@@ -240,13 +240,23 @@ class AutofillAgent : public content::RenderFrameObserver,
       blink::WebFormRelatedChangeType) override;
 
   // content::RenderFrameObserver:
+
   void DidCommitProvisionalLoad(ui::PageTransition transition) override;
   void DidCreateDocumentElement() override;
   void DidDispatchDOMContentLoadedEvent() override;
   void DidChangeScrollOffset() override;
-  void FocusedElementChanged(const blink::WebElement& element) override;
   void AccessibilityModeChanged(const ui::AXMode& mode) override;
   void OnDestruct() override;
+
+  // This function fires `FocusOnFormField()` xor `FocusNoLongerOnForm()`:
+  // - It calls `FocusOnFormField()` iff the newly focused element is a non-null
+  //   `WebFormControlElement` or a non-null contenteditable whose `FormData`
+  //   can be extracted.
+  // - It calls `FocusNoLongerOnForm()` iff it does not call
+  //   `FocusOnFormField()`.
+  // See crbug.com/337690061 for details.
+  void FocusedElementChanged(
+      const blink::WebElement& new_focused_element) override;
 
  private:
   class DeferringAutofillDriver;
@@ -281,6 +291,12 @@ class AutofillAgent : public content::RenderFrameObserver,
         mojom::FocusedFieldType::kUnknown;
     const raw_ref<AutofillAgent> agent_;
   };
+
+  // The legacy focus-change behavior is broken in many ways and to be removed
+  // once the kill switch `kAutofillNewFocusEvents` is removed.
+  // TODO(crbug.com/337690061): Remove when cleaning up
+  // `kAutofillNewFocusEvents`.
+  void FocusedElementChangedDeprecated(const blink::WebElement& element);
 
   // The RenderFrame* is nullptr while the AutofillAgent is pending deletion,
   // between OnDestruct() and ~AutofillAgent().

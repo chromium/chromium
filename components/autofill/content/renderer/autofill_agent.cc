@@ -407,7 +407,8 @@ void AutofillAgent::DidChangeScrollOffsetImpl(FieldRendererId element_id) {
   HidePopup();
 }
 
-void AutofillAgent::FocusedElementChanged(const WebElement& element) {
+void AutofillAgent::FocusedElementChangedDeprecated(const WebElement& element) {
+  CHECK(!base::FeatureList::IsEnabled(features::kAutofillNewFocusEvents));
   HidePopup();
 
   WebFormElement last_focused_form = last_interacted_form().GetForm();
@@ -481,6 +482,74 @@ void AutofillAgent::FocusedElementChanged(const WebElement& element) {
   }
 }
 
+void AutofillAgent::FocusedElementChanged(
+    const WebElement& new_focused_element) {
+  if (!base::FeatureList::IsEnabled(features::kAutofillNewFocusEvents)) {
+    FocusedElementChangedDeprecated(new_focused_element);
+    return;
+  }
+
+  HidePopup();
+
+  // This behavior was introduced for to fix http://crbug.com/1105254. It's
+  // unclear if this is still needed.
+  auto handle_focus_change = [&]() {
+    if ((config_.uses_keyboard_accessory_for_suggestions ||
+         !config_.focus_requires_scroll) &&
+        !new_focused_element.IsNull() &&
+        new_focused_element.GetDocument()
+            .GetFrame()
+            ->HasTransientUserActivation()) {
+      // If the focus change was caused by a user gesture,
+      // DidReceiveLeftMouseDownOrGestureTapInNode() will show the autofill
+      // suggestions. See crbug.com/730764 for why showing autofill suggestions
+      // as a result of JavaScript changing focus is enabled on WebView.
+      bool focused_node_was_last_clicked =
+          !base::FeatureList::IsEnabled(
+              features::kAutofillAndroidDisableSuggestionsOnJSFocus) ||
+          !config_.focus_requires_scroll;
+      HandleFocusChangeComplete(
+          /*focused_node_was_last_clicked=*/focused_node_was_last_clicked);
+    }
+  };
+
+  if (auto control = new_focused_element.DynamicTo<WebFormControlElement>();
+      !control.IsNull()) {
+    if (std::optional<FormAndField> form_and_field =
+            FindFormAndFieldForFormControlElement(
+                control, field_data_manager(),
+                MaybeExtractDatalist({form_util::ExtractOption::kBounds}))) {
+      auto& [form, field] = *form_and_field;
+      if (auto* autofill_driver = unsafe_autofill_driver()) {
+        last_queried_element_ = FieldRef(control);
+        autofill_driver->FocusOnFormField(form, field, field.bounds());
+        handle_focus_change();
+        return;
+      }
+    }
+  }
+
+  if (!new_focused_element.IsNull() &&
+      new_focused_element.IsContentEditable()) {
+    if (std::optional<FormData> form =
+            form_util::FindFormForContentEditable(new_focused_element)) {
+      CHECK_EQ(form->fields.size(), 1u);
+      if (auto* autofill_driver = unsafe_autofill_driver()) {
+        last_queried_element_ = FieldRef(new_focused_element);
+        autofill_driver->FocusOnFormField(*form, form->fields.front(),
+                                          form->fields.front().bounds());
+        handle_focus_change();
+        return;
+      }
+    }
+  }
+
+  if (auto* autofill_driver = unsafe_autofill_driver()) {
+    autofill_driver->FocusNoLongerOnForm(true);
+    handle_focus_change();
+  }
+}
+
 // AutofillAgent is deleted asynchronously because OnDestruct() may be
 // triggered by JavaScript, which in turn may be triggered by AutofillAgent.
 void AutofillAgent::OnDestruct() {
@@ -545,9 +614,10 @@ void AutofillAgent::ContentEditableDidChange(const WebElement& element) {
   // rapid changes.
   if (std::optional<FormData> form =
           form_util::FindFormForContentEditable(element)) {
-    const FormFieldData& field = form->fields.front();
+    CHECK_EQ(form->fields.size(), 1u);
     if (auto* autofill_driver = unsafe_autofill_driver()) {
-      autofill_driver->TextFieldDidChange(*form, field, field.bounds(),
+      autofill_driver->TextFieldDidChange(*form, form->fields.front(),
+                                          form->fields.front().bounds(),
                                           base::TimeTicks::Now());
     }
   }

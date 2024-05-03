@@ -1487,6 +1487,13 @@ void BrowserAutofillManager::OnFocusOnFormFieldImpl(
     const FormData& form,
     const FormFieldData& field,
     const gfx::RectF& bounding_box) {
+  if (pending_form_data_ &&
+      pending_form_data_->global_id() != form.global_id()) {
+    // A new form has received the focus, so we may have votes to upload for the
+    // old form.
+    ProcessPendingFormForUpload();
+  }
+
   // Notify installed screen readers if the focus is on a field for which there
   // are suggestions to present. Ignore if a screen reader is not present. If
   // the platform is ChromeOS, then assume ChromeVox is in use as there is no

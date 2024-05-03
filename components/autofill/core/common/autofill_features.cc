@@ -305,6 +305,18 @@ BASE_FEATURE(kAutofillFixCachingOnJavaScriptChanges,
              "AutofillFixCachingOnJavaScriptChanges",
              base::FEATURE_DISABLED_BY_DEFAULT);
 
+// Changes the semantics of FocusOnFormField() and FocusNoLongerOnForm() so that
+// - FocusOnFormField() is called when the focus moves to another field,
+//   including fields owned by form, unowned fields, and contenteditables.
+// - FocusNoLongerOnForm() is called in all remaining cases.
+// See crbug.com/337690061 for details.
+// This is a kill switch.
+// TODO(crbug.com/337690061): Remove when cleaning up
+// `kAutofillNewFocusEvents`.
+BASE_FEATURE(kAutofillNewFocusEvents,
+             "AutofillNewFocusEvents",
+             base::FEATURE_ENABLED_BY_DEFAULT);
+
 // Implements a model that suppresses suggestions after N times the user ignores
 // the popup (i.e. doesn't select a suggestion from the popup).
 // N depends on the parametrization of the feature.

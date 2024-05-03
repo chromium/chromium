@@ -1392,12 +1392,18 @@ public class AwAutofillTest extends AwParameterizedTest {
                 waitForCallbackAndVerifyTypes(
                         cnt,
                         new Integer[] {
-                            AUTOFILL_VIEW_EXITED, AUTOFILL_VIEW_ENTERED, AUTOFILL_VALUE_CHANGED
+                            AUTOFILL_VIEW_EXITED,
+                            AUTOFILL_VIEW_ENTERED,
+                            // onFocusChangeImpl() treats focus changes as value changes.
+                            AUTOFILL_VALUE_CHANGED,
+                            AUTOFILL_VALUE_CHANGED
                         });
         ArrayList<Pair<Integer, AutofillValue>> values = getChangedValues();
-        assertEquals(1, values.size());
+        assertEquals(2, values.size());
         assertTrue(values.get(0).second.isList());
-        assertEquals(1, values.get(0).second.getListValue());
+        assertEquals(0, values.get(0).second.getListValue());
+        assertTrue(values.get(1).second.isList());
+        assertEquals(1, values.get(1).second.getListValue());
     }
 
     @Test

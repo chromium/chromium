@@ -567,9 +567,23 @@ TEST_F(FormAutocompleteTest, AcceptDataListSuggestion) {
   }
 }
 
+// TODO(crbug.com/337690061): Remove the test suite when the new focus events
+// are launched. The new tests are `AutofillAgentTestFocus` in
+// `autofill_agent_browsertest.cc`.
+class FormAutocompleteTestFocus : public FormAutocompleteTest {
+ public:
+  FormAutocompleteTestFocus() {
+    scoped_feature_list_.InitAndDisableFeature(
+        autofill::features::kAutofillNewFocusEvents);
+  }
+
+ private:
+  base::test::ScopedFeatureList scoped_feature_list_;
+};
+
 // Test that a FocusNoLongerOnForm message is sent if focus goes from a
 // focused but uninteracted form to a null element.
-TEST_F(FormAutocompleteTest,
+TEST_F(FormAutocompleteTestFocus,
        UninteractedFormFocusChangesToNull_FocusNoLongerOnForm) {
   // Load a form.
   LoadHTML(
@@ -597,7 +611,7 @@ TEST_F(FormAutocompleteTest,
 
 // Test that a FocusNoLongerOnForm message is sent if focus goes from an
 // interacted form to a null element.
-TEST_F(FormAutocompleteTest,
+TEST_F(FormAutocompleteTestFocus,
        InteractedFormFocusChangesToNull_FocusNoLongerOnForm) {
   // Load a form.
   LoadHTML(
@@ -627,7 +641,7 @@ TEST_F(FormAutocompleteTest,
 
 // Test that a FocusNoLongerOnForm message is sent if focus goes from an
 // interacted form to an element outside the form.
-TEST_F(FormAutocompleteTest,
+TEST_F(FormAutocompleteTestFocus,
        InteractedFormFocusChangesToExternalElement_FocusNoLongerOnForm) {
   // Load a form.
   LoadHTML(
@@ -659,7 +673,8 @@ TEST_F(FormAutocompleteTest,
 
 // Test that a FocusNoLongerOnForm message is sent if focus goes from one
 // interacted form to another.
-TEST_F(FormAutocompleteTest, InteractingInDifferentForms_FocusNoLongerOnForm) {
+TEST_F(FormAutocompleteTestFocus,
+       InteractingInDifferentForms_FocusNoLongerOnForm) {
   // Load a form.
   LoadHTML(
       "<html><form id='myForm' action='http://example.com/blade.php'>"

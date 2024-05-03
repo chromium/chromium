@@ -25,6 +25,10 @@ class AutofillAgentTestApi {
     return agent_->provisionally_saved_form();
   }
 
+  void FocusedElementChanged(blink::WebElement new_focused_element) {
+    agent_->FocusedElementChanged(new_focused_element);
+  }
+
  private:
   const raw_ref<AutofillAgent> agent_;
 };

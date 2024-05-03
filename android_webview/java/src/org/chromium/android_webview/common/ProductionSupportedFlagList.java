@@ -254,6 +254,9 @@ public final class ProductionSupportedFlagList {
                 AutofillFeatures.AUTOFILL_DONT_PRESERVE_AUTOFILL_STATE,
                 "Retrieves is_autofilled state from blink instead of the cache"),
         Flag.baseFeature(
+                AutofillFeatures.AUTOFILL_NEW_FOCUS_EVENTS,
+                "Changes the semantics of Autofill's focus-change events"),
+        Flag.baseFeature(
                 AutofillFeatures.AUTOFILL_PARSING_PATTERN_PROVIDER,
                 "Enables Autofill to use its new method to retrieve parsing patterns."),
         Flag.baseFeature(
