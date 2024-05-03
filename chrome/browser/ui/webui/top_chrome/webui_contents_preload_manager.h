@@ -10,6 +10,8 @@
 #include "content/public/browser/web_contents.h"
 #include "url/gurl.h"
 
+class Browser;
+
 // This is a singleton class that preloads Top Chrome WebUIs resources.
 // If preloaded, it hosts a WebContents that can later be used to show a WebUI.
 // The currently implementation preloads Tab Search. If a different WebUI
@@ -18,7 +20,7 @@
 class WebUIContentsPreloadManager {
  public:
   enum class PreloadMode {
-    // Preloads on calling `WarmupForBrowserContext()` and after every WebUI
+    // Preloads on calling `WarmupForBrowser()` and after every WebUI
     // creation.
     // TODO(326505383): preloading on browser startup causes test failures
     // primarily because they expect a certain number of WebContents are
@@ -59,7 +61,7 @@ class WebUIContentsPreloadManager {
 
   // Warms up the preload manager. Depending on PreloadMode this may or may not
   // make a preloaded contents.
-  void WarmupForBrowserContext(content::BrowserContext* browser_context);
+  void WarmupForBrowser(Browser* browser);
 
   // Make a WebContents that shows `webui_url` under `browser_context`.
   // Reuses the preloaded contents if it is under the same `browser_context`.

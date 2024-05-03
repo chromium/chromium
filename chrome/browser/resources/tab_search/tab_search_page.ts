@@ -345,6 +345,19 @@ export class TabSearchPageElement extends TabSearchSearchFieldBase {
           // Ignore silently if mark 'TabListDataReceived' is missing.
           .catch(() => {});
 
+      // In rare cases there is no browser window. I suspect this happens during
+      // browser shutdown. Don't show Tab Search when this happens.
+      if (!profileData.windows) {
+        console.warn('Tab Search: no browser window.');
+        return;
+      }
+
+      // TODO(crbug.com/40855872): Determine why no active window is reported
+      // in some cases on ChromeOS and Linux.
+      const activeWindow = profileData.windows.find((t) => t.active);
+      this.availableHeight_ =
+          activeWindow ? activeWindow!.height : profileData.windows[0]!.height;
+
       // The infinite-list produces viewport-filled events whenever a data or
       // scroll position change triggers the the viewport fill logic.
       listenOnce(this.$.tabsList, 'viewport-filled', () => {
@@ -352,12 +365,6 @@ export class TabSearchPageElement extends TabSearchSearchFieldBase {
         // to occur following the DOM update.
         setTimeout(() => this.apiProxy_.notifySearchUiReadyToShow(), 0);
       });
-
-      // TODO(crbug.com/c/1349350): Determine why no active window is reported
-      // in some cases on ChromeOS and Linux.
-      const activeWindow = profileData.windows.find((t) => t.active);
-      this.availableHeight_ =
-          activeWindow ? activeWindow!.height : profileData.windows[0]!.height;
 
       this.tabsChanged_(profileData);
     });

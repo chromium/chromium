@@ -8,7 +8,9 @@
 #include "base/memory/memory_pressure_monitor.h"
 #include "base/memory/weak_ptr.h"
 #include "base/no_destructor.h"
+#include "chrome/browser/profiles/profile.h"
 #include "chrome/browser/task_manager/web_contents_tags.h"
+#include "chrome/browser/ui/browser.h"
 #include "chrome/browser/ui/prefs/prefs_tab_helper.h"
 #include "chrome/browser/ui/ui_features.h"
 #include "chrome/browser/ui/webui/top_chrome/top_chrome_web_ui_controller.h"
@@ -168,14 +170,19 @@ void WebUIContentsPreloadManager::EnsureFactoryBuilt() {
   BrowserContextShutdownNotifierFactory::GetInstance();
 }
 
-void WebUIContentsPreloadManager::WarmupForBrowserContext(
-    content::BrowserContext* browser_context) {
+void WebUIContentsPreloadManager::WarmupForBrowser(Browser* browser) {
+  // Most WebUIs, if not all, are hosted by a TYPE_NORMAL browser. This check
+  // skips unnecessary preloading for the majority of WebUIs.
+  if (!browser->is_type_normal()) {
+    return;
+  }
+
   if (preload_mode_ == PreloadMode::kPreloadOnMakeContents) {
     return;
   }
 
   CHECK_EQ(preload_mode_, PreloadMode::kPreloadOnWarmup);
-  PreloadForBrowserContext(browser_context);
+  PreloadForBrowserContext(browser->profile());
 }
 
 void WebUIContentsPreloadManager::PreloadForBrowserContextForTesting(

@@ -272,6 +272,9 @@ export class InfiniteList extends PolymerElement {
 
   private getDomItem_(index: number): HTMLElement|undefined {
     const instance = this.instances_[index];
+    if (!instance) {
+      return undefined;
+    }
     return instance!.children[0] as HTMLElement;
   }
 
