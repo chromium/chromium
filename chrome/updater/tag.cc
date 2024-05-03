@@ -28,6 +28,7 @@
 #include "base/strings/string_util.h"
 #include "base/strings/utf_string_conversions.h"
 #include "base/types/cxx23_to_underlying.h"
+#include "base/uuid.h"
 #include "chrome/updater/certificate_tag.h"
 
 namespace updater::tagging {
@@ -84,6 +85,13 @@ constexpr std::string_view kTagArgBrowserType = "browser";
 // Example:
 //   "runtime=true&needsadmin=true"
 constexpr std::string_view kTagArgRuntimeMode = "runtime";
+
+// Enrollment token: "etoken" argument in the tag tells the per-machine updater
+// to register the machine to the device management server. The value must be a
+// GUID.
+// Example:
+//   "etoken=5d086552-4514-4dfb-8a3e-337024ec35ac"
+constexpr std::string_view kTagArgErollmentToken = "etoken";
 
 // The list of arguments that are needed for a meta-installer, to
 // indicate which application is being installed. These are stamped
@@ -263,6 +271,14 @@ ErrorCode ParseRuntimeMode(std::string_view value, TagArgs& args) {
   return ErrorCode::kGlobal_RuntimeModeValueIsInvalid;
 }
 
+ErrorCode ParseEnrollmentToken(std::string_view value, TagArgs& args) {
+  if (!base::Uuid::ParseCaseInsensitive(value).is_valid()) {
+    return ErrorCode::kGlobal_EnrollmentTokenValueIsInvalid;
+  }
+  args.enrollment_token = value;
+  return ErrorCode::kSuccess;
+}
+
 // |value| must not be empty.
 using ParseGlobalAttributeFunPtr = ErrorCode (*)(std::string_view value,
                                                  TagArgs& args);
@@ -272,20 +288,20 @@ using GlobalParseTable = std::map<std::string_view,
                                   CaseInsensitiveASCIICompare>;
 
 const GlobalParseTable& GetTable() {
-  static const base::NoDestructor<GlobalParseTable> instance{{
-      {kTagArgBundleName, &ParseBundleName},
-      {kTagArgInstallationId, &ParseInstallationId},
-      {kTagArgBrandCode, &ParseBrandCode},
-      {kTagArgClientId, &ParseClientId},
-      {kTagArgOmahaExperimentLabels, &ParseOmahaExperimentLabels},
-      {kTagArgReferralId, &ParseReferralId},
-      {kTagArgBrowserType, &ParseBrowserType},
-      {kTagArgLanguage, &ParseLanguage},
-      {kTagArgFlighting, &ParseFlighting},
-      {kTagArgUsageStats, &ParseUsageStats},
-      {kTagArgAppId, &ParseAppId},
-      {kTagArgRuntimeMode, &ParseRuntimeMode},
-  }};
+  static const base::NoDestructor<GlobalParseTable> instance{
+      {{kTagArgBundleName, &ParseBundleName},
+       {kTagArgInstallationId, &ParseInstallationId},
+       {kTagArgBrandCode, &ParseBrandCode},
+       {kTagArgClientId, &ParseClientId},
+       {kTagArgOmahaExperimentLabels, &ParseOmahaExperimentLabels},
+       {kTagArgReferralId, &ParseReferralId},
+       {kTagArgBrowserType, &ParseBrowserType},
+       {kTagArgLanguage, &ParseLanguage},
+       {kTagArgFlighting, &ParseFlighting},
+       {kTagArgUsageStats, &ParseUsageStats},
+       {kTagArgAppId, &ParseAppId},
+       {kTagArgRuntimeMode, &ParseRuntimeMode},
+       {kTagArgErollmentToken, &ParseEnrollmentToken}}};
   return *instance;
 }
 
@@ -766,6 +782,8 @@ std::ostream& operator<<(std::ostream& os, const ErrorCode& error_code) {
       return os << "ErrorCode::kGlobal_UsageStatsValueIsInvalid";
     case ErrorCode::kGlobal_RuntimeModeValueIsInvalid:
       return os << "ErrorCode::kGlobal_RuntimeModeValueIsInvalid";
+    case ErrorCode::kGlobal_EnrollmentTokenValueIsInvalid:
+      return os << "ErrorCode::kGlobal_EnrollmentTokenValueIsInvalid";
     case ErrorCode::kRuntimeMode_NeedsAdminValueIsInvalid:
       return os << "ErrorCode::kRuntimeMode_NeedsAdminValueIsInvalid";
   }

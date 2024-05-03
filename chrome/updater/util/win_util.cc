@@ -1511,4 +1511,14 @@ std::wstring StringFromGuid(const GUID& guid) {
   return guid_string;
 }
 
+bool StoreRunTimeEnrollmentToken(const std::string& enrollment_token) {
+  VLOG(1) << __func__ << ": " << enrollment_token;
+  return base::win::RegKey(HKEY_LOCAL_MACHINE,
+                           GetAppClientsKey(kUpdaterAppId).c_str(),
+                           Wow6432(KEY_SET_VALUE))
+             .WriteValue(kRegValueCloudManagementEnrollmentToken,
+                         base::SysUTF8ToWide(enrollment_token).c_str()) ==
+         ERROR_SUCCESS;
+}
+
 }  // namespace updater

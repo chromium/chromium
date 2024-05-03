@@ -79,6 +79,10 @@ class TagArgsBuilder {
     this->inner_.runtime_mode = runtime_mode;
     return *this;
   }
+  TagArgsBuilder& WithEnrollmentToken(const std::string& enrollment_token) {
+    this->inner_.enrollment_token = enrollment_token;
+    return *this;
+  }
 
  private:
   TagArgs inner_;
@@ -1101,6 +1105,7 @@ TEST(TagParserTestMultipleEntries, TestNotStartingWithAppId) {
 // that is saved.
 TEST(TagParserTestMultipleEntries, ThreeApplications) {
   VerifyTagParseSuccess(
+      "etoken=5d086552-4514-4dfb-8a3e-337024ec35ac&"
       "appguid=8617EE50-F91C-4DC1-B937-0969EEF59B0B&"
       "appname=TestApp&"
       "needsadmin=false&"
@@ -1132,6 +1137,7 @@ TEST(TagParserTestMultipleEntries, ThreeApplications) {
        "appguid=8617EE50-F91C-4DC1-B937-0969EEF59B0B&"
        "installerdata=installerdata_app1"},
       TagArgsBuilder()
+          .WithEnrollmentToken("5d086552-4514-4dfb-8a3e-337024ec35ac")
           .WithBundleName("TestApp")
           .WithInstallationId("98CEC468-9429-4984-AEDE-4F53C6A14869")
           .WithBrandCode("g00g")
@@ -1208,6 +1214,50 @@ TEST(TagParserTest, RuntimeModeValidUser) {
       TagArgsBuilder()
           .WithRuntimeMode(
               RuntimeModeArgsBuilder().WithNeedsAdmin(NeedsAdmin::kNo).Build())
+          .Build());
+}
+
+TEST(TagParserTest, EnrollmentTokenBeforeApp) {
+  VerifyTagParseSuccess(
+      "etoken=5d086552-4514-4dfb-8a3e-337024ec35ac&"
+      "appguid=D0324988-DA8A-49e5-BCE5-925FCD04EAB7&"
+      "appname=Hello",
+      std::nullopt,
+      TagArgsBuilder()
+          .WithEnrollmentToken("5d086552-4514-4dfb-8a3e-337024ec35ac")
+          .WithBundleName("Hello")
+          .WithApp(AppArgsBuilder("D0324988-DA8A-49e5-BCE5-925FCD04EAB7")
+                       .WithAppName("Hello")
+                       .Build())
+          .Build());
+}
+
+TEST(TagParserTest, EnrollmentTokenAfterApp) {
+  VerifyTagParseSuccess(
+      "appguid=D0324988-DA8A-49e5-BCE5-925FCD04EAB7&"
+      "appname=Hello&"
+      "etoken=5d086552-4514-4dfb-8a3e-337024ec35ac",
+      std::nullopt,
+      TagArgsBuilder()
+          .WithEnrollmentToken("5d086552-4514-4dfb-8a3e-337024ec35ac")
+          .WithBundleName("Hello")
+          .WithApp(AppArgsBuilder("D0324988-DA8A-49e5-BCE5-925FCD04EAB7")
+                       .WithAppName("Hello")
+                       .Build())
+          .Build());
+}
+
+TEST(TagParserTest, EnrollmentTokenInvalidValue) {
+  VerifyTagParseFail("etoken=5d086552-4514-____-8a3e-337024ec35ac",
+                     std::nullopt,
+                     ErrorCode::kGlobal_EnrollmentTokenValueIsInvalid);
+}
+
+TEST(TagParserTest, EnrollmentTokenValid) {
+  VerifyTagParseSuccess(
+      "etoken=5d086552-4514-4dfb-8a3e-337024ec35ac", std::nullopt,
+      TagArgsBuilder()
+          .WithEnrollmentToken("5d086552-4514-4dfb-8a3e-337024ec35ac")
           .Build());
 }
 

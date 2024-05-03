@@ -545,6 +545,7 @@ void ExpectTagArgsEqual(const updater::tagging::TagArgs& actual,
   EXPECT_EQ(actual.language, expected.language);
   EXPECT_EQ(actual.browser_type, expected.browser_type);
   EXPECT_EQ(actual.usage_stats_enable, expected.usage_stats_enable);
+  EXPECT_EQ(actual.enrollment_token, expected.enrollment_token);
 
   EXPECT_EQ(actual.apps.size(), expected.apps.size());
   for (size_t i = 0; i < expected.apps.size(); ++i) {

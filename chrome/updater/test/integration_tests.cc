@@ -2459,7 +2459,8 @@ class IntegrationTestDeviceManagement : public IntegrationTest {
   }
 
   std::unique_ptr<ScopedServer> test_server_;
-  static constexpr char kEnrollmentToken[] = "integration-enrollment-token";
+  static constexpr char kEnrollmentToken[] =
+      "00001111-beef-f00d-2222-333344445555";
   static constexpr char kDMToken[] = "integration-dm-token";
 
 #if BUILDFLAG(IS_WIN)
@@ -2603,9 +2604,28 @@ TEST_F(IntegrationTestDeviceManagement, ForceInstall) {
   ASSERT_NO_FATAL_FAILURE(Uninstall());
 }
 
+#if BUILDFLAG(IS_WIN)
+// RuntimeEnrollmentToken is supported on Windows only.
+TEST_F(IntegrationTestDeviceManagement, RuntimeEnrollmentToken) {
+  ExpectDeviceManagementRegistrationRequest(test_server_.get(),
+                                            kEnrollmentToken, kDMToken);
+  ExpectDeviceManagementPolicyFetchRequest(test_server_.get(), kDMToken,
+                                           OmahaSettingsClientProto());
+  ASSERT_NO_FATAL_FAILURE(ExpectInstallSequence(
+      test_server_.get(), kApp1.appid, "", UpdateService::Priority::kForeground,
+      base::Version({0, 0, 0, 0}), kApp1.v1));
+  ASSERT_NO_FATAL_FAILURE(InstallUpdaterAndApp(
+      kApp1.appid, /*is_silent_install=*/true,
+      base::StrCat({"etoken=", kEnrollmentToken, "&appguid=", kApp1.appid,
+                    "&usagestats=1"})));
+  ASSERT_TRUE(WaitForUpdaterExit());
+  ASSERT_NO_FATAL_FAILURE(ExpectAppVersion(kApp1.appid, kApp1.v1));
+  ASSERT_NO_FATAL_FAILURE(ExpectUninstallPing(test_server_.get()));
+  ASSERT_NO_FATAL_FAILURE(Uninstall());
+}
+
 // This test depends on platform policy overriding cloud policy, which is not
 // the default on POSIX. Therefore, this test is Windows only.
-#if BUILDFLAG(IS_WIN)
 TEST_F(IntegrationTestDeviceManagement, AppUpdateConflictPolicies) {
   ASSERT_NO_FATAL_FAILURE(Install());
   ASSERT_NO_FATAL_FAILURE(ExpectInstalled());

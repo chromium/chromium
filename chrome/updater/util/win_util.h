@@ -453,6 +453,9 @@ bool ResetOemInstallState();
 // `kMinOemModeTime` since the OEM install.
 bool IsOemInstalling();
 
+// Stores the runtime enrollment token to the persistent storage.
+bool StoreRunTimeEnrollmentToken(const std::string& enrollment_token);
+
 }  // namespace updater
 
 #endif  // CHROME_UPDATER_UTIL_WIN_UTIL_H_

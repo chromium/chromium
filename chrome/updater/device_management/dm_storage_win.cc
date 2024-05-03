@@ -14,6 +14,7 @@
 #include "base/path_service.h"
 #include "base/strings/sys_string_conversions.h"
 #include "base/win/registry.h"
+#include "chrome/updater/constants.h"
 #include "chrome/updater/updater_branding.h"
 #include "chrome/updater/util/win_util.h"
 #include "chrome/updater/win/win_constants.h"
@@ -152,18 +153,21 @@ bool TokenService::DeleteEnrollmentToken() {
 
 std::string TokenService::GetEnrollmentToken() const {
   std::wstring token;
-  if (base::win::RegKey key;
-      key.Open(HKEY_LOCAL_MACHINE, kRegKeyCompanyCloudManagement,
-               Wow6432(KEY_READ)) == ERROR_SUCCESS &&
-      key.ReadValue(kRegValueEnrollmentToken, &token) == ERROR_SUCCESS) {
+  if (base::win::RegKey(HKEY_LOCAL_MACHINE, kRegKeyCompanyCloudManagement,
+                        Wow6432(KEY_READ))
+          .ReadValue(kRegValueEnrollmentToken, &token) == ERROR_SUCCESS) {
     return base::SysWideToUTF8(token);
   }
-  if (base::win::RegKey key;
-      key.Open(HKEY_LOCAL_MACHINE, kRegKeyCompanyLegacyCloudManagement,
-               Wow6432(KEY_READ)) == ERROR_SUCCESS &&
-      key.ReadValue(kRegValueCloudManagementEnrollmentToken, &token) ==
-          ERROR_SUCCESS) {
-    return base::SysWideToUTF8(token);
+  for (const std::wstring& key_path :
+       {std::wstring(kRegKeyCompanyLegacyCloudManagement),
+        GetAppClientsKey(UPDATER_APPID),
+        GetAppClientsKey(kLegacyGoogleUpdateAppID)}) {
+    if (base::win::RegKey(HKEY_LOCAL_MACHINE, key_path.c_str(),
+                          Wow6432(KEY_READ))
+            .ReadValue(kRegValueCloudManagementEnrollmentToken, &token) ==
+        ERROR_SUCCESS) {
+      return base::SysWideToUTF8(token);
+    }
   }
   return {};
 }

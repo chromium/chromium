@@ -803,16 +803,21 @@ the following parameters:
 ```
 
 ### Enterprise Enrollment
-The updater may be enrolled with a particular enterprise. Enrollment is
+The machine updater may be enrolled with a particular enterprise. Enrollment is
 coordinated with a device management server by means of an enrollment token and
 a device management token. The enrollment token is placed on the device by other
 programs or the enterprise administrator and serves as an indicator of which
-enterprise the device should attempt to enroll with. The updater sends the
-enrollment token, along with the device's machine name, os information, and
-(on Windows) BIOS serial number. If the server accepts the enrollment, it
-responds with a device-specific device management token, which is used in
-future requests to fetch device-specific policies from the device management
-server.
+enterprise the device should attempt to enroll with. On Windows platform,
+alternatively, an enrollment token can be tagged to the meta-installer by the
+key `etoken`. This is called runtime enrollment token and must be a GUID string.
+When the meta-installer runs, the tagged token is persisted to
+`CloudManagementEnrollmentToken` under registry key
+`{CLIENTSTATE}\{UpdaterAppID}`.  The updater searches the enrollment token from
+known places in order, sends it along with the device's machine name, os
+information, and (on Windows) BIOS serial number. If the server accepts the
+enrollment, it responds with a device-specific device management token, which is
+used in future requests to fetch device-specific policies from the device
+management server.
 
 By default, if enrollment fails, for example if the enrollment token is invalid
 or revoked, the updater will start in an unmanaged state. Instead, if you want
@@ -830,16 +835,23 @@ The maximum size of the token is 4K (Windows only).
 
 #### Windows
 The enrollment token is searched in the order:
+
 * The `EnrollmentToken` REG_SZ value from
   `HKLM\Software\Policies\{COMPANY_SHORTNAME}\CloudManagement`
 * The `CloudManagementEnrollmentToken` REG_SZ value from
   `HKLM\Software\Policies\{COMPANY_SHORTNAME}\{BROWSER_NAME}`
+* The `CloudManagementEnrollmentToken` REG_SZ value from
+  `{CLIENTSTATE}\{UpdaterAppID}` (the runtime enrollmen token)
+* The `CloudManagementEnrollmentToken` REG_SZ value from
+  `{CLIENTSTATE}\{430FD4D0-B729-4F61-AA34-91526481799D}` (the legacy runtime
+  enrollment token)
 
 The `EnrollmentMandatory` `REG_DWORD` value is also read from
 `HKLM\Software\Policies\{COMPANY_SHORTNAME}\CloudManagement`.
 
 #### macOS
 The enrollment token is searched in the order:
+
 * Managed Preference value with key `CloudManagementEnrollmentToken` in domain
  `{MAC_BROWSER_BUNDLE_IDENTIFIER}`.
 * Managed Preference value with key `EnrollmentToken` in domain
