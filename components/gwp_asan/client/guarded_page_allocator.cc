@@ -21,6 +21,7 @@
 #include "base/synchronization/lock.h"
 #include "build/build_config.h"
 #include "components/crash/core/common/crash_key.h"
+#include "components/gwp_asan/client/gwp_asan.h"
 #include "components/gwp_asan/client/thread_local_random_bit_generator.h"
 #include "components/gwp_asan/common/allocation_info.h"
 #include "components/gwp_asan/common/allocator_state.h"
@@ -141,22 +142,20 @@ void GuardedPageAllocator::PartitionAllocSlotFreeList::Free(
 
 GuardedPageAllocator::GuardedPageAllocator() {}
 
-void GuardedPageAllocator::Init(size_t max_alloced_pages,
-                                size_t num_metadata,
-                                size_t total_pages,
+void GuardedPageAllocator::Init(const AllocatorSettings& settings,
                                 OutOfMemoryCallback oom_callback,
                                 bool is_partition_alloc) {
-  CHECK_GT(max_alloced_pages, 0U);
-  CHECK_LE(max_alloced_pages, num_metadata);
-  CHECK_LE(num_metadata, AllocatorState::kMaxMetadata);
-  CHECK_LE(num_metadata, total_pages);
-  CHECK_LE(total_pages, AllocatorState::kMaxRequestedSlots);
+  CHECK_GT(settings.max_allocated_pages, 0U);
+  CHECK_LE(settings.max_allocated_pages, settings.num_metadata);
+  CHECK_LE(settings.num_metadata, AllocatorState::kMaxMetadata);
+  CHECK_LE(settings.num_metadata, settings.total_pages);
+  CHECK_LE(settings.total_pages, AllocatorState::kMaxRequestedSlots);
 
   ThreadLocalRandomBitGenerator::InitIfNeeded();
 
-  max_alloced_pages_ = max_alloced_pages;
-  state_.num_metadata = num_metadata;
-  state_.total_requested_pages = total_pages;
+  max_alloced_pages_ = settings.max_allocated_pages;
+  state_.num_metadata = settings.num_metadata;
+  state_.total_requested_pages = settings.total_pages;
   oom_callback_ = std::move(oom_callback);
   is_partition_alloc_ = is_partition_alloc;
 
@@ -164,8 +163,8 @@ void GuardedPageAllocator::Init(size_t max_alloced_pages,
 
 #if BUILDFLAG(USE_PARTITION_ALLOC_AS_GWP_ASAN_STORE)
   std::vector<AllocatorState::SlotIdx> free_list_indices;
-  void* region = partition_alloc::GwpAsanSupport::MapRegion(total_pages,
-                                                            free_list_indices);
+  void* region = partition_alloc::GwpAsanSupport::MapRegion(
+      settings.total_pages, free_list_indices);
   CHECK(!free_list_indices.empty());
   AllocatorState::SlotIdx highest_idx = free_list_indices.back();
   DCHECK_EQ(highest_idx, *std::max_element(free_list_indices.begin(),
@@ -173,7 +172,7 @@ void GuardedPageAllocator::Init(size_t max_alloced_pages,
   state_.total_reserved_pages = highest_idx + 1;
   CHECK_LE(state_.total_reserved_pages, AllocatorState::kMaxReservedSlots);
 #else   // BUILDFLAG(USE_PARTITION_ALLOC_AS_GWP_ASAN_STORE)
-  state_.total_reserved_pages = total_pages;
+  state_.total_reserved_pages = settings.total_pages;
   void* region = MapRegion();
 #endif  // BUILDFLAG(USE_PARTITION_ALLOC_AS_GWP_ASAN_STORE)
 

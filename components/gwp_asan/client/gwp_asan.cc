@@ -448,16 +448,15 @@ bool MaybeEnableLightweightDetectorInternal(bool boost_sampling,
 void EnableForMalloc(bool boost_sampling, std::string_view process_type) {
 #if PA_BUILDFLAG(USE_ALLOCATOR_SHIM)
   static bool init_once = [&]() -> bool {
-    auto settings = internal::GetAllocatorSettings(internal::kGwpAsanMalloc,
-                                                   boost_sampling);
+    const auto settings = internal::GetAllocatorSettings(
+        internal::kGwpAsanMalloc, boost_sampling);
     internal::ReportGwpAsanActivated("Malloc", process_type,
                                      settings.has_value());
     if (!settings)
       return false;
 
     internal::InstallMallocHooks(
-        settings->max_allocated_pages, settings->num_metadata,
-        settings->total_pages, settings->sampling_frequency,
+        settings.value(),
         internal::CreateOomCallback("Malloc", process_type,
                                     settings->sampling_frequency));
     return true;
@@ -473,7 +472,7 @@ void EnableForPartitionAlloc(bool boost_sampling,
                              std::string_view process_type) {
 #if PA_BUILDFLAG(USE_PARTITION_ALLOC)
   static bool init_once = [&]() -> bool {
-    auto settings = internal::GetAllocatorSettings(
+    const auto settings = internal::GetAllocatorSettings(
         internal::kGwpAsanPartitionAlloc, boost_sampling);
     internal::ReportGwpAsanActivated("PartitionAlloc", process_type,
                                      settings.has_value());
@@ -481,8 +480,7 @@ void EnableForPartitionAlloc(bool boost_sampling,
       return false;
 
     internal::InstallPartitionAllocHooks(
-        settings->max_allocated_pages, settings->num_metadata,
-        settings->total_pages, settings->sampling_frequency,
+        settings.value(),
         internal::CreateOomCallback("PartitionAlloc", process_type,
                                     settings->sampling_frequency));
     return true;

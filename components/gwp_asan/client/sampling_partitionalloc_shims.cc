@@ -74,18 +74,14 @@ GWP_ASAN_EXPORT GuardedPageAllocator& GetPartitionAllocGpaForTesting() {
 }
 
 void InstallPartitionAllocHooks(
-    size_t max_allocated_pages,
-    size_t num_metadata,
-    size_t total_pages,
-    size_t sampling_frequency,
+    const AllocatorSettings& settings,
     GuardedPageAllocator::OutOfMemoryCallback callback) {
   static crash_reporter::CrashKeyString<24> pa_crash_key(
       kPartitionAllocCrashKey);
   gpa = new GuardedPageAllocator();
-  gpa->Init(max_allocated_pages, num_metadata, total_pages, std::move(callback),
-            true);
+  gpa->Init(settings, std::move(callback), true);
   pa_crash_key.Set(gpa->GetCrashKey());
-  sampling_state.Init(sampling_frequency);
+  sampling_state.Init(settings.sampling_frequency);
   // TODO(vtsyrklevich): Allow SetOverrideHooks to be passed in so we can hook
   // PDFium's PartitionAlloc fork.
   partition_alloc::PartitionAllocHooks::SetOverrideHooks(

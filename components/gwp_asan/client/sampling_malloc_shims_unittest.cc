@@ -5,6 +5,7 @@
 #include "components/gwp_asan/client/sampling_malloc_shims.h"
 
 #include <stdlib.h>
+
 #include <cstdlib>
 #include <memory>
 #include <string>
@@ -20,6 +21,7 @@
 #include "build/build_config.h"
 #include "components/crash/core/common/crash_key.h"
 #include "components/gwp_asan/client/guarded_page_allocator.h"
+#include "components/gwp_asan/client/gwp_asan.h"
 #include "components/gwp_asan/common/crash_key_name.h"
 #include "testing/gtest/include/gtest/gtest.h"
 #include "testing/multiprocess_func_list.h"
@@ -68,10 +70,14 @@ class SamplingMallocShimsTest : public base::MultiProcessTest {
     allocator_shim::InitializeAllocatorShim();
 #endif  // BUILDFLAG(IS_APPLE)
     crash_reporter::InitializeCrashKeys();
-    InstallMallocHooks(AllocatorState::kMaxMetadata,
-                       AllocatorState::kMaxMetadata,
-                       AllocatorState::kMaxRequestedSlots, kSamplingFrequency,
-                       base::DoNothing());
+    InstallMallocHooks(
+        AllocatorSettings{
+            .max_allocated_pages = AllocatorState::kMaxMetadata,
+            .num_metadata = AllocatorState::kMaxMetadata,
+            .total_pages = AllocatorState::kMaxRequestedSlots,
+            .sampling_frequency = kSamplingFrequency,
+        },
+        base::DoNothing());
   }
 
  protected:

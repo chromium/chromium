@@ -18,6 +18,7 @@
 #include "base/thread_annotations.h"
 #include "build/build_config.h"
 #include "components/gwp_asan/client/export.h"
+#include "components/gwp_asan/client/gwp_asan.h"
 #include "components/gwp_asan/common/allocator_state.h"
 
 namespace gwp_asan {
@@ -47,17 +48,15 @@ class GWP_ASAN_EXPORT GuardedPageAllocator {
   GuardedPageAllocator(const GuardedPageAllocator&) = delete;
   GuardedPageAllocator& operator=(const GuardedPageAllocator&) = delete;
 
-  // Configures this allocator to allocate up to max_alloced_pages pages at a
-  // time, holding metadata for up to num_metadata allocations, from a pool of
-  // total_pages pages, where:
+  // Configures this allocator to allocate up to `settings.max_alloced_pages`
+  // pages at a time, holding metadata for up to `settings.num_metadata`
+  // allocations, from a pool of `settings.total_pages` pages, where:
   //   1 <= max_alloced_pages <= num_metadata <= kMaxMetadata
   //   num_metadata <= total_pages <= kMaxSlots
   //
   // The OOM callback is called the first time the allocator fails to allocate
   // kOutOfMemoryCount allocations consecutively due to lack of memory.
-  void Init(size_t max_alloced_pages,
-            size_t num_metadata,
-            size_t total_pages,
+  void Init(const AllocatorSettings& settings,
             OutOfMemoryCallback oom_callback,
             bool is_partition_alloc);
 

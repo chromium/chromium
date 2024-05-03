@@ -18,6 +18,7 @@
 #include "base/test/metrics/histogram_tester.h"
 #include "build/build_config.h"
 #include "components/gwp_asan/client/guarded_page_allocator.h"
+#include "components/gwp_asan/client/gwp_asan.h"
 #include "components/gwp_asan/client/lightweight_detector/poison_metadata_recorder.h"
 #include "components/gwp_asan/common/allocator_state.h"
 #include "components/gwp_asan/common/crash_key_name.h"
@@ -99,7 +100,14 @@ class BaseCrashAnalyzerTest : public testing::Test {
       : is_partition_alloc_(is_partition_alloc),
         lightweight_detector_enabled_(lightweight_detector_mode !=
                                       LightweightDetectorMode::kOff) {
-    gpa_.Init(1, 1, 1, base::DoNothing(), is_partition_alloc);
+    gpa_.Init(
+        AllocatorSettings{
+            .max_allocated_pages = 1u,
+            .num_metadata = 1u,
+            .total_pages = 1u,
+            .sampling_frequency = 0u,
+        },
+        base::DoNothing(), is_partition_alloc);
     if (lightweight_detector_enabled_) {
       lud::PoisonMetadataRecorder::ResetForTesting();
       lud::PoisonMetadataRecorder::Init(lightweight_detector_mode, 1);

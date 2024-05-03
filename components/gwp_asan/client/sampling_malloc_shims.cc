@@ -288,17 +288,13 @@ GWP_ASAN_EXPORT GuardedPageAllocator& GetMallocGpaForTesting() {
   return *gpa;
 }
 
-void InstallMallocHooks(size_t max_allocated_pages,
-                        size_t num_metadata,
-                        size_t total_pages,
-                        size_t sampling_frequency,
+void InstallMallocHooks(const AllocatorSettings& settings,
                         GuardedPageAllocator::OutOfMemoryCallback callback) {
   static crash_reporter::CrashKeyString<24> malloc_crash_key(kMallocCrashKey);
   gpa = new GuardedPageAllocator();
-  gpa->Init(max_allocated_pages, num_metadata, total_pages, std::move(callback),
-            false);
+  gpa->Init(settings, std::move(callback), false);
   malloc_crash_key.Set(gpa->GetCrashKey());
-  sampling_state.Init(sampling_frequency);
+  sampling_state.Init(settings.sampling_frequency);
   allocator_shim::InsertAllocatorDispatch(&g_allocator_dispatch);
 }
 
