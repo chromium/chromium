@@ -1139,12 +1139,12 @@ TEST_F(AutofillI18nStructuredAddress, ParseStreetAddressMX) {
        .street_name = "Avenida Álvaro Obregón",
        .house_number = "S/N"},
       {.country_code = "MX",
-       .street_address = "Avenida Álvaro Obregón 1234, Apartamento 5A, Piso 10 "
+       .street_address = "Avenida Álvaro Obregón 1234, Piso 10, Apartamento 5A "
                          "Entre Calles Tonalá y Monterrey",
        .street_location = "Avenida Álvaro Obregón 1234",
        .street_name = "Avenida Álvaro Obregón",
        .house_number = "1234",
-       .subpremise = "Apartamento 5A, Piso 10",
+       .subpremise = "Piso 10, Apartamento 5A",
        .floor = "10",
        .apartment = "Apartamento 5A",
        .apartment_type = "Apartamento",
@@ -1154,12 +1154,12 @@ TEST_F(AutofillI18nStructuredAddress, ParseStreetAddressMX) {
        .cross_streets_1 = "Tonalá",
        .cross_streets_2 = "Monterrey"},
       {.country_code = "MX",
-       .street_address = "Avenida Paseo de la Reforma 505 interior 201, piso "
-                         "2, entre Río Sena y Río Neva",
+       .street_address = "Avenida Paseo de la Reforma 505 piso 2, interior 201"
+                         ", entre Río Sena y Río Neva",
        .street_location = "Avenida Paseo de la Reforma 505",
        .street_name = "Avenida Paseo de la Reforma",
        .house_number = "505",
-       .subpremise = "interior 201, Piso 2",
+       .subpremise = "Piso 2, interior 201",
        .floor = "2",
        .apartment = "interior 201",
        .apartment_type = "interior",
