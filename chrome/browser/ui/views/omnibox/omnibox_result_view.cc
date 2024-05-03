@@ -591,9 +591,9 @@ bool OmniboxResultView::OnMouseDragged(const ui::MouseEvent& event) {
 }
 
 void OmniboxResultView::OnMouseReleased(const ui::MouseEvent& event) {
-  if (match_.type == AutocompleteMatchType::STARTER_PACK) {
-    // Starter pack matches in the keyword mode refresh are a special case that
-    // does not commit the omnibox by opening a selected match.
+  if (AutocompleteMatch::IsFeaturedSearchType(match_.type)) {
+    // Featured search matches in the keyword mode refresh are a special case
+    // that does not commit the omnibox by opening a selected match.
     OmniboxEditModel* model = popup_view_->model();
     model->ClearKeyword();
     model->SetPopupSelection(OmniboxPopupSelection(

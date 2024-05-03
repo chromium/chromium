@@ -330,6 +330,10 @@ struct AutocompleteMatch {
   // Convenience function to check if `type` is featured Enterprise search.
   static bool IsFeaturedEnterpriseSearchType(Type type);
 
+  // Convenience function to check if `type` is featured search type, e.g.
+  // starter pack and featured site search engines created by policy.
+  static bool IsFeaturedSearchType(Type type);
+
   // Convenience function to check if |type| is a search (as opposed to a URL or
   // an extension).
   static bool IsSearchType(Type type);

@@ -83,6 +83,17 @@ class AutocompleteControllerTest : public testing::Test {
     return match;
   }
 
+  AutocompleteMatch CreateFeaturedEnterpriseSearch(std::u16string keyword) {
+    AutocompleteMatch match;
+    match.type = AutocompleteMatchType::Type::FEATURED_ENTERPRISE_SEARCH;
+    match.contents = keyword;
+    match.keyword = keyword;
+    match.associated_keyword = std::make_unique<AutocompleteMatch>(
+        nullptr, 1000, false, AutocompleteMatchType::SEARCH_WHAT_YOU_TYPED);
+    match.associated_keyword->keyword = keyword;
+    return match;
+  }
+
   AutocompleteMatch CreateSearchMatch(std::string name,
                                       bool allowed_to_be_default_match,
                                       int traditional_relevance) {
@@ -340,6 +351,7 @@ TEST_F(AutocompleteControllerTest, FilterMatchesForInstantKeywordWithBareAt) {
       CreateStarterPackMatch(u"@bookmarks"),
       CreateStarterPackMatch(u"@history"),
       CreateStarterPackMatch(u"@tabs"),
+      CreateFeaturedEnterpriseSearch(u"@work"),
   });
 
   AutocompleteInput input(u"@", 1u, metrics::OmniboxEventProto::OTHER,
@@ -347,13 +359,15 @@ TEST_F(AutocompleteControllerTest, FilterMatchesForInstantKeywordWithBareAt) {
   controller_.MaybeCleanSuggestionsForKeywordMode(
       input, &controller_.internal_result_);
 
-  EXPECT_EQ(controller_.internal_result_.size(), 4u);
-  EXPECT_TRUE(
-      std::all_of(controller_.internal_result_.begin(),
-                  controller_.internal_result_.end(), [](const auto& match) {
-                    return match.type == AutocompleteMatchType::STARTER_PACK ||
-                           match.contents == u"@";
-                  }));
+  EXPECT_EQ(controller_.internal_result_.size(), 5u);
+  EXPECT_TRUE(std::all_of(
+      controller_.internal_result_.begin(), controller_.internal_result_.end(),
+      [](const auto& match) {
+        return match.type == AutocompleteMatchType::STARTER_PACK ||
+               match.type ==
+                   AutocompleteMatchType::FEATURED_ENTERPRISE_SEARCH ||
+               match.contents == u"@";
+      }));
 }
 #endif
 

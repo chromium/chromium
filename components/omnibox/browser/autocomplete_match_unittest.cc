@@ -977,9 +977,10 @@ TEST_F(AutocompleteMatchTest, TryRichAutocompletionShortcutText) {
 
 TEST_F(AutocompleteMatchTest, BetterDuplicate) {
   const auto create_match = [](scoped_refptr<FakeAutocompleteProvider> provider,
-                               int relevance) {
-    return AutocompleteMatch{provider.get(), relevance, false,
-                             AutocompleteMatchType::URL_WHAT_YOU_TYPED};
+                               int relevance,
+                               AutocompleteMatchType::Type match_type =
+                                   AutocompleteMatchType::URL_WHAT_YOU_TYPED) {
+    return AutocompleteMatch{provider.get(), relevance, false, match_type};
   };
 
   scoped_refptr<FakeAutocompleteProvider> document_provider =
@@ -994,6 +995,10 @@ TEST_F(AutocompleteMatchTest, BetterDuplicate) {
 
   scoped_refptr<FakeAutocompleteProvider> shortcuts_provider =
       new FakeAutocompleteProvider(AutocompleteProvider::Type::TYPE_SHORTCUTS);
+
+  scoped_refptr<FakeAutocompleteProvider> featured_search_provider =
+      new FakeAutocompleteProvider(
+          AutocompleteProvider::Type::TYPE_FEATURED_SEARCH);
 
   // Prefer document provider matches over other providers, even if scored
   // lower.
@@ -1012,12 +1017,46 @@ TEST_F(AutocompleteMatchTest, BetterDuplicate) {
       create_match(document_provider, 0),
       create_match(bookmark_provider, 1000)));
 
+#if !BUILDFLAG(IS_ANDROID) && !BUILDFLAG(IS_IOS)
   // Prefer non-shortcuts provider matches over shortcuts provider matches.
   EXPECT_TRUE(AutocompleteMatch::BetterDuplicate(
       create_match(history_provider, 0),
       create_match(shortcuts_provider, 1000)));
 
-  // Prefer non-shortcuts provider matches over shortcuts provider matches.
+  // Prefer featured enterprise search over other matches.
+  EXPECT_TRUE(AutocompleteMatch::BetterDuplicate(
+      create_match(featured_search_provider, 100,
+                   AutocompleteMatchType::FEATURED_ENTERPRISE_SEARCH),
+      create_match(featured_search_provider, 500,
+                   AutocompleteMatchType::STARTER_PACK)));
+
+  EXPECT_FALSE(AutocompleteMatch::BetterDuplicate(
+      create_match(featured_search_provider, 500,
+                   AutocompleteMatchType::STARTER_PACK),
+      create_match(featured_search_provider, 100,
+                   AutocompleteMatchType::FEATURED_ENTERPRISE_SEARCH)));
+
+  EXPECT_TRUE(AutocompleteMatch::BetterDuplicate(
+      create_match(featured_search_provider, 100,
+                   AutocompleteMatchType::FEATURED_ENTERPRISE_SEARCH),
+      create_match(bookmark_provider, 500)));
+
+  EXPECT_FALSE(AutocompleteMatch::BetterDuplicate(
+      create_match(bookmark_provider, 500),
+      create_match(featured_search_provider, 100,
+                   AutocompleteMatchType::FEATURED_ENTERPRISE_SEARCH)));
+
+  // Prefer stater pack matches over other matches.
+  EXPECT_TRUE(AutocompleteMatch::BetterDuplicate(
+      create_match(featured_search_provider, 100,
+                   AutocompleteMatchType::STARTER_PACK),
+      create_match(bookmark_provider, 500)));
+
+  EXPECT_FALSE(AutocompleteMatch::BetterDuplicate(
+      create_match(bookmark_provider, 500),
+      create_match(featured_search_provider, 100,
+                   AutocompleteMatchType::STARTER_PACK)));
+#endif  // !BUILDFLAG(IS_ANDROID) && !BUILDFLAG(IS_IOS)
 
   // Prefer more relevant matches.
   EXPECT_FALSE(

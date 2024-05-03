@@ -2368,7 +2368,7 @@ void AutocompleteController::MaybeCleanSuggestionsForKeywordMode(
     // Intentionally avoid actions and remove button on first suggestion
     // which may interfere with keyword mode refresh.
     if (result->size() > 1 &&
-        result->match_at(1)->type == AutocompleteMatchType::STARTER_PACK) {
+        AutocompleteMatch::IsFeaturedSearchType(result->match_at(1)->type)) {
       result->match_at(0)->actions.clear();
       result->match_at(0)->deletable = false;
       for (AutocompleteMatch& duplicate :
