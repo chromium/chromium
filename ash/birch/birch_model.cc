@@ -461,6 +461,10 @@ void BirchModel::MarkDataNotFresh() {
 
 void BirchModel::InitPrefChangeRegistrars() {
   PrefService* prefs = GetPrefService();
+  if (!prefs) {
+    return;
+  }
+
   calendar_pref_registrar_.Init(prefs);
   calendar_pref_registrar_.Add(
       prefs::kBirchUseCalendar,
@@ -524,6 +528,10 @@ void BirchModel::OnReleaseNotesPrefChanged() {
 
 void BirchModel::RecordProviderHiddenHistograms() {
   PrefService* prefs = GetPrefService();
+  if (!prefs) {
+    return;
+  }
+
   base::UmaHistogramBoolean("Ash.Birch.ProviderHidden.Calendar",
                             !prefs->GetBoolean(prefs::kBirchUseCalendar));
   base::UmaHistogramBoolean("Ash.Birch.ProviderHidden.FileSuggest",
