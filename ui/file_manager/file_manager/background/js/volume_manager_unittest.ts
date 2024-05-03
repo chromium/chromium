@@ -61,6 +61,9 @@ export function setUp() {
       getVolumeRoot: function(options, callback) {
         if (!(options.volumeId in mockData.fileSystemMap_)) {
           chrome.runtime.lastError = {message: 'Not found.'};
+          callback(undefined as unknown as DirectoryEntry);
+          chrome.runtime.lastError = undefined;
+          return;
         }
         callback(mockData.fileSystemMap_[options.volumeId]!.root);
       },
@@ -241,6 +244,37 @@ export async function testUnresponsiveVolumeStartUp(done: VoidCallback) {
   // Unblock the unresponsive volume and check if it gets available:
   unblock!();
   await waitUntil(() => volumeManager.volumeInfoList.length === 3);
+
+  done();
+}
+
+/**
+ * Tests that failing to get the root doesn't add a volume to the
+ * `volumeInfoList`.
+ */
+export async function testFailureToGetRootStartUp(done: VoidCallback) {
+  const fileManagerPrivate = chrome.fileManagerPrivate;
+
+  // Replace chrome.fileManagerPrivate.getVolumeRoot() to emulate failure to get
+  // 1 volume root.
+  const origGetVolumeRoot = fileManagerPrivate.getVolumeRoot;
+  fileManagerPrivate.getVolumeRoot =
+      (options: chrome.fileManagerPrivate.GetVolumeRootOptions,
+       callback: DirectoryEntryCallback) => {
+        if (options.volumeId === 'download:Downloads') {
+          chrome.runtime.lastError = {message: 'Not found.'};
+          callback(undefined as unknown as DirectoryEntry);
+          chrome.runtime.lastError = undefined;
+          return;
+        }
+        return origGetVolumeRoot(options, callback);
+      };
+
+  // getInstance() calls and waits for initialize(), which shouldn't add
+  // 'download:Downloads' to the volumeInfoList when failing to get the root.
+  const volumeManager = await volumeManagerFactory.getInstance();
+
+  await waitUntil(() => volumeManager.volumeInfoList.length === 2);
 
   done();
 }
@@ -524,7 +558,7 @@ export async function testWhenReady(done: VoidCallback) {
   const volumeInfo = new VolumeInfo(
       /* volumeType */ VolumeType.MY_FILES,
       /* volumeId */ 'volumeId',
-      /* fileSystem */ null,
+      /* fileSystem */ new MockFileSystem('testName', '/testURL'),
       /* error */ undefined,
       /* deviceType */ undefined,
       /* devicePath */ undefined,
@@ -635,48 +669,6 @@ export async function testErrorInitializingVolume(done: VoidCallback) {
   assertEquals(
       VolumeType.ANDROID_FILES,
       volumeManager.volumeInfoList.item(1).volumeType);
-
-  done();
-}
-
-/**
- * Tests VolumeInfo doesn't raise exception if null is passed for
- * filesystem. crbug.com/1041340
- */
-export async function testDriveWithNullFilesystem(done: VoidCallback) {
-  // Get Drive volume metadata from faked getVolumeMetadataList().
-  const driveVolumeMetadata =
-      mockData.volumeMetadataList_.find(volumeMetadata => {
-        return volumeMetadata.volumeType === VolumeType.DRIVE;
-      });
-  assert(driveVolumeMetadata);
-
-  const localizedLabel = 'DRIVE LABEL';
-  const expectedError = 'EXPECTED ERROR DESCRIPTION';
-
-  // Create a VolumeInfo with null filesystem, in the same way that happens on
-  // createVolumeInfo().
-  const volumeInfo = new VolumeInfo(
-      driveVolumeMetadata.volumeType as VolumeType,
-      driveVolumeMetadata.volumeId,
-      null,  // File system is not found.
-      expectedError, driveVolumeMetadata.deviceType,
-      driveVolumeMetadata.devicePath, driveVolumeMetadata.isReadOnly,
-      driveVolumeMetadata.isReadOnlyRemovableDevice,
-      driveVolumeMetadata.profile, localizedLabel,
-      driveVolumeMetadata.providerId, driveVolumeMetadata.configurable,
-      driveVolumeMetadata.watchable, driveVolumeMetadata.source as Source,
-      driveVolumeMetadata.diskFileSystemType as FileSystemType,
-      driveVolumeMetadata.iconSet, driveVolumeMetadata.driveLabel,
-      driveVolumeMetadata.remoteMountPath, driveVolumeMetadata.vmType);
-
-  // Wait for trying to resolve display root, it should fail with
-  // |expectedError| if not re-throw to make the test fail.
-  await volumeInfo.resolveDisplayRoot().catch(error => {
-    if (error !== expectedError) {
-      throw error;
-    }
-  });
 
   done();
 }

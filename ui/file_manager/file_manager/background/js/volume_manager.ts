@@ -132,18 +132,7 @@ export async function createVolumeInfo(
 
         // TODO(crbug.com/41391739): Report a mount error via UMA.
 
-        return new VolumeInfo(
-            volumeMetadata.volumeType as VolumeType, volumeMetadata.volumeId,
-            null,  // File system is not found.
-            volumeMetadata.mountCondition, volumeMetadata.deviceType,
-            volumeMetadata.devicePath, volumeMetadata.isReadOnly,
-            volumeMetadata.isReadOnlyRemovableDevice, volumeMetadata.profile,
-            localizedLabel, volumeMetadata.providerId,
-            volumeMetadata.configurable, volumeMetadata.watchable,
-            volumeMetadata.source as Source,
-            volumeMetadata.diskFileSystemType as FileSystemType,
-            volumeMetadata.iconSet, volumeMetadata.driveLabel,
-            volumeMetadata.remoteMountPath, volumeMetadata.vmType);
+        throw error;
       });
 }
 
@@ -292,26 +281,6 @@ export class VolumeManager extends FilesEventTarget<VolumeManagerEventMap> {
    */
   private addVolumeInfo_(volumeInfo: VolumeInfo): VolumeInfo {
     const volumeType = volumeInfo.volumeType as VolumeType;
-
-    // We don't show Downloads and Drive on volume list if they have
-    // mount error, since users can do nothing in this situation. We
-    // show Removable and Provided volumes regardless of mount error
-    // so that users can unmount or format the volume.
-    // TODO(fukino): Once the Files app gets ready, show erroneous
-    // Drive volume so that users can see auth warning banner on the
-    // volume. crbug.com/517772.
-    let shouldShow = true;
-    switch (volumeType) {
-      case VolumeType.DOWNLOADS:
-      case VolumeType.DRIVE:
-        shouldShow = !!volumeInfo.fileSystem;
-        break;
-    }
-
-    if (!shouldShow) {
-      return volumeInfo;
-    }
-
     if (this.volumeInfoList.findIndex(volumeInfo.volumeId) === -1) {
       this.volumeInfoList.add(volumeInfo);
 
@@ -379,7 +348,7 @@ export class VolumeManager extends FilesEventTarget<VolumeManagerEventMap> {
           this.addVolumeInfo_(volumeInfo);
           console.debug(`Initialized volume #${idx} ${volumeId}'`);
         } catch (error) {
-          console.warn(`Error initiliazing #${idx} ${volumeId}: ${error}`);
+          console.warn(`Error initializing #${idx} ${volumeId}: ${error}`);
         } finally {
           counter += 1;
           // Finish after all volumes have been processed, or at least Downloads
@@ -447,7 +416,7 @@ export class VolumeManager extends FilesEventTarget<VolumeManagerEventMap> {
                   `Mount status: ${volumeError}. Error: ${
                       error.stack || error}.`);
               this.finishRequest_(requestKey, volumeError);
-              throw (error);
+              return;
             }
             this.addVolumeInfo_(volumeInfo);
             this.finishRequest_(requestKey, volumeError, volumeInfo);

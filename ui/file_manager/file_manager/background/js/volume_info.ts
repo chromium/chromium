@@ -61,7 +61,7 @@ export class VolumeInfo {
    */
   constructor(
       private volumeType_: VolumeType, private volumeId_: string,
-      private fileSystem_: FileSystem|null, private error_: (string|undefined),
+      private fileSystem_: FileSystem, private error_: (string|undefined),
       private deviceType_: (string|undefined),
       private devicePath_: (string|undefined), private isReadOnly_: boolean,
       private isReadOnlyRemovableDevice_: boolean,
@@ -115,8 +115,7 @@ export class VolumeInfo {
   }
 
   get fileSystem(): FileSystem {
-    // TODO(b/309054429): fileSystem could be null, handle it gracefully.
-    return this.fileSystem_!;
+    return this.fileSystem_;
   }
 
   /** Display root path. It is null before finishing to resolve the entry. */
