@@ -113,11 +113,10 @@ public class TabSwitcherActionMenuFacility extends Facility<PageStation> {
     }
 
     /** Select the "New tab" menu option to open a new Tab. */
-    public PageStation selectNewTab() {
-        PageStation destination =
-                PageStation.newPageStationBuilder()
+    public NewTabPageStation selectNewTab() {
+        NewTabPageStation destination =
+                NewTabPageStation.newBuilder()
                         .withActivityTestRule(mHostStation.getTestRule())
-                        .withIncognito(false)
                         .withIsOpeningTab(true)
                         .withIsSelectingTab(true)
                         .build();
@@ -125,11 +124,10 @@ public class TabSwitcherActionMenuFacility extends Facility<PageStation> {
     }
 
     /** Select the "New Incognito tab" menu option to open a new incognito Tab. */
-    public PageStation selectNewIncognitoTab() {
-        PageStation destination =
-                PageStation.newPageStationBuilder()
+    public IncognitoNewTabPageStation selectNewIncognitoTab() {
+        IncognitoNewTabPageStation destination =
+                IncognitoNewTabPageStation.newBuilder()
                         .withActivityTestRule(mHostStation.getTestRule())
-                        .withIncognito(true)
                         .withIsOpeningTab(true)
                         .withIsSelectingTab(true)
                         .build();

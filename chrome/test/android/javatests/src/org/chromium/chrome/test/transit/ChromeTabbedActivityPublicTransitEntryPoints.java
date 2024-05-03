@@ -27,9 +27,9 @@ public class ChromeTabbedActivityPublicTransitEntryPoints {
      *
      * @return the active entry {@link PageStation}
      */
-    public PageStation startOnBlankPage() {
-        PageStation entryPageStation =
-                PageStation.newPageStationBuilder()
+    public WebPageStation startOnBlankPage() {
+        WebPageStation entryPageStation =
+                WebPageStation.newWebPageStationBuilder()
                         .withActivityTestRule(mActivityTestRule)
                         .withIsOpeningTab(false)
                         .withIsSelectingTab(false)

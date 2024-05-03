@@ -9,14 +9,15 @@ import android.util.Pair;
 import org.chromium.chrome.test.ChromeTabbedActivityTestRule;
 import org.chromium.chrome.test.transit.PageStation;
 import org.chromium.chrome.test.transit.PopupBlockedMessageFacility;
+import org.chromium.chrome.test.transit.WebPageStation;
 
 /**
  * PageStation for popup_test.html, which opens two pop-ups (one.html and two.html) upon loading.
  */
-public class PopupOnLoadPageStation extends PageStation {
+public class PopupOnLoadPageStation extends WebPageStation {
     public static final String PATH = "/chrome/test/data/android/popup_test.html";
 
-    protected PopupOnLoadPageStation(Builder<PopupOnLoadPageStation> builder) {
+    protected <T extends PopupOnLoadPageStation> PopupOnLoadPageStation(Builder<T> builder) {
         super(builder);
     }
 
@@ -30,7 +31,7 @@ public class PopupOnLoadPageStation extends PageStation {
             loadInCurrentTabExpectBlocked(
                     ChromeTabbedActivityTestRule activityTestRule, PageStation currentPageStation) {
         PopupOnLoadPageStation newPage =
-                new Builder<>(PopupOnLoadPageStation::new)
+                new Builder<PopupOnLoadPageStation>(PopupOnLoadPageStation::new)
                         .initFrom(currentPageStation)
                         .withIsOpeningTab(false)
                         .withIsSelectingTab(false)
@@ -50,10 +51,10 @@ public class PopupOnLoadPageStation extends PageStation {
      *
      * @return the now active PageStation two.html
      */
-    public static PageStation loadInCurrentTabExpectPopups(
+    public static WebPageStation loadInCurrentTabExpectPopups(
             ChromeTabbedActivityTestRule activityTestRule, PageStation currentPageStation) {
         // Don't expect popup_test.html to be loaded at the end of the transition, but two.html.
-        PageStation newPage =
+        WebPageStation newPage =
                 NavigatePageStations.newNavigateTwoPageBuilder()
                         .initFrom(currentPageStation)
                         .withIsOpeningTab(true)

@@ -18,7 +18,8 @@ public class IncognitoNewTabPageStation extends PageStation {
     public ViewElement ICON = sharedViewElement(withId(R.id.new_tab_incognito_icon));
     public ViewElement GONE_INCOGNITO_TEXT = sharedViewElement(withText("You’ve gone Incognito"));
 
-    protected IncognitoNewTabPageStation(Builder<IncognitoNewTabPageStation> builder) {
+    protected <T extends IncognitoNewTabPageStation> IncognitoNewTabPageStation(
+            Builder<T> builder) {
         super(builder.withIncognito(true));
     }
 

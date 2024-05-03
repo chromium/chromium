@@ -21,7 +21,7 @@ public class NewTabPageStation extends PageStation {
     public ViewElement SEARCH_BOX = sharedViewElement(withId(R.id.search_box));
     public ViewElement MOST_VISITED_TILES = sharedViewElement(withId(R.id.mv_tiles_container));
 
-    protected NewTabPageStation(Builder<NewTabPageStation> builder) {
+    protected <T extends NewTabPageStation> NewTabPageStation(Builder<T> builder) {
         super(builder.withIncognito(false));
     }
 

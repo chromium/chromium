@@ -30,8 +30,8 @@ import org.chromium.chrome.browser.flags.ChromeSwitches;
 import org.chromium.chrome.test.ChromeJUnit4ClassRunner;
 import org.chromium.chrome.test.ChromeTabbedActivityTestRule;
 import org.chromium.chrome.test.transit.BlankCTATabInitialStatePublicTransitRule;
-import org.chromium.chrome.test.transit.PageStation;
 import org.chromium.chrome.test.transit.PopupBlockedMessageFacility;
+import org.chromium.chrome.test.transit.WebPageStation;
 import org.chromium.chrome.test.transit.testhtmls.PopupOnClickPageStation;
 import org.chromium.chrome.test.transit.testhtmls.PopupOnLoadPageStation;
 import org.chromium.components.safe_browsing.SafeBrowsingApiBridge;
@@ -53,7 +53,7 @@ public class PopupPTTest {
     private static final String METADATA_FOR_ABUSIVE_ENFORCEMENT =
             "{\"matches\":[{\"threat_type\":\"13\",\"sf_absv\":\"\"}]}";
 
-    private PageStation mEntryPage;
+    private WebPageStation mEntryPage;
 
     @BeforeClass
     public static void setUpClass() {
@@ -121,12 +121,12 @@ public class PopupPTTest {
         assertEquals(1, sActivityTestRule.tabsCount(/* incognito= */ false));
 
         // Click the "Always allow" button.
-        PageStation poppedUpPage = popupBlockedMessage.clickAlwaysAllow();
+        WebPageStation poppedUpPage = popupBlockedMessage.clickAlwaysAllow();
         assertEquals(3, sActivityTestRule.tabsCount(/* incognito= */ false));
 
         // Test that revisiting the original page makes pop-up windows show immediately.
         // The second pop-up opens navigate/page_two.html.
-        PageStation pageTwo =
+        WebPageStation pageTwo =
                 PopupOnLoadPageStation.loadInCurrentTabExpectPopups(
                         sActivityTestRule, poppedUpPage);
 

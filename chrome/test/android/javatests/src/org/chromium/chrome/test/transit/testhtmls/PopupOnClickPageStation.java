@@ -11,18 +11,18 @@ import org.chromium.base.test.transit.Trip;
 import org.chromium.chrome.test.ChromeTabbedActivityTestRule;
 import org.chromium.chrome.test.transit.PageStation;
 import org.chromium.chrome.test.transit.PopupBlockedMessageFacility;
+import org.chromium.chrome.test.transit.WebPageStation;
 import org.chromium.content_public.browser.test.transit.HtmlElement;
 import org.chromium.content_public.browser.test.transit.HtmlElementInState;
-import org.chromium.content_public.browser.test.transit.WebContentsElementInState;
 
 /** PageStation for popup_on_click.html, which contains a link to open itself in a pop-up. */
-public class PopupOnClickPageStation extends PageStation {
+public class PopupOnClickPageStation extends WebPageStation {
     public static final String PATH = "/chrome/test/data/android/popup_on_click.html";
 
     public static final HtmlElement LINK_TO_POPUP = new HtmlElement("link");
     private HtmlElementInState mLinkToPopup;
 
-    protected PopupOnClickPageStation(Builder<PopupOnClickPageStation> builder) {
+    protected <T extends PopupOnClickPageStation> PopupOnClickPageStation(Builder<T> builder) {
         super(builder);
     }
 
@@ -39,17 +39,14 @@ public class PopupOnClickPageStation extends PageStation {
     public void declareElements(Elements.Builder elements) {
         super.declareElements(elements);
 
-        WebContentsElementInState webContents =
-                elements.declareElementInState(
-                        new WebContentsElementInState(getTestRule()::getWebContents));
         mLinkToPopup =
-                elements.declareElementInState(new HtmlElementInState(LINK_TO_POPUP, webContents));
+                elements.declareElementInState(new HtmlElementInState(LINK_TO_POPUP, mWebContents));
     }
 
     /** Opens the same page as a pop-up (in Android, this means in a new tab). */
     public PopupOnClickPageStation clickLinkToOpenPopup() {
         PopupOnClickPageStation newPage =
-                new Builder<>(PopupOnClickPageStation::new)
+                new Builder<PopupOnClickPageStation>(PopupOnClickPageStation::new)
                         .initFrom(this)
                         .withIsOpeningTab(true)
                         .withIsSelectingTab(true)

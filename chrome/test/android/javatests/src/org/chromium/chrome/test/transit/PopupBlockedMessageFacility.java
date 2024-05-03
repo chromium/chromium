@@ -37,9 +37,9 @@ public class PopupBlockedMessageFacility extends MessageFacility {
         elements.declareView(ALWAYS_SHOW_BUTTON);
     }
 
-    public PageStation clickAlwaysAllow() {
-        PageStation popupPage =
-                PageStation.newPageStationBuilder()
+    public WebPageStation clickAlwaysAllow() {
+        WebPageStation popupPage =
+                WebPageStation.newWebPageStationBuilder()
                         .initFrom(mHostStation)
                         .withIsOpeningTab(true)
                         .withIsSelectingTab(true)

@@ -34,7 +34,7 @@ import org.chromium.ui.base.PageTransition;
 import java.util.function.Function;
 
 /**
- * The screen that shows a loaded webpage with the omnibox and the toolbar.
+ * The screen that shows a web or native page with the toolbar within a tab.
  *
  * <p>Contains extra configurable Conditions such as waiting for a tab to be created, selected, have
  * the expected title, etc.
