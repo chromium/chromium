@@ -333,9 +333,6 @@ void UseCounterCallback(v8::Isolate* isolate,
     case v8::Isolate::kAsyncStackTaggingCreateTaskCall:
       blink_feature = WebFeature::kV8AsyncStackTaggingCreateTaskCall;
       break;
-    case v8::Isolate::kImportAssertionDeprecatedSyntax:
-      blink_feature = WebFeature::kV8ImportAssertionDeprecatedSyntax;
-      break;
     case v8::Isolate::kCompileHintsMagicAll:
       blink_feature = WebFeature::kV8CompileHintsMagicAll;
       break;

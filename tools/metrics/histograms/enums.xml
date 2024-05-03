@@ -11039,7 +11039,7 @@ Called by update_use_counter_feature_enum.py.-->
   <int value="4525" label="WindowOpenFullscreenRequested"/>
   <int value="4526" label="FullscreenAllowedByWindowOpen"/>
   <int value="4527" label="AttributeValueContainsLtOrGt"/>
-  <int value="4528" label="V8ImportAssertionDeprecatedSyntax"/>
+  <int value="4528" label="OBSOLETE_V8ImportAssertionDeprecatedSyntax"/>
   <int value="4529" label="ImageCaptureBackgroundBlur"/>
   <int value="4530" label="PrivateNetworkAccessPreflightError"/>
   <int value="4531" label="PrivateNetworkAccessPreflightSuccess"/>

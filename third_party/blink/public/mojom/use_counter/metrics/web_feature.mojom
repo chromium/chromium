@@ -3873,7 +3873,7 @@ enum WebFeature {
   // The items above roughly this point are available in the M113 branch.
 
   kAttributeValueContainsLtOrGt = 4527,
-  kV8ImportAssertionDeprecatedSyntax = 4528,
+  kOBSOLETE_V8ImportAssertionDeprecatedSyntax = 4528,
   kImageCaptureBackgroundBlur = 4529,
   kPrivateNetworkAccessPreflightError = 4530,
   kPrivateNetworkAccessPreflightSuccess = 4531,

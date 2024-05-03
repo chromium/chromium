@@ -175,10 +175,6 @@ RenderProcessImpl::RenderProcessImpl()
   SetV8FlagIfOverridden(features::kWebAssemblyDynamicTiering,
                         "--wasm-dynamic-tiering", "--no-wasm-dynamic-tiering");
 
-  constexpr char kImportAssertionsFlag[] = "--harmony-import-assertions";
-  v8::V8::SetFlagsFromString(kImportAssertionsFlag,
-                             sizeof(kImportAssertionsFlag));
-
   bool enable_shared_array_buffer_unconditionally =
       base::FeatureList::IsEnabled(features::kSharedArrayBuffer);
 
