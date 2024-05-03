@@ -560,8 +560,6 @@ void ReadAnythingAppController::OnAXTreeDistilled(
     // Google Docs to finish loading.
     if (!IsGoogleDocs() || model_.page_finished_loading()) {
       ExecuteJavaScript("chrome.readingMode.showEmpty();");
-    }
-    if (IsGoogleDocs()) {
       base::UmaHistogramEnumeration(string_constants::kEmptyStateHistogramName,
                                     ReadAnythingEmptyState::kEmptyStateShown);
     }
