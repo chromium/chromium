@@ -4081,6 +4081,7 @@ test("ash_unittests") {
     "system/usb_peripheral/usb_peripheral_notification_controller_unittest.cc",
     "system/video_conference/bubble/bubble_view_unittest.cc",
     "system/video_conference/bubble/return_to_app_panel_unittest.cc",
+    "system/video_conference/bubble/set_camera_background_view_unittest.cc",
     "system/video_conference/bubble/toggle_effects_view_unittest.cc",
     "system/video_conference/bubble/vc_tile_ui_controller_unittest.cc",
     "system/video_conference/effects/video_conference_tray_effects_delegate_unittest.cc",

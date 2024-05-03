@@ -30,9 +30,12 @@ class ASH_EXPORT SetCameraBackgroundView : public views::View {
 
   void SetBackgroundReplaceUiVisible(bool visible);
 
+  bool IsAnimationPlayingForCreateWithAiButtonForTesting();
+
  private:
   raw_ptr<VideoConferenceTrayController> controller_;
   raw_ptr<views::View> recently_used_background_view_;
+  raw_ptr<views::View> create_with_image_button_;
 };
 
 }  // namespace ash::video_conference

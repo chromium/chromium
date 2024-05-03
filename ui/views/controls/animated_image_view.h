@@ -81,6 +81,8 @@ class VIEWS_EXPORT AnimatedImageView : public ImageViewBase,
     additional_translation_ = std::move(additional_translation);
   }
 
+  State state() const { return state_; }
+
  private:
   // Overridden from View:
   void OnPaint(gfx::Canvas* canvas) override;
