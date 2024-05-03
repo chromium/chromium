@@ -110,12 +110,12 @@ void ConfigDirPolicyLoader::LoadFromPath(const base::FilePath& path,
   for (base::FilePath config_file_path = file_enumerator.Next();
        !config_file_path.empty(); config_file_path = file_enumerator.Next()) {
     files.insert(config_file_path);
-    LOG_POLICY(INFO, POLICY_FETCHING)
+    VLOG_POLICY(1, POLICY_FETCHING)
         << "Found " << policy_level << " policy file: " << config_file_path;
   }
 
   if (files.empty()) {
-    LOG_POLICY(INFO, POLICY_FETCHING)
+    VLOG_POLICY(1, POLICY_FETCHING)
         << "Skipping " << policy_level
         << " platform policies because no policy file was found at: " << path;
     return;
