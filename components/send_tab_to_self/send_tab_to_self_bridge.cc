@@ -24,6 +24,7 @@
 #include "components/send_tab_to_self/metrics_util.h"
 #include "components/send_tab_to_self/proto/send_tab_to_self.pb.h"
 #include "components/send_tab_to_self/target_device_info.h"
+#include "components/sync/base/deletion_origin.h"
 #include "components/sync/model/entity_change.h"
 #include "components/sync/model/metadata_batch.h"
 #include "components/sync/model/metadata_change_list.h"
@@ -168,7 +169,8 @@ SendTabToSelfBridge::ApplyIncrementalSyncChanges(
       }
       if (remote_entry->IsExpired(clock_->Now())) {
         // Remove expired data from server.
-        change_processor()->Delete(guid, batch->GetMetadataChangeList());
+        change_processor()->Delete(guid, syncer::DeletionOrigin::Unspecified(),
+                                   batch->GetMetadataChangeList());
       } else {
         SendTabToSelfEntry* local_entry =
             GetMutableEntryByGUID(remote_entry->GetGUID());
@@ -683,7 +685,8 @@ void SendTabToSelfBridge::DeleteEntryWithBatch(
   DCHECK(GetEntryByGUID(guid) != nullptr);
   DCHECK(change_processor()->IsTrackingMetadata());
 
-  change_processor()->Delete(guid, batch->GetMetadataChangeList());
+  change_processor()->Delete(guid, syncer::DeletionOrigin::Unspecified(),
+                             batch->GetMetadataChangeList());
 
   if (mru_entry_ && mru_entry_->GetGUID() == guid) {
     mru_entry_ = nullptr;
@@ -732,7 +735,8 @@ void SendTabToSelfBridge::DeleteAllEntries() {
   std::vector<std::string> all_guids = GetAllGuids();
 
   for (const auto& guid : all_guids) {
-    change_processor()->Delete(guid, batch->GetMetadataChangeList());
+    change_processor()->Delete(guid, syncer::DeletionOrigin::Unspecified(),
+                               batch->GetMetadataChangeList());
     batch->DeleteData(guid);
   }
   entries_.clear();
