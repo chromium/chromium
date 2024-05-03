@@ -458,7 +458,8 @@ void PickerController::InsertResultOnNextFocus(
 
 void PickerController::ShowEmojiPicker(ui::EmojiPickerCategory category) {
   ui::ShowEmojiPanelInSpecificMode(category,
-                                   ui::EmojiPickerFocusBehavior::kAlwaysShow);
+                                   ui::EmojiPickerFocusBehavior::kAlwaysShow,
+                                   /*initial_query=*/"");
 }
 
 void PickerController::ShowEditor(std::optional<std::string> preset_query_id,

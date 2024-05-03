@@ -34,13 +34,15 @@ void ShowEmojiPanel() {
   DCHECK(GetShowEmojiKeyboardCallback());
   GetShowEmojiKeyboardCallback().Run(
       EmojiPickerCategory::kEmojis,
-      EmojiPickerFocusBehavior::kOnlyShowWhenFocused);
+      EmojiPickerFocusBehavior::kOnlyShowWhenFocused,
+      /*initial_query=*/std::string());
 }
 
 void ShowEmojiPanelInSpecificMode(EmojiPickerCategory category,
-                                  EmojiPickerFocusBehavior focus_behavior) {
+                                  EmojiPickerFocusBehavior focus_behavior,
+                                  const std::string& initial_query) {
   DCHECK(GetShowEmojiKeyboardCallback());
-  GetShowEmojiKeyboardCallback().Run(category, focus_behavior);
+  GetShowEmojiKeyboardCallback().Run(category, focus_behavior, initial_query);
 }
 
 void ShowTabletModeEmojiPanel() {

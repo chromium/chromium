@@ -121,6 +121,9 @@ interface PageHandler {
   // Send a signal that emoji UI is fully loaded for metrics.
   OnUiFullyLoaded();
 
-  // Find out the initial category to show for the emoji piicker
+  // Find out the initial category to show for the emoji picker
   GetInitialCategory() => (Category category);
+
+  // Find out the initial query to search for in the emoji picker
+  GetInitialQuery() => (string query);
 };

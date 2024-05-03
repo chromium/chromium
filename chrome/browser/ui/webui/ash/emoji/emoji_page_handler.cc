@@ -244,12 +244,14 @@ EmojiPageHandler::EmojiPageHandler(
     EmojiUI* webui_controller,
     bool incognito_mode,
     bool no_text_field,
-    emoji_picker::mojom::Category initial_category)
+    emoji_picker::mojom::Category initial_category,
+    const std::string& initial_query)
     : receiver_(this, std::move(receiver)),
       webui_controller_(webui_controller),
       incognito_mode_(incognito_mode),
       no_text_field_(no_text_field),
-      initial_category_(initial_category) {
+      initial_category_(initial_category),
+      initial_query_(initial_query) {
   Profile* profile = Profile::FromWebUI(web_ui);
 
   // There are two conditions to control the GIF support:
@@ -410,6 +412,10 @@ void EmojiPageHandler::OnUiFullyLoaded() {
 
 void EmojiPageHandler::GetInitialCategory(GetInitialCategoryCallback callback) {
   std::move(callback).Run(initial_category_);
+}
+
+void EmojiPageHandler::GetInitialQuery(GetInitialQueryCallback callback) {
+  std::move(callback).Run(initial_query_);
 }
 
 }  // namespace ash

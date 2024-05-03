@@ -311,15 +311,17 @@ TEST_F(PickerControllerTest, ShowEmojiPickerCallsEmojiPanelCallback) {
   PickerController controller;
   NiceMock<TestPickerClient> client(&controller);
   controller.ToggleWidget();
-  base::test::TestFuture<ui::EmojiPickerCategory, ui::EmojiPickerFocusBehavior>
+  base::test::TestFuture<ui::EmojiPickerCategory, ui::EmojiPickerFocusBehavior,
+                         const std::string&>
       future;
   ui::SetShowEmojiKeyboardCallback(future.GetRepeatingCallback());
 
   controller.ShowEmojiPicker(ui::EmojiPickerCategory::kSymbols);
 
-  const auto& [category, focus_behavior] = future.Get();
+  const auto& [category, focus_behavior, initial_query] = future.Get();
   EXPECT_EQ(category, ui::EmojiPickerCategory::kSymbols);
   EXPECT_EQ(focus_behavior, ui::EmojiPickerFocusBehavior::kAlwaysShow);
+  EXPECT_EQ(initial_query, "");
 }
 
 TEST_F(PickerControllerTest, SetCapsLockEnabledToTrueTurnsOnCapsLock) {

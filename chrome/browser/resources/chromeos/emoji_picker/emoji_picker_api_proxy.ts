@@ -108,6 +108,10 @@ export class EmojiPickerApiProxy {
     return this.handler.getInitialCategory();
   }
 
+  getInitialQuery(): Promise<{query: string}> {
+    return this.handler.getInitialQuery();
+  }
+
   onUiFullyLoaded(): void {
     this.handler.onUiFullyLoaded();
   }

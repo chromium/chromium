@@ -602,6 +602,11 @@ export class EmojiPickerApp extends PolymerElement {
                 break;
             }
 
+            const initialQuery = (await this.apiProxy.getInitialQuery()).query;
+            if (initialQuery !== '') {
+              this.$['search-container'].setSearchQuery(initialQuery);
+            }
+
             this.apiProxy.onUiFullyLoaded();
             this.dispatchEvent(
                 events.createCustomEvent(events.EMOJI_PICKER_READY, {}));

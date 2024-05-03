@@ -56,7 +56,8 @@ class EmojiUI : public TopChromeWebUIController,
   static bool ShouldShow(const ui::TextInputClient* input_client,
                          ui::EmojiPickerFocusBehavior focus_behavior);
   static void Show(ui::EmojiPickerCategory category,
-                   ui::EmojiPickerFocusBehavior focus_behavior);
+                   ui::EmojiPickerFocusBehavior focus_behavior,
+                   const std::string& initial_query);
 
   // Instantiates the implementor of the mojom::PageHandler mojo interface
   // passing the pending receiver that will be internally bound.
@@ -99,6 +100,7 @@ class EmojiUI : public TopChromeWebUIController,
   bool incognito_mode_ = false;
   bool no_text_field_ = false;
   emoji_picker::mojom::Category initial_category_;
+  std::string initial_query_;
 
   WEB_UI_CONTROLLER_TYPE_DECL();
 };

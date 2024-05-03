@@ -277,3 +277,15 @@ var EmojiPickerScrollTest = class extends PolymerTest {
 TEST_F('EmojiPickerScrollTest', 'All', function() {
   mocha.run();
 });
+
+var EmojiPickerLoadTest = class extends PolymerTest {
+  /** @override */
+  get browsePreload() {
+    return 'chrome://emoji-picker/test_loader.html?module=' +
+        'chromeos/emoji_picker/emoji_picker_load_test.js';
+  }
+};
+
+TEST_F('EmojiPickerLoadTest', 'All', function() {
+  mocha.run();
+});

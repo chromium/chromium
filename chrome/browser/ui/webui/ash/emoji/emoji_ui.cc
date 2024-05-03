@@ -123,7 +123,8 @@ bool EmojiUI::ShouldShow(const ui::TextInputClient* input_client,
 }
 
 void EmojiUI::Show(ui::EmojiPickerCategory category,
-                   ui::EmojiPickerFocusBehavior focus_behavior) {
+                   ui::EmojiPickerFocusBehavior focus_behavior,
+                   const std::string& initial_query) {
   if (display::Screen::GetScreen()->InTabletMode()) {
     ui::ShowTabletModeEmojiPanel();
     return;
@@ -183,6 +184,7 @@ void EmojiUI::Show(ui::EmojiPickerCategory category,
       input_client == nullptr;
   contents_wrapper->GetWebUIController()->initial_category_ =
       ConvertCategoryEnum(category);
+  contents_wrapper->GetWebUIController()->initial_query_ = initial_query;
 
   auto bubble_view =
       std::make_unique<EmojiBubbleDialogView>(std::move(contents_wrapper));
@@ -235,7 +237,7 @@ void EmojiUI::CreatePageHandler(
     mojo::PendingReceiver<emoji_picker::mojom::PageHandler> receiver) {
   page_handler_ = std::make_unique<EmojiPageHandler>(
       std::move(receiver), web_ui(), this, incognito_mode_, no_text_field_,
-      initial_category_);
+      initial_category_, initial_query_);
 }
 
 }  // namespace ash

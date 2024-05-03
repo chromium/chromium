@@ -22,6 +22,7 @@ build_webui_tests("build") {
     "emoji_picker_extension_symbol_test.ts",
     "emoji_picker_extension_test.ts",
     "emoji_picker_gif_test.ts",
+    "emoji_picker_load_test.ts",
     "emoji_picker_global_variants_test.ts",
     "emoji_picker_preference_storage_test.ts",
     "emoji_picker_http_error_gif_test.ts",
