@@ -36,6 +36,7 @@
 #include "components/services/app_service/public/cpp/app_registry_cache.h"
 #include "components/services/app_service/public/cpp/app_registry_cache_wrapper.h"
 #include "components/services/app_service/public/cpp/app_types.h"
+#include "components/sync/base/deletion_origin.h"
 #include "components/sync/model/entity_change.h"
 #include "components/sync/model/metadata_batch.h"
 #include "components/sync/model/metadata_change_list.h"
@@ -420,6 +421,7 @@ void DeskSyncBridge::DeleteEntry(const base::Uuid& uuid,
       store_->CreateWriteBatch();
 
   change_processor()->Delete(uuid.AsLowercaseString(),
+                             syncer::DeletionOrigin::Unspecified(),
                              batch->GetMetadataChangeList());
 
   desk_template_entries_.erase(uuid);
@@ -451,6 +453,7 @@ DeskModel::DeleteEntryStatus DeskSyncBridge::DeleteAllEntriesSync() {
 
   for (const auto& uuid : all_uuids) {
     change_processor()->Delete(uuid.AsLowercaseString(),
+                               syncer::DeletionOrigin::Unspecified(),
                                batch->GetMetadataChangeList());
     batch->DeleteData(uuid.AsLowercaseString());
   }
