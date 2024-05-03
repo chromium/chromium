@@ -292,5 +292,8 @@ BASE_DECLARE_FEATURE(kClientSideDetectionImagesCache);
 
 BASE_DECLARE_FEATURE(kClientSideDetectionDebuggingMetadataCache);
 
+// Enables Enhanced Safe Browsing promos for iOS.
+BASE_DECLARE_FEATURE(kEnhancedSafeBrowsingPromo);
+
 }  // namespace safe_browsing
 #endif  // COMPONENTS_SAFE_BROWSING_CORE_COMMON_FEATURES_H_

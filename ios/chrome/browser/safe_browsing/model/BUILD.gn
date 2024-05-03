@@ -77,7 +77,6 @@ source_set("model") {
     "//ios/chrome/browser/sync/model",
     "//ios/components/security_interstitials",
     "//ios/components/security_interstitials/safe_browsing",
-    "//ios/components/security_interstitials/safe_browsing:features",
     "//ios/components/security_interstitials/safe_browsing:util",
     "//ios/web/common:user_agent",
     "//ios/web/public",

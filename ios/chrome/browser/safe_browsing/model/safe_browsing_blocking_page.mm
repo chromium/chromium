@@ -22,7 +22,6 @@
 #import "ios/chrome/browser/shared/model/application_context/application_context.h"
 #import "ios/chrome/browser/shared/model/browser_state/chrome_browser_state.h"
 #import "ios/components/security_interstitials/ios_blocking_page_metrics_helper.h"
-#import "ios/components/security_interstitials/safe_browsing/features.h"
 #import "ios/components/security_interstitials/safe_browsing/safe_browsing_tab_helper.h"
 #import "ios/components/security_interstitials/safe_browsing/unsafe_resource_util.h"
 #import "ios/web/public/web_state.h"
@@ -146,7 +145,7 @@ void SafeBrowsingBlockingPage::PopulateInterstitialStrings(
 
 void SafeBrowsingBlockingPage::ShowInfobar() {
   if (!base::FeatureList::IsEnabled(
-          security_interstitials::features::kEnhancedSafeBrowsingPromo)) {
+          safe_browsing::kEnhancedSafeBrowsingPromo)) {
     return;
   }
 

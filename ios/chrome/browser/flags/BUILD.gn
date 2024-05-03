@@ -95,7 +95,6 @@ source_set("flags") {
     "//ios/chrome/browser/ui/whats_new:util",
     "//ios/chrome/browser/web/model:feature_flags",
     "//ios/components/security_interstitials/https_only_mode:feature",
-    "//ios/components/security_interstitials/safe_browsing:features",
     "//ios/public/provider/chrome/browser/app_utils:app_utils_api",
     "//ios/web/common",
     "//ios/web/common:user_agent",
