@@ -245,6 +245,11 @@ struct VisitedLinkRow {
   // this row (must exactly match the <link_url, top_level_url, frame_url>
   // partition key).
   int visit_count = 0;
+
+ private:
+  friend bool operator==(const VisitedLinkRow& lhs, const VisitedLinkRow& rhs);
+  friend bool operator!=(const VisitedLinkRow& lhs, const VisitedLinkRow& rhs);
+  friend bool operator<(const VisitedLinkRow& lhs, const VisitedLinkRow& rhs);
 };
 using VisitedLinkRows = std::vector<VisitedLinkRow>;
 

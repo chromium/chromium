@@ -44,6 +44,26 @@ VisitRow::~VisitRow() = default;
 
 VisitRow::VisitRow(const VisitRow&) = default;
 
+// VisitedLinkRow --------------------------------------------------------------
+
+bool operator==(const VisitedLinkRow& lhs, const VisitedLinkRow& rhs) {
+  return std::tie(lhs.id, lhs.link_url_id, lhs.top_level_url, lhs.frame_url,
+                  lhs.visit_count) == std::tie(rhs.id, rhs.link_url_id,
+                                               rhs.top_level_url, rhs.frame_url,
+                                               rhs.visit_count);
+}
+
+bool operator!=(const VisitedLinkRow& lhs, const VisitedLinkRow& rhs) {
+  return !(lhs == rhs);
+}
+
+bool operator<(const VisitedLinkRow& lhs, const VisitedLinkRow& rhs) {
+  return std::tie(lhs.id, lhs.link_url_id, lhs.top_level_url, lhs.frame_url,
+                  lhs.visit_count) < std::tie(rhs.id, rhs.link_url_id,
+                                              rhs.top_level_url, rhs.frame_url,
+                                              rhs.visit_count);
+}
+
 // QueryResults ----------------------------------------------------------------
 
 QueryResults::QueryResults() = default;

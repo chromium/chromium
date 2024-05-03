@@ -3673,7 +3673,9 @@ void HistoryBackend::NotifyVisitsDeleted(
   }
   // We want to avoid posting a new task for every VisitedLink deleted, so we
   // notify the `delegate_` in a batch.
-  delegate_->NotifyVisitedLinksDeleted(links);
+  if (!links.empty()) {
+    delegate_->NotifyVisitedLinksDeleted(links);
+  }
 }
 
 // Deleting --------------------------------------------------------------------

@@ -194,9 +194,9 @@ class HistoryBackendTestDelegate : public HistoryBackend::Delegate {
                         std::optional<int64_t> local_navigation_id) override;
   void NotifyURLsModified(const URLRows& changed_urls) override;
   void NotifyDeletions(DeletionInfo deletion_info) override;
-  void NotifyVisitedLinksAdded(const HistoryAddPageArgs& args) override {}
+  void NotifyVisitedLinksAdded(const HistoryAddPageArgs& args) override;
   void NotifyVisitedLinksDeleted(
-      const std::vector<DeletedVisitedLink>& links) override {}
+      const std::vector<DeletedVisitedLink>& links) override;
   void NotifyKeywordSearchTermUpdated(const URLRow& row,
                                       KeywordID keyword_id,
                                       const std::u16string& term) override;
@@ -270,6 +270,23 @@ class HistoryBackendTestBase : public testing::Test {
     return urls_deleted_notifications_;
   }
 
+  const std::vector<HistoryAddPageArgs>& links_added_notifications() const {
+    return links_added_notifications_;
+  }
+
+  int num_links_added_notifications() const {
+    return links_added_notifications_.size();
+  }
+
+  const std::vector<std::vector<DeletedVisitedLink>>&
+  links_deleted_notifications() const {
+    return links_deleted_notifications_;
+  }
+
+  int num_links_deleted_notifications() const {
+    return links_deleted_notifications_.size();
+  }
+
   void ClearBroadcastedNotifications() {
     url_visited_notifications_.clear();
     urls_modified_notifications_.clear();
@@ -304,6 +321,14 @@ class HistoryBackendTestBase : public testing::Test {
   void NotifyDeletions(DeletionInfo deletion_info) {
     mem_backend_->OnHistoryDeletions(nullptr, deletion_info);
     urls_deleted_notifications_.push_back(std::move(deletion_info));
+  }
+
+  void NotifyVisitedLinksAdded(const HistoryAddPageArgs& args) {
+    links_added_notifications_.push_back(args);
+  }
+
+  void NotifyVisitedLinksDeleted(const std::vector<DeletedVisitedLink>& links) {
+    links_deleted_notifications_.push_back(links);
   }
 
   void NotifyKeywordSearchTermUpdated(const URLRow& row,
@@ -370,6 +395,8 @@ class HistoryBackendTestBase : public testing::Test {
   // The types and details of notifications which were broadcasted.
   std::vector<GURL> favicon_changed_notifications_page_urls_;
   std::vector<GURL> favicon_changed_notifications_icon_urls_;
+  std::vector<HistoryAddPageArgs> links_added_notifications_;
+  std::vector<std::vector<DeletedVisitedLink>> links_deleted_notifications_;
   URLVisitedList url_visited_notifications_;
   URLsModifiedList urls_modified_notifications_;
   URLsDeletedList urls_deleted_notifications_;
@@ -407,6 +434,16 @@ void HistoryBackendTestDelegate::NotifyURLsModified(
 
 void HistoryBackendTestDelegate::NotifyDeletions(DeletionInfo deletion_info) {
   test_->NotifyDeletions(std::move(deletion_info));
+}
+
+void HistoryBackendTestDelegate::NotifyVisitedLinksAdded(
+    const HistoryAddPageArgs& args) {
+  test_->NotifyVisitedLinksAdded(args);
+}
+
+void HistoryBackendTestDelegate::NotifyVisitedLinksDeleted(
+    const std::vector<DeletedVisitedLink>& links) {
+  test_->NotifyVisitedLinksDeleted(links);
 }
 
 void HistoryBackendTestDelegate::NotifyKeywordSearchTermUpdated(
@@ -5781,9 +5818,10 @@ TEST_P(HistoryBackendTestForVisitedLinks, DecreaseVisitCount) {
   // Ensure that visits 2 and 3 have the same VisitedLinkRow.
   EXPECT_EQ(visited_link_id2, visited_link_id3);
 
-  // Save the visited_link2's current visit_count for comparison. (visited_link1
-  // will be deleted so we don't need to compare).
+  // Save visited_link1 and visited_link2 for comparison.
   VisitedLinkRow visited_link1, visited_link2;
+  EXPECT_EQ(backend_->db()->GetVisitedLinkRow(visited_link_id1, visited_link1),
+            is_database_enabled_);
   EXPECT_EQ(backend_->db()->GetVisitedLinkRow(visited_link_id2, visited_link2),
             is_database_enabled_);
   int visit_count2 = is_database_enabled_ ? visited_link2.visit_count : 0;
@@ -5805,5 +5843,51 @@ TEST_P(HistoryBackendTestForVisitedLinks, DecreaseVisitCount) {
             is_database_enabled_);
   EXPECT_EQ(visited_link2.visit_count == (visit_count2 - 1),
             is_database_enabled_);
+
+  // Check that we notify HistoryService that the first VisitedLink is deleted
+  // from the database when the VisitedLinkDatabase is enabled.
+  const int num_expected_notifications = is_database_enabled_ ? 1 : 0;
+  ASSERT_EQ(num_links_deleted_notifications(), num_expected_notifications);
+
+  // Ensure that when we send DeletedVisitedLinks to the HistoryService, they
+  // contain the correct information.
+  if (is_database_enabled_) {
+    const std::vector<DeletedVisitedLink> deleted_links =
+        links_deleted_notifications()[0];
+    ASSERT_EQ(deleted_links.size(), 1u);
+    EXPECT_EQ(deleted_links[0].link_url, link_url1);
+    EXPECT_EQ(deleted_links[0].visited_link_row, visited_link1);
+  }
 }
+
+TEST_P(HistoryBackendTestForVisitedLinks, NotifyVisitedLinksAdded) {
+  // Setup: to be stored in the VisitedLinkDatabase, visits must contain a valid
+  // top-level url and frame url, and come from a LINK or MANUAL_SUBFRAME
+  // transition type.
+  const GURL link_url("https://local1.url");
+  const GURL top_level_url("https://local2.url");
+  const GURL frame_url("https://local3.url");
+  const ContextID context_id1 = 1;
+  HistoryAddPageArgs request(link_url, base::Time::Now() - base::Seconds(1),
+                             context_id1, 0, std::nullopt, frame_url,
+                             /*redirects=*/{}, link_transition_, false,
+                             SOURCE_BROWSED, false, true, std::nullopt,
+                             top_level_url);
+
+  // Notify the HistoryBackend of our mock navigation.
+  backend_->AddPage(request);
+
+  // Check that we notify HistoryService of the added page.
+  ASSERT_EQ(num_links_added_notifications(), 1);
+
+  // Ensure that when we send HistoryAddPageArgs to the HistoryService, they
+  // contain the correct information.
+  const std::vector<HistoryAddPageArgs> added_links =
+      links_added_notifications();
+  EXPECT_EQ(added_links[0].url, link_url);
+  ASSERT_TRUE(added_links[0].top_level_url.has_value());
+  EXPECT_EQ(added_links[0].top_level_url.value(), top_level_url);
+  EXPECT_EQ(added_links[0].referrer, frame_url);
+}
+
 }  // namespace history
