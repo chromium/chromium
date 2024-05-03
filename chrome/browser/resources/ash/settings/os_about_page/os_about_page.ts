@@ -56,6 +56,7 @@ export interface OsAboutPageElement {
   $: {
     buttonContainer: HTMLElement,
     checkForUpdatesButton: CrButtonElement,
+    extendedUpdatesButton: CrButtonElement,
     productLogo: HTMLImageElement,
     regulatoryInfo: HTMLElement,
     relaunchButton: CrButtonElement,
@@ -414,6 +415,8 @@ export class OsAboutPageElement extends OsAboutPageBase {
         'true') {
       this.onCheckUpdatesClick_();
     }
+
+    this.registerExtendedUpdatesObserver_();
   }
 
   override ready(): void {
@@ -885,6 +888,21 @@ export class OsAboutPageElement extends OsAboutPageBase {
 
   private onExtendedUpdatesButtonClick_(): void {
     this.aboutBrowserProxy_.openExtendedUpdatesDialog();
+  }
+
+  private registerExtendedUpdatesObserver_(): void {
+    const extendedUpdatesObserver = new IntersectionObserver(
+        (entries: IntersectionObserverEntry[],
+         observer: IntersectionObserver) => {
+          entries.forEach((entry: IntersectionObserverEntry) => {
+            if (entry.isIntersecting) {
+              this.aboutBrowserProxy_.recordExtendedUpdatesShown();
+              observer.disconnect();
+              return;
+            }
+          });
+        });
+    extendedUpdatesObserver.observe(this.$.extendedUpdatesButton);
   }
 }
 

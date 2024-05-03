@@ -72,6 +72,7 @@ export class TestAboutPageBrowserProxy extends TestBrowserProxy implements
       'setConsumerAutoUpdate',
       'isExtendedUpdatesOptInEligible',
       'openExtendedUpdatesDialog',
+      'recordExtendedUpdatesShown',
     ]);
   }
 
@@ -268,6 +269,10 @@ export class TestAboutPageBrowserProxy extends TestBrowserProxy implements
 
   openExtendedUpdatesDialog(): void {
     this.methodCalled('openExtendedUpdatesDialog');
+  }
+
+  recordExtendedUpdatesShown(): void {
+    this.methodCalled('recordExtendedUpdatesShown');
   }
 
   applyDeferredUpdate(): void {

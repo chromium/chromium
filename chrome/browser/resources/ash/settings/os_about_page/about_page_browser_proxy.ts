@@ -248,6 +248,11 @@ export interface AboutPageBrowserProxy {
    * Opens the extended updates opt-in dialog.
    */
   openExtendedUpdatesDialog(): void;
+
+  /**
+   * Records that the Extended Updates option was shown to the user.
+   */
+  recordExtendedUpdatesShown(): void;
 }
 
 let instance: AboutPageBrowserProxy|null = null;
@@ -369,5 +374,9 @@ export class AboutPageBrowserProxyImpl implements AboutPageBrowserProxy {
 
   openExtendedUpdatesDialog(): void {
     chrome.send('openExtendedUpdatesDialog');
+  }
+
+  recordExtendedUpdatesShown(): void {
+    chrome.send('recordExtendedUpdatesShown');
   }
 }

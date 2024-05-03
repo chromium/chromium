@@ -51,6 +51,10 @@ class ExtendedUpdatesController {
   // Resets the global controller instance, for testing.
   static void ResetInstanceForTesting();
 
+  // Convenience methods for recording metrics.
+  static void RecordEntryPointEventForSettingsSetUpButtonShown();
+  static void RecordEntryPointEventForSettingsSetUpButtonClicked();
+
   // Whether the device is eligible to opt-in for extended updates.
   // This depends on multiple criteria, e.g. whether opt-in is required,
   // being within the allowed time window, the user type, whether the device

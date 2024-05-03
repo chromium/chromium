@@ -384,6 +384,10 @@ void AboutHandler::RegisterMessages() {
       "openExtendedUpdatesDialog",
       base::BindRepeating(&AboutHandler::HandleOpenExtendedUpdatesDialog,
                           base::Unretained(this)));
+  web_ui()->RegisterMessageCallback(
+      "recordExtendedUpdatesShown",
+      base::BindRepeating(&AboutHandler::HandleRecordExtendedUpdatesShown,
+                          base::Unretained(this)));
 #endif
 #if BUILDFLAG(IS_MAC)
   web_ui()->RegisterMessageCallback(
@@ -835,7 +839,16 @@ void AboutHandler::HandleIsExtendedUpdatesOptInEligible(
 void AboutHandler::HandleOpenExtendedUpdatesDialog(
     const base::Value::List& args) {
   CHECK(args.empty());
+  ash::ExtendedUpdatesController::
+      RecordEntryPointEventForSettingsSetUpButtonClicked();
   ash::extended_updates::ExtendedUpdatesDialog::Show();
+}
+
+void AboutHandler::HandleRecordExtendedUpdatesShown(
+    const base::Value::List& args) {
+  CHECK(args.empty());
+  ash::ExtendedUpdatesController::
+      RecordEntryPointEventForSettingsSetUpButtonShown();
 }
 
 void AboutHandler::OnExtendedUpdatesSettingChanged() {

@@ -215,6 +215,9 @@ class AboutHandler : public settings::SettingsPageUIHandler,
   // Opens the Extended Updates dialog. |args| must be empty.
   void HandleOpenExtendedUpdatesDialog(const base::Value::List& args);
 
+  // Records metric indicating that the Extended Updates option was shown.
+  void HandleRecordExtendedUpdatesShown(const base::Value::List& args);
+
   // Called when the |kDeviceExtendedAutoUpdateEnabled| setting is changed.
   void OnExtendedUpdatesSettingChanged();
 

@@ -8,6 +8,7 @@
 
 #include "ash/constants/ash_features.h"
 #include "ash/shell.h"
+#include "ash/system/extended_updates/extended_updates_metrics.h"
 #include "ash/system/model/system_tray_model.h"
 #include "ash/system/model/update_model.h"
 #include "base/functional/bind.h"
@@ -86,6 +87,18 @@ void ExtendedUpdatesController::ResetInstanceForTesting() {
     delete instance_;
     instance_ = nullptr;
   }
+}
+
+void ExtendedUpdatesController::
+    RecordEntryPointEventForSettingsSetUpButtonShown() {
+  RecordExtendedUpdatesEntryPointEvent(
+      ExtendedUpdatesEntryPointEvent::kSettingsSetUpButtonShown);
+}
+
+void ExtendedUpdatesController::
+    RecordEntryPointEventForSettingsSetUpButtonClicked() {
+  RecordExtendedUpdatesEntryPointEvent(
+      ExtendedUpdatesEntryPointEvent::kSettingsSetUpButtonClicked);
 }
 
 ExtendedUpdatesController::ExtendedUpdatesController()

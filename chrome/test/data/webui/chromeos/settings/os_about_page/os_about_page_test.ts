@@ -795,21 +795,15 @@ suite('<os-about-page> AllBuilds', () => {
   suite('Extended Updates', () => {
     const EXTENDED_UPDATES_ICON = 'os-settings:about-update-complete';
 
-    function getExtendedUpdatesButton(): HTMLElement|null {
-      return page.shadowRoot!.querySelector<HTMLElement>(
-          '#extendedUpdatesButton');
-    }
-
     function assertExtendedUpdatesVisibility(visible: boolean) {
       const mainMessage = page.shadowRoot!.querySelector<HTMLElement>(
           '#extendedUpdatesMainMessage');
       const secondaryMessage = page.shadowRoot!.querySelector<HTMLElement>(
           '#extendedUpdatesSecondaryMessage');
-      const button = getExtendedUpdatesButton();
 
       assertEquals(visible, isVisible(mainMessage));
       assertEquals(visible, isVisible(secondaryMessage));
-      assertEquals(visible, isVisible(button));
+      assertEquals(visible, isVisible(page.$.extendedUpdatesButton));
     }
 
     function getLastEligibilityArgs(): boolean[] {
@@ -832,10 +826,15 @@ suite('<os-about-page> AllBuilds', () => {
 
     test('is shown when eligible and up to date', async () => {
       aboutBrowserProxy.setExtendedUpdatesOptInEligible(true);
+      assertEquals(
+          0, aboutBrowserProxy.getCallCount('recordExtendedUpdatesShown'));
 
       await initPage();
       // Extended updates is shown initially if no pending updates.
       assertExtendedUpdatesVisibility(true);
+      await aboutBrowserProxy.whenCalled('recordExtendedUpdatesShown');
+      assertEquals(
+          1, aboutBrowserProxy.getCallCount('recordExtendedUpdatesShown'));
 
       fireStatusChanged(UpdateStatus.CHECKING);
       assertExtendedUpdatesVisibility(false);
@@ -849,6 +848,9 @@ suite('<os-about-page> AllBuilds', () => {
       fireStatusChanged(UpdateStatus.UPDATED);
       assertExtendedUpdatesVisibility(true);
       assertFalse(isVisible(page.$.checkForUpdatesButton));
+      // Record call should only happen at most once.
+      assertEquals(
+          1, aboutBrowserProxy.getCallCount('recordExtendedUpdatesShown'));
 
       const updateRowIcon =
           page.shadowRoot!.querySelector<IronIconElement>('#updateRowIcon');
@@ -856,10 +858,8 @@ suite('<os-about-page> AllBuilds', () => {
       assertNull(updateRowIcon.src);
       assertEquals(EXTENDED_UPDATES_ICON, updateRowIcon.icon);
 
-      const extendedUpdatesButton = getExtendedUpdatesButton();
-      assertTrue(!!extendedUpdatesButton);
-      assertTrue(isVisible(extendedUpdatesButton));
-      extendedUpdatesButton.click();
+      assertTrue(isVisible(page.$.extendedUpdatesButton));
+      page.$.extendedUpdatesButton.click();
       await aboutBrowserProxy.whenCalled('openExtendedUpdatesDialog');
     });
 
