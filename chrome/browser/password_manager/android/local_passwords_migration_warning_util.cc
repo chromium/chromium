@@ -4,6 +4,7 @@
 
 #include "chrome/browser/password_manager/android/local_passwords_migration_warning_util.h"
 
+#include "base/android/build_info.h"
 #include "base/android/scoped_java_ref.h"
 #include "base/metrics/histogram_functions.h"
 #include "base/time/time.h"
@@ -81,6 +82,9 @@ void ShowWarningWithActivity(
 }
 
 bool ShouldShowWarning(Profile* profile) {
+  if (base::android::BuildInfo::GetInstance()->is_automotive()) {
+    return false;
+  }
   if (password_manager::UsesSplitStoresAndUPMForLocal(profile->GetPrefs())) {
     return false;
   }
