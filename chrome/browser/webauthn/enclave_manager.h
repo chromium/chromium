@@ -181,6 +181,11 @@ class EnclaveManager : public KeyedService {
   // `is_ready`.
   device::enclave::SigningCallback UserVerifyingKeySigningCallback(
       UVKeyOptions options);
+  // Get a callback that creates a new "uv" key. This can only be called when
+  // `is_ready` and the user's state has `deferred_uv_key_creation` = true.
+  // The callback will create a new UV key and provides the public key to the
+  // invoker.
+  device::enclave::UVKeyCreationCallback UserVerifyingKeyCreationCallback();
   // Fetch a wrapped security domain secret for the given epoch. Only valid to
   // call if `is_ready`.
   std::optional<std::vector<uint8_t>> GetWrappedSecret(int32_t version);
@@ -209,6 +214,10 @@ class EnclaveManager : public KeyedService {
     // A UV key is present and `UserVerifyingKeySigningCallback` will return a
     // signing callback where the UI is handled by the system.
     kUsesSystemUI,
+    // A UV key has not yet been created but can be.
+    // `UserVerifyingKeyCreationCallback` will return a callback that creates
+    // the UV key.
+    kUsesSystemUIDeferredCreation,
     // A UV key is present and `UserVerifyingKeySigningCallback` will return a
     // valid callback. However, Chrome UI needs to be shown in order to collect
     // biometrics.

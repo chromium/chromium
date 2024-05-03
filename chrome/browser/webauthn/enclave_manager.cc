@@ -298,6 +298,11 @@ std::optional<int> CheckInvariants(const EnclaveLocalState::User& user) {
     return CheckPINInvariants(user.wrapped_pin());
   }
 
+  if (user.deferred_uv_key_creation() &&
+      !user.wrapped_uv_private_key().empty()) {
+    return __LINE__;
+  }
+
   return std::nullopt;
 }
 
@@ -306,7 +311,8 @@ std::optional<int> CheckInvariants(const EnclaveLocalState::User& user) {
 cbor::Value BuildRegistrationMessage(
     const std::string& device_id,
     const crypto::UnexportableSigningKey& hardware_key,
-    scoped_refptr<crypto::RefCountedUserVerifyingSigningKey> uv_key) {
+    scoped_refptr<crypto::RefCountedUserVerifyingSigningKey> uv_key,
+    bool defer_uv_key) {
   cbor::Value::MapValue pub_keys;
   pub_keys.emplace(enclave::kHardwareKey,
                    hardware_key.GetSubjectPublicKeyInfo());
@@ -320,6 +326,13 @@ cbor::Value BuildRegistrationMessage(
   request1.emplace(enclave::kRegisterDeviceIdKey,
                    std::vector<uint8_t>(device_id.begin(), device_id.end()));
   request1.emplace(enclave::kRegisterPubKeysKey, std::move(pub_keys));
+
+  if (defer_uv_key) {
+    CHECK(!uv_key);
+    // The enclave ignores the value. The presence of the entry signals that the
+    // UV key is pending.
+    request1.emplace(enclave::kRegisterUVKeyPending, true);
+  }
 
   cbor::Value::MapValue request2;
   request2.emplace(enclave::kRequestCommandKey,
@@ -1042,14 +1055,19 @@ class EnclaveManager::StateMachine {
     kSigFile,
   };
 
+  using DeferredUVKeyCreation =
+      base::StrongAlias<class DeferredUVKeyCreation, absl::monostate>;
+  using MaybeUVKey =
+      absl::variant<DeferredUVKeyCreation,
+                    std::unique_ptr<crypto::UserVerifyingSigningKey>>;
+
   using None = base::StrongAlias<class None, absl::monostate>;
   using Failure =
       base::StrongAlias<class KeyGenerationFailure, absl::monostate>;
   using FileContents = base::StrongAlias<class FileContents, std::string>;
   using KeyReady = base::StrongAlias<
       class KeyGenerated,
-      std::pair<std::unique_ptr<crypto::UserVerifyingSigningKey>,
-                std::unique_ptr<crypto::UnexportableSigningKey>>>;
+      std::pair<MaybeUVKey, std::unique_ptr<crypto::UnexportableSigningKey>>>;
   using EnclaveResponse = base::StrongAlias<class EnclaveResponse, cbor::Value>;
   using JoinStatus =
       base::StrongAlias<class JoinStatus,
@@ -1449,24 +1467,46 @@ class EnclaveManager::StateMachine {
                 return;
               }
               if (state_machine->user_->wrapped_uv_private_key().empty()) {
+#if BUILDFLAG(IS_WIN)
+                // On Windows we don't want to create a UV key at registration
+                // time. Instead we defer creation until one is going to be
+                // used in a UV request.
+                state_machine->GenerateHardwareKey(DeferredUVKeyCreation());
+#else
                 // Create a new UV key.
                 key_provider->GenerateUserVerifyingSigningKey(
                     device::enclave::kSigningAlgorithms,
-                    base::BindOnce(&StateMachine::GenerateHardwareKey,
-                                   state_machine));
+                    base::BindOnce(
+                        [](base::WeakPtr<StateMachine> state_machine,
+                           std::unique_ptr<crypto::UserVerifyingSigningKey>
+                               uv_key) {
+                          if (!state_machine) {
+                            return;
+                          }
+                          state_machine->GenerateHardwareKey(std::move(uv_key));
+                        },
+                        state_machine));
+#endif
                 return;
               }
               // Use the existing UV key.
               key_provider->GetUserVerifyingSigningKey(
                   state_machine->user_->wrapped_uv_private_key(),
-                  base::BindOnce(&StateMachine::GenerateHardwareKey,
-                                 state_machine));
+                  base::BindOnce(
+                      [](base::WeakPtr<StateMachine> state_machine,
+                         std::unique_ptr<crypto::UserVerifyingSigningKey>
+                             uv_key) {
+                        if (!state_machine) {
+                          return;
+                        }
+                        state_machine->GenerateHardwareKey(std::move(uv_key));
+                      },
+                      state_machine));
             },
             weak_ptr_factory_.GetWeakPtr()));
   }
 
-  void GenerateHardwareKey(
-      std::unique_ptr<crypto::UserVerifyingSigningKey> uv_key) {
+  void GenerateHardwareKey(MaybeUVKey uv_key) {
     DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
     CHECK(state_ == State::kGeneratingKeys);
     std::optional<std::vector<uint8_t>> existing_key_id;
@@ -1477,8 +1517,7 @@ class EnclaveManager::StateMachine {
         FROM_HERE, {base::TaskPriority::BEST_EFFORT, base::MayBlock()},
         base::BindOnce(
             [](std::optional<std::vector<uint8_t>> key_id,
-               std::unique_ptr<crypto::UserVerifyingSigningKey> uv_key)
-                -> Event {
+               MaybeUVKey uv_key) -> Event {
               std::unique_ptr<crypto::UnexportableKeyProvider> provider =
                   GetUnexportableKeyProvider();
               if (!provider) {
@@ -1516,26 +1555,37 @@ class EnclaveManager::StateMachine {
 
     bool state_dirty = false;
 
-    auto uv_key = std::move(absl::get_if<KeyReady>(&event)->value().first);
-    manager_->user_verifying_key_ =
-        (uv_key == nullptr)
-            ? nullptr
-            : base::MakeRefCounted<crypto::RefCountedUserVerifyingSigningKey>(
-                  std::move(uv_key));
+    MaybeUVKey maybe_uv_key =
+        std::move(absl::get_if<KeyReady>(&event)->value().first);
+    // TODO(crbug.com/40253837): There is a presubmit bug that makes the script
+    // complain about the unique_ptr within the holds_alternative if they are
+    // on different lines. The type alias is just to work around that.
+    using UVSigningKey = std::unique_ptr<crypto::UserVerifyingSigningKey>;
+    if (absl::holds_alternative<UVSigningKey>(maybe_uv_key)) {
+      auto uv_key = std::move(absl::get<UVSigningKey>(maybe_uv_key));
+      if (uv_key) {
+        manager_->user_verifying_key_ =
+            base::MakeRefCounted<crypto::RefCountedUserVerifyingSigningKey>(
+                std::move(uv_key));
+        user_->set_deferred_uv_key_creation(false);
+      }
+    } else {
+      CHECK(absl::holds_alternative<DeferredUVKeyCreation>(maybe_uv_key));
+      user_->set_deferred_uv_key_creation(true);
+    }
 
     manager_->hardware_key_ = base::MakeRefCounted<
         unexportable_keys::RefCountedUnexportableSigningKey>(
         std::move(absl::get_if<KeyReady>(&event)->value().second),
         unexportable_keys::UnexportableKeyId());
 
-    EnclaveLocalState::User* const user_state = user_;
     if (manager_->user_verifying_key_) {
       const std::vector<uint8_t> uv_public_key =
           manager_->user_verifying_key_->key().GetPublicKey();
       const std::string uv_public_key_str = VecToString(uv_public_key);
-      if (user_state->uv_public_key() != uv_public_key_str) {
-        user_state->set_uv_public_key(uv_public_key_str);
-        user_state->set_wrapped_uv_private_key(UserVerifyingLabelToString(
+      if (user_->uv_public_key() != uv_public_key_str) {
+        user_->set_uv_public_key(uv_public_key_str);
+        user_->set_wrapped_uv_private_key(UserVerifyingLabelToString(
             manager_->user_verifying_key_->key().GetKeyLabel()));
         state_dirty = true;
       }
@@ -1544,13 +1594,13 @@ class EnclaveManager::StateMachine {
     const std::vector<uint8_t> spki =
         manager_->hardware_key_->key().GetSubjectPublicKeyInfo();
     const std::string spki_str = VecToString(spki);
-    if (user_state->hardware_public_key() != spki_str) {
+    if (user_->hardware_public_key() != spki_str) {
       std::array<uint8_t, crypto::kSHA256Length> device_id =
           crypto::SHA256Hash(spki);
-      user_state->set_hardware_public_key(spki_str);
-      user_state->set_wrapped_hardware_private_key(
+      user_->set_hardware_public_key(spki_str);
+      user_->set_wrapped_hardware_private_key(
           VecToString(manager_->hardware_key_->key().GetWrappedKey()));
-      user_state->set_device_id(VecToString(device_id));
+      user_->set_device_id(VecToString(device_id));
       state_dirty = true;
     }
 
@@ -1575,15 +1625,16 @@ class EnclaveManager::StateMachine {
 
     state_ = State::kRegisteringWithEnclave;
     std::string token = std::move(absl::get_if<AccessToken>(&event)->value());
-    enclave::Transact(manager_->network_context_factory_,
-                      enclave::GetEnclaveIdentity(), std::move(token),
-                      /*reauthentication_token=*/std::nullopt,
-                      BuildRegistrationMessage(user_->device_id(),
-                                               manager_->hardware_key_->key(),
-                                               manager_->user_verifying_key_),
-                      enclave::SigningCallback(),
-                      base::BindOnce(&StateMachine::OnEnclaveResponse,
-                                     weak_ptr_factory_.GetWeakPtr()));
+    enclave::Transact(
+        manager_->network_context_factory_, enclave::GetEnclaveIdentity(),
+        std::move(token),
+        /*reauthentication_token=*/std::nullopt,
+        BuildRegistrationMessage(
+            user_->device_id(), manager_->hardware_key_->key(),
+            manager_->user_verifying_key_, user_->deferred_uv_key_creation()),
+        enclave::SigningCallback(),
+        base::BindOnce(&StateMachine::OnEnclaveResponse,
+                       weak_ptr_factory_.GetWeakPtr()));
   }
 
   void DoRegisteringWithEnclave(Event event) {
@@ -2789,6 +2840,78 @@ enclave::SigningCallback EnclaveManager::UserVerifyingKeySigningCallback(
       std::move(options), weak_ptr_factory_.GetWeakPtr());
 }
 
+device::enclave::UVKeyCreationCallback
+EnclaveManager::UserVerifyingKeyCreationCallback() {
+  DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
+  CHECK(user_->deferred_uv_key_creation());
+  CHECK(user_->registered());
+  return base::BindOnce(
+      [](base::WeakPtr<EnclaveManager> enclave_manager,
+         CoreAccountId account_id,
+         base::OnceCallback<void(base::span<const uint8_t>)>
+             public_key_callback) {
+        if (!enclave_manager) {
+          std::move(public_key_callback).Run(std::vector<uint8_t>());
+          return;
+        }
+        // Unregister the device with the enclave if there are any errors from
+        // this point, because UV key creation is a necessary step to have a
+        // useable state.
+        auto key_provider = crypto::GetUserVerifyingKeyProvider(
+            MakeUserVerifyingKeyConfig(/*options=*/{}));
+        if (!key_provider) {
+          enclave_manager->ClearRegistration();
+          std::move(public_key_callback).Run(std::vector<uint8_t>());
+          return;
+        }
+        key_provider->GenerateUserVerifyingSigningKey(
+            device::enclave::kSigningAlgorithms,
+            base::BindOnce(
+                [](base::WeakPtr<EnclaveManager> enclave_manager,
+                   base::OnceCallback<void(base::span<const uint8_t>)>
+                       public_key_callback,
+                   CoreAccountId account_id,
+                   std::unique_ptr<crypto::UserVerifyingSigningKey> uv_key) {
+                  if (!enclave_manager ||
+                      enclave_manager->primary_account_info_->account_id !=
+                          account_id) {
+                    std::move(public_key_callback).Run(std::vector<uint8_t>());
+                    return;
+                  }
+                  if (!uv_key) {
+                    enclave_manager->ClearRegistration();
+                    std::move(public_key_callback).Run(std::vector<uint8_t>());
+                    return;
+                  }
+                  enclave_manager->user_verifying_key_ = base::MakeRefCounted<
+                      crypto::RefCountedUserVerifyingSigningKey>(
+                      std::move(uv_key));
+                  const std::vector<uint8_t> uv_public_key =
+                      enclave_manager->user_verifying_key_->key()
+                          .GetPublicKey();
+                  const std::string uv_public_key_str =
+                      VecToString(uv_public_key);
+
+                  auto* local_state =
+                      StateForUser(enclave_manager->local_state_.get(),
+                                   *enclave_manager->primary_account_info_);
+                  local_state->set_uv_public_key(uv_public_key_str);
+                  local_state->set_wrapped_uv_private_key(
+                      UserVerifyingLabelToString(
+                          enclave_manager->user_verifying_key_->key()
+                              .GetKeyLabel()));
+                  local_state->set_deferred_uv_key_creation(false);
+                  enclave_manager->WriteState(
+                      enclave_manager->local_state_.get());
+
+                  std::move(public_key_callback).Run(uv_public_key);
+                },
+                enclave_manager, std::move(public_key_callback),
+                std::move(account_id)));
+      },
+      weak_ptr_factory_.GetWeakPtr(), primary_account_info_->account_id);
+}
+
 std::optional<std::vector<uint8_t>> EnclaveManager::GetWrappedSecret(
     int32_t version) {
   DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
@@ -2838,6 +2961,11 @@ EnclaveManager::GetWrappedPIN() {
 
 EnclaveManager::UvKeyState EnclaveManager::uv_key_state() const {
   CHECK(is_ready());
+#if BUILDFLAG(IS_WIN)
+  if (user_->deferred_uv_key_creation()) {
+    return UvKeyState::kUsesSystemUIDeferredCreation;
+  }
+#endif
   if (user_->wrapped_uv_private_key().empty()) {
     return UvKeyState::kNone;
   }

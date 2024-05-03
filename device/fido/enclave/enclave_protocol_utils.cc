@@ -55,6 +55,9 @@ const char kRequestClaimedPINKey[] = "claimed_pin";
 // JSON keys for GetAssertion request fields.
 const char kGetAssertionRequestProtobufKey[] = "protobuf";
 
+// Keys for AddUVKey fields.
+const char kAddUVKeyPubKey[] = "pub_key";
+
 // JSON keys for GetAssertion response fields.
 const char kGetAssertionResponseKey[] = "response";
 const char kGetAssertionResponsePrfKey[] = "prf";
@@ -67,6 +70,7 @@ const char kMakeCredentialResponsePrfKey[] = "prf";
 // Specific command names recognizable by the enclave processor.
 const char kGetAssertionCommandName[] = "passkeys/assert";
 const char kMakeCredentialCommandName[] = "passkeys/create";
+const char kAddUVKeyCommandName[] = "device/add_uv_key";
 
 // Keys in a PRF response structure
 const char kPrfFirst[] = "first";
@@ -218,41 +222,46 @@ ParseGetAssertionResponse(cbor::Value response_value,
     return "Command response was not a valid CBOR array.";
   }
 
-  const cbor::Value& response_element = response_value.GetArray()[0];
-  if (!response_element.is_map()) {
-    return "Command response element is not a map.";
-  }
-  const auto& response_map = response_element.GetMap();
-
-  // Response errors can be either strings or integers.
-  auto value_it = response_map.find(cbor::Value(kResponseErrorKey));
-  if (value_it != response_map.end()) {
-    if (value_it->second.is_integer()) {
-      return value_it->second.GetInteger();
-    } else if (value_it->second.is_string()) {
-      return base::StrCat(
-          {"Error received from enclave: ", value_it->second.GetString()});
-    } else {
-      return "Command response contained invalid error field.";
+  for (auto& response_element : response_value.GetArray()) {
+    if (!response_element.is_map()) {
+      return "Command response element is not a map.";
+    }
+    const auto& response_map = response_element.GetMap();
+    // Response errors can be either strings or integers.
+    auto value_it = response_map.find(cbor::Value(kResponseErrorKey));
+    if (value_it != response_map.end()) {
+      if (value_it->second.is_integer()) {
+        return value_it->second.GetInteger();
+      } else if (value_it->second.is_string()) {
+        return base::StrCat(
+            {"Error received from enclave: ", value_it->second.GetString()});
+      } else {
+        return "Command response contained invalid error field.";
+      }
+    }
+    if (response_map.find(cbor::Value(kResponseSuccessKey)) ==
+        response_map.end()) {
+      return "Command response did not contain a successful response or an "
+             "error.";
     }
   }
 
-  const cbor::Value::MapValue* success_response =
-      cborFindMap(response_map, kResponseSuccessKey);
-  if (!success_response) {
-    return "Command response did not contain a successful response or an "
-           "error.";
+  const cbor::Value::MapValue* last_response = cborFindMap(
+      response_value.GetArray()[response_value.GetArray().size() - 1].GetMap(),
+      kResponseSuccessKey);
+  if (!last_response) {
+    return "Command response did not contain a map as last entry.";
   }
 
   const cbor::Value::MapValue* assertion_response =
-      cborFindMap(*success_response, kGetAssertionResponseKey);
+      cborFindMap(*last_response, kGetAssertionResponseKey);
   if (!assertion_response) {
     return "Command response did not contain a response field.";
   }
 
   std::optional<std::vector<uint8_t>> prf_results;
-  auto it = success_response->find(cbor::Value(kGetAssertionResponsePrfKey));
-  if (it != success_response->end()) {
+  auto it = last_response->find(cbor::Value(kGetAssertionResponsePrfKey));
+  if (it != last_response->end()) {
     prf_results = ParsePrfResponse(it->second);
     if (!prf_results) {
       return "Invalid PRF results";
@@ -285,48 +294,54 @@ ParseMakeCredentialResponse(cbor::Value response_value,
     return "Command response was not a valid CBOR array.";
   }
 
-  const cbor::Value& response_element = response_value.GetArray()[0];
-  if (!response_element.is_map()) {
-    return "Command response element is not a map.";
-  }
-  const auto& response_map = response_element.GetMap();
+  for (auto& response_element : response_value.GetArray()) {
+    if (!response_element.is_map()) {
+      return "Command response element is not a map.";
+    }
+    const auto& response_map = response_element.GetMap();
 
-  // Response errors can be either strings or integers.
-  auto value_it = response_map.find(cbor::Value(kResponseErrorKey));
-  if (value_it != response_map.end()) {
-    if (value_it->second.is_integer()) {
-      return value_it->second.GetInteger();
-    } else if (value_it->second.is_string()) {
-      return base::StrCat(
-          {"Error received from enclave: ", value_it->second.GetString()});
-    } else {
-      return "Command response contained invalid error field.";
+    // Response errors can be either strings or integers.
+    auto value_it = response_map.find(cbor::Value(kResponseErrorKey));
+    if (value_it != response_map.end()) {
+      if (value_it->second.is_integer()) {
+        return value_it->second.GetInteger();
+      } else if (value_it->second.is_string()) {
+        return base::StrCat(
+            {"Error received from enclave: ", value_it->second.GetString()});
+      } else {
+        return "Command response contained invalid error field.";
+      }
+    }
+    if (response_map.find(cbor::Value(kResponseSuccessKey)) ==
+        response_map.end()) {
+      return "Command response did not contain a successful response or an "
+             "error.";
     }
   }
 
-  const cbor::Value::MapValue* success_response =
-      cborFindMap(response_map, kResponseSuccessKey);
-  if (!success_response) {
-    return "Command response did not contain a successful response or an "
-           "error.";
+  const cbor::Value::MapValue* last_response = cborFindMap(
+      response_value.GetArray()[response_value.GetArray().size() - 1].GetMap(),
+      kResponseSuccessKey);
+  if (!last_response) {
+    return "Command response did not contain a map as last entry.";
   }
 
   const std::vector<uint8_t>* pubkey_field =
-      cborFindBytestring(*success_response, kMakeCredentialResponsePubKeyKey);
+      cborFindBytestring(*last_response, kMakeCredentialResponsePubKeyKey);
   if (!pubkey_field) {
     return "MakeCredential response did not contain a public key.";
   }
 
-  const std::vector<uint8_t>* encrypted_field = cborFindBytestring(
-      *success_response, kMakeCredentialResponseEncryptedKey);
+  const std::vector<uint8_t>* encrypted_field =
+      cborFindBytestring(*last_response, kMakeCredentialResponseEncryptedKey);
   if (!encrypted_field) {
     return "MakeCredential response did not contain an encrypted passkey.";
   }
 
   std::optional<std::vector<uint8_t>> prf_results;
   bool prf_enabled = false;
-  auto it = success_response->find(cbor::Value(kMakeCredentialResponsePrfKey));
-  if (it != success_response->end()) {
+  auto it = last_response->find(cbor::Value(kMakeCredentialResponsePrfKey));
+  if (it != last_response->end()) {
     if (it->second.is_bool()) {
       prf_enabled = it->second.GetBool();
     } else {
@@ -460,6 +475,16 @@ cbor::Value BuildMakeCredentialCommand(
     entry_map.emplace(kRequestWrappedPINDataKey,
                       std::move(claimed_pin->wrapped_pin));
   }
+
+  return cbor::Value(entry_map);
+}
+
+cbor::Value BuildAddUVKeyCommand(base::span<const uint8_t> uv_public_key) {
+  cbor::Value::MapValue entry_map;
+
+  entry_map.emplace(cbor::Value(kRequestCommandKey),
+                    cbor::Value(kAddUVKeyCommandName));
+  entry_map.emplace(cbor::Value(kAddUVKeyPubKey), cbor::Value(uv_public_key));
 
   return cbor::Value(entry_map);
 }

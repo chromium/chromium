@@ -89,6 +89,7 @@ extern const char kRecoveryKeyStoreRewrapCommandName[];
 // Register request keys
 COMPONENT_EXPORT(DEVICE_FIDO) extern const char kRegisterPubKeysKey[];
 COMPONENT_EXPORT(DEVICE_FIDO) extern const char kRegisterDeviceIdKey[];
+COMPONENT_EXPORT(DEVICE_FIDO) extern const char kRegisterUVKeyPending[];
 
 // Device key types
 COMPONENT_EXPORT(DEVICE_FIDO) extern const char kHardwareKey[];

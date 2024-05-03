@@ -104,6 +104,7 @@ const char kRecoveryKeyStoreRewrapCommandName[] = "recovery_key_store/rewrap";
 
 const char kRegisterPubKeysKey[] = "pub_keys";
 const char kRegisterDeviceIdKey[] = "device_id";
+const char kRegisterUVKeyPending[] = "uv_key_pending";
 
 const char kHardwareKey[] = "hw";
 const char kUserVerificationKey[] = "uv";

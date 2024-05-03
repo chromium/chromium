@@ -13,6 +13,7 @@
 #include "base/strings/strcat.h"
 #include "base/strings/string_number_conversions.h"
 #include "base/task/sequenced_task_runner.h"
+#include "components/cbor/values.h"
 #include "components/device_event_log/device_event_log.h"
 #include "components/sync/protocol/webauthn_credential_specifics.pb.h"
 #include "crypto/random.h"
@@ -122,6 +123,15 @@ void EnclaveAuthenticator::MakeCredential(CtapMakeCredentialRequest request,
   pending_make_credential_request_ =
       std::make_unique<PendingMakeCredentialRequest>(
           std::move(request), std::move(options), std::move(callback));
+
+  if (ui_request_->uv_key_creation_callback) {
+    std::move(ui_request_->uv_key_creation_callback)
+        .Run(base::BindOnce(
+            &EnclaveAuthenticator::DispatchMakeCredentialWithNewUVKey,
+            weak_factory_.GetWeakPtr()));
+    return;
+  }
+
   Transact(network_context_factory_, GetEnclaveIdentity(),
            std::move(ui_request_->access_token),
            /*reauthentication_token=*/std::nullopt,
@@ -130,6 +140,30 @@ void EnclaveAuthenticator::MakeCredential(CtapMakeCredentialRequest request,
                std::move(ui_request_->claimed_pin),
                std::move(ui_request_->wrapped_secret),
                std::move(ui_request_->secret)),
+           std::move(ui_request_->signing_callback),
+           base::BindOnce(&EnclaveAuthenticator::ProcessMakeCredentialResponse,
+                          weak_factory_.GetWeakPtr()));
+}
+
+void EnclaveAuthenticator::DispatchMakeCredentialWithNewUVKey(
+    base::span<const uint8_t> uv_public_key) {
+  if (uv_public_key.empty()) {
+    FIDO_LOG(ERROR) << "Failed deferred UV key creation";
+    CompleteRequestWithError(CtapDeviceResponseCode::kCtap2ErrOther);
+    return;
+  }
+
+  cbor::Value::ArrayValue requests;
+  requests.emplace_back(BuildAddUVKeyCommand(uv_public_key));
+  requests.emplace_back(BuildMakeCredentialCommand(
+      std::move(pending_make_credential_request_->options.json),
+      std::move(ui_request_->claimed_pin),
+      std::move(ui_request_->wrapped_secret), std::move(ui_request_->secret)));
+
+  Transact(network_context_factory_, GetEnclaveIdentity(),
+           std::move(ui_request_->access_token),
+           /*reauthentication_token=*/std::nullopt,
+           cbor::Value(std::move(requests)),
            std::move(ui_request_->signing_callback),
            base::BindOnce(&EnclaveAuthenticator::ProcessMakeCredentialResponse,
                           weak_factory_.GetWeakPtr()));
@@ -145,6 +179,15 @@ void EnclaveAuthenticator::GetAssertion(CtapGetAssertionRequest request,
 
   pending_get_assertion_request_ = std::make_unique<PendingGetAssertionRequest>(
       request, options, std::move(callback));
+
+  if (ui_request_->uv_key_creation_callback) {
+    std::move(ui_request_->uv_key_creation_callback)
+        .Run(base::BindOnce(
+            &EnclaveAuthenticator::DispatchGetAssertionWithNewUVKey,
+            weak_factory_.GetWeakPtr()));
+    return;
+  }
+
   Transact(network_context_factory_, GetEnclaveIdentity(),
            std::move(ui_request_->access_token),
            /*reauthentication_token=*/std::nullopt,
@@ -155,6 +198,32 @@ void EnclaveAuthenticator::GetAssertion(CtapGetAssertionRequest request,
                std::move(ui_request_->claimed_pin),
                std::move(ui_request_->wrapped_secret),
                std::move(ui_request_->secret)),
+           std::move(ui_request_->signing_callback),
+           base::BindOnce(&EnclaveAuthenticator::ProcessGetAssertionResponse,
+                          weak_factory_.GetWeakPtr()));
+}
+
+void EnclaveAuthenticator::DispatchGetAssertionWithNewUVKey(
+    base::span<const uint8_t> uv_public_key) {
+  if (uv_public_key.empty()) {
+    FIDO_LOG(ERROR) << "Failed deferred UV key creation";
+    CompleteRequestWithError(CtapDeviceResponseCode::kCtap2ErrOther);
+    return;
+  }
+
+  cbor::Value::ArrayValue requests;
+  requests.emplace_back(BuildAddUVKeyCommand(uv_public_key));
+  requests.emplace_back(BuildGetAssertionCommand(
+      *ui_request_->entity,
+      std::move(pending_get_assertion_request_->options.json),
+      pending_get_assertion_request_->request.client_data_json,
+      std::move(ui_request_->claimed_pin),
+      std::move(ui_request_->wrapped_secret), std::move(ui_request_->secret)));
+
+  Transact(network_context_factory_, GetEnclaveIdentity(),
+           std::move(ui_request_->access_token),
+           /*reauthentication_token=*/std::nullopt,
+           cbor::Value(std::move(requests)),
            std::move(ui_request_->signing_callback),
            base::BindOnce(&EnclaveAuthenticator::ProcessGetAssertionResponse,
                           weak_factory_.GetWeakPtr()));
@@ -172,6 +241,9 @@ void EnclaveAuthenticator::ProcessMakeCredentialResponse(
   auto parse_result = ParseMakeCredentialResponse(
       std::move(*response), pending_make_credential_request_->request,
       *ui_request_->key_version, ui_request_->user_verified);
+  // TODO(enclave): This should identify and handle failures of AddUVKey
+  // requests, and signal these back to the EnclaveManager to unregister the
+  // device.
   if (absl::holds_alternative<std::string>(parse_result)) {
     FIDO_LOG(ERROR) << base::StrCat(
         {"Error in registration response from server: ",
@@ -213,6 +285,7 @@ void EnclaveAuthenticator::ProcessGetAssertionResponse(
     CompleteRequestWithError(CtapDeviceResponseCode::kCtap2ErrOther);
     return;
   }
+
   const std::string& cred_id_str = ui_request_->entity->credential_id();
   auto parse_result = ParseGetAssertionResponse(
       std::move(*response), base::as_bytes(base::make_span(cred_id_str)));
@@ -223,6 +296,9 @@ void EnclaveAuthenticator::ProcessGetAssertionResponse(
     CompleteRequestWithError(CtapDeviceResponseCode::kCtap2ErrOther);
     return;
   }
+  // TODO(enclave): This should identify and handle failures of AddUVKey
+  // requests, and signal these back to the EnclaveManager to unregister the
+  // device.
   if (absl::holds_alternative<int>(parse_result)) {
     int code = absl::get<int>(parse_result);
     if (ui_request_->pin_result_callback &&

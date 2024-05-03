@@ -205,6 +205,9 @@ enum class EnclaveUserVerificationMethod {
   // The operating system will perform user verification and allow signing
   // with the UV key.
   kUVKeyWithSystemUI,
+  // The device is in a state waiting for an OS UV key to be created, which can
+  // be done when a UV request is required.
+  kDeferredUVKeyWithSystemUI,
   // Chrome will show user verification UI for the operating system, which will
   // then allow signing
   // with the UV key.
@@ -240,6 +243,9 @@ EnclaveUserVerificationMethod PickEnclaveUserVerificationMethod(
 
         case EnclaveManager::UvKeyState::kUsesSystemUI:
           return EnclaveUserVerificationMethod::kUVKeyWithSystemUI;
+
+        case EnclaveManager::UvKeyState::kUsesSystemUIDeferredCreation:
+          return EnclaveUserVerificationMethod::kDeferredUVKeyWithSystemUI;
 
         case EnclaveManager::UvKeyState::kUsesChromeUI:
           return EnclaveUserVerificationMethod::kUVKeyWithChromeUI;
@@ -611,6 +617,7 @@ void GPMEnclaveController::SetAccountStateReady() {
       user_verification_requirement_, have_added_device_,
       enclave_manager_->has_wrapped_pin(), enclave_manager_->uv_key_state())) {
     case EnclaveUserVerificationMethod::kUVKeyWithSystemUI:
+    case EnclaveUserVerificationMethod::kDeferredUVKeyWithSystemUI:
     case EnclaveUserVerificationMethod::kNone:
     case EnclaveUserVerificationMethod::kImplicit:
       account_state_ = AccountState::kReady;
@@ -930,6 +937,16 @@ void GPMEnclaveController::StartEnclaveTransaction(
       request->user_verified = true;
       break;
     }
+    case EnclaveUserVerificationMethod::kDeferredUVKeyWithSystemUI:
+      // This submits a UV key, but is signed with the HW key. We still count
+      // it as being user verified because this will trigger UV creation and
+      // the system will verify the user for that operation.
+      request->signing_callback =
+          enclave_manager_->HardwareKeySigningCallback();
+      request->user_verified = true;
+      request->uv_key_creation_callback =
+          enclave_manager_->UserVerifyingKeyCreationCallback();
+      break;
     case EnclaveUserVerificationMethod::kUnsatisfiable:
       NOTREACHED_NORETURN();
   }

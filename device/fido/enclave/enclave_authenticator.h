@@ -91,6 +91,10 @@ class COMPONENT_EXPORT(DEVICE_FIDO) EnclaveAuthenticator
     MakeCredentialCallback callback;
   };
 
+  void DispatchMakeCredentialWithNewUVKey(
+      base::span<const uint8_t> uv_public_key);
+  void DispatchGetAssertionWithNewUVKey(
+      base::span<const uint8_t> uv_public_key);
   void ProcessMakeCredentialResponse(std::optional<cbor::Value> response);
   void ProcessGetAssertionResponse(std::optional<cbor::Value> response);
   void CompleteRequestWithError(CtapDeviceResponseCode error);

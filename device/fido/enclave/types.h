@@ -73,6 +73,11 @@ using SigningCallback = base::OnceCallback<void(
     SignedMessage,
     base::OnceCallback<void(std::optional<ClientSignature>)>)>;
 
+// A callback that creates a new user-verifying key and provides its public key
+// for submission to the enclave service.
+using UVKeyCreationCallback = base::OnceCallback<void(
+    base::OnceCallback<void(base::span<const uint8_t>)>)>;
+
 // A callback that is called when the Enclave responds to a request using a PIN
 // for UV. PIN errors can be handled, and PIN success allows the failed attempt
 // counter to be reset.
@@ -110,6 +115,8 @@ struct COMPONENT_EXPORT(DEVICE_FIDO) CredentialRequest {
   PINResultCallback pin_result_callback;
   // Callback for storing a newly-created passkey.
   SavePasskeyCallback save_passkey_callback;
+  // Callback for deferred creation of a UV key.
+  UVKeyCreationCallback uv_key_creation_callback;
   // access_token contains an OAuth2 token to authenticate access to the enclave
   // at the account level.
   std::string access_token;

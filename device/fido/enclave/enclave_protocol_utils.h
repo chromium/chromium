@@ -14,7 +14,6 @@
 #include "base/containers/span.h"
 #include "base/functional/callback_forward.h"
 #include "base/memory/scoped_refptr.h"
-#include "base/values.h"
 #include "device/fido/authenticator_get_assertion_response.h"
 #include "device/fido/authenticator_make_credential_response.h"
 #include "device/fido/ctap_get_assertion_request.h"
@@ -37,6 +36,8 @@ class JSONRequest;
 namespace enclave {
 
 // Parses a decrypted assertion command response from the enclave.
+// If there are multiple request responses in the array, it assumes the last
+// one is for the GetAssertion.
 // Returns one of: A successful response, an error code received from the
 //                 enclave, or a string describing an unhandled failure.
 absl::variant<AuthenticatorGetAssertionResponse, int, std::string>
@@ -45,6 +46,8 @@ absl::variant<AuthenticatorGetAssertionResponse, int, std::string>
                                   base::span<const uint8_t> credential_id);
 
 // Parses a decrypted registration command response from the enclave.
+// If there are multiple request responses in the array, it assumes the last
+// one is for the MakeCredential.
 // Returns one of: A pair containing the response and the new passkey entity,
 //                 an error code received from the enclave, or a string
 //                 describing an unhandled failure.
@@ -77,6 +80,12 @@ cbor::Value COMPONENT_EXPORT(DEVICE_FIDO) BuildMakeCredentialCommand(
     std::unique_ptr<ClaimedPIN> claimed_pin,
     std::optional<std::vector<uint8_t>> wrapped_secret,
     std::optional<std::vector<uint8_t>> secret);
+
+// Returns a CBOR value with the provided AddUVKey command to the enclave.
+// It must precede a credential registration or assertion request in the
+// command array.
+cbor::Value COMPONENT_EXPORT(DEVICE_FIDO)
+    BuildAddUVKeyCommand(base::span<const uint8_t> uv_public_key);
 
 // Builds a CBOR serialization of the command to be sent to the enclave
 // service which can then be encrypted and sent over HTTPS.
