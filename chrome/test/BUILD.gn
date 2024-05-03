@@ -3140,6 +3140,7 @@ if (!is_android) {
         "../browser/media/webrtc/get_all_screens_media_browsertest.cc",
         "../browser/sessions/tab_restore_service_browsertest.cc",
         "../browser/support_tool/signin_data_collector_browsertest.cc",
+        "../browser/ui/quick_answers/ui/quick_answers_pixeltest.cc",
         "../browser/ui/views/web_apps/web_app_integration_browsertest_cros.cc",
         "base/ash/web_ui_browser_test_browsertest.cc",
         "data/webui/chromeos/async_gen.cc",
