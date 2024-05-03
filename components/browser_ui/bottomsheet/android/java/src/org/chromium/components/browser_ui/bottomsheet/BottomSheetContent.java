@@ -67,11 +67,12 @@ public interface BottomSheetContent {
     View getContentView();
 
     /**
-     * @return The background color for the bottom sheet content, defaulting to the semantic default
-     *     background color if no background color is specified by the content.
+     * Gets the background color for the bottom sheet content, defaulting to the semantic default
+     * background color if no background color is specified by the content. This should return null
+     * if the sheet content is showing tab content / a page preview.
      */
     @ColorInt
-    default int getBackgroundColor() {
+    default Integer getBackgroundColor() {
         return SemanticColorUtils.getDefaultBgColor(getContentView().getContext());
     }
 

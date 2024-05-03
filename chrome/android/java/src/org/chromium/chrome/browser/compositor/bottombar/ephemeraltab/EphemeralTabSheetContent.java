@@ -277,6 +277,11 @@ public class EphemeralTabSheetContent implements BottomSheetContent {
         return mSheetContentView;
     }
 
+    @Override
+    public Integer getBackgroundColor() {
+        return null;
+    }
+
     @Nullable
     @Override
     public View getToolbarView() {

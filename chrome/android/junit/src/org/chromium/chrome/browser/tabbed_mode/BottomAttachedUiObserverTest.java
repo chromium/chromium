@@ -54,6 +54,7 @@ public class BottomAttachedUiObserverTest {
     @Mock private OverlayPanelStateProvider mOverlayPanelStateProvider;
 
     @Mock private BottomSheetController mBottomSheetController;
+    @Mock private BottomSheetContent mBottomSheetContentNullBackground;
     @Mock private BottomSheetContent mBottomSheetContentYellowBackground;
     @Mock private BottomSheetContent mBottomSheetContentCyanBackground;
 
@@ -71,6 +72,7 @@ public class BottomAttachedUiObserverTest {
         when(mContextualSearchManager.getOverlayPanelStateProviderSupplier())
                 .thenReturn(mOverlayPanelStateProviderSupplier);
 
+        when(mBottomSheetContentNullBackground.getBackgroundColor()).thenReturn(null);
         when(mBottomSheetContentYellowBackground.getBackgroundColor())
                 .thenReturn(BOTTOM_SHEET_YELLOW);
         when(mBottomSheetContentCyanBackground.getBackgroundColor()).thenReturn(BOTTOM_SHEET_CYAN);
@@ -166,9 +168,15 @@ public class BottomAttachedUiObserverTest {
 
     @Test
     public void testAdaptsColorToBottomSheet() {
-        mBottomAttachedUiObserver.onSheetContentChanged(mBottomSheetContentCyanBackground);
+        mBottomAttachedUiObserver.onSheetContentChanged(mBottomSheetContentNullBackground);
         mColorChangeObserver.assertColor(null);
 
+        mBottomAttachedUiObserver.onSheetOpened(0);
+        mColorChangeObserver.assertColor(null);
+        mBottomAttachedUiObserver.onSheetClosed(0);
+        mColorChangeObserver.assertColor(null);
+
+        mBottomAttachedUiObserver.onSheetContentChanged(mBottomSheetContentCyanBackground);
         mBottomAttachedUiObserver.onSheetOpened(0);
         mColorChangeObserver.assertColor(BOTTOM_SHEET_CYAN);
         mBottomAttachedUiObserver.onSheetClosed(0);

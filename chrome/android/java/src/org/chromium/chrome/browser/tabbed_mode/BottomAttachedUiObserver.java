@@ -154,6 +154,8 @@ public class BottomAttachedUiObserver
 
     private @Nullable @ColorInt Integer calculateBottomAttachedColor() {
         if (mBottomSheetVisible) {
+            // This can cause a null return intentionally to indicate that a bottom sheet is showing
+            // a page preview / web content.
             return mBottomSheetColor;
         }
         if (mOverlayPanelVisible) {
