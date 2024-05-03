@@ -2144,42 +2144,39 @@ void ExtensionService::RenderProcessHostDestroyed(
     return;
 
   ProcessMap* process_map = ProcessMap::Get(profile_);
-  if (process_map->Contains(host->GetID())) {
-    // An extension process was terminated, this might have resulted in an
-    // app or extension becoming idle.
-    std::set<std::string> extension_ids =
-        process_map->GetExtensionsInProcess(host->GetID());
-    // In addition to the extensions listed in the process map, one of those
-    // extensions could be referencing a shared module which is waiting for
-    // idle to update. Check all imports of these extensions, too.
-    std::set<std::string> import_ids;
-    for (auto& extension_id : extension_ids) {
-      const Extension* extension = registry_->GetExtensionById(
-          extension_id, ExtensionRegistry::EVERYTHING);
-      if (!extension)
-        continue;
+
+  // An extension process was terminated, this might have resulted in an
+  // app or extension becoming idle.
+  if (std::optional<std::string> extension_id =
+          process_map->GetExtensionIdForProcess(host->GetID())) {
+    // The extension running in this process might also be referencing a shared
+    // module which is waiting for idle to update. Check all imports of this
+    // extension too.
+    std::set<std::string> affected_ids;
+    affected_ids.insert(*extension_id);
+
+    if (auto* extension = registry_->GetExtensionById(
+            *extension_id, ExtensionRegistry::EVERYTHING)) {
       const std::vector<SharedModuleInfo::ImportInfo>& imports =
           SharedModuleInfo::GetImports(extension);
       for (const auto& import_info : imports) {
-        import_ids.insert(import_info.extension_id);
+        affected_ids.insert(import_info.extension_id);
       }
     }
-    extension_ids.insert(import_ids.begin(), import_ids.end());
 
-    for (auto& extension_id : extension_ids) {
-      if (delayed_installs_.Contains(extension_id)) {
+    for (const auto& id : affected_ids) {
+      if (delayed_installs_.Contains(id)) {
         base::SingleThreadTaskRunner::GetCurrentDefault()->PostDelayedTask(
             FROM_HERE,
             base::BindOnce(
                 base::IgnoreResult(
                     &ExtensionService::FinishDelayedInstallationIfReady),
-                AsExtensionServiceWeakPtr(), extension_id,
-                false /*install_immediately*/),
+                AsExtensionServiceWeakPtr(), id, false /*install_immediately*/),
             kUpdateIdleDelay);
       }
     }
   }
-  process_map->RemoveAllFromProcess(host->GetID());
+  process_map->Remove(host->GetID());
 }
 
 int ExtensionService::GetDisableReasonsOnInstalled(const Extension* extension) {

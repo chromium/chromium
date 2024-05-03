@@ -308,13 +308,12 @@ void MemoryDetails::CollectChildInfoOnUIThread() {
       int rph_id = render_process_host->GetID();
       process_is_for_extensions = process_map->Contains(rph_id);
 
-      // For our purposes, don't count processes containing only hosted
-      // apps as extension processes. See also: crbug.com/102533.
-      for (auto& extension_id : process_map->GetExtensionsInProcess(rph_id)) {
-        const Extension* extension = extension_set->GetByID(extension_id);
-        if (extension && !extension->is_hosted_app()) {
+      // For our purposes, don't count processes running hosted apps as
+      // extension processes. See also: crbug.com/102533.
+      if (const Extension* extension =
+              process_map->GetEnabledExtensionByProcessID(rph_id)) {
+        if (!extension->is_hosted_app()) {
           process.renderer_type = ProcessMemoryInformation::RENDERER_EXTENSION;
-          break;
         }
       }
     }

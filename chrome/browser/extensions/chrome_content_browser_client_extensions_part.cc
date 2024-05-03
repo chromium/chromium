@@ -836,10 +836,8 @@ void ChromeContentBrowserClientExtensionsPart::
     return;
   }
 
-  auto& process_map = CHECK_DEREF(ProcessMap::Get(process.GetBrowserContext()));
-  std::set<ExtensionId> extensions =
-      process_map.GetExtensionsInProcess(process.GetID());
-  if (!extensions.empty()) {
+  if (auto* extension = ProcessMap::Get(process.GetBrowserContext())
+                            ->GetEnabledExtensionByProcessID(process.GetID())) {
     command_line->AppendSwitch(switches::kExtensionProcess);
 
     // Blink usually initializes the main-thread Isolate in background mode for
@@ -848,29 +846,16 @@ void ChromeContentBrowserClientExtensionsPart::
     // visibility, and benefit from being started in foreground mode. We can
     // safely start those processes in foreground mode, knowing that
     // RenderThreadImpl::OnRendererHidden will be called when appropriate.
-    const std::vector<std::string>& mimehandler_extensions =
-        MimeTypesHandler::GetMIMETypeAllowlist();
-    for (const std::string& extension : mimehandler_extensions) {
-      if (extensions.contains(extension)) {
-        command_line->AppendSwitch(::switches::kInitIsolateAsForeground);
-        break;
-      }
+    if (base::Contains(MimeTypesHandler::GetMIMETypeAllowlist(),
+                       extension->id())) {
+      command_line->AppendSwitch(::switches::kInitIsolateAsForeground);
     }
+
+    // Direct Sockets API is enabled for Chrome Apps with "sockets" permission.
     if (base::FeatureList::IsEnabled(kDirectSocketsInChromeApps) &&
-        extensions.size() == 1) {
-      // Chrome Apps never share their processes with other apps or extensions.
-      // With this precondition, it's sufficient to check that there's exactly
-      // one extension running in the current process, and that this extension
-      // is indeed a Chrome App with "sockets" permission to enable the Direct
-      // Sockets API.
-      auto* extension = ExtensionRegistry::Get(process.GetBrowserContext())
-                            ->enabled_extensions()
-                            .GetByID(*extensions.begin());
-      if (extension && extension->is_platform_app() &&
-          SocketsManifestData::Get(extension)) {
-        command_line->AppendSwitchASCII(::switches::kEnableBlinkFeatures,
-                                        "DirectSockets");
-      }
+        extension->is_platform_app() && SocketsManifestData::Get(extension)) {
+      command_line->AppendSwitchASCII(::switches::kEnableBlinkFeatures,
+                                      "DirectSockets");
     }
   }
 }
