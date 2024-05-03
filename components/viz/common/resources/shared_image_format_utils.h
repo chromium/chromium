@@ -29,6 +29,7 @@ namespace viz {
 class ContextProviderCommandBuffer;
 class TestContextProvider;
 class TestInProcessContextProvider;
+class TestSharedImageInterface;
 
 // Returns the closest SkColorType for a given single planar `format`.
 //
@@ -106,6 +107,7 @@ class COMPONENT_EXPORT(VIZ_SHARED_IMAGE_FORMAT)
  private:
   friend class gpu::ClientSharedImage;
   friend class gpu::SharedImageFormatToBufferFormatRestrictedUtilsAccessor;
+  friend class TestSharedImageInterface;
 
   // BufferFormat is being transitioned out of SharedImage code (to use
   // SharedImageFormat instead). Refrain from using this function or preferably
