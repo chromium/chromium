@@ -17739,6 +17739,7 @@ from previous Chrome versions.
   <int value="-1557747651" label="FractionalScrollOffsets:disabled"/>
   <int value="-1557527869" label="LoadingWithMojo:disabled"/>
   <int value="-1556805396" label="ScreenshotsForAndroidV2:enabled"/>
+  <int value="-1556654570" label="tab-groups-save-v2:enabled"/>
   <int value="-1555616901" label="ShoppingListTrackByDefault:disabled"/>
   <int value="-1555375841" label="FedCmRpContext:enabled"/>
   <int value="-1554921134"
@@ -26110,6 +26111,7 @@ from previous Chrome versions.
       label="enable-experimental-accessibility-dictation-listening"/>
   <int value="2137571271" label="MediaSessionWebRTC:enabled"/>
   <int value="2137599770" label="enable-win32k-renderer-lockdown"/>
+  <int value="2137726794" label="tab-groups-save-v2:disabled"/>
   <int value="2138146331" label="OmniboxVoiceSearchAlwaysVisible:enabled"/>
   <int value="2138431623" label="GlobalMediaControlsCrOSUpdatedUI:disabled"/>
   <int value="2138744939" label="ScreenSaverDuration:disabled"/>

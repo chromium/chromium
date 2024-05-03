@@ -1953,6 +1953,10 @@ extern const char kTabAndLinkDragDropDescription[];
 extern const char kCommerceDeveloperName[];
 extern const char kCommerceDeveloperDescription[];
 
+extern const char kTabGroupsSaveV2Id[];
+extern const char kTabGroupsSaveV2Name[];
+extern const char kTabGroupsSaveV2Description[];
+
 extern const char kTabGroupsSaveUIUpdateId[];
 extern const char kTabGroupsSaveUIUpdateName[];
 extern const char kTabGroupsSaveUIUpdateDescription[];

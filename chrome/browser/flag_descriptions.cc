@@ -3329,6 +3329,12 @@ const char kCommerceDeveloperName[] = "Commerce developer mode";
 const char kCommerceDeveloperDescription[] =
     "Allows users in the allowlist to enter the developer mode";
 
+const char kTabGroupsSaveV2Id[] = "tab-groups-save-v2";
+const char kTabGroupsSaveV2Name[] = "Tab Groups Save and Sync V2";
+const char kTabGroupsSaveV2Description[] =
+    "Enables saving and recalling of tab groups but enhanced. Highly "
+    "experimental.";
+
 const char kTabGroupsSaveUIUpdateId[] = "tab-groups-save-ui-update";
 const char kTabGroupsSaveUIUpdateName[] = "Tab Groups Save UI Update";
 const char kTabGroupsSaveUIUpdateDescription[] =

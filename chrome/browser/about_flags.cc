@@ -6496,6 +6496,11 @@ const FeatureEntry kFeatureEntries[] = {
      FEATURE_VALUE_TYPE(features::kQuickSettingsPWANotifications)},
 #endif  // BUILDFLAG(IS_CHROMEOS_ASH)
 
+    {flag_descriptions::kTabGroupsSaveV2Id,
+     flag_descriptions::kTabGroupsSaveV2Name,
+     flag_descriptions::kTabGroupsSaveV2Description, kOsDesktop,
+     FEATURE_VALUE_TYPE(tab_groups::kTabGroupsSaveV2)},
+
     {flag_descriptions::kTabGroupsSaveUIUpdateId,
      flag_descriptions::kTabGroupsSaveUIUpdateName,
      flag_descriptions::kTabGroupsSaveUIUpdateDescription, kOsDesktop,
