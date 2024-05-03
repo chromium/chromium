@@ -1898,7 +1898,7 @@ TEST_F(AutocompleteControllerTest, ExtraHeaders) {
         std::make_unique<TemplateURLRef::SearchTermsArgs>(u"search term");
 
     controller_.SetMatchDestinationURL(&match);
-    EXPECT_EQ(match.extra_headers, "X-Omnibox-Gemini:search term");
+    EXPECT_EQ(match.extra_headers, "X-Omnibox-Gemini:search%20term");
     EXPECT_EQ(match.destination_url, "https://gemini.google.com/prompt");
   }
   {
@@ -1912,21 +1912,46 @@ TEST_F(AutocompleteControllerTest, ExtraHeaders) {
     auto match = CreateStarterPackMatch(u"@gemini");
     // search_terms_args need to have been set.
     match.search_terms_args =
-        std::make_unique<TemplateURLRef::SearchTermsArgs>(u"search term");
+        std::make_unique<TemplateURLRef::SearchTermsArgs>(u"search term?");
 
     controller_.SetMatchDestinationURL(&match);
-    EXPECT_EQ(match.extra_headers, "X-Omnibox-Gemini:search term");
+    EXPECT_EQ(match.extra_headers, "X-Omnibox-Gemini:search%20term%3F");
     EXPECT_EQ(match.destination_url, "https://example.com/");
   }
   {
-    SCOPED_TRACE("@gemini starter pack with invalid input");
+    SCOPED_TRACE("@gemini starter pack with invalid non-encoded input");
     auto match = CreateStarterPackMatch(u"@gemini");
     // search_terms_args need to have been set.
     match.search_terms_args =
         std::make_unique<TemplateURLRef::SearchTermsArgs>(u"search term\n");
 
     controller_.SetMatchDestinationURL(&match);
-    EXPECT_EQ(match.extra_headers, "");
+    EXPECT_EQ(match.extra_headers, "X-Omnibox-Gemini:search%20term%0A");
+    EXPECT_EQ(match.destination_url, "https://gemini.google.com/prompt");
+  }
+  {
+    SCOPED_TRACE("@gemini starter pack with url in the input");
+    auto match = CreateStarterPackMatch(u"@gemini");
+    // search_terms_args need to have been set.
+    match.search_terms_args = std::make_unique<TemplateURLRef::SearchTermsArgs>(
+        u"what is http://example.com for?");
+
+    controller_.SetMatchDestinationURL(&match);
+    EXPECT_EQ(match.extra_headers,
+              "X-Omnibox-Gemini:what%20is%20http%3A%2F%2Fexample.com%20for%3F");
+    EXPECT_EQ(match.destination_url, "https://gemini.google.com/prompt");
+  }
+  {
+    SCOPED_TRACE("@gemini starter pack with non-ascii input");
+    auto match = CreateStarterPackMatch(u"@gemini");
+    // search_terms_args need to have been set.
+    match.search_terms_args =
+        std::make_unique<TemplateURLRef::SearchTermsArgs>(u"こんにちは\n");
+
+    controller_.SetMatchDestinationURL(&match);
+    EXPECT_EQ(
+        match.extra_headers,
+        "X-Omnibox-Gemini:%E3%81%93%E3%82%93%E3%81%AB%E3%81%A1%E3%81%AF%0A");
     EXPECT_EQ(match.destination_url, "https://gemini.google.com/prompt");
   }
   {
