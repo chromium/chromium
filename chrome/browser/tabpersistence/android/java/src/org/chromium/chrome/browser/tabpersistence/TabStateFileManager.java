@@ -406,6 +406,11 @@ public class TabStateFileManager {
                         "Failed to read tabGroupId token from tab state."
                                 + " Assuming tabGroupId is null");
             }
+            // If TabState was restored using legacy format and the FlatBuffer flag is on, that
+            // indicates the TabState hasn't been migrated yet and should be.
+            if (isFlatBufferSchemaEnabled()) {
+                tabState.shouldMigrate = true;
+            }
             return tabState;
         } finally {
             StreamUtil.closeQuietly(stream);
@@ -434,10 +439,20 @@ public class TabStateFileManager {
         // FlatBuffers safely.
         saveStateInternal(
                 getTabStateFile(directory, tabId, isEncrypted, false), tabState, isEncrypted);
-        if (isFlatBufferSchemaEnabled()) {
-            saveStateInternal(
-                    getTabStateFile(directory, tabId, isEncrypted, true), tabState, isEncrypted);
-        }
+    }
+
+    /**
+     * Migrate TabState to new FlatBuffer based format
+     *
+     * @param directory directory TabState files are stored in
+     * @param tabState TabState to store in a file
+     * @param tabId identifier for the Tab
+     * @param isEncrypted whether the stored Tab is encrypted or not
+     */
+    public static void migrateTabState(
+            File directory, TabState tabState, int tabId, boolean isEncrypted) {
+        saveStateInternal(
+                getTabStateFile(directory, tabId, isEncrypted, true), tabState, isEncrypted);
     }
 
     /**

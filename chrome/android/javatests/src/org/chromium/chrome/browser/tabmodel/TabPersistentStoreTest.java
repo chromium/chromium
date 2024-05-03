@@ -33,8 +33,12 @@ import org.chromium.base.task.AsyncTask;
 import org.chromium.base.test.util.AdvancedMockContext;
 import org.chromium.base.test.util.CallbackHelper;
 import org.chromium.base.test.util.CommandLineFlags;
+import org.chromium.base.test.util.Criteria;
+import org.chromium.base.test.util.CriteriaHelper;
 import org.chromium.base.test.util.Feature;
 import org.chromium.base.test.util.Features;
+import org.chromium.base.test.util.Features.EnableFeatures;
+import org.chromium.base.test.util.Matchers;
 import org.chromium.base.test.util.MinAndroidSdkLevel;
 import org.chromium.chrome.browser.app.ChromeActivity;
 import org.chromium.chrome.browser.app.metrics.LaunchCauseMetrics;
@@ -44,6 +48,7 @@ import org.chromium.chrome.browser.app.tabmodel.TabModelOrchestrator;
 import org.chromium.chrome.browser.app.tabmodel.TabWindowManagerSingleton;
 import org.chromium.chrome.browser.compositor.overlays.strip.StripLayoutHelper;
 import org.chromium.chrome.browser.flags.ActivityType;
+import org.chromium.chrome.browser.flags.ChromeFeatureList;
 import org.chromium.chrome.browser.flags.ChromeSwitches;
 import org.chromium.chrome.browser.init.ActivityProfileProvider;
 import org.chromium.chrome.browser.preferences.ChromePreferenceKeys;
@@ -58,6 +63,7 @@ import org.chromium.chrome.browser.tab.TabSelectionType;
 import org.chromium.chrome.browser.tab.TabState;
 import org.chromium.chrome.browser.tab.TabStateAttributes;
 import org.chromium.chrome.browser.tab.TabStateExtractor;
+import org.chromium.chrome.browser.tab.WebContentsState;
 import org.chromium.chrome.browser.tab.state.ShoppingPersistedTabData;
 import org.chromium.chrome.browser.tab_ui.TabContentManager;
 import org.chromium.chrome.browser.tabmodel.NextTabPolicy.NextTabPolicySupplier;
@@ -77,11 +83,15 @@ import org.chromium.chrome.test.util.browser.tabmodel.MockTabCreatorManager;
 import org.chromium.chrome.test.util.browser.tabmodel.MockTabModelSelector;
 import org.chromium.content_public.browser.test.util.TestThreadUtils;
 
+import java.io.File;
+import java.nio.ByteBuffer;
 import java.util.ArrayList;
+import java.util.Arrays;
 import java.util.List;
 import java.util.concurrent.Callable;
 import java.util.concurrent.ExecutionException;
 import java.util.concurrent.TimeoutException;
+import java.util.stream.Collectors;
 
 /** Tests for the TabPersistentStore. */
 
@@ -316,6 +326,7 @@ public class TabPersistentStoreTest {
 
     @Before
     public void setUp() {
+        TabPersistentStore.resetDeferredStartupCompleteForTesting();
         TestThreadUtils.runOnUiThreadBlocking(
                 () -> {
                     mChromeActivity =
@@ -490,6 +501,129 @@ public class TabPersistentStoreTest {
             int tabId = info.contents[i].tabId;
             Assert.assertNotNull(regularCreator.created.get(tabId));
         }
+    }
+
+    @Test
+    @SmallTest
+    @Feature("TabPersistentStore")
+    @EnableFeatures(ChromeFeatureList.TAB_STATE_FLATBUFFER)
+    public void testFlatBufferMigration() throws Exception {
+        Pair<TabPersistentStore, Tab[]> storeAndRestoredTabs = createStoreAndRestoreTabs();
+        TabPersistentStore store = storeAndRestoredTabs.first;
+        Tab[] tabs = storeAndRestoredTabs.second;
+        // Wait for legacy TabState files to be cleaned up. This cleanup path covers FlatBuffer
+        // files as well so if we're not careful we'll have a race condition where a FlatBuffer file
+        // is deleted after it's created and before it's verified.
+        for (final Tab tab : tabs) {
+            CriteriaHelper.pollInstrumentationThread(
+                    () -> {
+                        File legacyTabStateFile =
+                                TabStateFileManager.getTabStateFile(
+                                        mMockDirectory.getDataDirectory(),
+                                        /* tabId= */ tab.getId(),
+                                        /* encrypted= */ tab.isIncognito(),
+                                        /* isFlatBuffer= */ false);
+                        Criteria.checkThat(legacyTabStateFile.exists(), Matchers.is(false));
+                    });
+        }
+        // All Tabs should be a candidate for the FlatBuffer migration as they were restored
+        // using legacy TabState.
+        Assert.assertEquals(tabs.length, store.getTabsToMigrateForTesting().size());
+        TabPersistentStore.onDeferredStartup();
+        setAllTabStatesForTesting(tabs);
+
+        CallbackHelper helper = new CallbackHelper();
+        TestThreadUtils.runOnUiThreadBlocking(
+                () -> {
+                    // Saving 1 Tab will trigger 5 migrations.
+                    store.addTabToSaveQueue(tabs[0]);
+                    store.saveNextTab();
+                    helper.notifyCalled();
+                });
+        helper.waitForCallback(0);
+
+        CriteriaHelper.pollUiThread(
+                () -> {
+                    Criteria.checkThat(
+                            store.getTabsToMigrateForTesting().size(),
+                            Matchers.is(tabs.length - TabPersistentStore.sMaxMigrationsPerSave));
+                    Criteria.checkThat(store.getMigrateTabTaskForTesting(), Matchers.nullValue());
+                });
+        // First 5 (= sMaxMigrationsPerSave) Tabs should be migrated.
+        for (Tab tab :
+                Arrays.stream(tabs)
+                        .limit(TabPersistentStore.sMaxMigrationsPerSave)
+                        .collect(Collectors.toList())) {
+            File flatBufferFile =
+                    TabStateFileManager.getTabStateFile(
+                            mMockDirectory.getDataDirectory(),
+                            /* tabId= */ tab.getId(),
+                            /* encrypted= */ false,
+                            /* isFlatBuffer= */ true);
+            Assert.assertTrue(
+                    "FlatBuffer file should exist " + flatBufferFile, flatBufferFile.exists());
+        }
+    }
+
+    private Pair<TabPersistentStore, Tab[]> createStoreAndRestoreTabs() throws Exception {
+        TabModelMetaDataInfo info = TestTabModelDirectory.TAB_MODEL_METADATA_V4;
+        int numExpectedTabs = info.contents.length;
+        mMockDirectory.writeTabModelFiles(info, true);
+        MockTabModelSelector mockSelector =
+                TestThreadUtils.runOnUiThreadBlocking(
+                        () -> {
+                            Profile profile = ProfileManager.getLastUsedRegularProfile();
+                            return new MockTabModelSelector(
+                                    profile, profile.getPrimaryOTRProfile(true), 0, 0, null);
+                        });
+        MockTabCreatorManager mockManager = new MockTabCreatorManager(mockSelector);
+        MockTabCreator regularCreator = mockManager.getTabCreator(false);
+        MockTabPersistentStoreObserver mockObserver = new MockTabPersistentStoreObserver();
+        TabPersistencePolicy persistencePolicy = createTabPersistencePolicy(0, false, true);
+        final TabPersistentStore store =
+                buildTabPersistentStore(persistencePolicy, mockSelector, mockManager);
+        TestThreadUtils.runOnUiThreadBlocking(
+                () -> {
+                    store.addObserver(mockObserver);
+                    store.loadState(/* ignoreIncognitoFiles */ false);
+                });
+        mockObserver.initializedCallback.waitForCallback(0, 1);
+        mockObserver.detailsReadCallback.waitForCallback(0, numExpectedTabs);
+        TestThreadUtils.runOnUiThreadBlocking(
+                () -> {
+                    store.restoreTabs(true);
+                });
+        regularCreator.callback.waitForCallback(0, 1);
+        mockObserver.stateLoadedCallback.waitForCallback(0, 1);
+        Tab[] restoredTabs = new Tab[info.numRegularTabs];
+        for (int i = 0; i < info.numRegularTabs; i++) {
+            restoredTabs[i] = mockSelector.getModel(false).getTabAt(i);
+        }
+        return Pair.create(store, restoredTabs);
+    }
+
+    /**
+     * TabStateExtractor expects a Tab to be initialized in order to acquire a TabState. In the
+     * absence of this, TabStateExtractor#from has an early return which can be set via
+     * setTabStateForTesting. This method creates a dummy TabState for each Tab to activate this
+     * early return.
+     *
+     * @param tabs {@link Tab}s to setTabStateForTesting for
+     */
+    private static void setAllTabStatesForTesting(Tab[] tabs) throws TimeoutException {
+        CallbackHelper helper = new CallbackHelper();
+        TestThreadUtils.runOnUiThreadBlocking(
+                () -> {
+                    for (Tab tab : tabs) {
+                        TabState tabState = new TabState();
+                        ByteBuffer buffer = ByteBuffer.allocateDirect(4);
+                        buffer.put(new byte[] {1, 2, 3, 4});
+                        tabState.contentsState = new WebContentsState(buffer);
+                        TabStateExtractor.setTabStateForTesting(tab.getId(), tabState);
+                    }
+                    helper.notifyCalled();
+                });
+        helper.waitForCallback(0);
     }
 
     @Test

@@ -54,6 +54,10 @@ public class TabState {
 
     public long lastNavigationCommittedTimestampMillis = TIMESTAMP_NOT_SET;
 
+    // Flag to signal TabState should be migrated to new FlatBuffer format.
+    // This field is not persisted on disk.
+    public boolean shouldMigrate;
+
     public boolean isIncognito() {
         return isIncognito;
     }
