@@ -25,6 +25,8 @@ COMPONENT_EXPORT(VR_FEATURES) BASE_DECLARE_FEATURE(kWebXrSharedBuffers);
 // Note that this feature can be overridden by logic contained within
 // `IsOpenXrEnabled` and therefore should generally not be queried directly.
 COMPONENT_EXPORT(VR_FEATURES) BASE_DECLARE_FEATURE(kOpenXR);
+// Note that this feature can be overridden by logic contained within
+// `IsOpenXrArEnabled` and therefore should generally not be queried directly.
 COMPONENT_EXPORT(VR_FEATURES)
 BASE_DECLARE_FEATURE(kOpenXrExtendedFeatureSupport);
 COMPONENT_EXPORT(VR_FEATURES) BASE_DECLARE_FEATURE(kOpenXRSharedImages);
@@ -36,6 +38,13 @@ BASE_DECLARE_FEATURE(kAllowOpenXrWithImmersiveFeature);
 // Android and the `kAllowOpenXrWithImmersiveFeature` flag, and should be
 // checked instead of a direct query on the kOpenXR feature being enabled.
 COMPONENT_EXPORT(VR_FEATURES) bool IsOpenXrEnabled();
+
+// Helper method to check if OpenXR AR should be enabled. It takes into account
+// both the `kOpenXrExtendedFeatureSupport` feature, as well as the state of the
+// system features on Android and the `kAllowOpenXrWithImmersiveFeature` flag,
+// and should be checked instead of a direct query on the kOpenXR feature being
+// enabled.
+COMPONENT_EXPORT(VR_FEATURES) bool IsOpenXrArEnabled();
 #endif  // ENABLE_OPENXR
 
 }  // namespace device::features

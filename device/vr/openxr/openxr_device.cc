@@ -84,7 +84,7 @@ OpenXrDevice::OpenXrDevice(
         mojom::XRSessionFeature::LAYERS);
 
   // Only support hit test if the feature flag is enabled.
-  if (base::FeatureList::IsEnabled(features::kOpenXrExtendedFeatureSupport)) {
+  if (device::features::IsOpenXrArEnabled()) {
     device_data.supported_features.emplace_back(
         mojom::XRSessionFeature::HIT_TEST);
   }

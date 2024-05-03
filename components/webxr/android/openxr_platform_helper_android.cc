@@ -83,8 +83,7 @@ bool OpenXrPlatformHelperAndroid::Initialize() {
 
 bool OpenXrPlatformHelperAndroid::CheckHardwareSupport(
     content::WebContents* web_contents) {
-  if (!base::FeatureList::IsEnabled(
-          device::features::kOpenXrExtendedFeatureSupport)) {
+  if (!device::features::IsOpenXrArEnabled()) {
     return true;
   }
 

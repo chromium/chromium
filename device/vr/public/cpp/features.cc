@@ -81,13 +81,17 @@ BASE_FEATURE(kAllowOpenXrWithImmersiveFeature,
              "AllowOpenXrWithImmersiveFeature",
              base::FEATURE_DISABLED_BY_DEFAULT);
 
-bool IsOpenXrEnabled() {
+// Helper for enabling a feature if either the base flag is enabled or if the
+// device has an immersive feature that we will allow to override the default
+// state.
+bool IsImmersiveFeatureEnabled(const base::Feature& base_feature,
+                               const base::Feature& immersive_feature_guard) {
   // Generally a reboot is required to change the state of a feature; so we
   // use statics rather than const's here to give a slight optimization,
   // especially in the case of `has_immersive_feature`.
-  static bool feature_enabled = base::FeatureList::IsEnabled(kOpenXR);
+  static bool feature_enabled = base::FeatureList::IsEnabled(base_feature);
   static bool allow_with_immersive_feature =
-      base::FeatureList::IsEnabled(kAllowOpenXrWithImmersiveFeature);
+      base::FeatureList::IsEnabled(immersive_feature_guard);
 #if BUILDFLAG(IS_ANDROID)
   static bool has_immersive_feature = Java_XrFeatureStatus_hasImmersiveFeature(
       base::android::AttachCurrentThread());
@@ -97,6 +101,16 @@ bool IsOpenXrEnabled() {
 
   return feature_enabled ||
          (allow_with_immersive_feature && has_immersive_feature);
+}
+
+bool IsOpenXrEnabled() {
+  return IsImmersiveFeatureEnabled(kOpenXR, kAllowOpenXrWithImmersiveFeature);
+}
+
+bool IsOpenXrArEnabled() {
+  return IsOpenXrEnabled() &&
+         IsImmersiveFeatureEnabled(kOpenXrExtendedFeatureSupport,
+                                   kAllowOpenXrWithImmersiveFeature);
 }
 
 #endif  // ENABLE_OPENXR
