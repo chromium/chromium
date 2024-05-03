@@ -2826,11 +2826,6 @@ source_set("browser") {
       "speech/tts_win.cc",
       "utility_sandbox_delegate_win.cc",
     ]
-    defines += [
-      # This prevents the inclusion of atlhost.h which paired
-      # with the windows 8 sdk it does the wrong thing.
-      "__ATLHOST_H__",
-    ]
     deps += [
       "//components/app_launch_prefetch",
       "//content/utility:delegate_data",
