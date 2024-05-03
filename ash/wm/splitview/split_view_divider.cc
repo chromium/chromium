@@ -44,11 +44,9 @@ gfx::Range GetDividerPositionAllowedRange(const aura::Window::Windows windows) {
   aura::Window* primary_window = nullptr;
   aura::Window* secondary_window = nullptr;
   for (auto window : windows) {
-    if (WindowState::Get(window)->GetStateType() ==
-        chromeos::WindowStateType::kPrimarySnapped) {
+    if (IsPhysicalLeftOrTop(window)) {
       primary_window = window;
-    } else if (WindowState::Get(window)->GetStateType() ==
-               chromeos::WindowStateType::kSecondarySnapped) {
+    } else {
       secondary_window = window;
     }
   }
@@ -173,8 +171,20 @@ void SplitViewDivider::SetDividerPosition(int divider_position) {
 
 void SplitViewDivider::UpdateDividerPosition(
     const gfx::Point& location_in_screen) {
+  const bool horizontal = IsLayoutHorizontal(GetRootWindow());
+  if (!display::Screen::GetScreen()->InTabletMode()) {
+    // In clamshell mode, we try to keep the center point of the divider as in
+    // sync with the mouse event location as possible. `SetDividerPosition()`
+    // will clamp the position between the windows' minimum sizes.
+    SetDividerPosition(
+        horizontal
+            ? location_in_screen.x() - kSplitviewDividerShortSideLength / 2
+            : location_in_screen.y() - kSplitviewDividerShortSideLength / 2);
+    return;
+  }
+
   int potential_divider_position = divider_position_;
-  if (IsLayoutHorizontal(GetRootWindow())) {
+  if (horizontal) {
     potential_divider_position +=
         location_in_screen.x() - previous_event_location_.x();
   } else {

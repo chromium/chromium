@@ -3159,10 +3159,8 @@ TEST_F(SnapGroupDividerTest, SnapGroupDividerEnlargedHitArea) {
   event_generator->MoveMouseTo(hover_location + move_vector);
   event_generator->ReleaseLeftButton();
   EXPECT_FALSE(split_view_controller()->InSplitViewMode());
-  // TODO(michelefan): Fix the snapped window bounds not correctly configured
-  // issue while dragging with divider.
-  EXPECT_NEAR(snap_group_divider_bounds_in_screen().CenterPoint().x(),
-              (cached_divider_center_point + move_vector).x(), /*abs_error=*/1);
+  EXPECT_EQ(hover_location + move_vector,
+            snap_group_divider_bounds_in_screen().CenterPoint());
 }
 
 // TODO(b/326481241): Currently it's not possible to swap windows since
@@ -3230,6 +3228,69 @@ TEST_F(SnapGroupTest, DragWindowOutOfSnapGroupToAnotherDisplay) {
                                           display1_right_half);
 
   EXPECT_EQ(display1_left_half, w2->GetBoundsInScreen());
+}
+
+// Tests that when the cursor is moved significantly past the window sizes
+// then moved the other direction, we don't update bounds.
+TEST_F(SnapGroupDividerTest, ResizeCursor) {
+  const int min_width = 300;
+  std::unique_ptr<aura::Window> w1(
+      CreateAppWindowWithMinSize(gfx::Size(min_width, min_width)));
+  std::unique_ptr<aura::Window> w2(CreateAppWindow());
+  SnapTwoTestWindows(w1.get(), w2.get(), /*horizontal=*/true);
+  auto* snap_group_divider = SnapGroupController::Get()
+                                 ->GetSnapGroupForGivenWindow(w1.get())
+                                 ->snap_group_divider();
+  for (const auto& display_specs : {"800x600", "600x800"}) {
+    UpdateDisplay(display_specs);
+    const auto display = display::Screen::GetScreen()->GetPrimaryDisplay();
+    // Press and move the mouse left without releasing, past `w1`'s min width.
+    // Test we don't update bounds beyond `w1`'s min width.
+    auto* event_generator = GetEventGenerator();
+    const gfx::Point divider_point(
+        snap_group_divider->GetDividerBoundsInScreen(/*is_dragging=*/false)
+            .CenterPoint());
+    event_generator->set_current_screen_location(divider_point);
+    event_generator->PressLeftButton();
+    const bool horizontal = IsLayoutHorizontal(display);
+    gfx::Point resize_point1 = horizontal ? gfx::Point(10, divider_point.y())
+                                          : gfx::Point(divider_point.x(), 10);
+    event_generator->MoveMouseTo(resize_point1, /*count=*/2);
+    ASSERT_TRUE(snap_group_divider->is_resizing_with_divider());
+    EXPECT_EQ(min_width, GetWindowLength(w1.get(), horizontal));
+    UnionBoundsEqualToWorkAreaBounds(w1.get(), w2.get(), snap_group_divider);
+
+    // Move the mouse right but still beyond `w1`'s min width. Test we don't
+    // update bounds yet.
+    const gfx::Point resize_point2 = horizontal
+                                         ? gfx::Point(150, divider_point.y())
+                                         : gfx::Point(divider_point.x(), 150);
+    event_generator->MoveMouseTo(resize_point2, /*count=*/2);
+    EXPECT_EQ(min_width, GetWindowLength(w1.get(), horizontal));
+    UnionBoundsEqualToWorkAreaBounds(w1.get(), w2.get(), snap_group_divider);
+
+    // Move the mouse over `w1`'s min width. Test we update bounds now.
+    const gfx::Point resize_point3 =
+        horizontal ? gfx::Point(min_width, divider_point.y())
+                   : gfx::Point(divider_point.x(), min_width);
+    event_generator->MoveMouseTo(resize_point3,
+                                 /*count=*/2);
+    EXPECT_EQ(min_width, GetWindowLength(w1.get(), horizontal));
+    UnionBoundsEqualToWorkAreaBounds(w1.get(), w2.get(), snap_group_divider);
+
+    // Move the mouse past `w1`'s min width. Test we update bounds now.
+    const gfx::Point resize_point4 = horizontal
+                                         ? gfx::Point(600, divider_point.y())
+                                         : gfx::Point(divider_point.x(), 600);
+    event_generator->MoveMouseTo(resize_point4,
+                                 /*count=*/2);
+    EXPECT_EQ(600,
+              horizontal
+                  ? snap_group_divider_bounds_in_screen().CenterPoint().x()
+                  : snap_group_divider_bounds_in_screen().CenterPoint().y());
+    UnionBoundsEqualToWorkAreaBounds(w1.get(), w2.get(), snap_group_divider);
+    event_generator->ReleaseLeftButton();
+  }
 }
 
 // -----------------------------------------------------------------------------
@@ -6308,6 +6369,52 @@ TEST_F(SnapGroupMultiDisplayTest, AddRemovePrimaryDisplay) {
                                    group1->snap_group_divider());
   UnionBoundsEqualToWorkAreaBounds(w3.get(), w4.get(),
                                    group2->snap_group_divider());
+}
+
+// Tests that resizing via the cursor between displays works correctly.
+TEST_F(SnapGroupDividerTest, ResizeCursorBetweenDisplays) {
+  UpdateDisplay("800x700,801+0-800x700");
+  const int min_width = 300;
+  std::unique_ptr<aura::Window> w1(
+      CreateAppWindowWithMinSize(gfx::Size(min_width, 0)));
+  std::unique_ptr<aura::Window> w2(
+      CreateAppWindowWithMinSize(gfx::Size(min_width, 0)));
+  SnapTwoTestWindows(w1.get(), w2.get(), /*horizontal=*/true);
+  auto* snap_group =
+      SnapGroupController::Get()->GetSnapGroupForGivenWindow(w1.get());
+  auto* snap_group_divider = snap_group->snap_group_divider();
+
+  // Press and move the mouse right, within `w1` and `w2` min widths. Test we
+  // update bounds.
+  auto* event_generator = GetEventGenerator();
+  const gfx::Point divider_point(
+      snap_group_divider->GetDividerBoundsInScreen(/*is_dragging=*/false)
+          .CenterPoint());
+  event_generator->set_current_screen_location(divider_point);
+  event_generator->PressLeftButton();
+  event_generator->MoveMouseTo(gfx::Point(350, divider_point.y()), /*count=*/2);
+  ASSERT_TRUE(snap_group_divider->is_resizing_with_divider());
+  EXPECT_EQ(350, snap_group_divider_bounds_in_screen().CenterPoint().x());
+  UnionBoundsEqualToWorkAreaBounds(w1.get(), w2.get(), snap_group_divider);
+
+  // Move the mouse right, past `w2`'s min width and onto display #2. Test we
+  // don't move beyond `w2`'s min width.
+  event_generator->MoveMouseTo(gfx::Point(810, divider_point.y()), /*count=*/2);
+  EXPECT_EQ(min_width, w2->GetBoundsInScreen().width());
+  UnionBoundsEqualToWorkAreaBounds(w1.get(), w2.get(), snap_group_divider);
+
+  // Move the mouse left, back onto display #1 but still beyond `w2`'s min
+  // width. Test we don't move beyond `w2`'s min width.
+  event_generator->MoveMouseTo(gfx::Point(799, divider_point.y()),
+                               /*count=*/2);
+  EXPECT_EQ(min_width, w2->GetBoundsInScreen().width());
+  UnionBoundsEqualToWorkAreaBounds(w1.get(), w2.get(), snap_group_divider);
+
+  // Move the mouse left, back within range. Test we update bounds now.
+  event_generator->MoveMouseTo(gfx::Point(350, divider_point.y()), /*count=*/2);
+  EXPECT_EQ(350, snap_group_divider_bounds_in_screen().CenterPoint().x());
+  UnionBoundsEqualToWorkAreaBounds(w1.get(), w2.get(), snap_group_divider);
+  event_generator->ReleaseLeftButton();
 }
 
 // -----------------------------------------------------------------------------

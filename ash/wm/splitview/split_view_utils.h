@@ -133,7 +133,7 @@ void DoSplitviewClipRectAnimation(
 bool IsPhysicalLeftOrTop(aura::Window* window);
 
 // Returns the length of the window according to the screen orientation.
-int GetWindowLength(aura::Window* window, bool horizontal);
+ASH_EXPORT int GetWindowLength(aura::Window* window, bool horizontal);
 
 // Transforms `window` based on whether it is the primary or secondary window
 // and its distance from `divider_position` during split view resizing.

@@ -388,6 +388,7 @@ int GetWindowLength(aura::Window* window, bool horizontal) {
 bool IsPhysicalLeftOrTop(aura::Window* window) {
   chromeos::WindowStateType state_type =
       WindowState::Get(window)->GetStateType();
+  CHECK(chromeos::IsSnappedWindowStateType(state_type));
   if (IsLayoutPrimary(window)) {
     return state_type == chromeos::WindowStateType::kPrimarySnapped;
   }
