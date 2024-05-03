@@ -133,9 +133,8 @@ public abstract class HubBaseStation extends Station {
         try {
             HUB_PANE_SWITCHER.onView().check(matches(isDisplayed()));
         } catch (NoMatchingViewException e) {
-            var throwable = new Throwable(
-                "Hub pane switcher is not visible to switch to " + paneId);
-            throw TravelException.newTripException(this, destinationStation, throwable);
+            throw TravelException.newTravelException(
+                    "Hub pane switcher is not visible to switch to " + paneId);
         }
 
         @StringRes

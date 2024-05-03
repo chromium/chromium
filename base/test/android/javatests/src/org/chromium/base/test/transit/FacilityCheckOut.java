@@ -78,6 +78,11 @@ class FacilityCheckOut extends Transition {
         Log.i(TAG, "Triggered exit from %s", mFacility);
     }
 
+    @Override
+    public String toDebugString() {
+        return "FacilityCheckOut for " + mFacility;
+    }
+
     private List<ConditionWait> createWaits() {
         ArrayList<ConditionWait> waits = new ArrayList<>();
         for (ElementInState element : mFacility.getElements().getElementsInState()) {
@@ -101,7 +106,7 @@ class FacilityCheckOut extends Transition {
         try {
             ConditionWaiter.waitFor(transitionConditions, mOptions);
         } catch (AssertionError e) {
-            throw TravelException.newExitFacilityException(mFacility, e);
+            throw newTransitionException(e);
         }
     }
 

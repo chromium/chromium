@@ -129,7 +129,7 @@ public class Trip extends Transition {
         try {
             ConditionWaiter.waitFor(mWaits, mOptions);
         } catch (AssertionError e) {
-            throw TravelException.newTripException(mOrigin, mDestination, e);
+            throw newTransitionException(e);
         }
 
         if (mOrigin != null) {
@@ -186,5 +186,12 @@ public class Trip extends Transition {
         }
 
         return waits;
+    }
+
+    @Override
+    public String toDebugString() {
+        return String.format(
+                "Trip from %s to %s",
+                mOrigin != null ? mOrigin.toString() : "<entry point>", mDestination);
     }
 }

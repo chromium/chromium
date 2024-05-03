@@ -77,6 +77,11 @@ class FacilityCheckIn extends Transition {
         Log.i(TAG, "Triggered entry into %s", mFacility);
     }
 
+    @Override
+    public String toDebugString() {
+        return "FacilityCheckIn for " + mFacility;
+    }
+
     private List<ConditionWait> createWaits() {
         ArrayList<ConditionWait> waits = new ArrayList<>();
 
@@ -101,7 +106,7 @@ class FacilityCheckIn extends Transition {
         try {
             ConditionWaiter.waitFor(transitionConditions, mOptions);
         } catch (AssertionError e) {
-            throw TravelException.newEnterFacilityException(mFacility, e);
+            throw newTransitionException(e);
         }
     }
 
