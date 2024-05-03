@@ -41,15 +41,19 @@ class OidcAuthResponseCaptureNavigationThrottle
   ~OidcAuthResponseCaptureNavigationThrottle() override;
 
   // content::NavigationThrottle implementation:
+  ThrottleCheckResult WillRedirectRequest() override;
   ThrottleCheckResult WillProcessResponse() override;
   const char* GetNameForLogging() override;
 
  private:
+  ThrottleCheckResult AttemptToTriggerInterception();
+
   // Starts OIDC registration and profile creation process if the response is
   // valid.
   void RegisterWithOidcTokens(ProfileManagementOicdTokens tokens,
                               data_decoder::DataDecoder::ValueOrError result);
 
+  bool interception_triggered_ = false;
   base::WeakPtrFactory<OidcAuthResponseCaptureNavigationThrottle>
       weak_ptr_factory_{this};
 };

@@ -33,6 +33,7 @@ constexpr char kEnrollmentFallbackPath[] = "/enroll/";
 // throttle.
 constexpr char kOidcEntraLoginHost[] = "login.microsoftonline.com";
 constexpr char kOidcEntraReprocessPath[] = "/common/reprocess";
+constexpr char kOidcEntraLoginPath[] = "/common/login";
 // For new identities, the redirection starts from the "Keep me signed in" page.
 constexpr char kOidcEntraKmsiPath[] = "/kmsi";
 
@@ -74,7 +75,8 @@ OidcAuthResponseCaptureNavigationThrottle::MaybeCreateThrottleFor(
   auto url = navigation_handle->GetURL();
   if (!(url.DomainIs(kOidcEntraLoginHost) &&
         (url.path() == kOidcEntraReprocessPath ||
-         url.path() == kOidcEntraKmsiPath))) {
+         url.path() == kOidcEntraKmsiPath ||
+         url.path() == kOidcEntraLoginPath))) {
     return nullptr;
   }
 
@@ -93,7 +95,20 @@ OidcAuthResponseCaptureNavigationThrottle::
     ~OidcAuthResponseCaptureNavigationThrottle() = default;
 
 content::NavigationThrottle::ThrottleCheckResult
+OidcAuthResponseCaptureNavigationThrottle::WillRedirectRequest() {
+  return AttemptToTriggerInterception();
+}
+
+content::NavigationThrottle::ThrottleCheckResult
 OidcAuthResponseCaptureNavigationThrottle::WillProcessResponse() {
+  return AttemptToTriggerInterception();
+}
+
+content::NavigationThrottle::ThrottleCheckResult
+OidcAuthResponseCaptureNavigationThrottle::AttemptToTriggerInterception() {
+  if (interception_triggered_) {
+    return PROCEED;
+  }
   auto url = navigation_handle()->GetURL();
 
   // This maybe some other redirect from MSFT Entra that isn't an OIDC profile
@@ -138,6 +153,7 @@ OidcAuthResponseCaptureNavigationThrottle::WillProcessResponse() {
     return CANCEL_AND_IGNORE;
   }
 
+  interception_triggered_ = true;
   data_decoder::DataDecoder::ParseJsonIsolated(
       json_payload,
       base::BindOnce(
