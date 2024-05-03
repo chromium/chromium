@@ -89,6 +89,9 @@ class WifiHotspotConnector : public NetworkStateHandlerObserver {
   void OnWifiConnectionSucceeded();
   void OnWifiConnectionFailed(const std::string& error_name);
 
+  void AssociateNetworks(std::string wifi_network_guid,
+                         std::string tether_network_guid);
+
   void SetTestDoubles(std::unique_ptr<base::OneShotTimer> test_timer,
                       base::Clock* test_clock,
                       scoped_refptr<base::TaskRunner> test_task_runner);
