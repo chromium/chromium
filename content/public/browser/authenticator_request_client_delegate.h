@@ -287,6 +287,9 @@ class CONTENT_EXPORT AuthenticatorRequestClientDelegate
   // |resident_key_requirement| (which is only set when provided, i.e. for
   // makeCredential calls) reflects the value requested by the site.
   //
+  // For a create() request, |user_name| contains the contents of the
+  // |user.name| field, which is set by the site.
+  //
   // caBLE (also called the "hybrid" transport) must be configured in order to
   // be functional and |pairings_from_extension| contains any caBLEv1 pairings
   // that have been provided in an extension to the WebAuthn get() call.
@@ -303,6 +306,7 @@ class CONTENT_EXPORT AuthenticatorRequestClientDelegate
       device::FidoRequestType request_type,
       std::optional<device::ResidentKeyRequirement> resident_key_requirement,
       device::UserVerificationRequirement user_verification_requirement,
+      std::optional<std::string_view> user_name,
       base::span<const device::CableDiscoveryData> pairings_from_extension,
       bool is_enclave_authenticator_available,
       device::FidoDiscoveryFactory* fido_discovery_factory);

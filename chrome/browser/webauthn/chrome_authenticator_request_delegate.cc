@@ -75,6 +75,7 @@
 #include "device/fido/enclave/constants.h"
 #include "device/fido/features.h"
 #include "device/fido/fido_authenticator.h"
+#include "device/fido/fido_constants.h"
 #include "device/fido/fido_discovery_factory.h"
 #include "device/fido/fido_request_handler_base.h"
 #include "device/fido/public_key_credential_descriptor.h"
@@ -831,6 +832,7 @@ void ChromeAuthenticatorRequestDelegate::ConfigureDiscoveries(
     device::FidoRequestType request_type,
     std::optional<device::ResidentKeyRequirement> resident_key_requirement,
     device::UserVerificationRequirement user_verification_requirement,
+    std::optional<std::string_view> user_name,
     base::span<const device::CableDiscoveryData> pairings_from_extension,
     bool is_enclave_authenticator_available,
     device::FidoDiscoveryFactory* discovery_factory) {
@@ -851,14 +853,21 @@ void ChromeAuthenticatorRequestDelegate::ConfigureDiscoveries(
         IdentityManagerFactory::GetForProfile(profile);
     const auto consent = signin::ConsentLevel::kSignin;
     if (identity_manager->HasPrimaryAccount(consent)) {
-      dialog_model_->account_name =
+      std::string account_name =
           identity_manager->GetPrimaryAccountInfo(consent).email;
-      enclave_controller_ = std::make_unique<GPMEnclaveController>(
-          GetRenderFrameHost(), dialog_model_.get(), rp_id, request_type,
-          user_verification_requirement);
-      if (pending_trusted_vault_connection_) {
-        enclave_controller_->SetTrustedVaultConnectionForTesting(
-            std::move(pending_trusted_vault_connection_));
+      // The enclave should not allow a credential to be created within it for
+      // the same Google account.
+      if (rp_id != kGoogleRpId ||
+          request_type != device::FidoRequestType::kMakeCredential ||
+          user_name.value_or("") != account_name) {
+        dialog_model_->account_name = std::move(account_name);
+        enclave_controller_ = std::make_unique<GPMEnclaveController>(
+            GetRenderFrameHost(), dialog_model_.get(), rp_id, request_type,
+            user_verification_requirement);
+        if (pending_trusted_vault_connection_) {
+          enclave_controller_->SetTrustedVaultConnectionForTesting(
+              std::move(pending_trusted_vault_connection_));
+        }
       }
     }
   }

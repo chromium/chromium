@@ -646,6 +646,7 @@ void AuthenticatorCommonImpl::StartMakeCredentialRequest(
       device::FidoRequestType::kMakeCredential,
       req_state_->make_credential_options->resident_key,
       req_state_->make_credential_options->user_verification,
+      req_state_->ctap_make_credential_request->user.name,
       base::span<const device::CableDiscoveryData>(), enclave_available_,
       discovery_factory());
   SetHints(req_state_->request_delegate.get(), req_state_->hints);
@@ -699,8 +700,9 @@ void AuthenticatorCommonImpl::StartGetAssertionRequest(
       req_state_->caller_origin, req_state_->relying_party_id, RequestSource(),
       device::FidoRequestType::kGetAssertion,
       /*resident_key_requirement=*/std::nullopt,
-      req_state_->ctap_get_assertion_request->user_verification, cable_pairings,
-      enclave_available_, discovery_factory());
+      req_state_->ctap_get_assertion_request->user_verification,
+      /*user_name=*/std::nullopt, cable_pairings, enclave_available_,
+      discovery_factory());
 #if BUILDFLAG(IS_CHROMEOS)
   discovery_factory()->set_get_assertion_request_for_legacy_credential_check(
       *req_state_->ctap_get_assertion_request);
@@ -2077,12 +2079,12 @@ AuthenticatorCommonImpl::CreateMakeCredentialResponse(
     case AttestationErasureOption::kIncludeAttestation:
       break;
     case AttestationErasureOption::kEraseAttestationButIncludeAaguid:
-          response_data.attestation_object.EraseAttestationStatement(
-              device::AttestationObject::AAGUID::kInclude);
+      response_data.attestation_object.EraseAttestationStatement(
+          device::AttestationObject::AAGUID::kInclude);
       break;
     case AttestationErasureOption::kEraseAttestationAndAaguid:
-          response_data.attestation_object.EraseAttestationStatement(
-              device::AttestationObject::AAGUID::kErase);
+      response_data.attestation_object.EraseAttestationStatement(
+          device::AttestationObject::AAGUID::kErase);
       break;
   }
 
