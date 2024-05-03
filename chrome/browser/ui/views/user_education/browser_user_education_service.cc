@@ -62,7 +62,6 @@
 #include "ui/base/interaction/element_identifier.h"
 #include "ui/base/interaction/element_tracker.h"
 #include "ui/base/l10n/l10n_util.h"
-#include "ui/base/ui_base_features.h"
 #include "ui/gfx/vector_icon_types.h"
 #include "ui/views/interaction/element_tracker_views.h"
 #include "ui/views/vector_icons.h"
@@ -163,13 +162,11 @@ void MaybeRegisterChromeFeaturePromos(
   using user_education::HelpBubbleArrow;
   using user_education::Metadata;
 
-  // This icon got updated, so select which is used based on whether refresh is
-  // enabled. Note that the WebUI refresh state is not taken into account, so
+  // This icon got updated, so select the 2023 Refresh version.
+  // Note that the WebUI refresh state is not taken into account, so
   // this selection will affect both Views and WebUI help bubbles.
   const gfx::VectorIcon* const kLightbulbOutlineIcon =
-      features::IsChromeRefresh2023()
-          ? &vector_icons::kLightbulbOutlineChromeRefreshIcon
-          : &vector_icons::kLightbulbOutlineIcon;
+      &vector_icons::kLightbulbOutlineChromeRefreshIcon;
 
   // Verify that we haven't already registered the expected features.
   // Use a known test feature that is unlikely to change.
@@ -336,7 +333,7 @@ void MaybeRegisterChromeFeaturePromos(
           NewTabPageUI::kModulesCustomizeIPHAnchorElement,
           IDS_NTP_MODULES_CUSTOMIZE_IPH)
           .SetBubbleArrow(HelpBubbleArrow::kBottomRight)
-          .SetBubbleIcon(&vector_icons::kLightbulbOutlineIcon)
+          .SetBubbleIcon(kLightbulbOutlineIcon)
           .SetInAnyContext(true)
           // See: crbug.com/1494923
           .OverrideFocusOnShow(false)));

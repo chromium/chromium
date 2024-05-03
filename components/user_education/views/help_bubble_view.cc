@@ -27,7 +27,6 @@
 #include "ui/base/metadata/metadata_header_macros.h"
 #include "ui/base/metadata/metadata_impl_macros.h"
 #include "ui/base/models/image_model.h"
-#include "ui/base/ui_base_features.h"
 #include "ui/color/color_provider.h"
 #include "ui/events/event.h"
 #include "ui/events/event_constants.h"
@@ -127,28 +126,18 @@ class MdIPHBubbleButton : public views::MdTextButton {
         is_default_button_(is_default_button) {
     GetViewAccessibility().SetIsLeaf(true);
 
-    if (features::IsChromeRefresh2023()) {
-      views::FocusRing::Get(this)->SetColorId(
-          delegate_->GetHelpBubbleForegroundColorId());
+    views::FocusRing::Get(this)->SetColorId(
+        delegate_->GetHelpBubbleForegroundColorId());
 
-      // The default behavior in 2023 refresh is for MD buttons is to have the
-      // alpha baked into the color, but we currently don't have that yet, so
-      // switch back to using the old default alpha blending mode.
-      auto* const ink_drop = views::InkDrop::Get(this);
-      ink_drop->SetBaseColorId(
-          is_default_button_
-              ? delegate_->GetHelpBubbleDefaultButtonForegroundColorId()
-              : delegate_->GetHelpBubbleForegroundColorId());
-      ink_drop->SetHighlightOpacity(std::nullopt);
-    } else {
-      // Prominent style gives a button hover highlight.
-      SetStyle(ui::ButtonStyle::kProminent);
-      // Focus ring rendering varies significantly between pre- and post-refresh
-      // Chrome. The pre-refresh tactic of setting the focus color to background
-      // is actually a hack; the post-refresh approach is more "correct".
-      views::FocusRing::Get(this)->SetColorId(
-          delegate_->GetHelpBubbleBackgroundColorId());
-    }
+    // The default behavior in 2023 refresh is for MD buttons is to have the
+    // alpha baked into the color, but we currently don't have that yet, so
+    // switch back to using the old default alpha blending mode.
+    auto* const ink_drop = views::InkDrop::Get(this);
+    ink_drop->SetBaseColorId(
+        is_default_button_
+            ? delegate_->GetHelpBubbleDefaultButtonForegroundColorId()
+            : delegate_->GetHelpBubbleForegroundColorId());
+    ink_drop->SetHighlightOpacity(std::nullopt);
   }
   MdIPHBubbleButton(const MdIPHBubbleButton&) = delete;
   MdIPHBubbleButton& operator=(const MdIPHBubbleButton&) = delete;
@@ -514,12 +503,9 @@ HelpBubbleView::HelpBubbleView(const HelpBubbleDelegate* delegate,
           // STANDARD_SHADOW.
           views::BubbleBorder::STANDARD_SHADOW
 #else
-          // On other platforms, all shadows are Views-drawn, which means we
-          // can revert back to the (slightly better-looking) default
-          // DIALOG_SHADOW following the 2023 refresh. The old pre-refresh
-          // value is preserved just for consistency.
-          features::IsChromeRefresh2023() ? views::BubbleBorder::DIALOG_SHADOW
-                                          : views::BubbleBorder::STANDARD_SHADOW
+          // On other platforms, all shadows are Views-drawn; use the (slightly
+          // better-looking) default DIALOG_SHADOW.
+          views::BubbleBorder::DIALOG_SHADOW
 #endif
           ,
           true),
@@ -718,9 +704,7 @@ HelpBubbleView::HelpBubbleView(const HelpBubbleDelegate* delegate,
       views::DISTANCE_RELATED_CONTROL_VERTICAL);
 
   // The insets from the bubble border to the text inside.
-  const gfx::Insets contents_insets = features::IsChromeRefresh2023()
-                                          ? gfx::Insets(20)
-                                          : gfx::Insets::VH(16, 20);
+  const gfx::Insets contents_insets = gfx::Insets(20);
 
   // Create primary layout (vertical).
   SetLayoutManager(std::make_unique<views::FlexLayout>())
@@ -733,7 +717,7 @@ HelpBubbleView::HelpBubbleView(const HelpBubbleDelegate* delegate,
       .SetIgnoreDefaultMainAxisMargins(true);
 
   // Set up top row container layout.
-  const int kCloseButtonHeight = features::IsChromeRefresh2023() ? 20 : 24;
+  const int kCloseButtonHeight = 20;
   auto& progress_layout =
       progress_container
           ->SetLayoutManager(std::make_unique<views::FlexLayout>())
@@ -865,11 +849,6 @@ HelpBubbleView::HelpBubbleView(const HelpBubbleDelegate* delegate,
   // have to change it afterwards:
   set_adjust_if_offscreen(true);
   auto* const frame_view = GetBubbleFrameView();
-  if (!features::IsChromeRefresh2023()) {
-    frame_view->SetCornerRadius(
-        views::LayoutProvider::Get()->GetCornerRadiusMetric(
-            views::Emphasis::kHigh));
-  }
   frame_view->SetDisplayVisibleArrow(anchor.show_arrow &&
                                      params.arrow != HelpBubbleArrow::kNone);
 

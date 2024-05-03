@@ -424,10 +424,7 @@ need to be translated for each locale.-->
       </message>
 
       <!-- New Badge (user education) -->
-      <message name="IDS_NEW_BADGE" desc="Appears as a badge on UI elements like menus, denoting new features">
-        New
-      </message>
-      <message name="IDS_NEW_BADGE_UPPERCASE" desc="Appears as a badge on UI elements like menus, denoting new features, in uppercase">
+      <message name="IDS_NEW_BADGE" desc="Appears as a badge on UI elements like menus, denoting new features, in uppercase">
         NEW
       </message>
       <message name="IDS_NEW_BADGE_SCREEN_READER_MESSAGE"

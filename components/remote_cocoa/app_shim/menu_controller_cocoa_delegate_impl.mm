@@ -13,7 +13,6 @@
 #include "ui/base/interaction/element_tracker_mac.h"
 #include "ui/base/l10n/l10n_util_mac.h"
 #include "ui/base/models/menu_model.h"
-#include "ui/base/ui_base_features.h"
 #include "ui/gfx/mac/coordinate_conversion.h"
 #include "ui/gfx/platform_font_mac.h"
 #include "ui/strings/grit/ui_strings.h"
@@ -25,9 +24,7 @@ constexpr CGFloat kIPHDotSize = 6;
 NSImage* NewTagImage(const remote_cocoa::mojom::MenuControllerParams& params) {
   // 1. Make the attributed string.
 
-  NSString* badge_text = l10n_util::GetNSString(features::IsChromeRefresh2023()
-                                                    ? IDS_NEW_BADGE_UPPERCASE
-                                                    : IDS_NEW_BADGE);
+  NSString* badge_text = l10n_util::GetNSString(IDS_NEW_BADGE);
 
   NSColor* badge_text_color =
       skia::SkColorToSRGBNSColor(params.badge_text_color);
