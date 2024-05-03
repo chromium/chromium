@@ -7,6 +7,7 @@
 
 #include <map>
 #include <memory>
+#include <set>
 #include <vector>
 
 #include "base/containers/lru_cache.h"
@@ -224,6 +225,12 @@ class PasswordFormManager : public PasswordFormManagerForUI,
       const PasswordManagerDriver* driver,
       const base::LRUCache<PossibleUsernameFieldIdentifier,
                            PossibleUsernameData>& possible_usernames);
+
+  // Checks if `this` can be inspected for submission detection after unowned
+  // form fields were removed. Only to be used on formless form managers.
+  bool AreRemovedUnownedFieldsValidForSubmissionDetection(
+      const std::set<autofill::FieldRendererId>& removed_fields,
+      const autofill::FieldDataManager& field_data_manager) const;
 #endif  // BUILDFLAG(IS_IOS)
 
   // Create a copy of |*this| which can be passed to the code handling

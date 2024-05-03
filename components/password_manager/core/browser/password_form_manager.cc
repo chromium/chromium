@@ -742,6 +742,37 @@ void PasswordFormManager::ProvisionallySaveFieldDataManagerInfo(
   if (data_found)
     ProvisionallySave(*observed_form(), driver, possible_usernames);
 }
+
+bool PasswordFormManager::AreRemovedUnownedFieldsValidForSubmissionDetection(
+    const std::set<FieldRendererId>& removed_fields,
+    const FieldDataManager& field_data_manager) const {
+  CHECK(observed_form());
+  CHECK(!observed_form()->renderer_id)
+      << "This method should only be called on formless form managers. Removed "
+         "formless fields are only relevant for formless forms submission "
+         "detection.";
+
+  const auto is_removed_password = [&](const FormFieldData& field_data) {
+    return field_data.IsPasswordInputElement() &&
+           removed_fields.find(field_data.renderer_id()) !=
+               removed_fields.end();
+  };
+
+  bool has_removed_passwords =
+      base::ranges::any_of(observed_form()->fields, is_removed_password);
+  if (!has_removed_passwords) {
+    return false;
+  }
+
+  // The formless form can be considered submitted if all removed password
+  // fields had input and there was at least one removed password field.
+  return base::ranges::all_of(
+      observed_form()->fields, [&](const FormFieldData& field_data) {
+        return !is_removed_password(field_data) ||
+               field_data_manager.HasFieldData(field_data.renderer_id());
+      });
+}
+
 #endif  // BUILDFLAG(IS_IOS)
 
 void PasswordFormManager::SaveSuggestedUsernameValueToVotesUploader() {

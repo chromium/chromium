@@ -977,13 +977,56 @@ void PasswordManager::OnPasswordNoLongerGenerated() {
   }
 }
 
-void PasswordManager::OnPasswordFormRemoved(
+void PasswordManager::OnPasswordFormsRemoved(
     PasswordManagerDriver* driver,
     const FieldDataManager& field_data_manager,
-    FormRendererId form_id) {
-  if (PasswordFormManager* manager = GetMatchedManager(driver, form_id)) {
-    DetectPotentialSubmission(manager, field_data_manager, driver);
+    const std::set<FormRendererId>& removed_forms,
+    const std::set<FieldRendererId>& removed_unowned_fields) {
+  // Inject the default form renderer id in removed forms when there are
+  // removed unowned fields. Copying should be cheap as there should not be many
+  // removed forms.
+  std::set<FormRendererId> removed_forms_copy = removed_forms;
+  if (!removed_unowned_fields.empty()) {
+    removed_forms_copy.insert(FormRendererId());
   }
+  // Partial application of DetectPotentialSubmissionAfterFormRemoval that only
+  // takes a PasswordFormManager. Calls
+  // DetectPotentialSubmissionAfterFormRemoval with the PasswordFormManager plus
+  // `field_data_manager`, `driver` and `removed_unowned_fields`. Used for
+  // shortening the calls to DetectPotentialSubmissionAfterFormRemoval.
+  const auto detect_submission = [&](PasswordFormManager* form_manager) {
+    return form_manager && DetectPotentialSubmissionAfterFormRemoval(
+                               form_manager, field_data_manager, driver,
+                               removed_unowned_fields);
+  };
+
+  // A form submission after form removals can be detected if there is a removed
+  // form or formless form with data that can be saved.
+  // The first candidate for submission is the removed submitted manager, which
+  // observes the form that received the last user input.
+  auto* submitted_manager = GetSubmittedManager();
+  if (submitted_manager) {
+    // Check if the submitted manager corresponds to one of the removed forms.
+    bool removed_submitted_form = base::ranges::any_of(
+        removed_forms_copy, [&](const auto& removed_form_id) {
+          return submitted_manager->DoesManage(removed_form_id, driver);
+        });
+
+    // Check the submitted manager for submission if its form was removed.
+    if (removed_submitted_form && detect_submission(submitted_manager)) {
+      return;
+    }
+  }
+
+  // No submission was detected for the submitted manager. A submission could
+  // still be detected if one of the other removed forms or the formless form
+  // have data that we can save.
+  // If the submitted manager observes one of the removed forms, just
+  // ignore it as it was already inspected above.
+  base::ranges::any_of(removed_forms_copy, [&](const auto& removed_form_id) {
+    auto* manager = GetMatchedManager(driver, removed_form_id);
+    return manager != submitted_manager && detect_submission(manager);
+  });
 }
 
 void PasswordManager::OnIframeDetach(
@@ -1531,6 +1574,26 @@ bool PasswordManager::DetectPotentialSubmission(
     return true;
   }
   return false;
+}
+
+bool PasswordManager::DetectPotentialSubmissionAfterFormRemoval(
+    PasswordFormManager* form_manager,
+    const FieldDataManager& field_data_manager,
+    PasswordManagerDriver* driver,
+    const std::set<FieldRendererId>& removed_unowned_fields) {
+  CHECK(form_manager);
+
+  // The formless form requires that all removed password fields have user
+  // input.
+  bool is_formless_form =
+      form_manager->observed_form()->renderer_id == FormRendererId();
+  if (is_formless_form &&
+      !form_manager->AreRemovedUnownedFieldsValidForSubmissionDetection(
+          removed_unowned_fields, field_data_manager)) {
+    return false;
+  }
+
+  return DetectPotentialSubmission(form_manager, field_data_manager, driver);
 }
 #endif  // BUILDFLAG(IS_IOS)
 

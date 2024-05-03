@@ -115,10 +115,11 @@ class MockPasswordManager : public PasswordManagerInterface {
               (override));
   MOCK_METHOD(void, OnPasswordNoLongerGenerated, (), (override));
   MOCK_METHOD(void,
-              OnPasswordFormRemoved,
+              OnPasswordFormsRemoved,
               (PasswordManagerDriver*,
                const autofill::FieldDataManager&,
-               autofill::FormRendererId),
+               const std::set<autofill::FormRendererId>&,
+               const std::set<autofill::FieldRendererId>&),
               (override));
   MOCK_METHOD(void,
               OnIframeDetach,
@@ -1412,7 +1413,7 @@ TEST_F(SharedPasswordControllerTest,
                                   frame->GetSecurityOrigin()));
 
   OCMExpect([driver_helper_ PasswordManagerDriver:frame]);
-  EXPECT_CALL(password_manager_, OnPasswordFormRemoved).Times(1);
+  EXPECT_CALL(password_manager_, OnPasswordFormsRemoved).Times(1);
 
   autofill::FormRemovalParams params;
   params.removed_forms = {autofill::FormRendererId()};

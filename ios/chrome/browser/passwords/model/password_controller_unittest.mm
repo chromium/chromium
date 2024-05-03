@@ -25,6 +25,7 @@
 #import "components/autofill/core/browser/ui/suggestion_type.h"
 #import "components/autofill/core/common/password_form_fill_data.h"
 #import "components/autofill/ios/browser/autofill_driver_ios_factory.h"
+#import "components/autofill/ios/common/field_data_manager_factory_ios.h"
 #import "components/autofill/ios/form_util/form_activity_params.h"
 #import "components/autofill/ios/form_util/form_util_java_script_feature.h"
 #import "components/password_manager/core/browser/leak_detection/mock_leak_detection_check_factory.h"
@@ -88,6 +89,8 @@ using base::test::ios::kWaitForJSCompletionTimeout;
 using base::test::ios::WaitUntilConditionOrTimeout;
 using FillingAssistance =
     password_manager::PasswordFormMetricsRecorder::FillingAssistance;
+using autofill::FieldDataManager;
+using autofill::FieldPropertiesFlags;
 using password_manager::PasswordForm;
 using password_manager::PasswordFormManager;
 using password_manager::PasswordFormManagerForUI;
@@ -307,19 +310,14 @@ class PasswordControllerTest : public PlatformTest {
     }));
   }
 
-  void SimulateFormActivityObserverSignal(std::string type,
-                                          FormRendererId form_id,
-                                          FieldRendererId field_id,
-                                          std::string value) {
+  void SimulateFormChangedObserverSignal() {
     password_manager::PasswordManagerJavaScriptFeature* feature =
         password_manager::PasswordManagerJavaScriptFeature::GetInstance();
     WebFrame* frame =
         feature->GetWebFramesManager(web_state())->GetMainWebFrame();
     FormActivityParams params;
-    params.type = type;
-    params.form_renderer_id = form_id;
+    params.type = "form_changed";
     params.frame_id = frame->GetFrameId();
-    params.value = value;
     [passwordController_.sharedPasswordController webState:web_state()
                                    didRegisterFormActivity:params
                                                    inFrame:frame];
@@ -1483,8 +1481,7 @@ TEST_F(PasswordControllerTest, CheckAsyncSuggestions) {
     web::test::LoadHtml(kHtmlWithoutPasswordForm, web_state());
     ExecuteJavaScript(kAddFormDynamicallyScript);
 
-    SimulateFormActivityObserverSignal("form_changed", FormRendererId(),
-                                       FieldRendererId(), std::string());
+    SimulateFormChangedObserverSignal();
     WaitForFormManagersCreation();
 
     __block BOOL completion_handler_success = NO;
@@ -1532,8 +1529,7 @@ TEST_F(PasswordControllerTest, CheckNoAsyncSuggestionsOnNonUsernameField) {
   LoadHtml(kHtmlWithoutPasswordForm);
   ExecuteJavaScript(kAddFormDynamicallyScript);
 
-  SimulateFormActivityObserverSignal("form_changed", FormRendererId(),
-                                     FieldRendererId(), std::string());
+  SimulateFormChangedObserverSignal();
   WaitForFormManagersCreation();
 
   __block BOOL completion_handler_success = NO;
@@ -1915,134 +1911,13 @@ TEST_F(PasswordControllerTest, FindDynamicallyAddedForm2) {
   LoadHtml(kHtmlWithoutPasswordForm);
   ExecuteJavaScript(kAddFormDynamicallyScript);
 
-  SimulateFormActivityObserverSignal("form_changed", FormRendererId(),
-                                     FieldRendererId(), std::string());
+  SimulateFormChangedObserverSignal();
   WaitForFormManagersCreation();
 
   auto form_managers = passwordController_.passwordManager->form_managers();
   ASSERT_EQ(1u, form_managers.size());
   auto* password_form = form_managers[0]->observed_form();
   EXPECT_EQ(u"dynamic_form", password_form->name);
-}
-
-// Tests that submission is detected on removal of the form that had user input.
-TEST_F(PasswordControllerTest, DetectSubmissionOnRemovedForm) {
-  // TODO(crbug.com/330909663): Add test coverage for multiple removed forms,
-  // including non-password forms.
-  ON_CALL(*store_, GetLogins)
-      .WillByDefault(WithArg<1>(InvokeEmptyConsumerWithForms(store_.get())));
-  for (bool has_form_tag : {true, false}) {
-    SCOPED_TRACE(testing::Message("has_form_tag = ") << has_form_tag);
-    LoadHtml(has_form_tag ? kHtmlWithPasswordForm
-                          : kHtmlFormlessPasswordFields);
-    WaitForFormManagersCreation();
-
-    std::string mainFrameID = GetMainWebFrameId();
-
-    std::string form_name = has_form_tag ? "login_form" : "";
-    FormRendererId form_id(has_form_tag ? 1 : 0);
-    FieldRendererId username_id(has_form_tag ? 2 : 1);
-    FieldRendererId password_id(has_form_tag ? 3 : 2);
-
-    SimulateUserTyping(form_name, form_id, "un", username_id, "user1",
-                       mainFrameID);
-    SimulateUserTyping(form_name, form_id, "pw", password_id, "password1",
-                       mainFrameID);
-
-    std::unique_ptr<PasswordFormManagerForUI> form_manager_to_save;
-    EXPECT_CALL(*weak_client_, PromptUserToSaveOrUpdatePassword)
-        .WillOnce(MoveArgAndReturn<0>(&form_manager_to_save, true));
-
-    std::set<FieldRendererId> removed_ids;
-    if (!has_form_tag) {
-      removed_ids.insert(FieldRendererId(1));
-      removed_ids.insert(FieldRendererId(2));
-    }
-
-    SimulateFormRemovalObserverSignal({form_id}, removed_ids);
-
-    auto& form_manager_check = form_manager_to_save;
-    ASSERT_TRUE(WaitUntilConditionOrTimeout(kWaitForActionTimeout, ^bool() {
-      return form_manager_check != nullptr;
-    }));
-    EXPECT_EQ("https://chromium.test/",
-              form_manager_to_save->GetPendingCredentials().signon_realm);
-    EXPECT_EQ(u"user1",
-              form_manager_to_save->GetPendingCredentials().username_value);
-    EXPECT_EQ(u"password1",
-              form_manager_to_save->GetPendingCredentials().password_value);
-
-    auto* form_manager =
-        static_cast<PasswordFormManager*>(form_manager_to_save.get());
-    EXPECT_TRUE(form_manager->is_submitted());
-    EXPECT_FALSE(form_manager->IsPasswordUpdate());
-  }
-}
-
-// Tests that submission is not detected on form removal if saving is
-// disabled.
-TEST_F(PasswordControllerTest,
-       DetectNoSubmissionOnRemovedFormIfSavingDisabled) {
-  ON_CALL(*weak_client_, IsSavingAndFillingEnabled)
-      .WillByDefault(Return(false));
-
-  ON_CALL(*store_, GetLogins)
-      .WillByDefault(WithArg<1>(InvokeEmptyConsumerWithForms(store_.get())));
-  LoadHtml(kHtmlWithPasswordForm);
-  WaitForFormManagersCreation();
-
-  std::string mainFrameID = GetMainWebFrameId();
-
-  SimulateUserTyping("login_form", FormRendererId(1), "username",
-                     FieldRendererId(2), "user1", mainFrameID);
-  SimulateUserTyping("login_form", FormRendererId(1), "pw", FieldRendererId(3),
-                     "password1", mainFrameID);
-
-  EXPECT_CALL(*weak_client_, PromptUserToSaveOrUpdatePassword).Times(0);
-
-  SimulateFormActivityObserverSignal("password_form_removed", FormRendererId(1),
-                                     FieldRendererId(), std::string());
-}
-
-// Tests that submission is not detected on removal of the form that never
-// had user input.
-TEST_F(PasswordControllerTest,
-       DetectNoSubmissionOnRemovedFormWithoutUserInput) {
-  ON_CALL(*store_, GetLogins)
-      .WillByDefault(WithArg<1>(InvokeEmptyConsumerWithForms(store_.get())));
-  LoadHtml(kHtmlWithPasswordForm);
-  WaitForFormManagersCreation();
-
-  EXPECT_CALL(*weak_client_, PromptUserToSaveOrUpdatePassword).Times(0);
-
-  SimulateFormActivityObserverSignal("password_form_removed", FormRendererId(1),
-                                     FieldRendererId(), std::string());
-}
-
-// Tests that prompt is not shown automatically if the form is eligible only for
-// manual fallback for saving.
-TEST_F(PasswordControllerTest,
-       DetectNoSubmissionOnRemovedFormForManualFallback) {
-  ON_CALL(*store_, GetLogins)
-      .WillByDefault(WithArg<1>(InvokeEmptyConsumerWithForms(store_.get())));
-  LoadHtml(@""
-            "<form id='form1'>"
-            "  <input id='username' type='text'>"
-            "  <input id='one-time-code' type='password'>"
-            "</form>");
-  WaitForFormManagersCreation();
-
-  std::string mainFrameID = GetMainWebFrameId();
-
-  SimulateUserTyping("form1", FormRendererId(1), "username", FieldRendererId(2),
-                     "john", mainFrameID);
-  SimulateUserTyping("form1", FormRendererId(1), "one-time-code",
-                     FieldRendererId(3), "123456", mainFrameID);
-
-  EXPECT_CALL(*weak_client_, PromptUserToSaveOrUpdatePassword).Times(0);
-
-  SimulateFormActivityObserverSignal("password_form_removed", FormRendererId(1),
-                                     FieldRendererId(), std::string());
 }
 
 // Tests that submission is detected on removal of the form that had user input.
@@ -2448,3 +2323,705 @@ TEST_F(PasswordControllerTest, PasswordManagerManualFillingAssistanceMetric) {
   histogram_tester.ExpectUniqueSample("PasswordManager.FillingAssistance",
                                       FillingAssistance::kManual, 1);
 }
+
+// Test case data for form submission detection testing after form removals.
+struct RemovedFormsTestCase {
+  // Represents a typing action that can be performed during a
+  // test.
+  struct TypingAction {
+    // The name of the form that the typing action should be performed on.
+    std::string form_name;
+
+    // The ID of the form renderer that the typing action should be performed
+    // on.
+    FormRendererId form_renderer_id;
+
+    // The identifier of the field that the typing action should be performed
+    // on.
+    std::string field_identifier;
+
+    // The ID of the field renderer that the typing action should be performed
+    // on.
+    FieldRendererId field_renderer_id;
+
+    // The value that should be typed into the field.
+    std::string typed_value;
+  };
+
+  // Represents the credentials that should be submitted after the
+  // typing actions have been performed.
+  struct SubmittedCredentials {
+    // The username that should be submitted.
+    std::u16string username;
+
+    // The password that should be submitted.
+    std::u16string password;
+  };
+
+  // Represents the elements that should be removed from the page
+  // after the typing actions have been performed.
+  struct RemovedElements {
+    // The IDs of the forms that should be removed.
+    std::set<FormRendererId> form_ids;
+
+    // The IDs of the fields that should be removed.
+    std::set<FieldRendererId> field_ids;
+  };
+
+  // Represents a value associated to a field in the main frame's associated
+  // FieldDataManager.
+  struct FieldDataManagerRecord {
+    // The renderer id of the field.
+    FieldRendererId field_renderer_id;
+    // The value stored for the field.
+    std::u16string value;
+  };
+
+  // A description of the test case.
+  std::string description;
+
+  // The HTML that should be loaded into the page before the typing actions are
+  // performed.
+  NSString* html;
+
+  // Whether or not saving should be enabled for the test case.
+  bool saving_enabled = true;
+
+  // The typing actions that should be performed during the test case.
+  std::vector<TypingAction> typing_actions;
+
+  // Values stored in the FieldDataManager associated to the main frame.
+  // The Password Manager uses these as fallback source of input.
+  std::vector<FieldDataManagerRecord> field_data_manager_records;
+
+  // The elements that should be removed from the page after the typing actions
+  // have been performed.
+  RemovedElements removed_elements;
+
+  // The credentials in the form detected as submitted after removing the
+  // elements.
+  std::optional<SubmittedCredentials> expected_submitted_credentials;
+};
+
+class RemovedFormsTest
+    : public PasswordControllerTest,
+      public ::testing::WithParamInterface<RemovedFormsTestCase> {};
+
+// Test HTML page. It contains several password forms, non-password forms and
+// formless fields.
+static NSString* kHtmlWithMultipleForms =
+    @""
+     // Password form.
+     "<form id='password_form1'>"                  // unique_id 1
+     "<input id='un0' type='text' name='u0'>"      // unique_id 2
+     "<input id='pw0' type='password' name='p0'>"  // unique_id 3
+     "</form>"
+     // Password form.
+     "<form id='passsword_form2'>"                 // unique_id 4
+     "<input id='un1' type='text' name='u1'>"      // unique_id 5
+     "<input id='pw1' type='password' name='p1'>"  // unique_id 6
+     "</form>"
+     // Non-password form.
+     "<form id='non_password_form1'>"                  // unique_id 7
+     "<input id='text1' type='text' name='text1'>"     // unique_id 8
+     "<input id='email1' type='email' name='email1'>"  // unique_id 9
+     "</form>"
+     // Fields that are outside the <form> tag.
+     "<input id='un2' type='text'>"         // unique_id 10
+     "<input id='pw2' type='password'>"     // unique_id 11
+     "<input id='email2' type='email'>"     // unique_id 12
+     "<input id='un3' type='text'>"         // unique_id 13
+     "<input id='pw3' type='password'>"     // unique_id 14
+     "<input id='button0' type='button'>";  // unique_id 15
+
+class SubmissionDetectedTest : public RemovedFormsTest {};
+
+TEST_P(SubmissionDetectedTest, SubmissionDetectedAfterFormRemoval) {
+  const auto& test_case = GetParam();
+  SCOPED_TRACE(::testing::Message("description: ") << test_case.description);
+
+  // Mock no password forms in store so the save prompt is shown for every
+  // submission detected.
+  ON_CALL(*store_, GetLogins)
+      .WillByDefault(WithArg<1>(InvokeEmptyConsumerWithForms(store_.get())));
+
+  LoadHtml(test_case.html);
+
+  WaitForFormManagersCreation();
+
+  std::string main_frame_ID = GetMainWebFrameId();
+
+  // Simulate user actions.
+  for (const auto& typing_action : test_case.typing_actions) {
+    SimulateUserTyping(typing_action.form_name, typing_action.form_renderer_id,
+                       typing_action.field_identifier,
+                       typing_action.field_renderer_id,
+                       typing_action.typed_value, main_frame_ID);
+  }
+
+  // Store field data in data manager. This is similar to what happens when
+  // values are autofilled from Autofill.
+  FieldDataManager* field_data_manager =
+      autofill::FieldDataManagerFactoryIOS::FromWebFrame(
+          GetWebFrame(/*is_main_frame=*/true));
+  for (const auto& field_data_manager_record :
+       test_case.field_data_manager_records) {
+    field_data_manager->UpdateFieldDataMap(
+        field_data_manager_record.field_renderer_id,
+        field_data_manager_record.value,
+        FieldPropertiesFlags::kAutofilledOnUserTrigger);
+  }
+
+  // Expect that a form submission is detected.
+  std::unique_ptr<PasswordFormManagerForUI> form_manager_to_save;
+  EXPECT_CALL(*weak_client_, PromptUserToSaveOrUpdatePassword)
+      .WillOnce(MoveArgAndReturn<0>(&form_manager_to_save, true));
+
+  // Remove elements.
+  SimulateFormRemovalObserverSignal(test_case.removed_elements.form_ids,
+                                    test_case.removed_elements.field_ids);
+
+  // Wait for submission detection.
+  auto& form_manager_check = form_manager_to_save;
+  ASSERT_TRUE(WaitUntilConditionOrTimeout(kWaitForActionTimeout, ^bool() {
+    return form_manager_check != nullptr;
+  }));
+
+  // Validate the submitted credentials.
+  EXPECT_EQ("https://chromium.test/",
+            form_manager_to_save->GetPendingCredentials().signon_realm);
+  ASSERT_TRUE(test_case.expected_submitted_credentials);
+  EXPECT_EQ(test_case.expected_submitted_credentials->username,
+            form_manager_to_save->GetPendingCredentials().username_value);
+  EXPECT_EQ(test_case.expected_submitted_credentials->password,
+            form_manager_to_save->GetPendingCredentials().password_value);
+
+  auto* form_manager =
+      static_cast<PasswordFormManager*>(form_manager_to_save.get());
+  EXPECT_TRUE(form_manager->is_submitted());
+  EXPECT_FALSE(form_manager->IsPasswordUpdate());
+}
+
+INSTANTIATE_TEST_SUITE_P(
+    /* No Instantiation Name*/,
+    SubmissionDetectedTest,
+    ::testing::Values(
+
+        // Test case 0.
+        RemovedFormsTestCase{
+            .description =
+                "Detect submission when one password form is removed.",
+            .html = kHtmlWithPasswordForm,
+            // Enter credentials in form fields.
+            .typing_actions = {RemovedFormsTestCase::TypingAction{
+                                   .form_name = "login_form",
+                                   .form_renderer_id = FormRendererId(1),
+                                   .field_identifier = "un",
+                                   .field_renderer_id = FieldRendererId(2),
+                                   .typed_value = "user1"},
+                               RemovedFormsTestCase::TypingAction{
+                                   .form_name = "login_form",
+                                   .form_renderer_id = FormRendererId(1),
+                                   .field_identifier = "pw",
+                                   .field_renderer_id = FieldRendererId(3),
+                                   .typed_value = "password1"}},
+            // Remove form.
+            .removed_elements =
+                RemovedFormsTestCase::RemovedElements{
+                    .form_ids = {FormRendererId(1)},
+                },
+            // Expect submission with credentials entered in form.
+            .expected_submitted_credentials =
+                RemovedFormsTestCase::SubmittedCredentials{
+                    .username = u"user1",
+                    .password = u"password1",
+                }},
+
+        // Test case 1.
+        RemovedFormsTestCase{
+            .description = "Detect submission when one formless password field "
+                           "is removed.",
+            .html = kHtmlFormlessPasswordFields,
+            // Enter credentials in formless fields.
+            .typing_actions = {RemovedFormsTestCase::TypingAction{
+                                   .field_identifier = "un",
+                                   .field_renderer_id = FieldRendererId(1),
+                                   .typed_value = "user1"},
+                               RemovedFormsTestCase::TypingAction{
+                                   .field_identifier = "pw",
+                                   .field_renderer_id = FieldRendererId(2),
+                                   .typed_value = "password1"}},
+            // Remove formless fields.
+            .removed_elements =
+                RemovedFormsTestCase::RemovedElements{
+                    .field_ids = {FieldRendererId(1), FieldRendererId(2)},
+                },
+            // Expect submission with credentials entered in formless fields.
+            .expected_submitted_credentials =
+                RemovedFormsTestCase::SubmittedCredentials{
+                    .username = u"user1",
+                    .password = u"password1",
+                }},
+
+        // Test case 2.
+        RemovedFormsTestCase{
+            .description = "Detect submission when multiple password forms are "
+                           "removed. User input in regular password form.",
+            .html = kHtmlWithMultipleForms,
+            // Enter credentials in second password form.
+            .typing_actions = {RemovedFormsTestCase::TypingAction{
+                                   .form_name = "password_form2",
+                                   .form_renderer_id = FormRendererId(4),
+                                   .field_identifier = "un1",
+                                   .field_renderer_id = FieldRendererId(5),
+                                   .typed_value = "user1"},
+                               RemovedFormsTestCase::TypingAction{
+                                   .form_name = "password_form2",
+                                   .form_renderer_id = FormRendererId(4),
+                                   .field_identifier = "pw1",
+                                   .field_renderer_id = FieldRendererId(6),
+                                   .typed_value = "password1"}},
+            // Remove all forms and formless fields.
+            .removed_elements =
+                RemovedFormsTestCase::RemovedElements{
+                    .form_ids = {FormRendererId(1), FormRendererId(4),
+                                 FormRendererId(7)},
+                    .field_ids = {FieldRendererId(10), FieldRendererId(11),
+                                  FieldRendererId(12), FieldRendererId(13),
+                                  FieldRendererId(14), FieldRendererId(15)}},
+            // Expect submission with credentials entered in second form.
+            .expected_submitted_credentials =
+                RemovedFormsTestCase::SubmittedCredentials{
+                    .username = u"user1",
+                    .password = u"password1",
+                }},
+
+        // Test case 3.
+        RemovedFormsTestCase{
+            .description = "Detect submission when multiple password forms are "
+                           "removed. User input in formless fields.",
+            .html = kHtmlWithMultipleForms,
+            // Enter credentials in formless fields.
+            .typing_actions = {RemovedFormsTestCase::TypingAction{
+                                   .field_identifier = "un2",
+                                   .field_renderer_id = FieldRendererId(10),
+                                   .typed_value = "user1"},
+                               RemovedFormsTestCase::TypingAction{
+                                   .field_identifier = "pw2",
+                                   .field_renderer_id = FieldRendererId(11),
+                                   .typed_value = "password1"}},
+            // Remove all forms and the formless fields with user input.
+            .removed_elements =
+                RemovedFormsTestCase::RemovedElements{
+                    .form_ids = {FormRendererId(1), FormRendererId(4),
+                                 FormRendererId(7)},
+                    .field_ids = {FieldRendererId(10), FieldRendererId(11)}},
+            // Expect submission with credentials entered formless fields.
+            .expected_submitted_credentials =
+                RemovedFormsTestCase::SubmittedCredentials{
+                    .username = u"user1",
+                    .password = u"password1",
+                }},
+
+        // Test case 4.
+        RemovedFormsTestCase{
+            .description =
+                "Detect submission when only formless fields removed.",
+            .html = kHtmlWithMultipleForms,
+            // Enter credentials in all formless password fields.
+            .typing_actions = {RemovedFormsTestCase::TypingAction{
+                                   .field_identifier = "un2",
+                                   .field_renderer_id = FieldRendererId(10),
+                                   .typed_value = "user1"},
+                               RemovedFormsTestCase::TypingAction{
+                                   .field_identifier = "pw2",
+                                   .field_renderer_id = FieldRendererId(11),
+                                   .typed_value = "password1"},
+                               RemovedFormsTestCase::TypingAction{
+                                   .field_identifier = "un3",
+                                   .field_renderer_id = FieldRendererId(13),
+                                   .typed_value = "user2"},
+                               RemovedFormsTestCase::TypingAction{
+                                   .field_identifier = "pw3",
+                                   .field_renderer_id = FieldRendererId(14),
+                                   .typed_value = "password2"}},
+            // Remove all forms and the formless fields with user input.
+            .removed_elements =
+                RemovedFormsTestCase::RemovedElements{
+                    .form_ids = {FormRendererId(1), FormRendererId(4),
+                                 FormRendererId(7)},
+                    .field_ids = {FieldRendererId(10), FieldRendererId(11),
+                                  FieldRendererId(12), FieldRendererId(13),
+                                  FieldRendererId(14), FieldRendererId(15)}},
+            // Expect submission data entered in username and password fields
+            // according to base heuristics.
+            .expected_submitted_credentials =
+                RemovedFormsTestCase::SubmittedCredentials{
+                    .username = u"user1",
+                    .password = u"password2",
+                }},
+
+        // Test case 5.
+        RemovedFormsTestCase{
+            .description =
+                "Detect submission when multiple password forms are "
+                "removed. Submission detected for last interacted form.",
+            .html = kHtmlWithMultipleForms,
+            .typing_actions =
+                {// Enter credentials in first password form.
+                 RemovedFormsTestCase::TypingAction{
+                     .form_name = "password_form1",
+                     .form_renderer_id = FormRendererId(1),
+                     .field_identifier = "un0",
+                     .field_renderer_id = FieldRendererId(2),
+                     .typed_value = "user1"},
+                 RemovedFormsTestCase::TypingAction{
+                     .form_name = "password_form1",
+                     .form_renderer_id = FormRendererId(1),
+                     .field_identifier = "pw0",
+                     .field_renderer_id = FieldRendererId(3),
+                     .typed_value = "password1"},
+                 // Enter credentials in formless fields.
+                 RemovedFormsTestCase::TypingAction{
+                     .field_identifier = "un2",
+                     .field_renderer_id = FieldRendererId(10),
+                     .typed_value = "user2"},
+                 RemovedFormsTestCase::TypingAction{
+                     .field_identifier = "pw2",
+                     .field_renderer_id = FieldRendererId(11),
+                     .typed_value = "password2"},
+                 // Enter credentials in second password form.
+                 RemovedFormsTestCase::TypingAction{
+                     .form_name = "password_form2",
+                     .form_renderer_id = FormRendererId(4),
+                     .field_identifier = "un1",
+                     .field_renderer_id = FieldRendererId(5),
+                     .typed_value = "user3"},
+                 RemovedFormsTestCase::TypingAction{
+                     .form_name = "password_form2",
+                     .form_renderer_id = FormRendererId(4),
+                     .field_identifier = "pw1",
+                     .field_renderer_id = FieldRendererId(6),
+                     .typed_value = "password3"}},
+            // Remove all forms and formless fields.
+            .removed_elements =
+                RemovedFormsTestCase::RemovedElements{
+                    .form_ids = {FormRendererId(1), FormRendererId(4),
+                                 FormRendererId(7)},
+                    .field_ids = {FieldRendererId(10), FieldRendererId(11),
+                                  FieldRendererId(12), FieldRendererId(13),
+                                  FieldRendererId(14), FieldRendererId(15)}},
+            // Expect submission with credentials entered in second form which
+            // is the last interacted form.
+            .expected_submitted_credentials =
+                RemovedFormsTestCase::SubmittedCredentials{
+                    .username = u"user3",
+                    .password = u"password3",
+                }},
+
+        // Test case 6.
+        RemovedFormsTestCase{
+            .description = "Detect submission when multiple password forms are "
+                           "removed. Submission detected for last interacted "
+                           "formless form.",
+            .html = kHtmlWithMultipleForms,
+            .typing_actions =
+                {// Enter credentials in first password form.
+                 RemovedFormsTestCase::TypingAction{
+                     .form_name = "password_form1",
+                     .form_renderer_id = FormRendererId(1),
+                     .field_identifier = "un0",
+                     .field_renderer_id = FieldRendererId(2),
+                     .typed_value = "user1"},
+                 RemovedFormsTestCase::TypingAction{
+                     .form_name = "password_form1",
+                     .form_renderer_id = FormRendererId(1),
+                     .field_identifier = "pw0",
+                     .field_renderer_id = FieldRendererId(3),
+                     .typed_value = "password1"},
+                 // Enter credentials in second password form.
+                 RemovedFormsTestCase::TypingAction{
+                     .form_name = "password_form2",
+                     .form_renderer_id = FormRendererId(4),
+                     .field_identifier = "un1",
+                     .field_renderer_id = FieldRendererId(5),
+                     .typed_value = "user3"},
+                 RemovedFormsTestCase::TypingAction{
+                     .form_name = "password_form2",
+                     .form_renderer_id = FormRendererId(4),
+                     .field_identifier = "pw1",
+                     .field_renderer_id = FieldRendererId(6),
+                     .typed_value = "password3"},
+                 // Enter credentials in formless fields.
+                 RemovedFormsTestCase::TypingAction{
+                     .field_identifier = "un2",
+                     .field_renderer_id = FieldRendererId(10),
+                     .typed_value = "user2"},
+                 RemovedFormsTestCase::TypingAction{
+                     .field_identifier = "pw2",
+                     .field_renderer_id = FieldRendererId(11),
+                     .typed_value = "password2"}},
+            // Remove all forms and the formless fields with input.
+            .removed_elements =
+                RemovedFormsTestCase::RemovedElements{
+                    .form_ids = {FormRendererId(1), FormRendererId(4),
+                                 FormRendererId(7)},
+                    .field_ids = {FieldRendererId(10), FieldRendererId(11)}},
+            // Expect submission with credentials entered in formless fields.
+            .expected_submitted_credentials =
+                RemovedFormsTestCase::SubmittedCredentials{
+                    .username = u"user2",
+                    .password = u"password2",
+                }},
+
+        // Test case 7.
+        RemovedFormsTestCase{
+            .description = "Detect submission when one password form is "
+                           "removed with Autofill data.",
+            .html = kHtmlWithPasswordForm,
+            // Save Autofill data in FieldDataManager associated to the form's
+            // fields.
+            .field_data_manager_records =
+                {RemovedFormsTestCase::FieldDataManagerRecord{
+                     .field_renderer_id = FieldRendererId(2),
+                     .value = u"user1"},
+                 RemovedFormsTestCase::FieldDataManagerRecord{
+                     .field_renderer_id = FieldRendererId(3),
+                     .value = u"password1"}},
+            // Remove form.
+            .removed_elements =
+                RemovedFormsTestCase::RemovedElements{
+                    .form_ids = {FormRendererId(1)},
+                },
+            // Expect submission with credentials coming from FieldDataManager.
+            .expected_submitted_credentials =
+                RemovedFormsTestCase::SubmittedCredentials{
+                    .username = u"user1",
+                    .password = u"password1",
+                }},
+
+        // Test case 8.
+        RemovedFormsTestCase{
+            .description = "Detect submission when one formless password field "
+                           "is removed with Autofill data.",
+            .html = kHtmlFormlessPasswordFields,
+            // Save Autofill data in FieldDataManager associated to formless
+            // fields.
+            .field_data_manager_records =
+                {RemovedFormsTestCase::FieldDataManagerRecord{
+                     .field_renderer_id = FieldRendererId(1),
+                     .value = u"user1"},
+                 RemovedFormsTestCase::FieldDataManagerRecord{
+                     .field_renderer_id = FieldRendererId(2),
+                     .value = u"password1"}},
+            // Remove formless fields.
+            .removed_elements =
+                RemovedFormsTestCase::RemovedElements{
+                    .field_ids = {FieldRendererId(1), FieldRendererId(2)},
+                },
+            // Expect submission with credentials coming from FieldDataManager.
+            .expected_submitted_credentials =
+                RemovedFormsTestCase::SubmittedCredentials{
+                    .username = u"user1",
+                    .password = u"password1",
+                }}
+
+        // field_data_manager_records
+        ));
+
+class NoSubmissionDetectedTest : public RemovedFormsTest {
+ public:
+  void TearDown() override {
+    // Ensure the password manager callbacks complete.
+    task_environment_.RunUntilIdle();
+
+    RemovedFormsTest::TearDown();
+  }
+};
+
+TEST_P(NoSubmissionDetectedTest, NoSubmissionDetectedAfterFormRemoval) {
+  const auto& test_case = GetParam();
+  SCOPED_TRACE(::testing::Message("description: ") << test_case.description);
+
+  // Mock saving enabled status.
+  ON_CALL(*weak_client_, IsSavingAndFillingEnabled)
+      .WillByDefault(Return(test_case.saving_enabled));
+
+  // Mock no password forms in store.
+  ON_CALL(*store_, GetLogins)
+      .WillByDefault(WithArg<1>(InvokeEmptyConsumerWithForms(store_.get())));
+
+  LoadHtml(test_case.html);
+
+  WaitForFormManagersCreation();
+
+  std::string main_frame_ID = GetMainWebFrameId();
+
+  // Simulate user actions.
+  for (const auto& typing_action : test_case.typing_actions) {
+    SimulateUserTyping(typing_action.form_name, typing_action.form_renderer_id,
+                       typing_action.field_identifier,
+                       typing_action.field_renderer_id,
+                       typing_action.typed_value, main_frame_ID);
+  }
+
+  EXPECT_CALL(*weak_client_, PromptUserToSaveOrUpdatePassword).Times(0);
+
+  SimulateFormRemovalObserverSignal(test_case.removed_elements.form_ids,
+                                    test_case.removed_elements.field_ids);
+}
+
+INSTANTIATE_TEST_SUITE_P(
+    /*No Instantiation Name*/,
+    NoSubmissionDetectedTest,
+    ::testing::Values(
+        // Test case 0.
+        RemovedFormsTestCase{
+            .description = "No submission detected when "
+                           "saving is disabled.",
+            .html = kHtmlWithPasswordForm,
+            .saving_enabled = false,
+            .typing_actions = {RemovedFormsTestCase::TypingAction{
+                                   .form_name = "login_form",
+                                   .form_renderer_id = FormRendererId(1),
+                                   .field_identifier = "un",
+                                   .field_renderer_id = FieldRendererId(2),
+                                   .typed_value = "user1"},
+                               RemovedFormsTestCase::TypingAction{
+                                   .form_name = "login_form",
+                                   .form_renderer_id = FormRendererId(1),
+                                   .field_identifier = "pw",
+                                   .field_renderer_id = FieldRendererId(3),
+                                   .typed_value = "password1"}},
+            .removed_elements =
+                RemovedFormsTestCase::RemovedElements{
+                    .form_ids = {FormRendererId(1)},
+                }},
+
+        // Test case 1.
+        RemovedFormsTestCase{.description = "No submission without user input",
+                             .html = kHtmlWithPasswordForm,
+                             .removed_elements =
+                                 RemovedFormsTestCase::RemovedElements{
+                                     .form_ids = {FormRendererId(1)},
+                                 }},
+
+        // Test case 2.
+        RemovedFormsTestCase{
+            .description = "No submission detected when removed "
+                           "form is only elegible for manual "
+                           "fallback for saving.",
+            .html = @""
+                     "<form id='form1'>"
+                     "  <input id='username' type='text'>"
+                     "  <input id='one-time-code' "
+                     "type='password'>"
+                     "</form>",
+            .typing_actions = {RemovedFormsTestCase::TypingAction{
+                                   .form_name = "form1",
+                                   .form_renderer_id = FormRendererId(1),
+                                   .field_identifier = "username",
+                                   .field_renderer_id = FieldRendererId(2),
+                                   .typed_value = "user1"},
+                               RemovedFormsTestCase::TypingAction{
+                                   .form_name = "form1",
+                                   .form_renderer_id = FormRendererId(1),
+                                   .field_identifier = "one-time-code",
+                                   .field_renderer_id = FieldRendererId(3),
+                                   .typed_value = "123456"}},
+            .removed_elements =
+                RemovedFormsTestCase::RemovedElements{
+                    .form_ids = {FormRendererId(1)},
+                }},
+
+        // Test case 3.
+        RemovedFormsTestCase{
+            .description =
+                "No submission detected non-password form is removed.",
+            .html = kHtmlWithMultipleForms,
+            // Type in non-password form.
+            .typing_actions = {RemovedFormsTestCase::TypingAction{
+                                   .form_name = "non_password_form1",
+                                   .form_renderer_id = FormRendererId(7),
+                                   .field_identifier = "text1",
+                                   .field_renderer_id = FieldRendererId(8),
+                                   .typed_value = "the text"},
+                               RemovedFormsTestCase::TypingAction{
+                                   .form_name = "non_password_form1",
+                                   .form_renderer_id = FormRendererId(7),
+                                   .field_identifier = "email1",
+                                   .field_renderer_id = FieldRendererId(9),
+                                   .typed_value = "email@email.com"}},
+            .removed_elements =
+                RemovedFormsTestCase::RemovedElements{
+                    .form_ids = {FormRendererId(7)},
+                }},
+
+        // Test case 4.
+        RemovedFormsTestCase{
+            .description = "No submission detected after removing non-password "
+                           "formless fields.",
+            .html = kHtmlWithMultipleForms,
+            // Type in non-password formless fields.
+            .typing_actions = {RemovedFormsTestCase::TypingAction{
+                                   .field_identifier = "un2",
+                                   .field_renderer_id = FieldRendererId(10),
+                                   .typed_value = "the text"},
+                               RemovedFormsTestCase::TypingAction{
+                                   .field_identifier = "email2",
+                                   .field_renderer_id = FieldRendererId(12),
+                                   .typed_value = "email@email.com"}},
+            // Remove formless non-password fields.
+            .removed_elements =
+                RemovedFormsTestCase::RemovedElements{
+
+                    .field_ids = {FieldRendererId(10), FieldRendererId(12)}}},
+
+        // Test case 5.
+        RemovedFormsTestCase{
+            .description = "No submission detected after removing password "
+                           "formless fields but not all have user input.",
+            .html = kHtmlWithMultipleForms,
+            // Type in one non-password formless field.
+            .typing_actions =
+                {
+                    RemovedFormsTestCase::TypingAction{
+                        .field_identifier = "un2",
+                        .field_renderer_id = FieldRendererId(10),
+                        .typed_value = "user"},
+                    RemovedFormsTestCase::TypingAction{
+                        .field_identifier = "pw2",
+                        .field_renderer_id = FieldRendererId(11),
+                        .typed_value = "password"},
+                },
+            // Remove the fields with user input plus one empty password field.
+            .removed_elements =
+                RemovedFormsTestCase::RemovedElements{
+
+                    .field_ids = {FieldRendererId(10), FieldRendererId(11),
+                                  FieldRendererId(14)}}},
+
+        // Test case 6.
+        RemovedFormsTestCase{
+            .description = "No submission detected when password form with "
+                           "user input is not removed.",
+            .html = kHtmlWithMultipleForms,
+            // Type in first password form.
+            .typing_actions = {RemovedFormsTestCase::TypingAction{
+                                   .form_name = "password_form1",
+                                   .form_renderer_id = FormRendererId(1),
+                                   .field_identifier = "un0",
+                                   .field_renderer_id = FieldRendererId(2),
+                                   .typed_value = "user"},
+                               RemovedFormsTestCase::TypingAction{
+                                   .form_name = "password_form1",
+                                   .form_renderer_id = FormRendererId(1),
+                                   .field_identifier = "pw0",
+                                   .field_renderer_id = FieldRendererId(3),
+                                   .typed_value = "password"}},
+            // Remove second password form.
+            .removed_elements =
+                RemovedFormsTestCase::RemovedElements{
+                    .form_ids = {FormRendererId(4)},
+                }}  // no detection when last interacted form not removed
+        ));

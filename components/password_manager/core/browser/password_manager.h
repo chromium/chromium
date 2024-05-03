@@ -7,6 +7,7 @@
 
 #include <map>
 #include <memory>
+#include <set>
 #include <string>
 #include <vector>
 
@@ -115,10 +116,12 @@ class PasswordManager : public PasswordManagerInterface {
                               autofill::FieldRendererId field_id,
                               const std::u16string& field_value) override;
   void OnPasswordNoLongerGenerated() override;
-  void OnPasswordFormRemoved(
+  void OnPasswordFormsRemoved(
       PasswordManagerDriver* driver,
       const autofill::FieldDataManager& field_data_manager,
-      autofill::FormRendererId form_id) override;
+      const std::set<autofill::FormRendererId>& removed_forms,
+      const std::set<autofill::FieldRendererId>& removed_unowned_fields)
+      override;
   void OnIframeDetach(
       const std::string& frame_id,
       PasswordManagerDriver* driver,
@@ -362,6 +365,18 @@ class PasswordManager : public PasswordManagerInterface {
       PasswordFormManager* form_manager,
       const autofill::FieldDataManager& field_data_manager,
       PasswordManagerDriver* driver);
+
+  // Checks `form_manager` for submission after the corresponding form or
+  // formless fields were removed from the page.
+  // - removed_unowned_fields: Formless fields removed in the removal event.
+  // These are only analyzed for the formless form manager, which requires that
+  // all removed password fields have user input when deciding if the form was
+  // submitted.
+  bool DetectPotentialSubmissionAfterFormRemoval(
+      PasswordFormManager* form_manager,
+      const autofill::FieldDataManager& field_data_manager,
+      PasswordManagerDriver* driver,
+      const std::set<autofill::FieldRendererId>& removed_unowned_fields);
 #endif
 
   // PasswordFormManager transition schemes:

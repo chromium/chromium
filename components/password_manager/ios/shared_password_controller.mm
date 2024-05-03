@@ -947,16 +947,6 @@ NSString* const kPasswordFormSuggestionSuffix = @" ••••••••";
       SysNSStringToUTF16(generatedPassword));
 }
 
-// Checks that all fields with |fieldIds| have user input recorded by
-// the FieldDataManager.
-- (BOOL)allFieldsContainUserInput:(const std::set<FieldRendererId>&)fieldIds
-                 fieldDataManager:
-                     (const autofill::FieldDataManager&)fieldDataManager {
-  return base::ranges::all_of(fieldIds, [&fieldDataManager](auto fieldId) {
-    return fieldDataManager.HasFieldData(fieldId);
-  });
-}
-
 #pragma mark - FormActivityObserver
 
 - (void)webState:(web::WebState*)webState
@@ -1004,24 +994,10 @@ NSString* const kPasswordFormSuggestionSuffix = @" ••••••••";
   auto* driver = static_cast<IOSPasswordManagerDriver*>(
       [_driverHelper PasswordManagerDriver:frame]);
 
-  // TODO(crbug.com/330909663): Move unowned fields input check to
-  // PasswordFormManager and only do it if formless form is the last interacted
-  // form.
-  if (!params.removed_unowned_fields.empty()) {
-    // If formless password fields were removed, check that all of them had
-    // user input.
-    if (![self allFieldsContainUserInput:params.removed_unowned_fields
-                        fieldDataManager:driver->field_data_manager()]) {
-      return;
-    }
-  }
-
-  // TODO(crbug.com/330909663): Handle multiple form removals in Password
-  // Manager.
-  _passwordManager->OnPasswordFormRemoved(driver, driver->field_data_manager(),
-                                          params.removed_forms.empty()
-                                              ? FormRendererId()
-                                              : *params.removed_forms.begin());
+  _passwordManager->OnPasswordFormsRemoved(
+      driver, driver->field_data_manager(),
+      /*removed_forms=*/params.removed_forms,
+      /*removed_unowned_fields=*/params.removed_unowned_fields);
 }
 
 @end
