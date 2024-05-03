@@ -2095,10 +2095,20 @@ void CrasAudioHandler::HandleNonHotplugNodesChange(
       if (preferred_device.has_value()) {
         SwitchToDevice(preferred_device.value(), /*notify=*/true,
                        DeviceActivateType::kActivateByPriority);
-      } else if (!ActivateMostRecentActiveDevice(is_input)) {
-        // Fall back to previous approach if no device in the most recently
-        // active device list is currently connected.
-        SwitchToTopPriorityDevice(devices);
+      } else {
+        // Record metrics for Exception Rule #4 that unplugging an active device
+        // and the remaining device set was not seen before.
+        audio_device_metrics_handler_.RecordExceptionRulesMet(
+            is_input ? AudioDeviceMetricsHandler::AudioSelectionExceptionRules::
+                           kInputRule4UnplugDeviceCausesUnseenSet
+                     : AudioDeviceMetricsHandler::AudioSelectionExceptionRules::
+                           kOutputRule4UnplugDeviceCausesUnseenSet);
+
+        if (!ActivateMostRecentActiveDevice(is_input)) {
+          // Fall back to previous approach if no device in the most recently
+          // active device list is currently connected.
+          SwitchToTopPriorityDevice(devices);
+        }
       }
 
       return;

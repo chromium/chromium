@@ -6879,6 +6879,16 @@ TEST_P(
   cras_audio_handler_->SwitchToDevice(usb_headphone_device_1, true,
                                       DeviceActivateType::kActivateByUser);
 
+  // No metrics are fired before unplugging the active device.
+  histogram_tester_.ExpectBucketCount(
+      AudioDeviceMetricsHandler::kAudioSelectionExceptionRuleMetrics,
+      AudioDeviceMetricsHandler::AudioSelectionExceptionRules::
+          kOutputRule4UnplugDeviceCausesUnseenSet,
+      /*expected_count=*/0);
+  histogram_tester_.ExpectTotalCount(
+      AudioDeviceMetricsHandler::kAudioSelectionExceptionRuleMetrics,
+      /*expected_count=*/0);
+
   audio_nodes.clear();
   audio_nodes.push_back(internal_speaker);
   audio_nodes.push_back(usb_headphone_2);
@@ -6888,6 +6898,17 @@ TEST_P(
   ExpectActiveDevice(/*is_input=*/false,
                      /*expected_active_device=*/kHDMIOutput,
                      /*has_alternative_device=*/true);
+
+  // Exception rule #4 metrics are fired after unplugging the active device and
+  // remaining device set was not seen before.
+  histogram_tester_.ExpectBucketCount(
+      AudioDeviceMetricsHandler::kAudioSelectionExceptionRuleMetrics,
+      AudioDeviceMetricsHandler::AudioSelectionExceptionRules::
+          kOutputRule4UnplugDeviceCausesUnseenSet,
+      /*expected_count=*/1);
+  histogram_tester_.ExpectTotalCount(
+      AudioDeviceMetricsHandler::kAudioSelectionExceptionRuleMetrics,
+      /*expected_count=*/1);
 }
 
 // Unplug an active device and the remaining device set was not seen before.
@@ -6921,6 +6942,16 @@ TEST_P(
   cras_audio_handler_->SwitchToDevice(usb_headphone_device_1, true,
                                       DeviceActivateType::kActivateByUser);
 
+  // No metrics are fired before unplugging the active device.
+  histogram_tester_.ExpectBucketCount(
+      AudioDeviceMetricsHandler::kAudioSelectionExceptionRuleMetrics,
+      AudioDeviceMetricsHandler::AudioSelectionExceptionRules::
+          kOutputRule4UnplugDeviceCausesUnseenSet,
+      /*expected_count=*/0);
+  histogram_tester_.ExpectTotalCount(
+      AudioDeviceMetricsHandler::kAudioSelectionExceptionRuleMetrics,
+      /*expected_count=*/0);
+
   AudioNodeList audio_nodes;
   audio_nodes.push_back(hdmi_output);
   audio_nodes.push_back(usb_headphone_2);
@@ -6929,6 +6960,78 @@ TEST_P(
   ExpectActiveDevice(/*is_input=*/false,
                      /*expected_active_device=*/kUSBHeadphone2,
                      /*has_alternative_device=*/true);
+
+  // Exception rule #4 metrics are fired after unplugging the active device and
+  // remaining device set was not seen before.
+  histogram_tester_.ExpectBucketCount(
+      AudioDeviceMetricsHandler::kAudioSelectionExceptionRuleMetrics,
+      AudioDeviceMetricsHandler::AudioSelectionExceptionRules::
+          kOutputRule4UnplugDeviceCausesUnseenSet,
+      /*expected_count=*/1);
+  histogram_tester_.ExpectTotalCount(
+      AudioDeviceMetricsHandler::kAudioSelectionExceptionRuleMetrics,
+      /*expected_count=*/1);
+}
+
+// Unplug an input active device and the remaining device set was not seen
+// before. Exception rule #4 metrics are fired.
+TEST_P(
+    CrasAudioHandlerTest,
+    UnplugActiveDeviceWithRemainingSetUnseenBefore4_AudioSelectionImprovementFlagOn) {
+  scoped_feature_list_.InitAndEnableFeature(
+      ash::features::kAudioSelectionImprovement);
+
+  // Set up initial audio devices, with kBluetoothNbMic, kUSBMic1 and
+  // kUSBMic2.
+  SetupAudioNodesAndExpectActiveNodes(
+      /*initial_nodes=*/{kBluetoothNbMic, kUSBMic1, kUSBMic2},
+      /*expected_active_input_node=*/kUSBMic1,
+      /*expected_active_output_node=*/nullptr,
+      /*expected_has_alternative_input=*/true,
+      /*expected_has_alternative_output=*/std::nullopt);
+
+  AudioNode bluetooth_input = GenerateAudioNode(kBluetoothNbMic);
+  AudioNode usb_mic_1 = GenerateAudioNode(kUSBMic1);
+  AudioNode usb_mic_2 = GenerateAudioNode(kUSBMic2);
+
+  // Activate kUSBMic1 and Unplug it, remaining device set
+  // kBluetoothNbMic, kUSBMic2 was not seen before. There is no most
+  // recently active device available. Fall back to previous approach and expect
+  // that kUSBMic2 is acivated since it has higher default priority than
+  // kBluetoothNbMic.
+  AudioDevice usb_mic_device_1(usb_mic_1);
+  cras_audio_handler_->SwitchToDevice(usb_mic_device_1, true,
+                                      DeviceActivateType::kActivateByUser);
+
+  // No metrics are fired before unplugging the active device.
+  histogram_tester_.ExpectBucketCount(
+      AudioDeviceMetricsHandler::kAudioSelectionExceptionRuleMetrics,
+      AudioDeviceMetricsHandler::AudioSelectionExceptionRules::
+          kInputRule4UnplugDeviceCausesUnseenSet,
+      /*expected_count=*/0);
+  histogram_tester_.ExpectTotalCount(
+      AudioDeviceMetricsHandler::kAudioSelectionExceptionRuleMetrics,
+      /*expected_count=*/0);
+
+  AudioNodeList audio_nodes;
+  audio_nodes.push_back(bluetooth_input);
+  audio_nodes.push_back(usb_mic_2);
+  ChangeAudioNodes(audio_nodes);
+
+  ExpectActiveDevice(/*is_input=*/true,
+                     /*expected_active_device=*/kUSBMic2,
+                     /*has_alternative_device=*/true);
+
+  // Exception rule #4 metrics are fired after unplugging the active device and
+  // remaining device set was not seen before.
+  histogram_tester_.ExpectBucketCount(
+      AudioDeviceMetricsHandler::kAudioSelectionExceptionRuleMetrics,
+      AudioDeviceMetricsHandler::AudioSelectionExceptionRules::
+          kInputRule4UnplugDeviceCausesUnseenSet,
+      /*expected_count=*/1);
+  histogram_tester_.ExpectTotalCount(
+      AudioDeviceMetricsHandler::kAudioSelectionExceptionRuleMetrics,
+      /*expected_count=*/1);
 }
 
 // Tests system boots with only one device kHDMIOutput, kHDMIOutput is expected
