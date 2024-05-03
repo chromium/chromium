@@ -5,3 +5,5 @@ per-file fake_app_launch_splash_screen_handler*=file://chromeos/components/kiosk
 per-file gaia_screen_handler.*=file://ash/login/SAML_INTEGRATION_OWNERS
 per-file kiosk_autolaunch_screen_handler*=file://chromeos/components/kiosk/OWNERS
 per-file kiosk_enable_screen_handler*=file://chromeos/components/kiosk/OWNERS
+
+per-file quick_start_screen_handler.*=file://chrome/browser/ash/login/oobe_quick_start/QUICKSTART_OWNERS
