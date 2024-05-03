@@ -40,8 +40,6 @@
 #include "content/public/common/content_constants.h"
 #include "ui/base/accelerators/accelerator_manager.h"
 #include "ui/base/metadata/metadata_impl_macros.h"
-#include "ui/display/screen.h"
-#include "ui/gfx/geometry/point.h"
 #include "ui/views/controls/webview/webview.h"
 #include "ui/views/focus/focus_manager.h"
 #include "ui/views/layout/box_layout.h"
@@ -363,10 +361,6 @@ PresentationReceiverWindowView::GetExclusiveAccessManager() {
   return &exclusive_access_manager_;
 }
 
-views::Widget* PresentationReceiverWindowView::GetBubbleAssociatedWidget() {
-  return frame_;
-}
-
 ui::AcceleratorProvider*
 PresentationReceiverWindowView::GetAcceleratorProvider() {
   return this;
@@ -374,12 +368,6 @@ PresentationReceiverWindowView::GetAcceleratorProvider() {
 
 gfx::NativeView PresentationReceiverWindowView::GetBubbleParentView() const {
   return frame_->GetNativeView();
-}
-
-gfx::Point PresentationReceiverWindowView::GetCursorPointInParent() const {
-  gfx::Point cursor_pos = display::Screen::GetScreen()->GetCursorScreenPoint();
-  views::View::ConvertPointFromScreen(GetWidget()->GetRootView(), &cursor_pos);
-  return cursor_pos;
 }
 
 gfx::Rect PresentationReceiverWindowView::GetClientAreaBoundsInScreen() const {

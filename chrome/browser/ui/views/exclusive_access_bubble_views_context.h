@@ -13,10 +13,6 @@ namespace ui {
 class AcceleratorProvider;
 }
 
-namespace views {
-class Widget;
-}
-
 // Context in which the exclusive access bubble view is initiated.
 class ExclusiveAccessBubbleViewsContext {
  public:
@@ -24,20 +20,12 @@ class ExclusiveAccessBubbleViewsContext {
   // webview.
   virtual ExclusiveAccessManager* GetExclusiveAccessManager() = 0;
 
-  // Returns the Widget that hosts the view containing the exclusive access
-  // bubble. Not used for the simplified fullscreen UI.
-  virtual views::Widget* GetBubbleAssociatedWidget() = 0;
-
   // Returns the AcceleratorProvider, providing the shortcut key to exit the
   // exclusive access.
   virtual ui::AcceleratorProvider* GetAcceleratorProvider() = 0;
 
   // Returns the view used to parent the bubble Widget.
   virtual gfx::NativeView GetBubbleParentView() const = 0;
-
-  // Return the current mouse cursor location, offset from the top-left of the
-  // parent window.
-  virtual gfx::Point GetCursorPointInParent() const = 0;
 
   // Return the current bounds (not restored bounds) of the parent window.
   virtual gfx::Rect GetClientAreaBoundsInScreen() const = 0;

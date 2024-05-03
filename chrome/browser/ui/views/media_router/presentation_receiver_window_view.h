@@ -104,10 +104,8 @@ class PresentationReceiverWindowView final
 
   // ExclusiveAccessBubbleViewsContext overrides.
   ExclusiveAccessManager* GetExclusiveAccessManager() final;
-  views::Widget* GetBubbleAssociatedWidget() final;
   ui::AcceleratorProvider* GetAcceleratorProvider() final;
   gfx::NativeView GetBubbleParentView() const final;
-  gfx::Point GetCursorPointInParent() const final;
   gfx::Rect GetClientAreaBoundsInScreen() const final;
   bool IsImmersiveModeEnabled() const final;
   gfx::Rect GetTopContainerBoundsInScreen() final;

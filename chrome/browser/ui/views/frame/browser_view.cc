@@ -5328,22 +5328,12 @@ ExclusiveAccessManager* BrowserView::GetExclusiveAccessManager() {
   return browser_->exclusive_access_manager();
 }
 
-views::Widget* BrowserView::GetBubbleAssociatedWidget() {
-  return GetWidget();
-}
-
 ui::AcceleratorProvider* BrowserView::GetAcceleratorProvider() {
   return this;
 }
 
 gfx::NativeView BrowserView::GetBubbleParentView() const {
   return GetWidget()->GetNativeView();
-}
-
-gfx::Point BrowserView::GetCursorPointInParent() const {
-  gfx::Point cursor_pos = display::Screen::GetScreen()->GetCursorScreenPoint();
-  views::View::ConvertPointFromScreen(GetWidget()->GetRootView(), &cursor_pos);
-  return cursor_pos;
 }
 
 gfx::Rect BrowserView::GetClientAreaBoundsInScreen() const {

@@ -522,10 +522,6 @@ ChromeNativeAppWindowViewsAuraAsh::GetExclusiveAccessManager() {
   return exclusive_access_manager_.get();
 }
 
-views::Widget* ChromeNativeAppWindowViewsAuraAsh::GetBubbleAssociatedWidget() {
-  return widget();
-}
-
 ui::AcceleratorProvider*
 ChromeNativeAppWindowViewsAuraAsh::GetAcceleratorProvider() {
   return this;
@@ -533,12 +529,6 @@ ChromeNativeAppWindowViewsAuraAsh::GetAcceleratorProvider() {
 
 gfx::NativeView ChromeNativeAppWindowViewsAuraAsh::GetBubbleParentView() const {
   return widget()->GetNativeView();
-}
-
-gfx::Point ChromeNativeAppWindowViewsAuraAsh::GetCursorPointInParent() const {
-  gfx::Point cursor_pos = display::Screen::GetScreen()->GetCursorScreenPoint();
-  views::View::ConvertPointFromScreen(widget()->GetRootView(), &cursor_pos);
-  return cursor_pos;
 }
 
 gfx::Rect ChromeNativeAppWindowViewsAuraAsh::GetClientAreaBoundsInScreen()
