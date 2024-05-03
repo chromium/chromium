@@ -501,6 +501,34 @@ IN_PROC_BROWSER_TEST_F(PageColorsBrowserClientTest,
                    "background-color').toString()"));
 }
 
+IN_PROC_BROWSER_TEST_F(PageColorsBrowserClientTest,
+                       PageColorsAffectsCssPseudoElements) {
+  browser()->profile()->GetPrefs()->SetBoolean(
+      prefs::kApplyPageColorsOnlyOnIncreasedContrast, false);
+  browser()->profile()->GetPrefs()->SetInteger(
+      prefs::kPageColors, ui::NativeTheme::PageColors::kDesert);
+
+  browser()
+      ->tab_strip_model()
+      ->GetActiveWebContents()
+      ->OnWebPreferencesChanged();
+
+  ASSERT_TRUE(ui_test_utils::NavigateToURL(
+      browser(), ui_test_utils::GetTestUrl(
+                     base::FilePath(base::FilePath::kCurrentDirectory),
+                     base::FilePath(FILE_PATH_LITERAL("system-colors.html")))));
+
+  // Check that the right system color is applied for Pseudo elements when
+  // Forced Colors is enabled. For the Desert theme, the color value for
+  // WindowText is 0x3D3D3D which corresponds to rgb(61, 61, 61).
+  std::string expected_element_color = "rgb(61, 61, 61)";
+  EXPECT_EQ(expected_element_color,
+            EvalJs(browser()->tab_strip_model()->GetActiveWebContents(),
+                   "window.getComputedStyle(document.getElementById('icon'), "
+                   "'::before')."
+                   "getPropertyValue('color').toString()"));
+}
+
 // Tests for the preferred color scheme for a given WebContents. The first param
 // controls whether the web NativeTheme is light or dark the second controls
 // whether the color mode on the associated color provider is light or dark.

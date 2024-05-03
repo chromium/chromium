@@ -1,0 +1,20 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Icon with Pseudo-element</title>
+<style>
+  #icon::before {
+    content: '★'; /* Unicode character for a star */
+    font-size: 24px; /* Icon size */
+    color: #f0ad4e; /* Icon color */
+    display: inline-block;
+    margin-right: 8px; /* Space between icon and text */
+  }
+</style>
+</head>
+<body>
+<div id="icon">Star Icon</div>
+</body>
+</html>
