@@ -138,6 +138,12 @@ class CameraAppUIDelegate {
   virtual void RenderPdfAsJpeg(
       const std::vector<uint8_t>& pdf,
       base::OnceCallback<void(const std::vector<uint8_t>&)> callback) = 0;
+
+  // Adds an invisible text layer on the inaccessible PDF and returns a
+  // searchable PDF.
+  virtual void Searchify(
+      const std::vector<uint8_t>& pdf,
+      base::OnceCallback<void(const std::vector<uint8_t>&)> callback) = 0;
 };
 
 }  // namespace ash

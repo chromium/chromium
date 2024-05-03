@@ -13,15 +13,19 @@
 #include "base/files/file_path_watcher.h"
 #include "base/functional/callback.h"
 #include "base/memory/raw_ptr.h"
+#include "base/memory/scoped_refptr.h"
 #include "base/memory/weak_ptr.h"
 #include "base/task/sequenced_task_runner.h"
 #include "base/time/time.h"
 #include "base/timer/timer.h"
+#include "chrome/browser/screen_ai/public/optical_character_recognizer.h"
 #include "chrome/browser/ui/webui/ash/system_web_dialog_delegate.h"
+#include "chrome/services/pdf/public/mojom/pdf_searchifier.mojom.h"
 #include "chrome/services/pdf/public/mojom/pdf_service.mojom.h"
 #include "chrome/services/pdf/public/mojom/pdf_thumbnailer.mojom.h"
 #include "content/public/browser/media_stream_request.h"
 #include "content/public/browser/web_ui.h"
+#include "mojo/public/cpp/bindings/receiver_set.h"
 #include "mojo/public/cpp/bindings/remote.h"
 #include "mojo/public/cpp/bindings/remote_set.h"
 
@@ -118,14 +122,19 @@ class ChromeCameraAppUIDelegate : public ash::CameraAppUIDelegate {
         weak_factory_{this};
   };
 
-  class PdfServiceManager {
+  class PdfServiceManager : public pdf::mojom::Ocr {
    public:
-    PdfServiceManager();
+    explicit PdfServiceManager(
+        scoped_refptr<screen_ai::OpticalCharacterRecognizer>
+            optical_character_recognizer);
     PdfServiceManager(const PdfServiceManager&) = delete;
     PdfServiceManager& operator=(const PdfServiceManager&) = delete;
-    ~PdfServiceManager();
+    ~PdfServiceManager() override;
 
     void GetThumbnail(
+        const std::vector<uint8_t>& pdf,
+        base::OnceCallback<void(const std::vector<uint8_t>&)> callback);
+    void Searchify(
         const std::vector<uint8_t>& pdf,
         base::OnceCallback<void(const std::vector<uint8_t>&)> callback);
 
@@ -135,11 +144,32 @@ class ChromeCameraAppUIDelegate : public ash::CameraAppUIDelegate {
                       const SkBitmap& bitmap);
     void ConsumeGotThumbnailCallback(const std::vector<uint8_t>& thumbnail,
                                      mojo::RemoteSetElementId id);
+    void Searchified(mojo::RemoteSetElementId pdf_service_id,
+                     mojo::RemoteSetElementId pdf_searchifier_id,
+                     const std::vector<uint8_t>& pdf);
+    void ConsumeSearchifiedCallback(const std::vector<uint8_t>& pdf,
+                                    mojo::RemoteSetElementId id);
+    mojo::PendingRemote<pdf::mojom::Ocr> CreateOcrRemote();
+
+    //  pdf::mojom::Ocr
+    void PerformOcr(
+        const SkBitmap& image,
+        base::OnceCallback<void(screen_ai::mojom::VisualAnnotationPtr)>
+            got_annotation_callback) override;
 
     mojo::RemoteSet<pdf::mojom::PdfThumbnailer> pdf_thumbnailers_;
     base::flat_map<mojo::RemoteSetElementId,
                    base::OnceCallback<void(const std::vector<uint8_t>&)>>
         pdf_thumbnailer_callbacks;
+
+    mojo::RemoteSet<pdf::mojom::PdfSearchifier> pdf_searchifiers_;
+    base::flat_map<mojo::RemoteSetElementId,
+                   base::OnceCallback<void(const std::vector<uint8_t>&)>>
+        pdf_searchifier_callbacks_;
+    mojo::ReceiverSet<pdf::mojom::Ocr> ocr_receivers_;
+    scoped_refptr<screen_ai::OpticalCharacterRecognizer>
+        optical_character_recognizer_;
+
     mojo::RemoteSet<pdf::mojom::PdfService> pdf_services_;
     base::WeakPtrFactory<PdfServiceManager> weak_factory_{this};
   };
@@ -176,6 +206,9 @@ class ChromeCameraAppUIDelegate : public ash::CameraAppUIDelegate {
   void RenderPdfAsJpeg(
       const std::vector<uint8_t>& pdf,
       base::OnceCallback<void(const std::vector<uint8_t>&)> callback) override;
+  void Searchify(
+      const std::vector<uint8_t>& pdf,
+      base::OnceCallback<void(const std::vector<uint8_t>&)> callback) override;
 
  private:
   base::FilePath GetMyFilesFolder();
@@ -202,7 +235,10 @@ class ChromeCameraAppUIDelegate : public ash::CameraAppUIDelegate {
   base::WeakPtr<ChromeCameraAppUIDelegate::StorageMonitor>
       storage_monitor_weak_ptr_;
 
-  PdfServiceManager pdf_service_manager_;
+  std::unique_ptr<PdfServiceManager> pdf_service_manager_;
+
+  scoped_refptr<screen_ai::OpticalCharacterRecognizer>
+      optical_character_recognizer_;
 
   // Weak pointer for this class |ChromeCameraAppUIDelegate|, used to run on
   // main thread (mojo thread).
