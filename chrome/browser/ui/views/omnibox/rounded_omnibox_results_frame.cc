@@ -228,16 +228,8 @@ RoundedOmniboxResultsFrame::RoundedOmniboxResultsFrame(
   contents_host_->layer()->SetFillsBoundsOpaquely(false);
 
   // Use rounded corners.
-  bool cr23_expanded_shape =
-      base::FeatureList::IsEnabled(omnibox::kExpandedStateShape) ||
-      features::GetChromeRefresh2023Level() ==
-          features::ChromeRefresh2023Level::kLevel2;
-  int corner_radius =
-      cr23_expanded_shape
-          ? views::LayoutProvider::Get()->GetCornerRadiusMetric(
-                views::ShapeContextTokens::kOmniboxExpandedRadius)
-          : views::LayoutProvider::Get()->GetCornerRadiusMetric(
-                views::Emphasis::kHigh);
+  int corner_radius = views::LayoutProvider::Get()->GetCornerRadiusMetric(
+      views::ShapeContextTokens::kOmniboxExpandedRadius);
   contents_host_->layer()->SetRoundedCornerRadius(
       gfx::RoundedCornersF(corner_radius));
   contents_host_->layer()->SetIsFastRoundedCorner(true);
@@ -290,12 +282,8 @@ int RoundedOmniboxResultsFrame::GetNonResultSectionHeight() {
 gfx::Insets RoundedOmniboxResultsFrame::GetLocationBarAlignmentInsets() {
   if (ui::TouchUiController::Get()->touch_ui()) {
     return gfx::Insets::TLBR(6, 1, 5, 1);
-  } else if (base::FeatureList::IsEnabled(omnibox::kExpandedStateHeight) ||
-             features::GetChromeRefresh2023Level() ==
-                 features::ChromeRefresh2023Level::kLevel2) {
-    return gfx::Insets::VH(5, 6);
   }
-  return gfx::Insets::VH(4, 6);
+  return gfx::Insets::VH(5, 6);
 }
 
 // static

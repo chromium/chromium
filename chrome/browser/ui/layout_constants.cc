@@ -71,13 +71,7 @@ int GetLayoutConstant(LayoutConstant constant) {
     case LOCATION_BAR_TRAILING_DECORATION_EDGE_PADDING:
       return touch_ui ? 3 : 12;
     case LOCATION_BAR_HEIGHT:
-      if (base::FeatureList::IsEnabled(omnibox::kOmniboxSteadyStateHeight) ||
-          features::GetChromeRefresh2023Level() ==
-              features::ChromeRefresh2023Level::kLevel2) {
-        return touch_ui ? 36 : 34;
-      } else {
-        return touch_ui ? 36 : 28;
-      }
+      return touch_ui ? 36 : 34;
     case LOCATION_BAR_ICON_SIZE:
       return touch_ui ? 20 : 16;
     case LOCATION_BAR_LEADING_ICON_SIZE:

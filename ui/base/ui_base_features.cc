@@ -587,40 +587,6 @@ bool IsChromeWebuiRefresh2023() {
           base::FeatureList::IsEnabled(kChromeRefreshSecondary2023));
 }
 
-constexpr base::FeatureParam<ChromeRefresh2023Level>::Option
-    kChromeRefresh2023LevelOption[] = {{ChromeRefresh2023Level::kLevel1, "1"},
-                                       {ChromeRefresh2023Level::kLevel2, "2"}};
-
-const base::FeatureParam<ChromeRefresh2023Level> kChromeRefresh2023Level(
-    &kChromeRefresh2023,
-    "level",
-    ChromeRefresh2023Level::kLevel2,
-    &kChromeRefresh2023LevelOption);
-
-ChromeRefresh2023Level GetChromeRefresh2023LevelUncached() {
-  if (!CustomizeChromeSupportsChromeRefresh2023()) {
-    // Bail before checking any other feature flags so that associated studies
-    // don't get activated.
-    return ChromeRefresh2023Level::kDisabled;
-  }
-  // For simplicity, the secondary field trial to enable chrome refresh will
-  // also enable the omnibox refresh.
-  if (base::FeatureList::IsEnabled(kChromeRefreshSecondary2023)) {
-    return ChromeRefresh2023Level::kLevel2;
-  }
-
-  return IsChromeRefresh2023() ? kChromeRefresh2023Level.Get()
-                               : ChromeRefresh2023Level::kDisabled;
-}
-
-ChromeRefresh2023Level GetChromeRefresh2023Level() {
-  // Cached due to frequent calls for performance optimization.
-  // Please update `GetChromeRefresh2023LevelUncached()` for any changes.
-  static const ChromeRefresh2023Level level =
-      GetChromeRefresh2023LevelUncached();
-  return level;
-}
-
 BASE_FEATURE(kBubbleMetricsApi,
              "BubbleMetricsApi",
              base::FEATURE_DISABLED_BY_DEFAULT);

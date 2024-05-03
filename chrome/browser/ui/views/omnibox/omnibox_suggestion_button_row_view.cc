@@ -76,21 +76,10 @@ class OmniboxSuggestionRowButton : public views::MdTextButton {
                              ui::EF_MIDDLE_MOUSE_BUTTON);
     views::InstallPillHighlightPathGenerator(this);
 
-    if (base::FeatureList::IsEnabled(omnibox::kCr2023ActionChips) ||
-        features::GetChromeRefresh2023Level() ==
-            features::ChromeRefresh2023Level::kLevel2) {
-      SetImageLabelSpacing(8);
-      SetCustomPadding(ChromeLayoutProvider::Get()->GetInsetsMetric(
-          INSETS_OMNIBOX_PILL_BUTTON));
-      SetCornerRadius(GetLayoutConstant(TOOLBAR_CORNER_RADIUS));
-    } else {
-      SetImageLabelSpacing(ChromeLayoutProvider::Get()->GetDistanceMetric(
-          DISTANCE_RELATED_LABEL_HORIZONTAL_LIST));
-      SetCustomPadding(ChromeLayoutProvider::Get()->GetInsetsMetric(
-          INSETS_OMNIBOX_PILL_BUTTON));
-      SetCornerRadius(GetInsets().height() +
-                      GetLayoutConstant(LOCATION_BAR_ICON_SIZE));
-    }
+    SetImageLabelSpacing(8);
+    SetCustomPadding(ChromeLayoutProvider::Get()->GetInsetsMetric(
+        INSETS_OMNIBOX_PILL_BUTTON));
+    SetCornerRadius(GetLayoutConstant(TOOLBAR_CORNER_RADIUS));
 
     auto* const ink_drop = views::InkDrop::Get(this);
     if (!Cr2023ExpandedStateColorsEnabled())

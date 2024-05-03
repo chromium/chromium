@@ -79,10 +79,7 @@ gfx::Insets ChromeLayoutProvider::GetInsetsMetric(int metric) const {
     case INSETS_TOAST:
       return gfx::Insets::VH(0, kHarmonyLayoutUnit);
     case INSETS_OMNIBOX_PILL_BUTTON:
-      if ((base::FeatureList::IsEnabled(omnibox::kCr2023ActionChips) ||
-           features::GetChromeRefresh2023Level() ==
-               features::ChromeRefresh2023Level::kLevel2) &&
-          !touch_ui) {
+      if (!touch_ui) {
         return gfx::Insets::VH(4, 8);
       } else {
         return touch_ui

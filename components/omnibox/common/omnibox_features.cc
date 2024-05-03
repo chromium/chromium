@@ -477,15 +477,7 @@ BASE_FEATURE(kCategoricalSuggestions,
 BASE_FEATURE(kMergeSubtypes, "MergeSubtypes", base::FEATURE_ENABLED_BY_DEFAULT);
 
 bool IsOmniboxCr23CustomizeGuardedFeatureEnabled(const base::Feature& feature) {
-  if (!features::CustomizeChromeSupportsChromeRefresh2023()) {
-    // Bail before checking any other feature flags so that associated studies
-    // don't get activated.
-    return false;
-  }
-
-  return features::GetChromeRefresh2023Level() ==
-             features::ChromeRefresh2023Level::kLevel2 ||
-         base::FeatureList::IsEnabled(feature);
+  return features::CustomizeChromeSupportsChromeRefresh2023();
 }
 
 // If enabled, sends a signal when a user touches down on a search suggestion to

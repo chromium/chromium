@@ -272,25 +272,6 @@ BASE_DECLARE_FEATURE(kChromeWebuiRefresh2023);
 
 COMPONENT_EXPORT(UI_BASE_FEATURES) bool IsChromeWebuiRefresh2023();
 
-// If you are not Omnibox developer, you don't need to query CR2023 level.
-// Otherwise, please ensure that Omnibox features are guarded by an OR; enabling
-// either CR2023 Level2 or the feature-specific features should enable them
-// respectively.
-enum class ChromeRefresh2023Level {
-  // ChromeRefresh2023 is disabled.
-  kDisabled = 0,
-  // Enables ChromeRefresh2023 without Omnibox changes.
-  // Omnibox features can still be independently enabled by feature-specific
-  // Features.
-  kLevel1 = 1,
-  // Enables ChromeRefresh2023 with full Omnibox changes.
-  // Omnibox feature-specific features can be enabled on top of Level2 to gain
-  // additional control using their FeatureParams.
-  kLevel2 = 2,
-};
-COMPONENT_EXPORT(UI_BASE_FEATURES)
-ChromeRefresh2023Level GetChromeRefresh2023Level();
-
 COMPONENT_EXPORT(UI_BASE_FEATURES)
 BASE_DECLARE_FEATURE(kBubbleMetricsApi);
 
