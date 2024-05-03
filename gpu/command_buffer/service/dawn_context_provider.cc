@@ -218,7 +218,7 @@ class DawnSharedState : public base::RefCountedThreadSafe<DawnSharedState>,
                                void* userdata) {
     if (auto& caching_interface =
             static_cast<DawnSharedState*>(userdata)->caching_interface_) {
-      caching_interface->LoadData(key, key_size, value, value_size);
+      return caching_interface->LoadData(key, key_size, value, value_size);
     }
     return 0;
   }
