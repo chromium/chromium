@@ -12,8 +12,6 @@ set -o pipefail
 # An auto-created directory whose content will ultimately be uploaded to CIPD.
 # The commands below should output the built product to this directory.
 PREFIX="$1"
-CLANG_VERSION="17"
-LIB="lib"
 
 # Glob patterns to include from the NDK.
 GLOB_INCLUDES=(
@@ -22,10 +20,9 @@ GLOB_INCLUDES=(
   # Used for remote debugging, include server / client binaries and libs.
   toolchains/llvm/prebuilt/linux-x86_64/bin/lldb
   toolchains/llvm/prebuilt/linux-x86_64/bin/lldb.sh
-  toolchains/llvm/prebuilt/linux-x86_64/${LIB}/clang/${CLANG_VERSION}/lib/linux/*/lldb-server
-  toolchains/llvm/prebuilt/linux-x86_64/${LIB}/lib*.*
-  toolchains/llvm/prebuilt/linux-x86_64/${LIB}/python3
-  toolchains/llvm/prebuilt/linux-x86_64/${LIB}/python3.10
+  toolchains/llvm/prebuilt/linux-x86_64/lib/clang/*/lib/linux/*/lldb-server
+  toolchains/llvm/prebuilt/linux-x86_64/lib/lib*.so*
+  toolchains/llvm/prebuilt/linux-x86_64/lib/python*
   toolchains/llvm/prebuilt/linux-x86_64/python3
   # Used for compilation.
   toolchains/llvm/prebuilt/linux-x86_64/sysroot

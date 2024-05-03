@@ -12,7 +12,6 @@ set -o pipefail
 # An auto-created directory whose content will ultimately be uploaded to CIPD.
 # The commands below should output the built product to this directory.
 PREFIX="$1"
-CLANG_VERSION="14.0.7"
 
 # Glob patterns to include from the NDK.
 GLOB_INCLUDES=(
