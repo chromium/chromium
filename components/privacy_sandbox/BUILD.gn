@@ -103,20 +103,6 @@ static_library("tracking_protection_prefs") {
   public_deps = [ "//base" ]
 }
 
-source_set("privacy_sandbox_notice_storage") {
-  sources = [
-    "privacy_sandbox_notice_storage.cc",
-    "privacy_sandbox_notice_storage.h",
-  ]
-
-  deps = [
-    "//components/pref_registry:pref_registry",
-    "//components/prefs",
-  ]
-
-  public_deps = [ "//base" ]
-}
-
 # These sources depend on targets from "//content/browser", which means they can't be
 # loaded on ios.
 # TOOD(b/301947962): Delete this check after CookieSettings is removed from iOS.
@@ -211,14 +197,10 @@ if (use_blink) {
 
 source_set("unit_tests") {
   testonly = true
-  sources = [
-    "privacy_sandbox_notice_storage_unittest.cc",
-    "tracking_protection_onboarding_unittest.cc",
-  ]
+  sources = [ "tracking_protection_onboarding_unittest.cc" ]
 
   deps = [
     ":features",
-    ":privacy_sandbox_notice_storage",
     ":privacy_sandbox_prefs",
     ":tracking_protection_onboarding",
     ":tracking_protection_prefs",
