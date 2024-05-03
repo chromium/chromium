@@ -285,7 +285,36 @@ void TestNativeDisplayDelegate::SetPrivacyScreen(
 void TestNativeDisplayDelegate::GetSeamlessRefreshRates(
     int64_t display_id,
     GetSeamlessRefreshRatesCallback callback) const {
-  std::move(callback).Run(std::nullopt);
+  const DisplaySnapshot* snapshot = nullptr;
+  for (const auto& output : outputs_) {
+    if (output->display_id() == display_id) {
+      snapshot = output.get();
+      break;
+    }
+  }
+  // Return nullopt if there is no snapshot with this display_id.
+  std::optional<std::vector<float>> result;
+  if (snapshot) {
+    // Return empty vector if there is no current mode.
+    std::vector<float> refresh_rates;
+    if (snapshot->current_mode()) {
+      for (auto& mode : snapshot->modes()) {
+        // If a mode has the same size as the currently configured mode, then
+        // include that mode's refresh rate.
+        if (mode->size() == snapshot->current_mode()->size()) {
+          refresh_rates.push_back(mode->refresh_rate());
+        }
+      }
+    }
+    result.emplace(refresh_rates);
+  }
+
+  if (run_async_) {
+    base::SingleThreadTaskRunner::GetCurrentDefault()->PostTask(
+        FROM_HERE, base::BindOnce(std::move(callback), result));
+  } else {
+    std::move(callback).Run(result);
+  }
 }
 
 void TestNativeDisplayDelegate::AddObserver(NativeDisplayObserver* observer) {
