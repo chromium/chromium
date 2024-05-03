@@ -17,10 +17,12 @@ import org.junit.Assert;
 import org.junit.Before;
 import org.junit.Test;
 import org.junit.runner.RunWith;
+import org.mockito.Mock;
 import org.mockito.Mockito;
 import org.robolectric.annotation.Config;
 
 import org.chromium.base.test.BaseRobolectricTestRunner;
+import org.chromium.chrome.browser.profiles.Profile;
 import org.chromium.chrome.browser.tab_resumption.UrlImageProvider.UrlImageSource;
 import org.chromium.components.browser_ui.widget.RoundedIconGenerator;
 import org.chromium.components.favicon.IconType;
@@ -60,6 +62,8 @@ public class TabResumptionModuleSuggestionsUnitTest extends TestSupport {
             return true;
         }
     }
+
+    @Mock private Profile mProfile;
 
     // Various test value that satisfy FOO_LO < FOO_0 < FOO_HI.
     private static final String SOURCE_NAME_LO = "Desktop";
@@ -234,7 +238,7 @@ public class TabResumptionModuleSuggestionsUnitTest extends TestSupport {
         when(urlImageSource.createLargeIconBridge()).thenReturn(largeIconBridge);
         when(urlImageSource.createIconGenerator()).thenReturn(roundedIconGenerator);
         Context context = ApplicationProvider.getApplicationContext();
-        UrlImageProvider urlImageProvider = new UrlImageProvider(urlImageSource, context);
+        UrlImageProvider urlImageProvider = new UrlImageProvider(mProfile, urlImageSource, context);
 
         urlImageProvider.fetchImageForUrl(
                 urlWithFavicon,

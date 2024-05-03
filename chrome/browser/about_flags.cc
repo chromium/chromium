@@ -2546,15 +2546,22 @@ const FeatureEntry::FeatureVariation
 
 const FeatureEntry::FeatureParam kTabResumptionModule_enable_v2[] = {
     {"enable_v2", "true"}};
-const FeatureEntry::FeatureParam kTabResumptionModule_single_tile[] = {
-    {"enable_v2", "true"},
-    {"max_tiles_number", "1"},
+const FeatureEntry::FeatureParam kTabResumptionModules_salient_image[] = {
+    {"use_salient_image", "true"},
+};
+const FeatureEntry::FeatureParam
+    kTabResumptionModule_single_tile_with_salient_image[] = {
+        {"use_salient_image", "true"},
+        {"max_tiles_number", "1"},
 };
 const FeatureEntry::FeatureVariation kTabResumptionModuleAndroidVariations[] = {
-    {"Arm 1 V2", kTabResumptionModule_enable_v2,
+    {"V2", kTabResumptionModule_enable_v2,
      std::size(kTabResumptionModule_enable_v2), nullptr},
-    {"Arm 3 Single tile", kTabResumptionModule_single_tile,
-     std::size(kTabResumptionModule_single_tile), nullptr},
+    {"Salient image", kTabResumptionModules_salient_image,
+     std::size(kTabResumptionModules_salient_image), nullptr},
+    {"Salient image + single tile",
+     kTabResumptionModule_single_tile_with_salient_image,
+     std::size(kTabResumptionModule_single_tile_with_salient_image), nullptr},
 };
 const FeatureEntry::FeatureParam
     kNotificationPermissionRationale_show_dialog_next_start[] = {

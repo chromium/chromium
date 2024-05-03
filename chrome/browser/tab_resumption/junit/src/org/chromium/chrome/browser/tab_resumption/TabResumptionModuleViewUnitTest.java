@@ -67,6 +67,7 @@ public class TabResumptionModuleViewUnitTest extends TestSupport {
     @Captor private ArgumentCaptor<GURL> mFetchImagePageUrlCaptor;
     @Captor private ArgumentCaptor<Callback<Bitmap>> mThumbnailProviderCaptor;
     @Captor private ArgumentCaptor<UrlImageCallback> mFetchImageCallbackCaptor;
+    @Captor private ArgumentCaptor<Callback<Bitmap>> mFetchSalientImageCallbackCaptor;
 
     private TabResumptionModuleView mModuleView;
     private Size mThumbnailSize;
@@ -188,6 +189,67 @@ public class TabResumptionModuleViewUnitTest extends TestSupport {
         // Provide test image, and check that it's shown as icon.
         Bitmap bitmap1 = makeBitmap(64, 64);
         mFetchImageCallbackCaptor.getAllValues().get(0).onBitmap(bitmap1);
+        BitmapDrawable drawable1 =
+                (BitmapDrawable) ((ImageView) tile1.findViewById(R.id.tile_icon)).getDrawable();
+        Assert.assertNotNull(drawable1);
+        Assert.assertEquals(bitmap1, drawable1.getBitmap());
+
+        // Simulate click.
+        Assert.assertEquals(0, mClickCount);
+        Assert.assertEquals(null, mLastClickUrl);
+        tile1.performClick();
+        Assert.assertEquals(1, mClickCount);
+        Assert.assertEquals(JUnitTestGURLs.GOOGLE_URL_DOG, mLastClickUrl);
+    }
+
+    @Test
+    @SmallTest
+    public void testRenderSingle_SalientImage() {
+        mModuleView.setUseSalientImage(true);
+
+        SuggestionEntry entry1 =
+                new SuggestionEntry(
+                        /* sourceName= */ "Desktop",
+                        /* url= */ JUnitTestGURLs.GOOGLE_URL_DOG,
+                        /* title= */ "Google Dog",
+                        /* timestamp= */ makeTimestamp(24 - 3, 0, 0),
+                        /* id= */ 90);
+        mSuggestionBundle.entries.add(entry1);
+
+        Assert.assertEquals(0, mTileContainerView.getChildCount());
+
+        mModuleView.setSuggestionBundle(mSuggestionBundle);
+        Assert.assertEquals(1, mTileContainerView.getChildCount());
+
+        // Capture call to fetch image.
+        verify(mUrlImageProvider, atLeastOnce())
+                .fetchSalientImageWithFallback(
+                        mFetchImagePageUrlCaptor.capture(),
+                        eq(true),
+                        mFetchSalientImageCallbackCaptor.capture(),
+                        mFetchImageCallbackCaptor.capture());
+        Assert.assertEquals(1, mFetchImagePageUrlCaptor.getAllValues().size());
+        Assert.assertEquals(1, mFetchSalientImageCallbackCaptor.getAllValues().size());
+        Assert.assertEquals(
+                JUnitTestGURLs.GOOGLE_URL_DOG, mFetchImagePageUrlCaptor.getAllValues().get(0));
+
+        // Check tile texts.
+        TabResumptionTileView tile1 = (TabResumptionTileView) mTileContainerView.getChildAt(0);
+        Assert.assertEquals(
+                "From Desktop", ((TextView) tile1.findViewById(R.id.tile_pre_info_text)).getText());
+        Assert.assertEquals(
+                "Google Dog", ((TextView) tile1.findViewById(R.id.tile_display_text)).getText());
+        // Actual code would remove "www." prefix, but the test's JNI mock doesn't do so.
+        Assert.assertEquals(
+                "www.google.com \u2022 3 hr ago",
+                ((TextView) tile1.findViewById(R.id.tile_post_info_text)).getText());
+
+        // Image is not loaded yet.
+        Assert.assertNull(((ImageView) tile1.findViewById(R.id.tile_icon)).getDrawable());
+
+        // Provide test image, and check that it's shown as icon.
+        Bitmap bitmap1 = makeBitmap(64, 64);
+        mFetchSalientImageCallbackCaptor.getAllValues().get(0).onResult(bitmap1);
         BitmapDrawable drawable1 =
                 (BitmapDrawable) ((ImageView) tile1.findViewById(R.id.tile_icon)).getDrawable();
         Assert.assertNotNull(drawable1);

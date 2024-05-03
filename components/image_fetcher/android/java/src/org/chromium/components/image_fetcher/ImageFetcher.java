@@ -36,6 +36,7 @@ public abstract class ImageFetcher {
     public static final String WEB_ID_ACCOUNT_SELECTION_UMA_CLIENT_NAME = "WebIDAccountSelection";
     public static final String WEB_NOTES_UMA_CLIENT_NAME = "WebNotes";
     public static final String PRICE_CHANGE_MODULE_NAME = "PriceChangeModule";
+    public static final String TAB_RESUMPTION_MODULE_NAME = "TabResumptionModule";
 
     /**
      * Encapsulates image fetching customization options. Supports a subset of the native

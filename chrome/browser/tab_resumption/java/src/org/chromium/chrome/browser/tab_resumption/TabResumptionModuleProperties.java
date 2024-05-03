@@ -12,6 +12,8 @@ import org.chromium.ui.modelutil.PropertyModel.WritableObjectPropertyKey;
 
 interface TabResumptionModuleProperties {
     WritableBooleanPropertyKey IS_VISIBLE = new WritableBooleanPropertyKey();
+    WritableBooleanPropertyKey USE_SALIENT_IMAGE = new WritableBooleanPropertyKey();
+
     WritableObjectPropertyKey<UrlImageProvider> URL_IMAGE_PROVIDER =
             new WritableObjectPropertyKey();
     WritableObjectPropertyKey<ThumbnailProvider> THUMBNAIL_PROVIDER =
@@ -24,6 +26,7 @@ interface TabResumptionModuleProperties {
     PropertyKey[] ALL_KEYS =
             new PropertyKey[] {
                 IS_VISIBLE,
+                USE_SALIENT_IMAGE,
                 URL_IMAGE_PROVIDER,
                 THUMBNAIL_PROVIDER,
                 CLICK_CALLBACK,

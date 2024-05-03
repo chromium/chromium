@@ -88,6 +88,9 @@ chromium-metrics-reviews@google.com.
       summary="Images fetched for the icon of price drop notification."/>
   <variant name=".QueryTiles" summary="Showing Query tiles images."/>
   <variant name=".SharePreview" summary="Images fetched for Share previews."/>
+  <variant name=".TabResumptionModule"
+      summary="Images fetched and used to render tab resumption module on NTP
+               or StartSurface."/>
   <variant name=".VideoTutorialsIPH"
       summary="Showing thumbnails for video tutorials IPH."/>
   <variant name=".VideoTutorialsList"

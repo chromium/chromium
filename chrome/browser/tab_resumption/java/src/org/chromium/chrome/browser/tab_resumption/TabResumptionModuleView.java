@@ -23,6 +23,7 @@ public class TabResumptionModuleView extends LinearLayout {
     private ThumbnailProvider mThumbnailProvider;
     private SuggestionClickCallbacks mClickCallbacks;
     private SuggestionBundle mBundle;
+    private boolean mUseSalientImage;
 
     private boolean mIsSuggestionBundleReady;
     private String mTitle;
@@ -40,6 +41,10 @@ public class TabResumptionModuleView extends LinearLayout {
 
     void destroy() {
         mTileContainerView.destroy();
+    }
+
+    void setUseSalientImage(boolean useSalientImage) {
+        mUseSalientImage = useSalientImage;
     }
 
     void setUrlImageProvider(UrlImageProvider urlImageProvider) {
@@ -85,7 +90,11 @@ public class TabResumptionModuleView extends LinearLayout {
             } else {
                 mAllTilesTexts =
                         mTileContainerView.renderAllTiles(
-                                mBundle, mUrlImageProvider, mThumbnailProvider, mClickCallbacks);
+                                mBundle,
+                                mUrlImageProvider,
+                                mThumbnailProvider,
+                                mClickCallbacks,
+                                mUseSalientImage);
             }
             setContentDescriptionOfTabResumption();
         }

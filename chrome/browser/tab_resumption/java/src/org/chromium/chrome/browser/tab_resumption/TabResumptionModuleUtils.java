@@ -42,6 +42,13 @@ public class TabResumptionModuleUtils {
                     TAB_RESUMPTION_MAX_TILES_NUMBER_PARAM,
                     DEFAULT_MAX_TILES_NUMBER);
 
+    private static final String TAB_RESUMPTION_USE_SALIENT_IMAGE_PARAM = "use_salient_image";
+    public static final BooleanCachedFieldTrialParameter TAB_RESUMPTION_USE_SALIENT_IMAGE =
+            ChromeFeatureList.newBooleanCachedFieldTrialParameter(
+                    ChromeFeatureList.TAB_RESUMPTION_MODULE_ANDROID,
+                    TAB_RESUMPTION_USE_SALIENT_IMAGE_PARAM,
+                    false);
+
     /**
      * Computes the string representation of how recent an event was, given the time delta.
      *

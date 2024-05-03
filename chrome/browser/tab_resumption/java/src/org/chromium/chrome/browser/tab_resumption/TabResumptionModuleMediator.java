@@ -312,6 +312,9 @@ public class TabResumptionModuleMediator {
         mModel.set(TabResumptionModuleProperties.URL_IMAGE_PROVIDER, mUrlImageProvider);
         mModel.set(TabResumptionModuleProperties.THUMBNAIL_PROVIDER, mThumbnailProvider);
         mModel.set(TabResumptionModuleProperties.CLICK_CALLBACK, mSuggestionClickCallbacks);
+        mModel.set(
+                TabResumptionModuleProperties.USE_SALIENT_IMAGE,
+                TabResumptionModuleUtils.TAB_RESUMPTION_USE_SALIENT_IMAGE.getValue());
     }
 
     void startSession(@NonNull TabResumptionDataProvider dataProvider) {

@@ -18,8 +18,16 @@ import androidx.annotation.Nullable;
  * "single-tile" case, and a smaller one for the "multi-tile" case.
  */
 public class TabResumptionTileView extends RelativeLayout {
+    private ImageView mIconView;
+
     public TabResumptionTileView(Context context, @Nullable AttributeSet attrs) {
         super(context, attrs);
+    }
+
+    @Override
+    protected void onFinishInflate() {
+        super.onFinishInflate();
+        mIconView = findViewById(R.id.tile_icon);
     }
 
     void destroy() {
@@ -56,6 +64,11 @@ public class TabResumptionTileView extends RelativeLayout {
 
     /** Assigns the main URL image. */
     public void setImageDrawable(Drawable drawable) {
-        ((ImageView) findViewById(R.id.tile_icon)).setImageDrawable(drawable);
+        mIconView.setImageDrawable(drawable);
+    }
+
+    /** Resets the padding around the image view. */
+    public void resetImagePadding() {
+        mIconView.setPadding(0, 0, 0, 0);
     }
 }

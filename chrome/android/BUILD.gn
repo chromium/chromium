@@ -1069,6 +1069,7 @@ if (current_toolchain == default_toolchain) {
       "//chrome/browser/omaha/android:java",
       "//chrome/browser/omaha/android:update_proto_java",
       "//chrome/browser/optimization_guide/android:java",
+      "//chrome/browser/page_image_service/android:junit",
       "//chrome/browser/page_load_metrics:java",
       "//chrome/browser/partnercustomizations:java",
       "//chrome/browser/partnercustomizations:junit",

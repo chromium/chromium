@@ -22,6 +22,7 @@ import org.chromium.chrome.browser.tab.Tab;
 import org.chromium.chrome.browser.tab_resumption.TabResumptionModuleMetricsUtils.ClickInfo;
 import org.chromium.chrome.browser.tab_resumption.TabResumptionModuleMetricsUtils.ModuleShowConfig;
 import org.chromium.chrome.browser.tab_resumption.TabResumptionModuleUtils.SuggestionClickCallbacks;
+import org.chromium.chrome.browser.tab_resumption.UrlImageProvider.UrlImageCallback;
 import org.chromium.chrome.browser.tab_ui.ThumbnailProvider;
 
 /** The view containing suggestion tiles on the tab resumption module. */
@@ -63,7 +64,8 @@ public class TabResumptionTileContainerView extends LinearLayout {
             SuggestionBundle bundle,
             UrlImageProvider urlImageProvider,
             ThumbnailProvider thumbnailProvider,
-            SuggestionClickCallbacks suggestionClickCallbacks) {
+            SuggestionClickCallbacks suggestionClickCallbacks,
+            boolean useSalientImage) {
         removeAllViews();
 
         @ModuleShowConfig
@@ -113,7 +115,7 @@ public class TabResumptionTileContainerView extends LinearLayout {
                                 LayoutInflater.from(getContext()).inflate(layoutId, this, false);
                 allTilesTexts +=
                         loadTileTexts(entry, bundle.referenceTimeMs, isSingle, tileView) + ". ";
-                loadTileUrlImage(entry, urlImageProvider, tileView);
+                loadTileUrlImage(entry, urlImageProvider, tileView, isSingle, useSalientImage);
                 bindSuggestionClickCallback(tileView, suggestionClickCallbacks, entry, clickInfo);
                 addView(tileView);
             }
@@ -213,14 +215,41 @@ public class TabResumptionTileContainerView extends LinearLayout {
     private void loadTileUrlImage(
             SuggestionEntry entry,
             UrlImageProvider urlImageProvider,
-            TabResumptionTileView tileView) {
-        urlImageProvider.fetchImageForUrl(
-                entry.url,
+            TabResumptionTileView tileView,
+            boolean isSingle,
+            boolean useSalientImage) {
+        UrlImageCallback callback =
                 (Bitmap bitmap) -> {
-                    Resources res = getContext().getResources();
-                    Drawable urlDrawable = new BitmapDrawable(res, bitmap);
-                    tileView.setImageDrawable(urlDrawable);
-                });
+                    onImageAvailable(bitmap, tileView, /* isSalientImage= */ false);
+                };
+        if (useSalientImage) {
+            urlImageProvider.fetchSalientImageWithFallback(
+                    entry.url,
+                    isSingle,
+                    (bitmap) -> {
+                        onImageAvailable(bitmap, tileView, /* isSalientImage= */ true);
+                    },
+                    callback);
+        } else {
+            urlImageProvider.fetchImageForUrl(entry.url, callback);
+        }
+    }
+
+    /**
+     * Called when the image bitmap is fetched.
+     *
+     * @param bitmap The image bitmap returned.
+     * @param tileView The tile view to show the image.
+     * @param isSalientImage Whether the returned image is a salient image.
+     */
+    private void onImageAvailable(
+            Bitmap bitmap, TabResumptionTileView tileView, boolean isSalientImage) {
+        Resources res = getContext().getResources();
+        Drawable urlDrawable = new BitmapDrawable(res, bitmap);
+        tileView.setImageDrawable(urlDrawable);
+        if (isSalientImage) {
+            tileView.resetImagePadding();
+        }
     }
 
     /** Binds the click handler with an associated URL. */
