@@ -993,13 +993,6 @@ gn_args.config(
 )
 
 gn_args.config(
-    name = "perfetto",
-    args = {
-        "use_perfetto_client_library": True,
-    },
-)
-
-gn_args.config(
     name = "perfetto_zlib",
     args = {
         "enable_perfetto_zlib": True,

@@ -616,7 +616,6 @@ ci.builder(
     ),
     gn_args = gn_args.config(
         configs = [
-            "perfetto",
             "release_builder",
             "reclient",
             "android_builder",
@@ -645,7 +644,6 @@ ci.builder(
     ),
     gn_args = gn_args.config(
         configs = [
-            "perfetto",
             "release_builder",
             "reclient",
         ],
@@ -674,7 +672,6 @@ fyi_mac_builder(
     ),
     gn_args = gn_args.config(
         configs = [
-            "perfetto",
             "release_builder",
             "reclient",
             "x64",
@@ -980,7 +977,6 @@ ci.builder(
     ),
     gn_args = gn_args.config(
         configs = [
-            "perfetto",
             "release_builder",
             "reclient",
         ],
