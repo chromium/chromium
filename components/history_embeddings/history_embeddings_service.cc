@@ -31,6 +31,11 @@
 
 namespace history_embeddings {
 
+// Time in milliseconds to wait for embedder to return a query embedding before
+// allowing the next one to be submitted. This would only apply if the embedder
+// fails to call the service back, for example due to utility process crash.
+constexpr int kEmbedderQueryTimeout = 20000;
+
 void OnGotInnerText(mojo::Remote<blink::mojom::InnerTextAgent> remote,
                     base::TimeTicks start_time,
                     base::OnceCallback<void(std::vector<std::string>)> callback,
@@ -169,11 +174,27 @@ void HistoryEmbeddingsService::Search(
     std::optional<base::Time> time_range_start,
     size_t count,
     SearchResultCallback callback) {
-  embedder_->ComputePassagesEmbeddings(
-      {std::move(query)},
+  // Only submit this query if there's none in progress.
+  bool submit = !query_submission_time_.has_value() ||
+                (base::Time::Now() - query_submission_time_.value() >
+                 base::Milliseconds(kEmbedderQueryTimeout));
+  if (next_query_.has_value()) {
+    VLOG(2) << "Dropped pending query '" << next_query_.value()
+            << "'. Next query: '" << query << "'";
+    next_query_.reset();
+    // TODO(b/332394465): Distinguish skipped queries from errors.
+    std::move(next_query_callback_).Run({}, {});
+  }
+
+  next_query_ = std::move(query);
+  next_query_callback_ =
       base::BindOnce(&HistoryEmbeddingsService::OnQueryEmbeddingComputed,
                      weak_ptr_factory_.GetWeakPtr(), time_range_start, count,
-                     std::move(callback)));
+                     std::move(callback));
+
+  if (submit) {
+    SubmitQueryToEmbedder();
+  }
 }
 
 void HistoryEmbeddingsService::OnQueryEmbeddingComputed(
@@ -182,13 +203,18 @@ void HistoryEmbeddingsService::OnQueryEmbeddingComputed(
     SearchResultCallback callback,
     std::vector<std::string> query_passages,
     std::vector<Embedding> query_embeddings) {
+  // If another query is pending, submit it for embedding while the current
+  // search is in progress.
+  query_submission_time_.reset();
+  SubmitQueryToEmbedder();
+
   bool succeeded = !query_embeddings.empty();
   base::UmaHistogramBoolean("History.Embeddings.QueryEmbeddingSucceeded",
                             succeeded);
 
   VLOG(1) << "History.Embeddings.QueryEmbeddingSucceeded: " << succeeded
           << " ; Query: '"
-          << (query_passages.empty() ? "(FAILED)" : query_passages[0]) << "'";
+          << (query_passages.empty() ? "(NONE)" : query_passages[0]) << "'";
 
   if (!succeeded) {
     // Query embedding failed. Just return no search results.
@@ -280,7 +306,7 @@ std::vector<ScoredUrl> HistoryEmbeddingsService::Storage::Search(
     if (value &&
         scored_url.index < static_cast<size_t>(value.value().passages_size())) {
       scored_url.passage = value.value().passages(scored_url.index);
-      VLOG(2) << "- score: " << scored_url.score
+      VLOG(3) << "- score: " << scored_url.score
               << " ; passage: " << scored_url.passage;
     }
   }
@@ -404,6 +430,21 @@ void HistoryEmbeddingsService::OnPassageVisibilityCalculated(
       base::BindOnce(&FinishSearchResultWithHistory,
                      base::SequencedTaskRunner::GetCurrentDefault(),
                      std::move(callback), std::move(scored_urls)));
+}
+
+void HistoryEmbeddingsService::SubmitQueryToEmbedder() {
+  if (!next_query_.has_value()) {
+    return;
+  }
+  VLOG(2) << "Submitting query to embedder: '" << next_query_.value() << "'";
+
+  // The embedder could call back synchronously and immediately, so be ready.
+  std::string query = std::move(next_query_.value());
+  auto callback = std::move(next_query_callback_);
+  next_query_.reset();
+  next_query_callback_.Reset();
+  query_submission_time_ = base::Time::Now();
+  embedder_->ComputePassagesEmbeddings({std::move(query)}, std::move(callback));
 }
 
 }  // namespace history_embeddings

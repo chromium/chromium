@@ -164,6 +164,12 @@ SearchInfo VectorDatabase::FindNearest(
   }
 
   base::TimeDelta total_elapsed = total_timer.Elapsed();
+  if (total_elapsed.is_zero()) {
+    // Note, base::Nanoseconds(1) is still treated as zero by the time code,
+    // so at least milliseconds are required here.
+    scoring_elapsed = base::Milliseconds(0);
+    total_elapsed = base::Milliseconds(1);
+  }
   VLOG(1) << "Inner search total (ns): " << total_elapsed.InNanoseconds()
           << " ; scoring (ns): " << scoring_elapsed.InNanoseconds()
           << " ; scoring %: " << scoring_elapsed * 100 / total_elapsed;

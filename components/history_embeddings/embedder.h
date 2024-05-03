@@ -14,8 +14,7 @@ namespace history_embeddings {
 
 class Embedding;
 
-// TODO(b/332394465): switch to a different signature to include an error
-// state.
+// TODO(b/332394465): Use a different signature to include an error state.
 using ComputePassagesEmbeddingsCallback =
     base::OnceCallback<void(std::vector<std::string> passages,
                             std::vector<Embedding> embeddings)>;

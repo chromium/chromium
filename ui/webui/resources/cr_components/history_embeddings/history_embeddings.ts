@@ -174,6 +174,10 @@ export class HistoryEmbeddingsElement extends HistoryEmbeddingsElementBase {
           this.timeRangeStart ? jsDateToMojoDate(this.timeRangeStart) : null,
     };
     this.browserProxy_.search(query).then((result) => {
+      if (query.query !== this.searchQuery) {
+        // Results are for an outdated query. Skip these results.
+        return;
+      }
       // Flush any old results metrics before overwriting the member variable.
       this.flushDebouncedUserMetrics_(/*userClickedResult=*/ false);
 
