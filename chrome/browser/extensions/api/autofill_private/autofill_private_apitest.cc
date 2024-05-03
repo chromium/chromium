@@ -315,7 +315,8 @@ IN_PROC_BROWSER_TEST_F(AutofillPrivateApiTest,
 
   autofill_client()
       ->GetPersonalDataManager()
-      ->SetPaymentMethodsMandatoryReauthEnabled(true);
+      ->payments_data_manager()
+      .SetPaymentMethodsMandatoryReauthEnabled(true);
   auto* mock_mandatory_reauth_manager =
       autofill_client()->GetOrCreatePaymentsMandatoryReauthManager();
 

@@ -169,30 +169,16 @@ class PersonalDataManager : public KeyedService,
   void ClearAllServerDataForTesting();
   void AddServerCreditCardForTest(std::unique_ptr<CreditCard> credit_card);
   CreditCard* GetCreditCardByGUID(const std::string& guid);
-  CreditCard* GetCreditCardByNumber(const std::string& number);
   CreditCard* GetCreditCardByInstrumentId(int64_t instrument_id);
   CreditCard* GetCreditCardByServerId(const std::string& server_id);
-  void AddCreditCardBenefitForTest(CreditCardBenefit benefit);
   std::vector<AutofillProfile*> GetProfiles(
       AddressDataManager::ProfileOrder order =
           AddressDataManager::ProfileOrder::kNone) const;
-  std::vector<CreditCard*> GetLocalCreditCards() const;
-  std::vector<CreditCard*> GetServerCreditCards() const;
   std::vector<CreditCard*> GetCreditCards() const;
-  PaymentsCustomerData* GetPaymentsCustomerData() const;
-  std::vector<CreditCardCloudTokenData*> GetCreditCardCloudTokenData() const;
-  std::vector<AutofillOfferData*> GetAutofillOffers() const;
   std::vector<const AutofillOfferData*>
   GetActiveAutofillPromoCodeOffersForOrigin(GURL origin) const;
-  GURL GetCardArtURL(const CreditCard& credit_card) const;
-  gfx::Image* GetCreditCardArtImageForUrl(const GURL& card_art_url) const;
   std::vector<CreditCard*> GetCreditCardsToSuggest() const;
   void SetSyncingForTest(bool is_syncing_for_test);
-  void SetCreditCards(std::vector<CreditCard>* credit_cards);
-  void SetPaymentMethodsMandatoryReauthEnabled(bool enabled);
-  bool IsPaymentMethodsMandatoryReauthEnabled();
-  AlternativeStateNameMapUpdater*
-  get_alternative_state_name_map_updater_for_testing();
 
   // Re-loads profiles, credit cards, and IBANs from the WebDatabase
   // asynchronously. In the general case, this is a no-op and will re-create

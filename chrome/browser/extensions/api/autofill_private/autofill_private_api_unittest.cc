@@ -49,7 +49,8 @@ class MandatoryReauthSettingsPageMetricsTest
         autofill_client()->GetPrefs());
     autofill_client()
         ->GetPersonalDataManager()
-        ->SetPaymentMethodsMandatoryReauthEnabled(IsFeatureTurnedOn());
+        ->payments_data_manager()
+        .SetPaymentMethodsMandatoryReauthEnabled(IsFeatureTurnedOn());
     extensions::AutofillPrivateEventRouterFactory::GetForProfile(
         browser_context())
         ->RebindPersonalDataManagerForTesting(

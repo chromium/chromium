@@ -152,11 +152,6 @@ CreditCard* PersonalDataManager::GetCreditCardByGUID(const std::string& guid) {
   return payments_data_manager_->GetCreditCardByGUID(guid);
 }
 
-CreditCard* PersonalDataManager::GetCreditCardByNumber(
-    const std::string& number) {
-  return payments_data_manager_->GetCreditCardByNumber(number);
-}
-
 CreditCard* PersonalDataManager::GetCreditCardByInstrumentId(
     int64_t instrument_id) {
   return payments_data_manager_->GetCreditCardByInstrumentId(instrument_id);
@@ -165,12 +160,6 @@ CreditCard* PersonalDataManager::GetCreditCardByInstrumentId(
 CreditCard* PersonalDataManager::GetCreditCardByServerId(
     const std::string& server_id) {
   return payments_data_manager_->GetCreditCardByServerId(server_id);
-}
-
-void PersonalDataManager::AddCreditCardBenefitForTest(
-    CreditCardBenefit benefit) {
-  payments_data_manager_->AddCreditCardBenefitForTest(
-      std::move(benefit));  // IN-TEST
 }
 
 bool PersonalDataManager::IsDataLoaded() const {
@@ -183,29 +172,8 @@ std::vector<AutofillProfile*> PersonalDataManager::GetProfiles(
   return address_data_manager_->GetProfiles(order);
 }
 
-std::vector<CreditCard*> PersonalDataManager::GetLocalCreditCards() const {
-  return payments_data_manager_->GetLocalCreditCards();
-}
-
-std::vector<CreditCard*> PersonalDataManager::GetServerCreditCards() const {
-  return payments_data_manager_->GetServerCreditCards();
-}
-
 std::vector<CreditCard*> PersonalDataManager::GetCreditCards() const {
   return payments_data_manager_->GetCreditCards();
-}
-
-PaymentsCustomerData* PersonalDataManager::GetPaymentsCustomerData() const {
-  return payments_data_manager_->GetPaymentsCustomerData();
-}
-
-std::vector<CreditCardCloudTokenData*>
-PersonalDataManager::GetCreditCardCloudTokenData() const {
-  return payments_data_manager_->GetCreditCardCloudTokenData();
-}
-
-std::vector<AutofillOfferData*> PersonalDataManager::GetAutofillOffers() const {
-  return payments_data_manager_->GetAutofillOffers();
 }
 
 std::vector<const AutofillOfferData*>
@@ -213,15 +181,6 @@ PersonalDataManager::GetActiveAutofillPromoCodeOffersForOrigin(
     GURL origin) const {
   return payments_data_manager_->GetActiveAutofillPromoCodeOffersForOrigin(
       origin);
-}
-
-GURL PersonalDataManager::GetCardArtURL(const CreditCard& credit_card) const {
-  return payments_data_manager_->GetCardArtURL(credit_card);
-}
-
-gfx::Image* PersonalDataManager::GetCreditCardArtImageForUrl(
-    const GURL& card_art_url) const {
-  return payments_data_manager_->GetCreditCardArtImageForUrl(card_art_url);
 }
 
 void PersonalDataManager::SetSyncingForTest(bool is_syncing_for_test) {
@@ -240,26 +199,6 @@ std::vector<CreditCard*> PersonalDataManager::GetCreditCardsToSuggest() const {
 bool PersonalDataManager::IsAutofillEnabled() const {
   return address_data_manager_->IsAutofillProfileEnabled() ||
          payments_data_manager_->IsAutofillPaymentMethodsEnabled();
-}
-
-void PersonalDataManager::SetPaymentMethodsMandatoryReauthEnabled(
-    bool enabled) {
-  payments_data_manager_->SetPaymentMethodsMandatoryReauthEnabled(enabled);
-}
-
-bool PersonalDataManager::IsPaymentMethodsMandatoryReauthEnabled() {
-  return payments_data_manager_->IsPaymentMethodsMandatoryReauthEnabled();
-}
-
-AlternativeStateNameMapUpdater*
-PersonalDataManager::get_alternative_state_name_map_updater_for_testing() {
-  return address_data_manager_
-      ->get_alternative_state_name_map_updater_for_testing();  // IN-TEST
-}
-
-void PersonalDataManager::SetCreditCards(
-    std::vector<CreditCard>* credit_cards) {
-  payments_data_manager_->SetCreditCards(credit_cards);
 }
 
 void PersonalDataManager::NotifyPersonalDataObserver() {
