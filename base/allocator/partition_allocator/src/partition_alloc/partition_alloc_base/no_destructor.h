@@ -122,9 +122,7 @@ class NoDestructor {
       new (storage_) T(std::forward<Args>(args)...);
     }
 
-    const T* get() const {
-      return const_cast<PlacementStorage*>(this)->storage();
-    }
+    const T* get() const { return const_cast<PlacementStorage*>(this)->get(); }
     T* get() { return reinterpret_cast<T*>(storage_); }
 
    private:
