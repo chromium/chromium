@@ -22,7 +22,6 @@ import org.chromium.base.Callback;
 import org.chromium.base.supplier.ObservableSupplierImpl;
 import org.chromium.chrome.browser.omnibox.styles.OmniboxResourceProvider;
 import org.chromium.chrome.browser.omnibox.suggestions.OmniboxSuggestionsDropdownEmbedder;
-import org.chromium.components.omnibox.OmniboxFeatures;
 import org.chromium.ui.base.DeviceFormFactor;
 import org.chromium.ui.base.ViewUtils;
 import org.chromium.ui.base.WindowAndroid;
@@ -232,39 +231,22 @@ class OmniboxSuggestionsDropdownEmbedderImpl
         int paddingRight;
         if (isTablet()) {
             ViewUtils.getRelativeLayoutPosition(mAnchorView, mAlignmentView, mPositionArray);
-            if (OmniboxFeatures.shouldShowModernizeVisualUpdate(mContext)) {
-                // Case 1: tablets with revamp enabled. Width equal to alignment view and left
-                // equivalent to left of alignment view. Top minus a small overlap.
-                top -=
-                        mContext.getResources()
-                                .getDimensionPixelSize(
-                                        R.dimen.omnibox_suggestion_list_toolbar_overlap);
-                int sideSpacing = OmniboxResourceProvider.getDropdownSideSpacing(mContext);
-                width = mAlignmentView.getMeasuredWidth() + 2 * sideSpacing;
+            // Width equal to alignment view and left equivalent to left of alignment view. Top
+            // minus a small overlap.
+            top -=
+                    mContext.getResources()
+                            .getDimensionPixelSize(R.dimen.omnibox_suggestion_list_toolbar_overlap);
+            int sideSpacing = OmniboxResourceProvider.getDropdownSideSpacing(mContext);
+            width = mAlignmentView.getMeasuredWidth() + 2 * sideSpacing;
 
-                if (mAnchorView.getLayoutDirection() == View.LAYOUT_DIRECTION_RTL) {
-                    // The view will be shifted to the left, so the adjustment needs to be negative.
-                    left =
-                            -(mAnchorView.getMeasuredWidth()
-                                    - width
-                                    - mPositionArray[0]
-                                    + sideSpacing);
-                } else {
-                    left = mPositionArray[0] - sideSpacing;
-                }
-                paddingLeft = 0;
-                paddingRight = 0;
+            if (mAnchorView.getLayoutDirection() == View.LAYOUT_DIRECTION_RTL) {
+                // The view will be shifted to the left, so the adjustment needs to be negative.
+                left = -(mAnchorView.getMeasuredWidth() - width - mPositionArray[0] + sideSpacing);
             } else {
-                // Case 2: tablets with revamp disabled. Full bleed width with padding to align
-                // suggestions to the alignment view.
-                left = 0;
-                width = mAnchorView.getMeasuredWidth();
-                paddingLeft = mPositionArray[0];
-                paddingRight =
-                        mAnchorView.getMeasuredWidth()
-                                - mAlignmentView.getMeasuredWidth()
-                                - mPositionArray[0];
+                left = mPositionArray[0] - sideSpacing;
             }
+            paddingLeft = 0;
+            paddingRight = 0;
         } else {
             // Case 3: phones or phone-sized windows on tablets. Full bleed width with no padding or
             // positioning adjustments.
