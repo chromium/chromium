@@ -31,6 +31,7 @@
 #include "base/notreached.h"
 #include "base/observer_list.h"
 #include "base/ranges/algorithm.h"
+#include "base/strings/strcat.h"
 #include "base/strings/string_number_conversions.h"
 #include "base/strings/string_util.h"
 #include "base/strings/stringprintf.h"
@@ -89,6 +90,8 @@
 #include "third_party/omnibox_proto/types.pb.h"
 #include "ui/base/device_form_factor.h"
 #include "ui/base/l10n/l10n_util.h"
+#include "url/url_canon.h"
+#include "url/url_util.h"
 
 #if !BUILDFLAG(IS_ANDROID) && !BUILDFLAG(IS_IOS)
 #include "components/omnibox/browser/featured_search_provider.h"
@@ -229,6 +232,12 @@ std::u16string GetDomain(const AutocompleteMatch& match) {
   std::u16string url_domain;
   url_formatter::SplitHost(url, &url_host, &url_domain, nullptr);
   return url_domain;
+}
+
+std::string EncodeURIComponent(const std::string& component) {
+  url::RawCanonOutputT<char> encoded;
+  url::EncodeURIComponent(component, &encoded);
+  return std::string(encoded.view());
 }
 
 }  // namespace
@@ -838,17 +847,20 @@ void AutocompleteController::
 void AutocompleteController::SetMatchDestinationURL(
     AutocompleteMatch* match) const {
   TRACE_EVENT0("omnibox", "AutocompleteController::SetMatchDestinationURL");
-  const TemplateURL* turl = match->GetTemplateURL(template_url_service_, false);
-  const std::string search_terms =
-      base::UTF16ToUTF8(match->search_terms_args->search_terms);
+
+  // Convert search terms to UTF8 and URI-component encode the string.
+  const std::string encoded_search_terms = EncodeURIComponent(
+      base::UTF16ToUTF8(match->search_terms_args->search_terms));
+
   // Append an extra header to navigations from the @gemini scope.
+  const TemplateURL* turl = match->GetTemplateURL(template_url_service_, false);
   if (turl &&
       turl->starter_pack_id() == TemplateURLStarterPackData::kAskGoogle &&
-      net::HttpUtil::IsValidHeaderValue(search_terms)) {
+      !encoded_search_terms.empty() &&
+      net::HttpUtil::IsValidHeaderValue(encoded_search_terms)) {
     DCHECK(net::HttpUtil::IsValidHeaderName(kOmniboxGeminiHeader));
-    match->extra_headers = kOmniboxGeminiHeader;
-    match->extra_headers += ":";
-    match->extra_headers += search_terms;
+    match->extra_headers =
+        base::StrCat({kOmniboxGeminiHeader, ":", encoded_search_terms});
   }
 
   auto url = ComputeURLFromSearchTermsArgs(turl, *match->search_terms_args);
