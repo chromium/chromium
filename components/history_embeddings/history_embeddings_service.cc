@@ -141,6 +141,10 @@ HistoryEmbeddingsService::~HistoryEmbeddingsService() = default;
 void HistoryEmbeddingsService::RetrievePassages(
     const history::VisitRow& visit_row,
     content::RenderFrameHost& host) {
+  if (!host.IsRenderFrameLive()) {
+    return;
+  }
+
   const base::TimeTicks start_time = base::TimeTicks::Now();
   mojo::Remote<blink::mojom::InnerTextAgent> agent;
   host.GetRemoteInterfaces()->GetInterface(agent.BindNewPipeAndPassReceiver());
