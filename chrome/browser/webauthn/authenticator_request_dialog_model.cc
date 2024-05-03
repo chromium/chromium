@@ -2148,6 +2148,16 @@ void AuthenticatorRequestDialogController::PopulateMechanisms() {
     }
   }
 
+  if (base::FeatureList::IsEnabled(device::kWebAuthnEnclaveAuthenticator) &&
+      enclave_enabled_ && !is_get_assertion) {
+    const std::u16string name =
+        l10n_util::GetStringUTF16(IDS_WEBAUTHN_SOURCE_GOOGLE_PASSWORD_MANAGER);
+    model_->mechanisms.emplace_back(
+        Mechanism::Enclave(), name, name, kIcloudKeychainIcon,
+        base::BindRepeating(&AuthenticatorRequestDialogController::StartEnclave,
+                            base::Unretained(this)));
+  }
+
   if (transport_availability_.has_icloud_keychain && allow_icloud_keychain_ &&
       // The mechanism for iCloud Keychain only appears for create(), or if
       // Chrome doesn't have permission to enumerate credentials and thus the
@@ -2162,16 +2172,6 @@ void AuthenticatorRequestDialogController::PopulateMechanisms() {
         base::BindRepeating(
             &AuthenticatorRequestDialogController::StartICloudKeychain,
             base::Unretained(this)));
-  }
-
-  if (base::FeatureList::IsEnabled(device::kWebAuthnEnclaveAuthenticator) &&
-      enclave_enabled_ && !is_get_assertion) {
-    const std::u16string name =
-        l10n_util::GetStringUTF16(IDS_WEBAUTHN_SOURCE_GOOGLE_PASSWORD_MANAGER);
-    model_->mechanisms.emplace_back(
-        Mechanism::Enclave(), name, name, kIcloudKeychainIcon,
-        base::BindRepeating(&AuthenticatorRequestDialogController::StartEnclave,
-                            base::Unretained(this)));
   }
 
   std::optional<std::pair<int, AuthenticatorTransport>> windows_button_label;
