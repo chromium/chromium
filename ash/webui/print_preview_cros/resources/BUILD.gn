@@ -19,6 +19,7 @@ build_webui("build") {
     "js/data/destination_constants.ts",
     "js/data/destination_manager.ts",
     "js/data/print_ticket_manager.ts",
+    "js/data/ticket_constants.ts",
     "js/destination_dropdown_controller.ts",
     "js/destination_row_controller.ts",
     "js/destination_select_controller.ts",

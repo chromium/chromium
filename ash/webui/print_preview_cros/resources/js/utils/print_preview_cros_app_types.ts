@@ -60,6 +60,15 @@ export interface PrintTicket {
 
   // Number of prints to make of source document.
   copies: number;
+
+  // Horizontal DPI used for setting print job resolution.
+  dpiHorizontal: number;
+
+  // Vertical DPI used for setting print job resolution.
+  dpiVertical: number;
+
+  // Whether DPI used is the destination's default DPI.
+  dpiDefault: boolean;
 }
 
 // Immutable session configuration details for the current CrOS preview request.
