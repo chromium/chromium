@@ -33,8 +33,9 @@ export function getNormalizedKey(value: string): string {
       return 'Tab';
     case '\uE005':
       return 'Clear';
+    // Specification declares the '\uE006' to be `Return`, but it is not supported by
+    // Chrome, so fall back to `Enter`, which aligns with WPT.
     case '\uE006':
-      return 'Return';
     case '\uE007':
       return 'Enter';
     case '\uE008':
