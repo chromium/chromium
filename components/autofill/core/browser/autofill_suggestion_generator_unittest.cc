@@ -1202,6 +1202,27 @@ TEST_P(AutofillCreditCardBenefitsLabelTest,
               CREDIT_CARD_EXP_DATE_2_DIGIT_YEAR, /*app_locale=*/"en-US"))}));
 }
 
+// Checks that the benefit description is not displayed when benefit suggestions
+// are disabled for the given card and url.
+TEST_P(AutofillCreditCardBenefitsLabelTest,
+       BenefitSuggestionLabelNotDisplayed_BlockedUrl) {
+  ON_CALL(*static_cast<MockAutofillOptimizationGuide*>(
+              autofill_client()->GetAutofillOptimizationGuide()),
+          ShouldBlockBenefitSuggestionLabelsForCardAndUrl)
+      .WillByDefault(testing::Return(true));
+
+  // Benefit description is not returned.
+  EXPECT_THAT(
+      test_api(suggestion_generator())
+          .CreateCreditCardSuggestion(card(), CREDIT_CARD_NUMBER,
+                                      /*virtual_card_option=*/false,
+                                      /*card_linked_offer_available=*/false)
+          .labels,
+      testing::ElementsAre(
+          std::vector<Suggestion::Text>{Suggestion::Text(card().GetInfo(
+              CREDIT_CARD_EXP_DATE_2_DIGIT_YEAR, /*app_locale=*/"en-US"))}));
+}
+
 #endif  // !BUILDFLAG(IS_ANDROID) && !BUILDFLAG(IS_IOS)
 
 class AutofillChildrenSuggestionGeneratorTest

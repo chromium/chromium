@@ -559,6 +559,13 @@ PaymentsDataManager::GetApplicableBenefitDescriptionForCardAndOrigin(
   if (app_locale_ != "en-US") {
     return std::u16string();
   }
+  // Ensure that benefit suggestions can be displayed for this card on the
+  // current origin.
+  if (optimization_guide &&
+      optimization_guide->ShouldBlockBenefitSuggestionLabelsForCardAndUrl(
+          credit_card, origin.GetURL())) {
+    return std::u16string();
+  }
   CreditCardBenefitBase::LinkedCardInstrumentId benefit_instrument_id(
       credit_card.instrument_id());
 

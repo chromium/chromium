@@ -69,6 +69,13 @@ class AutofillOptimizationGuide : public KeyedService {
   virtual bool ShouldBlockFormFieldSuggestion(const GURL& url,
                                               const CreditCard& card) const;
 
+  // Returns whether autofill benefit suggestion labels for `card` should be
+  // blocked on `url` based on the `card`'s issuer and the `url`'s presence in
+  // its corresponding blocklist.
+  virtual bool ShouldBlockBenefitSuggestionLabelsForCardAndUrl(
+      const CreditCard& card,
+      const GURL& url) const;
+
  private:
   // Raw pointer to a decider which is owned by the decider's factory.
   // The factory dependencies ensure that the `decider_` outlives this object.

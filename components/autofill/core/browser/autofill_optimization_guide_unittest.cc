@@ -87,6 +87,19 @@ class AutofillOptimizationGuideTest : public testing::Test {
     personal_data_manager_->AddServerCreditCard(card);
   }
 
+  void MockCapitalOneCreditCardBenefitsBlockedDecisionForUrl(
+      const GURL& url,
+      optimization_guide::OptimizationGuideDecision decision) {
+    ON_CALL(*decider_,
+            CanApplyOptimization(
+                testing::Eq(url),
+                testing::Eq(optimization_guide::proto::
+                                CAPITAL_ONE_CREDIT_CARD_BENEFITS_BLOCKED),
+                testing::Matcher<optimization_guide::OptimizationMetadata*>(
+                    testing::Eq(nullptr))))
+        .WillByDefault(testing::Return(decision));
+  }
+
  protected:
   base::test::TaskEnvironment task_environment_;
   test::AutofillUnitTestEnvironment autofill_test_environment_;
@@ -415,6 +428,95 @@ TEST_F(
       url, virtual_card));
 }
 
+// Test that we block benefits suggestions for Capital One cards on blocked
+// URLs.
+TEST_F(AutofillOptimizationGuideTest,
+       ShouldBlockBenefitSuggestionLabelsForCardAndUrl_CapitalOne_BlockedUrl) {
+  GURL url("https://example.com/");
+  CreditCard* card =
+      personal_data_manager_->payments_data_manager().GetCreditCards()[0];
+  test_api(*card).set_issuer_id_for_card(kCapitalOneCardIssuerId);
+
+  MockCapitalOneCreditCardBenefitsBlockedDecisionForUrl(
+      url, optimization_guide::OptimizationGuideDecision::kFalse);
+
+  EXPECT_TRUE(
+      autofill_optimization_guide_
+          ->ShouldBlockBenefitSuggestionLabelsForCardAndUrl(*card, url));
+}
+
+// Test that we do not block benefits suggestions for Capital One cards on
+// unblocked URLs.
+TEST_F(
+    AutofillOptimizationGuideTest,
+    ShouldNotBlockBenefitSuggestionLabelsForCardAndUrl_CapitalOne_UnblockedUrl) {
+  GURL url("https://example.com/");
+  CreditCard* card =
+      personal_data_manager_->payments_data_manager().GetCreditCards()[0];
+  test_api(*card).set_issuer_id_for_card(kCapitalOneCardIssuerId);
+
+  MockCapitalOneCreditCardBenefitsBlockedDecisionForUrl(
+      url, optimization_guide::OptimizationGuideDecision::kTrue);
+
+  EXPECT_FALSE(
+      autofill_optimization_guide_
+          ->ShouldBlockBenefitSuggestionLabelsForCardAndUrl(*card, url));
+}
+
+// Test that we do not block benefits suggestions when a kUnknown decision is
+// returned.
+TEST_F(
+    AutofillOptimizationGuideTest,
+    ShouldNotBlockBenefitSuggestionLabelsForCardAndUrl_CapitalOne_UnknownDecision) {
+  GURL url("https://example.com/");
+  CreditCard* card =
+      personal_data_manager_->payments_data_manager().GetCreditCards()[0];
+  test_api(*card).set_issuer_id_for_card(kCapitalOneCardIssuerId);
+
+  MockCapitalOneCreditCardBenefitsBlockedDecisionForUrl(
+      url, optimization_guide::OptimizationGuideDecision::kUnknown);
+
+  EXPECT_FALSE(
+      autofill_optimization_guide_
+          ->ShouldBlockBenefitSuggestionLabelsForCardAndUrl(*card, url));
+}
+
+// Test that we do not block benefits suggestions for non-Capital One cards on
+// blocked URLs.
+TEST_F(
+    AutofillOptimizationGuideTest,
+    ShouldNotBlockBenefitSuggestionLabelsForCardAndUrl_NonCapitalOne_BlockedUrl) {
+  GURL url("https://example.com/");
+  CreditCard* card =
+      personal_data_manager_->payments_data_manager().GetCreditCards()[0];
+  test_api(*card).set_issuer_id_for_card(kAmexCardIssuerId);
+
+  MockCapitalOneCreditCardBenefitsBlockedDecisionForUrl(
+      url, optimization_guide::OptimizationGuideDecision::kFalse);
+
+  EXPECT_FALSE(
+      autofill_optimization_guide_
+          ->ShouldBlockBenefitSuggestionLabelsForCardAndUrl(*card, url));
+}
+
+// Test that we do not block benefits suggestions for non-Capital One cards on
+// unblocked URLs.
+TEST_F(
+    AutofillOptimizationGuideTest,
+    ShouldNotBlockBenefitSuggestionLabelsForCardAndUrl_NonCapitalOne_UnblockedUrl) {
+  GURL url("https://example.com/");
+  CreditCard* card =
+      personal_data_manager_->payments_data_manager().GetCreditCards()[0];
+  test_api(*card).set_issuer_id_for_card(kAmexCardIssuerId);
+
+  MockCapitalOneCreditCardBenefitsBlockedDecisionForUrl(
+      url, optimization_guide::OptimizationGuideDecision::kTrue);
+
+  EXPECT_FALSE(
+      autofill_optimization_guide_
+          ->ShouldBlockBenefitSuggestionLabelsForCardAndUrl(*card, url));
+}
+
 // Test that the Amex category-benefit optimization types are registered when we
 // have seen a credit card form and the user has an Amex card.
 TEST_F(AutofillOptimizationGuideTest,
@@ -467,8 +569,9 @@ TEST_F(AutofillOptimizationGuideTest,
           optimization_guide::proto::CAPITAL_ONE_CREDIT_CARD_GROCERY_BENEFITS,
           optimization_guide::proto::
               CAPITAL_ONE_CREDIT_CARD_ENTERTAINMENT_BENEFITS,
+          optimization_guide::proto::CAPITAL_ONE_CREDIT_CARD_STREAMING_BENEFITS,
           optimization_guide::proto::
-              CAPITAL_ONE_CREDIT_CARD_STREAMING_BENEFITS)));
+              CAPITAL_ONE_CREDIT_CARD_BENEFITS_BLOCKED)));
 
   autofill_optimization_guide_->OnDidParseForm(form_structure,
                                                personal_data_manager_.get());

@@ -72,6 +72,8 @@ GetCardBenefitsOptimizationTypesForCard(const CreditCard& card) {
             CAPITAL_ONE_CREDIT_CARD_ENTERTAINMENT_BENEFITS);
     optimization_types.push_back(
         optimization_guide::proto::CAPITAL_ONE_CREDIT_CARD_STREAMING_BENEFITS);
+    optimization_types.push_back(
+        optimization_guide::proto::CAPITAL_ONE_CREDIT_CARD_BENEFITS_BLOCKED);
   }
   return optimization_types;
 }
@@ -261,6 +263,29 @@ bool AutofillOptimizationGuide::ShouldBlockFormFieldSuggestion(
 
   // No conditions to block displaying this virtual card suggestion were met,
   // so return that we should not block displaying this suggestion.
+  return false;
+}
+
+bool AutofillOptimizationGuide::ShouldBlockBenefitSuggestionLabelsForCardAndUrl(
+    const CreditCard& card,
+    const GURL& url) const {
+  if (card.issuer_id() == kCapitalOneCardIssuerId) {
+    optimization_guide::OptimizationGuideDecision decision =
+        decider_->CanApplyOptimization(
+            url,
+            optimization_guide::proto::CAPITAL_ONE_CREDIT_CARD_BENEFITS_BLOCKED,
+            /*optimization_metadata=*/nullptr);
+    // Since the Capital One benefit suggestions hint uses a blocklist, it will
+    // return kFalse if the `url` is present, meaning when kFalse is returned,
+    // we should block the suggestion from being shown. If the optimization type
+    // was not registered in time before being queried, it will be kUnknown, so
+    // the default functionality in this case will be to not block the
+    // suggestion from being shown.
+    return decision == optimization_guide::OptimizationGuideDecision::kFalse;
+  }
+
+  // No conditions indicating benefits suggestions should be blocked were
+  // encountered, so return that they should not be blocked.
   return false;
 }
 
