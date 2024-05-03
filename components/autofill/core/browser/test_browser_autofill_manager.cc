@@ -204,7 +204,7 @@ void TestBrowserAutofillManager::AddSeenForm(
   auto form_structure = std::make_unique<FormStructure>(
       preserve_values_in_form_structure ? form : test::WithoutValues(form));
   test_api(*form_structure).SetFieldTypes(heuristic_types, server_types);
-  test_api(*form_structure).IdentifySections(/*ignore_autocomplete=*/false);
+  test_api(*form_structure).AssignSections();
   AddSeenFormStructure(std::move(form_structure));
   form_interactions_ukm_logger()->OnFormsParsed(client().GetUkmSourceId());
 }

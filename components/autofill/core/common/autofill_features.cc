@@ -594,26 +594,6 @@ BASE_FEATURE(kAutofillTrackProfileTokenQuality,
              "AutofillTrackProfileTokenQuality",
              base::FEATURE_ENABLED_BY_DEFAULT);
 
-// Controls whether to use the combined heuristic and the autocomplete section
-// implementation for section splitting or not. See https://crbug.com/1076175.
-BASE_FEATURE(kAutofillUseNewSectioningMethod,
-             "AutofillUseNewSectioningMethod",
-             base::FEATURE_DISABLED_BY_DEFAULT);
-
-// Controls whether to use the newest, parameterized sectioning algorithm.
-// TODO(crbug.com/40159136): Remove the feature when the experiment is
-// completed.
-BASE_FEATURE(kAutofillUseParameterizedSectioning,
-             "AutofillUseParameterizedSectioning",
-             base::FEATURE_ENABLED_BY_DEFAULT);
-// In the experiment, we test different combinations of these parameters.
-const base::FeatureParam<bool> kAutofillSectioningModeIgnoreAutocomplete{
-    &kAutofillUseParameterizedSectioning, "ignore_autocomplete", false};
-const base::FeatureParam<bool> kAutofillSectioningModeCreateGaps{
-    &kAutofillUseParameterizedSectioning, "create_gaps", false};
-const base::FeatureParam<bool> kAutofillSectioningModeExpand{
-    &kAutofillUseParameterizedSectioning, "expand_assigned_sections", false};
-
 // Whether to favor credit card number that user typed into input field vs
 // input field value (which was potentially modified via JavaScript).
 BASE_FEATURE(kAutofillUseTypedCreditCardNumber,

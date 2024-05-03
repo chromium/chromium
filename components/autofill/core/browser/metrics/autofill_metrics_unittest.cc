@@ -309,12 +309,6 @@ TEST_F(AutofillMetricsTest, NumericQuantityCollision) {
 // Test that we log the skip decisions for hidden/representational fields
 // correctly.
 TEST_F(AutofillMetricsTest, LogHiddenRepresentationalFieldSkipDecision) {
-  // The old sectioning algorithm emits several different UKM metrics. Since we
-  // will have various variants of the sectioning algorithm, we don't want to
-  // adjust the expectations for each variant for now.
-  base::test::ScopedFeatureList scoped_feature_list;
-  scoped_feature_list.InitAndDisableFeature(
-      features::kAutofillUseParameterizedSectioning);
   RecreateProfile();
 
   FormData form = CreateForm({
@@ -357,44 +351,6 @@ TEST_F(AutofillMetricsTest, LogHiddenRepresentationalFieldSkipDecision) {
       &test_ukm_recorder(), form,
       UkmLogHiddenRepresentationalFieldSkipDecisionType::kEntryName,
       {{{UkmLogHiddenRepresentationalFieldSkipDecisionType::kFormSignatureName,
-         form_signature.value()},
-        {UkmLogHiddenRepresentationalFieldSkipDecisionType::kFieldSignatureName,
-         field_signature[0].value()},
-        {UkmLogHiddenRepresentationalFieldSkipDecisionType::kFieldTypeGroupName,
-         static_cast<int64_t>(FieldTypeGroup::kAddress)},
-        {UkmLogHiddenRepresentationalFieldSkipDecisionType::
-             kFieldOverallTypeName,
-         ADDRESS_HOME_LINE1},
-        {UkmLogHiddenRepresentationalFieldSkipDecisionType::kHeuristicTypeName,
-         ADDRESS_HOME_LINE1},
-        {UkmLogHiddenRepresentationalFieldSkipDecisionType::kServerTypeName,
-         ADDRESS_HOME_LINE1},
-        {UkmLogHiddenRepresentationalFieldSkipDecisionType::kHtmlFieldTypeName,
-         HtmlFieldType::kUnspecified},
-        {UkmLogHiddenRepresentationalFieldSkipDecisionType::kHtmlFieldModeName,
-         HtmlFieldMode::kNone},
-        {UkmLogHiddenRepresentationalFieldSkipDecisionType::kIsSkippedName,
-         true}},
-       {{UkmLogHiddenRepresentationalFieldSkipDecisionType::kFormSignatureName,
-         form_signature.value()},
-        {UkmLogHiddenRepresentationalFieldSkipDecisionType::kFieldSignatureName,
-         field_signature[1].value()},
-        {UkmLogHiddenRepresentationalFieldSkipDecisionType::kFieldTypeGroupName,
-         static_cast<int64_t>(FieldTypeGroup::kAddress)},
-        {UkmLogHiddenRepresentationalFieldSkipDecisionType::
-             kFieldOverallTypeName,
-         ADDRESS_HOME_CITY},
-        {UkmLogHiddenRepresentationalFieldSkipDecisionType::kHeuristicTypeName,
-         ADDRESS_HOME_CITY},
-        {UkmLogHiddenRepresentationalFieldSkipDecisionType::kServerTypeName,
-         ADDRESS_HOME_CITY},
-        {UkmLogHiddenRepresentationalFieldSkipDecisionType::kHtmlFieldTypeName,
-         HtmlFieldType::kUnspecified},
-        {UkmLogHiddenRepresentationalFieldSkipDecisionType::kHtmlFieldModeName,
-         HtmlFieldMode::kNone},
-        {UkmLogHiddenRepresentationalFieldSkipDecisionType::kIsSkippedName,
-         true}},
-       {{UkmLogHiddenRepresentationalFieldSkipDecisionType::kFormSignatureName,
          form_signature.value()},
         {UkmLogHiddenRepresentationalFieldSkipDecisionType::kFieldSignatureName,
          field_signature[2].value()},

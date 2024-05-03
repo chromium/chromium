@@ -1,5 +1,5 @@
-UNKNOWN_TYPE | loginID | Adresse e-mail |  | loginID_1
-UNKNOWN_TYPE | password | Mot de passe |  | loginID_1
+UNKNOWN_TYPE | loginID | Adresse e-mail |  | -default
+UNKNOWN_TYPE | password | Mot de passe |  | -default
 
 UNKNOWN_TYPE | retrieveBookingByLastname.RecordLocator | Numéro de réservation |  | retrieveBookingByLastname.RecordLocator_1
 UNKNOWN_TYPE | retrieveBookingByLastname.LastName | Nom de famille |  | retrieveBookingByLastname.RecordLocator_1

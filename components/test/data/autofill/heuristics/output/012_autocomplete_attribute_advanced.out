@@ -1,5 +1,5 @@
-HTML_TYPE_NAME | 1.n |  |  | one-shipping
-HTML_TYPE_EMAIL | 1.e |  |  | one-shipping
+HTML_TYPE_NAME | 1.n |  |  | 1.n_1
+HTML_TYPE_EMAIL | 1.e |  |  | 1.n_1
 HTML_TYPE_ADDRESS_LINE1 | 1.a |  |  | one-shipping
 
 PHONE_HOME_CITY_AND_NUMBER | 4.phone |  |  | 4.phone_1

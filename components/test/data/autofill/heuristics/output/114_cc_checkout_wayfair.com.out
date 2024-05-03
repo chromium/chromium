@@ -7,4 +7,4 @@ CREDIT_CARD_VERIFICATION_CODE | credit_card[security_code] | What is this? |  | 
 CREDIT_CARD_NAME_FULL | credit_card[card_holder_name] | Name on card* | Homer Simpson | credit_card[card_number]_2
 UNKNOWN_TYPE | credit_card[b_settle_immediately] | I am using a debit card one time use card | 1 | payment_method_1
 UNKNOWN_TYPE | apply_gift_card_or_promo | Apply a gift card | on | payment_method_1
-UNKNOWN_TYPE | GiftPromo | Enter a gift card number |  | payment_method_1
+UNKNOWN_TYPE | GiftPromo | Enter a gift card number |  | -default

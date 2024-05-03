@@ -115,29 +115,11 @@ void AssignFieldIdentifierSections(
   }
 }
 
-void ExpandSections(base::span<const std::unique_ptr<AutofillField>> fields) {
-  auto HasSection = [](auto& field) {
-    return IsSectionable(*field) && field->section();
-  };
-  auto it = base::ranges::find_if(fields, HasSection);
-  while (it != fields.end()) {
-    auto end = base::ranges::find_if(it + 1, fields.end(), HasSection);
-    if (end != fields.end() && (*it)->section() == (*end)->section()) {
-      for (auto& field : base::make_span(it + 1, end)) {
-        if (IsSectionable(*field)) {
-          field->set_section((*it)->section());
-        }
-      }
-    }
-    it = end;
-  }
-}
-
 bool BelongsToCurrentSection(const FieldTypeSet& seen_types,
                              const AutofillField& current_field,
                              const AutofillField& previous_field) {
   if (current_field.section()) {
-    return !features::kAutofillSectioningModeCreateGaps.Get();
+    return true;
   }
 
   const FieldType current_type = current_field.Type().GetStorableType();
@@ -213,12 +195,8 @@ void AssignSections(base::span<const std::unique_ptr<AutofillField>> fields) {
   // Create a unique identifier based on the field for the section.
   base::flat_map<LocalFrameToken, size_t> frame_token_ids;
 
-  if (!features::kAutofillSectioningModeIgnoreAutocomplete.Get())
-    AssignAutocompleteSections(fields);
+  AssignAutocompleteSections(fields);
   AssignCreditCardSections(fields, frame_token_ids);
-  if (features::kAutofillSectioningModeExpand.Get()) {
-    ExpandSections(fields);
-  }
 
   auto begin = fields.begin();
   while (begin != fields.end()) {

@@ -23,11 +23,6 @@
 #include "testing/gmock/include/gmock/gmock.h"
 #include "testing/gtest/include/gtest/gtest.h"
 
-using autofill::features::kAutofillSectioningModeCreateGaps;
-using autofill::features::kAutofillSectioningModeExpand;
-using autofill::features::kAutofillSectioningModeIgnoreAutocomplete;
-using autofill::features::kAutofillUseParameterizedSectioning;
-
 namespace autofill {
 
 namespace {
@@ -111,15 +106,6 @@ std::vector<std::unique_ptr<AutofillField>> CreateExampleFields() {
 }
 
 TEST_F(FormStructureSectioningTest, ExampleFormNoSectioningMode) {
-  base::test::ScopedFeatureList features;
-  base::FieldTrialParams feature_parameters{
-      {kAutofillSectioningModeIgnoreAutocomplete.name, "false"},
-      {kAutofillSectioningModeCreateGaps.name, "false"},
-      {kAutofillSectioningModeExpand.name, "false"},
-  };
-  features.InitAndEnableFeatureWithParameters(
-      features::kAutofillUseParameterizedSectioning, feature_parameters);
-
   auto fields = CreateExampleFields();
   base::HistogramTester histogram_tester;
   AssignSectionsAndLogMetrics(fields);
@@ -146,114 +132,6 @@ TEST_F(FormStructureSectioningTest, ExampleFormNoSectioningMode) {
               BucketsAre(Bucket(1, 1), Bucket(2, 2), Bucket(3, 1)));
 }
 
-TEST_F(FormStructureSectioningTest,
-       ExampleFormSectioningModeIgnoreAutocomplete) {
-  base::test::ScopedFeatureList features;
-  base::FieldTrialParams feature_parameters{
-      {kAutofillSectioningModeIgnoreAutocomplete.name, "true"},
-      {kAutofillSectioningModeCreateGaps.name, "false"},
-      {kAutofillSectioningModeExpand.name, "false"},
-  };
-  features.InitAndEnableFeatureWithParameters(
-      features::kAutofillUseParameterizedSectioning, feature_parameters);
-
-  auto fields = CreateExampleFields();
-  base::HistogramTester histogram_tester;
-  AssignSectionsAndLogMetrics(fields);
-
-  // The evaluation order of the `Section::FromFieldIdentifier()` expressions
-  // does not matter, as all `FormFieldData::host_frame` are identical.
-  base::flat_map<LocalFrameToken, size_t> frame_token_ids;
-  EXPECT_THAT(GetSections(fields),
-              testing::ElementsAre(
-                  Section::FromFieldIdentifier(*fields[0], frame_token_ids),
-                  Section::FromFieldIdentifier(*fields[0], frame_token_ids),
-                  Section::FromFieldIdentifier(*fields[2], frame_token_ids),
-                  Section::FromFieldIdentifier(*fields[2], frame_token_ids),
-                  Section::FromFieldIdentifier(*fields[4], frame_token_ids),
-                  Section::FromFieldIdentifier(*fields[4], frame_token_ids),
-                  Section::FromFieldIdentifier(*fields[6], frame_token_ids),
-                  Section::FromFieldIdentifier(*fields[6], frame_token_ids),
-                  Section::FromFieldIdentifier(*fields[4], frame_token_ids)));
-  // The metrics ignore the section of field #5 because it's unfocusable.
-  EXPECT_EQ(ComputeSectioningSignature(fields), StrToHash32Bit("00112332"));
-  histogram_tester.ExpectUniqueSample(kNumberOfSectionsHistogram, 4, 1);
-  EXPECT_THAT(histogram_tester.GetAllSamples(kFieldsPerSectionHistogram),
-              BucketsAre(Bucket(2, 4), Bucket(3, 0)));
-}
-
-TEST_F(FormStructureSectioningTest, ExampleFormSectioningModeCreateGaps) {
-  base::test::ScopedFeatureList features;
-  base::FieldTrialParams feature_parameters{
-      {kAutofillSectioningModeIgnoreAutocomplete.name, "false"},
-      {kAutofillSectioningModeCreateGaps.name, "true"},
-      {kAutofillSectioningModeExpand.name, "false"},
-  };
-  features.InitAndEnableFeatureWithParameters(
-      features::kAutofillUseParameterizedSectioning, feature_parameters);
-
-  auto fields = CreateExampleFields();
-  base::HistogramTester histogram_tester;
-  AssignSectionsAndLogMetrics(fields);
-
-  // The evaluation order of the `Section::FromFieldIdentifier()` expressions
-  // does not matter, as all `FormFieldData::host_frame` are identical.
-  base::flat_map<LocalFrameToken, size_t> frame_token_ids;
-  EXPECT_THAT(GetSections(fields),
-              testing::ElementsAre(
-                  Section::FromFieldIdentifier(*fields[0], frame_token_ids),
-                  Section::FromFieldIdentifier(*fields[0], frame_token_ids),
-                  Section::FromAutocomplete(
-                      {.section = fields[2]->parsed_autocomplete()->section}),
-                  Section::FromFieldIdentifier(*fields[3], frame_token_ids),
-                  Section::FromFieldIdentifier(*fields[4], frame_token_ids),
-                  Section::FromFieldIdentifier(*fields[4], frame_token_ids),
-                  Section::FromFieldIdentifier(*fields[6], frame_token_ids),
-                  Section::FromFieldIdentifier(*fields[6], frame_token_ids),
-                  Section::FromFieldIdentifier(*fields[4], frame_token_ids)));
-  // The metrics ignore the section of field #5 because it's unfocusable.
-  EXPECT_EQ(ComputeSectioningSignature(fields), StrToHash32Bit("00123443"));
-  histogram_tester.ExpectUniqueSample(kNumberOfSectionsHistogram, 5, 1);
-  EXPECT_THAT(histogram_tester.GetAllSamples(kFieldsPerSectionHistogram),
-              BucketsAre(Bucket(1, 2), Bucket(2, 3), Bucket(3, 0)));
-}
-
-TEST_F(FormStructureSectioningTest, ExampleFormSectioningModeExpand) {
-  base::test::ScopedFeatureList features;
-  base::FieldTrialParams feature_parameters{
-      {kAutofillSectioningModeIgnoreAutocomplete.name, "false"},
-      {kAutofillSectioningModeCreateGaps.name, "false"},
-      {kAutofillSectioningModeExpand.name, "true"},
-  };
-  features.InitAndEnableFeatureWithParameters(
-      features::kAutofillUseParameterizedSectioning, feature_parameters);
-
-  auto fields = CreateExampleFields();
-  base::HistogramTester histogram_tester;
-  AssignSectionsAndLogMetrics(fields);
-
-  // The evaluation order of the `Section::FromFieldIdentifier()` expressions
-  // does not matter, as all `FormFieldData::host_frame` are identical.
-  base::flat_map<LocalFrameToken, size_t> frame_token_ids;
-  EXPECT_THAT(GetSections(fields),
-              testing::ElementsAre(
-                  Section::FromFieldIdentifier(*fields[0], frame_token_ids),
-                  Section::FromFieldIdentifier(*fields[0], frame_token_ids),
-                  Section::FromAutocomplete(
-                      {.section = fields[2]->parsed_autocomplete()->section}),
-                  Section::FromFieldIdentifier(*fields[0], frame_token_ids),
-                  Section::FromFieldIdentifier(*fields[4], frame_token_ids),
-                  Section::FromFieldIdentifier(*fields[4], frame_token_ids),
-                  Section::FromFieldIdentifier(*fields[4], frame_token_ids),
-                  Section::FromFieldIdentifier(*fields[4], frame_token_ids),
-                  Section::FromFieldIdentifier(*fields[4], frame_token_ids)));
-  // The metrics ignore the section of field #5 because it's unfocusable.
-  EXPECT_EQ(ComputeSectioningSignature(fields), StrToHash32Bit("00102222"));
-  histogram_tester.ExpectUniqueSample(kNumberOfSectionsHistogram, 3, 1);
-  EXPECT_THAT(histogram_tester.GetAllSamples(kFieldsPerSectionHistogram),
-              BucketsAre(Bucket(1, 1), Bucket(3, 1), Bucket(4, 1)));
-}
-
 // Tests that an invisible <select> does not start a new section. Consider the
 // following form:
 //   <form>
@@ -274,9 +152,6 @@ TEST_F(FormStructureSectioningTest, ExampleFormSectioningModeExpand) {
 // added.
 TEST_F(FormStructureSectioningTest,
        SelectFieldOfHiddenSectionDoesNotLeakIntoFollowingSection) {
-  base::test::ScopedFeatureList features(
-      features::kAutofillUseParameterizedSectioning);
-
   auto fields =
       CreateFields({{.field_type = NAME_FULL, .is_focusable = false},
                     {.field_type = ADDRESS_HOME_LINE1, .is_focusable = false},
@@ -328,9 +203,6 @@ TEST_F(FormStructureSectioningTest,
 // The fields in the second <div> should not start a new section.
 TEST_F(FormStructureSectioningTest,
        RepeatedSequenceOfStateCountryEtcDoesNotBreakSection) {
-  base::test::ScopedFeatureList features(
-      features::kAutofillUseParameterizedSectioning);
-
   auto fields = CreateFields({{.field_type = NAME_FULL},
                               {.field_type = ADDRESS_HOME_LINE1},
                               {.field_type = ADDRESS_HOME_LINE2},

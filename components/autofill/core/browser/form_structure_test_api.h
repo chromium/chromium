@@ -12,6 +12,7 @@
 #include "base/memory/raw_ptr.h"
 #include "base/memory/raw_ref.h"
 #include "components/autofill/core/browser/form_structure.h"
+#include "components/autofill/core/browser/form_structure_sectioning_util.h"
 
 namespace autofill {
 
@@ -68,9 +69,7 @@ class FormStructureTestApi {
   // returns NO_INFORMATION.
   AutofillUploadContents::Field::VoteType get_username_vote_type();
 
-  void IdentifySections(bool ignore_autocomplete) {
-    form_structure_->IdentifySections(ignore_autocomplete);
-  }
+  void AssignSections() { autofill::AssignSections(form_structure_->fields_); }
 
   bool phone_rationalized(const Section& section) const {
     return base::Contains(form_structure_->phone_rationalized_, section);

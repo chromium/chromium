@@ -18,7 +18,7 @@ UNKNOWN_TYPE | lastName | Last Name* |  | firstName_1
 UNKNOWN_TYPE | keywords |  |  | keywords_1
 UNKNOWN_TYPE | searchNodeID |  | 1038576|1287991011 | keywords_1
 
-UNKNOWN_TYPE | ue_back | 1 | 1 | ue_back_1
+UNKNOWN_TYPE | ue_back | 1 | 1 | -default
 
 UNKNOWN_TYPE | userName | Your name:* |  | userName_1
 EMAIL_ADDRESS | email | Your email address:* |  | userName_1

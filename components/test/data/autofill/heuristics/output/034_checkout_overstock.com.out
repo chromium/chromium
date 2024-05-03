@@ -25,25 +25,25 @@ CREDIT_CARD_EXP_4_DIGIT_YEAR | exp_year | Expiration Date: |  | CC_number_3
 UNKNOWN_TYPE | CC | PayPal | PayPal | ShippingFirstName_2
 UNKNOWN_TYPE | CC | bml | bml | ShippingFirstName_2
 UNKNOWN_TYPE | UsePromoCode | Use Promo Code | on | ShippingFirstName_2
-MERCHANT_PROMO_CODE | PromoCode | Use Promo Code |  | ShippingFirstName_2
+MERCHANT_PROMO_CODE | PromoCode | Use Promo Code |  | -default
 UNKNOWN_TYPE | UseGiftCards | Use Gift Card | on | ShippingFirstName_2
-UNKNOWN_TYPE | GiftCardNumber0 | Gift Card 1: |  | ShippingFirstName_2
-UNKNOWN_TYPE | PINNumber0 | PIN: |  | ShippingFirstName_2
-UNKNOWN_TYPE | GiftCardNumber1 | Gift Card 2: |  | ShippingFirstName_2
-UNKNOWN_TYPE | PINNumber1 | PIN: |  | ShippingFirstName_2
-UNKNOWN_TYPE | GiftCardNumber2 | Gift Card 3: |  | ShippingFirstName_2
-UNKNOWN_TYPE | PINNumber2 | PIN: |  | ShippingFirstName_2
-UNKNOWN_TYPE | GiftCardNumber3 | Gift Card 4: |  | ShippingFirstName_2
-UNKNOWN_TYPE | PINNumber3 | PIN: |  | ShippingFirstName_2
-UNKNOWN_TYPE | GiftCardNumber4 | Gift Card 5: |  | ShippingFirstName_2
-UNKNOWN_TYPE | PINNumber4 | PIN: |  | ShippingFirstName_2
-UNKNOWN_TYPE | GiftCardNumber5 | Gift Card 6: |  | ShippingFirstName_2
-UNKNOWN_TYPE | PINNumber5 | PIN: |  | ShippingFirstName_2
-UNKNOWN_TYPE | GiftCardNumber6 | Gift Card 7: |  | ShippingFirstName_2
-UNKNOWN_TYPE | PINNumber6 | PIN: |  | ShippingFirstName_2
-UNKNOWN_TYPE | GiftCardNumber7 | Gift Card 8: |  | ShippingFirstName_2
-UNKNOWN_TYPE | PINNumber7 | PIN: |  | ShippingFirstName_2
-UNKNOWN_TYPE | GiftCardNumber8 | Gift Card 9: |  | ShippingFirstName_2
-UNKNOWN_TYPE | PINNumber8 | PIN: |  | ShippingFirstName_2
-UNKNOWN_TYPE | GiftCardNumber9 | Gift Card 10: |  | ShippingFirstName_2
-UNKNOWN_TYPE | PINNumber9 | PIN: |  | ShippingFirstName_2
+UNKNOWN_TYPE | GiftCardNumber0 | Gift Card 1: |  | -default
+UNKNOWN_TYPE | PINNumber0 | PIN: |  | -default
+UNKNOWN_TYPE | GiftCardNumber1 | Gift Card 2: |  | -default
+UNKNOWN_TYPE | PINNumber1 | PIN: |  | -default
+UNKNOWN_TYPE | GiftCardNumber2 | Gift Card 3: |  | -default
+UNKNOWN_TYPE | PINNumber2 | PIN: |  | -default
+UNKNOWN_TYPE | GiftCardNumber3 | Gift Card 4: |  | -default
+UNKNOWN_TYPE | PINNumber3 | PIN: |  | -default
+UNKNOWN_TYPE | GiftCardNumber4 | Gift Card 5: |  | -default
+UNKNOWN_TYPE | PINNumber4 | PIN: |  | -default
+UNKNOWN_TYPE | GiftCardNumber5 | Gift Card 6: |  | -default
+UNKNOWN_TYPE | PINNumber5 | PIN: |  | -default
+UNKNOWN_TYPE | GiftCardNumber6 | Gift Card 7: |  | -default
+UNKNOWN_TYPE | PINNumber6 | PIN: |  | -default
+UNKNOWN_TYPE | GiftCardNumber7 | Gift Card 8: |  | -default
+UNKNOWN_TYPE | PINNumber7 | PIN: |  | -default
+UNKNOWN_TYPE | GiftCardNumber8 | Gift Card 9: |  | -default
+UNKNOWN_TYPE | PINNumber8 | PIN: |  | -default
+UNKNOWN_TYPE | GiftCardNumber9 | Gift Card 10: |  | -default
+UNKNOWN_TYPE | PINNumber9 | PIN: |  | -default

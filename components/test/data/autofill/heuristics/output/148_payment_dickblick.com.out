@@ -1,6 +1,6 @@
 UNKNOWN_TYPE | unbxd_q | enter keyword or item number... | enter keyword or item number... | unbxd_q_1
-MERCHANT_PROMO_CODE | CouponCode | Enter Your Gift Card or Coupon Number: |  | unbxd_q_1
-UNKNOWN_TYPE | CouponPin | Enter Your Gift Card Pin Number: |  | unbxd_q_1
+MERCHANT_PROMO_CODE | CouponCode | Enter Your Gift Card or Coupon Number: |  | -default
+UNKNOWN_TYPE | CouponPin | Enter Your Gift Card Pin Number: |  | -default
 UNKNOWN_TYPE | paymentMethod | Credit Card | CreditCard | unbxd_q_1
 CREDIT_CARD_NUMBER | CreditCardNumber | Credit Card Number: |  | CreditCardNumber_2
 CREDIT_CARD_NAME_FULL | CreditCardHolderName | Name on Card: |  | CreditCardNumber_2
@@ -18,9 +18,9 @@ ADDRESS_HOME_LINE2 | BillingAddressSuiteNumber | Apt/Suite: |  | unbxd_q_1
 ADDRESS_HOME_LINE3 | BillingAddressStreetLine2 | Street Address Line 2 (optional): |  | unbxd_q_1
 ADDRESS_HOME_CITY | BillingAddressCity | City: |  | unbxd_q_1
 ADDRESS_HOME_STATE | BillingAddressState | State: | 0 | unbxd_q_1
-UNKNOWN_TYPE | BillingAddressNotUsState | State/Province: |  | unbxd_q_1
+UNKNOWN_TYPE | BillingAddressNotUsState | State/Province: |  | -default
 ADDRESS_HOME_ZIP | BillingAddressZipCode | Zip Code: |  | unbxd_q_1
-ADDRESS_HOME_ZIP | BillingAddressPostalCode | Postal Code: |  | unbxd_q_1
+ADDRESS_HOME_ZIP | BillingAddressPostalCode | Postal Code: |  | -default
 ADDRESS_HOME_COUNTRY | BillingAddressCountry | Country: | 0 | unbxd_q_1
 PHONE_HOME_CITY_AND_NUMBER | ContactDaytimePhoneNumber | Daytime Telephone: |  | unbxd_q_1
 PHONE_HOME_CITY_AND_NUMBER | ContactEveningPhoneNumber | Evening Telephone: |  | unbxd_q_1
@@ -30,8 +30,8 @@ UNKNOWN_TYPE | SendEmailSpecialSalesBlickRetailStores | I want to receive emails
 UNKNOWN_TYPE | SendCatalogsAndFlyers | Please mail me catalogs and flyers. | true | unbxd_q_1
 UNKNOWN_TYPE | ShareMailingAddress | Allow my mailing address to be shared. | true | unbxd_q_1
 UNKNOWN_TYPE | unbxd_q | enter keyword or item number... | enter keyword or item number... | unbxd_q_1
-MERCHANT_PROMO_CODE | CouponCode | Enter Your Gift Card or Coupon Number: |  | unbxd_q_1
-UNKNOWN_TYPE | CouponPin | Enter Your Gift Card Pin Number: |  | unbxd_q_1
+MERCHANT_PROMO_CODE | CouponCode | Enter Your Gift Card or Coupon Number: |  | -default
+UNKNOWN_TYPE | CouponPin | Enter Your Gift Card Pin Number: |  | -default
 UNKNOWN_TYPE | paymentMethod | Credit Card | CreditCard | unbxd_q_1
 CREDIT_CARD_NUMBER | CreditCardNumber | Credit Card Number: |  | CreditCardNumber_2
 CREDIT_CARD_NAME_FULL | CreditCardHolderName | Name on Card: |  | CreditCardNumber_2
@@ -49,9 +49,9 @@ ADDRESS_HOME_LINE2 | BillingAddressSuiteNumber | Apt/Suite: |  | BillingAddressF
 ADDRESS_HOME_LINE3 | BillingAddressStreetLine2 | Street Address Line 2 (optional): |  | BillingAddressFirstName_3
 ADDRESS_HOME_CITY | BillingAddressCity | City: |  | BillingAddressFirstName_3
 ADDRESS_HOME_STATE | BillingAddressState | State: | 0 | BillingAddressFirstName_3
-UNKNOWN_TYPE | BillingAddressNotUsState | State/Province: |  | BillingAddressFirstName_3
+UNKNOWN_TYPE | BillingAddressNotUsState | State/Province: |  | -default
 ADDRESS_HOME_ZIP | BillingAddressZipCode | Zip Code: |  | BillingAddressFirstName_3
-ADDRESS_HOME_ZIP | BillingAddressPostalCode | Postal Code: |  | BillingAddressFirstName_3
+ADDRESS_HOME_ZIP | BillingAddressPostalCode | Postal Code: |  | -default
 ADDRESS_HOME_COUNTRY | BillingAddressCountry | Country: | 0 | BillingAddressFirstName_3
 PHONE_HOME_CITY_AND_NUMBER | ContactDaytimePhoneNumber | Daytime Telephone: |  | BillingAddressFirstName_3
 PHONE_HOME_CITY_AND_NUMBER | ContactEveningPhoneNumber | Evening Telephone: |  | BillingAddressFirstName_3
@@ -61,8 +61,8 @@ UNKNOWN_TYPE | SendEmailSpecialSalesBlickRetailStores | I want to receive emails
 UNKNOWN_TYPE | SendCatalogsAndFlyers | Please mail me catalogs and flyers. | true | BillingAddressFirstName_3
 UNKNOWN_TYPE | ShareMailingAddress | Allow my mailing address to be shared. | true | BillingAddressFirstName_3
 UNKNOWN_TYPE | unbxd_q | enter keyword or item number... | enter keyword or item number... | BillingAddressFirstName_3
-MERCHANT_PROMO_CODE | CouponCode | Enter Your Gift Card or Coupon Number: |  | BillingAddressFirstName_3
-UNKNOWN_TYPE | CouponPin | Enter Your Gift Card Pin Number: |  | BillingAddressFirstName_3
+MERCHANT_PROMO_CODE | CouponCode | Enter Your Gift Card or Coupon Number: |  | -default
+UNKNOWN_TYPE | CouponPin | Enter Your Gift Card Pin Number: |  | -default
 UNKNOWN_TYPE | paymentMethod | Credit Card | CreditCard | BillingAddressFirstName_3
 CREDIT_CARD_NUMBER | CreditCardNumber | Credit Card Number: |  | CreditCardNumber_2
 CREDIT_CARD_NAME_FULL | CreditCardHolderName | Name on Card: |  | CreditCardNumber_2
@@ -80,9 +80,9 @@ ADDRESS_HOME_LINE2 | BillingAddressSuiteNumber | Apt/Suite: |  | BillingAddressF
 ADDRESS_HOME_LINE3 | BillingAddressStreetLine2 | Street Address Line 2 (optional): |  | BillingAddressFirstName_4
 ADDRESS_HOME_CITY | BillingAddressCity | City: |  | BillingAddressFirstName_4
 ADDRESS_HOME_STATE | BillingAddressState | State: | 0 | BillingAddressFirstName_4
-UNKNOWN_TYPE | BillingAddressNotUsState | State/Province: |  | BillingAddressFirstName_4
+UNKNOWN_TYPE | BillingAddressNotUsState | State/Province: |  | -default
 ADDRESS_HOME_ZIP | BillingAddressZipCode | Zip Code: |  | BillingAddressFirstName_4
-ADDRESS_HOME_ZIP | BillingAddressPostalCode | Postal Code: |  | BillingAddressFirstName_4
+ADDRESS_HOME_ZIP | BillingAddressPostalCode | Postal Code: |  | -default
 ADDRESS_HOME_COUNTRY | BillingAddressCountry | Country: | 0 | BillingAddressFirstName_4
 PHONE_HOME_CITY_AND_NUMBER | ContactDaytimePhoneNumber | Daytime Telephone: |  | BillingAddressFirstName_4
 PHONE_HOME_CITY_AND_NUMBER | ContactEveningPhoneNumber | Evening Telephone: |  | BillingAddressFirstName_4

@@ -206,8 +206,6 @@ FormStructureBrowserTest::FormStructureBrowserTest()
   feature_list_.InitWithFeatures(
       // Enabled
       {
-          // TODO(crbug.com/40128551) Remove once launched.
-          features::kAutofillUseNewSectioningMethod,
           // TODO(crbug.com/40160818) Remove once launched.
           features::kAutofillEnableDependentLocalityParsing,
           // TODO(crbug.com/40158074) Remove once launched.

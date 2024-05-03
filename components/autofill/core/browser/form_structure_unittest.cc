@@ -64,8 +64,6 @@ using ::testing::ResultOf;
 using ::testing::Truly;
 using ::testing::UnorderedElementsAre;
 
-constexpr uint64_t kFieldMaxLength = 10000;
-
 constexpr DenseSet<PatternSource> kAllPatternSources {
 #if !BUILDFLAG(USE_INTERNAL_AUTOFILL_PATTERNS)
   PatternSource::kLegacy
@@ -984,68 +982,6 @@ TEST_F(FormStructureTestImpl, PasswordFormShouldBeQueried) {
   EXPECT_TRUE(form_structure.ShouldBeUploaded());
 }
 
-// Verify that we can correctly process sections listed in the |autocomplete|
-// attribute.
-TEST_F(FormStructureTestImpl, HeuristicsAutocompleteAttributeWithSections) {
-  // This test tests whether credit card fields are implicitly in one, separate
-  // credit card section, independent of whether they have a valid autocomplete
-  // attribute section. With the new sectioning, credit card fields with a valid
-  // autocomplete attribute section S are in section S.
-  base::test::ScopedFeatureList scoped_feature_list;
-  scoped_feature_list.InitAndDisableFeature(
-      features::kAutofillUseParameterizedSectioning);
-
-  FormData form;
-  form.url = GURL("http://www.foo.com/");
-  form.fields = {
-      // Some fields will have no section specified.  These fall into the
-      // default section.
-      CreateTestFormField("", "", "", FormControlType::kInputText, "email"),
-      // We allow arbitrary section names.
-      CreateTestFormField("", "", "", FormControlType::kInputText,
-                          "section-foo email"),
-      // "shipping" and "billing" are special section tokens that don't require
-      // the "section-" prefix.
-      CreateTestFormField("", "", "", FormControlType::kInputText,
-                          "shipping email"),
-      CreateTestFormField("", "", "", FormControlType::kInputText,
-                          "billing email"),
-      // "shipping" and "billing" can be combined with other section names.
-      CreateTestFormField("", "", "", FormControlType::kInputText,
-                          "section-foo shipping email"),
-      CreateTestFormField("", "", "", FormControlType::kInputText,
-                          "section-foo billing email"),
-      // We don't do anything clever to try to coalesce sections; it's up to
-      // site authors to avoid typos.
-      CreateTestFormField("", "", "", FormControlType::kInputText,
-                          "section--foo email"),
-      // "shipping email" and "section--shipping" email should be parsed as
-      // different sections.  This is only an interesting test due to how we
-      // implement implicit section names from attributes like "shipping email";
-      // see the implementation for more details.
-      CreateTestFormField("", "", "", FormControlType::kInputText,
-                          "section--shipping email"),
-      // Credit card fields are implicitly in one, separate credit card section.
-      CreateTestFormField("", "", "", FormControlType::kInputText,
-                          "section-foo cc-number")};
-  FormStructure form_structure(form);
-  form_structure.DetermineHeuristicTypes(GeoIpCountryCode(""), nullptr,
-                                         nullptr);
-  EXPECT_TRUE(form_structure.IsAutofillable());
-
-  // Expect the correct number of fields.
-  ASSERT_EQ(9U, form_structure.field_count());
-  EXPECT_EQ(9U, form_structure.autofill_count());
-
-  // All of the fields in this form should be parsed as belonging to different
-  // sections.
-  std::set<Section> section_names;
-  for (size_t i = 0; i < 9; ++i) {
-    section_names.insert(form_structure.field(i)->section());
-  }
-  EXPECT_EQ(9U, section_names.size());
-}
-
 // Verify that we can correctly process a degenerate section listed in the
 // |autocomplete| attribute.
 TEST_F(FormStructureTestImpl,
@@ -1110,47 +1046,6 @@ TEST_F(FormStructureTestImpl,
     section_names.insert(form_structure.field(i)->section());
   }
   EXPECT_EQ(1U, section_names.size());
-}
-
-// Verify that we do not override the author-specified sections from a form with
-// local heuristics.
-TEST_F(FormStructureTestImpl,
-       HeuristicsDontOverrideAutocompleteAttributeSections) {
-  // With the new sectioning, fields with a valid autocomplete attribute section
-  // S are in section S. All other <input> fields that are focusable are
-  // partitioned into intervals, each of which is a section.
-  // This is different compared to the old behavior which assigns fields without
-  // an autocomplete attribute section to the empty, "-default" section if there
-  // is a field with a valid autocomplete attribute section in the form.
-  base::test::ScopedFeatureList scoped_feature_list;
-  scoped_feature_list.InitAndDisableFeature(
-      features::kAutofillUseParameterizedSectioning);
-
-  FormData form;
-  form.url = GURL("http://www.foo.com/");
-  form.fields = {
-      CreateTestFormField("", "one", "", FormControlType::kInputText,
-                          "address-line1"),
-      CreateTestFormField("", "", "", FormControlType::kInputText,
-                          "section-foo email"),
-      CreateTestFormField("", "", "", FormControlType::kInputText, "name"),
-      CreateTestFormField("", "two", "", FormControlType::kInputText,
-                          "address-line1")};
-  FormStructure form_structure(form);
-  form_structure.DetermineHeuristicTypes(GeoIpCountryCode(""), nullptr,
-                                         nullptr);
-
-  // Expect the correct number of fields.
-  ASSERT_EQ(4U, form_structure.field_count());
-  EXPECT_EQ(4U, form_structure.autofill_count());
-
-  // Normally, the two separate address fields would cause us to detect two
-  // separate sections; but because there is an author-specified section in this
-  // form, we do not apply these usual heuristics.
-  EXPECT_EQ(u"one", form_structure.field(0)->name());
-  EXPECT_EQ(u"two", form_structure.field(3)->name());
-  EXPECT_EQ(form_structure.field(0)->section(),
-            form_structure.field(3)->section());
 }
 
 TEST_F(FormStructureTestImpl, HeuristicsSample8) {
@@ -2368,7 +2263,7 @@ TEST_F(FormStructureTestImpl, NoAutocompleteSectionNames) {
   std::vector<FormStructure*> forms;
   forms.push_back(&form_structure);
 
-  test_api(form_structure).IdentifySections(/*ignore_autocomplete=*/false);
+  test_api(form_structure).AssignSections();
 
   // Assert the correct number of fields.
   ASSERT_EQ(6U, form_structure.field_count());
@@ -2380,59 +2275,8 @@ TEST_F(FormStructureTestImpl, NoAutocompleteSectionNames) {
   EXPECT_EQ("fullName_0_14", form_structure.field(5)->section().ToString());
 }
 
-// Tests that the immediate recurrence of the |PHONE_HOME_NUMBER| type does not
-// lead to a section split.
-TEST_F(FormStructureTestImpl, NoSplitByRecurringPhoneFieldType) {
-  base::test::ScopedFeatureList enabled;
-  enabled.InitAndEnableFeature(features::kAutofillUseNewSectioningMethod);
-
-  FormData form;
-  form.url = GURL("http://foo.com");
-  form.fields = {
-      CreateTestFormField("Full Name", "fullName", "",
-                          FormControlType::kInputText, "", kFieldMaxLength),
-      CreateTestFormField("Phone", "phone", "", FormControlType::kInputText, "",
-                          kFieldMaxLength),
-      CreateTestFormField("Mobile Number", "mobileNumber", "",
-                          FormControlType::kInputText, "", kFieldMaxLength),
-      CreateTestFormField("Full Name", "fullName", "",
-                          FormControlType::kInputText,
-                          "section-blue billing name", kFieldMaxLength),
-      CreateTestFormField("Phone", "phone", "", FormControlType::kInputText,
-                          "section-blue billing tel", kFieldMaxLength),
-      CreateTestFormField("Mobile Number", "mobileNumber", "",
-                          FormControlType::kInputText,
-                          "section-blue billing tel", kFieldMaxLength),
-      CreateTestFormField("Country", "country", "", FormControlType::kInputText,
-                          "", kFieldMaxLength)};
-  FormStructure form_structure(form);
-  test_api(form_structure)
-      .SetFieldTypes({NAME_FULL, PHONE_HOME_NUMBER, PHONE_HOME_NUMBER,
-                      NAME_FULL, PHONE_HOME_NUMBER, PHONE_HOME_NUMBER,
-                      ADDRESS_HOME_COUNTRY});
-
-  std::vector<FormStructure*> forms;
-  forms.push_back(&form_structure);
-
-  test_api(form_structure).IdentifySections(/*ignore_autocomplete=*/false);
-
-  // Assert the correct number of fields.
-  ASSERT_EQ(7U, form_structure.field_count());
-
-  EXPECT_EQ("blue-billing", form_structure.field(0)->section().ToString());
-  EXPECT_EQ("blue-billing", form_structure.field(1)->section().ToString());
-  EXPECT_EQ("blue-billing", form_structure.field(2)->section().ToString());
-  EXPECT_EQ("blue-billing", form_structure.field(3)->section().ToString());
-  EXPECT_EQ("blue-billing", form_structure.field(4)->section().ToString());
-  EXPECT_EQ("blue-billing", form_structure.field(5)->section().ToString());
-  EXPECT_EQ("blue-billing", form_structure.field(6)->section().ToString());
-}
-
 // Tests that adjacent name field types are not split into different sections.
 TEST_F(FormStructureTestImpl, NoSplitAdjacentNameFieldType) {
-  base::test::ScopedFeatureList enabled;
-  enabled.InitAndEnableFeature(features::kAutofillUseParameterizedSectioning);
-
   FormData form;
   form.url = GURL("http://foo.com");
   form.fields = {CreateTestFormField("First Name", "firstname", "",
@@ -2452,7 +2296,7 @@ TEST_F(FormStructureTestImpl, NoSplitAdjacentNameFieldType) {
       .SetFieldTypes({NAME_FIRST, NAME_LAST, NAME_FIRST, NAME_LAST,
                       ADDRESS_HOME_COUNTRY, NAME_FIRST});
 
-  test_api(form_structure).IdentifySections(/*ignore_autocomplete=*/false);
+  test_api(form_structure).AssignSections();
 
   // Assert the correct number of fields.
   ASSERT_EQ(6U, form_structure.field_count());
@@ -2468,223 +2312,6 @@ TEST_F(FormStructureTestImpl, NoSplitAdjacentNameFieldType) {
   // The non-adjacent name field should be split into a different section.
   EXPECT_NE(form_structure.field(0)->section(),
             form_structure.field(5)->section());
-}
-
-// Tests if a new logical form is started with the second appearance of a field
-// of type |ADDRESS_HOME_COUNTRY|.
-TEST_F(FormStructureTestImpl, SplitByRecurringFieldType) {
-  base::test::ScopedFeatureList scoped_features;
-  scoped_features.InitAndEnableFeature(
-      features::kAutofillUseNewSectioningMethod);
-  FormData form;
-  form.url = GURL("http://foo.com");
-  form.fields = {
-      CreateTestFormField("Full Name", "fullName", "",
-                          FormControlType::kInputText,
-                          "section-blue shipping name", kFieldMaxLength),
-      CreateTestFormField("Country", "country", "", FormControlType::kInputText,
-                          "section-blue shipping country", kFieldMaxLength),
-      CreateTestFormField("Full Name", "fullName", "",
-                          FormControlType::kInputText,
-                          "section-blue shipping name", kFieldMaxLength),
-      CreateTestFormField("Country", "country", "", FormControlType::kInputText,
-                          "", kFieldMaxLength)};
-  FormStructure form_structure(form);
-  test_api(form_structure)
-      .SetFieldTypes(
-          {NAME_FULL, ADDRESS_HOME_COUNTRY, NAME_FULL, ADDRESS_HOME_COUNTRY});
-
-  std::vector<FormStructure*> forms;
-  forms.push_back(&form_structure);
-
-  test_api(form_structure).IdentifySections(/*ignore_autocomplete=*/false);
-
-  // Assert the correct number of fields.
-  ASSERT_EQ(4U, form_structure.field_count());
-
-  EXPECT_EQ("blue-shipping", form_structure.field(0)->section().ToString());
-  EXPECT_EQ("blue-shipping", form_structure.field(1)->section().ToString());
-  EXPECT_EQ("blue-shipping", form_structure.field(2)->section().ToString());
-  EXPECT_EQ("country_2_14", form_structure.field(3)->section().ToString());
-}
-
-// Tests if a new logical form is started with the second appearance of a field
-// of type |NAME_FULL| and another with the second appearance of a field of
-// type |ADDRESS_HOME_COUNTRY|.
-TEST_F(FormStructureTestImpl,
-       SplitByNewAutocompleteSectionNameAndRecurringType) {
-  base::test::ScopedFeatureList scoped_features;
-  scoped_features.InitAndEnableFeature(
-      features::kAutofillUseNewSectioningMethod);
-  FormData form;
-  form.url = GURL("http://foo.com");
-  form.fields = {
-      CreateTestFormField("Full Name", "fullName", "",
-                          FormControlType::kInputText,
-                          "section-blue shipping name", kFieldMaxLength),
-      CreateTestFormField("Country", "country", "", FormControlType::kInputText,
-                          "section-blue billing country", kFieldMaxLength),
-      CreateTestFormField("Full Name", "fullName", "",
-                          FormControlType::kInputText, "", kFieldMaxLength),
-      CreateTestFormField("Country", "country", "", FormControlType::kInputText,
-                          "", kFieldMaxLength)};
-  FormStructure form_structure(form);
-  test_api(form_structure)
-      .SetFieldTypes(
-          {NAME_FULL, ADDRESS_HOME_COUNTRY, NAME_FULL, ADDRESS_HOME_COUNTRY});
-
-  std::vector<FormStructure*> forms;
-  forms.push_back(&form_structure);
-
-  test_api(form_structure).IdentifySections(/*ignore_autocomplete=*/false);
-
-  // Assert the correct number of fields.
-  ASSERT_EQ(4U, form_structure.field_count());
-
-  EXPECT_EQ("blue-shipping", form_structure.field(0)->section().ToString());
-  EXPECT_EQ("blue-billing", form_structure.field(1)->section().ToString());
-  EXPECT_EQ("blue-billing", form_structure.field(2)->section().ToString());
-  EXPECT_EQ("country_2_14", form_structure.field(3)->section().ToString());
-}  // namespace autofill
-
-// Tests if a new logical form is started with the second appearance of a field
-// of type |NAME_FULL|.
-TEST_F(FormStructureTestImpl, SplitByNewAutocompleteSectionName) {
-  base::test::ScopedFeatureList enabled;
-  enabled.InitAndEnableFeature(features::kAutofillUseNewSectioningMethod);
-
-  FormData form;
-  form.url = GURL("http://foo.com");
-  form.fields = {
-      CreateTestFormField("Full Name", "fullName", "",
-                          FormControlType::kInputText,
-                          "section-blue shipping name", kFieldMaxLength),
-      CreateTestFormField("City", "city", "", FormControlType::kInputText, "",
-                          kFieldMaxLength),
-      CreateTestFormField("Full Name", "fullName", "",
-                          FormControlType::kInputText,
-                          "section-blue billing name", kFieldMaxLength),
-      CreateTestFormField("City", "city", "", FormControlType::kInputText, "",
-                          kFieldMaxLength)};
-  FormStructure form_structure(form);
-  test_api(form_structure)
-      .SetFieldTypes(
-          {NAME_FULL, ADDRESS_HOME_CITY, NAME_FULL, ADDRESS_HOME_CITY});
-
-  std::vector<FormStructure*> forms;
-  forms.push_back(&form_structure);
-
-  test_api(form_structure).IdentifySections(/*ignore_autocomplete=*/false);
-
-  // Assert the correct number of fields.
-  ASSERT_EQ(4U, form_structure.field_count());
-
-  EXPECT_EQ("blue-shipping", form_structure.field(0)->section().ToString());
-  EXPECT_EQ("blue-shipping", form_structure.field(1)->section().ToString());
-  EXPECT_EQ("blue-billing", form_structure.field(2)->section().ToString());
-  EXPECT_EQ("blue-billing", form_structure.field(3)->section().ToString());
-}
-
-// Tests if a new logical form is started with the second appearance of a field
-// of type |NAME_FULL|.
-TEST_F(
-    FormStructureTestImpl,
-    FromEmptyAutocompleteSectionToDefinedOneWithSplitByNewAutocompleteSectionName) {
-  base::test::ScopedFeatureList enabled;
-  enabled.InitAndEnableFeature(features::kAutofillUseNewSectioningMethod);
-
-  FormData form;
-  form.url = GURL("http://foo.com");
-  form.fields = {
-      CreateTestFormField("Full Name", "fullName", "",
-                          FormControlType::kInputText, "", kFieldMaxLength),
-      CreateTestFormField("Country", "country", "", FormControlType::kInputText,
-                          "section-blue shipping country", kFieldMaxLength),
-      CreateTestFormField("Full Name", "fullName", "",
-                          FormControlType::kInputText,
-                          "section-blue billing name", kFieldMaxLength),
-      CreateTestFormField("City", "city", "", FormControlType::kInputText, "",
-                          kFieldMaxLength)};
-  FormStructure form_structure(form);
-  test_api(form_structure)
-      .SetFieldTypes(
-          {NAME_FULL, ADDRESS_HOME_COUNTRY, NAME_FULL, ADDRESS_HOME_CITY});
-
-  std::vector<FormStructure*> forms;
-  forms.push_back(&form_structure);
-
-  test_api(form_structure).IdentifySections(/*ignore_autocomplete=*/false);
-
-  // Assert the correct number of fields.
-  ASSERT_EQ(4U, form_structure.field_count());
-
-  EXPECT_EQ("blue-shipping", form_structure.field(0)->section().ToString());
-  EXPECT_EQ("blue-shipping", form_structure.field(1)->section().ToString());
-  EXPECT_EQ("blue-billing", form_structure.field(2)->section().ToString());
-  EXPECT_EQ("blue-billing", form_structure.field(3)->section().ToString());
-}
-
-// Tests if all the fields in the form belong to the same section when the
-// second field has the autocomplete-section attribute set.
-TEST_F(FormStructureTestImpl, FromEmptyAutocompleteSectionToDefinedOne) {
-  base::test::ScopedFeatureList enabled;
-  enabled.InitAndEnableFeature(features::kAutofillUseNewSectioningMethod);
-
-  FormData form;
-  form.url = GURL("http://foo.com");
-  form.fields = {
-      CreateTestFormField("Full Name", "fullName", "",
-                          FormControlType::kInputText, "", kFieldMaxLength),
-      CreateTestFormField("Country", "country", "", FormControlType::kInputText,
-                          "section-blue shipping country", kFieldMaxLength)};
-  FormStructure form_structure(form);
-  test_api(form_structure).SetFieldTypes({NAME_FULL, ADDRESS_HOME_COUNTRY});
-
-  std::vector<FormStructure*> forms;
-  forms.push_back(&form_structure);
-
-  test_api(form_structure).IdentifySections(/*ignore_autocomplete=*/false);
-
-  // Assert the correct number of fields.
-  ASSERT_EQ(2U, form_structure.field_count());
-
-  EXPECT_EQ("blue-shipping", form_structure.field(0)->section().ToString());
-  EXPECT_EQ("blue-shipping", form_structure.field(1)->section().ToString());
-}
-
-// Tests if all the fields in the form belong to the same section when one of
-// the field is ignored.
-TEST_F(FormStructureTestImpl,
-       FromEmptyAutocompleteSectionToDefinedOneWithIgnoredField) {
-  base::test::ScopedFeatureList enabled;
-  enabled.InitAndEnableFeature(features::kAutofillUseNewSectioningMethod);
-
-  FormData form;
-  form.url = GURL("http://foo.com");
-  form.fields.push_back(CreateTestFormField("Full Name", "fullName", "",
-                                            FormControlType::kInputText, "",
-                                            kFieldMaxLength));
-  form.fields.push_back(CreateTestFormField(
-      "Phone", "phone", "", FormControlType::kInputText, "", kFieldMaxLength));
-  form.fields.back().set_is_focusable(false);  // hidden
-  form.fields.push_back(CreateTestFormField("Full Name", "fullName", "",
-                                            FormControlType::kInputText,
-                                            "shipping name", kFieldMaxLength));
-  FormStructure form_structure(form);
-  test_api(form_structure)
-      .SetFieldTypes({NAME_FULL, PHONE_HOME_NUMBER, NAME_FULL});
-
-  std::vector<FormStructure*> forms;
-  forms.push_back(&form_structure);
-
-  test_api(form_structure).IdentifySections(/*ignore_autocomplete=*/false);
-
-  // Assert the correct number of fields.
-  ASSERT_EQ(3U, form_structure.field_count());
-
-  EXPECT_EQ("-shipping", form_structure.field(0)->section().ToString());
-  EXPECT_EQ("-shipping", form_structure.field(1)->section().ToString());
-  EXPECT_EQ("-shipping", form_structure.field(2)->section().ToString());
 }
 
 TEST_F(FormStructureTestImpl, FindFieldsEligibleForManualFilling) {
@@ -2720,7 +2347,7 @@ TEST_F(FormStructureTestImpl, FindFieldsEligibleForManualFilling) {
   std::vector<raw_ptr<FormStructure, VectorExperimental>> forms;
   forms.push_back(&form_structure);
 
-  test_api(form_structure).IdentifySections(/*ignore_autocomplete=*/false);
+  test_api(form_structure).AssignSections();
   std::vector<FieldGlobalId> expected_result;
   // Only credit card related and unknown fields are eligible for manual
   // filling.
