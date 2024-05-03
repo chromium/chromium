@@ -3501,16 +3501,25 @@ bool RenderFrameHostImpl::CreateRenderFrame(
   if (auto* rwh = GetLocalRenderWidgetHost()) {
     params->widget_params = rwh->BindAndGenerateCreateFrameWidgetParams();
 
-    auto* previous_rfh =
-        lifecycle_state_ == LifecycleStateImpl::kSpeculative &&
-                frame_tree_node_->current_frame_host()->ShouldReuseCompositing(
-                    *GetSiteInstance())
-            ? frame_tree_node_->current_frame_host()
-            : nullptr;
+    auto* previous_rfh = lifecycle_state_ == LifecycleStateImpl::kSpeculative
+                             ? frame_tree_node_->current_frame_host()
+                             : nullptr;
     if (previous_rfh) {
-      waiting_for_renderer_widget_creation_after_commit_ = true;
-      params->widget_params->previous_frame_token_for_compositor_reuse =
-          previous_rfh->GetFrameToken();
+      // When migrating a frame to a new/different render process, use the frame
+      // size we already have from the existing RenderFrameHost.
+      if (params->widget_params->visual_properties.new_size.IsZero()) {
+        float dsf = rwh->GetScreenInfo().device_scale_factor;
+        params->widget_params->visual_properties.new_size =
+            gfx::ScaleToRoundedSize(
+                previous_rfh->GetFrameSize().value_or(gfx::Size()), 1.f / dsf);
+      }
+
+      if (frame_tree_node_->current_frame_host()->ShouldReuseCompositing(
+              *GetSiteInstance())) {
+        waiting_for_renderer_widget_creation_after_commit_ = true;
+        params->widget_params->previous_frame_token_for_compositor_reuse =
+            previous_rfh->GetFrameToken();
+      }
     }
   }
   mojo::PendingAssociatedRemote<mojom::Frame> pending_frame_remote;
