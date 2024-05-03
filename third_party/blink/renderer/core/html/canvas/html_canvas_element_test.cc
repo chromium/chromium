@@ -162,7 +162,6 @@ TEST_P(HTMLCanvasElementTest, BrokenCanvasHighRes) {
   EXPECT_EQ(HTMLCanvasElement::BrokenCanvas(1.0).second, 1.0);
 }
 
-#if BUILDFLAG(USE_PERFETTO_CLIENT_LIBRARY)
 
 class HTMLCanvasElementWithTracingTest : public RenderingTest {
  public:
@@ -375,6 +374,5 @@ TEST_P(HTMLCanvasElementWithTracingAsyncTest,
   }
 }
 
-#endif
 
 }  // namespace blink
