@@ -527,6 +527,83 @@ class ProcessMapBrowserTest : public ExtensionBrowserTest {
   std::vector<std::unique_ptr<TestExtensionDir>> extension_dirs_;
 };
 
+// Check that when an extension frame is inadvertently loaded as sandboxed
+// because it inherits sandbox flags from its parent, the extension frame can
+// still use extension messaging APIs without triggering a renderer kill due
+// to sandboxed frame checks in ChildProcessSecurityPolicy.
+IN_PROC_BROWSER_TEST_F(ProcessMapBrowserTest, SandboxedWebPageEmbedsExtension) {
+  GURL sandboxed_url =
+      embedded_test_server()->GetURL("a.test", "/csp-sandbox.html");
+
+  ASSERT_TRUE(ui_test_utils::NavigateToURL(browser(), sandboxed_url));
+  content::WebContents* web_contents = GetActiveTab();
+  content::RenderFrameHost* sandboxed_main_frame =
+      web_contents->GetPrimaryMainFrame();
+  ASSERT_TRUE(sandboxed_main_frame->IsSandboxed(
+      network::mojom::WebSandboxFlags::kOrigin));
+
+  // Set up an extension with a web-accessible page that sends a message to a
+  // background worker and waits for a response.
+  static constexpr char kManifest[] = R"(
+      {
+        "name": "Foo",
+        "version": "1.0",
+        "web_accessible_resources": [{
+          "resources": ["foo.html"],
+          "matches": ["*://*/*"]
+        }],
+        "manifest_version": 3,
+        "background": { "service_worker": "worker.js" }
+    })";
+
+  TestExtensionDir dir;
+  dir.WriteManifest(kManifest);
+  dir.WriteFile(FILE_PATH_LITERAL("foo.html"),
+                R"(<script src="foo.js"></script>)");
+  dir.WriteFile(FILE_PATH_LITERAL("foo.js"), R"(
+    (async function() {
+      const response = await chrome.runtime.sendMessage('ping');
+      chrome.test.assertEq('pong', response);
+      chrome.test.sendMessage('done');
+    })();
+  )");
+
+  dir.WriteFile(FILE_PATH_LITERAL("worker.js"), R"(
+    chrome.runtime.onMessage.addListener((request, sender, sendResponse) => {
+      if (request == 'ping') {
+        sendResponse('pong');
+      }
+    });
+  )");
+
+  const Extension* extension = LoadExtension(dir.UnpackedPath());
+  GURL extension_url = extension->GetResourceURL("foo.html");
+
+  // Insert an extension subframe into the sandboxed main frame and ensure that
+  // the the sendMessage exchange finishes successfully.
+  const char kAddFrameScript[] =
+      R"(
+        let f = document.createElement('iframe');
+        f.src = $1;
+        document.body.appendChild(f);
+      )";
+
+  ExtensionTestMessageListener listener("done");
+  content::TestNavigationObserver observer(web_contents, 1);
+  EXPECT_TRUE(ExecJs(sandboxed_main_frame,
+                     content::JsReplace(kAddFrameScript, extension_url)));
+  observer.Wait();
+
+  // Double-check that the extension frame was sandboxed but maintained access
+  // to extension APIs.
+  content::RenderFrameHost* sandboxed_extension_frame =
+      content::ChildFrameAt(sandboxed_main_frame, 0);
+  EXPECT_TRUE(sandboxed_extension_frame->IsSandboxed(
+      network::mojom::WebSandboxFlags::kOrigin));
+  EXPECT_TRUE(FrameHasAccessToExtensionApis(sandboxed_extension_frame));
+  EXPECT_TRUE(listener.WaitUntilSatisfied());
+}
+
 // Tests that extension E1 containing a sandboxed webpage A which then contains
 // extension E2 in a subframe results in the E2 frame being sandboxed.
 IN_PROC_BROWSER_TEST_F(

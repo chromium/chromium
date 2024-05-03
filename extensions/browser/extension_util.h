@@ -143,9 +143,12 @@ std::string GetExtensionIdFromFrame(
 
 // Returns true if the process corresponding to `render_process_id` can host an
 // extension with `extension_id`.  (It doesn't necessarily mean that the process
-// *does* host this specific extension at this point in time.)
+// *does* host this specific extension at this point in time.) `is_sandboxed`
+// specifies whether this is asking about a sandboxed extension document and is
+// needed to accurately compute the expected extension origin for that case.
 bool CanRendererHostExtensionOrigin(int render_process_id,
-                                    const ExtensionId& extension_id);
+                                    const ExtensionId& extension_id,
+                                    bool is_sandboxed);
 
 // Returns true if the extension associated with `extension_id` is a Chrome App.
 bool IsChromeApp(const ExtensionId& extension_id,

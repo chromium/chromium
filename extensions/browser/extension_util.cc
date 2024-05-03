@@ -359,9 +359,17 @@ std::string GetExtensionIdFromFrame(
 }
 
 bool CanRendererHostExtensionOrigin(int render_process_id,
-                                    const ExtensionId& extension_id) {
+                                    const ExtensionId& extension_id,
+                                    bool is_sandboxed) {
   url::Origin extension_origin =
       Extension::CreateOriginFromExtensionId(extension_id);
+  if (is_sandboxed) {
+    // If the extension frame is sandboxed, the corresponding process is only
+    // allowed to host opaque origins, per crbug.com/325410297. Therefore,
+    // convert the origin into an opaque origin, and note that HostsOrigin()
+    // will still validate the extension ID in the origin's precursor.
+    extension_origin = extension_origin.DeriveNewOpaqueOrigin();
+  }
   auto* policy = content::ChildProcessSecurityPolicy::GetInstance();
   return policy->HostsOrigin(render_process_id, extension_origin);
 }

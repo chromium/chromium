@@ -1751,9 +1751,7 @@ TEST_P(ChildProcessSecurityPolicyTest, SandboxedProcessEnforcements) {
   // origin.
   EXPECT_TRUE(p->CanAccessOrigin(kRendererID, opaque_foo_origin,
                                  AccessType::kHostsOrigin));
-  // TODO(crbug.com/325410297): Non-opaque origins are temporarily allowed to
-  // pass kHostsOrigin checks. Fix this and flip this expectation to false.
-  EXPECT_TRUE(
+  EXPECT_FALSE(
       p->CanAccessOrigin(kRendererID, foo_origin, AccessType::kHostsOrigin));
   EXPECT_FALSE(
       p->CanAccessOrigin(kRendererID, bar_origin, AccessType::kHostsOrigin));

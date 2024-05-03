@@ -126,10 +126,18 @@ bool CanRendererActOnBehalfOfExtension(
     return true;
   }
 
+  // CanRendererHostExtensionOrigin() needs to know if the extension is
+  // sandboxed, so check the sandbox flags if this request is for an extension
+  // frame. Note that extension workers cannot be sandboxed since workers aren't
+  // supported in opaque origins.
+  bool is_sandboxed =
+      render_frame_host &&
+      render_frame_host->IsSandboxed(network::mojom::WebSandboxFlags::kOrigin);
+
   // Can `render_process_id` host a chrome-extension:// origin (frame, worker,
   // etc.)?
   if (util::CanRendererHostExtensionOrigin(render_process_host.GetID(),
-                                           extension_id)) {
+                                           extension_id, is_sandboxed)) {
     return true;
   }
 
