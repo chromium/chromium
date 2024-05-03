@@ -40,10 +40,6 @@ const CGFloat kLineSpacingBetweenErrorAndFooter = 12.0f;
 @property(nonatomic, strong)
     NSMutableDictionary<NSString*, NSString*>* fieldValuesMap;
 
-// Stores the address fields that are part of the view for inputting data.
-@property(nonatomic, strong)
-    NSArray<AutofillProfileAddressField*>* addressInputFields;
-
 // YES, if the profile's source is autofill::AutofillProfile::Source::kAccount.
 @property(nonatomic, assign) BOOL accountProfile;
 
@@ -170,7 +166,8 @@ const CGFloat kLineSpacingBetweenErrorAndFooter = 12.0f;
       [model addSectionWithIdentifier:
                  AutofillProfileDetailsSectionIdentifierAddress];
     }
-    for (AutofillProfileAddressField* addressField in self.addressInputFields) {
+    for (AutofillProfileAddressField* addressField in
+         [_delegate inputAddressFields]) {
       [model addItem:[self addressItem:addressField.fieldLabel
                              fieldType:addressField.fieldType]
           toSectionWithIdentifier:
@@ -205,7 +202,8 @@ const CGFloat kLineSpacingBetweenErrorAndFooter = 12.0f;
     [model addItem:[self companyItem]
         toSectionWithIdentifier:AutofillProfileDetailsSectionIdentifierFields];
 
-    for (AutofillProfileAddressField* addressField in self.addressInputFields) {
+    for (AutofillProfileAddressField* addressField in
+         [_delegate inputAddressFields]) {
       [model addItem:[self addressItem:addressField.fieldLabel
                              fieldType:addressField.fieldType]
           toSectionWithIdentifier:

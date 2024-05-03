@@ -16,6 +16,7 @@
 #import "components/autofill/ios/common/features.h"
 #import "ios/chrome/browser/shared/model/application_context/application_context.h"
 #import "ios/chrome/browser/shared/ui/list_model/list_model.h"
+#import "ios/chrome/browser/ui/autofill/autofill_profile_address_field.h"
 #import "ios/chrome/browser/ui/autofill/autofill_profile_edit_consumer.h"
 #import "ios/chrome/browser/ui/autofill/autofill_profile_edit_mediator_delegate.h"
 #import "ios/chrome/browser/ui/autofill/autofill_ui_type.h"
@@ -31,7 +32,20 @@ typedef NS_ENUM(NSInteger, ItemType) {
   ItemTypeCountry = kItemTypeEnumZero,
 };
 
+// Field types that do not change with the country value.
+constexpr std::array<autofill::FieldType, 5> kStaticFieldsTypes = {
+    autofill::NAME_FULL, autofill::COMPANY_NAME, autofill::ADDRESS_HOME_COUNTRY,
+    autofill::PHONE_HOME_WHOLE_NUMBER, autofill::EMAIL_ADDRESS};
+
 }  // namespace
+
+@interface AutofillProfileEditMediator ()
+
+// Stores the address input fields.
+@property(nonatomic, strong, readonly)
+    NSArray<AutofillProfileAddressField*>* inputAddressFields;
+
+@end
 
 @implementation AutofillProfileEditMediator {
   raw_ptr<autofill::AutofillProfile> _autofillProfile;
@@ -93,7 +107,7 @@ typedef NS_ENUM(NSInteger, ItemType) {
 
   _consumer = consumer;
 
-  [self sendAddressFieldsToConsumer];
+  [self fetchAndSetInputAddressFields];
   [self sendAutofillProfileDataToConsumer];
   [self fetchAndUpdateFieldRequirements];
 
@@ -109,7 +123,7 @@ typedef NS_ENUM(NSInteger, ItemType) {
 
   _selectedCountryCode = countryItem.countryCode;
 
-  [self sendAddressFieldsToConsumer];
+  [self fetchAndSetInputAddressFields];
   [self fetchAndUpdateFieldRequirements];
   [self.consumer didSelectCountry:countryItem.text];
 }
@@ -296,8 +310,8 @@ typedef NS_ENUM(NSInteger, ItemType) {
   _zipRequired = country.requires_zip();
 }
 
-// Informs the consumer about the address fields to be shown.
-- (void)sendAddressFieldsToConsumer {
+// Fetches the address fields for input and sets them to inputAddressFields.
+- (void)fetchAndSetInputAddressFields {
   NSMutableArray<AutofillProfileAddressField*>* addressFields =
       [[NSMutableArray alloc] init];
 
@@ -354,20 +368,26 @@ typedef NS_ENUM(NSInteger, ItemType) {
     }
   }
 
-  [self.consumer setAddressInputFields:addressFields];
+  _inputAddressFields = addressFields;
 }
 
 // Informs the consumer of the profile's data.
 - (void)sendAutofillProfileDataToConsumer {
+  int totalFieldCount =
+      [self.inputAddressFields count] + kStaticFieldsTypes.size();
   NSMutableDictionary<NSString*, NSString*>* fieldValueMap =
-      [[NSMutableDictionary alloc]
-          initWithCapacity:std::size(kProfileFieldsToDisplay)];
-  for (const AutofillProfileFieldDisplayInfo& field : kProfileFieldsToDisplay) {
-    NSString* fieldType = [self fieldTypeToTypeName:field.autofillType];
+      [[NSMutableDictionary alloc] initWithCapacity:totalFieldCount];
+  for (AutofillProfileAddressField* field in self.inputAddressFields) {
     NSString* fieldValue = base::SysUTF16ToNSString(_autofillProfile->GetInfo(
-        autofill::AutofillType(field.autofillType),
-        GetApplicationContext()->GetApplicationLocale()));
-    fieldValueMap[fieldType] = fieldValue;
+        [self typeNameToFieldType:field.fieldType],
+        GetApplicationContext() -> GetApplicationLocale()));
+    fieldValueMap[field.fieldType] = fieldValue;
+  }
+
+  for (const auto& field_type : kStaticFieldsTypes) {
+    NSString* fieldValue = base::SysUTF16ToNSString(_autofillProfile->GetInfo(
+        field_type, GetApplicationContext()->GetApplicationLocale()));
+    fieldValueMap[[self fieldTypeToTypeName:field_type]] = fieldValue;
   }
 
   [self.consumer setFieldValuesMap:fieldValueMap];
