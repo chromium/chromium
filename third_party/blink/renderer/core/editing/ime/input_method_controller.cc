@@ -903,6 +903,9 @@ bool InputMethodController::InsertTextAndMoveCaret(
       return false;
   }
 
+  // TODO(editing-dev): The use of UpdateStyleAndLayout
+  // needs to be audited. see http://crbug.com/590369 for more details.
+  GetDocument().UpdateStyleAndLayout(DocumentUpdateReason::kEditing);
   Element* root_editable_element = GetFrame()
                                        .Selection()
                                        .ComputeVisibleSelectionInDOMTree()
@@ -1160,6 +1163,9 @@ void InputMethodController::SetCompositionFromExistingText(
   if (!HasComposition() && !DispatchCompositionStartEvent(""))
     return;
 
+  // TODO(editing-dev): The use of UpdateStyleAndLayout
+  // needs to be audited.  see http://crbug.com/590369 for more details.
+  GetDocument().UpdateStyleAndLayout(DocumentUpdateReason::kEditing);
   Element* editable = GetFrame()
                           .Selection()
                           .ComputeVisibleSelectionInDOMTree()

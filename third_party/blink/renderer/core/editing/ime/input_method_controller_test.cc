@@ -3341,6 +3341,28 @@ TEST_F(InputMethodControllerTest,
                    .ComputeOffsetInContainerNode());
 }
 
+TEST_F(
+    InputMethodControllerTest,
+    SetCompositionFromExistingTextAndCompositionStartEventHandlerChangingStyle) {
+  InsertHTMLElement("<div id='sample' contenteditable>hello world</div>",
+                    "sample");
+
+  GetDocument().GetSettings()->SetScriptEnabled(true);
+  Element* script = GetDocument().CreateRawElement(html_names::kScriptTag);
+  script->setInnerHTML(
+      "document.getElementById('sample').addEventListener('compositionstart', "
+      "  event => {"
+      "    event.currentTarget.style.transform = 'rotate(7deg)';"
+      "});");
+  GetDocument().body()->AppendChild(script);
+  UpdateAllLifecyclePhasesForTest();
+
+  // Call SetCompositionFromExistingText() will fire compositionstart event. The
+  // compositionstart event handler dirties the layout. We should update layout
+  // again before getting visible selection to avoid crash.
+  Controller().SetCompositionFromExistingText(Vector<ImeTextSpan>(), 6, 11);
+}
+
 TEST_F(InputMethodControllerTest,
        FinishComposingTextTooLongKeepSelectionAndInputEventHandler) {
   auto* input = To<HTMLInputElement>(
