@@ -282231,6 +282231,19 @@
      }
     },
     "layout": {
+     "svg-embed-intrinsic-size-min-size.html": [
+      "79dfb07b42bb4f60c56033ac1fcb5e7f0eb33ec8",
+      [
+       null,
+       [
+        [
+         "/svg/layout/svg-intrinsic-size-min-size-ref.html",
+         "=="
+        ]
+       ],
+       {}
+      ]
+     ],
      "svg-foreign-relayout-001.html": [
       "2c8a8141526d0ddf759f32d038754ec919d93435",
       [
@@ -282264,6 +282277,19 @@
        [
         [
          "/svg/layout/svg-intrinsic-size-invalidation-ref.html",
+         "=="
+        ]
+       ],
+       {}
+      ]
+     ],
+     "svg-intrinsic-size-min-size.html": [
+      "41c68e56e1e92afb164c46a6c19f6391eff6bd6b",
+      [
+       null,
+       [
+        [
+         "/svg/layout/svg-intrinsic-size-min-size-ref.html",
          "=="
         ]
        ],
@@ -353704,7 +353730,7 @@
        []
       ],
       "fetch-metadata.conf.yml": [
-       "e0fab5db2fbb26d81eafd3152cfd5d30e9c2bab8",
+       "b96bd2fd7b4b81f6681ec84ffe41afe85576f1fd",
        []
       ],
       "generate.py": [
@@ -391340,6 +391366,10 @@
       "acfc7be517b3cc6783a372de4c67cc0d7a8b976e",
       []
      ],
+     "svg-intrinsic-size-min-size-ref.html": [
+      "f9ae2910d860e41dc0f489730ebabc44fc76315d",
+      []
+     ],
      "svg-use-symbol-animateMotion-print-ref.html": [
       "07e162c8a5182d7550640801d05c3ccc36718adc",
       []
@@ -395515,6 +395545,10 @@
     ],
     "OWNERS": [
      "bf4ea08fcaf8fc52c91c6823936715e9b733edf9",
+     []
+    ],
+    "WEB_FEATURES.yml": [
+     "8b273de80b54a1e320ec9ffdd29bdbaa92445430",
      []
     ],
     "helpers.js": [
@@ -721635,7 +721669,7 @@
         ]
        ],
        "navigate.py": [
-        "7616c069632c899ba5771009a2733823d9ab7278",
+        "407d288a53e87f57612e70fe47e1114480538015",
         [
          null,
          {}
