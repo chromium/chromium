@@ -31,8 +31,7 @@ import type {FuzzySearchOptions} from './fuzzy_search.js';
 import {fuzzySearch} from './fuzzy_search.js';
 import type {InfiniteList} from './infinite_list.js';
 import {NO_SELECTION, selectorNavigationKeys} from './infinite_list.js';
-import type {ItemData} from './tab_data.js';
-import {ariaLabel, TabData, TabGroupData, TabItemType, tokenEquals, tokenToString} from './tab_data.js';
+import {ariaLabel, type ItemData, normalizeURL, TabData, TabGroupData, TabItemType, tokenEquals, tokenToString} from './tab_data.js';
 import type {ProfileData, RecentlyClosedTab, RecentlyClosedTabGroup, Tab, TabGroup, TabsRemovedInfo, TabUpdateInfo} from './tab_search.mojom-webui.js';
 import type {TabSearchApiProxy} from './tab_search_api_proxy.js';
 import {TabSearchApiProxyImpl} from './tab_search_api_proxy.js';
@@ -650,9 +649,8 @@ export class TabSearchPageElement extends TabSearchSearchFieldBase {
   private tabData_(
       tab: Tab|RecentlyClosedTab, inActiveWindow: boolean, type: TabItemType,
       tabGroupsMap: Map<string, TabGroup>): TabData {
-    // TODO(crbug.com/329638230): figure out why tab.url.url could be empty.
     const tabData =
-        new TabData(tab, type, new URL(tab.url.url || 'about:blank').hostname);
+        new TabData(tab, type, new URL(normalizeURL(tab.url.url)).hostname);
 
     if (tab.groupId) {
       tabData.tabGroup = tabGroupsMap.get(tokenToString(tab.groupId));
