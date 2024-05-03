@@ -4,6 +4,7 @@
 
 #include "chrome/browser/password_manager/web_app_profile_switcher.h"
 
+#include <memory>
 #include <optional>
 
 #include "base/command_line.h"
@@ -30,18 +31,17 @@
 
 namespace {
 
-web_app::WebAppInstallInfo MakeInstallInfoFromApp(
-    const web_app::WebApp* web_app) {
-  web_app::WebAppInstallInfo install_info;
-  install_info.title = base::UTF8ToUTF16(web_app->untranslated_name());
-  install_info.description =
-      base::UTF8ToUTF16(web_app->untranslated_description());
-  install_info.start_url = web_app->start_url();
-  install_info.manifest_id = web_app->manifest_id();
-  install_info.manifest_url = web_app->manifest_url();
-  install_info.scope = web_app->scope();
-  install_info.manifest_icons = web_app->manifest_icons();
-  install_info.display_mode = web_app->display_mode();
+std::unique_ptr<web_app::WebAppInstallInfo> MakeInstallInfoFromApp(
+    const web_app::WebApp& web_app) {
+  auto install_info = std::make_unique<web_app::WebAppInstallInfo>(
+      web_app.manifest_id(), web_app.start_url());
+  install_info->title = base::UTF8ToUTF16(web_app.untranslated_name());
+  install_info->description =
+      base::UTF8ToUTF16(web_app.untranslated_description());
+  install_info->manifest_url = web_app.manifest_url();
+  install_info->scope = web_app.scope();
+  install_info->manifest_icons = web_app.manifest_icons();
+  install_info->display_mode = web_app.display_mode();
   return install_info;
 }
 
@@ -138,8 +138,7 @@ void WebAppProfileSwitcher::InstallAndLaunchWebApp(
   const web_app::WebApp* web_app =
       active_profile_provider->registrar_unsafe().GetAppById(app_id_);
   DCHECK(web_app);
-  auto install_info = std::make_unique<web_app::WebAppInstallInfo>(
-      MakeInstallInfoFromApp(web_app));
+  auto install_info = MakeInstallInfoFromApp(*web_app);
   install_info->icon_bitmaps = std::move(icon_bitmaps);
 
   web_app::WebAppInstallParams install_params;
