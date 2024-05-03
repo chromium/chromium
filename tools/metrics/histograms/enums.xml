@@ -27874,16 +27874,16 @@ Called by update_net_error_codes.py.-->
   <int value="0" label="None"/>
   <int value="1" label="Test Catalog Name"/>
   <int value="2" label="Management Transition"/>
-  <int value="3" label="Authpolicy Credentials Error"/>
-  <int value="4" label="Unauthorized Battery"/>
-  <int value="5" label="Non Wilco Charger"/>
-  <int value="6" label="Incompatible Dock"/>
-  <int value="7" label="Dock Error"/>
-  <int value="8" label="Dock Display Error"/>
-  <int value="9" label="Dock Thunderbolt Error"/>
-  <int value="10" label="Wilco Low Power Charger"/>
+  <int value="3" label="(deprecated) Authpolicy Credentials Error"/>
+  <int value="4" label="(deprecated) Unauthorized Battery"/>
+  <int value="5" label="(deprecated) Non Wilco Charger"/>
+  <int value="6" label="(deprecated) Incompatible Dock"/>
+  <int value="7" label="(deprecated) Dock Error"/>
+  <int value="8" label="(deprecated) Dock Display Error"/>
+  <int value="9" label="(deprecated) Dock Thunderbolt Error"/>
+  <int value="10" label="(deprecated) Wilco Low Power Charger"/>
   <int value="11" label="Deprecated Accelerator"/>
-  <int value="12" label="Shortcuts Changed"/>
+  <int value="12" label="(deprecated) Shortcuts Changed"/>
   <int value="13" label="Docked Magnifier Enabled"/>
   <int value="14" label="High Contrast Enabled"/>
   <int value="15" label="Full Screen Magnifier Enabled"/>
@@ -27920,7 +27920,7 @@ Called by update_net_error_codes.py.-->
   <int value="46" label="SMS"/>
   <int value="47" label="Assistant Notification"/>
   <int value="48" label="Fast Pair"/>
-  <int value="49" label="Power Notifier"/>
+  <int value="49" label="(deprecated) Power Notifier"/>
   <int value="50" label="Battery Notifier"/>
   <int value="51" label="Microphone Mute"/>
   <int value="52" label="Cast"/>
@@ -27936,9 +27936,9 @@ Called by update_net_error_codes.py.-->
   <int value="62" label="Firmware Update"/>
   <int value="63" label="Peripheral Battery"/>
   <int value="64" label="Bluetooth Pairing Request"/>
-  <int value="65" label="Bluetooth Paired Device"/>
+  <int value="65" label="(deprecated) Bluetooth Paired Device"/>
   <int value="66" label="Cellular Setup"/>
-  <int value="67" label="Screen Security"/>
+  <int value="67" label="(deprecated) Screen Security"/>
   <int value="68" label="Wifi Toggle"/>
   <int value="69" label="USB Peripheral Invalid Dp Cable"/>
   <int value="70" label="USB Peripheral Invalid USB4 Valid TBT Cable"/>
@@ -27952,7 +27952,7 @@ Called by update_net_error_codes.py.-->
   <int value="78" label="Caps Lock"/>
   <int value="79" label="Night Light"/>
   <int value="80" label="Plugin VM Uninstaller"/>
-  <int value="81" label="TPM Auto Update"/>
+  <int value="81" label="(deprecated) TPM Auto Update"/>
   <int value="82" label="It2Me Confirmation"/>
   <int value="83" label="HPS Notify"/>
   <int value="84" label="Nearby Share"/>
@@ -27969,7 +27969,7 @@ Called by update_net_error_codes.py.-->
   <int value="95" label="Eche App Inactivity"/>
   <int value="96" label="Eche App From Web Without Button"/>
   <int value="97" label="Eche App Screen Lock"/>
-  <int value="98" label="Accessibility"/>
+  <int value="98" label="(deprecated) Accessibility"/>
   <int value="99" label="Projector"/>
   <int value="100" label="Website Approval"/>
   <int value="101" label="Arc Migration Guide"/>
@@ -28026,7 +28026,8 @@ Called by update_net_error_codes.py.-->
   <int value="152" label="ARC Low Disk Space Post-stop"/>
   <int value="153" label="Multi capture started"/>
   <int value="154" label="PrivacyHubCamera"/>
-  <int value="155" label="PrivacyHubHWCameraSwitchOffSWCameraSwitchOn"/>
+  <int value="155"
+      label="(deprecated) PrivacyHubHWCameraSwitchOffSWCameraSwitchOn"/>
   <int value="156" label="Eche App Network Setting"/>
   <int value="157" label="Privacy Hub Microphone and Camera"/>
   <int value="158" label="ARCVM Data Migration"/>
@@ -28045,7 +28046,7 @@ Called by update_net_error_codes.py.-->
   <int value="171" label="Multi Capture On Login"/>
   <int value="172" label="Floating Workspace"/>
   <int value="173" label="Scalable IPH"/>
-  <int value="174" label="After Update Notification"/>
+  <int value="174" label="(deprecated) After Update Notification"/>
   <int value="175" label="Sub Apps Uninstall"/>
   <int value="176" label="Network Carrier Unlock"/>
   <int value="177" label="Coral Feature"/>
