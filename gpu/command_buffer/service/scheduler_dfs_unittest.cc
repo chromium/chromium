@@ -53,16 +53,16 @@ class SchedulerDfsTest : public testing::Test {
   Scheduler* scheduler() const { return scheduler_.get(); }
 
   void RunAllPendingTasks() {
+    base::RunLoop run_loop;
     SequenceId sequence_id =
         scheduler()->CreateSequenceForTesting(SchedulingPriority::kLow);
     scheduler()->ScheduleTask(Scheduler::Task(
-        sequence_id, run_loop_.QuitClosure(), std::vector<SyncToken>()));
-    run_loop_.Run();
+        sequence_id, run_loop.QuitClosure(), std::vector<SyncToken>()));
+    run_loop.Run();
     scheduler()->DestroySequence(sequence_id);
   }
 
   base::test::SingleThreadTaskEnvironment task_environment_;
-  base::RunLoop run_loop_;
 
  private:
   base::test::ScopedFeatureList scoped_feature_list_;
@@ -75,7 +75,7 @@ TEST_F(SchedulerDfsTest, ScheduledTasksRunInOrder) {
   SequenceId sequence_id =
       scheduler()->CreateSequenceForTesting(SchedulingPriority::kNormal);
 
-  static int count = 0;
+  int count = 0;
   int ran1 = 0;
   scheduler()->ScheduleTask(Scheduler::Task(sequence_id,
                                             GetClosure([&] { ran1 = ++count; }),
@@ -86,9 +86,10 @@ TEST_F(SchedulerDfsTest, ScheduledTasksRunInOrder) {
                                             GetClosure([&] { ran2 = ++count; }),
                                             std::vector<SyncToken>()));
 
-  scheduler()->ScheduleTask(Scheduler::Task(
-      sequence_id, run_loop_.QuitClosure(), std::vector<SyncToken>()));
-  run_loop_.Run();
+  base::RunLoop run_loop;
+  scheduler()->ScheduleTask(Scheduler::Task(sequence_id, run_loop.QuitClosure(),
+                                            std::vector<SyncToken>()));
+  run_loop.Run();
 
   EXPECT_EQ(ran1, 1);
   EXPECT_EQ(ran2, 2);
@@ -114,9 +115,10 @@ TEST_F(SchedulerDfsTest, ScheduledTasksRunAfterReporting) {
                             reported = true;
                           },
                           std::ref(ran), std::ref(reported))));
-  scheduler()->ScheduleTask(Scheduler::Task(
-      sequence_id, run_loop_.QuitClosure(), std::vector<SyncToken>()));
-  run_loop_.Run();
+  base::RunLoop run_loop;
+  scheduler()->ScheduleTask(Scheduler::Task(sequence_id, run_loop.QuitClosure(),
+                                            std::vector<SyncToken>()));
+  run_loop.Run();
 
   EXPECT_TRUE(ran);
   scheduler()->DestroySequence(sequence_id);
@@ -126,7 +128,7 @@ TEST_F(SchedulerDfsTest, ContinuedTasksRunFirst) {
   SequenceId sequence_id =
       scheduler()->CreateSequenceForTesting(SchedulingPriority::kNormal);
 
-  static int count = 0;
+  int count = 0;
   int ran1 = 0;
   int continued1 = 0;
   scheduler()->ScheduleTask(Scheduler::Task(
@@ -142,9 +144,10 @@ TEST_F(SchedulerDfsTest, ContinuedTasksRunFirst) {
                                             GetClosure([&] { ran2 = ++count; }),
                                             std::vector<SyncToken>()));
 
-  scheduler()->ScheduleTask(Scheduler::Task(
-      sequence_id, run_loop_.QuitClosure(), std::vector<SyncToken>()));
-  run_loop_.Run();
+  base::RunLoop run_loop;
+  scheduler()->ScheduleTask(Scheduler::Task(sequence_id, run_loop.QuitClosure(),
+                                            std::vector<SyncToken>()));
+  run_loop.Run();
 
   EXPECT_EQ(ran1, 1);
   EXPECT_EQ(continued1, 2);
@@ -576,7 +579,7 @@ TEST_F(SchedulerDfsTest, ReleaseSequenceShouldYield) {
           namespace_id, command_buffer_id, sequence_id1);
 
   uint64_t release = 1;
-  static int count = 0;
+  int count = 0;
   int ran1 = 0;
   scheduler()->ScheduleTask(
       Scheduler::Task(sequence_id1, GetClosure([&] {
@@ -674,7 +677,7 @@ TEST_F(SchedulerDfsTest, ReentrantEnableSequenceShouldNotDeadlock) {
   uint64_t release = 1;
   SyncToken sync_token(namespace_id, command_buffer_id2, release);
 
-  static int count = 0;
+  int count = 0;
   int ran1, ran2 = 0;
 
   // Schedule task on sequence 2 first so that the sync token wait isn't a nop.
@@ -718,7 +721,7 @@ TEST_F(SchedulerDfsTest, CanSetSequencePriority) {
   SequenceId sequence_id3 =
       scheduler()->CreateSequenceForTesting(SchedulingPriority::kHigh);
 
-  static int count = 0;
+  int count = 0;
   int ran1 = 0, ran2 = 0, ran3 = 0;
 
   scheduler()->ScheduleTask(Scheduler::Task(sequence_id1,
@@ -758,16 +761,7 @@ TEST_F(SchedulerDfsTest, CanSetSequencePriority) {
       scheduler()->GetSchedulerDfsForTesting()->GetSequenceDefaultPriority(
           sequence_id2));
 
-  // Note that we are not using RunAllPendingTasks() here because more than one
-  // Run() is not allowed on the same Runloop. Hence creating a new runloop to
-  // schedule the task.
-  base::RunLoop run_loop_temp;
-  SequenceId sequence_id_run_loop =
-      scheduler()->CreateSequenceForTesting(SchedulingPriority::kLow);
-  scheduler()->ScheduleTask(Scheduler::Task(sequence_id_run_loop,
-                                            run_loop_temp.QuitClosure(),
-                                            std::vector<SyncToken>()));
-  run_loop_temp.Run();
+  RunAllPendingTasks();
 
   EXPECT_EQ(ran3, 4);
   EXPECT_EQ(ran1, 5);
@@ -776,7 +770,6 @@ TEST_F(SchedulerDfsTest, CanSetSequencePriority) {
   scheduler()->DestroySequence(sequence_id1);
   scheduler()->DestroySequence(sequence_id2);
   scheduler()->DestroySequence(sequence_id3);
-  scheduler()->DestroySequence(sequence_id_run_loop);
 }
 
 TEST_F(SchedulerDfsTest, StreamPriorities) {
