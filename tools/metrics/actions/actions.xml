@@ -3671,7 +3671,7 @@ should be able to be added at any place in this file.
 
 <action name="AppHome_CreateShortcut">
   <owner>dibyapal@chromium.org</owner>
-  <owner>desktop-pwas-team@google.com</owner>
+  <owner>pwa-team@google.com</owner>
   <description>
     User clicks on the menu option to create shortcuts for an app from the right
     click context menu of an app from new chrome://apps page.
@@ -3680,7 +3680,7 @@ should be able to be added at any place in this file.
 
 <action name="AppHome_CustomContextMenuTriggered">
   <owner>dibyapal@chromium.org</owner>
-  <owner>desktop-pwas-team@google.com</owner>
+  <owner>pwa-team@google.com</owner>
   <description>
     User opens the custom context menu for an app from new chrome://apps page.
   </description>
@@ -3688,7 +3688,7 @@ should be able to be added at any place in this file.
 
 <action name="AppHome_InstallAppLocally">
   <owner>dibyapal@chromium.org</owner>
-  <owner>desktop-pwas-team@google.com</owner>
+  <owner>pwa-team@google.com</owner>
   <description>
     User clicks on the menu option to install an app locally from the right
     click context menu of an app from new chrome://apps page.
@@ -3697,7 +3697,7 @@ should be able to be added at any place in this file.
 
 <action name="AppHome_LaunchApp">
   <owner>dmurph@chromium.org</owner>
-  <owner>desktop-pwas-team@google.com</owner>
+  <owner>pwa-team@google.com</owner>
   <description>
     User launches a web app by clicking on the app icon from the new
     chrome://apps page. This results in the web app's start_url opening up in a
@@ -3707,7 +3707,7 @@ should be able to be added at any place in this file.
 
 <action name="AppHome_LaunchAtStartupChecked">
   <owner>dibyapal@chromium.org</owner>
-  <owner>desktop-pwas-team@google.com</owner>
+  <owner>pwa-team@google.com</owner>
   <description>
     User checks the launch at startup option from the right click context menu
     of an app from new chrome://apps page.
@@ -3716,7 +3716,7 @@ should be able to be added at any place in this file.
 
 <action name="AppHome_LaunchAtStartupUnchecked">
   <owner>dibyapal@chromium.org</owner>
-  <owner>desktop-pwas-team@google.com</owner>
+  <owner>pwa-team@google.com</owner>
   <description>
     User unchecks the launch at startup option from the right click context menu
     of an app from new chrome://apps page.
@@ -3725,7 +3725,7 @@ should be able to be added at any place in this file.
 
 <action name="AppHome_LaunchDeprecatedApp">
   <owner>dmurph@chromium.org</owner>
-  <owner>desktop-pwas-team@google.com</owner>
+  <owner>pwa-team@google.com</owner>
   <description>
     User launches a deprecated app (chrome app, built on extensions system) by
     clicking on the app icon from the new chrome://apps page. This will result
@@ -3739,7 +3739,7 @@ should be able to be added at any place in this file.
 
 <action name="AppHome_NavigationComplete">
   <owner>dibyapal@chromium.org</owner>
-  <owner>desktop-pwas-team@google.com</owner>
+  <owner>pwa-team@google.com</owner>
   <description>
     Triggered whenever an the new chrome://apps page page is initialized on
     navigation. This is not recorded on OSes where the new chrome://apps page
@@ -3749,7 +3749,7 @@ should be able to be added at any place in this file.
 
 <action name="AppHome_OpenAppSettings">
   <owner>dibyapal@chromium.org</owner>
-  <owner>desktop-pwas-team@google.com</owner>
+  <owner>pwa-team@google.com</owner>
   <description>
     User clicks on the menu option to open app settings from the right click
     context menu of an app from new chrome://apps page.
@@ -3758,7 +3758,7 @@ should be able to be added at any place in this file.
 
 <action name="AppHome_OpenInWindowChecked">
   <owner>dibyapal@chromium.org</owner>
-  <owner>desktop-pwas-team@google.com</owner>
+  <owner>pwa-team@google.com</owner>
   <description>
     User checks the open in window option from the right click context menu of
     an app from new chrome://apps page.
@@ -3767,7 +3767,7 @@ should be able to be added at any place in this file.
 
 <action name="AppHome_OpenInWindowUnchecked">
   <owner>dibyapal@chromium.org</owner>
-  <owner>desktop-pwas-team@google.com</owner>
+  <owner>pwa-team@google.com</owner>
   <description>
     User checks the open in window option from the right click context menu of
     an app from new chrome://apps page.
@@ -3776,7 +3776,7 @@ should be able to be added at any place in this file.
 
 <action name="AppHome_UninstallTriggered">
   <owner>dibyapal@chromium.org</owner>
-  <owner>desktop-pwas-team@google.com</owner>
+  <owner>pwa-team@google.com</owner>
   <description>
     User clicks on the menu option to uninstall an app from the right click
     context menu of an app from new chrome://apps page.
@@ -8550,7 +8550,7 @@ should be able to be added at any place in this file.
 </action>
 
 <action name="CopyCustomTabBarUrl">
-  <owner>desktop-pwas-team@google.com</owner>
+  <owner>pwa-team@google.com</owner>
   <description>
     &quot;Copy URL&quot; option in right-click context menu on CustomTabBar.
   </description>
@@ -8568,7 +8568,7 @@ should be able to be added at any place in this file.
 
 <action name="CreateDesktopShortcutDialogAccepted">
   <owner>dibyapal@google.com</owner>
-  <owner>desktop-pwas-team@google.com</owner>
+  <owner>pwa-team@google.com</owner>
   <description>
     The redesigned `Create Shortcut` dialog for a site was accepted by the end
     user, leading to the creation of a desktop shortcut that launches the site
@@ -8578,7 +8578,7 @@ should be able to be added at any place in this file.
 
 <action name="CreateDesktopShortcutDialogCancelled">
   <owner>dibyapal@google.com</owner>
-  <owner>desktop-pwas-team@google.com</owner>
+  <owner>pwa-team@google.com</owner>
   <description>
     The redesigned `Create Shortcut` dialog for a site was cancelled by the end
     user.
@@ -8587,7 +8587,7 @@ should be able to be added at any place in this file.
 
 <action name="CreateDesktopShortcutDialogShown">
   <owner>dibyapal@google.com</owner>
-  <owner>desktop-pwas-team@google.com</owner>
+  <owner>pwa-team@google.com</owner>
   <description>
     Shortcut creation triggered via &quot;Menu &gt; More Tools &gt; Create
     Shortcut...&quot; to a site. Creates a shortcut entity that is fire and
@@ -13263,7 +13263,7 @@ should be able to be added at any place in this file.
 
 <action name="IntentPickerIconClicked">
   <owner>dibyapal@google.com</owner>
-  <owner>desktop-pwas-team@google.com</owner>
+  <owner>pwa-team@google.com</owner>
   <description>
     Recorded when the user clicks on the intent picker icon that pops up
     whenever a navigation occurs to a site that is already installed by a PWA
@@ -13275,7 +13275,7 @@ should be able to be added at any place in this file.
 
 <action name="IntentPickerViewAcceptLaunchApp">
   <owner>dibyapal@google.com</owner>
-  <owner>desktop-pwas-team@google.com</owner>
+  <owner>pwa-team@google.com</owner>
   <description>
     Recorded when the user clicks on a PWA that shows up in the intent picker,
     and clicks on Open, leading to the current site being launched in the PWA.
@@ -13286,7 +13286,7 @@ should be able to be added at any place in this file.
 <action name="IntentPickerViewClosedOpenInChrome">
   <obsolete>Deprecated as of 11/2023, needed a rename.</obsolete>
   <owner>dibyapal@google.com</owner>
-  <owner>desktop-pwas-team@google.com</owner>
+  <owner>pwa-team@google.com</owner>
   <description>
     Recorded when the user manually closes the intent picker bubble view,
     leading to the site not being launched in a PWA. This is currently measured
@@ -13296,7 +13296,7 @@ should be able to be added at any place in this file.
 
 <action name="IntentPickerViewClosedStayInChrome">
   <owner>dibyapal@google.com</owner>
-  <owner>desktop-pwas-team@google.com</owner>
+  <owner>pwa-team@google.com</owner>
   <description>
     Recorded when the user manually closes the intent picker bubble view,
     leading to the site not being launched in a PWA. This is currently measured
@@ -13306,7 +13306,7 @@ should be able to be added at any place in this file.
 
 <action name="IntentPickerViewIgnored">
   <owner>dibyapal@google.com</owner>
-  <owner>desktop-pwas-team@google.com</owner>
+  <owner>pwa-team@google.com</owner>
   <description>
     Recorded when the user navigates away from the current site with an open
     intent picker bubble view, leading to it being closed. This is currently
@@ -18904,7 +18904,7 @@ should be able to be added at any place in this file.
 
 <action name="LinkCapturingAcceptedFromInfoBar">
   <owner>dmurph@google.com</owner>
-  <owner>desktop-pwas-team@google.com</owner>
+  <owner>pwa-team@google.com</owner>
   <description>
     Recorded when the user accepts the info bar in an app browser to turn on
     link capturing for that app. This only shows if the app doesn't have link
@@ -18914,7 +18914,7 @@ should be able to be added at any place in this file.
 
 <action name="LinkCapturingCancelledFromInfoBar">
   <owner>dmurph@google.com</owner>
-  <owner>desktop-pwas-team@google.com</owner>
+  <owner>pwa-team@google.com</owner>
   <description>
     Recorded when the user cancels the info bar in an app browser offering to
     turn on link capturing for that app. This only shows if the app doesn't have
@@ -18924,7 +18924,7 @@ should be able to be added at any place in this file.
 
 <action name="LinkCapturingIgnoredFromInfoBar">
   <owner>dmurph@google.com</owner>
-  <owner>desktop-pwas-team@google.com</owner>
+  <owner>pwa-team@google.com</owner>
   <description>
     Recorded when the user ignores the info bar in an app browser offering to
     turn on link capturing for that app. This only shows if the app doesn't have
@@ -18934,7 +18934,7 @@ should be able to be added at any place in this file.
 
 <action name="LinkCapturingIPHAppBubbleAccepted">
   <owner>dibyapal@google.com</owner>
-  <owner>desktop-pwas-team@google.com</owner>
+  <owner>pwa-team@google.com</owner>
   <description>
     Recorded when the user clicks on the Open App Settings button in the IPH
     bubble that pops up whenever an app is opened via a link capturing workflow
@@ -18944,7 +18944,7 @@ should be able to be added at any place in this file.
 
 <action name="LinkCapturingIPHAppBubbleNotAccepted">
   <owner>dibyapal@google.com</owner>
-  <owner>desktop-pwas-team@google.com</owner>
+  <owner>pwa-team@google.com</owner>
   <description>
     Recorded when the user dismisses or ignores the IPH bubble that pops up
     whenever an app is opened via a link capturing workflow due to the app being
@@ -18954,7 +18954,7 @@ should be able to be added at any place in this file.
 
 <action name="LinkCapturingIPHAppBubbleShown">
   <owner>dibyapal@google.com</owner>
-  <owner>desktop-pwas-team@google.com</owner>
+  <owner>pwa-team@google.com</owner>
   <description>
     Recorded when the IPH bubble is shown as a result of launching an app that
     has link capturing enabled and is set to support links by default.
@@ -26236,7 +26236,7 @@ should be able to be added at any place in this file.
 <action name="NewTabPage.PreinstalledApps.Clicked">
   <obsolete>Removed from code in 2022-01.</obsolete>
   <owner>phillis@chromium.org</owner>
-  <owner>desktop-pwas-team@google.com</owner>
+  <owner>pwa-team@google.com</owner>
   <description>
     The user clicked on a most visited tile that is a preinstalled extension
     app. This action is logged every time the NewTabPage.MostVisited histogram
@@ -39213,7 +39213,7 @@ should be able to be added at any place in this file.
 
 <action name="TabContextMenu_Back">
   <owner>loubrett@google.com</owner>
-  <owner>desktop-pwas-team@google.com</owner>
+  <owner>pwa-team@google.com</owner>
   <description>User selected Back from tab context menu.</description>
 </action>
 
@@ -39227,7 +39227,7 @@ should be able to be added at any place in this file.
 
 <action name="TabContextMenu_CloseAllTabs">
   <owner>loubrett@google.com</owner>
-  <owner>desktop-pwas-team@google.com</owner>
+  <owner>pwa-team@google.com</owner>
   <description>User selected Close All Tabs from tab context menu.</description>
 </action>
 
@@ -39268,7 +39268,7 @@ should be able to be added at any place in this file.
 
 <action name="TabContextMenu_CopyURL">
   <owner>loubrett@google.com</owner>
-  <owner>desktop-pwas-team@google.com</owner>
+  <owner>pwa-team@google.com</owner>
   <description>User selected Copy URL from tab context menu.</description>
 </action>
 
@@ -41370,7 +41370,7 @@ should be able to be added at any place in this file.
 
 <action name="WebApp.Preinstalled.UninstallByUser">
   <owner>dibyapal@chromium.org</owner>
-  <owner>desktop-pwas-team@google.com</owner>
+  <owner>pwa-team@google.com</owner>
   <description>
     The user uninstalled a preinstalled app which was previously not in
     UserUninstalledPreinstalledWebAppPrefs, and has now been added to the prefs.
@@ -41379,13 +41379,13 @@ should be able to be added at any place in this file.
 
 <action name="WebApp.SetWindowMode.Tab">
   <owner>alancutter@chromium.org</owner>
-  <owner>desktop-pwas-team@google.com</owner>
+  <owner>pwa-team@google.com</owner>
   <description>The user set a web app to open in a browser tab.</description>
 </action>
 
 <action name="WebApp.SetWindowMode.Tabbed">
   <owner>loubrett@google.com</owner>
-  <owner>desktop-pwas-team@google.com</owner>
+  <owner>pwa-team@google.com</owner>
   <description>
     The user set a web app to open in a tabbed app window.
   </description>
@@ -41393,13 +41393,13 @@ should be able to be added at any place in this file.
 
 <action name="WebApp.SetWindowMode.Window">
   <owner>alancutter@chromium.org</owner>
-  <owner>desktop-pwas-team@google.com</owner>
+  <owner>pwa-team@google.com</owner>
   <description>The user set a web app to open in an app window.</description>
 </action>
 
 <action name="WebAppDetailedInstallAccepted">
   <owner>dmurph@chromium.org</owner>
-  <owner>desktop-pwas-team@google.com</owner>
+  <owner>pwa-team@google.com</owner>
   <description>
     The user accepted an installation of a web app in the detailed installation
     dialog (with screenshots, etc).
@@ -41408,7 +41408,7 @@ should be able to be added at any place in this file.
 
 <action name="WebAppDetailedInstallCancelled">
   <owner>dmurph@chromium.org</owner>
-  <owner>desktop-pwas-team@google.com</owner>
+  <owner>pwa-team@google.com</owner>
   <description>
     The user cancelled an installation of a web app in the detailed installation
     dialog (with screenshots, etc).
@@ -41417,7 +41417,7 @@ should be able to be added at any place in this file.
 
 <action name="WebAppDetailedInstallShown">
   <owner>dmurph@chromium.org</owner>
-  <owner>desktop-pwas-team@google.com</owner>
+  <owner>pwa-team@google.com</owner>
   <description>
     The user was shown the detailed installation dialog for a web app (with
     screenshots, etc).
@@ -41426,7 +41426,7 @@ should be able to be added at any place in this file.
 
 <action name="WebAppDiyInstallAccepted">
   <owner>dibyapal@chromium.org</owner>
-  <owner>desktop-pwas-team@google.com</owner>
+  <owner>pwa-team@google.com</owner>
   <description>
     The user accepted an installation of a web app in the DIY installation
     dialog.
@@ -41435,7 +41435,7 @@ should be able to be added at any place in this file.
 
 <action name="WebAppDiyInstallCancelled">
   <owner>dibyapal@chromium.org</owner>
-  <owner>desktop-pwas-team@google.com</owner>
+  <owner>pwa-team@google.com</owner>
   <description>
     The user cancelled an installation of a web app in the DIY installation
     dialog.
@@ -41444,7 +41444,7 @@ should be able to be added at any place in this file.
 
 <action name="WebAppDiyInstallShown">
   <owner>dibyapal@chromium.org</owner>
-  <owner>desktop-pwas-team@google.com</owner>
+  <owner>pwa-team@google.com</owner>
   <description>
     The user was shown the DIY install dialog for a web app that is not
     installable.
@@ -41453,7 +41453,7 @@ should be able to be added at any place in this file.
 
 <action name="WebAppInstallAccepted">
   <owner>dmurph@gchromium.org</owner>
-  <owner>desktop-pwas-team@google.com</owner>
+  <owner>pwa-team@google.com</owner>
   <description>
     The user accepted an installation of a web app in the installation dialog.
   </description>
@@ -41461,7 +41461,7 @@ should be able to be added at any place in this file.
 
 <action name="WebAppInstallCancelled">
   <owner>dmurph@gchromium.org</owner>
-  <owner>desktop-pwas-team@google.com</owner>
+  <owner>pwa-team@google.com</owner>
   <description>
     The user cancelled an installation of a web app in the installation dialog.
   </description>
@@ -41469,7 +41469,7 @@ should be able to be added at any place in this file.
 
 <action name="WebAppInstallShown">
   <owner>dmurph@gchromium.org</owner>
-  <owner>desktop-pwas-team@google.com</owner>
+  <owner>pwa-team@google.com</owner>
   <description>
     The user was shown the installation dialog for a web app.
   </description>

@@ -25053,7 +25053,7 @@ be describing additional metrics about the same event.
 
 <event name="Site.Install">
   <owner>dibyapal@chromium.org</owner>
-  <owner>desktop-pwas-team@google.com</owner>
+  <owner>pwa-team@google.com</owner>
   <summary>
     Records various metrics about whether a particular site has been installed
     as a PWA or not.
@@ -25091,7 +25091,7 @@ be describing additional metrics about the same event.
 
 <event name="Site.Manifest">
   <owner>dibyapal@chromium.org</owner>
-  <owner>desktop-pwas-team@google.com</owner>
+  <owner>pwa-team@google.com</owner>
   <summary>
     Records various signals regarding the fields present inside a manifest. If
     the DisplayMode is undefined, HasStartUrl is kEmpty, and all the other
@@ -25199,7 +25199,7 @@ be describing additional metrics about the same event.
 
 <event name="Site.Quality">
   <owner>dibyapal@chromium.org</owner>
-  <owner>desktop-pwas-team@google.com</owner>
+  <owner>pwa-team@google.com</owner>
   <summary>
     Records various signals about a site that boost its chances of being
     installed as a web app, like valid fetch handlers (boosting offline

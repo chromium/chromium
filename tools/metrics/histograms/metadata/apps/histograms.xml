@@ -196,7 +196,7 @@ chromium-metrics-reviews@google.com.
   <owner>sharminzaman@google.com</owner>
   <owner>tsergeant@chromium.org</owner>
   <owner>chromeos-apps-foundation-team@google.com</owner>
-  <owner>desktop-pwas-team@google.com</owner>
+  <owner>pwa-team@google.com</owner>
   <summary>
     The actions taken by the user when they are viewing the app details of an
     app in App Management (chrome://os-settings/app-management). On
@@ -294,7 +294,7 @@ chromium-metrics-reviews@google.com.
 <histogram name="Apps.AppInfoDialog.CreateWebAppShortcutSuccess" enum="Boolean"
     expires_after="2024-02-11">
   <owner>dmurph@chromium.org</owner>
-  <owner>desktop-pwas-team@google.com</owner>
+  <owner>pwa-team@google.com</owner>
   <summary>
     Records the result of creating shortcuts for a WebApp, specifically from the
     user clicking on &quot;Create Shortcut&quot; on the chrome://apps page, in
@@ -2180,16 +2180,16 @@ chromium-metrics-reviews@google.com.
 </histogram>
 
 <histogram name="Apps.CreateShortcutIcon.Linux.Result"
-    enum="WebAppCreateShortcutIconLinuxResult" expires_after="2023-10-01">
+    enum="WebAppCreateShortcutIconLinuxResult" expires_after="2024-09-01">
   <owner>estade@chromium.org</owner>
-  <owner>desktop-pwas-team@google.com</owner>
+  <owner>pwa-team@google.com</owner>
   <summary>
     Records the result of creating shortcut image for web app on Linux.
   </summary>
 </histogram>
 
 <histogram name="Apps.CreateShortcuts.Linux.Result"
-    enum="WebAppCreateShortcutLinuxResult" expires_after="2024-01-14">
+    enum="WebAppCreateShortcutLinuxResult" expires_after="2024-09-01">
   <owner>phillis@chromium.org</owner>
   <owner>cmumford@chromium.org</owner>
   <summary>
@@ -2264,7 +2264,7 @@ chromium-metrics-reviews@google.com.
 <histogram name="Apps.FileHandler.Registration.Linux.Result"
     enum="FileHandlerRegistrationLinuxResult" expires_after="M110">
   <owner>estade@chromium.org</owner>
-  <owner>desktop-pwas-team@google.com</owner>
+  <owner>pwa-team@google.com</owner>
   <summary>
     Records the result of MIME info database update when enabling an app's use
     of the PWA File Handling API
@@ -2274,7 +2274,7 @@ chromium-metrics-reviews@google.com.
 <histogram name="Apps.FileHandler.Registration.Win.Result"
     enum="FileHandlerRegistrationWinResult" expires_after="2023-07-09">
   <owner>estade@chromium.org</owner>
-  <owner>desktop-pwas-team@google.com</owner>
+  <owner>pwa-team@google.com</owner>
   <summary>
     Records the result of file handler registration for PWA on Windows
   </summary>
@@ -2283,7 +2283,7 @@ chromium-metrics-reviews@google.com.
 <histogram name="Apps.FileHandler.Unregistration.Linux.Result"
     enum="FileHandlerRegistrationLinuxResult" expires_after="M110">
   <owner>estade@chromium.org</owner>
-  <owner>desktop-pwas-team@google.com</owner>
+  <owner>pwa-team@google.com</owner>
   <summary>
     Records the result of MIME info database update when disabling an app's use
     of the PWA File Handling API
