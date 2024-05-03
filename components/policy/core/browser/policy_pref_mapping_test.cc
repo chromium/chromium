@@ -350,8 +350,7 @@ bool CheckRequiredBuildFlagsSupported(const PolicyPrefMappingTest* test) {
 class PolicyTestCase {
  public:
   PolicyTestCase(const std::string& policy_name,
-                 const base::Value::Dict& test_case)
-      : policy_name_(policy_name) {
+                 const base::Value::Dict& test_case) {
     is_official_only_ = test_case.FindBool("official_only").value_or(false);
     can_be_recommended_ =
         test_case.FindBool("can_be_recommended").value_or(false);
@@ -393,8 +392,6 @@ class PolicyTestCase {
   ~PolicyTestCase() = default;
   PolicyTestCase(const PolicyTestCase& other) = delete;
   PolicyTestCase& operator=(const PolicyTestCase& other) = delete;
-
-  const std::string& policy_name() const { return policy_name_; }
 
   bool is_official_only() const { return is_official_only_; }
 
@@ -452,7 +449,6 @@ class PolicyTestCase {
   bool HasSupportedOs() const { return !supported_os_.empty(); }
 
  private:
-  std::string policy_name_;
   bool is_official_only_;
   bool can_be_recommended_;
   bool has_reason_for_missing_test_;
@@ -624,9 +620,10 @@ void VerifyAllPoliciesHaveATestCase(const base::FilePath& test_case_dir) {
   PolicyTestCases policy_test_cases(test_case_dir);
   for (Schema::Iterator it = chrome_schema.GetPropertiesIterator();
        !it.IsAtEnd(); it.Advance()) {
-    auto policy = policy_test_cases.map().find(it.key());
+    const char* policy_name = it.key();
+    auto policy = policy_test_cases.map().find(policy_name);
     if (policy == policy_test_cases.map().end()) {
-      ADD_FAILURE() << "Missing policy test case for: " << it.key();
+      ADD_FAILURE() << "Missing policy test case for: " << policy_name;
       continue;
     }
 
@@ -635,9 +632,9 @@ void VerifyAllPoliciesHaveATestCase(const base::FilePath& test_case_dir) {
     for (const auto& test_case : policy->second) {
       EXPECT_TRUE(test_case->has_reason_for_missing_test() ||
                   !test_case->policy_pref_mapping_tests().empty())
-          << "Test case " << test_case->policy_name()
-          << " has empty list of test cases (policy_pref_mapping_tests). Add "
-             "tests or use reason_for_missing_test.";
+          << "A test case for " << policy_name << " has empty list of test "
+          << "cases (policy_pref_mapping_tests). Add tests or use "
+          << "reason_for_missing_test.";
 
       if (test_case->HasSupportedOs()) {
         has_test_case_or_reason_for_this_os |= test_case->IsOsCovered();
@@ -646,10 +643,9 @@ void VerifyAllPoliciesHaveATestCase(const base::FilePath& test_case_dir) {
       }
     }
     EXPECT_TRUE(has_test_case_or_reason_for_this_os || has_reason_for_all_os)
-        << "Policy " << policy->first
-        << " should either provide a test case for all supported operating "
-           "systems (see policy_templates.json) or provide a "
-           "reason_for_missing_test.";
+        << "Policy " << policy_name << " should either provide a test case for "
+        << "all supported operating systems (see policy_templates.json) or "
+        << "provide a reason_for_missing_test.";
   }
 }
 
@@ -668,39 +664,37 @@ void VerifyPolicyToPrefMappings(const base::FilePath& test_case_dir,
 
   auto test_filter = GetTestFilter();
 
-  for (const auto& policy : test_cases) {
-    for (size_t idx = 0; idx < policy.second.size(); ++idx) {
-      auto& test_case = policy.second[idx];
-      SCOPED_TRACE(policy.second.size() <= 1
-                       ? ::testing::Message()
-                             << "Policy name: " << test_case->policy_name()
-                       : ::testing::Message()
-                             << "Policy name: " << test_case->policy_name()
-                             << " - " << idx);
-
-      if (chunk_info != nullptr) {
-        const size_t policy_name_hash = base::PersistentHash(policy.first);
-        const size_t chunk_index = policy_name_hash % chunk_info->num_chunks;
-        if (chunk_index != chunk_info->current_chunk)
-          // Skip policy if test cases are chunked and the policy is not part of
-          // the current chunk.
-          continue;
-      }
-
-      if (test_filter.has_value() &&
-          !base::Contains(test_filter.value(), test_case->policy_name())) {
-        // Skip policy based on the filter.
+  for (const auto& [policy_name, policy_test_cases] : test_cases) {
+    if (chunk_info != nullptr) {
+      const size_t policy_name_hash = base::PersistentHash(policy_name);
+      const size_t chunk_index = policy_name_hash % chunk_info->num_chunks;
+      if (chunk_index != chunk_info->current_chunk) {
+        // Skip policy if test cases are chunked and the policy is not part of
+        // the current chunk.
         continue;
       }
+    }
 
-      if (!chrome_schema.GetKnownProperty(policy.first).valid() &&
+    if (test_filter.has_value() &&
+        !base::Contains(test_filter.value(), policy_name)) {
+      // Skip policy based on the filter.
+      continue;
+    }
+
+    for (size_t idx = 0; idx < policy_test_cases.size(); ++idx) {
+      auto& test_case = policy_test_cases[idx];
+      SCOPED_TRACE(policy_test_cases.size() <= 1
+                       ? ::testing::Message() << "Policy name: " << policy_name
+                       : ::testing::Message()
+                             << "Policy name: " << policy_name << " - " << idx);
+
+      if (!chrome_schema.GetKnownProperty(policy_name).valid() &&
           test_case->IsSupported()) {
         // Print warning message if a deprecated policy is still supported by
         // the test file.
-        LOG(WARNING)
-            << "Policy " << policy.first
-            << " is marked as supported on this OS but does not exist in the "
-            << "Chrome policy schema.";
+        LOG(WARNING) << "Policy " << policy_name << " is marked as supported "
+                     << "on this OS but does not exist in the Chrome policy "
+                     << "schema.";
         continue;
       }
 
@@ -715,12 +709,12 @@ void VerifyPolicyToPrefMappings(const base::FilePath& test_case_dir,
         SCOPED_TRACE(::testing::Message() << "Mapping test index " << i);
 
         EXPECT_FALSE(pref_mapping->prefs().empty())
-            << "Test #" << i << " for " << test_case->policy_name()
-            << " is missing pref values to check for";
+            << "Test #" << i << " for " << policy_name << " is missing pref "
+            << "values to check for";
 
         if (!CheckRequiredBuildFlagsSupported(pref_mapping.get())) {
-          LOG(INFO) << "Test #" << i << " for " << test_case->policy_name()
-                    << " skipped due to buildflags";
+          LOG(INFO) << "Test #" << i << " for " << policy_name << " skipped "
+                    << "due to buildflags";
           continue;
         }
 
