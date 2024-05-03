@@ -16,7 +16,7 @@ namespace media::internal {
 // Class used for libdav1d software decoding.
 class Av1DecoderDelegate : public ContextDelegate {
  public:
-  Av1DecoderDelegate(int picture_height_hint, VAProfile profile);
+  explicit Av1DecoderDelegate(VAProfile profile);
   Av1DecoderDelegate(const Av1DecoderDelegate&) = delete;
   Av1DecoderDelegate& operator=(const Av1DecoderDelegate&) = delete;
   ~Av1DecoderDelegate() override;

@@ -38,7 +38,7 @@ std::unique_ptr<media::internal::ContextDelegate> CreateDelegate(
           picture_width, picture_height, config.GetProfile());
     case VAProfileAV1Profile0:
       return std::make_unique<media::internal::Av1DecoderDelegate>(
-          picture_height, config.GetProfile());
+          config.GetProfile());
     default:
       break;
   }

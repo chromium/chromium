@@ -6,7 +6,6 @@
 
 #include "base/check_op.h"
 #include "base/numerics/safe_conversions.h"
-#include "media/base/limits.h"
 #include "media/gpu/vaapi/test/fake_libva_driver/fake_buffer.h"
 #include "media/gpu/vaapi/test/fake_libva_driver/fake_surface.h"
 #include "third_party/dav1d/libdav1d/include/dav1d/dav1d.h"
@@ -35,51 +34,18 @@ struct ScopedDav1dPictureFree {
 
 void NullFreeCallback(const uint8_t* buffer, void* opaque) {}
 
-void GetDecoderThreadCounts(const int coded_height,
-                            int* tile_threads,
-                            int* frame_threads) {
-  // Tile thread counts based on currently available content. Recommended by
-  // YouTube, while frame thread values fit within
-  // limits::kMaxVideoDecodeThreads.
-  if (coded_height >= 700) {
-    *tile_threads =
-        4;  // Current 720p content is encoded in 5 tiles and 1080p content with
-            // 8 tiles, but we'll exceed limits::kMaxVideoDecodeThreads with 5+
-            // tile threads with 3 frame threads (5 * 3 + 3 = 18 threads vs 16
-            // max).
-            //
-            // Since 720p playback isn't smooth without 3 frame threads, we've
-            // chosen a slightly lower tile thread count.
-    *frame_threads = 3;
-  } else if (coded_height >= 300) {
-    *tile_threads = 3;
-    *frame_threads = 2;
-  } else {
-    *tile_threads = 2;
-    *frame_threads = 2;
-  }
-}
-
 }  // namespace
 
 void Av1DecoderDelegate::Dav1dContextDeleter::operator()(Dav1dContext* ptr) {
   dav1d_close(&ptr);
 }
 
-Av1DecoderDelegate::Av1DecoderDelegate(int picture_height_hint,
-                                       VAProfile profile) {
+Av1DecoderDelegate::Av1DecoderDelegate(VAProfile profile) {
   CHECK_EQ(profile, VAProfileAV1Profile0);
 
   Dav1dSettings settings;
   dav1d_default_settings(&settings);
-
-  // Compute decoder thread count for libdav1d.
-  int tile_threads, frame_threads;
-  GetDecoderThreadCounts(picture_height_hint, &tile_threads, &frame_threads);
-  settings.n_threads = frame_threads * (tile_threads + 1);
-
   settings.max_frame_delay = 1;
-  settings.frame_size_limit = limits::kMaxCanvas;
 
   Dav1dContext* temp_david_context_pointer = nullptr;
   CHECK_EQ(dav1d_open(&temp_david_context_pointer, &settings), 0);
