@@ -236,9 +236,11 @@ void AddAdditionalData(bool enable_printing,
   annotations_enabled = enable_annotations;
 #endif  // BUILDFLAG(IS_CHROMEOS_ASH)
 #if BUILDFLAG(ENABLE_PDF_INK2)
-  annotations_enabled = enable_annotations;
-  dict->Set("pdfInk2Enabled",
-            base::FeatureList::IsEnabled(chrome_pdf::features::kPdfInk2));
+  bool use_ink2 = base::FeatureList::IsEnabled(chrome_pdf::features::kPdfInk2);
+  if (use_ink2) {
+    annotations_enabled = enable_annotations;
+  }
+  dict->Set("pdfInk2Enabled", use_ink2);
 #endif  // BUILDFLAG(ENABLE_PDF_INK2)
   dict->Set("printingEnabled", printing_enabled);
   dict->Set("pdfAnnotationsEnabled", annotations_enabled);

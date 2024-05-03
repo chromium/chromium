@@ -452,6 +452,14 @@ IN_PROC_BROWSER_TEST_P(PDFExtensionServiceWorkerJSTest, Interception) {
 }
 
 #if BUILDFLAG(ENABLE_PDF_INK2)
+#if !BUILDFLAG(IS_CHROMEOS_ASH)
+// Test behavior when Ink2 and annotation mode are disabled for the PDF viewer.
+// Don't run this test on Ash, as annotation mode is always enabled there.
+IN_PROC_BROWSER_TEST_P(PDFExtensionJSTest, Ink2Disabled) {
+  RunTestsInJsModule("ink2_disabled_test.js", "test.pdf");
+}
+#endif  // !BUILDFLAG(IS_CHROMEOS_ASH)
+
 class PDFExtensionJSInk2Test : public PDFExtensionJSTest {
  protected:
   std::vector<base::test::FeatureRef> GetEnabledFeatures() const override {
