@@ -20,7 +20,8 @@ LegacyDeskBarView::LegacyDeskBarView(base::WeakPtr<OverviewGrid> overview_grid)
   overview_grid_ = overview_grid;
 }
 
-gfx::Size LegacyDeskBarView::CalculatePreferredSize() const {
+gfx::Size LegacyDeskBarView::CalculatePreferredSize(
+    const views::SizeBounds& available_size) const {
   // For overview bar, it always come with the fixed width (the full available
   // width).
   return {GetAvailableBounds().width(),

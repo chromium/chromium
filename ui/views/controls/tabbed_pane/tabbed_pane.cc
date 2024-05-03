@@ -10,7 +10,6 @@
 
 #include "base/check_op.h"
 #include "base/i18n/rtl.h"
-#include "base/notreached.h"
 #include "build/build_config.h"
 #include "cc/paint/paint_flags.h"
 #include "third_party/skia/include/core/SkPath.h"
@@ -129,10 +128,6 @@ void TabbedPaneTab::OnGestureEvent(ui::GestureEvent* event) {
       break;
   }
   event->SetHandled();
-}
-
-gfx::Size TabbedPaneTab::CalculatePreferredSize() const {
-  NOTREACHED_NORETURN() << "Use CalculatePreferredSize(SizeBounds)";
 }
 
 gfx::Size TabbedPaneTab::CalculatePreferredSize(

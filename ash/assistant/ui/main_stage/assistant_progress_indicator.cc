@@ -80,7 +80,8 @@ AssistantProgressIndicator::~AssistantProgressIndicator() = default;
 
 gfx::Size AssistantProgressIndicator::CalculatePreferredSize(
     const views::SizeBounds& available_size) const {
-  const int preferred_width = views::View::CalculatePreferredSize().width();
+  const int preferred_width =
+      views::View::CalculatePreferredSize(available_size).width();
   return gfx::Size(preferred_width, GetHeightForWidth(preferred_width));
 }
 

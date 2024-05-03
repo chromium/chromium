@@ -907,7 +907,7 @@ int PopupViewViews::AdjustWidth(int width) const {
 }
 
 bool PopupViewViews::DoUpdateBoundsAndRedrawPopup() {
-  gfx::Size preferred_size = CalculatePreferredSize();
+  gfx::Size preferred_size = CalculatePreferredSize({});
   gfx::Rect popup_bounds;
 
   const gfx::Rect content_area_bounds = GetContentAreaBounds();

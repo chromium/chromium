@@ -661,7 +661,8 @@ class TestDialog : public views::DialogDelegateView {
   TestDialog() { SetProperty(views::kElementIdentifierKey, kElementId); }
   ~TestDialog() override = default;
 
-  gfx::Size CalculatePreferredSize() const override {
+  gfx::Size CalculatePreferredSize(
+      const views::SizeBounds& available_size) const override {
     return gfx::Size(200, 200);
   }
 

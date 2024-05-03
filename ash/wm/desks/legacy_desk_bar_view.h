@@ -25,7 +25,8 @@ class ASH_EXPORT LegacyDeskBarView : public DeskBarViewBase {
   LegacyDeskBarView& operator=(const LegacyDeskBarView&) = delete;
 
   // views::View:
-  gfx::Size CalculatePreferredSize() const override;
+  gfx::Size CalculatePreferredSize(
+      const views::SizeBounds& available_size) const override;
 
   // DeskBarViewBase:
   gfx::Rect GetAvailableBounds() const override;

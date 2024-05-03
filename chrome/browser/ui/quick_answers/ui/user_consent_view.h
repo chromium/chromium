@@ -44,7 +44,8 @@ class UserConsentView : public chromeos::ReadWriteCardsView {
   ~UserConsentView() override;
 
   // chromeos::ReadWriteCardsView:
-  gfx::Size CalculatePreferredSize() const override;
+  gfx::Size CalculatePreferredSize(
+      const views::SizeBounds& available_size) const override;
   void OnFocus() override;
   void OnThemeChanged() override;
   views::FocusTraversable* GetPaneFocusTraversable() override;

@@ -21,11 +21,13 @@ namespace ash {
 DeskBarView::DeskBarView(aura::Window* root)
     : DeskBarViewBase(root, DeskBarViewBase::Type::kDeskButton) {}
 
-gfx::Size DeskBarView::CalculatePreferredSize() const {
+gfx::Size DeskBarView::CalculatePreferredSize(
+    const views::SizeBounds& available_size) const {
   // The preferred size should be its scroll view contents' size plus the
   // horizontal padding at both left/right. In addition, it should not exceed
   // the available size.
-  gfx::Size preferred_size = scroll_view_contents_->GetPreferredSize();
+  gfx::Size preferred_size =
+      scroll_view_contents_->GetPreferredSize(available_size);
   preferred_size.Enlarge(
       /*grow_width=*/kDeskBarScrollViewMinimumHorizontalPaddingDeskButton * 2,
       /*grow_height=*/0);
@@ -128,7 +130,7 @@ void DeskBarView::UpdateBarBounds() {
   // Refresh bounds as preferred. This is needed for dynamic width for the
   // bar.
   const ShelfAlignment shelf_alignment = Shelf::ForWindow(root_)->alignment();
-  gfx::Size preferred_size = CalculatePreferredSize();
+  gfx::Size preferred_size = CalculatePreferredSize({});
   gfx::Rect new_bounds = GetAvailableBounds();
   switch (shelf_alignment) {
     case ShelfAlignment::kBottom:

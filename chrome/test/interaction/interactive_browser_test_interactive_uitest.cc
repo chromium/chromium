@@ -505,7 +505,8 @@ class WebBubbleView : public views::BubbleDialogDelegateView {
   }
 
   // views::BubbleDialogDelegateView:
-  gfx::Size CalculatePreferredSize() const override {
+  gfx::Size CalculatePreferredSize(
+      const views::SizeBounds& available_size) const override {
     // Need a large enough bubble that the WebView has size to render.
     return gfx::Size(300, 400);
   }

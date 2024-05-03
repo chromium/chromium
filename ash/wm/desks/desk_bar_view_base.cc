@@ -196,7 +196,7 @@ class DeskBarScrollViewLayout : public views::LayoutManager {
     const ShelfAlignment shelf_alignment =
         Shelf::ForWindow(bar_view_->root_)->alignment();
     const gfx::Rect preferred_bounds =
-        gfx::Rect(bar_view_->CalculatePreferredSize());
+        gfx::Rect(bar_view_->CalculatePreferredSize({}));
     const gfx::Rect current_bounds = gfx::Rect(bar_view_->size());
     gfx::Rect new_bounds = preferred_bounds;
     if (shelf_alignment == ShelfAlignment::kBottom) {

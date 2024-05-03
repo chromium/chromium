@@ -579,7 +579,8 @@ SharesheetBubbleView::CreateNonClientFrameView(views::Widget* widget) {
   return frame;
 }
 
-gfx::Size SharesheetBubbleView::CalculatePreferredSize() const {
+gfx::Size SharesheetBubbleView::CalculatePreferredSize(
+    const views::SizeBounds& available_size) const {
   return gfx::Size(width_, height_);
 }
 

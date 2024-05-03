@@ -79,7 +79,8 @@ class SharesheetBubbleView : public views::BubbleDialogDelegateView,
       views::Widget* widget) override;
 
   // views::BubbleDialogDelegateView:
-  gfx::Size CalculatePreferredSize() const override;
+  gfx::Size CalculatePreferredSize(
+      const views::SizeBounds& available_size) const override;
   void OnWidgetActivationChanged(views::Widget* widget, bool active) override;
 
   // display::DisplayObserver:

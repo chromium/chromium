@@ -40,7 +40,8 @@ class ASH_EXPORT AuthPanelDebugView : public views::View,
   void OnUserAuthSuccess(AshAuthFactor factor,
                          const AuthProofToken& token) override;
 
-  gfx::Size CalculatePreferredSize() const override;
+  gfx::Size CalculatePreferredSize(
+      const views::SizeBounds& available_size) const override;
 
  private:
   // Closes the view.

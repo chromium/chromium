@@ -76,12 +76,13 @@ AuthPanelDebugView::AuthPanelDebugView(const AccountId& account_id) {
 
 AuthPanelDebugView::~AuthPanelDebugView() = default;
 
-gfx::Size AuthPanelDebugView::CalculatePreferredSize() const {
+gfx::Size AuthPanelDebugView::CalculatePreferredSize(
+    const views::SizeBounds& available_size) const {
   return GetAuthPanelDebugViewSize();
 }
 
 void AuthPanelDebugView::UpdatePreferredSize() {
-  SetPreferredSize(CalculatePreferredSize());
+  SetPreferredSize(CalculatePreferredSize({}));
   if (GetWidget()) {
     GetWidget()->CenterWindow(GetPreferredSize());
   }
