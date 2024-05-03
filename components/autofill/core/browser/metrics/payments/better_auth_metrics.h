@@ -194,6 +194,11 @@ void LogWebauthnOptChangeCalled(bool request_to_opt_in,
 void LogWebauthnOptInPromoNotOfferedReason(
     WebauthnOptInPromoNotOfferedReason reason);
 
+// Logs true if the Better Auth (FIDO) enrollment prompt was offered, false
+// otherwise. Logged at the time of showing or not showing the FIDO enrollment
+// prompt.
+void LogWebauthnEnrollmentPromptOffered(bool offered);
+
 // Logs the number of times the opt-in promo for enabling FIDO authentication
 // for card unmasking has been shown.
 void LogWebauthnOptInPromoShown(bool is_checkout_flow);

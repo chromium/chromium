@@ -103,6 +103,11 @@ void LogWebauthnOptInPromoNotOfferedReason(
       "Autofill.BetterAuth.OptInPromoNotOfferedReason", reason);
 }
 
+void LogWebauthnEnrollmentPromptOffered(bool offered) {
+  base::UmaHistogramBoolean("Autofill.BetterAuth.EnrollmentPromptOffered",
+                            /*sample=*/offered);
+}
+
 void LogWebauthnOptInPromoShown(bool is_checkout_flow) {
   std::string suffix =
       is_checkout_flow ? "FromCheckoutFlow" : "FromSettingsPage";

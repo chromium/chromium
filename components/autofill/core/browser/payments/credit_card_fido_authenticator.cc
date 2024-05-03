@@ -127,7 +127,10 @@ void CreditCardFidoAuthenticator::Authorize(
     // opt-in.
     current_flow_ = user_is_opted_in_ ? FOLLOWUP_AFTER_CVC_AUTH_FLOW
                                       : OPT_IN_WITH_CHALLENGE_FLOW;
+    autofill_metrics::LogWebauthnEnrollmentPromptOffered(/*offered=*/true);
     GetAssertion(ParseRequestOptions(std::move(request_options)));
+  } else {
+    autofill_metrics::LogWebauthnEnrollmentPromptOffered(/*offered=*/false);
   }
 }
 

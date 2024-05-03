@@ -976,6 +976,18 @@ chromium-metrics-reviews@google.com.
   </summary>
 </histogram>
 
+<histogram name="Autofill.BetterAuth.EnrollmentPromptOffered" enum="Boolean"
+    expires_after="2024-07-01">
+  <owner>vinnypersky@google.com</owner>
+  <owner>payments-autofill-team@google.com</owner>
+  <summary>
+    Records whether the Better Auth (FIDO) enrollment prompt was offered. Logged
+    at the time of showing the prompt, or if not shown, when the prompt would
+    have been shown. This metric can only be logged from the checkout flow,
+    after a CVC authentication has completed.
+  </summary>
+</histogram>
+
 <histogram
     name="Autofill.BetterAuth.FlowEvents.{BetterAuthFlowType}.{CardType}"
     enum="AutofillCreditCardAuthenticationEvents" expires_after="2024-09-01">
