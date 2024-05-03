@@ -771,10 +771,6 @@ public final class ProductionSupportedFlagList {
                 "This flag allows non-standard CSS appearance values with page load "
                         + "usage >= 0.001% and shows a deprecation warning."),
         Flag.baseFeature(
-                BlinkFeatures.NON_STANDARD_APPEARANCE_VALUES_LOW_USAGE,
-                "This flag allows non-standard CSS appearance values with page load "
-                        + "usage < 0.001% and shows a deprecation warning."),
-        Flag.baseFeature(
                 BlinkFeatures.DISCARD_INPUT_EVENTS_TO_RECENTLY_MOVED_FRAMES,
                 "Enables a browser intervention which silently ignores input events "
                         + "targeting a cross-origin iframe which has moved within its "

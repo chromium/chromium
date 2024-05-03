@@ -254,6 +254,15 @@ inline CSSIdentifierValue::CSSIdentifierValue(ControlPart e)
     : CSSValue(kIdentifierClass) {
   switch (e) {
     case kNoControlPart:
+    // Non standard appearance values that are not listed as
+    // compat-auto must be rendered as none.
+    // https://drafts.csswg.org/css-ui/#appearance-switching
+    case kMediaSliderPart:
+    case kMediaSliderThumbPart:
+    case kMediaVolumeSliderPart:
+    case kMediaVolumeSliderThumbPart:
+    case kSliderThumbHorizontalPart:
+    case kSliderThumbVerticalPart:
       value_id_ = CSSValueID::kNone;
       break;
     case kAutoPart:
@@ -280,18 +289,6 @@ inline CSSIdentifierValue::CSSIdentifierValue(ControlPart e)
     case kListboxPart:
       value_id_ = CSSValueID::kListbox;
       break;
-    case kMediaSliderPart:
-      value_id_ = CSSValueID::kMediaSlider;
-      break;
-    case kMediaSliderThumbPart:
-      value_id_ = CSSValueID::kMediaSliderthumb;
-      break;
-    case kMediaVolumeSliderPart:
-      value_id_ = CSSValueID::kMediaVolumeSlider;
-      break;
-    case kMediaVolumeSliderThumbPart:
-      value_id_ = CSSValueID::kMediaVolumeSliderthumb;
-      break;
     case kMediaControlPart:
       value_id_ = CSSValueID::kInternalMediaControl;
       break;
@@ -312,12 +309,6 @@ inline CSSIdentifierValue::CSSIdentifierValue(ControlPart e)
       break;
     case kSliderVerticalPart:
       value_id_ = CSSValueID::kSliderVertical;
-      break;
-    case kSliderThumbHorizontalPart:
-      value_id_ = CSSValueID::kSliderthumbHorizontal;
-      break;
-    case kSliderThumbVerticalPart:
-      value_id_ = CSSValueID::kSliderthumbVertical;
       break;
     case kSearchFieldPart:
       value_id_ = CSSValueID::kSearchfield;
@@ -359,14 +350,6 @@ inline ControlPart CSSIdentifierValue::ConvertTo() const {
       return kInnerSpinButtonPart;
     case CSSValueID::kListbox:
       return kListboxPart;
-    case CSSValueID::kMediaSlider:
-      return kMediaSliderPart;
-    case CSSValueID::kMediaSliderthumb:
-      return kMediaSliderThumbPart;
-    case CSSValueID::kMediaVolumeSlider:
-      return kMediaVolumeSliderPart;
-    case CSSValueID::kMediaVolumeSliderthumb:
-      return kMediaVolumeSliderThumbPart;
     case CSSValueID::kInternalMediaControl:
       return kMediaControlPart;
     case CSSValueID::kMenulist:
@@ -381,10 +364,6 @@ inline ControlPart CSSIdentifierValue::ConvertTo() const {
       return kSliderHorizontalPart;
     case CSSValueID::kSliderVertical:
       return kSliderVerticalPart;
-    case CSSValueID::kSliderthumbHorizontal:
-      return kSliderThumbHorizontalPart;
-    case CSSValueID::kSliderthumbVertical:
-      return kSliderThumbVerticalPart;
     case CSSValueID::kSearchfield:
       return kSearchFieldPart;
     case CSSValueID::kSearchfieldCancelButton:

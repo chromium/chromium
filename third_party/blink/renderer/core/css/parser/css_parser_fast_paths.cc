@@ -1153,16 +1153,6 @@ bool CSSParserFastPaths::IsNonStandardAppearanceValuesHighUsage(
          value_id == CSSValueID::kSearchfieldCancelButton;
 }
 
-bool CSSParserFastPaths::IsNonStandardAppearanceValuesLowUsage(
-    CSSValueID value_id) {
-  return value_id == CSSValueID::kMediaSlider ||
-         value_id == CSSValueID::kMediaSliderthumb ||
-         value_id == CSSValueID::kMediaVolumeSlider ||
-         value_id == CSSValueID::kMediaVolumeSliderthumb ||
-         value_id == CSSValueID::kSliderthumbHorizontal ||
-         value_id == CSSValueID::kSliderthumbVertical;
-}
-
 bool CSSParserFastPaths::IsValidKeywordPropertyAndValue(
     CSSPropertyID property_id,
     CSSValueID value_id,
@@ -1449,9 +1439,6 @@ bool CSSParserFastPaths::IsValidKeywordPropertyAndValue(
              (RuntimeEnabledFeatures::
                   NonStandardAppearanceValuesHighUsageEnabled() &&
               IsNonStandardAppearanceValuesHighUsage(value_id)) ||
-             (RuntimeEnabledFeatures::
-                  NonStandardAppearanceValuesLowUsageEnabled() &&
-              IsNonStandardAppearanceValuesLowUsage(value_id)) ||
              (RuntimeEnabledFeatures::
                   NonStandardAppearanceValueSliderVerticalEnabled() &&
               value_id == CSSValueID::kSliderVertical) ||

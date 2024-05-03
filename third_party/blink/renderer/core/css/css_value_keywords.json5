@@ -883,13 +883,6 @@
     "square-button",
     "slider-horizontal",
     "searchfield-cancel-button",
-    // TODO(crbug/924486) All appearance values that should not be accepted by the parser (low usage).
-    "media-slider",
-    "media-sliderthumb",
-    "media-volume-slider",
-    "media-volume-sliderthumb",
-    "sliderthumb-horizontal",
-    "sliderthumb-vertical",
     // TODO(crbug/1426629) All appearance values that should not be accepted by the parser (special case).
     "slider-vertical",
     //

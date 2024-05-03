@@ -4089,10 +4089,6 @@ void CountKeywordOnlyPropertyUsage(CSSPropertyID property,
       if ((RuntimeEnabledFeatures::
                NonStandardAppearanceValuesHighUsageEnabled() &&
            CSSParserFastPaths::IsNonStandardAppearanceValuesHighUsage(
-               value_id)) ||
-          (RuntimeEnabledFeatures::
-               NonStandardAppearanceValuesLowUsageEnabled() &&
-           CSSParserFastPaths::IsNonStandardAppearanceValuesLowUsage(
                value_id))) {
         if (const auto* document = context.GetDocument()) {
           document->AddConsoleMessage(MakeGarbageCollected<ConsoleMessage>(
@@ -4139,14 +4135,6 @@ void CountKeywordOnlyPropertyUsage(CSSPropertyID property,
           feature = WebFeature::kCSSValueAppearanceCheckbox;
         } else if (value_id == CSSValueID::kInnerSpinButton) {
           feature = WebFeature::kCSSValueAppearanceInnerSpinButton;
-        } else if (value_id == CSSValueID::kMediaSlider) {
-          feature = WebFeature::kCSSValueAppearanceMediaSlider;
-        } else if (value_id == CSSValueID::kMediaSliderthumb) {
-          feature = WebFeature::kCSSValueAppearanceMediaSliderthumb;
-        } else if (value_id == CSSValueID::kMediaVolumeSlider) {
-          feature = WebFeature::kCSSValueAppearanceMediaVolumeSlider;
-        } else if (value_id == CSSValueID::kMediaVolumeSliderthumb) {
-          feature = WebFeature::kCSSValueAppearanceMediaVolumeSliderthumb;
         } else if (value_id == CSSValueID::kMenulist) {
           feature = WebFeature::kCSSValueAppearanceMenulist;
         } else if (value_id == CSSValueID::kMenulistButton) {
@@ -4171,10 +4159,6 @@ void CountKeywordOnlyPropertyUsage(CSSPropertyID property,
           feature = WebFeature::kCSSValueAppearanceSliderHorizontal;
         } else if (value_id == CSSValueID::kSliderVertical) {
           feature = WebFeature::kCSSValueAppearanceSliderVertical;
-        } else if (value_id == CSSValueID::kSliderthumbHorizontal) {
-          feature = WebFeature::kCSSValueAppearanceSliderthumbHorizontal;
-        } else if (value_id == CSSValueID::kSliderthumbVertical) {
-          feature = WebFeature::kCSSValueAppearanceSliderthumbVertical;
         } else if (value_id == CSSValueID::kTextarea) {
           feature = WebFeature::kCSSValueAppearanceTextarea;
         } else if (value_id == CSSValueID::kTextfield) {
@@ -4233,10 +4217,6 @@ void WarnInvalidKeywordPropertyUsage(CSSPropertyID property,
       if ((!RuntimeEnabledFeatures::
                NonStandardAppearanceValuesHighUsageEnabled() &&
            CSSParserFastPaths::IsNonStandardAppearanceValuesHighUsage(
-               value_id)) ||
-          (!RuntimeEnabledFeatures::
-               NonStandardAppearanceValuesLowUsageEnabled() &&
-           CSSParserFastPaths::IsNonStandardAppearanceValuesLowUsage(
                value_id)) ||
           (!RuntimeEnabledFeatures::
                NonStandardAppearanceValueSliderVerticalEnabled() &&

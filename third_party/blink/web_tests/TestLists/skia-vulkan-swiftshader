@@ -743,7 +743,6 @@ media/avtrack/audio-track-enabled.html
 media/avtrack/track-switching.html
 media/avtrack/video-track-properties.html
 media/controls-layout-direction.html
-media/controls-slider-appearance-crash.html
 media/controls/accessibility-time-element.html
 media/controls/audio-element-should-not-propagate-click-events.html
 media/controls/closed-captions-on-off.html
