@@ -15,6 +15,10 @@
  * limitations under the License.
  */
 
+/**
+ * Returns the normalized key value for a given key according to the table:
+ * https://w3c.github.io/webdriver/#dfn-normalized-key-value
+ */
 export function getNormalizedKey(value: string): string {
   switch (value) {
     case '\uE000':
@@ -162,6 +166,10 @@ export function getNormalizedKey(value: string): string {
   }
 }
 
+/**
+ * Returns the key code for a given key according to the table:
+ * https://w3c.github.io/webdriver/#dfn-shifted-character
+ */
 export function getKeyCode(key: string): string | undefined {
   switch (key) {
     case '`':
@@ -214,6 +222,10 @@ export function getKeyCode(key: string): string | undefined {
     case '=':
     case '+':
       return 'Equal';
+    // The spec declares the '<' to be `IntlBackslash` as well, but it is already covered
+    // in the `Comma` above.
+    case '>':
+      return 'IntlBackslash';
     case 'a':
     case 'A':
       return 'KeyA';
@@ -316,6 +328,8 @@ export function getKeyCode(key: string): string | undefined {
       return 'ControlRight';
     case '\uE006':
       return 'Enter';
+    case '\uE00B':
+      return 'Pause';
     case '\uE03D':
       return 'MetaLeft';
     case '\uE053':
@@ -377,6 +391,8 @@ export function getKeyCode(key: string): string | undefined {
       return 'F11';
     case '\uE03C':
       return 'F12';
+    case '\uE019':
+      return 'NumpadEqual';
     case '\uE01A':
     case '\uE05C':
       return 'Numpad0';
@@ -426,6 +442,10 @@ export function getKeyCode(key: string): string | undefined {
   }
 }
 
+/**
+ * Returns the location of the key according to the table:
+ * https://w3c.github.io/webdriver/#dfn-key-location
+ */
 export function getKeyLocation(key: string): 0 | 1 | 2 | 3 {
   switch (key) {
     case '\uE007':
@@ -434,6 +454,7 @@ export function getKeyLocation(key: string): 0 | 1 | 2 | 3 {
     case '\uE00A':
     case '\uE03D':
       return 1;
+    case '\uE019':
     case '\uE01A':
     case '\uE01B':
     case '\uE01C':
