@@ -954,8 +954,6 @@ class MODULES_EXPORT AXObject : public GarbageCollected<AXObject> {
   bool AriaCheckedIsPresent() const;
   bool AriaPressedIsPresent() const;
   bool SupportsARIAExpanded() const;
-  virtual void Dropeffects(
-      Vector<ax::mojom::blink::Dropeffect>& dropeffects) const {}
   bool SupportsARIAReadOnly() const;
 
   // Returns 0-based index.

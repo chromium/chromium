@@ -2529,25 +2529,6 @@ const char* ToString(ax::mojom::ImageAnnotationStatus status) {
   return "";
 }
 
-const char* ToString(ax::mojom::Dropeffect dropeffect) {
-  switch (dropeffect) {
-    case ax::mojom::Dropeffect::kCopy:
-      return "copy";
-    case ax::mojom::Dropeffect::kExecute:
-      return "execute";
-    case ax::mojom::Dropeffect::kLink:
-      return "link";
-    case ax::mojom::Dropeffect::kMove:
-      return "move";
-    case ax::mojom::Dropeffect::kPopup:
-      return "popup";
-    case ax::mojom::Dropeffect::kNone:
-      return "none";
-  }
-
-  return "";
-}
-
 const char* ToString(ax::mojom::AriaNotificationInterrupt interrupt) {
   switch (interrupt) {
     case ax::mojom::AriaNotificationInterrupt::kNone:

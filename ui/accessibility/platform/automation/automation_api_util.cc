@@ -120,14 +120,12 @@ bool ShouldIgnoreGeneratedEventForAutomation(
     case AXEventGenerator::Event::DESCRIPTION_CHANGED:
     case AXEventGenerator::Event::DOCUMENT_SELECTION_CHANGED:
     case AXEventGenerator::Event::DOCUMENT_TITLE_CHANGED:
-    case AXEventGenerator::Event::DROPEFFECT_CHANGED:
     case AXEventGenerator::Event::EDITABLE_TEXT_CHANGED:
     case AXEventGenerator::Event::ENABLED_CHANGED:
     case AXEventGenerator::Event::EXPANDED:
     case AXEventGenerator::Event::FOCUS_CHANGED:
     case AXEventGenerator::Event::FLOW_FROM_CHANGED:
     case AXEventGenerator::Event::FLOW_TO_CHANGED:
-    case AXEventGenerator::Event::GRABBED_CHANGED:
     case AXEventGenerator::Event::HASPOPUP_CHANGED:
     case AXEventGenerator::Event::HIERARCHICAL_LEVEL_CHANGED:
     case AXEventGenerator::Event::IGNORED_CHANGED:

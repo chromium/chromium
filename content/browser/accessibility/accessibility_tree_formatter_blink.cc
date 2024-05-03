@@ -111,8 +111,6 @@ std::string IntAttrToString(const ui::AXNode& node,
       return ui::ToString(static_cast<ax::mojom::DefaultActionVerb>(value));
     case ax::mojom::IntAttribute::kDescriptionFrom:
       return ui::ToString(static_cast<ax::mojom::DescriptionFrom>(value));
-    case ax::mojom::IntAttribute::kDropeffectDeprecated:
-      return node.data().DropeffectBitfieldToString();
     case ax::mojom::IntAttribute::kHasPopup:
       return ui::ToString(static_cast<ax::mojom::HasPopup>(value));
     case ax::mojom::IntAttribute::kInvalidState:
@@ -153,6 +151,7 @@ std::string IntAttrToString(const ui::AXNode& node,
     case ax::mojom::IntAttribute::kAriaRowCount:
     case ax::mojom::IntAttribute::kColorValue:
     case ax::mojom::IntAttribute::kDOMNodeId:
+    case ax::mojom::IntAttribute::kDropeffectDeprecated:
     case ax::mojom::IntAttribute::kErrormessageIdDeprecated:
     case ax::mojom::IntAttribute::kHierarchicalLevel:
     case ax::mojom::IntAttribute::kInPageLinkTargetId:

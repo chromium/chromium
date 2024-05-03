@@ -5176,16 +5176,12 @@ data/accessibility/mac/attributes/ax-dom-class-list-expected.txt
 data/accessibility/mac/attributes/ax-dom-class-list.html
 data/accessibility/mac/attributes/ax-dom-identifier-expected.txt
 data/accessibility/mac/attributes/ax-dom-identifier.html
-data/accessibility/mac/attributes/ax-drop-effects-expected.txt
-data/accessibility/mac/attributes/ax-drop-effects.html
 data/accessibility/mac/attributes/ax-editable-ancestor-expected.txt
 data/accessibility/mac/attributes/ax-editable-ancestor.html
 data/accessibility/mac/attributes/ax-element-busy-expected.txt
 data/accessibility/mac/attributes/ax-element-busy.html
 data/accessibility/mac/attributes/ax-focusable-ancestor-expected.txt
 data/accessibility/mac/attributes/ax-focusable-ancestor.html
-data/accessibility/mac/attributes/ax-grabbed-expected.txt
-data/accessibility/mac/attributes/ax-grabbed.html
 data/accessibility/mac/attributes/ax-has-popup-expected.txt
 data/accessibility/mac/attributes/ax-has-popup.html
 data/accessibility/mac/attributes/ax-help-expected.txt

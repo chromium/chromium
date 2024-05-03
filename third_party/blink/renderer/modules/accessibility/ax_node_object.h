@@ -224,9 +224,6 @@ class MODULES_EXPORT AXNodeObject : public AXObject {
   ax::mojom::blink::Role RawAriaRole() const final;
   void AriaDescribedbyElements(AXObjectVector&) const override;
   void AriaOwnsElements(AXObjectVector&) const override;
-  void Dropeffects(
-      Vector<ax::mojom::blink::Dropeffect>& dropeffects) const override;
-
   ax::mojom::blink::HasPopup HasPopup() const override;
   ax::mojom::blink::IsPopup IsPopup() const override;
   bool IsEditableRoot() const override;
@@ -414,7 +411,6 @@ class MODULES_EXPORT AXNodeObject : public AXObject {
 #endif
 
   ax::mojom::blink::TextPosition GetTextPositionFromRole() const;
-  ax::mojom::blink::Dropeffect ParseDropeffect(String& dropeffect) const;
 
   static bool IsNameFromLabelElement(HTMLElement* control);
 

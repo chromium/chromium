@@ -283,20 +283,12 @@ IN_PROC_BROWSER_TEST_P(DumpAccessibilityScriptTest, AXEditableAncestor) {
   RunTypedTest<kMacAttributes>("ax-editable-ancestor.html");
 }
 
-IN_PROC_BROWSER_TEST_P(DumpAccessibilityScriptTest, AXDropEffects) {
-  RunTypedTest<kMacAttributes>("ax-drop-effects.html");
-}
-
 IN_PROC_BROWSER_TEST_P(DumpAccessibilityScriptTest, AXElementBusy) {
   RunTypedTest<kMacAttributes>("ax-element-busy.html");
 }
 
 IN_PROC_BROWSER_TEST_P(DumpAccessibilityScriptTest, AXFocusableAncestor) {
   RunTypedTest<kMacAttributes>("ax-focusable-ancestor.html");
-}
-
-IN_PROC_BROWSER_TEST_P(DumpAccessibilityScriptTest, AXGrabbed) {
-  RunTypedTest<kMacAttributes>("ax-grabbed.html");
 }
 
 IN_PROC_BROWSER_TEST_P(DumpAccessibilityScriptTest, AXHasPopup) {

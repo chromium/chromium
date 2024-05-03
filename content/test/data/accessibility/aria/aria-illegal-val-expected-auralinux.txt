@@ -6,7 +6,6 @@
 ++[panel] name='Current illegal' current:true
 ++[panel] name='Disabled illegal'
 ++[tree item] name='Expanded illegal' expanded selectable
-++[panel] name='Grabbed illegal'
 ++[push button] name='Haspopup illegal'
 ++[panel] name='Invalid illegal' invalid-entry
 ++[log] name='Live illegal' atomic:false live:X-ILLEGAL relevant:additions text

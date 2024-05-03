@@ -56,7 +56,6 @@ class AX_EXPORT AXEventGenerator : public AXTreeObserver {
     DESCRIPTION_CHANGED,
     DOCUMENT_SELECTION_CHANGED,
     DOCUMENT_TITLE_CHANGED,
-    DROPEFFECT_CHANGED,
 
     // TODO(nektar): Deprecate this event and replace it with
     // "VALUE_IN_TEXT_FIELD_CHANGED".
@@ -66,7 +65,6 @@ class AX_EXPORT AXEventGenerator : public AXTreeObserver {
     FOCUS_CHANGED,
     FLOW_FROM_CHANGED,
     FLOW_TO_CHANGED,
-    GRABBED_CHANGED,
     HASPOPUP_CHANGED,
     HIERARCHICAL_LEVEL_CHANGED,
     IGNORED_CHANGED,

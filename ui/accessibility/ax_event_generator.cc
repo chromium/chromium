@@ -597,9 +597,6 @@ void AXEventGenerator::OnIntAttributeChanged(AXTree* tree,
     case ax::mojom::IntAttribute::kAriaCurrentState:
       AddEvent(node, Event::ARIA_CURRENT_CHANGED);
       break;
-    case ax::mojom::IntAttribute::kDropeffectDeprecated:
-      AddEvent(node, Event::DROPEFFECT_CHANGED);
-      break;
     case ax::mojom::IntAttribute::kHasPopup:
       AddEvent(node, Event::HASPOPUP_CHANGED);
       AddEvent(node, Event::WIN_IACCESSIBLE_STATE_CHANGED);
@@ -733,9 +730,6 @@ void AXEventGenerator::OnBoolAttributeChanged(AXTree* tree,
       // Fire an 'invalidated' event when aria-busy becomes false.
       if (!new_value)
         AddEvent(node, Event::LAYOUT_INVALIDATED);
-      break;
-    case ax::mojom::BoolAttribute::kGrabbedDeprecated:
-      AddEvent(node, Event::GRABBED_CHANGED);
       break;
     case ax::mojom::BoolAttribute::kLiveAtomic:
       AddEvent(node, Event::ATOMIC_CHANGED);
@@ -1346,8 +1340,6 @@ const char* ToString(AXEventGenerator::Event event) {
       return "documentSelectionChanged";
     case AXEventGenerator::Event::DOCUMENT_TITLE_CHANGED:
       return "documentTitleChanged";
-    case AXEventGenerator::Event::DROPEFFECT_CHANGED:
-      return "dropeffectChanged";
     case ui::AXEventGenerator::Event::EDITABLE_TEXT_CHANGED:
       return "editableTextChanged";
     case AXEventGenerator::Event::ENABLED_CHANGED:
@@ -1360,8 +1352,6 @@ const char* ToString(AXEventGenerator::Event event) {
       return "flowFromChanged";
     case AXEventGenerator::Event::FLOW_TO_CHANGED:
       return "flowToChanged";
-    case AXEventGenerator::Event::GRABBED_CHANGED:
-      return "grabbedChanged";
     case AXEventGenerator::Event::HASPOPUP_CHANGED:
       return "haspopupChanged";
     case AXEventGenerator::Event::HIERARCHICAL_LEVEL_CHANGED:

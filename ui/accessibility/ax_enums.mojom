@@ -1471,15 +1471,6 @@ enum ImageAnnotationStatus {
   kAnnotationProcessFailed,
 };
 
-enum Dropeffect {
-  kNone,
-  kCopy,
-  kExecute,
-  kLink,
-  kMove,
-  kPopup,
-};
-
 enum AriaNotificationInterrupt {
   kNone,
   kAll,

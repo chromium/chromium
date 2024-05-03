@@ -38,12 +38,6 @@
     {name: "aria-description", type: "string"},
     {name: "aria-details", type: "IDREF"},
     {name: "aria-disabled", default: "false", type: "boolean"},
-    {
-      name: "aria-dropeffect",
-      default: "none",
-      enum: ["copy", "move", "link", "execute", "popup", "none"],
-      type: "token_list"
-    },
     {name: "aria-errormessage", type: "IDREF"},
     {
       name: "aria-expanded",
@@ -52,12 +46,6 @@
       type: "token"
     },
     {name: "aria-flowto", type: "IDREF_list"},
-    {
-      name: "aria-grabbed",
-      default: "undefined",
-      enum: ["true", "false", "undefined"],
-      type: "token"
-    },
     {
       name: "aria-haspopup",
       default: "false",

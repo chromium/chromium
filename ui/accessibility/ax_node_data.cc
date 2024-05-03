@@ -774,13 +774,6 @@ bool AXNodeData::HasTextStyle(ax::mojom::TextStyle text_style_enum) const {
                    static_cast<uint32_t>(text_style_enum));
 }
 
-bool AXNodeData::HasDropeffect(ax::mojom::Dropeffect dropeffect_enum) const {
-  int32_t dropeffect =
-      GetIntAttribute(ax::mojom::IntAttribute::kDropeffectDeprecated);
-  return IsFlagSet(static_cast<uint32_t>(dropeffect),
-                   static_cast<uint32_t>(dropeffect_enum));
-}
-
 void AXNodeData::AddState(ax::mojom::State state_enum) {
   DCHECK_GT(static_cast<int>(state_enum),
             static_cast<int>(ax::mojom::State::kNone));
@@ -2144,25 +2137,6 @@ size_t AXNodeData::AXNodeDataSize::ByteSize() const {
   return int_attribute_size + float_attribute_size + bool_attribute_size +
          string_attribute_size + int_list_attribhute_size +
          string_list_attribute_size + html_attribute_size + child_ids_size;
-}
-
-std::string AXNodeData::DropeffectBitfieldToString() const {
-  if (!HasIntAttribute(ax::mojom::IntAttribute::kDropeffectDeprecated)) {
-    return "";
-  }
-
-  std::string str;
-  for (int dropeffect_idx = static_cast<int>(ax::mojom::Dropeffect::kMinValue);
-       dropeffect_idx <= static_cast<int>(ax::mojom::Dropeffect::kMaxValue);
-       ++dropeffect_idx) {
-    ax::mojom::Dropeffect dropeffect_enum =
-        static_cast<ax::mojom::Dropeffect>(dropeffect_idx);
-    if (HasDropeffect(dropeffect_enum))
-      str += " " + std::string(ui::ToString(dropeffect_enum));
-  }
-
-  // Removing leading space in final string.
-  return str.substr(1);
 }
 
 }  // namespace ui

@@ -926,14 +926,12 @@ void ReadAnythingAppModel::ProcessGeneratedEvents(
       case ui::AXEventGenerator::Event::DETAILS_CHANGED:
       case ui::AXEventGenerator::Event::DESCRIBED_BY_CHANGED:
       case ui::AXEventGenerator::Event::DESCRIPTION_CHANGED:
-      case ui::AXEventGenerator::Event::DROPEFFECT_CHANGED:
       case ui::AXEventGenerator::Event::EDITABLE_TEXT_CHANGED:
       case ui::AXEventGenerator::Event::ENABLED_CHANGED:
       case ui::AXEventGenerator::Event::EXPANDED:
       case ui::AXEventGenerator::Event::FOCUS_CHANGED:
       case ui::AXEventGenerator::Event::FLOW_FROM_CHANGED:
       case ui::AXEventGenerator::Event::FLOW_TO_CHANGED:
-      case ui::AXEventGenerator::Event::GRABBED_CHANGED:
       case ui::AXEventGenerator::Event::HASPOPUP_CHANGED:
       case ui::AXEventGenerator::Event::HIERARCHICAL_LEVEL_CHANGED:
       case ui::AXEventGenerator::Event::IGNORED_CHANGED:

@@ -332,10 +332,6 @@ void BrowserAccessibilityManagerWin::FireGeneratedEvent(
       }
       break;
     }
-    // aria-dropeffect is deprecated in WAI-ARIA 1.1.
-    case ui::AXEventGenerator::Event::DROPEFFECT_CHANGED:
-      HandleAriaPropertiesChangedEvent(*wrapper);
-      break;
     case ui::AXEventGenerator::Event::EDITABLE_TEXT_CHANGED:
       EnqueueTextChangedEvent(*wrapper);
       break;
@@ -348,10 +344,6 @@ void BrowserAccessibilityManagerWin::FireGeneratedEvent(
       break;
     case ui::AXEventGenerator::Event::FLOW_TO_CHANGED:
       FireUiaPropertyChangedEvent(UIA_FlowsToPropertyId, wrapper);
-      break;
-    // aria-grabbed is deprecated in WAI-ARIA 1.1.
-    case ui::AXEventGenerator::Event::GRABBED_CHANGED:
-      HandleAriaPropertiesChangedEvent(*wrapper);
       break;
     case ui::AXEventGenerator::Event::HASPOPUP_CHANGED:
       HandleAriaPropertiesChangedEvent(*wrapper);

@@ -4304,40 +4304,6 @@ void AXNodeObject::AriaOwnsElements(AXObjectVector& owns) const {
   AccessibilityChildrenFromAOMProperty(AOMRelationListProperty::kOwns, owns);
 }
 
-ax::mojom::blink::Dropeffect AXNodeObject::ParseDropeffect(
-    String& dropeffect) const {
-  if (EqualIgnoringASCIICase(dropeffect, "copy"))
-    return ax::mojom::blink::Dropeffect::kCopy;
-  if (EqualIgnoringASCIICase(dropeffect, "execute"))
-    return ax::mojom::blink::Dropeffect::kExecute;
-  if (EqualIgnoringASCIICase(dropeffect, "link"))
-    return ax::mojom::blink::Dropeffect::kLink;
-  if (EqualIgnoringASCIICase(dropeffect, "move"))
-    return ax::mojom::blink::Dropeffect::kMove;
-  if (EqualIgnoringASCIICase(dropeffect, "popup"))
-    return ax::mojom::blink::Dropeffect::kPopup;
-  return ax::mojom::blink::Dropeffect::kNone;
-}
-
-void AXNodeObject::Dropeffects(
-    Vector<ax::mojom::blink::Dropeffect>& dropeffects) const {
-  if (!HasAttribute(html_names::kAriaDropeffectAttr))
-    return;
-
-  Vector<String> str_dropeffects;
-  TokenVectorFromAttribute(GetElement(), str_dropeffects,
-                           html_names::kAriaDropeffectAttr);
-
-  if (str_dropeffects.empty()) {
-    dropeffects.push_back(ax::mojom::blink::Dropeffect::kNone);
-    return;
-  }
-
-  for (auto&& str : str_dropeffects) {
-    dropeffects.push_back(ParseDropeffect(str));
-  }
-}
-
 ax::mojom::blink::HasPopup AXNodeObject::HasPopup() const {
   const AtomicString& has_popup =
       GetAOMPropertyOrARIAAttribute(AOMStringProperty::kHasPopup);

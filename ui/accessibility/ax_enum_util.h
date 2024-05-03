@@ -151,9 +151,6 @@ AX_BASE_EXPORT const char* ToString(ax::mojom::TreeOrder tree_order);
 // ax::mojom::ImageAnnotationStatus
 AX_BASE_EXPORT const char* ToString(ax::mojom::ImageAnnotationStatus status);
 
-// ax::mojom::Dropeffect
-AX_BASE_EXPORT const char* ToString(ax::mojom::Dropeffect dropeffect);
-
 // ax::mojom::AriaNotificationInterrupt
 AX_BASE_EXPORT const char* ToString(
     ax::mojom::AriaNotificationInterrupt interrupt);

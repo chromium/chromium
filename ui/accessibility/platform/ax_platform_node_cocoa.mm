@@ -1282,10 +1282,6 @@ void CollectAncestorRoles(
     [axAttributes addObject:NSAccessibilityErrorMessageElementsAttribute];
   }
 
-  // Grabbed
-  if (_node->HasHtmlAttribute("aria-grabbed"))
-    [axAttributes addObject:NSAccessibilityGrabbedAttribute];
-
   if (ui::SupportsRequired(role)) {
     [axAttributes addObject:NSAccessibilityRequiredAttribute];
   }
@@ -1610,13 +1606,6 @@ void CollectAncestorRoles(
 }
 
 - (NSString*)AXDropEffects {
-  if (![self instanceActive])
-    return nil;
-
-  std::string dropEffects;
-  if (_node->GetHtmlAttribute("aria-dropeffect", &dropEffects))
-    return base::SysUTF8ToNSString(dropEffects);
-
   return nil;
 }
 
@@ -1654,12 +1643,6 @@ void CollectAncestorRoles(
 }
 
 - (NSNumber*)AXGrabbed {
-  if (![self instanceActive])
-    return nil;
-  std::string grabbed;
-  if (_node->GetHtmlAttribute("aria-grabbed", &grabbed) && grabbed == "true")
-    return @YES;
-
   return @NO;
 }
 
