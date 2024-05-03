@@ -18,6 +18,7 @@
 #include "components/reporting/client/report_queue_factory.h"
 #include "components/reporting/proto/synced/record_constants.pb.h"
 #include "components/reporting/util/status.h"
+#include "content/public/common/content_constants.h"
 #include "url/gurl.h"
 
 #if BUILDFLAG(IS_CHROMEOS_ASH)
@@ -133,14 +134,14 @@ DlpPolicyEvent_UserType GetCurrentUserType() {
 
 // static
 std::unique_ptr<DlpPolicyEventBuilder> DlpPolicyEventBuilder::Event(
-    const std::string& src_pattern,
+    const std::string& src_url,
     const std::string& rule_name,
     const std::string& rule_id,
     Rule::Restriction restriction,
     Rule::Level level) {
   std::unique_ptr<DlpPolicyEventBuilder> event_builder(
       new DlpPolicyEventBuilder());
-  event_builder->SetSourcePattern(src_pattern);
+  event_builder->SetSourceUrl(src_url);
   event_builder->SetRestriction(restriction);
   event_builder->event.set_mode(RuleLevel2DlpEventMode(level));
 
@@ -155,14 +156,13 @@ std::unique_ptr<DlpPolicyEventBuilder> DlpPolicyEventBuilder::Event(
 
 // static
 std::unique_ptr<DlpPolicyEventBuilder>
-DlpPolicyEventBuilder::WarningProceededEvent(
-    const std::string& src_pattern,
-    const std::string& rule_name,
-    const std::string& rule_id,
-    Rule::Restriction restriction) {
+DlpPolicyEventBuilder::WarningProceededEvent(const std::string& src_url,
+                                             const std::string& rule_name,
+                                             const std::string& rule_id,
+                                             Rule::Restriction restriction) {
   std::unique_ptr<DlpPolicyEventBuilder> event_builder(
       new DlpPolicyEventBuilder());
-  event_builder->SetSourcePattern(src_pattern);
+  event_builder->SetSourceUrl(src_url);
   event_builder->SetRestriction(restriction);
   event_builder->event.set_mode(DlpPolicyEvent_Mode_WARN_PROCEED);
   return event_builder;
@@ -175,10 +175,9 @@ DlpPolicyEventBuilder::DlpPolicyEventBuilder() {
   event.set_user_type(GetCurrentUserType());
 }
 
-void DlpPolicyEventBuilder::SetDestinationPattern(
-    const std::string& dst_pattern) {
+void DlpPolicyEventBuilder::SetDestinationUrl(const std::string& dst_url) {
   DlpPolicyEventDestination* event_destination = new DlpPolicyEventDestination;
-  event_destination->set_url(dst_pattern);
+  event_destination->set_url(dst_url.substr(0, content::kMaxURLDisplayChars));
   event.set_allocated_destination(event_destination);
 }
 
@@ -226,9 +225,9 @@ DlpPolicyEvent DlpPolicyEventBuilder::Create() {
   return event;
 }
 
-void DlpPolicyEventBuilder::SetSourcePattern(const std::string& src_pattern) {
+void DlpPolicyEventBuilder::SetSourceUrl(const std::string& src_url) {
   DlpPolicyEventSource* event_source = new DlpPolicyEventSource;
-  event_source->set_url(src_pattern);
+  event_source->set_url(src_url.substr(0, content::kMaxURLDisplayChars));
   event.set_allocated_source(event_source);
 }
 
@@ -238,37 +237,37 @@ void DlpPolicyEventBuilder::SetRestriction(
       RuleRestriction2DlpEventRestriction(restriction));
 }
 
-DlpPolicyEvent CreateDlpPolicyEvent(const std::string& src_pattern,
+DlpPolicyEvent CreateDlpPolicyEvent(const std::string& src_url,
                                     Rule::Restriction restriction,
                                     const std::string& rule_name,
                                     const std::string& rule_id,
                                     Rule::Level level) {
-  auto event_builder = DlpPolicyEventBuilder::Event(
-      src_pattern, rule_name, rule_id, restriction, level);
+  auto event_builder = DlpPolicyEventBuilder::Event(src_url, rule_name, rule_id,
+                                                    restriction, level);
   return event_builder->Create();
 }
 
-DlpPolicyEvent CreateDlpPolicyEvent(const std::string& src_pattern,
-                                    const std::string& dst_pattern,
+DlpPolicyEvent CreateDlpPolicyEvent(const std::string& src_url,
+                                    const std::string& dst_url,
                                     Rule::Restriction restriction,
                                     const std::string& rule_name,
                                     const std::string& rule_id,
                                     Rule::Level level) {
-  auto event_builder = DlpPolicyEventBuilder::Event(
-      src_pattern, rule_name, rule_id, restriction, level);
-  event_builder->SetDestinationPattern(dst_pattern);
+  auto event_builder = DlpPolicyEventBuilder::Event(src_url, rule_name, rule_id,
+                                                    restriction, level);
+  event_builder->SetDestinationUrl(dst_url);
   return event_builder->Create();
 }
 
 #if BUILDFLAG(IS_CHROMEOS)
-DlpPolicyEvent CreateDlpPolicyEvent(const std::string& src_pattern,
+DlpPolicyEvent CreateDlpPolicyEvent(const std::string& src_url,
                                     Component dst_component,
                                     Rule::Restriction restriction,
                                     const std::string& rule_name,
                                     const std::string& rule_id,
                                     Rule::Level level) {
-  auto event_builder = DlpPolicyEventBuilder::Event(
-      src_pattern, rule_name, rule_id, restriction, level);
+  auto event_builder = DlpPolicyEventBuilder::Event(src_url, rule_name, rule_id,
+                                                    restriction, level);
   event_builder->SetDestinationComponent(dst_component);
 
   return event_builder->Create();
@@ -295,36 +294,35 @@ void DlpReportingManager::SetReportQueueForTest(
   report_queue_ = std::move(report_queue);
 }
 
-void DlpReportingManager::ReportEvent(const std::string& src_pattern,
+void DlpReportingManager::ReportEvent(const std::string& src_url,
                                       Rule::Restriction restriction,
                                       Rule::Level level,
                                       const std::string& rule_name,
                                       const std::string& rule_id) {
   auto event =
-      CreateDlpPolicyEvent(src_pattern, restriction, rule_name, rule_id, level);
+      CreateDlpPolicyEvent(src_url, restriction, rule_name, rule_id, level);
   ReportEvent(std::move(event));
 }
 
-void DlpReportingManager::ReportEvent(const std::string& src_pattern,
-                                      const std::string& dst_pattern,
+void DlpReportingManager::ReportEvent(const std::string& src_url,
+                                      const std::string& dst_url,
                                       Rule::Restriction restriction,
                                       Rule::Level level,
                                       const std::string& rule_name,
                                       const std::string& rule_id) {
-  auto event = CreateDlpPolicyEvent(src_pattern, dst_pattern, restriction,
-                                    rule_name, rule_id, level);
+  auto event = CreateDlpPolicyEvent(src_url, dst_url, restriction, rule_name,
+                                    rule_id, level);
   ReportEvent(std::move(event));
 }
 
 #if BUILDFLAG(IS_CHROMEOS)
-void DlpReportingManager::ReportEvent(
-    const std::string& src_pattern,
-    const Component dst_component,
-    Rule::Restriction restriction,
-    Rule::Level level,
-    const std::string& rule_name,
-    const std::string& rule_id) {
-  auto event = CreateDlpPolicyEvent(src_pattern, dst_component, restriction,
+void DlpReportingManager::ReportEvent(const std::string& src_url,
+                                      const Component dst_component,
+                                      Rule::Restriction restriction,
+                                      Rule::Level level,
+                                      const std::string& rule_name,
+                                      const std::string& rule_id) {
+  auto event = CreateDlpPolicyEvent(src_url, dst_component, restriction,
                                     rule_name, rule_id, level);
   ReportEvent(std::move(event));
 }

@@ -967,7 +967,7 @@ void DlpFilesControllerAsh::MaybeReportEvent(
 
   if (dst_pattern.has_value()) {
     DCHECK(!dst.component().has_value());
-    event_builder->SetDestinationPattern(dst_pattern.value());
+    event_builder->SetDestinationUrl(dst_pattern.value());
   } else {
     DCHECK(dst.component().has_value());
     event_builder->SetDestinationComponent(dst.component().value());

@@ -24,19 +24,19 @@ class DlpPolicyEventBuilder {
  public:
   // Possible event types.
   static std::unique_ptr<DlpPolicyEventBuilder> Event(
-      const std::string& src_pattern,
+      const std::string& src_url,
       const std::string& rule_name,
       const std::string& rule_id,
       Rule::Restriction restriction,
       Rule::Level level);
   static std::unique_ptr<DlpPolicyEventBuilder> WarningProceededEvent(
-      const std::string& src_pattern,
+      const std::string& src_url,
       const std::string& rule_name,
       const std::string& rule_id,
       Rule::Restriction restriction);
 
   // Setters used to define event properties.
-  void SetDestinationPattern(const std::string& dst_pattern);
+  void SetDestinationUrl(const std::string& dst_url);
 #if BUILDFLAG(IS_CHROMEOS)
   void SetDestinationComponent(Component dst_component);
 #endif  // BUILDFLAG(IS_CHROMEOS)
@@ -50,7 +50,7 @@ class DlpPolicyEventBuilder {
 
   // Private setters used to define mandatory event properties set up internally
   // when a DlpPolicyEventBuilder is built.
-  void SetSourcePattern(const std::string& src_pattern);
+  void SetSourceUrl(const std::string& src_url);
   void SetRestriction(Rule::Restriction restriction);
 
   DlpPolicyEvent event;
@@ -58,20 +58,20 @@ class DlpPolicyEventBuilder {
 
 // helper function to create DlpPolicyEvents to be enqueued or used to test
 // against.
-DlpPolicyEvent CreateDlpPolicyEvent(const std::string& src_pattern,
+DlpPolicyEvent CreateDlpPolicyEvent(const std::string& src_url,
                                     Rule::Restriction restriction,
                                     const std::string& rule_name,
                                     const std::string& rule_id,
                                     Rule::Level level);
-DlpPolicyEvent CreateDlpPolicyEvent(const std::string& src_pattern,
-                                    const std::string& dst_pattern,
+DlpPolicyEvent CreateDlpPolicyEvent(const std::string& src_url,
+                                    const std::string& dst_url,
                                     Rule::Restriction restriction,
                                     const std::string& rule_name,
                                     const std::string& rule_id,
                                     Rule::Level level);
 
 #if BUILDFLAG(IS_CHROMEOS)
-DlpPolicyEvent CreateDlpPolicyEvent(const std::string& src_pattern,
+DlpPolicyEvent CreateDlpPolicyEvent(const std::string& src_url,
                                     Component dst_component,
                                     Rule::Restriction restriction,
                                     const std::string& rule_name,
@@ -111,19 +111,19 @@ class DlpReportingManager {
 
   // The different methods that cause report events from the specific
   // restrictions.
-  void ReportEvent(const std::string& src_pattern,
+  void ReportEvent(const std::string& src_url,
                    Rule::Restriction restriction,
                    Rule::Level level,
                    const std::string& rule_name,
                    const std::string& rule_id);
-  void ReportEvent(const std::string& src_pattern,
-                   const std::string& dst_pattern,
+  void ReportEvent(const std::string& src_url,
+                   const std::string& dst_url,
                    Rule::Restriction restriction,
                    Rule::Level level,
                    const std::string& rule_name,
                    const std::string& rule_id);
 #if BUILDFLAG(IS_CHROMEOS)
-  void ReportEvent(const std::string& src_pattern,
+  void ReportEvent(const std::string& src_url,
                    Component dst_component,
                    Rule::Restriction restriction,
                    Rule::Level level,
