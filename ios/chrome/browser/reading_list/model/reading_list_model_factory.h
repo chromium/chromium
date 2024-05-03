@@ -23,8 +23,6 @@ class ReadingListModelFactory : public BrowserStateKeyedServiceFactory {
  public:
   static ReadingListModel* GetForBrowserState(
       ChromeBrowserState* browser_state);
-  // Returns nullptr if ReadingListEnableDualReadingListModel flag is not
-  // enabled.
   static reading_list::DualReadingListModel*
   GetAsDualReadingListModelForBrowserState(ChromeBrowserState* browser_state);
   static ReadingListModelFactory* GetInstance();
