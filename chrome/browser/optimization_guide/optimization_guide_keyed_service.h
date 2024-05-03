@@ -125,6 +125,8 @@ class OptimizationGuideKeyedService
       optimization_guide::OptimizationTargetModelObserver* observer) override;
 
   // optimization_guide::OptimizationGuideModelExecutor implementation:
+  bool CanCreateOnDeviceSession(
+      optimization_guide::ModelBasedCapabilityKey feature) override;
   std::unique_ptr<Session> StartSession(
       optimization_guide::ModelBasedCapabilityKey feature,
       const std::optional<optimization_guide::SessionConfigParams>&

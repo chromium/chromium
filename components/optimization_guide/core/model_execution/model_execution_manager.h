@@ -67,6 +67,9 @@ class ModelExecutionManager : public OptimizationTargetModelObserver {
       std::unique_ptr<proto::LogAiDataRequest> log_ai_data_request,
       OptimizationGuideModelExecutionResultCallback callback);
 
+  // Returns whether an on-device session can be created for `feature`.
+  bool CanCreateOnDeviceSession(ModelBasedCapabilityKey feature);
+
   // Starts a new session for `feature`.
   std::unique_ptr<OptimizationGuideModelExecutor::Session> StartSession(
       ModelBasedCapabilityKey feature,

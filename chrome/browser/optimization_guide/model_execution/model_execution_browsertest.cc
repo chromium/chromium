@@ -212,6 +212,11 @@ class ModelExecutionBrowserTestBase : public InProcessBrowserTest {
     run_loop.Run();
   }
 
+  bool CanCreateOnDeviceSession(ModelBasedCapabilityKey feature) {
+    return GetOptimizationGuideKeyedService()->CanCreateOnDeviceSession(
+        feature);
+  }
+
   // Uploads the model quality logs for the feature, waits until the response is
   // received and no response is returned from the server.
   void UploadModelQualityLogs(std::unique_ptr<ModelQualityLogEntry> log_entry,
@@ -388,12 +393,33 @@ IN_PROC_BROWSER_TEST_F(ModelExecutionDisabledBrowserTest,
   EXPECT_TRUE(model_execution_result_->error().transient());
 }
 
+IN_PROC_BROWSER_TEST_F(ModelExecutionDisabledBrowserTest,
+                       CanCreateOnDeviceSessionExecutionDisabled) {
+  EXPECT_FALSE(CanCreateOnDeviceSession(ModelBasedCapabilityKey::kCompose));
+}
+
+class ModelExecutionEnabledOnDeviceDisabledBrowserTest
+    : public ModelExecutionBrowserTestBase {
+  void InitializeFeatureList() override {
+    scoped_feature_list_.InitWithFeatures(
+        {features::kOptimizationGuideModelExecution,
+         features::kModelQualityLogging},
+        {features::kOptimizationGuideOnDeviceModel});
+  }
+};
+
+IN_PROC_BROWSER_TEST_F(ModelExecutionEnabledOnDeviceDisabledBrowserTest,
+                       CanCreateOnDeviceSessionOnDeviceDisabled) {
+  EXPECT_FALSE(CanCreateOnDeviceSession(ModelBasedCapabilityKey::kCompose));
+}
+
 class ModelExecutionEnabledBrowserTest : public ModelExecutionBrowserTestBase {
  public:
   void InitializeFeatureList() override {
     scoped_feature_list_.InitWithFeatures(
         {features::kOptimizationGuideModelExecution,
-         features::kModelQualityLogging},
+         features::kModelQualityLogging,
+         features::kOptimizationGuideOnDeviceModel},
         {});
   }
 
@@ -563,6 +589,11 @@ IN_PROC_BROWSER_TEST_F(ModelExecutionEnabledBrowserTest,
   histogram_tester_.ExpectBucketCount(
       "OptimizationGuide.ModelQualityLogsUploaderService.UploadStatus.Compose",
       ModelQualityLogsUploadStatus::kDisabledDueToEnterprisePolicy, 1);
+}
+
+IN_PROC_BROWSER_TEST_F(ModelExecutionEnabledBrowserTest,
+                       CanCreateOnDeviceSessionNoModelAvailable) {
+  EXPECT_FALSE(CanCreateOnDeviceSession(ModelBasedCapabilityKey::kCompose));
 }
 
 class ModelExecutionInternalsPageBrowserTest

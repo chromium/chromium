@@ -81,6 +81,9 @@ class MockInnerText : public InnerTextProvider {
 class MockModelExecutor
     : public optimization_guide::OptimizationGuideModelExecutor {
  public:
+  MOCK_METHOD(bool,
+              CanCreateOnDeviceSession,
+              (optimization_guide::ModelBasedCapabilityKey feature));
   MOCK_METHOD(std::unique_ptr<Session>,
               StartSession,
               (optimization_guide::ModelBasedCapabilityKey feature,

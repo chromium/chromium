@@ -584,6 +584,14 @@ void OptimizationGuideKeyedService::CanApplyOptimizationOnDemand(
                                                request_context_metadata);
 }
 
+bool OptimizationGuideKeyedService::CanCreateOnDeviceSession(
+    optimization_guide::ModelBasedCapabilityKey feature) {
+  if (!model_execution_manager_) {
+    return false;
+  }
+  return model_execution_manager_->CanCreateOnDeviceSession(feature);
+}
+
 std::unique_ptr<optimization_guide::OptimizationGuideModelExecutor::Session>
 OptimizationGuideKeyedService::StartSession(
     optimization_guide::ModelBasedCapabilityKey feature,

@@ -39,6 +39,7 @@ class FilePath;
 }  // namespace base
 
 namespace optimization_guide {
+enum class OnDeviceModelEligibilityReason;
 class OnDeviceModelAccessController;
 class OnDeviceModelComponentStateManager;
 class OnDeviceModelMetadata;
@@ -66,6 +67,10 @@ class OnDeviceModelServiceController
   // Initializes OnDeviceModelServiceController. This should be called once
   // after creation.
   void Init();
+
+  // Whether an on-device session can be created for `feature`.
+  OnDeviceModelEligibilityReason CanCreateSession(
+      ModelBasedCapabilityKey feature);
 
   // Starts a session for `feature`. This will start the service and load the
   // model if it is not already loaded. The session will handle updating

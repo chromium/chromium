@@ -109,6 +109,10 @@ class OptimizationGuideModelExecutor {
         OptimizationGuideModelExecutionResultStreamingCallback callback) = 0;
   };
 
+  // Whether an on-device session can be created for `feature`.
+  virtual bool CanCreateOnDeviceSession(
+      optimization_guide::ModelBasedCapabilityKey feature) = 0;
+
   // Starts a session which allows streaming input and output from the model.
   // May return nullptr if model execution is not supported. This session should
   // not outlive OptimizationGuideModelExecutor.

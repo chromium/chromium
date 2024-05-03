@@ -20,6 +20,7 @@
 #include "components/optimization_guide/core/model_quality/model_quality_log_entry.h"
 #include "components/optimization_guide/core/model_util.h"
 #include "components/optimization_guide/core/optimization_guide_constants.h"
+#include "components/optimization_guide/core/optimization_guide_enums.h"
 #include "components/optimization_guide/core/optimization_guide_logger.h"
 #include "components/optimization_guide/core/optimization_guide_model_executor.h"
 #include "components/optimization_guide/core/optimization_guide_model_provider.h"
@@ -238,6 +239,15 @@ void ModelExecutionManager::ExecuteModel(
       base::BindOnce(&ModelExecutionManager::OnModelExecuteResponse,
                      weak_ptr_factory_.GetWeakPtr(), feature,
                      std::move(log_ai_data_request), std::move(callback)));
+}
+
+bool ModelExecutionManager::CanCreateOnDeviceSession(
+    ModelBasedCapabilityKey feature) {
+  if (!on_device_model_service_controller_) {
+    return false;
+  }
+  return on_device_model_service_controller_->CanCreateSession(feature) ==
+         OnDeviceModelEligibilityReason::kSuccess;
 }
 
 std::unique_ptr<OptimizationGuideModelExecutor::Session>

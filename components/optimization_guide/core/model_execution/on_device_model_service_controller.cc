@@ -36,28 +36,6 @@ namespace optimization_guide {
 
 namespace {
 
-class ScopedEligibilityReasonLogger {
- public:
-  explicit ScopedEligibilityReasonLogger(ModelBasedCapabilityKey feature)
-      : feature_(feature) {}
-  ~ScopedEligibilityReasonLogger() {
-    CHECK_NE(reason_, OnDeviceModelEligibilityReason::kUnknown);
-    base::UmaHistogramEnumeration(
-        base::StrCat(
-            {"OptimizationGuide.ModelExecution.OnDeviceModelEligibilityReason.",
-             GetStringNameForModelExecutionFeature(feature_)}),
-        reason_);
-  }
-
-  void set_reason(OnDeviceModelEligibilityReason reason) { reason_ = reason; }
-
- private:
-  ModelBasedCapabilityKey feature_;
-
-  OnDeviceModelEligibilityReason reason_ =
-      OnDeviceModelEligibilityReason::kUnknown;
-};
-
 OnDeviceModelLoadResult ConvertToOnDeviceModelLoadResult(
     on_device_model::mojom::LoadModelResult result) {
   switch (result) {
@@ -102,6 +80,53 @@ void OnDeviceModelServiceController::Init() {
       on_device_component_state_manager_);
 }
 
+OnDeviceModelEligibilityReason OnDeviceModelServiceController::CanCreateSession(
+    ModelBasedCapabilityKey feature) {
+  if (!base::FeatureList::IsEnabled(
+          features::kOptimizationGuideOnDeviceModel)) {
+    return OnDeviceModelEligibilityReason::kFeatureNotEnabled;
+  }
+
+  if (!model_metadata_) {
+    return OnDeviceModelEligibilityReason::kModelNotAvailable;
+  }
+
+  // Check safety info.
+  if (features::GetOnDeviceModelMustUseSafetyModel()) {
+    if (!safety_model_info_) {
+      return OnDeviceModelEligibilityReason::kSafetyModelNotAvailable;
+    }
+
+    std::optional<proto::FeatureTextSafetyConfiguration> safety_config =
+        safety_model_info_->GetConfig(ToModelExecutionFeatureProto(feature));
+    if (!safety_config) {
+      return OnDeviceModelEligibilityReason::
+          kSafetyConfigNotAvailableForFeature;
+    }
+
+    if (!safety_config->allowed_languages().empty() &&
+        !language_detection_model_path_) {
+      return OnDeviceModelEligibilityReason::
+          kLanguageDetectionModelNotAvailable;
+    }
+  }
+
+  // Check feature config.
+  scoped_refptr<const OnDeviceModelFeatureAdapter> adapter =
+      model_metadata_->GetAdapter(ToModelExecutionFeatureProto(feature));
+  if (!adapter) {
+    return OnDeviceModelEligibilityReason::kConfigNotAvailableForFeature;
+  }
+
+  if (feature == ModelBasedCapabilityKey::kCompose &&
+      !base::FeatureList::IsEnabled(
+          features::kOptimizationGuideComposeOnDeviceEval)) {
+    return OnDeviceModelEligibilityReason::kFeatureExecutionNotEnabled;
+  }
+
+  return access_controller_->ShouldStartNewSession();
+}
+
 std::unique_ptr<OptimizationGuideModelExecutor::Session>
 OnDeviceModelServiceController::CreateSession(
     ModelBasedCapabilityKey feature,
@@ -113,75 +138,50 @@ OnDeviceModelServiceController::CreateSession(
   if (on_device_component_state_manager_) {
     on_device_component_state_manager_->OnDeviceEligibleFeatureUsed();
   }
-  ScopedEligibilityReasonLogger logger(feature);
-  if (!base::FeatureList::IsEnabled(
-          features::kOptimizationGuideOnDeviceModel)) {
-    logger.set_reason(OnDeviceModelEligibilityReason::kFeatureNotEnabled);
-    return nullptr;
-  }
-  if (!model_metadata_) {
-    logger.set_reason(OnDeviceModelEligibilityReason::kModelNotAvailable);
+
+  OnDeviceModelEligibilityReason reason = CanCreateSession(feature);
+  CHECK_NE(reason, OnDeviceModelEligibilityReason::kUnknown);
+  base::UmaHistogramEnumeration(
+      base::StrCat(
+          {"OptimizationGuide.ModelExecution.OnDeviceModelEligibilityReason.",
+           GetStringNameForModelExecutionFeature(feature)}),
+      reason);
+  if (reason != OnDeviceModelEligibilityReason::kSuccess) {
     return nullptr;
   }
 
+  CHECK(model_metadata_);
   on_device_model::ModelAssetPaths model_paths;
   model_paths.sp_model = model_metadata_->model_path().Append(kSpModelFile);
   model_paths.model = model_metadata_->model_path().Append(kModelFile);
   model_paths.weights = model_metadata_->model_path().Append(kWeightsFile);
 
   std::optional<proto::FeatureTextSafetyConfiguration> safety_config;
-  if (!safety_model_info_ && features::GetOnDeviceModelMustUseSafetyModel()) {
-    logger.set_reason(OnDeviceModelEligibilityReason::kSafetyModelNotAvailable);
-    return nullptr;
-  }
   if (safety_model_info_) {
     safety_config =
         safety_model_info_->GetConfig(ToModelExecutionFeatureProto(feature));
-    if (!safety_config && features::GetOnDeviceModelMustUseSafetyModel()) {
-      logger.set_reason(
-          OnDeviceModelEligibilityReason::kSafetyConfigNotAvailableForFeature);
-      return nullptr;
-    }
 
     if (safety_config) {
       model_paths.ts_data = safety_model_info_->GetDataPath();
       model_paths.ts_sp_model = safety_model_info_->GetSpModelPath();
 
-      if (!safety_config->allowed_languages().empty()) {
-        if (language_detection_model_path_) {
-          model_paths.language_detection_model =
-              *language_detection_model_path_;
-        } else if (features::GetOnDeviceModelMustUseSafetyModel()) {
-          logger.set_reason(OnDeviceModelEligibilityReason::
-                                kLanguageDetectionModelNotAvailable);
-          return nullptr;
-        }
+      if (!safety_config->allowed_languages().empty() &&
+          language_detection_model_path_) {
+        model_paths.language_detection_model = *language_detection_model_path_;
       }
+    }
+  }
+  if (features::GetOnDeviceModelMustUseSafetyModel()) {
+    CHECK(safety_config);
+    CHECK(!model_paths.ts_data.empty() && !model_paths.ts_sp_model.empty());
+    if (!safety_config->allowed_languages().empty()) {
+      CHECK(!model_paths.language_detection_model.empty());
     }
   }
 
   scoped_refptr<const OnDeviceModelFeatureAdapter> adapter =
       model_metadata_->GetAdapter(ToModelExecutionFeatureProto(feature));
-  if (!adapter) {
-    logger.set_reason(
-        OnDeviceModelEligibilityReason::kConfigNotAvailableForFeature);
-    return nullptr;
-  }
-
-  if (feature == ModelBasedCapabilityKey::kCompose &&
-      !base::FeatureList::IsEnabled(
-          features::kOptimizationGuideComposeOnDeviceEval)) {
-    logger.set_reason(
-        OnDeviceModelEligibilityReason::kFeatureExecutionNotEnabled);
-    return nullptr;
-  }
-  OnDeviceModelEligibilityReason reason =
-      access_controller_->ShouldStartNewSession();
-  logger.set_reason(reason);
-  if (reason != OnDeviceModelEligibilityReason::kSuccess) {
-    return nullptr;
-  }
-  CHECK_EQ(reason, OnDeviceModelEligibilityReason::kSuccess);
+  CHECK(adapter);
 
   SessionImpl::OnDeviceOptions opts;
   opts.model_client = std::make_unique<OnDeviceModelClient>(
