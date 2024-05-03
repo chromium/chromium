@@ -51,7 +51,9 @@ class AccessCodeCastDialogBrowserTest : public DialogBrowserTest {
   base::test::ScopedFeatureList feature_list_;
 };
 
-IN_PROC_BROWSER_TEST_F(AccessCodeCastDialogBrowserTest, InvokeUi_default) {
+// TODO(b/40261456): Test is consistently failing.
+IN_PROC_BROWSER_TEST_F(AccessCodeCastDialogBrowserTest,
+                       DISABLED_InvokeUi_default) {
   ShowAndVerifyUi();
 }
 
