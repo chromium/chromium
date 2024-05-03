@@ -927,6 +927,17 @@ void View::Layout(PassKey) {
   }
 }
 
+void View::SetLayoutManagerUseConstrainedSpace(
+    bool layout_manager_use_constrained_space) {
+  if (layout_manager_use_constrained_space ==
+      layout_manager_use_constrained_space_) {
+    return;
+  }
+
+  layout_manager_use_constrained_space_ = layout_manager_use_constrained_space;
+  InvalidateLayout();
+}
+
 void View::InvalidateLayout() {
   if (invalidating_) {
     return;
@@ -2331,15 +2342,13 @@ bool View::HasObserver(const ViewObserver* observer) const {
 
 // Size and disposition --------------------------------------------------------
 
-gfx::Size View::CalculatePreferredSize() const {
+gfx::Size View::CalculatePreferredSize(const SizeBounds& available_size) const {
   if (HasLayoutManager()) {
-    return GetLayoutManager()->GetPreferredSize(this);
+    return GetLayoutManager()->GetPreferredSize(
+        this,
+        layout_manager_use_constrained_space_ ? available_size : SizeBounds());
   }
   return gfx::Size();
-}
-
-gfx::Size View::CalculatePreferredSize(const SizeBounds& available_size) const {
-  return CalculatePreferredSize();
 }
 
 void View::PreferredSizeChanged() {

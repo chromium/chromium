@@ -818,6 +818,14 @@ class VIEWS_EXPORT View : public ui::LayerDelegate,
   // do not change.
   void InvalidateLayout();
 
+  // Sets whether or not the layout manager need to respect the available space.
+  //
+  // TODO(crbug.com/40232718): All layout management needs to respect the
+  // available space. But there are some problems with `FlexLayout`. After we
+  // fix the problem with FlexLayout. Remove this.
+  void SetLayoutManagerUseConstrainedSpace(
+      bool layout_manager_use_constrained_space);
+
   // TODO(kylixrd): Update comment once UseDefaultFillLayout is true by default.
   // UseDefaultFillLayout will be set to true by default once the codebase is
   // audited and refactored.
@@ -1682,14 +1690,6 @@ class VIEWS_EXPORT View : public ui::LayerDelegate,
 
   // Size and disposition ------------------------------------------------------
 
-  // Calculates the natural size for the View, to be taken into consideration
-  // when the parent is performing layout.
-  // `preferred_size_` will take precedence over CalculatePreferredSize() if
-  // it exists.
-  // TODO(crbug.com/40232718): Don't use this. Use the size-constrained
-  //                          CalculatePreferredSize(const SizeBounds&) instead.
-  virtual gfx::Size CalculatePreferredSize() const;
-
   // Calculates the preferred size for the View given `available_size`.
   // `preferred_size_` will take precedence over CalculatePreferredSize() if
   // it exists.
@@ -2323,6 +2323,20 @@ class VIEWS_EXPORT View : public ui::LayerDelegate,
   // Whether the view needs to be laid out.
   bool needs_layout_ = true;
 
+  // Whether Layout() access is currently legal. This is used to prevent calls
+  // to LayoutSuperclass() outside the implementation of Layout().
+  bool layout_allowed_ = false;
+
+  // Whether this view is in the middle of InvalidateLayout().
+  bool invalidating_ = false;
+
+  // Whether the layout manager requires constrained space.
+  //
+  // TODO(crbug.com/40232718): All layout management needs to respect the
+  // available space. But there are some problems with `FlexLayout`. After we
+  // fix the problem with FlexLayout. Remove this.
+  bool layout_manager_use_constrained_space_ = false;
+
   // Used to generate an UMA metric for the maximum reentrant call depth seen
   // during layout. Normally the metric value will be one (Layout() was not
   // reentered). But, we know Layout() is reentered at least sometimes and
@@ -2334,10 +2348,6 @@ class VIEWS_EXPORT View : public ui::LayerDelegate,
   // max_layout_call_depth_, above).
   int current_layout_call_depth_ = 0;
 
-  // Whether Layout() access is currently legal. This is used to prevent calls
-  // to LayoutSuperclass() outside the implementation of Layout().
-  bool layout_allowed_ = false;
-
   // How many times this view has done layout since the last time it was
   // painted. This is used to compute metrics around unnecessary layout calls.
   int layouts_since_last_paint_ = 0;
@@ -2346,9 +2356,6 @@ class VIEWS_EXPORT View : public ui::LayerDelegate,
   // This should never be necessary, but we don't yet know how often
   // it is happening.
   int invalidates_during_layout_ = 0;
-
-  // Whether this view is in the middle of InvalidateLayout().
-  bool invalidating_ = false;
 
   // The View's LayoutManager defines the sizing heuristics applied to child
   // Views. The default is absolute positioning according to bounds_.
