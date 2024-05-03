@@ -113,7 +113,9 @@ void ClientGpuMemoryBufferManager::DeletedGpuMemoryBuffer(
                        base::Unretained(this), id));
     return;
   }
-  gpu_direct_->DestroyGpuMemoryBuffer(id);
+  if (gpu_direct_) {
+    gpu_direct_->DestroyGpuMemoryBuffer(id);
+  }
 }
 
 std::unique_ptr<gfx::GpuMemoryBuffer>
@@ -173,9 +175,11 @@ void ClientGpuMemoryBufferManager::CopyGpuMemoryBufferAsync(
     return;
   }
 
+  if (gpu_direct_) {
     gpu_direct_->CopyGpuMemoryBuffer(std::move(buffer_handle),
                                      std::move(memory_region),
                                      std::move(callback));
+  }
 }
 
 bool ClientGpuMemoryBufferManager::CopyGpuMemoryBufferSync(
