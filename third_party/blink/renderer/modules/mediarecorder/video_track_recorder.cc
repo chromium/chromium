@@ -518,6 +518,8 @@ void VideoTrackRecorderImpl::Encoder::StartFrameEncode(
   awaiting_first_frame_ = false;
 
   if (num_frames_in_encode_->count() > kMaxNumberOfFramesInEncode) {
+    LOCAL_HISTOGRAM_BOOLEAN("Media.MediaRecorder.DroppingFrameTooManyInEncode",
+                            true);
     DLOG(WARNING) << "Too many frames are queued up. Dropping this one.";
     return;
   }
