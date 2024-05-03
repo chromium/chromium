@@ -14,6 +14,7 @@
 #include "base/memory/weak_ptr.h"
 #include "base/time/time.h"
 #include "chromeos/dbus/power/power_manager_client.h"
+#include "components/prefs/pref_registry_simple.h"
 
 class AccountId;
 class PrefService;
@@ -46,6 +47,9 @@ class ASH_EXPORT BrightnessControllerChromeos
       delete;
 
   ~BrightnessControllerChromeos() override;
+
+  // Registers user profile prefs with the specified registry.
+  static void RegisterProfilePrefs(PrefRegistrySimple* registry);
 
   // Overridden from ash::BrightnessControlDelegate:
   void HandleBrightnessDown() override;

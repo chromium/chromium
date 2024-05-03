@@ -20,6 +20,7 @@
 #include "base/time/time.h"
 #include "chromeos/dbus/power/power_manager_client.h"
 #include "chromeos/dbus/power_manager/backlight.pb.h"
+#include "components/pref_registry/pref_registry_syncable.h"
 #include "components/prefs/pref_service.h"
 #include "components/session_manager/session_manager_types.h"
 #include "components/user_manager/known_user.h"
@@ -103,6 +104,15 @@ BrightnessControllerChromeos::~BrightnessControllerChromeos() {
   if (data_dispatcher) {
     data_dispatcher->RemoveObserver(this);
   }
+}
+
+// static
+void BrightnessControllerChromeos::RegisterProfilePrefs(
+    PrefRegistrySimple* registry) {
+  registry->RegisterBooleanPref(
+      prefs::kDisplayAmbientLightSensorLastEnabled,
+      /*default_value=*/true,
+      user_prefs::PrefRegistrySyncable::SYNCABLE_OS_PREF);
 }
 
 void BrightnessControllerChromeos::HandleBrightnessDown() {
@@ -240,6 +250,12 @@ void BrightnessControllerChromeos::AmbientLightSensorEnabledChanged(
   known_user.SetPath(active_account_id_.value(),
                      prefs::kDisplayAmbientLightSensorEnabled,
                      std::make_optional<base::Value>(change.sensor_enabled()));
+
+  PrefService* primary_user_prefs = session_controller_->GetActivePrefService();
+  if (primary_user_prefs) {
+    primary_user_prefs->SetBoolean(prefs::kDisplayAmbientLightSensorLastEnabled,
+                                   change.sensor_enabled());
+  }
 }
 
 void BrightnessControllerChromeos::RecordHistogramForBrightnessAction(

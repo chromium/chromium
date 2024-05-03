@@ -716,34 +716,46 @@ TEST_F(BrightnessControllerChromeosTest, AmbientLightSensorEnabledPref) {
 
   user_manager::KnownUser known_user(local_state());
 
-  // There should not be a pref set initially because a user account wasn't
-  // focused at the time of the change.
+  // There should not be a KnownUser pref set initially because a user account
+  // wasn't focused at the time of the change.
   EXPECT_FALSE(
       HasDisplayAmbientLightSensorEnabledPrefValue(known_user, account_id));
+  // However, the synced profile pref value should default to true.
+  EXPECT_TRUE(
+      Shell::Get()->session_controller()->GetActivePrefService()->GetBoolean(
+          prefs::kDisplayAmbientLightSensorLastEnabled));
 
   // Disable the ambient light sensor.
   power_manager_client()->SetAmbientLightSensorEnabled(false);
   // Wait for AmbientLightSensorEnabledChange observer to be notified.
   run_loop_.RunUntilIdle();
 
-  // After the ambient light sensor status is disabled, the pref should be
-  // stored with the correct value.
+  // After the ambient light sensor status is disabled, the KnownUser pref
+  // should be stored with the correct value.
   EXPECT_TRUE(
       HasDisplayAmbientLightSensorEnabledPrefValue(known_user, account_id));
   EXPECT_FALSE(
       GetDisplayAmbientLightSensorEnabledPrefValue(known_user, account_id));
+  // The synced profile pref should also have the correct value.
+  EXPECT_FALSE(
+      Shell::Get()->session_controller()->GetActivePrefService()->GetBoolean(
+          prefs::kDisplayAmbientLightSensorLastEnabled));
 
   // Re-enable the ambient light sensor.
   power_manager_client()->SetAmbientLightSensorEnabled(true);
   // Wait for AmbientLightSensorEnabledChange observer to be notified.
   run_loop_.RunUntilIdle();
 
-  // After the ambient light sensor status is re-enabled, the pref should be
-  // stored with the correct value.
+  // After the ambient light sensor status is re-enabled, the KnownUser pref
+  // should be stored with the correct value.
   EXPECT_TRUE(
       HasDisplayAmbientLightSensorEnabledPrefValue(known_user, account_id));
   EXPECT_TRUE(
       GetDisplayAmbientLightSensorEnabledPrefValue(known_user, account_id));
+  // The synced profile pref should also have the correct value.
+  EXPECT_TRUE(
+      Shell::Get()->session_controller()->GetActivePrefService()->GetBoolean(
+          prefs::kDisplayAmbientLightSensorLastEnabled));
 }
 
 class BrightnessControllerChromeosTest_NonApplicableSessionStates
