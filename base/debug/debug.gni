@@ -3,6 +3,7 @@
 # found in the LICENSE file.
 
 import("//build/config/compiler/compiler.gni")
+import("//build/config/compiler/pgo/pgo.gni")
 
 declare_args() {
   # Whether to compile support for Allocation Stack Trace Recorder.
@@ -14,8 +15,12 @@ declare_args() {
   #
   # Although it should work on other platforms as well, for the above reasons,
   # we currently enable it only for Android when compiling for Arm64.
+  #
+  # To prepare for usage in official builds, ensure profiling data for the
+  # recorder is present during the optimization.
   build_allocation_stack_trace_recorder =
-      !is_official_build && current_cpu == "arm64" && is_android
+      (!is_official_build || chrome_pgo_phase == 1) && current_cpu == "arm64" &&
+      is_android
 }
 
 declare_args() {
