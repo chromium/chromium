@@ -25,7 +25,7 @@ class MockAutofillOptimizationGuide : public AutofillOptimizationGuide {
               (override));
   MOCK_METHOD(CreditCardCategoryBenefit::BenefitCategory,
               AttemptToGetEligibleCreditCardBenefitCategory,
-              (std::string_view issuer_id, const url::Origin& origin),
+              (std::string_view issuer_id, const GURL& url),
               (const override));
   MOCK_METHOD(bool,
               ShouldBlockSingleFieldSuggestions,

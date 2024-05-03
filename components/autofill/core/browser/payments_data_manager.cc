@@ -575,7 +575,7 @@ PaymentsDataManager::GetApplicableBenefitDescriptionForCardAndOrigin(
   if (optimization_guide) {
     CreditCardCategoryBenefit::BenefitCategory category_benefit_type =
         optimization_guide->AttemptToGetEligibleCreditCardBenefitCategory(
-            credit_card.issuer_id(), origin);
+            credit_card.issuer_id(), origin.GetURL());
     if (category_benefit_type !=
         CreditCardCategoryBenefit::BenefitCategory::kUnknownBenefitCategory) {
       std::optional<CreditCardCategoryBenefit> category_benefit =

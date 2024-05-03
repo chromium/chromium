@@ -44,13 +44,12 @@ class AutofillOptimizationGuide : public KeyedService {
   virtual void OnDidParseForm(const FormStructure& form_structure,
                               const PersonalDataManager* personal_data_manager);
 
-  // Checks if the URL `origin` has an applicable category benefit for the
-  // credit card issuer `issuer_id`. If an optimization is found, returns the
-  // applicable category benefit.
+  // Checks if the `url` has an applicable category benefit for the credit card
+  // issuer `issuer_id`. If an optimization is found, returns the applicable
+  // category benefit.
   virtual CreditCardCategoryBenefit::BenefitCategory
-  AttemptToGetEligibleCreditCardBenefitCategory(
-      std::string_view issuer_id,
-      const url::Origin& origin) const;
+  AttemptToGetEligibleCreditCardBenefitCategory(std::string_view issuer_id,
+                                                const GURL& url) const;
 
   // Returns whether the URL origin contained in `url` is blocked from
   // displaying suggestions for `field` by querying the optimization guide

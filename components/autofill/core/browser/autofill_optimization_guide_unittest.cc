@@ -575,14 +575,13 @@ class BenefitOptimizationToBenefitCategoryTest
 };
 
 // Tests that the correct benefit category is returned when a benefit
-// optimization is found for a particular credit card issuer and webpage origin.
+// optimization is found for a particular credit card issuer and url.
 TEST_P(BenefitOptimizationToBenefitCategoryTest,
        GetBenefitCategoryForOptimizationType) {
-  url::Origin origin = url::Origin::Create(GURL("https://example.com/"));
+  GURL url = GURL("https://example.com/");
   ON_CALL(*decider_,
           CanApplyOptimization(
-              testing::Eq(origin.GetURL()),
-              testing::Eq(expected_benefit_optimization()),
+              testing::Eq(url), testing::Eq(expected_benefit_optimization()),
               testing::Matcher<optimization_guide::OptimizationMetadata*>(
                   testing::Eq(nullptr))))
       .WillByDefault(testing::Return(
@@ -590,7 +589,7 @@ TEST_P(BenefitOptimizationToBenefitCategoryTest,
 
   EXPECT_EQ(autofill_optimization_guide_
                 ->AttemptToGetEligibleCreditCardBenefitCategory(
-                    credit_card().issuer_id(), origin),
+                    credit_card().issuer_id(), url),
             expected_benefit_category());
 }
 

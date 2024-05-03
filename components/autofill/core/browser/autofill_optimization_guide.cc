@@ -176,7 +176,7 @@ void AutofillOptimizationGuide::OnDidParseForm(
 CreditCardCategoryBenefit::BenefitCategory
 AutofillOptimizationGuide::AttemptToGetEligibleCreditCardBenefitCategory(
     std::string_view issuer_id,
-    const url::Origin& origin) const {
+    const GURL& url) const {
   std::vector<optimization_guide::proto::OptimizationType>
       issuer_optimization_types;
   if (issuer_id == kAmexCardIssuerId) {
@@ -200,7 +200,7 @@ AutofillOptimizationGuide::AttemptToGetEligibleCreditCardBenefitCategory(
 
   for (auto& optimization_type : issuer_optimization_types) {
     optimization_guide::OptimizationGuideDecision decision =
-        decider_->CanApplyOptimization(origin.GetURL(), optimization_type,
+        decider_->CanApplyOptimization(url, optimization_type,
                                        /*optimization_metadata=*/nullptr);
     if (decision == optimization_guide::OptimizationGuideDecision::kTrue) {
       // Webpage is eligible for category benefit `optimization_type`. Early
@@ -209,7 +209,7 @@ AutofillOptimizationGuide::AttemptToGetEligibleCreditCardBenefitCategory(
       return GetBenefitCategoryForOptimizationType(optimization_type);
     }
   }
-  // No applicable category benefit for the 'issuer_id' on `origin` webpage.
+  // No applicable category benefit for the 'issuer_id' on the 'url'.
   return CreditCardCategoryBenefit::BenefitCategory::kUnknownBenefitCategory;
 }
 
