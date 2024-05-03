@@ -43,9 +43,9 @@ class RealtimeAudioDestinationHandler final
   void Initialize() override;
   void Uninitialize() override;
   void SetChannelCount(unsigned, ExceptionState&) override;
-  double LatencyTime() const override { return 0; }
+  bool RequiresTailProcessing() const override { return false; }
   double TailTime() const override { return 0; }
-  bool RequiresTailProcessing() const final { return false; }
+  double LatencyTime() const override { return 0; }
 
   // For AudioDestinationHandler.
   void StartRendering() override;
@@ -53,9 +53,9 @@ class RealtimeAudioDestinationHandler final
   void Pause() override;
   void Resume() override;
   void RestartRendering() override;
-  uint32_t MaxChannelCount() const override;
-  double SampleRate() const override;
   void PrepareTaskRunnerForWorklet() override;
+  double SampleRate() const override;
+  uint32_t MaxChannelCount() const override;
 
   // For AudioIOCallback. This is invoked by the platform audio destination to
   // get the next render quantum into `destination_bus` and update
@@ -63,12 +63,12 @@ class RealtimeAudioDestinationHandler final
   void Render(AudioBus* destination_bus,
               uint32_t number_of_frames,
               const AudioIOPosition& output_position,
-              const AudioCallbackMetric& metric) final;
+              const AudioCallbackMetric& metric) override;
 
-  // For `AudioIOCallback`. This is invoked by the `AudioDestination` to notify
+  // For AudioIOCallback. This is invoked by the `AudioDestination` to notify
   // when an error has occurred in the lower layer in the stack. It may be
   // called from either the main thread or non-main threads.
-  void OnRenderError() final;
+  void OnRenderError() override;
 
   // Returns a hardware callback buffer size from audio infra.
   uint32_t GetCallbackBufferSize() const;
@@ -82,9 +82,6 @@ class RealtimeAudioDestinationHandler final
     return allow_pulling_audio_graph_.load(std::memory_order_acquire);
   }
 
-  // Sets the detect silence flag for the platform destination.
-  void SetDetectSilence(bool detect_silence);
-
   // Sets the identifier for a new output device. Note that this will recreate
   // a new platform destination with the specified sink device. It also invokes
   // `callback` when the recreation is completed.
@@ -96,6 +93,9 @@ class RealtimeAudioDestinationHandler final
                                            const WebAudioSinkDescriptor&,
                                            const WebAudioLatencyHint&,
                                            std::optional<float> sample_rate);
+
+  // Sets the detect silence flag for the platform destination.
+  void SetDetectSilence(bool detect_silence);
 
   void CreatePlatformDestination();
   void StartPlatformDestination();

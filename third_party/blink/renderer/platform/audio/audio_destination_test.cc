@@ -140,8 +140,8 @@ class AudioDestinationTest
     }
     const int expected_frames_processed =
         std::ceil(exact_frames_required /
-                  static_cast<double>(destination->RenderQuantumFrames())) *
-        destination->RenderQuantumFrames();
+                  static_cast<double>(render_quantum_frames)) *
+        render_quantum_frames;
 
     // TODO(crbug.com/329876634): Replace it so that it tests the path passing
     // through the bad device_params (`if (!device_params.IsValid())`) in the

@@ -134,12 +134,10 @@ class PLATFORM_EXPORT AudioDestination final
   base::TimeDelta GetPlatformBufferDuration() const;
 
   // The maximum channel count of the current audio sink device.
-  uint32_t MaxChannelCount();
+  uint32_t MaxChannelCount() const;
 
   // Sets the detect silence flag for `web_audio_device_`.
   void SetDetectSilence(bool detect_silence);
-
-  unsigned RenderQuantumFrames() const;
 
   // Creates a new sink and return its device status. If the status is OK,
   // replace the existing sink with the new one. This function is called in

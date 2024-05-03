@@ -324,7 +324,6 @@ double AudioDestination::SampleRate() const {
 }
 
 uint32_t AudioDestination::CallbackBufferSize() const {
-  DCHECK(IsMainThread());
   return callback_buffer_size_;
 }
 
@@ -339,7 +338,7 @@ base::TimeDelta AudioDestination::GetPlatformBufferDuration() const {
                                        web_audio_device_->SampleRate());
 }
 
-uint32_t AudioDestination::MaxChannelCount() {
+uint32_t AudioDestination::MaxChannelCount() const {
   return web_audio_device_->MaxChannelCount();
 }
 
@@ -351,10 +350,6 @@ void AudioDestination::SetDetectSilence(bool detect_silence) {
       String::Format("%s({detect_silence=%d})", __func__, detect_silence));
 
   web_audio_device_->SetDetectSilence(detect_silence);
-}
-
-unsigned AudioDestination::RenderQuantumFrames() const {
-  return render_quantum_frames_;
 }
 
 AudioDestination::AudioDestination(
@@ -531,12 +526,12 @@ void AudioDestination::RequestRender(
   const base::TimeTicks callback_request = base::TimeTicks::Now();
 
   for (size_t pushed_frames = 0; pushed_frames < frames_to_render;
-       pushed_frames += RenderQuantumFrames()) {
+       pushed_frames += render_quantum_frames_) {
     // If platform buffer is more than two times longer than
     // `RenderQuantumFrames` we do not want output position to get stuck so we
     // promote it using the elapsed time from the moment it was initially
     // obtained.
-    if (callback_buffer_size_ > RenderQuantumFrames() * 2) {
+    if (callback_buffer_size_ > render_quantum_frames_ * 2) {
       const double delta =
           (base::TimeTicks::Now() - callback_request).InSecondsF();
       output_position_.position += delta;
@@ -550,10 +545,11 @@ void AudioDestination::RequestRender(
     }
 
     if (resampler_) {
-      resampler_->ResampleInternal(RenderQuantumFrames(), resampler_bus_.get());
+      resampler_->ResampleInternal(render_quantum_frames_,
+                                   resampler_bus_.get());
     } else {
       // Process WebAudio graph and push the rendered output to FIFO.
-      callback_->Render(render_bus_.get(), RenderQuantumFrames(),
+      callback_->Render(render_bus_.get(), render_quantum_frames_,
                         output_position_, metric_reporter_.GetMetric());
     }
 
@@ -567,7 +563,7 @@ void AudioDestination::RequestRender(
 
 void AudioDestination::ProvideResamplerInput(int resampler_frame_delay,
                                              AudioBus* dest) {
-  callback_->Render(dest, RenderQuantumFrames(), output_position_,
+  callback_->Render(dest, render_quantum_frames_, output_position_,
                     metric_reporter_.GetMetric());
 }
 
