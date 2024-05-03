@@ -41,10 +41,12 @@ struct MEDIA_EXPORT AudioDeviceDescription {
   // Only supported on ChromeOS.
   static const char kLoopbackWithoutChromeId[];
 
-  // Returns true if |device_id| represents the default device.
+  // TODO(b/338470954): Rename to IsVirtualDefaultDevice(...)
+  // Returns true if |device_id| represents the virtual default device.
   static bool IsDefaultDevice(const std::string& device_id);
 
-  // Returns true if |device_id| represents the communications device.
+  // TODO(b/338470954): Rename to IsVirtualCommunicationsDevice(...)
+  // Returns true if |device_id| represents the virtual communications device.
   static bool IsCommunicationsDevice(const std::string& device_id);
 
   // Returns true if |device_id| represents a loopback audio capture device.
@@ -91,7 +93,8 @@ struct MEDIA_EXPORT AudioDeviceDescription {
   AudioDeviceDescription(std::string device_name,
                          std::string unique_id,
                          std::string group_id,
-                         bool is_system_default = false);
+                         bool is_system_default = false,
+                         bool is_communications_device = false);
 
   ~AudioDeviceDescription();
 
@@ -102,6 +105,9 @@ struct MEDIA_EXPORT AudioDeviceDescription {
   std::string group_id;            // Group identifier.
   bool is_system_default = false;  // True if the device represented by this
                                    // description is the system default.
+  bool is_communications_device =  // True if the device represented by this
+      false;                       // description is a communications device
+                                   // (only relevant on Windows).
 };
 
 typedef std::vector<AudioDeviceDescription> AudioDeviceDescriptions;

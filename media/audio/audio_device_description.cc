@@ -150,11 +150,13 @@ AudioDeviceDescription& AudioDeviceDescription::operator=(
 AudioDeviceDescription::AudioDeviceDescription(std::string device_name,
                                                std::string unique_id,
                                                std::string group_id,
-                                               bool is_system_default)
+                                               bool is_system_default,
+                                               bool is_communications_device)
     : device_name(device_name),
       unique_id(unique_id),
       group_id(group_id),
-      is_system_default(is_system_default) {}
+      is_system_default(is_system_default),
+      is_communications_device(is_communications_device) {}
 
 bool AudioDeviceDescription::operator==(
     const AudioDeviceDescription& other) const {
