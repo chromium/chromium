@@ -430,13 +430,6 @@ std::optional<webapps::AppId> WebAppRegistrar::FindAppWithUrlInScope(
       best_app_is_shortcut = app_is_shortcut;
     }
   }
-#if BUILDFLAG(IS_CHROMEOS)
-  // With project shortstand, shortcuts are no longer considered apps,
-  // so we should ignore results within the scope of shortcuts.
-  if (chromeos::features::IsCrosShortstandEnabled() && best_app_is_shortcut) {
-    return std::nullopt;
-  }
-#endif  // BUILDFLAG(IS_CHROMEOS)
   return best_app_id;
 }
 
@@ -548,11 +541,7 @@ bool WebAppRegistrar::IsShortcutApp(const webapps::AppId& app_id) const {
   }
   // TODO(crbug.com/40277513): Record shortcut distinction explicitly instead of
   // using scope.
-#if BUILDFLAG(IS_CHROMEOS)
-  return IsShortcutAppChromeOs(app_id);
-#else
   return !GetAppScopeInternal(app_id).has_value();
-#endif  // BUILDFLAG(IS_CHROMEOS)
 }
 
 bool WebAppRegistrar::IsSystemApp(const webapps::AppId& app_id) const {
@@ -1749,66 +1738,6 @@ std::vector<webapps::AppId> WebAppRegistrar::GetAppIdsForAppSet(
 
   return app_ids;
 }
-
-#if BUILDFLAG(IS_CHROMEOS)
-bool WebAppRegistrar::IsShortcutAppChromeOs(
-    const webapps::AppId& app_id) const {
-  const WebApp* web_app = GetAppById(app_id);
-  if (!web_app) {
-    return false;
-  }
-
-  // See go/shortstand-prd#bookmark=id.mbe9ojau9umf for detail.
-  if (!chromeos::features::IsCrosShortstandEnabled()) {
-    return !GetAppScopeInternal(app_id).has_value();
-  }
-
-  // Avoid opening Workspace apps in standalone windows if they are set to open
-  // in browser.
-  // TODO(b/312854225): Remove this special case once Workspace makes use of
-  // tabbed web app display mode.
-  if (web_app->app_id() == kGoogleDocsAppId ||
-      web_app->app_id() == kGoogleSheetsAppId ||
-      web_app->app_id() == kGoogleSlidesAppId) {
-    return web_app->user_display_mode() == mojom::UserDisplayMode::kBrowser;
-  }
-
-  // For policy installed apps/shortcuts, it is a shortcut if admin set to open
-  // in browser or install_as_shortcut is set to true.
-  if (web_app->IsPolicyInstalledApp()) {
-    // TODO(b/304660867): Check the required field for policy installed apps.
-    return !GetAppScopeInternal(app_id).has_value();
-  }
-
-  // System web apps should always be considered as apps.
-  if (web_app->IsSystemApp()) {
-    return false;
-  }
-
-  // For web apps installed from Chrome Browser and play store by the user,
-  // everything is considered as app instead of shortcut.
-  if (web_app->WasInstalledByUser() &&
-      GetAppScopeInternal(app_id).has_value()) {
-    return false;
-  }
-
-  // Any default installed apps are considered as apps not shortcut.
-  if (web_app->GetSources().Has(WebAppManagement::kDefault) ||
-      web_app->GetSources().Has(WebAppManagement::kOem) ||
-      web_app->GetSources().Has(WebAppManagement::kApsDefault)) {
-    return false;
-  }
-
-  // For user created shortcuts via Chrome, we considered whether it is shortcut
-  // based on the display mode setting. If will be considered as shortcut only
-  // when it is set to open in the browser tab.
-  if (web_app->WasInstalledByUser() &&
-      !GetAppScopeInternal(app_id).has_value()) {
-    return web_app->user_display_mode() == mojom::UserDisplayMode::kBrowser;
-  }
-  return false;
-}
-#endif  // BUILDFLAG(IS_CHROMEOS)
 
 int WebAppRegistrar::CountUserInstalledNotLocallyInstalledApps() const {
   int num_non_locally_installed = 0;

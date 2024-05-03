@@ -625,14 +625,6 @@ class WebAppRegistrar : public ProfileManagerObserver {
   bool ShouldCaptureLinksConsiderOverlappingScopes(
       const webapps::AppId& app_id);
 
-#if BUILDFLAG(IS_CHROMEOS)
-  // Returns if a given app_id is considered as a shortcut in Chrome OS
-  // platform. In Chrome OS, we treated more web apps as app and force them to
-  // be opened in standalone windows, and the checking criteria is more
-  // complicated and documented in go/shortstand-prd#bookmark=id.mbe9ojau9umf.
-  bool IsShortcutAppChromeOs(const webapps::AppId& app_id) const;
-#endif
-
   // Count a number of all apps which are installed by the user but not locally
   // installed (aka installed via sync).
   int CountUserInstalledNotLocallyInstalledApps() const;
