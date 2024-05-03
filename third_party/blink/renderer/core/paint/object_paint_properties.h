@@ -141,7 +141,7 @@ class CORE_EXPORT ObjectPaintProperties {
 
     // Effects
     kElementCaptureEffect = 13,
-    kViewTransitionSubframeRoot = 14,
+    kViewTransitionSubframeRootEffect = 14,
     kViewTransitionEffect = 15,
     kEffect = 16,
     kFilter = 17,
@@ -312,7 +312,8 @@ class CORE_EXPORT ObjectPaintProperties {
   }
 
   ADD_EFFECT(ElementCaptureEffect, NodeId::kElementCaptureEffect)
-  ADD_EFFECT(ViewTransitionSubframeRoot, NodeId::kViewTransitionSubframeRoot)
+  ADD_EFFECT(ViewTransitionSubframeRootEffect,
+             NodeId::kViewTransitionSubframeRootEffect)
   ADD_EFFECT(ViewTransitionEffect, NodeId::kViewTransitionEffect)
   ADD_EFFECT(Effect, NodeId::kEffect)
   ADD_EFFECT(Filter, NodeId::kFilter)
