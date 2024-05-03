@@ -176,7 +176,8 @@ DOMViewTransition* ViewTransitionSupplement::StartTransition(
 
   // If there is a transition in a parent frame, give that precedence over a
   // transition in a child frame.
-  if (HasActiveTransitionInAncestorFrame(document.GetFrame())) {
+  if (!RuntimeEnabledFeatures::ConcurrentViewTransitionsEnabled() &&
+      HasActiveTransitionInAncestorFrame(document.GetFrame())) {
     auto skipped_transition = transition_;
     skipped_transition->SkipTransition();
 
@@ -186,7 +187,9 @@ DOMViewTransition* ViewTransitionSupplement::StartTransition(
 
   // Skip transitions in all frames associated with this widget. We can only
   // have one transition per widget/CC.
-  SkipTransitionInAllLocalFrames(document.GetFrame());
+  if (!RuntimeEnabledFeatures::ConcurrentViewTransitionsEnabled()) {
+    SkipTransitionInAllLocalFrames(document.GetFrame());
+  }
   DCHECK(transition_);
 
   return transition_->GetScriptDelegate();

@@ -685,6 +685,11 @@
       status: "stable",
     },
     {
+      name: "ConcurrentViewTransitions",
+      status: "test",
+      implied_by: ["ViewTransitionOnNavigation"],
+    },
+    {
       name: "ContactsManager",
       status:  {"Android": "stable", "default": "test"},
     },
