@@ -3329,4 +3329,10 @@ void WebLocalFrameImpl::WillSendSubmitEvent(const WebFormElement& form) {
     observer.WillSendSubmitEvent(form);
 }
 
+bool WebLocalFrameImpl::AllowStorageAccessSyncAndNotify(
+    WebContentSettingsClient::StorageType storage_type) {
+  return LocalFrame::FromFrameToken(GetLocalFrameToken())
+      ->AllowStorageAccessSyncAndNotify(storage_type);
+}
+
 }  // namespace blink

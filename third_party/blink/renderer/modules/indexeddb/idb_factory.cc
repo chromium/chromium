@@ -457,24 +457,25 @@ void IDBFactory::AllowIndexedDB(base::OnceCallback<void()> callback) {
     return;
   }
 
-  WebContentSettingsClient* settings_client = nullptr;
-
   if (auto* window = DynamicTo<LocalDOMWindow>(context)) {
     LocalFrame* frame = window->GetFrame();
     if (!frame) {
       DidAllowIndexedDB(false);
       return;
     }
-    settings_client = frame->GetContentSettingsClient();
-  } else {
-    settings_client = To<WorkerGlobalScope>(context)->ContentSettingsClient();
+    frame->AllowStorageAccessAndNotify(
+        WebContentSettingsClient::StorageType::kIndexedDB,
+        WTF::BindOnce(&IDBFactory::DidAllowIndexedDB,
+                      WrapPersistent(weak_factory_.GetWeakCell())));
+    return;
   }
 
+  WebContentSettingsClient* settings_client =
+      To<WorkerGlobalScope>(context)->ContentSettingsClient();
   if (!settings_client) {
     DidAllowIndexedDB(true);
     return;
   }
-
   settings_client->AllowStorageAccess(
       WebContentSettingsClient::StorageType::kIndexedDB,
       WTF::BindOnce(&IDBFactory::DidAllowIndexedDB,

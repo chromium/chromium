@@ -530,26 +530,26 @@ void LockManager::CheckStorageAccessAllowed(
     return;
   }
 
-  WebContentSettingsClient* content_settings_client = nullptr;
   if (auto* window = DynamicTo<LocalDOMWindow>(context)) {
     LocalFrame* frame = window->GetFrame();
     if (!frame) {
       std::move(wrapped_callback).Run(false);
       return;
     }
-    content_settings_client = frame->GetContentSettingsClient();
+    frame->AllowStorageAccessAndNotify(
+        WebContentSettingsClient::StorageType::kWebLocks,
+        std::move(wrapped_callback));
   } else {
-    content_settings_client =
+    WebContentSettingsClient* content_settings_client =
         To<WorkerGlobalScope>(context)->ContentSettingsClient();
-  }
-
-  if (content_settings_client) {
+    if (!content_settings_client) {
+      std::move(wrapped_callback).Run(true);
+      return;
+    }
     content_settings_client->AllowStorageAccess(
         WebContentSettingsClient::StorageType::kWebLocks,
         std::move(wrapped_callback));
-    return;
   }
-  std::move(wrapped_callback).Run(true);
 }
 
 void LockManager::DidCheckStorageAccessAllowed(

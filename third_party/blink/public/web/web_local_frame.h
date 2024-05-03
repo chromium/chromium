@@ -42,6 +42,7 @@
 #include "third_party/blink/public/platform/cross_variant_mojo_util.h"
 #include "third_party/blink/public/platform/task_type.h"
 #include "third_party/blink/public/platform/web_common.h"
+#include "third_party/blink/public/platform/web_content_settings_client.h"
 #include "third_party/blink/public/platform/web_url_error.h"
 #include "third_party/blink/public/platform/web_url_request.h"
 #include "third_party/blink/public/web/web_document.h"
@@ -943,6 +944,9 @@ class BLINK_EXPORT WebLocalFrame : public WebFrame {
   // as well. The passed closure is invoked when queues of both threads have
   // been processed.
   virtual void FlushInputForTesting(base::OnceClosure) {}
+
+  virtual bool AllowStorageAccessSyncAndNotify(
+      WebContentSettingsClient::StorageType storage_type) = 0;
 
  protected:
   explicit WebLocalFrame(mojom::TreeScopeType scope,

@@ -9548,6 +9548,12 @@ void RenderFrameHostImpl::IssueKeepAliveHandle(
           GetFrameToken(), policy_container_host(), GetSiteInstance())));
 }
 
+void RenderFrameHostImpl::NotifyStorageAccessed(
+    blink::mojom::StorageTypeAccessed storage_type,
+    bool blocked) {
+  delegate_->NotifyStorageAccessed(this, storage_type, blocked);
+}
+
 void RenderFrameHostImpl::CreateNewPopupWidget(
     mojo::PendingAssociatedReceiver<blink::mojom::PopupWidgetHost>
         blink_popup_widget_host,

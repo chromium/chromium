@@ -361,6 +361,27 @@ bool IsNavigationBlockedByCoopRestrictProperties(
   return false;
 }
 
+// TODO: b/338175253 - remove the need for this conversion
+mojom::blink::StorageTypeAccessed ToMojoStorageType(
+    blink::WebContentSettingsClient::StorageType storage_type) {
+  switch (storage_type) {
+    case blink::WebContentSettingsClient::StorageType::kDatabase:
+      return mojom::blink::StorageTypeAccessed::kDatabase;
+    case blink::WebContentSettingsClient::StorageType::kCacheStorage:
+      return mojom::blink::StorageTypeAccessed::kCacheStorage;
+    case blink::WebContentSettingsClient::StorageType::kIndexedDB:
+      return mojom::blink::StorageTypeAccessed::kIndexedDB;
+    case blink::WebContentSettingsClient::StorageType::kFileSystem:
+      return mojom::blink::StorageTypeAccessed::kFileSystem;
+    case blink::WebContentSettingsClient::StorageType::kWebLocks:
+      return mojom::blink::StorageTypeAccessed::kWebLocks;
+    case blink::WebContentSettingsClient::StorageType::kLocalStorage:
+      return mojom::blink::StorageTypeAccessed::kLocalStorage;
+    case blink::WebContentSettingsClient::StorageType::kSessionStorage:
+      return mojom::blink::StorageTypeAccessed::kSessionStorage;
+  }
+}
+
 }  // namespace
 
 template class CORE_TEMPLATE_EXPORT Supplement<LocalFrame>;
@@ -3986,6 +4007,43 @@ void LocalFrame::SetLinkPreviewTriggererForTesting(
     std::unique_ptr<WebLinkPreviewTriggerer> trigger) {
   link_preview_triggerer_ = std::move(trigger);
   is_link_preivew_triggerer_initialized_ = true;
+}
+
+void LocalFrame::AllowStorageAccessAndNotify(
+    blink::WebContentSettingsClient::StorageType storage_type,
+    base::OnceCallback<void(bool)> callback) {
+  mojom::blink::StorageTypeAccessed mojo_storage_type =
+      ToMojoStorageType(storage_type);
+  auto wrapped_callback = WTF::BindOnce(&LocalFrame::OnStorageAccessCallback,
+                                        WrapWeakPersistent(this),
+                                        std::move(callback), mojo_storage_type);
+  if (WebContentSettingsClient* content_settings_client =
+          GetContentSettingsClient()) {
+    content_settings_client->AllowStorageAccess(storage_type,
+                                                std::move(wrapped_callback));
+  } else {
+    std::move(wrapped_callback).Run(true);
+  }
+}
+
+bool LocalFrame::AllowStorageAccessSyncAndNotify(
+    blink::WebContentSettingsClient::StorageType storage_type) {
+  bool allowed = true;
+  if (WebContentSettingsClient* content_settings_client =
+          GetContentSettingsClient()) {
+    allowed = content_settings_client->AllowStorageAccessSync(storage_type);
+  }
+  GetLocalFrameHostRemote().NotifyStorageAccessed(
+      ToMojoStorageType(storage_type), !allowed);
+  return allowed;
+}
+
+void LocalFrame::OnStorageAccessCallback(
+    base::OnceCallback<void(bool)> callback,
+    mojom::blink::StorageTypeAccessed storage_type,
+    bool is_allowed) {
+  GetLocalFrameHostRemote().NotifyStorageAccessed(storage_type, !is_allowed);
+  std::move(callback).Run(is_allowed);
 }
 
 }  // namespace blink

@@ -58,6 +58,7 @@
 #include "third_party/blink/public/mojom/lcp_critical_path_predictor/lcp_critical_path_predictor.mojom-blink.h"
 #include "third_party/blink/public/mojom/page/widget.mojom-blink.h"
 #include "third_party/blink/public/mojom/script/script_evaluation_params.mojom-blink-forward.h"
+#include "third_party/blink/public/platform/web_content_settings_client.h"
 #include "third_party/blink/public/platform/web_file_system_type.h"
 #include "third_party/blink/public/web/web_history_commit_type.h"
 #include "third_party/blink/public/web/web_local_frame.h"
@@ -365,6 +366,8 @@ class CORE_EXPORT WebLocalFrameImpl final
   void BlockParserForTesting() override;
   void ResumeParserForTesting() override;
   void FlushInputForTesting(base::OnceClosure done_callback) override;
+  bool AllowStorageAccessSyncAndNotify(
+      WebContentSettingsClient::StorageType storage_type) override;
 
   // WebNavigationControl overrides:
   bool DispatchBeforeUnloadEvent(bool) override;

@@ -2493,6 +2493,8 @@ class CONTENT_EXPORT RenderFrameHostImpl
   void IssueKeepAliveHandle(
       mojo::PendingReceiver<blink::mojom::NavigationStateKeepAliveHandle>
           receiver) override;
+  void NotifyStorageAccessed(blink::mojom::StorageTypeAccessed storage_type,
+                             bool blocked) override;
 
   // blink::mojom::BackForwardCacheControllerHost:
   void EvictFromBackForwardCache(

@@ -508,6 +508,14 @@ class CONTENT_EXPORT WebContentsObserver : public base::CheckedObserver {
       NavigationHandle* navigation_handle,
       const network::mojom::SharedDictionaryAccessDetails& details) {}
 
+  // Called when the renderer requests access to storage.
+  // Observers will be notified about the type of storage access requested
+  // as well as whether access was blocked or not.
+  virtual void NotifyStorageAccessed(
+      RenderFrameHost* render_frame_host,
+      blink::mojom::StorageTypeAccessed storage_type,
+      bool blocked) {}
+
   // This method is invoked when a new non-pending navigation entry is created.
   // This corresponds to one NavigationController entry being created
   // (in the case of new navigations) or renavigated to (for back/forward

@@ -84,26 +84,26 @@ void CacheStorage::IsCacheStorageAllowed(ExecutionContext* context,
     return;
   }
 
-  WebContentSettingsClient* settings_client = nullptr;
-
   if (auto* window = DynamicTo<LocalDOMWindow>(context)) {
     LocalFrame* frame = window->GetFrame();
     if (!frame) {
       std::move(wrapped_callback).Run(false);
       return;
     }
-    settings_client = window->GetFrame()->GetContentSettingsClient();
+    frame->AllowStorageAccessAndNotify(
+        WebContentSettingsClient::StorageType::kCacheStorage,
+        std::move(wrapped_callback));
   } else {
-    settings_client = To<WorkerGlobalScope>(context)->ContentSettingsClient();
+    WebContentSettingsClient* settings_client =
+        To<WorkerGlobalScope>(context)->ContentSettingsClient();
+    if (!settings_client) {
+      std::move(wrapped_callback).Run(true);
+      return;
+    }
+    settings_client->AllowStorageAccess(
+        WebContentSettingsClient::StorageType::kCacheStorage,
+        std::move(wrapped_callback));
   }
-
-  if (!settings_client) {
-    std::move(wrapped_callback).Run(true);
-    return;
-  }
-  settings_client->AllowStorageAccess(
-      WebContentSettingsClient::StorageType::kCacheStorage,
-      std::move(wrapped_callback));
 }
 
 void CacheStorage::OnCacheStorageAllowed(base::OnceCallback<void()> callback,

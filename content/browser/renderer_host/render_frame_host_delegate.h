@@ -623,6 +623,11 @@ class CONTENT_EXPORT RenderFrameHostDelegate {
       RenderFrameHostImpl* render_frame_host,
       const network::mojom::SharedDictionaryAccessDetails& details) {}
 
+  virtual void NotifyStorageAccessed(
+      RenderFrameHostImpl* render_frame_host,
+      blink::mojom::StorageTypeAccessed storage_type,
+      bool blocked) {}
+
   // Notified that the renderer responded after calling GetSavableResourceLinks.
   virtual void SavableResourceLinksResponse(
       RenderFrameHostImpl* source,

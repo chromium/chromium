@@ -53,15 +53,13 @@ StorageController* StorageController::GetInstance() {
 // static
 bool StorageController::CanAccessStorageArea(LocalFrame* frame,
                                              StorageArea::StorageType type) {
-  if (auto* settings_client = frame->GetContentSettingsClient()) {
-    switch (type) {
-      case StorageArea::StorageType::kLocalStorage:
-        return settings_client->AllowStorageAccessSync(
-            WebContentSettingsClient::StorageType::kLocalStorage);
-      case StorageArea::StorageType::kSessionStorage:
-        return settings_client->AllowStorageAccessSync(
-            WebContentSettingsClient::StorageType::kSessionStorage);
-    }
+  switch (type) {
+    case StorageArea::StorageType::kLocalStorage:
+      return frame->AllowStorageAccessSyncAndNotify(
+          WebContentSettingsClient::StorageType::kLocalStorage);
+    case StorageArea::StorageType::kSessionStorage:
+      return frame->AllowStorageAccessSyncAndNotify(
+          WebContentSettingsClient::StorageType::kSessionStorage);
   }
   return true;
 }

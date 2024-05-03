@@ -219,6 +219,8 @@ class FakeLocalFrameHost : public mojom::blink::LocalFrameHost {
   void IssueKeepAliveHandle(
       mojo::PendingReceiver<mojom::blink::NavigationStateKeepAliveHandle>
           receiver) override;
+  void NotifyStorageAccessed(blink::mojom::StorageTypeAccessed storageType,
+                             bool blocked) override;
 
  private:
   void BindFrameHostReceiver(mojo::ScopedInterfaceEndpointHandle handle);

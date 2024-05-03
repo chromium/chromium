@@ -103,14 +103,9 @@ void LocalFileSystem::RequestFileSystemCallback(
 void LocalFileSystem::RequestFileSystemAccessInternal(
     base::OnceCallback<void(bool)> callback) {
   if (LocalDOMWindow* window = DynamicTo<LocalDOMWindow>(GetSupplementable())) {
-    auto* client = window->GetFrame()->GetContentSettingsClient();
-    if (!client) {
-      std::move(callback).Run(true);
-    } else {
-      client->AllowStorageAccess(
-          WebContentSettingsClient::StorageType::kFileSystem,
-          std::move(callback));
-    }
+    window->GetFrame()->AllowStorageAccessAndNotify(
+        WebContentSettingsClient::StorageType::kFileSystem,
+        std::move(callback));
     return;
   }
   if (auto* global_scope = DynamicTo<WorkerGlobalScope>(GetSupplementable())) {

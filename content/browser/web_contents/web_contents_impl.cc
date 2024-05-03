@@ -3460,6 +3460,16 @@ void WebContentsImpl::OnSharedDictionaryAccessed(
   observers_.NotifyObservers(func, rfh, details);
 }
 
+void WebContentsImpl::NotifyStorageAccessed(
+    RenderFrameHostImpl* rfh,
+    blink::mojom::StorageTypeAccessed storage_type,
+    bool blocked) {
+  OPTIONAL_TRACE_EVENT1("content", "WebContentsImpl::NotifyStorageAccessed",
+                        "render_frame_host", rfh);
+  observers_.NotifyObservers(&WebContentsObserver::NotifyStorageAccessed, rfh,
+                             storage_type, blocked);
+}
+
 std::optional<blink::ParsedPermissionsPolicy>
 WebContentsImpl::GetPermissionsPolicyForIsolatedWebApp(
     RenderFrameHostImpl* source) {

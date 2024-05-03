@@ -184,6 +184,16 @@ enum NavigationApiEntryRestoreReason {
   kPrerenderActivationReplace
 };
 
+enum StorageTypeAccessed {
+    kDatabase,
+    kCacheStorage,
+    kIndexedDB,
+    kFileSystem,
+    kWebLocks,
+    kLocalStorage,
+    kSessionStorage
+};
+
 // The maximum number of characters of the document's title that we're willing
 // to accept in the browser process.
 const uint16 kMaxTitleChars = 4096; // 4 * 1024;
@@ -767,6 +777,9 @@ interface LocalFrameHost {
   // browser-process navigation state associated with this LocalFrameHost.
   IssueKeepAliveHandle(
       pending_receiver<NavigationStateKeepAliveHandle> receiver);
+
+  // Used to tell the browser that storage access was requested and whether it was allowed.
+  NotifyStorageAccessed(StorageTypeAccessed storageType, bool blocked);
 };
 
 // Implemented in Browser, this interface defines frame-specific methods

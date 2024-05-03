@@ -110,7 +110,22 @@ void StorageManagerFileSystemAccess::CheckGetDirectoryIsAllowed(
   }
 
   SECURITY_DCHECK(context->IsWindow() || context->IsWorkerGlobalScope());
-  WebContentSettingsClient* content_settings_client = nullptr;
+
+  auto storage_access_callback =
+      [](base::OnceCallback<void(mojom::blink::FileSystemAccessErrorPtr)>
+             inner_callback,
+         bool is_allowed) {
+        std::move(inner_callback)
+            .Run(is_allowed
+                     ? mojom::blink::FileSystemAccessError::New(
+                           mojom::blink::FileSystemAccessStatus::kOk,
+                           base::File::FILE_OK, "")
+                     : mojom::blink::FileSystemAccessError::New(
+                           mojom::blink::FileSystemAccessStatus::kSecurityError,
+                           base::File::Error::FILE_ERROR_SECURITY,
+                           "Storage directory access is denied."));
+      };
+
   if (auto* window = DynamicTo<LocalDOMWindow>(context)) {
     LocalFrame* frame = window->GetFrame();
     if (!frame) {
@@ -120,35 +135,22 @@ void StorageManagerFileSystemAccess::CheckGetDirectoryIsAllowed(
           "Storage directory access is denied."));
       return;
     }
-    content_settings_client = frame->GetContentSettingsClient();
-  } else {
-    content_settings_client =
-        To<WorkerGlobalScope>(context)->ContentSettingsClient();
-  }
-
-  if (content_settings_client) {
-    content_settings_client->AllowStorageAccess(
+    frame->AllowStorageAccessAndNotify(
         WebContentSettingsClient::StorageType::kFileSystem,
-        WTF::BindOnce(
-            [](base::OnceCallback<void(mojom::blink::FileSystemAccessErrorPtr)>
-                   callback,
-               bool is_allowed) {
-              std::move(callback).Run(
-                  is_allowed ? mojom::blink::FileSystemAccessError::New(
-                                   mojom::blink::FileSystemAccessStatus::kOk,
-                                   base::File::FILE_OK, "")
-                             : mojom::blink::FileSystemAccessError::New(
-                                   mojom::blink::FileSystemAccessStatus::
-                                       kSecurityError,
-                                   base::File::Error::FILE_ERROR_SECURITY,
-                                   "Storage directory access is denied."));
-            },
-            std::move(callback)));
+        WTF::BindOnce(std::move(storage_access_callback), std::move(callback)));
     return;
   }
 
-  std::move(callback).Run(mojom::blink::FileSystemAccessError::New(
-      mojom::blink::FileSystemAccessStatus::kOk, base::File::FILE_OK, ""));
+  WebContentSettingsClient* content_settings_client =
+      To<WorkerGlobalScope>(context)->ContentSettingsClient();
+  if (!content_settings_client) {
+    std::move(callback).Run(mojom::blink::FileSystemAccessError::New(
+        mojom::blink::FileSystemAccessStatus::kOk, base::File::FILE_OK, ""));
+    return;
+  }
+  content_settings_client->AllowStorageAccess(
+      WebContentSettingsClient::StorageType::kFileSystem,
+      WTF::BindOnce(std::move(storage_access_callback), std::move(callback)));
 }
 
 // static

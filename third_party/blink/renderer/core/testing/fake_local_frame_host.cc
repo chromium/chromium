@@ -318,4 +318,8 @@ void FakeLocalFrameHost::IssueKeepAliveHandle(
     mojo::PendingReceiver<mojom::blink::NavigationStateKeepAliveHandle>
         receiver) {}
 
+void FakeLocalFrameHost::NotifyStorageAccessed(
+    blink::mojom::StorageTypeAccessed storageType,
+    bool blocked) {}
+
 }  // namespace blink

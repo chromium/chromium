@@ -201,10 +201,7 @@ bool KeySystemConfigSelector::WebLocalFrameDelegate::
 bool KeySystemConfigSelector::WebLocalFrameDelegate::AllowStorageAccessSync(
     WebContentSettingsClient::StorageType storage_type) {
   DCHECK(web_frame_);
-  WebContentSettingsClient* content_settings_client =
-      web_frame_->GetContentSettingsClient();
-  return !content_settings_client ||
-         content_settings_client->AllowStorageAccessSync(storage_type);
+  return web_frame_->AllowStorageAccessSyncAndNotify(storage_type);
 }
 
 struct KeySystemConfigSelector::SelectionRequest {

@@ -771,6 +771,9 @@ class CONTENT_EXPORT WebContentsImpl : public WebContents,
   void OnSharedDictionaryAccessed(
       RenderFrameHostImpl*,
       const network::mojom::SharedDictionaryAccessDetails& details) override;
+  void NotifyStorageAccessed(RenderFrameHostImpl*,
+                             blink::mojom::StorageTypeAccessed storage_type,
+                             bool blocked) override;
   std::optional<blink::ParsedPermissionsPolicy>
   GetPermissionsPolicyForIsolatedWebApp(RenderFrameHostImpl* source) override;
 
