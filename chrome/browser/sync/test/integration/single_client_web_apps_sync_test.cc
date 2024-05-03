@@ -483,6 +483,33 @@ IN_PROC_BROWSER_TEST_F(SingleClientWebAppsSyncTest,
 }
 
 IN_PROC_BROWSER_TEST_F(SingleClientWebAppsSyncTest,
+                       AppWithFragmentInManifestIdSyncInstalled) {
+  base::HistogramTester histogram_tester;
+  const std::string relative_manifest_id = "explicit_id#fragment";
+  const std::string stripped_manifest_id = "explicit_id";
+  GURL url("https://example.com/start");
+  const std::string app_id = GenerateAppId(relative_manifest_id, url);
+  // Sanity check GenerateAppId strips the fragment part.
+  EXPECT_EQ(app_id, GenerateAppId(stripped_manifest_id, url));
+
+  InjectWebAppEntityToFakeServer(app_id, url, relative_manifest_id);
+  ASSERT_TRUE(SetupSync());
+  AwaitWebAppQuiescence();
+
+  EXPECT_TRUE(registrar_unsafe().IsInstalled(app_id));
+  const WebApp* web_app = registrar_unsafe().GetAppById(app_id);
+  ASSERT_TRUE(web_app);
+
+  // Fragment part of ID should have been stripped off.
+  EXPECT_EQ(web_app->manifest_id(),
+            webapps::ManifestId("https://example.com/explicit_id"));
+  EXPECT_EQ(web_app->sync_proto().relative_manifest_id(), stripped_manifest_id);
+
+  histogram_tester.ExpectUniqueSample(
+      "WebApp.ApplySyncDataToApp.ManifestIdMatch", false, 1);
+}
+
+IN_PROC_BROWSER_TEST_F(SingleClientWebAppsSyncTest,
                        NoDisplayModeMeansStandalone) {
   GURL url("https://example.com/start");
   const std::string app_id =

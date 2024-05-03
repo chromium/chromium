@@ -57,6 +57,9 @@ proto::UrlPattern ToUrlPatternProto(const blink::SafeUrlPattern& url_pattern);
 
 std::optional<TabStrip> ProtoToTabStrip(proto::TabStrip tab_strip_proto);
 
+// Compute the relative manifest ID path as used in the sync proto.
+std::string RelativeManifestIdPath(webapps::ManifestId manifest_id);
+
 }  // namespace web_app
 
 #endif  // CHROME_BROWSER_WEB_APPLICATIONS_WEB_APP_PROTO_UTILS_H_

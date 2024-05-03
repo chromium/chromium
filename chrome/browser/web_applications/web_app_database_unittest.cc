@@ -15,6 +15,7 @@
 #include "base/strings/string_number_conversions.h"
 #include "base/strings/utf_string_conversions.h"
 #include "base/test/bind.h"
+#include "base/test/metrics/histogram_tester.h"
 #include "base/test/scoped_feature_list.h"
 #include "base/test/test_future.h"
 #include "base/time/time.h"
@@ -766,6 +767,39 @@ TEST_P(WebAppDatabaseTest, MigrateFromMissingShortcutsSizes) {
 
   EXPECT_EQ(base::ToString(*roundtrip_app),
             base::ToString(*app_with_empty_downloaded_sizes));
+}
+
+// Old versions of Chrome may have stored sync data with a manifest_id_path
+// containing a fragment part in the URL. It should be stripped out, because the
+// spec requires that ManifestIds with different fragments are considered
+// equivalent.
+TEST_P(WebAppDatabaseTest, RemovesFragmentFromSyncProtoManifestIdPath) {
+  base::HistogramTester histogram_tester;
+
+  std::unique_ptr<WebApp> app = test::CreateRandomWebApp({});
+  // Apps must always have a valid manifest ID without a ref.
+  EXPECT_TRUE(app->manifest_id().is_valid());
+  EXPECT_FALSE(app->manifest_id().has_ref());
+  std::string relative_manifest_id_path =
+      app->sync_proto().relative_manifest_id();
+
+  std::unique_ptr<WebAppProto> proto = WebAppDatabase::CreateWebAppProto(*app);
+  proto->mutable_sync_data()->set_relative_manifest_id(
+      relative_manifest_id_path + "#fragment");
+  EXPECT_EQ(proto->sync_data().relative_manifest_id(),
+            relative_manifest_id_path + "#fragment");
+
+  // Re-parse the app from the proto.
+  auto roundtrip_app = WebAppDatabase::CreateWebApp(*proto);
+  ASSERT_TRUE(roundtrip_app);
+
+  // Loaded app should have had the fragment stripped.
+  EXPECT_EQ(roundtrip_app->sync_proto().relative_manifest_id(),
+            relative_manifest_id_path);
+  EXPECT_FALSE(roundtrip_app->manifest_id().has_ref());
+
+  histogram_tester.ExpectUniqueSample("WebApp.CreateWebApp.ManifestIdMatch",
+                                      false, 1);
 }
 
 INSTANTIATE_TEST_SUITE_P(

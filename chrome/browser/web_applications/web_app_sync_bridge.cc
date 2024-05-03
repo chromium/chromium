@@ -144,6 +144,22 @@ void ApplySyncDataToApp(const sync_pb::WebAppSpecifics& sync_proto,
 
   sync_pb::WebAppSpecifics modified_sync_proto = sync_proto;
 
+  std::string relative_manifest_id_path =
+      RelativeManifestIdPath(app->manifest_id());
+  if (modified_sync_proto.has_relative_manifest_id() &&
+      modified_sync_proto.relative_manifest_id() != relative_manifest_id_path) {
+    modified_sync_proto.set_relative_manifest_id(relative_manifest_id_path);
+    // Record when this happens. When it is rare enough we could remove the
+    // logic here and instead drop incoming sync data with fragment parts in the
+    // manifest_id_path.
+    base::UmaHistogramBoolean("WebApp.ApplySyncDataToApp.ManifestIdMatch",
+                              false);
+  } else {
+    // Record success for comparison.
+    base::UmaHistogramBoolean("WebApp.ApplySyncDataToApp.ManifestIdMatch",
+                              true);
+  }
+
   // Prevent incoming sync data from clearing recently-added fields in our local
   // copy. This ensures new sync fields are preserved despite old (pre-M125)
   // clients incorrectly clearing unknown fields. Any new fields added to the

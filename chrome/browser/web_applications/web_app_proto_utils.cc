@@ -399,4 +399,14 @@ std::optional<TabStrip> ProtoToTabStrip(proto::TabStrip tab_strip_proto) {
   return tab_strip;
 }
 
+std::string RelativeManifestIdPath(webapps::ManifestId manifest_id) {
+  CHECK(manifest_id.is_valid(), base::NotFatalUntil::M127);
+  // The relative id does not include the initial '/' character.
+  std::string relative_manifest_id_path = manifest_id.PathForRequest();
+  if (relative_manifest_id_path.starts_with("/")) {
+    relative_manifest_id_path = relative_manifest_id_path.substr(1);
+  }
+  return relative_manifest_id_path;
+}
+
 }  // namespace web_app

@@ -17,6 +17,7 @@
 #include "base/functional/bind.h"
 #include "base/functional/callback.h"
 #include "base/functional/overloaded.h"
+#include "base/metrics/histogram_functions.h"
 #include "base/pickle.h"
 #include "base/strings/string_util.h"
 #include "base/strings/utf_string_conversions.h"
@@ -945,7 +946,6 @@ std::unique_ptr<WebApp> WebAppDatabase::CreateWebApp(
 
   const sync_pb::WebAppSpecifics& sync_data = local_data.sync_data();
 
-  // webapps::AppId is a hash of start_url. Read start_url first:
   GURL start_url(sync_data.start_url());
   if (start_url.is_empty() || !start_url.is_valid()) {
     DLOG(ERROR) << "WebApp proto start_url parse error: "
@@ -966,6 +966,33 @@ std::unique_ptr<WebApp> WebAppDatabase::CreateWebApp(
   auto web_app = std::make_unique<WebApp>(app_id);
   web_app->SetStartUrl(start_url);
   web_app->SetManifestId(manifest_id);
+
+  if (!sync_data.has_user_display_mode_cros() &&
+      !sync_data.has_user_display_mode_default()) {
+    DLOG(ERROR) << "WebApp proto parse error: no user_display_mode field";
+    return nullptr;
+  }
+
+  // GenerateManifestId functions above strip the fragment part from the URL,
+  // but stored sync data may still have a fragment in relative_manifest_id.
+  // Per manifest spec, manifest IDs should be compared ignoring the fragment,
+  // so we should remove it from the sync data. Note this doesn't trigger a DB
+  // write or sync change - they will only happen if the app data changes for
+  // some other reason (eg. launch).
+  std::string relative_manifest_id_path = RelativeManifestIdPath(manifest_id);
+  if (sync_data.has_relative_manifest_id() &&
+      sync_data.relative_manifest_id() != relative_manifest_id_path) {
+    auto modified_sync_data = sync_data;
+    modified_sync_data.set_relative_manifest_id(relative_manifest_id_path);
+    web_app->SetSyncProto(modified_sync_data);
+    // Record when this happens. When it is rare enough we could simplify the
+    // logic here by just treating apps with mismatching IDs as a parse error.
+    base::UmaHistogramBoolean("WebApp.CreateWebApp.ManifestIdMatch", false);
+  } else {
+    web_app->SetSyncProto(sync_data);
+    // Record success for comparison.
+    base::UmaHistogramBoolean("WebApp.CreateWebApp.ManifestIdMatch", true);
+  }
 
   // Required fields:
   if (!local_data.has_sources()) {
@@ -1008,14 +1035,6 @@ std::unique_ptr<WebApp> WebAppDatabase::CreateWebApp(
     return nullptr;
   }
   web_app->SetName(local_data.name());
-
-  if (!sync_data.has_user_display_mode_cros() &&
-      !sync_data.has_user_display_mode_default()) {
-    DLOG(ERROR) << "WebApp proto parse error: no user_display_mode field";
-    return nullptr;
-  }
-
-  web_app->SetSyncProto(sync_data);
 
   if (!local_data.has_is_locally_installed()) {
     DLOG(ERROR) << "WebApp proto parse error: no is_locally_installed field";

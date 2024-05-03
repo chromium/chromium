@@ -327,6 +327,16 @@ chromium-metrics-reviews@google.com.
   </summary>
 </histogram>
 
+<histogram name="Webapp.ApplySyncDataToApp.ManifestIdMatch"
+    enum="BooleanSuccess" expires_after="2025-04-29">
+  <owner>glenrob@chromium.org</owner>
+  <owner>desktop-pwas-team@google.com</owner>
+  <summary>
+    Recorded when incoming sync data is applied to an app, whether the resolved
+    manifest ID's path matches the manifest ID path stored in the sync proto.
+  </summary>
+</histogram>
+
 <histogram name="WebApp.AppSettingsPage.EntryPoints"
     enum="AppSettingsPageEntryPoints" expires_after="2023-08-08">
   <owner>phillis@chromium.org</owner>
@@ -359,6 +369,16 @@ chromium-metrics-reviews@google.com.
     fetch event handler when the CheckOfflineCapability feature is disabled.
     When the feature is enabled, records the time to complete the check if a PWA
     supports offline pages with a service worker.
+  </summary>
+</histogram>
+
+<histogram name="Webapp.CreateWebApp.ManifestIdMatch" enum="BooleanSuccess"
+    expires_after="2025-04-29">
+  <owner>glenrob@chromium.org</owner>
+  <owner>desktop-pwas-team@google.com</owner>
+  <summary>
+    Recorded at web app database read time for each app, whether the resolved
+    manifest ID's path matches the manifest ID path stored in the sync proto.
   </summary>
 </histogram>
 

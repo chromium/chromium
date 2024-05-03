@@ -15,6 +15,7 @@
 #include "base/check_is_test.h"
 #include "base/check_op.h"
 #include "base/containers/flat_tree.h"
+#include "base/not_fatal_until.h"
 #include "base/notreached.h"
 #include "base/numerics/clamped_math.h"
 #include "base/strings/strcat.h"
@@ -637,14 +638,10 @@ void WebApp::SetSyncProto(sync_pb::WebAppSpecifics sync_proto) {
 
   // Sync data must never be set on an app with mismatching manifest_id.
   CHECK(manifest_id().is_valid(), base::NotFatalUntil::M126);
-  // The relative id does not include the initial '/' character.
-  std::string relative_manifest_id_path = manifest_id().PathForRequest();
-  if (relative_manifest_id_path.starts_with("/")) {
-    relative_manifest_id_path = relative_manifest_id_path.substr(1);
-  }
+  std::string relative_manifest_id_path = RelativeManifestIdPath(manifest_id());
   if (sync_proto.has_relative_manifest_id()) {
     CHECK_EQ(sync_proto.relative_manifest_id(), relative_manifest_id_path,
-             base::NotFatalUntil::M126);
+             base::NotFatalUntil::M127);
   } else {
     sync_proto.set_relative_manifest_id(relative_manifest_id_path);
   }
@@ -689,6 +686,7 @@ void WebApp::SetManifestId(const webapps::ManifestId& manifest_id) {
         url::Origin::Create(start_url_)
             .IsSameOriginWith(url::Origin::Create(manifest_id)))
       << start_url_.spec() << " vs " << manifest_id.spec();
+  CHECK(!manifest_id.has_ref(), base::NotFatalUntil::M127);
   manifest_id_ = manifest_id;
 
   // Ensure sync proto is initialized and remains consistent. Logic in
