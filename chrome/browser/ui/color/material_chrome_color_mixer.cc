@@ -177,6 +177,8 @@ void AddMaterialChromeColorMixer(ui::ColorProvider* provider,
   mixer[kColorComposeDialogTextareaReadonlyForeground] = {
       ui::kColorSysOnSurface};
   mixer[kColorComposeDialogTextareaIcon] = {ui::kColorSysOnSurfaceSubtle};
+  mixer[kColorComposeDialogSelectOptionDisabled] = {
+      ui::kColorLabelForegroundDisabled};
 #endif  // BUILDFLAG(ENABLE_COMPOSE)
 
   if (!ShouldApplyChromeMaterialOverrides(key)) {
