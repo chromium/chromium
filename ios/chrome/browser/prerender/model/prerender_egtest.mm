@@ -127,18 +127,10 @@ void LegacyLongPressAndDragTabInTabStrip(NSString* moving_tab_identifier,
 
 @implementation PrerenderTestCase
 
-#if BUILDFLAG(GOOGLE_CHROME_BRANDING)
-#define MAYBE_testLegacyOpenTabInTabStripBeforePrerenderedTab \
-  DISABLED_testLegacyOpenTabInTabStripBeforePrerenderedTab
-#else
-#define MAYBE_testLegacyOpenTabInTabStripBeforePrerenderedTab \
-  testLegacyOpenTabInTabStripBeforePrerenderedTab
-#endif
-
 - (AppLaunchConfiguration)appConfigurationForTestCase {
   AppLaunchConfiguration config;
   if ([self isRunningTest:@selector
-            (MAYBE_testLegacyOpenTabInTabStripBeforePrerenderedTab)] ||
+            (FLAKY_testLegacyOpenTabInTabStripBeforePrerenderedTab)] ||
       [self isRunningTest:@selector(FLAKY_testMovePrerenderedTabInTabStrip)]) {
     config.features_disabled.push_back(kModernTabStrip);
   } else {
@@ -357,7 +349,8 @@ void LegacyLongPressAndDragTabInTabStrip(NSString* moving_tab_identifier,
 // lead to an incorrect data source, as can be seen after opening a new tab in
 // the background before the pre-rendered tab.
 // TODO(crbug.com/40073670): Test fails on official builds.
-- (void)MAYBE_testLegacyOpenTabInTabStripBeforePrerenderedTab {
+// TODO(crbug.com/332961713): Test is Flaky on iOS17+ devices.
+- (void)FLAKY_testLegacyOpenTabInTabStripBeforePrerenderedTab {
   if (![ChromeEarlGrey isIPadIdiom]) {
     EARL_GREY_TEST_SKIPPED(
         @"Skipped for iPhone. The test makes use of the tab strip.");
