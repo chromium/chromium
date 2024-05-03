@@ -42,6 +42,11 @@ export interface PrintTicket {
 
   // Whether to print full document or selected section.
   shouldPrintSelectionOnly: boolean;
+
+  // Used when printing multiple copies. When true, prints a full set of the
+  // document before printing the next copy. When false, prints N-copies of page
+  // one, then page two until all pages are printed.
+  collate: boolean;
 }
 
 // Immutable session configuration details for the current CrOS preview request.

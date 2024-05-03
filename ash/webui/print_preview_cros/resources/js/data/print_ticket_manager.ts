@@ -24,6 +24,12 @@ export const PRINT_REQUEST_FINISHED_EVENT =
 export const PRINT_TICKET_MANAGER_SESSION_INITIALIZED =
     'print-ticket-manager.session-initialized';
 
+// Default based on settings defaults described in createSettings function.
+// See: chrome/browser/resources/print_preview/data/model.ts.
+export const DEFAULT_PARTIAL_PRINT_TICKET: Partial<PrintTicket> = {
+  collate: true,
+};
+
 export class PrintTicketManager extends EventTarget {
   private static instance: PrintTicketManager|null = null;
 
@@ -65,6 +71,8 @@ export class PrintTicketManager extends EventTarget {
     // TODO(b/323421684): Uses session context to configure ticket properties
     // and validating ticket matches policy requirements.
     this.printTicket = {
+      // Set print ticket defaults.
+      ...DEFAULT_PARTIAL_PRINT_TICKET,
       printPreviewId: this.sessionContext.printPreviewId,
       destination: this.destinationManager.getActiveDestination()?.id ?? '',
       previewModifiable: this.sessionContext.isModifiable,
@@ -77,6 +85,9 @@ export class PrintTicketManager extends EventTarget {
           DESTINATION_MANAGER_ACTIVE_DESTINATION_CHANGED,
           (event: Event): void => this.onActiveDestinationChanged(event));
     }
+
+    // TODO(b/323421684): Apply default settings from destination capabilities
+    // once capabilities manager has fetched active destination capabilities.
 
     this.dispatchEvent(
         createCustomEvent(PRINT_TICKET_MANAGER_SESSION_INITIALIZED));

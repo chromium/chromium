@@ -6,7 +6,7 @@ import 'chrome://os-print/js/data/print_ticket_manager.js';
 
 import {PDF_DESTINATION} from 'chrome://os-print/js/data/destination_constants.js';
 import {DESTINATION_MANAGER_ACTIVE_DESTINATION_CHANGED, DestinationManager} from 'chrome://os-print/js/data/destination_manager.js';
-import {PRINT_REQUEST_FINISHED_EVENT, PRINT_REQUEST_STARTED_EVENT, PRINT_TICKET_MANAGER_SESSION_INITIALIZED, PrintTicketManager} from 'chrome://os-print/js/data/print_ticket_manager.js';
+import {DEFAULT_PARTIAL_PRINT_TICKET, PRINT_REQUEST_FINISHED_EVENT, PRINT_REQUEST_STARTED_EVENT, PRINT_TICKET_MANAGER_SESSION_INITIALIZED, PrintTicketManager} from 'chrome://os-print/js/data/print_ticket_manager.js';
 import {FAKE_PRINT_SESSION_CONTEXT_SUCCESSFUL, FakePrintPreviewPageHandler} from 'chrome://os-print/js/fakes/fake_print_preview_page_handler.js';
 import {createCustomEvent} from 'chrome://os-print/js/utils/event_utils.js';
 import {setPrintPreviewPageHandlerForTesting} from 'chrome://os-print/js/utils/mojo_data_providers.js';
@@ -22,6 +22,7 @@ suite('PrintTicketManager', () => {
   let mockController: MockController;
 
   const partialTicket: Partial<PrintTicket> = {
+    ...DEFAULT_PARTIAL_PRINT_TICKET,
     destination: '',
     previewModifiable: true,  // Default to HTML document.
     shouldPrintSelectionOnly: false,
@@ -230,7 +231,8 @@ suite('PrintTicketManager', () => {
           shouldPrintSelectionOnly:
               FAKE_PRINT_SESSION_CONTEXT_SUCCESSFUL.hasSelection,
         } as PrintTicket;
-        assertDeepEquals(expectedTicket, instance.getPrintTicketForTesting());
+        const ticket = instance.getPrintTicketForTesting() as PrintTicket;
+        assertDeepEquals(expectedTicket, ticket);
       });
 
   // Verify `sendPrintRequest` requires a valid print ticket.
@@ -393,5 +395,29 @@ suite('PrintTicketManager', () => {
         assertEquals(
             PDF_DESTINATION.id, ticket!.destination,
             `destination should remain ${PDF_DESTINATION.id}`);
+      });
+
+  // Verify print ticket created uses default partial ticket for initialization
+  // of settings not configured by session context.
+  test(
+      'initializeSession creates print ticket using default value for' +
+          ' settings not configured by session context',
+      () => {
+        const instance = PrintTicketManager.getInstance();
+        let expectedTicket: PrintTicket|null = null;
+        assertEquals(expectedTicket, instance.getPrintTicketForTesting());
+
+        instance.initializeSession(FAKE_PRINT_SESSION_CONTEXT_SUCCESSFUL);
+
+        expectedTicket = {
+          ...partialTicket,
+          printPreviewId: FAKE_PRINT_SESSION_CONTEXT_SUCCESSFUL.printPreviewId,
+          shouldPrintSelectionOnly:
+              FAKE_PRINT_SESSION_CONTEXT_SUCCESSFUL.hasSelection,
+        } as PrintTicket;
+        const ticket = instance.getPrintTicketForTesting() as PrintTicket;
+        assertEquals(
+            DEFAULT_PARTIAL_PRINT_TICKET.collate, ticket.collate,
+            'Ticket collate should match DEFAULT_PARTIAL_PRINT_TICKET');
       });
 });
