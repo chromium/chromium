@@ -11,6 +11,7 @@
 #import "base/metrics/user_metrics.h"
 #import "base/strings/sys_string_conversions.h"
 #import "components/autofill/core/browser/metrics/payments/mandatory_reauth_metrics.h"
+#import "components/autofill/core/browser/payments_data_manager.h"
 #import "components/autofill/core/browser/personal_data_manager.h"
 #import "components/autofill/core/common/autofill_payments_features.h"
 #import "components/autofill/core/common/autofill_prefs.h"
@@ -231,7 +232,7 @@ using autofill::autofill_metrics::MandatoryReauthOptInOrOutSource;
 
   TableViewModel* model = self.tableViewModel;
   const std::vector<autofill::CreditCard*>& creditCards =
-      _personalDataManager->GetCreditCards();
+      _personalDataManager->payments_data_manager().GetCreditCards();
   if (!creditCards.empty()) {
     [model addSectionWithIdentifier:SectionIdentifierCards];
     [model setHeader:[self cardSectionHeader]
@@ -284,8 +285,8 @@ using autofill::autofill_metrics::MandatoryReauthOptInOrOutSource;
   BOOL canAttemptReauth = [self.reauthenticationModule canAttemptReauth];
   switchItem.enabled = canAttemptReauth;
   switchItem.on =
-      canAttemptReauth &&
-      _personalDataManager->IsPaymentMethodsMandatoryReauthEnabled();
+      canAttemptReauth && _personalDataManager->payments_data_manager()
+                              .IsPaymentMethodsMandatoryReauthEnabled();
   return switchItem;
 }
 
@@ -327,7 +328,9 @@ using autofill::autofill_metrics::MandatoryReauthOptInOrOutSource;
 
 - (BOOL)localCreditCardsExist {
   return !_settingsAreDismissed &&
-         !_personalDataManager->GetLocalCreditCards().empty();
+         !_personalDataManager->payments_data_manager()
+              .GetLocalCreditCards()
+              .empty();
 }
 
 #pragma mark - SettingsControllerProtocol
@@ -368,7 +371,8 @@ using autofill::autofill_metrics::MandatoryReauthOptInOrOutSource;
   // If 1. reauth is not available or 2. reauth succeeded, we
   // proceed by calling the parent's editButtonPressed. Otherwise return
   // early and do nothing.
-  if (_personalDataManager->IsPaymentMethodsMandatoryReauthEnabled() &&
+  if (_personalDataManager->payments_data_manager()
+          .IsPaymentMethodsMandatoryReauthEnabled() &&
       [self.reauthenticationModule canAttemptReauth]) {
     LogMandatoryReauthSettingsPageDeleteCardEvent(
         MandatoryReauthAuthenticationFlowEvent::kFlowStarted);
@@ -513,8 +517,8 @@ using autofill::autofill_metrics::MandatoryReauthOptInOrOutSource;
 - (void)mandatoryReauthSwitchChanged:(UISwitch*)switchView {
   if ([self.reauthenticationModule canAttemptReauth]) {
     // Get the original value.
-    BOOL mandatoryReauthEnabled =
-        _personalDataManager->IsPaymentMethodsMandatoryReauthEnabled();
+    BOOL mandatoryReauthEnabled = _personalDataManager->payments_data_manager()
+                                      .IsPaymentMethodsMandatoryReauthEnabled();
     LogMandatoryReauthOptInOrOutUpdateEvent(
         MandatoryReauthOptInOrOutSource::kSettingsPage,
         /*opt_in=*/!mandatoryReauthEnabled,
@@ -604,10 +608,11 @@ using autofill::autofill_metrics::MandatoryReauthOptInOrOutSource;
     return;
 
   const std::vector<autofill::CreditCard*>& creditCards =
-      _personalDataManager->GetCreditCards();
+      _personalDataManager->payments_data_manager().GetCreditCards();
   autofill::CreditCard selectedCard = *creditCards[indexPath.item];
   if (autofill::IsCreditCardLocal(selectedCard) &&
-      _personalDataManager->IsPaymentMethodsMandatoryReauthEnabled() &&
+      _personalDataManager->payments_data_manager()
+          .IsPaymentMethodsMandatoryReauthEnabled() &&
       [self.reauthenticationModule canAttemptReauth]) {
     [self attemptReauthenticationForEditCard:selectedCard];
   } else {
@@ -829,8 +834,8 @@ using autofill::autofill_metrics::MandatoryReauthOptInOrOutSource;
 // result.
 - (void)handleReauthenticationResult:(ReauthenticationResult)result {
   // Get the original value.
-  BOOL mandatoryReauthEnabled =
-      _personalDataManager->IsPaymentMethodsMandatoryReauthEnabled();
+  BOOL mandatoryReauthEnabled = _personalDataManager->payments_data_manager()
+                                    .IsPaymentMethodsMandatoryReauthEnabled();
 
   MandatoryReauthAuthenticationFlowEvent flow_event;
   if (result == ReauthenticationResult::kFailure) {
@@ -842,8 +847,8 @@ using autofill::autofill_metrics::MandatoryReauthOptInOrOutSource;
 
   } else {
     // Upon success, update the mandatory reauth pref and the switch.
-    _personalDataManager->SetPaymentMethodsMandatoryReauthEnabled(
-        !mandatoryReauthEnabled);
+    _personalDataManager->payments_data_manager()
+        .SetPaymentMethodsMandatoryReauthEnabled(!mandatoryReauthEnabled);
     [self setSwitchItemOn:!mandatoryReauthEnabled
                  itemType:ItemTypeMandatoryReauthSwitch
         sectionIdentifier:SectionIdentifierMandatoryReauthSwitch];

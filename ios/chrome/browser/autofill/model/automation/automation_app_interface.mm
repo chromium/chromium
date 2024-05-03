@@ -14,6 +14,7 @@
 #import "base/uuid.h"
 #import "base/values.h"
 #import "components/autofill/core/browser/address_data_manager.h"
+#import "components/autofill/core/browser/payments_data_manager.h"
 #import "components/autofill/core/browser/personal_data_manager.h"
 #import "ios/chrome/browser/autofill/model/personal_data_manager_factory.h"
 #import "ios/chrome/browser/shared/model/browser_state/chrome_browser_state.h"
@@ -135,7 +136,7 @@ NSError* PrepareAutofillProfileWithValues(
   PersonalDataManager* personal_data_manager =
       PersonalDataManagerFactory::GetForBrowserState(browser_state);
   for (const autofill::CreditCard* local_card :
-       personal_data_manager->GetLocalCreditCards()) {
+       personal_data_manager->payments_data_manager().GetLocalCreditCards()) {
     personal_data_manager->RemoveByGUID(local_card->guid());
   }
   for (const autofill::AutofillProfile* local_profile :
@@ -143,7 +144,7 @@ NSError* PrepareAutofillProfileWithValues(
            autofill::AutofillProfile::Source::kLocalOrSyncable)) {
     personal_data_manager->RemoveByGUID(local_profile->guid());
   }
-  personal_data_manager->AddCreditCard(credit_card);
+  personal_data_manager->payments_data_manager().AddCreditCard(credit_card);
   personal_data_manager->address_data_manager().AddProfile(profile);
 
   return nil;

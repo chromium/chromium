@@ -11,6 +11,7 @@
 #import "base/uuid.h"
 #import "components/autofill/core/browser/address_data_manager.h"
 #import "components/autofill/core/browser/data_model/credit_card.h"
+#import "components/autofill/core/browser/payments_data_manager.h"
 #import "components/autofill/core/browser/personal_data_manager.h"
 #import "components/autofill/core/browser/personal_data_manager_test_utils.h"
 #import "components/autofill/core/common/autofill_features.h"
@@ -161,7 +162,8 @@ TEST_F(AutofillCreditCardTableViewControllerTest,
   autofill::PersonalDataManager* personal_data_manager =
       autofill::PersonalDataManagerFactory::GetForBrowserState(
           chrome_browser_state_.get());
-  EXPECT_TRUE(personal_data_manager->IsPaymentMethodsMandatoryReauthEnabled());
+  EXPECT_TRUE(personal_data_manager->payments_data_manager()
+                  .IsPaymentMethodsMandatoryReauthEnabled());
 
   CreateController();
   CheckController();

@@ -7,6 +7,7 @@
 #import "base/memory/raw_ptr.h"
 #import "base/metrics/histogram_functions.h"
 #import "base/strings/sys_string_conversions.h"
+#import "components/autofill/core/browser/payments_data_manager.h"
 #import "components/autofill/core/browser/personal_data_manager.h"
 #import "components/autofill/core/browser/personal_data_manager_observer.h"
 #import "components/autofill/core/common/autofill_payments_features.h"
@@ -139,7 +140,7 @@ using PaymentsSuggestionBottomSheetExitReason::kBadProvider;
 - (autofill::CreditCard*)creditCardForIdentifier:(NSString*)identifier {
   CHECK(identifier);
   CHECK(_personalDataManager);
-  return _personalDataManager->GetCreditCardByGUID(
+  return _personalDataManager->payments_data_manager().GetCreditCardByGUID(
       base::SysNSStringToUTF8(identifier));
 }
 
@@ -166,7 +167,8 @@ using PaymentsSuggestionBottomSheetExitReason::kBadProvider;
     return;
   }
 
-  const auto& creditCards = _personalDataManager->GetCreditCardsToSuggest();
+  const auto& creditCards =
+      _personalDataManager->payments_data_manager().GetCreditCardsToSuggest();
   if (creditCards.empty()) {
     [_consumer dismiss];
     return;
@@ -344,10 +346,11 @@ using PaymentsSuggestionBottomSheetExitReason::kBadProvider;
 // Returns the icon associated with the provided credit card.
 - (UIImage*)iconForCreditCard:(const autofill::CreditCard*)creditCard {
   // Check if custom card art is available.
-  GURL cardArtURL = _personalDataManager->GetCardArtURL(*creditCard);
+  GURL cardArtURL =
+      _personalDataManager->payments_data_manager().GetCardArtURL(*creditCard);
   if (!cardArtURL.is_empty() && cardArtURL.is_valid()) {
-    gfx::Image* image =
-        _personalDataManager->GetCreditCardArtImageForUrl(cardArtURL);
+    gfx::Image* image = _personalDataManager->payments_data_manager()
+                            .GetCreditCardArtImageForUrl(cardArtURL);
     if (image) {
       return image->ToUIImage();
     }

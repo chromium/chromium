@@ -9,6 +9,7 @@
 #include "base/notreached.h"
 #include "base/strings/sys_string_conversions.h"
 #import "components/autofill/core/browser/address_data_manager.h"
+#import "components/autofill/core/browser/payments_data_manager.h"
 #include "components/autofill/core/browser/personal_data_manager.h"
 #include "components/autofill/core/browser/personal_data_manager_observer.h"
 #include "components/password_manager/core/browser/password_manager_util.h"
@@ -390,7 +391,7 @@ class WebViewPasswordStoreObserver
 - (NSArray<CWVCreditCard*>*)creditCards {
   NSMutableArray* creditCards = [NSMutableArray array];
   for (autofill::CreditCard* internalCard :
-       _personalDataManager->GetCreditCards()) {
+       _personalDataManager->payments_data_manager().GetCreditCards()) {
     CWVCreditCard* creditCard =
         [[CWVCreditCard alloc] initWithCreditCard:*internalCard];
     [creditCards addObject:creditCard];

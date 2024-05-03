@@ -13,6 +13,7 @@
 #import "base/metrics/histogram_functions.h"
 #import "base/strings/sys_string_conversions.h"
 #import "components/autofill/core/browser/address_data_manager.h"
+#import "components/autofill/core/browser/payments_data_manager.h"
 #import "components/autofill/core/browser/personal_data_manager.h"
 #import "components/autofill/core/common/autofill_features.h"
 #import "components/autofill/ios/browser/form_suggestion.h"
@@ -253,7 +254,7 @@ bool InputTriggersKeyboard(std::string field_type, bool default_value) {
       // button is hidden when local cards are saved and then
       // kAutofillCreditCardEnabled is changed to disabled.
       consumer.creditCardButtonHidden =
-          personalDataManager->GetCreditCards().empty();
+          personalDataManager->payments_data_manager().GetCreditCards().empty();
 
       consumer.addressButtonHidden = personalDataManager->address_data_manager()
                                          .GetProfilesToSuggest()
@@ -825,7 +826,7 @@ bool InputTriggersKeyboard(std::string field_type, bool default_value) {
   DCHECK(_personalDataManager);
 
   self.consumer.creditCardButtonHidden =
-      _personalDataManager->GetCreditCards().empty();
+      _personalDataManager->payments_data_manager().GetCreditCards().empty();
 
   self.consumer.addressButtonHidden =
       _personalDataManager->address_data_manager()

@@ -20,6 +20,7 @@
 #import "components/autofill/core/browser/browser_autofill_manager.h"
 #import "components/autofill/core/browser/form_structure.h"
 #import "components/autofill/core/browser/metrics/autofill_metrics.h"
+#import "components/autofill/core/browser/payments_data_manager.h"
 #import "components/autofill/core/browser/personal_data_manager.h"
 #import "components/autofill/core/browser/personal_data_manager_test_utils.h"
 #import "components/autofill/core/browser/test_autofill_manager_waiter.h"
@@ -787,7 +788,9 @@ TEST_F(AutofillControllerTest, CreditCardImport) {
   personal_data_manager->SetSyncServiceForTest(nullptr);
 
   // Check there are no registered profiles already.
-  EXPECT_EQ(0U, personal_data_manager->GetCreditCards().size());
+  EXPECT_EQ(
+      0U,
+      personal_data_manager->payments_data_manager().GetCreditCards().size());
   ASSERT_TRUE(LoadHtmlAndWaitForFormFetched(kCreditCardFormHtml, 1));
   web::test::ExecuteJavaScript(@"document.forms[0].name.value = 'Superman'",
                                web_state());
@@ -817,7 +820,7 @@ TEST_F(AutofillControllerTest, CreditCardImport) {
   std::move(waiter).Wait();
 
   const std::vector<CreditCard*>& credit_cards =
-      personal_data_manager->GetCreditCards();
+      personal_data_manager->payments_data_manager().GetCreditCards();
   ASSERT_EQ(1U, credit_cards.size());
   const CreditCard& credit_card = *credit_cards[0];
   EXPECT_EQ(u"Superman",

@@ -2,14 +2,15 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#import <Foundation/Foundation.h>
-
 #import "ios/chrome/browser/ui/autofill/bottom_sheet/payments_suggestion_bottom_sheet_coordinator.h"
+
+#import <Foundation/Foundation.h>
 
 #import "base/strings/sys_string_conversions.h"
 #import "base/test/ios/wait_util.h"
 #import "base/test/metrics/histogram_tester.h"
 #import "components/autofill/core/browser/autofill_test_utils.h"
+#import "components/autofill/core/browser/payments_data_manager.h"
 #import "components/autofill/core/browser/personal_data_manager.h"
 #import "components/autofill/core/common/autofill_payments_features.h"
 #import "components/autofill/ios/form_util/form_activity_params.h"
@@ -64,7 +65,7 @@ class PaymentsSuggestionBottomSheetCoordinatorTest : public PlatformTest {
     InsertWebState();
     credit_card_ = autofill::test::GetCreditCard();
     virtual_card_ = autofill::test::GetVirtualCard();
-    personal_data_manager->AddServerCreditCardForTest(
+    personal_data_manager->payments_data_manager().AddServerCreditCardForTest(
         std::make_unique<autofill::CreditCard>(credit_card_));
     personal_data_manager->SetSyncingForTest(true);
 

@@ -14,6 +14,7 @@
 #import "components/autofill/core/browser/data_model/credit_card.h"
 #import "components/autofill/core/browser/field_types.h"
 #import "components/autofill/core/browser/payments/payments_service_url.h"
+#import "components/autofill/core/browser/payments_data_manager.h"
 #import "components/autofill/core/browser/personal_data_manager.h"
 #import "components/autofill/core/common/autofill_payments_features.h"
 #import "components/autofill/ios/browser/credit_card_util.h"
@@ -141,7 +142,7 @@ typedef NS_ENUM(NSInteger, ItemType) {
       }
     }
 
-    _personalDataManager->UpdateCreditCard(_creditCard);
+    _personalDataManager->payments_data_manager().UpdateCreditCard(_creditCard);
   }
 
   // Reload the model.

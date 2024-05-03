@@ -12,6 +12,7 @@
 #include "components/autofill/core/browser/autofill_test_utils.h"
 #include "components/autofill/core/browser/data_model/autofill_profile.h"
 #include "components/autofill/core/browser/data_model/credit_card.h"
+#import "components/autofill/core/browser/payments_data_manager.h"
 #include "components/autofill/core/browser/test_personal_data_manager.h"
 #include "components/password_manager/core/browser/password_form.h"
 #import "components/password_manager/core/browser/password_store/test_password_store.h"
@@ -205,7 +206,7 @@ TEST_F(CWVAutofillDataManagerTest, UpdateProfile) {
 // Tests CWVAutofillDataManager properly returns credit cards.
 TEST_F(CWVAutofillDataManagerTest, ReturnCreditCard) {
   autofill::CreditCard credit_card = autofill::test::GetCreditCard();
-  personal_data_manager_->AddCreditCard(credit_card);
+  personal_data_manager_->payments_data_manager().AddCreditCard(credit_card);
 
   EXPECT_TRUE(FetchCreditCards(^(NSArray<CWVCreditCard*>* credit_cards) {
     EXPECT_EQ(1ul, credit_cards.count);

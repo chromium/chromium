@@ -10,6 +10,7 @@
 #import "base/ranges/algorithm.h"
 #import "components/autofill/core/browser/form_structure.h"
 #import "components/autofill/core/browser/payments/card_unmask_challenge_option.h"
+#import "components/autofill/core/browser/payments_data_manager.h"
 #import "components/autofill/core/browser/personal_data_manager.h"
 #import "components/autofill/core/browser/ui/payments/card_unmask_authentication_selection_dialog_controller_impl.h"
 #import "components/autofill/core/browser/ui/payments/virtual_card_enroll_ui_model.h"
@@ -316,7 +317,7 @@ void AutofillBottomSheetTabHelper::OnFieldTypesDetermined(
     return;
   }
   if (auto* pdm = manager.client().GetPersonalDataManager();
-      pdm->GetCreditCardsToSuggest().empty()) {
+      pdm->payments_data_manager().GetCreditCardsToSuggest().empty()) {
     return;
   }
   std::vector<autofill::FieldRendererId> renderer_ids;

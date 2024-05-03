@@ -8,6 +8,7 @@
 #import "base/notreached.h"
 #import "base/strings/sys_string_conversions.h"
 #import "components/autofill/core/browser/data_model/credit_card.h"
+#import "components/autofill/core/browser/payments_data_manager.h"
 #import "components/autofill/core/browser/personal_data_manager.h"
 #import "components/autofill/core/browser/ui/payments/card_unmask_prompt_controller.h"
 #import "ios/chrome/browser/autofill/model/credit_card/credit_card_data.h"
@@ -100,8 +101,9 @@ void CardUnmaskPromptViewBridge::PerformClose() {
 UIImage* CardUnmaskPromptViewBridge::GetCardIcon() {
   // Firstly check if card art image is available.
   const CreditCard& credit_card = GetController()->GetCreditCard();
-  gfx::Image* image = personal_data_manager_->GetCreditCardArtImageForUrl(
-      credit_card.card_art_url());
+  gfx::Image* image =
+      personal_data_manager_->payments_data_manager()
+          .GetCreditCardArtImageForUrl(credit_card.card_art_url());
   if (image) {
     return image->ToUIImage();
   }
