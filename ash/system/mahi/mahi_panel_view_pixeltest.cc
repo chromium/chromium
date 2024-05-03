@@ -109,10 +109,10 @@ TEST_F(MahiPanelViewPixelTest, MainPanel) {
   views::test::RunScheduledLayout(widget());
 
   EXPECT_TRUE(GetPixelDiffer()->CompareUiComponentsOnPrimaryScreen(
-      "panel_view", /*revision_number=*/1, panel_view()));
+      "panel_view", /*revision_number=*/2, panel_view()));
 }
 
-TEST_F(MahiPanelViewPixelTest, ContentMetadataRow) {
+TEST_F(MahiPanelViewPixelTest, ContentSourceButton) {
   ON_CALL(mock_mahi_manager(), GetContentTitle)
       .WillByDefault(testing::Return(base::StrCat(
           std::vector<std::u16string>(3, u"Long content title "))));
@@ -124,8 +124,8 @@ TEST_F(MahiPanelViewPixelTest, ContentMetadataRow) {
   views::test::RunScheduledLayout(widget());
 
   EXPECT_TRUE(GetPixelDiffer()->CompareUiComponentsOnPrimaryScreen(
-      "content_metadata", /*revision_number=*/0,
-      panel_view()->GetViewByID(mahi_constants::ViewId::kContentMetadataRow)));
+      "content_source", /*revision_number=*/0,
+      panel_view()->GetViewByID(mahi_constants::ViewId::kContentSourceButton)));
 }
 
 TEST_F(MahiPanelViewPixelTest, SummaryView) {

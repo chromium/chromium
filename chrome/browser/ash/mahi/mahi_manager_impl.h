@@ -34,6 +34,7 @@ class MahiManagerImpl : public chromeos::MahiManager, public SessionObserver {
   void OpenMahiPanel(int64_t display_id) override;
   std::u16string GetContentTitle() override;
   gfx::ImageSkia GetContentIcon() override;
+  GURL GetContentUrl() override;
   void GetSummary(MahiSummaryCallback callback) override;
   void GetOutlines(MahiOutlinesCallback callback) override;
   void GoToOutlineContent(int outline_id) override;

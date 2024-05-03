@@ -103,6 +103,10 @@ gfx::ImageSkia MahiManagerImpl::GetContentIcon() {
   return current_page_info_->favicon_image;
 }
 
+GURL MahiManagerImpl::GetContentUrl() {
+  return current_page_info_->url;
+}
+
 void MahiManagerImpl::GetSummary(MahiSummaryCallback callback) {
   MaybeInitialize();
 

@@ -13,9 +13,7 @@ namespace ash::mahi_constants {
 // The view ids that will be used for all children views within the Mahi panel.
 enum ViewId {
   kCloseButton = 1,
-  kContentMetadataRow,
-  kContentTitle,
-  kContentIcon,
+  kContentSourceButton,
   kScrollView,
   kScrollViewContents,
   kSummaryLabel,

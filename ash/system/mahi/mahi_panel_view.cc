@@ -19,6 +19,7 @@
 #include "ash/style/style_util.h"
 #include "ash/style/typography.h"
 #include "ash/system/mahi/mahi_constants.h"
+#include "ash/system/mahi/mahi_content_source_button.h"
 #include "ash/system/mahi/mahi_error_status_view.h"
 #include "ash/system/mahi/mahi_question_answer_view.h"
 #include "ash/system/mahi/mahi_ui_controller.h"
@@ -79,8 +80,6 @@ namespace {
 constexpr SkScalar kContentScrollViewCornerRadius = 16;
 constexpr int kPanelChildSpacing = 8;
 constexpr int kHeaderRowSpacing = 8;
-constexpr gfx::Insets kSourceRowPadding = gfx::Insets::TLBR(6, 12, 6, 14);
-constexpr int kSourceRowSpacing = 8;
 
 // Ask Question container constants.
 constexpr gfx::Insets kAskQuestionContainerInteriorMargin =
@@ -583,34 +582,11 @@ MahiPanelView::MahiPanelView(MahiUiController* ui_controller)
 
   AddChildView(CreateHeaderRow());
 
-  auto* const mahi_manager = chromeos::MahiManager::Get();
-
-  // Add a source row containing the content icon and title.
-  AddChildView(
-      views::Builder<views::BoxLayoutView>()
-          .SetID(mahi_constants::ViewId::kContentMetadataRow)
-          .SetBackground(StyleUtil::CreateThemedFullyRoundedRectBackground(
-              cros_tokens::kCrosSysSystemOnBase1))
-          .SetBorder(views::CreateEmptyBorder(kSourceRowPadding))
-          .SetOrientation(views::BoxLayout::Orientation::kHorizontal)
-          .SetBetweenChildSpacing(kSourceRowSpacing)
-          .AddChildren(
-              views::Builder<views::ImageView>()
-                  .CopyAddressTo(&content_icon_)
-                  .SetID(mahi_constants::kContentIcon)
-                  .SetImage(ui::ImageModel::FromImageSkia(
-                      mahi_manager->GetContentIcon()))
-                  .SetImageSize(mahi_constants::kContentIconSize),
-              views::Builder<views::Label>()
-                  .CopyAddressTo(&content_title_)
-                  .SetID(mahi_constants::kContentTitle)
-                  .SetText(mahi_manager->GetContentTitle())
-                  .SetEnabledColorId(cros_tokens::kCrosSysOnSurfaceVariant)
-                  .CustomConfigure(base::BindOnce([](views::Label* self) {
-                    TypographyProvider::Get()->StyleLabel(
-                        TypographyToken::kCrosAnnotation2, *self);
-                  })))
-          .Build());
+  // Add a button which shows the content source icon and title.
+  AddChildView(views::Builder<MahiContentSourceButton>()
+                   .CopyAddressTo(&content_source_button_)
+                   .SetID(mahi_constants::ViewId::kContentSourceButton)
+                   .Build());
 
   // Add a scrollable view of the panel's content, with a feedback section.
   AddChildView(
@@ -844,10 +820,7 @@ void MahiPanelView::OnUpdated(const MahiUiUpdate& update) {
       send_button_->SetEnabled(true);
       return;
     case MahiUiUpdateType::kContentsRefreshInitiated: {
-      auto* const mahi_manager = chromeos::MahiManager::Get();
-      content_icon_->SetImage(
-          ui::ImageModel::FromImageSkia(mahi_manager->GetContentIcon()));
-      content_title_->SetText(mahi_manager->GetContentTitle());
+      content_source_button_->RefreshContentSourceInfo();
       return;
     }
     case MahiUiUpdateType::kErrorReceived:

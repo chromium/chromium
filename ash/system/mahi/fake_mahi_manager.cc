@@ -24,6 +24,8 @@ constexpr char16_t kDefaultAnswer[] = u"Fake answer";
 
 constexpr char16_t kDefaultContentTitle[] = u"fake content title";
 
+constexpr char kDefaultContentUrl[] = "https://en.wikipedia.org/wiki/Wombat";
+
 const std::vector<chromeos::MahiOutline> kDefaultOutlines(
     {chromeos::MahiOutline(/*id=*/1, u"Outline 1"),
      chromeos::MahiOutline(/*id=*/2, u"Outline 2"),
@@ -57,6 +59,10 @@ std::u16string FakeMahiManager::GetContentTitle() {
 
 gfx::ImageSkia FakeMahiManager::GetContentIcon() {
   return content_icon_;
+}
+
+GURL FakeMahiManager::GetContentUrl() {
+  return GURL(kDefaultContentUrl);
 }
 
 void FakeMahiManager::GetSummary(MahiSummaryCallback callback) {

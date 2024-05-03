@@ -9,6 +9,7 @@
 #include <utility>
 #include <vector>
 
+#include "ash/public/cpp/image_util.h"
 #include "ash/public/cpp/new_window_delegate.h"
 #include "ash/public/cpp/test/test_new_window_delegate.h"
 #include "ash/shell.h"
@@ -16,6 +17,7 @@
 #include "ash/style/icon_button.h"
 #include "ash/style/system_textfield.h"
 #include "ash/system/mahi/mahi_constants.h"
+#include "ash/system/mahi/mahi_content_source_button.h"
 #include "ash/system/mahi/mahi_ui_controller.h"
 #include "ash/system/mahi/mahi_utils.h"
 #include "ash/system/mahi/test/mock_mahi_manager.h"
@@ -33,7 +35,6 @@
 #include "ui/gfx/geometry/size.h"
 #include "ui/gfx/image/image_unittest_util.h"
 #include "ui/gfx/text_constants.h"
-#include "ui/views/controls/image_view.h"
 #include "ui/views/controls/label.h"
 #include "ui/views/controls/scroll_view.h"
 #include "ui/views/controls/scrollbar/scroll_bar.h"
@@ -167,14 +168,18 @@ void ReturnLongSummary(chromeos::MahiManager::MahiSummaryCallback callback) {
       MahiResponseStatus::kSuccess);
 }
 
-views::Label* GetContentTitle(views::View* mahi_view) {
-  return views::AsViewClass<views::Label>(
-      mahi_view->GetViewByID(mahi_constants::ViewId::kContentTitle));
+const std::u16string& GetContentSourceTitle(views::View* mahi_view) {
+  return views::AsViewClass<MahiContentSourceButton>(
+             mahi_view->GetViewByID(
+                 mahi_constants::ViewId::kContentSourceButton))
+      ->GetText();
 }
 
-views::ImageView* GetContentIcon(views::View* mahi_view) {
-  return views::AsViewClass<views::ImageView>(
-      mahi_view->GetViewByID(mahi_constants::ViewId::kContentIcon));
+gfx::ImageSkia GetContentSourceIcon(views::View* mahi_view) {
+  return views::AsViewClass<MahiContentSourceButton>(
+             mahi_view->GetViewByID(
+                 mahi_constants::ViewId::kContentSourceButton))
+      ->GetImage(views::Button::STATE_NORMAL);
 }
 
 views::Label* GetSummaryLabel(views::View* mahi_view) {
@@ -267,53 +272,6 @@ class MahiPanelViewTest : public AshTestBase {
   raw_ptr<MockNewWindowDelegate> new_window_delegate_;
   std::unique_ptr<TestNewWindowDelegateProvider> delegate_provider_;
 };
-
-// Verifies that the content title is correct when the panel is created.
-TEST_F(MahiPanelViewTest, ContentTitle) {
-  const std::u16string test_title1(u"test content title 1");
-  ON_CALL(mock_mahi_manager(), GetContentTitle)
-      .WillByDefault(Return(test_title1));
-
-  MahiPanelView mahi_view1(ui_controller());
-  const auto* const content_title_label1 = views::AsViewClass<views::Label>(
-      mahi_view1.GetViewByID(mahi_constants::ViewId::kContentTitle));
-  EXPECT_EQ(content_title_label1->GetText(), test_title1);
-
-  const std::u16string test_title2(u"test content title 2");
-  ON_CALL(mock_mahi_manager(), GetContentTitle)
-      .WillByDefault(Return(test_title2));
-
-  MahiPanelView mahi_view2(ui_controller());
-  const auto* const content_title_label2 = views::AsViewClass<views::Label>(
-      mahi_view2.GetViewByID(mahi_constants::ViewId::kContentTitle));
-  EXPECT_EQ(content_title_label2->GetText(), test_title2);
-}
-
-// Verifies that the content icon is correct when the panel is created.
-TEST_F(MahiPanelViewTest, ContentIcon) {
-  const auto test_icon1 = gfx::test::CreateImageSkia(/*size=*/128, SK_ColorRED);
-  ON_CALL(mock_mahi_manager(), GetContentIcon)
-      .WillByDefault(Return(test_icon1));
-  MahiPanelView mahi_view1(ui_controller());
-  const auto* const content_icon1 = views::AsViewClass<views::ImageView>(
-      mahi_view1.GetViewByID(mahi_constants::ViewId::kContentIcon));
-  EXPECT_TRUE(gfx::test::AreBitmapsEqual(*content_icon1->GetImage().bitmap(),
-                                         *test_icon1.bitmap()));
-  EXPECT_EQ(content_icon1->GetPreferredSize(),
-            mahi_constants::kContentIconSize);
-
-  const auto test_icon2 =
-      gfx::test::CreateImageSkia(/*size=*/128, SK_ColorBLUE);
-  ON_CALL(mock_mahi_manager(), GetContentIcon)
-      .WillByDefault(Return(test_icon2));
-  MahiPanelView mahi_view2(ui_controller());
-  const auto* const content_icon2 = views::AsViewClass<views::ImageView>(
-      mahi_view2.GetViewByID(mahi_constants::ViewId::kContentIcon));
-  EXPECT_TRUE(gfx::test::AreBitmapsEqual(*content_icon2->GetImage().bitmap(),
-                                         *test_icon2.bitmap()));
-  EXPECT_EQ(content_icon2->GetPreferredSize(),
-            mahi_constants::kContentIconSize);
-}
 
 // Checks that the summary text is set correctly in ctor with different texts.
 TEST_F(MahiPanelViewTest, SummaryText) {
@@ -1579,9 +1537,11 @@ TEST_F(MahiPanelViewTest, RefreshSummaryContents) {
 
   MahiPanelView mahi_view(ui_controller());
 
-  EXPECT_EQ(GetContentTitle(&mahi_view)->GetText(), title1);
+  EXPECT_EQ(GetContentSourceTitle(&mahi_view), title1);
   EXPECT_TRUE(gfx::test::AreBitmapsEqual(
-      *GetContentIcon(&mahi_view)->GetImage().bitmap(), *icon1.bitmap()));
+      *GetContentSourceIcon(&mahi_view).bitmap(),
+      *image_util::ResizeAndCropImage(icon1, mahi_constants::kContentIconSize)
+           .bitmap()));
   EXPECT_EQ(GetSummaryLabel(&mahi_view)->GetText(), summary1);
 
   const std::u16string title2(u"Test content title 2");
@@ -1599,10 +1559,42 @@ TEST_F(MahiPanelViewTest, RefreshSummaryContents) {
 
   ui_controller()->RefreshContents();
 
-  EXPECT_EQ(GetContentTitle(&mahi_view)->GetText(), title2);
+  EXPECT_EQ(GetContentSourceTitle(&mahi_view), title2);
   EXPECT_TRUE(gfx::test::AreBitmapsEqual(
-      *GetContentIcon(&mahi_view)->GetImage().bitmap(), *icon2.bitmap()));
+      *GetContentSourceIcon(&mahi_view).bitmap(),
+      *image_util::ResizeAndCropImage(icon2, mahi_constants::kContentIconSize)
+           .bitmap()));
   EXPECT_EQ(GetSummaryLabel(&mahi_view)->GetText(), summary2);
+}
+
+// Tests that clicking the content source button opens the source url
+// corresponding to the refreshed content shown on the Mahi panel.
+TEST_F(MahiPanelViewTest, ContentSourceButtonUrlAfterRefresh) {
+  const GURL test_url1("https://www.google.com");
+  ON_CALL(mock_mahi_manager(), GetContentUrl).WillByDefault(Return(test_url1));
+
+  CreatePanelWidget();
+
+  EXPECT_CALL(
+      new_window_delegate(),
+      OpenUrl(test_url1, NewWindowDelegate::OpenUrlFrom::kUserInteraction,
+              NewWindowDelegate::Disposition::kSwitchToTab));
+  LeftClickOn(
+      panel_view()->GetViewByID(mahi_constants::ViewId::kContentSourceButton));
+  Mock::VerifyAndClearExpectations(&new_window_delegate());
+
+  const GURL test_url2("https://en.wikipedia.org");
+  ON_CALL(mock_mahi_manager(), GetContentUrl).WillByDefault(Return(test_url2));
+
+  ui_controller()->RefreshContents();
+
+  EXPECT_CALL(
+      new_window_delegate(),
+      OpenUrl(test_url2, NewWindowDelegate::OpenUrlFrom::kUserInteraction,
+              NewWindowDelegate::Disposition::kSwitchToTab));
+  LeftClickOn(
+      panel_view()->GetViewByID(mahi_constants::ViewId::kContentSourceButton));
+  Mock::VerifyAndClearExpectations(&new_window_delegate());
 }
 
 // Tests that refreshing Summary contents will bring the user to the Summary
