@@ -71,7 +71,6 @@
 #include "third_party/blink/renderer/core/html/forms/html_input_element.h"
 #include "third_party/blink/renderer/core/html/forms/html_label_element.h"
 #include "third_party/blink/renderer/core/html/forms/html_opt_group_element.h"
-#include "third_party/blink/renderer/core/html/forms/html_option_element.h"
 #include "third_party/blink/renderer/core/html/forms/html_select_element.h"
 #include "third_party/blink/renderer/core/html/forms/html_text_area_element.h"
 #include "third_party/blink/renderer/core/html/forms/text_control_element.h"
@@ -123,6 +122,9 @@
 #endif
 #include "third_party/blink/renderer/modules/accessibility/ax_image_map_link.h"
 #include "third_party/blink/renderer/modules/accessibility/ax_inline_text_box.h"
+#include "third_party/blink/renderer/modules/accessibility/ax_menu_list.h"
+#include "third_party/blink/renderer/modules/accessibility/ax_menu_list_option.h"
+#include "third_party/blink/renderer/modules/accessibility/ax_menu_list_popup.h"
 #include "third_party/blink/renderer/modules/accessibility/ax_object_cache_impl.h"
 #include "third_party/blink/renderer/modules/accessibility/ax_range.h"
 #include "third_party/blink/renderer/modules/accessibility/ax_selection.h"
@@ -732,11 +734,21 @@ void AXObject::Init(AXObject* parent) {
   DCHECK(IsValidRole(role_)) << "Illegal " << role_ << " for\n"
                              << GetNode() << '\n'
                              << GetLayoutObject();
+
+  HTMLOptGroupElement* optgroup = DynamicTo<HTMLOptGroupElement>(GetNode());
+  if (optgroup && optgroup->OwnerSelectElement()) {
+    // We do not currently create accessible objects for an <optgroup> inside of
+    // a <select size=1>.
+    // TODO(accessibility) Remove this once we refactor HTML <select> to use
+    // the shadow DOM and AXNodeObject instead of AXMenuList* classes.
+    DCHECK(!optgroup->OwnerSelectElement()->UsesMenuList());
+  }
+#endif  // DCHECK_IS_ON()
+
   // The parent cannot have children. This object must be destroyed.
   DCHECK(!parent_ || parent_->CanHaveChildren())
       << "Tried to set a parent that cannot have children:" << "\n* Parent = "
       << parent_ << "\n* Child = " << this;
-#endif
 
   children_dirty_ = true;
 
@@ -753,11 +765,18 @@ void AXObject::Detach() {
 #if DCHECK_IS_ON()
   DCHECK(!is_updating_cached_values_)
       << "Don't detach in the middle of updating cached values: " << this;
-  DCHECK(!IsDetached());
 #endif
   // Prevents LastKnown*() methods from returning the wrong values.
   cached_is_ignored_ = true;
   cached_is_ignored_but_included_in_tree_ = false;
+
+  if (IsDetached()) {
+    // Only mock objects can end up being detached twice, because their owner
+    // may have needed to detach them when they were detached, but couldn't
+    // remove them from the object cache yet.
+    DCHECK(IsMockObject()) << "Object detached twice: " << RoleValue();
+    return;
+  }
 
 #if defined(AX_FAIL_FAST_BUILD)
   SANITIZER_CHECK(ax_object_cache_);
@@ -910,6 +929,11 @@ AXObject* AXObject::ComputeParent() const {
 AXObject* AXObject::ComputeParentOrNull() const {
   CHECK(!IsDetached());
 
+  if (IsMockObject()) {
+    const AXMenuListPopup* popup = To<AXMenuListPopup>(this);
+    return popup->owner();
+  }
+
   CHECK(GetNode() || GetLayoutObject() || IsVirtualObject())
       << "Can't compute parent on AXObjects without a backing Node "
          "LayoutObject, "
@@ -948,7 +972,16 @@ Node* AXObject::GetParentNodeForComputeParent(AXObjectCacheImpl& cache,
   if (auto* document = DynamicTo<Document>(node)) {
     LocalFrame* frame = document->GetFrame();
     DCHECK(frame);
-    return frame->PagePopupOwner();
+    Node* popup_owner = frame->PagePopupOwner();
+    if (!popup_owner) {
+      return nullptr;
+    }
+    // TODO(accessibility) Remove this rule once we stop using AXMenuList*.
+    if (IsA<HTMLSelectElement>(popup_owner) &&
+        AXObjectCacheImpl::ShouldCreateAXMenuListFor(popup_owner)) {
+      return nullptr;
+    }
+    return popup_owner;
   }
 
   // Avoid a CHECK that disallows calling LayoutTreeBuilderTraversal::Parent() with a shadow root node.
@@ -1005,6 +1038,14 @@ bool AXObject::CanComputeAsNaturalParent(Node* node) {
   }
 
   DCHECK(IsA<Element>(node)) << "Expected element: " << node;
+
+  // When the flag to use AXMenuList in on, a menu list is only allowed to
+  // parent an AXMenuListPopup, which is added as a child on creation. No other
+  // children are allowed, and false is returned for anything else where the
+  // parent would be AXMenuList.
+  if (AXObjectCacheImpl::ShouldCreateAXMenuListFor(node)) {
+    return false;
+  }
 
   // An image cannot be the natural DOM parent of another AXObject, it can only
   // have <area> children, which are from another part of the DOM tree.
@@ -1122,6 +1163,16 @@ AXObject* AXObject::ComputeNonARIAParent(AXObjectCacheImpl& cache,
                                          Node* current_node) {
   if (!current_node) {
     return nullptr;
+  }
+
+  // For <option> in <select size=1>, return the popup.
+  if (AXObjectCacheImpl::UseAXMenuList()) {
+    if (auto* option = DynamicTo<HTMLOptionElement>(current_node)) {
+      if (AXObject* ax_select =
+              AXMenuListOption::ComputeParentAXMenuPopupFor(cache, option)) {
+        return ax_select;
+      }
+    }
   }
 
   Node* parent_node = GetParentNodeForComputeParent(cache, current_node);
@@ -2587,6 +2638,30 @@ bool AXObject::IsList() const {
   return ui::IsList(RoleValue());
 }
 
+bool AXObject::IsAXListBox() const {
+  return false;
+}
+
+bool AXObject::IsAXListBoxOption() const {
+  return false;
+}
+
+bool AXObject::IsMenuList() const {
+  return false;
+}
+
+bool AXObject::IsMenuListOption() const {
+  return false;
+}
+
+bool AXObject::IsMenuListPopup() const {
+  return false;
+}
+
+bool AXObject::IsMockObject() const {
+  return false;
+}
+
 bool AXObject::IsProgressIndicator() const {
   return false;
 }
@@ -2763,6 +2838,10 @@ bool AXObject::IsCheckable() const {
   }
 }
 
+// Why this is here instead of AXNodeObject:
+// Because an AXMenuListOption (<option>) can
+// have an ARIA role of menuitemcheckbox/menuitemradio
+// yet does not inherit from AXNodeObject
 ax::mojom::blink::CheckedState AXObject::CheckedState() const {
   const Node* node = GetNode();
   if (!IsCheckable() || !node) {
@@ -3041,6 +3120,10 @@ bool AXObject::IsIgnored() {
         << "\nThe Detach() method sets cached_is_ignored_ to true, but "
            "something has recomputed it.";
   }
+  if (!cached_is_ignored_ && IsA<Document>(GetNode()) && ParentObject() &&
+      ParentObject()->IsMenuList()) {
+    NOTREACHED() << "The menulist popup's document must be ignored.";
+  }
 #endif
   return cached_is_ignored_;
 }
@@ -3123,7 +3206,30 @@ void AXObject::UpdateCachedAttributeValuesIfNeeded(
       << GetDocument()->Lifecycle().ToString();
 #endif  // DCHECK_IS_ON()
 
-  DUMP_WILL_BE_CHECK(!IsMissingParent()) << "Missing parent: " << this;
+  if (IsMissingParent()) {
+    // TODO(accessibility) Address this more proactively and cleanly
+    // pruning the a11y tree for layout changes.
+    DUMP_WILL_BE_CHECK(!IsMissingParent()) << "Missing parent: " << this;
+  }
+
+  // Mock objects are created by, owned and dependent on their parents.
+  // If the mock object's values change, recompute the parent's as well.
+  // Note: The only remaining use of mock objects is AXMenuListPopup.
+  // TODO(accessibility) Remove this when we remove AXMenuList* and create the
+  // AX hierarchy for <select> from the shadow dom instead.
+  // TODO(accessibility) Can this be fixed by instead invalidating the parent
+  // when invalidating the child?
+  if (IsMockObject()) {
+    CHECK(parent_) << "Mock object missing parent: " << this;
+    parent_->UpdateCachedAttributeValuesIfNeeded();
+    if (IsDetached()) {
+      // This object can become detached when parents update their values.
+      cached_is_ignored_ = true;
+      cached_is_ignored_but_included_in_tree_ = false;
+      return;
+    }
+    CHECK(!IsMissingParent());
+  }
 
   const ComputedStyle* style = GetComputedStyle();
 
@@ -3384,8 +3490,7 @@ bool AXObject::ShouldIgnoreForHiddenOrInert(
   // Hide nodes that are whitespace or are occluded by CSS alt text.
   if (!GetLayoutObject() && GetNode() && !IsA<HTMLAreaElement>(GetNode()) &&
       !DisplayLockUtilities::IsDisplayLockedPreventingPaint(GetNode()) &&
-      (!GetElement() || !GetElement()->HasDisplayContentsStyle()) &&
-      !IsA<HTMLOptionElement>(GetNode())) {
+      (!GetElement() || !GetElement()->HasDisplayContentsStyle())) {
     if (ignored_reasons) {
       ignored_reasons->push_back(IgnoredReason(kAXNotRendered));
     }
@@ -3822,6 +3927,14 @@ bool AXObject::ComputeIsIgnoredButIncludedInTree() {
     return true;
   }
 
+  // Ensure clean teardown of AXMenuList and AXMenuListPopup.
+  // TODO(accessibility) Remove this exception once AXMenuList* is removed.
+  if (RoleValue() == ax::mojom::blink::Role::kMenuListPopup ||
+      RoleValue() == ax::mojom::blink::Role::kMenuListOption ||
+      RoleValue() == ax::mojom::blink::Role::kComboBoxSelect) {
+    return true;
+  }
+
   const Node* node = GetNode();
 
   if (!node) {
@@ -3836,8 +3949,8 @@ bool AXObject::ComputeIsIgnoredButIncludedInTree() {
           << "Object has layout object but no node and is not anonymous: "
           << GetLayoutObject();
     } else {
-      // Include virtual objects.
-      DCHECK(IsVirtualObject())
+      // Include ignored mock objects, virtual objects and inline text boxes.
+      DCHECK(IsMockObject() || IsVirtualObject())
           << "Nodeless, layout-less object found with role " << RoleValue();
     }
     // By including all of these objects in the tree, it is ensured that
@@ -4622,7 +4735,10 @@ bool AXObject::ComputeIsUsedForLabelOrDescription() {
       // node as also part of the label/description, because label and
       // descriptions computed from relations include hidden nodes.
       while (parent && parent->IsUsedForLabelOrDescription()) {
-        if (AXObjectCache().IsLabelOrDescription(*parent->GetElement())) {
+        // It's possible for parent->GetElement() to be null in the case of an
+        // AXMenuListPopup. In that case, continue and check its ancestors.
+        if (parent->GetElement() &&
+            AXObjectCache().IsLabelOrDescription(*parent->GetElement())) {
           return true;
         }
         parent = parent->ParentObject();
@@ -5426,10 +5542,10 @@ bool AXObject::ContainerLiveRegionBusy() const {
 }
 
 AXObject* AXObject::ElementAccessibilityHitTest(const gfx::Point& point) const {
-  // Check if the validation message contains the point.
+  // Check if there are any mock elements that need to be handled.
   PhysicalOffset physical_point(point);
   for (const auto& child : ChildrenIncludingIgnored()) {
-    if (child->IsValidationMessage() &&
+    if (child->IsMockObject() &&
         child->GetBoundsInFrameCoordinates().Contains(physical_point)) {
       return child->ElementAccessibilityHitTest(point);
     }
@@ -6043,6 +6159,13 @@ bool AXObject::ShouldDestroyWhenDetachingFromParent() const {
   // Do not interfere with the destruction loop in AXObjectCacheImpl::Dispose().
   if (IsDetached() || AXObjectCache().HasBeenDisposed()) {
     return false;
+  }
+  // Nodeless objects's children do not have a node, and a node is required for
+  // parent repair. Return true so that the nodeless child is not
+  // orphaned/leaked. Menulist popups are an exception as they are a single
+  // child managed by the parent AXMenuList.
+  if (!GetNode() && !IsMenuListPopup()) {
+    return true;
   }
 
   // Destroy all pseudo-elements that can't compute their parents, because we
@@ -7406,6 +7529,7 @@ bool AXObject::SupportsNameFromContents(bool recursive) const {
     case ax::mojom::blink::Role::kMenuItem:
     case ax::mojom::blink::Role::kMenuItemCheckBox:
     case ax::mojom::blink::Role::kMenuItemRadio:
+    case ax::mojom::blink::Role::kMenuListOption:
     case ax::mojom::blink::Role::kPopUpButton:
     case ax::mojom::blink::Role::kPortal:
     case ax::mojom::blink::Role::kRadioButton:
@@ -7518,7 +7642,6 @@ bool AXObject::SupportsNameFromContents(bool recursive) const {
     case ax::mojom::blink::Role::kMathMLText:
     case ax::mojom::blink::Role::kMathMLUnder:
     case ax::mojom::blink::Role::kMathMLUnderOver:
-    case ax::mojom::blink::Role::kMenuListOption:
     case ax::mojom::blink::Role::kMenuListPopup:
     case ax::mojom::blink::Role::kMenu:
     case ax::mojom::blink::Role::kMenuBar:
@@ -8054,9 +8177,8 @@ String AXObject::ToString(bool verbose) const {
       string_builder = string_builder + " inLabelOrDesc";
     }
 
-    if (!cached_values_only) {
+    if (!cached_values_only)
       string_builder = string_builder + " name=";
-    }
   } else {
     string_builder = string_builder + ": ";
   }

@@ -21,6 +21,15 @@ using ui::AXTreeFormatter;
 
 class DumpAccessibilityNodeTest : public DumpAccessibilityTestBase {
  public:
+  void SetUpCommandLine(base::CommandLine* command_line) override {
+    // kDisableAXMenuList is true on Chrome OS by default. This can cause the
+    // calculation of text alternatives from content to fail in blink tests
+    // which include a select element descendant.
+    base::CommandLine::ForCurrentProcess()->AppendSwitchASCII(
+        switches::kDisableAXMenuList, "false");
+    DumpAccessibilityTestBase::SetUpCommandLine(command_line);
+  }
+
   std::vector<ui::AXPropertyFilter> DefaultFilters() const override {
     std::vector<AXPropertyFilter> property_filters;
     if (GetParam() == ui::AXApiType::kMac) {

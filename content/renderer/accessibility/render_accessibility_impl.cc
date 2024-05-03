@@ -27,6 +27,7 @@
 #include "base/timer/elapsed_timer.h"
 #include "build/build_config.h"
 #include "build/chromeos_buildflags.h"
+#include "content/public/common/content_features.h"
 #include "content/public/renderer/render_thread.h"
 #include "content/renderer/accessibility/annotations/ax_annotators_manager.h"
 #include "content/renderer/accessibility/ax_action_target_factory.h"
@@ -44,6 +45,8 @@
 #include "third_party/blink/public/web/web_plugin_container.h"
 #include "third_party/blink/public/web/web_settings.h"
 #include "third_party/blink/public/web/web_view.h"
+#include "ui/accessibility/accessibility_features.h"
+#include "ui/accessibility/accessibility_switches.h"
 #include "ui/accessibility/ax_enum_util.h"
 #include "ui/accessibility/ax_event_intent.h"
 #include "ui/accessibility/ax_mode_histogram_logger.h"
@@ -102,22 +105,39 @@ RenderAccessibilityImpl::RenderAccessibilityImpl(
   content::RenderThread::Get()->BindHostReceiver(
       factory.BindNewPipeAndPassReceiver());
   ukm_recorder_ = ukm::MojoUkmRecorder::Create(*factory);
+  WebView* web_view = render_frame_->GetWebView();
+  WebSettings* settings = web_view->GetSettings();
 
 #if BUILDFLAG(IS_ANDROID)
   // Password values are only passed through on Android.
-  render_frame_->GetWebView()
-      ->GetSettings()
-      ->SetAccessibilityPasswordValuesEnabled(true);
-#elif BUILDFLAG(IS_MAC)
+  settings->SetAccessibilityPasswordValuesEnabled(true);
+#endif
+
+#if BUILDFLAG(IS_MAC)
   // aria-modal currently prunes the accessibility tree on Mac only.
-  render_frame_->GetWebView()->GetSettings()->SetAriaModalPrunesAXTree(true);
-#elif BUILDFLAG(IS_CHROMEOS)
+  settings->SetAriaModalPrunesAXTree(true);
+#endif
+
+#if BUILDFLAG(IS_CHROMEOS)
   // Do not ignore SVG grouping (<g>) elements on ChromeOS, which is needed so
   // Select-to-Speak can read SVG text nodes in natural reading order.
-  render_frame_->GetWebView()
-      ->GetSettings()
-      ->SetAccessibilityIncludeSvgGElement(true);
+  settings->SetAccessibilityIncludeSvgGElement(true);
 #endif
+
+  // Optionally disable AXMenuList, which makes the internal pop-up menu
+  // UI for a select element directly accessible. Disable by default on
+  // Chrome OS, but some tests may override.
+  bool disable_ax_menu_list = false;
+#if BUILDFLAG(IS_CHROMEOS)
+  disable_ax_menu_list = true;
+#endif
+  auto* command_line = base::CommandLine::ForCurrentProcess();
+  if (command_line->HasSwitch(::switches::kDisableAXMenuList)) {
+    disable_ax_menu_list = command_line->GetSwitchValueASCII(
+                               ::switches::kDisableAXMenuList) != "false";
+  }
+  if (disable_ax_menu_list)
+    settings->SetUseAXMenuList(false);
 
   ax_annotators_manager_ = std::make_unique<AXAnnotatorsManager>(this);
 }

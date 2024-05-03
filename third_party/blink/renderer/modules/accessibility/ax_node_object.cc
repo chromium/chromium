@@ -165,6 +165,8 @@
 #include "third_party/blink/renderer/core/xlink_names.h"
 #include "third_party/blink/renderer/modules/accessibility/ax_image_map_link.h"
 #include "third_party/blink/renderer/modules/accessibility/ax_inline_text_box.h"
+#include "third_party/blink/renderer/modules/accessibility/ax_menu_list_option.h"
+#include "third_party/blink/renderer/modules/accessibility/ax_menu_list_popup.h"
 #include "third_party/blink/renderer/modules/accessibility/ax_node_object.h"
 #include "third_party/blink/renderer/modules/accessibility/ax_object_cache_impl.h"
 #include "third_party/blink/renderer/modules/accessibility/ax_position.h"
@@ -612,21 +614,14 @@ AXObject* AXNodeObject::ActiveDescendant() const {
   if (!element)
     return nullptr;
 
-  if (RoleValue() == ax::mojom::blink::Role::kMenuListPopup) {
-    if (HTMLSelectElement* select =
-            DynamicTo<HTMLSelectElement>(parent_->GetNode())) {
-      // TODO(accessibility): as a simplification, just expose the active
-      // descendant of a <select size=1> at all times, like we do for other
-      // active descendant situations,
-      return select->PopupIsVisible() || select->IsFocusedElementInDocument()
-                 ? AXObjectCache().Get(select->OptionToBeShown())
-                 : nullptr;
-    }
-  }
-
   if (auto* select = DynamicTo<HTMLSelectElement>(GetNode())) {
+    // This is more direct than getting the item via
+    // select->item(active_index_). It's also more accurate, because
+    // active_index includes optgroup lines, whereas select->item() assumes an
+    // index that does not include them.
     if (!select->UsesMenuList()) {
-      return AXObjectCache().Get(select->ActiveSelectionEnd());
+      HTMLOptionElement* option = select->ActiveSelectionEnd();
+      return AXObjectCache().Get(option);
     }
   }
 
@@ -776,10 +771,6 @@ AXObjectInclusion AXNodeObject::ShouldIncludeBasedOnSemantics(
   if (IsControl())
     return kIncludeObject;
 
-  if (IsA<HTMLOptGroupElement>(node)) {
-    return kIncludeObject;
-  }
-
   // Anything with an explicit ARIA role should be included.
   if (RawAriaRole() != ax::mojom::blink::Role::kUnknown) {
     return kIncludeObject;
@@ -873,8 +864,6 @@ AXObjectInclusion AXNodeObject::ShouldIncludeBasedOnSemantics(
           ax::mojom::blink::Role::kMathMLUnder,
           ax::mojom::blink::Role::kMathMLUnderOver,
           ax::mojom::blink::Role::kMeter,
-          ax::mojom::blink::Role::kMenuListOption,
-          ax::mojom::blink::Role::kMenuListPopup,
           ax::mojom::blink::Role::kNavigation,
           ax::mojom::blink::Role::kPluginObject,
           ax::mojom::blink::Role::kProgressIndicator,
@@ -984,13 +973,8 @@ bool AXNodeObject::ComputeIsIgnored(
   Node* node = GetNode();
 
   if (ShouldIgnoreForHiddenOrInert(ignored_reasons)) {
-    // Keep structure of <select size=1> even when collapsed
-    if (RoleValue() == ax::mojom::blink::Role::kMenuListPopup ||
-        RoleValue() == ax::mojom::blink::Role::kMenuListOption ||
-        IsA<HTMLOptGroupElement>(node)) {
-      return ParentObject()->IsIgnored();
-    }
     // Fallback elements inside of a <canvas> are invisible, but are not ignored
+    // if they are semantic and not aria-hidden or hidden via style.
     if (IsAriaHidden() || IsHiddenViaStyle() || IsHiddenByChildTree() ||
         !node || !node->parentElement() ||
         !node->parentElement()->IsInCanvasSubtree()) {
@@ -1047,14 +1031,11 @@ bool AXNodeObject::ComputeIsIgnored(
   }
 
   if (node && node->IsInUserAgentShadowRoot()) {
-    Element* host = node->OwnerShadowHost();
-    if (auto* containing_media_element = DynamicTo<HTMLMediaElement>(host)) {
+    if (auto* containing_media_element =
+            DynamicTo<HTMLMediaElement>(node->OwnerShadowHost())) {
       if (!containing_media_element->ShouldShowControls()) {
         return true;
       }
-    }
-    if (IsA<HTMLOptGroupElement>(host)) {
-      return false;
     }
   }
 
@@ -2080,12 +2061,6 @@ ax::mojom::blink::Role AXNodeObject::NativeRoleIgnoringAria() const {
     }
   }
 
-  // Look for a special <slot> that is the popup for a <select size=1>.
-  if (IsA<HTMLSlotElement>(GetNode()) &&
-      ParentObject()->RoleValue() == ax::mojom::blink::Role::kComboBoxSelect) {
-    return ax::mojom::blink::Role::kMenuListPopup;
-  }
-
   if (auto* option = DynamicTo<HTMLOptionElement>(*GetNode())) {
     HTMLSelectElement* select_element = option->OwnerSelectElement();
     if (select_element && select_element->UsesMenuList() &&
@@ -2094,10 +2069,6 @@ ax::mojom::blink::Role AXNodeObject::NativeRoleIgnoringAria() const {
     } else {
       return ax::mojom::blink::Role::kListBoxOption;
     }
-  }
-
-  if (IsA<HTMLOptGroupElement>(GetNode())) {
-    return ax::mojom::blink::Role::kGroup;
   }
 
   if (IsA<HTMLTextAreaElement>(*GetNode()))
@@ -2603,33 +2574,7 @@ bool AXNodeObject::IsNativeImage() const {
   return false;
 }
 
-bool AXNodeObject::IsVisible() const {
-  // Any descendant of a <select size=1> should be considered invisible if
-  // the select is collapsed.
-  // TODO(aleventhal, jarhar): do this for any descendant of stylable selects.
-  if (RoleValue() == ax::mojom::blink::Role::kMenuListPopup) {
-    CHECK(parent_);
-    return parent_->IsExpanded() == kExpandedExpanded;
-  }
-  if (AXObject* tree_parent = ParentObjectUnignored()) {
-    if (tree_parent->RoleValue() == ax::mojom::blink::Role::kMenuListPopup ||
-        IsA<HTMLOptGroupElement>(tree_parent->GetNode())) {
-      // Visible if the parent is visible.
-      // The selected item is also visible in the collapsed <select>..
-      return tree_parent->IsVisible() || IsSelected() == kSelectedStateTrue;
-    }
-  }
-
-  return AXObject::IsVisible();
-}
-
 bool AXNodeObject::IsOffScreen() const {
-  if (RoleValue() == ax::mojom::blink::Role::kMenuListPopup) {
-    if (!IsVisible()) {
-      return true;
-    }
-  }
-
   if (GetLayoutObject()) {
     gfx::Rect content_rect =
         ToPixelSnappedRect(GetLayoutObject()->VisualRectInDocument());
@@ -2751,7 +2696,7 @@ bool AXNodeObject::IsFocused() const {
 }
 
 AccessibilitySelectedState AXNodeObject::IsSelected() const {
-  if (!GetNode() || !IsSubWidget()) {
+  if (!GetNode() || !GetLayoutObject() || !IsSubWidget()) {
     return kSelectedStateUndefined;
   }
 
@@ -2944,17 +2889,17 @@ AccessibilityExpanded AXNodeObject::IsExpanded() const {
   if (!element)
     return kExpandedUndefined;
 
-  if (RoleValue() == ax::mojom::blink::Role::kComboBoxSelect) {
-    DCHECK(IsA<HTMLSelectElement>(element));
-    bool is_expanded = To<HTMLSelectElement>(element)->PopupIsVisible();
-    return is_expanded ? kExpandedExpanded : kExpandedCollapsed;
-  }
-
-  // For stylable select.
   if (auto* button = DynamicTo<HTMLButtonElement>(element)) {
     if (auto* select_list = button->OwnerSelectList()) {
       return select_list->open() ? kExpandedExpanded : kExpandedCollapsed;
     }
+  }
+
+  if (RoleValue() == ax::mojom::blink::Role::kComboBoxSelect &&
+      IsA<HTMLSelectElement>(*element)) {
+    return To<HTMLSelectElement>(element)->PopupIsVisible()
+               ? kExpandedExpanded
+               : kExpandedCollapsed;
   }
 
   // For form controls that act as triggering elements for popovers of type
@@ -3924,11 +3869,10 @@ bool AXNodeObject::IsValidFormControl(ListedElement* form_control) const {
 }
 
 int AXNodeObject::PosInSet() const {
-  // A <select size=1> exposes posinset as the index of the selected option.
-  if (RoleValue() == ax::mojom::blink::Role::kComboBoxSelect) {
-    if (auto* select_element = DynamicTo<HTMLSelectElement>(*GetNode())) {
+  if (RoleValue() == ax::mojom::blink::Role::kComboBoxSelect && GetNode() &&
+      !AXObjectCache().UseAXMenuList()) {
+    if (auto* select_element = DynamicTo<HTMLSelectElement>(*GetNode()))
       return 1 + select_element->selectedIndex();
-    }
   }
 
   if (SupportsARIASetSizeAndPosInSet()) {
@@ -3940,12 +3884,10 @@ int AXNodeObject::PosInSet() const {
 }
 
 int AXNodeObject::SetSize() const {
-  if (auto* select_element = DynamicTo<HTMLSelectElement>(GetNode())) {
-    return static_cast<int>(select_element->length());
-  }
-
-  if (RoleValue() == ax::mojom::blink::Role::kMenuListPopup) {
-    return ParentObject()->SetSize();
+  if (RoleValue() == ax::mojom::blink::Role::kComboBoxSelect && GetNode() &&
+      !AXObjectCache().UseAXMenuList()) {
+    if (auto* select_element = DynamicTo<HTMLSelectElement>(*GetNode()))
+      return static_cast<int>(select_element->length());
   }
 
   if (SupportsARIASetSizeAndPosInSet()) {
@@ -5048,30 +4990,6 @@ void AXNodeObject::GetRelativeBounds(AXObject** out_container,
   out_bounds_in_container = gfx::RectF();
   out_container_transform.MakeIdentity();
 
-  if (RoleValue() == ax::mojom::blink::Role::kMenuListOption) {
-    // When a <select> is collapsed, the bounds of its options are the same as
-    // that of the containing <select>. Falling through will achieve this.
-    // TODO(accessibility): Support bounding boxes for <optgroup>. Could
-    // union the rect of the first and last option in it.
-    auto* select = To<HTMLOptionElement>(GetNode())->OwnerSelectElement();
-    if (auto* ax_select = AXObjectCache().Get(select)) {
-      if (ax_select->IsExpanded() == kExpandedExpanded) {
-        WTF::Vector<gfx::Rect> options_bounds =
-            AXObjectCache().GetOptionsBounds(*ax_select);
-        if (options_bounds.size()) {
-          unsigned int index = static_cast<unsigned int>(
-              To<HTMLOptionElement>(GetNode())->index());
-          DUMP_WILL_BE_CHECK(index < options_bounds.size())
-              << "Out of bounds option index=" << index
-              << " should be less than " << options_bounds.size()
-              << "\n* Object = " << this;
-          out_bounds_in_container = gfx::RectF(options_bounds.at(index));
-          return;
-        }
-      }
-    }
-  }
-
   // First check if it has explicit bounds, for example if this element is tied
   // to a canvas path. When explicit coordinates are provided, the ID of the
   // explicit container element that the coordinates are relative to must be
@@ -5463,9 +5381,8 @@ void AXNodeObject::AddImageMapChildren() {
 void AXNodeObject::AddPopupChildren() {
   auto* html_select_element = DynamicTo<HTMLSelectElement>(GetNode());
   if (html_select_element) {
-    if (html_select_element->UsesMenuList()) {
+    if (!AXObjectCache().UseAXMenuList() && html_select_element->UsesMenuList())
       AddChildAndCheckIncluded(html_select_element->PopupRootAXObject());
-    }
     return;
   }
 
@@ -5676,6 +5593,24 @@ void AXNodeObject::CheckValidChild(AXObject* child) {
         << "Area elements can only be added by image parents: " << child
         << " had a parent of " << this;
   }
+
+  // An option or popup for a <select size=1> must only be added via an
+  // overridden AddChildren() on AXMenuList/AXMenuListPopup.
+  // These AXObjects must be added in an overridden AddChildren() method, and
+  // that will only occur if AXObjectCacheImpl::UseAXMenuList() returns true.
+  DCHECK(!IsA<AXMenuListOption>(child))
+      << "Adding menulist option child in wrong place: " << "\nChild: " << child
+      << "\nParent: " << child->ParentObject()
+      << "\nUseAXMenuList()=" << AXObjectCacheImpl::UseAXMenuList();
+
+  // An popup for a <select size=1> must only be added via an overridden
+  // AddChildren() on AXMenuList.
+  DCHECK(!IsA<AXMenuListPopup>(child))
+      << "Adding menulist popup in wrong place: " << "\nChild: " << child
+      << "\nParent: " << child->ParentObject()
+      << "\nUseAXMenuList()=" << AXObjectCacheImpl::UseAXMenuList()
+      << "\nShouldCreateAXMenuListOptionFor()="
+      << AXObjectCacheImpl::ShouldCreateAXMenuListOptionFor(child_node);
 
   DCHECK(!IsA<HTMLFrameElementBase>(GetNode()) ||
          IsA<Document>(child->GetNode()))
@@ -6345,21 +6280,7 @@ String AXNodeObject::NativeTextAlternative(
     text_alternative = option_element->DisplayLabel();
     if (!text_alternative.empty()) {
       if (name_sources) {
-        name_sources->push_back(NameSource(*found_text_alternative));
-        name_sources->back().type = name_from;
-        name_sources->back().text = text_alternative;
-        *found_text_alternative = true;
-      }
-      return text_alternative;
-    }
-  }
-
-  if (auto* opt_group_element = DynamicTo<HTMLOptGroupElement>(GetNode())) {
-    name_from = ax::mojom::blink::NameFrom::kAttribute;
-    text_alternative = opt_group_element->GroupLabelText();
-    if (!text_alternative.empty()) {
-      if (name_sources) {
-        name_sources->push_back(NameSource(*found_text_alternative));
+        name_sources->push_back(NameSource(found_text_alternative));
         name_sources->back().type = name_from;
         name_sources->back().text = text_alternative;
         *found_text_alternative = true;

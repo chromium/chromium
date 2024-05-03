@@ -481,7 +481,7 @@ export namespace AutomationPredicate {
       return true;
     }
 
-    // Ignore structural containers.
+    // Ignore structural containres.
     if (AutomationPredicate.structuralContainer(node)) {
       return true;
     }
@@ -766,6 +766,7 @@ export namespace AutomationPredicate {
       Role.MENU_ITEM,
       Role.MENU_ITEM_CHECK_BOX,
       Role.MENU_ITEM_RADIO,
+      Role.MENU_LIST_OPTION,
       Role.SCROLL_BAR,
     ],
   });
@@ -796,7 +797,6 @@ export namespace AutomationPredicate {
     Role.LAYOUT_TABLE,
     Role.LAYOUT_TABLE_CELL,
     Role.LAYOUT_TABLE_ROW,
-    Role.MENU_LIST_POPUP,
     Role.ROOT_WEB_AREA,
     Role.WEB_VIEW,
     Role.WINDOW,

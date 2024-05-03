@@ -1,5 +1,5 @@
 /*
- * Copyright (C) 2009 Apple Inc. All rights reserved.
+ * Copyright (C) 2011 Apple Inc. All rights reserved.
  *
  * Redistribution and use in source and binary forms, with or without
  * modification, are permitted provided that the following conditions
@@ -10,9 +10,6 @@
  * 2.  Redistributions in binary form must reproduce the above copyright
  *     notice, this list of conditions and the following disclaimer in the
  *     documentation and/or other materials provided with the distribution.
- * 3.  Neither the name of Apple Computer, Inc. ("Apple") nor the names of
- *     its contributors may be used to endorse or promote products derived
- *     from this software without specific prior written permission.
  *
  * THIS SOFTWARE IS PROVIDED BY APPLE AND ITS CONTRIBUTORS "AS IS" AND ANY
  * EXPRESS OR IMPLIED WARRANTIES, INCLUDING, BUT NOT LIMITED TO, THE IMPLIED
@@ -26,37 +23,26 @@
  * THIS SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
  */
 
-#ifndef THIRD_PARTY_BLINK_RENDERER_MODULES_ACCESSIBILITY_AX_SLIDER_H_
-#define THIRD_PARTY_BLINK_RENDERER_MODULES_ACCESSIBILITY_AX_SLIDER_H_
-
 #include "third_party/blink/renderer/modules/accessibility/ax_mock_object.h"
-#include "third_party/blink/renderer/modules/accessibility/ax_node_object.h"
+
+#include "third_party/blink/renderer/modules/accessibility/ax_object_cache_impl.h"
 
 namespace blink {
 
-class AXObjectCacheImpl;
-class HTMLInputElement;
+AXMockObject::AXMockObject(AXObjectCacheImpl& ax_object_cache)
+    : AXObject(ax_object_cache) {}
 
-class AXSlider : public AXNodeObject {
- public:
-  AXSlider(LayoutObject*, AXObjectCacheImpl&);
+AXMockObject::~AXMockObject() = default;
 
-  AXSlider(const AXSlider&) = delete;
-  AXSlider& operator=(const AXSlider&) = delete;
+Document* AXMockObject::GetDocument() const {
+  // This assumes that the mock object (only used for <select> popups) will not
+  // occur within another popup document (a popup within another popup).
+  return &AXObjectCache().GetDocument();
+}
 
-  ~AXSlider() override = default;
-
- private:
-  HTMLInputElement* GetInputElement() const;
-
-  ax::mojom::blink::Role NativeRoleIgnoringAria() const final;
-  bool IsSlider() const final { return true; }
-  bool IsControl() const final { return true; }
-
-  bool OnNativeSetValueAction(const String&) final;
-  AccessibilityOrientation Orientation() const final;
-};
+ax::mojom::blink::Role AXMockObject::NativeRoleIgnoringAria() const {
+  NOTREACHED();
+  return ax::mojom::blink::Role::kUnknown;
+}
 
 }  // namespace blink
-
-#endif  // THIRD_PARTY_BLINK_RENDERER_MODULES_ACCESSIBILITY_AX_SLIDER_H_

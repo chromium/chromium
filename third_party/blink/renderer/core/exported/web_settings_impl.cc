@@ -781,6 +781,10 @@ void WebSettingsImpl::SetAriaModalPrunesAXTree(bool enabled) {
   settings_->SetAriaModalPrunesAXTree(enabled);
 }
 
+void WebSettingsImpl::SetUseAXMenuList(bool enabled) {
+  settings_->SetUseAXMenuList(enabled);
+}
+
 void WebSettingsImpl::SetSelectionClipboardBufferAvailable(bool available) {
   settings_->SetSelectionClipboardBufferAvailable(available);
 }

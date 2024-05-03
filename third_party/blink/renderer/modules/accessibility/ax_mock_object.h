@@ -1,5 +1,5 @@
 /*
- * Copyright (C) 2009 Apple Inc. All rights reserved.
+ * Copyright (C) 2011 Apple Inc. All rights reserved.
  *
  * Redistribution and use in source and binary forms, with or without
  * modification, are permitted provided that the following conditions
@@ -10,9 +10,6 @@
  * 2.  Redistributions in binary form must reproduce the above copyright
  *     notice, this list of conditions and the following disclaimer in the
  *     documentation and/or other materials provided with the distribution.
- * 3.  Neither the name of Apple Computer, Inc. ("Apple") nor the names of
- *     its contributors may be used to endorse or promote products derived
- *     from this software without specific prior written permission.
  *
  * THIS SOFTWARE IS PROVIDED BY APPLE AND ITS CONTRIBUTORS "AS IS" AND ANY
  * EXPRESS OR IMPLIED WARRANTIES, INCLUDING, BUT NOT LIMITED TO, THE IMPLIED
@@ -26,37 +23,45 @@
  * THIS SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
  */
 
-#ifndef THIRD_PARTY_BLINK_RENDERER_MODULES_ACCESSIBILITY_AX_SLIDER_H_
-#define THIRD_PARTY_BLINK_RENDERER_MODULES_ACCESSIBILITY_AX_SLIDER_H_
+#ifndef THIRD_PARTY_BLINK_RENDERER_MODULES_ACCESSIBILITY_AX_MOCK_OBJECT_H_
+#define THIRD_PARTY_BLINK_RENDERER_MODULES_ACCESSIBILITY_AX_MOCK_OBJECT_H_
 
-#include "third_party/blink/renderer/modules/accessibility/ax_mock_object.h"
-#include "third_party/blink/renderer/modules/accessibility/ax_node_object.h"
+#include "third_party/blink/renderer/modules/accessibility/ax_object.h"
+#include "third_party/blink/renderer/modules/modules_export.h"
 
 namespace blink {
 
 class AXObjectCacheImpl;
-class HTMLInputElement;
 
-class AXSlider : public AXNodeObject {
+// A mock object is an AXObject defined only by a role, having no backing object
+// such as a node, layout object or AccessibleNode. It must be explicitly added
+// by its parent. The only current type of AXMockObject is an AXMenuListPopup.
+// TODO(accessibility) Remove this class.
+
+class MODULES_EXPORT AXMockObject : public AXObject {
+ protected:
+  explicit AXMockObject(AXObjectCacheImpl&);
+
  public:
-  AXSlider(LayoutObject*, AXObjectCacheImpl&);
+  AXMockObject(const AXMockObject&) = delete;
+  AXMockObject& operator=(const AXMockObject&) = delete;
 
-  AXSlider(const AXSlider&) = delete;
-  AXSlider& operator=(const AXSlider&) = delete;
+  ~AXMockObject() override;
 
-  ~AXSlider() override = default;
+  // AXObject overrides.
+  AXRestriction Restriction() const override { return kRestrictionNone; }
+  bool IsMockObject() const final { return true; }
+  Document* GetDocument() const override;
+  ax::mojom::blink::Role NativeRoleIgnoringAria() const override;
+};
 
- private:
-  HTMLInputElement* GetInputElement() const;
-
-  ax::mojom::blink::Role NativeRoleIgnoringAria() const final;
-  bool IsSlider() const final { return true; }
-  bool IsControl() const final { return true; }
-
-  bool OnNativeSetValueAction(const String&) final;
-  AccessibilityOrientation Orientation() const final;
+template <>
+struct DowncastTraits<AXMockObject> {
+  static bool AllowFrom(const AXObject& object) {
+    return object.IsMockObject();
+  }
 };
 
 }  // namespace blink
 
-#endif  // THIRD_PARTY_BLINK_RENDERER_MODULES_ACCESSIBILITY_AX_SLIDER_H_
+#endif  // THIRD_PARTY_BLINK_RENDERER_MODULES_ACCESSIBILITY_AX_MOCK_OBJECT_H_

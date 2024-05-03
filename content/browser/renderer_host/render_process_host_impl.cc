@@ -3412,6 +3412,7 @@ void RenderProcessHostImpl::PropagateBrowserCommandLineToRenderer(
     switches::kMojoCoreLibraryPath,
     switches::kDisable2dCanvasImageChromium,
     switches::kDisableYUVImageDecoding,
+    switches::kDisableAXMenuList,
     switches::kDisableAcceleratedVideoDecode,
     switches::kDisableBackForwardCache,
     switches::kDisableBackgroundTimerThrottling,

@@ -14,17 +14,13 @@
 namespace blink {
 
 AXValidationMessage::AXValidationMessage(AXObjectCacheImpl& ax_object_cache)
-    : AXObject(ax_object_cache) {}
+    : AXMockObject(ax_object_cache) {}
 
 AXValidationMessage::~AXValidationMessage() {}
 
 bool AXValidationMessage::ComputeIsIgnored(
     IgnoredReasons* ignored_reasons) const {
   return false;
-}
-
-Document* AXValidationMessage::GetDocument() const {
-  return &AXObjectCache().GetDocument();
 }
 
 // TODO(accessibility) Currently we return the bounds of the focused form

@@ -2284,11 +2284,10 @@ AXNode* AXNode::GetCollapsedMenuListSelectAncestor() const {
 }
 
 bool AXNode::IsEmbeddedGroup() const {
-  if (GetRole() != ax::mojom::Role::kGroup || !GetUnignoredParent()) {
+  if (GetRole() != ax::mojom::Role::kGroup || !GetParent())
     return false;
-  }
 
-  return ui::IsSetLike(GetUnignoredParent()->GetRole());
+  return ui::IsSetLike(GetParent()->GetRole());
 }
 
 AXNode* AXNode::GetLowestPlatformAncestor() const {

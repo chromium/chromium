@@ -1,0 +1,29 @@
+<!DOCTYPE HTML>
+<script src="../resources/testharness.js"></script>
+<script src="../resources/testharnessreport.js"></script>
+<select id="menulist">
+  <option>Random Transformer</option>
+  <optgroup>
+    <option>Optimus Prime</option>
+    <option>Bumblebee</option>
+    <option>Jazz</option>
+  </optgroup>
+  <optgroup>
+    <option>Megatron</option>
+    <option>Starscream</option>
+    <option>Brawl</option>
+  </optgroup>
+</select>
+<script>
+test(function(t)
+{
+    var axMenuList = accessibilityController.accessibleElementById("menulist");
+    assert_equals(axMenuList.role, "AXRole: AXComboBoxSelect");
+    var axMenuListPopup = axMenuList.childAtIndex(0);
+    assert_equals(axMenuListPopup.role, "AXRole: AXMenuListPopup");
+    assert_equals(axMenuListPopup.childrenCount, 7);
+    for (var i = 0; i < axMenuListPopup.childrenCount; i++) {
+        assert_equals(axMenuListPopup.childAtIndex(i).role, "AXRole: AXMenuListOption");
+    }
+}, "menu list optgroup options are accessible");
+</script>

@@ -724,22 +724,16 @@ AX_TEST_F('ChromeVoxBackgroundTest', 'SelectOptionSelected', async function() {
   const root = await this.runWithLoadedTree(site);
   const select = root.find({role: RoleType.COMBO_BOX_SELECT});
   const selectLastOption = () => {
-    const options = select.findAll({role: RoleType.MENU_LIST_OPTION});
+    const options = select.findAll({role: RoleType.LIST_BOX_OPTION});
     options[options.length - 1].doDefault();
   };
 
   mockFeedback.call(doCmd('nextObject'))
-      .expectSpeech('apple')
-      .expectSpeech('Button')
-      .expectSpeech('Collapsed')
-      .expectSpeech('Press Search+Space to activate')
+      .expectSpeech('Button', 'Press Search+Space to activate')
       .call(doDefault(select))
       .expectSpeech('apple')
-      // TODO(crbug.com/260178552): flaky whether this is read as an expanded
-      // button or as a list item 1 of 3. This is also flaky when using
-      // ChromeVox. Accept either for now -- both convey the current selection.
-      // .expectSpeech('Button')
-      // .expectSpeech('Expanded')
+      .expectSpeech('Button')
+      .expectSpeech('Expanded')
       .call(selectLastOption)
       .expectNextSpeechUtteranceIsNot('apple')
       .expectSpeech('grapefruit');
@@ -4041,24 +4035,21 @@ AX_TEST_F(
       await mockFeedback.replay();
     });
 
-// TODO(crbug.com/260291606): flaky.
-AX_TEST_F(
-    'ChromeVoxBackgroundTest', 'DISABLED_GestureOnPopUpButton',
-    async function() {
-      const mockFeedback = this.createMockFeedback();
-      const site = `
+AX_TEST_F('ChromeVoxBackgroundTest', 'GestureOnPopUpButton', async function() {
+  const mockFeedback = this.createMockFeedback();
+  const site = `
     <select><option>apple</option><option>banana</option></select>
   `;
-      await this.runWithLoadedTree(site);
-      mockFeedback.expectSpeech('Button', 'has pop up')
-          .call(doGesture(Gesture.CLICK))
-          .expectSpeech('Button', 'has pop up', 'Expanded')
-          .call(doGesture(Gesture.SWIPE_DOWN1))
-          .expectSpeech('banana')
-          .call(doGesture(Gesture.SWIPE_UP1))
-          .expectSpeech('apple');
-      await mockFeedback.replay();
-    });
+  await this.runWithLoadedTree(site);
+  mockFeedback.expectSpeech('Button', 'has pop up')
+      .call(doGesture(Gesture.CLICK))
+      .expectSpeech('Button', 'has pop up', 'Expanded')
+      .call(doGesture(Gesture.SWIPE_DOWN1))
+      .expectSpeech('banana')
+      .call(doGesture(Gesture.SWIPE_UP1))
+      .expectSpeech('apple');
+  await mockFeedback.replay();
+});
 
 AX_TEST_F('ChromeVoxBackgroundTest', 'NestedImages', async function() {
   const mockFeedback = this.createMockFeedback();
