@@ -710,6 +710,21 @@
             ]
         }
     ],
+    "AppSpecificHistory": [
+        {
+            "platforms": [
+                "android"
+            ],
+            "experiments": [
+                {
+                    "name": "Enabled",
+                    "enable_features": [
+                        "AppSpecificHistory"
+                    ]
+                }
+            ]
+        }
+    ],
     "AppStreamingAccessibilityIntegration": [
         {
             "platforms": [
