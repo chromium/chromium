@@ -30,6 +30,7 @@
 #include "chrome/browser/ash/system_logs/device_data_manager_input_devices_log_source.h"
 #include "chrome/browser/ash/system_logs/input_event_converter_log_source.h"
 #include "chrome/browser/ash/system_logs/iwlwifi_dump_log_source.h"
+#include "chrome/browser/ash/system_logs/keyboard_info_log_source.h"
 #include "chrome/browser/ash/system_logs/network_health_source.h"
 #include "chrome/browser/ash/system_logs/reven_log_source.h"
 #include "chrome/browser/ash/system_logs/shill_log_source.h"
@@ -102,6 +103,7 @@ SystemLogsFetcher* BuildChromeSystemLogsFetcher(Profile* profile,
 
   fetcher->AddSource(std::make_unique<VirtualKeyboardLogSource>());
   fetcher->AddSource(std::make_unique<AppServiceLogSource>());
+  fetcher->AddSource(std::make_unique<KeyboardInfoLogSource>());
 #if BUILDFLAG(IS_CHROMEOS_WITH_HW_DETAILS)
   fetcher->AddSource(std::make_unique<RevenLogSource>());
 #endif

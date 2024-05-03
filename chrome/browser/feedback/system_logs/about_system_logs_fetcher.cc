@@ -29,6 +29,7 @@
 #include "chrome/browser/ash/system_logs/debug_daemon_log_source.h"
 #include "chrome/browser/ash/system_logs/device_data_manager_input_devices_log_source.h"
 #include "chrome/browser/ash/system_logs/input_event_converter_log_source.h"
+#include "chrome/browser/ash/system_logs/keyboard_info_log_source.h"
 #include "chrome/browser/ash/system_logs/network_health_source.h"
 #include "chrome/browser/ash/system_logs/reven_log_source.h"
 #include "chrome/browser/ash/system_logs/shill_log_source.h"
@@ -77,6 +78,7 @@ SystemLogsFetcher* BuildAboutSystemLogsFetcher(content::WebUI* web_ui) {
       scrub_data, /*include_guid_when_not_scrub=*/false));
   fetcher->AddSource(std::make_unique<ShillLogSource>(scrub_data));
   fetcher->AddSource(std::make_unique<UiHierarchyLogSource>(scrub_data));
+  fetcher->AddSource(std::make_unique<KeyboardInfoLogSource>());
 #endif
 
   return fetcher;

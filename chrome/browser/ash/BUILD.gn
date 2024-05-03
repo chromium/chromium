@@ -3413,6 +3413,8 @@ source_set("ash") {
     "system_logs/input_event_converter_log_source.h",
     "system_logs/iwlwifi_dump_log_source.cc",
     "system_logs/iwlwifi_dump_log_source.h",
+    "system_logs/keyboard_info_log_source.cc",
+    "system_logs/keyboard_info_log_source.h",
     "system_logs/network_health_source.cc",
     "system_logs/network_health_source.h",
     "system_logs/reven_log_source.cc",
