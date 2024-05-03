@@ -99,9 +99,12 @@ class PLATFORM_EXPORT MediaStreamComponentImpl final
   void GetSettings(MediaStreamTrackPlatform::Settings&) override;
   MediaStreamTrackPlatform::CaptureHandle GetCaptureHandle() override;
 
-  WebLocalFrame* CreationFrame() override { return creation_frame_; }
-  void SetCreationFrame(WebLocalFrame* creation_frame) override {
-    creation_frame_ = creation_frame;
+  WebLocalFrame* CreationFrame() override {
+    return creation_frame_getter_ ? creation_frame_getter_.Run() : nullptr;
+  }
+  void SetCreationFrameGetter(base::RepeatingCallback<WebLocalFrame*()>
+                                  creation_frame_getter) override {
+    creation_frame_getter_ = std::move(creation_frame_getter);
   }
 
   void AddSourceObserver(MediaStreamSource::Observer* observer) override;
@@ -124,8 +127,12 @@ class PLATFORM_EXPORT MediaStreamComponentImpl final
   WebMediaStreamTrack::ContentHintType content_hint_ =
       WebMediaStreamTrack::ContentHintType::kNone;
   std::unique_ptr<MediaStreamTrackPlatform> platform_track_;
-  // Frame where the referenced platform track was created, if applicable.
-  raw_ptr<WebLocalFrame> creation_frame_ = nullptr;
+  // Getter returning the frame where the referenced platform track was created,
+  // if it's still alive.
+  // Stored as a callback in which code in modules/ can bind a weak pointer to
+  // the GCed core class LocalFrame, as this platform/ class can't depend on
+  // core/.
+  base::RepeatingCallback<WebLocalFrame*()> creation_frame_getter_;
 };
 
 }  // namespace blink

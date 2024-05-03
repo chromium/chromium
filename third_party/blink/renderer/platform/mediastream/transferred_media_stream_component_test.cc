@@ -47,7 +47,8 @@ class MockMediaStreamComponent
   MOCK_METHOD1(GetSettings, void(MediaStreamTrackPlatform::Settings&));
   MOCK_METHOD0(GetCaptureHandle, MediaStreamTrackPlatform::CaptureHandle());
   MOCK_METHOD0(CreationFrame, WebLocalFrame*());
-  MOCK_METHOD1(SetCreationFrame, void(WebLocalFrame*));
+  MOCK_METHOD1(SetCreationFrameGetter,
+               void(base::RepeatingCallback<WebLocalFrame*()>));
   MOCK_METHOD1(AddSourceObserver, void(MediaStreamSource::Observer*));
   MOCK_METHOD1(AddSink, void(WebMediaStreamAudioSink*));
   MOCK_METHOD4(AddSink,

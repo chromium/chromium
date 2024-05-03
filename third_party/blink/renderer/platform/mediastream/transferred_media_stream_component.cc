@@ -193,10 +193,10 @@ WebLocalFrame* TransferredMediaStreamComponent::CreationFrame() {
   return nullptr;
 }
 
-void TransferredMediaStreamComponent::SetCreationFrame(
-    WebLocalFrame* creation_frame) {
+void TransferredMediaStreamComponent::SetCreationFrameGetter(
+    base::RepeatingCallback<WebLocalFrame*()> creation_frame_getter) {
   if (component_) {
-    component_->SetCreationFrame(creation_frame);
+    component_->SetCreationFrameGetter(std::move(creation_frame_getter));
     return;
   }
   // TODO(https://crbug.com/1288839): Save and forward to component_ once it's

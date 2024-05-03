@@ -60,7 +60,8 @@ class PLATFORM_EXPORT TransferredMediaStreamComponent final
   MediaStreamTrackPlatform::CaptureHandle GetCaptureHandle() override;
 
   WebLocalFrame* CreationFrame() override;
-  void SetCreationFrame(WebLocalFrame* creation_frame) override;
+  void SetCreationFrameGetter(
+      base::RepeatingCallback<WebLocalFrame*()>) override;
 
   void AddSourceObserver(MediaStreamSource::Observer* observer) override;
   void AddSink(WebMediaStreamAudioSink* sink) override;

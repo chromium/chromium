@@ -96,7 +96,8 @@ class PLATFORM_EXPORT MediaStreamComponent : public GarbageCollectedMixin {
   virtual MediaStreamTrackPlatform::CaptureHandle GetCaptureHandle() = 0;
 
   virtual WebLocalFrame* CreationFrame() = 0;
-  virtual void SetCreationFrame(WebLocalFrame* creation_frame) = 0;
+  virtual void SetCreationFrameGetter(
+      base::RepeatingCallback<WebLocalFrame*()>) = 0;
 
   virtual void AddSourceObserver(MediaStreamSource::Observer*) = 0;
 
