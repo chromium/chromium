@@ -4476,7 +4476,7 @@ IN_PROC_BROWSER_TEST_P(DetachToBrowserInSeparateDisplayTabDragControllerTest,
 IN_PROC_BROWSER_TEST_P(DetachToBrowserInSeparateDisplayTabDragControllerTest,
                        MAYBE_DragMaxTabToNonMaxWindowInSeparateDisplay) {
   AddTabsAndResetBrowser(browser(), 1);
-  browser()->window()->Maximize();
+  ASSERT_TRUE(ui_test_utils::MaximizeAndWaitUntilUIUpdateDone(*browser()));
   TabStrip* tab_strip = GetTabStripForBrowser(browser());
 
   // Create another browser on the second display.

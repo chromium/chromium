@@ -214,6 +214,11 @@ bool WaitForMaximized(Browser* browser);
 // bounds update will be observable from all parts of the client.
 void SetAndWaitForBounds(Browser& browser, const gfx::Rect& bounds);
 
+// Maximizes the browser window and wait until the window is maximized and all
+// related visible UI effects are applied and observable from chrome.
+// Returns true if succeeded.
+bool MaximizeAndWaitUntilUIUpdateDone(Browser& browser);
+
 // Waits for fullscreen state to be updated.
 // There're two variation of fullscreen concepts, browser fullscreen and
 // tab fullscreen. Due to fullscreen implementation, fullscreen state may

@@ -509,6 +509,13 @@ void SetAndWaitForBounds(Browser& browser, const gfx::Rect& bounds) {
   waiter.Wait();
 }
 
+bool MaximizeAndWaitUntilUIUpdateDone(Browser& browser) {
+  auto waiter = ui_test_utils::CreateAsyncWidgetRequestWaiter(browser);
+  browser.window()->Maximize();
+  waiter.Wait();
+  return browser.window()->IsMaximized();
+}
+
 FullscreenWaiter::FullscreenWaiter(Browser* browser,
                                    FullscreenWaiter::Expectation expectation)
     : expectation_(std::move(expectation)),
