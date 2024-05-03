@@ -227,18 +227,6 @@ bool WebAuthnApiSupportsHybrid() {
 }
 
 const gfx::VectorIcon& GetCredentialIcon(device::AuthenticatorType type) {
-  if (base::FeatureList::IsEnabled(device::kWebAuthnEnclaveAuthenticator)) {
-    switch (type) {
-      case device::AuthenticatorType::kEnclave:
-        return vector_icons::kPasswordManagerIcon;
-      case device::AuthenticatorType::kWinNative:
-        return kWindowsHelloIcon;
-      case device::AuthenticatorType::kICloudKeychain:
-        return kIcloudKeychainIcon;
-      default:
-        return vector_icons::kPasskeyIcon;
-    }
-  }
   if (type == device::AuthenticatorType::kPhone) {
     return kSmartphoneIcon;
   }
