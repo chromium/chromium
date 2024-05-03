@@ -166,7 +166,9 @@ END_METADATA
 MultilineExample::MultilineExample()
     : ExampleBase(GetStringUTF8(IDS_MULTILINE_SELECT_LABEL).c_str()) {}
 
-MultilineExample::~MultilineExample() = default;
+MultilineExample::~MultilineExample() {
+  textfield_->set_controller(nullptr);
+}
 
 void MultilineExample::CreateExampleView(View* container) {
   container->SetLayoutManager(std::make_unique<views::TableLayout>())

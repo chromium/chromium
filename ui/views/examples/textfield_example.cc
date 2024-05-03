@@ -33,7 +33,10 @@ namespace views::examples {
 TextfieldExample::TextfieldExample()
     : ExampleBase(GetStringUTF8(IDS_TEXTFIELD_SELECT_LABEL).c_str()) {}
 
-TextfieldExample::~TextfieldExample() = default;
+TextfieldExample::~TextfieldExample() {
+  name_->set_controller(nullptr);
+  password_->set_controller(nullptr);
+}
 
 void TextfieldExample::CreateExampleView(View* container) {
   TableLayout* layout =

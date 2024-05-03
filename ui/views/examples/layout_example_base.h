@@ -28,6 +28,8 @@ class VIEWS_EXAMPLES_EXPORT LayoutExampleBase : public ExampleBase,
  public:
   // Grouping of multiple textfields that provide insets.
   struct InsetTextfields {
+    void ResetControllers();
+
     raw_ptr<Textfield> left = nullptr;
     raw_ptr<Textfield> top = nullptr;
     raw_ptr<Textfield> right = nullptr;

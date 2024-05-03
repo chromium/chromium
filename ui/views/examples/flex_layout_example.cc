@@ -29,7 +29,10 @@ namespace views::examples {
 
 FlexLayoutExample::FlexLayoutExample() : LayoutExampleBase("Flex Layout") {}
 
-FlexLayoutExample::~FlexLayoutExample() = default;
+FlexLayoutExample::~FlexLayoutExample() {
+  interior_margin_.ResetControllers();
+  default_child_margins_.ResetControllers();
+}
 
 void FlexLayoutExample::ContentsChanged(Textfield* sender,
                                         const std::u16string& new_contents) {

@@ -242,7 +242,11 @@ MahiMenuView::MahiMenuView()
   AddChildView(CreateInputContainer());
 }
 
-MahiMenuView::~MahiMenuView() = default;
+MahiMenuView::~MahiMenuView() {
+  // `textfield_` keeps a raw pointer to `textfield_controller_` - reset that
+  // before destroying the controller.
+  textfield_->SetController(nullptr);
+}
 
 // static
 views::UniqueWidgetPtr MahiMenuView::CreateWidget(

@@ -115,7 +115,13 @@ DialogExample::DialogExample()
           ui::SimpleComboboxModel::Item(u"Fake Modeless (non-bubbles)"),
       }) {}
 
-DialogExample::~DialogExample() = default;
+DialogExample::~DialogExample() {
+  title_->set_controller(nullptr);
+  body_->set_controller(nullptr);
+  ok_button_label_->set_controller(nullptr);
+  cancel_button_label_->set_controller(nullptr);
+  extra_button_label_->set_controller(nullptr);
+}
 
 void DialogExample::CreateExampleView(View* container) {
   auto* flex_layout =

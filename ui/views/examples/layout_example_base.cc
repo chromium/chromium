@@ -87,6 +87,13 @@ std::unique_ptr<Textfield> CreateCommonTextfieldWithAXName(
 
 }  // namespace
 
+void LayoutExampleBase::InsetTextfields::ResetControllers() {
+  left->set_controller(nullptr);
+  top->set_controller(nullptr);
+  right->set_controller(nullptr);
+  bottom->set_controller(nullptr);
+}
+
 LayoutExampleBase::ChildPanel::ChildPanel(LayoutExampleBase* example)
     : example_(example) {
   margin_.left = CreateTextfield(u"Left margin");
@@ -184,7 +191,10 @@ END_METADATA
 
 LayoutExampleBase::LayoutExampleBase(const char* title) : ExampleBase(title) {}
 
-LayoutExampleBase::~LayoutExampleBase() = default;
+LayoutExampleBase::~LayoutExampleBase() {
+  preferred_width_view_->set_controller(nullptr);
+  preferred_height_view_->set_controller(nullptr);
+}
 
 void LayoutExampleBase::RefreshLayoutPanel(bool update_layout) {
   if (update_layout)

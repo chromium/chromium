@@ -108,7 +108,9 @@ ColoredDialog::ColoredDialog(AcceptCallback accept_callback) {
   SetButtonEnabled(ui::DIALOG_BUTTON_OK, false);
 }
 
-ColoredDialog::~ColoredDialog() = default;
+ColoredDialog::~ColoredDialog() {
+  textfield_->set_controller(nullptr);
+}
 
 bool ColoredDialog::ShouldShowCloseButton() const {
   return false;

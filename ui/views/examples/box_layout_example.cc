@@ -29,7 +29,12 @@ namespace views::examples {
 
 BoxLayoutExample::BoxLayoutExample() : LayoutExampleBase("Box Layout") {}
 
-BoxLayoutExample::~BoxLayoutExample() = default;
+BoxLayoutExample::~BoxLayoutExample() {
+  between_child_spacing_->set_controller(nullptr);
+  default_flex_->set_controller(nullptr);
+  min_cross_axis_size_->set_controller(nullptr);
+  border_insets_.ResetControllers();
+}
 
 void BoxLayoutExample::ContentsChanged(Textfield* textfield,
                                        const std::u16string& new_contents) {
