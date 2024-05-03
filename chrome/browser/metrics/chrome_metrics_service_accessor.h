@@ -114,6 +114,10 @@ namespace readaloud {
 class SyntheticTrial;
 }
 
+namespace tab_groups {
+class TabGroupTrial;
+}  // namespace tab_groups
+
 // This class limits and documents access to metrics service helper methods.
 // Since these methods are private, each user has to be explicitly declared
 // as a 'friend' below.
@@ -179,6 +183,7 @@ class ChromeMetricsServiceAccessor : public metrics::MetricsServiceAccessor {
   friend class CampaignsManagerClientImpl;
   friend class tpcd::experiment::ExperimentManagerImpl;
   friend class readaloud::SyntheticTrial;
+  friend class tab_groups::TabGroupTrial;
 #if !BUILDFLAG(IS_ANDROID)
   friend class DefaultBrowserPromptTrial;
 #endif
