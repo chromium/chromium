@@ -20,4 +20,6 @@ const char kOrcaFreeformParamKey[] = "freeform";
 
 const char kOrcaResizingEnabledParamKey[] = "resizing-enabled";
 
+const char kOrcaHostLanguageParamKey[] = "hl";
+
 }  // namespace ash

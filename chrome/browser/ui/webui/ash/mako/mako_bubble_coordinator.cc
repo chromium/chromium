@@ -9,6 +9,8 @@
 
 #include "ash/constants/ash_features.h"
 #include "base/check.h"
+#include "base/strings/string_util.h"
+#include "chrome/browser/browser_process.h"
 #include "chrome/browser/profiles/profile.h"
 #include "chrome/browser/ui/webui/ash/mako/mako_consent_view.h"
 #include "chrome/browser/ui/webui/ash/mako/mako_rewrite_view.h"
@@ -31,6 +33,12 @@ std::string_view ToOrcaModeParamValue(MakoEditorMode mode) {
   return mode == MakoEditorMode::kWrite ? kOrcaWriteMode : kOrcaRewriteMode;
 }
 
+std::string GetSystemLocale() {
+  return g_browser_process != nullptr
+             ? g_browser_process->GetApplicationLocale()
+             : "";
+}
+
 }  // namespace
 
 MakoBubbleCoordinator::MakoBubbleCoordinator() = default;
@@ -40,6 +48,10 @@ MakoBubbleCoordinator::~MakoBubbleCoordinator() {
 }
 
 void MakoBubbleCoordinator::LoadConsentUI(Profile* profile) {
+  GURL url = net::AppendOrReplaceQueryParameter(GURL(kChromeUIMakoPrivacyURL),
+                                                kOrcaHostLanguageParamKey,
+                                                GetSystemLocale());
+
   contents_wrapper_ = std::make_unique<WebUIContentsWrapperT<MakoUntrustedUI>>(
       GURL(kChromeUIMakoPrivacyURL), profile, IDS_ACCNAME_ORCA);
   views::BubbleDialogDelegateView::CreateBubble(
@@ -63,6 +75,8 @@ void MakoBubbleCoordinator::LoadEditorUI(
                                            preset_query_id);
   url = net::AppendOrReplaceQueryParameter(url, kOrcaFreeformParamKey,
                                            freeform_text);
+  url = net::AppendOrReplaceQueryParameter(url, kOrcaHostLanguageParamKey,
+                                           GetSystemLocale());
   if (base::FeatureList::IsEnabled(ash::features::kOrcaResizingSupport)) {
     url = net::AppendOrReplaceQueryParameter(url, kOrcaResizingEnabledParamKey,
                                              "true");
