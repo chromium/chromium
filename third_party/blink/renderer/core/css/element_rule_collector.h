@@ -26,9 +26,11 @@
 #include "base/auto_reset.h"
 #include "base/gtest_prod_util.h"
 #include "base/memory/scoped_refptr.h"
+#include "base/memory/stack_allocated.h"
 #include "third_party/blink/renderer/core/core_export.h"
 #include "third_party/blink/renderer/core/css/container_selector.h"
 #include "third_party/blink/renderer/core/css/css_rule_list.h"
+#include "third_party/blink/renderer/core/css/part_names.h"
 #include "third_party/blink/renderer/core/css/resolver/match_request.h"
 #include "third_party/blink/renderer/core/css/resolver/match_result.h"
 #include "third_party/blink/renderer/core/css/selector_checker.h"
@@ -44,7 +46,6 @@ class Element;
 class ElementResolveContext;
 class ElementRuleCollector;
 class HTMLSlotElement;
-class PartNames;
 class RuleData;
 class SelectorFilter;
 class StyleRuleUsageTracker;
@@ -157,7 +158,7 @@ class CORE_EXPORT ElementRuleCollector {
   void CollectMatchingShadowHostRules(const MatchRequest&);
   void CollectMatchingSlottedRules(const MatchRequest&);
   void CollectMatchingPartPseudoRules(const MatchRequest&,
-                                      PartNames&,
+                                      PartNames*,
                                       bool for_shadow_pseudo);
   void SortAndTransferMatchedRules(CascadeOrigin origin,
                                    bool is_vtt_embedded_style,
@@ -242,7 +243,10 @@ class CORE_EXPORT ElementRuleCollector {
 
  private:
   struct PartRequest {
-    PartNames& part_names;
+    STACK_ALLOCATED();
+
+   public:
+    PartNames* part_names;
     // If this is true, we're matching for a pseudo-element of the part, such as
     // ::placeholder.
     bool for_shadow_pseudo = false;

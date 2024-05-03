@@ -447,9 +447,9 @@ TEST_F(ElementTest, ExportpartsAttribute) {
     const NamesMap* part_names_map = has_one_mapping->PartNamesMap();
     ASSERT_TRUE(part_names_map);
     ASSERT_EQ(1UL, part_names_map->size());
-    ASSERT_EQ("partname2", part_names_map->Get(AtomicString("partname1"))
-                               .value()
-                               .SerializeToString());
+    ASSERT_EQ(
+        "partname2",
+        part_names_map->Get(AtomicString("partname1"))->SerializeToString());
   }
 
   {
@@ -457,12 +457,12 @@ TEST_F(ElementTest, ExportpartsAttribute) {
     const NamesMap* part_names_map = has_two_mappings->PartNamesMap();
     ASSERT_TRUE(part_names_map);
     ASSERT_EQ(2UL, part_names_map->size());
-    ASSERT_EQ("partname2", part_names_map->Get(AtomicString("partname1"))
-                               .value()
-                               .SerializeToString());
-    ASSERT_EQ("partname4", part_names_map->Get(AtomicString("partname3"))
-                               .value()
-                               .SerializeToString());
+    ASSERT_EQ(
+        "partname2",
+        part_names_map->Get(AtomicString("partname1"))->SerializeToString());
+    ASSERT_EQ(
+        "partname4",
+        part_names_map->Get(AtomicString("partname3"))->SerializeToString());
   }
 
   {
@@ -475,9 +475,9 @@ TEST_F(ElementTest, ExportpartsAttribute) {
     const NamesMap* part_names_map = has_no_mapping->PartNamesMap();
     ASSERT_TRUE(part_names_map);
     ASSERT_EQ(1UL, part_names_map->size());
-    ASSERT_EQ("partname2", part_names_map->Get(AtomicString("partname1"))
-                               .value()
-                               .SerializeToString());
+    ASSERT_EQ(
+        "partname2",
+        part_names_map->Get(AtomicString("partname1"))->SerializeToString());
   }
 }
 

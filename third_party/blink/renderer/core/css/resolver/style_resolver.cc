@@ -792,7 +792,7 @@ void StyleResolver::MatchPseudoPartRules(const Element& part_matching_element,
                                                  const_cast<Element&>(*host));
       collector.ClearMatchedRules();
       collector.BeginAddingAuthorRulesForTreeScope(resolver->GetTreeScope());
-      resolver->CollectMatchingPartPseudoRules(collector, current_names,
+      resolver->CollectMatchingPartPseudoRules(collector, &current_names,
                                                for_shadow_pseudo);
       collector.SortAndTransferMatchedRules(
           CascadeOrigin::kAuthor, /*is_vtt_embedded_style=*/false, tracker_);

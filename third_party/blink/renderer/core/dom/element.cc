@@ -2800,14 +2800,18 @@ bool Element::HasLegalLinkAttribute(const QualifiedName&) const {
 
 void Element::ClassAttributeChanged(const AtomicString& new_class_string) {
   DCHECK(HasElementData());
-  const bool should_fold_case = GetDocument().InQuirksMode();
+  // Note that this is a copy-by-value of the class names.
   const SpaceSplitString old_classes = GetElementData()->ClassNames();
   if (UNLIKELY(new_class_string.empty())) {
     GetDocument().GetStyleEngine().ClassChangedForElement(old_classes, *this);
     GetElementData()->ClearClass();
     return;
   }
-  GetElementData()->SetClass(new_class_string, should_fold_case);
+  if (UNLIKELY(GetDocument().InQuirksMode())) {
+    GetElementData()->SetClassFoldingCase(new_class_string);
+  } else {
+    GetElementData()->SetClass(new_class_string);
+  }
   const SpaceSplitString& new_classes = GetElementData()->ClassNames();
   GetDocument().GetStyleEngine().ClassChangedForElement(old_classes,
                                                         new_classes, *this);

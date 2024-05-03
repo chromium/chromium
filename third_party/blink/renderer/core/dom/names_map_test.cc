@@ -16,13 +16,12 @@ void ExpectEqMap(const ExpectedMap& exp, NamesMap& map) {
   EXPECT_EQ(exp.size(), map.size());
 
   for (auto kv : exp) {
-    std::optional<SpaceSplitString> value = map.Get(AtomicString(kv.key));
+    SpaceSplitString* value = map.Get(AtomicString(kv.key));
     if (!value) {
       ADD_FAILURE() << "key: " << kv.key << " was nullptr";
       return;
     }
-    EXPECT_EQ(kv.value, value.value().SerializeToString())
-        << "for key: " << kv.key;
+    EXPECT_EQ(kv.value, value->SerializeToString()) << "for key: " << kv.key;
   }
 }
 

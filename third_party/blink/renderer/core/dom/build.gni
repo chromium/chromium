@@ -253,6 +253,7 @@ blink_core_sources_dom = [
   "slot_assignment_recalc_forbidden_scope.h",
   "space_split_string.cc",
   "space_split_string.h",
+  "space_split_string_wrapper.h",
   "static_node_list.h",
   "static_range.cc",
   "static_range.h",

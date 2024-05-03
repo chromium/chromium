@@ -120,6 +120,7 @@ void ElementData::Trace(Visitor* visitor) const {
 
 void ElementData::TraceAfterDispatch(blink::Visitor* visitor) const {
   visitor->Trace(inline_style_);
+  visitor->Trace(class_names_);
 }
 
 ShareableElementData::ShareableElementData(

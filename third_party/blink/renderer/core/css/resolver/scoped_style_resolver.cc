@@ -302,7 +302,7 @@ void ScopedStyleResolver::CollectMatchingSlottedRules(
 
 void ScopedStyleResolver::CollectMatchingPartPseudoRules(
     ElementRuleCollector& collector,
-    PartNames& part_names,
+    PartNames* part_names,
     bool for_shadow_pseudo) {
   ForAllStylesheets(collector, [&](const MatchRequest& match_request) {
     collector.CollectMatchingPartPseudoRules(match_request, part_names,

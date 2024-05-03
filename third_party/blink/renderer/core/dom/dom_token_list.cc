@@ -79,6 +79,7 @@ bool CheckTokensSyntax(const Vector<String>& tokens,
 }  // anonymous namespace
 
 void DOMTokenList::Trace(Visitor* visitor) const {
+  visitor->Trace(token_set_);
   visitor->Trace(element_);
   ScriptWrappable::Trace(visitor);
   ElementRareDataField::Trace(visitor);

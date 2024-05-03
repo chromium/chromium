@@ -5,6 +5,8 @@
 #ifndef THIRD_PARTY_BLINK_RENDERER_CORE_CSS_PART_NAMES_H_
 #define THIRD_PARTY_BLINK_RENDERER_CORE_CSS_PART_NAMES_H_
 
+#include "base/memory/stack_allocated.h"
+#include "third_party/blink/renderer/platform/heap/collection_support/heap_vector.h"
 #include "third_party/blink/renderer/platform/wtf/hash_set.h"
 #include "third_party/blink/renderer/platform/wtf/text/atomic_string.h"
 #include "third_party/blink/renderer/platform/wtf/text/atomic_string_hash.h"
@@ -22,9 +24,12 @@ class SpaceSplitString;
 // taking the union of all of the values found (which are sets of names). This
 // becomes the new set of names. Multiple partmaps are applied in succession.
 class PartNames {
+  STACK_ALLOCATED();
+
  public:
   PartNames();
   explicit PartNames(const SpaceSplitString& names);
+  ~PartNames() { pending_maps_.clear(); }
   PartNames(const PartNames&) = delete;
   PartNames& operator=(const PartNames&) = delete;
   // Adds a new map to be applied. It does that apply the map and update the set
@@ -45,7 +50,7 @@ class PartNames {
   HashSet<AtomicString> names_;
   // A queue of maps that have been passed to ApplyMap but not yet
   // applied. These will be applied only if Contains is eventually called.
-  Vector<const NamesMap*> pending_maps_;
+  HeapVector<Member<const NamesMap>> pending_maps_;
 };
 
 }  // namespace blink

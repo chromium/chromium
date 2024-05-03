@@ -31,6 +31,8 @@
 
 #include "third_party/blink/renderer/core/dom/document.h"
 #include "third_party/blink/renderer/core/dom/node_rare_data.h"
+#include "third_party/blink/renderer/core/dom/space_split_string.h"
+#include "third_party/blink/renderer/platform/heap/garbage_collected.h"
 
 namespace blink {
 
@@ -43,8 +45,9 @@ ClassCollection::ClassCollection(ContainerNode& root_node,
     : HTMLCollection(root_node,
                      kClassCollectionType,
                      kDoesNotOverrideItemAfter),
-      class_names_(GetDocument().InQuirksMode() ? class_names.LowerASCII()
-                                                : class_names) {}
+      class_names_(MakeGarbageCollected<SpaceSplitStringWrapper>(
+          GetDocument().InQuirksMode() ? class_names.LowerASCII()
+                                       : class_names)) {}
 
 ClassCollection::ClassCollection(ContainerNode& root_node,
                                  CollectionType type,
