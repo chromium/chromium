@@ -273,6 +273,14 @@ class PopupViewViews : public PopupBaseView,
   // to `false.`
   bool has_keyboard_focus_ = false;
 
+  // A boolean variable tracking the execution state of the `Show()` method.
+  // It's set to `true` when the method starts and `false` before it finishes.
+  // Required for the `HasFocus()` method, that might be called during
+  // the `Show()` execution. In this case, `GetWidget()->IsActive()` may not yet
+  // be `true`, and the `HasFocus()` returning `false` may potentially cause
+  // the popup to hide.
+  bool show_in_progress_ = false;
+
   base::WeakPtrFactory<PopupViewViews> weak_ptr_factory_{this};
 };
 

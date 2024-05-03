@@ -12,6 +12,7 @@
 #include <utility>
 #include <vector>
 
+#include "base/auto_reset.h"
 #include "base/containers/contains.h"
 #include "base/feature_list.h"
 #include "base/functional/bind.h"
@@ -194,6 +195,8 @@ void PopupViewViews::OnMouseExited(const ui::MouseEvent& event) {
 
 bool PopupViewViews::Show(
     AutoselectFirstSuggestion autoselect_first_suggestion) {
+  base::AutoReset show_in_progress_reset(&show_in_progress_, !!search_bar_);
+
   NotifyAccessibilityEvent(ax::mojom::Event::kExpandedChanged, true);
   if (!DoShow()) {
     return false;
@@ -225,7 +228,7 @@ bool PopupViewViews::Show(
     search_bar_->Focus();
   }
 
-  return true;
+  return !CanActivate() || (GetWidget() && GetWidget()->IsActive());
 }
 
 void PopupViewViews::Hide() {
@@ -614,7 +617,16 @@ PopupViewViews::GetPopupScreenLocation() const {
 }
 
 bool PopupViewViews::HasFocus() const {
-  return GetWidget() && GetWidget()->IsActive();
+  if (!GetWidget()) {
+    return false;
+  }
+
+  // The `CanActivate() && show_in_progress_` expression is needed to cover
+  // the case when this method is called during the `GetWidget()->Show()`
+  // execution and the popup is not yet active. It optimistically responds
+  // `true` and requires an additional `GetWidget()->IsActive()` check after
+  // the `GetWidget()->Show()` call to ensure the popup is shown successfully.
+  return (CanActivate() && show_in_progress_) || GetWidget()->IsActive();
 }
 
 void PopupViewViews::OnWidgetVisibilityChanged(views::Widget* widget,
