@@ -150,19 +150,10 @@ IN_PROC_BROWSER_TEST_F(TouchInputBrowserTest, TouchNoHandler) {
             filter->WaitForAck());
 
   // The same is true for release because there is no touch-end handler.
-  //
-  // TODO(crbug.com/40893874): a suspicious flake in AR/XR tests forced
-  // us to disable `kDroppedTouchSequenceIncludesTouchEnd` then override the
-  // expectation here!
   filter = AddFilter(WebInputEvent::Type::kTouchEnd);
   touch.ReleasePoint(0);
   SendTouchEvent(&touch);
-  blink::mojom::InputEventResultState expected_touchend_result =
-      base::FeatureList::IsEnabled(
-          blink::features::kDroppedTouchSequenceIncludesTouchEnd)
-          ? blink::mojom::InputEventResultState::kNoConsumerExists
-          : ExpectedNotConsumedOrNotConsumedBlocking();
-  EXPECT_EQ(expected_touchend_result, filter->WaitForAck());
+  EXPECT_EQ(ExpectedNotConsumedOrNotConsumedBlocking(), filter->WaitForAck());
 }
 
 IN_PROC_BROWSER_TEST_F(TouchInputBrowserTest, TouchStartNoConsume) {
