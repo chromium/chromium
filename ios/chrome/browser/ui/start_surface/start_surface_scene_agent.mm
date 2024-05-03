@@ -235,9 +235,15 @@ bool IsEmptyNTP(const web::WebState* web_state) {
                            indicesToRemoveInGroup.end());
   }
 
-  // Perform the operations on the WebStateList.
-  // TODO(crbug.com/338346284): Add a ScopedBatchOperation lock once all
-  // observers are correctly handling batched operations.
+  // Report how many, if any, excess NTPs have been removed.
+  UMA_HISTOGRAM_COUNTS_100(kExcessNTPTabsRemoved, indicesToRemove.size());
+
+  // Perform the operations on the WebStateList, if needed.
+  if (indicesToRemove.empty()) {
+    return;
+  }
+  const WebStateList::ScopedBatchOperation batch =
+      webStateList->StartBatchOperation();
 
   // If the active tab is going to be closed, pick the last ungrouped
   // NTP as the new active tab, otherwise insert a new NTP.
@@ -266,7 +272,6 @@ bool IsEmptyNTP(const web::WebState* web_state) {
   }
 
   // Close the excessive NTPs.
-  UMA_HISTOGRAM_COUNTS_100(kExcessNTPTabsRemoved, indicesToRemove.size());
   webStateList->CloseWebStatesAtIndices(
       WebStateList::CLOSE_NO_FLAGS,
       RemovingIndexes(std::move(indicesToRemove)));
