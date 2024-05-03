@@ -2951,7 +2951,7 @@ AutotestPrivateRegisterComponentFunction::Run() {
            << ", " << params->path;
 
   g_browser_process->platform_part()
-      ->cros_component_manager()
+      ->component_manager_ash()
       ->RegisterCompatiblePath(params->name,
                                component_updater::CompatibleComponentInfo(
                                    base::FilePath(params->path), std::nullopt));

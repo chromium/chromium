@@ -17,7 +17,7 @@
 #include "base/sequence_checker.h"
 #include "base/version.h"
 #include "chrome/browser/ash/crosapi/lacros_selection_loader.h"
-#include "chrome/browser/component_updater/cros_component_manager.h"
+#include "components/component_updater/ash/component_manager_ash.h"
 
 namespace component_updater {
 class ComponentUpdateService;
@@ -29,10 +29,10 @@ class StatefulLacrosLoader : public LacrosSelectionLoader {
  public:
   // Constructor for production.
   explicit StatefulLacrosLoader(
-      scoped_refptr<component_updater::CrOSComponentManager> manager);
+      scoped_refptr<component_updater::ComponentManagerAsh> manager);
   // Constructor for testing.
   explicit StatefulLacrosLoader(
-      scoped_refptr<component_updater::CrOSComponentManager> manager,
+      scoped_refptr<component_updater::ComponentManagerAsh> manager,
       component_updater::ComponentUpdateService* updater,
       const std::string& lacros_component_name);
   StatefulLacrosLoader(const StatefulLacrosLoader&) = delete;
@@ -73,7 +73,7 @@ class StatefulLacrosLoader : public LacrosSelectionLoader {
 
   // Called after Load.
   void OnLoad(LoadCompletionCallback callback,
-              component_updater::CrOSComponentManager::Error error,
+              component_updater::ComponentManagerAsh::Error error,
               const base::FilePath& path);
 
   // Called in GetVersion sequence on IsInstalledMayBlock returns result.
@@ -97,7 +97,7 @@ class StatefulLacrosLoader : public LacrosSelectionLoader {
   // Cache the path to installed lacros-chrome path.
   std::optional<base::FilePath> path_;
 
-  scoped_refptr<component_updater::CrOSComponentManager> component_manager_;
+  scoped_refptr<component_updater::ComponentManagerAsh> component_manager_;
 
   // May be null in tests.
   const raw_ptr<component_updater::ComponentUpdateService>

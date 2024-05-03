@@ -6,19 +6,18 @@
 
 #include "base/memory/scoped_refptr.h"
 #include "base/version.h"
-#include "chrome/browser/component_updater/cros_component_manager.h"
 #include "chromeos/crosapi/mojom/crosapi.mojom.h"
+#include "components/component_updater/ash/component_manager_ash.h"
 #include "testing/gmock/include/gmock/gmock.h"
 
 namespace {
 
-class MockCrOSComponentManager
-    : public component_updater::CrOSComponentManager {
+class MockComponentManagerAsh : public component_updater::ComponentManagerAsh {
  public:
-  MockCrOSComponentManager() = default;
+  MockComponentManagerAsh() = default;
 
-  MockCrOSComponentManager(const MockCrOSComponentManager&) = delete;
-  MockCrOSComponentManager& operator=(const MockCrOSComponentManager&) = delete;
+  MockComponentManagerAsh(const MockComponentManagerAsh&) = delete;
+  MockComponentManagerAsh& operator=(const MockComponentManagerAsh&) = delete;
 
   MOCK_METHOD(void, SetDelegate, (Delegate * delegate), (override));
   MOCK_METHOD(void,
@@ -54,7 +53,7 @@ class MockCrOSComponentManager
   MOCK_METHOD(void, RegisterInstalled, (), (override));
 
  protected:
-  ~MockCrOSComponentManager() override = default;
+  ~MockComponentManagerAsh() override = default;
 };
 
 }  // namespace
@@ -62,7 +61,7 @@ class MockCrOSComponentManager
 namespace crosapi {
 
 FakeBrowserManager::FakeBrowserManager()
-    : BrowserManager(base::MakeRefCounted<MockCrOSComponentManager>()) {}
+    : BrowserManager(base::MakeRefCounted<MockComponentManagerAsh>()) {}
 
 FakeBrowserManager::~FakeBrowserManager() = default;
 

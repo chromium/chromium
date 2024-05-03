@@ -136,7 +136,7 @@ class DemoSetupController
         EnrollmentLauncher::OtherError error);
 
     static DemoSetupError CreateFromComponentError(
-        component_updater::CrOSComponentManager::Error error,
+        component_updater::ComponentManagerAsh::Error error,
         std::string component_name);
 
     DemoSetupError(ErrorCode error_code, RecoveryMethod recovery_method);
@@ -238,7 +238,7 @@ class DemoSetupController
   void OnDeviceAttributeUpdatePermission(bool granted) override;
 
   void SetCrOSComponentLoadErrorForTest(
-      component_updater::CrOSComponentManager::Error error);
+      component_updater::ComponentManagerAsh::Error error);
 
   void EnableLoadRealComponentsForTest();
 
@@ -291,8 +291,8 @@ class DemoSetupController
 
   // Error code to use when attempting to load the demo resources CrOS
   // component.
-  component_updater::CrOSComponentManager::Error component_error_for_tests_ =
-      component_updater::CrOSComponentManager::Error::NONE;
+  component_updater::ComponentManagerAsh::Error component_error_for_tests_ =
+      component_updater::ComponentManagerAsh::Error::NONE;
 
   // Callback to call when setup step is updated.
   OnSetCurrentSetupStep set_current_setup_step_;

@@ -20,9 +20,9 @@
 #include "chrome/browser/ash/crosapi/browser_loader.h"
 #include "chrome/browser/browser_process.h"
 #include "chrome/browser/component_updater/cros_component_installer_chromeos.h"
-#include "chrome/browser/component_updater/fake_cros_component_manager.h"
 #include "chrome/test/base/browser_process_platform_part_test_api_chromeos.h"
 #include "chromeos/ash/components/standalone_browser/browser_support.h"
+#include "components/component_updater/ash/fake_component_manager_ash.h"
 #include "components/component_updater/component_updater_paths.h"
 #include "components/component_updater/mock_component_updater_service.h"
 #include "components/update_client/update_client.h"
@@ -42,17 +42,17 @@ class StatefulLacrosLoaderTest : public testing::Test {
   StatefulLacrosLoaderTest() {
     // Create dependencies for object under test.
     component_manager_ =
-        base::MakeRefCounted<component_updater::FakeCrOSComponentManager>();
+        base::MakeRefCounted<component_updater::FakeComponentManagerAsh>();
     component_manager_->set_supported_components({kLacrosComponentName});
     component_manager_->ResetComponentState(
         kLacrosComponentName,
-        component_updater::FakeCrOSComponentManager::ComponentInfo(
-            component_updater::CrOSComponentManager::Error::NONE,
+        component_updater::FakeComponentManagerAsh::ComponentInfo(
+            component_updater::ComponentManagerAsh::Error::NONE,
             base::FilePath("/install/path"), base::FilePath("/mount/path"),
             version));
     browser_part_ = std::make_unique<BrowserProcessPlatformPartTestApi>(
         g_browser_process->platform_part());
-    browser_part_->InitializeCrosComponentManager(component_manager_);
+    browser_part_->InitializeComponentManager(component_manager_);
 
     // Set up component path.
     base::FilePath root_dir;
@@ -72,7 +72,7 @@ class StatefulLacrosLoaderTest : public testing::Test {
   ~StatefulLacrosLoaderTest() override {
     stateful_lacros_loader_.reset();
 
-    browser_part_->ShutdownCrosComponentManager();
+    browser_part_->ShutdownComponentManager();
   }
 
   const base::Version version = base::Version("1.0.0");
@@ -83,7 +83,7 @@ class StatefulLacrosLoaderTest : public testing::Test {
   base::ScopedPathOverride scoped_component_user_dir_{
       component_updater::DIR_COMPONENT_USER};
   component_updater::MockComponentUpdateService mock_component_update_service_;
-  scoped_refptr<component_updater::FakeCrOSComponentManager> component_manager_;
+  scoped_refptr<component_updater::FakeComponentManagerAsh> component_manager_;
   std::unique_ptr<BrowserProcessPlatformPartTestApi> browser_part_;
   std::unique_ptr<StatefulLacrosLoader> stateful_lacros_loader_;
 };

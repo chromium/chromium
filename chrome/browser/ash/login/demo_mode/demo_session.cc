@@ -724,9 +724,9 @@ void DemoSession::OnDemoAppComponentLoaded() {
                        ? app_component_version.value().GetString()
                        : "");
   auto error = components_->app_component_error().value_or(
-      component_updater::CrOSComponentManager::Error::NOT_FOUND);
+      component_updater::ComponentManagerAsh::Error::NOT_FOUND);
 
-  if (error != component_updater::CrOSComponentManager::Error::NONE) {
+  if (error != component_updater::ComponentManagerAsh::Error::NONE) {
     LOG(WARNING) << "Error loading demo mode app component: "
                  << static_cast<int>(error);
     return;

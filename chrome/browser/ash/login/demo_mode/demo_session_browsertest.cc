@@ -21,7 +21,6 @@
 #include "chrome/browser/browser_process.h"
 #include "chrome/browser/chrome_browser_main.h"
 #include "chrome/browser/chrome_browser_main_extra_parts.h"
-#include "chrome/browser/component_updater/fake_cros_component_manager.h"
 #include "chrome/browser/profiles/profile_manager.h"
 #include "chrome/browser/ui/ash/system_web_apps/system_web_app_ui_utils.h"
 #include "chrome/browser/ui/browser.h"
@@ -31,6 +30,7 @@
 #include "chrome/test/base/ui_test_utils.h"
 #include "chromeos/constants/chromeos_features.h"
 #include "chromeos/dbus/power/fake_power_manager_client.h"
+#include "components/component_updater/ash/fake_component_manager_ash.h"
 #include "components/policy/core/common/cloud/cloud_policy_constants.h"
 #include "components/prefs/pref_service.h"
 #include "components/user_manager/user_manager.h"
@@ -209,7 +209,7 @@ IN_PROC_BROWSER_TEST_F(DemoSessionActiveDirectoryDeviceTest, NotDemoMode) {
 
 /* ============================ Demo Login Tests =============================*/
 
-// Extra parts for setting up the FakeCrOSComponentManager before the real one
+// Extra parts for setting up the FakeComponentManagerAsh before the real one
 // has been initialized on the browser
 class DemoLoginTestMainExtraParts : public ChromeBrowserMainExtraParts {
  public:
@@ -227,31 +227,31 @@ class DemoLoginTestMainExtraParts : public ChromeBrowserMainExtraParts {
   }
 
   void PostEarlyInitialization() override {
-    auto cros_component_manager =
-        base::MakeRefCounted<component_updater::FakeCrOSComponentManager>();
-    cros_component_manager->set_supported_components(
+    auto component_manager_ash =
+        base::MakeRefCounted<component_updater::FakeComponentManagerAsh>();
+    component_manager_ash->set_supported_components(
         {"demo-mode-app", kGrowthCampaignsComponentName});
-    cros_component_manager->ResetComponentState(
+    component_manager_ash->ResetComponentState(
         "demo-mode-app",
-        component_updater::FakeCrOSComponentManager::ComponentInfo(
-            component_updater::CrOSComponentManager::Error::NONE,
+        component_updater::FakeComponentManagerAsh::ComponentInfo(
+            component_updater::ComponentManagerAsh::Error::NONE,
             base::FilePath("/dev/null"),
             base::FilePath("/run/imageloader/demo-mode-app")));
-    cros_component_manager->ResetComponentState(
+    component_manager_ash->ResetComponentState(
         "growth-campaigns",
-        component_updater::FakeCrOSComponentManager::ComponentInfo(
-            component_updater::CrOSComponentManager::Error::NONE,
+        component_updater::FakeComponentManagerAsh::ComponentInfo(
+            component_updater::ComponentManagerAsh::Error::NONE,
             base::FilePath("/dev/null"), GetGrowthCampaignsPath()));
 
     platform_part_test_api_ =
         std::make_unique<BrowserProcessPlatformPartTestApi>(
             g_browser_process->platform_part());
-    platform_part_test_api_->InitializeCrosComponentManager(
-        std::move(cros_component_manager));
+    platform_part_test_api_->InitializeComponentManager(
+        std::move(component_manager_ash));
   }
 
   void PostMainMessageLoopRun() override {
-    platform_part_test_api_->ShutdownCrosComponentManager();
+    platform_part_test_api_->ShutdownComponentManager();
     platform_part_test_api_.reset();
   }
 

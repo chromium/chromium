@@ -23,25 +23,24 @@ namespace {
 const char kErrorInvalidArgs[] = "org.freedesktop.DBus.Error.InvalidArgs";
 const char kErrorInternalError[] = "org.freedesktop.DBus.Error.InternalError";
 
-std::string ErrorToString(
-    component_updater::CrOSComponentManager::Error error) {
+std::string ErrorToString(component_updater::ComponentManagerAsh::Error error) {
   switch (error) {
-    case component_updater::CrOSComponentManager::Error::NONE:
+    case component_updater::ComponentManagerAsh::Error::NONE:
       return "NONE";
-    case component_updater::CrOSComponentManager::Error::UNKNOWN_COMPONENT:
+    case component_updater::ComponentManagerAsh::Error::UNKNOWN_COMPONENT:
       return "UNKNOWN_COMPONENT";
-    case component_updater::CrOSComponentManager::Error::INSTALL_FAILURE:
+    case component_updater::ComponentManagerAsh::Error::INSTALL_FAILURE:
       return "INSTALL_FAILURE";
-    case component_updater::CrOSComponentManager::Error::MOUNT_FAILURE:
+    case component_updater::ComponentManagerAsh::Error::MOUNT_FAILURE:
       return "MOUNT_FAILURE";
-    case component_updater::CrOSComponentManager::Error::
+    case component_updater::ComponentManagerAsh::Error::
         COMPATIBILITY_CHECK_FAILED:
       return "COMPATIBILITY_CHECK_FAILED";
-    case component_updater::CrOSComponentManager::Error::NOT_FOUND:
+    case component_updater::ComponentManagerAsh::Error::NOT_FOUND:
       return "NOT_FOUND";
-    case component_updater::CrOSComponentManager::Error::UPDATE_IN_PROGRESS:
+    case component_updater::ComponentManagerAsh::Error::UPDATE_IN_PROGRESS:
       return "UPDATE_IN_PROGRESS";
-    case component_updater::CrOSComponentManager::Error::ERROR_MAX:
+    case component_updater::ComponentManagerAsh::Error::ERROR_MAX:
       return "ERROR_MAX";
   }
   return "Unknown error code";
@@ -50,7 +49,7 @@ std::string ErrorToString(
 }  // namespace
 
 ComponentUpdaterServiceProvider::ComponentUpdaterServiceProvider(
-    component_updater::CrOSComponentManager* cros_component_manager) {
+    component_updater::ComponentManagerAsh* cros_component_manager) {
   DCHECK(cros_component_manager);
 
   cros_component_manager_ = cros_component_manager;
@@ -114,10 +113,9 @@ void ComponentUpdaterServiceProvider::LoadComponent(
       mount = true;
     cros_component_manager_->Load(
         component_name,
-        mount
-            ? component_updater::CrOSComponentManager::MountPolicy::kMount
-            : component_updater::CrOSComponentManager::MountPolicy::kDontMount,
-        component_updater::CrOSComponentManager::UpdatePolicy::kDontForce,
+        mount ? component_updater::ComponentManagerAsh::MountPolicy::kMount
+              : component_updater::ComponentManagerAsh::MountPolicy::kDontMount,
+        component_updater::ComponentManagerAsh::UpdatePolicy::kDontForce,
         base::BindOnce(&ComponentUpdaterServiceProvider::OnLoadComponent,
                        weak_ptr_factory_.GetWeakPtr(), method_call,
                        std::move(response_sender)));
@@ -133,9 +131,9 @@ void ComponentUpdaterServiceProvider::LoadComponent(
 void ComponentUpdaterServiceProvider::OnLoadComponent(
     dbus::MethodCall* method_call,
     dbus::ExportedObject::ResponseSender response_sender,
-    component_updater::CrOSComponentManager::Error error,
+    component_updater::ComponentManagerAsh::Error error,
     const base::FilePath& result) {
-  if (error != component_updater::CrOSComponentManager::Error::NONE) {
+  if (error != component_updater::ComponentManagerAsh::Error::NONE) {
     LOG(ERROR) << "Component updater Load API error: " << ErrorToString(error);
   }
 

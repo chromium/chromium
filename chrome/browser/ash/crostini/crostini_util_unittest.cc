@@ -12,7 +12,6 @@
 #include "chrome/browser/ash/crostini/crostini_pref_names.h"
 #include "chrome/browser/ash/crostini/crostini_test_helper.h"
 #include "chrome/browser/ash/guest_os/guest_os_pref_names.h"
-#include "chrome/browser/component_updater/fake_cros_component_manager.h"
 #include "chrome/test/base/browser_process_platform_part_test_api_chromeos.h"
 #include "chrome/test/base/scoped_testing_local_state.h"
 #include "chrome/test/base/testing_browser_process.h"
@@ -24,6 +23,7 @@
 #include "chromeos/ash/components/dbus/debug_daemon/debug_daemon_client.h"
 #include "chromeos/ash/components/dbus/dlcservice/dlcservice_client.h"
 #include "chromeos/ash/components/dbus/seneschal/seneschal_client.h"
+#include "components/component_updater/ash/fake_component_manager_ash.h"
 #include "content/public/test/browser_task_environment.h"
 #include "testing/gtest/include/gtest/gtest.h"
 
@@ -64,14 +64,14 @@ class CrostiniUtilTest : public testing::Test {
     ash::DlcserviceClient::InitializeFake();
 
     component_manager_ =
-        base::MakeRefCounted<component_updater::FakeCrOSComponentManager>();
+        base::MakeRefCounted<component_updater::FakeComponentManagerAsh>();
     component_manager_->set_supported_components({"cros-termina"});
     component_manager_->ResetComponentState(
         "cros-termina",
-        component_updater::FakeCrOSComponentManager::ComponentInfo(
-            component_updater::CrOSComponentManager::Error::NONE,
+        component_updater::FakeComponentManagerAsh::ComponentInfo(
+            component_updater::ComponentManagerAsh::Error::NONE,
             base::FilePath("/install/path"), base::FilePath("/mount/path")));
-    browser_part_.InitializeCrosComponentManager(component_manager_);
+    browser_part_.InitializeComponentManager(component_manager_);
 
     profile_ = std::make_unique<TestingProfile>();
     test_helper_ = std::make_unique<CrostiniTestHelper>(profile_.get());
@@ -84,7 +84,7 @@ class CrostiniUtilTest : public testing::Test {
     g_browser_process->platform_part()->ShutdownSchedulerConfigurationManager();
     test_helper_.reset();
     profile_.reset();
-    browser_part_.ShutdownCrosComponentManager();
+    browser_part_.ShutdownComponentManager();
     component_manager_.reset();
     ash::DlcserviceClient::Shutdown();
   }
@@ -99,7 +99,7 @@ class CrostiniUtilTest : public testing::Test {
  private:
   content::BrowserTaskEnvironment task_environment_;
   std::unique_ptr<ScopedTestingLocalState> local_state_;
-  scoped_refptr<component_updater::FakeCrOSComponentManager> component_manager_;
+  scoped_refptr<component_updater::FakeComponentManagerAsh> component_manager_;
   BrowserProcessPlatformPartTestApi browser_part_;
 };
 

@@ -25,8 +25,8 @@
 #include "chrome/browser/ash/crosapi/rootfs_lacros_loader.h"
 #include "chrome/browser/ash/crosapi/stateful_lacros_loader.h"
 #include "chrome/browser/browser_process.h"
-#include "chrome/browser/component_updater/cros_component_manager.h"
 #include "chromeos/ash/components/cryptohome/system_salt_getter.h"
+#include "components/component_updater/ash/component_manager_ash.h"
 
 namespace crosapi {
 
@@ -37,7 +37,7 @@ constexpr size_t kLacrosSelectionTypes = 2;
 class LacrosSelectionLoaderFactoryImpl : public LacrosSelectionLoaderFactory {
  public:
   explicit LacrosSelectionLoaderFactoryImpl(
-      scoped_refptr<component_updater::CrOSComponentManager> manager)
+      scoped_refptr<component_updater::ComponentManagerAsh> manager)
       : component_manager_(manager) {}
 
   LacrosSelectionLoaderFactoryImpl(const LacrosSelectionLoaderFactoryImpl&) =
@@ -56,7 +56,7 @@ class LacrosSelectionLoaderFactoryImpl : public LacrosSelectionLoaderFactory {
   }
 
  private:
-  scoped_refptr<component_updater::CrOSComponentManager> component_manager_;
+  scoped_refptr<component_updater::ComponentManagerAsh> component_manager_;
 };
 
 bool IsUnloading(LacrosSelectionLoader* loader) {
@@ -66,7 +66,7 @@ bool IsUnloading(LacrosSelectionLoader* loader) {
 }  // namespace
 
 BrowserLoader::BrowserLoader(
-    scoped_refptr<component_updater::CrOSComponentManager> manager)
+    scoped_refptr<component_updater::ComponentManagerAsh> manager)
     : factory_(std::make_unique<LacrosSelectionLoaderFactoryImpl>(manager)) {}
 
 BrowserLoader::BrowserLoader(

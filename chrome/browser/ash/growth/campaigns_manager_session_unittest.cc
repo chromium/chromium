@@ -13,13 +13,13 @@
 #include "chrome/browser/ash/ownership/fake_owner_settings_service.h"
 #include "chrome/browser/ash/ownership/owner_settings_service_ash.h"
 #include "chrome/browser/ash/ownership/owner_settings_service_ash_factory.h"
-#include "chrome/browser/component_updater/fake_cros_component_manager.h"
 #include "chrome/browser/prefs/browser_prefs.h"
 #include "chrome/test/base/browser_process_platform_part_test_api_chromeos.h"
 #include "chrome/test/base/testing_browser_process.h"
 #include "chrome/test/base/testing_profile.h"
 #include "chrome/test/base/testing_profile_manager.h"
 #include "chromeos/ash/components/dbus/concierge/concierge_client.h"
+#include "components/component_updater/ash/fake_component_manager_ash.h"
 #include "components/session_manager/core/session_manager.h"
 #include "components/sync_preferences/testing_pref_service_syncable.h"
 #include "components/user_manager/scoped_user_manager.h"
@@ -51,42 +51,40 @@ class CampaignsManagerSessionTest : public testing::Test {
   void SetUp() override {
     ASSERT_TRUE(profile_manager_->SetUp());
     ash::ConciergeClient::InitializeFake(/*fake_cicerone_client=*/nullptr);
-    InitializeCrosComponentManager();
+    InitializeComponentManager();
     session_manager_ = std::make_unique<session_manager::SessionManager>();
   }
 
   void TearDown() override {
     ash::ConciergeClient::Shutdown();
 
-    cros_component_manager_ = nullptr;
+    component_manager_ash_ = nullptr;
     owner_settings_service_ash_ = nullptr;
-    browser_process_platform_part_test_api_.ShutdownCrosComponentManager();
+    browser_process_platform_part_test_api_.ShutdownComponentManager();
     profile_manager_->DeleteAllTestingProfiles();
   }
 
  protected:
   bool FinishCampaignsComponentLoad(const base::FilePath& mount_path) {
-    EXPECT_TRUE(
-        cros_component_manager_->HasPendingInstall(kCampaignsComponent));
-    EXPECT_TRUE(cros_component_manager_->UpdateRequested(kCampaignsComponent));
+    EXPECT_TRUE(component_manager_ash_->HasPendingInstall(kCampaignsComponent));
+    EXPECT_TRUE(component_manager_ash_->UpdateRequested(kCampaignsComponent));
 
-    return cros_component_manager_->FinishLoadRequest(
+    return component_manager_ash_->FinishLoadRequest(
         kCampaignsComponent,
-        component_updater::FakeCrOSComponentManager::ComponentInfo(
-            component_updater::CrOSComponentManager::Error::NONE,
+        component_updater::FakeComponentManagerAsh::ComponentInfo(
+            component_updater::ComponentManagerAsh::Error::NONE,
             base::FilePath("/dev/null"), mount_path));
   }
 
-  void InitializeCrosComponentManager() {
-    auto fake_cros_component_manager =
-        base::MakeRefCounted<component_updater::FakeCrOSComponentManager>();
-    fake_cros_component_manager->set_queue_load_requests(true);
-    fake_cros_component_manager->set_supported_components(
-        {kCampaignsComponent});
-    cros_component_manager_ = fake_cros_component_manager.get();
+  void InitializeComponentManager() {
+    auto fake_component_manager_ash =
+        base::MakeRefCounted<component_updater::FakeComponentManagerAsh>();
+    fake_component_manager_ash->set_queue_load_requests(true);
+    fake_component_manager_ash->set_supported_components({kCampaignsComponent});
+    component_manager_ash_ = fake_component_manager_ash.get();
 
-    browser_process_platform_part_test_api_.InitializeCrosComponentManager(
-        std::move(fake_cros_component_manager));
+    browser_process_platform_part_test_api_.InitializeComponentManager(
+        std::move(fake_component_manager_ash));
   }
 
   void FlushActiveProfileCallbacks(bool is_owner) {
@@ -119,7 +117,7 @@ class CampaignsManagerSessionTest : public testing::Test {
     return profile;
   }
 
-  raw_ptr<component_updater::FakeCrOSComponentManager> cros_component_manager_ =
+  raw_ptr<component_updater::FakeComponentManagerAsh> component_manager_ash_ =
       nullptr;
   content::BrowserTaskEnvironment task_environment_;
   std::unique_ptr<session_manager::SessionManager> session_manager_;
@@ -148,7 +146,7 @@ TEST_F(CampaignsManagerSessionTest, LoadCampaignsComponent) {
 
   ASSERT_TRUE(
       FinishCampaignsComponentLoad(base::FilePath(kCampaignsMountPoint)));
-  EXPECT_FALSE(cros_component_manager_->HasPendingInstall(kCampaignsComponent));
+  EXPECT_FALSE(component_manager_ash_->HasPendingInstall(kCampaignsComponent));
 }
 
 TEST_F(CampaignsManagerSessionTest, LoadCampaignsComponentLoggedInNotActive) {
@@ -156,7 +154,7 @@ TEST_F(CampaignsManagerSessionTest, LoadCampaignsComponentLoggedInNotActive) {
   session_manager_->SetSessionState(
       session_manager::SessionState::LOGGED_IN_NOT_ACTIVE);
 
-  EXPECT_FALSE(cros_component_manager_->HasPendingInstall(kCampaignsComponent));
+  EXPECT_FALSE(component_manager_ash_->HasPendingInstall(kCampaignsComponent));
 }
 
 TEST_F(CampaignsManagerSessionTest, LoadCampaignsComponentManagedDevice) {
@@ -167,5 +165,5 @@ TEST_F(CampaignsManagerSessionTest, LoadCampaignsComponentManagedDevice) {
   campaigns_manager_session.SetProfileForTesting(profile.get());
   session_manager_->SetSessionState(session_manager::SessionState::ACTIVE);
 
-  EXPECT_FALSE(cros_component_manager_->HasPendingInstall(kCampaignsComponent));
+  EXPECT_FALSE(component_manager_ash_->HasPendingInstall(kCampaignsComponent));
 }

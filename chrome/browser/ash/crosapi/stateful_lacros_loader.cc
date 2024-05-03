@@ -31,13 +31,13 @@ namespace {
 
 // Returns whether lacros-chrome component is registered.
 bool CheckRegisteredMayBlock(
-    scoped_refptr<component_updater::CrOSComponentManager> manager,
+    scoped_refptr<component_updater::ComponentManagerAsh> manager,
     const std::string& lacros_component_name) {
   return manager->IsRegisteredMayBlock(lacros_component_name);
 }
 
 // Checks the local disk structure to confirm whether a component is installed.
-// We intentionally avoid going through CrOSComponentManager since the latter
+// We intentionally avoid going through ComponentManagerAsh since the latter
 // functions around the idea of "registration" -- but the timing of this method
 // is prelogin, so the component might exist but not yet be registered.
 bool IsInstalledMayBlock(const std::string& name) {
@@ -60,7 +60,7 @@ bool IsInstalledMayBlock(const std::string& name) {
 }
 
 // Called after preloading is finished.
-void DonePreloading(component_updater::CrOSComponentManager::Error error,
+void DonePreloading(component_updater::ComponentManagerAsh::Error error,
                     const base::FilePath& path) {
   LOG(WARNING) << "Done preloading stateful Lacros. " << static_cast<int>(error)
                << " " << path;
@@ -69,13 +69,13 @@ void DonePreloading(component_updater::CrOSComponentManager::Error error,
 // Preloads the given component, or does nothing if |component| is empty.
 // Must be called on main thread.
 void PreloadComponent(
-    scoped_refptr<component_updater::CrOSComponentManager> manager,
+    scoped_refptr<component_updater::ComponentManagerAsh> manager,
     std::string component) {
   if (!component.empty()) {
     LOG(WARNING) << "Preloading stateful lacros. " << component;
     manager->Load(component,
-                  component_updater::CrOSComponentManager::MountPolicy::kMount,
-                  component_updater::CrOSComponentManager::UpdatePolicy::kSkip,
+                  component_updater::ComponentManagerAsh::MountPolicy::kMount,
+                  component_updater::ComponentManagerAsh::UpdatePolicy::kSkip,
                   base::BindOnce(&DonePreloading));
   }
 }
@@ -99,7 +99,7 @@ std::string CheckForComponentToPreloadMayBlock() {
 // If it is, delete the user directory, too, because it will be
 // uninstalled.
 bool CheckInstalledAndMaybeRemoveUserDirectory(
-    scoped_refptr<component_updater::CrOSComponentManager> manager,
+    scoped_refptr<component_updater::ComponentManagerAsh> manager,
     const std::string& lacros_component_name) {
   if (!CheckRegisteredMayBlock(manager, lacros_component_name)) {
     return false;
@@ -127,13 +127,13 @@ bool CheckInstalledAndMaybeRemoveUserDirectory(
 }  // namespace
 
 StatefulLacrosLoader::StatefulLacrosLoader(
-    scoped_refptr<component_updater::CrOSComponentManager> manager)
+    scoped_refptr<component_updater::ComponentManagerAsh> manager)
     : StatefulLacrosLoader(manager,
                            g_browser_process->component_updater(),
                            browser_util::GetLacrosComponentInfo().name) {}
 
 StatefulLacrosLoader::StatefulLacrosLoader(
-    scoped_refptr<component_updater::CrOSComponentManager> manager,
+    scoped_refptr<component_updater::ComponentManagerAsh> manager,
     component_updater::ComponentUpdateService* updater,
     const std::string& lacros_component_name)
     : component_manager_(manager),
@@ -232,12 +232,12 @@ void StatefulLacrosLoader::LoadInternal(LoadCompletionCallback callback,
   // If stateful lacros is forced, we cannot fallback to rootfs lacros, so wait
   // until the installation of stateful to be completed.
   auto update_policy =
-      forced ? component_updater::CrOSComponentManager::UpdatePolicy::kDontForce
-             : component_updater::CrOSComponentManager::UpdatePolicy::kSkip;
+      forced ? component_updater::ComponentManagerAsh::UpdatePolicy::kDontForce
+             : component_updater::ComponentManagerAsh::UpdatePolicy::kSkip;
 
   component_manager_->Load(
       lacros_component_name_,
-      component_updater::CrOSComponentManager::MountPolicy::kMount,
+      component_updater::ComponentManagerAsh::MountPolicy::kMount,
       update_policy,
       // If `callback` is null, means stateful lacros-chrome should be
       // installed/updated but rootfs lacros-chrome will be used.
@@ -247,7 +247,7 @@ void StatefulLacrosLoader::LoadInternal(LoadCompletionCallback callback,
 
 void StatefulLacrosLoader::OnLoad(
     LoadCompletionCallback callback,
-    component_updater::CrOSComponentManager::Error error,
+    component_updater::ComponentManagerAsh::Error error,
     const base::FilePath& path) {
   DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
   CHECK_EQ(state_, State::kLoading) << state_;
@@ -263,7 +263,7 @@ void StatefulLacrosLoader::OnLoad(
   }
 
   bool is_stateful_lacros_available =
-      error == component_updater::CrOSComponentManager::Error::NONE &&
+      error == component_updater::ComponentManagerAsh::Error::NONE &&
       !path.empty();
   LOG_IF(WARNING, !is_stateful_lacros_available)
       << "Error loading lacros component image in the "
@@ -332,7 +332,7 @@ void StatefulLacrosLoader::OnCheckInstalledToUnload(base::OnceClosure callback,
   }
 
   // Workaround for login crash when the user disables Lacros.
-  // CrOSComponentManager::Unload() calls into code in MetadataTable that
+  // ComponentManagerAsh::Unload() calls into code in MetadataTable that
   // assumes that system salt is available. This isn't always true when chrome
   // restarts to apply non-owner flags. It's hard to make MetadataTable async.
   // Ensure salt is available before unloading. https://crbug.com/1122674

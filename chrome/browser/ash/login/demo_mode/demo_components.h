@@ -79,7 +79,7 @@ class DemoComponents {
   // mounted at the given path (or not mounted if `path` is empty).
   void SetCrOSComponentLoadedForTesting(
       const base::FilePath& path,
-      component_updater::CrOSComponentManager::Error);
+      component_updater::ComponentManagerAsh::Error);
 
   // Fakes the offline demo mode resources image having been requested and
   // mounted at the given path (or not mounted if `path` is empty).
@@ -95,15 +95,15 @@ class DemoComponents {
   }
 
   // The error from trying to load the demo mode resources CrOS component from
-  // the CrOSComponentManager.
-  const std::optional<component_updater::CrOSComponentManager::Error>&
+  // the ComponentManagerAsh.
+  const std::optional<component_updater::ComponentManagerAsh::Error>&
   resources_component_error() const {
     return resources_component_error_;
   }
 
   // The error from trying to load the demo mode app CrOS component from
-  // the CrOSComponentManager.
-  const std::optional<component_updater::CrOSComponentManager::Error>&
+  // the ComponentManagerAsh.
+  const std::optional<component_updater::ComponentManagerAsh::Error>&
   app_component_error() const {
     return app_component_error_;
   }
@@ -123,17 +123,16 @@ class DemoComponents {
   void OnResourcesVersionReady(const base::FilePath& path,
                                const base::Version& version);
 
-  void OnAppComponentLoaded(
-      base::OnceClosure load_callback,
-      component_updater::CrOSComponentManager::Error error,
-      const base::FilePath& path);
+  void OnAppComponentLoaded(base::OnceClosure load_callback,
+                            component_updater::ComponentManagerAsh::Error error,
+                            const base::FilePath& path);
 
   // Called after attempting to load the installed demo mode resources CrOS
   // component has finished.
   // On success, `path` is expected to contain the path as which the component
   // is loaded.
   void InstalledComponentLoaded(
-      component_updater::CrOSComponentManager::Error error,
+      component_updater::ComponentManagerAsh::Error error,
       const base::FilePath& path);
 
   // Callback for the component or image loader request to load demo resources.
@@ -148,12 +147,12 @@ class DemoComponents {
 
   // Last error (or NONE) seen when trying to load the demo-mode-resources CrOS
   // component. Has no value until the load attempt has completed.
-  std::optional<component_updater::CrOSComponentManager::Error>
+  std::optional<component_updater::ComponentManagerAsh::Error>
       resources_component_error_;
 
   // Last error (or NONE) seen when trying to load the demo-mode-app CrOS
   // component. Has no value until the load attempt has completed.
-  std::optional<component_updater::CrOSComponentManager::Error>
+  std::optional<component_updater::ComponentManagerAsh::Error>
       app_component_error_;
 
   // Path at which the demo-mode-resources component was loaded.

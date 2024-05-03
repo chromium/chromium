@@ -13,11 +13,11 @@
 #include "chrome/browser/ash/growth/campaigns_manager_client_impl.h"
 #include "chrome/browser/ash/growth/metrics.h"
 #include "chrome/browser/browser_process.h"
-#include "chrome/browser/component_updater/fake_cros_component_manager.h"
 #include "chrome/test/base/browser_process_platform_part_test_api_chromeos.h"
 #include "chrome/test/base/scoped_testing_local_state.h"
 #include "chrome/test/base/testing_browser_process.h"
 #include "chrome/test/base/testing_profile_manager.h"
+#include "components/component_updater/ash/fake_component_manager_ash.h"
 #include "components/metrics/structured/structured_events.h"
 #include "components/metrics/structured/test/test_structured_metrics_recorder.h"
 #include "content/public/test/browser_task_environment.h"
@@ -27,7 +27,7 @@ namespace {
 
 namespace cros_events = metrics::structured::events::v2::cr_os_events;
 
-using ::component_updater::FakeCrOSComponentManager;
+using ::component_updater::FakeComponentManagerAsh;
 
 inline constexpr char kCampaignsComponent[] = "growth-campaigns";
 
@@ -76,47 +76,47 @@ class CampaignsManagerClientTest : public testing::Test {
     scoped_feature_list_.InitAndEnableFeature(
         ash::features::kGrowthCampaignsCrOSEvents);
     SetupProfileManager();
-    InitializeCrosComponentManager();
+    InitializeComponentManager();
     campaigns_manager_client_ = std::make_unique<CampaignsManagerClientImpl>();
     metrics_recorder_.Initialize();
   }
 
   void TearDown() override {
     cros_component_manager_ = nullptr;
-    browser_process_platform_part_test_api_.ShutdownCrosComponentManager();
+    browser_process_platform_part_test_api_.ShutdownComponentManager();
     campaigns_manager_client_.reset();
     profile_manager_->DeleteAllTestingProfiles();
     profile_manager_.reset();
   }
 
  protected:
-  void InitializeCrosComponentManager() {
+  void InitializeComponentManager() {
     auto fake_cros_component_manager =
-        base::MakeRefCounted<FakeCrOSComponentManager>();
+        base::MakeRefCounted<FakeComponentManagerAsh>();
     fake_cros_component_manager->set_queue_load_requests(true);
     fake_cros_component_manager->set_supported_components(
         {kCampaignsComponent});
     cros_component_manager_ = fake_cros_component_manager.get();
 
-    browser_process_platform_part_test_api_.InitializeCrosComponentManager(
+    browser_process_platform_part_test_api_.InitializeComponentManager(
         std::move(fake_cros_component_manager));
   }
 
   bool FinishComponentLoad(
       const base::FilePath& mount_path,
-      component_updater::FakeCrOSComponentManager::Error error) {
+      component_updater::FakeComponentManagerAsh::Error error) {
     EXPECT_TRUE(
         cros_component_manager_->HasPendingInstall(kCampaignsComponent));
     EXPECT_TRUE(cros_component_manager_->UpdateRequested(kCampaignsComponent));
 
     auto install_path = base::FilePath();
-    if (error == component_updater::FakeCrOSComponentManager::Error::NONE) {
+    if (error == component_updater::FakeComponentManagerAsh::Error::NONE) {
       install_path = base::FilePath("/dev/null");
     }
 
     return cros_component_manager_->FinishLoadRequest(
         kCampaignsComponent,
-        FakeCrOSComponentManager::ComponentInfo(
+        FakeComponentManagerAsh::ComponentInfo(
             /*load_response=*/error, install_path, mount_path));
   }
 
@@ -160,7 +160,7 @@ class CampaignsManagerClientTest : public testing::Test {
 
   content::BrowserTaskEnvironment task_environment_;
   std::unique_ptr<CampaignsManagerClientImpl> campaigns_manager_client_;
-  raw_ptr<FakeCrOSComponentManager> cros_component_manager_ = nullptr;
+  raw_ptr<FakeComponentManagerAsh> cros_component_manager_ = nullptr;
   base::HistogramTester histogram_tester_;
   metrics::structured::TestStructuredMetricsRecorder metrics_recorder_;
 
@@ -178,9 +178,9 @@ TEST_F(CampaignsManagerClientTest, LoadCampaignsComponent) {
                   kTestCampaignsComponentMountedPath);
       }));
 
-  ASSERT_TRUE(FinishComponentLoad(
-      base::FilePath(kTestCampaignsComponentMountedPath),
-      component_updater::CrOSComponentManager::Error::NONE));
+  ASSERT_TRUE(
+      FinishComponentLoad(base::FilePath(kTestCampaignsComponentMountedPath),
+                          component_updater::ComponentManagerAsh::Error::NONE));
   EXPECT_FALSE(cros_component_manager_->HasPendingInstall(kCampaignsComponent));
 }
 
@@ -192,7 +192,7 @@ TEST_F(CampaignsManagerClientTest, LoadCampaignsComponentFailed) {
 
   ASSERT_TRUE(FinishComponentLoad(
       base::FilePath(),
-      component_updater::CrOSComponentManager::Error::NOT_FOUND));
+      component_updater::ComponentManagerAsh::Error::NOT_FOUND));
   EXPECT_FALSE(cros_component_manager_->HasPendingInstall(kCampaignsComponent));
 }
 

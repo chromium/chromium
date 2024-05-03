@@ -3983,6 +3983,7 @@ static_library("ui") {
       "//components/assist_ranker",
       "//components/assist_ranker/proto",
       "//components/captive_portal/core",
+      "//components/component_updater/ash",
       "//components/consent_auditor:consent_auditor",
       "//components/content_relationship_verification",
       "//components/desks_storage",

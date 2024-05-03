@@ -262,7 +262,7 @@ DemoSetupController::DemoSetupError::CreateFromOtherEnrollmentError(
 // static
 DemoSetupController::DemoSetupError
 DemoSetupController::DemoSetupError::CreateFromComponentError(
-    component_updater::CrOSComponentManager::Error error,
+    component_updater::ComponentManagerAsh::Error error,
     std::string component_name) {
   const std::string debug_message =
       base::StringPrintf("Failed to load '%s' CrOS component with error: %d",
@@ -571,18 +571,18 @@ void DemoSetupController::OnDemoComponentsLoaded() {
 
   auto resources_component_error =
       demo_components_->resources_component_error().value_or(
-          component_updater::CrOSComponentManager::Error::NOT_FOUND);
+          component_updater::ComponentManagerAsh::Error::NOT_FOUND);
   if (resources_component_error !=
-      component_updater::CrOSComponentManager::Error::NONE) {
+      component_updater::ComponentManagerAsh::Error::NONE) {
     SetupFailed(DemoSetupError::CreateFromComponentError(
         resources_component_error,
         DemoComponents::kDemoModeResourcesComponentName));
     return;
   }
   auto app_component_error = demo_components_->app_component_error().value_or(
-      component_updater::CrOSComponentManager::Error::NOT_FOUND);
+      component_updater::ComponentManagerAsh::Error::NOT_FOUND);
   if (app_component_error !=
-      component_updater::CrOSComponentManager::Error::NONE) {
+      component_updater::ComponentManagerAsh::Error::NONE) {
     SetupFailed(DemoSetupError::CreateFromComponentError(
         app_component_error, DemoComponents::kDemoModeAppComponentName));
     return;
@@ -643,7 +643,7 @@ void DemoSetupController::OnDeviceAttributeUpdatePermission(bool granted) {
 }
 
 void DemoSetupController::SetCrOSComponentLoadErrorForTest(
-    component_updater::CrOSComponentManager::Error error) {
+    component_updater::ComponentManagerAsh::Error error) {
   component_error_for_tests_ = error;
 }
 

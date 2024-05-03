@@ -25,7 +25,6 @@
 #include "chrome/browser/ash/wallpaper_handlers/test_wallpaper_fetcher_delegate.h"
 #include "chrome/browser/browser_process.h"
 #include "chrome/browser/browser_process_platform_part.h"
-#include "chrome/browser/component_updater/fake_cros_component_manager.h"
 #include "chrome/browser/prefs/browser_prefs.h"
 #include "chrome/browser/ui/apps/chrome_app_delegate.h"
 #include "chrome/browser/ui/ash/test_wallpaper_controller.h"
@@ -36,6 +35,7 @@
 #include "chrome/test/base/testing_profile.h"
 #include "chrome/test/base/testing_profile_manager.h"
 #include "chromeos/ash/components/dbus/concierge/concierge_client.h"
+#include "components/component_updater/ash/fake_component_manager_ash.h"
 #include "components/language/core/browser/pref_names.h"
 #include "components/session_manager/core/session_manager.h"
 #include "components/sync_preferences/testing_pref_service_syncable.h"
@@ -48,7 +48,7 @@
 namespace ash {
 namespace {
 
-using ::component_updater::FakeCrOSComponentManager;
+using ::component_updater::FakeComponentManagerAsh;
 
 constexpr char kResourcesComponent[] = "demo-mode-resources";
 constexpr char kTestDemoModeResourcesMountPoint[] =
@@ -74,7 +74,7 @@ class DemoSessionTest : public testing::Test {
     ASSERT_TRUE(profile_manager_->SetUp());
     ConciergeClient::InitializeFake(/*fake_cicerone_client=*/nullptr);
     DemoSession::SetDemoConfigForTesting(DemoSession::DemoModeConfig::kOnline);
-    InitializeCrosComponentManager();
+    InitializeComponentManager();
     session_manager_ = std::make_unique<session_manager::SessionManager>();
     wallpaper_controller_client_ = std::make_unique<
         WallpaperControllerClientImpl>(
@@ -92,34 +92,32 @@ class DemoSessionTest : public testing::Test {
     wallpaper_controller_client_.reset();
     ConciergeClient::Shutdown();
 
-    cros_component_manager_ = nullptr;
-    browser_process_platform_part_test_api_.ShutdownCrosComponentManager();
+    component_manager_ash_ = nullptr;
+    browser_process_platform_part_test_api_.ShutdownComponentManager();
     profile_manager_->DeleteAllTestingProfiles();
   }
 
  protected:
   bool FinishResourcesComponentLoad(const base::FilePath& mount_path) {
-    EXPECT_TRUE(
-        cros_component_manager_->HasPendingInstall(kResourcesComponent));
-    EXPECT_TRUE(cros_component_manager_->UpdateRequested(kResourcesComponent));
+    EXPECT_TRUE(component_manager_ash_->HasPendingInstall(kResourcesComponent));
+    EXPECT_TRUE(component_manager_ash_->UpdateRequested(kResourcesComponent));
 
-    return cros_component_manager_->FinishLoadRequest(
+    return component_manager_ash_->FinishLoadRequest(
         kResourcesComponent,
-        FakeCrOSComponentManager::ComponentInfo(
-            component_updater::CrOSComponentManager::Error::NONE,
+        FakeComponentManagerAsh::ComponentInfo(
+            component_updater::ComponentManagerAsh::Error::NONE,
             base::FilePath("/dev/null"), mount_path));
   }
 
-  void InitializeCrosComponentManager() {
-    auto fake_cros_component_manager =
-        base::MakeRefCounted<FakeCrOSComponentManager>();
-    fake_cros_component_manager->set_queue_load_requests(true);
-    fake_cros_component_manager->set_supported_components(
-        {kResourcesComponent});
-    cros_component_manager_ = fake_cros_component_manager.get();
+  void InitializeComponentManager() {
+    auto fake_component_manager_ash =
+        base::MakeRefCounted<FakeComponentManagerAsh>();
+    fake_component_manager_ash->set_queue_load_requests(true);
+    fake_component_manager_ash->set_supported_components({kResourcesComponent});
+    component_manager_ash_ = fake_component_manager_ash.get();
 
-    browser_process_platform_part_test_api_.InitializeCrosComponentManager(
-        std::move(fake_cros_component_manager));
+    browser_process_platform_part_test_api_.InitializeComponentManager(
+        std::move(fake_component_manager_ash));
   }
 
   // Creates a dummy demo user with a testing profile and logs in.
@@ -139,7 +137,7 @@ class DemoSessionTest : public testing::Test {
     return profile;
   }
 
-  raw_ptr<FakeCrOSComponentManager> cros_component_manager_ = nullptr;
+  raw_ptr<FakeComponentManagerAsh> component_manager_ash_ = nullptr;
   content::BrowserTaskEnvironment task_environment_;
   std::unique_ptr<session_manager::SessionManager> session_manager_;
   std::unique_ptr<WallpaperControllerClientImpl> wallpaper_controller_client_;
@@ -168,7 +166,7 @@ TEST_F(DemoSessionTest, StartForDemoDeviceNotInDemoMode) {
   EXPECT_FALSE(DemoSession::StartIfInDemoMode());
   EXPECT_FALSE(DemoSession::Get());
 
-  EXPECT_FALSE(cros_component_manager_->HasPendingInstall(kResourcesComponent));
+  EXPECT_FALSE(component_manager_ash_->HasPendingInstall(kResourcesComponent));
 }
 
 TEST_F(DemoSessionTest, ShutdownResetsInstance) {

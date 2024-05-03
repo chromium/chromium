@@ -48,7 +48,7 @@
 #include "ui/base/ui_base_types.h"
 
 namespace component_updater {
-class CrOSComponentManager;
+class ComponentManagerAsh;
 }  // namespace component_updater
 
 namespace apps {
@@ -111,7 +111,7 @@ class BrowserManager : public session_manager::SessionManagerObserver,
   static BrowserManager* Get();
 
   explicit BrowserManager(
-      scoped_refptr<component_updater::CrOSComponentManager> manager);
+      scoped_refptr<component_updater::ComponentManagerAsh> manager);
   // Constructor for testing.
   BrowserManager(std::unique_ptr<BrowserLoader> browser_loader,
                  ComponentUpdateService* update_service);

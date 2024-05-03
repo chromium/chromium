@@ -73,8 +73,8 @@ class BrowserProcessPlatformPart : public BrowserProcessPlatformPartChromeOS {
   void InitializeCrosSettings();
   void ShutdownCrosSettings();
 
-  void InitializeCrosComponentManager();
-  void ShutdownCrosComponentManager();
+  void InitializeComponentManager();
+  void ShutdownComponentManager();
 
   void InitializeSchedulerConfigurationManager();
   void ShutdownSchedulerConfigurationManager();
@@ -121,9 +121,9 @@ class BrowserProcessPlatformPart : public BrowserProcessPlatformPartChromeOS {
     return device_disabling_manager_.get();
   }
 
-  scoped_refptr<component_updater::CrOSComponentManager>
-  cros_component_manager() {
-    return cros_component_manager_;
+  scoped_refptr<component_updater::ComponentManagerAsh>
+  component_manager_ash() {
+    return component_manager_ash_;
   }
 
   ash::AshProxyMonitor* ash_proxy_monitor() { return ash_proxy_monitor_.get(); }
@@ -188,11 +188,10 @@ class BrowserProcessPlatformPart : public BrowserProcessPlatformPartChromeOS {
 
   std::unique_ptr<ash::CrosSettingsHolder> cros_settings_holder_;
 
-  // Whether cros_component_manager_ has been initialized for test. Set by
+  // Whether `component_manager_ash_` has been initialized for test. Set by
   // BrowserProcessPlatformPartTestApi.
-  bool using_testing_cros_component_manager_ = false;
-  scoped_refptr<component_updater::CrOSComponentManager>
-      cros_component_manager_;
+  bool using_testing_component_manager_ash_ = false;
+  scoped_refptr<component_updater::ComponentManagerAsh> component_manager_ash_;
 
   std::unique_ptr<ash::AccountManagerFactory> account_manager_factory_;
 

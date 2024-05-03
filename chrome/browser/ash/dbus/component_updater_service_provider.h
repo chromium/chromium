@@ -43,7 +43,7 @@ namespace ash {
 // % (returns empty response on success and error response on failure)
 class ComponentUpdaterServiceProvider
     : public CrosDBusService::ServiceProviderInterface,
-      public component_updater::CrOSComponentManager::Delegate {
+      public component_updater::ComponentManagerAsh::Delegate {
  public:
   // Delegate interface providing additional resources to
   // ComponentUpdaterServiceProvider.
@@ -66,7 +66,7 @@ class ComponentUpdaterServiceProvider
   };
 
   explicit ComponentUpdaterServiceProvider(
-      component_updater::CrOSComponentManager* cros_component_manager);
+      component_updater::ComponentManagerAsh* cros_component_manager);
 
   ComponentUpdaterServiceProvider(const ComponentUpdaterServiceProvider&) =
       delete;
@@ -78,7 +78,7 @@ class ComponentUpdaterServiceProvider
   // CrosDBusService::ServiceProviderInterface overrides:
   void Start(scoped_refptr<dbus::ExportedObject> exported_object) override;
 
-  // component_updater::CrOSComponentManager::Delegate overrides:
+  // component_updater::ComponentManagerAsh::Delegate overrides:
   void EmitInstalledSignal(const std::string& component) override;
 
  private:
@@ -95,7 +95,7 @@ class ComponentUpdaterServiceProvider
   // Callback executed after component loading operation is done.
   void OnLoadComponent(dbus::MethodCall* method_call,
                        dbus::ExportedObject::ResponseSender response_sender,
-                       component_updater::CrOSComponentManager::Error error,
+                       component_updater::ComponentManagerAsh::Error error,
                        const base::FilePath& result);
 
   // Called on UI thread in response to a D-Bus request.
@@ -108,8 +108,8 @@ class ComponentUpdaterServiceProvider
   // A reference on ExportedObject for sending signals.
   scoped_refptr<dbus::ExportedObject> exported_object_;
 
-  // Weak pointer to CrOSComponentManager to avoid calling BrowserProcess.
-  raw_ptr<component_updater::CrOSComponentManager> cros_component_manager_;
+  // Weak pointer to ComponentManagerAsh to avoid calling BrowserProcess.
+  raw_ptr<component_updater::ComponentManagerAsh> cros_component_manager_;
 
   // Keep this last so that all weak pointers will be invalidated at the
   // beginning of destruction.

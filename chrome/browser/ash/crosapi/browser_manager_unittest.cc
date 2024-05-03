@@ -17,7 +17,6 @@
 #include "chrome/browser/ash/crosapi/browser_loader.h"
 #include "chrome/browser/ash/login/users/fake_chrome_user_manager.h"
 #include "chrome/browser/browser_process.h"
-#include "chrome/browser/component_updater/fake_cros_component_manager.h"
 #include "chrome/browser/ui/ash/shelf/chrome_shelf_controller.h"
 #include "chrome/test/base/scoped_testing_local_state.h"
 #include "chrome/test/base/testing_browser_process.h"
@@ -30,6 +29,7 @@
 #include "chromeos/crosapi/mojom/browser_service.mojom-test-utils.h"
 #include "chromeos/crosapi/mojom/browser_service.mojom.h"
 #include "components/account_id/account_id.h"
+#include "components/component_updater/ash/fake_component_manager_ash.h"
 #include "components/component_updater/mock_component_updater_service.h"
 #include "components/session_manager/core/session_manager.h"
 #include "components/user_manager/fake_device_ownership_waiter.h"
@@ -41,7 +41,7 @@
 #include "testing/gtest/include/gtest/gtest.h"
 #include "ui/display/test/test_screen.h"
 
-using ::component_updater::FakeCrOSComponentManager;
+using ::component_updater::FakeComponentManagerAsh;
 using ::component_updater::MockComponentUpdateService;
 using testing::_;
 using update_client::UpdateClient;
@@ -167,7 +167,7 @@ class MockVersionServiceDelegate : public BrowserVersionServiceAsh::Delegate {
 class MockBrowserLoader : public BrowserLoader {
  public:
   explicit MockBrowserLoader(
-      scoped_refptr<component_updater::CrOSComponentManager> manager)
+      scoped_refptr<component_updater::ComponentManagerAsh> manager)
       : BrowserLoader(manager) {}
   MockBrowserLoader(const MockBrowserLoader&) = delete;
   MockBrowserLoader& operator=(const MockBrowserLoader&) = delete;
@@ -236,7 +236,7 @@ class BrowserManagerTest : public testing::Test {
 
   virtual void SetUpBrowserManager() {
     auto fake_cros_component_manager =
-        base::MakeRefCounted<FakeCrOSComponentManager>();
+        base::MakeRefCounted<FakeComponentManagerAsh>();
 
     std::unique_ptr<MockBrowserLoader> browser_loader =
         std::make_unique<testing::StrictMock<MockBrowserLoader>>(

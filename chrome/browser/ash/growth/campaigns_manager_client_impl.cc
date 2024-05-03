@@ -26,7 +26,6 @@
 #include "chrome/browser/ash/login/demo_mode/demo_session.h"
 #include "chrome/browser/browser_process.h"
 #include "chrome/browser/browser_process_platform_part.h"
-#include "chrome/browser/component_updater/cros_component_manager.h"
 #include "chrome/browser/feature_engagement/tracker_factory.h"
 #include "chrome/browser/metrics/chrome_metrics_service_accessor.h"
 #include "chrome/browser/profiles/profile_manager.h"
@@ -34,6 +33,7 @@
 #include "chromeos/ash/components/growth/campaigns_constants.h"
 #include "chromeos/ash/components/growth/campaigns_manager.h"
 #include "chromeos/ash/components/growth/growth_metrics.h"
+#include "components/component_updater/ash/component_manager_ash.h"
 #include "components/feature_engagement/public/feature_constants.h"
 #include "components/feature_engagement/public/tracker.h"
 #include "components/variations/synthetic_trials.h"
@@ -75,14 +75,14 @@ void CampaignsManagerClientImpl::LoadCampaignsComponent(
   }
 
   // Loads campaigns component.
-  auto cros_component_manager =
-      g_browser_process->platform_part()->cros_component_manager();
-  CHECK(cros_component_manager);
+  auto component_manager_ash =
+      g_browser_process->platform_part()->component_manager_ash();
+  CHECK(component_manager_ash);
 
-  cros_component_manager->Load(
+  component_manager_ash->Load(
       kCampaignComponentName,
-      component_updater::CrOSComponentManager::MountPolicy::kMount,
-      component_updater::CrOSComponentManager::UpdatePolicy::kDontForce,
+      component_updater::ComponentManagerAsh::MountPolicy::kMount,
+      component_updater::ComponentManagerAsh::UpdatePolicy::kDontForce,
       base::BindOnce(&CampaignsManagerClientImpl::OnComponentDownloaded,
                      weak_ptr_factory_.GetWeakPtr(), std::move(callback)));
 }
@@ -230,9 +230,9 @@ void CampaignsManagerClientImpl::OnButtonPressed(int campaign_id,
 
 void CampaignsManagerClientImpl::OnComponentDownloaded(
     growth::CampaignComponentLoadedCallback loaded_callback,
-    component_updater::CrOSComponentManager::Error error,
+    component_updater::ComponentManagerAsh::Error error,
     const base::FilePath& path) {
-  if (error != component_updater::CrOSComponentManager::Error::NONE) {
+  if (error != component_updater::ComponentManagerAsh::Error::NONE) {
     std::move(loaded_callback).Run(std::nullopt);
     return;
   }

@@ -234,7 +234,7 @@ TEST_F(DemoSetupControllerTest, OnlineComponentError) {
 
   tested_controller_.set_demo_config(DemoSession::DemoModeConfig::kOnline);
   tested_controller_.SetCrOSComponentLoadErrorForTest(
-      component_updater::CrOSComponentManager::Error::
+      component_updater::ComponentManagerAsh::Error::
           COMPATIBILITY_CHECK_FAILED);
   tested_controller_.Enroll(
       base::BindOnce(&DemoSetupControllerTestHelper::OnSetupSuccess,

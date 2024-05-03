@@ -13,9 +13,9 @@
 #include "base/scoped_observation.h"
 #include "chrome/browser/ash/growth/metrics.h"
 #include "chrome/browser/ash/growth/ui_action_performer.h"
-#include "chrome/browser/component_updater/cros_component_manager.h"
 #include "chromeos/ash/components/growth/campaigns_configuration_provider.h"
 #include "chromeos/ash/components/growth/campaigns_manager_client.h"
+#include "components/component_updater/ash/component_manager_ash.h"
 
 namespace base {
 class Version;
@@ -61,7 +61,7 @@ class CampaignsManagerClientImpl : public growth::CampaignsManagerClient,
  private:
   void OnComponentDownloaded(
       growth::CampaignComponentLoadedCallback loaded_callback,
-      component_updater::CrOSComponentManager::Error error,
+      component_updater::ComponentManagerAsh::Error error,
       const base::FilePath& path);
   void UpdateConfig(const std::map<std::string, std::string>& params);
 

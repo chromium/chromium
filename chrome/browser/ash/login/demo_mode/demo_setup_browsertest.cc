@@ -50,7 +50,6 @@
 #include "chrome/browser/chrome_browser_main.h"
 #include "chrome/browser/chrome_browser_main_extra_parts.h"
 #include "chrome/browser/component_updater/cros_component_installer_chromeos.h"
-#include "chrome/browser/component_updater/fake_cros_component_manager.h"
 #include "chrome/browser/ui/webui/ash/login/demo_preferences_screen_handler.h"
 #include "chrome/browser/ui/webui/ash/login/demo_setup_screen_handler.h"
 #include "chrome/browser/ui/webui/ash/login/error_screen_handler.h"
@@ -70,6 +69,7 @@
 #include "chromeos/ash/components/system/fake_statistics_provider.h"
 #include "chromeos/ash/components/system/statistics_provider.h"
 #include "chromeos/constants/chromeos_features.h"
+#include "components/component_updater/ash/fake_component_manager_ash.h"
 #include "components/policy/core/common/cloud/mock_cloud_policy_store.h"
 #include "content/public/test/browser_task_environment.h"
 #include "content/public/test/browser_test.h"
@@ -323,15 +323,15 @@ class DemoSetupTestBase : public OobeBaseTest {
   std::unique_ptr<base::AutoReset<bool>> branded_build_override_;
 };
 
-// Extra parts for setting up the FakeCrOSComponentManager before the real one
+// Extra parts for setting up the FakeComponentManagerAsh before the real one
 // has been initialized on the browser
 class DemoSetupTestMainExtraParts : public ChromeBrowserMainExtraParts {
  public:
   explicit DemoSetupTestMainExtraParts(
       bool growth_campaigns_enabled = false,
-      component_updater::CrOSComponentManager::Error
+      component_updater::ComponentManagerAsh::Error
           demo_mode_app_load_response =
-              component_updater::CrOSComponentManager::Error::NONE)
+              component_updater::ComponentManagerAsh::Error::NONE)
       : growth_campaigns_enabled_(growth_campaigns_enabled),
         demo_mode_app_load_response_(demo_mode_app_load_response) {
     CHECK(components_temp_dir_.CreateUniqueTempDir());
@@ -347,53 +347,53 @@ class DemoSetupTestMainExtraParts : public ChromeBrowserMainExtraParts {
   }
 
   void PostEarlyInitialization() override {
-    auto cros_component_manager =
-        base::MakeRefCounted<component_updater::FakeCrOSComponentManager>();
+    auto component_manager_ash =
+        base::MakeRefCounted<component_updater::FakeComponentManagerAsh>();
     std::set<std::string> supported_components = {kDemoResourcesComponentName,
                                                   kDemoAppComponentName};
     if (growth_campaigns_enabled_) {
       supported_components.insert(kGrowthCampaignsComponentName);
     }
 
-    cros_component_manager->set_supported_components(supported_components);
+    component_manager_ash->set_supported_components(supported_components);
     if (demo_mode_app_load_response_ ==
-        component_updater::CrOSComponentManager::Error::NONE) {
-      cros_component_manager->ResetComponentState(
+        component_updater::ComponentManagerAsh::Error::NONE) {
+      component_manager_ash->ResetComponentState(
           kDemoAppComponentName,
-          component_updater::FakeCrOSComponentManager::ComponentInfo(
+          component_updater::FakeComponentManagerAsh::ComponentInfo(
               demo_mode_app_load_response_, base::FilePath("/dev/null"),
               base::FilePath("/run/imageloader/demo-mode-app")));
     } else {
-      cros_component_manager->ResetComponentState(
+      component_manager_ash->ResetComponentState(
           kDemoAppComponentName,
-          component_updater::FakeCrOSComponentManager::ComponentInfo(
+          component_updater::FakeComponentManagerAsh::ComponentInfo(
               demo_mode_app_load_response_, base::FilePath(),
               base::FilePath()));
     }
-    cros_component_manager->ResetComponentState(
+    component_manager_ash->ResetComponentState(
         kDemoResourcesComponentName,
-        component_updater::FakeCrOSComponentManager::ComponentInfo(
-            component_updater::CrOSComponentManager::Error::NONE,
+        component_updater::FakeComponentManagerAsh::ComponentInfo(
+            component_updater::ComponentManagerAsh::Error::NONE,
             base::FilePath("/dev/null"),
             base::FilePath("/run/imageloader/demo-mode-resources")));
 
     if (growth_campaigns_enabled_) {
-      cros_component_manager->ResetComponentState(
+      component_manager_ash->ResetComponentState(
           kGrowthCampaignsComponentName,
-          component_updater::FakeCrOSComponentManager::ComponentInfo(
-              component_updater::CrOSComponentManager::Error::NONE,
+          component_updater::FakeComponentManagerAsh::ComponentInfo(
+              component_updater::ComponentManagerAsh::Error::NONE,
               base::FilePath("/dev/null"), GetGrowthCampaignsPath()));
     }
 
     platform_part_test_api_ =
         std::make_unique<BrowserProcessPlatformPartTestApi>(
             g_browser_process->platform_part());
-    platform_part_test_api_->InitializeCrosComponentManager(
-        std::move(cros_component_manager));
+    platform_part_test_api_->InitializeComponentManager(
+        std::move(component_manager_ash));
   }
 
   void PostMainMessageLoopRun() override {
-    platform_part_test_api_->ShutdownCrosComponentManager();
+    platform_part_test_api_->ShutdownComponentManager();
     platform_part_test_api_.reset();
   }
 
@@ -401,7 +401,7 @@ class DemoSetupTestMainExtraParts : public ChromeBrowserMainExtraParts {
   std::unique_ptr<BrowserProcessPlatformPartTestApi> platform_part_test_api_;
   base::ScopedTempDir components_temp_dir_;
   bool growth_campaigns_enabled_;
-  component_updater::CrOSComponentManager::Error demo_mode_app_load_response_;
+  component_updater::ComponentManagerAsh::Error demo_mode_app_load_response_;
 };
 
 class DemoSetupArcSupportedTest : public DemoSetupTestBase {
@@ -1059,7 +1059,7 @@ class DemoSetupComponentLoadErrorTest : public DemoSetupArcSupportedTest {
       content::BrowserMainParts* browser_main_parts) override {
     auto extra_parts = std::make_unique<DemoSetupTestMainExtraParts>(
         /*growth_campaigns_enabled=*/false,
-        component_updater::CrOSComponentManager::Error::INSTALL_FAILURE);
+        component_updater::ComponentManagerAsh::Error::INSTALL_FAILURE);
     static_cast<ChromeBrowserMainParts*>(browser_main_parts)
         ->AddParts(std::move(extra_parts));
     DemoSetupTestBase::CreatedBrowserMainParts(browser_main_parts);

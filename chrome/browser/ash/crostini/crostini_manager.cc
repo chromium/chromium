@@ -1612,8 +1612,8 @@ namespace {
 
 std::string GetImageServer() {
   std::string image_server_url;
-  scoped_refptr<component_updater::CrOSComponentManager> component_manager =
-      g_browser_process->platform_part()->cros_component_manager();
+  scoped_refptr<component_updater::ComponentManagerAsh> component_manager =
+      g_browser_process->platform_part()->component_manager_ash();
   if (component_manager) {
     image_server_url =
         component_manager->GetCompatiblePath("cros-crostini-image-server-url")

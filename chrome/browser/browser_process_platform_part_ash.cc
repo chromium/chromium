@@ -174,26 +174,28 @@ void BrowserProcessPlatformPart::ShutdownCrosSettings() {
   cros_settings_holder_.reset();
 }
 
-void BrowserProcessPlatformPart::InitializeCrosComponentManager() {
-  if (using_testing_cros_component_manager_)
+void BrowserProcessPlatformPart::InitializeComponentManager() {
+  if (using_testing_component_manager_ash_) {
     return;
+  }
 
-  DCHECK(!cros_component_manager_);
-  cros_component_manager_ =
+  DCHECK(!component_manager_ash_);
+  component_manager_ash_ =
       base::MakeRefCounted<component_updater::CrOSComponentInstaller>(
           std::make_unique<component_updater::MetadataTable>(
               g_browser_process->local_state()),
           g_browser_process->component_updater());
 
   // Register all installed components for regular update.
-  cros_component_manager_->RegisterInstalled();
+  component_manager_ash_->RegisterInstalled();
 }
 
-void BrowserProcessPlatformPart::ShutdownCrosComponentManager() {
-  if (using_testing_cros_component_manager_)
+void BrowserProcessPlatformPart::ShutdownComponentManager() {
+  if (using_testing_component_manager_ash_) {
     return;
+  }
 
-  cros_component_manager_.reset();
+  component_manager_ash_.reset();
 }
 
 void BrowserProcessPlatformPart::InitializeSchedulerConfigurationManager() {

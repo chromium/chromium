@@ -2,8 +2,8 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#ifndef CHROME_BROWSER_COMPONENT_UPDATER_FAKE_CROS_COMPONENT_MANAGER_H_
-#define CHROME_BROWSER_COMPONENT_UPDATER_FAKE_CROS_COMPONENT_MANAGER_H_
+#ifndef COMPONENTS_COMPONENT_UPDATER_ASH_FAKE_COMPONENT_MANAGER_ASH_H_
+#define COMPONENTS_COMPONENT_UPDATER_ASH_FAKE_COMPONENT_MANAGER_ASH_H_
 
 #include <list>
 #include <map>
@@ -16,14 +16,14 @@
 #include "base/functional/callback.h"
 #include "base/synchronization/lock.h"
 #include "base/version.h"
-#include "chrome/browser/component_updater/cros_component_manager.h"
+#include "components/component_updater/ash/component_manager_ash.h"
 
 namespace component_updater {
 
 // This fake implementation of cros component manager. Intended to be used in
 // tests to abstract away the cros component manager dependency on imageloader
 // and component updater services, and local file system.
-class FakeCrOSComponentManager : public CrOSComponentManager {
+class FakeComponentManagerAsh : public ComponentManagerAsh {
  public:
   // Information about how fake component manager should "load" a component.
   struct ComponentInfo {
@@ -53,10 +53,10 @@ class FakeCrOSComponentManager : public CrOSComponentManager {
     std::optional<base::Version> version;
   };
 
-  FakeCrOSComponentManager();
+  FakeComponentManagerAsh();
 
-  FakeCrOSComponentManager(const FakeCrOSComponentManager&) = delete;
-  FakeCrOSComponentManager& operator=(const FakeCrOSComponentManager&) = delete;
+  FakeComponentManagerAsh(const FakeComponentManagerAsh&) = delete;
+  FakeComponentManagerAsh& operator=(const FakeComponentManagerAsh&) = delete;
 
   void set_queue_load_requests(bool queue_load_requests) {
     queue_load_requests_ = queue_load_requests;
@@ -87,7 +87,7 @@ class FakeCrOSComponentManager : public CrOSComponentManager {
   // |queue_load_requests_| is set.
   bool UpdateRequested(const std::string& name) const;
 
-  // CrOSComponentManager:
+  // ComponentManagerAsh:
   void SetDelegate(Delegate* delegate) override;
   void Load(const std::string& name,
             MountPolicy mount_policy,
@@ -105,7 +105,7 @@ class FakeCrOSComponentManager : public CrOSComponentManager {
   void RegisterInstalled() override;
 
  protected:
-  ~FakeCrOSComponentManager() override;
+  ~FakeComponentManagerAsh() override;
 
  private:
   // Describes pending component load request.
@@ -177,4 +177,4 @@ class FakeCrOSComponentManager : public CrOSComponentManager {
 
 }  // namespace component_updater
 
-#endif  // CHROME_BROWSER_COMPONENT_UPDATER_FAKE_CROS_COMPONENT_MANAGER_H_
+#endif  // COMPONENTS_COMPONENT_UPDATER_ASH_FAKE_COMPONENT_MANAGER_ASH_H_

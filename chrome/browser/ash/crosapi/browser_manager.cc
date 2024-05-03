@@ -75,7 +75,6 @@
 #include "chrome/browser/ash/profiles/profile_helper.h"
 #include "chrome/browser/browser_process.h"
 #include "chrome/browser/browser_process_platform_part_ash.h"
-#include "chrome/browser/component_updater/cros_component_manager.h"
 #include "chrome/browser/notifications/system_notification_helper.h"
 #include "chrome/browser/profiles/profile_manager.h"
 #include "chrome/browser/ui/ash/shelf/chrome_shelf_controller.h"
@@ -91,6 +90,7 @@
 #include "chromeos/crosapi/cpp/lacros_startup_state.h"
 #include "chromeos/crosapi/mojom/crosapi.mojom-shared.h"
 #include "components/account_id/account_id.h"
+#include "components/component_updater/ash/component_manager_ash.h"
 #include "components/crash/core/common/crash_key.h"
 #include "components/feature_engagement/public/tracker.h"
 #include "components/nacl/common/buildflags.h"
@@ -359,7 +359,7 @@ BrowserManager* BrowserManager::Get() {
 }
 
 BrowserManager::BrowserManager(
-    scoped_refptr<component_updater::CrOSComponentManager> manager)
+    scoped_refptr<component_updater::ComponentManagerAsh> manager)
     : BrowserManager(std::make_unique<BrowserLoader>(manager),
                      g_browser_process->component_updater()) {}
 

@@ -422,7 +422,7 @@ class DBusServices {
         CrosDBusService::CreateServiceProviderList(
             std::make_unique<ComponentUpdaterServiceProvider>(
                 g_browser_process->platform_part()
-                    ->cros_component_manager()
+                    ->component_manager_ash()
                     .get())));
 
     chrome_features_service_ = CrosDBusService::Create(
@@ -750,7 +750,7 @@ void ChromeBrowserMainPartsAsh::PostCreateMainMessageLoop() {
 
   // This has to be initialized before DBusServices
   // (ComponentUpdaterServiceProvider).
-  g_browser_process->platform_part()->InitializeCrosComponentManager();
+  g_browser_process->platform_part()->InitializeComponentManager();
 
   dbus_services_ = std::make_unique<internal::DBusServices>(
       std::move(feature_list_accessor_));
@@ -1017,7 +1017,7 @@ void ChromeBrowserMainPartsAsh::PreProfileInit() {
   // profile-keyed service AppService can call into it.
   crosapi_manager_ = std::make_unique<crosapi::CrosapiManager>();
   browser_manager_ = std::make_unique<crosapi::BrowserManager>(
-      g_browser_process->platform_part()->cros_component_manager());
+      g_browser_process->platform_part()->component_manager_ash());
   browser_manager_->AddObserver(SessionControllerClientImpl::Get());
   lacros_availability_policy_observer_ =
       std::make_unique<crosapi::LacrosAvailabilityPolicyObserver>();
@@ -1760,7 +1760,7 @@ void ChromeBrowserMainPartsAsh::PostDestroyThreads() {
 
   // This has to be destroyed after DBusServices
   // (ComponentUpdaterServiceProvider).
-  g_browser_process->platform_part()->ShutdownCrosComponentManager();
+  g_browser_process->platform_part()->ShutdownComponentManager();
 
   ShutdownDBus();
 

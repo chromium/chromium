@@ -2,7 +2,7 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#include "chrome/browser/component_updater/fake_cros_component_manager.h"
+#include "components/component_updater/ash/fake_component_manager_ash.h"
 
 #include <utility>
 
@@ -15,7 +15,7 @@
 
 namespace component_updater {
 
-FakeCrOSComponentManager::ComponentInfo::ComponentInfo(
+FakeComponentManagerAsh::ComponentInfo::ComponentInfo(
     Error load_response,
     const base::FilePath& install_path,
     const base::FilePath& mount_path)
@@ -29,7 +29,7 @@ FakeCrOSComponentManager::ComponentInfo::ComponentInfo(
   DCHECK(load_response != Error::NONE || (!install_path.empty()));
 }
 
-FakeCrOSComponentManager::ComponentInfo::ComponentInfo(
+FakeComponentManagerAsh::ComponentInfo::ComponentInfo(
     Error load_response,
     const base::FilePath& install_path,
     const base::FilePath& mount_path,
@@ -48,20 +48,20 @@ FakeCrOSComponentManager::ComponentInfo::ComponentInfo(
          (!install_path.empty() && version.IsValid()));
 }
 
-FakeCrOSComponentManager::ComponentInfo::ComponentInfo(
-    const FakeCrOSComponentManager::ComponentInfo& other) = default;
+FakeComponentManagerAsh::ComponentInfo::ComponentInfo(
+    const FakeComponentManagerAsh::ComponentInfo& other) = default;
 
-FakeCrOSComponentManager::ComponentInfo&
-FakeCrOSComponentManager::ComponentInfo::operator=(
-    const FakeCrOSComponentManager::ComponentInfo& other) = default;
+FakeComponentManagerAsh::ComponentInfo&
+FakeComponentManagerAsh::ComponentInfo::operator=(
+    const FakeComponentManagerAsh::ComponentInfo& other) = default;
 
-FakeCrOSComponentManager::ComponentInfo::~ComponentInfo() = default;
+FakeComponentManagerAsh::ComponentInfo::~ComponentInfo() = default;
 
-FakeCrOSComponentManager::FakeCrOSComponentManager() = default;
+FakeComponentManagerAsh::FakeComponentManagerAsh() = default;
 
-FakeCrOSComponentManager::~FakeCrOSComponentManager() = default;
+FakeComponentManagerAsh::~FakeComponentManagerAsh() = default;
 
-bool FakeCrOSComponentManager::FinishLoadRequest(
+bool FakeComponentManagerAsh::FinishLoadRequest(
     const std::string& name,
     const ComponentInfo& component_info) {
   if (!pending_loads_.count(name) || pending_loads_[name].empty()) {
@@ -82,7 +82,7 @@ bool FakeCrOSComponentManager::FinishLoadRequest(
   return true;
 }
 
-bool FakeCrOSComponentManager::ResetComponentState(const std::string& name,
+bool FakeComponentManagerAsh::ResetComponentState(const std::string& name,
                                                    const ComponentInfo& state) {
   if (!supported_components_.count(name)) {
     return false;
@@ -96,7 +96,7 @@ bool FakeCrOSComponentManager::ResetComponentState(const std::string& name,
   return true;
 }
 
-bool FakeCrOSComponentManager::HasPendingInstall(
+bool FakeComponentManagerAsh::HasPendingInstall(
     const std::string& name) const {
   DCHECK(queue_load_requests_);
 
@@ -104,7 +104,7 @@ bool FakeCrOSComponentManager::HasPendingInstall(
   return it != pending_loads_.end() && !it->second.empty();
 }
 
-bool FakeCrOSComponentManager::UpdateRequested(const std::string& name) const {
+bool FakeComponentManagerAsh::UpdateRequested(const std::string& name) const {
   DCHECK(queue_load_requests_);
 
   const auto& it = pending_loads_.find(name);
@@ -112,11 +112,11 @@ bool FakeCrOSComponentManager::UpdateRequested(const std::string& name) const {
          it->second.front().needs_update;
 }
 
-void FakeCrOSComponentManager::SetDelegate(Delegate* delegate) {
+void FakeComponentManagerAsh::SetDelegate(Delegate* delegate) {
   // No-op, not used by the fake.
 }
 
-void FakeCrOSComponentManager::Load(const std::string& name,
+void FakeComponentManagerAsh::Load(const std::string& name,
                                     MountPolicy mount_policy,
                                     UpdatePolicy update_policy,
                                     LoadCallback load_callback) {
@@ -156,7 +156,7 @@ void FakeCrOSComponentManager::Load(const std::string& name,
                                     : base::FilePath()));
 }
 
-bool FakeCrOSComponentManager::Unload(const std::string& name) {
+bool FakeComponentManagerAsh::Unload(const std::string& name) {
   {
     base::AutoLock lock(registered_components_lock_);
     registered_components_.erase(name);
@@ -166,18 +166,18 @@ bool FakeCrOSComponentManager::Unload(const std::string& name) {
   return unload_component_result_;
 }
 
-void FakeCrOSComponentManager::RegisterCompatiblePath(
+void FakeComponentManagerAsh::RegisterCompatiblePath(
     const std::string& name,
     CompatibleComponentInfo info) {
   installed_components_[name] = std::move(info);
 }
 
-void FakeCrOSComponentManager::UnregisterCompatiblePath(
+void FakeComponentManagerAsh::UnregisterCompatiblePath(
     const std::string& name) {
   installed_components_.erase(name);
 }
 
-base::FilePath FakeCrOSComponentManager::GetCompatiblePath(
+base::FilePath FakeComponentManagerAsh::GetCompatiblePath(
     const std::string& name) const {
   const auto& it = installed_components_.find(name);
   if (it == installed_components_.end()) {
@@ -186,22 +186,22 @@ base::FilePath FakeCrOSComponentManager::GetCompatiblePath(
   return it->second.path;
 }
 
-void FakeCrOSComponentManager::SetRegisteredComponents(
+void FakeComponentManagerAsh::SetRegisteredComponents(
     const std::set<std::string>& components) {
   base::AutoLock lock(registered_components_lock_);
   registered_components_ = components;
 }
 
-bool FakeCrOSComponentManager::IsRegisteredMayBlock(const std::string& name) {
+bool FakeComponentManagerAsh::IsRegisteredMayBlock(const std::string& name) {
   base::AutoLock lock(registered_components_lock_);
   return registered_components_.count(name);
 }
 
-void FakeCrOSComponentManager::RegisterInstalled() {
+void FakeComponentManagerAsh::RegisterInstalled() {
   NOTIMPLEMENTED();
 }
 
-void FakeCrOSComponentManager::GetVersion(
+void FakeComponentManagerAsh::GetVersion(
     const std::string& name,
     base::OnceCallback<void(const base::Version&)> version_callback) const {
   const auto& component_info = component_infos_.find(name);
@@ -214,16 +214,16 @@ void FakeCrOSComponentManager::GetVersion(
   std::move(version_callback).Run(component_info->second.version.value());
 }
 
-FakeCrOSComponentManager::LoadRequest::LoadRequest(bool mount_requested,
+FakeComponentManagerAsh::LoadRequest::LoadRequest(bool mount_requested,
                                                    bool needs_update,
                                                    LoadCallback callback)
     : mount_requested(mount_requested),
       needs_update(needs_update),
       callback(std::move(callback)) {}
 
-FakeCrOSComponentManager::LoadRequest::~LoadRequest() = default;
+FakeComponentManagerAsh::LoadRequest::~LoadRequest() = default;
 
-void FakeCrOSComponentManager::HandlePendingRequest(const std::string& name,
+void FakeComponentManagerAsh::HandlePendingRequest(const std::string& name,
                                                     bool mount_requested,
                                                     bool needs_update,
                                                     LoadCallback callback) {
@@ -249,7 +249,7 @@ void FakeCrOSComponentManager::HandlePendingRequest(const std::string& name,
                      component_info->second.mount_path));
 }
 
-void FakeCrOSComponentManager::FinishComponentLoad(
+void FakeComponentManagerAsh::FinishComponentLoad(
     const std::string& name,
     bool mount_requested,
     const ComponentInfo& component_info) {

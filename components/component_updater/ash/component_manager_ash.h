@@ -2,12 +2,13 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#ifndef CHROME_BROWSER_COMPONENT_UPDATER_CROS_COMPONENT_MANAGER_H_
-#define CHROME_BROWSER_COMPONENT_UPDATER_CROS_COMPONENT_MANAGER_H_
+#ifndef COMPONENTS_COMPONENT_UPDATER_ASH_COMPONENT_MANAGER_ASH_H_
+#define COMPONENTS_COMPONENT_UPDATER_ASH_COMPONENT_MANAGER_ASH_H_
 
 #include <optional>
 #include <string>
 
+#include "base/component_export.h"
 #include "base/files/file_path.h"
 #include "base/functional/callback_forward.h"
 #include "base/memory/ref_counted.h"
@@ -21,7 +22,7 @@ class Version;
 namespace component_updater {
 
 // Contains the path and version of a compatible component.
-struct CompatibleComponentInfo {
+struct COMPONENT_EXPORT(COMPONENT_UPDATER_ASH) CompatibleComponentInfo {
   CompatibleComponentInfo();
   CompatibleComponentInfo(const base::FilePath& path_in,
                           const std::optional<base::Version>& version_in);
@@ -56,12 +57,12 @@ struct CompatibleComponentInfo {
 // This class, with the exception of the method IsRegisteredMayBlock() must only
 // be used from the main thread. IsRegisteredMayBlock() must only be used from a
 // thread that allows disk IO.
-class CrOSComponentManager
-    : public base::RefCountedThreadSafe<CrOSComponentManager> {
+class COMPONENT_EXPORT(COMPONENT_UPDATER_ASH) ComponentManagerAsh
+    : public base::RefCountedThreadSafe<ComponentManagerAsh> {
  public:
-  CrOSComponentManager();
+  ComponentManagerAsh();
 
-  // Error needs to be consistent with CrosComponentManagerError in
+  // Error needs to be consistent with ComponentManagerAshError in
   // src/tools/metrics/histograms/enums.xml.
   enum class Error {
     NONE = 0,
@@ -149,12 +150,12 @@ class CrOSComponentManager
   virtual void RegisterInstalled() = 0;
 
  protected:
-  virtual ~CrOSComponentManager();
+  virtual ~ComponentManagerAsh();
 
  private:
-  friend class base::RefCountedThreadSafe<CrOSComponentManager>;
+  friend class base::RefCountedThreadSafe<ComponentManagerAsh>;
 };
 
 }  // namespace component_updater
 
-#endif  // CHROME_BROWSER_COMPONENT_UPDATER_CROS_COMPONENT_MANAGER_H_
+#endif  // COMPONENTS_COMPONENT_UPDATER_ASH_COMPONENT_MANAGER_ASH_H_

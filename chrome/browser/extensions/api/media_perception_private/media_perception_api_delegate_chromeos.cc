@@ -40,27 +40,27 @@ std::string GetComponentNameForComponentType(
 }
 
 api::media_perception_private::ComponentInstallationError
-GetComponentInstallationErrorForCrOSComponentManagerError(
-    const component_updater::CrOSComponentManager::Error error) {
+GetComponentInstallationErrorForComponentManagerAshError(
+    const component_updater::ComponentManagerAsh::Error error) {
   switch (error) {
-    case component_updater::CrOSComponentManager::Error::ERROR_MAX:
-    case component_updater::CrOSComponentManager::Error::NONE:
+    case component_updater::ComponentManagerAsh::Error::ERROR_MAX:
+    case component_updater::ComponentManagerAsh::Error::NONE:
       return api::media_perception_private::ComponentInstallationError::kNone;
-    case component_updater::CrOSComponentManager::Error::UNKNOWN_COMPONENT:
+    case component_updater::ComponentManagerAsh::Error::UNKNOWN_COMPONENT:
       return api::media_perception_private::ComponentInstallationError::
           kUnknownComponent;
-    case component_updater::CrOSComponentManager::Error::INSTALL_FAILURE:
-    case component_updater::CrOSComponentManager::Error::UPDATE_IN_PROGRESS:
+    case component_updater::ComponentManagerAsh::Error::INSTALL_FAILURE:
+    case component_updater::ComponentManagerAsh::Error::UPDATE_IN_PROGRESS:
       return api::media_perception_private::ComponentInstallationError::
           kInstallFailure;
-    case component_updater::CrOSComponentManager::Error::MOUNT_FAILURE:
+    case component_updater::ComponentManagerAsh::Error::MOUNT_FAILURE:
       return api::media_perception_private::ComponentInstallationError::
           kMountFailure;
-    case component_updater::CrOSComponentManager::Error::
+    case component_updater::ComponentManagerAsh::Error::
         COMPATIBILITY_CHECK_FAILED:
       return api::media_perception_private::ComponentInstallationError::
           kCompatibilityCheckFailed;
-    case component_updater::CrOSComponentManager::Error::NOT_FOUND:
+    case component_updater::ComponentManagerAsh::Error::NOT_FOUND:
       return api::media_perception_private::ComponentInstallationError::
           kNotFound;
   }
@@ -70,10 +70,10 @@ GetComponentInstallationErrorForCrOSComponentManagerError(
 
 void OnLoadComponent(
     MediaPerceptionAPIDelegate::LoadCrOSComponentCallback load_callback,
-    component_updater::CrOSComponentManager::Error error,
+    component_updater::ComponentManagerAsh::Error error,
     const base::FilePath& mount_point) {
   std::move(load_callback)
-      .Run(GetComponentInstallationErrorForCrOSComponentManagerError(error),
+      .Run(GetComponentInstallationErrorForComponentManagerAshError(error),
            mount_point);
 }
 
@@ -87,10 +87,10 @@ MediaPerceptionAPIDelegateChromeOS::~MediaPerceptionAPIDelegateChromeOS() {}
 void MediaPerceptionAPIDelegateChromeOS::LoadCrOSComponent(
     const extensions::api::media_perception_private::ComponentType& type,
     LoadCrOSComponentCallback load_callback) {
-  g_browser_process->platform_part()->cros_component_manager()->Load(
+  g_browser_process->platform_part()->component_manager_ash()->Load(
       GetComponentNameForComponentType(type),
-      component_updater::CrOSComponentManager::MountPolicy::kMount,
-      component_updater::CrOSComponentManager::UpdatePolicy::kDontForce,
+      component_updater::ComponentManagerAsh::MountPolicy::kMount,
+      component_updater::ComponentManagerAsh::UpdatePolicy::kDontForce,
       base::BindOnce(OnLoadComponent, std::move(load_callback)));
 }
 

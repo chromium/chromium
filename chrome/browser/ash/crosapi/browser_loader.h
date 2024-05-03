@@ -20,7 +20,7 @@
 #include "chromeos/ash/components/standalone_browser/lacros_selection.h"
 
 namespace component_updater {
-class CrOSComponentManager;
+class ComponentManagerAsh;
 }  // namespace component_updater
 
 namespace crosapi {
@@ -34,7 +34,7 @@ using ash::standalone_browser::LacrosSelection;
 class BrowserLoader {
  public:
   explicit BrowserLoader(
-      scoped_refptr<component_updater::CrOSComponentManager> manager);
+      scoped_refptr<component_updater::ComponentManagerAsh> manager);
 
   // Constructor for testing.
   explicit BrowserLoader(std::unique_ptr<LacrosSelectionLoaderFactory> factory);

@@ -1108,7 +1108,7 @@ namespace autotestPrivate {
     // |callback|: Called when the operation has completed.
     static void installBorealis(VoidCallback callback);
 
-    // Register a component with CrOSComponentManager.
+    // Register a component with ComponentManagerAsh.
     // |name|: The name of the component.
     // |path|: Path to the component.
     static void registerComponent(DOMString name, DOMString path);

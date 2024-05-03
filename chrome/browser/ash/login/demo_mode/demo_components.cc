@@ -108,29 +108,29 @@ base::FilePath DemoComponents::GetExternalExtensionsPrefsPath() const {
 }
 
 void DemoComponents::LoadAppComponent(base::OnceClosure load_callback) {
-  g_browser_process->platform_part()->cros_component_manager()->Load(
+  g_browser_process->platform_part()->component_manager_ash()->Load(
       kDemoModeAppComponentName,
-      component_updater::CrOSComponentManager::MountPolicy::kMount,
-      component_updater::CrOSComponentManager::UpdatePolicy::kDontForce,
+      component_updater::ComponentManagerAsh::MountPolicy::kMount,
+      component_updater::ComponentManagerAsh::UpdatePolicy::kDontForce,
       base::BindOnce(&DemoComponents::OnAppComponentLoaded,
                      weak_ptr_factory_.GetWeakPtr(), std::move(load_callback)));
 }
 
 void DemoComponents::OnAppComponentLoaded(
     base::OnceClosure load_callback,
-    component_updater::CrOSComponentManager::Error error,
+    component_updater::ComponentManagerAsh::Error error,
     const base::FilePath& app_component_path) {
   // Before returning saying that the app component has been loaded
   // let's ensure that the app's version is loaded.
   app_component_error_ = error;
   default_app_component_path_ = app_component_path;
 
-  auto cros_component_manager =
-      g_browser_process->platform_part()->cros_component_manager();
+  auto component_manager_ash =
+      g_browser_process->platform_part()->component_manager_ash();
 
-  // cros_component_manager may be null in unit tests.
-  if (cros_component_manager) {
-    cros_component_manager->GetVersion(
+  // component_manager_ash may be null in unit tests.
+  if (component_manager_ash) {
+    component_manager_ash->GetVersion(
         kDemoModeAppComponentName,
         base::BindOnce(&DemoComponents::OnAppVersionReady,
                        weak_ptr_factory_.GetWeakPtr(),
@@ -142,7 +142,7 @@ void DemoComponents::OnAppComponentLoaded(
 
 void DemoComponents::LoadResourcesComponent(base::OnceClosure load_callback) {
   // TODO(b/254735031): Consider removing this callback queuing logic, since
-  // it's already supported internally by CrOSComponentManager::Load
+  // it's already supported internally by ComponentManagerAsh::Load
   if (resources_loaded_) {
     if (load_callback)
       std::move(load_callback).Run();
@@ -156,16 +156,16 @@ void DemoComponents::LoadResourcesComponent(base::OnceClosure load_callback) {
     return;
   resources_load_requested_ = true;
 
-  auto cros_component_manager =
-      g_browser_process->platform_part()->cros_component_manager();
+  auto component_manager_ash =
+      g_browser_process->platform_part()->component_manager_ash();
   // In unit tests, DemoModeTestHelper should set up a fake
-  // CrOSComponentManager.
-  DCHECK(cros_component_manager);
+  // ComponentManagerAsh.
+  DCHECK(component_manager_ash);
 
-  cros_component_manager->Load(
+  component_manager_ash->Load(
       kDemoModeResourcesComponentName,
-      component_updater::CrOSComponentManager::MountPolicy::kMount,
-      component_updater::CrOSComponentManager::UpdatePolicy::kDontForce,
+      component_updater::ComponentManagerAsh::MountPolicy::kMount,
+      component_updater::ComponentManagerAsh::UpdatePolicy::kDontForce,
       base::BindOnce(&DemoComponents::InstalledComponentLoaded,
                      weak_ptr_factory_.GetWeakPtr()));
 }
@@ -191,7 +191,7 @@ void DemoComponents::OnResourcesVersionReady(const base::FilePath& path,
 
 void DemoComponents::SetCrOSComponentLoadedForTesting(
     const base::FilePath& path,
-    component_updater::CrOSComponentManager::Error error) {
+    component_updater::ComponentManagerAsh::Error error) {
   InstalledComponentLoaded(error, path);
   OnAppComponentLoaded(base::DoNothing(), error, path);
 }
@@ -202,16 +202,16 @@ void DemoComponents::SetPreinstalledOfflineResourcesLoadedForTesting(
 }
 
 void DemoComponents::InstalledComponentLoaded(
-    component_updater::CrOSComponentManager::Error error,
+    component_updater::ComponentManagerAsh::Error error,
     const base::FilePath& path) {
   resources_component_error_ = error;
 
-  auto cros_component_manager =
-      g_browser_process->platform_part()->cros_component_manager();
+  auto component_manager_ash =
+      g_browser_process->platform_part()->component_manager_ash();
 
-  // cros_component_manager may be null in unit tests.
-  if (cros_component_manager) {
-    cros_component_manager->GetVersion(
+  // component_manager_ash may be null in unit tests.
+  if (component_manager_ash) {
+    component_manager_ash->GetVersion(
         kDemoModeResourcesComponentName,
         base::BindOnce(&DemoComponents::OnResourcesVersionReady,
                        weak_ptr_factory_.GetWeakPtr(), path));
