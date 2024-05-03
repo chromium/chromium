@@ -137,6 +137,12 @@ TEST_F(AutofillSuggestionControllerTest, ShowTwice) {
                   {Suggestion(u"Help me write", SuggestionType::kCompose)});
 }
 
+// Tests that the AED is informed when suggestions were shown.
+TEST_F(AutofillSuggestionControllerTest, ShowInformsDelegate) {
+  EXPECT_CALL(manager().external_delegate(), OnPopupShown());
+  ShowSuggestions(manager(), {SuggestionType::kAddressEntry});
+}
+
 TEST_F(AutofillSuggestionControllerTest, UpdateDataListValues) {
   ShowSuggestions(manager(), {SuggestionType::kAddressEntry});
   std::vector<SelectOption> options = {

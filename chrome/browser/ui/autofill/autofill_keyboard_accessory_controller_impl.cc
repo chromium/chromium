@@ -466,6 +466,7 @@ void AutofillKeyboardAccessoryControllerImpl::Show(
 
   time_view_shown_ = NextIdleTimeTicks::CaptureNextIdleTimeTicksWithDelay(
       kIgnoreEarlyClicksOnPopupDuration);
+  delegate_->OnPopupShown();
 }
 
 void AutofillKeyboardAccessoryControllerImpl::DisableThresholdForTesting(
