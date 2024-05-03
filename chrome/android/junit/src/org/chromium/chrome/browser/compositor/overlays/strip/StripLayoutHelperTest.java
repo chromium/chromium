@@ -2627,6 +2627,85 @@ public class StripLayoutHelperTest {
     @Test
     @EnableFeatures({
         ChromeFeatureList.TAB_STRIP_GROUP_INDICATORS,
+        ChromeFeatureList.TAB_STRIP_GROUP_COLLAPSE
+    })
+    public void testBottomIndicatorWidth_CollapseAndExpand() {
+        // Mock 5 tabs, group first 3 tabs as group1 and group the rest as group2.
+        initializeTest(false, false, true, 0, 5);
+        mStripLayoutHelper.onSizeChanged(
+                SCREEN_WIDTH, SCREEN_HEIGHT, false, TIMESTAMP, PADDING_LEFT, PADDING_RIGHT);
+        StripLayoutTab[] tabs = mStripLayoutHelper.getStripLayoutTabsForTesting();
+        groupTabs(0, 3);
+        groupTabs(3, 5);
+
+        // Assert: the first and fourth view should be group title.
+        StripLayoutView[] views = mStripLayoutHelper.getStripLayoutViewsForTesting();
+        assertTrue(EXPECTED_TITLE, views[0] instanceof StripLayoutGroupTitle);
+        assertTrue(EXPECTED_TITLE, views[4] instanceof StripLayoutGroupTitle);
+        StripLayoutGroupTitle groupTitle1 = ((StripLayoutGroupTitle) views[0]);
+        StripLayoutGroupTitle groupTitle2 = ((StripLayoutGroupTitle) views[4]);
+
+        // Calculate tab and bottom indicator initial width.
+        float initialTabWidth = tabs[0].getWidth();
+        float expectedStartWidth1 =
+                calculateExpectedBottomIndicatorWidth(initialTabWidth, 3, groupTitle1);
+        float expectedStartWidth2 =
+                calculateExpectedBottomIndicatorWidth(initialTabWidth, 2, groupTitle1);
+
+        // Assert: bottom indicator start width as usual.
+        assertEquals(
+                "Group 1 bottom indicator start width is incorrect",
+                expectedStartWidth1,
+                groupTitle1.getBottomIndicatorWidth(),
+                EPSILON);
+        assertEquals(
+                "Group 2 bottom indicator start width is incorrect",
+                expectedStartWidth2,
+                groupTitle2.getBottomIndicatorWidth(),
+                EPSILON);
+
+        // Click to collapse the first tab group.
+        mStripLayoutHelper.collapseTabGroupForTesting((StripLayoutGroupTitle) views[0], true);
+
+        // Assert: check bottom indicator end width for the 1st tab group should be 0.
+        assertEquals(
+                "Bottom indicator end width is incorrect",
+                0.f,
+                groupTitle1.getBottomIndicatorWidth(),
+                EPSILON);
+
+        // Assert: check bottom indicator end width for the 2nd tab group should been adjusted to
+        // match the new tab width after collapse, since there are only 2 active tabs on strip, tab
+        // width should become the max width.
+        assertEquals(
+                "Bottom indicator end width is incorrect",
+                calculateExpectedBottomIndicatorWidth(265.f, 2, groupTitle2),
+                groupTitle2.getBottomIndicatorWidth(),
+                EPSILON);
+
+        // Click to expand the first tab group.
+        mStripLayoutHelper.collapseTabGroupForTesting((StripLayoutGroupTitle) views[0], false);
+
+        // Assert: check bottom indicator end width for the 1st tab group has been expanded to the
+        // initial length.
+        assertEquals(
+                "Bottom indicator end width is incorrect",
+                expectedStartWidth1,
+                groupTitle1.getBottomIndicatorWidth(),
+                EPSILON);
+
+        // Assert: check bottom indicator end width for the 2st tab group has been adjusted to the
+        // initial length.
+        assertEquals(
+                "Bottom indicator end width is incorrect",
+                expectedStartWidth2,
+                groupTitle2.getBottomIndicatorWidth(),
+                EPSILON);
+    }
+
+    @Test
+    @EnableFeatures({
+        ChromeFeatureList.TAB_STRIP_GROUP_INDICATORS,
         ChromeFeatureList.TAB_DRAG_DROP_ANDROID
     })
     public void testBottomIndicatorWidth_TabHoveredOntoTabGroup_TabGroupIndicators() {

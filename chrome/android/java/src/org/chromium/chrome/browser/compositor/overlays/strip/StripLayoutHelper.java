@@ -2463,7 +2463,8 @@ public class StripLayoutHelper implements StripLayoutTabDelegate, StripLayoutGro
         mLayerTitleCache.removeGroupTitle(rootId);
     }
 
-    private AnimatorListener getCollapseAnimatorListener() {
+    private AnimatorListener getCollapseAnimatorListener(
+            StripLayoutGroupTitle collapsedGroupTitle) {
         return new AnimatorListenerAdapter() {
             @Override
             public void onAnimationStart(Animator animation) {
@@ -2472,6 +2473,9 @@ public class StripLayoutHelper implements StripLayoutTabDelegate, StripLayoutGro
 
             @Override
             public void onAnimationEnd(Animator animation) {
+                if (collapsedGroupTitle != null) {
+                    collapsedGroupTitle.setBottomIndicatorWidth(0.f);
+                }
                 mGroupCollapsingOrExpanding = false;
             }
         };
@@ -2537,10 +2541,36 @@ public class StripLayoutHelper implements StripLayoutTabDelegate, StripLayoutGro
             }
         }
 
+        // Similar to bottom indicator collapse animation, the expansion animation should also begin
+        // from the padded width of the group title.
+        if (!isCollapsed) {
+            groupTitle.setBottomIndicatorWidth(groupTitle.getPaddedWidth());
+        }
+
         List<Animator> resizeAnimationList = resizeTabStrip(animate, false, animate);
         if (collapseAnimationList != null) {
+            StripLayoutGroupTitle collapsedGroupTitle = null;
+            if (isCollapsed) {
+                // Animate bottom indicator down to the group title padded width when collapsing,
+                // and then hide the remaining portion under the group title.
+                collapsedGroupTitle = groupTitle;
+                collapseAnimationList.add(
+                        CompositorAnimator.ofFloatProperty(
+                                mUpdateHost.getAnimationHandler(),
+                                groupTitle,
+                                StripLayoutGroupTitle.BOTTOM_INDICATOR_WIDTH,
+                                groupTitle.getBottomIndicatorWidth(),
+                                groupTitle.getPaddedWidth(),
+                                ANIM_TAB_RESIZE_MS));
+            }
+
             if (resizeAnimationList != null) collapseAnimationList.addAll(resizeAnimationList);
-            startAnimationList(collapseAnimationList, getCollapseAnimatorListener());
+            startAnimationList(
+                    collapseAnimationList, getCollapseAnimatorListener(collapsedGroupTitle));
+        } else {
+            if (isCollapsed) {
+                groupTitle.setBottomIndicatorWidth(0.f);
+            }
         }
     }
 
@@ -2632,6 +2662,10 @@ public class StripLayoutHelper implements StripLayoutTabDelegate, StripLayoutGro
         }
         for (int i = 0; i < mStripGroupTitles.length; i++) {
             StripLayoutGroupTitle groupTitle = mStripGroupTitles[i];
+
+            if (groupTitle.isCollapsed()) {
+                continue;
+            }
 
             // Calculate the bottom indicator width.
             float bottomIndicatorWidth =
@@ -2917,6 +2951,9 @@ public class StripLayoutHelper implements StripLayoutTabDelegate, StripLayoutGro
         // 6. Animate bottom indicator when tab width change.
         for (int i = 0; i < mStripGroupTitles.length; i++) {
             StripLayoutGroupTitle groupTitle = mStripGroupTitles[i];
+            if (groupTitle.isCollapsed()) {
+                continue;
+            }
             float bottomIndicatorStartWidth = groupTitle.getBottomIndicatorWidth();
             float bottomIndicatorEndWidth;
 
