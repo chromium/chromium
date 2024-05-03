@@ -97,10 +97,14 @@ class CONTENT_EXPORT SharedStorageDocumentServiceImpl final
 
   storage::SharedStorageManager* GetSharedStorageManager();
 
-  bool IsSharedStorageAllowed(std::string* out_debug_message = nullptr);
+  bool IsSharedStorageAllowed(std::string* out_debug_message);
 
-  bool IsSharedStorageAddModuleAllowed(
-      std::string* out_debug_message = nullptr);
+  bool IsSharedStorageAllowedForOrigin(const url::Origin& accessing_origin,
+                                       std::string* out_debug_message);
+
+  bool IsSharedStorageAddModuleAllowedForOrigin(
+      const url::Origin& accessing_origin,
+      std::string* out_debug_message);
 
   std::string SerializeLastCommittedOrigin() const;
 

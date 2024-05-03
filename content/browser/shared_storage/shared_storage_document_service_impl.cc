@@ -149,7 +149,8 @@ void SharedStorageDocumentServiceImpl::CreateWorklet(
       weak_ptr_factory_.GetWeakPtr(), is_same_origin, std::move(callback));
 
   std::string debug_message;
-  if (!IsSharedStorageAddModuleAllowed(&debug_message)) {
+  if (!IsSharedStorageAddModuleAllowedForOrigin(
+          url::Origin::Create(script_source_url), &debug_message)) {
     std::move(intercepting_callback)
         .Run(
             /*success=*/false,
@@ -384,27 +385,37 @@ bool SharedStorageDocumentServiceImpl::IsSharedStorageAllowed(
   // Will trigger a call to
   // `content_settings::PageSpecificContentSettings::BrowsingDataAccessed()` for
   // reporting purposes.
-  return GetContentClient()->browser()->IsSharedStorageAllowed(
-      render_frame_host().GetBrowserContext(), &render_frame_host(),
-      main_frame_origin_, render_frame_host().GetLastCommittedOrigin(),
-      out_debug_message);
+  return IsSharedStorageAllowedForOrigin(
+      render_frame_host().GetLastCommittedOrigin(), out_debug_message);
 }
 
-bool SharedStorageDocumentServiceImpl::IsSharedStorageAddModuleAllowed(
+bool SharedStorageDocumentServiceImpl::IsSharedStorageAllowedForOrigin(
+    const url::Origin& accessing_origin,
     std::string* out_debug_message) {
   // Will trigger a call to
   // `content_settings::PageSpecificContentSettings::BrowsingDataAccessed()` for
   // reporting purposes.
-  if (!IsSharedStorageAllowed(out_debug_message)) {
+  return GetContentClient()->browser()->IsSharedStorageAllowed(
+      render_frame_host().GetBrowserContext(), &render_frame_host(),
+      main_frame_origin_, accessing_origin, out_debug_message);
+}
+
+bool SharedStorageDocumentServiceImpl::IsSharedStorageAddModuleAllowedForOrigin(
+    const url::Origin& accessing_origin,
+    std::string* out_debug_message) {
+  // Will trigger a call to
+  // `content_settings::PageSpecificContentSettings::BrowsingDataAccessed()` for
+  // reporting purposes.
+  if (!IsSharedStorageAllowedForOrigin(accessing_origin, out_debug_message)) {
     return false;
   }
 
   return GetContentClient()->browser()->IsSharedStorageSelectURLAllowed(
              render_frame_host().GetBrowserContext(), main_frame_origin_,
-             render_frame_host().GetLastCommittedOrigin(), out_debug_message) ||
+             accessing_origin, out_debug_message) ||
          GetContentClient()->browser()->IsPrivateAggregationAllowed(
              render_frame_host().GetBrowserContext(), main_frame_origin_,
-             render_frame_host().GetLastCommittedOrigin());
+             accessing_origin);
 }
 
 std::string SharedStorageDocumentServiceImpl::SerializeLastCommittedOrigin()
