@@ -60,10 +60,10 @@
 //mojo/public/interfaces/bindings/tests/data/validation/conformance_mthd0_incomplete_struct.expected
 //mojo/public/interfaces/bindings/tests/data/validation/conformance_mthd0_incomplete_struct_header.data
 //mojo/public/interfaces/bindings/tests/data/validation/conformance_mthd0_incomplete_struct_header.expected
-//mojo/public/interfaces/bindings/tests/data/validation/conformance_mthd0_invalid_request_flags2.data
-//mojo/public/interfaces/bindings/tests/data/validation/conformance_mthd0_invalid_request_flags2.expected
 //mojo/public/interfaces/bindings/tests/data/validation/conformance_mthd0_invalid_request_flags.data
 //mojo/public/interfaces/bindings/tests/data/validation/conformance_mthd0_invalid_request_flags.expected
+//mojo/public/interfaces/bindings/tests/data/validation/conformance_mthd0_invalid_request_flags2.data
+//mojo/public/interfaces/bindings/tests/data/validation/conformance_mthd0_invalid_request_flags2.expected
 //mojo/public/interfaces/bindings/tests/data/validation/conformance_mthd0_struct_num_bytes_huge.data
 //mojo/public/interfaces/bindings/tests/data/validation/conformance_mthd0_struct_num_bytes_huge.expected
 //mojo/public/interfaces/bindings/tests/data/validation/conformance_mthd0_struct_num_bytes_less_than_min_requirement.data
@@ -146,6 +146,10 @@
 //mojo/public/interfaces/bindings/tests/data/validation/conformance_mthd21_empty_extensible_enum_accepts_any_value.expected
 //mojo/public/interfaces/bindings/tests/data/validation/conformance_mthd22_empty_nonextensible_enum_accepts_no_values.data
 //mojo/public/interfaces/bindings/tests/data/validation/conformance_mthd22_empty_nonextensible_enum_accepts_no_values.expected
+//mojo/public/interfaces/bindings/tests/data/validation/conformance_mthd23_good.data
+//mojo/public/interfaces/bindings/tests/data/validation/conformance_mthd23_good.expected
+//mojo/public/interfaces/bindings/tests/data/validation/conformance_mthd24_good.data
+//mojo/public/interfaces/bindings/tests/data/validation/conformance_mthd24_good.expected
 //mojo/public/interfaces/bindings/tests/data/validation/conformance_mthd2_good.data
 //mojo/public/interfaces/bindings/tests/data/validation/conformance_mthd2_good.expected
 //mojo/public/interfaces/bindings/tests/data/validation/conformance_mthd2_multiple_pointers_to_same_struct.data

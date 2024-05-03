@@ -102,6 +102,8 @@ interface ConformanceTestInterface {
   Method20(map<StructB, uint8> param0);
   Method21(ExtensibleEmptyEnum param0);
   Method22(EmptyEnum param0);
+  Method23(array<bool?> param0, array<uint32?> param1);
+  Method24(map<uint32, bool?> param0, map<uint32, uint64?> param1);
 };
 
 struct BasicStruct {

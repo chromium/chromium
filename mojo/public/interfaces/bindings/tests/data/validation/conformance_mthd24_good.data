@@ -1,0 +1,61 @@
+[dist4]message_header  // num_bytes
+[u4]0                  // version
+[u4]0                  // interface ID
+[u4]24                 // name
+[u4]0                  // flags
+[u4]0                  // padding
+[anchr]message_header
+
+[dist4]method24_params
+[u4]0                  // version
+[dist8]param0_ptr      // param0: map<uint32, bool?>
+[dist8]param1_ptr      // param1: map<uint32, uint64?>
+[anchr]method24_params
+
+[anchr]param0_ptr
+[dist4]param0_map_data_struct_header  // num_bytes
+[u4]0                                 // version
+[dist8]param0_key_array_ptr
+[dist8]param0_value_array_ptr
+[anchr]param0_map_data_struct_header
+
+[anchr]param0_key_array_ptr
+[dist4]param0_key_array_member  // num_bytes
+[u4]2                           // num_elements
+[u4]1                           // key
+[u4]2                           // key
+[anchr]param0_key_array_member
+
+[anchr]param0_value_array_ptr
+[dist4]param0_value_array_member  // num_bytes
+[u4]2                             // num_elements
+[b]00000010                       // set bitfield
+[b]00000010                       // value bitfield
+[u2]0                             // padding
+[u4]0                             // padding
+[anchr]param0_value_array_member
+
+[anchr]param1_ptr
+[dist4]param1_map_data_struct_header  // num_bytes
+[u4]0                                 // version
+[dist8]param1_key_array_ptr
+[dist8]param1_value_array_ptr
+[anchr]param1_map_data_struct_header
+
+[anchr]param1_key_array_ptr
+[dist4]param1_key_array_member  // num_bytes
+[u4]2                           // num_elements
+[u4]1                           // key
+[u4]2                           // key
+[anchr]param1_key_array_member
+
+[anchr]param1_value_array_ptr
+[dist4]param1_value_array_member  // num_bytes
+[u4]2                             // num_elements
+[b]00000010                       // set bitfield
+[u1]0                             // padding
+[u2]0                             // padding
+[u4]0                             // padding
+[u8]0                             // value
+[u8]6                             // value
+[anchr]param1_value_array_member
