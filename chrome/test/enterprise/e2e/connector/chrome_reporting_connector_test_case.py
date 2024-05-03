@@ -41,12 +41,17 @@ class ChromeReportingConnectorTestCase(ChromeEnterpriseTestCase):
   def GetEncryptedReportingAPIKey(self):
     """Returns the API key required to get events from the
     ChromeOS Insights and Intelligence team's encrypted reporting server."""
-    return self.GetFileFromGCSBucket('secrets/EncryptedReportingAPIKey')
+    return self.GetFileFromGCSBucket(
+        'secrets/EncryptedReportingProductionAPIKey')
 
   def GetManagedChromeDomainEnrollmentToken(self):
     """Get the enrollment token for the managedchrome.com domain"""
     return self.GetFileFromGCSBucket(
         'secrets/ManagedChromeDomain-enrollmentToken')
+
+  def GetManagedChromeCustomerId(self):
+    """Get the customer id for the managedchrome.com domain"""
+    return self.GetFileFromGCSBucket('secrets/ManagedChromeCustomerId')
 
   def GetCELabDefaultToken(self):
     """Get default celab org enrollment token from GCS bucket"""
