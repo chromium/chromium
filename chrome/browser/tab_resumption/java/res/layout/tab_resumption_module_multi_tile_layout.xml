@@ -20,7 +20,7 @@ found in the LICENSE file.
     android:foreground="@drawable/tab_resumption_module_ripple"
     android:orientation="vertical">
 
-    <ImageView
+    <org.chromium.components.browser_ui.widget.RoundedCornerImageView
         android:id="@+id/tile_icon"
         android:contentDescription="@string/DefaultSearchProviderSuggestURLDesc"
         android:layout_width="@dimen/tab_resumption_module_multi_icon_size"

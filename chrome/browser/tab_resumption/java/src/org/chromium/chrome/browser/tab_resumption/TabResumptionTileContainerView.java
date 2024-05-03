@@ -248,7 +248,7 @@ public class TabResumptionTileContainerView extends LinearLayout {
         Drawable urlDrawable = new BitmapDrawable(res, bitmap);
         tileView.setImageDrawable(urlDrawable);
         if (isSalientImage) {
-            tileView.resetImagePadding();
+            tileView.updateForSalientImage();
         }
     }
 
