@@ -206,8 +206,11 @@ class PixelIntegrationTest(sghitb.SkiaGoldHeartbeatIntegrationTestBase):
     image_name = self._UrlToImageName(test_case.name)
     self._UploadTestResultToSkiaGold(image_name, screen_shot, test_case)
 
-  def _GetScreenshotTimeout(self):
-    multiplier = 1
+  def _GetScreenshotTimeout(self) -> float:
+    # Parallel jobs can cause heavier tests to flakily time out when capturing
+    # screenshots, so increase the base timeout depending on the number of
+    # parallel jobs. Aim for 2x the timeout with 4 jobs.
+    multiplier = 1 + (self.child.jobs - 1) / 3.0
     if self._IsSlowTest():
       multiplier = SLOW_SCREENSHOT_MULTIPLIER
     return DEFAULT_SCREENSHOT_TIMEOUT * multiplier
