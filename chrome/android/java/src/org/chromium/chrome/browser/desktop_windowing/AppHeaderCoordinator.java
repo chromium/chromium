@@ -29,6 +29,8 @@ import org.chromium.chrome.browser.lifecycle.ActivityLifecycleDispatcher;
 import org.chromium.chrome.browser.lifecycle.SaveInstanceStateObserver;
 import org.chromium.chrome.browser.lifecycle.TopResumedActivityChangedObserver;
 import org.chromium.chrome.browser.ui.desktop_windowing.AppHeaderState;
+import org.chromium.chrome.browser.ui.desktop_windowing.AppHeaderUtils;
+import org.chromium.chrome.browser.ui.desktop_windowing.AppHeaderUtils.DesktopWindowHeuristicResult;
 import org.chromium.chrome.browser.ui.desktop_windowing.DesktopWindowStateProvider;
 import org.chromium.components.browser_ui.widget.InsetObserver;
 import org.chromium.components.browser_ui.widget.InsetsRectProvider;
@@ -69,6 +71,8 @@ public class AppHeaderCoordinator
     private int mBrowserControlsToken = TokenHolder.INVALID_TOKEN;
     private @Nullable AppHeaderState mAppHeaderState;
     private boolean mIsInUnfocusedDesktopWindow;
+    private @DesktopWindowHeuristicResult int mHeuristicResult =
+            DesktopWindowHeuristicResult.UNKNOWN;
 
     /**
      * Instantiate the coordinator to handle drawing the tab strip into the captionBar area.
@@ -177,8 +181,10 @@ public class AppHeaderCoordinator
     }
 
     private void onInsetsRectsUpdated(@NonNull Rect widestUnoccludedRect) {
-        boolean isInDesktopWindow =
-                checkIsInDesktopWindow(mActivity, mInsetObserver, mInsetsRectProvider);
+        mHeuristicResult =
+                checkIsInDesktopWindow(
+                        mActivity, mInsetObserver, mInsetsRectProvider, mHeuristicResult);
+        var isInDesktopWindow = mHeuristicResult == DesktopWindowHeuristicResult.IN_DESKTOP_WINDOW;
         // Use an empty |widestUnoccludedRect| instead of the cached Rect while creating the
         // AppHeaderState while not in or while exiting desktop windowing mode, so that it always
         // holds a valid state for observers to use.
@@ -233,33 +239,45 @@ public class AppHeaderCoordinator
      * This method is marked as static, in order to ensure it does not change / read any state from
      * an AppHeaderCoordinator instance, especially the cached {@link AppHeaderState}.
      */
-    // TODO(crbug/328446763): Add metrics to record the failure reason.
-    private static boolean checkIsInDesktopWindow(
-            Activity activity, InsetObserver insetObserver, InsetsRectProvider insetsRectProvider) {
-        if (!activity.isInMultiWindowMode()) return false;
+    private static @DesktopWindowHeuristicResult int checkIsInDesktopWindow(
+            Activity activity,
+            InsetObserver insetObserver,
+            InsetsRectProvider insetsRectProvider,
+            @DesktopWindowHeuristicResult int currentResult) {
+        @DesktopWindowHeuristicResult int newResult;
 
-        // Disable DW mode if there is a navigation bar (though it may or may not be visible /
-        // dismissed).
         assert insetObserver.getLastRawWindowInsets() != null
                 : "Attempt to read the insets too early.";
-
         var navBarInsets =
                 insetObserver
                         .getLastRawWindowInsets()
                         .getInsets(WindowInsetsCompat.Type.navigationBars());
-        if (navBarInsets.bottom > 0) {
-            return false;
-        }
 
         int numOfBoundingRects = insetsRectProvider.getBoundingRects().size();
-        if (numOfBoundingRects != 2) {
-            Log.w(TAG, "Unexpected number of bounding rects is observed! " + numOfBoundingRects);
-            return false;
-        }
-
         Insets captionBarInset = insetsRectProvider.getCachedInset();
-        return captionBarInset.top > 0
-                && insetsRectProvider.getWidestUnoccludedRect().bottom == captionBarInset.top;
+
+        if (!activity.isInMultiWindowMode()) {
+            newResult = DesktopWindowHeuristicResult.NOT_IN_MULTIWINDOW_MODE;
+        } else if (navBarInsets.bottom > 0) {
+            // Disable DW mode if there is a navigation bar (though it may or may not be visible /
+            // dismissed).
+            newResult = DesktopWindowHeuristicResult.NAV_BAR_BOTTOM_INSETS_PRESENT;
+        } else if (numOfBoundingRects != 2) {
+            Log.w(TAG, "Unexpected number of bounding rects is observed! " + numOfBoundingRects);
+            newResult = DesktopWindowHeuristicResult.CAPTION_BAR_BOUNDING_RECTS_UNEXPECTED_NUMBER;
+        } else if (captionBarInset.top == 0) {
+            newResult = DesktopWindowHeuristicResult.CAPTION_BAR_TOP_INSETS_ABSENT;
+        } else if (insetsRectProvider.getWidestUnoccludedRect().bottom != captionBarInset.top) {
+            newResult = DesktopWindowHeuristicResult.CAPTION_BAR_BOUNDING_RECT_INVALID_HEIGHT;
+        } else {
+            newResult = DesktopWindowHeuristicResult.IN_DESKTOP_WINDOW;
+        }
+        if (newResult != currentResult) {
+            Log.i(TAG, "Recording desktop windowing heuristic result: " + newResult);
+            // Only record histogram when heuristics result has changed.
+            AppHeaderUtils.recordDesktopWindowHeuristicResult(newResult);
+        }
+        return newResult;
     }
 
     @SuppressLint("WrongConstant")

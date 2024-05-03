@@ -17,6 +17,7 @@ import androidx.core.view.WindowInsetsAnimationCompat.BoundsCompat;
 import androidx.core.view.WindowInsetsCompat;
 
 import org.chromium.base.ObserverList;
+import org.chromium.base.ResettersForTesting;
 import org.chromium.base.supplier.ObservableSupplier;
 import org.chromium.base.supplier.ObservableSupplierImpl;
 import org.chromium.ui.KeyboardVisibilityDelegate;
@@ -46,6 +47,7 @@ public class InsetObserver implements OnApplyWindowInsetsListener {
 
     // Cached state
     private WindowInsetsCompat mLastSeenRawWindowInset;
+    private static @Nullable WindowInsetsCompat sInitialRawWindowInsetsForTesting;
 
     /** Allows observing changes to the window insets from Android system UI. */
     public interface WindowInsetObserver {
@@ -172,6 +174,8 @@ public class InsetObserver implements OnApplyWindowInsetsListener {
         if (mRootView.getRootWindowInsets() != null) {
             mLastSeenRawWindowInset =
                     WindowInsetsCompat.toWindowInsetsCompat(mRootView.getRootWindowInsets());
+        } else if (sInitialRawWindowInsetsForTesting != null) {
+            mLastSeenRawWindowInset = sInitialRawWindowInsetsForTesting;
         }
         ViewCompat.setWindowInsetsAnimationCallback(rootView, mWindowInsetsAnimationProxyCallback);
         ViewCompat.setOnApplyWindowInsetsListener(rootView, this);
@@ -348,5 +352,10 @@ public class InsetObserver implements OnApplyWindowInsetsListener {
 
         mBottomInsetsForEdgeToEdge = bottomInset;
         updateCurrentSafeArea();
+    }
+
+    public static void setInitialRawWindowInsetsForTesting(WindowInsetsCompat windowInsets) {
+        sInitialRawWindowInsetsForTesting = windowInsets;
+        ResettersForTesting.register(() -> sInitialRawWindowInsetsForTesting = null);
     }
 }

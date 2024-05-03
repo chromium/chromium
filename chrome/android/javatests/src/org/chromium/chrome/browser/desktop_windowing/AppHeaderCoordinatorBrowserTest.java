@@ -17,6 +17,7 @@ import android.widget.FrameLayout.LayoutParams;
 import android.widget.ImageButton;
 
 import androidx.annotation.RequiresApi;
+import androidx.core.view.WindowInsetsCompat;
 import androidx.test.filters.MediumTest;
 
 import org.hamcrest.Matchers;
@@ -52,6 +53,7 @@ import org.chromium.chrome.browser.ui.theme.BrandedColorScheme;
 import org.chromium.chrome.test.ChromeJUnit4ClassRunner;
 import org.chromium.chrome.test.ChromeTabbedActivityTestRule;
 import org.chromium.chrome.test.R;
+import org.chromium.components.browser_ui.widget.InsetObserver;
 import org.chromium.components.browser_ui.widget.InsetsRectProvider;
 import org.chromium.content_public.browser.test.util.TestThreadUtils;
 import org.chromium.ui.test.util.UiRestriction;
@@ -72,6 +74,8 @@ public class AppHeaderCoordinatorBrowserTest {
     @Rule public MockitoRule mockitoRule = MockitoJUnit.rule();
 
     private @Mock InsetsRectProvider mInsetsRectProvider;
+    private @Mock InsetObserver mInsetObserver;
+    private @Mock WindowInsetsCompat mWindowInsets;
 
     private Rect mWidestUnoccludedRect = new Rect();
     private Rect mWindowRect = new Rect();
@@ -80,6 +84,7 @@ public class AppHeaderCoordinatorBrowserTest {
     @Before
     public void setup() {
         ToolbarFeatures.setIsTabStripLayoutOptimizationEnabledForTesting(true);
+        InsetObserver.setInitialRawWindowInsetsForTesting(mWindowInsets);
         AppHeaderCoordinator.setInsetsRectProviderForTesting(mInsetsRectProvider);
 
         doAnswer(args -> mWidestUnoccludedRect).when(mInsetsRectProvider).getWidestUnoccludedRect();
