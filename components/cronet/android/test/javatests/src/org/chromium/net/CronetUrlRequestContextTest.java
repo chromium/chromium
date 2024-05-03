@@ -2210,6 +2210,80 @@ public class CronetUrlRequestContextTest {
 
     @Test
     @SmallTest
+    @IgnoreFor(
+            implementations = {CronetImplementation.FALLBACK, CronetImplementation.AOSP_PLATFORM},
+            reason =
+                    "Fallback implementation doesn't support HTTP flags; AOSP doesn't have this"
+                        + " logic yet")
+    public void testCronetEngineThreadPriority_honorsHttpFlag() throws Exception {
+        final int flagValue = 13;
+        mTestRule
+                .getTestFramework()
+                .setHttpFlags(
+                        Flags.newBuilder()
+                                .putFlags(
+                                        CronetUrlRequestContext
+                                                .OVERRIDE_NETWORK_THREAD_PRIORITY_FLAG_NAME,
+                                        FlagValue.newBuilder()
+                                                .addConstrainedValues(
+                                                        FlagValue.ConstrainedValue.newBuilder()
+                                                                .setIntValue(flagValue))
+                                                .build())
+                                .build());
+        CronetEngine engine =
+                mTestRule
+                        .getTestFramework()
+                        .createNewSecondaryBuilder(mTestRule.getTestFramework().getContext())
+                        .build();
+        try {
+            final FutureTask<Integer> task = getThreadPriorityTask();
+            postToNetworkThread(engine, task);
+            assertThat(task.get()).isEqualTo(flagValue);
+        } finally {
+            engine.shutdown();
+        }
+    }
+
+    @Test
+    @SmallTest
+    @RequiresMinApi(6) // setThreadPriority added in API 6: crrev.com/472449
+    @IgnoreFor(
+            implementations = {CronetImplementation.FALLBACK, CronetImplementation.AOSP_PLATFORM},
+            reason =
+                    "Fallback implementation doesn't support HTTP flags; AOSP doesn't have this"
+                        + " logic yet")
+    public void testCronetEngineThreadPriority_httpFlagOverridesBuilderOption() throws Exception {
+        final int flagValue = 13;
+        mTestRule
+                .getTestFramework()
+                .setHttpFlags(
+                        Flags.newBuilder()
+                                .putFlags(
+                                        CronetUrlRequestContext
+                                                .OVERRIDE_NETWORK_THREAD_PRIORITY_FLAG_NAME,
+                                        FlagValue.newBuilder()
+                                                .addConstrainedValues(
+                                                        FlagValue.ConstrainedValue.newBuilder()
+                                                                .setIntValue(flagValue))
+                                                .build())
+                                .build());
+        CronetEngine engine =
+                mTestRule
+                        .getTestFramework()
+                        .createNewSecondaryBuilder(mTestRule.getTestFramework().getContext())
+                        .setThreadPriority(flagValue - 1)
+                        .build();
+        try {
+            final FutureTask<Integer> task = getThreadPriorityTask();
+            postToNetworkThread(engine, task);
+            assertThat(task.get()).isEqualTo(flagValue);
+        } finally {
+            engine.shutdown();
+        }
+    }
+
+    @Test
+    @SmallTest
     @RequiresMinApi(6) // setThreadPriority added in API 6: crrev.com/472449
     @IgnoreFor(
             implementations = {CronetImplementation.FALLBACK},

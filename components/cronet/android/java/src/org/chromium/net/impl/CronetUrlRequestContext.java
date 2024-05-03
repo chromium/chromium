@@ -366,8 +366,16 @@ public class CronetUrlRequestContext extends CronetEngineBase {
         return urlRequestContextConfig;
     }
 
+    @VisibleForTesting
+    public static final String OVERRIDE_NETWORK_THREAD_PRIORITY_FLAG_NAME =
+            "Cronet_override_network_thread_priority";
+
     private static RequestContextConfigOptions createRequestContextConfigOptions(
             CronetEngineBuilderImpl engineBuilder) {
+        var networkThreadPriorityFlagValue =
+                CronetLibraryLoader.getHttpFlags()
+                        .flags()
+                        .get(OVERRIDE_NETWORK_THREAD_PRIORITY_FLAG_NAME);
         RequestContextConfigOptions.Builder resultBuilder =
                 RequestContextConfigOptions.newBuilder()
                         .setQuicEnabled(engineBuilder.quicEnabled())
@@ -382,7 +390,10 @@ public class CronetUrlRequestContext extends CronetEngineBase {
                         .setBypassPublicKeyPinningForLocalTrustAnchors(
                                 engineBuilder.publicKeyPinningBypassForLocalTrustAnchorsEnabled())
                         .setNetworkThreadPriority(
-                                engineBuilder.threadPriority(Process.THREAD_PRIORITY_BACKGROUND));
+                                networkThreadPriorityFlagValue != null
+                                        ? (int) networkThreadPriorityFlagValue.getIntValue()
+                                        : engineBuilder.threadPriority(
+                                                Process.THREAD_PRIORITY_BACKGROUND));
 
         if (engineBuilder.getUserAgent() != null) {
             resultBuilder.setUserAgent(engineBuilder.getUserAgent());
