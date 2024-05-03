@@ -57,7 +57,8 @@ export class VoiceSelectionMenuElement extends VoiceSelectionMenuElementBase {
   // If Read Aloud is in the paused state. This is set from the parent element
   // via one way data binding.
   private readonly paused: boolean;
-
+  private readonly voicePackInstallStatus:
+      {[language: string]: VoicePackStatus};
   private voicePlayingWhenMenuOpened_: boolean = false;
 
   static get is() {

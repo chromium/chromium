@@ -27,10 +27,16 @@ export interface LanguageMenuElement {
   };
 }
 
+interface Notification {
+  isError: boolean;
+  text: string|undefined;
+}
+
 interface LanguageDropdownItem {
   readableLanguage: string;
   checked: boolean;
   languageCode: string;
+  notification: Notification;
   callback: () => void;
 }
 
@@ -53,20 +59,21 @@ export class LanguageMenuElement extends LanguageMenuElementBase {
       availableVoices: Array,
       languageSearchValue_: String,
       localeToDisplayName: Object,
-      voicePackInstallStatus: {type: Object, notify: true},
+      voicePackInstallStatus: Object,
       availableLanguages_: {
         type: Array,
         computed:
             'computeAvailableLanguages_(availableVoices,localeToDisplayName,' +
-            ' languageSearchValue_)',
+            'voicePackInstallStatus,languageSearchValue_)',
       },
     };
   }
 
   private languageSearchValue_: string;
-  private voicePackInstallStatus: {[language: string]: VoicePackStatus} = {};
+  private readonly voicePackInstallStatus:
+      {[language: string]: VoicePackStatus};
   private readonly enabledLanguagesInPref: string[];
-
+  private readonly availableLanguages_: LanguageDropdownItem[];
   // Use this variable instead of AVAILABLE_GOOGLE_TTS_LOCALES
   // directly to better aid in testing.
   private baseLanguages = AVAILABLE_GOOGLE_TTS_LOCALES;
@@ -93,6 +100,7 @@ export class LanguageMenuElement extends LanguageMenuElementBase {
   private computeAvailableLanguages_(
       availableVoices: SpeechSynthesisVoice[],
       localeToDisplayName: {[lang: string]: string},
+      voicePackInstallStatus: {[language: string]: VoicePackStatus},
       languageSearchValue: string|undefined): LanguageDropdownItem[] {
     if (!availableVoices) {
       return [];
@@ -119,7 +127,6 @@ export class LanguageMenuElement extends LanguageMenuElementBase {
         ]);
       }
     });
-
     return langsAndReadableLangs
         .filter(([_, readableLang]) => {
           if (languageSearchValue) {
@@ -129,27 +136,29 @@ export class LanguageMenuElement extends LanguageMenuElementBase {
             return true;
           }
         })
-        .map(([lang, readableLang]) => ({
-               readableLanguage: readableLang,
-               checked: this.enabledLanguagesInPref &&
-                   this.enabledLanguagesInPref.includes(lang),
-               languageCode: lang,
-               callback: () =>
-                   this.dispatchEvent(new CustomEvent(LANGUAGE_TOGGLE_EVENT, {
-                     bubbles: true,
-                     composed: true,
-                     detail: {
-                       language: lang,
-                     },
-                   })),
-             }));
+        .map(
+            ([lang, readableLang]) => ({
+              readableLanguage: readableLang,
+              checked: this.enabledLanguagesInPref &&
+                  this.enabledLanguagesInPref.includes(lang),
+              languageCode: lang,
+              notification: {
+                isError: this.isNotificationError(lang, voicePackInstallStatus),
+                text: this.getNotificationText(lang, voicePackInstallStatus),
+              },
+              callback: () =>
+                  this.dispatchEvent(new CustomEvent(LANGUAGE_TOGGLE_EVENT, {
+                    bubbles: true,
+                    composed: true,
+                    detail: {
+                      language: lang,
+                    },
+                  })),
+            }));
   }
 
-  private getAriaSetting(
-      lang: string,
-      voicePackInstallStatus: {[language: string]: VoicePackStatus}): string {
-    return this.isNotificationError(lang, voicePackInstallStatus) ? `polite` :
-                                                                    `off`;
+  private computeAriaSetting(isError: boolean): string {
+    return isError ? `polite` : `off`;
   }
 
   private isNotificationError(
@@ -199,7 +208,7 @@ export class LanguageMenuElement extends LanguageMenuElementBase {
     switch (notification) {
       case VoicePackStatus.INSTALLING:
       case VoicePackStatus.DOWNLOADED:
-        return `${this.i18n('readingModeLanguageMenuDownloading')}`;
+        return 'readingModeLanguageMenuDownloading';
       case VoicePackStatus.INSTALL_ERROR:
         // There's not a specific error code from the language pack installer
         // for internet connectivity, but if there's an installation error
@@ -209,7 +218,7 @@ export class LanguageMenuElement extends LanguageMenuElementBase {
         // app.ts so that this can be reused by the voice menu when other
         // errors are added to the voice menu.
         if (!window.navigator.onLine) {
-          return `${this.i18n('readingModeLanguageMenuNoInternet')}`;
+          return 'readingModeLanguageMenuNoInternet';
         }
         return '';
       case VoicePackStatus.NONE:
@@ -219,6 +228,16 @@ export class LanguageMenuElement extends LanguageMenuElementBase {
       default:
         return '';
     }
+  }
+
+  // Runtime errors were thrown when this.i18n() was called in a Polymer
+  // computed bindining callback function, so instead we call this.i18n from the
+  // html via a wrapper.
+  private i18nWraper(s: string): string {
+    if (!s) {
+      return '';
+    }
+    return `${this.i18n(s)}`;
   }
 
   showDialog() {

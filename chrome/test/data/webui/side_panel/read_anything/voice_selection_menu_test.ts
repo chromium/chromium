@@ -62,6 +62,9 @@ suite('VoiceSelectionMenu', () => {
     document.body.appendChild(dots);
     myClickEvent = {target: dots} as unknown as MouseEvent;
 
+    // @ts-ignore
+    voiceSelectionMenu.voicePackInstallStatus = {};
+
     flush();
   });
 

@@ -115,10 +115,9 @@
             aria-labelledby$="language-name-[[index]]"></cr-toggle>
         </div>
         <span id="notificationText"
-              class$="notification-error-[[isNotificationError(item.languageCode, voicePackInstallStatus)]]"
-              aria-live$=
-              "[[getAriaSetting(item.languageCode, voicePackInstallStatus)]]">
-              [[getNotificationText(item.languageCode, voicePackInstallStatus)]]
+              class$="notification-error-[[item.notification.isError]]"
+              aria-live$="[[computeAriaSetting(item.notification.isError)]]">
+              [[i18nWraper(item.notification.text)]]
         </span>
     </template>
   </div>

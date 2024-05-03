@@ -69,6 +69,8 @@ suite('LanguageMenu', () => {
     document.body.appendChild(languageMenu);
     // @ts-ignore
     languageMenu.baseLanguages = {};
+    // @ts-ignore
+    languageMenu.voicePackInstallStatus = {};
     flush();
   });
 
