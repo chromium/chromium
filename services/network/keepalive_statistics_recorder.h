@@ -15,8 +15,7 @@ namespace network {
 
 // KeepaliveStatisticsRecorder keeps tracks of the number of inflight requests
 // with "keepalive" set.
-class COMPONENT_EXPORT(NETWORK_SERVICE) KeepaliveStatisticsRecorder
-    : public base::SupportsWeakPtr<KeepaliveStatisticsRecorder> {
+class COMPONENT_EXPORT(NETWORK_SERVICE) KeepaliveStatisticsRecorder final {
  public:
   struct PerTopLevelFrameStats {
     int num_registrations = 1;
@@ -59,11 +58,16 @@ class COMPONENT_EXPORT(NETWORK_SERVICE) KeepaliveStatisticsRecorder
   int num_inflight_requests() const { return num_inflight_requests_; }
   int peak_inflight_requests() const { return peak_inflight_requests_; }
 
+  base::WeakPtr<KeepaliveStatisticsRecorder> AsWeakPtr() {
+    return weak_ptr_factory_.GetWeakPtr();
+  }
+
  private:
   std::map<base::UnguessableToken, PerTopLevelFrameStats>
       per_top_level_frame_records_;
   int num_inflight_requests_ = 0;
   int peak_inflight_requests_ = 0;
+  base::WeakPtrFactory<KeepaliveStatisticsRecorder> weak_ptr_factory_{this};
 };
 
 }  // namespace network
