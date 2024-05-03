@@ -733,6 +733,21 @@ void TabRestoreServiceHelper::AddEntry(std::unique_ptr<Entry> entry,
     return;
   }
 
+  if (entry->type == sessions::tab_restore::WINDOW) {
+    auto& window = static_cast<Window&>(*entry.get());
+    if (window.tab_groups.empty()) {
+      for (auto& tab : window.tabs) {
+        if (tab->group.has_value() &&
+            !window.tab_groups.contains(tab->group.value())) {
+          // Creating the mapping here covers the cases where we close a browser
+          // window and when restoring the last session on browser startup.
+          auto group = Group::FromTab(*tab);
+          window.tab_groups.emplace(group->group_id, std::move(group));
+        }
+      }
+    }
+  }
+
   if (to_front) {
     entries_.push_front(std::move(entry));
   } else {
