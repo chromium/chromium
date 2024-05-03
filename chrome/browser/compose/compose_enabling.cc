@@ -11,6 +11,7 @@
 #include "base/check.h"
 #include "base/functional/callback.h"
 #include "base/functional/callback_helpers.h"
+#include "base/rand_util.h"
 #include "chrome/browser/about_flags.h"
 #include "chrome/browser/compose/proto/compose_optimization_guide.pb.h"
 #include "chrome/browser/flag_descriptions.h"
@@ -232,7 +233,13 @@ ComposeEnabling::ShouldTriggerNoStatePopup(
   // Check URL with Optimization guide.
   switch (GetOptimizationGuidanceForUrl(url, profile)) {
     case compose::ComposeHintDecision::COMPOSE_HINT_DECISION_COMPOSE_DISABLED:
+      return base::unexpected(
+          compose::ComposeNudgeDenyReason::kOptimizationGuideChecks);
     case compose::ComposeHintDecision::COMPOSE_HINT_DECISION_DISABLE_NUDGE:
+      if (compose::GetComposeConfig()
+              .proactive_nudge_bypass_optimization_guide) {
+        break;
+      }
       return base::unexpected(
           compose::ComposeNudgeDenyReason::kOptimizationGuideChecks);
     case compose::ComposeHintDecision::COMPOSE_HINT_DECISION_UNSPECIFIED:
@@ -263,7 +270,12 @@ ComposeEnabling::ShouldTriggerNoStatePopup(
         compose::ComposeNudgeDenyReason::kProactiveNudgeDisabled);
   }
 
-  return base::ok();
+  if (base::RandDouble() <
+      compose::GetComposeConfig().proactive_nudge_show_probability) {
+    return base::ok();
+  }
+
+  return base::unexpected(compose::ComposeNudgeDenyReason::kRandomlyBlocked);
 }
 
 base::expected<void, compose::ComposeNudgeDenyReason>

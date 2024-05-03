@@ -56,6 +56,10 @@ Config::Config() {
   proactive_nudge_enabled =
       base::FeatureList::IsEnabled(features::kEnableComposeProactiveNudge);
 
+  proactive_nudge_show_probability = base::GetFieldTrialParamByFeatureAsDouble(
+      features::kEnableComposeProactiveNudge,
+      "proactive_nudge_show_probability", proactive_nudge_show_probability);
+
   saved_state_timeout_milliseconds = base::GetFieldTrialParamByFeatureAsInt(
       features::kEnableComposeSavedStateNotification,
       "saved_state_timeout_milliseconds", saved_state_timeout_milliseconds);
