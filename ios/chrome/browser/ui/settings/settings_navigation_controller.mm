@@ -24,6 +24,7 @@
 #import "ios/chrome/browser/shared/public/commands/browser_commands.h"
 #import "ios/chrome/browser/shared/public/commands/browsing_data_commands.h"
 #import "ios/chrome/browser/shared/public/commands/command_dispatcher.h"
+#import "ios/chrome/browser/shared/public/commands/quick_delete_commands.h"
 #import "ios/chrome/browser/shared/public/commands/snackbar_commands.h"
 #import "ios/chrome/browser/shared/ui/symbols/chrome_icon.h"
 #import "ios/chrome/browser/shared/ui/table_view/table_view_utils.h"
@@ -38,7 +39,6 @@
 #import "ios/chrome/browser/ui/settings/clear_browsing_data/clear_browsing_data_coordinator.h"
 #import "ios/chrome/browser/ui/settings/clear_browsing_data/clear_browsing_data_table_view_controller.h"
 #import "ios/chrome/browser/ui/settings/clear_browsing_data/features.h"
-#import "ios/chrome/browser/ui/settings/clear_browsing_data/quick_delete_coordinator.h"
 #import "ios/chrome/browser/ui/settings/content_settings/content_settings_table_view_controller.h"
 #import "ios/chrome/browser/ui/settings/default_browser/default_browser_settings_table_view_controller.h"
 #import "ios/chrome/browser/ui/settings/google_services/google_services_settings_coordinator.h"
@@ -126,10 +126,6 @@ NSString* const kSettingsDoneButtonId = @"kSettingsDoneButtonId";
 // launched. The coordinator for the clear browsing data screen.
 @property(nonatomic, strong)
     ClearBrowsingDataCoordinator* clearBrowsingDataCoordinator;
-
-// The coordinator for the new Delete Browsing Data screen, also called Quick
-// Delete.
-@property(nonatomic, strong) QuickDeleteCoordinator* quickDeleteCoordinator;
 
 // Safety Check coordinator.
 @property(nonatomic, strong) SafetyCheckCoordinator* safetyCheckCoordinator;
@@ -502,26 +498,19 @@ NSString* const kSettingsDoneButtonId = @"kSettingsDoneButtonId";
                                  delegate:
                                      (id<SettingsNavigationControllerDelegate>)
                                          delegate {
+  CHECK(!IsIosQuickDeleteEnabled());
   SettingsNavigationController* navigationController =
       [[SettingsNavigationController alloc]
           initWithRootViewController:nil
                              browser:browser
                             delegate:delegate];
-  if (IsIosQuickDeleteEnabled()) {
-    navigationController.quickDeleteCoordinator =
-        [[QuickDeleteCoordinator alloc]
-            initWithBaseNavigationController:navigationController
-                                     browser:browser];
-    [navigationController.quickDeleteCoordinator start];
-  } else {
-    navigationController.clearBrowsingDataCoordinator =
-        [[ClearBrowsingDataCoordinator alloc]
-            initWithBaseNavigationController:navigationController
-                                     browser:browser];
-    navigationController.clearBrowsingDataCoordinator.delegate =
-        navigationController;
-    [navigationController.clearBrowsingDataCoordinator start];
-  }
+  navigationController.clearBrowsingDataCoordinator =
+      [[ClearBrowsingDataCoordinator alloc]
+          initWithBaseNavigationController:navigationController
+                                   browser:browser];
+  navigationController.clearBrowsingDataCoordinator.delegate =
+      navigationController;
+  [navigationController.clearBrowsingDataCoordinator start];
   return navigationController;
 }
 
@@ -866,15 +855,9 @@ NSString* const kSettingsDoneButtonId = @"kSettingsDoneButtonId";
 
 // Stops the underlying clear browsing data coordinator if it exists.
 - (void)stopClearBrowsingDataCoordinator {
-  if (IsIosQuickDeleteEnabled()) {
-    [self.quickDeleteCoordinator stop];
-    self.quickDeleteCoordinator = nil;
-
-  } else {
-    [self.clearBrowsingDataCoordinator stop];
-    self.clearBrowsingDataCoordinator.delegate = nil;
-    self.clearBrowsingDataCoordinator = nil;
-  }
+  [self.clearBrowsingDataCoordinator stop];
+  self.clearBrowsingDataCoordinator.delegate = nil;
+  self.clearBrowsingDataCoordinator = nil;
 }
 
 // Stops the underlying inactive tabs settings coordinator if it exists.
@@ -1182,21 +1165,14 @@ NSString* const kSettingsDoneButtonId = @"kSettingsDoneButtonId";
 }
 
 - (void)showClearBrowsingDataSettings {
+  CHECK(!IsIosQuickDeleteEnabled());
   [self stopClearBrowsingDataCoordinator];
 
-  if (IsIosQuickDeleteEnabled()) {
-    self.quickDeleteCoordinator = [[QuickDeleteCoordinator alloc]
-        initWithBaseNavigationController:self
-                                 browser:self.browser];
-    [self.quickDeleteCoordinator start];
-
-  } else {
-    self.clearBrowsingDataCoordinator = [[ClearBrowsingDataCoordinator alloc]
-        initWithBaseNavigationController:self
-                                 browser:self.browser];
-    self.clearBrowsingDataCoordinator.delegate = self;
-    [self.clearBrowsingDataCoordinator start];
-  }
+  self.clearBrowsingDataCoordinator = [[ClearBrowsingDataCoordinator alloc]
+      initWithBaseNavigationController:self
+                               browser:self.browser];
+  self.clearBrowsingDataCoordinator.delegate = self;
+  [self.clearBrowsingDataCoordinator start];
 }
 
 // Shows the Safety Check page and starts the Safety Check for `referrer`.

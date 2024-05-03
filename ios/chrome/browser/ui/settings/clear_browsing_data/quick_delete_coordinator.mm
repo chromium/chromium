@@ -9,31 +9,24 @@
 
 @implementation QuickDeleteCoordinator {
   QuickDeleteViewController* _viewController;
+  UINavigationController* _navigationController;
 }
-
-@synthesize baseNavigationController = _baseNavigationController;
 
 #pragma mark - ChromeCoordinator
-
-- (instancetype)initWithBaseNavigationController:
-                    (UINavigationController*)navigationController
-                                         browser:(Browser*)browser {
-  self = [super initWithBaseViewController:navigationController
-                                   browser:browser];
-  if (self) {
-    _baseNavigationController = navigationController;
-  }
-  return self;
-}
-
 - (void)start {
   _viewController = [[QuickDeleteViewController alloc] init];
 
-  [self.baseNavigationController pushViewController:_viewController
-                                           animated:YES];
+  _navigationController = [[UINavigationController alloc]
+      initWithRootViewController:_viewController];
+  _navigationController.modalPresentationStyle = UIModalPresentationFormSheet;
+
+  [self.baseViewController presentViewController:_navigationController
+                                        animated:YES
+                                      completion:nil];
 }
 
 - (void)stop {
+  _navigationController = nil;
   _viewController = nil;
 }
 

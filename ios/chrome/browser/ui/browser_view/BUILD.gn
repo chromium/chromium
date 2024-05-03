@@ -209,6 +209,8 @@ source_set("browser_view") {
     "//ios/chrome/browser/ui/save_to_photos",
     "//ios/chrome/browser/ui/send_tab_to_self",
     "//ios/chrome/browser/ui/settings/autofill",
+    "//ios/chrome/browser/ui/settings/clear_browsing_data",
+    "//ios/chrome/browser/ui/settings/clear_browsing_data:features",
     "//ios/chrome/browser/ui/settings/password/password_settings",
     "//ios/chrome/browser/ui/sharing",
     "//ios/chrome/browser/ui/side_swipe",

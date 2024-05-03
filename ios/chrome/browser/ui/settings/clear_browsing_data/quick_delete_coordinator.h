@@ -7,16 +7,8 @@
 
 #import "ios/chrome/browser/shared/coordinator/chrome_coordinator/chrome_coordinator.h"
 
-// Coordinator for Quick Delete, the new vesion of Clear/Delete Browsing Data.
+// Coordinator for Quick Delete, the new version of Clear/Delete Browsing Data.
 @interface QuickDeleteCoordinator : ChromeCoordinator
-
-- (instancetype)initWithBaseViewController:(UIViewController*)viewController
-                                   browser:(Browser*)browser NS_UNAVAILABLE;
-
-- (instancetype)initWithBaseNavigationController:
-                    (UINavigationController*)navigationController
-                                         browser:(Browser*)browser
-    NS_DESIGNATED_INITIALIZER;
 
 @end
 

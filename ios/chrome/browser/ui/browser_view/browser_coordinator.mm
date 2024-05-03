@@ -100,6 +100,7 @@
 #import "ios/chrome/browser/shared/public/commands/price_notifications_commands.h"
 #import "ios/chrome/browser/shared/public/commands/promos_manager_commands.h"
 #import "ios/chrome/browser/shared/public/commands/qr_generation_commands.h"
+#import "ios/chrome/browser/shared/public/commands/quick_delete_commands.h"
 #import "ios/chrome/browser/shared/public/commands/save_image_to_photos_command.h"
 #import "ios/chrome/browser/shared/public/commands/save_to_drive_commands.h"
 #import "ios/chrome/browser/shared/public/commands/save_to_photos_commands.h"
@@ -115,6 +116,7 @@
 #import "ios/chrome/browser/shared/ui/elements/activity_overlay_coordinator.h"
 #import "ios/chrome/browser/shared/ui/util/layout_guide_names.h"
 #import "ios/chrome/browser/shared/ui/util/page_animation_util.h"
+#import "ios/chrome/browser/shared/ui/util/top_view_controller.h"
 #import "ios/chrome/browser/shared/ui/util/uikit_ui_util.h"
 #import "ios/chrome/browser/shared/ui/util/util_swift.h"
 #import "ios/chrome/browser/signin/model/account_consistency_browser_agent.h"
@@ -206,6 +208,8 @@
 #import "ios/chrome/browser/ui/send_tab_to_self/send_tab_to_self_coordinator.h"
 #import "ios/chrome/browser/ui/settings/autofill/autofill_add_credit_card_coordinator.h"
 #import "ios/chrome/browser/ui/settings/autofill/autofill_add_credit_card_coordinator_delegate.h"
+#import "ios/chrome/browser/ui/settings/clear_browsing_data/features.h"
+#import "ios/chrome/browser/ui/settings/clear_browsing_data/quick_delete_coordinator.h"
 #import "ios/chrome/browser/ui/settings/password/password_settings/password_settings_coordinator.h"
 #import "ios/chrome/browser/ui/settings/password/password_settings/password_settings_coordinator_delegate.h"
 #import "ios/chrome/browser/ui/sharing/sharing_coordinator.h"
@@ -300,6 +304,7 @@ enum class ToolbarKind {
     PromosManagerCommands,
     PolicyChangeCommands,
     PreloadControllerDelegate,
+    QuickDeleteCommands,
     ReadingListCoordinatorDelegate,
     RecentTabsCoordinatorDelegate,
     RepostFormCoordinatorDelegate,
@@ -573,6 +578,10 @@ enum class ToolbarKind {
   std::unique_ptr<WebUsageEnablerBrowserAgentObserverBridge>
       _webUsageEnablerObserver;
   ContextualSheetCoordinator* _contextualSheetCoordinator;
+
+  // The coordinator for the new Delete Browsing Data screen, also called Quick
+  // Delete.
+  QuickDeleteCoordinator* _quickDeleteCoordinator;
 }
 
 #pragma mark - ChromeCoordinator
@@ -750,6 +759,9 @@ enum class ToolbarKind {
 
   [_formInputAccessoryCoordinator clearPresentedState];
 
+  [_quickDeleteCoordinator stop];
+  _quickDeleteCoordinator = nil;
+
   [self.viewController clearPresentedStateWithCompletion:completion
                                           dismissOmnibox:dismissOmnibox];
 
@@ -892,6 +904,7 @@ enum class ToolbarKind {
     @protocol(PasswordSuggestionCommands),
     @protocol(PolicyChangeCommands),
     @protocol(PriceNotificationsCommands),
+    @protocol(QuickDeleteCommands),
     @protocol(SaveToDriveCommands),
     @protocol(SaveToPhotosCommands),
     @protocol(TextZoomCommands),
@@ -1490,6 +1503,9 @@ enum class ToolbarKind {
 
   [_addContactsCoordinator stop];
   _addContactsCoordinator = nil;
+
+  [_quickDeleteCoordinator stop];
+  _quickDeleteCoordinator = nil;
 }
 
 // Starts independent mediators owned by this coordinator.
@@ -3500,6 +3516,29 @@ enum class ToolbarKind {
     (WebUsageEnablerBrowserAgent*)webUsageEnabler {
   self.active = WebUsageEnablerBrowserAgent::FromBrowser(self.browser)
                     ->IsWebUsageEnabled();
+}
+#pragma mark - QuickDeleteCommands
+
+- (void)showQuickDelete {
+  CHECK(IsIosQuickDeleteEnabled());
+  CHECK(!self.browser->GetBrowserState()->IsOffTheRecord());
+
+  [_quickDeleteCoordinator stop];
+
+  QuickDeleteCoordinator* quickDeleteCoordinator =
+      [[QuickDeleteCoordinator alloc]
+          initWithBaseViewController:top_view_controller::
+                                         TopPresentedViewControllerFrom(
+                                             self.viewController)
+                             browser:self.browser];
+  _quickDeleteCoordinator = quickDeleteCoordinator;
+  [_quickDeleteCoordinator start];
+}
+
+- (void)stopQuickDelete {
+  CHECK(IsIosQuickDeleteEnabled());
+  [_quickDeleteCoordinator stop];
+  _quickDeleteCoordinator = nil;
 }
 
 @end

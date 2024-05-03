@@ -109,6 +109,7 @@
 #import "ios/chrome/browser/shared/public/commands/open_new_tab_command.h"
 #import "ios/chrome/browser/shared/public/commands/policy_change_commands.h"
 #import "ios/chrome/browser/shared/public/commands/qr_scanner_commands.h"
+#import "ios/chrome/browser/shared/public/commands/quick_delete_commands.h"
 #import "ios/chrome/browser/shared/public/commands/show_signin_command.h"
 #import "ios/chrome/browser/shared/public/commands/snackbar_commands.h"
 #import "ios/chrome/browser/shared/public/features/features.h"
@@ -153,6 +154,7 @@
 #import "ios/chrome/browser/ui/promos_manager/promos_manager_scene_agent.h"
 #import "ios/chrome/browser/ui/promos_manager/utils.h"
 #import "ios/chrome/browser/ui/scoped_ui_blocker/scoped_ui_blocker.h"
+#import "ios/chrome/browser/ui/settings/clear_browsing_data/features.h"
 #import "ios/chrome/browser/ui/settings/password/password_checkup/password_checkup_coordinator.h"
 #import "ios/chrome/browser/ui/settings/password/passwords_coordinator.h"
 #import "ios/chrome/browser/ui/settings/password/passwords_mediator.h"
@@ -2357,6 +2359,17 @@ using UserFeedbackDataCallback =
 }
 
 - (void)showClearBrowsingDataSettings {
+  // TODO(crbug.com/335387869): When removing the flag, the clients of
+  // SettingsCommands.showClearBrowsingDataSettings should call
+  // QuickDeleteCommands.showPageInfo directly.
+  if (IsIosQuickDeleteEnabled()) {
+    id<QuickDeleteCommands> quickDeleteHandler = HandlerForProtocol(
+        self.currentInterface.browser->GetCommandDispatcher(),
+        QuickDeleteCommands);
+    [quickDeleteHandler showQuickDelete];
+    return;
+  }
+
   UIViewController* baseViewController = self.currentInterface.viewController;
   if (self.settingsNavigationController) {
     [self.settingsNavigationController showClearBrowsingDataSettings];

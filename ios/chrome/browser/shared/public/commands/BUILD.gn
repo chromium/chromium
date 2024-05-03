@@ -47,6 +47,7 @@ source_set("commands") {
     "promos_manager_commands.h",
     "qr_generation_commands.h",
     "qr_scanner_commands.h",
+    "quick_delete_commands.h",
     "reading_list_add_command.h",
     "reading_list_add_command.mm",
     "save_image_to_photos_command.h",
