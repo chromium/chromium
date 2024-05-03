@@ -1,4 +1,4 @@
-// Copyright 2019 The Chromium Authors
+// Copyright 2024 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
@@ -8,6 +8,7 @@ import android.content.Context;
 import android.graphics.drawable.Drawable;
 import android.graphics.drawable.InsetDrawable;
 import android.util.AttributeSet;
+import android.view.View;
 import android.view.accessibility.AccessibilityNodeInfo;
 import android.widget.ImageView;
 
@@ -18,8 +19,8 @@ import org.chromium.chrome.tab_ui.R;
 import org.chromium.components.browser_ui.widget.selectable_list.SelectableItemViewBase;
 
 /** Holds the view for a selectable tab grid. */
-public class SelectableTabGridView extends SelectableItemViewBase<Integer> {
-    public SelectableTabGridView(Context context, AttributeSet attrs) {
+public class SelectableTabListView extends SelectableItemViewBase<Integer> {
+    public SelectableTabListView(Context context, AttributeSet attrs) {
         super(context, attrs);
         setSelectionOnLongClick(false);
     }
@@ -32,15 +33,23 @@ public class SelectableTabGridView extends SelectableItemViewBase<Integer> {
         Drawable selectionListIcon =
                 AppCompatResources.getDrawable(
                         getContext(), R.drawable.tab_grid_selection_list_icon);
-        ImageView actionButton = (ImageView) fastFindViewById(R.id.action_button);
-
+        ImageView actionButton = findViewById(R.id.end_button);
+        actionButton.setVisibility(View.VISIBLE);
+        int lateralInset =
+                resources.getDimensionPixelSize(
+                        R.dimen.selection_tab_list_toggle_button_lateral_inset);
+        int verticalInset =
+                resources.getDimensionPixelSize(
+                        R.dimen.selection_tab_list_toggle_button_vertical_inset);
         InsetDrawable drawable =
                 new InsetDrawable(
                         selectionListIcon,
-                        (int)
-                                resources.getDimension(
-                                        R.dimen.selection_tab_grid_toggle_button_inset));
+                        lateralInset,
+                        verticalInset,
+                        lateralInset,
+                        verticalInset);
         actionButton.setBackground(drawable);
+        findViewById(R.id.start_icon).setBackground(null);
         actionButton
                 .getBackground()
                 .setLevel(resources.getInteger(R.integer.list_item_level_default));

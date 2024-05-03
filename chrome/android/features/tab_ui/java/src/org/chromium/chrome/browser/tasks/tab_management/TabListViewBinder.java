@@ -127,7 +127,7 @@ class TabListViewBinder {
     /**
      * Bind color updates.
      *
-     * @param view The root view of the item.
+     * @param view The root view of the item (either Selectable/ClosableTabListView).
      * @param isIncognito Whether the model is in incognito mode.
      * @param isSelected Whether the item is selected.
      */
@@ -135,6 +135,7 @@ class TabListViewBinder {
         // TODO(crbug.com/40272756): isSelected is ignored as the selected row is only outlined not
         // colored so it should use the unselected color. This will be addressed in a fixit.
 
+        // Shared by both classes, from tab_list_card_item.
         View cardView = view.findViewById(R.id.content_view);
         cardView.getBackground().mutate();
         final @ColorInt int backgroundColor =
@@ -176,7 +177,7 @@ class TabListViewBinder {
         final int defaultLevel = view.getResources().getInteger(R.integer.list_item_level_default);
         final int selectedLevel =
                 view.getResources().getInteger(R.integer.list_item_level_selected);
-        SelectableTabGridView selectableTabListView = view.findViewById(R.id.content_view);
+        SelectableTabListView selectableTabListView = (SelectableTabListView) view;
 
         if (TabProperties.SELECTABLE_TAB_CLICKED_LISTENER == propertyKey) {
             View.OnClickListener onClickListener =

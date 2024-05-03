@@ -721,14 +721,13 @@ public class TabListViewHolderTest extends BlankUiTestActivityTestCase {
 
         // For the List version, we need to trigger the click from the view that has id
         // content_view, because of the xml hierarchy.
-        ViewGroup selectableTabListContent = mSelectableTabListView.findViewById(R.id.content_view);
-        testSelectableTabClickToSelect(selectableTabListContent, mSelectableModel, false);
-        testSelectableTabClickToSelect(selectableTabListContent, mSelectableModel, true);
+        testSelectableTabClickToSelect(mSelectableTabListView, mSelectableModel, false);
+        testSelectableTabClickToSelect(mSelectableTabListView, mSelectableModel, true);
         // Also test the end button.
         testSelectableTabClickToSelect(
-                selectableTabListContent.findViewById(R.id.end_button), mSelectableModel, false);
+                mSelectableTabListView.findViewById(R.id.end_button), mSelectableModel, false);
         testSelectableTabClickToSelect(
-                selectableTabListContent.findViewById(R.id.end_button), mSelectableModel, true);
+                mSelectableTabListView.findViewById(R.id.end_button), mSelectableModel, true);
     }
 
     @Test
