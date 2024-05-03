@@ -2388,6 +2388,13 @@ void CrasAudioHandler::UpdateDevicesAndSwitchActive(
   bool has_external_output_device = false;
 
   for (AudioDevice device : devices) {
+    // When audio selection improvement flag is on, ignore non simple usage
+    // devices because users can't see/select them.
+    if (features::IsAudioSelectionImprovementEnabled() &&
+        !device.is_for_simple_usage()) {
+      continue;
+    }
+
     audio_devices_[device.id] = device;
 
     if (device.is_input) {

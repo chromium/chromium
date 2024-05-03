@@ -7144,4 +7144,22 @@ TEST_P(CrasAudioHandlerTest,
                      /*has_alternative_device=*/true);
 }
 
+// Tests non simple usage devices are ignored.
+TEST_P(CrasAudioHandlerTest,
+       IgnoreNonSimpleUsageDevices_AudioSelectionImprovementFlagOn) {
+  scoped_feature_list_.InitAndEnableFeature(
+      ash::features::kAudioSelectionImprovement);
+
+  AudioNodeList audio_nodes;
+  audio_nodes.push_back(GenerateAudioNode(kMicJack));
+  audio_nodes.push_back(GenerateAudioNode(kKeyboardMic));
+  SetUpCrasAudioHandler(audio_nodes);
+
+  // kKeyboardMic is a simple usage device, it should be ignored.
+  // The devices size is expected to be 1.
+  AudioDeviceList audio_devices;
+  cras_audio_handler_->GetAudioDevices(&audio_devices);
+  EXPECT_EQ(1u, audio_devices.size());
+}
+
 }  // namespace ash
