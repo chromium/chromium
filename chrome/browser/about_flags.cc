@@ -3721,6 +3721,27 @@ const FeatureEntry::Choice kAccountBookmarksAndReadingListBehindOptInChoices[] =
          "EnableBookmarkFoldersForAccountStorage,"
          "ReadingListEnableSyncTransportModeUponSignIn"},
 };
+
+const FeatureEntry::Choice kReplaceSyncPromosWithSignInPromosChoices[] = {
+    {"Default", "", ""},
+    {"Base only", "enable-features", "ReplaceSyncPromosWithSignInPromos"},
+    {"Everything (bookmarks, reading list, etc)", "enable-features",
+     "ReplaceSyncPromosWithSignInPromos,"
+     "EnableBookmarkFoldersForAccountStorage,"
+     "ReadingListEnableSyncTransportModeUponSignIn,"
+     "SyncEnableContactInfoDataTypeInTransportMode,"
+     "SyncEnableContactInfoDataTypeForCustomPassphraseUsers,"
+     "SyncEnableWalletMetadataInTransportMode,"
+     "SyncEnableWalletOfferInTransportMode,"
+     "UnifiedPasswordManagerLocalPasswordsAndroidWithMigration,"
+     "UnifiedPasswordManagerSyncOnlyInGMSCore,"
+     "ClearLoginDatabaseForUPMUsers,"
+     "EnablePasswordsAccountStorageForNonSyncingUsers,"
+     "EnterprisePolicyOnSignin,"
+     "MinorModeRestrictionsForHistorySyncOptIn,"
+     "HideSettingsSignInPromo,"
+     "FeedBottomSyncStringRemoval"},
+};
 #endif  // BUILDFLAG(IS_ANDROID)
 
 #if !BUILDFLAG(IS_ANDROID)
@@ -11173,8 +11194,7 @@ const FeatureEntry kFeatureEntries[] = {
     {"replace-sync-promos-with-sign-in-promos",
      flag_descriptions::kReplaceSyncPromosWithSignInPromosName,
      flag_descriptions::kReplaceSyncPromosWithSignInPromosDescription,
-     kOsAndroid,
-     FEATURE_VALUE_TYPE(syncer::kReplaceSyncPromosWithSignInPromos)},
+     kOsAndroid, MULTI_VALUE_TYPE(kReplaceSyncPromosWithSignInPromosChoices)},
 #endif  // BUILDFLAG(IS_ANDROID)
 
     {"autofill-enable-verve-card-support",
