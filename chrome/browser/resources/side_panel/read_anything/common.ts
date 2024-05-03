@@ -24,7 +24,7 @@ const validFontNames: Array<{name: string, css: string}> = [
   {name: 'Andika', css: 'Andika'},
 ];
 
-const activeClass = ' active';
+const ACTIVE_CSS_CLASS = 'active';
 
 // Validate that the given font name is a valid choice, or use the default.
 export function validatedFontName(fontName: string): string {
@@ -39,9 +39,9 @@ export function openMenu(
   // The button should stay active while the menu is open and deactivate when
   // the menu closes.
   menuToOpen.addEventListener('close', () => {
-    target.className = target.className.replace(activeClass, '');
+    target.classList.remove(ACTIVE_CSS_CLASS);
   });
-  target.className += activeClass;
+  target.classList.add(ACTIVE_CSS_CLASS);
 
   requestAnimationFrame(() => {
     const minY = target.getBoundingClientRect().bottom;
