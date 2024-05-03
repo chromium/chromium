@@ -23,7 +23,7 @@ import {loadTimeData} from '//resources/js/load_time_data.js';
 import type {DomRepeatEvent} from '//resources/polymer/v3_0/polymer/polymer_bundled.min.js';
 import {PolymerElement} from '//resources/polymer/v3_0/polymer/polymer_bundled.min.js';
 
-import {openMenu, validatedFontName} from './common.js';
+import {minOverflowLengthToScroll, openMenu, validatedFontName} from './common.js';
 import {getTemplate} from './read_anything_toolbar.html.js';
 import type {VoiceSelectionMenuElement} from './voice_selection_menu.js';
 
@@ -102,6 +102,10 @@ export const NEXT_GRANULARITY_EVENT = 'next-granularity-click';
 export const PREVIOUS_GRANULARITY_EVENT = 'previous-granularity-click';
 export const LINKS_EVENT = 'links-toggle';
 
+// Constants for styling the toolbar when page zoom changes.
+const whiteSpaceTypical = 'nowrap';
+const whiteSpaceOverflow = 'normal';
+
 const ReadAnythingToolbarElementBase =
     WebUiListenerMixin(I18nMixin(PolymerElement));
 export class ReadAnythingToolbarElement extends ReadAnythingToolbarElementBase {
@@ -144,7 +148,7 @@ export class ReadAnythingToolbarElement extends ReadAnythingToolbarElementBase {
 
     // Show all the buttons to see if they fit.
     const buttons =
-        Array.from(toolbar.querySelectorAll<HTMLElement>('.toolbar-button'));
+        Array.from(toolbar.querySelectorAll<HTMLElement>('.text-style-button'));
     assert(buttons, 'no toolbar buttons');
     buttons.forEach(btn => ReadAnythingToolbarElement.showElement(btn));
     toolbar.dispatchEvent(new CustomEvent('reset-toolbar'));
@@ -157,28 +161,40 @@ export class ReadAnythingToolbarElement extends ReadAnythingToolbarElementBase {
     // overflowed.
     const parentWidth = toolbar.offsetParent.clientWidth;
     if (toolbar.clientWidth > parentWidth) {
-      ReadAnythingToolbarElement.showElement(moreOptionsButton);
-
       // Hide at least 3 buttons and more if needed.
       let numOverflowButtons = 3;
       let nextOverflowButton = buttons[buttons.length - numOverflowButtons];
       // No need to hide a button if it only exceeds the width by a little (i.e.
       // only the padding overflows).
       const maxDiff = 10;
-      while ((nextOverflowButton.offsetLeft + nextOverflowButton.offsetWidth -
-              parentWidth) > maxDiff) {
+      let overflowLength = nextOverflowButton.offsetLeft +
+          nextOverflowButton.offsetWidth - parentWidth;
+      while (overflowLength > maxDiff) {
         numOverflowButtons++;
         nextOverflowButton = buttons[buttons.length - numOverflowButtons];
+        if (!nextOverflowButton) {
+          break;
+        }
+
+        overflowLength = nextOverflowButton.offsetLeft +
+            nextOverflowButton.offsetWidth - parentWidth;
       }
 
-      // Notify the toolbar to populate the more options menu.
+      // Notify the app and toolbar of the overflow.
       toolbar.dispatchEvent(new CustomEvent('toolbar-overflow', {
         bubbles: true,
         composed: true,
-        detail: {numOverflowButtons},
+        detail: {numOverflowButtons, overflowLength},
       }));
+
+      // If we have too much overflow, we won't use the more options button.
+      if (numOverflowButtons > buttons.length) {
+        return;
+      }
+
       // Hide the overflowed buttons and show the more options button in front
       // of them.
+      ReadAnythingToolbarElement.showElement(moreOptionsButton);
       const overflowedButtons =
           buttons.slice(buttons.length - numOverflowButtons);
       overflowedButtons.forEach(
@@ -428,11 +444,27 @@ export class ReadAnythingToolbarElement extends ReadAnythingToolbarElementBase {
   private onResetToolbar_() {
     this.$.moreOptionsMenu.getIfExists()?.close();
     this.moreOptionsButtons_ = [];
+    this.updateStyles({
+      '--toolbar-white-space': whiteSpaceTypical,
+    });
   }
 
-  private onToolbarOverflow_(event: CustomEvent<{numOverflowButtons: number}>) {
+  private onToolbarOverflow_(
+      event:
+          CustomEvent<{numOverflowButtons: number, overflowLength: number}>) {
     const firstHiddenButton =
         this.textStyleOptions_.length - event.detail.numOverflowButtons;
+    // Wrap the buttons if we overflow significantly but aren't yet scrolling
+    // the whole app.
+    if (firstHiddenButton < 0 &&
+        event.detail.overflowLength < minOverflowLengthToScroll) {
+      this.updateStyles({
+        '--toolbar-white-space': whiteSpaceOverflow,
+      });
+      return;
+    }
+
+    // If we only overflow by a little, use the more options button.
     this.moreOptionsButtons_ = this.textStyleOptions_.slice(firstHiddenButton);
   }
 

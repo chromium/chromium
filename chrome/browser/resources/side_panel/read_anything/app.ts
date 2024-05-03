@@ -21,7 +21,7 @@ import type {SkColor} from '//resources/mojo/skia/public/mojom/skcolor.mojom-web
 import {PolymerElement} from '//resources/polymer/v3_0/polymer/polymer_bundled.min.js';
 
 import {getTemplate} from './app.html.js';
-import {validatedFontName} from './common.js';
+import {minOverflowLengthToScroll, validatedFontName} from './common.js';
 import type {ReadAnythingToolbarElement} from './read_anything_toolbar.js';
 import {areVoicesEqual, AVAILABLE_GOOGLE_TTS_LOCALES, convertLangOrLocaleForVoicePackManager, convertLangToAnAvailableLangIfPresent, createInitialListOfEnabledLanguages, mojoVoicePackStatusToVoicePackStatusEnum, VoicePackStatus} from './voice_language_util.js';
 
@@ -71,6 +71,12 @@ export const currentReadHighlightClass = 'current-read-highlight';
 const parentOfHighlightClass = 'parent-of-highlight';
 
 const linkDataAttribute = 'link';
+
+// Constants for styling the app when page zoom changes.
+const overflowXTypical = 'hidden';
+const overflowXScroll = 'scroll';
+const minWidthTypical = 'auto';
+const minWidthOverflow = 'fit-content';
 
 // A two-way map where each key is unique and each value is unique. The keys are
 // DOM nodes and the values are numbers, representing AXNodeIDs.
@@ -1877,6 +1883,25 @@ export class ReadAnythingElement extends ReadAnythingElementBase {
 
   private onThemeChange_(event: CustomEvent<{data: string}>) {
     this.updateThemeFromWebUi_(event.detail.data);
+  }
+
+  private onResetToolbar_() {
+    this.updateStyles({
+      '--app-overflow-x': overflowXTypical,
+      '--container-min-width': minWidthTypical,
+    });
+  }
+
+  private onToolbarOverflow_(event: CustomEvent<{overflowLength: number}>) {
+    const shouldScroll =
+        (event.detail.overflowLength >= minOverflowLengthToScroll);
+    this.updateStyles({
+      '--app-overflow-x': shouldScroll ? overflowXScroll : overflowXTypical,
+      // When we scroll, we should allow the container to expand and scroll
+      // horizontally.
+      '--container-min-width': shouldScroll ? minWidthOverflow :
+                                              minWidthTypical,
+    });
   }
 
   // TODO(crbug.com/40275871): This method should be renamed to updateTheme()

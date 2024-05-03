@@ -5,6 +5,9 @@
 import type {CrActionMenuElement} from '//resources/cr_elements/cr_action_menu/cr_action_menu.js';
 import {AnchorAlignment} from '//resources/cr_elements/cr_action_menu/cr_action_menu.js';
 
+// Determined by experimentation - can be adjusted to fine tune for different
+// platforms.
+export const minOverflowLengthToScroll = 75;
 export const defaultFontName: string = 'sans-serif';
 
 // Defines the valid font names that can be passed to front-end and maps

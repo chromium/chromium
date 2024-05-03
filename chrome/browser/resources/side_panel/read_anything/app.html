@@ -4,7 +4,8 @@
     border-radius: 12px;
     height: 100%;
     margin: 0 8px;
-    min-width: fit-content;
+    min-width: var(--container-min-width);
+    overflow: hidden;
     padding: 20px;
     margin-bottom: var(--sp-card-block-padding);
   }
@@ -22,18 +23,14 @@
     width: 100%;
     display: flex;
     flex-direction: column;
+    overflow-x: var(--app-overflow-x);
   }
 
   #container-parent {
     background: var(--background-color);
     height: 100%;
     margin-bottom: var(--sp-card-block-padding);
-  }
-
-  @media (min-resolution: 200dpi) {
-    #container-parent {
-      min-width: fit-content;
-    }
+    min-width: var(--container-min-width);
   }
 
   .sp-scroller::-webkit-scrollbar-track {
@@ -74,9 +71,7 @@
   }
 
   sp-empty-state {
-    display: flex;
     margin: 0 auto 16px auto;
-    width: fit-content;
   }
 
   ::selection {
@@ -140,6 +135,8 @@
       on-theme-change="onThemeChange_"
       on-line-spacing-change="onLineSpacingChange_"
       on-highlight-toggle="onHighlightToggle_"
+      on-reset-toolbar="onResetToolbar_"
+      on-toolbar-overflow="onToolbarOverflow_"
       id="toolbar">
     </read-anything-toolbar>
   </div>

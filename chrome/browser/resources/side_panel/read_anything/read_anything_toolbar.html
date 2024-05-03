@@ -69,8 +69,7 @@
   .toolbar-container {
     padding: 6px 8px;
     overflow: visible;
-    white-space: nowrap;
-    max-height: 48px;
+    white-space: var(--toolbar-white-space);
     display: inline-block;
   }
   #more {
@@ -226,7 +225,7 @@
 
   <template is="dom-repeat" items="[[textStyleOptions_]]" initial-count="3">
     <cr-icon-button
-      class="toolbar-button"
+      class="toolbar-button text-style-button"
       id="[[item.id]]"
       tabindex="-1"
       aria-label="[[item.ariaLabel]]"
