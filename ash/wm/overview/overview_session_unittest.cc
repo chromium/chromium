@@ -1873,23 +1873,29 @@ TEST_P(OverviewSessionTest, NoWindowsIndicatorPosition) {
       GetOverviewSession()->grid_list()[0]->no_windows_widget();
   ASSERT_TRUE(no_windows_widget);
 
+  display::Screen* screen = display::Screen::GetScreen();
+
+  // The expected y of the label will be the screen minus the shelf, desks bar
+  // and maybe some extra padding for forest.
+  auto get_expected_y = [&screen]() -> int {
+    const int display_height = screen->GetPrimaryDisplay().bounds().height();
+    const int grid_y = kDeskBarZeroStateHeight;
+    int grid_height = display_height - ShelfConfig::Get()->shelf_size() -
+                      kDeskBarZeroStateHeight;
+    return grid_y + grid_height / 2;
+  };
+
   // Verify that originally the label is in the center of the workspace.
-  // Midpoint of height minus shelf.
-  int expected_y =
-      (300 - ShelfConfig::Get()->shelf_size() + kDeskBarZeroStateHeight) / 2;
-  EXPECT_EQ(gfx::Point(200, expected_y),
+  EXPECT_EQ(gfx::Point(200, get_expected_y()),
             no_windows_widget->GetWindowBoundsInScreen().CenterPoint());
 
   // Verify that after rotating the display, the label is centered in the
-  // workspace 300x(400-shelf).
-  display::Screen* screen = display::Screen::GetScreen();
+  // workspace.
   const display::Display& display = screen->GetPrimaryDisplay();
   display_manager()->SetDisplayRotation(
       display.id(), display::Display::ROTATE_90,
       display::Display::RotationSource::ACTIVE);
-  expected_y =
-      (400 - ShelfConfig::Get()->shelf_size() + kDeskBarZeroStateHeight) / 2;
-  EXPECT_EQ(gfx::Point(150, expected_y),
+  EXPECT_EQ(gfx::Point(150, get_expected_y()),
             no_windows_widget->GetWindowBoundsInScreen().CenterPoint());
 }
 

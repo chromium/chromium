@@ -578,8 +578,8 @@ class ASH_EXPORT OverviewGrid : public SplitViewObserver,
   // Maybe modify `out_window_rects` to center the overview items excluding the
   // the rect(s) corresponding to item(s) in `ignored_items`.
   void MaybeCenterOverviewItems(
-      std::vector<gfx::RectF>& out_window_rects,
-      const base::flat_set<OverviewItemBase*>& ignored_items);
+      const base::flat_set<OverviewItemBase*>& ignored_items,
+      std::vector<gfx::RectF>& out_window_rects);
 
   // Returns the index of `item` in `item_list_`.
   size_t GetOverviewItemIndex(OverviewItemBase* item) const;

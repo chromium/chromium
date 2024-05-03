@@ -152,13 +152,6 @@ constexpr int kMinimumItemsForScrollingLayout = 6;
 
 constexpr int kTabletModeOverviewItemTopPaddingDp = 16;
 
-// The padding applied to the side of the effective bounds without neighboring
-// widget.
-constexpr int kSpaciousPaddingForEffectiveBounds = 32;
-// The padding applied to the side of the effective bounds with neighboring
-// widget.
-constexpr int kCompactPaddingForEffectiveBounds = 16;
-
 // The horizontal and vertical distance from the bottom left corner of the grid
 // area to the origin of the `feedback_widget_`.
 constexpr int kFeedbackCornerSpacing = 8;
@@ -2841,7 +2834,7 @@ std::vector<gfx::RectF> OverviewGrid::GetWindowRects(
                            &max_right);
   }
 
-  MaybeCenterOverviewItems(rects, ignored_items);
+  MaybeCenterOverviewItems(ignored_items, rects);
 
   gfx::Vector2dF offset(0, (total_bounds.bottom() - max_bottom) / 2.f);
   for (auto& rect : rects)
@@ -2997,8 +2990,8 @@ bool OverviewGrid::FitWindowRectsInBounds(
 }
 
 void OverviewGrid::MaybeCenterOverviewItems(
-    std::vector<gfx::RectF>& out_window_rects,
-    const base::flat_set<OverviewItemBase*>& ignored_items) {
+    const base::flat_set<OverviewItemBase*>& ignored_items,
+    std::vector<gfx::RectF>& out_window_rects) {
   if (!features::IsOakFeatureEnabled() && !IsForestFeatureEnabled()) {
     return;
   }
@@ -3019,7 +3012,7 @@ void OverviewGrid::MaybeCenterOverviewItems(
     const float range_center =
         (current_row_union_range.start() + current_row_union_range.end()) / 2.f;
     const int center_position = GetGridEffectiveBounds().CenterPoint().x();
-    float current_diff = std::abs(center_position - range_center);
+    float current_diff = std::round(std::abs(center_position - range_center));
     for (size_t j = current_row_first_item_index; j < end_index; j++) {
       out_window_rects[j].Offset(current_diff, 0);
     }

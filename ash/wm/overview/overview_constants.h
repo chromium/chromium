@@ -38,6 +38,13 @@ constexpr SystemShadow::Type kDraggedShadowType =
 // Rounded corner radii applied on the wallpaper clip rect.
 constexpr gfx::RoundedCornersF kWallpaperClipRoundedCornerRadii(20.f);
 
+// The padding applied to the side of the effective bounds without neighboring
+// widget.
+inline constexpr int kSpaciousPaddingForEffectiveBounds = 32;
+// The padding applied to the side of the effective bounds with neighboring
+// widget.
+inline constexpr int kCompactPaddingForEffectiveBounds = 16;
+
 }  // namespace ash
 
 #endif  // ASH_WM_OVERVIEW_OVERVIEW_CONSTANTS_H_
