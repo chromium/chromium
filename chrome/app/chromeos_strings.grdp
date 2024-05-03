@@ -7550,13 +7550,13 @@ Your <ph name="DEVICE_TYPE">{0}<ex>Chromebook</ex></ph> will be locked now.
     Tip: Many Android apps are available on the web. Check the app or developer website for availability.
   </message>
   <message name="IDS_EXTENDED_UPDATES_DIALOG_SECURITY_DESCRIPTION" desc="Description of the extended security updates">
-    Your device gets the latest security, stability, and performance
+    Your device gets the latest security, stability, and performance updates
   </message>
   <message name="IDS_EXTENDED_UPDATES_DIALOG_POPUP_TITLE" desc="Title of the confirmation popup in the Extended Updates Dialog">
     Confirm extended security updates?
   </message>
   <message name="IDS_EXTENDED_UPDATES_DIALOG_POPUP_DESCRIPTION" desc="Description of the confirmation popup in the Extended Updates Dialog">
-    This change will take effect when you receive the next update and restart your Chromebook. This change can’t be reversed and applies to all users of this device.
+    This change will take effect when you receive the next update and restart your <ph name="DEVICE_TYPE">$1<ex>Chromebook</ex></ph>. This change can’t be reversed and applies to all users of this device.
   </message>
   <message name="IDS_EXTENDED_UPDATES_DIALOG_POPUP_CONFIRM_BUTTON" desc="Confirm button label of the confirmation popup in the Extended Updates Dialog">
     Confirm &amp; turn on

@@ -52,7 +52,6 @@ ExtendedUpdatesUI::ExtendedUpdatesUI(content::WebUI* web_ui)
        IDS_EXTENDED_UPDATES_DIALOG_ANDROID_APPS_LIST_NOTE},
       {"securityDescription", IDS_EXTENDED_UPDATES_DIALOG_SECURITY_DESCRIPTION},
       {"popupTitle", IDS_EXTENDED_UPDATES_DIALOG_POPUP_TITLE},
-      {"popupDescription", IDS_EXTENDED_UPDATES_DIALOG_POPUP_DESCRIPTION},
       {"popupConfirmButton", IDS_EXTENDED_UPDATES_DIALOG_POPUP_CONFIRM_BUTTON},
   };
   source->AddLocalizedStrings(kLocalizedStrings);
@@ -61,6 +60,10 @@ ExtendedUpdatesUI::ExtendedUpdatesUI(content::WebUI* web_ui)
                     l10n_util::GetStringFUTF16(
                         IDS_EXTENDED_UPDATES_DIALOG_DIALOG_DESCRIPTION_P2,
                         chrome::kDeviceExtendedUpdatesLearnMoreURL));
+  source->AddString(
+      "popupDescription",
+      l10n_util::GetStringFUTF16(IDS_EXTENDED_UPDATES_DIALOG_POPUP_DESCRIPTION,
+                                 ui::GetChromeOSDeviceName()));
 
   webui::SetupWebUIDataSource(
       source,
