@@ -59,3 +59,13 @@ window.disableBFCache = () => {
     });
   });
 };
+
+function waitForMessage(msg) {
+  return new Promise(resolve => {
+    window.addEventListener(
+      "message", (e) => {
+        if (e.data === msg)
+          resolve();
+        }
+  )});
+}

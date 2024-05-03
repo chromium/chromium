@@ -5,6 +5,7 @@
 #include "content/browser/renderer_host/view_transition_commit_deferring_condition.h"
 
 #include "base/memory/ptr_util.h"
+#include "content/browser/renderer_host/frame_tree.h"
 #include "content/browser/renderer_host/frame_tree_node.h"
 #include "content/browser/renderer_host/navigation_request.h"
 #include "content/browser/renderer_host/view_transition_opt_in_state.h"
@@ -23,8 +24,18 @@ ViewTransitionCommitDeferringCondition::MaybeCreate(
     return nullptr;
   }
 
-  if (!navigation_request.IsInPrimaryMainFrame())
-    return nullptr;
+  switch (navigation_request.frame_tree_node()->frame_tree().type()) {
+    case FrameTree::Type::kPrerender:
+      // Pre-rendered frame trees don't render any frames until activation. It's
+      // not feasible to run transitions in a frame which has no lifecycle
+      // updates.
+      return nullptr;
+    case FrameTree::Type::kPrimary:
+      break;
+    case FrameTree::Type::kFencedFrame:
+      // TODO(khushalsagar): Enable for fenced frames with a WPT.
+      return nullptr;
+  };
 
   if (!navigation_request.ShouldDispatchPageSwapEvent()) {
     return nullptr;
