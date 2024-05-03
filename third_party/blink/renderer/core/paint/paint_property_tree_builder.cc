@@ -426,18 +426,33 @@ class FragmentPaintPropertyTreeBuilder {
 // scrolling.
 static bool NeedsScrollOrScrollTranslation(
     const LayoutObject& object,
-    CompositingReasons direct_compositing_reasons) {
-  if (!object.IsScrollContainer())
+    CompositingReasons direct_compositing_reasons,
+    bool allow_scrolled_overflow_hidden = true) {
+  if (!object.IsScrollContainer()) {
     return false;
+  }
+  if (direct_compositing_reasons & CompositingReason::kRootScroller) {
+    return true;
+  }
 
-  const LayoutBox& box = To<LayoutBox>(object);
-  if (!box.GetScrollableArea())
-    return false;
+  auto* scrollable_area = To<LayoutBox>(object).GetScrollableArea();
+  CHECK(scrollable_area);
+  if (scrollable_area->ScrollsOverflow()) {
+    return true;
+  }
+  if (allow_scrolled_overflow_hidden &&
+      (!scrollable_area->ScrollPosition().IsOrigin() ||
+       !scrollable_area->GetScrollOffset().IsZero())) {
+    return true;
+  }
+  return false;
+}
 
-  gfx::PointF scroll_position = box.GetScrollableArea()->ScrollPosition();
-  ScrollOffset scroll_offset = box.GetScrollableArea()->GetScrollOffset();
-  return !scroll_position.IsOrigin() || !scroll_offset.IsZero() ||
-         box.NeedsScrollNode(direct_compositing_reasons);
+static bool NeedsScrollNode(const LayoutObject& object,
+                            CompositingReasons direct_compositing_reasons) {
+  return NeedsScrollOrScrollTranslation(
+      object, direct_compositing_reasons,
+      RuntimeEnabledFeatures::ScrollNodeForOverflowHiddenEnabled());
 }
 
 static bool NeedsReplacedContentTransform(const LayoutObject& object) {
@@ -747,7 +762,7 @@ void FragmentPaintPropertyTreeBuilder::UpdateStickyTranslation() {
                 ->GetLayoutObject()
                 .FirstFragment()
                 .PaintProperties();
-        // A scroll node is only created if an object can be scrolled manually,
+        // A scroll node is created conditionally (see NeedsScrollNode),
         // while sticky position attaches to anything that clips overflow.
         // No need to (actually can't) setup composited sticky constraint if
         // the clipping ancestor we attach to doesn't have a scroll node.
@@ -2605,8 +2620,7 @@ void FragmentPaintPropertyTreeBuilder::UpdateScrollAndScrollTranslation() {
   DCHECK(properties_);
 
   if (NeedsPaintPropertyUpdate()) {
-    if (object_.IsBox() && To<LayoutBox>(object_).NeedsScrollNode(
-                               full_context_.direct_compositing_reasons)) {
+    if (NeedsScrollNode(object_, full_context_.direct_compositing_reasons)) {
       const auto& box = To<LayoutBox>(object_);
       PaintLayerScrollableArea* scrollable_area = box.GetScrollableArea();
       ScrollPaintPropertyNode::State state;
@@ -2804,8 +2818,8 @@ void FragmentPaintPropertyTreeBuilder::UpdateScrollAndScrollTranslation() {
               PaintPropertyChangeType::kChangedOnlySimpleValues &&
           // In platform code, only scroll translations with scroll nodes are
           // treated as scroll translations with overlap testing treatment.
-          // A scroll translation for overflow:hidden doesn't have a scroll node
-          // and needs full PaintArtifactCompositor update on scroll.
+          // A scroll translation without a scroll node (see NeedsScrollNode)
+          // needs full PaintArtifactCompositor update on scroll.
           properties_->Scroll()) {
         if (auto* paint_artifact_compositor =
                 object_.GetFrameView()->GetPaintArtifactCompositor()) {

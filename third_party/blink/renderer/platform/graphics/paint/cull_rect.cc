@@ -101,6 +101,10 @@ std::pair<bool, bool> CullRect::ApplyScrollTranslation(
       CompositedScrollingPreference::kNotPreferred) {
     return {false, false};
   }
+  if (RuntimeEnabledFeatures::ScrollNodeForOverflowHiddenEnabled() &&
+      !scroll->UserScrollable()) {
+    return {false, false};
+  }
 
   gfx::Rect contents_rect = scroll->ContentsRect();
   int scroll_range_x = contents_rect.width() - container_rect.width();

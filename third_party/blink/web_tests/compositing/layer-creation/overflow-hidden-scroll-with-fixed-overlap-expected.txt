@@ -56,11 +56,11 @@ After scroll:
     },
     {
       "name": "LayoutNGBlockFlow (relative positioned) DIV class='overlapped'",
-      "position": [8, 102],
+      "position": [8, 1008],
       "bounds": [40, 40],
       "contentsOpaque": true,
       "backgroundColor": "#FFA500",
-      "transform": 1
+      "transform": 3
     }
   ],
   "transforms": [
@@ -81,6 +81,16 @@ After scroll:
         [0, 1, 0, 0],
         [0, 0, 1, 0],
         [8, 100, 0, 1]
+      ]
+    },
+    {
+      "id": 3,
+      "parent": 1,
+      "transform": [
+        [1, 0, 0, 0],
+        [0, 1, 0, 0],
+        [0, 0, 1, 0],
+        [0, -906, 0, 1]
       ]
     }
   ]

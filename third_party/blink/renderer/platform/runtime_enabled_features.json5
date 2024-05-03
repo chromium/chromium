@@ -3401,6 +3401,11 @@
       name: "ScrollEndEvents",
       status: "stable",
     },
+    // Killswitch. Remove after M126 or M127 stable.
+    {
+      name: "ScrollNodeForOverflowHidden",
+      status: "stable",
+    },
     {
       name: "ScrollTimeline",
       status: "stable",

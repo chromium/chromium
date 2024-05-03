@@ -87,7 +87,10 @@ AnchorPositionScrollData::ComputeAdjustmentContainersData(
     if (container->IsScrollContainer()) {
       const PaintLayerScrollableArea* scrollable_area =
           To<LayoutBox>(container)->GetScrollableArea();
-      if (container != anchor && container != bounding_container) {
+      if (container != anchor && container != bounding_container &&
+          (!RuntimeEnabledFeatures::ScrollNodeForOverflowHiddenEnabled() ||
+           // No need to adjust if the scroll container can't scroll anything.
+           To<LayoutBox>(container)->HasScrollableOverflow())) {
         result.adjustment_container_ids.push_back(
             scrollable_area->GetScrollElementId());
         result.accumulated_adjustment += scrollable_area->GetScrollOffset();

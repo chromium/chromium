@@ -4007,18 +4007,6 @@ TextDirection LayoutBox::ResolvedDirection() const {
   return StyleRef().Direction();
 }
 
-bool LayoutBox::NeedsScrollNode(
-    CompositingReasons direct_compositing_reasons) const {
-  NOT_DESTROYED();
-  if (!IsScrollContainer())
-    return false;
-
-  if (direct_compositing_reasons & CompositingReason::kRootScroller)
-    return true;
-
-  return GetScrollableArea()->ScrollsOverflow();
-}
-
 bool LayoutBox::UsesCompositedScrolling() const {
   NOT_DESTROYED();
   const auto* properties = FirstFragment().PaintProperties();

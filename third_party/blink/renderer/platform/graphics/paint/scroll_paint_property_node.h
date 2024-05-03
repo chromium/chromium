@@ -152,6 +152,10 @@ class PLATFORM_EXPORT ScrollPaintPropertyNode final
   bool UserScrollableVertical() const {
     return state_.user_scrollable_vertical;
   }
+  bool UserScrollable() const {
+    return UserScrollableHorizontal() || UserScrollableVertical();
+  }
+
   bool PreventViewportScrollingFromInner() const {
     return state_.prevent_viewport_scrolling_from_inner;
   }

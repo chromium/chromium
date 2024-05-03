@@ -1948,9 +1948,6 @@ TEST_F(PaintLayerScrollableAreaWithWebFrameTest,
   GetDocument().View()->UpdateAllLifecyclePhasesForTest();
 
   auto* scroller = GetDocument().getElementById(AtomicString("scroller"));
-  scroller->scrollTo(0, 200);
-  GetDocument().View()->UpdateAllLifecyclePhasesForTest();
-
   auto* box = scroller->GetLayoutBox();
   auto* scrollable_area = box->GetScrollableArea();
   ASSERT_TRUE(scrollable_area);
@@ -1967,6 +1964,15 @@ TEST_F(PaintLayerScrollableAreaWithWebFrameTest,
   GetDocument().View()->UpdateAllLifecyclePhasesForTest();
   EXPECT_TRUE(scrollable_area->ShouldScrollOnMainThread());
   EXPECT_FALSE(box->FirstFragment().PaintProperties()->Scroll());
+
+  scroller->scrollTo(0, 200);
+  GetDocument().View()->UpdateAllLifecyclePhasesForTest();
+  EXPECT_TRUE(scrollable_area->ShouldScrollOnMainThread());
+  if (RuntimeEnabledFeatures::ScrollNodeForOverflowHiddenEnabled()) {
+    EXPECT_TRUE(box->FirstFragment().PaintProperties()->Scroll());
+  } else {
+    EXPECT_FALSE(box->FirstFragment().PaintProperties()->Scroll());
+  }
 }
 
 }  // namespace blink

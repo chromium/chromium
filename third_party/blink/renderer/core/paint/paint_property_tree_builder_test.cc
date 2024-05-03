@@ -3912,20 +3912,31 @@ TEST_P(PaintPropertyTreeBuilderTest, OverflowHiddenScrollProperties) {
 
   Element* overflow_hidden =
       GetDocument().getElementById(AtomicString("overflowHidden"));
-  overflow_hidden->setScrollTop(37);
-
-  UpdateAllLifecyclePhasesForTest();
 
   const ObjectPaintProperties* overflow_hidden_scroll_properties =
       overflow_hidden->GetLayoutObject()->FirstFragment().PaintProperties();
 
-  // Because the overflow hidden does not scroll and only has a static scroll
-  // offset, there should be a scroll translation node but no scroll node.
+  // No scroll translation when the scroll offset is zero.
+  EXPECT_EQ(nullptr, overflow_hidden_scroll_properties->ScrollTranslation());
+  EXPECT_EQ(nullptr, overflow_hidden_scroll_properties->Scroll());
+
+  // Both scroll translation and scroll nodes when the scroll offset is not
+  // zero.
+  overflow_hidden->setScrollTop(37);
+  UpdateAllLifecyclePhasesForTest();
   auto* scroll_translation =
       overflow_hidden_scroll_properties->ScrollTranslation();
+  ASSERT_NE(nullptr, scroll_translation);
   EXPECT_EQ(gfx::Vector2dF(0, -37), scroll_translation->Get2dTranslation());
-  EXPECT_EQ(nullptr, scroll_translation->ScrollNode());
-  EXPECT_EQ(nullptr, overflow_hidden_scroll_properties->Scroll());
+  auto* scroll = scroll_translation->ScrollNode();
+  if (RuntimeEnabledFeatures::ScrollNodeForOverflowHiddenEnabled()) {
+    ASSERT_NE(nullptr, scroll);
+    EXPECT_EQ(scroll, overflow_hidden_scroll_properties->Scroll());
+    EXPECT_FALSE(scroll->UserScrollableHorizontal());
+    EXPECT_FALSE(scroll->UserScrollableVertical());
+  } else {
+    EXPECT_EQ(nullptr, scroll);
+  }
 }
 
 TEST_P(PaintPropertyTreeBuilderTest, FrameOverflowHiddenScrollProperties) {
@@ -6155,7 +6166,7 @@ TEST_P(PaintPropertyTreeBuilderTest, StickyConstraintChain) {
 
 TEST_P(PaintPropertyTreeBuilderTest, StickyUnderOverflowHidden) {
   // This test verifies the property tree builder applies sticky offset
-  // correctly when the scroll container cannot be manually scrolled, and
+  // correctly when the scroll container doesn't have a scroll node, and
   // does not emit sticky constraints.
   SetBodyInnerHTML(R"HTML(
     <div id="scroller" style="overflow:hidden; width:300px; height:200px;">
@@ -6169,8 +6180,6 @@ TEST_P(PaintPropertyTreeBuilderTest, StickyUnderOverflowHidden) {
       <div style="height:1000px;"></div>
     </div>
   )HTML");
-  GetDocument().getElementById(AtomicString("scroller"))->setScrollTop(50);
-  UpdateAllLifecyclePhasesForTest();
 
   const auto* outer_properties = PaintPropertiesForElement("outer");
   ASSERT_TRUE(outer_properties && outer_properties->StickyTranslation());
@@ -6178,7 +6187,7 @@ TEST_P(PaintPropertyTreeBuilderTest, StickyUnderOverflowHidden) {
   // offset animation.
   EXPECT_TRUE(outer_properties->StickyTranslation()
                   ->RequiresCompositingForStickyPosition());
-  EXPECT_EQ(gfx::Vector2dF(0, 60),
+  EXPECT_EQ(gfx::Vector2dF(0, 10),
             outer_properties->StickyTranslation()->Get2dTranslation());
   EXPECT_EQ(nullptr,
             outer_properties->StickyTranslation()->GetStickyConstraint());
@@ -6200,6 +6209,49 @@ TEST_P(PaintPropertyTreeBuilderTest, StickyUnderOverflowHidden) {
             inner_properties->StickyTranslation()->Get2dTranslation());
   EXPECT_EQ(nullptr,
             inner_properties->StickyTranslation()->GetStickyConstraint());
+
+  // The overflow:hidden scroller will create a scroll node when the scroll
+  // offset is not zero.
+  GetDocument().getElementById(AtomicString("scroller"))->setScrollTop(50);
+  UpdateAllLifecyclePhasesForTest();
+
+  EXPECT_TRUE(outer_properties->StickyTranslation()
+                  ->RequiresCompositingForStickyPosition());
+  EXPECT_EQ(gfx::Vector2dF(0, 60),
+            outer_properties->StickyTranslation()->Get2dTranslation());
+  if (RuntimeEnabledFeatures::ScrollNodeForOverflowHiddenEnabled()) {
+    EXPECT_NE(nullptr,
+              outer_properties->StickyTranslation()->GetStickyConstraint());
+  } else {
+    EXPECT_EQ(nullptr,
+              outer_properties->StickyTranslation()->GetStickyConstraint());
+  }
+
+  ASSERT_TRUE(middle_properties && middle_properties->StickyTranslation());
+  EXPECT_TRUE(middle_properties->StickyTranslation()
+                  ->RequiresCompositingForStickyPosition());
+  EXPECT_EQ(gfx::Vector2dF(0, 15),
+            middle_properties->StickyTranslation()->Get2dTranslation());
+  if (RuntimeEnabledFeatures::ScrollNodeForOverflowHiddenEnabled()) {
+    EXPECT_NE(nullptr,
+              middle_properties->StickyTranslation()->GetStickyConstraint());
+  } else {
+    EXPECT_EQ(nullptr,
+              middle_properties->StickyTranslation()->GetStickyConstraint());
+  }
+
+  ASSERT_TRUE(inner_properties && inner_properties->StickyTranslation());
+  EXPECT_TRUE(inner_properties->StickyTranslation()
+                  ->RequiresCompositingForStickyPosition());
+  EXPECT_EQ(gfx::Vector2dF(0, 20),
+            inner_properties->StickyTranslation()->Get2dTranslation());
+  if (RuntimeEnabledFeatures::ScrollNodeForOverflowHiddenEnabled()) {
+    EXPECT_NE(nullptr,
+              inner_properties->StickyTranslation()->GetStickyConstraint());
+  } else {
+    EXPECT_EQ(nullptr,
+              inner_properties->StickyTranslation()->GetStickyConstraint());
+  }
 }
 
 TEST_P(PaintPropertyTreeBuilderTest, StickyUnderScrollerWithoutOverflow) {

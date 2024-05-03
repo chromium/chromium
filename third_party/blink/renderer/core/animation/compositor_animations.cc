@@ -1157,8 +1157,11 @@ bool CompositorAnimations::CanStartScrollTimelineOnCompositor(Node* target) {
     return false;
   }
   if (RuntimeEnabledFeatures::ScrollTimelineAlwaysOnCompositorEnabled()) {
-    return layout_box->FirstFragment().PaintProperties() &&
-           layout_box->FirstFragment().PaintProperties()->Scroll();
+    if (auto* properties = layout_box->FirstFragment().PaintProperties()) {
+      return properties->Scroll() &&
+             (!RuntimeEnabledFeatures::ScrollNodeForOverflowHiddenEnabled() ||
+              properties->Scroll()->UserScrollable());
+    }
   }
   if (NativePaintImageGenerator::NativePaintWorkletAnimationsEnabled() &&
       target->GetDocument().Lifecycle().GetState() <

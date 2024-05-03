@@ -293,9 +293,9 @@ CompositorElementId HitTestResult::GetScrollableContainer() const {
   // browser control movement and overscroll glow.
   while (cur_box) {
     if (cur_box->IsGlobalRootScroller() ||
-        cur_box->NeedsScrollNode(CompositingReason::kNone)) {
-      return CompositorElementIdFromUniqueObjectId(
-          cur_box->UniqueId(), CompositorElementIdNamespace::kScroll);
+        (cur_box->IsScrollContainer() &&
+         cur_box->GetScrollableArea()->ScrollsOverflow())) {
+      return cur_box->GetScrollableArea()->GetScrollElementId();
     }
 
     if (IsA<LayoutView>(cur_box))
