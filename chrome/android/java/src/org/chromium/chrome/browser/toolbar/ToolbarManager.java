@@ -185,6 +185,7 @@ import org.chromium.content_public.browser.NavigationEntry;
 import org.chromium.content_public.browser.NavigationHandle;
 import org.chromium.content_public.browser.WebContents;
 import org.chromium.net.NetError;
+import org.chromium.ui.UiUtils;
 import org.chromium.ui.base.BackGestureEventSwipeEdge;
 import org.chromium.ui.base.DeviceFormFactor;
 import org.chromium.ui.base.PageTransition;
@@ -411,11 +412,14 @@ public class ToolbarManager
 
     private class OnBackPressHandler implements BackPressHandler {
         private TabOnBackGestureHandler mHandler;
+        private boolean mIsGestureMode;
 
         @Override
         public int handleBackPress() {
-            BackPressMetrics.recordNavStatusDuringGesture(
-                    mStartNavDuringOngoingGesture, mActivity.getWindow());
+            if (mIsGestureMode) {
+                BackPressMetrics.recordNavStatusDuringGesture(
+                        mStartNavDuringOngoingGesture, mActivity.getWindow());
+            }
             mBackGestureInProgress = false;
             int res = BackPressResult.SUCCESS;
             // When enabled, the content/ native will trigger the navigation.
@@ -434,8 +438,10 @@ public class ToolbarManager
 
         @Override
         public void handleOnBackCancelled() {
-            BackPressMetrics.recordNavStatusDuringGesture(
-                    mStartNavDuringOngoingGesture, mActivity.getWindow());
+            if (mIsGestureMode) {
+                BackPressMetrics.recordNavStatusDuringGesture(
+                        mStartNavDuringOngoingGesture, mActivity.getWindow());
+            }
             mBackGestureInProgress = false;
             if (mHandler == null) return;
             mHandler.onBackCancelled();
@@ -455,12 +461,18 @@ public class ToolbarManager
 
         @Override
         public void handleOnBackStarted(@NonNull BackEventCompat backEvent) {
-            BackPressMetrics.recordNavStatusOnGestureStart(
-                    mActivityTabProvider
-                            .get()
-                            .getWebContents()
-                            .hasUncommittedNavigationInPrimaryMainFrame(),
-                    mActivity.getWindow());
+            mIsGestureMode = UiUtils.isGestureNavigationMode(mActivity.getWindow());
+            // For 3-button mode, record metrics only when back is triggered by swiping.
+            // See NavigationHandler.java.
+            if (mIsGestureMode) {
+                BackPressMetrics.recordNavStatusOnGestureStart(
+                        mActivityTabProvider
+                                .get()
+                                .getWebContents()
+                                .hasUncommittedNavigationInPrimaryMainFrame(),
+                        mActivity.getWindow());
+            }
+
             mStartNavDuringOngoingGesture = false;
             mBackGestureInProgress = true;
             if (!ChromeFeatureList.isEnabled(ChromeFeatureList.BACK_FORWARD_TRANSITIONS)) return;

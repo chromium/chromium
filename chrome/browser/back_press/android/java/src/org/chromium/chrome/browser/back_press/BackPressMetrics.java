@@ -73,11 +73,11 @@ public class BackPressMetrics {
                 "Navigation.OnGestureStart.NavigationInProgress", isNavigationInProgress);
         if (UiUtils.isGestureNavigationMode(window)) {
             RecordHistogram.recordBooleanHistogram(
-                    "Navigation.OnNavigationStart.GestureInProgress.GestureMode",
+                    "Navigation.OnGestureStart.NavigationInProgress.GestureMode",
                     isNavigationInProgress);
         } else {
             RecordHistogram.recordBooleanHistogram(
-                    "Navigation.OnNavigationStart.GestureInProgress.3ButtonMode",
+                    "Navigation.OnGestureStart.NavigationInProgress.3ButtonMode",
                     isNavigationInProgress);
         }
     }

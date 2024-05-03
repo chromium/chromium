@@ -28,7 +28,6 @@ import androidx.annotation.Nullable;
 import androidx.annotation.VisibleForTesting;
 
 import org.chromium.base.supplier.Supplier;
-import org.chromium.chrome.browser.back_press.BackPressManager;
 import org.chromium.chrome.browser.back_press.BackPressMetrics;
 import org.chromium.chrome.browser.flags.ChromeFeatureList;
 import org.chromium.chrome.browser.gesturenav.BackActionDelegate.ActionType;
@@ -342,12 +341,9 @@ class NavigationHandler implements TouchEventObserver {
     void release(boolean allowNav) {
         // If the back gesture will update history, record the metrics.
         if (mBackGestureForTabHistoryInProgress) {
-            // if this is a back action, histogram will be recorded by back press handler.
-            if (!(allowNav && BackPressManager.isEnabled() && !mModel.get(DIRECTION))) {
-                BackPressMetrics.recordNavStatusDuringGesture(
-                        mStartNavDuringOngoingGesture,
-                        mTab.getWindowAndroid().getActivity().get().getWindow());
-            }
+            BackPressMetrics.recordNavStatusDuringGesture(
+                    mStartNavDuringOngoingGesture,
+                    mTab.getWindowAndroid().getActivity().get().getWindow());
         }
         mBackGestureForTabHistoryInProgress = false;
         mStartNavDuringOngoingGesture = false;
