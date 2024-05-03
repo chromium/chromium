@@ -256,6 +256,23 @@
         "test_id_prefix": "ninja://fuchsia_web/runners:cast_runner_unittests/"
       },
       {
+        "merge": {
+          "script": "//testing/merge_scripts/standard_gtest_merge.py"
+        },
+        "name": "cc_unittests",
+        "swarming": {
+          "dimensions": {
+            "cpu": "arm64",
+            "inside_docker": "1",
+            "os": "Ubuntu-22.04|Ubuntu-20.04"
+          },
+          "service_account": "chromium-tester@chops-service-accounts.iam.gserviceaccount.com",
+          "shards": 2
+        },
+        "test": "cc_unittests",
+        "test_id_prefix": "ninja://cc:cc_unittests/"
+      },
+      {
         "args": [
           "--test-arg=--disable-gpu",
           "--test-arg=--headless",
@@ -353,6 +370,22 @@
         "merge": {
           "script": "//testing/merge_scripts/standard_gtest_merge.py"
         },
+        "name": "courgette_unittests",
+        "swarming": {
+          "dimensions": {
+            "cpu": "arm64",
+            "inside_docker": "1",
+            "os": "Ubuntu-22.04|Ubuntu-20.04"
+          },
+          "service_account": "chromium-tester@chops-service-accounts.iam.gserviceaccount.com"
+        },
+        "test": "courgette_unittests",
+        "test_id_prefix": "ninja://courgette:courgette_unittests/"
+      },
+      {
+        "merge": {
+          "script": "//testing/merge_scripts/standard_gtest_merge.py"
+        },
         "name": "crypto_unittests",
         "swarming": {
           "dimensions": {
@@ -364,6 +397,22 @@
         },
         "test": "crypto_unittests",
         "test_id_prefix": "ninja://crypto:crypto_unittests/"
+      },
+      {
+        "merge": {
+          "script": "//testing/merge_scripts/standard_gtest_merge.py"
+        },
+        "name": "display_unittests",
+        "swarming": {
+          "dimensions": {
+            "cpu": "arm64",
+            "inside_docker": "1",
+            "os": "Ubuntu-22.04|Ubuntu-20.04"
+          },
+          "service_account": "chromium-tester@chops-service-accounts.iam.gserviceaccount.com"
+        },
+        "test": "display_unittests",
+        "test_id_prefix": "ninja://ui/display:display_unittests/"
       },
       {
         "merge": {
@@ -412,6 +461,22 @@
         },
         "test": "gcm_unit_tests",
         "test_id_prefix": "ninja://google_apis/gcm:gcm_unit_tests/"
+      },
+      {
+        "merge": {
+          "script": "//testing/merge_scripts/standard_gtest_merge.py"
+        },
+        "name": "gfx_unittests",
+        "swarming": {
+          "dimensions": {
+            "cpu": "arm64",
+            "inside_docker": "1",
+            "os": "Ubuntu-22.04|Ubuntu-20.04"
+          },
+          "service_account": "chromium-tester@chops-service-accounts.iam.gserviceaccount.com"
+        },
+        "test": "gfx_unittests",
+        "test_id_prefix": "ninja://ui/gfx:gfx_unittests/"
       },
       {
         "merge": {
@@ -497,6 +562,22 @@
         "merge": {
           "script": "//testing/merge_scripts/standard_gtest_merge.py"
         },
+        "name": "headless_unittests",
+        "swarming": {
+          "dimensions": {
+            "cpu": "arm64",
+            "inside_docker": "1",
+            "os": "Ubuntu-22.04|Ubuntu-20.04"
+          },
+          "service_account": "chromium-tester@chops-service-accounts.iam.gserviceaccount.com"
+        },
+        "test": "headless_unittests",
+        "test_id_prefix": "ninja://headless:headless_unittests/"
+      },
+      {
+        "merge": {
+          "script": "//testing/merge_scripts/standard_gtest_merge.py"
+        },
         "name": "ipc_tests",
         "swarming": {
           "dimensions": {
@@ -540,6 +621,22 @@
         },
         "test": "media_unittests",
         "test_id_prefix": "ninja://media:media_unittests/"
+      },
+      {
+        "merge": {
+          "script": "//testing/merge_scripts/standard_gtest_merge.py"
+        },
+        "name": "message_center_unittests",
+        "swarming": {
+          "dimensions": {
+            "cpu": "arm64",
+            "inside_docker": "1",
+            "os": "Ubuntu-22.04|Ubuntu-20.04"
+          },
+          "service_account": "chromium-tester@chops-service-accounts.iam.gserviceaccount.com"
+        },
+        "test": "message_center_unittests",
+        "test_id_prefix": "ninja://ui/message_center:message_center_unittests/"
       },
       {
         "merge": {
@@ -825,6 +922,63 @@
         },
         "test": "url_unittests",
         "test_id_prefix": "ninja://url:url_unittests/"
+      },
+      {
+        "args": [
+          "--test-launcher-filter-file=../../testing/buildbot/filters/fuchsia.views_examples_unittests.filter"
+        ],
+        "merge": {
+          "script": "//testing/merge_scripts/standard_gtest_merge.py"
+        },
+        "name": "views_examples_unittests",
+        "swarming": {
+          "dimensions": {
+            "cpu": "arm64",
+            "inside_docker": "1",
+            "os": "Ubuntu-22.04|Ubuntu-20.04"
+          },
+          "service_account": "chromium-tester@chops-service-accounts.iam.gserviceaccount.com"
+        },
+        "test": "views_examples_unittests",
+        "test_id_prefix": "ninja://ui/views/examples:views_examples_unittests/"
+      },
+      {
+        "args": [
+          "--test-launcher-filter-file=../../testing/buildbot/filters/fuchsia.views_unittests.filter"
+        ],
+        "merge": {
+          "script": "//testing/merge_scripts/standard_gtest_merge.py"
+        },
+        "name": "views_unittests",
+        "swarming": {
+          "dimensions": {
+            "cpu": "arm64",
+            "inside_docker": "1",
+            "os": "Ubuntu-22.04|Ubuntu-20.04"
+          },
+          "service_account": "chromium-tester@chops-service-accounts.iam.gserviceaccount.com"
+        },
+        "test": "views_unittests",
+        "test_id_prefix": "ninja://ui/views:views_unittests/"
+      },
+      {
+        "args": [
+          "--test-launcher-filter-file=../../testing/buildbot/filters/fuchsia.viz_unittests.filter"
+        ],
+        "merge": {
+          "script": "//testing/merge_scripts/standard_gtest_merge.py"
+        },
+        "name": "viz_unittests",
+        "swarming": {
+          "dimensions": {
+            "cpu": "arm64",
+            "inside_docker": "1",
+            "os": "Ubuntu-22.04|Ubuntu-20.04"
+          },
+          "service_account": "chromium-tester@chops-service-accounts.iam.gserviceaccount.com"
+        },
+        "test": "viz_unittests",
+        "test_id_prefix": "ninja://components/viz:viz_unittests/"
       },
       {
         "merge": {

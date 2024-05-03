@@ -146,6 +146,7 @@ ci.builder(
             "cast_receiver_size_optimized",
         ],
     ),
+    free_space = free_space.high,
     console_view_entry = [
         consoles.console_view_entry(
             category = "cast-receiver",

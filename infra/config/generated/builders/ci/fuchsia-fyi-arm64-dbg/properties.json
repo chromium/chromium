@@ -32,8 +32,7 @@
                   "fuchsia_arm64_host"
                 ],
                 "config": "chromium"
-              },
-              "run_tests_serially": true
+              }
             }
           }
         ]

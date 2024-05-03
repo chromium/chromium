@@ -1857,7 +1857,8 @@ targets.legacy_basic_suite(
 )
 
 targets.legacy_basic_suite(
-    name = "fuchsia_chrome_small_gtests",
+    # chromium gtests running on fuchsia.
+    name = "fuchsia_chrome_gtests",
     tests = {
         "courgette_unittests": targets.legacy_test_config(),
         "headless_unittests": targets.legacy_test_config(),
@@ -1872,12 +1873,6 @@ targets.legacy_basic_suite(
                 "--test-launcher-filter-file=../../testing/buildbot/filters/fuchsia.views_unittests.filter",
             ],
         ),
-    },
-)
-
-targets.legacy_basic_suite(
-    name = "fuchsia_common_gtests",
-    tests = {
         "absl_hardening_tests": targets.legacy_test_config(),
         "accessibility_unittests": targets.legacy_test_config(),
         "aura_unittests": targets.legacy_test_config(),
@@ -1968,12 +1963,6 @@ targets.legacy_basic_suite(
         "wm_unittests": targets.legacy_test_config(),
         "wtf_unittests": targets.legacy_test_config(),
         "zlib_unittests": targets.legacy_test_config(),
-    },
-)
-
-targets.legacy_basic_suite(
-    name = "fuchsia_common_gtests_with_graphical_output",
-    tests = {
         "cc_unittests": targets.legacy_test_config(
             swarming = targets.swarming(
                 shards = 2,
@@ -1986,6 +1975,19 @@ targets.legacy_basic_suite(
                 "--test-launcher-filter-file=../../testing/buildbot/filters/fuchsia.viz_unittests.filter",
             ],
         ),
+    },
+)
+
+targets.legacy_basic_suite(
+    # dedicated fuchsia gtests for web-engine and its related components.
+    name = "fuchsia_web_engine_gtests",
+    tests = {
+        "cast_runner_browsertests": targets.legacy_test_config(),
+        "cast_runner_integration_tests": targets.legacy_test_config(),
+        "cast_runner_unittests": targets.legacy_test_config(),
+        "web_engine_browsertests": targets.legacy_test_config(),
+        "web_engine_integration_tests": targets.legacy_test_config(),
+        "web_engine_unittests": targets.legacy_test_config(),
     },
 )
 
@@ -4888,18 +4890,6 @@ targets.legacy_basic_suite(
     name = "vulkan_swiftshader_isolated_scripts",
     tests = {
         "vulkan_swiftshader_blink_web_tests": targets.legacy_test_config(),
-    },
-)
-
-targets.legacy_basic_suite(
-    name = "web_engine_gtests",
-    tests = {
-        "cast_runner_browsertests": targets.legacy_test_config(),
-        "cast_runner_integration_tests": targets.legacy_test_config(),
-        "cast_runner_unittests": targets.legacy_test_config(),
-        "web_engine_browsertests": targets.legacy_test_config(),
-        "web_engine_integration_tests": targets.legacy_test_config(),
-        "web_engine_unittests": targets.legacy_test_config(),
     },
 )
 

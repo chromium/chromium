@@ -2950,8 +2950,15 @@
           'all',
           'cast_test_lists',
         ],
+        'browser_config': 'web-engine-shell',
+        'os_type': 'fuchsia',
         'test_suites': {
-          'gtest_tests': 'fuchsia_web_engine_non_graphical_gtests',
+          # Ignore the gpu_telemetry_tests to make it slightly faster. But may
+          # need revise if gpu tests slow things down so dramatically.
+          # TODO(crbug.com/41481724): Revise the time consumption of this
+          # builder and fuchsia-fyi-arm64-dbg to decide if later one can be
+          # removed.
+          'gtest_tests': 'fuchsia_gtests',
           'isolated_scripts': 'fuchsia_arm64_isolated_scripts',
         },
         'mixins': [
@@ -3014,9 +3021,12 @@
         'additional_compile_targets': [
           'all',
         ],
+        'browser_config': 'web-engine-shell',
+        'os_type': 'fuchsia',
         'test_suites': {
-          'gtest_tests': 'fuchsia_web_engine_non_graphical_gtests',
-          'isolated_scripts': 'gpu_angle_fuchsia_unittests_isolated_scripts',
+          'gpu_telemetry_tests': 'gpu_fuchsia_telemetry_tests',
+          'gtest_tests': 'fuchsia_gtests',
+          'isolated_scripts': 'fuchsia_isolated_scripts',
         },
         'mixins': [
           'arm64',
@@ -3033,11 +3043,17 @@
             'kvm': '1',
           },
         },
+        'browser_config': 'web-engine-shell',
+        'os_type': 'fuchsia',
         'test_suites': {
+          'gpu_telemetry_tests': 'gpu_fuchsia_telemetry_tests',
           'gtest_tests': 'fuchsia_gtests',
-          'isolated_scripts': 'gpu_angle_fuchsia_unittests_isolated_scripts',
+          'isolated_scripts': 'fuchsia_isolated_scripts',
         },
       },
+      # TODO(crbug.com/41481724): It should be the same as cast-receiver
+      # counter-part since chrome-on-fuchsia has been removed. So this builder
+      # can be removed as well.
       'fuchsia-fyi-x64-dbg': {
         'additional_compile_targets': [
           'all',
@@ -3050,9 +3066,12 @@
             'kvm': '1',
           },
         },
+        'browser_config': 'web-engine-shell',
+        'os_type': 'fuchsia',
         'test_suites': {
+          'gpu_telemetry_tests': 'gpu_fuchsia_telemetry_tests',
           'gtest_tests': 'fuchsia_gtests',
-          'isolated_scripts': 'gpu_angle_fuchsia_unittests_isolated_scripts',
+          'isolated_scripts': 'fuchsia_isolated_scripts',
         },
       },
       'fuchsia-fyi-x64-dbg-persistent-emulator' : {

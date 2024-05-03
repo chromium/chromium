@@ -256,6 +256,26 @@
       },
       {
         "args": [
+          "--test-launcher-filter-file=../../testing/buildbot/filters/fuchsia.debug.cc_unittests.filter"
+        ],
+        "merge": {
+          "script": "//testing/merge_scripts/standard_gtest_merge.py"
+        },
+        "name": "cc_unittests",
+        "swarming": {
+          "dimensions": {
+            "cpu": "arm64",
+            "inside_docker": "1",
+            "os": "Ubuntu-22.04|Ubuntu-20.04"
+          },
+          "service_account": "chromium-tester@chops-service-accounts.iam.gserviceaccount.com",
+          "shards": 2
+        },
+        "test": "cc_unittests",
+        "test_id_prefix": "ninja://cc:cc_unittests/"
+      },
+      {
+        "args": [
           "--test-arg=--disable-gpu",
           "--test-arg=--headless",
           "--test-arg=--ozone-platform=headless"
@@ -331,6 +351,22 @@
         "merge": {
           "script": "//testing/merge_scripts/standard_gtest_merge.py"
         },
+        "name": "courgette_unittests",
+        "swarming": {
+          "dimensions": {
+            "cpu": "arm64",
+            "inside_docker": "1",
+            "os": "Ubuntu-22.04|Ubuntu-20.04"
+          },
+          "service_account": "chromium-tester@chops-service-accounts.iam.gserviceaccount.com"
+        },
+        "test": "courgette_unittests",
+        "test_id_prefix": "ninja://courgette:courgette_unittests/"
+      },
+      {
+        "merge": {
+          "script": "//testing/merge_scripts/standard_gtest_merge.py"
+        },
         "name": "crypto_unittests",
         "swarming": {
           "dimensions": {
@@ -342,6 +378,22 @@
         },
         "test": "crypto_unittests",
         "test_id_prefix": "ninja://crypto:crypto_unittests/"
+      },
+      {
+        "merge": {
+          "script": "//testing/merge_scripts/standard_gtest_merge.py"
+        },
+        "name": "display_unittests",
+        "swarming": {
+          "dimensions": {
+            "cpu": "arm64",
+            "inside_docker": "1",
+            "os": "Ubuntu-22.04|Ubuntu-20.04"
+          },
+          "service_account": "chromium-tester@chops-service-accounts.iam.gserviceaccount.com"
+        },
+        "test": "display_unittests",
+        "test_id_prefix": "ninja://ui/display:display_unittests/"
       },
       {
         "merge": {
@@ -390,6 +442,22 @@
         },
         "test": "gcm_unit_tests",
         "test_id_prefix": "ninja://google_apis/gcm:gcm_unit_tests/"
+      },
+      {
+        "merge": {
+          "script": "//testing/merge_scripts/standard_gtest_merge.py"
+        },
+        "name": "gfx_unittests",
+        "swarming": {
+          "dimensions": {
+            "cpu": "arm64",
+            "inside_docker": "1",
+            "os": "Ubuntu-22.04|Ubuntu-20.04"
+          },
+          "service_account": "chromium-tester@chops-service-accounts.iam.gserviceaccount.com"
+        },
+        "test": "gfx_unittests",
+        "test_id_prefix": "ninja://ui/gfx:gfx_unittests/"
       },
       {
         "merge": {
@@ -475,6 +543,22 @@
         "merge": {
           "script": "//testing/merge_scripts/standard_gtest_merge.py"
         },
+        "name": "headless_unittests",
+        "swarming": {
+          "dimensions": {
+            "cpu": "arm64",
+            "inside_docker": "1",
+            "os": "Ubuntu-22.04|Ubuntu-20.04"
+          },
+          "service_account": "chromium-tester@chops-service-accounts.iam.gserviceaccount.com"
+        },
+        "test": "headless_unittests",
+        "test_id_prefix": "ninja://headless:headless_unittests/"
+      },
+      {
+        "merge": {
+          "script": "//testing/merge_scripts/standard_gtest_merge.py"
+        },
         "name": "ipc_tests",
         "swarming": {
           "dimensions": {
@@ -521,6 +605,22 @@
         },
         "test": "media_unittests",
         "test_id_prefix": "ninja://media:media_unittests/"
+      },
+      {
+        "merge": {
+          "script": "//testing/merge_scripts/standard_gtest_merge.py"
+        },
+        "name": "message_center_unittests",
+        "swarming": {
+          "dimensions": {
+            "cpu": "arm64",
+            "inside_docker": "1",
+            "os": "Ubuntu-22.04|Ubuntu-20.04"
+          },
+          "service_account": "chromium-tester@chops-service-accounts.iam.gserviceaccount.com"
+        },
+        "test": "message_center_unittests",
+        "test_id_prefix": "ninja://ui/message_center:message_center_unittests/"
       },
       {
         "merge": {
@@ -811,6 +911,63 @@
         "test_id_prefix": "ninja://url:url_unittests/"
       },
       {
+        "args": [
+          "--test-launcher-filter-file=../../testing/buildbot/filters/fuchsia.views_examples_unittests.filter"
+        ],
+        "merge": {
+          "script": "//testing/merge_scripts/standard_gtest_merge.py"
+        },
+        "name": "views_examples_unittests",
+        "swarming": {
+          "dimensions": {
+            "cpu": "arm64",
+            "inside_docker": "1",
+            "os": "Ubuntu-22.04|Ubuntu-20.04"
+          },
+          "service_account": "chromium-tester@chops-service-accounts.iam.gserviceaccount.com"
+        },
+        "test": "views_examples_unittests",
+        "test_id_prefix": "ninja://ui/views/examples:views_examples_unittests/"
+      },
+      {
+        "args": [
+          "--test-launcher-filter-file=../../testing/buildbot/filters/fuchsia.views_unittests.filter;../../testing/buildbot/filters/fuchsia.debug.views_unittests.filter"
+        ],
+        "merge": {
+          "script": "//testing/merge_scripts/standard_gtest_merge.py"
+        },
+        "name": "views_unittests",
+        "swarming": {
+          "dimensions": {
+            "cpu": "arm64",
+            "inside_docker": "1",
+            "os": "Ubuntu-22.04|Ubuntu-20.04"
+          },
+          "service_account": "chromium-tester@chops-service-accounts.iam.gserviceaccount.com"
+        },
+        "test": "views_unittests",
+        "test_id_prefix": "ninja://ui/views:views_unittests/"
+      },
+      {
+        "args": [
+          "--test-launcher-filter-file=../../testing/buildbot/filters/fuchsia.viz_unittests.filter;../../testing/buildbot/filters/fuchsia.debug.viz_unittests.filter"
+        ],
+        "merge": {
+          "script": "//testing/merge_scripts/standard_gtest_merge.py"
+        },
+        "name": "viz_unittests",
+        "swarming": {
+          "dimensions": {
+            "cpu": "arm64",
+            "inside_docker": "1",
+            "os": "Ubuntu-22.04|Ubuntu-20.04"
+          },
+          "service_account": "chromium-tester@chops-service-accounts.iam.gserviceaccount.com"
+        },
+        "test": "viz_unittests",
+        "test_id_prefix": "ninja://components/viz:viz_unittests/"
+      },
+      {
         "merge": {
           "script": "//testing/merge_scripts/standard_gtest_merge.py"
         },
@@ -927,6 +1084,275 @@
         },
         "test": "angle_unittests",
         "test_id_prefix": "ninja://third_party/angle/src/tests:angle_unittests/"
+      },
+      {
+        "args": [
+          "--num-retries=3",
+          "--write-run-histories-to=${ISOLATED_OUTDIR}/run_histories.json"
+        ],
+        "merge": {
+          "args": [
+            "--verbose"
+          ],
+          "script": "//third_party/blink/tools/merge_web_test_results.py"
+        },
+        "name": "blink_web_tests",
+        "resultdb": {
+          "enable": true,
+          "has_native_resultdb_integration": true
+        },
+        "results_handler": "layout tests",
+        "swarming": {
+          "dimensions": {
+            "cpu": "arm64",
+            "inside_docker": "1",
+            "os": "Ubuntu-22.04|Ubuntu-20.04"
+          },
+          "service_account": "chromium-tester@chops-service-accounts.iam.gserviceaccount.com",
+          "shards": 5
+        },
+        "test": "blink_web_tests",
+        "test_id_prefix": "ninja://:blink_web_tests/"
+      },
+      {
+        "args": [
+          "--num-retries=3",
+          "--write-run-histories-to=${ISOLATED_OUTDIR}/run_histories.json"
+        ],
+        "merge": {
+          "args": [
+            "--verbose"
+          ],
+          "script": "//third_party/blink/tools/merge_web_test_results.py"
+        },
+        "name": "blink_wpt_tests",
+        "resultdb": {
+          "enable": true,
+          "has_native_resultdb_integration": true
+        },
+        "results_handler": "layout tests",
+        "swarming": {
+          "dimensions": {
+            "cpu": "arm64",
+            "inside_docker": "1",
+            "os": "Ubuntu-22.04|Ubuntu-20.04"
+          },
+          "service_account": "chromium-tester@chops-service-accounts.iam.gserviceaccount.com",
+          "shards": 7
+        },
+        "test": "blink_wpt_tests",
+        "test_id_prefix": "ninja://:blink_wpt_tests/"
+      },
+      {
+        "args": [
+          "context_lost",
+          "--show-stdout",
+          "--browser=web-engine-shell",
+          "--passthrough",
+          "-v",
+          "--stable-jobs",
+          "--extra-browser-args=--enable-logging=stderr --js-flags=--expose-gc --use-cmd-decoder=validating",
+          "--enforce-browser-version",
+          "--jobs=1"
+        ],
+        "merge": {
+          "script": "//testing/merge_scripts/standard_isolated_script_merge.py"
+        },
+        "name": "context_lost_validating_tests",
+        "resultdb": {
+          "enable": true,
+          "has_native_resultdb_integration": true
+        },
+        "swarming": {
+          "dimensions": {
+            "cpu": "arm64",
+            "inside_docker": "1",
+            "os": "Ubuntu-22.04|Ubuntu-20.04"
+          },
+          "idempotent": false,
+          "service_account": "chromium-tester@chops-service-accounts.iam.gserviceaccount.com"
+        },
+        "test": "telemetry_gpu_integration_test_fuchsia",
+        "test_id_prefix": "ninja://content/test:telemetry_gpu_integration_test_fuchsia/"
+      },
+      {
+        "args": [
+          "expected_color",
+          "--show-stdout",
+          "--browser=web-engine-shell",
+          "--passthrough",
+          "-v",
+          "--stable-jobs",
+          "--extra-browser-args=--enable-logging=stderr --js-flags=--expose-gc --use-cmd-decoder=validating",
+          "--enforce-browser-version",
+          "--dont-restore-color-profile-after-test",
+          "--test-machine-name",
+          "${buildername}",
+          "--git-revision=${got_revision}",
+          "--jobs=1"
+        ],
+        "merge": {
+          "script": "//testing/merge_scripts/standard_isolated_script_merge.py"
+        },
+        "name": "expected_color_pixel_validating_test",
+        "precommit_args": [
+          "--gerrit-issue=${patch_issue}",
+          "--gerrit-patchset=${patch_set}",
+          "--buildbucket-id=${buildbucket_build_id}"
+        ],
+        "resultdb": {
+          "enable": true,
+          "has_native_resultdb_integration": true
+        },
+        "swarming": {
+          "dimensions": {
+            "cpu": "arm64",
+            "inside_docker": "1",
+            "os": "Ubuntu-22.04|Ubuntu-20.04"
+          },
+          "idempotent": false,
+          "service_account": "chromium-tester@chops-service-accounts.iam.gserviceaccount.com"
+        },
+        "test": "telemetry_gpu_integration_test_fuchsia",
+        "test_id_prefix": "ninja://content/test:telemetry_gpu_integration_test_fuchsia/"
+      },
+      {
+        "args": [
+          "gpu_process",
+          "--show-stdout",
+          "--browser=web-engine-shell",
+          "--passthrough",
+          "-v",
+          "--stable-jobs",
+          "--extra-browser-args=--enable-logging=stderr --js-flags=--expose-gc",
+          "--enforce-browser-version",
+          "--jobs=1"
+        ],
+        "merge": {
+          "script": "//testing/merge_scripts/standard_isolated_script_merge.py"
+        },
+        "name": "gpu_process_launch_tests",
+        "resultdb": {
+          "enable": true,
+          "has_native_resultdb_integration": true
+        },
+        "swarming": {
+          "dimensions": {
+            "cpu": "arm64",
+            "inside_docker": "1",
+            "os": "Ubuntu-22.04|Ubuntu-20.04"
+          },
+          "idempotent": false,
+          "service_account": "chromium-tester@chops-service-accounts.iam.gserviceaccount.com"
+        },
+        "test": "telemetry_gpu_integration_test_fuchsia",
+        "test_id_prefix": "ninja://content/test:telemetry_gpu_integration_test_fuchsia/"
+      },
+      {
+        "args": [
+          "hardware_accelerated_feature",
+          "--show-stdout",
+          "--browser=web-engine-shell",
+          "--passthrough",
+          "-v",
+          "--stable-jobs",
+          "--extra-browser-args=--enable-logging=stderr --js-flags=--expose-gc",
+          "--enforce-browser-version",
+          "--jobs=1"
+        ],
+        "merge": {
+          "script": "//testing/merge_scripts/standard_isolated_script_merge.py"
+        },
+        "name": "hardware_accelerated_feature_tests",
+        "resultdb": {
+          "enable": true,
+          "has_native_resultdb_integration": true
+        },
+        "swarming": {
+          "dimensions": {
+            "cpu": "arm64",
+            "inside_docker": "1",
+            "os": "Ubuntu-22.04|Ubuntu-20.04"
+          },
+          "idempotent": false,
+          "service_account": "chromium-tester@chops-service-accounts.iam.gserviceaccount.com"
+        },
+        "test": "telemetry_gpu_integration_test_fuchsia",
+        "test_id_prefix": "ninja://content/test:telemetry_gpu_integration_test_fuchsia/"
+      },
+      {
+        "args": [
+          "pixel",
+          "--show-stdout",
+          "--browser=web-engine-shell",
+          "--passthrough",
+          "-v",
+          "--stable-jobs",
+          "--extra-browser-args=--enable-logging=stderr --js-flags=--expose-gc --use-cmd-decoder=validating",
+          "--enforce-browser-version",
+          "--dont-restore-color-profile-after-test",
+          "--test-machine-name",
+          "${buildername}",
+          "--git-revision=${got_revision}",
+          "--jobs=1"
+        ],
+        "merge": {
+          "script": "//testing/merge_scripts/standard_isolated_script_merge.py"
+        },
+        "name": "pixel_skia_gold_validating_test",
+        "precommit_args": [
+          "--gerrit-issue=${patch_issue}",
+          "--gerrit-patchset=${patch_set}",
+          "--buildbucket-id=${buildbucket_build_id}"
+        ],
+        "resultdb": {
+          "enable": true,
+          "has_native_resultdb_integration": true
+        },
+        "swarming": {
+          "dimensions": {
+            "cpu": "arm64",
+            "inside_docker": "1",
+            "os": "Ubuntu-22.04|Ubuntu-20.04"
+          },
+          "idempotent": false,
+          "service_account": "chromium-tester@chops-service-accounts.iam.gserviceaccount.com"
+        },
+        "test": "telemetry_gpu_integration_test_fuchsia",
+        "test_id_prefix": "ninja://content/test:telemetry_gpu_integration_test_fuchsia/"
+      },
+      {
+        "args": [
+          "screenshot_sync",
+          "--show-stdout",
+          "--browser=web-engine-shell",
+          "--passthrough",
+          "-v",
+          "--stable-jobs",
+          "--extra-browser-args=--enable-logging=stderr --js-flags=--expose-gc --use-cmd-decoder=validating",
+          "--enforce-browser-version",
+          "--dont-restore-color-profile-after-test",
+          "--jobs=1"
+        ],
+        "merge": {
+          "script": "//testing/merge_scripts/standard_isolated_script_merge.py"
+        },
+        "name": "screenshot_sync_validating_tests",
+        "resultdb": {
+          "enable": true,
+          "has_native_resultdb_integration": true
+        },
+        "swarming": {
+          "dimensions": {
+            "cpu": "arm64",
+            "inside_docker": "1",
+            "os": "Ubuntu-22.04|Ubuntu-20.04"
+          },
+          "idempotent": false,
+          "service_account": "chromium-tester@chops-service-accounts.iam.gserviceaccount.com"
+        },
+        "test": "telemetry_gpu_integration_test_fuchsia",
+        "test_id_prefix": "ninja://content/test:telemetry_gpu_integration_test_fuchsia/"
       }
     ]
   },
@@ -1947,6 +2373,267 @@
         },
         "test": "angle_unittests",
         "test_id_prefix": "ninja://third_party/angle/src/tests:angle_unittests/"
+      },
+      {
+        "args": [
+          "--num-retries=3",
+          "--write-run-histories-to=${ISOLATED_OUTDIR}/run_histories.json"
+        ],
+        "merge": {
+          "args": [
+            "--verbose"
+          ],
+          "script": "//third_party/blink/tools/merge_web_test_results.py"
+        },
+        "name": "blink_web_tests",
+        "resultdb": {
+          "enable": true,
+          "has_native_resultdb_integration": true
+        },
+        "results_handler": "layout tests",
+        "swarming": {
+          "dimensions": {
+            "kvm": "1",
+            "os": "Ubuntu-22.04"
+          },
+          "service_account": "chromium-tester@chops-service-accounts.iam.gserviceaccount.com",
+          "shards": 5
+        },
+        "test": "blink_web_tests",
+        "test_id_prefix": "ninja://:blink_web_tests/"
+      },
+      {
+        "args": [
+          "--num-retries=3",
+          "--write-run-histories-to=${ISOLATED_OUTDIR}/run_histories.json"
+        ],
+        "merge": {
+          "args": [
+            "--verbose"
+          ],
+          "script": "//third_party/blink/tools/merge_web_test_results.py"
+        },
+        "name": "blink_wpt_tests",
+        "resultdb": {
+          "enable": true,
+          "has_native_resultdb_integration": true
+        },
+        "results_handler": "layout tests",
+        "swarming": {
+          "dimensions": {
+            "kvm": "1",
+            "os": "Ubuntu-22.04"
+          },
+          "service_account": "chromium-tester@chops-service-accounts.iam.gserviceaccount.com",
+          "shards": 7
+        },
+        "test": "blink_wpt_tests",
+        "test_id_prefix": "ninja://:blink_wpt_tests/"
+      },
+      {
+        "args": [
+          "context_lost",
+          "--show-stdout",
+          "--browser=web-engine-shell",
+          "--passthrough",
+          "-v",
+          "--stable-jobs",
+          "--extra-browser-args=--enable-logging=stderr --js-flags=--expose-gc --use-cmd-decoder=validating",
+          "--enforce-browser-version",
+          "--jobs=1"
+        ],
+        "merge": {
+          "script": "//testing/merge_scripts/standard_isolated_script_merge.py"
+        },
+        "name": "context_lost_validating_tests",
+        "resultdb": {
+          "enable": true,
+          "has_native_resultdb_integration": true
+        },
+        "swarming": {
+          "dimensions": {
+            "kvm": "1",
+            "os": "Ubuntu-22.04"
+          },
+          "idempotent": false,
+          "service_account": "chromium-tester@chops-service-accounts.iam.gserviceaccount.com"
+        },
+        "test": "telemetry_gpu_integration_test_fuchsia",
+        "test_id_prefix": "ninja://content/test:telemetry_gpu_integration_test_fuchsia/"
+      },
+      {
+        "args": [
+          "expected_color",
+          "--show-stdout",
+          "--browser=web-engine-shell",
+          "--passthrough",
+          "-v",
+          "--stable-jobs",
+          "--extra-browser-args=--enable-logging=stderr --js-flags=--expose-gc --use-cmd-decoder=validating",
+          "--enforce-browser-version",
+          "--dont-restore-color-profile-after-test",
+          "--test-machine-name",
+          "${buildername}",
+          "--git-revision=${got_revision}",
+          "--jobs=1"
+        ],
+        "merge": {
+          "script": "//testing/merge_scripts/standard_isolated_script_merge.py"
+        },
+        "name": "expected_color_pixel_validating_test",
+        "precommit_args": [
+          "--gerrit-issue=${patch_issue}",
+          "--gerrit-patchset=${patch_set}",
+          "--buildbucket-id=${buildbucket_build_id}"
+        ],
+        "resultdb": {
+          "enable": true,
+          "has_native_resultdb_integration": true
+        },
+        "swarming": {
+          "dimensions": {
+            "kvm": "1",
+            "os": "Ubuntu-22.04"
+          },
+          "idempotent": false,
+          "service_account": "chromium-tester@chops-service-accounts.iam.gserviceaccount.com"
+        },
+        "test": "telemetry_gpu_integration_test_fuchsia",
+        "test_id_prefix": "ninja://content/test:telemetry_gpu_integration_test_fuchsia/"
+      },
+      {
+        "args": [
+          "gpu_process",
+          "--show-stdout",
+          "--browser=web-engine-shell",
+          "--passthrough",
+          "-v",
+          "--stable-jobs",
+          "--extra-browser-args=--enable-logging=stderr --js-flags=--expose-gc",
+          "--enforce-browser-version",
+          "--jobs=1"
+        ],
+        "merge": {
+          "script": "//testing/merge_scripts/standard_isolated_script_merge.py"
+        },
+        "name": "gpu_process_launch_tests",
+        "resultdb": {
+          "enable": true,
+          "has_native_resultdb_integration": true
+        },
+        "swarming": {
+          "dimensions": {
+            "kvm": "1",
+            "os": "Ubuntu-22.04"
+          },
+          "idempotent": false,
+          "service_account": "chromium-tester@chops-service-accounts.iam.gserviceaccount.com"
+        },
+        "test": "telemetry_gpu_integration_test_fuchsia",
+        "test_id_prefix": "ninja://content/test:telemetry_gpu_integration_test_fuchsia/"
+      },
+      {
+        "args": [
+          "hardware_accelerated_feature",
+          "--show-stdout",
+          "--browser=web-engine-shell",
+          "--passthrough",
+          "-v",
+          "--stable-jobs",
+          "--extra-browser-args=--enable-logging=stderr --js-flags=--expose-gc",
+          "--enforce-browser-version",
+          "--jobs=1"
+        ],
+        "merge": {
+          "script": "//testing/merge_scripts/standard_isolated_script_merge.py"
+        },
+        "name": "hardware_accelerated_feature_tests",
+        "resultdb": {
+          "enable": true,
+          "has_native_resultdb_integration": true
+        },
+        "swarming": {
+          "dimensions": {
+            "kvm": "1",
+            "os": "Ubuntu-22.04"
+          },
+          "idempotent": false,
+          "service_account": "chromium-tester@chops-service-accounts.iam.gserviceaccount.com"
+        },
+        "test": "telemetry_gpu_integration_test_fuchsia",
+        "test_id_prefix": "ninja://content/test:telemetry_gpu_integration_test_fuchsia/"
+      },
+      {
+        "args": [
+          "pixel",
+          "--show-stdout",
+          "--browser=web-engine-shell",
+          "--passthrough",
+          "-v",
+          "--stable-jobs",
+          "--extra-browser-args=--enable-logging=stderr --js-flags=--expose-gc --use-cmd-decoder=validating",
+          "--enforce-browser-version",
+          "--dont-restore-color-profile-after-test",
+          "--test-machine-name",
+          "${buildername}",
+          "--git-revision=${got_revision}",
+          "--jobs=1"
+        ],
+        "merge": {
+          "script": "//testing/merge_scripts/standard_isolated_script_merge.py"
+        },
+        "name": "pixel_skia_gold_validating_test",
+        "precommit_args": [
+          "--gerrit-issue=${patch_issue}",
+          "--gerrit-patchset=${patch_set}",
+          "--buildbucket-id=${buildbucket_build_id}"
+        ],
+        "resultdb": {
+          "enable": true,
+          "has_native_resultdb_integration": true
+        },
+        "swarming": {
+          "dimensions": {
+            "kvm": "1",
+            "os": "Ubuntu-22.04"
+          },
+          "idempotent": false,
+          "service_account": "chromium-tester@chops-service-accounts.iam.gserviceaccount.com"
+        },
+        "test": "telemetry_gpu_integration_test_fuchsia",
+        "test_id_prefix": "ninja://content/test:telemetry_gpu_integration_test_fuchsia/"
+      },
+      {
+        "args": [
+          "screenshot_sync",
+          "--show-stdout",
+          "--browser=web-engine-shell",
+          "--passthrough",
+          "-v",
+          "--stable-jobs",
+          "--extra-browser-args=--enable-logging=stderr --js-flags=--expose-gc --use-cmd-decoder=validating",
+          "--enforce-browser-version",
+          "--dont-restore-color-profile-after-test",
+          "--jobs=1"
+        ],
+        "merge": {
+          "script": "//testing/merge_scripts/standard_isolated_script_merge.py"
+        },
+        "name": "screenshot_sync_validating_tests",
+        "resultdb": {
+          "enable": true,
+          "has_native_resultdb_integration": true
+        },
+        "swarming": {
+          "dimensions": {
+            "kvm": "1",
+            "os": "Ubuntu-22.04"
+          },
+          "idempotent": false,
+          "service_account": "chromium-tester@chops-service-accounts.iam.gserviceaccount.com"
+        },
+        "test": "telemetry_gpu_integration_test_fuchsia",
+        "test_id_prefix": "ninja://content/test:telemetry_gpu_integration_test_fuchsia/"
       }
     ]
   },
@@ -2957,6 +3644,267 @@
         },
         "test": "angle_unittests",
         "test_id_prefix": "ninja://third_party/angle/src/tests:angle_unittests/"
+      },
+      {
+        "args": [
+          "--num-retries=3",
+          "--write-run-histories-to=${ISOLATED_OUTDIR}/run_histories.json"
+        ],
+        "merge": {
+          "args": [
+            "--verbose"
+          ],
+          "script": "//third_party/blink/tools/merge_web_test_results.py"
+        },
+        "name": "blink_web_tests",
+        "resultdb": {
+          "enable": true,
+          "has_native_resultdb_integration": true
+        },
+        "results_handler": "layout tests",
+        "swarming": {
+          "dimensions": {
+            "kvm": "1",
+            "os": "Ubuntu-22.04"
+          },
+          "service_account": "chromium-tester@chops-service-accounts.iam.gserviceaccount.com",
+          "shards": 5
+        },
+        "test": "blink_web_tests",
+        "test_id_prefix": "ninja://:blink_web_tests/"
+      },
+      {
+        "args": [
+          "--num-retries=3",
+          "--write-run-histories-to=${ISOLATED_OUTDIR}/run_histories.json"
+        ],
+        "merge": {
+          "args": [
+            "--verbose"
+          ],
+          "script": "//third_party/blink/tools/merge_web_test_results.py"
+        },
+        "name": "blink_wpt_tests",
+        "resultdb": {
+          "enable": true,
+          "has_native_resultdb_integration": true
+        },
+        "results_handler": "layout tests",
+        "swarming": {
+          "dimensions": {
+            "kvm": "1",
+            "os": "Ubuntu-22.04"
+          },
+          "service_account": "chromium-tester@chops-service-accounts.iam.gserviceaccount.com",
+          "shards": 7
+        },
+        "test": "blink_wpt_tests",
+        "test_id_prefix": "ninja://:blink_wpt_tests/"
+      },
+      {
+        "args": [
+          "context_lost",
+          "--show-stdout",
+          "--browser=web-engine-shell",
+          "--passthrough",
+          "-v",
+          "--stable-jobs",
+          "--extra-browser-args=--enable-logging=stderr --js-flags=--expose-gc --use-cmd-decoder=validating",
+          "--enforce-browser-version",
+          "--jobs=1"
+        ],
+        "merge": {
+          "script": "//testing/merge_scripts/standard_isolated_script_merge.py"
+        },
+        "name": "context_lost_validating_tests",
+        "resultdb": {
+          "enable": true,
+          "has_native_resultdb_integration": true
+        },
+        "swarming": {
+          "dimensions": {
+            "kvm": "1",
+            "os": "Ubuntu-22.04"
+          },
+          "idempotent": false,
+          "service_account": "chromium-tester@chops-service-accounts.iam.gserviceaccount.com"
+        },
+        "test": "telemetry_gpu_integration_test_fuchsia",
+        "test_id_prefix": "ninja://content/test:telemetry_gpu_integration_test_fuchsia/"
+      },
+      {
+        "args": [
+          "expected_color",
+          "--show-stdout",
+          "--browser=web-engine-shell",
+          "--passthrough",
+          "-v",
+          "--stable-jobs",
+          "--extra-browser-args=--enable-logging=stderr --js-flags=--expose-gc --use-cmd-decoder=validating",
+          "--enforce-browser-version",
+          "--dont-restore-color-profile-after-test",
+          "--test-machine-name",
+          "${buildername}",
+          "--git-revision=${got_revision}",
+          "--jobs=1"
+        ],
+        "merge": {
+          "script": "//testing/merge_scripts/standard_isolated_script_merge.py"
+        },
+        "name": "expected_color_pixel_validating_test",
+        "precommit_args": [
+          "--gerrit-issue=${patch_issue}",
+          "--gerrit-patchset=${patch_set}",
+          "--buildbucket-id=${buildbucket_build_id}"
+        ],
+        "resultdb": {
+          "enable": true,
+          "has_native_resultdb_integration": true
+        },
+        "swarming": {
+          "dimensions": {
+            "kvm": "1",
+            "os": "Ubuntu-22.04"
+          },
+          "idempotent": false,
+          "service_account": "chromium-tester@chops-service-accounts.iam.gserviceaccount.com"
+        },
+        "test": "telemetry_gpu_integration_test_fuchsia",
+        "test_id_prefix": "ninja://content/test:telemetry_gpu_integration_test_fuchsia/"
+      },
+      {
+        "args": [
+          "gpu_process",
+          "--show-stdout",
+          "--browser=web-engine-shell",
+          "--passthrough",
+          "-v",
+          "--stable-jobs",
+          "--extra-browser-args=--enable-logging=stderr --js-flags=--expose-gc",
+          "--enforce-browser-version",
+          "--jobs=1"
+        ],
+        "merge": {
+          "script": "//testing/merge_scripts/standard_isolated_script_merge.py"
+        },
+        "name": "gpu_process_launch_tests",
+        "resultdb": {
+          "enable": true,
+          "has_native_resultdb_integration": true
+        },
+        "swarming": {
+          "dimensions": {
+            "kvm": "1",
+            "os": "Ubuntu-22.04"
+          },
+          "idempotent": false,
+          "service_account": "chromium-tester@chops-service-accounts.iam.gserviceaccount.com"
+        },
+        "test": "telemetry_gpu_integration_test_fuchsia",
+        "test_id_prefix": "ninja://content/test:telemetry_gpu_integration_test_fuchsia/"
+      },
+      {
+        "args": [
+          "hardware_accelerated_feature",
+          "--show-stdout",
+          "--browser=web-engine-shell",
+          "--passthrough",
+          "-v",
+          "--stable-jobs",
+          "--extra-browser-args=--enable-logging=stderr --js-flags=--expose-gc",
+          "--enforce-browser-version",
+          "--jobs=1"
+        ],
+        "merge": {
+          "script": "//testing/merge_scripts/standard_isolated_script_merge.py"
+        },
+        "name": "hardware_accelerated_feature_tests",
+        "resultdb": {
+          "enable": true,
+          "has_native_resultdb_integration": true
+        },
+        "swarming": {
+          "dimensions": {
+            "kvm": "1",
+            "os": "Ubuntu-22.04"
+          },
+          "idempotent": false,
+          "service_account": "chromium-tester@chops-service-accounts.iam.gserviceaccount.com"
+        },
+        "test": "telemetry_gpu_integration_test_fuchsia",
+        "test_id_prefix": "ninja://content/test:telemetry_gpu_integration_test_fuchsia/"
+      },
+      {
+        "args": [
+          "pixel",
+          "--show-stdout",
+          "--browser=web-engine-shell",
+          "--passthrough",
+          "-v",
+          "--stable-jobs",
+          "--extra-browser-args=--enable-logging=stderr --js-flags=--expose-gc --use-cmd-decoder=validating",
+          "--enforce-browser-version",
+          "--dont-restore-color-profile-after-test",
+          "--test-machine-name",
+          "${buildername}",
+          "--git-revision=${got_revision}",
+          "--jobs=1"
+        ],
+        "merge": {
+          "script": "//testing/merge_scripts/standard_isolated_script_merge.py"
+        },
+        "name": "pixel_skia_gold_validating_test",
+        "precommit_args": [
+          "--gerrit-issue=${patch_issue}",
+          "--gerrit-patchset=${patch_set}",
+          "--buildbucket-id=${buildbucket_build_id}"
+        ],
+        "resultdb": {
+          "enable": true,
+          "has_native_resultdb_integration": true
+        },
+        "swarming": {
+          "dimensions": {
+            "kvm": "1",
+            "os": "Ubuntu-22.04"
+          },
+          "idempotent": false,
+          "service_account": "chromium-tester@chops-service-accounts.iam.gserviceaccount.com"
+        },
+        "test": "telemetry_gpu_integration_test_fuchsia",
+        "test_id_prefix": "ninja://content/test:telemetry_gpu_integration_test_fuchsia/"
+      },
+      {
+        "args": [
+          "screenshot_sync",
+          "--show-stdout",
+          "--browser=web-engine-shell",
+          "--passthrough",
+          "-v",
+          "--stable-jobs",
+          "--extra-browser-args=--enable-logging=stderr --js-flags=--expose-gc --use-cmd-decoder=validating",
+          "--enforce-browser-version",
+          "--dont-restore-color-profile-after-test",
+          "--jobs=1"
+        ],
+        "merge": {
+          "script": "//testing/merge_scripts/standard_isolated_script_merge.py"
+        },
+        "name": "screenshot_sync_validating_tests",
+        "resultdb": {
+          "enable": true,
+          "has_native_resultdb_integration": true
+        },
+        "swarming": {
+          "dimensions": {
+            "kvm": "1",
+            "os": "Ubuntu-22.04"
+          },
+          "idempotent": false,
+          "service_account": "chromium-tester@chops-service-accounts.iam.gserviceaccount.com"
+        },
+        "test": "telemetry_gpu_integration_test_fuchsia",
+        "test_id_prefix": "ninja://content/test:telemetry_gpu_integration_test_fuchsia/"
       }
     ]
   },

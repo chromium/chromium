@@ -568,10 +568,8 @@ targets.legacy_compound_suite(
 targets.legacy_compound_suite(
     name = "fuchsia_gtests",
     basic_suites = [
-        "fuchsia_chrome_small_gtests",
-        "fuchsia_common_gtests",
-        "fuchsia_common_gtests_with_graphical_output",
-        "web_engine_gtests",
+        "fuchsia_chrome_gtests",
+        "fuchsia_web_engine_gtests",
     ],
 )
 
@@ -580,14 +578,6 @@ targets.legacy_compound_suite(
     basic_suites = [
         "chromium_webkit_isolated_scripts",
         "gpu_angle_fuchsia_unittests_isolated_scripts",
-    ],
-)
-
-targets.legacy_compound_suite(
-    name = "fuchsia_web_engine_non_graphical_gtests",
-    basic_suites = [
-        "fuchsia_common_gtests",
-        "web_engine_gtests",
     ],
 )
 
