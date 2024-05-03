@@ -526,22 +526,6 @@ targets.binaries.generated_script(
 )
 
 targets.binaries.generated_script(
-    name = "content_shell_wpt",
-    label = "//:content_shell_wpt",
-    results_handler = "layout tests",
-    args = [
-        "--results-directory",
-        "${ISOLATED_OUTDIR}",
-    ],
-    merge = targets.merge(
-        script = "//third_party/blink/tools/merge_web_test_results.py",
-        args = [
-            "--verbose",
-        ],
-    ),
-)
-
-targets.binaries.generated_script(
     name = "chrome_ios_wpt",
     label = "//ios/chrome/test/wpt:chrome_ios_wpt",
     results_handler = "layout tests",

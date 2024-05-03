@@ -3690,33 +3690,6 @@
           'isolated_scripts': 'chrome_wpt_tests_three_modes',
         },
       },
-      'linux-wpt-content-shell-asan-fyi-rel': {
-        'mixins': [
-          'has_native_resultdb_integration',
-          'linux-jammy',
-        ],
-        'test_suites': {
-          'isolated_scripts': 'wpt_web_tests_content_shell',
-        },
-      },
-      'linux-wpt-content-shell-fyi-rel': {
-        'mixins': [
-          'has_native_resultdb_integration',
-          'linux-jammy',
-        ],
-        'test_suites': {
-          'isolated_scripts': 'wpt_web_tests_content_shell_multiple_flags',
-        },
-      },
-      'linux-wpt-content-shell-leak-detection': {
-        'mixins': [
-          'has_native_resultdb_integration',
-          'linux-jammy',
-        ],
-        'test_suites': {
-          'isolated_scripts': 'wpt_web_tests_enable_leak_detection',
-        },
-      },
       'mac-fieldtrial-tester': {
         'mixins': [
           'finch-chromium-swarming-pool',
@@ -3751,83 +3724,6 @@
           'isolated_scripts': 'upload_perfetto',
         },
         'use_swarming': False,
-      },
-      'mac10.15-wpt-content-shell-fyi-rel': {
-        'mixins': [
-          'has_native_resultdb_integration',
-          'isolate_profile_data',
-          'mac_10.15',
-        ],
-        'test_suites': {
-          'isolated_scripts': 'wpt_web_tests_content_shell',
-        },
-        'os_type': 'mac',
-      },
-      'mac11-arm64-wpt-content-shell-fyi-rel': {
-        'mixins': [
-          'has_native_resultdb_integration',
-          'isolate_profile_data',
-          'mac_11_arm64',
-        ],
-        'test_suites': {
-          'isolated_scripts': 'wpt_web_tests_content_shell',
-        },
-        'os_type': 'mac',
-      },
-      'mac11-wpt-content-shell-fyi-rel': {
-        'mixins': [
-          'has_native_resultdb_integration',
-          'isolate_profile_data',
-          'mac_11_x64',
-        ],
-        'test_suites': {
-          'isolated_scripts': 'wpt_web_tests_content_shell',
-        },
-        'os_type': 'mac',
-      },
-      'mac12-arm64-wpt-content-shell-fyi-rel': {
-        'mixins': [
-          'has_native_resultdb_integration',
-          'isolate_profile_data',
-          'mac_12_arm64',
-        ],
-        'test_suites': {
-          'isolated_scripts': 'wpt_web_tests_content_shell',
-        },
-        'os_type': 'mac',
-      },
-      'mac12-wpt-content-shell-fyi-rel': {
-        'mixins': [
-          'has_native_resultdb_integration',
-          'isolate_profile_data',
-          'mac_12_x64',
-        ],
-        'test_suites': {
-          'isolated_scripts': 'wpt_web_tests_content_shell',
-        },
-        'os_type': 'mac',
-      },
-      'mac13-arm64-wpt-content-shell-fyi-rel': {
-        'mixins': [
-          'has_native_resultdb_integration',
-          'isolate_profile_data',
-          'mac_13_arm64',
-        ],
-        'test_suites': {
-          'isolated_scripts': 'wpt_web_tests_content_shell',
-        },
-        'os_type': 'mac',
-      },
-      'mac13-wpt-content-shell-fyi-rel': {
-        'mixins': [
-          'has_native_resultdb_integration',
-          'isolate_profile_data',
-          'mac_13_x64',
-        ],
-        'test_suites': {
-          'isolated_scripts': 'wpt_web_tests_content_shell',
-        },
-        'os_type': 'mac',
       },
       'win-annotator-rel': {
         'test_suites': {
@@ -3893,30 +3789,6 @@
           'gtest_tests': 'chromium_win10_gtests',
           'isolated_scripts': 'chromium_win_rel_isolated_scripts',
         },
-      },
-      'win10-wpt-content-shell-fyi-rel': {
-        'mixins': [
-          'has_native_resultdb_integration',
-          'x86-64',
-          'win10',
-          'isolate_profile_data',
-        ],
-        'test_suites': {
-          'isolated_scripts': 'wpt_web_tests_content_shell',
-        },
-        'os_type': 'win',
-      },
-      'win11-wpt-content-shell-fyi-rel': {
-        'mixins': [
-          'has_native_resultdb_integration',
-          'x86-64',
-          'win11',
-          'isolate_profile_data',
-        ],
-        'test_suites': {
-          'isolated_scripts': 'wpt_web_tests_content_shell',
-        },
-        'os_type': 'win',
       },
     },
   },

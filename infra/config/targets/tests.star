@@ -2787,30 +2787,6 @@ targets.tests.isolated_script_test(
     binary = "chrome_ios_wpt",
 )
 
-targets.tests.isolated_script_test(
-    name = "wpt_tests_suite",
-    binary = "content_shell_wpt",
-)
-
-targets.tests.isolated_script_test(
-    name = "wpt_tests_suite_highdpi",
-    args = [
-        "--flag-specific",
-        "highdpi",
-    ],
-    binary = "content_shell_wpt",
-)
-
-targets.tests.isolated_script_test(
-    name = "wpt_tests_suite_not_site_per_process",
-    args = [
-        "--child-processes=8",
-        "--flag-specific",
-        "disable-site-isolation-trials",
-    ],
-    binary = "content_shell_wpt",
-)
-
 targets.tests.gtest_test(
     name = "wtf_unittests",
 )

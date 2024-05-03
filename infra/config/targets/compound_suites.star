@@ -1297,12 +1297,3 @@ targets.legacy_compound_suite(
         "win_specific_isolated_scripts",
     ],
 )
-
-targets.legacy_compound_suite(
-    name = "wpt_web_tests_content_shell_multiple_flags",
-    basic_suites = [
-        "wpt_web_tests_content_shell",
-        "wpt_web_tests_not_site_per_process",
-        "wpt_web_tests_highdpi",
-    ],
-)

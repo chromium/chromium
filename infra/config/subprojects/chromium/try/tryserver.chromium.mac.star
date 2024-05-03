@@ -188,14 +188,6 @@ try_.compilator_builder(
 )
 
 try_.builder(
-    name = "mac10.15-wpt-content-shell-fyi-rel",
-    mirrors = [
-        "ci/mac10.15-wpt-content-shell-fyi-rel",
-    ],
-    gn_args = "ci/mac10.15-wpt-content-shell-fyi-rel",
-)
-
-try_.builder(
     name = "mac11-arm64-rel",
     branch_selector = branches.selector.MAC_BRANCHES,
     mirrors = [
@@ -212,23 +204,6 @@ try_.builder(
         ],
     ),
     builderless = True,
-)
-
-try_.builder(
-    name = "mac11-arm64-wpt-content-shell-fyi-rel",
-    mirrors = [
-        "ci/mac11-arm64-wpt-content-shell-fyi-rel",
-    ],
-    gn_args = "ci/mac11-arm64-wpt-content-shell-fyi-rel",
-)
-
-try_.builder(
-    name = "mac11-wpt-content-shell-fyi-rel",
-    mirrors = [
-        "ci/mac11-wpt-content-shell-fyi-rel",
-    ],
-    gn_args = "ci/mac11-wpt-content-shell-fyi-rel",
-    cpu = cpu.ARM64,
 )
 
 try_.builder(
@@ -339,40 +314,6 @@ try_.compilator_builder(
     # TODO (crbug.com/1245171): Revert when root issue is fixed
     grace_period = 4 * time.minute,
     main_list_view = "try",
-)
-
-try_.builder(
-    name = "mac12-arm64-wpt-content-shell-fyi-rel",
-    mirrors = [
-        "ci/mac12-arm64-wpt-content-shell-fyi-rel",
-    ],
-    gn_args = "ci/mac12-arm64-wpt-content-shell-fyi-rel",
-)
-
-try_.builder(
-    name = "mac12-wpt-content-shell-fyi-rel",
-    mirrors = [
-        "ci/mac12-wpt-content-shell-fyi-rel",
-    ],
-    gn_args = "ci/mac12-wpt-content-shell-fyi-rel",
-    cpu = cpu.ARM64,
-)
-
-try_.builder(
-    name = "mac13-arm64-wpt-content-shell-fyi-rel",
-    mirrors = [
-        "ci/mac13-arm64-wpt-content-shell-fyi-rel",
-    ],
-    gn_args = "ci/mac13-arm64-wpt-content-shell-fyi-rel",
-)
-
-try_.builder(
-    name = "mac13-wpt-content-shell-fyi-rel",
-    mirrors = [
-        "ci/mac13-wpt-content-shell-fyi-rel",
-    ],
-    gn_args = "ci/mac13-wpt-content-shell-fyi-rel",
-    cpu = cpu.ARM64,
 )
 
 # NOTE: the following trybots aren't sensitive to Mac version on which

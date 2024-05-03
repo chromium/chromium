@@ -5461,86 +5461,6 @@
         },
       },
     },
-
-    'wpt_web_tests_content_shell': {
-      'wpt_tests_suite': {
-        'test': 'content_shell_wpt',
-        'results_handler': 'layout tests',
-        'swarming': {
-          'shards': 15,
-        },
-        'merge': {
-          'script': '//third_party/blink/tools/merge_web_test_results.py',
-          'args': [
-            '--verbose',
-          ],
-        },
-        'experiment_percentage': 100,
-      },
-    },
-
-    'wpt_web_tests_enable_leak_detection': {
-      'wpt_tests_suite': {
-        'test': 'content_shell_wpt',
-        'results_handler': 'layout tests',
-        'args': [
-          '--enable-leak-detection',
-        ],
-        'swarming': {
-          'shards': 15,
-        },
-        'merge': {
-          'script': '//third_party/blink/tools/merge_web_test_results.py',
-          'args': [
-            '--verbose',
-          ],
-        },
-        'experiment_percentage': 100,
-      },
-    },
-
-    'wpt_web_tests_highdpi': {
-      'wpt_tests_suite_highdpi': {
-        'test': 'content_shell_wpt',
-        'results_handler': 'layout tests',
-        'args': [
-          '--flag-specific',
-          'highdpi',
-        ],
-        'swarming': {
-          'shards': 3,
-        },
-        'merge': {
-          'script': '//third_party/blink/tools/merge_web_test_results.py',
-          'args': [
-            '--verbose',
-          ],
-        },
-        'experiment_percentage': 100,
-      },
-    },
-
-    'wpt_web_tests_not_site_per_process': {
-      'wpt_tests_suite_not_site_per_process': {
-        'test': 'content_shell_wpt',
-        'results_handler': 'layout tests',
-        'args': [
-          '--child-processes=8',
-          '--flag-specific',
-          'disable-site-isolation-trials',
-        ],
-        'swarming': {
-          'shards': 10,
-        },
-        'merge': {
-          'script': '//third_party/blink/tools/merge_web_test_results.py',
-          'args': [
-            '--verbose',
-          ],
-        },
-        'experiment_percentage': 100,
-      },
-    },
   },
 
   'compound_suites': {
@@ -6402,12 +6322,6 @@
     'win_specific_isolated_scripts_and_sizes': [
       'chrome_sizes_suite',
       'win_specific_isolated_scripts',
-    ],
-
-    'wpt_web_tests_content_shell_multiple_flags': [
-      'wpt_web_tests_content_shell',
-      'wpt_web_tests_highdpi',
-      'wpt_web_tests_not_site_per_process',
     ],
   },
 

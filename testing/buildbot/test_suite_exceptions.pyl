@@ -5432,35 +5432,6 @@
       'android-12-x64-rel', # These tests are not ready to run on a non FYI CI.
     ]
   },
-  'wpt_tests_suite': {
-    'modifications': {
-      'linux-wpt-content-shell-asan-fyi-rel': {
-        'args': [
-          '--enable-sanitizer',
-        ],
-        'swarming': {
-          'shards': 8,
-        },
-      },
-      'linux-wpt-content-shell-fyi-rel': {
-        'swarming': {
-          'shards': 10,
-        },
-      },
-      'win10-wpt-content-shell-fyi-rel': {
-        'args': [
-          '--target',
-          'Release_x64',
-        ],
-      },
-      'win11-wpt-content-shell-fyi-rel': {
-        'args': [
-          '--target',
-          'Release_x64',
-        ],
-      },
-    },
-  },
   'xr_browser_tests': {
     'remove_from': [
       # No Windows arm64 devices currently support XR features, so don't bother

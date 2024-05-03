@@ -492,24 +492,6 @@ try_.builder(
 )
 
 try_.builder(
-    name = "linux-wpt-content-shell-fyi-rel",
-    mirrors = [
-        "ci/linux-wpt-content-shell-fyi-rel",
-    ],
-    gn_args = "ci/linux-wpt-content-shell-fyi-rel",
-    siso_remote_jobs = reclient.jobs.LOW_JOBS_FOR_CQ,
-)
-
-try_.builder(
-    name = "linux-wpt-content-shell-leak-detection",
-    mirrors = [
-        "ci/linux-wpt-content-shell-leak-detection",
-    ],
-    gn_args = "ci/linux-wpt-content-shell-leak-detection",
-    siso_remote_jobs = reclient.jobs.LOW_JOBS_FOR_CQ,
-)
-
-try_.builder(
     name = "linux-x64-cast-dbg",
     branch_selector = branches.selector.MAIN,
     description_html = "Try builder for linux-x64-cast-dbg",

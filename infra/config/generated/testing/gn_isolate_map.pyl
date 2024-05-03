@@ -633,14 +633,6 @@
     "label": "//content/shell/android:content_shell_test_apk",
     "type": "console_test_launcher",
   },
-  "content_shell_wpt": {
-    "label": "//:content_shell_wpt",
-    "type": "generated_script",
-    "args": [
-      "--results-directory",
-      "${ISOLATED_OUTDIR}",
-    ],
-  },
   "content_unittests": {
     "label": "//content/test:content_unittests",
     "type": "windowed_test_launcher",

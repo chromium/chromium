@@ -281,24 +281,6 @@ try_.builder(
 )
 
 try_.builder(
-    name = "win10-wpt-content-shell-fyi-rel",
-    mirrors = [
-        "ci/win10-wpt-content-shell-fyi-rel",
-    ],
-    gn_args = "ci/win10-wpt-content-shell-fyi-rel",
-    os = os.WINDOWS_10,
-)
-
-try_.builder(
-    name = "win11-wpt-content-shell-fyi-rel",
-    mirrors = [
-        "ci/win11-wpt-content-shell-fyi-rel",
-    ],
-    gn_args = "ci/win11-wpt-content-shell-fyi-rel",
-    os = os.WINDOWS_ANY,
-)
-
-try_.builder(
     name = "win11-rel",
     description_html = "This builder run tests for Windows 11 release build.",
     mirrors = [
