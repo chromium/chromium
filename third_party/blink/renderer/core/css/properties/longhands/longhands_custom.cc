@@ -35,6 +35,7 @@
 #include "third_party/blink/renderer/core/css/parser/css_parser_fast_paths.h"
 #include "third_party/blink/renderer/core/css/parser/css_parser_local_context.h"
 #include "third_party/blink/renderer/core/css/parser/css_parser_mode.h"
+#include "third_party/blink/renderer/core/css/parser/css_parser_save_point.h"
 #include "third_party/blink/renderer/core/css/parser/css_parser_token.h"
 #include "third_party/blink/renderer/core/css/parser/css_parser_token_range.h"
 #include "third_party/blink/renderer/core/css/parser/css_property_parser.h"
@@ -2559,6 +2560,7 @@ const CSSValue* Content::ParseSingleValueFromRange(
   CSSValueList* outer_list = CSSValueList::CreateSlashSeparated();
   bool alt_text_present = false;
   do {
+    CSSParserSavePoint savepoint(range);
     CSSValue* parsed_value = css_parsing_utils::ConsumeImage(range, context);
     if (!parsed_value) {
       parsed_value = css_parsing_utils::ConsumeIdent<
@@ -2589,19 +2591,47 @@ const CSSValue* Content::ParseSingleValueFromRange(
         }
         alt_text_present = true;
       } else {
-        return nullptr;
+        break;
       }
     } else {
       values->Append(*parsed_value);
     }
+    savepoint.Release();
   } while (!range.AtEnd() && !alt_text_present);
+  if (!values->length()) {
+    return nullptr;
+  }
   outer_list->Append(*values);
   if (alt_text_present) {
-    CSSStringValue* alt_text = css_parsing_utils::ConsumeString(range);
-    if (!alt_text) {
-      return nullptr;
+    CSSValueList* alt_text_values = CSSValueList::CreateSpaceSeparated();
+    CSSValue* alt_text = nullptr;
+    if (RuntimeEnabledFeatures::CSSContentMultiArgAltTextEnabled()) {
+      do {
+        CSSParserSavePoint savepoint(range);
+        if (range.Peek().FunctionId() == CSSValueID::kAttr) {
+          alt_text =
+              ConsumeAttr(css_parsing_utils::ConsumeFunction(range), context);
+        } else {
+          alt_text = css_parsing_utils::ConsumeString(range);
+          if (!alt_text) {
+            break;
+          }
+        }
+        alt_text_values->Append(*alt_text);
+        savepoint.Release();
+      } while (!range.AtEnd());
+      if (!alt_text_values->length()) {
+        return nullptr;
+      }
+    } else {
+      alt_text = css_parsing_utils::ConsumeString(range);
+      if (!alt_text) {
+        return nullptr;
+      }
+      alt_text_values->Append(*alt_text);
     }
-    outer_list->Append(*alt_text);
+
+    outer_list->Append(*alt_text_values);
   }
   return outer_list;
 }
@@ -2624,6 +2654,28 @@ void Content::ApplyInherit(StyleResolverState& state) const {
   // not. This note is a reminder that eventually "inherit" needs to be
   // supported.
 }
+
+namespace {
+
+String GetStringFromAttributeOrStringValue(const CSSValue& value,
+                                           StyleResolverState& state,
+                                           ComputedStyleBuilder& builder) {
+  String string;
+  if (const auto* function_value = DynamicTo<CSSFunctionValue>(value)) {
+    DCHECK_EQ(function_value->FunctionType(), CSSValueID::kAttr);
+    builder.SetHasAttrContent();
+    // TODO: Can a namespace be specified for an attr(foo)?
+    QualifiedName attr(
+        To<CSSCustomIdentValue>(function_value->Item(0)).Value());
+    const AtomicString& attr_value = state.GetElement().getAttribute(attr);
+    string = attr_value.IsNull() ? g_empty_string : attr_value.GetString();
+  } else {
+    string = To<CSSStringValue>(value).Value();
+  }
+  return string;
+}
+
+}  // namespace
 
 void Content::ApplyValue(StyleResolverState& state,
                          const CSSValue& value,
@@ -2677,19 +2729,8 @@ void Content::ApplyValue(StyleResolverState& state,
       }
       next_content = MakeGarbageCollected<QuoteContentData>(quote_type);
     } else {
-      String string;
-      if (const auto* function_value =
-              DynamicTo<CSSFunctionValue>(item.Get())) {
-        DCHECK_EQ(function_value->FunctionType(), CSSValueID::kAttr);
-        builder.SetHasAttrContent();
-        // TODO: Can a namespace be specified for an attr(foo)?
-        QualifiedName attr(
-            To<CSSCustomIdentValue>(function_value->Item(0)).Value());
-        const AtomicString& attr_value = state.GetElement().getAttribute(attr);
-        string = attr_value.IsNull() ? g_empty_string : attr_value.GetString();
-      } else {
-        string = To<CSSStringValue>(*item).Value();
-      }
+      String string =
+          GetStringFromAttributeOrStringValue(*item, state, builder);
       if (prev_content && prev_content->IsText()) {
         TextContentData* text_content = To<TextContentData>(prev_content);
         text_content->SetText(text_content->GetText() + string);
@@ -2709,9 +2750,13 @@ void Content::ApplyValue(StyleResolverState& state,
   // If alt text was provided, it will be present as the final element of the
   // outer list.
   if (outer_list.length() > 1) {
-    String string = To<CSSStringValue>(outer_list.Item(1)).Value();
-    auto* alt_content = MakeGarbageCollected<AltTextContentData>(string);
-    prev_content->SetNext(alt_content);
+    CHECK_EQ(outer_list.length(), 2U);
+    for (auto& item : To<CSSValueList>(outer_list.Item(1))) {
+      auto* alt_content = MakeGarbageCollected<AltTextContentData>(
+          GetStringFromAttributeOrStringValue(*item, state, builder));
+      prev_content->SetNext(alt_content);
+      prev_content = alt_content;
+    }
   }
   DCHECK(first_content);
   builder.SetContent(first_content);

@@ -1163,8 +1163,9 @@ std::optional<String> AXNodeObject::GetCSSAltText(const Element* element) {
   if (element->IsPseudoElement()) {
     for (const ContentData* content_data = style->GetContentData();
          content_data; content_data = content_data->Next()) {
-      if (content_data->IsAltText())
-        return To<AltTextContentData>(content_data)->GetText();
+      if (auto* css_alt = DynamicTo<AltTextContentData>(content_data)) {
+        return css_alt->ConcatenateAltText();
+      }
     }
     return std::nullopt;
   }
@@ -1175,7 +1176,7 @@ std::optional<String> AXNodeObject::GetCSSAltText(const Element* element) {
   const ContentData* content_data = style->GetContentData();
   if (content_data && content_data->IsImage() && content_data->Next() &&
       content_data->Next()->IsAltText()) {
-    return To<AltTextContentData>(content_data->Next())->GetText();
+    return To<AltTextContentData>(content_data->Next())->ConcatenateAltText();
   }
 
   return std::nullopt;

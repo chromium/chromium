@@ -209,6 +209,14 @@ class AltTextContentData final : public ContentData {
   explicit AltTextContentData(const String& text) : text_(text) {}
 
   String GetText() const { return text_; }
+  String ConcatenateAltText() const {
+    StringBuilder alt_text;
+    for (const ContentData* content_data = this; content_data;
+         content_data = content_data->Next()) {
+      alt_text.Append(To<AltTextContentData>(content_data)->GetText());
+    }
+    return alt_text.ToString();
+  }
   void SetText(const String& text) { text_ = text; }
 
   bool IsAltText() const override { return true; }

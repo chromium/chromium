@@ -783,6 +783,10 @@
       status: "stable",
     },
     {
+      name: "CSSContentMultiArgAltText",
+      status: "experimental",
+    },
+    {
       name: "CSSContentVisibilityImpliesContainIntrinsicSizeAuto",
       status: "stable",
     },

@@ -3165,7 +3165,8 @@ CSSValue* ComputedStyleUtils::ValueForContentData(const ComputedStyle& style,
       list->Append(*CSSIdentifierValue::Create(ValueForQuoteType(quote_type)));
     } else if (content_data->IsAltText()) {
       alt_text = MakeGarbageCollected<CSSStringValue>(
-          To<AltTextContentData>(content_data)->GetText());
+          To<AltTextContentData>(content_data)->ConcatenateAltText());
+      break;
     } else {
       NOTREACHED();
     }
