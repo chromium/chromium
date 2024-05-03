@@ -223,8 +223,11 @@ void PrivacyIndicatorsNotificationDelegate::SetLaunchSettingsCallback(
 void PrivacyIndicatorsNotificationDelegate::Click(
     const std::optional<int>& button_index,
     const std::optional<std::u16string>& reply) {
-  // Click on the notification body is no-op.
   if (!button_index) {
+    // Click on the notification body should launch app settings if possible.
+    if (launch_settings_callback_) {
+      launch_settings_callback_->Run();
+    }
     return;
   }
 
