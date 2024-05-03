@@ -18,6 +18,7 @@
 #include "base/debug/crash_logging.h"
 #import "base/mac/mac_util.h"
 #include "base/memory/raw_ptr.h"
+#include "base/numerics/safe_conversions.h"
 #include "base/strings/sys_string_conversions.h"
 #include "components/remote_cocoa/app_shim/ns_view_ids.h"
 #import "content/browser/accessibility/browser_accessibility_cocoa.h"
@@ -2251,14 +2252,12 @@ extern NSString* NSTextInputReplacementRangeAttributeName;
       CHECK_NE(_markedRange.location, static_cast<NSUInteger>(NSNotFound));
       CHECK_LE(_markedRange.location, std::numeric_limits<uint32_t>::max());
       CHECK_LE(newSelRange.location, std::numeric_limits<uint32_t>::max());
-      CHECK_LE(_markedRange.location + NSMaxRange(newSelRange),
-               std::numeric_limits<uint32_t>::max())
-          << "`end` is too large; _markedRange.location="
-          << _markedRange.location
-          << "; NSMaxRange(newSelRange)=" << NSMaxRange(newSelRange);
+      // `_markedRange.location + NSMaxRange(newSelRange)` can be larger than
+      // the maximum uint32_t. See crbug.com/40060200.
+      uint32_t new_end = base::saturated_cast<uint32_t>(
+          _markedRange.location + NSMaxRange(newSelRange));
       _textSelectionRange =
-          gfx::Range(_markedRange.location + newSelRange.location,
-                     _markedRange.location + NSMaxRange(newSelRange));
+          gfx::Range(_markedRange.location + newSelRange.location, new_end);
     }
   } else {
     // An empty text means the composition is about to be cancelled,
