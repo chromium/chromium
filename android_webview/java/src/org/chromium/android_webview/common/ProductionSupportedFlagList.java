@@ -978,6 +978,7 @@ public final class ProductionSupportedFlagList {
         Flag.baseFeature(
                 "EnableHangWatcher",
                 "Controls whether hooks for hang detection are active"),
+        Flag.baseFeature("EnsureExistingRendererAlive"),
         // Add new commandline switches and features above. The final entry should have a
         // trailing comma for cleaner diffs.
     };
