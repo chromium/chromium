@@ -76,6 +76,10 @@ BASE_FEATURE(kWebViewSurfaceControl,
              "WebViewSurfaceControl",
              base::FEATURE_DISABLED_BY_DEFAULT);
 
+BASE_FEATURE(kWebViewSurfaceControlForTV,
+             "WebViewSurfaceControlForTV",
+             base::FEATURE_DISABLED_BY_DEFAULT);
+
 // Use thread-safe media path on WebView.
 BASE_FEATURE(kWebViewThreadSafeMedia,
              "WebViewThreadSafeMedia",
@@ -740,7 +744,13 @@ bool IsAndroidSurfaceControlEnabled() {
 
   // On WebView we require thread-safe media to use SurfaceControl
   if (IsUsingThreadSafeMediaForWebView()) {
-    return base::FeatureList::IsEnabled(kWebViewSurfaceControl);
+    // We decouple experiments between ATV and the rest of the users by using
+    // different flags here.
+    if (base::android::BuildInfo::GetInstance()->is_tv()) {
+      return base::FeatureList::IsEnabled(kWebViewSurfaceControlForTV);
+    } else {
+      return base::FeatureList::IsEnabled(kWebViewSurfaceControl);
+    }
   }
 
   return base::FeatureList::IsEnabled(kAndroidSurfaceControl);

@@ -449,6 +449,11 @@ bool ShouldUsePlatformDelegatedInk() {
 
 #if BUILDFLAG(IS_ANDROID)
 bool UseWebViewNewInvalidateHeuristic() {
+  // For Android TVs we bundle this with WebViewSurfaceControlForTV.
+  if (base::android::BuildInfo::GetInstance()->is_tv()) {
+    return base::FeatureList::IsEnabled(kWebViewSurfaceControlForTV);
+  }
+
   return base::FeatureList::IsEnabled(kWebViewNewInvalidateHeuristic);
 }
 #endif

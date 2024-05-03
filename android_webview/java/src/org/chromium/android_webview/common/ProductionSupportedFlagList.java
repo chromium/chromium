@@ -142,7 +142,11 @@ public final class ProductionSupportedFlagList {
         Flag.baseFeature(
                 GpuFeatures.WEBVIEW_SURFACE_CONTROL,
                 "Use SurfaceControl. Requires WebViewThreadSafeMedia and Android device and OS "
-                        + "support."),
+                        + "support. Is not supported for TV, see WebViewSurfaceControlForTV."),
+        Flag.baseFeature(
+                GpuFeatures.WEBVIEW_SURFACE_CONTROL_FOR_TV,
+                "Use SurfaceControl. Requires WebViewThreadSafeMedia and Android device and OS "
+                        + "support. Only supported on TV."),
         Flag.baseFeature(
                 GpuFeatures.WEBVIEW_THREAD_SAFE_MEDIA,
                 "Use thread-safe media path, requires Android P."),
