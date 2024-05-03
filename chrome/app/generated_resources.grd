@@ -16653,6 +16653,22 @@ Please help our engineers fix this problem. Tell us what happened right before y
     <message name="IDS_LENS_SEND_FEEDBACK_PLACEHOLDER" desc="Placeholder text that is shown in the feedback dialog to send feedback for the Lens Overlay.">
       Send feedback for search with Lens
     </message>
+    <!-- Lens Permission bubble dialog-->
+    <message name="IDS_LENS_PERMISSION_BUBBLE_DIALOG_CLOSE_BUTTON" desc="Text on the close button in the dialog for choosing not to allow the sending of the Lens screenshot to Google.">
+      Close
+    </message>
+    <message name="IDS_LENS_PERMISSION_BUBBLE_DIALOG_CONTINUE_BUTTON" desc="Text on the continue button in the dialog for choosing to allow the sending of the Lens screenshot to Google.">
+      Continue
+    </message>
+    <message name="IDS_LENS_PERMISSION_BUBBLE_DIALOG_DESCRIPTION" desc="Text that is shown in the Lens permission bubble informing users that their screenshot will be sent to Google. Includes placeholder for learn more link.">
+      When you use Google Lens, a screenshot of the page is sent to Google. <ph name="LEARN_MORE">$1<ex>Learn more</ex></ph>
+    </message>
+    <message name="IDS_LENS_PERMISSION_BUBBLE_DIALOG_LEARN_MORE_LINK" desc="Text link that is shown to users to learn more about privacy in relation to Google Lens.">
+      Learn more
+    </message>
+    <message name="IDS_LENS_PERMISSION_BUBBLE_DIALOG_TITLE" desc="The title of the lens permission search bubble dialog.">
+      Search anything on this page with Google Lens
+    </message>
     <!-- ChromeLabs Thumbnail Tab Strip -->
     <message name="IDS_THUMBNAIL_TAB_STRIP_EXPERIMENT_NAME" desc="Name for Thumbnail Tab Strip experiment">
       Thumbnail tab strip for tablet mode
