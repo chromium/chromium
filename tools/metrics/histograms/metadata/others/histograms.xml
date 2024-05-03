@@ -44,7 +44,13 @@ chromium-metrics-reviews@google.com.
 
 <variants name="HighlightsDetailsPageName">
   <variant name="AdobePage" summary="Highlights app Adobe detail page"/>
+  <variant name="AIBackgroundPage"
+      summary="Highlights app AI background detail page"/>
+  <variant name="AIPremiumPlanPage"
+      summary="Highlights app Google One AI Premium Plan detail page"/>
   <variant name="BatteryPage" summary="Highlights app Battery detail page"/>
+  <variant name="BuiltInSecurityPage"
+      summary="Highlights app Built In Security detail page"/>
   <variant name="ComparisonPage"
       summary="Highlights app Comparison detail page"/>
   <variant name="DisplayEntertainmentPage"
@@ -53,8 +59,16 @@ chromium-metrics-reviews@google.com.
       summary="Highlights app Display (Performance) detail page"/>
   <variant name="EntertainmentAppsPage"
       summary="Highlights app Entertainment Apps detail page"/>
+  <variant name="GameDashboardPage"
+      summary="Highlights app Game Dashboard detail page"/>
+  <variant name="GeminiForAllPage"
+      summary="Highlights app Gemini for all detail page"/>
+  <variant name="GeminiForWorkSpacePage"
+      summary="Highlights app Gemini for Work space detail page"/>
   <variant name="GoogleAppsPage"
       summary="Highlights app Google Apps detail page"/>
+  <variant name="HelpMeWritePage"
+      summary="Highlights app Help me write detail page"/>
   <variant name="LumaFusionPage"
       summary="Highlights app LumaFusion detail page"/>
   <variant name="MessagingPage" summary="Highlights app Messaging detail page"/>
@@ -75,6 +89,7 @@ chromium-metrics-reviews@google.com.
   <variant name="SwitchingPage" summary="Highlights app Switching detail page"/>
   <variant name="VideoCallPage"
       summary="Highlights app Video Call detail page"/>
+  <variant name="WebcamPage" summary="Highlights app Webcam detail page"/>
 </variants>
 
 <variants name="HighlightsPageName">
@@ -82,8 +97,12 @@ chromium-metrics-reviews@google.com.
   <variant name="ChromeOSPage" summary="Highlights app ChromeOS page"/>
   <variant name="DisplayPage" summary="Highlights app Display page"/>
   <variant name="EasyPage" summary="Highlights app Easy page"/>
+  <variant name="EasyToUsePage" summary="Highlights app Easy to use page"/>
   <variant name="FastPage" summary="Highlights app Fast page"/>
   <variant name="GamePage" summary="Highlights app Game page"/>
+  <variant name="GoogleAIPage" summary="Highlights app Google AI page"/>
+  <variant name="GoogleBuiltInPage"
+      summary="Highlights app Google built in page"/>
   <variant name="GraphicsPage" summary="Highlights app Graphics page"/>
   <variant name="HomePage" summary="Highlights app Home page"/>
   <variant name="KeyboardPage" summary="Highlights app Keyboard page"/>

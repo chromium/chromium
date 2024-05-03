@@ -20,6 +20,13 @@ export const Page = {
   PERFORMANCE: 'Performance',
   APPS: 'Apps',
   CHROMEOS: 'ChromeOS',
+
+  // New in 2024 Cycle 1 refresh
+  // CBX:
+  GOOGLE_AI: 'GoogleAI',
+  EASY_TO_USE: 'EasyToUse',
+  // CB (Shared with CBX: Performance, Apps):
+  GOOGLE_BUILT_IN: 'GoogleBuiltIn',
 };
 
 /**
@@ -47,6 +54,17 @@ export const DetailsPage = {
   STORAGE: 'Storage',
   SWITCHING: 'Switching',
   VIDEO_CALL: 'VideoCall',
+
+  // New in 2024 Cycle 1 refresh
+  // CBX:
+  BUILT_IN_SECURITY:'BuiltInSecurity',
+  WEBCAM: 'Webcam',
+  GAME_DASH_BOARD: 'GameDashboard',
+  GEMINI_FOR_ALL:'GeminiForAll',
+  HELP_ME_WRITE: 'HelpMeWrite',
+  GEMINI_FOR_WORK_SPACE: 'GeminiForWorkSpace',
+  AI_BACKGROUND: 'AIBackground',
+  AI_PREMIUM_PLAN: 'AIPremiumPlan',
 };
 
 /**
@@ -92,7 +110,11 @@ const FirstInteractionActionMap = new Map([
   [Page.PERFORMANCE, 10],
   [Page.APPS, 11],
   [Page.CHROMEOS, 12],
-  ['MAX_VALUE', 13],
+  [Page.GOOGLE_AI, 13],
+  [Page.EASY_TO_USE, 14],
+  [Page.GOOGLE_BUILT_IN, 15],
+
+  ['MAX_VALUE', 15],
 ]);
 
 /**

@@ -43293,24 +43293,24 @@ should be able to be added at any place in this file.
 </action-suffix>
 
 <action-suffix separator="_" ordering="suffix">
+  <suffix name="AppsButton" label="Apps pillar page button"/>
+  <suffix name="ChromeOSButton" label="ChromeOS pillar page button"/>
   <suffix name="DisplayButton" label="Display pillar page button"/>
   <suffix name="EasyButton" label="Easy pillar page button"/>
+  <suffix name="EasyToUseButton" label="Performance pillar page button"/>
   <suffix name="FastButton" label="Fast pillar page button"/>
   <suffix name="GameButton" label="Game pillar page button"/>
+  <suffix name="GoogleAIButton" label="Google AI pillar page button"/>
+  <suffix name="GoogleBuiltInButton"
+      label="Google Built In pillar page button"/>
   <suffix name="GraphicsButton" label="Graphics pillar page button"/>
   <suffix name="KeyboardButton" label="Keyboard pillar page button"/>
+  <suffix name="PerformanceButton" label="Performance pillar page button"/>
   <suffix name="PeripheralsButton" label="Peripherals pillar page button"/>
   <suffix name="PowerfulButton" label="Powerful pillar page button"/>
   <suffix name="SecureButton" label="Secure pillar page button"/>
   <affected-action name="DemoMode_Highlights_HomePage_Click"/>
   <affected-action name="DemoMode_Highlights_Navbar_Click"/>
-</action-suffix>
-
-<action-suffix separator="_" ordering="suffix">
-  <suffix name="AppsButton" label="Apps pillar page button"/>
-  <suffix name="ChromeOSButton" label="ChromeOS pillar page button"/>
-  <suffix name="PerformanceButton" label="Performance pillar page button"/>
-  <affected-action name="DemoMode_Highlights_HomePage_Click"/>
 </action-suffix>
 
 <action-suffix separator="_" ordering="suffix">
@@ -43321,7 +43321,12 @@ should be able to be added at any place in this file.
 
 <action-suffix separator="_" ordering="suffix">
   <suffix name="AdobeButton" label="Adobe details page button"/>
+  <suffix name="AIBackgroundButton" label="AI background details page button"/>
+  <suffix name="AIPremiumPlanButton"
+      label="Google One AI Premium Plan details page button"/>
   <suffix name="BatteryButton" label="Battery details page button"/>
+  <suffix name="BuiltInSecurityButton"
+      label="Built in security details page button"/>
   <suffix name="ComparisonButton" label="Comparison details page button"/>
   <suffix name="DisplayEntertainmentButton"
       label="Display (Entertainment) details page button"/>
@@ -43329,7 +43334,13 @@ should be able to be added at any place in this file.
       label="Display (Performance) details page button"/>
   <suffix name="EntertainmentAppsButton"
       label="Entertainment Apps details page button"/>
+  <suffix name="GameDashboardButton"
+      label="Game Dashboard details page button"/>
+  <suffix name="GeminiForAllButton" label="Gemini for All details page button"/>
+  <suffix name="GeminiForWorkSpaceButton"
+      label="Gemini for Work space details page button"/>
   <suffix name="GoogleAppsButton" label="Google Apps details page button"/>
+  <suffix name="HelpMeWriteButton" label="Help me write page button"/>
   <suffix name="LumaFusionButton" label="LumaFusion details page button"/>
   <suffix name="MessagingButton" label="Messaging details page button"/>
   <suffix name="MobileGamingButton" label="Mobile Gaming details page button"/>
@@ -43345,6 +43356,7 @@ should be able to be added at any place in this file.
   <suffix name="StorageButton" label="Storage details page button"/>
   <suffix name="SwitchingButton" label="Switching details page button"/>
   <suffix name="VideoCallButton" label="Video Call details page button"/>
+  <suffix name="WebcamButton" label="Webcam details page button"/>
   <affected-action name="DemoMode_Highlights_DetailsPage_Clicked"/>
 </action-suffix>
 
