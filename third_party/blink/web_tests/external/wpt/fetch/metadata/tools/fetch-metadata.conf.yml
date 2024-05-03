@@ -112,7 +112,6 @@ cases:
     template_axes:
       # All the templates in this block are unused with the exception of
       # `worker-dedicated-constructor`
-      appcache-manifest.sub.https.html: []
       audioworklet.https.sub.html: []
       fetch-via-serviceworker.https.sub.html: []
       serviceworker.https.sub.html: []

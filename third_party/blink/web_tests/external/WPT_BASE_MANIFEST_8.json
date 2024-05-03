@@ -353704,7 +353704,7 @@
        []
       ],
       "fetch-metadata.conf.yml": [
-       "11e6140343638fd47c6fe6795d9e6127ae41cf40",
+       "e0fab5db2fbb26d81eafd3152cfd5d30e9c2bab8",
        []
       ],
       "generate.py": [
@@ -362448,6 +362448,10 @@
      }
     },
     "dom": {
+     "WEB_FEATURES.yml": [
+      "5c9e27d29745ca9046d04c1dea58af2f8b3fd801",
+      []
+     ],
      "directionality": {
       "bdi-element-invalid-dir-ref.html": [
        "88ccd4b9b53ee27a8450bd77ec794861fc01a708",
@@ -368290,6 +368294,10 @@
         "6b6e7c9b9bfe0b1e97d09f49850840f0ab755115",
         []
        ],
+       "WEB_FEATURES.yml": [
+        "5730fe4715a896c4e93fd79b51da5a124cb9f03e",
+        []
+       ],
        "autoplay-allowed-by-feature-policy.https.sub.html.headers": [
         "08461fadc2888cbcdfcda533f2928f14a52ab44e",
         []
@@ -374054,6 +374062,10 @@
      ],
      "OWNERS": [
       "35449ec5bab7c3e8ac3c61fa50a8207e667eabe2",
+      []
+     ],
+     "WEB_FEATURES.yml": [
+      "4104016b756353a2207a93c4955fcfd5e9e8c2e4",
       []
      ],
      "propagation-sameorigin-expected.txt": [
