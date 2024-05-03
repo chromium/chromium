@@ -247,6 +247,16 @@ Status PrepareDesktopCommandLine(const Capabilities& capabilities,
     if (status.IsError())
       return status;
   }
+  // `webSocketUrl: true` means the WebDriver BiDi is enabled, which is run via
+  // BiDi-CDP Mapper in a dedicated tab, and that tab should not be throttled.
+  // As long as there is no way to disable throttling for a single target,
+  // disable throttling all together.
+  // TODO(crbug.com/chromedriver/4762): Remove after the Mapper is moved away
+  // from the tab.
+  if (capabilities.webSocketUrl) {
+    switches.SetSwitch("disable-background-timer-throttling");
+  }
+
   switches.AppendToCommandLine(&command);
   prepared_command = command;
   return Status(kOk);
