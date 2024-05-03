@@ -126,7 +126,7 @@ crbug.com/330132405 [ fuchsia fuchsia-board-qemu-x64 ] ExpectedColor_MediaRecord
 crbug.com/40935289 [ clang-coverage fuchsia web-engine-shell ] ExpectedColor_MediaRecorderFromVideoElementWithOoprCanvasDisabled [ Failure ]
 
 # Gardener 2024-04-29 - page reported failure
-crbug.com/40877266 [ win amd-0x7340 angle-d3d11 graphite-enabled passthrough release ] ExpectedColor_MediaRecorderFromVideoElementWithOoprCanvasDisabled [ Failure ]
+crbug.com/40877266 [ win angle-d3d11 graphite-enabled passthrough release ] ExpectedColor_MediaRecorderFromVideoElementWithOoprCanvasDisabled [ Failure ]
 
 #######################################################################
 # Automated Entries After This Point - Do Not Manually Add Below Here #
