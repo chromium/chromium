@@ -6,12 +6,9 @@
 
 #include <string_view>
 
-#include "base/containers/contains.h"
 #include "base/functional/bind.h"
 #include "base/logging.h"
 #include "base/task/single_thread_task_runner.h"
-#include "chromeos/ash/components/dbus/dlcservice/dlcservice.pb.h"
-#include "third_party/cros_system_api/dbus/dlcservice/dbus-constants.h"
 
 namespace ash {
 
@@ -63,19 +60,11 @@ void FakeDlcserviceClient::Purge(std::string_view dlc_id,
 
 void FakeDlcserviceClient::GetDlcState(std::string_view dlc_id,
                                        GetDlcStateCallback callback) {
-  VLOG(1) << "Requesting to get DLC state of: " << dlc_id;
-  std::string error = dlcservice::kErrorNone;
-  if (base::Contains(get_dlc_state_errors_, dlc_id)) {
-    error = get_dlc_state_errors_[std::string(dlc_id)];
-  }
-
-  dlcservice::DlcState state;
-  if (base::Contains(dlc_states_, dlc_id)) {
-    state = dlc_states_[std::string(dlc_id)];
-  }
-
+  VLOG(1) << "Requesting to get DLC state of" << dlc_id;
   base::SingleThreadTaskRunner::GetCurrentDefault()->PostTask(
-      FROM_HERE, base::BindOnce(std::move(callback), error, state));
+      FROM_HERE,
+      base::BindOnce(std::move(callback), std::string_view(get_dlc_state_err_),
+                     dlc_state_));
 }
 
 void FakeDlcserviceClient::GetExistingDlcs(GetExistingDlcsCallback callback) {

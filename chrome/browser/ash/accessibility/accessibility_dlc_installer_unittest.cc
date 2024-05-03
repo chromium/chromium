@@ -132,21 +132,21 @@ class AccessibilityDlcInstallerTest : public testing::Test {
     fake_dlcservice_client_.set_install_error(dlcservice::kErrorNeedReboot);
   }
 
-  void SetPumpkinAlreadyInstalled(std::string_view root_path) {
+  void SetDlcAlreadyInstalled(std::string_view root_path) {
     dlcservice::DlcState dlc_state;
     dlc_state.set_state(dlcservice::DlcState_State_INSTALLED);
     dlc_state.set_root_path(std::string(root_path));
-    fake_dlcservice_client_.set_dlc_state("pumpkin", dlc_state);
+    fake_dlcservice_client_.set_dlc_state(dlc_state);
   }
 
-  void SetPumpkinCurrentlyInstalling() {
+  void SetDlcCurrentlyInstalling() {
     dlcservice::DlcState dlc_state;
     dlc_state.set_state(dlcservice::DlcState_State_INSTALLING);
-    fake_dlcservice_client_.set_dlc_state("pumpkin", dlc_state);
+    fake_dlcservice_client_.set_dlc_state(dlc_state);
   }
 
-  void SetPumpkinDlcError() {
-    fake_dlcservice_client_.set_get_dlc_state_error("pumpkin", "Test error");
+  void SetGetDlcStateError() {
+    fake_dlcservice_client_.set_get_dlc_state_error("Test error");
   }
 
   void ExpectPumpkinSuccessHistogramCount(int expected_count) {
@@ -240,7 +240,7 @@ TEST_F(AccessibilityDlcInstallerTest, PumpkinAlreadyInstalled) {
   ASSERT_FALSE(GetInstallSuccess(DlcType::kPumpkin));
   ASSERT_FALSE(IsPumpkinInstalled());
 
-  SetPumpkinAlreadyInstalled("/fake/root/path");
+  SetDlcAlreadyInstalled("/fake/root/path");
 
   MaybeInstallPumpkinAndWait();
   ASSERT_TRUE(GetInstallSuccess(DlcType::kPumpkin));
@@ -259,7 +259,7 @@ TEST_F(AccessibilityDlcInstallerTest, PumpkinAlreadyInstalled) {
 TEST_F(AccessibilityDlcInstallerTest, PumpkinCurrentlyInstalling) {
   ASSERT_FALSE(GetInstallSuccess(DlcType::kPumpkin));
   ASSERT_FALSE(IsPumpkinInstalled());
-  SetPumpkinCurrentlyInstalling();
+  SetDlcCurrentlyInstalling();
   MaybeInstallPumpkinAndWait();
   ASSERT_FALSE(GetInstallSuccess(DlcType::kPumpkin));
   ASSERT_FALSE(IsPumpkinInstalled());
@@ -274,7 +274,7 @@ TEST_F(AccessibilityDlcInstallerTest, PumpkinCurrentlyInstalling) {
 TEST_F(AccessibilityDlcInstallerTest, GetDlcError) {
   ASSERT_FALSE(GetInstallSuccess(DlcType::kPumpkin));
   ASSERT_FALSE(IsPumpkinInstalled());
-  SetPumpkinDlcError();
+  SetGetDlcStateError();
   MaybeInstallPumpkinAndWait();
   ASSERT_FALSE(GetInstallSuccess(DlcType::kPumpkin));
   ASSERT_FALSE(IsPumpkinInstalled());
