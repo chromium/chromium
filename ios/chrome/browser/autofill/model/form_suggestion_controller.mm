@@ -353,9 +353,11 @@ void RunSearchPipeline(NSArray<PipelineBlock>* blocks,
 // Performs the suggestion selection based on the provided suggestion state.
 - (void)didSelectSuggestion:(FormSuggestion*)suggestion
                       state:(const AutofillSuggestionState&)suggestionState {
-  // If a suggestion was selected, reset the password bottom sheet dismiss count
-  // to 0.
-  [self resetPasswordBottomSheetDismissCount];
+  // If a password related suggestion was selected, reset the password bottom
+  // sheet dismiss count to 0.
+  if (_provider.type == SuggestionProviderTypePassword) {
+    [self resetPasswordBottomSheetDismissCount];
+  }
 
   // Send the suggestion to the provider. Upon completion advance the cursor
   // for single-field Autofill, or close the keyboard for full-form Autofill.
