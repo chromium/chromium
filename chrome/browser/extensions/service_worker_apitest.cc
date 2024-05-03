@@ -1750,67 +1750,10 @@ IN_PROC_BROWSER_TEST_F(ServiceWorkerPushMessagingTest, OnPush) {
   EXPECT_TRUE(push_message_listener.WaitUntilSatisfied());
   run_loop.Run();  // Wait until the message is handled by push service.
 }
+
 IN_PROC_BROWSER_TEST_F(ServiceWorkerTest, MimeHandlerView) {
   ASSERT_TRUE(RunExtensionTest("service_worker/mime_handler_view"));
 }
-
-// Observer for an extension service worker to start and stop.
-class TestWorkerObserver : public content::ServiceWorkerContextObserver {
- public:
-  TestWorkerObserver(content::ServiceWorkerContext* context,
-                     const ExtensionId& extension_id)
-      : context_(context),
-        extension_url_(Extension::GetBaseURLFromExtensionId(extension_id)) {
-    context_->AddObserver(this);
-  }
-  ~TestWorkerObserver() override {
-    if (context_) {
-      context_->RemoveObserver(this);
-    }
-  }
-
-  TestWorkerObserver(const TestWorkerObserver&) = delete;
-  TestWorkerObserver& operator=(const TestWorkerObserver&) = delete;
-
-  void WaitForWorkerStart() {
-    if (running_version_id_.has_value())
-      return;
-    started_run_loop_.Run();
-  }
-
-  void WaitForWorkerStop() {
-    DCHECK(running_version_id_.has_value()) << "Worker hasn't started";
-    stopped_run_loop_.Run();
-  }
-
- private:
-  // ServiceWorkerContextObserver:
-  void OnVersionStartedRunning(
-      int64_t version_id,
-      const content::ServiceWorkerRunningInfo& running_info) override {
-    if (running_info.scope != extension_url_)
-      return;
-
-    running_version_id_ = version_id;
-    started_run_loop_.Quit();
-  }
-  void OnVersionStoppedRunning(int64_t version_id) override {
-    if (running_version_id_ == version_id)
-      stopped_run_loop_.Quit();
-  }
-  void OnDestruct(content::ServiceWorkerContext* context) override {
-    context_->RemoveObserver(this);
-    context_ = nullptr;
-  }
-
-  base::RunLoop started_run_loop_;
-  base::RunLoop stopped_run_loop_;
-  // Holds version id of an extension worker once OnVersionStartedRunning is
-  // observed.
-  std::optional<int64_t> running_version_id_;
-  raw_ptr<content::ServiceWorkerContext> context_ = nullptr;
-  GURL extension_url_;
-};
 
 IN_PROC_BROWSER_TEST_F(ServiceWorkerBasedBackgroundTest,
                        EventsToStoppedWorker) {
@@ -2189,7 +2132,7 @@ IN_PROC_BROWSER_TEST_F(ServiceWorkerBasedBackgroundTest,
   // Set up an observer to track all SW registrations. We expect only
   // one for the extension's root scope. This test attempts to register
   // an additional service worker, which will fail.
-  service_worker_test_utils::TestRegistrationObserver observer(
+  service_worker_test_utils::TestServiceWorkerContextObserver observer(
       browser()->profile());
   ExtensionTestMessageListener registration_listener("REGISTRATION_FAILED");
   registration_listener.set_failure_message("WORKER_STARTED");
@@ -2213,7 +2156,8 @@ IN_PROC_BROWSER_TEST_F(ServiceWorkerBasedBackgroundTest,
 
   const ExtensionId test_extension_id("iegclhlplifhodhkoafiokenjoapiobj");
   // Set up an observer to wait for worker to start and then stop.
-  TestWorkerObserver observer(context, test_extension_id);
+  service_worker_test_utils::TestServiceWorkerContextObserver observer(
+      context, test_extension_id);
 
   TestExtensionDir test_dir;
   // Key for extension id |test_extension_id|.
@@ -2247,8 +2191,8 @@ IN_PROC_BROWSER_TEST_F(ServiceWorkerBasedBackgroundTest,
       LazyContextId::ForExtension(browser()->profile(), extension);
   // Let the worker start so it rejects 'install' event. This causes the worker
   // to stop.
-  observer.WaitForWorkerStart();
-  observer.WaitForWorkerStop();
+  observer.WaitForWorkerStarted();
+  observer.WaitForWorkerStopped();
 
   TestServiceWorkerTaskQueueObserver worker_start_failure_observer;
 

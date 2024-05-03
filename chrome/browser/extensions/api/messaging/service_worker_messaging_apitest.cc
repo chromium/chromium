@@ -217,7 +217,7 @@ IN_PROC_BROWSER_TEST_F(ServiceWorkerMessagingTest,
                        WorkerShutsDownWhileNativeMessagePortIsOpen) {
   // Set up an observer to wait for the registration to be stored before
   // calling StopServiceWorker below.
-  service_worker_test_utils::TestRegistrationObserver observer(
+  service_worker_test_utils::TestServiceWorkerContextObserver observer(
       browser()->profile());
   ASSERT_NO_FATAL_FAILURE(test_host_.RegisterTestHost(false));
 
@@ -416,12 +416,12 @@ IN_PROC_BROWSER_TEST_F(ServiceWorkerMessagingTestWithActivityLog, ActivityLog) {
 IN_PROC_BROWSER_TEST_F(ServiceWorkerMessagingTest, LongLivedChannelNoMessage) {
   ASSERT_TRUE(StartEmbeddedTestServer());
 
-  service_worker_test_utils::TestRegistrationObserver observer(
+  service_worker_test_utils::TestServiceWorkerContextObserver observer(
       browser()->profile());
   const Extension* extension = LoadExtension(test_data_dir_.AppendASCII(
       "service_worker/messaging/connect_to_worker/connect"));
   ASSERT_TRUE(extension);
-  observer.WaitForWorkerStart();
+  const int64_t version_id = observer.WaitForWorkerStarted();
 
   // Load the tab with content script to open a Port to |extension|.
   ResultCatcher catcher;
@@ -439,8 +439,8 @@ IN_PROC_BROWSER_TEST_F(ServiceWorkerMessagingTest, LongLivedChannelNoMessage) {
   content::ServiceWorkerContext* context =
       util::GetServiceWorkerContextForExtensionId(extension->id(),
                                                   browser()->profile());
-  EXPECT_FALSE(content::TriggerTimeoutAndCheckRunningState(
-      context, observer.GetServiceWorkerVersionId()));
+  EXPECT_FALSE(
+      content::TriggerTimeoutAndCheckRunningState(context, version_id));
 }
 
 // Tests that one-time messages (chrome.runtime.sendMessage) from content script
@@ -448,12 +448,12 @@ IN_PROC_BROWSER_TEST_F(ServiceWorkerMessagingTest, LongLivedChannelNoMessage) {
 IN_PROC_BROWSER_TEST_F(ServiceWorkerMessagingTest, OneTimeChannel) {
   ASSERT_TRUE(StartEmbeddedTestServer());
 
-  service_worker_test_utils::TestRegistrationObserver observer(
+  service_worker_test_utils::TestServiceWorkerContextObserver observer(
       browser()->profile());
   const Extension* extension = LoadExtension(test_data_dir_.AppendASCII(
       "service_worker/messaging/connect_to_worker/send_message"));
   ASSERT_TRUE(extension);
-  observer.WaitForWorkerStart();
+  const int64_t version_id = observer.WaitForWorkerStarted();
 
   // Load the tab with content script to open a Port to |extension|.
   ResultCatcher catcher;
@@ -473,8 +473,7 @@ IN_PROC_BROWSER_TEST_F(ServiceWorkerMessagingTest, OneTimeChannel) {
   content::ServiceWorkerContext* context =
       util::GetServiceWorkerContextForExtensionId(extension->id(),
                                                   browser()->profile());
-  EXPECT_TRUE(content::TriggerTimeoutAndCheckRunningState(
-      context, observer.GetServiceWorkerVersionId()));
+  EXPECT_TRUE(content::TriggerTimeoutAndCheckRunningState(context, version_id));
 }
 
 // Tests post messages through a long-lived channel from content script to an
@@ -483,19 +482,18 @@ IN_PROC_BROWSER_TEST_F(ServiceWorkerMessagingTest,
                        LongLivedChannelPostMessage) {
   ASSERT_TRUE(StartEmbeddedTestServer());
 
-  service_worker_test_utils::TestRegistrationObserver observer(
+  service_worker_test_utils::TestServiceWorkerContextObserver observer(
       browser()->profile());
   const Extension* extension = LoadExtension(test_data_dir_.AppendASCII(
       "service_worker/messaging/connect_to_worker/connect_and_post"));
   ASSERT_TRUE(extension);
-  observer.WaitForWorkerStart();
+  const int64_t version_id = observer.WaitForWorkerStarted();
 
   // Set idle timeout to 1 second.
   content::ServiceWorkerContext* context =
       util::GetServiceWorkerContextForExtensionId(extension->id(),
                                                   browser()->profile());
-  content::SetServiceWorkerIdleDelay(
-      context, observer.GetServiceWorkerVersionId(), base::Seconds(1));
+  content::SetServiceWorkerIdleDelay(context, version_id, base::Seconds(1));
 
   // Load the tab with content script to open a Port to |extension|.
   ResultCatcher catcher;
@@ -513,8 +511,7 @@ IN_PROC_BROWSER_TEST_F(ServiceWorkerMessagingTest,
   // 100ms. The service worker is still running at this point verifies that
   // sending messages prolongs the service worker lifetime.
   base::RunLoop().RunUntilIdle();
-  EXPECT_TRUE(content::CheckServiceWorkerIsRunning(
-      context, observer.GetServiceWorkerVersionId()));
+  EXPECT_TRUE(content::CheckServiceWorkerIsRunning(context, version_id));
 }
 
 }  // namespace extensions

@@ -1933,8 +1933,8 @@ IN_PROC_BROWSER_TEST_F(ExtensionActionStableChannelApiTest,
   // Unlike `LoadExtension()`, `InstallExtension()` doesn't wait for the service
   // worker to be ready, so we need a few manual waiters.
   base::FilePath packed_path = test_dir.Pack();
-  service_worker_test_utils::TestRegistrationObserver registration_observer(
-      profile());
+  service_worker_test_utils::TestServiceWorkerContextObserver
+      registration_observer(profile());
   ExtensionTestMessageListener policy_listener("ready");
   const Extension* policy_extension = InstallExtension(
       packed_path, 1, mojom::ManifestLocation::kExternalPolicyDownload);

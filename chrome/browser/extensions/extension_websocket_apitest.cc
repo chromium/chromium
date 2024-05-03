@@ -48,13 +48,13 @@ class ExtensionWebSocketApiTest : public ExtensionApiTest {
 void ExtensionWebSocketApiTest::RunServiceWorkerWebSocketTest(
     const char* test_directory) {
   ExtensionTestMessageListener socket_ready_listener("socket ready");
-  service_worker_test_utils::TestRegistrationObserver observer(
+  service_worker_test_utils::TestServiceWorkerContextObserver observer(
       browser()->profile());
   ResultCatcher catcher;
   const Extension* extension =
       LoadExtension(test_data_dir_.AppendASCII(test_directory));
   ASSERT_TRUE(extension);
-  observer.WaitForWorkerStart();
+  const int64_t version_id = observer.WaitForWorkerStarted();
 
   // Open the web socket in the extension.
   base::Value open_result = BackgroundScriptExecutor::ExecuteScript(
@@ -72,8 +72,7 @@ void ExtensionWebSocketApiTest::RunServiceWorkerWebSocketTest(
   content::ServiceWorkerContext* context =
       util::GetServiceWorkerContextForExtensionId(extension->id(),
                                                   browser()->profile());
-  content::SetServiceWorkerIdleDelay(
-      context, observer.GetServiceWorkerVersionId(), base::Seconds(1));
+  content::SetServiceWorkerIdleDelay(context, version_id, base::Seconds(1));
 
   // Wait for two seconds of web socket activity, after which the socket will
   // be closed and the extension will return. If we make it to the two seconds,

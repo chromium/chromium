@@ -94,7 +94,7 @@ using extensions::mojom::ManifestLocation;
 
 namespace extensions {
 
-using extensions::service_worker_test_utils::TestRegistrationObserver;
+using extensions::service_worker_test_utils::TestServiceWorkerContextObserver;
 
 namespace {
 
@@ -533,11 +533,11 @@ const Extension* ExtensionBrowserTest::LoadExtension(
     loader.set_install_param(options.install_param);
   }
 
-  std::unique_ptr<TestRegistrationObserver> registration_observer;
+  std::unique_ptr<TestServiceWorkerContextObserver> registration_observer;
 
   if (options.wait_for_registration_stored) {
     registration_observer =
-        std::make_unique<TestRegistrationObserver>(profile_);
+        std::make_unique<TestServiceWorkerContextObserver>(profile_);
   }
 
   scoped_refptr<const Extension> extension =

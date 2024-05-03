@@ -34,66 +34,7 @@ using ContextType = ExtensionBrowserTest::ContextType;
 using EventMetricsBrowserTest = ExtensionBrowserTest;
 using service_worker_test_utils::TestServiceWorkerTaskQueueObserver;
 
-// TODO(crbug.com/40909770): combine this observer with
-// extensions/browser/service_worker/service_worker_test_utils.h and
-// chrome/browser/extensions/service_worker_event_dispatching_browsertest.cc
-// observers.
-class TestWorkerStatusObserver : public content::ServiceWorkerContextObserver {
- public:
-  TestWorkerStatusObserver(content::BrowserContext* browser_context,
-                           const ExtensionId& extension_id)
-      : extension_url_(Extension::GetBaseURLFromExtensionId(extension_id)),
-        sw_context_(service_worker_test_utils::GetServiceWorkerContext(
-            browser_context)) {
-    scoped_observation_.Observe(sw_context_);
-  }
-
-  TestWorkerStatusObserver(const TestWorkerStatusObserver&) = delete;
-  TestWorkerStatusObserver& operator=(const TestWorkerStatusObserver&) = delete;
-
-  void WaitForWorkerStarted() { started_worker_run_loop_.Run(); }
-  void WaitForWorkerStopped() { stopped_worker_run_loop_.Run(); }
-
-  int64_t test_worker_version_id() const { return test_worker_version_id_; }
-
- private:
-  // ServiceWorkerContextObserver:
-
-  // Called when a worker has entered the
-  // `blink::EmbeddedWorkerStatus::kRunning` status. Used to indicate when our
-  // test extension is now running.
-  void OnVersionStartedRunning(
-      int64_t version_id,
-      const content::ServiceWorkerRunningInfo& running_info) override {
-    if (running_info.scope != extension_url_) {
-      return;
-    }
-
-    test_worker_version_id_ = version_id;
-    started_worker_run_loop_.Quit();
-  }
-
-  // Called when a worker has entered the
-  // `blink::EmbeddedWorkerStatus::kStopping` status. Used to indicate when our
-  // test extension has stopped.
-  void OnVersionStoppedRunning(int64_t version_id) override {
-    // `test_worker_version_id_` is the previously running version's id.
-    if (test_worker_version_id_ != version_id) {
-      return;
-    }
-    stopped_worker_run_loop_.Quit();
-  }
-
-  int64_t test_worker_version_id_ =
-      blink::mojom::kInvalidServiceWorkerVersionId;
-  base::RunLoop started_worker_run_loop_;
-  base::RunLoop stopped_worker_run_loop_;
-  const GURL extension_url_;
-  const raw_ptr<content::ServiceWorkerContext> sw_context_;
-  base::ScopedObservation<content::ServiceWorkerContext,
-                          content::ServiceWorkerContextObserver>
-      scoped_observation_{this};
-};
+using service_worker_test_utils::TestServiceWorkerContextObserver;
 
 // Tests that the only the dispatch time histogram provided to the test is
 // emitted with a sane value, and that other provided metrics are not emitted.
@@ -447,8 +388,8 @@ IN_PROC_BROWSER_TEST_F(EventMetricsBrowserTest,
   ASSERT_TRUE(embedded_test_server()->Start());
   constexpr char kTestExtensionId[] = "iegclhlplifhodhkoafiokenjoapiobj";
   // Stop the service worker to make it inactive.
-  TestWorkerStatusObserver test_worker_start_stop_observer(profile(),
-                                                           kTestExtensionId);
+  TestServiceWorkerContextObserver test_worker_start_stop_observer(
+      profile(), kTestExtensionId);
   ExtensionTestMessageListener extension_oninstall_listener_fired(
       "installed listener fired");
   // We need to load an extension where we know the extensions ID so that we
@@ -460,14 +401,14 @@ IN_PROC_BROWSER_TEST_F(EventMetricsBrowserTest,
   // This ensures that we wait until the the browser receives the ack from the
   // renderer. This prevents unexpected histogram emits later.
   ASSERT_TRUE(extension_oninstall_listener_fired.WaitUntilSatisfied());
-  test_worker_start_stop_observer.WaitForWorkerStarted();
+  const int64_t test_worker_version_id =
+      test_worker_start_stop_observer.WaitForWorkerStarted();
 
   browsertest_util::StopServiceWorkerForExtensionGlobalScope(profile(),
                                                              kTestExtensionId);
   test_worker_start_stop_observer.WaitForWorkerStopped();
-  ASSERT_TRUE(content::CheckServiceWorkerIsStopped(
-      GetServiceWorkerContext(),
-      test_worker_start_stop_observer.test_worker_version_id()));
+  ASSERT_TRUE(content::CheckServiceWorkerIsStopped(GetServiceWorkerContext(),
+                                                   test_worker_version_id));
 
   base::HistogramTester histogram_tester;
   ExtensionTestMessageListener test_event_listener_fired("listener fired");

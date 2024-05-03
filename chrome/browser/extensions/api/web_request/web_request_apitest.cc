@@ -5773,8 +5773,8 @@ class ManifestV3WebRequestApiTest : public ExtensionWebRequestApiTest {
     ExtensionTestMessageListener listener("ready");
     // Since we may programmatically stop the worker, we also need to wait for
     // the registration to be fully stored.
-    service_worker_test_utils::TestRegistrationObserver registration_observer(
-        profile());
+    service_worker_test_utils::TestServiceWorkerContextObserver
+        registration_observer(profile());
     base::FilePath packed_path = test_dir.Pack();
     const Extension* extension = InstallExtension(
         packed_path, 1, mojom::ManifestLocation::kExternalPolicyDownload);

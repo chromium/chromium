@@ -435,14 +435,14 @@ IN_PROC_BROWSER_TEST_F(EmbeddedA11yManagerLacrosTest,
   Profile* profile = ProfileManager::GetPrimaryUserProfile();
   ASSERT_TRUE(profile);
 
-  extensions::service_worker_test_utils::TestRegistrationObserver
+  extensions::service_worker_test_utils::TestServiceWorkerContextObserver
       service_worker_observer(profile);
 
   SetEnabledAndWaitForExtensionLoaded(
       profile, AssistiveTechnologyType::kSwitchAccess,
       extension_misc::kEmbeddedA11yHelperExtensionId);
 
-  service_worker_observer.WaitForWorkerStart();
+  service_worker_observer.WaitForWorkerStarted();
 
   RenderViewContextMenu* menu = LoadTestPageAndSelectTextAndRightClick();
 
@@ -466,14 +466,14 @@ IN_PROC_BROWSER_TEST_F(EmbeddedA11yManagerLacrosTest,
   Profile* profile = ProfileManager::GetPrimaryUserProfile();
   ASSERT_TRUE(profile);
 
-  extensions::service_worker_test_utils::TestRegistrationObserver
+  extensions::service_worker_test_utils::TestServiceWorkerContextObserver
       service_worker_observer(profile);
 
   SetEnabledAndWaitForExtensionLoaded(
       profile, AssistiveTechnologyType::kSelectToSpeak,
       extension_misc::kEmbeddedA11yHelperExtensionId);
 
-  service_worker_observer.WaitForWorkerStart();
+  service_worker_observer.WaitForWorkerStarted();
 
   RenderViewContextMenu* menu = LoadTestPageAndSelectTextAndRightClick();
 
