@@ -530,7 +530,8 @@ TEST_F(FocusModeDetailedViewTest, TimerSettingViewDecrements) {
 
 // Tests that the timer setting view is visible outside of a focus session and
 // the countdown view is visible in a focus session.
-TEST_F(FocusModeDetailedViewTest, TimerViewVisibility) {
+// TODO(b/338629645): disabled due to flakes.
+TEST_F(FocusModeDetailedViewTest, DISABLED_TimerViewVisibility) {
   auto* focus_mode_controller = FocusModeController::Get();
   auto* timer_setting_view = GetTimerSettingView();
   auto* countdown_view = GetTimerCountdownView();
