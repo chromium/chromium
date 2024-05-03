@@ -2054,6 +2054,7 @@ Pretējā gadījumā šī iespēja būtu liegta saskaņā ar jūsu konfidenciali
 <translation id="4930153903256238152">Liela ietilpība</translation>
 <translation id="4930714375720679147">Ieslēgt</translation>
 <translation id="4932035752129140860">Jūsu ielīmētais vai pievienotais teksts tiek nosūtīts uz Google Cloud vai trešajām pusēm, lai veiktu analīzi. Piemēram, šis teksts var tikt pārmeklēts, lai konstatētu, vai tajā ir sensitīvi dati, un uzglabāts saskaņā ar uzņēmuma politikām, turklāt tas var būt redzams jūsu administratoram.</translation>
+<translation id="4933468175699107356">Noklikšķiniet ar peles labo pogu, lai jebkurā veidlapā automātiski aizpildītu saglabāto informāciju, piemēram, vārdu un uzvārdu vai adresi.</translation>
 <translation id="4934780484581617878">Logu pārvaldība</translation>
 <translation id="4936134414789135531">Ievietoto elementu “<ph name="VALUE_NAME" />” nevarēja atrast.</translation>
 <translation id="4936675324097895694">Finanses</translation>
@@ -2475,7 +2476,6 @@ Pretējā gadījumā šī iespēja būtu liegta saskaņā ar jūsu konfidenciali
 <translation id="5765072501007116331">Lai skatītu piegādes veidus un prasības, atlasiet adresi.</translation>
 <translation id="57689295674415555">Vai nav ievadīts virtuālās kartes numurs?</translation>
 <translation id="5772086939108830423">Izmantot piekļuves atslēgu citā ierīcē</translation>
-<translation id="5775734789739406956">Noklikšķiniet ar peles labo pogu, lai saglabāto informāciju pievienotu jebkurai veidlapai</translation>
 <translation id="5776313857861697733">Prioritārs</translation>
 <translation id="5776574724412881956">Virtuālā karte nav aizpildīta? Noklikšķiniet uz virtuālās kartes informācijas, lai to kopētu starpliktuvē. <ph name="IDS_AUTOFILL_VIRTUAL_CARD_MANUAL_FALLBACK_BUBBLE_LEARN_MORE_LINK_LABEL" /></translation>
 <translation id="5781136890105823427">Eksperiments iespējots</translation>

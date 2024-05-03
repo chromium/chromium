@@ -373,7 +373,7 @@
 <translation id="2890171748217283516">‏تم حفظ المواقع الإلكترونية التي تُتابعها في حسابك على Google. يمكنك إدارة هذه المواقع الإلكترونية من خلال إعدادات القسم "اقتراحات".</translation>
 <translation id="2895084600668778673">عرض جميع بيانات الملء التلقائي</translation>
 <translation id="2898963176829412617">مجلد جديد...</translation>
-<translation id="2902684821701498619">إضافة إلى قائمة القراءة</translation>
+<translation id="2902684821701498619">الإضافة إلى قائمة القراءة</translation>
 <translation id="2905479111267140204">لديك كلمات مرور يبلغ عددها <ph name="NUMBER_OF_PASSWORDS" /> مستخدَمة لحساب آخر ويمكن أن تعرّضك لمشاكل أمنية.</translation>
 <translation id="291754862089661335">ضَع رمز الاستجابة السريعة أو الرمز الشريطي في هذا الإطار</translation>
 <translation id="2920866371965792875">للاطّلاع على التحديثات في هذا الموقع الإلكتروني، يُرجى النقر هنا.</translation>
@@ -416,7 +416,7 @@
 <translation id="314837624430314508">يمكنك متابعة آخر الأخبار وتغيّرات الأسعار وغير ذلك.</translation>
 <translation id="3148946345238989659">بعض الميزات لم تعُد متوفّرة.</translation>
 <translation id="3153862085237805241">حفظ البطاقة</translation>
-<translation id="3157387275655328056">إضافة إلى قائمة القراءة</translation>
+<translation id="3157387275655328056">الإضافة إلى قائمة القراءة</translation>
 <translation id="3157684681743766797">وضع علامة على الكل...</translation>
 <translation id="315778507796115851">السجلّ</translation>
 <translation id="31652791196570636">إغلاق</translation>
@@ -1025,7 +1025,7 @@
 <translation id="6289501276895392862">تم إلغاء متابعة <ph name="CHANNEL_NAME" />.</translation>
 <translation id="6293101329759844770">‏لتفعيل "التصفّح الآمن"، افتح <ph name="BEGIN_LINK" />خدمات Google<ph name="END_LINK" /> وانقر على "التصفّح الآمن".</translation>
 <translation id="629730747756840877">الحساب</translation>
-<translation id="6321526113093607004">إضافة إلى الإشارات المرجعية</translation>
+<translation id="6321526113093607004">الإضافة إلى الإشارات المرجعية</translation>
 <translation id="6328337032497818759">تخصيص القائمة</translation>
 <translation id="6331180460633101391"><ph name="COUNT" /> كلمة مرور مستخدَمة لحساب آخر</translation>
 <translation id="6337234675334993532">ترميز</translation>
@@ -1059,7 +1059,7 @@
 <translation id="6418346271604475326">‏جارٍ إعداد PDF</translation>
 <translation id="6429213933892582367">‏افتح Password Options (خيارات كلمات المرور).</translation>
 <translation id="6434591244308415567">حدث خطأ. يُرجى إعادة المحاولة لاحقًا.</translation>
-<translation id="6435236283694032571">الإضافة إلى "قائمة القراءة"</translation>
+<translation id="6435236283694032571">الإضافة إلى قائمة القراءة</translation>
 <translation id="6439338047467462846">السماح بالكل</translation>
 <translation id="6442697326824312960">إزالة تثبيت علامة التبويب</translation>
 <translation id="6445051938772793705">البلد</translation>
@@ -1149,7 +1149,7 @@
 <translation id="6824350924364057989">الإعدادات</translation>
 <translation id="6831043979455480757">ترجمة</translation>
 <translation id="6842136130964845393">لضمان إمكانية الوصول دائمًا إلى كلمات المرور المحفوظة، عليك إثبات هويتك.</translation>
-<translation id="6851516051005285358">طلب موقع سطح المكتب</translation>
+<translation id="6851516051005285358">طلب الموقع المخصّص لأجهزة الكمبيوتر</translation>
 <translation id="6852222216891664518">إغلاق علامة التبويب المثبَّتة</translation>
 <translation id="6858855187367714033">تم مسحه ضوئيًا.</translation>
 <translation id="6859944681507688231">لمسح رمز الاستجابة السريعة أو بطاقة ائتمان ضوئيًا، يمكنك تفعيل الكاميرا من الإعدادات.</translation>

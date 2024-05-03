@@ -2055,6 +2055,7 @@ This will otherwise be blocked by your privacy settings. This will allow the con
 <translation id="4930153903256238152">Large capacity</translation>
 <translation id="4930714375720679147">Turn On</translation>
 <translation id="4932035752129140860">Text you paste or attach is sent to Google Cloud or third parties for analysis. For example, it might be scanned for sensitive data and might be stored based on company policies and visible to your administrator.</translation>
+<translation id="4933468175699107356">Right-click to autofill saved info, such as your name or address, on any form</translation>
 <translation id="4934780484581617878">Window management</translation>
 <translation id="4936134414789135531">The inserted <ph name="VALUE_NAME" /> couldn't be found.</translation>
 <translation id="4936675324097895694">Finance</translation>
@@ -2476,7 +2477,6 @@ This will otherwise be blocked by your privacy settings. This will allow the con
 <translation id="5765072501007116331">To see delivery methods and requirements, select an address</translation>
 <translation id="57689295674415555">Virtual card number not filled in?</translation>
 <translation id="5772086939108830423">Use a passkey on a different device</translation>
-<translation id="5775734789739406956">Right-click to add your saved info to any form</translation>
 <translation id="5776313857861697733">Priority</translation>
 <translation id="5776574724412881956">Virtual card not filled in? Click virtual card details to copy to clipboard. <ph name="IDS_AUTOFILL_VIRTUAL_CARD_MANUAL_FALLBACK_BUBBLE_LEARN_MORE_LINK_LABEL" /></translation>
 <translation id="5781136890105823427">Experiment enabled</translation>
