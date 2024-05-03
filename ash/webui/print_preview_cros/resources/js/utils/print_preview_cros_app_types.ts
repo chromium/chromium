@@ -40,6 +40,27 @@ export enum DuplexMode {
   UNKNOWN_DUPLEX_MODE = -1,
 }
 
+// Constant values matching printing::mojom::MarginType enum.
+export enum MarginType {
+  // Default varies depending on headers being enabled or not
+  DEFAULT_MARGINS = 0,
+  NO_MARGINS = 1,
+  PRINTABLE_AREA_MARGINS = 2,
+  CUSTOM_MARGINS = 3,
+}
+
+/**
+ * Keep in sync with the C++ kSettingMargin... values in
+ * printing/print_job_constants.h. Numbers are stored as integer values as that
+ * is what printing::PageMargins class expects.
+ */
+export interface MarginsSetting {
+  marginTop: number;
+  marginRight: number;
+  marginBottom: number;
+  marginLeft: number;
+}
+
 // PrintTicket represents the data required to start print job. Ticket will be
 // used to create a settings dictionary with fields matching the existing Chrome
 // preview print settings for reusability.
@@ -84,6 +105,12 @@ export interface PrintTicket {
 
   // Whether orientation should be in landscape or portrait mode.
   landscape: boolean;
+
+  // Whether to use predefined margins or custom.
+  marginsType: MarginType;
+
+  // Margins defined by users when marginsType is MarginType.CUSTOM_MARGINS.
+  marginsCustom?: MarginsSetting;
 }
 
 // Immutable session configuration details for the current CrOS preview request.

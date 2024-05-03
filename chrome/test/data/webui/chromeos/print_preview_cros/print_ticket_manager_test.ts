@@ -441,5 +441,14 @@ suite('PrintTicketManager', () => {
         assertEquals(
             DEFAULT_PARTIAL_PRINT_TICKET.landscape, ticket.landscape,
             'Ticket landscape should match DEFAULT_PARTIAL_PRINT_TICKET');
+        assertEquals(
+            DEFAULT_PARTIAL_PRINT_TICKET.marginsType, ticket.marginsType,
+            'Ticket marginsType should match DEFAULT_PARTIAL_PRINT_TICKET');
+        assertDeepEquals(
+            DEFAULT_PARTIAL_PRINT_TICKET.marginsCustom, ticket.marginsCustom,
+            'Ticket marginsCustom should match DEFAULT_PARTIAL_PRINT_TICKET');
+        assertEquals(
+            undefined, ticket.marginsCustom,
+            'Ticket marginsCustom optional property should not be set');
       });
 });
