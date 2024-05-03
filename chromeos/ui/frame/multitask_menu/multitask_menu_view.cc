@@ -35,6 +35,7 @@
 #include "ui/views/background.h"
 #include "ui/views/controls/label.h"
 #include "ui/views/widget/widget.h"
+#include "ui/wm/public/activation_client.h"
 
 namespace chromeos {
 
@@ -418,6 +419,7 @@ void MultitaskMenuView::HalfButtonPressed(SnapDirection direction) {
   SnapController::Get()->CommitSnap(
       window_, direction, kDefaultSnapRatio,
       SnapController::SnapRequestSource::kWindowLayoutMenu);
+  wm::GetActivationClient(window_->GetRootWindow())->ActivateWindow(window_);
   close_callback_.Run();
   base::RecordAction(base::UserMetricsAction(
       direction == SnapDirection::kPrimary ? kHalfSplitPrimaryUserAction
@@ -434,6 +436,7 @@ void MultitaskMenuView::PartialButtonPressed(SnapDirection direction) {
           : (is_reversed_ ? chromeos::kTwoThirdSnapRatio
                           : chromeos::kOneThirdSnapRatio),
       SnapController::SnapRequestSource::kWindowLayoutMenu);
+  wm::GetActivationClient(window_->GetRootWindow())->ActivateWindow(window_);
   close_callback_.Run();
 
   base::RecordAction(base::UserMetricsAction(
@@ -446,6 +449,7 @@ void MultitaskMenuView::FullScreenButtonPressed() {
   auto* widget = views::Widget::GetWidgetForNativeWindow(window_);
   const bool is_fullscreen = widget->IsFullscreen();
   widget->SetFullscreen(!is_fullscreen);
+  wm::GetActivationClient(window_->GetRootWindow())->ActivateWindow(window_);
   close_callback_.Run();
   base::RecordAction(base::UserMetricsAction(
       is_fullscreen ? kExitFullscreenUserAction : kFullscreenUserAction));
@@ -463,6 +467,7 @@ void MultitaskMenuView::FloatButtonPressed() {
                               : FloatStartLocation::kBottomRight);
   }
 
+  wm::GetActivationClient(window_->GetRootWindow())->ActivateWindow(window_);
   close_callback_.Run();
   RecordMultitaskMenuActionType(MultitaskMenuActionType::kFloatButton);
 }

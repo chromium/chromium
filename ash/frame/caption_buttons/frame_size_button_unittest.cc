@@ -45,6 +45,7 @@
 #include "ui/views/window/caption_button_layout_constants.h"
 #include "ui/views/window/frame_caption_button.h"
 #include "ui/views/window/vector_icons/vector_icons.h"
+#include "ui/wm/public/activation_client.h"
 
 namespace ash {
 
@@ -687,6 +688,11 @@ class MultitaskMenuTest : public FrameSizeButtonTest {
     ShowAndWaitMultitaskMenuForWindow(
         static_cast<FrameSizeButton*>(size_button()), entry_type);
   }
+
+  aura::Window* window() { return window_state()->window(); }
+  wm::ActivationClient* activation_client() {
+    return wm::GetActivationClient(window()->GetRootWindow());
+  }
 };
 
 // Test float button functionality.
@@ -694,7 +700,10 @@ TEST_F(MultitaskMenuTest, TestMultitaskMenuFloatFunctionality) {
   base::HistogramTester histogram_tester;
   EXPECT_TRUE(window_state()->IsNormalStateType());
   ui::test::EventGenerator* generator = GetEventGenerator();
+  window_state()->Deactivate();
+  ASSERT_NE(activation_client()->GetActiveWindow(), window());
   ShowMultitaskMenu();
+  EXPECT_NE(activation_client()->GetActiveWindow(), window());
   generator->MoveMouseTo(CenterPointInScreen(
       MultitaskMenuViewTestApi(GetMultitaskMenu()->multitask_menu_view())
           .GetFloatButton()));
@@ -703,13 +712,17 @@ TEST_F(MultitaskMenuTest, TestMultitaskMenuFloatFunctionality) {
   histogram_tester.ExpectBucketCount(
       chromeos::GetActionTypeHistogramName(),
       chromeos::MultitaskMenuActionType::kFloatButton, 1);
+  EXPECT_EQ(activation_client()->GetActiveWindow(), window());
 }
 
 // Test Half Button Functionality.
 TEST_F(MultitaskMenuTest, TestMultitaskMenuHalfFunctionality) {
   base::HistogramTester histogram_tester;
   EXPECT_TRUE(window_state()->IsNormalStateType());
+  window_state()->Deactivate();
+  ASSERT_NE(activation_client()->GetActiveWindow(), window());
   ShowMultitaskMenu();
+  EXPECT_NE(activation_client()->GetActiveWindow(), window());
   LeftClickOn(
       MultitaskMenuViewTestApi(GetMultitaskMenu()->multitask_menu_view())
           .GetHalfButton()
@@ -718,6 +731,7 @@ TEST_F(MultitaskMenuTest, TestMultitaskMenuHalfFunctionality) {
   histogram_tester.ExpectBucketCount(
       chromeos::GetActionTypeHistogramName(),
       chromeos::MultitaskMenuActionType::kHalfSplitButton, 1);
+  EXPECT_EQ(activation_client()->GetActiveWindow(), window());
 }
 
 // Tests that clicking the left side of the half button works as intended for
@@ -788,6 +802,8 @@ TEST_F(MultitaskMenuTest, HalfButtonSecondaryLayout) {
 TEST_F(MultitaskMenuTest, TestMultitaskMenuPartialSplit) {
   base::HistogramTester histogram_tester;
   EXPECT_TRUE(window_state()->IsNormalStateType());
+  window_state()->Deactivate();
+  ASSERT_NE(activation_client()->GetActiveWindow(), window());
   const gfx::Rect work_area_bounds_in_screen =
       display::Screen::GetScreen()->GetPrimaryDisplay().work_area();
 
@@ -802,6 +818,7 @@ TEST_F(MultitaskMenuTest, TestMultitaskMenuPartialSplit) {
 
   // Snap to primary with 0.67f screen ratio.
   ShowMultitaskMenu();
+  EXPECT_NE(activation_client()->GetActiveWindow(), window());
   LeftClickOn(GetMultitaskMenu()
                   ->multitask_menu_view()
                   ->partial_button()
@@ -816,6 +833,7 @@ TEST_F(MultitaskMenuTest, TestMultitaskMenuPartialSplit) {
   histogram_tester.ExpectBucketCount(
       chromeos::GetActionTypeHistogramName(),
       chromeos::MultitaskMenuActionType::kPartialSplitButton, 1);
+  EXPECT_EQ(activation_client()->GetActiveWindow(), window());
 
   // Snap to secondary with 0.33f screen ratio.
   ShowMultitaskMenu();
@@ -839,7 +857,10 @@ TEST_F(MultitaskMenuTest, TestMultitaskMenuPartialSplit) {
 TEST_F(MultitaskMenuTest, TestMultitaskMenuFullFunctionality) {
   base::HistogramTester histogram_tester;
   ASSERT_TRUE(window_state()->IsNormalStateType());
+  window_state()->Deactivate();
+  ASSERT_NE(activation_client()->GetActiveWindow(), window());
   ShowMultitaskMenu();
+  EXPECT_NE(activation_client()->GetActiveWindow(), window());
   LeftClickOn(
       MultitaskMenuViewTestApi(GetMultitaskMenu()->multitask_menu_view())
           .GetFullButton());
@@ -847,6 +868,7 @@ TEST_F(MultitaskMenuTest, TestMultitaskMenuFullFunctionality) {
   histogram_tester.ExpectBucketCount(
       chromeos::GetActionTypeHistogramName(),
       chromeos::MultitaskMenuActionType::kFullscreenButton, 1);
+  EXPECT_EQ(activation_client()->GetActiveWindow(), window());
 }
 
 TEST_F(MultitaskMenuTest, MultitaskMenuClosesOnTabletMode) {
