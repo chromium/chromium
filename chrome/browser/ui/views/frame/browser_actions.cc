@@ -104,7 +104,7 @@ BrowserActions::~BrowserActions() {
 }
 
 // static
-BrowserActions* BrowserActions::FromBrowser(Browser* browser) {
+BrowserActions* BrowserActions::FromBrowser(const Browser* browser) {
   return static_cast<BrowserActions*>(
       browser->GetUserData(BrowserActions::UserDataKey()));
 }

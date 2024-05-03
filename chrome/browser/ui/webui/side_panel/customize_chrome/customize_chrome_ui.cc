@@ -439,5 +439,5 @@ void CustomizeChromeUI::CreateCustomizeToolbarHandler(
     return;
   }
   customize_toolbar_handler_ = std::make_unique<CustomizeToolbarHandler>(
-      std::move(handler), std::move(client));
+      std::move(handler), std::move(client), profile_, web_contents_);
 }

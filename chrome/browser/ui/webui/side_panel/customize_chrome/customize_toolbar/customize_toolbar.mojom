@@ -4,6 +4,22 @@
 
 module side_panel.customize_chrome.mojom;
 
+// Unique identifiers for actions that can be pinned to the toolbar.
+// TODO(crbug.com/323964782): Add the other pinnable actions.
+enum ActionId {
+  kPrint,
+};
+
+// An action that can be pinned to the toolbar.
+struct Action {
+  // Which action this is.
+  ActionId id;
+  // The name for the webui to display for this action.
+  string display_name;
+  // TODO(crbug.com/323964782): Also include category.
+  // TODO(crbug.com/323964874): Also include icon data.
+};
+
 // Used by the WebUI page to bootstrap bidirectional communication.
 interface CustomizeToolbarHandlerFactory {
   // The WebUI calls this method when the page is first initialized.
@@ -13,8 +29,16 @@ interface CustomizeToolbarHandlerFactory {
 
 // Browser-side handler for requests from WebUI page.
 interface CustomizeToolbarHandler {
+  // Returns the list of all actions that can be pinned to the toolbar.
+  ListActions() => (array<Action> actions);
+  // Returns true if the action with id `action_id` is pinned to the toolbar.
+  GetActionPinned(ActionId action_id) => (bool pinned);
+  // Pins the action with id `action_id` to (or unpins it from) the toolbar.
+  PinAction(ActionId action_id, bool pinned);
 };
 
 // WebUI-side handler for requests from the browser.
 interface CustomizeToolbarClient {
+  // Sets the pinned state of the action with id `action_id`.
+  SetActionPinned(ActionId action_id, bool pinned);
 };
