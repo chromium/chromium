@@ -66,7 +66,6 @@ source_set("model") {
     "//ios/components/ui_util",
     "//ios/components/webui:url_constants",
     "//ios/net",
-    "//ios/web",
     "//ios/web/common",
     "//ios/web/common:user_agent",
     "//ios/web/public/js_messaging",
@@ -76,7 +75,10 @@ source_set("model") {
     "//ui/base",
     "//url",
   ]
-  public_deps = [ "//components/infobars/core" ]
+  public_deps = [
+    "//components/infobars/core",
+    "//ios/web/public",
+  ]
 }
 
 source_set("delegate") {
@@ -137,8 +139,8 @@ source_set("page_placeholder") {
     "//ios/chrome/browser/snapshots/model",
     "//ios/chrome/common/ui/util",
     "//ios/net",
-    "//ios/web",
   ]
+  public_deps = [ "//ios/web/public" ]
 }
 
 source_set("tab_helper_delegates") {

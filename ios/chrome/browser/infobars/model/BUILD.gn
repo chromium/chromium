@@ -14,12 +14,12 @@ source_set("model") {
   deps = [
     ":public",
     "//ios/chrome/browser/ui/infobars/coordinators",
-    "//ios/web",
     "//ui/gfx",
   ]
   public_deps = [
     "//base",
     "//components/infobars/core",
+    "//ios/web/public",
   ]
 }
 

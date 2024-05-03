@@ -42,6 +42,7 @@ source_set("bubble") {
     "//ios/chrome/browser/ui/bubble/gesture_iph",
     "//ios/chrome/browser/url_loading/model",
     "//ios/chrome/common/ui/util",
+    "//ios/web/public",
     "//net",
     "//ui/base",
   ]

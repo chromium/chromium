@@ -19,7 +19,6 @@ source_set("password_details") {
     "password_details_mediator_delegate.h",
   ]
   deps = [
-    ":password_details_ui",
     "//components/autofill/core/common",
     "//components/password_manager/core/browser/form_parsing",
     "//components/password_manager/core/common",
@@ -32,7 +31,6 @@ source_set("password_details") {
     "//ios/chrome/browser/passwords/model:password_checkup_utils",
     "//ios/chrome/browser/passwords/model/metrics",
     "//ios/chrome/browser/shared/coordinator/alert",
-    "//ios/chrome/browser/shared/coordinator/chrome_coordinator",
     "//ios/chrome/browser/shared/model/browser",
     "//ios/chrome/browser/shared/model/browser_state",
     "//ios/chrome/browser/shared/model/prefs:pref_names",
@@ -53,8 +51,12 @@ source_set("password_details") {
     "//ios/chrome/common/ui/colors",
     "//ios/chrome/common/ui/reauthentication",
     "//ios/chrome/common/ui/util",
-    "//ios/web",
+    "//ios/web/public",
     "//ui/base",
+  ]
+  public_deps = [
+    ":password_details_ui",
+    "//ios/chrome/browser/shared/coordinator/chrome_coordinator",
   ]
 }
 

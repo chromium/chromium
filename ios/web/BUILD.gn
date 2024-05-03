@@ -18,10 +18,10 @@ group("all_tests") {
 
 source_set("web") {
   public_deps = [
-    # TODO(crbug.com/40471293): Remove private files from public dependencies.
-    "//ios/web/public",
+    # TODO(crbug.com/338033944): Remove private files from public dependencies.
     "//ios/web/public/download",
     "//ios/web/public/init",
+    "//ios/web/public/navigation",
     "//ios/web/web_state/ui",
     "//ios/web/web_state/ui:wk_web_view_configuration_provider",
     "//ios/web/webui",
@@ -325,6 +325,7 @@ source_set("test_support") {
     "public/test/crw_fake_web_state_delegate.h",
     "public/test/crw_fake_web_state_delegate.mm",
   ]
+  public_deps = [ "//ios/web/public" ]
   deps = [
     "//ios/web",
     "//ios/web/public/session",

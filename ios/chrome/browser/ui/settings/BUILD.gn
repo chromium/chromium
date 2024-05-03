@@ -413,6 +413,7 @@ source_set("eg_app_support+eg2") {
     "//ios/chrome/browser/supervised_user/model:sync_settings_factory",
     "//ios/chrome/test/app:test_support",
     "//ios/components/security_interstitials:security_interstitials",
+    "//ios/web/public",
     "//services/network:test_support",
   ]
   public_deps = [ "//components/content_settings/core/common" ]

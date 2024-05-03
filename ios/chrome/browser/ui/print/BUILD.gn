@@ -13,7 +13,7 @@ source_set("print") {
     "//ios/chrome/browser/shared/coordinator/chrome_coordinator",
     "//ios/chrome/browser/tabs/model",
     "//ios/chrome/browser/web/model/print",
-    "//ios/web",
+    "//ios/web/public",
     "//net",
     "//ui/base",
   ]

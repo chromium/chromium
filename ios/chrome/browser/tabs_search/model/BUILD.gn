@@ -21,6 +21,7 @@ source_set("model") {
     "//ios/chrome/browser/synced_sessions/model",
     "//ios/chrome/browser/tabs/model",
     "//ios/chrome/browser/ui/history:history_driver",
+    "//ios/web/public",
   ]
 }
 

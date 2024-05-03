@@ -135,6 +135,7 @@ source_set("sync_error_browser_agent") {
     "//ios/chrome/browser/ui/authentication:signin_presenter",
     "//ui/base",
   ]
+  public_deps = [ "//ios/web/public" ]
   frameworks = [ "UIKit.framework" ]
 }
 
@@ -155,10 +156,12 @@ source_set("test_support") {
     "//ios/chrome/browser/shared/model/browser_state",
     "//ios/chrome/browser/signin/model",
     "//ios/chrome/common",
-    "//ios/web",
     "//ui/base",
   ]
-  public_deps = [ "//testing/gmock" ]
+  public_deps = [
+    "//ios/web/public",
+    "//testing/gmock",
+  ]
 }
 
 source_set("unit_tests") {

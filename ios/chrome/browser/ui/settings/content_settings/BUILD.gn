@@ -117,6 +117,7 @@ source_set("eg_app_support+eg2") {
     ":content_settings",
     "//base",
     "//components/content_settings/core/browser",
+    "//components/content_settings/core/common",
     "//ios/chrome/app:app_internal",
     "//ios/chrome/browser/content_settings/model",
     "//ios/chrome/browser/shared/model/browser_state",

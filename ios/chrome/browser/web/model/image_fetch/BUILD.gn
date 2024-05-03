@@ -16,11 +16,11 @@ source_set("image_fetch") {
     ":image_fetch_js",
     "//base",
     "//components/image_fetcher/core",
-    "//ios/web",
     "//ios/web/common",
     "//ios/web/public/js_messaging",
     "//url",
   ]
+  public_deps = [ "//ios/web/public" ]
 }
 
 optimize_ts("image_fetch_js") {
@@ -53,6 +53,7 @@ source_set("unit_tests") {
     "//ios/web/public/js_messaging:js_messaging",
     "//ios/web/public/test",
     "//ios/web/test:js_test_util_internal",
+    "//ios/web/web_state/ui:web_controller_header",
     "//net:test_support",
     "//services/network:test_support",
   ]

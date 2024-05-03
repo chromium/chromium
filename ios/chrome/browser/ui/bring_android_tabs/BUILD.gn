@@ -61,6 +61,7 @@ source_set("bring_android_tabs_ui") {
     "//ios/chrome/common/ui/colors",
     "//ios/chrome/common/ui/favicon",
     "//ios/chrome/common/ui/table_view:cells_constants",
+    "//ios/web/public",
   ]
 }
 

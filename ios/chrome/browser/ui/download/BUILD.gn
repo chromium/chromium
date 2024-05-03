@@ -71,13 +71,14 @@ source_set("download") {
     "//ios/chrome/common/ui/util",
     "//ios/public/provider/chrome/browser/branded_images:branded_images_api",
     "//ios/third_party/material_components_ios",
-    "//ios/web",
     "//ios/web:core",
     "//ios/web/common",
+    "//ios/web/public",
     "//net",
     "//ui/base",
     "//ui/gfx",
   ]
+  public_deps = [ "//ios/web/public/download" ]
   frameworks = [
     "ContactsUI.framework",
     "Contacts.framework",

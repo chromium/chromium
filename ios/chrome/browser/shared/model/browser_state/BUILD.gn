@@ -16,7 +16,7 @@ source_set("browser_state") {
   ]
 
   public_deps = [
-    "//ios/web",
+    "//ios/web/public",
     "//net",
   ]
 
@@ -35,6 +35,7 @@ source_set("browser_state") {
     "//ios/chrome/browser/shared/model/url:constants",
     "//ios/components/webui:url_constants",
     "//ios/web/public/webui",
+    "//ios/web/webui",
   ]
 }
 
@@ -90,7 +91,7 @@ source_set("test_support") {
     "//ios/chrome/browser/ui/ntp:logo",
     "//ios/chrome/browser/webdata_services/model",
     "//ios/chrome/test:test_support",
-    "//ios/web",
+    "//ios/web/public",
     "//net:test_support",
   ]
 }

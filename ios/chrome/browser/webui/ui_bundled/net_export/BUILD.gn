@@ -7,6 +7,7 @@ source_set("net_export") {
     "net_export_ui.h",
     "net_export_ui.mm",
   ]
+  public_deps = [ "//ios/web/public/webui" ]
   deps = [
     "//base",
     "//components/net_log",
@@ -17,7 +18,7 @@ source_set("net_export") {
     "//ios/chrome/browser/shared/model/url:constants",
     "//ios/chrome/browser/webui/model",
     "//ios/chrome/common:common",
-    "//ios/web/public/webui",
+    "//ios/web/public",
     "//net",
   ]
 }

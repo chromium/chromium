@@ -30,6 +30,7 @@ source_set("model") {
     "//ui/gfx",
     "//url",
   ]
+  public_deps = [ "//ios/web/public" ]
   frameworks = [ "UIKit.framework" ]
 }
 

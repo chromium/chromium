@@ -26,6 +26,7 @@ source_set("tab_pickup") {
     "//ios/chrome/browser/synced_sessions/model",
     "//ios/chrome/browser/tabs/model:tab_sync_util",
   ]
+  public_deps = [ "//ios/web/public" ]
 }
 
 source_set("infobar_delegate") {

@@ -39,6 +39,7 @@ source_set("eg_app_support+eg2") {
     "//ios/chrome/browser/ui/fullscreen",
     "//ios/chrome/browser/ui/ntp:logo",
     "//ios/chrome/test/app:test_support",
+    "//ios/web/public",
   ]
 }
 

@@ -13,6 +13,7 @@ source_set("model") {
     "//base",
     "//components/keyed_service/ios",
     "//components/trusted_vault",
+    "//ios/web/public",
   ]
   deps = [
     "//components/signin/public/identity_manager",

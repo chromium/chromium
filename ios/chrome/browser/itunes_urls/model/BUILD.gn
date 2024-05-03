@@ -10,9 +10,9 @@ source_set("model") {
   deps = [
     "//base",
     "//ios/chrome/browser/shared/public/commands",
-    "//ios/web",
     "//url",
   ]
+  public_deps = [ "//ios/web/public" ]
   frameworks = [
     "Foundation.framework",
     "StoreKit.framework",

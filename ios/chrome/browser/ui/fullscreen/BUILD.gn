@@ -87,11 +87,12 @@ source_set("internal") {
     "//ios/chrome/common:timing",
     "//ios/chrome/common/ui/util",
     "//ios/public/provider/chrome/browser/fullscreen:fullscreen_api",
-    "//ios/web",
     "//ios/web/common",
     "//ios/web/public/security",
     "//ui/gfx/geometry",
   ]
+
+  public_deps = [ "//ios/web/public" ]
 }
 
 source_set("ui") {

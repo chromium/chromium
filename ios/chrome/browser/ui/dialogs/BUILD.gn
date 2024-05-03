@@ -12,6 +12,8 @@ source_set("dialogs") {
     "java_script_dialog_blocking_state.h",
     "java_script_dialog_blocking_state.mm",
   ]
+
+  public_deps = [ "//ios/web/public" ]
 }
 
 source_set("unit_tests") {

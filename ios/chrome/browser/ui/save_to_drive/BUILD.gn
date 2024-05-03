@@ -32,6 +32,8 @@ source_set("save_to_drive") {
     "//ios/chrome/browser/ui/account_picker:account_picker_configuration",
     "//ios/chrome/browser/ui/account_picker:account_picker_consumer",
     "//ios/chrome/browser/ui/authentication/signin:signin_headers",
+    "//ios/web/public",
+    "//ios/web/public/download",
     "//ui/base",
   ]
   frameworks = [ "UIKit.framework" ]

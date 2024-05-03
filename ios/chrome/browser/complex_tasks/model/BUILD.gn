@@ -9,7 +9,7 @@ source_set("model") {
     "ios_task_tab_helper.h",
     "ios_task_tab_helper.mm",
   ]
-  deps = [ "//ios/web" ]
+  public_deps = [ "//ios/web/public" ]
 }
 
 source_set("unit_tests") {

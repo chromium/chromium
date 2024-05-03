@@ -49,6 +49,8 @@ source_set("model") {
     "//net",
     "//services/network/public/cpp",
   ]
+
+  public_deps = [ "//ios/web/public" ]
 }
 
 source_set("sync_settings_factory") {

@@ -65,7 +65,7 @@ source_set("tabs") {
     "//ios/chrome/common/ui/util",
     "//ios/public/provider/chrome/browser/fullscreen:fullscreen_api",
     "//ios/third_party/material_components_ios",
-    "//ios/web",
+    "//ios/web/public",
     "//ui/base",
     "//ui/gfx",
   ]

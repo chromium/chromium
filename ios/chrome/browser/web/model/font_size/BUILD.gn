@@ -26,7 +26,10 @@ source_set("font_size") {
     "//ios/public/provider/chrome/browser/text_zoom:text_zoom_api",
     "//services/metrics/public/cpp:ukm_builders",
   ]
-  public_deps = [ "//ios/web/public/js_messaging" ]
+  public_deps = [
+    "//ios/web/public",
+    "//ios/web/public/js_messaging",
+  ]
 }
 
 source_set("unit_tests") {

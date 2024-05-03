@@ -59,6 +59,7 @@ source_set("model") {
     "//ios/chrome/browser/shared/model/url:constants",
     "//ios/chrome/browser/shared/ui/util",
     "//ios/components/webui:url_constants",
+    "//ios/web/public",
     "//third_party/metrics_proto",
     "//ui/base",
     "//ui/gfx",

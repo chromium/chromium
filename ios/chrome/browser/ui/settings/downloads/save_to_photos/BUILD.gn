@@ -71,5 +71,6 @@ source_set("unit_tests") {
     "//ios/chrome/browser/ui/authentication/cells",
     "//ios/chrome/common/ui/colors",
     "//testing/gtest",
+    "//ui/base",
   ]
 }

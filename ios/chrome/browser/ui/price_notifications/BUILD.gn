@@ -40,6 +40,7 @@ source_set("price_notifications") {
     "//ios/chrome/browser/shared/ui/table_view:utils",
     "//ios/chrome/browser/tabs/model",
     "//ios/chrome/browser/ui/price_notifications/cells",
+    "//ios/web/public",
     "//url",
   ]
 }

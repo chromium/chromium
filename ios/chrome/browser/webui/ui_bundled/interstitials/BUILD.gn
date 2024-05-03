@@ -25,6 +25,7 @@ source_set("interstitials") {
     "//ios/chrome/browser/ssl/model",
     "//ios/components/security_interstitials",
     "//ios/components/security_interstitials/safe_browsing",
+    "//ios/web/public",
     "//ios/web/public/security",
     "//ios/web/public/webui",
     "//net",

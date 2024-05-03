@@ -14,7 +14,7 @@ source_set("model") {
     "//ios/chrome/browser/main/model",
     "//ios/chrome/browser/shared/model/web_state_list",
     "//ios/chrome/browser/ui/main",
-    "//ios/web",
+    "//ios/web/public",
   ]
 }
 

@@ -16,7 +16,7 @@ source_set("ios") {
 
   deps = [
     "//components/keyed_service/core",
-    "//ios/web",
+    "//ios/web/public",
   ]
 
   defines = [ "KEYED_SERVICE_IMPLEMENTATION" ]

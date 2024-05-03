@@ -21,8 +21,9 @@ source_set("model") {
     "//components/pref_registry",
     "//components/prefs",
     "//ios/public/provider/chrome/browser/voice_search:voice_search_api",
-    "//ios/web",
   ]
+
+  public_deps = [ "//ios/web/public" ]
 }
 
 source_set("voice_search_language") {
@@ -62,7 +63,7 @@ source_set("tts") {
     "//components/google/core/common",
     "//components/prefs",
     "//ios/chrome/browser/shared/model/browser_state",
-    "//ios/web",
+    "//ios/web/public",
     "//ios/web/public/js_messaging:js_messaging",
     "//net",
     "//url",

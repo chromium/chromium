@@ -43,7 +43,7 @@ source_set("coordinator") {
     "version_ui.h",
     "version_ui.mm",
   ]
-
+  public_deps = [ "//ios/web/public/webui" ]
   deps = [
     "//base",
     "//base:i18n",
@@ -98,6 +98,7 @@ source_set("coordinator") {
     "//ios/chrome/browser/web/model/java_script_console",
     "//ios/chrome/browser/webui/model",
     "//ios/chrome/common",
+    "//ios/web/public",
     "//ios/web/public/js_messaging",
     "//ios/web/public/webui",
     "//net",

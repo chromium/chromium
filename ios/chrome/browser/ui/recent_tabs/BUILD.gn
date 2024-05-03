@@ -124,6 +124,7 @@ source_set("recent_tabs_ui") {
     "//ios/chrome/common/ui/favicon",
     "//ios/chrome/common/ui/table_view:cells_constants",
     "//ios/public/provider/chrome/browser/modals:modals_api",
+    "//ios/web/public",
     "//ui/base",
   ]
 }

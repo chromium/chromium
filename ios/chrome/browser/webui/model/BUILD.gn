@@ -10,10 +10,8 @@ source_set("model") {
     "show_mail_composer_context.h",
     "show_mail_composer_context.mm",
   ]
-  deps = [
-    "//base",
-    "//ios/web",
-  ]
+  public_deps = [ "//ios/web/public" ]
+  deps = [ "//base" ]
 }
 
 source_set("unit_tests") {
@@ -24,7 +22,6 @@ source_set("unit_tests") {
     "//base",
     "//components/strings",
     "//ios/chrome/browser/shared/model/browser_state:test_support",
-    "//ios/web",
     "//ios/web/public/test",
     "//testing/gtest",
   ]
