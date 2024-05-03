@@ -691,6 +691,18 @@ void CheckKeyboardIsUpAndNotCovered() {
                  @"Keyboard Should be Shown");
   [[EarlGrey selectElementWithMatcher:ManualFallbackPasswordTableViewMatcher()]
       assertWithMatcher:grey_minimumVisiblePercent(0.5)];
+  CheckPasswordFillingOptionIsVisible(/*site=*/@"example.com");
+
+  // Search for a term that shouldn't give any results.
+  [[EarlGrey selectElementWithMatcher:ManualFallbackPasswordSearchBarMatcher()]
+      performAction:grey_replaceText(@"example1")];
+  [[EarlGrey selectElementWithMatcher:grey_text(@"example.com")]
+      assertWithMatcher:grey_notVisible()];
+
+  // Search for a term that matches with the saved credential.
+  [[EarlGrey selectElementWithMatcher:ManualFallbackPasswordSearchBarMatcher()]
+      performAction:grey_replaceText(@"AMPL")];
+  CheckPasswordFillingOptionIsVisible(/*site=*/@"example.com");
 }
 
 // Tests that the Password View Controller is dismissed when tapping the
