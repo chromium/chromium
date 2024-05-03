@@ -139,7 +139,9 @@ ShortcutCreatorResult CreateShortcutOnLinuxDesktop(
       break;
   }
 
-  // Fourth, install the .desktop file into the desktop menu.
+  // Fourth, install the .desktop file into the desktop menu. If this fails that
+  // is OK, as linux distros often have the capability of double-clicking the
+  // .desktop file to launch them.
   int error_code = xdg_wrapper.XdgDesktopMenuInstall(shortcut_desktop_location);
   if (error_code != EXIT_SUCCESS) {
     non_fatal_failure = true;
