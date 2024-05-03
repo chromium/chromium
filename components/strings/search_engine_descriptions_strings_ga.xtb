@@ -1,9 +1,0 @@
-
-<?xml version="1.0" ?>
-<!DOCTYPE translationbundle>
-<!-- This file is generated using
-google3/googleclient/chrome/tools/search_engine_choice/generate_marketing_snippets.py.
-Do not modify it manually. -->
-<translationbundle lang="ga">
-  <translation id="IDS_BING_SEARCH_DESCRIPTION">Is inneall cuardaigh AI é Microsoft Bing atá cumhachtaithe ag GPT-4</translation>
-</translationbundle>

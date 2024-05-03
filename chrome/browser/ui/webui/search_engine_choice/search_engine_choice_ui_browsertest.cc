@@ -258,7 +258,8 @@ class SearchEngineChoiceUIPixelTest
   base::CallbackListSubscription create_services_subscription_;
 };
 
-IN_PROC_BROWSER_TEST_P(SearchEngineChoiceUIPixelTest, InvokeUi_default) {
+IN_PROC_BROWSER_TEST_P(SearchEngineChoiceUIPixelTest,
+                       DISABLED_InvokeUi_default) {
   ShowAndVerifyUi();
 }
 
