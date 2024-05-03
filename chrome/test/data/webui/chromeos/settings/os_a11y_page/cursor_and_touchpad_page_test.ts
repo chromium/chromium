@@ -5,7 +5,7 @@
 import 'chrome://os-settings/lazy_load.js';
 
 import {SettingsCursorAndTouchpadPageElement} from 'chrome://os-settings/lazy_load.js';
-import {CrSettingsPrefs, DevicePageBrowserProxyImpl, Router, routes, settingMojom, SettingsDropdownMenuElement, SettingsPrefsElement, SettingsToggleButtonElement} from 'chrome://os-settings/os_settings.js';
+import {createRouterForTesting, CrSettingsPrefs, DevicePageBrowserProxyImpl, Router, routes, settingMojom, SettingsDropdownMenuElement, SettingsPrefsElement, SettingsToggleButtonElement} from 'chrome://os-settings/os_settings.js';
 import {assert} from 'chrome://resources/js/assert.js';
 import {loadTimeData} from 'chrome://resources/js/load_time_data.js';
 import {flush} from 'chrome://resources/polymer/v3_0/polymer/polymer_bundled.min.js';
@@ -62,6 +62,25 @@ suite('<settings-cursor-and-touchpad-page>', () => {
     Router.getInstance().resetRouteForTesting();
   });
 
+  function setUpDeviceBrowserProxy(
+      hasMouse: boolean, hasTouchpad: boolean, hasPointingStick: boolean) {
+    deviceBrowserProxy.hasMouse = hasMouse;
+    deviceBrowserProxy.hasTouchpad = hasTouchpad;
+    deviceBrowserProxy.hasPointingStick = hasPointingStick;
+  }
+
+  async function setUpNavigationTest(
+      hasMouse: boolean, hasTouchpad: boolean,
+      hasPointingStick: boolean): Promise<void> {
+    loadTimeData.overrideValues({
+      enableInputDeviceSettingsSplit: true,
+    });
+    const testRouter = createRouterForTesting();
+    Router.resetInstanceForTesting(testRouter);
+    await initPage();
+    setUpDeviceBrowserProxy(hasMouse, hasTouchpad, hasPointingStick);
+  }
+
   test('cursor color prefs and dropdown synced', async () => {
     await initPage();
 
@@ -93,9 +112,16 @@ suite('<settings-cursor-and-touchpad-page>', () => {
     assertFalse(cursorColorEnabledPref.value);
   });
 
+  // Only run this test when input device setting split feature flag is
+  // disabled.
   test(
       'should focus pointerSubpageButton button when returning from Pointers subpage',
       async () => {
+        loadTimeData.overrideValues({
+          enableInputDeviceSettingsSplit: false,
+        });
+        const testRouter = createRouterForTesting();
+        Router.resetInstanceForTesting(testRouter);
         const selector = '#pointerSubpageButton';
         const route = routes.POINTERS;
         await initPage();
@@ -122,6 +148,133 @@ suite('<settings-cursor-and-touchpad-page>', () => {
             subpageButton, page.shadowRoot!.activeElement,
             `${selector} should be focused`);
       });
+
+  test(
+      'should focus pointerSubpageButton button when returning from touchpad subpage',
+      async () => {
+        loadTimeData.overrideValues({
+          enableInputDeviceSettingsSplit: true,
+        });
+        const testRouter = createRouterForTesting();
+        Router.resetInstanceForTesting(testRouter);
+        const selector = '#pointerSubpageButton';
+        const route = routes.PER_DEVICE_TOUCHPAD;
+        // Only a touchpad is connected, no mouse.
+        deviceBrowserProxy.hasMouse = false;
+        deviceBrowserProxy.hasTouchpad = true;
+        await initPage();
+        flush();
+        const router = Router.getInstance();
+
+        const subpageButton =
+            page.shadowRoot!.querySelector<HTMLElement>(selector);
+        assert(subpageButton);
+
+        subpageButton.click();
+        assertEquals(route, router.currentRoute);
+        assertNotEquals(
+            subpageButton, page.shadowRoot!.activeElement,
+            `${selector} should not be focused`);
+
+        const popStateEventPromise = eventToPromise('popstate', window);
+        router.navigateToPreviousRoute();
+        await popStateEventPromise;
+        await waitAfterNextRender(page);
+
+        assertEquals(routes.A11Y_CURSOR_AND_TOUCHPAD, router.currentRoute);
+        assertEquals(
+            subpageButton, page.shadowRoot!.activeElement,
+            `${selector} should be focused`);
+      });
+
+  test('Click pointerSubpageButton to navigate to mouse subpage', async () => {
+    await setUpNavigationTest(
+        /*hasMouse=*/ true, /*hasTouchpad=*/ false,
+        /*hasPointingStick=*/ false);
+    const row =
+        page.shadowRoot!.querySelector<HTMLElement>('#pointerSubpageButton');
+    assert(row);
+    assertFalse(row.hidden);
+
+    row.click();
+    assertEquals(routes.PER_DEVICE_MOUSE, Router.getInstance().currentRoute);
+  });
+
+  test(
+      'Click pointerSubpageButton to navigate to touchpad subpage',
+      async () => {
+        await setUpNavigationTest(
+            /*hasMouse=*/ false, /*hasTouchpad=*/ true,
+            /*hasPointingStick=*/ false);
+        const row = page.shadowRoot!.querySelector<HTMLElement>(
+            '#pointerSubpageButton');
+        assert(row);
+        assertFalse(row.hidden);
+
+        row.click();
+        assertEquals(
+            routes.PER_DEVICE_TOUCHPAD, Router.getInstance().currentRoute);
+      });
+
+  test(
+      'Click pointerSubpageButton to navigate to pointing stick subpage',
+      async () => {
+        await setUpNavigationTest(
+            /*hasMouse=*/ false, /*hasTouchpad=*/ false,
+            /*hasPointingStick=*/ true);
+        const row = page.shadowRoot!.querySelector<HTMLElement>(
+            '#pointerSubpageButton');
+        assert(row);
+        assertFalse(row.hidden);
+
+        row.click();
+        assertEquals(
+            routes.PER_DEVICE_POINTING_STICK,
+            Router.getInstance().currentRoute);
+      });
+
+  test('Click pointerSubpageButton to navigate to device subpage', async () => {
+    // All Mouse, touchpad and pointing stick are connected.
+    await setUpNavigationTest(
+        /*hasMouse=*/ true, /*hasTouchpad=*/ true,
+        /*hasPointingStick=*/ true);
+    const row =
+        page.shadowRoot!.querySelector<HTMLElement>('#pointerSubpageButton');
+    assert(row);
+    assertFalse(row.hidden);
+
+    row.click();
+    assertEquals(routes.DEVICE, Router.getInstance().currentRoute);
+
+    Router.getInstance().navigateToPreviousRoute();
+    // Touchpad and pointing stick are connected.
+    setUpDeviceBrowserProxy(
+        /*hasMouse=*/ false, /*hasTouchpad=*/ true, /*hasPointingStick=*/ true);
+    row.click();
+    assertEquals(routes.DEVICE, Router.getInstance().currentRoute);
+
+    Router.getInstance().navigateToPreviousRoute();
+    // Mouse and pointing stick are connected.
+    setUpDeviceBrowserProxy(
+        /*hasMouse=*/ true, /*hasTouchpad=*/ false, /*hasPointingStick=*/ true);
+    row.click();
+    assertEquals(routes.DEVICE, Router.getInstance().currentRoute);
+
+    Router.getInstance().navigateToPreviousRoute();
+    // Mouse and touchpad are connected.
+    setUpDeviceBrowserProxy(
+        /*hasMouse=*/ true, /*hasTouchpad=*/ true, /*hasPointingStick=*/ false);
+    row.click();
+    assertEquals(routes.DEVICE, Router.getInstance().currentRoute);
+
+    Router.getInstance().navigateToPreviousRoute();
+    // No device is connected.
+    setUpDeviceBrowserProxy(
+        /*hasMouse=*/ false, /*hasTouchpad=*/ false,
+        /*hasPointingStick=*/ false);
+    row.click();
+    assertEquals(routes.DEVICE, Router.getInstance().currentRoute);
+  });
 
   test('Pointers row only visible if mouse/touchpad present', async () => {
     await initPage();

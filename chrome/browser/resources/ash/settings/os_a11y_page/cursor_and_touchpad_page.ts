@@ -308,6 +308,27 @@ export class SettingsCursorAndTouchpadPageElement extends
           Setting.kOverscrollEnabled,
         ]),
       },
+
+      /**
+       * Check if at least one mouse is connected.
+       */
+      hasMouse_: {
+        type: Boolean,
+      },
+
+      /**
+       * Check if at least one touchpad is connected.
+       */
+      hasTouchpad_: {
+        type: Boolean,
+      },
+
+      /**
+       * Check if at least one pointing stick is connected.
+       */
+      hasPointingStick_: {
+        type: Boolean,
+      },
     };
   }
 
@@ -332,6 +353,9 @@ export class SettingsCursorAndTouchpadPageElement extends
   private readonly isAccessibilityMouseKeysEnabled_: boolean;
   private readonly isAccessibilityOverscrollSettingFeatureEnabled_: boolean;
   private readonly largeCursorMaxSize_: number;
+  private hasMouse_: boolean;
+  private hasTouchpad_: boolean;
+  private hasPointingStick_: boolean;
 
   constructor() {
     super();
@@ -363,7 +387,15 @@ export class SettingsCursorAndTouchpadPageElement extends
   override ready(): void {
     super.ready();
 
-    this.addFocusConfig(routes.POINTERS, '#pointerSubpageButton');
+    if (loadTimeData.getBoolean('enableInputDeviceSettingsSplit')) {
+      this.addFocusConfig(routes.DEVICE, '#pointerSubpageButton');
+      this.addFocusConfig(routes.PER_DEVICE_TOUCHPAD, '#pointerSubpageButton');
+      this.addFocusConfig(routes.PER_DEVICE_MOUSE, '#pointerSubpageButton');
+      this.addFocusConfig(
+          routes.PER_DEVICE_POINTING_STICK, '#pointerSubpageButton');
+    } else {
+      this.addFocusConfig(routes.POINTERS, '#pointerSubpageButton');
+    }
     this.addFocusConfig(
         routes.MANAGE_FACEGAZE_CURSOR_SETTINGS, '#faceGazeCursorControlButton');
     this.addFocusConfig(
@@ -458,6 +490,47 @@ export class SettingsCursorAndTouchpadPageElement extends
         (!hasMouse && !hasPointingStick && !hasTouchpad) || isKioskModeActive;
   }
 
+  /**
+   * If enableInputDeviceSettingsSplit feature flag is enabled:
+   * If there is only touchpad connected, navigate to touchpad subpage.
+   * If there is only mouse connected, navigate to mouse subpage.
+   * If there is only pointing stick connected, navigate to pointing stick
+   * subpage. If there are more than one types device connected, navigate to
+   * device subpage. If there is no mouse or touchpad or pointing stick
+   * connected, navigate to device subpage.
+   *
+   * If enableInputDeviceSettingsSplit feature flag is disabled:
+   * Navigate to pointers page.
+   */
+  onNavigateToSubpageClick(): void {
+    if (!loadTimeData.getBoolean('enableInputDeviceSettingsSplit')) {
+      Router.getInstance().navigateTo(
+          routes.POINTERS,
+          /* dynamicParams= */ undefined, /* removeSearch= */ true);
+      return;
+    }
+
+    if (this.hasMouse_ && !this.hasTouchpad_ && !this.hasPointingStick_) {
+      Router.getInstance().navigateTo(
+          routes.PER_DEVICE_MOUSE,
+          /* dynamicParams= */ undefined, /* removeSearch= */ true);
+    } else if (
+        !this.hasMouse_ && this.hasTouchpad_ && !this.hasPointingStick_) {
+      Router.getInstance().navigateTo(
+          routes.PER_DEVICE_TOUCHPAD,
+          /* dynamicParams= */ undefined, /* removeSearch= */ true);
+    } else if (
+        !this.hasMouse_ && !this.hasTouchpad_ && this.hasPointingStick_) {
+      Router.getInstance().navigateTo(
+          routes.PER_DEVICE_POINTING_STICK,
+          /* dynamicParams= */ undefined, /* removeSearch= */ true);
+    } else {
+      Router.getInstance().navigateTo(
+          routes.DEVICE,
+          /* dynamicParams= */ undefined, /* removeSearch= */ true);
+    }
+  }
+
   private computeShowShelfNavigationButtonsSettings_(): boolean {
     return !this.isKioskModeActive_ &&
         loadTimeData.getBoolean('showTabletModeShelfNavigationButtonsSettings');
@@ -532,13 +605,6 @@ export class SettingsCursorAndTouchpadPageElement extends
         DEFAULT_BLACK_CURSOR_COLOR;
     this.set(
         'prefs.settings.a11y.cursor_color_enabled.value', a11yCursorColorOn);
-  }
-
-
-  private onMouseClick_(): void {
-    Router.getInstance().navigateTo(
-        routes.POINTERS,
-        /* dynamicParams= */ undefined, /* removeSearch= */ true);
   }
 }
 
