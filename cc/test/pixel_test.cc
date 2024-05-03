@@ -31,6 +31,7 @@
 #include "components/viz/service/display/software_renderer.h"
 #include "components/viz/service/display_embedder/skia_output_surface_dependency_impl.h"
 #include "components/viz/service/display_embedder/skia_output_surface_impl.h"
+#include "components/viz/service/gl/gpu_service_impl.h"
 #include "components/viz/test/paths.h"
 #include "components/viz/test/test_in_process_context_provider.h"
 #include "components/viz/test/test_shared_bitmap_manager.h"
@@ -273,16 +274,8 @@ void PixelTest::SetUpSkiaRenderer(gfx::SurfaceOrigin output_surface_origin) {
       resource_provider.get(), nullptr,
       static_cast<viz::SkiaOutputSurface*>(output_surface_.get()));
   resource_provider_ = std::move(resource_provider);
-  renderer_->Initialize();
-  renderer_->SetVisible(true);
 
-  // Set up the client side context provider, etc
-  child_context_provider_ =
-      base::MakeRefCounted<viz::TestInProcessContextProvider>(
-          viz::TestContextType::kSoftwareRaster, /*support_locking=*/false);
-  gpu::ContextResult result = child_context_provider_->BindToCurrentSequence();
-  DCHECK_EQ(result, gpu::ContextResult::kSuccess);
-  child_resource_provider_ = std::make_unique<viz::ClientResourceProvider>();
+  FinishSetup();
 }
 
 void PixelTest::TearDown() {
@@ -299,18 +292,20 @@ void PixelTest::TearDown() {
 }
 
 void PixelTest::SetUpSoftwareRenderer() {
+  // Set up the GPU service. It's only used for shared bitmaps but it's still
+  // needed.
+  gpu_service_holder_ = viz::TestGpuServiceHolder::GetInstance();
+
   output_surface_ = std::make_unique<PixelTestOutputSurface>(
       std::make_unique<viz::SoftwareOutputDevice>());
   output_surface_->BindToClient(output_surface_client_.get());
   shared_bitmap_manager_ = std::make_unique<viz::TestSharedBitmapManager>();
-  shared_image_manager_ = std::make_unique<gpu::SharedImageManager>();
-  sync_point_manager_ = std::make_unique<gpu::SyncPointManager>();
 
+  auto* gpu_service = gpu_service_holder_->gpu_service();
   auto resource_provider =
       std::make_unique<viz::DisplayResourceProviderSoftware>(
-          shared_bitmap_manager_.get(), shared_image_manager_.get(),
-          sync_point_manager_.get());
-  child_resource_provider_ = std::make_unique<viz::ClientResourceProvider>();
+          shared_bitmap_manager_.get(), gpu_service->shared_image_manager(),
+          gpu_service->sync_point_manager());
 
   auto renderer = std::make_unique<viz::SoftwareRenderer>(
       &renderer_settings_, &debug_settings_, output_surface_.get(),
@@ -318,8 +313,21 @@ void PixelTest::SetUpSoftwareRenderer() {
   resource_provider_ = std::move(resource_provider);
   software_renderer_ = renderer.get();
   renderer_ = std::move(renderer);
+
+  FinishSetup();
+}
+
+void PixelTest::FinishSetup() {
+  CHECK(renderer_);
   renderer_->Initialize();
   renderer_->SetVisible(true);
+
+  child_context_provider_ =
+      base::MakeRefCounted<viz::TestInProcessContextProvider>(
+          viz::TestContextType::kSoftwareRaster, /*support_locking=*/false);
+  gpu::ContextResult result = child_context_provider_->BindToCurrentSequence();
+  CHECK_EQ(result, gpu::ContextResult::kSuccess);
+  child_resource_provider_ = std::make_unique<viz::ClientResourceProvider>();
 }
 
 }  // namespace cc
