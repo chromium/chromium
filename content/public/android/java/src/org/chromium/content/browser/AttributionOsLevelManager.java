@@ -41,6 +41,7 @@ import org.chromium.base.task.TaskTraits;
 import org.chromium.url.GURL;
 
 import java.io.IOException;
+import java.io.InvalidObjectException;
 import java.lang.annotation.Retention;
 import java.lang.annotation.RetentionPolicy;
 import java.time.Instant;
@@ -99,6 +100,16 @@ public class AttributionOsLevelManager {
         OperationResult.ERROR_BACKGROUND_CALLER,
         OperationResult.ERROR_VERSION_UNSUPPORTED,
         OperationResult.ERROR_PERMISSION_UNGRANTED,
+        OperationResult.ERROR_SERVICE_UNAVAILABLE,
+        OperationResult.ERROR_API_RATE_LIMIT_EXCEEDED,
+        OperationResult.ERROR_SERVER_RATE_LIMIT_EXCEEDED,
+        OperationResult.ERROR_CALLER_NOT_ALLOWED_TO_CROSS_USER_BOUNDARIES,
+        OperationResult.ERROR_CALLER_NOT_ALLOWED_ON_BEHALF,
+        OperationResult.ERROR_PERMISSION_NOT_REQUESTED,
+        OperationResult.ERROR_CALLER_NOT_ALLOWED,
+        OperationResult.ERROR_ENCRYPTION_FAILURE,
+        OperationResult.ERROR_SERVICE_NOT_FOUND,
+        OperationResult.ERROR_INVALID_OBJECT,
         OperationResult.COUNT
     })
     @Retention(RetentionPolicy.SOURCE)
@@ -115,27 +126,72 @@ public class AttributionOsLevelManager {
         int ERROR_BACKGROUND_CALLER = 9;
         int ERROR_VERSION_UNSUPPORTED = 10;
         int ERROR_PERMISSION_UNGRANTED = 11;
-        int COUNT = 12;
+        int ERROR_SERVICE_UNAVAILABLE = 12;
+        int ERROR_API_RATE_LIMIT_EXCEEDED = 13;
+        int ERROR_SERVER_RATE_LIMIT_EXCEEDED = 14;
+        int ERROR_CALLER_NOT_ALLOWED_TO_CROSS_USER_BOUNDARIES = 15;
+        int ERROR_CALLER_NOT_ALLOWED_ON_BEHALF = 16;
+        int ERROR_PERMISSION_NOT_REQUESTED = 17;
+        int ERROR_CALLER_NOT_ALLOWED = 18;
+        int ERROR_ENCRYPTION_FAILURE = 19;
+        int ERROR_SERVICE_NOT_FOUND = 20;
+        int ERROR_INVALID_OBJECT = 21;
+        int COUNT = 22;
     }
 
     private static boolean supportsAttribution() {
         return Build.VERSION.SDK_INT >= Build.VERSION_CODES.R;
     }
 
+    private static @OperationResult int getOperationResultFromMessage(String message) {
+        if (message == null) {
+            return OperationResult.ERROR_UNKNOWN;
+        } else {
+            String lowerMessage = message.toLowerCase(Locale.US);
+            if (lowerMessage.contains("background")) {
+                return OperationResult.ERROR_BACKGROUND_CALLER;
+            } else if (lowerMessage.contains("unable to find the service")) {
+                return OperationResult.ERROR_SERVICE_NOT_FOUND;
+            } else if (lowerMessage.contains("service is not available")) {
+                return OperationResult.ERROR_SERVICE_UNAVAILABLE;
+            } else if (lowerMessage.contains("api rate limit exceeded")) {
+                return OperationResult.ERROR_API_RATE_LIMIT_EXCEEDED;
+            } else if (lowerMessage.contains("server rate limit exceeded")) {
+                return OperationResult.ERROR_SERVER_RATE_LIMIT_EXCEEDED;
+            } else if (lowerMessage.contains(
+                    "caller is not authorized to access information from another user")) {
+                return OperationResult.ERROR_CALLER_NOT_ALLOWED_TO_CROSS_USER_BOUNDARIES;
+            } else if (lowerMessage.contains(
+                    "caller is not allowed to perform this operation on behalf of the given"
+                            + " package")) {
+                return OperationResult.ERROR_CALLER_NOT_ALLOWED_ON_BEHALF;
+            } else if (lowerMessage.contains("permission was not requested")) {
+                return OperationResult.ERROR_PERMISSION_NOT_REQUESTED;
+            } else if (lowerMessage.contains("caller is not allowed")) {
+                return OperationResult.ERROR_CALLER_NOT_ALLOWED;
+            } else if (lowerMessage.contains("api time out")) {
+                return OperationResult.ERROR_TIMEOUT;
+            } else if (lowerMessage.contains("failed to encrypt responses")) {
+                return OperationResult.ERROR_ENCRYPTION_FAILURE;
+            } else if (lowerMessage.contains(
+                    "service received an invalid object from the server")) {
+                return OperationResult.ERROR_INVALID_OBJECT;
+            } else {
+                return OperationResult.ERROR_UNKNOWN;
+            }
+        }
+    }
+
     private static @OperationResult int convertToOperationResult(Throwable thrown) {
-        if (thrown instanceof IllegalArgumentException) {
+        @OperationResult int result = getOperationResultFromMessage(thrown.getMessage());
+        if (result != OperationResult.ERROR_UNKNOWN) {
+            return result;
+        } else if (thrown instanceof IllegalArgumentException) {
             return OperationResult.ERROR_ILLEGAL_ARGUMENT;
         } else if (thrown instanceof IOException) {
             return OperationResult.ERROR_IO;
         } else if (thrown instanceof IllegalStateException) {
-            // The Android API doesn't break out this error as a separate exception so we
-            // are forced to inspect the message for now.
-            if (thrown.getMessage() != null
-                    && thrown.getMessage().toLowerCase(Locale.US).contains("background")) {
-                return OperationResult.ERROR_BACKGROUND_CALLER;
-            } else {
-                return OperationResult.ERROR_ILLEGAL_STATE;
-            }
+            return OperationResult.ERROR_ILLEGAL_STATE;
         } else if (thrown instanceof SecurityException) {
             return OperationResult.ERROR_SECURITY;
         } else if (thrown instanceof TimeoutException) {
@@ -143,6 +199,8 @@ public class AttributionOsLevelManager {
         } else if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.R
                 && thrown instanceof LimitExceededException) {
             return OperationResult.ERROR_LIMIT_EXCEEDED;
+        } else if (thrown instanceof InvalidObjectException) {
+            return OperationResult.ERROR_INVALID_OBJECT;
         } else {
             return OperationResult.ERROR_UNKNOWN;
         }
@@ -175,7 +233,7 @@ public class AttributionOsLevelManager {
         assert suffix.length() > 0;
 
         RecordHistogram.recordEnumeratedHistogram(
-                "Conversions.AndroidOperationResult." + suffix, result, OperationResult.COUNT);
+                "Conversions.AndroidOperationResult2." + suffix, result, OperationResult.COUNT);
     }
 
     @CalledByNative

@@ -3799,6 +3799,16 @@ Called by update_net_error_codes.py.-->
   <int value="9" label="Background caller error"/>
   <int value="10" label="Version unsupported"/>
   <int value="11" label="Permission ungranted"/>
+  <int value="12" label="Service unavailable"/>
+  <int value="13" label="API rate limit exeeded"/>
+  <int value="14" label="Server rate limit exeeded"/>
+  <int value="15" label="Caller not allowed to cross user boundary"/>
+  <int value="16" label="Caller not allowed on behalf"/>
+  <int value="17" label="Permission not requested"/>
+  <int value="18" label="Caller not allowed"/>
+  <int value="19" label="Encryption failure"/>
+  <int value="20" label="Service not found"/>
+  <int value="21" label="Invalid object from the server"/>
 </enum>
 
 <enum name="ConversionAssembleAggregatableReportStatus">
