@@ -229,6 +229,16 @@ chromium-metrics-reviews@google.com.
   </summary>
 </histogram>
 
+<histogram name="ContentNotifications.Registration.BrowserStateUnavailable"
+    enum="Boolean" expires_after="2024-11-03">
+  <owner>guiperez@google.com</owner>
+  <owner>chrome-sherlock@google.com</owner>
+  <summary>
+    This logs if a SNo registration has not succeeded due to a BrowserState
+    being unavailable at the time due to a Browser not being initialized.
+  </summary>
+</histogram>
+
 <histogram
     name="ContentSettings.ActiveExpiry.{ProviderType}.ContentSettingsType"
     enum="PermissionType" expires_after="2024-07-10">
