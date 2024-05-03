@@ -1710,8 +1710,8 @@ base::expected<void, mojom::ErrorPtr> GraphBuilder::AddOperationForReduce(
       break;
   }
 
-  constexpr char kParamAxes[] = "axes";
-  constexpr char kParamKeepDims[] = "keep_dims";
+  static constexpr char kParamAxes[] = "axes";
+  static constexpr char kParamKeepDims[] = "keep_dims";
   PopulateNamedValueType(operation.output_operand_id, *op->add_outputs());
 
   std::vector<int32_t> axes;
@@ -1820,7 +1820,7 @@ base::expected<void, mojom::ErrorPtr> GraphBuilder::AddOperationForReshape(
   SetInputWithName(*op->mutable_inputs(), kOpParamX,
                    input_operand_info.coreml_name);
 
-  constexpr char kParamShape[] = "shape";
+  static constexpr char kParamShape[] = "shape";
   std::vector<int32_t> shape;
   base::ranges::transform(
       output_operand_info.dimensions, std::back_inserter(shape),
@@ -1864,8 +1864,8 @@ base::expected<void, mojom::ErrorPtr> GraphBuilder::AddOperationForSlice(
   SetInputWithName(*op->mutable_inputs(), kOpParamX,
                    input_operand_info.coreml_name);
 
-  constexpr char kParamBegin[] = "begin";
-  constexpr char kParamSize[] = "size";
+  static constexpr char kParamBegin[] = "begin";
+  static constexpr char kParamSize[] = "size";
   std::vector<int32_t> beginnings;
   std::vector<int32_t> sizes;
   for (const mojom::StartAndSizePtr& start_and_size :
@@ -1904,7 +1904,7 @@ base::expected<void, mojom::ErrorPtr> GraphBuilder::AddOperationForTranspose(
                    input_operand_info.coreml_name);
 
   // CoreML expects permutation to be vector of int32_t.
-  constexpr char kParamPerm[] = "perm";
+  static constexpr char kParamPerm[] = "perm";
   std::vector<int32_t> permutation;
   base::ranges::transform(
       operation.permutation, std::back_inserter(permutation),
