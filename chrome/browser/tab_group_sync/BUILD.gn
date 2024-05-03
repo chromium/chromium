@@ -13,12 +13,11 @@ if (is_android) {
     sources = [
       "feature_utils.cc",
       "feature_utils.h",
-      "prefs.cc",
-      "prefs.h",
     ]
 
     deps = [
       "//base:base",
+      "//chrome/browser/profiles",
       "//chrome/common:constants",
       "//components/pref_registry",
       "//components/prefs",
@@ -51,6 +50,7 @@ if (is_android) {
   }
 
   android_library("java") {
+    srcjar_deps = [ ":utils_jni_headers" ]
     sources = [
       "android/java/src/org/chromium/chrome/browser/tab_group_sync/LocalTabGroupMutationHelper.java",
       "android/java/src/org/chromium/chrome/browser/tab_group_sync/LogUtils.java",
@@ -72,6 +72,7 @@ if (is_android) {
       "//build/android:build_java",
       "//chrome/browser/flags:java",
       "//chrome/browser/preferences:java",
+      "//chrome/browser/profiles/android:java",
       "//chrome/browser/tab:java",
       "//chrome/browser/tab_group:java",
       "//chrome/browser/tabmodel:java",

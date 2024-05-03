@@ -27,6 +27,7 @@ specific_include_rules = {
     "+components/password_manager",
     "+components/payments",
     "+components/safe_browsing",
+    "+components/saved_tab_groups",
     "+components/search_engines",
     "+components/translate",
     "+components/variations",

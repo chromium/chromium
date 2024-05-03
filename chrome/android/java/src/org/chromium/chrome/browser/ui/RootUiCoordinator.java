@@ -962,7 +962,7 @@ public class RootUiCoordinator
     @CallSuper
     protected void initProfileDependentFeatures(Profile currentlySelectedProfile) {
         Profile originalProfile = currentlySelectedProfile.getOriginalProfile();
-        if (TabGroupSyncFeatures.isTabGroupSyncEnabled()) {
+        if (TabGroupSyncFeatures.isTabGroupSyncEnabled(currentlySelectedProfile)) {
             mTabGroupSyncController =
                     new TabGroupSyncController(
                             mTabModelSelectorSupplier.get(),

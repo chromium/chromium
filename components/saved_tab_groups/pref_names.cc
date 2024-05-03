@@ -2,17 +2,18 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#include "chrome/browser/tab_group_sync/prefs.h"
+#include "components/saved_tab_groups/pref_names.h"
 
 #include "base/feature_list.h"
 #include "base/metrics/field_trial_params.h"
-#include "chrome/common/pref_names.h"
-#include "components/prefs/pref_registry_simple.h"
+#include "components/pref_registry/pref_registry_syncable.h"
 #include "components/saved_tab_groups/features.h"
 
-namespace tab_groups {
+namespace tab_groups::prefs {
 
-void RegisterProfilePrefs(PrefRegistrySimple* registry) {
+void RegisterProfilePrefs(user_prefs::PrefRegistrySyncable* registry) {
+  registry->RegisterBooleanPref(prefs::kSyncableTabGroups, false);
+#if BUILDFLAG(IS_ANDROID)
   if (base::FeatureList::IsEnabled(tab_groups::kTabGroupSyncAndroid)) {
     registry->RegisterBooleanPref(prefs::kAutoOpenSyncedTabGroups,
                                   base::GetFieldTrialParamByFeatureAsBool(
@@ -27,6 +28,7 @@ void RegisterProfilePrefs(PrefRegistrySimple* registry) {
     registry->RegisterBooleanPref(
         prefs::kStopShowingTabGroupConfirmationOnTabClose, false);
   }
+#endif  // BUILDFLAG(IS_ANDROID)
 }
 
-}  // namespace tab_groups
+}  // namespace tab_groups::prefs

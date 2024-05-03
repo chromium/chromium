@@ -4132,19 +4132,6 @@ inline constexpr char kBreachedCredentialsCount[] =
 inline constexpr char kTabGroupSavesUIUpdateMigrated[] =
     "tab_group_saves_ui_update_migrated";
 
-#if BUILDFLAG(IS_ANDROID)
-inline constexpr char kAutoOpenSyncedTabGroups[] =
-    "auto_open_synced_tab_groups";
-inline constexpr char kStopShowingTabGroupConfirmationOnClose[] =
-    "stop_showing_tab_group_confirmation_on_close";
-inline constexpr char kStopShowingTabGroupConfirmationOnUngroup[] =
-    "stop_showing_tab_group_confirmation_on_ungroup";
-inline constexpr char kStopShowingTabGroupConfirmationOnTabRemove[] =
-    "stop_showing_tab_group_confirmation_on_tab_remove";
-inline constexpr char kStopShowingTabGroupConfirmationOnTabClose[] =
-    "stop_showing_tab_group_confirmation_on_tab_close";
-#endif  // BUILDFLAG(IS_ANDROID)
-
 }  // namespace prefs
 
 #endif  // CHROME_COMMON_PREF_NAMES_H_

@@ -12,6 +12,8 @@ BASE_DECLARE_FEATURE(kTabGroupSyncAndroid);
 
 BASE_DECLARE_FEATURE(kTabGroupSyncForceOff);
 
+BASE_DECLARE_FEATURE(kAndroidTabGroupStableIds);
+
 BASE_DECLARE_FEATURE(kTabGroupsSaveV2);
 
 BASE_DECLARE_FEATURE(kTabGroupsSaveUIUpdate);

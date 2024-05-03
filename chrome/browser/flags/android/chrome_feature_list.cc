@@ -160,7 +160,6 @@ const base::Feature* const kFeaturesExposedToJava[] = {
     &kAndroidNoVisibleHintForDifferentTLD,
     &kAndroidTabDeclutter,
     &kAndroidTabDeclutterRescueKillswitch,
-    &kAndroidTabGroupStableIds,
     &kAndroidToolbarScrollAblation,
     &kAnimatedImageDragShadow,
     &kAppSpecificHistory,
@@ -352,6 +351,7 @@ const base::Feature* const kFeaturesExposedToJava[] = {
     &syncer::kSyncAndroidLimitNTPPromoImpressions,
     &syncer::kSyncEnableContactInfoDataTypeInTransportMode,
     &syncer::kWebApkBackupAndRestoreBackend,
+    &tab_groups::kAndroidTabGroupStableIds,
     &tab_groups::kTabGroupSyncAndroid,
     &webapps::features::kPwaUniversalInstallUi,
     &webapps::features::kWebApkInstallFailureNotification,
@@ -431,10 +431,6 @@ BASE_FEATURE(kAndroidTabDeclutter,
 BASE_FEATURE(kAndroidTabDeclutterRescueKillswitch,
              "AndroidTabDeclutterRescueKillswitch",
              base::FEATURE_ENABLED_BY_DEFAULT);
-
-BASE_FEATURE(kAndroidTabGroupStableIds,
-             "AndroidTabGroupStableIds",
-             base::FEATURE_DISABLED_BY_DEFAULT);
 
 BASE_FEATURE(kAndroidToolbarScrollAblation,
              "AndroidToolbarScrollAblation",

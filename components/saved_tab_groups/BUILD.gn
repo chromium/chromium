@@ -56,6 +56,8 @@ source_set("model") {
   sources = [
     "features.cc",
     "features.h",
+    "pref_names.cc",
+    "pref_names.h",
     "saved_tab_group.cc",
     "saved_tab_group.h",
     "saved_tab_group_model.cc",
@@ -67,6 +69,7 @@ source_set("model") {
   ]
   deps = [
     "//base",
+    "//components/pref_registry",
     "//components/sync",
     "//components/tab_groups",
     "//ui/gfx",

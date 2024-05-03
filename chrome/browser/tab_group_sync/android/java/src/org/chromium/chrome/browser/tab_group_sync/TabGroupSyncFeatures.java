@@ -4,17 +4,22 @@
 
 package org.chromium.chrome.browser.tab_group_sync;
 
-import org.jni_zero.CalledByNative;
+import org.jni_zero.JNINamespace;
+import org.jni_zero.JniType;
+import org.jni_zero.NativeMethods;
 
-import org.chromium.chrome.browser.flags.ChromeFeatureList;
+import org.chromium.chrome.browser.profiles.Profile;
 
 /** Utility class for defining features and params related to tab group sync. */
+@JNINamespace("tab_groups")
 public final class TabGroupSyncFeatures {
-
     /** Whether tab group sync is enabled. */
-    @CalledByNative
-    public static boolean isTabGroupSyncEnabled() {
-        return ChromeFeatureList.sAndroidTabGroupStableIds.isEnabled()
-                && ChromeFeatureList.isEnabled(ChromeFeatureList.TAB_GROUP_SYNC_ANDROID);
+    public static boolean isTabGroupSyncEnabled(Profile profile) {
+        return TabGroupSyncFeaturesJni.get().isTabGroupSyncEnabled(profile);
+    }
+
+    @NativeMethods
+    interface Natives {
+        boolean isTabGroupSyncEnabled(@JniType("Profile*") Profile profile);
     }
 }

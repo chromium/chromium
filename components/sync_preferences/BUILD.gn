@@ -61,6 +61,7 @@ source_set("common_syncable_prefs_database") {
     "//components/password_manager/core/common",
     "//components/payments/core",
     "//components/safe_browsing/core/common:safe_browsing_prefs",
+    "//components/saved_tab_groups:model",
     "//components/search_engines",
     "//components/translate/core/browser",
     "//components/variations/service",
