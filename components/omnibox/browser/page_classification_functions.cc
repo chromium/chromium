@@ -7,8 +7,7 @@ namespace omnibox {
 
 using OEP = ::metrics::OmniboxEventProto;
 
-bool IsNTPPage(
-    ::metrics::OmniboxEventProto::PageClassification classification) {
+bool IsNTPPage(OEP::PageClassification classification) {
   return (classification == OEP::NTP) ||
          (classification == OEP::OBSOLETE_INSTANT_NTP) ||
          (classification == OEP::INSTANT_NTP_WITH_FAKEBOX_AS_STARTING_FOCUS) ||
@@ -17,8 +16,7 @@ bool IsNTPPage(
          (classification == OEP::NTP_ZPS_PREFETCH);
 }
 
-bool IsSearchResultsPage(
-    ::metrics::OmniboxEventProto::PageClassification classification) {
+bool IsSearchResultsPage(OEP::PageClassification classification) {
   return (classification ==
           OEP::SEARCH_RESULT_PAGE_NO_SEARCH_TERM_REPLACEMENT) ||
          (classification ==
@@ -27,19 +25,22 @@ bool IsSearchResultsPage(
          (classification == OEP::SRP_ZPS_PREFETCH);
 }
 
-bool IsOtherWebPage(
-    ::metrics::OmniboxEventProto::PageClassification classification) {
+bool IsOtherWebPage(OEP::PageClassification classification) {
   return (classification == OEP::OTHER) ||
          (classification == OEP::OTHER_ON_CCT) ||
          (classification == OEP::ANDROID_SHORTCUTS_WIDGET) ||
          (classification == OEP::OTHER_ZPS_PREFETCH);
 }
 
-bool IsLensSearchbox(
-    ::metrics::OmniboxEventProto::PageClassification classification) {
+bool IsLensSearchbox(OEP::PageClassification classification) {
   return (classification == OEP::CONTEXTUAL_SEARCHBOX) ||
          (classification == OEP::SEARCH_SIDE_PANEL_SEARCHBOX) ||
          (classification == OEP::LENS_SIDE_PANEL_SEARCHBOX);
+}
+
+bool IsCustomTab(OEP::PageClassification classification) {
+  return classification == OEP::SEARCH_RESULT_PAGE_ON_CCT ||
+         classification == OEP::OTHER_ON_CCT;
 }
 
 }  // namespace omnibox

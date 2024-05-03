@@ -25,6 +25,10 @@ bool IsOtherWebPage(
 bool IsLensSearchbox(
     ::metrics::OmniboxEventProto::PageClassification classification);
 
+// Return true, if supplied page classification is a Chrome Custom Tab.
+bool IsCustomTab(
+    ::metrics::OmniboxEventProto::PageClassification classification);
+
 }  // namespace omnibox
 
 #endif  // COMPONENTS_OMNIBOX_BROWSER_PAGE_CLASSIFICATION_FUNCTIONS_H_

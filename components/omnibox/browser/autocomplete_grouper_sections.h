@@ -82,7 +82,8 @@ class ZpsSectionWithMVTiles : public ZpsSection {
 // Android prefixed section for Adaptive Suggestions grouping.
 class AndroidNonZPSSection : public Section {
  public:
-  explicit AndroidNonZPSSection(omnibox::GroupConfigMap& group_configs);
+  explicit AndroidNonZPSSection(bool show_only_search_suggestions,
+                                omnibox::GroupConfigMap& group_configs);
 
   // Section:
   void InitFromMatches(ACMatches& matches) override;
