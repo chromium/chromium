@@ -244,6 +244,10 @@ void BinaryUploadService::Request::set_require_metadata_verdict(
       require_metadata_verdict);
 }
 
+void BinaryUploadService::Request::set_blocking(bool blocking) {
+  content_analysis_request_.set_blocking(blocking);
+}
+
 std::string BinaryUploadService::Request::SetRandomRequestToken() {
   DCHECK(request_token().empty());
   content_analysis_request_.set_request_token(
@@ -300,8 +304,9 @@ uint64_t BinaryUploadService::Request::user_action_requests_count() const {
 }
 
 GURL BinaryUploadService::Request::tab_url() const {
-  if (!content_analysis_request_.has_request_data())
+  if (!content_analysis_request_.has_request_data()) {
     return GURL();
+  }
   return GURL(content_analysis_request_.request_data().tab_url());
 }
 
@@ -318,9 +323,14 @@ BinaryUploadService::Request::reason() const {
   return content_analysis_request_.reason();
 }
 
+bool BinaryUploadService::Request::blocking() const {
+  return content_analysis_request_.blocking();
+}
+
 void BinaryUploadService::Request::StartRequest() {
-  if (!request_start_callback_.is_null())
+  if (!request_start_callback_.is_null()) {
     std::move(request_start_callback_).Run(*this);
+  }
 }
 
 void BinaryUploadService::Request::FinishRequest(
@@ -367,8 +377,9 @@ GURL BinaryUploadService::Request::GetUrlWithParams() const {
                                     connector);
   }
 
-  for (const std::string& tag : content_analysis_request_.tags())
+  for (const std::string& tag : content_analysis_request_.tags()) {
     url = net::AppendQueryParameter(url, enterprise::kUrlParamTag, tag);
+  }
 
   return url;
 }

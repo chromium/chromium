@@ -919,6 +919,9 @@ void ContentAnalysisDelegate::PrepareRequest(
   if (data_.reason != ContentAnalysisRequest::UNKNOWN) {
     request->set_reason(data_.reason);
   }
+
+  request->set_blocking(data_.settings.block_until_verdict !=
+                        BlockUntilVerdict::kNoBlock);
 }
 
 void ContentAnalysisDelegate::FillAllResultsWith(bool status) {

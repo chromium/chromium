@@ -184,6 +184,7 @@ class BinaryUploadService : public KeyedService {
     void set_reason(
         enterprise_connectors::ContentAnalysisRequest::Reason reason);
     void set_require_metadata_verdict(bool require_metadata_verdict);
+    void set_blocking(bool blocking);
 
     std::string SetRandomRequestToken();
 
@@ -202,6 +203,7 @@ class BinaryUploadService : public KeyedService {
     GURL tab_url() const;
     base::optional_ref<const std::string> password() const;
     enterprise_connectors::ContentAnalysisRequest::Reason reason() const;
+    bool blocking() const;
 
     // Called when beginning to try upload.
     void StartRequest();

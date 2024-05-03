@@ -1230,4 +1230,17 @@ TEST_P(CloudBinaryUploadServiceTest, RunsStartCallback) {
   EXPECT_TRUE(was_started);
 }
 
+TEST_P(CloudBinaryUploadServiceTest, VerifyBlockingSet) {
+  BinaryUploadService::Result scanning_result;
+  enterprise_connectors::ContentAnalysisResponse scanning_response;
+  std::unique_ptr<MockRequest> request = MakeRequest(
+      &scanning_result, &scanning_response, /*is_advanced_protection*/ false);
+
+  request->set_blocking(true);
+  ASSERT_TRUE(request->blocking());
+
+  request->set_blocking(false);
+  ASSERT_FALSE(request->blocking());
+}
+
 }  // namespace safe_browsing

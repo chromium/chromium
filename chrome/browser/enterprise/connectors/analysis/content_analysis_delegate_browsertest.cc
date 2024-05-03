@@ -118,6 +118,7 @@ class FakeBinaryUploadService : public CloudBinaryUploadService {
 
   int requests_count() const { return requests_count_; }
   int ack_count() const { return ack_count_; }
+  bool blocking() { return blocking_; }
 
  private:
   void MaybeAcknowledge(std::unique_ptr<Ack> ack) override {
@@ -132,15 +133,14 @@ class FakeBinaryUploadService : public CloudBinaryUploadService {
 
   void UploadForDeepScanning(std::unique_ptr<Request> request) override {
     ++requests_count_;
-
     // A request without tags indicates that it's used for authentication
     if (request->content_analysis_request().tags().empty()) {
       authorization_request_.swap(request);
-
       if (should_automatically_authorize_) {
         ReturnAuthorizedResponse();
       }
     } else {
+      blocking_ = request->blocking();
       Request* request_raw = request.get();
       std::string file = request->filename();
       switch (request->analysis_connector()) {
@@ -200,6 +200,7 @@ class FakeBinaryUploadService : public CloudBinaryUploadService {
 
   int requests_count_ = 0;
   int ack_count_ = 0;
+  bool blocking_ = true;
   bool should_automatically_authorize_ = false;
   std::map<std::string, ContentAnalysisAcknowledgement::FinalAction>
       request_tokens_to_final_actions_;
@@ -677,7 +678,6 @@ IN_PROC_BROWSER_TEST_P(ContentAnalysisDelegateBrowserTest, ForFiles) {
       safe_browsing::DeepScanAccessPoint::UPLOAD);
 
   run_loop.Run();
-
   EXPECT_TRUE(called);
 
   // There should have been 1 request per file (3 files) and 1 for
@@ -998,6 +998,7 @@ IN_PROC_BROWSER_TEST_P(ContentAnalysisDelegateBrowserTest,
   data.text.emplace_back(text());
   ASSERT_TRUE(ContentAnalysisDelegate::IsEnabled(
       browser()->profile(), GURL(kTestUrl), &data, BULK_DATA_ENTRY));
+  EXPECT_TRUE(data.settings.block_until_verdict != BlockUntilVerdict::kNoBlock);
 
   // Start test.
   ContentAnalysisDelegate::CreateForWebContents(
@@ -1024,6 +1025,7 @@ IN_PROC_BROWSER_TEST_P(ContentAnalysisDelegateBrowserTest,
   // 1 for authentication of the scanning request.
   ASSERT_EQ(FakeBinaryUploadServiceStorage()->requests_count(), 3);
   ASSERT_EQ(FakeBinaryUploadServiceStorage()->ack_count(), 2);
+  EXPECT_TRUE(FakeBinaryUploadServiceStorage()->blocking());
 
   // Ensure the ContentAnalysisDelegate is destroyed before the end of the test.
   content_analysis_run_loop.Run();
@@ -1531,6 +1533,122 @@ IN_PROC_BROWSER_TEST_P(ContentAnalysisDelegateBlockingSettingBrowserTest,
   // file in all cases.
   ASSERT_EQ(FakeBinaryUploadServiceStorage()->requests_count(), 2);
   ASSERT_EQ(FakeBinaryUploadServiceStorage()->ack_count(), 1);
+
+  // Ensure the ContentAnalysisDelegate is destroyed before the end of the test.
+  content_analysis_run_loop.Run();
+}
+
+IN_PROC_BROWSER_TEST_P(ContentAnalysisDelegateBlockingSettingBrowserTest,
+                       BlockTextUntilVerdict) {
+  base::ScopedAllowBlockingForTesting allow_blocking;
+
+  // Set up delegate and upload service.
+  EnableUploadsScanningAndReporting();
+  constexpr char kBlockUntilVerdictPref[] = R"({
+    "service_provider": "google",
+    "enable": [
+      {
+        "url_list": ["*"],
+        "tags": ["dlp", "malware"]
+      }
+    ],
+    "block_until_verdict": %s
+  })";
+  enterprise_connectors::test::SetAnalysisConnector(
+      browser()->profile()->GetPrefs(), BULK_DATA_ENTRY,
+      base::StringPrintf(kBlockUntilVerdictPref, int_setting_value()),
+      machine_scope());
+
+  base::RunLoop content_analysis_run_loop;
+  ContentAnalysisDelegate::SetFactoryForTesting(
+      base::BindRepeating(&MinimalFakeContentAnalysisDelegate::Create,
+                          content_analysis_run_loop.QuitClosure()));
+
+  FakeBinaryUploadServiceStorage()->SetAuthorized(true);
+
+  // Create text.
+  ContentAnalysisDelegate::Data data;
+  data.text.emplace_back(text());
+  data.reason = ContentAnalysisRequest::CLIPBOARD_PASTE;
+  ASSERT_TRUE(ContentAnalysisDelegate::IsEnabled(
+      browser()->profile(), GURL(kTestUrl), &data, BULK_DATA_ENTRY));
+
+  EXPECT_EQ(data.settings.block_until_verdict != BlockUntilVerdict::kNoBlock,
+            setting_param());
+
+  // The text should be reported as sensitive content.
+  test::EventReportValidator validator(client());
+  ContentAnalysisResponse response;
+  response.set_request_token(kScanId1);
+
+  auto* dlp_result = response.add_results();
+  dlp_result->set_status(ContentAnalysisResponse::Result::SUCCESS);
+  dlp_result->set_tag("dlp");
+  auto* dlp_rule = dlp_result->add_triggered_rules();
+  dlp_rule->set_action(TriggeredRule::BLOCK);
+  dlp_rule->set_rule_id("1");
+  dlp_rule->set_rule_name("resource rule 1");
+
+  FakeBinaryUploadServiceStorage()->SetResponseForText(
+      BinaryUploadService::Result::SUCCESS, response);
+  FakeBinaryUploadServiceStorage()->SetExpectedFinalAction(
+      kScanId1, ContentAnalysisAcknowledgement::BLOCK);
+  validator.ExpectSensitiveDataEvent(
+      /*url*/ "about:blank",
+      /*tab_url*/ "about:blank",
+      /*source*/ "",
+      /*destination*/ "",
+      /*filename*/ "Text data",
+      // The hash should not be included for string requests.
+      /*sha*/ "",
+      /*trigger*/ SafeBrowsingPrivateEventRouter::kTriggerWebContentUpload,
+      /*dlp_verdict*/ *dlp_result,
+      /*mimetypes*/ TextMimeTypes(),
+      /*size*/ 100,
+      // If the policy allows immediate delivery of the file, then the result is
+      // ALLOWED even if the verdict obtained afterwards is BLOCKED.
+      /*result*/
+      safe_browsing::EventResultToString(
+          expected_result() ? safe_browsing::EventResult::ALLOWED
+                            : safe_browsing::EventResult::BLOCKED),
+      /*username*/ kUserName,
+      /*profile_identifier*/ GetProfileIdentifier(),
+      /*scan_id*/ kScanId1,
+      /*content_transfer_method*/ std::nullopt);
+
+  bool called = false;
+  base::RunLoop run_loop;
+
+  // If the delivery is not delayed, put the quit closure right after the events
+  // are reported instead of when the dialog closes.
+  if (expected_result()) {
+    validator.SetDoneClosure(run_loop.QuitClosure());
+  } else {
+    SetQuitClosure(run_loop.QuitClosure());
+  }
+
+  // Start test.
+  ContentAnalysisDelegate::CreateForWebContents(
+      browser()->tab_strip_model()->GetActiveWebContents(), std::move(data),
+      base::BindLambdaForTesting(
+          [this, &called](const ContentAnalysisDelegate::Data& data,
+                          ContentAnalysisDelegate::Result& result) {
+            ASSERT_TRUE(result.paths_results.empty());
+            ASSERT_EQ(result.text_results.size(), 1u);
+            ASSERT_EQ(result.text_results[0], expected_result());
+            called = true;
+          }),
+      safe_browsing::DeepScanAccessPoint::PASTE);
+
+  FakeBinaryUploadServiceStorage()->ReturnAuthorizedResponse();
+  run_loop.Run();
+  EXPECT_TRUE(called);
+
+  // Expect 1 request for text and 1 for authentication of the scanning request.
+  ASSERT_EQ(FakeBinaryUploadServiceStorage()->requests_count(), 2);
+  ASSERT_EQ(FakeBinaryUploadServiceStorage()->ack_count(), 1);
+  EXPECT_EQ(FakeBinaryUploadServiceStorage()->blocking(),
+            data.settings.block_until_verdict != BlockUntilVerdict::kNoBlock);
 
   // Ensure the ContentAnalysisDelegate is destroyed before the end of the test.
   content_analysis_run_loop.Run();
