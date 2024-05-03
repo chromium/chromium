@@ -6,4 +6,8 @@
 
 @implementation LensConfiguration
 
+- (id<SingleSignOnService>)ssoService {
+  return self.singleSignOnService;
+}
+
 @end

@@ -21,7 +21,9 @@ enum class LensEntrypoint;
 @property(nonatomic, assign) BOOL isIncognito;
 
 // The SingleSignOnService instance to use by LensProvider.
-@property(nonatomic, strong) id<SingleSignOnService> ssoService;
+@property(nonatomic, strong) id<SingleSignOnService> singleSignOnService;
+// Deprecated, please use `singleSignOnService`.
+@property(nonatomic, strong, readonly) id<SingleSignOnService> ssoService;
 
 // The entry point from which Lens was entered.
 @property(nonatomic, assign) LensEntrypoint entrypoint;

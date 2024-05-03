@@ -48,7 +48,8 @@ MailtoHandlerServiceFactory::BuildServiceInstanceFor(
 
   ApplicationContext* application_context = GetApplicationContext();
   configuration.localState = application_context->GetLocalState();
-  configuration.ssoService = application_context->GetSingleSignOnService();
+  configuration.singleSignOnService =
+      application_context->GetSingleSignOnService();
 
   return ios::provider::CreateMailtoHandlerService(configuration);
 }

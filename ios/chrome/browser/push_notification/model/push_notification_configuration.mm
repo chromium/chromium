@@ -6,4 +6,8 @@
 
 @implementation PushNotificationConfiguration
 
+- (id<SingleSignOnService>)ssoService {
+  return self.singleSignOnService;
+}
+
 @end

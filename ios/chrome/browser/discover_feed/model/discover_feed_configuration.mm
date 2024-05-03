@@ -6,4 +6,8 @@
 
 @implementation DiscoverFeedConfiguration
 
+- (id<SingleSignOnService>)ssoService {
+  return self.singleSignOnService;
+}
+
 @end

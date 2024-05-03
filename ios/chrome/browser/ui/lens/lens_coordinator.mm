@@ -202,7 +202,8 @@ const base::TimeDelta kCloseLensViewTimeout = base::Seconds(10);
   const bool isIncognito = browserState->IsOffTheRecord();
   LensConfiguration* configuration = [[LensConfiguration alloc] init];
   configuration.isIncognito = isIncognito;
-  configuration.ssoService = GetApplicationContext()->GetSingleSignOnService();
+  configuration.singleSignOnService =
+      GetApplicationContext()->GetSingleSignOnService();
   configuration.entrypoint = entrypoint;
 
   // Mark IPHs as completed.

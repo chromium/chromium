@@ -6,4 +6,8 @@
 
 @implementation TrustedVaultConfiguration
 
+- (id<SingleSignOnService>)ssoService {
+  return self.singleSignOnService;
+}
+
 @end

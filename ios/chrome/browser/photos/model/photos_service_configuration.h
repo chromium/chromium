@@ -19,7 +19,9 @@ class IdentityManager;
 @interface PhotosServiceConfiguration : NSObject
 
 // The SingleSignOnService instance to use by PhotosService.
-@property(nonatomic, strong) id<SingleSignOnService> ssoService;
+@property(nonatomic, strong) id<SingleSignOnService> singleSignOnService;
+// Deprecated, please use `singleSignOnService`.
+@property(nonatomic, strong, readonly) id<SingleSignOnService> ssoService;
 // PrefService to check the state of Save to Photos preferences.
 @property(nonatomic, assign) PrefService* prefService;
 // IdentityManager to check whether the user is signed-in.
