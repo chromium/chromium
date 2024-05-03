@@ -12952,12 +12952,6 @@
                 {
                     "name": "EnabledWithNormalLanguage",
                     "params": {
-                        "probability": "1",
-                        "probability_vector": "1.0,1.0,1.0",
-                        "prompt_disposition_reason_filter": "DefaultFallback",
-                        "request_type_filter": "Geolocation,VideoCapture,AudioCapture",
-                        "survey_display_time": "OnPromptResolved",
-                        "trigger_id": "WZp2sfiwg0ugnJ3q1cK0VHG6m12V,zrDfttnJe0ugnJ3q1cK0QcoodXoN,WokA6U5FP0ugnJ3q1cK0VYJQ93c4",
                         "use_stronger_prompt_language": "false"
                     },
                     "enable_features": [
@@ -12968,12 +12962,6 @@
                 {
                     "name": "EnabledWithStrongLanguage",
                     "params": {
-                        "probability": "1",
-                        "probability_vector": "1.0,1.0,1.0",
-                        "prompt_disposition_reason_filter": "DefaultFallback",
-                        "request_type_filter": "Geolocation,VideoCapture,AudioCapture",
-                        "survey_display_time": "OnPromptResolved",
-                        "trigger_id": "Xrna7ZFaz0ugnJ3q1cK0Nn4Zgupz,z1o2b2qU70ugnJ3q1cK0XcJwgRg4,1E7SQhG9X0ugnJ3q1cK0YHQnpSTL",
                         "use_stronger_prompt_language": "true"
                     },
                     "enable_features": [
@@ -12999,6 +12987,17 @@
                 {
                     "name": "Control",
                     "disable_features": [
+                        "ActiveContentSettingExpiry",
+                        "OneTimePermission"
+                    ]
+                },
+                {
+                    "name": "EnabledWithAllowAlwaysFirst",
+                    "params": {
+                        "show_allow_always_as_first_button": "true",
+                        "use_stronger_prompt_language": "false"
+                    },
+                    "enable_features": [
                         "ActiveContentSettingExpiry",
                         "OneTimePermission"
                     ]
@@ -13031,7 +13030,7 @@
                     ]
                 },
                 {
-                    "name": "HatsControl_20240208",
+                    "name": "HatsControl",
                     "params": {
                         "experimental_custom_invitation_arm_trigger_id": "Db6NddebR0tK1KeaPYj0UzKHA4zC,sRE9DYcBN0tK1KeaPYj0PtzgM3xw,t6mgdAXqK0tK1KeaPYj0VHRxVpBT",
                         "probability": "1",
@@ -13050,7 +13049,7 @@
                     ]
                 },
                 {
-                    "name": "EnabledWithStrongLanguage_20240208",
+                    "name": "EnabledWithStrongLanguage",
                     "params": {
                         "experimental_custom_invitation_arm_trigger_id": "eaHr88umj0tK1KeaPYj0YkhJEi1Y,8U6CRfLYU0tK1KeaPYj0RbTHRpNZ,qrWTeaJaK0tK1KeaPYj0XjFWabba",
                         "probability": "1",
@@ -13064,6 +13063,28 @@
                     "enable_features": [
                         "ActiveContentSettingExpiry",
                         "OneTimePermission",
+                        "PermissionsPromptSurvey"
+                    ]
+                },
+                {
+                    "name": "Control",
+                    "disable_features": [
+                        "ActiveContentSettingExpiry",
+                        "OneTimePermission",
+                        "PermissionsPromptSurvey"
+                    ]
+                },
+                {
+                    "name": "EnabledWithAllowAlwaysFirst",
+                    "params": {
+                        "show_allow_always_as_first_button": "true",
+                        "use_stronger_prompt_language": "false"
+                    },
+                    "enable_features": [
+                        "ActiveContentSettingExpiry",
+                        "OneTimePermission"
+                    ],
+                    "disable_features": [
                         "PermissionsPromptSurvey"
                     ]
                 }
