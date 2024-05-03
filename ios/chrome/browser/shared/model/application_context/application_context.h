@@ -166,8 +166,6 @@ class ApplicationContext {
 
   // Returns the SingleSignOnService instance used by this application.
   virtual id<SingleSignOnService> GetSingleSignOnService() = 0;
-  // Deprecated, replaced with `GetSingleSignOnService()`.
-  virtual id<SingleSignOnService> GetSSOService();
 
   // Returns the SystemIdentityManager instance used by this application.
   virtual SystemIdentityManager* GetSystemIdentityManager() = 0;
