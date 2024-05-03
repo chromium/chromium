@@ -643,7 +643,10 @@ std::u16string GlanceablesTasksView::GetErrorString(
     case GlanceablesTasksErrorType::kCantUpdateTasks: {
       auto last_modified_time =
           GetTasksClient()->GetTasksLastUpdateTime(GetActiveTaskList()->id);
-      CHECK(last_modified_time.has_value());
+      if (!last_modified_time.has_value()) {
+        return l10n_util::GetStringUTF16(
+            IDS_GLANCEABLES_TASKS_ERROR_LOAD_ITEMS_FAILED);
+      }
       return GetLastUpdateTimeMessage(last_modified_time.value());
     }
     case GlanceablesTasksErrorType::kCantLoadTasks:
