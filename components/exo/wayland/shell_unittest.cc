@@ -296,7 +296,13 @@ TEST_F(ShellWithClientTest, CreateWithDisplayId) {
   }
 }
 
-TEST_F(ShellWithClientTest, BufferCommitNoNeedsCommit) {
+// TODO(crbug.com/338519156): Fix and enable on MSan.
+#if defined(MEMORY_SANITIZER)
+#define MAYBE_BufferCommitNoNeedsCommit DISABLED_BufferCommitNoNeedsCommit
+#else
+#define MAYBE_BufferCommitNoNeedsCommit BufferCommitNoNeedsCommit
+#endif
+TEST_F(ShellWithClientTest, MAYBE_BufferCommitNoNeedsCommit) {
   auto* ash_window_tree_host = static_cast<ash::AshWindowTreeHostPlatform*>(
       ash::Shell::GetPrimaryRootWindow()->GetHost());
   // The compositor may receive draw request upon X11's damage event, which
