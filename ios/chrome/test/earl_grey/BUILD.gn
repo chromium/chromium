@@ -193,6 +193,7 @@ source_set("eg_app_support+eg2") {
     "//ios/chrome/browser/ui/tab_switcher/tab_grid/grid:grid_ui",
     "//ios/chrome/browser/ui/tab_switcher/tab_grid/grid:grid_ui_constants",
     "//ios/chrome/browser/ui/tab_switcher/tab_grid/inactive_tabs:inactive_tabs_constants",
+    "//ios/chrome/browser/ui/tab_switcher/tab_strip/ui:swift_constants_for_objective_c",
     "//ios/chrome/browser/ui/tabs/tests:eg_app_support+eg2",
     "//ios/chrome/browser/ui/toolbar:eg_app_support+eg2",
     "//ios/chrome/browser/ui/toolbar:toolbar_ui",

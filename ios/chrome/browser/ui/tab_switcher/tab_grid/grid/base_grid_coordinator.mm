@@ -187,11 +187,13 @@
       initTabGroupCreationWithBaseViewController:self.baseViewController
                                          browser:self.browser
                                     selectedTabs:identifiers];
+  _tabGroupCreator.delegate = self;
   [_tabGroupCreator start];
 }
 
 - (void)hideTabGroupCreationAnimated:(BOOL)animated {
   _tabGroupCreator.animatedDismissal = animated;
+  _tabGroupCreator.delegate = nil;
   [_tabGroupCreator stop];
   _tabGroupCreator = nil;
 }
@@ -211,11 +213,21 @@
       initTabGroupEditionWithBaseViewController:backgroundView
                                         browser:self.browser
                                        tabGroup:tabGroup];
+  _tabGroupCreator.delegate = self;
   [_tabGroupCreator start];
 }
 
 - (void)showActiveTab {
   [self.mediator displayActiveTab];
+}
+
+#pragma mark - CreateOrEditTabGroupCoordinatorDelegate
+
+- (void)createOrEditTabGroupCoordinatorDidDismiss:
+            (CreateTabGroupCoordinator*)coordinator
+                                         animated:(BOOL)animated {
+  CHECK(coordinator == _tabGroupCreator);
+  [self hideTabGroupCreationAnimated:animated];
 }
 
 #pragma mark - Private

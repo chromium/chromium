@@ -44,6 +44,7 @@ source_set("tab_groups") {
 
 source_set("tab_group_creation") {
   sources = [
+    "create_or_edit_tab_group_coordinator_delegate.h",
     "create_tab_group_coordinator.h",
     "create_tab_group_coordinator.mm",
     "create_tab_group_mediator.h",
@@ -72,6 +73,7 @@ source_set("tab_group_creation") {
 
 source_set("tab_groups_ui") {
   sources = [
+    "create_or_edit_tab_group_view_controller_delegate.h",
     "tab_group_grid_view_controller.h",
     "tab_group_grid_view_controller.mm",
     "tab_group_header.h",
