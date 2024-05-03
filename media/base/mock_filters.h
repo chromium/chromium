@@ -503,8 +503,7 @@ class MockAudioRenderer : public AudioRenderer {
   MOCK_METHOD1(SetWasPlayedWithUserActivation, void(bool));
 };
 
-class MockRenderer : public Renderer,
-                     public base::SupportsWeakPtr<MockRenderer> {
+class MockRenderer : public Renderer {
  public:
   MockRenderer();
 
@@ -544,6 +543,13 @@ class MockRenderer : public Renderer,
   MOCK_METHOD2(OnSelectedAudioTracksChanged,
                void(std::vector<DemuxerStream*>, base::OnceClosure));
   RendererType GetRendererType() override { return RendererType::kTest; }
+
+  base::WeakPtr<MockRenderer> AsWeakPtr() {
+    return weak_ptr_factory_.GetWeakPtr();
+  }
+
+ private:
+  base::WeakPtrFactory<MockRenderer> weak_ptr_factory_{this};
 };
 
 class MockRendererFactory : public RendererFactory {

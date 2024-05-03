@@ -27,10 +27,9 @@ namespace learning {
 // chosen.  The feature with the best randomly chosen split point is used.
 //
 // These will automatically convert nominal values to one-hot vectors.
-class COMPONENT_EXPORT(LEARNING_IMPL) ExtraTreesTrainer
+class COMPONENT_EXPORT(LEARNING_IMPL) ExtraTreesTrainer final
     : public TrainingAlgorithm,
-      public HasRandomNumberGenerator,
-      public base::SupportsWeakPtr<ExtraTreesTrainer> {
+      public HasRandomNumberGenerator {
  public:
   ExtraTreesTrainer();
 
@@ -54,6 +53,7 @@ class COMPONENT_EXPORT(LEARNING_IMPL) ExtraTreesTrainer
   std::vector<std::unique_ptr<Model>> trees_;
   std::unique_ptr<OneHotConverter> converter_;
   TrainingData converted_training_data_;
+  base::WeakPtrFactory<ExtraTreesTrainer> weak_ptr_factory_{this};
 };
 
 }  // namespace learning

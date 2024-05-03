@@ -25,13 +25,13 @@ LearningTaskControllerImpl::LearningTaskControllerImpl(
     : task_(task),
       training_data_(std::make_unique<TrainingData>()),
       reporter_(std::move(reporter)),
-      helper_(std::make_unique<LearningTaskControllerHelper>(
-          task,
-          base::BindRepeating(&LearningTaskControllerImpl::AddFinishedExample,
-                              AsWeakPtr()),
-          std::move(feature_provider))),
       expected_feature_count_(task_.feature_descriptions.size()) {
   // Note that |helper_| uses the full set of features.
+  helper_ = std::make_unique<LearningTaskControllerHelper>(
+      task,
+      base::BindRepeating(&LearningTaskControllerImpl::AddFinishedExample,
+                          weak_ptr_factory_.GetWeakPtr()),
+      std::move(feature_provider));
 
   // TODO(liberato): Make this compositional.  FeatureSubsetTaskController?
   if (task_.feature_subset_size)
@@ -163,7 +163,8 @@ void LearningTaskControllerImpl::AddFinishedExample(LabelledExample example,
   last_training_size_ = training_data_->size();
 
   TrainedModelCB model_cb =
-      base::BindOnce(&LearningTaskControllerImpl::OnModelTrained, AsWeakPtr(),
+      base::BindOnce(&LearningTaskControllerImpl::OnModelTrained,
+                     weak_ptr_factory_.GetWeakPtr(),
                      training_data_->total_weight(), training_data_->size());
   training_is_in_progress_ = true;
   // Note that this copies the training data, so it's okay if we add more

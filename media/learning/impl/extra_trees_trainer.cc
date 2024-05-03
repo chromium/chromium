@@ -70,8 +70,8 @@ void ExtraTreesTrainer::OnRandomTreeModel(TrainedModelCB model_cb,
   }
 
   // Train the next tree.
-  auto cb = base::BindOnce(&ExtraTreesTrainer::OnRandomTreeModel, AsWeakPtr(),
-                           std::move(model_cb));
+  auto cb = base::BindOnce(&ExtraTreesTrainer::OnRandomTreeModel,
+                           weak_ptr_factory_.GetWeakPtr(), std::move(model_cb));
   tree_trainer_->Train(task_, converted_training_data_, std::move(cb));
 }
 
