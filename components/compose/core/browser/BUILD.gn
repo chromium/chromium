@@ -49,7 +49,10 @@ mojom("mojo_bindings") {
 
 source_set("unit_tests") {
   testonly = true
-  sources = [ "compose_manager_impl_unittest.cc" ]
+  sources = [
+    "compose_manager_impl_unittest.cc",
+    "compose_prompt_trimming_unittest.cc",
+  ]
 
   deps = [
     ":browser",

@@ -236,7 +236,8 @@ class ComposeSession
 
   // Adds page content to the session context.
   void AddPageContentToSession(std::string inner_text,
-                               std::optional<uint64_t> node_offset);
+                               std::optional<uint64_t> node_offset,
+                               std::string trimmed_inner_text);
 
   // Makes compose or rewrite request.
   void MakeRequest(optimization_guide::proto::ComposeRequest request,

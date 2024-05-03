@@ -4,6 +4,7 @@
 
 #include "chrome/browser/compose/compose_session.h"
 
+#include <cmath>
 #include <memory>
 #include <string>
 #include <string_view>
@@ -456,7 +457,7 @@ void ComposeSession::RequestWithSession(
     bool is_input_edited) {
   if (!collect_inner_text_) {
     // Make sure context is added for sessions with no inner text.
-    AddPageContentToSession("", std::nullopt);
+    AddPageContentToSession("", std::nullopt, "");
   }
 
   // Add timeout for high latency Compose requests.
@@ -1017,18 +1018,21 @@ void ComposeSession::MaybeRefreshInnerText(bool has_selection) {
 
 void ComposeSession::AddPageContentToSession(
     std::string inner_text,
-    std::optional<uint64_t> node_offset) {
+    std::optional<uint64_t> node_offset,
+    std::string trimmed_inner_text) {
   if (!session_) {
     return;
   }
   optimization_guide::proto::ComposePageMetadata page_metadata;
   page_metadata.set_page_url(web_contents_->GetLastCommittedURL().spec());
   page_metadata.set_page_title(base::UTF16ToUTF8(web_contents_->GetTitle()));
-  page_metadata.set_page_inner_text(std::move(inner_text));
 
   if (node_offset.has_value()) {
     page_metadata.set_page_inner_text_offset(node_offset.value());
   }
+  page_metadata.set_trimmed_page_inner_text(trimmed_inner_text);
+
+  page_metadata.set_page_inner_text(std::move(inner_text));
 
   optimization_guide::proto::ComposeRequest request;
   *request.mutable_page_metadata() = std::move(page_metadata);
@@ -1047,20 +1051,30 @@ void ComposeSession::UpdateInnerTextAndContinueComposeIfNecessary(
   }
   got_inner_text_ = true;
   std::string inner_text;
+  std::string trimmed_inner_text;
   std::optional<uint64_t> node_offset;
   if (result) {
     const compose::Config& config = compose::GetComposeConfig();
     inner_text = std::move(result->inner_text);
+    node_offset = result->node_offset;
+    if (node_offset.has_value()) {
+      trimmed_inner_text = compose::GetTrimmedPageText(
+          inner_text, config.trimmed_inner_text_max_chars, node_offset.value(),
+          config.trimmed_inner_text_header_length);
+    } else {
+      trimmed_inner_text =
+          inner_text.substr(0, config.trimmed_inner_text_max_chars);
+    }
     compose::LogComposeDialogInnerTextSize(inner_text.size());
     if (inner_text.size() > config.inner_text_max_bytes) {
       compose::LogComposeDialogInnerTextShortenedBy(
           inner_text.size() - config.inner_text_max_bytes);
       inner_text.erase(config.inner_text_max_bytes);
     }
-    node_offset = result->node_offset;
     compose::LogComposeDialogInnerTextOffsetFound(node_offset.has_value());
   }
-  AddPageContentToSession(std::move(inner_text), node_offset);
+  AddPageContentToSession(std::move(inner_text), node_offset,
+                          std::move(trimmed_inner_text));
   if (!continue_compose_.is_null()) {
     std::move(continue_compose_).Run();
   }
