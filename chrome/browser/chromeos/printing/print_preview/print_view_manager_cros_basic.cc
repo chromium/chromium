@@ -10,6 +10,8 @@ namespace chromeos {
 
 PrintViewManagerCrosBasic::PrintViewManagerCrosBasic(
     content::WebContents* web_contents)
-    : PrintViewManagerCrosBase(web_contents) {}
+    : PrintViewManagerCrosBase(web_contents),
+      content::WebContentsUserData<PrintViewManagerCrosBasic>(*web_contents) {}
 
+WEB_CONTENTS_USER_DATA_KEY_IMPL(PrintViewManagerCrosBasic);
 }  // namespace chromeos

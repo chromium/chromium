@@ -18,7 +18,7 @@ class WebContents;
 namespace chromeos {
 
 // Base class for managing the print commands for a WebContents.
-class PrintViewManagerCrosBase : public printing::PrintManager {
+class PrintViewManagerCrosBase : public ::printing::PrintManager {
  public:
   PrintViewManagerCrosBase(const PrintViewManagerCrosBase&) = delete;
   PrintViewManagerCrosBase& operator=(const PrintViewManagerCrosBase&) = delete;
@@ -27,7 +27,7 @@ class PrintViewManagerCrosBase : public printing::PrintManager {
 
   // mojom::PrintManagerHost:
   void DidGetPrintedPagesCount(int32_t cookie, uint32_t number_pages) override;
-  void DidPrintDocument(printing::mojom::DidPrintDocumentParamsPtr params,
+  void DidPrintDocument(::printing::mojom::DidPrintDocumentParamsPtr params,
                         DidPrintDocumentCallback callback) override;
   void GetDefaultPrintSettings(
       GetDefaultPrintSettingsCallback callback) override;
@@ -39,10 +39,10 @@ class PrintViewManagerCrosBase : public printing::PrintManager {
       const ui::AXTreeUpdate& accessibility_tree) override;
 #endif
   void IsPrintingEnabled(IsPrintingEnabledCallback callback) override;
-  void ScriptedPrint(printing::mojom::ScriptedPrintParamsPtr params,
+  void ScriptedPrint(::printing::mojom::ScriptedPrintParamsPtr params,
                      ScriptedPrintCallback callback) override;
   void PrintingFailed(int32_t cookie,
-                      printing::mojom::PrintFailureReason reason) override;
+                      ::printing::mojom::PrintFailureReason reason) override;
 
   // Prints the current document immediately. Since the rendering is
   // asynchronous, the actual printing will not be completed on the return of

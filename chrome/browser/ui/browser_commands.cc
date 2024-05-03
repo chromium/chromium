@@ -217,6 +217,10 @@
 #include "chromeos/lacros/lacros_service.h"
 #endif
 
+#if BUILDFLAG(IS_CHROMEOS)
+#include "chrome/browser/chromeos/printing/print_preview/print_view_manager_common.h"
+#endif
+
 #if !BUILDFLAG(IS_CHROMEOS)
 #include "chrome/browser/apps/link_capturing/enable_link_capturing_infobar_delegate.h"
 #endif
@@ -1689,6 +1693,23 @@ bool CanSavePage(const Browser* browser) {
 void Print(Browser* browser) {
 #if BUILDFLAG(ENABLE_PRINTING)
   auto* web_contents = browser->tab_strip_model()->GetActiveWebContents();
+
+  // Launch ChromeOS print preview only if in a ChromeOS build and
+  // `kPrintPreviewCrosPrimary` enabled. Otherwise use browser print preview.
+#if BUILDFLAG(IS_CHROMEOS)
+  if (base::FeatureList::IsEnabled(::features::kPrintPreviewCrosPrimary)) {
+    chromeos::printing::StartPrint(
+        web_contents,
+#if BUILDFLAG(IS_CHROMEOS_ASH)
+        /*print_renderer=*/mojo::NullAssociatedRemote(),
+#endif
+        browser->profile()->GetPrefs()->GetBoolean(
+            prefs::kPrintPreviewDisabled),
+        /*has_selection=*/false);
+    return;
+  }
+#endif
+
   printing::StartPrint(
       web_contents,
 #if BUILDFLAG(IS_CHROMEOS_ASH)

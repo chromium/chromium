@@ -6,12 +6,14 @@
 
 #include "content/public/browser/render_frame_host.h"
 #include "content/public/browser/web_contents.h"
+#include "content/public/browser/web_contents_user_data.h"
 #include "stdint.h"
 
 namespace chromeos {
 
 PrintViewManagerCros::PrintViewManagerCros(content::WebContents* web_contents)
-    : PrintViewManagerCrosBase(web_contents) {}
+    : PrintViewManagerCrosBase(web_contents),
+      content::WebContentsUserData<PrintViewManagerCros>(*web_contents) {}
 
 // TODO(jimmyxgong): Implement stubs.
 void PrintViewManagerCros::DidShowPrintDialog() {}
@@ -23,7 +25,7 @@ void PrintViewManagerCros::ShowScriptedPrintPreview(bool source_is_modifiable) {
 }
 
 void PrintViewManagerCros::RequestPrintPreview(
-    printing::mojom::RequestPrintPreviewParamsPtr params) {}
+    ::printing::mojom::RequestPrintPreviewParamsPtr params) {}
 
 void PrintViewManagerCros::CheckForCancel(int32_t preview_ui_id,
                                           int32_t request_id,
@@ -32,5 +34,7 @@ void PrintViewManagerCros::CheckForCancel(int32_t preview_ui_id,
 bool PrintViewManagerCros::PrintNow(content::RenderFrameHost* rfh) {
   return false;
 }
+
+WEB_CONTENTS_USER_DATA_KEY_IMPL(PrintViewManagerCros);
 
 }  // namespace chromeos

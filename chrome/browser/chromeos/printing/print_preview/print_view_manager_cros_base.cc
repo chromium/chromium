@@ -21,7 +21,7 @@ void PrintViewManagerCrosBase::DidGetPrintedPagesCount(int32_t cookie,
                                                        uint32_t number_pages) {}
 
 void PrintViewManagerCrosBase::DidPrintDocument(
-    printing::mojom::DidPrintDocumentParamsPtr params,
+    ::printing::mojom::DidPrintDocumentParamsPtr params,
     DidPrintDocumentCallback callback) {}
 
 void PrintViewManagerCrosBase::GetDefaultPrintSettings(
@@ -41,12 +41,12 @@ void PrintViewManagerCrosBase::IsPrintingEnabled(
     IsPrintingEnabledCallback callback) {}
 
 void PrintViewManagerCrosBase::ScriptedPrint(
-    printing::mojom::ScriptedPrintParamsPtr params,
+    ::printing::mojom::ScriptedPrintParamsPtr params,
     ScriptedPrintCallback callback) {}
 
 void PrintViewManagerCrosBase::PrintingFailed(
     int32_t cookie,
-    printing::mojom::PrintFailureReason reason) {}
+    ::printing::mojom::PrintFailureReason reason) {}
 
 bool PrintViewManagerCrosBase::PrintNow(content::RenderFrameHost* rfh) {
   return false;
