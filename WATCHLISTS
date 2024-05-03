@@ -1249,6 +1249,9 @@
     'gn': {
       'filepath': 'tools/gn',
     },
+    'google_bottom_bar': {
+      'filepath': 'chrome/browser/ui/android/google_bottom_bar/',
+    },
     'gpu_passthrough_cmd_decoder': {
       'filepath': 'gpu/command_buffer/service/.*passthrough',
     },
@@ -2939,6 +2942,7 @@
     'global_media_controls': ['steimel+watch-gmc@chromium.org'],
     'gn': ['agrieve+watch@chromium.org',
            'dpranke@chromium.org'],
+    'google_bottom_bar': ['gbb-cct-eng+cls@google.com'],
     'gpu_passthrough_cmd_decoder': ['geofflang+watch@chromium.org'],
     'guest_view': ['mcnee@chromium.org',
                    'wjmaclean@chromium.org'],
