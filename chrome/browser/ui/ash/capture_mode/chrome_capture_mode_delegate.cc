@@ -260,13 +260,19 @@ ChromeCaptureModeDelegate::GetPolicyCapturePath() const {
     auto* pref = profile->GetPrefs()->FindPreference(
         ash::prefs::kCaptureModePolicySavePath);
     if (pref->IsManaged()) {
-      return {policy::local_user_files::ResolvePath(pref->GetValue()->GetString()),
-              CapturePathEnforcement::kManaged};
+      const base::FilePath resolved_path =
+          policy::local_user_files::ResolvePath(pref->GetValue()->GetString());
+      if (!resolved_path.empty()) {
+        return {resolved_path, CapturePathEnforcement::kManaged};
+      }
     }
     if (pref->IsRecommended()) {
-      return {policy::local_user_files::ResolvePath(
-                  pref->GetRecommendedValue()->GetString()),
-              CapturePathEnforcement::kRecommended};
+      const base::FilePath resolved_path =
+          policy::local_user_files::ResolvePath(
+              pref->GetRecommendedValue()->GetString());
+      if (!resolved_path.empty()) {
+        return {resolved_path, CapturePathEnforcement::kRecommended};
+      }
     }
   }
   return {base::FilePath(), CapturePathEnforcement::kNone};

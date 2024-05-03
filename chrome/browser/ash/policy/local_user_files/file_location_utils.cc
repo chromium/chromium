@@ -5,6 +5,7 @@
 #include "chrome/browser/ash/policy/local_user_files/file_location_utils.h"
 
 #include "chrome/browser/ash/drive/drive_integration_service.h"
+#include "chrome/browser/ash/file_manager/path_util.h"
 #include "chrome/browser/ash/policy/handlers/screen_capture_location_policy_handler.h"
 #include "chrome/browser/profiles/profile_manager.h"
 #include "chrome/browser/ui/webui/ash/cloud_upload/cloud_upload_util.h"
@@ -35,6 +36,12 @@ base::FilePath GetDriveFsMountPointPath() {
   return integration_service->GetMountPointPath();
 }
 
+base::FilePath GetUserDefaultDownloadsFolder() {
+  auto* profile = ProfileManager::GetPrimaryUserProfile();
+  return profile ? file_manager::util::GetDownloadsFolderForProfile(profile)
+                 : base::FilePath();
+}
+
 }  // namespace
 
 // The location string may have Google Drive or Microsoft Drive placeholders, but
@@ -55,6 +62,11 @@ bool IsValidLocationString(const std::string& str) {
 base::FilePath ResolvePath(const std::string& path_str) {
   if (!IsValidLocationString(path_str)) {
     return base::FilePath();
+  }
+
+  // Empty path in the policy means default downloads directory.
+  if (path_str.empty()) {
+    return GetUserDefaultDownloadsFolder();
   }
 
   const size_t google_drive_position =

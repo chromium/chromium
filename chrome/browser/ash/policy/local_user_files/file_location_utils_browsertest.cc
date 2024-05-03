@@ -2,11 +2,13 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
+#include "chrome/browser/ash/policy/local_user_files/file_location_utils.h"
+
 #include "chrome/browser/ash/drive/drive_integration_service.h"
+#include "chrome/browser/ash/file_manager/path_util.h"
 #include "chrome/browser/ash/file_manager/volume_manager.h"
 #include "chrome/browser/ash/file_system_provider/fake_extension_provider.h"
 #include "chrome/browser/ash/file_system_provider/service.h"
-#include "chrome/browser/ash/policy/local_user_files/file_location_utils.h"
 #include "chrome/browser/profiles/profile.h"
 #include "chrome/browser/ui/browser.h"
 #include "chrome/browser/ui/webui/ash/cloud_upload/cloud_upload_util.h"
@@ -77,6 +79,12 @@ IN_PROC_BROWSER_TEST_F(FileLocationUtilsTest, ResolveODFS) {
 
 IN_PROC_BROWSER_TEST_F(FileLocationUtilsTest, ResolveRegular) {
   EXPECT_EQ(base::FilePath("/some/path"), ResolvePath("/some/path"));
+}
+
+IN_PROC_BROWSER_TEST_F(FileLocationUtilsTest, ResolveEmpty) {
+  EXPECT_EQ(
+      file_manager::util::GetDownloadsFolderForProfile(browser()->profile()),
+      ResolvePath(""));
 }
 
 }  // namespace policy::local_user_files
