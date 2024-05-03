@@ -18,6 +18,7 @@ source_set("clear_browsing_data") {
     "clear_browsing_data_ui_delegate.h",
     "quick_delete_coordinator.h",
     "quick_delete_coordinator.mm",
+    "quick_delete_presentation_commands.h",
     "quick_delete_view_controller.h",
     "quick_delete_view_controller.mm",
     "time_range_selector_table_view_controller+Testing.h",
@@ -52,6 +53,7 @@ source_set("clear_browsing_data") {
     "//ios/chrome/browser/shared/model/browser_state",
     "//ios/chrome/browser/shared/model/url:constants",
     "//ios/chrome/browser/shared/public/commands",
+    "//ios/chrome/browser/shared/ui/bottom_sheet:table_view_bottom_sheet_view_controller",
     "//ios/chrome/browser/shared/ui/elements:elements_internal",
     "//ios/chrome/browser/shared/ui/list_model",
     "//ios/chrome/browser/shared/ui/symbols",
@@ -69,6 +71,7 @@ source_set("clear_browsing_data") {
     "//ios/chrome/browser/ui/settings/cells",
     "//ios/chrome/common",
     "//ios/chrome/common/ui/colors",
+    "//ios/chrome/common/ui/confirmation_alert",
     "//ios/chrome/common/ui/table_view:cells_constants",
     "//ios/public/provider/chrome/browser/branded_images:branded_images_api",
     "//ui/base",
@@ -140,8 +143,12 @@ source_set("test_support") {
 source_set("eg2_tests") {
   configs += [ "//build/config/ios:xctest_config" ]
   testonly = true
-  sources = [ "clear_browsing_data_egtest.mm" ]
+  sources = [
+    "clear_browsing_data_egtest.mm",
+    "quick_delete_egtest.mm",
+  ]
   deps = [
+    ":features",
     "//base/test:test_support",
     "//ios/chrome/app/strings",
     "//ios/chrome/browser/shared/ui/elements:constants",
@@ -150,6 +157,7 @@ source_set("eg2_tests") {
     "//ios/chrome/browser/ui/authentication:eg_test_support+eg2",
     "//ios/chrome/browser/ui/popup_menu:constants",
     "//ios/chrome/browser/ui/settings/cells:clear_browsing_data_constants",
+    "//ios/chrome/common/ui/confirmation_alert:constants",
     "//ios/chrome/test/earl_grey:eg_test_support+eg2",
     "//ios/testing/earl_grey:eg_test_support+eg2",
     "//ui/base",

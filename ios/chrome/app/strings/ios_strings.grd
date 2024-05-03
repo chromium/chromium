@@ -1292,6 +1292,10 @@ See your search engine’s instructions for deleting your search history, if app
       <message name="IDS_IOS_DELETE_ACTION_TITLE" desc="Title of the action used to delete a selected item. Item types include, for example, a Bookmark or an History Entry. [iOS only]">
         Delete
       </message>
+      <!-- TODO(crbug.com/335387869): Make string translatable once we have the complete UI. -->
+      <message name="IDS_IOS_DELETE_BROWSING_DATA_CANCEL" translateable="false" desc="Label for the option to cancel and dismiss deleting browsing data. [iOS only]">
+        Cancel
+      </message>
       <message name="IDS_IOS_DELETE_COMPROMISED_PASSWORD_DESCRIPTION" desc="Message on top of the confirmation alert when the user tapped delete password button. [iOS only]" meaning="Explaining to the user that deleting password locally won't delete account on a website.">
         Deleting this password will not delete your account on <ph name="WEBSITE">$1<ex>twitter.com</ex></ph>. Change your password on <ph name="WEBSITE">$1<ex>twitter.com</ex></ph> to keep it safe from others.
       </message>
