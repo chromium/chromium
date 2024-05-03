@@ -361,7 +361,7 @@ export class HistoryClustersElement extends HistoryClustersElementBase {
       this.set('result_.canLoadMore', result.canLoadMore);
     } else {
       // Scroll to the top when `result` contains a new set of clusters.
-      this.scrollTop = 0;
+      this.scrollTarget.scrollTop = 0;
       this.result_ = result;
     }
 
@@ -380,7 +380,8 @@ export class HistoryClustersElement extends HistoryClustersElementBase {
     // Do this on browser idle to avoid jank and to give the DOM a chance to be
     // updated with the results we just got.
     this.onBrowserIdle_().then(() => {
-      if (this.scrollHeight <= this.clientHeight && this.result_.canLoadMore) {
+      if (this.scrollTarget.scrollHeight <= this.scrollTarget.clientHeight &&
+          this.result_.canLoadMore) {
         this.onLoadMoreButtonClick_();
       }
     });
