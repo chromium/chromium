@@ -456,5 +456,8 @@ suite('PrintTicketManager', () => {
         assertEquals(
             DEFAULT_PARTIAL_PRINT_TICKET.mediaType, ticket.mediaType,
             'Ticket mediaType should match DEFAULT_PARTIAL_PRINT_TICKET');
+        assertEquals(
+            DEFAULT_PARTIAL_PRINT_TICKET.pageCount, ticket.pageCount,
+            'Ticket pageCount should match DEFAULT_PARTIAL_PRINT_TICKET');
       });
 });

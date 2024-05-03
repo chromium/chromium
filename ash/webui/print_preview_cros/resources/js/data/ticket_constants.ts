@@ -36,4 +36,5 @@ export const DEFAULT_PARTIAL_PRINT_TICKET: Partial<PrintTicket> = {
   marginsType: MarginType.DEFAULT_MARGINS,
   mediaSize: DEFAULT_MEDIA_SIZE,
   mediaType: '',
+  pageCount: [1],
 };

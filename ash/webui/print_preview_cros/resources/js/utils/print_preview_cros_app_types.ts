@@ -129,6 +129,9 @@ export interface PrintTicket {
   // Vendor id for a media type (plain paper, photo paper, etc.). For example,
   // vendor id ‘glossygold’ for media type Photo Paper Plus Glossy II.
   mediaType: string;
+
+  // Number of pages/sheets in generated PDF. Value takes into account n-up.
+  pageCount: number[];
 }
 
 // Immutable session configuration details for the current CrOS preview request.
