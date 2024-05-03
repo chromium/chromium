@@ -16,6 +16,8 @@
 #include "chrome/grit/generated_resources.h"
 #include "components/constrained_window/constrained_window_views.h"
 #include "components/prefs/pref_service.h"
+#include "components/web_modal/web_contents_modal_dialog_manager.h"
+#include "content/public/browser/document_user_data.h"
 #include "content/public/browser/web_contents.h"
 #include "ui/base/l10n/l10n_util.h"
 #include "ui/base/models/dialog_model.h"
@@ -32,7 +34,17 @@ void ShowCreateShortcutDialog(
     CreateShortcutDialogCallback dialog_action_and_text_callback) {
   Browser* browser = chrome::FindBrowserWithTab(web_contents);
   if (!browser) {
-    std::move(dialog_action_and_text_callback).Run(false, title);
+    std::move(dialog_action_and_text_callback)
+        .Run(/*is_accepted=*/false, title);
+    return;
+  }
+
+  // Do not show the dialog if it is already being shown.
+  const web_modal::WebContentsModalDialogManager* manager =
+      web_modal::WebContentsModalDialogManager::FromWebContents(web_contents);
+  if (!manager || manager->IsDialogActive()) {
+    std::move(dialog_action_and_text_callback)
+        .Run(/*is_accepted=*/false, title);
     return;
   }
 

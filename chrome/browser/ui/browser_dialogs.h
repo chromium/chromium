@@ -143,8 +143,12 @@ std::unique_ptr<compose::ComposeDialogController> ShowComposeDialog(
     const gfx::RectF& element_bounds_in_screen);
 #endif
 
+// This is passed to ShowCreateShortcutDialog to return 2 values:
+// 1. A boolean indicating if the dialog was accepted or cancelled. Cancellation
+// covers both manual as well as automatic cancellations of the dialog.
+// 2. The title that should be used for the shortcut name.
 using CreateShortcutDialogCallback =
-    base::OnceCallback<void(bool, std::u16string)>;
+    base::OnceCallback<void(bool /*is_accepted*/, std::u16string /*title*/)>;
 
 // Shows the `Create Shortcut` dialog to create fire and forget entities on the
 // desktop of the OS. This API works only if kShortcutsNotApps is enabled.

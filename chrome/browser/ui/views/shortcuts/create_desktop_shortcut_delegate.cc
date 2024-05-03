@@ -56,7 +56,7 @@ void CreateDesktopShortcutDelegate::OnAccept() {
     base::RecordAction(
         base::UserMetricsAction("CreateDesktopShortcutDialogAccepted"));
     CHECK(!text_field_data_.empty());
-    std::move(final_callback_).Run(true, text_field_data_);
+    std::move(final_callback_).Run(/*is_accepted=*/true, text_field_data_);
   }
 }
 
@@ -64,7 +64,7 @@ void CreateDesktopShortcutDelegate::OnClose() {
   if (final_callback_) {
     base::RecordAction(
         base::UserMetricsAction("CreateDesktopShortcutDialogCancelled"));
-    std::move(final_callback_).Run(false, text_field_data_);
+    std::move(final_callback_).Run(/*is_accepted=*/false, text_field_data_);
   }
 }
 
