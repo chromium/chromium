@@ -17,6 +17,7 @@
 #include "base/task/sequenced_task_runner.h"
 #include "base/threading/scoped_blocking_call.h"
 #include "base/time/time.h"
+#include "base/types/expected.h"
 #include "base/win/object_watcher.h"
 #include "base/win/scoped_handle.h"
 
@@ -43,6 +44,52 @@ using ScopedNotificationHandle =
     win::GenericScopedHandle<NotificationHandleTraits,
                              win::DummyVerifierTraits>;
 
+enum class CreateFileHandleError {
+  // When watching a path, the path (or some of its ancestor directories) might
+  // not exist yet. Failure to create a watcher because the path doesn't exist
+  // (or is not a directory) should not be considered fatal, since the watcher
+  // implementation can simply try again one directory level above.
+  kNonFatal,
+  kFatal,
+};
+
+base::expected<ScopedNotificationHandle, CreateFileHandleError>
+CreateNotificationHandle(const FilePath& dir, FilePathWatcher::Type type) {
+  ScopedBlockingCall scoped_blocking_call(FROM_HERE, BlockingType::MAY_BLOCK);
+
+  ScopedNotificationHandle handle(FindFirstChangeNotification(
+      dir.value().c_str(), type == FilePathWatcher::Type::kRecursive,
+      FILE_NOTIFY_CHANGE_FILE_NAME | FILE_NOTIFY_CHANGE_SIZE |
+          FILE_NOTIFY_CHANGE_LAST_WRITE | FILE_NOTIFY_CHANGE_DIR_NAME |
+          FILE_NOTIFY_CHANGE_ATTRIBUTES | FILE_NOTIFY_CHANGE_SECURITY));
+
+  if (handle.is_valid()) {
+    // Make sure the handle we got points to an existing directory. It seems
+    // that windows sometimes hands out watches to directories that are about to
+    // go away, but doesn't send notifications if that happens.
+    if (!DirectoryExists(dir)) {
+      return base::unexpected(CreateFileHandleError::kNonFatal);
+    }
+
+    return handle;
+  }
+
+  switch (GetLastError()) {
+    case ERROR_FILE_NOT_FOUND:
+    case ERROR_PATH_NOT_FOUND:
+    case ERROR_ACCESS_DENIED:
+    case ERROR_SHARING_VIOLATION:
+    case ERROR_DIRECTORY:
+      // Failure to create the handle is ok if the target directory doesn't
+      // exist, access is denied (happens if the file is already gone but there
+      // are still handles open), or the target is not a directory.
+      return base::unexpected(CreateFileHandleError::kNonFatal);
+    default:
+      DPLOG(ERROR) << "CreateFileW failed for " << dir.value();
+      return base::unexpected(CreateFileHandleError::kFatal);
+  }
+}
+
 class FilePathWatcherImpl : public FilePathWatcher::PlatformDelegate,
                             public base::win::ObjectWatcher::Delegate {
  public:
@@ -61,14 +108,6 @@ class FilePathWatcherImpl : public FilePathWatcher::PlatformDelegate,
   void OnObjectSignaled(HANDLE object) override;
 
  private:
-  // Setup a watch handle for directory `dir`. Set `recursive` to true to watch
-  // the directory sub trees. Returns true if no fatal error occurs. `handle`
-  // will receive the handle value if `dir` is watchable, otherwise
-  // INVALID_HANDLE_VALUE.
-  [[nodiscard]] static bool SetupWatchHandle(const FilePath& dir,
-                                             bool recursive,
-                                             ScopedNotificationHandle& handle);
-
   // Sets up a watch handle in `watched_handle_` for either `target_` or one of
   // its ancestors. Returns true on success.
   [[nodiscard]] bool SetupWatchHandleForTarget();
@@ -217,41 +256,6 @@ void FilePathWatcherImpl::OnObjectSignaled(HANDLE object) {
   }
 }
 
-// static
-bool FilePathWatcherImpl::SetupWatchHandle(const FilePath& dir,
-                                           bool recursive,
-                                           ScopedNotificationHandle& handle) {
-  ScopedBlockingCall scoped_blocking_call(FROM_HERE, BlockingType::MAY_BLOCK);
-  handle.Set(FindFirstChangeNotification(
-      dir.value().c_str(), recursive,
-      FILE_NOTIFY_CHANGE_FILE_NAME | FILE_NOTIFY_CHANGE_SIZE |
-          FILE_NOTIFY_CHANGE_LAST_WRITE | FILE_NOTIFY_CHANGE_DIR_NAME |
-          FILE_NOTIFY_CHANGE_ATTRIBUTES | FILE_NOTIFY_CHANGE_SECURITY));
-  if (handle.is_valid()) {
-    // Make sure the handle we got points to an existing directory. It seems
-    // that windows sometimes hands out watches to directories that are about to
-    // go away, but doesn't send notifications if that happens.
-    if (!DirectoryExists(dir)) {
-      handle.Close();
-    }
-    return true;
-  }
-
-  // If FindFirstChangeNotification failed because the target directory doesn't
-  // exist, access is denied (happens if the file is already gone but there are
-  // still handles open), or the target is not a directory, try the immediate
-  // parent directory instead.
-  DWORD error_code = GetLastError();
-  if (error_code != ERROR_FILE_NOT_FOUND &&
-      error_code != ERROR_PATH_NOT_FOUND && error_code != ERROR_ACCESS_DENIED &&
-      error_code != ERROR_SHARING_VIOLATION && error_code != ERROR_DIRECTORY) {
-    DPLOG(ERROR) << "FindFirstChangeNotification failed for " << dir.value();
-    return false;
-  }
-
-  return true;
-}
-
 bool FilePathWatcherImpl::SetupWatchHandleForTarget() {
   CloseWatchHandle();
 
@@ -263,14 +267,18 @@ bool FilePathWatcherImpl::SetupWatchHandleForTarget() {
   std::vector<FilePath> child_dirs;
   FilePath path_to_watch(target_);
   while (true) {
-    if (!SetupWatchHandle(path_to_watch, type_ == Type::kRecursive,
-                          watched_handle_)) {
-      return false;
+    auto result = CreateNotificationHandle(path_to_watch, type_);
+
+    // Break if a valid handle is returned.
+    if (result.has_value()) {
+      watched_handle_ = std::move(result.value());
+      break;
     }
 
-    // Break if a valid handle is returned. Try the parent directory otherwise.
-    if (watched_handle_.is_valid()) {
-      break;
+    // We're in an unknown state if `CreateNotificationHandle` returns an
+    // `kFatal` error, so return failure.
+    if (result.error() == CreateFileHandleError::kFatal) {
+      return false;
     }
 
     // Abort if we hit the root directory.
@@ -289,15 +297,17 @@ bool FilePathWatcherImpl::SetupWatchHandleForTarget() {
   while (!child_dirs.empty()) {
     path_to_watch = path_to_watch.Append(child_dirs.back());
     child_dirs.pop_back();
-    ScopedNotificationHandle temp_handle;
-    if (!SetupWatchHandle(path_to_watch, type_ == Type::kRecursive,
-                          temp_handle)) {
-      return false;
-    }
-    if (!temp_handle.is_valid()) {
+    auto result = CreateNotificationHandle(path_to_watch, type_);
+    if (!result.has_value()) {
+      // We're in an unknown state if `CreateNotificationHandle` returns an
+      // `kFatal` error, so return failure.
+      if (result.error() == CreateFileHandleError::kFatal) {
+        return false;
+      }
+      // Otherwise go with the current `watched_handle`.
       break;
     }
-    watched_handle_ = std::move(temp_handle);
+    watched_handle_ = std::move(result.value());
   }
 
   return true;
