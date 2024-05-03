@@ -33,8 +33,6 @@ class NodeCollector {
                                            PropertyTreePrinter&) const {}
   virtual void AddOtherProperties(const LocalFrameView&,
                                   PropertyTreePrinter&) const {}
-  virtual void AddViewTransitionProperties(const LayoutObject&,
-                                           PropertyTreePrinter&) const {}
   virtual void AddObjectPaintProperties(const ObjectPaintProperties&,
                                         PropertyTreePrinter&) const {}
 };
@@ -67,8 +65,6 @@ class FrameViewPropertyTreePrinter : public PropertyTreePrinter {
   }
 
   void CollectNodes(const LayoutObject& object) {
-    collector_.AddViewTransitionProperties(object, *this);
-
     for (const FragmentData& fragment : FragmentDataIterator(object)) {
       if (const auto* properties = fragment.PaintProperties()) {
         collector_.AddObjectPaintProperties(*properties, *this);
@@ -112,19 +108,6 @@ class EffectNodeCollector : public NodeCollector {
   void AddObjectPaintProperties(const ObjectPaintProperties& properties,
                                 PropertyTreePrinter& printer) const override {
     properties.AddEffectNodesToPrinter(printer);
-  }
-
-  void AddViewTransitionProperties(
-      const LayoutObject& object,
-      PropertyTreePrinter& printer) const override {
-    auto* transition = ViewTransitionUtils::GetTransition(object.GetDocument());
-    // `NeedsViewTransitionEffectNode` is an indirect way to see if the object
-    // is participating in the transition.
-    if (!transition || !transition->NeedsViewTransitionEffectNode(object)) {
-      return;
-    }
-
-    printer.AddNode(transition->GetEffect(object));
   }
 
   void AddOtherProperties(const LocalFrameView& frame_view,

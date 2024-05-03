@@ -758,42 +758,18 @@ bool ViewTransition::IsTransitionElementExcludingRoot(
   return !node.IsDocumentElement() && style_tracker_->IsTransitionElement(node);
 }
 
-PaintPropertyChangeType ViewTransition::UpdateEffect(
-    const LayoutObject& object,
-    const EffectPaintPropertyNodeOrAlias& current_effect,
-    const ClipPaintPropertyNodeOrAlias* current_clip,
-    const TransformPaintPropertyNodeOrAlias* current_transform) {
+viz::ViewTransitionElementResourceId ViewTransition::GetSnapshotId(
+    const LayoutObject& object) const {
   DCHECK(NeedsViewTransitionEffectNode(object));
-  DCHECK(current_transform);
-  DCHECK(current_clip);
 
-  EffectPaintPropertyNode::State state;
-  state.direct_compositing_reasons = CompositingReason::kViewTransitionElement;
-  state.local_transform_space = current_transform;
-  state.output_clip = current_clip;
-  state.compositor_element_id = CompositorElementIdFromUniqueObjectId(
-      object.UniqueId(), CompositorElementIdNamespace::kViewTransitionElement);
   auto* element = DynamicTo<Element>(object.GetNode());
   if (!element) {
     // The only non-element participant is the layout view.
     DCHECK(object.IsLayoutView());
-
-    // We always generate an effect node for the root element but element and
-    // resource IDs are only setup if the root element is participating in the
-    // transition, requiring a snapshot.
-    if (IsRootTransitioning()) {
-      style_tracker_->UpdateElementIndicesAndSnapshotId(
-          document_->documentElement(),
-          state.view_transition_element_resource_id);
-    }
-    return style_tracker_->UpdateRootEffect(std::move(state), current_effect);
+    element = document_->documentElement();
   }
 
-  state.self_or_ancestor_participates_in_view_transition = true;
-  style_tracker_->UpdateElementIndicesAndSnapshotId(
-      element, state.view_transition_element_resource_id);
-  return style_tracker_->UpdateEffect(*element, std::move(state),
-                                      current_effect);
+  return style_tracker_->GetSnapshotId(*element);
 }
 
 PaintPropertyChangeType ViewTransition::UpdateCaptureClip(
@@ -807,16 +783,6 @@ PaintPropertyChangeType ViewTransition::UpdateCaptureClip(
   DCHECK(element);
   return style_tracker_->UpdateCaptureClip(*element, current_clip,
                                            current_transform);
-}
-
-const EffectPaintPropertyNode* ViewTransition::GetEffect(
-    const LayoutObject& object) const {
-  DCHECK(NeedsViewTransitionEffectNode(object));
-
-  auto* element = DynamicTo<Element>(object.GetNode());
-  if (!element)
-    return style_tracker_->GetRootEffect();
-  return style_tracker_->GetEffect(*element);
 }
 
 const ClipPaintPropertyNode* ViewTransition::GetCaptureClip(

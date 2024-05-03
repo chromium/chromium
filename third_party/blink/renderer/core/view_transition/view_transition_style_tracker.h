@@ -112,9 +112,10 @@ class ViewTransitionStyleTracker
   // is initiated.
   void Abort();
 
-  void UpdateElementIndicesAndSnapshotId(
-      Element*,
-      viz::ViewTransitionElementResourceId&) const;
+  // Returns the snapshot ID to identify the render pass based image produced by
+  // this Element. Returns an invalid ID if this element is not participating in
+  // the transition.
+  viz::ViewTransitionElementResourceId GetSnapshotId(const Element&) const;
 
   // Creates a PseudoElement for the corresponding |pseudo_id| and
   // |view_transition_name|. The |pseudo_id| must be a ::transition* element.
@@ -136,19 +137,6 @@ class ViewTransitionStyleTracker
   // Returns true if any of the pseudo elements are currently participating in
   // an animation.
   bool HasActiveAnimations() const;
-
-  // Updates an effect node with the given state. The return value is a result
-  // of updating the effect node.
-  PaintPropertyChangeType UpdateEffect(
-      const Element& element,
-      EffectPaintPropertyNode::State state,
-      const EffectPaintPropertyNodeOrAlias& current_effect);
-  PaintPropertyChangeType UpdateRootEffect(
-      EffectPaintPropertyNode::State state,
-      const EffectPaintPropertyNodeOrAlias& current_effect);
-
-  const EffectPaintPropertyNode* GetEffect(const Element& element) const;
-  const EffectPaintPropertyNode* GetRootEffect() const;
 
   // Updates a clip node with the given state. The return value is a result of
   // updating the clip node.
@@ -247,12 +235,9 @@ class ViewTransitionStyleTracker
     // Valid if there is an element in the new DOM generating a snapshot.
     viz::ViewTransitionElementResourceId new_snapshot_id;
 
-    // An effect used to represent the `target_element`'s contents, including
-    // any of element's own effects, in a pseudo element layer.
-    scoped_refptr<EffectPaintPropertyNode> effect_node;
-
     // A clip used to specify the subset of the `target_element`'s visual
     // overflow rect rendered into the element's snapshot.
+    // TODO(khushalsagar): Move this to ObjectPaintProperties.
     scoped_refptr<ClipPaintPropertyNode> clip_node;
 
     // Index to add to the view transition element id.
@@ -351,11 +336,6 @@ class ViewTransitionStyleTracker
   // The device scale factor used for layout of the Document. This is kept in
   // sync with the Document during RunPostPrePaintSteps().
   float device_pixel_ratio_ = 0.f;
-
-  // The paint property node for the |documentElement|. This is generated if the
-  // element has a valid |view-transition-name| and ensures correct generation
-  // of its snapshot.
-  scoped_refptr<EffectPaintPropertyNode> root_effect_node_;
 
   // The dynamically generated UA stylesheet for default styles on
   // pseudo-elements.

@@ -141,28 +141,30 @@ class CORE_EXPORT ObjectPaintProperties {
 
     // Effects
     kElementCaptureEffect = 13,
-    kEffect = 14,
-    kFilter = 15,
-    kMask = 16,
-    kClipPathMask = 17,
-    kVerticalScrollbarEffect = 18,
-    kHorizontalScrollbarEffect = 19,
-    kScrollCorner = 20,
-    kEffectAlias = 21,
+    kViewTransitionSubframeRoot = 14,
+    kViewTransitionEffect = 15,
+    kEffect = 16,
+    kFilter = 17,
+    kMask = 18,
+    kClipPathMask = 19,
+    kVerticalScrollbarEffect = 20,
+    kHorizontalScrollbarEffect = 21,
+    kScrollCorner = 22,
+    kEffectAlias = 23,
     kFirstEffect = kElementCaptureEffect,
     kLastEffect = kEffectAlias,
 
     // Clips
-    kClipPathClip = 22,
-    kMaskClip = 23,
-    kCssClip = 24,
-    kOverflowControlsClip = 25,
-    kBackgroundClip = 26,
-    kPixelMovingFilterClipExpander = 27,
-    kInnerBorderRadiusClip = 28,
-    kOverflowClip = 29,
-    kCssClipFixedPosition = 30,
-    kClipAlias = 31,
+    kClipPathClip = 24,
+    kMaskClip = 25,
+    kCssClip = 26,
+    kOverflowControlsClip = 27,
+    kBackgroundClip = 28,
+    kPixelMovingFilterClipExpander = 29,
+    kInnerBorderRadiusClip = 30,
+    kOverflowClip = 31,
+    kCssClipFixedPosition = 32,
+    kClipAlias = 33,
     kFirstClip = kClipPathClip,
     kLastClip = kClipAlias,
 
@@ -269,6 +271,16 @@ class CORE_EXPORT ObjectPaintProperties {
   // follows:
   // [ ElementCaptureEffect ]
   // |     Isolated group to force an element to be painted separately.
+  // +-[ ViewTransitionSubframeRoot ]
+  //   |   Provides the root stacking context for a local subframe with an
+  //   |   active ViewTransition. This is used to implement the view transition
+  //  /    layer stacking context:
+  // /     https://drafts.csswg.org/css-view-transitions-1/#view-transition-layer
+  // +-[ ViewTransitionEffect ]
+  //   |   Provides the stacking context to paint all content for a Document,
+  //   |   including top layer elements, into an image used for ViewTransition.
+  //  /    This implements the capturing the image for the document element at:
+  // /     https://drafts.csswg.org/css-view-transitions-1/#capture-the-image-algorithm
   // +-[ Effect ]
   //   |   Isolated group to apply various CSS effects, including opacity,
   //  /    mix-blend-mode, backdrop-filter, and for isolation if a mask needs
@@ -300,6 +312,8 @@ class CORE_EXPORT ObjectPaintProperties {
   }
 
   ADD_EFFECT(ElementCaptureEffect, NodeId::kElementCaptureEffect)
+  ADD_EFFECT(ViewTransitionSubframeRoot, NodeId::kViewTransitionSubframeRoot)
+  ADD_EFFECT(ViewTransitionEffect, NodeId::kViewTransitionEffect)
   ADD_EFFECT(Effect, NodeId::kEffect)
   ADD_EFFECT(Filter, NodeId::kFilter)
   ADD_EFFECT(Mask, NodeId::kMask)

@@ -49,13 +49,13 @@ class CORE_EXPORT SparseVector {
   ~SparseVector() = default;
 
   // Common vector methods for checking state.
-  uint32_t capacity() const { return fields_.capacity(); }
-  uint32_t size() const { return fields_.size(); }
+  wtf_size_t capacity() const { return fields_.capacity(); }
+  wtf_size_t size() const { return fields_.size(); }
   bool empty() const { return fields_.empty(); }
 
   // Field accessors.
   bool HasField(FieldId field_id) const {
-    return fields_bitfield_ & (1u << static_cast<unsigned>(field_id));
+    return fields_bitfield_ & FieldIdMask(field_id);
   }
 
   const FieldType& GetField(FieldId field_id) const {
@@ -78,8 +78,7 @@ class CORE_EXPORT SparseVector {
       if (fields_.empty()) {
         fields_.reserve(kFirstCapacityToReserve);
       }
-      fields_bitfield_ =
-          fields_bitfield_ | (1u << static_cast<unsigned>(field_id));
+      fields_bitfield_ = fields_bitfield_ | FieldIdMask(field_id);
       fields_.insert(GetFieldIndex(field_id), std::move(field));
     }
   }
@@ -89,31 +88,36 @@ class CORE_EXPORT SparseVector {
   bool ClearField(FieldId field_id) {
     if (HasField(field_id)) {
       fields_.EraseAt(GetFieldIndex(field_id));
-      fields_bitfield_ =
-          fields_bitfield_ & ~(1u << static_cast<unsigned>(field_id));
+      fields_bitfield_ = fields_bitfield_ & ~FieldIdMask(field_id);
       return true;
     }
     return false;
   }
 
  private:
+  using BitfieldType = uint64_t;
+
+  static BitfieldType FieldIdMask(FieldId field_id) {
+    return static_cast<BitfieldType>(1) << static_cast<unsigned>(field_id);
+  }
+
   // GetFieldIndex returns the index in |fields_| that |field_id| is stored in.
   // If |fields_| isn't storing a field for |field_id|, then this returns the
   // index which the data for |field_id| should be inserted into.
-  unsigned GetFieldIndex(FieldId field_id) const {
+  wtf_size_t GetFieldIndex(FieldId field_id) const {
     // First, create a mask that has entries only for field IDs lower than
     // the field ID we are looking for.
-    const unsigned mask = ~(~(0u) << static_cast<unsigned>(field_id));
+    const BitfieldType mask =
+        ~(~static_cast<BitfieldType>(0) << static_cast<unsigned>(field_id));
 
     // Then count the total population of field IDs lower than that one we
     // are looking for. The target field ID should be located at the index of
     // of the total population.
-    return __builtin_popcount(fields_bitfield_ & mask);
+    return __builtin_popcountll(fields_bitfield_ & mask);
   }
 
   Vector<FieldType> fields_;
 
-  using BitfieldType = uint32_t;
   BitfieldType fields_bitfield_ = {};
   static_assert(sizeof(fields_bitfield_) * CHAR_BIT >=
                     static_cast<unsigned>(FieldId::kNumFields),

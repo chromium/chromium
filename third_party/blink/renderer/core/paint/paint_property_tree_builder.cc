@@ -460,6 +460,15 @@ static bool NeedsPaintOffsetTranslationForOverflowControls(
   return false;
 }
 
+static bool IsLocalSubframeLayoutView(const LayoutObject& object) {
+  if (!object.IsLayoutView()) {
+    return false;
+  }
+
+  const auto* parent_frame = object.GetFrame()->Tree().Parent();
+  return parent_frame && parent_frame->IsLocalFrame();
+}
+
 static bool NeedsIsolationNodes(const LayoutObject& object) {
   if (!object.HasLayer())
     return false;
@@ -474,10 +483,10 @@ static bool NeedsIsolationNodes(const LayoutObject& object) {
 
   // Layout view establishes isolation with the exception of local roots (since
   // they are already essentially isolated).
-  if (IsA<LayoutView>(object)) {
-    const auto* parent_frame = object.GetFrame()->Tree().Parent();
-    return IsA<LocalFrame>(parent_frame);
+  if (IsLocalSubframeLayoutView(object)) {
+    return true;
   }
+
   return false;
 }
 
@@ -1625,9 +1634,12 @@ void FragmentPaintPropertyTreeBuilder::UpdateEffect() {
             ViewTransitionUtils::GetTransition(object_.GetDocument());
         DCHECK(transition);
 
-        parent_effect =
-            transition->GetEffect(*object_.GetDocument().GetLayoutView())
-                ->Parent();
+        parent_effect = object_.GetDocument()
+                            .GetLayoutView()
+                            ->FirstFragment()
+                            .PaintProperties()
+                            ->ViewTransitionEffect()
+                            ->Parent();
         DCHECK(parent_effect);
       }
       DCHECK(parent_effect);
@@ -1737,41 +1749,67 @@ void FragmentPaintPropertyTreeBuilder::UpdateElementCaptureEffect() {
 
 void FragmentPaintPropertyTreeBuilder::UpdateViewTransitionEffect() {
   if (NeedsPaintPropertyUpdate()) {
-    if (full_context_.direct_compositing_reasons &
-        CompositingReason::kViewTransitionElement) {
+    const bool old_self_or_ancestor_participates_in_view_transition =
+        properties_->ViewTransitionEffect() &&
+        properties_->ViewTransitionEffect()
+            ->SelfOrAncestorParticipatesInViewTransition();
+
+    const bool needs_view_transition_effect =
+        full_context_.direct_compositing_reasons &
+        CompositingReason::kViewTransitionElement;
+
+    if (needs_view_transition_effect) {
       auto* transition =
           ViewTransitionUtils::GetTransition(object_.GetDocument());
       DCHECK(transition);
 
-      auto* old_effect = transition->GetEffect(object_);
-      bool old_participation_flag =
-          old_effect &&
-          old_effect->SelfOrAncestorParticipatesInViewTransition();
+      EffectPaintPropertyNode::State state;
+      state.direct_compositing_reasons =
+          CompositingReason::kViewTransitionElement;
+      state.local_transform_space = context_.current.transform;
+      state.output_clip = context_.current.clip;
+      state.compositor_element_id = CompositorElementIdFromUniqueObjectId(
+          object_.UniqueId(),
+          CompositorElementIdNamespace::kViewTransitionElement);
+      state.view_transition_element_resource_id =
+          transition->GetSnapshotId(object_);
 
-      OnUpdateEffect(transition->UpdateEffect(object_, *context_.current_effect,
-                                              context_.current.clip,
-                                              context_.current.transform));
-
-      auto* new_effect = transition->GetEffect(object_);
       // The value isn't set on the root, since clipping rules are different for
-      // the root view transition element. So, if we don't set this on the
-      // effect, it implies that no other ancestor could have set it.
-      CHECK(new_effect->SelfOrAncestorParticipatesInViewTransition() ||
-            !context_.self_or_ancestor_participates_in_view_transition);
-
-      context_.self_or_ancestor_participates_in_view_transition |=
-          new_effect->SelfOrAncestorParticipatesInViewTransition();
-
-      // Whether self and ancestor participate in a view transition needs to be
-      // propagated to the subtree of the element that set the value.
-      if (old_participation_flag !=
-          new_effect->SelfOrAncestorParticipatesInViewTransition()) {
-        full_context_.force_subtree_update_reasons |=
-            PaintPropertyTreeBuilderContext::kSubtreeUpdateIsolationPiercing;
+      // the root view transition element.
+      if (object_.IsLayoutView()) {
+        // The LayoutView can only have this bit set from an ancestor if it
+        // belongs to a subframe.
+        CHECK(!context_.self_or_ancestor_participates_in_view_transition ||
+              IsLocalSubframeLayoutView(object_));
+        state.self_or_ancestor_participates_in_view_transition =
+            context_.self_or_ancestor_participates_in_view_transition;
+      } else {
+        state.self_or_ancestor_participates_in_view_transition = true;
       }
 
-      context_.current_effect = new_effect;
+      OnUpdateEffect(properties_->UpdateViewTransitionEffect(
+          *context_.current_effect, std::move(state), {}));
+    } else {
+      OnClearEffect(properties_->ClearViewTransitionEffect());
     }
+
+    // Whether self and ancestor participate in a view transition needs to be
+    // propagated to the subtree of the element that set the value.
+    const auto* new_effect = properties_->ViewTransitionEffect();
+    bool new_self_or_ancestor_participates_in_view_transition =
+        new_effect && new_effect->SelfOrAncestorParticipatesInViewTransition();
+
+    if (old_self_or_ancestor_participates_in_view_transition !=
+        new_self_or_ancestor_participates_in_view_transition) {
+      full_context_.force_subtree_update_reasons |=
+          PaintPropertyTreeBuilderContext::kSubtreeUpdateIsolationPiercing;
+    }
+  }
+
+  if (auto* effect = properties_->ViewTransitionEffect()) {
+    context_.current_effect = effect;
+    context_.self_or_ancestor_participates_in_view_transition |=
+        effect->SelfOrAncestorParticipatesInViewTransition();
   }
 }
 

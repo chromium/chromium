@@ -139,14 +139,10 @@ class CORE_EXPORT ViewTransition : public GarbageCollected<ViewTransition>,
   // instead of the root element's LayoutView.
   bool IsTransitionElementExcludingRoot(const Element& node) const;
 
-  // Updates an effect node. This effect populates the view transition element
-  // id and the shared element resource id. The return value is a result of
-  // updating the effect node.
-  PaintPropertyChangeType UpdateEffect(
-      const LayoutObject& object,
-      const EffectPaintPropertyNodeOrAlias& current_effect,
-      const ClipPaintPropertyNodeOrAlias* current_clip,
-      const TransformPaintPropertyNodeOrAlias* current_transform);
+  // Returns the resource id if `object` is producing a snapshot for this
+  // transition.
+  viz::ViewTransitionElementResourceId GetSnapshotId(
+      const LayoutObject& object) const;
 
   // Updates a clip node. The clip tracks the subset of the |object|'s ink
   // overflow rectangle which should be painted.The return value is a result of
@@ -155,9 +151,6 @@ class CORE_EXPORT ViewTransition : public GarbageCollected<ViewTransition>,
       const LayoutObject& object,
       const ClipPaintPropertyNodeOrAlias* current_clip,
       const TransformPaintPropertyNodeOrAlias* current_transform);
-
-  // Returns the effect. One needs to first call UpdateEffect().
-  const EffectPaintPropertyNode* GetEffect(const LayoutObject& object) const;
 
   // Returns the clip. One needs to first call UpdateCaptureClip().
   const ClipPaintPropertyNode* GetCaptureClip(const LayoutObject& object) const;

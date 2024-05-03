@@ -813,9 +813,7 @@ void ViewTransitionStyleTracker::CaptureResolved() {
     auto& element_data = entry.value;
 
     element_data->target_element = nullptr;
-    element_data->effect_node = nullptr;
   }
-  root_effect_node_ = nullptr;
   is_root_transitioning_ = false;
 }
 
@@ -983,12 +981,13 @@ void ViewTransitionStyleTracker::EndTransition() {
     page->Animator().SetHasViewTransition(false);
 }
 
-void ViewTransitionStyleTracker::UpdateElementIndicesAndSnapshotId(
-    Element* element,
-    viz::ViewTransitionElementResourceId& resource_id) const {
-  DCHECK(element);
+viz::ViewTransitionElementResourceId ViewTransitionStyleTracker::GetSnapshotId(
+    const Element& element) const {
+  viz::ViewTransitionElementResourceId resource_id;
 
   for (const auto& entry : element_data_map_) {
+    // This loop is based on the assumption that an element can have multiple
+    // names. But this concept is not supported by the web API.
     if (entry.value->target_element == element) {
       const auto& snapshot_id = HasLiveNewContent()
                                     ? entry.value->new_snapshot_id
@@ -998,7 +997,8 @@ void ViewTransitionStyleTracker::UpdateElementIndicesAndSnapshotId(
         resource_id = snapshot_id;
     }
   }
-  DCHECK(resource_id.IsValid());
+
+  return resource_id;
 }
 
 PseudoElement* ViewTransitionStyleTracker::CreatePseudoElement(
@@ -1345,64 +1345,6 @@ bool ViewTransitionStyleTracker::HasActiveAnimations() const {
   return !!ViewTransitionUtils::FindPseudoIf(*document_, pseudo_has_animation);
 }
 
-PaintPropertyChangeType ViewTransitionStyleTracker::UpdateEffect(
-    const Element& element,
-    EffectPaintPropertyNode::State state,
-    const EffectPaintPropertyNodeOrAlias& current_effect) {
-  for (auto& entry : element_data_map_) {
-    auto& element_data = entry.value;
-    if (element_data->target_element != &element) {
-      continue;
-    }
-
-    if (!element_data->effect_node) {
-      element_data->effect_node =
-          EffectPaintPropertyNode::Create(current_effect, std::move(state));
-#if DCHECK_IS_ON()
-      element_data->effect_node->SetDebugName(element.DebugName() +
-                                              "ViewTransition");
-#endif
-      return PaintPropertyChangeType::kNodeAddedOrRemoved;
-    }
-    return element_data->effect_node->Update(current_effect, std::move(state),
-                                             {});
-  }
-  NOTREACHED();
-  return PaintPropertyChangeType::kUnchanged;
-}
-
-PaintPropertyChangeType ViewTransitionStyleTracker::UpdateRootEffect(
-    EffectPaintPropertyNode::State state,
-    const EffectPaintPropertyNodeOrAlias& current_effect) {
-  if (!root_effect_node_) {
-    root_effect_node_ =
-        EffectPaintPropertyNode::Create(current_effect, std::move(state));
-#if DCHECK_IS_ON()
-    root_effect_node_->SetDebugName("ViewTransition");
-#endif
-    return PaintPropertyChangeType::kNodeAddedOrRemoved;
-  }
-  return root_effect_node_->Update(current_effect, std::move(state), {});
-}
-
-const EffectPaintPropertyNode* ViewTransitionStyleTracker::GetEffect(
-    const Element& element) const {
-  for (auto& entry : element_data_map_) {
-    auto& element_data = entry.value;
-    if (element_data->target_element != &element) {
-      continue;
-    }
-    return element_data->effect_node.get();
-  }
-  NOTREACHED();
-  return nullptr;
-}
-
-const EffectPaintPropertyNode* ViewTransitionStyleTracker::GetRootEffect()
-    const {
-  return root_effect_node_.get();
-}
-
 PaintPropertyChangeType ViewTransitionStyleTracker::UpdateCaptureClip(
     const Element& element,
     const ClipPaintPropertyNodeOrAlias* current_clip,
@@ -1699,8 +1641,9 @@ void ViewTransitionStyleTracker::InvalidateStyle() {
   ViewTransitionUtils::ForEachTransitionPseudo(*document_, invalidate_style);
 
   // Invalidate layout view compositing properties.
-  if (auto* layout_view = document_->GetLayoutView())
+  if (auto* layout_view = document_->GetLayoutView()) {
     layout_view->SetNeedsPaintPropertyUpdate();
+  }
 
   for (auto& entry : element_data_map_) {
     if (!entry.value->target_element ||
