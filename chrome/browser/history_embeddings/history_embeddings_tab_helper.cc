@@ -86,11 +86,6 @@ void HistoryEmbeddingsTabHelper::ExtractPassages(
   if (!history_service) {
     return;
   }
-  history_embeddings::HistoryEmbeddingsService* embeddings_service =
-      GetHistoryEmbeddingsService();
-  if (!embeddings_service) {
-    return;
-  }
 
   history_service->GetMostRecentVisitsForGurl(
       history_url_.value(), 1,
@@ -129,7 +124,7 @@ void HistoryEmbeddingsTabHelper::ExtractPassages(
             history_embeddings_service->RetrievePassages(latest_visit,
                                                          *render_frame_host);
           },
-          embeddings_service->AsWeakPtr(), render_frame_host,
+          GetHistoryEmbeddingsService()->AsWeakPtr(), render_frame_host,
           history_visit_time_.value()),
       &task_tracker_);
 
