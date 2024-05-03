@@ -341,6 +341,10 @@ void PasswordGenerationAgent::GeneratedPasswordAccepted(
   password_generation::LogPasswordGenerationEvent(
       password_generation::PASSWORD_ACCEPTED);
   LogMessage(Logger::STRING_GENERATION_RENDERER_GENERATED_PASSWORD_ACCEPTED);
+
+  // Preview needs to be cleared before filling to be removed correctly.
+  password_agent_->autofill_agent().ClearPreviewedForm();
+
   for (auto& password_element : current_generation_item_->password_elements_) {
     base::AutoReset<bool> auto_reset_update_confirmation_password(
         &current_generation_item_->updating_other_password_fields_, true);
