@@ -632,7 +632,7 @@ v8::MaybeLocal<v8::Promise> HostImportModuleDynamically(
     v8::Local<v8::Data> v8_host_defined_options,
     v8::Local<v8::Value> v8_referrer_resource_url,
     v8::Local<v8::String> v8_specifier,
-    v8::Local<v8::FixedArray> v8_import_assertions) {
+    v8::Local<v8::FixedArray> v8_import_attributes) {
   ScriptState* script_state = ScriptState::From(context);
 
   Modulator* modulator = Modulator::From(script_state);
@@ -679,9 +679,9 @@ v8::MaybeLocal<v8::Promise> HostImportModuleDynamically(
 
   ModuleRequest module_request(
       specifier, TextPosition::MinimumPosition(),
-      ModuleRecord::ToBlinkImportAssertions(
+      ModuleRecord::ToBlinkImportAttributes(
           script_state->GetContext(), v8::Local<v8::Module>(),
-          v8_import_assertions, /*v8_import_assertions_has_positions=*/false));
+          v8_import_attributes, /*v8_import_attributes_has_positions=*/false));
 
   auto* resolver = MakeGarbageCollected<ScriptPromiseResolver<IDLAny>>(
       script_state,
