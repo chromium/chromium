@@ -1923,6 +1923,72 @@ class PortTest(LoggingTestCase):
             port.skipped_due_to_exclusive_virtual_tests(
                 'virtual/v2/b2/test2.html'))
 
+    def test_virtual_exclusive_tests_with_generated_tests(self):
+        port = self.make_port()
+        fs = port.host.filesystem
+        web_tests_dir = port.web_tests_dir()
+        fs.write_text_file(
+            fs.join(web_tests_dir, 'VirtualTestSuites'), '['
+            '{"prefix": "v1", "platforms": ["Linux"], "bases": ["external/wpt/console/b1.any.js"],'
+            ' "exclusive_tests": "ALL", '
+            '"args": ["-a"], "expires": "never"},'
+            '{"prefix": "v2", "platforms": ["Linux"], "bases": ["external/wpt/console/b1.any.js",'
+            '                                                   "external/wpt/console/b2.any.js"],'
+            ' "exclusive_tests": ["external/wpt/console/b2.any.js"], '
+            '"args": ["-b"], "expires": "never"}'
+            ']')
+        fs.write_text_file(
+            fs.join(web_tests_dir, 'external/wpt/console', 'b1.any.js'), '')
+        fs.write_text_file(
+            fs.join(web_tests_dir, 'external/wpt/console', 'b2.any.js'), '')
+
+        self.assertTrue(
+            port.skipped_due_to_exclusive_virtual_tests(
+                'external/wpt/console/b1.any.html'))
+        self.assertTrue(
+            port.skipped_due_to_exclusive_virtual_tests(
+                'external/wpt/console/b1.any.sharedworker.html'))
+        self.assertTrue(
+            port.skipped_due_to_exclusive_virtual_tests(
+                'external/wpt/console/b1.any.worker.html'))
+        self.assertFalse(
+            port.skipped_due_to_exclusive_virtual_tests(
+                'virtual/v1/external/wpt/console/b1.any.html'))
+        self.assertFalse(
+            port.skipped_due_to_exclusive_virtual_tests(
+                'virtual/v1/external/wpt/console/b1.any.sharedworker.html'))
+        self.assertFalse(
+            port.skipped_due_to_exclusive_virtual_tests(
+                'virtual/v1/external/wpt/console/b1.any.worker.html'))
+
+        self.assertTrue(
+            port.skipped_due_to_exclusive_virtual_tests(
+                'external/wpt/console/b2.any.html'))
+        self.assertTrue(
+            port.skipped_due_to_exclusive_virtual_tests(
+                'external/wpt/console/b2.any.sharedworker.html'))
+        self.assertTrue(
+            port.skipped_due_to_exclusive_virtual_tests(
+                'external/wpt/console/b2.any.worker.html'))
+        self.assertTrue(
+            port.skipped_due_to_exclusive_virtual_tests(
+                'virtual/v2/external/wpt/console/b1.any.html'))
+        self.assertTrue(
+            port.skipped_due_to_exclusive_virtual_tests(
+                'virtual/v2/external/wpt/console/b1.any.sharedworker.html'))
+        self.assertTrue(
+            port.skipped_due_to_exclusive_virtual_tests(
+                'virtual/v2/external/wpt/console/b1.any.worker.html'))
+        self.assertFalse(
+            port.skipped_due_to_exclusive_virtual_tests(
+                'virtual/v2/external/wpt/console/b2.any.html'))
+        self.assertFalse(
+            port.skipped_due_to_exclusive_virtual_tests(
+                'virtual/v2/external/wpt/console/b2.any.sharedworker.html'))
+        self.assertFalse(
+            port.skipped_due_to_exclusive_virtual_tests(
+                'virtual/v2/external/wpt/console/b2.any.worker.html'))
+
     def test_virtual_skip_base_tests(self):
         port = self.make_port()
         fs = port.host.filesystem

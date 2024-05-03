@@ -1732,7 +1732,14 @@ class Port(object):
     def _normalized_exclusive_tests(self, virtual_suite):
         tests = set()
         for exclusive_test in virtual_suite.exclusive_tests:
-            tests.add(self.normalize_test_name(exclusive_test))
+            normalized_test = self.normalize_test_name(exclusive_test)
+            # WPT JS tests can expand to multiple tests. Remove the "js" suffix
+            # so that generated variants (e.g. "test.any.worker.html") match
+            # against the base with startswith and are correctly excluded.
+            if self.is_wpt_test(normalized_test) and normalized_test.endswith(
+                    '.js'):
+                normalized_test = normalized_test[:-2]
+            tests.add(normalized_test)
         return tests
 
     @memoized
