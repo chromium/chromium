@@ -748,6 +748,7 @@ void SettingsUI::CreateHelpBubbleHandler(
       std::vector<ui::ElementIdentifier>{
           kEnhancedProtectionSettingElementId,
           kAnonymizedUrlCollectionPersonalizationSettingId,
+          kInactiveTabSettingElementId,
       });
 }
 

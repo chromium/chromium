@@ -788,10 +788,20 @@ void MaybeRegisterChromeFeaturePromos(
               [](ui::ElementContext ctx,
                  user_education::FeaturePromoHandle promo_handle) {
                 auto* browser = chrome::FindBrowserWithUiElementContext(ctx);
-                if (browser) {
-                  chrome::ShowSettingsSubPage(browser,
-                                              chrome::kPerformanceSubPage);
+                if (!browser) {
+                  return;
                 }
+                ShowPromoInPage::Params params;
+                params.target_url =
+                    chrome::GetSettingsUrl(chrome::kPerformanceSubPage);
+                params.bubble_anchor_id = kInactiveTabSettingElementId;
+                params.bubble_arrow =
+                    user_education::HelpBubbleArrow::kBottomRight;
+                params.bubble_text =
+                    l10n_util::GetStringUTF16(IDS_DISCARD_RING_SETTINGS_TOAST);
+                params.close_button_alt_text_id = IDS_CLOSE_PROMO;
+
+                ShowPromoInPage::Start(browser, std::move(params));
               }))
           .SetAnchorElementFilter(base::BindRepeating(
               [](const ui::ElementTracker::ElementList& elements) {

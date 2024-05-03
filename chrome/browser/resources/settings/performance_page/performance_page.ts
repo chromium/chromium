@@ -12,7 +12,8 @@ import '../settings_shared.css.js';
 import './tab_discard/exception_list.js';
 
 import {PrefsMixin} from '/shared/settings/prefs/prefs_mixin.js';
-import {PolymerElement} from 'chrome://resources/polymer/v3_0/polymer/polymer_bundled.min.js';
+import {HelpBubbleMixin} from 'chrome://resources/cr_components/help_bubble/help_bubble_mixin.js';
+import {afterNextRender, PolymerElement} from 'chrome://resources/polymer/v3_0/polymer/polymer_bundled.min.js';
 
 import type {SettingsToggleButtonElement} from '../controls/settings_toggle_button.js';
 import {loadTimeData} from '../i18n_setup.js';
@@ -28,7 +29,11 @@ export const MEMORY_SAVER_MODE_PREF =
 export const DISCARD_RING_PREF =
     'performance_tuning.discard_ring_treatment.enabled';
 
-const SettingsPerformancePageElementBase = PrefsMixin(PolymerElement);
+// browser_element_identifiers constants
+const INACTIVE_TAB_SETTING_ELEMENT_ID = 'kInactiveTabSettingElementId';
+
+const SettingsPerformancePageElementBase =
+    HelpBubbleMixin(PrefsMixin(PolymerElement));
 
 export interface SettingsPerformancePageElement {
   $: {
@@ -91,6 +96,21 @@ export class SettingsPerformancePageElement extends
   private isMemorySaverMultistateModeEnabled_: boolean;
 
   private isDiscardRingImprovementsEnabled_: boolean;
+
+  override ready() {
+    super.ready();
+    // Remove afterNextRender when feature is launched and dom-if is removed.
+    afterNextRender(this, () => {
+      const discardRingTreatmentToggleButton =
+          this.shadowRoot!.querySelector<SettingsToggleButtonElement>(
+              '#discardRingTreatmentToggleButton');
+      if (discardRingTreatmentToggleButton) {
+        this.registerHelpBubble(
+            INACTIVE_TAB_SETTING_ELEMENT_ID,
+            discardRingTreatmentToggleButton.getBubbleAnchor());
+      }
+    });
+  }
 
   private onMemorySaverModeChange_() {
     this.metricsProxy_.recordMemorySaverModeChanged(

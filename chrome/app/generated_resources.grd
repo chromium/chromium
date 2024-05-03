@@ -9920,6 +9920,9 @@ Keep your key file in a safe place. You will need it to create new versions of y
       <message name="IDS_DISCARD_RING_PROMO_ACTION_TEXT" desc="The custom action button text for the discard ring in-product promo bubble.">
         Settings
       </message>
+      <message name="IDS_DISCARD_RING_SETTINGS_TOAST" desc="A toast bubble that highlights where the inactive tabs look can be changed in settings.">
+        Manage the look of inactive tabs here
+      </message>
 
       <!-- User Education Tutorial Strings -->
       <message name="IDS_TUTORIAL_GENERIC_SUCCESS_TITLE" desc="The title of the generic success step in the user education tutorials">

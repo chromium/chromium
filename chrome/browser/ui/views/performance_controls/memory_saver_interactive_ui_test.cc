@@ -59,6 +59,7 @@
 namespace {
 DEFINE_LOCAL_ELEMENT_IDENTIFIER_VALUE(kFirstTabContents);
 DEFINE_LOCAL_ELEMENT_IDENTIFIER_VALUE(kSecondTabContents);
+DEFINE_LOCAL_ELEMENT_IDENTIFIER_VALUE(kThirdTabContents);
 DEFINE_LOCAL_ELEMENT_IDENTIFIER_VALUE(kPerformanceSettingsTab);
 DEFINE_LOCAL_CUSTOM_ELEMENT_EVENT_TYPE(kAudioIsAudible);
 
@@ -605,7 +606,11 @@ IN_PROC_BROWSER_TEST_F(MemorySaverFaviconTreatmentTest,
       NavigateWebContents(kFirstTabContents, GetURL()),
       AddInstrumentedTab(kSecondTabContents, GURL(chrome::kChromeUINewTabURL)),
       TryDiscardTab(0), CheckTabIsDiscarded(0, true),
-      WaitForPromo(feature_engagement::kIPHDiscardRingFeature));
+      WaitForPromo(feature_engagement::kIPHDiscardRingFeature),
+      PressNonDefaultPromoButton(), InstrumentTab(kThirdTabContents, 2),
+      WaitForWebContentsReady(
+          kThirdTabContents,
+          GURL(chrome::GetSettingsUrl(chrome::kPerformanceSubPage))));
 }
 
 class MemorySaverImprovedFaviconTreatmentTest
