@@ -22,9 +22,7 @@
 #include "base/trace_event/memory_dump_request_args.h"
 #include "base/trace_event/trace_event.h"
 
-#if BUILDFLAG(USE_PERFETTO_CLIENT_LIBRARY)
 #include "third_party/perfetto/protos/perfetto/config/track_event/track_event_config.gen.h"  // nogncheck
-#endif
 
 namespace base::trace_event {
 
@@ -783,7 +781,6 @@ std::string TraceConfig::ToTraceOptionsString() const {
   return ret;
 }
 
-#if BUILDFLAG(USE_PERFETTO_CLIENT_LIBRARY)
 std::string TraceConfig::ToPerfettoTrackEventConfigRaw(
     bool privacy_filtering_enabled) const {
   perfetto::protos::gen::TrackEventConfig te_cfg;
@@ -817,6 +814,5 @@ std::string TraceConfig::ToPerfettoTrackEventConfigRaw(
   }
   return te_cfg.SerializeAsString();
 }
-#endif
 
 }  // namespace base::trace_event

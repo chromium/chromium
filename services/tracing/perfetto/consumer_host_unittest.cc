@@ -35,11 +35,7 @@
 
 namespace tracing {
 
-#if BUILDFLAG(USE_PERFETTO_CLIENT_LIBRARY)
 const std::string kDataSourceName = "track_event";
-#else
-const std::string kDataSourceName = mojom::kTraceEventDataSourceName;
-#endif
 
 constexpr base::ProcessId kProducerPid = 1234;
 
@@ -777,49 +773,5 @@ class MockConsumerHost : public mojom::TracingSessionClient {
   base::RunLoop wait_for_tracing_enabled_;
   base::RunLoop wait_for_tracing_disabled_;
 };
-
-// Perfetto client library supports multiple parallel tracing sessions, so
-// this test is irrelevant.
-#if !BUILDFLAG(USE_PERFETTO_CLIENT_LIBRARY)
-TEST_F(TracingConsumerTest, TestConsumerPriority) {
-  PerfettoService::GetInstance()->SetActiveServicePidsInitialized();
-  auto trace_config_background = GetDefaultTraceConfig(
-      kDataSourceName, perfetto::protos::gen ::ChromeConfig::BACKGROUND);
-  auto trace_config_user_initiated = GetDefaultTraceConfig(
-      kDataSourceName, perfetto::protos::gen ::ChromeConfig::USER_INITIATED);
-
-  MockConsumerHost background_consumer_1(PerfettoService::GetInstance());
-  background_consumer_1.EnableTracing(trace_config_background);
-  background_consumer_1.WaitForTracingEnabled();
-
-  // Second consumer of the same priority should cause the first one to
-  // be disabled and the second to start.
-  MockConsumerHost background_consumer_2(PerfettoService::GetInstance());
-  background_consumer_2.EnableTracing(trace_config_background);
-  background_consumer_1.WaitForTracingDisabled();
-  background_consumer_2.WaitForTracingEnabled();
-
-  // Third consumer will have a higher priority, and should kill the second
-  // one.
-  MockConsumerHost user_initiated_consumer(PerfettoService::GetInstance());
-  user_initiated_consumer.EnableTracing(trace_config_user_initiated);
-  background_consumer_2.WaitForTracingDisabled();
-  user_initiated_consumer.WaitForTracingEnabled();
-
-  // Fourth consumer will be another background consumer, and should be
-  // itself killed as the third consumer is still running.
-  MockConsumerHost background_consumer_3(PerfettoService::GetInstance());
-  background_consumer_3.EnableTracing(trace_config_background);
-  background_consumer_3.WaitForConnectionLost();
-
-  // If we close the user initiated consumer, the third background consumer
-  // should now be able to trace.
-  user_initiated_consumer.DisableTracing();
-  user_initiated_consumer.WaitForTracingDisabled();
-  user_initiated_consumer.CloseTracingSession();
-  background_consumer_3.EnableTracing(trace_config_background);
-  background_consumer_3.WaitForTracingEnabled();
-}
-#endif
 
 }  // namespace tracing

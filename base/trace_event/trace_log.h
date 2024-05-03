@@ -31,7 +31,6 @@
 #include "base/trace_event/trace_event_impl.h"
 #include "build/build_config.h"
 
-#if BUILDFLAG(USE_PERFETTO_CLIENT_LIBRARY)
 #include "third_party/perfetto/include/perfetto/tracing/core/trace_config.h"
 
 namespace perfetto {
@@ -39,8 +38,6 @@ namespace trace_processor {
 class TraceProcessorStorage;
 }  // namespace trace_processor
 }  // namespace perfetto
-
-#endif  // BUILDFLAG(USE_PERFETTO_CLIENT_LIBRARY)
 
 namespace base {
 class RefCountedString;
@@ -62,9 +59,7 @@ struct BASE_EXPORT TraceLogStatus {
 };
 
 class BASE_EXPORT TraceLog :
-#if BUILDFLAG(USE_PERFETTO_CLIENT_LIBRARY)
     public perfetto::TrackEventSessionObserver,
-#endif  // BUILDFLAG(USE_PERFETTO_CLIENT_LIBRARY)
     public MemoryDumpProvider {
  public:
   class ThreadLocalEventBuffer;
@@ -94,13 +89,11 @@ class BASE_EXPORT TraceLog :
   // will be traced. Only RECORDING_MODE is supported.
   void SetEnabled(const TraceConfig& trace_config, uint8_t modes_to_enable);
 
-#if BUILDFLAG(USE_PERFETTO_CLIENT_LIBRARY)
   // Enable tracing using a customized Perfetto trace config. This allows, for
   // example, enabling additional data sources and enabling protobuf output
   // instead of the legacy JSON trace format.
   void SetEnabled(const TraceConfig& trace_config,
                   const perfetto::TraceConfig& perfetto_config);
-#endif
 
   // Disables tracing for all categories. Only RECORDING_MODE is supported.
   void SetDisabled();
@@ -109,7 +102,6 @@ class BASE_EXPORT TraceLog :
   // Returns true if TraceLog is enabled on recording mode.
   // Note: Returns false even if FILTERING_MODE is enabled.
   bool IsEnabled() {
-#if BUILDFLAG(USE_PERFETTO_CLIENT_LIBRARY)
     // In SDK build we return true as soon as the datasource has been set up and
     // we know the config. This doesn't necessarily mean that the tracing has
     // already started.
@@ -118,10 +110,6 @@ class BASE_EXPORT TraceLog :
     // TrackEvent::IsEnabled() is true.
     AutoLock lock(track_event_lock_);
     return track_event_sessions_.size() > 0;
-#else   // !BUILDFLAG(USE_PERFETTO_CLIENT_LIBRARY)
-    AutoLock lock(lock_);
-    return enabled_;
-#endif  // !BUILDFLAG(USE_PERFETTO_CLIENT_LIBRARY)
   }
 
   // The number of times we have begun recording traces. If tracing is off,
@@ -200,10 +188,6 @@ class BASE_EXPORT TraceLog :
   void RemoveIncrementalStateObserver(IncrementalStateObserver* listener);
 
   TraceLogStatus GetStatus() const;
-
-#if !BUILDFLAG(USE_PERFETTO_CLIENT_LIBRARY)
-  bool BufferIsFull() const;
-#endif  // !BUILDFLAG(USE_PERFETTO_CLIENT_LIBRARY)
 
   // Computes an estimate of the size of the TraceLog including all the retained
   // objects.
@@ -398,12 +382,6 @@ class BASE_EXPORT TraceLog :
   // sort index, ascending, then by their name, and then tid.
   void SetThreadSortIndex(PlatformThreadId thread_id, int sort_index);
 
-#if !BUILDFLAG(USE_PERFETTO_CLIENT_LIBRARY)
-  // Allow setting an offset between the current TimeTicks time and the time
-  // that should be reported.
-  void SetTimeOffset(TimeDelta offset);
-#endif  // !BUILDFLAG(USE_PERFETTO_CLIENT_LIBRARY)
-
   size_t GetObserverCountForTest() const;
 
   // Call this method if the current thread may block the message loop to
@@ -421,7 +399,6 @@ class BASE_EXPORT TraceLog :
   // Replaces |logged_events_| with a new TraceBuffer for testing.
   void SetTraceBufferForTesting(std::unique_ptr<TraceBuffer> trace_buffer);
 
-#if BUILDFLAG(USE_PERFETTO_CLIENT_LIBRARY)
   struct TrackEventSession {
     uint32_t internal_instance_index;
     perfetto::DataSourceConfig config;
@@ -444,7 +421,6 @@ class BASE_EXPORT TraceLog :
   void OnSetup(const perfetto::DataSourceBase::SetupArgs&) override;
   void OnStart(const perfetto::DataSourceBase::StartArgs&) override;
   void OnStop(const perfetto::DataSourceBase::StopArgs&) override;
-#endif  // BUILDFLAG(USE_PERFETTO_CLIENT_LIBRARY)
 
   // Called by the perfetto backend just after incremental state was cleared.
   void OnIncrementalStateCleared();
@@ -518,9 +494,7 @@ class BASE_EXPORT TraceLog :
                      bool use_worker_thread,
                      bool discard_events);
 
-#if BUILDFLAG(USE_PERFETTO_CLIENT_LIBRARY)
   void OnTraceData(const char* data, size_t size, bool has_more);
-#endif  // BUILDFLAG(USE_PERFETTO_CLIENT_LIBRARY)
 
   // |generation| is used in the following callbacks to check if the callback
   // is called for the flush of the current |logged_events_|.
@@ -629,7 +603,6 @@ class BASE_EXPORT TraceLog :
   std::atomic<OnFlushFunction> on_flush_override_{nullptr};
   std::atomic<UpdateDurationFunction> update_duration_override_{nullptr};
 
-#if BUILDFLAG(USE_PERFETTO_CLIENT_LIBRARY)
   std::unique_ptr<perfetto::TracingSession> tracing_session_;
   perfetto::TraceConfig perfetto_config_;
   std::vector<TrackEventSession> track_event_sessions_
@@ -642,7 +615,6 @@ class BASE_EXPORT TraceLog :
   std::unique_ptr<JsonStringOutputWriter> json_output_writer_;
   OutputCallback proto_output_callback_;
 #endif  // BUILDFLAG(USE_PERFETTO_TRACE_PROCESSOR)
-#endif  // BUILDFLAG(USE_PERFETTO_CLIENT_LIBRARY)
 
 #if BUILDFLAG(IS_ANDROID)
   std::optional<TraceConfig> atrace_startup_config_;

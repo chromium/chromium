@@ -21,22 +21,17 @@
 #include "services/tracing/public/cpp/tracing_features.h"
 #include "third_party/perfetto/include/perfetto/tracing/track.h"
 
-#if BUILDFLAG(USE_PERFETTO_CLIENT_LIBRARY) && BUILDFLAG(IS_WIN)
 #include "components/tracing/common/etw_export_win.h"
-#endif
 
 namespace tracing {
 namespace {
 
 constexpr char kJsonFormat[] = "json";
-#if BUILDFLAG(USE_PERFETTO_CLIENT_LIBRARY)
 constexpr uint32_t kStartupTracingTimeoutMs = 30 * 1000;  // 30 sec
-#endif
 
 using base::trace_event::TraceConfig;
 using base::trace_event::TraceLog;
 
-#if BUILDFLAG(USE_PERFETTO_CLIENT_LIBRARY)
 bool CanBePropagatedViaCommandLine(
     const base::trace_event::TraceConfig& trace_config) {
   base::trace_event::TraceConfig reconstructed_config(
@@ -62,7 +57,6 @@ std::string CategoryFilterStringFromTrackEventConfig(
   }
   return filter;
 }
-#endif  // BUILDFLAG(USE_PERFETTO_CLIENT_LIBRARY)
 
 }  // namespace
 
@@ -106,7 +100,6 @@ void EnableStartupTracingIfNeeded() {
             TraceStartupConfig::SessionOwner::kBackgroundTracing ||
         command_line.HasSwitch(switches::kTraceStartupEnablePrivacyFiltering);
 
-#if BUILDFLAG(USE_PERFETTO_CLIENT_LIBRARY)
     bool convert_to_legacy_json = startup_config->GetOutputFormat() ==
                                   TraceStartupConfig::OutputFormat::kLegacyJSON;
 
@@ -125,27 +118,12 @@ void EnableStartupTracingIfNeeded() {
     // and it's possible to start startup tracing early, replace this call with
     // perfetto::Tracing::SetupStartupTracing(perfetto_config, args).
     PerfettoTracedProcess::Get()->RequestStartupTracing(perfetto_config, opts);
-#else   // !BUILDFLAG(USE_PERFETTO_CLIENT_LIBRARY)
-    PerfettoProducer* producer =
-        PerfettoTracedProcess::Get()->producer_client();
-    if (startup_config->GetSessionOwner() ==
-        TraceStartupConfig::SessionOwner::kSystemTracing) {
-      PerfettoTracedProcess::Get()->SetupSystemTracing();
-      producer = PerfettoTracedProcess::Get()->system_producer();
-    }
-
-    if (!PerfettoTracedProcess::Get()->SetupStartupTracing(
-            producer, trace_config, privacy_filtering_enabled)) {
-      startup_config->SetDisabled();
-    }
-#endif  // !BUILDFLAG(USE_PERFETTO_CLIENT_LIBRARY)
   }
 }
 
 bool EnableStartupTracingForProcess(
     const base::trace_event::TraceConfig& trace_config,
     bool privacy_filtering_enabled) {
-#if BUILDFLAG(USE_PERFETTO_CLIENT_LIBRARY)
   perfetto::TraceConfig perfetto_config =
       tracing::GetDefaultPerfettoConfig(trace_config, privacy_filtering_enabled,
                                         /*convert_to_legacy_json=*/false);
@@ -157,11 +135,6 @@ bool EnableStartupTracingForProcess(
   // perfetto::Tracing::SetupStartupTracing(perfetto_config, args).
   PerfettoTracedProcess::Get()->RequestStartupTracing(perfetto_config, opts);
   return true;
-#else   // !BUILDFLAG(USE_PERFETTO_CLIENT_LIBRARY)
-  return PerfettoTracedProcess::Get()->SetupStartupTracing(
-      PerfettoTracedProcess::Get()->producer_client(), trace_config,
-      privacy_filtering_enabled);
-#endif  // !BUILDFLAG(USE_PERFETTO_CLIENT_LIBRARY)
 }
 
 void InitTracingPostThreadPoolStartAndFeatureList(bool enable_consumer) {
@@ -172,28 +145,6 @@ void InitTracingPostThreadPoolStartAndFeatureList(bool enable_consumer) {
   DCHECK(base::FeatureList::GetInstance());
 
   PerfettoTracedProcess::Get()->OnThreadPoolAvailable(enable_consumer);
-
-#if !BUILDFLAG(USE_PERFETTO_CLIENT_LIBRARY)
-  if (ShouldSetupSystemTracing()) {
-    // Ensure that data sources are created and registered.
-    TraceEventAgent::GetInstance();
-    // Connect to system service if available (currently a no-op except on
-    // Posix). Has to happen on the producer's sequence, as all communication
-    // with the system Perfetto service should occur on a single sequence.
-    if (!PerfettoTracedProcess::Get()->system_producer())
-      PerfettoTracedProcess::Get()->SetupSystemTracing();
-    PerfettoTracedProcess::Get()
-        ->GetTaskRunner()
-        ->GetOrCreateTaskRunner()
-        ->PostTask(FROM_HERE, base::BindOnce([]() {
-                     PerfettoTracedProcess::Get()
-                         ->system_producer()
-                         ->ConnectToSystemService();
-                   }));
-  }
-#elif BUILDFLAG(IS_WIN)  // !BUILDFLAG(USE_PERFETTO_CLIENT_LIBRARY)
-  tracing::EnableETWExport();
-#endif  // !BUILDFLAG(USE_PERFETTO_CLIENT_LIBRARY)
 }
 
 void PropagateTracingFlagsToChildProcessCmdLine(base::CommandLine* cmd_line) {
@@ -204,7 +155,6 @@ void PropagateTracingFlagsToChildProcessCmdLine(base::CommandLine* cmd_line) {
   bool privacy_filtering_enabled = false;
   bool convert_to_legacy_json = false;
 
-#if BUILDFLAG(USE_PERFETTO_CLIENT_LIBRARY)
   // TODO(khokhlov): Figure out if we are using custom or system backend and
   // propagate this info to the child process (after startup tracing w/system
   // backend is supported in the SDK build).
@@ -249,39 +199,6 @@ void PropagateTracingFlagsToChildProcessCmdLine(base::CommandLine* cmd_line) {
   } else {
     return;
   }
-#else   // !BUILDFLAG(USE_PERFETTO_CLIENT_LIBRARY)
-  if (!trace_log->IsEnabled())
-    return;
-
-  // It's possible that tracing is enabled only for atrace, in which case the
-  // TraceEventDataSource isn't registered. In that case, there's no reason to
-  // enable startup tracing in the child process (and we wouldn't know the
-  // correct value for privacy_filtering_enabled below).
-  if (!TraceEventDataSource::GetInstance()->IsEnabled())
-    return;
-
-  // (Posix)SystemProducer doesn't currently support startup tracing, so don't
-  // attempt to enable startup tracing in child processes if system tracing is
-  // active.
-  if (PerfettoTracedProcess::Get()->system_producer() &&
-      PerfettoTracedProcess::Get()->system_producer()->IsTracingActive()) {
-    return;
-  }
-
-  // The child process startup may race with a concurrent disabling of the
-  // tracing session by the tracing service. To avoid being stuck in startup
-  // tracing mode forever, the child process will discard the startup session
-  // after a timeout (|startup_tracing_timer_| in TraceEventDataSource).
-  //
-  // Note that we disregard the config's process filter, since it's possible
-  // that the trace consumer will update the config to include the process
-  // shortly. Otherwise, the startup tracing timeout in the child will
-  // eventually disable tracing for the process.
-
-  trace_config = trace_log->GetCurrentTraceConfig();
-  privacy_filtering_enabled =
-      TraceEventDataSource::GetInstance()->IsPrivacyFilteringEnabled();
-#endif  // !BUILDFLAG(USE_PERFETTO_CLIENT_LIBRARY)
 
   // We can't currently propagate event filter options, histogram names, memory
   // dump configs, or trace buffer sizes via command line flags (they only
@@ -305,10 +222,8 @@ void PropagateTracingFlagsToChildProcessCmdLine(base::CommandLine* cmd_line) {
   // supplied to the tracing service will prevent the service from adopting
   // the startup session. So if the config contains any field that can't be
   // propagated via command line, we bail out here.
-#if BUILDFLAG(USE_PERFETTO_CLIENT_LIBRARY)
   if (!CanBePropagatedViaCommandLine(trace_config))
     return;
-#endif  // BUILDFLAG(USE_PERFETTO_CLIENT_LIBRARY)
 
   // Make sure that the startup session uses privacy filtering mode if it's
   // enabled for the browser's session.

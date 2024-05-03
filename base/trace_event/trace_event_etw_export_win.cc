@@ -505,8 +505,6 @@ uint64_t CategoryGroupToETWKeyword(std::string_view category_group_name) {
   return keyword;
 }
 
-#if BUILDFLAG(USE_PERFETTO_CLIENT_LIBRARY)
-
 perfetto::protos::gen::TrackEventConfig ETWKeywordToTrackEventConfig(
     uint64_t keyword) {
   perfetto::protos::gen::TrackEventConfig track_event_config;
@@ -530,8 +528,6 @@ perfetto::protos::gen::TrackEventConfig ETWKeywordToTrackEventConfig(
   }
   return track_event_config;
 }
-
-#endif  // BUILDFLAG(USE_PERFETTO_CLIENT_LIBRARY)
 
 }  // namespace trace_event
 }  // namespace base

@@ -83,8 +83,7 @@ void OnPerfettoLogMessage(perfetto::base::LogMessageCallbackArgs args) {
       << args.message;
 }
 
-#if BUILDFLAG(USE_PERFETTO_CLIENT_LIBRARY) && BUILDFLAG(IS_POSIX) && \
-    !BUILDFLAG(IS_ANDROID)
+#if BUILDFLAG(IS_POSIX) && !BUILDFLAG(IS_ANDROID)
 // The async socket connection function passed to the client library for
 // connecting the producer socket in the browser process via mojo IPC.
 // |cb| is a callback from within the client library this function calls when
@@ -181,14 +180,11 @@ void PerfettoTracedProcess::DataSourceBase::StopTracingImpl(
 
 void PerfettoTracedProcess::DataSourceBase::Flush(
     base::RepeatingClosure flush_complete_callback) {
-#if BUILDFLAG(USE_PERFETTO_CLIENT_LIBRARY)
   base::TrackEvent::Flush();
-#endif  // BUILDFLAG(USE_PERFETTO_CLIENT_LIBRARY)
   if (flush_complete_callback)
     std::move(flush_complete_callback).Run();
 }
 
-#if BUILDFLAG(USE_PERFETTO_CLIENT_LIBRARY)
 base::SequencedTaskRunner*
 PerfettoTracedProcess::DataSourceBase::GetTaskRunner() {
   return PerfettoTracedProcess::Get()
@@ -196,7 +192,6 @@ PerfettoTracedProcess::DataSourceBase::GetTaskRunner() {
       ->GetOrCreateTaskRunner()
       .get();
 }
-#endif  // BUILDFLAG(USE_PERFETTO_CLIENT_LIBRARY)
 
 // static
 PerfettoTracedProcess* PerfettoTracedProcess::Get() {
@@ -221,11 +216,7 @@ void PerfettoTracedProcess::SetConsumerConnectionFactory(
 
 void PerfettoTracedProcess::ConnectProducer(
     mojo::PendingRemote<mojom::PerfettoService> perfetto_service) {
-#if BUILDFLAG(USE_PERFETTO_CLIENT_LIBRARY)
   tracing_backend_->OnProducerConnected(std::move(perfetto_service));
-#else   // !BUILDFLAG(USE_PERFETTO_CLIENT_LIBRARY)
-  producer_client_->Connect(std::move(perfetto_service));
-#endif  // !BUILDFLAG(USE_PERFETTO_CLIENT_LIBRARY)
 }
 
 void PerfettoTracedProcess::ClearDataSourcesForTesting() {
@@ -365,22 +356,10 @@ void PerfettoTracedProcess::SetupClientLibrary(bool enable_consumer) {
   init_args.use_monotonic_clock = true;
   init_args.disallow_merging_with_system_tracks = true;
 #if BUILDFLAG(IS_POSIX)
-  // In non-SDK build we only use the client library system backend for the
-  // consumer side, which is only allowed in the browser process.
-  // In SDK build we use system backend for producers too, but note that
-  // currently the connection to the service fails from sandboxed processes
-  // on non-Android platforms.
-  // TODO(khokhlov): Delegate socket connections from sandboxed processes
-  // to the browser.
-#if BUILDFLAG(USE_PERFETTO_CLIENT_LIBRARY)
   if (ShouldSetupSystemTracing()) {
-#else   // !BUILDFLAG(USE_PERFETTO_CLIENT_LIBRARY)
-  if (ShouldSetupSystemTracing() && enable_consumer) {
-#endif  // @BUILDFLAG(USE_PERFETTO_CLIENT_LIBRARY)
     init_args.backends |= perfetto::kSystemBackend;
     init_args.tracing_policy = this;
-#if BUILDFLAG(USE_PERFETTO_CLIENT_LIBRARY) && BUILDFLAG(IS_POSIX) && \
-    !BUILDFLAG(IS_ANDROID)
+#if BUILDFLAG(IS_POSIX) && !BUILDFLAG(IS_ANDROID)
     auto type =
         base::CommandLine::ForCurrentProcess()->GetSwitchValueASCII("type");
     if (!type.empty()) {  // Sandboxed. Need to delegate to the browser process
@@ -396,7 +375,6 @@ void PerfettoTracedProcess::SetupClientLibrary(bool enable_consumer) {
   init_args.log_message_callback = &OnPerfettoLogMessage;
   perfetto::Tracing::Initialize(init_args);
 
-#if BUILDFLAG(USE_PERFETTO_CLIENT_LIBRARY)
   base::TrackEvent::Register();
   tracing::TriggersDataSource::Register();
   tracing::TracingSamplerProfiler::RegisterDataSource();
@@ -408,7 +386,6 @@ void PerfettoTracedProcess::SetupClientLibrary(bool enable_consumer) {
 #endif
   TrackNameRecorder::GetInstance();
   CustomEventRecorder::GetInstance();
-#endif  // BUILDFLAG(USE_PERFETTO_CLIENT_LIBRARY)
 }
 
 void PerfettoTracedProcess::OnThreadPoolAvailable(bool enable_consumer) {

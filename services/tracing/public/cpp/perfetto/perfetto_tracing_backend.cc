@@ -663,13 +663,11 @@ PerfettoTracingBackend::ConnectProducer(const ConnectProducerArgs& args) {
   if (shmem_page_size_hint == 0)
     shmem_page_size_hint = kDefaultSMBPageSizeBytes;
 
-#if BUILDFLAG(USE_PERFETTO_CLIENT_LIBRARY)
   if (args.use_producer_provided_smb) {
     shm = std::make_unique<ChromeBaseSharedMemory>(shmem_size_hint);
     arbiter = perfetto::SharedMemoryArbiter::CreateUnboundInstance(
         shm.get(), shmem_page_size_hint, ShmemMode::kDefault);
   }
-#endif  // BUILDFLAG(USE_PERFETTO_CLIENT_LIBRARY)
 
   auto producer_endpoint = std::make_unique<ProducerEndpoint>(
       args.producer_name, args.producer, args.task_runner, shmem_page_size_hint,

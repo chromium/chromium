@@ -408,7 +408,6 @@
 
 #define INTERNAL_TRACE_INIT_CATEGORY(name) {0, 0, name},
 
-#if BUILDFLAG(USE_PERFETTO_CLIENT_LIBRARY)
 PERFETTO_DEFINE_TEST_CATEGORY_PREFIXES("cat",
                                        "foo",
                                        "test",
@@ -434,7 +433,6 @@ PERFETTO_USE_CATEGORIES_FROM_NAMESPACE(base);
 
 #undef INTERNAL_CATEGORY
 #undef INTERNAL_CATEGORY_GROUP
-#endif  // BUILDFLAG(USE_PERFETTO_CLIENT_LIBRARY)
 
 namespace base {
 namespace trace_event {

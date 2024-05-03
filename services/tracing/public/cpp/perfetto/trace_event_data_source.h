@@ -79,16 +79,12 @@ class COMPONENT_EXPORT(TRACING_CPP) TraceEventMetadataSource
       const perfetto::DataSourceConfig& data_source_config) override;
   void StopTracingImpl(base::OnceClosure stop_complete_callback) override;
   void Flush(base::RepeatingClosure flush_complete_callback) override;
-#if BUILDFLAG(USE_PERFETTO_CLIENT_LIBRARY)
   base::SequencedTaskRunner* GetTaskRunner() override;
-#endif
 
   void ResetForTesting();
 
-#if BUILDFLAG(USE_PERFETTO_CLIENT_LIBRARY)
   using DataSourceProxy =
       PerfettoTracedProcess::DataSourceProxy<TraceEventMetadataSource>;
-#endif
 
  private:
   friend class base::NoDestructor<TraceEventMetadataSource>;
@@ -126,9 +122,6 @@ class COMPONENT_EXPORT(TRACING_CPP) TraceEventMetadataSource
   const scoped_refptr<base::SequencedTaskRunner> origin_task_runner_
       GUARDED_BY_FIXME(lock_);
 
-#if !BUILDFLAG(USE_PERFETTO_CLIENT_LIBRARY)
-  std::unique_ptr<perfetto::TraceWriter> trace_writer_ GUARDED_BY_FIXME(lock_);
-#endif
   bool privacy_filtering_enabled_ GUARDED_BY_FIXME(lock_) = false;
   std::string chrome_config_ GUARDED_BY(lock_);
   std::unique_ptr<base::trace_event::TraceConfig> parsed_chrome_config_

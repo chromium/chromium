@@ -97,10 +97,6 @@ source_set("tests") {
     "public/cpp/stack_sampling/tracing_sampler_profiler_unittest.cc",
   ]
 
-  if (!use_perfetto_client_library) {
-    sources += [ "public/cpp/perfetto/trace_event_data_source_unittest.cc" ]
-  }
-
   deps = [
     ":lib",
     ":privacy_check",

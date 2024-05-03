@@ -174,19 +174,6 @@ struct BASE_EXPORT InternedUnsymbolizedSourceLocation
   static void Add(perfetto::protos::pbzero::InternedData* interned_data,
                   size_t iid,
                   const UnsymbolizedSourceLocation& location);
-
-// We use thread local storage for the module cache if we are using the
-// client library since it is more optimal. It was not worth it to write
-// optimal caching for not client library users since everyone will convert.
-#if !BUILDFLAG(USE_PERFETTO_CLIENT_LIBRARY)
- private:
-  // This implies that a module cache lifetime = incremental state.
-  // We don't want unlimited lifetime because it keeps modules pinned in
-  // memory on some platforms (Windows).
-  // TODO(b/237055179): Consider tying module cache to DataSource instead so
-  // that the cache is not unnecessarily cleared on incremental state change.
-  base::ModuleCache module_cache_;
-#endif
 };
 
 }  // namespace trace_event

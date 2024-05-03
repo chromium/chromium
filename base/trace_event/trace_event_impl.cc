@@ -22,8 +22,6 @@
 #include "base/trace_event/traced_value.h"
 #include "build/build_config.h"
 
-#if BUILDFLAG(USE_PERFETTO_CLIENT_LIBRARY)
-
 // Define static storage for trace event categories (see
 // PERFETTO_DEFINE_CATEGORIES).
 PERFETTO_TRACK_EVENT_STATIC_STORAGE_IN_NAMESPACE_WITH_ATTRS(base, BASE_EXPORT);
@@ -59,8 +57,6 @@ void WriteDebugAnnotation(protos::pbzero::DebugAnnotation* annotation,
 
 }  // namespace internal
 }  // namespace perfetto
-
-#endif  // BUILDFLAG(USE_PERFETTO_CLIENT_LIBRARY)
 
 namespace base {
 namespace trace_event {

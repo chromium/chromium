@@ -272,12 +272,10 @@ class BASE_EXPORT TraceConfig {
   // filters, or memory dump configs.
   std::string ToTraceOptionsString() const;
 
-#if BUILDFLAG(USE_PERFETTO_CLIENT_LIBRARY)
   // Write the serialized perfetto::TrackEventConfig corresponding to this
   // TraceConfig.
   std::string ToPerfettoTrackEventConfigRaw(
       bool privacy_filtering_enabled) const;
-#endif  // BUILDFLAG(USE_PERFETTO_CLIENT_LIBRARY)
 
   // Returns true if at least one category in the list is enabled by this
   // trace config. This is used to determine if the category filters are

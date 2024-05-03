@@ -141,25 +141,15 @@ class DataSourceTester {
   const perfetto::protos::TracePacket* GetFinalizedPacket(
       size_t packet_index = 0);
 
-#if !BUILDFLAG(USE_PERFETTO_CLIENT_LIBRARY)
-  TestProducerClient* GetProducerClient() { return producer_.get(); }
-#endif  // !BUILDFLAG(USE_PERFETTO_CLIENT_LIBRARY)
 
  private:
-#if BUILDFLAG(USE_PERFETTO_CLIENT_LIBRARY)
   void OnTraceData(base::RepeatingClosure quit_closure,
                    const scoped_refptr<base::RefCountedString>& chunk,
                    bool has_more_events);
-#endif  // BUILDFLAG(USE_PERFETTO_CLIENT_LIBRARY)
 
   base::test::ScopedFeatureList features_;
-#if BUILDFLAG(USE_PERFETTO_CLIENT_LIBRARY)
   std::vector<std::unique_ptr<perfetto::protos::TracePacket>>
       finalized_packets_;
-#else   // !BUILDFLAG(USE_PERFETTO_CLIENT_LIBRARY)
-  std::unique_ptr<tracing::TestProducerClient> producer_;
-  raw_ptr<tracing::PerfettoTracedProcess::DataSourceBase> data_source_;
-#endif  // !BUILDFLAG(USE_PERFETTO_CLIENT_LIBRARY)
 };
 
 }  // namespace tracing

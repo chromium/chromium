@@ -121,7 +121,6 @@ void AppendValueDebugString(const TraceArguments& args,
   *out += ")";
 }
 
-#if BUILDFLAG(USE_PERFETTO_CLIENT_LIBRARY)
 class PerfettoProtoAppender : public ConvertableToTraceFormat::ProtoAppender {
  public:
   explicit PerfettoProtoAppender(
@@ -144,7 +143,6 @@ class PerfettoProtoAppender : public ConvertableToTraceFormat::ProtoAppender {
   std::vector<protozero::ContiguousMemoryRange> ranges_;
   raw_ptr<perfetto::protos::pbzero::DebugAnnotation> annotation_proto_;
 };
-#endif  // BUILDFLAG(USE_PERFETTO_CLIENT_LIBRARY)
 
 }  // namespace
 
@@ -323,7 +321,6 @@ void TraceArguments::AppendDebugString(std::string* out) {
   *out += ")";
 }
 
-#if BUILDFLAG(USE_PERFETTO_CLIENT_LIBRARY)
 void ConvertableToTraceFormat::Add(
     perfetto::protos::pbzero::DebugAnnotation* annotation) const {
   PerfettoProtoAppender proto_appender(annotation);
@@ -335,7 +332,6 @@ void ConvertableToTraceFormat::Add(
   AppendAsTraceFormat(&json);
   annotation->set_legacy_json_value(json);
 }
-#endif  // BUILDFLAG(USE_PERFETTO_CLIENT_LIBRARY)
 
 }  // namespace trace_event
 }  // namespace base

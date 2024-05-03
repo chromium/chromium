@@ -183,11 +183,7 @@ ConsumerHost::TracingSession::TracingSession(
   }
 #endif
 
-#if BUILDFLAG(USE_PERFETTO_CLIENT_LIBRARY)
   const std::string kDataSourceName = "track_event";
-#else
-  const std::string kDataSourceName = mojom::kTraceEventDataSourceName;
-#endif
 
   filtered_pids_.clear();
   for (const auto& ds_config : trace_config.data_sources()) {
@@ -676,38 +672,9 @@ void ConsumerHost::EnableTracing(
   perfetto::base::ScopedFile file(output_file.TakePlatformFile());
 #endif
 
-#if BUILDFLAG(USE_PERFETTO_CLIENT_LIBRARY)
   tracing_session_ = std::make_unique<TracingSession>(
       this, std::move(tracing_session_host), std::move(tracing_session_client),
       trace_config, std::move(file), priority);
-#else   // !BUILDFLAG(USE_PERFETTO_CLIENT_LIBRARY)
-  // We create our new TracingSession async, if the PerfettoService allows
-  // us to, after it's stopped any currently running lower or equal priority
-  // tracing sessions.
-  service_->RequestTracingSession(
-      priority, base::BindOnce(
-                    [](base::WeakPtr<ConsumerHost> weak_this,
-                       mojo::PendingReceiver<mojom::TracingSessionHost>
-                           tracing_session_host,
-                       mojo::PendingRemote<mojom::TracingSessionClient>
-                           tracing_session_client,
-                       const perfetto::TraceConfig& trace_config,
-                       perfetto::base::ScopedFile output_file,
-                       mojom::TracingClientPriority priority) {
-                      if (!weak_this) {
-                        return;
-                      }
-
-                      weak_this->tracing_session_ =
-                          std::make_unique<TracingSession>(
-                              weak_this.get(), std::move(tracing_session_host),
-                              std::move(tracing_session_client), trace_config,
-                              std::move(output_file), priority);
-                    },
-                    weak_factory_.GetWeakPtr(), std::move(tracing_session_host),
-                    std::move(tracing_session_client), trace_config,
-                    std::move(file), priority));
-#endif  // !BUILDFLAG(USE_PERFETTO_CLIENT_LIBRARY)
 }
 
 void ConsumerHost::OnConnect() {}

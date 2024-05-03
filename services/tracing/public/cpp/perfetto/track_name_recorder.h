@@ -16,7 +16,6 @@ namespace tracing {
 
 std::optional<uint64_t> GetTraceCrashId();
 
-#if BUILDFLAG(USE_PERFETTO_CLIENT_LIBRARY)
 // A class that emits track descriptors for Chrome processes and threads.
 class COMPONENT_EXPORT(TRACING_CPP) TrackNameRecorder
     : public perfetto::TrackEventSessionObserver,
@@ -42,7 +41,6 @@ class COMPONENT_EXPORT(TRACING_CPP) TrackNameRecorder
 
   uint64_t process_start_timestamp_;
 };
-#endif  // BUILDFLAG(USE_PERFETTO_CLIENT_LIBRARY)
 
 }  // namespace tracing
 

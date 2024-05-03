@@ -55,14 +55,10 @@ perfetto::TraceConfig::DataSource* AddDataSourceConfig(
     chrome_config->set_json_agent_label_filter(json_agent_label_filter);
 
   if (!strcmp(name, tracing::mojom::kTraceEventDataSourceName)) {
-#if BUILDFLAG(USE_PERFETTO_CLIENT_LIBRARY)
     source_config->set_name("track_event");
     base::trace_event::TraceConfig base_config(chrome_config_string);
     source_config->set_track_event_config_raw(
         base_config.ToPerfettoTrackEventConfigRaw(privacy_filtering_enabled));
-#else
-    source_config->set_track_event_config_raw("");
-#endif  // BUILDFLAG(USE_PERFETTO_CLIENT_LIBRARY)
   }
 
   return data_source;
@@ -270,7 +266,6 @@ void AdaptBuiltinDataSourcesConfig(
   config->set_disable_service_events(privacy_filtering_enabled);
 }
 
-#if BUILDFLAG(USE_PERFETTO_CLIENT_LIBRARY)
 void AdaptTrackEventConfig(perfetto::protos::gen::TrackEventConfig* config,
                            bool privacy_filtering_enabled) {
   if (!config->has_enable_thread_time_sampling()) {
@@ -284,7 +279,6 @@ void AdaptTrackEventConfig(perfetto::protos::gen::TrackEventConfig* config,
     config->set_filter_debug_annotations(true);
   }
 }
-#endif
 
 void AdaptDataSourceConfig(
     perfetto::DataSourceConfig* config,
@@ -303,17 +297,11 @@ void AdaptDataSourceConfig(
   chrome_config->set_trace_config(chrome_config_string);
 
   if (!config->track_event_config_raw().empty()) {
-#if BUILDFLAG(USE_PERFETTO_CLIENT_LIBRARY)
     config->set_name("track_event");
     perfetto::protos::gen::TrackEventConfig track_event_config;
     track_event_config.ParseFromString(config->track_event_config_raw());
     AdaptTrackEventConfig(&track_event_config, privacy_filtering_enabled);
     config->set_track_event_config_raw(track_event_config.SerializeAsString());
-#else
-    config->set_name(tracing::mojom::kTraceEventDataSourceName);
-    // Remove track_event_config because it's not used.
-    config->set_track_event_config_raw("");
-#endif
   }
 }
 
