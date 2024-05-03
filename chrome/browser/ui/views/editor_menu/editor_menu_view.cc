@@ -61,14 +61,22 @@ constexpr int kBadgeHorizontalPadding = 8;
 // Spacing to apply between and around chips.
 constexpr int kChipsHorizontalPadding = 8;
 constexpr int kChipsVerticalPadding = 12;
-constexpr int kHeightWithoutChips = 100;
-constexpr int kHeightPerChipRow = 40;
+
 constexpr gfx::Insets kChipsContainerInsets = gfx::Insets::TLBR(0, 16, 16, 16);
 
 constexpr gfx::Insets kTextfieldContainerInsets =
     gfx::Insets::TLBR(0, 16, 12, 16);
 
 }  // namespace
+
+int GetChipsContainerHeightWithPaddings(int chip_height, int num_rows) {
+  const int total_chips_height = num_rows * chip_height;
+  const int total_chips_paddings =
+      num_rows >= 1 ? (num_rows - 1) * kChipsVerticalPadding +
+                          kChipsContainerInsets.height()
+                    : 0;
+  return total_chips_height + total_chips_paddings;
+}
 
 EditorMenuView::EditorMenuView(EditorMenuMode editor_menu_mode,
                                const PresetTextQueries& preset_text_queries,
@@ -134,6 +142,8 @@ int EditorMenuView::GetHeightForWidth(int width) const {
   const int chip_container_width = width - kChipsContainerInsets.width();
   int running_width = 0;
   int num_rows = 0;
+  int chip_height = 0;
+
   for (views::View* row : chips_container_->children()) {
     for (views::View* chip : row->children()) {
       const int chip_width = chip->GetPreferredSize().width();
@@ -145,10 +155,20 @@ int EditorMenuView::GetHeightForWidth(int width) const {
         ++num_rows;
         running_width = chip_width;
       }
+
+      chip_height = chip->height();
     }
   }
 
-  return kHeightWithoutChips + num_rows * kHeightPerChipRow;
+  const int title_height_with_padding =
+      title_container_->height() + kTitleContainerInsets.height();
+  const int chips_height_with_padding =
+      GetChipsContainerHeightWithPaddings(chip_height, num_rows);
+  const int textfield_height_with_padding =
+      textfield_->height() + kTextfieldContainerInsets.height();
+
+  return title_height_with_padding + chips_height_with_padding +
+         textfield_height_with_padding;
 }
 
 bool EditorMenuView::AcceleratorPressed(const ui::Accelerator& accelerator) {
