@@ -124,9 +124,6 @@ import org.chromium.chrome.browser.tab.TabLaunchType;
 import org.chromium.chrome.browser.tab.TabLoadIfNeededCaller;
 import org.chromium.chrome.browser.tab.TabObscuringHandler;
 import org.chromium.chrome.browser.tab.TabObscuringHandlerSupplier;
-import org.chromium.chrome.browser.tab_group_sync.TabGroupSyncController;
-import org.chromium.chrome.browser.tab_group_sync.TabGroupSyncFeatures;
-import org.chromium.chrome.browser.tab_group_sync.TabGroupSyncServiceFactory;
 import org.chromium.chrome.browser.tab_ui.RecyclerViewPosition;
 import org.chromium.chrome.browser.tab_ui.TabContentManager;
 import org.chromium.chrome.browser.tab_ui.TabSwitcher;
@@ -183,7 +180,6 @@ import org.chromium.components.messages.MessageContainer;
 import org.chromium.components.messages.MessageDispatcherProvider;
 import org.chromium.components.messages.MessagesFactory;
 import org.chromium.components.ukm.UkmRecorder;
-import org.chromium.components.user_prefs.UserPrefs;
 import org.chromium.content_public.browser.ActionModeCallbackHelper;
 import org.chromium.content_public.browser.BrowserContextHandle;
 import org.chromium.content_public.browser.LoadUrlParams;
@@ -345,7 +341,6 @@ public class RootUiCoordinator
     private @Nullable BoardingPassController mBoardingPassController;
     private @Nullable ObservableSupplier<Integer> mOverviewColorSupplier;
     private @Nullable View mBaseChromeLayout;
-    private TabGroupSyncController mTabGroupSyncController;
 
     /**
      * Create a new {@link RootUiCoordinator} for the given activity.
@@ -628,11 +623,6 @@ public class RootUiCoordinator
 
         destroyUnownedUserDataSuppliers();
         mActivityLifecycleDispatcher.unregister(this);
-
-        if (mTabGroupSyncController != null) {
-            mTabGroupSyncController.destroy();
-            mTabGroupSyncController = null;
-        }
 
         if (mMessageDispatcher != null) {
             mMessageDispatcher.dismissAllMessages(DismissReason.ACTIVITY_DESTROYED);
@@ -962,15 +952,6 @@ public class RootUiCoordinator
     @CallSuper
     protected void initProfileDependentFeatures(Profile currentlySelectedProfile) {
         Profile originalProfile = currentlySelectedProfile.getOriginalProfile();
-        if (TabGroupSyncFeatures.isTabGroupSyncEnabled(currentlySelectedProfile)) {
-            mTabGroupSyncController =
-                    new TabGroupSyncController(
-                            mTabModelSelectorSupplier.get(),
-                            mTabCreatorManagerSupplier.get(),
-                            TabGroupSyncServiceFactory.getForProfile(currentlySelectedProfile),
-                            UserPrefs.get(currentlySelectedProfile));
-        }
-
         if (DeviceFormFactor.isWindowOnTablet(mWindowAndroid)
                 && (RequestDesktopUtils.maybeDefaultEnableGlobalSetting(
                         getPrimaryDisplaySizeInInches(), originalProfile, mActivity))) {
@@ -1895,11 +1876,6 @@ public class RootUiCoordinator
     /** @return The {@link SnackbarManager} for the {@link BottomSheetController}. */
     public SnackbarManager getBottomSheetSnackbarManager() {
         return mBottomSheetSnackbarManager;
-    }
-
-    /** Returns the {@link TabGroupSyncController} if it has been created yet. */
-    public TabGroupSyncController getTabGroupSyncController() {
-        return mTabGroupSyncController;
     }
 
     /**

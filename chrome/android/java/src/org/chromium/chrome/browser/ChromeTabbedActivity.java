@@ -977,7 +977,9 @@ public class ChromeTabbedActivity extends ChromeActivity<ChromeActivityComponent
                         adaptOnToolbarAlphaChange(),
                         getProfileProviderSupplier(),
                         mHubManagerSupplier,
-                        () -> mRootUiCoordinator.getTabGroupSyncController());
+                        () ->
+                                ((TabbedRootUiCoordinator) mRootUiCoordinator)
+                                        .getTabGroupSyncController());
     }
 
     private void createGridTabSwitcher(

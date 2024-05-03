@@ -104,6 +104,9 @@ import org.chromium.chrome.browser.tab.RequestDesktopUtils;
 import org.chromium.chrome.browser.tab.Tab;
 import org.chromium.chrome.browser.tab.TabAssociatedApp;
 import org.chromium.chrome.browser.tab.TabLaunchType;
+import org.chromium.chrome.browser.tab_group_sync.TabGroupSyncController;
+import org.chromium.chrome.browser.tab_group_sync.TabGroupSyncFeatures;
+import org.chromium.chrome.browser.tab_group_sync.TabGroupSyncServiceFactory;
 import org.chromium.chrome.browser.tab_ui.TabContentManager;
 import org.chromium.chrome.browser.tab_ui.TabSwitcher;
 import org.chromium.chrome.browser.tabmodel.TabCreator;
@@ -140,6 +143,7 @@ import org.chromium.components.browser_ui.widget.MenuOrKeyboardActionController;
 import org.chromium.components.browser_ui.widget.TouchEventObserver;
 import org.chromium.components.browser_ui.widget.scrim.ScrimCoordinator;
 import org.chromium.components.messages.MessageDispatcherProvider;
+import org.chromium.components.user_prefs.UserPrefs;
 import org.chromium.components.webapps.bottomsheet.PwaBottomSheetController;
 import org.chromium.components.webapps.bottomsheet.PwaBottomSheetControllerFactory;
 import org.chromium.ui.base.ActivityWindowAndroid;
@@ -156,7 +160,7 @@ public class TabbedRootUiCoordinator extends RootUiCoordinator {
     private static boolean sDisableTopControlsAnimationForTesting;
     private final RootUiTabObserver mRootUiTabObserver;
     private TabbedSystemUiCoordinator mSystemUiCoordinator;
-
+    private TabGroupSyncController mTabGroupSyncController;
     private StatusIndicatorCoordinator mStatusIndicatorCoordinator;
     private StatusIndicatorCoordinator.StatusIndicatorObserver mStatusIndicatorObserver;
     private OfflineIndicatorControllerV2 mOfflineIndicatorController;
@@ -417,6 +421,11 @@ public class TabbedRootUiCoordinator extends RootUiCoordinator {
 
         if (mOfflineIndicatorController != null) {
             mOfflineIndicatorController.destroy();
+        }
+
+        if (mTabGroupSyncController != null) {
+            mTabGroupSyncController.destroy();
+            mTabGroupSyncController = null;
         }
 
         if (mToolbarManager != null) {
@@ -724,6 +733,19 @@ public class TabbedRootUiCoordinator extends RootUiCoordinator {
         initTabStripTransitionCoordinator();
         if (ChromeFeatureList.isEnabled(ChromeFeatureList.CHROME_SHARE_PAGE_INFO)) {
             PageInfoSharingControllerImpl.getInstance().initialize();
+        }
+    }
+
+    @Override
+    protected void initProfileDependentFeatures(Profile currentlySelectedProfile) {
+        super.initProfileDependentFeatures(currentlySelectedProfile);
+        if (TabGroupSyncFeatures.isTabGroupSyncEnabled(currentlySelectedProfile)) {
+            mTabGroupSyncController =
+                    new TabGroupSyncController(
+                            mTabModelSelectorSupplier.get(),
+                            mTabCreatorManagerSupplier.get(),
+                            TabGroupSyncServiceFactory.getForProfile(currentlySelectedProfile),
+                            UserPrefs.get(currentlySelectedProfile));
         }
     }
 
@@ -1213,6 +1235,11 @@ public class TabbedRootUiCoordinator extends RootUiCoordinator {
     @Override
     public DesktopWindowStateProvider getDesktopWindowStateProvider() {
         return mAppHeaderCoordinator;
+    }
+
+    /** Returns the {@link TabGroupSyncController} if it has been created yet. */
+    public TabGroupSyncController getTabGroupSyncController() {
+        return mTabGroupSyncController;
     }
 
     @Override
