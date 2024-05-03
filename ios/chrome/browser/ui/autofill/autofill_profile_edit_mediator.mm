@@ -131,7 +131,7 @@ constexpr std::array<autofill::FieldType, 5> kStaticFieldsTypes = {
 #pragma mark - AutofillSettingsProfileEditTableViewControllerDelegate
 
 - (void)didEditAutofillProfileFromSettings {
-  _personalDataManager->UpdateProfile(*_autofillProfile);
+  _personalDataManager->address_data_manager().UpdateProfile(*_autofillProfile);
 
   // Push the saved profile data to the consumer.
   [self sendAutofillProfileDataToConsumer];

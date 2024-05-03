@@ -8,6 +8,7 @@
 #import "base/strings/utf_string_conversions.h"
 #import "base/test/ios/wait_util.h"
 #import "base/uuid.h"
+#import "components/autofill/core/browser/address_data_manager.h"
 #import "components/autofill/core/browser/data_model/autofill_profile.h"
 #import "components/autofill/core/browser/personal_data_manager.h"
 #import "components/autofill/core/browser/personal_data_manager_test_utils.h"
@@ -71,7 +72,8 @@ class AutofillProfileTableViewControllerTest
     autofill::PersonalDataManager* personal_data_manager =
         autofill::PersonalDataManagerFactory::GetForBrowserState(
             chrome_browser_state_.get());
-    personal_data_manager->get_alternative_state_name_map_updater_for_testing()
+    personal_data_manager->address_data_manager()
+        .get_alternative_state_name_map_updater_for_testing()
         ->set_local_state_for_testing(local_state_.Get());
     personal_data_manager->SetSyncServiceForTest(nullptr);
     autofill::PersonalDataChangedWaiter waiter(*personal_data_manager);
@@ -81,7 +83,7 @@ class AutofillProfileTableViewControllerTest
     autofill_profile.SetRawInfo(autofill::NAME_FULL, base::ASCIIToUTF16(name));
     autofill_profile.SetRawInfo(autofill::ADDRESS_HOME_LINE1,
                                 base::ASCIIToUTF16(address));
-    personal_data_manager->AddProfile(autofill_profile);
+    personal_data_manager->address_data_manager().AddProfile(autofill_profile);
     std::move(waiter).Wait();  // Wait for completion of the async operation.
   }
 

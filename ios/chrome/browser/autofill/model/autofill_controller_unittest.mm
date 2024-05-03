@@ -15,6 +15,7 @@
 #import "base/test/ios/wait_util.h"
 #import "base/test/metrics/histogram_tester.h"
 #import "base/uuid.h"
+#import "components/autofill/core/browser/address_data_manager.h"
 #import "components/autofill/core/browser/address_data_manager_test_api.h"
 #import "components/autofill/core/browser/browser_autofill_manager.h"
 #import "components/autofill/core/browser/form_structure.h"
@@ -334,7 +335,8 @@ void AutofillControllerTest::SetUp() {
       browser_state_.get(), web_state(), infobar_manager, autofill_agent_);
 
   autofill_client_->GetPersonalDataManager()
-      ->get_alternative_state_name_map_updater_for_testing()
+      ->address_data_manager()
+      .get_alternative_state_name_map_updater_for_testing()
       ->set_local_state_for_testing(local_state_.Get());
 
   std::string locale("en");
@@ -457,7 +459,8 @@ TEST_F(AutofillControllerTest, ProfileImport) {
   test_api(personal_data_manager->address_data_manager())
       .set_auto_accept_address_imports(true);
   // Check there are no registered profiles already.
-  EXPECT_EQ(0U, personal_data_manager->GetProfiles().size());
+  EXPECT_EQ(0U,
+            personal_data_manager->address_data_manager().GetProfiles().size());
   ASSERT_TRUE(LoadHtmlAndWaitForFormFetched(kProfileFormHtml, 1));
   web::test::ExecuteJavaScript(
       @"document.forms[0].name.value = 'Homer Simpson'", web_state());
@@ -471,10 +474,10 @@ TEST_F(AutofillControllerTest, ProfileImport) {
                                web_state());
   web::test::ExecuteJavaScript(@"submit.click()", web_state());
   WaitForCondition(^bool {
-    return personal_data_manager->GetProfiles().size();
+    return personal_data_manager->address_data_manager().GetProfiles().size();
   });
   const std::vector<AutofillProfile*>& profiles =
-      personal_data_manager->GetProfiles();
+      personal_data_manager->address_data_manager().GetProfiles();
   if (profiles.size() != 1)
     FAIL() << "Not exactly one profile found after attempted import";
   const AutofillProfile& profile = *profiles[0];
@@ -501,11 +504,13 @@ void AutofillControllerTest::SetUpForSuggestions(
   profile.SetRawInfo(ADDRESS_HOME_CITY, u"Springfield");
   profile.SetRawInfo(ADDRESS_HOME_STATE, u"IL");
   profile.SetRawInfo(ADDRESS_HOME_ZIP, u"55123");
-  EXPECT_EQ(0U, personal_data_manager->GetProfiles().size());
+  EXPECT_EQ(0U,
+            personal_data_manager->address_data_manager().GetProfiles().size());
   PersonalDataChangedWaiter waiter(*personal_data_manager);
-  personal_data_manager->AddProfile(profile);
+  personal_data_manager->address_data_manager().AddProfile(profile);
   std::move(waiter).Wait();
-  EXPECT_EQ(1U, personal_data_manager->GetProfiles().size());
+  EXPECT_EQ(1U,
+            personal_data_manager->address_data_manager().GetProfiles().size());
 
   ASSERT_TRUE(LoadHtmlAndWaitForFormFetched(data, expected_number_of_forms));
   web::test::WaitForBackgroundTasks();
@@ -600,12 +605,14 @@ TEST_F(AutofillControllerTest, MultipleProfileSuggestions) {
   profile2.SetRawInfo(ADDRESS_HOME_STATE, u"CA");
   profile2.SetRawInfo(ADDRESS_HOME_ZIP, u"94043");
 
-  EXPECT_EQ(0U, personal_data_manager->GetProfiles().size());
+  EXPECT_EQ(0U,
+            personal_data_manager->address_data_manager().GetProfiles().size());
   PersonalDataChangedWaiter waiter(*personal_data_manager);
-  personal_data_manager->AddProfile(profile);
-  personal_data_manager->AddProfile(profile2);
+  personal_data_manager->address_data_manager().AddProfile(profile);
+  personal_data_manager->address_data_manager().AddProfile(profile2);
   std::move(waiter).Wait();
-  EXPECT_EQ(2U, personal_data_manager->GetProfiles().size());
+  EXPECT_EQ(2U,
+            personal_data_manager->address_data_manager().GetProfiles().size());
 
   EXPECT_TRUE(LoadHtmlAndWaitForFormFetched(kProfileFormHtml, 1));
   ForceViewRendering(web_state()->GetView());

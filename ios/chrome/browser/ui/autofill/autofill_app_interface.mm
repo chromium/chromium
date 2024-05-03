@@ -10,6 +10,7 @@
 #import "base/strings/sys_string_conversions.h"
 #import "base/strings/utf_string_conversions.h"
 #import "base/test/ios/wait_util.h"
+#import "components/autofill/core/browser/address_data_manager.h"
 #import "components/autofill/core/browser/autofill_client.h"
 #import "components/autofill/core/browser/autofill_test_utils.h"
 #import "components/autofill/core/browser/browser_autofill_manager_test_api.h"
@@ -161,20 +162,23 @@ void AddAutofillProfile(autofill::PersonalDataManager* personalDataManager,
   autofill::AutofillProfile profile = autofill::test::GetFullProfile();
   // If the test profile is already in the store, adding it will be a no-op.
   // In that case, early return.
-  for (autofill::AutofillProfile* p : personalDataManager->GetProfiles()) {
+  for (autofill::AutofillProfile* p :
+       personalDataManager->address_data_manager().GetProfiles()) {
     if (p->Compare(profile) == 0) {
       return;
     }
   }
-  size_t profileCount = personalDataManager->GetProfiles().size();
+  size_t profileCount =
+      personalDataManager->address_data_manager().GetProfiles().size();
 
   if (isAccountProfile) {
     profile.set_source_for_testing(autofill::AutofillProfile::Source::kAccount);
   }
-  personalDataManager->AddProfile(profile);
+  personalDataManager->address_data_manager().AddProfile(profile);
 
   ConditionBlock conditionBlock = ^bool {
-    return profileCount < personalDataManager->GetProfiles().size();
+    return profileCount <
+           personalDataManager->address_data_manager().GetProfiles().size();
   };
   CHECK(base::test::ios::WaitUntilConditionOrTimeout(
       base::test::ios::kWaitForActionTimeout, conditionBlock));
@@ -371,7 +375,7 @@ static std::unique_ptr<ScopedAutofillPaymentReauthModuleOverride>
 + (NSInteger)profilesCount {
   autofill::PersonalDataManager* personalDataManager =
       [self personalDataManager];
-  return personalDataManager->GetProfiles().size();
+  return personalDataManager->address_data_manager().GetProfiles().size();
 }
 
 + (void)clearProfilesStore {
@@ -380,12 +384,13 @@ static std::unique_ptr<ScopedAutofillPaymentReauthModuleOverride>
   autofill::PersonalDataManager* personalDataManager =
       autofill::PersonalDataManagerFactory::GetForBrowserState(browserState);
   for (const autofill::AutofillProfile* profile :
-       personalDataManager->GetProfiles()) {
+       personalDataManager->address_data_manager().GetProfiles()) {
     personalDataManager->RemoveByGUID(profile->guid());
   }
 
   ConditionBlock conditionBlock = ^bool {
-    return 0 == personalDataManager->GetProfiles().size();
+    return 0 ==
+           personalDataManager->address_data_manager().GetProfiles().size();
   };
   CHECK(base::test::ios::WaitUntilConditionOrTimeout(
       base::test::ios::kWaitForActionTimeout, conditionBlock));

@@ -144,7 +144,7 @@ NSError* PrepareAutofillProfileWithValues(
     personal_data_manager->RemoveByGUID(local_profile->guid());
   }
   personal_data_manager->AddCreditCard(credit_card);
-  personal_data_manager->AddProfile(profile);
+  personal_data_manager->address_data_manager().AddProfile(profile);
 
   return nil;
 }
