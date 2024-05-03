@@ -25,6 +25,7 @@ import org.chromium.chrome.browser.profiles.Profile;
 import org.chromium.chrome.browser.tab.Tab;
 import org.chromium.chrome.browser.tabmodel.TabModel;
 import org.chromium.chrome.browser.tabmodel.TabModelSelector;
+import org.chromium.chrome.browser.tasks.tab_groups.TabGroupModelFilter;
 import org.chromium.chrome.browser.ui.messages.snackbar.Snackbar;
 import org.chromium.chrome.browser.ui.messages.snackbar.SnackbarManager;
 import org.chromium.components.feature_engagement.Tracker;
@@ -74,7 +75,12 @@ public class QuickDeleteController {
         mLayoutManager = layoutManager;
 
         mTabModel = tabModelSelector.getModel(/* incognito= */ false);
-        mDeleteTabsFilter = new QuickDeleteTabsFilter(mTabModel);
+        mDeleteTabsFilter =
+                new QuickDeleteTabsFilter(
+                        (TabGroupModelFilter)
+                                tabModelSelector
+                                        .getTabModelFilterProvider()
+                                        .getTabModelFilter(/* incognito= */ false));
         mProfile = tabModelSelector.getCurrentModel().getProfile();
         mQuickDeleteBridge = new QuickDeleteBridge(mProfile);
 
