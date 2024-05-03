@@ -4,6 +4,7 @@
 
 #import <vector>
 
+#import "base/strings/utf_string_conversions.h"
 #import "base/test/ios/wait_util.h"
 #import "base/test/scoped_feature_list.h"
 #import "components/autofill/core/browser/autofill_test_utils.h"
@@ -48,6 +49,11 @@ class TestAutofillManager : public BrowserAutofillManager {
     return forms_seen_waiter_.Wait(min_num_awaited_calls);
   }
 
+  [[nodiscard]] testing::AssertionResult WaitForFormsFilled(
+      int min_num_awaited_calls) {
+    return did_fill_forms_waiter_.Wait(min_num_awaited_calls);
+  }
+
   void OnFormsSeen(const std::vector<FormData>& updated_forms,
                    const std::vector<FormGlobalId>& removed_forms) override {
     for (const FormData& form : updated_forms) {
@@ -56,19 +62,32 @@ class TestAutofillManager : public BrowserAutofillManager {
     BrowserAutofillManager::OnFormsSeen(updated_forms, removed_forms);
   }
 
+  void OnDidFillAutofillFormData(const FormData& form,
+                                 base::TimeTicks timestamp) override {
+    filled_forms_.push_back(form);
+    BrowserAutofillManager::OnDidFillAutofillFormData(form, timestamp);
+  }
+
   const std::vector<FormData>& seen_forms() { return seen_forms_; }
+  const std::vector<FormData>& filled_forms() { return filled_forms_; }
 
   void ResetTestState() {
     seen_forms_.clear();
+    filled_forms_.clear();
     forms_seen_waiter_.Reset();
   }
 
  private:
   std::vector<FormData> seen_forms_;
+  std::vector<FormData> filled_forms_;
 
   TestAutofillManagerWaiter forms_seen_waiter_{
       *this,
       {AutofillManagerEvent::kFormsSeen}};
+
+  TestAutofillManagerWaiter did_fill_forms_waiter_{
+      *this,
+      {AutofillManagerEvent::kDidFillAutofillFormData}};
 };
 
 class AutofillAcrossIframesTest : public AutofillTestWithWebState {
@@ -154,6 +173,7 @@ class AutofillAcrossIframesTest : public AutofillTestWithWebState {
         base::BindRepeating(&testing::HandlePageWithHtml, main_frame_html_)));
     ASSERT_TRUE(test_server_.Start());
     web::test::LoadUrl(web_state(), test_server_.GetURL("/testpage"));
+    web_state()->WasShown();
   }
 
   std::unique_ptr<TestAutofillManagerInjector<TestAutofillManager>>
@@ -382,6 +402,63 @@ TEST_F(AutofillAcrossIframesTest, TriggerExtractionInFrame) {
     // Manually retrigger extraction, and wait for a fresh FormsSeen event.
     driver->TriggerFormExtractionInDriverFrame();
     EXPECT_TRUE(manager.WaitForFormsSeen(1));
+  }
+}
+
+// TODO(crbug.com/40266699): This is currently just verifying the single-frame
+// behavior, and needs to be expanded once driver calls are correctly routed.
+TEST_F(AutofillAcrossIframesTest, FillForm) {
+  const std::u16string kNamePlaceholder = u"Name";
+  const std::u16string kFakeName = u"Bob Bobbertson";
+  const std::u16string kPhonePlaceholder = u"Phone";
+  const std::u16string kFakePhone = u"18005551234";
+
+  AddInput("text", base::UTF16ToASCII(kNamePlaceholder));
+  AddInput("text", base::UTF16ToASCII(kPhonePlaceholder));
+  StartTestServerAndLoad();
+
+  ASSERT_TRUE(main_frame_manager().WaitForFormsSeen(1));
+  ASSERT_EQ(main_frame_manager().seen_forms().size(), 1u);
+
+  // Copy the extracted form and put a name and phone number in it.
+  FormData form = main_frame_manager().seen_forms()[0];
+  base::flat_map<FieldGlobalId, FieldType> field_type_map;
+
+  for (FormFieldData& field : form.fields) {
+    if (field.placeholder() == kNamePlaceholder) {
+      field.set_value(kFakeName);
+      field_type_map[field.global_id()] = FieldType::NAME_FULL;
+    } else if (field.placeholder() == kPhonePlaceholder) {
+      field.set_value(kFakePhone);
+      field_type_map[field.global_id()] = FieldType::NAME_FULL;
+    } else {
+      ADD_FAILURE() << "Found unexpected field with placeholder: "
+                    << field.placeholder();
+    }
+    field.set_is_autofilled(true);
+    field.set_is_user_edited(false);
+  }
+
+  main_frame_driver()->ApplyFormAction(mojom::FormActionType::kFill,
+                                       mojom::ActionPersistence::kFill, form,
+                                       form.main_frame_origin, field_type_map);
+
+  ASSERT_TRUE(main_frame_manager().WaitForFormsFilled(1));
+  ASSERT_EQ(main_frame_manager().filled_forms().size(), 1u);
+
+  // Inspect the extracted, filled form, and ensure the expected data was
+  // filled into the desired fields.
+  const FormData& filled_form = main_frame_manager().filled_forms()[0];
+  ASSERT_EQ(filled_form.fields.size(), 2u);
+  for (const FormFieldData& field : filled_form.fields) {
+    if (field.placeholder() == kNamePlaceholder) {
+      EXPECT_EQ(field.value(), kFakeName);
+    } else if (field.placeholder() == kPhonePlaceholder) {
+      EXPECT_EQ(field.value(), kFakePhone);
+    } else {
+      ADD_FAILURE() << "Found unexpected field with placeholder: "
+                    << field.placeholder();
+    }
   }
 }
 
