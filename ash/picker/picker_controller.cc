@@ -328,6 +328,7 @@ void PickerController::ToggleWidget(
 
     feature_usage_metrics_.StartUsage();
     session_metrics_ = std::make_unique<PickerSessionMetrics>();
+    session_metrics_->OnStartSession(GetFocusedTextInputClient());
     widget_observation_.Observe(widget_.get());
   }
 }
