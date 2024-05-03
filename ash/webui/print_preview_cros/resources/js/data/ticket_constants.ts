@@ -35,4 +35,5 @@ export const DEFAULT_PARTIAL_PRINT_TICKET: Partial<PrintTicket> = {
   landscape: false,
   marginsType: MarginType.DEFAULT_MARGINS,
   mediaSize: DEFAULT_MEDIA_SIZE,
+  mediaType: '',
 };

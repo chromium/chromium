@@ -453,5 +453,8 @@ suite('PrintTicketManager', () => {
         assertEquals(
             DEFAULT_PARTIAL_PRINT_TICKET.mediaSize, ticket.mediaSize,
             'Ticket mediaSize should match DEFAULT_PARTIAL_PRINT_TICKET');
+        assertEquals(
+            DEFAULT_PARTIAL_PRINT_TICKET.mediaType, ticket.mediaType,
+            'Ticket mediaType should match DEFAULT_PARTIAL_PRINT_TICKET');
       });
 });

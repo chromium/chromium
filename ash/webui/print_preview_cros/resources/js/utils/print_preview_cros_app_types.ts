@@ -125,6 +125,10 @@ export interface PrintTicket {
   // Used to set requested media and printable area size.
   // See: printing/print_settings_conversion.cc
   mediaSize: MediaSize;
+
+  // Vendor id for a media type (plain paper, photo paper, etc.). For example,
+  // vendor id ‘glossygold’ for media type Photo Paper Plus Glossy II.
+  mediaType: string;
 }
 
 // Immutable session configuration details for the current CrOS preview request.
