@@ -169,8 +169,6 @@ component("vr_common") {
     "//base",
     "//cc/paint",
     "//chrome/common:constants",
-    "//components/omnibox/browser",
-    "//components/omnibox/browser",
     "//components/ukm/content",
     "//content/public/browser",
     "//device/base",
@@ -239,7 +237,6 @@ component("vr_base") {
   defines = [ "VR_BASE_IMPLEMENTATION" ]
 
   public_deps = [
-    "//components/omnibox/browser",
     "//components/strings:components_strings_grit",
     "//content/public/common",
     "//device/vr:vr_gl_bindings",
