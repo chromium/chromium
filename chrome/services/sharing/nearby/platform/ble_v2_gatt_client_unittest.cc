@@ -106,6 +106,16 @@ TEST_F(BleV2GattClientTest, DiscoverServiceAndCharacteristics_Success) {
               /*characteristic_uuids=*/characteristic_uuids),
           run_loop.QuitClosure());
   run_loop.Run();
+
+  auto characteristic = ble_v2_gatt_client_->GetCharacteristic(
+      kServiceUuid1, kCharacteristicUuid1);
+  EXPECT_TRUE(characteristic.has_value());
+  EXPECT_EQ(kServiceUuid1, characteristic->service_uuid);
+  EXPECT_EQ(kCharacteristicUuid1, characteristic->uuid);
+  EXPECT_EQ(nearby::api::ble_v2::GattCharacteristic::Permission::kNone,
+            characteristic->permission);
+  EXPECT_EQ(nearby::api::ble_v2::GattCharacteristic::Property::kNone,
+            characteristic->property);
 }
 
 TEST_F(BleV2GattClientTest,
@@ -142,6 +152,10 @@ TEST_F(BleV2GattClientTest,
               /*characteristic_uuids=*/characteristic_uuids),
           run_loop.QuitClosure());
   run_loop.Run();
+
+  EXPECT_FALSE(ble_v2_gatt_client_
+                   ->GetCharacteristic(kServiceUuid1, kCharacteristicUuid1)
+                   .has_value());
 }
 
 TEST_F(BleV2GattClientTest,
@@ -162,6 +176,10 @@ TEST_F(BleV2GattClientTest,
               /*characteristic_uuids=*/characteristic_uuids),
           run_loop.QuitClosure());
   run_loop.Run();
+
+  EXPECT_FALSE(ble_v2_gatt_client_
+                   ->GetCharacteristic(kServiceUuid1, kCharacteristicUuid1)
+                   .has_value());
 }
 
 }  // namespace nearby::chrome

@@ -15,6 +15,13 @@
 
 namespace {
 
+using BluetoothProperties = device::BluetoothGattCharacteristic::Properties;
+using BluetoothPermissions = device::BluetoothGattCharacteristic::Permissions;
+using BluetoothProperty = device::BluetoothGattCharacteristic::Property;
+using BluetoothPermission = device::BluetoothGattCharacteristic::Permission;
+using NearbyPermission = nearby::api::ble_v2::GattCharacteristic::Permission;
+using NearbyProperty = nearby::api::ble_v2::GattCharacteristic::Property;
+
 void CancelPendingTasks(
     base::flat_set<raw_ptr<base::WaitableEvent>>& events_to_cancel) {
   if (!events_to_cancel.empty()) {
@@ -45,6 +52,42 @@ bool WereAllExpectedCharacteristicsFound(
   }
 
   return true;
+}
+
+NearbyPermission ConvertPermission(BluetoothPermissions permissions) {
+  if ((permissions & BluetoothPermission::PERMISSION_READ) != 0) {
+    return NearbyPermission::kRead;
+  }
+
+  if ((permissions & BluetoothPermission::PERMISSION_WRITE) != 0) {
+    return NearbyPermission::kWrite;
+  }
+
+  if ((permissions & BluetoothPermission::PERMISSION_WRITE) != 0) {
+    return NearbyPermission::kWrite;
+  }
+
+  return NearbyPermission::kNone;
+}
+
+NearbyProperty ConvertProperty(BluetoothProperties properties) {
+  if ((properties & BluetoothProperty::PROPERTY_READ) != 0) {
+    return NearbyProperty::kRead;
+  }
+
+  if ((properties & BluetoothProperty::PROPERTY_WRITE) != 0) {
+    return NearbyProperty::kWrite;
+  }
+
+  if ((properties & BluetoothProperty::PROPERTY_INDICATE) != 0) {
+    return NearbyProperty::kIndicate;
+  }
+
+  if ((properties & BluetoothProperty::PROPERTY_NOTIFY) != 0) {
+    return NearbyProperty::kNotify;
+  }
+
+  return NearbyProperty::kNone;
 }
 
 }  // namespace
@@ -141,9 +184,50 @@ bool BleV2GattClient::DiscoverServiceAndCharacteristics(
 std::optional<api::ble_v2::GattCharacteristic>
 BleV2GattClient::GetCharacteristic(const Uuid& service_uuid,
                                    const Uuid& characteristic_uuid) {
-  // TODO(b/311430390): Implement this function.
-  NOTIMPLEMENTED();
-  return std::nullopt;
+  VLOG(1) << __func__;
+
+  auto service_it =
+      uuid_to_discovered_gatt_service_map_.find(std::string(service_uuid));
+  if (service_it == uuid_to_discovered_gatt_service_map_.end()) {
+    LOG(WARNING) << __func__ << ": no match for service at UUID"
+                 << std::string(service_uuid) << " in "
+                 << uuid_to_discovered_gatt_service_map_.size()
+                 << " number of discovered services";
+    return std::nullopt;
+  }
+
+  const auto& characteristics = service_it->second->characteristics;
+  if (!characteristics.has_value()) {
+    LOG(WARNING) << __func__ << ": characteristics have no value";
+    return std::nullopt;
+  }
+
+  auto char_it = std::find_if(
+      characteristics.value().begin(), characteristics.value().end(),
+      [characteristic_uuid](
+          const bluetooth::mojom::CharacteristicInfoPtr& characteristic_info) {
+        return characteristic_uuid ==
+               BluetoothUuidToNearbyUuid(characteristic_info->uuid);
+      });
+  if (char_it == characteristics.value().end()) {
+    LOG(WARNING) << __func__ << ": no match for characteristic at UUID"
+                 << std::string(characteristic_uuid) << " in "
+                 << characteristics.value().size()
+                 << " number of discovered characteristics";
+    return std::nullopt;
+  }
+
+  // The current implementation of BLE V2 in Nearby Connections only supports a
+  // single permission or property type for a characteristic, even though the
+  // Bluetooth Adapter in the platform layer can support multiple properties
+  // using bitwise operations. `BleV2GattClient` converts the returned
+  // properties and permissions to a single
+  // nearby::api::ble_v2::GattCharacteristic::Property/Permission.
+  api::ble_v2::GattCharacteristic gatt_characteristic = {
+      characteristic_uuid, service_uuid,
+      ConvertPermission((*char_it)->permissions),
+      ConvertProperty((*char_it)->properties)};
+  return gatt_characteristic;
 }
 
 std::optional<std::string> BleV2GattClient::ReadCharacteristic(
