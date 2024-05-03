@@ -23,6 +23,7 @@ import logging
 import os
 import pathlib
 import shutil
+import statistics
 import subprocess
 import sys
 import tempfile
@@ -55,6 +56,9 @@ _ARCH_GN_ARGS = {
     # Telemetry does not work with x64 yet: https://crbug.com/327791269
     'x64': ['target_cpu="x64"'],
 }
+
+_RESULTS_KEY_SPEEDOMETER = 'Speedometer2.0'
+
 
 class CommandError(Exception):
   """Indicates that a dispatched shell command exited with a non-zero status."""
@@ -904,7 +908,7 @@ class OrderfileGenerator:
       # Build APK to be installed on the device.
       self._compiler.CompileChromeApk(instrumented=False,
                                       force_relink=True)
-      benchmark_results['Speedometer2.0'] = self._PerformanceBenchmark(
+      benchmark_results[_RESULTS_KEY_SPEEDOMETER] = self._PerformanceBenchmark(
           self._compiler.chrome_apk_path)
       benchmark_results['orderfile.memory_mobile'] = (
           self._NativeCodeMemoryBenchmark(self._compiler.chrome_apk_path))
@@ -923,6 +927,24 @@ class OrderfileGenerator:
         shutil.move(backup_orderfile, orderfile_path)
 
     return benchmark_results
+
+  def _SaveBenchmarkResultsToOutput(self, with_orderfile_results,
+                                    no_orderfile_results):
+    self._output_data['orderfile_benchmark_results'] = with_orderfile_results
+    self._output_data['no_orderfile_benchmark_results'] = no_orderfile_results
+    with_orderfile_samples = with_orderfile_results[_RESULTS_KEY_SPEEDOMETER]
+    no_orderfile_samples = no_orderfile_results[_RESULTS_KEY_SPEEDOMETER]
+    self._output_data['orderfile_median_speedup'] = (
+        statistics.median(no_orderfile_samples) /
+        statistics.median(with_orderfile_samples))
+
+    def RelativeStdev(samples):
+      return statistics.stdev(samples) / statistics.median(samples)
+
+    self._output_data['orderfile_benchmark_stdev_relative'] = RelativeStdev(
+        with_orderfile_samples)
+    self._output_data['no_orderfile_benchmark_stdev_relative'] = RelativeStdev(
+        no_orderfile_samples)
 
   def Generate(self):
     """Generates and maybe upload an order."""
@@ -995,10 +1017,9 @@ class OrderfileGenerator:
         self._SaveForDebugging(self._GetPathToOrderfile())
 
     if self._options.benchmark:
-      self._output_data['orderfile_benchmark_results'] = self.RunBenchmark(
-          self._uninstrumented_out_dir)
-      self._output_data['no_orderfile_benchmark_results'] = self.RunBenchmark(
-          self._no_orderfile_out_dir, no_orderfile=True)
+      self._SaveBenchmarkResultsToOutput(
+          self.RunBenchmark(self._uninstrumented_out_dir),
+          self.RunBenchmark(self._no_orderfile_out_dir, no_orderfile=True))
 
     if self._options.buildbot:
       self._orderfile_updater._GitStash()
