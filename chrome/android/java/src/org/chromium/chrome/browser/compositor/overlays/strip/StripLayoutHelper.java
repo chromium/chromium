@@ -1025,8 +1025,9 @@ public class StripLayoutHelper implements StripLayoutTabDelegate, StripLayoutGro
 
     /**
      * Called when a new tab model is selected.
+     *
      * @param selected If the new tab model selected is the model that this strip helper associated
-     * with.
+     *     with.
      */
     public void tabModelSelected(boolean selected) {
         if (selected) {
@@ -2570,6 +2571,36 @@ public class StripLayoutHelper implements StripLayoutTabDelegate, StripLayoutGro
         } else {
             if (isCollapsed) {
                 groupTitle.setBottomIndicatorWidth(0.f);
+            }
+        }
+
+        // Select an adjacent expanded tab if the current selected tab is being collapsed, If all
+        // tabs are collapsed, open a ntp.
+        if (isCollapsed) {
+            Tab selectedTab = getTabById(getSelectedTabId());
+            boolean expandedTabSelected = false;
+            if (selectedTab != null && selectedTab.getRootId() == groupTitle.getRootId()) {
+                int index = getSelectedStripTabIndex();
+                for (int i = index; i < mStripTabs.length; i++) {
+                    if (!mStripTabs[i].isCollapsed()) {
+                        expandedTabSelected = true;
+                        TabModelUtils.setIndex(mModel, i, false);
+                        break;
+                    }
+                }
+
+                if (!expandedTabSelected) {
+                    for (int i = index; i >= 0; i--) {
+                        if (!mStripTabs[i].isCollapsed()) {
+                            expandedTabSelected = true;
+                            TabModelUtils.setIndex(mModel, i, false);
+                            break;
+                        }
+                    }
+                }
+                if (!expandedTabSelected) {
+                    mTabCreator.launchNtp();
+                }
             }
         }
     }
@@ -4647,7 +4678,8 @@ public class StripLayoutHelper implements StripLayoutTabDelegate, StripLayoutGro
         return tab.getId();
     }
 
-    private int getSelectedStripTabIndex() {
+    @VisibleForTesting
+    int getSelectedStripTabIndex() {
         return mTabStateInitialized
                 ? findIndexForTab(getSelectedTabId())
                 : mActiveTabIndexOnStartup;
