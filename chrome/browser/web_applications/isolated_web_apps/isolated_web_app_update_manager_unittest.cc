@@ -883,7 +883,9 @@ TEST_F(IsolatedWebAppUpdateManagerUpdateTest,
       ->Shutdown();
 }
 
-TEST_F(IsolatedWebAppUpdateManagerUpdateTest, StopsWaitingIfIwaIsUninstalled) {
+// TODO(b/338380813): The test is flaky on asan ChromeOS builder.
+TEST_F(IsolatedWebAppUpdateManagerUpdateTest,
+       DISABLED_StopsWaitingIfIwaIsUninstalled) {
   AddDummyIsolatedAppToRegistry(
       profile(), iwa_info1_->url_info.origin().GetURL(), "installed app",
       WebApp::IsolationData(iwa_info1_->installed_location,
