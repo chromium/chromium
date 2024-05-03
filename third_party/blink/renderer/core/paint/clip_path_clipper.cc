@@ -555,11 +555,6 @@ void ClipPathClipper::PaintClipPathAsMaskImage(
 std::optional<Path> ClipPathClipper::PathBasedClip(
     const LayoutObject& clip_path_owner,
     const bool is_in_block_fragmentation) {
-  // TODO(crbug.com/1248622): Currently HasCompositeClipPathAnimation is called
-  // multiple times, which is not efficient. Cache
-  // HasCompositeClipPathAnimation value as part of fragment_data, similarly to
-  // FragmentData::ClipPathPath().
-
   // If not all the fragments of this layout object have been populated yet, it
   // will be impossible to tell if a composited clip path animation is possible
   // or not based only on the layout object. Exclude the possibility if we're
