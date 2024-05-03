@@ -41,7 +41,10 @@ public class ReparentingTask implements UserData {
         /**
          * Gets a {@link CompositorViewHolder} which is passed on to {@link ReparentingTask}, used
          * in the reparenting process.
+         *
+         * <p>Can be null if the CompositorViewHolder does not yet exist.
          */
+        @Nullable
         CompositorViewHolder getCompositorViewHolder();
 
         /**
@@ -167,15 +170,17 @@ public class ReparentingTask implements UserData {
     }
 
     /**
-     * Finishes the tab reparenting process. Attaches this tab to a new activity, and updates
-     * the tab and related objects to reference it. This updates many delegates inside the tab
-     * and {@link WebContents} both on java and native sides.
+     * Finishes the tab reparenting process. Attaches this tab to a new activity, and updates the
+     * tab and related objects to reference it. This updates many delegates inside the tab and
+     * {@link WebContents} both on java and native sides.
      *
      * @param delegate A delegate that provides dependencies.
      * @param finalizeCallback A Callback to be called after the Tab has been reparented.
      */
     public void finish(@NonNull Delegate delegate, @Nullable Runnable finalizeCallback) {
-        delegate.getCompositorViewHolder().prepareForTabReparenting();
+        if (delegate.getCompositorViewHolder() != null) {
+            delegate.getCompositorViewHolder().prepareForTabReparenting();
+        }
         attach(delegate.getWindowAndroid(), delegate.getTabDelegateFactory());
         if (finalizeCallback != null) finalizeCallback.run();
     }

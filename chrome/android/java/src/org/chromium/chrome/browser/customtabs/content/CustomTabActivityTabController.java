@@ -347,15 +347,6 @@ public class CustomTabActivityTabController implements InflationObserver {
                                     mWindowAndroid,
                                     mCustomTabDelegateFactory.get()),
                             (params == null ? null : params.getFinalizeCallback()));
-        } else if (tab.isDetached()) {
-            ReparentingTask.from(tab)
-                    .finish(
-                            ReparentingDelegateFactory.createReparentingTaskDelegate(
-                                    mCompositorViewHolder.get(),
-                                    mWindowAndroid,
-                                    mCustomTabDelegateFactory.get()),
-                            null);
-            tab.getWebContents().updateWebContentsVisibility(Visibility.VISIBLE);
         }
 
         if (tab != earlyCreatedTab) {
@@ -403,6 +394,13 @@ public class CustomTabActivityTabController implements InflationObserver {
             tab = warmupManager.takeSpareTab(profile, TabLaunchType.FROM_EXTERNAL_APP);
             TabAssociatedApp.from(tab)
                     .setAppId(mConnection.getClientPackageNameForSession(mSession));
+            ReparentingTask.from(tab)
+                    .finish(
+                            ReparentingDelegateFactory.createReparentingTaskDelegate(
+                                    null, mWindowAndroid, mCustomTabDelegateFactory.get()),
+                            null);
+
+            tab.getWebContents().updateWebContentsVisibility(Visibility.VISIBLE);
         } else {
             WebContents webContents = takeWebContents();
             Callback<Tab> tabCallback =
