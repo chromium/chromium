@@ -1201,13 +1201,22 @@ void NavigateAndWait(content::TestRenderFrame* frame,
 
 class FakeContentSettingsClient : public blink::WebContentSettingsClient {
  public:
-  FakeContentSettingsClient() = default;
+  explicit FakeContentSettingsClient(content::RenderFrame* render_frame)
+      : render_frame_(render_frame) {
+    render_frame_->GetWebFrame()->SetContentSettingsClient(this);
+  }
 
+  ~FakeContentSettingsClient() override {
+    render_frame_->GetWebFrame()->SetContentSettingsClient(nullptr);
+  }
+
+  // blink::WebContentSettingsClient implementation.
   void DidNotAllowImage() override { ++did_not_allow_image_count_; }
   void DidNotAllowScript() override { ++did_not_allow_script_count_; }
 
   int did_not_allow_image_count_ = 0;
   int did_not_allow_script_count_ = 0;
+  raw_ptr<content::RenderFrame> render_frame_;
 };
 
 }  // namespace
@@ -1216,9 +1225,7 @@ class FakeContentSettingsClient : public blink::WebContentSettingsClient {
 // callback.
 TEST_F(RenderFrameImplTest, ContentSettingsCallbackImageBlocked) {
   // Create a fake content settings client to track image blocked callbacks.
-  FakeContentSettingsClient fake_content_settings_client;
-  GetMainRenderFrame()->GetWebFrame()->SetContentSettingsClient(
-      &fake_content_settings_client);
+  FakeContentSettingsClient fake_content_settings_client(GetMainRenderFrame());
 
   // Navigate to a URL that consists of a red square.
   std::string data_url_contents =
@@ -1246,9 +1253,7 @@ TEST_F(RenderFrameImplTest, ContentSettingsCallbackImageBlocked) {
 // callback.
 TEST_F(RenderFrameImplTest, ContentSettingsCallbackScriptBlocked) {
   // Create a fake content settings client to track script blocked callbacks.
-  FakeContentSettingsClient fake_content_settings_client;
-  GetMainRenderFrame()->GetWebFrame()->SetContentSettingsClient(
-      &fake_content_settings_client);
+  FakeContentSettingsClient fake_content_settings_client(GetMainRenderFrame());
 
   // Navigate to a URL with script disabled.
   auto common_params = GetCommonParamsForContentSettingsTest();
@@ -1272,9 +1277,7 @@ TEST_F(RenderFrameImplTest, ContentSettingsCallbackScriptBlocked) {
 // a callback.
 TEST_F(RenderFrameImplTest, ContentSettingsCallbackScriptAllowed) {
   // Create a fake content settings client to track script blocked callbacks.
-  FakeContentSettingsClient fake_content_settings_client;
-  GetMainRenderFrame()->GetWebFrame()->SetContentSettingsClient(
-      &fake_content_settings_client);
+  FakeContentSettingsClient fake_content_settings_client(GetMainRenderFrame());
 
   // Navigate to a URL with script enabled.
   auto common_params = GetCommonParamsForContentSettingsTest();
