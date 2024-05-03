@@ -11570,7 +11570,7 @@
                 {
                     "name": "Enabled",
                     "enable_features": [
-                        "MetricsUMATracingCalculationReduction"
+                        "MetricsTracingCalculationReduction"
                     ]
                 }
             ]

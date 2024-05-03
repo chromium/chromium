@@ -982,6 +982,9 @@ public final class ProductionSupportedFlagList {
         Flag.baseFeature(
                 GfxSwitches.USE_SMART_REF_FOR_GPU_FENCE_HANDLE,
                 "Avoids cloning of gpu fences when possible"),
+        Flag.baseFeature(
+                CcFeatures.METRICS_TRACING_CALCULATION_REDUCTION,
+                "Reduces Renderer event latency attribution to only during tracing."),
         // Add new commandline switches and features above. The final entry should have a
         // trailing comma for cleaner diffs.
     };
