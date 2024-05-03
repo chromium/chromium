@@ -501,8 +501,9 @@ ci.thin_tester(
 )
 
 ci.thin_tester(
-    name = "Mac13 Tests (dbg)",
+    name = "mac14-tests-dbg",
     branch_selector = branches.selector.MAC_BRANCHES,
+    description_html = "Runs Mac 14 tests with debug config.",
     triggered_by = ["ci/Mac Builder (dbg)"],
     builder_spec = builder_config.builder_spec(
         execution_mode = builder_config.execution_mode.TEST,
@@ -524,9 +525,10 @@ ci.thin_tester(
     sheriff_rotations = args.ignore_default(None),
     console_view_entry = consoles.console_view_entry(
         category = "debug",
-        short_name = "13",
+        short_name = "14",
     ),
     cq_mirrors_console_view = "mirrors",
+    contact_team_email = "bling-engprod@google.com",
 )
 
 ci.thin_tester(

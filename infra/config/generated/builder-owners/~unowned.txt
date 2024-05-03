@@ -25,7 +25,6 @@ ci/Mac Builder Next
 ci/Mac deterministic
 ci/Mac deterministic (dbg)
 ci/Mac13 Tests
-ci/Mac13 Tests (dbg)
 ci/Oreo Phone Tester
 ci/Site Isolation Android
 ci/Win 10 Fast Ring

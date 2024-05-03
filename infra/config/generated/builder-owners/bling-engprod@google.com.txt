@@ -15,6 +15,7 @@ ci/mac12-arm64-rel-tests
 ci/mac13-arm64-rel-tests
 ci/mac14-arm64-rel-tests
 ci/mac14-tests
+ci/mac14-tests-dbg
 try/mac14-arm64-rel
 try/mac14-arm64-rel-compilator
 try/mac14-tests

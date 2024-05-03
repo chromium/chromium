@@ -360,11 +360,6 @@
           'shards': 12,
         },
       },
-      'Mac13 Tests (dbg)': {
-        'swarming': {
-          'shards': 16,
-        },
-      },
       'Mac13 Tests Siso FYI': {
         'swarming': {
           'dimensions': {
@@ -567,6 +562,11 @@
           'shards': 12,
         },
       },
+      'mac14-tests-dbg': {
+        'swarming': {
+          'shards': 16,
+        },
+      },
       'win-rel-cft': {
         'args': [
           '--test-launcher-filter-file=../../testing/buildbot/filters/cft.blink_web_tests.filter',
@@ -650,14 +650,6 @@
             'gpu': None,
           },
           'shards': 18,
-        },
-      },
-      'Mac13 Tests (dbg)': {
-        'args': [
-          '--debug',
-        ],
-        'swarming': {
-          'shards': 24,
         },
       },
       'Mac13 Tests Siso FYI': {
@@ -840,6 +832,14 @@
           'shards': 18,
         },
       },
+      'mac14-tests-dbg': {
+        'args': [
+          '--debug',
+        ],
+        'swarming': {
+          'shards': 24,
+        },
+      },
       'win-rel-cft': {
         'swarming': {
           "shards": 18,
@@ -880,12 +880,14 @@
       'ToTLinuxTSan',  # https://crbug.com/368525
       # TODO(crbug.com/40166003): Enable the suite in 'Mac10.15 Tests' once it's
       # off CQ.
-      'Mac13 Tests (dbg)', # https://crbug.com/1201386
       'mac-code-coverage', # https://crbug.com/1201386
       'mac11-arm64-rel-tests', # https://crbug.com/1406364
       'mac12-arm64-rel-tests', # https://crbug.com/1406364
       'mac13-arm64-rel-tests', # https://crbug.com/1406364
       'mac14-arm64-rel-tests', # https://crbug.com/1406364
+      # TODO(crbug.com/338402345): Enable if there is enough capacity after
+      # Mac 14 upgrades.
+      'mac14-tests-dbg',
       'Linux TSan Tests',  # https://crbug.com/368525
       'linux-chromeos-chrome-preuprev', # http://b/331706144
       'Win10 Tests x64 (dbg)',
@@ -997,19 +999,6 @@
         'swarming': {
           'shards': 20,  # crbug.com/1361887
         },
-      },
-      'Mac13 Tests (dbg)': {
-        # crbug.com/1042757
-        'swarming': {
-          'dimensions': {
-            # These shards are liable to time out when running on macmini7,1.
-            'cores': '8|12',
-          },
-        },
-        # crbug.com/1196416
-        'args': [
-          '--test-launcher-filter-file=../../testing/buildbot/filters/mac.mac-rel.browser_tests.filter',
-        ],
       },
       'Mac13 Tests Siso FYI': {
         'ci_only': True,
@@ -1168,6 +1157,12 @@
         'swarming': {
           'shards': 20,  # crbug.com/1361887
         },
+      },
+      'mac14-tests-dbg': {
+        # crbug.com/1196416
+        'args': [
+          '--test-launcher-filter-file=../../testing/buildbot/filters/mac.mac-rel.browser_tests.filter',
+        ],
       },
       'win-asan': {
          # Tests shows tests run faster with fewer retries by using fewer jobs crbug.com/1411912
@@ -1757,11 +1752,6 @@
           'shards': 12,
         },
       },
-      'Mac13 Tests (dbg)': { # https://crbug.com/1279504
-        'swarming': {
-          'shards': 18,
-        },
-      },
       'Mac13 Tests Siso FYI': {
         # Only retry the individual failed tests instead of rerunning entire
         # shards.
@@ -2037,6 +2027,11 @@
         'retry_only_failed_tests': True,
         'swarming': {
           'shards': 12,
+        },
+      },
+      'mac14-tests-dbg': { # https://crbug.com/1279504
+        'swarming': {
+          'shards': 18,
         },
       },
       'win-asan': {
@@ -3103,12 +3098,6 @@
           'shards': 6,
         },
       },
-      'Mac13 Tests (dbg)': { # https://crbug.com/1265051
-        'experiment_percentage': 100,
-        'swarming': {
-          'shards':6,
-        }
-      },
       'Mac13 Tests Siso FYI': {
         'swarming': {
           'shards': 6,
@@ -3219,6 +3208,14 @@
         'swarming': {
           'shards': 6,
         },
+      },
+      'mac14-tests-dbg': {
+        # TODO(crbug.com/338408669): Remove experimental when suite is ready to
+        # be sheriffed.
+        'experiment_percentage': 100,
+        'swarming': {
+          'shards': 12,
+        }
       },
       'win-asan': {
          # Tests shows tests run faster with fewer retries by using fewer jobs crbug.com/1411912
@@ -3752,16 +3749,16 @@
   },
   'performance_test_suite': {
     'modifications': {
-      'Mac13 Tests (dbg)': {
-        'args': [
-          '--browser=debug',
-        ],
-      },
       'Win10 Tests x64 (dbg)': {
         'args': [
           '--browser=debug_x64',
         ],
         'experiment_percentage': 100,
+      },
+      'mac14-tests-dbg': {
+        'args': [
+          '--browser=debug',
+        ],
       },
     },
   },
@@ -4141,11 +4138,6 @@
           'shards': 4,
         },
       },
-      'Mac13 Tests (dbg)': {
-        'swarming': {
-          'shards': 3,
-        }
-      },
       'Mac13 Tests Siso FYI': {
         'ci_only': True,
         'swarming': {
@@ -4196,6 +4188,11 @@
         'swarming': {
           'shards': 4,
         },
+      },
+      'mac14-tests-dbg': {
+        'swarming': {
+          'shards': 3,
+        }
       },
       'win-asan': {
          # Tests shows tests run faster with fewer retries by using fewer jobs crbug.com/1411912
@@ -4329,7 +4326,7 @@
       # crbug.com/936540
       'Mac10.15 Tests',
       # TODO crbug.com/1277277
-      'Mac13 Tests (dbg)',
+      'mac14-tests-dbg',
       'Linux - Future (dbg)',  # client.v8.chromium
       'Win10 Tests x64',
       'Win10 Tests x64 (dbg)',
@@ -4487,11 +4484,6 @@
           'shards': 2,
         },
       },
-      'Mac13 Tests (dbg)': {
-        'swarming': {
-          'shards': 2,
-        },
-      },
       'Mac13 Tests Siso FYI': {
         'swarming': {
           'shards': 2,
@@ -4546,6 +4538,11 @@
         }
       },
       'mac14-tests': {
+        'swarming': {
+          'shards': 2,
+        },
+      },
+      'mac14-tests-dbg': {
         'swarming': {
           'shards': 2,
         },
