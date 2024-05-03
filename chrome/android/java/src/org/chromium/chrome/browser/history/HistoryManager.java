@@ -40,6 +40,7 @@ import org.chromium.chrome.browser.ui.messages.snackbar.SnackbarManager;
 import org.chromium.chrome.browser.ui.messages.snackbar.SnackbarManager.SnackbarController;
 import org.chromium.components.browser_ui.bottomsheet.BottomSheetController;
 import org.chromium.components.browser_ui.settings.SettingsLauncher;
+import org.chromium.components.browser_ui.widget.DateDividedAdapter.ItemViewType;
 import org.chromium.components.browser_ui.widget.gesture.BackPressHandler;
 import org.chromium.components.browser_ui.widget.selectable_list.SelectableListLayout;
 import org.chromium.components.browser_ui.widget.selectable_list.SelectableListToolbar.SearchDelegate;
@@ -199,6 +200,11 @@ public class HistoryManager
                         showAppFilter);
         mSelectableListLayout.initializeRecyclerView(
                 mContentManager.getAdapter(), mContentManager.getRecyclerView());
+        if (mContentManager.showAppFilter()) {
+            // Now the search mode can have a header. Let the layout ignore it to
+            // return the right item count.
+            mSelectableListLayout.ignoreItemTypeForEmptyState(ItemViewType.HEADER);
+        }
 
         mShouldShowPrivacyDisclaimerSupplier.set(
                 shouldShowInfoHeader && mContentManager.isInfoHeaderAvailable());
