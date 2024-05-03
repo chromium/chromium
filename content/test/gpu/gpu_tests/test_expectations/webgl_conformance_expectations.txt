@@ -405,6 +405,7 @@ crbug.com/1473838 [ chromeos lacros-chrome chromeos-board-jacuzzi passthrough an
 # they are not attributed to some known issue that needs resolving.
 
 [ linux debug ] conformance/rendering/multisample-corruption.html [ Slow ]
+[ linux angle-opengl debug nvidia-0x2184 passthrough ] conformance/uniforms/uniform-samplers-test.html [ Slow ]
 
 ###################
 # Failures/Flakes #
