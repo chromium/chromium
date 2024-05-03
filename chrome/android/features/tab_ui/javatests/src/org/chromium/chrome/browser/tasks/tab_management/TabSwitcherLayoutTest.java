@@ -17,6 +17,7 @@ import static androidx.test.espresso.assertion.ViewAssertions.doesNotExist;
 import static androidx.test.espresso.assertion.ViewAssertions.matches;
 import static androidx.test.espresso.contrib.RecyclerViewActions.actionOnItemAtPosition;
 import static androidx.test.espresso.matcher.ViewMatchers.Visibility.VISIBLE;
+import static androidx.test.espresso.matcher.ViewMatchers.isCompletelyDisplayed;
 import static androidx.test.espresso.matcher.ViewMatchers.isDescendantOfA;
 import static androidx.test.espresso.matcher.ViewMatchers.isDisplayed;
 import static androidx.test.espresso.matcher.ViewMatchers.withContentDescription;
@@ -2223,6 +2224,39 @@ public class TabSwitcherLayoutTest {
                             TabGroupColorUtils.getTabGroupColor(
                                     normalTabModel.getTabAt(2).getRootId()));
                 });
+    }
+
+    @Test
+    @MediumTest
+    @EnableFeatures({
+        ChromeFeatureList.TAB_GROUP_PARITY_ANDROID,
+        ChromeFeatureList.TAB_GROUP_PANE_ANDROID
+    })
+    public void testGroupMerge_UndoBarGoneAfterManualUngroup() {
+        final ChromeTabbedActivity cta = mActivityTestRule.getActivity();
+        SnackbarManager snackbarManager = mActivityTestRule.getActivity().getSnackbarManager();
+        createTabs(cta, false, 3);
+        enterTabSwitcher(cta);
+        verifyTabSwitcherCardCount(cta, 3);
+
+        // Merge first two tabs into a group.
+        TabModel normalTabModel = cta.getTabModelSelector().getModel(false);
+        List<Tab> tabGroup =
+                new ArrayList<>(
+                        Arrays.asList(normalTabModel.getTabAt(0), normalTabModel.getTabAt(1)));
+        createTabGroup(cta, false, tabGroup);
+        verifyGroupVisualDataDialogOpenedAndDismiss(cta);
+
+        // Merge tab group of 2 at first index with the 3rd tab.
+        mergeAllNormalTabsToAGroup(cta);
+
+        onViewWaiting(withId(R.id.snackbar_button)).check(matches(isCompletelyDisplayed()));
+
+        String ungroupButtonText = cta.getString(R.string.ungroup_tab_group_menu_item);
+        onView(withId(R.id.action_button)).perform(click());
+        onView(allOf(withText(ungroupButtonText), withId(R.id.menu_item_text))).perform(click());
+
+        onView(withId(R.id.snackbar_button)).check(doesNotExist());
     }
 
     @Test

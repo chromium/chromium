@@ -86,6 +86,14 @@ public class UndoGroupSnackbarController implements SnackbarManager.SnackbarCont
         mTabGroupModelFilterObserver =
                 new TabGroupModelFilterObserver() {
                     @Override
+                    public void willMoveTabOutOfGroup(Tab movedTab, int newRootId) {
+                        // Fix for b/338511492 is to dismiss the snackbar if an ungroup operation
+                        // happens because information that allowed the group action to be undone
+                        // may no longer be usable (incorrect indices, group IDs, etc.).
+                        mSnackbarManager.dismissSnackbars(UndoGroupSnackbarController.this);
+                    }
+
+                    @Override
                     public void didCreateGroup(
                             List<Tab> tabs,
                             List<Integer> tabOriginalIndex,
