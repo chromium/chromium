@@ -1,7 +1,7 @@
 Name: play-services-location
 Short Name: play-services-location
 URL: https://developers.google.com/android/guides/setup
-Version: 19.0.1
+Version: 21.0.1
 License: Android Software Development Kit License
 License File: LICENSE
 CPEPrefix: unknown
@@ -10,6 +10,6 @@ Shipped: yes
 
 Description:
 
-
+Provides data about the device's physical location via gmscore.
 Local Modifications:
 No modifications.
