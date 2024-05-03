@@ -37,11 +37,17 @@ class TermTable : public TextTable {
   // method returns -1.
   int64_t GetTermId(const std::string& term) const;
 
+  // For the given `term_id` attempts to find the corresponding term value.
+  // If one cannot be found, returns -1. Otherwise returns `term_id` and fills
+  // the term with the found value.
+  int64_t GetTerm(int64_t term_id, std::string* term) const;
+
   // Gets or creates the unique term ID for the given term.
   int64_t GetOrCreateTermId(const std::string& term);
 
  protected:
-  std::unique_ptr<sql::Statement> MakeGetStatement() const override;
+  std::unique_ptr<sql::Statement> MakeGetValueIdStatement() const override;
+  std::unique_ptr<sql::Statement> MakeGetValueStatement() const override;
   std::unique_ptr<sql::Statement> MakeInsertStatement() const override;
   std::unique_ptr<sql::Statement> MakeDeleteStatement() const override;
   std::unique_ptr<sql::Statement> MakeCreateTableStatement() const override;

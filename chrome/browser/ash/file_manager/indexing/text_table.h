@@ -45,10 +45,16 @@ class TextTable {
   // it is inserted into the table and the unique key assigned to is returned.
   int64_t GetOrCreateValueId(const std::string& value);
 
+  // Populates the value with the value for the given ID, if found. If not
+  // found, returns -1 and leaves `value` unchanged.
+  int64_t GetValue(int64_t value_id, std::string* value) const;
+
   // To be overridden by the extending classes.
 
   // Returns a statement that gets text ID by value.
-  virtual std::unique_ptr<sql::Statement> MakeGetStatement() const = 0;
+  virtual std::unique_ptr<sql::Statement> MakeGetValueIdStatement() const = 0;
+  // Returns a statement that gets text value by its ID.
+  virtual std::unique_ptr<sql::Statement> MakeGetValueStatement() const = 0;
   // Returns a statement that inserts text value into the table.
   virtual std::unique_ptr<sql::Statement> MakeInsertStatement() const = 0;
   // Returns a statement that deletes a value by its ID.

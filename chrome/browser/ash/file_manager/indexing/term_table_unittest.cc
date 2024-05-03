@@ -74,5 +74,20 @@ TEST_F(TermTableTest, DeleteTerm) {
   EXPECT_EQ(table.DeleteTerm("hello"), 1);
 }
 
+TEST_F(TermTableTest, GetTerm) {
+  TermTable table(db_.get());
+  EXPECT_TRUE(table.Init());
+
+  std::string term;
+  EXPECT_EQ(table.GetTerm(1, &term), -1);
+  EXPECT_EQ(table.GetOrCreateTermId("hello"), 1);
+  EXPECT_EQ(table.GetTerm(1, &term), 1);
+  EXPECT_EQ(term, "hello");
+  EXPECT_EQ(table.DeleteTerm("hello"), 1);
+  term = "";
+  EXPECT_EQ(table.GetTerm(1, &term), -1);
+  EXPECT_TRUE(term.empty());
+}
+
 }  // namespace
 }  // namespace file_manager

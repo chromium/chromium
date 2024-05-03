@@ -33,6 +33,12 @@ static constexpr char kGetUrlIdQuery[] =
      "SELECT " URL_ID " FROM " URL_TABLE " WHERE " URL_SPEC "=?";
 // clang-format on
 
+// The statement used fetch the ID of the URL.
+static constexpr char kGetUrlValueQuery[] =
+    // clang-format off
+     "SELECT " URL_SPEC " FROM " URL_TABLE " WHERE " URL_ID "=?";
+// clang-format on
+
 // The statement used to insert a new URL into the table.
 static constexpr char kInsertUrlQuery[] =
     // clang-format off
@@ -61,14 +67,23 @@ int64_t UrlTable::GetUrlId(const GURL& url) const {
   return GetValueId(url.spec());
 }
 
+int64_t UrlTable::GetUrlSpec(int64_t url_id, std::string* url_spec) const {
+  return GetValue(url_id, url_spec);
+}
+
 int64_t UrlTable::GetOrCreateUrlId(const GURL& url) {
   DCHECK(url.is_valid());
   return GetOrCreateValueId(url.spec());
 }
 
-std::unique_ptr<sql::Statement> UrlTable::MakeGetStatement() const {
+std::unique_ptr<sql::Statement> UrlTable::MakeGetValueIdStatement() const {
   return std::make_unique<sql::Statement>(
       db_->GetCachedStatement(SQL_FROM_HERE, kGetUrlIdQuery));
+}
+
+std::unique_ptr<sql::Statement> UrlTable::MakeGetValueStatement() const {
+  return std::make_unique<sql::Statement>(
+      db_->GetCachedStatement(SQL_FROM_HERE, kGetUrlValueQuery));
 }
 
 std::unique_ptr<sql::Statement> UrlTable::MakeInsertStatement() const {

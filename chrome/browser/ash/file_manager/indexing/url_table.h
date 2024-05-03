@@ -41,8 +41,14 @@ class UrlTable : public TextTable {
   // Gets or creates the URL ID for the given URL.
   int64_t GetOrCreateUrlId(const GURL& url);
 
+  // For the given `url_id` attempts to find the corresponding URL spec.
+  // If one cannot be found, returns -1. Otherwise returns `url_id` and fills
+  // the `url_spec` with the found value.
+  int64_t GetUrlSpec(int64_t url_id, std::string* url_spec) const;
+
  protected:
-  std::unique_ptr<sql::Statement> MakeGetStatement() const override;
+  std::unique_ptr<sql::Statement> MakeGetValueIdStatement() const override;
+  std::unique_ptr<sql::Statement> MakeGetValueStatement() const override;
   std::unique_ptr<sql::Statement> MakeInsertStatement() const override;
   std::unique_ptr<sql::Statement> MakeDeleteStatement() const override;
   std::unique_ptr<sql::Statement> MakeCreateTableStatement() const override;

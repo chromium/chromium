@@ -36,6 +36,12 @@ static constexpr char kGetTermIdQuery[] =
     "SELECT " TERM_ID " FROM " TERM_TABLE " WHERE " TERM "=?";
 // clang-format on
 
+// The statement used fetch the ID of the term.
+static constexpr char kGetTermValueQuery[] =
+    // clang-format off
+    "SELECT " TERM " FROM " TERM_TABLE " WHERE " TERM_ID "=?";
+// clang-format on
+
 // The statement used to insert a new term into the table.
 static constexpr char kInsertTermQuery[] =
     // clang-format off
@@ -58,6 +64,10 @@ int64_t TermTable::DeleteTerm(const std::string& term) {
   return DeleteValue(term);
 }
 
+int64_t TermTable::GetTerm(int64_t term_id, std::string* term) const {
+  return GetValue(term_id, term);
+}
+
 int64_t TermTable::GetTermId(const std::string& term) const {
   return GetValueId(term);
 }
@@ -66,9 +76,14 @@ int64_t TermTable::GetOrCreateTermId(const std::string& term) {
   return GetOrCreateValueId(term);
 }
 
-std::unique_ptr<sql::Statement> TermTable::MakeGetStatement() const {
+std::unique_ptr<sql::Statement> TermTable::MakeGetValueIdStatement() const {
   return std::make_unique<sql::Statement>(
       db_->GetCachedStatement(SQL_FROM_HERE, kGetTermIdQuery));
+}
+
+std::unique_ptr<sql::Statement> TermTable::MakeGetValueStatement() const {
+  return std::make_unique<sql::Statement>(
+      db_->GetCachedStatement(SQL_FROM_HERE, kGetTermValueQuery));
 }
 
 std::unique_ptr<sql::Statement> TermTable::MakeInsertStatement() const {
