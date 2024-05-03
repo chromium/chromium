@@ -196,6 +196,10 @@ class GraphBuilder {
 
   // Serialization functions for members of the mojom::Operation union. Keep
   // these functions in the same order as in webnn_graph.mojom.
+  [[nodiscard]] base::expected<void, mojom::ErrorPtr>
+  AddOperationForBatchNormalization(
+      const mojom::BatchNormalization& operation,
+      CoreML::Specification::MILSpec::Block& block);
   [[nodiscard]] base::expected<void, mojom::ErrorPtr> AddOperationForCast(
       uint64_t input_operand_id,
       uint64_t output_operand_id,

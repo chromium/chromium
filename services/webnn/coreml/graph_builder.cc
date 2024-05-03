@@ -101,6 +101,7 @@ constexpr char kPlaceholderOuputName[] = "placeholder_output";
 // op names
 constexpr char kOpConstTypeName[] = "const";
 // Generic operators.
+constexpr char kOpBatchNormalizationTypeName[] = "batch_norm";
 constexpr char kOpCastTypeName[] = "cast";
 constexpr char kOpClipTypeName[] = "clip";
 constexpr char kOpConcatTypeName[] = "concat";
@@ -604,6 +605,11 @@ GraphBuilder::BuildCoreMLModel() {
   // Add operations.
   for (const mojom::OperationPtr& operation : graph_info_->operations) {
     switch (operation->which()) {
+      case mojom::Operation::Tag::kBatchNormalization: {
+        RETURN_IF_ERROR(AddOperationForBatchNormalization(
+            *operation->get_batch_normalization(), block));
+        break;
+      }
       case mojom::Operation::Tag::kClamp: {
         RETURN_IF_ERROR(AddOperationForClamp(*operation->get_clamp(), block));
         break;
@@ -704,7 +710,6 @@ GraphBuilder::BuildCoreMLModel() {
         break;
       }
       case mojom::Operation::Tag::kArgMinMax:
-      case mojom::Operation::Tag::kBatchNormalization:
       case mojom::Operation::Tag::kExpand:
       case mojom::Operation::Tag::kGather:
       case mojom::Operation::Tag::kGelu:
@@ -992,6 +997,73 @@ GraphBuilder::AddUnaryFloatsOperationWithEpsilon(
       operation.output_operand_id, epsilon, block);
 }
 
+base::expected<void, mojom::ErrorPtr>
+GraphBuilder::AddOperationForBatchNormalization(
+    const mojom::BatchNormalization& operation,
+    CoreML::Specification::MILSpec::Block& block) {
+  const OperandInfo& input_operand_info =
+      GetOperandInfo(operation.input_operand_id);
+  CHECK(kFloatDataTypes.contains(input_operand_info.mil_data_type));
+
+  // TODO(crbug.com/338529225): Support ND inputs.
+  if (input_operand_info.dimensions.size() < 3 ||
+      input_operand_info.dimensions.size() > 5) {
+    return NewNotSupportedError(
+        "Unsupported rank for batchNormalization. It must be between 3 and 5.");
+  }
+
+  // TODO(crbug.com/338398666): Consider supporting more values for
+  // `operation.axis` by transposing the input. CoreML only supports
+  // batchNormalization over the "channel" dimension, though we don't actually
+  // have any way to know the layout here, so we'll just guess it's:
+  //  - NCH for a 3D input,
+  //  - NCHW for a 4D input, or
+  //  - NCDHW for a 5D input
+  // https://apple.github.io/coremltools/source/coremltools.converters.mil.mil.ops.defs.html#coremltools.converters.mil.mil.ops.defs.iOS17.normalization.batch_norm
+  if (operation.axis != 1) {
+    return NewNotSupportedError(
+        "Unsupported axis for batchNormalization. It must be the channel "
+        "dimension.");
+  }
+
+  if (!operation.activation.is_null()) {
+    return NewNotSupportedError(
+        "Activations are not supported with batchNormalization.");
+  }
+
+  CoreML::Specification::MILSpec::Operation* op = block.add_operations();
+  op->set_type(kOpBatchNormalizationTypeName);
+  SetInputWithName(*op->mutable_inputs(), kOpParamX,
+                   input_operand_info.coreml_name);
+
+  static constexpr char kParamMean[] = "mean";
+  static constexpr char kParamVariance[] = "variance";
+  static constexpr char kParamGamma[] = "gamma";
+
+  // TODO(crbug.com/338529226): These params must all be constant tensors.
+  SetInputWithName(*op->mutable_inputs(), kParamMean,
+                   GetOperandInfo(operation.mean_operand_id).coreml_name);
+  SetInputWithName(*op->mutable_inputs(), kParamVariance,
+                   GetOperandInfo(operation.variance_operand_id).coreml_name);
+  if (operation.scale_operand_id.has_value()) {
+    SetInputWithName(*op->mutable_inputs(), kParamGamma,
+                     GetOperandInfo(*operation.scale_operand_id).coreml_name);
+  }
+  if (operation.bias_operand_id.has_value()) {
+    SetInputWithName(*op->mutable_inputs(), kOpParamBeta,
+                     GetOperandInfo(*operation.bias_operand_id).coreml_name);
+  }
+
+  // TODO(crbug.com/338348440): Consider using float16 when the input is
+  // float16.
+  SetInputWithValue(*op->mutable_inputs(), kOpParamEpsilon,
+                    CreateScalarImmediateValue<float>(operation.epsilon));
+
+  CoreML::Specification::MILSpec::NamedValueType& output = *op->add_outputs();
+  PopulateNamedValueType(operation.output_operand_id, output);
+  return base::ok();
+}
+
 base::expected<void, mojom::ErrorPtr> GraphBuilder::AddOperationForCast(
     uint64_t input_operand_id,
     uint64_t output_operand_id,
@@ -1161,6 +1233,7 @@ base::expected<void, mojom::ErrorPtr> GraphBuilder::AddOperationForConv2d(
        {kParamGroups, CreateScalarImmediateValue(
                           base::checked_cast<int32_t>(operation.groups))}});
   if (operation.bias_operand_id) {
+    // TODO(crbug.com/338529226): This param must be a constant tensor.
     SetInputWithName(
         inputs, kParamBias,
         GetOperandInfo(operation.bias_operand_id.value()).coreml_name);
