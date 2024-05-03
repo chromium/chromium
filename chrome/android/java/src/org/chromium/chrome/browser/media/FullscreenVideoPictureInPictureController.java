@@ -9,6 +9,7 @@ import android.app.PictureInPictureParams;
 import android.content.pm.PackageManager;
 import android.graphics.Rect;
 import android.os.Build;
+import android.os.Handler;
 import android.os.SystemClock;
 import android.util.Rational;
 
@@ -42,11 +43,12 @@ import java.util.Set;
 /**
  * A controller for entering Android O Picture in Picture mode with fullscreen videos.
  *
- * Do not inline to prevent class verification errors on pre-O runtimes.
+ * <p>Do not inline to prevent class verification errors on pre-O runtimes.
  */
 @RequiresApi(Build.VERSION_CODES.O)
 public class FullscreenVideoPictureInPictureController {
     private static final String TAG = "VideoPersist";
+    private static final int AUTO_PIP_UPDATE_DELAY = 500 /* msec */;
 
     // Metrics
 
@@ -108,6 +110,18 @@ public class FullscreenVideoPictureInPictureController {
 
     /** Wall clock time when we last entered Picture in Picture */
     private long mLastOnEnteredTimeMillis;
+
+    /** Handler for posting delayed messages. */
+    private Handler mHandler = new Handler();
+
+    /** Runnable that will update our autopip config. */
+    private Runnable mUpdateAutoPipRunnable =
+            new Runnable() {
+                @Override
+                public void run() {
+                    updateAutoPictureInPictureStatus();
+                }
+            };
 
     public FullscreenVideoPictureInPictureController(
             Activity activity,
@@ -388,8 +402,10 @@ public class FullscreenVideoPictureInPictureController {
         // Do not check if we're in PiP mode or not, since we're called during transitions into and
         // out of it.  The framework won't try to auto-enter if we're already there anyway.
         final boolean allowed = (getAttemptResult(false) == MetricsAttemptResult.SUCCESS);
-        if (allowed == mIsAutoEnterAllowed) {
-            // Don't notify the framework if nothing has changed.
+        if (!allowed && !mIsAutoEnterAllowed) {
+            // Don't notify the framework if we were not and continue to be not allowed.  In the
+            // case where we're allowed, the bounds for the source rect can change even if we were
+            // allowed before.
             return;
         }
 
@@ -398,7 +414,7 @@ public class FullscreenVideoPictureInPictureController {
             final WebContents webContents = getWebContents();
             assert webContents != null;
 
-            Rect bounds = getVideoBounds(webContents, mActivity);
+            final Rect bounds = getVideoBounds(webContents, mActivity);
             if (bounds != null) {
                 builder.setAspectRatio(new Rational(bounds.width(), bounds.height()));
                 builder.setSourceRectHint(bounds);
@@ -639,7 +655,13 @@ public class FullscreenVideoPictureInPictureController {
         @Override
         public void hasEffectivelyFullscreenVideoChange(boolean isFullscreen) {
             if (isFullscreen) {
-                updateAutoPictureInPictureStatus();
+                mUpdateAutoPipRunnable.run();
+                // Also post a delayed handler to update the status again, once things have had some
+                // time to settle.  When switching into landscape mode, for example, sometimes we're
+                // called before relayout has happened, causing the source rectangle for the pip
+                // transition to be wrong.  This causes the pip window to look like it moves to the
+                // wrong part of the screen / partially clipped before snapping to its normal place.
+                mHandler.postDelayed(mUpdateAutoPipRunnable, AUTO_PIP_UPDATE_DELAY);
             } else {
                 dismissActivityIfNeeded(mActivity, MetricsEndReason.WEB_CONTENTS_LEFT_FULLSCREEN);
             }
