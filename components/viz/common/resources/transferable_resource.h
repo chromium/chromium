@@ -149,7 +149,19 @@ struct VIZ_COMMON_EXPORT TransferableResource {
   // The |mailbox| inside here holds the gpu::Mailbox when this is a gpu
   // resource, or the SharedBitmapId when it is a software resource.
   // The |texture_target| inside here only apply for gpu resources.
+  // TODO(crbug.com/337538024): Replace all access to this field with usage of
+  // the accessors below and remove this field in favor of TransferableResource
+  // directly storing the fields.
   gpu::MailboxHolder mailbox_holder;
+
+  const gpu::Mailbox& mailbox() const { return mailbox_holder.mailbox; }
+  const gpu::SyncToken& sync_token() const { return mailbox_holder.sync_token; }
+  uint32_t texture_target() const { return mailbox_holder.texture_target; }
+
+  // NOTE: This explicitly accesses the mailbox field directly so that we will
+  // be forced to update it when we change the Mailbox and the SharedBitmapId to
+  // be held in an std::variant.
+  bool is_empty() const { return mailbox_holder.mailbox.IsZero(); }
 
   // The color space that is used for pixel path operations (e.g, TexImage,
   // CopyTexImage, DrawPixels) and when displaying as an overlay.

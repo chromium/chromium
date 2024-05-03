@@ -97,7 +97,7 @@ bool TextureLayerImpl::WillDraw(
 
   if (own_resource_) {
     DCHECK(!resource_id_);
-    if (!transferable_resource_.mailbox_holder.mailbox.IsZero()) {
+    if (!transferable_resource_.is_empty()) {
       // Currently only Canvas supports releases resources in response to
       // eviction. Other sources will be add once they can support this. Some
       // complexity arises here from WebGL/WebGPU textures, as they do not
@@ -250,7 +250,7 @@ void TextureLayerImpl::SetUVBottomRight(const gfx::PointF& bottom_right) {
 void TextureLayerImpl::SetTransferableResource(
     const viz::TransferableResource& resource,
     viz::ReleaseCallback release_callback) {
-  DCHECK_EQ(resource.mailbox_holder.mailbox.IsZero(), !release_callback);
+  DCHECK_EQ(resource.is_empty(), !release_callback);
   FreeTransferableResource();
   transferable_resource_ = resource;
   release_callback_ = std::move(release_callback);
@@ -300,7 +300,7 @@ void TextureLayerImpl::FreeTransferableResource() {
       // We didn't use the resource, but the client might need the SyncToken
       // before it can use the resource with its own GL context.
       std::move(release_callback_)
-          .Run(transferable_resource_.mailbox_holder.sync_token, false);
+          .Run(transferable_resource_.sync_token(), false);
     }
     transferable_resource_ = viz::TransferableResource();
   } else if (resource_id_) {

@@ -728,10 +728,10 @@ TEST_F(ResourcePoolTest, MetadataSentToDisplayCompositor) {
 
   ASSERT_EQ(transfer.size(), 1u);
   EXPECT_EQ(transfer[0].id, resource.resource_id_for_export());
-  EXPECT_EQ(transfer[0].mailbox_holder.mailbox,
+  EXPECT_EQ(transfer[0].mailbox(),
             resource.gpu_backing()->shared_image->mailbox());
-  EXPECT_EQ(transfer[0].mailbox_holder.sync_token, sync_token);
-  EXPECT_EQ(transfer[0].mailbox_holder.texture_target,
+  EXPECT_EQ(transfer[0].sync_token(), sync_token);
+  EXPECT_EQ(transfer[0].texture_target(),
             resource.gpu_backing()->shared_image->GetTextureTarget(
                 gfx::BufferUsage::SCANOUT));
   EXPECT_EQ(transfer[0].format, format);
