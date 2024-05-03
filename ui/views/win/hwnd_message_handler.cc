@@ -2755,10 +2755,20 @@ void HWNDMessageHandler::OnSysCommand(UINT notification_code,
     return;
 
   bool is_mouse_menu = (notification_code & sc_mask) == SC_MOUSEMENU;
-  if (is_mouse_menu)
+  if (is_mouse_menu) {
+    // `handling_mouse_menu_` set/reset here and below isn't reentrancy safe but
+    // we assume the nested native loop running as part of DefWindowProc() will
+    // not trigger a nested SC_MOUSEMENU as that's not possible in practice.
+    CHECK(!handling_mouse_menu_);
     handling_mouse_menu_ = true;
+  }
 
   base::WeakPtr<HWNDMessageHandler> ref(msg_handler_weak_factory_.GetWeakPtr());
+  // Since redraws occur in drag-induced nested message loops which occur here,
+  // application tasks need to run. This is safe because HWNDMessageHandler
+  // should be in the only C++ frame on the stack and is reentrancy safe in this
+  // situation.
+  base::CurrentThread::ScopedAllowApplicationTasksInNativeNestedLoop allow;
   // If the delegate can't handle it, the system implementation will be called.
   DefWindowProc(hwnd(), WM_SYSCOMMAND, notification_code,
                 MAKELPARAM(point.x(), point.y()));
