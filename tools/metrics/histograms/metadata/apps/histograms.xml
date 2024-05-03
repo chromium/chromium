@@ -2184,7 +2184,9 @@ chromium-metrics-reviews@google.com.
   <owner>estade@chromium.org</owner>
   <owner>pwa-team@google.com</owner>
   <summary>
-    Records the result of creating shortcut image for web app on Linux.
+    Records the result of creating shortcut image for web app on Linux. Note
+    that this metric was expired between 2023-10-01 and 2024-05-03, so some data
+    might be missing.
   </summary>
 </histogram>
 
@@ -2193,7 +2195,9 @@ chromium-metrics-reviews@google.com.
   <owner>phillis@chromium.org</owner>
   <owner>cmumford@chromium.org</owner>
   <summary>
-    Records the result of creating shortcut for web app on Linux.
+    Records the result of creating shortcut for web app on Linux. Note that this
+    metric was expired between 2024-01-14 and 2024-05-03, so some data might be
+    missing.
   </summary>
 </histogram>
 
