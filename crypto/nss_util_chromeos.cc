@@ -617,7 +617,7 @@ namespace {
 void PrintDirectoryInfo(const base::FilePath& path) {
   base::stat_wrapper_t file_stat;
 
-  if (base::File::Stat(path.value().c_str(), &file_stat) == -1) {
+  if (base::File::Stat(path, &file_stat) == -1) {
     base::File::Error error_code = base::File::OSErrorToFileError(errno);
     LOG(ERROR) << "Failed to collect directory info, error: " << error_code;
   }

@@ -384,11 +384,11 @@ class BASE_EXPORT File {
 
 #if BUILDFLAG(IS_POSIX) || BUILDFLAG(IS_FUCHSIA)
   // Wrapper for stat().
-  static int Stat(const char* path, stat_wrapper_t* sb);
+  static int Stat(const FilePath& path, stat_wrapper_t* sb);
   // Wrapper for fstat().
   static int Fstat(int fd, stat_wrapper_t* sb);
   // Wrapper for lstat().
-  static int Lstat(const char* path, stat_wrapper_t* sb);
+  static int Lstat(const FilePath& path, stat_wrapper_t* sb);
 #endif
 
   // This function can be used to augment `flags` with the correct flags

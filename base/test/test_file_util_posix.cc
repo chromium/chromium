@@ -28,8 +28,9 @@ namespace {
 // Deny |permission| on the file |path|.
 bool DenyFilePermission(const FilePath& path, mode_t permission) {
   stat_wrapper_t stat_buf;
-  if (File::Stat(path.value().c_str(), &stat_buf) != 0)
+  if (File::Stat(path, &stat_buf) != 0) {
     return false;
+  }
   stat_buf.st_mode &= ~permission;
 
   int rv = HANDLE_EINTR(chmod(path.value().c_str(), stat_buf.st_mode));
@@ -44,8 +45,9 @@ void* GetPermissionInfo(const FilePath& path, size_t* length) {
   *length = 0;
 
   stat_wrapper_t stat_buf;
-  if (File::Stat(path.value().c_str(), &stat_buf) != 0)
+  if (File::Stat(path, &stat_buf) != 0) {
     return nullptr;
+  }
 
   *length = sizeof(mode_t);
   mode_t* mode = new mode_t;

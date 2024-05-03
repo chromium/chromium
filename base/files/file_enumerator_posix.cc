@@ -19,8 +19,7 @@ namespace {
 
 void GetStat(const FilePath& path, bool show_links, stat_wrapper_t* st) {
   DCHECK(st);
-  const int res = show_links ? File::Lstat(path.value().c_str(), st)
-                             : File::Stat(path.value().c_str(), st);
+  const int res = show_links ? File::Lstat(path, st) : File::Stat(path, st);
   if (res < 0) {
     // Print the stat() error message unless it was ENOENT and we're following
     // symlinks.

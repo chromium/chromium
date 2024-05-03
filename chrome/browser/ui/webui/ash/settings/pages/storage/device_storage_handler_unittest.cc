@@ -225,7 +225,7 @@ class StorageHandlerTest : public testing::Test {
         << " failed.";
     // Verify file size.
     base::stat_wrapper_t stat;
-    const int res = base::File::Lstat(target_path.value().c_str(), &stat);
+    const int res = base::File::Lstat(target_path, &stat);
     ASSERT_FALSE(res < 0) << "Couldn't stat" << target_path.value();
     ASSERT_EQ(expected_size, stat.st_size);
   }

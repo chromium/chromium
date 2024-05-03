@@ -59,7 +59,7 @@ const int kUnknownContentLength = -1;
 #if BUILDFLAG(IS_MAC)
 void UnHideFile(const base::FilePath& path) {
   base::stat_wrapper_t stat;
-  if (base::File::Stat(path.value().c_str(), &stat) < 0) {
+  if (base::File::Stat(path, &stat) < 0) {
     return;
   }
 

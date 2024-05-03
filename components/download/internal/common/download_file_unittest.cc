@@ -737,7 +737,7 @@ TEST_F(DownloadFileTest, RenameRemovesHiddenFlag) {
   EXPECT_TRUE(base::PathExists(initial_path));
   // Set the file hidden.
   base::stat_wrapper_t stat;
-  base::File::Stat(initial_path.value().c_str(), &stat);
+  base::File::Stat(initial_path, &stat);
   // Update the file's hidden flags.
   chflags(initial_path.value().c_str(), stat.st_flags | UF_HIDDEN);
 
@@ -747,7 +747,7 @@ TEST_F(DownloadFileTest, RenameRemovesHiddenFlag) {
   EXPECT_EQ(DOWNLOAD_INTERRUPT_REASON_NONE,
             RenameAndUniquify(target_path, &new_path));
   EXPECT_TRUE(base::PathExists(target_path));
-  base::File::Stat(initial_path.value().c_str(), &stat);
+  base::File::Stat(initial_path, &stat);
   EXPECT_FALSE(stat.st_flags & UF_HIDDEN);
 
   FinishStream(DOWNLOAD_INTERRUPT_REASON_NONE, true, kEmptyHash);

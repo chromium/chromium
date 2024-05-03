@@ -4103,7 +4103,7 @@ class VerifyPathControlledByUserTest : public FileUtilTest {
 
     // Get the user and group files are created with from |base_dir_|.
     stat_wrapper_t stat_buf;
-    ASSERT_EQ(0, File::Stat(base_dir_.value().c_str(), &stat_buf));
+    ASSERT_EQ(0, File::Stat(base_dir_, &stat_buf));
     uid_ = stat_buf.st_uid;
     ok_gids_.insert(stat_buf.st_gid);
     bad_gids_.insert(stat_buf.st_gid + 1);
