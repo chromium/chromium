@@ -29,8 +29,6 @@ using GaiaIdToPushNotificationPreferenceMap =
 
 // SingleSignOnService used by PushNotificationService.
 @property(nonatomic, strong) id<SingleSignOnService> singleSignOnService;
-// Deprecated, please use `singleSignOnService`.
-@property(nonatomic, strong, readonly) id<SingleSignOnService> ssoService;
 
 // DEPRECATED. Please use the `contextManager.contextMap` instead. A dictionary
 // that maps a user's GAIA ID to its preferences for all push notification

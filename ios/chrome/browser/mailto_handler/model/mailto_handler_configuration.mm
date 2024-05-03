@@ -6,8 +6,4 @@
 
 @implementation MailtoHandlerConfiguration
 
-- (id<SingleSignOnService>)ssoService {
-  return self.singleSignOnService;
-}
-
 @end

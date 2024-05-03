@@ -39,8 +39,6 @@ class SyncService;
 
 // SingleSignOnService used by DiscoverFeedService.
 @property(nonatomic, strong) id<SingleSignOnService> singleSignOnService;
-// Deprecated, need to use `singleSignOnService`.
-@property(nonatomic, strong, readonly) id<SingleSignOnService> ssoService;
 
 // Feed metrics recorder used by DiscoverFeedService.
 @property(nonatomic, strong) FeedMetricsRecorder* metricsRecorder;

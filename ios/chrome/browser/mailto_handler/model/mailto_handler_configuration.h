@@ -23,8 +23,6 @@ class PrefService;
 
 // SingleSignOnService used by MailtoHandlerService.
 @property(nonatomic, strong) id<SingleSignOnService> singleSignOnService;
-// Deprecated, please use `singleSignOnService`.
-@property(nonatomic, strong, readonly) id<SingleSignOnService> ssoService;
 
 @end
 

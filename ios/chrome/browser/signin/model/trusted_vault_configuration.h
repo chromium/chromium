@@ -14,8 +14,6 @@
 
 // SingleSignOnService used by TrustedVaultClientBackend.
 @property(nonatomic, strong) id<SingleSignOnService> singleSignOnService;
-// Deprecated, need to use `singleSignOnService`.
-@property(nonatomic, strong, readonly) id<SingleSignOnService> ssoService;
 
 @end
 
