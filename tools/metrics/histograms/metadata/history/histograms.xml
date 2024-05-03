@@ -1746,6 +1746,86 @@ chromium-metrics-reviews@google.com.
   </summary>
 </histogram>
 
+<histogram name="History.Embeddings.Embedder.EmbeddingsGenerationDuration"
+    units="ms" expires_after="2024-12-31">
+  <owner>sophiechang@chromium.org</owner>
+  <owner>zekunjiang@google.com</owner>
+  <summary>
+    The number of milliseconds spent to generate one embeddings vector. Logged
+    each time an embeddings generation succeeds.
+  </summary>
+</histogram>
+
+<histogram name="History.Embeddings.Embedder.EmbeddingsGenerationSucceeded"
+    enum="Boolean" expires_after="2024-12-31">
+  <owner>sophiechang@chromium.org</owner>
+  <owner>zekunjiang@google.com</owner>
+  <summary>
+    Whether an attempt to generate embeddings was successful. Logged each time
+    the embedder attempts to generate embeddings.
+  </summary>
+</histogram>
+
+<histogram name="History.Embeddings.Embedder.EmbeddingsModelLoadDuration"
+    units="ms" expires_after="2024-12-31">
+  <owner>sophiechang@chromium.org</owner>
+  <owner>zekunjiang@google.com</owner>
+  <summary>
+    The time it took to load the embeddings model. Logged each time the
+    embeddings model is successfully loaded.
+  </summary>
+</histogram>
+
+<histogram name="History.Embeddings.Embedder.EmbeddingsModelLoadSucceeded"
+    enum="Boolean" expires_after="2024-12-31">
+  <owner>sophiechang@chromium.org</owner>
+  <owner>zekunjiang@google.com</owner>
+  <summary>
+    Whether the attempt to load the embeddings model succeeded. Logged each time
+    loading of the embeddings model was attempted.
+  </summary>
+</histogram>
+
+<histogram name="History.Embeddings.Embedder.SentencePieceModelLoadDuration"
+    units="ms" expires_after="2024-12-31">
+  <owner>sophiechang@chromium.org</owner>
+  <owner>zekunjiang@google.com</owner>
+  <summary>
+    The time it took to load the sentencepiece model. Logged each time the
+    sentencepiece model is successfully loaded.
+  </summary>
+</histogram>
+
+<histogram name="History.Embeddings.Embedder.SentencePieceModelLoadSucceeded"
+    enum="Boolean" expires_after="2024-12-31">
+  <owner>sophiechang@chromium.org</owner>
+  <owner>zekunjiang@google.com</owner>
+  <summary>
+    Whether the attempt to load the sentencepiece model succeeded. Logged each
+    time loading of the sentencepiece model was attempted.
+  </summary>
+</histogram>
+
+<histogram name="History.Embeddings.Embedder.TokenizationDuration" units="ms"
+    expires_after="2024-12-31">
+  <owner>sophiechang@chromium.org</owner>
+  <owner>zekunjiang@google.com</owner>
+  <summary>
+    The number of milliseconds spent tokenizing an input string. Logged each
+    time the embedder successfully tokenizes an input string.
+  </summary>
+</histogram>
+
+<histogram name="History.Embeddings.Embedder.TokenizationSucceeded"
+    enum="Boolean" expires_after="2024-12-31">
+  <owner>sophiechang@chromium.org</owner>
+  <owner>zekunjiang@google.com</owner>
+  <summary>
+    Whether an attempt to tokenize an input string to the embedder was
+    successful. Logged each time the embedder attempts to tokenize a string.
+  </summary>
+</histogram>
+
 <histogram name="History.Embeddings.NumMatchedUrlsVisible" units="counts"
     expires_after="2024-12-31">
   <owner>sophiechang@chromium.org</owner>

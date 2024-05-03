@@ -6,6 +6,8 @@
 
 #include "base/containers/heap_array.h"
 #include "base/files/file.h"
+#include "base/metrics/histogram_functions.h"
+#include "base/timer/elapsed_timer.h"
 #include "components/optimization_guide/core/tflite_op_resolver.h"
 #include "third_party/sentencepiece/src/src/sentencepiece_model.pb.h"
 
@@ -28,11 +30,31 @@ PassageEmbedder::~PassageEmbedder() = default;
 bool PassageEmbedder::LoadModels(base::File* embeddings_model_file,
                                  base::File* sp_file) {
   UnloadModelFiles();
-  if (!LoadEmbeddingsModelFile(embeddings_model_file) ||
-      !LoadSentencePieceModelFile(sp_file)) {
-    UnloadModelFiles();
+
+  base::ElapsedTimer embeddings_timer;
+  bool embeddings_load_success = LoadEmbeddingsModelFile(embeddings_model_file);
+  base::UmaHistogramBoolean(
+      "History.Embeddings.Embedder.EmbeddingsModelLoadSucceeded",
+      embeddings_load_success);
+  if (!embeddings_load_success) {
     return false;
   }
+  base::UmaHistogramMediumTimes(
+      "History.Embeddings.Embedder.EmbeddingsModelLoadDuration",
+      embeddings_timer.Elapsed());
+
+  base::ElapsedTimer sp_timer;
+  bool sp_load_success = LoadSentencePieceModelFile(sp_file);
+  base::UmaHistogramBoolean(
+      "History.Embeddings.Embedder.SentencePieceModelLoadSucceeded",
+      sp_load_success);
+  if (!sp_load_success) {
+    return false;
+  }
+  base::UmaHistogramMediumTimes(
+      "History.Embeddings.Embedder.SentencePieceModelLoadDuration",
+      sp_timer.Elapsed());
+
   return true;
 }
 
@@ -112,22 +134,35 @@ void PassageEmbedder::GenerateEmbeddings(
       return;
     }
     std::vector<int> tokenized;
+    base::ElapsedTimer tokenize_timer;
     auto status = sp_processor_->Encode(input, &tokenized);
+    base::UmaHistogramBoolean(
+        "History.Embeddings.Embedder.TokenizationSucceeded", status.ok());
     if (!status.ok()) {
       std::move(callback).Run({});
       return;
     }
     tokenized.resize(kEmbeddingsInputWindowSize);
+    base::UmaHistogramMediumTimes(
+        "History.Embeddings.Embedder.TokenizationDuration",
+        tokenize_timer.Elapsed());
 
+    base::ElapsedTimer execute_timer;
     std::optional<std::vector<float>> embeddings = Execute(tokenized);
-    if (embeddings == std::nullopt) {
+    base::UmaHistogramBoolean(
+        "History.Embeddings.Embedder.EmbeddingsGenerationSucceeded",
+        !!embeddings);
+    if (!embeddings) {
       std::move(callback).Run({});
       return;
     }
+    base::UmaHistogramMediumTimes(
+        "History.Embeddings.Embedder.EmbeddingsGenerationDuration",
+        execute_timer.Elapsed());
 
     mojom::PassageEmbeddingsResultPtr result =
         mojom::PassageEmbeddingsResult::New();
-    result->embeddings = embeddings.value();
+    result->embeddings = *embeddings;
     result->passage = input;
     results.push_back(std::move(result));
   }
