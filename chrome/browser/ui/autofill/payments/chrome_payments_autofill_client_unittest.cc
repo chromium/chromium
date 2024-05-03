@@ -12,8 +12,13 @@
 #include "content/public/browser/web_contents.h"
 #include "testing/gmock/include/gmock/gmock.h"
 
-namespace autofill {
+#if BUILDFLAG(IS_ANDROID)
+#include "chrome/browser/ui/android/tab_model/tab_model_list.h"
+#include "chrome/browser/ui/android/tab_model/tab_model_test_helper.h"
+#include "ui/android/window_android.h"
+#endif  // BUILDFLAG(IS_ANDROID)
 
+namespace autofill {
 class MockVirtualCardEnrollBubbleController
     : public VirtualCardEnrollBubbleControllerImpl {
  public:
@@ -64,8 +69,22 @@ class ChromePaymentsAutofillClientTest
  private:
   base::test::ScopedFeatureList feature_list_;
 };
+#if BUILDFLAG(IS_ANDROID)
+TEST_F(ChromePaymentsAutofillClientTest,
+       GetOrCreateAutofillSaveCardBottomSheetBridge_IsNotNull) {
+  std::unique_ptr<ui::WindowAndroid::ScopedWindowAndroidForTesting> window =
+      ui::WindowAndroid::CreateForTesting();
+  window.get()->get()->AddChild(web_contents()->GetNativeView());
 
-#if !BUILDFLAG(IS_ANDROID)
+  TestTabModel tab_model(profile());
+  tab_model.SetWebContentsList({web_contents()});
+  TabModelList::AddTabModel(&tab_model);
+
+  EXPECT_NE(
+      chrome_payments_client()->GetOrCreateAutofillSaveCardBottomSheetBridge(),
+      nullptr);
+}
+#else   // !BUILDFLAG(IS_ANDROID)
 // Verify that confirmation bubble view is shown after virtual card enrollment
 // is completed.
 TEST_F(ChromePaymentsAutofillClientTest,
@@ -76,7 +95,7 @@ TEST_F(ChromePaymentsAutofillClientTest,
               ShowConfirmationBubbleView(true));
   chrome_payments_client()->VirtualCardEnrollCompleted(true);
 }
-#endif
+#endif  // BUILDFLAG(IS_ANDROID)
 
 // Test that there is always an PaymentsWindowManager present if attempted
 // to be retrieved.

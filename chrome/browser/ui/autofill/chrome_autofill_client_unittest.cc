@@ -121,7 +121,8 @@ class TestChromeAutofillClient : public ChromeAutofillClient {
   InjectMockAutofillSaveCardBottomSheetBridge() {
     auto mock = std::make_unique<MockAutofillSaveCardBottomSheetBridge>();
     auto* pointer = mock.get();
-    SetAutofillSaveCardBottomSheetBridgeForTesting(std::move(mock));
+    GetPaymentsAutofillClient()->SetAutofillSaveCardBottomSheetBridgeForTesting(
+        std::move(mock));
     return pointer;
   }
 

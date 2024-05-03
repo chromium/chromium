@@ -16,6 +16,7 @@
 namespace autofill {
 
 struct AutofillErrorDialogContext;
+class AutofillSaveCardBottomSheetBridge;
 enum class AutofillProgressDialogType;
 class CardUnmaskDelegate;
 struct CardUnmaskPromptOptions;
@@ -54,7 +55,12 @@ class PaymentsAutofillClient : public RiskDataLoader {
   using MigrationDeleteCardCallback =
       base::RepeatingCallback<void(const std::string&)>;
 
-#if !BUILDFLAG(IS_ANDROID) && !BUILDFLAG(IS_IOS)
+#if BUILDFLAG(IS_ANDROID)
+  // Gets the AutofillSaveCardBottomSheetBridge or creates one if it doesn't
+  // exist.
+  virtual AutofillSaveCardBottomSheetBridge*
+  GetOrCreateAutofillSaveCardBottomSheetBridge();
+#elif !BUILDFLAG(IS_IOS)
   // Runs `show_migration_dialog_closure` if the user accepts the card migration
   // offer. This causes the card migration dialog to be shown.
   virtual void ShowLocalCardMigrationDialog(
@@ -86,7 +92,7 @@ class PaymentsAutofillClient : public RiskDataLoader {
   // result to users. `is_vcn_enrolled` indicates if the card was successfully
   // enrolled as a virtual card.
   virtual void VirtualCardEnrollCompleted(bool is_vcn_enrolled);
-#endif  // !BUILDFLAG(IS_ANDROID) && !BUILDFLAG(IS_IOS)
+#endif  // BUILDFLAG(IS_ANDROID)
 
   // Called after credit card upload is finished. Will show upload result to
   // users. `card_saved` indicates if the card is successfully saved.

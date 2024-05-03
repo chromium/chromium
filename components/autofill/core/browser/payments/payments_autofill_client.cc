@@ -16,7 +16,12 @@ namespace autofill::payments {
 
 PaymentsAutofillClient::~PaymentsAutofillClient() = default;
 
-#if !BUILDFLAG(IS_ANDROID) && !BUILDFLAG(IS_IOS)
+#if BUILDFLAG(IS_ANDROID)
+AutofillSaveCardBottomSheetBridge*
+PaymentsAutofillClient::GetOrCreateAutofillSaveCardBottomSheetBridge() {
+  return nullptr;
+}
+#elif !BUILDFLAG(IS_IOS)
 void PaymentsAutofillClient::ShowLocalCardMigrationDialog(
     base::OnceClosure show_migration_dialog_closure) {}
 
@@ -33,7 +38,7 @@ void PaymentsAutofillClient::ShowLocalCardMigrationResults(
     MigrationDeleteCardCallback delete_local_card_callback) {}
 
 void PaymentsAutofillClient::VirtualCardEnrollCompleted(bool is_vcn_enrolled) {}
-#endif  // !BUILDFLAG(IS_ANDROID) && !BUILDFLAG(IS_IOS)
+#endif  // BUILDFLAG(IS_ANDROID)
 
 void PaymentsAutofillClient::CreditCardUploadCompleted(bool card_saved) {}
 

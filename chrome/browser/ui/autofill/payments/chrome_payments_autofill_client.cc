@@ -30,14 +30,17 @@
 #include "content/public/browser/web_contents.h"
 #include "content/public/browser/web_contents_observer.h"
 
-#if !BUILDFLAG(IS_ANDROID)
+#if BUILDFLAG(IS_ANDROID)
+#include "chrome/browser/ui/android/autofill/autofill_save_card_bottom_sheet_bridge.h"
+#include "chrome/browser/ui/android/tab_model/tab_model_list.h"
+#else  // !BUILDFLAG(IS_ANDROID)
 #include "chrome/browser/ui/autofill/payments/desktop_payments_window_manager.h"
 #include "chrome/browser/ui/autofill/payments/manage_migration_ui_controller.h"
 #include "chrome/browser/ui/autofill/payments/save_card_bubble_controller_impl.h"
 #include "chrome/browser/ui/autofill/payments/virtual_card_enroll_bubble_controller_impl.h"
 #include "components/autofill/core/browser/payments/local_card_migration_manager.h"
 #include "components/autofill/core/common/autofill_payments_features.h"
-#endif  // !BUILDFLAG(IS_ANDROID)
+#endif  // BUILDFLAG(IS_ANDROID)
 
 namespace autofill::payments {
 
@@ -62,7 +65,24 @@ void ChromePaymentsAutofillClient::LoadRiskData(
           std::move(callback), base::TimeTicks::Now()));
 }
 
-#if !BUILDFLAG(IS_ANDROID)
+#if BUILDFLAG(IS_ANDROID)
+AutofillSaveCardBottomSheetBridge*
+ChromePaymentsAutofillClient::GetOrCreateAutofillSaveCardBottomSheetBridge() {
+  if (!autofill_save_card_bottom_sheet_bridge_) {
+    // During shutdown the window may be null. There is no need to show the
+    // bottom sheet during shutdown.
+    auto* window_android = web_contents()->GetTopLevelNativeWindow();
+    TabModel* tab_model =
+        TabModelList::GetTabModelForWebContents(web_contents());
+    if (window_android && tab_model) {
+      autofill_save_card_bottom_sheet_bridge_ =
+          std::make_unique<AutofillSaveCardBottomSheetBridge>(window_android,
+                                                              tab_model);
+    }
+  }
+  return autofill_save_card_bottom_sheet_bridge_.get();
+}
+#else   // !BUILDFLAG(IS_ANDROID)
 void ChromePaymentsAutofillClient::ShowLocalCardMigrationDialog(
     base::OnceClosure show_migration_dialog_closure) {
   ManageMigrationUiController::CreateForWebContents(web_contents());
@@ -292,5 +312,15 @@ ChromePaymentsAutofillClient::GetOtpAuthenticator() {
   }
   return otp_authenticator_.get();
 }
+
+#if BUILDFLAG(IS_ANDROID)
+void ChromePaymentsAutofillClient::
+    SetAutofillSaveCardBottomSheetBridgeForTesting(
+        std::unique_ptr<AutofillSaveCardBottomSheetBridge>
+            autofill_save_card_bottom_sheet_bridge) {
+  autofill_save_card_bottom_sheet_bridge_ =
+      std::move(autofill_save_card_bottom_sheet_bridge);
+}
+#endif
 
 }  // namespace autofill::payments

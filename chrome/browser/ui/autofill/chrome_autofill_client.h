@@ -51,7 +51,6 @@ namespace autofill {
 
 class AutofillOptimizationGuide;
 #if BUILDFLAG(IS_ANDROID)
-class AutofillSaveCardBottomSheetBridge;
 class AutofillSnackbarControllerImpl;
 class AutofillCvcSaveMessageDelegate;
 #endif  // BUILDFLAG(IS_ANDROID)
@@ -278,11 +277,6 @@ class ChromeAutofillClient : public ContentAutofillClient,
 
  protected:
   explicit ChromeAutofillClient(content::WebContents* web_contents);
-#if BUILDFLAG(IS_ANDROID)
-  void SetAutofillSaveCardBottomSheetBridgeForTesting(
-      std::unique_ptr<AutofillSaveCardBottomSheetBridge>
-          autofill_save_card_bottom_sheet_bridge);
-#endif
 
  private:
   Profile* GetProfile() const;
@@ -292,11 +286,6 @@ class ChromeAutofillClient : public ContentAutofillClient,
       const PopupOpenArgs& open_args,
       base::WeakPtr<AutofillPopupDelegate> delegate);
   base::WeakPtr<ChromeAutofillClient> GetWeakPtr();
-
-#if BUILDFLAG(IS_ANDROID)
-  AutofillSaveCardBottomSheetBridge*
-  GetOrCreateAutofillSaveCardBottomSheetBridge();
-#endif
 
   std::unique_ptr<LogManager> log_manager_;
 
@@ -329,8 +318,6 @@ class ChromeAutofillClient : public ContentAutofillClient,
   std::unique_ptr<AutofillSnackbarControllerImpl>
       autofill_snackbar_controller_impl_;
   std::unique_ptr<FastCheckoutClient> fast_checkout_client_;
-  std::unique_ptr<AutofillSaveCardBottomSheetBridge>
-      autofill_save_card_bottom_sheet_bridge_;
   std::unique_ptr<AutofillCvcSaveMessageDelegate>
       autofill_cvc_save_message_delegate_;
 #endif

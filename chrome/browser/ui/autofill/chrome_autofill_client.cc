@@ -144,7 +144,6 @@
 #include "chrome/browser/ui/android/autofill/card_expiration_date_fix_flow_view_android.h"
 #include "chrome/browser/ui/android/autofill/card_name_fix_flow_view_android.h"
 #include "chrome/browser/ui/android/infobars/autofill_credit_card_filling_infobar.h"
-#include "chrome/browser/ui/android/tab_model/tab_model_list.h"
 #include "chrome/browser/ui/autofill/payments/autofill_snackbar_controller_impl.h"
 #include "chrome/browser/ui/autofill/payments/offer_notification_controller_android.h"
 #include "components/autofill/core/browser/payments/autofill_credit_card_filling_infobar_delegate_mobile.h"
@@ -157,8 +156,7 @@
 #include "components/messages/android/messages_feature.h"
 #include "components/strings/grit/components_strings.h"
 #include "components/webauthn/android/internal_authenticator_android.h"
-#include "ui/android/window_android.h"
-#else  // BUILDFLAG(IS_ANDROID)
+#else  // !BUILDFLAG(IS_ANDROID)
 #include "chrome/browser/ui/autofill/delete_address_profile_dialog_controller_impl.h"
 #include "chrome/browser/ui/autofill/payments/offer_notification_bubble_controller_impl.h"
 #include "chrome/browser/ui/autofill/payments/save_card_bubble_controller_impl.h"
@@ -710,7 +708,8 @@ void ChromeAutofillClient::ConfirmSaveCreditCardLocally(
   }
 
   // Saving a new local card (may include CVC) via a bottom sheet.
-  if (auto* bridge = GetOrCreateAutofillSaveCardBottomSheetBridge()) {
+  if (auto* bridge = GetPaymentsAutofillClient()
+                         ->GetOrCreateAutofillSaveCardBottomSheetBridge()) {
     bridge->RequestShowContent(ui_info, std::move(save_card_delegate));
   }
 #else
@@ -748,7 +747,8 @@ void ChromeAutofillClient::ConfirmSaveCreditCardToCloud(
   }
 
   // For new cards, the save card prompt is shown in a bottom sheet.
-  if (auto* bridge = GetOrCreateAutofillSaveCardBottomSheetBridge()) {
+  if (auto* bridge = GetPaymentsAutofillClient()
+                         ->GetOrCreateAutofillSaveCardBottomSheetBridge()) {
     bridge->RequestShowContent(ui_info, std::move(save_card_delegate));
   }
 #else
@@ -1221,15 +1221,6 @@ ChromeAutofillClient::ChromeAutofillClient(content::WebContents* web_contents)
 #endif
 }
 
-#if BUILDFLAG(IS_ANDROID)
-void ChromeAutofillClient::SetAutofillSaveCardBottomSheetBridgeForTesting(
-    std::unique_ptr<AutofillSaveCardBottomSheetBridge>
-        autofill_save_card_bottom_sheet_bridge) {
-  autofill_save_card_bottom_sheet_bridge_ =
-      std::move(autofill_save_card_bottom_sheet_bridge);
-}
-#endif
-
 Profile* ChromeAutofillClient::GetProfile() const {
   if (!web_contents())
     return nullptr;
@@ -1282,25 +1273,6 @@ void ChromeAutofillClient::ShowAutofillSuggestionsImpl(
 base::WeakPtr<ChromeAutofillClient> ChromeAutofillClient::GetWeakPtr() {
   return weak_ptr_factory_.GetWeakPtr();
 }
-
-#if BUILDFLAG(IS_ANDROID)
-AutofillSaveCardBottomSheetBridge*
-ChromeAutofillClient::GetOrCreateAutofillSaveCardBottomSheetBridge() {
-  if (!autofill_save_card_bottom_sheet_bridge_) {
-    // During shutdown the window may be null. There is no need to show the
-    // bottom sheet during shutdown.
-    auto* window_android = web_contents()->GetTopLevelNativeWindow();
-    TabModel* tab_model =
-        TabModelList::GetTabModelForWebContents(web_contents());
-    if (window_android && tab_model) {
-      autofill_save_card_bottom_sheet_bridge_ =
-          std::make_unique<AutofillSaveCardBottomSheetBridge>(window_android,
-                                                              tab_model);
-    }
-  }
-  return autofill_save_card_bottom_sheet_bridge_.get();
-}
-#endif
 
 std::unique_ptr<AutofillManager> ChromeAutofillClient::CreateManager(
     base::PassKey<ContentAutofillDriver> pass_key,

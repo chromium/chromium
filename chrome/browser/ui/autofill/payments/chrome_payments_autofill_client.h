@@ -22,6 +22,7 @@
 namespace autofill {
 
 class AutofillErrorDialogControllerImpl;
+class AutofillSaveCardBottomSheetBridge;
 class ContentAutofillClient;
 struct CardUnmaskChallengeOption;
 class CardUnmaskOtpInputDialogControllerImpl;
@@ -53,7 +54,10 @@ class ChromePaymentsAutofillClient : public PaymentsAutofillClient,
       base::OnceCallback<void(const std::string&)> callback) override;
 
   // PaymentsAutofillClient:
-#if !BUILDFLAG(IS_ANDROID)
+#if BUILDFLAG(IS_ANDROID)
+  AutofillSaveCardBottomSheetBridge*
+  GetOrCreateAutofillSaveCardBottomSheetBridge() override;
+#else   // !BUILDFLAG(IS_ANDROID)
   void ShowLocalCardMigrationDialog(
       base::OnceClosure show_migration_dialog_closure) override;
   void ConfirmMigrateLocalCardToCloud(
@@ -67,7 +71,7 @@ class ChromePaymentsAutofillClient : public PaymentsAutofillClient,
       const std::vector<MigratableCreditCard>& migratable_credit_cards,
       MigrationDeleteCardCallback delete_local_card_callback) override;
   void VirtualCardEnrollCompleted(bool is_vcn_enrolled) override;
-#endif  // !BUILDFLAG(IS_ANDROID)
+#endif  // BUILDFLAG(IS_ANDROID)
   void CreditCardUploadCompleted(bool card_saved) override;
   bool IsSaveCardPromptVisible() const override;
   void HideSaveCardPromptPrompt() override;
@@ -108,7 +112,17 @@ class ChromePaymentsAutofillClient : public PaymentsAutofillClient,
     unmask_controller_ = std::move(test_controller);
   }
 
+#if BUILDFLAG(IS_ANDROID)
+  void SetAutofillSaveCardBottomSheetBridgeForTesting(
+      std::unique_ptr<AutofillSaveCardBottomSheetBridge>
+          autofill_save_card_bottom_sheet_bridge);
+#endif
+
  private:
+#if BUILDFLAG(IS_ANDROID)
+  std::unique_ptr<AutofillSaveCardBottomSheetBridge>
+      autofill_save_card_bottom_sheet_bridge_;
+#endif
   const raw_ref<ContentAutofillClient> client_;
 
   std::unique_ptr<PaymentsNetworkInterface> payments_network_interface_;
