@@ -295,7 +295,7 @@ void V8UnitTest::ExecuteScriptInContext(const std::string_view& script_source,
           .ToLocalChecked();
 
   v8::TryCatch try_catch(isolate);
-  v8::ScriptOrigin origin(isolate, name);
+  v8::ScriptOrigin origin(name);
   v8::Local<v8::Script> script;
   // Ensure the script compiled without errors.
   if (!v8::Script::Compile(context, source, &origin).ToLocal(&script))

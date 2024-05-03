@@ -541,8 +541,8 @@ v8::Local<v8::Value> ScriptContext::RunScript(
                                  v8::MicrotasksScope::kDoNotRunMicrotasks);
   v8::TryCatch try_catch(isolate());
   try_catch.SetCaptureMessage(true);
-  v8::ScriptOrigin origin(isolate(), v8_helpers::ToV8StringUnsafe(
-                                         isolate(), internal_name.c_str()));
+  v8::ScriptOrigin origin(
+      v8_helpers::ToV8StringUnsafe(isolate(), internal_name.c_str()));
   v8::ScriptCompiler::Source script_source(code, origin);
   v8::Local<v8::Script> script;
   if (!v8::ScriptCompiler::Compile(v8_context(), &script_source,

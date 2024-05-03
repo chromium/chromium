@@ -567,7 +567,7 @@ scoped_refptr<CachedMetadata> V8CodeCache::GenerateFullCodeCache(
   v8::TryCatch block(isolate);
   ReferrerScriptInfo referrer_info;
   v8::ScriptOrigin origin(
-      isolate, V8String(isolate, file_name),
+      V8String(isolate, file_name),
       0,                                      // line_offset
       0,                                      // column_offset
       opaque_mode == OpaqueMode::kNotOpaque,  // is_shared_cross_origin

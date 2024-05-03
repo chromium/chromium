@@ -361,8 +361,7 @@ v8::MaybeLocal<v8::Module> V8ScriptRunner::CompileModule(
   // |resource_is_shared_cross_origin| is always true and |resource_is_opaque|
   // is always false because CORS is enforced to module scripts.
   v8::ScriptOrigin origin(
-      isolate, V8String(isolate, file_name),
-      start_position.line_.ZeroBasedInt(),
+      V8String(isolate, file_name), start_position.line_.ZeroBasedInt(),
       start_position.column_.ZeroBasedInt(),
       true,                        // resource_is_shared_cross_origin
       -1,                          // script id

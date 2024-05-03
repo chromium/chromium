@@ -530,7 +530,7 @@ v8::MaybeLocal<v8::UnboundScript> AuctionV8Helper::Compile(
   v8::TryCatch try_catch(isolate());
   v8::ScriptCompiler::Source script_source(
       src_string.ToLocalChecked(),
-      v8::ScriptOrigin(v8_isolate, origin_string.ToLocalChecked()));
+      v8::ScriptOrigin(origin_string.ToLocalChecked()));
   auto result = v8::ScriptCompiler::CompileUnboundScript(
       v8_isolate, &script_source, v8::ScriptCompiler::kNoCompileOptions,
       v8::ScriptCompiler::NoCacheReason::kNoCacheNoReason);

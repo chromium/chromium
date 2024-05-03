@@ -252,7 +252,7 @@ void V8Environment::OnFileLoaded(std::string module_identifier,
           .ToLocalChecked();
 
   v8::ScriptOrigin origin(
-      GetIsolate(), resource_name, /*resource_line_offset =*/0,
+      resource_name, /*resource_line_offset =*/0,
       /*resource_column_offset=*/0, /*resource_is_shared_cross_origin=*/false,
       /*script_id=*/-1,
       /*source_map_url=*/Local<v8::Value>(), /*resource_is_opaque=*/false,

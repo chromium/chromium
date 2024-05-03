@@ -700,8 +700,7 @@ void JsSandboxIsolate::EvaluateJavascriptOnThread(
   v8::TryCatch try_catch(v8_isolate);
 
   // Compile
-  v8::ScriptOrigin origin(v8_isolate,
-                          gin::StringToV8(v8_isolate, resource_name));
+  v8::ScriptOrigin origin(gin::StringToV8(v8_isolate, resource_name));
   v8::MaybeLocal<v8::Script> maybe_script = v8::Script::Compile(
       context_holder_->context(), gin::StringToV8(v8_isolate, code), &origin);
   std::string compile_error = "";
