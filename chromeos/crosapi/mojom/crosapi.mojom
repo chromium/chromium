@@ -1140,8 +1140,8 @@ enum BuildFlag {
 // parameters here. If a new parameter is added and its value is only known
 // after the user has logged in, please update BrowserPostLoginParams as well.
 //
-// Next version: 87
-// Next id: 87
+// Next version: 88
+// Next id: 88
 [Stable, RenamedFrom="crosapi.mojom.LacrosInitParams"]
 struct BrowserInitParams {
   // This is ash-chrome's version of the Crosapi interface. This is used by
@@ -1639,6 +1639,10 @@ struct BrowserInitParams {
   // Ash.
   [MinVersion=86]
   bool is_file_system_provider_content_cache_enabled@86;
+
+  // Tell lacros whether the device is available to enable LL Privacy.
+  [MinVersion=87]
+  bool is_llprivacy_available@87;
 };
 
 // BrowserPostLoginParams is the subset of parameters in BrowserInitParams

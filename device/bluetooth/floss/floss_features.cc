@@ -20,6 +20,9 @@ BASE_FEATURE(kFlossIsAvailable,
 BASE_FEATURE(kFlossIsAvailabilityCheckNeeded,
              "FlossIsAvailabilityCheckNeeded",
              base::FEATURE_ENABLED_BY_DEFAULT);
+BASE_FEATURE(kLLPrivacyIsAvailable,
+             "LLPrivacyIsAvailable",
+             base::FEATURE_ENABLED_BY_DEFAULT);
 #endif
 
 bool IsFlossEnabled() {
@@ -51,6 +54,16 @@ bool IsFlossAvailabilityCheckNeeded() {
       floss::features::kFlossIsAvailabilityCheckNeeded);
 #elif BUILDFLAG(IS_CHROMEOS_LACROS)
   return chromeos::BrowserParamsProxy::Get()->IsFlossAvailabilityCheckNeeded();
+#else
+  return false;
+#endif
+}
+
+bool IsLLPrivacyAvailable() {
+#if BUILDFLAG(IS_CHROMEOS_ASH)
+  return base::FeatureList::IsEnabled(floss::features::kLLPrivacyIsAvailable);
+#elif BUILDFLAG(IS_CHROMEOS_LACROS)
+  return chromeos::BrowserParamsProxy::Get()->IsLLPrivacyAvailable();
 #else
   return false;
 #endif

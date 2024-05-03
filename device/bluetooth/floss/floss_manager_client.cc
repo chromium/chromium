@@ -314,15 +314,17 @@ void FlossManagerClient::Init(dbus::Bus* bus,
                  base::FeatureList::IsEnabled(
                      chromeos::bluetooth::features::kBluetoothFlossCoredump));
 
-  SetLLPrivacy(
-      base::BindOnce([](DBusResult<bool> ret) {
-        if (!ret.has_value())
-          LOG(ERROR) << "Set LL privacy returned error: " << ret.error();
-        else if (!ret.value()) {
-          LOG(ERROR) << "Dbus call to set LL privary returned false.\n";
-        }
-      }),
-      base::FeatureList::IsEnabled(bluez::features::kLinkLayerPrivacy));
+  if (floss::features::IsLLPrivacyAvailable()) {
+    SetLLPrivacy(
+        base::BindOnce([](DBusResult<bool> ret) {
+          if (!ret.has_value()) {
+            LOG(ERROR) << "Set LL privacy returned error: " << ret.error();
+          } else if (!ret.value()) {
+            LOG(ERROR) << "Dbus call to set LL privary returned false.\n";
+          }
+        }),
+        base::FeatureList::IsEnabled(bluez::features::kLinkLayerPrivacy));
+  }
 #endif  // BUILDFLAG(IS_CHROMEOS_ASH)
 }
 

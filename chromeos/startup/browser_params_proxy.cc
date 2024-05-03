@@ -244,6 +244,10 @@ bool BrowserParamsProxy::IsFlossAvailabilityCheckNeeded() const {
   return BrowserInitParams::Get()->is_floss_availability_check_needed;
 }
 
+bool BrowserParamsProxy::IsLLPrivacyAvailable() const {
+  return BrowserInitParams::Get()->is_llprivacy_available;
+}
+
 bool BrowserParamsProxy::IsCurrentUserDeviceOwner() const {
   if (IsLaunchedWithPostLoginParams()) {
     return BrowserPostLoginParams::Get()->is_current_user_device_owner;

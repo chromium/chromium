@@ -3120,6 +3120,7 @@ constexpr char kClipboardHistoryRefreshInternalName[] =
 constexpr char kClipboardHistoryUrlTitlesInternalName[] =
     "clipboard-history-url-titles";
 constexpr char kBluetoothUseFlossInternalName[] = "bluetooth-use-floss";
+constexpr char kBluetoothUseLLPrivacyInternalName[] = "bluetooth-use-llprivacy";
 constexpr char kSeaPenInternalName[] = "sea-pen";
 constexpr char kAssistantIphInternalName[] = "assistant-iph";
 constexpr char kGrowthCampaigns[] = "growth-campaigns";
@@ -4201,7 +4202,8 @@ const FeatureEntry kFeatureEntries[] = {
      flag_descriptions::kBluetoothFlossIsAvailabilityCheckNeededDescription,
      kOsCrOS,
      FEATURE_VALUE_TYPE(floss::features::kFlossIsAvailabilityCheckNeeded)},
-    {"bluetooth-use-llprivacy", flag_descriptions::kBluetoothUseLLPrivacyName,
+    {kBluetoothUseLLPrivacyInternalName,
+     flag_descriptions::kBluetoothUseLLPrivacyName,
      flag_descriptions::kBluetoothUseLLPrivacyDescription, kOsCrOS,
      FEATURE_VALUE_TYPE(bluez::features::kLinkLayerPrivacy)},
     {"campbell-glyph", flag_descriptions::kCampbellGlyphName,
@@ -11434,6 +11436,18 @@ bool ShouldSkipConditionalFeatureEntry(const flags_ui::FlagsStorage* storage,
            base::FeatureList::GetInstance()->IsFeatureOverriddenFromCommandLine(
                floss::features::kFlossIsAvailable.name,
                base::FeatureList::OVERRIDE_DISABLE_FEATURE);
+  }
+
+  // Disable and prevent users from enabling LL privacy on boards that were
+  // explicitly built without floss or hardware does not support LL privacy.
+  if (!strcmp(kBluetoothUseLLPrivacyInternalName, entry.internal_name)) {
+    return (
+        base::FeatureList::GetInstance()->IsFeatureOverriddenFromCommandLine(
+            floss::features::kFlossIsAvailable.name,
+            base::FeatureList::OVERRIDE_DISABLE_FEATURE) ||
+        base::FeatureList::GetInstance()->IsFeatureOverriddenFromCommandLine(
+            floss::features::kLLPrivacyIsAvailable.name,
+            base::FeatureList::OVERRIDE_DISABLE_FEATURE));
   }
 
   // Only show glanceables flag if channel is one of Beta/Dev/Canary/Unknown.

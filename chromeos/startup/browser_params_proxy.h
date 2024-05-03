@@ -114,6 +114,8 @@ class COMPONENT_EXPORT(CHROMEOS_STARTUP) BrowserParamsProxy {
 
   bool IsFlossAvailabilityCheckNeeded() const;
 
+  bool IsLLPrivacyAvailable() const;
+
   bool IsCurrentUserDeviceOwner() const;
 
   bool IsCurrentUserEphemeral() const;

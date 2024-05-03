@@ -867,6 +867,7 @@ void InjectBrowserInitParams(
   params->is_floss_available = floss::features::IsFlossAvailable();
   params->is_floss_availability_check_needed =
       floss::features::IsFlossAvailabilityCheckNeeded();
+  params->is_llprivacy_available = floss::features::IsLLPrivacyAvailable();
 
   params->is_cloud_gaming_device =
       chromeos::features::IsCloudGamingDeviceEnabled();
