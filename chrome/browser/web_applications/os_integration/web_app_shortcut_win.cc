@@ -30,6 +30,7 @@
 #include "base/win/shortcut.h"
 #include "chrome/browser/shell_integration.h"
 #include "chrome/browser/shell_integration_win.h"
+#include "chrome/browser/shortcuts/platform_util_win.h"
 #include "chrome/browser/web_applications/os_integration/os_integration_test_override.h"
 #include "chrome/browser/web_applications/os_integration/web_app_shortcuts_menu_win.h"
 #include "chrome/browser/web_applications/web_app_constants.h"
@@ -50,16 +51,7 @@ namespace {
 constexpr base::FilePath::CharType kIconChecksumFileExt[] =
     FILE_PATH_LITERAL(".ico.md5");
 
-constexpr base::FilePath::CharType kChromeProxyExecutable[] =
-    FILE_PATH_LITERAL("chrome_proxy.exe");
-
 }  // namespace
-
-base::FilePath GetChromeProxyPath() {
-  base::FilePath chrome_dir;
-  CHECK(base::PathService::Get(base::DIR_EXE, &chrome_dir));
-  return chrome_dir.Append(kChromeProxyExecutable);
-}
 
 namespace internals {
 namespace {
@@ -161,7 +153,7 @@ bool CreateShortcutsInPaths(const base::FilePath& web_app_path,
     return false;
   }
 
-  base::FilePath chrome_proxy_path = GetChromeProxyPath();
+  base::FilePath chrome_proxy_path = shortcuts::GetChromeProxyPath();
 
   // Working directory.
   base::FilePath working_dir(chrome_proxy_path.DirName());
@@ -446,7 +438,7 @@ void CreateIconAndSetRelaunchDetails(const base::FilePath& web_app_path,
           shortcut_info.url, shortcut_info.app_id, shortcut_info.profile_path,
           "");
 
-  command_line.SetProgram(GetChromeProxyPath());
+  command_line.SetProgram(shortcuts::GetChromeProxyPath());
   ui::win::SetRelaunchDetailsForWindow(command_line.GetCommandLineString(),
                                        base::AsWString(shortcut_info.title),
                                        hwnd);

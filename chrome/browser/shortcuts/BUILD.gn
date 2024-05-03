@@ -8,6 +8,8 @@ assert(!is_android)
 assert(!is_chromeos)
 
 source_set("shortcuts") {
+  public = []
+
   sources = [
     "create_shortcut_for_current_web_contents_task.h",
     "document_icon_fetcher.cc",
@@ -35,11 +37,22 @@ source_set("shortcuts") {
     "//url",
   ]
 
+  if (is_win) {
+    public += [ "platform_util_win.h" ]
+    sources += [ "platform_util_win.cc" ]
+  }
+
+  friend = [
+    ":browser_tests",
+    ":test_support",
+    ":unit_tests",
+  ]
+
   if (is_mac) {
+    public += [ "platform_util_mac.h" ]
     sources += [
       "chrome_webloc_file.h",
       "chrome_webloc_file.mm",
-      "platform_util_mac.h",
       "platform_util_mac.mm",
       "shortcut_creator_mac.mm",
     ]

@@ -11,8 +11,6 @@
 
 namespace web_app {
 
-base::FilePath GetChromeProxyPath();
-
 namespace internals {
 
 // Sanitizes |name| and returns a version of it that is safe to use as an

@@ -7292,6 +7292,7 @@ test("unit_tests") {
       "//chrome/app:win_unit_tests",
       "//chrome/browser:chrome_process_finder",
       "//chrome/browser/enterprise/platform_auth:test_utils",
+      "//chrome/browser/shortcuts",
       "//chrome/browser/win/conflicts:unit_tests",
       "//chrome/chrome_elf:constants",
       "//chrome/common/notifications",

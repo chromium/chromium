@@ -42,7 +42,7 @@
 #include "base/win/shortcut.h"
 #include "chrome/browser/policy/policy_path_parser.h"
 #include "chrome/browser/shell_integration.h"
-#include "chrome/browser/web_applications/os_integration/web_app_shortcut_win.h"
+#include "chrome/browser/shortcuts/platform_util_win.h"
 #include "chrome/browser/web_applications/web_app_helpers.h"
 #include "chrome/browser/win/settings_app_monitor.h"
 #include "chrome/browser/win/util_win_service.h"
@@ -854,7 +854,7 @@ void MigrateTaskbarPinsCallback(const base::FilePath& taskbar_path,
   base::FilePath chrome_exe;
   if (!base::PathService::Get(base::FILE_EXE, &chrome_exe))
     return;
-  base::FilePath chrome_proxy_path(web_app::GetChromeProxyPath());
+  base::FilePath chrome_proxy_path(shortcuts::GetChromeProxyPath());
 
   if (!taskbar_path.empty()) {
     MigrateChromeAndChromeProxyShortcuts(chrome_exe, chrome_proxy_path,
