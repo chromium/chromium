@@ -139,10 +139,6 @@ std::unique_ptr<PermissionsPolicy> PermissionsPolicy::CreateFromParsedPolicy(
       new PermissionsPolicy(origin, allow_lists_and_reporting_endpoints,
                             inherited_policies, features));
 
-  if (!new_policy->allowlists_.empty()) {
-    new_policy->allowlists_set_by_manifest_ = true;
-  }
-
   return new_policy;
 }
 
@@ -323,24 +319,6 @@ PermissionsPolicy::CreateAllowlistsAndReportingEndpoints(
     }
   }
   return allow_lists_and_reporting_endpoints;
-}
-
-void PermissionsPolicy::SetHeaderPolicy(
-    const ParsedPermissionsPolicy& parsed_header) {
-  if (allowlists_set_by_manifest_)
-    return;
-  DCHECK(allowlists_.empty() && !disallow_updates_);
-  for (const ParsedPermissionsPolicyDeclaration& parsed_declaration :
-       parsed_header) {
-    mojom::PermissionsPolicyFeature feature = parsed_declaration.feature;
-    DCHECK(feature != mojom::PermissionsPolicyFeature::kNotFound);
-    allowlists_.emplace(feature,
-                        Allowlist::FromDeclaration(parsed_declaration));
-    if (parsed_declaration.reporting_endpoint.has_value()) {
-      reporting_endpoints_.insert(
-          {feature, parsed_declaration.reporting_endpoint.value()});
-    }
-  }
 }
 
 void PermissionsPolicy::SetHeaderPolicyForIsolatedApp(

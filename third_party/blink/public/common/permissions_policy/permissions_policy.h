@@ -232,10 +232,6 @@ class BLINK_COMMON_EXPORT PermissionsPolicy {
   std::optional<std::string> GetEndpointForFeature(
       mojom::PermissionsPolicyFeature feature) const;
 
-  // Sets the declared policy from the parsed Permissions-Policy HTTP header.
-  // Unrecognized features will be ignored.
-  void SetHeaderPolicy(const ParsedPermissionsPolicy& parsed_header);
-
   // Further restricts the policy for Isolated Apps that have a
   // Permissions-Policy HTTP header, |parsed_header|, that might be more
   // restrictive than its permissions policy declared in the Web App Manifest.
@@ -353,10 +349,6 @@ class BLINK_COMMON_EXPORT PermissionsPolicy {
 
   // Set this to true if `allowlists_` have already been checked.
   mutable bool disallow_updates_ = false;
-
-  // Set this to true if `allowlists_` was populated by web app manifest
-  // declared permissions policy.
-  bool allowlists_set_by_manifest_{false};
 
   // Records whether or not each feature was enabled for this frame by its
   // parent frame.
