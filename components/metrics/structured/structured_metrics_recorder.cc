@@ -202,8 +202,7 @@ void StructuredMetricsRecorder::RecordEvent(const Event& event) {
   LogEventRecordingState(EventRecordingState::kRecorded);
 
   // Events associated with UMA are deprecated.
-  if (!IsIndependentMetricsUploadEnabled() ||
-      project_validator->id_type() == IdType::kUmaId) {
+  if (project_validator->id_type() == IdType::kUmaId) {
     return;
   }
 

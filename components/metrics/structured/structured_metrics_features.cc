@@ -62,11 +62,6 @@ constexpr base::FeatureParam<int> kStructuredMetricsUploadCadenceMinutes{
 constexpr base::FeatureParam<int> kMaxProtoKiBSize{
     &features::kStructuredMetrics, "max_proto_size_kib", 25};
 
-bool IsIndependentMetricsUploadEnabled() {
-  return base::GetFieldTrialParamByFeatureAsBool(
-      features::kStructuredMetrics, "enable_independent_metrics_upload", true);
-}
-
 int GetFileLimitPerScan() {
   return kLimitFilesPerScanParam.Get();
 }
