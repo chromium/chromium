@@ -20,4 +20,5 @@ export const DEFAULT_PARTIAL_PRINT_TICKET: Partial<PrintTicket> = {
   dpiVertical: 0,
   dpiDefault: false,
   duplex: DuplexMode.LONG_EDGE,
+  landscape: false,
 };

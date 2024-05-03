@@ -438,5 +438,8 @@ suite('PrintTicketManager', () => {
         assertEquals(
             DEFAULT_PARTIAL_PRINT_TICKET.duplex, ticket.duplex,
             'Ticket duplex should match DEFAULT_PARTIAL_PRINT_TICKET');
+        assertEquals(
+            DEFAULT_PARTIAL_PRINT_TICKET.landscape, ticket.landscape,
+            'Ticket landscape should match DEFAULT_PARTIAL_PRINT_TICKET');
       });
 });

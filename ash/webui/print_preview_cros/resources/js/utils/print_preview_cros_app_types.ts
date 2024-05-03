@@ -81,6 +81,9 @@ export interface PrintTicket {
   // Determine if printing should be done on both sides and along which edge
   // of the media.
   duplex: DuplexMode;
+
+  // Whether orientation should be in landscape or portrait mode.
+  landscape: boolean;
 }
 
 // Immutable session configuration details for the current CrOS preview request.
