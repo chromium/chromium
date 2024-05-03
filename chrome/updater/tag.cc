@@ -253,7 +253,7 @@ ErrorCode ParseAppId(std::string_view value, TagArgs& args) {
 }
 
 ErrorCode ParseRuntimeMode(std::string_view value, TagArgs& args) {
-  for (const std::string expected_value : {"true", "persist", "false"}) {
+  for (const std::string_view expected_value : {"true", "persist", "false"}) {
     if (base::EqualsCaseInsensitiveASCII(expected_value, value)) {
       args.runtime_mode = RuntimeModeArgs();
       return ErrorCode::kSuccess;
@@ -504,12 +504,9 @@ ErrorCode ParseTag(std::string_view tag, TagArgs& args) {
 
   const std::vector<std::pair<std::string, std::string>> attributes =
       query_string::Split(tag);
-  for (const auto& attribute : attributes) {
+  for (const auto& [name, value] : attributes) {
     // Attribute names are only ASCII, so no i18n case folding needed.
-    const std::string_view name = attribute.first;
-    const std::string_view value = attribute.second;
-
-    if (global_func_lookup_table.find(name) != global_func_lookup_table.end()) {
+    if (global_func_lookup_table.contains(name)) {
       if (value.empty()) {
         return ErrorCode::kAttributeMustHaveValue;
       }
@@ -518,8 +515,7 @@ ErrorCode ParseTag(std::string_view tag, TagArgs& args) {
       if (result != ErrorCode::kSuccess) {
         return result;
       }
-    } else if ((runtime_mode_func_lookup_table.find(name) !=
-                runtime_mode_func_lookup_table.end()) &&
+    } else if ((runtime_mode_func_lookup_table.contains(name)) &&
                args.runtime_mode) {
       if (value.empty()) {
         return ErrorCode::kAttributeMustHaveValue;
@@ -530,8 +526,7 @@ ErrorCode ParseTag(std::string_view tag, TagArgs& args) {
       if (result != ErrorCode::kSuccess) {
         return result;
       }
-    } else if (app_func_lookup_table.find(name) !=
-               app_func_lookup_table.end()) {
+    } else if (app_func_lookup_table.contains(name)) {
       if (args.apps.empty()) {
         return ErrorCode::kApp_AppIdNotSpecified;
       }
@@ -577,7 +572,7 @@ ErrorCode ParseAppInstallerDataArgs(std::string_view app_installer_data_args,
     }
 
     const auto& func_lookup_table = installer_data_attributes::GetTable();
-    if (func_lookup_table.find(name) == func_lookup_table.end()) {
+    if (!func_lookup_table.contains(name)) {
       return ErrorCode::kUnrecognizedName;
     }
 
