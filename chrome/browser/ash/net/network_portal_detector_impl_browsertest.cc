@@ -218,10 +218,9 @@ IN_PROC_BROWSER_TEST_F(NetworkPortalDetectorImplBrowserTest,
       shill::kStatePortalSuspected, NetworkState::PortalState::kPortalSuspected,
       l10n_util::GetStringUTF16(
           IDS_NEW_PORTAL_DETECTION_NOTIFICATION_TITLE_WIFI),
-      l10n_util::GetStringFUTF16(
-          IDS_NEW_PORTAL_SUSPECTED_DETECTION_NOTIFICATION_MESSAGE, u"wifi"),
-      l10n_util::GetStringUTF16(
-          IDS_NEW_PORTAL_SUSPECTED_DETECTION_NOTIFICATION_BUTTON));
+      l10n_util::GetStringFUTF16(IDS_NEW_PORTAL_DETECTION_NOTIFICATION_MESSAGE,
+                                 u"wifi"),
+      l10n_util::GetStringUTF16(IDS_NEW_PORTAL_DETECTION_NOTIFICATION_BUTTON));
 }
 
 IN_PROC_BROWSER_TEST_F(NetworkPortalDetectorImplBrowserTest,
@@ -251,7 +250,7 @@ IN_PROC_BROWSER_TEST_F(NetworkPortalDetectorImplBrowserTest,
       GetNotificationButtonTitle(),
       l10n_util::GetStringUTF16(IDS_NEW_PORTAL_DETECTION_NOTIFICATION_BUTTON));
 
-  // State changes to portal-suspected and check if notification properties
+  // State changes to portal-suspected. Notification properties shouldn't
   // change.
   SetState(shill::kStatePortalSuspected);
   ASSERT_TRUE(default_network);
@@ -259,13 +258,12 @@ IN_PROC_BROWSER_TEST_F(NetworkPortalDetectorImplBrowserTest,
   EXPECT_EQ(GetNotificationTitle(),
             l10n_util::GetStringUTF16(
                 IDS_NEW_PORTAL_DETECTION_NOTIFICATION_TITLE_WIFI));
+  EXPECT_EQ(GetNotificationMessage(),
+            l10n_util::GetStringFUTF16(
+                IDS_NEW_PORTAL_DETECTION_NOTIFICATION_MESSAGE, u"wifi"));
   EXPECT_EQ(
-      GetNotificationMessage(),
-      l10n_util::GetStringFUTF16(
-          IDS_NEW_PORTAL_SUSPECTED_DETECTION_NOTIFICATION_MESSAGE, u"wifi"));
-  EXPECT_EQ(GetNotificationButtonTitle(),
-            l10n_util::GetStringUTF16(
-                IDS_NEW_PORTAL_SUSPECTED_DETECTION_NOTIFICATION_BUTTON));
+      GetNotificationButtonTitle(),
+      l10n_util::GetStringUTF16(IDS_NEW_PORTAL_DETECTION_NOTIFICATION_BUTTON));
 
   // Explicitly close the notification.
   display_service_->RemoveNotification(NotificationHandler::Type::TRANSIENT,
