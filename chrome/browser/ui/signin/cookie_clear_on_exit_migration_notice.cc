@@ -7,13 +7,10 @@
 #include <functional>
 #include <utility>
 
-#include "base/check.h"
 #include "base/functional/bind.h"
 #include "base/functional/callback.h"
 #include "base/notreached.h"
-#include "base/supports_user_data.h"
 #include "chrome/browser/profiles/profile.h"
-#include "chrome/browser/signin/identity_manager_factory.h"
 #include "chrome/browser/ui/browser.h"
 #include "chrome/browser/ui/browser_dialogs.h"
 #include "chrome/browser/ui/chrome_pages.h"
@@ -21,10 +18,8 @@
 #include "chrome/grit/branded_strings.h"
 #include "chrome/grit/generated_resources.h"
 #include "components/prefs/pref_service.h"
-#include "components/signin/public/base/consent_level.h"
 #include "components/signin/public/base/signin_buildflags.h"
 #include "components/signin/public/base/signin_pref_names.h"
-#include "components/signin/public/identity_manager/identity_manager.h"
 #include "components/strings/grit/components_strings.h"
 #include "ui/base/l10n/l10n_util.h"
 #include "ui/base/models/dialog_model.h"
@@ -34,31 +29,6 @@
 namespace {
 
 #if BUILDFLAG(ENABLE_DICE_SUPPORT)
-
-const void* const kCookieClearOnExitMigrationNoticeShowingUserDataKey =
-    &kCookieClearOnExitMigrationNoticeShowingUserDataKey;
-
-// User data indicating whether the notice is currently being shown.
-class CookieClearOnExitMigrationNoticeShowingUserData
-    : public base::SupportsUserData::Data {
- public:
-  static bool HasForProfile(const Profile& profile) {
-    return static_cast<CookieClearOnExitMigrationNoticeShowingUserData*>(
-        profile.GetUserData(
-            kCookieClearOnExitMigrationNoticeShowingUserDataKey));
-  }
-
-  static void CreateForProfile(Profile& profile) {
-    CHECK(!HasForProfile(profile));
-    profile.SetUserData(
-        kCookieClearOnExitMigrationNoticeShowingUserDataKey,
-        std::make_unique<CookieClearOnExitMigrationNoticeShowingUserData>());
-  }
-
-  static void RemoveForProfile(Profile& profile) {
-    profile.RemoveUserData(kCookieClearOnExitMigrationNoticeShowingUserDataKey);
-  }
-};
 
 void OpenCookieSettingsAndCloseDialog(Browser& browser,
                                       ui::DialogModel& model) {
@@ -75,57 +45,11 @@ bool SetCookieClearOnExitMigrationComplete(PrefService& prefs, bool can_close) {
 
 }  // namespace
 
-bool CanShowCookieClearOnExitMigrationNotice(const Browser& browser) {
-#if BUILDFLAG(ENABLE_DICE_SUPPORT)
-  Profile* profile = browser.profile();
-  PrefService* prefs = profile->GetPrefs();
-
-  if (prefs->GetBoolean(prefs::kCookieClearOnExitMigrationNoticeComplete)) {
-    return false;
-  }
-
-  if (CookieClearOnExitMigrationNoticeShowingUserData::HasForProfile(
-          *profile)) {
-    return false;
-  }
-
-  if (!profile->IsRegularProfile()) {
-    return false;
-  }
-
-  // User has to be signed in with UNO (non-syncing).
-  signin::IdentityManager* identity_manager =
-      IdentityManagerFactory::GetForProfile(profile);
-  if (!prefs->GetBoolean(prefs::kExplicitBrowserSignin)) {
-    return false;
-  }
-
-  if (identity_manager->HasPrimaryAccount(signin::ConsentLevel::kSync)) {
-    return false;
-  }
-
-  if (!identity_manager->HasPrimaryAccount(signin::ConsentLevel::kSignin)) {
-    return false;
-  }
-
-  return true;
-
-#else
-  return false;
-#endif
-}
-
 void ShowCookieClearOnExitMigrationNotice(
     Browser& browser,
     base::OnceCallback<void(bool)> callback) {
 #if BUILDFLAG(ENABLE_DICE_SUPPORT)
-  CHECK(CanShowCookieClearOnExitMigrationNotice(browser));
-
-  Profile& profile = *browser.profile();
-  PrefService& prefs = *profile.GetPrefs();
-
-  // Do not show if the dialog is already being shown for this profile.
-  CookieClearOnExitMigrationNoticeShowingUserData::CreateForProfile(profile);
+  PrefService& prefs = *browser.profile()->GetPrefs();
 
   // Marks the migration completes when the user interacts with the dialog.
   base::OnceCallback<void(bool)> set_migration_complete_callback =
@@ -163,10 +87,7 @@ void ShowCookieClearOnExitMigrationNotice(
       .AddCancelButton(std::move(cancel_closure),
                        ui::DialogModel::Button::Params().SetLabel(
                            l10n_util::GetStringUTF16(IDS_CANCEL)))
-      .SetCloseActionCallback(std::move(close_closure))
-      .SetDialogDestroyingCallback(base::BindOnce(
-          &CookieClearOnExitMigrationNoticeShowingUserData::RemoveForProfile,
-          std::ref(profile)));
+      .SetCloseActionCallback(std::move(close_closure));
 
   chrome::ShowBrowserModal(&browser, dialog_builder.Build());
 #else
