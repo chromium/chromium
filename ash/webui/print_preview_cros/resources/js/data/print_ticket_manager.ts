@@ -29,6 +29,7 @@ export const PRINT_TICKET_MANAGER_SESSION_INITIALIZED =
 export const DEFAULT_PARTIAL_PRINT_TICKET: Partial<PrintTicket> = {
   collate: true,
   color: ColorModel.COLOR,
+  copies: 1,
 };
 
 export class PrintTicketManager extends EventTarget {

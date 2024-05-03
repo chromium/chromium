@@ -57,6 +57,9 @@ export interface PrintTicket {
 
   // Print job color mode value.
   color: ColorModel;
+
+  // Number of prints to make of source document.
+  copies: number;
 }
 
 // Immutable session configuration details for the current CrOS preview request.
