@@ -12,7 +12,6 @@
 #include "content/services/auction_worklet/bidder_lazy_filler.h"
 #include "content/services/auction_worklet/for_debugging_only_bindings.h"
 #include "content/services/auction_worklet/private_aggregation_bindings.h"
-#include "content/services/auction_worklet/real_time_reporting_bindings.h"
 #include "content/services/auction_worklet/register_ad_beacon_bindings.h"
 #include "content/services/auction_worklet/register_ad_macro_bindings.h"
 #include "content/services/auction_worklet/report_bindings.h"
@@ -53,11 +52,14 @@ void ContextRecycler::AddPrivateAggregationBindings(
   AddBindings(private_aggregation_bindings_.get());
 }
 
-void ContextRecycler::AddRealTimeReportingBindings() {
-  DCHECK(!real_time_reporting_bindings_);
-  real_time_reporting_bindings_ =
-      std::make_unique<RealTimeReportingBindings>(v8_helper_);
-  AddBindings(real_time_reporting_bindings_.get());
+void ContextRecycler::AddSharedStorageBindings(
+    mojom::AuctionSharedStorageHost* shared_storage_host,
+    bool shared_storage_permissions_policy_allowed) {
+  DCHECK(!shared_storage_bindings_);
+  shared_storage_bindings_ = std::make_unique<SharedStorageBindings>(
+      v8_helper_, shared_storage_host,
+      shared_storage_permissions_policy_allowed);
+  AddBindings(shared_storage_bindings_.get());
 }
 
 void ContextRecycler::AddRegisterAdBeaconBindings() {
@@ -91,16 +93,6 @@ void ContextRecycler::AddSetPriorityBindings() {
   DCHECK(!set_priority_bindings_);
   set_priority_bindings_ = std::make_unique<SetPriorityBindings>(v8_helper_);
   AddBindings(set_priority_bindings_.get());
-}
-
-void ContextRecycler::AddSharedStorageBindings(
-    mojom::AuctionSharedStorageHost* shared_storage_host,
-    bool shared_storage_permissions_policy_allowed) {
-  DCHECK(!shared_storage_bindings_);
-  shared_storage_bindings_ = std::make_unique<SharedStorageBindings>(
-      v8_helper_, shared_storage_host,
-      shared_storage_permissions_policy_allowed);
-  AddBindings(shared_storage_bindings_.get());
 }
 
 void ContextRecycler::AddInterestGroupLazyFiller() {

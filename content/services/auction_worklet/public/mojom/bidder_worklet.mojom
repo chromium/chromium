@@ -5,7 +5,6 @@
 module auction_worklet.mojom;
 
 import "content/services/auction_worklet/public/mojom/private_aggregation_request.mojom";
-import "content/services/auction_worklet/public/mojom/real_time_reporting.mojom";
 import "content/services/auction_worklet/public/mojom/reject_reason.mojom";
 import "mojo/public/mojom/base/time.mojom";
 import "services/network/public/mojom/url_loader_factory.mojom";
@@ -280,8 +279,6 @@ interface GenerateBidClient {
   //
   // `pa_requests` The various requests made to the Private Aggregation API.
   //
-  // `real_time_contributions` Real time reporting contributions.
-  //
   // `bidding_latency` The amount of time taken running all bids (note that
   // there may be 2 bids if the first bid result was not k-anonymous).
   //
@@ -306,7 +303,6 @@ interface GenerateBidClient {
       map<string, PrioritySignalsDouble?> update_priority_signals_overrides,
       array<PrivateAggregationRequest> pa_requests,
       array<PrivateAggregationRequest> non_kanon_pa_requests,
-      array<RealTimeReportingContribution> real_time_contributions,
       mojo_base.mojom.TimeDelta bidding_latency,
       GenerateBidDependencyLatencies generate_bid_dependency_latencies,
       RejectReason reject_reason,

@@ -38,7 +38,6 @@
 #include "content/public/browser/content_browser_client.h"
 #include "content/services/auction_worklet/public/mojom/bidder_worklet.mojom.h"
 #include "content/services/auction_worklet/public/mojom/private_aggregation_request.mojom.h"
-#include "content/services/auction_worklet/public/mojom/real_time_reporting.mojom.h"
 #include "content/services/auction_worklet/public/mojom/seller_worklet.mojom.h"
 #include "mojo/public/cpp/base/big_buffer.h"
 #include "mojo/public/cpp/bindings/associated_receiver_set.h"
@@ -168,9 +167,6 @@ class CONTENT_EXPORT InterestGroupAuction
 
   using PrivateAggregationRequests =
       std::vector<auction_worklet::mojom::PrivateAggregationRequestPtr>;
-
-  using RealTimeReportingContributions =
-      std::vector<auction_worklet::mojom::RealTimeReportingContributionPtr>;
 
   // Helps determine which level of worklet a particular PA request came from.
   enum class PrivateAggregationPhase {
@@ -1029,7 +1025,6 @@ class CONTENT_EXPORT InterestGroupAuction
       const std::optional<GURL>& debug_loss_report_url,
       const std::optional<GURL>& debug_win_report_url,
       PrivateAggregationRequests pa_requests,
-      RealTimeReportingContributions real_time_contributions,
       base::TimeDelta scoring_latency,
       auction_worklet::mojom::ScoreAdDependencyLatenciesPtr
           score_ad_dependency_latencies,

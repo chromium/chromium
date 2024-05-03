@@ -23,7 +23,6 @@
 #include "content/services/auction_worklet/public/mojom/auction_worklet_service.mojom.h"
 #include "content/services/auction_worklet/public/mojom/bidder_worklet.mojom.h"
 #include "content/services/auction_worklet/public/mojom/private_aggregation_request.mojom.h"
-#include "content/services/auction_worklet/public/mojom/real_time_reporting.mojom.h"
 #include "content/services/auction_worklet/public/mojom/seller_worklet.mojom.h"
 #include "mojo/public/cpp/bindings/associated_receiver_set.h"
 #include "mojo/public/cpp/bindings/associated_remote.h"
@@ -222,8 +221,6 @@ void MockBidderWorklet::InvokeGenerateBidCallback(
     const std::optional<GURL>& debug_win_report_url,
     std::vector<auction_worklet::mojom::PrivateAggregationRequestPtr>
         pa_requests,
-    std::vector<auction_worklet::mojom::RealTimeReportingContributionPtr>
-        real_time_contributions,
     auction_worklet::mojom::GenerateBidDependencyLatenciesPtr
         dependency_latencies,
     auction_worklet::mojom::RejectReason reject_reason) {
@@ -258,7 +255,6 @@ void MockBidderWorklet::InvokeGenerateBidCallback(
                        auction_worklet::mojom::PrioritySignalsDoublePtr>(),
         /*pa_requests=*/std::move(pa_requests),
         /*non_kanon_pa_requests=*/{},
-        /*real_time_contributions=*/{},
         /*bidding_latency=*/bidding_latency_,
         /*generate_bid_dependency_latencies=*/std::move(dependency_latencies),
         reject_reason,
@@ -282,7 +278,6 @@ void MockBidderWorklet::InvokeGenerateBidCallback(
                      auction_worklet::mojom::PrioritySignalsDoublePtr>(),
       /*pa_requests=*/std::move(pa_requests),
       /*non_kanon_pa_requests=*/{},
-      /*real_time_contributions=*/std::move(real_time_contributions),
       /*bidding_latency=*/bidding_latency_,
       /*generate_bid_dependency_latencies=*/std::move(dependency_latencies),
       reject_reason,

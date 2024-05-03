@@ -37,7 +37,6 @@
 #include "content/services/auction_worklet/public/cpp/auction_network_events_delegate.h"
 #include "content/services/auction_worklet/public/mojom/auction_worklet_service.mojom.h"
 #include "content/services/auction_worklet/public/mojom/seller_worklet.mojom.h"
-#include "content/services/auction_worklet/real_time_reporting_bindings.h"
 #include "content/services/auction_worklet/register_ad_beacon_bindings.h"
 #include "content/services/auction_worklet/report_bindings.h"
 #include "content/services/auction_worklet/seller_lazy_filler.h"
@@ -1006,14 +1005,12 @@ void SellerWorklet::V8State::ScoreAd(
           /*debug_loss_report_url=*/std::nullopt,
           /*debug_win_report_url=*/std::nullopt,
           /*pa_requests=*/{},
-          /*real_time_contributions=*/{},
           /*scoring_latency=*/elapsed_timer.Elapsed(), std::move(errors_out));
       return;
     }
     context_recycler->AddForDebuggingOnlyBindings();
     context_recycler->AddPrivateAggregationBindings(
         permissions_policy_state_->private_aggregation_allowed);
-    context_recycler->AddRealTimeReportingBindings();
     if (base::FeatureList::IsEnabled(blink::features::kSharedStorageAPI)) {
       context_recycler->AddSharedStorageBindings(
           shared_storage_host_remote_.is_bound()
@@ -1035,25 +1032,9 @@ void SellerWorklet::V8State::ScoreAd(
   base::TimeDelta elapsed = elapsed_timer.Elapsed();
   base::UmaHistogramTimes("Ads.InterestGroup.Auction.ScoreAdTime", elapsed);
 
-  std::vector<auction_worklet::mojom::RealTimeReportingContributionPtr>
-      real_time_contributions = context_recycler->real_time_reporting_bindings()
-                                    ->TakeRealTimeReportingContributions();
-
-  // Remove worklet latency contributions if the worklet execution time is
-  // within the threshold.
-  std::erase_if(
-      real_time_contributions,
-      [elapsed](const auction_worklet::mojom::RealTimeReportingContributionPtr&
-                    contribution) {
-        return contribution->latency_threshold.has_value() &&
-               elapsed.InMilliseconds() <=
-                   contribution->latency_threshold.value();
-      });
-
   if (!success) {
-    // Keep debug loss reports, Private Aggregation API requests, and real time
-    // reporting contributions since `scoreAd()` might use them to detect script
-    // timeout or failures.
+    // Keep debug loss reports and Private Aggregation API requests since
+    // `scoreAd()` might use them to detect script timeout or failures.
     PostScoreAdCallbackToUserThread(
         std::move(callback), /*score=*/0,
         /*reject_reason=*/mojom::RejectReason::kNotAvailable,
@@ -1065,7 +1046,6 @@ void SellerWorklet::V8State::ScoreAd(
         /*debug_win_report_url=*/std::nullopt,
         context_recycler->private_aggregation_bindings()
             ->TakePrivateAggregationRequests(),
-        std::move(real_time_contributions),
         /*scoring_latency=*/elapsed, std::move(errors_out));
     return;
   }
@@ -1128,8 +1108,7 @@ void SellerWorklet::V8State::ScoreAd(
           std::move(callback),
           /*scoring_latency=*/elapsed, std::move(errors_out),
           context_recycler->private_aggregation_bindings()
-              ->TakePrivateAggregationRequests(),
-          std::move(real_time_contributions));
+              ->TakePrivateAggregationRequests());
       return;
     }
 
@@ -1168,8 +1147,7 @@ void SellerWorklet::V8State::ScoreAd(
             std::move(callback),
             /*scoring_latency=*/elapsed, std::move(errors_out),
             context_recycler->private_aggregation_bindings()
-                ->TakePrivateAggregationRequests(),
-            std::move(real_time_contributions));
+                ->TakePrivateAggregationRequests());
         return;
       }
       bid_in_seller_currency = result_idl.incoming_bid_in_seller_currency;
@@ -1250,8 +1228,7 @@ void SellerWorklet::V8State::ScoreAd(
         std::move(callback),
         /*scoring_latency=*/elapsed, std::move(errors_out),
         context_recycler->private_aggregation_bindings()
-            ->TakePrivateAggregationRequests(),
-        std::move(real_time_contributions));
+            ->TakePrivateAggregationRequests());
     return;
   }
 
@@ -1266,7 +1243,6 @@ void SellerWorklet::V8State::ScoreAd(
         context_recycler->for_debugging_only_bindings()->TakeWinReportUrl(),
         context_recycler->private_aggregation_bindings()
             ->TakePrivateAggregationRequests(),
-        std::move(real_time_contributions),
         /*scoring_latency=*/elapsed, std::move(errors_out));
     return;
   }
@@ -1285,8 +1261,7 @@ void SellerWorklet::V8State::ScoreAd(
         std::move(callback),
         /*scoring_latency=*/elapsed, std::move(errors_out),
         context_recycler->private_aggregation_bindings()
-            ->TakePrivateAggregationRequests(),
-        std::move(real_time_contributions));
+            ->TakePrivateAggregationRequests());
     return;
   }
 
@@ -1307,8 +1282,7 @@ void SellerWorklet::V8State::ScoreAd(
           std::move(callback),
           /*scoring_latency=*/elapsed, std::move(errors_out),
           context_recycler->private_aggregation_bindings()
-              ->TakePrivateAggregationRequests(),
-          std::move(real_time_contributions));
+              ->TakePrivateAggregationRequests());
       return;
     }
   } else if (browser_signals_other_seller &&
@@ -1335,7 +1309,6 @@ void SellerWorklet::V8State::ScoreAd(
       context_recycler->for_debugging_only_bindings()->TakeWinReportUrl(),
       context_recycler->private_aggregation_bindings()
           ->TakePrivateAggregationRequests(),
-      std::move(real_time_contributions),
       /*scoring_latency=*/elapsed, std::move(errors_out));
 }
 
@@ -1623,8 +1596,7 @@ void SellerWorklet::V8State::PostScoreAdCallbackToUserThreadOnError(
     ScoreAdCallbackInternal callback,
     base::TimeDelta scoring_latency,
     std::vector<std::string> errors,
-    PrivateAggregationRequests pa_requests,
-    RealTimeReportingContributions real_time_contributions) {
+    PrivateAggregationRequests pa_requests) {
   PostScoreAdCallbackToUserThread(
       std::move(callback), /*score=*/0,
       /*reject_reason=*/mojom::RejectReason::kNotAvailable,
@@ -1633,7 +1605,6 @@ void SellerWorklet::V8State::PostScoreAdCallbackToUserThreadOnError(
       /*scoring_signals_data_version=*/std::nullopt,
       /*debug_loss_report_url=*/std::nullopt,
       /*debug_win_report_url=*/std::nullopt, std::move(pa_requests),
-      std::move(real_time_contributions),
       /*scoring_latency=*/scoring_latency, std::move(errors));
 }
 
@@ -1648,7 +1619,6 @@ void SellerWorklet::V8State::PostScoreAdCallbackToUserThread(
     std::optional<GURL> debug_loss_report_url,
     std::optional<GURL> debug_win_report_url,
     PrivateAggregationRequests pa_requests,
-    RealTimeReportingContributions real_time_contributions,
     base::TimeDelta scoring_latency,
     std::vector<std::string> errors) {
   DCHECK_CALLED_ON_VALID_SEQUENCE(v8_sequence_checker_);
@@ -1659,8 +1629,7 @@ void SellerWorklet::V8State::PostScoreAdCallbackToUserThread(
                      bid_in_seller_currency, scoring_signals_data_version,
                      std::move(debug_loss_report_url),
                      std::move(debug_win_report_url), std::move(pa_requests),
-                     std::move(real_time_contributions), scoring_latency,
-                     std::move(errors)));
+                     scoring_latency, std::move(errors)));
 }
 
 void SellerWorklet::V8State::PostReportResultCallbackToUserThread(
@@ -1963,7 +1932,6 @@ void SellerWorklet::DeliverScoreAdCallbackOnUserThread(
     std::optional<GURL> debug_loss_report_url,
     std::optional<GURL> debug_win_report_url,
     PrivateAggregationRequests pa_requests,
-    RealTimeReportingContributions real_time_contributions,
     base::TimeDelta scoring_latency,
     std::vector<std::string> errors) {
   DCHECK_CALLED_ON_VALID_SEQUENCE(user_sequence_checker_);
@@ -1984,7 +1952,7 @@ void SellerWorklet::DeliverScoreAdCallbackOnUserThread(
       score, reject_reason, std::move(component_auction_modified_bid_params),
       std::move(bid_in_seller_currency), scoring_signals_data_version,
       debug_loss_report_url, debug_win_report_url, std::move(pa_requests),
-      std::move(real_time_contributions), scoring_latency,
+      scoring_latency,
       mojom::ScoreAdDependencyLatencies::New(
           /*code_ready_latency=*/NullOptIfZero(task->wait_code),
           /*direct_from_seller_signals_latency=*/

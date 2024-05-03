@@ -30,8 +30,7 @@
 #include "content/services/auction_worklet/public/mojom/auction_shared_storage_host.mojom.h"
 #include "content/services/auction_worklet/public/mojom/auction_worklet_service.mojom.h"
 #include "content/services/auction_worklet/public/mojom/bidder_worklet.mojom.h"
-#include "content/services/auction_worklet/public/mojom/private_aggregation_request.mojom.h"
-#include "content/services/auction_worklet/public/mojom/real_time_reporting.mojom.h"
+#include "content/services/auction_worklet/public/mojom/private_aggregation_request.mojom-forward.h"
 #include "content/services/auction_worklet/set_bid_bindings.h"
 #include "content/services/auction_worklet/trusted_signals.h"
 #include "content/services/auction_worklet/trusted_signals_request_manager.h"
@@ -83,9 +82,6 @@ class CONTENT_EXPORT BidderWorklet : public mojom::BidderWorklet,
 
   using PrivateAggregationRequests =
       std::vector<auction_worklet::mojom::PrivateAggregationRequestPtr>;
-
-  using RealTimeReportingContributions =
-      std::vector<auction_worklet::mojom::RealTimeReportingContributionPtr>;
 
   // Classification of how trusted signals related to this worklet.
   enum class SignalsOriginRelation {
@@ -387,7 +383,6 @@ class CONTENT_EXPORT BidderWorklet : public mojom::BidderWorklet,
             update_priority_signals_overrides,
         PrivateAggregationRequests pa_requests,
         PrivateAggregationRequests non_kanon_pa_requests,
-        RealTimeReportingContributions real_time_contributions,
         base::TimeDelta bidding_latency,
         mojom::RejectReason reject_reason,
         std::vector<std::string> error_msgs)>;
@@ -413,7 +408,6 @@ class CONTENT_EXPORT BidderWorklet : public mojom::BidderWorklet,
           base::flat_map<std::string, mojom::PrioritySignalsDoublePtr>
               update_priority_signals_overrides,
           PrivateAggregationRequests pa_requests,
-          RealTimeReportingContributions real_time_contributions,
           mojom::RejectReason reject_reason,
           std::vector<std::string> error_msgs);
 
@@ -438,7 +432,6 @@ class CONTENT_EXPORT BidderWorklet : public mojom::BidderWorklet,
           update_priority_signals_overrides;
       PrivateAggregationRequests pa_requests;
       PrivateAggregationRequests non_kanon_pa_requests;
-      RealTimeReportingContributions real_time_contributions;
       mojom::RejectReason reject_reason;
       std::vector<std::string> error_msgs;
     };
@@ -569,8 +562,8 @@ class CONTENT_EXPORT BidderWorklet : public mojom::BidderWorklet,
     void PostErrorBidCallbackToUserThread(
         GenerateBidCallbackInternal callback,
         base::TimeDelta bidding_latency,
-        PrivateAggregationRequests non_kanon_pa_requests,
-        RealTimeReportingContributions real_time_contributions,
+        PrivateAggregationRequests non_kanon_pa_requests =
+            PrivateAggregationRequests(),
         std::vector<std::string> error_msgs = std::vector<std::string>());
 
     static void PostResumeToUserThread(
@@ -692,7 +685,6 @@ class CONTENT_EXPORT BidderWorklet : public mojom::BidderWorklet,
           update_priority_signals_overrides,
       PrivateAggregationRequests pa_requests,
       PrivateAggregationRequests non_kanon_pa_requests,
-      RealTimeReportingContributions real_time_contributions,
       base::TimeDelta bidding_latency,
       mojom::RejectReason reject_reason,
       std::vector<std::string> error_msgs);

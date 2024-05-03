@@ -21,7 +21,6 @@
 #include "content/public/browser/site_instance.h"
 #include "content/services/auction_worklet/public/mojom/auction_worklet_service.mojom.h"
 #include "content/services/auction_worklet/public/mojom/bidder_worklet.mojom.h"
-#include "content/services/auction_worklet/public/mojom/real_time_reporting.mojom.h"
 #include "content/services/auction_worklet/public/mojom/seller_worklet.mojom.h"
 #include "mojo/public/cpp/bindings/associated_receiver_set.h"
 #include "mojo/public/cpp/bindings/associated_remote.h"
@@ -162,8 +161,6 @@ class MockBidderWorklet : public auction_worklet::mojom::BidderWorklet,
       const std::optional<GURL>& debug_win_report_url = std::nullopt,
       std::vector<auction_worklet::mojom::PrivateAggregationRequestPtr>
           pa_requests = {},
-      std::vector<auction_worklet::mojom::RealTimeReportingContributionPtr>
-          real_time_contributions = {},
       auction_worklet::mojom::GenerateBidDependencyLatenciesPtr
           dependency_latencies =
               auction_worklet::mojom::GenerateBidDependencyLatenciesPtr(),
