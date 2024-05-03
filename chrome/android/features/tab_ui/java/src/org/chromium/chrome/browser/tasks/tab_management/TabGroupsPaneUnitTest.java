@@ -33,6 +33,7 @@ import org.chromium.chrome.browser.tasks.tab_groups.TabGroupModelFilter;
 import org.chromium.chrome.browser.ui.favicon.FaviconHelper;
 import org.chromium.chrome.browser.ui.favicon.FaviconHelperJni;
 import org.chromium.components.tab_group_sync.TabGroupSyncService;
+import org.chromium.ui.modaldialog.ModalDialogManager;
 
 import java.util.function.DoubleConsumer;
 
@@ -48,11 +49,14 @@ public class TabGroupsPaneUnitTest {
     @Mock private Profile mProfile;
     @Mock private TabGroupSyncService mTabGroupSyncService;
     @Mock private Supplier<PaneManager> mPaneManagerSupplier;
+    @Mock private Supplier<ModalDialogManager> mModalDialogManagerSupplier;
     @Mock Supplier<TabGroupUiActionHandler> mTabGroupUiActionHandlerSupplier;
     @Mock FaviconHelper.Natives mFaviconHelperJniMock;
 
     private final OneshotSupplierImpl<ProfileProvider> mProfileSupplier =
             new OneshotSupplierImpl<>();
+
+    private TabGroupsPane mTabGroupsPane;
 
     @Before
     public void setUp() {
@@ -63,69 +67,47 @@ public class TabGroupsPaneUnitTest {
         mProfileSupplier.set(mProfileProvider);
         TabGroupSyncServiceFactory.setForTesting(mTabGroupSyncService);
         when(mTabGroupSyncService.getAllGroupIds()).thenReturn(new String[] {});
+
+        mTabGroupsPane =
+                new TabGroupsPane(
+                        ApplicationProvider.getApplicationContext(),
+                        LazyOneshotSupplier.fromValue(mTabGroupModelFilter),
+                        mOnToolbarAlphaChange,
+                        mProfileSupplier,
+                        mPaneManagerSupplier,
+                        mTabGroupUiActionHandlerSupplier,
+                        mModalDialogManagerSupplier);
     }
 
     @Test
     public void testNotifyLoadHint() {
-        TabGroupsPane pane =
-                new TabGroupsPane(
-                        ApplicationProvider.getApplicationContext(),
-                        LazyOneshotSupplier.fromValue(mTabGroupModelFilter),
-                        mOnToolbarAlphaChange,
-                        mProfileSupplier,
-                        mPaneManagerSupplier,
-                        mTabGroupUiActionHandlerSupplier);
-        assertEquals(0, pane.getRootView().getChildCount());
+        assertEquals(0, mTabGroupsPane.getRootView().getChildCount());
 
-        pane.notifyLoadHint(LoadHint.HOT);
-        assertNotEquals(0, pane.getRootView().getChildCount());
+        mTabGroupsPane.notifyLoadHint(LoadHint.HOT);
+        assertNotEquals(0, mTabGroupsPane.getRootView().getChildCount());
 
-        pane.notifyLoadHint(LoadHint.COLD);
-        assertEquals(0, pane.getRootView().getChildCount());
+        mTabGroupsPane.notifyLoadHint(LoadHint.COLD);
+        assertEquals(0, mTabGroupsPane.getRootView().getChildCount());
     }
 
     @Test
     public void testDestroy_WhileHot() {
-        TabGroupsPane pane =
-                new TabGroupsPane(
-                        ApplicationProvider.getApplicationContext(),
-                        LazyOneshotSupplier.fromValue(mTabGroupModelFilter),
-                        mOnToolbarAlphaChange,
-                        mProfileSupplier,
-                        mPaneManagerSupplier,
-                        mTabGroupUiActionHandlerSupplier);
-        pane.notifyLoadHint(LoadHint.HOT);
-        pane.destroy();
-        assertEquals(0, pane.getRootView().getChildCount());
+        mTabGroupsPane.notifyLoadHint(LoadHint.HOT);
+        mTabGroupsPane.destroy();
+        assertEquals(0, mTabGroupsPane.getRootView().getChildCount());
     }
 
     @Test
     public void testDestroy_WhileCold() {
-        TabGroupsPane pane =
-                new TabGroupsPane(
-                        ApplicationProvider.getApplicationContext(),
-                        LazyOneshotSupplier.fromValue(mTabGroupModelFilter),
-                        mOnToolbarAlphaChange,
-                        mProfileSupplier,
-                        mPaneManagerSupplier,
-                        mTabGroupUiActionHandlerSupplier);
-        pane.notifyLoadHint(LoadHint.HOT);
-        pane.notifyLoadHint(LoadHint.COLD);
-        pane.destroy();
-        assertEquals(0, pane.getRootView().getChildCount());
+        mTabGroupsPane.notifyLoadHint(LoadHint.HOT);
+        mTabGroupsPane.notifyLoadHint(LoadHint.COLD);
+        mTabGroupsPane.destroy();
+        assertEquals(0, mTabGroupsPane.getRootView().getChildCount());
     }
 
     @Test
     public void testDestroy_NoLoadHint() {
-        TabGroupsPane pane =
-                new TabGroupsPane(
-                        ApplicationProvider.getApplicationContext(),
-                        LazyOneshotSupplier.fromValue(mTabGroupModelFilter),
-                        mOnToolbarAlphaChange,
-                        mProfileSupplier,
-                        mPaneManagerSupplier,
-                        mTabGroupUiActionHandlerSupplier);
-        pane.destroy();
-        assertEquals(0, pane.getRootView().getChildCount());
+        mTabGroupsPane.destroy();
+        assertEquals(0, mTabGroupsPane.getRootView().getChildCount());
     }
 }

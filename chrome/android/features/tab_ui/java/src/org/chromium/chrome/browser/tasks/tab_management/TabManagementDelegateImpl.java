@@ -227,7 +227,8 @@ public class TabManagementDelegateImpl implements TabManagementDelegate {
             @NonNull DoubleConsumer onToolbarAlphaChange,
             @NonNull OneshotSupplier<ProfileProvider> profileProviderSupplier,
             @NonNull OneshotSupplier<HubManager> hubManagerSupplier,
-            @NonNull Supplier<TabGroupUiActionHandler> tabGroupUiActionHandlerSupplier) {
+            @NonNull Supplier<TabGroupUiActionHandler> tabGroupUiActionHandlerSupplier,
+            @NonNull Supplier<ModalDialogManager> modalDialogManagerSupplier) {
         LazyOneshotSupplier<TabModelFilter> tabModelFilterSupplier =
                 LazyOneshotSupplier.fromSupplier(
                         () ->
@@ -240,7 +241,8 @@ public class TabManagementDelegateImpl implements TabManagementDelegate {
                 onToolbarAlphaChange,
                 profileProviderSupplier,
                 () -> hubManagerSupplier.get().getPaneManager(),
-                tabGroupUiActionHandlerSupplier);
+                tabGroupUiActionHandlerSupplier,
+                modalDialogManagerSupplier);
     }
 
     @Override

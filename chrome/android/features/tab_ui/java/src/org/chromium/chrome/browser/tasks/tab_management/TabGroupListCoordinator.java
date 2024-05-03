@@ -29,6 +29,7 @@ import org.chromium.chrome.tab_ui.R;
 import org.chromium.components.embedder_support.util.UrlUtilities;
 import org.chromium.components.tab_group_sync.TabGroupSyncService;
 import org.chromium.ui.base.ViewUtils;
+import org.chromium.ui.modaldialog.ModalDialogManager;
 import org.chromium.ui.modelutil.LayoutViewBuilder;
 import org.chromium.ui.modelutil.MVCListAdapter.ModelList;
 import org.chromium.ui.modelutil.MVCListAdapter.ViewBuilder;
@@ -57,13 +58,15 @@ public class TabGroupListCoordinator {
      * @param profileProvider Used to fetch keyed service.
      * @param paneManager Used to switch to show detailed tab group UI.
      * @param tabGroupUiActionHandler Used to open hidden tab groups.
+     * @param modalDialogManager Used to show confirmation dialogs.
      */
     public TabGroupListCoordinator(
             Context context,
             TabGroupModelFilter filter,
             ProfileProvider profileProvider,
             PaneManager paneManager,
-            TabGroupUiActionHandler tabGroupUiActionHandler) {
+            TabGroupUiActionHandler tabGroupUiActionHandler,
+            ModalDialogManager modalDialogManager) {
         ModelList modelList = new ModelList();
 
         ViewBuilder<TabGroupRowView> layoutBuilder =
@@ -81,6 +84,8 @@ public class TabGroupListCoordinator {
         BiConsumer<GURL, Callback<Drawable>> faviconResolver =
                 buildFaviconResolver(context, profile);
         TabGroupSyncService syncService = TabGroupSyncServiceFactory.getForProfile(profile);
+        ActionConfirmationManager actionConfirmationManager =
+                new ActionConfirmationManager(profile, context, filter, modalDialogManager);
         mTabGroupListMediator =
                 new TabGroupListMediator(
                         modelList,
@@ -88,7 +93,8 @@ public class TabGroupListCoordinator {
                         faviconResolver,
                         syncService,
                         paneManager,
-                        tabGroupUiActionHandler);
+                        tabGroupUiActionHandler,
+                        actionConfirmationManager);
     }
 
     @VisibleForTesting

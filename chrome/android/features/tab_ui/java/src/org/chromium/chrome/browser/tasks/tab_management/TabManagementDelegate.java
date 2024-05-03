@@ -212,6 +212,7 @@ public interface TabManagementDelegate {
      * @param hubManagerSupplier Supplier ultimately used to get the pane manager to switch panes.
      * @param tabGroupUiActionHandlerSupplier Supplier for the controller used to open hidden
      *     groups.
+     * @param modalDialogManagerSupplier Used to show confirmation dialogs.
      * @return The pane implementation that displays and allows interactions with tab groups.
      */
     Pane createTabGroupsPane(
@@ -220,7 +221,8 @@ public interface TabManagementDelegate {
             @NonNull DoubleConsumer onToolbarAlphaChange,
             @NonNull OneshotSupplier<ProfileProvider> profileProviderSupplier,
             @NonNull OneshotSupplier<HubManager> hubManagerSupplier,
-            @NonNull Supplier<TabGroupUiActionHandler> tabGroupUiActionHandlerSupplier);
+            @NonNull Supplier<TabGroupUiActionHandler> tabGroupUiActionHandlerSupplier,
+            @NonNull Supplier<ModalDialogManager> modalDialogManagerSupplier);
 
     /**
      * Create a TabGroupCreationDialogManager when creating a new tab group.

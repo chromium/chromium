@@ -30,6 +30,7 @@ import org.chromium.chrome.browser.hub.PaneManager;
 import org.chromium.chrome.browser.tab.Tab;
 import org.chromium.chrome.browser.tab_group_sync.TabGroupUiActionHandler;
 import org.chromium.chrome.browser.tasks.tab_groups.TabGroupModelFilter;
+import org.chromium.chrome.browser.tasks.tab_management.ActionConfirmationManager.ConfirmationResult;
 import org.chromium.chrome.browser.tasks.tab_management.TabGroupRowProperties.AsyncDrawable;
 import org.chromium.components.tab_group_sync.LocalTabGroupId;
 import org.chromium.components.tab_group_sync.SavedTabGroup;
@@ -80,6 +81,7 @@ public class TabGroupListMediator {
     private final TabGroupSyncService mSyncService;
     private final PaneManager mPaneManager;
     private final TabGroupUiActionHandler mTabGroupUiActionHandler;
+    private final ActionConfirmationManager mActionConfirmationManager;
     private final CallbackController mCallbackController = new CallbackController();
     private final PendingRunnable mPendingRefresh =
             new PendingRunnable(
@@ -121,6 +123,7 @@ public class TabGroupListMediator {
      * @param syncService Used to fetch synced copy of tab groups.
      * @param paneManager Used switch panes to show details of a group.
      * @param tabGroupUiActionHandler Used to open hidden tab groups.
+     * @param actionConfirmationManager Used to show confirmation dialogs.
      */
     public TabGroupListMediator(
             ModelList modelList,
@@ -128,13 +131,16 @@ public class TabGroupListMediator {
             BiConsumer<GURL, Callback<Drawable>> faviconResolver,
             TabGroupSyncService syncService,
             PaneManager paneManager,
-            TabGroupUiActionHandler tabGroupUiActionHandler) {
+            TabGroupUiActionHandler tabGroupUiActionHandler,
+            ActionConfirmationManager actionConfirmationManager) {
         mModelList = modelList;
         mFilter = filter;
         mFaviconResolver = faviconResolver;
         mSyncService = syncService;
         mPaneManager = paneManager;
         mTabGroupUiActionHandler = tabGroupUiActionHandler;
+        mActionConfirmationManager = actionConfirmationManager;
+
         mSyncService.addObserver(mSyncObserver);
         repopulateModelList();
     }
@@ -208,7 +214,8 @@ public class TabGroupListMediator {
             builder.with(
                     TabGroupRowProperties.OPEN_RUNNABLE, () -> openGroup(savedTabGroup, state));
             builder.with(
-                    TabGroupRowProperties.DELETE_RUNNABLE, () -> deleteGroup(savedTabGroup, state));
+                    TabGroupRowProperties.DELETE_RUNNABLE,
+                    () -> processDeleteGroup(savedTabGroup, state));
 
             PropertyModel propertyModel = builder.build();
             ListItem listItem = new ListItem(0, propertyModel);
@@ -229,6 +236,15 @@ public class TabGroupListMediator {
                 (TabSwitcherPaneBase) mPaneManager.getPaneForId(PaneId.TAB_SWITCHER);
         boolean success = tabSwitcherPaneBase.requestOpenTabGroupDialog(rootId);
         assert success;
+    }
+
+    private void processDeleteGroup(SavedTabGroup savedTabGroup, @TabGroupState int state) {
+        mActionConfirmationManager.processDeleteGroupAttempt(
+                (@ConfirmationResult Integer result) -> {
+                    if (result != ConfirmationResult.CONFIRMATION_NEGATIVE) {
+                        deleteGroup(savedTabGroup, state);
+                    }
+                });
     }
 
     private void deleteGroup(SavedTabGroup savedTabGroup, @TabGroupState int state) {

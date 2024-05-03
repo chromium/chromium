@@ -35,6 +35,7 @@ import org.chromium.chrome.browser.tabmodel.TabModelFilter;
 import org.chromium.chrome.browser.tasks.tab_groups.TabGroupModelFilter;
 import org.chromium.chrome.tab_ui.R;
 import org.chromium.components.browser_ui.widget.MenuOrKeyboardActionController.MenuOrKeyboardActionHandler;
+import org.chromium.ui.modaldialog.ModalDialogManager;
 
 import java.util.function.DoubleConsumer;
 
@@ -46,6 +47,7 @@ public class TabGroupsPane implements Pane {
     private final OneshotSupplier<ProfileProvider> mProfileProviderSupplier;
     private final Supplier<PaneManager> mPaneManagerSupplier;
     private final Supplier<TabGroupUiActionHandler> mTabGroupUiActionHandlerSupplier;
+    private final Supplier<ModalDialogManager> mModalDialogManagerSupplier;
     private final FrameLayout mRootView;
     private final ObservableSupplierImpl<DisplayButtonData> mReferenceButtonSupplier =
             new ObservableSupplierImpl<>();
@@ -61,6 +63,7 @@ public class TabGroupsPane implements Pane {
      * @param profileProviderSupplier Used to fetch the current profile.
      * @param paneManagerSupplier Used to switch and communicate with other panes.
      * @param tabGroupUiActionHandlerSupplier Used to open hidden tab groups.
+     * @param modalDialogManagerSupplier Used to create confirmation dialogs.
      */
     TabGroupsPane(
             @NonNull Context context,
@@ -68,13 +71,15 @@ public class TabGroupsPane implements Pane {
             @NonNull DoubleConsumer onToolbarAlphaChange,
             @NonNull OneshotSupplier<ProfileProvider> profileProviderSupplier,
             @NonNull Supplier<PaneManager> paneManagerSupplier,
-            @NonNull Supplier<TabGroupUiActionHandler> tabGroupUiActionHandlerSupplier) {
+            @NonNull Supplier<TabGroupUiActionHandler> tabGroupUiActionHandlerSupplier,
+            @NonNull Supplier<ModalDialogManager> modalDialogManagerSupplier) {
         mContext = context;
         mTabModelFilterSupplier = tabModelFilterSupplier;
         mOnToolbarAlphaChange = onToolbarAlphaChange;
         mProfileProviderSupplier = profileProviderSupplier;
         mPaneManagerSupplier = paneManagerSupplier;
         mTabGroupUiActionHandlerSupplier = tabGroupUiActionHandlerSupplier;
+        mModalDialogManagerSupplier = modalDialogManagerSupplier;
         mReferenceButtonSupplier.set(
                 new ResourceButtonData(
                         R.string.accessibility_tab_groups,
@@ -132,7 +137,8 @@ public class TabGroupsPane implements Pane {
                             (TabGroupModelFilter) mTabModelFilterSupplier.get(),
                             mProfileProviderSupplier.get(),
                             mPaneManagerSupplier.get(),
-                            mTabGroupUiActionHandlerSupplier.get());
+                            mTabGroupUiActionHandlerSupplier.get(),
+                            mModalDialogManagerSupplier.get());
             mRootView.addView(mTabGroupListCoordinator.getView());
         } else if (loadHint == LoadHint.COLD && mTabGroupListCoordinator != null) {
             destroy();
