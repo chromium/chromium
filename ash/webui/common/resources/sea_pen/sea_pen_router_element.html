@@ -92,10 +92,10 @@
 <div id="topContainer">
   <slot></slot>
   <template is="dom-if" if="[[shouldShowTextInputQuery_(relativePath_, queryParams_.seaPenTemplateId)]]" restamp>
-    <sea-pen-input-query path="[[relativePath_]]"></sea-pen-input-query>
+    <sea-pen-input-query></sea-pen-input-query>
   </template>
   <template is="dom-if" if="[[shouldShowTemplateQuery_(relativePath_, queryParams_.seaPenTemplateId)]]" restamp>
-    <sea-pen-template-query template-id="[[queryParams_.seaPenTemplateId]]" path="[[relativePath_]]">
+    <sea-pen-template-query template-id="[[queryParams_.seaPenTemplateId]]">
     </sea-pen-template-query>
   </template>
 </div>

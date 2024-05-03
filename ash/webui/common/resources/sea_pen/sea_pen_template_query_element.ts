@@ -26,7 +26,6 @@ import {searchSeaPenThumbnails} from './sea_pen_controller.js';
 import {SeaPenTemplateChip, SeaPenTemplateId, SeaPenTemplateOption} from './sea_pen_generated.mojom-webui.js';
 import {getSeaPenProvider} from './sea_pen_interface_provider.js';
 import {logGenerateSeaPenWallpaper} from './sea_pen_metrics_logger.js';
-import {SeaPenPaths} from './sea_pen_router_element.js';
 import {WithSeaPenStore} from './sea_pen_store.js';
 import {getTemplate} from './sea_pen_template_query_element.html.js';
 import {ChipToken, getDefaultOptions, getSelectedOptionsFromQuery, getTemplateTokens, isNonEmptyArray, TemplateToken} from './sea_pen_utils.js';
@@ -61,8 +60,6 @@ export class SeaPenTemplateQueryElement extends WithSeaPenStore {
   static get properties() {
     return {
       templateId: String,
-
-      path: String,
 
       seaPenQuery_: {
         type: Object,
@@ -106,7 +103,10 @@ export class SeaPenTemplateQueryElement extends WithSeaPenStore {
         reflectToAttribute: true,
       },
 
-      thumbnails_: Object,
+      thumbnails_: {
+        type: Object,
+        observer: 'updateSearchButton_',
+      },
 
       thumbnailsLoading_: Boolean,
 
@@ -126,7 +126,6 @@ export class SeaPenTemplateQueryElement extends WithSeaPenStore {
     };
   }
 
-  path: string;
   // TODO(b/319719709) this should be SeaPenTemplateId.
   templateId: string|null;
   private inspireMeAnimation_: LottieRenderer|null|undefined;
@@ -144,7 +143,6 @@ export class SeaPenTemplateQueryElement extends WithSeaPenStore {
 
   static get observers() {
     return [
-      'updateSearchButton_(path, thumbnails_)',
       'onSeaPenTemplateOrQueryChanged_(seaPenTemplate_, seaPenQuery_)',
     ];
   }
@@ -338,25 +336,14 @@ export class SeaPenTemplateQueryElement extends WithSeaPenStore {
     event.stopPropagation();
   }
 
-  private updateSearchButton_(
-      path: string|null, thumbnails: SeaPenThumbnail[]|null) {
+  private updateSearchButton_(thumbnails: SeaPenThumbnail[]|null) {
     if (!thumbnails) {
       // The thumbnails are not loaded yet.
       this.searchButtonText_ = this.i18n('seaPenCreateButton');
       this.searchButtonIcon_ = 'sea-pen:photo-spark';
-      return;
-    }
-
-    switch (path) {
-      case SeaPenPaths.RESULTS:
-        this.searchButtonText_ = this.i18n('seaPenRecreateButton');
-        this.searchButtonIcon_ = 'personalization-shared:refresh';
-        break;
-      case SeaPenPaths.ROOT:
-      default:
-        this.searchButtonText_ = this.i18n('seaPenCreateButton');
-        this.searchButtonIcon_ = 'sea-pen:photo-spark';
-        break;
+    } else {
+      this.searchButtonText_ = this.i18n('seaPenRecreateButton');
+      this.searchButtonIcon_ = 'personalization-shared:refresh';
     }
   }
 

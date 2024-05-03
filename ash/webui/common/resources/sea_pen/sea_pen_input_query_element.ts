@@ -24,7 +24,6 @@ import {MAXIMUM_SEARCH_WALLPAPER_TEXT_BYTES, SeaPenQuery, SeaPenThumbnail} from 
 import {searchSeaPenThumbnails} from './sea_pen_controller.js';
 import {getTemplate} from './sea_pen_input_query_element.html.js';
 import {getSeaPenProvider} from './sea_pen_interface_provider.js';
-import {SeaPenPaths, SeaPenRouterElement} from './sea_pen_router_element.js';
 import {WithSeaPenStore} from './sea_pen_store.js';
 
 export class SeaPenInputQueryElement extends WithSeaPenStore {
@@ -37,8 +36,6 @@ export class SeaPenInputQueryElement extends WithSeaPenStore {
 
   static get properties() {
     return {
-      path: String,
-
       textValue_: String,
 
       thumbnails_: Object,
@@ -55,7 +52,6 @@ export class SeaPenInputQueryElement extends WithSeaPenStore {
   private textValue_: string;
   private thumbnails_: SeaPenThumbnail[]|null;
   private thumbnailsLoading_: boolean;
-  path: string;
 
   override connectedCallback() {
     assert(isSeaPenTextInputEnabled(), 'sea pen text input must be enabled');
@@ -73,40 +69,16 @@ export class SeaPenInputQueryElement extends WithSeaPenStore {
       textQuery: this.textValue_,
     };
     searchSeaPenThumbnails(query, getSeaPenProvider(), this.getStore());
-    SeaPenRouterElement.instance().goToRoute(
-        SeaPenPaths.RESULTS, {seaPenTemplateId: 'Query'});
   }
 
-  private getSearchButtonText_(
-      path: string|null, thumbnails: SeaPenThumbnail[]|null): string {
-    if (!thumbnails) {
-      // The thumbnails are not loaded yet.
-      return this.i18n('seaPenCreateButton');
-    }
-
-    switch (path) {
-      case SeaPenPaths.RESULTS:
-        return this.i18n('seaPenRecreateButton');
-      case SeaPenPaths.ROOT:
-      default:
-        return this.i18n('seaPenCreateButton');
-    }
+  private getSearchButtonText_(thumbnails: SeaPenThumbnail[]|null): string {
+    return thumbnails ? this.i18n('seaPenRecreateButton') :
+                        this.i18n('seaPenCreateButton');
   }
 
-  private getSearchButtonIcon_(
-      path: string|null, thumbnails: SeaPenThumbnail[]|null): string {
-    if (!thumbnails) {
-      // The thumbnails are not loaded yet.
-      return 'sea-pen:photo-spark';
-    }
-
-    switch (path) {
-      case SeaPenPaths.RESULTS:
-        return 'personalization-shared:refresh';
-      case SeaPenPaths.ROOT:
-      default:
-        return 'sea-pen:photo-spark';
-    }
+  private getSearchButtonIcon_(thumbnails: SeaPenThumbnail[]|null): string {
+    return thumbnails ? 'personalization-shared:refresh' :
+                        'sea-pen:photo-spark';
   }
 }
 customElements.define(SeaPenInputQueryElement.is, SeaPenInputQueryElement);

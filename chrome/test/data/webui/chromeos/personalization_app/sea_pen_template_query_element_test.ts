@@ -5,7 +5,7 @@
 import 'chrome://personalization/strings.m.js';
 import 'chrome://webui-test/chromeos/mojo_webui_test_support.js';
 
-import {SeaPenOptionsElement, SeaPenPaths, SeaPenRouterElement, SeaPenTemplateQueryElement, setTransitionsEnabled} from 'chrome://personalization/js/personalization_app.js';
+import {SeaPenOptionsElement, SeaPenRouterElement, SeaPenTemplateQueryElement, setTransitionsEnabled} from 'chrome://personalization/js/personalization_app.js';
 import {CrButtonElement} from 'chrome://resources/ash/common/cr_elements/cr_button/cr_button.js';
 import {SeaPenQuery} from 'chrome://resources/ash/common/sea_pen/sea_pen.mojom-webui.js';
 import {SeaPenTemplateId} from 'chrome://resources/ash/common/sea_pen/sea_pen_generated.mojom-webui.js';
@@ -50,7 +50,6 @@ suite('SeaPenTemplateQueryElementTest', function() {
 
   test('displays sea pen template', async () => {
     seaPenTemplateQueryElement = initElement(SeaPenTemplateQueryElement, {
-      path: SeaPenPaths.ROOT,
       templateId: SeaPenTemplateId.kFlower.toString(),
     });
     await waitAfterNextRender(seaPenTemplateQueryElement);
@@ -79,11 +78,10 @@ suite('SeaPenTemplateQueryElementTest', function() {
         searchButton!.innerText);
   });
 
-  test('displays search again button on results page', async () => {
+  test('displays recreate button if thumbnails exist', async () => {
     personalizationStore.data.wallpaper.seaPen.thumbnails =
         seaPenProvider.images;
     seaPenTemplateQueryElement = initElement(SeaPenTemplateQueryElement, {
-      path: SeaPenPaths.RESULTS,
       templateId: SeaPenTemplateId.kFlower.toString(),
     });
     await waitAfterNextRender(seaPenTemplateQueryElement);
@@ -92,15 +90,16 @@ suite('SeaPenTemplateQueryElementTest', function() {
         seaPenTemplateQueryElement.shadowRoot!.querySelector<HTMLElement>(
             '#searchButton');
     const icon = searchButton!.querySelector<HTMLElement>('iron-icon');
+
     assertEquals(
         seaPenTemplateQueryElement.i18n('seaPenRecreateButton'),
         searchButton!.innerText);
     assertEquals('personalization-shared:refresh', icon!.getAttribute('icon'));
   });
 
-  test('displays create button when no thumbnails are generated', async () => {
+  test('displays create button without thumbnails', async () => {
+    personalizationStore.data.wallpaper.seaPen.thumbnails = null;
     seaPenTemplateQueryElement = initElement(SeaPenTemplateQueryElement, {
-      path: SeaPenPaths.RESULTS,
       templateId: SeaPenTemplateId.kFlower.toString(),
     });
     await waitAfterNextRender(seaPenTemplateQueryElement);
@@ -109,6 +108,7 @@ suite('SeaPenTemplateQueryElementTest', function() {
         seaPenTemplateQueryElement.shadowRoot!.querySelector<HTMLElement>(
             '#searchButton');
     const icon = searchButton!.querySelector<HTMLElement>('iron-icon');
+
     assertEquals(
         seaPenTemplateQueryElement.i18n('seaPenCreateButton'),
         searchButton!.innerText);
@@ -119,7 +119,6 @@ suite('SeaPenTemplateQueryElementTest', function() {
     personalizationStore.data.wallpaper.seaPen.thumbnails =
         seaPenProvider.images;
     seaPenTemplateQueryElement = initElement(SeaPenTemplateQueryElement, {
-      path: SeaPenPaths.RESULTS,
       templateId: SeaPenTemplateId.kFlower.toString(),
     });
     await waitAfterNextRender(seaPenTemplateQueryElement);

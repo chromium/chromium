@@ -5,7 +5,7 @@
 import 'chrome://personalization/strings.m.js';
 import 'chrome://webui-test/chromeos/mojo_webui_test_support.js';
 
-import {SeaPenInputQueryElement, SeaPenPaths} from 'chrome://personalization/js/personalization_app.js';
+import {SeaPenInputQueryElement} from 'chrome://personalization/js/personalization_app.js';
 import {loadTimeData} from 'chrome://resources/js/load_time_data.js';
 import {assertEquals} from 'chrome://webui-test/chai_assert.js';
 import {waitAfterNextRender} from 'chrome://webui-test/polymer_test_util.js';
@@ -31,30 +31,17 @@ suite('SeaPenInputQueryElementTest', function() {
     seaPenInputQueryElement = null;
   });
 
-  test('displays search button on root page', async () => {
-    seaPenInputQueryElement =
-        initElement(SeaPenInputQueryElement, {path: SeaPenPaths.ROOT});
-    await waitAfterNextRender(seaPenInputQueryElement);
-
-    const searchButton = seaPenInputQueryElement.shadowRoot!.querySelector(
-                             '#searchButton') as HTMLElement;
-
-    assertEquals(
-        seaPenInputQueryElement.i18n('seaPenCreateButton'),
-        searchButton!.innerText);
-  });
-
-  test('displays search again button on results page', async () => {
+  test('displays recreate button if thumbnails exist', async () => {
     personalizationStore.data.wallpaper.seaPen.thumbnails =
         seaPenProvider.images;
-    seaPenInputQueryElement =
-        initElement(SeaPenInputQueryElement, {path: SeaPenPaths.RESULTS});
+    seaPenInputQueryElement = initElement(SeaPenInputQueryElement);
     await waitAfterNextRender(seaPenInputQueryElement);
 
     const searchButton =
         seaPenInputQueryElement.shadowRoot!.querySelector<HTMLElement>(
             '#searchButton');
     const icon = searchButton!.querySelector<HTMLElement>('iron-icon');
+
     assertEquals(
         seaPenInputQueryElement.i18n('seaPenRecreateButton'),
         searchButton!.innerText);
@@ -62,14 +49,15 @@ suite('SeaPenInputQueryElementTest', function() {
   });
 
   test('displays create button when no thumbnails are generated', async () => {
-    seaPenInputQueryElement =
-        initElement(SeaPenInputQueryElement, {path: SeaPenPaths.RESULTS});
+    personalizationStore.data.wallpaper.seaPen.thumbnails = null;
+    seaPenInputQueryElement = initElement(SeaPenInputQueryElement);
     await waitAfterNextRender(seaPenInputQueryElement);
 
     const searchButton =
         seaPenInputQueryElement.shadowRoot!.querySelector<HTMLElement>(
             '#searchButton');
     const icon = searchButton!.querySelector<HTMLElement>('iron-icon');
+
     assertEquals(
         seaPenInputQueryElement.i18n('seaPenCreateButton'),
         searchButton!.innerText);
