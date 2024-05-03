@@ -78,13 +78,7 @@ bool IsUserEligibleForAccountStorage(const PrefService* pref_service,
 
   switch (sync_service->GetTransportState()) {
     case syncer::SyncService::TransportState::DISABLED:
-      return false;
     case syncer::SyncService::TransportState::PAUSED:
-      // `prefs::kExplicitBrowserSignin` is false for users who signed in
-      // implicitly through the Dice web signin in a previous run.
-      if (pref_service->GetBoolean(::prefs::kExplicitBrowserSignin)) {
-        break;
-      }
       return false;
     case syncer::SyncService::TransportState::START_DEFERRED:
     case syncer::SyncService::TransportState::INITIALIZING:

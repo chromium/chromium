@@ -394,11 +394,7 @@ void MigrateDeclinedSaveOptInToExplicitOptOut(PrefService* pref_service) {
 bool ShouldShowAccountStorageSettingToggle(
     const PrefService* pref_service,
     const syncer::SyncService* sync_service) {
-  return AreAccountStorageOptInPromosAllowed()
-             ? (IsOptedInForAccountStorage(pref_service, sync_service) ||
-                ShouldShowAccountStorageOptIn(pref_service, sync_service))
-             : internal::IsUserEligibleForAccountStorage(pref_service,
-                                                         sync_service);
+  return internal::IsUserEligibleForAccountStorage(pref_service, sync_service);
 }
 
 bool AreAccountStorageOptInPromosAllowed() {

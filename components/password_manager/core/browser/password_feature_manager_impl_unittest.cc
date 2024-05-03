@@ -153,7 +153,7 @@ TEST_P(PasswordFeatureManagerImplExplicitSigninParamTest,
             !IsExplicitSignin());
 }
 
-// When signin is explicit, account storage remains enabled in auth errors.
+// When signin is explicit, account storage remains disabled in auth errors.
 TEST_P(PasswordFeatureManagerImplExplicitSigninParamTest,
        OptedInIfSigninPaused) {
   sync_service_.SetAccountInfo(account_);
@@ -165,9 +165,7 @@ TEST_P(PasswordFeatureManagerImplExplicitSigninParamTest,
             syncer::SyncService::TransportState::PAUSED);
   ASSERT_EQ(password_manager::sync_util::GetPasswordSyncState(&sync_service_),
             password_manager::sync_util::SyncState::kNotActive);
-
-  EXPECT_EQ(password_feature_manager_.IsOptedInForAccountStorage(),
-            IsExplicitSignin());
+  EXPECT_FALSE(password_feature_manager_.IsOptedInForAccountStorage());
 }
 
 INSTANTIATE_FEATURE_OVERRIDE_TEST_SUITE(
