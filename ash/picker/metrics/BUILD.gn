@@ -18,6 +18,7 @@ static_library("metrics") {
   ]
 
   deps = [
+    "//ash/public/cpp:cpp",
     "//base",
     "//components/metrics/structured:structured_events",
     "//ui/base/ime",
