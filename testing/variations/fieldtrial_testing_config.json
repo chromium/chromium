@@ -11949,6 +11949,21 @@
             ]
         }
     ],
+    "NavBarColorMatchesTabBackground": [
+        {
+            "platforms": [
+                "android"
+            ],
+            "experiments": [
+                {
+                    "name": "Enabled",
+                    "enable_features": [
+                        "NavBarColorMatchesTabBackground"
+                    ]
+                }
+            ]
+        }
+    ],
     "NavigationPredictorIntersectionObserver": [
         {
             "platforms": [
