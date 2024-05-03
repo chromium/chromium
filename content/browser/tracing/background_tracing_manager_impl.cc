@@ -596,17 +596,6 @@ bool BackgroundTracingManagerImpl::SetActiveScenario(
     return false;
   }
 
-#if !BUILDFLAG(USE_PERFETTO_CLIENT_LIBRARY)
-  // If startup config was not set and we're not a SYSTEM scenario (system
-  // might already have started a trace in the background) but tracing was
-  // enabled, then do not set any scenario.
-  if (base::trace_event::TraceLog::GetInstance()->IsEnabled() &&
-      !startup_tracing_enabled &&
-      config_impl->tracing_mode() != BackgroundTracingConfigImpl::SYSTEM) {
-    return false;
-  }
-#endif
-
   if (config_impl->upload_limit_kb()) {
     upload_limit_kb_ = *config_impl->upload_limit_kb();
   }

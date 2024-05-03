@@ -186,9 +186,6 @@ class CastDataSource : public tracing::PerfettoTracedProcess::DataSourceBase {
   void StopTracingImpl(base::OnceClosure stop_complete_callback) override {
     DCHECK_CALLED_ON_VALID_SEQUENCE(perfetto_sequence_checker_);
     DCHECK(session_);
-#if !BUILDFLAG(USE_PERFETTO_CLIENT_LIBRARY)
-    DCHECK(producer_);
-#endif
     if (!session_started_) {
       session_started_callback_ =
           base::BindOnce(&CastDataSource::StopTracing, base::Unretained(this),
@@ -197,9 +194,6 @@ class CastDataSource : public tracing::PerfettoTracedProcess::DataSourceBase {
     }
 
     trace_writer_ = std::make_unique<SystemTraceWriter>(
-#if !BUILDFLAG(USE_PERFETTO_CLIENT_LIBRARY)
-        producer_,
-#endif
         target_buffer_, SystemTraceWriter::TraceType::kFTrace);
     stop_complete_callback_ = std::move(stop_complete_callback);
     session_->StopTracing(base::BindRepeating(&CastDataSource::OnTraceData,
@@ -213,14 +207,10 @@ class CastDataSource : public tracing::PerfettoTracedProcess::DataSourceBase {
 
  private:
   friend class base::NoDestructor<CastDataSource>;
-#if BUILDFLAG(USE_PERFETTO_CLIENT_LIBRARY)
   using DataSourceProxy =
       tracing::PerfettoTracedProcess::DataSourceProxy<CastDataSource>;
   using SystemTraceWriter =
       tracing::SystemTraceWriter<std::string, DataSourceProxy>;
-#else
-  using SystemTraceWriter = tracing::SystemTraceWriter<std::string>;
-#endif
 
   CastDataSource()
       : DataSourceBase(tracing::mojom::kSystemTraceDataSourceName),
@@ -229,11 +219,9 @@ class CastDataSource : public tracing::PerfettoTracedProcess::DataSourceBase {
              base::TaskShutdownBehavior::SKIP_ON_SHUTDOWN})) {
     DETACH_FROM_SEQUENCE(perfetto_sequence_checker_);
     tracing::PerfettoTracedProcess::Get()->AddDataSource(this);
-#if BUILDFLAG(USE_PERFETTO_CLIENT_LIBRARY)
     perfetto::DataSourceDescriptor dsd;
     dsd.set_name(tracing::mojom::kSystemTraceDataSourceName);
     DataSourceProxy::Register(dsd, this);
-#endif
   }
 
   void SystemTracerStarted(bool success) {

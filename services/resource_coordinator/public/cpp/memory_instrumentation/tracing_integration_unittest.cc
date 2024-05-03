@@ -144,11 +144,9 @@ class MemoryTracingIntegrationTest : public testing::Test {
         std::make_unique<base::test::SingleThreadTaskEnvironment>();
     coordinator_ = std::make_unique<MockCoordinator>(this);
 
-#if BUILDFLAG(USE_PERFETTO_CLIENT_LIBRARY)
     TraceLog::GetInstance()->InitializePerfettoIfNeeded();
     tracing::PerfettoTracedProcess::GetTaskRunner()->ResetTaskRunnerForTesting(
         base::SingleThreadTaskRunner::GetCurrentDefault());
-#endif
 
     TracingObserverProto::GetInstance()->ResetForTesting();
   }

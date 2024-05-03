@@ -29,7 +29,6 @@
 #include "third_party/perfetto/protos/perfetto/common/tracing_service_state.gen.h"
 #endif
 
-#if BUILDFLAG(USE_PERFETTO_CLIENT_LIBRARY)
 namespace content {
 
 namespace {
@@ -725,4 +724,3 @@ IN_PROC_BROWSER_TEST_F(SystemTracingEndToEndBrowserTest,
 #endif  // BUILDFLAG(IS_POSIX)
 
 }  // namespace content
-#endif  // BUILDFLAG(USE_PERFETTO_CLIENT_LIBRARY)

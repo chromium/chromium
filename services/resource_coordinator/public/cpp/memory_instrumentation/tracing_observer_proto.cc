@@ -82,7 +82,6 @@ bool TracingObserverProto::AddChromeDumpToTraceIfEnabled(
     process_memory_dump->SerializeAllocatorDumpsInto(memory_snapshot, pid);
   };
 
-#if BUILDFLAG(USE_PERFETTO_CLIENT_LIBRARY)
   DataSourceProxy::Trace([&](DataSourceProxy::TraceContext ctx) {
     write_packet(ctx.NewTracePacket());
   });
@@ -94,13 +93,6 @@ bool TracingObserverProto::AddChromeDumpToTraceIfEnabled(
       std::move(on_chrome_dump_callback_for_testing_).Run();
     }
   }
-#else   // !BUILDFLAG(USE_PERFETTO_CLIENT_LIBRARY)
-  base::AutoLock lock(writer_lock_);
-  if (!trace_writer_)
-    return false;
-
-  write_packet(trace_writer_->NewTracePacket());
-#endif  // !BUILDFLAG(USE_PERFETTO_CLIENT_LIBRARY)
 
   return true;
 }
@@ -144,22 +136,12 @@ bool TracingObserverProto::AddOsDumpToTraceIfEnabled(
         smaps_packet->Finalize();
       };
 
-#if BUILDFLAG(USE_PERFETTO_CLIENT_LIBRARY)
   DataSourceProxy::Trace([&](DataSourceProxy::TraceContext ctx) {
     write_process_stats_packet(ctx.NewTracePacket());
     if (memory_maps.size())
       write_memory_maps_packet(ctx.NewTracePacket());
   });
   Flush({});
-#else   // !BUILDFLAG(USE_PERFETTO_CLIENT_LIBRARY)
-  base::AutoLock lock(writer_lock_);
-  if (!trace_writer_)
-    return false;
-
-  write_process_stats_packet(trace_writer_->NewTracePacket());
-  if (memory_maps.size())
-    write_memory_maps_packet(trace_writer_->NewTracePacket());
-#endif  // !BUILDFLAG(USE_PERFETTO_CLIENT_LIBRARY)
 
   return true;
 }
