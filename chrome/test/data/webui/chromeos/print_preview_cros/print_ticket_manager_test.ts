@@ -450,5 +450,8 @@ suite('PrintTicketManager', () => {
         assertEquals(
             undefined, ticket.marginsCustom,
             'Ticket marginsCustom optional property should not be set');
+        assertEquals(
+            DEFAULT_PARTIAL_PRINT_TICKET.mediaSize, ticket.mediaSize,
+            'Ticket mediaSize should match DEFAULT_PARTIAL_PRINT_TICKET');
       });
 });

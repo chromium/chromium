@@ -61,6 +61,16 @@ export interface MarginsSetting {
   marginLeft: number;
 }
 
+export interface MediaSize {
+  widthMicrons: number;
+  heightMicrons: number;
+  imageableAreaLeftMicrons?: number;
+  imageableAreaBottomMicrons?: number;
+  imageableAreaRightMicrons?: number;
+  imageableAreaTopMicrons?: number;
+  hasBorderlessVariant?: boolean;
+}
+
 // PrintTicket represents the data required to start print job. Ticket will be
 // used to create a settings dictionary with fields matching the existing Chrome
 // preview print settings for reusability.
@@ -111,6 +121,10 @@ export interface PrintTicket {
 
   // Margins defined by users when marginsType is MarginType.CUSTOM_MARGINS.
   marginsCustom?: MarginsSetting;
+
+  // Used to set requested media and printable area size.
+  // See: printing/print_settings_conversion.cc
+  mediaSize: MediaSize;
 }
 
 // Immutable session configuration details for the current CrOS preview request.
