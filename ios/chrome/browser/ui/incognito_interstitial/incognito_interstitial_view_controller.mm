@@ -102,14 +102,12 @@ const CGFloat kTitleLabelLineHeightMultiple = 1.3;
   self.modalInPresentation = YES;
 
   // Creating the Incognito view (same one as NTP).
-  UIScrollView* incognitoView = NULL;
-  IncognitoView* revampedIncognitoView =
+  IncognitoView* incognitoView =
       [[IncognitoView alloc] initWithFrame:CGRectZero
              showTopIncognitoImageAndTitle:NO
                  stackViewHorizontalMargin:0
                          stackViewMaxWidth:CGFLOAT_MAX];
-  revampedIncognitoView.URLLoaderDelegate = self.URLLoaderDelegate;
-  incognitoView = revampedIncognitoView;
+  incognitoView.URLLoaderDelegate = self.URLLoaderDelegate;
   incognitoView.translatesAutoresizingMaskIntoConstraints = NO;
   incognitoView.bounces = NO;
 
@@ -160,7 +158,6 @@ const CGFloat kTitleLabelLineHeightMultiple = 1.3;
   [self.navigationBar pushNavigationItem:navigationRootItem animated:false];
   [self updateNavigationBarAppearance];
 
-  incognitoView.translatesAutoresizingMaskIntoConstraints = NO;
   [NSLayoutConstraint activateConstraints:@[
     [stackView.leadingAnchor
         constraintEqualToAnchor:self.specificContentView.leadingAnchor],
