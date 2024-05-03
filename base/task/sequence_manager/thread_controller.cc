@@ -117,23 +117,30 @@ std::string ThreadController::RunLevelTracker::RunLevel::GetSuffixForHistogram(
 }
 
 void ThreadController::EnableMessagePumpTimeKeeperMetrics(
-    const char* thread_name) {
+    const char* thread_name,
+    bool wall_time_based_metrics_enabled_for_testing) {
   // MessagePump runs too fast, a low-res clock would result in noisy metrics.
   if (!base::TimeTicks::IsHighResolution())
     return;
 
-  run_level_tracker_.EnableTimeKeeperMetrics(thread_name);
+  run_level_tracker_.EnableTimeKeeperMetrics(
+      thread_name, wall_time_based_metrics_enabled_for_testing);
 }
 
 void ThreadController::RunLevelTracker::EnableTimeKeeperMetrics(
-    const char* thread_name) {
-  time_keeper_.EnableRecording(thread_name);
+    const char* thread_name,
+    bool wall_time_based_metrics_enabled_for_testing) {
+  time_keeper_.EnableRecording(thread_name,
+                               wall_time_based_metrics_enabled_for_testing);
 }
 
 void ThreadController::RunLevelTracker::TimeKeeper::EnableRecording(
-    const char* thread_name) {
+    const char* thread_name,
+    bool wall_time_based_metrics_enabled_for_testing) {
   DCHECK(!histogram_);
   thread_name_ = thread_name;
+  wall_time_based_metrics_enabled_for_testing_ =
+      wall_time_based_metrics_enabled_for_testing;
 
   histogram_ = LinearHistogram::FactoryGet(
       JoinString({"Scheduling.MessagePumpTimeKeeper", thread_name}, "."), 1,
@@ -162,8 +169,7 @@ void ThreadController::RunLevelTracker::OnRunLoopStarted(State initial_state,
   DCHECK_CALLED_ON_VALID_THREAD(outer_->associated_thread_->thread_checker);
 
   const bool is_nested = !run_levels_.empty();
-  run_levels_.emplace(initial_state, is_nested, time_keeper_, lazy_now
-  );
+  run_levels_.emplace(initial_state, is_nested, time_keeper_, lazy_now);
 
   // In unit tests, RunLoop::Run() acts as the initial wake-up.
   if (!is_nested && initial_state != kIdle)
@@ -324,6 +330,13 @@ ThreadController::RunLevelTracker::RunLevel::RunLevel(RunLevel&& other) =
 
 void ThreadController::RunLevelTracker::RunLevel::LogPercentageMetric(
     const char* name,
+    int percentage) {
+  UmaHistogramPercentage(
+      base::StrCat({name, base::StrCat({".", GetThreadName()})}), percentage);
+}
+
+void ThreadController::RunLevelTracker::RunLevel::LogPercentageMetric(
+    const char* name,
     int percentage,
     base::TimeDelta interval_duration) {
   UmaHistogramPercentage(base::StrCat({name, GetSuffixForCatchAllHistogram()}),
@@ -361,12 +374,18 @@ void ThreadController::RunLevelTracker::RunLevel::LogOnActiveMetrics(
     LogIntervalMetric("Scheduling.ThreadController.IdleDuration", idle_time,
                       idle_time);
     last_active_end_ = base::TimeTicks();
+    accumulated_idle_time_ += idle_time;
   }
 
   // Taking thread ticks can be expensive. Make sure to do it rarely enough to
   // not have a discernible impact on performance.
   static const bool thread_ticks_supported = ThreadTicks::IsSupported();
-  if (thread_ticks_supported && metrics_sub_sampler_.ShouldSample(0.001)) {
+  // Disable subsampling to support wall-time based metrics. Only supported for
+  // testing purposes. By default, the subsampling probability is 0.1%.
+  const double probability =
+      time_keeper_->wall_time_based_metrics_enabled_for_testing() ? 1.0 : 0.001;
+  if (thread_ticks_supported &&
+      metrics_sub_sampler_.ShouldSample(probability)) {
     last_active_start_ = lazy_now.Now();
     last_active_threadtick_start_ = ThreadTicks::Now();
   }
@@ -401,6 +420,44 @@ void ThreadController::RunLevelTracker::RunLevel::LogOnIdleMetrics(
     LogPercentageMetric(
         "Scheduling.ThreadController.ActiveIntervalOnCpuPercentage",
         active_interval_cpu_percentage, elapsed_ticks);
+
+    if (time_keeper_->wall_time_based_metrics_enabled_for_testing()) {
+      accumulated_active_time_ += elapsed_ticks;
+      accumulated_active_on_cpu_time_ += elapsed_thread_ticks;
+      accumulated_active_off_cpu_time_ +=
+          (elapsed_ticks - elapsed_thread_ticks);
+
+      // Accumulated wall-time since last wall-time based metric was stored.
+      const base::TimeDelta accumulated_wall_time =
+          accumulated_active_time_ + accumulated_idle_time_;
+
+      // Add wall-time based ratio metrics (in percent) when the total sum of
+      // active and idle times is larger than one second.
+      if (accumulated_wall_time > Seconds(1)) {
+        const int active_vs_wall_time_percentage = checked_cast<int>(
+            (accumulated_active_time_ * 100).IntDiv(accumulated_wall_time));
+        LogPercentageMetric(
+            "Scheduling.ThreadController.ActiveVsWallTimePercentage",
+            active_vs_wall_time_percentage);
+        const int active_on_cpu_vs_wall_time_percentage =
+            checked_cast<int>((accumulated_active_on_cpu_time_ * 100)
+                                  .IntDiv(accumulated_wall_time));
+        LogPercentageMetric(
+            "Scheduling.ThreadController.ActiveOnCpuVsWallTimePercentage",
+            active_on_cpu_vs_wall_time_percentage);
+        const int active_off_cpu_vs_wall_time_percentage =
+            checked_cast<int>((accumulated_active_off_cpu_time_ * 100)
+                                  .IntDiv(accumulated_wall_time));
+        LogPercentageMetric(
+            "Scheduling.ThreadController.ActiveOffCpuVsWallTimePercentage",
+            active_off_cpu_vs_wall_time_percentage);
+
+        accumulated_idle_time_ = base::TimeDelta();
+        accumulated_active_time_ = base::TimeDelta();
+        accumulated_active_on_cpu_time_ = base::TimeDelta();
+        accumulated_active_off_cpu_time_ = base::TimeDelta();
+      }
+    }
 
     // Reset timings.
     last_active_start_ = base::TimeTicks();

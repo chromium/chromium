@@ -1130,8 +1130,10 @@ bool SequenceManagerImpl::IsIdleForTesting() {
 }
 
 void SequenceManagerImpl::EnableMessagePumpTimeKeeperMetrics(
-    const char* thread_name) {
-  controller_->EnableMessagePumpTimeKeeperMetrics(thread_name);
+    const char* thread_name,
+    bool wall_time_based_metrics_enabled_for_testing) {
+  controller_->EnableMessagePumpTimeKeeperMetrics(
+      thread_name, wall_time_based_metrics_enabled_for_testing);
 }
 
 size_t SequenceManagerImpl::GetPendingTaskCountForTesting() const {

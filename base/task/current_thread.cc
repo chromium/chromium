@@ -71,8 +71,10 @@ bool CurrentThread::IsIdleForTesting() {
 }
 
 void CurrentThread::EnableMessagePumpTimeKeeperMetrics(
-    const char* thread_name) {
-  return current_->EnableMessagePumpTimeKeeperMetrics(thread_name);
+    const char* thread_name,
+    bool wall_time_based_metrics_enabled_for_testing) {
+  return current_->EnableMessagePumpTimeKeeperMetrics(
+      thread_name, wall_time_based_metrics_enabled_for_testing);
 }
 
 void CurrentThread::AddTaskObserver(TaskObserver* task_observer) {

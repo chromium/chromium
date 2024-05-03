@@ -209,7 +209,12 @@ class BASE_EXPORT CurrentThread {
 
   // Enables ThreadControllerWithMessagePumpImpl's TimeKeeper metrics.
   // `thread_name` will be used as a suffix.
-  void EnableMessagePumpTimeKeeperMetrics(const char* thread_name);
+  // Setting `wall_time_based_metrics_enabled_for_testing` adds wall-time
+  // based metrics for this thread. This is only for test environments as it
+  // disables subsampling.
+  void EnableMessagePumpTimeKeeperMetrics(
+      const char* thread_name,
+      bool wall_time_based_metrics_enabled_for_testing = false);
 
  protected:
   explicit CurrentThread(

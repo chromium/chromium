@@ -79,7 +79,9 @@ class ThreadControllerForTest : public ThreadControllerWithMessagePumpImpl {
     // EnableMessagePumpTimeKeeperMetrics is a no-op on hardware which lacks
     // high-res clocks.
     ASSERT_TRUE(TimeTicks::IsHighResolution());
-    EnableMessagePumpTimeKeeperMetrics("TestMainThread");
+    EnableMessagePumpTimeKeeperMetrics(
+        "TestMainThread",
+        /*wall_time_based_metrics_enabled_for_testing=*/false);
   }
 
   // Optionally emplaced, strict from then on.

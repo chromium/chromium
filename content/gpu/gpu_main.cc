@@ -24,6 +24,7 @@
 #include "base/run_loop.h"
 #include "base/strings/string_number_conversions.h"
 #include "base/system/sys_info.h"
+#include "base/task/current_thread.h"
 #include "base/task/single_thread_task_executor.h"
 #include "base/task/thread_pool/thread_pool_instance.h"
 #include "base/threading/platform_thread.h"
@@ -422,6 +423,15 @@ int GpuMain(MainFunctionParams parameters) {
       switches::kGpuProcess);
 
   base::HighResolutionTimerManager hi_res_timer_manager;
+
+  // Adds support of wall-time based TimerKeeper metrics for the main GPU thread
+  // when command-line flag is set. CrGpuMain will be used as suffix for each
+  // metric.
+  if (command_line.HasSwitch(switches::kEnableGpuMainTimeKeeperMetrics)) {
+    base::CurrentThread::Get()->EnableMessagePumpTimeKeeperMetrics(
+        "CrGpuMain",
+        /*wall_time_based_metrics_enabled_for_testing=*/true);
+  }
 
   {
     TRACE_EVENT0("gpu", "Run Message Loop");

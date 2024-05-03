@@ -152,4 +152,9 @@ const char kShaderCachePath[] = "shader-cache-path";
 // https://learn.microsoft.com/en-us/windows/ai/directml/dml-version-history
 const char kUseRedistributableDirectML[] = "use-redist-dml";
 
+// Enables ThreadControllerWithMessagePumpImpl's TimeKeeper UMA metrics using
+// CrGpuMain as suffix.
+const char kEnableGpuMainTimeKeeperMetrics[] =
+    "enable-gpu-main-time-keeper-metrics";
+
 }  // namespace switches
