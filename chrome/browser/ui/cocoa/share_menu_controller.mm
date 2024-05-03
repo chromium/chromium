@@ -10,6 +10,7 @@
 #include "base/mac/mac_util.h"
 #include "base/memory/weak_ptr.h"
 #include "base/metrics/histogram_macros.h"
+#include "base/run_loop.h"
 #include "base/strings/sys_string_conversions.h"
 #include "chrome/app/chrome_command_ids.h"
 #include "chrome/browser/global_keyboard_shortcuts_mac.h"
@@ -224,11 +225,14 @@ bool CanShare() {
     _activity.title = title;
     [_activity becomeCurrent];
   }
-
+  base::RunLoop run_loop;
+  auto done = run_loop.QuitClosure();
   [self saveTransitionDataFromBrowser:browser
                          whenComplete:base::BindOnce(^{
                            [service performWithItems:@[ url ]];
+                           std::move(done).Run();
                          })];
+  run_loop.Run();
 }
 
 // Opens the "Sharing" subpane of the "Extensions" macOS preference pane.
