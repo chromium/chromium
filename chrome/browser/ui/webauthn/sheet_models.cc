@@ -607,7 +607,7 @@ bool AuthenticatorTouchIdSheetModel::IsCancelButtonVisible() const {
 }
 
 std::u16string AuthenticatorTouchIdSheetModel::GetAcceptButtonLabel() const {
-  return u"Use password (UT)";
+  return l10n_util::GetStringUTF16(IDS_WEBAUTHN_TOUCH_ID_ENTER_PASSWORD);
 }
 
 void AuthenticatorTouchIdSheetModel::OnAccept() {

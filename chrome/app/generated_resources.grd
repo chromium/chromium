@@ -16092,6 +16092,12 @@ Please help our engineers fix this problem. Tell us what happened right before y
       <message name="IDS_WEBAUTHN_TOUCH_ID_CONTINUE" desc="A label that appears under a fingerprint symbol. Chrome is waiting for the user to use their fingerprint sensor in order to sign into a website. When they do so, the process will continue automatically. 'Touch ID' is an Apple-specific term for their fingerprint sensors. You might want to play with the language in the following URL to see how Apple translate this term: https://support.apple.com/en-us/102528">
         Touch ID to continue
       </message>
+      <message name="IDS_WEBAUTHN_TOUCH_ID_LOCKED" desc="This string appears in an authentication dialog users see after they choose to sign in to a website. It means the user can no longer use Touch ID (fingerprint) to sign in. The second sentence means they can enter a password to continue. Note the intentional use of “enter” as a verb. The main UI asks users to “use” a passkey to sign in. If possible, please distinguish between using a passkey to sign in and entering a password to continue (verify).">
+        Touch ID is locked. To continue, enter your password.
+      </message>
+      <message name="IDS_WEBAUTHN_TOUCH_ID_ENTER_PASSWORD" desc="A label on a button that appears after the user has repeatedly tried to use their fingerprint to authenticate, but the laptop believes that the fingerprint is incorrect. After enough failed attempts the fingerprint reader is disabled and the user must enter their local system password to authenticate. They do so by clicking this button.">
+        Enter password
+      </message>
 
       <!-- Side Search -->
       <message name="IDS_ACCNAME_SIDE_SEARCH_TOOL" desc="The accessible name for the side search tool.">

@@ -65,7 +65,7 @@ AuthenticatorTouchIdView::BuildStepSpecificContent() {
         std::make_unique<views::ImageView>(ui::ImageModel::FromVectorIcon(
             vector_icons::kLockIcon, ui::kColorMenuIcon, kLockIconSize)));
     container->AddChildView(std::make_unique<views::Label>(
-        u"Touch ID locked. Use your password to unlock. (UT)"));
+        l10n_util::GetStringUTF16(IDS_WEBAUTHN_TOUCH_ID_LOCKED)));
   }
   return {std::move(container), AutoFocus::kNo};
 }
