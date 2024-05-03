@@ -29,7 +29,6 @@
 #include "remoting/host/setup/host_starter.h"
 #include "remoting/host/setup/oauth_host_starter.h"
 #include "remoting/host/setup/pin_validator.h"
-#include "remoting/host/usage_stats_consent.h"
 #include "services/network/public/cpp/shared_url_loader_factory.h"
 #include "services/network/transitional_url_loader_factory_owner.h"
 
@@ -360,12 +359,6 @@ int StartHostMain(int argc, char** argv) {
       logging::LOG_TO_SYSTEM_DEBUG_LOG | logging::LOG_TO_STDERR;
   logging::InitLogging(settings);
 
-#if defined(REMOTING_ENABLE_BREAKPAD)
-  if (IsUsageStatsAllowed()) {
-    InitializeCrashReporting();
-  }
-#endif  // defined(REMOTING_ENABLE_BREAKPAD)
-
   base::ThreadPoolInstance::CreateAndStartWithDefaultParams(
       "RemotingHostSetup");
 
@@ -416,6 +409,14 @@ int StartHostMain(int argc, char** argv) {
     PrintDefaultHelpMessage(argv[0]);
     return 1;
   }
+
+#if defined(REMOTING_ENABLE_BREAKPAD)
+  // We don't have a config file yet so we can't use IsUsageStatsAllowed(),
+  // instead we can just check the command line parameter.
+  if (params.enable_crash_reporting) {
+    InitializeCrashReporting();
+  }
+#endif  // defined(REMOTING_ENABLE_BREAKPAD)
 
   // Provide SingleThreadTaskExecutor and threads for the
   // URLRequestContextGetter.
