@@ -42,6 +42,8 @@
 #include "content/services/auction_worklet/public/mojom/auction_worklet_service.mojom.h"
 #include "content/services/auction_worklet/public/mojom/bidder_worklet.mojom-shared.h"
 #include "content/services/auction_worklet/public/mojom/private_aggregation_request.mojom.h"
+#include "content/services/auction_worklet/public/mojom/real_time_reporting.mojom.h"
+#include "content/services/auction_worklet/real_time_reporting_bindings.h"
 #include "content/services/auction_worklet/register_ad_beacon_bindings.h"
 #include "content/services/auction_worklet/register_ad_macro_bindings.h"
 #include "content/services/auction_worklet/report_bindings.h"
@@ -759,6 +761,7 @@ BidderWorklet::V8State::SingleGenerateBidResult::SingleGenerateBidResult(
     base::flat_map<std::string, mojom::PrioritySignalsDoublePtr>
         update_priority_signals_overrides,
     PrivateAggregationRequests pa_requests,
+    RealTimeReportingContributions real_time_contributions,
     mojom::RejectReason reject_reason,
     std::vector<std::string> error_msgs)
     : context_recycler_for_rerun(std::move(context_recycler_for_rerun)),
@@ -770,6 +773,7 @@ BidderWorklet::V8State::SingleGenerateBidResult::SingleGenerateBidResult(
       update_priority_signals_overrides(
           std::move(update_priority_signals_overrides)),
       pa_requests(std::move(pa_requests)),
+      real_time_contributions(std::move(real_time_contributions)),
       reject_reason(reject_reason),
       error_msgs(std::move(error_msgs)) {}
 
@@ -1121,7 +1125,8 @@ void BidderWorklet::V8State::GenerateBid(
   if (!result.has_value()) {
     PostErrorBidCallbackToUserThread(
         std::move(callback),
-        /*bidding_latency=*/base::TimeTicks::Now() - bidding_start);
+        /*bidding_latency=*/base::TimeTicks::Now() - bidding_start,
+        PrivateAggregationRequests(), RealTimeReportingContributions());
     return;
   }
 
@@ -1184,6 +1189,7 @@ void BidderWorklet::V8State::GenerateBid(
             /*set_priority=*/std::nullopt,
             /*update_priority_signals_overrides=*/{},
             /*pa_requests=*/{},
+            /*real_time_contributions=*/{},
             /*reject_reason=*/mojom::RejectReason::kNotAvailable,
             /*error_msgs=*/{});
       }
@@ -1214,7 +1220,8 @@ void BidderWorklet::V8State::GenerateBid(
           PostErrorBidCallbackToUserThread(
               std::move(callback),
               /*bidding_latency=*/base::TimeTicks::Now() - bidding_start,
-              std::move(non_kanon_pa_requests));
+              std::move(non_kanon_pa_requests),
+              std::move(result->real_time_contributions));
           return;
         }
         result = std::move(restricted_result);
@@ -1237,6 +1244,7 @@ void BidderWorklet::V8State::GenerateBid(
                      std::move(result->update_priority_signals_overrides),
                      std::move(result->pa_requests),
                      std::move(result->non_kanon_pa_requests),
+                     std::move(result->real_time_contributions),
                      /*bidding_latency=*/base::TimeTicks::Now() - bidding_start,
                      result->reject_reason, std::move(result->error_msgs)));
 }
@@ -1287,6 +1295,7 @@ BidderWorklet::V8State::RunGenerateBidOnce(
         /*set_priority=*/std::nullopt,
         /*update_priority_signals_overrides=*/{},
         /*pa_requests=*/{},
+        /*real_time_contributions=*/{},
         /*reject_reason=*/mojom::RejectReason::kNotAvailable,
         std::move(errors_out)));
   }
@@ -1373,6 +1382,7 @@ BidderWorklet::V8State::RunGenerateBidOnce(
           /*set_priority=*/std::nullopt,
           /*update_priority_signals_overrides=*/{},
           /*pa_requests=*/{},
+          /*real_time_contributions=*/{},
           /*reject_reason=*/mojom::RejectReason::kNotAvailable,
           std::move(errors_out)));
     }
@@ -1612,8 +1622,26 @@ BidderWorklet::V8State::RunGenerateBidOnce(
               "generateBid", args, total_timeout.get(), errors_out)
           .ToLocal(&generate_bid_result);
   TRACE_EVENT_NESTABLE_ASYNC_END0("fledge", "generate_bid", trace_id);
+
+  base::TimeDelta time_duration = base::TimeTicks::Now() - start;
   base::UmaHistogramTimes("Ads.InterestGroup.Auction.GenerateBidTime",
-                          base::TimeTicks::Now() - start);
+                          time_duration);
+
+  std::vector<auction_worklet::mojom::RealTimeReportingContributionPtr>
+      real_time_contributions = context_recycler->real_time_reporting_bindings()
+                                    ->TakeRealTimeReportingContributions();
+
+  // Remove worklet latency contributions if the worklet execution time is
+  // within the threshold.
+  std::erase_if(
+      real_time_contributions,
+      [time_duration](
+          const auction_worklet::mojom::RealTimeReportingContributionPtr&
+              contribution) {
+        return contribution->latency_threshold.has_value() &&
+               time_duration.InMilliseconds() <=
+                   contribution->latency_threshold.value();
+      });
 
   if (got_return_value) {
     IdlConvert::Status status =
@@ -1628,12 +1656,12 @@ BidderWorklet::V8State::RunGenerateBidOnce(
   if (!context_recycler->set_bid_bindings()->has_bids()) {
     // If no bid was returned (due to an error or just not choosing to bid), or
     // the method timed out and no intermediate result was given through
-    // `setBid()`, return an error. Keep debug loss reports and Private
-    // Aggregation API requests since `generateBid()` might use them to detect
-    // script timeout or failures. Keep any set priority and set priority
-    // overrides because an interest group may want to update them even when not
-    // bidding. No need to return a ContextRecycler since this will not be
-    // re-run.
+    // `setBid()`, return an error. Keep debug loss reports, Private
+    // Aggregation requests and real time reporting contributions  since
+    // `generateBid()` might use them to detect script timeout or failures. Keep
+    // any set priority and set priority overrides because an interest group may
+    // want to update them even when not bidding. No need to return a
+    // ContextRecycler since this will not be re-run.
     return std::make_optional(SingleGenerateBidResult(
         std::unique_ptr<ContextRecycler>(),
         std::vector<SetBidBindings::BidAndComponentTarget>(),
@@ -1645,6 +1673,7 @@ BidderWorklet::V8State::RunGenerateBidOnce(
             ->TakeSetPrioritySignalsOverrides(),
         context_recycler->private_aggregation_bindings()
             ->TakePrivateAggregationRequests(),
+        std::move(real_time_contributions),
         context_recycler->set_bid_bindings()->reject_reason(),
         std::move(errors_out)));
   }
@@ -1663,7 +1692,8 @@ BidderWorklet::V8State::RunGenerateBidOnce(
           ->TakeSetPrioritySignalsOverrides(),
       context_recycler->private_aggregation_bindings()
           ->TakePrivateAggregationRequests(),
-      mojom::RejectReason::kNotAvailable, std::move(errors_out)));
+      std::move(real_time_contributions), mojom::RejectReason::kNotAvailable,
+      std::move(errors_out)));
 }
 
 std::unique_ptr<ContextRecycler>
@@ -1699,6 +1729,7 @@ BidderWorklet::V8State::CreateContextRecyclerAndRunTopLevelForGenerateBid(
   context_recycler->AddForDebuggingOnlyBindings();
   context_recycler->AddPrivateAggregationBindings(
       permissions_policy_state_->private_aggregation_allowed);
+  context_recycler->AddRealTimeReportingBindings();
 
   if (base::FeatureList::IsEnabled(blink::features::kSharedStorageAPI)) {
     context_recycler->AddSharedStorageBindings(
@@ -1782,6 +1813,7 @@ void BidderWorklet::V8State::PostErrorBidCallbackToUserThread(
     GenerateBidCallbackInternal callback,
     base::TimeDelta bidding_latency,
     PrivateAggregationRequests non_kanon_pa_requests,
+    RealTimeReportingContributions real_time_contributions,
     std::vector<std::string> error_msgs) {
   DCHECK_CALLED_ON_VALID_SEQUENCE(v8_sequence_checker_);
   user_thread_->PostTask(
@@ -1796,7 +1828,7 @@ void BidderWorklet::V8State::PostErrorBidCallbackToUserThread(
           base::flat_map<std::string, mojom::PrioritySignalsDoublePtr>(),
           /*pa_requests=*/
           PrivateAggregationRequests(), std::move(non_kanon_pa_requests),
-          bidding_latency,
+          std::move(real_time_contributions), bidding_latency,
           /*reject_reason=*/mojom::RejectReason::kNotAvailable,
           std::move(error_msgs)));
 }
@@ -2270,6 +2302,7 @@ void BidderWorklet::DeliverBidCallbackOnUserThread(
         update_priority_signals_overrides,
     PrivateAggregationRequests pa_requests,
     PrivateAggregationRequests non_kanon_pa_requests,
+    RealTimeReportingContributions real_time_contributions,
     base::TimeDelta bidding_latency,
     mojom::RejectReason reject_reason,
     std::vector<std::string> error_msgs) {
@@ -2289,7 +2322,8 @@ void BidderWorklet::DeliverBidCallbackOnUserThread(
       std::move(bids), bidding_signals_data_version, debug_loss_report_url,
       debug_win_report_url, set_priority,
       std::move(update_priority_signals_overrides), std::move(pa_requests),
-      std::move(non_kanon_pa_requests), bidding_latency,
+      std::move(non_kanon_pa_requests), std::move(real_time_contributions),
+      bidding_latency,
       mojom::GenerateBidDependencyLatencies::New(
           /*code_ready_latency=*/NullOptIfZero(task->wait_code),
           /*config_promises_latency=*/NullOptIfZero(task->wait_promises),

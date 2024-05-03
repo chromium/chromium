@@ -67,6 +67,7 @@
 #include "content/services/auction_worklet/public/mojom/auction_worklet_service.mojom.h"
 #include "content/services/auction_worklet/public/mojom/bidder_worklet.mojom.h"
 #include "content/services/auction_worklet/public/mojom/private_aggregation_request.mojom.h"
+#include "content/services/auction_worklet/public/mojom/real_time_reporting.mojom.h"
 #include "content/services/auction_worklet/public/mojom/seller_worklet.mojom.h"
 #include "content/services/auction_worklet/worklet_devtools_debug_test_util.h"
 #include "content/services/auction_worklet/worklet_test_util.h"
@@ -2269,6 +2270,7 @@ class AuctionRunnerTest : public RenderViewHostTestHarness,
                 /*scoring_signals_data_version=*/std::nullopt,
                 /*debug_loss_report_url=*/std::nullopt,
                 /*debug_win_report_url=*/std::nullopt, /*pa_requests=*/{},
+                /*real_time_contributions=*/{},
                 /*scoring_latency=*/base::TimeDelta(),
                 /*score_ad_dependency_latencies=*/
                 auction_worklet::mojom::ScoreAdDependencyLatencies::New(
@@ -10485,6 +10487,7 @@ TEST_F(AuctionRunnerTest, LateSellerWorkletSendPendingSignalsRequestsCalled) {
           /*scoring_signals_data_version=*/std::nullopt,
           /*debug_loss_report_url=*/std::nullopt,
           /*debug_win_report_url=*/std::nullopt, /*pa_requests=*/{},
+          /*real_time_contributions=*/{},
           /*scoring_latency=*/base::TimeDelta(),
           /*score_ad_dependency_latencies=*/
           auction_worklet::mojom::ScoreAdDependencyLatencies::New(
@@ -10507,6 +10510,7 @@ TEST_F(AuctionRunnerTest, LateSellerWorkletSendPendingSignalsRequestsCalled) {
           /*scoring_signals_data_version=*/std::nullopt,
           /*debug_loss_report_url=*/std::nullopt,
           /*debug_win_report_url=*/std::nullopt, /*pa_requests=*/{},
+          /*real_time_contributions=*/{},
           /*scoring_latency=*/base::TimeDelta(),
           /*score_ad_dependency_latencies=*/
           auction_worklet::mojom::ScoreAdDependencyLatencies::New(
@@ -10767,6 +10771,7 @@ TEST_F(AuctionRunnerTest, BidderCrashBeforeBidding) {
             /*scoring_signals_data_version=*/std::nullopt,
             /*debug_loss_report_url=*/std::nullopt,
             /*debug_win_report_url=*/std::nullopt, /*pa_requests=*/{},
+            /*real_time_contributions=*/{},
             /*scoring_latency=*/base::TimeDelta(),
             /*score_ad_dependency_latencies=*/
             auction_worklet::mojom::ScoreAdDependencyLatencies::New(
@@ -11021,6 +11026,7 @@ TEST_F(AuctionRunnerTest, ComponentAuctionOneBidderCrashesBeforeBidding) {
           /*scoring_signals_data_version=*/std::nullopt,
           /*debug_loss_report_url=*/std::nullopt,
           /*debug_win_report_url=*/std::nullopt, /*pa_requests=*/{},
+          /*real_time_contributions=*/{},
           /*scoring_latency=*/base::TimeDelta(),
           /*score_ad_dependency_latencies=*/
           auction_worklet::mojom::ScoreAdDependencyLatencies::New(
@@ -11047,6 +11053,7 @@ TEST_F(AuctionRunnerTest, ComponentAuctionOneBidderCrashesBeforeBidding) {
           /*scoring_signals_data_version=*/std::nullopt,
           /*debug_loss_report_url=*/std::nullopt,
           /*debug_win_report_url=*/std::nullopt, /*pa_requests=*/{},
+          /*real_time_contributions=*/{},
           /*scoring_latency=*/base::TimeDelta(),
           /*score_ad_dependency_latencies=*/
           auction_worklet::mojom::ScoreAdDependencyLatencies::New(
@@ -11241,6 +11248,7 @@ TEST_F(AuctionRunnerTest, ComponentAuctionComponentSellerBadBidParams) {
             /*debug_loss_report_url=*/std::nullopt,
             /*debug_win_report_url=*/std::nullopt,
             /*pa_requests=*/{},
+            /*real_time_contributions=*/{},
             /*scoring_latency=*/base::TimeDelta(),
             /*score_ad_dependency_latencies=*/
             auction_worklet::mojom::ScoreAdDependencyLatencies::New(
@@ -11318,6 +11326,7 @@ TEST_F(AuctionRunnerTest, TopLevelSellerBadBidParams) {
           /*scoring_signals_data_version=*/std::nullopt,
           /*debug_loss_report_url=*/std::nullopt,
           /*debug_win_report_url=*/std::nullopt, /*pa_requests=*/{},
+          /*real_time_contributions=*/{},
           /*scoring_latency=*/base::TimeDelta(),
           /*score_ad_dependency_latencies=*/
           auction_worklet::mojom::ScoreAdDependencyLatencies::New(
@@ -11404,6 +11413,7 @@ TEST_F(AuctionRunnerTest, NullAdComponents) {
               /*scoring_signals_data_version=*/std::nullopt,
               /*debug_loss_report_url=*/std::nullopt,
               /*debug_win_report_url=*/std::nullopt, /*pa_requests=*/{},
+              /*real_time_contributions=*/{},
               /*scoring_latency=*/base::TimeDelta(),
               /*score_ad_dependency_latencies=*/
               auction_worklet::mojom::ScoreAdDependencyLatencies::New(
@@ -11527,6 +11537,7 @@ TEST_F(AuctionRunnerTest, AdComponentsLimit) {
               /*scoring_signals_data_version=*/std::nullopt,
               /*debug_loss_report_url=*/std::nullopt,
               /*debug_win_report_url=*/std::nullopt, /*pa_requests=*/{},
+              /*real_time_contributions=*/{},
               /*scoring_latency=*/base::TimeDelta(),
               /*score_ad_dependency_latencies=*/
               auction_worklet::mojom::ScoreAdDependencyLatencies::New(
@@ -11814,6 +11825,7 @@ TEST_F(AuctionRunnerTest, BadBid) {
         std::nullopt, /*debug_loss_report_url=*/std::nullopt,
         /*debug_win_report_url=*/std::nullopt,
         /*pa_requests=*/{},
+        /*real_time_contributions=*/{},
         /*dependency_latencies=*/
         auction_worklet::mojom::GenerateBidDependencyLatenciesPtr(),
         test_case.reject_reason);
@@ -11903,6 +11915,7 @@ TEST_F(AuctionRunnerTest, BadScoreAdBidInSellerCurrency) {
             /*scoring_signals_data_version=*/std::nullopt,
             /*debug_loss_report_url=*/std::nullopt,
             /*debug_win_report_url=*/std::nullopt, /*pa_requests=*/{},
+            /*real_time_contributions=*/{},
             /*scoring_latency=*/base::TimeDelta(),
             /*score_ad_dependency_latencies=*/
             auction_worklet::mojom::ScoreAdDependencyLatencies::New(
@@ -11956,6 +11969,7 @@ TEST_F(AuctionRunnerTest, DestroyBidderWorkletWithoutBid) {
           /*scoring_signals_data_version=*/std::nullopt,
           /*debug_loss_report_url=*/std::nullopt,
           /*debug_win_report_url=*/std::nullopt, /*pa_requests=*/{},
+          /*real_time_contributions=*/{},
           /*scoring_latency=*/base::TimeDelta(),
           /*score_ad_dependency_latencies=*/
           auction_worklet::mojom::ScoreAdDependencyLatencies::New(
@@ -12036,6 +12050,7 @@ TEST_F(AuctionRunnerTest, Tie) {
             /*scoring_signals_data_version=*/std::nullopt,
             /*debug_loss_report_url=*/std::nullopt,
             /*debug_win_report_url=*/std::nullopt, /*pa_requests=*/{},
+            /*real_time_contributions=*/{},
             /*scoring_latency=*/base::TimeDelta(),
             /*score_ad_dependency_latencies=*/
             auction_worklet::mojom::ScoreAdDependencyLatencies::New(
@@ -12062,6 +12077,7 @@ TEST_F(AuctionRunnerTest, Tie) {
             /*scoring_signals_data_version=*/std::nullopt,
             /*debug_loss_report_url=*/std::nullopt,
             /*debug_win_report_url=*/std::nullopt, /*pa_requests=*/{},
+            /*real_time_contributions=*/{},
             /*scoring_latency=*/base::TimeDelta(),
             /*score_ad_dependency_latencies=*/
             auction_worklet::mojom::ScoreAdDependencyLatencies::New(
@@ -12209,6 +12225,7 @@ TEST_F(AuctionRunnerTest, WorkletOrder) {
                     /*scoring_signals_data_version=*/std::nullopt,
                     /*debug_loss_report_url=*/std::nullopt,
                     /*debug_win_report_url=*/std::nullopt, /*pa_requests=*/{},
+                    /*real_time_contributions=*/{},
                     /*scoring_latency=*/base::TimeDelta(),
                     /*score_ad_dependency_latencies=*/
                     auction_worklet::mojom::ScoreAdDependencyLatencies::New(
@@ -12233,6 +12250,7 @@ TEST_F(AuctionRunnerTest, WorkletOrder) {
                     /*debug_loss_report_url=*/std::nullopt,
                     /*debug_win_report_url=*/std::nullopt,
                     /*pa_requests=*/{},
+                    /*real_time_contributions=*/{},
                     /*scoring_latency=*/base::TimeDelta(),
                     /*score_ad_dependency_latencies=*/
                     auction_worklet::mojom::ScoreAdDependencyLatencies::New(
@@ -12525,6 +12543,7 @@ TEST_F(AuctionRunnerTest,
           /*scoring_signals_data_version=*/std::nullopt,
           /*debug_loss_report_url=*/std::nullopt,
           /*debug_win_report_url=*/std::nullopt, /*pa_requests=*/{},
+          /*real_time_contributions=*/{},
           /*scoring_latency=*/base::TimeDelta(),
           /*score_ad_dependency_latencies=*/
           auction_worklet::mojom::ScoreAdDependencyLatencies::New(
@@ -12649,6 +12668,7 @@ TEST_F(AuctionRunnerTest,
           /*scoring_signals_data_version=*/std::nullopt,
           /*debug_loss_report_url=*/std::nullopt,
           /*debug_win_report_url=*/std::nullopt, /*pa_requests=*/{},
+          /*real_time_contributions=*/{},
           /*scoring_latency=*/base::TimeDelta(),
           /*score_ad_dependency_latencies=*/
           auction_worklet::mojom::ScoreAdDependencyLatencies::New(
@@ -13916,6 +13936,7 @@ TEST_F(
         /*debug_loss_report_url=*/std::nullopt,
         /*debug_win_report_url=*/std::nullopt,
         /*pa_requests=*/{},
+        /*real_time_contributions=*/{},
         /*dependency_latencies=*/
         GenerateBidDependencyLatencies::New(test_case.dependency_latencies));
 
@@ -13934,6 +13955,7 @@ TEST_F(
             /*scoring_signals_data_version=*/std::nullopt,
             /*debug_loss_report_url=*/std::nullopt,
             /*debug_win_report_url=*/std::nullopt, /*pa_requests=*/{},
+            /*real_time_contributions=*/{},
             /*scoring_latency=*/base::TimeDelta(),
             /*score_ad_dependency_latencies=*/
             auction_worklet::mojom::ScoreAdDependencyLatencies::New(
@@ -14150,6 +14172,7 @@ TEST_F(AuctionRunnerTest,
         /*debug_loss_report_url=*/std::nullopt,
         /*debug_win_report_url=*/std::nullopt,
         /*pa_requests=*/{},
+        /*real_time_contributions=*/{},
         /*dependency_latencies=*/
         auction_worklet::mojom::GenerateBidDependencyLatencies::New(
             /*code_ready_latency=*/std::nullopt,
@@ -14172,7 +14195,8 @@ TEST_F(AuctionRunnerTest,
             /*scoring_signals_data_version=*/std::nullopt,
             /*debug_loss_report_url=*/std::nullopt,
             /*debug_win_report_url=*/std::nullopt, /*pa_requests=*/{},
-            /*score_ad_latency=*/base::Milliseconds(0),
+            /*real_time_contributions=*/{},
+            /*scoring_latency=*/base::Milliseconds(0),
             /*score_ad_dependency_latencies=*/
             ScoreAdDependencyLatencies::New(test_case.dependency_latencies),
             /*errors=*/{});
@@ -15033,6 +15057,7 @@ TEST_F(AuctionRunnerTest,
           /*debug_loss_report_url=*/std::nullopt,
           /*debug_win_report_url=*/std::nullopt,
           std::move(score_ad_1_pa_requests),
+          /*real_time_contributions=*/{},
           /*scoring_latency=*/base::TimeDelta(),
           /*score_ad_dependency_latencies=*/
           auction_worklet::mojom::ScoreAdDependencyLatencies::New(
@@ -15151,6 +15176,7 @@ TEST_F(AuctionRunnerTest, PrivateAggregationTimeMetrics) {
             /*debug_loss_report_url=*/std::nullopt,
             /*debug_win_report_url=*/std::nullopt,
             /*pa_requests=*/std::move(seller_pa_requests),
+            /*real_time_contributions=*/{},
             /*scoring_latency=*/base::Milliseconds(100 * i + 20),
             /*score_ad_dependency_latencies=*/
             auction_worklet::mojom::ScoreAdDependencyLatencies::New(
@@ -15308,6 +15334,7 @@ TEST_F(AuctionRunnerTest, ComponentAuctionPrivateAggregationTimeMetrics) {
             /*debug_loss_report_url=*/std::nullopt,
             /*debug_win_report_url=*/std::nullopt,
             /*pa_requests=*/std::move(component_seller_pa_requests),
+            /*real_time_contributions=*/{},
             /*scoring_latency=*/base::Milliseconds(100 * i + 20),
             /*score_ad_dependency_latencies=*/
             auction_worklet::mojom::ScoreAdDependencyLatencies::New(
@@ -15340,6 +15367,7 @@ TEST_F(AuctionRunnerTest, ComponentAuctionPrivateAggregationTimeMetrics) {
           /*debug_loss_report_url=*/std::nullopt,
           /*debug_win_report_url=*/std::nullopt,
           /*pa_requests=*/std::move(top_seller_pa_requests),
+          /*real_time_contributions=*/{},
           /*scoring_latency=*/base::Milliseconds(30),
           /*score_ad_dependency_latencies=*/
           auction_worklet::mojom::ScoreAdDependencyLatencies::New(
@@ -18830,6 +18858,7 @@ TEST_P(AuctionRunnerBiddingAndScoringDebugReportingAPIEnabledTest,
             /*scoring_signals_data_version=*/std::nullopt,
             test_case.seller_debug_loss_report_url,
             test_case.seller_debug_win_report_url, /*pa_requests=*/{},
+            /*real_time_contributions=*/{},
             /*scoring_latency=*/base::TimeDelta(),
             /*score_ad_dependency_latencies=*/
             auction_worklet::mojom::ScoreAdDependencyLatencies::New(
@@ -18907,6 +18936,7 @@ TEST_P(AuctionRunnerBiddingAndScoringDebugReportingAPIEnabledTest,
           /*scoring_signals_data_version=*/std::nullopt,
           GURL("https://seller-debug-loss-reporting.com/1"),
           GURL("https://seller-debug-win-reporting.com/1"), /*pa_requests=*/{},
+          /*real_time_contributions=*/{},
           /*scoring_latency=*/base::TimeDelta(),
           /*score_ad_dependency_latencies=*/
           auction_worklet::mojom::ScoreAdDependencyLatencies::New(
