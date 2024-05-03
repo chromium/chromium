@@ -116,10 +116,16 @@ window.onload = () => {
     // instead of "Shift". The Option key is mapped to "Alt" in GPUbenchmarking.
     const modifier = onMacPlatform ? "Alt" : "Shift";
     let scrollPromise = waitForScrollendEvent(standardDivFast);
+
     // TODO: Switch to test-driver variant. Unclear from the test-driver
     // documentation if pointerDown supports a 'keys' option.
-    await mouseClickOn(SCROLLBAR_BUTTON_FWD.x, standardRectFast.top + 50,
-          /*left_click*/0, modifier);
+    var point = {
+      x: SCROLLBAR_BUTTON_FWD.x,
+      y: standardRectFast.top + 50,
+      left_click: 0,
+      input_modifier: modifier
+    }
+    await mouseClickHelper(point);
     await scrollPromise;
     let expected_offset = 0;
     // If Fluent is enabled, Linux and Windows behavior should match
@@ -135,10 +141,12 @@ window.onload = () => {
         modifier + " + click forward didn't scroll.");
 
     scrollPromise = waitForScrollendEvent(standardDivFast);
-    await mouseClickOn(
-        SCROLLBAR_BUTTON_FWD.x,
-        standardRectFast.top + ((onMacPlatform ? 0 : BUTTON_WIDTH) + 2),
-        /*left_click*/0, modifier);
+
+    point.x = SCROLLBAR_BUTTON_FWD.x;
+    point.y = standardRectFast.top + ((onMacPlatform ? 0 : BUTTON_WIDTH) + 2);
+    point.left_click = 0;
+    point.input_modifier = modifier;
+    await mouseClickHelper(point);
     await scrollPromise;
     assert_equals(standardDivFast.scrollTop, 0, modifier + " + click backward didn't scroll.");
   }, "Test non-animated click scroll on non-custom composited scrollbars.");

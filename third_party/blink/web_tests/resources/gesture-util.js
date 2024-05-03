@@ -498,6 +498,11 @@ function mouseUpAt(xPosition, yPosition) {
   });
 }
 
+// Improves test readability by accepting a struct.
+function mouseClickHelper(point) {
+  return mouseClickOn(point.x, point.y, point.left_click, point.input_modifier);
+}
+
 // Simulate a mouse click on point.
 function mouseClickOn(x, y, button = 0 /* left */, keys = '') {
   return new Promise((resolve, reject) => {
