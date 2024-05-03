@@ -528,6 +528,7 @@ void ChromeWebAuthenticationDelegate::IsEnclaveAuthenticatorAvailable(
   std::move(callback).Run(false);
 #else
   if (!base::FeatureList::IsEnabled(device::kWebAuthnEnclaveAuthenticator)) {
+    FIDO_LOG(EVENT) << "Enclave authenticator disabled because flag not set";
     std::move(callback).Run(false);
     return;
   }
@@ -537,6 +538,8 @@ void ChromeWebAuthenticationDelegate::IsEnclaveAuthenticatorAvailable(
   // TODO(enclave): what do we do in an Incognito session?
   if (!identity_manager ||
       !identity_manager->HasPrimaryAccount(signin::ConsentLevel::kSignin)) {
+    FIDO_LOG(EVENT)
+        << "Enclave authenticator disabled because no suitable account";
     std::move(callback).Run(false);
     return;
   }
@@ -549,6 +552,8 @@ void ChromeWebAuthenticationDelegate::IsEnclaveAuthenticatorAvailable(
   if (!sync_service || !sync_service->IsSyncFeatureEnabled() ||
       !sync_service->GetUserSettings()->GetSelectedTypes().Has(
           syncer::UserSelectableType::kPasswords)) {
+    FIDO_LOG(EVENT)
+        << "Enclave authenticator disabled because password sync not active";
     std::move(callback).Run(false);
     return;
   }
@@ -564,6 +569,8 @@ void ChromeWebAuthenticationDelegate::IsEnclaveAuthenticatorAvailable(
         std::unique_ptr<crypto::UnexportableKeyProvider> provider =
             crypto::GetUnexportableKeyProvider(/*config=*/{});
         if (!provider) {
+          FIDO_LOG(EVENT)
+              << "Enclave authenticator disabled because no key provider";
           return false;
         }
         return provider->SelectAlgorithm(device::enclave::kSigningAlgorithms) !=
@@ -575,6 +582,10 @@ void ChromeWebAuthenticationDelegate::IsEnclaveAuthenticatorAvailable(
              bool available) {
             if (webauthn_delegate) {
               webauthn_delegate->tpm_available_ = available;
+            }
+            if (!available) {
+              FIDO_LOG(EVENT)
+                  << "Enclave authenticator disabled because of lack of TPM";
             }
             std::move(callback).Run(available);
           },
