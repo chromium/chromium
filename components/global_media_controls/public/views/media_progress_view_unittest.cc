@@ -5,6 +5,7 @@
 #include "components/global_media_controls/public/views/media_progress_view.h"
 
 #include "base/i18n/rtl.h"
+#include "base/time/time.h"
 #include "services/media_session/public/mojom/media_session.mojom.h"
 #include "testing/gmock/include/gmock/gmock.h"
 #include "testing/gtest/include/gtest/gtest.h"
@@ -39,6 +40,8 @@ class MediaProgressViewTest : public views::ViewsTestBase {
         base::BindRepeating(&MediaProgressViewTest::OnProgressDragging,
                             base::Unretained(this)),
         base::BindRepeating(&MediaProgressViewTest::SeekTo,
+                            base::Unretained(this)),
+        base::BindRepeating(&MediaProgressViewTest::OnProgressUpdated,
                             base::Unretained(this))));
 
     widget_->SetBounds(gfx::Rect(500, 500));
@@ -57,6 +60,7 @@ class MediaProgressViewTest : public views::ViewsTestBase {
 
   MOCK_METHOD1(OnProgressDragging, void(bool));
   MOCK_METHOD1(SeekTo, void(double));
+  MOCK_METHOD1(OnProgressUpdated, void(base::TimeDelta));
 
  private:
   std::unique_ptr<views::Widget> widget_;
@@ -278,6 +282,15 @@ TEST_F(MediaProgressViewTest, DragProgressForPausedMedia) {
   EXPECT_CALL(*this, SeekTo(testing::DoubleNear(0.25, 0.01)));
   EXPECT_CALL(*this, OnProgressDragging(testing::_)).Times(0);
   view()->OnMouseReleased(released_event);
+}
+
+TEST_F(MediaProgressViewTest, UpdateProgress) {
+  media_session::MediaPosition media_position(
+      /*playback_rate=*/1, /*duration=*/base::Seconds(600),
+      /*position=*/base::Seconds(150), /*end_of_media=*/false);
+
+  EXPECT_CALL(*this, OnProgressUpdated(testing::_));
+  view()->UpdateProgress(media_position);
 }
 
 }  // namespace global_media_controls

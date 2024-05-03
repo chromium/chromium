@@ -6,6 +6,7 @@
 #define COMPONENTS_GLOBAL_MEDIA_CONTROLS_PUBLIC_VIEWS_MEDIA_PROGRESS_VIEW_H_
 
 #include "base/memory/raw_ptr.h"
+#include "base/time/time.h"
 #include "base/timer/timer.h"
 #include "ui/base/metadata/metadata_header_macros.h"
 #include "ui/color/color_id.h"
@@ -33,7 +34,9 @@ class COMPONENT_EXPORT(GLOBAL_MEDIA_CONTROLS) MediaProgressView
       ui::ColorId paused_background_color_id,
       ui::ColorId focus_ring_color_id,
       base::RepeatingCallback<void(bool)> dragging_callback,
-      base::RepeatingCallback<void(double)> seek_callback);
+      base::RepeatingCallback<void(double)> seek_callback,
+      base::RepeatingCallback<void(base::TimeDelta)>
+          on_update_progress_callback);
   MediaProgressView(const MediaProgressView&) = delete;
   MediaProgressView& operator=(const MediaProgressView&) = delete;
   ~MediaProgressView() override;
@@ -92,6 +95,8 @@ class COMPONENT_EXPORT(GLOBAL_MEDIA_CONTROLS) MediaProgressView
   ui::ColorId focus_ring_color_id_;
   const base::RepeatingCallback<void(bool)> dragging_callback_;
   const base::RepeatingCallback<void(double)> seek_callback_;
+  const base::RepeatingCallback<void(base::TimeDelta)>
+      on_update_progress_callback_;
 
   // Current progress value in the range from 0.0 to 1.0.
   double current_value_ = 0.0;

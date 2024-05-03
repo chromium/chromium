@@ -211,7 +211,8 @@ MediaItemUIUpdatedView::MediaItemUIUpdatedView(
           base::BindRepeating(&MediaItemUIUpdatedView::OnProgressDragging,
                               base::Unretained(this)),
           base::BindRepeating(&MediaItemUIUpdatedView::SeekTo,
-                              base::Unretained(this))));
+                              base::Unretained(this)),
+          /*on_update_progress_callback=*/base::DoNothing()));
   progress_row->SetFlexForView(progress_view_, 1);
 
   // Create the forward 10 button.

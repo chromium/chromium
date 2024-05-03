@@ -98,7 +98,7 @@ class COMPONENT_EXPORT(GLOBAL_MEDIA_CONTROLS) MediaItemUIView
                        SkColor background) override;
   void OnHeaderClicked(bool activate_original_media) override;
   void OnShowCastingDevicesRequested() override;
-  void OnDeviceSelectorViewSizeChanged() override;
+  void OnListViewSizeChanged() override;
 
   // views::SlideOutControllerDelegate:
   ui::Layer* GetSlideOutLayer() override;

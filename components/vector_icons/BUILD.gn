@@ -234,6 +234,7 @@ aggregate_vector_icons("components_vector_icons") {
     "usb.icon",
     "usb_chrome_refresh.icon",
     "usb_off_chrome_refresh.icon",
+    "video_library.icon",
     "videocam.icon",
     "videocam_chrome_refresh.icon",
     "videocam_off.icon",

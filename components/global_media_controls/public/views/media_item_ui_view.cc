@@ -327,7 +327,7 @@ void MediaItemUIView::OnDeviceSelectorViewDevicesChanged(bool has_devices) {
   view_->UpdateDeviceSelectorAvailability(has_devices);
 }
 
-void MediaItemUIView::OnDeviceSelectorViewSizeChanged() {
+void MediaItemUIView::OnListViewSizeChanged() {
   OnSizeChanged();
 }
 

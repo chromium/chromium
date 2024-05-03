@@ -360,7 +360,7 @@ void MediaItemUIDeviceSelectorView::UpdateVisibility() {
   }
 
   if (media_item_ui_) {
-    media_item_ui_->OnDeviceSelectorViewSizeChanged();
+    media_item_ui_->OnListViewSizeChanged();
   }
 }
 
@@ -436,7 +436,7 @@ void MediaItemUIDeviceSelectorView::ShowOrHideDeviceList() {
   }
 
   if (media_item_ui_) {
-    media_item_ui_->OnDeviceSelectorViewSizeChanged();
+    media_item_ui_->OnListViewSizeChanged();
   }
 }
 

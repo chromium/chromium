@@ -65,10 +65,9 @@ class MockMediaNotificationContainer
 class MediaItemUIDetailedViewTest : public views::ViewsTestBase {
  public:
   MediaItemUIDetailedViewTest() = default;
-  MediaItemUIDetailedViewTest(const MediaItemUIDetailedViewTest&) =
+  MediaItemUIDetailedViewTest(const MediaItemUIDetailedViewTest&) = delete;
+  MediaItemUIDetailedViewTest& operator=(const MediaItemUIDetailedViewTest&) =
       delete;
-  MediaItemUIDetailedViewTest& operator=(
-      const MediaItemUIDetailedViewTest&) = delete;
   ~MediaItemUIDetailedViewTest() override = default;
 
   void SetUp() override {
@@ -85,12 +84,11 @@ class MediaItemUIDetailedViewTest : public views::ViewsTestBase {
     // Create a widget and add the view to show on the screen for testing screen
     // coordinates and focus.
     widget_ = CreateTestWidget();
-    view_ =
-        widget_->SetContentsView(std::make_unique<MediaItemUIDetailedView>(
-            container_.get(), item_->GetWeakPtr(), /*footer_view=*/nullptr,
-            std::move(device_selector), /*dismiss_button=*/nullptr,
-            media_message_center::MediaColorTheme(),
-            MediaDisplayPage::kQuickSettingsMediaDetailedView));
+    view_ = widget_->SetContentsView(std::make_unique<MediaItemUIDetailedView>(
+        container_.get(), item_->GetWeakPtr(), /*footer_view=*/nullptr,
+        std::move(device_selector), /*dismiss_button=*/nullptr,
+        media_message_center::MediaColorTheme(),
+        MediaDisplayPage::kQuickSettingsMediaDetailedView));
     widget_->Show();
   }
 
@@ -105,10 +103,13 @@ class MediaItemUIDetailedViewTest : public views::ViewsTestBase {
 
   std::unique_ptr<MediaItemUIDetailedView> CreateView(
       MediaDisplayPage media_display_page) {
+    auto device_selector =
+        std::make_unique<NiceMock<MockMediaItemUIDeviceSelector>>();
     return std::make_unique<MediaItemUIDetailedView>(
         container_.get(), item_->GetWeakPtr(), /*footer_view=*/nullptr,
-        /*device_selector_view=*/nullptr, /*dismiss_button=*/nullptr,
-        media_message_center::MediaColorTheme(), media_display_page);
+        /*device_selector_view=*/std::move(device_selector),
+        /*dismiss_button=*/nullptr, media_message_center::MediaColorTheme(),
+        media_display_page);
   }
 
   std::unique_ptr<MediaItemUIDetailedView> CreateViewWithFooter(
@@ -139,6 +140,11 @@ class MediaItemUIDetailedViewTest : public views::ViewsTestBase {
     actions_.insert(MediaSessionAction::kStop);
     actions_.insert(MediaSessionAction::kEnterPictureInPicture);
     actions_.insert(MediaSessionAction::kExitPictureInPicture);
+
+#if BUILDFLAG(IS_CHROMEOS_ASH)
+    actions_.insert(MediaSessionAction::kSeekForward);
+    actions_.insert(MediaSessionAction::kSeekBackward);
+#endif  // BUILDFLAG(IS_CHROMEOS_ASH)
 
     NotifyUpdatedActions();
   }
@@ -445,16 +451,20 @@ TEST_F(MediaItemUIDetailedViewTest, ProgressViewCheck) {
   view->OnKeyPressed(key_event);
 }
 
-TEST_F(MediaItemUIDetailedViewTest, ChapterList) {
 #if BUILDFLAG(IS_CHROMEOS_ASH)
+TEST_F(MediaItemUIDetailedViewTest, ChapterList) {
   base::test::ScopedFeatureList scoped_feature_list;
   scoped_feature_list.InitAndEnableFeature(media::kBackgroundListening);
+  auto widget = CreateTestWidget();
+  auto* view = widget->SetContentsView(
+      CreateView(MediaDisplayPage::kSystemShelfMediaDetailedView));
 
   // Chapter list is not created yet.
-  EXPECT_EQ(view()->GetTitleLabelForTesting()->GetText(), u"");
-  EXPECT_FALSE(!!view()->GetChapterListViewForTesting());
-  EXPECT_EQ(view()->GetChaptersForTesting().find(0),
-            view()->GetChaptersForTesting().end());
+  EXPECT_EQ(view->GetTitleLabelForTesting()->GetText(), u"");
+  EXPECT_FALSE(!!view->GetChapterListViewForTesting());
+  EXPECT_EQ(view->GetChaptersForTesting().find(0),
+            view->GetChaptersForTesting().end());
+  EXPECT_FALSE(view->GetChapterListButtonForTesting()->GetVisible());
 
   std::vector<media_session::ChapterInformation> expected_chapters;
   media_session::MediaImage test_image_1;
@@ -477,23 +487,30 @@ TEST_F(MediaItemUIDetailedViewTest, ChapterList) {
   metadata.chapters = expected_chapters;
 
   EXPECT_CALL(container(), OnMediaSessionMetadataChanged(_));
-  view()->UpdateWithMediaMetadata(metadata);
+  view->UpdateWithMediaMetadata(metadata);
 
-  EXPECT_EQ(view()->GetTitleLabelForTesting()->GetText(), metadata.title);
-  EXPECT_EQ(view()->GetChapterListViewForTesting()->children().size(), 2u);
-  EXPECT_EQ(view()->GetChaptersForTesting().find(0)->second->chapter().title(),
+  // Before clicking on the chapter list button, the list is not visible.
+  EXPECT_TRUE(view->GetChapterListButtonForTesting()->GetVisible());
+  EXPECT_FALSE(view->GetChapterListViewForTesting()->GetVisible());
+
+  // Click the start chapter list button to show the chapters.
+  views::test::ButtonTestApi(view->GetChapterListButtonForTesting())
+      .NotifyClick(ui::MouseEvent(ui::ET_MOUSE_PRESSED, gfx::Point(),
+                                  gfx::Point(), ui::EventTimeForNow(), 0, 0));
+  EXPECT_TRUE(view->GetChapterListViewForTesting()->GetVisible());
+  EXPECT_EQ(view->GetTitleLabelForTesting()->GetText(), metadata.title);
+  EXPECT_EQ(view->GetChapterListViewForTesting()->children().size(), 2u);
+  EXPECT_EQ(view->GetChaptersForTesting().find(0)->second->chapter().title(),
             u"chapter1");
-  EXPECT_EQ(view()->GetChaptersForTesting().find(1)->second->chapter().title(),
+  EXPECT_EQ(view->GetChaptersForTesting().find(1)->second->chapter().title(),
             u"chapter2");
-  EXPECT_EQ(view()
-                ->GetChaptersForTesting()
+  EXPECT_EQ(view->GetChaptersForTesting()
                 .find(0)
                 ->second->chapter()
                 .startTime()
                 .InSeconds(),
             10);
-  EXPECT_EQ(view()
-                ->GetChaptersForTesting()
+  EXPECT_EQ(view->GetChaptersForTesting()
                 .find(1)
                 ->second->chapter()
                 .startTime()
@@ -502,22 +519,50 @@ TEST_F(MediaItemUIDetailedViewTest, ChapterList) {
 
   // Clicking on a chapter item should seek to the start time of that chapter.
   EXPECT_CALL(item(), SeekTo(base::Seconds(10)));
-  views::test::ButtonTestApi(view()->GetChaptersForTesting().find(0)->second)
+  views::test::ButtonTestApi(view->GetChaptersForTesting().find(0)->second)
       .NotifyClick(ui::MouseEvent(ui::ET_MOUSE_PRESSED, gfx::Point(),
                                   gfx::Point(), ui::EventTimeForNow(), 0, 0));
   testing::Mock::VerifyAndClearExpectations(this);
 
   EXPECT_CALL(item(), SeekTo(base::Seconds(20)));
-  views::test::ButtonTestApi(view()->GetChaptersForTesting().find(1)->second)
+  views::test::ButtonTestApi(view->GetChaptersForTesting().find(1)->second)
       .NotifyClick(ui::MouseEvent(ui::ET_MOUSE_PRESSED, gfx::Point(),
                                   gfx::Point(), ui::EventTimeForNow(), 0, 0));
   testing::Mock::VerifyAndClearExpectations(this);
 
-#endif
+  // Showing cast view should hide the chapter list view.
+  view->UpdateDeviceSelectorAvailability(/*has_devices=*/true);
+  EXPECT_TRUE(view->GetStartCastingButtonForTesting()->GetVisible());
+  views::test::ButtonTestApi(view->GetStartCastingButtonForTesting())
+      .NotifyClick(ui::MouseEvent(ui::ET_MOUSE_PRESSED, gfx::Point(),
+                                  gfx::Point(), ui::EventTimeForNow(), 0, 0));
+  EXPECT_TRUE(view->GetChapterListButtonForTesting()->GetVisible());
+  EXPECT_FALSE(view->GetChapterListViewForTesting()->GetVisible());
+
+  // Showing the chapter list view should also hide the cast view.
+  views::test::ButtonTestApi(view->GetChapterListButtonForTesting())
+      .NotifyClick(ui::MouseEvent(ui::ET_MOUSE_PRESSED, gfx::Point(),
+                                  gfx::Point(), ui::EventTimeForNow(), 0, 0));
+  EXPECT_FALSE(view->GetDeviceSelectorForTesting()->IsDeviceSelectorExpanded());
+  EXPECT_TRUE(view->GetChapterListViewForTesting()->GetVisible());
+  EXPECT_EQ(view->GetChapterListViewForTesting()->children().size(), 2u);
+
+  // Should not show chapter list button when there's no chapters.
+  media_session::MediaMetadata metadata_with_0_chpaters;
+  metadata_with_0_chpaters.source_title = u"source title 0";
+  metadata_with_0_chpaters.title = u"title 0";
+  metadata_with_0_chpaters.artist = u"artist 0";
+
+  EXPECT_CALL(container(), OnMediaSessionMetadataChanged(_));
+  view->UpdateWithMediaMetadata(metadata_with_0_chpaters);
+  EXPECT_FALSE(view->GetChapterListButtonForTesting()->GetVisible());
+  EXPECT_FALSE(view->GetChapterListViewForTesting()->GetVisible());
+  EXPECT_EQ(view->GetTitleLabelForTesting()->GetText(),
+            metadata_with_0_chpaters.title);
+  EXPECT_EQ(view->GetChapterListViewForTesting()->children().size(), 0u);
 }
 
 TEST_F(MediaItemUIDetailedViewTest, ShouldNotShowDeviceSelectorViewForAsh) {
-#if BUILDFLAG(IS_CHROMEOS_ASH)
   base::test::ScopedFeatureList scoped_feature_list;
   scoped_feature_list.InitAndEnableFeature(media::kBackgroundListening);
   auto* start_casting_button = view()->GetStartCastingButtonForTesting();
@@ -558,7 +603,66 @@ TEST_F(MediaItemUIDetailedViewTest, ShouldNotShowDeviceSelectorViewForAsh) {
       .NotifyClick(ui::MouseEvent(ui::ET_MOUSE_PRESSED, gfx::Point(),
                                   gfx::Point(), ui::EventTimeForNow(), 0, 0));
   EXPECT_FALSE(separator->GetVisible());
-#endif
 }
+
+TEST_F(MediaItemUIDetailedViewTest, Forward10ButtonClick) {
+  base::test::ScopedFeatureList scoped_feature_list;
+  scoped_feature_list.InitAndEnableFeature(media::kBackgroundListening);
+  auto widget = CreateTestWidget();
+  auto* view = widget->SetContentsView(
+      CreateView(MediaDisplayPage::kSystemShelfMediaDetailedView));
+  view->UpdateWithMediaActions({MediaSessionAction::kSeekForward});
+
+  EXPECT_CALL(item(), OnMediaSessionActionButtonPressed(
+                          MediaSessionAction::kSeekForward));
+  views::Button* button =
+      view->GetActionButtonForTesting(MediaSessionAction::kSeekForward);
+  EXPECT_TRUE(button && button->GetVisible());
+  views::test::ButtonTestApi(button).NotifyClick(
+      ui::MouseEvent(ui::ET_MOUSE_PRESSED, gfx::Point(), gfx::Point(),
+                     ui::EventTimeForNow(), 0, 0));
+}
+
+TEST_F(MediaItemUIDetailedViewTest, Backward10ButtonClick) {
+  base::test::ScopedFeatureList scoped_feature_list;
+  scoped_feature_list.InitAndEnableFeature(media::kBackgroundListening);
+  auto widget = CreateTestWidget();
+  auto* view = widget->SetContentsView(
+      CreateView(MediaDisplayPage::kSystemShelfMediaDetailedView));
+  view->UpdateWithMediaActions({MediaSessionAction::kSeekBackward});
+
+  EXPECT_CALL(item(), OnMediaSessionActionButtonPressed(
+                          MediaSessionAction::kSeekBackward));
+  views::Button* button =
+      view->GetActionButtonForTesting(MediaSessionAction::kSeekBackward);
+  EXPECT_TRUE(button && button->GetVisible());
+  views::test::ButtonTestApi(button).NotifyClick(
+      ui::MouseEvent(ui::ET_MOUSE_PRESSED, gfx::Point(), gfx::Point(),
+                     ui::EventTimeForNow(), 0, 0));
+}
+
+TEST_F(MediaItemUIDetailedViewTest, TimestampView) {
+  base::test::ScopedFeatureList scoped_feature_list;
+  scoped_feature_list.InitAndEnableFeature(media::kBackgroundListening);
+  auto view = CreateView(MediaDisplayPage::kSystemShelfMediaDetailedView);
+  EXPECT_NE(view->GetProgressViewForTesting(), nullptr);
+
+  // Check that the timestamp gets updated when the progress position is
+  // updated.
+  media_session::MediaPosition media_position(
+      /*playback_rate=*/1, /*duration=*/base::Seconds(58),
+      /*position=*/base::Seconds(5), /*end_of_media=*/false);
+  view->UpdateWithMediaPosition(media_position);
+  EXPECT_EQ(view->GetCurrentTimestampViewForTesting()->GetText(), u"0:05");
+  EXPECT_EQ(view->GetTotalDurationViewForTesting()->GetText(), u" / 0:58");
+
+  media_session::MediaPosition media_position2(
+      /*playback_rate=*/1, /*duration=*/base::Seconds(108),
+      /*position=*/base::Seconds(66), /*end_of_media=*/false);
+  view->UpdateWithMediaPosition(media_position2);
+  EXPECT_EQ(view->GetCurrentTimestampViewForTesting()->GetText(), u"1:06");
+  EXPECT_EQ(view->GetTotalDurationViewForTesting()->GetText(), u" / 1:48");
+}
+#endif  // BUILDFLAG(IS_CHROMEOS_ASH)
 
 }  // namespace global_media_controls

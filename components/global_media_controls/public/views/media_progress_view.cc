@@ -77,7 +77,8 @@ MediaProgressView::MediaProgressView(
     ui::ColorId paused_background_color_id,
     ui::ColorId focus_ring_color_id,
     base::RepeatingCallback<void(bool)> dragging_callback,
-    base::RepeatingCallback<void(double)> seek_callback)
+    base::RepeatingCallback<void(double)> seek_callback,
+    base::RepeatingCallback<void(base::TimeDelta)> on_update_progress_callback)
     : use_squiggly_line_(use_squiggly_line),
       playing_foreground_color_id_(playing_foreground_color_id),
       playing_background_color_id_(playing_background_color_id),
@@ -86,6 +87,7 @@ MediaProgressView::MediaProgressView(
       focus_ring_color_id_(focus_ring_color_id),
       dragging_callback_(std::move(dragging_callback)),
       seek_callback_(std::move(seek_callback)),
+      on_update_progress_callback_(std::move(on_update_progress_callback)),
       slide_animation_(this) {
   SetInsideBorderInsets(kInsideInsets);
   SetFlipCanvasOnPaintForRTLUI(true);
@@ -349,6 +351,8 @@ void MediaProgressView::UpdateProgress(
   current_position_ = media_position.GetPosition();
   media_duration_ = media_position.duration();
   is_live_ = media_duration_.is_max();
+
+  on_update_progress_callback_.Run(current_position_);
 
   double new_value = CalculateNewValue(current_position_);
   if (new_value != current_value_) {
