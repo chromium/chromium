@@ -16861,6 +16861,7 @@ from previous Chrome versions.
   <int value="-1946057753" label="GaiaIdCacheInAccountManagerFacade:disabled"/>
   <int value="-1945601266" label="freeze-user-agent"/>
   <int value="-1945524394" label="EnableBackgroundBlur:disabled"/>
+  <int value="-1944445271" label="ShowWebauthnSuggestionsOnAutofocus:disabled"/>
   <int value="-1943817505" label="SingleClickAutofill:enabled"/>
   <int value="-1943507605" label="enable-new-video-renderer"/>
   <int value="-1943313820" label="SystemKeyboardLock:disabled"/>
@@ -24630,6 +24631,7 @@ from previous Chrome versions.
   <int value="1492541927" label="QuickAnswersTranslationCloudAPI:enabled"/>
   <int value="1493006959" label="AutofillServerBehaviors:disabled"/>
   <int value="1493223152" label="CloseAllTabsModalDialog:enabled"/>
+  <int value="1493522762" label="ShowWebauthnSuggestionsOnAutofocus:enabled"/>
   <int value="1493727661" label="ChromeRootStoreUsed:disabled"/>
   <int value="1494628887" label="MediaPickerAdoption:disabled"/>
   <int value="1495059835" label="VirtualKeyboardMultipasteSuggestion:enabled"/>

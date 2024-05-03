@@ -11218,6 +11218,14 @@ const FeatureEntry kFeatureEntries[] = {
          autofill::features::kAutofillSkipAndroidBottomSheetForIban)},
 #endif
 
+    {"pwm-show-webauthn-suggestions-on-autofocus",
+     flag_descriptions::kPasswordManagerShowWebauthnSuggestionsOnAutofocusName,
+     flag_descriptions::
+         kPasswordManagerShowWebauthnSuggestionsOnAutofocusDescription,
+     kOsAll,
+     FEATURE_VALUE_TYPE(
+         password_manager::features::kShowWebauthnSuggestionsOnAutofocus)},
+
     // NOTE: Adding a new flag requires adding a corresponding entry to enum
     // "LoginCustomFlags" in tools/metrics/histograms/enums.xml. See "Flag
     // Histograms" in tools/metrics/histograms/README.md (run the

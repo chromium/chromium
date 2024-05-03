@@ -2781,6 +2781,13 @@ const char kPasswordManagerShadowDomSupportName[] =
 const char kPasswordManagerShadowDomSupportDescription[] =
     "Enables form filling and saving for password forms in shadow DOM.";
 
+const char kPasswordManagerShowWebauthnSuggestionsOnAutofocusName[] =
+    "Showing password suggestions on autofocused webauthn forms";
+const char kPasswordManagerShowWebauthnSuggestionsOnAutofocusDescription[] =
+    "Enables showing password suggestions without requiring the user to "
+    "click on the already focused field if the field was autofocused on "
+    "the page load.";
+
 const char kPasswordManualFallbackAvailableName[] = "Password manual fallback";
 const char kPasswordManualFallbackAvailableDescription[] =
     "Enables triggering password suggestions through the context menu";

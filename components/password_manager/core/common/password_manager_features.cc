@@ -78,6 +78,12 @@ BASE_FEATURE(kNoPasswordSuggestionFiltering,
              "NoPasswordSuggestionFiltering",
              base::FEATURE_DISABLED_BY_DEFAULT);
 
+// Allows to show suggestions automatically when forms accepting webauthn are
+// autofocused on pageload.
+BASE_FEATURE(kShowWebauthnSuggestionsOnAutofocus,
+             "ShowWebauthnSuggestionsOnAutofocus",
+             base::FEATURE_DISABLED_BY_DEFAULT);
+
 #if BUILDFLAG(IS_ANDROID)
 // Enables the Password generation bottom sheet.
 BASE_FEATURE(kPasswordGenerationBottomSheet,
