@@ -250495,6 +250495,103 @@
      ]
     },
     "filter-effects": {
+     "backdrop-filter-backdrop-root-backdrop-filter.html": [
+      "6be85d5cf24ca4fd605c428fb8d6d0c109210cc4",
+      [
+       null,
+       [
+        [
+         "/css/filter-effects/backdrop-filter-backdrop-root-ref.html",
+         "=="
+        ]
+       ],
+       {}
+      ]
+     ],
+     "backdrop-filter-backdrop-root-clip-path.html": [
+      "172d07be93e6ed271d9c7444f0674c72b79b7367",
+      [
+       null,
+       [
+        [
+         "/css/filter-effects/backdrop-filter-backdrop-root-clip-path-ref.html",
+         "=="
+        ]
+       ],
+       {}
+      ]
+     ],
+     "backdrop-filter-backdrop-root-filter.html": [
+      "e988b479ced02e521ddbd578ede43473aa3d0419",
+      [
+       null,
+       [
+        [
+         "/css/filter-effects/backdrop-filter-backdrop-root-filter-ref.html",
+         "=="
+        ]
+       ],
+       {
+        "fuzzy": [
+         [
+          null,
+          [
+           [
+            0,
+            5
+           ],
+           [
+            0,
+            500
+           ]
+          ]
+         ]
+        ]
+       }
+      ]
+     ],
+     "backdrop-filter-backdrop-root-mix-blend-mode.html": [
+      "2d77b61b849393d5b61b2e62a5a50d373bf5abea",
+      [
+       null,
+       [
+        [
+         "/css/filter-effects/backdrop-filter-backdrop-root-ref.html",
+         "=="
+        ]
+       ],
+       {}
+      ]
+     ],
+     "backdrop-filter-backdrop-root-opacity.html": [
+      "b11d064cb3b2d9a860964c682aa4f02ebc4061b6",
+      [
+       null,
+       [
+        [
+         "/css/filter-effects/backdrop-filter-backdrop-root-opacity-ref.html",
+         "=="
+        ]
+       ],
+       {
+        "fuzzy": [
+         [
+          null,
+          [
+           [
+            0,
+            5
+           ],
+           [
+            0,
+            500
+           ]
+          ]
+         ]
+        ]
+       }
+      ]
+     ],
      "backdrop-filter-basic-opacity-2.html": [
       "c40e8bc09832ec6d30daa6803e98baa3141c9efe",
       [
@@ -250732,19 +250829,6 @@
        [
         [
          "/css/filter-effects/backdrop-filter-non-isolation-ref.html",
-         "=="
-        ]
-       ],
-       {}
-      ]
-     ],
-     "backdrop-filter-isolation.html": [
-      "06791f73d2b78ed03b77cd4a4d5b56e44406abf8",
-      [
-       null,
-       [
-        [
-         "/css/filter-effects/backdrop-filter-isolation-ref.html",
          "=="
         ]
        ],
@@ -308295,6 +308379,10 @@
       []
      ],
      "counter-style-at-rule": {
+      "WEB_FEATURES.yml": [
+       "fc866d5c1246989f29f1a917470edc611296149e",
+       []
+      ],
       "access-from-shadow-dom-ref.html": [
        "ee40f94bda4b400be543eb79eff155269a6f4056",
        []
@@ -308467,6 +308555,10 @@
       []
      ],
      "cssom": {
+      "WEB_FEATURES.yml": [
+       "1efb03070d8cdd0be1284ba554171d5cd3b2089d",
+       []
+      ],
       "cssom-additive-symbols-setter-ref.html": [
        "a09788e369a58a35dd92370cc1f25ef2561c1814",
        []
@@ -309410,6 +309502,10 @@
      ],
      "META.yml": [
       "2c412b40f0f1b6059099682bc5c787310e8d2991",
+      []
+     ],
+     "WEB_FEATURES.yml": [
+      "c17b6206c55bb09fe0920d7a4af8cfe8cb3603b7",
       []
      ],
      "step-timing-functions-syntax-expected.txt": [
@@ -322716,6 +322812,10 @@
       "05e60af1d8a558ec87a6c6f8acdeecdc0c7bb78d",
       []
      ],
+     "WEB_FEATURES.yml": [
+      "89ef4a2521b17e1b251f82964bbd380aa5067d9f",
+      []
+     ],
      "add-inline-child-after-marker-001-ref.html": [
       "0c1d2397d75c34f7238c65b8762d5d206c36bf73",
       []
@@ -330111,6 +330211,10 @@
       []
      ],
      "contain-intrinsic-size": {
+      "WEB_FEATURES.yml": [
+       "5fc7189215cd11a5f49504feba382008cf182e64",
+       []
+      ],
       "contain-intrinsic-size-001-ref.html": [
        "299930ac35a35a27cbfbe67ebee66c9facb7d2b9",
        []
@@ -331209,6 +331313,10 @@
       }
      },
      "hyphens": {
+      "WEB_FEATURES.yml": [
+       "c8270e62c6030d5e7d7e86d7b7ec8448a31316b1",
+       []
+      ],
       "hyphens-auto-control-ref.html": [
        "7283d239d8bb337a291b0866f75119eef019e853",
        []
@@ -339599,7 +339707,7 @@
       []
      ],
      "WEB_FEATURES.yml": [
-      "ca3c0ff91b9f8b46195b54ea0364a5f3f071aca2",
+      "dc7331ab9545223f7c420b54be38a929498661cc",
       []
      ],
      "acos-asin-atan-atan2-computed-expected.txt": [
@@ -344186,6 +344294,22 @@
        []
       ]
      },
+     "backdrop-filter-backdrop-root-clip-path-ref.html": [
+      "08a2ad4fc52f0bdad5d3cc54d489e8987bf912b0",
+      []
+     ],
+     "backdrop-filter-backdrop-root-filter-ref.html": [
+      "ffa4dfcf0e0e308f9910c8c501ede43e78b9b382",
+      []
+     ],
+     "backdrop-filter-backdrop-root-opacity-ref.html": [
+      "76d4854df6c149dd0b59ca900a8e89102a37666f",
+      []
+     ],
+     "backdrop-filter-backdrop-root-ref.html": [
+      "934e08acb9a01f59157653687a6daadd3d50c22c",
+      []
+     ],
      "backdrop-filter-basic-background-color-ref.html": [
       "4997007f0bf858986b8f0fbbe8348153cfee1dd6",
       []
@@ -344228,10 +344352,6 @@
      ],
      "backdrop-filter-fixed-clip-ref.html": [
       "38a8c8b253a9302f230fe5d4b073eac0d9a38df6",
-      []
-     ],
-     "backdrop-filter-isolation-ref.html": [
-      "fc2bccc36c1143b194c09bed7a3ba566fcca46f6",
       []
      ],
      "backdrop-filter-non-isolation-ref.html": [
@@ -344775,6 +344895,10 @@
       ]
      },
      "resources": {
+      "backdrop-filter-backdrop-root.css": [
+       "635e497cdfc8acaf8f254ba1d77b21246b0be89d",
+       []
+      ],
       "reference.png": [
        "68641b76771abf086dc213b353ac2088fffb931a",
        []
@@ -380689,6 +380813,10 @@
      "9b5206f28fbf76d952bda6cd40c116bc2edbfff4",
      []
     ],
+    "WEB_FEATURES.yml": [
+     "414dbe7478f078be42ac08999c2afcb97d0f0fdd",
+     []
+    ],
     "resources": {
      "orientation-event-helpers.js": [
       "dab876fc6a320bbf11e9bc85b28631850b094269",
@@ -393169,6 +393297,10 @@
      "fa5e3b0dc72385a5a60125802d78c53e46e99058",
      []
     ],
+    "WEB_FEATURES.yml": [
+     "4711efc1faf9a97d57c9a48bdff97b1f7951f6d0",
+     []
+    ],
     "a-element-xhtml_include=javascript-expected.txt": [
      "42409f24f93df5550843549c8ccb765e6bf38eb4",
      []
@@ -394879,6 +395011,10 @@
     ],
     "README.md": [
      "84af41baa8224b8e1c807bdefe43366235102612",
+     []
+    ],
+    "WEB_FEATURES.yml": [
+     "dac5b1ba75296ea0788b0a29d7e1f4b78fe6b81f",
      []
     ],
     "bfcache": {
@@ -438453,7 +438589,7 @@
      ]
     ],
     "digital-identity.https.html": [
-     "b2f36d21eec550f4d859e0e566950b8e0311123e",
+     "8ae9caa002d061862098b30341147601da6d10e0",
      [
       null,
       {
@@ -447555,15 +447691,15 @@
        {}
       ]
      ],
-     "linear-timing-functions-output.tentative.html": [
-      "82ea4690529504afc34a9b2be964c6801c0d78f2",
+     "linear-timing-functions-output.html": [
+      "ef157e2e28520da48b16f91409b0679e3366260a",
       [
        null,
        {}
       ]
      ],
-     "linear-timing-functions-syntax.tentative.html": [
-      "d2aa4f45b1a87c5b97bfc582cb3494095e5581c5",
+     "linear-timing-functions-syntax.html": [
+      "2d1baea4ebb311cd9710469189926b5a95beab47",
       [
        null,
        {}
