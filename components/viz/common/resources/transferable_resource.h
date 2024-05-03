@@ -72,15 +72,6 @@ struct VIZ_COMMON_EXPORT TransferableResource {
     kWebGPUSwapBuffer = 15,
   };
 
-  // TODO(crbug.com/337538024): Transition all callers to
-  // MakeSoftware{SharedBitmap, SharedImage} based on their use case and
-  // make this method internal.
-  static TransferableResource MakeSoftware(
-      const SharedBitmapId& id,
-      const gpu::SyncToken& sync_token,
-      const gfx::Size& size,
-      SharedImageFormat format,
-      ResourceSource source = ResourceSource::kUnknown);
   static TransferableResource MakeSoftwareSharedBitmap(
       const SharedBitmapId& id,
       const gpu::SyncToken& sync_token,
@@ -234,6 +225,17 @@ struct VIZ_COMMON_EXPORT TransferableResource {
            resource_source == o.resource_source;
   }
   bool operator!=(const TransferableResource& o) const { return !(*this == o); }
+
+ private:
+  // TODO(crbug.com/337538024): Separate out holding of mailbox for software
+  // SharedImage and holding of SharedBitmapId internally and inline/adapt this
+  // impl into MakeSoftware{SharedImage, SharedBitmapId}.
+  static TransferableResource MakeSoftware(
+      const SharedBitmapId& id,
+      const gpu::SyncToken& sync_token,
+      const gfx::Size& size,
+      SharedImageFormat format,
+      ResourceSource source = ResourceSource::kUnknown);
 };
 
 }  // namespace viz

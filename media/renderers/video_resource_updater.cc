@@ -650,8 +650,12 @@ class VideoResourceUpdater::SoftwarePlaneResource
     }
   }
 
-  const gpu::Mailbox& mailbox() const {
-    return shared_image_ ? shared_image_->mailbox() : shared_bitmap_id_;
+  const scoped_refptr<gpu::ClientSharedImage>& shared_image() const {
+    return shared_image_;
+  }
+
+  const viz::SharedBitmapId& shared_bitmap_id() const {
+    return shared_bitmap_id_;
   }
 
   void* pixels() { return shared_mapping_.memory(); }
@@ -1781,11 +1785,21 @@ VideoFrameExternalResources VideoResourceUpdater::CreateForSoftwarePlanes(
     if (software_compositor()) {
       SoftwarePlaneResource* software_resource = plane_resource->AsSoftware();
       external_resources.type = VideoFrameResourceType::RGBA_PREMULTIPLIED;
-      transferable_resource = viz::TransferableResource::MakeSoftware(
-          software_resource->mailbox(),
-          software_resource->GetSyncToken(shared_image_interface()),
-          software_resource->resource_size(), plane_resource->si_format(),
-          viz::TransferableResource::ResourceSource::kVideo);
+      const auto& shared_image = software_resource->shared_image();
+      transferable_resource =
+          shared_image
+              ? viz::TransferableResource::MakeSoftwareSharedImage(
+                    shared_image,
+                    software_resource->GetSyncToken(shared_image_interface()),
+                    software_resource->resource_size(),
+                    plane_resource->si_format(),
+                    viz::TransferableResource::ResourceSource::kVideo)
+              : viz::TransferableResource::MakeSoftwareSharedBitmap(
+                    software_resource->shared_bitmap_id(),
+                    software_resource->GetSyncToken(shared_image_interface()),
+                    software_resource->resource_size(),
+                    plane_resource->si_format(),
+                    viz::TransferableResource::ResourceSource::kVideo);
     } else {
       HardwarePlaneResource* hardware_resource = plane_resource->AsHardware();
       external_resources.type = VideoFrameResourceType::RGBA;
