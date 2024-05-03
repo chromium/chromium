@@ -21,6 +21,7 @@
 #include "components/autofill/core/browser/proto/autofill_sync.pb.h"
 #include "components/autofill/core/browser/webdata/autofill_sync_metadata_table.h"
 #include "components/autofill/core/browser/webdata/autofill_webdata_service.h"
+#include "components/sync/base/deletion_origin.h"
 #include "components/sync/model/client_tag_based_model_type_processor.h"
 #include "components/sync/model/model_type_change_processor.h"
 #include "components/sync/model/mutable_data_batch.h"
@@ -452,7 +453,9 @@ void AutocompleteSyncBridge::ActOnLocalChanges(
         break;
       }
       case AutocompleteChange::REMOVE: {
-        change_processor()->Delete(storage_key, metadata_change_list.get());
+        change_processor()->Delete(storage_key,
+                                   syncer::DeletionOrigin::Unspecified(),
+                                   metadata_change_list.get());
         break;
       }
       case AutocompleteChange::EXPIRE: {

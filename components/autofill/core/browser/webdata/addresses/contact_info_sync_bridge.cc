@@ -9,6 +9,7 @@
 #include "base/uuid.h"
 #include "components/autofill/core/browser/webdata/addresses/contact_info_sync_util.h"
 #include "components/autofill/core/browser/webdata/autofill_webdata_service.h"
+#include "components/sync/base/deletion_origin.h"
 #include "components/sync/base/features.h"
 #include "components/sync/base/model_type.h"
 #include "components/sync/model/client_tag_based_model_type_processor.h"
@@ -199,7 +200,9 @@ void ContactInfoSyncBridge::AutofillProfileChanged(
           metadata_change_list.get());
       break;
     case AutofillProfileChange::REMOVE:
-      change_processor()->Delete(change.key(), metadata_change_list.get());
+      change_processor()->Delete(change.key(),
+                                 syncer::DeletionOrigin::Unspecified(),
+                                 metadata_change_list.get());
       break;
   }
 
