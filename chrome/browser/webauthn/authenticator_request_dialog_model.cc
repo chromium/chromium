@@ -2153,7 +2153,7 @@ void AuthenticatorRequestDialogController::PopulateMechanisms() {
     const std::u16string name =
         l10n_util::GetStringUTF16(IDS_WEBAUTHN_SOURCE_GOOGLE_PASSWORD_MANAGER);
     model_->mechanisms.emplace_back(
-        Mechanism::Enclave(), name, name, kIcloudKeychainIcon,
+        Mechanism::Enclave(), name, name, vector_icons::kPasswordManagerIcon,
         base::BindRepeating(&AuthenticatorRequestDialogController::StartEnclave,
                             base::Unretained(this)));
   }
