@@ -294,6 +294,9 @@
   <message name="IDS_OMNIBOX_INSTANT_KEYWORD_SEARCH_TEXT" desc="Text shown in an omnibox suggestion ready for instant keyword search when the destination is suitable for searching. For example, starter pack suggestions like @bookmarks will search Bookmarks.">
     <ph name="KEYWORD">$1<ex>@bookmarks</ex></ph> - Search <ph name="KEYWORD_SHORT_NAME">$2<ex>Bookmarks</ex></ph>
   </message>
+  <message name="IDS_OMNIBOX_SELECTED_KEYWORD_CHAT_TEXT" desc="Text shown at the front of the Omnibox when a user has selected a keyword that is suitable for chatting. For example, starter pack suggestions like @gemini will chat with Gemini.">
+    Chat with <ph name="KEYWORD_SHORT_NAME">$1<ex>Gemini</ex></ph>
+  </message>
 
   <!-- No results description for the Starter Pack's tab search feature (@tabs). This appears as the first suggestion when no matching tabs are found. -->
   <message name="IDS_OMNIBOX_TAB_SEARCH_NO_RESULTS_FOUND" desc = "The string displayed as the first row in the Omnibox when no results are found in Tab Search mode.">

@@ -12,6 +12,7 @@
 #include "components/omnibox/browser/vector_icons.h"
 #include "components/search_engines/template_url_service.h"
 #include "components/search_engines/template_url_starter_pack_data.h"
+#include "components/strings/grit/components_strings.h"
 #include "components/vector_icons/vector_icons.h"
 #include "ui/accessibility/ax_enums.mojom.h"
 #include "ui/base/l10n/l10n_util.h"
@@ -31,10 +32,15 @@ SelectedKeywordView::GetKeywordLabelNames(const std::u16string& keyword,
     bool is_ask_google_keyword = false;
     names.short_name = service->GetKeywordShortName(
         keyword, &is_extension_keyword, &is_ask_google_keyword);
-    names.full_name = (is_extension_keyword || is_ask_google_keyword)
-                          ? names.short_name
-                          : l10n_util::GetStringFUTF16(
-                                IDS_OMNIBOX_KEYWORD_TEXT_MD, names.short_name);
+    if (is_ask_google_keyword) {
+      names.full_name = l10n_util::GetStringFUTF16(
+          IDS_OMNIBOX_SELECTED_KEYWORD_CHAT_TEXT, names.short_name);
+    } else if (is_extension_keyword) {
+      names.full_name = names.short_name;
+    } else {
+      names.full_name = l10n_util::GetStringFUTF16(IDS_OMNIBOX_KEYWORD_TEXT_MD,
+                                                   names.short_name);
+    }
   }
   return names;
 }
