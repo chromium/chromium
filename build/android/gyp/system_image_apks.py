@@ -46,16 +46,14 @@ def main():
         pathlib.Path(args.output).write_bytes(z.read('system/system.apk'))
       return
 
-    # Rename .apk files and remove toc.pb to make it clear that system apks
-    # should not be installed via bundletool.
-    with zipfile.ZipFile(tmp_file.name) as z_input, \
-        zipfile.ZipFile(args.output, 'w') as z_output:
-      for info in z_input.infolist():
-        if info.filename.endswith('.apk'):
-          data = z_input.read(info)
-          info.filename = (info.filename.replace('splits/',
-                                                 '').replace('-master', ''))
-          z_output.writestr(info, data)
+    # A single .apk file means a bundle where we take only the base split.
+    if args.output.endswith('.apk'):
+      with zipfile.ZipFile(tmp_file.name) as z:
+        pathlib.Path(args.output).write_bytes(z.read('splits/base-master.apk'))
+      return
+
+    # Use the full .apks.
+    shutil.copyfile(tmp_file.name, args.output)
 
 
 if __name__ == '__main__':
