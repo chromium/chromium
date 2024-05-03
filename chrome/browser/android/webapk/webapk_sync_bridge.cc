@@ -22,6 +22,7 @@
 #include "chrome/browser/android/webapk/webapk_restore_task.h"
 #include "chrome/browser/android/webapk/webapk_specifics_fetcher.h"
 #include "chrome/common/channel_info.h"
+#include "components/sync/base/deletion_origin.h"
 #include "components/sync/base/model_type.h"
 #include "components/sync/base/report_unrecoverable_error.h"
 #include "components/sync/model/client_tag_based_model_type_processor.h"
@@ -531,7 +532,8 @@ void WebApkSyncBridge::DeleteAppsFromSync(
       std::make_unique<RegistryUpdateData>();
 
   for (const webapps::AppId& app_id : app_ids) {
-    change_processor()->Delete(app_id, metadata_change_list.get());
+    change_processor()->Delete(app_id, syncer::DeletionOrigin::Unspecified(),
+                               metadata_change_list.get());
     registry_update->apps_to_delete.push_back(app_id);
   }
 
