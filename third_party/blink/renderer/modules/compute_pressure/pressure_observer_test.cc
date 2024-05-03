@@ -93,7 +93,7 @@ TEST(PressureObserverTest, PressureObserverDisconnectBeforePenaltyEnd) {
   task_environment.FastForwardBy(kDelayTime);
   pressure_service.SendUpdate(device::mojom::blink::PressureUpdate::New(
       device::mojom::blink::PressureSource::kCpu,
-      device::mojom::blink::PressureState::kCritical, base::Time::Now()));
+      device::mojom::blink::PressureState::kCritical, base::TimeTicks::Now()));
 
   callback_run_loop.Run();
 
@@ -101,7 +101,7 @@ TEST(PressureObserverTest, PressureObserverDisconnectBeforePenaltyEnd) {
   task_environment.FastForwardBy(kDelayTime);
   pressure_service.SendUpdate(device::mojom::blink::PressureUpdate::New(
       device::mojom::blink::PressureSource::kCpu,
-      device::mojom::blink::PressureState::kNominal, base::Time::Now()));
+      device::mojom::blink::PressureState::kNominal, base::TimeTicks::Now()));
   // The number of seconds here should not exceed the penalty time, we just
   // want to run some code like OnUpdate() but not the pending delayed task
   // that it should have created.
@@ -146,7 +146,7 @@ TEST(PressureObserverTest, PressureObserverUnobserveBeforePenaltyEnd) {
   task_environment.FastForwardBy(kDelayTime);
   pressure_service.SendUpdate(device::mojom::blink::PressureUpdate::New(
       device::mojom::blink::PressureSource::kCpu,
-      device::mojom::blink::PressureState::kNominal, base::Time::Now()));
+      device::mojom::blink::PressureState::kNominal, base::TimeTicks::Now()));
 
   callback_run_loop.Run();
 
@@ -154,7 +154,7 @@ TEST(PressureObserverTest, PressureObserverUnobserveBeforePenaltyEnd) {
   task_environment.FastForwardBy(kDelayTime);
   pressure_service.SendUpdate(device::mojom::blink::PressureUpdate::New(
       device::mojom::blink::PressureSource::kCpu,
-      device::mojom::blink::PressureState::kCritical, base::Time::Now()));
+      device::mojom::blink::PressureState::kCritical, base::TimeTicks::Now()));
   // The number of seconds here should not exceed the penalty time, we just
   // want to run some code like OnUpdate() but not the pending delayed task
   // that it should have created.

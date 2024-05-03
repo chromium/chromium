@@ -4,12 +4,22 @@
 
 #include "third_party/blink/renderer/modules/compute_pressure/pressure_client_impl.h"
 
+#include "base/check.h"
+#include "base/check_deref.h"
+#include "base/notreached.h"
 #include "base/task/single_thread_task_runner.h"
+#include "base/time/time.h"
 #include "services/device/public/mojom/pressure_manager.mojom-blink.h"
 #include "services/device/public/mojom/pressure_update.mojom-blink.h"
 #include "third_party/blink/renderer/core/dom/dom_high_res_time_stamp.h"
 #include "third_party/blink/renderer/core/execution_context/execution_context.h"
+#include "third_party/blink/renderer/core/timing/dom_window_performance.h"
+#include "third_party/blink/renderer/core/timing/performance.h"
+#include "third_party/blink/renderer/core/timing/window_performance.h"
+#include "third_party/blink/renderer/core/timing/worker_global_scope_performance.h"
+#include "third_party/blink/renderer/core/workers/worker_global_scope.h"
 #include "third_party/blink/renderer/modules/compute_pressure/pressure_observer_manager.h"
+#include "third_party/blink/renderer/platform/wtf/casting.h"
 #include "third_party/blink/renderer/platform/wtf/functional.h"
 
 using device::mojom::blink::PressureSource;
@@ -60,7 +70,7 @@ void PressureClientImpl::OnPressureUpdated(
   for (const auto& observer : observers) {
     observer->OnUpdate(GetExecutionContext(), source,
                        PressureStateToV8PressureState(update->state),
-                       ConvertTimeToDOMHighResTimeStamp(update->timestamp));
+                       CalculateTimestamp(update->timestamp));
   }
 }
 
@@ -89,6 +99,21 @@ void PressureClientImpl::Reset() {
   state_ = State::kUninitialized;
   observers_.clear();
   receiver_.reset();
+}
+
+DOMHighResTimeStamp PressureClientImpl::CalculateTimestamp(
+    base::TimeTicks timeticks) const {
+  auto* context = GetExecutionContext();
+  Performance* performance;
+  if (auto* window = DynamicTo<LocalDOMWindow>(context); window) {
+    performance = DOMWindowPerformance::performance(*window);
+  } else if (auto* worker = DynamicTo<WorkerGlobalScope>(context); worker) {
+    performance = WorkerGlobalScopePerformance::performance(*worker);
+  } else {
+    NOTREACHED_NORETURN();
+  }
+  CHECK(performance);
+  return performance->MonotonicTimeToDOMHighResTimeStamp(timeticks);
 }
 
 void PressureClientImpl::Trace(Visitor* visitor) const {

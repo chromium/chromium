@@ -180,7 +180,7 @@ TEST_F(PressureServiceForDedicatedWorkerTest, AddClient) {
                                PressureSource::kCpu, future.GetCallback());
   ASSERT_EQ(future.Get(), PressureStatus::kOk);
 
-  const base::Time time = base::Time::Now();
+  const base::TimeTicks time = base::TimeTicks::Now();
   PressureUpdate update(PressureSource::kCpu, PressureState::kNominal, time);
   pressure_manager_overrider_->UpdateClients(update);
   client.WaitForUpdate();
@@ -290,7 +290,7 @@ TEST_F(PressureServiceForSharedWorkerTest, AddClient) {
                                PressureSource::kCpu, future.GetCallback());
   ASSERT_EQ(future.Get(), PressureStatus::kOk);
 
-  const base::Time time = base::Time::Now();
+  const base::TimeTicks time = base::TimeTicks::Now();
   PressureUpdate update(PressureSource::kCpu, PressureState::kNominal, time);
   pressure_manager_overrider_->UpdateClients(update);
   client.WaitForUpdate();

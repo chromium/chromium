@@ -174,7 +174,7 @@ TEST_F(PressureServiceForFrameTest, AddClient) {
                               PressureSource::kCpu),
             PressureStatus::kOk);
 
-  const base::Time time = base::Time::Now();
+  const base::TimeTicks time = base::TimeTicks::Now();
   PressureUpdate update(PressureSource::kCpu, PressureState::kNominal, time);
   pressure_manager_overrider_->UpdateClients(update);
   client.WaitForUpdate();

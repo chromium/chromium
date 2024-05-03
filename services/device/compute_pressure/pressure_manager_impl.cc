@@ -78,7 +78,7 @@ void PressureManagerImpl::AddClient(
 void PressureManagerImpl::UpdateClients(mojom::PressureSource source,
                                         mojom::PressureState state) {
   DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
-  const base::Time timestamp = base::Time::Now();
+  const base::TimeTicks timestamp = base::TimeTicks::Now();
 
   mojom::PressureUpdate update(source, state, timestamp);
   for (auto& client : clients_[source]) {

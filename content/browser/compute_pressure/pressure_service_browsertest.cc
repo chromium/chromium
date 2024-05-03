@@ -148,7 +148,7 @@ IN_PROC_BROWSER_TEST_F(ComputePressureBrowserTest, DeliverUpdate) {
   }
 
   // Deliver update.
-  const base::Time time = base::Time::Now();
+  const base::TimeTicks time = base::TimeTicks::Now();
   PressureUpdate update(PressureSource::kCpu, PressureState::kNominal, time);
   pressure_manager_overrider_.UpdateClients(std::move(update));
 
@@ -179,7 +179,7 @@ IN_PROC_BROWSER_TEST_F(ComputePressureBrowserTest, DeliverUpdateForSameOrigin) {
   ASSERT_TRUE(ExecJs(shell(), "same_origin_iframe.focus();"));
 
   // Deliver update.
-  const base::Time time = base::Time::Now();
+  const base::TimeTicks time = base::TimeTicks::Now();
   PressureUpdate update(PressureSource::kCpu, PressureState::kNominal, time);
   pressure_manager_overrider_.UpdateClients(std::move(update));
 
@@ -210,7 +210,7 @@ IN_PROC_BROWSER_TEST_F(ComputePressureBrowserTest, NoUpdateForCrossOrigin) {
   ASSERT_TRUE(ExecJs(shell(), "cross_origin_iframe.focus();"));
 
   // Deliver update.
-  const base::Time time1 = base::Time::Now();
+  const base::TimeTicks time1 = base::TimeTicks::Now();
   PressureUpdate update1(PressureSource::kCpu, PressureState::kNominal, time1);
   pressure_manager_overrider_.UpdateClients(std::move(update1));
 
@@ -218,7 +218,7 @@ IN_PROC_BROWSER_TEST_F(ComputePressureBrowserTest, NoUpdateForCrossOrigin) {
   ASSERT_TRUE(ExecJs(shell(), "parent.focus();"));
 
   // Deliver update.
-  const base::Time time2 = time1 + base::Seconds(2);
+  const base::TimeTicks time2 = time1 + base::Seconds(2);
   PressureUpdate update2(PressureSource::kCpu, PressureState::kFair, time2);
   pressure_manager_overrider_.UpdateClients(std::move(update2));
 
@@ -257,7 +257,7 @@ IN_PROC_BROWSER_TEST_F(ComputePressureBrowserTest, DeliverDataForPiP) {
   ASSERT_TRUE(ExecJs(shell(), "cross_origin_iframe.focus();"));
 
   // Deliver update.
-  const base::Time time1 = base::Time::Now();
+  const base::TimeTicks time1 = base::TimeTicks::Now();
   PressureUpdate update1(PressureSource::kCpu, PressureState::kNominal, time1);
   pressure_manager_overrider_.UpdateClients(std::move(update1));
 
@@ -280,7 +280,7 @@ IN_PROC_BROWSER_TEST_F(ComputePressureBrowserTest, DeliverDataForPiP) {
   EXPECT_FALSE(shell()->web_contents()->HasPictureInPictureVideo());
 
   // Deliver update.
-  const base::Time time2 = time1 + base::Seconds(2);
+  const base::TimeTicks time2 = time1 + base::Seconds(2);
   PressureUpdate update2(PressureSource::kCpu, PressureState::kFair, time2);
   pressure_manager_overrider_.UpdateClients(std::move(update2));
 
@@ -288,7 +288,7 @@ IN_PROC_BROWSER_TEST_F(ComputePressureBrowserTest, DeliverDataForPiP) {
   ASSERT_TRUE(ExecJs(shell(), "parent.focus();"));
 
   // Deliver update.
-  const base::Time time3 = time2 + base::Seconds(2);
+  const base::TimeTicks time3 = time2 + base::Seconds(2);
   PressureUpdate update3(PressureSource::kCpu, PressureState::kSerious, time3);
   pressure_manager_overrider_.UpdateClients(std::move(update3));
 
@@ -323,7 +323,7 @@ IN_PROC_BROWSER_TEST_F(ComputePressureBrowserTest, DeliverDataForCapturing) {
   ASSERT_TRUE(ExecJs(shell(), "cross_origin_iframe.focus();"));
 
   // Deliver update.
-  const base::Time time1 = base::Time::Now();
+  const base::TimeTicks time1 = base::TimeTicks::Now();
   PressureUpdate update1(PressureSource::kCpu, PressureState::kNominal, time1);
   pressure_manager_overrider_.UpdateClients(std::move(update1));
 
@@ -345,7 +345,7 @@ IN_PROC_BROWSER_TEST_F(ComputePressureBrowserTest, DeliverDataForCapturing) {
   ASSERT_TRUE(ExecJs(shell(), "stopCapturing();"));
 
   // Deliver update.
-  const base::Time time2 = time1 + base::Seconds(2);
+  const base::TimeTicks time2 = time1 + base::Seconds(2);
   PressureUpdate update2(PressureSource::kCpu, PressureState::kFair, time2);
   pressure_manager_overrider_.UpdateClients(std::move(update2));
 
@@ -353,7 +353,7 @@ IN_PROC_BROWSER_TEST_F(ComputePressureBrowserTest, DeliverDataForCapturing) {
   ASSERT_TRUE(ExecJs(shell(), "parent.focus();"));
 
   // Deliver update.
-  const base::Time time3 = time2 + base::Seconds(2);
+  const base::TimeTicks time3 = time2 + base::Seconds(2);
   PressureUpdate update3(PressureSource::kCpu, PressureState::kSerious, time3);
   pressure_manager_overrider_.UpdateClients(std::move(update3));
 

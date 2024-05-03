@@ -32,5 +32,5 @@ enum PressureState {
 struct PressureUpdate {
   PressureSource source;
   PressureState state;
-  mojo_base.mojom.Time timestamp;
+  mojo_base.mojom.TimeTicks timestamp;
 };
