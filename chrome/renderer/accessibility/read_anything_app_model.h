@@ -170,7 +170,7 @@ class ReadAnythingAppModel {
   const SkColor& background_color() const { return background_color_; }
   float speech_rate() const { return speech_rate_; }
   const base::Value::Dict& voices() const { return voices_; }
-  void setVoice(const std::string& voice, const std::string& lang) {
+  void SetVoice(const std::string& voice, const std::string& lang) {
     voices_.Set(lang, voice);
   }
   const base::Value::List& languages_enabled_in_pref() const {

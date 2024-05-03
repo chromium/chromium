@@ -1361,7 +1361,7 @@ void ReadAnythingAppController::OnVoiceChange(const std::string& voice,
   // pages, use that voice even if the page is marked en-US.
   std::string base_lang = std::string(language::ExtractBaseLanguage(lang));
   page_handler_->OnVoiceChange(voice, base_lang);
-  model_.setVoice(voice, base_lang);
+  model_.SetVoice(voice, base_lang);
 }
 
 void ReadAnythingAppController::OnLanguagePrefChange(const std::string& lang,
