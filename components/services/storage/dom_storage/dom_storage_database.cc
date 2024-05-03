@@ -51,7 +51,13 @@ leveldb_env::Options MakeOptions() {
   // Default write_buffer_size is 4 MB but that might leave a 3.999
   // memory allocation in RAM from a log file recovery.
   options.write_buffer_size = 64 * 1024;
-  options.block_cache = leveldb_chrome::GetSharedWebBlockCache();
+
+  // We disable caching because all reads are one-offs such as in
+  // `LocalStorageImpl::OnDatabaseOpened()`, or they are bulk scans (as in
+  // `ForEachWithPrefix`). In the case of bulk scans, they're either for
+  // deletion (where caching doesn't make sense) or a mass-read, which we cache
+  // in memory.
+  options.block_cache = leveldb_chrome::GetSharedInMemoryBlockCache();
 
   static base::NoDestructor<DomStorageDatabaseEnv> env;
   options.env = env.get();
@@ -90,12 +96,8 @@ template <typename Func>
 DomStorageDatabase::Status ForEachWithPrefix(leveldb::DB* db,
                                              DomStorageDatabase::KeyView prefix,
                                              Func function) {
-  // NOTE: We disable filling the cache for bulk scans. Either this is for
-  // deletion (where caching doesn't make sense) or a mass-read, which the user
-  // should be caching or only needing once.
-  leveldb::ReadOptions options;
-  options.fill_cache = false;
-  std::unique_ptr<leveldb::Iterator> iter(db->NewIterator(options));
+  std::unique_ptr<leveldb::Iterator> iter(
+      db->NewIterator(leveldb::ReadOptions()));
   const leveldb::Slice prefix_slice(MakeSlice(prefix));
   iter->Seek(prefix_slice);
   for (; iter->Valid(); iter->Next()) {
