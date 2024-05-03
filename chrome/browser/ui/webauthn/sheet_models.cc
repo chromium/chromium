@@ -1492,18 +1492,17 @@ AuthenticatorGPMErrorSheetModel::AuthenticatorGPMErrorSheetModel(
     AuthenticatorRequestDialogModel* dialog_model)
     : AuthenticatorSheetModelBase(dialog_model,
                                   OtherMechanismButtonVisibility::kHidden) {
-  lottie_illustrations_.emplace(IDR_WEBAUTHN_PASSKEY_LIGHT,
-                                IDR_WEBAUTHN_PASSKEY_DARK);
+  vector_illustrations_.emplace(kPasskeyErrorIcon, kPasskeyErrorDarkIcon);
 }
 
 AuthenticatorGPMErrorSheetModel::~AuthenticatorGPMErrorSheetModel() = default;
 
 std::u16string AuthenticatorGPMErrorSheetModel::GetStepTitle() const {
-  return u"Something went wrong (UNTRANSLATED)";
+  return l10n_util::GetStringUTF16(IDS_WEBAUTHN_GPM_ERROR_TITLE);
 }
 
 std::u16string AuthenticatorGPMErrorSheetModel::GetStepDescription() const {
-  return u"Check your internet connection and try again (UNTRANSLATED)";
+  return l10n_util::GetStringUTF16(IDS_WEBAUTHN_GPM_ERROR_DESC);
 }
 
 // AuthenticatorGPMConnectingSheetModel --------------------------------------

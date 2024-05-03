@@ -16095,6 +16095,12 @@ Please help our engineers fix this problem. Tell us what happened right before y
       <message name="IDS_WEBAUTHN_TOUCH_ID_ENTER_PASSWORD" desc="A label on a button that appears after the user has repeatedly tried to use their fingerprint to authenticate, but the laptop believes that the fingerprint is incorrect. After enough failed attempts the fingerprint reader is disabled and the user must enter their local system password to authenticate. They do so by clicking this button.">
         Enter password
       </message>
+      <message name="IDS_WEBAUTHN_GPM_ERROR_TITLE" desc="The title of a dialog that is shown when an error occurs with Google Password Manager. Since this involves communication with a server, the most likely cause of the error is a connectivity problem thus 'reach' refers to this external communication.">
+        Can't reach Google Password Manager
+      </message>
+      <message name="IDS_WEBAUTHN_GPM_ERROR_DESC" desc="The description of a dialog that is shown when an error occurs with Google Password Manager. Since this involves communication with a server, the most likely cause of the error is a connectivity problem thus 'reach' refers to this external communication.">
+        Can’t reach Google Password Manager. Try again in a few minutes
+      </message>
 
       <!-- Side Search -->
       <message name="IDS_ACCNAME_SIDE_SEARCH_TOOL" desc="The accessible name for the side search tool.">

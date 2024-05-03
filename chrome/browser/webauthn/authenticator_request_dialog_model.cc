@@ -1292,9 +1292,7 @@ bool AuthenticatorRequestDialogController::OnHybridTransportError() {
 }
 
 bool AuthenticatorRequestDialogController::OnEnclaveError() {
-  // TODO(enclave): this is just a placeholder. We'll need a specific error
-  // sheet for this case.
-  SetCurrentStep(Step::kCableV2Error);
+  SetCurrentStep(Step::kGPMError);
   return true;
 }
 
