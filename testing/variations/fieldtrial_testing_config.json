@@ -3191,25 +3191,6 @@
             ]
         }
     ],
-    "CastFallbackCRLRevocation": [
-        {
-            "platforms": [
-                "chromeos",
-                "chromeos_lacros",
-                "linux",
-                "mac",
-                "windows"
-            ],
-            "experiments": [
-                {
-                    "name": "EnableCastFallbackCRLRevocation",
-                    "enable_features": [
-                        "CastFallbackCRLRevocation"
-                    ]
-                }
-            ]
-        }
-    ],
     "CastMirroringPlayoutDelayChromeOS": [
         {
             "platforms": [
