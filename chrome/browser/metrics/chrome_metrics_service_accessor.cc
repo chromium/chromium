@@ -44,15 +44,22 @@ bool ChromeMetricsServiceAccessor::IsMetricsAndCrashReportingEnabled() {
 // static
 bool ChromeMetricsServiceAccessor::IsMetricsAndCrashReportingEnabled(
     PrefService* local_state) {
-  if (g_metrics_consent_for_testing) {
+  if (g_metrics_consent_for_testing)
     return *g_metrics_consent_for_testing;
-  }
 
   // TODO(blundell): Fix the unittests that don't set up the UI thread and
   // change this to just be DCHECK_CURRENTLY_ON().
   DCHECK(!content::BrowserThread::IsThreadInitialized(
              content::BrowserThread::UI) ||
          content::BrowserThread::CurrentlyOn(content::BrowserThread::UI));
+
+  // This is only possible during unit tests. If the unit test didn't set the
+  // local_state then it doesn't care about pref value and therefore we return
+  // false.
+  if (!local_state) {
+    DLOG(WARNING) << "Local state has not been set and pref cannot be read";
+    return false;
+  }
 
   return IsMetricsReportingEnabled(local_state);
 }
