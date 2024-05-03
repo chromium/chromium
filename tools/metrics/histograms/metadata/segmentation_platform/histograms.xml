@@ -69,6 +69,7 @@ chromium-metrics-reviews@google.com.
   <variant name="ChromeLowUserEngagement"/>
   <variant name="ChromeStartAndroid"/>
   <variant name="ChromeStartAndroidV2"/>
+  <variant name="ComposePromotion"/>
   <variant name="ContextualPageActions"/>
   <variant name="CrossDeviceUser"/>
   <variant name="DatabaseApiClients"/>
@@ -98,6 +99,7 @@ chromium-metrics-reviews@google.com.
   <variant name="ChromeLowUserEngagement"/>
   <variant name="ChromeStartAndroid"/>
   <variant name="ChromeStartAndroidV2"/>
+  <variant name="ComposePromotion"/>
   <variant name="ContextualPageActionPriceTracking"/>
   <variant name="CrossDeviceUserSegment"/>
   <variant name="DatabaseApiClients"/>

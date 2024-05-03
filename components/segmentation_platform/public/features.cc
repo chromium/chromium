@@ -146,4 +146,8 @@ BASE_FEATURE(kSegmentationPlatformSignalDbCache,
              base::FEATURE_DISABLED_BY_DEFAULT);
 #endif
 
+BASE_FEATURE(kSegmentationPlatformComposePromotion,
+             "SegmentationPlatformComposePromotion",
+             base::FEATURE_DISABLED_BY_DEFAULT);
+
 }  // namespace segmentation_platform::features

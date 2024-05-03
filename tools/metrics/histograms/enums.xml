@@ -32016,6 +32016,7 @@ Called by update_net_error_codes.py.-->
   <int value="37" label="IosModuleRanker"/>
   <int value="38" label="DesktopNtpModule"/>
   <int value="41" label="AndroidHomeModuleRanker"/>
+  <int value="44" label="ComposePromotion"/>
 </enum>
 
 <enum name="SegmentationPlatformTrainingDataCollectionEvent">

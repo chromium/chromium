@@ -101,6 +101,9 @@ BASE_DECLARE_FEATURE(kSegmentationPlatformModelInitializationDelay);
 // Feature flag for turning of signal database cache.
 BASE_DECLARE_FEATURE(kSegmentationPlatformSignalDbCache);
 
+// Feature flag for Compose promotion targeting.
+BASE_DECLARE_FEATURE(kSegmentationPlatformComposePromotion);
+
 }  // namespace segmentation_platform::features
 
 #endif  // COMPONENTS_SEGMENTATION_PLATFORM_PUBLIC_FEATURES_H_

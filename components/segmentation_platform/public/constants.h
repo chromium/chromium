@@ -106,6 +106,9 @@ const char kDesktopNtpModuleUmaName[] = "DesktopNtpModule";
 const char kOptimizationTargetSegmentationDummyKey[] = "segmentation_dummy";
 const char kOptimizationTargetSegmentationDummyUmaName[] = "SegmentationDummy";
 
+const char kComposePromotionKey[] = "compose_promotion";
+const char kComposePromotionUmaName[] = "ComposePromotion";
+
 // SEGMENTATION_CLIENT_KEYS_END
 
 // Please keep the UMA names for keys in sync with SegmentationKey variant in
@@ -226,6 +229,9 @@ const char kDesktopNtpDriveModuleLabelDontShow[] = "dont_show_drive";
 // Custom inputs for contextual page actions model.
 const char kContextualPageActionModelInputPriceTracking[] = "can_track_price";
 const char kContextualPageActionModelInputReaderMode[] = "has_reader_mode";
+
+const char kComposePrmotionLabelShow[] = "Show";
+const char kComposePrmotionLabelDontShow[] = "DontShow";
 
 // Finch parameter key for sampling rate of the model execution results.
 constexpr char kModelExecutionSamplingRateKey[] =

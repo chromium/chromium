@@ -133,6 +133,16 @@ std::unique_ptr<Config> GetConfigForWebAppInstallationPromo() {
   return config;
 }
 
+std::unique_ptr<Config> GetConfigForComposePromotion() {
+  auto config = std::make_unique<Config>();
+  config->segmentation_key = kComposePromotionKey;
+  config->segmentation_uma_name = kComposePromotionUmaName;
+  config->AddSegmentId(
+      SegmentId::OPTIMIZATION_TARGET_SEGMENTATION_COMPOSE_PROMOTION);
+  config->auto_execute_and_cache = false;
+  return config;
+}
+
 std::unique_ptr<Config> GetConfigForDesktopNtpModule() {
   auto config = std::make_unique<Config>();
   config->segmentation_key = kDesktopNtpModuleKey;
@@ -181,6 +191,10 @@ std::vector<std::unique_ptr<Config>> GetSegmentationPlatformConfig(
   // Model used for testing.
   configs.emplace_back(OptimizationTargetSegmentationDummy::GetConfig());
 
+  if (base::FeatureList::IsEnabled(
+          features::kSegmentationPlatformComposePromotion)) {
+    configs.emplace_back(GetConfigForComposePromotion());
+  }
   if (base::FeatureList::IsEnabled(
           webapps::features::kWebAppsEnableMLModelForPromotion)) {
     configs.emplace_back(GetConfigForWebAppInstallationPromo());

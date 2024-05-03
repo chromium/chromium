@@ -125,6 +125,8 @@ std::string GetStringNameForOptimizationTarget(
       return "Compose";
     case proto::OPTIMIZATION_TARGET_PASSAGE_EMBEDDER:
       return "PassageEmbedder";
+    case proto::OPTIMIZATION_TARGET_SEGMENTATION_COMPOSE_PROMOTION:
+      return "SegmentationComposePromotion";
       // Whenever a new value is added, make sure to add it to the OptTarget
       // variant list in
       // //tools/metrics/histograms/metadata/optimization/histograms.xml.
