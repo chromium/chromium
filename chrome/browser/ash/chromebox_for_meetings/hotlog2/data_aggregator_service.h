@@ -11,6 +11,7 @@
 #include "chromeos/ash/components/dbus/chromebox_for_meetings/cfm_observer.h"
 #include "chromeos/ash/services/chromebox_for_meetings/public/mojom/meet_devices_data_aggregator.mojom-shared.h"
 #include "chromeos/ash/services/chromebox_for_meetings/public/mojom/meet_devices_data_aggregator.mojom.h"
+#include "chromeos/ash/services/chromebox_for_meetings/public/mojom/meet_devices_info.mojom.h"
 #include "chromeos/ash/services/chromebox_for_meetings/public/mojom/meet_devices_logger.mojom.h"
 #include "mojo/public/cpp/bindings/pending_remote.h"
 #include "mojo/public/cpp/bindings/receiver_set.h"
@@ -76,6 +77,12 @@ class DataAggregatorService : public CfmObserver,
   void OnRequestBindUploadService(const std::string& interface_name,
                                   size_t num_tries,
                                   bool success);
+  void InitializeDeviceInfoEndpoint(size_t num_tries);
+  void OnRequestBindDeviceInfoService(const std::string& interface_name,
+                                      size_t num_tries,
+                                      bool success);
+  void RequestDeviceId();
+  void StoreDeviceId(chromeos::cfm::mojom::PolicyInfoPtr policy_info);
   void StartFetchTimer();
   void FetchFromAllSourcesAndEnqueue();
   void EnqueueData(const std::string& source_name,
@@ -94,6 +101,12 @@ class DataAggregatorService : public CfmObserver,
 
   // Remote endpoint for CfmLoggerService
   mojo::Remote<chromeos::cfm::mojom::MeetDevicesLogger> uploader_remote_;
+
+  // Remote endpoint for CfmDeviceInfoService
+  mojo::Remote<chromeos::cfm::mojom::MeetDevicesInfo> device_info_remote_;
+
+  // Unique device ID for the CfM that is permanent across provisioning.
+  std::string device_id_;
 
   // Must be the last class member.
   base::WeakPtrFactory<DataAggregatorService> weak_ptr_factory_{this};

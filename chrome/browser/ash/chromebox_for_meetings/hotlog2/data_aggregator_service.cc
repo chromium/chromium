@@ -261,7 +261,7 @@ void DataAggregatorService::OnRequestBindUploadService(
           << " for interface: " << interface_name;
 
   if (success) {
-    StartFetchTimer();
+    InitializeDeviceInfoEndpoint(/*num_tries=*/0);
     return;
   }
 
@@ -278,6 +278,68 @@ void DataAggregatorService::OnRequestBindUploadService(
       base::BindOnce(&DataAggregatorService::InitializeUploadEndpoint,
                      weak_ptr_factory_.GetWeakPtr(), num_tries + 1),
       kServiceAdaptorRetryDelay);
+}
+
+void DataAggregatorService::InitializeDeviceInfoEndpoint(size_t num_tries) {
+  // Hook into the existing CfmDeviceInfoService.
+  const std::string kMeetDevicesInfoInterfaceName =
+      chromeos::cfm::mojom::MeetDevicesInfo::Name_;
+
+  // We'll only be bound if we tried to initialize the endpoint
+  // already and failed. Just reset and try again.
+  if (device_info_remote_.is_bound()) {
+    device_info_remote_.reset();
+  }
+
+  service_adaptor_.GetService(
+      kMeetDevicesInfoInterfaceName,
+      device_info_remote_.BindNewPipeAndPassReceiver().PassPipe(),
+      base::BindOnce(&DataAggregatorService::OnRequestBindDeviceInfoService,
+                     weak_ptr_factory_.GetWeakPtr(),
+                     kMeetDevicesInfoInterfaceName, num_tries));
+}
+
+void DataAggregatorService::OnRequestBindDeviceInfoService(
+    const std::string& interface_name,
+    size_t num_tries,
+    bool success) {
+  VLOG(3) << "DeviceInfo RequestBindService result: " << success
+          << " for interface: " << interface_name;
+
+  if (success) {
+    RequestDeviceId();
+    return;
+  }
+
+  if (num_tries >= kServiceAdaptorRetryMaxTries) {
+    LOG(ERROR) << "Retry limit reached for connecting to " << interface_name
+               << ". Remote calls will fail.";
+    return;
+  }
+
+  VLOG(3) << "Retrying service adaptor connection in "
+          << kServiceAdaptorRetryDelay;
+  base::SequencedTaskRunner::GetCurrentDefault()->PostDelayedTask(
+      FROM_HERE,
+      base::BindOnce(&DataAggregatorService::InitializeDeviceInfoEndpoint,
+                     weak_ptr_factory_.GetWeakPtr(), num_tries + 1),
+      kServiceAdaptorRetryDelay);
+}
+
+void DataAggregatorService::RequestDeviceId() {
+  device_info_remote_->GetPolicyInfo(base::BindOnce(
+      &DataAggregatorService::StoreDeviceId, weak_ptr_factory_.GetWeakPtr()));
+}
+
+void DataAggregatorService::StoreDeviceId(
+    chromeos::cfm::mojom::PolicyInfoPtr policy_info) {
+  // Only start collecting data if we have a device_id. Without a proper
+  // ID, we can't upload logs to cloud logging, so the data is useless.
+  if (policy_info->device_id.has_value()) {
+    device_id_ = policy_info->device_id.value();
+    VLOG(4) << "Assigning device ID " << device_id_;
+    StartFetchTimer();
+  }
 }
 
 void DataAggregatorService::StartFetchTimer() {
