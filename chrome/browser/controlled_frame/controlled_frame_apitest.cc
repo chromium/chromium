@@ -647,6 +647,60 @@ IN_PROC_BROWSER_TEST_F(ControlledFrameApiTest, DisabledInSandboxedIframe) {
   ASSERT_FALSE(CreateControlledFrame(iframe, https_url));
 }
 
+IN_PROC_BROWSER_TEST_F(ControlledFrameApiTest, DisabledInSrcdocIframe) {
+  web_app::IsolatedWebAppUrlInfo url_info =
+      CreateAndInstallEmptyApp(web_app::ManifestBuilder());
+  content::RenderFrameHost* app_frame = OpenApp(url_info.app_id());
+
+  ASSERT_TRUE(ExecJs(app_frame, R"(
+      const noopPolicy = trustedTypes.createPolicy("policy", {
+        createHTML: (string) => string,
+      });
+      new Promise(resolve => {
+        const f = document.createElement('iframe');
+        f.srcdoc = noopPolicy.createHTML('<!DOCTYPE html><p>srcdoc iframe</p>');
+        f.addEventListener('load', resolve);
+        document.body.appendChild(f);
+      });
+  )"));
+  content::RenderFrameHost* iframe = ChildFrameAt(app_frame, 0);
+  ASSERT_NE(iframe, nullptr);
+
+  // Despite srcdoc iframes being same-origin, creating the <controlledframe>
+  // fails because AvailabilityCheck looks at the frame's scheme as well as
+  // its isolation level. No other IsolatedContext API does this, but it makes
+  // sense for <controlledframe> because it's not a purely JS-based API that
+  // will be blocked through CSP.
+  ASSERT_FALSE(CreateControlledFrame(
+      iframe, embedded_https_test_server().GetURL("/index.html")));
+}
+
+IN_PROC_BROWSER_TEST_F(ControlledFrameApiTest, DisabledInBlobIframe) {
+  web_app::IsolatedWebAppUrlInfo url_info =
+      CreateAndInstallEmptyApp(web_app::ManifestBuilder());
+  content::RenderFrameHost* app_frame = OpenApp(url_info.app_id());
+
+  ASSERT_TRUE(ExecJs(app_frame, R"(
+      const blob = new Blob(['<!DOCTYPE html><p>blob html page</p>'], {
+        type: 'text/html'
+      });
+      const url = URL.createObjectURL(blob);
+      new Promise(resolve => {
+        const f = document.createElement('iframe');
+        f.src = url;
+        f.addEventListener('load', resolve);
+        document.body.appendChild(f);
+      });
+  )"));
+  content::RenderFrameHost* iframe = ChildFrameAt(app_frame, 0);
+  ASSERT_NE(iframe, nullptr);
+
+  // As with srcdoc iframes, is blocked due to AvailabilityCheck verifying
+  // the frame's scheme as well as its isolation level.
+  ASSERT_FALSE(CreateControlledFrame(
+      iframe, embedded_https_test_server().GetURL("/index.html")));
+}
+
 class ControlledFrameWebSocketApiTest : public ControlledFrameApiTest {
  public:
   void SetUpOnMainThread() override {
