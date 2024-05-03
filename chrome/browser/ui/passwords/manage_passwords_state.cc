@@ -151,7 +151,8 @@ void ManagePasswordsState::OnAutomaticPasswordSave(
 
 void ManagePasswordsState::OnSubmittedGeneratedPassword(
     password_manager::ui::State state,
-    std::unique_ptr<password_manager::PasswordFormManagerForUI> form_manager) {
+    std::unique_ptr<password_manager::PasswordFormManagerForUI> form_manager,
+    password_manager::PasswordForm form_to_update) {
   CHECK(state == password_manager::ui::SAVE_CONFIRMATION_STATE ||
         state == password_manager::ui::UPDATE_CONFIRMATION_STATE ||
         state == password_manager::ui::GENERATED_PASSWORD_CONFIRMATION_STATE);
@@ -164,6 +165,15 @@ void ManagePasswordsState::OnSubmittedGeneratedPassword(
       DeepCopyNonPSLVector(form_manager_->GetBestMatches());
   AppendDeepCopyVector(form_manager_->GetFederatedMatches(),
                        &local_credentials_forms_);
+
+  // When confirmation bubble for the added username is shown, the old
+  // credential(without the added username) can be still present in
+  // best_matches, if FormFetcher didn't finish fetching passwords yet. It needs
+  // to be removed before showing the confirmation bubble.
+  std::erase_if(local_credentials_forms_,
+                [form_to_update](const std::unique_ptr<PasswordForm>& form) {
+                  return ArePasswordFormUniqueKeysEqual(form_to_update, *form);
+                });
 
   // In the confirmation state, a list of saved passwords is displayed, and that
   // list should contain the just added one. This step should be skipped when

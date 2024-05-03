@@ -120,7 +120,7 @@ class PasswordsModelDelegateMock : public PasswordsModelDelegate {
   MOCK_METHOD(void, OnBiometricAuthBeforeFillingDeclined, (), (override));
   MOCK_METHOD(void,
               OnAddUsernameSaveClicked,
-              (const std::u16string&),
+              (const std::u16string&, const password_manager::PasswordForm&),
               (override));
   MOCK_METHOD(void, MaybeShowIOSPasswordPromo, (), (override));
   MOCK_METHOD(void, RelaunchChrome, (), (override));

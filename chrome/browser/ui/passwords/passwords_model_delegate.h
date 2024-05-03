@@ -204,7 +204,9 @@ class PasswordsModelDelegate {
   virtual void OnBiometricAuthBeforeFillingDeclined() = 0;
 
   // Called when user clicked "Add username" button in AddUsername bubble.
-  virtual void OnAddUsernameSaveClicked(const std::u16string& username) = 0;
+  virtual void OnAddUsernameSaveClicked(
+      const std::u16string& username,
+      const password_manager::PasswordForm& password_to_change) = 0;
 
   // Called from the Save/Update bubble controller to decide whether or not we
   // should show the user the Chrome for iOS promo.

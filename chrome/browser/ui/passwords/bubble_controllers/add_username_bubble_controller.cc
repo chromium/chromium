@@ -19,7 +19,8 @@ AddUsernameBubbleController::AddUsernameBubbleController(
           display_reason ==
                   PasswordBubbleControllerBase::DisplayReason::kUserAction
               ? metrics_util::MANUAL_ADD_USERNAME_BUBBLE
-              : metrics_util::AUTOMATIC_ADD_USERNAME_BUBBLE) {}
+              : metrics_util::AUTOMATIC_ADD_USERNAME_BUBBLE),
+      ininial_pending_password_(pending_password()) {}
 
 AddUsernameBubbleController::~AddUsernameBubbleController() {
   OnBubbleClosing();
@@ -30,7 +31,8 @@ void AddUsernameBubbleController::OnSaveClicked() {
   if (!delegate_) {
     return;
   }
-  delegate_->OnAddUsernameSaveClicked(pending_password().username_value);
+  delegate_->OnAddUsernameSaveClicked(pending_password().username_value,
+                                      ininial_pending_password_);
 }
 
 std::u16string AddUsernameBubbleController::GetTitle() const {

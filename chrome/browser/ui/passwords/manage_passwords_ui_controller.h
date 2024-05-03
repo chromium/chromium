@@ -115,7 +115,9 @@ class ManagePasswordsUIController
   void ShowMovePasswordBubble(
       const password_manager::PasswordForm& form) override;
   void OnBiometricAuthBeforeFillingDeclined() override;
-  void OnAddUsernameSaveClicked(const std::u16string& username) override;
+  void OnAddUsernameSaveClicked(
+      const std::u16string& username,
+      const password_manager::PasswordForm& form_to_update) override;
   void OnKeychainError() override;
 
   virtual void NotifyUnsyncedCredentialsWillBeDeleted(

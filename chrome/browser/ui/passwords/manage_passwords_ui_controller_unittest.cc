@@ -1942,7 +1942,7 @@ TEST_F(ManagePasswordsUIControllerTest, UsernameAdded) {
   EXPECT_CALL(*test_form_manager_raw,
               OnUpdateUsernameFromPrompt(Eq(kExampleUsername)));
   EXPECT_CALL(*controller(), OnUpdateBubbleAndIconVisibility());
-  controller()->OnAddUsernameSaveClicked(kExampleUsername);
+  controller()->OnAddUsernameSaveClicked(kExampleUsername, submitted_form());
 
   EXPECT_TRUE(controller()->opened_automatic_bubble());
   EXPECT_EQ(password_manager::ui::SAVE_CONFIRMATION_STATE,

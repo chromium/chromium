@@ -73,10 +73,13 @@ class ManagePasswordsState {
       std::unique_ptr<password_manager::PasswordFormManagerForUI> form_manager);
 
   // Move to |state|. Updates local_credentials_forms_ to contain pending
-  // credentials.
+  // credentials.|form_to_update| will be excluded from the confirmation
+  // management bubble as it contains outdated data.
   void OnSubmittedGeneratedPassword(
       password_manager::ui::State state,
-      std::unique_ptr<password_manager::PasswordFormManagerForUI> form_manager);
+      std::unique_ptr<password_manager::PasswordFormManagerForUI> form_manager,
+      password_manager::PasswordForm form_to_update =
+          password_manager::PasswordForm());
 
   // Move to MANAGE_STATE or INACTIVE_STATE for PSL matched passwords.
   // |password_forms| contains best matches from the password store for the

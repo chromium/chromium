@@ -493,14 +493,16 @@ void ManagePasswordsUIController::OnKeychainError() {
 }
 
 void ManagePasswordsUIController::OnAddUsernameSaveClicked(
-    const std::u16string& username) {
+    const std::u16string& username,
+    const password_manager::PasswordForm& form_to_update) {
   CHECK(!dialog_controller_);
+
   passwords_data_.form_manager()->OnUpdateUsernameFromPrompt(username);
   save_fallback_timer_.Stop();
 
   passwords_data_.form_manager()->Save();
   passwords_data_.OnSubmittedGeneratedPassword(
-      password_manager::ui::SAVE_CONFIRMATION_STATE, nullptr);
+      password_manager::ui::SAVE_CONFIRMATION_STATE, nullptr, form_to_update);
   // After adding a new username, confirmation helium bubble should appear.
   bubble_status_ = BubbleStatus::SHOULD_POP_UP;
   UpdateBubbleAndIconVisibility();
