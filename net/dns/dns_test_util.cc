@@ -439,9 +439,7 @@ MockDnsClientRule::MockDnsClientRule(const std::string& prefix,
 MockDnsClientRule::MockDnsClientRule(MockDnsClientRule&& rule) = default;
 
 // A DnsTransaction which uses MockDnsClientRuleList to determine the response.
-class MockDnsTransactionFactory::MockTransaction
-    : public DnsTransaction,
-      public base::SupportsWeakPtr<MockTransaction> {
+class MockDnsTransactionFactory::MockTransaction final : public DnsTransaction {
  public:
   MockTransaction(const MockDnsClientRuleList& rules,
                   std::string hostname,
@@ -545,7 +543,8 @@ class MockDnsTransactionFactory::MockTransaction
       return;
     // Using WeakPtr to cleanly cancel when transaction is destroyed.
     base::SingleThreadTaskRunner::GetCurrentDefault()->PostTask(
-        FROM_HERE, base::BindOnce(&MockTransaction::Finish, AsWeakPtr()));
+        FROM_HERE, base::BindOnce(&MockTransaction::Finish,
+                                  weak_ptr_factory_.GetWeakPtr()));
   }
 
   void FinishDelayedTransaction() {
@@ -555,6 +554,10 @@ class MockDnsTransactionFactory::MockTransaction
   }
 
   bool delayed() const { return delayed_; }
+
+  base::WeakPtr<MockTransaction> AsWeakPtr() {
+    return weak_ptr_factory_.GetWeakPtr();
+  }
 
  private:
   void SetResponse(const MockDnsClientRule::Result* result) {
@@ -624,6 +627,7 @@ class MockDnsTransactionFactory::MockTransaction
   ResponseCallback callback_;
   bool started_ = false;
   bool delayed_ = false;
+  base::WeakPtrFactory<MockTransaction> weak_ptr_factory_{this};
 };
 
 class MockDnsTransactionFactory::MockDohProbeRunner : public DnsProbeRunner {
