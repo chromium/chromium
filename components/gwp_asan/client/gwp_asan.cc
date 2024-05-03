@@ -250,6 +250,10 @@ GWP_ASAN_EXPORT std::optional<AllocatorSettings> GetAllocatorSettings(
     return std::nullopt;
   }
 
+  if (!SampleProcess(feature, boost_sampling)) {
+    return std::nullopt;
+  }
+
   static_assert(
       AllocatorState::kMaxRequestedSlots <= std::numeric_limits<int>::max(),
       "kMaxRequestedSlots out of range");
@@ -288,9 +292,6 @@ GWP_ASAN_EXPORT std::optional<AllocatorSettings> GetAllocatorSettings(
 
   size_t alloc_sampling_freq = AllocationSamplingFrequency(feature);
   if (!alloc_sampling_freq)
-    return std::nullopt;
-
-  if (!SampleProcess(feature, boost_sampling))
     return std::nullopt;
 
   return AllocatorSettings{
