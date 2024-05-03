@@ -1024,17 +1024,8 @@ Permissions you've already given to websites and apps may apply to this account.
         <message name="IDS_SIGNIN_DICE_WEB_INTERCEPT_CONSUMER_BUBBLE_DESC_V2" desc="Body of the web signin interception bubble. It is shown when the user signs in on the web while they already have another account present in the current profile.">
           Another account is already signed in. To keep your browsing separate, Chrome can create your own profile for you.
         </message>
-        <message name="IDS_SIGNIN_DICE_WEB_INTERCEPT_BUBBLE_CHROME_SIGNIN_TITLE" desc="Title of the Chrome Signin Bubble intercept that is shown when a signed out user signs in on the web with it's first account.">
-          Make Chrome your own
-        </message>
         <message name="IDS_SIGNIN_DICE_WEB_INTERCEPT_BUBBLE_CHROME_SIGNIN_SUBTITLE" desc="Subtitle of the Chrome Signin Bubble intercept that is shown when a signed out user signs in on the web with it's first account.">
-          Sign in to get the most out of Chrome
-        </message>
-        <message name="IDS_SIGNIN_DICE_WEB_INTERCEPT_BUBBLE_CHROME_SIGNIN_DECLINE_TEXT" desc="Label of the Decline button of the Chrome Signin Bubble intercept that is shown when a signed out user signs in on the web with it's first account.">
-          Use Chrome without an account
-        </message>
-        <message name="IDS_AVATAR_BUTTON_INTERCEPT_BUBBLE_CHROME_SIGNIN_TEXT" desc="Text asking the user to sign into Chrome while the Chrome Signin Bubble intercept is shown.">
-          Sign in to Chrome?
+          To save and use your passwords and more on all your devices, sign in to Chrome
         </message>
         <message name="IDS_CHROME_SIGNOUT_CONFIRMATION_PROMPT_VERIFY_BODY" translateable="false"  desc="This is the subtitle of an error message dialog that appears when the user opens the Chrome Profile Menu and chooses 'Sign out of Chrome'. The error message appears when the user has saved some data (like a password or payment method) to Chrome, but Chrome wasn't able to save the data to the user's Google Account due to a sign-in error; but, the data has been saved locally to Chrome. This subtitle is after the 'Some data isn’t saved yet' string. The tone should be cautionary, because we want to explain to the user that their data is not saved to their Google Account. This string provides a path to resolution because it explains how the user can properly save their data before they sign out of Chrome.">
           Chrome needs to verify it’s you before some data can be saved in your Google Account and used on all your devices. If you sign out, this data will stay on this device.
@@ -1045,6 +1036,29 @@ Permissions you've already given to websites and apps may apply to this account.
         <message name="IDS_CLOSE_WARNING_FOR_CLEAR_COOKIES_ON_EXIT_TEXT" desc="Body of a notice displayed when closing the last Chrome window, to inform the user about a change in the way the 'Clear cookie on exit' setting works.">
           You’ll be signed out of most sites when you close all Chrome windows, except your Google Account if you’re signed in to Chrome. To let sites remember you, <ph name="SETTINGS_LINK">$1<ex>go to settings</ex></ph>.
         </message>
+
+        <if expr="not use_titlecase">
+          <message name="IDS_AVATAR_BUTTON_INTERCEPT_BUBBLE_CHROME_SIGNIN_TEXT" desc="Text asking the user to sign into Chrome while the Chrome Signin Bubble intercept is shown.">
+            Sign in to Chrome?
+          </message>
+          <message name="IDS_SIGNIN_DICE_WEB_INTERCEPT_BUBBLE_CHROME_SIGNIN_TITLE" desc="Title of the Chrome Signin Bubble intercept that is shown when a signed out user signs in on the web with it's first account.">
+            Make Chrome your own
+          </message>
+          <message name="IDS_SIGNIN_DICE_WEB_INTERCEPT_BUBBLE_CHROME_SIGNIN_DECLINE_TEXT" desc="Label of the Decline button of the Chrome Signin Bubble intercept that is shown when a signed out user signs in on the web with it's first account.">
+            Use Chrome without an account
+          </message>
+        </if>
+        <if expr="use_titlecase">
+          <message name="IDS_AVATAR_BUTTON_INTERCEPT_BUBBLE_CHROME_SIGNIN_TEXT" desc="Text asking the user to sign into Chrome while the Chrome Signin Bubble intercept is shown.">
+            Sign In to Chrome?
+          </message>
+          <message name="IDS_SIGNIN_DICE_WEB_INTERCEPT_BUBBLE_CHROME_SIGNIN_TITLE" desc="Title of the Chrome Signin Bubble intercept that is shown when a signed out user signs in on the web with it's first account.">
+            Make Chrome Your Own
+          </message>
+          <message name="IDS_SIGNIN_DICE_WEB_INTERCEPT_BUBBLE_CHROME_SIGNIN_DECLINE_TEXT" desc="Label of the Decline button of the Chrome Signin Bubble intercept that is shown when a signed out user signs in on the web with it's first account.">
+            Use Chrome Without an Account
+          </message>
+        </if>
       </if>
 
       <if expr="not chromeos_ash and not is_android">

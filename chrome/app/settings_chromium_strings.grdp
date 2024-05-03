@@ -297,17 +297,17 @@
     You can manage your signed-in Google Accounts. Your Google Accounts are used for Chromium browser, Play Store, Gmail, and more. If you want to add an account for someone else, like a family member, add a new person to your <ph name="DEVICE_TYPE">$1<ex>Chromebook</ex></ph> instead. <ph name="LINK_BEGIN">&lt;a&gt;</ph>Learn more<ph name="LINK_END">&lt;/a&gt;</ph>
   </message>
 </if>
-  <message name="IDS_SETTINGS_SIGNIN_CHROME_SIGNIN_OPTIONS_TITLE" translateable="false" desc="Title of the settings that controls whether a user gets signed in to Chrome when signing in to Google Services.">
+  <message name="IDS_SETTINGS_SIGNIN_CHROME_SIGNIN_OPTIONS_TITLE" desc="Title of the settings that controls whether a user gets signed in to Chromium when signing in to Google Services.">
     Sign in to Chromium when you sign in to other Google services
   </message>
-  <message name="IDS_SETTINGS_SIGNIN_CHROME_SIGNIN_OPTIONS_DESC" translateable="false" desc="Description of the settings that controls whether a user gets signed in to Chrome when signing in to Google Services.">
+  <message name="IDS_SETTINGS_SIGNIN_CHROME_SIGNIN_OPTIONS_DESC" desc="Description of the settings that controls whether a user gets signed in to Chromium when signing in to Google Services.">
     When signing into Google services like Gmail or Youtube with <ph name="USER_EMAIL">$1<ex>foo@example.com</ex></ph>, you can sign in to Chromium with the same account
   </message>
-  <message name="IDS_SETTINGS_SIGNIN_CHROME_SIGNIN_OPTION_SIGNIN" translateable="false" desc="One of three options for the setting is called 'Sign in to Chrome when you sign in to other Google services'. When the user chooses this option, the user will automatically sign in to Chrome after they sign in to a Google service (like Gmail) using Chrome. The verb tense should be descriptive, not imperative.">
-    Sign in to Chromium
+  <message name="IDS_SETTINGS_SIGNIN_CHROME_SIGNIN_OPTION_SIGNIN" desc="One of three options for the setting is called 'Sign in to Chromium when you sign in to other Google services'. When the user chooses this option, the user will automatically sign in to Chromium after they sign in to a Google service (like Gmail) using Chromium. The verb tense should be descriptive, not imperative.">
+    Automatically sign me in to Chromium
   </message>
-  <message name="IDS_SETTINGS_SIGNIN_CHROME_SIGNIN_OPTION_DO_NOT_SIGNIN" translateable="false" desc="One of three options for the setting is called 'Sign in to Chrome when you sign in to other Google services'. When the user chooses this option, the user will NOT automatically sign in to Chrome after they sign in to a Google service (like Gmail) using Chrome. The verb tense should be descriptive, not imperative.">
-    Don’t sign in to Chromium
+  <message name="IDS_SETTINGS_SIGNIN_CHROME_SIGNIN_OPTION_DO_NOT_SIGNIN" desc="One of three options for the setting is called 'Sign in to Chromium when you sign in to other Google services'. When the user chooses this option, the user will NOT automatically sign in to Chromium after they sign in to a Google service (like Gmail) using Chromium. The verb tense should be descriptive, not imperative.">
+    Don’t sign me in to Chromium
   </message>
 
   <!-- Sync Page -->
