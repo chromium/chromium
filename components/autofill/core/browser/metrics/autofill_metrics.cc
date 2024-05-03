@@ -1381,6 +1381,7 @@ void AutofillMetrics::LogStoredCreditCardMetrics(
     base::TimeDelta disused_data_threshold) {
   size_t num_local_cards = 0;
   size_t num_local_cards_with_nickname = 0;
+  size_t num_local_cards_with_invalid_number = 0;
   size_t num_masked_cards = 0;
   size_t num_masked_cards_with_nickname = 0;
   size_t num_unmasked_cards = 0;
@@ -1416,6 +1417,9 @@ void AutofillMetrics::LogStoredCreditCardMetrics(
         num_disused_local_cards += disused_delta;
         if (card->HasNonEmptyValidNickname())
           num_local_cards_with_nickname += 1;
+        if (!card->HasValidCardNumber()) {
+          num_local_cards_with_invalid_number += 1;
+        }
         break;
       case CreditCard::RecordType::kMaskedServerCard:
         UMA_HISTOGRAM_COUNTS_1000(
@@ -1460,6 +1464,9 @@ void AutofillMetrics::LogStoredCreditCardMetrics(
                             num_local_cards);
   UMA_HISTOGRAM_COUNTS_1000("Autofill.StoredCreditCardCount.Local.WithNickname",
                             num_local_cards_with_nickname);
+  UMA_HISTOGRAM_COUNTS_1000(
+      "Autofill.StoredCreditCardCount.Local.WithInvalidCardNumber",
+      num_local_cards_with_invalid_number);
   UMA_HISTOGRAM_COUNTS_1000("Autofill.StoredCreditCardCount.Server",
                             num_server_cards);
   UMA_HISTOGRAM_COUNTS_1000("Autofill.StoredCreditCardCount.Server.Masked",

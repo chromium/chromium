@@ -1165,6 +1165,38 @@ TEST_F(AutofillMetricsTest, LogStoredCreditCardWithNicknameMetrics) {
       "Autofill.StoredCreditCardCount.Server.Masked.WithNickname", 2, 1);
 }
 
+// Tests that local cards with invalid card numbers are correctly logged.
+TEST_F(AutofillMetricsTest, LogStoredCreditCardWithInvalidCardNumberMetrics) {
+  // Only local cards can have invalid card numbers.
+  CreditCard card_with_valid_card_number =
+      test::GetRandomCreditCard(CreditCard::RecordType::kLocalCard);
+  card_with_valid_card_number.SetNumber(u"4444333322221111");
+  CreditCard card_with_invalid_card_number =
+      test::GetRandomCreditCard(CreditCard::RecordType::kLocalCard);
+  card_with_invalid_card_number.SetNumber(u"4444333322221115");
+  CreditCard card_with_non_digit_card_number =
+      test::GetRandomCreditCard(CreditCard::RecordType::kLocalCard);
+  card_with_non_digit_card_number.SetNumber(u"invalid_number");
+
+  std::vector<std::unique_ptr<CreditCard>> local_cards;
+  local_cards.push_back(
+      std::make_unique<CreditCard>(card_with_valid_card_number));
+  local_cards.push_back(
+      std::make_unique<CreditCard>(card_with_non_digit_card_number));
+  local_cards.push_back(
+      std::make_unique<CreditCard>(card_with_invalid_card_number));
+  std::vector<std::unique_ptr<CreditCard>> server_cards;
+
+  // Log the stored credit card metrics for the cards configured above.
+  base::HistogramTester histogram_tester;
+  AutofillMetrics::LogStoredCreditCardMetrics(
+      local_cards, server_cards, /*server_card_count_with_card_art_image=*/0,
+      base::Days(180));
+
+  histogram_tester.ExpectUniqueSample(
+      "Autofill.StoredCreditCardCount.Local.WithInvalidCardNumber", 2, 1);
+}
+
 // Test that the credit card checkout flow user actions are correctly logged.
 TEST_F(AutofillMetricsTest, CreditCardCheckoutFlowUserActions) {
   // Disable mandatory reauth as it is not part of this test and will
