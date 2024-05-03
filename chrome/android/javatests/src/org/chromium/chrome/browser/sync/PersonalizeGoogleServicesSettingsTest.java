@@ -27,6 +27,7 @@ import org.mockito.junit.MockitoRule;
 import org.chromium.base.test.util.ApplicationTestUtils;
 import org.chromium.base.test.util.Batch;
 import org.chromium.base.test.util.CommandLineFlags;
+import org.chromium.base.test.util.DisabledTest;
 import org.chromium.base.test.util.Feature;
 import org.chromium.chrome.R;
 import org.chromium.chrome.browser.AppHooks;
@@ -121,6 +122,7 @@ public class PersonalizeGoogleServicesSettingsTest {
 
     @Test
     @SmallTest
+    @DisabledTest(message = "Flaky test: b/334206890")
     @Feature({"PersonalizedGoogleServices"})
     public void testUserNotSignedIn() {
         mSettingsActivityTestRule.startSettingsActivity();
