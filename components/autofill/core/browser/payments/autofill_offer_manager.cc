@@ -41,14 +41,13 @@ AutofillOfferManager::AutofillOfferManager(
     : personal_data_(personal_data),
       coupon_service_delegate_(coupon_service_delegate),
       shopping_service_delegate_(std::move(shopping_service_delegate)) {
-  payments_data_manager_observation.Observe(
-      &personal_data_->payments_data_manager());
+  personal_data_manager_observation.Observe(personal_data_);
   UpdateEligibleMerchantDomains();
 }
 
 AutofillOfferManager::~AutofillOfferManager() = default;
 
-void AutofillOfferManager::OnPaymentsDataChanged() {
+void AutofillOfferManager::OnPersonalDataChanged() {
   UpdateEligibleMerchantDomains();
 }
 

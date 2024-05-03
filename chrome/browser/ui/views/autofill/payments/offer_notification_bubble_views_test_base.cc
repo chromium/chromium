@@ -111,7 +111,7 @@ OfferNotificationBubbleViewsTestBase::CreateCardLinkedOfferDataWithDomains(
   card->set_instrument_id(kCreditCardInstrumentId);
   personal_data_->payments_data_manager().AddServerCreditCardForTest(
       std::move(card));
-  test_api(personal_data_->payments_data_manager()).NotifyObservers();
+  personal_data_->NotifyPersonalDataObserver();
   int64_t offer_id = 4444;
   base::Time expiry = AutofillClock::Now() + base::Days(2);
   std::vector<GURL> merchant_origins;
@@ -197,7 +197,7 @@ void OfferNotificationBubbleViewsTestBase::SetUpCardLinkedOfferDataWithDomains(
   // CreateCardLinkedOfferDataWithDomains(~) will add the necessary card.
   test_api(personal_data_->payments_data_manager())
       .AddOfferData(CreateCardLinkedOfferDataWithDomains(domains));
-  test_api(personal_data_->payments_data_manager()).NotifyObservers();
+  personal_data_->NotifyPersonalDataObserver();
 }
 
 void OfferNotificationBubbleViewsTestBase::
@@ -206,7 +206,7 @@ void OfferNotificationBubbleViewsTestBase::
   personal_data_->payments_data_manager().ClearAllServerDataForTesting();
   test_api(personal_data_->payments_data_manager())
       .AddOfferData(CreateFreeListingCouponDataWithDomains(domains));
-  test_api(personal_data_->payments_data_manager()).NotifyObservers();
+  personal_data_->NotifyPersonalDataObserver();
 }
 
 void OfferNotificationBubbleViewsTestBase::
@@ -214,7 +214,7 @@ void OfferNotificationBubbleViewsTestBase::
   personal_data_->payments_data_manager().ClearAllServerDataForTesting();
   test_api(personal_data_->payments_data_manager())
       .AddOfferData(CreateGPayPromoCodeOfferDataWithDomains(domains));
-  test_api(personal_data_->payments_data_manager()).NotifyObservers();
+  personal_data_->NotifyPersonalDataObserver();
 }
 
 void OfferNotificationBubbleViewsTestBase::
