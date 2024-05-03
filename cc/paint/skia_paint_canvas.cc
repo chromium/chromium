@@ -198,7 +198,10 @@ void SkiaPaintCanvas::drawLine(SkScalar x0,
   FlushAfterDrawIfNeeded();
 }
 
-void SkiaPaintCanvas::drawArc(const SkArc& arc, const PaintFlags& flags) {
+void SkiaPaintCanvas::drawArc(const SkRect& oval,
+                              SkScalar start_angle_degrees,
+                              SkScalar sweep_angle_degrees,
+                              const PaintFlags& flags) {
   ScopedRasterFlags raster_flags(&flags, image_provider_,
                                  canvas_->getTotalMatrix(), GetMaxTextureSize(),
                                  1.0f);
@@ -207,7 +210,10 @@ void SkiaPaintCanvas::drawArc(const SkArc& arc, const PaintFlags& flags) {
   }
 
   raster_flags.flags()->DrawToSk(
-      canvas_, [arc](SkCanvas* c, const SkPaint& p) { c->drawArc(arc, p); });
+      canvas_, [oval, start_angle_degrees, sweep_angle_degrees](
+                   SkCanvas* c, const SkPaint& p) {
+        c->drawArc(oval, start_angle_degrees, sweep_angle_degrees, false, p);
+      });
   FlushAfterDrawIfNeeded();
 }
 

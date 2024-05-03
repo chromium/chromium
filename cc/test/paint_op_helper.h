@@ -140,10 +140,9 @@ class PaintOpHelper {
       }
       case PaintOpType::kDrawArc: {
         const auto& op = static_cast<const DrawArcOp&>(base_op);
-        str << "DrawArcOp(oval=" << ToString(op.arc.fOval)
-            << ", start_angle=" << ToString(op.arc.fStartAngle)
-            << ", sweep_angle=" << ToString(op.arc.fSweepAngle)
-            << ", is_wedge=" << op.arc.isWedge()
+        str << "DrawArcOp(oval=" << ToString(op.oval)
+            << ", start_angle=" << ToString(op.start_angle_degrees)
+            << ", sweep_angle=" << ToString(op.sweep_angle_degrees)
             << ", flags=" << ToString(op.flags) << ")";
         break;
       }

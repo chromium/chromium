@@ -243,8 +243,11 @@ void RecordPaintCanvas::drawLine(SkScalar x0,
   push<DrawLineOp>(x0, y0, x1, y1, flags, draw_path_count_ > 4);
 }
 
-void RecordPaintCanvas::drawArc(const SkArc& arc, const PaintFlags& flags) {
-  push<DrawArcOp>(arc, flags);
+void RecordPaintCanvas::drawArc(const SkRect& oval,
+                                SkScalar start_angle_degrees,
+                                SkScalar sweep_angle_degrees,
+                                const PaintFlags& flags) {
+  push<DrawArcOp>(oval, start_angle_degrees, sweep_angle_degrees, flags);
 }
 
 void RecordPaintCanvas::drawRect(const SkRect& rect, const PaintFlags& flags) {

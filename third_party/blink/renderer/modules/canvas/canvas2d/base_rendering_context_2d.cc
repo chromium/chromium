@@ -1347,12 +1347,11 @@ void BaseRenderingContext2D::DrawPathInternal(
         WebCoreFloatToSkScalar(arc.start_angle_radians * 180 / kPiFloat);
     const SkScalar sweep_degrees =
         WebCoreFloatToSkScalar(arc.sweep_angle_radians * 180 / kPiFloat);
-    const SkArc sk_arc =
-        SkArc::Make(oval, start_degrees, sweep_degrees, SkArc::Type::kArc);
     Draw<OverdrawOp::kNone>(
-        [sk_arc](cc::PaintCanvas* c,
-                 const cc::PaintFlags* flags)  // draw lambda
-        { c->drawArc(sk_arc, *flags); },
+        [oval, start_degrees, sweep_degrees](
+            cc::PaintCanvas* c,
+            const cc::PaintFlags* flags)  // draw lambda
+        { c->drawArc(oval, start_degrees, sweep_degrees, *flags); },
         [](const SkIRect& rect)  // overdraw test lambda
         { return false; },
         bounds, paint_type,
