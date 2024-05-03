@@ -3879,8 +3879,8 @@ const WTF::Vector<gfx::Rect>& AXObjectCacheImpl::GetOptionsBounds(
     }
   }
 
-  // Android may not provide options bounds.
-#if !BUILDFLAG(IS_ANDROID)
+  // Android and Mac can use the OS widget and may not provide options bounds.
+#if !BUILDFLAG(IS_ANDROID) && !BUILDFLAG(IS_MAC)
   CHECK(current_menu_list_axid_);
   CHECK_EQ(ax_menu_list.IsExpanded(), kExpandedExpanded);
   CHECK_EQ(ax_menu_list.AXObjectID(), current_menu_list_axid_);
