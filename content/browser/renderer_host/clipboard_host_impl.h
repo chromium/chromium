@@ -92,6 +92,7 @@ class CONTENT_EXPORT ClipboardHostImpl
  private:
   friend class ClipboardHostImplTest;
   friend class ClipboardHostImplWriteTest;
+  friend class ClipboardHostImplAsyncWriteTest;
 
   FRIEND_TEST_ALL_PREFIXES(ClipboardHostImplWriteTest, WriteText);
   FRIEND_TEST_ALL_PREFIXES(ClipboardHostImplWriteTest, WriteText_Empty);
@@ -107,6 +108,10 @@ class CONTENT_EXPORT ClipboardHostImpl
                            PerformPasteIfAllowed_EmptyData);
   FRIEND_TEST_ALL_PREFIXES(ClipboardHostImplWriteTest, MainFrameURL);
   FRIEND_TEST_ALL_PREFIXES(ClipboardHostImplWriteTest, GetSourceEndpoint);
+  FRIEND_TEST_ALL_PREFIXES(ClipboardHostImplAsyncWriteTest, WriteText);
+  FRIEND_TEST_ALL_PREFIXES(ClipboardHostImplAsyncWriteTest, WriteHtml);
+  FRIEND_TEST_ALL_PREFIXES(ClipboardHostImplAsyncWriteTest, WriteTextAndHtml);
+  FRIEND_TEST_ALL_PREFIXES(ClipboardHostImplAsyncWriteTest, ConcurrentWrites);
 
   // mojom::ClipboardHost
   void GetSequenceNumber(ui::ClipboardBuffer clipboard_buffer,
@@ -168,18 +173,20 @@ class CONTENT_EXPORT ClipboardHostImpl
   // written to the clipboard as plaintext.
   //
   // This method can be called asynchronously.
-  void OnCopyAllowedResult(const ui::ClipboardFormatType& data_type,
-                           const ClipboardPasteData& data,
-                           std::optional<std::u16string> replacement_data);
+  virtual void OnCopyAllowedResult(
+      const ui::ClipboardFormatType& data_type,
+      const ClipboardPasteData& data,
+      std::optional<std::u16string> replacement_data);
 
   // Does the same thing as the previous function with an extra `source_url`
   // used to propagate the URL obtained in the `WriteHtml()` method call.
   //
   // This method can be called asynchronously.
-  void OnCopyHtmlAllowedResult(const GURL& source_url,
-                               const ui::ClipboardFormatType& data_type,
-                               const ClipboardPasteData& data,
-                               std::optional<std::u16string> replacement_data);
+  virtual void OnCopyHtmlAllowedResult(
+      const GURL& source_url,
+      const ui::ClipboardFormatType& data_type,
+      const ClipboardPasteData& data,
+      std::optional<std::u16string> replacement_data);
 
   using CopyAllowedCallback = base::OnceCallback<void()>;
 
@@ -194,6 +201,16 @@ class CONTENT_EXPORT ClipboardHostImpl
   ClipboardEndpoint CreateClipboardEndpoint();
 
   std::unique_ptr<ui::ScopedClipboardWriter> clipboard_writer_;
+
+  // Counts the number of expected `Write*` calls to be made to the current
+  // `clipboard_writer_`. This should be used to handle asynchronous `Write*`
+  // calls made by `IsClipboardCopyAllowedByPolicy`.
+  int pending_writes_ = 0;
+
+  // Indicates that the renderer called `CommitWrite()`, but that
+  // `pending_writes_` was not 0 at that time and that it should instead be
+  // called when the last pending `Write*` call is made.
+  bool pending_commit_write_ = false;
 
   base::WeakPtrFactory<ClipboardHostImpl> weak_ptr_factory_{this};
 };

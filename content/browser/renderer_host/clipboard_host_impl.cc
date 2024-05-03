@@ -544,6 +544,7 @@ void ClipboardHostImpl::ReadCustomData(ui::ClipboardBuffer clipboard_buffer,
 void ClipboardHostImpl::WriteText(const std::u16string& text) {
   ClipboardPasteData data;
   data.text = text;
+  ++pending_writes_;
   GetContentClient()->browser()->IsClipboardCopyAllowedByPolicy(
       CreateClipboardEndpoint(),
       {
@@ -559,6 +560,7 @@ void ClipboardHostImpl::WriteHtml(const std::u16string& markup,
                                   const GURL& url) {
   ClipboardPasteData data;
   data.html = markup;
+  ++pending_writes_;
   GetContentClient()->browser()->IsClipboardCopyAllowedByPolicy(
       CreateClipboardEndpoint(),
       {
@@ -573,6 +575,7 @@ void ClipboardHostImpl::WriteHtml(const std::u16string& markup,
 void ClipboardHostImpl::WriteSvg(const std::u16string& markup) {
   ClipboardPasteData data;
   data.svg = markup;
+  ++pending_writes_;
   GetContentClient()->browser()->IsClipboardCopyAllowedByPolicy(
       CreateClipboardEndpoint(),
       {
@@ -598,6 +601,7 @@ void ClipboardHostImpl::WriteCustomData(
     total_size += entry.second.size();
   }
 
+  ++pending_writes_;
   GetContentClient()->browser()->IsClipboardCopyAllowedByPolicy(
       CreateClipboardEndpoint(),
       {
@@ -617,7 +621,7 @@ void ClipboardHostImpl::WriteBookmark(const std::string& url,
 void ClipboardHostImpl::WriteImage(const SkBitmap& bitmap) {
   ClipboardPasteData data;
   data.bitmap = bitmap;
-
+  ++pending_writes_;
   GetContentClient()->browser()->IsClipboardCopyAllowedByPolicy(
       CreateClipboardEndpoint(),
       {
@@ -630,6 +634,15 @@ void ClipboardHostImpl::WriteImage(const SkBitmap& bitmap) {
 }
 
 void ClipboardHostImpl::CommitWrite() {
+  if (pending_writes_ != 0) {
+    // This branch indicates that some callbacks passed to
+    // `IsClipboardCopyAllowedByPolicy` still haven't been called, so committing
+    // data to the clipboard should be delayed.
+    pending_commit_write_ = true;
+    return;
+  }
+  pending_commit_write_ = false;
+
   if (render_frame_host().GetBrowserContext()->IsOffTheRecord()) {
     clipboard_writer_->MarkAsOffTheRecord();
   }
@@ -732,36 +745,41 @@ void ClipboardHostImpl::OnCopyHtmlAllowedResult(
     const ui::ClipboardFormatType& data_type,
     const ClipboardPasteData& data,
     std::optional<std::u16string> replacement_data) {
+  DCHECK_GT(pending_writes_, 0);
+  --pending_writes_;
+
   clipboard_writer_->SetDataSourceURL(
       render_frame_host().GetMainFrame()->GetLastCommittedURL(),
       render_frame_host().GetLastCommittedURL());
 
   if (replacement_data) {
     clipboard_writer_->WriteText(std::move(*replacement_data));
-    return;
+  } else {
+    clipboard_writer_->WriteHTML(data.html, source_url.spec());
   }
-
-  clipboard_writer_->WriteHTML(data.html, source_url.spec());
+  if (pending_commit_write_) {
+    CommitWrite();
+  }
 }
 
 void ClipboardHostImpl::OnCopyAllowedResult(
     const ui::ClipboardFormatType& data_type,
     const ClipboardPasteData& data,
     std::optional<std::u16string> replacement_data) {
+  DCHECK_GT(pending_writes_, 0);
+  --pending_writes_;
+
   clipboard_writer_->SetDataSourceURL(
       render_frame_host().GetMainFrame()->GetLastCommittedURL(),
       render_frame_host().GetLastCommittedURL());
 
+  // If `replacement_data` is empty, only one of these fields should be
+  // non-empty depending on which "Write" method was called by the renderer.
   if (replacement_data) {
     // `replacement_data` having a value implies the copy was not allowed and
     // that a warning message should instead be put into the clipboard.
     clipboard_writer_->WriteText(std::move(*replacement_data));
-    return;
-  }
-
-  // Only one of these fields should be non-empty depending on which "Write"
-  // method was called by the renderer.
-  if (data_type == ui::ClipboardFormatType::PlainTextType()) {
+  } else if (data_type == ui::ClipboardFormatType::PlainTextType()) {
     // This branch should be reached only after `WriteText()` is called.
     clipboard_writer_->WriteText(data.text);
   } else if (data_type == ui::ClipboardFormatType::SvgType()) {
@@ -778,6 +796,10 @@ void ClipboardHostImpl::OnCopyAllowedResult(
         pickle, ui::ClipboardFormatType::WebCustomDataType());
   } else {
     NOTREACHED();
+  }
+
+  if (pending_commit_write_) {
+    CommitWrite();
   }
 }
 

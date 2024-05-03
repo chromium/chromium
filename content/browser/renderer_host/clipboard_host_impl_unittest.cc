@@ -418,4 +418,319 @@ TEST_F(ClipboardHostImplWriteTest, WriteCustomData_Empty) {
   EXPECT_TRUE(future_2.Take().empty());
 }
 
+class ClipboardHostImplAsyncWriteTest : public RenderViewHostTestHarness {
+ protected:
+  class AsyncWriteClipboardHostImpl : public ClipboardHostImpl {
+   public:
+    AsyncWriteClipboardHostImpl(
+        RenderFrameHost& render_frame_host,
+        mojo::PendingReceiver<blink::mojom::ClipboardHost> receiver)
+        : ClipboardHostImpl(render_frame_host, std::move(receiver)) {}
+
+    void OnCopyAllowedResult(
+        const ui::ClipboardFormatType& data_type,
+        const ClipboardPasteData& data,
+        std::optional<std::u16string> replacement_data) override {
+      if (delay_) {
+        delayed_on_copy_allowed_results_.push(base::BindOnce(
+            &ClipboardHostImpl::OnCopyAllowedResult, base::Unretained(this),
+            data_type, data, std::move(replacement_data)));
+      } else {
+        ClipboardHostImpl::OnCopyAllowedResult(data_type, data,
+                                               std::move(replacement_data));
+      }
+    }
+
+    void OnCopyHtmlAllowedResult(
+        const GURL& source_url,
+        const ui::ClipboardFormatType& data_type,
+        const ClipboardPasteData& data,
+        std::optional<std::u16string> replacement_data) override {
+      if (delay_) {
+        delayed_on_copy_allowed_results_.push(base::BindOnce(
+            &ClipboardHostImpl::OnCopyHtmlAllowedResult, base::Unretained(this),
+            source_url, data_type, data, std::move(replacement_data)));
+      } else {
+        ClipboardHostImpl::OnCopyHtmlAllowedResult(source_url, data_type, data,
+                                                   std::move(replacement_data));
+      }
+    }
+
+    void CallOneDelayedResult() {
+      delay_ = false;
+      auto& front = delayed_on_copy_allowed_results_.front();
+      std::move(front).Run();
+      delayed_on_copy_allowed_results_.pop();
+    }
+
+    void DelayWrites() { delay_ = true; }
+
+   private:
+    bool delay_ = true;
+    std::queue<base::OnceClosure> delayed_on_copy_allowed_results_;
+  };
+
+  ClipboardHostImplAsyncWriteTest()
+      : RenderViewHostTestHarness(
+            base::test::TaskEnvironment::TimeSource::MOCK_TIME) {
+    ui::TestClipboard::CreateForCurrentThread();
+  }
+
+  void SetUp() override {
+    RenderViewHostTestHarness::SetUp();
+    SetContents(CreateTestWebContents());
+    fake_clipboard_host_impl_ =
+        new AsyncWriteClipboardHostImpl(*web_contents()->GetPrimaryMainFrame(),
+                                        remote_.BindNewPipeAndPassReceiver());
+  }
+
+  void TearDown() override {
+    fake_clipboard_host_impl_ = nullptr;
+    RenderViewHostTestHarness::TearDown();
+  }
+
+  ~ClipboardHostImplAsyncWriteTest() override {
+    ui::Clipboard::DestroyClipboardForCurrentThread();
+  }
+
+  AsyncWriteClipboardHostImpl* async_write_clipboard_host_impl() {
+    return fake_clipboard_host_impl_;
+  }
+
+ private:
+  mojo::Remote<blink::mojom::ClipboardHost> remote_;
+  // `ClipboardHostImpl` is a `DocumentService` and manages its own
+  // lifetime.
+  raw_ptr<AsyncWriteClipboardHostImpl> fake_clipboard_host_impl_;
+};
+
+TEST_F(ClipboardHostImplAsyncWriteTest, WriteText) {
+  ui::Clipboard::GetForCurrentThread()->Clear(ui::ClipboardBuffer::kCopyPaste);
+
+  const std::u16string kText = u"text";
+  async_write_clipboard_host_impl()->WriteText(kText);
+  async_write_clipboard_host_impl()->CommitWrite();
+
+  // Even after calling `CommitWrite()`, reading from the clipboard shouldn't
+  // return `kText` as we don't know yet if it's allowed or not.
+  base::test::TestFuture<const std::u16string&> first_future;
+  async_write_clipboard_host_impl()->ReadText(ui::ClipboardBuffer::kCopyPaste,
+                                              first_future.GetCallback());
+  EXPECT_TRUE(first_future.Take().empty());
+
+  async_write_clipboard_host_impl()->CallOneDelayedResult();
+
+  base::test::TestFuture<const std::u16string&> second_future;
+  async_write_clipboard_host_impl()->ReadText(ui::ClipboardBuffer::kCopyPaste,
+                                              second_future.GetCallback());
+  EXPECT_EQ(second_future.Take(), kText);
+}
+
+TEST_F(ClipboardHostImplAsyncWriteTest, WriteHtml) {
+  ui::Clipboard::GetForCurrentThread()->Clear(ui::ClipboardBuffer::kCopyPaste);
+
+  const GURL kUrl("https://example.com");
+  const std::u16string kHtml = u"<html>foo</html>";
+  async_write_clipboard_host_impl()->WriteHtml(kHtml, kUrl);
+  async_write_clipboard_host_impl()->CommitWrite();
+
+  // Even after calling `CommitWrite()`, reading from the clipboard shouldn't
+  // return `kHtml` as we don't know yet if it's allowed or not.
+  base::test::TestFuture<const std::u16string&, const GURL&, uint32_t, uint32_t>
+      first_future;
+  async_write_clipboard_host_impl()->ReadHtml(ui::ClipboardBuffer::kCopyPaste,
+                                              first_future.GetCallback());
+  EXPECT_TRUE(first_future.Get<std::u16string>().empty());
+  EXPECT_TRUE(first_future.Get<GURL>().is_empty());
+  EXPECT_EQ(first_future.Get<2>(), 0u);
+  EXPECT_EQ(first_future.Get<3>(), 0u);
+
+  async_write_clipboard_host_impl()->CallOneDelayedResult();
+
+  base::test::TestFuture<const std::u16string&, const GURL&, uint32_t, uint32_t>
+      second_future;
+  async_write_clipboard_host_impl()->ReadHtml(ui::ClipboardBuffer::kCopyPaste,
+                                              second_future.GetCallback());
+  EXPECT_EQ(second_future.Get<std::u16string>(), kHtml);
+  EXPECT_EQ(second_future.Get<GURL>(), kUrl);
+  EXPECT_EQ(second_future.Get<2>(), 0u);
+  EXPECT_EQ(second_future.Get<3>(), 16u);
+}
+
+TEST_F(ClipboardHostImplAsyncWriteTest, WriteTextAndHtml) {
+  ui::Clipboard::GetForCurrentThread()->Clear(ui::ClipboardBuffer::kCopyPaste);
+
+  const std::u16string kText = u"text";
+  const GURL kUrl("https://example.com");
+  const std::u16string kHtml = u"<html>foo</html>";
+  async_write_clipboard_host_impl()->WriteText(kText);
+  async_write_clipboard_host_impl()->WriteHtml(kHtml, kUrl);
+  async_write_clipboard_host_impl()->CommitWrite();
+
+  // Even after calling `CommitWrite()`, reading from the clipboard shouldn't
+  // return anything as we don't know yet if the data is allowed or not.
+  base::test::TestFuture<const std::u16string&> first_text_future;
+  async_write_clipboard_host_impl()->ReadText(ui::ClipboardBuffer::kCopyPaste,
+                                              first_text_future.GetCallback());
+  EXPECT_TRUE(first_text_future.Take().empty());
+
+  base::test::TestFuture<const std::u16string&, const GURL&, uint32_t, uint32_t>
+      first_html_future;
+  async_write_clipboard_host_impl()->ReadHtml(ui::ClipboardBuffer::kCopyPaste,
+                                              first_html_future.GetCallback());
+  EXPECT_TRUE(first_html_future.Get<std::u16string>().empty());
+  EXPECT_TRUE(first_html_future.Get<GURL>().is_empty());
+  EXPECT_EQ(first_html_future.Get<2>(), 0u);
+  EXPECT_EQ(first_html_future.Get<3>(), 0u);
+
+  // After only one delayed result has been propagated, the clipboard still
+  // shouldn't have data as it isn't committed until the last result is
+  // resolved.
+  async_write_clipboard_host_impl()->CallOneDelayedResult();
+
+  base::test::TestFuture<const std::u16string&> second_text_future;
+  async_write_clipboard_host_impl()->ReadText(ui::ClipboardBuffer::kCopyPaste,
+                                              second_text_future.GetCallback());
+  EXPECT_TRUE(second_text_future.Take().empty());
+
+  base::test::TestFuture<const std::u16string&, const GURL&, uint32_t, uint32_t>
+      second_html_future;
+  async_write_clipboard_host_impl()->ReadHtml(ui::ClipboardBuffer::kCopyPaste,
+                                              second_html_future.GetCallback());
+  EXPECT_TRUE(second_html_future.Get<std::u16string>().empty());
+  EXPECT_TRUE(second_html_future.Get<GURL>().is_empty());
+  EXPECT_EQ(second_html_future.Get<2>(), 0u);
+  EXPECT_EQ(second_html_future.Get<3>(), 0u);
+
+  // After calling the last delayed callback, the data should be in the
+  // clipboard.
+  async_write_clipboard_host_impl()->CallOneDelayedResult();
+
+  base::test::TestFuture<const std::u16string&> third_text_future;
+  async_write_clipboard_host_impl()->ReadText(ui::ClipboardBuffer::kCopyPaste,
+                                              third_text_future.GetCallback());
+  EXPECT_EQ(third_text_future.Take(), kText);
+
+  base::test::TestFuture<const std::u16string&, const GURL&, uint32_t, uint32_t>
+      third_html_future;
+  async_write_clipboard_host_impl()->ReadHtml(ui::ClipboardBuffer::kCopyPaste,
+                                              third_html_future.GetCallback());
+  EXPECT_EQ(third_html_future.Get<std::u16string>(), kHtml);
+  EXPECT_EQ(third_html_future.Get<GURL>(), kUrl);
+  EXPECT_EQ(third_html_future.Get<2>(), 0u);
+  EXPECT_EQ(third_html_future.Get<3>(), 16u);
+}
+
+TEST_F(ClipboardHostImplAsyncWriteTest, ConcurrentWrites) {
+  ui::Clipboard::GetForCurrentThread()->Clear(ui::ClipboardBuffer::kCopyPaste);
+
+  const std::u16string kFirstText = u"first text";
+  const GURL kFirstUrl("https://first.example.com");
+  const std::u16string kFirstHtml = u"<html>first foo</html>";
+
+  async_write_clipboard_host_impl()->WriteText(kFirstText);
+  async_write_clipboard_host_impl()->WriteHtml(kFirstHtml, kFirstUrl);
+  async_write_clipboard_host_impl()->CommitWrite();
+
+  // Even after calling `CommitWrite()`, reading from the clipboard shouldn't
+  // return anything as we don't know yet if the data is allowed or not.
+  base::test::TestFuture<const std::u16string&> first_text_future;
+  async_write_clipboard_host_impl()->ReadText(ui::ClipboardBuffer::kCopyPaste,
+                                              first_text_future.GetCallback());
+  EXPECT_TRUE(first_text_future.Take().empty());
+
+  base::test::TestFuture<const std::u16string&, const GURL&, uint32_t, uint32_t>
+      first_html_future;
+  async_write_clipboard_host_impl()->ReadHtml(ui::ClipboardBuffer::kCopyPaste,
+                                              first_html_future.GetCallback());
+  EXPECT_TRUE(first_html_future.Get<std::u16string>().empty());
+  EXPECT_TRUE(first_html_future.Get<GURL>().is_empty());
+  EXPECT_EQ(first_html_future.Get<2>(), 0u);
+  EXPECT_EQ(first_html_future.Get<3>(), 0u);
+
+  // After only one delayed result has been propagated, the clipboard still
+  // shouldn't have data as it isn't committed until the last result is
+  // resolved.
+  async_write_clipboard_host_impl()->CallOneDelayedResult();
+
+  base::test::TestFuture<const std::u16string&> second_text_future;
+  async_write_clipboard_host_impl()->ReadText(ui::ClipboardBuffer::kCopyPaste,
+                                              second_text_future.GetCallback());
+  EXPECT_TRUE(second_text_future.Take().empty());
+
+  base::test::TestFuture<const std::u16string&, const GURL&, uint32_t, uint32_t>
+      second_html_future;
+  async_write_clipboard_host_impl()->ReadHtml(ui::ClipboardBuffer::kCopyPaste,
+                                              second_html_future.GetCallback());
+  EXPECT_TRUE(second_html_future.Get<std::u16string>().empty());
+  EXPECT_TRUE(second_html_future.Get<GURL>().is_empty());
+  EXPECT_EQ(second_html_future.Get<2>(), 0u);
+  EXPECT_EQ(second_html_future.Get<3>(), 0u);
+
+  // Making more `Write*` calls the first set hasn't completed should simply
+  // queue the new values while still only committing when the last result has
+  // been processed.
+  const std::u16string kSecondText = u"second text";
+  const GURL kSecondUrl("https://second.example.com");
+  const std::u16string kSecondHtml = u"<html>second foo</html>";
+  const std::u16string kSvg = u"svg";
+
+  async_write_clipboard_host_impl()->DelayWrites();
+  async_write_clipboard_host_impl()->WriteText(kSecondText);
+  async_write_clipboard_host_impl()->WriteHtml(kSecondHtml, kSecondUrl);
+  async_write_clipboard_host_impl()->WriteSvg(kSvg);
+  async_write_clipboard_host_impl()->CommitWrite();
+
+  // At this point we still have the first HTML write, second text write, second
+  // HTML write and SVG write queued, so we should be able to make three more
+  // `CallOneDelayedResult()` calls without getting all the data committed.
+  for (int i = 0; i < 3; ++i) {
+    async_write_clipboard_host_impl()->CallOneDelayedResult();
+
+    base::test::TestFuture<const std::u16string&> empty_text_future;
+    async_write_clipboard_host_impl()->ReadText(
+        ui::ClipboardBuffer::kCopyPaste, empty_text_future.GetCallback());
+    EXPECT_TRUE(empty_text_future.Take().empty());
+
+    base::test::TestFuture<const std::u16string&, const GURL&, uint32_t,
+                           uint32_t>
+        empty_html_future;
+    async_write_clipboard_host_impl()->ReadHtml(
+        ui::ClipboardBuffer::kCopyPaste, empty_html_future.GetCallback());
+
+    EXPECT_TRUE(empty_html_future.Get<std::u16string>().empty());
+    EXPECT_TRUE(empty_html_future.Get<GURL>().is_empty());
+    EXPECT_EQ(empty_html_future.Get<2>(), 0u);
+    EXPECT_EQ(empty_html_future.Get<3>(), 0u);
+
+    base::test::TestFuture<const std::u16string&> empty_svg_future;
+    async_write_clipboard_host_impl()->ReadSvg(ui::ClipboardBuffer::kCopyPaste,
+                                               empty_svg_future.GetCallback());
+    EXPECT_TRUE(empty_svg_future.Take().empty());
+  }
+
+  // After calling the last delayed callback, the data should be in the
+  // clipboard.
+  async_write_clipboard_host_impl()->CallOneDelayedResult();
+
+  base::test::TestFuture<const std::u16string&> last_text_future;
+  async_write_clipboard_host_impl()->ReadText(ui::ClipboardBuffer::kCopyPaste,
+                                              last_text_future.GetCallback());
+  EXPECT_EQ(last_text_future.Take(), kSecondText);
+
+  base::test::TestFuture<const std::u16string&, const GURL&, uint32_t, uint32_t>
+      last_html_future;
+  async_write_clipboard_host_impl()->ReadHtml(ui::ClipboardBuffer::kCopyPaste,
+                                              last_html_future.GetCallback());
+  EXPECT_EQ(last_html_future.Get<std::u16string>(), kSecondHtml);
+  EXPECT_EQ(last_html_future.Get<GURL>(), kSecondUrl);
+  EXPECT_EQ(last_html_future.Get<2>(), 0u);
+  EXPECT_EQ(last_html_future.Get<3>(), 23u);
+
+  base::test::TestFuture<const std::u16string&> last_svg_future;
+  async_write_clipboard_host_impl()->ReadSvg(ui::ClipboardBuffer::kCopyPaste,
+                                             last_svg_future.GetCallback());
+  EXPECT_EQ(last_svg_future.Take(), kSvg);
+}
+
 }  // namespace content
