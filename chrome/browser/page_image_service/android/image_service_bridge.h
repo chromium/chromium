@@ -36,6 +36,10 @@ class ImageServiceBridge {
                         const base::android::JavaParamRef<jobject>& j_callback);
 
  private:
+  FRIEND_TEST_ALL_PREFIXES(ImageServiceBridgeTest, TestGetImageUrl);
+  FRIEND_TEST_ALL_PREFIXES(ImageServiceBridgeTest,
+                           TestGetImageUrlWithInvalidURL);
+
   void FetchImageUrlForImpl(
       const bool is_account_data,
       const page_image_service::mojom::ClientId client_id,
