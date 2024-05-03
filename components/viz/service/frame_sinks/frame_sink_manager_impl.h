@@ -57,6 +57,7 @@ class GmbVideoFramePoolContextProvider;
 class HintSessionFactory;
 class OutputSurfaceProvider;
 class SharedBitmapManager;
+class SharedImageInterfaceProvider;
 struct VideoCaptureTarget;
 
 // FrameSinkManagerImpl manages BeginFrame hierarchy. This is the implementation
@@ -90,7 +91,8 @@ class VIZ_SERVICE_EXPORT FrameSinkManagerImpl
     base::ProcessId host_process_id = base::kNullProcessId;
     raw_ptr<HintSessionFactory> hint_session_factory = nullptr;
     size_t max_uncommitted_frames = 0;
-    raw_ptr<gpu::SharedImageInterface> shared_image_interface = nullptr;
+    raw_ptr<SharedImageInterfaceProvider> shared_image_interface_provider =
+        nullptr;
   };
   explicit FrameSinkManagerImpl(const InitParams& params);
 
@@ -300,15 +302,9 @@ class VIZ_SERVICE_EXPORT FrameSinkManagerImpl
   }
 
   // Note that if context is lost, this shared image interface will become
-  // invalid. It will then be replaced by a valid one via a
-  // `SetSharedImageInterface` call. It is up to the client to detect changes in
-  // the shared image interface.
-  gpu::SharedImageInterface* shared_image_interface() {
-    return shared_image_interface_.get();
-  }
-
-  void SetSharedImageInterface(
-      gpu::SharedImageInterface* shared_image_interface);
+  // invalid. Next call to this function will create a new interface.
+  // It is up to the client to detect changes in the shared image interface.
+  gpu::SharedImageInterface* GetSharedImageInterface();
 
   ReservedResourceIdTracker* reserved_resource_id_tracker() {
     return &reserved_resource_id_tracker_;
@@ -500,7 +496,8 @@ class VIZ_SERVICE_EXPORT FrameSinkManagerImpl
   // Counts frames for test.
   std::optional<FrameCounter> frame_counter_;
 
-  raw_ptr<gpu::SharedImageInterface> shared_image_interface_ = nullptr;
+  raw_ptr<SharedImageInterfaceProvider> shared_image_interface_provider_ =
+      nullptr;
 
   ReservedResourceIdTracker reserved_resource_id_tracker_;
 

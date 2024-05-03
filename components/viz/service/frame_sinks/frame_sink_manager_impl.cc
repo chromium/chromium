@@ -28,6 +28,7 @@
 #include "components/viz/service/display_embedder/output_surface_provider.h"
 #include "components/viz/service/frame_sinks/compositor_frame_sink_support.h"
 #include "components/viz/service/frame_sinks/frame_sink_bundle_impl.h"
+#include "components/viz/service/frame_sinks/shared_image_interface_provider.h"
 #include "components/viz/service/frame_sinks/video_capture/capturable_frame_sink.h"
 #include "components/viz/service/frame_sinks/video_capture/frame_sink_video_capturer_impl.h"
 #include "components/viz/service/surfaces/pending_copy_output_request.h"
@@ -85,7 +86,7 @@ FrameSinkManagerImpl::FrameSinkManagerImpl(const InitParams& params)
       debug_settings_(params.debug_renderer_settings),
       host_process_id_(params.host_process_id),
       hint_session_factory_(params.hint_session_factory),
-      shared_image_interface_(params.shared_image_interface) {
+      shared_image_interface_provider_(params.shared_image_interface_provider) {
   surface_manager_.AddObserver(&hit_test_manager_);
   surface_manager_.AddObserver(this);
 }
@@ -903,9 +904,10 @@ void FrameSinkManagerImpl::OnScreenshotCaptured(
                                 std::move(copy_output_result));
 }
 
-void FrameSinkManagerImpl::SetSharedImageInterface(
-    gpu::SharedImageInterface* shared_image_interface) {
-  shared_image_interface_ = shared_image_interface;
+gpu::SharedImageInterface* FrameSinkManagerImpl::GetSharedImageInterface() {
+  return shared_image_interface_provider_
+             ? shared_image_interface_provider_->GetSharedImageInterface()
+             : nullptr;
 }
 
 void FrameSinkManagerImpl::StartFrameCountingForTest(

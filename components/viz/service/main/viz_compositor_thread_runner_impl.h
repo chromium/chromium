@@ -23,12 +23,6 @@ class Thread;
 class WaitableEvent;
 }  // namespace base
 
-namespace gpu {
-class SchedulerSequence;
-class SharedImageInterface;
-class SharedImageInterfaceInProcess;
-}  // namespace gpu
-
 namespace viz {
 class FrameSinkManagerImpl;
 class GmbVideoFramePoolContextProvider;
@@ -36,6 +30,7 @@ class HintSessionFactory;
 class InProcessGpuMemoryBufferManager;
 class OutputSurfaceProvider;
 class ServerSharedBitmapManager;
+class SharedImageInterfaceProvider;
 
 #if BUILDFLAG(IS_ANDROID)
 using VizCompositorThreadType = base::android::JavaHandlerThread;
@@ -43,9 +38,7 @@ using VizCompositorThreadType = base::android::JavaHandlerThread;
 using VizCompositorThreadType = base::Thread;
 #endif
 
-class VizCompositorThreadRunnerImpl
-    : public VizCompositorThreadRunner,
-      public gpu::SharedContextState::ContextLostObserver {
+class VizCompositorThreadRunnerImpl : public VizCompositorThreadRunner {
  public:
   VizCompositorThreadRunnerImpl();
 
@@ -73,25 +66,17 @@ class VizCompositorThreadRunnerImpl
   void WakeUpOnCompositorThread();
   void CreateFrameSinkManagerOnCompositorThread(
       mojom::FrameSinkManagerParamsPtr params,
-      gpu::SharedImageInterface* shared_image_interface);
+      GpuServiceImpl* gpu_service);
   void TearDownOnCompositorThread();
-  void OnContextLost() override;
-  void CreateSharedImageInterfaceOnGpu(bool post_update_to_compositor);
-  void SetFrameSinkImplSharedImageInterfaceOnCompositor(
-      gpu::SharedImageInterface* shared_image_interface);
 
-  raw_ptr<GpuServiceImpl> gpu_service_ = nullptr;
   std::unique_ptr<VizCompositorThreadType> thread_;
   scoped_refptr<base::SingleThreadTaskRunner> task_runner_;
 
   // Sequence checker for tasks that run on the gpu "thread".
   SEQUENCE_CHECKER(gpu_sequence_checker_);
 
-  // The following are created and destroyed on the GPU thread.
-  // SharedImageInterface pointer is used on the compositor thread.
-  scoped_refptr<gpu::SharedContextState> shared_context_state_;
-  std::unique_ptr<gpu::SchedulerSequence> shared_image_interface_sequence_;
-  scoped_refptr<gpu::SharedImageInterfaceInProcess> shared_image_interface_;
+  std::unique_ptr<SharedImageInterfaceProvider>
+      shared_image_interface_provider_;
 
   // Start variables to be accessed only on |task_runner_|.
   std::unique_ptr<HintSessionFactory> hint_session_factory_;
