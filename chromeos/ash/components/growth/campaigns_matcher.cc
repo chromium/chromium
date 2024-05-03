@@ -171,6 +171,10 @@ void CampaignsMatcher::SetIsUserOwner(bool is_user_owner) {
   is_user_owner_ = is_user_owner;
 }
 
+void CampaignsMatcher::SetTrigger(TriggeringType trigger) {
+  trigger_ = trigger;
+}
+
 void CampaignsMatcher::SetPrefs(PrefService* prefs) {
   prefs_ = prefs;
 }
@@ -381,6 +385,21 @@ bool CampaignsMatcher::MatchDeviceAge(
                          /*target=*/base::Time::Now());
 }
 
+bool CampaignsMatcher::MatchTriggeringType(
+    const std::vector<TriggeringType>& trigger_targetings) const {
+  if (trigger_targetings.empty()) {
+    // Campaigns matched if `trigger_targetings` is empty.
+    return true;
+  }
+
+  for (const auto& trigger : trigger_targetings) {
+    if (trigger == trigger_) {
+      return true;
+    }
+  }
+  return false;
+}
+
 bool CampaignsMatcher::MatchOpenedApp(
     const std::vector<std::unique_ptr<AppTargeting>>& apps_opened_targeting)
     const {
@@ -548,7 +567,8 @@ bool CampaignsMatcher::MatchRuntimeTargeting(const RuntimeTargeting& targeting,
     return true;
   }
 
-  return MatchSchedulings(targeting.GetSchedulings()) &&
+  return MatchTriggeringType(targeting.GetTriggers()) &&
+         MatchSchedulings(targeting.GetSchedulings()) &&
          MatchOpenedApp(targeting.GetAppsOpened()) &&
          MatchActiveUrlRegexes(targeting.GetActiveUrlRegexes()) &&
          MatchEvents(targeting.GetEventsConfig(), campaign_id);

@@ -40,6 +40,14 @@ enum class Slot {
 
 // These values are deserialized from Growth Campaign, so entries should not
 // be renumbered and numeric values should never be reused.
+enum class TriggeringType {
+  kAppOpened = 0,
+  kCampaignsLoaded = 1,
+  kMaxValue = kCampaignsLoaded
+};
+
+// These values are deserialized from Growth Campaign, so entries should not
+// be renumbered and numeric values should never be reused.
 enum class BuiltInIcon { kRedeem, kContainerApp, kG1 };
 
 // Supported window anchor element.
@@ -311,6 +319,7 @@ class EventsTargeting {
 //   "runtime": {
 //      "schedulings": [...]
 //      "appsOpend": [...]
+//      "triggers": [...]
 //   }
 // }
 class RuntimeTargeting : public TargetingBase {
@@ -322,8 +331,13 @@ class RuntimeTargeting : public TargetingBase {
 
   const std::vector<std::unique_ptr<TimeWindowTargeting>> GetSchedulings()
       const;
+
+  // Returns a list of triggers against the current trigger, e.g. `AppOpened`.
+  const std::vector<TriggeringType> GetTriggers() const;
+
   // Returns a list of apps to be matched against the current opened app.
   const std::vector<std::unique_ptr<AppTargeting>> GetAppsOpened() const;
+
   const std::vector<std::string> GetActiveUrlRegexes() const;
 
   std::unique_ptr<EventsTargeting> GetEventsConfig() const;

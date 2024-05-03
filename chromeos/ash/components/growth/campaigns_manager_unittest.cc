@@ -350,6 +350,17 @@ class CampaignsManagerTest : public testing::Test {
         kValidCampaignsFileTemplate, session_targeting.c_str()));
   }
 
+  void LoadComponentWithTriggerTargeting(const std::string& triggers) {
+    auto session_targeting = base::StringPrintf(R"(
+            "runtime": {
+              "triggers": %s
+            }
+          )",
+                                                triggers.c_str());
+    LoadComponentAndVerifyLoadComplete(base::StringPrintf(
+        kValidCampaignsFileTemplate, session_targeting.c_str()));
+  }
+
   void LoadComponentWithAppsOpenedTargeting(const std::string& apps_opened) {
     auto session_targeting = base::StringPrintf(R"(
             "runtime": {
@@ -1480,6 +1491,38 @@ TEST_F(CampaignsManagerTest, GetCampaignActiveUrlNoActiveUrl) {
         "http://www\\.google\\.com/\\?foo=bar",
         "https://www\\.google\\.com/\\?foo=bar2"
     ])");
+
+  ASSERT_EQ(nullptr, campaigns_manager_->GetCampaignBySlot(Slot::kDemoModeApp));
+}
+
+TEST_F(CampaignsManagerTest, GetCampaignTriggers) {
+  campaigns_manager_->SetTrigger(TriggeringType::kAppOpened);
+
+  LoadComponentWithTriggerTargeting(R"([0])");
+
+  VerifyDemoModePayload(
+      campaigns_manager_->GetCampaignBySlot(Slot::kDemoModeApp));
+}
+
+TEST_F(CampaignsManagerTest, GetCampaignTriggersOrRelationship) {
+  campaigns_manager_->SetTrigger(TriggeringType::kAppOpened);
+
+  LoadComponentWithTriggerTargeting(R"([0, 1])");
+
+  VerifyDemoModePayload(
+      campaigns_manager_->GetCampaignBySlot(Slot::kDemoModeApp));
+}
+
+TEST_F(CampaignsManagerTest, GetCampaignTriggersMissmatch) {
+  campaigns_manager_->SetTrigger(TriggeringType::kAppOpened);
+
+  LoadComponentWithTriggerTargeting(R"([1])");
+
+  ASSERT_EQ(nullptr, campaigns_manager_->GetCampaignBySlot(Slot::kDemoModeApp));
+}
+
+TEST_F(CampaignsManagerTest, GetCampaignTriggersNoTrigger) {
+  LoadComponentWithTriggerTargeting(R"([0, 1])");
 
   ASSERT_EQ(nullptr, campaigns_manager_->GetCampaignBySlot(Slot::kDemoModeApp));
 }

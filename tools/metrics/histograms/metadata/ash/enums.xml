@@ -446,6 +446,7 @@ ash/ambient/util/time_of_day_utils.h -->
   <int value="29" label="Missing button label in notification payload"/>
   <int value="30" label="Invalid button action in notification payload"/>
   <int value="31" label="Invalid notification payload"/>
+  <int value="32" label="Invalid trigger targeting"/>
 </enum>
 
 <enum name="CaptureModeBarButtonType">

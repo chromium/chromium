@@ -74,6 +74,9 @@ inline constexpr int kDismissalCapDefaultValue = 1;
 // Runtime Targeting paths.
 inline constexpr char kRuntimeTargeting[] = "runtime";
 
+// Trigger Targeting paths.
+inline constexpr char kTriggerTargetings[] = "triggers";
+
 // Scheduling Targeting paths.
 inline constexpr char kSchedulingTargetings[] = "schedulings";
 inline constexpr char kTimeWindowStart[] = "start";
@@ -414,6 +417,27 @@ RuntimeTargeting::GetSchedulings() const {
         std::make_unique<TimeWindowTargeting>(&scheduling_dict.GetDict()));
   }
   return schedulings;
+}
+
+const std::vector<TriggeringType> RuntimeTargeting::GetTriggers() const {
+  std::vector<TriggeringType> triggers;
+  auto* triggers_list = GetListCriteria(kTriggerTargetings);
+  if (!triggers_list) {
+    return triggers;
+  }
+
+  for (auto& trigger : *triggers_list) {
+    if (!trigger.is_int()) {
+      // Ignore invalid trigger.
+      RecordCampaignsManagerError(CampaignsManagerError::kInvalidTrigger);
+      continue;
+    }
+
+    // TODO: b/330931877 - Add bounds check for casting to enum from value in
+    // campaign payload.
+    triggers.push_back(static_cast<TriggeringType>(trigger.GetInt()));
+  }
+  return triggers;
 }
 
 const std::vector<std::unique_ptr<AppTargeting>>

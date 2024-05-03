@@ -52,8 +52,9 @@ enum class COMPONENT_EXPORT(CHROMEOS_ASH_COMPONENTS_GROWTH)
       kNotificationPayloadMissingButtonLabel = 29,
       kNotificationPayloadMissingButtonAction = 30,
       kInvalidNotificationPayload = 31,
+      kInvalidTrigger = 32,
 
-      kMaxValue = kInvalidNotificationPayload,
+      kMaxValue = kInvalidTrigger,
     };
 
 // Records errors encountered during the campaigns loading and matching flow.
