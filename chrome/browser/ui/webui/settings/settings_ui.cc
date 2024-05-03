@@ -771,8 +771,8 @@ void SettingsUI::CreateCertificateManagerPageHandler(
     mojo::PendingReceiver<
         certificate_manager_v2::mojom::CertificateManagerPageHandler> handler) {
   certificate_manager_page_handler_ =
-      std::make_unique<CertificateManagerPageHandler>(std::move(client),
-                                                      std::move(handler));
+      std::make_unique<CertificateManagerPageHandler>(
+          std::move(client), std::move(handler), Profile::FromWebUI(web_ui()));
 }
 #endif  // BUILDFLAG(CHROME_ROOT_STORE_CERT_MANAGEMENT_UI)
 

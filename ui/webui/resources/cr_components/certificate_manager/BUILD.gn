@@ -17,6 +17,11 @@ if (chrome_root_store_cert_management_ui) {
     public_deps = [ "//mojo/public/mojom/base" ]
 
     webui_module_path = "chrome://resources/cr_components/certificate_manager/"
+
+    enabled_features = []
+    if (is_win || is_mac) {
+      enabled_features += [ "enable_provisioned_client_certs" ]
+    }
   }
 }
 

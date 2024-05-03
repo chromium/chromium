@@ -40,6 +40,10 @@ export class CertificateManagerV2Element extends PolymerElement {
       // pair.
       crsCertificates: Array,
       crsTrustedCertsOpened_: Boolean,
+      platformClientCerts_: Array,
+      // <if expr="is_win or is_macosx">
+      provisionedClientCerts_: Array,
+      // </if>
     };
   }
 
@@ -50,6 +54,18 @@ export class CertificateManagerV2Element extends PolymerElement {
         (results: {crsCertInfos: SummaryCertInfo[]}) => {
           this.crsCertificates = results.crsCertInfos;
         });
+
+    proxy.handler.getPlatformClientCerts().then(
+        (results: {certs: SummaryCertInfo[]}) => {
+          this.platformClientCerts_ = results.certs;
+        });
+
+    // <if expr="is_win or is_macosx">
+    proxy.handler.getProvisionedClientCerts().then(
+        (results: {certs: SummaryCertInfo[]}) => {
+          this.provisionedClientCerts_ = results.certs;
+        });
+    // </if>
   }
 
   private selectedTabIndex_: number = 0;
@@ -63,6 +79,10 @@ export class CertificateManagerV2Element extends PolymerElement {
   // at the DOM, and then this variable should be private.
   crsCertificates: SummaryCertInfo[] = [];
   private crsTrustedCertsOpened_: boolean = true;
+  private platformClientCerts_: SummaryCertInfo[] = [];
+  // <if expr="is_win or is_macosx">
+  private provisionedClientCerts_: SummaryCertInfo[] = [];
+  // </if>
 }
 
 declare global {

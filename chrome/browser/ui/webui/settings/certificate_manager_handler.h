@@ -8,6 +8,8 @@
 #include "mojo/public/cpp/bindings/remote.h"
 #include "ui/webui/resources/cr_components/certificate_manager/certificate_manager_v2.mojom.h"
 
+class Profile;
+
 // Mojo handler for the Certificate Manager v2 page.
 class CertificateManagerPageHandler
     : public certificate_manager_v2::mojom::CertificateManagerPageHandler {
@@ -17,7 +19,8 @@ class CertificateManagerPageHandler
           pending_client,
       mojo::PendingReceiver<
           certificate_manager_v2::mojom::CertificateManagerPageHandler>
-          pending_handler);
+          pending_handler,
+      Profile* profile);
 
   CertificateManagerPageHandler(const CertificateManagerPageHandler&) = delete;
   CertificateManagerPageHandler& operator=(
@@ -27,12 +30,18 @@ class CertificateManagerPageHandler
 
   void GetChromeRootStoreCerts(
       GetChromeRootStoreCertsCallback callback) override;
+  void GetPlatformClientCerts(GetPlatformClientCertsCallback callback) override;
+#if BUILDFLAG(IS_WIN) || BUILDFLAG(IS_MAC)
+  void GetProvisionedClientCerts(
+      GetProvisionedClientCertsCallback callback) override;
+#endif
 
  private:
   mojo::Remote<certificate_manager_v2::mojom::CertificateManagerPage>
       remote_client_;
   mojo::Receiver<certificate_manager_v2::mojom::CertificateManagerPageHandler>
       handler_;
+  raw_ptr<Profile> profile_;
 };
 
 #endif  // CHROME_BROWSER_UI_WEBUI_SETTINGS_CERTIFICATE_MANAGER_HANDLER_H_
