@@ -324,7 +324,9 @@ bool HasPendingUncleanExit(Profile* profile);
 void AddLaunchedProfile(Profile* profile);
 
 // Returns the path that contains the profile that should be loaded on process
-// startup.
+// startup. This can do blocking operations to check if the profile exists in
+// the case of using --profile-directory and
+// --ignore-profile-directory-if-not-exists together.
 // When the profile picker is shown on startup, this returns the Guest profile
 // path. On Mac, the startup profile path is also used to open URLs at startup,
 // bypassing the profile picker, because the profile picker does not support it.

@@ -413,7 +413,7 @@ void HandleTestParameters(const base::CommandLine& command_line) {
 //   the profile is a guest profile in this case, or
 // - kError mode with a nullptr profile if startup should not continue.
 StartupProfileInfo CreateInitialProfile(
-    const base::FilePath& cur_dir,
+    const base::FilePath& user_data_dir,
     const base::CommandLine& parsed_command_line) {
   TRACE_EVENT0("startup", "ChromeBrowserMainParts::CreateProfile");
   base::Time start = base::Time::Now();
@@ -436,9 +436,18 @@ StartupProfileInfo CreateInitialProfile(
   bool profile_dir_specified =
       profiles::IsMultipleProfilesEnabled() &&
       parsed_command_line.HasSwitch(switches::kProfileDirectory);
+  base::FilePath last_used_profile;
   if (!last_used_profile_set && profile_dir_specified) {
-    profiles::SetLastUsedProfile(
-        parsed_command_line.GetSwitchValuePath(switches::kProfileDirectory));
+    last_used_profile =
+        parsed_command_line.GetSwitchValuePath(switches::kProfileDirectory);
+  }
+  if (parsed_command_line.HasSwitch(
+          switches::kIgnoreProfileDirectoryIfNotExists) &&
+      !base::DirectoryExists(user_data_dir.Append(last_used_profile))) {
+    last_used_profile.clear();
+  }
+  if (!last_used_profile.empty()) {
+    profiles::SetLastUsedProfile(last_used_profile);
     last_used_profile_set = true;
   }
 
@@ -475,7 +484,8 @@ StartupProfileInfo CreateInitialProfile(
   ProfileManager::GetPrimaryUserProfile();
 #endif  // BUILDFLAG(IS_CHROMEOS_LACROS)
 
-  profile_info = GetStartupProfile(cur_dir, parsed_command_line);
+  profile_info =
+      GetStartupProfile(/*cur_dir=*/base::FilePath(), parsed_command_line);
 
   if (profile_info.mode == StartupProfileMode::kError &&
       !last_used_profile_set) {
@@ -1583,7 +1593,7 @@ int ChromeBrowserMainParts::PreMainMessageLoopRunImpl() {
   // This step is costly and is already measured in Startup.CreateFirstProfile
   // and more directly Profile.CreateAndInitializeProfile.
   StartupProfileInfo profile_info = CreateInitialProfile(
-      /*cur_dir=*/base::FilePath(), *base::CommandLine::ForCurrentProcess());
+      user_data_dir_, *base::CommandLine::ForCurrentProcess());
   base::UmaHistogramEnumeration(
       "ProfilePicker.StartupMode.CreateInitialProfile", profile_info.mode);
 

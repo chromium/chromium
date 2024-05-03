@@ -92,7 +92,10 @@ source_set("test_support") {
 source_set("browser_tests") {
   testonly = true
 
-  sources = [ "document_icon_fetcher_browsertest.cc" ]
+  sources = [
+    "document_icon_fetcher_browsertest.cc",
+    "shortcut_launch_browsertest.cc",
+  ]
 
   defines = [ "HAS_OUT_OF_PROC_TEST_RUNNER" ]
 
@@ -100,7 +103,12 @@ source_set("browser_tests") {
     ":shortcuts",
     ":test_support",
     "//base",
+    "//chrome/browser",
+    "//chrome/browser:browser_process",
+    "//chrome/browser/profiles",
     "//chrome/browser/ui",
+    "//chrome/common:non_code_constants",
+    "//chrome/test:test_support",
     "//chrome/test:test_support_ui",
     "//content/public/browser",
     "//skia",

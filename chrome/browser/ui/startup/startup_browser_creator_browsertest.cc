@@ -3654,6 +3654,7 @@ struct ProfilePickerSetup {
   std::optional<std::string> switch_value_ascii;
   std::optional<GURL> url_arg;
   ShutdownType shutdown_type = ShutdownType::kNormal;
+  std::optional<std::string> extra_switch_name = std::nullopt;
 };
 
 // Checks the correct behavior of the profile picker on startup. This feature is
@@ -3679,12 +3680,16 @@ class StartupBrowserCreatorPickerTest
 
     if (GetParam().url_arg) {
       command_line->AppendArg(GetParam().url_arg->spec());
-    } else if (GetParam().switch_value_ascii) {
+    }
+    if (GetParam().switch_value_ascii) {
       DCHECK(GetParam().switch_name);
       command_line->AppendSwitchASCII(*GetParam().switch_name,
                                       *GetParam().switch_value_ascii);
     } else if (GetParam().switch_name) {
       command_line->AppendSwitch(*GetParam().switch_name);
+    }
+    if (GetParam().extra_switch_name) {
+      command_line->AppendSwitch(*GetParam().extra_switch_name);
     }
   }
 
@@ -3776,6 +3781,24 @@ INSTANTIATE_TEST_SUITE_P(
         ProfilePickerSetup{/*expected_to_show=*/false,
                            /*switch_name=*/switches::kProfileDirectory,
                            /*switch_value_ascii=*/"Default"},
+        // Same, but with the kIgnoreProfileDirectoryIfNotExists flag with the
+        // profile existing.
+        ProfilePickerSetup{
+            /*expected_to_show=*/false,
+            /*switch_name=*/switches::kProfileDirectory,
+            /*switch_value_ascii=*/"Default",
+            /*url_arg=*/std::nullopt,
+            /*shutdown_type=*/ProfilePickerSetup::ShutdownType::kNormal,
+            /*extra_switch_name=*/
+            switches::kIgnoreProfileDirectoryIfNotExists},
+        // Show the picker if the profile is ignored due to it not existing.
+        ProfilePickerSetup{
+            /*expected_to_show=*/true,
+            /*switch_name=*/switches::kProfileDirectory,
+            /*switch_value_ascii=*/"DoesNotExist",
+            /*url_arg=*/std::nullopt,
+            /*shutdown_type=*/ProfilePickerSetup::ShutdownType::kNormal,
+            /*extra_switch_name=*/switches::kIgnoreProfileDirectoryIfNotExists},
         // Skip the picker when a specific profile is requested by email.
         ProfilePickerSetup{/*expected_to_show=*/false,
                            /*switch_name=*/switches::kProfileEmail,
@@ -3806,7 +3829,16 @@ INSTANTIATE_TEST_SUITE_P(
             /*switch_name=*/std::nullopt,
             /*switch_value_ascii=*/std::nullopt,
             /*url_arg=*/std::nullopt,
-            /*shutdown_type=*/ProfilePickerSetup::ShutdownType::kRestart}));
+            /*shutdown_type=*/ProfilePickerSetup::ShutdownType::kRestart},
+        // Skip the picker when a url is requested and the profile is ignored.
+        ProfilePickerSetup{
+            /*expected_to_show=*/false,
+            /*switch_name=*/switches::kProfileDirectory,
+            /*switch_value_ascii=*/"DoesNotExist",
+            /*url_arg=*/GURL("https://www.foo.com/"),
+            /*shutdown_type=*/ProfilePickerSetup::ShutdownType::kNormal,
+            /*extra_switch_name=*/
+            switches::kIgnoreProfileDirectoryIfNotExists}));
 
 class GuestStartupBrowserCreatorPickerTest
     : public StartupBrowserCreatorPickerTestBase {
