@@ -612,20 +612,21 @@ IN_PROC_BROWSER_TEST_F(PermissionPromptBubbleBaseViewBrowserTest,
   }
 }
 
-class OneTimePermissionPromptBubbleBaseViewBrowserTest
+class PermissionPromptBubbleBaseViewAllowAlwaysFirstBrowserTest
     : public PermissionPromptBubbleBaseViewBrowserTest {
  public:
-  OneTimePermissionPromptBubbleBaseViewBrowserTest() {
+  PermissionPromptBubbleBaseViewAllowAlwaysFirstBrowserTest() {
     scoped_feature_list_.InitAndEnableFeatureWithParameters(
         permissions::features::kOneTimePermission,
-        {{"OkButtonBehavesAsAllowAlways", "true"}});
+        {{"show_allow_always_as_first_button", "true"}});
   }
 
  private:
   base::test::ScopedFeatureList scoped_feature_list_;
 };
 
-IN_PROC_BROWSER_TEST_F(OneTimePermissionPromptBubbleBaseViewBrowserTest,
-                       InvokeUi_geolocation) {
+IN_PROC_BROWSER_TEST_F(
+    PermissionPromptBubbleBaseViewAllowAlwaysFirstBrowserTest,
+    InvokeUi_geolocation) {
   ShowAndVerifyUi();
 }

@@ -83,7 +83,7 @@ PasswordReuseModalWarningTest.*
 PaymentsWindowUserConsentDialogBrowserTest*
 PerformanceToolbarButtonInteractiveUiTest.*
 PermissionRequestChipBrowserUiTest.*
-*PermissionPromptBubble*ViewBrowserTest.InvokeUi_*
+*PermissionPromptBubble*View*BrowserTest.InvokeUi_*
 PermissionPromptPreviewBrowserTest.InvokeUi_*
 *PopupViewViewsBrowsertest*
 PrivacySandboxDialogViewBrowserTest.*
