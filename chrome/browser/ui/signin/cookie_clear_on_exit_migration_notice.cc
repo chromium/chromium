@@ -10,13 +10,16 @@
 #include "base/functional/bind.h"
 #include "base/functional/callback.h"
 #include "base/notreached.h"
+#include "chrome/browser/profiles/profile.h"
 #include "chrome/browser/ui/browser.h"
 #include "chrome/browser/ui/browser_dialogs.h"
 #include "chrome/browser/ui/chrome_pages.h"
 #include "chrome/common/webui_url_constants.h"
 #include "chrome/grit/branded_strings.h"
 #include "chrome/grit/generated_resources.h"
+#include "components/prefs/pref_service.h"
 #include "components/signin/public/base/signin_buildflags.h"
+#include "components/signin/public/base/signin_pref_names.h"
 #include "components/strings/grit/components_strings.h"
 #include "ui/base/l10n/l10n_util.h"
 #include "ui/base/models/dialog_model.h"
@@ -26,12 +29,19 @@
 namespace {
 
 #if BUILDFLAG(ENABLE_DICE_SUPPORT)
+
 void OpenCookieSettingsAndCloseDialog(Browser& browser,
                                       ui::DialogModel& model) {
   chrome::ShowSettingsSubPage(&browser, chrome::kOnDeviceSiteDataSubpage);
   model.host()->Close();
 }
-#endif
+
+bool SetCookieClearOnExitMigrationComplete(PrefService& prefs, bool can_close) {
+  prefs.SetBoolean(prefs::kCookieClearOnExitMigrationNoticeComplete, true);
+  return can_close;
+}
+
+#endif  // BUILDFLAG(ENABLE_DICE_SUPPORT)
 
 }  // namespace
 
@@ -39,12 +49,19 @@ void ShowCookieClearOnExitMigrationNotice(
     Browser& browser,
     base::OnceCallback<void(bool)> callback) {
 #if BUILDFLAG(ENABLE_DICE_SUPPORT)
+  PrefService& prefs = *browser.profile()->GetPrefs();
+
+  // Marks the migration completes when the user interacts with the dialog.
+  base::OnceCallback<void(bool)> set_migration_complete_callback =
+      base::BindOnce(&SetCookieClearOnExitMigrationComplete, std::ref(prefs))
+          .Then(std::move(callback));
+
   // Split the callback in 3: Ok, Cancel, Close.
   // Ok: Proceeds with closing the browser,
   // Cancel: Closes the dialog but keeps the browser open,
   // Close (e.g. by pressing ESC): same as cancel.
   auto [ok_callback, temp_callback] =
-      base::SplitOnceCallback(std::move(callback));
+      base::SplitOnceCallback(std::move(set_migration_complete_callback));
   base::OnceClosure temp_cancel_closure =
       base::BindOnce(std::move(temp_callback), false);
   auto [cancel_closure, close_closure] =

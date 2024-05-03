@@ -75,4 +75,11 @@ bool IsImplicitBrowserSigninOrExplicitDisabled(
          !prefs->GetBoolean(prefs::kExplicitBrowserSignin);
 }
 
+bool AreGoogleCookiesRebuiltAfterClearingWhenSignedIn(
+    signin::IdentityManager& manager,
+    PrefService& prefs) {
+  return !signin::IsImplicitBrowserSigninOrExplicitDisabled(&manager, &prefs) &&
+         !manager.HasPrimaryAccount(signin::ConsentLevel::kSync);
+}
+
 }  // namespace signin

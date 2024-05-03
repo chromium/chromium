@@ -33,6 +33,8 @@
 #include "components/account_manager_core/account_manager_facade.h"
 #endif
 
+class PrefRegistrySimple;
+
 namespace signin {
 class AccountReconcilorDelegate;
 enum class SetAccountsInCookieResult;
@@ -126,6 +128,8 @@ class AccountReconcilor
   AccountReconcilor& operator=(const AccountReconcilor&) = delete;
 
   ~AccountReconcilor() override;
+
+  static void RegisterProfilePrefs(PrefRegistrySimple* registry);
 
   // Initializes the account reconcilor. Should be called once after
   // construction.

@@ -24,14 +24,19 @@
 #include "base/task/single_thread_task_runner.h"
 #include "base/time/time.h"
 #include "components/content_settings/core/browser/content_settings_observer.h"
+#include "components/prefs/pref_registry_simple.h"
+#include "components/prefs/pref_service.h"
 #include "components/signin/core/browser/account_reconcilor_delegate.h"
 #include "components/signin/public/base/account_consistency_method.h"
 #include "components/signin/public/base/signin_client.h"
 #include "components/signin/public/base/signin_metrics.h"
+#include "components/signin/public/base/signin_pref_names.h"
+#include "components/signin/public/base/signin_switches.h"
 #include "components/signin/public/identity_manager/accounts_cookie_mutator.h"
 #include "components/signin/public/identity_manager/accounts_in_cookie_jar_info.h"
 #include "components/signin/public/identity_manager/accounts_mutator.h"
 #include "components/signin/public/identity_manager/identity_manager.h"
+#include "components/signin/public/identity_manager/identity_utils.h"
 #include "components/signin/public/identity_manager/set_accounts_in_cookie_result.h"
 #include "google_apis/gaia/gaia_auth_util.h"
 #include "google_apis/gaia/gaia_urls.h"
@@ -177,6 +182,14 @@ AccountReconcilor::~AccountReconcilor() {
   DCHECK(!registered_with_identity_manager_);
 }
 
+// static
+void AccountReconcilor::RegisterProfilePrefs(PrefRegistrySimple* registry) {
+#if BUILDFLAG(ENABLE_DICE_SUPPORT)
+  registry->RegisterBooleanPref(
+      prefs::kCookieClearOnExitMigrationNoticeComplete, false);
+#endif
+}
+
 void AccountReconcilor::RegisterWithAllDependencies() {
   RegisterWithContentSettings();
   RegisterWithIdentityManager();
@@ -198,6 +211,17 @@ void AccountReconcilor::Initialize(bool start_reconcile_if_tokens_available) {
   DCHECK(delegate_);
   delegate_->set_reconcilor(this);
   timeout_ = delegate_->GetReconcileTimeout();
+
+#if BUILDFLAG(ENABLE_DICE_SUPPORT)
+  // If Uno is enabled and there is no "clear on exit" setting affecting Gaia,
+  // consider the migration done.
+  PrefService* prefs = client_->GetPrefs();
+  if (!client_->AreSigninCookiesDeletedOnExit() &&
+      signin::AreGoogleCookiesRebuiltAfterClearingWhenSignedIn(
+          *identity_manager_, *client_->GetPrefs())) {
+    prefs->SetBoolean(prefs::kCookieClearOnExitMigrationNoticeComplete, true);
+  }
+#endif  // BUILDFLAG(ENABLE_DICE_SUPPORT)
 
   if (delegate_->IsReconcileEnabled()) {
     SetState(AccountReconcilorState::kScheduled);
@@ -321,6 +345,16 @@ void AccountReconcilor::OnContentSettingChanged(
   // If this is not a change to cookie settings, just ignore.
   if (!content_type_set.Contains(ContentSettingsType::COOKIES))
     return;
+
+#if BUILDFLAG(ENABLE_DICE_SUPPORT)
+  // Any change in cookie setting after Uno has been enabled count as a
+  // migration.
+  if (signin::AreGoogleCookiesRebuiltAfterClearingWhenSignedIn(
+          *identity_manager_, *client_->GetPrefs())) {
+    client_->GetPrefs()->SetBoolean(
+        prefs::kCookieClearOnExitMigrationNoticeComplete, true);
+  }
+#endif  // BUILDFLAG(ENABLE_DICE_SUPPORT)
 
   // If this does not affect GAIA, just ignore. The secondary pattern is not
   // needed.

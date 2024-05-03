@@ -23,6 +23,8 @@ extern const char kAccountInfo[];
 COMPONENT_EXPORT(SIGNIN_SWITCHES)
 extern const char kAutologinEnabled[];
 COMPONENT_EXPORT(SIGNIN_SWITCHES)
+extern const char kCookieClearOnExitMigrationNoticeComplete[];
+COMPONENT_EXPORT(SIGNIN_SWITCHES)
 extern const char kGaiaCookieHash[];
 COMPONENT_EXPORT(SIGNIN_SWITCHES)
 extern const char kGaiaCookieChangedTime[];

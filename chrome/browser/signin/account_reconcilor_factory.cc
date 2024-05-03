@@ -15,6 +15,7 @@
 #include "chrome/browser/signin/account_consistency_mode_manager.h"
 #include "chrome/browser/signin/chrome_signin_client_factory.h"
 #include "chrome/browser/signin/identity_manager_factory.h"
+#include "components/pref_registry/pref_registry_syncable.h"
 #include "components/signin/core/browser/account_reconcilor.h"
 #include "components/signin/core/browser/account_reconcilor_delegate.h"
 #include "components/signin/core/browser/mirror_account_reconcilor_delegate.h"
@@ -32,7 +33,6 @@
 #include "chrome/browser/ash/account_manager/account_manager_util.h"
 #include "chrome/browser/lifetime/application_lifetime.h"
 #include "chromeos/ash/components/install_attributes/install_attributes.h"
-#include "components/pref_registry/pref_registry_syncable.h"
 #include "components/prefs/pref_service.h"
 #include "components/signin/public/base/signin_pref_names.h"
 #include "components/user_manager/user_manager.h"
@@ -170,6 +170,7 @@ void AccountReconcilorFactory::RegisterProfilePrefs(
   registry->RegisterBooleanPref(prefs::kForceLogoutUnauthenticatedUserEnabled,
                                 false);
 #endif
+  AccountReconcilor::RegisterProfilePrefs(registry);
 }
 
 // static

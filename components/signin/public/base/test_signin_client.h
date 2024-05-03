@@ -101,6 +101,10 @@ class TestSigninClient : public SigninClient {
     are_signin_cookies_allowed_ = value;
   }
 
+  void set_are_signin_cookies_deleted_on_exit(bool value) {
+    are_signin_cookies_deleted_on_exit_ = value;
+  }
+
   // When |value| is true, network calls posted through DelayNetworkCall() are
   // delayed indefinitely.
   // When |value| is false, all pending calls are unblocked, and new calls are
@@ -160,6 +164,7 @@ class TestSigninClient : public SigninClient {
   std::unique_ptr<network::mojom::CookieManager> cookie_manager_;
   std::unique_ptr<network::mojom::NetworkContext> network_context_;
   bool are_signin_cookies_allowed_;
+  bool are_signin_cookies_deleted_on_exit_ = false;
 
 #if BUILDFLAG(ENABLE_BOUND_SESSION_CREDENTIALS)
   BoundSessionOauthMultiloginDelegateFactory bound_session_delegate_factory_;

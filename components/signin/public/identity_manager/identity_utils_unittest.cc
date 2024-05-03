@@ -15,8 +15,11 @@
 #include "components/signin/public/base/signin_switches.h"
 #include "components/signin/public/identity_manager/identity_manager.h"
 #include "components/signin/public/identity_manager/identity_test_environment.h"
+#include "components/signin/public/identity_manager/primary_account_mutator.h"
 #include "components/sync_preferences/testing_pref_service_syncable.h"
 #include "testing/gtest/include/gtest/gtest.h"
+
+namespace signin {
 
 namespace {
 const char kUsername[] = "test@test.com";
@@ -49,12 +52,69 @@ class IdentityUtilsIsUsernameAllowedTest : public testing::Test {
   TestingPrefServiceSimple prefs_;
 };
 
+class IdentityUtilsTest : public testing::Test {
+ public:
+  IdentityUtilsTest()
+      : identity_test_env_(/*test_url_loader_factory=*/nullptr,
+                           &pref_service_) {}
+
+  void MakePrimaryAccountAvailable() {
+    static const std::string kTestEmail = "test@gmail.com";
+    identity_test_env_.MakePrimaryAccountAvailable(kTestEmail,
+                                                   ConsentLevel::kSignin);
+  }
+
+  void SetExplicitBrowserSigninPref(bool value) {
+    pref_service_.SetBoolean(prefs::kExplicitBrowserSignin, value);
+  }
+
+  bool GetExplicitBrowserSigninPref() {
+    return pref_service_.GetBoolean(prefs::kExplicitBrowserSignin);
+  }
+
+  IdentityManager* identity_manager() {
+    return identity_test_env_.identity_manager();
+  }
+
+  sync_preferences::TestingPrefServiceSyncable* pref_service() {
+    return &pref_service_;
+  }
+
+ private:
+  base::test::SingleThreadTaskEnvironment task_environment_;
+  base::test::ScopedFeatureList scoped_feature_list_{
+      switches::kExplicitBrowserSigninUIOnDesktop};
+  sync_preferences::TestingPrefServiceSyncable pref_service_;
+  IdentityTestEnvironment identity_test_env_;
+};
+
+TEST_F(IdentityUtilsTest, AreGoogleCookiesRebuiltAfterClearingWhenSignedIn) {
+  // Signed out.
+  EXPECT_TRUE(AreGoogleCookiesRebuiltAfterClearingWhenSignedIn(
+      *identity_manager(), *pref_service()));
+  // Implicit signin.
+  MakePrimaryAccountAvailable();
+  SetExplicitBrowserSigninPref(false);
+  EXPECT_FALSE(AreGoogleCookiesRebuiltAfterClearingWhenSignedIn(
+      *identity_manager(), *pref_service()));
+  // Explicit signin.
+  SetExplicitBrowserSigninPref(true);
+  EXPECT_TRUE(AreGoogleCookiesRebuiltAfterClearingWhenSignedIn(
+      *identity_manager(), *pref_service()));
+  // Sync.
+  identity_manager()->GetPrimaryAccountMutator()->SetPrimaryAccount(
+      identity_manager()->GetPrimaryAccountId(ConsentLevel::kSignin),
+      ConsentLevel::kSync, signin_metrics::AccessPoint::ACCESS_POINT_SETTINGS);
+  EXPECT_FALSE(AreGoogleCookiesRebuiltAfterClearingWhenSignedIn(
+      *identity_manager(), *pref_service()));
+}
+
 TEST_F(IdentityUtilsIsUsernameAllowedTest, EmptyPatterns) {
   prefs()->SetString(prefs::kGoogleServicesUsernamePattern, "");
-  EXPECT_TRUE(signin::IsUsernameAllowedByPatternFromPrefs(prefs(), kUsername));
+  EXPECT_TRUE(IsUsernameAllowedByPatternFromPrefs(prefs(), kUsername));
 
   prefs()->SetString(prefs::kGoogleServicesUsernamePattern, "   ");
-  EXPECT_FALSE(signin::IsUsernameAllowedByPatternFromPrefs(prefs(), kUsername));
+  EXPECT_FALSE(IsUsernameAllowedByPatternFromPrefs(prefs(), kUsername));
 }
 
 TEST_F(IdentityUtilsIsUsernameAllowedTest, InvalidWildcardPatterns) {
@@ -63,43 +123,43 @@ TEST_F(IdentityUtilsIsUsernameAllowedTest, InvalidWildcardPatterns) {
   // automatically.
   prefs()->SetString(prefs::kGoogleServicesUsernamePattern,
                      kValidWildcardPattern);
-  EXPECT_TRUE(signin::IsUsernameAllowedByPatternFromPrefs(prefs(), kUsername));
+  EXPECT_TRUE(IsUsernameAllowedByPatternFromPrefs(prefs(), kUsername));
 
   prefs()->SetString(prefs::kGoogleServicesUsernamePattern,
                      kInvalidWildcardPattern);
-  EXPECT_TRUE(signin::IsUsernameAllowedByPatternFromPrefs(prefs(), kUsername));
+  EXPECT_TRUE(IsUsernameAllowedByPatternFromPrefs(prefs(), kUsername));
 }
 
 TEST_F(IdentityUtilsIsUsernameAllowedTest, MatchingWildcardPatterns) {
   prefs()->SetString(prefs::kGoogleServicesUsernamePattern, kMatchingPattern1);
-  EXPECT_TRUE(signin::IsUsernameAllowedByPatternFromPrefs(prefs(), kUsername));
+  EXPECT_TRUE(IsUsernameAllowedByPatternFromPrefs(prefs(), kUsername));
 
   prefs()->SetString(prefs::kGoogleServicesUsernamePattern, kMatchingPattern2);
-  EXPECT_TRUE(signin::IsUsernameAllowedByPatternFromPrefs(prefs(), kUsername));
+  EXPECT_TRUE(IsUsernameAllowedByPatternFromPrefs(prefs(), kUsername));
 
   prefs()->SetString(prefs::kGoogleServicesUsernamePattern, kMatchingPattern3);
-  EXPECT_TRUE(signin::IsUsernameAllowedByPatternFromPrefs(prefs(), kUsername));
+  EXPECT_TRUE(IsUsernameAllowedByPatternFromPrefs(prefs(), kUsername));
 
   prefs()->SetString(prefs::kGoogleServicesUsernamePattern, kMatchingPattern4);
-  EXPECT_TRUE(signin::IsUsernameAllowedByPatternFromPrefs(prefs(), kUsername));
+  EXPECT_TRUE(IsUsernameAllowedByPatternFromPrefs(prefs(), kUsername));
 
   prefs()->SetString(prefs::kGoogleServicesUsernamePattern, kMatchingPattern5);
-  EXPECT_TRUE(signin::IsUsernameAllowedByPatternFromPrefs(prefs(), kUsername));
+  EXPECT_TRUE(IsUsernameAllowedByPatternFromPrefs(prefs(), kUsername));
 
   prefs()->SetString(prefs::kGoogleServicesUsernamePattern, kMatchingPattern6);
-  EXPECT_TRUE(signin::IsUsernameAllowedByPatternFromPrefs(prefs(), kUsername));
+  EXPECT_TRUE(IsUsernameAllowedByPatternFromPrefs(prefs(), kUsername));
 
   prefs()->SetString(prefs::kGoogleServicesUsernamePattern,
                      kNonMatchingPattern);
-  EXPECT_FALSE(signin::IsUsernameAllowedByPatternFromPrefs(prefs(), kUsername));
+  EXPECT_FALSE(IsUsernameAllowedByPatternFromPrefs(prefs(), kUsername));
 
   prefs()->SetString(prefs::kGoogleServicesUsernamePattern,
                      kNonMatchingUsernamePattern);
-  EXPECT_FALSE(signin::IsUsernameAllowedByPatternFromPrefs(prefs(), kUsername));
+  EXPECT_FALSE(IsUsernameAllowedByPatternFromPrefs(prefs(), kUsername));
 
   prefs()->SetString(prefs::kGoogleServicesUsernamePattern,
                      kNonMatchingDomainPattern);
-  EXPECT_FALSE(signin::IsUsernameAllowedByPatternFromPrefs(prefs(), kUsername));
+  EXPECT_FALSE(IsUsernameAllowedByPatternFromPrefs(prefs(), kUsername));
 }
 
 class IdentityUtilsIsImplicitBrowserSigninOrExplicitDisabled
@@ -118,8 +178,8 @@ class IdentityUtilsIsImplicitBrowserSigninOrExplicitDisabled
 
   void MakePrimaryAccountAvailable() {
     static const std::string kTestEmail = "test@gmail.com";
-    identity_test_env_.MakePrimaryAccountAvailable(
-        kTestEmail, signin::ConsentLevel::kSignin);
+    identity_test_env_.MakePrimaryAccountAvailable(kTestEmail,
+                                                   ConsentLevel::kSignin);
   }
 
   void SetExplicitBrowserSigninPref(bool value) {
@@ -130,7 +190,7 @@ class IdentityUtilsIsImplicitBrowserSigninOrExplicitDisabled
     return pref_service_.GetBoolean(prefs::kExplicitBrowserSignin);
   }
 
-  signin::IdentityManager* identity_manager() {
+  IdentityManager* identity_manager() {
     return identity_test_env_.identity_manager();
   }
 
@@ -140,31 +200,28 @@ class IdentityUtilsIsImplicitBrowserSigninOrExplicitDisabled
 
  private:
   base::test::SingleThreadTaskEnvironment task_environment_;
-  base::test::ScopedFeatureList scoped_feature_list_;
   sync_preferences::TestingPrefServiceSyncable pref_service_;
-  signin::IdentityTestEnvironment identity_test_env_;
+  IdentityTestEnvironment identity_test_env_;
 };
 
 TEST_P(IdentityUtilsIsImplicitBrowserSigninOrExplicitDisabled,
        NoPrimaryAccount) {
-  ASSERT_FALSE(
-      identity_manager()->HasPrimaryAccount(signin::ConsentLevel::kSignin));
+  ASSERT_FALSE(identity_manager()->HasPrimaryAccount(ConsentLevel::kSignin));
   EXPECT_FALSE(GetExplicitBrowserSigninPref());
-  EXPECT_EQ(signin::IsImplicitBrowserSigninOrExplicitDisabled(
-                identity_manager(), pref_service()),
+  EXPECT_EQ(IsImplicitBrowserSigninOrExplicitDisabled(identity_manager(),
+                                                      pref_service()),
             IsExplicitBrowserSigninDisabled());
 }
 
 TEST_P(IdentityUtilsIsImplicitBrowserSigninOrExplicitDisabled,
        PrimaryAccountExplicitSignin) {
   MakePrimaryAccountAvailable();
-  ASSERT_TRUE(
-      identity_manager()->HasPrimaryAccount(signin::ConsentLevel::kSignin));
+  ASSERT_TRUE(identity_manager()->HasPrimaryAccount(ConsentLevel::kSignin));
   SetExplicitBrowserSigninPref(true);
   ASSERT_TRUE(GetExplicitBrowserSigninPref());
 
-  EXPECT_EQ(signin::IsImplicitBrowserSigninOrExplicitDisabled(
-                identity_manager(), pref_service()),
+  EXPECT_EQ(IsImplicitBrowserSigninOrExplicitDisabled(identity_manager(),
+                                                      pref_service()),
             IsExplicitBrowserSigninDisabled());
 }
 
@@ -172,14 +229,15 @@ TEST_P(IdentityUtilsIsImplicitBrowserSigninOrExplicitDisabled,
 TEST_P(IdentityUtilsIsImplicitBrowserSigninOrExplicitDisabled,
        PrimaryAccountDiceImplicitSignin) {
   MakePrimaryAccountAvailable();
-  ASSERT_TRUE(
-      identity_manager()->HasPrimaryAccount(signin::ConsentLevel::kSignin));
+  ASSERT_TRUE(identity_manager()->HasPrimaryAccount(ConsentLevel::kSignin));
   SetExplicitBrowserSigninPref(false);
   ASSERT_FALSE(GetExplicitBrowserSigninPref());
 
-  EXPECT_TRUE(signin::IsImplicitBrowserSigninOrExplicitDisabled(
-      identity_manager(), pref_service()));
+  EXPECT_TRUE(IsImplicitBrowserSigninOrExplicitDisabled(identity_manager(),
+                                                        pref_service()));
 }
 
 INSTANTIATE_FEATURE_OVERRIDE_TEST_SUITE(
     IdentityUtilsIsImplicitBrowserSigninOrExplicitDisabled);
+
+}  // namespace signin

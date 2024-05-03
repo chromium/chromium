@@ -29,6 +29,15 @@ bool IsImplicitBrowserSigninOrExplicitDisabled(
     IdentityManager* identity_manager,
     PrefService* prefs);
 
+// Returns true if the Google account cookies are automatically rebuilt after
+// being cleared from settings, when the user is signed in.
+// Note: this can return true even if the user is not signed in. This function
+// reflects whether the cookie setting has this new behavior (as opposed to the
+// old behavior where cookies were never rebuilt).
+bool AreGoogleCookiesRebuiltAfterClearingWhenSignedIn(
+    signin::IdentityManager& manager,
+    PrefService& prefs);
+
 }  // namespace signin
 
 #endif  // COMPONENTS_SIGNIN_PUBLIC_IDENTITY_MANAGER_IDENTITY_UTILS_H_

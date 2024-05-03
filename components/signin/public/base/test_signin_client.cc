@@ -113,7 +113,7 @@ bool TestSigninClient::AreSigninCookiesAllowed() {
 }
 
 bool TestSigninClient::AreSigninCookiesDeletedOnExit() {
-  return false;
+  return are_signin_cookies_deleted_on_exit_;
 }
 
 void TestSigninClient::AddContentSettingsObserver(

@@ -217,8 +217,11 @@ PrimaryAccountManager::PrimaryAccountManager(
 
   // Clear the pref it is was set and the feature is now off.
   if (!switches::IsExplicitBrowserSigninUIOnDesktopEnabled()) {
-    ScopedPrefCommit(client_->GetPrefs(), /*commit_on_destroy=*/false)
-        .ClearPref(prefs::kExplicitBrowserSignin);
+    ScopedPrefCommit scoped_pref_commit(client_->GetPrefs(),
+                                        /*commit_on_destroy=*/false);
+    scoped_pref_commit.ClearPref(prefs::kExplicitBrowserSignin);
+    scoped_pref_commit.ClearPref(
+        prefs::kCookieClearOnExitMigrationNoticeComplete);
   }
 }
 

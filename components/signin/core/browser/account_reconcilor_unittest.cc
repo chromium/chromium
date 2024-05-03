@@ -411,6 +411,7 @@ AccountReconcilorTest::AccountReconcilorTest()
       identity_test_env_(/*test_url_loader_factory=*/nullptr,
                          &pref_service_,
                          &test_signin_client_) {
+  AccountReconcilor::RegisterProfilePrefs(pref_service_.registry());
   signin::SetListAccountsResponseHttpNotFound(&test_url_loader_factory_);
 
   // The reconcilor should not be built before the test can set the account
@@ -1577,6 +1578,100 @@ TEST_P(AccountReconcilorDiceTestWithUnoDesktop, DeleteCookieForSyncingUser) {
   EXPECT_TRUE(
       identity_manager->HasAccountWithRefreshTokenInPersistentErrorState(
           account_info.account_id));
+}
+
+TEST_P(AccountReconcilorDiceTestWithUnoDesktop,
+       CookieSettingMigration_ExplicitSignin) {
+  ASSERT_FALSE(pref_service()->GetBoolean(
+      prefs::kCookieClearOnExitMigrationNoticeComplete));
+  AccountInfo account_info = identity_test_env()->MakePrimaryAccountAvailable(
+      kFakeEmail, signin::ConsentLevel::kSignin);
+  ASSERT_EQ(is_uno_desktop_enabled(),
+            pref_service()->GetBoolean(prefs::kExplicitBrowserSignin));
+
+  // Explicit signin is auto-migrated.
+  GetMockReconcilor();
+  EXPECT_EQ(is_uno_desktop_enabled(),
+            pref_service()->GetBoolean(
+                prefs::kCookieClearOnExitMigrationNoticeComplete));
+}
+
+TEST_P(AccountReconcilorDiceTestWithUnoDesktop,
+       CookieSettingMigration_ExplicitSignin_WithClearOnExit) {
+  ASSERT_FALSE(pref_service()->GetBoolean(
+      prefs::kCookieClearOnExitMigrationNoticeComplete));
+  AccountInfo account_info = identity_test_env()->MakePrimaryAccountAvailable(
+      kFakeEmail, signin::ConsentLevel::kSignin);
+  ASSERT_EQ(is_uno_desktop_enabled(),
+            pref_service()->GetBoolean(prefs::kExplicitBrowserSignin));
+  test_signin_client()->set_are_signin_cookies_deleted_on_exit(true);
+
+  // Explicit signin is not auto-migrated when the setting exists.
+  content_settings::Observer* reconcilor = GetMockReconcilor();
+  EXPECT_FALSE(pref_service()->GetBoolean(
+      prefs::kCookieClearOnExitMigrationNoticeComplete));
+
+  // Changing cookie settings should trigger the migration.
+
+  reconcilor->OnContentSettingChanged(
+      /*primary_pattern=*/ContentSettingsPattern(),
+      /*secondary_pattern=*/ContentSettingsPattern(),
+      ContentSettingsTypeSet(ContentSettingsType::COOKIES));
+  EXPECT_EQ(is_uno_desktop_enabled(),
+            pref_service()->GetBoolean(
+                prefs::kCookieClearOnExitMigrationNoticeComplete));
+}
+
+TEST_P(AccountReconcilorDiceTestWithUnoDesktop,
+       CookieSettingMigration_ImplicitSignin) {
+  ASSERT_FALSE(pref_service()->GetBoolean(
+      prefs::kCookieClearOnExitMigrationNoticeComplete));
+  AccountInfo account_info = identity_test_env()->MakePrimaryAccountAvailable(
+      kFakeEmail, signin::ConsentLevel::kSignin);
+  pref_service()->ClearPref(prefs::kExplicitBrowserSignin);
+  ASSERT_FALSE(pref_service()->GetBoolean(prefs::kExplicitBrowserSignin));
+
+  // Implicit signin is not auto-migrated.
+  content_settings::Observer* reconcilor = GetMockReconcilor();
+  EXPECT_FALSE(pref_service()->GetBoolean(
+      prefs::kCookieClearOnExitMigrationNoticeComplete));
+
+  // Changing cookie settings should not trigger the migration.
+  reconcilor->OnContentSettingChanged(
+      /*primary_pattern=*/ContentSettingsPattern(),
+      /*secondary_pattern=*/ContentSettingsPattern(),
+      ContentSettingsTypeSet(ContentSettingsType::COOKIES));
+  EXPECT_FALSE(pref_service()->GetBoolean(
+      prefs::kCookieClearOnExitMigrationNoticeComplete));
+}
+
+TEST_P(AccountReconcilorDiceTestWithUnoDesktop,
+       CookieSettingMigration_SignedOut) {
+  ASSERT_FALSE(pref_service()->GetBoolean(
+      prefs::kCookieClearOnExitMigrationNoticeComplete));
+  ASSERT_FALSE(pref_service()->GetBoolean(prefs::kExplicitBrowserSignin));
+  ASSERT_FALSE(identity_test_env()->identity_manager()->HasPrimaryAccount(
+      signin::ConsentLevel::kSignin));
+
+  // Implicit signin is auto-migrated.
+  GetMockReconcilor();
+  EXPECT_EQ(is_uno_desktop_enabled(),
+            pref_service()->GetBoolean(
+                prefs::kCookieClearOnExitMigrationNoticeComplete));
+}
+
+TEST_P(AccountReconcilorDiceTestWithUnoDesktop, CookieSettingMigration_Sync) {
+  ASSERT_FALSE(pref_service()->GetBoolean(
+      prefs::kCookieClearOnExitMigrationNoticeComplete));
+  AccountInfo account_info = identity_test_env()->MakePrimaryAccountAvailable(
+      kFakeEmail, signin::ConsentLevel::kSync);
+  ASSERT_EQ(is_uno_desktop_enabled(),
+            pref_service()->GetBoolean(prefs::kExplicitBrowserSignin));
+
+  // Sync is not auto-migrated.
+  GetMockReconcilor();
+  EXPECT_FALSE(pref_service()->GetBoolean(
+      prefs::kCookieClearOnExitMigrationNoticeComplete));
 }
 
 const std::vector<AccountReconcilorTestTableParam>
