@@ -804,11 +804,17 @@ export class ReadAnythingElement extends ReadAnythingElementBase {
         // mode and we don't want to reinstall.
         this.setVoicePackStatus_(lang, VoicePackStatus.REMOVED_BY_USER);
       } else if (this.languagesForVoiceDownloads.has(lang)) {
-        chrome.readingMode.sendInstallVoicePackRequest(lang);
-
-        // TODO(b/326130935): Hide the message when installation completes or
-        // show an error message if something fails.
-        this.setVoicePackStatus_(lang, VoicePackStatus.INSTALLING);
+        // We can't rely on the voice pack manager to reflect that a voice is
+        // installing, so check our local state to see if we've already
+        // triggered an install request.
+        // Only call sendInstallVoicePackRequest() if it's not already
+        // downloading
+        if (this.getVoicePackStatus_(lang) !== VoicePackStatus.INSTALLING) {
+          // TODO(b/326130935): Hide the message when installation completes or
+          // show an error message if something fails.
+          this.setVoicePackStatus_(lang, VoicePackStatus.INSTALLING);
+          chrome.readingMode.sendInstallVoicePackRequest(lang);
+        }
       }
     } else if (voicePackStatus === VoicePackStatus.DOWNLOADED) {
       // If we've never seen the voice pack for this language, then it was
@@ -2038,6 +2044,11 @@ export class ReadAnythingElement extends ReadAnythingElementBase {
       e.stopPropagation();
       this.onPlayPauseClick_();
     }
+  }
+
+  private getVoicePackStatus_(lang: string): VoicePackStatus|undefined {
+    const voicePackLanguage = this.getConvertedLangIfExists_(lang);
+    return this.voicePackInstallStatus[voicePackLanguage];
   }
 
   private setVoicePackStatus_(lang: string, status: VoicePackStatus) {
