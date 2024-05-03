@@ -29,7 +29,6 @@ class WebView;
 
 namespace chromeos::editor_menu {
 class FocusSearch;
-class PreTargetHandler;
 }  // namespace chromeos::editor_menu
 
 class QuickAnswersUiController;
@@ -37,8 +36,6 @@ class QuickAnswersUiController;
 namespace quick_answers {
 struct QuickAnswer;
 struct PhoneticsInfo;
-
-class QuickAnswersPreTargetHandler;
 
 // A bubble style view to show QuickAnswer.
 class QuickAnswersView : public chromeos::ReadWriteCardsView {
@@ -117,8 +114,6 @@ class QuickAnswersView : public chromeos::ReadWriteCardsView {
   // is lazy created to improve performance.
   views::ViewTracker phonetics_audio_web_view_;
 
-  std::unique_ptr<chromeos::editor_menu::PreTargetHandler>
-      quick_answers_view_handler_;
   std::unique_ptr<chromeos::editor_menu::FocusSearch> focus_search_;
   base::WeakPtrFactory<QuickAnswersView> weak_factory_{this};
 };

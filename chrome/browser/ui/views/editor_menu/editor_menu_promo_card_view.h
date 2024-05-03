@@ -8,6 +8,7 @@
 #include "base/memory/raw_ptr.h"
 #include "base/memory/weak_ptr.h"
 #include "base/scoped_observation.h"
+#include "chrome/browser/ui/views/editor_menu/utils/pre_target_handler.h"
 #include "ui/base/metadata/metadata_header_macros.h"
 #include "ui/views/widget/unique_widget_ptr.h"
 #include "ui/views/widget/widget.h"
@@ -16,16 +17,16 @@
 namespace views {
 class Label;
 class MdTextButton;
-}
+}  // namespace views
 
 namespace chromeos::editor_menu {
 
 class EditorMenuViewDelegate;
-class PreTargetHandler;
 
 // A view which shows a promo card to introduce the Editor Menu feature.
 class EditorMenuPromoCardView : public views::View,
-                                public views::WidgetObserver {
+                                public views::WidgetObserver,
+                                public PreTargetHandler::Delegate {
   METADATA_HEADER(EditorMenuPromoCardView, views::View)
 
  public:
@@ -54,6 +55,10 @@ class EditorMenuPromoCardView : public views::View,
   void OnWidgetVisibilityChanged(views::Widget* widget, bool visible) override;
 
   void UpdateBounds(const gfx::Rect& anchor_view_bounds);
+
+  // chromeos::editor_menu::PreTargetHandler::Delegate:
+  views::View* GetRootView() override;
+  std::vector<views::View*> GetTraversableViewsByUpDownKeys() override;
 
   views::Label* title_for_testing() { return title_; }
 

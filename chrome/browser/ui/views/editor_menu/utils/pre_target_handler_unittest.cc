@@ -5,6 +5,7 @@
 #include "chrome/browser/ui/views/editor_menu/utils/pre_target_handler.h"
 
 #include <memory>
+#include <vector>
 
 #include "base/memory/raw_ptr.h"
 #include "chrome/browser/ui/views/editor_menu/utils/utils.h"
@@ -91,6 +92,44 @@ ContextMenuSelectedState GetContextMenuSelectedState() {
   }
 }
 
+std::unique_ptr<views::View> CreateFocusableView() {
+  auto view = std::make_unique<views::View>();
+  // Set up view so that it is focusable during test.
+  view->SetEnabled(true);
+  view->SetFocusBehavior(views::View::FocusBehavior::ALWAYS);
+  return view;
+}
+
+constexpr int kTraversableViewsNumber = 5;
+
+class TestHandlerDelegate : public PreTargetHandler::Delegate {
+ public:
+  explicit TestHandlerDelegate(views::View* root_view) : root_view_(root_view) {
+    for (int i = 0; i < kTraversableViewsNumber; i++) {
+      auto* view = root_view_->AddChildView(CreateFocusableView());
+      traversable_views_.emplace_back(view);
+    }
+  }
+  TestHandlerDelegate(const TestHandlerDelegate&) = delete;
+  TestHandlerDelegate& operator=(const TestHandlerDelegate&) = delete;
+  ~TestHandlerDelegate() = default;
+
+  // PreTargetHandler::Delegate:
+  views::View* GetRootView() override { return root_view_; }
+
+  std::vector<views::View*> GetTraversableViewsByUpDownKeys() override {
+    return traversable_views_;
+  }
+
+  views::View* GetTraversableViewByIndex(int index) {
+    return traversable_views_[index];
+  }
+
+ private:
+  const raw_ptr<views::View> root_view_;
+  std::vector<views::View*> traversable_views_;
+};
+
 class PreTargetHandlerTest : public ChromeViewsTestBase,
                              public testing::WithParamInterface<CardType> {
  public:
@@ -107,10 +146,7 @@ class PreTargetHandlerTest : public ChromeViewsTestBase,
     test_widget_->Init(CreateParamsForTestWidget());
 
     auto contents_view = std::make_unique<views::BoxLayoutView>();
-    test_view_ = contents_view->AddChildView(std::make_unique<views::View>());
-    // Set up view so that it is focusable during test.
-    test_view_->SetEnabled(true);
-    test_view_->SetFocusBehavior(views::View::FocusBehavior::ALWAYS);
+    test_view_ = contents_view->AddChildView(CreateFocusableView());
 
     test_widget_->SetContentsView(std::move(contents_view));
 
@@ -158,7 +194,8 @@ INSTANTIATE_TEST_SUITE_P(,
 
 TEST_P(PreTargetHandlerTest, KeyUpWhenNoItemSelected) {
   auto card_type = GetCardType();
-  PreTargetHandler handler(test_view_, card_type);
+  TestHandlerDelegate delegate(test_view_);
+  PreTargetHandler handler(delegate, card_type);
 
   ui::test::EventGenerator event_generator(
       views::GetRootWindow(test_widget_.get()));
@@ -168,17 +205,19 @@ TEST_P(PreTargetHandlerTest, KeyUpWhenNoItemSelected) {
 
   event_generator.PressAndReleaseKey(ui::VKEY_UP);
 
-  // When no item is selected in the menu, the view should request focus when
-  // key up is hit if it is a `kDefault` card. Otherwise the view should not
-  // request focus
-  EXPECT_EQ(card_type == CardType::kDefault, test_view_->HasFocus());
+  // When no item is selected in the menu, the first traversable view should
+  // request focus when key up is hit if it is a `kDefault` card. Otherwise the
+  // view should not request focus
+  EXPECT_EQ(card_type == CardType::kDefault,
+            delegate.GetTraversableViewByIndex(0)->HasFocus());
 }
 
 TEST_P(PreTargetHandlerTest, FirstItemSelected) {
   auto card_type = GetCardType();
-  PreTargetHandler handler(test_view_, card_type);
+  TestHandlerDelegate delegate(test_view_);
+  PreTargetHandler handler(delegate, card_type);
 
-  // Hitting down should select the first item.
+  // Hitting down should select the first menu item.
   ui::test::EventGenerator event_generator(
       views::GetRootWindow(test_widget_.get()));
   event_generator.PressAndReleaseKey(ui::VKEY_DOWN);
@@ -186,11 +225,13 @@ TEST_P(PreTargetHandlerTest, FirstItemSelected) {
   ASSERT_EQ(GetContextMenuSelectedState(),
             ContextMenuSelectedState::kFirstItemSelected);
 
-  // Going up. The view should be focus if it is a `kDefault` card. Otherwise
-  // the focus should move down to the last menu item.
+  // Going up. The last traversable view should be focus if it is a `kDefault`
+  // card. Otherwise the focus should move down to the last menu item.
   event_generator.PressAndReleaseKey(ui::VKEY_UP);
 
-  EXPECT_EQ(card_type == CardType::kDefault, test_view_->HasFocus());
+  EXPECT_EQ(card_type == CardType::kDefault,
+            delegate.GetTraversableViewByIndex(kTraversableViewsNumber - 1)
+                ->HasFocus());
   EXPECT_EQ(card_type != CardType::kDefault,
             GetContextMenuSelectedState() ==
                 ContextMenuSelectedState::kLastItemSelected);
@@ -198,7 +239,8 @@ TEST_P(PreTargetHandlerTest, FirstItemSelected) {
 
 TEST_P(PreTargetHandlerTest, LastItemSelected) {
   auto card_type = GetCardType();
-  PreTargetHandler handler(test_view_, card_type);
+  TestHandlerDelegate delegate(test_view_);
+  PreTargetHandler handler(delegate, card_type);
 
   ui::test::EventGenerator event_generator(
       views::GetRootWindow(test_widget_.get()));
@@ -209,11 +251,13 @@ TEST_P(PreTargetHandlerTest, LastItemSelected) {
   ASSERT_EQ(GetContextMenuSelectedState(),
             ContextMenuSelectedState::kLastItemSelected);
 
-  // At the last menu item, going down should focus the view if it is a
-  // `kDefault` card. Otherwise the focus should move up to the first menu item.
+  // At the last menu item, going down should focus the first traversable view
+  // if it is a `kDefault` card. Otherwise the focus should move up to the first
+  // menu item.
   event_generator.PressAndReleaseKey(ui::VKEY_DOWN);
 
-  EXPECT_EQ(card_type == CardType::kDefault, test_view_->HasFocus());
+  EXPECT_EQ(card_type == CardType::kDefault,
+            delegate.GetTraversableViewByIndex(0)->HasFocus());
   EXPECT_EQ(card_type != CardType::kDefault,
             GetContextMenuSelectedState() ==
                 ContextMenuSelectedState::kFirstItemSelected);
@@ -225,23 +269,31 @@ TEST_P(PreTargetHandlerTest, ViewFocusedKeyDown) {
     GTEST_SKIP() << "This test only applies to kDefault type";
   }
 
-  PreTargetHandler handler(test_view_, CardType::kDefault);
+  TestHandlerDelegate delegate(test_view_);
+  PreTargetHandler handler(delegate, CardType::kDefault);
 
   ui::test::EventGenerator event_generator(
       views::GetRootWindow(test_widget_.get()));
   event_generator.PressAndReleaseKey(ui::VKEY_UP);
 
-  ASSERT_TRUE(test_view_->HasFocus());
+  // Traversing to the last view.
+  for (int i = 0; i < kTraversableViewsNumber - 1; i++) {
+    ASSERT_TRUE(delegate.GetTraversableViewByIndex(i)->HasFocus())
+        << "should focus view at index " << i;
+    event_generator.PressAndReleaseKey(ui::VKEY_DOWN);
+  }
 
-  // When view is focused, going down should take focus to the first menu item.
+  // When the last traversable view is focused, going down should take focus to
+  // the first menu item.
   event_generator.PressAndReleaseKey(ui::VKEY_DOWN);
 
   EXPECT_EQ(GetContextMenuSelectedState(),
             ContextMenuSelectedState::kFirstItemSelected);
 
-  // Going up will take focus back to the view.
+  // Going up will take focus back to the last traversable view.
   event_generator.PressAndReleaseKey(ui::VKEY_UP);
-  EXPECT_TRUE(test_view_->HasFocus());
+  EXPECT_TRUE(delegate.GetTraversableViewByIndex(kTraversableViewsNumber - 1)
+                  ->HasFocus());
 }
 
 TEST_P(PreTargetHandlerTest, ViewFocusedKeyUp) {
@@ -250,23 +302,53 @@ TEST_P(PreTargetHandlerTest, ViewFocusedKeyUp) {
     GTEST_SKIP() << "This test only applies to kDefault type";
   }
 
-  PreTargetHandler handler(test_view_, CardType::kDefault);
+  TestHandlerDelegate delegate(test_view_);
+  PreTargetHandler handler(delegate, CardType::kDefault);
 
   ui::test::EventGenerator event_generator(
       views::GetRootWindow(test_widget_.get()));
   event_generator.PressAndReleaseKey(ui::VKEY_UP);
 
-  ASSERT_TRUE(test_view_->HasFocus());
+  ASSERT_TRUE(delegate.GetTraversableViewByIndex(0)->HasFocus());
 
-  // When view is focused, going up should take focus to the last menu item.
+  // When the first traversable is focused, going up should take focus to the
+  // last menu item.
   event_generator.PressAndReleaseKey(ui::VKEY_UP);
 
   EXPECT_EQ(GetContextMenuSelectedState(),
             ContextMenuSelectedState::kLastItemSelected);
 
-  // Going down will take focus back to the view.
+  // Going down will take focus back to the first focusable view.
   event_generator.PressAndReleaseKey(ui::VKEY_DOWN);
-  EXPECT_TRUE(test_view_->HasFocus());
+  EXPECT_TRUE(delegate.GetTraversableViewByIndex(0)->HasFocus());
+}
+
+TEST_P(PreTargetHandlerTest, TraverseBetweenViews) {
+  auto card_type = GetCardType();
+  if (card_type != CardType::kDefault) {
+    GTEST_SKIP() << "This test only applies to kDefault type";
+  }
+
+  TestHandlerDelegate delegate(test_view_);
+  PreTargetHandler handler(delegate, CardType::kDefault);
+
+  ui::test::EventGenerator event_generator(
+      views::GetRootWindow(test_widget_.get()));
+  event_generator.PressAndReleaseKey(ui::VKEY_UP);
+
+  // Traversing down the list using VKEY_DOWN.
+  for (int i = 0; i < kTraversableViewsNumber - 1; i++) {
+    EXPECT_TRUE(delegate.GetTraversableViewByIndex(i)->HasFocus())
+        << "should focus view at index " << i;
+    event_generator.PressAndReleaseKey(ui::VKEY_DOWN);
+  }
+
+  // Traversing up the list using VKEY_UP.
+  for (int i = kTraversableViewsNumber - 1; i >= 0; i--) {
+    EXPECT_TRUE(delegate.GetTraversableViewByIndex(i)->HasFocus())
+        << "should focus view at index " << i;
+    event_generator.PressAndReleaseKey(ui::VKEY_UP);
+  }
 }
 
 }  // namespace

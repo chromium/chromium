@@ -360,4 +360,55 @@ TEST_P(ReadWriteCardsUiControllerTest, ChildViewsPosition) {
   EXPECT_EQ(1u, contents_view->GetIndexOf(qa_view));
 }
 
+TEST_P(ReadWriteCardsUiControllerTest, GetTraversableViewsByUpDownKeys) {
+  ReadWriteCardsUiController controller;
+
+  EXPECT_TRUE(controller.GetTraversableViewsByUpDownKeys().empty());
+
+  gfx::Rect context_menu_bounds =
+      gfx::Rect(gfx::Point(500, 250), gfx::Size(kDefaultWidth, 140));
+  controller.SetContextMenuBounds(context_menu_bounds);
+
+  constexpr int kMahiHeight = 80;
+  constexpr int kQuickAnswersHeight = 80;
+  views::View* test_mahi_view =
+      controller.SetMahiUi(CreateViewWithHeight(controller, kMahiHeight));
+
+  EXPECT_EQ(1u, controller.GetTraversableViewsByUpDownKeys().size());
+  EXPECT_EQ(test_mahi_view,
+            controller.GetTraversableViewsByUpDownKeys().front());
+
+  views::View* test_qa_view = controller.SetQuickAnswersUi(
+      CreateViewWithHeight(controller, kQuickAnswersHeight));
+
+  // Quick Answers view should be placed before Mahi view when widget is above
+  // context menu.
+  ASSERT_TRUE(controller.widget_above_context_menu_for_test());
+
+  EXPECT_EQ(2u, controller.GetTraversableViewsByUpDownKeys().size());
+  EXPECT_EQ(test_qa_view, controller.GetTraversableViewsByUpDownKeys().front());
+  EXPECT_EQ(test_mahi_view,
+            controller.GetTraversableViewsByUpDownKeys().back());
+
+  context_menu_bounds.set_y(10);
+  controller.SetContextMenuBounds(context_menu_bounds);
+
+  // Quick Answers view should be placed after Mahi view when widget is below
+  // context menu.
+  ASSERT_FALSE(controller.widget_above_context_menu_for_test());
+
+  EXPECT_EQ(2u, controller.GetTraversableViewsByUpDownKeys().size());
+  EXPECT_EQ(test_mahi_view,
+            controller.GetTraversableViewsByUpDownKeys().front());
+  EXPECT_EQ(test_qa_view, controller.GetTraversableViewsByUpDownKeys().back());
+
+  controller.RemoveMahiUi();
+
+  EXPECT_EQ(1u, controller.GetTraversableViewsByUpDownKeys().size());
+  EXPECT_EQ(test_qa_view, controller.GetTraversableViewsByUpDownKeys().front());
+
+  controller.RemoveQuickAnswersUi();
+  EXPECT_TRUE(controller.GetTraversableViewsByUpDownKeys().empty());
+}
+
 }  // namespace chromeos::mahi

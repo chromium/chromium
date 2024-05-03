@@ -8,8 +8,8 @@
 #include <memory>
 
 #include "base/memory/raw_ptr.h"
-#include "chrome/browser/ui/views/editor_menu/utils/pre_target_handler_view.h"
 #include "ui/base/metadata/metadata_header_macros.h"
+#include "ui/views/view.h"
 
 namespace views {
 class LabelButton;
@@ -19,10 +19,8 @@ class ViewShadow;
 namespace chromeos::mahi {
 
 // View to show a condensed version of the Mahi Menu.
-class MahiCondensedMenuView
-    : public chromeos::editor_menu::PreTargetHandlerView {
-  METADATA_HEADER(MahiCondensedMenuView,
-                  chromeos::editor_menu::PreTargetHandlerView)
+class MahiCondensedMenuView : public views::View {
+  METADATA_HEADER(MahiCondensedMenuView, views::View)
 
  public:
   MahiCondensedMenuView();
@@ -30,8 +28,10 @@ class MahiCondensedMenuView
   MahiCondensedMenuView& operator=(const MahiCondensedMenuView&) = delete;
   ~MahiCondensedMenuView() override;
 
-  // chromeos::editor_menu::PreTargetHandlerView:
+  // views::View:
   void RequestFocus() override;
+
+  views::LabelButton* menu_button_for_test() { return menu_button_; }
 
  private:
   // Owned by the views hierarchy.

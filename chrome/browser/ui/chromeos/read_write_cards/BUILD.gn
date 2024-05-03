@@ -13,6 +13,7 @@ source_set("read_write_cards") {
   ]
   deps = [
     "//base",
+    "//chrome/browser/ui/views/editor_menu:utils",
     "//ui/aura",
     "//ui/base",
     "//ui/gfx",

@@ -5,10 +5,11 @@
 #ifndef CHROME_BROWSER_UI_CHROMEOS_READ_WRITE_CARDS_READ_WRITE_CARDS_UI_CONTROLLER_H_
 #define CHROME_BROWSER_UI_CHROMEOS_READ_WRITE_CARDS_READ_WRITE_CARDS_UI_CONTROLLER_H_
 
-#include <memory>
+#include <optional>
 
 #include "base/memory/raw_ptr.h"
 #include "base/scoped_observation.h"
+#include "chrome/browser/ui/views/editor_menu/utils/pre_target_handler.h"
 #include "ui/gfx/geometry/rect.h"
 #include "ui/views/view_observer.h"
 #include "ui/views/view_tracker.h"
@@ -26,7 +27,9 @@ class ReadWriteCardsView;
 // The controller that manages all the behaviors of the UI widget containing
 // some of the read write cards (currently these are quick answers and mahi
 // cards).
-class ReadWriteCardsUiController : public views::ViewObserver {
+class ReadWriteCardsUiController
+    : public views::ViewObserver,
+      public chromeos::editor_menu::PreTargetHandler::Delegate {
  public:
   static constexpr char kWidgetName[] = "ReadWriteCardsWidget";
 
@@ -56,9 +59,21 @@ class ReadWriteCardsUiController : public views::ViewObserver {
 
   void SetContextMenuBounds(const gfx::Rect& context_menu_bounds);
 
+  // chromeos::editor_menu::PreTargetHandler::Delegate:
+  views::View* GetRootView() override;
+  std::vector<views::View*> GetTraversableViewsByUpDownKeys() override;
+
+  chromeos::editor_menu::PreTargetHandler& pre_target_handler() {
+    return pre_target_handler_.value();
+  }
+
   const gfx::Rect& context_menu_bounds() const { return context_menu_bounds_; }
 
   views::Widget* widget_for_test() const { return widget_.get(); }
+
+  bool widget_above_context_menu_for_test() {
+    return widget_above_context_menu_;
+  }
 
  private:
   // views::ViewObserver:
@@ -73,7 +88,7 @@ class ReadWriteCardsUiController : public views::ViewObserver {
 
   // Reorder the child views inside `widget_`, depending on if the widget is
   // above or below the context menu.
-  void ReorderChildViews(bool widget_above_context_menu);
+  void ReorderChildViews();
 
   // Re-layout if widget is shown.
   void MaybeRelayout();
@@ -91,6 +106,11 @@ class ReadWriteCardsUiController : public views::ViewObserver {
       quick_answers_ui_observation_{this};
   base::ScopedObservation<views::View, ReadWriteCardsUiController>
       mahi_ui_observation_{this};
+
+  std::optional<chromeos::editor_menu::PreTargetHandler> pre_target_handler_;
+
+  // Indicates whether the widget is placed above or below the context menu.
+  bool widget_above_context_menu_ = false;
 
   views::UniqueWidgetPtr widget_;
 

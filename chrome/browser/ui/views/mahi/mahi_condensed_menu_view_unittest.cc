@@ -16,9 +16,12 @@
 #include "testing/gtest/include/gtest/gtest.h"
 #include "ui/display/screen.h"
 #include "ui/events/test/event_generator.h"
+#include "ui/events/test/test_event.h"
 #include "ui/gfx/geometry/rect.h"
+#include "ui/views/controls/button/label_button.h"
 #include "ui/views/test/views_test_base.h"
 #include "ui/views/view.h"
+#include "ui/views/view_utils.h"
 #include "ui/views/widget/widget.h"
 #include "ui/views/widget/widget_utils.h"
 
@@ -50,6 +53,7 @@ TEST_F(MahiCondensedMenuViewTest, NotifiesWebContentsManagerOnClick) {
   std::unique_ptr<views::Widget> menu_widget = CreateTestWidget();
   auto* condensed_menu_view =
       menu_widget->SetContentsView(std::make_unique<MahiCondensedMenuView>());
+  menu_widget->Show();
 
   base::HistogramTester histogram;
   histogram.ExpectBucketCount(kMahiContextMenuButtonClickHistogram,
@@ -65,8 +69,8 @@ TEST_F(MahiCondensedMenuViewTest, NotifiesWebContentsManagerOnClick) {
           Eq(::mahi::ButtonType::kSummary), /*question=*/Eq(u"")))
       .Times(1);
 
-  ui::test::EventGenerator event_generator(
-      views::GetRootWindow(menu_widget.get()));
+  ui::test::EventGenerator event_generator(GetContext(),
+                                           menu_widget->GetNativeWindow());
   event_generator.MoveMouseTo(
       condensed_menu_view->GetBoundsInScreen().CenterPoint());
   event_generator.ClickLeftButton();

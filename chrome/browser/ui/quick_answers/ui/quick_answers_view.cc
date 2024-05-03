@@ -234,8 +234,6 @@ QuickAnswersView::QuickAnswersView(
       controller_(std::move(controller)),
       title_(title),
       is_internal_(is_internal),
-      quick_answers_view_handler_(
-          std::make_unique<chromeos::editor_menu::PreTargetHandler>(this)),
       focus_search_(std::make_unique<chromeos::editor_menu::FocusSearch>(
           this,
           base::BindRepeating(&QuickAnswersView::GetFocusableViews,

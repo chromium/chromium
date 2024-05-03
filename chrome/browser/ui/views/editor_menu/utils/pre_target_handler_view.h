@@ -9,6 +9,7 @@
 
 #include "base/memory/weak_ptr.h"
 #include "base/scoped_observation.h"
+#include "chrome/browser/ui/views/editor_menu/utils/pre_target_handler.h"
 #include "chrome/browser/ui/views/editor_menu/utils/utils.h"
 #include "ui/base/metadata/metadata_header_macros.h"
 #include "ui/views/view.h"
@@ -20,11 +21,11 @@ class Widget;
 
 namespace chromeos::editor_menu {
 
-class PreTargetHandler;
-
 // A view that is attached with `chromeos::editor_menu::PreTargetHandler` and
 // control the lifecycle of it.
-class PreTargetHandlerView : public views::View, public views::WidgetObserver {
+class PreTargetHandlerView : public views::View,
+                             public views::WidgetObserver,
+                             public PreTargetHandler::Delegate {
   METADATA_HEADER(PreTargetHandlerView, views::View)
 
  public:
@@ -41,6 +42,10 @@ class PreTargetHandlerView : public views::View, public views::WidgetObserver {
   // views::WidgetObserver:
   void OnWidgetDestroying(views::Widget* widget) override;
   void OnWidgetActivationChanged(views::Widget* widget, bool active) override;
+
+  // chromeos::editor_menu::PreTargetHandler::Delegate:
+  views::View* GetRootView() override;
+  std::vector<views::View*> GetTraversableViewsByUpDownKeys() override;
 
   void ResetPreTargetHandler();
 

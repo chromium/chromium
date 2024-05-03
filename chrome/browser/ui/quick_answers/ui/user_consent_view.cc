@@ -6,8 +6,10 @@
 
 #include "base/command_line.h"
 #include "base/functional/bind.h"
+#include "chrome/browser/ui/chromeos/read_write_cards/read_write_cards_ui_controller.h"
 #include "chrome/browser/ui/chromeos/read_write_cards/read_write_cards_view.h"
 #include "chrome/browser/ui/quick_answers/quick_answers_ui_controller.h"
+#include "chrome/browser/ui/views/editor_menu/utils/pre_target_handler.h"
 #include "chromeos/components/quick_answers/public/cpp/quick_answers_state.h"
 #include "chromeos/strings/grit/chromeos_strings.h"
 #include "components/vector_icons/vector_icons.h"
@@ -126,7 +128,6 @@ UserConsentView::UserConsentView(
     const std::u16string& intent_text,
     base::WeakPtr<QuickAnswersUiController> controller)
     : chromeos::ReadWriteCardsView(controller->GetReadWriteCardsUiController()),
-      event_handler_(this),
       controller_(std::move(controller)),
       focus_search_(this,
                     base::BindRepeating(&UserConsentView::GetFocusableViews,
@@ -292,16 +293,17 @@ void UserConsentView::InitButtonBar() {
   // Allow button
   auto allow_button = std::make_unique<CustomizedLabelButton>(
       base::BindRepeating(
-          [](chromeos::editor_menu::PreTargetHandler* handler,
-             base::WeakPtr<QuickAnswersUiController> controller) {
-            // When user consent is accepted, QuickAnswersView will be
-            // displayed instead of dismissing the menu.
-            handler->set_dismiss_anchor_menu_on_view_closed(false);
+          [](base::WeakPtr<QuickAnswersUiController> controller) {
             if (controller) {
+              // When user consent is accepted, QuickAnswersView will be
+              // displayed instead of dismissing the menu.
+              controller->GetReadWriteCardsUiController()
+                  .pre_target_handler()
+                  .set_dismiss_anchor_menu_on_view_closed(false);
               controller->OnUserConsentResult(true);
             }
           },
-          &event_handler_, controller_),
+          controller_),
       l10n_util::GetStringUTF16(
           IDS_QUICK_ANSWERS_USER_CONSENT_VIEW_ALLOW_BUTTON),
       ShouldUseCompactButtonLayout(context_menu_bounds().width()));

@@ -4,12 +4,14 @@
 
 #include "chrome/browser/ui/chromeos/read_write_cards/read_write_cards_ui_controller.h"
 
+#include <algorithm>
 #include <memory>
 
 #include "base/check_is_test.h"
 #include "base/check_op.h"
 #include "base/no_destructor.h"
 #include "chrome/browser/ui/chromeos/read_write_cards/read_write_cards_view.h"
+#include "chrome/browser/ui/views/editor_menu/utils/pre_target_handler.h"
 #include "ui/aura/window.h"
 #include "ui/base/ui_base_types.h"
 #include "ui/display/screen.h"
@@ -172,14 +174,14 @@ void ReadWriteCardsUiController::Relayout() {
   gfx::Point widget_origin_with_maximum_size =
       GetWidgetOrigin(context_menu_bounds_, maximum_widget_size,
                       /*above_context_menu=*/true);
-  bool above_context_menu = display::Screen::GetScreen()
-                                ->GetDisplayMatching(context_menu_bounds_)
-                                .work_area()
-                                .Contains(widget_origin_with_maximum_size);
-  gfx::Point widget_origin =
-      GetWidgetOrigin(context_menu_bounds_, widget_size, above_context_menu);
+  widget_above_context_menu_ = display::Screen::GetScreen()
+                                   ->GetDisplayMatching(context_menu_bounds_)
+                                   .work_area()
+                                   .Contains(widget_origin_with_maximum_size);
+  gfx::Point widget_origin = GetWidgetOrigin(context_menu_bounds_, widget_size,
+                                             widget_above_context_menu_);
 
-  ReorderChildViews(above_context_menu);
+  ReorderChildViews();
 
   gfx::Rect bounds(widget_origin, widget_size);
 #if BUILDFLAG(IS_CHROMEOS_ASH)
@@ -201,6 +203,32 @@ void ReadWriteCardsUiController::SetContextMenuBounds(
   }
 
   MaybeRelayout();
+}
+
+views::View* ReadWriteCardsUiController::GetRootView() {
+  return widget_ ? widget_->GetContentsView() : nullptr;
+}
+
+std::vector<views::View*>
+ReadWriteCardsUiController::GetTraversableViewsByUpDownKeys() {
+  std::vector<views::View*> views;
+  if (!widget_) {
+    return views;
+  }
+
+  if (quick_answers_ui()) {
+    views.emplace_back(quick_answers_ui());
+  }
+
+  if (mahi_ui()) {
+    views.emplace_back(mahi_ui());
+  }
+
+  if (!widget_above_context_menu_) {
+    std::reverse(views.begin(), views.end());
+  }
+
+  return views;
 }
 
 void ReadWriteCardsUiController::OnViewIsDeleting(views::View* view) {
@@ -239,6 +267,8 @@ void ReadWriteCardsUiController::MaybeCreateWidget() {
             .SetBackground(views::CreateSolidBackground(SK_ColorTRANSPARENT))
             .Build());
 
+    pre_target_handler_.emplace(/*delegate=*/*this);
+
     // Allow tooltips to be shown despite menu-controller owning capture.
     widget_->SetNativeWindowProperty(
         views::TooltipManager::kGroupingPropertyKey,
@@ -254,11 +284,11 @@ void ReadWriteCardsUiController::MaybeHideWidget() {
   }
 
   // Close the widget if all the views are removed.
+  pre_target_handler_.reset();
   widget_.reset();
 }
 
-void ReadWriteCardsUiController::ReorderChildViews(
-    bool widget_above_context_menu) {
+void ReadWriteCardsUiController::ReorderChildViews() {
   // No need to reorder if one of the view is not set.
   if (!quick_answers_ui() || !mahi_ui()) {
     return;
@@ -269,7 +299,7 @@ void ReadWriteCardsUiController::ReorderChildViews(
 
   // Quick Answers view should be on top if the widget is above the context
   // menu. The order should be reversed otherwise.
-  if (widget_above_context_menu) {
+  if (widget_above_context_menu_) {
     contents_view->ReorderChildView(quick_answers_ui(), /*index=*/0);
   } else {
     contents_view->ReorderChildView(mahi_ui(), /*index=*/0);

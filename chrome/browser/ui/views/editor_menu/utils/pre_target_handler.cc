@@ -4,13 +4,17 @@
 
 #include "chrome/browser/ui/views/editor_menu/utils/pre_target_handler.h"
 
+#include <cstddef>
+
 #include "base/containers/adapters.h"
 #include "chrome/browser/ui/views/editor_menu/utils/utils.h"
 #include "ui/aura/env.h"
+#include "ui/events/keycodes/keyboard_codes_posix.h"
 #include "ui/views/controls/menu/menu_controller.h"
 #include "ui/views/controls/menu/menu_item_view.h"
 #include "ui/views/controls/menu/submenu_view.h"
 #include "ui/views/focus/external_focus_tracker.h"
+#include "ui/views/focus/focus_manager.h"
 #include "ui/views/view.h"
 #include "ui/views/view_tracker.h"
 #include "ui/views/widget/tooltip_manager.h"
@@ -27,8 +31,8 @@ bool IsEditorOrMahiDefaultMenu(CardType card_type) {
 
 }  // namespace
 
-PreTargetHandler::PreTargetHandler(views::View* view, const CardType& type)
-    : view_(view), card_type_(type) {
+PreTargetHandler::PreTargetHandler(Delegate& delegate, const CardType& type)
+    : delegate_(delegate), card_type_(type) {
   Init();
 }
 
@@ -51,8 +55,8 @@ void PreTargetHandler::Init() {
   // here as well to intercept events for QuickAnswersView.
   aura::Env::GetInstance()->AddPreTargetHandler(
       this, ui::EventTarget::Priority::kSystem);
-  context_menu_focus_tracker_ =
-      std::make_unique<views::ExternalFocusTracker>(view_.view(), nullptr);
+  context_menu_focus_tracker_ = std::make_unique<views::ExternalFocusTracker>(
+      delegate_->GetRootView(), /*focus_manager=*/nullptr);
 }
 
 void PreTargetHandler::OnEvent(ui::Event* event) {
@@ -70,18 +74,20 @@ void PreTargetHandler::OnEvent(ui::Event* event) {
     return;
   }
 
-  CHECK(view_);
+  auto* root_view = delegate_->GetRootView();
+
+  CHECK(root_view);
 
   // Clone event to forward down the view-hierarchy.
   auto clone = event->Clone();
   ui::Event::DispatcherApi(clone.get()).set_target(event->target());
   auto* to_dispatch = clone->AsLocatedEvent();
   auto location = to_dispatch->target()->GetScreenLocation(*to_dispatch);
-  bool contains_location = view_.view()->GetBoundsInScreen().Contains(location);
+  bool contains_location = root_view->GetBoundsInScreen().Contains(location);
 
   // Use a local `ViewTracker` in case `this` is deleted after
   // `DoDispatchEvent()` is run.
-  views::ViewTracker view_tracker(view_.view());
+  views::ViewTracker view_tracker(root_view);
 
   // `ET_MOUSE_MOVED` events outside the top-view's bounds are also dispatched
   // to clear any set hover-state.
@@ -89,9 +95,9 @@ void PreTargetHandler::OnEvent(ui::Event* event) {
                          to_dispatch->type() == ui::EventType::ET_MOUSE_MOVED);
   if (dispatch_event) {
     // Convert to local coordinates and forward to the top-view.
-    views::View::ConvertPointFromScreen(view_.view(), &location);
+    views::View::ConvertPointFromScreen(root_view, &location);
     to_dispatch->set_location(location);
-    ui::Event::DispatcherApi(to_dispatch).set_target(view_.view());
+    ui::Event::DispatcherApi(to_dispatch).set_target(root_view);
 
     // Convert touch-event to gesture before dispatching since views do not
     // process touch-events.
@@ -103,24 +109,25 @@ void PreTargetHandler::OnEvent(ui::Event* event) {
       to_dispatch = gesture_event.get();
     }
 
-    DoDispatchEvent(view_.view(), to_dispatch);
+    DoDispatchEvent(root_view, to_dispatch);
 
     // Clicks inside Quick-Answers views can dismiss the menu since they are
     // outside menu-bounds and are thus not propagated to it to prevent so.
-    // Active menu instance will instead be cancelled when |view_| is deleted.
+    // Active menu instance will instead be cancelled when |root_view| is
+    // deleted.
     if (event->type() != ui::ET_MOUSE_MOVED) {
       event->StopPropagation();
     }
   }
 
-  // After `DoDispatchEvent()` is run, the event dispatch can cause `view_` and
-  // `this` to be deleted.
+  // After `DoDispatchEvent()` is run, the event dispatch can cause `root_view`
+  // and `this` to be deleted.
   if (!view_tracker) {
     return;
   }
 
   // Show tooltips.
-  auto* tooltip_manager = view_.view()->GetWidget()->GetTooltipManager();
+  auto* tooltip_manager = root_view->GetWidget()->GetTooltipManager();
   if (tooltip_manager) {
     tooltip_manager->UpdateTooltip();
   }
@@ -175,11 +182,13 @@ void PreTargetHandler::ProcessKeyEvent(ui::KeyEvent* key_event) {
     return;
   }
 
-  CHECK(view_);
+  auto* root_view = delegate_->GetRootView();
 
-  auto* focus_manager = view_.view()->GetFocusManager();
+  CHECK(root_view);
+
+  auto* focus_manager = root_view->GetFocusManager();
   auto* currently_focused_view = focus_manager->GetFocusedView();
-  bool view_has_pane_focus = view_.view()->Contains(currently_focused_view);
+  bool view_has_pane_focus = root_view->Contains(currently_focused_view);
 
   // |view_| will insert itself between the cyclic keyboard traversal order of
   // the last and the first menu items of the active menu by commandeering the
@@ -203,7 +212,7 @@ void PreTargetHandler::ProcessKeyEvent(ui::KeyEvent* key_event) {
     }
     case ui::VKEY_TAB: {
       if (IsEditorOrMahiDefaultMenu(card_type_) && !view_has_pane_focus) {
-        view_.view()->RequestFocus();
+        root_view->RequestFocus();
         key_event->StopPropagation();
       }
       return;
@@ -236,12 +245,40 @@ void PreTargetHandler::ProcessKeyUpAndDown(ui::KeyEvent* key_event) {
   auto* active_menu = views::MenuController::GetActiveInstance();
   CHECK(active_menu);
 
-  auto* focus_manager = view_.view()->GetFocusManager();
-  bool view_has_pane_focus =
-      view_.view()->Contains(focus_manager->GetFocusedView());
+  auto* root_view = delegate_->GetRootView();
+  CHECK(root_view);
 
-  if (view_has_pane_focus) {
-    MoveFocusToContextMenu();
+  std::vector<views::View*> views =
+      delegate_->GetTraversableViewsByUpDownKeys();
+  if (views.empty()) {
+    return;
+  }
+
+  auto* focus_manager = root_view->GetFocusManager();
+  auto* currently_focused_view = focus_manager->GetFocusedView();
+  auto key_code = key_event->key_code();
+
+  for (size_t index = 0; index < views.size(); ++index) {
+    auto* view = views[index];
+    CHECK(view);
+
+    // Only handle the case that view has focus.
+    if (view != currently_focused_view &&
+        !view->Contains(currently_focused_view)) {
+      continue;
+    }
+
+    // Move focus to context menu if needed if the view is the first or last
+    // view on the list.
+    if ((index == 0 && key_code == ui::VKEY_UP) ||
+        (index == views.size() - 1 && key_code == ui::VKEY_DOWN)) {
+      MoveFocusToContextMenu();
+      return;
+    }
+
+    // Move focus to the previous/next view depending on the key code.
+    MoveFocusTo(views[index + (key_code == ui::VKEY_UP ? -1 : 1)], key_event,
+                focus_manager);
     return;
   }
 
@@ -252,34 +289,37 @@ void PreTargetHandler::ProcessKeyUpAndDown(ui::KeyEvent* key_event) {
   }
 
   auto* const parent = selected_item->GetParentMenuItem();
-  bool view_should_gain_focus = false;
-  auto key_code = key_event->key_code();
-  if (parent) {
-    // Check if the item is within the outer-most menu, since we do not want
-    // the selection to loop back to |view_| for submenus.
-    if (parent->GetParentMenuItem()) {
-      return;
-    }
 
-    // |view_| should gain focus only when the selected item is first or
-    // last within the menu.
-    bool first_item_selected =
-        selected_item == parent->GetSubmenu()->children().front();
-    bool last_item_selected =
-        selected_item == parent->GetSubmenu()->children().back();
-    view_should_gain_focus = (first_item_selected || last_item_selected) &&
-                             first_item_selected == (key_code == ui::VKEY_UP);
-  } else {
-    // Selected menu-item will have no parent only when there are no nested
-    // menus and no items are visibly selected, and |view_| should gain
-    // focus for Up-key press in such scenario.
-    view_should_gain_focus = key_code == ui::VKEY_UP;
+  if (!parent) {
+    // The root menu item (which doesn't have a parent) can be marked as
+    // selected when there are no nested menus and no items are visibly
+    // selected. In this case, the first view in the list should gain focus for
+    // Up-key press.
+    if (key_code == ui::VKEY_UP) {
+      MoveFocusTo(views[0], key_event, focus_manager);
+    }
+    return;
   }
 
-  // Focus |view_| if compatible key-event should transfer the selection to
-  // it from within the menu.
-  if (view_should_gain_focus) {
-    MoveFocusTo(view_.view(), key_event, focus_manager);
+  // Check if the item is within the outer-most menu, since we do not want
+  // the selection to loop back to any views for submenus.
+  if (parent->GetParentMenuItem()) {
+    return;
+  }
+
+  // Handle key events that transition from context menu to the traversable
+  // view.
+  bool first_item_selected =
+      selected_item == parent->GetSubmenu()->children().front();
+  if (first_item_selected && key_code == ui::VKEY_UP) {
+    MoveFocusTo(views.back(), key_event, focus_manager);
+    return;
+  }
+
+  bool last_item_selected =
+      selected_item == parent->GetSubmenu()->children().back();
+  if (last_item_selected && key_code == ui::VKEY_DOWN) {
+    MoveFocusTo(views.front(), key_event, focus_manager);
   }
 }
 
@@ -289,11 +329,13 @@ void PreTargetHandler::MoveFocusToContextMenu() {
   context_menu_focus_tracker_->FocusLastFocusedExternalView();
   context_menu_focus_tracker_->SetFocusManager(nullptr);
 
-  CHECK(view_);
-  auto* focus_manager = view_.view()->GetFocusManager();
+  auto* root_view = delegate_->GetRootView();
+  CHECK(root_view);
+
+  auto* focus_manager = root_view->GetFocusManager();
 
   // Explicitly lose focus if restoring to last focused did not work.
-  if (view_.view()->Contains(focus_manager->GetFocusedView())) {
+  if (root_view->Contains(focus_manager->GetFocusedView())) {
     focus_manager->SetFocusedView(nullptr);
   }
 }

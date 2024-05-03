@@ -66,7 +66,8 @@ EditorMenuPromoCardView::EditorMenuPromoCardView(
     const gfx::Rect& anchor_view_bounds,
     EditorMenuViewDelegate* delegate)
     : pre_target_handler_(
-          std::make_unique<PreTargetHandler>(this, CardType::kEditorMenu)),
+          std::make_unique<PreTargetHandler>(/*delegate=*/*this,
+                                             CardType::kEditorMenu)),
       delegate_(delegate) {
   CHECK(delegate_);
   InitLayout();
@@ -173,6 +174,15 @@ void EditorMenuPromoCardView::OnWidgetVisibilityChanged(views::Widget* widget,
 void EditorMenuPromoCardView::UpdateBounds(
     const gfx::Rect& anchor_view_bounds) {
   GetWidget()->SetBounds(GetEditorMenuBounds(anchor_view_bounds, this));
+}
+
+views::View* EditorMenuPromoCardView::GetRootView() {
+  return this;
+}
+
+std::vector<views::View*>
+EditorMenuPromoCardView::GetTraversableViewsByUpDownKeys() {
+  return {this};
 }
 
 void EditorMenuPromoCardView::InitLayout() {
