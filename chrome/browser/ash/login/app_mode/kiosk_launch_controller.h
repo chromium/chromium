@@ -6,6 +6,7 @@
 #define CHROME_BROWSER_ASH_LOGIN_APP_MODE_KIOSK_LAUNCH_CONTROLLER_H_
 
 #include <memory>
+#include <optional>
 
 #include "ash/public/cpp/login_accelerators.h"
 #include "base/functional/callback_forward.h"
@@ -107,11 +108,17 @@ class KioskLaunchController : public KioskAppLauncher::Observer,
           const KioskAppId&,
           KioskAppLauncher::NetworkDelegate*)>;
 
+  using LaunchCompleteCallback =
+      base::OnceCallback<void(std::optional<KioskAppLaunchError::Error> error)>;
+
   explicit KioskLaunchController(OobeUI* oobe_ui);
   KioskLaunchController(
       LoginDisplayHost* host,
       AppLaunchSplashScreenView* splash_screen,
       LoadProfileCallback profile_loader,
+      LaunchCompleteCallback done_callback,
+      base::OnceClosure attempt_relaunch,
+      base::OnceClosure attempt_logout,
       KioskAppLauncherFactory app_launcher_factory,
       std::unique_ptr<NetworkUiController::NetworkMonitor> network_monitor,
       std::unique_ptr<AcceleratorController> accelerator_controller);
@@ -123,6 +130,8 @@ class KioskLaunchController : public KioskAppLauncher::Observer,
   // when the returned objects are destroyed.
   [[nodiscard]] static base::AutoReset<bool> SkipSplashScreenWaitForTesting();
   [[nodiscard]] static base::AutoReset<bool> BlockAppLaunchForTesting();
+  [[nodiscard]] static base::AutoReset<bool>
+  BlockSystemSessionCreationForTesting();
   [[nodiscard]] static base::AutoReset<bool> BlockExitOnFailureForTesting();
 
   void Start(const KioskAppId& kiosk_app_id, bool auto_launch);
@@ -199,6 +208,9 @@ class KioskLaunchController : public KioskAppLauncher::Observer,
   void CleanUp();
   void LaunchApp();
 
+  void ReportSuccess();
+  void ReportError(KioskAppLaunchError::Error error);
+
   bool auto_launch_ = false;  // Whether current app is being auto-launched.
 
   // Current state of the controller.
@@ -220,6 +232,15 @@ class KioskLaunchController : public KioskAppLauncher::Observer,
 
   // Whether the controller has already been cleaned-up.
   bool cleaned_up_ = false;
+
+  // Callback invoked when the launch is complete. The `error` field indicates
+  // if the launch was successful or not.
+  LaunchCompleteCallback done_callback_;
+
+  // When invoked will attempt to log out and return to the sign-in screen.
+  base::OnceClosure attempt_logout_;
+  // When invoked will attempt to restart the device.
+  base::OnceClosure attempt_relaunch_;
 
   // Handle to the job returned by `profile_loader_`.
   std::unique_ptr<CancellableJob> profile_loader_handle_;
