@@ -537,6 +537,8 @@ src/webgpu/shader/execution/expression/call/builtin/fract.cache.ts
 src/webgpu/shader/execution/expression/call/builtin/fract.spec.ts
 src/webgpu/shader/execution/expression/call/builtin/frexp.cache.ts
 src/webgpu/shader/execution/expression/call/builtin/frexp.spec.ts
+src/webgpu/shader/execution/expression/call/builtin/fwidth.cache.ts
+src/webgpu/shader/execution/expression/call/builtin/fwidth.ts
 src/webgpu/shader/execution/expression/call/builtin/fwidth.spec.ts
 src/webgpu/shader/execution/expression/call/builtin/fwidthCoarse.spec.ts
 src/webgpu/shader/execution/expression/call/builtin/fwidthFine.spec.ts
@@ -717,9 +719,7 @@ src/webgpu/shader/validation/decl/context_dependent_resolution.spec.ts
 src/webgpu/shader/validation/decl/let.spec.ts
 src/webgpu/shader/validation/decl/override.spec.ts
 src/webgpu/shader/validation/decl/util.ts
-src/webgpu/shader/validation/decl/ptr_spelling.spec.ts
 src/webgpu/shader/validation/decl/var.spec.ts
-src/webgpu/shader/validation/decl/var_access_mode.spec.ts
 src/webgpu/shader/validation/expression/overload_resolution.spec.ts
 src/webgpu/shader/validation/expression/precedence.spec.ts
 src/webgpu/shader/validation/expression/access/array.spec.ts
@@ -796,6 +796,7 @@ src/webgpu/shader/validation/expression/call/builtin/pow.spec.ts
 src/webgpu/shader/validation/expression/call/builtin/quantizeToF16.spec.ts
 src/webgpu/shader/validation/expression/call/builtin/radians.spec.ts
 src/webgpu/shader/validation/expression/call/builtin/reflect.spec.ts
+src/webgpu/shader/validation/expression/call/builtin/refract.spec.ts
 src/webgpu/shader/validation/expression/call/builtin/reverseBits.spec.ts
 src/webgpu/shader/validation/expression/call/builtin/round.spec.ts
 src/webgpu/shader/validation/expression/call/builtin/saturate.spec.ts
@@ -824,6 +825,7 @@ src/webgpu/shader/validation/expression/call/builtin/textureSampleCompareLevel.s
 src/webgpu/shader/validation/expression/call/builtin/textureSampleGrad.spec.ts
 src/webgpu/shader/validation/expression/call/builtin/textureSampleLevel.spec.ts
 src/webgpu/shader/validation/expression/call/builtin/textureStore.spec.ts
+src/webgpu/shader/validation/expression/call/builtin/transpose.spec.ts
 src/webgpu/shader/validation/expression/call/builtin/trunc.spec.ts
 src/webgpu/shader/validation/expression/call/builtin/unpack2x16float.spec.ts
 src/webgpu/shader/validation/expression/call/builtin/unpack2x16snorm.spec.ts
@@ -832,6 +834,7 @@ src/webgpu/shader/validation/expression/call/builtin/unpack4x8snorm.spec.ts
 src/webgpu/shader/validation/expression/call/builtin/unpack4x8unorm.spec.ts
 src/webgpu/shader/validation/expression/call/builtin/unpack4xI8.spec.ts
 src/webgpu/shader/validation/expression/call/builtin/unpack4xU8.spec.ts
+src/webgpu/shader/validation/expression/call/builtin/value_constructor.spec.ts
 src/webgpu/shader/validation/expression/call/builtin/workgroupUniformLoad.spec.ts
 src/webgpu/shader/validation/expression/matrix/add_sub.spec.ts
 src/webgpu/shader/validation/expression/matrix/and_or_xor.spec.ts
@@ -847,7 +850,6 @@ src/webgpu/shader/validation/extension/pointer_composite_access.spec.ts
 src/webgpu/shader/validation/extension/readonly_and_readwrite_storage_textures.spec.ts
 src/webgpu/shader/validation/functions/alias_analysis.spec.ts
 src/webgpu/shader/validation/functions/restrictions.spec.ts
-src/webgpu/shader/validation/parse/align.spec.ts
 src/webgpu/shader/validation/parse/attribute.spec.ts
 src/webgpu/shader/validation/parse/binary_ops.spec.ts
 src/webgpu/shader/validation/parse/blankspace.spec.ts
@@ -880,8 +882,8 @@ src/webgpu/shader/validation/parse/source.spec.ts
 src/webgpu/shader/validation/parse/statement_behavior.spec.ts
 src/webgpu/shader/validation/parse/switch.spec.ts
 src/webgpu/shader/validation/parse/unary_ops.spec.ts
-src/webgpu/shader/validation/parse/var_and_let.spec.ts
 src/webgpu/shader/validation/parse/while.spec.ts
+src/webgpu/shader/validation/shader_io/align.spec.ts
 src/webgpu/shader/validation/shader_io/binding.spec.ts
 src/webgpu/shader/validation/shader_io/util.ts
 src/webgpu/shader/validation/shader_io/builtins.spec.ts
@@ -937,6 +939,7 @@ src/webgpu/web_platform/reftests/canvas_clear.html.ts
 src/webgpu/web_platform/reftests/canvas_colorspace.html.ts
 src/webgpu/web_platform/reftests/canvas_complex.html.ts
 src/webgpu/web_platform/reftests/canvas_composite_alpha.html.ts
+src/webgpu/web_platform/reftests/canvas_display_after_device_lost.html.ts
 src/webgpu/web_platform/reftests/canvas_image_rendering.html.ts
 src/webgpu/web_platform/reftests/create-pattern-data-url.ts
 src/webgpu/web_platform/reftests/delay_get_texture.html.ts
