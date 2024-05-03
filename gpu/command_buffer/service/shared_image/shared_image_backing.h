@@ -205,10 +205,24 @@ class GPU_GLES2_EXPORT SharedImageBacking {
   // pixmap per plane.
   virtual bool ReadbackToMemory(const std::vector<SkPixmap>& pixmaps);
 
-  // Copy from the backing's GPU texture to its GpuMemoryBuffer if present. This
-  // is needed on Windows where the renderer process can only create shared
-  // memory GMBs and an explicit copy is needed. Returns true on success.
+  // Performs asynchronous readback of pixels from GPU texture into memory.
+  // `pixmaps` should have one pixmap per plane.
+  virtual void ReadbackToMemoryAsync(const std::vector<SkPixmap>& pixmaps,
+                                     base::OnceCallback<void(bool)> callback);
+
+  // Copy from the backing's GPU texture to its GpuMemoryBuffer if present.
+  // Returns whether the copy was successful. The copy, if successful, is
+  // complete when this returns. This is needed on Windows where the renderer
+  // process can only create shared memory GMBs and an explicit copy is needed.
   virtual bool CopyToGpuMemoryBuffer();
+
+  // Copy from the backing's GPU texture to its GpuMemoryBuffer if present.
+  // Runs `callback` with copy success status. The copy, if successful, is
+  // complete when the callback runs. Necessary on platforms like Windows where
+  // we use shared memory GMBs for readback from D3D texture shared images.
+  // Returns true on success.
+  virtual void CopyToGpuMemoryBufferAsync(
+      base::OnceCallback<void(bool)> callback);
 
   // Present the swap chain corresponding to this backing. Presents only if the
   // backing is the back buffer of the swap chain. Returns true on success.

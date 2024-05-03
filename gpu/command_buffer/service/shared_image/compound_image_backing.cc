@@ -524,7 +524,11 @@ CompoundImageBacking::CompoundImageBacking(
       base::Difference(AccessStreamSet::All(), kMemoryStreamSet);
 }
 
-CompoundImageBacking::~CompoundImageBacking() = default;
+CompoundImageBacking::~CompoundImageBacking() {
+  if (pending_copy_to_gmb_callback_) {
+    std::move(pending_copy_to_gmb_callback_).Run(/*success=*/false);
+  }
+}
 
 void CompoundImageBacking::NotifyBeginAccess(SharedImageAccessStream stream,
                                              RepresentationAccessMode mode) {
@@ -592,6 +596,43 @@ bool CompoundImageBacking::CopyToGpuMemoryBuffer() {
   SetLatestContent(SharedImageAccessStream::kMemory, /*write_access=*/false);
 
   return true;
+}
+
+void CompoundImageBacking::CopyToGpuMemoryBufferAsync(
+    base::OnceCallback<void(bool)> callback) {
+  auto& shm_element = GetElement(SharedImageAccessStream::kMemory);
+
+  if (HasLatestContent(shm_element)) {
+    std::move(callback).Run(true);
+    return;
+  }
+
+  if (pending_copy_to_gmb_callback_) {
+    DLOG(ERROR) << "Existing CopyToGpuMemoryBuffer operation pending";
+    std::move(callback).Run(false);
+    return;
+  }
+
+  auto* gpu_backing = elements_[1].GetBacking();
+  if (!gpu_backing) {
+    DLOG(ERROR) << "Failed to copy from GPU backing to shared memory";
+    std::move(callback).Run(false);
+    return;
+  }
+
+  pending_copy_to_gmb_callback_ = std::move(callback);
+
+  gpu_backing->ReadbackToMemoryAsync(
+      GetSharedMemoryPixmaps(),
+      base::BindOnce(&CompoundImageBacking::OnCopyToGpuMemoryBufferComplete,
+                     base::Unretained(this)));
+}
+
+void CompoundImageBacking::OnCopyToGpuMemoryBufferComplete(bool success) {
+  if (success) {
+    SetLatestContent(SharedImageAccessStream::kMemory, /*write_access=*/false);
+  }
+  std::move(pending_copy_to_gmb_callback_).Run(success);
 }
 
 gfx::Rect CompoundImageBacking::ClearedRect() const {

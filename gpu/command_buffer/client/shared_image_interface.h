@@ -249,6 +249,16 @@ class GPU_EXPORT SharedImageInterface
   virtual void CopyToGpuMemoryBuffer(const SyncToken& sync_token,
                                      const Mailbox& mailbox);
 
+  // Update the GpuMemoryBuffer associated with the shared image |mailbox| after
+  // |sync_token| is released. The |callback| is run denoting if the copy was
+  // successful and the GpuMemoryBuffer is ready to be mapped by the client.
+  // This is needed when the GpuMemoryBuffer is backed by shared memory on
+  // platforms like Windows where the renderer cannot create native GMBs.
+  virtual void CopyToGpuMemoryBufferAsync(
+      const SyncToken& sync_token,
+      const Mailbox& mailbox,
+      base::OnceCallback<void(bool)> callback);
+
   // Destroys the shared image, unregistering its mailbox, after |sync_token|
   // has been released. After this call, the mailbox can't be used to reference
   // the image any more, however if the image was imported into other APIs,

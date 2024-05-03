@@ -90,6 +90,12 @@ class GPU_IPC_SERVICE_EXPORT SharedImageStub : public MemoryTracker {
   bool UpdateSharedImage(const Mailbox& mailbox,
                          gfx::GpuFenceHandle in_fence_handle);
 
+#if BUILDFLAG(IS_WIN)
+  void CopyToGpuMemoryBufferAsync(const Mailbox& mailbox,
+                                  uint32_t release_id,
+                                  base::OnceCallback<void(bool)> callback);
+#endif
+
 #if BUILDFLAG(IS_FUCHSIA)
   void RegisterSysmemBufferCollection(zx::eventpair service_handle,
                                       zx::channel sysmem_token,

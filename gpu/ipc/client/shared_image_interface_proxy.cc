@@ -257,6 +257,16 @@ void SharedImageInterfaceProxy::CopyToGpuMemoryBuffer(
   }
 }
 
+void SharedImageInterfaceProxy::CopyToGpuMemoryBufferAsync(
+    const SyncToken& sync_token,
+    const Mailbox& mailbox,
+    base::OnceCallback<void(bool)> callback) {
+  base::AutoLock lock(lock_);
+  host_->CopyToGpuMemoryBufferAsync(
+      mailbox, GenerateDependenciesFromSyncToken(std::move(sync_token), host_),
+      ++next_release_id_, std::move(callback));
+}
+
 void SharedImageInterfaceProxy::UpdateSharedImage(
     const SyncToken& sync_token,
     scoped_refptr<gfx::D3DSharedFence> d3d_shared_fence,

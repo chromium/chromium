@@ -12,6 +12,7 @@
 #include "base/functional/callback_helpers.h"
 #include "base/memory/ptr_util.h"
 #include "base/memory/raw_ptr.h"
+#include "base/synchronization/waitable_event.h"
 #include "gpu/command_buffer/common/shared_image_trace_utils.h"
 #include "gpu/command_buffer/common/shared_image_usage.h"
 #include "gpu/command_buffer/service/dxgi_shared_handle_manager.h"
@@ -479,23 +480,29 @@ bool D3DImageBacking::UploadFromMemory(const std::vector<SkPixmap>& pixmaps) {
   return true;
 }
 
-bool D3DImageBacking::ReadbackToMemory(const std::vector<SkPixmap>& pixmaps) {
-  DCHECK_EQ(pixmaps.size(), static_cast<size_t>(format().NumberOfPlanes()));
-
+bool D3DImageBacking::CopyToStagingTexture() {
+  TRACE_EVENT0("gpu", "D3DImageBacking::CopyToStagingTexture");
   ID3D11Texture2D* staging_texture = GetOrCreateStagingTexture();
   if (!staging_texture) {
     return false;
   }
+  Microsoft::WRL::ComPtr<ID3D11DeviceContext> device_context;
+  texture_d3d11_device_->GetImmediateContext(&device_context);
+  device_context->CopyResource(staging_texture, d3d11_texture_.Get());
+  return true;
+}
 
-  CHECK(texture_d3d11_device_);
+bool D3DImageBacking::ReadbackFromStagingTexture(
+    const std::vector<SkPixmap>& pixmaps) {
+  TRACE_EVENT0("gpu", "D3DImageBacking::ReadbackFromStagingTexture");
   Microsoft::WRL::ComPtr<ID3D11DeviceContext> device_context;
   texture_d3d11_device_->GetImmediateContext(&device_context);
 
-  device_context->CopyResource(staging_texture, d3d11_texture_.Get());
+  ID3D11Texture2D* staging_texture = GetOrCreateStagingTexture();
 
   D3D11_MAPPED_SUBRESOURCE mapped_resource = {};
   HRESULT hr = device_context->Map(staging_texture, 0, D3D11_MAP_READ, 0,
-                                    &mapped_resource);
+                                   &mapped_resource);
   if (FAILED(hr)) {
     LOG(ERROR) << "Failed to map texture for read. hr=" << std::hex << hr;
     return false;
@@ -523,6 +530,48 @@ bool D3DImageBacking::ReadbackToMemory(const std::vector<SkPixmap>& pixmaps) {
 
   device_context->Unmap(staging_texture, 0);
   return true;
+}
+
+bool D3DImageBacking::ReadbackToMemory(const std::vector<SkPixmap>& pixmaps) {
+  TRACE_EVENT0("gpu", "D3DImageBacking::ReadbackToMemory");
+  return CopyToStagingTexture() && ReadbackFromStagingTexture(pixmaps);
+}
+
+void D3DImageBacking::ReadbackToMemoryAsync(
+    const std::vector<SkPixmap>& pixmaps,
+    base::OnceCallback<void(bool)> callback) {
+  TRACE_EVENT0("gpu", "D3DImageBacking::ReadbackToMemoryAsync");
+
+  if (pending_copy_event_watcher_) {
+    LOG(ERROR) << "Existing ReadbackToMemory operation pending";
+    std::move(callback).Run(false);
+    return;
+  }
+
+  if (!CopyToStagingTexture()) {
+    std::move(callback).Run(false);
+    return;
+  }
+
+  base::WaitableEvent copy_complete_event;
+  Microsoft::WRL::ComPtr<IDXGIDevice2> dxgi_device;
+  texture_d3d11_device_.As(&dxgi_device);
+  dxgi_device->EnqueueSetEvent(copy_complete_event.handle());
+
+  pending_copy_event_watcher_.emplace();
+  CHECK(pending_copy_event_watcher_->StartWatching(
+      &copy_complete_event,
+      base::IgnoreArgs<base::WaitableEvent*>(base::BindOnce(
+          &D3DImageBacking::OnCopyToStagingTextureDone,
+          weak_ptr_factory_.GetWeakPtr(), pixmaps, std::move(callback))),
+      base::SingleThreadTaskRunner::GetCurrentDefault()));
+}
+
+void D3DImageBacking::OnCopyToStagingTextureDone(
+    const std::vector<SkPixmap>& pixmaps,
+    base::OnceCallback<void(bool)> readback_cb) {
+  pending_copy_event_watcher_.reset();
+  std::move(readback_cb).Run(ReadbackFromStagingTexture(pixmaps));
 }
 
 #if BUILDFLAG(USE_DAWN)

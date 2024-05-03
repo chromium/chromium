@@ -133,6 +133,8 @@ class GPU_GLES2_EXPORT SharedImageFactory {
 
 #if BUILDFLAG(IS_WIN)
   bool CopyToGpuMemoryBuffer(const Mailbox& mailbox);
+  bool CopyToGpuMemoryBufferAsync(const Mailbox& mailbox,
+                                  base::OnceCallback<void(bool)> callback);
 #endif
 
   void SetGpuExtraInfo(const gfx::GpuExtraInfo& gpu_info);

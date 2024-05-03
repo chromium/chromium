@@ -116,6 +116,8 @@ class GPU_GLES2_EXPORT CompoundImageBacking : public SharedImageBacking {
   SharedImageBackingType GetType() const override;
   void Update(std::unique_ptr<gfx::GpuFence> in_fence) override;
   bool CopyToGpuMemoryBuffer() override;
+  void CopyToGpuMemoryBufferAsync(
+      base::OnceCallback<void(bool)> callback) override;
   gfx::Rect ClearedRect() const override;
   void SetClearedRect(const gfx::Rect& cleared_rect) override;
   void OnAddSecondaryReference() override;
@@ -216,6 +218,8 @@ class GPU_GLES2_EXPORT CompoundImageBacking : public SharedImageBacking {
                          std::string debug_label,
                          std::unique_ptr<SharedImageBacking>& backing);
 
+  void OnCopyToGpuMemoryBufferComplete(bool success);
+
   uint32_t latest_content_id_ = 1;
 
   // Holds all of the "element" backings that make up this compound backing. For
@@ -226,6 +230,8 @@ class GPU_GLES2_EXPORT CompoundImageBacking : public SharedImageBacking {
   // can't actually support that type of usage, in which case the backing will
   // be null or the ProduceX() call will just fail.
   std::array<ElementHolder, 2> elements_;
+
+  base::OnceCallback<void(bool)> pending_copy_to_gmb_callback_;
 };
 
 }  // namespace gpu

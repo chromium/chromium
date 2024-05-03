@@ -109,6 +109,20 @@ uint32_t GpuChannelHost::EnqueueDeferredMessage(
   return enqueued_deferred_message_id_;
 }
 
+#if BUILDFLAG(IS_WIN)
+void GpuChannelHost::CopyToGpuMemoryBufferAsync(
+    const Mailbox& mailbox,
+    std::vector<SyncToken> sync_token_dependencies,
+    uint32_t release_id,
+    base::OnceCallback<void(bool)> callback) {
+  AutoLock lock(context_lock_);
+  InternalFlush(UINT32_MAX);
+  GetGpuChannel().CopyToGpuMemoryBufferAsync(mailbox,
+                                             std::move(sync_token_dependencies),
+                                             release_id, std::move(callback));
+}
+#endif
+
 void GpuChannelHost::EnsureFlush(uint32_t deferred_message_id) {
   AutoLock lock(context_lock_);
   InternalFlush(deferred_message_id);

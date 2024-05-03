@@ -134,6 +134,14 @@ class GPU_EXPORT GpuChannelHost
                                     gfx::Size* size,
                                     gfx::BufferUsage* buffer_usage);
 
+#if BUILDFLAG(IS_WIN)
+  void CopyToGpuMemoryBufferAsync(
+      const Mailbox& mailbox,
+      std::vector<SyncToken> sync_token_dependencies,
+      uint32_t release_id,
+      base::OnceCallback<void(bool)> callback);
+#endif
+
   // Crashes the GPU process. This functionality is added here because
   // of instability when creating a new tab just to navigate to
   // chrome://gpucrash . This only works when running tests and is

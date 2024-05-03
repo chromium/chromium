@@ -12,6 +12,8 @@
 #include "base/memory/scoped_refptr.h"
 #include "base/memory/unsafe_shared_memory_region.h"
 #include "base/ranges/algorithm.h"
+#include "base/run_loop.h"
+#include "base/test/bind.h"
 #include "base/test/test_timeouts.h"
 #include "cc/test/pixel_comparator.h"
 #include "cc/test/pixel_test_utils.h"
@@ -560,6 +562,7 @@ class D3DImageBackingFactoryTest : public D3DImageBackingFactoryTestBase {
                       bool use_factory_per_plane,
                       bool use_factory_multiplanar);
   void RunCreateSharedImageFromHandleTest(DXGI_FORMAT dxgi_format);
+  void RunCreateFromSharedMemoryMultiplanarTest(bool use_async_copy);
 
 #if BUILDFLAG(USE_DAWN)
   static constexpr wgpu::FeatureName kRequiredFeatures[] = {
@@ -2151,7 +2154,8 @@ TEST_F(D3DImageBackingFactoryTest, CreateFromSharedMemory) {
   }
 }
 
-TEST_F(D3DImageBackingFactoryTest, CreateFromSharedMemoryMultiplanar) {
+void D3DImageBackingFactoryTest::RunCreateFromSharedMemoryMultiplanarTest(
+    bool use_async_copy) {
   constexpr gfx::Size size(32, 32);
   constexpr size_t kDataSize = size.width() * size.height() * 3 / 2;
 
@@ -2268,7 +2272,17 @@ TEST_F(D3DImageBackingFactoryTest, CreateFromSharedMemoryMultiplanar) {
   gl_access.reset();
   gl_representation.reset();
 
-  EXPECT_TRUE(shared_image_ref->CopyToGpuMemoryBuffer());
+  if (use_async_copy) {
+    base::RunLoop run_loop;
+    shared_image_ref->CopyToGpuMemoryBufferAsync(
+        base::BindLambdaForTesting([&](bool succeeded) {
+            EXPECT_TRUE(succeeded);
+            run_loop.Quit();
+        }));
+    run_loop.Run();
+  } else {
+    EXPECT_TRUE(shared_image_ref->CopyToGpuMemoryBuffer());
+  }
 
   {
     base::WritableSharedMemoryMapping shm_mapping = shm_region.Map();
@@ -2291,6 +2305,14 @@ TEST_F(D3DImageBackingFactoryTest, CreateFromSharedMemoryMultiplanar) {
     CheckNV12(overlay_image->nv12_pixmap(), overlay_image->pixmap_stride(),
               size, kYClearValue, kUClearValue, kVClearValue);
   }
+}
+
+TEST_F(D3DImageBackingFactoryTest, CreateFromSharedMemoryMultiplanar) {
+    RunCreateFromSharedMemoryMultiplanarTest(/*use_async_copy=*/false);
+}
+
+TEST_F(D3DImageBackingFactoryTest, CreateFromSharedMemoryMultiplanarAsyncCopy) {
+    RunCreateFromSharedMemoryMultiplanarTest(/*use_async_copy=*/true);
 }
 
 // Verifies that a multi-planar NV12 image can be created without DXGI handle

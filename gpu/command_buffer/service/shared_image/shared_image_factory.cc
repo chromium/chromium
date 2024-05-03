@@ -839,10 +839,23 @@ void SharedImageFactory::RegisterSysmemBufferCollection(
 bool SharedImageFactory::CopyToGpuMemoryBuffer(const Mailbox& mailbox) {
   auto it = shared_images_.find(mailbox);
   if (it == shared_images_.end()) {
-    DLOG(ERROR) << "UpdateSharedImage: Could not find shared image mailbox";
+    DLOG(ERROR) << "CopyToGpuMemoryBuffer: Could not find shared image mailbox";
     return false;
   }
   return (*it)->CopyToGpuMemoryBuffer();
+}
+
+bool SharedImageFactory::CopyToGpuMemoryBufferAsync(
+    const Mailbox& mailbox,
+    base::OnceCallback<void(bool)> callback) {
+  auto it = shared_images_.find(mailbox);
+  if (it == shared_images_.end()) {
+    DLOG(ERROR)
+        << "CopyToGpuMemoryBufferAsync: Could not find shared image mailbox";
+    return false;
+  }
+  (*it)->CopyToGpuMemoryBufferAsync(std::move(callback));
+  return true;
 }
 #endif
 

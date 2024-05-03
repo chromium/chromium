@@ -75,6 +75,11 @@ class MockGpuChannel : public mojom::GpuChannel {
                void(mojo::PendingRemote<gpu::mojom::OverlayStateObserver>,
                     const gpu::Mailbox&,
                     RegisterOverlayStateObserverCallback));
+  MOCK_METHOD4(CopyToGpuMemoryBufferAsync,
+               void(const Mailbox&,
+                    const std::vector<SyncToken>&,
+                    uint32_t,
+                    CopyToGpuMemoryBufferAsyncCallback));
 #endif  // BUILDFLAG(IS_WIN)
   MOCK_METHOD4(WaitForTokenInRange,
                void(int32_t, int32_t, int32_t, WaitForTokenInRangeCallback));

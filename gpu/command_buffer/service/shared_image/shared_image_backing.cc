@@ -114,7 +114,13 @@ SkImageInfo SharedImageBacking::AsSkImageInfo(int plane_index) const {
 }
 
 bool SharedImageBacking::CopyToGpuMemoryBuffer() {
+  NOTREACHED();
   return false;
+}
+
+void SharedImageBacking::CopyToGpuMemoryBufferAsync(
+    base::OnceCallback<void(bool)> callback) {
+  std::move(callback).Run(CopyToGpuMemoryBuffer());
 }
 
 void SharedImageBacking::Update(std::unique_ptr<gfx::GpuFence> in_fence) {}
@@ -129,6 +135,12 @@ bool SharedImageBacking::ReadbackToMemory(
     const std::vector<SkPixmap>& pixmaps) {
   NOTREACHED();
   return false;
+}
+
+void SharedImageBacking::ReadbackToMemoryAsync(
+    const std::vector<SkPixmap>& pixmaps,
+    base::OnceCallback<void(bool)> callback) {
+  std::move(callback).Run(ReadbackToMemory(pixmaps));
 }
 
 bool SharedImageBacking::PresentSwapChain() {

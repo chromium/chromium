@@ -17,6 +17,7 @@
 #include "base/containers/flat_map.h"
 #include "base/memory/scoped_refptr.h"
 #include "base/memory/weak_ptr.h"
+#include "base/synchronization/waitable_event_watcher.h"
 #include "base/types/pass_key.h"
 #include "components/viz/common/resources/shared_image_format.h"
 #include "gpu/command_buffer/service/dxgi_shared_handle_manager.h"
@@ -100,6 +101,8 @@ class GPU_GLES2_EXPORT D3DImageBacking final
   void Update(std::unique_ptr<gfx::GpuFence> in_fence) override;
   bool UploadFromMemory(const std::vector<SkPixmap>& pixmaps) override;
   bool ReadbackToMemory(const std::vector<SkPixmap>& pixmaps) override;
+  void ReadbackToMemoryAsync(const std::vector<SkPixmap>& pixmaps,
+                             base::OnceCallback<void(bool)> callback) override;
   bool PresentSwapChain() override;
 #if BUILDFLAG(USE_DAWN)
   std::unique_ptr<DawnImageRepresentation> ProduceDawn(
@@ -252,6 +255,12 @@ class GPU_GLES2_EXPORT D3DImageBacking final
   // Returns a staging texture for CPU uploads/readback, creating one if needed.
   ID3D11Texture2D* GetOrCreateStagingTexture();
 
+  bool CopyToStagingTexture();
+  bool ReadbackFromStagingTexture(const std::vector<SkPixmap>& pixmaps);
+
+  void OnCopyToStagingTextureDone(const std::vector<SkPixmap>& pixmaps,
+                                  base::OnceCallback<void(bool)> readback_cb);
+
   // Common state tracking for both D3D11 and Dawn access.
   bool ValidateBeginAccess(bool write_access) const;
   void BeginAccessCommon(bool write_access);
@@ -351,6 +360,10 @@ class GPU_GLES2_EXPORT D3DImageBacking final
   // D3DSharedFence::IsSameFenceAsHandle() is true for fence handle from Dawn.
   base::flat_map<WGPUDevice, D3DSharedFenceSet> dawn_signaled_fences_map_;
 #endif  // BUILDFLAG(USE_DAWN)
+
+  std::optional<base::WaitableEventWatcher> pending_copy_event_watcher_;
+
+  base::WeakPtrFactory<D3DImageBacking> weak_ptr_factory_{this};
 };
 
 }  // namespace gpu

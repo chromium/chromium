@@ -248,6 +248,15 @@ interface GpuChannel {
       handle<platform> service_handle, handle<platform> sysmem_token,
       gfx.mojom.BufferFormat format, gfx.mojom.BufferUsage usage,
       bool register_with_image_pipe);
+
+  // Updates the contents of the GpuMemoryBuffer associated with the shared
+  // image. Necessary on platforms like Windows where we use shared memory GMBs
+  // for readback from D3D texture shared images. The copy, if successful, is
+  // complete when the callback runs.
+  [EnableIf=is_win]
+  CopyToGpuMemoryBufferAsync(
+      Mailbox mailbox, array<SyncToken> sync_token_dependencies,
+      uint32 release_id) => (bool success);
 };
 
 // Interface used to issue commands to a specific CommandBuffer instance in the
@@ -652,6 +661,8 @@ struct AddReferenceToSharedImageParams {
 
 // Updates the contents of the GpuMemoryBuffer associated with the shared image.
 // Necessary on platforms like Windows where renderer cannot create native GMBs.
+// The command performs synchronization with the GPU so the copy is complete
+// after the command runs.
 [EnableIf=is_win]
 struct CopyToGpuMemoryBufferParams {
   // The mailbox identifying the shared image which should update its GMB.

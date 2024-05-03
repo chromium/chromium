@@ -78,6 +78,13 @@ void SharedImageInterface::CopyToGpuMemoryBuffer(const SyncToken& sync_token,
   NOTREACHED();
 }
 
+void SharedImageInterface::CopyToGpuMemoryBufferAsync(
+    const SyncToken& sync_token,
+    const Mailbox& mailbox,
+    base::OnceCallback<void(bool)> callback) {
+  NOTREACHED();
+}
+
 void SharedImageInterface::Release() const {
   bool should_destroy = false;
 

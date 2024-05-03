@@ -78,6 +78,9 @@ class SharedImageInterfaceProxy {
 #if BUILDFLAG(IS_WIN)
   void CopyToGpuMemoryBuffer(const SyncToken& sync_token,
                              const Mailbox& mailbox);
+  void CopyToGpuMemoryBufferAsync(const SyncToken& sync_token,
+                                  const Mailbox& mailbox,
+                                  base::OnceCallback<void(bool)> callback);
   void UpdateSharedImage(const SyncToken& sync_token,
                          scoped_refptr<gfx::D3DSharedFence> d3d_shared_fence,
                          const Mailbox& mailbox);

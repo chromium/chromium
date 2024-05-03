@@ -467,6 +467,22 @@ void SharedImageStub::OnCopyToGpuMemoryBuffer(const Mailbox& mailbox,
   sync_point_client_state_->ReleaseFenceSync(release_id);
 }
 
+void SharedImageStub::CopyToGpuMemoryBufferAsync(
+    const Mailbox& mailbox,
+    uint32_t release_id,
+    base::OnceCallback<void(bool)> callback) {
+  TRACE_EVENT0("gpu", "SharedImageStub::CopyToGpuMemoryBufferAsync");
+  auto split_cb = base::SplitOnceCallback(std::move(callback));
+  if (!factory_->CopyToGpuMemoryBufferAsync(mailbox,
+                                            std::move(split_cb.first))) {
+    DLOG(ERROR) << "SharedImageStub: Unable to update shared GMB";
+    std::move(split_cb.second).Run(false);
+    OnError();
+    return;
+  }
+  sync_point_client_state_->ReleaseFenceSync(release_id);
+}
+
 void SharedImageStub::OnCreateSwapChain(
     mojom::CreateSwapChainParamsPtr params) {
   TRACE_EVENT0("gpu", "SharedImageStub::OnCreateSwapChain");
