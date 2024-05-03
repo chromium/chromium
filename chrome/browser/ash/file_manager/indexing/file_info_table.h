@@ -33,7 +33,7 @@ class FileInfoTable {
   // the FileInfo object is populated with the retrieved data.
   // NO CHECK is performed whether the url_id corresponds to the `file_url`
   // field in the `info` object.
-  int64_t GetFileInfo(int64_t url_id, FileInfo* info);
+  int64_t GetFileInfo(int64_t url_id, FileInfo* info) const;
 
   // Attempts to store the given `info` in the table. If successful, it returns
   // the ID of the URL from the `info` object that was used to store the `info`

@@ -1,0 +1,174 @@
+// Copyright 2024 The Chromium Authors
+// Use of this source code is governed by a BSD-style license that can be
+// found in the LICENSE file.
+
+#include "chrome/browser/ash/file_manager/indexing/ram_storage.h"
+
+#include <algorithm>
+#include <cstdint>
+#include <tuple>
+#include <utility>
+
+#include "chrome/browser/ash/file_manager/indexing/match.h"
+
+namespace file_manager {
+
+RamStorage::RamStorage() = default;
+
+RamStorage::~RamStorage() = default;
+
+const std::set<int64_t> RamStorage::GetAugmentedTermIdsForUrl(
+    int64_t url_id) const {
+  auto url_term_it = inverted_posting_lists_.find(url_id);
+  if (url_term_it == inverted_posting_lists_.end()) {
+    return empty_id_set_;
+  }
+  return url_term_it->second;
+}
+
+const std::set<int64_t> RamStorage::GetUrlIdsForAugmentedTermId(
+    int64_t augmented_term_id) const {
+  auto term_match = posting_lists_.find(augmented_term_id);
+  if (term_match == posting_lists_.end()) {
+    return empty_id_set_;
+  }
+  return term_match->second;
+}
+
+int32_t RamStorage::AddToPostingList(int64_t term_id, int64_t url_id) {
+  auto it = posting_lists_.find(term_id);
+  if (it == posting_lists_.end()) {
+    posting_lists_.emplace(std::piecewise_construct,
+                           std::forward_as_tuple(term_id),
+                           std::forward_as_tuple(std::set<int64_t>{url_id}));
+  } else {
+    it->second.insert(url_id);
+  }
+  return 1;
+}
+
+int32_t RamStorage::DeleteFromPostingList(int64_t term_id, int64_t url_id) {
+  auto it = posting_lists_.find(term_id);
+  if (it != posting_lists_.end()) {
+    it->second.erase(url_id);
+    return 1;
+  }
+  return 0;
+}
+
+int64_t RamStorage::GetTermId(const std::string& term_bytes) const {
+  auto it = term_map_.find(term_bytes);
+  if (it != term_map_.end()) {
+    return it->second;
+  }
+  return -1;
+}
+
+int64_t RamStorage::GetOrCreateTermId(const std::string& term_bytes) {
+  int64_t term_id = GetTermId(term_bytes);
+  if (term_id >= 0) {
+    return term_id;
+  }
+  const int64_t this_term_id = term_id_++;
+  term_map_.emplace(std::make_pair(term_bytes, this_term_id));
+  return this_term_id;
+}
+
+int64_t RamStorage::GetAugmentedTermId(const std::string& field_name,
+                                       int64_t term_id) const {
+  std::tuple<std::string, int64_t> augmented_term{field_name, term_id};
+  auto augmented_term_it = augmented_term_map_.find(augmented_term);
+  if (augmented_term_it == augmented_term_map_.end()) {
+    return -1;
+  }
+  return augmented_term_it->second;
+}
+
+int64_t RamStorage::GetOrCreateAugmentedTermId(const std::string& field_name,
+                                               int64_t term_id) {
+  int64_t augmented_term_id = GetAugmentedTermId(field_name, term_id);
+  if (augmented_term_id >= 0) {
+    return augmented_term_id;
+  }
+  int64_t this_augmented_term_id = augmented_term_id_++;
+  augmented_term_map_.emplace(std::make_pair(
+      std::make_tuple(field_name, term_id), this_augmented_term_id));
+  return this_augmented_term_id;
+}
+
+int64_t RamStorage::GetUrlId(const GURL& url) {
+  auto it = url_to_id_.find(url);
+  return (it != url_to_id_.end()) ? it->second : -1;
+}
+
+int64_t RamStorage::GetOrCreateUrlId(const GURL& url) {
+  int64_t url_id = GetUrlId(url);
+  if (url_id >= 0) {
+    return url_id;
+  }
+  int64_t this_url_id = url_id_++;
+  url_to_id_.emplace(std::make_pair(url, this_url_id));
+  return this_url_id;
+}
+
+int64_t RamStorage::DeleteUrl(const GURL& url) {
+  auto it = url_to_id_.find(url);
+  if (it == url_to_id_.end()) {
+    return -1;
+  }
+  const int64_t url_id = it->second;
+  url_to_id_.erase(it);
+  return url_id;
+}
+
+int64_t RamStorage::PutFileInfo(int64_t url_id, const FileInfo& file_info) {
+  DCHECK(url_id == GetUrlId(file_info.file_url));
+  url_id_to_file_info_.emplace(std::make_pair(url_id, file_info));
+  return url_id;
+}
+
+int64_t RamStorage::GetFileInfo(int64_t url_id, FileInfo* file_info) const {
+  auto file_info_it = url_id_to_file_info_.find(url_id);
+  if (file_info_it == url_id_to_file_info_.end()) {
+    return -1;
+  }
+  *file_info = file_info_it->second;
+  return url_id;
+}
+
+int64_t RamStorage::DeleteFileInfo(int64_t url_id) {
+  auto file_info_it = url_id_to_file_info_.find(url_id);
+  if (file_info_it == url_id_to_file_info_.end()) {
+    return -1;
+  }
+  url_id_to_file_info_.erase(file_info_it);
+  return url_id;
+}
+
+void RamStorage::AddAugmentedTermIdsForUrl(const std::set<int64_t>& term_ids,
+                                           int64_t url_id) {
+  for (const int64_t term_id : term_ids) {
+    AddToPostingList(term_id, url_id);
+    AddToTermList(url_id, term_id);
+  }
+}
+
+void RamStorage::AddToTermList(int64_t url_id, int64_t term_id) {
+  auto it = inverted_posting_lists_.find(url_id);
+  if (it == inverted_posting_lists_.end()) {
+    inverted_posting_lists_.emplace(
+        std::piecewise_construct, std::forward_as_tuple(url_id),
+        std::forward_as_tuple(std::set<int64_t>{term_id}));
+  } else {
+    it->second.insert(term_id);
+  }
+}
+
+void RamStorage::DeleteFromTermList(int64_t url_id, int64_t term_id) {
+  auto it = inverted_posting_lists_.find(url_id);
+  if (it != inverted_posting_lists_.end()) {
+    it->second.erase(term_id);
+  }
+}
+
+}  // namespace file_manager

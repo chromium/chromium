@@ -82,7 +82,7 @@ class FileIndexService : public KeyedService, FileIndex {
 
  private:
   // The actual implementation of the index used by this service.
-  std::unique_ptr<FileIndex> file_index_delegate_;
+  std::unique_ptr<FileIndex> file_index_impl_;
 };
 
 }  // namespace file_manager

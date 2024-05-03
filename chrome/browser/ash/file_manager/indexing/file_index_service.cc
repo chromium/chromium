@@ -4,12 +4,37 @@
 
 #include "chrome/browser/ash/file_manager/indexing/file_index_service.h"
 
-#include "chrome/browser/ash/file_manager/indexing/inmemory_file_index.h"
+#include "chrome/browser/ash/file_manager/indexing/file_index_impl.h"
+#include "chrome/browser/ash/file_manager/indexing/ram_storage.h"
 
 namespace file_manager {
 
+// Currently FileIndexService implements FileIndex interface. It also
+// uses FileIndexImpl that implements the same interface to delegate
+// all details to it. This gives us a lean FileIndexService, though
+// in practive all code from FileIndexImpl could be moved here. The
+// current structure of the classes is as follows:
+//
+//      [ File Index  ]
+//      [ (interface) ]
+//             ^
+//             |
+//             +------------------.
+//             |                  |
+//  [ FileIndexService ]----<>[ FileIndexImpl ]
+//                                 |
+//                                 |
+//             [ IndexStorage ]<>--'
+//             [ (interface)  ]
+//                      ^
+//                      |
+//               -------+--------
+//               |               |
+//        [ RamStorage ]   [ SqlStorage ]
+
 FileIndexService::FileIndexService(Profile* profile)
-    : file_index_delegate_(std::make_unique<InmemoryFileIndex>()) {
+    : file_index_impl_(
+          std::make_unique<FileIndexImpl>(std::make_unique<RamStorage>())) {
   DCHECK(profile);
 }
 
@@ -17,21 +42,21 @@ FileIndexService::~FileIndexService() = default;
 
 OpResults FileIndexService::UpdateFile(const std::vector<Term>& terms,
                                        const FileInfo& info) {
-  return file_index_delegate_->UpdateFile(terms, info);
+  return file_index_impl_->UpdateFile(terms, info);
 }
 
 OpResults FileIndexService::AugmentFile(const std::vector<Term>& terms,
                                         const FileInfo& info) {
-  return file_index_delegate_->AugmentFile(terms, info);
+  return file_index_impl_->AugmentFile(terms, info);
 }
 
 OpResults FileIndexService::RemoveFile(const GURL& url) {
-  return file_index_delegate_->RemoveFile(url);
+  return file_index_impl_->RemoveFile(url);
 }
 
 // Searches the index for file info matching the specified query.
 SearchResults FileIndexService::Search(const Query& query) {
-  return file_index_delegate_->Search(query);
+  return file_index_impl_->Search(query);
 }
 
 }  // namespace file_manager

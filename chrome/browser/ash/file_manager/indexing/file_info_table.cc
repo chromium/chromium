@@ -68,7 +68,7 @@ bool FileInfoTable::Init() {
   return true;
 }
 
-int64_t FileInfoTable::GetFileInfo(int64_t url_id, FileInfo* info) {
+int64_t FileInfoTable::GetFileInfo(int64_t url_id, FileInfo* info) const {
   DCHECK(info);
   sql::Statement get_file_info(
       db_->GetCachedStatement(SQL_FROM_HERE, kGetFileInfoQuery));

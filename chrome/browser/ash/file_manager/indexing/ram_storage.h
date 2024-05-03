@@ -1,0 +1,104 @@
+// Copyright 2024 The Chromium Authors
+// Use of this source code is governed by a BSD-style license that can be
+// found in the LICENSE file.
+
+#ifndef CHROME_BROWSER_ASH_FILE_MANAGER_INDEXING_RAM_STORAGE_H_
+#define CHROME_BROWSER_ASH_FILE_MANAGER_INDEXING_RAM_STORAGE_H_
+
+#include <map>
+#include <memory>
+#include <set>
+#include <string>
+#include <vector>
+
+#include "chrome/browser/ash/file_manager/indexing/file_info.h"
+#include "chrome/browser/ash/file_manager/indexing/index_storage.h"
+#include "chrome/browser/ash/file_manager/indexing/query.h"
+#include "chrome/browser/ash/file_manager/indexing/term.h"
+#include "url/gurl.h"
+
+namespace file_manager {
+
+// An in-memory implementation of the file index. Nothing is persisted. All data
+// is kept in various maps.
+class RamStorage : public IndexStorage {
+ public:
+  RamStorage();
+  ~RamStorage() override;
+
+  RamStorage(const RamStorage&) = delete;
+  RamStorage& operator=(const RamStorage&) = delete;
+
+  // RAM implementation of IndexStorage methods.
+
+  // Inverted index and plain index functions.
+  const std::set<int64_t> GetUrlIdsForAugmentedTermId(
+      int64_t augmented_term_id) const override;
+  const std::set<int64_t> GetAugmentedTermIdsForUrl(
+      int64_t url_id) const override;
+
+  // Posting list support.
+  int32_t AddToPostingList(int64_t agumented_term_id, int64_t url_id) override;
+  int32_t DeleteFromPostingList(int64_t augmented_term_id,
+                                int64_t url_id) override;
+
+  // Augmented term ID management.
+  int64_t GetAugmentedTermId(const std::string& field_name,
+                             int64_t term_id) const override;
+  int64_t GetOrCreateAugmentedTermId(const std::string& field_name,
+                                     int64_t term_id) override;
+
+  // Term ID management.
+  int64_t GetTermId(const std::string& term_bytes) const override;
+  int64_t GetOrCreateTermId(const std::string& term_bytes) override;
+
+  // URL ID management.
+  int64_t GetUrlId(const GURL& url) override;
+  int64_t GetOrCreateUrlId(const GURL& url) override;
+  int64_t DeleteUrl(const GURL& url) override;
+
+  // FileInfo management.
+  int64_t PutFileInfo(int64_t url_id, const FileInfo& file_info) override;
+  int64_t GetFileInfo(int64_t url_id, FileInfo* info) const override;
+  int64_t DeleteFileInfo(int64_t url_id) override;
+
+  // Miscellaneous.
+  void AddAugmentedTermIdsForUrl(const std::set<int64_t>& augmented_term_ids,
+                                 int64_t url_id) override;
+  void AddToTermList(int64_t url_id, int64_t term_id) override;
+  void DeleteFromTermList(int64_t url_id, int64_t term_id) override;
+
+ private:
+  // Maps from stringified terms to a unique ID.
+  std::map<std::string, int64_t> term_map_;
+  int64_t term_id_ = 0;
+
+  // Maps field and term to a single term ID. It uses term_id rather than
+  // term to minimize memory usage.
+  std::map<std::tuple<std::string, int64_t>, int64_t> augmented_term_map_;
+  int64_t augmented_term_id_ = 0;
+
+  // Maps a file URL to a unique ID. The GURL is the data uniquely identifying
+  // a file. Hence we use the GURL rather than the whole FileInfo. For example,
+  // if the size of the file changes, it does not have consequences on this
+  // index.
+  std::map<GURL, int64_t> url_to_id_;
+  int64_t url_id_ = 0;
+
+  // Maps url_id to the corresponding FileInfo.
+  std::map<int64_t, FileInfo> url_id_to_file_info_;
+
+  // A posting list, which is a map from an augmented term ID to a set of all
+  // URL IDs that represent files that has this term ID associated with them.
+  std::map<int64_t, std::set<int64_t>> posting_lists_;
+
+  // A map from URL ID to augmented term IDs that are stored for a given file.
+  std::map<int64_t, std::set<int64_t>> inverted_posting_lists_;
+
+  // A pre-allocated empty ID set, returned when we have no ID set available.
+  const std::set<int64_t> empty_id_set_;
+};
+
+}  // namespace file_manager
+
+#endif  // CHROME_BROWSER_ASH_FILE_MANAGER_INDEXING_RAM_STORAGE_H_

@@ -1,0 +1,59 @@
+// Copyright 2024 The Chromium Authors
+// Use of this source code is governed by a BSD-style license that can be
+// found in the LICENSE file.
+
+#ifndef CHROME_BROWSER_ASH_FILE_MANAGER_INDEXING_FILE_INDEX_IMPL_H_
+#define CHROME_BROWSER_ASH_FILE_MANAGER_INDEXING_FILE_INDEX_IMPL_H_
+
+#include <memory>
+#include <set>
+#include <vector>
+
+#include "chrome/browser/ash/file_manager/indexing/file_index.h"
+#include "chrome/browser/ash/file_manager/indexing/file_info.h"
+#include "chrome/browser/ash/file_manager/indexing/index_storage.h"
+#include "chrome/browser/ash/file_manager/indexing/query.h"
+#include "chrome/browser/ash/file_manager/indexing/term.h"
+#include "url/gurl.h"
+
+namespace file_manager {
+
+class FileIndexImpl : public FileIndex {
+ public:
+  explicit FileIndexImpl(std::unique_ptr<IndexStorage> storage);
+  ~FileIndexImpl() override;
+
+  FileIndexImpl(const FileIndexImpl&) = delete;
+  FileIndexImpl& operator=(const FileIndexImpl&) = delete;
+
+  // Overrides base implementation to store association between terms
+  // and info in in-memory maps.
+  OpResults UpdateFile(const std::vector<Term>& terms,
+                       const FileInfo& info) override;
+
+  // Overrides base implementation to associate additional terms with
+  // the given file.
+  OpResults AugmentFile(const std::vector<Term>& terms,
+                        const FileInfo& info) override;
+
+  // Overrides base implementation to purge in-memory maps of information
+  // associated with the file with the given `url`.
+  OpResults RemoveFile(const GURL& url) override;
+
+  // Overrides base implementation to search in-memory maps for files that match
+  // the specified query.
+  SearchResults Search(const Query& query) override;
+
+ private:
+  OpResults SetFileTerms(const std::vector<Term>& terms, const FileInfo& info);
+
+  // Does a bulk conversion of given terms to augmented term IDs.
+  std::set<int64_t> ConvertToAugmentedTermIds(const std::vector<Term>& terms);
+
+  // Actual storage for structures needed to implement the inverted index.
+  std::unique_ptr<IndexStorage> storage_;
+};
+
+}  // namespace file_manager
+
+#endif  // CHROME_BROWSER_ASH_FILE_MANAGER_INDEXING_FILE_INDEX_IMPL_H_
