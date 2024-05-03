@@ -9,6 +9,9 @@ import("//build/config/compiler/compiler.gni")
 import("//build/config/ozone.gni")
 import("//build/config/sysroot.gni")  # Imports android/config.gni.
 import("//build/toolchain/gcc_toolchain.gni")
+if (build_with_chromium) {
+  import("//third_party/jni_zero/jni_zero.gni")
+}
 
 declare_args() {
   # Whether unstripped binaries, i.e. compiled with debug symbols, should be
@@ -136,6 +139,12 @@ clang_toolchain("robolectric_$host_cpu") {
     current_os = host_os
     current_cpu = host_cpu
     is_robolectric = true
+    if (build_with_chromium) {
+      # Forwarding this value from the primary toolchain to the secondary
+      # robolectric toolchain, since the default depends on is_component_build
+      # which can be different between primary and robolectric.
+      allow_jni_multiplexing = allow_jni_multiplexing
+    }
   }
 
   # TODO(crbug.com/40283271): Figure out why robolectric tests fail with component builds.

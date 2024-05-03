@@ -295,9 +295,9 @@ JNI_BOUNDARY_EXPORT ${RETURN} Java_${CLASS_NAME}_${PROXY_SIGNATURE}(
         switch (switch_num) {
           ${CASES}
           default:
-            JNI_ZERO_ELOG("${CLASS_NAME}_${PROXY_SIGNATURE} was called with an \
+            JNI_ZERO_ILOG("${CLASS_NAME}_${PROXY_SIGNATURE} was called with an \
 invalid switch number: %d", switch_num);
-            JNI_ZERO_DCHECK(false);
+            JNI_ZERO_CHECK(false);
             return${DEFAULT_RETURN};
         }
 }""")
@@ -780,26 +780,32 @@ _MULTIPLEXED_CHAR_BY_TYPE = {
     'String': 'R',
     'short': 'S',
     'Throwable': 'T',
+    'void': 'V',
     'boolean': 'Z',
 }
+
+
+def _GetShortenedMultiplexingType(type_name):
+  # Parameter types could contain multi-dimensional arrays and every
+  # instance of [] has to be replaced in the proxy signature name.
+  for k, v in _MULTIPLEXED_CHAR_BY_TYPE.items():
+    type_name = type_name.replace(k, v)
+  return type_name
 
 
 def _GetMultiplexProxyName(signature):
   # Proxy signatures for methods are named after their return type and
   # parameters to ensure uniqueness, even for the same return types.
-  params_part = ''
-  params_list = [t.to_java() for t in signature.param_types]
-  # Parameter types could contain multi-dimensional arrays and every
-  # instance of [] has to be replaced in the proxy signature name.
-  for k, v in _MULTIPLEXED_CHAR_BY_TYPE.items():
-    params_list = [p.replace(k, v) for p in params_list]
+  params_list = [
+      _GetShortenedMultiplexingType(t.to_java()) for t in signature.param_types
+  ]
   params_part = ''
   if params_list:
     params_part = '_' + ''.join(p for p in params_list)
 
-  java_return_type = signature.return_type.to_java()
-  return_value_part = java_return_type.replace('[]', '_array').lower()
-  return 'resolve_for_' + return_value_part + params_part
+  return_value_part = _GetShortenedMultiplexingType(
+      signature.return_type.to_java())
+  return '_' + return_value_part + params_part
 
 
 def _MakeForwardingProxy(options, gen_jni_class, proxy_native):

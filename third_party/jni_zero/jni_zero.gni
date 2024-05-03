@@ -587,6 +587,12 @@ template("native_with_jni") {
       if (_needs_native_dep) {
         configs +=
             [ "//third_party/jni_zero:jni_include_dir($default_toolchain)" ]
+        if (is_robolectric &&
+            filter_include(configs, [ "//third_party/jdk" ]) == []) {
+          # Adding jdk config if not already included - that's what the
+          # filter_include is for.
+          configs += [ "//third_party/jdk" ]
+        }
         deps += [ ":$_jni_registration_target_name($default_toolchain)" ]
         if (!defined(sources)) {
           sources = []
