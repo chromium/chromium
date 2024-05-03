@@ -1459,7 +1459,7 @@ Starting worker: resources/global-interface-listing-worker.js
 [Worker]     method constructor
 [Worker]     method query
 [Worker] interface PressureObserver
-[Worker]     static getter supportedSources
+[Worker]     static getter knownSources
 [Worker]     attribute @@toStringTag
 [Worker]     method constructor
 [Worker]     method disconnect

@@ -7659,7 +7659,7 @@ interface PresentationRequest : EventTarget
     method start
     setter onconnectionavailable
 interface PressureObserver
-    static getter supportedSources
+    static getter knownSources
     attribute @@toStringTag
     method constructor
     method disconnect

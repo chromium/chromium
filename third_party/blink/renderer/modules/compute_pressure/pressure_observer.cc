@@ -43,7 +43,7 @@ PressureObserver* PressureObserver::Create(V8PressureUpdateCallback* callback) {
 }
 
 // static
-Vector<V8PressureSource> PressureObserver::supportedSources() {
+Vector<V8PressureSource> PressureObserver::knownSources() {
   return Vector<V8PressureSource>(
       {V8PressureSource(V8PressureSource::Enum::kCpu)});
 }
@@ -129,7 +129,7 @@ void PressureObserver::disconnect() {
   }
 
   // Reject all pending promises.
-  for (const auto& source : supportedSources()) {
+  for (const auto& source : knownSources()) {
     RejectPendingResolvers(source.AsEnum(), DOMExceptionCode::kAbortError,
                            "Called disconnect method.");
   }
@@ -244,7 +244,7 @@ void PressureObserver::OnBindingFailed(V8PressureSource::Enum source,
 }
 
 void PressureObserver::OnConnectionError() {
-  for (const auto& source : supportedSources()) {
+  for (const auto& source : knownSources()) {
     RejectPendingResolvers(source.AsEnum(),
                            DOMExceptionCode::kNotSupportedError,
                            "Connection error.");
