@@ -7,6 +7,8 @@
 
 #include <string>
 
+#include "components/autofill/core/browser/metrics/payments/payments_window_metrics.h"
+
 namespace autofill::payments {
 
 // Interface for the controller that handles functionality related to the user
@@ -20,6 +22,10 @@ class PaymentsWindowUserConsentDialogController {
 
   // Triggers the callback that cancels the payments window pop-up flow.
   virtual void OnCancelButtonClicked() = 0;
+
+  // Logs when the dialog is closing, and `result` indicates the closed reason.
+  virtual void OnDialogClosing(
+      autofill_metrics::PaymentsWindowUserConsentDialogResult result) = 0;
 
   // Returns the title of the payments window pop-up user consent dialog to be
   // displayed to the user.

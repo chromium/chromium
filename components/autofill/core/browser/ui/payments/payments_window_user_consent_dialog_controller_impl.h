@@ -41,6 +41,8 @@ class PaymentsWindowUserConsentDialogControllerImpl
   // PaymentsWindowUserConsentDialogController:
   void OnOkButtonClicked() override;
   void OnCancelButtonClicked() override;
+  void OnDialogClosing(
+      autofill_metrics::PaymentsWindowUserConsentDialogResult result) override;
   std::u16string GetWindowTitle() const override;
   std::u16string GetDialogDescription() const override;
   std::u16string GetOkButtonLabel() const override;

@@ -38,6 +38,8 @@ class PaymentsWindowUserConsentDialogView
   void AddedToWidget() override;
   std::u16string GetWindowTitle() const override;
 
+  void OnDialogClosing();
+
  private:
   // The controller that handles view interaction, as well as contains the
   // information for what to display in the view.

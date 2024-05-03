@@ -51,9 +51,30 @@ enum class Vcn3dsFlowEvent {
   kMaxValue = kFlowSucceeded,
 };
 
+// Enum to track the result of a corresponding PaymentsWindowUserConsentDialog
+// that was shown.
+//
+// These values are persisted to logs. Entries should not be renumbered and
+// numeric values should never be reused.
+enum class PaymentsWindowUserConsentDialogResult {
+  // The tab or browser was closed.
+  kTabOrBrowserClosed = 0,
+  // The escape key was pressed, closing the dialog.
+  kEscapeKeyPressed = 1,
+  // The cancel button was pressed, closing the dialog.
+  kCancelButtonClicked = 2,
+  // The accept button was pressed, closing the dialog.
+  kAcceptButtonClicked = 3,
+  kMaxValue = kAcceptButtonClicked,
+};
+
 // Logs the flow event for a VCN 3DS authentication.
 void LogVcn3dsFlowEvent(Vcn3dsFlowEvent flow_event,
                         bool user_consent_already_given);
+
+// Logs events related to the PaymentsWindowUserConsentDialog.
+void LogPaymentsWindowUserConsentDialogResult(
+    PaymentsWindowUserConsentDialogResult result);
 
 }  // namespace autofill::autofill_metrics
 

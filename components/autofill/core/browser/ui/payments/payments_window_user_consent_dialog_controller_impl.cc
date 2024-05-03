@@ -4,6 +4,7 @@
 
 #include "components/autofill/core/browser/ui/payments/payments_window_user_consent_dialog_controller_impl.h"
 
+#include "components/autofill/core/browser/metrics/payments/payments_window_metrics.h"
 #include "components/autofill/core/browser/ui/payments/payments_window_user_consent_dialog.h"
 #include "components/strings/grit/components_strings.h"
 #include "ui/base/l10n/l10n_util.h"
@@ -48,6 +49,11 @@ void PaymentsWindowUserConsentDialogControllerImpl::OnOkButtonClicked() {
 void PaymentsWindowUserConsentDialogControllerImpl::OnCancelButtonClicked() {
   CHECK(cancel_callback_);
   std::move(cancel_callback_).Run();
+}
+
+void PaymentsWindowUserConsentDialogControllerImpl::OnDialogClosing(
+    autofill_metrics::PaymentsWindowUserConsentDialogResult result) {
+  autofill_metrics::LogPaymentsWindowUserConsentDialogResult(result);
 }
 
 std::u16string PaymentsWindowUserConsentDialogControllerImpl::GetWindowTitle()

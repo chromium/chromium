@@ -19,4 +19,10 @@ void LogVcn3dsFlowEvent(Vcn3dsFlowEvent flow_event,
       flow_event);
 }
 
+void LogPaymentsWindowUserConsentDialogResult(
+    PaymentsWindowUserConsentDialogResult result) {
+  base::UmaHistogramEnumeration(
+      "Autofill.Vcn3ds.PaymentsWindowUserConsentDialogResult", result);
+}
+
 }  // namespace autofill::autofill_metrics

@@ -3975,6 +3975,13 @@ Called by update_autofill_enums.py.-->
       label="Form passed is different from the one that initiated the session"/>
 </enum>
 
+<enum name="PaymentsWindowUserConsentDialogResult">
+  <int value="0" label="The tab or browser was closed"/>
+  <int value="1" label="The escape key was pressed, closing the dialog"/>
+  <int value="2" label="The cancel button was pressed, closing the dialog"/>
+  <int value="3" label="The accept button was pressed, closing the dialog"/>
+</enum>
+
 <enum name="PhoneNumberGrammarUsage2">
   <int value="0"
       label="Country code: [cc] Area Code: [ac] Prefix: [phone] Suffix:

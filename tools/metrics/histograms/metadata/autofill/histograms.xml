@@ -5631,6 +5631,16 @@ chromium-metrics-reviews@google.com.
   <token key="ConsentAlreadyGiven" variants="Vcn3ds.ConsentAlreadyGiven"/>
 </histogram>
 
+<histogram name="Autofill.Vcn3ds.PaymentsWindowUserConsentDialogResult"
+    enum="PaymentsWindowUserConsentDialogResult" expires_after="2024-07-01">
+  <owner>vinnypersky@google.com</owner>
+  <owner>payments-autofill-team@google.com</owner>
+  <summary>
+    Tracks the result of the payments window user consent dialog, broken down by
+    closed reason. Logged when the dialog is closing.
+  </summary>
+</histogram>
+
 <histogram name="Autofill.VirtualCard.Enroll.Attempt.{Source}"
     enum="BooleanAttempted" expires_after="2024-09-01">
   <owner>siyua@chromium.org</owner>
