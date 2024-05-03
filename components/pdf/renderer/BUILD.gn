@@ -21,6 +21,8 @@ static_library("renderer") {
   sources = [
     "internal_plugin_renderer_helpers.cc",
     "pdf_accessibility_tree.cc",
+    "pdf_accessibility_tree_builder.cc",
+    "pdf_accessibility_tree_builder.h",
     "pdf_ax_action_target.cc",
     "pdf_internal_plugin_delegate.cc",
     "pdf_view_web_plugin_client.cc",
