@@ -45,6 +45,8 @@ public class AutocompleteMatchBuilder {
     private boolean mHasTabMatch;
     private List<OmniboxAction> mActions;
     private boolean mAllowedToBeDefaultMatch;
+    private String mInlineAutocompletion;
+    private String mAdditionalText;
 
     /**
      * Create a suggestion builder for a search suggestion.
@@ -93,6 +95,8 @@ public class AutocompleteMatchBuilder {
         mHasTabMatch = false;
         mActions = null;
         mAllowedToBeDefaultMatch = false;
+        mInlineAutocompletion = null;
+        mAdditionalText = null;
 
         mDisplayTextClassifications.add(
                 new AutocompleteMatch.MatchClassification(0, MatchClassificationStyle.NONE));
@@ -130,7 +134,9 @@ public class AutocompleteMatchBuilder {
                 mClipboardImageData,
                 mHasTabMatch,
                 mActions,
-                mAllowedToBeDefaultMatch);
+                mAllowedToBeDefaultMatch,
+                mInlineAutocompletion,
+                mAdditionalText);
     }
 
     /**
@@ -296,11 +302,31 @@ public class AutocompleteMatchBuilder {
     }
 
     /**
-     * @param allowedToBeDefaultMatch Whether the match is allowed to be the default match..
+     * @param allowedToBeDefaultMatch Whether the match is allowed to be the default match.
      * @return Omnibox suggestion builder.
      */
     public AutocompleteMatchBuilder setAllowedToBeDefaultMatch(boolean allowedToBeDefaultMatch) {
         mAllowedToBeDefaultMatch = allowedToBeDefaultMatch;
+        return this;
+    }
+
+    /**
+     * @param inlineAutocompletion The inline autocompletion to display after the user's input in
+     *     the omnibox.
+     * @return Omnibox suggestion builder.
+     */
+    public AutocompleteMatchBuilder setInlineAutocompletion(String inlineAutocompletion) {
+        mInlineAutocompletion = inlineAutocompletion;
+        return this;
+    }
+
+    /**
+     * @param additionalText This string is displayed adjacent to the omnibox if this match is the
+     *     default.
+     * @return Omnibox suggestion builder.
+     */
+    public AutocompleteMatchBuilder setAdditionalText(String additionalText) {
+        mAdditionalText = additionalText;
         return this;
     }
 }

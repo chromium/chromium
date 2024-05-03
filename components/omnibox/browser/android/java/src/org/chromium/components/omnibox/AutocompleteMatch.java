@@ -88,6 +88,8 @@ public class AutocompleteMatch {
     private long mNativeMatch;
     private final @NonNull List<OmniboxAction> mActions;
     private final boolean mAllowedToBeDefaultMatch;
+    private final String mInlineAutocompletion;
+    private final String mAdditionalText;
 
     public AutocompleteMatch(
             int nativeType,
@@ -112,7 +114,9 @@ public class AutocompleteMatch {
             byte[] clipboardImageData,
             boolean hasTabMatch,
             @Nullable List<OmniboxAction> actions,
-            boolean allowedToBeDefaultMatch) {
+            boolean allowedToBeDefaultMatch,
+            String inlineAutocompletion,
+            String additionalText) {
         if (subtypes == null) {
             subtypes = Collections.emptySet();
         }
@@ -147,6 +151,8 @@ public class AutocompleteMatch {
         mHasTabMatch = hasTabMatch;
         mActions = actions != null ? actions : Arrays.asList();
         mAllowedToBeDefaultMatch = allowedToBeDefaultMatch;
+        mInlineAutocompletion = inlineAutocompletion;
+        mAdditionalText = inlineAutocompletion;
     }
 
     @CalledByNative
@@ -176,7 +182,9 @@ public class AutocompleteMatch {
             byte[] clipboardImageData,
             boolean hasTabMatch,
             @JniType("std::vector") Object[] actions,
-            boolean allowedToBeDefaultMatch) {
+            boolean allowedToBeDefaultMatch,
+            String inlineAutocompletion,
+            String additionalText) {
         assert contentClassificationOffsets.length == contentClassificationStyles.length;
         List<MatchClassification> contentClassifications = new ArrayList<>();
         for (int i = 0; i < contentClassificationOffsets.length; i++) {
@@ -214,7 +222,9 @@ public class AutocompleteMatch {
                         clipboardImageData,
                         hasTabMatch,
                         (List<OmniboxAction>) (List<?>) Arrays.asList(actions),
-                        allowedToBeDefaultMatch);
+                        allowedToBeDefaultMatch,
+                        inlineAutocompletion,
+                        additionalText);
         match.updateNativeObjectRef(nativeObject);
         match.setDescription(
                 description, descriptionClassificationOffsets, descriptionClassificationStyles);
@@ -374,6 +384,14 @@ public class AutocompleteMatch {
 
     public boolean allowedToBeDefaultMatch() {
         return mAllowedToBeDefaultMatch;
+    }
+
+    public String getInlineAutocompletion() {
+        return mInlineAutocompletion;
+    }
+
+    public String getAdditionalText() {
+        return mAdditionalText;
     }
 
     /**

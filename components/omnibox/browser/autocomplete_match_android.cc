@@ -111,7 +111,9 @@ ScopedJavaLocalRef<jobject> AutocompleteMatch::GetOrCreateJavaObject(
           j_post_content, suggestion_group_id.value_or(omnibox::GROUP_INVALID),
           ToJavaByteArray(env, clipboard_image_data),
           has_tab_match.value_or(false), actions_list,
-          allowed_to_be_default_match));
+          allowed_to_be_default_match,
+          ConvertUTF16ToJavaString(env, inline_autocompletion),
+          ConvertUTF16ToJavaString(env, additional_text)));
 
   return ScopedJavaLocalRef<jobject>(*java_match_);
 }
