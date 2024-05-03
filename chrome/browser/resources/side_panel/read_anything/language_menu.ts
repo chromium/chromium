@@ -37,6 +37,8 @@ interface LanguageDropdownItem {
   checked: boolean;
   languageCode: string;
   notification: Notification;
+  // Whether this is the language of the currently selected voice
+  selectedVoiceLang: boolean;
   callback: () => void;
 }
 
@@ -60,11 +62,12 @@ export class LanguageMenuElement extends LanguageMenuElementBase {
       languageSearchValue_: String,
       localeToDisplayName: Object,
       voicePackInstallStatus: Object,
+      selectedLang: String,
       availableLanguages_: {
         type: Array,
         computed:
             'computeAvailableLanguages_(availableVoices,localeToDisplayName,' +
-            'voicePackInstallStatus,languageSearchValue_)',
+            'voicePackInstallStatus,selectedLang,languageSearchValue_)',
       },
     };
   }
@@ -101,11 +104,13 @@ export class LanguageMenuElement extends LanguageMenuElementBase {
       availableVoices: SpeechSynthesisVoice[],
       localeToDisplayName: {[lang: string]: string},
       voicePackInstallStatus: {[language: string]: VoicePackStatus},
+      selectedLang: string|undefined,
       languageSearchValue: string|undefined): LanguageDropdownItem[] {
     if (!availableVoices) {
       return [];
     }
 
+    const selectedLangLowerCase = selectedLang?.toLowerCase();
     // Ensure we've added the available pack manager supported languages to
     // the language menu first, only on ChromeOS.
     const langsAndReadableLangs: Array<[string, string]> =
@@ -146,6 +151,7 @@ export class LanguageMenuElement extends LanguageMenuElementBase {
                 isError: this.isNotificationError(lang, voicePackInstallStatus),
                 text: this.getNotificationText(lang, voicePackInstallStatus),
               },
+              selectedVoiceLang: lang.toLowerCase() === selectedLangLowerCase,
               callback: () =>
                   this.dispatchEvent(new CustomEvent(LANGUAGE_TOGGLE_EVENT, {
                     bubbles: true,

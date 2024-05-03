@@ -112,6 +112,7 @@
           <cr-toggle
             checked="[[item.checked]]"
             on-change="onToggleChange_"
+            disabled$="[[item.selectedVoiceLang]]"
             aria-labelledby$="language-name-[[index]]"></cr-toggle>
         </div>
         <span id="notificationText"
