@@ -9,7 +9,7 @@
 
 #import <memory>
 
-#import "ios/chrome/browser/price_insights/coordinator/price_insights_mutator.h"
+#import "ios/chrome/browser/price_insights/ui/price_insights_mutator.h"
 #import "ios/chrome/browser/ui/price_notifications/price_notifications_mutator.h"
 
 @protocol BookmarksCommands;

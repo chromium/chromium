@@ -9,14 +9,23 @@
 
 #import "ios/chrome/browser/price_insights/ui/price_insights_item.h"
 
+@protocol PriceInsightsMutator;
+
 // UICollectionViewCell that contains data for Price Insights.
 @interface PriceInsightsCell : UICollectionViewCell
 
 // Contextual panel view controller.
 @property(nonatomic, weak) UIViewController* viewController;
 
+// Mutator for Price Tracking related actions e.g price tracking event
+// subscription.
+@property(nonatomic, weak) id<PriceInsightsMutator> mutator;
+
 // Configures the UICollectionViewCell with `PriceInsightsitem`.
 - (void)configureWithItem:(PriceInsightsItem*)item;
+
+// Updates the track button's state based on page tracking status.
+- (void)updateTrackButton:(BOOL)isTracking;
 
 @end
 

@@ -27,6 +27,8 @@
 @property(nonatomic, readonly) Browser* browser;
 // The base view controller.
 @property(nonatomic, strong) UIViewController* viewController;
+// A weak reference to a PriceInsightsCell.
+@property(nonatomic, weak) PriceInsightsCell* priceInsightsCell;
 
 @end
 
@@ -74,6 +76,7 @@
   __weak __typeof(self) weakSelf = self;
   auto handler =
       ^(PriceInsightsCell* cell, NSIndexPath* indexPath, id identifier) {
+        weakSelf.priceInsightsCell = cell;
         [weakSelf configureCell:cell];
       };
   return [UICollectionViewCellRegistration
@@ -84,9 +87,11 @@
 #pragma mark - PriceInsightsConsumer
 
 - (void)didStartPriceTracking {
+  [self.priceInsightsCell updateTrackButton:YES];
 }
 
 - (void)didStopPriceTracking {
+  [self.priceInsightsCell updateTrackButton:NO];
 }
 
 - (void)didStartNavigationToWebpage {
@@ -202,6 +207,7 @@
 // Cell configuration handler helper.
 - (void)configureCell:(PriceInsightsCell*)cell {
   cell.viewController = self.viewController;
+  cell.mutator = self.mediator;
   PriceInsightsItem* item = [[PriceInsightsItem alloc] init];
   [cell configureWithItem:item];
 }

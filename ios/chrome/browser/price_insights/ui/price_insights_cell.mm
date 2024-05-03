@@ -8,9 +8,9 @@
 #import "components/strings/grit/components_strings.h"
 #import "ios/chrome/browser/price_insights/ui/price_history_swift.h"
 #import "ios/chrome/browser/price_insights/ui/price_insights_constants.h"
+#import "ios/chrome/browser/price_insights/ui/price_insights_mutator.h"
 #import "ios/chrome/browser/shared/ui/symbols/symbols.h"
 #import "ios/chrome/browser/shared/ui/util/uikit_ui_util.h"
-#import "ios/chrome/browser/ui/price_notifications/cells/price_notifications_track_button.h"
 #import "ios/chrome/common/ui/colors/semantic_color_names.h"
 #import "ios/chrome/common/ui/util/constraints_ui_util.h"
 #import "ui/base/l10n/l10n_util_mac.h"
@@ -48,6 +48,12 @@ const CGFloat kPriceHistoryGraphHeight = 186.0f;
 // The corner radius of this container.
 const float kCornerRadius = 24;
 
+// The horizontal padding for the track button.
+const CGFloat kTrackButtonHorizontalPadding = 14.0f;
+
+// The vertical padding for the track button.
+const CGFloat kTrackButtonVerticalPadding = 3.0f;
+
 }  // namespace
 
 @interface PriceInsightsCell ()
@@ -58,11 +64,12 @@ const float kCornerRadius = 24;
 @end
 
 @implementation PriceInsightsCell {
-  PriceNotificationsTrackButton* _trackButton;
   UIStackView* _priceTrackingStackView;
   UIStackView* _buyingOptionsStackView;
   UIStackView* _contentStackView;
   UIStackView* _priceHistoryStackView;
+  UIButton* _trackButton;
+  NSLayoutConstraint* _trackButtonWidthConstraint;
 }
 
 #pragma mark - Public
@@ -135,6 +142,11 @@ const float kCornerRadius = 24;
     [self configureBuyingOptions];
     [_contentStackView addArrangedSubview:_buyingOptionsStackView];
   }
+}
+
+- (void)updateTrackButton:(BOOL)isTracking {
+  self.item.isPriceTracked = isTracking;
+  [self setOrUpdateTrackButton];
 }
 
 #pragma mark - Private
@@ -216,7 +228,7 @@ const float kCornerRadius = 24;
   [_priceTrackingStackView addArrangedSubview:verticalStack];
 
   if (self.item.canPriceTrack) {
-    _trackButton = [[PriceNotificationsTrackButton alloc] init];
+    [self setOrUpdateTrackButton];
     [_trackButton setAccessibilityIdentifier:kPriceTrackingButtonIdentifier];
     [_trackButton addTarget:self
                      action:@selector(trackButtonToggled)
@@ -370,12 +382,53 @@ const float kCornerRadius = 24;
   return label;
 }
 
+- (void)setOrUpdateTrackButton {
+  UIFont* font =
+      CreateDynamicFont(UIFontTextStyleSubheadline, UIFontWeightBold);
+  NSDictionary* attributes = @{NSFontAttributeName : font};
+  NSString* titleText =
+      self.item.isPriceTracked
+          ? l10n_util::GetNSString(IDS_PRICE_INSIGHTS_TRACKING_BUTTON_TITLE)
+          : l10n_util::GetNSString(IDS_PRICE_INSIGHTS_TRACK_BUTTON_TITLE);
+  NSMutableAttributedString* title =
+      [[NSMutableAttributedString alloc] initWithString:titleText];
+  [title addAttributes:attributes range:NSMakeRange(0, title.length)];
+
+  if (!_trackButton) {
+    UIButtonConfiguration* configuration =
+        [UIButtonConfiguration plainButtonConfiguration];
+    configuration.baseForegroundColor = UIColor.whiteColor;
+    configuration.background.backgroundColor = [UIColor colorNamed:kBlueColor];
+    configuration.cornerStyle = UIButtonConfigurationCornerStyleCapsule;
+    configuration.contentInsets = NSDirectionalEdgeInsetsMake(
+        kTrackButtonVerticalPadding, kTrackButtonHorizontalPadding,
+        kTrackButtonVerticalPadding, kTrackButtonHorizontalPadding);
+    _trackButton = [[UIButton alloc] init];
+    _trackButton.configuration = configuration;
+    _trackButtonWidthConstraint =
+        [_trackButton.widthAnchor constraintEqualToConstant:0];
+    _trackButtonWidthConstraint.active = YES;
+  }
+
+  [_trackButton setAttributedTitle:title forState:UIControlStateNormal];
+  CGSize stringSize = [titleText sizeWithAttributes:attributes];
+  _trackButtonWidthConstraint.constant =
+      stringSize.width + kTrackButtonHorizontalPadding * 2;
+}
+
 #pragma mark - Actions
 
 - (void)trackButtonToggled {
+  if (self.item.isPriceTracked) {
+    [self.mutator priceInsightsStopTrackingItem:self.item];
+    return;
+  }
+
+  [self.mutator priceInsightsTrackItem:self.item];
 }
 
 - (void)handleBuyingOptionsTap:(UITapGestureRecognizer*)sender {
+  [self.mutator priceInsightsNavigateToWebpageForItem:self.item];
 }
 
 @end

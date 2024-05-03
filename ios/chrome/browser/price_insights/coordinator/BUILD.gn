@@ -28,10 +28,7 @@ source_set("price_insights_coordinator") {
 }
 
 source_set("delegates") {
-  sources = [
-    "price_insights_consumer.h",
-    "price_insights_mutator.h",
-  ]
+  sources = [ "price_insights_consumer.h" ]
 
   deps = [ "//ios/chrome/browser/price_insights/ui:price_insights_ui" ]
   frameworks = [ "UIKit.framework" ]

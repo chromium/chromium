@@ -12,6 +12,7 @@ source_set("price_insights_ui") {
     "price_insights_constants.mm",
     "price_insights_item.h",
     "price_insights_item.mm",
+    "price_insights_mutator.h",
   ]
 
   deps = [
