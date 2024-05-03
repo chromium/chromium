@@ -6,6 +6,7 @@
 #define IOS_CHROME_BROWSER_UI_AUTOFILL_AUTHENTICATION_CARD_UNMASK_AUTHENTICATION_SELECTION_VIEW_CONTROLLER_H_
 
 #import <UIKit/UIKit.h>
+
 #import "ios/chrome/browser/shared/ui/table_view/chrome_table_view_controller.h"
 #import "ios/chrome/browser/ui/autofill/authentication/card_unmask_authentication_selection_consumer.h"
 #import "ios/chrome/browser/ui/autofill/authentication/card_unmask_authentication_selection_mutator.h"
@@ -14,7 +15,6 @@
 // cards.
 @interface CardUnmaskAuthenticationSelectionViewController
     : ChromeTableViewController <CardUnmaskAuthenticationSelectionConsumer,
-                                 UIAdaptivePresentationControllerDelegate,
                                  UITableViewDelegate>
 
 // The delegate for user actions.

@@ -68,8 +68,6 @@
   selectionViewController.mutator = _mediator->AsMutator();
   _selectionViewController = selectionViewController;
 
-  _baseNavigationController.presentationController.delegate =
-      _selectionViewController;
   [_baseNavigationController pushViewController:_selectionViewController
                                        animated:NO];
 }

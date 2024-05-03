@@ -161,13 +161,6 @@ static NSString* kSectionIdChallengeOptions = @"SectionIdChallengeOptions";
   return view;
 }
 
-#pragma mark - UIAdaptivePresentationControllerDelegate
-
-- (void)presentationControllerDidDismiss:
-    (UIPresentationController*)presentationController {
-  [self.mutator didCancelSelection];
-}
-
 #pragma mark - Private
 
 // Deques and sets up a cell for the challenge option at index.

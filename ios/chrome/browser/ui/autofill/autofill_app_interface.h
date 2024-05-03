@@ -97,6 +97,12 @@ enum CreditCardSaveManagerObserverEvent : int {
                  forRequest:(NSString*)request
               withErrorCode:(int)error;
 
+// Clear all existing fake response.
++ (void)clearPaymentsResponses;
+
+// Sets a fake access token to bypass the token fetch request.
++ (void)setAccessToken;
+
 // Sets the number of times the user refused to save a card.
 + (void)setFormFillMaxStrikes:(int)max forCard:(NSString*)card;
 
