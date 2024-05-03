@@ -151,7 +151,7 @@ void BirchCalendarItem::PerformAction() {
     return;
   }
   RecordActionMetrics();
-  NewWindowDelegate::GetInstance()->OpenUrl(
+  NewWindowDelegate::GetPrimary()->OpenUrl(
       calendar_url_, NewWindowDelegate::OpenUrlFrom::kUserInteraction,
       NewWindowDelegate::Disposition::kNewForegroundTab);
 }
@@ -164,7 +164,7 @@ void BirchCalendarItem::PerformSecondaryAction() {
   // TODO(jamescook): Decide if we want differerent metrics for secondary
   // actions.
   RecordActionMetrics();
-  NewWindowDelegate::GetInstance()->OpenUrl(
+  NewWindowDelegate::GetPrimary()->OpenUrl(
       conference_url_, NewWindowDelegate::OpenUrlFrom::kUserInteraction,
       NewWindowDelegate::Disposition::kNewForegroundTab);
 }
@@ -273,7 +273,7 @@ void BirchAttachmentItem::PerformAction() {
     LOG(ERROR) << "No valid URL for attachment item";
   }
   RecordActionMetrics();
-  NewWindowDelegate::GetInstance()->OpenUrl(
+  NewWindowDelegate::GetPrimary()->OpenUrl(
       file_url_, NewWindowDelegate::OpenUrlFrom::kUserInteraction,
       NewWindowDelegate::Disposition::kNewForegroundTab);
 }
@@ -339,7 +339,7 @@ std::string BirchFileItem::ToString() const {
 
 void BirchFileItem::PerformAction() {
   RecordActionMetrics();
-  NewWindowDelegate::GetInstance()->OpenFile(file_path_);
+  NewWindowDelegate::GetPrimary()->OpenFile(file_path_);
 }
 
 void BirchFileItem::PerformSecondaryAction() {
@@ -393,7 +393,7 @@ void BirchWeatherItem::PerformAction() {
   RecordActionMetrics();
   // TODO(jamescook): Localize the query string.
   GURL url("https://google.com/search?q=weather");
-  NewWindowDelegate::GetInstance()->OpenUrl(
+  NewWindowDelegate::GetPrimary()->OpenUrl(
       url, NewWindowDelegate::OpenUrlFrom::kUserInteraction,
       NewWindowDelegate::Disposition::kNewForegroundTab);
 }
@@ -451,7 +451,7 @@ void BirchTabItem::PerformAction() {
     return;
   }
   RecordActionMetrics();
-  NewWindowDelegate::GetInstance()->OpenUrl(
+  NewWindowDelegate::GetPrimary()->OpenUrl(
       url_, NewWindowDelegate::OpenUrlFrom::kUserInteraction,
       NewWindowDelegate::Disposition::kSwitchToTab);
 }
@@ -520,7 +520,7 @@ void BirchReleaseNotesItem::PerformAction() {
     return;
   }
   RecordActionMetrics();
-  NewWindowDelegate::GetInstance()->OpenUrl(
+  NewWindowDelegate::GetPrimary()->OpenUrl(
       url_, NewWindowDelegate::OpenUrlFrom::kUserInteraction,
       NewWindowDelegate::Disposition::kNewForegroundTab);
 }
