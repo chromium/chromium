@@ -1795,4 +1795,45 @@ TEST_F(InputDeviceSettingsControllerTest, BatteryInfoAddedForBluetoothDevices) {
   ASSERT_EQ(66, keyboard->battery_info->battery_percentage);
 }
 
+TEST_F(InputDeviceSettingsControllerTest, BatteryInfoUpdates) {
+  // Create mock BT device for testing.
+  uint32_t test_vendor_id = 0x1111;
+  uint32_t test_product_id = 0x1112;
+  auto mock_device = SetupMockBluetoothDevice(test_vendor_id, test_product_id,
+                                              kBluetoothDeviceName,
+                                              kBluetoothDevicePublicAddress);
+  std::vector<raw_ptr<const device::BluetoothDevice, VectorExperimental>>
+      devices;
+  devices.push_back(mock_device.get());
+  ON_CALL(*mock_adapter_, GetDevices).WillByDefault(testing::Return(devices));
+
+  // Set initial battery info for BT device.
+  mock_device->SetBatteryInfo(device::BluetoothDevice::BatteryInfo(
+      device::BluetoothDevice::BatteryType::kDefault, 66));
+  ui::KeyboardDevice bluetooth_keyboard = kSampleKeyboardBluetooth;
+  bluetooth_keyboard.product_id = test_product_id;
+  bluetooth_keyboard.vendor_id = test_vendor_id;
+  ui::DeviceDataManagerTestApi().SetKeyboardDevices({bluetooth_keyboard});
+
+  // Keyboard populated with initial battery info.
+  auto* keyboard = controller_->GetKeyboard(bluetooth_keyboard.id);
+  ASSERT_EQ(66, keyboard->battery_info->battery_percentage);
+  auto bt_address_map =
+      controller_->GetBluetoothAddressToDeviceIdMapForTesting();
+  // BT address map should contain an entry for the connected keyboard.
+  ASSERT_EQ(1u, bt_address_map.size());
+
+  // Battery percentage change should trigger a call to `DeviceBatteryChanged`.
+  mock_device->SetBatteryInfo(device::BluetoothDevice::BatteryInfo(
+      device::BluetoothDevice::BatteryType::kDefault, 65));
+  keyboard = controller_->GetKeyboard(bluetooth_keyboard.id);
+  ASSERT_EQ(65, keyboard->battery_info->battery_percentage);
+
+  // Disconnecting the bluetooth device should remove the corresponding
+  // entry from the bluetooth address map.
+  ui::DeviceDataManagerTestApi().SetKeyboardDevices({});
+  bt_address_map = controller_->GetBluetoothAddressToDeviceIdMapForTesting();
+  ASSERT_EQ(0u, bt_address_map.size());
+}
+
 }  // namespace ash

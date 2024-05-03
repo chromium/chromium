@@ -40,7 +40,8 @@ namespace ash {
 class ASH_EXPORT InputDeviceSettingsControllerImpl
     : public InputDeviceSettingsController,
       public input_method::InputMethodManager::Observer,
-      public SessionObserver {
+      public SessionObserver,
+      public device::BluetoothAdapter::Observer {
  public:
   explicit InputDeviceSettingsControllerImpl(PrefService* local_state);
   InputDeviceSettingsControllerImpl(
@@ -124,9 +125,19 @@ class ASH_EXPORT InputDeviceSettingsControllerImpl
                           Profile* profile,
                           bool show_message) override;
 
+  // device::BluetoothAdapter::Observer:
+  void DeviceBatteryChanged(device::BluetoothAdapter* adapter,
+                            device::BluetoothDevice* device,
+                            device::BluetoothDevice::BatteryType type) override;
+
   InputDeviceDuplicateIdFinder& duplicate_id_finder() {
     CHECK(duplicate_id_finder_);
     return *duplicate_id_finder_;
+  }
+
+  const base::flat_map<std::string, DeviceId>&
+  GetBluetoothAddressToDeviceIdMapForTesting() {
+    return bluetooth_address_to_device_id_map_;
   }
 
  private:
@@ -243,6 +254,9 @@ class ASH_EXPORT InputDeviceSettingsControllerImpl
   mojom::GraphicsTablet* FindGraphicsTablet(DeviceId id);
   mojom::PointingStick* FindPointingStick(DeviceId id);
 
+  void InitializeOnBluetoothReady(
+      scoped_refptr<device::BluetoothAdapter> adapter);
+
   base::ObserverList<InputDeviceSettingsController::Observer> observers_;
 
   std::unique_ptr<InputDeviceSettingsPolicyHandler> policy_handler_;
@@ -260,6 +274,7 @@ class ASH_EXPORT InputDeviceSettingsControllerImpl
   base::flat_map<DeviceId, mojom::MousePtr> mice_;
   base::flat_map<DeviceId, mojom::PointingStickPtr> pointing_sticks_;
   base::flat_map<DeviceId, mojom::GraphicsTabletPtr> graphics_tablets_;
+  base::flat_map<std::string, DeviceId> bluetooth_address_to_device_id_map_;
 
   // Notifiers must be declared after the `flat_map` objects as the notifiers
   // depend on these objects.
@@ -282,6 +297,8 @@ class ASH_EXPORT InputDeviceSettingsControllerImpl
       notification_controller_;
 
   std::unique_ptr<BluetoothDevicesObserver> bluetooth_devices_observer_;
+  // Observe bluetooth device change events.
+  scoped_refptr<device::BluetoothAdapter> bluetooth_adapter_;
 
   raw_ptr<PrefService> active_pref_service_ = nullptr;  // Not owned.
   std::optional<AccountId> active_account_id_;
