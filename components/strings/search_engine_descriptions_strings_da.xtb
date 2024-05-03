@@ -6,11 +6,12 @@ http://go/chrome-search-engines-marketing-snippets-script.
 Do not modify it manually. -->
 <translationbundle lang="da">
   <translation id="IDS_BING_SEARCH_DESCRIPTION">Drevet af ChatGPTs GPT-4</translation>
-  <translation id="IDS_DUCKDUCKGO_SEARCH_DESCRIPTION">Vi sporer dig ikke. Privatliv, forenklet.</translation>
+  <translation id="IDS_DUCKDUCKGO_SEARCH_DESCRIPTION">Privat. Raskt. Færre annonser. DuckDuckGo sporer deg aldri.</translation>
   <translation id="IDS_ECOSIA_SEARCH_DESCRIPTION">Plant træer, mens dudin browser. Over 200 millioner træer plantet til dags dato.</translation>
-  <translation id="IDS_GOOGLE_SEARCH_DESCRIPTION">Find det du søger</translation>
+  <translation id="IDS_GOOGLE_SEARCH_DESCRIPTION">Find det du søger med Google</translation>
   <translation id="IDS_KARMA_SEARCH_DESCRIPTION">Beskyt dyr og biodiversitet - få hver søgning til at tælle!</translation>
   <translation id="IDS_LILO_SEARCH_DESCRIPTION">Din internetforskning finansierer foreninger gratis</translation>
   <translation id="IDS_OCEANHERO_SEARCH_DESCRIPTION">Dine søgninger renser havene og strande for plast.</translation>
   <translation id="IDS_PRIVACYWALL_SEARCH_DESCRIPTION">En søgemaskine der beskytter dit privatliv.</translation>
+  <translation id="IDS_YAHOO_SEARCH_DESCRIPTION">Søg på nettet, og find svar på dagligdagens spørgsmål med Yahoo.</translation>
 </translationbundle>

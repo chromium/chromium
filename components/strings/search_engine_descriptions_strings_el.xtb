@@ -6,11 +6,11 @@ http://go/chrome-search-engines-marketing-snippets-script.
 Do not modify it manually. -->
 <translationbundle lang="el">
   <translation id="IDS_BING_SEARCH_DESCRIPTION">Με την υποστήριξη του GPT-4 του ChatGPT</translation>
-  <translation id="IDS_DUCKDUCKGO_SEARCH_DESCRIPTION">Δεν σε παρακολουθούμε. Απόρρητο, απλοποιημένο.</translation>
   <translation id="IDS_ECOSIA_SEARCH_DESCRIPTION">Φυτέψτε δέντρα κάνοντας περιήγηση. Φυτεύτηκαν πάνω από 200 εκατομμύρια δέντρα.</translation>
-  <translation id="IDS_GOOGLE_SEARCH_DESCRIPTION">Βρες ό,τι χρειάζεσαι</translation>
+  <translation id="IDS_GOOGLE_SEARCH_DESCRIPTION">Βρείτε αυτό που χρειάζεστε με το Google</translation>
   <translation id="IDS_KARMA_SEARCH_DESCRIPTION">Προστατέψτε τα ζώα και τη βιοποικιλότητα - κάντε κάθε αναζήτηση να μετράει!</translation>
   <translation id="IDS_LILO_SEARCH_DESCRIPTION">Η έρευνά σας στο Διαδίκτυο χρηματοδοτεί δωρεάν ενώσεις</translation>
   <translation id="IDS_OCEANHERO_SEARCH_DESCRIPTION">Οι αναζητήσεις σας καθαρίζουν τους ωκεανούς μας από πλαστικά.</translation>
   <translation id="IDS_PRIVACYWALL_SEARCH_DESCRIPTION">Μια μηχανή αναζήτησης που προστατεύει το απόρρητό σας.</translation>
+  <translation id="IDS_YAHOO_SEARCH_DESCRIPTION">Αναζητήστε στο Internet και απαντήστε σε καθημερινές ερωτήσεις ζωής με το Yahoo</translation>
 </translationbundle>

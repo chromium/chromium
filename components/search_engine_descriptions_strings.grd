@@ -117,11 +117,8 @@ process but are generated using a script that pulls them from outside the repo.-
     <file path="strings/search_engine_descriptions_strings_af.xtb" lang="af" />
     <file path="strings/search_engine_descriptions_strings_am.xtb" lang="am" />
     <file path="strings/search_engine_descriptions_strings_ar.xtb" lang="ar" />
-    <file path="strings/search_engine_descriptions_strings_as.xtb" lang="as" />
-    <file path="strings/search_engine_descriptions_strings_az.xtb" lang="az" />
     <file path="strings/search_engine_descriptions_strings_bg.xtb" lang="bg" />
     <file path="strings/search_engine_descriptions_strings_bn.xtb" lang="bn" />
-    <file path="strings/search_engine_descriptions_strings_bs.xtb" lang="bs" />
     <file path="strings/search_engine_descriptions_strings_ca.xtb" lang="ca" />
     <file path="strings/search_engine_descriptions_strings_cs.xtb" lang="cs" />
     <file path="strings/search_engine_descriptions_strings_da.xtb" lang="da" />
@@ -132,43 +129,38 @@ process but are generated using a script that pulls them from outside the repo.-
     <file path="strings/search_engine_descriptions_strings_eu.xtb" lang="eu" />
     <file path="strings/search_engine_descriptions_strings_fa.xtb" lang="fa" />
     <file path="strings/search_engine_descriptions_strings_fi.xtb" lang="fi" />
+    <file path="strings/search_engine_descriptions_strings_fil.xtb" lang="fil" />
     <file path="strings/search_engine_descriptions_strings_fr.xtb" lang="fr" />
     <file path="strings/search_engine_descriptions_strings_gl.xtb" lang="gl" />
     <file path="strings/search_engine_descriptions_strings_gu.xtb" lang="gu" />
     <file path="strings/search_engine_descriptions_strings_he.xtb" lang="he" />
     <file path="strings/search_engine_descriptions_strings_hr.xtb" lang="hr" />
     <file path="strings/search_engine_descriptions_strings_hu.xtb" lang="hu" />
-    <file path="strings/search_engine_descriptions_strings_hy.xtb" lang="hy" />
+    <file path="strings/search_engine_descriptions_strings_id.xtb" lang="id" />
     <file path="strings/search_engine_descriptions_strings_is.xtb" lang="is" />
     <file path="strings/search_engine_descriptions_strings_it.xtb" lang="it" />
     <file path="strings/search_engine_descriptions_strings_ja.xtb" lang="ja" />
-    <file path="strings/search_engine_descriptions_strings_ka.xtb" lang="ka" />
-    <file path="strings/search_engine_descriptions_strings_kk.xtb" lang="kk" />
+    <file path="strings/search_engine_descriptions_strings_kn.xtb" lang="kn" />
     <file path="strings/search_engine_descriptions_strings_ko.xtb" lang="ko" />
     <file path="strings/search_engine_descriptions_strings_lt.xtb" lang="lt" />
     <file path="strings/search_engine_descriptions_strings_lv.xtb" lang="lv" />
-    <file path="strings/search_engine_descriptions_strings_mk.xtb" lang="mk" />
-    <file path="strings/search_engine_descriptions_strings_mn.xtb" lang="mn" />
     <file path="strings/search_engine_descriptions_strings_mr.xtb" lang="mr" />
-    <file path="strings/search_engine_descriptions_strings_my.xtb" lang="my" />
-    <file path="strings/search_engine_descriptions_strings_nb.xtb" lang="nb" />
+    <file path="strings/search_engine_descriptions_strings_ms.xtb" lang="ms" />
     <file path="strings/search_engine_descriptions_strings_nl.xtb" lang="nl" />
     <file path="strings/search_engine_descriptions_strings_no.xtb" lang="no" />
     <file path="strings/search_engine_descriptions_strings_pl.xtb" lang="pl" />
     <file path="strings/search_engine_descriptions_strings_pt-PT.xtb" lang="pt-PT" />
     <file path="strings/search_engine_descriptions_strings_ro.xtb" lang="ro" />
     <file path="strings/search_engine_descriptions_strings_ru.xtb" lang="ru" />
-    <file path="strings/search_engine_descriptions_strings_si.xtb" lang="si" />
     <file path="strings/search_engine_descriptions_strings_sk.xtb" lang="sk" />
     <file path="strings/search_engine_descriptions_strings_sl.xtb" lang="sl" />
-    <file path="strings/search_engine_descriptions_strings_sq.xtb" lang="sq" />
     <file path="strings/search_engine_descriptions_strings_sr.xtb" lang="sr" />
     <file path="strings/search_engine_descriptions_strings_sv.xtb" lang="sv" />
     <file path="strings/search_engine_descriptions_strings_te.xtb" lang="te" />
     <file path="strings/search_engine_descriptions_strings_th.xtb" lang="th" />
     <file path="strings/search_engine_descriptions_strings_tr.xtb" lang="tr" />
     <file path="strings/search_engine_descriptions_strings_uk.xtb" lang="uk" />
-    <file path="strings/search_engine_descriptions_strings_uz.xtb" lang="uz" />
+    <file path="strings/search_engine_descriptions_strings_ur.xtb" lang="ur" />
     <file path="strings/search_engine_descriptions_strings_vi.xtb" lang="vi" />
     <file path="strings/search_engine_descriptions_strings_zh-CN.xtb" lang="zh-CN" />
     <file path="strings/search_engine_descriptions_strings_zh-HK.xtb" lang="zh-HK" />
@@ -191,7 +183,7 @@ process but are generated using a script that pulls them from outside the repo.-
         Plant trees as you search, for free. 200 million trees planted already.
       </message>
       <message name="IDS_GOOGLE_SEARCH_DESCRIPTION" use_name_for_id="true">
-        Find what you need
+        Find what you need with Google
       </message>
       <message name="IDS_KARMA_SEARCH_DESCRIPTION" use_name_for_id="true">
         Protect animals and biodiversity - make every search count!
@@ -215,13 +207,13 @@ process but are generated using a script that pulls them from outside the repo.-
         Search engine and web browser which protect your privacy
       </message>
       <message name="IDS_SEZNAM_SEARCH_DESCRIPTION" use_name_for_id="true">
-        Useful, entertaining, inspirational. Seznam - I find there what I don't know.
+        Useful, entertaining, inspirational. Seznam – I find there what I don't know.
       </message>
       <message name="IDS_YAHOO_SEARCH_DESCRIPTION" use_name_for_id="true">
         Search the web and answer life’s daily questions with Yahoo.
       </message>
       <message name="IDS_YOU_SEARCH_DESCRIPTION" use_name_for_id="true">
-        Personalized AI Assistant for search and chat.
+        AI-enhanced searching and browsing. Search results, summaries, and citations.
       </message>
     </messages>
   </release>

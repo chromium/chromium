@@ -6,7 +6,6 @@ http://go/chrome-search-engines-marketing-snippets-script.
 Do not modify it manually. -->
 <translationbundle lang="et">
   <translation id="IDS_BING_SEARCH_DESCRIPTION">Toetab ChatGPT GPT-4</translation>
-  <translation id="IDS_DUCKDUCKGO_SEARCH_DESCRIPTION">Me ei jälita sind. Privaatsus lihtsustatud kujul.</translation>
-  <translation id="IDS_GOOGLE_SEARCH_DESCRIPTION">Leidke maailma enim kasutatava otsingumootori abil seda, mida vajate.</translation>
+  <translation id="IDS_GOOGLE_SEARCH_DESCRIPTION">Leidke vajalik Google'i abiga</translation>
   <translation id="IDS_PRIVACYWALL_SEARCH_DESCRIPTION">Teie privaatsust kaitsev otsimootor.</translation>
 </translationbundle>

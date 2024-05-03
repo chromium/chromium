@@ -6,7 +6,8 @@ http://go/chrome-search-engines-marketing-snippets-script.
 Do not modify it manually. -->
 <translationbundle lang="no">
   <translation id="IDS_BING_SEARCH_DESCRIPTION">Drevet av ChatGPTs GPT-4</translation>
-  <translation id="IDS_DUCKDUCKGO_SEARCH_DESCRIPTION">Vi sporer deg ikke. Personvern gjort enkelt.</translation>
-  <translation id="IDS_GOOGLE_SEARCH_DESCRIPTION">Finn det du trenger</translation>
+  <translation id="IDS_ECOSIA_SEARCH_DESCRIPTION">Plant trær mens du søker på nettet. Over 200 millioner plantede trær.</translation>
+  <translation id="IDS_GOOGLE_SEARCH_DESCRIPTION">Finn det du trenger med Google</translation>
+  <translation id="IDS_OCEANHERO_SEARCH_DESCRIPTION">Søkene dine renser havene og strender for plast.</translation>
   <translation id="IDS_PRIVACYWALL_SEARCH_DESCRIPTION">En søkemotor som beskytter ditt personvern.</translation>
 </translationbundle>

@@ -7,11 +7,12 @@ Do not modify it manually. -->
 <translationbundle lang="nl">
   <translation id="IDS_BING_SEARCH_DESCRIPTION">Mogelijk gemaakt door ChatGPT's GPT-4</translation>
   <translation id="IDS_BRAVE_SEARCH_DESCRIPTION">Blokkeer advertenties en trackers terwijl je op het web surft.</translation>
-  <translation id="IDS_DUCKDUCKGO_SEARCH_DESCRIPTION">We volgen je niet. Privacy, zo simpel kan het zijn.</translation>
+  <translation id="IDS_DUCKDUCKGO_SEARCH_DESCRIPTION">Privé. Snel. Minder advertenties. DuckDuckGo volgt je nooit.</translation>
   <translation id="IDS_ECOSIA_SEARCH_DESCRIPTION">Plant bomen terwijl je zoekt, geheel gratis. Al 200 miljoen bomen geplant.</translation>
-  <translation id="IDS_GOOGLE_SEARCH_DESCRIPTION">Vind wat je zoekt</translation>
+  <translation id="IDS_GOOGLE_SEARCH_DESCRIPTION">Vind wat je zoekt met Google</translation>
   <translation id="IDS_KARMA_SEARCH_DESCRIPTION">Bescherm dieren en biodiversiteit - zorg ervoor dat elke zoekopdracht telt!</translation>
   <translation id="IDS_LILO_SEARCH_DESCRIPTION">Uw internetonderzoek financiert gratis verenigingen</translation>
   <translation id="IDS_OCEANHERO_SEARCH_DESCRIPTION">Uw zoekopdrachten helpen onze oceanen en stranden van plastic te reinigen.</translation>
   <translation id="IDS_PRIVACYWALL_SEARCH_DESCRIPTION">Een zoekmachine die uw privacy beschermt.</translation>
+  <translation id="IDS_YAHOO_SEARCH_DESCRIPTION">Zoek online en beantwoord alledaagse vragen met Yahoo.</translation>
 </translationbundle>

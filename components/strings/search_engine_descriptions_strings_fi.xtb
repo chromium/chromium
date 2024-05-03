@@ -6,11 +6,12 @@ http://go/chrome-search-engines-marketing-snippets-script.
 Do not modify it manually. -->
 <translationbundle lang="fi">
   <translation id="IDS_BING_SEARCH_DESCRIPTION">Palvelun tarjoaa ChatGPT:n GPT-4</translation>
-  <translation id="IDS_DUCKDUCKGO_SEARCH_DESCRIPTION">Emme seuraa sinua. Yksinkertaistettua yksityisyyttä.</translation>
+  <translation id="IDS_DUCKDUCKGO_SEARCH_DESCRIPTION">Yksityinen. Nopea. Vähemmän mainoksia. DuckDuckGo ei koskaan seuraa sinua.</translation>
   <translation id="IDS_ECOSIA_SEARCH_DESCRIPTION">Istuta puita hakuja tehdessäsi. Yli 200 miljoonaa istutettua puuta.</translation>
-  <translation id="IDS_GOOGLE_SEARCH_DESCRIPTION">Löydä mitä tarvitset</translation>
+  <translation id="IDS_GOOGLE_SEARCH_DESCRIPTION">Löydä etsimäsi Googlen avulla</translation>
   <translation id="IDS_KARMA_SEARCH_DESCRIPTION">Suojele eläimiä ja biologista monimuotoisuutta – tee jokaisesta hausta tärkeä!</translation>
   <translation id="IDS_LILO_SEARCH_DESCRIPTION">Internet-tutkimuksesi rahoittaa yhdistyksiä ilmaiseksi</translation>
   <translation id="IDS_OCEANHERO_SEARCH_DESCRIPTION">Hakusi puhdistavat meremme ja rannat muovista.</translation>
   <translation id="IDS_PRIVACYWALL_SEARCH_DESCRIPTION">Hakukone, joka suojaa yksityisyyttäsi.</translation>
+  <translation id="IDS_YAHOO_SEARCH_DESCRIPTION">Hae verkosta vastauksia arjen kysymyksiin Yahoolla.</translation>
 </translationbundle>
