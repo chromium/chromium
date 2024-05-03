@@ -55,19 +55,28 @@ export class SettingsSliderV2Element extends SettingsSliderV2ElementBase {
       },
 
       /**
-       * A scale factor used to support fractional pref values. This is not
-       * compatible with `ticks`, i.e. if `scale` is not 1 then `ticks` must be
-       * empty.
+       * A scale factor used to support fractional values. For example, if
+       * min=0, max=10, scale=10, the value ranges for any decimal number
+       * between [0, 1]. If min=0, max=10, scale=1, the value ranges for any
+       * decimal number between [0, 10].
+       * This is not compatible with `ticks`, i.e. if `scale` is not 1 then
+       * `ticks` must not be set.
        */
       scale: {
         type: Number,
         value: 1,
       },
 
-      /** The slider minimum value. */
+      /**
+       * The slider minimum value. If `ticks` is not used, this must be
+       * specified.
+       */
       min: Number,
 
-      /** The slider maximum value. */
+      /**
+       * The slider maximum value. If `ticks` is not used, this must be
+       * specified.
+       */
       max: Number,
 
       /**
@@ -110,7 +119,8 @@ export class SettingsSliderV2Element extends SettingsSliderV2ElementBase {
 
   static get observers() {
     return [
-      'valueChanged_(pref.*, value, ticks.*, loaded_)',
+      'syncPrefChangeToValue_(pref.*)',
+      'valueChanged_(value, ticks.*, loaded_)',
     ];
   }
 
@@ -159,25 +169,33 @@ export class SettingsSliderV2Element extends SettingsSliderV2ElementBase {
     }
 
     const sliderValue = this.$.slider.value;
-
-    let newValue;
-    if (this.ticks && this.ticks.length > 0) {
-      newValue = this.getTickValueAtIndex_(sliderValue);
+    if (this.ticks.length > 0) {
+      this.value = this.getTickValueAtIndex_(sliderValue);
     } else {
-      newValue = sliderValue / this.scale;
+      this.value = sliderValue / this.scale;
     }
 
     if (this.pref) {
-      this.updatePrefValueFromUserAction(newValue);
-    } else {
-      this.value = newValue;
+      this.updatePrefValueFromUserAction(this.value);
+    }
+
+    // TODO(b/333454006) dispatch "change" event for non-pref usage.
+  }
+
+  /**
+   * This observer watches changes to `pref` and syncs it to the `value`
+   * property.
+   */
+  private syncPrefChangeToValue_(): void {
+    if (this.pref) {
+      this.value = this.pref.value;
     }
   }
 
   /**
-   * Updates the knob position when slider value changes. If the knob is still
-   * being dragged, this instead forces slider value back to the current
-   * position.
+   * This observer watches changes to `value` via downwards data-flow and
+   * updates the slider accordingly. If the knob is in the middle of being
+   * dragged, the slider value is forced back to the current position.
    */
   private valueChanged_(): void {
     if (!this.loaded_ || this.$.slider.dragging ||
@@ -192,7 +210,7 @@ export class SettingsSliderV2Element extends SettingsSliderV2ElementBase {
       return;
     }
 
-    const currentValue = (this.pref ? this.pref.value : this.value);
+    const currentValue = this.value;
 
     // The preference and slider values are continuous when `ticks` is empty.
     if (numTicks === 0) {
@@ -222,11 +240,7 @@ export class SettingsSliderV2Element extends SettingsSliderV2ElementBase {
       this.$.slider.value = index;
     }
     const tickValue = this.getTickValueAtIndex_(index);
-
-    if (this.pref && this.pref.value !== tickValue) {
-      this.updatePrefValueFromUserAction(tickValue);
-    }
-    if (!this.pref && this.value !== tickValue) {
+    if (this.value !== tickValue) {
       this.value = tickValue;
     }
   }
