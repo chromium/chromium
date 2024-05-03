@@ -193,26 +193,25 @@ TEST_F(CallerValidationTest, NoneValidationTestOtherProcess) {
 
 TEST_F(CallerValidationTest, PathValidationFuzzyPathMatch) {
   // Build the paths.
-  const auto app1_path = temp_dir_.GetPath().AppendASCII("app1.exe");
+  // the temp dir must not end with the 'scoped_dir' dir or else it will be
+  // removed by the trim path function, so place the test binaries into a subdir
+  // of the temp dir.
+  const auto temp_dir = temp_dir_.GetPath().AppendASCII("testdir");
+  const auto app1_path = temp_dir.AppendASCII("app1.exe");
   const auto app2_path =
-      temp_dir_.GetPath().AppendASCII("Application").AppendASCII("app2.exe");
+      temp_dir.AppendASCII("Application").AppendASCII("app2.exe");
   const auto app3_path =
-      temp_dir_.GetPath().AppendASCII("Application").AppendASCII("app3.exe");
-  const auto app4_path =
-      temp_dir_.GetPath().AppendASCII("Temp").AppendASCII("app4.exe");
-  const auto app5_path =
-      temp_dir_.GetPath().AppendASCII("Blah").AppendASCII("app5.exe");
-  const auto app6_path =
-      temp_dir_.GetPath().AppendASCII("Blah").AppendASCII("app6.exe");
-  const auto app7_path = temp_dir_.GetPath()
-                             .AppendASCII("Application")
+      temp_dir.AppendASCII("Application").AppendASCII("app3.exe");
+  const auto app4_path = temp_dir.AppendASCII("Temp").AppendASCII("app4.exe");
+  const auto app5_path = temp_dir.AppendASCII("Blah").AppendASCII("app5.exe");
+  const auto app6_path = temp_dir.AppendASCII("Blah").AppendASCII("app6.exe");
+  const auto app7_path = temp_dir.AppendASCII("Application")
                              .AppendASCII("Temp")
                              .AppendASCII("app7.exe");
   const auto app8_path =
-      temp_dir_.GetPath().AppendASCII("Program Files").AppendASCII("app8.exe");
-  const auto app9_path = temp_dir_.GetPath()
-                             .AppendASCII("Program Files (x86)")
-                             .AppendASCII("app9.exe");
+      temp_dir.AppendASCII("Program Files").AppendASCII("app8.exe");
+  const auto app9_path =
+      temp_dir.AppendASCII("Program Files (x86)").AppendASCII("app9.exe");
 
   // Should ignore 'Temp' and 'Application' for matches.
   ASSERT_NO_FATAL_FAILURE(
@@ -278,6 +277,20 @@ TEST_F(CallerValidationTest, TrimProcessPath) {
       {L"C:\\Dir\\app.exe", L"C:\\Dir"},
       {L"C:\\Dir\\", L"C:\\Dir"},
       {L"C:\\Dir", L"C:\\Dir"},
+      {L"C:\\Program Files "
+       L"(x86)\\Google\\Chrome\\Temp\\scoped_dir11452_73964817\\chrome.exe",
+       L"C:\\Program Files\\Google\\Chrome"},
+      {L"C:\\Program Files "
+       L"(x86)\\Google\\Chrome\\scoped_dir11452_73964817\\Temp\\chrome.exe",
+       L"C:\\Program Files\\Google\\Chrome\\scoped_dir11452_73964817"},
+      {L"C:\\Program Files (x86)\\Google\\scoped_dir1\\Chrome\\chrome.exe",
+       L"C:\\Program Files\\Google\\scoped_dir1\\Chrome"},
+      {L"C:\\Temp\\Program Files "
+       L"(x86)\\Google\\scoped_dir1\\Chrome\\chrome.exe",
+       L"C:\\Temp\\Program Files\\Google\\scoped_dir1\\Chrome"},
+      {L"C:\\scoped_dir1234\\Program Files "
+       L"(x86)\\Google\\scoped_dir1234\\Chrome\\chrome.exe",
+       L"C:\\scoped_dir1234\\Program Files\\Google\\scoped_dir1234\\Chrome"},
   };
 
   for (size_t i = 0; i < std::size(cases); ++i) {

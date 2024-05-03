@@ -63,6 +63,10 @@ base::FilePath MaybeTrimProcessPath(const base::FilePath& full_path) {
                        base::EqualsCaseInsensitiveASCII(*it, "Application"))) {
       continue;
     }
+    if (token == 2 && it->starts_with(L"scoped_dir")) {
+      token--;
+      continue;
+    }
     // In Windows Vista and later, the paths to the 'Program Files' and 'Common
     // Files' directories are not localized (translated) on disk. Instead, the
     // localized names are NTFS junction points to the non-localized locations.

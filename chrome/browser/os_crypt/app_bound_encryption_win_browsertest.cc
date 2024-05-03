@@ -284,11 +284,14 @@ class AppBoundEncryptionWinTestMultiProcess : public AppBoundEncryptionWinTest {
     const auto output_file_path = temp_dir_.GetPath().Append(L"output-file");
     ASSERT_TRUE(base::WriteFile(input_file_path, input_data));
 
-    auto executable_file_dir = temp_dir_.GetPath();
+    // The binary must run from 'testdir' this is because otherwise the scoped
+    // temp dir ends with a `scoped_dir` path which conflicts with a production
+    // environment that path validation has to correctly cater for.
+    auto executable_file_dir = temp_dir_.GetPath().Append(L"testdir");
     if (sub_dir) {
       executable_file_dir = executable_file_dir.Append(*sub_dir);
-      base::CreateDirectory(executable_file_dir);
     }
+    base::CreateDirectory(executable_file_dir);
 
     const auto executable_file_path = executable_file_dir.Append(filename);
     std::ignore = base::DeleteFile(executable_file_path);
