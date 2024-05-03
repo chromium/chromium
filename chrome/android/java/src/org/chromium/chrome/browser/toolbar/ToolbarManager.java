@@ -1337,7 +1337,8 @@ public class ToolbarManager
     private void onReadAloudReadabilityUpdated() {
         // Update the button if ReadAloud is set as the customized button.
         if (ChromeSharedPreferences.getInstance().readInt(ADAPTIVE_TOOLBAR_CUSTOMIZATION_SETTINGS)
-                == AdaptiveToolbarButtonVariant.READ_ALOUD) {
+                        == AdaptiveToolbarButtonVariant.READ_ALOUD
+                && mInitializedWithNative) {
             updateButtonStatus();
         }
     }
