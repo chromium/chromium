@@ -479,6 +479,12 @@ public class HistoryManager
                 && !mSelectionDelegate.isSelectionEnabled();
     }
 
+    void showIPH() {
+        AppSpecificHistoryIPHController iphController =
+                new AppSpecificHistoryIPHController(mActivity, () -> mProfile);
+        iphController.maybeShowIPH();
+    }
+
     /**
      * @return True if the available privacy disclaimers should be shown. Note that this may return
      *     true even if there are currently no privacy disclaimers.

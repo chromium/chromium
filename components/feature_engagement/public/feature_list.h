@@ -69,6 +69,7 @@ DEFINE_VARIATION_PARAM(kIPHAutoDarkUserEducationMessageFeature,
                        "IPH_AutoDarkUserEducationMessage");
 DEFINE_VARIATION_PARAM(kIPHAutoDarkUserEducationMessageOptInFeature,
                        "IPH_AutoDarkUserEducationMessageOptIn");
+DEFINE_VARIATION_PARAM(kIPHAppSpecificHistoryFeature, "IPH_AppSpecificHistory");
 DEFINE_VARIATION_PARAM(kIPHCCTHistoryFeature, "IPH_CCTHistory");
 DEFINE_VARIATION_PARAM(kIPHCCTMinimizedFeature, "IPH_CCTMinimized");
 DEFINE_VARIATION_PARAM(kIPHContextualPageActionsQuietVariantFeature,
@@ -486,6 +487,7 @@ constexpr flags_ui::FeatureEntry::FeatureVariation
         VARIATION_ENTRY(kIPHAutoDarkOptOutFeature),
         VARIATION_ENTRY(kIPHAutoDarkUserEducationMessageFeature),
         VARIATION_ENTRY(kIPHAutoDarkUserEducationMessageOptInFeature),
+        VARIATION_ENTRY(kIPHAppSpecificHistoryFeature),
         VARIATION_ENTRY(kIPHCCTHistoryFeature),
         VARIATION_ENTRY(kIPHCCTMinimizedFeature),
         VARIATION_ENTRY(kIPHContextualPageActionsQuietVariantFeature),

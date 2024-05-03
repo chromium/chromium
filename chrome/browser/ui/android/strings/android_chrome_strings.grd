@@ -1726,6 +1726,9 @@ Your Google account may have other forms of browsing history like searches and a
       <message name="IDS_HISTORY_FILTER_BY_APP" desc="Text used in the app filter button and in the header of app filter sheet.">
         Filter by app
       </message>
+      <message name="IDS_HISTORY_IPH_BUBBLE_TEXT" desc="The message on the text bubble shown to educate users about the app history filter.">
+        Search by app, date, and more.
+      </message>
       <message name="IDS_HISTORY_APP_FILTER_SHEET_DESCRIPTION" desc="The content description of history app filter where an app id to filter the history with can be chosen.">
         App filter sheet
       </message>

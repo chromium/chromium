@@ -101,6 +101,10 @@ public class HistoryManagerToolbar extends SelectableListToolbar<HistoryItem> {
         super.setSearchEnabled(searchEnabled);
         updateInfoMenuItem(
                 mManager.shouldShowInfoButton(), mManager.shouldShowInfoHeaderIfAvailable());
+        // shouldShowInfoButton is checked to ensure all the menu items are ready.
+        if (searchEnabled && mManager.shouldShowInfoButton()) {
+            mManager.showIPH();
+        }
     }
 
     /** Should be called when the user's sign in state changes. */

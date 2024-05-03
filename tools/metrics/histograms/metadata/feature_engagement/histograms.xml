@@ -46,6 +46,7 @@ chromium-metrics-reviews@google.com.
   <variant name="IPH_AddToHomescreenTextBubble"
       summary="(obsolete) educating users about adding website shortcuts to
                their home screen (using a text bubble)"/>
+  <variant name="IPH_AppSpecificHistory" summary="App Specific History action"/>
   <variant name="IPH_AutoDarkOptOut"
       summary="educating users about disabling auto dark feature globally"/>
   <variant name="IPH_AutoDarkUserEducationMessage"

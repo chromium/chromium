@@ -740,6 +740,21 @@ std::optional<FeatureConfig> GetClientSideFeatureConfig(
 
 #if BUILDFLAG(IS_ANDROID)
 
+  if (kIPHAppSpecificHistory.name == feature->name) {
+    // A config that allows the AppSpecificHistory IPH to be shown once
+    // a week, up to 3 times, unless the button is clicked at least once.
+    std::optional<FeatureConfig> config = FeatureConfig();
+    config->valid = true;
+    config->availability = Comparator(ANY, 0);
+    config->session_rate = Comparator(EQUAL, 0);
+    config->trigger = EventConfig("app_specific_history_iph_trigger",
+                                  Comparator(LESS_THAN, 3), 360, 360);
+    config->event_configs.insert(EventConfig("app_specific_history_iph_trigger",
+                                             Comparator(LESS_THAN, 1), 7, 360));
+    config->used = EventConfig("history_toolbar_search_menu_item_clicked",
+                               Comparator(EQUAL, 0), 360, 360);
+    return config;
+  }
   if (kIPHCCTHistory.name == feature->name) {
     // A config that allows the CCTHistory IPH to be shown once
     // a week, up to 3 times, unless the button is clicked at least once.

@@ -21,6 +21,7 @@ import java.lang.annotation.RetentionPolicy;
     FeatureConstants.ADAPTIVE_BUTTON_IN_TOP_TOOLBAR_CUSTOMIZATION_ADD_TO_BOOKMARKS_FEATURE,
     FeatureConstants.ADAPTIVE_BUTTON_IN_TOP_TOOLBAR_CUSTOMIZATION_READ_ALOUD_FEATURE,
     FeatureConstants.ADD_TO_HOMESCREEN_MESSAGE_FEATURE,
+    FeatureConstants.APP_SPECIFIC_HISTORY_FEATURE,
     FeatureConstants.AUTO_DARK_OPT_OUT_FEATURE,
     FeatureConstants.AUTO_DARK_USER_EDUCATION_MESSAGE_FEATURE,
     FeatureConstants.AUTO_DARK_USER_EDUCATION_MESSAGE_OPT_IN_FEATURE,
@@ -115,6 +116,7 @@ public @interface FeatureConstants {
     String ADAPTIVE_BUTTON_IN_TOP_TOOLBAR_CUSTOMIZATION_READ_ALOUD_FEATURE =
             "IPH_AdaptiveButtonInTopToolbarCustomization_ReadAloud";
     String ADD_TO_HOMESCREEN_MESSAGE_FEATURE = "IPH_AddToHomescreenMessage";
+    String APP_SPECIFIC_HISTORY_FEATURE = "IPH_AppSpecificHistory";
     String AUTO_DARK_OPT_OUT_FEATURE = "IPH_AutoDarkOptOut";
     String AUTO_DARK_USER_EDUCATION_MESSAGE_FEATURE = "IPH_AutoDarkUserEducationMessage";
     String AUTO_DARK_USER_EDUCATION_MESSAGE_OPT_IN_FEATURE =

@@ -95,6 +95,7 @@ BASE_DECLARE_FEATURE(
 BASE_DECLARE_FEATURE(
     kIPHAdaptiveButtonInTopToolbarCustomizationReadAloudFeature);
 BASE_DECLARE_FEATURE(kIPHAddToHomescreenMessageFeature);
+BASE_DECLARE_FEATURE(kIPHAppSpecificHistory);
 BASE_DECLARE_FEATURE(kIPHAutoDarkOptOutFeature);
 BASE_DECLARE_FEATURE(kIPHAutoDarkUserEducationMessageFeature);
 BASE_DECLARE_FEATURE(kIPHAutoDarkUserEducationMessageOptInFeature);
