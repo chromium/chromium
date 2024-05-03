@@ -29,6 +29,7 @@
 #include "chrome/browser/apps/platform_apps/shortcut_manager.h"
 #include "chrome/browser/autofill/personal_data_manager_factory.h"
 #include "chrome/browser/browser_process.h"
+#include "chrome/browser/content_settings/cookie_settings_factory.h"
 #include "chrome/browser/enterprise/util/managed_browser_utils.h"
 #include "chrome/browser/extensions/api/identity/web_auth_flow.h"
 #include "chrome/browser/policy/cloud/user_policy_signin_service_internal.h"
@@ -56,6 +57,8 @@
 #include "chrome/test/base/in_process_browser_test.h"
 #include "chrome/test/base/ui_test_utils.h"
 #include "components/autofill/core/browser/personal_data_manager.h"
+#include "components/content_settings/core/browser/cookie_settings.h"
+#include "components/content_settings/core/common/content_settings.h"
 #include "components/prefs/pref_service.h"
 #include "components/search/ntp_features.h"
 #include "components/signin/core/browser/account_reconcilor.h"
@@ -1334,6 +1337,7 @@ IN_PROC_BROWSER_TEST_F(DiceExplicitSigninBrowserTest, PRE_Migration) {
 // account storage enabled silently. Account storage is enabled after the user
 // signs out and signs in again through an explicit flow.
 IN_PROC_BROWSER_TEST_F(DiceExplicitSigninBrowserTest, Migration) {
+  Profile* profile = browser()->profile();
   // The user is still signed in implicitly.
   ASSERT_EQ(signin::GetPrimaryAccountConsentLevel(GetIdentityManager()),
             signin::ConsentLevel::kSignin);
@@ -1342,8 +1346,7 @@ IN_PROC_BROWSER_TEST_F(DiceExplicitSigninBrowserTest, Migration) {
           ->GetPrimaryAccountInfo(signin::ConsentLevel::kSignin)
           .email,
       kMainGmailEmail));
-  ASSERT_FALSE(browser()->profile()->GetPrefs()->GetBoolean(
-      prefs::kExplicitBrowserSignin));
+  ASSERT_FALSE(profile->GetPrefs()->GetBoolean(prefs::kExplicitBrowserSignin));
   // Account storage was not enabled yet.
   AccountStorageStatus account_storage_status = GetAccountStorageStatus();
   EXPECT_FALSE(account_storage_status.user_selectable_type_set.HasAny(
@@ -1360,6 +1363,15 @@ IN_PROC_BROWSER_TEST_F(DiceExplicitSigninBrowserTest, Migration) {
   EXPECT_TRUE(account_storage_status.user_selectable_type_set.HasAll(
       {syncer::UserSelectableType::kAutofill,
        syncer::UserSelectableType::kPasswords}));
+
+  // Cookie migration is required.
+  EXPECT_FALSE(profile->GetPrefs()->GetBoolean(
+      prefs::kCookieClearOnExitMigrationNoticeComplete));
+  content_settings::CookieSettings* settings =
+      CookieSettingsFactory::GetForProfile(profile).get();
+  settings->SetDefaultCookieSetting(CONTENT_SETTING_ALLOW);
+  EXPECT_TRUE(profile->GetPrefs()->GetBoolean(
+      prefs::kCookieClearOnExitMigrationNoticeComplete));
 }
 
 class DiceBrowserTextWithExplicitSignin : public DiceBrowserTest {

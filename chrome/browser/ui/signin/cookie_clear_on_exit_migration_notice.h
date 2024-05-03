@@ -9,6 +9,11 @@
 
 class Browser;
 
+// Whether the cookie "clear on exit" migration notice should be shown: the
+// migration is not completed, the notice is not currently shown, and the user
+// is signed in.
+bool CanShowCookieClearOnExitMigrationNotice(const Browser& browser);
+
 // Factory function to create and show the cookie "clear on exit" migration
 // notice. `callback` is called with true if the user choses to proceed with
 // closing the windows, and false if closing the browser should be interrupted.
