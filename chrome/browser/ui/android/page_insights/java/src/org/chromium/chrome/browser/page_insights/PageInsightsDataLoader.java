@@ -34,8 +34,6 @@ import java.util.Locale;
 
 /** Class to provide a {@link PageInsights} data and helper methods */
 class PageInsightsDataLoader {
-    @VisibleForTesting
-    static final String PAGE_INSIGHTS_SEND_CONTEXT_METADATA = "page_insights_send_context_metadata";
 
     @VisibleForTesting
     static final String PAGE_INSIGHTS_SEND_TIMESTAMP = "page_insights_send_timestamp";
@@ -44,11 +42,6 @@ class PageInsightsDataLoader {
     private static final int LRU_CACHE_SIZE = 10;
 
     private final Supplier<Profile> mProfileSupplier;
-    private final boolean mSendContextMetadata =
-            ChromeFeatureList.getFieldTrialParamByFeatureAsBoolean(
-                    ChromeFeatureList.CCT_PAGE_INSIGHTS_HUB,
-                    PAGE_INSIGHTS_SEND_CONTEXT_METADATA,
-                    false);
     private final boolean mSendTimestamp =
             ChromeFeatureList.getFieldTrialParamByFeatureAsBoolean(
                     ChromeFeatureList.CCT_PAGE_INSIGHTS_HUB, PAGE_INSIGHTS_SEND_TIMESTAMP, false);
@@ -81,18 +74,16 @@ class PageInsightsDataLoader {
             callback.bind(mCache.get(url)).run();
             return;
         }
-        RequestContextMetadata.Builder requestContextMetadataBuilder =
-                RequestContextMetadata.newBuilder();
-        if (mSendContextMetadata) {
-            PageInsightsHubRequestContextMetadata.Builder builder =
-                    PageInsightsHubRequestContextMetadata.newBuilder();
-            builder.setIsUserInitiated(isUserInitiated)
-                    .setIsInitialPage(config.getIsInitialPage())
-                    .setShouldNotLogOrPersonalize(config.getServerShouldNotLogOrPersonalize());
-            if (mSendTimestamp && config.hasNavigationTimestampMs()) {
-                builder.setNavigationTimestampMs(config.getNavigationTimestampMs());
-            }
-            requestContextMetadataBuilder.setPageInsightsHubMetadata(builder);
+
+        PageInsightsHubRequestContextMetadata.Builder requestContextMetadataBuilder =
+                PageInsightsHubRequestContextMetadata.newBuilder();
+        requestContextMetadataBuilder
+                .setIsUserInitiated(isUserInitiated)
+                .setIsInitialPage(config.getIsInitialPage())
+                .setShouldNotLogOrPersonalize(config.getServerShouldNotLogOrPersonalize());
+        if (mSendTimestamp && config.hasNavigationTimestampMs()) {
+            requestContextMetadataBuilder.setNavigationTimestampMs(
+                    config.getNavigationTimestampMs());
         }
 
         assert mProfileSupplier.hasValue() : "Attempting to load data without a Profile";
@@ -106,9 +97,7 @@ class PageInsightsDataLoader {
         mOptimizationGuideBridge.canApplyOptimizationOnDemand(
                 List.of(url),
                 List.of(PAGE_INSIGHTS),
-                shouldAttachGaiaToRequest(config)
-                        ? RequestContext.CONTEXT_PAGE_INSIGHTS_HUB
-                        : RequestContext.CONTEXT_NON_PERSONALIZED_PAGE_INSIGHTS_HUB,
+                RequestContext.CONTEXT_PAGE_INSIGHTS_HUB,
                 (gurl, optimizationType, decision, metadata) -> {
                     try {
                         if (decision != OptimizationGuideDecision.TRUE) {
@@ -136,7 +125,9 @@ class PageInsightsDataLoader {
                                         e));
                     }
                 },
-                requestContextMetadataBuilder.build());
+                RequestContextMetadata.newBuilder()
+                        .setPageInsightsHubMetadata(requestContextMetadataBuilder)
+                        .build());
     }
 
     void clearCacheForTesting() {
@@ -145,17 +136,5 @@ class PageInsightsDataLoader {
 
     void cancelCallback() {
         mCurrentCallback = null;
-    }
-
-    private boolean shouldAttachGaiaToRequest(PageInsightsConfig config) {
-        if (mSendContextMetadata) {
-            // If we are sending context metadata we are ok to attach Gaia in all cases,
-            // as server will use metadata to ensure Gaia is only used in permitted
-            // ways.
-            return true;
-        }
-        // If we are not sending context metadata, then we should only attach Gaia
-        // if logging and personalisation are not forbidden.
-        return !config.getServerShouldNotLogOrPersonalize();
     }
 }

@@ -4637,9 +4637,6 @@ To change this setting, <ph name="BEGIN_LINK">BEGIN_LINK</ph>delete the Chrome d
         Page insights Loading Indicator
       </message>
       <message name="IDS_PAGE_INSIGHTS_HUB_PRIVACY_NOTICE" desc="Text that displays privacy notice for page insights hub">
-        Your activity in Page Insights is saved in your <ph name="BEGIN_LINK">&lt;link&gt;</ph>Google Account<ph name="END_LINK">&lt;/link&gt;</ph>.
-      </message>
-      <message name="IDS_PAGE_INSIGHTS_HUB_ALT_PRIVACY_NOTICE" desc="Text that displays privacy notice for page insights hub">
         Your activity in Page Insights is saved in your Google Account. <ph name="BEGIN_LINK">&lt;link&gt;</ph>Learn how to manage this<ph name="END_LINK">&lt;/link&gt;</ph>
       </message>
       <message name="IDS_PAGE_INSIGHTS_HUB_MY_ACTIVITY_LOGO" desc="Logo of privacy notice for page insights hub">

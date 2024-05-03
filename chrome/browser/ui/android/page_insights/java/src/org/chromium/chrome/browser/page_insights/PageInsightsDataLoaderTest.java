@@ -163,63 +163,8 @@ public class PageInsightsDataLoaderTest {
     }
 
     @Test
-    public void testLoadInsightsData_doNotSendContentMetadata_shouldLogAndPersonalise_allowsGaia() {
+    public void testLoadInsightsData_sendTimestamp_sendsMetadataAndAllowsGaia() {
         TestValues testValues = new TestValues();
-        testValues.addFieldTrialParamOverride(
-                ChromeFeatureList.CCT_PAGE_INSIGHTS_HUB,
-                PageInsightsDataLoader.PAGE_INSIGHTS_SEND_CONTEXT_METADATA,
-                "false");
-        createDataLoader(testValues);
-
-        mPageInsightsDataLoader.loadInsightsData(
-                mUrl,
-                /* isUserInitiated= */ true,
-                PageInsightsConfig.newBuilder().setServerShouldNotLogOrPersonalize(false).build(),
-                (data) -> {});
-
-        verify(mOptimizationGuideBridge, times(1))
-                .canApplyOptimizationOnDemand(
-                        eq(Arrays.asList(mUrl)),
-                        eq(Arrays.asList(HintsProto.OptimizationType.PAGE_INSIGHTS)),
-                        eq(CommonTypesProto.RequestContext.CONTEXT_PAGE_INSIGHTS_HUB),
-                        any(OptimizationGuideBridge.OnDemandOptimizationGuideCallback.class),
-                        eq(RequestContextMetadata.getDefaultInstance()));
-    }
-
-    @Test
-    public void
-            testLoadInsightsData_doNotSendContentMetadata_shouldNotLogAndPersonalise_disallowsGaia() {
-        TestValues testValues = new TestValues();
-        testValues.addFieldTrialParamOverride(
-                ChromeFeatureList.CCT_PAGE_INSIGHTS_HUB,
-                PageInsightsDataLoader.PAGE_INSIGHTS_SEND_CONTEXT_METADATA,
-                "false");
-        createDataLoader(testValues);
-
-        mPageInsightsDataLoader.loadInsightsData(
-                mUrl,
-                /* isUserInitiated= */ true,
-                PageInsightsConfig.newBuilder().setServerShouldNotLogOrPersonalize(true).build(),
-                (data) -> {});
-
-        verify(mOptimizationGuideBridge, times(1))
-                .canApplyOptimizationOnDemand(
-                        eq(Arrays.asList(mUrl)),
-                        eq(Arrays.asList(HintsProto.OptimizationType.PAGE_INSIGHTS)),
-                        eq(
-                                CommonTypesProto.RequestContext
-                                        .CONTEXT_NON_PERSONALIZED_PAGE_INSIGHTS_HUB),
-                        any(OptimizationGuideBridge.OnDemandOptimizationGuideCallback.class),
-                        eq(RequestContextMetadata.getDefaultInstance()));
-    }
-
-    @Test
-    public void testLoadInsightsData_sendAllContentMetadata_sendsMetadataAndAllowsGaia() {
-        TestValues testValues = new TestValues();
-        testValues.addFieldTrialParamOverride(
-                ChromeFeatureList.CCT_PAGE_INSIGHTS_HUB,
-                PageInsightsDataLoader.PAGE_INSIGHTS_SEND_CONTEXT_METADATA,
-                "true");
         testValues.addFieldTrialParamOverride(
                 ChromeFeatureList.CCT_PAGE_INSIGHTS_HUB,
                 PageInsightsDataLoader.PAGE_INSIGHTS_SEND_TIMESTAMP,
@@ -255,13 +200,8 @@ public class PageInsightsDataLoaderTest {
     }
 
     @Test
-    public void
-            testLoadInsightsData_sendContentMetadataExceptTimestamp_sendsMetadataAndAllowsGaia() {
+    public void testLoadInsightsData_doNotSendTimestamp_sendsMetadataAndAllowsGaia() {
         TestValues testValues = new TestValues();
-        testValues.addFieldTrialParamOverride(
-                ChromeFeatureList.CCT_PAGE_INSIGHTS_HUB,
-                PageInsightsDataLoader.PAGE_INSIGHTS_SEND_CONTEXT_METADATA,
-                "true");
         testValues.addFieldTrialParamOverride(
                 ChromeFeatureList.CCT_PAGE_INSIGHTS_HUB,
                 PageInsightsDataLoader.PAGE_INSIGHTS_SEND_TIMESTAMP,

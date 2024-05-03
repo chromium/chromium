@@ -530,10 +530,6 @@ public class PageInsightsMediatorTest {
         TestValues testValues = new TestValues();
         testValues.addFieldTrialParamOverride(
                 ChromeFeatureList.CCT_PAGE_INSIGHTS_HUB,
-                PageInsightsDataLoader.PAGE_INSIGHTS_SEND_CONTEXT_METADATA,
-                "true");
-        testValues.addFieldTrialParamOverride(
-                ChromeFeatureList.CCT_PAGE_INSIGHTS_HUB,
                 PageInsightsDataLoader.PAGE_INSIGHTS_SEND_TIMESTAMP,
                 "true");
         createMediator(
@@ -746,10 +742,6 @@ public class PageInsightsMediatorTest {
                                 .setNavigationTimestampMs(1234L)
                                 .build());
         TestValues testValues = new TestValues();
-        testValues.addFieldTrialParamOverride(
-                ChromeFeatureList.CCT_PAGE_INSIGHTS_HUB,
-                PageInsightsDataLoader.PAGE_INSIGHTS_SEND_CONTEXT_METADATA,
-                "true");
         testValues.addFieldTrialParamOverride(
                 ChromeFeatureList.CCT_PAGE_INSIGHTS_HUB,
                 PageInsightsDataLoader.PAGE_INSIGHTS_SEND_TIMESTAMP,

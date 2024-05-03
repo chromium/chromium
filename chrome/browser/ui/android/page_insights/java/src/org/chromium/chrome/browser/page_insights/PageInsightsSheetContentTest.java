@@ -418,37 +418,6 @@ public class PageInsightsSheetContentTest {
                                     - getContentViewById(R.id.page_insights_privacy_notice)
                                             .getHeight(),
                             getContentViewById(R.id.page_insights_feed_content).getHeight());
-                    assertFalse(
-                            ((TextView)
-                                            getContentViewById(
-                                                    R.id.page_insights_privacy_notice_message))
-                                    .getText()
-                                    .toString()
-                                    .contains("Learn how to manage this"));
-                });
-    }
-
-    @Test
-    @MediumTest
-    public void privacyNoticeShownForFirstTime_altPrivacyNotice_hasCorrectText() {
-        TestValues testValues = new TestValues();
-        testValues.addFeatureFlagOverride(ChromeFeatureList.CCT_PAGE_INSIGHTS_HUB, true);
-        testValues.addFieldTrialParamOverride(
-                ChromeFeatureList.CCT_PAGE_INSIGHTS_HUB,
-                PageInsightsSheetContent.PAGE_INSIGHTS_ALT_PRIVACY_NOTICE_URL_PARAM,
-                "https//help.google.com/1234");
-        createSheetContent(testValues);
-        TestThreadUtils.runOnUiThreadBlocking(
-                () -> {
-                    View testView = new View(sTestRule.getActivity());
-                    setPrivacyNoticePreferences(
-                            false, System.currentTimeMillis() - MILLIS_IN_ONE_DAY, 0);
-                    mSheetContent.initContent(
-                            testView,
-                            /* isPrivacyNoticeRequired= */ true,
-                            /* shouldHavePeekState= */ true);
-                    mSheetContent.showFeedPage();
-
                     assertTrue(
                             ((TextView)
                                             getContentViewById(
