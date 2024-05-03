@@ -7336,7 +7336,6 @@ crbug.com/338124116 external/wpt/payment-request/payment-request-hasenrolledinst
 crbug.com/40851596 external/wpt/pointerevents/pointerevent_click_during_capture.html?mouse-auxclick [ Failure Pass ]
 crbug.com/40181907 external/wpt/pointerevents/pointerevent_touch-action-pan-up-css_touch.html [ Failure Pass Timeout ]
 crbug.com/40286318 external/wpt/html/semantics/invokers/invoketarget-on-dialog-behavior.tentative.html [ Failure Pass ]
-crbug.com/333739617 [ Mac ] fast/peerconnection/RTCEncodedVideoFrameMetadata-timestamp.html [ Timeout ]
-crbug.com/333739617 [ Win ] fast/peerconnection/RTCEncodedVideoFrameMetadata-timestamp.html [ Timeout ]
+crbug.com/333739617 fast/peerconnection/RTCEncodedVideoFrameMetadata-timestamp.html [ Failure Pass Timeout ]
 crbug.com/333395248 [ Mac ] virtual/keepalive-in-browser-migration/external/wpt/fetch/api/response/response-clone.any.serviceworker.html [ Failure Pass ]
 crbug.com/329784394 external/wpt/html/browsers/browsing-the-web/history-traversal/persisted-user-state-restoration/scroll-restoration-fragment-scrolling-samedoc.html [ Failure Pass ]
