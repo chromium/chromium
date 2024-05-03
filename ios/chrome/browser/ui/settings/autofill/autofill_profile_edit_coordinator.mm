@@ -80,14 +80,10 @@
       autofill::PersonalDataManagerFactory::GetForBrowserState(
           self.browser->GetBrowserState()->GetOriginalChromeBrowserState());
 
-  std::string countryCode = autofill::data_util::GetCountryCodeWithFallback(
-      *_autofillProfile, GetApplicationContext()->GetApplicationLocale());
-
   self.mediator = [[AutofillProfileEditMediator alloc]
          initWithDelegate:self
       personalDataManager:personalDataManager
           autofillProfile:_autofillProfile.get()
-              countryCode:base::SysUTF8ToNSString(countryCode)
         isMigrationPrompt:NO];
 
   self.viewController = [[AutofillSettingsProfileEditTableViewController alloc]

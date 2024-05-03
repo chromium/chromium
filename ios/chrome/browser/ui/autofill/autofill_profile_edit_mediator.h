@@ -30,7 +30,6 @@ class PersonalDataManager;
                     (id<AutofillProfileEditMediatorDelegate>)delegate
              personalDataManager:(autofill::PersonalDataManager*)dataManager
                  autofillProfile:(autofill::AutofillProfile*)profile
-                     countryCode:(NSString*)countryCode
                isMigrationPrompt:(BOOL)isMigrationPrompt
     NS_DESIGNATED_INITIALIZER;
 

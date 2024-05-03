@@ -113,7 +113,6 @@ class AutofillProfileEditMediatorTest : public PlatformTest {
            initWithDelegate:fake_autofill_profile_edit_mediator_delegate_
         personalDataManager:personal_data_manager_
             autofillProfile:profile_.get()
-                countryCode:@"US"
           isMigrationPrompt:is_migration_prompt];
     autofill_profile_edit_mediator_.consumer = fake_consumer_;
   }

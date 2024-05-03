@@ -7,10 +7,13 @@
 #import "base/memory/raw_ptr.h"
 #import "base/strings/sys_string_conversions.h"
 #import "components/autofill/core/browser/address_data_manager.h"
+#import "components/autofill/core/browser/autofill_address_util.h"
+#import "components/autofill/core/browser/autofill_data_util.h"
 #import "components/autofill/core/browser/geo/autofill_country.h"
 #import "components/autofill/core/browser/personal_data_manager.h"
 #import "components/autofill/core/browser/profile_requirement_utils.h"
 #import "components/autofill/core/browser/ui/country_combobox_model.h"
+#import "components/autofill/ios/common/features.h"
 #import "ios/chrome/browser/shared/model/application_context/application_context.h"
 #import "ios/chrome/browser/shared/ui/list_model/list_model.h"
 #import "ios/chrome/browser/ui/autofill/autofill_profile_edit_consumer.h"
@@ -18,6 +21,8 @@
 #import "ios/chrome/browser/ui/autofill/autofill_ui_type.h"
 #import "ios/chrome/browser/ui/autofill/autofill_ui_type_util.h"
 #import "ios/chrome/browser/ui/autofill/cells/country_item.h"
+#import "third_party/libaddressinput/src/cpp/include/libaddressinput/address_ui.h"
+#import "third_party/libaddressinput/src/cpp/include/libaddressinput/localization.h"
 #import "ui/base/l10n/l10n_util.h"
 
 namespace {
@@ -61,7 +66,6 @@ typedef NS_ENUM(NSInteger, ItemType) {
                     (id<AutofillProfileEditMediatorDelegate>)delegate
              personalDataManager:(autofill::PersonalDataManager*)dataManager
                  autofillProfile:(autofill::AutofillProfile*)autofillProfile
-                     countryCode:(NSString*)countryCode
                isMigrationPrompt:(BOOL)isMigrationPrompt {
   self = [super init];
 
@@ -70,9 +74,11 @@ typedef NS_ENUM(NSInteger, ItemType) {
     _personalDataManager = dataManager;
     _autofillProfile = autofillProfile;
     _delegate = delegate;
-    _selectedCountryCode = countryCode;
     _isMigrationPrompt = isMigrationPrompt;
     _requiredFieldsWithEmptyValue = [[NSMutableSet<NSString*> alloc] init];
+    _selectedCountryCode =
+        base::SysUTF8ToNSString(autofill::data_util::GetCountryCodeWithFallback(
+            *autofillProfile, GetApplicationContext()->GetApplicationLocale()));
 
     [self loadCountries];
   }
@@ -89,16 +95,7 @@ typedef NS_ENUM(NSInteger, ItemType) {
 
   [self sendAddressFieldsToConsumer];
   [self sendAutofillProfileDataToConsumer];
-
-  if (_selectedCountryCode) {
-    [self updateRequirementsForCountryCode:_selectedCountryCode];
-  } else {
-    [self updateRequirementsForCountry:base::SysUTF16ToNSString(
-                                           _autofillProfile->GetInfo(
-                                               autofill::ADDRESS_HOME_COUNTRY,
-                                               GetApplicationContext()
-                                                   ->GetApplicationLocale()))];
-  }
+  [self fetchAndUpdateFieldRequirements];
 
   [_consumer setAccountProfile:[self isAccountProfile]];
 }
@@ -113,7 +110,7 @@ typedef NS_ENUM(NSInteger, ItemType) {
   _selectedCountryCode = countryItem.countryCode;
 
   [self sendAddressFieldsToConsumer];
-  [self updateRequirementsForCountryCode:_selectedCountryCode];
+  [self fetchAndUpdateFieldRequirements];
   [self.consumer didSelectCountry:countryItem.text];
 }
 
@@ -280,8 +277,8 @@ typedef NS_ENUM(NSInteger, ItemType) {
   _allCountries = countryItems;
 }
 
-// Fetches and updates the required fields for the `countryCode`.
-- (void)updateRequirementsForCountryCode:(NSString*)countryCode {
+// Fetches and computes the required fields based on `_selectedCountryCode`.
+- (void)fetchAndUpdateFieldRequirements {
   for (CountryItem* countryItem in _allCountries) {
     if ([_selectedCountryCode isEqualToString:countryItem.countryCode]) {
       countryItem.accessoryType = UITableViewCellAccessoryCheckmark;
@@ -290,26 +287,6 @@ typedef NS_ENUM(NSInteger, ItemType) {
     }
   }
 
-  [self setRequirementsForFields];
-}
-
-// Fetches and updates the required fields for the `country`.
-- (void)updateRequirementsForCountry:(NSString*)country {
-  for (CountryItem* countryItem in _allCountries) {
-    if ([country isEqualToString:countryItem.text]) {
-      _selectedCountryCode = countryItem.countryCode;
-      countryItem.accessoryType = UITableViewCellAccessoryCheckmark;
-    } else {
-      countryItem.accessoryType = UITableViewCellAccessoryNone;
-    }
-  }
-
-  [self setRequirementsForFields];
-}
-
-// Computes the required fields based on the country value
-// `_selectedCountryCode`.
-- (void)setRequirementsForFields {
   autofill::AutofillCountry country(
       base::SysNSStringToUTF8(_selectedCountryCode),
       GetApplicationContext()->GetApplicationLocale());
@@ -324,23 +301,57 @@ typedef NS_ENUM(NSInteger, ItemType) {
   NSMutableArray<AutofillProfileAddressField*>* addressFields =
       [[NSMutableArray alloc] init];
 
-  for (size_t i = 0; i < std::size(kProfileFieldsToDisplay); ++i) {
-    const AutofillProfileFieldDisplayInfo& fieldDisplayInfo =
-        kProfileFieldsToDisplay[i];
+  if (base::FeatureList::IsEnabled(
+          kAutofillDynamicallyLoadsFieldsForAddressInput)) {
+    i18n::addressinput::Localization localization;
+    localization.SetGetter(l10n_util::GetStringUTF8);
+    std::string best_language_tag_unused;
+    std::string country_code = base::SysNSStringToUTF8(_selectedCountryCode);
+    autofill::AutofillCountry country(country_code);
+    std::vector<autofill::AutofillAddressUIComponent> ui_components =
+        ConvertAddressUiComponents(
+            BuildComponents(country_code, localization,
+                            GetApplicationContext()->GetApplicationLocale(),
+                            &best_language_tag_unused),
+            country);
+    ExtendAddressComponents(ui_components, country, localization,
+                            /*include_literals=*/false);
+    for (const auto& item : ui_components) {
+      if (GroupTypeOfFieldType(item.field) !=
+          autofill::FieldTypeGroup::kAddress) {
+        continue;
+      }
 
-    if (!FieldIsUsedInAddress(fieldDisplayInfo.autofillType,
-                              _selectedCountryCode) ||
-        GroupTypeOfFieldType(fieldDisplayInfo.autofillType) !=
-            autofill::FieldTypeGroup::kAddress) {
-      continue;
+      AutofillProfileAddressField* field =
+          [[AutofillProfileAddressField alloc] init];
+      field.fieldType = [self fieldTypeToTypeName:item.field];
+      field.fieldLabel = base::SysUTF8ToNSString(item.name);
+
+      [addressFields addObject:field];
     }
+  } else {
+    for (size_t i = 0; i < std::size(kProfileFieldsToDisplay); ++i) {
+      const AutofillProfileFieldDisplayInfo& fieldDisplayInfo =
+          kProfileFieldsToDisplay[i];
 
-    AutofillProfileAddressField* field =
-        [[AutofillProfileAddressField alloc] init];
-    field.fieldLabel = l10n_util::GetNSString(fieldDisplayInfo.displayStringID);
-    field.fieldType = [self fieldTypeToTypeName:fieldDisplayInfo.autofillType];
+      if (!FieldIsUsedInAddress(fieldDisplayInfo.autofillType,
+                                _selectedCountryCode) ||
+          GroupTypeOfFieldType(fieldDisplayInfo.autofillType) !=
+              autofill::FieldTypeGroup::kAddress ||
+          fieldDisplayInfo.autofillType == autofill::ADDRESS_HOME_COUNTRY) {
+        // Country field is added separately in the VC.
+        continue;
+      }
 
-    [addressFields addObject:field];
+      AutofillProfileAddressField* field =
+          [[AutofillProfileAddressField alloc] init];
+      field.fieldLabel =
+          l10n_util::GetNSString(fieldDisplayInfo.displayStringID);
+      field.fieldType =
+          [self fieldTypeToTypeName:fieldDisplayInfo.autofillType];
+
+      [addressFields addObject:field];
+    }
   }
 
   [self.consumer setAddressInputFields:addressFields];

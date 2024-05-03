@@ -87,7 +87,6 @@
          initWithDelegate:self
       personalDataManager:_personalDataManager
           autofillProfile:_autofillProfile.get()
-              countryCode:nil
         isMigrationPrompt:delegate->IsMigrationToAccount()];
 
   // Bottom sheet table VC

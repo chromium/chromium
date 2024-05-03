@@ -164,19 +164,14 @@ const CGFloat kLineSpacingBetweenErrorAndFooter = 12.0f;
       toSectionWithIdentifier:AutofillProfileDetailsSectionIdentifierFields];
 
   for (AutofillProfileAddressField* addressField in self.addressInputFields) {
-    if ([addressField.fieldType
-            isEqualToString:[_delegate fieldTypeToTypeName:
-                                           autofill::ADDRESS_HOME_COUNTRY]]) {
-      [model addItem:[self countryItem]
-          toSectionWithIdentifier:
-              AutofillProfileDetailsSectionIdentifierFields];
-    } else {
       [model addItem:[self addressItem:addressField.fieldLabel
                              fieldType:addressField.fieldType]
           toSectionWithIdentifier:
               AutofillProfileDetailsSectionIdentifierFields];
-    }
   }
+
+  [model addItem:[self countryItem]
+      toSectionWithIdentifier:AutofillProfileDetailsSectionIdentifierFields];
 
   [model addItem:[self phoneItem]
       toSectionWithIdentifier:AutofillProfileDetailsSectionIdentifierFields];

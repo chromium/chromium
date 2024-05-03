@@ -125,6 +125,12 @@ id<GREYMatcher> SearchBarScrim() {
   return grey_accessibilityID(kAutofillCountrySelectionSearchScrimId);
 }
 
+id<GREYMatcher> TextFieldWithLabel(NSString* textFieldLabel) {
+  return grey_allOf(grey_accessibilityID(
+                        [textFieldLabel stringByAppendingString:@"_textField"]),
+                    grey_kindOfClass([UITextField class]), nil);
+}
+
 }  // namespace
 
 @interface SaveProfileEGTest : ChromeTestCase
@@ -414,9 +420,7 @@ id<GREYMatcher> SearchBarScrim() {
   [[EarlGrey selectElementWithMatcher:ModalEditButtonMatcher()]
       performAction:grey_tap()];
 
-  [[EarlGrey
-      selectElementWithMatcher:chrome_test_util::TextFieldForCellWithLabelId(
-                                   IDS_IOS_AUTOFILL_CITY)]
+  [[EarlGrey selectElementWithMatcher:TextFieldWithLabel(@"City")]
       performAction:grey_replaceText(@"New York")];
 
   [[EarlGrey

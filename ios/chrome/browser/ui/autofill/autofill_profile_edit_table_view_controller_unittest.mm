@@ -9,6 +9,7 @@
 #import "components/autofill/core/browser/autofill_test_utils.h"
 #import "components/autofill/core/browser/data_model/autofill_profile.h"
 #import "components/autofill/core/browser/test_personal_data_manager.h"
+#import "components/autofill/ios/common/features.h"
 #import "components/strings/grit/components_strings.h"
 #import "ios/chrome/browser/shared/model/application_context/application_context.h"
 #import "ios/chrome/browser/shared/ui/table_view/cells/table_view_attributed_string_header_footer_item.h"
@@ -58,7 +59,6 @@ class AutofillProfileEditTableViewControllerTest
            initWithDelegate:nil
         personalDataManager:personal_data_manager_.get()
             autofillProfile:profile_.get()
-                countryCode:@"US"
           isMigrationPrompt:(GetParam().prompt_mode ==
                              AutofillSaveProfilePromptMode::kMigrateProfile)];
     autofill_profile_edit_table_view_controller_ =
@@ -396,5 +396,90 @@ TEST_P(AutofillProfileEditTableViewControllerTest,
             [[controller() tableViewModel] footerForSectionIndex:1]);
     // Check that the error message has been updated.
     EXPECT_NSEQ(GetErrorFooterString(1), footer.attributedString);
+  }
+}
+
+class AutofillProfileEditTableViewControllerTestWithDynamicFieldsEnabled
+    : public AutofillProfileEditTableViewControllerTest {
+ protected:
+  void SetUp() override {
+    scoped_feature_list_.InitAndEnableFeature(
+        kAutofillDynamicallyLoadsFieldsForAddressInput);
+
+    AutofillProfileEditTableViewControllerTest::SetUp();
+  }
+
+  base::test::ScopedFeatureList scoped_feature_list_;
+};
+
+INSTANTIATE_TEST_SUITE_P(
+    /* No InstantiationName */,
+    AutofillProfileEditTableViewControllerTestWithDynamicFieldsEnabled,
+    testing::Values(
+        // Editing an account profile via settings.
+        AutofillProfileEditTableViewControllerTestCase{
+            AutofillSaveProfilePromptMode::kNewProfile, /*account_profile=*/YES,
+            /*is_settings=*/YES},
+
+        // Editing a local profile via settings.
+        AutofillProfileEditTableViewControllerTestCase{
+            AutofillSaveProfilePromptMode::kNewProfile, /*account_profile=*/NO,
+            /*is_settings=*/YES},
+
+        // Save Flow via Overlay UI: Editing an account profile.
+        AutofillProfileEditTableViewControllerTestCase{
+            AutofillSaveProfilePromptMode::kNewProfile, /*account_profile=*/YES,
+            /*is_settings=*/NO},
+
+        // Save Flow via Overlay UI: Editing a local profile.
+        AutofillProfileEditTableViewControllerTestCase{
+            AutofillSaveProfilePromptMode::kNewProfile, /*account_profile=*/NO,
+            /*is_settings=*/NO},
+
+        // Save Flow via Overlay UI: Editing an account profile after showing
+        // the update prompt.
+        AutofillProfileEditTableViewControllerTestCase{
+            AutofillSaveProfilePromptMode::kUpdateProfile,
+            /*account_profile=*/YES, /*is_settings=*/NO},
+
+        // Save Flow via Overlay UI: Editing a local profile after showing the
+        // update prompt.
+        AutofillProfileEditTableViewControllerTestCase{
+            AutofillSaveProfilePromptMode::kUpdateProfile,
+            /*account_profile=*/NO, /*is_settings=*/NO},
+
+        // Save Flow via Overlay UI: Editing a local profile after showing the
+        // migration to account prompt.
+        AutofillProfileEditTableViewControllerTestCase{
+            AutofillSaveProfilePromptMode::kMigrateProfile,
+            /*account_profile=*/NO, /*is_settings=*/NO}));
+
+// Test the sections and items in the section on initialisation as well as when
+// country value is changed.
+TEST_P(AutofillProfileEditTableViewControllerTestWithDynamicFieldsEnabled,
+       SectionsAndItems) {
+  auto test_case = GetParam();
+  bool multiple_sections = (test_case.is_settings && test_case.account_profile);
+  EXPECT_EQ(NumberOfSections(), multiple_sections ? 2 : 1);
+  if (test_case.account_profile ||
+      test_case.prompt_mode == AutofillSaveProfilePromptMode::kMigrateProfile) {
+    EXPECT_EQ(NumberOfItemsInSection(0), test_case.is_settings ? 9 : 11);
+  } else {
+    EXPECT_EQ(NumberOfItemsInSection(0), test_case.is_settings ? 9 : 10);
+  }
+
+  CountryItem* countryItem =
+      [[CountryItem alloc] initWithType:kItemTypeEnumZero];
+  countryItem.countryCode = @"DE";
+  countryItem.text = @"Germany";
+
+  [autofill_profile_edit_mediator_ didSelectCountry:countryItem];
+
+  // Check state field is not an input field for Germany.
+  if (test_case.account_profile ||
+      test_case.prompt_mode == AutofillSaveProfilePromptMode::kMigrateProfile) {
+    EXPECT_EQ(NumberOfItemsInSection(0), test_case.is_settings ? 8 : 10);
+  } else {
+    EXPECT_EQ(NumberOfItemsInSection(0), test_case.is_settings ? 8 : 9);
   }
 }

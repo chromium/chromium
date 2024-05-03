@@ -50,7 +50,6 @@ class AutofillSettingsProfileEditTableViewControllerTest
            initWithDelegate:nil
         personalDataManager:personal_data_manager_.get()
             autofillProfile:profile_.get()
-                countryCode:@"US"
           isMigrationPrompt:NO];
     CreateController();
     CheckController();
