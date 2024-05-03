@@ -714,7 +714,14 @@ IN_PROC_BROWSER_TEST_P(BrowserActionApiTestWithContextType, IncognitoBasic) {
   EXPECT_TRUE(catcher.GetNextResult());
 }
 
-IN_PROC_BROWSER_TEST_P(BrowserActionApiTestWithContextType, IncognitoUpdate) {
+// TODO(crbug.com/338638098): leaks flakily on LSAN bots.
+#if defined(LEAK_SANITIZER)
+#define MAYBE_IncognitoUpdate DISABLED_IncognitoUpdate
+#else
+#define MAYBE_IncognitoUpdate IncognitoUpdate
+#endif
+IN_PROC_BROWSER_TEST_P(BrowserActionApiTestWithContextType,
+                       MAYBE_IncognitoUpdate) {
   ASSERT_TRUE(embedded_test_server()->Start());
   ExtensionTestMessageListener incognito_not_allowed_listener(
       "incognito not allowed");
