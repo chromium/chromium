@@ -453,7 +453,8 @@ changelog-seen = 2'''
             subs = {}
             subs['DEBIAN_SYSROOT'] = quote_string(str(self._debian_sysroot))
 
-            os.makedirs(CARGO_HOME_DIR)
+            if not os.path.exists(CARGO_HOME_DIR):
+                os.makedirs(CARGO_HOME_DIR)
             with open(os.path.join(CARGO_HOME_DIR, 'config.toml'),
                       'w') as output:
                 output.write(template.substitute(subs))
