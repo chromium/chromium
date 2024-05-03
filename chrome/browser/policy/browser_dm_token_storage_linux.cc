@@ -23,6 +23,7 @@
 #include "base/task/thread_pool.h"
 #include "base/threading/scoped_blocking_call.h"
 #include "chrome/common/chrome_paths.h"
+#include "components/policy/core/common/policy_logger.h"
 
 namespace policy {
 
@@ -41,13 +42,19 @@ const char kEnrollmentMandatoryOption[] = "Mandatory";
 bool GetDmTokenFilePath(base::FilePath* token_file_path,
                         const std::string& client_id,
                         bool create_dir) {
-  if (!base::PathService::Get(chrome::DIR_USER_DATA, token_file_path))
+  if (!base::PathService::Get(chrome::DIR_USER_DATA, token_file_path)) {
+    LOG_POLICY(WARNING, CBCM_ENROLLMENT)
+        << "Failed to get user data directory path.";
     return false;
+  }
 
   *token_file_path = token_file_path->Append(kDmTokenBaseDir);
 
-  if (create_dir && !base::CreateDirectory(*token_file_path))
+  if (create_dir && !base::CreateDirectory(*token_file_path)) {
+    LOG_POLICY(WARNING, CBCM_ENROLLMENT)
+        << "Failed to create DMToken storage directory: " << *token_file_path;
     return false;
+  }
 
   *token_file_path = token_file_path->Append(client_id);
 
@@ -58,7 +65,6 @@ bool StoreDMTokenInUserDataDir(const std::string& token,
                                const std::string& client_id) {
   base::FilePath token_file_path;
   if (!GetDmTokenFilePath(&token_file_path, client_id, /*create_dir=*/true)) {
-    NOTREACHED();
     return false;
   }
 
@@ -68,7 +74,6 @@ bool StoreDMTokenInUserDataDir(const std::string& token,
 bool DeleteDMTokenFromUserDataDir(const std::string& client_id) {
   base::FilePath token_file_path;
   if (!GetDmTokenFilePath(&token_file_path, client_id, /*create_dir=*/false)) {
-    NOTREACHED();
     return false;
   }
 
