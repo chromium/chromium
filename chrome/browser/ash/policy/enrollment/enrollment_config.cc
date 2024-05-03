@@ -8,6 +8,8 @@
 #include <string>
 #include <string_view>
 
+#include "ash/constants/ash_switches.h"
+#include "base/command_line.h"
 #include "base/logging.h"
 #include "base/metrics/histogram_functions.h"
 #include "base/notreached.h"
@@ -30,6 +32,8 @@ namespace policy {
 namespace {
 
 const char kRecoveryHistogram[] = "EnterpriseCheck.EnrollementRecoveryOnBoot";
+
+const char kZeroTouchEnrollmentForced[] = "forced";
 
 // Do not reorder or delete entries because it is used in UMA.
 enum class EnrollmentRecoveryOnBootUma {
@@ -125,38 +129,34 @@ std::string_view ToStringView(EnrollmentConfig::AuthMechanism auth) {
 
 EnrollmentConfig::AuthMechanism GetPrescribedAuthMechanism(
     PrefService* local_state) {
-  EnrollmentConfig::AuthMechanism auth_mechanism =
-      EnrollmentConfig::AUTH_MECHANISM_INTERACTIVE;
-
   // Authentication through the attestation mechanism is controlled by a
   // command line switch that either enables it or forces it (meaning that
   // interactive authentication is disabled).
-  switch (DeviceCloudPolicyManagerAsh::GetZeroTouchEnrollmentMode()) {
-    case ZeroTouchEnrollmentMode::DISABLED:
-      // Only use interactive authentication.
-      auth_mechanism = EnrollmentConfig::AUTH_MECHANISM_INTERACTIVE;
-      break;
-
-    case ZeroTouchEnrollmentMode::ENABLED:
-      // Use the best mechanism, which may include attestation if available.
-      auth_mechanism = EnrollmentConfig::AUTH_MECHANISM_ATTESTATION_PREFERRED;
-      break;
-
-    case ZeroTouchEnrollmentMode::FORCED:
-      // Only use attestation to authenticate since zero-touch is forced.
-      auth_mechanism = EnrollmentConfig::AUTH_MECHANISM_ATTESTATION;
-      break;
+  base::CommandLine* command_line = base::CommandLine::ForCurrentProcess();
+  if (!command_line->HasSwitch(
+          ash::switches::kEnterpriseEnableZeroTouchEnrollment)) {
+    return EnrollmentConfig::AUTH_MECHANISM_INTERACTIVE;
   }
 
-  // If OOBE is done and we are not enrolled, make sure we only try interactive
-  // enrollment.
-  if (local_state->GetBoolean(ash::prefs::kOobeComplete) &&
-      auth_mechanism ==
-          EnrollmentConfig::AUTH_MECHANISM_ATTESTATION_PREFERRED) {
-    auth_mechanism = EnrollmentConfig::AUTH_MECHANISM_INTERACTIVE;
+  const std::string value = command_line->GetSwitchValueASCII(
+      ash::switches::kEnterpriseEnableZeroTouchEnrollment);
+  if (value == kZeroTouchEnrollmentForced) {
+    return EnrollmentConfig::AUTH_MECHANISM_ATTESTATION;
   }
 
-  return auth_mechanism;
+  if (value.empty()) {
+    // If OOBE is done and we are not enrolled, make sure we only try
+    // interactive enrollment.
+    if (local_state->GetBoolean(ash::prefs::kOobeComplete)) {
+      return EnrollmentConfig::AUTH_MECHANISM_INTERACTIVE;
+    }
+    return EnrollmentConfig::AUTH_MECHANISM_ATTESTATION_PREFERRED;
+  }
+
+  LOG(WARNING) << "Malformed value \"" << value << "\" for switch --"
+               << ash::switches::kEnterpriseEnableZeroTouchEnrollment
+               << ". Ignoring switch.";
+  return EnrollmentConfig::AUTH_MECHANISM_INTERACTIVE;
 }
 
 EnrollmentConfig GetPrescribedRecoveryConfig(

@@ -102,6 +102,10 @@ struct EnrollmentConfig {
   // enrollment.
   enum AuthMechanism {
     // Interactive authentication.
+    // Note: the entry is used as both a signal for interactive enrollment and
+    // as a default value (e.g. in `should_enroll_with_attestation()`).
+    // TODO(b/332529631): Introduce kNone entry to represent default config
+    // that does not require enrollment.
     AUTH_MECHANISM_INTERACTIVE = 0,
     // Automatic authentication relying on the attestation process.
     AUTH_MECHANISM_ATTESTATION = 1,
@@ -260,7 +264,7 @@ struct EnrollmentConfig {
   LicenseType license_type = LicenseType::kNone;
 
   // The assigned upgrade for a device after initial enrollment. Chrome
-  // Enterpise Upgrade is the default upgrade for ZTE devices, unless other is
+  // Enterprise Upgrade is the default upgrade for ZTE devices, unless other is
   // specified in the server-backed initial state retrieval.
   AssignedUpgradeType assigned_upgrade_type =
       AssignedUpgradeType::kAssignedUpgradeTypeChromeEnterprise;
