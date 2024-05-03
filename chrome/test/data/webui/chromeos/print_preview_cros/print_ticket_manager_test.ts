@@ -419,5 +419,8 @@ suite('PrintTicketManager', () => {
         assertEquals(
             DEFAULT_PARTIAL_PRINT_TICKET.collate, ticket.collate,
             'Ticket collate should match DEFAULT_PARTIAL_PRINT_TICKET');
+        assertEquals(
+            DEFAULT_PARTIAL_PRINT_TICKET.color, ticket.color,
+            'Ticket color should match DEFAULT_PARTIAL_PRINT_TICKET');
       });
 });

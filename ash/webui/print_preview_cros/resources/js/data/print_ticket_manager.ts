@@ -7,7 +7,7 @@ import {EventTracker} from 'chrome://resources/js/event_tracker.js';
 
 import {createCustomEvent} from '../utils/event_utils.js';
 import {getPrintPreviewPageHandler} from '../utils/mojo_data_providers.js';
-import {type PrintPreviewPageHandler, PrintTicket, SessionContext} from '../utils/print_preview_cros_app_types.js';
+import {ColorModel, type PrintPreviewPageHandler, PrintTicket, SessionContext} from '../utils/print_preview_cros_app_types.js';
 
 import {DESTINATION_MANAGER_ACTIVE_DESTINATION_CHANGED, DestinationManager} from './destination_manager.js';
 
@@ -28,6 +28,7 @@ export const PRINT_TICKET_MANAGER_SESSION_INITIALIZED =
 // See: chrome/browser/resources/print_preview/data/model.ts.
 export const DEFAULT_PARTIAL_PRINT_TICKET: Partial<PrintTicket> = {
   collate: true,
+  color: ColorModel.COLOR,
 };
 
 export class PrintTicketManager extends EventTarget {

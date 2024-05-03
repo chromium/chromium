@@ -25,6 +25,13 @@ export interface PrintRequestOutcome {
   error?: string;
 }
 
+// Based on printing::mojom::ColorModel.
+export enum ColorModel {
+  UNKNOWN_COLOR_MODEL = 0,
+  GRAY = 1,
+  COLOR = 2,
+}
+
 // PrintTicket represents the data required to start print job. Ticket will be
 // used to create a settings dictionary with fields matching the existing Chrome
 // preview print settings for reusability.
@@ -47,6 +54,9 @@ export interface PrintTicket {
   // document before printing the next copy. When false, prints N-copies of page
   // one, then page two until all pages are printed.
   collate: boolean;
+
+  // Print job color mode value.
+  color: ColorModel;
 }
 
 // Immutable session configuration details for the current CrOS preview request.
