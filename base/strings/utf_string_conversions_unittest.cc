@@ -182,24 +182,14 @@ TEST(UTFStringConversionsTest, ConvertUTF32ToUTF8) {
 #endif  // defined(WCHAR_T_IS_32_BIT)
 
 TEST(UTFStringConversionsTest, ConvertMultiString) {
-  static char16_t multi16[] = {'f',  'o', 'o', '\0', 'b',  'a', 'r',
-                               '\0', 'b', 'a', 'z',  '\0', '\0'};
-  static char multi[] = {
-    'f', 'o', 'o', '\0',
-    'b', 'a', 'r', '\0',
-    'b', 'a', 'z', '\0',
-    '\0'
-  };
-  std::u16string multistring16;
-  memcpy(WriteInto(&multistring16, std::size(multi16)), multi16,
-         sizeof(multi16));
-  EXPECT_EQ(std::size(multi16) - 1, multistring16.length());
-  std::string expected;
-  memcpy(WriteInto(&expected, std::size(multi)), multi, sizeof(multi));
-  EXPECT_EQ(std::size(multi) - 1, expected.length());
-  const std::string& converted = UTF16ToUTF8(multistring16);
-  EXPECT_EQ(std::size(multi) - 1, converted.length());
-  EXPECT_EQ(expected, converted);
+  // `operator""s` will avoid truncating the strings at the first embedded NUL.
+  using std::string_literals::operator""s;
+  std::u16string multistring16 = u"foo\0bar\0baz\0"s;
+  std::string expected = "foo\0bar\0baz\0"s;
+  ASSERT_EQ(12u, multistring16.size());
+  ASSERT_EQ(12u, expected.size());
+
+  EXPECT_EQ(expected, UTF16ToUTF8(multistring16));
 }
 
 }  // namespace base
