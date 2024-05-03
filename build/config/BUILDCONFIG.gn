@@ -713,6 +713,11 @@ if (is_component_build) {
     default_component_configs -=
         [ "//build/config/android:hide_all_but_jni_onload" ]
   }
+  if (is_win) {
+    # We don't want component dlls to statically load OS dlls that aren't
+    # loaded normally.
+    default_component_configs += [ "//build/config/win:delayloads" ]
+  }
 } else {
   default_component_configs = default_compiler_configs
 }
