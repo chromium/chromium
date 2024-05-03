@@ -20,6 +20,7 @@
 #include "components/prefs/pref_service.h"
 #include "components/signin/public/base/signin_switches.h"
 #include "components/signin/public/identity_manager/identity_manager.h"
+#include "components/signin/public/identity_manager/identity_utils.h"
 #include "components/strings/grit/components_strings.h"
 #include "ui/base/l10n/l10n_util.h"
 #include "ui/base/text/bytes_formatting.h"
@@ -156,9 +157,8 @@ std::u16string GetChromeCounterTextFromResult(
     int del_cookie_counter_msg_id =
         ShouldShowCookieException(profile) ||
                 (identity_manager &&
-                 identity_manager->HasPrimaryAccount(
-                     signin::ConsentLevel::kSignin) &&
-                 switches::IsExplicitBrowserSigninUIOnDesktopEnabled())
+                 signin::AreGoogleCookiesRebuiltAfterClearingWhenSignedIn(
+                     *identity_manager, *profile->GetPrefs()))
             ? IDS_DEL_COOKIES_COUNTER_ADVANCED_WITH_SIGNED_IN_EXCEPTION
             : IDS_DEL_COOKIES_COUNTER_ADVANCED;
 
