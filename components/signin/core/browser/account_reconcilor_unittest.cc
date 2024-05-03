@@ -1581,7 +1581,7 @@ TEST_P(AccountReconcilorDiceTestWithUnoDesktop, DeleteCookieForSyncingUser) {
 }
 
 TEST_P(AccountReconcilorDiceTestWithUnoDesktop,
-       CookieSettingMigration_ExplicitSignin) {
+       CookieSettingMigrationExplicitSignin) {
   ASSERT_FALSE(pref_service()->GetBoolean(
       prefs::kCookieClearOnExitMigrationNoticeComplete));
   AccountInfo account_info = identity_test_env()->MakePrimaryAccountAvailable(
@@ -1597,7 +1597,7 @@ TEST_P(AccountReconcilorDiceTestWithUnoDesktop,
 }
 
 TEST_P(AccountReconcilorDiceTestWithUnoDesktop,
-       CookieSettingMigration_ExplicitSignin_WithClearOnExit) {
+       CookieSettingMigrationExplicitSigninWithClearOnExit) {
   ASSERT_FALSE(pref_service()->GetBoolean(
       prefs::kCookieClearOnExitMigrationNoticeComplete));
   AccountInfo account_info = identity_test_env()->MakePrimaryAccountAvailable(
@@ -1623,7 +1623,7 @@ TEST_P(AccountReconcilorDiceTestWithUnoDesktop,
 }
 
 TEST_P(AccountReconcilorDiceTestWithUnoDesktop,
-       CookieSettingMigration_ImplicitSignin) {
+       CookieSettingMigrationImplicitSignin) {
   ASSERT_FALSE(pref_service()->GetBoolean(
       prefs::kCookieClearOnExitMigrationNoticeComplete));
   AccountInfo account_info = identity_test_env()->MakePrimaryAccountAvailable(
@@ -1646,7 +1646,7 @@ TEST_P(AccountReconcilorDiceTestWithUnoDesktop,
 }
 
 TEST_P(AccountReconcilorDiceTestWithUnoDesktop,
-       CookieSettingMigration_SignedOut) {
+       CookieSettingMigrationSignedOut) {
   ASSERT_FALSE(pref_service()->GetBoolean(
       prefs::kCookieClearOnExitMigrationNoticeComplete));
   ASSERT_FALSE(pref_service()->GetBoolean(prefs::kExplicitBrowserSignin));
@@ -1660,7 +1660,7 @@ TEST_P(AccountReconcilorDiceTestWithUnoDesktop,
                 prefs::kCookieClearOnExitMigrationNoticeComplete));
 }
 
-TEST_P(AccountReconcilorDiceTestWithUnoDesktop, CookieSettingMigration_Sync) {
+TEST_P(AccountReconcilorDiceTestWithUnoDesktop, CookieSettingMigrationSync) {
   ASSERT_FALSE(pref_service()->GetBoolean(
       prefs::kCookieClearOnExitMigrationNoticeComplete));
   AccountInfo account_info = identity_test_env()->MakePrimaryAccountAvailable(
