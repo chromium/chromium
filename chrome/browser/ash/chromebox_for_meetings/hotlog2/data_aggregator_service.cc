@@ -24,6 +24,9 @@ constexpr base::TimeDelta kDefaultCommandPollFrequency = base::Seconds(5);
 constexpr base::TimeDelta kDefaultLogPollFrequency = base::Seconds(10);
 constexpr size_t kDefaultLogBatchSize = 500;  // lines
 
+constexpr base::TimeDelta kServiceAdaptorRetryDelay = base::Seconds(1);
+constexpr size_t kServiceAdaptorRetryMaxTries = 5;
+
 const char* kLocalCommandSources[] = {
     "ip -brief address",
 };
@@ -231,6 +234,52 @@ void DataAggregatorService::InitializeLocalSources() {
   }
 }
 
+void DataAggregatorService::InitializeUploadEndpoint(size_t num_tries) {
+  // Hook into the existing CfmLoggerService.
+  const std::string kMeetDevicesLoggerInterfaceName =
+      chromeos::cfm::mojom::MeetDevicesLogger::Name_;
+
+  // We'll only be bound if we tried to initialize the endpoint
+  // already and failed. Just reset and try again.
+  if (uploader_remote_.is_bound()) {
+    uploader_remote_.reset();
+  }
+
+  service_adaptor_.GetService(
+      kMeetDevicesLoggerInterfaceName,
+      uploader_remote_.BindNewPipeAndPassReceiver().PassPipe(),
+      base::BindOnce(&DataAggregatorService::OnRequestBindUploadService,
+                     weak_ptr_factory_.GetWeakPtr(),
+                     kMeetDevicesLoggerInterfaceName, num_tries));
+}
+
+void DataAggregatorService::OnRequestBindUploadService(
+    const std::string& interface_name,
+    size_t num_tries,
+    bool success) {
+  VLOG(3) << "Uploader RequestBindService result: " << success
+          << " for interface: " << interface_name;
+
+  if (success) {
+    StartFetchTimer();
+    return;
+  }
+
+  if (num_tries >= kServiceAdaptorRetryMaxTries) {
+    LOG(ERROR) << "Retry limit reached for connecting to " << interface_name
+               << ". Remote calls will fail.";
+    return;
+  }
+
+  VLOG(3) << "Retrying service adaptor connection in "
+          << kServiceAdaptorRetryDelay;
+  base::SequencedTaskRunner::GetCurrentDefault()->PostDelayedTask(
+      FROM_HERE,
+      base::BindOnce(&DataAggregatorService::InitializeUploadEndpoint,
+                     weak_ptr_factory_.GetWeakPtr(), num_tries + 1),
+      kServiceAdaptorRetryDelay);
+}
+
 void DataAggregatorService::StartFetchTimer() {
   DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
   fetch_timer_.Start(
@@ -307,8 +356,8 @@ DataAggregatorService::DataAggregatorService()
   local_task_runner_ =
       base::ThreadPool::CreateSequencedTaskRunner({base::MayBlock()});
 
+  InitializeUploadEndpoint(/*num_tries=*/0);
   InitializeLocalSources();
-  StartFetchTimer();
 }
 
 DataAggregatorService::~DataAggregatorService() {
