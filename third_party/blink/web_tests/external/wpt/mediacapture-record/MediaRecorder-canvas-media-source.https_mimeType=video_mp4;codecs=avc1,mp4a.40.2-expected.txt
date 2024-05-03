@@ -1,5 +1,0 @@
-This is a testharness.js-based test.
-[PRECONDITION_FAILED] MediaRecorder returns frames containing video content
-  "video/mp4;codecs=avc1,mp4a.40.2" for MediaRecorder is not supported
-Harness: the test ran to completion.
-
