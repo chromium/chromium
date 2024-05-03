@@ -32,7 +32,7 @@ crbug.com/1517847 virtual/oopr-canvas2d/fast/canvas/fillrect_gradient.html [ Pas
 crbug.com/1518086 external/wpt/html/semantics/embedded-content/media-elements/ready-states/autoplay-hidden.optional.html [ Failure ]
 
 # ====== New tests from wpt-importer added here ======
-external/wpt/css/filter-effects/backdrop-filter-backdrop-root-opacity.html [ Failure ]
+crbug.com/338342080 external/wpt/css/filter-effects/backdrop-filter-backdrop-root-opacity.html [ Failure ]
 crbug.com/338122791 external/wpt/css/css-masking/clip-path/clip-path-rotated-will-change-transform.html [ Failure ]
 crbug.com/626703 external/wpt/css/compositing/mix-blend-mode/mix-blend-mode-video-sibling.html [ Crash ]
 crbug.com/626703 external/wpt/css/compositing/mix-blend-mode/mix-blend-mode-video.html [ Crash ]
