@@ -69,6 +69,10 @@
 -SurfaceAggregatorPixelTest.DrawAggregatedFrameWithSurfaceTransforms/SkiaGraphiteDawn
 -SurfaceAggregatorPixelTest.DrawSimpleAggregatedFrame/SkiaGraphiteDawn
 
+# This test has been failing since https://crrev.com/c/5492042 reduced back the
+# limits to the original.(50.0f -> 0.50f)
+-IntersectingMultiplanarVideoQuadPixelTest.YUVVideoQuads/SkiaGL
+
 # TODO(crbug.com/337673256): These tests has been failing with happening in a
 # "suitable for blending" color space since https://crrev.com/c/5494389.
 -ToColorSpace/ColorTransformPixelTest.Basic/78
