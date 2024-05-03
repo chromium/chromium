@@ -21,6 +21,7 @@ class GetIbanUploadDetailsRequest : public PaymentsRequest {
       const std::string& app_locale,
       int64_t billing_customer_number,
       int billable_service_number,
+      const std::string& country_code,
       base::OnceCallback<void(AutofillClient::PaymentsRpcResult,
                               const std::u16string&,
                               std::unique_ptr<base::Value::Dict>)> callback);
@@ -49,6 +50,7 @@ class GetIbanUploadDetailsRequest : public PaymentsRequest {
   std::unique_ptr<base::Value::Dict> legal_message_;
   const int64_t billing_customer_number_;
   const int billable_service_number_;
+  std::string country_code_;
   base::OnceCallback<void(AutofillClient::PaymentsRpcResult,
                           const std::u16string&,
                           std::unique_ptr<base::Value::Dict>)>

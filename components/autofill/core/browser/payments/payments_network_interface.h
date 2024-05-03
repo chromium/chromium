@@ -540,17 +540,19 @@ class PaymentsNetworkInterface : public PaymentsNetworkInterfaceBase {
   // The service uses `app_locale` and `billing_customer_number` to determine
   // which legal message to display. `billable_service_number` is defined in
   // the Payments server to distinguish different requests and is set in the
-  // GetIbanUploadDetails request. `callback` is the callback function that is
-  // triggered when a response is received from the server, and the callback is
-  // triggered with that response's result. The legal message will always be
-  // returned upon a successful response via `callback`. A successful response
-  // does not guarantee that the legal message is valid, callers should parse
-  // the legal message and use it to decide if IBAN upload save should be
-  // offered.
+  // GetIbanUploadDetails request. `country_code` is the first two characters
+  // of the IBAN, representing its country of origin. `callback` is the
+  // callback function that is triggered when a response is received from the
+  // server, and the callback is triggered with that response's result. The
+  // legal message will always be returned upon a successful response via
+  // `callback`. A successful response does not guarantee that the legal
+  // message is valid, callers should parse the legal message and use it to
+  // decide if IBAN upload save should be offered.
   virtual void GetIbanUploadDetails(
       const std::string& app_locale,
       int64_t billing_customer_number,
       int billable_service_number,
+      const std::string& country_code,
       base::OnceCallback<void(AutofillClient::PaymentsRpcResult,
                               const std::u16string&,
                               std::unique_ptr<base::Value::Dict>)> callback);

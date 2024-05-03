@@ -128,6 +128,9 @@ class Iban : public AutofillDataModel {
   // server-based IBANs because server-based IBANs don't store the full `value`.
   bool IsValid();
 
+  // The capitalized country code of this IBAN.
+  std::string GetCountryCode() const;
+
   // Logs the number of days since this IBAN was last used, increments its use
   // count, and updates its last used date to today.
   void RecordAndLogUse();

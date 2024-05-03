@@ -13,6 +13,7 @@ namespace autofill::payments {
 namespace {
 
 constexpr char kAppLocale[] = "dummy_locale";
+constexpr char kCountryCode[] = "FR";
 constexpr int kBillableServiceNumber = 12345678;
 constexpr int64_t kBillingCustomerNumber = 111222333;
 
@@ -23,7 +24,7 @@ class GetIbanUploadDetailsRequestTest : public testing::Test {
   void SetUp() override {
     request_ = std::make_unique<GetIbanUploadDetailsRequest>(
         /*full_sync_enabled=*/true, kAppLocale, kBillingCustomerNumber,
-        kBillableServiceNumber, base::DoNothing());
+        kBillableServiceNumber, kCountryCode, base::DoNothing());
   }
 
   GetIbanUploadDetailsRequest* GetRequest() { return request_.get(); }
@@ -67,6 +68,8 @@ TEST_F(GetIbanUploadDetailsRequestTest,
                 base::NumberToString(kBillingCustomerNumber)),
             std::string::npos);
   EXPECT_NE(GetRequest()->GetRequestContent().find("chrome_user_context"),
+            std::string::npos);
+  EXPECT_NE(GetRequest()->GetRequestContent().find("iban_region_code"),
             std::string::npos);
 }
 

@@ -325,6 +325,13 @@ TEST(IbanTest, ValidateIbanValue_ValidateOnRegexAndCountry) {
   EXPECT_FALSE(Iban::IsValid(u"XXA1CBKU0000000000001234560101"));
 }
 
+TEST(IbanTest, GetCountryCode) {
+  Iban iban;
+  iban.set_value(u"ch5604835012345678009");
+
+  EXPECT_EQ(iban.GetCountryCode(), "CH");
+}
+
 TEST(IbanTest, IsIbanApplicableInCountry) {
   // Is an IBAN-supported country.
   EXPECT_TRUE(Iban::IsIbanApplicableInCountry("KW"));

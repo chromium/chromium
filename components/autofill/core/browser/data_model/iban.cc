@@ -390,6 +390,11 @@ bool Iban::IsValid() {
   return record_type_ == kServerIban || IsValid(value_);
 }
 
+std::string Iban::GetCountryCode() const {
+  CHECK(prefix_.length() >= 2);
+  return base::UTF16ToUTF8(base::i18n::ToUpper(prefix_.substr(0, 2)));
+}
+
 void Iban::RecordAndLogUse() {
   autofill_metrics::LogDaysSinceLastIbanUse(*this);
   set_use_date(AutofillClock::Now());

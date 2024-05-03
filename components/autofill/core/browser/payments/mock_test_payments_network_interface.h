@@ -22,6 +22,7 @@ class MockTestPaymentsNetworkInterface : public payments::TestPaymentsNetworkInt
               (const std::string&,
                int64_t,
                int,
+               const std::string&,
                (base::OnceCallback<void(AutofillClient::PaymentsRpcResult,
                                         const std::u16string&,
                                         std::unique_ptr<base::Value::Dict>)>)),

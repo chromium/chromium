@@ -20,6 +20,7 @@ GetIbanUploadDetailsRequest::GetIbanUploadDetailsRequest(
     const std::string& app_locale,
     int64_t billing_customer_number,
     int billable_service_number,
+    const std::string& country_code,
     base::OnceCallback<void(AutofillClient::PaymentsRpcResult,
                             const std::u16string&,
                             std::unique_ptr<base::Value::Dict>)> callback)
@@ -27,6 +28,7 @@ GetIbanUploadDetailsRequest::GetIbanUploadDetailsRequest(
       app_locale_(app_locale),
       billing_customer_number_(billing_customer_number),
       billable_service_number_(billable_service_number),
+      country_code_(country_code),
       callback_(std::move(callback)) {}
 
 GetIbanUploadDetailsRequest::~GetIbanUploadDetailsRequest() = default;
@@ -52,6 +54,9 @@ std::string GetIbanUploadDetailsRequest::GetRequestContent() {
   base::Value::Dict chrome_user_context;
   chrome_user_context.Set("full_sync_enabled", full_sync_enabled_);
   request_dict.Set("chrome_user_context", std::move(chrome_user_context));
+  base::Value::Dict iban_info;
+  iban_info.Set("iban_region_code", country_code_);
+  request_dict.Set("iban_info", std::move(iban_info));
 
   return base::WriteJson(request_dict).value();
 }
