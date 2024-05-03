@@ -735,8 +735,7 @@ TEST_F(ExternalAppResolutionCommandTest, InstallWithWebAppInfoSucceeds) {
                                  ExternalInstallSource::kExternalDefault);
   options.only_use_app_info_factory = true;
   options.app_info_factory = base::BindLambdaForTesting([&kWebAppUrl]() {
-    auto info = std::make_unique<WebAppInstallInfo>();
-    info->start_url = kWebAppUrl;
+    auto info = WebAppInstallInfo::CreateWithStartUrlForTesting(kWebAppUrl);
     info->scope = kWebAppUrl.GetWithoutFilename();
     info->title = u"Foo Web App";
     return info;
@@ -775,8 +774,7 @@ TEST_F(ExternalAppResolutionCommandTest, InstallWithWebAppInfoFails) {
                                  ExternalInstallSource::kExternalDefault);
   options.only_use_app_info_factory = true;
   options.app_info_factory = base::BindLambdaForTesting([&kWebAppUrl]() {
-    auto info = std::make_unique<WebAppInstallInfo>();
-    info->start_url = kWebAppUrl;
+    auto info = WebAppInstallInfo::CreateWithStartUrlForTesting(kWebAppUrl);
     info->scope = kWebAppUrl.GetWithoutFilename();
     info->title = u"Foo Web App";
     return info;

@@ -24,6 +24,7 @@
 #include "components/webapps/browser/installable/installable_logging.h"
 #include "components/webapps/browser/installable/installable_manager.h"
 #include "components/webapps/browser/installable/installable_metrics.h"
+#include "components/webapps/common/web_app_id.h"
 #include "components/webapps/common/web_page_metadata.mojom.h"
 #include "components/webapps/common/web_page_metadata_agent.mojom-test-utils.h"
 #include "content/public/browser/navigation_entry.h"
@@ -172,6 +173,8 @@ TEST_F(WebAppDataRetrieverTest, GetWebAppInstallInfo_AppUrlAbsent) {
   const GURL kFooUrl("https://foo.example");
   web_contents_tester()->NavigateAndCommit(kFooUrl);
 
+  // TODO(b/280862254): Use a nullptr WebAppInstallInfo instead of an invalid
+  // one.
   WebAppInstallInfo original_web_app_info;
   original_web_app_info.start_url = GURL();
 
@@ -195,10 +198,10 @@ TEST_F(WebAppDataRetrieverTest, GetWebAppInstallInfo_AppUrlPresent) {
 
   web_contents_tester()->NavigateAndCommit(GURL("https://foo.example"));
 
-  WebAppInstallInfo original_web_app_info;
-  original_web_app_info.start_url = GURL("https://bar.example");
+  auto original_web_app_info = WebAppInstallInfo::CreateWithStartUrlForTesting(
+      GURL("https://bar.example"));
 
-  SetRendererWebAppInstallInfo(original_web_app_info);
+  SetRendererWebAppInstallInfo(*original_web_app_info);
 
   base::RunLoop run_loop;
   WebAppDataRetriever retriever;
@@ -208,7 +211,7 @@ TEST_F(WebAppDataRetrieverTest, GetWebAppInstallInfo_AppUrlPresent) {
                      base::Unretained(this), run_loop.QuitClosure()));
   run_loop.Run();
 
-  EXPECT_EQ(original_web_app_info.start_url, web_app_info()->start_url);
+  EXPECT_EQ(original_web_app_info->start_url, web_app_info()->start_url);
 }
 
 TEST_F(WebAppDataRetrieverTest, GetWebAppInstallInfo_TitleAbsentFromRenderer) {
@@ -358,8 +361,8 @@ TEST_F(WebAppDataRetrieverTest, GetWebAppInstallInfo_FrameNavigated) {
   const GURL kFooUrl("https://foo.example/bar");
   web_contents_tester()->NavigateAndCommit(kFooUrl.DeprecatedGetOriginAsURL());
 
-  // TODO(b/280862254): This will stop working once we remove the default
-  // constructor.
+  // TODO(b/280862254): Use a nullptr WebAppInstallInfo instead of an invalid
+  // one.
   SetRendererWebAppInstallInfo(WebAppInstallInfo());
 
   base::RunLoop run_loop;

@@ -905,8 +905,8 @@ class WebAppFrameToolbarBrowserTest_WindowControlsOverlay
                                            std::u16string app_title) {
     std::vector<blink::mojom::DisplayMode> display_overrides;
     display_overrides.push_back(web_app::DisplayMode::kWindowControlsOverlay);
-    auto web_app_info = std::make_unique<web_app::WebAppInstallInfo>();
-    web_app_info->start_url = start_url;
+    auto web_app_info =
+        web_app::WebAppInstallInfo::CreateWithStartUrlForTesting(start_url);
     web_app_info->scope = start_url.GetWithoutFilename();
     web_app_info->title = std::move(app_title);
     web_app_info->display_mode = web_app::DisplayMode::kStandalone;
@@ -1805,8 +1805,8 @@ class WebAppFrameToolbarBrowserTest_AdditionalWindowingControls
     second_page_url_ = helper()->LoadTestPageWithDataAndGetURL(
         embedded_test_server(), &temp_dir_, "");
 
-    auto web_app_info = std::make_unique<web_app::WebAppInstallInfo>();
-    web_app_info->start_url = start_url;
+    auto web_app_info =
+        web_app::WebAppInstallInfo::CreateWithStartUrlForTesting(start_url);
     web_app_info->scope = start_url.GetWithoutFilename();
     web_app_info->title = std::move(u"Test app");
     web_app_info->display_mode = web_app::DisplayMode::kStandalone;
@@ -2535,8 +2535,8 @@ class WebAppFrameToolbarBrowserTest_ScopeExtensionsOriginText
         {{url::Origin::Create(extension_url()),
           OriginAssociationFileFromAppIdentity(app_url())}});
 
-    auto web_app_info = std::make_unique<web_app::WebAppInstallInfo>();
-    web_app_info->start_url = app_url();
+    auto web_app_info =
+        web_app::WebAppInstallInfo::CreateWithStartUrlForTesting(app_url());
     web_app_info->scope = app_url().GetWithoutFilename();
     web_app_info->title = u"scope_extensions test app";
     web_app_info->display_mode = web_app::DisplayMode::kStandalone;

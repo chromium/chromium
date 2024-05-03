@@ -735,8 +735,7 @@ IN_PROC_BROWSER_TEST_F(PreinstalledWebAppMigrationBrowserTest,
   options.uninstall_and_replace.push_back(kExtensionId);
   options.only_use_app_info_factory = true;
   options.app_info_factory = base::BindLambdaForTesting([&]() {
-    auto info = std::make_unique<WebAppInstallInfo>();
-    info->start_url = GetWebAppUrl();
+    auto info = WebAppInstallInfo::CreateWithStartUrlForTesting(GetWebAppUrl());
     info->title = u"Test app";
     return info;
   });
@@ -864,8 +863,8 @@ IN_PROC_BROWSER_TEST_F(PreinstalledWebAppMigrationBrowserTest,
 
   webapps::AppId old_app_id;
   {
-    auto info = std::make_unique<WebAppInstallInfo>();
-    info->start_url = embedded_test_server()->GetURL("/webapps/migration/old/");
+    auto info = WebAppInstallInfo::CreateWithStartUrlForTesting(
+        embedded_test_server()->GetURL("/webapps/migration/old/"));
     info->scope = info->start_url;
     info->title = u"Old app";
     old_app_id = web_app::test::InstallWebApp(profile(), std::move(info));
@@ -883,8 +882,8 @@ IN_PROC_BROWSER_TEST_F(PreinstalledWebAppMigrationBrowserTest,
 
   webapps::AppId new_app_id;
   {
-    auto info = std::make_unique<WebAppInstallInfo>();
-    info->start_url = embedded_test_server()->GetURL("/webapps/migration/new/");
+    auto info = WebAppInstallInfo::CreateWithStartUrlForTesting(
+        embedded_test_server()->GetURL("/webapps/migration/new/"));
     info->scope = info->start_url;
     info->title = u"New app";
 

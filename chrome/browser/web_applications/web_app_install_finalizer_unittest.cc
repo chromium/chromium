@@ -145,8 +145,8 @@ class WebAppInstallFinalizerUnitTest : public WebAppTest {
 };
 
 TEST_F(WebAppInstallFinalizerUnitTest, BasicInstallSucceeds) {
-  auto info = std::make_unique<WebAppInstallInfo>();
-  info->start_url = GURL("https://foo.example");
+  auto info = WebAppInstallInfo::CreateWithStartUrlForTesting(
+      GURL("https://foo.example"));
   info->title = u"Foo Title";
   WebAppInstallFinalizer::FinalizeOptions options(
       webapps::WebappInstallSource::INTERNAL_DEFAULT);
@@ -159,12 +159,12 @@ TEST_F(WebAppInstallFinalizerUnitTest, BasicInstallSucceeds) {
 }
 
 TEST_F(WebAppInstallFinalizerUnitTest, ConcurrentInstallSucceeds) {
-  auto info1 = std::make_unique<WebAppInstallInfo>();
-  info1->start_url = GURL("https://foo1.example");
+  auto info1 = WebAppInstallInfo::CreateWithStartUrlForTesting(
+      GURL("https://foo1.example"));
   info1->title = u"Foo1 Title";
 
-  auto info2 = std::make_unique<WebAppInstallInfo>();
-  info2->start_url = GURL("https://foo2.example");
+  auto info2 = WebAppInstallInfo::CreateWithStartUrlForTesting(
+      GURL("https://foo2.example"));
   info2->title = u"Foo2 Title";
 
   WebAppInstallFinalizer::FinalizeOptions options(
@@ -213,8 +213,8 @@ TEST_F(WebAppInstallFinalizerUnitTest, ConcurrentInstallSucceeds) {
 }
 
 TEST_F(WebAppInstallFinalizerUnitTest, InstallStoresLatestWebAppInstallSource) {
-  auto info = std::make_unique<WebAppInstallInfo>();
-  info->start_url = GURL("https://foo.example");
+  auto info = WebAppInstallInfo::CreateWithStartUrlForTesting(
+      GURL("https://foo.example"));
   info->title = u"Foo Title";
   WebAppInstallFinalizer::FinalizeOptions options(
       webapps::WebappInstallSource::INTERNAL_DEFAULT);
@@ -226,8 +226,8 @@ TEST_F(WebAppInstallFinalizerUnitTest, InstallStoresLatestWebAppInstallSource) {
 }
 
 TEST_F(WebAppInstallFinalizerUnitTest, OnWebAppManifestUpdatedTriggered) {
-  auto info = std::make_unique<WebAppInstallInfo>();
-  info->start_url = GURL("https://foo.example");
+  auto info = WebAppInstallInfo::CreateWithStartUrlForTesting(
+      GURL("https://foo.example"));
   info->title = u"Foo Title";
   WebAppInstallFinalizer::FinalizeOptions options(
       webapps::WebappInstallSource::EXTERNAL_POLICY);
@@ -242,8 +242,8 @@ TEST_F(WebAppInstallFinalizerUnitTest, OnWebAppManifestUpdatedTriggered) {
 
 TEST_F(WebAppInstallFinalizerUnitTest,
        NonLocalThenLocalInstallSetsBothInstallTime) {
-  auto info = std::make_unique<WebAppInstallInfo>();
-  info->start_url = GURL("https://foo.example");
+  auto info = WebAppInstallInfo::CreateWithStartUrlForTesting(
+      GURL("https://foo.example"));
   info->title = u"Foo Title";
   WebAppInstallFinalizer::FinalizeOptions options(
       webapps::WebappInstallSource::INTERNAL_DEFAULT);
@@ -284,8 +284,8 @@ TEST_F(WebAppInstallFinalizerUnitTest,
 
 TEST_F(WebAppInstallFinalizerUnitTest,
        LatestInstallTimeAlwaysUpdatedIfReinstalled) {
-  auto info = std::make_unique<WebAppInstallInfo>();
-  info->start_url = GURL("https://foo.example");
+  auto info = WebAppInstallInfo::CreateWithStartUrlForTesting(
+      GURL("https://foo.example"));
   info->title = u"Foo Title";
   WebAppInstallFinalizer::FinalizeOptions options(
       webapps::WebappInstallSource::INTERNAL_DEFAULT);
@@ -332,8 +332,8 @@ TEST_F(WebAppInstallFinalizerUnitTest,
 }
 
 TEST_F(WebAppInstallFinalizerUnitTest, InstallNoDesktopShortcut) {
-  auto info = std::make_unique<WebAppInstallInfo>();
-  info->start_url = GURL("https://foo.example");
+  auto info = WebAppInstallInfo::CreateWithStartUrlForTesting(
+      GURL("https://foo.example"));
   info->title = u"Foo Title";
   WebAppInstallFinalizer::FinalizeOptions options(
       webapps::WebappInstallSource::OMNIBOX_INSTALL_ICON);
@@ -347,8 +347,8 @@ TEST_F(WebAppInstallFinalizerUnitTest, InstallNoDesktopShortcut) {
 }
 
 TEST_F(WebAppInstallFinalizerUnitTest, InstallNoQuickLaunchBarShortcut) {
-  auto info = std::make_unique<WebAppInstallInfo>();
-  info->start_url = GURL("https://foo.example");
+  auto info = WebAppInstallInfo::CreateWithStartUrlForTesting(
+      GURL("https://foo.example"));
   info->title = u"Foo Title";
   WebAppInstallFinalizer::FinalizeOptions options(
       webapps::WebappInstallSource::OMNIBOX_INSTALL_ICON);
@@ -363,8 +363,8 @@ TEST_F(WebAppInstallFinalizerUnitTest, InstallNoQuickLaunchBarShortcut) {
 
 TEST_F(WebAppInstallFinalizerUnitTest,
        InstallNoDesktopShortcutAndNoQuickLaunchBarShortcut) {
-  auto info = std::make_unique<WebAppInstallInfo>();
-  info->start_url = GURL("https://foo.example");
+  auto info = WebAppInstallInfo::CreateWithStartUrlForTesting(
+      GURL("https://foo.example"));
   info->title = u"Foo Title";
   WebAppInstallFinalizer::FinalizeOptions options(
       webapps::WebappInstallSource::OMNIBOX_INSTALL_ICON);
@@ -379,8 +379,8 @@ TEST_F(WebAppInstallFinalizerUnitTest,
 }
 
 TEST_F(WebAppInstallFinalizerUnitTest, InstallNoCreateOsShorcuts) {
-  auto info = std::make_unique<WebAppInstallInfo>();
-  info->start_url = GURL("https://foo.example");
+  auto info = WebAppInstallInfo::CreateWithStartUrlForTesting(
+      GURL("https://foo.example"));
   info->title = u"Foo Title";
   WebAppInstallFinalizer::FinalizeOptions options(
       webapps::WebappInstallSource::OMNIBOX_INSTALL_ICON);
@@ -395,8 +395,8 @@ TEST_F(WebAppInstallFinalizerUnitTest, InstallNoCreateOsShorcuts) {
 
 TEST_F(WebAppInstallFinalizerUnitTest,
        InstallOsHooksEnabledForUserInstalledApps) {
-  auto info = std::make_unique<WebAppInstallInfo>();
-  info->start_url = GURL("https://foo.example");
+  auto info = WebAppInstallInfo::CreateWithStartUrlForTesting(
+      GURL("https://foo.example"));
   info->title = u"Foo Title";
   WebAppInstallFinalizer::FinalizeOptions options(
       webapps::WebappInstallSource::OMNIBOX_INSTALL_ICON);
@@ -409,8 +409,8 @@ TEST_F(WebAppInstallFinalizerUnitTest,
 }
 
 TEST_F(WebAppInstallFinalizerUnitTest, InstallOsHooksDisabledForDefaultApps) {
-  auto info = std::make_unique<WebAppInstallInfo>();
-  info->start_url = GURL("https://foo.example");
+  auto info = WebAppInstallInfo::CreateWithStartUrlForTesting(
+      GURL("https://foo.example"));
   info->title = u"Foo Title";
   WebAppInstallFinalizer::FinalizeOptions options(
       webapps::WebappInstallSource::EXTERNAL_DEFAULT);
@@ -435,8 +435,8 @@ TEST_F(WebAppInstallFinalizerUnitTest, InstallOsHooksDisabledForDefaultApps) {
 }
 
 TEST_F(WebAppInstallFinalizerUnitTest, InstallUrlSetInWebAppDB) {
-  auto info = std::make_unique<WebAppInstallInfo>();
-  info->start_url = GURL("https://foo.example");
+  auto info = WebAppInstallInfo::CreateWithStartUrlForTesting(
+      GURL("https://foo.example"));
   info->title = u"Foo Title";
   info->install_url = GURL("https://foo.example/installer");
   WebAppInstallFinalizer::FinalizeOptions options(
@@ -461,10 +461,10 @@ TEST_F(WebAppInstallFinalizerUnitTest, InstallUrlSetInWebAppDB) {
 TEST_F(WebAppInstallFinalizerUnitTest, IsolationDataSetInWebAppDB) {
   base::Version version("1.2.3");
 
-  WebAppInstallInfo info;
-  info.start_url = GURL("https://foo.example");
-  info.title = u"Foo Title";
-  info.isolated_web_app_version = version;
+  auto info = WebAppInstallInfo::CreateWithStartUrlForTesting(
+      GURL("https://foo.example"));
+  info->title = u"Foo Title";
+  info->isolated_web_app_version = version;
 
   const IsolatedWebAppStorageLocation location(
       IwaStorageUnownedBundle{base::FilePath(FILE_PATH_LITERAL("p"))});
@@ -472,11 +472,11 @@ TEST_F(WebAppInstallFinalizerUnitTest, IsolationDataSetInWebAppDB) {
       webapps::WebappInstallSource::EXTERNAL_POLICY);
   options.isolated_web_app_location = location;
 
-  FinalizeInstallResult result = AwaitFinalizeInstall(info, options);
+  FinalizeInstallResult result = AwaitFinalizeInstall(*info, options);
 
   EXPECT_EQ(webapps::InstallResultCode::kSuccessNewInstall, result.code);
   EXPECT_EQ(result.installed_app_id,
-            GenerateAppId(/*manifest_id=*/std::nullopt, info.start_url));
+            GenerateAppId(/*manifest_id=*/std::nullopt, info->start_url));
 
   const WebApp* installed_app = registrar().GetAppById(result.installed_app_id);
   EXPECT_EQ(location, installed_app->isolation_data()->location);
@@ -484,8 +484,8 @@ TEST_F(WebAppInstallFinalizerUnitTest, IsolationDataSetInWebAppDB) {
 }
 
 TEST_F(WebAppInstallFinalizerUnitTest, ValidateOriginAssociationsApproved) {
-  auto info = std::make_unique<WebAppInstallInfo>();
-  info->start_url = GURL("https://foo.example");
+  auto info = WebAppInstallInfo::CreateWithStartUrlForTesting(
+      GURL("https://foo.example"));
   info->title = u"Foo Title";
   WebAppInstallFinalizer::FinalizeOptions options(
       webapps::WebappInstallSource::INTERNAL_DEFAULT);
@@ -513,8 +513,8 @@ TEST_F(WebAppInstallFinalizerUnitTest, ValidateOriginAssociationsApproved) {
 }
 
 TEST_F(WebAppInstallFinalizerUnitTest, ValidateOriginAssociationsDenied) {
-  auto info = std::make_unique<WebAppInstallInfo>();
-  info->start_url = GURL("https://foo.example");
+  auto info = WebAppInstallInfo::CreateWithStartUrlForTesting(
+      GURL("https://foo.example"));
   info->title = u"Foo Title";
   WebAppInstallFinalizer::FinalizeOptions options(
       webapps::WebappInstallSource::INTERNAL_DEFAULT);

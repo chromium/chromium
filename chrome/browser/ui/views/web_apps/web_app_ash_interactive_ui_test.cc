@@ -30,8 +30,9 @@ class WebAppAshInteractiveUITest : public web_app::WebAppBrowserTestBase {
 
   // web_app::WebAppBrowserTestBase override:
   void SetUpOnMainThread() override {
-    auto web_app_info = std::make_unique<web_app::WebAppInstallInfo>();
-    web_app_info->start_url = GURL("https://test.org");
+    auto web_app_info =
+        web_app::WebAppInstallInfo::CreateWithStartUrlForTesting(
+            GURL("https://test.org"));
     webapps::AppId app_id = InstallWebApp(std::move(web_app_info));
 
     Browser* browser = LaunchWebAppBrowser(app_id);

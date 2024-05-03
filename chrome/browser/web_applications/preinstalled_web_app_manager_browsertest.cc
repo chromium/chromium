@@ -1339,8 +1339,8 @@ IN_PROC_BROWSER_TEST_F(PreinstalledWebAppManagerBrowserTest,
       GenerateAppId(/*manifest_id=*/std::nullopt, preinstalled_app_start_url);
 
   // Install user app.
-  auto install_info = std::make_unique<WebAppInstallInfo>();
-  install_info->start_url = user_app_start_url;
+  auto install_info =
+      WebAppInstallInfo::CreateWithStartUrlForTesting(user_app_start_url);
   install_info->title = u"Test user app";
   webapps::AppId user_app_id =
       web_app::test::InstallWebApp(profile(), std::move(install_info));

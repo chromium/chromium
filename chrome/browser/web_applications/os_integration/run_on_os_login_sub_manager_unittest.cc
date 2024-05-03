@@ -69,8 +69,7 @@ class RunOnOsLoginSubManagerTestBase : public WebAppTest {
 
   webapps::AppId InstallWebApp() {
     std::unique_ptr<WebAppInstallInfo> info =
-        std::make_unique<WebAppInstallInfo>();
-    info->start_url = kWebAppUrl;
+        WebAppInstallInfo::CreateWithStartUrlForTesting(kWebAppUrl);
     info->title = u"Test App";
     info->user_display_mode = web_app::mojom::UserDisplayMode::kStandalone;
     base::test::TestFuture<const webapps::AppId&, webapps::InstallResultCode>

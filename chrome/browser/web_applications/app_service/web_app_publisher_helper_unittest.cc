@@ -133,9 +133,8 @@ TEST_F(WebAppPublisherHelperTest, CreateWebApp_Minimal) {
   const std::string name = "some app name";
   const GURL start_url("https://example.com/start_url");
 
-  auto info = std::make_unique<WebAppInstallInfo>();
+  auto info = WebAppInstallInfo::CreateWithStartUrlForTesting(start_url);
   info->title = base::UTF8ToUTF16(name);
-  info->start_url = start_url;
 
   webapps::AppId app_id = test::InstallWebApp(profile(), std::move(info));
   const WebApp* web_app = provider_->registrar_unsafe().GetAppById(app_id);
@@ -151,12 +150,11 @@ TEST_F(WebAppPublisherHelperTest, CreateWebApp_Random) {
     std::unique_ptr<WebApp> random_app =
         test::CreateRandomWebApp({.seed = seed});
 
-    auto info = std::make_unique<WebAppInstallInfo>();
+    auto info = std::make_unique<WebAppInstallInfo>(random_app->manifest_id(),
+                                                    random_app->start_url());
     info->title = base::UTF8ToUTF16(random_app->untranslated_name());
     info->description =
         base::UTF8ToUTF16(random_app->untranslated_description());
-    info->start_url = random_app->start_url();
-    info->manifest_id = random_app->manifest_id();
     info->file_handlers = random_app->file_handlers();
 
     // Unable to install a randomly generated web app struct, so just copy
@@ -176,9 +174,8 @@ TEST_F(WebAppPublisherHelperTest, CreateWebApp_NoteTaking) {
   const GURL start_url("https://example.com/start_url");
   const GURL new_note_url("https://example.com/new_note");
 
-  auto info = std::make_unique<WebAppInstallInfo>();
+  auto info = WebAppInstallInfo::CreateWithStartUrlForTesting(start_url);
   info->title = base::UTF8ToUTF16(name);
-  info->start_url = start_url;
   info->note_taking_new_note_url = new_note_url;
 
   webapps::AppId app_id = test::InstallWebApp(profile(), std::move(info));
@@ -193,9 +190,8 @@ TEST_F(WebAppPublisherHelperTest, CreateWebApp_LockScreen_DisabledByFlag) {
   const GURL start_url("https://example.com/start_url");
   const GURL lock_screen_url("https://example.com/lock_screen");
 
-  auto info = std::make_unique<WebAppInstallInfo>();
+  auto info = WebAppInstallInfo::CreateWithStartUrlForTesting(start_url);
   info->title = base::UTF8ToUTF16(name);
-  info->start_url = start_url;
   info->lock_screen_start_url = lock_screen_url;
 
   webapps::AppId app_id = test::InstallWebApp(profile(), std::move(info));
@@ -542,9 +538,8 @@ TEST_F(WebAppPublisherHelperTest_WebLockScreenApi, CreateWebApp_LockScreen) {
   const GURL start_url("https://example.com/start_url");
   const GURL lock_screen_url("https://example.com/lock_screen");
 
-  auto info = std::make_unique<WebAppInstallInfo>();
+  auto info = WebAppInstallInfo::CreateWithStartUrlForTesting(start_url);
   info->title = base::UTF8ToUTF16(name);
-  info->start_url = start_url;
   info->lock_screen_start_url = lock_screen_url;
 
   webapps::AppId app_id = test::InstallWebApp(profile(), std::move(info));

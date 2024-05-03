@@ -99,8 +99,8 @@ class WebAppTabStripBrowserTest : public WebAppBrowserTestBase {
     Profile* profile = browser()->profile();
     GURL start_url = embedded_test_server()->GetURL(kAppPath);
 
-    auto web_app_info = std::make_unique<web_app::WebAppInstallInfo>();
-    web_app_info->start_url = start_url;
+    auto web_app_info =
+        web_app::WebAppInstallInfo::CreateWithStartUrlForTesting(start_url);
     web_app_info->scope = start_url.GetWithoutFilename();
     web_app_info->title = u"Test app";
     web_app_info->background_color = kAppBackgroundColor;

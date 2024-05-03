@@ -50,8 +50,8 @@ class WebUIWebAppBrowserTest : public WebAppBrowserTestBase {
     std::string start_url = base::StrCat(
         {kWebUIScheme, password_manager::kChromeUIPasswordManagerHost});
 
-    auto web_app_info = std::make_unique<WebAppInstallInfo>();
-    web_app_info->start_url = GURL(start_url);
+    auto web_app_info =
+        WebAppInstallInfo::CreateWithStartUrlForTesting(GURL(start_url));
     web_app_info->user_display_mode = mojom::UserDisplayMode::kStandalone;
     webapps::AppId app_id =
         test::InstallWebApp(profile, std::move(web_app_info));

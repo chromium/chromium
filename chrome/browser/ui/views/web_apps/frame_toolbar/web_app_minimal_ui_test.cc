@@ -21,8 +21,8 @@ class WebAppMinimalUITest : public WebAppBrowserTestBase {
   WebAppMinimalUITest& operator=(const WebAppMinimalUITest&) = delete;
 
   BrowserView* CreateBrowserView(blink::mojom::DisplayMode display_mode) {
-    auto web_app_info = std::make_unique<WebAppInstallInfo>();
-    web_app_info->start_url = GURL("https://example.org");
+    auto web_app_info = WebAppInstallInfo::CreateWithStartUrlForTesting(
+        GURL("https://example.org"));
     web_app_info->display_mode = display_mode;
     web_app_info->user_display_mode = mojom::UserDisplayMode::kStandalone;
     webapps::AppId app_id = InstallWebApp(std::move(web_app_info));

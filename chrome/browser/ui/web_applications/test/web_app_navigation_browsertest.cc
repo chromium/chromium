@@ -287,8 +287,9 @@ webapps::AppId WebAppNavigationBrowserTest::InstallTestWebApp(
     CHECK(https_server_.Start());
   }
 
-  auto web_app_info = std::make_unique<WebAppInstallInfo>();
-  web_app_info->start_url = https_server_.GetURL(app_host, GetAppUrlPath());
+  GURL start_url = https_server_.GetURL(app_host, GetAppUrlPath());
+  auto web_app_info =
+      WebAppInstallInfo::CreateWithStartUrlForTesting(start_url);
   web_app_info->scope = https_server_.GetURL(app_host, app_scope);
   web_app_info->title = base::UTF8ToUTF16(GetAppName());
   web_app_info->description = u"Test description";

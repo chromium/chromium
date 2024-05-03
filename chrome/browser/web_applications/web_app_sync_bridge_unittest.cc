@@ -1614,8 +1614,7 @@ TEST_P(WebAppSyncBridgeTest_UserDisplayModeSplit, SyncUpdateToUserDisplayMode) {
 
   // Install an app.
   if (installed_before_sync()) {
-    auto info = std::make_unique<WebAppInstallInfo>();
-    info->start_url = start_url;
+    auto info = WebAppInstallInfo::CreateWithStartUrlForTesting(start_url);
     info->scope = start_url;
     info->title = u"Basic web app";
     info->description = u"Test description";

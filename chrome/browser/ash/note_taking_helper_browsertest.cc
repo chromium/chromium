@@ -38,8 +38,8 @@ IN_PROC_BROWSER_TEST_F(NoteTakingHelperBrowserTest, LaunchWebApp) {
   base::HistogramTester histogram_tester;
   // Install a web app with a note_taking_new_note_url.
   GURL new_note_url("http://some.url/new-note");
-  auto app_info = std::make_unique<web_app::WebAppInstallInfo>();
-  app_info->start_url = GURL("http://some.url");
+  auto app_info = web_app::WebAppInstallInfo::CreateWithStartUrlForTesting(
+      GURL("http://some.url"));
   app_info->scope = GURL("http://some.url");
   app_info->title = u"Web App 2";
   app_info->note_taking_new_note_url = new_note_url;
@@ -70,8 +70,8 @@ IN_PROC_BROWSER_TEST_F(NoteTakingHelperBrowserTest, LaunchHardcodedWebApp) {
   GURL app_url("https://yielding-large-chef.glitch.me/");
   // Install a default-allowed web app corresponding to ID of
   // |NoteTakingHelper::kNoteTakingWebAppIdTest|.
-  auto app_info = std::make_unique<web_app::WebAppInstallInfo>();
-  app_info->start_url = app_url;
+  auto app_info =
+      web_app::WebAppInstallInfo::CreateWithStartUrlForTesting(app_url);
   app_info->title = u"Default Allowed Web App";
   app_info->user_display_mode = web_app::mojom::UserDisplayMode::kStandalone;
   std::string app_id =

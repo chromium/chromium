@@ -75,9 +75,8 @@ webapps::AppId InstallDummyWebApp(
     const std::string& app_name,
     const GURL& start_url,
     const webapps::WebappInstallSource install_source) {
-  auto web_app_info = std::make_unique<WebAppInstallInfo>();
-
-  web_app_info->start_url = start_url;
+  auto web_app_info =
+      WebAppInstallInfo::CreateWithStartUrlForTesting(start_url);
   web_app_info->scope = start_url.GetWithoutFilename();
   web_app_info->title = base::UTF8ToUTF16(app_name);
   web_app_info->description = base::UTF8ToUTF16(app_name);
@@ -155,9 +154,10 @@ webapps::AppId InstallShortcut(Profile* profile,
                                const GURL& start_url,
                                bool create_default_icon,
                                bool is_policy_install) {
-  auto web_app_info = std::make_unique<WebAppInstallInfo>();
-
-  web_app_info->start_url = start_url;
+  auto web_app_info =
+      WebAppInstallInfo::CreateWithStartUrlForTesting(start_url);
+  // Explicitly clear the scope, because this is a shortcut.
+  web_app_info->scope = GURL();
   web_app_info->title = base::UTF8ToUTF16(shortcut_name);
   web_app_info->user_display_mode = mojom::UserDisplayMode::kBrowser;
   if (create_default_icon) {

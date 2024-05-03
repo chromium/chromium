@@ -116,12 +116,12 @@ IN_PROC_BROWSER_TEST_F(UserUninstalledPreinstalledWebAppPrefsBrowserTest,
 
 IN_PROC_BROWSER_TEST_F(UserUninstalledPreinstalledWebAppPrefsBrowserTest,
                        PrefsPropagateProperlyOnDefaultUninstall) {
-  auto app_info1 = std::make_unique<WebAppInstallInfo>();
-  app_info1->start_url = GURL("https://example_url1.com/");
+  auto app_info1 = WebAppInstallInfo::CreateWithStartUrlForTesting(
+      GURL("https://example_url1.com/"));
   app_info1->title = u"Example App1";
   app_info1->install_url = GURL("https://example_url1.com/install");
-  auto app_info2 = std::make_unique<WebAppInstallInfo>();
-  app_info2->start_url = GURL("https://example_url2.com/");
+  auto app_info2 = WebAppInstallInfo::CreateWithStartUrlForTesting(
+      GURL("https://example_url2.com/"));
   app_info2->title = u"Example App2";
   app_info2->install_url = GURL("https://example_url2.com/install");
   webapps::AppId app_id1 =

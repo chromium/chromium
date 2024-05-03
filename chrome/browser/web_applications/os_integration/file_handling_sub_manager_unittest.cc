@@ -62,8 +62,7 @@ class FileHandlingSubManagerConfigureTest : public WebAppTest {
   webapps::AppId InstallWebAppWithFileHandlers(
       apps::FileHandlers file_handlers) {
     std::unique_ptr<WebAppInstallInfo> info =
-        std::make_unique<WebAppInstallInfo>();
-    info->start_url = kWebAppUrl;
+        WebAppInstallInfo::CreateWithStartUrlForTesting(kWebAppUrl);
     info->title = u"Test App";
     info->user_display_mode = web_app::mojom::UserDisplayMode::kStandalone;
     info->file_handlers = file_handlers;

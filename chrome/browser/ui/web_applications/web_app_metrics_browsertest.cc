@@ -74,8 +74,8 @@ class WebAppMetricsBrowserTest : public WebAppBrowserTestBase {
   }
 
   webapps::AppId InstallWebApp() {
-    auto web_app_info = std::make_unique<WebAppInstallInfo>();
-    web_app_info->start_url = GetInstallableAppURL();
+    auto web_app_info =
+        WebAppInstallInfo::CreateWithStartUrlForTesting(GetInstallableAppURL());
     web_app_info->title = u"A Web App";
     web_app_info->display_mode = DisplayMode::kStandalone;
     web_app_info->user_display_mode = mojom::UserDisplayMode::kStandalone;
@@ -134,8 +134,8 @@ IN_PROC_BROWSER_TEST_F(WebAppMetricsBrowserTest,
                        InstalledWebAppInTab_RecordsDailyInteraction) {
   ukm::TestAutoSetUkmRecorder ukm_recorder;
 
-  auto web_app_info = std::make_unique<WebAppInstallInfo>();
-  web_app_info->start_url = GetInstallableAppURL();
+  auto web_app_info =
+      WebAppInstallInfo::CreateWithStartUrlForTesting(GetInstallableAppURL());
   web_app_info->title = u"A Web App";
   web_app_info->display_mode = DisplayMode::kStandalone;
   web_app_info->user_display_mode = mojom::UserDisplayMode::kStandalone;
@@ -181,8 +181,8 @@ IN_PROC_BROWSER_TEST_F(WebAppMetricsBrowserTest,
   LoopbackCrosapiAppServiceProxy loopback(profile());
 #endif
 
-  auto web_app_info = std::make_unique<WebAppInstallInfo>();
-  web_app_info->start_url = GetInstallableAppURL();
+  auto web_app_info =
+      WebAppInstallInfo::CreateWithStartUrlForTesting(GetInstallableAppURL());
   web_app_info->title = u"A Web App";
   web_app_info->display_mode = DisplayMode::kBrowser;
   web_app_info->user_display_mode = mojom::UserDisplayMode::kBrowser;
@@ -227,8 +227,8 @@ IN_PROC_BROWSER_TEST_F(
   LoopbackCrosapiAppServiceProxy loopback(profile());
 #endif
 
-  auto web_app_info = std::make_unique<WebAppInstallInfo>();
-  web_app_info->start_url = GetInstallableAppURL();
+  auto web_app_info =
+      WebAppInstallInfo::CreateWithStartUrlForTesting(GetInstallableAppURL());
   web_app_info->title = u"A Web App";
   web_app_info->display_mode = DisplayMode::kStandalone;
   web_app_info->user_display_mode = mojom::UserDisplayMode::kStandalone;

@@ -153,8 +153,7 @@ class ShortcutMenuHandlingSubManagerTestBase : public WebAppTest {
   webapps::AppId InstallWebAppWithShortcutMenuIcons(
       ShortcutsMenuIconBitmaps shortcuts_menu_icons) {
     std::unique_ptr<WebAppInstallInfo> info =
-        std::make_unique<WebAppInstallInfo>();
-    info->start_url = kWebAppUrl;
+        WebAppInstallInfo::CreateWithStartUrlForTesting(kWebAppUrl);
     info->title = u"Test App";
     info->user_display_mode = web_app::mojom::UserDisplayMode::kStandalone;
     info->shortcuts_menu_icon_bitmaps = shortcuts_menu_icons;

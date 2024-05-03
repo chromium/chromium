@@ -54,6 +54,7 @@
 #include "components/crx_file/id_util.h"
 #include "components/sync_preferences/testing_pref_service_syncable.h"
 #include "components/webapps/browser/install_result_code.h"
+#include "components/webapps/common/web_app_id.h"
 #include "testing/gmock/include/gmock/gmock.h"
 #include "testing/gtest/include/gtest/gtest.h"
 #include "third_party/skia/include/core/SkColor.h"
@@ -462,9 +463,7 @@ class WebAppPolicyManagerTestBase : public ChromeRenderViewHostTestHarness {
  protected:
   void InstallPwa(const std::string& url) {
     std::unique_ptr<WebAppInstallInfo> web_app_info =
-        std::make_unique<WebAppInstallInfo>(
-            GenerateManifestIdFromStartUrlOnly(GURL(url)));
-    web_app_info->start_url = GURL(url);
+        WebAppInstallInfo::CreateWithStartUrlForTesting(GURL(url));
     web_app::test::InstallWebApp(profile(), std::move(web_app_info));
   }
 
@@ -1737,14 +1736,13 @@ class WebAppPolicyForceUnregistrationTest : public WebAppTest {
       std::map<SquareSizePx, SkBitmap> icon_map,
       const GURL manifest_id) {
     std::unique_ptr<WebAppInstallInfo> info =
-        std::make_unique<WebAppInstallInfo>();
-    info->start_url = manifest_id;
+        std::make_unique<WebAppInstallInfo>(webapps::ManifestId(manifest_id),
+                                            /*start_url=*/manifest_id);
     // The name of the app should also change, otherwise on Mac and Windows, the
     // shortcuts are stored as name(1) and gets wiped out with name.
     info->title = base::UTF8ToUTF16(manifest_id.host());
     info->user_display_mode = web_app::mojom::UserDisplayMode::kStandalone;
     info->icon_bitmaps.any = std::move(icon_map);
-    info->manifest_id = manifest_id;
     base::test::TestFuture<const webapps::AppId&, webapps::InstallResultCode>
         result;
     provider().scheduler().InstallFromInfoWithParams(

@@ -147,8 +147,8 @@ class TestAppHomePageHandler : public AppHomePageHandler {
 
 std::unique_ptr<web_app::WebAppInstallInfo> BuildWebAppInfo(
     std::string test_app_name) {
-  auto app_info = std::make_unique<web_app::WebAppInstallInfo>();
-  app_info->start_url = GURL(kTestAppUrl);
+  auto app_info = web_app::WebAppInstallInfo::CreateWithStartUrlForTesting(
+      GURL(kTestAppUrl));
   app_info->scope = GURL(kTestAppUrl);
   app_info->title = base::UTF8ToUTF16(std::string_view(test_app_name));
   app_info->manifest_url = GURL(kTestManifestUrl);

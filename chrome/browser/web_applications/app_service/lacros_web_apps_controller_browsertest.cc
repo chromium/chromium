@@ -314,8 +314,8 @@ IN_PROC_BROWSER_TEST_F(LacrosWebAppsControllerBrowserTest, ManifestUpdate) {
   webapps::AppId app_id;
   {
     const std::u16string original_description = u"Original Web App";
-    auto web_app_info = std::make_unique<WebAppInstallInfo>();
-    web_app_info->start_url = app_url;
+    auto web_app_info =
+        WebAppInstallInfo::CreateWithStartUrlForTesting(app_url);
     web_app_info->scope = app_url;
     web_app_info->title = original_description;
     web_app_info->description = original_description;
@@ -328,8 +328,8 @@ IN_PROC_BROWSER_TEST_F(LacrosWebAppsControllerBrowserTest, ManifestUpdate) {
 
   {
     const std::u16string updated_description = u"Updated Web App";
-    auto web_app_info = std::make_unique<WebAppInstallInfo>();
-    web_app_info->start_url = app_url;
+    auto web_app_info =
+        WebAppInstallInfo::CreateWithStartUrlForTesting(app_url);
     web_app_info->scope = app_url;
     web_app_info->title = updated_description;
     web_app_info->description = updated_description;
@@ -360,8 +360,8 @@ IN_PROC_BROWSER_TEST_F(LacrosWebAppsControllerBrowserTest,
   webapps::AppId app_id;
   {
     const std::u16string description = u"Web App";
-    auto web_app_info = std::make_unique<WebAppInstallInfo>();
-    web_app_info->start_url = app_url;
+    auto web_app_info =
+        WebAppInstallInfo::CreateWithStartUrlForTesting(app_url);
     web_app_info->scope = app_url;
     web_app_info->title = description;
     web_app_info->description = description;
@@ -432,8 +432,8 @@ IN_PROC_BROWSER_TEST_F(LacrosWebAppsControllerBrowserTest, ContentSettings) {
 
   // Install an additional app from a different host.
   {
-    auto web_app_info = std::make_unique<WebAppInstallInfo>();
-    web_app_info->start_url = GURL("https://example.com:8080/");
+    auto web_app_info = WebAppInstallInfo::CreateWithStartUrlForTesting(
+        GURL("https://example.com:8080/"));
     web_app_info->scope = web_app_info->start_url;
     web_app_info->title = u"Unrelated Web App";
     InstallWebApp(std::move(web_app_info));

@@ -55,8 +55,8 @@ class FetchInstallabilityForChromeManagementTest : public WebAppTest {
   }
 
   std::unique_ptr<WebAppInstallInfo> CreateWebAppInfo() {
-    auto install_info = std::make_unique<WebAppInstallInfo>();
-    install_info->start_url = kWebAppUrl;
+    auto install_info =
+        WebAppInstallInfo::CreateWithStartUrlForTesting(kWebAppUrl);
     install_info->scope = kWebAppScope;
     install_info->title = base::ASCIIToUTF16(kWebAppName);
     return install_info;

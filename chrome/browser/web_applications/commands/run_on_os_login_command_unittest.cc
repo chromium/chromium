@@ -93,8 +93,7 @@ class RunOnOsLoginCommandTest : public WebAppTest {
 
   webapps::AppId InstallNonLocallyInstalledApp(const GURL url) {
     std::unique_ptr<WebAppInstallInfo> info =
-        std::make_unique<WebAppInstallInfo>();
-    info->start_url = url;
+        WebAppInstallInfo::CreateWithStartUrlForTesting(url);
     info->title = u"Test App";
     info->user_display_mode = mojom::UserDisplayMode::kStandalone;
     base::test::TestFuture<const webapps::AppId&, webapps::InstallResultCode>

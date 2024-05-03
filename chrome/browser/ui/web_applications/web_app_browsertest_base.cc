@@ -93,8 +93,8 @@ Profile* WebAppBrowserTestBase::profile() {
 }
 
 webapps::AppId WebAppBrowserTestBase::InstallPWA(const GURL& start_url) {
-  auto web_app_info = std::make_unique<WebAppInstallInfo>();
-  web_app_info->start_url = start_url;
+  auto web_app_info =
+      WebAppInstallInfo::CreateWithStartUrlForTesting(start_url);
   web_app_info->scope = start_url.GetWithoutFilename();
   web_app_info->user_display_mode = mojom::UserDisplayMode::kStandalone;
   web_app_info->title = u"A Web App";

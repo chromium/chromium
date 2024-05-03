@@ -82,8 +82,7 @@ class ShortcutSubManagerTestBase : public WebAppTest {
   webapps::AppId InstallWebAppWithShortcuts(
       std::map<SquareSizePx, SkBitmap> icon_map) {
     std::unique_ptr<WebAppInstallInfo> info =
-        std::make_unique<WebAppInstallInfo>();
-    info->start_url = kWebAppUrl;
+        WebAppInstallInfo::CreateWithStartUrlForTesting(kWebAppUrl);
     info->title = u"Test App";
     info->user_display_mode = web_app::mojom::UserDisplayMode::kStandalone;
     info->icon_bitmaps.any = std::move(icon_map);
@@ -214,8 +213,7 @@ class ShortcutSubManagerExecuteTest : public ShortcutSubManagerTestBase {
   webapps::AppId UpdateInstalledWebAppWithNewIcons(
       std::map<SquareSizePx, SkBitmap> updated_icons) {
     std::unique_ptr<WebAppInstallInfo> updated_info =
-        std::make_unique<WebAppInstallInfo>();
-    updated_info->start_url = kWebAppUrl;
+        WebAppInstallInfo::CreateWithStartUrlForTesting(kWebAppUrl);
     updated_info->title = u"New App";
     updated_info->user_display_mode =
         web_app::mojom::UserDisplayMode::kStandalone;
@@ -237,8 +235,7 @@ class ShortcutSubManagerExecuteTest : public ShortcutSubManagerTestBase {
   webapps::AppId InstallWebAppWithIconsNoShortcuts(
       std::map<SquareSizePx, SkBitmap> icon_map) {
     std::unique_ptr<WebAppInstallInfo> info =
-        std::make_unique<WebAppInstallInfo>();
-    info->start_url = kWebAppUrl;
+        WebAppInstallInfo::CreateWithStartUrlForTesting(kWebAppUrl);
     info->title = u"Test App";
     info->user_display_mode = web_app::mojom::UserDisplayMode::kStandalone;
     info->icon_bitmaps.any = std::move(icon_map);

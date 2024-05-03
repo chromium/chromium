@@ -1799,8 +1799,9 @@ TEST(WebAppInstallUtils, DuplicateIconDownloadURLs) {
 INSTANTIATE_TEST_SUITE_P(, FileHandlersFromManifestTest, testing::Bool());
 
 TEST(WebAppInstallUtils, SetWebAppManifestFields_Summary) {
-  WebAppInstallInfo web_app_info;
-  web_app_info.start_url = GURL("https://www.chromium.org/index.html");
+  GURL start_url("https://www.chromium.org/index.html");
+  WebAppInstallInfo web_app_info(GenerateManifestIdFromStartUrlOnly(start_url),
+                                 start_url);
   web_app_info.scope = web_app_info.start_url.GetWithoutFilename();
   web_app_info.title = u"App Name";
   web_app_info.description = u"App Description";
@@ -1838,8 +1839,8 @@ TEST(WebAppInstallUtils, SetWebAppManifestFields_Summary) {
 }
 
 TEST(WebAppInstallUtils, SetWebAppManifestFields_ShareTarget) {
-  WebAppInstallInfo web_app_info;
-  web_app_info.start_url = StartUrl();
+  WebAppInstallInfo web_app_info(GenerateManifestIdFromStartUrlOnly(StartUrl()),
+                                 StartUrl());
   web_app_info.scope = web_app_info.start_url.GetWithoutFilename();
   web_app_info.title = u"App Name";
 

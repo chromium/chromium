@@ -76,8 +76,7 @@ class InstallAppLocallyCommandTest : public WebAppTest {
   webapps::AppId InstallNonLocallyInstalledAppWithIcons(
       std::map<SquareSizePx, SkBitmap> icon_map) {
     std::unique_ptr<WebAppInstallInfo> info =
-        std::make_unique<WebAppInstallInfo>();
-    info->start_url = kWebAppUrl;
+        WebAppInstallInfo::CreateWithStartUrlForTesting(kWebAppUrl);
     info->title = u"Test App";
     info->user_display_mode = mojom::UserDisplayMode::kStandalone;
     info->icon_bitmaps.any = std::move(icon_map);

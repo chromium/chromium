@@ -75,8 +75,7 @@ IN_PROC_BROWSER_TEST_F(WebAppIconManagerBrowserTest, SingleIcon) {
   webapps::AppId app_id;
   {
     std::unique_ptr<WebAppInstallInfo> install_info =
-        std::make_unique<WebAppInstallInfo>();
-    install_info->start_url = start_url;
+        WebAppInstallInfo::CreateWithStartUrlForTesting(start_url);
     install_info->scope = start_url.GetWithoutFilename();
     install_info->title = u"App Name";
     install_info->user_display_mode = mojom::UserDisplayMode::kStandalone;

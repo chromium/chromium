@@ -274,8 +274,8 @@ IN_PROC_BROWSER_TEST_F(WebAppPolicyManagerBrowserTest,
 // AppServiceProxyLacros::UninstallSilently() has not yet been implemented.
 IN_PROC_BROWSER_TEST_F(WebAppPolicyManagerBrowserTest, MigratingPolicyApp) {
   // Install old app to replace.
-  auto install_info = std::make_unique<WebAppInstallInfo>();
-  install_info->start_url = GURL("https://some.app.com");
+  auto install_info = WebAppInstallInfo::CreateWithStartUrlForTesting(
+      GURL("https://some.app.com"));
   install_info->title = u"some app";
   webapps::AppId old_app_id =
       test::InstallWebApp(profile(), std::move(install_info));

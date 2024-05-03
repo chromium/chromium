@@ -66,8 +66,7 @@ class UninstallationViaOsSettingsSubManagerTest : public WebAppTest {
 
   webapps::AppId InstallWebApp(webapps::WebappInstallSource install_source) {
     std::unique_ptr<WebAppInstallInfo> info =
-        std::make_unique<WebAppInstallInfo>();
-    info->start_url = kWebAppUrl;
+        WebAppInstallInfo::CreateWithStartUrlForTesting(kWebAppUrl);
     info->title = u"Test App";
     info->user_display_mode = web_app::mojom::UserDisplayMode::kStandalone;
     auto source = install_source;

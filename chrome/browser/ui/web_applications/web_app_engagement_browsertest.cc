@@ -198,8 +198,8 @@ IN_PROC_BROWSER_TEST_F(WebAppEngagementBrowserTest, AppInWindow) {
 
   GURL example_url(
       embedded_test_server()->GetURL("/banners/manifest_test_page.html"));
-  auto web_app_info = std::make_unique<WebAppInstallInfo>();
-  web_app_info->start_url = example_url;
+  auto web_app_info =
+      WebAppInstallInfo::CreateWithStartUrlForTesting(example_url);
   web_app_info->scope = example_url;
   web_app_info->user_display_mode = mojom::UserDisplayMode::kStandalone;
   webapps::AppId app_id = InstallWebAppAndCountApps(std::move(web_app_info));
@@ -231,8 +231,8 @@ IN_PROC_BROWSER_TEST_F(WebAppEngagementBrowserTest, AppInTab) {
   GURL example_url(
       embedded_test_server()->GetURL("/banners/manifest_test_page.html"));
 
-  auto web_app_info = std::make_unique<WebAppInstallInfo>();
-  web_app_info->start_url = example_url;
+  auto web_app_info =
+      WebAppInstallInfo::CreateWithStartUrlForTesting(example_url);
   web_app_info->scope = example_url;
   web_app_info->user_display_mode = mojom::UserDisplayMode::kBrowser;
   webapps::AppId app_id = InstallWebAppAndCountApps(std::move(web_app_info));
@@ -265,8 +265,8 @@ IN_PROC_BROWSER_TEST_F(WebAppEngagementBrowserTest, AppWithoutScope) {
   GURL example_url(
       embedded_test_server()->GetURL("/banners/manifest_test_page.html"));
 
-  auto web_app_info = std::make_unique<WebAppInstallInfo>();
-  web_app_info->start_url = example_url;
+  auto web_app_info =
+      WebAppInstallInfo::CreateWithStartUrlForTesting(example_url);
   // If app has no scope then UrlHandlers::GetUrlHandlers are empty. Therefore,
   // the app is counted as installed via the Create Shortcut button.
   web_app_info->scope = GURL();
@@ -306,14 +306,14 @@ IN_PROC_BROWSER_TEST_F(WebAppEngagementBrowserTest, TwoApps) {
 
   // Install two apps.
   {
-    auto web_app_info = std::make_unique<WebAppInstallInfo>();
-    web_app_info->start_url = example_url1;
+    auto web_app_info =
+        WebAppInstallInfo::CreateWithStartUrlForTesting(example_url1);
     web_app_info->scope = example_url1;
     app_id1 = InstallWebAppAndCountApps(std::move(web_app_info));
   }
   {
-    auto web_app_info = std::make_unique<WebAppInstallInfo>();
-    web_app_info->start_url = example_url2;
+    auto web_app_info =
+        WebAppInstallInfo::CreateWithStartUrlForTesting(example_url2);
     web_app_info->scope = example_url2;
     app_id2 = InstallWebAppAndCountApps(std::move(web_app_info));
   }
@@ -360,8 +360,7 @@ IN_PROC_BROWSER_TEST_F(WebAppEngagementBrowserTest, ManyUserApps) {
   for (int i = 0; i < num_user_apps; ++i) {
     const GURL url = GetUrlForSuffix(base_url, i);
 
-    auto web_app_info = std::make_unique<WebAppInstallInfo>();
-    web_app_info->start_url = url;
+    auto web_app_info = WebAppInstallInfo::CreateWithStartUrlForTesting(url);
     web_app_info->scope = url;
     webapps::AppId app_id = InstallWebAppAndCountApps(std::move(web_app_info));
     app_ids.push_back(app_id);
@@ -439,8 +438,8 @@ IN_PROC_BROWSER_TEST_F(WebAppEngagementBrowserTest, NavigateAwayFromAppTab) {
   const GURL outer_url =
       embedded_test_server()->GetURL("/banners/manifest_test_page.html");
 
-  auto web_app_info = std::make_unique<WebAppInstallInfo>();
-  web_app_info->start_url = start_url;
+  auto web_app_info =
+      WebAppInstallInfo::CreateWithStartUrlForTesting(start_url);
   web_app_info->scope = start_url;
   web_app_info->user_display_mode = mojom::UserDisplayMode::kBrowser;
   webapps::AppId app_id = InstallWebAppAndCountApps(std::move(web_app_info));

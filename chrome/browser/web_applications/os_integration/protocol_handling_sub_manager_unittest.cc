@@ -91,8 +91,7 @@ class ProtocolHandlingSubManagerTestBase : public WebAppTest {
   webapps::AppId InstallWebAppWithProtocolHandlers(
       const std::vector<apps::ProtocolHandlerInfo>& protocol_handlers) {
     std::unique_ptr<WebAppInstallInfo> info =
-        std::make_unique<WebAppInstallInfo>();
-    info->start_url = kWebAppUrl;
+        WebAppInstallInfo::CreateWithStartUrlForTesting(kWebAppUrl);
     info->title = u"Test App";
     info->user_display_mode = web_app::mojom::UserDisplayMode::kStandalone;
     info->protocol_handlers = protocol_handlers;

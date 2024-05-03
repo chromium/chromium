@@ -26,8 +26,8 @@ WebAppFrameToolbarTestMixin::WebAppFrameToolbarTestMixin() {
 void WebAppFrameToolbarTestMixin::InstallAndLaunchWebApp(
     Browser* browser,
     const GURL& start_url) {
-  auto web_app_info = std::make_unique<WebAppInstallInfo>();
-  web_app_info->start_url = start_url;
+  auto web_app_info =
+      WebAppInstallInfo::CreateWithStartUrlForTesting(start_url);
   web_app_info->scope = start_url.GetWithoutFilename();
   web_app_info->title = u"A minimal-ui app";
   web_app_info->display_mode = web_app::DisplayMode::kMinimalUi;

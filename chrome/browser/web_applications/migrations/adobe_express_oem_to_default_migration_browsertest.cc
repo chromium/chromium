@@ -26,8 +26,8 @@ class AdobeExpressOemToDefaultMigrationTest : public InProcessBrowserTest {
 // Installs Adobe Express as an OEM installed app.
 IN_PROC_BROWSER_TEST_F(AdobeExpressOemToDefaultMigrationTest,
                        PRE_MigrateOemInstall) {
-  auto web_app_info = std::make_unique<web_app::WebAppInstallInfo>();
-  web_app_info->start_url = GURL("https://new.express.adobe.com/");
+  auto web_app_info = web_app::WebAppInstallInfo::CreateWithStartUrlForTesting(
+      GURL("https://new.express.adobe.com/"));
 
   webapps::AppId app_id =
       test::InstallWebApp(profile(), std::move(web_app_info),
@@ -53,8 +53,8 @@ IN_PROC_BROWSER_TEST_F(AdobeExpressOemToDefaultMigrationTest,
 // Installs Adobe Express as a user installed app.
 IN_PROC_BROWSER_TEST_F(AdobeExpressOemToDefaultMigrationTest,
                        PRE_DoNotMigrateUserInstall) {
-  auto web_app_info = std::make_unique<web_app::WebAppInstallInfo>();
-  web_app_info->start_url = GURL("https://new.express.adobe.com/");
+  auto web_app_info = web_app::WebAppInstallInfo::CreateWithStartUrlForTesting(
+      GURL("https://new.express.adobe.com/"));
 
   webapps::AppId app_id =
       test::InstallWebApp(profile(), std::move(web_app_info),

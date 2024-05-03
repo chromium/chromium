@@ -93,8 +93,7 @@ class WebAppFileHandlingTestBase : public WebAppBrowserTestBase {
   void InstallFileHandlingPWA() {
     GURL url = GetSecureAppURL();
 
-    auto web_app_info = std::make_unique<WebAppInstallInfo>();
-    web_app_info->start_url = url;
+    auto web_app_info = WebAppInstallInfo::CreateWithStartUrlForTesting(url);
     web_app_info->scope = url.GetWithoutFilename();
     web_app_info->title = u"A Hosted App";
 
@@ -128,8 +127,8 @@ class WebAppFileHandlingTestBase : public WebAppBrowserTestBase {
   }
 
   webapps::AppId InstallAnotherFileHandlingPwa(const GURL& start_url) {
-    auto web_app_info = std::make_unique<WebAppInstallInfo>();
-    web_app_info->start_url = start_url;
+    auto web_app_info =
+        WebAppInstallInfo::CreateWithStartUrlForTesting(start_url);
     web_app_info->scope = start_url.GetWithoutFilename();
     web_app_info->title = u"A second app";
 

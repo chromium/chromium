@@ -250,9 +250,8 @@ TEST_F(OsIntegrationSynchronizeCommandTest, ProtocolHandlers) {
 }
 
 TEST_F(OsIntegrationSynchronizeCommandTest, InstallSynchronizesFileHandlers) {
-  auto install_info = std::make_unique<WebAppInstallInfo>();
-
-  install_info->start_url = kWebAppUrl;
+  auto install_info =
+      WebAppInstallInfo::CreateWithStartUrlForTesting(kWebAppUrl);
   install_info->title = u"Test App";
   install_info->user_display_mode =
       web_app::mojom::UserDisplayMode::kStandalone;
@@ -290,9 +289,8 @@ TEST_F(OsIntegrationSynchronizeCommandTest, InstallSynchronizesFileHandlers) {
 }
 
 TEST_F(OsIntegrationSynchronizeCommandTest, RunOnOsLogin) {
-  auto install_info = std::make_unique<WebAppInstallInfo>();
-
-  install_info->start_url = kWebAppUrl;
+  auto install_info =
+      WebAppInstallInfo::CreateWithStartUrlForTesting(kWebAppUrl);
   install_info->title = u"Test App";
   install_info->user_display_mode =
       web_app::mojom::UserDisplayMode::kStandalone;
@@ -321,9 +319,8 @@ TEST_F(OsIntegrationSynchronizeCommandTest, RunOnOsLogin) {
 }
 
 TEST_F(OsIntegrationSynchronizeCommandTest, InstallSynchronizesShortcutsMenu) {
-  auto install_info = std::make_unique<WebAppInstallInfo>();
-
-  install_info->start_url = kWebAppUrl;
+  auto install_info =
+      WebAppInstallInfo::CreateWithStartUrlForTesting(kWebAppUrl);
   install_info->title = u"Test App";
   install_info->user_display_mode =
       web_app::mojom::UserDisplayMode::kStandalone;
@@ -372,9 +369,8 @@ TEST_F(OsIntegrationSynchronizeCommandTest, InstallSynchronizesShortcutsMenu) {
 }
 
 TEST_F(OsIntegrationSynchronizeCommandTest, InstallSynchronizesShortcuts) {
-  auto install_info = std::make_unique<WebAppInstallInfo>();
-
-  install_info->start_url = kWebAppUrl;
+  auto install_info =
+      WebAppInstallInfo::CreateWithStartUrlForTesting(kWebAppUrl);
   install_info->title = u"Test App";
   install_info->user_display_mode =
       web_app::mojom::UserDisplayMode::kStandalone;
@@ -404,9 +400,8 @@ TEST_F(OsIntegrationSynchronizeCommandTest, InstallSynchronizesShortcuts) {
 
 TEST_F(OsIntegrationSynchronizeCommandTest,
        InstallSynchronizesUninstallRegistration) {
-  auto install_info = std::make_unique<WebAppInstallInfo>();
-
-  install_info->start_url = kWebAppUrl;
+  auto install_info =
+      WebAppInstallInfo::CreateWithStartUrlForTesting(kWebAppUrl);
   install_info->title = u"Test App";
   install_info->user_display_mode =
       web_app::mojom::UserDisplayMode::kStandalone;
