@@ -24,6 +24,10 @@
 
 namespace {
 constexpr char kGoodCrxId[] = "ldnnhddmnhbkjipkidpdiheffobcpfmf";
+
+#if BUILDFLAG(IS_WIN) || BUILDFLAG(IS_MAC) || BUILDFLAG(IS_LINUX)
+constexpr char kSimpleWithIconCrxId[] = "dehdlahnlebladnfleagmjdapdjdcnlp";
+#endif  // BUILDFLAG(IS_WIN) || BUILDFLAG(IS_MAC) || BUILDFLAG(IS_LINUX)
 }  // namespace
 
 namespace extensions {
@@ -156,6 +160,25 @@ class SupervisionExtensionTestBase
         extensions::disable_reason::DISABLE_CUSTODIAN_APPROVAL_REQUIRED);
   }
 
+  void InstallExtensionAndCheckStatus(
+      bool should_be_loaded,
+      bool should_be_enabled,
+      const std::string& extension_id = kGoodCrxId,
+      const std::string& extension_crx = "good.crx") {
+    base::FilePath path = test_data_dir_.AppendASCII(extension_crx);
+    EXPECT_EQ(LoadExtension(path) != nullptr, should_be_loaded);
+    const Extension* extension =
+        extension_registry()->GetInstalledExtension(extension_id);
+    EXPECT_TRUE(extension);
+
+    EXPECT_EQ(
+        extension_registry()->disabled_extensions().Contains(extension_id),
+        !should_be_enabled);
+    EXPECT_EQ(IsDisabledForCustodianApproval(extension_id), !should_be_enabled);
+    EXPECT_EQ(extension_registry()->enabled_extensions().Contains(extension_id),
+              should_be_enabled);
+  }
+
   bool ApplyParentalControlsOnExtensions() {
     return std::get<0>(GetParam()) == ExtensionsParentalControlState::kEnabled;
   }
@@ -168,10 +191,10 @@ class SupervisionExtensionTestBase
     return std::get<2>(GetParam()).Run();
   }
 
- private:
-  base::test::ScopedFeatureList scoped_feature_list_;
   InProcessBrowserTestMixinHost mixin_host_;
 
+ private:
+  base::test::ScopedFeatureList scoped_feature_list_;
   supervised_user::SupervisionMixin supervision_mixin_{
       mixin_host_,
       this,
@@ -341,21 +364,6 @@ class ParentApprovalHandlingByExtensionSwitchTest
     : public SupervisionExtensionTestBase {
  public:
   ParentApprovalHandlingByExtensionSwitchTest() = default;
-
-  void InstallExtensionAndCheckStatus(bool should_be_loaded,
-                                      bool should_be_enabled) {
-    base::FilePath path = test_data_dir_.AppendASCII("good.crx");
-    EXPECT_EQ(LoadExtension(path) != nullptr, should_be_loaded);
-    const Extension* extension =
-        extension_registry()->GetInstalledExtension(kGoodCrxId);
-    EXPECT_TRUE(extension);
-
-    EXPECT_EQ(!should_be_enabled,
-              extension_registry()->disabled_extensions().Contains(kGoodCrxId));
-    EXPECT_EQ(should_be_enabled, !IsDisabledForCustodianApproval(kGoodCrxId));
-    EXPECT_EQ(should_be_enabled,
-              extension_registry()->enabled_extensions().Contains(kGoodCrxId));
-  }
 };
 
 IN_PROC_BROWSER_TEST_P(
@@ -446,5 +454,86 @@ INSTANTIATE_TEST_SUITE_P(
           return supervised_user::SupervisionMixin::SignInMode::kSupervised;
         }))),
     [](const auto& info) { return CreateTestSuffixFromParam(info); });
+
+#if BUILDFLAG(IS_WIN) || BUILDFLAG(IS_MAC) || BUILDFLAG(IS_LINUX)
+// Tests the behavior of existing and new extensions for a supervised user
+// on the release of the `SkipParentalApproval` feature.
+class SupervisedUserSkipParentalApprovalModeReleaseTest
+    : public SupervisionExtensionTestBase {
+ public:
+  SupervisedUserSkipParentalApprovalModeReleaseTest() {
+    // Over-writes any feature enabling of the parent class.
+    std::vector<base::test::FeatureRef> enabled_features;
+    std::vector<base::test::FeatureRef> disabled_features;
+
+    if (content::IsPreTest()) {
+      // Start with inactive features on Pre-test.
+      disabled_features.push_back(
+          supervised_user::
+              kEnableExtensionsPermissionsForSupervisedUsersOnDesktop);
+      disabled_features.push_back(
+          supervised_user::
+              kEnableSupervisedUserSkipParentApprovalToInstallExtensions);
+    } else {
+      // Simulate feature release on Main test.
+      enabled_features.push_back(
+          supervised_user::
+              kEnableExtensionsPermissionsForSupervisedUsersOnDesktop);
+      enabled_features.push_back(
+          supervised_user::
+              kEnableSupervisedUserSkipParentApprovalToInstallExtensions);
+    }
+    scoped_feature_list_.InitWithFeatures(enabled_features, disabled_features);
+  }
+
+  ~SupervisedUserSkipParentalApprovalModeReleaseTest() override {
+    scoped_feature_list_.Reset();
+  }
+
+ private:
+  supervised_user::SupervisionMixin supervision_mixin_{
+      mixin_host_,
+      this,
+      {.sign_in_mode = GetMixinSigninMode()}};
+
+  base::test::ScopedFeatureList scoped_feature_list_;
+};
+
+IN_PROC_BROWSER_TEST_P(SupervisedUserSkipParentalApprovalModeReleaseTest,
+                       PRE_OnFeatureReleaseForSupervisedUserWithExtensions) {
+  ASSERT_TRUE(profile()->IsChild());
+  // Before the release of features `SkipParentalApprovalToInstallExtensions`
+  // and `EnableExtensionsPermissionsForSupervisedUsersOnDesktop` no parental
+  // controls apply.
+  InstallExtensionAndCheckStatus(/*should_be_loaded=*/true,
+                                 /*should_be_enabled=*/true);
+}
+
+IN_PROC_BROWSER_TEST_P(SupervisedUserSkipParentalApprovalModeReleaseTest,
+                       OnFeatureReleaseForSupervisedUserWithExtensions) {
+  ASSERT_TRUE(profile()->IsChild());
+  // On feature release the extensions are enabled (due to the local parent
+  // approval migration).
+  EXPECT_TRUE(extension_registry()->enabled_extensions().Contains(kGoodCrxId));
+
+  // Extensions installed after the feature release (i.e. local installation,
+  // synced extensions) are disabled and pending approval.
+  InstallExtensionAndCheckStatus(/*should_be_loaded=*/false,
+                                 /*should_be_enabled=*/false,
+                                 kSimpleWithIconCrxId, "simple_with_icon.crx");
+}
+
+INSTANTIATE_TEST_SUITE_P(
+    All,
+    SupervisedUserSkipParentalApprovalModeReleaseTest,
+    testing::Combine(
+        testing::Values(ExtensionsParentalControlState::kEnabled),
+        testing::Values(ExtensionManagementSwitch::kManagedByExtensions),
+        testing::Values(base::BindRepeating([]() {
+          return supervised_user::SupervisionMixin::SignInMode::kSupervised;
+        }))),
+    [](const auto& info) { return CreateTestSuffixFromParam(info); });
+
+#endif  // BUILDFLAG(IS_WIN) || BUILDFLAG(IS_MAC) || BUILDFLAG(IS_LINUX)
 
 }  // namespace extensions
