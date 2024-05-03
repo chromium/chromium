@@ -128,6 +128,9 @@ crbug.com/40935289 [ clang-coverage fuchsia web-engine-shell ] ExpectedColor_Med
 # Gardener 2024-04-29 - page reported failure
 crbug.com/40877266 [ win angle-d3d11 graphite-enabled passthrough release ] ExpectedColor_MediaRecorderFromVideoElementWithOoprCanvasDisabled [ Failure ]
 
+# Gardener 2024-05-03 - Linux KVM causing incorrect screenshots
+crbug.com/338232679 [ linux angle-vulkan intel-0x4680 passthrough ] ExpectedColor_maps [ Failure ]
+
 #######################################################################
 # Automated Entries After This Point - Do Not Manually Add Below Here #
 #######################################################################
