@@ -44,6 +44,7 @@ public class AutocompleteMatchBuilder {
     private byte[] mClipboardImageData;
     private boolean mHasTabMatch;
     private List<OmniboxAction> mActions;
+    private boolean mAllowedToBeDefaultMatch;
 
     /**
      * Create a suggestion builder for a search suggestion.
@@ -91,6 +92,7 @@ public class AutocompleteMatchBuilder {
         mClipboardImageData = null;
         mHasTabMatch = false;
         mActions = null;
+        mAllowedToBeDefaultMatch = false;
 
         mDisplayTextClassifications.add(
                 new AutocompleteMatch.MatchClassification(0, MatchClassificationStyle.NONE));
@@ -127,7 +129,8 @@ public class AutocompleteMatchBuilder {
                 mGroupId,
                 mClipboardImageData,
                 mHasTabMatch,
-                mActions);
+                mActions,
+                mAllowedToBeDefaultMatch);
     }
 
     /**
@@ -289,6 +292,15 @@ public class AutocompleteMatchBuilder {
      */
     public AutocompleteMatchBuilder setDeletable(boolean isDeletable) {
         mIsDeletable = isDeletable;
+        return this;
+    }
+
+    /**
+     * @param allowedToBeDefaultMatch Whether the match is allowed to be the default match..
+     * @return Omnibox suggestion builder.
+     */
+    public AutocompleteMatchBuilder setAllowedToBeDefaultMatch(boolean allowedToBeDefaultMatch) {
+        mAllowedToBeDefaultMatch = allowedToBeDefaultMatch;
         return this;
     }
 }

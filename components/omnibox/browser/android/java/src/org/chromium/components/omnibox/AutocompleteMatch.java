@@ -87,6 +87,7 @@ public class AutocompleteMatch {
     private boolean mHasTabMatch;
     private long mNativeMatch;
     private final @NonNull List<OmniboxAction> mActions;
+    private final boolean mAllowedToBeDefaultMatch;
 
     public AutocompleteMatch(
             int nativeType,
@@ -110,7 +111,8 @@ public class AutocompleteMatch {
             int groupId,
             byte[] clipboardImageData,
             boolean hasTabMatch,
-            @Nullable List<OmniboxAction> actions) {
+            @Nullable List<OmniboxAction> actions,
+            boolean allowedToBeDefaultMatch) {
         if (subtypes == null) {
             subtypes = Collections.emptySet();
         }
@@ -144,6 +146,7 @@ public class AutocompleteMatch {
         mClipboardImageData = clipboardImageData;
         mHasTabMatch = hasTabMatch;
         mActions = actions != null ? actions : Arrays.asList();
+        mAllowedToBeDefaultMatch = allowedToBeDefaultMatch;
     }
 
     @CalledByNative
@@ -172,7 +175,8 @@ public class AutocompleteMatch {
             int groupId,
             byte[] clipboardImageData,
             boolean hasTabMatch,
-            @JniType("std::vector") Object[] actions) {
+            @JniType("std::vector") Object[] actions,
+            boolean allowedToBeDefaultMatch) {
         assert contentClassificationOffsets.length == contentClassificationStyles.length;
         List<MatchClassification> contentClassifications = new ArrayList<>();
         for (int i = 0; i < contentClassificationOffsets.length; i++) {
@@ -209,7 +213,8 @@ public class AutocompleteMatch {
                         groupId,
                         clipboardImageData,
                         hasTabMatch,
-                        (List<OmniboxAction>) (List<?>) Arrays.asList(actions));
+                        (List<OmniboxAction>) (List<?>) Arrays.asList(actions),
+                        allowedToBeDefaultMatch);
         match.updateNativeObjectRef(nativeObject);
         match.setDescription(
                 description, descriptionClassificationOffsets, descriptionClassificationStyles);
@@ -365,6 +370,10 @@ public class AutocompleteMatch {
     @NonNull
     public List<OmniboxAction> getActions() {
         return mActions;
+    }
+
+    public boolean allowedToBeDefaultMatch() {
+        return mAllowedToBeDefaultMatch;
     }
 
     /**

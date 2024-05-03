@@ -209,7 +209,8 @@ public class CachedZeroSuggestionsManager {
                             groupId,
                             null,
                             false,
-                            null);
+                            null,
+                            false);
             suggestions.add(suggestion);
         }
 
