@@ -30,23 +30,6 @@
         margin-top: 8px;
       }
 
-      #aboutIcon {
-        --cr-icon-image: url(//resources/images/chrome_logo_dark.svg);
-        -webkit-mask-size: 18px;
-        background-color: var(--iron-icon-fill-color);
-        display: block;
-        height: var(--cr-icon-size);
-        margin-inline-end: 20px;
-        margin-inline-start: 0;
-        width: var(--cr-icon-size);
-      }
-
-      @media (forced-colors: active) {
-        #aboutIcon {
-          background-color: ButtonText;
-        }
-      }
-
       @media (prefers-color-scheme: dark) {
         #menu {
           color: var(--cr-primary-text-color);
@@ -65,7 +48,10 @@
         <a role="menuitem"
             id="people" href="/people" hidden="[[!pageVisibility.people]]"
             class="cr-nav-menu-item">
-          <iron-icon icon="cr:person"></iron-icon>
+<if expr="_google_chrome">
+          <!-- TODO: b/326287027 - Add G icon for branded chrome. -->
+</if>
+          <iron-icon icon="settings:person"></iron-icon>
           $i18n{peoplePageTitle}
           <cr-ripple></cr-ripple>
         </a>
@@ -79,14 +65,14 @@
         <a role="menuitem" href="/privacy"
             hidden="[[!pageVisibility.privacy]]"
             class="cr-nav-menu-item">
-          <iron-icon icon="cr:security"></iron-icon>
+          <iron-icon icon="settings:security"></iron-icon>
           $i18n{privacyPageTitle}
           <cr-ripple></cr-ripple>
         </a>
         <a role="menuitem" id="performance" href="/performance"
             class="cr-nav-menu-item"
             hidden="[[!pageVisibility.performance]]">
-          <iron-icon icon="settings:performance"></iron-icon>
+          <iron-icon icon="settings:navigation-performance"></iron-icon>
           $i18n{performancePageTitle}
           <cr-ripple></cr-ripple>
         </a>
@@ -106,7 +92,7 @@
           <cr-ripple></cr-ripple>
         </a>
         <a role="menuitem" href="/search" class="cr-nav-menu-item">
-          <iron-icon icon="cr:search"></iron-icon>
+          <iron-icon icon="settings:search"></iron-icon>
           $i18n{searchPageTitle}
           <cr-ripple></cr-ripple>
         </a>
@@ -122,7 +108,7 @@
         <a role="menuitem" id="onStartup" href="/onStartup"
             class="cr-nav-menu-item"
             hidden="[[!pageVisibility.onStartup]]">
-          <iron-icon icon="settings:power-settings-new"></iron-icon>
+          <iron-icon icon="settings:power-settings"></iron-icon>
           $i18n{onStartup}
           <cr-ripple></cr-ripple>
         </a>
@@ -130,14 +116,14 @@
         <a role="menuitem" id="languages" href="/languages"
             class="cr-nav-menu-item"
             hidden="[[!pageVisibility.languages]]">
-          <iron-icon icon="settings:language"></iron-icon>
+          <iron-icon icon="settings:navigation-language"></iron-icon>
           $i18n{languagesPageTitle}
           <cr-ripple></cr-ripple>
         </a>
         <a role="menuitem" id="downloads" href="/downloads"
             class="cr-nav-menu-item"
             hidden="[[!pageVisibility.downloads]]">
-          <iron-icon icon="cr:file-download"></iron-icon>
+          <iron-icon icon="settings:download"></iron-icon>
           $i18n{downloadsPageTitle}
           <cr-ripple></cr-ripple>
         </a>
@@ -151,7 +137,7 @@
   <if expr="not chromeos_ash">
         <a role="menuitem" id="system" href="/system" class="cr-nav-menu-item"
             hidden="[[!pageVisibility.system]]">
-          <iron-icon icon="settings:build"></iron-icon>
+          <iron-icon icon="settings:system"></iron-icon>
           $i18n{systemPageTitle}
           <cr-ripple></cr-ripple>
         </a>
@@ -169,14 +155,14 @@
             hidden="[[!pageVisibility.extensions]]"
             on-click="onExtensionsLinkClick_"
             title="$i18n{extensionsLinkTooltip}">
-          <iron-icon icon="cr:extension"></iron-icon>
+          <iron-icon icon="settings:extension"></iron-icon>
           <span>$i18n{extensionsPageTitle}</span>
           <div class="cr-icon icon-external"></div>
           <cr-ripple></cr-ripple>
         </a>
         <a role="menuitem" id="about-menu" href="/help"
             class="cr-nav-menu-item">
-          <span id="aboutIcon" class="cr-icon" role="presentation"></span>
+          <iron-icon icon="settings:about"></iron-icon>
           $i18n{aboutPageTitle}
           <cr-ripple></cr-ripple>
         </a>
