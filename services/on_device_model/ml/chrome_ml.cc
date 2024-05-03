@@ -24,7 +24,9 @@
 #include "gpu/config/gpu_util.h"
 #include "gpu/config/webgpu_blocklist_impl.h"
 #include "services/on_device_model/ml/on_device_model_executor.h"
+#include "third_party/dawn/include/dawn/dawn_proc.h"
 #include "third_party/dawn/include/dawn/native/DawnNative.h"
+#include "third_party/dawn/include/dawn/webgpu_cpp.h"
 
 #if BUILDFLAG(IS_MAC)
 #include "base/apple/bundle_locations.h"
@@ -167,6 +169,7 @@ std::unique_ptr<ChromeML> ChromeML::Create(
     return {};
   }
 
+  dawnProcSetProcs(&dawn::native::GetProcs());
   api->InitDawnProcs(dawn::native::GetProcs());
   if (api->SetFatalErrorFn) {
     api->SetFatalErrorFn(&FatalGpuErrorFn);
@@ -191,22 +194,34 @@ bool ChromeML::IsGpuBlocked() const {
     return false;
   }
 
-  GpuConfig gpu_config;
-  if (!api().GetGpuConfig(gpu_config)) {
+  struct QueryData {
+    bool blocklisted;
+    bool is_blocklisted_cpu_adapter;
+  };
+
+  QueryData query_data;
+  if (!api().QueryGPUAdapter(
+          [](WGPUAdapter cAdapter, void* data) {
+            wgpu::Adapter adapter(cAdapter);
+            auto* query_data = static_cast<QueryData*>(data);
+
+            query_data->blocklisted =
+                gpu::IsWebGPUAdapterBlocklisted(adapter, kGpuBlockList.Get());
+            if (query_data->blocklisted) {
+              wgpu::AdapterProperties properties;
+              adapter.GetProperties(&properties);
+              query_data->is_blocklisted_cpu_adapter =
+                  properties.adapterType == wgpu::AdapterType::CPU;
+            }
+          },
+          &query_data)) {
     LogGpuBlocked(GpuBlockedReason::kGpuConfigError);
-    LOG(ERROR) << "Unable to get gpu config";
+    LOG(ERROR) << "Unable to get gpu adapter";
     return true;
   }
-  WGPUAdapterProperties wgpu_adapter_properties = {};
-  wgpu_adapter_properties.vendorID = gpu_config.vendor_id;
-  wgpu_adapter_properties.deviceID = gpu_config.device_id;
-  wgpu_adapter_properties.architecture = gpu_config.architecture;
-  wgpu_adapter_properties.driverDescription = gpu_config.driver_description;
-  wgpu_adapter_properties.adapterType = gpu_config.adapter_type;
-  wgpu_adapter_properties.backendType = gpu_config.backend_type;
-  if (gpu::IsWebGPUAdapterBlocklisted(wgpu_adapter_properties,
-                                      kGpuBlockList.Get())) {
-    if (gpu_config.adapter_type == WGPUAdapterType_CPU) {
+
+  if (query_data.blocklisted) {
+    if (query_data.is_blocklisted_cpu_adapter) {
       LogGpuBlocked(GpuBlockedReason::kBlocklistedForCpuAdapter);
     } else {
       LogGpuBlocked(GpuBlockedReason::kBlocklisted);

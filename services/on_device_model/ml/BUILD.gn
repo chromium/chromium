@@ -27,6 +27,7 @@ source_set("ml") {
     "//components/translate/core/language_detection",
     "//gpu/config",
     "//third_party/angle:includes",
+    "//third_party/dawn/src/dawn:proc",
     "//third_party/dawn/src/dawn/native",
   ]
   public_deps = [

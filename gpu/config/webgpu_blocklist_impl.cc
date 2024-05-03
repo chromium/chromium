@@ -17,6 +17,8 @@
 #include "base/android/build_info.h"
 #endif
 
+#include "third_party/dawn/include/dawn/webgpu_cpp.h"
+
 namespace gpu {
 
 bool IsWebGPUAdapterBlocklisted(const WGPUAdapterProperties& properties,
@@ -111,6 +113,13 @@ bool IsWebGPUAdapterBlocklisted(const WGPUAdapterProperties& properties,
     return true;
   }
   return false;
+}
+
+bool IsWebGPUAdapterBlocklisted(const wgpu::Adapter& adapter,
+                                const std::string& blocklist_string) {
+  wgpu::AdapterProperties properties;
+  adapter.GetProperties(&properties);
+  return IsWebGPUAdapterBlocklisted(properties, blocklist_string);
 }
 
 }  // namespace gpu

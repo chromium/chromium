@@ -9,9 +9,16 @@
 
 #include "third_party/dawn/include/dawn/webgpu.h"
 
+namespace wgpu {
+class Adapter;
+}
+
 namespace gpu {
 
 bool IsWebGPUAdapterBlocklisted(const WGPUAdapterProperties& properties,
+                                const std::string& blocklist_string);
+
+bool IsWebGPUAdapterBlocklisted(const wgpu::Adapter& adapter,
                                 const std::string& blocklist_string);
 
 }  // namespace gpu
