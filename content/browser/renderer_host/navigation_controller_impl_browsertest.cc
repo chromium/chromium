@@ -2,6 +2,8 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
+#include "content/browser/renderer_host/navigation_controller_impl.h"
+
 #include <stdint.h>
 
 #include <utility>
@@ -29,7 +31,6 @@
 #include "content/browser/process_lock.h"
 #include "content/browser/renderer_host/frame_navigation_entry.h"
 #include "content/browser/renderer_host/frame_tree.h"
-#include "content/browser/renderer_host/navigation_controller_impl.h"
 #include "content/browser/renderer_host/navigation_entry_impl.h"
 #include "content/browser/renderer_host/navigation_entry_restore_context_impl.h"
 #include "content/browser/renderer_host/navigation_request.h"
@@ -42,6 +43,7 @@
 #include "content/browser/web_contents/web_contents_view.h"
 #include "content/common/content_navigation_policy.h"
 #include "content/common/features.h"
+#include "content/common/frame.mojom-test-utils.h"
 #include "content/common/frame_messages.mojom.h"
 #include "content/public/browser/browser_context.h"
 #include "content/public/browser/browser_task_traits.h"
@@ -4561,9 +4563,37 @@ IN_PROC_BROWSER_TEST_P(InitialEmptyDocNavigationControllerBrowserTest,
     // (NavigateSubframeAndCheckNavigationType() thinks the navigation failed).
     // TODO: ideally the renderer wouldn't send DidStopLoading() in this case.
     base::RunLoop run_loop;
-    static_cast<RenderFrameHostImpl*>(child6)
-        ->set_did_stop_loading_callback_for_testing(run_loop.QuitClosure());
-    run_loop.Run();
+    class WaitForDidStopLoading : public mojom::FrameHostInterceptorForTesting {
+     public:
+      explicit WaitForDidStopLoading(RenderFrameHostImpl* impl) : impl_(impl) {
+        (void)impl_->frame_host_receiver_for_testing().SwapImplForTesting(this);
+      }
+
+      ~WaitForDidStopLoading() override {
+        (void)impl_->frame_host_receiver_for_testing().SwapImplForTesting(
+            impl_);
+      }
+
+      FrameHost* GetForwardingInterface() override { return impl_; }
+
+      // mojom::FrameHost overrides:
+      void DidStopLoading() override {
+        loop_.Quit();
+        // Can't call it through `impl_` directly since `DidStopLoading()` is
+        // private on `RenderFrameHostImpl`.
+        GetForwardingInterface()->DidStopLoading();
+      }
+
+      void Wait() { loop_.Run(); }
+
+     private:
+      base::RunLoop loop_;
+      raw_ptr<RenderFrameHostImpl> impl_;
+    };
+
+    WaitForDidStopLoading did_stop_loading_waiter(
+        static_cast<RenderFrameHostImpl*>(child6));
+    did_stop_loading_waiter.Wait();
 
     // Do a navigation on the "child6" subframe to |url_2|.
     // The navigation is still classified as "auto", so we didn't append a new

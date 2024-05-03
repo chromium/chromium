@@ -8380,8 +8380,6 @@ void RenderFrameHostImpl::GetAssociatedInterface(
 void RenderFrameHostImpl::DidStopLoading() {
   TRACE_EVENT("navigation", "RenderFrameHostImpl::DidStopLoading",
               ChromeTrackEvent::kRenderFrameHost, this);
-  if (did_stop_loading_callback_)
-    std::move(did_stop_loading_callback_).Run();
 
   // This may be called for newly created frames when the frame is not loading
   // that navigate to about:blank, as well as history navigations during

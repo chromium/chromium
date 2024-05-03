@@ -1895,10 +1895,6 @@ class CONTENT_EXPORT RenderFrameHostImpl
   // Clears the entries in the PrefetchedSignedExchangeCache if exists.
   void ClearPrefetchedSignedExchangeCache();
 
-  void set_did_stop_loading_callback_for_testing(base::OnceClosure callback) {
-    did_stop_loading_callback_ = std::move(callback);
-  }
-
   class BackForwardCacheDisablingFeatureHandle {
    public:
     BackForwardCacheDisablingFeatureHandle();
@@ -5051,11 +5047,6 @@ class CONTENT_EXPORT RenderFrameHostImpl
   // associated with a fenced frame root, or `this` is associated with an iframe
   // nested within a fenced frame.
   const FencedFrameStatus fenced_frame_status_;
-
-  // Testing callback run in DidStopLoading() regardless of loading state. This
-  // is useful for tests that need to detect when newly created frames finish
-  // loading about:blank.
-  base::OnceClosure did_stop_loading_callback_;
 
   BackForwardCacheDisablingFeaturesCallback
       back_forward_cache_disabling_features_callback_for_testing_;
