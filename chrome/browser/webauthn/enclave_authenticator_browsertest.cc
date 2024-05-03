@@ -20,6 +20,7 @@
 #include "base/strings/string_util.h"
 #include "base/test/bind.h"
 #include "base/test/scoped_feature_list.h"
+#include "base/test/simple_test_clock.h"
 #include "build/build_config.h"
 #include "chrome/browser/signin/identity_test_environment_profile_adaptor.h"
 #include "chrome/browser/sync/sync_service_factory.h"
@@ -348,6 +349,7 @@ class EnclaveAuthenticatorBrowserTest : public SyncTest {
         delegate->SetTrustedVaultConnectionForTesting(
             std::move(pending_connection_));
       }
+      delegate->SetClockForTesting(&test_instance_->clock_);
     }
 
     void OnDestroy(ChromeAuthenticatorRequestDelegate* delegate) override {
@@ -449,6 +451,7 @@ class EnclaveAuthenticatorBrowserTest : public SyncTest {
     // builders causing differences / failures.
     fake_webauthn_dll_.set_available(false);
 #endif
+    clock_.SetNow(base::Time::FromTimeT(1000));
     OSCryptMocker::SetUp();
 
     auto security_domain_service_callback =
@@ -646,6 +649,7 @@ class EnclaveAuthenticatorBrowserTest : public SyncTest {
   }
 
  protected:
+  base::SimpleTestClock clock_;
   net::EmbeddedTestServer https_server_{net::EmbeddedTestServer::TYPE_HTTPS};
   const TempDir temp_dir_;
   base::CallbackListSubscription subscription_;
@@ -1787,6 +1791,8 @@ IN_PROC_BROWSER_TEST_F(EnclaveICloudRecoveryKeyTest, Recovery) {
   EnclaveManagerFactory::GetForProfile(browser()->profile())
       ->ClearRegistrationForTesting();
   EnclaveManagerFactory::GetForProfile(browser()->profile())->ResetForTesting();
+  // Expire any cache.
+  clock_.Advance(base::Hours(10));
 
   // Do a make credential request and recover with a PIN.
   {
@@ -1851,5 +1857,69 @@ IN_PROC_BROWSER_TEST_F(EnclaveICloudRecoveryKeyTest, Recovery) {
 #endif  // BUILDFLAG(IS_MAC)
 
 }  // namespace
+
+IN_PROC_BROWSER_TEST_F(EnclaveAuthenticatorWithoutPinBrowserTest, Caching) {
+  EnableUVKeySupport();
+  trusted_vault::DownloadAuthenticationFactorsRegistrationStateResult
+      registration_state_result;
+
+  registration_state_result.state = trusted_vault::
+      DownloadAuthenticationFactorsRegistrationStateResult::State::kEmpty;
+  SetMockVaultConnectionOnRequestDelegate(std::move(registration_state_result));
+
+  content::WebContents* web_contents =
+      browser()->tab_strip_model()->GetActiveWebContents();
+  content::DOMMessageQueue message_queue(web_contents);
+  content::ExecuteScriptAsync(web_contents, kMakeCredentialUvDiscouraged);
+  delegate_observer()->WaitForUI();
+
+  // The enclave is not active because the account is empty.
+  EXPECT_TRUE(
+      base::ranges::none_of(dialog_model()->mechanisms, [](const auto& m) {
+        return absl::holds_alternative<
+            AuthenticatorRequestDialogModel::Mechanism::Enclave>(m.type);
+      }));
+
+  dialog_model()->CancelAuthenticatorRequest();
+  std::string script_result;
+  ASSERT_TRUE(message_queue.WaitForMessage(&script_result));
+  delegate_observer()->WaitForDelegateDestruction();
+
+  // The enclave will _still_ not be active for a second request because the
+  // previous result is cached, thus no call to
+  // `SetMockVaultconnectionOnRequestDelegate` is needed.
+  content::ExecuteScriptAsync(web_contents, kMakeCredentialUvDiscouraged);
+  delegate_observer()->WaitForUI();
+
+  EXPECT_TRUE(
+      base::ranges::none_of(dialog_model()->mechanisms, [](const auto& m) {
+        return absl::holds_alternative<
+            AuthenticatorRequestDialogModel::Mechanism::Enclave>(m.type);
+      }));
+
+  dialog_model()->CancelAuthenticatorRequest();
+  ASSERT_TRUE(message_queue.WaitForMessage(&script_result));
+  delegate_observer()->WaitForDelegateDestruction();
+
+  clock_.Advance(base::Hours(10));
+  request_delegate_ = nullptr;
+  registration_state_result.state = trusted_vault::
+      DownloadAuthenticationFactorsRegistrationStateResult::State::kRecoverable;
+  SetMockVaultConnectionOnRequestDelegate(std::move(registration_state_result));
+  content::ExecuteScriptAsync(web_contents, kMakeCredentialUvDiscouraged);
+  delegate_observer()->WaitForUI();
+
+  // Now that the clock has advanced, the cache is stale and the updated account
+  // state will be noticed.
+  EXPECT_FALSE(
+      base::ranges::none_of(dialog_model()->mechanisms, [](const auto& m) {
+        return absl::holds_alternative<
+            AuthenticatorRequestDialogModel::Mechanism::Enclave>(m.type);
+      }));
+
+  dialog_model()->CancelAuthenticatorRequest();
+  ASSERT_TRUE(message_queue.WaitForMessage(&script_result));
+  delegate_observer()->WaitForDelegateDestruction();
+}
 
 #endif  // !defined(MEMORY_SANITIZER)

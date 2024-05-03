@@ -13,6 +13,8 @@
 #include "base/notreached.h"
 #include "base/strings/utf_string_conversions.h"
 #include "base/task/thread_pool.h"
+#include "base/time/clock.h"
+#include "base/time/default_clock.h"
 #include "chrome/browser/net/system_network_context_manager.h"
 #include "chrome/browser/profiles/profile.h"
 #include "chrome/browser/signin/identity_manager_factory.h"
@@ -186,6 +188,26 @@ using Step = AuthenticatorRequestDialogModel::Step;
 //   +---------------------> |   StartTransaction   | <+
 //                           +----------------------+
 
+// DownloadedAccountState holds the subset of information from
+// `trusted_vault::DownloadAuthenticationFactorsRegistrationStateResult` that is
+// required for `GPMEnclaveController` to work. It exists because it's copyable,
+// which the `trusted_vault` structure is not, and thus can be put in a cache.
+struct GPMEnclaveController::DownloadedAccountState {
+  explicit DownloadedAccountState(
+      trusted_vault::DownloadAuthenticationFactorsRegistrationStateResult
+          result)
+      : state(result.state),
+        gpm_pin_metadata(std::move(result.gpm_pin_metadata)) {
+    std::ranges::transform(result.icloud_keys, std::back_inserter(icloud_keys),
+                           &trusted_vault::SecureBoxPublicKey::ExportToBytes);
+  }
+
+  trusted_vault::DownloadAuthenticationFactorsRegistrationStateResult::State
+      state;
+  std::optional<trusted_vault::GpmPinMetadata> gpm_pin_metadata;
+  std::vector<std::vector<uint8_t>> icloud_keys;
+};
+
 namespace {
 
 #if BUILDFLAG(IS_MAC)
@@ -253,6 +275,57 @@ EnclaveUserVerificationMethod PickEnclaveUserVerificationMethod(
   }
 }
 
+const char* ToString(
+    trusted_vault::DownloadAuthenticationFactorsRegistrationStateResult::State
+        state) {
+  using Result =
+      trusted_vault::DownloadAuthenticationFactorsRegistrationStateResult;
+  switch (state) {
+    case Result::State::kError:
+      return "Error";
+    case Result::State::kEmpty:
+      return "Empty";
+    case Result::State::kRecoverable:
+      return "Recoverable";
+    case Result::State::kIrrecoverable:
+      return "Irrecoverable";
+  }
+}
+
+// AccountStateCache caches the account state between requests to reduce the
+// load on the security domain service.
+class AccountStateCache {
+ public:
+  std::optional<GPMEnclaveController::DownloadedAccountState> Get(
+      base::Clock* clock) {
+    if (!cache_time_) {
+      return std::nullopt;
+    }
+    const base::Time now = clock->Now();
+    if (now < *cache_time_ || (now - *cache_time_) > base::Minutes(30)) {
+      cache_time_.reset();
+      value_.reset();
+      return std::nullopt;
+    }
+    return value_;
+  }
+
+  void Put(base::Clock* clock,
+           const GPMEnclaveController::DownloadedAccountState& state) {
+    cache_time_ = clock->Now();
+    value_ = state;
+  }
+
+ private:
+  std::optional<base::Time> cache_time_;
+  std::optional<GPMEnclaveController::DownloadedAccountState> value_;
+};
+
+AccountStateCache* GetAccountStateCache() {
+  static base::NoDestructor<AccountStateCache> cache;
+  return cache.get();
+}
+
 }  // namespace
 
 GPMEnclaveController::GPMEnclaveController(
@@ -260,14 +333,18 @@ GPMEnclaveController::GPMEnclaveController(
     AuthenticatorRequestDialogModel* model,
     const std::string& rp_id,
     device::FidoRequestType request_type,
-    device::UserVerificationRequirement user_verification_requirement)
+    device::UserVerificationRequirement user_verification_requirement,
+    base::Clock* clock,
+    std::unique_ptr<trusted_vault::TrustedVaultConnection> optional_connection)
     : render_frame_host_id_(render_frame_host->GetGlobalId()),
       rp_id_(rp_id),
       request_type_(request_type),
       user_verification_requirement_(user_verification_requirement),
       enclave_manager_(EnclaveManagerFactory::GetForProfile(
           Profile::FromBrowserContext(render_frame_host->GetBrowserContext()))),
-      model_(model) {
+      model_(model),
+      vault_connection_override_(std::move(optional_connection)),
+      clock_(clock) {
   enclave_manager_observer_.Observe(enclave_manager_);
   model_observer_.Observe(model_);
 
@@ -326,11 +403,6 @@ GPMEnclaveController::creds() const {
   return creds_;
 }
 
-void GPMEnclaveController::SetTrustedVaultConnectionForTesting(
-    std::unique_ptr<trusted_vault::TrustedVaultConnection> connection) {
-  vault_connection_override_ = std::move(connection);
-}
-
 Profile* GPMEnclaveController::GetProfile() const {
   return Profile::FromBrowserContext(
       content::RenderFrameHost::FromID(render_frame_host_id_)
@@ -382,6 +454,14 @@ void GPMEnclaveController::OnUVCapabilityKnown(bool can_make_uv_keys) {
 }
 
 void GPMEnclaveController::DownloadAccountState() {
+  std::optional<DownloadedAccountState> maybe_cached =
+      GetAccountStateCache()->Get(clock_);
+  if (maybe_cached) {
+    FIDO_LOG(EVENT) << "Using cached account state";
+    OnHaveAccountState(std::move(*maybe_cached));
+    return;
+  }
+
   FIDO_LOG(EVENT) << "Fetching account state";
   account_state_ = AccountState::kChecking;
 
@@ -422,8 +502,6 @@ void GPMEnclaveController::OnAccountStateDownloaded(
     std::unique_ptr<trusted_vault::TrustedVaultConnection> unused,
     trusted_vault::DownloadAuthenticationFactorsRegistrationStateResult
         result) {
-  using Result =
-      trusted_vault::DownloadAuthenticationFactorsRegistrationStateResult;
   if (account_state_ != AccountState::kChecking) {
     // This request timed out.
     return;
@@ -431,30 +509,7 @@ void GPMEnclaveController::OnAccountStateDownloaded(
   download_account_state_request_.reset();
   account_state_timeout_.reset();
 
-  const char* state_str;
-  switch (result.state) {
-    case Result::State::kError:
-      state_str = "Error";
-      account_state_ = AccountState::kNone;
-      break;
-
-    case Result::State::kEmpty:
-      state_str = "Empty";
-      account_state_ = AccountState::kEmpty;
-      break;
-
-    case Result::State::kRecoverable:
-      state_str = "Recoverable";
-      account_state_ = AccountState::kRecoverable;
-      break;
-
-    case Result::State::kIrrecoverable:
-      state_str = "Irrecoverable";
-      account_state_ = AccountState::kIrrecoverable;
-      break;
-  }
-
-  FIDO_LOG(EVENT) << "Download account state result: " << state_str
+  FIDO_LOG(EVENT) << "Download account state result: " << ToString(result.state)
                   << ", key_version: " << result.key_version.value_or(0)
                   << ", has PIN: " << result.gpm_pin_metadata.has_value()
                   << ", expiry: "
@@ -462,15 +517,43 @@ void GPMEnclaveController::OnAccountStateDownloaded(
                           ? base::TimeFormatAsIso8601(
                                 result.gpm_pin_metadata->expiry)
                           : "<none>")
-                  << ", icloud keys: " << result.icloud_keys.size();
+                  << ", iCloud Keychain keys: " << result.icloud_keys.size();
+
+  DownloadedAccountState downloaded(std::move(result));
+  GetAccountStateCache()->Put(clock_, downloaded);
+
+  OnHaveAccountState(DownloadedAccountState(std::move(downloaded)));
+}
+
+void GPMEnclaveController::OnHaveAccountState(DownloadedAccountState result) {
+  using Result =
+      trusted_vault::DownloadAuthenticationFactorsRegistrationStateResult;
+  FIDO_LOG(EVENT) << "Account state: " << ToString(result.state)
+                  << ", has PIN: " << result.gpm_pin_metadata.has_value()
+                  << ", iCloud Keychain keys: " << result.icloud_keys.size();
+
+  switch (result.state) {
+    case Result::State::kError:
+      account_state_ = AccountState::kNone;
+      break;
+
+    case Result::State::kEmpty:
+      account_state_ = AccountState::kEmpty;
+      break;
+
+    case Result::State::kRecoverable:
+      account_state_ = AccountState::kRecoverable;
+      break;
+
+    case Result::State::kIrrecoverable:
+      account_state_ = AccountState::kIrrecoverable;
+      break;
+  }
 
   if (result.gpm_pin_metadata) {
     pin_metadata_ = std::move(result.gpm_pin_metadata);
   }
-  std::ranges::transform(
-      result.icloud_keys,
-      std::back_inserter(security_domain_icloud_recovery_keys_),
-      &trusted_vault::SecureBoxPublicKey::ExportToBytes);
+  security_domain_icloud_recovery_keys_ = std::move(result.icloud_keys);
 
   if (base::FeatureList::IsEnabled(device::kWebAuthnGpmPin)) {
     SetActive(account_state_ != AccountState::kNone);

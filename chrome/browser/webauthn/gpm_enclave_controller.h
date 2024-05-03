@@ -18,6 +18,10 @@
 #include "components/trusted_vault/trusted_vault_connection.h"
 #include "content/public/browser/global_routing_id.h"
 
+namespace base {
+class Clock;
+}
+
 namespace content {
 class RenderFrameHost;
 }  // namespace content
@@ -41,6 +45,8 @@ class Profile;
 class GPMEnclaveController : AuthenticatorRequestDialogModel::Observer,
                              EnclaveManager::Observer {
  public:
+  struct DownloadedAccountState;
+
   enum class AccountState {
     // There isn't a primary account, or enclave support is disabled.
     kNone,
@@ -69,7 +75,12 @@ class GPMEnclaveController : AuthenticatorRequestDialogModel::Observer,
       AuthenticatorRequestDialogModel* model,
       const std::string& rp_id,
       device::FidoRequestType request_type,
-      device::UserVerificationRequirement user_verification_requirement);
+      device::UserVerificationRequirement user_verification_requirement,
+      base::Clock* clock,
+      // `optional_connection` can be set to override the connection to the
+      // security domain service for testing.
+      std::unique_ptr<trusted_vault::TrustedVaultConnection>
+          optional_connection);
   GPMEnclaveController(const GPMEnclaveController&) = delete;
   GPMEnclaveController& operator=(const GPMEnclaveController&) = delete;
   GPMEnclaveController(GPMEnclaveController&&) = delete;
@@ -91,12 +102,6 @@ class GPMEnclaveController : AuthenticatorRequestDialogModel::Observer,
 
   // Fetch the set of GPM passkeys for this request.
   const std::vector<sync_pb::WebauthnCredentialSpecifics>& creds() const;
-
-  // Allows setting a mock `TrustedVaultConnection` so a real one will not be
-  // created. This is only used for a single request, and is destroyed
-  // afterwards.
-  void SetTrustedVaultConnectionForTesting(
-      std::unique_ptr<trusted_vault::TrustedVaultConnection> connection);
 
   AccountState account_state_for_testing() const;
 
@@ -121,6 +126,8 @@ class GPMEnclaveController : AuthenticatorRequestDialogModel::Observer,
       std::unique_ptr<trusted_vault::TrustedVaultConnection> unused,
       trusted_vault::DownloadAuthenticationFactorsRegistrationStateResult
           result);
+
+  void OnHaveAccountState(DownloadedAccountState result);
 
   // Called when enough state has been loaded that the initial UI can be shown.
   // If `active` then the enclave will be a valid mechanism.
@@ -281,6 +288,8 @@ class GPMEnclaveController : AuthenticatorRequestDialogModel::Observer,
 
   // Set to true when the user initiates reset GPM pin flow during UV.
   bool changing_gpm_pin_ = false;
+
+  const raw_ptr<base::Clock> clock_;
 
   base::WeakPtrFactory<GPMEnclaveController> weak_ptr_factory_{this};
 };

@@ -21,6 +21,7 @@
 #include "base/ranges/algorithm.h"
 #include "base/strings/string_split.h"
 #include "base/task/thread_pool.h"
+#include "base/time/default_clock.h"
 #include "base/values.h"
 #include "build/build_config.h"
 #include "build/chromeos_buildflags.h"
@@ -863,11 +864,9 @@ void ChromeAuthenticatorRequestDelegate::ConfigureDiscoveries(
         dialog_model_->account_name = std::move(account_name);
         enclave_controller_ = std::make_unique<GPMEnclaveController>(
             GetRenderFrameHost(), dialog_model_.get(), rp_id, request_type,
-            user_verification_requirement);
-        if (pending_trusted_vault_connection_) {
-          enclave_controller_->SetTrustedVaultConnectionForTesting(
-              std::move(pending_trusted_vault_connection_));
-        }
+            user_verification_requirement,
+            clock_ ? clock_ : base::DefaultClock::GetInstance(),
+            std::move(pending_trusted_vault_connection_));
       }
     }
   }
@@ -1242,12 +1241,14 @@ void ChromeAuthenticatorRequestDelegate::SetPassEmptyUsbDeviceManagerForTesting(
 
 void ChromeAuthenticatorRequestDelegate::SetTrustedVaultConnectionForTesting(
     std::unique_ptr<trusted_vault::TrustedVaultConnection> connection) {
-  if (enclave_controller_) {
-    enclave_controller_->SetTrustedVaultConnectionForTesting(
-        std::move(connection));
-  } else {
-    pending_trusted_vault_connection_ = std::move(connection);
-  }
+  CHECK(!enclave_controller_);
+  pending_trusted_vault_connection_ = std::move(connection);
+}
+
+void ChromeAuthenticatorRequestDelegate::SetClockForTesting(
+    base::Clock* clock) {
+  CHECK(!enclave_controller_);
+  clock_ = clock;
 }
 
 content::RenderFrameHost*

@@ -30,6 +30,10 @@ class GPMEnclaveController;
 class PrefService;
 class Profile;
 
+namespace base {
+class Clock;
+}
+
 namespace content {
 class BrowserContext;
 class RenderFrameHost;
@@ -253,6 +257,8 @@ class ChromeAuthenticatorRequestDelegate
   void SetTrustedVaultConnectionForTesting(
       std::unique_ptr<trusted_vault::TrustedVaultConnection> connection);
 
+  void SetClockForTesting(base::Clock*);
+
  private:
   FRIEND_TEST_ALL_PREFIXES(ChromeAuthenticatorRequestDelegatePrivateTest,
                            DaysSinceDate);
@@ -378,6 +384,7 @@ class ChromeAuthenticatorRequestDelegate
   // `enclave_controller_` when it is created.
   std::unique_ptr<trusted_vault::TrustedVaultConnection>
       pending_trusted_vault_connection_;
+  raw_ptr<base::Clock> clock_ = nullptr;
 
   base::WeakPtrFactory<ChromeAuthenticatorRequestDelegate> weak_ptr_factory_{
       this};
