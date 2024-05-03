@@ -14,7 +14,7 @@ import {BrowserProxyImpl} from './browser_proxy.js';
 import {CenterRotatedBox_CoordinateType} from './geometry.mojom-webui.js';
 import {bestHit} from './hit.js';
 import type {LensPageCallbackRouter} from './lens.mojom-webui.js';
-import type {CursorData} from './selection_overlay.js';
+import type {CursorData, TextContextMenuData} from './selection_overlay.js';
 import {CursorType} from './selection_utils.js';
 import type {GestureEvent} from './selection_utils.js';
 import type {Line, Paragraph, Text, Word} from './text.mojom-webui.js';
@@ -203,10 +203,25 @@ export class TextLayerElement extends PolymerElement {
 
   handleUpGesture() {
     this.isSelectingText = false;
+    const highlightedText = this.getHighlightedText();
+    const lines = this.getHighlightedLines();
+    const containingRect = this.getContainingRect(lines);
+    this.dispatchEvent(
+        new CustomEvent<TextContextMenuData>('show-text-context-menu', {
+          bubbles: true,
+          composed: true,
+          detail: {
+            text: highlightedText,
+            left: containingRect.left,
+            right: containingRect.right,
+            top: containingRect.top,
+            bottom: containingRect.bottom,
+          },
+        }));
 
     // On drag complete, send the selected text to C++.
     BrowserProxyImpl.getInstance().handler.issueTextSelectionRequest(
-        this.getHighlightedText());
+        highlightedText);
   }
 
   cancelGesture() {
@@ -216,6 +231,8 @@ export class TextLayerElement extends PolymerElement {
   private unselectWords() {
     this.selectionStartIndex = -1;
     this.selectionEndIndex = -1;
+    this.dispatchEvent(new CustomEvent(
+        'hide-text-context-menu', {bubbles: true, composed: true}));
   }
 
   private onTextReceived(text: Text) {
@@ -251,6 +268,15 @@ export class TextLayerElement extends PolymerElement {
     this.renderedWords = receivedWords;
     assert(this.lineNumbers.length === this.renderedWords.length);
     assert(this.paragraphNumbers.length === this.renderedWords.length);
+  }
+
+  // Returns the rectangle circumscribing the given lines.
+  private getContainingRect(lines: HighlightedLine[]) {
+    const left = Math.min(...lines.map((line) => line.left));
+    const right = Math.max(...lines.map((line) => line.left + line.width));
+    const top = Math.min(...lines.map((line) => line.top));
+    const bottom = Math.max(...lines.map((line) => line.top + line.height));
+    return {left, right, top, bottom};
   }
 
   // Used by the HTML template to get the array of highlighted lines to render

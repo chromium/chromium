@@ -34,8 +34,12 @@ LensUntrustedUI::LensUntrustedUI(content::WebUI* web_ui)
           chrome::kChromeUILensUntrustedURL);
   html_source->AddLocalizedString("close", IDS_CLOSE);
   html_source->AddLocalizedString("sendFeedback", IDS_LENS_SEND_FEEDBACK_LABEL);
+  html_source->AddLocalizedString("copy", IDS_LENS_OVERLAY_COPY);
   html_source->AddLocalizedString("initialToastMessage",
                                   IDS_LENS_OVERLAY_INITIAL_TOAST_MESSAGE);
+  html_source->AddLocalizedString("translate", IDS_LENS_OVERLAY_TRANSLATE);
+  html_source->AddLocalizedString("translateSuffix",
+                                  IDS_LENS_OVERLAY_TRANSLATE_SUFFIX);
 
   // Add finch flags
   html_source->AddBoolean("enableDebuggingMode",

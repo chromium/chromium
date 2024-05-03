@@ -9,6 +9,7 @@ import './post_selection_renderer.js';
 import './overlay_shimmer.js';
 import './strings.m.js';
 
+import {I18nMixin} from '//resources/cr_elements/i18n_mixin.js';
 import {EventTracker} from '//resources/js/event_tracker.js';
 import {loadTimeData} from '//resources/js/load_time_data.js';
 import {PolymerElement} from '//resources/polymer/v3_0/polymer/polymer_bundled.min.js';
@@ -20,6 +21,7 @@ import type {RegionSelectionElement} from './region_selection.js';
 import {getTemplate} from './selection_overlay.html.js';
 import {CursorType, DRAG_THRESHOLD, DragFeature, emptyGestureEvent, type GestureEvent, GestureState} from './selection_utils.js';
 import type {TextLayerElement} from './text_layer.js';
+import {toPercent} from './values_converter.js';
 
 const RESIZE_THRESHOLD = 8;
 
@@ -27,9 +29,23 @@ export interface CursorData {
   cursor: CursorType;
 }
 
+export interface TextContextMenuData {
+  // The text selection that the context menu commands will act on.
+  text: string;
+  // The left-most position of the selected text.
+  left: number;
+  // The right-most position of the selected text.
+  right: number;
+  // The highest position of the selected text.
+  top: number;
+  // The lowest position of the selected text.
+  bottom: number;
+}
+
 export interface SelectionOverlayElement {
   $: {
     backgroundImage: HTMLImageElement,
+    contextMenu: HTMLElement,
     cursor: HTMLElement,
     objectSelectionLayer: ObjectLayerElement,
     postSelectionRenderer: PostSelectionRendererElement,
@@ -39,6 +55,8 @@ export interface SelectionOverlayElement {
   };
 }
 
+const SelectionOverlayElementBase = I18nMixin(PolymerElement);
+
 /*
  * Element responsible for coordinating selections between the various selection
  * features. This includes:
@@ -46,7 +64,7 @@ export interface SelectionOverlayElement {
  *   - Listening to mouse/tap events and delegating them to the correct features
  *   - Coordinating animations between the different features
  */
-export class SelectionOverlayElement extends PolymerElement {
+export class SelectionOverlayElement extends SelectionOverlayElementBase {
   static get is() {
     return 'lens-selection-overlay';
   }
@@ -61,6 +79,13 @@ export class SelectionOverlayElement extends PolymerElement {
         type: Boolean,
         reflectToAttribute: true,
       },
+      showTextContextMenu: {
+        type: Boolean,
+        value: false,
+        reflectToAttribute: true,
+      },
+      contextMenuX: Number,
+      contextMenuY: Number,
       screenshotDataUri: String,
       cursorImgUri: String,
       isPointerInside: Boolean,
@@ -71,6 +96,11 @@ export class SelectionOverlayElement extends PolymerElement {
 
   // Whether the selection overlay is its initial size, or has changed size.
   private isResized: boolean = false;
+  private showTextContextMenu: boolean;
+  // Location at which to show the text context menu.
+  private contextMenuX: number;
+  private contextMenuY: number;
+  private highlightedText: string = '';
   // The data URI of the current overlay screenshot.
   private screenshotDataUri: string;
   private cursorImgUri: string = 'lens.svg';
@@ -115,6 +145,17 @@ export class SelectionOverlayElement extends PolymerElement {
             this.resetCursor();
           }
         });
+    this.eventTracker_.add(
+        document, 'show-text-context-menu',
+        (e: CustomEvent<TextContextMenuData>) => {
+          this.contextMenuX = e.detail.left;
+          this.contextMenuY = e.detail.bottom;
+          this.showTextContextMenu = true;
+          this.highlightedText = e.detail.text;
+        });
+    this.eventTracker_.add(document, 'hide-text-context-menu', () => {
+      this.showTextContextMenu = false;
+    });
   }
 
   override disconnectedCallback() {
@@ -351,6 +392,11 @@ export class SelectionOverlayElement extends PolymerElement {
 
   // Returns if the given PointerEvent should be ignored.
   private shouldIgnoreEvent(event: PointerEvent) {
+    // Do not intercept events that should go to the context menu.
+    if (this.shadowRoot!.elementsFromPoint(event.clientX, event.clientY)
+            .includes(this.$.contextMenu)) {
+      return true;
+    }
     // Ignore multi touch events and none left click events.
     return !event.isPrimary || event.button !== 0;
   }
@@ -369,6 +415,30 @@ export class SelectionOverlayElement extends PolymerElement {
     const yMovement =
         Math.abs(this.currentGesture.clientY - this.currentGesture.startY);
     return xMovement > DRAG_THRESHOLD || yMovement > DRAG_THRESHOLD;
+  }
+
+  private getContextMenuStyle(contextMenuX: number, contextMenuY: number):
+      string {
+    return `left: ${toPercent(contextMenuX)}; top: calc(${
+        toPercent(contextMenuY)} + 12px)`;
+  }
+
+  private handleCopy() {
+    navigator.clipboard.writeText(this.highlightedText);
+  }
+
+  private handleTranslate() {
+    BrowserProxyImpl.getInstance().handler.issueTextSelectionRequest(
+        '"' + this.highlightedText + '" ' + this.i18n('translateSuffix'));
+  }
+
+  // Make the cursor disappear over the context menu, as if leaving the overlay.
+  private handlePointerEnterContextMenu() {
+    this.isPointerInside = false;
+  }
+
+  private handlePointerLeaveContextMenu() {
+    this.isPointerInside = true;
   }
 }
 

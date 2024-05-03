@@ -6,6 +6,22 @@ import("//ui/webui/resources/tools/build_webui.gni")
 
 assert(toolkit_views)
 
+if (is_chrome_branded) {
+  generate_grd("build_icons_grdp") {
+    grd_prefix = "lens_untrusted_icons"
+    out_grd = "$target_gen_dir/icon_resources.grdp"
+    input_files = [
+      "copy.svg",
+      "lens.svg",
+      "search.svg",
+      "text.svg",
+      "translate.svg",
+    ]
+    input_files_base_dir =
+        rebase_path("//chrome/app/theme/google_chrome/lens/", "//")
+  }
+}
+
 build_webui("build_overlay") {
   grd_prefix = "lens_untrusted"
 
@@ -13,11 +29,13 @@ build_webui("build_overlay") {
     "feedback.svg",
     "icon_clear.svg",
     "lens_overlay.html",
-    "lens.svg",
-    "search.svg",
     "side_panel/side_panel.html",
-    "text.svg",
   ]
+
+  if (is_chrome_branded) {
+    extra_grdp_deps = [ ":build_icons_grdp" ]
+    extra_grdp_files = [ "$target_gen_dir/icon_resources.grdp" ]
+  }
 
   web_component_files = [
     "initial_toast.ts",

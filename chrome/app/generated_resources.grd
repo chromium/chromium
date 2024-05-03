@@ -16644,6 +16644,15 @@ Please help our engineers fix this problem. Tell us what happened right before y
     <message name="IDS_LENS_SEARCH_BUBBLE_DIALOG_TITLE" desc="The name of the lens search bubble dialog.">
       Google Lens Search Bubble
     </message>
+    <message name="IDS_LENS_OVERLAY_COPY" desc="Command in the Lens Overlay context menu to copy text.">
+      Copy
+    </message>
+    <message name="IDS_LENS_OVERLAY_TRANSLATE" desc="Command in the Lens Overlay context menu to translate text.">
+      Translate
+    </message>
+    <message name="IDS_LENS_OVERLAY_TRANSLATE_SUFFIX" desc="String appended to search queries to trigger Google Translate.">
+      translate
+    </message>
     <message name="IDS_LENS_OVERLAY_INITIAL_TOAST_MESSAGE" desc="Text that is shown in the Lens Overlay education bubble when starting the feature. Informs the user to tap an object or drag over the screen to select a region to search with Google Lens.">
       Click or drag anywhere to search with Lens
     </message>
