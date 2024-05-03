@@ -346,7 +346,7 @@ ChromeCameraAppUIDelegate::ChromeCameraAppUIDelegate(content::WebUI* web_ui)
       base::BindOnce(&ChromeCameraAppUIDelegate::OnFileMonitorInitialized,
                      weak_factory_.GetWeakPtr()));
 
-  IntializeStorageMonitor();
+  InitializeStorageMonitor();
 }
 
 ChromeCameraAppUIDelegate::~ChromeCameraAppUIDelegate() {
@@ -599,7 +599,7 @@ void ChromeCameraAppUIDelegate::MonitorFileDeletionOnFileThread(
   file_monitor->Monitor(file_path, std::move(callback));
 }
 
-void ChromeCameraAppUIDelegate::IntializeStorageMonitor() {
+void ChromeCameraAppUIDelegate::InitializeStorageMonitor() {
   storage_task_runner_->PostTaskAndReplyWithResult(
       FROM_HERE,
       base::BindOnce(

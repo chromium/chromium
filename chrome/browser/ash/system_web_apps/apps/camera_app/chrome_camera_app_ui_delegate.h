@@ -185,7 +185,7 @@ class ChromeCameraAppUIDelegate : public ash::CameraAppUIDelegate {
       const base::FilePath& file_path,
       base::OnceCallback<void(FileMonitorResult)> callback);
 
-  void IntializeStorageMonitor();
+  void InitializeStorageMonitor();
   void OnStorageMonitorInitialized(std::unique_ptr<StorageMonitor> monitor);
 
   raw_ptr<content::WebUI> web_ui_;  // Owns |this|.
