@@ -1018,7 +1018,7 @@ constexpr CGFloat kSuggestionIconWidth = 32;
   }
 
   CHECK_EQ(_webState, webState);
-  CHECK(!params.removed_forms.empty())
+  CHECK(!params.removed_forms.empty() || !params.removed_unowned_fields.empty())
       << "Invalid params. Form removal events with missing input should have "
          "been filtered out by FormActivityTabHelper.";
 

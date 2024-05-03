@@ -7,11 +7,13 @@
 #import "base/memory/ptr_util.h"
 #import "components/autofill/core/browser/form_structure.h"
 #import "components/autofill/core/common/autofill_features.h"
+#import "components/autofill/core/common/field_data_manager.h"
 #import "components/autofill/core/common/mojom/autofill_types.mojom-shared.h"
 #import "components/autofill/ios/browser/autofill_driver_ios_bridge.h"
 #import "components/autofill/ios/browser/autofill_driver_ios_factory.h"
 #import "components/autofill/ios/browser/autofill_java_script_feature.h"
 #import "components/autofill/ios/browser/autofill_util.h"
+#import "components/autofill/ios/common/field_data_manager_factory_ios.h"
 #import "components/autofill/ios/form_util/child_frame_registrar.h"
 #import "ios/web/public/browser_state.h"
 #import "ios/web/public/js_messaging/web_frame.h"
@@ -258,6 +260,7 @@ void AutofillDriverIOS::AskForValuesToFill(const FormData& form,
 
 void AutofillDriverIOS::DidFillAutofillFormData(const FormData& form,
                                                 base::TimeTicks timestamp) {
+  UpdateLastInteractedForm(/*form_data=*/form);
   // TODO(crbug.com/40266699): Route this using AutofillDriverRouter.
   GetAutofillManager().OnDidFillAutofillFormData(form, timestamp);
 }
@@ -287,7 +290,6 @@ void AutofillDriverIOS::FormsSeen(const std::vector<FormData>& updated_forms) {
   }
 
   // TODO(crbug.com/40266699): Route this using AutofillDriverRouter.
-  // TODO(crbug.com/40184363): Notify about deleted fields.
   GetAutofillManager().OnFormsSeen(updated_forms, {});
 }
 
@@ -297,11 +299,17 @@ void AutofillDriverIOS::FormSubmitted(
     mojom::SubmissionSource submission_source) {
   // TODO(crbug.com/40266699): Route this using AutofillDriverRouter.
   GetAutofillManager().OnFormSubmitted(form, known_success, submission_source);
+  ClearLastInteractedForm();
 }
 
 void AutofillDriverIOS::TextFieldDidChange(const FormData& form,
                                            const FormFieldData& field,
                                            base::TimeTicks timestamp) {
+  UpdateLastInteractedForm(/*form_data=*/form,
+                           /*formless_field=*/form.renderer_id
+                               ? FieldRendererId()
+                               : field.renderer_id());
+
   // TODO(crbug.com/40266699): Route this using AutofillDriverRouter.
   GetAutofillManager().OnTextFieldDidChange(
       form, field,
@@ -319,6 +327,28 @@ void AutofillDriverIOS::SetSelfAsParent(LocalFrameToken token) {
   if (child_driver) {
     child_driver->SetParent(weak_ptr_factory_.GetWeakPtr());
   }
+}
+
+void AutofillDriverIOS::UpdateLastInteractedForm(
+    const FormData& form_data,
+    const FieldRendererId& formless_field) {
+  // No-op when XHR submission detection disabled.
+  if (!base::FeatureList::IsEnabled(
+          autofill::features::kAutofillEnableXHRSubmissionDetectionIOS)) {
+    return;
+  }
+
+  // Only update the interacted form if different from the previous one.
+  if (last_interacted_form_ &&
+      last_interacted_form_->formless_field == formless_field &&
+      FormData::DeepEqual(last_interacted_form_->form_data, form_data)) {
+    return;
+  }
+  last_interacted_form_.emplace(form_data, formless_field);
+}
+
+void AutofillDriverIOS::ClearLastInteractedForm() {
+  last_interacted_form_.reset();
 }
 
 void AutofillDriverIOS::OnAutofillManagerDestroyed(AutofillManager& manager) {
@@ -344,9 +374,70 @@ void AutofillDriverIOS::OnAfterFormsSeen(AutofillManager& manager,
 }
 
 void AutofillDriverIOS::FormsRemoved(
-    const std::set<autofill::FormRendererId>& removed_forms,
-    const std::set<autofill::FieldRendererId>& removed_unowned_fields) {
-  // TODO(crbug.com/328471201): Inspect removed forms and fields for submission.
+    const std::set<FormRendererId>& removed_forms,
+    const std::set<FieldRendererId>& removed_unowned_fields) {
+  CHECK(base::FeatureList::IsEnabled(
+      autofill::features::kAutofillEnableXHRSubmissionDetectionIOS));
+
+  if (DetectFormSubmissionAfterFormRemoval(removed_forms,
+                                           removed_unowned_fields)) {
+    UpdateLastInteractedFormFromFieldDataManager();
+
+    FormSubmitted(last_interacted_form_->form_data,
+                  /*known_success=*/true,
+                  mojom::SubmissionSource::XHR_SUCCEEDED);
+  }
+
+  // TODO(crbug.com/40184363): Call FormsSeen with deleted forms and formless
+  // form.
+}
+
+bool AutofillDriverIOS::DetectFormSubmissionAfterFormRemoval(
+    const std::set<FormRendererId>& removed_forms,
+    const std::set<autofill::FieldRendererId>& removed_unowned_fields) const {
+  // Detect a form submission only if the last interacted form or formless field
+  // was removed.
+  if (!last_interacted_form_) {
+    return false;
+  }
+
+  const auto& last_interacted_form_id =
+      last_interacted_form_->form_data.renderer_id;
+  // Check if the last interacted form was removed.
+  if (last_interacted_form_id &&
+      removed_forms.find(last_interacted_form_id) != removed_forms.end()) {
+    return true;
+  }
+
+  const auto& last_formless_field_id = last_interacted_form_->formless_field;
+
+  // Check if the last interacted formless field was removed.
+  return removed_unowned_fields.find(last_formless_field_id) !=
+         removed_unowned_fields.end();
+}
+
+void AutofillDriverIOS::UpdateLastInteractedFormFromFieldDataManager() {
+  CHECK(last_interacted_form_);
+
+  auto* frame = web_frame();
+  if (!frame) {
+    return;
+  }
+
+  FieldDataManager* field_data_manager =
+      FieldDataManagerFactoryIOS::FromWebFrame(frame);
+
+  // Update the snapshot of the last interacted form with the data in
+  // FieldDataManager.
+  for (auto& field : last_interacted_form_->form_data.fields) {
+    const auto& field_id = field.renderer_id();
+    if (!field_data_manager->HasFieldData(field_id)) {
+      continue;
+    }
+    field.set_user_input(field_data_manager->GetUserInput(field_id));
+    field.set_properties_mask(
+        field_data_manager->GetFieldPropertiesMask(field_id));
+  }
 }
 
 }  // namespace autofill
