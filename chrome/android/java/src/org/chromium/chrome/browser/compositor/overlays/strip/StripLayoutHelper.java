@@ -2352,7 +2352,12 @@ public class StripLayoutHelper implements StripLayoutTabDelegate, StripLayoutGro
         for (int i = 0; i < mStripViews.length; i++) {
             final StripLayoutView view = mStripViews[i];
             if (view instanceof final StripLayoutTab tab) {
-                if (!tab.isDying() && !tab.isDraggedOffStrip()) {
+                if (tab.isCollapsed()) {
+                    // Need to use real width here (which gets animated to effectively 0), so we
+                    // don't "jump", but instead smoothly scroll when collapsing near the end of a
+                    // full tab strip.
+                    tabsWidth += tab.getWidth() - mTabOverlapWidth;
+                } else if (!tab.isDying() && !tab.isDraggedOffStrip()) {
                     tabsWidth += mCachedTabWidth - mTabOverlapWidth;
                 }
             } else {
