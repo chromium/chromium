@@ -47,20 +47,11 @@ DiscardableSharedMemoryHeap::ScopedMemorySegment::ScopedMemorySegment(
     size_t size,
     int32_t id,
     base::OnceClosure deleted_callback)
-    : dirty_pages_(std::vector<bool>(size / base::GetPageSize())),
-      heap_(heap),
+    : heap_(heap),
       shared_memory_(std::move(shared_memory)),
       size_(size),
       id_(id),
       deleted_callback_(std::move(deleted_callback)) {}
-
-size_t DiscardableSharedMemoryHeap::Span::MarkAsClean() {
-  return memory_segment_->MarkPages(start_, length_, false);
-}
-
-size_t DiscardableSharedMemoryHeap::Span::MarkAsDirty() {
-  return memory_segment_->MarkPages(start_, length_, true);
-}
 
 DiscardableSharedMemoryHeap::ScopedMemorySegment*
 DiscardableSharedMemoryHeap::Span::GetScopedMemorySegmentForTesting() const {
@@ -68,33 +59,8 @@ DiscardableSharedMemoryHeap::Span::GetScopedMemorySegmentForTesting() const {
 }
 
 DiscardableSharedMemoryHeap::ScopedMemorySegment::~ScopedMemorySegment() {
-  heap_->dirty_freed_memory_page_count_ -= MarkPages(
-      reinterpret_cast<size_t>(shared_memory_->memory()) / base::GetPageSize(),
-      dirty_pages_.size(), false);
   heap_->ReleaseMemory(shared_memory_.get(), size_);
   std::move(deleted_callback_).Run();
-}
-
-size_t DiscardableSharedMemoryHeap::ScopedMemorySegment::MarkPages(
-    size_t start,
-    size_t length,
-    bool value) {
-  if (!shared_memory_)
-    return 0;
-
-  const size_t offset =
-      start -
-      reinterpret_cast<size_t>(shared_memory_->memory()) / base::GetPageSize();
-
-  size_t tmp = 0;
-  for (size_t i = offset; i < offset + length; i++) {
-    if (dirty_pages_[i] != value) {
-      dirty_pages_[i] = value;
-      tmp++;
-    }
-  }
-
-  return tmp;
 }
 
 bool DiscardableSharedMemoryHeap::ScopedMemorySegment::IsUsed() const {
@@ -108,11 +74,6 @@ bool DiscardableSharedMemoryHeap::ScopedMemorySegment::IsResident() const {
 bool DiscardableSharedMemoryHeap::ScopedMemorySegment::ContainsSpan(
     Span* span) const {
   return shared_memory_.get() == span->shared_memory();
-}
-
-size_t DiscardableSharedMemoryHeap::ScopedMemorySegment::CountMarkedPages()
-    const {
-  return base::ranges::count(dirty_pages_, true);
 }
 
 base::trace_event::MemoryAllocatorDump*
@@ -182,7 +143,6 @@ DiscardableSharedMemoryHeap::Grow(
 
 void DiscardableSharedMemoryHeap::MergeIntoFreeLists(
     std::unique_ptr<Span> span) {
-  dirty_freed_memory_page_count_ += span->MarkAsDirty();
   MergeIntoFreeListsClean(std::move(span));
 }
 
@@ -337,9 +297,6 @@ bool DiscardableSharedMemoryHeap::OnMemoryDump(
   total_dump->AddScalar("freelist_size",
                         base::trace_event::MemoryAllocatorDump::kUnitsBytes,
                         freelist_size);
-  total_dump->AddScalar("freelist_size_dirty",
-                        base::trace_event::MemoryAllocatorDump::kUnitsBytes,
-                        dirty_freed_memory_page_count_ * base::GetPageSize());
   if (args.level_of_detail ==
       base::trace_event::MemoryDumpLevelOfDetail::kBackground) {
     // These metrics (size and virtual size) are also reported by each

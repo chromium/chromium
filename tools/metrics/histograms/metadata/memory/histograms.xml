@@ -355,16 +355,6 @@ chromium-metrics-reviews@google.com.
   <summary>TBD.</summary>
 </histogram>
 
-<histogram name="Memory.Discardable.FreelistSize.Dirty" units="KiB"
-    expires_after="2022-12-18">
-  <owner>thiabaud@google.com</owner>
-  <owner>lizeb@chromium.org</owner>
-  <summary>
-    Amount of resident memory that was in use but has now been moved to the
-    freelist. Recorded during |OnMemoryDump|.
-  </summary>
-</histogram>
-
 <histogram name="Memory.Discardable.FreelistSize.Foreground" units="KiB"
     expires_after="2023-03-05">
   <owner>thiabaud@google.com</owner>

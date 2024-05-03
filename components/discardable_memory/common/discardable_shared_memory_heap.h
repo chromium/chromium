@@ -48,13 +48,6 @@ class DISCARDABLE_MEMORY_EXPORT DiscardableSharedMemoryHeap {
     size_t length() const { return length_; }
     void set_is_locked(bool is_locked) { is_locked_ = is_locked; }
 
-    // Marks all bytes in this Span as dirty, returns the number of pages
-    // marked as dirty this way.
-    size_t MarkAsDirty();
-    // Marks all bytes in this Span as non-dirty, returning the number of
-    // pages marked as non-dirty this way.
-    size_t MarkAsClean();
-
     ScopedMemorySegment* GetScopedMemorySegmentForTesting() const;
 
    private:
@@ -136,8 +129,6 @@ class DISCARDABLE_MEMORY_EXPORT DiscardableSharedMemoryHeap {
       const char* name,
       base::trace_event::ProcessMemoryDump* pmd) const;
 
-  size_t dirty_freed_memory_page_count_ = 0;
-
  private:
   class DISCARDABLE_MEMORY_EXPORT ScopedMemorySegment {
    public:
@@ -158,8 +149,6 @@ class DISCARDABLE_MEMORY_EXPORT DiscardableSharedMemoryHeap {
 
     bool ContainsSpan(Span* span) const;
 
-    size_t CountMarkedPages() const;
-
     base::trace_event::MemoryAllocatorDump* CreateMemoryAllocatorDump(
         Span* span,
         size_t block_size,
@@ -169,10 +158,7 @@ class DISCARDABLE_MEMORY_EXPORT DiscardableSharedMemoryHeap {
     // Used for dumping memory statistics from the segment to chrome://tracing.
     void OnMemoryDump(base::trace_event::ProcessMemoryDump* pmd) const;
 
-    size_t MarkPages(size_t start, size_t length, bool value);
-
    private:
-    std::vector<bool> dirty_pages_;
     const raw_ptr<DiscardableSharedMemoryHeap> heap_;
     std::unique_ptr<base::DiscardableSharedMemory> shared_memory_;
     const size_t size_;

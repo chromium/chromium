@@ -65,11 +65,6 @@ class TestClientDiscardableSharedMemoryManager
     return heap_->GetFreelistSize();
   }
 
-  size_t GetDirtyFreedMemoryPageCount() const {
-    base::AutoLock lock(lock_);
-    return heap_->dirty_freed_memory_page_count_;
-  }
-
   bool IsPurgeScheduled() const {
     base::AutoLock lock(lock_);
     return is_purge_scheduled_;
@@ -453,49 +448,6 @@ TEST_F(ClientDiscardableSharedMemoryManagerTest,
   task_env_.FastForwardBy(
       ClientDiscardableSharedMemoryManager::kScheduledPurgeInterval);
   EXPECT_FALSE(client->IsPurgeScheduled());
-}
-
-TEST_F(ClientDiscardableSharedMemoryManagerTest, MarkDirtyFreelistPages) {
-  auto client =
-      base::MakeRefCounted<TestClientDiscardableSharedMemoryManager>();
-
-  ASSERT_EQ(0u, client->GetDirtyFreedMemoryPageCount());
-
-  auto mem1 = client->AllocateLockedDiscardableMemory(base::GetPageSize() / 2u);
-
-  ASSERT_EQ(0u, client->GetDirtyFreedMemoryPageCount());
-
-  auto mem2 =
-      client->AllocateLockedDiscardableMemory(base::GetPageSize() * 1.2);
-
-  ASSERT_EQ(0u, client->GetDirtyFreedMemoryPageCount());
-
-  // Allocate 5 MiB. This is to test large allocations, which are special-cased
-  // when allocating.
-  auto mem3 = client->AllocateLockedDiscardableMemory(5 * 1024 * 1024);
-
-  ASSERT_EQ(0u, client->GetDirtyFreedMemoryPageCount());
-
-  mem1 = nullptr;
-
-  ASSERT_EQ(1u, client->GetDirtyFreedMemoryPageCount());
-
-  mem2 = nullptr;
-
-  // Allocations on done in multiples of the page size, so we have 3 pages
-  // dirtied, even though we only actually touched 1.7 pages (since the 0.5 page
-  // allocation used 1 page, and the 1.2 page allocation used 2).
-  ASSERT_EQ(3u, client->GetDirtyFreedMemoryPageCount());
-
-  mem3 = nullptr;
-
-  ASSERT_EQ(3u + 5 * 1024 * 1024 / base::GetPageSize(),
-            client->GetDirtyFreedMemoryPageCount());
-
-  client->ReleaseFreeMemory();
-
-  // All pages should be freed now, so there are no dirty pages in the freelist.
-  ASSERT_EQ(0u, client->GetDirtyFreedMemoryPageCount());
 }
 
 }  // namespace
