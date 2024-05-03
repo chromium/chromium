@@ -4,6 +4,7 @@
 
 #include "components/performance_manager/graph/graph_impl.h"
 
+#include <string_view>
 #include <utility>
 
 #include "base/check_op.h"
@@ -13,7 +14,6 @@
 #include "base/functional/bind.h"
 #include "base/functional/callback_helpers.h"
 #include "base/notreached.h"
-#include "base/strings/string_piece.h"
 #include "components/performance_manager/graph/frame_node_impl.h"
 #include "components/performance_manager/graph/node_base.h"
 #include "components/performance_manager/graph/page_node_impl.h"
@@ -63,7 +63,7 @@ class NodeDataDescriberRegistryImpl : public NodeDataDescriberRegistry {
 
   // NodeDataDescriberRegistry impl:
   void RegisterDescriber(const NodeDataDescriber* describer,
-                         base::StringPiece name) override;
+                         std::string_view name) override;
   void UnregisterDescriber(const NodeDataDescriber* describer) override;
   base::Value::Dict DescribeNodeData(const Node* node) const override;
 
@@ -85,7 +85,7 @@ NodeDataDescriberRegistryImpl::~NodeDataDescriberRegistryImpl() {
 
 void NodeDataDescriberRegistryImpl::RegisterDescriber(
     const NodeDataDescriber* describer,
-    base::StringPiece name) {
+    std::string_view name) {
   DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
 #if DCHECK_IS_ON()
   for (const auto& kv : describers_) {

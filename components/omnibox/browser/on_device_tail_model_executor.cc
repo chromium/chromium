@@ -7,6 +7,7 @@
 #include <cmath>
 #include <cstdint>
 #include <sstream>
+#include <string_view>
 
 #include "base/base64.h"
 #include "base/containers/contains.h"
@@ -38,11 +39,11 @@ static constexpr char kRnnStepInputIdsNodeName[] = "input_ids";
 static constexpr char kRnnStepPrevQueryEncodingInputNodeName[] =
     "prev_query_encoding";
 
-static constexpr base::StringPiece kRnnStepCStateInputNamePrefix = "c_in_";
-static constexpr base::StringPiece kRnnStepMStateInputNamePrefix = "m_in_";
+static constexpr std::string_view kRnnStepCStateInputNamePrefix = "c_in_";
+static constexpr std::string_view kRnnStepMStateInputNamePrefix = "m_in_";
 
-static constexpr base::StringPiece kRnnStepCStateOutputNamePrefix = "c_out_";
-static constexpr base::StringPiece kRnnStepMStateOutputNamePrefix = "m_out_";
+static constexpr std::string_view kRnnStepCStateOutputNamePrefix = "c_out_";
+static constexpr std::string_view kRnnStepMStateOutputNamePrefix = "m_out_";
 
 static constexpr char kRnnStepOutputProbsNodeName[] = "probs";
 

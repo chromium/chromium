@@ -9,6 +9,7 @@
 
 #include <memory>
 #include <optional>
+#include <string_view>
 
 #include "base/feature_list.h"
 #include "base/gtest_prod_util.h"
@@ -156,7 +157,7 @@ class NetworkTimeTracker {
 
   void SetMaxResponseSizeForTesting(size_t limit);
 
-  void SetPublicKeyForTesting(base::StringPiece key);
+  void SetPublicKeyForTesting(std::string_view key);
 
   void SetTimeServerURLForTesting(const GURL& url);
 

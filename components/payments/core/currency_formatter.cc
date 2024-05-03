@@ -5,6 +5,7 @@
 #include "components/payments/core/currency_formatter.h"
 
 #include <memory>
+#include <string_view>
 
 #include "base/logging.h"
 #include "base/numerics/safe_conversions.h"

@@ -5,7 +5,8 @@
 #ifndef COMPONENTS_PERFORMANCE_MANAGER_PUBLIC_GRAPH_NODE_DATA_DESCRIBER_REGISTRY_H_
 #define COMPONENTS_PERFORMANCE_MANAGER_PUBLIC_GRAPH_NODE_DATA_DESCRIBER_REGISTRY_H_
 
-#include "base/strings/string_piece.h"
+#include <string_view>
+
 #include "base/values.h"
 
 namespace performance_manager {
@@ -22,7 +23,7 @@ class NodeDataDescriberRegistry {
   // The |describer| must not be registered already, and |name| must be unique
   // to this registration.
   virtual void RegisterDescriber(const NodeDataDescriber* describer,
-                                 base::StringPiece name) = 0;
+                                 std::string_view name) = 0;
   // Unregister previously registered |describer|.
   virtual void UnregisterDescriber(const NodeDataDescriber* describer) = 0;
 

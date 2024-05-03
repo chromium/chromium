@@ -6,6 +6,7 @@
 
 #include <memory>
 #include <string>
+#include <string_view>
 
 #include "base/base64url.h"
 #include "base/feature_list.h"
@@ -15,7 +16,6 @@
 #include "base/metrics/histogram_functions.h"
 #include "base/metrics/histogram_macros.h"
 #include "base/strings/string_number_conversions.h"
-#include "base/strings/string_piece.h"
 #include "base/strings/string_util.h"
 #include "build/build_config.h"
 #include "components/gcm_driver/gcm_driver.h"
@@ -83,7 +83,7 @@ std::string GetValueFromMessage(const gcm::IncomingMessage& message,
 // "/topics/${public_topic}". For these messages, strip the "/topics/" prefix.
 //
 // If the provided sender does not match either pattern, return it unchanged.
-std::string UnpackPrivateTopic(base::StringPiece private_topic) {
+std::string UnpackPrivateTopic(std::string_view private_topic) {
   if (base::StartsWith(private_topic, "/topics/private/")) {
     return std::string(private_topic.substr(strlen("/topics")));
   } else if (base::StartsWith(private_topic, "/topics/")) {

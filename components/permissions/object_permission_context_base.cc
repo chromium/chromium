@@ -4,6 +4,7 @@
 
 #include "components/permissions/object_permission_context_base.h"
 
+#include <string_view>
 #include <utility>
 
 #include "base/containers/contains.h"
@@ -98,7 +99,7 @@ bool ObjectPermissionContextBase::CanRequestObjectPermission(
 
 std::unique_ptr<ObjectPermissionContextBase::Object>
 ObjectPermissionContextBase::GetGrantedObject(const url::Origin& origin,
-                                              const base::StringPiece key) {
+                                              const std::string_view key) {
   if (!CanRequestObjectPermission(origin))
     return nullptr;
 
@@ -204,7 +205,7 @@ void ObjectPermissionContextBase::RevokeObjectPermission(
 
 void ObjectPermissionContextBase::RevokeObjectPermission(
     const url::Origin& origin,
-    const base::StringPiece key) {
+    const std::string_view key) {
   auto origin_objects_it = objects().find(origin);
   if (origin_objects_it == objects().end()) {
     return;

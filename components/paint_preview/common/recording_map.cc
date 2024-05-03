@@ -4,8 +4,9 @@
 
 #include "components/paint_preview/common/recording_map.h"
 
+#include <string_view>
+
 #include "base/files/file_path.h"
-#include "base/strings/string_piece.h"
 #include "base/strings/utf_string_conversions.h"
 #include "build/build_config.h"
 
@@ -13,7 +14,7 @@ namespace paint_preview {
 
 namespace {
 
-base::FilePath ToFilePath(base::StringPiece path_str) {
+base::FilePath ToFilePath(std::string_view path_str) {
 #if BUILDFLAG(IS_WIN)
   return base::FilePath(base::UTF8ToWide(path_str));
 #else

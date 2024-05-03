@@ -4,10 +4,11 @@
 
 #include "components/peripherals/logging/logging.h"
 
+#include <string_view>
+
 #include "ash/constants/ash_features.h"
 #include "base/command_line.h"
 #include "base/logging.h"
-#include "base/strings/string_piece.h"
 #include "base/strings/string_util.h"
 
 PeripheralsScopedLogMessage::PeripheralsScopedLogMessage(
@@ -17,7 +18,7 @@ PeripheralsScopedLogMessage::PeripheralsScopedLogMessage(
     Feature feature)
     : file_(file), feature_(feature), line_(line), severity_(severity) {}
 
-base::StringPiece GetFeaturePrefix(Feature feature) {
+std::string_view GetFeaturePrefix(Feature feature) {
   switch (feature) {
     case Feature::ACCEL:
       return "[ACCEL]";

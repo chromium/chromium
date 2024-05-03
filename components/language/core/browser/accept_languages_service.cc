@@ -6,10 +6,11 @@
 
 #include <stddef.h>
 
+#include <string_view>
+
 #include "base/functional/bind.h"
 #include "base/i18n/rtl.h"
 #include "base/metrics/histogram_macros.h"
-#include "base/strings/string_piece.h"
 #include "base/strings/string_split.h"
 #include "base/strings/string_util.h"
 #include "components/language/core/common/language_util.h"
@@ -35,8 +36,7 @@ AcceptLanguagesService::AcceptLanguagesService(
 AcceptLanguagesService::~AcceptLanguagesService() = default;
 
 // static
-bool AcceptLanguagesService::CanBeAcceptLanguage(
-    const base::StringPiece& language) {
+bool AcceptLanguagesService::CanBeAcceptLanguage(std::string_view language) {
   std::string accept_language(language);
   language::ToChromeLanguageSynonym(&accept_language);
 
@@ -45,8 +45,7 @@ bool AcceptLanguagesService::CanBeAcceptLanguage(
   return l10n_util::IsLanguageAccepted(ui_locale, accept_language);
 }
 
-bool AcceptLanguagesService::IsAcceptLanguage(
-    const base::StringPiece& language) const {
+bool AcceptLanguagesService::IsAcceptLanguage(std::string_view language) const {
   std::string accept_language(language);
   language::ToChromeLanguageSynonym(&accept_language);
   return accept_languages_.find(accept_language) != accept_languages_.end();
@@ -57,14 +56,15 @@ void AcceptLanguagesService::InitAcceptLanguages(PrefService* prefs) {
   // Build the languages.
   accept_languages_.clear();
   std::string accept_languages_pref = prefs->GetString(accept_languages_pref_);
-  for (const base::StringPiece& lang :
+  for (std::string_view lang :
        base::SplitStringPiece(accept_languages_pref, ",", base::TRIM_WHITESPACE,
                               base::SPLIT_WANT_ALL)) {
     // Get rid of the locale extension if any (ex: en-US -> en), but for Chinese
     // for which the CLD reports zh-CN and zh-TW.
     size_t index = lang.find('-');
-    if (index != base::StringPiece::npos && lang != "zh-CN" && lang != "zh-TW")
+    if (index != std::string_view::npos && lang != "zh-CN" && lang != "zh-TW") {
       accept_languages_.insert(std::string(lang.substr(0, index)));
+    }
     accept_languages_.insert(std::string(lang));
   }
 }

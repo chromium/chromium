@@ -5,6 +5,7 @@
 #include "components/permissions/permission_hats_trigger_helper.h"
 
 #include <optional>
+#include <string_view>
 #include <utility>
 
 #include "base/check_is_test.h"
@@ -41,7 +42,7 @@ std::vector<std::string> SplitCsvString(const std::string& csv_string) {
 bool StringMatchesFilter(const std::string& string, const std::string& filter) {
   return filter.empty() ||
          base::ranges::any_of(SplitCsvString(filter),
-                              [string](base::StringPiece current_filter) {
+                              [string](std::string_view current_filter) {
                                 return base::EqualsCaseInsensitiveASCII(
                                     string, current_filter);
                               });

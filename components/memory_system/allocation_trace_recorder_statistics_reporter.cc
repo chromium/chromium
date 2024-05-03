@@ -7,12 +7,12 @@
 #include <functional>
 #include <ios>
 #include <string>
+#include <string_view>
 #include <utility>
 
 #include "base/debug/allocation_trace.h"
 #include "base/functional/bind.h"
 #include "base/logging.h"
-#include "base/strings/string_piece.h"
 #include "base/task/sequenced_task_runner.h"
 #include "base/task/task_traits.h"
 #include "base/task/thread_pool.h"
@@ -74,7 +74,7 @@ AllocationTraceRecorderStatisticsReporter::
 AllocationTraceRecorderStatisticsReporter::
     AllocationTraceRecorderStatisticsReporter(
         const base::debug::tracer::AllocationTraceRecorder& recorder,
-        base::StringPiece process_type,
+        std::string_view process_type,
         base::TimeDelta interval,
         logging::LogSeverity severity)
     : core_(base::ThreadPool::CreateSequencedTaskRunner(

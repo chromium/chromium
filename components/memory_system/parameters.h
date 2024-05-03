@@ -6,8 +6,8 @@
 #define COMPONENTS_MEMORY_SYSTEM_PARAMETERS_H_
 
 #include <string>
+#include <string_view>
 
-#include "base/strings/string_piece.h"
 #include "components/metrics/call_stacks/call_stack_profile_params.h"
 #include "components/version_info/channel.h"
 
@@ -21,7 +21,7 @@ namespace memory_system {
 // GWP-ASan specific parameters, please see
 // components/gwp_asan/client/gwp_asan.h for details.
 struct GwpAsanParameters {
-  GwpAsanParameters(bool boost_sampling, base::StringPiece process_type);
+  GwpAsanParameters(bool boost_sampling, std::string_view process_type);
 
   bool boost_sampling;
   std::string process_type;
@@ -70,7 +70,7 @@ struct DispatcherParameters {
   explicit DispatcherParameters(
       PoissonAllocationSamplerInclusion poisson_allocation_sampler_inclusion,
       AllocationTraceRecorderInclusion allocation_trace_recorder_inclusion,
-      base::StringPiece process_type);
+      std::string_view process_type);
 
   PoissonAllocationSamplerInclusion poisson_allocation_sampler_inclusion;
   AllocationTraceRecorderInclusion allocation_trace_recorder_inclusion;

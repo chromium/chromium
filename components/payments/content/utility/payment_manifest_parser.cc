@@ -5,6 +5,7 @@
 #include "components/payments/content/utility/payment_manifest_parser.h"
 
 #include <algorithm>
+#include <string_view>
 #include <utility>
 
 #include "base/check_op.h"
@@ -316,7 +317,7 @@ void ParsePreferredRelatedApplicationIdentifiers(
 }
 
 bool GetString(const base::Value::Dict* dict,
-               base::StringPiece key,
+               std::string_view key,
                std::string& result) {
   DCHECK(dict);
   const std::string* value = dict->FindString(key);

@@ -6,9 +6,9 @@
 #define COMPONENTS_LANGUAGE_CORE_BROWSER_LANGUAGE_USAGE_METRICS_H_
 
 #include <set>
+#include <string_view>
 
 #include "base/gtest_prod_util.h"
-#include "base/strings/string_piece.h"
 
 namespace language {
 class UrlLanguageHistogram;
@@ -25,7 +25,7 @@ class LanguageUsageMetrics {
   // xx-YY, or xx_YY format where xx is iso-639 language code and YY is iso-3166
   // country code. Country code is ignored. That is, xx and XX-YY are considered
   // identical and recorded once.
-  static void RecordAcceptLanguages(base::StringPiece accept_languages);
+  static void RecordAcceptLanguages(std::string_view accept_languages);
 
   // Records detected page language history as a UMA histogram.
   // |UrlLanguageHistogram| is a mapping of page language to frequency. Country
@@ -43,12 +43,12 @@ class LanguageUsageMetrics {
   // of 'e' and 'n' are 101 and 110 respectively, and the language hash will be
   // 101 * 256 + 100 = 25966. |locale| is case-insensitive and not checked for
   // validity. Returns 0 in case of errors.
-  static int ToLanguageCodeHash(base::StringPiece locale);
+  static int ToLanguageCodeHash(std::string_view locale);
 
  private:
   // Parses |accept_languages| and returns a set of language codes in
   // |languages|.
-  static void ParseAcceptLanguages(base::StringPiece accept_languages,
+  static void ParseAcceptLanguages(std::string_view accept_languages,
                                    std::set<int>* languages);
 
   FRIEND_TEST_ALL_PREFIXES(LanguageUsageMetricsTest, ParseAcceptLanguages);

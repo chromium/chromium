@@ -4,6 +4,8 @@
 
 #include "components/performance_manager/graph/graph_impl.h"
 
+#include <string_view>
+
 #include "base/memory/ptr_util.h"
 #include "base/memory/raw_ptr.h"
 #include "base/process/process.h"
@@ -339,7 +341,7 @@ namespace {
 
 class TestNodeDataDescriber : public NodeDataDescriber {
  public:
-  explicit TestNodeDataDescriber(base::StringPiece name) : name_(name) {}
+  explicit TestNodeDataDescriber(std::string_view name) : name_(name) {}
 
   base::Value::Dict DescribeFrameNodeData(
       const FrameNode* node) const override {

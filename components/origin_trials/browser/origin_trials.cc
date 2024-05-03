@@ -5,6 +5,7 @@
 #include "components/origin_trials/browser/origin_trials.h"
 
 #include <algorithm>
+#include <string_view>
 
 #include "base/containers/contains.h"
 #include "base/containers/flat_map.h"
@@ -143,7 +144,7 @@ void OriginTrials::PersistTokensInternal(
   }
 
   // Parse the provided tokens
-  for (const base::StringPiece token : header_tokens) {
+  for (const std::string_view token : header_tokens) {
     blink::TrialTokenResult validation_result =
         trial_token_validator_->ValidateTokenAndTrial(
             token, origin, script_origins, current_time);

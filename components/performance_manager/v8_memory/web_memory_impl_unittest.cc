@@ -6,6 +6,7 @@
 
 #include <memory>
 #include <string>
+#include <string_view>
 #include <utility>
 
 #include "base/containers/flat_map.h"
@@ -137,7 +138,7 @@ TEST_F(WebMemoryImplPMTest, WebMeasureMemory) {
         run_loop.Quit();
       });
   auto bad_message_callback =
-      base::BindLambdaForTesting([&](base::StringPiece error) {
+      base::BindLambdaForTesting([&](std::string_view error) {
         ADD_FAILURE() << error;
         run_loop.Quit();
       });
@@ -181,7 +182,7 @@ TEST_F(WebMemoryImplPMTest, MeasurementInterrupted) {
         FAIL() << "Measurement callback ran unexpectedly";
       });
   auto bad_message_callback =
-      base::BindOnce([](base::StringPiece error) { FAIL() << error; });
+      base::BindOnce([](std::string_view error) { FAIL() << error; });
 
   base::WeakPtr<FrameNode> frame_node_wrapper =
       PerformanceManager::GetFrameNodeForRenderFrameHost(child_frame());
@@ -228,7 +229,7 @@ TEST_F(WebMemoryImplPMTest, MeasurementDisallowed) {
         run_loop.Quit();
       });
   auto bad_message_callback =
-      base::BindLambdaForTesting([&](base::StringPiece error) {
+      base::BindLambdaForTesting([&](std::string_view error) {
         SUCCEED() << error;
         run_loop.Quit();
       });

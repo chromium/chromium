@@ -5,6 +5,7 @@
 #include "components/page_load_metrics/common/page_load_metrics_util.h"
 
 #include <algorithm>
+#include <string_view>
 
 #include "base/metrics/field_trial_params.h"
 #include "base/strings/string_util.h"
@@ -36,14 +37,14 @@ std::optional<std::string> GetGoogleHostnamePrefix(const GURL& url) {
           // want to match URLs like www.google.appspot.com.
           net::registry_controlled_domains::EXCLUDE_PRIVATE_REGISTRIES);
 
-  const base::StringPiece hostname = url.host_piece();
+  const std::string_view hostname = url.host_piece();
   if (registry_length == 0 || registry_length == std::string::npos ||
       registry_length >= hostname.length()) {
     return std::nullopt;
   }
 
   // Removes the tld and the preceding dot.
-  const base::StringPiece hostname_minus_registry =
+  const std::string_view hostname_minus_registry =
       hostname.substr(0, hostname.length() - (registry_length + 1));
 
   if (hostname_minus_registry == "google")

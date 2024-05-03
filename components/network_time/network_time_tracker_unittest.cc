@@ -6,6 +6,7 @@
 
 #include <memory>
 #include <string>
+#include <string_view>
 #include <utility>
 
 #include "base/compiler_specific.h"
@@ -615,8 +616,8 @@ static const uint8_t kDevKeyPubBytes[] = {
 TEST_F(NetworkTimeTrackerTest, UpdateFromNetworkBadData) {
   SetResponseHandler(
       base::BindRepeating(&NetworkTimeTrackerTest::BadDataResponseHandler));
-  base::StringPiece key = {reinterpret_cast<const char*>(kDevKeyPubBytes),
-                           sizeof(kDevKeyPubBytes)};
+  std::string_view key = {reinterpret_cast<const char*>(kDevKeyPubBytes),
+                          sizeof(kDevKeyPubBytes)};
   tracker_->SetPublicKeyForTesting(key);
   EXPECT_TRUE(tracker_->QueryTimeServiceForTesting());
   tracker_->WaitForFetchForTesting(123123123);
@@ -680,8 +681,8 @@ TEST_F(NetworkTimeTrackerTest, UpdateFromNetworkLargeResponse) {
 TEST_F(NetworkTimeTrackerTest, UpdateFromNetworkFirstSyncPending) {
   SetResponseHandler(
       base::BindRepeating(&NetworkTimeTrackerTest::BadDataResponseHandler));
-  base::StringPiece key = {reinterpret_cast<const char*>(kDevKeyPubBytes),
-                           sizeof(kDevKeyPubBytes)};
+  std::string_view key = {reinterpret_cast<const char*>(kDevKeyPubBytes),
+                          sizeof(kDevKeyPubBytes)};
   tracker_->SetPublicKeyForTesting(key);
   EXPECT_TRUE(tracker_->QueryTimeServiceForTesting());
 
@@ -697,8 +698,8 @@ TEST_F(NetworkTimeTrackerTest, UpdateFromNetworkFirstSyncPending) {
 TEST_F(NetworkTimeTrackerTest, UpdateFromNetworkSubseqeuntSyncPending) {
   SetResponseHandler(
       base::BindRepeating(&NetworkTimeTrackerTest::BadDataResponseHandler));
-  base::StringPiece key = {reinterpret_cast<const char*>(kDevKeyPubBytes),
-                           sizeof(kDevKeyPubBytes)};
+  std::string_view key = {reinterpret_cast<const char*>(kDevKeyPubBytes),
+                          sizeof(kDevKeyPubBytes)};
   tracker_->SetPublicKeyForTesting(key);
   EXPECT_TRUE(tracker_->QueryTimeServiceForTesting());
   tracker_->WaitForFetchForTesting(123123123);

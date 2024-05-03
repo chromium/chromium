@@ -5,6 +5,7 @@
 #include "components/named_mojo_ipc_server/named_mojo_ipc_util.h"
 
 #include <string>
+#include <string_view>
 
 #include "build/build_config.h"
 
@@ -17,7 +18,7 @@
 namespace named_mojo_ipc_server {
 
 mojo::NamedPlatformChannel::ServerName
-WorkingDirectoryIndependentServerNameFromUTF8(base::StringPiece name) {
+WorkingDirectoryIndependentServerNameFromUTF8(std::string_view name) {
 #if BUILDFLAG(IS_POSIX) && !BUILDFLAG(IS_MAC)
   // The channel name on non-mac POSIX (basically Linux) is the path to a unix
   // domain socket, so it needs to be an absolute path to allow the IPC binary

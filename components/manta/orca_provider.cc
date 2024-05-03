@@ -7,6 +7,7 @@
 #include <memory>
 #include <optional>
 #include <string>
+#include <string_view>
 #include <vector>
 
 #include "base/check.h"
@@ -34,7 +35,7 @@ using Tone = proto::RequestConfig::Tone;
 
 std::optional<Tone> GetTone(const std::string& tone) {
   static constexpr auto tone_map =
-      base::MakeFixedFlatMap<base::StringPiece, Tone>({
+      base::MakeFixedFlatMap<std::string_view, Tone>({
           {"UNSPECIFIED", proto::RequestConfig::UNSPECIFIED},
           {"SHORTEN", proto::RequestConfig::SHORTEN},
           {"ELABORATE", proto::RequestConfig::ELABORATE},

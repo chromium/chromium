@@ -6,6 +6,8 @@
 
 #include <stddef.h>
 
+#include <string_view>
+
 #include "base/metrics/histogram_functions.h"
 #include "base/metrics/histogram_macros.h"
 #include "base/strings/string_tokenizer.h"
@@ -15,7 +17,7 @@ namespace language {
 
 // static
 void LanguageUsageMetrics::RecordAcceptLanguages(
-    base::StringPiece accept_languages) {
+    std::string_view accept_languages) {
   std::set<int> languages;
   ParseAcceptLanguages(accept_languages, &languages);
 
@@ -48,8 +50,8 @@ void LanguageUsageMetrics::RecordPageLanguages(
 }
 
 // static
-int LanguageUsageMetrics::ToLanguageCodeHash(base::StringPiece locale) {
-  base::StringPiece language_part =
+int LanguageUsageMetrics::ToLanguageCodeHash(std::string_view locale) {
+  std::string_view language_part =
       locale.substr(0U, locale.find_first_of("-_"));
 
   int language_code = 0;
@@ -79,7 +81,7 @@ int LanguageUsageMetrics::ToLanguageCodeHash(base::StringPiece locale) {
 
 // static
 void LanguageUsageMetrics::ParseAcceptLanguages(
-    base::StringPiece accept_languages,
+    std::string_view accept_languages,
     std::set<int>* languages) {
   languages->clear();
   base::StringViewTokenizer locales(accept_languages, ",");

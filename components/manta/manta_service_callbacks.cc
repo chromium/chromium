@@ -6,6 +6,7 @@
 
 #include <memory>
 #include <string>
+#include <string_view>
 
 #include "base/containers/fixed_flat_map.h"
 #include "base/functional/callback.h"
@@ -30,7 +31,7 @@ constexpr char kExpectedEndPointDomain[] = "aratea-pa.googleapis.com";
 std::optional<MantaStatusCode> MapServerFailureReasonToMantaStatusCode(
     const std::string& reason) {
   static constexpr auto reason_map =
-      base::MakeFixedFlatMap<base::StringPiece, MantaStatusCode>({
+      base::MakeFixedFlatMap<std::string_view, MantaStatusCode>({
           {"MISSING_INPUT", MantaStatusCode::kInvalidInput},
           {"INVALID_INPUT", MantaStatusCode::kInvalidInput},
           {"UNSUPPORTED_LANGUAGE", MantaStatusCode::kUnsupportedLanguage},

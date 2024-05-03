@@ -6,6 +6,7 @@
 #define COMPONENTS_PAINT_PREVIEW_BROWSER_PAINT_PREVIEW_FILE_MIXIN_H_
 
 #include <optional>
+#include <string_view>
 
 #include "base/files/file_path.h"
 #include "base/functional/callback.h"
@@ -36,7 +37,7 @@ class PaintPreviewFileMixin {
   // Creates an instance for a profile. FileManager's root directory will be set
   // to |profile_dir|/paint_preview/|ascii_feature_name|.
   PaintPreviewFileMixin(const base::FilePath& profile_dir,
-                        base::StringPiece ascii_feature_name);
+                        std::string_view ascii_feature_name);
   PaintPreviewFileMixin(const PaintPreviewFileMixin&) = delete;
   PaintPreviewFileMixin& operator=(const PaintPreviewFileMixin&) = delete;
   virtual ~PaintPreviewFileMixin();

@@ -4,6 +4,7 @@
 
 #include "components/paint_preview/browser/paint_preview_file_mixin.h"
 
+#include <string_view>
 #include <utility>
 
 #include "base/files/file_util.h"
@@ -70,7 +71,7 @@ void OnReadProto(PaintPreviewFileMixin::OnReadProtoCallback callback,
 
 PaintPreviewFileMixin::PaintPreviewFileMixin(
     const base::FilePath& path,
-    base::StringPiece ascii_feature_name)
+    std::string_view ascii_feature_name)
     : task_runner_(base::ThreadPool::CreateSequencedTaskRunner(
           {base::MayBlock(), base::TaskPriority::USER_VISIBLE,
            base::TaskShutdownBehavior::BLOCK_SHUTDOWN,

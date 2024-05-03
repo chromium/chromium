@@ -4,6 +4,8 @@
 
 #include "components/offline_pages/core/request_header/offline_page_header.h"
 
+#include <string_view>
+
 #include "base/base64.h"
 #include "base/notreached.h"
 #include "base/strings/string_tokenizer.h"
@@ -42,12 +44,12 @@ bool ParseOfflineHeaderValue(const std::string& header_value,
   base::StringTokenizer tokenizer(header_value, ", ");
   while (tokenizer.GetNext()) {
     token_found = true;
-    base::StringPiece pair = tokenizer.token_piece();
+    std::string_view pair = tokenizer.token_piece();
     std::size_t pos = pair.find('=');
     if (pos == std::string::npos)
       return false;
     std::string key = base::ToLowerASCII(pair.substr(0, pos));
-    base::StringPiece value = pair.substr(pos + 1);
+    std::string_view value = pair.substr(pos + 1);
     std::string lower_value = base::ToLowerASCII(value);
     if (key == kOfflinePageHeaderPersistKey) {
       if (lower_value == "1")

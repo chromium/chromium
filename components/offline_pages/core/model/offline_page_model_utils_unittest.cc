@@ -4,6 +4,8 @@
 
 #include "components/offline_pages/core/model/offline_page_model_utils.h"
 
+#include <string_view>
+
 #include "base/files/file_path.h"
 #include "base/files/file_util.h"
 #include "base/files/scoped_temp_dir.h"
@@ -85,7 +87,7 @@ TEST(OfflinePageModelUtilsTest, MAYBE_TestGenerateUniqueFilename) {
     base::FilePath path = model_utils::GenerateUniqueFilenameForOfflinePage(
         test_case.page_title, test_case.page_url, temp_dir.GetPath());
     // Writing a dummy file so the uniquifier can increase.
-    base::WriteFile(path, base::StringPiece());
+    base::WriteFile(path, std::string_view());
     EXPECT_EQ(path.BaseName().value(), test_case.expected_basename);
   }
 }

@@ -5,6 +5,7 @@
 #include "components/payments/core/payment_manifest_downloader.h"
 
 #include <optional>
+#include <string_view>
 #include <unordered_map>
 #include <utility>
 
@@ -13,7 +14,6 @@
 #include "base/feature_list.h"
 #include "base/functional/bind.h"
 #include "base/strings/string_number_conversions.h"
-#include "base/strings/string_piece.h"
 #include "base/strings/string_split.h"
 #include "base/strings/string_util.h"
 #include "components/link_header_util/link_header_util.h"
@@ -59,7 +59,7 @@ void RespondWithHttpStatusCodeError(const GURL& final_url,
 }
 
 // Invokes |callback| with |error_format|.
-void RespondWithError(const base::StringPiece& error_format,
+void RespondWithError(std::string_view error_format,
                       const GURL& final_url,
                       const ErrorLogger& log,
                       PaymentManifestDownloadCallback callback) {
@@ -72,7 +72,7 @@ void RespondWithError(const base::StringPiece& error_format,
 // Invokes the |callback| with |response_body|. If |response_body| is empty,
 // then invokes |callback| with |empty_error_format|.
 void RespondWithContent(const std::string& response_body,
-                        const base::StringPiece& empty_error_format,
+                        std::string_view empty_error_format,
                         const GURL& final_url,
                         const ErrorLogger& log,
                         PaymentManifestDownloadCallback callback) {

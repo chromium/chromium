@@ -7,10 +7,10 @@
 
 #include <set>
 #include <string>
+#include <string_view>
 #include <vector>
 
 #include "base/memory/raw_ptr.h"
-#include "base/strings/string_piece.h"
 #include "components/prefs/pref_change_registrar.h"
 
 class PrefService;
@@ -87,7 +87,7 @@ class LanguagePrefs {
 void ResetLanguagePrefs(PrefService* prefs);
 
 // Given a comma separated list of locales, return the first.
-std::string GetFirstLanguage(base::StringPiece language_list);
+std::string GetFirstLanguage(std::string_view language_list);
 
 }  // namespace language
 

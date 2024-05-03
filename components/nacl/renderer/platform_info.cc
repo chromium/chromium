@@ -2,7 +2,8 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#include "base/strings/string_piece.h"
+#include <string_view>
+
 #include "base/strings/string_util.h"
 #include "build/build_config.h"
 
@@ -51,7 +52,7 @@ std::string GetCpuFeatures() {
   //           doesn't handle other architectures very well, and we
   //           should at least detect the presence of ARM's integer
   //           divide.
-  std::vector<base::StringPiece> features;
+  std::vector<std::string_view> features;
 #if defined(ARCH_CPU_X86_FAMILY)
   base::CPU cpu;
 

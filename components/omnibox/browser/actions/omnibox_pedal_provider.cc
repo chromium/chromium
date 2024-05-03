@@ -5,6 +5,7 @@
 #include "components/omnibox/browser/actions/omnibox_pedal_provider.h"
 
 #include <numeric>
+#include <string_view>
 #include <unordered_map>
 
 #include "base/i18n/case_conversion.h"
@@ -200,7 +201,7 @@ void OmniboxPedalProvider::TokenizeAndExpandDictionary(
     StringTokenizer16 tokenizer(token_sequence_string, tokenize_characters_);
     while (tokenizer.GetNext()) {
       std::u16string raw_token = tokenizer.token();
-      base::StringPiece16 trimmed_token =
+      std::u16string_view trimmed_token =
           base::TrimWhitespace(raw_token, base::TrimPositions::TRIM_ALL);
       std::u16string token = base::i18n::FoldCase(trimmed_token);
       const auto iter = dictionary_.find(token);

@@ -5,6 +5,7 @@
 #include "components/omnibox/browser/titled_url_match_utils.h"
 
 #include <numeric>
+#include <string_view>
 #include <vector>
 
 #include "base/metrics/field_trial_params.h"
@@ -28,13 +29,13 @@ using ScoringSignals = ::metrics::OmniboxEventProto::Suggestion::ScoringSignals;
 
 // Concatenates |ancestors| in reverse order and using '/' as the delimiter.
 std::u16string ConcatAncestorsTitles(
-    std::vector<base::StringPiece16> ancestors) {
+    std::vector<std::u16string_view> ancestors) {
   return ancestors.empty()
              ? std::u16string()
              : std::accumulate(
                    std::next(ancestors.rbegin()), ancestors.rend(),
                    std::u16string(*ancestors.rbegin()),
-                   [](const std::u16string& a, const base::StringPiece16& b) {
+                   [](const std::u16string& a, std::u16string_view b) {
                      return a + u"/" + std::u16string(b);
                    });
 }

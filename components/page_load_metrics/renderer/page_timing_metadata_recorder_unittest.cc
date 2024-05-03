@@ -4,6 +4,7 @@
 
 #include "components/page_load_metrics/renderer/page_timing_metadata_recorder.h"
 
+#include <string_view>
 #include <vector>
 
 #include "base/profiler/sample_metadata.h"
@@ -15,7 +16,7 @@ namespace page_load_metrics {
 struct MetadataTaggingRequest {
   base::TimeTicks period_start;
   base::TimeTicks period_end;
-  base::StringPiece name;
+  std::string_view name;
   int64_t key;
   int64_t value;
 };
@@ -28,7 +29,7 @@ class TestPageTimingMetadataRecorder : public PageTimingMetadataRecorder {
 
   void ApplyMetadataToPastSamples(base::TimeTicks period_start,
                                   base::TimeTicks period_end,
-                                  base::StringPiece name,
+                                  std::string_view name,
                                   int64_t key,
                                   int64_t value,
                                   base::SampleMetadataScope scope) override {

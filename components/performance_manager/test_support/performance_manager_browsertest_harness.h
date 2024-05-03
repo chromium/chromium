@@ -6,9 +6,9 @@
 #define COMPONENTS_PERFORMANCE_MANAGER_TEST_SUPPORT_PERFORMANCE_MANAGER_BROWSERTEST_HARNESS_H_
 
 #include <set>
+#include <string_view>
 
 #include "base/memory/raw_ptr.h"
-#include "base/strings/string_piece.h"
 #include "components/performance_manager/embedder/graph_features.h"
 #include "content/public/test/content_browser_test.h"
 #include "testing/gtest/include/gtest/gtest.h"
@@ -76,7 +76,7 @@ class PerformanceManagerBrowserTestHarness
   ::testing::AssertionResult NavigateAndWaitForConsoleMessage(
       content::WebContents* contents,
       const GURL& url,
-      base::StringPiece console_pattern);
+      std::string_view console_pattern);
 
   // Waits for an ongoing navigation to terminate on the given |contents|.
   void WaitForLoad(content::WebContents* contents);

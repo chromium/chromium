@@ -3,7 +3,9 @@
 // found in the LICENSE file.
 
 #include "components/page_load_metrics/renderer/page_timing_metadata_recorder.h"
+
 #include <cstdint>
+#include <string_view>
 
 namespace page_load_metrics {
 namespace {
@@ -49,7 +51,7 @@ void PageTimingMetadataRecorder::UpdateMetadata(const MonotonicTiming& timing) {
 void PageTimingMetadataRecorder::ApplyMetadataToPastSamples(
     base::TimeTicks period_start,
     base::TimeTicks period_end,
-    base::StringPiece name,
+    std::string_view name,
     int64_t key,
     int64_t value,
     base::SampleMetadataScope scope) {

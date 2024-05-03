@@ -4,6 +4,8 @@
 
 #include "components/performance_manager/public/graph/node_data_describer_util.h"
 
+#include <string_view>
+
 #include "base/i18n/time_formatting.h"
 #include "base/task/task_traits.h"
 #include "components/performance_manager/graph/frame_node_impl.h"
@@ -41,7 +43,7 @@ base::Value TimeSinceEpochToValue(base::TimeTicks time_ticks) {
       base::Time::UnixEpoch() + delta_since_epoch, "yyyy-MM-dd HH:mm:ss"));
 }
 
-base::Value MaybeNullStringToValue(base::StringPiece str) {
+base::Value MaybeNullStringToValue(std::string_view str) {
   if (str.data() == nullptr) {
     return base::Value();
   }

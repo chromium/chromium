@@ -7,6 +7,7 @@
 
 #include <memory>
 #include <string>
+#include <string_view>
 #include <vector>
 
 #include "base/functional/callback_forward.h"
@@ -43,17 +44,17 @@ class NTPTilesInternalsMessageHandlerClient {
 
   // Registers a callback in Javascript. See content::WebUI and web::WebUIIOS.
   virtual void RegisterMessageCallback(
-      base::StringPiece message,
+      std::string_view message,
       base::RepeatingCallback<void(const base::Value::List&)> callback) = 0;
 
   // Invokes a function in Javascript. See content::WebUI and web::WebUIIOS.
   virtual void CallJavascriptFunctionSpan(
-      base::StringPiece name,
+      std::string_view name,
       base::span<const base::ValueView> values) = 0;
 
   // Convenience function for CallJavascriptFunctionSpan().
   template <typename... Arg>
-  void CallJavascriptFunction(base::StringPiece name, const Arg&... arg) {
+  void CallJavascriptFunction(std::string_view name, const Arg&... arg) {
     base::ValueView args[] = {arg...};
     CallJavascriptFunctionSpan(name, args);
   }

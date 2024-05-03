@@ -6,6 +6,7 @@
 
 #include <memory>
 #include <string>
+#include <string_view>
 
 #include "base/command_line.h"
 #include "base/functional/bind.h"
@@ -14,7 +15,6 @@
 #include "base/process/process.h"
 #include "base/process/process_handle.h"
 #include "base/run_loop.h"
-#include "base/strings/string_piece.h"
 #include "base/test/bind.h"
 #include "base/test/gmock_callback_support.h"
 #include "base/test/mock_callback.h"
@@ -79,7 +79,7 @@ class NamedMojoIpcServerTest
 
  protected:
   void CreateIpcServer();
-  base::Process LaunchClientProcess(base::StringPiece extra_switch = {});
+  base::Process LaunchClientProcess(std::string_view extra_switch = {});
   int WaitForProcessExit(base::Process& process);
   void WaitForServerEndpointCreated();
 
@@ -162,7 +162,7 @@ void NamedMojoIpcServerTest::WaitForServerEndpointCreated() {
 }
 
 base::Process NamedMojoIpcServerTest::LaunchClientProcess(
-    base::StringPiece extra_switch) {
+    std::string_view extra_switch) {
   base::CommandLine cmd_line = base::GetMultiProcessTestChildBaseCommandLine();
   cmd_line.AppendSwitchNative(kClientProcessServerNameSwitch,
                               test_server_name_);

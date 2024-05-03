@@ -6,8 +6,8 @@
 
 #include <cstdint>
 #include <set>
+#include <string_view>
 
-#include "base/strings/string_piece.h"
 #include "testing/gtest/include/gtest/gtest.h"
 #include "third_party/blink/public/mojom/payments/payment_app.mojom.h"
 
@@ -34,7 +34,7 @@ TEST(PaymentEventResponseUtilTest, CanMakePaymentEventResponse) {
     if (no_error.find(response_type) != no_error.end())
       continue;
 
-    base::StringPiece error_string =
+    std::string_view error_string =
         ConvertCanMakePaymentEventResponseTypeToErrorString(response_type);
     EXPECT_LT(2U, error_string.length());
     EXPECT_EQ('.', error_string[error_string.length() - 1]);
@@ -56,7 +56,7 @@ TEST(PaymentEventResponseUtilTest, PaymentRequestEventResponse) {
     if (mojom::PaymentEventResponseType::PAYMENT_EVENT_SUCCESS == response_type)
       continue;
 
-    base::StringPiece error_string =
+    std::string_view error_string =
         ConvertPaymentEventResponseTypeToErrorString(response_type);
     EXPECT_LT(2U, error_string.length());
     EXPECT_EQ('.', error_string[error_string.length() - 1]);

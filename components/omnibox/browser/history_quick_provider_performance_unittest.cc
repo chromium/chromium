@@ -6,6 +6,7 @@
 #include <memory>
 #include <random>
 #include <string>
+#include <string_view>
 
 #include "base/run_loop.h"
 #include "base/strings/string_util.h"
@@ -62,10 +63,10 @@ URLRow GeneratePopularURLRow() {
   return row;
 }
 
-using StringPieces = std::vector<base::StringPiece>;
+using StringPieces = std::vector<std::string_view>;
 
 StringPieces AllPrefixes(const std::string& str) {
-  std::vector<base::StringPiece> res;
+  std::vector<std::string_view> res;
   res.reserve(str.size());
   for (auto char_it = str.begin(); char_it != str.end(); ++char_it)
     res.push_back(base::MakeStringPiece(str.begin(), char_it));
@@ -203,7 +204,7 @@ void HQPPerfTestOnePopularURL::RunAllTests(PieceIt first, PieceIt last) {
     PieceIt group_end = std::min(group_start + kTestGroupSize, last);
 
     std::transform(group_start, group_end, std::back_inserter(measurements),
-                   [this](const base::StringPiece& prefix) {
+                   [this](std::string_view prefix) {
                      return RunTest(base::UTF8ToUTF16(prefix));
                    });
 

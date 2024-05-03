@@ -5,6 +5,7 @@
 #include "components/lookalikes/core/lookalike_url_util.h"
 
 #include <algorithm>
+#include <string_view>
 #include <utility>
 
 #include "base/containers/contains.h"
@@ -13,7 +14,6 @@
 #include "base/i18n/char_iterator.h"
 #include "base/metrics/histogram_macros.h"
 #include "base/strings/strcat.h"
-#include "base/strings/string_piece.h"
 #include "base/strings/string_split.h"
 #include "base/strings/string_util.h"
 #include "base/strings/utf_string_conversions.h"
@@ -346,7 +346,7 @@ void RecordEvent(NavigationSuggestionEvent event) {
 //
 // |hostname| must outlive the return value since the vector contains
 // StringPieces.
-std::vector<base::StringPiece> SplitDomainIntoTokens(
+std::vector<std::string_view> SplitDomainIntoTokens(
     const std::string& hostname) {
   return base::SplitStringPiece(hostname, kTargetEmbeddingSeparators,
                                 base::TRIM_WHITESPACE,
@@ -357,7 +357,7 @@ std::vector<base::StringPiece> SplitDomainIntoTokens(
 // allowlisted. e.g. if domain_labels = {foo,scholar,google,com}, checks the
 // allowlist for google.com, scholar.google.com, and foo.scholar.google.com.
 bool ASubdomainIsAllowlisted(
-    const base::span<const base::StringPiece>& domain_labels,
+    const base::span<const std::string_view>& domain_labels,
     const LookalikeTargetAllowlistChecker& in_target_allowlist) {
   DCHECK(domain_labels.size() >= 2);
   std::string potential_hostname(domain_labels[domain_labels.size() - 1]);
@@ -376,7 +376,7 @@ bool ASubdomainIsAllowlisted(
 // Returns the top domain if the top domain without its separators matches the
 // |potential_target| (e.g. googlecom). The matching is a skeleton matching.
 std::string GetMatchingTopDomainWithoutSeparators(
-    const base::StringPiece& potential_target) {
+    std::string_view potential_target) {
   const url_formatter::Skeletons skeletons =
       url_formatter::GetSkeletons(base::UTF8ToUTF16(potential_target));
 
@@ -468,7 +468,7 @@ bool UsesCommonWord(const reputation::SafetyTipsConfig* config_proto,
 // Returns whether |domain_labels| is in the same domain as embedding_domain.
 // e.g. IsEmbeddingItself(["foo", "example", "com"], "example.com") -> true
 //  since foo.example.com is in the same domain as example.com.
-bool IsEmbeddingItself(const base::span<const base::StringPiece>& domain_labels,
+bool IsEmbeddingItself(const base::span<const std::string_view>& domain_labels,
                        const std::string& embedding_domain) {
   DCHECK(domain_labels.size() >= 2);
   std::string potential_hostname(domain_labels[domain_labels.size() - 1]);
@@ -555,7 +555,7 @@ bool EndsWithPermittedDomains(const DomainInfo& embedded_target,
 // cross-TLD match (e.g. google.com vs google.com.mx).
 bool IsAllowedToBeEmbedded(
     const DomainInfo& embedded_target,
-    const base::span<const base::StringPiece>& subdomain_span,
+    const base::span<const std::string_view>& subdomain_span,
     const LookalikeTargetAllowlistChecker& in_target_allowlist,
     const std::string& embedding_domain,
     const reputation::SafetyTipsConfig* config_proto) {
@@ -1119,7 +1119,7 @@ TargetEmbeddingType SearchForEmbeddings(
     bool safety_tips_allowed,
     std::string* safe_hostname) {
   const std::string embedding_domain = GetETLDPlusOne(hostname);
-  const std::vector<base::StringPiece> hostname_tokens =
+  const std::vector<std::string_view> hostname_tokens =
       SplitDomainIntoTokens(hostname);
 
   // There are O(n^2) potential target embeddings in a domain name. We want to
@@ -1129,8 +1129,8 @@ TargetEmbeddingType SearchForEmbeddings(
   // possible embedded domains that end in that eTLD (i.e. all possible start
   // points from the beginning of the string onward).
   for (size_t end = hostname_tokens.size(); end > 0; --end) {
-    base::span<const base::StringPiece> etld_check_span(hostname_tokens.data(),
-                                                        end);
+    base::span<const std::string_view> etld_check_span(hostname_tokens.data(),
+                                                       end);
     std::string etld_check_host = base::JoinString(etld_check_span, ".");
     auto etld_check_dominfo = GetDomainInfo(etld_check_host);
 
@@ -1178,7 +1178,7 @@ TargetEmbeddingType SearchForEmbeddings(
     // Check for exact matches against engaged sites, among all possible
     // subdomains ending at |end|.
     for (size_t start = 0; start < end - 1; ++start) {
-      const base::span<const base::StringPiece> span(
+      const base::span<const std::string_view> span(
           hostname_tokens.data() + start, end - start);
       auto embedded_hostname = base::JoinString(span, ".");
       auto embedded_dominfo = GetDomainInfo(embedded_hostname);
@@ -1248,7 +1248,7 @@ bool IsEmojiRelatedCodepoint(UChar32 codepoint) {
 // failed spoof checks should be blocked by an interstitial. Ideally, we would
 // check this for non-ASCII scripts as well (e.g. Cyrillic + emoji), but such
 // usage isn't common.
-bool IsASCIIAndEmojiOnly(const base::StringPiece16& text) {
+bool IsASCIIAndEmojiOnly(std::u16string_view text) {
   for (base::i18n::UTF16CharIterator iter(text); !iter.end(); iter.Advance()) {
     const UChar32 codepoint = iter.get();
     if (!IsASCII(codepoint) && !IsEmojiRelatedCodepoint(codepoint)) {

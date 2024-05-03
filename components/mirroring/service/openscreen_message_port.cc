@@ -4,6 +4,7 @@
 
 #include "components/mirroring/service/openscreen_message_port.h"
 
+#include <string_view>
 #include <utility>
 
 #include "base/check.h"
@@ -12,8 +13,8 @@
 namespace mirroring {
 
 OpenscreenMessagePort::OpenscreenMessagePort(
-    base::StringPiece source_id,
-    base::StringPiece destination_id,
+    std::string_view source_id,
+    std::string_view destination_id,
     mojo::PendingRemote<mojom::CastMessageChannel> outbound_channel,
     mojo::PendingReceiver<mojom::CastMessageChannel> inbound_channel)
     : source_id_(source_id),

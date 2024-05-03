@@ -9,6 +9,7 @@
 #include <memory>
 #include <optional>
 #include <string>
+#include <string_view>
 #include <utility>
 
 #include "base/check.h"
@@ -21,7 +22,6 @@
 #include "base/rand_util.h"
 #include "base/run_loop.h"
 #include "base/strings/string_number_conversions.h"
-#include "base/strings/string_piece.h"
 #include "base/strings/utf_string_conversions.h"
 #include "base/time/tick_clock.h"
 #include "base/time/time.h"
@@ -211,8 +211,8 @@ NetworkTimeTracker::NetworkTimeTracker(
     network_time_at_last_measurement_ = base::Time();  // Reset.
   }
 
-  base::StringPiece public_key = {reinterpret_cast<const char*>(kKeyPubBytes),
-                                  sizeof(kKeyPubBytes)};
+  std::string_view public_key = {reinterpret_cast<const char*>(kKeyPubBytes),
+                                 sizeof(kKeyPubBytes)};
   query_signer_ =
       client_update_protocol::Ecdsa::Create(kKeyVersion, public_key);
 
@@ -293,7 +293,7 @@ void NetworkTimeTracker::SetMaxResponseSizeForTesting(size_t limit) {
   max_response_size_ = limit;
 }
 
-void NetworkTimeTracker::SetPublicKeyForTesting(base::StringPiece key) {
+void NetworkTimeTracker::SetPublicKeyForTesting(std::string_view key) {
   query_signer_ = client_update_protocol::Ecdsa::Create(kKeyVersion, key);
 }
 
@@ -481,7 +481,7 @@ bool NetworkTimeTracker::UpdateTimeFromResponse(
     return false;
   }
 
-  base::StringPiece response(*response_body);
+  std::string_view response(*response_body);
 
   DCHECK(query_signer_);
   if (!query_signer_->ValidateResponse(

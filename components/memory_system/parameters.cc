@@ -4,10 +4,12 @@
 
 #include "components/memory_system/parameters.h"
 
+#include <string_view>
+
 namespace memory_system {
 
 GwpAsanParameters::GwpAsanParameters(bool boost_sampling,
-                                     base::StringPiece process_type)
+                                     std::string_view process_type)
     : boost_sampling(boost_sampling), process_type(process_type) {}
 
 ProfilingClientParameters::ProfilingClientParameters(
@@ -18,7 +20,7 @@ ProfilingClientParameters::ProfilingClientParameters(
 DispatcherParameters::DispatcherParameters(
     PoissonAllocationSamplerInclusion poisson_allocation_sampler_inclusion,
     AllocationTraceRecorderInclusion allocation_trace_recorder_inclusion,
-    base::StringPiece process_type)
+    std::string_view process_type)
     : poisson_allocation_sampler_inclusion(
           poisson_allocation_sampler_inclusion),
       allocation_trace_recorder_inclusion(allocation_trace_recorder_inclusion),

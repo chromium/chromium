@@ -6,6 +6,7 @@
 
 #include <memory>
 #include <set>
+#include <string_view>
 #include <utility>
 
 #include "base/files/file_path.h"
@@ -231,7 +232,7 @@ base::Value::Dict NetExportFileWriter::GetState() const {
   base::Value::Dict dict;
   dict.Set("file", base::UTF16ToUTF8(log_path_.LossyDisplayName()));
 
-  base::StringPiece state_string;
+  std::string_view state_string;
   switch (state_) {
     case STATE_UNINITIALIZED:
       state_string = "UNINITIALIZED";

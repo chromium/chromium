@@ -127,22 +127,24 @@ constexpr char kPresentationMimetype[] =
     "application/vnd.google-apps.presentation";
 
 // Returns mappings from MIME types to overridden icons.
-AutocompleteMatch::DocumentType GetIconForMIMEType(
-    const base::StringPiece& mimetype) {
-  constexpr auto kIconMap = base::MakeFixedFlatMap<
-      base::StringPiece, AutocompleteMatch::DocumentType>({
-      {kDocumentMimetype, AutocompleteMatch::DocumentType::DRIVE_DOCS},
-      {kFormMimetype, AutocompleteMatch::DocumentType::DRIVE_FORMS},
-      {kSpreadsheetMimetype, AutocompleteMatch::DocumentType::DRIVE_SHEETS},
-      {kPresentationMimetype, AutocompleteMatch::DocumentType::DRIVE_SLIDES},
-      {"image/jpeg", AutocompleteMatch::DocumentType::DRIVE_IMAGE},
-      {"image/png", AutocompleteMatch::DocumentType::DRIVE_IMAGE},
-      {"image/gif", AutocompleteMatch::DocumentType::DRIVE_IMAGE},
-      {"application/pdf", AutocompleteMatch::DocumentType::DRIVE_PDF},
-      {"video/mp4", AutocompleteMatch::DocumentType::DRIVE_VIDEO},
-      {"application/vnd.google-apps.folder",
-       AutocompleteMatch::DocumentType::DRIVE_FOLDER},
-  });
+AutocompleteMatch::DocumentType GetIconForMIMEType(std::string_view mimetype) {
+  constexpr auto kIconMap =
+      base::MakeFixedFlatMap<std::string_view, AutocompleteMatch::DocumentType>(
+          {
+              {kDocumentMimetype, AutocompleteMatch::DocumentType::DRIVE_DOCS},
+              {kFormMimetype, AutocompleteMatch::DocumentType::DRIVE_FORMS},
+              {kSpreadsheetMimetype,
+               AutocompleteMatch::DocumentType::DRIVE_SHEETS},
+              {kPresentationMimetype,
+               AutocompleteMatch::DocumentType::DRIVE_SLIDES},
+              {"image/jpeg", AutocompleteMatch::DocumentType::DRIVE_IMAGE},
+              {"image/png", AutocompleteMatch::DocumentType::DRIVE_IMAGE},
+              {"image/gif", AutocompleteMatch::DocumentType::DRIVE_IMAGE},
+              {"application/pdf", AutocompleteMatch::DocumentType::DRIVE_PDF},
+              {"video/mp4", AutocompleteMatch::DocumentType::DRIVE_VIDEO},
+              {"application/vnd.google-apps.folder",
+               AutocompleteMatch::DocumentType::DRIVE_FOLDER},
+          });
 
   const auto it = kIconMap.find(mimetype);
   return it != kIconMap.end() ? it->second
@@ -161,8 +163,8 @@ std::vector<T> Concat(std::vector<T>& v1, const std::vector<T>& v2) {
 // be `nullptr` if the value at `field_path` is not found or is not a string.
 std::vector<const std::string*> ExtractResultList(
     const base::Value::Dict& result,
-    const base::StringPiece& list_path,
-    const base::StringPiece& field_path) {
+    std::string_view list_path,
+    std::string_view field_path) {
   const base::Value::List* list = result.FindListByDottedPath(list_path);
   if (!list) {
     return {};
@@ -319,7 +321,7 @@ bool ValidHostPrefix(const std::string& host) {
 
 // If `value[key]`, returns it. Otherwise, returns `fallback`.
 std::string FindStringKeyOrFallback(const base::Value::Dict& value,
-                                    base::StringPiece key,
+                                    std::string_view key,
                                     std::string fallback = "") {
   auto* ptr = value.FindString(key);
   return ptr ? *ptr : fallback;

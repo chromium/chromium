@@ -6,6 +6,7 @@
 
 #include <limits>
 #include <map>
+#include <string_view>
 #include <unordered_set>
 #include <utility>
 #include <vector>
@@ -18,7 +19,6 @@
 #include "base/metrics/histogram_macros.h"
 #include "base/rand_util.h"
 #include "base/strings/string_number_conversions.h"
-#include "base/strings/string_piece.h"
 #include "base/strings/string_split.h"
 #include "base/strings/string_util.h"
 #include "build/build_config.h"
@@ -128,7 +128,7 @@ int ConfigureSpdySessionMaxQueuedCappedFrames(
 }
 
 void ConfigureHttp2Params(const base::CommandLine& command_line,
-                          base::StringPiece http2_trial_group,
+                          std::string_view http2_trial_group,
                           const VariationParameters& http2_trial_params,
                           net::HttpNetworkSessionParams* params) {
   if (GetVariationParam(http2_trial_params, "http2_enabled") == "false") {
@@ -179,7 +179,7 @@ void ConfigureHttp2Params(const base::CommandLine& command_line,
                                                 http2_trial_params);
 }
 
-bool ShouldDisableQuic(base::StringPiece quic_trial_group,
+bool ShouldDisableQuic(std::string_view quic_trial_group,
                        const VariationParameters& quic_trial_params,
                        bool is_quic_force_disabled) {
   if (is_quic_force_disabled)
@@ -519,7 +519,7 @@ quic::ParsedQuicVersionVector GetQuicVersions(
 }
 
 bool AreQuicParamsValid(const base::CommandLine& command_line,
-                        base::StringPiece quic_trial_group,
+                        std::string_view quic_trial_group,
                         const VariationParameters& quic_trial_params) {
   if (command_line.HasSwitch(variations::switches::kForceFieldTrialParams)) {
     // Skip validation of params from the command line.
@@ -556,7 +556,7 @@ bool AreQuicParamsValid(const base::CommandLine& command_line,
 }
 
 void ConfigureQuicParams(const base::CommandLine& command_line,
-                         base::StringPiece quic_trial_group,
+                         std::string_view quic_trial_group,
                          const VariationParameters& quic_trial_params,
                          bool is_quic_force_disabled,
                          net::HttpNetworkSessionParams* params,

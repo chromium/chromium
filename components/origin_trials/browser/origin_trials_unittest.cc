@@ -2,15 +2,16 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
+#include "components/origin_trials/browser/origin_trials.h"
+
 #include <memory>
+#include <string_view>
 #include <utility>
 #include <vector>
 
 #include "base/containers/flat_set.h"
 #include "base/memory/scoped_refptr.h"
-#include "base/strings/string_piece.h"
 #include "base/time/time.h"
-#include "components/origin_trials/browser/origin_trials.h"
 #include "components/origin_trials/common/persisted_trial_token.h"
 #include "components/origin_trials/test/test_persistence_provider.h"
 #include "testing/gtest/include/gtest/gtest.h"
@@ -201,28 +202,26 @@ class OpenScopedTestOriginTrialPolicy
   ~OpenScopedTestOriginTrialPolicy() override = default;
 
   // Check if the passed |trial_name| has been disabled.
-  bool IsFeatureDisabled(base::StringPiece trial_name) const override {
+  bool IsFeatureDisabled(std::string_view trial_name) const override {
     return disabled_trials_.contains(trial_name);
   }
 
-  bool IsTokenDisabled(base::StringPiece token_signature) const override {
+  bool IsTokenDisabled(std::string_view token_signature) const override {
     return disabled_signatures_.contains(token_signature);
   }
 
   // Check if the passed |trial_name| has been disabled.
-  bool IsFeatureDisabledForUser(base::StringPiece trial_name) const override {
+  bool IsFeatureDisabledForUser(std::string_view trial_name) const override {
     return user_disabled_trials_.contains(trial_name);
   }
 
-  void DisableTrial(base::StringPiece trial) {
-    disabled_trials_.emplace(trial);
-  }
+  void DisableTrial(std::string_view trial) { disabled_trials_.emplace(trial); }
 
-  void DisableToken(base::StringPiece token_signature) {
+  void DisableToken(std::string_view token_signature) {
     disabled_signatures_.emplace(token_signature);
   }
 
-  void DisableTrialForUser(base::StringPiece trial_name) {
+  void DisableTrialForUser(std::string_view trial_name) {
     user_disabled_trials_.emplace(trial_name);
   }
 

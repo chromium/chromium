@@ -3,7 +3,10 @@
 // found in the LICENSE file.
 
 #include "components/page_info/core/about_this_site_service.h"
+
 #include <memory>
+#include <string_view>
+
 #include "base/memory/raw_ptr.h"
 #include "base/test/metrics/histogram_tester.h"
 #include "components/optimization_guide/core/optimization_guide_decision.h"
@@ -245,12 +248,12 @@ TEST_P(AboutThisSiteServiceTest, NotShownWhenNoGoogleDSE) {
   TemplateURL* template_url =
       templateService()->Add(std::make_unique<TemplateURL>(TemplateURLData(
           u"shortname", u"keyword", "https://cs.chromium.org",
-          base::StringPiece(), base::StringPiece(), base::StringPiece(),
-          base::StringPiece(), base::StringPiece(), base::StringPiece(),
-          base::StringPiece(), base::StringPiece(), base::StringPiece(),
-          base::StringPiece(), base::StringPiece(), base::StringPiece(),
-          base::StringPiece(), base::StringPiece(), std::vector<std::string>(),
-          base::StringPiece(), base::StringPiece(), base::StringPiece16(),
+          std::string_view(), std::string_view(), std::string_view(),
+          std::string_view(), std::string_view(), std::string_view(),
+          std::string_view(), std::string_view(), std::string_view(),
+          std::string_view(), std::string_view(), std::string_view(),
+          std::string_view(), std::string_view(), std::vector<std::string>(),
+          std::string_view(), std::string_view(), std::u16string_view(),
           base::Value::List(), false, false, 0)));
   templateService()->SetUserSelectedDefaultSearchProvider(template_url);
 

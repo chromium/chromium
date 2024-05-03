@@ -8,10 +8,10 @@
 #include <memory>
 #include <optional>
 #include <string>
+#include <string_view>
 #include <utility>
 #include <vector>
 
-#include "base/strings/string_piece.h"
 #include "base/values.h"
 #include "components/omnibox/browser/autocomplete_match.h"
 #include "components/omnibox/browser/autocomplete_match_type.h"
@@ -374,7 +374,7 @@ class SearchSuggestionParser {
   // protection if needed. Returns the parsed data if successful, NULL
   // otherwise.
   static std::optional<base::Value::List> DeserializeJsonData(
-      base::StringPiece json_data);
+      std::string_view json_data);
 
   // Parses results from the suggest server and updates the appropriate suggest
   // and navigation result lists in |results|. |is_keyword_result| indicates

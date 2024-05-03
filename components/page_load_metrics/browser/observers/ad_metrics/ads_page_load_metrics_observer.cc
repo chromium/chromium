@@ -7,6 +7,7 @@
 #include <algorithm>
 #include <limits>
 #include <string>
+#include <string_view>
 #include <utility>
 
 #include "base/check_op.h"
@@ -15,7 +16,6 @@
 #include "base/notreached.h"
 #include "base/rand_util.h"
 #include "base/strings/strcat.h"
-#include "base/strings/string_piece.h"
 #include "base/strings/string_util.h"
 #include "base/time/default_tick_clock.h"
 #include "base/time/time.h"
@@ -105,7 +105,7 @@ std::string GetHeavyAdReportMessage(const FrameTreeData& frame_data,
       "A future version of Chrome may remove this ad";
   const char kInterventionMessage[] = "Ad was removed";
 
-  base::StringPiece intervention_mode =
+  std::string_view intervention_mode =
       will_unload_adframe ? kInterventionMessage : kReportingOnlyMessage;
 
   switch (frame_data.heavy_ad_status_with_noise()) {

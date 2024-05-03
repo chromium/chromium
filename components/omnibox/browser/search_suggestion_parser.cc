@@ -8,6 +8,7 @@
 
 #include <memory>
 #include <optional>
+#include <string_view>
 
 #include "base/base64.h"
 #include "base/check.h"
@@ -583,10 +584,10 @@ std::string SearchSuggestionParser::ExtractJsonData(
 
 // static
 std::optional<base::Value::List> SearchSuggestionParser::DeserializeJsonData(
-    base::StringPiece json_data) {
+    std::string_view json_data) {
   // The JSON response should be an array.
   for (size_t response_start_index = json_data.find("["), i = 0;
-       response_start_index != base::StringPiece::npos && i < 5;
+       response_start_index != std::string_view::npos && i < 5;
        response_start_index = json_data.find("[", 1), i++) {
     // Remove any XSSI guards to allow for JSON parsing.
     json_data.remove_prefix(response_start_index);

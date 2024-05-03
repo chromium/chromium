@@ -4,13 +4,14 @@
 
 #include "components/payments/content/payment_event_response_util.h"
 
-#include "base/strings/string_piece.h"
+#include <string_view>
+
 #include "components/payments/core/error_strings.h"
 #include "components/payments/core/native_error_strings.h"
 
 namespace payments {
 
-base::StringPiece ConvertCanMakePaymentEventResponseTypeToErrorString(
+std::string_view ConvertCanMakePaymentEventResponseTypeToErrorString(
     mojom::CanMakePaymentEventResponseType response_type) {
   switch (response_type) {
     case mojom::CanMakePaymentEventResponseType::BOOLEAN_CONVERSION_ERROR:
@@ -38,7 +39,7 @@ base::StringPiece ConvertCanMakePaymentEventResponseTypeToErrorString(
   }
 }
 
-base::StringPiece ConvertPaymentEventResponseTypeToErrorString(
+std::string_view ConvertPaymentEventResponseTypeToErrorString(
     mojom::PaymentEventResponseType response_type) {
   switch (response_type) {
     case mojom::PaymentEventResponseType::PAYMENT_EVENT_SUCCESS:

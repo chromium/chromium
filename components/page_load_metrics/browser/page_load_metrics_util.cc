@@ -5,6 +5,7 @@
 #include "components/page_load_metrics/browser/page_load_metrics_util.h"
 
 #include <algorithm>
+#include <string_view>
 
 #include "components/page_load_metrics/common/page_load_timing.h"
 #include "components/page_load_metrics/common/page_visit_final_status.h"
@@ -45,8 +46,8 @@ PageAbortReason GetAbortReasonForEndReason(PageEndReason end_reason) {
 }
 
 // Common helper for QueryContainsComponent and QueryContainsComponentPrefix.
-bool QueryContainsComponentHelper(const base::StringPiece query,
-                                  const base::StringPiece component,
+bool QueryContainsComponentHelper(const std::string_view query,
+                                  const std::string_view component,
                                   bool component_is_prefix) {
   if (query.empty() || component.empty() ||
       component.length() > query.length()) {
@@ -59,7 +60,7 @@ bool QueryContainsComponentHelper(const base::StringPiece query,
   // Note: This heuristic can cause a component string that starts with one of
   // these characters to not match a query string which contains it at the
   // beginning.
-  const base::StringPiece trimmed_query =
+  const std::string_view trimmed_query =
       base::TrimString(query, "?#", base::TrimPositions::TRIM_LEADING);
 
   // We shouldn't try to find matches beyond the point where there aren't enough
@@ -300,7 +301,7 @@ bool IsGoogleSearchResultUrl(const GURL& url) {
     return false;
   }
 
-  const base::StringPiece path = url.path_piece();
+  const std::string_view path = url.path_piece();
   return path == "/search" || path == "/webhp" || path == "/custom" ||
          path == "/";
 }
@@ -330,13 +331,13 @@ bool IsZstdUrl(const GURL& url) {
          url.DomainIs("whatsapp.com") || url.DomainIs("messenger.com");
 }
 
-bool QueryContainsComponent(const base::StringPiece query,
-                            const base::StringPiece component) {
+bool QueryContainsComponent(const std::string_view query,
+                            const std::string_view component) {
   return QueryContainsComponentHelper(query, component, false);
 }
 
-bool QueryContainsComponentPrefix(const base::StringPiece query,
-                                  const base::StringPiece component) {
+bool QueryContainsComponentPrefix(const std::string_view query,
+                                  const std::string_view component) {
   return QueryContainsComponentHelper(query, component, true);
 }
 

@@ -6,6 +6,7 @@
 #define COMPONENTS_PAGE_LOAD_METRICS_BROWSER_PAGE_LOAD_METRICS_UTIL_H_
 
 #include <optional>
+#include <string_view>
 
 #include "base/metrics/histogram_functions.h"
 #include "base/time/time.h"
@@ -245,10 +246,10 @@ bool IsZstdUrl(const GURL& url);
 // beginning of the query string if the component starts with a delimiter
 // character ('?' or '#'). For example, '?foo=bar' will match the query string
 // 'a=b&?foo=bar' but not the query string '?foo=bar&a=b'.
-bool QueryContainsComponent(const base::StringPiece query,
-                            const base::StringPiece component);
-bool QueryContainsComponentPrefix(const base::StringPiece query,
-                                  const base::StringPiece component);
+bool QueryContainsComponent(const std::string_view query,
+                            const std::string_view component);
+bool QueryContainsComponentPrefix(const std::string_view query,
+                                  const std::string_view component);
 
 // Adjusts the layout shift score for UKM.
 int64_t LayoutShiftUkmValue(float shift_score);

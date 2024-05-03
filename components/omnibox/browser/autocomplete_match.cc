@@ -4,6 +4,7 @@
 
 #include "components/omnibox/browser/autocomplete_match.h"
 
+#include <string_view>
 #include <vector>
 
 #include "base/check_op.h"
@@ -16,7 +17,6 @@
 #include "base/notreached.h"
 #include "base/ranges/algorithm.h"
 #include "base/strings/string_number_conversions.h"
-#include "base/strings/string_piece.h"
 #include "base/strings/string_split.h"
 #include "base/strings/string_util.h"
 #include "base/strings/stringprintf.h"
@@ -829,7 +829,7 @@ std::string AutocompleteMatch::ClassificationsToString(
 ACMatchClassifications AutocompleteMatch::ClassificationsFromString(
     const std::string& serialized_classifications) {
   ACMatchClassifications classifications;
-  std::vector<base::StringPiece> tokens =
+  std::vector<std::string_view> tokens =
       base::SplitStringPiece(serialized_classifications, ",",
                              base::KEEP_WHITESPACE, base::SPLIT_WANT_NONEMPTY);
   DCHECK(!(tokens.size() & 1));  // The number of tokens should be even.
@@ -1035,7 +1035,7 @@ GURL AutocompleteMatch::GURLToStrippedGURL(
   static const size_t prefix_len = std::size(prefix) - 1;
   std::string host = stripped_destination_url.host();
   if (host.compare(0, prefix_len, prefix) == 0 && host.length() > prefix_len) {
-    replacements.SetHostStr(base::StringPiece(host).substr(prefix_len));
+    replacements.SetHostStr(std::string_view(host).substr(prefix_len));
     needs_replacement = true;
   }
 

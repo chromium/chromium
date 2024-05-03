@@ -6,20 +6,19 @@
 #define COMPONENTS_LANGUAGE_CORE_COMMON_LOCALE_UTIL_H_
 
 #include <string>
+#include <string_view>
 #include <utility>
-
-#include "base/strings/string_piece.h"
 
 namespace language {
 
 // Split the |locale| into two parts. For example, if |locale| is 'en-US',
 // this will be split into the main part 'en' and the tail part '-US'.
-std::pair<base::StringPiece, base::StringPiece> SplitIntoMainAndTail(
-    base::StringPiece locale);
+std::pair<std::string_view, std::string_view> SplitIntoMainAndTail(
+    std::string_view locale);
 
 // Given a language code, extract the base language only.
 // Example: from "en-US", extract "en".
-base::StringPiece ExtractBaseLanguage(base::StringPiece language_code);
+std::string_view ExtractBaseLanguage(std::string_view language_code);
 
 // DEPRECATED. Use:
 // - |l10n_util::CheckAndResolveLocale| to deterministically convert an input

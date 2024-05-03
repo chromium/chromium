@@ -5,7 +5,8 @@
 #ifndef COMPONENTS_NAMED_MOJO_IPC_SERVER_NAMED_MOJO_IPC_UTIL_H_
 #define COMPONENTS_NAMED_MOJO_IPC_SERVER_NAMED_MOJO_IPC_UTIL_H_
 
-#include "base/strings/string_piece.h"
+#include <string_view>
+
 #include "mojo/public/cpp/platform/named_platform_channel.h"
 
 namespace named_mojo_ipc_server {
@@ -14,7 +15,7 @@ namespace named_mojo_ipc_server {
 // it resolves to the same channel no matter which working directory you are
 // running the binary from.
 mojo::NamedPlatformChannel::ServerName
-WorkingDirectoryIndependentServerNameFromUTF8(base::StringPiece name);
+WorkingDirectoryIndependentServerNameFromUTF8(std::string_view name);
 
 }  // namespace named_mojo_ipc_server
 

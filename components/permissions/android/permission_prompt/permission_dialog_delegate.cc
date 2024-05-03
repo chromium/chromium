@@ -4,6 +4,8 @@
 
 #include "components/permissions/android/permission_prompt/permission_dialog_delegate.h"
 
+#include <string_view>
+
 #include "base/android/jni_array.h"
 #include "base/android/jni_string.h"
 #include "components/content_settings/core/common/content_settings_types.h"
@@ -63,7 +65,7 @@ void PermissionDialogJavaDelegate::CreateJavaDelegate(
     negativeButtonText = ConvertUTF16ToJavaString(
         env, l10n_util::GetStringUTF16(IDS_PERMISSION_DENY));
     positiveEphemeralButtonText =
-        ConvertUTF16ToJavaString(env, base::StringPiece16());
+        ConvertUTF16ToJavaString(env, std::u16string_view());
   }
 
   std::vector<int> content_settings_types;

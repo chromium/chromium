@@ -4,6 +4,8 @@
 
 #include "components/openscreen_platform/message_port_tls_connection.h"
 
+#include <string_view>
+
 #include "third_party/openscreen/src/platform/api/task_runner.h"
 #include "third_party/openscreen/src/platform/base/error.h"
 
@@ -27,7 +29,7 @@ void MessagePortTlsConnection::SetClient(TlsConnection::Client* client) {
 
 bool MessagePortTlsConnection::Send(const void* data, size_t len) {
   return message_port_->PostMessage(
-      base::StringPiece(static_cast<const char*>(data), len));
+      std::string_view(static_cast<const char*>(data), len));
 }
 
 openscreen::IPEndpoint MessagePortTlsConnection::GetRemoteEndpoint() const {
@@ -35,7 +37,7 @@ openscreen::IPEndpoint MessagePortTlsConnection::GetRemoteEndpoint() const {
 }
 
 bool MessagePortTlsConnection::OnMessage(
-    base::StringPiece message,
+    std::string_view message,
     std::vector<std::unique_ptr<cast_api_bindings::MessagePort>> ports) {
   DCHECK(ports.empty());
 
