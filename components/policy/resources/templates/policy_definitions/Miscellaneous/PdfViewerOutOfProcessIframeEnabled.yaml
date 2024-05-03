@@ -11,7 +11,7 @@ desc: |-
 example_value: true
 features:
   dynamic_refresh: false
-  per_profile: true
+  per_profile: false
 future_on:
 - chrome_os
 items:
