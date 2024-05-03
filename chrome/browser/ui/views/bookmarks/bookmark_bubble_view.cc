@@ -429,9 +429,7 @@ void BookmarkBubbleView::ShowBubble(
                               base::Unretained(bubble_delegate)),
           ui::DialogModel::Button::Params()
               .SetLabel(secondary_button_label)
-              .SetStyle(features::IsChromeRefresh2023()
-                            ? ui::ButtonStyle::kTonal
-                            : ui::ButtonStyle::kDefault)
+              .SetStyle(ui::ButtonStyle::kTonal)
               .AddAccelerator(ui::Accelerator(ui::VKEY_R, ui::EF_ALT_DOWN))
               .SetId(kBookmarkSecondaryButtonId));
 

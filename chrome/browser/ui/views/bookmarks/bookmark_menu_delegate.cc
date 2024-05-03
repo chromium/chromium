@@ -182,10 +182,7 @@ void BookmarkMenuDelegate::Init(views::MenuDelegate* real_delegate,
         !parent->GetSubmenu()->GetMenuItems().empty()) {
       parent->AppendSeparator();
       // Add a "Bookmarks" title.
-      if (features::IsChromeRefresh2023()) {
-        parent->AppendTitle(
-            l10n_util::GetStringUTF16(IDS_BOOKMARKS_LIST_TITLE));
-      }
+      parent->AppendTitle(l10n_util::GetStringUTF16(IDS_BOOKMARKS_LIST_TITLE));
     }
 
     if (show_managed)

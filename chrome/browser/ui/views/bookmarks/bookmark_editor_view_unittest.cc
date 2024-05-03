@@ -581,14 +581,11 @@ TEST_F(BookmarkEditorViewTest, ConcurrentDeleteDuringConfirmationDialog) {
   EXPECT_EQ(nullptr, GetNode("f11a"));
 }
 
+// TODO(crbug.com/41494057): Fix and re-enable or remove if no longer relevant
+// for ChromeRefresh2023.
 // Add enough new folders to scroll to the bottom of the scroll view. Verify
 // that the editor at the end can still be fully visible.
-TEST_F(BookmarkEditorViewTest, EditorFullyShown) {
-  // TODO (crbug/1521085): Fix and re-enable or remove if no longer relevant for
-  //                       ChromeRefresh2023.
-  if (features::IsChromeRefresh2023()) {
-    GTEST_SKIP();
-  }
+TEST_F(BookmarkEditorViewTest, DISABLED_EditorFullyShown) {
   CreateEditor(profile_.get(), nullptr,
                BookmarkEditor::EditDetails::EditNode(GetNode("oa")),
                BookmarkEditorView::SHOW_TREE);
