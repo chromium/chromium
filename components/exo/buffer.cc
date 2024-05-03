@@ -795,7 +795,7 @@ bool Buffer::ProduceTransferableResource(
         context_provider, gpu_memory_buffer_.get(), &gpu_memory_buffer_handle_,
         buffer_format_, size_, color_space, query_type_,
         wait_for_release_delay_, is_overlay_candidate_,
-        resource->mailbox_holder.sync_token);
+        resource->mutable_sync_token());
   }
   Texture* contents_texture = contents_texture_.get();
 
@@ -848,9 +848,8 @@ bool Buffer::ProduceTransferableResource(
     }
     uint32_t texture_target =
         contents_texture->shared_image()->GetTextureTarget(GetFormat());
-    resource->mailbox_holder =
-        gpu::MailboxHolder(contents_texture->mailbox(),
-                           resource->mailbox_holder.sync_token, texture_target);
+    resource->mailbox_holder = gpu::MailboxHolder(
+        contents_texture->mailbox(), resource->sync_token(), texture_target);
     resource->is_overlay_candidate = is_overlay_candidate_;
     resource->format = GetSharedImageFormat(buffer_format_);
 
@@ -877,7 +876,7 @@ bool Buffer::ProduceTransferableResource(
   if (!texture_) {
     texture_ =
         std::make_unique<Texture>(context_provider, GetSize(), color_space,
-                                  resource->mailbox_holder.sync_token);
+                                  resource->mutable_sync_token());
   }
   Texture* texture = texture_.get();
 

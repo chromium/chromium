@@ -147,6 +147,7 @@ struct VIZ_COMMON_EXPORT TransferableResource {
 
   const gpu::Mailbox& mailbox() const { return mailbox_holder.mailbox; }
   const gpu::SyncToken& sync_token() const { return mailbox_holder.sync_token; }
+  gpu::SyncToken& mutable_sync_token() { return mailbox_holder.sync_token; }
   uint32_t texture_target() const { return mailbox_holder.texture_target; }
 
   // NOTE: This explicitly accesses the mailbox field directly so that we will

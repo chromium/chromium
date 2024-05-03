@@ -396,13 +396,13 @@ void SurfaceTreeHost::SubmitCompositorFrame() {
     // |prev_frame_verified_tokens| has, have that flag set. If that is not done
     // locally here, the comparison of the tokens fails as all fields of each
     // tokens are compared during ::find().
-    auto tmp_sync_token = resource.mailbox_holder.sync_token;
+    auto tmp_sync_token = resource.sync_token();
     tmp_sync_token.SetVerifyFlush();
     if (prev_frame_verified_tokens_.find(tmp_sync_token) !=
         prev_frame_verified_tokens_.end()) {
-      resource.mailbox_holder.sync_token.SetVerifyFlush();
+      resource.mutable_sync_token().SetVerifyFlush();
     }
-    sync_tokens.push_back(resource.mailbox_holder.sync_token.GetData());
+    sync_tokens.push_back(resource.mutable_sync_token().GetData());
   }
   gpu::InterfaceBase* rii = context_provider_->RasterInterface();
   rii->VerifySyncTokensCHROMIUM(sync_tokens.data(), sync_tokens.size());
@@ -410,8 +410,8 @@ void SurfaceTreeHost::SubmitCompositorFrame() {
   prev_frame_verified_tokens_.clear();
   frame.metadata.content_color_usage = gfx::ContentColorUsage::kSRGB;
   for (auto& resource : frame.resource_list) {
-    if (resource.mailbox_holder.sync_token.verified_flush()) {
-      prev_frame_verified_tokens_.insert(resource.mailbox_holder.sync_token);
+    if (resource.sync_token().verified_flush()) {
+      prev_frame_verified_tokens_.insert(resource.sync_token());
     }
     frame.metadata.content_color_usage =
         std::max(frame.metadata.content_color_usage,

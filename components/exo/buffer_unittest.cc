@@ -47,7 +47,7 @@ class BufferTest
 void VerifySyncTokensInCompositorFrame(viz::CompositorFrame* frame) {
   std::vector<GLbyte*> sync_tokens;
   for (auto& resource : frame->resource_list)
-    sync_tokens.push_back(resource.mailbox_holder.sync_token.GetData());
+    sync_tokens.push_back(resource.mutable_sync_token().GetData());
   gpu::raster::RasterInterface* ri =
       aura::Env::GetInstance()
           ->context_factory()
@@ -115,7 +115,7 @@ TEST_P(BufferTest, ReleaseCallback) {
 
   // Release buffer.
   std::vector<viz::ReturnedResource> resources;
-  resources.emplace_back(resource.id, resource.mailbox_holder.sync_token,
+  resources.emplace_back(resource.id, resource.sync_token(),
                          /*release_fence=*/gfx::GpuFenceHandle(),
                          /*count=*/0, /*lost=*/false);
   frame_sink_holder->ReclaimResources(std::move(resources));
@@ -164,7 +164,7 @@ TEST_P(BufferTest, SolidColorReleaseCallback) {
 
   // Release buffer.
   std::vector<viz::ReturnedResource> resources;
-  resources.emplace_back(resource.id, resource.mailbox_holder.sync_token,
+  resources.emplace_back(resource.id, resource.sync_token(),
                          /*release_fence=*/gfx::GpuFenceHandle(),
                          /*count=*/0, /*lost=*/false);
   frame_sink_holder->ReclaimResources(std::move(resources));
@@ -372,7 +372,7 @@ TEST_P(BufferTest, SurfaceTreeHostLastFrame) {
     // Try to release buffer in last frame. This can happen during a resize
     // when frame sink id changes.
     std::vector<viz::ReturnedResource> resources;
-    resources.emplace_back(resource.id, resource.mailbox_holder.sync_token,
+    resources.emplace_back(resource.id, resource.sync_token(),
                            /*release_fence=*/gfx::GpuFenceHandle(),
                            /*count=*/0, /*lost=*/false);
     frame_sink_holder->ReclaimResources(std::move(resources));
