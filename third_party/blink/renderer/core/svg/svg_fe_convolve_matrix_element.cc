@@ -55,7 +55,7 @@ class SVGAnimatedOrder : public SVGAnimatedIntegerOptionalInteger {
                                           svg_names::kOrderAttr,
                                           3) {}
 
-  SVGParsingError AttributeChanged(const String&) override;
+  SVGParsingError AttributeChanged(const AtomicString&) override;
 
  protected:
   static SVGParsingError CheckValue(SVGParsingError parse_status, int value) {
@@ -69,7 +69,7 @@ class SVGAnimatedOrder : public SVGAnimatedIntegerOptionalInteger {
   }
 };
 
-SVGParsingError SVGAnimatedOrder::AttributeChanged(const String& value) {
+SVGParsingError SVGAnimatedOrder::AttributeChanged(const AtomicString& value) {
   SVGParsingError parse_status =
       SVGAnimatedIntegerOptionalInteger::AttributeChanged(value);
   // Check for semantic errors.

@@ -34,7 +34,7 @@
 
 namespace blink {
 
-SVGParsingError SVGAnimatedLength::AttributeChanged(const String& value) {
+SVGParsingError SVGAnimatedLength::AttributeChanged(const AtomicString& value) {
   SVGParsingError parse_status =
       SVGAnimatedProperty<SVGLength>::AttributeChanged(value);
 

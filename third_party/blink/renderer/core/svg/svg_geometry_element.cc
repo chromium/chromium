@@ -49,7 +49,7 @@ class SVGAnimatedPathLength final : public SVGAnimatedNumber {
                           svg_names::kPathLengthAttr,
                           MakeGarbageCollected<SVGNumber>()) {}
 
-  SVGParsingError AttributeChanged(const String& value) override {
+  SVGParsingError AttributeChanged(const AtomicString& value) override {
     SVGParsingError parse_status = SVGAnimatedNumber::AttributeChanged(value);
     if (parse_status == SVGParseStatus::kNoError && BaseValue()->Value() < 0)
       parse_status = SVGParseStatus::kNegativeValue;

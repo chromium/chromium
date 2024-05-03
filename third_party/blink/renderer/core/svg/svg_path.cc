@@ -33,7 +33,10 @@
 #include "third_party/blink/renderer/core/svg/svg_path_byte_stream_source.h"
 #include "third_party/blink/renderer/core/svg/svg_path_utilities.h"
 #include "third_party/blink/renderer/platform/graphics/path.h"
+#include "third_party/blink/renderer/platform/heap/collection_support/heap_hash_map.h"
 #include "third_party/blink/renderer/platform/heap/garbage_collected.h"
+#include "third_party/blink/renderer/platform/heap/persistent.h"
+#include "third_party/blink/renderer/platform/wtf/text/atomic_string_hash.h"
 
 namespace blink {
 
@@ -45,8 +48,7 @@ std::unique_ptr<SVGPathByteStream> BlendPathByteStreams(
     const SVGPathByteStream& from_stream,
     const SVGPathByteStream& to_stream,
     float progress) {
-  std::unique_ptr<SVGPathByteStream> result_stream =
-      std::make_unique<SVGPathByteStream>();
+  auto result_stream = std::make_unique<SVGPathByteStream>();
   SVGPathByteStreamBuilder builder(*result_stream);
   SVGPathByteStreamSource from_source(from_stream);
   SVGPathByteStreamSource to_source(to_stream);
@@ -59,8 +61,7 @@ std::unique_ptr<SVGPathByteStream> AddPathByteStreams(
     const SVGPathByteStream& from_stream,
     const SVGPathByteStream& by_stream,
     unsigned repeat_count = 1) {
-  std::unique_ptr<SVGPathByteStream> result_stream =
-      std::make_unique<SVGPathByteStream>();
+  auto result_stream = std::make_unique<SVGPathByteStream>();
   SVGPathByteStreamBuilder builder(*result_stream);
   SVGPathByteStreamSource from_source(from_stream);
   SVGPathByteStreamSource by_source(by_stream);
@@ -76,6 +77,19 @@ std::unique_ptr<SVGPathByteStream> ConditionallyAddPathByteStreams(
   if (from_stream->IsEmpty() || by_stream.IsEmpty())
     return from_stream;
   return AddPathByteStreams(*from_stream, by_stream, repeat_count);
+}
+
+// Entries in this cache are kept with a WeakMember. They'll be removed from
+// the map if nothing is referencing them - as such this doesn't grow
+// unbounded in size.
+// NOTE: This cache exists for a relatively minor gain in MotionMark. If at any
+// point it becomes burdensome please re-evaluate its existence.
+using CSSPathValueCache =
+    HeapHashMap<AtomicString, WeakMember<const cssvalue::CSSPathValue>>;
+static CSSPathValueCache& GetCSSPathValueCache() {
+  DEFINE_STATIC_LOCAL(Persistent<CSSPathValueCache>, cache,
+                      (MakeGarbageCollected<CSSPathValueCache>()));
+  return *cache;
 }
 
 }  // namespace
@@ -94,18 +108,32 @@ SVGPath* SVGPath::Clone() const {
   return MakeGarbageCollected<SVGPath>(*path_value_);
 }
 
-SVGParsingError SVGPath::SetValueAsString(const String& string) {
-  std::unique_ptr<SVGPathByteStream> byte_stream =
-      std::make_unique<SVGPathByteStream>();
+SVGParsingError SVGPath::SetValueAsString(const AtomicString& string) {
+  // Special-case for "" or a removed attribute (string.IsNull()).
+  if (string.empty()) {
+    path_value_ = CSSPathValue::EmptyPathValue();
+    return SVGParseStatus::kNoError;
+  }
+  CSSPathValueCache& cache = GetCSSPathValueCache();
+  auto it = cache.find(string);
+  if (it != cache.end()) {
+    path_value_ = it->value;
+    return SVGParseStatus::kNoError;
+  }
+
+  auto byte_stream = std::make_unique<SVGPathByteStream>();
   SVGParsingError parse_status =
       BuildByteStreamFromString(string, *byte_stream);
   path_value_ = MakeGarbageCollected<CSSPathValue>(std::move(byte_stream));
+
+  if (parse_status == SVGParseStatus::kNoError) {
+    cache.insert(string, path_value_);
+  }
   return parse_status;
 }
 
 SVGPropertyBase* SVGPath::CloneForAnimation(const String& value) const {
-  std::unique_ptr<SVGPathByteStream> byte_stream =
-      std::make_unique<SVGPathByteStream>();
+  auto byte_stream = std::make_unique<SVGPathByteStream>();
   BuildByteStreamFromString(value, *byte_stream);
   return MakeGarbageCollected<SVGPath>(
       *MakeGarbageCollected<CSSPathValue>(std::move(byte_stream)));
