@@ -179,7 +179,8 @@ export class SettingsSliderV2Element extends SettingsSliderV2ElementBase {
       this.updatePrefValueFromUserAction(this.value);
     }
 
-    // TODO(b/333454006) dispatch "change" event for non-pref usage.
+    this.dispatchEvent(new CustomEvent(
+        'change', {bubbles: true, composed: true, detail: this.value}));
   }
 
   /**

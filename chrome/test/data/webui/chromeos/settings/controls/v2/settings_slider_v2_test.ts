@@ -194,9 +194,9 @@ suite(SettingsSliderV2Element.is, () => {
           assertEquals(128, slider.value);
         });
 
-        test('move slider dispatches pref value change event', async () => {
+        test('slider dispatches pref value change event', async () => {
           slider.ticks = ticks;
-          updateSliderValue(/*hasPref=*/ true, 30);
+          updateSliderValue(/*hasPref=*/ true, /*newValue=*/ 32);
 
           const prefChangeEventPromise =
               eventToPromise('user-action-setting-pref-change', window);
@@ -211,6 +211,19 @@ suite(SettingsSliderV2Element.is, () => {
           assertEquals(newValue, event.detail.value);
         });
       }
+
+      test('slider dispatches a "change" event', async () => {
+        slider.ticks = ticks;
+        updateSliderValue(hasPref, /*newValue=*/ 32);
+
+        const changeEventPromise = eventToPromise('change', window);
+        press('ArrowRight');
+        const newValue = 64;
+        assertEquals(newValue, slider.value);
+
+        const event = await changeEventPromise;
+        assertEquals(newValue, event.detail);
+      });
 
       suite('with ticks', () => {
         setup(() => {
