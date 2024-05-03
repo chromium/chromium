@@ -846,11 +846,6 @@ class Browser : public TabStripModelObserver,
   bool ShouldRunUnloadListenerBeforeClosing(content::WebContents* web_contents);
   bool RunUnloadListenerBeforeClosing(content::WebContents* web_contents);
 
-  // Set if the browser is currently participating in a tab dragging process.
-  // This information is used to decide if fast resize will be used during
-  // dragging.
-  void SetIsInTabDragging(bool is_in_tab_dragging);
-
   // Sets the browser's user title. Setting it to an empty string clears it.
   void SetWindowUserTitle(const std::string& user_title);
 
