@@ -57,5 +57,8 @@ crbug.com/1405548 [ Win ] wpt_internal/webgpu/web_platform/reftests/canvas_color
 crbug.com/1405548 [ Win ] wpt_internal/webgpu/web_platform/reftests/canvas_colorspace_rgba16float.https.html [ Failure ]
 crbug.com/1405548 [ Win ] wpt_internal/webgpu/web_platform/reftests/canvas_colorspace_rgba8unorm.https.html [ Failure ]
 
-# Failing on all platforms
-crbug.com/338217304 wpt_internal/webgpu/web_platform/reftests/canvas_display_after_device_lost.https.html [ Failure ]
+# Failing on all platforms, crashing on Windows
+crbug.com/338217304 [ Mac ] wpt_internal/webgpu/web_platform/reftests/canvas_display_after_device_lost.https.html [ Failure ]
+crbug.com/338217304 [ Linux ] wpt_internal/webgpu/web_platform/reftests/canvas_display_after_device_lost.https.html [ Failure ]
+crbug.com/338217304 [ Android ] wpt_internal/webgpu/web_platform/reftests/canvas_display_after_device_lost.https.html [ Failure ]
+crbug.com/338217304 [ Win ] wpt_internal/webgpu/web_platform/reftests/canvas_display_after_device_lost.https.html [ Crash ]
