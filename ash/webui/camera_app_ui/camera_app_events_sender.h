@@ -63,6 +63,7 @@ class CameraAppEventsSender : public camera_app::mojom::EventsSender {
 
  private:
   FRIEND_TEST_ALL_PREFIXES(CameraAppEventsSenderTest, EndSession);
+  FRIEND_TEST_ALL_PREFIXES(CameraAppEventsSenderTest, MemoryUsage);
 
   friend class CameraAppEventsSenderTest;
 

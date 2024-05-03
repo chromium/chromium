@@ -369,14 +369,6 @@ TEST_F(CameraAppEventsSenderTest, EndSession) {
       ash::camera_app::mojom::LaunchType::kAssistant;
   events_sender_->SendStartSessionEvent(std::move(start_session_params));
 
-  // Updates the memory usage event to be brought with the end session event.
-  auto params = ash::camera_app::mojom::MemoryUsageEventParams::New();
-  params->behaviors_mask = static_cast<uint32_t>(
-      ash::camera_app::mojom::UserBehavior::kRecordTimelapseVideo);
-  params->memory_usage = 10000;
-
-  events_sender_->UpdateMemoryUsageEventParams(params.Clone());
-
   // The end session event will be sent when the mojo connection dropped.
   events_sender_->OnMojoDisconnected();
 
@@ -388,6 +380,36 @@ TEST_F(CameraAppEventsSenderTest, EndSession) {
   auto& received_event = events[1];
 
   cros_events::CameraApp_EndSession expected_event;
+  EXPECT_EQ(received_event.event_name(), expected_event.event_name());
+}
+
+TEST_F(CameraAppEventsSenderTest, MemoryUsage) {
+  // To send a memory usage event, a start session event should be sent first.
+  auto start_session_params =
+      ash::camera_app::mojom::StartSessionEventParams::New();
+  start_session_params->launch_type =
+      ash::camera_app::mojom::LaunchType::kAssistant;
+  events_sender_->SendStartSessionEvent(std::move(start_session_params));
+
+  // Updates the memory usage event to be brought with the end session event.
+  auto params = ash::camera_app::mojom::MemoryUsageEventParams::New();
+  params->behaviors_mask = static_cast<uint32_t>(
+      ash::camera_app::mojom::UserBehavior::kRecordTimelapseVideo);
+  params->memory_usage = 10000;
+  events_sender_->UpdateMemoryUsageEventParams(params.Clone());
+
+  // The memory usage event will be sent when the mojo connection dropped.
+  events_sender_->OnMojoDisconnected();
+
+  // [0]: Start Session Event.
+  // [1]: End Session Event.
+  // [2]: Memory usage Event.
+  const std::vector<metrics::structured::Event>& events =
+      metrics_recorder_->GetEvents();
+  ASSERT_EQ(events.size(), 3U);
+  auto& received_event = events[2];
+
+  cros_events::CameraApp_MemoryUsage expected_event;
   expected_event.SetBehaviors(static_cast<int64_t>(params->behaviors_mask))
       .SetMemoryUsage(static_cast<int64_t>(params->memory_usage));
 
@@ -395,10 +417,6 @@ TEST_F(CameraAppEventsSenderTest, EndSession) {
   auto& received_metrics = received_event.metric_values();
   auto& expected_metrics = expected_event.metric_values();
   for (auto it = received_metrics.begin(); it != received_metrics.end(); it++) {
-    // Skip the verification of session duration.
-    if (it->first == "Duration") {
-      continue;
-    }
     EXPECT_EQ(it->second, expected_metrics.at(it->first));
   }
 }

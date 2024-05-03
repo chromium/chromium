@@ -363,14 +363,17 @@ void CameraAppEventsSender::OnMojoDisconnected() {
   if (!start_time_.has_value()) {
     return;
   }
-  if (session_memory_usage_.is_null()) {
-    return;
-  }
   int64_t duration = static_cast<int64_t>(
       (base::TimeTicks::Now() - start_time_.value()).InMilliseconds());
   metrics::structured::StructuredMetricsClient::Record(std::move(
       cros_events::CameraApp_EndSession()
-          .SetDuration(duration)
+          .SetDuration(duration)));
+
+  if (session_memory_usage_.is_null()) {
+    return;
+  }
+  metrics::structured::StructuredMetricsClient::Record(std::move(
+      cros_events::CameraApp_MemoryUsage()
           .SetBehaviors(
               static_cast<int64_t>(session_memory_usage_->behaviors_mask))
           .SetMemoryUsage(

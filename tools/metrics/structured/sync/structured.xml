@@ -1669,6 +1669,12 @@
         The duration of the camera app session in milliseconds.
       </summary>
     </metric>
+  </event>
+
+  <event name="CameraApp.MemoryUsage">
+    <summary>
+      Event recorded the memory usage summary of the camera session sent at the end of a camera session.
+    </summary>
     <metric name="Behaviors" type="int">
       <summary>
         Bit mask indicating the combination of user behavior(s) that the user
