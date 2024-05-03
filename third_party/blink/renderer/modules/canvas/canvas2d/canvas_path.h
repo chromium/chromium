@@ -61,6 +61,8 @@ class MODULES_EXPORT CanvasPath : public GarbageCollectedMixin,
     float radius;
     float start_angle_radians;
     float sweep_angle_radians;
+    // Whether the path was closed.
+    bool closed;
   };
 
   virtual ~CanvasPath() = default;
@@ -144,7 +146,7 @@ class MODULES_EXPORT CanvasPath : public GarbageCollectedMixin,
   // Returns true if the CanvasPath represents an arc. In some cases (such as
   // using constructor that takes a Path) this can return false even though the
   // path is an arc
-  bool IsArc() const { return arc_builder_.HasArc(); }
+  bool IsArc() const { return arc_builder_.HasArcOrIsClosed(); }
 
   // Returns the points that make up the line. Only valid if IsLine() is true.
   const Line& line() const {
@@ -259,21 +261,36 @@ class MODULES_EXPORT CanvasPath : public GarbageCollectedMixin,
 
     ALWAYS_INLINE void Clear() { state_ = State::kEmpty; }
 
+    // Returns true if ArcTo() may be called.
+    bool CanCreateArcTo() const { return state_ == State::kEmpty; }
+
+    bool IsClosed() const { return state_ == State::kClosed; }
+
+    void Close() {
+      // Close() may be called multiple times.
+      DCHECK(state_ == State::kClosed || state_ == State::kArc);
+      state_ = State::kClosed;
+      arc_.closed = true;
+    }
+
     void ArcTo(float x,
                float y,
                float radius,
                float start_angle_radians,
                float sweep_angle_radians) {
-      DCHECK(IsEmpty());
+      DCHECK(CanCreateArcTo());
       state_ = State::kArc;
       arc_.x = x;
       arc_.y = y;
       arc_.radius = radius;
       arc_.start_angle_radians = start_angle_radians;
       arc_.sweep_angle_radians = sweep_angle_radians;
+      arc_.closed = false;
     }
 
-    bool HasArc() const { return state_ == State::kArc; }
+    bool HasArcOrIsClosed() const {
+      return state_ == State::kArc || state_ == State::kClosed;
+    }
 
     gfx::RectF BoundingRect() const;
 
@@ -288,6 +305,7 @@ class MODULES_EXPORT CanvasPath : public GarbageCollectedMixin,
     enum class State {
       kEmpty,
       kArc,     // ArcTo() was called.
+      kClosed,  // Close() was called after ArcTo().
     };
 
     State state_ = State::kEmpty;

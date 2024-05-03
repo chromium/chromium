@@ -209,11 +209,8 @@ void SkiaPaintCanvas::drawArc(const SkRect& oval,
     return;
   }
 
-  raster_flags.flags()->DrawToSk(
-      canvas_, [oval, start_angle_degrees, sweep_angle_degrees](
-                   SkCanvas* c, const SkPaint& p) {
-        c->drawArc(oval, start_angle_degrees, sweep_angle_degrees, false, p);
-      });
+  DrawArcOp op(oval, start_angle_degrees, sweep_angle_degrees, flags);
+  op.RasterWithFlagsImpl(raster_flags.flags(), canvas_);
   FlushAfterDrawIfNeeded();
 }
 
