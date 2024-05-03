@@ -64,7 +64,8 @@ public class CreatorActionDelegateImpl implements FeedActionDelegate {
             int disposition,
             LoadUrlParams params,
             boolean inGroup,
-            Runnable onPageLoaded,
+            int pageId,
+            PageLoadObserver pageLoadObserver,
             Callback<VisitResult> onVisitComplete) {
         // Back-of-card actions
         if (disposition == WindowOpenDisposition.NEW_FOREGROUND_TAB

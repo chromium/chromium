@@ -182,7 +182,7 @@ public class NewTabPageTest {
     @Mock VoiceRecognitionHandler mVoiceRecognitionHandler;
     @Mock FeedReliabilityLogger mFeedReliabilityLogger;
     @Mock private Callback mOnVisitComplete;
-    @Mock private Runnable mOnPageLoaded;
+    @Mock FeedActionDelegate.PageLoadObserver mPageLoadObserver;
     @Mock LogoBridge.Natives mLogoBridgeJniMock;
     @Mock private LogoBridge mLogoBridge;
 
@@ -841,7 +841,8 @@ public class NewTabPageTest {
                             WindowOpenDisposition.CURRENT_TAB,
                             new LoadUrlParams(TEST_URL, PageTransition.AUTO_BOOKMARK),
                             false,
-                            mOnPageLoaded,
+                            0,
+                            mPageLoadObserver,
                             mOnVisitComplete);
                     histogramWatcher.assertExpected(
                             HISTOGRAM_NTP_MODULE_CLICK
@@ -854,7 +855,8 @@ public class NewTabPageTest {
                             WindowOpenDisposition.NEW_BACKGROUND_TAB,
                             new LoadUrlParams(TEST_URL, PageTransition.AUTO_BOOKMARK),
                             false,
-                            mOnPageLoaded,
+                            0,
+                            mPageLoadObserver,
                             mOnVisitComplete);
                     histogramWatcher.assertExpected(
                             HISTOGRAM_NTP_MODULE_CLICK
@@ -867,7 +869,8 @@ public class NewTabPageTest {
                             WindowOpenDisposition.OFF_THE_RECORD,
                             new LoadUrlParams(TEST_URL, PageTransition.AUTO_BOOKMARK),
                             false,
-                            mOnPageLoaded,
+                            0,
+                            mPageLoadObserver,
                             mOnVisitComplete);
                     histogramWatcher.assertExpected(
                             HISTOGRAM_NTP_MODULE_CLICK

@@ -7,32 +7,41 @@ package org.chromium.chrome.browser.feed;
 import android.os.SystemClock;
 import android.view.View;
 
+import androidx.annotation.NonNull;
 import androidx.annotation.Nullable;
 
 import org.chromium.chrome.browser.omnibox.UrlFocusChangeListener;
+import org.chromium.chrome.browser.xsurface.feed.FeedCardOpeningReliabilityLogger;
+import org.chromium.chrome.browser.xsurface.feed.FeedCardOpeningReliabilityLogger.PageLoadError;
 import org.chromium.chrome.browser.xsurface.feed.FeedLaunchReliabilityLogger;
 import org.chromium.chrome.browser.xsurface.feed.FeedUserInteractionReliabilityLogger;
 import org.chromium.chrome.browser.xsurface.feed.FeedUserInteractionReliabilityLogger.ClosedReason;
 import org.chromium.chrome.browser.xsurface.feed.StreamType;
 import org.chromium.components.feed.proto.wire.ReliabilityLoggingEnums.DiscoverLaunchResult;
+import org.chromium.net.NetError;
 
 /** Home for logic related to feed reliability logging. */
 public class FeedReliabilityLogger implements UrlFocusChangeListener {
     private final FeedLaunchReliabilityLogger mLaunchLogger;
     private final @Nullable FeedUserInteractionReliabilityLogger mUserInteractionLogger;
+    private final FeedCardOpeningReliabilityLogger mCardOpeningLogger;
 
     /**
      * Constructor records some info known about the feed UI before mLaunchLogger is available. UI
      * surface type and creation timestamp are logged as part of the feed launch flow.
+     *
      * @param launchLogger FeedLaunchReliabilityLogger for recording events during feed loading.
      * @param userInteractionLogger FeedUserInteractionReliabilityLogger for tracking user
-     *         interaction with feed content.
+     *     interaction with feed content.
+     * @param cardOpeningLogger FeedCardOpeningLogger for report events related to card tapping.
      */
     public FeedReliabilityLogger(
-            FeedLaunchReliabilityLogger launchLogger,
-            @Nullable FeedUserInteractionReliabilityLogger userInteractionLogger) {
+            @NonNull FeedLaunchReliabilityLogger launchLogger,
+            @Nullable FeedUserInteractionReliabilityLogger userInteractionLogger,
+            @NonNull FeedCardOpeningReliabilityLogger cardOpeningLogger) {
         mLaunchLogger = launchLogger;
         mUserInteractionLogger = userInteractionLogger;
+        mCardOpeningLogger = cardOpeningLogger;
     }
 
     /** Call this when the activity is paused. */
@@ -110,9 +119,45 @@ public class FeedReliabilityLogger implements UrlFocusChangeListener {
     }
 
     /** Call this when the card is about to open. */
-    public void onOpenCard() {
+    public void onOpenCard(int pageId, int cardCategory) {
         logLaunchFinishedIfInProgress(
                 DiscoverLaunchResult.CARD_TAPPED, /* userMightComeBack= */ false);
+        mCardOpeningLogger.onCardClicked(pageId, cardCategory);
+    }
+
+    /** Call this when the page starts loading. */
+    public void onPageLoadStarted(int pageId) {
+        mCardOpeningLogger.onPageLoadStarted(pageId);
+    }
+
+    /** Call this when the page finishes loading. */
+    public void onPageLoadFinished(int pageId) {
+        mCardOpeningLogger.onPageLoadFinished(pageId);
+    }
+
+    /** Call this when the page fails to load. */
+    public void onPageLoadFailed(int pageId, @NetError int errorCode) {
+        int pageLoadError;
+        switch (errorCode) {
+            case NetError.ERR_INTERNET_DISCONNECTED:
+                pageLoadError = PageLoadError.INTERNET_DISCONNECTED;
+                break;
+            case NetError.ERR_CONNECTION_TIMED_OUT:
+                pageLoadError = PageLoadError.CONNECTION_TIMED_OUT;
+                break;
+            case NetError.ERR_NAME_RESOLUTION_FAILED:
+                pageLoadError = PageLoadError.NAME_RESOLUTION_FAILED;
+                break;
+            default:
+                pageLoadError = PageLoadError.PAGE_LOAD_ERROR;
+                break;
+        }
+        mCardOpeningLogger.onPageLoadFailed(pageId, pageLoadError);
+    }
+
+    /** Called when the page finishes first paint after non-empty layout. */
+    public void onPageFirstContentfulPaint(int pageId) {
+        mCardOpeningLogger.onPageFirstContentfulPaint(pageId);
     }
 
     /** Call this when the view is barely visible for the first time. */

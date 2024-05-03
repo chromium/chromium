@@ -41,6 +41,7 @@ import org.chromium.components.browser_ui.bottomsheet.BottomSheetController;
 import org.chromium.components.signin.metrics.SigninAccessPoint;
 import org.chromium.content_public.browser.LoadUrlParams;
 import org.chromium.content_public.common.Referrer;
+import org.chromium.net.NetError;
 import org.chromium.ui.base.PageTransition;
 import org.chromium.ui.base.WindowAndroid;
 import org.chromium.ui.mojom.WindowOpenDisposition;
@@ -90,7 +91,8 @@ public class FeedActionDelegateImpl implements FeedActionDelegate {
             int disposition,
             LoadUrlParams params,
             boolean inGroup,
-            Runnable onPageLoaded,
+            int pageId,
+            PageLoadObserver pageLoadObserver,
             Callback<VisitResult> onVisitComplete) {
         params.setReferrer(
                 new Referrer(
@@ -111,7 +113,7 @@ public class FeedActionDelegateImpl implements FeedActionDelegate {
                         || disposition == WindowOpenDisposition.OFF_THE_RECORD);
 
         if (tab != null) {
-            tab.addObserver(new FeedTabNavigationObserver(inNewTab, onPageLoaded));
+            tab.addObserver(new FeedTabNavigationObserver(inNewTab, pageId, pageLoadObserver));
             NavigationRecorder.record(
                     tab,
                     navigationResult -> {
@@ -251,22 +253,32 @@ public class FeedActionDelegateImpl implements FeedActionDelegate {
      * interactions. Calls reportPageLoaded when navigation completes.
      */
     private class FeedTabNavigationObserver extends EmptyTabObserver {
-        private final Runnable mCallback;
+        private final boolean mInNewTab;
+        private final int mPageId;
+        private final PageLoadObserver mPageLoadObserver;
 
-        FeedTabNavigationObserver(boolean inNewTab, Runnable callback) {
-            mCallback = callback;
+        FeedTabNavigationObserver(boolean inNewTab, int pageId, PageLoadObserver pageLoadObserver) {
+            mInNewTab = inNewTab;
+            mPageId = pageId;
+            mPageLoadObserver = pageLoadObserver;
+        }
+
+        @Override
+        public void onPageLoadStarted(Tab tab, GURL url) {
+            mPageLoadObserver.onPageLoadStarted(mPageId);
         }
 
         @Override
         public void onPageLoadFinished(Tab tab, GURL url) {
             // TODO(jianli): onPageLoadFinished is called on successful load, and if a user manually
             // stops the page load. We should only capture successful page loads.
-            mCallback.run();
+            mPageLoadObserver.onPageLoadFinished(mPageId, mInNewTab);
             tab.removeObserver(this);
         }
 
         @Override
-        public void onPageLoadFailed(Tab tab, int errorCode) {
+        public void onPageLoadFailed(Tab tab, @NetError int errorCode) {
+            mPageLoadObserver.onPageLoadFailed(mPageId, errorCode);
             tab.removeObserver(this);
         }
 
@@ -278,6 +290,11 @@ public class FeedActionDelegateImpl implements FeedActionDelegate {
         @Override
         public void onDestroyed(Tab tab) {
             tab.removeObserver(this);
+        }
+
+        @Override
+        public void didFirstVisuallyNonEmptyPaint(Tab tab) {
+            mPageLoadObserver.onPageFirstContentfulPaint(mPageId);
         }
     }
 }

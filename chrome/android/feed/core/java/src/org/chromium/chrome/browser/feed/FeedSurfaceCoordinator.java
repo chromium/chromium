@@ -58,6 +58,7 @@ import org.chromium.chrome.browser.ui.signin.PersonalizedSigninPromoView;
 import org.chromium.chrome.browser.user_education.UserEducationHelper;
 import org.chromium.chrome.browser.xsurface.HybridListRenderer;
 import org.chromium.chrome.browser.xsurface.ProcessScope;
+import org.chromium.chrome.browser.xsurface.feed.FeedCardOpeningReliabilityLogger;
 import org.chromium.chrome.browser.xsurface.feed.FeedLaunchReliabilityLogger;
 import org.chromium.chrome.browser.xsurface.feed.FeedLaunchReliabilityLogger.SurfaceType;
 import org.chromium.chrome.browser.xsurface.feed.FeedSurfaceScope;
@@ -800,7 +801,11 @@ public class FeedSurfaceCoordinator
                         ChromeFeatureList.FEED_USER_INTERACTION_RELIABILITY_REPORT)) {
                     userInteractionLogger = mSurfaceScope.getUserInteractionReliabilityLogger();
                 }
-                mReliabilityLogger = new FeedReliabilityLogger(launchLogger, userInteractionLogger);
+                FeedCardOpeningReliabilityLogger cardOpeningLogger =
+                        mSurfaceScope.getCardOpeningReliabilityLogger();
+                mReliabilityLogger =
+                        new FeedReliabilityLogger(
+                                launchLogger, userInteractionLogger, cardOpeningLogger);
                 launchLogger.logUiStarting(mSurfaceType, mEmbeddingSurfaceCreatedTimeNs);
             }
 

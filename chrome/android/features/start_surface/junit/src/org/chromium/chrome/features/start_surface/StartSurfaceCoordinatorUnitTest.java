@@ -54,7 +54,7 @@ public class StartSurfaceCoordinatorUnitTest {
     private static final String TEST_URL = "https://www.example.com/";
 
     @Mock private Callback mOnVisitComplete;
-    @Mock private Runnable mOnPageLoaded;
+    @Mock private FeedActionDelegate.PageLoadObserver mPageLoadObserver;
 
     @Rule
     public StartSurfaceCoordinatorUnitTestRule mTestRule =
@@ -258,7 +258,8 @@ public class StartSurfaceCoordinatorUnitTest {
                 WindowOpenDisposition.CURRENT_TAB,
                 new LoadUrlParams(TEST_URL, PageTransition.AUTO_BOOKMARK),
                 false,
-                mOnPageLoaded,
+                0,
+                mPageLoadObserver,
                 mOnVisitComplete);
         assertEquals(
                 HISTOGRAM_START_SURFACE_MODULE_CLICK
@@ -273,7 +274,8 @@ public class StartSurfaceCoordinatorUnitTest {
                 WindowOpenDisposition.NEW_BACKGROUND_TAB,
                 new LoadUrlParams(TEST_URL, PageTransition.AUTO_BOOKMARK),
                 false,
-                mOnPageLoaded,
+                0,
+                mPageLoadObserver,
                 mOnVisitComplete);
         assertEquals(
                 HISTOGRAM_START_SURFACE_MODULE_CLICK
@@ -288,7 +290,8 @@ public class StartSurfaceCoordinatorUnitTest {
                 WindowOpenDisposition.OFF_THE_RECORD,
                 new LoadUrlParams(TEST_URL, PageTransition.AUTO_BOOKMARK),
                 false,
-                mOnPageLoaded,
+                0,
+                mPageLoadObserver,
                 mOnVisitComplete);
         assertEquals(
                 HISTOGRAM_START_SURFACE_MODULE_CLICK

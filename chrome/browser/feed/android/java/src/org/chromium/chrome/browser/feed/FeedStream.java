@@ -59,6 +59,7 @@ import org.chromium.components.browser_ui.share.ShareParams;
 import org.chromium.components.feed.proto.FeedUiProto;
 import org.chromium.components.signin.metrics.SigninAccessPoint;
 import org.chromium.content_public.browser.LoadUrlParams;
+import org.chromium.net.NetError;
 import org.chromium.ui.base.PageTransition;
 import org.chromium.ui.base.WindowAndroid;
 import org.chromium.ui.display.DisplayAndroid;
@@ -72,18 +73,21 @@ import java.util.HashMap;
 import java.util.HashSet;
 import java.util.List;
 import java.util.Map;
+import java.util.concurrent.atomic.AtomicInteger;
 
 /**
- * A implementation of a Feed {@link Stream} that is just able to render a vertical stream of
- * cards for Feed v2.
+ * A implementation of a Feed {@link Stream} that is just able to render a vertical stream of cards
+ * for Feed v2.
  */
 public class FeedStream implements Stream {
     private static final String TAG = "FeedStream";
     private static final String SPACER_KEY = "Spacer";
+    private static final AtomicInteger sPageId = new AtomicInteger();
 
     /** Implementation of SurfaceActionsHandler methods. */
     @VisibleForTesting
-    class FeedSurfaceActionsHandler implements SurfaceActionsHandler {
+    class FeedSurfaceActionsHandler
+            implements SurfaceActionsHandler, FeedActionDelegate.PageLoadObserver {
         FeedActionDelegate mActionDelegate;
 
         FeedSurfaceActionsHandler(FeedActionDelegate actionDelegate) {
@@ -300,13 +304,11 @@ public class FeedStream implements Stream {
 
         private void openSuggestionUrl(
                 String url, int disposition, boolean inGroup, OpenUrlOptions openOptions) {
-            boolean inNewTab =
-                    (disposition == WindowOpenDisposition.NEW_BACKGROUND_TAB
-                            || disposition == WindowOpenDisposition.OFF_THE_RECORD);
-
+            int pageId = sPageId.incrementAndGet();
             if (disposition != WindowOpenDisposition.NEW_BACKGROUND_TAB
                     && mReliabilityLogger != null) {
-                mReliabilityLogger.onOpenCard();
+                // TODO(crbug.com/338585368): Add card category.
+                mReliabilityLogger.onOpenCard(pageId, 0);
                 mClosedReason = ClosedReason.OPEN_CARD;
             }
 
@@ -327,7 +329,8 @@ public class FeedStream implements Stream {
                                 disposition,
                                 params,
                                 inGroup,
-                                /* onPageLoaded= */ () -> mBridge.reportPageLoaded(inNewTab),
+                                pageId,
+                                /* pageLoadObserver= */ this,
                                 visitResult ->
                                         mBridge.reportOpenVisitComplete(visitResult.visitTimeMs));
                     });
@@ -354,6 +357,35 @@ public class FeedStream implements Stream {
                     SigninAccessPoint.NTP_FEED_CARD_MENU_PROMO,
                     mBottomSheetController,
                     mWindowAndroid);
+        }
+
+        @Override
+        public void onPageLoadStarted(int pageId) {
+            if (mReliabilityLogger != null) {
+                mReliabilityLogger.onPageLoadStarted(pageId);
+            }
+        }
+
+        @Override
+        public void onPageLoadFinished(int pageId, boolean inNewTab) {
+            mBridge.reportPageLoaded(inNewTab);
+            if (mReliabilityLogger != null) {
+                mReliabilityLogger.onPageLoadFinished(pageId);
+            }
+        }
+
+        @Override
+        public void onPageLoadFailed(int pageId, @NetError int errorCode) {
+            if (mReliabilityLogger != null) {
+                mReliabilityLogger.onPageLoadFailed(pageId, errorCode);
+            }
+        }
+
+        @Override
+        public void onPageFirstContentfulPaint(int pageId) {
+            if (mReliabilityLogger != null) {
+                mReliabilityLogger.onPageFirstContentfulPaint(pageId);
+            }
         }
     }
 
