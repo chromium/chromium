@@ -1116,6 +1116,10 @@ void PasswordFormManager::FillNow() {
       form_fetcher_->GetBestMatches(), form_fetcher_->GetFederatedMatches(),
       form_fetcher_->GetPreferredMatch(), metrics_recorder_.get(),
       WebAuthnCredentialsAvailable());
+  // No logic should be added after the call to `SendFillInformationToRenderer`.
+  // That function can cause this `PasswordFormManager` to be destroyed, it can
+  // happen when there are saved credentials available for filling on this
+  // site, which will lead to use after free.
 }
 
 void PasswordFormManager::OnGeneratedPasswordAccepted(
