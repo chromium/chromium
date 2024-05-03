@@ -9112,6 +9112,50 @@ be describing additional metrics about the same event.
   </metric>
 </event>
 
+<event name="DIPS.ChainBegin" singular="True">
+  <owner>rtarpine@google.com</owner>
+  <owner>dc-komics@google.com</owner>
+  <summary>
+    Emitted after a redirect chain terminates, but for the page visited before
+    the chain began -- the initial URL.
+  </summary>
+  <metric name="ChainId">
+    <summary>
+      A randomly-generated 32-bit id to connect this event with the
+      DIPS.Redirect and DIPS.ChainEnd events emitted for the same redirect
+      chain.
+    </summary>
+  </metric>
+  <metric name="InitialAndFinalSitesSame" enum="BooleanSameSite">
+    <summary>
+      True when the site before the redirect chain is the same as the site at
+      the end of the chain.
+    </summary>
+  </metric>
+</event>
+
+<event name="DIPS.ChainEnd" singular="True">
+  <owner>rtarpine@google.com</owner>
+  <owner>dc-komics@google.com</owner>
+  <summary>
+    Emitted for the page visited at the end of a redirect chain -- the final
+    URL.
+  </summary>
+  <metric name="ChainId">
+    <summary>
+      A randomly-generated 32-bit id to connect this event with the
+      DIPS.ChainBegin and DIPS.Redirect events emitted for the same redirect
+      chain.
+    </summary>
+  </metric>
+  <metric name="InitialAndFinalSitesSame" enum="BooleanSameSite">
+    <summary>
+      True when the site before the redirect chain is the same as the site at
+      the end of the chain.
+    </summary>
+  </metric>
+</event>
+
 <event name="DIPS.Deletion" singular="True">
   <owner>rtarpine@google.com</owner>
   <owner>dc-komics@google.com</owner>
@@ -9145,6 +9189,13 @@ be describing additional metrics about the same event.
     bounce is a non-user-initiated navigation starting soon after the previous
     navigation committed.
   </summary>
+  <metric name="ChainId">
+    <summary>
+      A randomly-generated 32-bit id to connect this event with other
+      DIPS.Redirect events and the DIPS.ChainBegin/ChainEnd events emitted for
+      the same redirect chain.
+    </summary>
+  </metric>
   <metric name="ClientBounceDelay">
     <summary>
       Populated for client redirects only. The time in seconds (capped at 10)

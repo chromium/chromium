@@ -44,6 +44,11 @@
 #include "third_party/blink/public/common/features_generated.h"
 #include "url/gurl.h"
 
+using testing::AllOf;
+using testing::ElementsAre;
+using testing::IsEmpty;
+using testing::Pair;
+
 class DIPSServiceTest : public testing::Test {
  private:
   content::BrowserTaskEnvironment task_environment_;
@@ -285,14 +290,13 @@ TEST_F(DIPSServiceStateRemovalTest,
 
   std::vector<DIPSRedirectInfoPtr> complete_redirects;
   complete_redirects.push_back(std::make_unique<DIPSRedirectInfo>(
-      /*url=*/GURL("http://b.test/"),
+      /*url=*/MakeUrlAndId("http://b.test/"),
       /*redirect_type=*/DIPSRedirectType::kServer,
       /*access_type=*/SiteDataAccessType::kNone,
-      /*source_id=*/ukm::SourceId(),
       /*time=*/Now()));
   auto complete_chain = std::make_unique<DIPSRedirectChainInfo>(
-      /*initial_url=*/GURL("http://a.test/"),
-      /*final_url=*/GURL("http://c.test/"),
+      /*initial_url=*/MakeUrlAndId("http://a.test/"),
+      /*final_url=*/MakeUrlAndId("http://c.test/"),
       /*length=*/1, /*is_partial_chain=*/false);
 
   GetService()->HandleRedirectChain(
@@ -311,14 +315,13 @@ TEST_F(DIPSServiceStateRemovalTest,
 
   std::vector<DIPSRedirectInfoPtr> partial_redirects;
   partial_redirects.push_back(std::make_unique<DIPSRedirectInfo>(
-      /*url=*/GURL("http://b.test/"),
+      /*url=*/MakeUrlAndId("http://b.test/"),
       /*redirect_type=*/DIPSRedirectType::kServer,
       /*access_type=*/SiteDataAccessType::kNone,
-      /*source_id=*/ukm::SourceId(),
       /*time=*/Now()));
   auto partial_chain = std::make_unique<DIPSRedirectChainInfo>(
-      /*initial_url=*/GURL("http://a.test/"),
-      /*final_url=*/GURL("http://c.test/"),
+      /*initial_url=*/MakeUrlAndId("http://a.test/"),
+      /*final_url=*/MakeUrlAndId("http://c.test/"),
       /*length=*/1, /*is_partial_chain=*/true);
 
   GetService()->HandleRedirectChain(
@@ -991,4 +994,195 @@ TEST_F(DIPSServiceHistogramTest, Deletion_Enforced) {
   histograms().ExpectUniqueSample(kUmaHistogramDeletionPrefix + kBlock3PC,
                                   DIPSDeletionAction::kEnforced, 1);
   EXPECT_TRUE(GetDIPSState(GetService(), url).has_value());
+}
+
+MATCHER_P(HasSourceId, id, "") {
+  *result_listener << "where the source id is " << arg.source_id;
+  return arg.source_id == id;
+}
+
+MATCHER_P(HasMetrics, matcher, "") {
+  return ExplainMatchResult(matcher, arg.metrics, result_listener);
+}
+
+using DIPSServiceUkmTest = DIPSServiceTest;
+
+TEST_F(DIPSServiceUkmTest, BothChainBeginAndChainEnd) {
+  ukm::TestAutoSetUkmRecorder ukm_recorder;
+  TestingProfile profile;
+  DIPSService* service = DIPSService::Get(&profile);
+
+  UrlAndSourceId initial_url = MakeUrlAndId("http://a.test/");
+  UrlAndSourceId redirect_url1 = MakeUrlAndId("http://b.test/");
+  UrlAndSourceId redirect_url2 = MakeUrlAndId("http://c.test/first");
+  UrlAndSourceId final_url = MakeUrlAndId("http://c.test/second");
+
+  RedirectChainObserver observer(service, final_url.url);
+  std::vector<DIPSRedirectInfoPtr> redirects;
+  redirects.push_back(std::make_unique<DIPSRedirectInfo>(
+      redirect_url1,
+      /*redirect_type=*/DIPSRedirectType::kServer,
+      /*access_type=*/SiteDataAccessType::kNone,
+      /*time=*/base::Time::Now()));
+  redirects.push_back(std::make_unique<DIPSRedirectInfo>(
+      redirect_url2,
+      /*redirect_type=*/DIPSRedirectType::kServer,
+      /*access_type=*/SiteDataAccessType::kNone,
+      /*time=*/base::Time::Now()));
+  DIPSRedirectChainInfoPtr chain = std::make_unique<DIPSRedirectChainInfo>(
+      initial_url, final_url,
+      /*length=*/2, /*is_partial_chain=*/false);
+  const int32_t chain_id = chain->chain_id;
+  service->HandleRedirectChain(std::move(redirects), std::move(chain),
+                               base::DoNothing());
+  observer.Wait();
+
+  EXPECT_THAT(ukm_recorder.GetEntries("DIPS.ChainBegin",
+                                      {"ChainId", "InitialAndFinalSitesSame"}),
+              ElementsAre(AllOf(HasSourceId(initial_url.source_id),
+                                HasMetrics(ElementsAre(
+                                    Pair("ChainId", chain_id),
+                                    Pair("InitialAndFinalSitesSame", 0))))));
+
+  EXPECT_THAT(
+      ukm_recorder.GetEntries("DIPS.Redirect",
+                              {"ChainId", "InitialAndFinalSitesSame"}),
+      ElementsAre(
+          AllOf(HasSourceId(redirect_url1.source_id),
+                HasMetrics(ElementsAre(Pair("ChainId", chain_id),
+                                       Pair("InitialAndFinalSitesSame", 0)))),
+          AllOf(HasSourceId(redirect_url2.source_id),
+                HasMetrics(ElementsAre(Pair("ChainId", chain_id),
+                                       Pair("InitialAndFinalSitesSame", 0))))));
+
+  EXPECT_THAT(ukm_recorder.GetEntries("DIPS.ChainEnd",
+                                      {"ChainId", "InitialAndFinalSitesSame"}),
+              ElementsAre(AllOf(HasSourceId(final_url.source_id),
+                                HasMetrics(ElementsAre(
+                                    Pair("ChainId", chain_id),
+                                    Pair("InitialAndFinalSitesSame", 0))))));
+}
+
+TEST_F(DIPSServiceUkmTest, InitialAndFinalSitesSame_True) {
+  ukm::TestAutoSetUkmRecorder ukm_recorder;
+  TestingProfile profile;
+  DIPSService* service = DIPSService::Get(&profile);
+
+  UrlAndSourceId initial_url = MakeUrlAndId("http://a.test/");
+  UrlAndSourceId redirect_url = MakeUrlAndId("http://b.test/");
+  UrlAndSourceId final_url = MakeUrlAndId("http://a.test/different-path");
+
+  RedirectChainObserver observer(service, final_url.url);
+  std::vector<DIPSRedirectInfoPtr> redirects;
+  redirects.push_back(std::make_unique<DIPSRedirectInfo>(
+      redirect_url,
+      /*redirect_type=*/DIPSRedirectType::kServer,
+      /*access_type=*/SiteDataAccessType::kNone,
+      /*time=*/base::Time::Now()));
+  DIPSRedirectChainInfoPtr chain = std::make_unique<DIPSRedirectChainInfo>(
+      initial_url, final_url,
+      /*length=*/1, /*is_partial_chain=*/false);
+  service->HandleRedirectChain(std::move(redirects), std::move(chain),
+                               base::DoNothing());
+  observer.Wait();
+
+  EXPECT_THAT(
+      ukm_recorder.GetEntries("DIPS.ChainBegin", {"InitialAndFinalSitesSame"}),
+      ElementsAre(
+          AllOf(HasSourceId(initial_url.source_id),
+                HasMetrics(ElementsAre(Pair("InitialAndFinalSitesSame", 1))))));
+
+  EXPECT_THAT(
+      ukm_recorder.GetEntries("DIPS.Redirect", {"InitialAndFinalSitesSame"}),
+      ElementsAre(
+          AllOf(HasSourceId(redirect_url.source_id),
+                HasMetrics(ElementsAre(Pair("InitialAndFinalSitesSame", 1))))));
+
+  EXPECT_THAT(
+      ukm_recorder.GetEntries("DIPS.ChainEnd", {"InitialAndFinalSitesSame"}),
+      ElementsAre(
+          AllOf(HasSourceId(final_url.source_id),
+                HasMetrics(ElementsAre(Pair("InitialAndFinalSitesSame", 1))))));
+}
+
+TEST_F(DIPSServiceUkmTest, DontReportEmptyChainsAtAll) {
+  ukm::TestAutoSetUkmRecorder ukm_recorder;
+  TestingProfile profile;
+  DIPSService* service = DIPSService::Get(&profile);
+
+  UrlAndSourceId initial_url = MakeUrlAndId("http://a.test/");
+  UrlAndSourceId final_url = MakeUrlAndId("http://b.test/");
+
+  RedirectChainObserver observer(service, final_url.url);
+  DIPSRedirectChainInfoPtr chain = std::make_unique<DIPSRedirectChainInfo>(
+      initial_url, final_url,
+      /*length=*/0, /*is_partial_chain=*/false);
+  service->HandleRedirectChain({}, std::move(chain), base::DoNothing());
+  observer.Wait();
+
+  EXPECT_THAT(ukm_recorder.GetEntries("DIPS.ChainBegin", {}), IsEmpty());
+  EXPECT_THAT(ukm_recorder.GetEntries("DIPS.Redirect", {}), IsEmpty());
+  EXPECT_THAT(ukm_recorder.GetEntries("DIPS.ChainEnd", {}), IsEmpty());
+}
+
+TEST_F(DIPSServiceUkmTest, DontReportChainBeginIfInvalidSourceId) {
+  ukm::TestAutoSetUkmRecorder ukm_recorder;
+  TestingProfile profile;
+  DIPSService* service = DIPSService::Get(&profile);
+
+  UrlAndSourceId redirect_url = MakeUrlAndId("http://b.test/");
+  UrlAndSourceId final_url = MakeUrlAndId("http://c.test/");
+
+  RedirectChainObserver observer(service, final_url.url);
+  std::vector<DIPSRedirectInfoPtr> redirects;
+  redirects.push_back(std::make_unique<DIPSRedirectInfo>(
+      redirect_url,
+      /*redirect_type=*/DIPSRedirectType::kServer,
+      /*access_type=*/SiteDataAccessType::kNone,
+      /*time=*/base::Time::Now()));
+  DIPSRedirectChainInfoPtr chain = std::make_unique<DIPSRedirectChainInfo>(
+      UrlAndSourceId(), final_url,
+      /*length=*/1, /*is_partial_chain=*/false);
+  service->HandleRedirectChain(std::move(redirects), std::move(chain),
+                               base::DoNothing());
+  observer.Wait();
+
+  EXPECT_THAT(ukm_recorder.GetEntries("DIPS.ChainBegin", {}), IsEmpty());
+
+  EXPECT_THAT(ukm_recorder.GetEntries("DIPS.Redirect", {}),
+              ElementsAre(AllOf(HasSourceId(redirect_url.source_id))));
+
+  EXPECT_THAT(ukm_recorder.GetEntries("DIPS.ChainEnd", {}),
+              ElementsAre(AllOf(HasSourceId(final_url.source_id))));
+}
+
+TEST_F(DIPSServiceUkmTest, DontReportChainEndIfInvalidSourceId) {
+  ukm::TestAutoSetUkmRecorder ukm_recorder;
+  TestingProfile profile;
+  DIPSService* service = DIPSService::Get(&profile);
+
+  UrlAndSourceId initial_url = MakeUrlAndId("http://a.test/");
+  UrlAndSourceId redirect_url = MakeUrlAndId("http://b.test/");
+
+  RedirectChainObserver observer(service, GURL());
+  std::vector<DIPSRedirectInfoPtr> redirects;
+  redirects.push_back(std::make_unique<DIPSRedirectInfo>(
+      redirect_url,
+      /*redirect_type=*/DIPSRedirectType::kServer,
+      /*access_type=*/SiteDataAccessType::kNone,
+      /*time=*/base::Time::Now()));
+  DIPSRedirectChainInfoPtr chain = std::make_unique<DIPSRedirectChainInfo>(
+      initial_url, UrlAndSourceId(),
+      /*length=*/1, /*is_partial_chain=*/false);
+  service->HandleRedirectChain(std::move(redirects), std::move(chain),
+                               base::DoNothing());
+  observer.Wait();
+
+  EXPECT_THAT(ukm_recorder.GetEntries("DIPS.ChainBegin", {}),
+              ElementsAre(AllOf(HasSourceId(initial_url.source_id))));
+
+  EXPECT_THAT(ukm_recorder.GetEntries("DIPS.Redirect", {}),
+              ElementsAre(AllOf(HasSourceId(redirect_url.source_id))));
+
+  EXPECT_THAT(ukm_recorder.GetEntries("DIPS.ChainEnd", {}), IsEmpty());
 }

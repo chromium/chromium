@@ -298,4 +298,7 @@ class OpenedWindowObserver : public content::WebContentsObserver {
 // activation.
 void SimulateMouseClickAndWait(content::WebContents*);
 
+// Make a UrlAndSourceId with a randomly-generated UKM source id.
+UrlAndSourceId MakeUrlAndId(std::string_view url);
+
 #endif  // CHROME_BROWSER_DIPS_DIPS_TEST_UTILS_H_

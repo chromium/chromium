@@ -75,7 +75,7 @@ void RedirectHeuristicTabHelper::MaybeRecordRedirectHeuristic(
   }
   size_t third_party_site_index = third_party_site_info->first;
   ukm::SourceId third_party_source_id =
-      third_party_site_info->second->source_id;
+      third_party_site_info->second->url.source_id;
   bool is_current_interaction =
       detector_->CommittedRedirectContext().SiteHadUserActivation(
           third_party_site);

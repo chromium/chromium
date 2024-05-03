@@ -49,6 +49,7 @@
 #include "net/cookies/cookie_setting_override.h"
 #include "services/metrics/public/cpp/ukm_builders.h"
 #include "services/metrics/public/cpp/ukm_recorder.h"
+#include "services/metrics/public/cpp/ukm_source_id.h"
 #include "services/network/public/mojom/clear_data_filter.mojom.h"
 #include "url/origin.h"
 
@@ -384,6 +385,8 @@ void DIPSService::HandleRedirectChain(
     std::vector<DIPSRedirectInfoPtr> redirects,
     DIPSRedirectChainInfoPtr chain,
     base::RepeatingCallback<void(const GURL&)> content_settings_callback) {
+  DCHECK_LE(redirects.size(), chain->length);
+
   if (redirects.empty()) {
     DCHECK(!chain->is_partial_chain);
     for (auto& observer : observers_) {
@@ -392,9 +395,25 @@ void DIPSService::HandleRedirectChain(
     return;
   }
 
+  if (base::FeatureList::IsEnabled(kDipsUkm)) {
+    if (chain->initial_url.source_id != ukm::kInvalidSourceId) {
+      ukm::builders::DIPS_ChainBegin(chain->initial_url.source_id)
+          .SetChainId(chain->chain_id)
+          .SetInitialAndFinalSitesSame(chain->initial_and_final_sites_same)
+          .Record(ukm::UkmRecorder::Get());
+    }
+
+    if (chain->final_url.source_id != ukm::kInvalidSourceId) {
+      ukm::builders::DIPS_ChainEnd(chain->final_url.source_id)
+          .SetChainId(chain->chain_id)
+          .SetInitialAndFinalSitesSame(chain->initial_and_final_sites_same)
+          .Record(ukm::UkmRecorder::Get());
+    }
+  }
+
   chain->cookie_mode = GetCookieMode();
   // Copy the URL out before |redirects| is moved, to avoid use-after-move.
-  GURL url = redirects[0]->url;
+  GURL url = redirects[0]->url.url;
   storage_.AsyncCall(&DIPSStorage::Read)
       .WithArgs(url)
       .Then(base::BindOnce(&DIPSService::GotState, weak_factory_.GetWeakPtr(),
@@ -421,7 +440,17 @@ void DIPSService::GotState(
 
   DIPSRedirectInfo* redirect = redirects[index].get();
   // If there's any user interaction recorded in the DIPS DB, that's engagement.
+  DCHECK(!redirect->has_interaction.has_value());
   redirect->has_interaction = url_state.user_interaction_times().has_value();
+  DCHECK(!redirect->chain_id.has_value());
+  redirect->chain_id = chain->chain_id;
+  DCHECK(!redirect->chain_index.has_value());
+  // If the chain was too long, some redirects may have been trimmed already,
+  // which would make `index` not the "true" index of the redirect in the whole
+  // chain. `chain->length` is accurate though. `chain->length -
+  // redirects.size()` is then the number of trimmed redirects; so add that to
+  // `index` to get the "true" index to report in our metrics.
+  redirect->chain_index = chain->length - redirects.size() + index;
   HandleRedirect(
       *redirect, *chain,
       base::BindRepeating(&DIPSService::RecordBounce, base::Unretained(this)),
@@ -438,7 +467,7 @@ void DIPSService::GotState(
   }
 
   // Copy the URL out before `redirects` is moved, to avoid use-after-move.
-  GURL url = redirects[index + 1]->url;
+  GURL url = redirects[index + 1]->url.url;
   storage_.AsyncCall(&DIPSStorage::Read)
       .WithArgs(url)
       .Then(base::BindOnce(&DIPSService::GotState, weak_factory_.GetWeakPtr(),
@@ -517,17 +546,17 @@ void DIPSService::HandleRedirect(
     base::RepeatingCallback<void(const GURL&)> content_settings_callback) {
   bool initial_site_same = (redirect.site == chain.initial_site);
   bool final_site_same = (redirect.site == chain.final_site);
-  DCHECK_LT(redirect.chain_index, chain.length);
+  DCHECK_LT(redirect.chain_index.value(), chain.length);
 
   if (base::FeatureList::IsEnabled(kDipsUkm)) {
-    ukm::builders::DIPS_Redirect(redirect.source_id)
+    ukm::builders::DIPS_Redirect(redirect.url.source_id)
         .SetSiteEngagementLevel(redirect.has_interaction.value() ? 1 : 0)
         .SetRedirectType(static_cast<int64_t>(redirect.redirect_type))
         .SetCookieAccessType(static_cast<int64_t>(redirect.access_type))
         .SetRedirectAndInitialSiteSame(initial_site_same)
         .SetRedirectAndFinalSiteSame(final_site_same)
         .SetInitialAndFinalSitesSame(chain.initial_and_final_sites_same)
-        .SetRedirectChainIndex(redirect.chain_index)
+        .SetRedirectChainIndex(redirect.chain_index.value())
         .SetRedirectChainLength(chain.length)
         .SetIsPartialRedirectChain(chain.is_partial_chain)
         .SetClientBounceDelay(
@@ -535,6 +564,7 @@ void DIPSService::HandleRedirect(
         .SetHasStickyActivation(redirect.has_sticky_activation)
         .SetWebAuthnAssertionRequestSucceeded(
             redirect.web_authn_assertion_request_succeeded)
+        .SetChainId(redirect.chain_id.value())
         .Record(ukm::UkmRecorder::Get());
   }
 
@@ -546,7 +576,8 @@ void DIPSService::HandleRedirect(
   // Record this bounce in the DIPS database.
   if (redirect.access_type != SiteDataAccessType::kUnknown) {
     record_bounce.Run(
-        redirect.url, chain.initial_url, chain.final_url, redirect.time,
+        redirect.url.url, chain.initial_url.url, chain.final_url.url,
+        redirect.time,
         /*stateful=*/redirect.access_type > SiteDataAccessType::kRead,
         content_settings_callback);
   }

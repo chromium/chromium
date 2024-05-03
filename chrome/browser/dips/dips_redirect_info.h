@@ -14,22 +14,33 @@
 
 #include "chrome/browser/dips/dips_utils.h"
 
+struct UrlAndSourceId {
+  GURL url;
+  ukm::SourceId source_id;
+};
+
 // Properties of a redirect chain common to all the URLs within the chain.
 struct DIPSRedirectChainInfo {
  public:
-  DIPSRedirectChainInfo(const GURL& initial_url,
-                        const GURL& final_url,
+  DIPSRedirectChainInfo(const UrlAndSourceId& initial_url,
+                        const UrlAndSourceId& final_url,
                         size_t length,
                         bool is_partial_chain);
   DIPSRedirectChainInfo(const DIPSRedirectChainInfo&);
   ~DIPSRedirectChainInfo();
 
-  const GURL initial_url;
+  // A randomly-generated ID to associate redirects within the same chain for
+  // metrics reporting.
+  const int32_t chain_id;
+
+  const UrlAndSourceId initial_url;
   // The eTLD+1 of initial_url, cached.
   const std::string initial_site;
-  const GURL final_url;
+
+  const UrlAndSourceId final_url;
   // The eTLD+1 of final_url, cached.
   const std::string final_site;
+
   // initial_site == final_site, cached.
   const bool initial_and_final_sites_same;
   const size_t length;
@@ -46,16 +57,14 @@ struct DIPSRedirectChainInfo {
 struct DIPSRedirectInfo {
  public:
   // Constructor for server-side redirects.
-  DIPSRedirectInfo(const GURL& url,
+  DIPSRedirectInfo(const UrlAndSourceId& url,
                    DIPSRedirectType redirect_type,
                    SiteDataAccessType access_type,
-                   ukm::SourceId source_id,
                    base::Time time);
   // Constructor for client-side redirects.
-  DIPSRedirectInfo(const GURL& url,
+  DIPSRedirectInfo(const UrlAndSourceId& url,
                    DIPSRedirectType redirect_type,
                    SiteDataAccessType access_type,
-                   ukm::SourceId source_id,
                    base::Time time,
                    base::TimeDelta client_bounce_delay,
                    bool has_sticky_activation,
@@ -65,18 +74,19 @@ struct DIPSRedirectInfo {
 
   // These properties are required for all redirects:
 
-  const GURL url;
+  const UrlAndSourceId url;
   const std::string site;  // the cached result of GetSiteForDIPS(url)
   const DIPSRedirectType redirect_type;
   SiteDataAccessType
       access_type;  // may be updated by late cookie notifications
-  const ukm::SourceId source_id;
   const base::Time time;
 
   // These properties aren't known at the time of creation, and are filled in
   // later:
   std::optional<bool> has_interaction;
-  size_t chain_index = 0u;
+  std::optional<size_t> chain_index;
+  // See DIPSRedirectChainInfo::chain_id.
+  std::optional<int32_t> chain_id;
 
   // The following properties are only applicable for client-side redirects:
 
