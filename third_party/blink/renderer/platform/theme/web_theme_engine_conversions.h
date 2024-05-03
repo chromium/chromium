@@ -14,9 +14,6 @@ namespace blink {
 PLATFORM_EXPORT ui::NativeTheme::Part NativeThemePart(
     WebThemeEngine::Part part);
 
-PLATFORM_EXPORT ui::NativeTheme::ScrollbarOverlayColorTheme
-NativeThemeScrollbarOverlayColorTheme(WebScrollbarOverlayColorTheme theme);
-
 PLATFORM_EXPORT ui::NativeTheme::State NativeThemeState(
     WebThemeEngine::State state);
 

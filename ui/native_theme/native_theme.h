@@ -295,8 +295,6 @@ class NATIVE_THEME_EXPORT NativeTheme {
 
   struct ScrollbarThumbExtraParams {
     bool is_hovering = false;
-    ScrollbarOverlayColorTheme scrollbar_theme =
-        ScrollbarOverlayColorTheme::kDefault;
     // This allows clients to directly override the color values to support
     // element-specific web platform CSS.
     std::optional<SkColor> thumb_color;

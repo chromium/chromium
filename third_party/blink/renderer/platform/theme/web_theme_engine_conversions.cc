@@ -53,18 +53,6 @@ ui::NativeTheme::Part NativeThemePart(WebThemeEngine::Part part) {
   }
 }
 
-ui::NativeTheme::ScrollbarOverlayColorTheme
-NativeThemeScrollbarOverlayColorTheme(WebScrollbarOverlayColorTheme theme) {
-  switch (theme) {
-    case WebScrollbarOverlayColorTheme::kWebScrollbarOverlayColorThemeLight:
-      return ui::NativeTheme::ScrollbarOverlayColorTheme::kLight;
-    case WebScrollbarOverlayColorTheme::kWebScrollbarOverlayColorThemeDark:
-      return ui::NativeTheme::ScrollbarOverlayColorTheme::kDark;
-    default:
-      return ui::NativeTheme::ScrollbarOverlayColorTheme::kDefault;
-  }
-}
-
 ui::NativeTheme::State NativeThemeState(WebThemeEngine::State state) {
   switch (state) {
     case WebThemeEngine::kStateDisabled:

@@ -44,28 +44,12 @@ constexpr RendererColorIdTable kRendererColorIdMap[] = {
      kColorMenuItemBackgroundSelected},
     {RendererColorId::kColorMenuSeparator, kColorMenuSeparator},
     {RendererColorId::kColorOverlayScrollbarFill, kColorOverlayScrollbarFill},
-    {RendererColorId::kColorOverlayScrollbarFillDark,
-     kColorOverlayScrollbarFillDark},
-    {RendererColorId::kColorOverlayScrollbarFillLight,
-     kColorOverlayScrollbarFillLight},
     {RendererColorId::kColorOverlayScrollbarFillHovered,
      kColorOverlayScrollbarFillHovered},
-    {RendererColorId::kColorOverlayScrollbarFillHoveredDark,
-     kColorOverlayScrollbarFillHoveredDark},
-    {RendererColorId::kColorOverlayScrollbarFillHoveredLight,
-     kColorOverlayScrollbarFillHoveredLight},
     {RendererColorId::kColorOverlayScrollbarStroke,
      kColorOverlayScrollbarStroke},
-    {RendererColorId::kColorOverlayScrollbarStrokeDark,
-     kColorOverlayScrollbarStrokeDark},
-    {RendererColorId::kColorOverlayScrollbarStrokeLight,
-     kColorOverlayScrollbarStrokeLight},
     {RendererColorId::kColorOverlayScrollbarStrokeHovered,
      kColorOverlayScrollbarStrokeHovered},
-    {RendererColorId::kColorOverlayScrollbarStrokeHoveredDark,
-     kColorOverlayScrollbarStrokeHoveredDark},
-    {RendererColorId::kColorOverlayScrollbarStrokeHoveredLight,
-     kColorOverlayScrollbarStrokeHoveredLight},
     {RendererColorId::kColorWebNativeControlAccent,
      kColorWebNativeControlAccent},
     {RendererColorId::kColorWebNativeControlAccentDisabled,
@@ -760,32 +744,12 @@ void COMPONENT_EXPORT(COLOR)
   mixer[kColorMenuSeparator] = {kColorSeparator};
   mixer[kColorOverlayScrollbarFill] =
       SetAlpha(kColorEndpointForeground, gfx::kGoogleGreyAlpha700);
-  mixer[kColorOverlayScrollbarFillDark] = SetAlpha(
-      GetColorWithMaxContrast(SK_ColorWHITE), gfx::kGoogleGreyAlpha700);
-  mixer[kColorOverlayScrollbarFillLight] = SetAlpha(
-      GetColorWithMaxContrast(SK_ColorBLACK), gfx::kGoogleGreyAlpha700);
   mixer[kColorOverlayScrollbarFillHovered] =
       SetAlpha(kColorEndpointForeground, gfx::kGoogleGreyAlpha800);
-  mixer[kColorOverlayScrollbarFillHoveredDark] = SetAlpha(
-      GetColorWithMaxContrast(SK_ColorWHITE), gfx::kGoogleGreyAlpha800);
-  mixer[kColorOverlayScrollbarFillHoveredLight] = SetAlpha(
-      GetColorWithMaxContrast(SK_ColorBLACK), gfx::kGoogleGreyAlpha800);
   mixer[kColorOverlayScrollbarStroke] =
       SetAlpha(kColorEndpointBackground, gfx::kGoogleGreyAlpha400);
-  mixer[kColorOverlayScrollbarStrokeDark] =
-      SetAlpha(GetColorWithMaxContrast(kColorOverlayScrollbarFillDark),
-               gfx::kGoogleGreyAlpha400);
-  mixer[kColorOverlayScrollbarStrokeLight] =
-      SetAlpha(GetColorWithMaxContrast(kColorOverlayScrollbarFillLight),
-               gfx::kGoogleGreyAlpha400);
   mixer[kColorOverlayScrollbarStrokeHovered] =
       SetAlpha(kColorEndpointBackground, gfx::kGoogleGreyAlpha500);
-  mixer[kColorOverlayScrollbarStrokeHoveredDark] =
-      SetAlpha(GetColorWithMaxContrast(kColorOverlayScrollbarFillHoveredDark),
-               gfx::kGoogleGreyAlpha500);
-  mixer[kColorOverlayScrollbarStrokeHoveredLight] =
-      SetAlpha(GetColorWithMaxContrast(kColorOverlayScrollbarFillHoveredLight),
-               gfx::kGoogleGreyAlpha500);
 }
 
 RendererColorMap COMPONENT_EXPORT(COLOR)

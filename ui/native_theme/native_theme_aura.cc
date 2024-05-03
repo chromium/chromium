@@ -321,35 +321,13 @@ void NativeThemeAura::PaintScrollbarThumb(
 
     const bool hovered = state != kNormal;
 
-    static constexpr auto kFillIdMap =
-        base::MakeFixedFlatMap<ScrollbarOverlayColorTheme, std::array<int, 2>>({
-            {ScrollbarOverlayColorTheme::kDefault,
-             {kColorOverlayScrollbarFill, kColorOverlayScrollbarFillHovered}},
-            {ScrollbarOverlayColorTheme::kLight,
-             {kColorOverlayScrollbarFillLight,
-              kColorOverlayScrollbarFillHoveredLight}},
-            {ScrollbarOverlayColorTheme::kDark,
-             {kColorOverlayScrollbarFillDark,
-              kColorOverlayScrollbarFillHoveredDark}},
-        });
-    static constexpr auto kStrokeIdMap =
-        base::MakeFixedFlatMap<ScrollbarOverlayColorTheme, std::array<int, 2>>({
-            {ScrollbarOverlayColorTheme::kDefault,
-             {kColorOverlayScrollbarStroke,
-              kColorOverlayScrollbarStrokeHovered}},
-            {ScrollbarOverlayColorTheme::kLight,
-             {kColorOverlayScrollbarStrokeLight,
-              kColorOverlayScrollbarStrokeHoveredLight}},
-            {ScrollbarOverlayColorTheme::kDark,
-             {kColorOverlayScrollbarStrokeDark,
-              kColorOverlayScrollbarStrokeHoveredDark}},
-        });
-
     DCHECK(color_provider);
-    default_thumb_color = color_provider->GetColor(
-        kFillIdMap.at(extra_params.scrollbar_theme)[hovered]);
-    const SkColor stroke_color = color_provider->GetColor(
-        kStrokeIdMap.at(extra_params.scrollbar_theme)[hovered]);
+    default_thumb_color =
+        color_provider->GetColor(hovered ? kColorOverlayScrollbarFillHovered
+                                         : kColorOverlayScrollbarFill);
+    const SkColor stroke_color =
+        color_provider->GetColor(hovered ? kColorOverlayScrollbarStrokeHovered
+                                         : kColorOverlayScrollbarStroke);
 
     // In overlay mode, draw a stroke (border).
     constexpr int kStrokeWidth = kOverlayScrollbarStrokeWidth;

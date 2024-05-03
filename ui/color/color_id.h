@@ -395,17 +395,9 @@
   E_CPONLY(kColorNotificationInputForeground) \
   E_CPONLY(kColorNotificationInputPlaceholderForeground) \
   E_CPONLY(kColorOverlayScrollbarFill) \
-  E_CPONLY(kColorOverlayScrollbarFillDark) \
-  E_CPONLY(kColorOverlayScrollbarFillLight) \
   E_CPONLY(kColorOverlayScrollbarFillHovered) \
-  E_CPONLY(kColorOverlayScrollbarFillHoveredDark) \
-  E_CPONLY(kColorOverlayScrollbarFillHoveredLight) \
   E_CPONLY(kColorOverlayScrollbarStroke) \
-  E_CPONLY(kColorOverlayScrollbarStrokeDark) \
-  E_CPONLY(kColorOverlayScrollbarStrokeLight) \
   E_CPONLY(kColorOverlayScrollbarStrokeHovered) \
-  E_CPONLY(kColorOverlayScrollbarStrokeHoveredDark) \
-  E_CPONLY(kColorOverlayScrollbarStrokeHoveredLight) \
   E_CPONLY(kColorProgressBar) \
   E_CPONLY(kColorProgressBarBackground) \
   E_CPONLY(kColorProgressBarPaused) \

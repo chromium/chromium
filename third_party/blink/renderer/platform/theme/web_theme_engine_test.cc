@@ -108,20 +108,4 @@ TEST(WebThemeEngineTest, NativeColorScheme) {
     EXPECT_EQ(NativeColorScheme(blink_inputs[i]), native_theme_outputs[i]);
 }
 
-TEST(WebThemeEngineTest, NativeThemeScrollbarOverlayColorTheme) {
-  std::vector<blink::WebScrollbarOverlayColorTheme> blink_inputs = {
-      blink::WebScrollbarOverlayColorTheme::kWebScrollbarOverlayColorThemeLight,
-      blink::WebScrollbarOverlayColorTheme::kWebScrollbarOverlayColorThemeDark};
-
-  std::vector<ui::NativeTheme::ScrollbarOverlayColorTheme>
-      native_theme_outputs = {
-          ui::NativeTheme::ScrollbarOverlayColorTheme::kLight,
-          ui::NativeTheme::ScrollbarOverlayColorTheme::kDark};
-
-  for (size_t i = 0; i < blink_inputs.size(); ++i) {
-    EXPECT_EQ(NativeThemeScrollbarOverlayColorTheme(blink_inputs[i]),
-              native_theme_outputs[i]);
-  }
-}
-
 }  // namespace blink
