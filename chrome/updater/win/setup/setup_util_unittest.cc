@@ -21,7 +21,7 @@
 namespace updater {
 
 TEST(SetupUtilTest, DeleteLegacyEntriesPerUser) {
-  if (IsSystemInstall(GetTestScope())) {
+  if (IsSystemInstall(GetUpdaterScopeForTesting())) {
     return;
   }
 
@@ -46,66 +46,69 @@ TEST(SetupUtilTest, DeleteLegacyEntriesPerUser) {
 }
 
 TEST(SetupUtilTest, RegisterTypeLibs) {
-  ASSERT_HRESULT_SUCCEEDED(RegisterTypeLibs(GetTestScope(), true));
-  ASSERT_HRESULT_SUCCEEDED(RegisterTypeLibs(GetTestScope(), false));
+  ASSERT_HRESULT_SUCCEEDED(RegisterTypeLibs(GetUpdaterScopeForTesting(), true));
+  ASSERT_HRESULT_SUCCEEDED(
+      RegisterTypeLibs(GetUpdaterScopeForTesting(), false));
 }
 
 class SetupUtilRegisterWakeTaskWorkItemTests : public ::testing::Test {
  public:
   void SetUp() override {
-    task_scheduler_ = TaskScheduler::CreateInstance(GetTestScope());
+    task_scheduler_ =
+        TaskScheduler::CreateInstance(GetUpdaterScopeForTesting());
     ASSERT_TRUE(task_scheduler_);
   }
 
   void TearDown() override {
-    std::wstring task_name(GetTaskName(GetTestScope()));
+    std::wstring task_name(GetTaskName(GetUpdaterScopeForTesting()));
     EXPECT_TRUE(task_name.empty());
     while (!task_name.empty()) {
       EXPECT_TRUE(task_scheduler_->DeleteTask(task_name.c_str()));
-      task_name = GetTaskName(GetTestScope());
+      task_name = GetTaskName(GetUpdaterScopeForTesting());
     }
   }
 
  protected:
   scoped_refptr<TaskScheduler> task_scheduler_;
   const base::CommandLine command_line_ =
-      GetTestProcessCommandLine(GetTestScope(), test::GetTestName());
+      GetTestProcessCommandLine(GetUpdaterScopeForTesting(),
+                                test::GetTestName());
 };
 
 TEST_F(SetupUtilRegisterWakeTaskWorkItemTests, TaskDoesNotExist) {
-  ASSERT_TRUE(GetTaskName(GetTestScope()).empty());
+  ASSERT_TRUE(GetTaskName(GetUpdaterScopeForTesting()).empty());
 
   std::unique_ptr<WorkItemList> install_list(WorkItem::CreateWorkItemList());
   install_list->AddWorkItem(
-      new RegisterWakeTaskWorkItem(command_line_, GetTestScope()));
+      new RegisterWakeTaskWorkItem(command_line_, GetUpdaterScopeForTesting()));
   ASSERT_TRUE(install_list->Do());
-  ASSERT_FALSE(GetTaskName(GetTestScope()).empty());
+  ASSERT_FALSE(GetTaskName(GetUpdaterScopeForTesting()).empty());
 
   install_list->Rollback();
-  ASSERT_TRUE(GetTaskName(GetTestScope()).empty());
+  ASSERT_TRUE(GetTaskName(GetUpdaterScopeForTesting()).empty());
 }
 
 TEST_F(SetupUtilRegisterWakeTaskWorkItemTests, TaskAlreadyExists) {
-  ASSERT_TRUE(GetTaskName(GetTestScope()).empty());
+  ASSERT_TRUE(GetTaskName(GetUpdaterScopeForTesting()).empty());
 
   std::unique_ptr<WorkItemList> install_list(WorkItem::CreateWorkItemList());
   install_list->AddWorkItem(
-      new RegisterWakeTaskWorkItem(command_line_, GetTestScope()));
+      new RegisterWakeTaskWorkItem(command_line_, GetUpdaterScopeForTesting()));
   ASSERT_TRUE(install_list->Do());
-  ASSERT_FALSE(GetTaskName(GetTestScope()).empty());
+  ASSERT_FALSE(GetTaskName(GetUpdaterScopeForTesting()).empty());
 
   std::unique_ptr<WorkItemList> install_list_task_exists(
       WorkItem::CreateWorkItemList());
   install_list_task_exists->AddWorkItem(
-      new RegisterWakeTaskWorkItem(command_line_, GetTestScope()));
+      new RegisterWakeTaskWorkItem(command_line_, GetUpdaterScopeForTesting()));
   ASSERT_TRUE(install_list_task_exists->Do());
-  ASSERT_FALSE(GetTaskName(GetTestScope()).empty());
+  ASSERT_FALSE(GetTaskName(GetUpdaterScopeForTesting()).empty());
 
   install_list_task_exists->Rollback();
-  ASSERT_FALSE(GetTaskName(GetTestScope()).empty());
+  ASSERT_FALSE(GetTaskName(GetUpdaterScopeForTesting()).empty());
 
   install_list->Rollback();
-  ASSERT_TRUE(GetTaskName(GetTestScope()).empty());
+  ASSERT_TRUE(GetTaskName(GetUpdaterScopeForTesting()).empty());
 }
 
 }  // namespace updater

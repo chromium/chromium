@@ -404,7 +404,8 @@ void StopProcmonLogging(const base::FilePath& pml_file) {
 
 EventHolder CreateWaitableEventForTest() {
   NamedObjectAttributes attr = GetNamedObjectAttributes(
-      base::NumberToWString(::GetCurrentProcessId()).c_str(), GetTestScope());
+      base::NumberToWString(::GetCurrentProcessId()).c_str(),
+      GetUpdaterScopeForTesting());
   return {base::WaitableEvent(base::win::ScopedHandle(
               ::CreateEvent(&attr.sa, FALSE, FALSE, attr.name.c_str()))),
           attr.name};
@@ -488,7 +489,8 @@ void SetupMockUpdater(const base::FilePath& mock_updater_path) {
 #if BUILDFLAG(IS_WIN)
   // A valid executable is needed for Windows.
   const base::FilePath test_executable(
-      GetTestProcessCommandLine(GetTestScope(), test::GetTestName())
+      GetTestProcessCommandLine(GetUpdaterScopeForTesting(),
+                                test::GetTestName())
           .GetProgram());
 #else
   // Create an empty temporary file.

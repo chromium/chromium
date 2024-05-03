@@ -107,7 +107,7 @@ TEST(Util, WriteInstallerDataToTempFile) {
 
 TEST(Util, GetCrashDatabasePath) {
   std::optional<base::FilePath> crash_database_path(
-      GetCrashDatabasePath(GetTestScope()));
+      GetCrashDatabasePath(GetUpdaterScopeForTesting()));
   ASSERT_TRUE(crash_database_path);
   EXPECT_EQ(crash_database_path->BaseName().value(),
             FILE_PATH_LITERAL("Crashpad"));
@@ -115,7 +115,7 @@ TEST(Util, GetCrashDatabasePath) {
 
 TEST(Util, GetCrxDiffCacheDirectory) {
   std::optional<base::FilePath> diff_cache_directory(
-      GetCrxDiffCacheDirectory(GetTestScope()));
+      GetCrxDiffCacheDirectory(GetUpdaterScopeForTesting()));
   ASSERT_TRUE(diff_cache_directory);
   EXPECT_EQ(diff_cache_directory->BaseName().value(),
             FILE_PATH_LITERAL("crx_cache"));

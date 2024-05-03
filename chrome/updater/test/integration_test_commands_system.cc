@@ -580,7 +580,7 @@ class IntegrationTestCommandsSystem : public IntegrationTestCommands {
 };
 
 const UpdaterScope IntegrationTestCommandsSystem::updater_scope_ =
-    GetTestScope();
+    GetUpdaterScopeForTesting();
 
 scoped_refptr<IntegrationTestCommands> CreateIntegrationTestCommandsSystem() {
   return base::MakeRefCounted<IntegrationTestCommandsSystem>();

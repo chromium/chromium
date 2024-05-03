@@ -57,13 +57,15 @@ class AppServerTest : public AppServer {
   ~AppServerTest() override = default;
 
  private:
-  UpdaterScope updater_scope() const override { return GetTestScope(); }
+  UpdaterScope updater_scope() const override {
+    return GetUpdaterScopeForTesting();
+  }
 
   void Shutdown0() { Shutdown(0); }
 };
 
 void ClearPrefs() {
-  const UpdaterScope updater_scope = GetTestScope();
+  const UpdaterScope updater_scope = GetUpdaterScopeForTesting();
   for (const std::optional<base::FilePath>& path :
        {GetInstallDirectory(updater_scope),
         GetVersionedInstallDirectory(updater_scope)}) {
@@ -77,7 +79,7 @@ class AppServerTestCase : public testing::Test {
  public:
   void SetUp() override {
 #if BUILDFLAG(IS_MAC)
-    if (GetTestScope() == UpdaterScope::kSystem) {
+    if (GetUpdaterScopeForTesting() == UpdaterScope::kSystem) {
       GTEST_SKIP();
     }
 #endif  // BUILDFLAG(IS_MAC)
@@ -95,10 +97,12 @@ TEST_F(AppServerTestCase, SelfUninstall) {
   command_line.GetProcessCommandLine()->AppendSwitchASCII(
       kServerServiceSwitch, kServerUpdateServiceInternalSwitchValue);
   {
-    scoped_refptr<GlobalPrefs> global_prefs = CreateGlobalPrefs(GetTestScope());
+    scoped_refptr<GlobalPrefs> global_prefs =
+        CreateGlobalPrefs(GetUpdaterScopeForTesting());
     global_prefs->SetActiveVersion("9999999");
     PrefsCommitPendingWrites(global_prefs->GetPrefService());
-    scoped_refptr<LocalPrefs> local_prefs = CreateLocalPrefs(GetTestScope());
+    scoped_refptr<LocalPrefs> local_prefs =
+        CreateLocalPrefs(GetUpdaterScopeForTesting());
     local_prefs->SetQualified(true);
     PrefsCommitPendingWrites(local_prefs->GetPrefService());
   }
@@ -110,12 +114,13 @@ TEST_F(AppServerTestCase, SelfUninstall) {
   EXPECT_CALL(*app, SwapInNewVersion).Times(0);
   EXPECT_CALL(*app, UninstallSelf).Times(1);
   EXPECT_EQ(app->Run(), 0);
-  EXPECT_TRUE(CreateLocalPrefs(GetTestScope())->GetQualified());
+  EXPECT_TRUE(CreateLocalPrefs(GetUpdaterScopeForTesting())->GetQualified());
 }
 
 TEST_F(AppServerTestCase, SelfPromote) {
   {
-    scoped_refptr<LocalPrefs> local_prefs = CreateLocalPrefs(GetTestScope());
+    scoped_refptr<LocalPrefs> local_prefs =
+        CreateLocalPrefs(GetUpdaterScopeForTesting());
     local_prefs->SetQualified(true);
     PrefsCommitPendingWrites(local_prefs->GetPrefService());
   }
@@ -129,7 +134,8 @@ TEST_F(AppServerTestCase, SelfPromote) {
     EXPECT_CALL(*app, UninstallSelf).Times(0);
     EXPECT_EQ(app->Run(), 0);
   }
-  scoped_refptr<GlobalPrefs> global_prefs = CreateGlobalPrefs(GetTestScope());
+  scoped_refptr<GlobalPrefs> global_prefs =
+      CreateGlobalPrefs(GetUpdaterScopeForTesting());
   EXPECT_FALSE(global_prefs->GetSwapping());
   EXPECT_EQ(global_prefs->GetActiveVersion(), kUpdaterVersion);
 }
@@ -144,16 +150,18 @@ TEST_F(AppServerTestCase, InstallAutoPromotes) {
     EXPECT_CALL(*app, SwapInNewVersion).WillOnce(Return(true));
     EXPECT_CALL(*app, UninstallSelf).Times(0);
     EXPECT_EQ(app->Run(), 0);
-    EXPECT_FALSE(CreateLocalPrefs(GetTestScope())->GetQualified());
+    EXPECT_FALSE(CreateLocalPrefs(GetUpdaterScopeForTesting())->GetQualified());
   }
-  scoped_refptr<GlobalPrefs> global_prefs = CreateGlobalPrefs(GetTestScope());
+  scoped_refptr<GlobalPrefs> global_prefs =
+      CreateGlobalPrefs(GetUpdaterScopeForTesting());
   EXPECT_FALSE(global_prefs->GetSwapping());
   EXPECT_EQ(global_prefs->GetActiveVersion(), kUpdaterVersion);
 }
 
 TEST_F(AppServerTestCase, SelfPromoteFails) {
   {
-    scoped_refptr<LocalPrefs> local_prefs = CreateLocalPrefs(GetTestScope());
+    scoped_refptr<LocalPrefs> local_prefs =
+        CreateLocalPrefs(GetUpdaterScopeForTesting());
     local_prefs->SetQualified(true);
     PrefsCommitPendingWrites(local_prefs->GetPrefService());
   }
@@ -166,17 +174,20 @@ TEST_F(AppServerTestCase, SelfPromoteFails) {
     EXPECT_CALL(*app, UninstallSelf).Times(0);
     EXPECT_EQ(app->Run(), 2);
   }
-  scoped_refptr<GlobalPrefs> global_prefs = CreateGlobalPrefs(GetTestScope());
+  scoped_refptr<GlobalPrefs> global_prefs =
+      CreateGlobalPrefs(GetUpdaterScopeForTesting());
   EXPECT_TRUE(global_prefs->GetSwapping());
   EXPECT_EQ(global_prefs->GetActiveVersion(), "0");
 }
 
 TEST_F(AppServerTestCase, ActiveDutyAlready) {
   {
-    scoped_refptr<GlobalPrefs> global_prefs = CreateGlobalPrefs(GetTestScope());
+    scoped_refptr<GlobalPrefs> global_prefs =
+        CreateGlobalPrefs(GetUpdaterScopeForTesting());
     global_prefs->SetActiveVersion(kUpdaterVersion);
     PrefsCommitPendingWrites(global_prefs->GetPrefService());
-    scoped_refptr<LocalPrefs> local_prefs = CreateLocalPrefs(GetTestScope());
+    scoped_refptr<LocalPrefs> local_prefs =
+        CreateLocalPrefs(GetUpdaterScopeForTesting());
     local_prefs->SetQualified(true);
     PrefsCommitPendingWrites(local_prefs->GetPrefService());
   }
@@ -189,18 +200,21 @@ TEST_F(AppServerTestCase, ActiveDutyAlready) {
     EXPECT_CALL(*app, UninstallSelf).Times(0);
     EXPECT_EQ(app->Run(), 0);
   }
-  scoped_refptr<GlobalPrefs> global_prefs = CreateGlobalPrefs(GetTestScope());
+  scoped_refptr<GlobalPrefs> global_prefs =
+      CreateGlobalPrefs(GetUpdaterScopeForTesting());
   EXPECT_FALSE(global_prefs->GetSwapping());
   EXPECT_EQ(global_prefs->GetActiveVersion(), kUpdaterVersion);
 }
 
 TEST_F(AppServerTestCase, StateDirty) {
   {
-    scoped_refptr<GlobalPrefs> global_prefs = CreateGlobalPrefs(GetTestScope());
+    scoped_refptr<GlobalPrefs> global_prefs =
+        CreateGlobalPrefs(GetUpdaterScopeForTesting());
     global_prefs->SetActiveVersion(kUpdaterVersion);
     global_prefs->SetSwapping(true);
     PrefsCommitPendingWrites(global_prefs->GetPrefService());
-    scoped_refptr<LocalPrefs> local_prefs = CreateLocalPrefs(GetTestScope());
+    scoped_refptr<LocalPrefs> local_prefs =
+        CreateLocalPrefs(GetUpdaterScopeForTesting());
     local_prefs->SetQualified(true);
     PrefsCommitPendingWrites(local_prefs->GetPrefService());
   }
@@ -214,18 +228,21 @@ TEST_F(AppServerTestCase, StateDirty) {
     EXPECT_CALL(*app, UninstallSelf).Times(0);
     EXPECT_EQ(app->Run(), 0);
   }
-  scoped_refptr<GlobalPrefs> global_prefs = CreateGlobalPrefs(GetTestScope());
+  scoped_refptr<GlobalPrefs> global_prefs =
+      CreateGlobalPrefs(GetUpdaterScopeForTesting());
   EXPECT_FALSE(global_prefs->GetSwapping());
   EXPECT_EQ(global_prefs->GetActiveVersion(), kUpdaterVersion);
 }
 
 TEST_F(AppServerTestCase, StateDirtySwapFails) {
   {
-    scoped_refptr<GlobalPrefs> global_prefs = CreateGlobalPrefs(GetTestScope());
+    scoped_refptr<GlobalPrefs> global_prefs =
+        CreateGlobalPrefs(GetUpdaterScopeForTesting());
     global_prefs->SetActiveVersion(kUpdaterVersion);
     global_prefs->SetSwapping(true);
     PrefsCommitPendingWrites(global_prefs->GetPrefService());
-    scoped_refptr<LocalPrefs> local_prefs = CreateLocalPrefs(GetTestScope());
+    scoped_refptr<LocalPrefs> local_prefs =
+        CreateLocalPrefs(GetUpdaterScopeForTesting());
     local_prefs->SetQualified(true);
     PrefsCommitPendingWrites(local_prefs->GetPrefService());
   }
@@ -238,7 +255,8 @@ TEST_F(AppServerTestCase, StateDirtySwapFails) {
     EXPECT_CALL(*app, UninstallSelf).Times(0);
     EXPECT_EQ(app->Run(), 2);
   }
-  scoped_refptr<GlobalPrefs> global_prefs = CreateGlobalPrefs(GetTestScope());
+  scoped_refptr<GlobalPrefs> global_prefs =
+      CreateGlobalPrefs(GetUpdaterScopeForTesting());
   EXPECT_TRUE(global_prefs->GetSwapping());
   EXPECT_EQ(global_prefs->GetActiveVersion(), kUpdaterVersion);
 }

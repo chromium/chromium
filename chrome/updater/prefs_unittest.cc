@@ -26,8 +26,8 @@ TEST(PrefsTest, PrefsCommitPendingWrites) {
   base::test::TaskEnvironment task_environment;
   auto pref = std::make_unique<TestingPrefServiceSimple>();
   update_client::RegisterPrefs(pref->registry());
-  auto metadata =
-      base::MakeRefCounted<PersistedData>(GetTestScope(), pref.get(), nullptr);
+  auto metadata = base::MakeRefCounted<PersistedData>(
+      GetUpdaterScopeForTesting(), pref.get(), nullptr);
 
   // Writes something to prefs.
   metadata->SetBrandCode("someappid", "brand");

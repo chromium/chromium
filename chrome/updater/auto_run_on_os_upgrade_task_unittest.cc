@@ -55,12 +55,14 @@ class AutoRunOnOsUpgradeTaskTest : public testing::Test {
     update_client::RegisterPrefs(pref_service_->registry());
     RegisterPersistedDataPrefs(pref_service_->registry());
     persisted_data_ = base::MakeRefCounted<PersistedData>(
-        GetTestScope(), pref_service_.get(), nullptr);
-    test::SetupCmdExe(GetTestScope(), cmd_exe_command_line_,
+        GetUpdaterScopeForTesting(), pref_service_.get(), nullptr);
+    test::SetupCmdExe(GetUpdaterScopeForTesting(), cmd_exe_command_line_,
                       temp_programfiles_dir_);
   }
 
-  void TearDown() override { test::DeleteAppClientKey(GetTestScope(), kAppId); }
+  void TearDown() override {
+    test::DeleteAppClientKey(GetUpdaterScopeForTesting(), kAppId);
+  }
 
   void SetLastOSVersion(const OSVERSIONINFOEX& os_version) {
     EXPECT_TRUE(pref_service_);
@@ -88,15 +90,15 @@ TEST_F(AutoRunOnOsUpgradeTaskTest, RunOnOsUpgradeForApp) {
   SetLastOSVersion(last_os_version);
 
   auto os_upgrade_task = base::MakeRefCounted<AutoRunOnOsUpgradeTask>(
-      GetTestScope(), persisted_data_);
+      GetUpdaterScopeForTesting(), persisted_data_);
   ASSERT_TRUE(os_upgrade_task->HasOSUpgraded());
 
   test::CreateAppCommandOSUpgradeRegistry(
-      GetTestScope(), kAppId, kCmdId1,
+      GetUpdaterScopeForTesting(), kAppId, kCmdId1,
       base::StrCat({cmd_exe_command_line_.GetCommandLineString(), L" ",
                     kCmdLineCreateOSVersionsFile}));
   test::CreateAppCommandOSUpgradeRegistry(
-      GetTestScope(), kAppId, kCmdId2,
+      GetUpdaterScopeForTesting(), kAppId, kCmdId2,
       base::StrCat({cmd_exe_command_line_.GetCommandLineString(), L" ",
                     kCmdLineCreateHardcodedFile}));
 

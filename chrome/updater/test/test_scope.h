@@ -9,7 +9,7 @@ namespace updater {
 
 enum class UpdaterScope;
 
-UpdaterScope GetTestScope();
+UpdaterScope GetUpdaterScopeForTesting();
 
 }  // namespace updater
 

@@ -70,8 +70,8 @@ TEST(UpdateServiceImplTest, TestGetComponentsInOrder) {
   auto pref = std::make_unique<TestingPrefServiceSimple>();
   update_client::RegisterPrefs(pref->registry());
   RegisterPersistedDataPrefs(pref->registry());
-  auto metadata =
-      base::MakeRefCounted<PersistedData>(GetTestScope(), pref.get(), nullptr);
+  auto metadata = base::MakeRefCounted<PersistedData>(
+      GetUpdaterScopeForTesting(), pref.get(), nullptr);
   metadata->SetProductVersion("id1", base::Version("1.2.3.4"));
   metadata->SetProductVersionKey("id1", "pv_key");
   metadata->SetAP("id1", "ap");

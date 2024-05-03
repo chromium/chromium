@@ -367,8 +367,8 @@ TEST_F(ProgressWndTest, LaunchCmdLine) {
                             : test::CreateWaitableEventForTest());
   ASSERT_NE(event_holder.event.handle(), nullptr);
 
-  base::CommandLine test_process_cmd_line =
-      GetTestProcessCommandLine(GetTestScope(), test::GetTestName());
+  base::CommandLine test_process_cmd_line = GetTestProcessCommandLine(
+      GetUpdaterScopeForTesting(), test::GetTestName());
   test_process_cmd_line.AppendSwitchNative(
       IsElevatedWithUACOn() ? kTestEventToSignalIfMediumIntegrity
                             : kTestEventToSignal,

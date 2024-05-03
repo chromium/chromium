@@ -105,7 +105,7 @@ TEST(KSAdminTest, ParseCommandLine_CombinedShortOptions) {
 }
 
 TEST(KSAdminTest, Register) {
-  if (GetTestScope() == UpdaterScope::kSystem) {
+  if (GetUpdaterScopeForTesting() == UpdaterScope::kSystem) {
     return;
   }
   class MockUpdateService final : public UpdateService {

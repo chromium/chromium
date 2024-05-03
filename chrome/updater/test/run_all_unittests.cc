@@ -216,7 +216,7 @@ int main(int argc, char** argv) {
   // Use the {ISOLATED_OUTDIR} as a log destination for the test suite.
   base::TestSuite test_suite(argc, argv);
   updater::test::InitLoggingForUnitTest(base::FilePath([] {
-    switch (updater::GetTestScope()) {
+    switch (updater::GetUpdaterScopeForTesting()) {
       case updater::UpdaterScope::kSystem:
         return FILE_PATH_LITERAL("updater_test_system.log");
       case updater::UpdaterScope::kUser:

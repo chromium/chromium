@@ -140,19 +140,20 @@ TEST(WinUtil, ShellExecuteAndWait) {
   EXPECT_THAT(ShellExecuteAndWait(base::FilePath(L"NonExistent.Exe"), {}, {}),
               base::test::ErrorIs(HRESULT_FROM_WIN32(ERROR_FILE_NOT_FOUND)));
 
-  EXPECT_THAT(ShellExecuteAndWait(
-                  GetTestProcessCommandLine(GetTestScope(), test::GetTestName())
-                      .GetProgram(),
-                  {}, {}),
-              base::test::ValueIs(DWORD{0}));
+  EXPECT_THAT(
+      ShellExecuteAndWait(GetTestProcessCommandLine(GetUpdaterScopeForTesting(),
+                                                    test::GetTestName())
+                              .GetProgram(),
+                          {}, {}),
+      base::test::ValueIs(DWORD{0}));
 }
 
 TEST(WinUtil, RunElevated) {
   if (!::IsUserAnAdmin()) {
     return;
   }
-  const base::CommandLine test_process_cmd_line =
-      GetTestProcessCommandLine(GetTestScope(), test::GetTestName());
+  const base::CommandLine test_process_cmd_line = GetTestProcessCommandLine(
+      GetUpdaterScopeForTesting(), test::GetTestName());
   EXPECT_THAT(RunElevated(test_process_cmd_line.GetProgram(),
                           test_process_cmd_line.GetArgumentsString()),
               base::test::ValueIs(DWORD{0}));
@@ -171,8 +172,8 @@ TEST(WinUtil, RunDeElevated_Exe) {
   test::EventHolder event_holder(CreateEveryoneWaitableEventForTest());
   ASSERT_NE(event_holder.event.handle(), nullptr);
 
-  base::CommandLine test_process_cmd_line =
-      GetTestProcessCommandLine(GetTestScope(), test::GetTestName());
+  base::CommandLine test_process_cmd_line = GetTestProcessCommandLine(
+      GetUpdaterScopeForTesting(), test::GetTestName());
   test_process_cmd_line.AppendSwitchNative(kTestEventToSignalIfMediumIntegrity,
                                            event_holder.name);
   EXPECT_HRESULT_SUCCEEDED(
@@ -193,8 +194,8 @@ TEST(WinUtil, RunDeElevatedCmdLine_Exe) {
                                      : test::CreateWaitableEventForTest());
   ASSERT_NE(event_holder.event.handle(), nullptr);
 
-  base::CommandLine test_process_cmd_line =
-      GetTestProcessCommandLine(GetTestScope(), test::GetTestName());
+  base::CommandLine test_process_cmd_line = GetTestProcessCommandLine(
+      GetUpdaterScopeForTesting(), test::GetTestName());
   test_process_cmd_line.AppendSwitchNative(
       IsElevatedWithUACOn() ? kTestEventToSignalIfMediumIntegrity
                             : kTestEventToSignal,
@@ -348,15 +349,15 @@ TEST(WinUtil, CreateSecureTempDir) {
 TEST(WinUtil, SignalShutdownEvent) {
   {
     const base::ScopedClosureRunner reset_shutdown_event(
-        SignalShutdownEvent(GetTestScope()));
+        SignalShutdownEvent(GetUpdaterScopeForTesting()));
 
     // Expect that the legacy GoogleUpdate shutdown event is signaled.
-    EXPECT_TRUE(IsShutdownEventSignaled(GetTestScope()))
+    EXPECT_TRUE(IsShutdownEventSignaled(GetUpdaterScopeForTesting()))
         << "Unexpected shutdown event not signaled";
   }
 
   // Expect that the legacy GoogleUpdate shutdown event is invalid now.
-  EXPECT_FALSE(IsShutdownEventSignaled(GetTestScope()))
+  EXPECT_FALSE(IsShutdownEventSignaled(GetUpdaterScopeForTesting()))
       << "Unexpected shutdown event signaled";
 }
 
@@ -365,8 +366,8 @@ TEST(WinUtil, StopProcessesUnderPath) {
   ASSERT_TRUE(base::PathService::Get(base::DIR_EXE, &exe_dir));
   exe_dir = exe_dir.AppendASCII(test::GetTestName());
 
-  base::CommandLine command_line =
-      GetTestProcessCommandLine(GetTestScope(), test::GetTestName());
+  base::CommandLine command_line = GetTestProcessCommandLine(
+      GetUpdaterScopeForTesting(), test::GetTestName());
   command_line.AppendSwitchASCII(
       updater::kTestSleepSecondsSwitch,
       base::NumberToString(TestTimeouts::action_timeout().InSeconds() / 4));
@@ -522,17 +523,18 @@ TEST(WinUtil, LogClsidEntries) {
 }
 
 TEST(WinUtil, GetAppAPValue) {
-  std::string ap(GetAppAPValue(GetTestScope(), kTestAppID));
+  std::string ap(GetAppAPValue(GetUpdaterScopeForTesting(), kTestAppID));
   EXPECT_EQ(ap, "");
 
-  base::win::RegKey client_state_key(
-      CreateAppClientStateKey(GetTestScope(), base::ASCIIToWide(kTestAppID)));
+  base::win::RegKey client_state_key(CreateAppClientStateKey(
+      GetUpdaterScopeForTesting(), base::ASCIIToWide(kTestAppID)));
   EXPECT_EQ(client_state_key.WriteValue(kRegValueAP, L"TestAP"), ERROR_SUCCESS);
 
-  ap = GetAppAPValue(GetTestScope(), kTestAppID);
+  ap = GetAppAPValue(GetUpdaterScopeForTesting(), kTestAppID);
   EXPECT_EQ(ap, "TestAP");
 
-  DeleteAppClientStateKey(GetTestScope(), base::ASCIIToWide(kTestAppID));
+  DeleteAppClientStateKey(GetUpdaterScopeForTesting(),
+                          base::ASCIIToWide(kTestAppID));
 }
 
 struct WinUtilGetRegKeyContentsTestCase {

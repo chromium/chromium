@@ -31,8 +31,8 @@ TEST(InstallerTest, Simple) {
   auto pref = std::make_unique<TestingPrefServiceSimple>();
   update_client::RegisterPrefs(pref->registry());
   RegisterPersistedDataPrefs(pref->registry());
-  auto metadata =
-      base::MakeRefCounted<PersistedData>(GetTestScope(), pref.get(), nullptr);
+  auto metadata = base::MakeRefCounted<PersistedData>(
+      GetUpdaterScopeForTesting(), pref.get(), nullptr);
   metadata->SetProductVersion("id", base::Version("1.2.3.4"));
   metadata->SetAP("id", "ap");
   metadata->SetBrandCode("id", "BRND");
@@ -84,8 +84,8 @@ TEST(InstallerTest, LoadFromPath) {
   auto pref = std::make_unique<TestingPrefServiceSimple>();
   update_client::RegisterPrefs(pref->registry());
   RegisterPersistedDataPrefs(pref->registry());
-  auto metadata =
-      base::MakeRefCounted<PersistedData>(GetTestScope(), pref.get(), nullptr);
+  auto metadata = base::MakeRefCounted<PersistedData>(
+      GetUpdaterScopeForTesting(), pref.get(), nullptr);
   metadata->SetProductVersion("id", base::Version("1.2.3.4"));
   metadata->SetProductVersionKey("id", "pv_key");
   metadata->SetProductVersionPath("id", plist_path);
@@ -123,8 +123,8 @@ TEST(InstallerTest, LoadFromPath_PathDoesNotExist) {
   auto pref = std::make_unique<TestingPrefServiceSimple>();
   update_client::RegisterPrefs(pref->registry());
   RegisterPersistedDataPrefs(pref->registry());
-  auto metadata =
-      base::MakeRefCounted<PersistedData>(GetTestScope(), pref.get(), nullptr);
+  auto metadata = base::MakeRefCounted<PersistedData>(
+      GetUpdaterScopeForTesting(), pref.get(), nullptr);
   metadata->SetProductVersion("id", base::Version("1.2.3.4"));
   metadata->SetProductVersionPath(
       "id", base::FilePath(FILE_PATH_LITERAL("nonexistent")));
@@ -171,8 +171,8 @@ TEST(InstallerTest, LoadFromPath_KeysMissing) {
   auto pref = std::make_unique<TestingPrefServiceSimple>();
   update_client::RegisterPrefs(pref->registry());
   RegisterPersistedDataPrefs(pref->registry());
-  auto metadata =
-      base::MakeRefCounted<PersistedData>(GetTestScope(), pref.get(), nullptr);
+  auto metadata = base::MakeRefCounted<PersistedData>(
+      GetUpdaterScopeForTesting(), pref.get(), nullptr);
   metadata->SetProductVersion("id", base::Version("1.2.3.4"));
   metadata->SetProductVersionKey("id", "pv_key");
   metadata->SetAP("id", "ap");

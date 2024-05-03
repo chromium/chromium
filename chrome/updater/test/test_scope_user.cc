@@ -7,7 +7,7 @@
 
 namespace updater {
 
-UpdaterScope GetTestScope() {
+UpdaterScope GetUpdaterScopeForTesting() {
   return UpdaterScope::kUser;
 }
 

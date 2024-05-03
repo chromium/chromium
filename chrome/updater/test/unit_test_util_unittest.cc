@@ -79,9 +79,9 @@ TEST(UnitTestUtil, Processes) {
   // Start two long-lived processes and expect to find them running.
   std::vector<base::Process> long_running;
   long_running.push_back(
-      LongRunningProcess(GetTestScope(), GetTestName(), nullptr));
+      LongRunningProcess(GetUpdaterScopeForTesting(), GetTestName(), nullptr));
   long_running.push_back(
-      LongRunningProcess(GetTestScope(), GetTestName(), nullptr));
+      LongRunningProcess(GetUpdaterScopeForTesting(), GetTestName(), nullptr));
   for (const base::Process& p : long_running) {
     EXPECT_TRUE(p.IsValid());
   }
@@ -161,8 +161,8 @@ TEST(UnitTestUtil, DeleteFileAndEmptyParentDirectories) {
 
 #if BUILDFLAG(IS_WIN)
 TEST(UnitTestUtil, FindProcesses) {
-  base::CommandLine command_line =
-      GetTestProcessCommandLine(GetTestScope(), test::GetTestName());
+  base::CommandLine command_line = GetTestProcessCommandLine(
+      GetUpdaterScopeForTesting(), test::GetTestName());
 
   // Create a unique name for a shared event to be waited for in the test
   // process and signaled in this test.

@@ -97,7 +97,7 @@ class ActivityWinTest : public ::testing::TestWithParam<
         .DeleteKey(low_integrity_key_path_.c_str());
   }
 
-  UpdaterScope GetScope() const { return GetTestScope(); }
+  UpdaterScope GetScope() const { return GetUpdaterScopeForTesting(); }
 
   bool SetUserValue() const { return std::get<0>(GetParam()); }
 

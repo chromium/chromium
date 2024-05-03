@@ -29,12 +29,12 @@
 namespace updater {
 
 TEST(LockTest, LockThenLockSameThread) {
-  std::unique_ptr<ScopedLock> lock =
-      ScopedLock::Create("foobar", GetTestScope(), base::Seconds(0));
+  std::unique_ptr<ScopedLock> lock = ScopedLock::Create(
+      "foobar", GetUpdaterScopeForTesting(), base::Seconds(0));
   EXPECT_TRUE(lock);
 
-  std::unique_ptr<ScopedLock> lock_again =
-      ScopedLock::Create("foobar", GetTestScope(), base::Seconds(0));
+  std::unique_ptr<ScopedLock> lock_again = ScopedLock::Create(
+      "foobar", GetUpdaterScopeForTesting(), base::Seconds(0));
 
 #if BUILDFLAG(IS_WIN)
   EXPECT_TRUE(lock_again);
@@ -46,15 +46,15 @@ TEST(LockTest, LockThenLockSameThread) {
 TEST(LockTest, LockThenTryLockInThreadFail) {
   base::test::TaskEnvironment task_environment;
 
-  std::unique_ptr<ScopedLock> lock =
-      ScopedLock::Create("foobar", GetTestScope(), base::Seconds(0));
+  std::unique_ptr<ScopedLock> lock = ScopedLock::Create(
+      "foobar", GetUpdaterScopeForTesting(), base::Seconds(0));
   EXPECT_TRUE(lock);
 
   base::RunLoop run_loop;
   base::ThreadPool::PostTaskAndReply(
       FROM_HERE, {base::MayBlock()}, base::BindOnce([] {
-        EXPECT_FALSE(
-            ScopedLock::Create("foobar", GetTestScope(), base::Seconds(0)));
+        EXPECT_FALSE(ScopedLock::Create("foobar", GetUpdaterScopeForTesting(),
+                                        base::Seconds(0)));
       }),
       base::BindLambdaForTesting([&run_loop] { run_loop.Quit(); }));
   run_loop.Run();
@@ -66,30 +66,31 @@ TEST(LockTest, TryLockInThreadSuccess) {
   base::RunLoop run_loop;
   base::ThreadPool::PostTaskAndReply(
       FROM_HERE, {base::MayBlock()}, base::BindOnce([] {
-        EXPECT_TRUE(
-            ScopedLock::Create("foobar", GetTestScope(), base::Seconds(0)));
+        EXPECT_TRUE(ScopedLock::Create("foobar", GetUpdaterScopeForTesting(),
+                                       base::Seconds(0)));
       }),
       base::BindLambdaForTesting([&run_loop] { run_loop.Quit(); }));
   run_loop.Run();
 
-  EXPECT_TRUE(ScopedLock::Create("foobar", GetTestScope(), base::Seconds(0)));
+  EXPECT_TRUE(ScopedLock::Create("foobar", GetUpdaterScopeForTesting(),
+                                 base::Seconds(0)));
 }
 
 #if BUILDFLAG(IS_LINUX)
 TEST(LockTest, SharedMemoryWrongPermissions) {
   // Use a different lock name to avoid reusing a shared memory region leaked by
   // other tests.
-  const std::string shared_mem_name =
-      base::StrCat({"/", PRODUCT_FULLNAME_STRING, "permissions_test",
-                    UpdaterScopeToString(GetTestScope()), ".lock"});
+  const std::string shared_mem_name = base::StrCat(
+      {"/", PRODUCT_FULLNAME_STRING, "permissions_test",
+       UpdaterScopeToString(GetUpdaterScopeForTesting()), ".lock"});
 
   // Create a shared memory region with overpermissive perms.
   int shm_fd = shm_open(shared_mem_name.c_str(), O_RDWR | O_CREAT | O_EXCL,
                         S_IRWXU | S_IRWXG | S_IRWXO);
   ASSERT_GE(shm_fd, 0);
 
-  EXPECT_FALSE(
-      ScopedLock::Create("permissions_test", GetTestScope(), base::Seconds(0)));
+  EXPECT_FALSE(ScopedLock::Create(
+      "permissions_test", GetUpdaterScopeForTesting(), base::Seconds(0)));
 
   close(shm_fd);
   shm_unlink(shared_mem_name.c_str());

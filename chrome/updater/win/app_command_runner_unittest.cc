@@ -58,21 +58,22 @@ class AppCommandRunnerTestBase : public ::testing::Test {
   ~AppCommandRunnerTestBase() override = default;
 
   void SetUp() override {
-    test::SetupCmdExe(GetTestScope(), cmd_exe_command_line_,
+    test::SetupCmdExe(GetUpdaterScopeForTesting(), cmd_exe_command_line_,
                       temp_programfiles_dir_);
   }
 
   void TearDown() override {
-    test::DeleteAppClientKey(GetTestScope(), kAppId1);
+    test::DeleteAppClientKey(GetUpdaterScopeForTesting(), kAppId1);
   }
 
   HResultOr<AppCommandRunner> CreateAppCommandRunner(
       const std::wstring& app_id,
       const std::wstring& command_id,
       const std::wstring& command_line_format) {
-    test::CreateAppCommandRegistry(GetTestScope(), app_id, command_id,
-                                   command_line_format);
-    return AppCommandRunner::LoadAppCommand(GetTestScope(), app_id, command_id);
+    test::CreateAppCommandRegistry(GetUpdaterScopeForTesting(), app_id,
+                                   command_id, command_line_format);
+    return AppCommandRunner::LoadAppCommand(GetUpdaterScopeForTesting(), app_id,
+                                            command_id);
   }
 
   HResultOr<AppCommandRunner> CreateProcessLauncherRunner(
@@ -81,10 +82,11 @@ class AppCommandRunnerTestBase : public ::testing::Test {
       const std::wstring& pv,
       const std::wstring& command_id,
       const std::wstring& command_line_format) {
-    EXPECT_TRUE(IsSystemInstall(GetTestScope()));
+    EXPECT_TRUE(IsSystemInstall(GetUpdaterScopeForTesting()));
     test::CreateLaunchCmdElevatedRegistry(app_id, name, pv, command_id,
                                           command_line_format);
-    return AppCommandRunner::LoadAppCommand(GetTestScope(), app_id, command_id);
+    return AppCommandRunner::LoadAppCommand(GetUpdaterScopeForTesting(), app_id,
+                                            command_id);
   }
 
   base::CommandLine cmd_exe_command_line_{base::CommandLine::NO_PROGRAM};
@@ -144,7 +146,8 @@ TEST_P(AppCommandFormatComponentsProgramFilesPathsTest, TestCases) {
   const std::wstring process_command_line =
       GetCommandLine(GetParam(), L"process.exe");
   ASSERT_EQ(AppCommandRunner::GetAppCommandFormatComponents(
-                GetTestScope(), process_command_line, executable, parameters),
+                GetUpdaterScopeForTesting(), process_command_line, executable,
+                parameters),
             S_OK);
   EXPECT_EQ(executable,
             base::CommandLine::FromString(process_command_line).GetProgram());
@@ -311,7 +314,7 @@ TEST_P(AppCommandFormatComponentsAndCommandLineTest, TestCases) {
   std::vector<std::wstring> parameters;
 
   ASSERT_EQ(AppCommandRunner::GetAppCommandFormatComponents(
-                GetTestScope(),
+                GetUpdaterScopeForTesting(),
                 base::StrCat({process_command_line, L" ",
                               base::JoinString(GetParam().input, L" ")}),
                 executable, parameters),
@@ -383,15 +386,17 @@ TEST_P(AppCommandExecuteTest, TestCases) {
 
 TEST_F(AppCommandRunnerTest, NoApp) {
   HResultOr<AppCommandRunner> app_command_runner =
-      AppCommandRunner::LoadAppCommand(GetTestScope(), kAppId1, kCmdId1);
+      AppCommandRunner::LoadAppCommand(GetUpdaterScopeForTesting(), kAppId1,
+                                       kCmdId1);
   EXPECT_FALSE(app_command_runner.has_value());
 }
 
 TEST_F(AppCommandRunnerTest, NoCmd) {
-  test::CreateAppCommandRegistry(GetTestScope(), kAppId1, kCmdId1,
+  test::CreateAppCommandRegistry(GetUpdaterScopeForTesting(), kAppId1, kCmdId1,
                                  kCmdLineValid);
   HResultOr<AppCommandRunner> app_command_runner =
-      AppCommandRunner::LoadAppCommand(GetTestScope(), kAppId1, kCmdId2);
+      AppCommandRunner::LoadAppCommand(GetUpdaterScopeForTesting(), kAppId1,
+                                       kCmdId2);
   EXPECT_FALSE(app_command_runner.has_value());
 }
 
@@ -492,7 +497,7 @@ INSTANTIATE_TEST_SUITE_P(
     }));
 
 TEST_P(RunProcessLauncherFormatTest, TestCases) {
-  if (!IsSystemInstall(GetTestScope())) {
+  if (!IsSystemInstall(GetUpdaterScopeForTesting())) {
     return;
   }
 
@@ -546,7 +551,7 @@ INSTANTIATE_TEST_SUITE_P(
     }));
 
 TEST_P(RunBothFormatsTest, TestCases) {
-  if (!IsSystemInstall(GetTestScope())) {
+  if (!IsSystemInstall(GetUpdaterScopeForTesting())) {
     GTEST_SKIP();
   }
 
@@ -556,7 +561,7 @@ TEST_P(RunBothFormatsTest, TestCases) {
 
   if (GetParam().cmd_id_appcommand) {
     test::CreateAppCommandRegistry(
-        GetTestScope(), kAppId1, GetParam().cmd_id_appcommand,
+        GetUpdaterScopeForTesting(), kAppId1, GetParam().cmd_id_appcommand,
         base::StrCat({cmd_exe_command_line_.GetCommandLineString(), L" ",
                       base::JoinString(GetParam().input_appcommand, L" ")}));
   }
@@ -570,9 +575,10 @@ TEST_P(RunBothFormatsTest, TestCases) {
              base::JoinString(GetParam().input_processlauncher, L" ")}));
   }
 
-  ASSERT_OK_AND_ASSIGN(app_command_runner, AppCommandRunner::LoadAppCommand(
-                                               GetTestScope(), kAppId1,
-                                               GetParam().cmd_id_to_execute));
+  ASSERT_OK_AND_ASSIGN(
+      app_command_runner,
+      AppCommandRunner::LoadAppCommand(GetUpdaterScopeForTesting(), kAppId1,
+                                       GetParam().cmd_id_to_execute));
 
   ASSERT_HRESULT_SUCCEEDED(app_command_runner.Run({}, process));
 
@@ -581,7 +587,7 @@ TEST_P(RunBothFormatsTest, TestCases) {
                                              &exit_code));
   EXPECT_EQ(exit_code, GetParam().expected_exit_code);
 
-  test::DeleteAppClientKey(GetTestScope(), kAppId1);
+  test::DeleteAppClientKey(GetUpdaterScopeForTesting(), kAppId1);
 }
 
 struct EachAppCommand {
@@ -614,14 +620,14 @@ INSTANTIATE_TEST_SUITE_P(
 TEST_P(LoadAutoRunOnOsUpgradeAppCommandsTest, TestCases) {
   base::ranges::for_each(GetParam(), [&](const auto& app_command) {
     test::CreateAppCommandOSUpgradeRegistry(
-        GetTestScope(), kAppId1, app_command.command_id,
+        GetUpdaterScopeForTesting(), kAppId1, app_command.command_id,
         base::StrCat({cmd_exe_command_line_.GetCommandLineString(), L" ",
                       base::JoinString(app_command.input, L" ")}));
   });
 
   const std::vector<AppCommandRunner> app_command_runners =
-      AppCommandRunner::LoadAutoRunOnOsUpgradeAppCommands(GetTestScope(),
-                                                          kAppId1);
+      AppCommandRunner::LoadAutoRunOnOsUpgradeAppCommands(
+          GetUpdaterScopeForTesting(), kAppId1);
 
   ASSERT_EQ(std::size(app_command_runners), std::size(GetParam()));
   base::ranges::for_each(

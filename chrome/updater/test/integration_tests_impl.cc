@@ -869,7 +869,7 @@ void DeleteActiveUpdaterExecutable(UpdaterScope scope) {
   // On Linux, a qualified service makes a full copy of itself, so we have to
   // delete the copy that systemd uses too.
   std::optional<base::FilePath> launcher_path =
-      GetUpdateServiceLauncherPath(GetTestScope());
+      GetUpdateServiceLauncherPath(GetUpdaterScopeForTesting());
   ASSERT_TRUE(launcher_path.has_value()) << "No launcher path.";
   DeleteFile(*launcher_path);
 #endif  // BUILDFLAG(IS_LINUX)
@@ -1336,14 +1336,14 @@ void DMPushEnrollmentToken(const std::string& enrollment_token) {
 }
 
 void DMDeregisterDevice(UpdaterScope scope) {
-  if (!IsSystemInstall(GetTestScope())) {
+  if (!IsSystemInstall(GetUpdaterScopeForTesting())) {
     return;
   }
   EXPECT_TRUE(GetDefaultDMStorage()->InvalidateDMToken());
 }
 
 void DMCleanup(UpdaterScope scope) {
-  if (!IsSystemInstall(GetTestScope())) {
+  if (!IsSystemInstall(GetUpdaterScopeForTesting())) {
     return;
   }
   scoped_refptr<DMStorage> storage = GetDefaultDMStorage();

@@ -37,7 +37,8 @@ TEST(UtilTest, ConfirmFilePermissionsTest) {
 }
 
 TEST(UtilTest, GetCacheBaseDirectoryTest) {
-  std::optional<base::FilePath> path(GetCacheBaseDirectory(GetTestScope()));
+  std::optional<base::FilePath> path(
+      GetCacheBaseDirectory(GetUpdaterScopeForTesting()));
   ASSERT_TRUE(path);
 
   EXPECT_EQ(path->BaseName().value(),
