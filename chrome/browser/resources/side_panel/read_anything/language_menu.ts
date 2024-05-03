@@ -132,6 +132,12 @@ export class LanguageMenuElement extends LanguageMenuElementBase {
         ]);
       }
     });
+
+    // Sort the list of languages alphabetically by display name.
+    langsAndReadableLangs.sort(([, firstDisplay], [, secondDisplay]) => {
+      return firstDisplay.localeCompare(secondDisplay);
+    });
+
     return langsAndReadableLangs
         .filter(([_, readableLang]) => {
           if (languageSearchValue) {

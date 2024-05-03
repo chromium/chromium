@@ -118,6 +118,20 @@ suite('LanguageMenu', () => {
       assertTrue(isPositionedOnPage(languageMenu));
       assertEquals(getLanguageLineItems().length, expectedLanguages + 1);
     });
+
+    test('sorts alphabetically', () => {
+      const expectedLanguages = chrome.readingMode.isChromeOsAsh ? 1 : 0;
+      availableVoices = [
+        {name: 'Steve', lang: 'da-dk'} as SpeechSynthesisVoice,
+        {name: 'Dustin', lang: 'bn-bd'} as SpeechSynthesisVoice,
+      ];
+      setAvailableVoices();
+      languageMenu.showDialog();
+      assertTrue(isPositionedOnPage(languageMenu));
+      assertEquals(getLanguageLineItems().length, expectedLanguages + 2);
+      assertLanguageLineWithTextAndSwitch(getLanguageLineItems()[0]!, 'bn-bd');
+      assertLanguageLineWithTextAndSwitch(getLanguageLineItems()[1]!, 'da-dk');
+    });
   });
 
   suite('with one language', () => {
@@ -151,9 +165,9 @@ suite('LanguageMenu', () => {
         assertTrue(isPositionedOnPage(languageMenu));
         assertEquals(getLanguageLineItems().length, 2);
         assertLanguageLineWithTextAndSwitch(
-            getLanguageLineItems()[0]!, 'en-US');
+            getLanguageLineItems()[0]!, 'en-UK');
         assertLanguageLineWithTextAndSwitch(
-            getLanguageLineItems()[1]!, 'en-UK');
+            getLanguageLineItems()[1]!, 'en-US');
         assertEquals(getLanguageSearchField().value, '');
         assertEquals(getNoResultsFoundMessage()!.hidden, true);
       });
@@ -217,11 +231,11 @@ suite('LanguageMenu', () => {
           assertTrue(isPositionedOnPage(languageMenu));
           assertEquals(getLanguageLineItems().length, 3);
           assertLanguageLineWithTextAndSwitch(
-              getLanguageLineItems()[0]!, 'en-US');
+              getLanguageLineItems()[0]!, 'en-UK');
           assertLanguageLineWithTextAndSwitch(
-              getLanguageLineItems()[1]!, 'it-IT');
+              getLanguageLineItems()[1]!, 'en-US');
           assertLanguageLineWithTextAndSwitch(
-              getLanguageLineItems()[2]!, 'en-UK');
+              getLanguageLineItems()[2]!, 'it-IT');
           assertEquals(getLanguageSearchField().value, '');
         });
 
@@ -242,11 +256,11 @@ suite('LanguageMenu', () => {
         assertTrue(isPositionedOnPage(languageMenu));
         assertEquals(getLanguageLineItems().length, 3);
         assertLanguageLineWithTextAndSwitch(
-            getLanguageLineItems()[0]!, 'English (United States)');
+            getLanguageLineItems()[0]!, 'English (United Kingdom)');
         assertLanguageLineWithTextAndSwitch(
-            getLanguageLineItems()[1]!, 'Italian');
+            getLanguageLineItems()[1]!, 'English (United States)');
         assertLanguageLineWithTextAndSwitch(
-            getLanguageLineItems()[2]!, 'English (United Kingdom)');
+            getLanguageLineItems()[2]!, 'Italian');
         assertEquals(getLanguageSearchField().value, '');
       });
 
@@ -267,9 +281,9 @@ suite('LanguageMenu', () => {
         assertTrue(isPositionedOnPage(languageMenu));
         assertEquals(getLanguageLineItems().length, 2);
         assertLanguageLineWithTextAndSwitch(
-            getLanguageLineItems()[0]!, 'English (United States)');
+            getLanguageLineItems()[0]!, 'English');
         assertLanguageLineWithTextAndSwitch(
-            getLanguageLineItems()[1]!, 'English');
+            getLanguageLineItems()[1]!, 'English (United States)');
       });
 
       test('it toggles switch on for initially enabled line', async () => {
@@ -346,8 +360,8 @@ suite('LanguageMenu', () => {
     test('only shows one line per unique language name', () => {
       assertTrue(isPositionedOnPage(languageMenu));
       assertEquals(getLanguageLineItems().length, 4);
-      assertLanguageLineWithTextAndSwitch(getLanguageLineItems()[0]!, 'en-US');
-      assertLanguageLineWithTextAndSwitch(getLanguageLineItems()[1]!, 'en-UK');
+      assertLanguageLineWithTextAndSwitch(getLanguageLineItems()[0]!, 'en-UK');
+      assertLanguageLineWithTextAndSwitch(getLanguageLineItems()[1]!, 'en-US');
       assertLanguageLineWithTextAndSwitch(getLanguageLineItems()[2]!, 'it-IT');
       assertLanguageLineWithTextAndSwitch(getLanguageLineItems()[3]!, 'zh-CN');
     });
@@ -371,13 +385,13 @@ suite('LanguageMenu', () => {
         assertTrue(isPositionedOnPage(languageMenu));
         assertEquals(getLanguageLineItems().length, 4);
         assertLanguageLineWithTextAndSwitch(
-            getLanguageLineItems()[0]!, 'English (United States)');
+            getLanguageLineItems()[0]!, 'Chinese');
         assertLanguageLineWithTextAndSwitch(
             getLanguageLineItems()[1]!, 'English (United Kingdom)');
         assertLanguageLineWithTextAndSwitch(
-            getLanguageLineItems()[2]!, 'Italian');
+            getLanguageLineItems()[2]!, 'English (United States)');
         assertLanguageLineWithTextAndSwitch(
-            getLanguageLineItems()[3]!, 'Chinese');
+            getLanguageLineItems()[3]!, 'Italian');
         assertEquals(getLanguageSearchField().value, '');
       });
 
