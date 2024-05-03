@@ -15,12 +15,26 @@
 
 const char kMagicStackTopModuleImpressionHistogram[] =
     "IOS.MagicStack.Module.TopImpression";
+const char kMagicStackModuleEngagementOnStartHistogram[] =
+    "IOS.MagicStack.Module.Click.OnStart";
+const char kMagicStackModuleEngagementOnNTPHistogram[] =
+    "IOS.MagicStack.Module.Click.OnNTP";
 
 void RecordHomeAction(IOSHomeActionType type, bool isStartSurface) {
   if (isStartSurface) {
     UMA_HISTOGRAM_ENUMERATION(kActionOnStartHistogram, type);
   } else {
     UMA_HISTOGRAM_ENUMERATION(kActionOnNTPHistogram, type);
+  }
+}
+
+void RecordMagicStackClick(ContentSuggestionsModuleType type,
+                           bool isStartSurface) {
+  if (isStartSurface) {
+    UMA_HISTOGRAM_ENUMERATION(kMagicStackModuleEngagementOnStartHistogram,
+                              type);
+  } else {
+    UMA_HISTOGRAM_ENUMERATION(kMagicStackModuleEngagementOnNTPHistogram, type);
   }
 }
 

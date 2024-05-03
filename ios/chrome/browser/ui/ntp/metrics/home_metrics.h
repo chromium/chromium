@@ -30,6 +30,10 @@ extern const char kMagicStackTopModuleImpressionHistogram[];
 // Logs a Home action and attributes it to the NTP or Start surface.
 void RecordHomeAction(IOSHomeActionType type, bool isStartSurface);
 
+// Logs a Magic Stack card click split by NTP and Start surface.
+void RecordMagicStackClick(ContentSuggestionsModuleType type,
+                           bool isStartSurface);
+
 // Logs a Magic Stack freshness event.
 void RecordModuleFreshnessSignal(ContentSuggestionsModuleType module_type);
 

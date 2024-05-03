@@ -1190,11 +1190,15 @@
 #pragma mark - NewTabPageMetricsDelegate
 
 - (void)recentTabTileOpened {
+  RecordMagicStackClick(ContentSuggestionsModuleType::kTabResumption,
+                        [self isStartSurface]);
   RecordHomeAction(IOSHomeActionType::kReturnToRecentTab,
                    [self isStartSurface]);
 }
 
 - (void)distantTabResumptionOpened {
+  RecordMagicStackClick(ContentSuggestionsModuleType::kTabResumption,
+                        [self isStartSurface]);
   RecordHomeAction(IOSHomeActionType::kOpenDistantTabResumption,
                    [self isStartSurface]);
 }
@@ -1208,6 +1212,8 @@
 }
 
 - (void)shortcutTileOpened {
+  RecordMagicStackClick(ContentSuggestionsModuleType::kShortcuts,
+                        [self isStartSurface]);
   RecordHomeAction(IOSHomeActionType::kShortcuts, [self isStartSurface]);
 }
 
@@ -1216,10 +1222,14 @@
 }
 
 - (void)safetyCheckOpened {
+  RecordMagicStackClick(ContentSuggestionsModuleType::kSafetyCheck,
+                        [self isStartSurface]);
   RecordHomeAction(IOSHomeActionType::kSafetyCheck, [self isStartSurface]);
 }
 
 - (void)parcelTrackingOpened {
+  RecordMagicStackClick(ContentSuggestionsModuleType::kParcelTracking,
+                        [self isStartSurface]);
   RecordHomeAction(IOSHomeActionType::kParcelTracking, [self isStartSurface]);
 }
 

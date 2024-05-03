@@ -461,6 +461,9 @@ TEST_F(NewTabPageCoordinatorTest, ShortcutsStartMetricLogging) {
 
   histogram_tester_->ExpectUniqueSample("IOS.Start.Click",
                                         IOSHomeActionType::kShortcuts, 0);
+  histogram_tester_->ExpectUniqueSample(
+      "IOS.MagicStack.Module.Click.OnStart",
+      ContentSuggestionsModuleType::kShortcuts, 0);
   histogram_tester_->ExpectTotalCount(kStartTimeSpentHistogram, 0);
   histogram_tester_->ExpectTotalCount(kStartImpressionHistogram, 1);
 
@@ -484,6 +487,9 @@ TEST_F(NewTabPageCoordinatorTest, ShortcutsStartMetricLogging) {
   // ShouldShowStartSurface() to false.
   histogram_tester_->ExpectUniqueSample("IOS.Start.Click",
                                         IOSHomeActionType::kShortcuts, 1);
+  histogram_tester_->ExpectUniqueSample(
+      "IOS.MagicStack.Module.Click.OnStart",
+      ContentSuggestionsModuleType::kShortcuts, 1);
   histogram_tester_->ExpectTotalCount(kStartTimeSpentHistogram, 1);
   histogram_tester_->ExpectTotalCount(kStartImpressionHistogram, 1);
   EXPECT_FALSE(
