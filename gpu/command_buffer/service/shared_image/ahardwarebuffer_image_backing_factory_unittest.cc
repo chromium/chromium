@@ -212,7 +212,7 @@ TEST_F(AHardwareBufferImageBackingFactoryTest, InitialData) {
 // Test to check invalid format support.
 TEST_F(AHardwareBufferImageBackingFactoryTest, InvalidFormat) {
   auto mailbox = Mailbox::GenerateForSharedImage();
-  auto format = viz::LegacyMultiPlaneFormat::kNV12;
+  auto format = viz::MultiPlaneFormat::kNV12;
   gfx::Size size(256, 256);
   auto color_space = gfx::ColorSpace::CreateSRGB();
   GrSurfaceOrigin surface_origin = kTopLeft_GrSurfaceOrigin;

@@ -168,7 +168,7 @@ using GLTextureImageBackingFactoryWithReadbackTest =
     GLTextureImageBackingFactoryWithUploadTest;
 
 TEST_F(GLTextureImageBackingFactoryTest, InvalidFormat) {
-  auto format = viz::LegacyMultiPlaneFormat::kNV12;
+  auto format = viz::SinglePlaneFormat::kBGR_565;
   gfx::Size size(256, 256);
   // Note: The specific usage doesn't matter here as long as it's supported by
   // GLTextureImageBacking.
