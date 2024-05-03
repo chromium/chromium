@@ -38,6 +38,11 @@ chromium-metrics-reviews@google.com.
   <variant name="Over300000Rules" summary="over 300,000 rules"/>
 </variants>
 
+<variants name="DeveloperModeState">
+  <variant name="DeveloperModeOff" summary="developer mode off"/>
+  <variant name="DeveloperModeOn" summary="developer mode on"/>
+</variants>
+
 <variants name="ExtensionFunctionExecutionTime">
   <variant name=".1msTo5ms"
       summary="Execution took between 1ms and 5ms (tolerable)."/>
@@ -53,6 +58,11 @@ chromium-metrics-reviews@google.com.
   <variant name=".Extension" summary="A port opened to an extension context."/>
   <variant name=".NativeApp" summary="A port opened to a native application."/>
   <variant name=".Tab" summary="A port opened to a tab context."/>
+</variants>
+
+<variants name="ExtensionState">
+  <variant name=".Disabled" summary="disabled"/>
+  <variant name=".Enabled" summary="enabled"/>
 </variants>
 
 <variants name="ManifestLocationGroup">
@@ -300,6 +310,21 @@ of interesting buckets, such as "internal + external".
     The reason a valid ExtensionSyncData could not be parsed from a SyncData
     received from sync.
   </summary>
+</histogram>
+
+<histogram
+    name="Extensions.CommandLineWith{DeveloperModeState}{ExtensionState}"
+    units="count" expires_after="2024-09-01">
+  <owner>richche@google.com</owner>
+  <owner>chrome-counter-abuse-alerts@google.com</owner>
+  <summary>
+    Records when a {ExtensionState} command-line extension is loaded with
+    {DeveloperModeState}. Emitted on every profile open only for &quot;user
+    profiles&quot; (profiles where people can install extensions, specifically
+    profiles that can have non-component extensions installed).
+  </summary>
+  <token key="DeveloperModeState" variants="DeveloperModeState"/>
+  <token key="ExtensionState" variants="ExtensionState"/>
 </histogram>
 
 <histogram name="Extensions.ContentScripts.ContentScriptLength" units="KB"
@@ -3838,22 +3863,19 @@ of interesting buckets, such as "internal + external".
 </histogram>
 
 <histogram
-    name="Extensions.NonWebstoreLocationWithDeveloperModeOff{ExtensionState}"
+    name="Extensions.NonWebstoreLocationWith{DeveloperModeState}{ExtensionState}2"
     enum="ExtensionLocation" expires_after="2024-09-01">
   <owner>richche@google.com</owner>
   <owner>chrome-counter-abuse-alerts@google.com</owner>
   <summary>
     The number of {ExtensionState} non-webstore extensions with a non-webstore
-    update_url loaded on profile open and developer mode disabled. Grouped by
-    Extension::Location, which only includes external pref, registry, and
-    unpacked. Emitted on every profile open only for &quot;user profiles&quot;
-    (profiles where people can install extensions, specifically profiles that
-    can have non-component extensions installed).
+    update_url loaded on profile open and {DeveloperModeState}. Grouped by
+    Extension::Location. Emitted on every profile open only for &quot;user
+    profiles&quot; (profiles where people can install extensions, specifically
+    profiles that can have non-component extensions installed).
   </summary>
-  <token key="ExtensionState">
-    <variant name=".Disabled" summary="disabled"/>
-    <variant name=".Enabled" summary="enabled"/>
-  </token>
+  <token key="DeveloperModeState" variants="DeveloperModeState"/>
+  <token key="ExtensionState" variants="ExtensionState"/>
 </histogram>
 
 <histogram name="Extensions.NonWebStoreNewTabPageOverrides" units="units"

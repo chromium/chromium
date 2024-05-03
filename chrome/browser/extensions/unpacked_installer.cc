@@ -10,6 +10,7 @@
 #include "base/files/file_util.h"
 #include "base/functional/bind.h"
 #include "base/functional/callback.h"
+#include "base/metrics/histogram_functions.h"
 #include "base/path_service.h"
 #include "base/strings/string_util.h"
 #include "base/strings/utf_string_conversions.h"
@@ -29,6 +30,7 @@
 #include "extensions/browser/extension_file_task_runner.h"
 #include "extensions/browser/extension_prefs.h"
 #include "extensions/browser/extension_registry.h"
+#include "extensions/browser/extension_util.h"
 #include "extensions/browser/install_flag.h"
 #include "extensions/browser/path_util.h"
 #include "extensions/browser/policy_check.h"
@@ -38,10 +40,12 @@
 #include "extensions/common/extension.h"
 #include "extensions/common/extension_features.h"
 #include "extensions/common/extension_l10n_util.h"
+#include "extensions/common/features/feature_developer_mode_only.h"
 #include "extensions/common/file_util.h"
 #include "extensions/common/manifest.h"
 #include "extensions/common/manifest_constants.h"
 #include "extensions/common/manifest_handlers/shared_module_info.h"
+#include "extensions/common/mojom/manifest.mojom-shared.h"
 #include "extensions/common/permissions/permissions_data.h"
 
 using content::BrowserThread;
@@ -400,8 +404,42 @@ void UnpackedInstaller::InstallExtension() {
                                       kInstallFlagInstallImmediately,
                                       ruleset_install_prefs_);
 
+  // Record metrics here since the registry would contain the extension by now.
+  RecordCommandLineDeveloperModeMetrics();
+
   if (!callback_.is_null())
     std::move(callback_).Run(extension(), extension_path_, std::string());
+}
+
+void UnpackedInstaller::RecordCommandLineDeveloperModeMetrics() {
+  if (!extension()->is_extension() ||
+      extension()->location() != mojom::ManifestLocation::kCommandLine) {
+    return;
+  }
+
+  bool dev_mode_enabled =
+      GetCurrentDeveloperMode(util::GetBrowserContextId(profile_));
+
+  ExtensionRegistry* extension_registry = ExtensionRegistry::Get(profile_);
+  if (extension_registry->enabled_extensions().Contains(extension()->id())) {
+    if (dev_mode_enabled) {
+      base::UmaHistogramCounts100(
+          "Extensions.CommandLineWithDeveloperModeOn.Enabled", 1);
+    } else {
+      base::UmaHistogramCounts100(
+          "Extensions.CommandLineWithDeveloperModeOff.Enabled", 1);
+    }
+  }
+
+  if (extension_registry->disabled_extensions().Contains(extension()->id())) {
+    if (dev_mode_enabled) {
+      base::UmaHistogramCounts100(
+          "Extensions.CommandLineWithDeveloperModeOn.Disabled", 1);
+    } else {
+      base::UmaHistogramCounts100(
+          "Extensions.CommandLineWithDeveloperModeOff.Disabled", 1);
+    }
+  }
 }
 
 }  // namespace extensions
