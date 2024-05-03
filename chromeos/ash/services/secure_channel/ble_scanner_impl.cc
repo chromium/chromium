@@ -219,6 +219,15 @@ void BleScannerImpl::OnStartDiscoverySessionError() {
 }
 
 void BleScannerImpl::EnsureDiscoverySessionNotActive() {
+  if (floss::features::IsFlossEnabled() && is_initializing_discovery_session_) {
+    // We won't be able to receive any updates from Floss after
+    // |le_scan_session_| is reset. Since this function aims to ensure the
+    // session is down, |is_initializing_discovery_session_| must be reset as
+    // well otherwise we would get stuck in the initializing state forever.
+    PA_LOG(WARNING) << "LE scan is reset while still initializing.";
+    is_initializing_discovery_session_ = false;
+  }
+
   if (!IsDiscoverySessionActive() || is_stopping_discovery_session_)
     return;
 
