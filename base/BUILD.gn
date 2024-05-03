@@ -3848,7 +3848,6 @@ test("base_unittests") {
       "android/sys_utils_unittest.cc",
       "android/token_android_unittest.cc",
       "android/unguessable_token_android_unittest.cc",
-      "os_compat_android_unittest.cc",
     ]
 
     # Android does not use test_launcher to run gtests.

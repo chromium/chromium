@@ -9,13 +9,8 @@
 #include <sys/types.h>
 #include <utime.h>
 
-// Not implemented in Bionic.
+#if __ANDROID_API__ < 26
 extern "C" int futimes(int fd, const struct timeval tv[2]);
-
-// Not exposed or implemented in Bionic.
-extern "C" char* mkdtemp(char* path);
-
-// Android has no timegm().
-extern "C" time_t timegm(struct tm* const t);
+#endif
 
 #endif  // BASE_OS_COMPAT_ANDROID_H_
