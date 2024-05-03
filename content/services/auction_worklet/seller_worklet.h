@@ -467,7 +467,7 @@ class CONTENT_EXPORT SellerWorklet : public mojom::SellerWorklet {
   void ResumeIfPaused();
   void Start();
 
-  void OnDownloadComplete(WorkletLoader::Result worklet_script,
+  void OnDownloadComplete(std::vector<WorkletLoader::Result> worklet_scripts,
                           std::optional<std::string> error_msg);
   void MaybeRecordCodeWait();
 

@@ -614,9 +614,9 @@ class CONTENT_EXPORT BidderWorklet : public mojom::BidderWorklet,
   void ResumeIfPaused();
   void Start();
 
-  void OnScriptDownloaded(WorkletLoader::Result worklet_script,
+  void OnScriptDownloaded(std::vector<WorkletLoader::Result> worklet_scripts,
                           std::optional<std::string> error_msg);
-  void OnWasmDownloaded(WorkletWasmLoader::Result worklet_script,
+  void OnWasmDownloaded(std::vector<WorkletWasmLoader::Result> worklet_scripts,
                         std::optional<std::string> error_msg);
   void MaybeRecordCodeWait();
   void RunReadyTasks();

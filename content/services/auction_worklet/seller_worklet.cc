@@ -1679,15 +1679,20 @@ void SellerWorklet::Start() {
       url_loader_factory_.get(), /*auction_network_events_handler=*/
       CreateNewAuctionNetworkEventsHandlerRemote(
           auction_network_events_handler_),
-      script_source_url_, v8_helper_, debug_id_,
+      script_source_url_, std::vector{v8_helper_}, std::vector{debug_id_},
       std::move(on_got_cross_origin_signals_permissions),
       base::BindOnce(&SellerWorklet::OnDownloadComplete,
                      base::Unretained(this)));
 }
 
-void SellerWorklet::OnDownloadComplete(WorkletLoader::Result worklet_script,
-                                       std::optional<std::string> error_msg) {
+void SellerWorklet::OnDownloadComplete(
+    std::vector<WorkletLoader::Result> worklet_scripts,
+    std::optional<std::string> error_msg) {
   DCHECK_CALLED_ON_VALID_SEQUENCE(user_sequence_checker_);
+
+  DCHECK_EQ(worklet_scripts.size(), 1u);
+  WorkletLoader::Result worklet_script = std::move(worklet_scripts[0]);
+
   base::UmaHistogramCounts10M(
       "Ads.InterestGroup.Net.ResponseSizeBytes.ScoringScriptJS",
       worklet_script.original_size_bytes());
