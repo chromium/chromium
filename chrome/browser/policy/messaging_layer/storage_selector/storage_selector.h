@@ -16,12 +16,13 @@
 #include <utility>
 
 #include "base/functional/callback.h"
-#include "chrome/browser/policy/messaging_layer/upload/upload_client.h"
-#include "chrome/browser/policy/messaging_layer/upload/upload_provider.h"
 #include "chrome/browser/policy/messaging_layer/util/upload_declarations.h"
-#include "components/reporting/storage/storage_module.h"
-#include "components/reporting/storage/storage_uploader_interface.h"
+#include "components/reporting/storage/storage_uploader_interface.h"  // nogncheck
 #endif  // !BUILDFLAG(IS_CHROMEOS)
+
+namespace base {
+class FilePath;
+}
 
 namespace reporting {
 

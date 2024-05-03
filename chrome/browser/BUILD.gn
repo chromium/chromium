@@ -2013,6 +2013,7 @@ static_library("browser") {
     "//chrome/browser/media/router",
 
     "//chrome/browser/permissions",
+    "//chrome/browser/policy/messaging_layer/storage_selector",
   ]
 
   if (!is_chromeos_lacros) {

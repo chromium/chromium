@@ -18,7 +18,6 @@
 #include "components/reporting/storage/storage_configuration.h"
 #include "components/reporting/storage/storage_module.h"
 #include "components/reporting/storage/storage_module_interface.h"
-#include "components/reporting/storage/storage_uploader_interface.h"
 #include "components/reporting/util/statusor.h"
 
 namespace reporting {
