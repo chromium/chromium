@@ -641,7 +641,7 @@ ${KMETHODS}
         stub_name = 'Java_' + class_name + '_' + proxy_signature
 
         multipliexed_signature = java_types.JavaSignature(
-            native.return_type, (java_types.LONG, ), None)
+            native.return_type, (java_types.INT, ), None)
         jni_descriptor = multipliexed_signature.to_descriptor()
       elif self.options.use_proxy_hash:
         name = native.hashed_proxy_name
