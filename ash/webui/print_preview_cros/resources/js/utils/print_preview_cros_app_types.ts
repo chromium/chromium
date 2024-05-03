@@ -32,6 +32,14 @@ export enum ColorModel {
   COLOR = 2,
 }
 
+// Constant values matching printing::DuplexMode enum.
+export enum DuplexMode {
+  SIMPLEX = 0,
+  LONG_EDGE = 1,
+  SHORT_EDGE = 2,
+  UNKNOWN_DUPLEX_MODE = -1,
+}
+
 // PrintTicket represents the data required to start print job. Ticket will be
 // used to create a settings dictionary with fields matching the existing Chrome
 // preview print settings for reusability.
@@ -69,6 +77,10 @@ export interface PrintTicket {
 
   // Whether DPI used is the destination's default DPI.
   dpiDefault: boolean;
+
+  // Determine if printing should be done on both sides and along which edge
+  // of the media.
+  duplex: DuplexMode;
 }
 
 // Immutable session configuration details for the current CrOS preview request.

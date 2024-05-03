@@ -2,7 +2,7 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-import {ColorModel, type PrintTicket} from '../utils/print_preview_cros_app_types.js';
+import {ColorModel, DuplexMode, type PrintTicket} from '../utils/print_preview_cros_app_types.js';
 
 /**
  * @fileoverview
@@ -19,4 +19,5 @@ export const DEFAULT_PARTIAL_PRINT_TICKET: Partial<PrintTicket> = {
   dpiHorizontal: 0,
   dpiVertical: 0,
   dpiDefault: false,
+  duplex: DuplexMode.LONG_EDGE,
 };

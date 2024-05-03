@@ -435,5 +435,8 @@ suite('PrintTicketManager', () => {
         assertEquals(
             DEFAULT_PARTIAL_PRINT_TICKET.dpiDefault, ticket.dpiDefault,
             'Ticket dpiDefault should match DEFAULT_PARTIAL_PRINT_TICKET');
+        assertEquals(
+            DEFAULT_PARTIAL_PRINT_TICKET.duplex, ticket.duplex,
+            'Ticket duplex should match DEFAULT_PARTIAL_PRINT_TICKET');
       });
 });
