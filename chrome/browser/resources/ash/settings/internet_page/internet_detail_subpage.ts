@@ -2191,9 +2191,9 @@ export class SettingsInternetDetailPageElement extends
     this.trafficCountersAvailable_ = networks.some(n => n.guid === this.guid);
   }
 
-  private async showDataUsage_(
+  private showDataUsage_(
       managedProperties: ManagedProperties|undefined,
-      trafficCountersAvailable: boolean): Promise<boolean> {
+      trafficCountersAvailable: boolean): boolean {
     if (!this.isTrafficCountersEnabled_) {
       return false;
     }
