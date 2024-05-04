@@ -1109,6 +1109,57 @@ TEST_F(OnDeviceModelServiceControllerTest, SessionRequiresSafetyModel) {
         "OnDeviceTextSafetyModelMetadataValidity",
         0);
   }
+
+  // Safety model info is valid and requires language but no language detection
+  // model, session not created successfully.
+  {
+    base::HistogramTester histogram_tester;
+
+    auto safety_config =
+        std::make_unique<proto::FeatureTextSafetyConfiguration>();
+    safety_config->add_allowed_languages("en");
+    SetFeatureTextSafetyConfiguration(std::move(safety_config));
+
+    EXPECT_FALSE(test_controller_->CreateSession(
+        kFeature, base::DoNothing(), logger_.GetWeakPtr(), nullptr,
+        /*config_params=*/std::nullopt));
+
+    histogram_tester.ExpectUniqueSample(
+        "OptimizationGuide.ModelExecution."
+        "OnDeviceTextSafetyModelMetadataValidity",
+        TextSafetyModelMetadataValidity::kValid, 1);
+    histogram_tester.ExpectUniqueSample(
+        "OptimizationGuide.ModelExecution.OnDeviceModelEligibilityReason."
+        "Compose",
+        OnDeviceModelEligibilityReason::kLanguageDetectionModelNotAvailable, 1);
+  }
+
+  // Safety model info is valid and requires language, all models available and
+  // session created successfully.
+  {
+    base::HistogramTester histogram_tester;
+
+    auto safety_config =
+        std::make_unique<proto::FeatureTextSafetyConfiguration>();
+    safety_config->add_allowed_languages("en");
+    SetFeatureTextSafetyConfiguration(std::move(safety_config));
+    std::unique_ptr<optimization_guide::ModelInfo> ld_model_info =
+        TestModelInfoBuilder().SetVersion(123).Build();
+    test_controller_->SetLanguageDetectionModel(*ld_model_info);
+
+    EXPECT_TRUE(test_controller_->CreateSession(
+        kFeature, base::DoNothing(), logger_.GetWeakPtr(), nullptr,
+        /*config_params=*/std::nullopt));
+
+    histogram_tester.ExpectUniqueSample(
+        "OptimizationGuide.ModelExecution."
+        "OnDeviceTextSafetyModelMetadataValidity",
+        TextSafetyModelMetadataValidity::kValid, 1);
+    histogram_tester.ExpectUniqueSample(
+        "OptimizationGuide.ModelExecution.OnDeviceModelEligibilityReason."
+        "Compose",
+        OnDeviceModelEligibilityReason::kSuccess, 1);
+  }
 }
 
 TEST_F(OnDeviceModelServiceControllerTest, SafetyModelRetract) {
