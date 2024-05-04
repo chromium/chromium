@@ -270,7 +270,7 @@ public class WarmupManagerTest {
         PostTask.runOrPostTask(
                 TaskTraits.UI_DEFAULT,
                 () -> {
-                    mWarmupManager.createSpareWebContents();
+                    mWarmupManager.createSpareWebContents(sActivityTestRule.getProfile(false));
                     Assert.assertTrue(mWarmupManager.hasSpareWebContents());
                     WebContents webContents = mWarmupManager.takeSpareWebContents(false, false);
                     Assert.assertNotNull(webContents);
@@ -292,7 +292,7 @@ public class WarmupManagerTest {
     @SmallTest
     @UiThreadTest
     public void testTakeSpareWebContents() {
-        mWarmupManager.createSpareWebContents();
+        mWarmupManager.createSpareWebContents(sActivityTestRule.getProfile(false));
         WebContents webContents = mWarmupManager.takeSpareWebContents(false, false);
         Assert.assertNotNull(webContents);
         Assert.assertFalse(mWarmupManager.hasSpareWebContents());
@@ -303,7 +303,7 @@ public class WarmupManagerTest {
     @SmallTest
     @UiThreadTest
     public void testTakeSpareWebContentsChecksArguments() {
-        mWarmupManager.createSpareWebContents();
+        mWarmupManager.createSpareWebContents(sActivityTestRule.getProfile(false));
         Assert.assertNull(mWarmupManager.takeSpareWebContents(true, false));
         Assert.assertNull(mWarmupManager.takeSpareWebContents(true, true));
         Assert.assertTrue(mWarmupManager.hasSpareWebContents());
@@ -315,7 +315,7 @@ public class WarmupManagerTest {
     @SmallTest
     @UiThreadTest
     public void testClearsDeadWebContents() {
-        mWarmupManager.createSpareWebContents();
+        mWarmupManager.createSpareWebContents(sActivityTestRule.getProfile(false));
         WebContentsUtils.simulateRendererKilled(mWarmupManager.mSpareWebContents);
         Assert.assertNull(mWarmupManager.takeSpareWebContents(false, false));
     }

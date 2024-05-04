@@ -1918,7 +1918,7 @@ public class CustomTabsConnection {
         if (ChromeFeatureList.isEnabled(ChromeFeatureList.CCT_PREWARM_TAB)) {
             WarmupManager.getInstance().createRegularSpareTab(profile);
         } else {
-            WarmupManager.getInstance().createSpareWebContents();
+            WarmupManager.getInstance().createSpareWebContents(profile);
         }
     }
 

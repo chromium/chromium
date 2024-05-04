@@ -43,7 +43,6 @@ import org.chromium.chrome.browser.content.WebContentsFactory;
 import org.chromium.chrome.browser.crash.ChromePureJavaExceptionReporter;
 import org.chromium.chrome.browser.customtabs.CustomTabDelegateFactory;
 import org.chromium.chrome.browser.profiles.Profile;
-import org.chromium.chrome.browser.profiles.ProfileManager;
 import org.chromium.chrome.browser.tab.EmptyTabObserver;
 import org.chromium.chrome.browser.tab.Tab;
 import org.chromium.chrome.browser.tab.TabBuilder;
@@ -569,10 +568,10 @@ public class WarmupManager {
     /**
      * Creates and initializes a spare WebContents, to be used in a subsequent navigation.
      *
-     * This creates a renderer that is suitable for any navigation. It can be picked up by any tab.
-     * Can be called multiple times, and must be called from the UI thread.
+     * <p>This creates a renderer that is suitable for any navigation. It can be picked up by any
+     * tab. Can be called multiple times, and must be called from the UI thread.
      */
-    public void createSpareWebContents() {
+    public void createSpareWebContents(Profile profile) {
         try (TraceEvent e = TraceEvent.scoped("WarmupManager.createSpareWebContents")) {
             ThreadUtils.assertOnUiThread();
             if (!LibraryLoader.getInstance().isInitialized() || mSpareWebContents != null) return;
@@ -580,8 +579,7 @@ public class WarmupManager {
             mSpareWebContents =
                     new WebContentsFactory()
                             .createWebContentsWithWarmRenderer(
-                                    ProfileManager.getLastUsedRegularProfile(),
-                                    /* initiallyHidden= */ true);
+                                    profile, /* initiallyHidden= */ true);
             mObserver = new RenderProcessGoneObserver();
             mSpareWebContents.addObserver(mObserver);
         }

@@ -152,7 +152,8 @@ public class ChromeTabCreatorTest {
                     @Override
                     public void run() {
                         Tab currentTab = sActivityTestRule.getActivity().getActivityTab();
-                        WarmupManager.getInstance().createSpareWebContents();
+                        WarmupManager.getInstance()
+                                .createSpareWebContents(sActivityTestRule.getProfile(false));
                         Assert.assertTrue(WarmupManager.getInstance().hasSpareWebContents());
                         sActivityTestRule
                                 .getActivity()
