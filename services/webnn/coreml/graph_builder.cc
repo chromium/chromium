@@ -107,6 +107,7 @@ constexpr char kOpClipTypeName[] = "clip";
 constexpr char kOpConcatTypeName[] = "concat";
 constexpr char kOpConv2dTypeName[] = "conv";
 constexpr char kOpEluTypeName[] = "elu";
+constexpr char kOpHardSigmoidTypeName[] = "sigmoid_hard";
 constexpr char kOpLeakyReluTypeName[] = "leaky_relu";
 constexpr char kOpMatmul[] = "matmul";
 constexpr char kOpReluTypeName[] = "relu";
@@ -643,6 +644,11 @@ GraphBuilder::BuildCoreMLModel() {
         RETURN_IF_ERROR(AddOperationForGemm(*operation->get_gemm(), block));
         break;
       }
+      case mojom::Operation::Tag::kHardSigmoid: {
+        RETURN_IF_ERROR(
+            AddOperationForHardSigmoid(*operation->get_hard_sigmoid(), block));
+        break;
+      }
       case mojom::Operation::Tag::kLeakyRelu: {
         RETURN_IF_ERROR(
             AddOperationForLeakyRelu(*operation->get_leaky_relu(), block));
@@ -715,7 +721,6 @@ GraphBuilder::BuildCoreMLModel() {
       case mojom::Operation::Tag::kGelu:
       case mojom::Operation::Tag::kGru:
       case mojom::Operation::Tag::kGruCell:
-      case mojom::Operation::Tag::kHardSigmoid:
       case mojom::Operation::Tag::kHardSwish:
       case mojom::Operation::Tag::kLayerNormalization:
       case mojom::Operation::Tag::kInstanceNormalization:
@@ -1585,6 +1590,32 @@ base::expected<void, mojom::ErrorPtr> GraphBuilder::AddOperationForGemm(
   return AddOperationForElementwiseBinary(
       matmul_output, c_operand_id, operation.output_operand_id,
       mojom::ElementWiseBinary::Kind::kAdd, block);
+}
+
+base::expected<void, mojom::ErrorPtr> GraphBuilder::AddOperationForHardSigmoid(
+    const mojom::HardSigmoid& operation,
+    CoreML::Specification::MILSpec::Block& block) {
+  const OperandInfo& input_operand_info =
+      GetOperandInfo(operation.input_operand_id);
+  CHECK(kFloatDataTypes.contains(input_operand_info.mil_data_type));
+
+  CoreML::Specification::MILSpec::Operation* op = block.add_operations();
+  op->set_type(kOpHardSigmoidTypeName);
+
+  SetInputWithName(*op->mutable_inputs(), kOpParamX,
+                   input_operand_info.coreml_name);
+
+  // TODO(crbug.com/338601192): Consider using float16 when the input is
+  // float16.
+  SetInputsWithValues(
+      *op->mutable_inputs(),
+      {
+          {kOpParamAlpha, CreateScalarImmediateValue(operation.alpha)},
+          {kOpParamBeta, CreateScalarImmediateValue(operation.beta)},
+      });
+
+  PopulateNamedValueType(operation.output_operand_id, *op->add_outputs());
+  return base::ok();
 }
 
 base::expected<void, mojom::ErrorPtr> GraphBuilder::AddOperationForLeakyRelu(
