@@ -1104,7 +1104,7 @@ TEST_F(ReadAnythingAppControllerTest,
 
 TEST_F(ReadAnythingAppControllerTest, GetDisplayNameForLocale) {
   EXPECT_EQ(GetDisplayNameForLocale("en-US", "en"), "English (United States)");
-  EXPECT_EQ(GetDisplayNameForLocale("en-US", "es"), "inglés (Estados Unidos)");
+  EXPECT_EQ(GetDisplayNameForLocale("en-US", "es"), "Inglés (Estados Unidos)");
   EXPECT_EQ(GetDisplayNameForLocale("en-US", "en-US"),
             "English (United States)");
   EXPECT_EQ(GetDisplayNameForLocale("en-UK", "en"), "English (United Kingdom)");

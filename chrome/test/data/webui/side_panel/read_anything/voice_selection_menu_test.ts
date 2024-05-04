@@ -442,7 +442,7 @@ suite('VoiceSelectionMenu', () => {
 
         assertEquals(msgs.length, 1);
         assertStringContains(
-            msgs[0]!.textContent!.trim(), 'Downloading français voices');
+            msgs[0]!.textContent!.trim(), 'Downloading Français voices');
       });
 
       test('hides downloading message when done', () => {
@@ -475,7 +475,7 @@ suite('VoiceSelectionMenu', () => {
             msgs[1]!.textContent!.trim(), 'Downloading 日本語 voices');
         assertStringContains(
             msgs[2]!.textContent!.trim(),
-            'Downloading español (España) voices');
+            'Downloading Español (España) voices');
         assertStringContains(
             msgs[3]!.textContent!.trim(),
             'Downloading हिन्दी voices');

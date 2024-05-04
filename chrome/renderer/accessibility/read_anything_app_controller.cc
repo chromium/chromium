@@ -1222,6 +1222,8 @@ const std::string ReadAnythingAppController::GetDisplayNameForLocale(
   // Return an empty string to communicate there's no display name.
   if (!found_valid_result) {
     locale_result = std::string();
+  } else {
+    locale_result[0] = std::toupper(locale_result[0]);
   }
 
   return locale_result;
