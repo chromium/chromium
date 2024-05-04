@@ -36,6 +36,7 @@ import org.chromium.chrome.browser.preferences.ChromePreferenceKeys;
 import org.chromium.chrome.browser.preferences.ChromeSharedPreferences;
 import org.chromium.chrome.browser.tab.state.ShoppingPersistedTabDataService;
 import org.chromium.chrome.browser.tab_resumption.TabResumptionModuleUtils;
+import org.chromium.chrome.browser.tabpersistence.TabStateFileManager;
 import org.chromium.chrome.browser.tasks.tab_management.TabManagementFieldTrial;
 import org.chromium.chrome.browser.tasks.tab_management.TabUiFeatureUtilities;
 import org.chromium.chrome.browser.toolbar.ToolbarFeatures;
@@ -135,6 +136,7 @@ public class ChromeCachedFlags {
                                 TabResumptionModuleUtils.TAB_RESUMPTION_MAX_TILES_NUMBER,
                                 TabResumptionModuleUtils.TAB_RESUMPTION_USE_SALIENT_IMAGE,
                                 TabResumptionModuleUtils.TAB_RESUMPTION_V2,
+                                TabStateFileManager.MIGRATE_STALE_TABS_CACHED_PARAM,
                                 TabUiFeatureUtilities.ANIMATION_START_TIMEOUT_MS,
                                 TabUiFeatureUtilities.ZOOMING_MIN_MEMORY,
                                 TabUiFeatureUtilities.SKIP_SLOW_ZOOMING,

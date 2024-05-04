@@ -15,6 +15,7 @@ import org.chromium.base.ResettersForTesting;
 import org.chromium.base.StreamUtil;
 import org.chromium.base.ThreadUtils;
 import org.chromium.base.Token;
+import org.chromium.base.cached_flags.BooleanCachedFieldTrialParameter;
 import org.chromium.base.metrics.RecordHistogram;
 import org.chromium.base.task.PostTask;
 import org.chromium.base.task.TaskTraits;
@@ -79,6 +80,10 @@ public class TabStateFileManager {
     private static String sChannelNameOverrideForTest;
 
     private static final long NO_TAB_GROUP_ID = 0L;
+
+    public static final BooleanCachedFieldTrialParameter MIGRATE_STALE_TABS_CACHED_PARAM =
+            ChromeFeatureList.newBooleanCachedFieldTrialParameter(
+                    ChromeFeatureList.TAB_STATE_FLATBUFFER, "migrate_stale_tabs", false);
 
     /** Enum representing the exception that occurred during {@link restoreTabState}. */
     @IntDef({
@@ -408,7 +413,7 @@ public class TabStateFileManager {
             }
             // If TabState was restored using legacy format and the FlatBuffer flag is on, that
             // indicates the TabState hasn't been migrated yet and should be.
-            if (isFlatBufferSchemaEnabled()) {
+            if (isMigrateStaleTabsToFlatBufferEnabled()) {
                 tabState.shouldMigrate = true;
             }
             return tabState;
@@ -691,5 +696,9 @@ public class TabStateFileManager {
 
     private static boolean isFlatBufferSchemaEnabled() {
         return ChromeFeatureList.sTabStateFlatBuffer.isEnabled();
+    }
+
+    private static boolean isMigrateStaleTabsToFlatBufferEnabled() {
+        return MIGRATE_STALE_TABS_CACHED_PARAM.getValue();
     }
 }

@@ -506,7 +506,11 @@ public class TabPersistentStoreTest {
     @Test
     @SmallTest
     @Feature("TabPersistentStore")
-    @EnableFeatures(ChromeFeatureList.TAB_STATE_FLATBUFFER)
+    @EnableFeatures({ChromeFeatureList.TAB_STATE_FLATBUFFER + "<Study"})
+    @CommandLineFlags.Add({
+        "force-fieldtrials=Study/Group",
+        "force-fieldtrial-params=Study.Group:migrate_stale_tabs/true"
+    })
     public void testFlatBufferMigration() throws Exception {
         Pair<TabPersistentStore, Tab[]> storeAndRestoredTabs = createStoreAndRestoreTabs();
         TabPersistentStore store = storeAndRestoredTabs.first;
