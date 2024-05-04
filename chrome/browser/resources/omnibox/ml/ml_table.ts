@@ -131,4 +131,10 @@ export class MlTableElement extends CustomElement {
   }
 }
 
+declare global {
+  interface HTMLElementTagNameMap {
+    'ml-table': MlTableElement;
+  }
+}
+
 customElements.define('ml-table', MlTableElement);

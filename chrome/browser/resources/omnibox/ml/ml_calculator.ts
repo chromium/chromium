@@ -122,4 +122,10 @@ export class MlCalculatorElement extends CustomElement {
   }
 }
 
+declare global {
+  interface HTMLElementTagNameMap {
+    'ml-calculator': MlCalculatorElement;
+  }
+}
+
 customElements.define('ml-calculator', MlCalculatorElement);

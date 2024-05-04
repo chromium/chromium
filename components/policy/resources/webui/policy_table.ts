@@ -56,10 +56,8 @@ export class PolicyTableElement extends CustomElement {
 
   addEventListeners() {
     for (const field of Object.values(SortButtonsField)) {
-      const sortUpButton =
-          this.getRequiredElement(`#${field}-sort-up`) as HTMLButtonElement;
-      const sortDownButton =
-          this.getRequiredElement(`#${field}-sort-down`) as HTMLButtonElement;
+      const sortUpButton = this.getRequiredElement(`#${field}-sort-up`);
+      const sortDownButton = this.getRequiredElement(`#${field}-sort-down`);
       sortUpButton.onclick = () => this.update(SortOrder.ASCENDING, field);
       sortDownButton.onclick = () => this.update(SortOrder.DESCENDING, field);
     }

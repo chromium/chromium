@@ -138,7 +138,7 @@ export class MlChartElement extends CustomElement {
   }
 
   connectedCallback() {
-    const canvas = this.getRequiredElement<HTMLCanvasElement>('canvas');
+    const canvas = this.getRequiredElement('canvas');
     this.canvasSize = new Vector(canvas.width, canvas.height);
     this.context = canvas.getContext('2d')!;
     canvas.addEventListener(
@@ -535,6 +535,12 @@ export class MlChartElement extends CustomElement {
   // Helper to get colors consistent with the colored texts defined in ml.css.
   private getColor(h: number) {
     return `hsl(${h}, 50%, ${this.getCssProperty('--color-lightness')})`;
+  }
+}
+
+declare global {
+  interface HTMLElementTagNameMap {
+    'ml-chart': MlChartElement;
   }
 }
 

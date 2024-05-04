@@ -37,8 +37,11 @@ export class CustomElement extends HTMLElement {
     return this.shadowRoot!.querySelectorAll<E>(query);
   }
 
-  getRequiredElement<T extends HTMLElement = HTMLElement>(query: string): T {
-    const el = this.shadowRoot!.querySelector<T>(query);
+  getRequiredElement<K extends keyof HTMLElementTagNameMap>(query: K):
+      HTMLElementTagNameMap[K];
+  getRequiredElement<E extends HTMLElement = HTMLElement>(query: string): E;
+  getRequiredElement(query: string) {
+    const el = this.shadowRoot!.querySelector(query);
     assert(el);
     assert(el instanceof HTMLElement);
     return el;

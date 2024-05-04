@@ -43,8 +43,7 @@ export class StructuredMetricsInternalsAppElement extends CustomElement {
     await this.updateStructuredMetricsSummary_();
     await this.updateStructuredMetricsEvents_();
 
-    const eventRefreshButton =
-        this.getRequiredElement<HTMLElement>('#sm-refresh-events');
+    const eventRefreshButton = this.getRequiredElement('#sm-refresh-events');
     eventRefreshButton.addEventListener(
         'click', () => this.updateStructuredMetricsEvents_());
   }
@@ -58,8 +57,7 @@ export class StructuredMetricsInternalsAppElement extends CustomElement {
         await this.browserProxy_.fetchStructuredMetricsSummary();
     const template =
         this.getRequiredElement<HTMLTemplateElement>('#summary-row-template');
-    const smSummaryBody =
-        this.getRequiredElement<HTMLElement>('#sm-summary-body');
+    const smSummaryBody = this.getRequiredElement('#sm-summary-body');
     updateStructuredMetricsSummary(smSummaryBody, summary, template);
   }
 
@@ -79,8 +77,7 @@ export class StructuredMetricsInternalsAppElement extends CustomElement {
 
     const kvTemplate =
         this.getRequiredElement<HTMLTemplateElement>('#summary-row-template');
-    const eventTableBody =
-      this.getRequiredElement<HTMLElement>('#sm-events-body');
+    const eventTableBody = this.getRequiredElement('#sm-events-body');
 
     updateStructuredMetricsEvents(
         eventTableBody, events, eventTemplate, eventDetailsTemplate,

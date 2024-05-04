@@ -64,9 +64,9 @@ export class SiteEngagementAppElement extends CustomElement {
 
   connectedCallback() {
     const engagementTableHeader =
-        this.getRequiredElement<HTMLElement>('#engagement-table-header');
+        this.getRequiredElement('#engagement-table-header');
     this.engagementTableBody =
-        this.getRequiredElement<HTMLElement>('#engagement-table-body');
+        this.getRequiredElement('#engagement-table-body');
 
     const headers = engagementTableHeader.children;
     for (let i = 0; i < headers.length; i++) {
@@ -80,8 +80,7 @@ export class SiteEngagementAppElement extends CustomElement {
           this.sortKey = newSortKey;
           this.sortReverse = false;
         }
-        const oldSortColumn =
-            this.getRequiredElement<HTMLElement>('.sort-column');
+        const oldSortColumn = this.getRequiredElement('.sort-column');
         oldSortColumn.classList.remove('sort-column');
         target.classList.add('sort-column');
         target.toggleAttribute('sort-reverse', this.sortReverse);
