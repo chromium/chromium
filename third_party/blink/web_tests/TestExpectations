@@ -2567,9 +2567,9 @@ crbug.com/626703 [ Mac ] external/wpt/mediacapture-insertable-streams/legacy/Med
 crbug.com/626703 external/wpt/uievents/mouse/mouse_boundary_events_after_removing_last_over_element.html [ Failure ]
 
 # ====== New tests from wpt-importer added here ======
-[ Win11-arm64 ] external/wpt/html/semantics/forms/the-selectlist-element/selectlist-option-arbitrary-content-displayed.tentative.html [ Failure ]
-[ Win11-arm64 ] virtual/fedcm-multi-idp/external/wpt/credential-management/fedcm-multi-idp/fedcm-multi-idp-mediation-optional.https.html [ Timeout ]
-[ Win11-arm64 ] virtual/stylable-select-disabled/external/wpt/html/semantics/forms/the-selectlist-element/selectlist-option-arbitrary-content-displayed.tentative.html [ Failure ]
+crbug.com/338513292 [ Win11-arm64 ] external/wpt/html/semantics/forms/the-selectlist-element/selectlist-option-arbitrary-content-displayed.tentative.html [ Failure ]
+crbug.com/338513293 [ Win11-arm64 ] virtual/fedcm-multi-idp/external/wpt/credential-management/fedcm-multi-idp/fedcm-multi-idp-mediation-optional.https.html [ Timeout ]
+crbug.com/338513292 [ Win11-arm64 ] virtual/stylable-select-disabled/external/wpt/html/semantics/forms/the-selectlist-element/selectlist-option-arbitrary-content-displayed.tentative.html [ Failure ]
 crbug.com/338437452 [ Win11-arm64 ] external/wpt/html/semantics/embedded-content/bfcache/embedded-type-only.html [ Timeout ]
 crbug.com/338350366 [ Win11-arm64 ] external/wpt/preload/delaying-onload-link-preload-after-discovery.html [ Timeout ]
 crbug.com/338339781 [ Win11-arm64 ] external/wpt/fs/FileSystemFileHandle-cross-primitive-locking.https.tentative.worker.html [ Timeout ]
