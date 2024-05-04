@@ -18,6 +18,10 @@ export function isSeaPenTextInputEnabled() {
   return loadTimeData.getBoolean('isSeaPenTextInputEnabled');
 }
 
+export function isSeaPenUINextEnabled() {
+  return loadTimeData.getBoolean('isSeaPenUINextEnabled');
+}
+
 export function isLacrosEnabled() {
   return loadTimeData.getBoolean('isLacrosEnabled');
 }

@@ -6,6 +6,7 @@ import 'chrome://personalization/strings.m.js';
 import 'chrome://webui-test/chromeos/mojo_webui_test_support.js';
 
 import {emptyState, SeaPenActionName, SeaPenRecentWallpapersElement, WallpaperGridItemElement} from 'chrome://personalization/js/personalization_app.js';
+import {loadTimeData} from 'chrome://resources/js/load_time_data.js';
 import {assertDeepEquals, assertEquals, assertFalse, assertNull, assertTrue} from 'chrome://webui-test/chai_assert.js';
 import {waitAfterNextRender} from 'chrome://webui-test/polymer_test_util.js';
 
@@ -48,6 +49,9 @@ suite('SeaPenRecentWallpapersElementTest', function() {
   teardown(async () => {
     await teardownElement(seaPenRecentWallpapersElement);
     seaPenRecentWallpapersElement = null;
+    loadTimeData.overrideValues({
+      isSeaPenUINextEnabled: false,
+    });
   });
 
   test('displays recently used Sea Pen wallpapers', async () => {
@@ -317,6 +321,116 @@ suite('SeaPenRecentWallpapersElementTest', function() {
       }
     });
   });
+
+  test(
+      'disables SeaPenUiNext to hide Create more option for recent image',
+      async () => {
+        personalizationStore.data.wallpaper.seaPen.recentImages =
+            seaPenProvider.recentImageIds;
+        personalizationStore.data.wallpaper.seaPen.recentImageData =
+            seaPenProvider.recentImageData;
+        personalizationStore.data.wallpaper.seaPen.loading = {
+          recentImageData: {
+            111: false,
+            222: false,
+            333: false,
+          },
+          recentImages: false,
+          thumbnails: false,
+          currentSelected: false,
+          setImage: 0,
+        };
+
+        // Initialize |seaPenRecentWallpapersElement|.
+        seaPenRecentWallpapersElement =
+            initElement(SeaPenRecentWallpapersElement);
+        await waitAfterNextRender(seaPenRecentWallpapersElement);
+
+        // Get menu icon button for the second image.
+        const menuIconButton =
+            seaPenRecentWallpapersElement.shadowRoot?.querySelectorAll<
+                HTMLElement>(
+                'div:not([hidden]) .menu-icon-container .menu-icon-button')[1];
+        assertTrue(
+            !!menuIconButton,
+            'menu icon button for the second image should display.');
+
+        // Click on the menu icon button of the second image to open its menu
+        // options.
+        menuIconButton!.click();
+
+        // Get the action menu for the second image.
+        const actionMenu =
+            seaPenRecentWallpapersElement.shadowRoot
+                ?.querySelectorAll<HTMLElement>(
+                    'div:not([hidden]) .action-menu-container')[1];
+        assertTrue(!!actionMenu, 'action menu for 2nd image should display');
+
+        const menuOptions =
+            actionMenu.querySelectorAll<HTMLElement>('.dropdown-item');
+        assertEquals(2, menuOptions.length, '2 options available to select');
+
+        const createMoreOption = actionMenu.querySelector<HTMLElement>(
+            '.dropdown-item.create-more-option');
+        assertFalse(
+            !!createMoreOption, 'Create more option should not display.');
+      });
+
+  test(
+      'enables SeaPenUINext to show Create more option for recent image',
+      async () => {
+        loadTimeData.overrideValues({
+          isSeaPenUINextEnabled: true,
+        });
+        personalizationStore.data.wallpaper.seaPen.recentImages =
+            seaPenProvider.recentImageIds;
+        personalizationStore.data.wallpaper.seaPen.recentImageData =
+            seaPenProvider.recentImageData;
+        personalizationStore.data.wallpaper.seaPen.loading = {
+          recentImageData: {
+            111: false,
+            222: false,
+            333: false,
+          },
+          recentImages: false,
+          thumbnails: false,
+          currentSelected: false,
+          setImage: 0,
+        };
+
+        // Initialize |seaPenRecentWallpapersElement|.
+        seaPenRecentWallpapersElement =
+            initElement(SeaPenRecentWallpapersElement);
+        await waitAfterNextRender(seaPenRecentWallpapersElement);
+
+        // Get menu icon button for the second image.
+        const menuIconButton =
+            seaPenRecentWallpapersElement.shadowRoot?.querySelectorAll<
+                HTMLElement>(
+                'div:not([hidden]) .menu-icon-container .menu-icon-button')[1];
+        assertTrue(
+            !!menuIconButton,
+            'menu icon button for the second image should display.');
+
+        // Click on the menu icon button of the second image to open its menu
+        // options.
+        menuIconButton!.click();
+
+        // Get the action menu for the second image.
+        const actionMenu =
+            seaPenRecentWallpapersElement.shadowRoot
+                ?.querySelectorAll<HTMLElement>(
+                    'div:not([hidden]) .action-menu-container')[1];
+        assertTrue(!!actionMenu, 'action menu for 2nd image should display');
+
+        const menuOptions =
+            actionMenu.querySelectorAll<HTMLElement>('.dropdown-item');
+        assertEquals(3, menuOptions.length, '3 options available to select');
+
+        const createMoreOption = actionMenu.querySelector<HTMLElement>(
+            '.dropdown-item.create-more-option');
+        assertTrue(!!createMoreOption, 'Create more option should display.');
+      });
 
   test(
       'select Wallpaper Info option for recent image', async () => {

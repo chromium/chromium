@@ -8,6 +8,7 @@ import {CrDialogElement} from 'chrome://resources/ash/common/cr_elements/cr_dial
 import {CrIconButtonElement} from 'chrome://resources/ash/common/cr_elements/cr_icon_button/cr_icon_button.js';
 import {SeaPenTemplateId} from 'chrome://resources/ash/common/sea_pen/sea_pen_generated.mojom-webui.js';
 import {assertInstanceof} from 'chrome://resources/js/assert.js';
+import {loadTimeData} from 'chrome://resources/js/load_time_data.js';
 import {SkColor} from 'chrome://resources/mojo/skia/public/mojom/skcolor.mojom-webui.js';
 import {IronSelectorElement} from 'chrome://resources/polymer/v3_0/iron-selector/iron-selector.js';
 import {assertDeepEquals, assertEquals, assertFalse, assertGT, assertLE, assertNotEquals, assertTrue} from 'chrome://webui-test/chai_assert.js';
@@ -596,6 +597,10 @@ suite('sea pen', () => {
     clickWallpaperPreviewLink();
   });
 
+  teardown(() => {
+    loadTimeData.overrideValues({isSeaPenUINextEnabled: false});
+  });
+
   suite('feedback', async () => {
     // At the end of this test, a feedback dialog is expected to be opened in an
     // external window.
@@ -876,6 +881,7 @@ suite('sea pen', () => {
   });
 
   test('create more recent image', async () => {
+    loadTimeData.overrideValues({isSeaPenUINextEnabled: true});
     const seaPenRouter = await getSeaPenRouter();
     const recentImages = await waitUntil(
         () => seaPenRouter.shadowRoot
