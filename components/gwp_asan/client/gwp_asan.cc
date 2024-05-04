@@ -10,7 +10,6 @@
 #include <optional>
 #include <string>
 #include <string_view>
-#include <tuple>
 
 #include "base/allocator/partition_alloc_support.h"
 #include "base/allocator/partition_allocator/src/partition_alloc/partition_alloc_buildflags.h"
@@ -18,6 +17,7 @@
 #include "base/debug/crash_logging.h"
 #include "base/feature_list.h"
 #include "base/functional/callback_helpers.h"
+#include "base/functional/function_ref.h"
 #include "base/logging.h"
 #include "base/metrics/field_trial_params.h"
 #include "base/numerics/safe_math.h"
@@ -141,6 +141,22 @@ const base::FeatureParam<LightweightDetectorMode>
                                      LightweightDetectorMode::kBrpQuarantine,
                                      &kLightweightUafDetectorModeOptions};
 
+// Gets (integral) named `param` from `feature`,  defaulting to
+// `fallback` if unset. Invokes `failure_condition()` on the result to
+// validate that the value is acceptable.
+std::optional<int> GetIntParam(const base::Feature& feature,
+                               const std::string& param,
+                               int fallback,
+                               base::FunctionRef<bool(int)> failure_condition) {
+  int param_int = GetFieldTrialParamByFeatureAsInt(feature, param, fallback);
+  if (param_int < 1 || failure_condition(param_int)) {
+    DLOG(ERROR) << feature.name << " " << param
+                << " is out-of-range: " << param_int;
+    return std::nullopt;
+  }
+  return param_int;
+}
+
 // Returns whether this process should be sampled to enable GWP-ASan.
 bool SampleProcess(const base::Feature& feature, bool boost_sampling) {
   double process_sampling_probability =
@@ -240,20 +256,11 @@ bool IsMutuallyExclusiveFeatureAllowed(const base::Feature& feature) {
 }  // namespace
 
 // Exported for testing.
-GWP_ASAN_EXPORT std::optional<AllocatorSettings> GetAllocatorSettings(
+// Provides ungated access to the allocator settings that _would_
+// be assigned to the `feature`.
+GWP_ASAN_EXPORT std::optional<AllocatorSettings> GetAllocatorSettingsImpl(
     const base::Feature& feature,
     bool boost_sampling) {
-  if (!base::FeatureList::IsEnabled(feature))
-    return std::nullopt;
-
-  if (!IsMutuallyExclusiveFeatureAllowed(feature)) {
-    return std::nullopt;
-  }
-
-  if (!SampleProcess(feature, boost_sampling)) {
-    return std::nullopt;
-  }
-
   static_assert(
       AllocatorState::kMaxRequestedSlots <= std::numeric_limits<int>::max(),
       "kMaxRequestedSlots out of range");
@@ -264,29 +271,26 @@ GWP_ASAN_EXPORT std::optional<AllocatorSettings> GetAllocatorSettings(
                 "AllocatorState::kMaxMetadata out of range");
   constexpr int kMaxMetadata = static_cast<int>(AllocatorState::kMaxMetadata);
 
-  int total_pages = GetFieldTrialParamByFeatureAsInt(feature, "TotalPages",
-                                                     kDefaultTotalPages);
-  if (total_pages < 1 || total_pages > kMaxRequestedSlots) {
-    DLOG(ERROR) << feature.name
-                << " TotalPages is out-of-range: " << total_pages;
+  const auto total_pages =
+      GetIntParam(feature, "TotalPages", kDefaultTotalPages,
+                  [](int param_int) { return param_int > kMaxRequestedSlots; });
+  if (!total_pages.has_value()) {
     return std::nullopt;
   }
 
-  int max_metadata = GetFieldTrialParamByFeatureAsInt(feature, "MaxMetadata",
-                                                      kDefaultMaxMetadata);
-  if (max_metadata < 1 || max_metadata > std::min(total_pages, kMaxMetadata)) {
-    DLOG(ERROR) << feature.name
-                << " MaxMetadata is out-of-range: " << max_metadata
-                << " with TotalPages = " << total_pages;
+  const auto max_metadata = GetIntParam(
+      feature, "MaxMetadata", kDefaultMaxMetadata,
+      [total_pages, kMaxMetadata](int param_int) {
+        return param_int > std::min(total_pages.value(), kMaxMetadata);
+      });
+  if (!max_metadata.has_value()) {
     return std::nullopt;
   }
 
-  int max_allocations = GetFieldTrialParamByFeatureAsInt(
-      feature, "MaxAllocations", kDefaultMaxAllocations);
-  if (max_allocations < 1 || max_allocations > max_metadata) {
-    DLOG(ERROR) << feature.name
-                << " MaxAllocations is out-of-range: " << max_allocations
-                << " with MaxMetadata = " << max_metadata;
+  const auto max_allocations = GetIntParam(
+      feature, "MaxAllocations", kDefaultMaxAllocations,
+      [max_metadata](int param_int) { return param_int > max_metadata; });
+  if (!max_allocations.has_value()) {
     return std::nullopt;
   }
 
@@ -294,9 +298,29 @@ GWP_ASAN_EXPORT std::optional<AllocatorSettings> GetAllocatorSettings(
   if (!alloc_sampling_freq)
     return std::nullopt;
 
-  return AllocatorSettings{
-      static_cast<size_t>(max_allocations), static_cast<size_t>(max_metadata),
-      static_cast<size_t>(total_pages), alloc_sampling_freq};
+  return AllocatorSettings{static_cast<size_t>(max_allocations.value()),
+                           static_cast<size_t>(max_metadata.value()),
+                           static_cast<size_t>(total_pages.value()),
+                           alloc_sampling_freq};
+}
+
+// Exported for testing.
+GWP_ASAN_EXPORT std::optional<AllocatorSettings> GetAllocatorSettings(
+    const base::Feature& feature,
+    bool boost_sampling) {
+  if (!base::FeatureList::IsEnabled(feature)) {
+    return std::nullopt;
+  }
+
+  if (!IsMutuallyExclusiveFeatureAllowed(feature)) {
+    return std::nullopt;
+  }
+
+  if (!SampleProcess(feature, boost_sampling)) {
+    return std::nullopt;
+  }
+
+  return GetAllocatorSettingsImpl(feature, boost_sampling);
 }
 
 bool MaybeEnableLightweightDetectorInternal(bool boost_sampling,
