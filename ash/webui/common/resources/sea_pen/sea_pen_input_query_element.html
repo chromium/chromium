@@ -13,8 +13,27 @@
     --cr-input-error-display: none;
   }
 
-  #buttonContainer {
-    padding: 12px 0;
+  #searchButtons {
+    align-items: center;
+    box-sizing: border-box;
+    display: flex;
+    justify-content: center;
+    margin-block: 24px;
+  }
+
+  #searchButtons cr-button {
+    margin: 0 4px;
+    padding-inline-end: 16px;
+  }
+
+  #thumbnailsLoadingText {
+    color: var(--cros-sys-on_primary_container);
+    font: var(--cros-annotation-1-font);
+  }
+
+  cr-button {
+    font: var(--cros-button-2-font);
+    padding: 0px 12px;
   }
 </style>
 
@@ -22,17 +41,25 @@
   <cr-input id="queryInput"
       maxlength="[[maxTextLength_]]"
       placeholder="Describe your wallpaper"
+      on-change="onClickInputQuerySearchButton_"
       type="text"
       value="{{textValue_}}">
   </cr-input>
-  <div id="buttonContainer">
-    <cr-button
-        id="searchButton"
-        class="action-button"
-        disabled$="[[thumbnailsLoading_]]"
-        on-click="onClickInputQuerySearchButton_">
-      <iron-icon icon$="[[getSearchButtonIcon_(thumbnails_)]]" slot="prefix-icon"></iron-icon>
-      [[getSearchButtonText_(thumbnails_)]]
-    </cr-button>
+  <div id="searchButtons">
+    <template is="dom-if" if="[[thumbnailsLoading_]]">
+      <span id="thumbnailsLoadingText" aria-description$="[[getTemplateAriaLabel_(templateTokens_)]]" aria-live="polite">
+        [[i18n('seaPenThumbnailsLoading')]]
+      </span>
+    </template>
+    <template is="dom-if" if="[[!thumbnailsLoading_]]" restamp>
+      <cr-button
+          id="searchButton"
+          class="action-button"
+          on-click="onClickInputQuerySearchButton_">
+        <iron-icon icon$="[[searchButtonIcon_]]" slot="prefix-icon">
+        </iron-icon>
+        <p>[[searchButtonText_]]</p>
+      </cr-button>
+    </template>
   </div>
 </div>
