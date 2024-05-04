@@ -70922,6 +70922,19 @@
        {}
       ]
      ],
+     "anchor-scroll-overflow-hidden.html": [
+      "b57e39956bbbb3f268b25d3dabedb6c97ef22dd0",
+      [
+       null,
+       [
+        [
+         "/css/css-anchor-position/anchor-scroll-overflow-hidden-ref.html",
+         "=="
+        ]
+       ],
+       {}
+      ]
+     ],
      "anchor-scroll-position-try-012.html": [
       "7c0b381999d303dcefd8dccbdcad60d9c4b1d29d",
       [
@@ -227955,6 +227968,19 @@
        {}
       ]
      ],
+     "webkit-appearance-auto-non-html-namespace-001.html": [
+      "27567497250252ef0a45808506ab2b2c95371189",
+      [
+       null,
+       [
+        [
+         "/css/css-ui/nothing-below-ref.html",
+         "=="
+        ]
+       ],
+       {}
+      ]
+     ],
      "webkit-appearance-button-001.html": [
       "cf36b42384a7168d85a0475bded03aaadf26d52c",
       [
@@ -302721,6 +302747,10 @@
      ],
      "anchor-position-top-layer-ref.html": [
       "dc7f77f2b3441ebee25f3e40a9480b668ee79ea4",
+      []
+     ],
+     "anchor-scroll-overflow-hidden-ref.html": [
+      "b674998a5db1f347af82bde1f5efb4261a3732af",
       []
      ],
      "anchor-scroll-position-try-012-ref.html": [
