@@ -147,9 +147,15 @@ LensOverlayQueryController::LensOverlayQueryController(
 
 LensOverlayQueryController::~LensOverlayQueryController() = default;
 
-void LensOverlayQueryController::StartQueryFlow(const SkBitmap& screenshot) {
+void LensOverlayQueryController::StartQueryFlow(
+    const SkBitmap& screenshot,
+    std::optional<GURL> page_url,
+    std::optional<std::string> page_title) {
   DCHECK_EQ(query_controller_state_, QueryControllerState::kOff);
   original_screenshot_ = screenshot;
+  page_url_ = page_url;
+  page_title_ = page_title;
+
   PrepareAndFetchFullImageRequest();
 }
 
@@ -157,7 +163,6 @@ void LensOverlayQueryController::PrepareAndFetchFullImageRequest() {
   DCHECK(query_controller_state_ !=
          QueryControllerState::kAwaitingFullImageResponse);
   query_controller_state_ = QueryControllerState::kAwaitingFullImageResponse;
-
   base::ThreadPool::PostTask(
       base::BindOnce(&DownscaleAndEncodeBitmap, original_screenshot_)
           .Then(base::BindPostTask(
@@ -271,7 +276,9 @@ void LensOverlayQueryController::EndQuery() {
   interaction_endpoint_fetcher_.reset();
   cluster_info_received_callback_.Reset();
   access_token_fetcher_.reset();
-  cluster_info_ = std::nullopt;
+  page_url_.reset();
+  page_title_.reset();
+  cluster_info_.reset();
   query_controller_state_ = QueryControllerState::kOff;
 }
 
@@ -311,7 +318,8 @@ void LensOverlayQueryController::SendTextOnlyQuery(
   request_counter_++;
   lens::proto::LensOverlayUrlResponse lens_overlay_url_response;
   lens_overlay_url_response.set_url(
-      lens::BuildTextOnlySearchURL(query_text, additional_search_query_params)
+      lens::BuildTextOnlySearchURL(query_text, page_url_, page_title_,
+                                   additional_search_query_params)
           .spec());
   base::SequencedTaskRunner::GetCurrentDefault()->PostTask(
       FROM_HERE, base::BindOnce(url_callback_, lens_overlay_url_response));

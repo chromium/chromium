@@ -16,6 +16,7 @@
 #include "chrome/browser/lens/core/mojom/text.mojom.h"
 #include "chrome/browser/profiles/profile.h"
 #include "chrome/browser/signin/identity_manager_factory.h"
+#include "chrome/browser/sync/sync_service_factory.h"
 #include "chrome/browser/ui/browser.h"
 #include "chrome/browser/ui/lens/lens_overlay_side_panel_coordinator.h"
 #include "chrome/browser/ui/lens/lens_overlay_url_builder.h"
@@ -157,7 +158,9 @@ class LensOverlayQueryControllerFake : public lens::LensOverlayQueryController {
                                    variations_client,
                                    identity_manager) {}
 
-  void StartQueryFlow(const SkBitmap& screenshot) override {
+  void StartQueryFlow(const SkBitmap& screenshot,
+                      std::optional<GURL> page_url,
+                      std::optional<std::string> page_title) override {
     // Send response for full image callback / HandleStartQueryResponse.
     std::vector<lens::mojom::OverlayObjectPtr> test_objects;
     test_objects.push_back(kTestOverlayObject->Clone());
@@ -180,8 +183,14 @@ class LensOverlayControllerFake : public LensOverlayController {
  public:
   LensOverlayControllerFake(tabs::TabInterface* tab,
                             variations::VariationsClient* variations_client,
-                            signin::IdentityManager* identity_manager)
-      : LensOverlayController(tab, variations_client, identity_manager) {}
+                            signin::IdentityManager* identity_manager,
+                            PrefService* pref_service,
+                            syncer::SyncService* sync_service)
+      : LensOverlayController(tab,
+                              variations_client,
+                              identity_manager,
+                              pref_service,
+                              sync_service) {}
 
   std::unique_ptr<lens::LensOverlayQueryController> CreateLensQueryController(
       lens::LensOverlayFullImageResponseCallback full_image_callback,
@@ -221,7 +230,8 @@ class TabFeaturesFake : public tabs::TabFeatures {
       Profile* profile) override {
     return std::make_unique<LensOverlayControllerFake>(
         tab, profile->GetVariationsClient(),
-        IdentityManagerFactory::GetForProfile(profile));
+        IdentityManagerFactory::GetForProfile(profile), profile->GetPrefs(),
+        SyncServiceFactory::GetForProfile(profile));
   }
 };
 

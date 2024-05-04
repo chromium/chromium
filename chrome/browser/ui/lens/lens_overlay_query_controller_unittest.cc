@@ -14,6 +14,7 @@
 #include "components/endpoint_fetcher/endpoint_fetcher.h"
 #include "content/public/test/browser_task_environment.h"
 #include "google_apis/common/api_error_codes.h"
+#include "net/base/url_util.h"
 #include "net/http/http_status_code.h"
 #include "net/traffic_annotation/network_traffic_annotation.h"
 #include "testing/gtest/include/gtest/gtest.h"
@@ -39,6 +40,17 @@ constexpr char kTestApiKey[] = "test_api_key";
 
 // The language to use.
 constexpr char kLanguage[] = "en-US";
+
+// The fake page information.
+constexpr char kTestPageUrl[] = "https://www.google.com";
+constexpr char kTestPageTitle[] = "Page Title";
+
+// The url parameter key for the search context.
+constexpr char kSearchContextParamKey[] = "mactx";
+
+// The encoded search context for the test page and title.
+constexpr char kTestEncodedSearchContext[] =
+    "ChdodHRwczovL3d3dy5nb29nbGUuY29tLxIKUGFnZSBUaXRsZQ";
 
 class FakeEndpointFetcher : public EndpointFetcher {
  public:
@@ -156,7 +168,9 @@ TEST_F(LensOverlayQueryControllerTest, FetchInitialQuery_ReturnsResponse) {
       profile()->GetVariationsClient(),
       IdentityManagerFactory::GetForProfile(profile()));
   SkBitmap bitmap = CreateNonEmptyBitmap(100, 100);
-  query_controller.StartQueryFlow(bitmap);
+  query_controller.StartQueryFlow(
+      bitmap, std::make_optional<GURL>(kTestPageUrl),
+      std::make_optional<std::string>(kTestPageTitle));
 
   task_environment_.RunUntilIdle();
   query_controller.EndQuery();
@@ -199,7 +213,9 @@ TEST_F(LensOverlayQueryControllerTest,
       kTestSuggestSignals);
   SkBitmap bitmap = CreateNonEmptyBitmap(100, 100);
   std::map<std::string, std::string> additional_search_query_params;
-  query_controller.StartQueryFlow(bitmap);
+  query_controller.StartQueryFlow(
+      bitmap, std::make_optional<GURL>(kTestPageUrl),
+      std::make_optional<std::string>(kTestPageTitle));
   task_environment_.RunUntilIdle();
 
   auto region = lens::mojom::CenterRotatedBox::New();
@@ -293,7 +309,9 @@ TEST_F(LensOverlayQueryControllerTest,
       kTestSuggestSignals);
   SkBitmap bitmap = CreateNonEmptyBitmap(100, 100);
   std::map<std::string, std::string> additional_search_query_params;
-  query_controller.StartQueryFlow(bitmap);
+  query_controller.StartQueryFlow(
+      bitmap, std::make_optional<GURL>(kTestPageUrl),
+      std::make_optional<std::string>(kTestPageTitle));
   task_environment_.RunUntilIdle();
 
   auto region = lens::mojom::CenterRotatedBox::New();
@@ -385,7 +403,9 @@ TEST_F(LensOverlayQueryControllerTest,
       kTestSuggestSignals);
   SkBitmap bitmap = CreateNonEmptyBitmap(100, 100);
   std::map<std::string, std::string> additional_search_query_params;
-  query_controller.StartQueryFlow(bitmap);
+  query_controller.StartQueryFlow(
+      bitmap, std::make_optional<GURL>(kTestPageUrl),
+      std::make_optional<std::string>(kTestPageTitle));
   task_environment_.RunUntilIdle();
 
   query_controller.SendObjectSelection(kTestObjectId,
@@ -452,16 +472,24 @@ TEST_F(LensOverlayQueryControllerTest,
       IdentityManagerFactory::GetForProfile(profile()));
   SkBitmap bitmap = CreateNonEmptyBitmap(100, 100);
   std::map<std::string, std::string> additional_search_query_params;
-  query_controller.StartQueryFlow(bitmap);
+  query_controller.StartQueryFlow(
+      bitmap, std::make_optional<GURL>(kTestPageUrl),
+      std::make_optional<std::string>(kTestPageTitle));
   task_environment_.RunUntilIdle();
 
   query_controller.SendTextOnlyQuery("", additional_search_query_params);
   task_environment_.RunUntilIdle();
   query_controller.EndQuery();
 
+  std::string actual_encoded_search_context;
+  net::GetValueForKeyInQuery(GURL(url_response_future.Get().url()),
+                             kSearchContextParamKey,
+                             &actual_encoded_search_context);
+
   ASSERT_TRUE(full_image_response_future.IsReady());
   ASSERT_TRUE(url_response_future.IsReady());
   ASSERT_FALSE(interaction_data_response_future.IsReady());
+  ASSERT_EQ(actual_encoded_search_context, kTestEncodedSearchContext);
 }
 
 TEST_F(LensOverlayQueryControllerTest,
@@ -493,7 +521,9 @@ TEST_F(LensOverlayQueryControllerTest,
   region->coordinate_type =
       lens::mojom::CenterRotatedBox_CoordinateType::kImage;
 
-  query_controller.StartQueryFlow(bitmap);
+  query_controller.StartQueryFlow(
+      bitmap, std::make_optional<GURL>(kTestPageUrl),
+      std::make_optional<std::string>(kTestPageTitle));
   task_environment_.RunUntilIdle();
 
   ASSERT_TRUE(full_image_response_future.IsReady());

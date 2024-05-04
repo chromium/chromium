@@ -8,6 +8,7 @@
 #include "base/no_destructor.h"
 #include "chrome/browser/profiles/profile.h"
 #include "chrome/browser/signin/identity_manager_factory.h"
+#include "chrome/browser/sync/sync_service_factory.h"
 #include "chrome/browser/ui/lens/lens_overlay_controller.h"
 #include "chrome/browser/ui/tabs/tab_model.h"
 #include "chrome/browser/ui/tabs/tab_strip_model.h"
@@ -61,7 +62,8 @@ std::unique_ptr<LensOverlayController> TabFeatures::CreateLensController(
     Profile* profile) {
   return std::make_unique<LensOverlayController>(
       tab, profile->GetVariationsClient(),
-      IdentityManagerFactory::GetForProfile(profile));
+      IdentityManagerFactory::GetForProfile(profile), profile->GetPrefs(),
+      SyncServiceFactory::GetForProfile(profile));
 }
 
 }  // namespace tabs

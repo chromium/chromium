@@ -15,8 +15,14 @@
 namespace lens {
 GURL AppendCommonSearchParametersToURL(const GURL& url_to_modify);
 
+GURL AppendSearchContextParamToURL(const GURL& url_to_modify,
+                                   std::optional<GURL> page_url,
+                                   std::optional<std::string> page_title);
+
 GURL BuildTextOnlySearchURL(
     const std::string& text_query,
+    std::optional<GURL> page_url,
+    std::optional<std::string> page_title,
     std::map<std::string, std::string> additional_search_query_params);
 
 GURL BuildLensSearchURL(

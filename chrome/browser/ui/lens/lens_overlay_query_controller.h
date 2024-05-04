@@ -60,7 +60,9 @@ class LensOverlayQueryController {
   // returning the response to the full image callback. Should be called
   // exactly once. Override these methods to stub out network requests for
   // testing.
-  virtual void StartQueryFlow(const SkBitmap& screenshot);
+  virtual void StartQueryFlow(const SkBitmap& screenshot,
+                              std::optional<GURL> page_url,
+                              std::optional<std::string> page_title);
 
   // Clears the state and resets stored values.
   void EndQuery();
@@ -206,6 +208,12 @@ class LensOverlayQueryController {
 
   // The original screenshot image.
   SkBitmap original_screenshot_;
+
+  // The page url, if it is allowed to be shared.
+  std::optional<GURL> page_url_;
+
+  // The page title, if it is allowed to be shared.
+  std::optional<std::string> page_title_;
 
   // The current state.
   QueryControllerState query_controller_state_ = QueryControllerState::kOff;

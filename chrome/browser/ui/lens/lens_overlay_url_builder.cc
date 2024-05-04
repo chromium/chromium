@@ -9,6 +9,7 @@
 #include "components/lens/lens_features.h"
 #include "net/base/registry_controlled_domains/registry_controlled_domain.h"
 #include "net/base/url_util.h"
+#include "third_party/omnibox_proto/search_context.pb.h"
 #include "url/gurl.h"
 
 namespace lens {
@@ -39,6 +40,9 @@ inline constexpr char kMultimodalModeParameterValue[] = "24";
 // Query parameter for the language code.
 inline constexpr char kLanguageCodeParameterKey[] = "hl";
 
+// Query parameter for the search context.
+inline constexpr char kSearchContextParameterKey[] = "mactx";
+
 // Appends the url params from the map to the url.
 GURL AppendUrlParamsFromMap(
     const GURL& url_to_modify,
@@ -65,8 +69,38 @@ GURL AppendCommonSearchParametersToURL(const GURL& url_to_modify) {
   return new_url;
 }
 
+GURL AppendSearchContextParamToURL(const GURL& url_to_modify,
+                                   std::optional<GURL> page_url,
+                                   std::optional<std::string> page_title) {
+  if (!page_url.has_value() && !page_title.has_value()) {
+    return url_to_modify;
+  }
+
+  GURL new_url = url_to_modify;
+  omnibox::SearchContext search_context;
+  if (page_url.has_value()) {
+    search_context.set_webpage_url(page_url->spec());
+  }
+  if (page_title.has_value()) {
+    search_context.set_webpage_title(*page_title);
+  }
+  std::string serialized_search_context;
+  if (!search_context.SerializeToString(&serialized_search_context)) {
+    return url_to_modify;
+  }
+  std::string encoded_search_context;
+  base::Base64UrlEncode(serialized_search_context,
+                        base::Base64UrlEncodePolicy::OMIT_PADDING,
+                        &encoded_search_context);
+  new_url = net::AppendOrReplaceQueryParameter(
+      new_url, kSearchContextParameterKey, encoded_search_context);
+  return new_url;
+}
+
 GURL BuildTextOnlySearchURL(
     const std::string& text_query,
+    std::optional<GURL> page_url,
+    std::optional<std::string> page_title,
     std::map<std::string, std::string> additional_search_query_params) {
   GURL url_with_query_params =
       GURL(lens::features::GetLensOverlayResultsSearchURL());
@@ -76,6 +110,8 @@ GURL BuildTextOnlySearchURL(
       url_with_query_params, kTextQueryParameterKey, text_query);
   url_with_query_params =
       AppendCommonSearchParametersToURL(url_with_query_params);
+  url_with_query_params = AppendSearchContextParamToURL(url_with_query_params,
+                                                        page_url, page_title);
   return url_with_query_params;
 }
 

@@ -15,6 +15,7 @@
 #include "chrome/browser/ui/browser_window/public/browser_window_interface.h"
 #include "chrome/browser/ui/chrome_pages.h"
 #include "chrome/browser/ui/lens/lens_overlay_image_helper.h"
+#include "chrome/browser/ui/lens/lens_overlay_permission_utils.h"
 #include "chrome/browser/ui/lens/lens_overlay_query_controller.h"
 #include "chrome/browser/ui/lens/lens_overlay_side_panel_coordinator.h"
 #include "chrome/browser/ui/lens/lens_overlay_url_builder.h"
@@ -122,10 +123,14 @@ std::vector<lens::mojom::OverlayObjectPtr> CopyObjects(
 LensOverlayController::LensOverlayController(
     tabs::TabInterface* tab,
     variations::VariationsClient* variations_client,
-    signin::IdentityManager* identity_manager)
+    signin::IdentityManager* identity_manager,
+    PrefService* pref_service,
+    syncer::SyncService* sync_service)
     : tab_(tab),
       variations_client_(variations_client),
-      identity_manager_(identity_manager) {
+      identity_manager_(identity_manager),
+      pref_service_(pref_service),
+      sync_service_(sync_service) {
   LensOverlayControllerTabLookup::CreateForWebContents(tab_->GetContents(),
                                                        this);
 
@@ -331,7 +336,8 @@ void LensOverlayController::BindOverlay(
   // response.
   if (!initialization_data_->has_full_image_response()) {
     lens_overlay_query_controller_->StartQueryFlow(
-        initialization_data_->current_screenshot_);
+        initialization_data_->current_screenshot_,
+        initialization_data_->page_url_, initialization_data_->page_title_);
   }
 }
 
@@ -464,12 +470,16 @@ LensOverlayController::CreateLensQueryController(
 LensOverlayController::OverlayInitializationData::OverlayInitializationData(
     const SkBitmap& screenshot,
     const std::string& data_uri,
+    std::optional<GURL> page_url,
+    std::optional<std::string> page_title,
     std::vector<lens::mojom::OverlayObjectPtr> objects,
     lens::mojom::TextPtr text,
     const lens::proto::LensOverlayInteractionResponse& interaction_response,
     lens::mojom::CenterRotatedBoxPtr selected_region)
     : current_screenshot_(screenshot),
       current_screenshot_data_uri_(data_uri),
+      page_url_(page_url),
+      page_title_(page_title),
       interaction_response_(interaction_response),
       selected_region_(std::move(selected_region)),
       text_(std::move(text)),
@@ -541,8 +551,22 @@ void LensOverlayController::DidCaptureScreenshot(int attempt_id,
     return;
   }
 
+  content::WebContents* active_web_contents = tab_->GetContents();
+
+  std::optional<GURL> page_url;
+  if (lens::CanSharePageURLWithLensOverlay(pref_service_)) {
+    page_url = std::make_optional<GURL>(active_web_contents->GetVisibleURL());
+  }
+
+  std::optional<std::string> page_title;
+  if (lens::CanSharePageTitleWithLensOverlay(sync_service_)) {
+    page_title = std::make_optional<std::string>(
+        base::UTF16ToUTF8(active_web_contents->GetTitle()));
+  }
+
   initialization_data_ = std::make_unique<OverlayInitializationData>(
-      bitmap, webui::MakeDataURIForImage(data->as_vector(), "jpeg"));
+      bitmap, webui::MakeDataURIForImage(data->as_vector(), "jpeg"), page_url,
+      page_title);
 
   ShowOverlayWidget();
 
@@ -826,7 +850,6 @@ void LensOverlayController::IssueLensRequest(
   CHECK(region);
   SetSearchboxInputText(std::string());
   initialization_data_->selected_region_ = region.Clone();
-  // TODO(b/332787629): Append the 'mactx' param.
   // TODO(b/335718601): Remove query parameters from region search.
   lens_overlay_query_controller_->SendRegionSearch(
       region.Clone(), initialization_data_->additional_search_query_params_);
@@ -837,7 +860,6 @@ void LensOverlayController::IssueLensRequest(
 void LensOverlayController::IssueObjectSelectionRequest(
     const std::string& object_id) {
   SetSearchboxInputText(std::string());
-  // TODO(b/332787629): Append the 'mactx' param.
   initialization_data_->additional_search_query_params_.clear();
   initialization_data_->selected_region_.reset();
   // TODO(b/335718601): Remove query parameters from object selection.
@@ -855,8 +877,6 @@ void LensOverlayController::IssueTextSelectionRequest(
 
   SetSearchboxInputText(query);
   SetSearchboxThumbnail(std::string());
-
-  // TODO(b/332787629): Append the 'mactx' param.
   lens_overlay_query_controller_->SendTextOnlyQuery(
       query, initialization_data_->additional_search_query_params_);
   results_side_panel_coordinator_->RegisterEntryAndShow();
@@ -866,7 +886,6 @@ void LensOverlayController::IssueTextSelectionRequest(
 void LensOverlayController::IssueSearchBoxRequest(
     const std::string& search_box_text,
     std::map<std::string, std::string> additional_query_params) {
-  // TODO(b/332787629): Append the 'mactx' param.
   initialization_data_->additional_search_query_params_ =
       additional_query_params;
   if (initialization_data_->selected_region_.is_null()) {

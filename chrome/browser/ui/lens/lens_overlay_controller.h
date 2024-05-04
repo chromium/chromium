@@ -41,9 +41,15 @@ namespace signin {
 class IdentityManager;
 }  // namespace signin
 
+namespace syncer {
+class SyncService;
+}  // namespace syncer
+
 namespace variations {
 class VariationsClient;
 }  // namespace variations
+
+class PrefService;
 
 // Manages all state associated with the lens overlay.
 // This class is not thread safe. It should only be used from the browser
@@ -54,7 +60,9 @@ class LensOverlayController : public LensSearchboxClient,
  public:
   LensOverlayController(tabs::TabInterface* tab,
                         variations::VariationsClient* variations_client,
-                        signin::IdentityManager* identity_manager);
+                        signin::IdentityManager* identity_manager,
+                        PrefService* pref_service,
+                        syncer::SyncService* sync_service);
   ~LensOverlayController() override;
 
   DECLARE_CLASS_ELEMENT_IDENTIFIER_VALUE(kOverlayId);
@@ -244,12 +252,14 @@ class LensOverlayController : public LensSearchboxClient,
    public:
     // This is data used to initialize the overlay after the WebUI has been
     // bound to the overlay controller. The only required fields are the
-    // screenshot and data URI, as the overlay does not require any server
-    // response data for use. Adding response data allows for restoration of
-    // state after the overlay WebUI was torn down.
+    // screenshot, data URI, and the page information if the data is allowed
+    // to be shared. The rest of the fields are optional because the overlay
+    // does not require any server response data for use.
     OverlayInitializationData(
         const SkBitmap& screenshot,
         const std::string& data_uri,
+        std::optional<GURL> page_url,
+        std::optional<std::string> page_title,
         std::vector<lens::mojom::OverlayObjectPtr> objects =
             std::vector<lens::mojom::OverlayObjectPtr>(),
         lens::mojom::TextPtr text = lens::mojom::TextPtr(),
@@ -268,6 +278,12 @@ class LensOverlayController : public LensSearchboxClient,
     // The screenshot that is currently being rendered by the WebUI.
     SkBitmap current_screenshot_;
     std::string current_screenshot_data_uri_;
+
+    // The page url, if it is allowed to be shared.
+    std::optional<GURL> page_url_;
+
+    // The page title, if it is allowed to be shared.
+    std::optional<std::string> page_title_;
 
     // The latest stored interaction response from the server.
     lens::proto::LensOverlayInteractionResponse interaction_response_;
@@ -469,6 +485,12 @@ class LensOverlayController : public LensSearchboxClient,
   // Unowned IdentityManager for fetching access tokens. Could be null for
   // incognito profiles.
   raw_ptr<signin::IdentityManager> identity_manager_;
+
+  // The pref service associated with the current profile.
+  raw_ptr<PrefService> pref_service_;
+
+  // The sync service associated with the current profile.
+  raw_ptr<syncer::SyncService> sync_service_;
 
   // Prevents other features from showing tab-modal UI.
   std::unique_ptr<tabs::ScopedTabModalUI> scoped_tab_modal_ui_;
