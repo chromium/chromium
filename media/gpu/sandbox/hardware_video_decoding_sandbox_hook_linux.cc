@@ -167,16 +167,6 @@ bool HardwareVideoDecodingPreSandboxHookForV4L2(
   // platforms that need it.
   static const char kDevImageProc0Path[] = "/dev/image-proc0";
   permissions.push_back(BrokerFilePermission::ReadWrite(kDevImageProc0Path));
-
-  // Some platforms (RK3399) need libv4l2 to interact with the kernel V4L2
-  // driver, so we need to load that library prior to entering the sandbox.
-#if BUILDFLAG(USE_LIBV4L2)
-#if defined(__aarch64__)
-  dlopen("/usr/lib64/libv4l2.so", RTLD_NOW | RTLD_GLOBAL | RTLD_NODELETE);
-#else
-  dlopen("/usr/lib/libv4l2.so", RTLD_NOW | RTLD_GLOBAL | RTLD_NODELETE);
-#endif  // defined(__aarch64__)
-#endif  // BUILDFLAG(USE_LIBV4L2)
   return true;
 #else
   NOTREACHED_NORETURN();
