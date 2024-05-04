@@ -78,10 +78,23 @@ void MicCoordinator::OnAudioSourceInfosReceived(
     eligible_mic_ids.insert(*real_default_device_id);
   }
 
+  auto real_communications_device_id =
+      media_effects::GetRealCommunicationsDeviceId(device_infos);
+  if (real_communications_device_id &&
+      eligible_mic_ids.contains(
+          media::AudioDeviceDescription::kCommunicationsDeviceId)) {
+    eligible_mic_ids.insert(*real_communications_device_id);
+  }
+
   eligible_device_infos_.clear();
   for (const auto& device_info : device_infos) {
     if (real_default_device_id &&
         media::AudioDeviceDescription::IsDefaultDevice(device_info.unique_id)) {
+      continue;
+    }
+    if (real_communications_device_id &&
+        media::AudioDeviceDescription::IsCommunicationsDevice(
+            device_info.unique_id)) {
       continue;
     }
     if (!eligible_mic_ids.empty() &&

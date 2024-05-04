@@ -293,6 +293,37 @@ TEST_F(MicCoordinatorTest, DefaultMicHandling) {
   ExpectHistogramTotalDevices(/*expected_bucket_min_value=*/2);
 }
 
+TEST_F(MicCoordinatorTest, CommunicationsMicHandling) {
+  VerifyEmptyCombobox();
+
+  constexpr char kCommunicationsDeviceName[] = "communications_name";
+
+  // Add 2 mics. The virtual communications device, and one other.
+  ASSERT_TRUE(AddFakeInputDevice(
+      {kCommunicationsDeviceName,
+       media::AudioDeviceDescription::kCommunicationsDeviceId,
+       "communications_group_id"}));
+  ASSERT_TRUE(AddFakeInputDevice({kDeviceName, kDeviceId, kGroupId}));
+  // The virtual communication device should be included because there's no
+  // mapping for the real system default device.
+  EXPECT_THAT(GetComboboxItems(),
+              ElementsAre(kCommunicationsDeviceName, kDeviceName));
+  EXPECT_THAT(GetComboboxSecondaryTexts(),
+              ElementsAre(std::string{}, std::string{}));
+  on_input_stream_id_future_.Clear();
+
+  // Add another mic marked with `is_communications_device`.
+  ASSERT_TRUE(AddFakeInputDevice({kDeviceName2, kDeviceId2, kGroupId2,
+                                  /*is_system_default=*/false,
+                                  /*is_communications_device=*/true}));
+  // The virtual communications device should be excluded because the real
+  // system communications device was found in the list.
+  EXPECT_THAT(GetComboboxItems(), ElementsAre(kDeviceName, kDeviceName2));
+
+  coordinator_.reset();
+  ExpectHistogramTotalDevices(/*expected_bucket_min_value=*/2);
+}
+
 TEST_F(MicCoordinatorTest, UpdateDevicePreferenceRanking) {
   VerifyEmptyCombobox();
   const media::AudioDeviceDescription kDevice1{kDeviceName, kDeviceId,

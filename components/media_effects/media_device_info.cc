@@ -26,6 +26,18 @@ std::optional<std::string> GetRealDefaultDeviceId(
   return std::nullopt;
 }
 
+std::optional<std::string> GetRealCommunicationsDeviceId(
+    const std::vector<media::AudioDeviceDescription>& infos) {
+  for (const auto& info : infos) {
+    if (info.is_communications_device &&
+        !media::AudioDeviceDescription::IsCommunicationsDevice(
+            info.unique_id)) {
+      return info.unique_id;
+    }
+  }
+  return std::nullopt;
+}
+
 std::vector<std::string> GetRealAudioDeviceNames(
     const std::vector<media::AudioDeviceDescription>& infos) {
   std::vector<std::string> real_names;
