@@ -9,6 +9,7 @@
 #include <stddef.h>
 #include <stdint.h>
 
+#include <atomic>
 #include <list>
 #include <memory>
 #include <utility>
@@ -78,6 +79,11 @@ class GpuMemoryBufferVideoFramePool::PoolImpl
         in_shutdown_(false) {
     DCHECK(media_task_runner_);
     DCHECK(worker_task_runner_);
+
+    // Using a static atomic id generator to generate a unique id for each
+    // GpuMemoryBufferVideoFramePool in a thread safe manner.
+    static std::atomic_uint32_t id = 0;
+    pool_id_ = ++id;
   }
 
   PoolImpl(const PoolImpl&) = delete;
@@ -114,6 +120,7 @@ class GpuMemoryBufferVideoFramePool::PoolImpl
   struct PlaneResource {
     gfx::Size size;
     std::unique_ptr<gfx::GpuMemoryBuffer> gpu_memory_buffer;
+    int32_t buffer_id = -1;
     scoped_refptr<gpu::ClientSharedImage> shared_image;
     // Tracks whether the SharedImage is created with GpuMemoryBuffer containing
     // multiplanar format and prefers external sampler.
@@ -258,7 +265,16 @@ class GpuMemoryBufferVideoFramePool::PoolImpl
   // Queued up video frames for copies. The front is the currently
   // in-flight copy, new copies are added at the end.
   base::circular_deque<VideoFrameCopyRequest> frame_copy_requests_;
-  bool in_shutdown_;
+  bool in_shutdown_ = false;
+
+  // Id used in ::OnMemoryDump to identify the GpuMemoryBufferVideoFramePool.
+  uint32_t pool_id_ = 0;
+
+  // Unique Id generated each time a GpuMemoryBuffer is created. This is used
+  // to identify the GpuMemoryBuffer. This is done in order to stop using
+  // GpuMemoryBuffer::GetId() and eventually GpuMemoryBuffer altogether when
+  // MappableSI is enabled.
+  uint32_t buffer_id_ = 0;
 };
 
 namespace {
@@ -842,10 +858,9 @@ bool GpuMemoryBufferVideoFramePool::PoolImpl::OnMemoryDump(
     for (const PlaneResource& plane_resource :
          frame_resources->plane_resources) {
       if (plane_resource.gpu_memory_buffer) {
-        gfx::GpuMemoryBufferId buffer_id =
-            plane_resource.gpu_memory_buffer->GetId();
-        std::string dump_name = base::StringPrintf(
-            "media/video_frame_memory/buffer_%d", buffer_id.id);
+        std::string dump_name =
+            base::StringPrintf("media/video_frame_memory_%d/buffer_%d",
+                               pool_id_, plane_resource.buffer_id);
         base::trace_event::MemoryAllocatorDump* dump =
             pmd->CreateAllocatorDump(dump_name);
         size_t buffer_size_in_bytes = gfx::BufferSizeForBufferFormat(
@@ -1442,6 +1457,9 @@ GpuMemoryBufferVideoFramePool::PoolImpl::GetOrCreateFrameResources(
         GpuMemoryBufferFormat(output_format_, i);
     plane_resource.gpu_memory_buffer = gpu_factories_->CreateGpuMemoryBuffer(
         plane_resource.size, buffer_format, usage);
+    if (plane_resource.gpu_memory_buffer) {
+      plane_resource.buffer_id = ++buffer_id_;
+    }
   }
   return frame_resources;
 }
