@@ -1695,16 +1695,18 @@ wgpu::Adapter WebGPUDecoderImpl::CreatePreferredAdapter(
   // `CanUseAdapter` is a helper to determine if an adapter is not blocklisted,
   // supports all required features, and matches the requested adapter options
   // (some of which may be set by command-line flags).
-  auto CanUseAdapter = [&](const dawn::native::Adapter& adapter) {
-    WGPUAdapterProperties adapter_properties = {};
+  auto CanUseAdapter = [&](const dawn::native::Adapter& native_adapter) {
+    wgpu::Adapter adapter(native_adapter.Get());
+
+    wgpu::AdapterProperties adapter_properties = {};
     adapter.GetProperties(&adapter_properties);
 
-    if (use_blocklist() && IsWebGPUAdapterBlocklisted(adapter_properties)) {
+    if (use_blocklist() && IsWebGPUAdapterBlocklisted(adapter)) {
       return false;
     }
 
     const bool is_swiftshader =
-        adapter_properties.adapterType == WGPUAdapterType_CPU &&
+        adapter_properties.adapterType == wgpu::AdapterType::CPU &&
         adapter_properties.vendorID == 0x1AE0 &&
         adapter_properties.deviceID == 0xC0DE;
 
@@ -1713,12 +1715,10 @@ wgpu::Adapter WebGPUDecoderImpl::CreatePreferredAdapter(
     // upload/readback to/from shared images.
     bool supports_external_textures = false;
 #if BUILDFLAG(IS_APPLE)
-    wgpu::Adapter adapter_obj(adapter.Get());
     supports_external_textures =
-        adapter_obj.HasFeature(wgpu::FeatureName::SharedTextureMemoryIOSurface);
+        adapter.HasFeature(wgpu::FeatureName::SharedTextureMemoryIOSurface);
 #elif BUILDFLAG(IS_ANDROID)
-    wgpu::Adapter adapter_obj(adapter.Get());
-    supports_external_textures = adapter_obj.HasFeature(
+    supports_external_textures = adapter.HasFeature(
         wgpu::FeatureName::SharedTextureMemoryAHardwareBuffer);
 #else
     // Chromium is in the midst of being transitioned to SharedTextureMemory
@@ -1727,7 +1727,7 @@ wgpu::Adapter WebGPUDecoderImpl::CreatePreferredAdapter(
     // These platforms should be switched to the corresponding
     // SharedTextureMemory feature check as they are converted to using
     // SharedTextureMemory.
-    supports_external_textures = adapter.SupportsExternalImages();
+    supports_external_textures = native_adapter.SupportsExternalImages();
 #endif
     if (!(supports_external_textures || is_swiftshader)) {
       return false;
@@ -1736,12 +1736,12 @@ wgpu::Adapter WebGPUDecoderImpl::CreatePreferredAdapter(
     // If the power preference is forced, only accept specific adapter
     // types.
     if (use_webgpu_power_preference_ == WebGPUPowerPreference::kForceLowPower &&
-        adapter_properties.adapterType != WGPUAdapterType_IntegratedGPU) {
+        adapter_properties.adapterType != wgpu::AdapterType::IntegratedGPU) {
       return false;
     }
     if (use_webgpu_power_preference_ ==
             WebGPUPowerPreference::kForceHighPerformance &&
-        adapter_properties.adapterType != WGPUAdapterType_DiscreteGPU) {
+        adapter_properties.adapterType != wgpu::AdapterType::DiscreteGPU) {
       return false;
     }
 
@@ -1751,30 +1751,30 @@ wgpu::Adapter WebGPUDecoderImpl::CreatePreferredAdapter(
   // Enumerate adapters in order of the preferred backend type.
   for (wgpu::BackendType backend_type : backend_types) {
     adapter_options.backendType = backend_type;
-    for (dawn::native::Adapter& adapter :
+    for (dawn::native::Adapter& native_adapter :
          dawn_instance_->EnumerateAdapters(&adapter_options)) {
-      adapter.SetUseTieredLimits(tiered_adapter_limits_);
+      native_adapter.SetUseTieredLimits(tiered_adapter_limits_);
 
-      if (!CanUseAdapter(adapter)) {
+      if (!CanUseAdapter(native_adapter)) {
         continue;
       }
 
-      return wgpu::Adapter(adapter.Get());
+      return wgpu::Adapter(native_adapter.Get());
     }
   }
 
   // If we still don't have an adapter, now try to find the fallback adapter.
   adapter_options.forceFallbackAdapter = true;
   adapter_options.backendType = wgpu::BackendType::Vulkan;
-  for (dawn::native::Adapter& adapter :
+  for (dawn::native::Adapter& native_adapter :
        dawn_instance_->EnumerateAdapters(&adapter_options)) {
-    adapter.SetUseTieredLimits(tiered_adapter_limits_);
+    native_adapter.SetUseTieredLimits(tiered_adapter_limits_);
 
-    if (!CanUseAdapter(adapter)) {
+    if (!CanUseAdapter(native_adapter)) {
       continue;
     }
 
-    return wgpu::Adapter(adapter.Get());
+    return wgpu::Adapter(native_adapter.Get());
   }
 
   // No adapter could be found.
