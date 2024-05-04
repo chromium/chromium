@@ -13,6 +13,9 @@ import static org.mockito.Mockito.times;
 import static org.mockito.Mockito.verify;
 import static org.mockito.Mockito.when;
 
+import android.content.Context;
+import android.content.SharedPreferences;
+
 import org.junit.After;
 import org.junit.Before;
 import org.junit.Rule;
@@ -26,6 +29,7 @@ import org.mockito.junit.MockitoJUnit;
 import org.mockito.junit.MockitoRule;
 import org.robolectric.annotation.Config;
 
+import org.chromium.base.ContextUtils;
 import org.chromium.base.Token;
 import org.chromium.base.supplier.LazyOneshotSupplier;
 import org.chromium.base.test.BaseRobolectricTestRunner;
@@ -60,6 +64,7 @@ public class TabGroupSyncLocalObserverUnitTest {
     private static final Token TOKEN_1 = new Token(2, 3);
     private static final LocalTabGroupId LOCAL_TAB_GROUP_ID_1 = new LocalTabGroupId(TOKEN_1);
     private static final String TITLE_1 = "Group Title";
+    private static final String TAB_GROUP_COLORS_FILE_NAME = "tab_group_colors";
 
     @Rule public MockitoRule mMockitoRule = MockitoJUnit.rule();
     private @Mock TabModelSelector mTabModelSelector;
@@ -83,6 +88,11 @@ public class TabGroupSyncLocalObserverUnitTest {
         Mockito.doReturn(rootId).when(tab).getRootId();
         Mockito.doReturn(GURL.emptyGURL()).when(tab).getUrl();
         return tab;
+    }
+
+    private static SharedPreferences getGroupColorSharedPreferences() {
+        return ContextUtils.getApplicationContext()
+                .getSharedPreferences(TAB_GROUP_COLORS_FILE_NAME, Context.MODE_PRIVATE);
     }
 
     @Before
@@ -249,8 +259,12 @@ public class TabGroupSyncLocalObserverUnitTest {
 
     @Test
     public void testDidChangeColor() {
-        // Valid color.
-        when(mTabGroupModelFilter.getTabGroupColor(ROOT_ID_1)).thenReturn(TabGroupColorId.RED);
+        // Mock that we have a stored color (red) stored with reference to ROOT_ID_1.
+        getGroupColorSharedPreferences()
+                .edit()
+                .putInt(String.valueOf(ROOT_ID_1), TabGroupColorId.RED)
+                .apply();
+
         mTabGroupModelFilterObserverCaptor
                 .getValue()
                 .didChangeTabGroupColor(ROOT_ID_1, TabGroupColorId.RED);
