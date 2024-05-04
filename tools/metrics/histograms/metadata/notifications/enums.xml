@@ -26,6 +26,11 @@ chromium-metrics-reviews@google.com.
 
 <enums>
 
+<enum name="BooleanInitialized">
+  <int value="0" label="Cached channels uninitialized"/>
+  <int value="1" label="Cached channels initialized"/>
+</enum>
+
 <enum name="BooleanSystemNotifications">
   <int value="0" label="Using Chrome notifications"/>
   <int value="1" label="Using system notifications"/>

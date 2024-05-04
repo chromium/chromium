@@ -13,6 +13,7 @@
 #include "base/check_op.h"
 #include "base/feature_list.h"
 #include "base/functional/bind.h"
+#include "base/metrics/histogram_functions.h"
 #include "base/notreached.h"
 #include "base/strings/string_number_conversions.h"
 #include "base/strings/string_util.h"
@@ -316,8 +317,16 @@ NotificationChannelsProviderAndroid::GetRuleIterator(
     ContentSettingsType content_type,
     bool incognito,
     const content_settings::PartitionKey& partition_key) const {
-  if (content_type != ContentSettingsType::NOTIFICATIONS || incognito ||
-      !cached_channels_) {
+  if (content_type != ContentSettingsType::NOTIFICATIONS || incognito) {
+    return nullptr;
+  }
+
+  // This const_cast is not ideal but tolerated because it allows us to
+  // notify observers as soon as we detect changes to channels.
+  auto* provider = const_cast<NotificationChannelsProviderAndroid*>(this);
+  provider->RecordCachedChannelStatus();
+
+  if (!cached_channels_) {
     return nullptr;
   }
 
@@ -330,9 +339,6 @@ NotificationChannelsProviderAndroid::GetRuleIterator(
   // contain up-to-date information if user has modified notification settings,
   // As a result, schedule an channel update to inform all observers if
   // something has changed.
-  // This const_cast is not ideal but tolerated because it allows us to
-  // notify observers as soon as we detect changes to channels.
-  auto* provider = const_cast<NotificationChannelsProviderAndroid*>(this);
   provider->ScheduleGetChannels(
       /*skip_get_if_cached_channels_are_available=*/false,
       base::BindOnce(
@@ -627,4 +633,13 @@ void NotificationChannelsProviderAndroid::OnCurrentOperationFinished() {
   DCHECK(is_processing_pending_operations_);
   is_processing_pending_operations_ = false;
   ProcessPendingOperations();
+}
+
+void NotificationChannelsProviderAndroid::RecordCachedChannelStatus() {
+  if (!has_get_rule_iterator_called_) {
+    base::UmaHistogramBoolean(
+        "Notifications.Android.CachedChannelsStatusOnFirstGetRuleIterator",
+        !!cached_channels_);
+    has_get_rule_iterator_called_ = true;
+  }
 }

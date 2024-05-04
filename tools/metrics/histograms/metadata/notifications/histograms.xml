@@ -115,6 +115,19 @@ chromium-metrics-reviews@google.com.
   </summary>
 </histogram>
 
+<histogram
+    name="Notifications.Android.CachedChannelsStatusOnFirstGetRuleIterator"
+    enum="BooleanInitialized" expires_after="2024-12-31">
+  <owner>qinmin@chromium.org</owner>
+  <owner>peter@chromium.org</owner>
+  <summary>
+    Recorded when the first GetRuleIterator() is called to retrieve notification
+    channel content settings, whether cached channels are initialized. This is
+    only recorded on non-incognito profile and is only recorded once per browser
+    session.
+  </summary>
+</histogram>
+
 <histogram name="Notifications.Android.JobIsAlreadyPending{IntentAction}"
     enum="Boolean" expires_after="2024-09-22">
   <owner>peter@chromium.org</owner>

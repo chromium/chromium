@@ -219,6 +219,8 @@ class NotificationChannelsProviderAndroid
   // Called when a pending operation completes.
   void OnCurrentOperationFinished();
 
+  void RecordCachedChannelStatus();
+
   std::unique_ptr<NotificationChannelsBridge> bridge_;
 
   raw_ptr<base::Clock> clock_;
@@ -246,6 +248,8 @@ class NotificationChannelsProviderAndroid
   raw_ptr<PrefService> pref_service_;
 
   bool is_processing_pending_operations_ = false;
+
+  bool has_get_rule_iterator_called_ = false;
 
   base::WeakPtrFactory<NotificationChannelsProviderAndroid> weak_factory_{this};
 };
