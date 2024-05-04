@@ -1239,11 +1239,13 @@ Usage: The method must adhere to the following requirements:
 2. Doesn't trigger JavaScript execution;
 3. Has no side effect.
 
-Those requirements lead to the specific inability to throw JS exceptions and to log warnings to the console, as logging uses `MakeGarbageCollected<ConsoleMessage>`. If any such error reporting needs to happen, the method marked with `[NoAllocDirectCall]` should expect a last parameter `bool* has_error`, in which it might store `true` to signal V8. V8 will in turn re-execute the "default" callback, giving the possibility of the exception/error to be reported. This mechanism also implies that the "fast" callback is idempotent up to the point of reporting the error.
+Those requirements lead to the specific inability to log warnings to the console, as logging uses `MakeGarbageCollected<ConsoleMessage>`. If logging needs to happen, the method marked with `[NoAllocDirectCall]` should expect a last parameter `bool* has_error`, in which it might store `true` to signal V8. V8 will in turn re-execute the "default" callback, giving the possibility of the exception/error to be reported. This mechanism also implies that the "fast" callback is idempotent up to the point of reporting the error.
 
-Note: if `[NoAllocDirectCall]` is applied to a method, then the corresponding implementation C++ class must **also** derive from the [`NoAllocDirectCallHost` class](https://source.chromium.org/chromium/chromium/src/+/main:third_party/blink/renderer/platform/bindings/no_alloc_direct_call_host.h).
+If `[NoAllocDirectCall]` is applied to a method, then the corresponding implementation C++ class must **also** derive from the [`NoAllocDirectCallHost` class](https://source.chromium.org/chromium/chromium/src/+/main:third_party/blink/renderer/platform/bindings/no_alloc_direct_call_host.h).
 
-Note: the [NoAllocDirectCall] extended attribute can only be applied to methods, and not attributes. An attribute getter's V8 return value constitutes a V8 allocation, and setters likely allocate on the Blink side.
+Calling `ThrowDOMException` would seemingly cause `MakeGarbageCollected<DOMException>` to occur, violating the requirement about potentially triggering garbage collection. However, `ThrowDOMException` from a `[NoAllocDirectCall]` method is actually safe in practice. When generating the bindings for a method which is marked as both `[NoAllocDirectCall]` and `[RaisesException]`, V8 will automatically use [`NoAllocDirectCallExceptionState`](https://source.chromium.org/chromium/chromium/src/+/main:third_party/blink/renderer/platform/bindings/no_alloc_direct_call_exception_state.h) instead of `ExceptionState`. This class will defer the allocation of the `DOMException` object via `PostDeferrableAction` until it is safe to allocate GC memory. The `WTF::String` inside of the `DOMException` is not a V8 object and does not participate in garbage collection, so its allocation is safe and doesn't violate the requirements of `[NoAllocDirectCall]`.
+
+Note: the `[NoAllocDirectCall]` extended attribute can only be applied to methods, and not attributes. An attribute getter's V8 return value constitutes a V8 allocation, and setters likely allocate on the Blink side.
 
 ### [PerWorldBindings]
 
