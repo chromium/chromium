@@ -7,6 +7,7 @@ package org.chromium.chrome.browser.pdf;
 import android.app.Activity;
 import android.view.LayoutInflater;
 import android.view.View;
+import android.widget.TextView;
 
 import androidx.fragment.app.FragmentActivity;
 import androidx.fragment.app.FragmentManager;
@@ -26,6 +27,8 @@ import java.net.URL;
 /** The class responsible for setting up PdfPage. */
 public class PdfCoordinator {
     private static final String TAG = "PdfCoordinator";
+    private static final String PDF_LOADING = "Loading PDF.";
+    private static final String PDF_LOADED = "PDF loaded.";
     private NativePageHost mHost;
     private final View mView;
     private final FragmentManager mFragmentManager;
@@ -36,6 +39,7 @@ public class PdfCoordinator {
     private PdfViewerFragment mPdfViewerFragment;
     private PdfDocument mPdfDocument;
     private PdfEventsListener mPdfEventsListener;
+    private TextView mTextView;
 
     /**
      * Creates a PdfCoordinator for the PdfPage.
@@ -51,6 +55,8 @@ public class PdfCoordinator {
         mHost = host;
         mIsPdfLoaded = false;
         mView = LayoutInflater.from(host.getContext()).inflate(R.layout.pdf_page, null);
+        mTextView = mView.findViewById(R.id.fake_pdf_text);
+        mTextView.setText(PDF_LOADING);
         mView.addOnAttachStateChangeListener(
                 new View.OnAttachStateChangeListener() {
                     @Override
@@ -152,6 +158,7 @@ public class PdfCoordinator {
                     mFragmentManager,
                     mFragmentContainerViewId);
             mIsPdfLoaded = true;
+            mTextView.setText(PDF_LOADED);
         } else {
             Log.e(TAG, "PdfDocumentRequest is null.");
         }
