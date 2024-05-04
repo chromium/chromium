@@ -874,6 +874,11 @@ void GLDisplayEGL::InitializeCommon(bool for_testing) {
       base::SysInfo::GetAndroidHardwareEGL() != "emulation") {
     egl_android_native_fence_sync_supported_ = true;
   }
+
+  if (base::CommandLine::ForCurrentProcess()->HasSwitch(
+          switches::kDisableAndroidNativeFenceSyncForTesting)) {
+    egl_android_native_fence_sync_supported_ = false;
+  }
 #endif  // BUILDFLAG(IS_ANDROID)
 
   if (!for_testing) {

@@ -168,6 +168,17 @@ const char* const kGLSwitchesCopiedFromGpuProcessHost[] = {
 const size_t kGLSwitchesCopiedFromGpuProcessHostNumSwitches =
     std::size(kGLSwitchesCopiedFromGpuProcessHost);
 
+#if BUILDFLAG(IS_ANDROID)
+// On some Android emulators with software GL, ANGLE
+// is exposing the native fence sync extension but it doesn't
+// actually work. This switch is used to disable the Android native fence sync
+// during test to avoid crashes.
+//
+// TODO(https://crbug.com/337886037): Remove this flag once the upstream ANGLE
+// is fixed.
+const char kDisableAndroidNativeFenceSyncForTesting[] =
+    "disable-android-native-fence-sync-for-testing";
+#endif
 }  // namespace switches
 
 namespace features {
