@@ -6534,6 +6534,11 @@
           Please wait while this application is being updated
       </message>
 
+      <message name="IDS_DEEP_SCANNING_PROMPT_REMOVAL_NOTIFICATION"
+               desc="Notification text shown on Lacros indicating to the users that future suspicious downloads will scan automatically">
+        Suspicious files will be scanned automatically by Google Safe Browsing as part of the enhanced protection you chose
+      </message>
+
     </messages>
   </release>
 </grit>

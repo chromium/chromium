@@ -6,8 +6,11 @@
 
 #include "base/metrics/histogram_functions.h"
 #include "base/strings/stringprintf.h"
+#include "chrome/browser/profiles/profile.h"
 #include "components/download/public/common/download_item.h"
+#include "components/prefs/pref_service.h"
 #include "components/safe_browsing/content/common/file_type_policies.h"
+#include "components/safe_browsing/core/common/features.h"
 #include "components/safe_browsing/core/common/safe_browsing_prefs.h"
 
 #if BUILDFLAG(FULL_SAFE_BROWSING)
@@ -92,3 +95,26 @@ void SendSafeBrowsingDownloadReport(
   }
 }
 #endif  // BUILDFLAG(FULL_SAFE_BROWSING)
+
+bool ShouldShowDeepScanPromptNotice(Profile* profile,
+                                    download::DownloadDangerType danger_type) {
+  if (danger_type != download::DOWNLOAD_DANGER_TYPE_PROMPT_FOR_SCANNING) {
+    return false;
+  }
+
+  if (!safe_browsing::IsEnhancedProtectionEnabled(*profile->GetPrefs())) {
+    return false;
+  }
+
+  if (profile->GetPrefs()->GetBoolean(
+          prefs::kSafeBrowsingAutomaticDeepScanPerformed)) {
+    return false;
+  }
+
+  if (!base::FeatureList::IsEnabled(
+          safe_browsing::kDeepScanningPromptRemoval)) {
+    return false;
+  }
+
+  return true;
+}

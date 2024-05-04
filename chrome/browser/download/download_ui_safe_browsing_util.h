@@ -5,9 +5,10 @@
 #ifndef CHROME_BROWSER_DOWNLOAD_DOWNLOAD_UI_SAFE_BROWSING_UTIL_H_
 #define CHROME_BROWSER_DOWNLOAD_DOWNLOAD_UI_SAFE_BROWSING_UTIL_H_
 
-#include "components/safe_browsing/buildflags.h"
-
 #include <string>
+
+#include "components/download/public/common/download_danger_type.h"
+#include "components/safe_browsing/buildflags.h"
 
 #if BUILDFLAG(FULL_SAFE_BROWSING)
 #include "components/safe_browsing/core/common/proto/csd.pb.h"
@@ -56,5 +57,10 @@ void SendSafeBrowsingDownloadReport(
     bool did_proceed,
     download::DownloadItem* item);
 #endif  // BUILDFLAG(FULL_SAFE_BROWSING)
+
+// Whether to show a notice that the deep scanning prompt is being
+// removed for a download in `profile` with danger type `danger_type`.
+bool ShouldShowDeepScanPromptNotice(Profile* profile,
+                                    download::DownloadDangerType danger_type);
 
 #endif  // CHROME_BROWSER_DOWNLOAD_DOWNLOAD_UI_SAFE_BROWSING_UTIL_H_

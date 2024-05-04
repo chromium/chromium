@@ -234,7 +234,9 @@ class DownloadBubbleRowView : public views::View,
 
   raw_ptr<views::InkDropContainerView> inkdrop_container_;
 
+#if !BUILDFLAG(IS_CHROMEOS)
   raw_ptr<views::View> deep_scan_notice_;
+#endif
 
   // Drag and drop:
   // Whether we are dragging the download bubble row.

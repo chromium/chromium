@@ -144,6 +144,7 @@ class DownloadBubbleTransparentButton : public views::Button {
 BEGIN_METADATA(DownloadBubbleTransparentButton)
 END_METADATA
 
+#if !BUILDFLAG(IS_CHROMEOS)
 class DownloadBubbleDeepScanNotice : public views::View {
   METADATA_HEADER(DownloadBubbleDeepScanNotice, views::View)
  public:
@@ -257,6 +258,7 @@ class DownloadBubbleDeepScanNotice : public views::View {
 
 BEGIN_METADATA(DownloadBubbleDeepScanNotice)
 END_METADATA
+#endif
 
 }  // namespace
 
@@ -523,9 +525,14 @@ DownloadBubbleRowView::DownloadBubbleRowView(
                  views::TableLayout::kFixedSize,
                  views::TableLayout::ColumnSize::kFixed, insets.right(),
                  insets.right())
+#if BUILDFLAG(IS_CHROMEOS)
+      // Three rows, one for name, one for status, one for the progress bar.
+      .AddRows(3, 1.0f);
+#else
       // Four rows, one for name, one for status, one for the progress bar, and
       // one for the deep scan notice.
       .AddRows(4, 1.0f);
+#endif
 
   inkdrop_container_->SetProperty(views::kViewIgnoredByLayoutKey, true);
 
@@ -677,6 +684,7 @@ DownloadBubbleRowView::DownloadBubbleRowView(
   SetNotifyEnterExitOnChild(true);
 
   // TODO(https://crbug.com/332382747): Remove after 2024-10
+#if !BUILDFLAG(IS_CHROMEOS)
   deep_scan_notice_ =
       AddChildView(std::make_unique<DownloadBubbleDeepScanNotice>(browser_));
   deep_scan_notice_->SetProperty(views::kTableColAndRowSpanKey,
@@ -687,6 +695,7 @@ DownloadBubbleRowView::DownloadBubbleRowView(
       gfx::Insets().set_top(ChromeLayoutProvider::Get()->GetDistanceMetric(
           views::DISTANCE_RELATED_CONTROL_VERTICAL))));
   deep_scan_notice_->SetVisible(false);
+#endif
 
   // Set up initial state.
   UpdateRow(/*initial_setup=*/true);
@@ -702,7 +711,9 @@ views::View::Views DownloadBubbleRowView::GetChildrenInZOrder() {
   move_child_to_top(transparent_button_);
   move_child_to_top(quick_action_holder_);
   move_child_to_top(main_button_holder_);
+#if !BUILDFLAG(IS_CHROMEOS)
   move_child_to_top(deep_scan_notice_);
+#endif
   return children;
 }
 
@@ -945,8 +956,10 @@ void DownloadBubbleRowView::UpdateLabels() {
 
 void DownloadBubbleRowView::UpdateDeepScanNotice() {
   if (info_->ShouldShowDeepScanNotice()) {
+#if !BUILDFLAG(IS_CHROMEOS)
     deep_scan_notice_->SetVisible(true);
     bubble_controller_->SetDeepScanNoticeSeen();
+#endif
   }
 }
 
@@ -1242,13 +1255,15 @@ void DownloadBubbleRowView::SetInputProtectorForTesting(
 
 views::View* DownloadBubbleRowView::TargetForRect(View* root,
                                                   const gfx::Rect& rect) {
+  views::View* target = views::ViewTargeterDelegate::TargetForRect(root, rect);
+#if !BUILDFLAG(IS_CHROMEOS)
   // The deep scan notice is on top of the transparent button to make the link
   // clickable, but we want to target the button for all other input events.
-  views::View* target = views::ViewTargeterDelegate::TargetForRect(root, rect);
   if (views::IsViewClass<DownloadBubbleDeepScanNotice>(target) ||
       views::IsViewClass<DownloadBubbleDeepScanNotice>(target->parent())) {
     return transparent_button_;
   }
+#endif
 
   return target;
 }

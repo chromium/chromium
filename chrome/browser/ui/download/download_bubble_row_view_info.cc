@@ -367,25 +367,6 @@ void DownloadBubbleRowViewInfo::Reset() {
 }
 
 bool DownloadBubbleRowViewInfo::ShouldShowDeepScanNotice() const {
-  if (model_->GetDangerType() !=
-      download::DOWNLOAD_DANGER_TYPE_PROMPT_FOR_SCANNING) {
-    return false;
-  }
-
-  if (!safe_browsing::IsEnhancedProtectionEnabled(
-          *model_->profile()->GetPrefs())) {
-    return false;
-  }
-
-  if (model_->profile()->GetPrefs()->GetBoolean(
-          prefs::kSafeBrowsingAutomaticDeepScanPerformed)) {
-    return false;
-  }
-
-  if (!base::FeatureList::IsEnabled(
-          safe_browsing::kDeepScanningPromptRemoval)) {
-    return false;
-  }
-
-  return true;
+  return ShouldShowDeepScanPromptNotice(model_->profile(),
+                                        model_->GetDangerType());
 }

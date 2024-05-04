@@ -6701,6 +6701,7 @@ static_library("browser") {
         "upgrade_detector/installed_version_monitor_lacros.cc",
         "upgrade_detector/installed_version_monitor_lacros.h",
       ]
+      deps += [ "//chromeos/strings:strings_grit" ]
     } else {
       sources += [
         "download/download_status_updater_linux.cc",
