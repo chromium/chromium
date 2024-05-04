@@ -7,7 +7,7 @@
 <translation id="1018656279737460067">Abgebrochen</translation>
 <translation id="1020274983236703756">Exklusive <ph name="PRODUCT_NAME" />-Assets jetzt verfügbar</translation>
 <translation id="1022628058306505708">Earth Flow</translation>
-<translation id="1026212596705997935">Tastenkombination wird bereits für „<ph name="CONFLICT_ACCEL_NAME" />“ verwendet. Drücke eine andere Kombination. Wenn du den vorhandenen Befehl ersetzen möchtest, drücke diese Tastenkombination noch einmal.</translation>
+<translation id="1026212596705997935">Tastenkombination wird bereits für „<ph name="CONFLICT_ACCEL_NAME" />“ verwendet. Soll diese nicht ersetzt werden, drücke eine andere Kombination. Wenn du die ursprüngliche Tastenkombination ersetzen möchtest, drücke diese Tastenkombination noch einmal.</translation>
 <translation id="1047458377670401304"><ph name="CPU_NAME" /> (<ph name="THREAD_COUNT" /> Threads, <ph name="CPU_MAX_CLOCK_SPEED" /> GHz)</translation>
 <translation id="1047773237499189053">Neue Funktion verfügbar. Verwende den Aufwärtspfeil, um mehr zu erfahren.</translation>
 <translation id="1049663189809099096">pastellgelb</translation>
