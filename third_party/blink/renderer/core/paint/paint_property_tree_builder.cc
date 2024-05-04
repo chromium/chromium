@@ -1481,7 +1481,7 @@ static bool NeedsEffectIgnoringClipPath(
   // root stacking context which is already a backdrop filter root.
   if ((style.ViewTransitionName() ||
        ViewTransitionUtils::IsViewTransitionParticipant(object)) &&
-      !object.IsDocumentElement()) {
+      !object.IsDocumentElement() && !object.IsLayoutView()) {
     return true;
   }
 
