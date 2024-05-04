@@ -218,7 +218,7 @@ void GPUAdapter::OnRequestDeviceCallback(
         // TODO: Ideally this should be handled in Dawn, which can return an
         // error device.
         device_lost_info = MakeGarbageCollected<GPUDeviceLostInfo>(
-            wgpu::DeviceLostReason::Undefined,
+            wgpu::DeviceLostReason::Unknown,
             StringFromASCIIAndUTF8(
                 "The adapter is invalid because it has already been used to "
                 "create a device. A lost device has been returned."));
@@ -252,7 +252,7 @@ void GPUAdapter::OnRequestDeviceCallback(
       if (dawn_device) {
         // Immediately force the device to be lost.
         auto* device_lost_info = MakeGarbageCollected<GPUDeviceLostInfo>(
-            wgpu::DeviceLostReason::Undefined,
+            wgpu::DeviceLostReason::Unknown,
             StringFromASCIIAndUTF8(error_message));
         ExecutionContext* execution_context =
             ExecutionContext::From(script_state);
