@@ -128,6 +128,11 @@ bool ShouldApplyRoundedCorner(OverlayCandidate& candidate,
   return QuadRoundedCornersBoundsIntersects(quad, target_rect);
 }
 
+bool RequiresBlendingForReasonOtherThanRoundedCorners(const DrawQuad* quad) {
+  return quad->ShouldDrawWithBlendingForReasonOtherThanMaskFilter() ||
+         quad->shared_quad_state->mask_filter_info.HasGradientMask();
+}
+
 }  // namespace
 
 OverlayCandidateFactory::OverlayContext::OverlayContext() = default;
@@ -644,7 +649,7 @@ OverlayCandidate::CandidateStatus OverlayCandidateFactory::FromTextureQuad(
     candidate.color = quad->background_color;
   } else if (quad->background_color != SkColors::kTransparent &&
              (quad->background_color != SkColors::kBlack ||
-              quad->ShouldDrawWithBlending())) {
+              RequiresBlendingForReasonOtherThanRoundedCorners(quad))) {
     // The condition above is very specific to the implementation of DRM/KMS
     // scanout. An opaque plane with buffer that has buffer element component
     // alpha will default black for the blend. Basically we can simulate a black
