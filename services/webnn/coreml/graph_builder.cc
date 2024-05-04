@@ -108,6 +108,7 @@ constexpr char kOpConcatTypeName[] = "concat";
 constexpr char kOpConv2dTypeName[] = "conv";
 constexpr char kOpEluTypeName[] = "elu";
 constexpr char kOpHardSigmoidTypeName[] = "sigmoid_hard";
+constexpr char kOpGatherTypeName[] = "gather_along_axis";
 constexpr char kOpLeakyReluTypeName[] = "leaky_relu";
 constexpr char kOpMatmul[] = "matmul";
 constexpr char kOpReluTypeName[] = "relu";
@@ -171,6 +172,7 @@ constexpr char kOpDataTypeName[] = "dtype";
 constexpr char kOpParamAlpha[] = "alpha";
 constexpr char kOpParamBeta[] = "beta";
 constexpr char kOpParamEpsilon[] = "epsilon";
+constexpr char kOpParamAxis[] = "axis";
 
 // Hard coded path used in the model file to point at the weight path.
 constexpr char kWeightsRelativeFilePath[] = "@model_path/weights/weights.bin";
@@ -640,6 +642,10 @@ GraphBuilder::BuildCoreMLModel() {
         RETURN_IF_ERROR(AddOperationForElu(*operation->get_elu(), block));
         break;
       }
+      case mojom::Operation::Tag::kGather: {
+        RETURN_IF_ERROR(AddOperationForGather(*operation->get_gather(), block));
+        break;
+      }
       case mojom::Operation::Tag::kGemm: {
         RETURN_IF_ERROR(AddOperationForGemm(*operation->get_gemm(), block));
         break;
@@ -717,7 +723,6 @@ GraphBuilder::BuildCoreMLModel() {
       }
       case mojom::Operation::Tag::kArgMinMax:
       case mojom::Operation::Tag::kExpand:
-      case mojom::Operation::Tag::kGather:
       case mojom::Operation::Tag::kGelu:
       case mojom::Operation::Tag::kGru:
       case mojom::Operation::Tag::kGruCell:
@@ -1161,9 +1166,8 @@ base::expected<void, mojom::ErrorPtr> GraphBuilder::AddOperationForConcat(
     return NewNotSupportedError("Unsupported input datatype.");
   }
 
-  static const char kParamValues[] = "values";
-  static const char kParamAxis[] = "axis";
-  static const char kParamInterleave[] = "interleave";
+  static constexpr char kParamValues[] = "values";
+  static constexpr char kParamInterleave[] = "interleave";
 
   CoreML::Specification::MILSpec::Operation* op = block.add_operations();
   op->set_type(kOpConcatTypeName);
@@ -1174,8 +1178,8 @@ base::expected<void, mojom::ErrorPtr> GraphBuilder::AddOperationForConcat(
   }
   SetInputsWithValues(
       *op->mutable_inputs(),
-      {{kParamAxis, CreateScalarImmediateValue(
-                        base::checked_cast<int32_t>(operation.axis))},
+      {{kOpParamAxis, CreateScalarImmediateValue(
+                          base::checked_cast<int32_t>(operation.axis))},
        {kParamInterleave, CreateScalarImmediateValue(false)}});
 
   PopulateNamedValueType(operation.output_operand_id, *op->add_outputs());
@@ -1507,6 +1511,60 @@ base::expected<void, mojom::ErrorPtr> GraphBuilder::AddOperationForElu(
     CoreML::Specification::MILSpec::Block& block) {
   return AddOperationForElu(operation.input_operand_id, operation.alpha,
                             operation.output_operand_id, block);
+}
+
+base::expected<void, mojom::ErrorPtr> GraphBuilder::AddOperationForGather(
+    const mojom::Gather& operation,
+    CoreML::Specification::MILSpec::Block& block) {
+  const OperandInfo& input_operand_info =
+      GetOperandInfo(operation.input_operand_id);
+  const OperandInfo& indices_operand_info =
+      GetOperandInfo(operation.indices_operand_id);
+
+  // Note that INT16, and UINT16 is also supported by CoreML, but WebNN
+  // does not have corresponding types. See docs here:
+  // https://apple.github.io/coremltools/source/coremltools.converters.mil.mil.ops.defs.html#coremltools.converters.mil.mil.ops.defs.iOS17.scatter_gather.gather
+  static constexpr auto kSupportedGatherOpsTypes =
+      base::MakeFixedFlatSet<CoreML::Specification::MILSpec::DataType>(
+          {CoreML::Specification::MILSpec::DataType::FLOAT32,
+           CoreML::Specification::MILSpec::DataType::FLOAT16,
+           CoreML::Specification::MILSpec::DataType::INT8,
+           CoreML::Specification::MILSpec::DataType::INT32,
+           CoreML::Specification::MILSpec::DataType::UINT8});
+  if (!kSupportedGatherOpsTypes.contains(input_operand_info.mil_data_type)) {
+    return NewNotSupportedError("Unsupported input datatype.");
+  }
+
+  // TODO: crbug.com/338640913 - figure out what data type should be allowed for
+  // WebNN.
+  static constexpr auto kSupportedGatherIndicesTypes =
+      base::MakeFixedFlatSet<CoreML::Specification::MILSpec::DataType>(
+          {CoreML::Specification::MILSpec::DataType::INT8,
+           CoreML::Specification::MILSpec::DataType::INT32,
+           CoreML::Specification::MILSpec::DataType::UINT8});
+  if (!kSupportedGatherIndicesTypes.contains(
+          indices_operand_info.mil_data_type)) {
+    return NewNotSupportedError("Unsupported indices datatype.");
+  }
+  static constexpr char kParamIndices[] = "indices";
+  static constexpr char kParamValidateIndices[] = "validate_indices";
+
+  CoreML::Specification::MILSpec::Operation* op = block.add_operations();
+  op->set_type(kOpGatherTypeName);
+  SetInputWithName(*op->mutable_inputs(), kOpParamX,
+                   input_operand_info.coreml_name);
+
+  SetInputWithName(*op->mutable_inputs(), kParamIndices,
+                   indices_operand_info.coreml_name);
+
+  SetInputsWithValues(
+      *op->mutable_inputs(),
+      {{kOpParamAxis, CreateScalarImmediateValue(
+                          base::checked_cast<int32_t>(operation.axis))},
+       {kParamValidateIndices, CreateScalarImmediateValue(false)}});
+
+  PopulateNamedValueType(operation.output_operand_id, *op->add_outputs());
+  return base::ok();
 }
 
 base::expected<void, mojom::ErrorPtr> GraphBuilder::AddOperationForGemm(
