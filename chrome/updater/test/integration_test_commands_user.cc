@@ -446,11 +446,8 @@ class IntegrationTestCommandsUser : public IntegrationTestCommands {
  private:
   ~IntegrationTestCommandsUser() override = default;
 
-  static const UpdaterScope updater_scope_;
+  inline static const UpdaterScope updater_scope_ = GetUpdaterScopeForTesting();
 };
-
-const UpdaterScope IntegrationTestCommandsUser::updater_scope_ =
-    GetUpdaterScopeForTesting();
 
 scoped_refptr<IntegrationTestCommands> CreateIntegrationTestCommandsUser() {
   return base::MakeRefCounted<IntegrationTestCommandsUser>();

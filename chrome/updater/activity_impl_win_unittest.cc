@@ -97,8 +97,6 @@ class ActivityWinTest : public ::testing::TestWithParam<
         .DeleteKey(low_integrity_key_path_.c_str());
   }
 
-  UpdaterScope GetScope() const { return GetUpdaterScopeForTesting(); }
-
   bool SetUserValue() const { return std::get<0>(GetParam()); }
 
   bool SetLowUserValue() const { return std::get<1>(GetParam()); }
@@ -169,18 +167,18 @@ class ActivityWinTest : public ::testing::TestWithParam<
 
 TEST_P(ActivityWinTest, GetActiveBit) {
   ASSERT_EQ(SetUserValue() || SetLowUserValue(),
-            GetActiveBit(GetScope(), kAppId));
+            GetActiveBit(GetUpdaterScopeForTesting(), kAppId));
 
   CheckUserActiveBit(SetUserValue(), ReadActiveBitFn());
   CheckLowIntegrityUserActiveBit(SetLowUserValue(), ReadActiveBitFn());
 }
 
 TEST_P(ActivityWinTest, ClearActiveBit) {
-  ClearActiveBit(GetScope(), kAppId);
+  ClearActiveBit(GetUpdaterScopeForTesting(), kAppId);
 
   CheckUserActiveBit(false, &ReadActiveBitAsString);
   CheckLowIntegrityUserActiveBit(false, &ReadActiveBitAsString);
-  ASSERT_FALSE(GetActiveBit(GetScope(), kAppId));
+  ASSERT_FALSE(GetActiveBit(GetUpdaterScopeForTesting(), kAppId));
 }
 
 INSTANTIATE_TEST_SUITE_P(
