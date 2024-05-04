@@ -2134,7 +2134,7 @@ You can manage this account’s settings by installing the Family Link app on yo
 <translation id="2541706104884128042">New bedtime set</translation>
 <translation id="2542050502251273923">Sets the debugging level of the network connection manager and other services using ff_debug.</translation>
 <translation id="2543780089903485983">{NUM_SUB_APP_INSTALLS,plural, =1{Permissions that you allow for "<ph name="APP_NAME" />' will also be allowed for this app. <ph name="MANAGE_LINK" />}other{Permissions that you allow for ‘<ph name="APP_NAME" />' will also be allowed for these apps. <ph name="MANAGE_LINK" />}}</translation>
-<translation id="2544352060595557290">This Tab</translation>
+<translation id="2544352060595557290">This tab</translation>
 <translation id="2546302722632337735">Don't allow sites to use identifiers to play protected content</translation>
 <translation id="2546991196809436099">Zoom in to make items on the screen bigger. Use Search + Ctrl + M to turn the magnifier on and off.</translation>
 <translation id="2548347166720081527">Allowed <ph name="PERMISSION" /></translation>
@@ -7590,7 +7590,7 @@ You have # more compromised passwords. Google Password Manager recommends checki
 <translation id="6785915470941880363">Reverse scrolling <ph name="LINK_BEGIN" />Learn more<ph name="LINK_END" /></translation>
 <translation id="67862343314499040">Violet</translation>
 <translation id="6786747875388722282">Extensions</translation>
-<translation id="6787097042755590313">Other Tab</translation>
+<translation id="6787097042755590313">Other tab</translation>
 <translation id="6787531944787756058">username <ph name="USER_EMAIL" /> is saved only to this device. See details</translation>
 <translation id="6787839852456839824">Keyboard shortcuts</translation>
 <translation id="6788210894632713004">Unpacked extension</translation>
