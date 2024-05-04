@@ -16,6 +16,14 @@
 
 namespace visited_url_ranking {
 
+// The currently supported URL visit data fetchers that may participate in a
+// fetch request.
+enum class Fetcher {
+  kTabModel = 0,
+  kSession = 1,
+  kHistory = 2,
+};
+
 // URL visit associated data.
 struct URLVisit {
   // If applicable, whether the visit data was sourced from a specific origin
@@ -83,7 +91,8 @@ struct URLVisitAggregate {
     bool pinned = false;
     // Whether there is a tab for the given URL visit that is part of a group.
     bool in_group = false;
-    // The number of opened tabs for the given URL visit in a time period.
+    // The number of opened tabs for the given URL visit aggregate in a time
+    // period.
     size_t tab_count = 0;
   };
 
@@ -93,10 +102,13 @@ struct URLVisitAggregate {
   URLVisitAggregate& operator=(URLVisitAggregate&& other);
   ~URLVisitAggregate();
 
+  // A map of aggregate tab related characteristics associated with the visit as
+  // provided by a given source.
+  using URLVisitVariant = std::variant<URLVisitAggregate::TabData>;
+  std::map<Fetcher, URLVisitVariant> fetcher_data_map;
+
   // Whether the visit is bookmarked or not.
   bool bookmarked = false;
-  // Aggregate tab related characteristics associated with the visit, if any.
-  std::optional<TabData> tab;
 };
 
 }  // namespace visited_url_ranking

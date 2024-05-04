@@ -6,12 +6,15 @@ static_library("internal") {
   visibility = [
     ":*",
     "//chrome/browser",
+    "//chrome/browser/visited_url_ranking:*",
     "//chrome/test:*",
   ]
 
   sources = [
     "session_url_visit_data_fetcher.cc",
     "session_url_visit_data_fetcher.h",
+    "visited_url_ranking_service_impl.cc",
+    "visited_url_ranking_service_impl.h",
   ]
 
   deps = [
@@ -26,7 +29,10 @@ static_library("internal") {
 source_set("unit_tests") {
   testonly = true
 
-  sources = [ "session_url_visit_data_fetcher_unittest.cc" ]
+  sources = [
+    "session_url_visit_data_fetcher_unittest.cc",
+    "visited_url_ranking_service_impl_unittest.cc",
+  ]
 
   deps = [
     ":internal",

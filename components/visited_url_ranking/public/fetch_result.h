@@ -18,10 +18,10 @@ namespace visited_url_ranking {
 // which helps match related URL visit data.
 using URLMergeKey = std::string;
 
-using URLVisitVariant = std::variant<URLVisitAggregate::TabData>;
-
 struct FetchResult {
   enum class Status { kError = 0, kSuccess = 1 };
+
+  using URLVisitVariant = URLVisitAggregate::URLVisitVariant;
 
   FetchResult(Status status, std::map<URLMergeKey, URLVisitVariant> data);
   FetchResult(const FetchResult&) = delete;

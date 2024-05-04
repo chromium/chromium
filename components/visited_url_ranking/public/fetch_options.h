@@ -6,28 +6,24 @@
 #define COMPONENTS_VISITED_URL_RANKING_PUBLIC_FETCH_OPTIONS_H_
 
 #include <map>
+#include <vector>
 
 #include "base/containers/enum_set.h"
 #include "base/time/time.h"
 #include "components/visited_url_ranking/public/url_visit.h"
+#include "components/visited_url_ranking/public/url_visit_aggregates_transformer.h"
 
 namespace visited_url_ranking {
-
-// The currently supported URL visit data fetchers that may participate in a
-// fetch request.
-enum class Fetcher {
-  kTabModel = 0,
-  kSession = 1,
-  kHistory = 2,
-};
 
 // The options that may be specified when fetching URL visit data.
 struct FetchOptions {
   using Source = URLVisit::Source;
   using FetchSources =
       base::EnumSet<Source, Source::kNotApplicable, Source::kForeign>;
-  FetchOptions(std::map<Fetcher, FetchSources> fetcher_sources,
-               base::Time begin_time);
+  FetchOptions(
+      std::map<Fetcher, FetchSources> fetcher_sources_arg,
+      base::Time begin_time_arg,
+      std::vector<URLVisitAggregatesTransformType> transforms_arg = {});
   FetchOptions(const FetchOptions&) = delete;
   FetchOptions(FetchOptions&& other);
   FetchOptions& operator=(FetchOptions&& other);
@@ -48,6 +44,11 @@ struct FetchOptions {
   // fetcher may leverage this time differently depending on the timestamps that
   // are supported by their associated sources.
   base::Time begin_time;
+
+  // A series of transformations to apply on the `URVisitAggregate` object
+  // collection. These may include operations that mutate the collection or
+  // specific field of the collection objects.
+  std::vector<URLVisitAggregatesTransformType> transforms;
 };
 
 }  // namespace visited_url_ranking

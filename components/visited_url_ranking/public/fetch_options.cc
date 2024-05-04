@@ -5,16 +5,21 @@
 #include "components/visited_url_ranking/public/fetch_options.h"
 
 #include <map>
+#include <utility>
+#include <vector>
 
 #include "base/check.h"
 #include "base/containers/enum_set.h"
 
 namespace visited_url_ranking {
 
-FetchOptions::FetchOptions(std::map<Fetcher, FetchSources> fetcher_sources_arg,
-                           base::Time begin_time_arg)
+FetchOptions::FetchOptions(
+    std::map<Fetcher, FetchSources> fetcher_sources_arg,
+    base::Time begin_time_arg,
+    std::vector<URLVisitAggregatesTransformType> transforms_arg)
     : fetcher_sources(std::move(fetcher_sources_arg)),
-      begin_time(begin_time_arg) {
+      begin_time(begin_time_arg),
+      transforms(std::move(transforms_arg)) {
   DCHECK(!fetcher_sources.empty());
   DCHECK(!begin_time.is_null());
 }
@@ -32,7 +37,9 @@ FetchOptions FetchOptions::CreateDefaultFetchOptionsForTabResumption() {
           {Fetcher::kHistory, FetchOptions::kOriginSources},
           {Fetcher::kSession, FetchOptions::kOriginSources},
       },
-      base::Time::Now() - base::Days(1));
+      base::Time::Now() - base::Days(1),
+      {URLVisitAggregatesTransformType::kBookmarkData,
+       URLVisitAggregatesTransformType::kShoppingData});
 }
 
 }  // namespace visited_url_ranking

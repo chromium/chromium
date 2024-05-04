@@ -23,7 +23,10 @@ struct Config {
   std::string key;
 };
 
-enum class ResultStatus { kError = 0, kSuccess = 1 };
+enum class ResultStatus {
+  kError = 0,
+  kSuccess = 1,
+};
 
 // Provides APIs suitable for combining URL Visit data across various data
 // sources and their subsequent ranking via a model.
@@ -48,7 +51,7 @@ enum class ResultStatus { kError = 0, kSuccess = 1 };
 //
 class VisitedURLRankingService : public KeyedService {
  public:
-  VisitedURLRankingService();
+  VisitedURLRankingService() = default;
   ~VisitedURLRankingService() override = default;
 
   // Computes `URLVisitAggregate` objects based on a series of

@@ -10,6 +10,7 @@ source_set("public") {
     "fetch_result.h",
     "url_visit.cc",
     "url_visit.h",
+    "url_visit_aggregates_transformer.h",
     "url_visit_data_fetcher.h",
     "visited_url_ranking_service.h",
   ]

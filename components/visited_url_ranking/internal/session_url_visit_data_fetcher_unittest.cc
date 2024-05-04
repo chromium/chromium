@@ -153,9 +153,8 @@ class SessionURLVisitDataFetcherTest
  public:
   SessionURLVisitDataFetcherTest() {
     EXPECT_CALL(mock_session_sync_service_, GetOpenTabsUIDelegate())
-        .WillOnce(testing::Invoke([this /*&open_tabs_ui_delegate_*/]() {
-          return &open_tabs_ui_delegate_;
-        }));
+        .WillOnce(
+            testing::Invoke([this]() { return &open_tabs_ui_delegate_; }));
   }
 
  protected:

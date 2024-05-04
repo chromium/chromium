@@ -22,6 +22,7 @@
 namespace visited_url_ranking {
 
 using Source = URLVisit::Source;
+using URLVisitVariant = URLVisitAggregate::URLVisitVariant;
 
 // TODO(crbug.com/335200723): Integrate client configurable merging and
 // deduplication logic to produce "merge" keys for provided URLs.
