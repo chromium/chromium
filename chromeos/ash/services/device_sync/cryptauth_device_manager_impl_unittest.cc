@@ -1207,11 +1207,11 @@ TEST_F(DeviceSyncCryptAuthDeviceManagerImplTest,
 
   // Simulate how older client versions persisted SoftwareFeatures as ints.
   device.add_supported_software_features(
-      std::to_string(cryptauth::SoftwareFeature::EASY_UNLOCK_HOST));
+      base::NumberToString(cryptauth::SoftwareFeature::EASY_UNLOCK_HOST));
   device.add_enabled_software_features(
-      std::to_string(cryptauth::SoftwareFeature::EASY_UNLOCK_HOST));
+      base::NumberToString(cryptauth::SoftwareFeature::EASY_UNLOCK_HOST));
   device.add_supported_software_features(
-      std::to_string(cryptauth::SoftwareFeature::MAGIC_TETHER_HOST));
+      base::NumberToString(cryptauth::SoftwareFeature::MAGIC_TETHER_HOST));
 
   devices_in_response_.push_back(device);
   get_my_devices_response_.add_devices()->CopyFrom(device);

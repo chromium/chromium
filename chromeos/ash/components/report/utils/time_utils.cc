@@ -319,7 +319,7 @@ std::string ConvertTimeToISO8601String(base::Time ts) {
   // This captures ts for up to the 3 days after the new year that are apart of
   // the previous year last ISO week.
   if (ts < first_monday_iso_year.value()) {
-    return std::to_string(activate_year - 1) + "-52";
+    return base::NumberToString(activate_year - 1) + "-52";
   }
 
   std::optional<base::Time> first_monday_iso_year_next =
@@ -333,7 +333,7 @@ std::string ConvertTimeToISO8601String(base::Time ts) {
   // This captures ts for up to the 3 days before the new year that are apart of
   // the current year first ISO week.
   if (ts >= first_monday_iso_year_next.value()) {
-    return std::to_string(activate_year + 1) + "-01";
+    return base::NumberToString(activate_year + 1) + "-01";
   }
 
   // Calculate the number of days between the given time and the first
@@ -344,9 +344,9 @@ std::string ConvertTimeToISO8601String(base::Time ts) {
   // Calculate the ISO 8601 week number
   int activate_week_of_year = days_difference / 7 + 1;
 
-  return std::to_string(activate_year) + "-" +
+  return base::NumberToString(activate_year) + "-" +
          (activate_week_of_year < 10 ? "0" : "") +
-         std::to_string(activate_week_of_year);
+         base::NumberToString(activate_week_of_year);
 }
 
 }  // namespace ash::report::utils

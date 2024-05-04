@@ -237,7 +237,7 @@ void FakeBiodClient::StartEnrollSession(const std::string& user_id,
 
   // Create the enrollment with |user_id|, |label| and a empty fake fingerprint.
   current_record_path_ = dbus::ObjectPath(
-      kRecordObjectPathPrefix + std::to_string(next_record_unique_id_++));
+      kRecordObjectPathPrefix + base::NumberToString(next_record_unique_id_++));
   current_record_.user_id = user_id;
   current_record_.label = label;
   current_session_ = FingerprintSession::ENROLL;
