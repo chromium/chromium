@@ -11,7 +11,6 @@
 #include <string>
 
 #include "base/functional/bind.h"
-#include "base/logging.h"
 #include "base/trace_event/trace_event.h"
 #include "media/base/demuxer_memory_limit.h"
 #include "media/base/media_switches.h"
@@ -1804,6 +1803,21 @@ bool SourceBufferStream::UpdateAudioConfig(const AudioDecoderConfig& config,
   DVLOG(2) << "New audio config - index: " << append_config_index_;
   audio_configs_.resize(audio_configs_.size() + 1);
   audio_configs_[append_config_index_] = config;
+
+  if (memory_limit_overridden_) {
+    DVLOG(2)
+        << __func__
+        << ": Skipping updating memory limit as memory limit was overridden.";
+  } else {
+    // Dynamically increase |memory_limit_| on audio config changes.
+    size_t new_memory_limit = GetDemuxerStreamAudioMemoryLimit(&config);
+    if (new_memory_limit > memory_limit_) {
+      DVLOG(2) << __func__ << ": Increase memory limit from " << memory_limit_
+               << " to " << new_memory_limit << ".";
+      memory_limit_ = new_memory_limit;
+    }
+  }
+
   return true;
 }
 
@@ -1838,6 +1852,22 @@ bool SourceBufferStream::UpdateVideoConfig(const VideoDecoderConfig& config,
   DVLOG(2) << "New video config - index: " << append_config_index_;
   video_configs_.resize(video_configs_.size() + 1);
   video_configs_[append_config_index_] = config;
+
+  if (memory_limit_overridden_) {
+    DVLOG(2)
+        << __func__
+        << ": Skipping updating memory limit as memory limit was overridden.";
+  } else {
+    // Dynamically increase |memory_limit_| on video config changes.
+    size_t new_memory_limit = GetDemuxerStreamVideoMemoryLimit(
+        Demuxer::DemuxerTypes::kChunkDemuxer, &config);
+    if (new_memory_limit > memory_limit_) {
+      DVLOG(2) << __func__ << ": Increase memory limit from " << memory_limit_
+               << " to " << new_memory_limit << ".";
+      memory_limit_ = new_memory_limit;
+    }
+  }
+
   return true;
 }
 

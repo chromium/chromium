@@ -21,6 +21,7 @@
 #include <utility>
 #include <vector>
 
+#include "base/logging.h"
 #include "base/memory/memory_pressure_listener.h"
 #include "base/memory/raw_ptr.h"
 #include "base/memory/scoped_refptr.h"
@@ -177,7 +178,11 @@ class MEDIA_EXPORT SourceBufferStream {
   base::TimeDelta GetMaxInterbufferDistance() const;
 
   void set_memory_limit(size_t memory_limit) {
+    DVLOG(2) << __func__ << ": Override memory limit from " << memory_limit_
+             << " to " << memory_limit << ".";
+
     memory_limit_ = memory_limit;
+    memory_limit_overridden_ = true;
   }
 
   // A helper function for detecting video/audio config change, so that we
@@ -497,6 +502,11 @@ class MEDIA_EXPORT SourceBufferStream {
   // eviction heuristic can cause the result to vary from the value set in
   // constructor.
   size_t memory_limit_;
+
+  // Set to true in |set_memory_limit()| to signal that the |memory_limit_| has
+  // been overridden, and |memory_limit_| shouldn't be updated again in
+  // |UpdateAudioConfig()| or |UpdateVideoConfig()|.
+  bool memory_limit_overridden_ = false;
 
   // Indicates that a kConfigChanged status has been reported by GetNextBuffer()
   // and GetCurrentXXXDecoderConfig() must be called to update the current
