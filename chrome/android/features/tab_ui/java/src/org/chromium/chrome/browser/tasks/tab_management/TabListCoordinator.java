@@ -47,6 +47,7 @@ import org.chromium.chrome.browser.tabmodel.TabModelFilter;
 import org.chromium.chrome.browser.tabmodel.TabModelUtils;
 import org.chromium.chrome.browser.tasks.ReturnToChromeUtil;
 import org.chromium.chrome.browser.tasks.pseudotab.PseudoTab;
+import org.chromium.chrome.browser.tasks.tab_groups.TabGroupModelFilter;
 import org.chromium.chrome.browser.tasks.tab_management.TabListModel.CardProperties.ModelType;
 import org.chromium.chrome.browser.tasks.tab_management.TabProperties.UiType;
 import org.chromium.chrome.tab_ui.R;
@@ -354,6 +355,13 @@ public class TabListCoordinator
                         mMode == TabListMode.STRIP,
                         R.dimen.default_favicon_corner_radius);
 
+        ActionConfirmationManager actionConfirmationManager =
+                new ActionConfirmationManager(
+                        regularTabModelSupplier.get().getProfile(),
+                        mContext,
+                        (TabGroupModelFilter) mCurrentTabModelFilterSupplier.get(),
+                        modalDialogManager);
+
         mMediator =
                 new TabListMediator(
                         context,
@@ -373,7 +381,8 @@ public class TabListCoordinator
                         priceWelcomeMessageControllerSupplier,
                         componentName,
                         itemType,
-                        refreshTabListRunnable);
+                        refreshTabListRunnable,
+                        actionConfirmationManager);
 
         try (TraceEvent e = TraceEvent.scoped("TabListCoordinator.setupRecyclerView")) {
             // Ignore attachToParent initially. In some contexts multiple TabListCoordinators are

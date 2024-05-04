@@ -82,6 +82,7 @@ import org.chromium.chrome.browser.tasks.tab_groups.TabGroupModelFilter;
 import org.chromium.chrome.browser.tasks.tab_groups.TabGroupModelFilterObserver;
 import org.chromium.chrome.browser.tasks.tab_groups.TabGroupTitleUtils;
 import org.chromium.chrome.browser.tasks.tab_groups.TabGroupUtils;
+import org.chromium.chrome.browser.tasks.tab_management.ActionConfirmationManager.ConfirmationResult;
 import org.chromium.chrome.browser.tasks.tab_management.PriceMessageService.PriceTabData;
 import org.chromium.chrome.browser.tasks.tab_management.TabListCoordinator.TabListMode;
 import org.chromium.chrome.browser.tasks.tab_management.TabProperties.UiType;
@@ -361,6 +362,7 @@ class TabListMediator {
     private final TabGroupColorFaviconProvider mTabGroupColorFaviconProvider;
     private final TabListGroupMenuCoordinator.OnItemClickedCallback mOnMenuItemClickedCallback =
             this::onMenuItemClicked;
+    private final ActionConfirmationManager mActionConfirmationManager;
 
     private @Nullable Profile mProfile;
     private Size mDefaultGridCardSize;
@@ -866,7 +868,8 @@ class TabListMediator {
             @NonNull Supplier<PriceWelcomeMessageController> priceWelcomeMessageControllerSupplier,
             String componentName,
             @UiType int uiType,
-            @Nullable Runnable refreshTabListRunnable) {
+            @Nullable Runnable refreshTabListRunnable,
+            @NonNull ActionConfirmationManager actionConfirmationManager) {
         mContext = context;
         mModalDialogManager = modalDialogManager;
         mCurrentTabModelFilterSupplier = tabModelFilterSupplier;
@@ -887,6 +890,7 @@ class TabListMediator {
         mProfile = regularTabModelSupplier.get().getProfile();
         mTabGroupVisualDataDialogManager = null;
         mRefreshTabListRunnable = refreshTabListRunnable;
+        mActionConfirmationManager = actionConfirmationManager;
 
         mTabModelObserver =
                 new TabModelObserver() {
@@ -2616,7 +2620,20 @@ class TabListMediator {
         TabModel tabModel = filter.getTabModel();
         int rootId = TabModelUtils.getTabById(tabModel, tabId).getRootId();
         List<Tab> tabs = filter.getRelatedTabListForRootId(rootId);
-        filter.closeMultipleTabs(tabs, /* canUndo= */ true, hideTabGroups);
+
+        if (hideTabGroups) {
+            filter.closeMultipleTabs(tabs, /* canUndo= */ true, hideTabGroups);
+        } else {
+            // Present a confirmation dialog to the user before closing the tab group.
+            Callback<Integer> onResult =
+                    (@ConfirmationResult Integer result) -> {
+                        if (result != ConfirmationResult.CONFIRMATION_NEGATIVE) {
+                            boolean canUndo = result == ConfirmationResult.IMMEDIATE_CONTINUE;
+                            filter.closeMultipleTabs(tabs, canUndo, hideTabGroups);
+                        }
+                    };
+            mActionConfirmationManager.processDeleteGroupAttempt(onResult);
+        }
     }
 
     private void renameTabGroup(int tabId) {
@@ -2698,9 +2715,17 @@ class TabListMediator {
         TabGroupModelFilter filter = (TabGroupModelFilter) mCurrentTabModelFilterSupplier.get();
         List<Tab> tabs = filter.getRelatedTabListForRootId(rootId);
 
-        for (Tab tab : tabs) {
-            filter.moveTabOutOfGroup(tab.getId());
-        }
+        // Present a confirmation dialog to the user before ungrouping the tab group.
+        Callback<Integer> onResult =
+                (@ConfirmationResult Integer result) -> {
+                    if (result != ConfirmationResult.CONFIRMATION_NEGATIVE) {
+                        for (Tab tab : tabs) {
+                            filter.moveTabOutOfGroup(tab.getId());
+                        }
+                    }
+                };
+
+        mActionConfirmationManager.processUngroupAttempt(onResult);
     }
 
     private PropertyModel getModelFromId(int tabId) {

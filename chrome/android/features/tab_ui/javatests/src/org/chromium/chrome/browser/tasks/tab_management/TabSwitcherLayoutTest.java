@@ -1696,6 +1696,7 @@ public class TabSwitcherLayoutTest {
     })
     public void testTabGroupOverflowMenuInTabSwitcher_closeGroup() {
         final ChromeTabbedActivity cta = mActivityTestRule.getActivity();
+        SnackbarManager snackbarManager = cta.getSnackbarManager();
         createTabs(cta, false, 2);
         enterTabSwitcher(cta);
         verifyTabSwitcherCardCount(cta, 2);
@@ -1710,7 +1711,12 @@ public class TabSwitcherLayoutTest {
         onView(allOf(withText(closeButtonText), withId(R.id.menu_item_text))).perform(click());
 
         // Verify the tab group was closed.
+        assertTrue(
+                snackbarManager.getCurrentSnackbarForTesting().getController()
+                        instanceof UndoBarController);
         verifyTabSwitcherCardCount(cta, 0);
+        CriteriaHelper.pollInstrumentationThread(TabUiTestHelper::verifyUndoBarShowingAndClickUndo);
+        verifyTabSwitcherCardCount(cta, 1);
     }
 
     @Test
@@ -1823,9 +1829,9 @@ public class TabSwitcherLayoutTest {
     @MediumTest
     @EnableFeatures({
         ChromeFeatureList.TAB_GROUP_PARITY_ANDROID,
-        ChromeFeatureList.TAB_GROUP_PANE_ANDROID
+        ChromeFeatureList.TAB_GROUP_PANE_ANDROID,
     })
-    public void testTabGroupOverflowMenuInTabSwitcher_ungroup() {
+    public void testTabGroupOverflowMenuInTabSwitcher_ungroupAccept() {
         final ChromeTabbedActivity cta = mActivityTestRule.getActivity();
         createTabs(cta, false, 2);
         enterTabSwitcher(cta);
@@ -1840,6 +1846,13 @@ public class TabSwitcherLayoutTest {
         onView(withId(R.id.action_button)).perform(click());
         onView(allOf(withText(ungroupButtonText), withId(R.id.menu_item_text))).perform(click());
 
+        // Verify that the modal dialog is now showing.
+        verifyModalDialogShowingAnimationCompleteInTabSwitcher();
+        // Verify the ungroup dialog exists.
+        onViewWaiting(withId(R.id.stop_showing_check_box), /* checkRootDialog= */ true)
+                .check(matches(isDisplayed()));
+        // Confirm the action.
+        onView(withId(R.id.positive_button)).perform(click());
         // Verify the tab group was ungrouped.
         verifyTabSwitcherCardCount(cta, 2);
     }
@@ -1848,9 +1861,88 @@ public class TabSwitcherLayoutTest {
     @MediumTest
     @EnableFeatures({
         ChromeFeatureList.TAB_GROUP_PARITY_ANDROID,
-        ChromeFeatureList.TAB_GROUP_PANE_ANDROID
+        ChromeFeatureList.TAB_GROUP_PANE_ANDROID,
     })
-    public void testTabGroupOverflowMenuInTabSwitcher_deleteGroup() {
+    public void testTabGroupOverflowMenuInTabSwitcher_ungroupDecline() {
+        final ChromeTabbedActivity cta = mActivityTestRule.getActivity();
+        createTabs(cta, false, 2);
+        enterTabSwitcher(cta);
+        verifyTabSwitcherCardCount(cta, 2);
+        // Create a tab group.
+        mergeAllNormalTabsToAGroup(cta);
+        verifyGroupVisualDataDialogOpenedAndDismiss(cta);
+        verifyTabSwitcherCardCount(cta, 1);
+
+        // Click the ungroup action button to ungroup the group
+        String ungroupButtonText = cta.getString(R.string.ungroup_tab_group_menu_item);
+        onView(withId(R.id.action_button)).perform(click());
+        onView(allOf(withText(ungroupButtonText), withId(R.id.menu_item_text))).perform(click());
+
+        // Verify that the modal dialog is now showing.
+        verifyModalDialogShowingAnimationCompleteInTabSwitcher();
+        // Verify the ungroup dialog exists.
+        onViewWaiting(withId(R.id.stop_showing_check_box), /* checkRootDialog= */ true)
+                .check(matches(isDisplayed()));
+        // Decline the action.
+        onView(withId(R.id.negative_button)).perform(click());
+        // Verify the tab group was not ungrouped.
+        verifyTabSwitcherCardCount(cta, 1);
+    }
+
+    @Test
+    @MediumTest
+    @EnableFeatures({
+        ChromeFeatureList.TAB_GROUP_PARITY_ANDROID,
+        ChromeFeatureList.TAB_GROUP_PANE_ANDROID,
+    })
+    public void testTabGroupOverflowMenuInTabSwitcher_ungroupDoNotShowAgain() {
+        final ChromeTabbedActivity cta = mActivityTestRule.getActivity();
+        createTabs(cta, false, 2);
+        enterTabSwitcher(cta);
+        verifyTabSwitcherCardCount(cta, 2);
+        // Create a tab group.
+        mergeAllNormalTabsToAGroup(cta);
+        verifyGroupVisualDataDialogOpenedAndDismiss(cta);
+        verifyTabSwitcherCardCount(cta, 1);
+
+        // Click the ungroup action button to ungroup the group
+        String ungroupButtonText = cta.getString(R.string.ungroup_tab_group_menu_item);
+        onView(withId(R.id.action_button)).perform(click());
+        onView(allOf(withText(ungroupButtonText), withId(R.id.menu_item_text))).perform(click());
+
+        // Verify that the modal dialog is now showing.
+        verifyModalDialogShowingAnimationCompleteInTabSwitcher();
+        // Verify the ungroup dialog exists.
+        onViewWaiting(withId(R.id.stop_showing_check_box), /* checkRootDialog= */ true)
+                .check(matches(isDisplayed()));
+        // Select the checkbox.
+        onView(withId(R.id.stop_showing_check_box)).perform(click());
+        // Confirm the action.
+        onView(withId(R.id.positive_button)).perform(click());
+        // Verify the tab group was ungrouped.
+        verifyTabSwitcherCardCount(cta, 2);
+
+        // Regroup the tabs.
+        mergeAllNormalTabsToAGroup(cta);
+        verifyGroupVisualDataDialogOpenedAndDismiss(cta);
+        verifyTabSwitcherCardCount(cta, 1);
+
+        // Click the ungroup action button to ungroup the group
+        onView(withId(R.id.action_button)).perform(click());
+        onView(allOf(withText(ungroupButtonText), withId(R.id.menu_item_text))).perform(click());
+        // Verify the ungroup dialog does not exist.
+        onView(withId(R.id.stop_showing_check_box)).check(doesNotExist());
+        // Verify the tab group was ungrouped.
+        verifyTabSwitcherCardCount(cta, 2);
+    }
+
+    @Test
+    @MediumTest
+    @EnableFeatures({
+        ChromeFeatureList.TAB_GROUP_PARITY_ANDROID,
+        ChromeFeatureList.TAB_GROUP_PANE_ANDROID,
+    })
+    public void testTabGroupOverflowMenuInTabSwitcher_deleteGroupAccept() {
         final ChromeTabbedActivity cta = mActivityTestRule.getActivity();
         createTabs(cta, false, 2);
         enterTabSwitcher(cta);
@@ -1865,8 +1957,111 @@ public class TabSwitcherLayoutTest {
         onView(withId(R.id.action_button)).perform(click());
         onView(allOf(withText(deleteButtonText), withId(R.id.menu_item_text))).perform(click());
 
+        // Verify that the modal dialog is now showing.
+        verifyModalDialogShowingAnimationCompleteInTabSwitcher();
+        // Verify the delete dialog exists.
+        onViewWaiting(withId(R.id.stop_showing_check_box), /* checkRootDialog= */ true)
+                .check(matches(isDisplayed()));
+        // Confirm the action.
+        onView(withId(R.id.positive_button)).perform(click());
         // Verify the tab group was closed.
         verifyTabSwitcherCardCount(cta, 0);
+    }
+
+    @Test
+    @MediumTest
+    @EnableFeatures({
+        ChromeFeatureList.TAB_GROUP_PARITY_ANDROID,
+        ChromeFeatureList.TAB_GROUP_PANE_ANDROID,
+    })
+    public void testTabGroupOverflowMenuInTabSwitcher_deleteGroupDecline() {
+        final ChromeTabbedActivity cta = mActivityTestRule.getActivity();
+        createTabs(cta, false, 2);
+        enterTabSwitcher(cta);
+        verifyTabSwitcherCardCount(cta, 2);
+        // Create a tab group.
+        mergeAllNormalTabsToAGroup(cta);
+        verifyGroupVisualDataDialogOpenedAndDismiss(cta);
+        verifyTabSwitcherCardCount(cta, 1);
+
+        // Click the delete action button to close the group
+        String deleteButtonText = cta.getString(R.string.delete_tab_group_menu_item);
+        onView(withId(R.id.action_button)).perform(click());
+        onView(allOf(withText(deleteButtonText), withId(R.id.menu_item_text))).perform(click());
+
+        // Verify that the modal dialog is now showing.
+        verifyModalDialogShowingAnimationCompleteInTabSwitcher();
+        // Verify the delete dialog exists.
+        onViewWaiting(withId(R.id.stop_showing_check_box), /* checkRootDialog= */ true)
+                .check(matches(isDisplayed()));
+        // Decline the action.
+        Espresso.pressBack();
+        // Verify the tab group was not closed.
+        verifyTabSwitcherCardCount(cta, 1);
+    }
+
+    @Test
+    @MediumTest
+    @EnableFeatures({
+        ChromeFeatureList.TAB_GROUP_PARITY_ANDROID,
+        ChromeFeatureList.TAB_GROUP_PANE_ANDROID,
+    })
+    public void testTabGroupOverflowMenuInTabSwitcher_deleteGroupDoNotShowAgain() {
+        final ChromeTabbedActivity cta = mActivityTestRule.getActivity();
+        // TODO(b/338529212): Update the expected string once the content description is correct.
+        String expectedDescription = "Close tab group with 2 tabs, color Grey.";
+        SnackbarManager snackbarManager = cta.getSnackbarManager();
+        createTabs(cta, false, 4);
+        enterTabSwitcher(cta);
+        verifyTabSwitcherCardCount(cta, 4);
+
+        // Merge last two tabs into a group.
+        TabModel normalTabModel = cta.getTabModelSelector().getModel(false);
+        List<Tab> tabGroup =
+                new ArrayList<>(
+                        Arrays.asList(normalTabModel.getTabAt(2), normalTabModel.getTabAt(3)));
+        createTabGroup(cta, false, tabGroup);
+        verifyGroupVisualDataDialogOpenedAndDismiss(cta);
+        verifyTabSwitcherCardCount(cta, 3);
+
+        // Merge first two tabs into a group.
+        List<Tab> tabGroup2 =
+                new ArrayList<>(
+                        Arrays.asList(normalTabModel.getTabAt(0), normalTabModel.getTabAt(1)));
+        createTabGroup(cta, false, tabGroup2);
+        verifyGroupVisualDataDialogOpenedAndDismiss(cta);
+        verifyTabSwitcherCardCount(cta, 2);
+
+        // Click the delete action button to close the group
+        String deleteButtonText = cta.getString(R.string.delete_tab_group_menu_item);
+        onView(allOf(withContentDescription(expectedDescription), withId(R.id.action_button)))
+                .perform(click());
+        onView(allOf(withText(deleteButtonText), withId(R.id.menu_item_text))).perform(click());
+
+        // Verify that the modal dialog is now showing.
+        verifyModalDialogShowingAnimationCompleteInTabSwitcher();
+        // Verify the delete dialog exists.
+        onViewWaiting(withId(R.id.stop_showing_check_box), /* checkRootDialog= */ true)
+                .check(matches(isDisplayed()));
+        // Select the checkbox.
+        onView(withId(R.id.stop_showing_check_box)).perform(click());
+        // Confirm the action.
+        onView(withId(R.id.positive_button)).perform(click());
+        // Verify the tab group was closed.
+        verifyTabSwitcherCardCount(cta, 1);
+
+        // Click the delete action button to delete the group
+        onView(withId(R.id.action_button)).perform(click());
+        onView(allOf(withText(deleteButtonText), withId(R.id.menu_item_text))).perform(click());
+        // Verify the delete dialog does not exist.
+        onView(withId(R.id.stop_showing_check_box)).check(doesNotExist());
+        // Verify the tab group was closed.
+        assertTrue(
+                snackbarManager.getCurrentSnackbarForTesting().getController()
+                        instanceof UndoBarController);
+        verifyTabSwitcherCardCount(cta, 0);
+        CriteriaHelper.pollInstrumentationThread(TabUiTestHelper::verifyUndoBarShowingAndClickUndo);
+        verifyTabSwitcherCardCount(cta, 1);
     }
 
     @Test

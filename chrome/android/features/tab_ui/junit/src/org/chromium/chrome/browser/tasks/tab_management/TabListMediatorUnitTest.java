@@ -287,6 +287,7 @@ public class TabListMediatorUnitTest {
     @Mock SelectionDelegate<Integer> mSelectionDelegate;
     @Mock ModalDialogManager mModalDialogManager;
     @Mock Runnable mRefreshTabListRunnable;
+    @Mock ActionConfirmationManager mActionConfirmationManager;
 
     @Captor ArgumentCaptor<TabModelObserver> mTabModelObserverCaptor;
     @Captor ArgumentCaptor<TabObserver> mTabObserverCaptor;
@@ -1108,7 +1109,8 @@ public class TabListMediatorUnitTest {
                         null,
                         getClass().getSimpleName(),
                         UiType.CLOSABLE,
-                        mRefreshTabListRunnable);
+                        mRefreshTabListRunnable,
+                        mActionConfirmationManager);
         mMediator.initWithNative(mProfile);
 
         // mTabModelObserverCaptor captures on every initWithNative call.
@@ -2776,7 +2778,8 @@ public class TabListMediatorUnitTest {
                         null,
                         getClass().getSimpleName(),
                         TabProperties.UiType.CLOSABLE,
-                        mRefreshTabListRunnable);
+                        mRefreshTabListRunnable,
+                        mActionConfirmationManager);
         mMediator.registerOrientationListener(mGridLayoutManager);
         mMediator.initWithNative(mProfile);
         initAndAssertAllProperties();
@@ -2811,7 +2814,8 @@ public class TabListMediatorUnitTest {
                         null,
                         getClass().getSimpleName(),
                         TabProperties.UiType.CLOSABLE,
-                        mRefreshTabListRunnable);
+                        mRefreshTabListRunnable,
+                        mActionConfirmationManager);
         mMediator.registerOrientationListener(mGridLayoutManager);
         mMediator.initWithNative(mProfile);
         initWithThreeTabs();
@@ -3181,7 +3185,8 @@ public class TabListMediatorUnitTest {
                         null,
                         getClass().getSimpleName(),
                         TabProperties.UiType.SELECTABLE,
-                        mRefreshTabListRunnable);
+                        mRefreshTabListRunnable,
+                        mActionConfirmationManager);
         mMediator.registerOrientationListener(mGridLayoutManager);
         mMediator.initWithNative(mProfile);
         initAndAssertAllProperties();
@@ -3227,7 +3232,8 @@ public class TabListMediatorUnitTest {
                         null,
                         getClass().getSimpleName(),
                         TabProperties.UiType.SELECTABLE,
-                        mRefreshTabListRunnable);
+                        mRefreshTabListRunnable,
+                        mActionConfirmationManager);
         mMediator.registerOrientationListener(mGridLayoutManager);
         mMediator.initWithNative(mProfile);
         initAndAssertAllProperties();
@@ -3273,7 +3279,8 @@ public class TabListMediatorUnitTest {
                         null,
                         getClass().getSimpleName(),
                         TabProperties.UiType.SELECTABLE,
-                        mRefreshTabListRunnable);
+                        mRefreshTabListRunnable,
+                        mActionConfirmationManager);
         mMediator.registerOrientationListener(mGridLayoutManager);
         mMediator.initWithNative(mProfile);
         initAndAssertAllProperties();
@@ -3455,55 +3462,6 @@ public class TabListMediatorUnitTest {
                 .onClick(R.id.close_tab, TAB1_ID);
         verify(mTabGroupModelFilter)
                 .closeMultipleTabs(tabs, /* canUndo= */ true, /* hideTabGroups= */ true);
-    }
-
-    @Test
-    public void testOnMenuItemClickedCallback_UngroupInTabSwitcher() {
-        List<Tab> tabs = new ArrayList<>();
-        for (int i = 0; i < mTabModel.getCount(); i++) {
-            tabs.add(mTabModel.getTabAt(i));
-        }
-
-        // Create tab group.
-        List<Tab> group1 = new ArrayList<>(Arrays.asList(mTab1, mTab2));
-        createTabGroup(group1, TAB1_ID, TAB_GROUP_ID);
-        mMediator.resetWithListOfTabs(PseudoTab.getListOfPseudoTab(tabs), false);
-
-        // Assert that the callback performs as expected.
-        assertNotNull(mModel.get(POSITION1).model.get(TabProperties.ON_MENU_ITEM_CLICKED_CALLBACK));
-        when(mTabModel.getTabAt(0)).thenReturn(mTab1);
-        when(mTabModel.getTabAt(1)).thenReturn(mTab2);
-        when(mTabGroupModelFilter.getRelatedTabListForRootId(TAB1_ID)).thenReturn(tabs);
-        mModel.get(POSITION1)
-                .model
-                .get(TabProperties.ON_MENU_ITEM_CLICKED_CALLBACK)
-                .onClick(R.id.ungroup_tab, TAB1_ID);
-        verify(mTabGroupModelFilter).moveTabOutOfGroup(eq(TAB1_ID));
-        verify(mTabGroupModelFilter).moveTabOutOfGroup(eq(TAB2_ID));
-    }
-
-    @Test
-    public void testOnMenuItemClickedCallback_DeleteGroupInTabSwitcher() {
-        List<Tab> tabs = new ArrayList<>();
-        for (int i = 0; i < mTabModel.getCount(); i++) {
-            tabs.add(mTabModel.getTabAt(i));
-        }
-
-        // Create tab group.
-        List<Tab> group1 = new ArrayList<>(Arrays.asList(mTab1, mTab2));
-        createTabGroup(group1, TAB1_ID, TAB_GROUP_ID);
-        mMediator.resetWithListOfTabs(PseudoTab.getListOfPseudoTab(tabs), false);
-
-        // Assert that the callback performs as expected.
-        assertNotNull(mModel.get(POSITION1).model.get(TabProperties.ON_MENU_ITEM_CLICKED_CALLBACK));
-        when(mTabModel.getTabAt(0)).thenReturn(mTab1);
-        when(mTabGroupModelFilter.getRelatedTabListForRootId(TAB1_ID)).thenReturn(tabs);
-        mModel.get(POSITION1)
-                .model
-                .get(TabProperties.ON_MENU_ITEM_CLICKED_CALLBACK)
-                .onClick(R.id.delete_tab, TAB1_ID);
-        verify(mTabGroupModelFilter)
-                .closeMultipleTabs(tabs, /* canUndo= */ true, /* hideTabGroups= */ false);
     }
 
     @Test
@@ -3754,7 +3712,8 @@ public class TabListMediatorUnitTest {
                         null,
                         getClass().getSimpleName(),
                         uiType,
-                        mRefreshTabListRunnable);
+                        mRefreshTabListRunnable,
+                        mActionConfirmationManager);
         TrackerFactory.setTrackerForTests(mTracker);
         mMediator.registerOrientationListener(mGridLayoutManager);
 
