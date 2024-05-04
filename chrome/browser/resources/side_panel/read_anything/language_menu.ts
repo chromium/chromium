@@ -85,6 +85,10 @@ export class LanguageMenuElement extends LanguageMenuElementBase {
     this.$.languageMenu.close();
   }
 
+  private onCloseDialog_() {
+    this.onClearSearchClick_();
+  }
+
   private onClearSearchClick_() {
     this.languageSearchValue_ = '';
   }
