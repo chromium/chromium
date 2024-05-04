@@ -47,6 +47,9 @@ std::vector<std::string> MakeCrashHandlerArgs(UpdaterScope updater_scope) {
   if (IsSystemInstall(updater_scope)) {
     command_line.AppendSwitch(kSystemSwitch);
   }
+  if (base::CommandLine::ForCurrentProcess()->HasSwitch(kMonitorSelfSwitch)) {
+    command_line.AppendSwitch(kMonitorSelfSwitch);
+  }
 
   // The first element in the command line arguments is the program name,
   // which must be skipped.

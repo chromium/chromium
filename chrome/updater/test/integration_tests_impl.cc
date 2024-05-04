@@ -196,17 +196,19 @@ std::string GetUpdateResponse(const std::string& app_id,
                            GetHashHex(update_file));
 }
 
-void RunUpdaterWithSwitch(const base::Version& version,
-                          UpdaterScope scope,
-                          const std::string& command,
-                          std::optional<int> expected_exit_code) {
+void RunUpdaterWithSwitches(const base::Version& version,
+                            UpdaterScope scope,
+                            const std::vector<std::string>& switches,
+                            std::optional<int> expected_exit_code) {
   const std::optional<base::FilePath> installed_executable_path =
       GetVersionedInstallDirectory(scope, version)
           ->Append(GetExecutableRelativePath());
   ASSERT_TRUE(installed_executable_path);
   ASSERT_TRUE(base::PathExists(*installed_executable_path));
   base::CommandLine command_line(*installed_executable_path);
-  command_line.AppendSwitch(command);
+  for (const std::string& command_switch : switches) {
+    command_line.AppendSwitch(command_switch);
+  }
   if (expected_exit_code) {
     int exit_code = -1;
     Run(scope, command_line, &exit_code);
@@ -658,13 +660,13 @@ void ExpectAppsUpdateSequence(UpdaterScope scope,
 }
 
 void RunWake(UpdaterScope scope, int expected_exit_code) {
-  RunUpdaterWithSwitch(base::Version(kUpdaterVersion), scope, kWakeSwitch,
-                       expected_exit_code);
+  RunUpdaterWithSwitches(base::Version(kUpdaterVersion), scope, {kWakeSwitch},
+                         expected_exit_code);
 }
 
 void RunWakeAll(UpdaterScope scope) {
-  RunUpdaterWithSwitch(base::Version(kUpdaterVersion), scope, kWakeAllSwitch,
-                       kErrorOk);
+  RunUpdaterWithSwitches(base::Version(kUpdaterVersion), scope,
+                         {kWakeAllSwitch}, kErrorOk);
 }
 
 void RunWakeActive(UpdaterScope scope, int expected_exit_code) {
@@ -678,12 +680,13 @@ void RunWakeActive(UpdaterScope scope, int expected_exit_code) {
   ASSERT_TRUE(active_version.IsValid());
 
   // Invoke the wake client of that version.
-  RunUpdaterWithSwitch(active_version, scope, kWakeSwitch, expected_exit_code);
+  RunUpdaterWithSwitches(active_version, scope, {kWakeSwitch},
+                         expected_exit_code);
 }
 
 void RunCrashMe(UpdaterScope scope) {
-  RunUpdaterWithSwitch(base::Version(kUpdaterVersion), scope, kCrashMeSwitch,
-                       std::nullopt);
+  RunUpdaterWithSwitches(base::Version(kUpdaterVersion), scope,
+                         {kCrashMeSwitch, kMonitorSelfSwitch}, std::nullopt);
 }
 
 void RunServer(UpdaterScope scope, int expected_exit_code, bool internal) {
