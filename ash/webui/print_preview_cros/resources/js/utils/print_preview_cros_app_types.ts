@@ -71,6 +71,11 @@ export interface MediaSize {
   hasBorderlessVariant?: boolean;
 }
 
+// Chrome preview only allows the following options for pagesPerSheet.
+// TODO(b/323421684): Revisit allowed values for pages-per-sheet after
+// understanding the expectations of the n-up service/engine.
+export type PagesPerSheetValue = 1|2|4|6|9|16;
+
 // PrintTicket represents the data required to start print job. Ticket will be
 // used to create a settings dictionary with fields matching the existing Chrome
 // preview print settings for reusability.
@@ -132,6 +137,9 @@ export interface PrintTicket {
 
   // Number of pages/sheets in generated PDF. Value takes into account n-up.
   pageCount: number[];
+
+  // For n-up, number of pages to print on a single sheet.
+  pagesPerSheet: PagesPerSheetValue;
 }
 
 // Immutable session configuration details for the current CrOS preview request.

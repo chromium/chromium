@@ -459,5 +459,8 @@ suite('PrintTicketManager', () => {
         assertEquals(
             DEFAULT_PARTIAL_PRINT_TICKET.pageCount, ticket.pageCount,
             'Ticket pageCount should match DEFAULT_PARTIAL_PRINT_TICKET');
+        assertEquals(
+            DEFAULT_PARTIAL_PRINT_TICKET.pagesPerSheet, ticket.pagesPerSheet,
+            'Ticket pagesPerSheet should match DEFAULT_PARTIAL_PRINT_TICKET');
       });
 });

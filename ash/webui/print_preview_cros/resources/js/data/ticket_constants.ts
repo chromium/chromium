@@ -37,4 +37,5 @@ export const DEFAULT_PARTIAL_PRINT_TICKET: Partial<PrintTicket> = {
   mediaSize: DEFAULT_MEDIA_SIZE,
   mediaType: '',
   pageCount: [1],
+  pagesPerSheet: 1,
 };
