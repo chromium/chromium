@@ -16647,6 +16647,12 @@ Please help our engineers fix this problem. Tell us what happened right before y
     <message name="IDS_LENS_OVERLAY_COPY" desc="Command in the Lens Overlay context menu to copy text.">
       Copy
     </message>
+    <message name="IDS_LENS_OVERLAY_COPY_TOAST_MESSAGE" desc="Notification shown in the Lens Overlay when the user has copied selected text to the clipboard.">
+      Text copied
+    </message>
+    <message name="IDS_LENS_OVERLAY_TOAST_DISMISS_MESSAGE" desc="The label for the button that dismisses the toast message">
+      Dismiss
+    </message>
     <message name="IDS_LENS_OVERLAY_TRANSLATE" desc="Command in the Lens Overlay context menu to translate text.">
       Translate
     </message>

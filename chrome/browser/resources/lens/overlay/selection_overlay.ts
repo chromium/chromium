@@ -8,7 +8,10 @@ import './region_selection.js';
 import './post_selection_renderer.js';
 import './overlay_shimmer.js';
 import './strings.m.js';
+import '//resources/cr_elements/cr_button/cr_button.js';
+import '//resources/cr_elements/cr_toast/cr_toast.js';
 
+import type {CrToastElement} from '//resources/cr_elements/cr_toast/cr_toast.js';
 import {I18nMixin} from '//resources/cr_elements/i18n_mixin.js';
 import {EventTracker} from '//resources/js/event_tracker.js';
 import {loadTimeData} from '//resources/js/load_time_data.js';
@@ -46,6 +49,7 @@ export interface SelectionOverlayElement {
   $: {
     backgroundImage: HTMLImageElement,
     contextMenu: HTMLElement,
+    copyToast: CrToastElement,
     cursor: HTMLElement,
     objectSelectionLayer: ObjectLayerElement,
     postSelectionRenderer: PostSelectionRendererElement,
@@ -392,9 +396,11 @@ export class SelectionOverlayElement extends SelectionOverlayElementBase {
 
   // Returns if the given PointerEvent should be ignored.
   private shouldIgnoreEvent(event: PointerEvent) {
-    // Do not intercept events that should go to the context menu.
-    if (this.shadowRoot!.elementsFromPoint(event.clientX, event.clientY)
-            .includes(this.$.contextMenu)) {
+    const elementsAtPoint =
+        this.shadowRoot!.elementsFromPoint(event.clientX, event.clientY);
+    // Do not intercept events that should go to the following elements.
+    if (elementsAtPoint.includes(this.$.contextMenu) ||
+        elementsAtPoint.includes(this.$.copyToast)) {
       return true;
     }
     // Ignore multi touch events and none left click events.
@@ -423,8 +429,22 @@ export class SelectionOverlayElement extends SelectionOverlayElementBase {
         toPercent(contextMenuY)} + 12px)`;
   }
 
-  private handleCopy() {
+  private async handleCopy() {
     navigator.clipboard.writeText(this.highlightedText);
+    if (this.$.copyToast.open) {
+      // If toast already open, wait after hiding so that animation is
+      // smoother.
+      await this.$.copyToast.hide();
+      setTimeout(() => {
+        this.$.copyToast.show();
+      }, 100);
+    } else {
+      this.$.copyToast.show();
+    }
+  }
+
+  private onHideToastClick() {
+    this.$.copyToast.hide();
   }
 
   private handleTranslate() {

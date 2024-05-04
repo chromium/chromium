@@ -35,6 +35,10 @@ LensUntrustedUI::LensUntrustedUI(content::WebUI* web_ui)
   html_source->AddLocalizedString("close", IDS_CLOSE);
   html_source->AddLocalizedString("sendFeedback", IDS_LENS_SEND_FEEDBACK_LABEL);
   html_source->AddLocalizedString("copy", IDS_LENS_OVERLAY_COPY);
+  html_source->AddLocalizedString("copyToastMessage",
+                                  IDS_LENS_OVERLAY_COPY_TOAST_MESSAGE);
+  html_source->AddLocalizedString("dismiss",
+                                  IDS_LENS_OVERLAY_TOAST_DISMISS_MESSAGE);
   html_source->AddLocalizedString("initialToastMessage",
                                   IDS_LENS_OVERLAY_INITIAL_TOAST_MESSAGE);
   html_source->AddLocalizedString("translate", IDS_LENS_OVERLAY_TRANSLATE);

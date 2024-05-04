@@ -103,6 +103,10 @@
     z-index: 1;
   }
 
+  #copyToast {
+    justify-content: space-between;
+  }
+
   :host([show-text-context-menu]) #contextMenu {
     /* TODO: b/338642962 - Add animation */
     display: flex;
@@ -176,6 +180,12 @@
     </div>
   </div>
 </div>
+<cr-toast id="copyToast" duration="4000">
+  <div>$i18n{copyToastMessage}</div>
+  <cr-button on-click="onHideToastClick">
+    $i18n{dismiss}
+  </cr-button>
+</cr-toast>
 <div id="cursor"
     class$="[[getHiddenCursorClass(isPointerInside, currentGesture.state)]]">
   <img id="cursorImg" src="[[cursorImgUri]]">
