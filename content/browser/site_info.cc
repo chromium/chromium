@@ -881,7 +881,11 @@ WebExposedIsolationLevel SiteInfo::ComputeWebExposedIsolationLevel(
   if (!web_exposed_isolation_info.is_isolated_application()) {
     return WebExposedIsolationLevel::kIsolated;
   }
-  // The "application isolation" level cannot be delegated cross-origin.
+  // The "application isolation" level cannot be delegated to processes locked
+  // to other origins. Sandboxed frames are always considered cross-origin.
+  if (url_info.is_sandboxed) {
+    return WebExposedIsolationLevel::kIsolated;
+  }
   url::Origin origin =
       GetPossiblyOverriddenOriginFromUrl(url_info.url, url_info.origin);
   return web_exposed_isolation_info.origin() == origin

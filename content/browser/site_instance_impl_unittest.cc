@@ -27,7 +27,9 @@
 #include "content/browser/renderer_host/render_process_host_impl.h"
 #include "content/browser/renderer_host/render_view_host_impl.h"
 #include "content/browser/site_info.h"
+#include "content/browser/url_info.h"
 #include "content/browser/web_contents/web_contents_impl.h"
+#include "content/browser/web_exposed_isolation_info.h"
 #include "content/browser/webui/url_data_manager_backend.h"
 #include "content/browser/webui/web_ui_controller_factory_registry.h"
 #include "content/public/browser/browser_or_resource_context.h"
@@ -1659,41 +1661,25 @@ TEST_F(SiteInstanceTest, OriginalURL) {
   SetBrowserClientForTesting(regular_client);
 }
 
-namespace {
-
-SiteInfo SiteInfoFromUrlAndIsolationInfo(const GURL& url,
-                                         const WebExposedIsolationInfo& weii) {
-  WebExposedIsolationLevel weil = SiteInfo::ComputeWebExposedIsolationLevel(
-      weii, UrlInfo(UrlInfoInit(url)));
-  return SiteInfo(
-      /*site_url=*/url,
-      /*process_lock_url=*/url,
-      /*requires_origin_keyed_process=*/false,
-      /*requires_origin_keyed_process_by_default=*/false,
-      /*is_sandboxed=*/false, UrlInfo::kInvalidUniqueSandboxId,
-      CreateStoragePartitionConfigForTesting(), weii, weil,
-      /*is_guest=*/false,
-      /*does_site_request_dedicated_process_for_coop=*/false,
-      /*is_jit_disabled=*/false, /*is_pdf=*/false, /*is_fenced=*/false);
-}
-
-}  // namespace
-
 TEST_F(SiteInstanceTest, WebExposedIsolationLevel) {
   GURL url("https://example.com/");
   auto origin = url::Origin::Create(url);
   GURL other_url("https://example2.com/");
 
   // SiteInfos in a non-isolated BrowsingInstance shouldn't be isolated.
-  SiteInfo non_isolated = SiteInfoFromUrlAndIsolationInfo(
-      url, WebExposedIsolationInfo::CreateNonIsolated());
+  auto non_isolated =
+      SiteInfo::Create(IsolationContext(context()),
+                       UrlInfo(UrlInfoInit(url).WithWebExposedIsolationInfo(
+                           WebExposedIsolationInfo::CreateNonIsolated())));
   EXPECT_FALSE(non_isolated.web_exposed_isolation_info().is_isolated());
   EXPECT_EQ(WebExposedIsolationLevel::kNotIsolated,
             non_isolated.web_exposed_isolation_level());
 
   // SiteInfos in an isolated BrowsingInstance should be isolated.
-  SiteInfo isolated_same_origin = SiteInfoFromUrlAndIsolationInfo(
-      url, WebExposedIsolationInfo::CreateIsolated(origin));
+  auto isolated_same_origin =
+      SiteInfo::Create(IsolationContext(context()),
+                       UrlInfo(UrlInfoInit(url).WithWebExposedIsolationInfo(
+                           WebExposedIsolationInfo::CreateIsolated(origin))));
   EXPECT_TRUE(isolated_same_origin.web_exposed_isolation_info().is_isolated());
   EXPECT_FALSE(isolated_same_origin.web_exposed_isolation_info()
                    .is_isolated_application());
@@ -1701,8 +1687,10 @@ TEST_F(SiteInstanceTest, WebExposedIsolationLevel) {
             isolated_same_origin.web_exposed_isolation_level());
 
   // Cross-origin SiteInfos in an isolated BrowsingInstance should be isolated.
-  SiteInfo isolated_cross_origin = SiteInfoFromUrlAndIsolationInfo(
-      other_url, WebExposedIsolationInfo::CreateIsolated(origin));
+  auto isolated_cross_origin = SiteInfo::Create(
+      IsolationContext(context()),
+      UrlInfo(UrlInfoInit(other_url).WithWebExposedIsolationInfo(
+          WebExposedIsolationInfo::CreateIsolated(origin))));
   EXPECT_TRUE(isolated_cross_origin.web_exposed_isolation_info().is_isolated());
   EXPECT_FALSE(isolated_cross_origin.web_exposed_isolation_info()
                    .is_isolated_application());
@@ -1711,8 +1699,10 @@ TEST_F(SiteInstanceTest, WebExposedIsolationLevel) {
 
   // Same-origin SiteInfos in an isolated application BrowsingInstance should
   // have the "isolated application" isolation level.
-  SiteInfo isolated_app_same_origin = SiteInfoFromUrlAndIsolationInfo(
-      url, WebExposedIsolationInfo::CreateIsolatedApplication(origin));
+  auto isolated_app_same_origin = SiteInfo::Create(
+      IsolationContext(context()),
+      UrlInfo(UrlInfoInit(url).WithWebExposedIsolationInfo(
+          WebExposedIsolationInfo::CreateIsolatedApplication(origin))));
   EXPECT_TRUE(
       isolated_app_same_origin.web_exposed_isolation_info().is_isolated());
   EXPECT_TRUE(isolated_app_same_origin.web_exposed_isolation_info()
@@ -1722,14 +1712,32 @@ TEST_F(SiteInstanceTest, WebExposedIsolationLevel) {
 
   // Cross-origin SiteInfos in an isolated application BrowsingInstance should
   // only have the "isolated" isolation level.
-  SiteInfo isolated_app_cross_origin = SiteInfoFromUrlAndIsolationInfo(
-      other_url, WebExposedIsolationInfo::CreateIsolatedApplication(origin));
+  auto isolated_app_cross_origin = SiteInfo::Create(
+      IsolationContext(context()),
+      UrlInfo(UrlInfoInit(other_url).WithWebExposedIsolationInfo(
+          WebExposedIsolationInfo::CreateIsolatedApplication(origin))));
   EXPECT_TRUE(
       isolated_app_cross_origin.web_exposed_isolation_info().is_isolated());
   EXPECT_TRUE(isolated_app_cross_origin.web_exposed_isolation_info()
                   .is_isolated_application());
   EXPECT_EQ(WebExposedIsolationLevel::kIsolated,
             isolated_app_cross_origin.web_exposed_isolation_level());
+
+  // Sandboxed iframes should be considered cross-origin and not inherit the
+  // application isolation level.
+  auto isolated_app_same_origin_sandboxed = SiteInfo::Create(
+      IsolationContext(context()),
+      UrlInfo(
+          UrlInfoInit(url)
+              .WithWebExposedIsolationInfo(
+                  WebExposedIsolationInfo::CreateIsolatedApplication(origin))
+              .WithSandbox(true)));
+  EXPECT_TRUE(isolated_app_same_origin_sandboxed.web_exposed_isolation_info()
+                  .is_isolated());
+  EXPECT_TRUE(isolated_app_same_origin_sandboxed.web_exposed_isolation_info()
+                  .is_isolated_application());
+  EXPECT_EQ(WebExposedIsolationLevel::kIsolated,
+            isolated_app_same_origin_sandboxed.web_exposed_isolation_level());
 }
 
 namespace {
