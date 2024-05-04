@@ -319,11 +319,11 @@ class InMenuButton : public LabelButton {
     LabelButton::OnThemeChanged();
     SetTextColorId(views::Button::STATE_DISABLED,
                    ui::kColorMenuItemForegroundDisabled);
-    SetTextColor(views::Button::STATE_HOVERED,
-                 ui::kColorMenuItemForegroundSelected);
-    SetTextColor(views::Button::STATE_PRESSED,
-                 ui::kColorMenuItemForegroundSelected);
-    SetTextColor(views::Button::STATE_NORMAL, ui::kColorMenuItemForeground);
+    SetTextColorId(views::Button::STATE_HOVERED,
+                   ui::kColorMenuItemForegroundSelected);
+    SetTextColorId(views::Button::STATE_PRESSED,
+                   ui::kColorMenuItemForegroundSelected);
+    SetTextColorId(views::Button::STATE_NORMAL, ui::kColorMenuItemForeground);
   }
 };
 
