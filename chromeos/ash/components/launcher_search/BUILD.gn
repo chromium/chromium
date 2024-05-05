@@ -17,7 +17,6 @@ component("launcher_search") {
   defines = [ "IS_CHROMEOS_ASH_COMPONENTS_LAUNCHER_SEARCH_IMPL" ]
 
   deps = [
-    "//ash/public/cpp:cpp",
     "//ash/strings:strings",
     "//base",
     "//chromeos/ash/components/system_info",
