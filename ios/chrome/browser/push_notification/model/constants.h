@@ -40,4 +40,8 @@ extern NSString* const kContentNotificationFeedbackActionIdentifier;
 // Feedback action.
 extern NSString* const kContentNotificationFeedbackCategoryIdentifier;
 
+// The body parameter of the notification for a Content Notification delivered
+// NAU.
+extern NSString* const kContentNotificationNAUBodyParameter;
+
 #endif  // IOS_CHROME_BROWSER_PUSH_NOTIFICATION_MODEL_CONSTANTS_H_
