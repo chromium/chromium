@@ -2174,7 +2174,7 @@
 <translation id="5164798890604758545">已輸入文字</translation>
 <translation id="5164928537947209380">這項實驗 AI 工具提供的內容不一定正確。為改善這項工具，系統會將你的內容傳送給 Google。
     <ph name="BEGIN_LINK" />瞭解詳情<ph name="END_LINK" /></translation>
-<translation id="516920405563544094">請輸入 <ph name="CREDIT_CARD" /> 的信用卡驗證碼。你確認後，這個網站就會取得你 Google 帳戶中的信用卡詳細資料。</translation>
+<translation id="516920405563544094">請輸入「<ph name="CREDIT_CARD" />」的信用卡驗證碼。按下確認後，系統就會向這個網站提供 Google 帳戶中的信用卡詳細資料。</translation>
 <translation id="5169827969064885044">你可能會失去貴機構帳戶的存取權，或身分遭到冒用。Chrome 建議你立即變更密碼。</translation>
 <translation id="5171045022955879922">搜尋或輸入網址</translation>
 <translation id="5172758083709347301">本機</translation>
