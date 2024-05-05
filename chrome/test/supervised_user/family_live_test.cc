@@ -13,7 +13,9 @@
 #include "base/check.h"
 #include "base/files/file_path.h"
 #include "base/functional/bind.h"
+#include "base/functional/callback_forward.h"
 #include "base/notreached.h"
+#include "base/strings/strcat.h"
 #include "base/test/bind.h"
 #include "chrome/browser/browser_process.h"
 #include "chrome/browser/profiles/profile.h"
@@ -146,51 +148,29 @@ InteractiveFamilyLiveTest::InteractiveFamilyLiveTest(
                                               extra_enabled_hosts) {}
 
 ui::test::internal::InteractiveTestPrivate::MultiStep
-InteractiveFamilyLiveTest::DefineChromeTestState(
-    ui::test::StateIdentifier<ChromeTestStateObserver> id,
-    const std::vector<GURL>& allowed_urls,
-    const std::vector<GURL>& blocked_urls) {
+InteractiveFamilyLiveTest::WaitForStateSeeding(
+    ui::test::StateIdentifier<BrowserState::Observer> id,
+    const FamilyMember& rpc_issuer,
+    const FamilyMember& browser_user,
+    const BrowserState& state) {
   return Steps(
-      Log("DefineChromeTestState: start."),
-      ObserveState(id, std::make_unique<DefineChromeTestStateObserver>(
-                           child(), allowed_urls, blocked_urls)),
-      If(base::BindOnce(&UrlFiltersAreConfigured, std::ref(child()),
-                        allowed_urls, blocked_urls),
-         /* then= */ Log("DefineChromeTestState: not needed."),
-         /* else= */
+      Log(base::StrCat({"WaitForState[", state.ToString(), "]: start"})),
+      If(state.GetIntendedStateCheck(browser_user),
+         /* then_steps= */
+         Log(base::StrCat(
+             {"WaitForState[", state.ToString(), "]: not needed"})),
+         /* else_steps= */
          Steps(
-             // This delay reduces tests flakiness on picking up changes
-             // resulting from the RPC call.
-             Do([]() { Delay(base::Seconds(2)); }),
-             Log("DefineChromeTestState: performing rpc..."), Do([&]() {
-               IssueDefineTestStateOrDie(head_of_household(), child(),
-                                         allowed_urls, blocked_urls);
-             }),
-             Log("DefineChromeTestState: waiting for state change..."),
-             WaitForState(id, ChromeTestStateSeedingResult::kIntendedState),
-             Log("DefineChromeTestState: done."))),
-      StopObservingState(id));
-}
-
-ui::test::internal::InteractiveTestPrivate::MultiStep
-InteractiveFamilyLiveTest::ResetChromeTestState(
-    ui::test::StateIdentifier<ChromeTestStateObserver> id) {
-  return Steps(
-      Log("ResetChromeTestState: start."),
-      ObserveState(id, std::make_unique<ResetChromeTestStateObserver>(child())),
-      If(base::BindOnce(&UrlFiltersAreEmpty, std::ref(child())),
-         /* then= */ Log("ResetChromeTestState: not needed."),
-         /* else= */
-         Steps(
-             // This delay reduces tests flakiness on picking up changes
-             // resulting from the RPC call.
-             Do([]() { Delay(base::Seconds(2)); }),
-             Log("ResetChromeTestState: performing rpc..."),
-             Do([&]() { IssueResetOrDie(head_of_household(), child()); }),
-             Log("ResetChromeTestState: waiting for state change..."),
-             WaitForState(id, ChromeTestStateSeedingResult::kIntendedState),
-             Log("ResetChromeTestState: done."))),
-      StopObservingState(id));
+             ObserveState(id,
+                          base::BindOnce(&FamilyMember::supervised_user_service,
+                                         base::Unretained(&browser_user)),
+                          base::BindOnce(&BrowserState::GetIntendedStateCheck,
+                                         base::Unretained(&state),
+                                         std::ref(browser_user))),
+             Do([&]() { state.Seed(rpc_issuer, browser_user); }),
+             WaitForState(id, BrowserState::SeedingStatus::kCompleted),
+             StopObservingState(id))),
+      Log(base::StrCat({"WaitForState[", state.ToString(), "]: completed"})));
 }
 
 }  // namespace supervised_user

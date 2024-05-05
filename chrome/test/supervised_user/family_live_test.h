@@ -100,35 +100,12 @@ class InteractiveFamilyLiveTest
       const std::vector<std::string>& extra_enabled_hosts);
 
  protected:
-  // A collection of functions that return a MultiStep for the RunTestSequence
-  // that: 1) Issue a rpc by the `head_of_household()` that requests seeding the
-  // chrome test state of family link settings for the `child()`  account,
-  //
-  // 2) Wait for that request to be fully processed through the Google
-  // infrastructure, including being propagated to the browser associated with
-  // the `child()` account.
-  //
-  // Usage:
-  //
-  // DEFINE_LOCAL_STATE_IDENTIFIER_VALUE(ChromeTestStateSeededObserver,
-  // kResetObserver);
-  // DEFINE_LOCAL_STATE_IDENTIFIER_VALUE(ChromeTestStateSeededObserver,
-  // kDefineObserver);
-  // ...
-  // RunTestSequence(
-  //   ResetChromeTestState(kResetObserver),
-  //   ...
-  //   DefineChromeTestState(kDefineObserver,
-  //   {GetRoutedUrl("http://example.com")},
-  //   {GetRoutedUrl("http://mature.example.com")}),
-  //   ...
-  // )
-  ui::test::internal::InteractiveTestPrivate::MultiStep DefineChromeTestState(
-      ui::test::StateIdentifier<ChromeTestStateObserver> id,
-      const std::vector<GURL>& allowed_urls,
-      const std::vector<GURL>& blocked_urls);
-  ui::test::internal::InteractiveTestPrivate::MultiStep ResetChromeTestState(
-      ui::test::StateIdentifier<ChromeTestStateObserver> id);
+  // After completion, supervised user settings are in `state`.
+  ui::test::internal::InteractiveTestPrivate::MultiStep WaitForStateSeeding(
+      ui::test::StateIdentifier<BrowserState::Observer> id,
+      const FamilyMember& rpc_issuer,
+      const FamilyMember& browser_user,
+      const BrowserState& state);
 };
 
 }  // namespace supervised_user

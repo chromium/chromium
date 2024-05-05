@@ -131,15 +131,14 @@ class UrlFilterUiTest : public InteractiveFamilyLiveTest,
   }
 };
 
-// TODO(https://crbug.com/328036610): fails on win-live-tests-tester-rel
-IN_PROC_BROWSER_TEST_P(UrlFilterUiTest, DISABLED_ParentBlocksPage) {
+IN_PROC_BROWSER_TEST_P(UrlFilterUiTest, ParentBlocksPage) {
   DEFINE_LOCAL_ELEMENT_IDENTIFIER_VALUE(kChildElementId);
-  DEFINE_LOCAL_STATE_IDENTIFIER_VALUE(ChromeTestStateObserver,
-                                      kSetSafeSitesStateObserver);
-  DEFINE_LOCAL_STATE_IDENTIFIER_VALUE(ChromeTestStateObserver,
-                                      kDefineStateObserver);
-  DEFINE_LOCAL_STATE_IDENTIFIER_VALUE(ChromeTestStateObserver,
-                                      kResetStateObserver);
+  DEFINE_LOCAL_STATE_IDENTIFIER_VALUE(BrowserState::Observer,
+                                      kSetSafeSitesStateObserverId);
+  DEFINE_LOCAL_STATE_IDENTIFIER_VALUE(BrowserState::Observer,
+                                      kDefineStateObserverId);
+  DEFINE_LOCAL_STATE_IDENTIFIER_VALUE(BrowserState::Observer,
+                                      kResetStateObserverId);
 
   TurnOnSyncFor(head_of_household());
   TurnOnSyncFor(child());
@@ -147,11 +146,12 @@ IN_PROC_BROWSER_TEST_P(UrlFilterUiTest, DISABLED_ParentBlocksPage) {
   // Child activity is happening in this tab.
   int tab_index = 0;
   GURL all_audiences_site_url(GetRoutedUrl("https://example.com"));
+
   RunTestSequence(
-      // Reset test state.
-      ResetChromeTestState(kResetStateObserver),
-      // Set to SAFE_SITES behaviour.
-      DefineChromeTestState(kSetSafeSitesStateObserver, {}, {}),
+      WaitForStateSeeding(kResetStateObserverId, head_of_household(), child(),
+                          BrowserState::Reset()),
+      WaitForStateSeeding(kSetSafeSitesStateObserverId, head_of_household(),
+                          child(), BrowserState::EnableSafeSites()),
 
       // Supervised user navigates to any page.
       InstrumentTab(kChildElementId, tab_index, child().browser()),
@@ -160,30 +160,30 @@ IN_PROC_BROWSER_TEST_P(UrlFilterUiTest, DISABLED_ParentBlocksPage) {
                          PageWithMatchingTitle("Example Domain")),
       // Supervisor blocks that page and supervised user sees interstitial
       // blocked page screen.
-      DefineChromeTestState(kDefineStateObserver,
-                            /*allowed_urls=*/{},
-                            /*blocked_urls=*/{all_audiences_site_url}),
+      WaitForStateSeeding(kDefineStateObserverId, head_of_household(), child(),
+                          BrowserState::BlockSite(all_audiences_site_url)),
       WaitForStateChange(kChildElementId, RemoteApprovalButtonAppeared()));
 }
 
 // Sanity test, if it fails it means that resetting the test state is not
 // functioning properly.
 IN_PROC_BROWSER_TEST_P(UrlFilterUiTest, ClearFamilyLinkSettings) {
-  DEFINE_LOCAL_STATE_IDENTIFIER_VALUE(ChromeTestStateObserver, kObserver);
+  DEFINE_LOCAL_STATE_IDENTIFIER_VALUE(BrowserState::Observer, kObserverId);
 
   TurnOnSyncFor(head_of_household());
   TurnOnSyncFor(child());
 
   // Clear all existing filters.
-  RunTestSequence(ResetChromeTestState(kObserver));
+  RunTestSequence(WaitForStateSeeding(kObserverId, head_of_household(), child(),
+                                      BrowserState::Reset()));
 }
 
 IN_PROC_BROWSER_TEST_P(UrlFilterUiTest, ParentAllowsPageBlockedBySafeSites) {
   DEFINE_LOCAL_ELEMENT_IDENTIFIER_VALUE(kChildElementId);
-  DEFINE_LOCAL_STATE_IDENTIFIER_VALUE(ChromeTestStateObserver,
-                                      kDefineStateObserver);
-  DEFINE_LOCAL_STATE_IDENTIFIER_VALUE(ChromeTestStateObserver,
-                                      kResetStateObserver);
+  DEFINE_LOCAL_STATE_IDENTIFIER_VALUE(BrowserState::Observer,
+                                      kDefineStateObserverId);
+  DEFINE_LOCAL_STATE_IDENTIFIER_VALUE(BrowserState::Observer,
+                                      kResetStateObserverId);
 
   TurnOnSyncFor(head_of_household());
   TurnOnSyncFor(child());
@@ -193,7 +193,8 @@ IN_PROC_BROWSER_TEST_P(UrlFilterUiTest, ParentAllowsPageBlockedBySafeSites) {
   GURL mature_site_url(GetRoutedUrl("https://bestgore.com"));
 
   RunTestSequence(
-      ResetChromeTestState(kResetStateObserver),
+      WaitForStateSeeding(kResetStateObserverId, head_of_household(), child(),
+                          BrowserState::Reset()),
 
       // Supervised user navigates to inappropriate page and is blocked.
       InstrumentTab(kChildElementId, tab_index, child().browser()),
@@ -201,9 +202,8 @@ IN_PROC_BROWSER_TEST_P(UrlFilterUiTest, ParentAllowsPageBlockedBySafeSites) {
       WaitForStateChange(kChildElementId, RemoteApprovalButtonAppeared()),
 
       // Supervisor allows that page and supervised user consumes content.
-      DefineChromeTestState(kDefineStateObserver,
-                            /*allowed_urls=*/{mature_site_url},
-                            /*blocked_urls=*/{}),
+      WaitForStateSeeding(kDefineStateObserverId, head_of_household(), child(),
+                          BrowserState::AllowSite(mature_site_url)),
       WaitForStateChange(kChildElementId, PageWithMatchingTitle("Best Gore")));
 }
 
@@ -211,8 +211,8 @@ IN_PROC_BROWSER_TEST_P(UrlFilterUiTest,
                        ParentAprovesPermissionRequestForBlockedSite) {
   DEFINE_LOCAL_ELEMENT_IDENTIFIER_VALUE(kChildElementId);
   DEFINE_LOCAL_ELEMENT_IDENTIFIER_VALUE(kParentApprovalTab);
-  DEFINE_LOCAL_STATE_IDENTIFIER_VALUE(ChromeTestStateObserver,
-                                      kResetStateObserver);
+  DEFINE_LOCAL_STATE_IDENTIFIER_VALUE(BrowserState::Observer,
+                                      kResetStateObserverId);
 
   TurnOnSyncFor(head_of_household());
   TurnOnSyncFor(child());
@@ -222,7 +222,8 @@ IN_PROC_BROWSER_TEST_P(UrlFilterUiTest,
   int parent_tab_index = 0;
 
   RunTestSequence(
-      ResetChromeTestState(kResetStateObserver),
+      WaitForStateSeeding(kResetStateObserverId, head_of_household(), child(),
+                          BrowserState::Reset()),
       // Supervised user navigates to inappropriate page and is blocked, and
       // makes approval request.
       InstrumentTab(kChildElementId, child_tab_index, child().browser()),

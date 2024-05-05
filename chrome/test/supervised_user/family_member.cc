@@ -76,6 +76,13 @@ GURL FamilyMember::GetPermissionsUrlFor(const FamilyMember& member) const {
       base::StrCat({GetFamilyMemberSettingsUrlBase(member), "/permissions"}));
 }
 
+SupervisedUserService* FamilyMember::supervised_user_service() const {
+  supervised_user::SupervisedUserService* supervised_user_service =
+      SupervisedUserServiceFactory::GetForProfile(browser()->profile());
+  CHECK(supervised_user_service) << "Incognito mode is not supported.";
+  return supervised_user_service;
+}
+
 void FamilyMember::TurnOnSync() {
   sign_in_functions_.TurnOnSync(account_, 0);
 }
