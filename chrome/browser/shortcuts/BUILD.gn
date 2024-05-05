@@ -39,7 +39,14 @@ source_set("shortcuts") {
 
   if (is_win) {
     public += [ "platform_util_win.h" ]
-    sources += [ "platform_util_win.cc" ]
+    sources += [
+      "platform_util_win.cc",
+      "shortcut_creator_win.cc",
+    ]
+    deps += [
+      "//chrome/browser/profiles:profile",
+      "//chrome/common:non_code_constants",
+    ]
   }
 
   friend = [
@@ -136,6 +143,11 @@ source_set("unit_tests") {
     "//ui/gfx/codec",
     "//url",
   ]
+
+  if (is_win) {
+    sources += [ "shortcut_creator_win_unittest.cc" ]
+    deps += [ "//chrome/browser:browser" ]
+  }
 
   if (is_mac) {
     sources += [
