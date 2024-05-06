@@ -706,6 +706,9 @@ bool InputMethodController::ReplaceTextAndMoveCaret(
   if (!InsertText(text))
     return false;
 
+  // TODO(editing-dev): The use of UpdateStyleAndLayout
+  // needs to be audited.  see http://crbug.com/590369 for more details.
+  GetDocument().UpdateStyleAndLayout(DocumentUpdateReason::kEditing);
   switch (move_caret_behavior) {
     case MoveCaretBehavior::kMoveCaretAfterText: {
       wtf_size_t absolute_caret_position = range.Start() + text.length();
@@ -1504,6 +1507,9 @@ void InputMethodController::DeleteSurroundingText(int before, int after) {
     const int end =
         PlainTextRange::Create(*root_editable_element, valid_range).End();
 
+    // TODO(editing-dev): The use of UpdateStyleAndLayout
+    // needs to be audited.  see http://crbug.com/590369 for more details.
+    GetDocument().UpdateStyleAndLayout(DocumentUpdateReason::kEditing);
     if (!SetSelectionOffsets(PlainTextRange(selection_end, end)))
       return;
     if (!DeleteSelectionWithoutAdjustment())
