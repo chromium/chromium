@@ -710,4 +710,44 @@ TEST_F(InputDeviceSettingsNotificationControllerTest,
   EXPECT_TRUE(nudge_manager->GetNudgeIfShown(kCapsLockNoMatchNudgeId));
 }
 
+TEST_F(InputDeviceSettingsNotificationControllerTest,
+       NotifyKeyboardFirstTimeConnected) {
+  size_t expected_notification_count = 1;
+  mojom::KeyboardPtr mojom_keyboard = mojom::Keyboard::New();
+  mojom_keyboard->device_key = "0001:0001";
+  mojom_keyboard->id = 1;
+  mojom_keyboard->settings = mojom::KeyboardSettings::New();
+
+  PrefService* prefs =
+      Shell::Get()->session_controller()->GetActivePrefService();
+
+  EXPECT_TRUE(prefs->GetList(prefs::kKeyboardsWelcomeNotificationSeen).empty());
+  controller()->NotifyKeyboardFirstTimeConnected(*mojom_keyboard);
+  EXPECT_EQ(prefs->GetList(prefs::kKeyboardsWelcomeNotificationSeen).size(),
+            1u);
+  EXPECT_TRUE(
+      base::Contains(prefs->GetList(prefs::kKeyboardsWelcomeNotificationSeen),
+                     base::Value("0001:0001")));
+  controller()->NotifyKeyboardFirstTimeConnected(*mojom_keyboard);
+  EXPECT_EQ(prefs->GetList(prefs::kKeyboardsWelcomeNotificationSeen).size(),
+            1u);
+  EXPECT_EQ(expected_notification_count++,
+            message_center()->NotificationCount());
+  EXPECT_TRUE(message_center()->FindVisibleNotificationById(
+      "welcome_experience_keyboards_1"));
+
+  mojom_keyboard->id = 2;
+  mojom_keyboard->device_key = "0001:0002";
+
+  controller()->NotifyKeyboardFirstTimeConnected(*mojom_keyboard);
+  EXPECT_EQ(prefs->GetList(prefs::kKeyboardsWelcomeNotificationSeen).size(),
+            2u);
+  EXPECT_TRUE(
+      base::Contains(prefs->GetList(prefs::kKeyboardsWelcomeNotificationSeen),
+                     base::Value("0001:0002")));
+  EXPECT_EQ(expected_notification_count, message_center()->NotificationCount());
+  EXPECT_TRUE(message_center()->FindVisibleNotificationById(
+      "welcome_experience_keyboards_2"));
+}
+
 }  // namespace ash

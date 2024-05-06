@@ -16,6 +16,7 @@
 #include "ash/public/cpp/new_window_delegate.h"
 #include "ash/public/cpp/system_tray.h"
 #include "ash/public/cpp/update_types.h"
+#include "ash/webui/settings/public/constants/routes.mojom-forward.h"
 #include "ash/webui/settings/public/constants/routes.mojom.h"
 #include "ash/webui/settings/public/constants/setting.mojom.h"
 #include "base/command_line.h"
@@ -827,6 +828,13 @@ void SystemTrayClientImpl::ShowMouseSettings() {
   base::RecordAction(base::UserMetricsAction("ShowMouseSettingsPage"));
   ShowSettingsSubPageForActiveUser(
       chromeos::settings::mojom::kPerDeviceMouseSubpagePath);
+}
+
+void SystemTrayClientImpl::ShowKeyboardSettings() {
+  DCHECK(ash::features::IsWelcomeExperienceEnabled());
+  base::RecordAction(base::UserMetricsAction("ShowKeyboardSettingsPage"));
+  ShowSettingsSubPageForActiveUser(
+      chromeos::settings::mojom::kPerDeviceKeyboardSubpagePath);
 }
 
 void SystemTrayClientImpl::ShowTouchpadSettings() {

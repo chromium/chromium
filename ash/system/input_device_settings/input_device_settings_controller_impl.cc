@@ -1819,6 +1819,10 @@ void InputDeviceSettingsControllerImpl::OnKeyboardListUpdated(
           keyboard, bluetooth_devices_observer_.get())] = mojom_keyboard->id;
     }
     InitializeKeyboardSettings(mojom_keyboard.get());
+    if (features::IsWelcomeExperienceEnabled()) {
+      notification_controller_->NotifyKeyboardFirstTimeConnected(
+          *mojom_keyboard);
+    }
     keyboards_.insert_or_assign(keyboard.id, std::move(mojom_keyboard));
     DispatchKeyboardConnected(keyboard.id);
   }

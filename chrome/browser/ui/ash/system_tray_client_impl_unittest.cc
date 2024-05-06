@@ -18,6 +18,7 @@ namespace {
 
 constexpr const char kShowTouchpadSettingsPage[] = "ShowTouchpadSettingsPage";
 constexpr const char kShowMouseSettingsPage[] = "ShowMouseSettingsPage";
+constexpr const char kShowKeyboardSettingsPage[] = "ShowKeyboardSettingsPage";
 constexpr const char kShowGraphicsTabletSettingsPage[] =
     "ShowGraphicsTabletSettingsPage";
 constexpr const char kShowRemapKeysSettingsSubpage[] =
@@ -134,6 +135,20 @@ TEST_F(SystemTrayClientImplTest, ShowApnSubpage) {
                               chromeos::settings::mojom::kApnSubpagePath)
                               .spec(),
                           "?guid=guid"}));
+}
+
+TEST_F(SystemTrayClientImplTest, ShowKeyboardSettings) {
+  base::test::ScopedFeatureList feature_list;
+  feature_list.InitWithFeatures({ash::features::kInputDeviceSettingsSplit,
+                                 ash::features::kPeripheralCustomization,
+                                 ash::features::kWelcomeExperience},
+                                {});
+  base::UserActionTester user_action_tester;
+  client_impl_->ShowKeyboardSettings();
+  EXPECT_EQ(settings_window_manager_->last_url(),
+            chrome::GetOSSettingsUrl(
+                chromeos::settings::mojom::kPerDeviceKeyboardSubpagePath));
+  EXPECT_EQ(1, user_action_tester.GetActionCount(kShowKeyboardSettingsPage));
 }
 
 }  // namespace

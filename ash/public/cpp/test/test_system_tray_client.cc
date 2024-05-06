@@ -210,4 +210,8 @@ void TestSystemTrayClient::ShowYouTubeMusicPremiumPage() {
   ++show_youtube_music_premium_page_count_;
 }
 
+void TestSystemTrayClient::ShowKeyboardSettings() {
+  ++show_keyboard_settings_count_;
+}
+
 }  // namespace ash

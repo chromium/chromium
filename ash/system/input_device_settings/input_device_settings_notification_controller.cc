@@ -165,6 +165,7 @@ const char kInputDeviceSettingsMousePrefix[] =
     "peripheral_customization_mouse_";
 const char kInputDeviceSettingsGraphicsTabletPrefix[] =
     "peripheral_customization_graphics_tablet_";
+const char kKeyboardNotificationPrefix[] = "welcome_experience_keyboards";
 const char kDelimiter[] = "_";
 
 bool IsRightClickRewriteDisabled(SimulateRightClickModifier active_modifier) {
@@ -232,6 +233,11 @@ std::string GetRightClickNotificationId(
 
 std::string GetPeripheralCustomizationMouseNotificationID(uint32_t id) {
   return kInputDeviceSettingsMousePrefix + base::NumberToString(id);
+}
+
+std::string GetWelcomeExperienceNotificationId(const std::string& prefix,
+                                               uint32_t id) {
+  return prefix + kDelimiter + base::NumberToString(id);
 }
 
 std::string GetPeripheralCustomizationGraphicsTabletNotificationID(
@@ -413,6 +419,10 @@ void ShowTouchpadSettings() {
 
 void ShowMouseSettings() {
   Shell::Get()->system_tray_model()->client()->ShowMouseSettings();
+}
+
+void ShowKeyboardSettings() {
+  Shell::Get()->system_tray_model()->client()->ShowKeyboardSettings();
 }
 
 void ShowGraphicsTabletSettings() {
@@ -681,6 +691,14 @@ void HandleMouseCustomizationNotificationClicked(
   return;
 }
 
+void HandleKeyboardCustomizationNotificationClicked(
+    const std::string& notification_id,
+    std::optional<int> button_index) {
+  ShowKeyboardSettings();
+  RemoveNotification(notification_id);
+  return;
+}
+
 void HandleGraphicsTabletCustomizationNotificationClicked(
     const std::string& notification_id,
     std::optional<int> button_index) {
@@ -743,8 +761,28 @@ void InputDeviceSettingsNotificationController::
 
 void InputDeviceSettingsNotificationController::
     NotifyKeyboardFirstTimeConnected(const mojom::Keyboard& keyboard) {
-  // TODO(b/329686601): Implement this function.
-  NOTIMPLEMENTED();
+  if (!IsActiveUserSession()) {
+    return;
+  }
+
+  PrefService* prefs =
+      Shell::Get()->session_controller()->GetActivePrefService();
+  CHECK(prefs);
+
+  if (base::Contains(prefs->GetList(prefs::kKeyboardsWelcomeNotificationSeen),
+                     keyboard.device_key)) {
+    return;
+  }
+
+  auto seen_keyboard_list =
+      prefs->GetList(prefs::kKeyboardsWelcomeNotificationSeen).Clone();
+
+  seen_keyboard_list.Append(keyboard.device_key);
+  prefs->SetList(prefs::kKeyboardsWelcomeNotificationSeen,
+                 std::move(seen_keyboard_list));
+
+  CHECK(keyboard.settings);
+  ShowKeyboardSettingsNotification(keyboard);
 }
 
 void InputDeviceSettingsNotificationController::
@@ -782,6 +820,33 @@ void InputDeviceSettingsNotificationController::NotifyMouseIsCustomizable(
       rich_notification_data,
       base::MakeRefCounted<message_center::HandleNotificationClickDelegate>(
           base::BindRepeating(&HandleMouseCustomizationNotificationClicked,
+                              notification_id)),
+      kSettingsIcon, message_center::SystemNotificationWarningLevel::NORMAL);
+  message_center_->AddNotification(std::move(notification));
+}
+
+void InputDeviceSettingsNotificationController::
+    ShowKeyboardSettingsNotification(const mojom::Keyboard& keyboard) {
+  const auto peripheral_name = base::UTF8ToUTF16(keyboard.name);
+  const auto notification_id = GetWelcomeExperienceNotificationId(
+      kKeyboardNotificationPrefix, keyboard.id);
+  message_center::RichNotificationData rich_notification_data;
+  rich_notification_data.buttons.emplace_back(l10n_util::GetStringUTF16(
+      IDS_ASH_DEVICE_SETTINGS_NOTIFICATIONS_OPEN_SETTINGS_BUTTON));
+  auto notification = CreateSystemNotificationPtr(
+      message_center::NOTIFICATION_TYPE_SIMPLE, notification_id,
+      l10n_util::GetStringUTF16(
+          IDS_ASH_DEVICE_SETTINGS_NOTIFICATIONS_WELCOME_EXPERIENCE_KEYBOARD_TITLE),
+      l10n_util::GetStringFUTF16(
+          IDS_ASH_DEVICE_SETTINGS_NOTIFICATIONS_WELCOME_EXPERIENCE_KEYBOARD,
+          peripheral_name),
+      std::u16string(), GURL(),
+      message_center::NotifierId(message_center::NotifierType::SYSTEM_COMPONENT,
+                                 kNotifierId,
+                                 NotificationCatalogName::kInputDeviceSettings),
+      rich_notification_data,
+      base::MakeRefCounted<message_center::HandleNotificationClickDelegate>(
+          base::BindRepeating(&HandleKeyboardCustomizationNotificationClicked,
                               notification_id)),
       kSettingsIcon, message_center::SystemNotificationWarningLevel::NORMAL);
   message_center_->AddNotification(std::move(notification));

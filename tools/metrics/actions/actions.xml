@@ -34448,6 +34448,16 @@ should be able to be added at any place in this file.
   <description>Please enter the description of the metric.</description>
 </action>
 
+<action name="ShowKeyboardSettingsPage">
+  <owner>michaelcheco@google.com</owner>
+  <owner>cros-peripherals@google.com</owner>
+  <description>
+    Recorded when a user navigates to the keyboard settings subpage by clicking
+    on the notification shown when a mouse with customizable buttons is
+    connected to a chromebook for the first time.
+  </description>
+</action>
+
 <action name="ShowModalDialog">
   <owner>Please list the metric's owners. Add more owner tags as needed.</owner>
   <description>Please enter the description of this user action.</description>
