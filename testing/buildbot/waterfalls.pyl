@@ -453,6 +453,9 @@
         'test_suites': {
           'isolated_scripts': 'cast_junit_tests',
         },
+        'mixins': [
+            'has_native_resultdb_integration',
+        ],
       },
       'android-10-arm64-rel': {
         'swarming': {

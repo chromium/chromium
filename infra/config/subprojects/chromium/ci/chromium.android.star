@@ -240,6 +240,9 @@ ci.builder(
         additional_compile_targets = [
             "all",
         ],
+        mixins = [
+            "has_native_resultdb_integration",
+        ],
     ),
     free_space = builders.free_space.high,
     tree_closing = True,
