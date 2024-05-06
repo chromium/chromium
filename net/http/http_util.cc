@@ -427,7 +427,11 @@ bool HttpUtil::IsNonCoalescingHeader(std::string_view name) {
       "www-authenticate", "proxy-authenticate",
       // STS specifies that UAs must not process any STS headers after the first
       // one.
-      "strict-transport-security"};
+      "strict-transport-security",
+      // Attribution reporting registration header values are JSON, coalescing
+      // them changes the semantic. See https://crbug.com/40242261 for details.
+      "attribution-reporting-register-source",
+      "attribution-reporting-register-trigger"};
 
   for (std::string_view header : kNonCoalescingHeaders) {
     if (base::EqualsCaseInsensitiveASCII(name, header)) {

@@ -760,10 +760,37 @@ struct AttributionDataHostManagerImpl::RegistrationDataHeaders {
                  : std::nullopt;
     };
 
-    std::optional<std::string> web_source_header = get_header(
-        attribution_reporting::kAttributionReportingRegisterSourceHeader);
-    std::optional<std::string> web_trigger_header = get_header(
-        attribution_reporting::kAttributionReportingRegisterTriggerHeader);
+    std::optional<std::string> web_source_header;
+    {
+      std::string value;
+      size_t iter = 0;
+      while (headers->EnumerateHeader(
+          &iter,
+          attribution_reporting::kAttributionReportingRegisterSourceHeader,
+          &value)) {
+        if (web_source_header.has_value()) {
+          // TODO(https://crbug.com/40242261): Log an audit issue.
+          return std::nullopt;
+        }
+        web_source_header = std::move(value);
+      }
+    }
+
+    std::optional<std::string> web_trigger_header;
+    {
+      std::string value;
+      size_t iter = 0;
+      while (headers->EnumerateHeader(
+          &iter,
+          attribution_reporting::kAttributionReportingRegisterTriggerHeader,
+          &value)) {
+        if (web_trigger_header.has_value()) {
+          // TODO(https://crbug.com/40242261): Log an audit issue.
+          return std::nullopt;
+        }
+        web_trigger_header = std::move(value);
+      }
+    }
     std::optional<std::string> os_source_header = get_header(
         attribution_reporting::kAttributionReportingRegisterOsSourceHeader,
         cross_app_web_enabled);
