@@ -220,8 +220,9 @@ void AudioDeviceMetricsHandler::MaybeRecordUserOverrideSystemDecision(
     AudioSelectionEvents audio_selection_event =
         is_input ? AudioSelectionEvents::kUserOverrideSystemSwitchInput
                  : AudioSelectionEvents::kUserOverrideSystemSwitchOutput;
-    RecordUserOverrideMetrics(histogram_name_switched, audio_selection_event,
-                              time_delta_since_system_decision);
+    RecordUserOverrideMetricsHelper(histogram_name_switched,
+                                    audio_selection_event,
+                                    time_delta_since_system_decision);
 
     // Record user override metrics separated by chrome restarts.
 
@@ -247,9 +248,9 @@ void AudioDeviceMetricsHandler::MaybeRecordUserOverrideSystemDecision(
     AudioSelectionEvents audio_selection_event =
         is_input ? AudioSelectionEvents::kUserOverrideSystemNotSwitchInput
                  : AudioSelectionEvents::kUserOverrideSystemNotSwitchOutput;
-    RecordUserOverrideMetrics(histogram_name_not_switched,
-                              audio_selection_event,
-                              time_delta_since_system_decision);
+    RecordUserOverrideMetricsHelper(histogram_name_not_switched,
+                                    audio_selection_event,
+                                    time_delta_since_system_decision);
 
     // Record user override metrics separated by chrome restarts.
 
@@ -370,7 +371,7 @@ void AudioDeviceMetricsHandler::
                                previous_device_list, current_device_list));
 }
 
-void AudioDeviceMetricsHandler::RecordUserOverrideMetrics(
+void AudioDeviceMetricsHandler::RecordUserOverrideMetricsHelper(
     const std::string_view histogram_name,
     AudioSelectionEvents audio_selection_event,
     int time_delta_since_system_decision) const {
@@ -444,8 +445,9 @@ void AudioDeviceMetricsHandler::
     }
   }
 
-  RecordUserOverrideMetrics(user_override_histogram_name, audio_selection_event,
-                            time_delta_since_system_decision);
+  RecordUserOverrideMetricsHelper(user_override_histogram_name,
+                                  audio_selection_event,
+                                  time_delta_since_system_decision);
 }
 
 void AudioDeviceMetricsHandler::RecordConsecutiveAudioDevicsChangeTimeElapsed(

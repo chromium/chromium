@@ -370,11 +370,6 @@ class COMPONENT_EXPORT(CHROMEOS_ASH_COMPONENTS_AUDIO)
       const AudioDeviceList& previous_device_list,
       const AudioDeviceList& current_device_list) const;
 
-  // Record user overrides system decision metrics.
-  void RecordUserOverrideMetrics(const std::string_view histogram_name,
-                                 AudioSelectionEvents audio_selection_event,
-                                 int time_delta_since_system_decision) const;
-
   // Record user overrides system decision metrics in the case of chrome
   // restarts, including system boots and users sign out, as well as the case of
   // normal user hotplug or unplug.
@@ -405,6 +400,13 @@ class COMPONENT_EXPORT(CHROMEOS_ASH_COMPONENTS_AUDIO)
   }
 
  private:
+  // A helper function to record user overrides system decision metrics and
+  // directly calls uma histogram function.
+  void RecordUserOverrideMetricsHelper(
+      const std::string_view histogram_name,
+      AudioSelectionEvents audio_selection_event,
+      int time_delta_since_system_decision) const;
+
   // Clear the timer of system switch/not switch decision.
   void ResetSystemSwitchTimestamp(bool is_input);
 
