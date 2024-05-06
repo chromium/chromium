@@ -50,6 +50,8 @@ source_set("content_notification_nau_configuration") {
   sources = [
     "content_notification_nau_configuration.h",
     "content_notification_nau_configuration.mm",
+    "content_notification_settings_action.h",
+    "content_notification_settings_action.mm",
   ]
   deps = [
     "//base",
