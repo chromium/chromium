@@ -19,9 +19,6 @@ BASE_DECLARE_FEATURE(kStructuredMetrics);
 
 namespace metrics::structured {
 
-// Controls whether fast pair logging is enabled or not.
-BASE_DECLARE_FEATURE(kFastPairMetrics);
-
 // Controls whether nearby share logging is enabled or not.
 BASE_DECLARE_FEATURE(kNearbyShareMetrics);
 

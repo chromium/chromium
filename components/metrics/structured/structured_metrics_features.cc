@@ -8,10 +8,6 @@
 
 namespace metrics::structured {
 
-BASE_FEATURE(kFastPairMetrics,
-             "FastPairMetrics",
-             base::FEATURE_ENABLED_BY_DEFAULT);
-
 BASE_FEATURE(kNearbyShareMetrics,
              "NearbyShareMetrics",
              base::FEATURE_ENABLED_BY_DEFAULT);
