@@ -176,6 +176,7 @@
 #include "components/url_formatter/url_formatter.h"
 #include "components/user_notes/user_notes_features.h"
 #include "components/user_prefs/user_prefs.h"
+#include "components/vector_icons/vector_icons.h"
 #include "components/web_modal/web_contents_modal_dialog_manager.h"
 #include "content/public/browser/browser_context.h"
 #include "content/public/browser/child_process_security_policy.h"
@@ -2677,9 +2678,15 @@ void RenderViewContextMenu::AppendRegionSearchItem() {
   if (provider) {
     const int region_search_idc = GetRegionSearchIdc();
     if (lens::features::IsLensOverlayEnabled()) {
-      menu_model_.AddItem(
-          region_search_idc,
-          l10n_util::GetStringUTF16(IDS_CONTENT_CONTEXT_LENS_OVERLAY));
+      const gfx::VectorIcon& icon =
+#if BUILDFLAG(GOOGLE_CHROME_BRANDING)
+          vector_icons::kGoogleLensMonochromeLogoIcon;
+#else
+          vector_icons::kSearchIcon;
+#endif
+      menu_model_.AddItemWithStringIdAndIcon(
+          region_search_idc, IDS_CONTENT_CONTEXT_LENS_OVERLAY,
+          ui::ImageModel::FromVectorIcon(icon));
     } else {
       int resource_id = IDS_CONTENT_CONTEXT_LENS_REGION_SEARCH;
       if (lens::features::IsLensFullscreenSearchEnabled()) {

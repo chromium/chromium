@@ -1762,9 +1762,9 @@ void AppMenuModel::Build() {
 
 #if BUILDFLAG(GOOGLE_CHROME_BRANDING)
   if (lens::features::IsLensOverlayEnabled()) {
-    AddItemWithStringIdAndVectorIcon(this, IDC_CONTENT_CONTEXT_LENS_OVERLAY,
-                                     IDS_SHOW_LENS_OVERLAY,
-                                     vector_icons::kGoogleGLogoMonochromeIcon);
+    AddItemWithStringIdAndVectorIcon(
+        this, IDC_CONTENT_CONTEXT_LENS_OVERLAY, IDS_SHOW_LENS_OVERLAY,
+        vector_icons::kGoogleLensMonochromeLogoIcon);
     SetElementIdentifierAt(
         GetIndexOfCommandId(IDC_CONTENT_CONTEXT_LENS_OVERLAY).value(),
         kShowLensOverlay);

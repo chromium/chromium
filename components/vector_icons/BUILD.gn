@@ -272,6 +272,7 @@ aggregate_vector_icons("components_vector_icons") {
       "google_chrome/google_lens_full_logo.icon",
       "google_chrome/google_lens_full_logo_dark.icon",
       "google_chrome/google_lens_logo.icon",
+      "google_chrome/google_lens_monochrome_logo.icon",
       "google_chrome/google_password_manager.icon",
       "google_chrome/google_pay_logo.icon",
       "google_chrome/google_search_companion_logo.icon",

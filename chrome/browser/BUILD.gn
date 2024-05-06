@@ -4756,6 +4756,7 @@ static_library("browser") {
       "//components/user_notes/browser",
       "//components/user_notes/interfaces",
       "//components/user_notes/storage",
+      "//components/vector_icons",
       "//components/web_modal",
       "//components/webauthn/core/browser",
       "//components/webauthn/core/browser:passkey_model",

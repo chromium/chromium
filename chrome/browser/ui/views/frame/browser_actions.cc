@@ -190,7 +190,7 @@ void BrowserActions::InitializeBrowserActions() {
             &(browser_.get()));
     const gfx::VectorIcon& icon =
 #if BUILDFLAG(GOOGLE_CHROME_BRANDING)
-        vector_icons::kGoogleSearchCompanionMonochromeLogoChromeRefreshIcon;
+        vector_icons::kGoogleLensMonochromeLogoIcon;
 #else
         vector_icons::kSearchIcon;
 #endif
