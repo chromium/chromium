@@ -246,30 +246,15 @@ ContentSettingsForOneType Manager::GetGrants() const {
   return absl::get<ContentSettingsForOneType>(grants_);
 }
 
-void Manager::ResetCohorts(PatternSourcePredicate pattern_predicate) {
+void Manager::ResetCohorts() {
   if (!base::FeatureList::IsEnabled(
           net::features::kTpcdMetadataStagedRollback)) {
     return;
   }
 
-  if (pattern_predicate.is_null()) {
-    SetGrants(
-        BuildGrantsWithPredicate([](const MetadataEntry&) { return true; }));
-    return;
-  }
-
   auto reset_cohort = [&](const MetadataEntry& metadata_entry) -> bool {
-    if (!Parser::IsDtrpEligible(
-            Parser::ToRuleSource(metadata_entry.source()))) {
-      return false;
-    }
-
-    const auto primary_pattern = ContentSettingsPattern::FromString(
-        metadata_entry.primary_pattern_spec());
-    const auto secondary_pattern = ContentSettingsPattern::FromString(
-        metadata_entry.secondary_pattern_spec());
-
-    return pattern_predicate.Run(primary_pattern, secondary_pattern);
+    return Parser::IsDtrpEligible(
+        Parser::ToRuleSource(metadata_entry.source()));
   };
   SetGrants(BuildGrantsWithPredicate(reset_cohort));
 }

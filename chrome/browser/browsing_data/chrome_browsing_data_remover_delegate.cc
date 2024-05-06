@@ -660,19 +660,20 @@ void ChromeBrowsingDataRemoverDelegate::RemoveEmbedderData(
               base::Unretained(this), TracingDataType::kCookies));
       safe_browsing::VerdictCacheManagerFactory::GetForProfile(profile_)
           ->OnCookiesDeleted();
-
-      if (tpcd::metadata::Manager* manager =
-              tpcd::metadata::ManagerFactory::GetForProfile(profile_)) {
-        manager->ResetCohorts(website_settings_filter);
-      }
     }
 
     if (filter_builder->GetMode() ==
         BrowsingDataFilterBuilder::Mode::kPreserve) {
       auto* privacy_sandbox_settings =
           PrivacySandboxSettingsFactory::GetForProfile(profile_);
-      if (privacy_sandbox_settings)
+      if (privacy_sandbox_settings) {
         privacy_sandbox_settings->OnCookiesCleared();
+      }
+
+      if (tpcd::metadata::Manager* manager =
+              tpcd::metadata::ManagerFactory::GetForProfile(profile_)) {
+        manager->ResetCohorts();
+      }
 
 #if BUILDFLAG(IS_ANDROID)
       Java_PackageHash_onCookiesDeleted(

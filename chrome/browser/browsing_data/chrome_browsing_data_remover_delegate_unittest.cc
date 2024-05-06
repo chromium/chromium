@@ -4501,7 +4501,7 @@ TEST_F(ChromeBrowsingDataRemoverDelegateTpcdMetadataTest, ResetAllCohorts) {
                                 content::BrowsingDataRemover::DATA_TYPE_COOKIES,
                                 false);
 
-  // Make sure the cohorts was reset.
+  // Make sure the cohorts were reset.
   {
     EXPECT_EQ(
         tester.GetManager()
@@ -4515,7 +4515,7 @@ TEST_F(ChromeBrowsingDataRemoverDelegateTpcdMetadataTest, ResetAllCohorts) {
   }
 }
 
-TEST_F(ChromeBrowsingDataRemoverDelegateTpcdMetadataTest, ResetOneCohort) {
+TEST_F(ChromeBrowsingDataRemoverDelegateTpcdMetadataTest, ResetAllCohort_PreserveMode) {
   auto tester = RemoveTpcdMetadataCohortsTester(GetProfile());
 
   const std::string primary_pattern_spec = "https://example1.com";
@@ -4570,16 +4570,17 @@ TEST_F(ChromeBrowsingDataRemoverDelegateTpcdMetadataTest, ResetOneCohort) {
         content_settings::mojom::TpcdMetadataCohort::GRACE_PERIOD_FORCED_ON);
   }
 
-  // Apply deletion of cookies.
+  // Apply deletion of cookies with preservation of select URL.
+  // NOTE: This is still expected to reset all cohorts.
   std::unique_ptr<BrowsingDataFilterBuilder> filter(
       BrowsingDataFilterBuilder::Create(
-          BrowsingDataFilterBuilder::Mode::kDelete));
+          BrowsingDataFilterBuilder::Mode::kPreserve));
   filter->AddRegisterableDomain(GURL(primary_pattern_spec).host());
   BlockUntilOriginDataRemoved(base::Time(), base::Time::Max(),
                               content::BrowsingDataRemover::DATA_TYPE_COOKIES,
                               std::move(filter));
 
-  // Make sure only one cohort was reset.
+  // Make sure both cohorts were reset.
   {
     EXPECT_EQ(
         tester.GetManager()
@@ -4589,6 +4590,6 @@ TEST_F(ChromeBrowsingDataRemoverDelegateTpcdMetadataTest, ResetOneCohort) {
         content_settings::mojom::TpcdMetadataCohort::GRACE_PERIOD_FORCED_OFF);
     EXPECT_EQ(
         tester.GetManager()->GetGrants().back().metadata.tpcd_metadata_cohort(),
-        content_settings::mojom::TpcdMetadataCohort::GRACE_PERIOD_FORCED_ON);
+        content_settings::mojom::TpcdMetadataCohort::GRACE_PERIOD_FORCED_OFF);
   }
 }

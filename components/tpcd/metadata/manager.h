@@ -68,10 +68,9 @@ class Manager : public common::ManagerBase, public Parser::Observer {
     SetGrants(grants);
   }
 
-  // ResetCohorts only resets cohorts from any MetadataEntry matched by
-  // `pattern_predicate`. But If `pattern_predicate` is null, this method resets
-  // all the persisted cohorts.
-  void ResetCohorts(PatternSourcePredicate pattern_predicate);
+  // ResetCohorts reset all cohorts for which `Parser::IsDtrpEligible()` is
+  // true.
+  void ResetCohorts();
 
   class RandGenerator {
    public:
