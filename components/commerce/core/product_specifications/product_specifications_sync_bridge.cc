@@ -9,6 +9,7 @@
 
 #include "base/strings/stringprintf.h"
 #include "base/uuid.h"
+#include "components/sync/base/deletion_origin.h"
 #include "components/sync/base/model_type.h"
 #include "components/sync/model/metadata_batch.h"
 #include "components/sync/model/model_type_change_processor.h"
@@ -202,7 +203,8 @@ void ProductSpecificationsSyncBridge::DeleteProductSpecificationsSet(
   std::unique_ptr<syncer::ModelTypeStore::WriteBatch> batch =
       store_->CreateWriteBatch();
 
-  change_processor()->Delete(uuid, batch->GetMetadataChangeList());
+  change_processor()->Delete(uuid, syncer::DeletionOrigin::Unspecified(),
+                             batch->GetMetadataChangeList());
 
   entries_.erase(uuid);
   batch->DeleteData(uuid);
