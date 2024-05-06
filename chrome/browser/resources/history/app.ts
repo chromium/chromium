@@ -679,6 +679,9 @@ export class HistoryAppElement extends HistoryAppElementBase {
   private recordHistoryPageView_() {
     let histogramValue = HistoryPageViewHistogram.END;
     switch (this.selectedPage_) {
+      case Page.HISTORY:
+        histogramValue = HistoryPageViewHistogram.HISTORY;
+        break;
       case Page.HISTORY_CLUSTERS:
         histogramValue = HistoryPageViewHistogram.JOURNEYS;
         break;
@@ -691,8 +694,9 @@ export class HistoryAppElement extends HistoryAppElementBase {
         histogramValue = HistoryPageViewHistogram.PRODUCT_SPECIFICATIONS_LISTS;
         break;
       default:
-        histogramValue = HistoryPageViewHistogram.HISTORY;
-        break;
+        // Explicitly early exit and don't record anything for unknown selected
+        // pages. This can occur during test initialization.
+        return;
     }
 
     this.browserService_!.recordHistogram(
