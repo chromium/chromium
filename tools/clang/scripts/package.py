@@ -117,7 +117,7 @@ def MaybeUpload(do_upload,
                 gcs_platform,
                 extra_gsutil_args=[]):
   gsutil_args = ['cp'] + extra_gsutil_args + [
-      '-n', '-a', 'public-read', filename,
+      '-n', filename,
       'gs://%s/%s/' % (gcs_bucket, gcs_platform)
   ]
   if do_upload:
