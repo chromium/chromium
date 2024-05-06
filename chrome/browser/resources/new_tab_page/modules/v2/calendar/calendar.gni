@@ -3,4 +3,7 @@
 # found in the LICENSE file.
 
 # List of files that should be passed to html_to_wrapper().
-calendar_v2_web_component_files = [ "modules/v2/calendar/module.ts" ]
+calendar_v2_web_component_files = [
+  "modules/v2/calendar/google_calendar_module.ts",
+  "modules/v2/calendar/outlook_calendar_module.ts",
+]

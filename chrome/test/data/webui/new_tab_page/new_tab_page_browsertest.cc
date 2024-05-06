@@ -126,8 +126,14 @@ IN_PROC_BROWSER_TEST_F(NewTabPageModulesTest, PhotosModule) {
 }
 #endif  // !defined(OFFICIAL_BUILD)
 
-IN_PROC_BROWSER_TEST_F(NewTabPageModulesTest, CalendarModule) {
-  RunTest("new_tab_page/modules/v2/calendar/module_test.js", "mocha.run()");
+IN_PROC_BROWSER_TEST_F(NewTabPageModulesTest, GoogleCalendarModule) {
+  RunTest("new_tab_page/modules/v2/calendar/google_calendar_module_test.js",
+          "mocha.run()");
+}
+
+IN_PROC_BROWSER_TEST_F(NewTabPageModulesTest, OutlookCalendarModule) {
+  RunTest("new_tab_page/modules/v2/calendar/outlook_calendar_module_test.js",
+          "mocha.run()");
 }
 
 IN_PROC_BROWSER_TEST_F(NewTabPageModulesTest, DriveModule) {
