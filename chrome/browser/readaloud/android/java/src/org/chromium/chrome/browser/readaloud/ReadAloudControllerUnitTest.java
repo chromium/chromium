@@ -47,6 +47,9 @@ import org.robolectric.shadows.ShadowLooper;
 import org.chromium.base.ApplicationState;
 import org.chromium.base.Promise;
 import org.chromium.base.supplier.ObservableSupplierImpl;
+import org.chromium.base.task.TaskTraits;
+import org.chromium.base.task.test.ShadowPostTask;
+import org.chromium.base.task.test.ShadowPostTask.TestImpl;
 import org.chromium.base.test.BaseRobolectricTestRunner;
 import org.chromium.base.test.util.Features;
 import org.chromium.base.test.util.Features.DisableFeatures;
@@ -108,7 +111,7 @@ import java.util.List;
 @RunWith(BaseRobolectricTestRunner.class)
 @Config(
         manifest = Config.NONE,
-        shadows = {ShadowDeviceConditions.class})
+        shadows = {ShadowDeviceConditions.class, ShadowPostTask.class})
 @EnableFeatures({
     ChromeFeatureList.READALOUD,
     ChromeFeatureList.READALOUD_PLAYBACK,
@@ -187,6 +190,14 @@ public class ReadAloudControllerUnitTest {
     @Before
     public void setUp() {
         MockitoAnnotations.initMocks(this);
+        ShadowPostTask.setTestImpl(
+                new TestImpl() {
+                    @Override
+                    public void postDelayedTask(
+                            @TaskTraits int taskTraits, Runnable task, long delay) {
+                        task.run();
+                    }
+                });
         mProfileSupplier = new ObservableSupplierImpl<>();
         mProfileSupplier.set(mMockProfile);
         doReturn(true).when(mMockProfile).isNativeInitialized();
@@ -383,16 +394,6 @@ public class ReadAloudControllerUnitTest {
 
         verify(mPlayerCoordinator, never()).dismissPlayers();
         verify(mPlayback, never()).release();
-    }
-
-    @Test
-    public void testOnUrlUpdated() {
-        GURL gurl = new GURL("https://en.wikipedia.org/wiki/Alphabet_Inc.");
-        when(mTab.getUrl()).thenReturn(gurl);
-        mController.getTabModelTabObserverforTests().onUrlUpdated(mTab);
-
-        // check readability for new url
-        verify(mHooksImpl).isPageReadable(eq(gurl.getPossiblyInvalidSpec()), any());
     }
 
     @Test
@@ -704,7 +705,8 @@ public class ReadAloudControllerUnitTest {
         // advance by 1s - we're past the 1h limit, the record should be deleted
         mClock.advanceCurrentTimeMillis(1000);
         assertFalse(mController.isReadable(mTab));
-        verify(mHooksImpl, times(2))
+        // make sure readability isn't called again
+        verify(mHooksImpl, times(1))
                 .isPageReadable(eq(sTestGURL.getSpec()), mCallbackCaptor.capture());
     }
 
@@ -2376,6 +2378,14 @@ public class ReadAloudControllerUnitTest {
         // shouldn't seek
         mController.tapToSeek("the quick brown fox", 4, 9);
         verify(mPlayback, never()).seekToWord(0, 8);
+    }
+
+    @Test
+    public void testDidFirstVisuallyNonEmptyPaint() {
+        GURL gurl = new GURL("https://en.wikipedia.org/wiki/Alphabet_Inc.");
+        when(mTab.getUrl()).thenReturn(gurl);
+        mController.getTabModelTabObserverforTests().didFirstVisuallyNonEmptyPaint(mTab);
+        verify(mHooksImpl).isPageReadable(eq(gurl.getPossiblyInvalidSpec()), any());
     }
 
     private void requestAndStartPlayback() {
