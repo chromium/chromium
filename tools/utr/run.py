@@ -73,7 +73,10 @@ def add_common_args(parser):
       '--recipe-path',
       '-r',
       type=pathlib.Path,
-      help='Path to override the recipe bundle with a local checkout.')
+      help='Path to override the recipe bundle with a local bundle. To create '
+      'a bundle locally, run `./recipes.py bundle` in your desired recipe '
+      'checkout. This creates a dir called "bundle" that can be pointed to '
+      'with this arg.')
 
 
 def add_compile_args(parser):
@@ -161,7 +164,7 @@ def main():
   if not args.recipe_dir:
     recipes_path = cipd.fetch_recipe_bundle(args.verbosity).joinpath('recipes')
   else:
-    recipes_path = args.recipe_dir.joinpath('recipes', 'recipes.py')
+    recipes_path = args.recipe_dir.joinpath('recipes')
 
   builder_props, swarming_server = builders.find_builder_props(
       args.bucket, args.builder)
