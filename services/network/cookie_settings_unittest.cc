@@ -1306,7 +1306,13 @@ TEST_P(CookieSettingsTestP, AnnotateAndMoveUserBlockedCookies_CrossSiteEmbed) {
        // The ExclusionReason below is irrelevant, as long as there is
        // one.
        net::CookieAccessResult(net::CookieInclusionStatus(
-           net::CookieInclusionStatus::ExclusionReason::EXCLUDE_SECURE_ONLY))}};
+           net::CookieInclusionStatus::ExclusionReason::EXCLUDE_SECURE_ONLY))},
+      {*MakeCanonicalCookie("excluded_samesitelax", kURL),
+       // The ExclusionReason below is irrelevant, as long as there is
+       // one.
+       net::CookieAccessResult(net::CookieInclusionStatus(
+           net::CookieInclusionStatus::ExclusionReason::EXCLUDE_SECURE_ONLY))},
+  };
   url::Origin origin = url::Origin::Create(GURL(kOtherURL));
 
   const bool expected_any_allowed = false;
@@ -1343,14 +1349,25 @@ TEST_P(CookieSettingsTestP, AnnotateAndMoveUserBlockedCookies_CrossSiteEmbed) {
                     _, _, _))));
     EXPECT_THAT(
         excluded_cookies,
-        UnorderedElementsAre(MatchesCookieWithAccessResult(
-            net::MatchesCookieWithName("excluded_other"),
-            MatchesCookieAccessResult(
-                HasExactlyExclusionReasonsForTesting(
-                    std::vector<net::CookieInclusionStatus::ExclusionReason>{
-                        net::CookieInclusionStatus::ExclusionReason::
-                            EXCLUDE_SECURE_ONLY}),
-                _, _, _))));
+        UnorderedElementsAre(
+            MatchesCookieWithAccessResult(
+                net::MatchesCookieWithName("excluded_other"),
+                MatchesCookieAccessResult(
+                    HasExactlyExclusionReasonsForTesting(
+                        std::vector<
+                            net::CookieInclusionStatus::ExclusionReason>{
+                            net::CookieInclusionStatus::ExclusionReason::
+                                EXCLUDE_SECURE_ONLY}),
+                    _, _, _)),
+            MatchesCookieWithAccessResult(
+                net::MatchesCookieWithName("excluded_samesitelax"),
+                MatchesCookieAccessResult(
+                    HasExactlyExclusionReasonsForTesting(
+                        std::vector<
+                            net::CookieInclusionStatus::ExclusionReason>{
+                            net::CookieInclusionStatus::ExclusionReason::
+                                EXCLUDE_SECURE_ONLY}),
+                    _, _, _))));
   } else {
     EXPECT_THAT(maybe_included_cookies, IsEmpty());
     EXPECT_THAT(
@@ -1396,6 +1413,26 @@ TEST_P(CookieSettingsTestP, AnnotateAndMoveUserBlockedCookies_CrossSiteEmbed) {
                                       EXCLUDE_THIRD_PARTY_PHASEOUT
                                 : net::CookieInclusionStatus::
                                       EXCLUDE_USER_PREFERENCES}),
+                    _, _, _)),
+            MatchesCookieWithAccessResult(
+                net::MatchesCookieWithName("excluded_samesitelax"),
+                MatchesCookieAccessResult(
+                    HasExactlyExclusionReasonsForTesting(
+                        IsForceThirdPartyCookieBlockingFlagEnabled() ||
+                        IsTrackingProtectionEnabledFor3pcd()
+                            ? std::vector<
+                                  net::CookieInclusionStatus::
+                                      ExclusionReason>{
+                                        net::CookieInclusionStatus::
+                                            EXCLUDE_SECURE_ONLY,
+                                    }
+                            : std::vector<
+                                  net::CookieInclusionStatus::
+                                      ExclusionReason>{
+                                        net::CookieInclusionStatus::
+                                            EXCLUDE_SECURE_ONLY,
+                                        net::CookieInclusionStatus::
+                                            EXCLUDE_USER_PREFERENCES}),
                     _, _, _))));
   }
 }
