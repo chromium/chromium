@@ -58,55 +58,15 @@ class BookmarkBubbleViewInteractiveTest : public InteractiveBrowserTest {
   }
 };
 
-IN_PROC_BROWSER_TEST_F(BookmarkBubbleViewInteractiveTest,
-                       SimplifiedSaveFlow_NewBookmark) {
+IN_PROC_BROWSER_TEST_F(BookmarkBubbleViewInteractiveTest, NewBookmark) {
   RunTestSequence(
       InstrumentTab(kTestTab),
       NavigateWebContents(kTestTab,
                           embedded_test_server()->GetURL(kBookmarkURL)),
-
       PressButton(kBookmarkStarViewElementId),
-
-      // The simplified flow should not show the name and folder fields by
-      // default for new bookmarks.
-      WaitForShow(kBookmarkSaveLocationTextId),
-      EnsureNotPresent(kBookmarkNameFieldId),
-      CheckViewProperty(kBookmarkBubbleOkButtonId, &views::View::HasFocus,
-                        true),
-      EnsureNotPresent(kBookmarkFolderFieldId),
-
-      // Pressing the cancel button will show the fields to modify the bookmark.
-      PressButton(kBookmarkSecondaryButtonId),
-
-      WaitForShow(kBookmarkNameFieldId), EnsurePresent(kBookmarkFolderFieldId),
-      EnsureNotPresent(kBookmarkSaveLocationTextId),
-
-      FlushEvents());
-}
-
-IN_PROC_BROWSER_TEST_F(BookmarkBubbleViewInteractiveTest,
-                       SimplifiedSaveFlow_ExistingBookmark) {
-  bookmarks::BookmarkModel* model =
-      BookmarkModelFactory::GetForBrowserContext(browser()->profile());
-
-  RunTestSequence(InstrumentTab(kTestTab),
-                  NavigateWebContents(
-                      kTestTab, embedded_test_server()->GetURL(kBookmarkURL)));
-
-  // Add the bookmark before clicking on the star so it's "existing".
-  model->AddURL(model->other_node(), 0, u"bookmark",
-                browser()->tab_strip_model()->GetActiveWebContents()->GetURL());
-
-  RunTestSequence(
-      PressButton(kBookmarkStarViewElementId),
-
-      // The simplified flow should not be shown in this case. The
-      // edit fields should be visible.
       WaitForShow(kBookmarkNameFieldId),
       CheckViewProperty(kBookmarkNameFieldId, &views::View::HasFocus, true),
       EnsurePresent(kBookmarkFolderFieldId),
-      EnsureNotPresent(kBookmarkSaveLocationTextId),
-
       FlushEvents());
 }
 
