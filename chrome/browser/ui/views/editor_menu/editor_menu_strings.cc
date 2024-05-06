@@ -49,18 +49,11 @@ std::u16string GetEditorMenuRewriteCardTitle() {
              : u"Rewrite";
 }
 
-std::u16string GetEditorMenuWriteCardFreeformHolder() {
+std::u16string GetEditorMenuFreeformPromptInputFieldPlaceholder() {
   return chromeos::features::IsOrcaUseL10nStringsEnabled()
              ? l10n_util::GetStringUTF16(
-                   IDS_EDITOR_MENU_WRITE_CARD_FREEFORM_PLACEHOLDER)
-             : u"Enter a prompt like \"write a thank you note\"";
-}
-
-std::u16string GetEditorMenuRewriteCardFreeformHolder() {
-  return chromeos::features::IsOrcaUseL10nStringsEnabled()
-             ? l10n_util::GetStringUTF16(
-                   IDS_EDITOR_MENU_REWRITE_CARD_FREEFORM_PLACEHOLDER)
-             : u"Enter a prompt like \"make it more confident\"";
+                   IDS_EDITOR_MENU_FREEFORM_PROMPT_INPUT_FIELD_PLACEHOLDER)
+             : u"Enter a prompt";
 }
 
 std::u16string GetEditorMenuSettingsTooltip() {

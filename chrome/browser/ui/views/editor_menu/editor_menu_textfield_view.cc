@@ -37,21 +37,6 @@ constexpr gfx::Size kArrowButtonSize(20, 20);
 constexpr gfx::Insets kArrowButtonInsets(4);
 constexpr int kPaddingBetweenArrowButtonAndTextfield = 10;
 
-std::u16string GetPlaceholderText(EditorMenuMode editor_menu_mode, int width) {
-  switch (editor_menu_mode) {
-    case EditorMenuMode::kWrite:
-      return GetEditorMenuWriteCardFreeformHolder();
-
-    case EditorMenuMode::kRewrite:
-      return GetEditorMenuRewriteCardFreeformHolder();
-    default:
-      // EditorMenuTextfieldView will only be created for write & rewrite mode.
-      // We should nevery reach here.
-      NOTREACHED();
-      return u"";
-  }
-}
-
 }  // namespace
 
 EditorMenuTextfieldView::EditorMenuTextfieldView(
@@ -81,7 +66,7 @@ void EditorMenuTextfieldView::Layout(PassKey) {
 
   // Update the placeholder text based on the widget width.
   textfield_->SetPlaceholderText(
-      GetPlaceholderText(editor_menu_mode_, width()));
+      GetEditorMenuFreeformPromptInputFieldPlaceholder());
 }
 
 void EditorMenuTextfieldView::ContentsChanged(
@@ -111,7 +96,7 @@ void EditorMenuTextfieldView::InitLayout() {
   // issue in native views
   textfield_->SetTextInputFlags(ui::TEXT_INPUT_FLAG_AUTOCORRECT_OFF);
   textfield_->SetPlaceholderText(
-      GetPlaceholderText(editor_menu_mode_, width()));
+      GetEditorMenuFreeformPromptInputFieldPlaceholder());
   textfield_->SetBackgroundColor(SK_ColorTRANSPARENT);
   textfield_->RemoveHoverEffect();
   textfield_->SetExtraInsets(gfx::Insets::TLBR(

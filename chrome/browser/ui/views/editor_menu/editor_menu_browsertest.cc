@@ -375,7 +375,7 @@ IN_PROC_BROWSER_TEST_F(
                 ->textfield()
                 ->GetPlaceholderText(),
             l10n_util::GetStringUTF16(
-                IDS_EDITOR_MENU_WRITE_CARD_FREEFORM_PLACEHOLDER));
+                IDS_EDITOR_MENU_FREEFORM_PROMPT_INPUT_FIELD_PLACEHOLDER));
 }
 
 IN_PROC_BROWSER_TEST_F(
@@ -408,7 +408,7 @@ IN_PROC_BROWSER_TEST_F(
                 ->textfield_for_testing()
                 ->textfield()
                 ->GetPlaceholderText(),
-            u"Enter a prompt like \"write a thank you note\"");
+            u"Enter a prompt");
 }
 
 IN_PROC_BROWSER_TEST_F(
