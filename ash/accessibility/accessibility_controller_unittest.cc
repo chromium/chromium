@@ -111,13 +111,12 @@ class AccessibilityControllerTest : public AshTestBase {
   void SetUp() override {
     scoped_feature_list_.InitWithFeatures(
         /*enabled_features=*/{media::kLiveCaption,
-                              media::kLiveCaptionSystemWideOnChromeOS,
                               ash::features::kOnDeviceSpeechRecognition,
                               ::features::kAccessibilityFaceGaze,
                               ::features::kAccessibilityMouseKeys,
                               ::features::
                                   kAccessibilityCaretBlinkIntervalSetting},
-        /*disabled_feaures=*/{});
+        /*disabled_features=*/{});
     AshTestBase::SetUp();
   }
 

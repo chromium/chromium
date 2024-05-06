@@ -248,7 +248,10 @@ void AudioDetailedView::AddAudioSubHeader(views::View* container,
 void AudioDetailedView::CreateItems() {
   CreateScrollableList();
   CreateTitleRow(IDS_ASH_STATUS_TRAY_AUDIO_TITLE);
-  CreateLiveCaptionView();
+
+  if (captions::IsLiveCaptionFeatureSupported()) {
+    CreateLiveCaptionView();
+  }
 
   mic_gain_controller_ = std::make_unique<MicGainSliderController>();
   unified_volume_slider_controller_ =
@@ -589,8 +592,10 @@ void AudioDetailedView::UpdateScrollableList() {
   views::View* container =
       scroll_content()->AddChildView(std::make_unique<RoundedContainer>());
 
-  // Adds the live caption toggle.
-  CreateLiveCaptionView();
+  if (captions::IsLiveCaptionFeatureSupported()) {
+    // Adds the live caption toggle.
+    CreateLiveCaptionView();
+  }
 
   // Adds audio output devices.
   const bool has_output_devices = output_devices_.size() > 0;

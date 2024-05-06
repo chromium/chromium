@@ -138,7 +138,7 @@ AudioNodeList GenerateAudioNodeList(
 // Test param is the version of stable device id used by audio node.
 class UnifiedAudioDetailedViewControllerTest : public AshTestBase {
  public:
-  UnifiedAudioDetailedViewControllerTest() {}
+  UnifiedAudioDetailedViewControllerTest() = default;
   ~UnifiedAudioDetailedViewControllerTest() override = default;
 
   // AshTestBase:
@@ -580,9 +580,7 @@ TEST_F(UnifiedAudioDetailedViewControllerTest,
 TEST_F(UnifiedAudioDetailedViewControllerTest, ToggleLiveCaption) {
   scoped_feature_list_.Reset();
   scoped_feature_list_.InitWithFeatures(
-      {media::kLiveCaption, media::kLiveCaptionSystemWideOnChromeOS,
-       ash::features::kOnDeviceSpeechRecognition},
-      {});
+      {media::kLiveCaption, ash::features::kOnDeviceSpeechRecognition}, {});
 
   EXPECT_TRUE(live_caption_view());
   EXPECT_FALSE(live_caption_enabled());
@@ -598,8 +596,8 @@ TEST_F(UnifiedAudioDetailedViewControllerTest, ToggleLiveCaption) {
 
 TEST_F(UnifiedAudioDetailedViewControllerTest, LiveCaptionNotAvailable) {
   // If the Live Caption feature flags are not set, the Live Caption toggle will
-  // not be enabled in audio settings.
-  EXPECT_TRUE(live_caption_view());
+  // not be visible in audio settings.
+  EXPECT_FALSE(live_caption_view());
   EXPECT_FALSE(live_caption_enabled());
 }
 
@@ -667,8 +665,7 @@ class UnifiedAudioDetailedViewControllerSodaTest
     // calling speech::SodaInstaller::GetInstance() returns a valid instance.
     scoped_feature_list_.InitWithFeatures(
         {ash::features::kOnDeviceSpeechRecognition, media::kLiveCaption,
-         media::kLiveCaptionMultiLanguage,
-         media::kLiveCaptionSystemWideOnChromeOS},
+         media::kLiveCaptionMultiLanguage},
         {});
     soda_installer_impl_ =
         std::make_unique<speech::SodaInstallerImplChromeOS>();

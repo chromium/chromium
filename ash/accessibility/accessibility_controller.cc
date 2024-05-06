@@ -1707,15 +1707,11 @@ bool AccessibilityController::IsEnterpriseIconVisibleForLargeCursor() {
 
 bool AccessibilityController::IsLiveCaptionSettingVisibleInTray() {
   return captions::IsLiveCaptionFeatureSupported() &&
-         base::FeatureList::IsEnabled(
-             media::kLiveCaptionSystemWideOnChromeOS) &&
          live_caption().IsVisibleInTray();
 }
 
 bool AccessibilityController::IsEnterpriseIconVisibleForLiveCaption() {
   return captions::IsLiveCaptionFeatureSupported() &&
-         base::FeatureList::IsEnabled(
-             media::kLiveCaptionSystemWideOnChromeOS) &&
          live_caption().IsEnterpriseIconVisible();
 }
 

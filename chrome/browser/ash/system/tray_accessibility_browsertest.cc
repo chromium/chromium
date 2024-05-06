@@ -152,8 +152,7 @@ class TrayAccessibilityTest : public InProcessBrowserTest,
   TrayAccessibilityTest()
       : disable_animations_(
             ui::ScopedAnimationDurationScaleMode::ZERO_DURATION) {
-    scoped_feature_list_.InitWithFeatures(
-        {media::kLiveCaption, media::kLiveCaptionSystemWideOnChromeOS}, {});
+    scoped_feature_list_.InitWithFeatures({media::kLiveCaption}, {});
   }
   ~TrayAccessibilityTest() override = default;
 

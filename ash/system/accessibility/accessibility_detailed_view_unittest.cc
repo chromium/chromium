@@ -154,8 +154,7 @@ class AccessibilityDetailedViewTest : public AshTestBase,
  public:
   AccessibilityDetailedViewTest() {
     scoped_feature_list_.InitWithFeatures(
-        {media::kLiveCaption, media::kLiveCaptionSystemWideOnChromeOS,
-         ash::features::kOnDeviceSpeechRecognition,
+        {media::kLiveCaption, ash::features::kOnDeviceSpeechRecognition,
          ::features::kAccessibilityFaceGaze},
         {});
   }

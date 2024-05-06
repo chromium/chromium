@@ -468,8 +468,7 @@ TEST_F(AudioEffectsControllerTest, LiveCaptionNotSupported) {
 TEST_F(AudioEffectsControllerTest, LiveCaptionSupported) {
   base::test::ScopedFeatureList scoped_feature_list;
   scoped_feature_list.InitWithFeatures(
-      {media::kLiveCaption, media::kLiveCaptionSystemWideOnChromeOS,
-       features::kOnDeviceSpeechRecognition,
+      {features::kOnDeviceSpeechRecognition,
        features::kShowLiveCaptionInVideoConferenceTray},
       {});
 
@@ -493,8 +492,7 @@ TEST_F(AudioEffectsControllerTest, LiveCaptionSupported) {
 TEST_F(AudioEffectsControllerTest, DoNotShowLiveCaptionInVcTray) {
   base::test::ScopedFeatureList scoped_feature_list;
   scoped_feature_list.InitWithFeatures(
-      {media::kLiveCaption, media::kLiveCaptionSystemWideOnChromeOS,
-       features::kOnDeviceSpeechRecognition},
+      {media::kLiveCaption, features::kOnDeviceSpeechRecognition},
       {features::kShowLiveCaptionInVideoConferenceTray});
 
   SimulateUserLogin("testuser1@gmail.com");
@@ -509,9 +507,7 @@ TEST_F(AudioEffectsControllerTest, LiveCaptionNotEnabled) {
   // Ensure that live caption is supported.
   base::test::ScopedFeatureList scoped_feature_list;
   scoped_feature_list.InitWithFeatures(
-      {media::kLiveCaption, media::kLiveCaptionSystemWideOnChromeOS,
-       features::kOnDeviceSpeechRecognition},
-      {});
+      {media::kLiveCaption, features::kOnDeviceSpeechRecognition}, {});
 
   SimulateUserLogin("testuser1@gmail.com");
 
@@ -532,9 +528,7 @@ TEST_F(AudioEffectsControllerTest, LiveCaptionEnabled) {
   // Ensure that live caption is supported.
   base::test::ScopedFeatureList scoped_feature_list;
   scoped_feature_list.InitWithFeatures(
-      {media::kLiveCaption, media::kLiveCaptionSystemWideOnChromeOS,
-       features::kOnDeviceSpeechRecognition},
-      {});
+      {media::kLiveCaption, features::kOnDeviceSpeechRecognition}, {});
 
   SimulateUserLogin("testuser1@gmail.com");
 
@@ -555,9 +549,7 @@ TEST_F(AudioEffectsControllerTest, LiveCaptionSetNotEnabled) {
   // Ensure that live caption is supported.
   base::test::ScopedFeatureList scoped_feature_list;
   scoped_feature_list.InitWithFeatures(
-      {media::kLiveCaption, media::kLiveCaptionSystemWideOnChromeOS,
-       features::kOnDeviceSpeechRecognition},
-      {});
+      {media::kLiveCaption, features::kOnDeviceSpeechRecognition}, {});
 
   SimulateUserLogin("testuser1@gmail.com");
 
@@ -579,9 +571,7 @@ TEST_F(AudioEffectsControllerTest, LiveCaptionSetEnabled) {
   // Ensure that live caption is supported.
   base::test::ScopedFeatureList scoped_feature_list;
   scoped_feature_list.InitWithFeatures(
-      {media::kLiveCaption, media::kLiveCaptionSystemWideOnChromeOS,
-       features::kOnDeviceSpeechRecognition},
-      {});
+      {media::kLiveCaption, features::kOnDeviceSpeechRecognition}, {});
 
   SimulateUserLogin("testuser1@gmail.com");
 
@@ -607,8 +597,7 @@ TEST_F(AudioEffectsControllerTest, LiveCaptionAndNoiseCancellationAdded) {
   // Ensure that live caption is supported.
   base::test::ScopedFeatureList scoped_feature_list;
   scoped_feature_list.InitWithFeatures(
-      {media::kLiveCaption, media::kLiveCaptionSystemWideOnChromeOS,
-       features::kOnDeviceSpeechRecognition,
+      {media::kLiveCaption, features::kOnDeviceSpeechRecognition,
        features::kShowLiveCaptionInVideoConferenceTray},
       {});
 
