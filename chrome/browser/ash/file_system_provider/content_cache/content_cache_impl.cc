@@ -30,7 +30,7 @@ base::File::Error WriteBytesBlocking(scoped_refptr<net::IOBuffer> buffer,
                                      int64_t offset,
                                      int length,
                                      const base::FilePath& path) {
-  VLOG(2) << "WriteBytesBlocking: {path = '" << path.value() << "', offset = '"
+  VLOG(2) << "WriteBytesBlocking: {path = '" << path << "', offset = '"
           << offset << "', length = '" << length << "'}";
 
   // TODO(b/331275523): We should cache this writer fd to avoid opening a new
@@ -240,11 +240,11 @@ void ContentCacheImpl::EvictContext(const base::FilePath& path,
   DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
 
   if (!ctx.evicted) {
-    VLOG(2) << "Evicting '" << path.value() << "'";
+    VLOG(2) << "Evicting '" << path << "'";
     ctx.evicted = true;
     evicted_cache_items_++;
   } else {
-    VLOG(2) << "Item '" << path.value() << "'is already evicted";
+    VLOG(2) << "Item '" << path << "'is already evicted";
   }
 }
 

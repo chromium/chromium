@@ -93,7 +93,7 @@ bool ContextDatabase::Initialize() {
     LOG(ERROR) << "In memory database initialization failed";
     return false;
   } else if (!db_path_.empty() && !db_.Open(db_path_)) {
-    LOG(ERROR) << "Initialization of '" << db_path_.value() << "' failed";
+    LOG(ERROR) << "Initialization of '" << db_path_ << "' failed";
     Raze();
     return false;
   }
