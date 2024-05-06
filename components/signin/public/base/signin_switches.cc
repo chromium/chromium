@@ -180,6 +180,15 @@ BASE_FEATURE(kPreconnectAccountCapabilitiesPostSignin,
              base::FEATURE_DISABLED_BY_DEFAULT);
 #endif
 
+#if BUILDFLAG(IS_ANDROID)
+// Flag guarding the refresh of the metrics services states after the related
+// prefs are restored during the device restoration, to enable metrics upload
+// if it's allowed by those restored prefs.
+BASE_FEATURE(kUpdateMetricsServicesStateInRestore,
+             "UpdateMetricsServicesStateInRestore",
+             base::FEATURE_DISABLED_BY_DEFAULT);
+#endif
+
 }  // namespace switches
 
 #if !BUILDFLAG(IS_CHROMEOS_ASH) && !BUILDFLAG(IS_ANDROID) && !BUILDFLAG(IS_IOS)

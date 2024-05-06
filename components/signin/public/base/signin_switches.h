@@ -143,6 +143,11 @@ COMPONENT_EXPORT(SIGNIN_SWITCHES)
 BASE_DECLARE_FEATURE(kPreconnectAccountCapabilitiesPostSignin);
 #endif
 
+#if BUILDFLAG(IS_ANDROID)
+COMPONENT_EXPORT(SIGNIN_SWITCHES)
+BASE_DECLARE_FEATURE(kUpdateMetricsServicesStateInRestore);
+#endif
+
 }  // namespace switches
 
 // TODO(crbug.com/337879458): Move switches below into the switches namespace.
