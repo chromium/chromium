@@ -342,7 +342,7 @@ class AutocompleteMediator
                         && pageClass != PageClassification.ANDROID_SHORTCUTS_WIDGET_VALUE)) {
             return;
         }
-        onSuggestionsReceived(CachedZeroSuggestionsManager.readFromCache(), "", true);
+        onSuggestionsReceived(CachedZeroSuggestionsManager.readFromCache(), true);
     }
 
     /** Notify the mediator that a item selection is pending and should be accepted. */
@@ -832,10 +832,12 @@ class AutocompleteMediator
 
     @Override
     public void onSuggestionsReceived(
-            @NonNull AutocompleteResult autocompleteResult,
-            @NonNull String inlineAutocompleteText,
-            boolean isFinal) {
+            @NonNull AutocompleteResult autocompleteResult, boolean isFinal) {
         maybeCacheResult(autocompleteResult);
+
+        @Nullable AutocompleteMatch defaultMatch = autocompleteResult.getDefaultMatch();
+        String inlineAutocompleteText =
+                defaultMatch != null ? defaultMatch.getInlineAutocompletion() : "";
 
         final List<AutocompleteMatch> newSuggestions = autocompleteResult.getSuggestionsList();
         String userText = mUrlBarEditingTextProvider.getTextWithoutAutocomplete();

@@ -152,7 +152,7 @@ public class AutocompleteMatch {
         mActions = actions != null ? actions : Arrays.asList();
         mAllowedToBeDefaultMatch = allowedToBeDefaultMatch;
         mInlineAutocompletion = inlineAutocompletion;
-        mAdditionalText = inlineAutocompletion;
+        mAdditionalText = additionalText;
     }
 
     @CalledByNative

@@ -256,7 +256,7 @@ public class SearchActivityTest {
         TestThreadUtils.runOnUiThreadBlocking(
                 () ->
                         mOnSuggestionsReceivedListener.onSuggestionsReceived(
-                                buildDummyAutocompleteResult(), "inline text", true));
+                                buildDummyAutocompleteResult(), true));
         mOmnibox.checkSuggestionsShown();
     }
 

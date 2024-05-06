@@ -264,10 +264,14 @@ public class AutocompleteMediatorUnitTest {
     private List<AutocompleteMatch> buildSampleSuggestionsList(int count, String prefix) {
         List<AutocompleteMatch> list = new ArrayList<>();
         for (int index = 0; index < count; ++index) {
-            list.add(
+            AutocompleteMatchBuilder builder =
                     AutocompleteMatchBuilder.searchWithType(OmniboxSuggestionType.SEARCH_SUGGEST)
-                            .setDisplayText(prefix + (index + 1))
-                            .build());
+                            .setDisplayText(prefix + (index + 1));
+            if (index == 0) {
+                builder.setInlineAutocompletion("inline_autocomplete")
+                        .setAllowedToBeDefaultMatch(true);
+            }
+            list.add(builder.build());
         }
 
         return list;
@@ -322,7 +326,7 @@ public class AutocompleteMediatorUnitTest {
         final int maximumListHeight = SUGGESTION_MIN_HEIGHT * 7;
 
         mMediator.onSuggestionDropdownHeightChanged(maximumListHeight);
-        mMediator.onSuggestionsReceived(AutocompleteResult.EMPTY_RESULT, "", true);
+        mMediator.onSuggestionsReceived(AutocompleteResult.EMPTY_RESULT, /* isFinal= */ true);
 
         Assert.assertEquals(0, mSuggestionModels.size());
         Assert.assertFalse(mListModel.get(SuggestionListProperties.VISIBLE));
@@ -336,7 +340,7 @@ public class AutocompleteMediatorUnitTest {
         final int maximumListHeight = SUGGESTION_MIN_HEIGHT * 7;
 
         mMediator.onSuggestionDropdownHeightChanged(maximumListHeight);
-        mMediator.onSuggestionsReceived(AutocompleteResult.EMPTY_RESULT, "", true);
+        mMediator.onSuggestionsReceived(AutocompleteResult.EMPTY_RESULT, /* isFinal= */ true);
 
         Assert.assertEquals(0, mSuggestionModels.size());
         Assert.assertFalse(mListModel.get(SuggestionListProperties.VISIBLE));
@@ -352,7 +356,7 @@ public class AutocompleteMediatorUnitTest {
 
         mMediator.onSuggestionDropdownHeightChanged(heightWithOneConcealedItem);
         mMediator.onSuggestionsReceived(
-                AutocompleteResult.fromCache(mSuggestionsList, null), "", true);
+                AutocompleteResult.fromCache(mSuggestionsList, null), /* isFinal= */ true);
 
         // With fully concealed elements, scroll should trigger keyboard hide.
         reset(mAutocompleteDelegate);
@@ -394,7 +398,7 @@ public class AutocompleteMediatorUnitTest {
         // fully concealed items on the suggestions list.
         mMediator.onSuggestionDropdownHeightChanged(heightOfOAllSuggestions);
         mMediator.onSuggestionsReceived(
-                AutocompleteResult.fromCache(mSuggestionsList, null), "", true);
+                AutocompleteResult.fromCache(mSuggestionsList, null), /* isFinal= */ true);
 
         // Build separate list of suggestions so that these are accepted as a new set.
         // We want to follow the same restrictions as the original list (specifically: have a
@@ -403,7 +407,8 @@ public class AutocompleteMediatorUnitTest {
         List<AutocompleteMatch> newList =
                 buildSampleSuggestionsList(mSuggestionsList.size(), "SuggestionB");
         mMediator.onSuggestionDropdownHeightChanged(heightWithOneConcealedItem);
-        mMediator.onSuggestionsReceived(AutocompleteResult.fromCache(newList, null), "", true);
+        mMediator.onSuggestionsReceived(
+                AutocompleteResult.fromCache(newList, null), /* isFinal= */ true);
     }
 
     @Test
@@ -420,16 +425,14 @@ public class AutocompleteMediatorUnitTest {
 
         // Report height change with keyboard visible
         mMediator.onSuggestionDropdownHeightChanged(heightWithOneConcealedItem);
-        mMediator.onSuggestionsReceived(
-                AutocompleteResult.fromCache(mSuggestionsList, null), "", true);
+        mMediator.onSuggestionsReceived(AutocompleteResult.fromCache(mSuggestionsList, null), true);
 
         // "Hide keyboard", report larger area and re-evaluate the results. We should see no
         // difference, as the logic should only evaluate presence of items concealed when keyboard
         // is active.
         when(mAutocompleteDelegate.isKeyboardActive()).thenReturn(false);
         mMediator.onSuggestionDropdownHeightChanged(heightOfOAllSuggestions);
-        mMediator.onSuggestionsReceived(
-                AutocompleteResult.fromCache(mSuggestionsList, null), "", true);
+        mMediator.onSuggestionsReceived(AutocompleteResult.fromCache(mSuggestionsList, null), true);
     }
 
     @Test
@@ -634,14 +637,20 @@ public class AutocompleteMediatorUnitTest {
     public void onSuggestionsReceived_sendsOnSuggestionsChanged() {
         mMediator.onNativeInitialized();
         mMediator.onOmniboxSessionStateChange(true);
-        mMediator.onSuggestionsReceived(
-                AutocompleteResult.fromCache(mSuggestionsList, null), "inline_autocomplete", true);
+        mMediator.onSuggestionsReceived(AutocompleteResult.fromCache(mSuggestionsList, null), true);
         verify(mAutocompleteDelegate).onSuggestionsChanged("inline_autocomplete", true);
 
         // Ensure duplicate requests are not suppressed, to preserve the
         // relationship between Native and Java AutocompleteResult objects.
-        mMediator.onSuggestionsReceived(
-                AutocompleteResult.fromCache(mSuggestionsList, null), "inline_autocomplete2", true);
+        mSuggestionsList.remove(0);
+        mSuggestionsList.add(
+                0,
+                AutocompleteMatchBuilder.searchWithType(OmniboxSuggestionType.SEARCH_SUGGEST)
+                        .setDisplayText("Suggestion1")
+                        .setInlineAutocompletion("inline_autocomplete2")
+                        .setAllowedToBeDefaultMatch(true)
+                        .build());
+        mMediator.onSuggestionsReceived(AutocompleteResult.fromCache(mSuggestionsList, null), true);
         verify(mAutocompleteDelegate).onSuggestionsChanged("inline_autocomplete", true);
     }
 
@@ -744,7 +753,7 @@ public class AutocompleteMediatorUnitTest {
         mMediator.setLayoutDirection(View.LAYOUT_DIRECTION_RTL);
         mMediator.onSuggestionDropdownHeightChanged(Integer.MAX_VALUE);
         mMediator.onSuggestionsReceived(
-                AutocompleteResult.fromCache(mSuggestionsList, null), "", true);
+                AutocompleteResult.fromCache(mSuggestionsList, null), /* isFinal= */ true);
         Assert.assertEquals(mSuggestionsList.size(), mSuggestionModels.size());
         for (int i = 0; i < mSuggestionModels.size(); i++) {
             Assert.assertEquals(
@@ -763,7 +772,7 @@ public class AutocompleteMediatorUnitTest {
         mMediator.onNativeInitialized();
         mMediator.onSuggestionDropdownHeightChanged(Integer.MAX_VALUE);
         mMediator.onSuggestionsReceived(
-                AutocompleteResult.fromCache(mSuggestionsList, null), "", true);
+                AutocompleteResult.fromCache(mSuggestionsList, null), /* isFinal= */ true);
         Assert.assertEquals(mSuggestionsList.size(), mSuggestionModels.size());
 
         mMediator.setLayoutDirection(View.LAYOUT_DIRECTION_RTL);
@@ -1031,17 +1040,17 @@ public class AutocompleteMediatorUnitTest {
 
         // Report first results. Observe first results histogram reported.
         ShadowPausedSystemClock.advanceBy(Duration.ofMillis(100));
-        mMediator.onSuggestionsReceived(mAutocompleteResult, "", /* isFinal= */ false);
+        mMediator.onSuggestionsReceived(mAutocompleteResult, /* isFinal= */ false);
         verifySuggestionRequestToUiModelHistograms(1, 100, 0, null);
 
         // Report next results. Observe first results histogram not reported.
         ShadowPausedSystemClock.advanceBy(Duration.ofMillis(300));
-        mMediator.onSuggestionsReceived(mAutocompleteResult, "", /* isFinal= */ false);
+        mMediator.onSuggestionsReceived(mAutocompleteResult, /* isFinal= */ false);
         verifySuggestionRequestToUiModelHistograms(1, 100, 0, null);
 
         // Report last results. Observe two histograms reported.
         ShadowPausedSystemClock.advanceBy(Duration.ofMillis(100));
-        mMediator.onSuggestionsReceived(mAutocompleteResult, "", /* isFinal= */ true);
+        mMediator.onSuggestionsReceived(mAutocompleteResult, /* isFinal= */ true);
         verifySuggestionRequestToUiModelHistograms(1, 100, 1, 500);
     }
 
@@ -1066,7 +1075,7 @@ public class AutocompleteMediatorUnitTest {
 
         // Report first results. Observe first results histogram reported.
         ShadowPausedSystemClock.advanceBy(Duration.ofMillis(10));
-        mMediator.onSuggestionsReceived(mAutocompleteResult, "", /* isFinal= */ false);
+        mMediator.onSuggestionsReceived(mAutocompleteResult, /* isFinal= */ false);
         verifySuggestionRequestToUiModelHistograms(1, 10, 0, null);
 
         // Cancel the interaction.
@@ -1099,11 +1108,11 @@ public class AutocompleteMediatorUnitTest {
         mMediator.onOmniboxSessionStateChange(false);
 
         // Report first results. Observe no report (no focus).
-        mMediator.onSuggestionsReceived(mAutocompleteResult, "", /* isFinal= */ false);
+        mMediator.onSuggestionsReceived(mAutocompleteResult, /* isFinal= */ false);
         verifySuggestionRequestToUiModelHistograms(0, null, 0, null);
 
         // Report last results. Observe no final report (no focus).
-        mMediator.onSuggestionsReceived(mAutocompleteResult, "", /* isFinal= */ true);
+        mMediator.onSuggestionsReceived(mAutocompleteResult, /* isFinal= */ true);
         verifySuggestionRequestToUiModelHistograms(0, null, 0, null);
     }
 
@@ -1128,7 +1137,7 @@ public class AutocompleteMediatorUnitTest {
 
         // Report first result as final. Observe both metrics reported.
         ShadowPausedSystemClock.advanceBy(Duration.ofMillis(150));
-        mMediator.onSuggestionsReceived(mAutocompleteResult, "", /* isFinal= */ true);
+        mMediator.onSuggestionsReceived(mAutocompleteResult, /* isFinal= */ true);
         verifySuggestionRequestToUiModelHistograms(1, 150, 1, 150);
     }
 
@@ -1153,7 +1162,7 @@ public class AutocompleteMediatorUnitTest {
 
         // Report first result as final. Observe both metrics reported.
         ShadowPausedSystemClock.advanceBy(Duration.ofMillis(150));
-        mMediator.onSuggestionsReceived(mAutocompleteResult, "", /* isFinal= */ false);
+        mMediator.onSuggestionsReceived(mAutocompleteResult, /* isFinal= */ false);
         verifySuggestionRequestToUiModelHistograms(1, 150, 0, null);
 
         // No change on key press. No unexpected recordings.
@@ -1164,7 +1173,7 @@ public class AutocompleteMediatorUnitTest {
 
         // No change on key press. No unexpected recordings.
         ShadowPausedSystemClock.advanceBy(Duration.ofMillis(100));
-        mMediator.onSuggestionsReceived(mAutocompleteResult, "", /* isFinal= */ true);
+        mMediator.onSuggestionsReceived(mAutocompleteResult, /* isFinal= */ true);
         verifySuggestionRequestToUiModelHistograms(2, 100, 1, 100);
     }
 

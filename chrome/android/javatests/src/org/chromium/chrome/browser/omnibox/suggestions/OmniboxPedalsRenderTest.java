@@ -121,8 +121,7 @@ public class OmniboxPedalsRenderTest {
         List<AutocompleteMatch> suggestionsList = new ArrayList<>();
         suggestionsList.add(
                 createDummyPedalSuggestion("pedal", OmniboxPedalId.RUN_CHROME_SAFETY_CHECK));
-        mOmniboxUtils.setSuggestions(
-                AutocompleteResult.fromCache(suggestionsList, null), "Run safety check");
+        mOmniboxUtils.setSuggestions(AutocompleteResult.fromCache(suggestionsList, null));
         mOmniboxUtils.checkSuggestionsShown();
 
         SuggestionInfo<BaseSuggestionView> info = mOmniboxUtils.findSuggestionWithActionChips();
@@ -136,8 +135,7 @@ public class OmniboxPedalsRenderTest {
         List<AutocompleteMatch> suggestionsList = new ArrayList<>();
         suggestionsList.add(
                 createDummyPedalSuggestion("pedal", OmniboxPedalId.PLAY_CHROME_DINO_GAME));
-        mOmniboxUtils.setSuggestions(
-                AutocompleteResult.fromCache(suggestionsList, null), "Dino game");
+        mOmniboxUtils.setSuggestions(AutocompleteResult.fromCache(suggestionsList, null));
         mOmniboxUtils.checkSuggestionsShown();
 
         SuggestionInfo<BaseSuggestionView> info = mOmniboxUtils.findSuggestionWithActionChips();

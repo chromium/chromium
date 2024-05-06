@@ -78,7 +78,7 @@ public class OmniboxTest {
     }
 
     private static final OnSuggestionsReceivedListener sEmptySuggestionListener =
-            (result, autocompleteText, isFinal) -> {};
+            (result, isFinal) -> {};
 
     /**
      * Sanity check of Omnibox. The problem in http://b/5021723 would cause this to fail (hang or

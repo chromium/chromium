@@ -90,8 +90,7 @@ public class SearchResumptionModuleMediator
     }
 
     @Override
-    public void onSuggestionsReceived(
-            AutocompleteResult autocompleteResult, String inlineAutocompleteText, boolean isFinal) {
+    public void onSuggestionsReceived(AutocompleteResult autocompleteResult, boolean isFinal) {
         if (!isFinal || mModel != null) return;
 
         if (!shouldShowSuggestionModule(autocompleteResult.getSuggestionsList())) {

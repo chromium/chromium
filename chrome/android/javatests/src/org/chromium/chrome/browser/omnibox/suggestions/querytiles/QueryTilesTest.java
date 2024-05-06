@@ -120,7 +120,7 @@ public class QueryTilesTest {
         mOmnibox.requestFocus();
         verify(mController).startZeroSuggest(anyString(), any(), anyInt(), anyString());
         TestThreadUtils.runOnUiThreadBlocking(
-                () -> mListener.onSuggestionsReceived(acResult, "", true));
+                () -> mListener.onSuggestionsReceived(acResult, true));
         mOmnibox.checkSuggestionsShown();
     }
 

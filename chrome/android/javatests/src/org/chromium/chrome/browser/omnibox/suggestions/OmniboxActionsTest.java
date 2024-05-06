@@ -117,10 +117,9 @@ public class OmniboxActionsTest {
         mOmniboxUtils.requestFocus();
         // Ensure we start from empty suggestions list; don't carry over suggestions from previous
         // run.
-        mOmniboxUtils.setSuggestions(AutocompleteResult.fromCache(null, null), "");
+        mOmniboxUtils.setSuggestions(AutocompleteResult.fromCache(null, null));
 
-        mOmniboxUtils.setSuggestions(
-                AutocompleteResult.fromCache(Arrays.asList(matches), null), "");
+        mOmniboxUtils.setSuggestions(AutocompleteResult.fromCache(Arrays.asList(matches), null));
         mOmniboxUtils.checkSuggestionsShown();
         SuggestionInfo<BaseSuggestionView> info = mOmniboxUtils.findSuggestionWithActionChips();
         Assert.assertNotNull("No suggestions with actions", info);

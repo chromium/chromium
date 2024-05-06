@@ -58,14 +58,10 @@ public class AutocompleteController {
          *
          * @param autocompleteResult The current set of autocomplete matches for previously supplied
          *     query.
-         * @param inlineAutocompleteText The text to offer as an inline autocompletion.
          * @param isFinal Whether this result is transitory (false) or final (true). Final result
          *     always comes in last, even if the query is canceled.
          */
-        void onSuggestionsReceived(
-                @NonNull AutocompleteResult autocompleteResult,
-                @NonNull String inlineAutocompleteText,
-                boolean isFinal);
+        void onSuggestionsReceived(@NonNull AutocompleteResult autocompleteResult, boolean isFinal);
     }
 
     /**
@@ -247,13 +243,12 @@ public class AutocompleteController {
     @CalledByNative
     @VisibleForTesting
     public void onSuggestionsReceived(
-            @NonNull AutocompleteResult autocompleteResult,
-            @NonNull String inlineAutocompleteText,
-            boolean isFinal) {
+            @NonNull AutocompleteResult autocompleteResult, boolean isFinal) {
         mAutocompleteResult = autocompleteResult;
+
         // Notify callbacks of suggestions.
         for (OnSuggestionsReceivedListener listener : mListeners) {
-            listener.onSuggestionsReceived(autocompleteResult, inlineAutocompleteText, isFinal);
+            listener.onSuggestionsReceived(autocompleteResult, isFinal);
         }
     }
 

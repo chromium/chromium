@@ -538,17 +538,9 @@ void AutocompleteControllerAndroid::NotifySuggestionsReceived(
     const AutocompleteResult& autocomplete_result) {
   JNIEnv* env = AttachCurrentThread();
 
-  // Get the inline-autocomplete text.
-  std::u16string inline_autocompletion;
-  if (auto* default_match = autocomplete_result.default_match()) {
-    inline_autocompletion = default_match->inline_autocompletion;
-  }
-  ScopedJavaLocalRef<jstring> inline_text =
-      ConvertUTF16ToJavaString(env, inline_autocompletion);
-
   Java_AutocompleteController_onSuggestionsReceived(
       env, java_controller_, autocomplete_result.GetOrCreateJavaObject(env),
-      inline_text, autocomplete_controller_->done());
+      autocomplete_controller_->done());
 }
 
 void AutocompleteControllerAndroid::WarmUpRenderProcess() const {

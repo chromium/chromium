@@ -332,4 +332,45 @@ public class AutocompleteResultUnitTest {
         res.notifyNativeDestroyed();
         Assert.assertFalse(res.isFromCachedResult());
     }
+
+    @Test
+    public void getDefaultMatch_emptyList() {
+        AutocompleteResult emptyResult = new AutocompleteResult(0x12345678, null, null);
+        Assert.assertNull(emptyResult.getDefaultMatch());
+    }
+
+    @Test
+    public void getDefaultMatch_nonDefaultFirstMatch() {
+        List<AutocompleteMatch> list =
+                Arrays.asList(
+                        buildSuggestionForIndex(1),
+                        buildSuggestionForIndex(2),
+                        buildSuggestionForIndex(3));
+        AutocompleteResult autocompleteResult = new AutocompleteResult(0x12345678, list, null);
+        Assert.assertNull(autocompleteResult.getDefaultMatch());
+    }
+
+    @Test
+    public void getDefaultMatch_defaultFirstMatch() {
+        List<AutocompleteMatch> list =
+                Arrays.asList(
+                        AutocompleteMatchBuilder.searchWithType(
+                                        OmniboxSuggestionType.SEARCH_SUGGEST)
+                                .setDisplayText("Dummy Suggestion 1")
+                                .setDescription("Dummy Description 1")
+                                .setAllowedToBeDefaultMatch(true)
+                                .setInlineAutocompletion("inline_autocomplete")
+                                .setAdditionalText("additional_text")
+                                .build(),
+                        buildSuggestionForIndex(2),
+                        buildSuggestionForIndex(3));
+        AutocompleteResult autocompleteResult = new AutocompleteResult(0x12345678, list, null);
+        Assert.assertNotNull(autocompleteResult.getDefaultMatch());
+        Assert.assertTrue(autocompleteResult.getDefaultMatch().allowedToBeDefaultMatch());
+        Assert.assertEquals(
+                "inline_autocomplete",
+                autocompleteResult.getDefaultMatch().getInlineAutocompletion());
+        Assert.assertEquals(
+                "additional_text", autocompleteResult.getDefaultMatch().getAdditionalText());
+    }
 }

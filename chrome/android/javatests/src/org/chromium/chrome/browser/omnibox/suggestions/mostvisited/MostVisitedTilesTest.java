@@ -195,7 +195,7 @@ public class MostVisitedTilesTest {
         mOmnibox.requestFocus();
         TestThreadUtils.runOnUiThreadBlocking(
                 () -> {
-                    mListener.getValue().onSuggestionsReceived(autocompleteResult, mStartUrl, true);
+                    mListener.getValue().onSuggestionsReceived(autocompleteResult, true);
                 });
         mOmnibox.checkSuggestionsShown();
     }

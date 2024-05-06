@@ -235,6 +235,20 @@ public class AutocompleteResult {
         }
     }
 
+    /**
+     * This is a counterpart of native AutocompleteResult#default_match.
+     *
+     * @return The default match if it exists, or nullptr otherwise.
+     */
+    @Nullable
+    public AutocompleteMatch getDefaultMatch() {
+        if (mSuggestions.size() > 0 && mSuggestions.get(0).allowedToBeDefaultMatch()) {
+            return mSuggestions.get(0);
+        }
+
+        return null;
+    }
+
     @NativeMethods
     interface Natives {
         void groupSuggestionsBySearchVsURL(
