@@ -80,16 +80,14 @@ const LayoutResult* PaginatedRootLayoutAlgorithm::Layout() {
 const PhysicalBoxFragment& PaginatedRootLayoutAlgorithm::CreateEmptyPage(
     const BlockNode& node,
     const ConstraintSpace& parent_space,
+    wtf_size_t page_index,
     const PhysicalBoxFragment& previous_fragmentainer) {
   const BlockBreakToken* break_token = previous_fragmentainer.GetBreakToken();
   PageAreaLayoutParams page_area_params = {
       .break_token = break_token,
       .template_fragmentainer = &previous_fragmentainer};
-  // TODO(mstensho): We can do better than just using the size of the last page
-  // (figure out the correct page size by checking the page index and name), but
-  // there are other parts of the code that assume this behavior.
   PageContainerResult result =
-      LayoutPageContainer(node, parent_space, /*page_index=*/0,
+      LayoutPageContainer(node, parent_space, page_index,
                           previous_fragmentainer.PageName(), page_area_params);
   return *result.fragment;
 }

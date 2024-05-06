@@ -96,6 +96,7 @@ class CORE_EXPORT PaginatedRootLayoutAlgorithm
   static const PhysicalBoxFragment& CreateEmptyPage(
       const BlockNode& node,
       const ConstraintSpace& parent_space,
+      wtf_size_t page_index,
       const PhysicalBoxFragment& previous_fragmentainer);
 
  private:
