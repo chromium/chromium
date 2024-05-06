@@ -28,9 +28,7 @@
 
 namespace on_device_model {
 
-class ChromeosPlatformModelLoader
-    : public PlatformModelLoader,
-      public base::SupportsWeakPtr<ChromeosPlatformModelLoader> {
+class ChromeosPlatformModelLoader final : public PlatformModelLoader {
  public:
   explicit ChromeosPlatformModelLoader(mojom::OnDeviceModelService& service);
   ~ChromeosPlatformModelLoader() override;
@@ -44,14 +42,17 @@ class ChromeosPlatformModelLoader
                          LoadModelCallback callback) override;
 
  private:
-  class PlatformModel : public base::RefCounted<PlatformModel>,
-                        public base::SupportsWeakPtr<PlatformModel> {
+  class PlatformModel final : public base::RefCounted<PlatformModel> {
    public:
     PlatformModel();
 
     std::string& version() { return version_; }
     mojo::Remote<mojom::OnDeviceModel>& cur_model() { return cur_model_; }
     mojo::Remote<mojom::OnDeviceModel>& base_model() { return base_model_; }
+
+    base::WeakPtr<PlatformModel> AsWeakPtr() {
+      return weak_ptr_factory_.GetWeakPtr();
+    }
 
    private:
     friend class base::RefCounted<PlatformModel>;
@@ -60,6 +61,7 @@ class ChromeosPlatformModelLoader
     std::string version_;
     mojo::Remote<mojom::OnDeviceModel> cur_model_;
     mojo::Remote<mojom::OnDeviceModel> base_model_;
+    base::WeakPtrFactory<PlatformModel> weak_ptr_factory_{this};
   };
 
   struct PlatformModelRefTraits {
@@ -114,6 +116,7 @@ class ChromeosPlatformModelLoader
       void>
       receivers_;
   std::map<base::Uuid, PlatformModelRecord> platform_models_;
+  base::WeakPtrFactory<ChromeosPlatformModelLoader> weak_ptr_factory_{this};
 };
 
 }  // namespace on_device_model

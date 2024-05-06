@@ -219,7 +219,7 @@ void ChromeosPlatformModelLoader::LoadModelWithUuid(
   client->Install(
       request,
       base::BindOnce(&ChromeosPlatformModelLoader::OnInstallDlcComplete,
-                     AsWeakPtr(), uuid),
+                     weak_ptr_factory_.GetWeakPtr(), uuid),
       /*ProgressCallback=*/base::DoNothing());
   return;
 }
@@ -292,8 +292,9 @@ void ChromeosPlatformModelLoader::OnInstallDlcComplete(
         platform_model->base_model().BindNewPipeAndPassReceiver(),
         base::BindOnce(
             &ChromeosPlatformModelLoader::LoadAdaptationPlatformModel,
-            AsWeakPtr(), base_model_uuid, *base_version, uuid, dlc_root,
-            *version, *model_path, *weight_path, std::move(platform_model)));
+            weak_ptr_factory_.GetWeakPtr(), base_model_uuid, *base_version,
+            uuid, dlc_root, *version, *model_path, *weight_path,
+            std::move(platform_model)));
 
     return;
   }
@@ -349,8 +350,9 @@ void ChromeosPlatformModelLoader::OnInstallDlcComplete(
   service_->LoadModel(
       std::move(params),
       platform_model->cur_model().BindNewPipeAndPassReceiver(),
-      base::BindOnce(&ChromeosPlatformModelLoader::FinishLoadModel, AsWeakPtr(),
-                     uuid, *version, std::move(platform_model)));
+      base::BindOnce(&ChromeosPlatformModelLoader::FinishLoadModel,
+                     weak_ptr_factory_.GetWeakPtr(), uuid, *version,
+                     std::move(platform_model)));
 }
 
 void ChromeosPlatformModelLoader::FinishLoadModel(
@@ -413,8 +415,9 @@ void ChromeosPlatformModelLoader::LoadAdaptationPlatformModel(
 
   base_record.platform_model->cur_model()->LoadAdaptation(
       std::move(params), model->cur_model().BindNewPipeAndPassReceiver(),
-      base::BindOnce(&ChromeosPlatformModelLoader::FinishLoadModel, AsWeakPtr(),
-                     uuid, version, std::move(model)));
+      base::BindOnce(&ChromeosPlatformModelLoader::FinishLoadModel,
+                     weak_ptr_factory_.GetWeakPtr(), uuid, version,
+                     std::move(model)));
 }
 
 }  // namespace on_device_model
