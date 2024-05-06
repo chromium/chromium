@@ -244,7 +244,7 @@ void DeskButtonContainer::UpdateUi(const Desk* active_desk) {
                             : views::CreateThemedRoundedRectBackground(
                                   cros_tokens::kCrosSysSystemOnBase,
                                   kDeskButtonContainerCornerRadius));
-  desk_button_->set_zero_state(zero_state_);
+  desk_button_->SetZeroState(zero_state_);
   desk_button_->UpdateUi(active_desk);
   prev_desk_button_->UpdateUi(active_desk);
   next_desk_button_->UpdateUi(active_desk);

@@ -11252,7 +11252,7 @@ TEST_P(DeskButtonTest, OverviewDeskSwitch) {
 }
 
 // Tests that switching the shelf alignment correctly repositions the desk
-// button.
+// button and updates their colors.
 TEST_P(DeskButtonTest, UpdateShelfAlignmentDuringTest) {
   // Desk button will be forced to be zero state for display that is narrower
   // than 1280.
@@ -11265,11 +11265,33 @@ TEST_P(DeskButtonTest, UpdateShelfAlignmentDuringTest) {
   const bool bottom_at_start = GetParam().alignment == ShelfAlignment::kBottom;
   auto* desk_button = GetDeskButton();
   ASSERT_TRUE(desk_button);
+  // Verify desk names and color changes.
   ASSERT_EQ(bottom_at_start ? u"school" : u"s",
             desk_button->desk_name_label()->GetText());
+  auto* color_provider = desk_button->GetColorProvider();
+  ASSERT_EQ(color_provider->GetColor(bottom_at_start
+                                         ? cros_tokens::kCrosSysSystemOnBase1
+                                         : cros_tokens::kCrosSysSystemOnBase),
+            desk_button->GetBackground()->get_color());
 
+  // Activate/Deactivate the desk button and verify color changes.
+  ClickDeskButton();
+  ASSERT_EQ(
+      color_provider->GetColor(cros_tokens::kCrosSysSystemPrimaryContainer),
+      desk_button->GetBackground()->get_color());
+  ClickDeskButton();
+  ASSERT_EQ(color_provider->GetColor(bottom_at_start
+                                         ? cros_tokens::kCrosSysSystemOnBase1
+                                         : cros_tokens::kCrosSysSystemOnBase),
+            desk_button->GetBackground()->get_color());
+
+  // Update shelf alignment and verify desk names and color changes.
   GetPrimaryShelf()->SetAlignment(bottom_at_start ? ShelfAlignment::kLeft
                                                   : ShelfAlignment::kBottom);
+  ASSERT_EQ(color_provider->GetColor(bottom_at_start
+                                         ? cros_tokens::kCrosSysSystemOnBase
+                                         : cros_tokens::kCrosSysSystemOnBase1),
+            desk_button->GetBackground()->get_color());
   EXPECT_EQ(bottom_at_start ? u"s" : u"school",
             desk_button->desk_name_label()->GetText());
 }
