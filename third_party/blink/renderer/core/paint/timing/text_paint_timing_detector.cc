@@ -157,9 +157,14 @@ void TextPaintTimingDetector::RecordAggregatedText(
     const PropertyTreeStateOrAlias& property_tree_state) {
   if (RuntimeEnabledFeatures::
           ExcludeTransparentTextsFromBeingLcpEligibleEnabled()) {
-    if (aggregator.StyleRef()
+    bool is_color_transparent =
+        aggregator.StyleRef()
             .VisitedDependentColor(GetCSSPropertyColor())
-            .IsFullyTransparent()) {
+            .IsFullyTransparent();
+    bool has_shadow = !!aggregator.StyleRef().TextShadow();
+    bool has_text_stroke = aggregator.StyleRef().TextStrokeWidth();
+
+    if (is_color_transparent && !has_shadow && !has_text_stroke) {
       return;
     }
   }
@@ -173,6 +178,7 @@ void TextPaintTimingDetector::RecordAggregatedText(
       frame_view_->GetPaintTimingDetector().CalculateVisualRect(
           aggregated_visual_rect, property_tree_state);
   uint64_t aggregated_size = mapped_visual_rect.size().GetArea();
+
   DCHECK_LE(IgnorePaintTimingScope::IgnoreDepth(), 1);
   // Record the largest aggregated text that is hidden due to documentElement
   // being invisible but by no other reason (i.e. IgnoreDepth() needs to be 1).
