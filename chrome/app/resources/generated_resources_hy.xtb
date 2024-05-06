@@ -11,7 +11,7 @@
 <translation id="1005333234656240382">Միացնե՞լ ADB վրիպազերծումը</translation>
 <translation id="1005671386794704751">Վարդագույն</translation>
 <translation id="1006033052970139968">Խոսափողը հասանելի է հավելվածներին, «Խոսափող» թույլտվությունն ունեցող կայքերին, ինչպես նաև համակարգային ծառայություններին</translation>
-<translation id="1006557561787696884">Օգտագործել անցաբառեր բոլոր Apple սարքերում</translation>
+<translation id="1006557561787696884">Օգտագործել մուտքի բանալիներ բոլոր Apple սարքերում</translation>
 <translation id="1006873397406093306">Ընդլայնումը կարող է ընթերցել և փոփոխել կայքերում ձեր տվյալները։ Դուք կարող եք նծել, թե որ կայքերը հասանելի լինեն ընդլայնմանը։</translation>
 <translation id="1007057452468855774">Միացնել Google Play Խանութը</translation>
 <translation id="1008186147501209563">Էջանիշների արտահանում</translation>
@@ -1275,7 +1275,7 @@
 <translation id="1941995177877935582">Ցույց տալ ստեղների նշանակումը</translation>
 <translation id="1942128823046546853">Կարդալ և փոփոխել ձեր տվյալները բոլոր կայքերում</translation>
 <translation id="1944528062465413897">Bluetooth-ով զուգակցման կոդ՝</translation>
-<translation id="1944535645109964458">Հասանելի անցաբառեր չկան</translation>
+<translation id="1944535645109964458">Հասանելի մուտքի բանալիներ չկան</translation>
 <translation id="1944921356641260203">Գտնվել է թարմացում</translation>
 <translation id="1947136734041527201">Թույլ է տալիս ձեզ մուտք գործել կայքեր ինքնության հաստատման ծառայության միջոցով</translation>
 <translation id="1948528728718281125">Տեսախցիկը հասանելի է հավելվածներին, «Տեսախցիկ» թույլտվությունն ունեցող կայքերին, ինչպես նաև համակարգային ծառայություններին</translation>
@@ -1543,7 +1543,7 @@
 <translation id="2143915448548023856">Ցուցադրման կարգավորումներ</translation>
 <translation id="2144536955299248197">Վկայագրի դիտակ՝ <ph name="CERTIFICATE_NAME" /></translation>
 <translation id="2144557304298909478">Android-ի համար հավելվածների մշակում Լինուքսում</translation>
-<translation id="2144873026585036769">Օգտագործե՞լ Google հաշիվը՝ գաղտնաբառեր և անցաբառեր պահելու և ինքնալրացնելու համար</translation>
+<translation id="2144873026585036769">Օգտագործե՞լ Google հաշիվը՝ գաղտնաբառեր և մուտքի բանալիներ պահելու և ինքնալրացնելու համար</translation>
 <translation id="2146263598007866206">Կայքերը կարող են առնչվող ֆայլերն ավտոմատ միասին ներբեռնել՝ ձեր ժամանակը խնայելու համար</translation>
 <translation id="2147151613919729065">Հյուրի ռեժիմի պատմությունը ջնջելու համար փակեք այդ ռեժիմում բացված բոլոր պատուհանները։</translation>
 <translation id="2147218225094845757">Թաքցնել կողային վահանակը</translation>
@@ -5386,7 +5386,7 @@
 <translation id="5111326646107464148">Բացել խումբը նոր պատուհանում</translation>
 <translation id="5111646998522066203">Դուրս գալ ինկոգնիտո ռեժիմից</translation>
 <translation id="5111692334209731439">&amp;Էջանիշների կառավարիչ</translation>
-<translation id="5111794652433847656">Այս սարքում <ph name="APP_NAME" />-ի համար անցաբառեր չկան</translation>
+<translation id="5111794652433847656">Այս սարքում <ph name="APP_NAME" />-ի համար մուտքի բանալիներ չկան</translation>
 <translation id="5112577000029535889">&amp;Մշակողի գործիքներ</translation>
 <translation id="5112686815928391420">{NUM_OF_FILES,plural, =1{1 ֆայլ տեղափոխվեց}one{{NUM_OF_FILES} ֆայլ տեղափոխվեց}other{{NUM_OF_FILES} ֆայլ տեղափոխվեց}}</translation>
 <translation id="511313294362309725">Միացնել արագ զուգակցումը</translation>
@@ -5600,7 +5600,7 @@
 <translation id="5285635972691565180">Էկրան <ph name="DISPLAY_ID" /></translation>
 <translation id="5286194356314741248">Որոնում</translation>
 <translation id="5287425679749926365">Ձեր հաշիվները</translation>
-<translation id="5288106344236929384">Ավելի շատ գործողություններ, անցաբառերի տարբերակներ <ph name="USERNAME" /> օգտատիրոջ համար <ph name="DOMAIN" /> տիրույթում</translation>
+<translation id="5288106344236929384">Ավելի շատ գործողություններ, մուտքի բանալիների տարբերակներ <ph name="USERNAME" /> օգտատիրոջ համար <ph name="DOMAIN" /> տիրույթում</translation>
 <translation id="5288678174502918605">Նո&amp;րից բացել փակված ներդիրը</translation>
 <translation id="52895863590846877">Էջը <ph name="LANGUAGE" /> չէ</translation>
 <translation id="52912272896845572">Մասնավոր բանալիների ֆայլը սխալ է:</translation>
@@ -7102,7 +7102,7 @@
 <translation id="6468485451923838994">Տառատեսակներ</translation>
 <translation id="6468773105221177474"><ph name="FILE_COUNT" /> ֆայլ</translation>
 <translation id="6469557521904094793">Միացնել բջջային ցանցը</translation>
-<translation id="6469702164109431067">Գաղտնաբառեր և անցաբառեր</translation>
+<translation id="6469702164109431067">Գաղտնաբառեր և մուտքի բանալիներ</translation>
 <translation id="6470823736074966819">Անջատել ծանուցումների ձայնը</translation>
 <translation id="6472893788822429178">Ցույց տալ Սկիզբ կոճակը</translation>
 <translation id="6474498546677193336">Չհաջողվեց չեղարկել պանակի հասանելիությունը, քանի որ այն օգտագործվում է հավելվածի կողմից։ Պանակն անհասանելի կդառնա, երբ Լինուքսը հաջորդ անգամ անջատվի։</translation>
@@ -9250,7 +9250,7 @@
 <translation id="8101987792947961127">Հաջորդ վերաբեռնման ժամանակ հարկավոր է կատարել Powerwash</translation>
 <translation id="8102139037507939978">Հեռացնել անձը նույնականացնող տեղեկությունները system_logs.txt ֆայլից։</translation>
 <translation id="8102344699913991108">Կայքերն օգտագործում են այս կարգավորումը տպավորիչ լիաէկրան ռեժիմի համար՝ անկախ օգտատիրոջ ժեստերից</translation>
-<translation id="810362914482827094">Որոնել անցաբառեր</translation>
+<translation id="810362914482827094">Որոնել մուտքի բանալիներ</translation>
 <translation id="8104088837833760645">Ներբեռնել eSIM պրոֆիլը</translation>
 <translation id="8105273883928376822">Շարունակելու համար մուտք գործեք հաշիվ։</translation>
 <translation id="8107015733319732394">Google Play Խանութը տեղադրվում է <ph name="DEVICE_TYPE" /> սարքում։ Սա կարող է մի քանի րոպե տևել։</translation>
