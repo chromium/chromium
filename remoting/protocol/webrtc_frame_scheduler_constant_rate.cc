@@ -25,8 +25,8 @@ base::TimeDelta GetPostTaskAdjustment() {
   // lower than the target. By adjusting the capture rate by ~2ms, the host will
   // generate frames at, or slightly above, the target frame rate. If a value of
   // 1ms is used, then the host will generate frames at, or slightly below, the
-  // target. They higher of the two was chosen for better performance on high-
-  // CPU machines.
+  // target. The higher of the two was chosen for better performance on high-CPU
+  // machines.
   return base::Milliseconds(2);
 }
 }  // namespace
