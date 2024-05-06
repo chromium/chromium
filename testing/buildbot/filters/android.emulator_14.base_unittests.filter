@@ -1,0 +1,11 @@
+# crbug.com/1260521
+-ModuleCacheTest.CheckAgainstProcMaps
+
+# crbug.com/1399972
+-CheckExitCodeAfterSignalHandlerDeathTest.CheckSIGSEGVNonCanonicalAddress
+
+# crbug/338426159
+-FileUtilTest.CopyFileContentsWithSendfileSeqFile
+
+# crbug/338429160
+-SystemMetricsTest.MeasureChildCpuUsage
