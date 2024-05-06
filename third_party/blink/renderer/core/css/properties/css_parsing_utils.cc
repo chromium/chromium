@@ -6136,6 +6136,9 @@ CSSIdentifierValue* ConsumeFontStretchKeywordOnly(
 template CSSIdentifierValue* ConsumeFontStretchKeywordOnly(
     CSSParserTokenStream& stream,
     const CSSParserContext& context);
+template CSSIdentifierValue* ConsumeFontStretchKeywordOnly(
+    CSSParserTokenRange& stream,
+    const CSSParserContext& context);
 
 template <typename T>
   requires std::is_same_v<T, CSSParserTokenStream> ||
