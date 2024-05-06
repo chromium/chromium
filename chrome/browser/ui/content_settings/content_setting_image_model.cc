@@ -721,9 +721,11 @@ bool ContentSettingGeolocationImageModel::UpdateAndGetVisibility(
     return false;
   }
 
+  // Reset the explanatory string in all cases.
+  set_explanatory_string_id(0);
+
   if (is_allowed) {
     if (!IsGeolocationAllowedOnASystemLevel()) {
-      set_explanatory_string_id(0);
       SetIcon(ContentSettingsType::GEOLOCATION, /*blocked=*/true);
       base::RecordAction(base::UserMetricsAction(
           "ContentSettings.Geolocation.BlockedIconShown"));
