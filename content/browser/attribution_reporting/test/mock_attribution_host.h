@@ -27,7 +27,8 @@ class MockAttributionHost : public AttributionHost {
   MOCK_METHOD(void,
               RegisterDataHost,
               (mojo::PendingReceiver<blink::mojom::AttributionDataHost>,
-               attribution_reporting::mojom::RegistrationEligibility),
+               attribution_reporting::mojom::RegistrationEligibility,
+               bool),
               (override));
 
   MOCK_METHOD(void,

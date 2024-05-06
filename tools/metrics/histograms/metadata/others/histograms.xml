@@ -3884,7 +3884,7 @@ chromium-metrics-reviews@google.com.
   </summary>
 </histogram>
 
-<histogram name="Conversions.RegistrationMethod"
+<histogram name="Conversions.RegistrationMethod2"
     enum="ConversionsRegistrationMethod" expires_after="2024-09-15">
   <owner>anthonygarant@chromium.org</owner>
   <owner>measurement-api-dev+metrics@google.com</owner>

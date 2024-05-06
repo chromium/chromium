@@ -139,7 +139,7 @@ constexpr char kNavigationUnexpectedRegistrationHistogram[] =
 constexpr char kBackgroundNavigationOutcome[] =
     "Conversions.BackgroundNavigation.Outcome";
 
-constexpr char kRegistrationMethod[] = "Conversions.RegistrationMethod";
+constexpr char kRegistrationMethod[] = "Conversions.RegistrationMethod2";
 
 using attribution_reporting::kAttributionReportingRegisterOsSourceHeader;
 using attribution_reporting::kAttributionReportingRegisterOsTriggerHeader;
@@ -157,6 +157,7 @@ constexpr char kDevtoolsRequestId[] = "devtools-request-id-1";
 constexpr BackgroundRegistrationsId kBackgroundId(789);
 
 constexpr bool kViaServiceWorker = false;
+constexpr bool kIsForBackgroundRequests = true;
 
 // Value used to call `RegisterNavigationDataHost`. It is inconsequential unless
 // kKeepAliveInBrowserMigration is enabled and background registrations are
@@ -214,7 +215,8 @@ TEST_F(AttributionDataHostManagerImplTest, SourceDataHost_SourceRegistered) {
       AttributionSuitableContext::CreateForTesting(
           page_origin,
           /*is_nested_within_fenced_frame=*/false, kFrameId, kLastNavigationId),
-      RegistrationEligibility::kSourceOrTrigger);
+      RegistrationEligibility::kSourceOrTrigger,
+      /*is_for_background_requests=*/true);
 
   task_environment_.FastForwardBy(base::Milliseconds(1));
 
@@ -224,9 +226,9 @@ TEST_F(AttributionDataHostManagerImplTest, SourceDataHost_SourceRegistered) {
       reporting_origin, source_data, /*was_fetched_via_service_worker=*/false);
   data_host_remote.FlushForTesting();
 
-  // kAttributionSrcBlink = 3, kAttributionSrcBlinkViaSW = 10
-  histograms.ExpectBucketCount(kRegistrationMethod, 3, 1);
-  histograms.ExpectBucketCount(kRegistrationMethod, 10, 1);
+  // kBackgroundBlink = 8, kBackgroundBlinkViaSW = 9
+  histograms.ExpectBucketCount(kRegistrationMethod, 8, 1);
+  histograms.ExpectBucketCount(kRegistrationMethod, 9, 1);
 }
 
 TEST_F(AttributionDataHostManagerImplTest,
@@ -256,7 +258,7 @@ TEST_F(AttributionDataHostManagerImplTest,
       AttributionSuitableContext::CreateForTesting(
           page_origin,
           /*is_nested_within_fenced_frame=*/false, kFrameId, kLastNavigationId),
-      RegistrationEligibility::kSourceOrTrigger);
+      RegistrationEligibility::kSourceOrTrigger, kIsForBackgroundRequests);
 
   SourceRegistration source_data(*DestinationSet::Create({destination_site}));
   data_host_remote->SourceDataAvailable(reporting_origin, source_data,
@@ -331,7 +333,8 @@ TEST_F(AttributionDataHostManagerImplTest, TriggerDataHost_TriggerRegistered) {
       AttributionSuitableContext::CreateForTesting(
           destination_origin,
           /*is_nested_within_fenced_frame=*/false, kFrameId, kLastNavigationId),
-      RegistrationEligibility::kSourceOrTrigger);
+      RegistrationEligibility::kSourceOrTrigger,
+      /*is_for_background_requests=*/true);
 
   data_host_remote->TriggerDataAvailable(
       reporting_origin, trigger_data,
@@ -343,9 +346,9 @@ TEST_F(AttributionDataHostManagerImplTest, TriggerDataHost_TriggerRegistered) {
       /*was_fetched_via_service_worker=*/false);
   data_host_remote.FlushForTesting();
 
-  // kAttributionSrcBlink = 3, kAttributionSrcBlinkViaSW = 10
-  histograms.ExpectBucketCount(kRegistrationMethod, 3, 1);
-  histograms.ExpectBucketCount(kRegistrationMethod, 10, 1);
+  // kBackgroundBlink = 8, kBackgroundBlinkViaSW = 9
+  histograms.ExpectBucketCount(kRegistrationMethod, 8, 1);
+  histograms.ExpectBucketCount(kRegistrationMethod, 9, 1);
 }
 
 TEST_F(AttributionDataHostManagerImplTest,
@@ -376,7 +379,7 @@ TEST_F(AttributionDataHostManagerImplTest,
       AttributionSuitableContext::CreateForTesting(
           destination_origin,
           /*is_nested_within_fenced_frame=*/false, kFrameId, kLastNavigationId),
-      RegistrationEligibility::kTrigger);
+      RegistrationEligibility::kTrigger, /*is_for_background_requests=*/false);
 
   TriggerRegistration trigger_data;
 
@@ -415,9 +418,9 @@ TEST_F(AttributionDataHostManagerImplTest,
       /*verifications=*/{}, /*was_fetched_via_service_worker=*/true);
   data_host_remote.FlushForTesting();
 
-  // kLegacyBlink = 5, kLegacyBlinkViaSW = 11
-  histograms.ExpectBucketCount(kRegistrationMethod, 5, 2);
-  histograms.ExpectBucketCount(kRegistrationMethod, 11, 1);
+  // kForegroundBlink = 6, kForegroundBlinkViaSW = 7
+  histograms.ExpectBucketCount(kRegistrationMethod, 6, 2);
+  histograms.ExpectBucketCount(kRegistrationMethod, 7, 1);
 }
 
 TEST_F(AttributionDataHostManagerImplTest,
@@ -447,7 +450,7 @@ TEST_F(AttributionDataHostManagerImplTest,
       AttributionSuitableContext::CreateForTesting(
           page_origin,
           /*is_nested_within_fenced_frame=*/false, kFrameId, kLastNavigationId),
-      RegistrationEligibility::kSourceOrTrigger);
+      RegistrationEligibility::kSourceOrTrigger, kIsForBackgroundRequests);
 
   SourceRegistration source_data(*DestinationSet::Create({destination_site}));
 
@@ -502,7 +505,7 @@ TEST_F(AttributionDataHostManagerImplTest,
       AttributionSuitableContext::CreateForTesting(
           page_origin,
           /*is_nested_within_fenced_frame=*/false, kFrameId, kLastNavigationId),
-      RegistrationEligibility::kSource);
+      RegistrationEligibility::kSource, kIsForBackgroundRequests);
 
   SourceRegistration source_data(*DestinationSet::Create({destination_site}));
 
@@ -553,7 +556,7 @@ TEST_F(AttributionDataHostManagerImplTest,
       AttributionSuitableContext::CreateForTesting(
           page_origin,
           /*is_nested_within_fenced_frame=*/false, kFrameId, kLastNavigationId),
-      RegistrationEligibility::kSource);
+      RegistrationEligibility::kSource, kIsForBackgroundRequests);
 
   SourceRegistration source_data(*DestinationSet::Create({destination_site}));
   // Non-whole-day expiry is invalid for `SourceType::kEvent`.
@@ -648,9 +651,9 @@ TEST_F(AttributionDataHostManagerImplTest,
   histograms.ExpectBucketCount(kNavigationDataHostStatusHistogram, 0, 1);
   histograms.ExpectBucketCount(kNavigationDataHostStatusHistogram, 3, 1);
 
-  // kNavBackgroundBlink = 1, kNavBackgroundBlinkViaSW = 9
+  // kNavBackgroundBlink = 1, kNavBackgroundBlinkViaSW = 2
   histograms.ExpectBucketCount(kRegistrationMethod, /*sample=*/1, 1);
-  histograms.ExpectBucketCount(kRegistrationMethod, /*sample=*/9, 1);
+  histograms.ExpectBucketCount(kRegistrationMethod, /*sample=*/2, 1);
 }
 
 TEST_F(AttributionDataHostManagerImplTest,
@@ -788,7 +791,7 @@ TEST_F(AttributionDataHostManagerImplTest, NoSourceOrTrigger) {
       AttributionSuitableContext::CreateForTesting(
           page_origin,
           /*is_nested_within_fenced_frame=*/false, kFrameId, kLastNavigationId),
-      RegistrationEligibility::kSourceOrTrigger);
+      RegistrationEligibility::kSourceOrTrigger, kIsForBackgroundRequests);
   data_host_remote.reset();
   task_environment_.RunUntilIdle();
 
@@ -814,7 +817,7 @@ TEST_F(AttributionDataHostManagerImplTest,
             *SuitableOrigin::Deserialize("https://page1.example"),
             /*is_nested_within_fenced_frame=*/false, kFrameId,
             kLastNavigationId),
-        registration_eligibility);
+        registration_eligibility, kIsForBackgroundRequests);
 
     mojo::Remote<blink::mojom::AttributionDataHost> trigger_data_host_remote;
     data_host_manager_.RegisterDataHost(
@@ -823,7 +826,7 @@ TEST_F(AttributionDataHostManagerImplTest,
             *SuitableOrigin::Deserialize("https://page1.example"),
             /*is_nested_within_fenced_frame=*/false, kFrameId,
             kLastNavigationId),
-        RegistrationEligibility::kSourceOrTrigger);
+        RegistrationEligibility::kSourceOrTrigger, kIsForBackgroundRequests);
 
     task_environment_.FastForwardBy(base::Milliseconds(1));
 
@@ -851,7 +854,7 @@ TEST_F(AttributionDataHostManagerImplTest,
       AttributionSuitableContext::CreateForTesting(
           *SuitableOrigin::Deserialize("https://page1.example"),
           /*is_nested_within_fenced_frame=*/false, kFrameId, kLastNavigationId),
-      RegistrationEligibility::kTrigger);
+      RegistrationEligibility::kTrigger, kIsForBackgroundRequests);
 
   mojo::Remote<blink::mojom::AttributionDataHost> data_host_remote2;
   data_host_manager_.RegisterDataHost(
@@ -859,7 +862,7 @@ TEST_F(AttributionDataHostManagerImplTest,
       AttributionSuitableContext::CreateForTesting(
           *SuitableOrigin::Deserialize("https://page2.example"),
           /*is_nested_within_fenced_frame=*/false, kFrameId, kLastNavigationId),
-      RegistrationEligibility::kTrigger);
+      RegistrationEligibility::kTrigger, kIsForBackgroundRequests);
 
   // Because there is no data host in source mode, this trigger should not be
   // delayed.
@@ -904,7 +907,7 @@ TEST_F(AttributionDataHostManagerImplTest,
           *SuitableOrigin::Deserialize("https://page2.example"),
           /*is_nested_within_fenced_frame=*/false, kFrameId,
           /*last_navigation_id=*/kNavigationId),
-      RegistrationEligibility::kSourceOrTrigger);
+      RegistrationEligibility::kSourceOrTrigger, kIsForBackgroundRequests);
 
   // Because there is a connected data host in source mode, this trigger should
   // be delayed.
@@ -962,7 +965,7 @@ TEST_F(AttributionDataHostManagerImplTest,
             *SuitableOrigin::Deserialize("https://page2.example"),
             /*is_nested_within_fenced_frame=*/false, kFrameId,
             /*last_navigation_id=*/kNavigationId),
-        RegistrationEligibility::kSourceOrTrigger);
+        RegistrationEligibility::kSourceOrTrigger, kIsForBackgroundRequests);
     trigger_data_host_remote->TriggerDataAvailable(
         /*reporting_origin=*/*SuitableOrigin::Deserialize(
             "https://report.test"),
@@ -1016,7 +1019,7 @@ TEST_F(AttributionDataHostManagerImplTest,
           source_origin,
           /*is_nested_within_fenced_frame=*/false, kFrameId,
           /*last_navigation_id=*/kNavigationId),
-      RegistrationEligibility::kSourceOrTrigger);
+      RegistrationEligibility::kSourceOrTrigger, kIsForBackgroundRequests);
   trigger_data_host_remote->TriggerDataAvailable(
       /*reporting_origin=*/reporting_origin, TriggerRegistration(),
       /*verifications=*/{}, kViaServiceWorker);
@@ -1076,7 +1079,7 @@ TEST_F(AttributionDataHostManagerImplTest,
           *SuitableOrigin::Deserialize("https://page2.example"),
           /*is_nested_within_fenced_frame=*/false, kFrameId,
           /*last_navigation_id=*/kNavigationId),
-      RegistrationEligibility::kSourceOrTrigger);
+      RegistrationEligibility::kSourceOrTrigger, kIsForBackgroundRequests);
 
   trigger_data_host_remote->TriggerDataAvailable(
       /*reporting_origin=*/*SuitableOrigin::Deserialize("https://report.test"),
@@ -1136,7 +1139,7 @@ TEST_F(AttributionDataHostManagerImplTest,
           *SuitableOrigin::Deserialize("https://page2.example"),
           /*is_nested_within_fenced_frame=*/false, kFrameId,
           /*last_navigation_id=*/1),
-      RegistrationEligibility::kSourceOrTrigger);
+      RegistrationEligibility::kSourceOrTrigger, kIsForBackgroundRequests);
   trigger_data_host_remote->TriggerDataAvailable(
       /*reporting_origin=*/*SuitableOrigin::Deserialize("https://report.test"),
       TriggerRegistration(), /*verifications=*/{}, kViaServiceWorker);
@@ -1167,7 +1170,7 @@ TEST_F(AttributionDataHostManagerImplTest,
           *SuitableOrigin::Deserialize("https://page2.example"),
           /*is_nested_within_fenced_frame=*/false, kFrameId,
           /*last_navigation_id=*/2),
-      RegistrationEligibility::kSourceOrTrigger);
+      RegistrationEligibility::kSourceOrTrigger, kIsForBackgroundRequests);
   trigger_data_host_remote_2->TriggerDataAvailable(
       /*reporting_origin=*/*SuitableOrigin::Deserialize("https://report.test"),
       TriggerRegistration(), /*verifications=*/{}, kViaServiceWorker);
@@ -1200,7 +1203,7 @@ TEST_F(AttributionDataHostManagerImplTest,
           *SuitableOrigin::Deserialize("https://page2.example"),
           /*is_nested_within_fenced_frame=*/false, kFrameId,
           /*last_navigation_id=*/3),
-      RegistrationEligibility::kSourceOrTrigger);
+      RegistrationEligibility::kSourceOrTrigger, kIsForBackgroundRequests);
   trigger_data_host_remote_3->TriggerDataAvailable(
       /*reporting_origin=*/*SuitableOrigin::Deserialize("https://report.test"),
       TriggerRegistration(), /*verifications=*/{}, kViaServiceWorker);
@@ -1256,7 +1259,7 @@ TEST_F(AttributionDataHostManagerImplTest,
           *SuitableOrigin::Deserialize("https://page2.example"),
           /*is_nested_within_fenced_frame=*/false, kFrameId,
           /*last_navigation_id=*/2),
-      RegistrationEligibility::kSourceOrTrigger);
+      RegistrationEligibility::kSourceOrTrigger, kIsForBackgroundRequests);
 
   trigger_data_host_remote->TriggerDataAvailable(
       /*reporting_origin=*/*SuitableOrigin::Deserialize("https://report.test"),
@@ -1921,7 +1924,7 @@ TEST_F(AttributionDataHostManagerImplTest,
           *SuitableOrigin::Deserialize("https://page2.example"),
           /*is_nested_within_fenced_frame=*/false, kFrameId,
           /*last_navigation_id=*/kNavigationId),
-      RegistrationEligibility::kSourceOrTrigger);
+      RegistrationEligibility::kSourceOrTrigger, kIsForBackgroundRequests);
   trigger_data_host_remote->TriggerDataAvailable(
       reporter, TriggerRegistration(),
       /*verifications=*/{}, kViaServiceWorker);
@@ -1987,7 +1990,7 @@ TEST_F(AttributionDataHostManagerImplTest,
           *SuitableOrigin::Deserialize("https://page2.example"),
           /*is_nested_within_fenced_frame=*/false, kFrameId,
           /*last_navigation_id=*/kNavigationId),
-      RegistrationEligibility::kSourceOrTrigger);
+      RegistrationEligibility::kSourceOrTrigger, kIsForBackgroundRequests);
 
   trigger_data_host_remote->TriggerDataAvailable(
       /*reporting_origin=*/*SuitableOrigin::Deserialize("https://report.test"),
@@ -2006,7 +2009,7 @@ TEST_F(AttributionDataHostManagerImplTest, TwoTriggerReceivers) {
       AttributionSuitableContext::CreateForTesting(
           *SuitableOrigin::Deserialize("https://page1.example"),
           /*is_nested_within_fenced_frame=*/false, kFrameId, kLastNavigationId),
-      RegistrationEligibility::kSourceOrTrigger);
+      RegistrationEligibility::kSourceOrTrigger, kIsForBackgroundRequests);
 
   mojo::Remote<blink::mojom::AttributionDataHost> trigger_data_host_remote2;
   data_host_manager_.RegisterDataHost(
@@ -2014,7 +2017,7 @@ TEST_F(AttributionDataHostManagerImplTest, TwoTriggerReceivers) {
       AttributionSuitableContext::CreateForTesting(
           *SuitableOrigin::Deserialize("https://page2.example"),
           /*is_nested_within_fenced_frame=*/false, kFrameId, kLastNavigationId),
-      RegistrationEligibility::kSourceOrTrigger);
+      RegistrationEligibility::kSourceOrTrigger, kIsForBackgroundRequests);
 
   auto reporting_origin = *SuitableOrigin::Deserialize("https://report.test");
 
@@ -2050,7 +2053,7 @@ TEST_F(AttributionDataHostManagerImplTest,
       AttributionSuitableContext::CreateForTesting(
           source_origin,
           /*is_nested_within_fenced_frame=*/false, kFrameId, kLastNavigationId),
-      RegistrationEligibility::kSourceOrTrigger);
+      RegistrationEligibility::kSourceOrTrigger, kIsForBackgroundRequests);
 
   // `AttributionDataHostManager::NotifyNavigationRegistrationStarted()`
   // is not called, therefore the data host is not bound.
@@ -2119,7 +2122,7 @@ TEST_F(AttributionDataHostManagerImplTest,
           *SuitableOrigin::Deserialize("https://page2.example"),
           /*is_nested_within_fenced_frame=*/false, kFrameId,
           /*last_navigation_id=*/kNavigationId),
-      RegistrationEligibility::kSourceOrTrigger);
+      RegistrationEligibility::kSourceOrTrigger, kIsForBackgroundRequests);
 
   auto send_trigger = [&](const SuitableOrigin& reporting_origin) {
     trigger_data_host_remote->TriggerDataAvailable(
@@ -2154,7 +2157,7 @@ TEST_F(AttributionDataHostManagerImplTest,
       AttributionSuitableContext::CreateForTesting(
           *SuitableOrigin::Deserialize("https://page1.example"),
           /*is_nested_within_fenced_frame=*/false, kFrameId, kLastNavigationId),
-      RegistrationEligibility::kSourceOrTrigger);
+      RegistrationEligibility::kSourceOrTrigger, kIsForBackgroundRequests);
 
   mojo::Remote<blink::mojom::AttributionDataHost> trigger_data_host_remote;
   data_host_manager_.RegisterDataHost(
@@ -2162,7 +2165,7 @@ TEST_F(AttributionDataHostManagerImplTest,
       AttributionSuitableContext::CreateForTesting(
           *SuitableOrigin::Deserialize("https://page2.example"),
           /*is_nested_within_fenced_frame=*/false, kFrameId, kLastNavigationId),
-      RegistrationEligibility::kSourceOrTrigger);
+      RegistrationEligibility::kSourceOrTrigger, kIsForBackgroundRequests);
 
   trigger_data_host_remote->TriggerDataAvailable(
       /*reporting_origin=*/*SuitableOrigin::Deserialize("https://report.test"),
@@ -2289,7 +2292,7 @@ TEST_F(AttributionDataHostManagerImplTest,
       AttributionSuitableContext::CreateForTesting(
           page_origin, /*is_nested_within_fenced_frame=*/true, kFrameId,
           kLastNavigationId),
-      RegistrationEligibility::kSourceOrTrigger);
+      RegistrationEligibility::kSourceOrTrigger, kIsForBackgroundRequests);
 
   task_environment_.FastForwardBy(base::Milliseconds(1));
 
@@ -2317,7 +2320,7 @@ TEST_F(AttributionDataHostManagerImplTest,
       AttributionSuitableContext::CreateForTesting(
           destination_origin,
           /*is_nested_within_fenced_frame=*/true, kFrameId, kLastNavigationId),
-      RegistrationEligibility::kSourceOrTrigger);
+      RegistrationEligibility::kSourceOrTrigger, kIsForBackgroundRequests);
 
   data_host_remote->TriggerDataAvailable(
       reporting_origin, TriggerRegistration(), /*verifications=*/{},
@@ -2400,8 +2403,8 @@ TEST_F(AttributionDataHostManagerImplTest, NavigationBeaconSource_Registered) {
   // Wait for parsing to finish.
   task_environment_.FastForwardBy(base::TimeDelta());
 
-  // kFencedFrameAutomaticBeacon = 8
-  histograms.ExpectBucketCount(kRegistrationMethod, 8, 1);
+  // kFencedFrameAutomaticBeacon = 5
+  histograms.ExpectBucketCount(kRegistrationMethod, 5, 1);
 }
 
 TEST_F(AttributionDataHostManagerImplTest,
@@ -2532,7 +2535,7 @@ TEST_F(AttributionDataHostManagerImplTest,
           *SuitableOrigin::Deserialize("https://page2.example"),
           /*is_nested_within_fenced_frame=*/false, kFrameId,
           /*last_navigation_id=*/kNavigationId),
-      RegistrationEligibility::kSourceOrTrigger);
+      RegistrationEligibility::kSourceOrTrigger, kIsForBackgroundRequests);
 
   // Because we are waiting for beacon data linked to the same navigation, the
   // trigger should be delayed.
@@ -2603,7 +2606,7 @@ TEST_F(AttributionDataHostManagerImplTest,
           *SuitableOrigin::Deserialize("https://page2.example"),
           /*is_nested_within_fenced_frame=*/false, kFrameId,
           /*last_navigation_id=*/kNavigationId),
-      RegistrationEligibility::kSourceOrTrigger);
+      RegistrationEligibility::kSourceOrTrigger, kIsForBackgroundRequests);
   trigger_data_host_remote->TriggerDataAvailable(
       /*reporting_origin=*/*SuitableOrigin::Deserialize("https://report.test"),
       TriggerRegistration(), /*verifications=*/{}, kViaServiceWorker);
@@ -2679,7 +2682,7 @@ TEST_F(AttributionDataHostManagerImplTest,
           source_origin,
           /*is_nested_within_fenced_frame=*/false, kFrameId,
           /*last_navigation_id=*/kNavigationId),
-      RegistrationEligibility::kSourceOrTrigger);
+      RegistrationEligibility::kSourceOrTrigger, kIsForBackgroundRequests);
   trigger_data_host_remote->TriggerDataAvailable(
       /*reporting_origin=*/reporting_origin, TriggerRegistration(),
       /*verifications=*/{}, kViaServiceWorker);
@@ -2760,7 +2763,7 @@ TEST_F(AttributionDataHostManagerImplTest,
           *SuitableOrigin::Deserialize("https://page2.example"),
           /*is_nested_within_fenced_frame=*/false, kFrameId,
           /*last_navigation_id=*/kNavigationId),
-      RegistrationEligibility::kSourceOrTrigger);
+      RegistrationEligibility::kSourceOrTrigger, kIsForBackgroundRequests);
   trigger_data_host_remote->TriggerDataAvailable(
       /*reporting_origin=*/*SuitableOrigin::Deserialize("https://report.test"),
       TriggerRegistration(), /*verifications=*/{}, kViaServiceWorker);
@@ -2847,7 +2850,7 @@ TEST_F(AttributionDataHostManagerImplTest,
           *SuitableOrigin::Deserialize("https://page2.example"),
           /*is_nested_within_fenced_frame=*/false, kFrameId,
           /*last_navigation_id=*/kNavigationId),
-      RegistrationEligibility::kSourceOrTrigger);
+      RegistrationEligibility::kSourceOrTrigger, kIsForBackgroundRequests);
 
   trigger_data_host_remote->TriggerDataAvailable(
       *SuitableOrigin::Create(std::move(reporting_origin)),
@@ -2884,7 +2887,7 @@ TEST_F(AttributionDataHostManagerImplTest,
           *SuitableOrigin::Deserialize("https://page2.example"),
           /*is_nested_within_fenced_frame=*/false, kFrameId,
           /*last_navigation_id=*/kNavigationId),
-      RegistrationEligibility::kSourceOrTrigger);
+      RegistrationEligibility::kSourceOrTrigger, kIsForBackgroundRequests);
 
   trigger_data_host_remote->TriggerDataAvailable(
       reporting_origin, TriggerRegistration(), /*verifications=*/{},
@@ -2919,8 +2922,8 @@ TEST_F(AttributionDataHostManagerImplTest, EventBeaconSource_DataReceived) {
   // Wait for parsing to finish.
   task_environment_.FastForwardBy(base::TimeDelta());
 
-  // kFencedFrameBeacon = 7
-  histograms.ExpectBucketCount(kRegistrationMethod, 7, 1);
+  // kFencedFrameBeacon = 4
+  histograms.ExpectBucketCount(kRegistrationMethod, 4, 1);
 }
 
 TEST_F(AttributionDataHostManagerImplTest, OsSourceAvailable) {
@@ -2946,7 +2949,7 @@ TEST_F(AttributionDataHostManagerImplTest, OsSourceAvailable) {
       AttributionSuitableContext::CreateForTesting(
           kTopLevelOrigin,
           /*is_nested_within_fenced_frame=*/true, kFrameId, kLastNavigationId),
-      RegistrationEligibility::kSourceOrTrigger);
+      RegistrationEligibility::kSourceOrTrigger, kIsForBackgroundRequests);
 
   const auto reporting_origin =
       *SuitableOrigin::Deserialize("https://report.test");
@@ -2987,7 +2990,7 @@ TEST_F(AttributionDataHostManagerImplTest, OsTriggerAvailable) {
       AttributionSuitableContext::CreateForTesting(
           kTopLevelOrigin,
           /*is_nested_within_fenced_frame=*/true, kFrameId, kLastNavigationId),
-      RegistrationEligibility::kSourceOrTrigger);
+      RegistrationEligibility::kSourceOrTrigger, kIsForBackgroundRequests);
 
   const auto reporting_origin =
       *SuitableOrigin::Deserialize("https://report.test");
@@ -3257,10 +3260,10 @@ TEST_F(AttributionDataHostManagerImplWithInBrowserMigrationAndAppToWebTest,
 
   task_environment_.FastForwardBy(base::TimeDelta());
 
-  // kNavForeground = 0, kNavBackgroundBrowser = 2
+  // kNavForeground = 0, kNavBackgroundBrowser = 3
   histograms.ExpectBucketCount(kRegistrationMethod, 0, 1);
   // Even if OS registrations are buffered, each data received should record.
-  histograms.ExpectBucketCount(kRegistrationMethod, 2, 2);
+  histograms.ExpectBucketCount(kRegistrationMethod, 3, 2);
 }
 
 TEST_F(AttributionDataHostManagerImplWithInBrowserMigrationAndAppToWebTest,
@@ -4073,8 +4076,8 @@ TEST_F(AttributionDataHostManagerImplWithInBrowserMigrationAndAppToWebTest,
 
   task_environment_.FastForwardBy(base::TimeDelta());
 
-  // kAttributionSrcBrowser = 4
-  histograms.ExpectBucketCount(kRegistrationMethod, 4, 1);
+  // kForegroundOrBackgroundBrowser = 10
+  histograms.ExpectBucketCount(kRegistrationMethod, 10, 1);
 }
 
 TEST_F(AttributionDataHostManagerImplWithInBrowserMigrationAndAppToWebTest,
@@ -4150,7 +4153,7 @@ TEST_F(AttributionDataHostManagerImplWithInBrowserMigrationTest,
           *SuitableOrigin::Deserialize("https://page2.example"),
           /*is_nested_within_fenced_frame=*/false, kFrameId,
           /*last_navigation_id=*/kNavigationId),
-      RegistrationEligibility::kSourceOrTrigger);
+      RegistrationEligibility::kSourceOrTrigger, kIsForBackgroundRequests);
   trigger_data_host_remote->TriggerDataAvailable(
       reporting_origin, TriggerRegistration(), /*verifications=*/{},
       kViaServiceWorker);
@@ -4206,8 +4209,8 @@ TEST_F(AttributionDataHostManagerImplWithInBrowserMigrationTest,
 
   task_environment_.FastForwardBy(base::TimeDelta());
 
-  // kLegacyBrowser = 6
-  histograms.ExpectBucketCount(kRegistrationMethod, 6, 1);
+  // kForegroundOrBackgroundBrowser = 10
+  histograms.ExpectBucketCount(kRegistrationMethod, 10, 1);
 }
 
 TEST_F(AttributionDataHostManagerImplWithInBrowserMigrationTest,
@@ -4834,7 +4837,7 @@ TEST_F(AttributionDataHostManagerImplTest,
       AttributionSuitableContext::CreateForTesting(
           page_origin,
           /*is_nested_within_fenced_frame=*/false, kFrameId, kLastNavigationId),
-      RegistrationEligibility::kSourceOrTrigger);
+      RegistrationEligibility::kSourceOrTrigger, kIsForBackgroundRequests);
 
   data_host_remote->ReportRegistrationHeaderError(reporting_origin, error);
   data_host_remote.FlushForTesting();
@@ -4976,7 +4979,7 @@ TEST_F(AttributionDataHostManagerImplTest,
             context_origin,
             /*is_nested_within_fenced_frame=*/false, kFrameId,
             kLastNavigationId),
-        RegistrationEligibility::kSourceOrTrigger);
+        RegistrationEligibility::kSourceOrTrigger, kIsForBackgroundRequests);
     data_host_remote->SourceDataAvailable(
         reporting_origin,
         SourceRegistration(*DestinationSet::Create(

@@ -276,7 +276,8 @@ void AttributionHost::NotifyNavigationRegistrationData(
 void AttributionHost::RegisterDataHost(
     mojo::PendingReceiver<blink::mojom::AttributionDataHost> data_host,
     attribution_reporting::mojom::RegistrationEligibility
-        registration_eligibility) {
+        registration_eligibility,
+    bool is_for_background_requests) {
   auto suitable_context = AttributionSuitableContext::Create(
       static_cast<RenderFrameHostImpl*>(receivers_.GetCurrentTargetFrame()));
   if (!suitable_context.has_value()) {
@@ -285,7 +286,8 @@ void AttributionHost::RegisterDataHost(
 
   AttributionDataHostManager* manager = suitable_context->data_host_manager();
   manager->RegisterDataHost(std::move(data_host), std::move(*suitable_context),
-                            registration_eligibility);
+                            registration_eligibility,
+                            is_for_background_requests);
 }
 
 void AttributionHost::NotifyNavigationWithBackgroundRegistrationsWillStart(

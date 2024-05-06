@@ -571,7 +571,8 @@ bool AttributionSrcLoader::DoRegistration(
     source_type = SourceType::kNavigation;
   } else {
     conversion_host->RegisterDataHost(data_host.BindNewPipeAndPassReceiver(),
-                                      eligibility);
+                                      eligibility,
+                                      /*is_for_background_requests=*/true);
     source_type = SourceType::kEvent;
   }
 
@@ -828,7 +829,8 @@ void AttributionSrcLoader::RegisterAttributionHeaders(
 
   mojo::SharedRemote<mojom::blink::AttributionDataHost> data_host;
   conversion_host->RegisterDataHost(data_host.BindNewPipeAndPassReceiver(),
-                                    registration_eligibility);
+                                    registration_eligibility,
+                                    /*is_for_background_requests=*/false);
 
   // Create a client to mimic processing of attributionsrc requests. Note we do
   // not share `AttributionDataHosts` for redirects chains.

@@ -234,7 +234,8 @@ class MockAttributionHost : public mojom::blink::AttributionHost {
 
   void RegisterDataHost(
       mojo::PendingReceiver<mojom::blink::AttributionDataHost> data_host,
-      attribution_reporting::mojom::RegistrationEligibility) override {
+      attribution_reporting::mojom::RegistrationEligibility eligibility,
+      bool is_for_background_requests) override {
     mock_data_host_ = std::make_unique<MockDataHost>(std::move(data_host));
   }
 

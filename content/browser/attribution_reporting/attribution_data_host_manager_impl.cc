@@ -126,22 +126,20 @@ void RecordNavigationDataHostStatus(NavigationDataHostStatus event) {
 enum class RegistrationMethod {
   kNavForeground = 0,
   kNavBackgroundBlink = 1,
-  kNavBackgroundBrowser = 2,
-  kAttributionSrcBlink = 3,
-  kAttributionSrcBrowser = 4,
-  kLegacyBlink = 5,
-  kLegacyBrowser = 6,
-  kFencedFrameBeacon = 7,
-  kFencedFrameAutomaticBeacon = 8,
-  kNavBackgroundBlinkViaSW = 9,
-  kAttributionSrcBlinkViaSW = 10,
-  kLegacyBlinkViaSW = 11,
-
-  kMaxValue = kLegacyBlinkViaSW,
+  kNavBackgroundBlinkViaSW = 2,
+  kNavBackgroundBrowser = 3,
+  kFencedFrameBeacon = 4,
+  kFencedFrameAutomaticBeacon = 5,
+  kForegroundBlink = 6,
+  kForegroundBlinkViaSW = 7,
+  kBackgroundBlink = 8,
+  kBackgroundBlinkViaSW = 9,
+  kForegroundOrBackgroundBrowser = 10,
+  kMaxValue = kForegroundOrBackgroundBrowser,
 };
 
 void RecordRegistrationMethod(RegistrationMethod method) {
-  base::UmaHistogramEnumeration("Conversions.RegistrationMethod", method);
+  base::UmaHistogramEnumeration("Conversions.RegistrationMethod2", method);
 }
 
 // These values are persisted to logs. Entries should not be renumbered and
@@ -455,13 +453,13 @@ class AttributionDataHostManagerImpl::RegistrationContext {
         return was_fetched_via_service_worker
                    ? RegistrationMethod::kNavBackgroundBlinkViaSW
                    : method_;
-      case RegistrationMethod::kAttributionSrcBlink:
+      case RegistrationMethod::kForegroundBlink:
         return was_fetched_via_service_worker
-                   ? RegistrationMethod::kAttributionSrcBlinkViaSW
+                   ? RegistrationMethod::kForegroundBlinkViaSW
                    : method_;
-      case RegistrationMethod::kLegacyBlink:
+      case RegistrationMethod::kBackgroundBlink:
         return was_fetched_via_service_worker
-                   ? RegistrationMethod::kLegacyBlinkViaSW
+                   ? RegistrationMethod::kBackgroundBlinkViaSW
                    : method_;
       // Fetched via service worker is not applicable to foreground
       // registrations.
@@ -471,8 +469,7 @@ class AttributionDataHostManagerImpl::RegistrationContext {
       // TODO(crbug.com/41496810): Once service worker keep alive
       // requests are supported, handle it here.
       case RegistrationMethod::kNavBackgroundBrowser:
-      case RegistrationMethod::kAttributionSrcBrowser:
-      case RegistrationMethod::kLegacyBrowser:
+      case RegistrationMethod::kForegroundOrBackgroundBrowser:
       // TODO(anthonygarant): propagate the information on whether fenced frame
       // registrations were fetched from a service worker or not.
       case RegistrationMethod::kFencedFrameBeacon:
@@ -482,8 +479,8 @@ class AttributionDataHostManagerImpl::RegistrationContext {
       // When the context is created, we don't know if the registration was
       // processed via a service worker or not.
       case RegistrationMethod::kNavBackgroundBlinkViaSW:
-      case RegistrationMethod::kAttributionSrcBlinkViaSW:
-      case RegistrationMethod::kLegacyBlinkViaSW:
+      case RegistrationMethod::kForegroundBlinkViaSW:
+      case RegistrationMethod::kBackgroundBlinkViaSW:
         NOTREACHED_NORETURN();
     }
   }
@@ -1070,15 +1067,14 @@ AttributionDataHostManagerImpl::~AttributionDataHostManagerImpl() = default;
 void AttributionDataHostManagerImpl::RegisterDataHost(
     mojo::PendingReceiver<blink::mojom::AttributionDataHost> data_host,
     AttributionSuitableContext suitable_context,
-    RegistrationEligibility registration_eligibility) {
+    RegistrationEligibility registration_eligibility,
+    bool is_for_background_requests) {
   int64_t last_navigation_id = suitable_context.last_navigation_id();
   RegistrationContext receiver_context(
       std::move(suitable_context), registration_eligibility,
-      /*devtools_request_id=*/std::nullopt, /*navigation=*/std::nullopt,
-      registration_eligibility == RegistrationEligibility::kTrigger
-          ? RegistrationMethod::kLegacyBlink
-          : RegistrationMethod::kAttributionSrcBlink);
-
+      /*devtools_request_id=*/std::nullopt, /*navigation_id=*/std::nullopt,
+      is_for_background_requests ? RegistrationMethod::kBackgroundBlink
+                                 : RegistrationMethod::kForegroundBlink);
   switch (registration_eligibility) {
     case RegistrationEligibility::kTrigger:
     case RegistrationEligibility::kSourceOrTrigger:
@@ -1642,11 +1638,9 @@ void AttributionDataHostManagerImpl::NotifyBackgroundRegistrationStarted(
       RegistrationContext(
           std::move(suitable_context), registration_eligibility,
           std::move(devtools_request_id), navigation_id,
-          registration_eligibility == RegistrationEligibility::kTrigger
-              ? RegistrationMethod::kLegacyBrowser
-          : attribution_src_token.has_value()
+          attribution_src_token.has_value()
               ? RegistrationMethod::kNavBackgroundBrowser
-              : RegistrationMethod::kAttributionSrcBrowser),
+              : RegistrationMethod::kForegroundOrBackgroundBrowser),
       waiting_on_navigation, deferred_until);
   CHECK(inserted);
 

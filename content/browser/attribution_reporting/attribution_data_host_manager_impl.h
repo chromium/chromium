@@ -83,7 +83,8 @@ class CONTENT_EXPORT AttributionDataHostManagerImpl final
   void RegisterDataHost(
       mojo::PendingReceiver<blink::mojom::AttributionDataHost> data_host,
       AttributionSuitableContext,
-      attribution_reporting::mojom::RegistrationEligibility) override;
+      attribution_reporting::mojom::RegistrationEligibility,
+      bool is_for_background_requests) override;
   bool RegisterNavigationDataHost(
       mojo::PendingReceiver<blink::mojom::AttributionDataHost> data_host,
       const blink::AttributionSrcToken& attribution_src_token) override;
