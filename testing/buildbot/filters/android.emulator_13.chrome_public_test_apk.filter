@@ -83,3 +83,6 @@
 
 # crbug.com/338086460
 -org.chromium.chrome.browser.display_cutout.DisplayCutoutTest.testViewportFitSubframe
+
+# crbug.com/339034032
+-org.chromium.chrome.browser.toolbar.top.ToolbarPhoneTest.testToolbarBackgroundChangedWhenSearchEngineHasNoLogo

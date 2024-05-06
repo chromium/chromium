@@ -38,3 +38,6 @@
 -ViewTransitionBrowserTest.OwnershipTransferredToNewRenderer
 -ViewTransitionBrowserTest.NavigationCancelledAfterScreenshot
 -ViewTransitionBrowserTest.NavigationCancelledBeforeScreenshot
+
+# crbug.com/339033006
+-NavigationCookiesBrowserTest.CookiesInheritedSrcDoc
