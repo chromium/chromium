@@ -8,9 +8,10 @@
   }
 
   #queryInput {
+    --cr-input-error-display: none;
     padding: 32px 0 12px;
     text-align: center;
-    --cr-input-error-display: none;
+    width: 50%;
   }
 
   #searchButtons {
@@ -47,7 +48,7 @@
   </cr-input>
   <div id="searchButtons">
     <template is="dom-if" if="[[thumbnailsLoading_]]">
-      <span id="thumbnailsLoadingText" aria-description$="[[getTemplateAriaLabel_(templateTokens_)]]" aria-live="polite">
+      <span id="thumbnailsLoadingText" aria-description="{{textValue_}}" aria-live="polite">
         [[i18n('seaPenThumbnailsLoading')]]
       </span>
     </template>
