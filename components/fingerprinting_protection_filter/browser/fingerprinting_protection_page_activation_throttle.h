@@ -9,14 +9,17 @@
 #include "base/memory/weak_ptr.h"
 #include "base/time/time.h"
 #include "components/subresource_filter/content/shared/browser/page_activation_throttle_delegate.h"
-#include "components/subresource_filter/core/common/activation_decision.h"
 #include "content/public/browser/navigation_throttle.h"
+
+namespace subresource_filter {
+enum class ActivationDecision;
+}
 
 namespace fingerprinting_protection_filter {
 
 // Navigation throttle responsible for activating subresource filtering on page
 // loads that match the Fingerprinting Protection Filtering criteria.
-class FingerprintingProtectionPageActivationThrottle final
+class FingerprintingProtectionPageActivationThrottle
     : public content::NavigationThrottle {
  public:
   // |delegate| is allowed to be null, in which case the client creating this
@@ -42,7 +45,7 @@ class FingerprintingProtectionPageActivationThrottle final
 
  private:
   void CheckCurrentUrl();
-  void NotifyResult();
+  virtual void NotifyResult(subresource_filter::ActivationDecision decision);
 
   void LogMetricsOnChecksComplete(
       subresource_filter::ActivationDecision decision,

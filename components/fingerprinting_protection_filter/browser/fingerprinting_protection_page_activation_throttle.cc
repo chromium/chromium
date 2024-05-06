@@ -7,12 +7,13 @@
 #include "base/feature_list.h"
 #include "components/fingerprinting_protection_filter/browser/fingerprinting_protection_filter_features.h"
 #include "components/fingerprinting_protection_filter/browser/fingerprinting_protection_web_contents_helper.h"
+#include "components/subresource_filter/content/shared/browser/page_activation_throttle_delegate.h"
+#include "components/subresource_filter/core/common/activation_decision.h"
 #include "components/subresource_filter/core/mojom/subresource_filter.mojom.h"
-#include "content/public/browser/navigation_handle.h"
+#include "content/public/browser/navigation_throttle.h"
 
 using subresource_filter::ActivationDecision;
 using subresource_filter::mojom::ActivationLevel;
-using subresource_filter::mojom::ActivationState;
 
 namespace fingerprinting_protection_filter {
 
@@ -32,10 +33,7 @@ FingerprintingProtectionPageActivationThrottle::WillRedirectRequest() {
 
 content::NavigationThrottle::ThrottleCheckResult
 FingerprintingProtectionPageActivationThrottle::WillProcessResponse() {
-  if (GetActivationDecision() == ActivationDecision::ACTIVATED) {
-    // TODO(crbug/327005578): Defer to consult UX.
-    NotifyResult();
-  }
+  NotifyResult(GetActivationDecision());
   return PROCEED;
 }
 
@@ -46,20 +44,24 @@ FingerprintingProtectionPageActivationThrottle::GetNameForLogging() {
 
 ActivationDecision
 FingerprintingProtectionPageActivationThrottle::GetActivationDecision() const {
-  if (base::FeatureList::IsEnabled(
+  if (!base::FeatureList::IsEnabled(
           features::kEnableFingerprintingProtectionFilter)) {
-    return ActivationDecision::ACTIVATED;
+    return ActivationDecision::UNKNOWN;
   }
-  return ActivationDecision::UNKNOWN;
+  if (fingerprinting_protection_filter::features::kActivationLevel.Get() ==
+      subresource_filter::mojom::ActivationLevel::kDisabled) {
+    return ActivationDecision::ACTIVATION_DISABLED;
+  }
+  // Either enabled or dry_run
+  return ActivationDecision::ACTIVATED;
 }
 
-void FingerprintingProtectionPageActivationThrottle::NotifyResult() {
+void FingerprintingProtectionPageActivationThrottle::NotifyResult(
+    subresource_filter::ActivationDecision decision) {
   // TODO(crbug/327005578): Notify UX of the activation decision made.
-  ActivationState state;
-  state.activation_level = ActivationLevel::kEnabled;
   FingerprintingProtectionWebContentsHelper::FromWebContents(
       navigation_handle()->GetWebContents())
-      ->NotifyPageActivationComputed(navigation_handle(), state);
+      ->NotifyPageActivationComputed(navigation_handle(), decision);
 }
 
 void FingerprintingProtectionPageActivationThrottle::LogMetricsOnChecksComplete(

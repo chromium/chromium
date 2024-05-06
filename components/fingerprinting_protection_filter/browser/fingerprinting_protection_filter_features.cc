@@ -4,6 +4,10 @@
 
 #include "components/fingerprinting_protection_filter/browser/fingerprinting_protection_filter_features.h"
 
+#include "base/feature_list.h"
+#include "base/metrics/field_trial_params.h"
+#include "components/subresource_filter/core/mojom/subresource_filter.mojom.h"
+
 namespace fingerprinting_protection_filter::features {
 
 // When enabled, loads the Fingerprinting Protection component and evaluates
@@ -12,5 +16,16 @@ namespace fingerprinting_protection_filter::features {
 BASE_FEATURE(kEnableFingerprintingProtectionFilter,
              "EnableFingerprintingProtectionFilter",
              base::FEATURE_DISABLED_BY_DEFAULT);
+
+constexpr base::FeatureParam<subresource_filter::mojom::ActivationLevel>::Option
+    kActivationLevelOptions[] = {
+        {subresource_filter::mojom::ActivationLevel::kDisabled, "disabled"},
+        {subresource_filter::mojom::ActivationLevel::kDryRun, "dry_run"},
+        {subresource_filter::mojom::ActivationLevel::kEnabled, "enabled"}};
+
+const base::FeatureParam<subresource_filter::mojom::ActivationLevel>
+    kActivationLevel{&kEnableFingerprintingProtectionFilter, "activation_level",
+                     subresource_filter::mojom::ActivationLevel::kEnabled,
+                     &kActivationLevelOptions};
 
 }  // namespace fingerprinting_protection_filter::features

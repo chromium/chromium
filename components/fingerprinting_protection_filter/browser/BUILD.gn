@@ -15,10 +15,10 @@ source_set("browser") {
     ":features",
     "//base",
     "//components/subresource_filter/content/shared/browser",
-    "//components/subresource_filter/core/browser",
     "//content/public/browser",
   ]
   deps = [
+    "//components/subresource_filter/core/browser",
     "//components/subresource_filter/core/common",
     "//components/subresource_filter/core/mojom",
   ]
@@ -32,4 +32,19 @@ component("features") {
     "fingerprinting_protection_filter_features.h",
   ]
   public_deps = [ "//base" ]
+  deps = [ "//components/subresource_filter/core/mojom" ]
+}
+
+source_set("unit_tests") {
+  testonly = true
+  sources = [ "fingerprinting_protection_page_activation_throttle_unittest.cc" ]
+  deps = [
+    ":browser",
+    "//base/test:test_support",
+    "//components/subresource_filter/core/common",
+    "//components/subresource_filter/core/mojom",
+    "//content/public/browser",
+    "//content/test:test_support",
+    "//testing/gtest",
+  ]
 }

@@ -5,10 +5,17 @@
 #include "components/fingerprinting_protection_filter/browser/fingerprinting_protection_web_contents_helper.h"
 
 #include "components/fingerprinting_protection_filter/browser/fingerprinting_protection_filter_features.h"
-#include "components/subresource_filter/core/common/load_policy.h"
-#include "components/subresource_filter/core/mojom/subresource_filter.mojom.h"
-#include "content/public/browser/web_contents.h"
 #include "content/public/browser/web_contents_user_data.h"
+
+namespace content {
+class NavigationHandle;
+class WebContents;
+}  // namespace content
+
+namespace subresource_filter {
+enum class ActivationDecision;
+enum class LoadPolicy;
+}  // namespace subresource_filter
 
 namespace fingerprinting_protection_filter {
 
@@ -39,7 +46,7 @@ FingerprintingProtectionWebContentsHelper::
 
 void FingerprintingProtectionWebContentsHelper::NotifyPageActivationComputed(
     content::NavigationHandle* navigation_handle,
-    const subresource_filter::mojom::ActivationState& activation_state) {
+    const subresource_filter::ActivationDecision& activation_decision) {
   // TODO(crbug.com/327005578): Notify ThrottleManager
 }
 
