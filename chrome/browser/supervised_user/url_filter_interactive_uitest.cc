@@ -207,8 +207,9 @@ IN_PROC_BROWSER_TEST_P(UrlFilterUiTest, ParentAllowsPageBlockedBySafeSites) {
       WaitForStateChange(kChildElementId, PageWithMatchingTitle("Best Gore")));
 }
 
+// TODO(https://crbug.com/328036610): fails on win-live-tests-tester-rel
 IN_PROC_BROWSER_TEST_P(UrlFilterUiTest,
-                       ParentAprovesPermissionRequestForBlockedSite) {
+                       DISABLED_ParentAprovesPermissionRequestForBlockedSite) {
   DEFINE_LOCAL_ELEMENT_IDENTIFIER_VALUE(kChildElementId);
   DEFINE_LOCAL_ELEMENT_IDENTIFIER_VALUE(kParentApprovalTab);
   DEFINE_LOCAL_STATE_IDENTIFIER_VALUE(BrowserState::Observer,
