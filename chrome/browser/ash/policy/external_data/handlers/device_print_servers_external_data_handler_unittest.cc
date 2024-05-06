@@ -7,9 +7,9 @@
 #include <memory>
 #include <string>
 
+#include "chrome/browser/ash/printing/enterprise/print_servers_provider.h"
+#include "chrome/browser/ash/printing/enterprise/print_servers_provider_factory.h"
 #include "chrome/browser/ash/printing/print_server.h"
-#include "chrome/browser/ash/printing/print_servers_provider.h"
-#include "chrome/browser/ash/printing/print_servers_provider_factory.h"
 #include "components/policy/core/common/mock_policy_service.h"
 #include "components/policy/core/common/policy_namespace.h"
 #include "components/policy/policy_constants.h"

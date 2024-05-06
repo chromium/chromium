@@ -2,11 +2,11 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#include "chrome/browser/ash/printing/print_servers_policy_provider.h"
+#include "chrome/browser/ash/printing/enterprise/print_servers_policy_provider.h"
 
 #include "base/functional/bind.h"
-#include "chrome/browser/ash/printing/print_servers_provider.h"
-#include "chrome/browser/ash/printing/print_servers_provider_factory.h"
+#include "chrome/browser/ash/printing/enterprise/print_servers_provider.h"
+#include "chrome/browser/ash/printing/enterprise/print_servers_provider_factory.h"
 #include "chrome/browser/browser_process.h"
 #include "chrome/browser/profiles/profile.h"
 #include "chrome/common/pref_names.h"

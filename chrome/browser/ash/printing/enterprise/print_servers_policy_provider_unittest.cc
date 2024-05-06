@@ -2,7 +2,7 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#include "chrome/browser/ash/printing/print_servers_policy_provider.h"
+#include "chrome/browser/ash/printing/enterprise/print_servers_policy_provider.h"
 
 #include <map>
 #include <memory>

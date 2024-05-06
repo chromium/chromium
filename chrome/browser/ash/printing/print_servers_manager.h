@@ -8,8 +8,8 @@
 #include <string>
 #include <vector>
 
+#include "chrome/browser/ash/printing/enterprise/print_servers_policy_provider.h"
 #include "chrome/browser/ash/printing/print_server.h"
-#include "chrome/browser/ash/printing/print_servers_policy_provider.h"
 #include "chrome/browser/ash/printing/printer_detector.h"
 #include "chrome/browser/ash/printing/printer_installation_manager.h"
 #include "chromeos/printing/printer_configuration.h"

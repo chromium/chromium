@@ -2,8 +2,8 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#ifndef CHROME_BROWSER_ASH_PRINTING_CALCULATORS_POLICIES_BINDER_H_
-#define CHROME_BROWSER_ASH_PRINTING_CALCULATORS_POLICIES_BINDER_H_
+#ifndef CHROME_BROWSER_ASH_PRINTING_ENTERPRISE_CALCULATORS_POLICIES_BINDER_H_
+#define CHROME_BROWSER_ASH_PRINTING_ENTERPRISE_CALCULATORS_POLICIES_BINDER_H_
 
 #include <memory>
 #include <string>
@@ -11,7 +11,7 @@
 
 #include "base/functional/callback.h"
 #include "base/memory/weak_ptr.h"
-#include "chrome/browser/ash/printing/bulk_printers_calculator.h"
+#include "chrome/browser/ash/printing/enterprise/bulk_printers_calculator.h"
 
 class PrefService;
 class PrefRegistrySimple;
@@ -84,4 +84,4 @@ class CalculatorsPoliciesBinder {
 
 }  // namespace ash
 
-#endif  // CHROME_BROWSER_ASH_PRINTING_CALCULATORS_POLICIES_BINDER_H_
+#endif  // CHROME_BROWSER_ASH_PRINTING_ENTERPRISE_CALCULATORS_POLICIES_BINDER_H_

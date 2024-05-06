@@ -16,7 +16,6 @@
 #include "base/scoped_observation.h"
 #include "base/strings/string_util.h"
 #include "base/time/time.h"
-#include "chrome/browser/ash/printing/bulk_printers_calculator_factory.h"
 #include "chrome/browser/ash/printing/printers_sync_bridge.h"
 #include "chrome/browser/ash/printing/synced_printers_manager_factory.h"
 #include "chrome/common/pref_names.h"

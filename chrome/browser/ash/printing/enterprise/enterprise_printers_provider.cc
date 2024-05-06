@@ -2,7 +2,7 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#include "chrome/browser/ash/printing/enterprise_printers_provider.h"
+#include "chrome/browser/ash/printing/enterprise/enterprise_printers_provider.h"
 
 #include <iterator>
 #include <unordered_map>
@@ -14,9 +14,9 @@
 #include "base/logging.h"
 #include "base/memory/raw_ptr.h"
 #include "base/ranges/algorithm.h"
-#include "chrome/browser/ash/printing/bulk_printers_calculator.h"
-#include "chrome/browser/ash/printing/bulk_printers_calculator_factory.h"
-#include "chrome/browser/ash/printing/calculators_policies_binder.h"
+#include "chrome/browser/ash/printing/enterprise/bulk_printers_calculator.h"
+#include "chrome/browser/ash/printing/enterprise/bulk_printers_calculator_factory.h"
+#include "chrome/browser/ash/printing/enterprise/calculators_policies_binder.h"
 #include "chrome/browser/ash/profiles/profile_helper.h"
 #include "chrome/browser/policy/profile_policy_connector.h"
 #include "chrome/common/pref_names.h"

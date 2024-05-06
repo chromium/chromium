@@ -2,13 +2,13 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#include "chrome/browser/ash/printing/calculators_policies_binder.h"
+#include "chrome/browser/ash/printing/enterprise/calculators_policies_binder.h"
 
 #include <array>
 #include <string>
 
 #include "base/test/task_environment.h"
-#include "chrome/browser/ash/printing/bulk_printers_calculator.h"
+#include "chrome/browser/ash/printing/enterprise/bulk_printers_calculator.h"
 #include "chrome/browser/ash/settings/scoped_testing_cros_settings.h"
 #include "chrome/browser/ash/settings/stub_cros_settings_provider.h"
 #include "chrome/common/pref_names.h"

@@ -7,8 +7,8 @@
 #include <utility>
 
 #include "base/memory/weak_ptr.h"
-#include "chrome/browser/ash/printing/bulk_printers_calculator.h"
-#include "chrome/browser/ash/printing/bulk_printers_calculator_factory.h"
+#include "chrome/browser/ash/printing/enterprise/bulk_printers_calculator.h"
+#include "chrome/browser/ash/printing/enterprise/bulk_printers_calculator_factory.h"
 #include "chromeos/ash/components/settings/cros_settings.h"
 #include "components/policy/policy_constants.h"
 

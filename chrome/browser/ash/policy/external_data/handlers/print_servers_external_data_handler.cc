@@ -7,8 +7,8 @@
 #include <utility>
 
 #include "base/memory/weak_ptr.h"
-#include "chrome/browser/ash/printing/print_servers_provider.h"
-#include "chrome/browser/ash/printing/print_servers_provider_factory.h"
+#include "chrome/browser/ash/printing/enterprise/print_servers_provider.h"
+#include "chrome/browser/ash/printing/enterprise/print_servers_provider_factory.h"
 #include "chromeos/ash/components/settings/cros_settings.h"
 #include "components/policy/policy_constants.h"
 
