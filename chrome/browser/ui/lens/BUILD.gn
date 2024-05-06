@@ -33,6 +33,7 @@ static_library("lens") {
     "//components/prefs",
     "//components/signin/public/identity_manager",
     "//components/sync/service",
+    "//components/sync_preferences",
     "//components/unified_consent",
     "//components/variations",
     "//components/variations:variations_mojom",

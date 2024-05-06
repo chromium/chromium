@@ -2661,6 +2661,7 @@ static_library("browser") {
 
   if (!is_android) {
     deps += [
+      "//chrome/browser/ui/lens",
       "//chrome/browser/ui/webui/search_engine_choice:mojo_bindings",
       "//components/manta",
       "//components/manta/proto",
