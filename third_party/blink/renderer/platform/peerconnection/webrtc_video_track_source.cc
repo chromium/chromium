@@ -243,9 +243,15 @@ void WebRtcVideoTrackSource::OnFrameCaptured(
   }
 
   std::optional<webrtc::Timestamp> capture_time_identifier;
-  // Set |capture_time_identifier| only when frame->timestamp() is a valid
-  // value (infinite values are invalid).
-  if (!frame->timestamp().is_inf()) {
+  // Set |capture_time_identifier| to capture_begin_time if available, else use
+  // frame->timestamp().
+  if (base::FeatureList::IsEnabled(features::kWebRtcUseCaptureBeginTimestamp) &&
+      frame->metadata().capture_begin_time) {
+    capture_time_identifier = webrtc::Timestamp::Micros(
+        frame->metadata().capture_begin_time->ToInternalValue());
+  } else if (!frame->timestamp().is_inf()) {
+    // Use only when frame->timestamp() is a valid value (infinite values are
+    // invalid).
     capture_time_identifier =
         webrtc::Timestamp::Micros(frame->timestamp().InMicroseconds());
   }
