@@ -6544,21 +6544,6 @@
         },
         'os_type': 'chromeos',
       },
-      'optimization_guide-linux': {
-        'additional_compile_targets': [
-          'ondevice_model_benchmark',
-          'ondevice_model_example',
-        ],
-        'mixins': [
-          'chrome-intelligence-swarming-pool',
-          'linux-jammy',
-        ],
-        'test_suites': {
-           'gtest_tests': 'optimization_guide_linux_gtests',
-           'isolated_scripts': 'optimization_guide_linux_script_tests',
-        },
-        'os_type': 'linux',
-      },
       'optimization_guide-mac-arm64': {
         'additional_compile_targets': [
           'ondevice_model_benchmark',
@@ -6619,7 +6604,22 @@
         },
         'os_type': 'win',
       },
-      'optimization_guide-win64': {
+      'optimization_guide_official-linux': {
+        'additional_compile_targets': [
+          'ondevice_model_benchmark',
+          'ondevice_model_example',
+        ],
+        'mixins': [
+          'chrome-intelligence-swarming-pool',
+          'linux-jammy',
+        ],
+        'test_suites': {
+           'gtest_tests': 'optimization_guide_linux_gtests',
+           'isolated_scripts': 'optimization_guide_linux_script_tests',
+        },
+        'os_type': 'linux',
+      },
+      'optimization_guide_official-win64': {
         'additional_compile_targets': [
           'ondevice_model_benchmark',
           'ondevice_model_example',
