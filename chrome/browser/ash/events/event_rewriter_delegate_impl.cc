@@ -353,4 +353,11 @@ EventRewriterDelegateImpl::GetExtendedFkeySetting(int device_id,
   return settings->f12;
 }
 
+void EventRewriterDelegateImpl::NotifySixPackRewriteBlockedByFnKey(
+    ui::KeyboardCode key_code,
+    ui::mojom::SixPackShortcutModifier modifier) {
+  input_device_settings_notification_controller_->ShowSixPackKeyRewritingNudge(
+      key_code, modifier);
+}
+
 }  // namespace ash

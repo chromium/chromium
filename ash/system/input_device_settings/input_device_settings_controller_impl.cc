@@ -873,6 +873,25 @@ void InputDeviceSettingsControllerImpl::RegisterProfilePrefs(
   pref_registry->RegisterIntegerPref(
       prefs::kInsertKeyModifier,
       static_cast<int>(ui::mojom::SixPackShortcutModifier::kNone));
+  pref_registry->RegisterIntegerPref(prefs::kPageUpRemappingNudgeShownCount, 0);
+  pref_registry->RegisterIntegerPref(prefs::kPageDownRemappingNudgeShownCount,
+                                     0);
+  pref_registry->RegisterIntegerPref(prefs::kHomeRemappingNudgeShownCount, 0);
+  pref_registry->RegisterIntegerPref(prefs::kEndRemappingNudgeShownCount, 0);
+  pref_registry->RegisterIntegerPref(prefs::kDeleteRemappingNudgeShownCount, 0);
+  pref_registry->RegisterIntegerPref(prefs::kInsertRemappingNudgeShownCount, 0);
+  pref_registry->RegisterTimePref(prefs::kPageUpRemappingNudgeLastShown,
+                                  base::Time());
+  pref_registry->RegisterTimePref(prefs::kPageDownRemappingNudgeLastShown,
+                                  base::Time());
+  pref_registry->RegisterTimePref(prefs::kHomeRemappingNudgeLastShown,
+                                  base::Time());
+  pref_registry->RegisterTimePref(prefs::kEndRemappingNudgeLastShown,
+                                  base::Time());
+  pref_registry->RegisterTimePref(prefs::kDeleteRemappingNudgeLastShown,
+                                  base::Time());
+  pref_registry->RegisterTimePref(prefs::kInsertRemappingNudgeLastShown,
+                                  base::Time());
 }
 
 void InputDeviceSettingsControllerImpl::OnActiveUserPrefServiceChanged(
@@ -962,6 +981,21 @@ void InputDeviceSettingsControllerImpl::OnActiveUserPrefServiceChanged(
     pref_service->ClearPref(prefs::kSixPackKeyPageUpNotificationsRemaining);
     pref_service->ClearPref(prefs::kSixPackKeyPageDownNotificationsRemaining);
     pref_service->ClearPref(prefs::kSixPackKeyInsertNotificationsRemaining);
+  }
+
+  if (!features::IsModifierSplitEnabled()) {
+    pref_service->ClearPref(prefs::kPageUpRemappingNudgeShownCount);
+    pref_service->ClearPref(prefs::kPageDownRemappingNudgeShownCount);
+    pref_service->ClearPref(prefs::kHomeRemappingNudgeShownCount);
+    pref_service->ClearPref(prefs::kEndRemappingNudgeShownCount);
+    pref_service->ClearPref(prefs::kDeleteRemappingNudgeShownCount);
+    pref_service->ClearPref(prefs::kInsertRemappingNudgeShownCount);
+    pref_service->ClearPref(prefs::kPageUpRemappingNudgeLastShown);
+    pref_service->ClearPref(prefs::kPageDownRemappingNudgeLastShown);
+    pref_service->ClearPref(prefs::kHomeRemappingNudgeLastShown);
+    pref_service->ClearPref(prefs::kEndRemappingNudgeLastShown);
+    pref_service->ClearPref(prefs::kDeleteRemappingNudgeLastShown);
+    pref_service->ClearPref(prefs::kInsertRemappingNudgeLastShown);
   }
   active_pref_service_ = pref_service;
   active_account_id_ = Shell::Get()->session_controller()->GetActiveAccountId();

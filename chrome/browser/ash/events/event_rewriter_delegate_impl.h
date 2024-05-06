@@ -81,6 +81,11 @@ class EventRewriterDelegateImpl : public ui::EventRewriterAsh::Delegate {
       int device_id,
       ui::KeyboardCode key_code) override;
 
+  // Push a notification when the device does not have an Fn key.
+  void NotifySixPackRewriteBlockedByFnKey(
+      ui::KeyboardCode key_code,
+      ui::mojom::SixPackShortcutModifier modifier) override;
+
   // Workaround for test behavior injection.
   // Currently, there's no easier way to inject
   // ExtensionCommandsGlobalRegistry's behavior, so difficult to test

@@ -130,6 +130,30 @@ inline constexpr char kTouchpadUpdateSettingsMetricInfo[] =
     "settings.touchpad.update_settings_info";
 inline constexpr char kPointingStickUpdateSettingsMetricInfo[] =
     "settings.pointing_stick.update_settings_info";
+inline constexpr char kPageUpRemappingNudgeShownCount[] =
+    "settings.keyboard.page_up_key_remapping_nudge_shown_count";
+inline constexpr char kPageDownRemappingNudgeShownCount[] =
+    "settings.keyboard.page_down_key_remapping_nudge_shown_count";
+inline constexpr char kHomeRemappingNudgeShownCount[] =
+    "settings.keyboard.home_key_remapping_nudge_shown_count";
+inline constexpr char kEndRemappingNudgeShownCount[] =
+    "settings.keyboard.end_key_remapping_nudge_shown_count";
+inline constexpr char kDeleteRemappingNudgeShownCount[] =
+    "settings.keyboard.delete_key_remapping_nudge_shown_count";
+inline constexpr char kInsertRemappingNudgeShownCount[] =
+    "settings.keyboard.insert_key_remapping_nudge_shown_count";
+inline constexpr char kPageUpRemappingNudgeLastShown[] =
+    "settings.keyboard.page_up_key_remapping_nudge_last_shown";
+inline constexpr char kPageDownRemappingNudgeLastShown[] =
+    "settings.keyboard.page_down_key_remapping_nudge_last_shown";
+inline constexpr char kHomeRemappingNudgeLastShown[] =
+    "settings.keyboard.home_key_remapping_nudge_last_shown";
+inline constexpr char kEndRemappingNudgeLastShown[] =
+    "settings.keyboard.end_key_remapping_nudge_last_shown";
+inline constexpr char kDeleteRemappingNudgeLastShown[] =
+    "settings.keyboard.delete_key_remapping_nudge_last_shown";
+inline constexpr char kInsertRemappingNudgeLastShown[] =
+    "settings.keyboard.insert_key_remapping_nudge_last_shown";
 
 // Mouse settings dictionary keys.
 inline constexpr char kMouseSettingSwapRight[] = "swap_right";

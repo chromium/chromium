@@ -34,6 +34,7 @@
 #include "base/notreached.h"
 #include "base/strings/string_number_conversions.h"
 #include "base/strings/utf_string_conversions.h"
+#include "base/time/time.h"
 #include "components/pref_registry/pref_registry_syncable.h"
 #include "components/prefs/pref_registry_simple.h"
 #include "components/prefs/pref_service.h"
@@ -49,6 +50,11 @@
 namespace ash {
 
 namespace {
+
+// A nudge/tutorial will not be shown if it already been shown 3 times, or if 24
+// hours have not yet passed since it was last shown.
+constexpr int kNudgeMaxShownCount = 3;
+constexpr base::TimeDelta kNudgeTimeBetweenShown = base::Hours(24);
 
 const char kKeyboardSettingsLearnMoreLink[] =
     "https://support.google.com/chromebook?p=keyboard_settings";
@@ -103,6 +109,33 @@ constexpr auto kKeyCodeToSixPackKeyPrefName =
         {ui::KeyboardCode::VKEY_END, {prefs::kSixPackKeyEnd}},
         {ui::KeyboardCode::VKEY_NEXT, {prefs::kSixPackKeyPageDown}},
         {ui::KeyboardCode::VKEY_INSERT, {prefs::kSixPackKeyInsert}},
+    });
+
+constexpr auto kKeyCodeToSixPackKeyRemappingNudgeShownCountPref =
+    base::MakeFixedFlatMap<ui::KeyboardCode, const char*>({
+        {ui::KeyboardCode::VKEY_DELETE,
+         {prefs::kDeleteRemappingNudgeShownCount}},
+        {ui::KeyboardCode::VKEY_HOME, {prefs::kHomeRemappingNudgeShownCount}},
+        {ui::KeyboardCode::VKEY_PRIOR,
+         {prefs::kPageUpRemappingNudgeShownCount}},
+        {ui::KeyboardCode::VKEY_END, {prefs::kEndRemappingNudgeShownCount}},
+        {ui::KeyboardCode::VKEY_NEXT,
+         {prefs::kPageDownRemappingNudgeShownCount}},
+        {ui::KeyboardCode::VKEY_INSERT,
+         {prefs::kInsertRemappingNudgeShownCount}},
+    });
+
+constexpr auto kKeyCodeToSixPackKeyRemappingNudgeLastShownPref =
+    base::MakeFixedFlatMap<ui::KeyboardCode, const char*>({
+        {ui::KeyboardCode::VKEY_DELETE,
+         {prefs::kDeleteRemappingNudgeLastShown}},
+        {ui::KeyboardCode::VKEY_HOME, {prefs::kHomeRemappingNudgeLastShown}},
+        {ui::KeyboardCode::VKEY_PRIOR, {prefs::kPageUpRemappingNudgeLastShown}},
+        {ui::KeyboardCode::VKEY_END, {prefs::kEndRemappingNudgeLastShown}},
+        {ui::KeyboardCode::VKEY_NEXT,
+         {prefs::kPageDownRemappingNudgeLastShown}},
+        {ui::KeyboardCode::VKEY_INSERT,
+         {prefs::kInsertRemappingNudgeLastShown}},
     });
 
 // Device key of the virtual mouse often used by integration tests, avoid
@@ -808,24 +841,51 @@ void InputDeviceSettingsNotificationController::ShowSixPackKeyRewritingNudge(
       Shell::Get()->session_controller()->GetActivePrefService();
   CHECK(prefs);
 
-  auto it = kKeyCodeToSixPackKeyPrefName.find(key_code);
-  CHECK(it != kKeyCodeToSixPackKeyPrefName.end());
   const auto* six_pack_key_remappings =
       prefs->GetDict(prefs::kKeyboardDefaultChromeOSSettings)
           .FindDict(prefs::kKeyboardSettingSixPackKeyRemappings);
 
-  if (!six_pack_key_remappings) {
-    return;
-  }
+  std::optional<int> six_pack_key_modifier =
+      static_cast<int>(SixPackShortcutModifier::kSearch);
 
   // Only show the notification if the modifier key matches the pref in user's
   // last device for the behavior.
-  const char* pref = it->second;
-  const auto six_pack_key_remapping = six_pack_key_remappings->FindInt(pref);
-  if (six_pack_key_remapping == std::nullopt ||
-      six_pack_key_remapping != static_cast<int>(old_matched_modifier)) {
+  if (six_pack_key_remappings) {
+    auto it = kKeyCodeToSixPackKeyPrefName.find(key_code);
+    CHECK(it != kKeyCodeToSixPackKeyPrefName.end());
+    const char* pref = it->second;
+
+    six_pack_key_modifier = six_pack_key_remappings->FindInt(pref);
+    if (six_pack_key_modifier != std::nullopt &&
+        six_pack_key_modifier != static_cast<int>(old_matched_modifier)) {
+      return;
+    }
+  }
+
+  const auto shown_count_pref_iter =
+      kKeyCodeToSixPackKeyRemappingNudgeShownCountPref.find(key_code);
+  CHECK(shown_count_pref_iter !=
+        kKeyCodeToSixPackKeyRemappingNudgeShownCountPref.end());
+  const char* shown_count_pref_name = shown_count_pref_iter->second;
+  const int shown_count = prefs->GetInteger(shown_count_pref_name);
+
+  const auto last_shown_time_iter =
+      kKeyCodeToSixPackKeyRemappingNudgeLastShownPref.find(key_code);
+  CHECK(last_shown_time_iter !=
+        kKeyCodeToSixPackKeyRemappingNudgeLastShownPref.end());
+  const char* last_shown_time_pref_name = last_shown_time_iter->second;
+  const base::Time last_shown_time = prefs->GetTime(last_shown_time_pref_name);
+
+  // Do not show the nudge more than three times, or if it has already been
+  // shown in the past 24 hours.
+  const base::Time now = base::Time::Now();
+  if ((shown_count >= kNudgeMaxShownCount) ||
+      ((now - last_shown_time) < kNudgeTimeBetweenShown)) {
     return;
   }
+
+  prefs->SetInteger(shown_count_pref_name, shown_count + 1);
+  prefs->SetTime(last_shown_time_pref_name, now);
 
   AnchoredNudgeData nudge_data(
       kSixPackKeyNoMatchNudgeId, NudgeCatalogName::kSixPackRemappingPressed,

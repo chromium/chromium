@@ -348,6 +348,42 @@ struct KeyboardRemapping {
   EventRewriterAsh::MutableKeyState result;
 };
 
+// Maps the key combination into six pack key for the search and alt modifiers.
+const KeyboardRemapping kMergedSixPackRemappings[] = {
+    {// Search+Shift+BackSpace -> Insert
+     {EF_COMMAND_DOWN | EF_SHIFT_DOWN, VKEY_BACK},
+     {EF_NONE, DomCode::INSERT, DomKey::INSERT, VKEY_INSERT}},
+    {// Search+BackSpace -> Delete
+     {EF_COMMAND_DOWN, VKEY_BACK},
+     {EF_NONE, DomCode::DEL, DomKey::DEL, VKEY_DELETE}},
+    {// Alt+BackSpace -> Delete
+     {EF_ALT_DOWN, VKEY_BACK},
+     {EF_NONE, DomCode::DEL, DomKey::DEL, VKEY_DELETE}},
+    {// Search+Left -> Home
+     {EF_COMMAND_DOWN, VKEY_LEFT},
+     {EF_NONE, DomCode::HOME, DomKey::HOME, VKEY_HOME}},
+    {// Control+Alt+Up -> Home
+     {EF_ALT_DOWN | EF_CONTROL_DOWN, VKEY_UP},
+     {EF_NONE, DomCode::HOME, DomKey::HOME, VKEY_HOME}},
+    {// Search+Up -> Prior (aka PageUp)
+     {EF_COMMAND_DOWN, VKEY_UP},
+     {EF_NONE, DomCode::PAGE_UP, DomKey::PAGE_UP, VKEY_PRIOR}},
+    {// Alt+Up -> Prior (aka PageUp)
+     {EF_ALT_DOWN, VKEY_UP},
+     {EF_NONE, DomCode::PAGE_UP, DomKey::PAGE_UP, VKEY_PRIOR}},
+    {// Search+Right -> End
+     {EF_COMMAND_DOWN, VKEY_RIGHT},
+     {EF_NONE, DomCode::END, DomKey::END, VKEY_END}},
+    {// Control+Alt+Down -> End
+     {EF_ALT_DOWN | EF_CONTROL_DOWN, VKEY_DOWN},
+     {EF_NONE, DomCode::END, DomKey::END, VKEY_END}},
+    {// Search+Down -> Next (aka PageDown)
+     {EF_COMMAND_DOWN, VKEY_DOWN},
+     {EF_NONE, DomCode::PAGE_DOWN, DomKey::PAGE_DOWN, VKEY_NEXT}},
+    {// Alt+Down -> Next (aka PageDown)
+     {EF_ALT_DOWN, VKEY_DOWN},
+     {EF_NONE, DomCode::PAGE_DOWN, DomKey::PAGE_DOWN, VKEY_NEXT}}};
+
 // If |strict| is true, the flags must match exactly the same. In other words,
 // the event will be rewritten only if the exactly specified modifier is
 // pressed.  If false, it can match even if other modifiers are pressed.
@@ -931,40 +967,6 @@ void MaybeRewriteKeyEventToSixPackKeyAction(
     EventRewriterAsh::MutableKeyState* state,
     int device_id) {
   EventRewriterAsh::MutableKeyState incoming = *state;
-  static const KeyboardRemapping kMergedSixPackRemappings[] = {
-      {// Search+Shift+BackSpace -> Insert
-       {EF_COMMAND_DOWN | EF_SHIFT_DOWN, VKEY_BACK},
-       {EF_NONE, DomCode::INSERT, DomKey::INSERT, VKEY_INSERT}},
-      {// Search+BackSpace -> Delete
-       {EF_COMMAND_DOWN, VKEY_BACK},
-       {EF_NONE, DomCode::DEL, DomKey::DEL, VKEY_DELETE}},
-      {// Alt+BackSpace -> Delete
-       {EF_ALT_DOWN, VKEY_BACK},
-       {EF_NONE, DomCode::DEL, DomKey::DEL, VKEY_DELETE}},
-      {// Search+Left -> Home
-       {EF_COMMAND_DOWN, VKEY_LEFT},
-       {EF_NONE, DomCode::HOME, DomKey::HOME, VKEY_HOME}},
-      {// Control+Alt+Up -> Home
-       {EF_ALT_DOWN | EF_CONTROL_DOWN, VKEY_UP},
-       {EF_NONE, DomCode::HOME, DomKey::HOME, VKEY_HOME}},
-      {// Search+Up -> Prior (aka PageUp)
-       {EF_COMMAND_DOWN, VKEY_UP},
-       {EF_NONE, DomCode::PAGE_UP, DomKey::PAGE_UP, VKEY_PRIOR}},
-      {// Alt+Up -> Prior (aka PageUp)
-       {EF_ALT_DOWN, VKEY_UP},
-       {EF_NONE, DomCode::PAGE_UP, DomKey::PAGE_UP, VKEY_PRIOR}},
-      {// Search+Right -> End
-       {EF_COMMAND_DOWN, VKEY_RIGHT},
-       {EF_NONE, DomCode::END, DomKey::END, VKEY_END}},
-      {// Control+Alt+Down -> End
-       {EF_ALT_DOWN | EF_CONTROL_DOWN, VKEY_DOWN},
-       {EF_NONE, DomCode::END, DomKey::END, VKEY_END}},
-      {// Search+Down -> Next (aka PageDown)
-       {EF_COMMAND_DOWN, VKEY_DOWN},
-       {EF_NONE, DomCode::PAGE_DOWN, DomKey::PAGE_DOWN, VKEY_NEXT}},
-      {// Alt+Down -> Next (aka PageDown)
-       {EF_ALT_DOWN, VKEY_DOWN},
-       {EF_NONE, DomCode::PAGE_DOWN, DomKey::PAGE_DOWN, VKEY_NEXT}}};
 
   for (const auto& map : kMergedSixPackRemappings) {
     if (!MatchKeyboardRemapping(incoming, map.condition)) {
@@ -973,6 +975,7 @@ void MaybeRewriteKeyEventToSixPackKeyAction(
 
     const auto modifier_flag = delegate->GetShortcutModifierForSixPackKey(
         key_event.source_device_id(), map.result.key_code);
+
     if (ShouldBlockSixPackEventRewrite(delegate, modifier_flag,
                                        map.condition.flags, map.result.key_code,
                                        device_id)) {
@@ -985,6 +988,20 @@ void MaybeRewriteKeyEventToSixPackKeyAction(
                                /*legacy_variant=*/*modifier_flag ==
                                    ui::mojom::SixPackShortcutModifier::kAlt);
     return;
+  }
+}
+
+void NotifySixPackRewriteBlockedByFnKey(
+    EventRewriterAsh::Delegate* delegate,
+    const KeyEvent& key_event,
+    EventRewriterAsh::MutableKeyState* state) {
+  for (const auto& map : kMergedSixPackRemappings) {
+    if (MatchKeyboardRemapping(*state, map.condition)) {
+      delegate->NotifySixPackRewriteBlockedByFnKey(
+          map.result.key_code, (map.condition.flags & ui::EF_COMMAND_DOWN)
+                                   ? mojom::SixPackShortcutModifier::kSearch
+                                   : mojom::SixPackShortcutModifier::kAlt);
+    }
   }
 }
 
@@ -1880,7 +1897,7 @@ void EventRewriterAsh::RewriteExtendedKeys(const KeyEvent& key_event,
     if (incoming.flags & (EF_FUNCTION_DOWN)) {
       MaybeRewriteFunctionBasedShortcutToSixPackKeyAction(key_event, state);
     } else if (incoming.flags & (EF_COMMAND_DOWN | EF_ALT_DOWN)) {
-      // TODO(dpad): Fire notification for old rewriting combinations.
+      NotifySixPackRewriteBlockedByFnKey(delegate_, key_event, state);
     }
     return;
   }

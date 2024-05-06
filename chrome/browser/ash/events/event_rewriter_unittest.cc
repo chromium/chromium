@@ -19,6 +19,8 @@
 #include "ash/public/mojom/input_device_settings.mojom.h"
 #include "ash/shell.h"
 #include "ash/system/input_device_settings/input_device_settings_notification_controller.h"
+#include "ash/system/input_device_settings/input_device_settings_pref_names.h"
+#include "ash/system/toast/anchored_nudge_manager_impl.h"
 #include "base/command_line.h"
 #include "base/containers/adapters.h"
 #include "base/containers/contains.h"
@@ -90,6 +92,7 @@ constexpr uint32_t kNoScanCode = 0;
 constexpr char kKbdSysPath[] = "/devices/platform/i8042/serio2/input/input1";
 constexpr char kKbdTopRowPropertyName[] = "CROS_KEYBOARD_TOP_ROW_LAYOUT";
 constexpr char kKbdTopRowLayoutAttributeName[] = "function_row_physmap";
+constexpr char kSixPackKeyNoMatchNudgeId[] = "six-patch-key-no-match-nudge-id";
 
 constexpr char kKbdTopRowLayoutUnspecified[] = "";
 constexpr char kKbdTopRowLayout1Tag[] = "1";
@@ -4730,6 +4733,22 @@ TEST_P(EventRewriterTest, SixPackRemappingsFnBased) {
     EXPECT_EQ(KeyPageDown::Typed(flag),
               RunRewriter(KeyArrowDown::Typed(), ui::EF_FUNCTION_DOWN | flag));
   }
+}
+
+TEST_P(EventRewriterTest, NotifySixPackRewriteBlockedByFnKey) {
+  base::test::ScopedFeatureList feature_list;
+  feature_list.InitAndEnableFeature(features::kModifierSplit);
+  auto reset = switches::SetIgnoreModifierSplitSecretKeyForTest();
+
+  AnchoredNudgeManagerImpl* nudge_manager =
+      Shell::Get()->anchored_nudge_manager();
+  ASSERT_TRUE(nudge_manager);
+  SetUpKeyboard(kInternalChromeSplitModifierLayoutKeyboard);
+  EXPECT_EQ(KeyArrowLeft::Typed(ui::EF_COMMAND_DOWN),
+            RunRewriter(KeyArrowLeft::Typed(), ui::EF_COMMAND_DOWN));
+
+  EXPECT_TRUE(nudge_manager->GetNudgeIfShown(kSixPackKeyNoMatchNudgeId));
+  nudge_manager->Cancel(kSixPackKeyNoMatchNudgeId);
 }
 
 class ModifierPressedMetricsTest

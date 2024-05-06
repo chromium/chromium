@@ -538,7 +538,7 @@ class InputDeviceSettingsControllerTest : public NoSessionAshTestBase {
          features::kInputDeviceSettingsSplit,
          features::kAltClickAndSixPackCustomization,
          features::kPeripheralNotification, features::kWelcomeExperience,
-         ::features::kSupportF11AndF12KeyShortcuts},
+         ::features::kSupportF11AndF12KeyShortcuts, features::kModifierSplit},
         {});
     NoSessionAshTestBase::SetUp();
     Shell::Get()->event_rewriter_controller()->Initialize(nullptr, nullptr);
@@ -656,6 +656,8 @@ class InputDeviceSettingsControllerTest : public NoSessionAshTestBase {
   // in by default.
   bool should_sign_in_ = true;
   scoped_refptr<testing::NiceMock<device::MockBluetoothAdapter>> mock_adapter_;
+  base::AutoReset<bool> modifier_split_reset_ =
+      ash::switches::SetIgnoreModifierSplitSecretKeyForTest();
 };
 
 TEST_F(InputDeviceSettingsControllerTest, KeyboardAddingOne) {
@@ -966,11 +968,6 @@ TEST_F(InputDeviceSettingsControllerTest, FkeySettingsAreValid) {
 
 TEST_F(InputDeviceSettingsControllerTest,
        UpdateSplitModifierKeyboardDefaultSettings) {
-  base::test::ScopedFeatureList feature_list;
-  feature_list.InitAndEnableFeature(features::kModifierSplit);
-  auto ignore_modifier_split_secret_key =
-      ash::switches::SetIgnoreModifierSplitSecretKeyForTest();
-
   fake_device_manager_->AddFakeKeyboard(kSampleSplitModifierKeyboard,
                                         kKbdTopRowLayout1Tag);
 

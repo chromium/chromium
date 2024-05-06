@@ -662,15 +662,40 @@ TEST_F(InputDeviceSettingsNotificationControllerTest,
   CancelNudge(kSixPackKeyNoMatchNudgeId);
   EXPECT_FALSE(nudge_manager->GetNudgeIfShown(kSixPackKeyNoMatchNudgeId));
 
-  // Six pack key VKEY_NEXT is not in the prefDict, should not show anything.
+  // Six pack key VKEY_NEXT is not in the prefDict, should default show kSearch.
   controller()->ShowSixPackKeyRewritingNudge(
       ui::VKEY_NEXT, ui::mojom::SixPackShortcutModifier::kSearch);
-  EXPECT_FALSE(nudge_manager->GetNudgeIfShown(kSixPackKeyNoMatchNudgeId));
+  EXPECT_TRUE(nudge_manager->GetNudgeIfShown(kSixPackKeyNoMatchNudgeId));
+  CancelNudge(kSixPackKeyNoMatchNudgeId);
 
   // Call the method with a non six pack key, should not show anything.
   // Six pack key VKEY_NEXT is not in the prefDict, should not show anything.
   controller()->ShowSixPackKeyRewritingNudge(
       ui::VKEY_BRIGHTNESS_UP, ui::mojom::SixPackShortcutModifier::kSearch);
+  EXPECT_FALSE(nudge_manager->GetNudgeIfShown(kSixPackKeyNoMatchNudgeId));
+
+  // Call VKEY_PRIOR again before 24 hours, the nudge should not show.
+  controller()->ShowSixPackKeyRewritingNudge(
+      ui::VKEY_PRIOR, ui::mojom::SixPackShortcutModifier::kAlt);
+  EXPECT_FALSE(nudge_manager->GetNudgeIfShown(kSixPackKeyNoMatchNudgeId));
+
+  // Pretend VKEY_PRIOR was called before 24 hours, should show nudge again.
+  Shell::Get()->session_controller()->GetActivePrefService()->SetTime(
+      prefs::kPageUpRemappingNudgeLastShown,
+      base::Time::Now() - base::Hours(24));
+  controller()->ShowSixPackKeyRewritingNudge(
+      ui::VKEY_PRIOR, ui::mojom::SixPackShortcutModifier::kAlt);
+  EXPECT_TRUE(nudge_manager->GetNudgeIfShown(kSixPackKeyNoMatchNudgeId));
+  CancelNudge(kSixPackKeyNoMatchNudgeId);
+
+  // Pretend VKEY_PRIOR has called 3 times, should not show nudge again.
+  Shell::Get()->session_controller()->GetActivePrefService()->SetTime(
+      prefs::kPageUpRemappingNudgeLastShown,
+      base::Time::Now() - base::Hours(24));
+  Shell::Get()->session_controller()->GetActivePrefService()->SetInteger(
+      prefs::kPageUpRemappingNudgeShownCount, 3u);
+  controller()->ShowSixPackKeyRewritingNudge(
+      ui::VKEY_PRIOR, ui::mojom::SixPackShortcutModifier::kAlt);
   EXPECT_FALSE(nudge_manager->GetNudgeIfShown(kSixPackKeyNoMatchNudgeId));
 }
 

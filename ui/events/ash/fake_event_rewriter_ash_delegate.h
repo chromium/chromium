@@ -57,6 +57,10 @@ class FakeEventRewriterAshDelegate : public ui::EventRewriterAsh::Delegate {
       ui::mojom::SixPackShortcutModifier blocked_modifier,
       ui::mojom::SixPackShortcutModifier active_modifier,
       int device_id) override;
+  void NotifySixPackRewriteBlockedByFnKey(
+      ui::KeyboardCode key_code,
+      ui::mojom::SixPackShortcutModifier modifier) override;
+
   std::optional<ui::mojom::ExtendedFkeysModifier> GetExtendedFkeySetting(
       int device_id,
       ui::KeyboardCode key_code) override;

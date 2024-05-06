@@ -200,6 +200,13 @@ class EventRewriterAsh : public EventRewriter {
     // `device_id` weren't found) or if an invalid `key_code` was passed in.
     virtual std::optional<ui::mojom::ExtendedFkeysModifier>
     GetExtendedFkeySetting(int device_id, ui::KeyboardCode key_code) = 0;
+
+    // Used to send a notification when a income event is a shortcut with
+    // search key but could not find a matched remapped event, and the
+    // ModifierSplit flag is on.
+    virtual void NotifySixPackRewriteBlockedByFnKey(
+        ui::KeyboardCode key_code,
+        ui::mojom::SixPackShortcutModifier modifier) = 0;
   };
 
   // Does not take ownership of the |sticky_keys_controller|, which may also be
