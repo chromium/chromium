@@ -63,11 +63,8 @@ TEST_P(PagePrintAnalysisRequestTest, CloudSizes) {
 
         ASSERT_EQ(result, expected_result());
         ASSERT_EQ(data.size, page_size());
-        if (expected_result() ==
-            safe_browsing::BinaryUploadService::Result::SUCCESS) {
-          ASSERT_EQ(data.page.GetSize(), page_size());
-          ASSERT_TRUE(data.page.IsValid());
-        }
+        ASSERT_EQ(data.page.GetSize(), page_size());
+        ASSERT_TRUE(data.page.IsValid());
 
         run_loop.Quit();
       }));
