@@ -872,9 +872,6 @@ TypeConverter<IdentityProviderRequestOptionsPtr,
   if (options.hasScope()) {
     mojo_options->scope = options.scope();
   }
-  if (options.hasResponseType()) {
-    mojo_options->responseType = options.responseType();
-  }
   if (options.hasParams()) {
     HashMap<String, String> params;
     for (const auto& pair : options.params()) {

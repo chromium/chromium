@@ -19,6 +19,5 @@ dictionary IdentityProviderRequestOptions : IdentityProviderConfig {
   DOMString loginHint;
   [RuntimeEnabled=FedCmDomainHint] DOMString domainHint;
   [RuntimeEnabled=FedCmAuthz] sequence<USVString> scope;
-  [RuntimeEnabled=FedCmAuthz] sequence<USVString> responseType;
   [RuntimeEnabled=FedCmAuthz] record<USVString, USVString> params;
 };

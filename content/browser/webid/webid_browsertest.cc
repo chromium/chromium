@@ -1150,10 +1150,9 @@ IN_PROC_BROWSER_TEST_F(WebIdAuthzBrowserTest, Authz_noPopUpWindow) {
             content += "account_id=not_real_account&";
             content += "disclosure_text_shown=false&";
             content += "is_auto_selected=false&";
-            // Asserts that the scope, response_type and params parameters
+            // Asserts that the scope and params parameters
             // were passed correctly to the id assertion endpoint.
             content += "scope=name+email+picture&";
-            content += "response_type=id_token+code&";
             content += "%3F+gets+://=%26+escaped+!&";
             content += "foo=bar&";
             content += "hello=world";
@@ -1191,10 +1190,6 @@ IN_PROC_BROWSER_TEST_F(WebIdAuthzBrowserTest, Authz_noPopUpWindow) {
                   'name',
                   'email',
                   'picture',
-                ],
-                responseType: [
-                  'id_token',
-                  'code'
                 ],
                 params: {
                   'foo': 'bar',

@@ -94,12 +94,6 @@ struct IdentityProviderRequestOptions {
   // custom ones (e.g. "access to calendar", "access to social graph", etc).
   array<string> scope;
 
-  // The types of token the relying party wants to get back (e.g. an id token
-  // or an access token).
-  // More than one type can be requested, e.g. to support OIDC flows:
-  // https://openid.net/specs/openid-connect-core-1_0.html#code-id_token-tokenExample
-  array<string> responseType;
-
   // Additional parameters that the relying party can send to the IdP after
   // the user's permission has been gathered.
   map<string, string> params;

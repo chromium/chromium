@@ -98,7 +98,6 @@ std::string ComputeUrlEncodedTokenPostData(
     bool is_auto_reauthn,
     const RpMode& rp_mode,
     const std::vector<std::string>& scope,
-    const std::vector<std::string>& responseType,
     const base::flat_map<std::string, std::string>& params) {
   std::string query;
   if (!client_id.empty()) {
@@ -168,11 +167,6 @@ std::string ComputeUrlEncodedTokenPostData(
     if (!scope.empty()) {
       query += "&scope=" + base::EscapeUrlEncodedData(
                                base::JoinString(scope, " "), /*use_plus=*/true);
-    }
-    if (!responseType.empty()) {
-      query += "&response_type=" +
-               base::EscapeUrlEncodedData(base::JoinString(responseType, " "),
-                                          /*use_plus=*/true);
     }
     for (const auto& pair : params) {
       // TODO(crbug.com/40262526): Should we use a prefix with these custom
@@ -2177,8 +2171,7 @@ void FederatedAuthRequestImpl::OnAccountSelected(const GURL& idp_config_url,
           render_frame_host(), idp_origin, idp_info.provider->config->client_id,
           idp_info.provider->nonce, account_id, is_sign_in,
           identity_selection_type_ != kExplicit, rp_mode_,
-          idp_info.provider->scope, idp_info.provider->responseType,
-          idp_info.provider->params),
+          idp_info.provider->scope, idp_info.provider->params),
       base::BindOnce(&FederatedAuthRequestImpl::OnTokenResponseReceived,
                      weak_ptr_factory_.GetWeakPtr(),
                      idp_info.provider->Clone()),
