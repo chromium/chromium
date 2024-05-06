@@ -228,6 +228,8 @@ CGFloat const kCreditCardCellHeight = 64;
   NSMutableAttributedString* attributedText = [[NSMutableAttributedString alloc]
       initWithString:_bottomSheetData.explanatoryMessage
           attributes:@{
+            NSForegroundColorAttributeName :
+                [UIColor colorNamed:kTextPrimaryColor],
             NSFontAttributeName :
                 [UIFont preferredFontForTextStyle:UIFontTextStyleFootnote],
             NSParagraphStyleAttributeName : centeredTextStyle,
