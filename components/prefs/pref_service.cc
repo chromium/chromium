@@ -516,7 +516,8 @@ base::Value* PrefService::GetMutableUserPref(const std::string& path,
 
   const Preference* pref = FindPreference(path);
   if (!pref) {
-    NOTREACHED() << "Trying to get an unregistered pref: " << path;
+    DUMP_WILL_BE_NOTREACHED_NORETURN()
+        << "Trying to get an unregistered pref: " << path;
     return nullptr;
   }
   if (pref->GetType() != type) {
@@ -561,7 +562,8 @@ void PrefService::SetUserPrefValue(const std::string& path,
 
   const Preference* pref = FindPreference(path);
   if (!pref) {
-    NOTREACHED() << "Trying to write an unregistered pref: " << path;
+    DUMP_WILL_BE_NOTREACHED_NORETURN()
+        << "Trying to write an unregistered pref: " << path;
     return;
   }
   if (pref->GetType() != new_value.type()) {

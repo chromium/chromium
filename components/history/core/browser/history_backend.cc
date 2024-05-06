@@ -2922,7 +2922,7 @@ void HistoryBackend::GetRedirectsFromSpecificVisit(VisitID cur_visit,
   visit_set.insert(cur_visit);
   while (db_->GetRedirectFromVisit(cur_visit, &cur_visit, &cur_url)) {
     if (visit_set.find(cur_visit) != visit_set.end()) {
-      NOTREACHED() << "Loop in visit chain, giving up";
+      DUMP_WILL_BE_NOTREACHED_NORETURN() << "Loop in visit chain, giving up";
       return;
     }
     visit_set.insert(cur_visit);
@@ -2943,7 +2943,7 @@ void HistoryBackend::GetRedirectsToSpecificVisit(VisitID cur_visit,
   visit_set.insert(cur_visit);
   while (db_->GetRedirectToVisit(cur_visit, &cur_visit, &cur_url)) {
     if (visit_set.find(cur_visit) != visit_set.end()) {
-      NOTREACHED() << "Loop in visit chain, giving up";
+      DUMP_WILL_BE_NOTREACHED_NORETURN() << "Loop in visit chain, giving up";
       return;
     }
     visit_set.insert(cur_visit);

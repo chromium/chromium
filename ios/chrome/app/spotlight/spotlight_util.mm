@@ -104,7 +104,7 @@ Domain SpotlightDomainFromString(NSString* domain) {
   }
   // On normal flow, it is not possible to reach this point. When testing the
   // app, it may be possible though if the app is downgraded.
-  NOTREACHED();
+  DUMP_WILL_BE_NOTREACHED_NORETURN();
   return DOMAIN_UNKNOWN;
 }
 

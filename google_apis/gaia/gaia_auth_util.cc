@@ -100,7 +100,8 @@ std::string ExtractDomainName(std::string_view email_address) {
       separator_pos < email.length() - 1) {
     return email.substr(separator_pos + 1);
   } else {
-    NOTREACHED() << "Not a proper email address: " << email;
+    DUMP_WILL_BE_NOTREACHED_NORETURN()
+        << "Not a proper email address: " << email;
   }
   return std::string();
 }

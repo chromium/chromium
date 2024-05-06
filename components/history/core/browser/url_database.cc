@@ -276,7 +276,7 @@ bool URLDatabase::CommitTemporaryURLTable() {
 
   // Swap the url table out and replace it with the temporary one.
   if (!GetDB().Execute("DROP TABLE urls")) {
-    NOTREACHED() << GetDB().GetErrorMessage();
+    DUMP_WILL_BE_NOTREACHED_NORETURN() << GetDB().GetErrorMessage();
     return false;
   }
   if (!GetDB().Execute("ALTER TABLE temp_urls RENAME TO urls")) {
@@ -759,7 +759,7 @@ bool URLDatabase::RecreateURLTableWithAllContents() {
           "recreate_url_table_description");
       error_message_crash_key.Set(error_message);
     }
-    NOTREACHED() << error_message;
+    DUMP_WILL_BE_NOTREACHED_NORETURN() << error_message;
     return false;
   }
 

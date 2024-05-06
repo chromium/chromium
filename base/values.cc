@@ -217,8 +217,9 @@ Value::Value(DoubleStorage storage) : data_(std::move(storage)) {}
 
 Value::DoubleStorage::DoubleStorage(double v) : v_(bit_cast<decltype(v_)>(v)) {
   if (!std::isfinite(v)) {
-    NOTREACHED() << "Non-finite (i.e. NaN or positive/negative infinity) "
-                 << "values cannot be represented in JSON";
+    DUMP_WILL_BE_NOTREACHED_NORETURN()
+        << "Non-finite (i.e. NaN or positive/negative infinity) "
+        << "values cannot be represented in JSON";
     v_ = bit_cast<decltype(v_)>(0.0);
   }
 }

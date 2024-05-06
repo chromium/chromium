@@ -419,7 +419,7 @@ void Eviction::OnCreateEntryV2(EntryImpl* entry) {
       break;
     };
     default:
-      NOTREACHED();
+      DUMP_WILL_BE_NOTREACHED_NORETURN();
   }
 
   rankings_->Insert(entry->rankings(), true, GetListForEntryV2(entry));

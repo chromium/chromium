@@ -300,8 +300,9 @@ const NSUInteger kMaxSuggestTileTypePosition = 15;
 
     _delegate->OnMatchSelected(match, row, WindowOpenDisposition::CURRENT_TAB);
   } else {
-    NOTREACHED() << "Suggestion type " << NSStringFromClass(suggestion.class)
-                 << " not handled for selection.";
+    DUMP_WILL_BE_NOTREACHED_NORETURN()
+        << "Suggestion type " << NSStringFromClass(suggestion.class)
+        << " not handled for selection.";
   }
 }
 
@@ -342,8 +343,9 @@ const NSUInteger kMaxSuggestTileTypePosition = 15;
         autocompleteMatchFormatter.autocompleteMatch;
     _delegate->OnMatchSelectedForDeletion(match);
   } else {
-    NOTREACHED() << "Suggestion type " << NSStringFromClass(suggestion.class)
-                 << " not handled for deletion.";
+    DUMP_WILL_BE_NOTREACHED_NORETURN()
+        << "Suggestion type " << NSStringFromClass(suggestion.class)
+        << " not handled for deletion.";
   }
 }
 

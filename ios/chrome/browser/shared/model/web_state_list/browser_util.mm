@@ -88,8 +88,9 @@ void MoveTabToBrowser(web::WebStateID tab_id,
   BrowserAndIndex tab_info = FindBrowserAndIndex(tab_id, browsers);
 
   if (!tab_info.browser) {
-    NOTREACHED() << "Either the tab_id is incorrect, or the user is attempting "
-                    "to move a tab across profiles (incognito <-> regular)";
+    DUMP_WILL_BE_NOTREACHED_NORETURN()
+        << "Either the tab_id is incorrect, or the user is attempting "
+           "to move a tab across profiles (incognito <-> regular)";
     return;
   }
   MoveTabFromBrowserToBrowser(tab_info.browser, tab_info.tab_index,
@@ -143,7 +144,7 @@ void MoveTabGroupToBrowser(const TabGroup* source_tab_group,
   }
 
   if (!source_browser) {
-    NOTREACHED()
+    DUMP_WILL_BE_NOTREACHED_NORETURN()
         << "Either the 'source_tab_group' is incorrect, or the user is "
            "attempting to move a tab group across profiles (incognito <-> "
            "regular)";

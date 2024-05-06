@@ -28,7 +28,7 @@ bool InMemoryDatabase::InitDB() {
 
   // Create the URL table, but leave it empty for now.
   if (!CreateURLTable(false)) {
-    NOTREACHED() << "Unable to create table";
+    DUMP_WILL_BE_NOTREACHED_NORETURN() << "Unable to create table";
     db_.Close();
     return false;
   }

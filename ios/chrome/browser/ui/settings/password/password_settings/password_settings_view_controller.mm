@@ -302,7 +302,7 @@ typedef NS_ENUM(NSInteger, ModelLoadStatus) {
     case ItemTypeOnDeviceEncryptionOptInDescription:
     case ItemTypeSavePasswordsSwitch:
     case ItemTypeManagedSavePasswords: {
-      NOTREACHED();
+      DUMP_WILL_BE_NOTREACHED_NORETURN();
     }
   }
   [tableView deselectRowAtIndexPath:indexPath animated:YES];
