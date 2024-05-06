@@ -164,27 +164,6 @@ CredentialsItemView::CredentialsItemView(
 
 CredentialsItemView::~CredentialsItemView() = default;
 
-void CredentialsItemView::SetStoreIndicatorIcon(
-    password_manager::PasswordForm::Store store) {
-  if (store == password_manager::PasswordForm::Store::kAccountStore &&
-      !store_indicator_icon_view_) {
-    store_indicator_icon_view_ =
-        AddChildView(std::make_unique<views::ImageView>());
-    store_indicator_icon_view_->SetCanProcessEventsWithinSubtree(false);
-    store_indicator_icon_view_->SetImage(ui::ImageModel::FromVectorIcon(
-#if BUILDFLAG(GOOGLE_CHROME_BRANDING)
-        vector_icons::kGoogleGLogoIcon,
-#else
-        vector_icons::kSyncIcon,
-#endif  // !BUILDFLAG(GOOGLE_CHROME_BRANDING)
-        gfx::kPlaceholderColor));
-  } else if (store == password_manager::PasswordForm::Store::kProfileStore &&
-             store_indicator_icon_view_) {
-    RemoveChildView(store_indicator_icon_view_);
-    store_indicator_icon_view_ = nullptr;
-  }
-}
-
 void CredentialsItemView::UpdateAvatar(const gfx::ImageSkia& image) {
   image_view_->SetImage(
       ui::ImageModel::FromImageSkia(ScaleImageForAccountAvatar(image)));
