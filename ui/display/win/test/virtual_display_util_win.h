@@ -43,7 +43,7 @@ class VirtualDisplayUtilWin : public display::DisplayObserver,
  private:
   // display::DisplayObserver:
   void OnDisplayAdded(const display::Display& new_display) override;
-  void OnDisplayRemoved(const display::Display& old_display) override;
+  void OnDisplaysRemoved(const display::Displays& removed_displays) override;
 
   bool SetDriverProperties(DriverProperties properties);
   void OnDisplayAddedOrRemoved(int64_t id);

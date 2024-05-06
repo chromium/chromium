@@ -70,11 +70,8 @@ class TestDisplayObserver : public display::DisplayObserver {
     display_ = new_display;
   }
 
-  void OnDisplayRemoved(const display::Display& old_display) override {
-    removed_display_ = old_display;
-  }
-
   void OnDisplaysRemoved(const display::Displays& removed_displays) override {
+    removed_display_ = removed_displays.back();
     if (displays_removed_closure_) {
       displays_removed_closure_.Run();
     }

@@ -114,7 +114,7 @@ class ASH_EXPORT TabletModeWindowManager : public aura::WindowObserver,
 
   // display::DisplayObserver:
   void OnDisplayAdded(const display::Display& display) override;
-  void OnDisplayRemoved(const display::Display& display) override;
+  void OnDisplaysRemoved(const display::Displays& removed_displays) override;
 
   // SessionObserver:
   void OnActiveUserSessionChanged(const AccountId& account_id) override;

@@ -231,8 +231,8 @@ void DisplayInfoProvider::OnDisplayAdded(const display::Display& new_display) {
   DispatchOnDisplayChangedEvent();
 }
 
-void DisplayInfoProvider::OnDisplayRemoved(
-    const display::Display& old_display) {
+void DisplayInfoProvider::OnDisplaysRemoved(
+    const display::Displays& removed_displays) {
   DispatchOnDisplayChangedEvent();
 }
 

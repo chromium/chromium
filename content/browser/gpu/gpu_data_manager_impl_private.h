@@ -146,7 +146,7 @@ class CONTENT_EXPORT GpuDataManagerImplPrivate {
   void SetApplicationVisible(bool is_visible);
 
   void OnDisplayAdded(const display::Display& new_display);
-  void OnDisplayRemoved(const display::Display& old_display);
+  void OnDisplaysRemoved(const display::Displays& removed_displays);
   void OnDisplayMetricsChanged(const display::Display& display,
                                uint32_t changed_metrics);
 

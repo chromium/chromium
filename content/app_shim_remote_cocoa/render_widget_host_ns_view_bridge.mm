@@ -240,7 +240,7 @@ void RenderWidgetHostNSViewBridge::OnDisplayAdded(const display::Display&) {
   [cocoa_view_ updateScreenProperties];
 }
 
-void RenderWidgetHostNSViewBridge::OnDisplayRemoved(const display::Display&) {
+void RenderWidgetHostNSViewBridge::OnDisplaysRemoved(const display::Displays&) {
   [cocoa_view_ updateScreenProperties];
 }
 

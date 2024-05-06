@@ -233,17 +233,20 @@ void WiredDisplayMediaRouteProvider::OnDisplayAdded(
   NotifySinkObservers();
 }
 
-void WiredDisplayMediaRouteProvider::OnDisplayRemoved(
-    const Display& old_display) {
-  const std::string sink_id =
-      WiredDisplayMediaRouteProvider::GetSinkIdForDisplay(old_display);
-  auto it =
-      base::ranges::find(presentations_, sink_id,
-                         [](const Presentations::value_type& presentation) {
-                           return presentation.second.route().media_sink_id();
-                         });
-  if (it != presentations_.end())
-    it->second.receiver()->ExitFullscreen();
+void WiredDisplayMediaRouteProvider::OnDisplaysRemoved(
+    const display::Displays& removed_displays) {
+  for (const auto& display : removed_displays) {
+    const std::string sink_id =
+        WiredDisplayMediaRouteProvider::GetSinkIdForDisplay(display);
+    auto it =
+        base::ranges::find(presentations_, sink_id,
+                           [](const Presentations::value_type& presentation) {
+                             return presentation.second.route().media_sink_id();
+                           });
+    if (it != presentations_.end()) {
+      it->second.receiver()->ExitFullscreen();
+    }
+  }
   NotifySinkObservers();
 }
 

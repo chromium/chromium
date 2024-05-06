@@ -44,11 +44,6 @@ class DISPLAY_EXPORT DisplayObserver : public base::CheckedObserver {
   // Called before displays have been removed.
   virtual void OnWillRemoveDisplays(const Displays& removed_displays) {}
 
-  // [Deprecated] Use `OnDisplaysRemoved` instead.
-  // Called when |old_display| has been removed.
-  // TODO(crbug.com/329003664): Remove this method.
-  virtual void OnDisplayRemoved(const Display& old_display) {}
-
   // Called *after* `removed_displays` have been removed. Not called per
   // display.
   virtual void OnDisplaysRemoved(const Displays& removed_displays) {}

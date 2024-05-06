@@ -27,7 +27,9 @@ class MockDisplayObserver : public DisplayObserver {
 
   void OnDisplayAdded(const Display& display) override { display_added_++; }
 
-  void OnDisplayRemoved(const Display& display) override { display_removed_++; }
+  void OnDisplaysRemoved(const Displays& removed_displays) override {
+    display_removed_ += removed_displays.size();
+  }
 
   void OnDisplayMetricsChanged(const Display& display,
                                uint32_t metrics) override {

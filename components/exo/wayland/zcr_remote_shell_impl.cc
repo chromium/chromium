@@ -542,7 +542,8 @@ void WaylandRemoteShell::OnDisplayAdded(const display::Display& new_display) {
   ScheduleSendDisplayMetrics(0);
 }
 
-void WaylandRemoteShell::OnDisplayRemoved(const display::Display& old_display) {
+void WaylandRemoteShell::OnDisplaysRemoved(
+    const display::Displays& removed_displays) {
   ScheduleSendDisplayMetrics(0);
 }
 

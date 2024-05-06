@@ -563,7 +563,7 @@ class CrosDisplayConfig::ObserverImpl
     NotifyObserversDisplayConfigChanged();
   }
 
-  void OnDisplayRemoved(const display::Display& old_display) override {
+  void OnDisplaysRemoved(const display::Displays& removed_displays) override {
     NotifyObserversDisplayConfigChanged();
   }
 

@@ -101,7 +101,7 @@ class RenderWidgetHostNSViewBridge : public mojom::RenderWidgetHostNSView,
 
   // display::DisplayObserver implementation.
   void OnDisplayAdded(const display::Display&) override;
-  void OnDisplayRemoved(const display::Display&) override;
+  void OnDisplaysRemoved(const display::Displays&) override;
   void OnDisplayMetricsChanged(const display::Display&, uint32_t) override;
 
   void OnSharingServiceInvoked(ShowSharingServicePickerCallback callback,

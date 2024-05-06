@@ -241,7 +241,7 @@ class DisplayMetricsChangeObserver : public display::DisplayObserver {
       run_loop_.Quit();
   }
   void OnDisplayAdded(const display::Display& new_display) override {}
-  void OnDisplayRemoved(const display::Display& old_display) override {}
+  void OnDisplaysRemoved(const display::Displays& removed_displays) override {}
 
   const int64_t display_id_;
   const gfx::Size size_;
@@ -548,14 +548,15 @@ void VirtualDisplayUtilMac::OnDisplayAdded(
   OnDisplayAddedOrRemoved(new_display.id());
 }
 
-void VirtualDisplayUtilMac::OnDisplayRemoved(
-    const display::Display& old_display) {
-  // TODO(crbug.com/40148077): Please remove this log or replace it with
-  // [D]CHECK() ASAP when the TEST is stable.
-  LOG(INFO) << "VirtualDisplayUtilMac::" << __func__
-            << " - display id: " << old_display.id() << ".";
-
-  OnDisplayAddedOrRemoved(old_display.id());
+void VirtualDisplayUtilMac::OnDisplaysRemoved(
+    const display::Displays& removed_displays) {
+  for (const auto& display : removed_displays) {
+    // TODO(crbug.com/40148077): Please remove this log or replace it with
+    // [D]CHECK() ASAP when the TEST is stable.
+    LOG(INFO) << "VirtualDisplayUtilMac::" << __func__
+              << " - display id: " << display.id() << ".";
+    OnDisplayAddedOrRemoved(display.id());
+  }
 }
 
 void VirtualDisplayUtilMac::OnDisplayAddedOrRemoved(int64_t id) {

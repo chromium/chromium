@@ -73,9 +73,9 @@ class TestDisplayRemoveObserver : public display::DisplayObserver {
     ++added_displays_;
   }
 
-  void OnDisplayRemoved(const display::Display& old_display) override {
+  void OnDisplaysRemoved(const display::Displays& removed_displays) override {
     TestPrimaryDisplay();
-    ++removed_displays_;
+    removed_displays_ += removed_displays.size();
   }
 
  private:

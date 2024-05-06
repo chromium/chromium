@@ -115,9 +115,9 @@ void DesktopMessagePopupCollection::OnDisplayAdded(
   UpdatePrimaryDisplay();
 }
 
-void DesktopMessagePopupCollection::OnDisplayRemoved(
-    const display::Display& removed_display) {
-  // The removed display may have been the primary display.
+void DesktopMessagePopupCollection::OnDisplaysRemoved(
+    const display::Displays& removed_displays) {
+  // One of the removed displays may have been the primary display.
   UpdatePrimaryDisplay();
 }
 

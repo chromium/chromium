@@ -77,7 +77,7 @@ class ASH_EXPORT DisplayColorManager
       display::MultipleDisplayState failed_new_state) override {}
 
   // display::DisplayObserver:
-  void OnDisplayRemoved(const display::Display& old_display) override;
+  void OnDisplaysRemoved(const display::Displays& removed_displays) override;
 
  protected:
   virtual void FinishLoadCalibrationForDisplay(

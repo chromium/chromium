@@ -384,9 +384,10 @@ void GpuDataManagerImpl::OnDisplayAdded(const display::Display& new_display) {
   private_->OnDisplayAdded(new_display);
 }
 
-void GpuDataManagerImpl::OnDisplayRemoved(const display::Display& old_display) {
+void GpuDataManagerImpl::OnDisplaysRemoved(
+    const display::Displays& removed_displays) {
   base::AutoLock auto_lock(lock_);
-  private_->OnDisplayRemoved(old_display);
+  private_->OnDisplaysRemoved(removed_displays);
 }
 
 void GpuDataManagerImpl::OnDisplayMetricsChanged(

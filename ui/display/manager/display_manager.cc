@@ -1347,24 +1347,15 @@ void DisplayManager::UpdateDisplaysWith(
     }
   }
 
-  for (const auto& display : removed_displays) {
-    NotifyDisplayRemoved(display);
-  }
-
-  for (size_t index : added_display_indices) {
-    NotifyDisplayAdded(active_display_list_[index]);
+  if (!removed_displays.empty()) {
+    NotifyDisplaysRemoved(removed_displays);
   }
 
   active_display_list_.resize(active_display_list_size);
   is_updating_display_list_ = false;
 
-  // OnDidRemoveDisplays is called after the displays have been removed,
-  // in comparison to NotifyDisplayRemoved/OnDisplayRemoved which on Ash
-  // is called before.
-  if (!removed_displays.empty()) {
-    for (auto& display_observer : display_observers_) {
-      display_observer.OnDisplaysRemoved(removed_displays);
-    }
+  for (size_t index : added_display_indices) {
+    NotifyDisplayAdded(active_display_list_[index]);
   }
 
   UpdatePrimaryDisplayIdIfNecessary();
@@ -2605,9 +2596,9 @@ void DisplayManager::NotifyWillRemoveDisplays(const Displays& displays) {
   }
 }
 
-void DisplayManager::NotifyDisplayRemoved(const Display& display) {
+void DisplayManager::NotifyDisplaysRemoved(const Displays& displays) {
   for (auto& display_observer : display_observers_) {
-    display_observer.OnDisplayRemoved(display);
+    display_observer.OnDisplaysRemoved(displays);
   }
 }
 

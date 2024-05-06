@@ -313,9 +313,11 @@ void DisplayColorManager::OnDisplayModeChanged(
     displays_ctm_support_ = DisplayCtmSupport::kMixed;
 }
 
-void DisplayColorManager::OnDisplayRemoved(
-    const display::Display& old_display) {
-  displays_color_matrix_map_.erase(old_display.id());
+void DisplayColorManager::OnDisplaysRemoved(
+    const display::Displays& removed_displays) {
+  for (const auto& display : removed_displays) {
+    displays_color_matrix_map_.erase(display.id());
+  }
 }
 
 void DisplayColorManager::ApplyDisplayColorCalibration(

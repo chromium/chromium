@@ -1482,8 +1482,8 @@ void GpuDataManagerImplPrivate::OnDisplayAdded(
                            }));
 }
 
-void GpuDataManagerImplPrivate::OnDisplayRemoved(
-    const display::Display& old_display) {
+void GpuDataManagerImplPrivate::OnDisplaysRemoved(
+    const display::Displays& removed_displays) {
   base::AutoUnlock unlock(owner_->lock_);
 
   // Notify observers in the browser process.

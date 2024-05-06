@@ -1351,8 +1351,8 @@ void SplitViewController::OnOverviewModeEnded() {
   }
 }
 
-void SplitViewController::OnDisplayRemoved(
-    const display::Display& old_display) {
+void SplitViewController::OnDisplaysRemoved(
+    const display::Displays& removed_displays) {
   // If the `root_window_`is the root window of the display which is going to
   // be removed, there's no need to start overview.
   if (GetRootWindowSettings(root_window_)->display_id ==

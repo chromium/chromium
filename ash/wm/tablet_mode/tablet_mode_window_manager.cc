@@ -486,8 +486,8 @@ void TabletModeWindowManager::OnDisplayAdded(const display::Display& display) {
   DisplayConfigurationChanged();
 }
 
-void TabletModeWindowManager::OnDisplayRemoved(
-    const display::Display& display) {
+void TabletModeWindowManager::OnDisplaysRemoved(
+    const display::Displays& removed_displays) {
   DisplayConfigurationChanged();
 }
 

@@ -91,7 +91,7 @@ class ASH_EXPORT ResolutionNotificationController
   void RevertResolutionChange(bool display_was_removed);
 
   // display::DisplayObserver overrides:
-  void OnDisplayRemoved(const display::Display& old_display) override;
+  void OnDisplaysRemoved(const display::Displays& removed_displays) override;
 
   // WindowTreeHostManager::Observer overrides:
   void OnDisplayConfigurationChanged() override;

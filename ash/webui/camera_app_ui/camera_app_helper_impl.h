@@ -143,7 +143,7 @@ class CameraAppHelperImpl : public ScreenBacklightObserver,
 
   // display::DisplayObserver overrides;
   void OnDisplayAdded(const display::Display& new_display) override;
-  void OnDisplayRemoved(const display::Display& old_display) override;
+  void OnDisplaysRemoved(const display::Displays& removed_displays) override;
   void OnDisplayTabletStateChanged(display::TabletState state) override;
   void OnLidStateChanged(cros::mojom::LidState state) override;
 

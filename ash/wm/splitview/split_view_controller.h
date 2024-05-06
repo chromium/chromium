@@ -337,7 +337,7 @@ class ASH_EXPORT SplitViewController : public aura::WindowObserver,
   void OnOverviewModeEnded() override;
 
   // display::DisplayObserver:
-  void OnDisplayRemoved(const display::Display& old_display) override;
+  void OnDisplaysRemoved(const display::Displays& removed_displays) override;
   void OnDisplayMetricsChanged(const display::Display& display,
                                uint32_t metrics) override;
   void OnDisplayTabletStateChanged(display::TabletState state) override;

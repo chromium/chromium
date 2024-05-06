@@ -150,13 +150,15 @@ void VirtualDisplayUtilWin::OnDisplayAdded(
   OnDisplayAddedOrRemoved(new_display.id());
 }
 
-void VirtualDisplayUtilWin::OnDisplayRemoved(
-    const display::Display& old_display) {
-  base::EraseIf(virtual_displays_,
-                [&old_display](const std::pair<unsigned short, int64_t>& obj) {
-                  return obj.second == old_display.id();
-                });
-  OnDisplayAddedOrRemoved(old_display.id());
+void VirtualDisplayUtilWin::OnDisplaysRemoved(
+    const display::Displays& removed_displays) {
+  for (const auto& display : removed_displays) {
+    base::EraseIf(virtual_displays_,
+                  [&display](const std::pair<unsigned short, int64_t>& obj) {
+                    return obj.second == display.id();
+                  });
+    OnDisplayAddedOrRemoved(display.id());
+  }
 }
 
 bool VirtualDisplayUtilWin::SetDriverProperties(DriverProperties properties) {

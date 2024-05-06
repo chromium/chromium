@@ -565,8 +565,8 @@ void CameraAppHelperImpl::OnDisplayAdded(const display::Display& new_display) {
   CheckExternalScreenState();
 }
 
-void CameraAppHelperImpl::OnDisplayRemoved(
-    const display::Display& old_display) {
+void CameraAppHelperImpl::OnDisplaysRemoved(
+    const display::Displays& removed_displays) {
   CheckExternalScreenState();
 }
 

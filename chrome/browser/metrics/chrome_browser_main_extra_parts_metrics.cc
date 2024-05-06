@@ -1259,8 +1259,8 @@ void ChromeBrowserMainExtraPartsMetrics::OnDisplayAdded(
   RecordDisplayHDRStatus(new_display);
 }
 
-void ChromeBrowserMainExtraPartsMetrics::OnDisplayRemoved(
-    const display::Display& old_display) {
+void ChromeBrowserMainExtraPartsMetrics::OnDisplaysRemoved(
+    const display::Displays& removed_displays) {
   EmitDisplaysChangedMetric();
 }
 

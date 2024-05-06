@@ -102,9 +102,11 @@ class DisplayManagerObserverValidator : public display::DisplayObserver,
       added_displays_.push_back(new_display);
     }
   }
-  void OnDisplayRemoved(const display::Display& old_display) override {
-    if (!base::Contains(added_displays_, old_display)) {
-      removed_displays_.push_back(old_display);
+  void OnDisplaysRemoved(const display::Displays& removed_displays) override {
+    for (const auto& display : removed_displays) {
+      if (!base::Contains(added_displays_, display)) {
+        removed_displays_.push_back(display);
+      }
     }
   }
   void OnDisplayMetricsChanged(const display::Display& display,
@@ -257,8 +259,8 @@ class DisplayManagerTest : public AshTestBase,
   void OnDisplayAdded(const display::Display& new_display) override {
     added_.push_back(new_display);
   }
-  void OnDisplayRemoved(const display::Display& old_display) override {
-    ++removed_count_;
+  void OnDisplaysRemoved(const display::Displays& removed_displays) override {
+    removed_count_ += removed_displays.size();
   }
 
   // display::DisplayManager::Observer:
@@ -2629,7 +2631,7 @@ class TestDisplayObserver : public display::DisplayObserver {
     EXPECT_TRUE(test_api.GetHosts().empty());
     changed_ = true;
   }
-  void OnDisplayRemoved(const display::Display& old_display) override {
+  void OnDisplaysRemoved(const display::Displays& removed_displays) override {
     // Mirror window should not be created until the external display
     // is removed.
     EXPECT_TRUE(test_api.GetHosts().empty());

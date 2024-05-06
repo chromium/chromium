@@ -48,16 +48,20 @@ void DisplaySpeakerController::OnDisplayAdded(
   CrasAudioHandler::Get()->SetActiveHDMIOutoutRediscoveringIfNecessary(true);
 }
 
-void DisplaySpeakerController::OnDisplayRemoved(
-    const display::Display& old_display) {
-  if (!old_display.IsInternal())
-    return;
-  UpdateInternalSpeakerForDisplayRotation();
+void DisplaySpeakerController::OnDisplaysRemoved(
+    const display::Displays& removed_displays) {
+  for (const auto& display : removed_displays) {
+    if (display.IsInternal()) {
+      UpdateInternalSpeakerForDisplayRotation();
 
-  // This event will be triggered when the lid of the device is closed to enter
-  // the docked mode, we should always start or re-start HDMI re-discovering
-  // grace period right after this event.
-  CrasAudioHandler::Get()->SetActiveHDMIOutoutRediscoveringIfNecessary(true);
+      // This event will be triggered when the lid of the device is closed to
+      // enter the docked mode, we should always start or re-start HDMI
+      // re-discovering grace period right after this event.
+      CrasAudioHandler::Get()->SetActiveHDMIOutoutRediscoveringIfNecessary(
+          true);
+      break;
+    }
+  }
 }
 
 void DisplaySpeakerController::OnDisplayMetricsChanged(

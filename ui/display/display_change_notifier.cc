@@ -35,9 +35,6 @@ void DisplayChangeNotifier::NotifyDisplaysChanged(
        ++old_it) {
     if (!base::Contains(new_displays, old_it->id(), &Display::id)) {
       removed_displays.push_back(*old_it);
-      for (DisplayObserver& observer : observer_list_) {
-        observer.OnDisplayRemoved(*old_it);
-      }
     }
   }
 

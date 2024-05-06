@@ -1315,8 +1315,8 @@ void NativeWidgetNSWindowBridge::OnDisplayAdded(
   UpdateWindowDisplay();
 }
 
-void NativeWidgetNSWindowBridge::OnDisplayRemoved(
-    const display::Display& display) {
+void NativeWidgetNSWindowBridge::OnDisplaysRemoved(
+    const display::Displays& removed_displays) {
   UpdateWindowDisplay();
 }
 
