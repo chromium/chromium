@@ -1009,6 +1009,22 @@ public class CustomTabIntentDataProviderTest {
         assertFalse(dataProvider.isInteractiveOmniboxAllowed());
     }
 
+    @Test
+    @EnableFeatures({ChromeFeatureList.SEARCH_IN_CCT})
+    public void searchInCCT_notAllowedOnPartialCCTs() {
+        CustomTabIntentDataProvider.OMNIBOX_ALLOWED_PACKAGE_NAMES.setForTesting("com.a.b.c");
+        CustomTabsConnection connection = Mockito.mock(CustomTabsConnection.class);
+        CustomTabsConnection.setInstanceForTesting(connection);
+
+        Intent intent = new CustomTabsIntent.Builder().build().intent;
+        var dataProvider =
+                spy(new CustomTabIntentDataProvider(intent, mContext, COLOR_SCHEME_LIGHT));
+        when(dataProvider.isPartialCustomTab()).thenReturn(true);
+
+        when(connection.getClientPackageNameForSession(any())).thenReturn("com.a.b.c");
+        assertFalse(dataProvider.isInteractiveOmniboxAllowed());
+    }
+
     private Bundle createActionButtonInToolbarBundle() {
         Bundle bundle = new Bundle();
         bundle.putInt(CustomTabsIntent.KEY_ID, CustomTabsIntent.TOOLBAR_ACTION_BUTTON_ID);

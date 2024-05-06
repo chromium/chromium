@@ -1492,6 +1492,7 @@ public class CustomTabIntentDataProvider extends BrowserServicesIntentDataProvid
     public boolean isInteractiveOmniboxAllowed() {
         if (!ChromeFeatureList.sSearchInCCT.isEnabled()) return false;
         if (isIncognito()) return false;
+        if (isPartialCustomTab()) return false;
 
         return isPackageNameInList(
                 getClientPackageName(), OMNIBOX_ALLOWED_PACKAGE_NAMES.getValue());
