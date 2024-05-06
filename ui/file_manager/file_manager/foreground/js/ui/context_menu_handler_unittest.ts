@@ -2,7 +2,7 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-import {assertEquals} from 'chrome://webui-test/chromeos/chai_assert.js';
+import {assertEquals, assertFalse, assertTrue} from 'chrome://webui-test/chromeos/chai_assert.js';
 
 import {crInjectTypeAndInit} from '../../../common/js/cr_ui.js';
 
@@ -69,4 +69,52 @@ export async function testShowAndHideEvents() {
   assertEquals(menu, events[2]!.detail.menu);
 
   Date.now = originalDateNow;
+}
+
+/**
+ * Tests that a keydown event that is not intended for the context menu will not
+ * be consumed by the context menu.
+ */
+export async function testContextMenuDoesNotConsumeNonMenuEvent() {
+  let eventConsumedByMenu = true;
+  const contextMenuEventKey = 'ArrowDown';
+  const nonContextMenuEventKey = 'AudioVolumeUp';
+
+  // Create context menu.
+  const rawDiv = document.createElement('div');
+  const menu = crInjectTypeAndInit(rawDiv, Menu);
+  document.body.appendChild(menu);
+
+  // Show context menu.
+  const elem = document.createElement('div');
+  contextMenuHandler.setContextMenu(elem, menu);
+  document.dispatchEvent(new MouseEvent('contextmenu'));
+
+  // Only the event that is ignored by the context menu is received by
+  // `document.body`.
+  document.body.addEventListener('keydown', e => {
+    eventConsumedByMenu = false;
+    // Check this is the right keydown event.
+    assertEquals(nonContextMenuEventKey, e.key);
+    // Confirm this is not a menu event.
+    assertFalse(contextMenuHandler.isMenuEvent(e));
+  });
+
+  // Send a keydown event expected to be consumed by the context menu.
+  const contextMenuKeyDownEvent = new KeyboardEvent('keydown', {
+    key: contextMenuEventKey,
+    bubbles: true,
+    composed: true,  // Allow the event to bubble past shadow DOM root.
+  });
+  menu.dispatchEvent(contextMenuKeyDownEvent);
+  assertTrue(eventConsumedByMenu);
+
+  // Send a keydown event expected to be ignored by the context menu.
+  const nonContextMenuKeyDownEvent = new KeyboardEvent('keydown', {
+    key: nonContextMenuEventKey,
+    bubbles: true,
+    composed: true,  // Allow the event to bubble past shadow DOM root.
+  });
+  menu.dispatchEvent(nonContextMenuKeyDownEvent);
+  assertFalse(eventConsumedByMenu);
 }

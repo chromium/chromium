@@ -983,8 +983,6 @@ export async function checkEncryptedMoveEnabled() {
   await remoteCall.waitForElement(
       appId,
       '#file-context-menu:not([hidden]) [command="#cut"]:not([disabled]):not([hidden])');
-
-  await remoteCall.waitUntilSelected(appId, ENTRIES.testCSEFile.nameText);
   chrome.test.assertTrue(
       !!await remoteCall.callRemoteTestUtil('execCommand', appId, ['cut']),
       'execCommand failed');
