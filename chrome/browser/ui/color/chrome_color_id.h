@@ -79,6 +79,8 @@
   E_CPONLY(kColorComposeDialogResultForeground) \
   E_CPONLY(kColorComposeDialogResultForegroundWhileLoading) \
   E_CPONLY(kColorComposeDialogResultIcon) \
+  E_CPONLY(kColorComposeDialogResultButtonsDivider) \
+  E_CPONLY(kColorComposeDialogResultContainerScrollbarThumb) \
   E_CPONLY(kColorComposeDialogScrollbarThumb) \
   E_CPONLY(kColorComposeDialogTitle) \
   E_CPONLY(kColorComposeDialogTextarea) \
