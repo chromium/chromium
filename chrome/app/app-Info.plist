@@ -184,6 +184,18 @@
 				<string>com.adobe.pdf</string>
 			</array>
 		</dict>
+		<dict>
+			<key>CFBundleTypeIconFile</key>
+			<string>document.icns</string>
+			<key>CFBundleTypeName</key>
+			<string>Chromium Shortcut</string>
+			<key>CFBundleTypeRole</key>
+			<string>Viewer</string>
+			<key>LSItemContentTypes</key>
+			<array>
+				<string>org.chromium.shortcut</string>
+			</array>
+		</dict>
 	</array>
 	<key>CFBundleExecutable</key>
 	<string>${EXECUTABLE_NAME}</string>
@@ -274,6 +286,27 @@
 				<key>public.mime-type</key>
 				<array>
 					<string>application/x-chrome-extension</string>
+				</array>
+			</dict>
+		</dict>
+		<dict>
+			<key>UTTypeConformsTo</key>
+			<array>
+				<string>com.apple.web-internet-location</string>
+			</array>
+			<key>UTTypeDescription</key>
+			<string>Chromium Shortcut</string>
+			<key>UTTypeIdentifier</key>
+			<string>org.chromium.shortcut</string>
+			<key>UTTypeTagSpecification</key>
+			<dict>
+				<key>public.filename-extension</key>
+				<array>
+					<string>crwebloc</string>
+				</array>
+				<key>public.mime-type</key>
+				<array>
+					<string>application/x-chrome-shortcut</string>
 				</array>
 			</dict>
 		</dict>

@@ -56,9 +56,11 @@ source_set("shortcuts") {
   ]
 
   if (is_mac) {
-    public += [ "platform_util_mac.h" ]
-    sources += [
+    public += [
       "chrome_webloc_file.h",
+      "platform_util_mac.h",
+    ]
+    sources += [
       "chrome_webloc_file.mm",
       "platform_util_mac.mm",
       "shortcut_creator_mac.mm",

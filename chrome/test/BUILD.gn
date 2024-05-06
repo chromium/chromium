@@ -3394,6 +3394,7 @@ if (!is_android) {
         "//chrome/app_shim",
         "//chrome/browser/apps/app_shim",
         "//chrome/browser/renderer_host:history_swiper",
+        "//chrome/browser/shortcuts",
         "//components/onc",
         "//components/remote_cocoa/app_shim",
         "//mojo/core/embedder",

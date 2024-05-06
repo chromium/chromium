@@ -163,6 +163,10 @@ int main(int argc, char* const argv[]) {
                                IDS_RUNTIME_PERMISSION_OS_REASON_TEXT,
                                "IDS_RUNTIME_PERMISSION_OS_REASON_TEXT");
 
+    std::string chromium_shortcut_description = LoadStringFromDataPack(
+        branded_data_pack.get(), cur_lang, IDS_CHROMIUM_SHORCUT_DESCRIPTION,
+        "IDS_CHROMIUM_SHORCUT_DESCRIPTION");
+
     // For now, assume this is ok for all languages. If we need to, this could
     // be moved into generated_resources.grd and fetched.
     std::string get_info = base::StringPrintf(
@@ -179,6 +183,7 @@ int main(int argc, char* const argv[]) {
         {"NSLocationUsageDescription", permission_reason},
         {"NSMicrophoneUsageDescription", permission_reason},
         {"NSWebBrowserPublicKeyCredentialUsageDescription", permission_reason},
+        {"\"Chromium Shortcut\"", chromium_shortcut_description},
     };
     std::string strings_file_contents_string;
     for (const auto& kv : infoplist_strings) {

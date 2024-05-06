@@ -15,6 +15,7 @@
 #include "base/auto_reset.h"
 #include "base/check_op.h"
 #include "base/command_line.h"
+#include "base/containers/flat_map.h"
 #include "base/debug/dump_without_crashing.h"
 #include "base/files/file_path.h"
 #include "base/functional/bind.h"
@@ -59,6 +60,7 @@
 #include "chrome/browser/sessions/session_service.h"
 #include "chrome/browser/sessions/session_service_factory.h"
 #include "chrome/browser/sessions/tab_restore_service_factory.h"
+#include "chrome/browser/shortcuts/chrome_webloc_file.h"
 #include "chrome/browser/ui/browser.h"
 #include "chrome/browser/ui/browser_command_controller.h"
 #include "chrome/browser/ui/browser_commands.h"
@@ -378,12 +380,84 @@ base::FilePath GetStartupProfilePathMac() {
   return profile_path_info.path;
 }
 
+void OpenUrlsInBrowserWithProfileName(const std::vector<GURL>& urls,
+                                      const base::FilePath& profile_name) {
+  g_browser_process->profile_manager()->LoadProfile(
+      profile_name, /*incognito=*/false,
+      base::BindOnce(
+          [](const std::vector<GURL>& urls, Profile* profile) {
+            if (profile) {
+              OpenUrlsInBrowserWithProfile(urls, profile);
+            } else {
+              app_controller_mac::RunInLastProfileSafely(
+                  base::BindOnce(&OpenUrlsInBrowserWithProfile, urls),
+                  app_controller_mac::kShowProfilePickerOnFailure);
+            }
+          },
+          urls));
+}
+
 // Open the urls in the last used browser. Loads the profile asynchronously if
 // needed.
 void OpenUrlsInBrowser(const std::vector<GURL>& urls) {
-  app_controller_mac::RunInLastProfileSafely(
-      base::BindOnce(&OpenUrlsInBrowserWithProfile, urls),
-      app_controller_mac::kShowProfilePickerOnFailure);
+  if (base::FeatureList::IsEnabled(features::kShortcutsNotApps)) {
+    std::vector<GURL> regular_urls;
+    std::vector<base::FilePath> shortcuts;
+
+    for (const auto& url : urls) {
+      base::FilePath path;
+      if (net::FileURLToFilePath(url, &path) &&
+          path.Extension() == shortcuts::ChromeWeblocFile::kFileExtension) {
+        shortcuts.push_back(path);
+      } else {
+        regular_urls.push_back(url);
+      }
+    }
+
+    if (!shortcuts.empty()) {
+      // Parse/read the shortcut files on the thread pool to avoid blocking the
+      // UI thread.
+      base::ThreadPool::PostTaskAndReplyWithResult(
+          FROM_HERE,
+          {base::MayBlock(), base::TaskPriority::USER_BLOCKING,
+           base::TaskShutdownBehavior::BLOCK_SHUTDOWN},
+          base::BindOnce(
+              [](const std::vector<base::FilePath>& shortcuts) {
+                base::flat_map<base::FilePath, std::vector<GURL>>
+                    profile_url_map;
+                for (const auto& path : shortcuts) {
+                  auto shortcut =
+                      shortcuts::ChromeWeblocFile::LoadFromFile(path);
+                  if (!shortcut.has_value()) {
+                    // TODO: Consider opening the original file URL?
+                    continue;
+                  }
+                  profile_url_map[shortcut->profile_path_name().path()]
+                      .push_back(shortcut->target_url());
+                }
+                return profile_url_map;
+              },
+              std::move(shortcuts)),
+          base::BindOnce(
+              [](const base::flat_map<base::FilePath, std::vector<GURL>>
+                     profile_url_map) {
+                for (const auto& [profile, urls_for_profile] :
+                     profile_url_map) {
+                  OpenUrlsInBrowserWithProfileName(urls_for_profile, profile);
+                }
+              }));
+    }
+
+    if (!regular_urls.empty()) {
+      app_controller_mac::RunInLastProfileSafely(
+          base::BindOnce(&OpenUrlsInBrowserWithProfile, regular_urls),
+          app_controller_mac::kShowProfilePickerOnFailure);
+    }
+  } else {
+    app_controller_mac::RunInLastProfileSafely(
+        base::BindOnce(&OpenUrlsInBrowserWithProfile, urls),
+        app_controller_mac::kShowProfilePickerOnFailure);
+  }
 }
 
 }  // namespace
