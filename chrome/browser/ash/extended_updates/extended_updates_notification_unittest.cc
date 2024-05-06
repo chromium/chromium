@@ -26,9 +26,8 @@ using IndexedButton = ExtendedUpdatesNotification::IndexedButton;
 
 using ::testing::ElementsAre;
 
-class TestExtendedUpdatesNotification
-    : public ExtendedUpdatesNotification,
-      public base::SupportsWeakPtr<TestExtendedUpdatesNotification> {
+class TestExtendedUpdatesNotification final
+    : public ExtendedUpdatesNotification {
  public:
   explicit TestExtendedUpdatesNotification(Profile* profile)
       : ExtendedUpdatesNotification(profile) {}
@@ -40,6 +39,13 @@ class TestExtendedUpdatesNotification
 
   MOCK_METHOD(void, ShowExtendedUpdatesDialog, (), (override));
   MOCK_METHOD(void, OpenLearnMoreUrl, (), (override));
+
+  base::WeakPtr<TestExtendedUpdatesNotification> AsWeakPtr() {
+    return weak_ptr_factory_.GetWeakPtr();
+  }
+
+ private:
+  base::WeakPtrFactory<TestExtendedUpdatesNotification> weak_ptr_factory_{this};
 };
 
 class ExtendedUpdatesNotificationTest
