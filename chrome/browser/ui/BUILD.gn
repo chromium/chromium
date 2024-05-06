@@ -2735,6 +2735,8 @@ static_library("ui") {
       "ash/download_status/holding_space_display_client.h",
       "ash/download_status/notification_display_client.cc",
       "ash/download_status/notification_display_client.h",
+      "ash/focus_mode/chrome_focus_mode_delegate.cc",
+      "ash/focus_mode/chrome_focus_mode_delegate.h",
       "ash/fwupd_download_client_impl.cc",
       "ash/fwupd_download_client_impl.h",
       "ash/game_dashboard/chrome_game_dashboard_delegate.cc",

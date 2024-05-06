@@ -43,6 +43,7 @@ class BackGestureContextualNudgeDelegate;
 class CaptureModeDelegate;
 class ClipboardHistoryControllerDelegate;
 class DeskProfilesDelegate;
+class FocusModeDelegate;
 class GameDashboardDelegate;
 class MediaNotificationProvider;
 class NearbyShareController;
@@ -105,6 +106,10 @@ class ASH_EXPORT ShellDelegate {
       const = 0;
 
   virtual std::unique_ptr<api::TasksDelegate> CreateTasksDelegate() const = 0;
+
+  // Creates and returns the delegate for Focus Mode.
+  virtual std::unique_ptr<FocusModeDelegate> CreateFocusModeDelegate()
+      const = 0;
 
   // Creates and returns the delegate of the System Sounds feature.
   virtual std::unique_ptr<SystemSoundsDelegate> CreateSystemSoundsDelegate()

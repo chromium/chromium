@@ -1683,7 +1683,8 @@ void Shell::Init(
       std::make_unique<SystemNotificationController>();
 
   if (features::IsFocusModeEnabled()) {
-    focus_mode_controller_ = std::make_unique<FocusModeController>();
+    focus_mode_controller_ = std::make_unique<FocusModeController>(
+        shell_delegate_->CreateFocusModeDelegate());
   }
 
   // WmModeController should be created before initializing the window tree

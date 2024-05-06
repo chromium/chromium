@@ -12,6 +12,7 @@
 #include "ash/public/cpp/system/anchored_nudge_data.h"
 #include "ash/root_window_controller.h"
 #include "ash/shell.h"
+#include "ash/shell_delegate.h"
 #include "ash/strings/grit/ash_strings.h"
 #include "ash/system/do_not_disturb_notification_controller.h"
 #include "ash/system/focus_mode/focus_mode_histogram_names.h"
@@ -148,8 +149,10 @@ void RecordStartSessionSourceHistogram(
 
 }  // namespace
 
-FocusModeController::FocusModeController()
-    : session_duration_(kDefaultSessionDuration) {
+FocusModeController::FocusModeController(
+    std::unique_ptr<FocusModeDelegate> delegate)
+    : session_duration_(kDefaultSessionDuration),
+      delegate_(std::move(delegate)) {
   CHECK_EQ(g_instance, nullptr);
   g_instance = this;
 

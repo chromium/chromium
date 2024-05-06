@@ -51,6 +51,7 @@
 #include "chrome/browser/ui/ash/chrome_accessibility_delegate.h"
 #include "chrome/browser/ui/ash/clipboard_history_controller_delegate_impl.h"
 #include "chrome/browser/ui/ash/desks/chrome_saved_desk_delegate.h"
+#include "chrome/browser/ui/ash/focus_mode/chrome_focus_mode_delegate.h"
 #include "chrome/browser/ui/ash/game_dashboard/chrome_game_dashboard_delegate.h"
 #include "chrome/browser/ui/ash/global_media_controls/media_notification_provider_impl.h"
 #include "chrome/browser/ui/ash/keyboard/chrome_keyboard_ui.h"
@@ -208,6 +209,11 @@ ChromeShellDelegate::CreateSystemSoundsDelegate() const {
 std::unique_ptr<ash::api::TasksDelegate>
 ChromeShellDelegate::CreateTasksDelegate() const {
   return std::make_unique<ash::api::ChromeTasksDelegate>();
+}
+
+std::unique_ptr<ash::FocusModeDelegate>
+ChromeShellDelegate::CreateFocusModeDelegate() const {
+  return std::make_unique<ChromeFocusModeDelegate>();
 }
 
 std::unique_ptr<ash::UserEducationDelegate>
