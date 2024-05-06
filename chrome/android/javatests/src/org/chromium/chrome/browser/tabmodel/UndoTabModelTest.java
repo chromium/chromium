@@ -21,6 +21,7 @@ import org.chromium.base.test.util.CallbackHelper;
 import org.chromium.base.test.util.CommandLineFlags;
 import org.chromium.base.test.util.Criteria;
 import org.chromium.base.test.util.CriteriaHelper;
+import org.chromium.base.test.util.DisableIf;
 import org.chromium.base.test.util.MinAndroidSdkLevel;
 import org.chromium.base.test.util.Restriction;
 import org.chromium.base.test.util.UrlUtils;
@@ -36,6 +37,7 @@ import org.chromium.chrome.test.batch.BlankCTATabInitialStateRule;
 import org.chromium.chrome.test.util.ChromeTabUtils;
 import org.chromium.content_public.browser.LoadUrlParams;
 import org.chromium.content_public.browser.test.util.TestThreadUtils;
+import org.chromium.ui.test.util.UiDisableIf;
 import org.chromium.ui.test.util.UiRestriction;
 
 import java.util.concurrent.ExecutionException;
@@ -274,6 +276,7 @@ public class UndoTabModelTest {
      */
     @Test
     @MediumTest
+    @DisableIf.Device(type = {UiDisableIf.TABLET}) // https://crbug.com/338997949
     @CommandLineFlags.Add(ChromeSwitches.DISABLE_TAB_MERGING_FOR_TESTING)
     public void testOpenRecentlyClosedTabMultiWindow() throws TimeoutException {
         final ChromeTabbedActivity2 secondActivity =
@@ -353,6 +356,7 @@ public class UndoTabModelTest {
      */
     @Test
     @MediumTest
+    @DisableIf.Device(type = {UiDisableIf.TABLET}) // https://crbug.com/338997949
     @MinAndroidSdkLevel(24)
     @CommandLineFlags.Add(ChromeSwitches.DISABLE_TAB_MERGING_FOR_TESTING)
     public void testOpenRecentlyClosedTabMultiWindowFallback() throws TimeoutException {
