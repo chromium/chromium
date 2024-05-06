@@ -146,7 +146,7 @@ suite('LanguageChanged', () => {
     });
   });
 
-  suite('tries to install voice pack', () => {
+  suite('with flag tries to install voice pack', () => {
     let sentRequest: boolean;
 
     function setInstallStatus(lang: string, status: VoicePackStatus) {
@@ -155,6 +155,7 @@ suite('LanguageChanged', () => {
     }
 
     setup(() => {
+      chrome.readingMode.isLanguagePackDownloadingEnabled = true;
       sentRequest = false;
       chrome.readingMode.sendGetVoicePackInfoRequest = () => {
         sentRequest = true;

@@ -85,7 +85,10 @@ suite('LanguageMenu', () => {
       availableVoices =
           [{name: 'test voice 1', lang: 'en-US'} as SpeechSynthesisVoice];
       const expectedLanguages =
-          chrome.readingMode.isChromeOsAsh ? 34 : availableVoices.length;
+          chrome.readingMode.isLanguagePackDownloadingEnabled &&
+              chrome.readingMode.isChromeOsAsh ?
+          34 :
+          availableVoices.length;
       setAvailableVoices();
       languageMenu.showDialog();
       assertTrue(isPositionedOnPage(languageMenu));
@@ -110,7 +113,11 @@ suite('LanguageMenu', () => {
     });
 
     test('adds language from available voice', () => {
-      const expectedLanguages = chrome.readingMode.isChromeOsAsh ? 1 : 0;
+      const expectedLanguages =
+          chrome.readingMode.isLanguagePackDownloadingEnabled &&
+              chrome.readingMode.isChromeOsAsh ?
+          1 :
+          0;
       availableVoices =
           [{name: 'test voice 5', lang: 'en-es'} as SpeechSynthesisVoice];
       setAvailableVoices();
@@ -120,7 +127,11 @@ suite('LanguageMenu', () => {
     });
 
     test('sorts alphabetically', () => {
-      const expectedLanguages = chrome.readingMode.isChromeOsAsh ? 1 : 0;
+      const expectedLanguages =
+          chrome.readingMode.isLanguagePackDownloadingEnabled &&
+              chrome.readingMode.isChromeOsAsh ?
+          1 :
+          0;
       availableVoices = [
         {name: 'Steve', lang: 'da-dk'} as SpeechSynthesisVoice,
         {name: 'Dustin', lang: 'bn-bd'} as SpeechSynthesisVoice,

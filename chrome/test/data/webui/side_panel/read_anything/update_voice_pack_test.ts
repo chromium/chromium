@@ -58,6 +58,7 @@ suite('UpdateVoicePack', () => {
 
       test('request install if we need to', () => {
         const lang = 'it';
+        chrome.readingMode.isLanguagePackDownloadingEnabled = true;
         chrome.readingMode.baseLanguageForSpeech = lang;
         app.$.toolbar.updateFonts = () => {};
         app.languageChanged();

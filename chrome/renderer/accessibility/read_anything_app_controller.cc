@@ -712,6 +712,8 @@ gin::ObjectTemplateBuilder ReadAnythingAppController::GetObjectTemplateBuilder(
       .SetProperty("isChromeOsAsh", &ReadAnythingAppController::IsChromeOsAsh)
       .SetProperty("isAutoVoiceSwitchingEnabled",
                    &ReadAnythingAppController::IsAutoVoiceSwitchingEnabled)
+      .SetProperty("isLanguagePackDownloadingEnabled",
+                   &ReadAnythingAppController::IsLanguagePackDownloadingEnabled)
       .SetProperty(
           "isAutomaticWordHighlightingEnabled",
           &ReadAnythingAppController::IsAutomaticWordHighlightingEnabled)
@@ -1173,6 +1175,10 @@ bool ReadAnythingAppController::IsChromeOsAsh() const {
 
 bool ReadAnythingAppController::IsAutoVoiceSwitchingEnabled() const {
   return features::IsReadAloudAutoVoiceSwitchingEnabled();
+}
+
+bool ReadAnythingAppController::IsLanguagePackDownloadingEnabled() const {
+  return features::IsReadAloudLanguagePackDownloadingEnabled();
 }
 
 bool ReadAnythingAppController::IsAutomaticWordHighlightingEnabled() const {

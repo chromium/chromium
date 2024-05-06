@@ -2040,6 +2040,10 @@ export class ReadAnythingElement extends ReadAnythingElementBase {
   // 4) Upon response, if we see the voice is not installed and that it's in
   // installVoicePackIfPossible, then we trigger an install request
   private installVoicePackIfPossible(langOrLocale: string) {
+    if (!chrome.readingMode.isLanguagePackDownloadingEnabled) {
+      return;
+    }
+
     const langCodeForVoicePackManager =
         convertLangOrLocaleForVoicePackManager(langOrLocale);
 
