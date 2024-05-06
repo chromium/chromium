@@ -4126,6 +4126,7 @@
       // cross-document transitions.
       // See https://drafts.csswg.org/css-view-transitions-1/.
       name: "ViewTransitionOnNavigation",
+      status: "stable",
     },
     {
       name: "ViewTransitionOnNavigationForIframes",
