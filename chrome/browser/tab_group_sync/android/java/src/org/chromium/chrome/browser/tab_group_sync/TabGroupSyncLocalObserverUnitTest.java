@@ -43,6 +43,7 @@ import org.chromium.chrome.browser.tasks.tab_groups.TabGroupModelFilter;
 import org.chromium.chrome.browser.tasks.tab_groups.TabGroupModelFilterObserver;
 import org.chromium.chrome.browser.tasks.tab_groups.TabGroupModelFilterObserver.DidRemoveTabGroupReason;
 import org.chromium.chrome.test.util.browser.tabmodel.MockTabModel;
+import org.chromium.components.embedder_support.util.UrlConstants;
 import org.chromium.components.tab_group_sync.LocalTabGroupId;
 import org.chromium.components.tab_group_sync.TabGroupSyncService;
 import org.chromium.components.tab_groups.TabGroupColorId;
@@ -65,6 +66,8 @@ public class TabGroupSyncLocalObserverUnitTest {
     private static final LocalTabGroupId LOCAL_TAB_GROUP_ID_1 = new LocalTabGroupId(TOKEN_1);
     private static final String TITLE_1 = "Group Title";
     private static final String TAB_GROUP_COLORS_FILE_NAME = "tab_group_colors";
+    private static final String TAB_TITLE_1 = "Tab Title";
+    private static final GURL TAB_URL_1 = new GURL("https://google.com");
 
     @Rule public MockitoRule mMockitoRule = MockitoJUnit.rule();
     private @Mock TabModelSelector mTabModelSelector;
@@ -86,7 +89,8 @@ public class TabGroupSyncLocalObserverUnitTest {
         Tab tab = Mockito.mock(Tab.class);
         Mockito.doReturn(tabId).when(tab).getId();
         Mockito.doReturn(rootId).when(tab).getRootId();
-        Mockito.doReturn(GURL.emptyGURL()).when(tab).getUrl();
+        Mockito.doReturn(TAB_URL_1).when(tab).getUrl();
+        Mockito.doReturn(TAB_TITLE_1).when(tab).getTitle();
         return tab;
     }
 
@@ -142,7 +146,31 @@ public class TabGroupSyncLocalObserverUnitTest {
                         TabCreationState.LIVE_IN_BACKGROUND,
                         false);
         verify(mTabGroupSyncService, times(1))
-                .addTab(eq(LOCAL_TAB_GROUP_ID_1), eq(TAB_ID_1), any(), any(), anyInt());
+                .addTab(
+                        eq(LOCAL_TAB_GROUP_ID_1),
+                        eq(TAB_ID_1),
+                        eq(TAB_TITLE_1),
+                        eq(TAB_URL_1),
+                        anyInt());
+    }
+
+    @Test
+    public void testTabAddedLocally_NonSaveableUrl() {
+        Mockito.doReturn(new GURL("ftp://someurl.com")).when(mTab1).getUrl();
+        mTabModelObserverCaptor
+                .getValue()
+                .didAddTab(
+                        mTab1,
+                        TabLaunchType.FROM_RESTORE,
+                        TabCreationState.LIVE_IN_BACKGROUND,
+                        false);
+        verify(mTabGroupSyncService, times(1))
+                .addTab(
+                        eq(LOCAL_TAB_GROUP_ID_1),
+                        eq(TAB_ID_1),
+                        eq(TabGroupSyncUtils.UNSAVEABLE_TAB_TITLE),
+                        eq(new GURL(UrlConstants.NTP_URL)),
+                        anyInt());
     }
 
     @Test

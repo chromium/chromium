@@ -24,6 +24,7 @@ import org.chromium.base.test.BaseRobolectricTestRunner;
 import org.chromium.chrome.browser.tab.Tab;
 import org.chromium.chrome.browser.tabmodel.TabModel;
 import org.chromium.chrome.browser.tabmodel.TabModelSelector;
+import org.chromium.components.embedder_support.util.UrlConstants;
 import org.chromium.components.tab_group_sync.LocalTabGroupId;
 import org.chromium.components.tab_group_sync.TabGroupSyncService;
 import org.chromium.content_public.browser.NavigationHandle;
@@ -42,6 +43,7 @@ public class NavigationObserverUnitTest {
     private static final Token TOKEN_1 = new Token(2, 3);
     private static final Token TOKEN_2 = new Token(4, 5);
     private static final LocalTabGroupId LOCAL_TAB_GROUP_ID_1 = new LocalTabGroupId(TOKEN_1);
+    private static final GURL CHROME_HISTORY_URL = new GURL("chrome://history");
 
     @Rule public MockitoRule mMockitoRule = MockitoJUnit.rule();
     @Mock private Tab mTab;
@@ -78,10 +80,10 @@ public class NavigationObserverUnitTest {
         when(mTab.getUrl()).thenReturn(url);
     }
 
-    private void simulateNavigation(GURL gurl, int transition) {
+    private void simulateNavigation(int transition) {
         NavigationHandle navigation =
                 NavigationHandle.createForTesting(
-                        gurl,
+                        new GURL("unused"),
                         /* isInPrimaryMainFrame= */ true,
                         /*isSameDocument*/ false,
                         /*isRendererInitiated*/ false,
@@ -101,7 +103,7 @@ public class NavigationObserverUnitTest {
                 mTestUrl,
                 /* isIncognito= */ false,
                 /* isGrouped= */ true);
-        simulateNavigation(mTestUrl, PageTransition.LINK);
+        simulateNavigation(PageTransition.LINK);
         verify(mTabGroupSyncService)
                 .updateTab(
                         eq(LOCAL_TAB_GROUP_ID_1),
@@ -121,7 +123,7 @@ public class NavigationObserverUnitTest {
                 mTestUrl,
                 /* isIncognito= */ false,
                 /* isGrouped= */ true);
-        simulateNavigation(mTestUrl, PageTransition.LINK);
+        simulateNavigation(PageTransition.LINK);
         verify(mTabGroupSyncService)
                 .updateTab(
                         eq(LOCAL_TAB_GROUP_ID_1),
@@ -137,7 +139,7 @@ public class NavigationObserverUnitTest {
                 mTestUrl2,
                 /* isIncognito= */ false,
                 /* isGrouped= */ true);
-        simulateNavigation(mTestUrl, PageTransition.LINK);
+        simulateNavigation(PageTransition.LINK);
         verify(mTabGroupSyncService)
                 .updateTab(
                         eq(new LocalTabGroupId(TOKEN_2)),
@@ -157,7 +159,7 @@ public class NavigationObserverUnitTest {
                 mTestUrl,
                 /* isIncognito= */ false,
                 /* isGrouped= */ true);
-        simulateNavigation(mTestUrl, PageTransition.LINK);
+        simulateNavigation(PageTransition.LINK);
         verifyNoInteractions(mTabGroupSyncService);
     }
 
@@ -171,7 +173,7 @@ public class NavigationObserverUnitTest {
                 mTestUrl,
                 /* isIncognito= */ true,
                 /* isGrouped= */ true);
-        simulateNavigation(mTestUrl, PageTransition.LINK);
+        simulateNavigation(PageTransition.LINK);
         verifyNoInteractions(mTabGroupSyncService);
     }
 
@@ -185,8 +187,48 @@ public class NavigationObserverUnitTest {
                 mTestUrl,
                 /* isIncognito= */ false,
                 /* isGrouped= */ true);
-        simulateNavigation(mTestUrl, PageTransition.SERVER_REDIRECT);
+        simulateNavigation(PageTransition.SERVER_REDIRECT);
         verifyNoInteractions(mTabGroupSyncService);
+    }
+
+    @Test
+    public void testChromeInternalUrl() {
+        mNavigationObserver.enableObservers(true);
+        mockTab(
+                TAB_ID_1,
+                TOKEN_1,
+                mTestTitle,
+                CHROME_HISTORY_URL,
+                /* isIncognito= */ false,
+                /* isGrouped= */ true);
+        simulateNavigation(PageTransition.LINK);
+        verify(mTabGroupSyncService)
+                .updateTab(
+                        eq(LOCAL_TAB_GROUP_ID_1),
+                        eq(TAB_ID_1),
+                        eq(TabGroupSyncUtils.UNSAVEABLE_TAB_TITLE),
+                        eq(new GURL(UrlConstants.NTP_URL)),
+                        eq(-1));
+    }
+
+    @Test
+    public void testNotHttpOrHttpsOrChromeUrl() {
+        mNavigationObserver.enableObservers(true);
+        mockTab(
+                TAB_ID_1,
+                TOKEN_1,
+                mTestTitle,
+                new GURL("ftp://someurl.com"),
+                /* isIncognito= */ false,
+                /* isGrouped= */ true);
+        simulateNavigation(PageTransition.LINK);
+        verify(mTabGroupSyncService)
+                .updateTab(
+                        eq(LOCAL_TAB_GROUP_ID_1),
+                        eq(TAB_ID_1),
+                        eq(TabGroupSyncUtils.UNSAVEABLE_TAB_TITLE),
+                        eq(new GURL(UrlConstants.NTP_URL)),
+                        eq(-1));
     }
 
     @Test

@@ -4,6 +4,8 @@
 
 package org.chromium.chrome.browser.tab_group_sync;
 
+import android.util.Pair;
+
 import org.chromium.base.Token;
 import org.chromium.base.supplier.LazyOneshotSupplier;
 import org.chromium.chrome.browser.tab.Tab;
@@ -14,6 +16,7 @@ import org.chromium.components.tab_group_sync.SavedTabGroup;
 import org.chromium.components.tab_group_sync.SavedTabGroupTab;
 import org.chromium.components.tab_group_sync.TabGroupSyncService;
 import org.chromium.components.tab_groups.TabGroupColorId;
+import org.chromium.url.GURL;
 
 import java.util.List;
 import java.util.Set;
@@ -86,13 +89,17 @@ public class RemoteTabGroupMutationHelper {
     }
 
     public void addTab(LocalTabGroupId tabGroupId, Tab tab, int position) {
+        Pair<GURL, String> urlAndTitle =
+                TabGroupSyncUtils.getFilteredUrlAndTitle(tab.getUrl(), tab.getTitle());
         mTabGroupSyncService.addTab(
-                tabGroupId, tab.getId(), tab.getTitle(), tab.getUrl(), position);
+                tabGroupId, tab.getId(), urlAndTitle.second, urlAndTitle.first, position);
     }
 
     public void updateTab(LocalTabGroupId tabGroupId, Tab tab, int position) {
+        Pair<GURL, String> urlAndTitle =
+                TabGroupSyncUtils.getFilteredUrlAndTitle(tab.getUrl(), tab.getTitle());
         mTabGroupSyncService.updateTab(
-                tabGroupId, tab.getId(), tab.getTitle(), tab.getUrl(), position);
+                tabGroupId, tab.getId(), urlAndTitle.second, urlAndTitle.first, position);
     }
 
     public void moveTab(LocalTabGroupId tabGroupId, int tabId, int newPosition) {
