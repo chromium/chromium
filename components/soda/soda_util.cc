@@ -4,12 +4,12 @@
 
 #include "components/soda/soda_util.h"
 
-#include "base/cpu.h"
-#include "base/feature_list.h"
 #include "build/build_config.h"
+#include "build/chromeos_buildflags.h"
 
 #if BUILDFLAG(IS_CHROMEOS_ASH)
 #include "ash/constants/ash_features.h"
+#include "base/feature_list.h"
 #endif
 
 #if BUILDFLAG(IS_CHROMEOS_LACROS)
@@ -20,9 +20,16 @@
 #include "base/win/windows_version.h"
 #endif
 
+#if BUILDFLAG(IS_LINUX) && defined(ARCH_CPU_X86_FAMILY)
+#include "base/cpu.h"
+#endif
+
 namespace speech {
 
-bool IsOnDeviceSpeechRecognitionSupported() {
+namespace {
+
+#if BUILDFLAG(IS_CHROMEOS)
+bool IsSupportedChromeOS() {
 // Some Chrome OS devices do not support on-device speech.
 #if BUILDFLAG(IS_CHROMEOS_ASH)
   if (!base::FeatureList::IsEnabled(
@@ -33,21 +40,46 @@ bool IsOnDeviceSpeechRecognitionSupported() {
   if (!chromeos::BrowserParamsProxy::Get()->IsOndeviceSpeechSupported()) {
     return false;
   }
-#endif
+#endif  // BUILDFLAG(IS_CHROMEOS_ASH)
+  return true;
+}
+#endif  // BUILDFLAG(IS_CHROMEOS)
 
 #if BUILDFLAG(IS_LINUX)
+bool IsSupportedLinux() {
+#if defined(ARCH_CPU_X86_FAMILY)
   // Check if the CPU has the required instruction set to run the Speech
   // On-Device API (SODA) library.
   static bool has_sse41 = base::CPU().has_sse41();
-  if (!has_sse41) {
-    return false;
-  }
-#endif
+  return has_sse41;
+#else
+  // Other architectures are not supported.
+  return false;
+#endif  // defined(ARCH_CPU_X86_FAMILY)
+}
+#endif  // BUILDFLAG(IS_LINUX)
 
-#if BUILDFLAG(IS_WIN) && defined(ARCH_CPU_ARM64)
+#if BUILDFLAG(IS_WIN)
+bool IsSupportedWin() {
+#if defined(ARCH_CPU_ARM64)
   // The Speech On-Device API (SODA) component does not support Windows on
   // arm64.
   return false;
+#else
+  return true;
+#endif  // defined(ARCH_CPU_ARM64)
+}
+#endif  // BUILDFLAG(IS_WIN)
+
+}  // namespace
+
+bool IsOnDeviceSpeechRecognitionSupported() {
+#if BUILDFLAG(IS_CHROMEOS)
+  return IsSupportedChromeOS();
+#elif BUILDFLAG(IS_LINUX)
+  return IsSupportedLinux();
+#elif BUILDFLAG(IS_WIN)
+  return IsSupportedWin();
 #else
   return true;
 #endif
