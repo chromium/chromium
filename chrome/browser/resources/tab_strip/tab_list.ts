@@ -209,11 +209,11 @@ export class TabListElement extends CustomElement implements
 
     this.eventTracker_ = new EventTracker();
 
-    this.pinnedTabsElement_ = this.$('#pinnedTabs')!;
+    this.pinnedTabsElement_ = this.getRequiredElement('#pinnedTabs');
 
     this.tabsApi_ = TabsApiProxyImpl.getInstance();
 
-    this.unpinnedTabsElement_ = this.$('#unpinnedTabs')!;
+    this.unpinnedTabsElement_ = this.getRequiredElement('#unpinnedTabs');
 
     /**
      * Timeout that is created at every scroll event and is either canceled at
@@ -383,7 +383,7 @@ export class TabListElement extends CustomElement implements
   }
 
   private fetchAndUpdateGroupData_() {
-    const tabGroupElements = this.$all<TabGroupElement>('tabstrip-tab-group');
+    const tabGroupElements = this.$all('tabstrip-tab-group');
     this.tabsApi_.getGroupVisualData().then(({data}) => {
       tabGroupElements.forEach(tabGroupElement => {
         const visualData = data[tabGroupElement.dataset['groupId']!];
@@ -694,10 +694,11 @@ export class TabListElement extends CustomElement implements
       index++;
     }
 
-    let elementAtIndex = this.$all('tabstrip-tab')[index]!;
+    let elementAtIndex: TabGroupElement|TabElement =
+        this.$all('tabstrip-tab')[index]!;
     if (elementAtIndex && elementAtIndex.parentElement &&
         isTabGroupElement(elementAtIndex.parentElement)) {
-      elementAtIndex = elementAtIndex.parentElement;
+      elementAtIndex = elementAtIndex.parentElement as TabGroupElement;
     }
 
     this.unpinnedTabsElement_.insertBefore(element, elementAtIndex);

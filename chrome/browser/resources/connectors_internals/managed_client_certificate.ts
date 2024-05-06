@@ -31,8 +31,8 @@ export class ManagedClientCertificateElement extends CustomElement {
     this.setValueToElement('#policy-enabled-levels', `${policyLevels}`);
   }
 
-  private get managedIdentitiesSection(): HTMLDivElement|undefined {
-    return this.$('#managed-identities') as HTMLDivElement;
+  private get managedIdentitiesSection(): HTMLElement|null {
+    return this.$('#managed-identities');
   }
 
   constructor() {
@@ -80,7 +80,7 @@ export class ManagedClientCertificateElement extends CustomElement {
   }
 
   private setValueToElement(elementId: string, stringValue: string) {
-    const htmlElement = (this.$(elementId) as HTMLElement);
+    const htmlElement = this.$<HTMLElement>(elementId);
     if (htmlElement) {
       htmlElement.innerText = stringValue;
     } else {

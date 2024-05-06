@@ -72,7 +72,7 @@ export class MetricsInternalsAppElement extends CustomElement {
     setInterval(() => this.updateUmaSummary_(), 3000);
 
     // Set up the UMA table caption.
-    const umaTableCaption = this.$('#uma-table-caption') as HTMLElement;
+    const umaTableCaption = this.getRequiredElement('#uma-table-caption');
     const isUsingMetricsServiceObserver =
         await this.browserProxy_.isUsingMetricsServiceObserver();
     umaTableCaption.textContent = isUsingMetricsServiceObserver ?
@@ -88,7 +88,7 @@ export class MetricsInternalsAppElement extends CustomElement {
     await this.updateUmaLogsData_();
 
     // Set up the UMA "Export logs" button.
-    const exportUmaLogsButton = this.$('#export-uma-logs') as HTMLElement;
+    const exportUmaLogsButton = this.getRequiredElement('#export-uma-logs');
     exportUmaLogsButton.addEventListener('click', () => this.exportUmaLogs_());
   }
 
@@ -115,7 +115,8 @@ export class MetricsInternalsAppElement extends CustomElement {
     // Clear the table first.
     tableBody.replaceChildren();
 
-    const template = this.$('#summary-row-template') as HTMLTemplateElement;
+    const template =
+        this.getRequiredElement<HTMLTemplateElement>('#summary-row-template');
     for (const info of summary) {
       const row = template.content.cloneNode(true) as HTMLElement;
       const [key, value] = row.querySelectorAll('td');
@@ -136,8 +137,6 @@ export class MetricsInternalsAppElement extends CustomElement {
   private async updateVariationsSummary_(): Promise<void> {
     const summary: KeyValue[] =
         await this.browserProxy_.fetchVariationsSummary();
-    const variationsSummaryTableBody =
-        this.$('#variations-summary-body') as HTMLElement;
 
     // Don't re-render the table if the data has not changed.
     const newDataString = summary.toString();
@@ -146,6 +145,8 @@ export class MetricsInternalsAppElement extends CustomElement {
     }
 
     this.previousVariationsSummaryData_ = newDataString;
+    const variationsSummaryTableBody =
+        this.getRequiredElement('#variations-summary-body');
     this.updateSummaryTable_(variationsSummaryTableBody, summary);
   }
 
@@ -173,7 +174,8 @@ export class MetricsInternalsAppElement extends CustomElement {
     // Clear the table first.
     tableBody.replaceChildren();
 
-    const template = this.$('#uma-log-row-template') as HTMLTemplateElement;
+    const template =
+        this.getRequiredElement<HTMLTemplateElement>('#uma-log-row-template');
 
     // Iterate through the logs in reverse order so that the most recent log
     // shows up first.
@@ -234,7 +236,7 @@ export class MetricsInternalsAppElement extends CustomElement {
     // We don't compare the new data with the old data to prevent re-renderings
     // because this should only be called when there is an actual change.
 
-    const umaLogsTableBody = this.$('#uma-logs-body') as HTMLElement;
+    const umaLogsTableBody = this.getRequiredElement('#uma-logs-body');
     this.updateLogsTable_(umaLogsTableBody, logs.logs);
   }
 

@@ -45,7 +45,7 @@ export class AttributionInternalsTableElement<T> extends CustomElement {
     this.cols_ = [];
     this.getId_ = getId;
 
-    const tr = this.$<HTMLElement>('thead > tr')!;
+    const tr = this.getRequiredElement('thead > tr');
     tr.addEventListener('click', e => this.onSortButtonClick_(e));
 
     const addTh = (content: Node|string, render: RenderFunc<T>) => {
@@ -58,7 +58,7 @@ export class AttributionInternalsTableElement<T> extends CustomElement {
     };
 
     if (isSelectable) {
-      const tbody = this.$<HTMLElement>('tbody')!;
+      const tbody = this.getRequiredElement('tbody');
       tbody.addEventListener('click', e => this.onTbodyClick(e));
       tbody.addEventListener('keydown', e => {
         if (e.code === 'Enter' || e.code === 'Space') {
@@ -121,11 +121,11 @@ export class AttributionInternalsTableElement<T> extends CustomElement {
   }
 
   private rowCount_(): number {
-    return this.$<HTMLTableSectionElement>('tbody')!.rows.length;
+    return this.getRequiredElement('tbody').rows.length;
   }
 
   private dispatchRowsChange_(): void {
-    const td = this.$<HTMLTableCellElement>('tfoot td')!;
+    const td = this.getRequiredElement<HTMLTableCellElement>('tfoot td');
     td.colSpan = this.cols_!.length - 1;
 
     const rowCount = this.rowCount_();

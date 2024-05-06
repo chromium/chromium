@@ -28,7 +28,7 @@ export class AttributionDetailTableElement<T> extends CustomElement {
   init(cols: Iterable<string|DataColumn<T>>): void {
     this.cols_ = [];
 
-    const tbody = this.$<HTMLTableSectionElement>('tbody')!;
+    const tbody = this.getRequiredElement('tbody');
     for (const col of cols) {
       const tr = tbody.insertRow();
       const th = document.createElement('th');

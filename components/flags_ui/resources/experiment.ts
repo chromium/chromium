@@ -206,15 +206,15 @@ export class FlagsExperimentElement extends CustomElement {
   }
 
   getSelect(): HTMLSelectElement|null {
-    return this.$<HTMLSelectElement>('select');
+    return this.$('select');
   }
 
   getTextarea(): HTMLTextAreaElement|null {
-    return this.$<HTMLTextAreaElement>('textarea');
+    return this.$('textarea');
   }
 
   getTextbox(): HTMLInputElement|null {
-    return this.$<HTMLInputElement>('input');
+    return this.$('input');
   }
 
   /**

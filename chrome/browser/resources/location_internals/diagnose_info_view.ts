@@ -327,7 +327,7 @@ export class DiagnoseInfoViewElement extends CustomElement {
   }
 
   outputTables(): Record<string, any> {
-    const tables = this.$all<DiagnoseInfoTableElement>('diagnose-info-table');
+    const tables = this.$all('diagnose-info-table');
     const output: Record<string, any> = {};
     output['LocationInternals'] = [];
     for (const table of tables) {
