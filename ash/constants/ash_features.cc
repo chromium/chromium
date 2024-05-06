@@ -2663,12 +2663,6 @@ BASE_FEATURE(kShelfLauncherNudge,
              "ShelfLauncherNudge",
              base::FEATURE_ENABLED_BY_DEFAULT);
 
-// Stacks the hotseat app bar above the shelf button panels/system tray when
-// there is not enough space for the app bar.
-BASE_FEATURE(kShelfStackedHotseat,
-             "ShelfStackedHotseat",
-             base::FEATURE_ENABLED_BY_DEFAULT);
-
 // Enables or disables the OS update page in the Shimless RMA flow.
 BASE_FEATURE(kShimlessRMAOsUpdate,
              "ShimlessRMAOsUpdate",
@@ -4423,10 +4417,6 @@ bool IsSettingsAppThemeChangeAnimationEnabled() {
 
 bool IsShelfLauncherNudgeEnabled() {
   return base::FeatureList::IsEnabled(kShelfLauncherNudge);
-}
-
-bool IsShelfStackedHotseatEnabled() {
-  return base::FeatureList::IsEnabled(kShelfStackedHotseat);
 }
 
 bool IsShimlessRMAOsUpdateEnabled() {

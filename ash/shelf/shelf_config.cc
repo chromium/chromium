@@ -546,10 +546,8 @@ int ShelfConfig::GetMinimumInlineAppBarSize() const {
 
 void ShelfConfig::UpdateShowElevatedAppBar(
     const gfx::Size& inline_app_bar_size) {
-  if (features::IsShelfStackedHotseatEnabled()) {
     elevate_tablet_mode_app_bar_ =
         inline_app_bar_size.width() < GetMinimumInlineAppBarSize();
-  }
 }
 
 void ShelfConfig::UpdateConfigForAccessibilityState() {

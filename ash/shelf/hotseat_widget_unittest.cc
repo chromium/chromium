@@ -244,8 +244,7 @@ class StackedHotseatWidgetTest : public HotseatWidgetTest {
   void SetupFeatureLists() override {
     scoped_feature_list_.InitWithFeatureStates(
         {{features::kHideShelfControlsInTabletMode,
-          !navigation_buttons_shown_in_tablet_mode()},
-         {features::kShelfStackedHotseat, true}});
+          !navigation_buttons_shown_in_tablet_mode()}});
   }
 };
 

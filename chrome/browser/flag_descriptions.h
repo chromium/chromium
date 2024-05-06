@@ -1864,9 +1864,6 @@ extern const char kSharedZstdDescription[];
 extern const char kSharingDesktopScreenshotsName[];
 extern const char kSharingDesktopScreenshotsDescription[];
 
-extern const char kShelfStackedHotseatName[];
-extern const char kShelfStackedHotseatDescription[];
-
 extern const char kShowAutofillSignaturesName[];
 extern const char kShowAutofillSignaturesDescription[];
 
