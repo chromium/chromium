@@ -24,7 +24,7 @@
 #include "base/values.h"
 #include "chrome/browser/ash/policy/enrollment/auto_enrollment_state.h"
 #include "chrome/browser/ash/policy/enrollment/auto_enrollment_state_message_processor.h"
-#include "chrome/browser/ash/policy/enrollment/flex_enrollment_token_provider.h"
+#include "chrome/browser/ash/policy/enrollment/enrollment_token_provider.h"
 #include "chrome/browser/ash/policy/enrollment/psm/rlwe_dmserver_client.h"
 #include "chrome/browser/ash/policy/server_backed_state/server_backed_device_state.h"
 #include "chrome/common/pref_names.h"
@@ -564,23 +564,23 @@ class AutoEnrollmentClientImpl::InitialServerStateAvailabilityRequester
 
 // Stubbed out ServerStateAvailabilityRequester that always succeeds and
 // indicates that server state should be retrieved.
-class AutoEnrollmentClientImpl::FlexAutoEnrollmentStateAvailabilityRequester
+class AutoEnrollmentClientImpl::TokenBasedEnrollmentStateAvailabilityRequester
     : public ServerStateAvailabilityRequester {
  public:
-  explicit FlexAutoEnrollmentStateAvailabilityRequester(
-      std::optional<std::string> flex_enrollment_token,
+  explicit TokenBasedEnrollmentStateAvailabilityRequester(
+      std::optional<std::string> enrollment_token,
       PrefService* local_state)
-      : flex_enrollment_token_(std::move(flex_enrollment_token)),
+      : enrollment_token_(std::move(enrollment_token)),
         local_state_(local_state) {
     local_state_->SetInteger(
         prefs::kEnrollmentPsmResult,
         em::DeviceRegisterRequest::PSM_SKIPPED_FOR_FLEX_AUTO_ENROLLMENT);
     local_state_->SetBoolean(prefs::kShouldRetrieveDeviceState, true);
   }
-  FlexAutoEnrollmentStateAvailabilityRequester(
-      const FlexAutoEnrollmentStateAvailabilityRequester&) = delete;
-  FlexAutoEnrollmentStateAvailabilityRequester& operator=(
-      const FlexAutoEnrollmentStateAvailabilityRequester&) = delete;
+  TokenBasedEnrollmentStateAvailabilityRequester(
+      const TokenBasedEnrollmentStateAvailabilityRequester&) = delete;
+  TokenBasedEnrollmentStateAvailabilityRequester& operator=(
+      const TokenBasedEnrollmentStateAvailabilityRequester&) = delete;
 
   void Start(CompletionCallback callback) override {
     std::move(callback).Run(ServerStateAvailabilitySuccess::kSuccess);
@@ -588,14 +588,15 @@ class AutoEnrollmentClientImpl::FlexAutoEnrollmentStateAvailabilityRequester
 
   std::optional<bool> GetServerStateIfObtained() const override {
     // This should always return true (as this class _should_ only be
-    // instantiated after determining that a Flex token is present). Check the
-    // optional again anyways though for defensive programming purposes.
-    DCHECK(flex_enrollment_token_.has_value());
-    return flex_enrollment_token_.has_value();
+    // instantiated after determining that an enrollment token is present).
+    // Check the optional again anyways though for defensive programming
+    // purposes.
+    DCHECK(enrollment_token_.has_value());
+    return enrollment_token_.has_value();
   }
 
  private:
-  const std::optional<std::string> flex_enrollment_token_;
+  const std::optional<std::string> enrollment_token_;
   raw_ptr<PrefService> local_state_;
 };
 
@@ -796,12 +797,12 @@ AutoEnrollmentClientImpl::FactoryImpl::CreateForInitialEnrollment(
     ash::OobeConfiguration* oobe_config) {
   std::unique_ptr<ServerStateAvailabilityRequester>
       server_state_availability_requester;
-  const std::optional<std::string> flex_enrollment_token =
-      GetFlexEnrollmentToken(oobe_config);
-  if (flex_enrollment_token.has_value()) {
+  const std::optional<std::string> enrollment_token =
+      GetEnrollmentToken(oobe_config);
+  if (enrollment_token.has_value()) {
     server_state_availability_requester =
-        std::make_unique<FlexAutoEnrollmentStateAvailabilityRequester>(
-            flex_enrollment_token, local_state);
+        std::make_unique<TokenBasedEnrollmentStateAvailabilityRequester>(
+            enrollment_token, local_state);
   } else {
     server_state_availability_requester =
         std::make_unique<InitialServerStateAvailabilityRequester>(
@@ -814,8 +815,7 @@ AutoEnrollmentClientImpl::FactoryImpl::CreateForInitialEnrollment(
           /*device_id=*/base::Uuid::GenerateRandomV4().AsLowercaseString(),
           kUMASuffixInitialEnrollment,
           AutoEnrollmentStateMessageProcessor::CreateForInitialEnrollment(
-              device_serial_number, device_brand_code,
-              flex_enrollment_token))));
+              device_serial_number, device_brand_code, enrollment_token))));
 }
 
 // static

@@ -3133,7 +3133,7 @@ class WizardControllerEnrollmentTokenRebootTest
     command_line->AppendSwitch(ash::switches::kRevenBranding);
     base::FilePath configuration_file;
     ASSERT_TRUE(chromeos::test_utils::GetTestDataPath(
-        "oobe_configuration", "flex_enrollment_configuration.json",
+        "oobe_configuration", "enrollment_token_configuration.json",
         &configuration_file));
     command_line->AppendSwitchPath(chromeos::switches::kFakeOobeConfiguration,
                                    configuration_file);

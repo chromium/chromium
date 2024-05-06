@@ -35,7 +35,7 @@ extern const char kRestoreAfterRollback[];
 extern const char kEnrollmentAssetId[];
 extern const char kEnrollmentLocation[];
 extern const char kEnrollmentAutoAttributes[];
-extern const char kFlexToken[];
+extern const char kEnrollmentToken[];
 
 enum class ConfigurationHandlerSide : unsigned int {
   HANDLER_JS,    // Handled by JS code

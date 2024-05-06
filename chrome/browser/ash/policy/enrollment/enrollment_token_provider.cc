@@ -2,7 +2,7 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#include "chrome/browser/ash/policy/enrollment/flex_enrollment_token_provider.h"
+#include "chrome/browser/ash/policy/enrollment/enrollment_token_provider.h"
 
 #include "ash/constants/ash_switches.h"
 #include "base/logging.h"
@@ -12,7 +12,7 @@
 
 namespace policy {
 
-std::optional<std::string> GetFlexEnrollmentToken(
+std::optional<std::string> GetEnrollmentToken(
     const ash::OobeConfiguration* oobe_config) {
 #if BUILDFLAG(GOOGLE_CHROME_BRANDING)
   if (!ash::switches::IsRevenBranding()) {
@@ -24,10 +24,11 @@ std::optional<std::string> GetFlexEnrollmentToken(
     return std::nullopt;
   }
 
-  const std::string* flex_token =
-      oobe_config->configuration().FindString(ash::configuration::kFlexToken);
-  if (flex_token && !flex_token->empty()) {
-    return *flex_token;
+  const std::string* enrollment_token =
+      oobe_config->configuration().FindString(
+          ash::configuration::kEnrollmentToken);
+  if (enrollment_token && !enrollment_token->empty()) {
+    return *enrollment_token;
   }
 #endif
   return std::nullopt;

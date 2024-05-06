@@ -19,7 +19,7 @@
 
 namespace {
 
-const char kFlexToken[] = "flexToken";
+const char kEnrollmentToken[] = "enrollmentToken";
 
 std::string LoadConfigurationFile(base::FilePath path) {
   std::string configuration_data;
@@ -78,7 +78,7 @@ void FakeOobeConfigurationClient::DeleteFlexOobeConfig() {
   if (!dict.has_value()) {
     return;
   }
-  dict->Remove(kFlexToken);
+  dict->Remove(kEnrollmentToken);
 
   std::optional<std::string> new_configuration = base::WriteJson(*dict);
   if (!new_configuration.has_value()) {

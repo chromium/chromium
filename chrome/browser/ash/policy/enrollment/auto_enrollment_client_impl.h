@@ -90,10 +90,10 @@ class AutoEnrollmentClientImpl final : public AutoEnrollmentClient {
   // membership check requests for initial enrollment.
   class InitialServerStateAvailabilityRequester;
 
-  // Responsible for resolving availability status by checking Flex enrollment
+  // Responsible for resolving availability status by checking enrollment
   // token presence, to determine whether the device should retrieve server
-  // state for Flex Auto Enrollment.
-  class FlexAutoEnrollmentStateAvailabilityRequester;
+  // state for token-based initial enrollment.
+  class TokenBasedEnrollmentStateAvailabilityRequester;
 
   enum class ServerStateAvailabilitySuccess;
   using ServerStateAvailabilityResult =

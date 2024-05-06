@@ -466,10 +466,10 @@ AutoEnrollmentTypeChecker::GetInitialStateDeterminationRequirement(
   }
 
   if (IsOfficialGoogleFlex()) {
-    const std::string* flex_token =
+    const std::string* enrollment_token =
         ash::OobeConfiguration::Get()->configuration().FindString(
-            ash::configuration::kFlexToken);
-    if (!flex_token || flex_token->empty()) {
+            ash::configuration::kEnrollmentToken);
+    if (!enrollment_token || enrollment_token->empty()) {
       LOG(WARNING) << "Skipping Initial State Determination on Flex as no Flex "
                       "token was found.";
       return InitialStateDeterminationRequirement::kNotRequired;

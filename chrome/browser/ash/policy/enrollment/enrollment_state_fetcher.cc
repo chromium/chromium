@@ -28,7 +28,7 @@
 #include "chrome/browser/ash/policy/core/browser_policy_connector_ash.h"
 #include "chrome/browser/ash/policy/enrollment/auto_enrollment_state.h"
 #include "chrome/browser/ash/policy/enrollment/auto_enrollment_type_checker.h"
-#include "chrome/browser/ash/policy/enrollment/flex_enrollment_token_provider.h"
+#include "chrome/browser/ash/policy/enrollment/enrollment_token_provider.h"
 #include "chrome/browser/ash/policy/server_backed_state/server_backed_device_state.h"
 #include "chrome/browser/ash/policy/server_backed_state/server_backed_state_keys_broker.h"
 #include "chrome/browser/ash/settings/device_settings_service.h"
@@ -897,7 +897,7 @@ class EnrollmentStateFetcherImpl : public EnrollmentStateFetcher {
                              device_management_service, url_loader_factory,
                              system_clock_client, state_key_broker,
                              device_settings_service,
-                             GetFlexEnrollmentToken(oobe_configuration)});
+                             GetEnrollmentToken(oobe_configuration)});
   }
 
   void Start() override;

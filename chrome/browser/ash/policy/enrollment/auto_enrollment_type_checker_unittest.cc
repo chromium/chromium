@@ -456,7 +456,7 @@ TEST_F(AutoEnrollmentTypeCheckerTest,
   // TODO(b/331285209): Change the JSON key to "enrollmentToken" along with the
   // key definition in configuration_keys.h.
   constexpr char kEmptyEnrollmentTokenOobeConfig[] = R"({
-    "flexToken": ""
+    "enrollmentToken": ""
   })";
   enrollment_test_helper_.SetUpEnrollmentTokenConfig(
       kEmptyEnrollmentTokenOobeConfig);

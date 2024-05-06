@@ -14,10 +14,8 @@
 namespace policy::test {
 
 const char kEnrollmentToken[] = "test_enrollment_token";
-// TODO(b/331285209): Change the JSON key to "enrollmentToken" along with the
-// key definition in configuration_keys.h.
 const char kEnrollmentTokenOobeConfig[] = R"({
-  "flexToken": "test_enrollment_token"
+  "enrollmentToken": "test_enrollment_token"
 })";
 
 EnrollmentTestHelper::EnrollmentTestHelper(
@@ -60,7 +58,7 @@ EnrollmentTestHelper::GetEnrollmentTokenFromOobeConfiguration() {
   // values from FakeOobeConfigurationClient.
   oobe_configuration_.CheckConfiguration();
   return oobe_configuration_.configuration().FindString(
-      ash::configuration::kFlexToken);
+      ash::configuration::kEnrollmentToken);
 }
 
 }  // namespace policy::test

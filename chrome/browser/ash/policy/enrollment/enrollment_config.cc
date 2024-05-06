@@ -19,7 +19,7 @@
 #include "chrome/browser/ash/login/ui/login_display_host.h"
 #include "chrome/browser/ash/login/wizard_context.h"
 #include "chrome/browser/ash/policy/core/device_cloud_policy_manager_ash.h"
-#include "chrome/browser/ash/policy/enrollment/flex_enrollment_token_provider.h"
+#include "chrome/browser/ash/policy/enrollment/enrollment_token_provider.h"
 #include "chrome/browser/ash/policy/server_backed_state/server_backed_device_state.h"
 #include "chrome/browser/ash/settings/device_settings_service.h"
 #include "chrome/browser/browser_process.h"
@@ -260,15 +260,15 @@ EnrollmentConfig::PrescribedConfig::GetPrescribedConfig(
   }
 
   if (device_state_mode == kDeviceStateInitialModeTokenEnrollment) {
-    std::optional<std::string> flex_enrollment_token =
-        GetFlexEnrollmentToken(oobe_configuration);
-    // TODO(b/329271128): CHECK to ensure flex_token always has value after this
-    // bug is fixed.
-    if (flex_enrollment_token.has_value()) {
+    std::optional<std::string> enrollment_token =
+        GetEnrollmentToken(oobe_configuration);
+    // TODO(b/329271128): CHECK to ensure enrollment_token always has value
+    // after this bug is fixed.
+    if (enrollment_token.has_value()) {
       return {
           .mode = EnrollmentConfig::MODE_ENROLLMENT_TOKEN_INITIAL_SERVER_FORCED,
           .auth_mechanism = EnrollmentConfig::AUTH_MECHANISM_TOKEN_PREFERRED,
-          .enrollment_token = std::move(flex_enrollment_token.value())};
+          .enrollment_token = std::move(enrollment_token.value())};
     } else {
       return {.mode = EnrollmentConfig::MODE_NONE,
               .auth_mechanism = GetPrescribedAuthMechanism(local_state)};
