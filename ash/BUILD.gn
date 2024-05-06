@@ -2535,6 +2535,8 @@ component("ash") {
     "tray_action/tray_action.cc",
     "tray_action/tray_action.h",
     "tray_action/tray_action_observer.h",
+    "utility/arc_curve_path_util.cc",
+    "utility/arc_curve_path_util.h",
     "utility/cropping_util.cc",
     "utility/cropping_util.h",
     "utility/cursor_setter.cc",
@@ -4553,6 +4555,7 @@ test("ash_pixeltests") {
     "touch/touch_selection_pixeltest.cc",
     "user_education/views/help_bubble_view_ash_pixeltest.cc",
     "user_education/welcome_tour/welcome_tour_dialog_pixeltest.cc",
+    "utility/arc_curve_path_util_pixeltest.cc",
     "wm/test/wm_pixel_diff_test.cc",
   ]
 
