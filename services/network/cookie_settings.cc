@@ -338,18 +338,12 @@ bool CookieSettings::AnnotateAndMoveUserBlockedCookies(
   const CookieSettingWithMetadata setting_with_metadata =
       GetCookieSettingWithMetadata(url, site_for_cookies, top_frame_origin,
                                    overrides);
-  bool is_any_allowed = false;
-  if (IsAllowed(setting_with_metadata.cookie_setting())) {
-    is_any_allowed = true;
-  }
-
-  bool is_third_party_request = IsThirdPartyRequest(url, site_for_cookies);
+  const bool is_third_party_request =
+      IsThirdPartyRequest(url, site_for_cookies);
   // Add `WARN_THIRD_PARTY_PHASEOUT` `WarningReason` for allowed cookies
   // that meets the conditions and add the `ExclusionReason` for cookies
   // that ought to be blocked.
   for (net::CookieWithAccessResult& cookie : maybe_included_cookies) {
-    is_any_allowed =
-        is_any_allowed || IsCookieAllowed(cookie.cookie, setting_with_metadata);
     AugmentInclusionStatus(cookie.cookie, is_third_party_request,
                            setting_with_metadata, first_party_set_metadata,
                            cookie.access_result.status);
@@ -371,7 +365,8 @@ bool CookieSettings::AnnotateAndMoveUserBlockedCookies(
   net::cookie_util::DCheckIncludedAndExcludedCookieLists(maybe_included_cookies,
                                                          excluded_cookies);
 
-  return is_any_allowed;
+  return IsAllowed(setting_with_metadata.cookie_setting()) ||
+         !maybe_included_cookies.empty();
 }
 
 bool CookieSettings::HasSessionOnlyOrigins() const {
