@@ -54,8 +54,23 @@ base::TimeDelta g_execute_delay = base::TimeDelta();
 // If non-empty, used as the output from Execute().
 std::vector<std::string> g_model_execute_result;
 
-// Used as the SafetyInfo output.
-on_device_model::mojom::SafetyInfoPtr g_safety_info;
+// Sets a threshold that will rejct text containing "unsafe"  when used with
+// FakeOnDeviceModel::ClassifyTextSafety..
+proto::SafetyCategoryThreshold ForbidUnsafe() {
+  proto::SafetyCategoryThreshold result;
+  result.set_output_index(0);  // FakeOnDeviceModel's "SAFETY" category.
+  result.set_threshold(0.5);
+  return result;
+}
+
+// Sets a threshold that will reject text without "reasonable" when used with
+// FakeOnDeviceModel::ClassifyTextSafety.
+proto::SafetyCategoryThreshold RequireReasonable() {
+  proto::SafetyCategoryThreshold result;
+  result.set_output_index(1);  // FakeOnDeviceModel's "REASONABLE" category.
+  result.set_threshold(0.5);
+  return result;
+}
 
 }  // namespace
 
@@ -125,27 +140,15 @@ class FakeOnDeviceSession final : public on_device_model::mojom::Session {
                        ", Temp: " + base::NumberToString(*input->temperature) +
                        "\n";
       }
-      if (g_safety_info) {
-        chunk->safety_info = g_safety_info->Clone();
-      }
       remote->OnResponse(std::move(chunk));
     } else {
-      int safety_interval = input->safety_interval.value_or(1);
-      int n = 0;
       for (const auto& text : g_model_execute_result) {
-        n++;
         auto chunk = on_device_model::mojom::ResponseChunk::New();
         chunk->text = text;
-        if (g_safety_info && (n % safety_interval) == 0) {
-          chunk->safety_info = g_safety_info->Clone();
-        }
         remote->OnResponse(std::move(chunk));
       }
     }
     auto summary = on_device_model::mojom::ResponseSummary::New();
-    if (g_safety_info) {
-      summary->safety_info = g_safety_info->Clone();
-    }
     remote->OnComplete(std::move(summary));
   }
 
@@ -208,6 +211,9 @@ class FakeOnDeviceModel : public on_device_model::mojom::OnDeviceModel {
     // Text is unsafe if it contains "unsafe".
     bool has_unsafe = text.find("unsafe") != std::string::npos;
     safety_info->class_scores.emplace_back(has_unsafe ? 0.8 : 0.2);
+
+    bool has_reasonable = text.find("reasonable") != std::string::npos;
+    safety_info->class_scores.emplace_back(has_reasonable ? 0.2 : 0.8);
 
     if (text.find("esperanto") != std::string::npos) {
       safety_info->language =
@@ -334,7 +340,6 @@ class OnDeviceModelServiceControllerTest : public testing::Test {
   void SetUp() override {
     ASSERT_TRUE(temp_dir_.CreateUniqueTempDir());
     g_model_execute_result.clear();
-    g_safety_info.reset();
     g_execute_delay = base::TimeDelta();
     feature_list_.InitWithFeaturesAndParameters(
         {{features::kOptimizationGuideModelExecution, {}},
@@ -1162,7 +1167,35 @@ TEST_F(OnDeviceModelServiceControllerTest, SessionRequiresSafetyModel) {
   }
 }
 
-TEST_F(OnDeviceModelServiceControllerTest, SafetyModelRetract) {
+TEST(SafetyConfigTest, MissingScoreIsUnsafe) {
+  auto safety_config =
+      std::make_unique<proto::FeatureTextSafetyConfiguration>();
+  safety_config->set_feature(ToModelExecutionFeatureProto(kFeature));
+  auto* threshold = safety_config->add_safety_category_thresholds();
+  threshold->set_output_index(1);
+  threshold->set_threshold(0.5);
+  SafetyConfig cfg(*safety_config);
+
+  auto safety_info = on_device_model::mojom::SafetyInfo::New();
+  safety_info->class_scores = {0.1};  // Only 1 score, but expects 2.
+  EXPECT_TRUE(cfg.IsUnsafeText(safety_info));
+}
+
+TEST(SafetyConfigTest, SafeWithRequiredScores) {
+  auto safety_config =
+      std::make_unique<proto::FeatureTextSafetyConfiguration>();
+  safety_config->set_feature(ToModelExecutionFeatureProto(kFeature));
+  auto* threshold = safety_config->add_safety_category_thresholds();
+  threshold->set_output_index(1);
+  threshold->set_threshold(0.5);
+  SafetyConfig cfg(*safety_config);
+
+  auto safety_info = on_device_model::mojom::SafetyInfo::New();
+  safety_info->class_scores = {0.1, 0.1};  // Has score with index = 1.
+  EXPECT_FALSE(cfg.IsUnsafeText(safety_info));
+}
+
+TEST_F(OnDeviceModelServiceControllerTest, DefaultOutputSafetyPasses) {
   Initialize();
   base::test::ScopedFeatureList feature_list;
   feature_list.InitAndEnableFeatureWithParameters(
@@ -1170,126 +1203,91 @@ TEST_F(OnDeviceModelServiceControllerTest, SafetyModelRetract) {
       {{"on_device_must_use_safety_model", "true"},
        {"on_device_retract_unsafe_content", "true"}});
 
-  proto::TextSafetyModelMetadata model_metadata;
-  auto* safety_config = model_metadata.add_feature_text_safety_configurations();
-  safety_config->set_feature(ToModelExecutionFeatureProto(kFeature));
-  auto* threshold1 = safety_config->add_safety_category_thresholds();
-  threshold1->set_output_index(0);
-  threshold1->set_threshold(0.5);
-  auto* threshold2 = safety_config->add_safety_category_thresholds();
-  threshold2->set_output_index(1);
-  threshold2->set_threshold(0.5);
-  proto::Any any;
-  any.set_type_url(
-      "type.googleapis.com/optimization_guide.proto.TextSafetyModelMetadata");
-  model_metadata.SerializeToString(any.mutable_value());
-  std::unique_ptr<optimization_guide::ModelInfo> model_info =
-      TestModelInfoBuilder()
-          .SetAdditionalFiles(
-              {temp_dir().Append(kTsDataFile),
-               temp_dir().Append(base::FilePath(kTsSpModelFile))})
-          .SetModelMetadata(any)
-          .Build();
-  test_controller_->MaybeUpdateSafetyModel(*model_info);
+  {
+    auto safety_config =
+        std::make_unique<proto::FeatureTextSafetyConfiguration>();
+    safety_config->set_feature(ToModelExecutionFeatureProto(kFeature));
+    safety_config->mutable_safety_category_thresholds()->Add(
+        RequireReasonable());
+    safety_config->mutable_safety_category_thresholds()->Add(ForbidUnsafe());
+    SetFeatureTextSafetyConfiguration(std::move(safety_config));
+  }
+
   auto session = test_controller_->CreateSession(
       kFeature, base::DoNothing(), logger_.GetWeakPtr(), nullptr,
       /*config_params=*/std::nullopt);
   EXPECT_TRUE(session);
 
-  // Scores never provided even on complete.
+  // Should fail the default raw output check.
+  g_model_execute_result = {"unsafe_output"};
+  ExecuteModel(*session, "foo");
+  task_environment_.RunUntilIdle();
+  EXPECT_FALSE(response_received_);
+  ASSERT_TRUE(response_error_);
+  EXPECT_EQ(
+      *response_error_,
+      OptimizationGuideModelExecutionError::ModelExecutionError::kFiltered);
+  // Make sure T&S logged.
+  ASSERT_TRUE(log_entry_received_);
+  const auto logged_on_device_model_execution_info =
+      log_entry_received_->log_ai_data_request()
+          ->model_execution_info()
+          .on_device_model_execution_info();
+  const auto num_execution_infos =
+      logged_on_device_model_execution_info.execution_infos_size();
+  EXPECT_GE(num_execution_infos, 2);
+  auto ts_log = logged_on_device_model_execution_info.execution_infos(
+      num_execution_infos - 1);
+  EXPECT_EQ(ts_log.request().text_safety_model_request().text(),
+            "unsafe_output");
+  EXPECT_THAT(ts_log.response().text_safety_model_response().scores(),
+              ElementsAre(0.8, 0.8));
+  EXPECT_TRUE(ts_log.response().text_safety_model_response().is_unsafe());
+}
+
+TEST_F(OnDeviceModelServiceControllerTest, DefaultOutputSafetyFails) {
+  Initialize();
+  base::test::ScopedFeatureList feature_list;
+  feature_list.InitAndEnableFeatureWithParameters(
+      features::kTextSafetyClassifier,
+      {{"on_device_must_use_safety_model", "true"},
+       {"on_device_retract_unsafe_content", "true"}});
+
   {
-    base::HistogramTester histogram_tester;
-    g_safety_info.reset();
-    ExecuteModel(*session, "foo");
-    task_environment_.RunUntilIdle();
-    EXPECT_FALSE(response_received_);
-    ASSERT_TRUE(response_error_);
-    EXPECT_EQ(*response_error_, OptimizationGuideModelExecutionError::
-                                    ModelExecutionError::kGenericFailure);
-    histogram_tester.ExpectUniqueSample(
-        "OptimizationGuide.ModelExecution.OnDeviceExecuteModelResult.Compose",
-        ExecuteModelResult::kResponseCompleteButNoRequiredSafetyScores, 1);
+    auto safety_config =
+        std::make_unique<proto::FeatureTextSafetyConfiguration>();
+    safety_config->set_feature(ToModelExecutionFeatureProto(kFeature));
+    safety_config->mutable_safety_category_thresholds()->Add(
+        RequireReasonable());
+    safety_config->mutable_safety_category_thresholds()->Add(ForbidUnsafe());
+    SetFeatureTextSafetyConfiguration(std::move(safety_config));
   }
 
-  // Score exceeds threshold.
-  {
-    g_safety_info = on_device_model::mojom::SafetyInfo::New();
-    g_safety_info->class_scores = {0.7, 0.3};
-    ExecuteModel(*session, "foo");
-    task_environment_.RunUntilIdle();
-    EXPECT_FALSE(response_received_);
-    ASSERT_TRUE(response_error_);
-    EXPECT_EQ(
-        *response_error_,
-        OptimizationGuideModelExecutionError::ModelExecutionError::kFiltered);
-    // Make sure T&S logged.
-    ASSERT_TRUE(log_entry_received_);
-    const auto logged_on_device_model_execution_info =
-        log_entry_received_->log_ai_data_request()
-            ->model_execution_info()
-            .on_device_model_execution_info();
-    const auto num_execution_infos =
-        logged_on_device_model_execution_info.execution_infos_size();
-    EXPECT_GE(num_execution_infos, 2);
-    auto ts_log = logged_on_device_model_execution_info.execution_infos(
-        num_execution_infos - 1);
-    EXPECT_TRUE(ts_log.request().has_text_safety_model_request());
-    EXPECT_THAT(ts_log.response().text_safety_model_response().scores(),
-                ElementsAre(0.7, 0.3));
-    EXPECT_TRUE(ts_log.response().text_safety_model_response().is_unsafe());
-  }
+  auto session = test_controller_->CreateSession(
+      kFeature, base::DoNothing(), logger_.GetWeakPtr(), nullptr,
+      /*config_params=*/std::nullopt);
+  EXPECT_TRUE(session);
 
-  // Invalid model output according to config.
-  {
-    g_safety_info = on_device_model::mojom::SafetyInfo::New();
-    g_safety_info->class_scores = {0.3};
-    ExecuteModel(*session, "foo");
-    task_environment_.RunUntilIdle();
-    EXPECT_FALSE(response_received_);
-    ASSERT_TRUE(response_error_);
-    EXPECT_EQ(
-        *response_error_,
-        OptimizationGuideModelExecutionError::ModelExecutionError::kFiltered);
-    // Make sure T&S logged.
-    ASSERT_TRUE(log_entry_received_);
-    const auto logged_on_device_model_execution_info =
-        log_entry_received_->log_ai_data_request()
-            ->model_execution_info()
-            .on_device_model_execution_info();
-    const auto num_execution_infos =
-        logged_on_device_model_execution_info.execution_infos_size();
-    EXPECT_GE(num_execution_infos, 2);
-    auto ts_log = logged_on_device_model_execution_info.execution_infos(
-        num_execution_infos - 1);
-    EXPECT_TRUE(ts_log.request().has_text_safety_model_request());
-    EXPECT_THAT(ts_log.response().text_safety_model_response().scores(),
-                ElementsAre(0.3));
-    EXPECT_TRUE(ts_log.response().text_safety_model_response().is_unsafe());
-  }
-
-  // Score below threshold. Text safety check passes.
-  {
-    g_safety_info = on_device_model::mojom::SafetyInfo::New();
-    g_safety_info->class_scores = {0.3, 0.3};
-    ExecuteModel(*session, "foo");
-    task_environment_.RunUntilIdle();
-    EXPECT_TRUE(response_received_);
-    // Make sure T&S logged.
-    ASSERT_TRUE(log_entry_received_);
-    const auto logged_on_device_model_execution_info =
-        log_entry_received_->log_ai_data_request()
-            ->model_execution_info()
-            .on_device_model_execution_info();
-    const auto num_execution_infos =
-        logged_on_device_model_execution_info.execution_infos_size();
-    EXPECT_GE(num_execution_infos, 2);
-    auto ts_log = logged_on_device_model_execution_info.execution_infos(
-        num_execution_infos - 1);
-    EXPECT_TRUE(ts_log.request().has_text_safety_model_request());
-    EXPECT_THAT(ts_log.response().text_safety_model_response().scores(),
-                ElementsAre(0.3, 0.3));
-    EXPECT_FALSE(ts_log.response().text_safety_model_response().is_unsafe());
-  }
+  g_model_execute_result = {"reasonable_output"};
+  ExecuteModel(*session, "foo");
+  task_environment_.RunUntilIdle();
+  EXPECT_TRUE(response_received_);
+  // Make sure T&S logged.
+  ASSERT_TRUE(log_entry_received_);
+  const auto logged_on_device_model_execution_info =
+      log_entry_received_->log_ai_data_request()
+          ->model_execution_info()
+          .on_device_model_execution_info();
+  const auto num_execution_infos =
+      logged_on_device_model_execution_info.execution_infos_size();
+  EXPECT_GE(num_execution_infos, 2);
+  auto ts_log = logged_on_device_model_execution_info.execution_infos(
+      num_execution_infos - 1);
+  EXPECT_EQ(ts_log.request().text_safety_model_request().text(),
+            "reasonable_output");
+  EXPECT_THAT(ts_log.response().text_safety_model_response().scores(),
+              ElementsAre(0.2, 0.2));
+  EXPECT_FALSE(ts_log.response().text_safety_model_response().is_unsafe());
 }
 
 TEST_F(OnDeviceModelServiceControllerTest, SafetyModelUsedButNoRetract) {
@@ -1300,35 +1298,24 @@ TEST_F(OnDeviceModelServiceControllerTest, SafetyModelUsedButNoRetract) {
       {{"on_device_must_use_safety_model", "true"},
        {"on_device_retract_unsafe_content", "false"}});
 
-  proto::TextSafetyModelMetadata model_metadata;
-  auto* safety_config = model_metadata.add_feature_text_safety_configurations();
-  safety_config->set_feature(ToModelExecutionFeatureProto(kFeature));
-  auto* threshold1 = safety_config->add_safety_category_thresholds();
-  threshold1->set_output_index(0);
-  threshold1->set_threshold(0.5);
-  auto* threshold2 = safety_config->add_safety_category_thresholds();
-  threshold2->set_output_index(1);
-  threshold2->set_threshold(0.5);
-  proto::Any any;
-  any.set_type_url(
-      "type.googleapis.com/optimization_guide.proto.TextSafetyModelMetadata");
-  model_metadata.SerializeToString(any.mutable_value());
-  std::unique_ptr<optimization_guide::ModelInfo> model_info =
-      TestModelInfoBuilder()
-          .SetAdditionalFiles(
-              {temp_dir().Append(kTsDataFile),
-               temp_dir().Append(base::FilePath(kTsSpModelFile))})
-          .SetModelMetadata(any)
-          .Build();
-  test_controller_->MaybeUpdateSafetyModel(*model_info);
+  {
+    auto safety_config =
+        std::make_unique<proto::FeatureTextSafetyConfiguration>();
+    safety_config->set_feature(ToModelExecutionFeatureProto(kFeature));
+    safety_config->mutable_safety_category_thresholds()->Add(
+        RequireReasonable());
+    safety_config->mutable_safety_category_thresholds()->Add(ForbidUnsafe());
+    SetFeatureTextSafetyConfiguration(std::move(safety_config));
+  }
+
   auto session = test_controller_->CreateSession(
       kFeature, base::DoNothing(), logger_.GetWeakPtr(), nullptr,
       /*config_params=*/std::nullopt);
   EXPECT_TRUE(session);
 
-  // Score exceeds threshold. Would not pass but not retracting.
-  g_safety_info = on_device_model::mojom::SafetyInfo::New();
-  g_safety_info->class_scores = {0.7, 0.3};
+  // Should fail the configured checks, but not not be retracted.
+  g_model_execute_result = {"unsafe_output"};
+
   ExecuteModel(*session, "foo");
   task_environment_.RunUntilIdle();
   EXPECT_TRUE(response_received_);
@@ -1343,9 +1330,10 @@ TEST_F(OnDeviceModelServiceControllerTest, SafetyModelUsedButNoRetract) {
   EXPECT_GE(logged_on_device_model_execution_info.execution_infos_size(), 2);
   auto ts_log = logged_on_device_model_execution_info.execution_infos(
       logged_on_device_model_execution_info.execution_infos_size() - 1);
-  EXPECT_TRUE(ts_log.request().has_text_safety_model_request());
+  EXPECT_EQ(ts_log.request().text_safety_model_request().text(),
+            "unsafe_output");
   EXPECT_THAT(ts_log.response().text_safety_model_response().scores(),
-              ElementsAre(0.7, 0.3));
+              ElementsAre(0.8, 0.8));
   EXPECT_TRUE(ts_log.response().text_safety_model_response().is_unsafe());
 }
 
@@ -1360,22 +1348,18 @@ TEST_F(OnDeviceModelServiceControllerTest, RequestCheckPassesWithSafeUrl) {
     // Configure a request safety check on the PageUrl.
     auto safety_config =
         std::make_unique<proto::FeatureTextSafetyConfiguration>();
-    auto* default_threshold = safety_config->add_safety_category_thresholds();
-    default_threshold->set_output_index(0);
-    default_threshold->set_threshold(0.1);
+    safety_config->mutable_safety_category_thresholds()->Add(
+        RequireReasonable());
     auto* check = safety_config->add_request_check();
     auto* input_template = check->add_input_template();
     input_template->set_string_template("url: %s");
     AddPageUrlSubstitution(input_template);
-    auto* threshold1 = check->add_safety_category_thresholds();
-    threshold1->set_output_index(0);
-    threshold1->set_threshold(0.5);
+    check->mutable_safety_category_thresholds()->Add(ForbidUnsafe());
     SetFeatureTextSafetyConfiguration(std::move(safety_config));
   }
 
-  // Score output as completely safe.
-  g_safety_info = on_device_model::mojom::SafetyInfo::New();
-  g_safety_info->class_scores = {0.0, 0.0};
+  // This should pass the default raw output safety check
+  g_model_execute_result = {"reasonable but unsafe output in esperanto"};
 
   auto session = test_controller_->CreateSession(
       kFeature, base::DoNothing(), logger_.GetWeakPtr(), nullptr,
@@ -1399,7 +1383,7 @@ TEST_F(OnDeviceModelServiceControllerTest, RequestCheckPassesWithSafeUrl) {
   EXPECT_EQ(check_log.request().text_safety_model_request().text(),
             "url: safe_url");
   const auto& response_log = check_log.response().text_safety_model_response();
-  EXPECT_THAT(response_log.scores(), ElementsAre(0.2));
+  EXPECT_THAT(response_log.scores(), ElementsAre(0.2, 0.8));
   EXPECT_FALSE(response_log.is_unsafe());
 }
 
@@ -1413,22 +1397,18 @@ TEST_F(OnDeviceModelServiceControllerTest, RequestCheckFailsWithUnsafeUrl) {
   {
     auto safety_config =
         std::make_unique<proto::FeatureTextSafetyConfiguration>();
-    auto* default_threshold = safety_config->add_safety_category_thresholds();
-    default_threshold->set_output_index(0);
-    default_threshold->set_threshold(0.1);
+    safety_config->mutable_safety_category_thresholds()->Add(
+        RequireReasonable());
     auto* check = safety_config->add_request_check();
     auto* input_template = check->add_input_template();
     input_template->set_string_template("url: %s");
     AddPageUrlSubstitution(input_template);
-    auto* threshold1 = check->add_safety_category_thresholds();
-    threshold1->set_output_index(0);
-    threshold1->set_threshold(0.5);
+    check->mutable_safety_category_thresholds()->Add(ForbidUnsafe());
     SetFeatureTextSafetyConfiguration(std::move(safety_config));
   }
 
-  // Score output as completely safe.
-  g_safety_info = on_device_model::mojom::SafetyInfo::New();
-  g_safety_info->class_scores = {0.0, 0.0};
+  // This should pass the default raw output safety check
+  g_model_execute_result = {"reasonable but unsafe output in esperanto"};
 
   auto session = test_controller_->CreateSession(
       kFeature, base::DoNothing(), logger_.GetWeakPtr(), nullptr,
@@ -1452,7 +1432,7 @@ TEST_F(OnDeviceModelServiceControllerTest, RequestCheckFailsWithUnsafeUrl) {
   EXPECT_EQ(check_log.request().text_safety_model_request().text(),
             "url: unsafe_url");
   const auto& response_log = check_log.response().text_safety_model_response();
-  EXPECT_THAT(response_log.scores(), ElementsAre(0.8));
+  EXPECT_THAT(response_log.scores(), ElementsAre(0.8, 0.8));
   EXPECT_TRUE(response_log.is_unsafe());
 }
 
@@ -1466,22 +1446,18 @@ TEST_F(OnDeviceModelServiceControllerTest, RequestCheckIgnoredInDarkMode) {
   {
     auto safety_config =
         std::make_unique<proto::FeatureTextSafetyConfiguration>();
-    auto* default_threshold = safety_config->add_safety_category_thresholds();
-    default_threshold->set_output_index(0);
-    default_threshold->set_threshold(0.1);
+    safety_config->mutable_safety_category_thresholds()->Add(
+        RequireReasonable());
     auto* check = safety_config->add_request_check();
     auto* input_template = check->add_input_template();
     input_template->set_string_template("url: %s");
     AddPageUrlSubstitution(input_template);
-    auto* threshold1 = check->add_safety_category_thresholds();
-    threshold1->set_output_index(0);
-    threshold1->set_threshold(0.5);
+    check->mutable_safety_category_thresholds()->Add(ForbidUnsafe());
     SetFeatureTextSafetyConfiguration(std::move(safety_config));
   }
 
-  // Score output as completely safe.
-  g_safety_info = on_device_model::mojom::SafetyInfo::New();
-  g_safety_info->class_scores = {0.0, 0.0};
+  // This should pass the default raw output safety check
+  g_model_execute_result = {"reasonable but unsafe output in esperanto"};
 
   auto session = test_controller_->CreateSession(
       kFeature, base::DoNothing(), logger_.GetWeakPtr(), nullptr,
@@ -1506,7 +1482,7 @@ TEST_F(OnDeviceModelServiceControllerTest, RequestCheckIgnoredInDarkMode) {
   EXPECT_EQ(check_log.request().text_safety_model_request().text(),
             "url: unsafe_url");
   const auto& response_log = check_log.response().text_safety_model_response();
-  EXPECT_THAT(response_log.scores(), ElementsAre(0.8));
+  EXPECT_THAT(response_log.scores(), ElementsAre(0.8, 0.8));
   EXPECT_TRUE(response_log.is_unsafe());
 }
 
@@ -1521,9 +1497,8 @@ TEST_F(OnDeviceModelServiceControllerTest,
   {
     auto safety_config =
         std::make_unique<proto::FeatureTextSafetyConfiguration>();
-    auto* default_threshold = safety_config->add_safety_category_thresholds();
-    default_threshold->set_output_index(0);
-    default_threshold->set_threshold(0.1);
+    safety_config->mutable_safety_category_thresholds()->Add(
+        RequireReasonable());
     auto* check = safety_config->add_request_check();
     auto* input_template = check->add_input_template();
     input_template->set_string_template("url: %s");
@@ -1532,9 +1507,8 @@ TEST_F(OnDeviceModelServiceControllerTest,
     SetFeatureTextSafetyConfiguration(std::move(safety_config));
   }
 
-  // Score output as completely safe.
-  g_safety_info = on_device_model::mojom::SafetyInfo::New();
-  g_safety_info->class_scores = {0.0, 0.0};
+  // This should pass the default raw output safety check
+  g_model_execute_result = {"reasonable but unsafe output in esperanto"};
 
   auto session = test_controller_->CreateSession(
       kFeature, base::DoNothing(), logger_.GetWeakPtr(), nullptr,
@@ -1558,7 +1532,7 @@ TEST_F(OnDeviceModelServiceControllerTest,
   EXPECT_EQ(check_log.request().text_safety_model_request().text(),
             "url: safe_url");
   const auto& response_log = check_log.response().text_safety_model_response();
-  EXPECT_THAT(response_log.scores(), ElementsAre(0.2));
+  EXPECT_THAT(response_log.scores(), ElementsAre(0.2, 0.8));
   EXPECT_TRUE(response_log.is_unsafe());
 }
 
@@ -1575,24 +1549,18 @@ TEST_F(OnDeviceModelServiceControllerTest,
     auto safety_config =
         std::make_unique<proto::FeatureTextSafetyConfiguration>();
     safety_config->add_allowed_languages("eo");
-    auto* default_threshold = safety_config->add_safety_category_thresholds();
-    default_threshold->set_output_index(0);
-    default_threshold->set_threshold(0.1);
+    safety_config->mutable_safety_category_thresholds()->Add(
+        RequireReasonable());
     auto* check = safety_config->add_request_check();
     auto* input_template = check->add_input_template();
     input_template->set_string_template("url: %s");
     AddPageUrlSubstitution(input_template);
-    auto* threshold1 = check->add_safety_category_thresholds();
-    threshold1->set_output_index(0);
-    threshold1->set_threshold(0.5);
+    check->mutable_safety_category_thresholds()->Add(ForbidUnsafe());
     SetFeatureTextSafetyConfiguration(std::move(safety_config));
   }
 
-  // Score output as completely safe.
-  g_safety_info = on_device_model::mojom::SafetyInfo::New();
-  g_safety_info->class_scores = {0.0, 0.0};
-  g_safety_info->language =
-      on_device_model::mojom::LanguageDetectionResult::New("eo", 1.0);
+  // This should pass the default raw output safety check
+  g_model_execute_result = {"reasonable but unsafe output in esperanto"};
 
   auto session = test_controller_->CreateSession(
       kFeature, base::DoNothing(), logger_.GetWeakPtr(), nullptr,
@@ -1618,24 +1586,18 @@ TEST_F(OnDeviceModelServiceControllerTest,
     auto safety_config =
         std::make_unique<proto::FeatureTextSafetyConfiguration>();
     safety_config->add_allowed_languages("eo");
-    auto* default_threshold = safety_config->add_safety_category_thresholds();
-    default_threshold->set_output_index(0);
-    default_threshold->set_threshold(0.1);
+    safety_config->mutable_safety_category_thresholds()->Add(
+        RequireReasonable());
     auto* check = safety_config->add_request_check();
     auto* input_template = check->add_input_template();
     input_template->set_string_template("url: %s");
     AddPageUrlSubstitution(input_template);
-    auto* threshold1 = check->add_safety_category_thresholds();
-    threshold1->set_output_index(0);
-    threshold1->set_threshold(0.5);
+    check->mutable_safety_category_thresholds()->Add(ForbidUnsafe());
     SetFeatureTextSafetyConfiguration(std::move(safety_config));
   }
 
-  // Score output as completely safe.
-  g_safety_info = on_device_model::mojom::SafetyInfo::New();
-  g_safety_info->class_scores = {0.0, 0.0};
-  g_safety_info->language =
-      on_device_model::mojom::LanguageDetectionResult::New("eo", 1.0);
+  // This should pass the default raw output safety check
+  g_model_execute_result = {"reasonable but unsafe output in esperanto"};
 
   auto session = test_controller_->CreateSession(
       kFeature, base::DoNothing(), logger_.GetWeakPtr(), nullptr,
@@ -1661,25 +1623,19 @@ TEST_F(OnDeviceModelServiceControllerTest,
     auto safety_config =
         std::make_unique<proto::FeatureTextSafetyConfiguration>();
     safety_config->add_allowed_languages("eo");
-    auto* default_threshold = safety_config->add_safety_category_thresholds();
-    default_threshold->set_output_index(0);
-    default_threshold->set_threshold(0.1);
+    safety_config->mutable_safety_category_thresholds()->Add(
+        RequireReasonable());
     auto* check = safety_config->add_request_check();
     auto* input_template = check->add_input_template();
     input_template->set_string_template("url: %s");
     AddPageUrlSubstitution(input_template);
-    auto* threshold1 = check->add_safety_category_thresholds();
-    threshold1->set_output_index(0);
-    threshold1->set_threshold(0.5);
+    check->mutable_safety_category_thresholds()->Add(ForbidUnsafe());
     check->set_check_language_only(true);
     SetFeatureTextSafetyConfiguration(std::move(safety_config));
   }
 
-  // Score output as completely safe.
-  g_safety_info = on_device_model::mojom::SafetyInfo::New();
-  g_safety_info->class_scores = {0.0, 0.0};
-  g_safety_info->language =
-      on_device_model::mojom::LanguageDetectionResult::New("eo", 1.0);
+  // This should pass the default raw output safety check
+  g_model_execute_result = {"reasonable but unsafe output in esperanto"};
 
   auto session = test_controller_->CreateSession(
       kFeature, base::DoNothing(), logger_.GetWeakPtr(), nullptr,
@@ -1705,25 +1661,19 @@ TEST_F(OnDeviceModelServiceControllerTest,
     auto safety_config =
         std::make_unique<proto::FeatureTextSafetyConfiguration>();
     safety_config->add_allowed_languages("eo");
-    auto* default_threshold = safety_config->add_safety_category_thresholds();
-    default_threshold->set_output_index(0);
-    default_threshold->set_threshold(0.1);
+    safety_config->mutable_safety_category_thresholds()->Add(
+        RequireReasonable());
     auto* check = safety_config->add_request_check();
     auto* input_template = check->add_input_template();
     input_template->set_string_template("url: %s");
     AddPageUrlSubstitution(input_template);
-    auto* threshold1 = check->add_safety_category_thresholds();
-    threshold1->set_output_index(0);
-    threshold1->set_threshold(0.5);
+    check->mutable_safety_category_thresholds()->Add(ForbidUnsafe());
     check->set_check_language_only(true);
     SetFeatureTextSafetyConfiguration(std::move(safety_config));
   }
 
-  // Score output as completely safe.
-  g_safety_info = on_device_model::mojom::SafetyInfo::New();
-  g_safety_info->class_scores = {0.0, 0.0};
-  g_safety_info->language =
-      on_device_model::mojom::LanguageDetectionResult::New("eo", 1.0);
+  // This should pass the default raw output safety check
+  g_model_execute_result = {"reasonable but unsafe output in esperanto"};
 
   auto session = test_controller_->CreateSession(
       kFeature, base::DoNothing(), logger_.GetWeakPtr(), nullptr,
@@ -1766,9 +1716,9 @@ TEST_F(OnDeviceModelServiceControllerTest,
     auto safety_config =
         std::make_unique<proto::FeatureTextSafetyConfiguration>();
     safety_config->add_allowed_languages("eo");
-    auto* default_threshold = safety_config->add_safety_category_thresholds();
-    default_threshold->set_output_index(0);
-    default_threshold->set_threshold(0.5);
+    safety_config->mutable_safety_category_thresholds()->Add(ForbidUnsafe());
+    safety_config->mutable_safety_category_thresholds()->Add(
+        RequireReasonable());
     auto* check = safety_config->mutable_raw_output_check();
     auto* input_template = check->add_input_template();
     input_template->set_string_template("safe_text in esperanto: %s");
@@ -1776,9 +1726,8 @@ TEST_F(OnDeviceModelServiceControllerTest,
     SetFeatureTextSafetyConfiguration(std::move(safety_config));
   }
 
-  // Score output as totally unsafe, but we expect to ignore these scores.
-  g_safety_info = on_device_model::mojom::SafetyInfo::New();
-  g_safety_info->class_scores = {1.0, 1.0};
+  // This should be used in the raw output check.
+  g_model_execute_result = {"reasonable_output"};
 
   auto session = test_controller_->CreateSession(
       kFeature, base::DoNothing(), logger_.GetWeakPtr(), nullptr,
@@ -1800,15 +1749,14 @@ TEST_F(OnDeviceModelServiceControllerTest,
   ASSERT_EQ(logged_execution_infos.size(), 2);
   const auto& check_log = logged_execution_infos[1];
   EXPECT_EQ(check_log.request().text_safety_model_request().text(),
-            "safe_text in esperanto: Input: execute:some_url\n");
+            "safe_text in esperanto: reasonable_output");
   const auto& response_log = check_log.response().text_safety_model_response();
-  EXPECT_THAT(response_log.scores(), ElementsAre(0.2));
+  EXPECT_THAT(response_log.scores(), ElementsAre(0.2, 0.2));
   EXPECT_FALSE(response_log.is_unsafe());
   EXPECT_EQ(response_log.language_code(), "eo");
 }
 
-TEST_F(OnDeviceModelServiceControllerTest,
-       RawOutputCheckFailsWithUnsafeText) {
+TEST_F(OnDeviceModelServiceControllerTest, RawOutputCheckFailsWithUnsafeText) {
   base::test::ScopedFeatureList feature_list;
   feature_list.InitAndEnableFeatureWithParameters(
       features::kTextSafetyClassifier,
@@ -1822,9 +1770,9 @@ TEST_F(OnDeviceModelServiceControllerTest,
     auto safety_config =
         std::make_unique<proto::FeatureTextSafetyConfiguration>();
     safety_config->add_allowed_languages("eo");
-    auto* default_threshold = safety_config->add_safety_category_thresholds();
-    default_threshold->set_output_index(0);
-    default_threshold->set_threshold(0.5);
+    safety_config->mutable_safety_category_thresholds()->Add(ForbidUnsafe());
+    safety_config->mutable_safety_category_thresholds()->Add(
+        RequireReasonable());
     auto* check = safety_config->mutable_raw_output_check();
     auto* input_template = check->add_input_template();
     input_template->set_string_template("unsafe_text in esperanto: %s");
@@ -1832,9 +1780,8 @@ TEST_F(OnDeviceModelServiceControllerTest,
     SetFeatureTextSafetyConfiguration(std::move(safety_config));
   }
 
-  // Score output as totally unsafe, but we expect to ignore these scores.
-  g_safety_info = on_device_model::mojom::SafetyInfo::New();
-  g_safety_info->class_scores = {1.0, 1.0};
+  // This should be used in the raw output check.
+  g_model_execute_result = {"reasonable_output"};
 
   auto session = test_controller_->CreateSession(
       kFeature, base::DoNothing(), logger_.GetWeakPtr(), nullptr,
@@ -1856,9 +1803,9 @@ TEST_F(OnDeviceModelServiceControllerTest,
   ASSERT_EQ(logged_execution_infos.size(), 2);
   const auto& check_log = logged_execution_infos[1];
   EXPECT_EQ(check_log.request().text_safety_model_request().text(),
-            "unsafe_text in esperanto: Input: execute:some_url\n");
+            "unsafe_text in esperanto: reasonable_output");
   const auto& response_log = check_log.response().text_safety_model_response();
-  EXPECT_THAT(response_log.scores(), ElementsAre(0.8));
+  EXPECT_THAT(response_log.scores(), ElementsAre(0.8, 0.2));
   EXPECT_TRUE(response_log.is_unsafe());
   EXPECT_EQ(response_log.language_code(), "eo");
 }
@@ -1878,9 +1825,7 @@ TEST_F(OnDeviceModelServiceControllerTest,
     auto safety_config =
         std::make_unique<proto::FeatureTextSafetyConfiguration>();
     safety_config->add_allowed_languages("eo");
-    auto* default_threshold = safety_config->add_safety_category_thresholds();
-    default_threshold->set_output_index(0);
-    default_threshold->set_threshold(0.5);
+    safety_config->mutable_safety_category_thresholds()->Add(ForbidUnsafe());
     auto* check = safety_config->mutable_raw_output_check();
     auto* input_template = check->add_input_template();
     input_template->set_string_template("safe_text in unknown language: %s");
@@ -1888,9 +1833,8 @@ TEST_F(OnDeviceModelServiceControllerTest,
     SetFeatureTextSafetyConfiguration(std::move(safety_config));
   }
 
-  // Score output as totally unsafe, but we expect to ignore these scores.
-  g_safety_info = on_device_model::mojom::SafetyInfo::New();
-  g_safety_info->class_scores = {1.0, 1.0};
+  // This should be used in the raw output check.
+  g_model_execute_result = {"reasonable_output"};
 
   auto session = test_controller_->CreateSession(
       kFeature, base::DoNothing(), logger_.GetWeakPtr(), nullptr,
@@ -1912,9 +1856,9 @@ TEST_F(OnDeviceModelServiceControllerTest,
   ASSERT_EQ(logged_execution_infos.size(), 2);
   const auto& check_log = logged_execution_infos[1];
   EXPECT_EQ(check_log.request().text_safety_model_request().text(),
-            "safe_text in unknown language: Input: execute:some_url\n");
+            "safe_text in unknown language: reasonable_output");
   const auto& response_log = check_log.response().text_safety_model_response();
-  EXPECT_THAT(response_log.scores(), ElementsAre(0.2));
+  EXPECT_THAT(response_log.scores(), ElementsAre(0.2, 0.2));
   EXPECT_FALSE(response_log.is_unsafe());
   EXPECT_EQ(response_log.language_code(), "");
 }
@@ -1927,35 +1871,22 @@ TEST_F(OnDeviceModelServiceControllerTest, SafetyModelDarkMode) {
       {{"on_device_must_use_safety_model", "false"},
        {"on_device_retract_unsafe_content", "false"}});
 
-  proto::TextSafetyModelMetadata model_metadata;
-  auto* safety_config = model_metadata.add_feature_text_safety_configurations();
-  safety_config->set_feature(ToModelExecutionFeatureProto(kFeature));
-  auto* threshold1 = safety_config->add_safety_category_thresholds();
-  threshold1->set_output_index(0);
-  threshold1->set_threshold(0.5);
-  auto* threshold2 = safety_config->add_safety_category_thresholds();
-  threshold2->set_output_index(1);
-  threshold2->set_threshold(0.5);
-  proto::Any any;
-  any.set_type_url(
-      "type.googleapis.com/optimization_guide.proto.TextSafetyModelMetadata");
-  model_metadata.SerializeToString(any.mutable_value());
-  std::unique_ptr<optimization_guide::ModelInfo> model_info =
-      TestModelInfoBuilder()
-          .SetAdditionalFiles(
-              {temp_dir().Append(kTsDataFile),
-               temp_dir().Append(base::FilePath(kTsSpModelFile))})
-          .SetModelMetadata(any)
-          .Build();
-  test_controller_->MaybeUpdateSafetyModel(*model_info);
+  {
+    auto safety_config =
+        std::make_unique<proto::FeatureTextSafetyConfiguration>();
+    safety_config->mutable_safety_category_thresholds()->Add(ForbidUnsafe());
+    safety_config->mutable_safety_category_thresholds()->Add(
+        RequireReasonable());
+    SetFeatureTextSafetyConfiguration(std::move(safety_config));
+  }
+
   auto session = test_controller_->CreateSession(
       kFeature, base::DoNothing(), logger_.GetWeakPtr(), nullptr,
       /*config_params=*/std::nullopt);
   EXPECT_TRUE(session);
 
-  // Score exceeds threshold. Would not pass but not retracting.
-  g_safety_info = on_device_model::mojom::SafetyInfo::New();
-  g_safety_info->class_scores = {0.7, 0.3};
+  // Should fail raw output, but not retract.
+  g_model_execute_result = {"unsafe_output"};
   ExecuteModel(*session, "foo");
   task_environment_.RunUntilIdle();
   EXPECT_TRUE(response_received_);
@@ -1970,9 +1901,10 @@ TEST_F(OnDeviceModelServiceControllerTest, SafetyModelDarkMode) {
   EXPECT_GE(logged_on_device_model_execution_info.execution_infos_size(), 2);
   auto ts_log = logged_on_device_model_execution_info.execution_infos(
       logged_on_device_model_execution_info.execution_infos_size() - 1);
-  EXPECT_TRUE(ts_log.request().has_text_safety_model_request());
+  EXPECT_EQ(ts_log.request().text_safety_model_request().text(),
+            "unsafe_output");
   EXPECT_THAT(ts_log.response().text_safety_model_response().scores(),
-              ElementsAre(0.7, 0.3));
+              ElementsAre(0.8, 0.8));
   EXPECT_TRUE(ts_log.response().text_safety_model_response().is_unsafe());
 }
 
@@ -1988,14 +1920,10 @@ TEST_F(OnDeviceModelServiceControllerTest, SafetyModelDarkModeNoFeatureConfig) {
   auto* other_feature_safety_config =
       model_metadata.add_feature_text_safety_configurations();
   other_feature_safety_config->set_feature(proto::MODEL_EXECUTION_FEATURE_TEST);
-  auto* threshold1 =
-      other_feature_safety_config->add_safety_category_thresholds();
-  threshold1->set_output_index(0);
-  threshold1->set_threshold(0.5);
-  auto* threshold2 =
-      other_feature_safety_config->add_safety_category_thresholds();
-  threshold2->set_output_index(1);
-  threshold2->set_threshold(0.5);
+  other_feature_safety_config->mutable_safety_category_thresholds()->Add(
+      ForbidUnsafe());
+  other_feature_safety_config->mutable_safety_category_thresholds()->Add(
+      RequireReasonable());
   proto::Any any;
   any.set_type_url(
       "type.googleapis.com/optimization_guide.proto.TextSafetyModelMetadata");
@@ -2012,6 +1940,9 @@ TEST_F(OnDeviceModelServiceControllerTest, SafetyModelDarkModeNoFeatureConfig) {
       kFeature, base::DoNothing(), logger_.GetWeakPtr(), nullptr,
       /*config_params=*/std::nullopt);
   EXPECT_TRUE(session);
+
+  // Would fail other feature's raw output check, but it shouldn't run.
+  g_model_execute_result = {"unsafe_output"};
 
   ExecuteModel(*session, "foo");
   task_environment_.RunUntilIdle();
@@ -3246,6 +3177,113 @@ TEST_F(OnDeviceModelServiceControllerTest, UsesTopKAndTemperature) {
   EXPECT_THAT(streamed_responses_, ElementsAre(expected_response));
 }
 
+// Validate that token interval 0 suppresses partial output.
+TEST_F(OnDeviceModelServiceControllerTest, TsInterval0) {
+  base::test::ScopedFeatureList feature_list;
+  feature_list.InitWithFeaturesAndParameters(
+      {
+          {features::kOptimizationGuideOnDeviceModel,
+           {{"on_device_model_retract_repeats", "false"}}},
+          {features::kTextSafetyClassifier,
+           {{"on_device_text_safety_token_interval", "0"}}},
+      },
+      {});
+  Initialize();
+  {
+    auto safety_config =
+        std::make_unique<proto::FeatureTextSafetyConfiguration>();
+    safety_config->mutable_safety_category_thresholds()->Add(ForbidUnsafe());
+    SetFeatureTextSafetyConfiguration(std::move(safety_config));
+  }
+  auto session = test_controller_->CreateSession(
+      kFeature, base::DoNothing(), logger_.GetWeakPtr(), nullptr,
+      /*config_params=*/std::nullopt);
+  EXPECT_TRUE(session);
+
+  g_model_execute_result = {"token1", " token2", " token3", " token4"};
+  ExecuteModel(*session, "foo");
+  task_environment_.RunUntilIdle();
+
+  const std::vector<std::string> expected_responses = {
+      "token1 token2 token3 token4"};
+  EXPECT_EQ(*response_received_, expected_responses.back());
+  EXPECT_THAT(streamed_responses_, ElementsAreArray(expected_responses));
+}
+
+// Validate that token interval 1 evaluates all partial output.
+TEST_F(OnDeviceModelServiceControllerTest, TsInterval1) {
+  base::test::ScopedFeatureList feature_list;
+  feature_list.InitWithFeaturesAndParameters(
+      {
+          {features::kOptimizationGuideOnDeviceModel,
+           {{"on_device_model_retract_repeats", "false"}}},
+          {features::kTextSafetyClassifier,
+           {{"on_device_text_safety_token_interval", "1"}}},
+      },
+      {});
+  Initialize();
+  {
+    auto safety_config =
+        std::make_unique<proto::FeatureTextSafetyConfiguration>();
+    safety_config->mutable_safety_category_thresholds()->Add(ForbidUnsafe());
+    SetFeatureTextSafetyConfiguration(std::move(safety_config));
+  }
+  auto session = test_controller_->CreateSession(
+      kFeature, base::DoNothing(), logger_.GetWeakPtr(), nullptr,
+      /*config_params=*/std::nullopt);
+  EXPECT_TRUE(session);
+
+  g_model_execute_result = {"token1", " token2", " token3", " token4"};
+  ExecuteModel(*session, "foo");
+  task_environment_.RunUntilIdle();
+
+  const std::vector<std::string> expected_responses = {
+      "token1",
+      "token1 token2",
+      "token1 token2 token3",
+      "token1 token2 token3 token4",
+  };
+  EXPECT_EQ(*response_received_, expected_responses.back());
+  EXPECT_THAT(streamed_responses_, ElementsAreArray(expected_responses));
+}
+
+// Validate that token interval 3 only evaluates every third and final chunk.
+TEST_F(OnDeviceModelServiceControllerTest, TsInterval3) {
+  base::test::ScopedFeatureList feature_list;
+  feature_list.InitWithFeaturesAndParameters(
+      {
+          {features::kOptimizationGuideOnDeviceModel,
+           {{"on_device_model_retract_repeats", "false"}}},
+          {features::kTextSafetyClassifier,
+           {{"on_device_text_safety_token_interval", "3"}}},
+      },
+      {});
+  Initialize();
+  {
+    auto safety_config =
+        std::make_unique<proto::FeatureTextSafetyConfiguration>();
+    safety_config->mutable_safety_category_thresholds()->Add(ForbidUnsafe());
+    SetFeatureTextSafetyConfiguration(std::move(safety_config));
+  }
+  auto session = test_controller_->CreateSession(
+      kFeature, base::DoNothing(), logger_.GetWeakPtr(), nullptr,
+      /*config_params=*/std::nullopt);
+  EXPECT_TRUE(session);
+
+  g_model_execute_result = {"token1",  " token2", " token3", " token4",
+                            " token5", " token6", " token7"};
+  ExecuteModel(*session, "foo");
+  task_environment_.RunUntilIdle();
+
+  const std::vector<std::string> expected_responses = {
+      "token1 token2 token3",
+      "token1 token2 token3 token4 token5 token6",
+      "token1 token2 token3 token4 token5 token6 token7",
+  };
+  EXPECT_EQ(*response_received_, expected_responses.back());
+  EXPECT_THAT(streamed_responses_, ElementsAreArray(expected_responses));
+}
+
 class OnDeviceModelServiceControllerTsIntervalTest
     : public OnDeviceModelServiceControllerTest,
       public ::testing::WithParamInterface<int> {};
@@ -3266,39 +3304,23 @@ TEST_P(OnDeviceModelServiceControllerTsIntervalTest,
 
   Initialize();
 
-  proto::TextSafetyModelMetadata model_metadata;
-  auto* safety_config = model_metadata.add_feature_text_safety_configurations();
-  safety_config->set_feature(ToModelExecutionFeatureProto(kFeature));
-  auto* threshold1 = safety_config->add_safety_category_thresholds();
-  threshold1->set_output_index(0);
-  threshold1->set_threshold(0.5);
-  auto* threshold2 = safety_config->add_safety_category_thresholds();
-  threshold2->set_output_index(1);
-  threshold2->set_threshold(0.5);
-  proto::Any any;
-  any.set_type_url(
-      "type.googleapis.com/optimization_guide.proto.TextSafetyModelMetadata");
-  model_metadata.SerializeToString(any.mutable_value());
-  std::unique_ptr<optimization_guide::ModelInfo> model_info =
-      TestModelInfoBuilder()
-          .SetAdditionalFiles(
-              {temp_dir().Append(kTsDataFile),
-               temp_dir().Append(base::FilePath(kTsSpModelFile))})
-          .SetModelMetadata(any)
-          .Build();
-  test_controller_->MaybeUpdateSafetyModel(*model_info);
+  {
+    auto safety_config =
+        std::make_unique<proto::FeatureTextSafetyConfiguration>();
+    safety_config->mutable_safety_category_thresholds()->Add(ForbidUnsafe());
+    SetFeatureTextSafetyConfiguration(std::move(safety_config));
+  }
+
   auto session = test_controller_->CreateSession(
       kFeature, base::DoNothing(), logger_.GetWeakPtr(), nullptr,
       /*config_params=*/std::nullopt);
   EXPECT_TRUE(session);
 
-  g_safety_info = on_device_model::mojom::SafetyInfo::New();
-  g_safety_info->class_scores = {0.3, 0.3};
   g_model_execute_result = {
       "some text",
       " some more repeating text",
       " some more repeating text",
-      " more stuff",
+      " unsafe stuff not processed",
   };
   ExecuteModelUsingInput(*session, "foo");
   task_environment_.RunUntilIdle();

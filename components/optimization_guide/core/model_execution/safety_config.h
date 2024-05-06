@@ -22,8 +22,10 @@ class SafetyConfig final {
   SafetyConfig& operator=(SafetyConfig&&);
   ~SafetyConfig();
 
-  bool IsMissingSafetyInfo(bool has_safety_info) const;
-  std::optional<uint32_t> TokenInterval() const;
+  // The minimum number of tokens required between two text safety evaluations
+  // of partial model output. If this is 0, only complete outputs should be
+  // evaluated.
+  uint32_t TokenInterval() const;
 
   // Whether the text is in a language not supported by the safety classifier,
   // or the language could not be detected despite the classifier requiring one

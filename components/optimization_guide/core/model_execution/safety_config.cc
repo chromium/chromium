@@ -4,13 +4,16 @@
 
 #include "components/optimization_guide/core/model_execution/safety_config.h"
 
+#include <cstddef>
 #include <optional>
 #include <string>
 
 #include "base/containers/contains.h"
+#include "base/no_destructor.h"
 #include "components/optimization_guide/core/model_execution/substitution.h"
 #include "components/optimization_guide/core/optimization_guide_features.h"
 #include "components/optimization_guide/proto/string_value.pb.h"
+#include "components/optimization_guide/proto/substitution.pb.h"
 #include "components/optimization_guide/proto/text_safety_model_metadata.pb.h"
 #include "services/on_device_model/public/mojom/on_device_model.mojom.h"
 
@@ -42,6 +45,31 @@ bool HasUnsafeScores(
   return false;
 }
 
+using CheckTemplate =
+    google::protobuf::RepeatedPtrField<proto::SubstitutedString>;
+
+CheckTemplate MakeDefaultRawOutputCheckTemplate() {
+  CheckTemplate input_template;
+  auto* sub = input_template.Add();
+  sub->set_string_template("%s");
+  sub->add_substitutions()
+      ->add_candidates()
+      ->mutable_proto_field()
+      ->add_proto_descriptors()
+      ->set_tag_number(1);
+  return input_template;
+}
+
+const CheckTemplate& GetRawOutputCheckTemplate(
+    const proto::FeatureTextSafetyConfiguration& config) {
+  if (!config.has_raw_output_check()) {
+    const static base::NoDestructor<CheckTemplate> default_template(
+        MakeDefaultRawOutputCheckTemplate());
+    return *default_template;
+  }
+  return config.raw_output_check().input_template();
+}
+
 }  // namespace
 
 SafetyConfig::SafetyConfig() = default;
@@ -52,13 +80,11 @@ SafetyConfig::SafetyConfig(SafetyConfig&&) = default;
 SafetyConfig::~SafetyConfig() = default;
 SafetyConfig& SafetyConfig::operator=(SafetyConfig&&) = default;
 
-bool SafetyConfig::IsMissingSafetyInfo(bool has_safety_info) const {
-  return proto_ && !has_safety_info;
-}
-
-std::optional<uint32_t> SafetyConfig::TokenInterval() const {
+uint32_t SafetyConfig::TokenInterval() const {
   if (!proto_) {
-    return std::nullopt;
+    // In the absence of a config, HasRawOutputCheck() should be false, so it
+    // will trivially pass. Returning 1 here admits every partial output.
+    return 1;
   }
   return features::GetOnDeviceModelTextSafetyTokenInterval();
 }
@@ -136,15 +162,14 @@ bool SafetyConfig::IsRequestUnsafe(
 }
 
 bool SafetyConfig::HasRawOutputCheck() const {
-  return proto_ && proto_->has_raw_output_check();
+  return proto_.has_value();
 }
 
 std::optional<SubstitutionResult> SafetyConfig::GetRawOutputCheckInput(
     const std::string& raw_output) const {
   proto::StringValue message;
   message.set_value(raw_output);
-  return CreateSubstitutions(message,
-                             proto_->raw_output_check().input_template());
+  return CreateSubstitutions(message, GetRawOutputCheckTemplate(*proto_));
 }
 
 }  // namespace optimization_guide
