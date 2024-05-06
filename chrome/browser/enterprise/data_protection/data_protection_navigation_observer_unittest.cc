@@ -274,6 +274,49 @@ TEST_F(DataProtectionNavigationObserverTest, TestWatermarkTextUpdated) {
 }
 
 TEST_F(DataProtectionNavigationObserverTest,
+       TestWatermarkTextUpdated_NoUrlCheck) {
+  profile()->GetPrefs()->SetInteger(
+      prefs::kSafeBrowsingEnterpriseRealTimeUrlCheckMode,
+      safe_browsing::REAL_TIME_CHECK_DISABLED);
+
+  enterprise_connectors::test::EventReportValidator validator(client_.get());
+  validator.ExpectNoReport();
+
+  auto simulator = content::NavigationSimulator::CreateRendererInitiated(
+      GURL("https://test"), web_contents()->GetPrimaryMainFrame());
+
+  // DataProtectionNavigationObserver does not implement DidStartNavigation(),
+  // this is called by BrowserView. So we simply call Start() and manually
+  // construct the class using the navigation handle that is provided once
+  // Start() is called.
+  simulator->Start();
+  content::NavigationHandle* navigation_handle =
+      simulator->GetNavigationHandle();
+  base::test::TestFuture<const UrlSettings&> future;
+
+  // The DataProtectionNavigationObserver needs to be constructed using
+  // CreateForNavigationHandle to allow for proper lifetime management of the
+  // object, since we call DeleteForNavigationHandle() in our
+  // DidFinishNavigation() override.
+  enterprise_data_protection::DataProtectionNavigationObserver::
+      CreateForNavigationHandle(*navigation_handle, &lookup_service_,
+                                navigation_handle->GetWebContents(),
+                                future.GetCallback());
+
+  // Call DidFinishNavigation() navigation, which should invoke our callback.
+  simulator->Commit();
+
+  std::string watermark_text = future.Get().watermark_text;
+  EXPECT_TRUE(watermark_text.empty());
+
+  // Value should be cached.
+  auto* user_data = DataProtectionPageUserData::GetForPage(
+      GetPageFromWebContents(web_contents()));
+  ASSERT_TRUE(user_data);
+  EXPECT_TRUE(user_data->settings().watermark_text.empty());
+}
+
+TEST_F(DataProtectionNavigationObserverTest,
        TestScreenshotUpdated_DataControls) {
   enterprise_connectors::test::EventReportValidator validator(client_.get());
   validator.ExpectNoReport();
@@ -469,6 +512,36 @@ TEST_F(DataProtectionNavigationObserverTest, GetDataProtectionSettings) {
       GetPageFromWebContents(web_contents()));
   ASSERT_TRUE(user_data);
   EXPECT_EQ(user_data->settings(), future.Get());
+}
+
+TEST_F(DataProtectionNavigationObserverTest,
+       GetDataProtectionSettings_NoUrlCheck) {
+  profile()->GetPrefs()->SetInteger(
+      prefs::kSafeBrowsingEnterpriseRealTimeUrlCheckMode,
+      safe_browsing::REAL_TIME_CHECK_DISABLED);
+
+  enterprise_connectors::test::EventReportValidator validator(client_.get());
+  validator.ExpectNoReport();
+  DataProtectionNavigationObserver::SetLookupServiceForTesting(
+      &lookup_service_);
+
+  SetContents(CreateTestWebContents());
+  NavigateAndCommit(GURL("https://example.com"));
+
+  base::test::TestFuture<const UrlSettings&> future;
+  DataProtectionNavigationObserver::GetDataProtectionSettings(
+      Profile::FromBrowserContext(browser_context()), web_contents(),
+      future.GetCallback());
+  EXPECT_TRUE(future.Get().watermark_text.empty());
+  EXPECT_TRUE(future.Get().allow_screenshots);  // Default is true.
+
+  // Value should be cached.
+  auto* user_data = DataProtectionPageUserData::GetForPage(
+      GetPageFromWebContents(web_contents()));
+  ASSERT_TRUE(user_data);
+  EXPECT_EQ(user_data->settings(), future.Get());
+  EXPECT_TRUE(user_data->settings().watermark_text.empty());
+  EXPECT_TRUE(user_data->settings().allow_screenshots);
 }
 
 TEST_F(DataProtectionNavigationObserverTest,

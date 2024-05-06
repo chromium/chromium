@@ -117,23 +117,6 @@ void OnRealTimeLookupComplete(
   std::move(callback).Run(std::move(rt_lookup_response));
 }
 
-void DoLookup(safe_browsing::RealTimeUrlLookupServiceBase* lookup_service,
-              const GURL& url,
-              const std::string& identifier,
-              LookupCallback callback,
-              content::WebContents* web_contents) {
-  DCHECK_CURRENTLY_ON(content::BrowserThread::UI);
-  DCHECK(web_contents);
-  DCHECK(!callback.is_null());
-
-  lookup_service->StartLookup(
-      url,
-      base::BindOnce(&OnRealTimeLookupComplete, std::move(callback),
-                     identifier),
-      base::SequencedTaskRunner::GetCurrentDefault(),
-      sessions::SessionTabHelper::IdForTab(web_contents));
-}
-
 bool IsEnterpriseLookupEnabled(Profile* profile) {
   // Some tests return a non-null pointer for the enterprise lookup service,
   // so we need to defensively check if enterprise lookup is enabled.
@@ -145,6 +128,29 @@ bool IsEnterpriseLookupEnabled(Profile* profile) {
       connectors_service->GetDMTokenForRealTimeUrlCheck().has_value();
   return safe_browsing::RealTimePolicyEngine::CanPerformEnterpriseFullURLLookup(
       profile->GetPrefs(), has_valid_dm_token, profile->IsOffTheRecord());
+}
+
+bool IsEnterpriseLookupEnabled(content::BrowserContext* context) {
+  DCHECK(context);
+  return IsEnterpriseLookupEnabled(Profile::FromBrowserContext(context));
+}
+
+void DoLookup(safe_browsing::RealTimeUrlLookupServiceBase* lookup_service,
+              const GURL& url,
+              const std::string& identifier,
+              LookupCallback callback,
+              content::WebContents* web_contents) {
+  DCHECK_CURRENTLY_ON(content::BrowserThread::UI);
+  DCHECK(web_contents);
+  DCHECK(!callback.is_null());
+  DCHECK(IsEnterpriseLookupEnabled(web_contents->GetBrowserContext()));
+
+  lookup_service->StartLookup(
+      url,
+      base::BindOnce(&OnRealTimeLookupComplete, std::move(callback),
+                     identifier),
+      base::SequencedTaskRunner::GetCurrentDefault(),
+      sessions::SessionTabHelper::IdForTab(web_contents));
 }
 
 bool IsDesktopDataControlsEnabled() {
@@ -300,7 +306,8 @@ DataProtectionNavigationObserver::DataProtectionNavigationObserver(
   // main frame still points to the existing page before the navigation, not the
   // ultimate destination page of the navigation.
   is_from_cache_ = navigation_handle.IsServedFromBackForwardCache();
-  if (!is_from_cache_ && lookup_service_) {
+  if (!is_from_cache_ &&
+      ShouldPerformRealTimeUrlCheck(web_contents->GetBrowserContext())) {
     DoLookup(lookup_service_, navigation_handle.GetURL(), identifier_,
              base::BindOnce(&DataProtectionNavigationObserver::OnLookupComplete,
                             weak_factory_.GetWeakPtr()),
@@ -318,6 +325,11 @@ void DataProtectionNavigationObserver::OnLookupComplete(
   rt_lookup_response_ = std::move(rt_lookup_response);
 }
 
+bool DataProtectionNavigationObserver::ShouldPerformRealTimeUrlCheck(
+    content::BrowserContext* browser_context) const {
+  return lookup_service_ && IsEnterpriseLookupEnabled(browser_context);
+}
+
 void DataProtectionNavigationObserver::DidRedirectNavigation(
     content::NavigationHandle* navigation_handle) {
   DCHECK_CURRENTLY_ON(content::BrowserThread::UI);
@@ -327,7 +339,8 @@ void DataProtectionNavigationObserver::DidRedirectNavigation(
       navigation_handle->GetWebContents()->GetBrowserContext(),
       navigation_handle->GetURL());
 
-  if (lookup_service_) {
+  if (ShouldPerformRealTimeUrlCheck(
+          navigation_handle->GetWebContents()->GetBrowserContext())) {
     DoLookup(
         lookup_service_, navigation_handle->GetURL(),
         GetIdentifier(navigation_handle->GetWebContents()->GetBrowserContext()),
@@ -378,7 +391,8 @@ void DataProtectionNavigationObserver::DidFinishNavigation(
     OnDoLookupComplete(web_contents()->GetWeakPtr(),
                        std::move(pending_navigation_callback_), identifier_,
                        std::move(rt_lookup_response_));
-  } else if (lookup_service_) {
+  } else if (ShouldPerformRealTimeUrlCheck(
+                 web_contents()->GetBrowserContext())) {
     LogVerdictSource(URLVerdictSource::kPostNavigationLookup);
     DoLookup(
         lookup_service_, navigation_handle->GetURL(), identifier_,

@@ -107,6 +107,12 @@ class DataProtectionNavigationObserver
   void OnLookupComplete(
       std::unique_ptr<safe_browsing::RTLookupResponse> rt_lookup_response);
 
+  // Returns true when the "EnterpriseRealTimeUrlCheckMode" policy is enabled
+  // for `browser_context`, and when a `lookup_service_` is available to make
+  // URL filtering checks.
+  bool ShouldPerformRealTimeUrlCheck(
+      content::BrowserContext* browser_context) const;
+
   // content::WebContentsObserver:
   void DidRedirectNavigation(
       content::NavigationHandle* navigation_handle) override;
