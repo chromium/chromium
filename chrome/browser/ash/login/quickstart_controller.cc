@@ -689,6 +689,7 @@ void QuickStartController::HandleTransitionToQuickStartScreen() {
 
 void QuickStartController::StartAccountTransfer() {
   UpdateUiState(UiState::CONFIRM_GOOGLE_ACCOUNT);
+  QuickStartMetrics::RecordGaiaTransferStarted();
   bootstrap_controller_->RequestGoogleAccountInfo();
 }
 

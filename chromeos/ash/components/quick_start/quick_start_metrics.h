@@ -268,7 +268,7 @@ class QuickStartMetrics {
       bool succeeded,
       std::optional<WifiTransferResultFailureReason> failure_reason);
 
-  static void RecordGaiaTransferAttempted(bool attempted);
+  static void RecordGaiaTransferStarted();
 
   static void RecordCapturePortalEncountered(int32_t session_id);
 

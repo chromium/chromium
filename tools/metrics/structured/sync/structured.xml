@@ -2507,6 +2507,59 @@
     </metric>
   </event>
 
+  <event name="QuickStart.GetWifiCredentials">
+    <summary>
+      Recorded when the Wi-Fi credentials are received during Quick Start, or when
+      an error occurs attempting to receive them.
+    </summary>
+    <metric name="Success" type="int">
+      <summary>
+        Boolean indicating whether the Wi-Fi credentials were successfully received.
+      </summary>
+    </metric>
+  </event>
+
+  <event name="QuickStart.InstallForcedUpdate">
+    <summary>
+      Recorded when the Quick Start user begins to install a forced update.
+    </summary>
+
+  </event>
+
+  <event name="QuickStart.InstallConsumerUpdate">
+    <summary>
+      Recorded when the Quick Start user begins to install a consumer update.
+    </summary>
+
+  </event>
+
+  <event name="QuickStart.ConsumerUpdateCancelled">
+    <summary>
+      Recorded when the Quick Start user cancels after beginning to install a
+      consumer update.
+    </summary>
+
+  </event>
+
+  <event name="QuickStart.AccountTransferStarted">
+    <summary>
+      Recorded when the Quick Start account transfer process begins.
+    </summary>
+
+  </event>
+
+  <event name="QuickStart.AccountTransferComplete">
+    <summary>
+      Recorded when the Quick Start account transfer process finishes or an error
+      occurs during.
+    </summary>
+    <metric name="Success" type="int">
+      <summary>
+        Boolean indicating whether the account transfer was successful.
+      </summary>
+    </metric>
+  </event>
+
   <event name="UserLogin">
     <summary>
       An event to signify a user is using the system.

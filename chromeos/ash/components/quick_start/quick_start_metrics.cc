@@ -284,6 +284,8 @@ void QuickStartMetrics::RecordWifiTransferResult(
                                   failure_reason.value());
   }
   base::UmaHistogramBoolean(kWifiTransferResultHistogramName, succeeded);
+  metrics::structured::StructuredMetricsClient::Record(
+      cros_events::QuickStart_GetWifiCredentials().SetSuccess(succeeded));
 }
 
 // static
@@ -292,6 +294,12 @@ void QuickStartMetrics::RecordAbortFlowReason(AbortFlowReason reason) {
   metrics::structured::StructuredMetricsClient::Record(
       std::move(cros_events::QuickStart_FlowAborted().SetReason(
           static_cast<cros_events::QuickStartAbortFlowReason>(reason))));
+}
+
+// static
+void QuickStartMetrics::RecordGaiaTransferStarted() {
+  metrics::structured::StructuredMetricsClient::Record(
+      cros_events::QuickStart_AccountTransferStarted());
 }
 
 // static
@@ -306,6 +314,8 @@ void QuickStartMetrics::RecordGaiaTransferResult(
                                   failure_reason.value());
   }
   base::UmaHistogramBoolean(kGaiaTransferResultName, succeeded);
+  metrics::structured::StructuredMetricsClient::Record(
+      cros_events::QuickStart_AccountTransferComplete().SetSuccess(succeeded));
 }
 
 // static
@@ -327,14 +337,20 @@ void QuickStartMetrics::RecordAuthenticationMethod(
 void QuickStartMetrics::RecordUpdateStarted(bool is_forced) {
   if (is_forced) {
     base::UmaHistogramBoolean(kForcedUpdateStartedHistogramName, true);
+    metrics::structured::StructuredMetricsClient::Record(
+        cros_events::QuickStart_InstallForcedUpdate());
   } else {
     base::UmaHistogramBoolean(kConsumerUpdateStartedHistogramName, true);
+    metrics::structured::StructuredMetricsClient::Record(
+        cros_events::QuickStart_InstallConsumerUpdate());
   }
 }
 
 // static
 void QuickStartMetrics::RecordConsumerUpdateCancelled() {
   base::UmaHistogramBoolean(kConsumerUpdateCancelledHistogramName, true);
+  metrics::structured::StructuredMetricsClient::Record(
+      cros_events::QuickStart_ConsumerUpdateCancelled());
 }
 
 // static
