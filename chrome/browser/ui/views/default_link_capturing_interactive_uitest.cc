@@ -201,7 +201,8 @@ IN_PROC_BROWSER_TEST_F(IntentPickerInteractiveUiTest,
 
 // TODO(b/338969664): The following tests are failing on Linux MSan, so
 // disabling for now. These should be re-enabled.
-#if BUILDFLAG(IS_LINUX) && defined(MEMORY_SANITIZER)
+#if BUILDFLAG(IS_LINUX) && \
+    (defined(MEMORY_SANITIZER) || defined(THREAD_SANITIZER))
 #define MAYBE_AcceptingBubbleMeasuresUserAccept \
   DISABLED_AcceptingBubbleMeasuresUserAccept
 #define MAYBE_BubbleDismissMeasuresUserDismiss \
