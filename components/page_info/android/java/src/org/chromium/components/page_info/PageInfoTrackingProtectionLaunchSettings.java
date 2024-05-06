@@ -33,19 +33,18 @@ import org.chromium.ui.util.AttrUtils;
 /** View showing a toggle and a description for tracking protection for a site. */
 public class PageInfoTrackingProtectionLaunchSettings extends BaseSiteSettingsFragment {
     private static final String COOKIE_SUMMARY_PREFERENCE = "cookie_summary";
+    private static final String TP_TITLE = "tp_title";
     private static final String TP_SWITCH_PREFERENCE = "tp_switch";
     private static final String TP_STATUS_PREFERENCE = "tp_status";
     private static final String STORAGE_IN_USE_PREFERENCE = "storage_in_use";
     private static final String FPS_IN_USE_PREFERENCE = "fps_in_use";
-    private static final String TPC_TITLE = "tpc_title";
     private static final String TPC_SUMMARY = "tpc_summary";
     private static final int EXPIRATION_FOR_TESTING = 33;
 
-    private ChromeSwitchPreference mCookieSwitch;
+    private ChromeSwitchPreference mTpSwitch;
     private ChromeImageViewPreference mStorageInUse;
     private ChromeImageViewPreference mFPSInUse;
-    private TextMessagePreference mThirdPartyCookiesTitle;
-    private Preference mThirdPartyCookiesSummary;
+    private TextMessagePreference mTpTitle;
     private TrackingProtectionStatusPreference mTpStatus;
     private Runnable mOnClearCallback;
     private Runnable mOnCookieSettingsLinkClicked;
@@ -87,16 +86,15 @@ public class PageInfoTrackingProtectionLaunchSettings extends BaseSiteSettingsFr
         }
         SettingsUtils.addPreferencesFromResource(
                 this, R.xml.page_info_tracking_protection_launch_preference);
-        mThirdPartyCookiesSummary = findPreference(TP_SWITCH_PREFERENCE);
 
-        mCookieSwitch = findPreference(TP_SWITCH_PREFERENCE);
-        mCookieSwitch.setUseSummaryAsTitle(false);
+        mTpSwitch = findPreference(TP_SWITCH_PREFERENCE);
+        mTpSwitch.setUseSummaryAsTitle(false);
 
         mTpStatus = findPreference(TP_STATUS_PREFERENCE);
         mStorageInUse = findPreference(STORAGE_IN_USE_PREFERENCE);
         mFPSInUse = findPreference(FPS_IN_USE_PREFERENCE);
         mFPSInUse.setVisible(false);
-        mThirdPartyCookiesTitle = findPreference(TPC_TITLE);
+        mTpTitle = findPreference(TP_TITLE);
     }
 
     @Override
@@ -138,8 +136,8 @@ public class PageInfoTrackingProtectionLaunchSettings extends BaseSiteSettingsFr
                         new SpanApplier.SpanInfo("<link>", "</link>", linkSpan)));
 
         // TODO(crbug.com/40129299): Set a ManagedPreferenceDelegate?
-        mCookieSwitch.setVisible(params.thirdPartyCookieBlockingEnabled);
-        mCookieSwitch.setOnPreferenceChangeListener(
+        mTpSwitch.setVisible(params.thirdPartyCookieBlockingEnabled);
+        mTpSwitch.setOnPreferenceChangeListener(
                 (preference, newValue) -> {
                     boolean boolValue = (Boolean) newValue;
                     mTpStatus.setTrackingProtectionStatus(boolValue);
@@ -191,8 +189,8 @@ public class PageInfoTrackingProtectionLaunchSettings extends BaseSiteSettingsFr
 
         if (enforcement == CookieControlsEnforcement.ENFORCED_BY_TPCD_GRANT) {
             // Hide all the 3PC controls.
-            mCookieSwitch.setVisible(false);
-            mThirdPartyCookiesTitle.setVisible(false);
+            mTpSwitch.setVisible(false);
+            mTpTitle.setVisible(false);
             findPreference(COOKIE_SUMMARY_PREFERENCE).setVisible(false);
             ClickableSpan linkSpan =
                     new ClickableSpan() {
@@ -211,7 +209,7 @@ public class PageInfoTrackingProtectionLaunchSettings extends BaseSiteSettingsFr
                                             R.color.default_text_color_link_baseline));
                         }
                     };
-            mThirdPartyCookiesSummary.setSummary(
+            mTpSwitch.setSummary(
                     SpanApplier.applySpans(
                             getString(
                                     R.string.page_info_tracking_protection_site_grant_description),
@@ -219,16 +217,15 @@ public class PageInfoTrackingProtectionLaunchSettings extends BaseSiteSettingsFr
             return;
         }
 
-        mCookieSwitch.setVisible(controlsVisible);
-        mThirdPartyCookiesTitle.setVisible(controlsVisible);
-        mThirdPartyCookiesSummary.setVisible(controlsVisible);
+        mTpSwitch.setVisible(controlsVisible);
+        mTpTitle.setVisible(controlsVisible);
 
         if (!controlsVisible) return;
 
-        mCookieSwitch.setChecked(protectionsOn);
+        mTpSwitch.setChecked(protectionsOn);
         mTpStatus.setTrackingProtectionStatus(protectionsOn);
-        mCookieSwitch.setEnabled(!isEnforced);
-        mCookieSwitch.setManagedPreferenceDelegate(
+        mTpSwitch.setEnabled(!isEnforced);
+        mTpSwitch.setManagedPreferenceDelegate(
                 new ForwardingManagedPreferenceDelegate(
                         getSiteSettingsDelegate().getManagedPreferenceDelegate()) {
                     @Override
@@ -247,19 +244,13 @@ public class PageInfoTrackingProtectionLaunchSettings extends BaseSiteSettingsFr
                         });
 
         if (protectionsOn) {
-            mThirdPartyCookiesTitle.setTitle(
-                    getString(R.string.page_info_tracking_protection_title_on));
-            int resId =
-                    willCreatePermanentException()
-                            ? R.string.page_info_cookies_site_not_working_description_permanent
-                            : R.string
-                                    .page_info_cookies_site_not_working_description_tracking_protection;
-            mThirdPartyCookiesSummary.setSummary(getString(resId));
+            mTpTitle.setTitle(getString(R.string.page_info_tracking_protection_title_on));
+            mTpSwitch.setSummary(R.string.page_info_tracking_protection_toggle_on);
         } else if (permanentException) {
-            mThirdPartyCookiesTitle.setTitle(
+            mTpTitle.setTitle(
                     getString(R.string.page_info_tracking_protection_title_off_permanent));
             int resId = R.string.page_info_cookies_tracking_protection_description;
-            mThirdPartyCookiesSummary.setSummary(
+            mTpSwitch.setSummary(
                     SpanApplier.applySpans(
                             getString(resId),
                             new SpanApplier.SpanInfo("<link>", "</link>", feedbackSpan)));
@@ -271,7 +262,7 @@ public class PageInfoTrackingProtectionLaunchSettings extends BaseSiteSettingsFr
                                     TimeUtils.currentTimeMillis(), expiration);
             updateTrackingProtectionTitleTemporary(days);
             int resId = R.string.page_info_cookies_tracking_protection_description;
-            mThirdPartyCookiesSummary.setSummary(
+            mTpSwitch.setSummary(
                     SpanApplier.applySpans(
                             getString(resId),
                             new SpanApplier.SpanInfo("<link>", "</link>", feedbackSpan)));
@@ -359,7 +350,11 @@ public class PageInfoTrackingProtectionLaunchSettings extends BaseSiteSettingsFr
     }
 
     private void updateTrackingProtectionTitleTemporary(int days) {
-        mThirdPartyCookiesTitle.setTitle(
+        if (days == 0) {
+            mTpTitle.setTitle(getString(R.string.page_info_tracking_protection_title_off_today));
+            return;
+        }
+        mTpTitle.setTitle(
                 getQuantityString(R.plurals.page_info_tracking_protection_title_off, days));
     }
 

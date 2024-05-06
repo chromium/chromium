@@ -41,19 +41,17 @@ public class TrackingProtectionStatusPreference extends Preference {
         mStatus = enabled;
         if (mCookieStatus == null) return;
 
-        // TODO(b/330745124): Use the actual icons.
         Drawable cookieIcon =
                 AppCompatResources.getDrawable(
-                        getContext(),
-                        enabled ? R.drawable.ic_eye_crossed : R.drawable.ic_cookie_24dp);
+                        getContext(), enabled ? R.drawable.tp_cookie_off : R.drawable.tp_cookie);
         Drawable ipIcon =
                 AppCompatResources.getDrawable(
                         getContext(),
-                        enabled ? R.drawable.ic_eye_crossed : R.drawable.ic_cookie_24dp);
+                        enabled ? R.drawable.tp_ip_protection_on : R.drawable.tp_ip_protection_off);
         Drawable fingerprintIcon =
                 AppCompatResources.getDrawable(
                         getContext(),
-                        enabled ? R.drawable.ic_eye_crossed : R.drawable.ic_cookie_24dp);
+                        enabled ? R.drawable.tp_fingerprint_off : R.drawable.tp_fingerprint);
 
         // TODO(b/330745124): Use the actual strings.
         mCookieStatus.setText(
