@@ -94,6 +94,9 @@ export interface PrintTicket {
   // Whether to print full document or selected section.
   shouldPrintSelectionOnly: boolean;
 
+  // Whether media should use borderless variant.
+  borderless: boolean;
+
   // Used when printing multiple copies. When true, prints a full set of the
   // document before printing the next copy. When false, prints N-copies of page
   // one, then page two until all pages are printed.

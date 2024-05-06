@@ -25,6 +25,7 @@ const DEFAULT_MEDIA_SIZE: MediaSize = {
 // Default based on settings defaults described in createSettings function.
 // See: chrome/browser/resources/print_preview/data/model.ts.
 export const DEFAULT_PARTIAL_PRINT_TICKET: Partial<PrintTicket> = {
+  borderless: false,
   collate: true,
   color: ColorModel.COLOR,
   copies: 1,

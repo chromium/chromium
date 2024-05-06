@@ -418,6 +418,9 @@ suite('PrintTicketManager', () => {
         } as PrintTicket;
         const ticket = instance.getPrintTicketForTesting() as PrintTicket;
         assertEquals(
+            DEFAULT_PARTIAL_PRINT_TICKET.borderless, ticket.borderless,
+            'Ticket borderless should match DEFAULT_PARTIAL_PRINT_TICKET');
+        assertEquals(
             DEFAULT_PARTIAL_PRINT_TICKET.collate, ticket.collate,
             'Ticket collate should match DEFAULT_PARTIAL_PRINT_TICKET');
         assertEquals(
