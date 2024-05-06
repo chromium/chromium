@@ -15,25 +15,30 @@ import java.util.List;
  */
 public class CachedFlagUtils {
     /** Caches flags that must take effect on startup but are set via native code. */
-    public static void cacheNativeFlags(List<CachedFlag> featuresToCache) {
+    public static void cacheNativeFlags(List<CachedFlag>... listsOfFeaturesToCache) {
         // Batch the updates into a single apply() call to avoid calling the expensive
         // SharedPreferencesImpl$EditorImpl.commitToMemory() method many times unnecessarily.
         final SharedPreferences.Editor editor =
                 CachedFlagsSharedPreferences.getInstance().getEditor();
-        for (CachedFlag feature : featuresToCache) {
-            feature.writeCacheValueToEditor(editor);
+        for (final List<CachedFlag> featuresToCache : listsOfFeaturesToCache) {
+            for (CachedFlag feature : featuresToCache) {
+                feature.writeCacheValueToEditor(editor);
+            }
         }
         editor.apply();
     }
 
     /** Caches flags that must take effect on startup but are set via native code. */
-    public static void cacheFieldTrialParameters(List<CachedFieldTrialParameter> parameters) {
+    public static void cacheFieldTrialParameters(
+            List<CachedFieldTrialParameter>... listsOfParameters) {
         // Batch the updates into a single apply() call to avoid calling the expensive
         // SharedPreferencesImpl$EditorImpl.commitToMemory() method many times unnecessarily.
         final SharedPreferences.Editor editor =
                 CachedFlagsSharedPreferences.getInstance().getEditor();
-        for (final CachedFieldTrialParameter parameter : parameters) {
-            parameter.writeCacheValueToEditor(editor);
+        for (final List<CachedFieldTrialParameter> parameters : listsOfParameters) {
+            for (final CachedFieldTrialParameter parameter : parameters) {
+                parameter.writeCacheValueToEditor(editor);
+            }
         }
         editor.apply();
     }

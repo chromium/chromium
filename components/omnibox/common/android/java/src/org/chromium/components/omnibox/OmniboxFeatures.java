@@ -12,7 +12,6 @@ import org.chromium.base.SysUtils;
 import org.chromium.base.cached_flags.BooleanCachedFieldTrialParameter;
 import org.chromium.base.cached_flags.CachedFieldTrialParameter;
 import org.chromium.base.cached_flags.CachedFlag;
-import org.chromium.base.cached_flags.CachedFlagUtils;
 import org.chromium.base.cached_flags.IntCachedFieldTrialParameter;
 
 import java.util.ArrayList;
@@ -128,13 +127,9 @@ public class OmniboxFeatures {
         return param;
     }
 
-    /**
-     * Persist cached feature flags and parameters.
-     *
-     * <p>Persists all flags that were statically instantiated as part of this class.
-     */
-    public static void cacheFeatureFlags() {
-        CachedFlagUtils.cacheNativeFlags(sCachedFlags);
+    /** Retrieve list of CachedFlags that should be cached. */
+    public static List<CachedFlag> getFieldTrialsToCache() {
+        return sCachedFlags;
     }
 
     /** Retrieve list of FieldTrialParams that should be cached. */
