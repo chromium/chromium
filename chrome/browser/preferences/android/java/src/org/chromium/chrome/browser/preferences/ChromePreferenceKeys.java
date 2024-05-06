@@ -772,8 +772,8 @@ public final class ChromePreferenceKeys {
             "settings_personalized_signin_promo_dismissed";
 
     // TODO(crbug.com/40697988): Remove this after migrating the legacy code that uses
-    //                                  the sync account before the native is loaded.
-    public static final String SIGNIN_LEGACY_SYNC_ACCOUNT_EMAIL = "google.services.username";
+    //                                  the primary account before the native is loaded.
+    public static final String SIGNIN_LEGACY_PRIMARY_ACCOUNT_EMAIL = "google.services.username";
 
     public static final String SNAPSHOT_DATABASE_REMOVED = "snapshot_database_removed";
 

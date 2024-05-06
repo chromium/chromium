@@ -336,6 +336,7 @@ public class SigninManagerIntegrationTest {
     @Test
     @MediumTest
     @EnableFeatures(SigninFeatures.SEED_ACCOUNTS_REVAMP)
+    @DisableFeatures(SigninFeatures.USE_CONSENT_LEVEL_SIGNIN_FOR_LEGACY_ACCOUNT_EMAIL_PREF)
     public void testPrimaryAccountRemoval_signsOut() {
         mSigninTestRule.addAccount(TEST_ACCOUNT1);
         SigninTestUtil.signinAndEnableSync(mTestAccount1, null);
@@ -343,7 +344,7 @@ public class SigninManagerIntegrationTest {
         TestThreadUtils.runOnUiThreadBlocking(
                 () -> {
                     assertEquals(
-                            SigninPreferencesManager.getInstance().getLegacySyncAccountEmail(),
+                            SigninPreferencesManager.getInstance().getLegacyPrimaryAccountEmail(),
                             mTestAccount1.getEmail());
                 });
 
@@ -352,13 +353,15 @@ public class SigninManagerIntegrationTest {
         TestThreadUtils.runOnUiThreadBlocking(
                 () -> {
                     assertNull(mIdentityManager.getPrimaryAccountInfo(ConsentLevel.SIGNIN));
-                    assertNull(SigninPreferencesManager.getInstance().getLegacySyncAccountEmail());
+                    assertNull(
+                            SigninPreferencesManager.getInstance().getLegacyPrimaryAccountEmail());
                 });
     }
 
     @Test
     @MediumTest
     @EnableFeatures(SigninFeatures.SEED_ACCOUNTS_REVAMP)
+    @DisableFeatures(SigninFeatures.USE_CONSENT_LEVEL_SIGNIN_FOR_LEGACY_ACCOUNT_EMAIL_PREF)
     public void testPrimaryAccountRenaming_updatesLegacySyncAccountEmail() {
         mSigninTestRule.addAccount(TEST_ACCOUNT1);
         SigninTestUtil.signinAndEnableSync(mTestAccount1, null);
@@ -366,7 +369,7 @@ public class SigninManagerIntegrationTest {
         TestThreadUtils.runOnUiThreadBlocking(
                 () -> {
                     assertEquals(
-                            SigninPreferencesManager.getInstance().getLegacySyncAccountEmail(),
+                            SigninPreferencesManager.getInstance().getLegacyPrimaryAccountEmail(),
                             mTestAccount1.getEmail());
                 });
 
@@ -383,7 +386,68 @@ public class SigninManagerIntegrationTest {
                             mIdentityManager.getPrimaryAccountInfo(ConsentLevel.SYNC).getEmail(),
                             renamedAccount.getEmail());
                     assertEquals(
-                            SigninPreferencesManager.getInstance().getLegacySyncAccountEmail(),
+                            SigninPreferencesManager.getInstance().getLegacyPrimaryAccountEmail(),
+                            renamedAccount.getEmail());
+                });
+    }
+
+    @Test
+    @MediumTest
+    @EnableFeatures({
+        SigninFeatures.SEED_ACCOUNTS_REVAMP,
+        SigninFeatures.USE_CONSENT_LEVEL_SIGNIN_FOR_LEGACY_ACCOUNT_EMAIL_PREF
+    })
+    public void testSignInAndSignOut_updateLegacySyncAccountEmail() {
+        mSigninTestRule.addAccountThenSignin(SigninTestRule.TEST_ACCOUNT_1);
+
+        TestThreadUtils.runOnUiThreadBlocking(
+                () -> {
+                    assertEquals(
+                            SigninPreferencesManager.getInstance().getLegacyPrimaryAccountEmail(),
+                            SigninTestRule.TEST_ACCOUNT_1.getEmail());
+                });
+
+        mSigninTestRule.signOut();
+
+        TestThreadUtils.runOnUiThreadBlocking(
+                () -> {
+                    assertNull(
+                            SigninPreferencesManager.getInstance().getLegacyPrimaryAccountEmail());
+                });
+    }
+
+    @Test
+    @MediumTest
+    @EnableFeatures({
+        SigninFeatures.SEED_ACCOUNTS_REVAMP,
+        SigninFeatures.USE_CONSENT_LEVEL_SIGNIN_FOR_LEGACY_ACCOUNT_EMAIL_PREF
+    })
+    public void testPrimaryAccountRenaming_updatesLegacySyncAccountEmail_whenSignedIn() {
+        mSigninTestRule.addAccountThenSignin(SigninTestRule.TEST_ACCOUNT_1);
+
+        TestThreadUtils.runOnUiThreadBlocking(
+                () -> {
+                    assertEquals(
+                            SigninPreferencesManager.getInstance().getLegacyPrimaryAccountEmail(),
+                            SigninTestRule.TEST_ACCOUNT_1.getEmail());
+                });
+
+        mSigninTestRule.blockGetCoreAccountInfosUpdate(true);
+        mSigninTestRule.removeAccount(SigninTestRule.TEST_ACCOUNT_1.getId());
+        AccountInfo renamedAccount =
+                new AccountInfo.Builder(
+                                "renamed@gmail.com", SigninTestRule.TEST_ACCOUNT_1.getGaiaId())
+                        .build();
+        mSigninTestRule.addAccount(renamedAccount);
+        mSigninTestRule.unblockGetCoreAccountInfos();
+
+        TestThreadUtils.runOnUiThreadBlocking(
+                () -> {
+                    assertEquals(
+                            mIdentityManager.getPrimaryAccountInfo(ConsentLevel.SIGNIN).getEmail(),
+                            renamedAccount.getEmail());
+                    assertEquals(
+                            SigninPreferencesManager.getInstance().getLegacyPrimaryAccountEmail(),
                             renamedAccount.getEmail());
                 });
     }

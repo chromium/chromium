@@ -241,16 +241,22 @@ class SigninManagerImpl implements IdentityManager.Observer, SigninManager, Acco
      * by the native component. Sets the email of the primary account stored in shared preferences
      * to null in case the user is signed out.
      */
-    private void maybeUpdateLegacySyncAccountEmail() {
-        // TODO(crbug.com/40066882): Use ConsentLevel.SIGNIN instead.
-        CoreAccountInfo accountInfo = mIdentityManager.getPrimaryAccountInfo(ConsentLevel.SYNC);
+    private void maybeUpdateLegacyPrimaryAccountEmail() {
+        @ConsentLevel
+        int consentLevel =
+                SigninFeatureMap.isEnabled(
+                                SigninFeatures
+                                        .USE_CONSENT_LEVEL_SIGNIN_FOR_LEGACY_ACCOUNT_EMAIL_PREF)
+                        ? ConsentLevel.SIGNIN
+                        : ConsentLevel.SYNC;
+        CoreAccountInfo accountInfo = mIdentityManager.getPrimaryAccountInfo(consentLevel);
         if (Objects.equals(
                 CoreAccountInfo.getEmailFrom(accountInfo),
-                SigninPreferencesManager.getInstance().getLegacySyncAccountEmail())) {
+                SigninPreferencesManager.getInstance().getLegacyPrimaryAccountEmail())) {
             return;
         }
         SigninPreferencesManager.getInstance()
-                .setLegacySyncAccountEmail(CoreAccountInfo.getEmailFrom(accountInfo));
+                .setLegacyPrimaryAccountEmail(CoreAccountInfo.getEmailFrom(accountInfo));
     }
 
     /** Extracts the domain name of a given account's email. */
@@ -500,10 +506,10 @@ class SigninManagerImpl implements IdentityManager.Observer, SigninManager, Acco
             return;
         }
 
-        if (mSignInState.shouldTurnSyncOn()) {
-            // Should be called after re-seeding accounts to make sure that we get the new email.
-            maybeUpdateLegacySyncAccountEmail();
+        // Should be called after setting the primary account.
+        maybeUpdateLegacyPrimaryAccountEmail();
 
+        if (mSignInState.shouldTurnSyncOn()) {
             mSyncService.setSyncRequested();
 
             RecordUserAction.record("Signin_Signin_Succeed");
@@ -761,7 +767,7 @@ class SigninManagerImpl implements IdentityManager.Observer, SigninManager, Acco
         mIdentityManager.refreshAccountInfoIfStale(
                 mAccountManagerFacade.getCoreAccountInfos().getResult());
         // Should be called after re-seeding accounts to make sure that we get the new email.
-        maybeUpdateLegacySyncAccountEmail();
+        maybeUpdateLegacyPrimaryAccountEmail();
     }
 
     /**
@@ -870,7 +876,7 @@ class SigninManagerImpl implements IdentityManager.Observer, SigninManager, Acco
                 "Native signout complete, wiping data (user callback: %s)",
                 mSignOutState.mDataWipeAction);
 
-        maybeUpdateLegacySyncAccountEmail();
+        maybeUpdateLegacyPrimaryAccountEmail();
 
         if (mSignOutState.mSignOutCallback != null) {
             mSignOutState.mSignOutCallback.preWipeData();

@@ -37,6 +37,9 @@ BASE_DECLARE_FEATURE(kEnterprisePolicyOnSignin);
 // Feature flag to hide signin promo in settings page.
 COMPONENT_EXPORT(SIGNIN_SWITCHES)
 BASE_DECLARE_FEATURE(kHideSettingsSignInPromo);
+
+COMPONENT_EXPORT(SIGNIN_SWITCHES)
+BASE_DECLARE_FEATURE(kUseConsentLevelSigninForLegacyAccountEmailPref);
 #endif
 
 COMPONENT_EXPORT(SIGNIN_SWITCHES)
