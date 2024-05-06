@@ -160,16 +160,16 @@ void GameDashboardController::OnWindowPropertyChanged(aura::Window* window,
   }
 }
 
-void GameDashboardController::OnWindowVisibilityChanged(aura::Window* window,
-                                                        bool visible) {
-  // When this controller determines that the given `window` is a game, the
-  // `window` may not have known `WindowState`, so it will not create
-  // `GameDashboardContext` for the game window. This can happen if the window
-  // is temporarily hidden when launched by window restore. Soon after, the
-  // window will be reparented to a top level container, and
-  // `OnWindowVisibilityChanged` will be called, and it will have a
-  // `WindowState`. This ensures that a `GameDashboardContext` is created.
-  MaybeCreateGameDashboardContext(window);
+void GameDashboardController::OnWindowParentChanged(aura::Window* window,
+                                                    aura::Window* parent) {
+  if (parent) {
+    // When this controller determines that the given `window` is a game, the
+    // `window` may not be parented. The controller will not create a
+    // `GameDashboardContext`. When the window is reparented to a
+    // valid parent, `OnWindowParentChanged` will be called and create a
+    // `GameDashboardContext` for it.
+    MaybeCreateGameDashboardContext(window);
+  }
 }
 
 void GameDashboardController::OnWindowBoundsChanged(
@@ -301,7 +301,9 @@ void GameDashboardController::OnWindowActivated(
 void GameDashboardController::MaybeCreateGameDashboardContext(
     aura::Window* window) {
   DCHECK(window);
-  if (!IsGameWindow(window) || !WindowState::Get(window) ||
+  // Do not create a GameDashboardContext if the window is not a game, is not
+  // parented, doesn't have a WindowState, or is being destroyed.
+  if (!IsGameWindow(window) || !window->parent() || !WindowState::Get(window) ||
       window->is_destroying()) {
     return;
   }
