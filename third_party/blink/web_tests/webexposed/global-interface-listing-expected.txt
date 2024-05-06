@@ -9622,7 +9622,6 @@ interface ShadowRoot : DocumentFragment
     setter fullscreenElement
     setter innerHTML
     setter onslotchange
-    setter serializable
 interface SharedStorage
     attribute @@toStringTag
     getter worklet

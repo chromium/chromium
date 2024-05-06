@@ -8582,7 +8582,6 @@ interface ShadowRoot : DocumentFragment
     setter fullscreenElement
     setter innerHTML
     setter onslotchange
-    setter serializable
 interface SharedWorker : EventTarget
     attribute @@toStringTag
     getter onerror
