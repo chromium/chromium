@@ -11,6 +11,7 @@
 #include "base/command_line.h"
 #include "base/files/file_path.h"
 #include "base/files/file_util.h"
+#include "base/notreached.h"
 #include "base/path_service.h"
 #include "base/run_loop.h"
 #include "chrome/browser/ash/login/oobe_screen.h"
@@ -623,9 +624,7 @@ class EnrollmentErrorScreenTest
   bool IsManualEnrollmentMode(policy::EnrollmentConfig::Mode mode) const {
     switch (mode) {
       case policy::EnrollmentConfig::MODE_NONE:
-      case policy::EnrollmentConfig::DEPRECATED_MODE_ENROLLED_ROLLBACK:
-      case policy::EnrollmentConfig::DEPRECATED_MODE_OFFLINE_DEMO:
-        break;
+        NOTREACHED_NORETURN() << "Bad enrollment mode " << mode;
       case policy::EnrollmentConfig::MODE_MANUAL:
       case policy::EnrollmentConfig::MODE_MANUAL_REENROLLMENT:
       case policy::EnrollmentConfig::MODE_LOCAL_ADVERTISED:
@@ -649,9 +648,6 @@ class EnrollmentErrorScreenTest
           MODE_ENROLLMENT_TOKEN_INITIAL_MANUAL_FALLBACK:
         return false;
     }
-
-    NOTREACHED() << "Bad enrollment mode " << mode;
-    return true;
   }
 };
 

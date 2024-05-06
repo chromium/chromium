@@ -88,8 +88,6 @@ void EnrollmentUMA(policy::MetricEnrollment sample,
       base::UmaHistogramSparse(kMetricEnrollmentTokenBasedManualFallback,
                                sample);
       break;
-    case policy::EnrollmentConfig::DEPRECATED_MODE_ENROLLED_ROLLBACK:
-    case policy::EnrollmentConfig::DEPRECATED_MODE_OFFLINE_DEMO:
     case policy::EnrollmentConfig::MODE_NONE:
       NOTREACHED();
       break;

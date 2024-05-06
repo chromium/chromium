@@ -13,6 +13,7 @@
 #include "base/functional/bind.h"
 #include "base/location.h"
 #include "base/logging.h"
+#include "base/notreached.h"
 #include "base/system/sys_info.h"
 #include "base/task/sequenced_task_runner.h"
 #include "base/task/single_thread_task_runner.h"
@@ -75,9 +76,7 @@ em::DeviceRegisterRequest::Flavor EnrollmentModeToRegistrationFlavor(
     EnrollmentConfig::Mode mode) {
   switch (mode) {
     case EnrollmentConfig::MODE_NONE:
-    case EnrollmentConfig::DEPRECATED_MODE_ENROLLED_ROLLBACK:
-    case EnrollmentConfig::DEPRECATED_MODE_OFFLINE_DEMO:
-      break;
+      NOTREACHED_NORETURN() << "Bad enrollment mode: " << mode;
     case EnrollmentConfig::MODE_MANUAL:
       return em::DeviceRegisterRequest::FLAVOR_ENROLLMENT_MANUAL;
     case EnrollmentConfig::MODE_MANUAL_REENROLLMENT:
@@ -124,9 +123,6 @@ em::DeviceRegisterRequest::Flavor EnrollmentModeToRegistrationFlavor(
       return em::DeviceRegisterRequest::
           FLAVOR_ENROLLMENT_TOKEN_INITIAL_MANUAL_FALLBACK;
   }
-
-  NOTREACHED() << "Bad enrollment mode: " << mode;
-  return em::DeviceRegisterRequest::FLAVOR_ENROLLMENT_MANUAL;
 }
 
 // Returns the PSM protocol execution result if prefs::kEnrollmentPsmResult is
