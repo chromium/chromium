@@ -34,6 +34,7 @@ using autofill::PasswordFormFillData;
 using autofill::Suggestion;
 using autofill::SuggestionType;
 using testing::AllOf;
+using testing::Conditional;
 using testing::ElementsAre;
 using testing::Field;
 using testing::IsEmpty;
@@ -49,17 +50,25 @@ Matcher<Suggestion> EqualsDomainPasswordSuggestion(
     const std::u16string& realm_label,
     const gfx::Image& custom_icon,
     Suggestion::Icon trailing_icon = Suggestion::Icon::kNoIcon) {
+  const std::u16string voice_over_suffix =
+      realm_label.empty() ? u"" : base::StrCat({u", ", realm_label});
   return AllOf(
       EqualsSuggestion(id, main_text, Suggestion::Icon::kGlobe),
       Field("additional_label", &Suggestion::additional_label,
             additional_label),
-      Field("labels", &Suggestion::labels,
-            ElementsAre(ElementsAre(Suggestion::Text(realm_label)))),
+      Field(
+          "labels", &Suggestion::labels,
+          Conditional(realm_label.empty(), IsEmpty(),
+                      ElementsAre(ElementsAre(Suggestion::Text(realm_label))))),
       Field("voice_over", &Suggestion::voice_over,
-            base::StrCat(
-                {l10n_util::GetStringFUTF16(
-                     IDS_PASSWORD_MANAGER_PASSWORD_FOR_ACCOUNT, main_text),
-                 u", ", realm_label})),
+            Conditional(
+                realm_label.empty(),
+                l10n_util::GetStringFUTF16(
+                    IDS_PASSWORD_MANAGER_PASSWORD_FOR_ACCOUNT, main_text),
+                base::StrCat(
+                    {l10n_util::GetStringFUTF16(
+                         IDS_PASSWORD_MANAGER_PASSWORD_FOR_ACCOUNT, main_text),
+                     u", ", realm_label}))),
       Field("custom_icon", &Suggestion::custom_icon, custom_icon),
       Field("trailing_icon", &Suggestion::trailing_icon, trailing_icon));
 }
@@ -128,7 +137,7 @@ Matcher<Suggestion> EqualsAccountStorageResignin() {
       Suggestion::Icon::kGoogle);
 }
 
-Matcher<Suggestion> EqualsManageManagePasswordsSuggestion(
+Matcher<Suggestion> EqualsManagePasswordsSuggestion(
     bool has_webauthn_credential = false) {
   return AllOf(EqualsSuggestion(
                    SuggestionType::kAllSavedPasswordsEntry,
@@ -314,7 +323,7 @@ TEST_F(PasswordSuggestionGeneratorTest, PasswordSuggestions_FromProfileStore) {
                               password_label(8u),
                               /*realm_label=*/u"", favicon()),
                           EqualsSuggestion(SuggestionType::kSeparator),
-                          EqualsManageManagePasswordsSuggestion()));
+                          EqualsManagePasswordsSuggestion()));
 }
 
 // Verify that suggestion for account store credential receives a different
@@ -339,7 +348,7 @@ TEST_F(PasswordSuggestionGeneratorTest, PasswordSuggestions_FromAccountStore) {
 #endif  // !BUILDFLAG(IS_ANDROID) && !BUILDFLAG(IS_IOS)
                               ),
                           EqualsSuggestion(SuggestionType::kSeparator),
-                          EqualsManageManagePasswordsSuggestion()));
+                          EqualsManagePasswordsSuggestion()));
 }
 
 #if !BUILDFLAG(IS_ANDROID) && !BUILDFLAG(IS_IOS)
@@ -364,7 +373,7 @@ TEST_F(PasswordSuggestionGeneratorTest,
                               /*realm_label=*/u"", favicon(),
                               Suggestion::Icon::kNoIcon),
                           EqualsSuggestion(SuggestionType::kSeparator),
-                          EqualsManageManagePasswordsSuggestion()));
+                          EqualsManagePasswordsSuggestion()));
 }
 #endif  // !BUILDFLAG(IS_ANDROID) && !BUILDFLAG(IS_IOS)
 
@@ -384,7 +393,7 @@ TEST_F(PasswordSuggestionGeneratorTest,
                               password_label(8u),
                               /*realm_label=*/u"example.com", favicon()),
                           EqualsSuggestion(SuggestionType::kSeparator),
-                          EqualsManageManagePasswordsSuggestion()));
+                          EqualsManagePasswordsSuggestion()));
 }
 
 // Verify the suggestion content for the additional login.
@@ -422,7 +431,7 @@ TEST_F(PasswordSuggestionGeneratorTest,
 #endif  // !BUILDFLAG(IS_ANDROID) && !BUILDFLAG(IS_IOS)
               ),
           EqualsSuggestion(SuggestionType::kSeparator),
-          EqualsManageManagePasswordsSuggestion()));
+          EqualsManagePasswordsSuggestion()));
 }
 
 // Verify that suggestions for additional logins are sorted by username.
@@ -455,7 +464,7 @@ TEST_F(PasswordSuggestionGeneratorTest,
                                          password_label(12u),
                                          /*realm_label=*/u"", favicon()),
           EqualsSuggestion(SuggestionType::kSeparator),
-          EqualsManageManagePasswordsSuggestion()));
+          EqualsManagePasswordsSuggestion()));
 }
 
 // Verify that no passkeys suggestions are generated when
@@ -513,7 +522,7 @@ TEST_F(PasswordSuggestionGeneratorTest, PasskeySuggestions_SingleSavedPasskey) {
               favicon(),
               Suggestion::Guid(base::Base64Encode(passkey.credential_id()))),
           EqualsSuggestion(SuggestionType::kSeparator),
-          EqualsManageManagePasswordsSuggestion(
+          EqualsManagePasswordsSuggestion(
               /*has_webauthn_credential=*/true)));
 }
 
@@ -551,7 +560,7 @@ TEST_F(PasswordSuggestionGeneratorTest,
                       Suggestion::Guid(
                           base::Base64Encode(bar_passkey.credential_id()))),
                   EqualsSuggestion(SuggestionType::kSeparator),
-                  EqualsManageManagePasswordsSuggestion(
+                  EqualsManagePasswordsSuggestion(
                       /*has_webauthn_credential=*/true)));
 }
 
@@ -580,7 +589,7 @@ TEST_F(PasswordSuggestionGeneratorTest, GeneratePassword_HasSavedPassword) {
                               /*realm_label=*/u"", favicon()),
                           EqualsGeneratePasswordSuggestion(),
                           EqualsSuggestion(SuggestionType::kSeparator),
-                          EqualsManageManagePasswordsSuggestion()));
+                          EqualsManagePasswordsSuggestion()));
 }
 
 // Test that the password generation suggestion is added when the user has a
@@ -608,7 +617,7 @@ TEST_F(PasswordSuggestionGeneratorTest, GeneratePassword_HasSavedPasskey) {
               Suggestion::Guid(base::Base64Encode(passkey.credential_id()))),
           EqualsGeneratePasswordSuggestion(),
           EqualsSuggestion(SuggestionType::kSeparator),
-          EqualsManageManagePasswordsSuggestion(
+          EqualsManagePasswordsSuggestion(
               /*has_webauthn_credential=*/true)));
 }
 
@@ -636,7 +645,7 @@ TEST_F(PasswordSuggestionGeneratorTest,
                           EqualsEntryToOptInToAccountStorageThenFill(
                               /*has_passkey_sync=*/false),
                           EqualsSuggestion(SuggestionType::kSeparator),
-                          EqualsManageManagePasswordsSuggestion()));
+                          EqualsManagePasswordsSuggestion()));
 }
 
 // Verifies that opt into account storage suggestion is still shown if there're
@@ -679,7 +688,7 @@ TEST_F(PasswordSuggestionGeneratorTest, OptInToAccountStorage_HasPasskeySync) {
                           EqualsEntryToOptInToAccountStorageThenFill(
                               /*has_passkey_sync=*/true),
                           EqualsSuggestion(SuggestionType::kSeparator),
-                          EqualsManageManagePasswordsSuggestion()));
+                          EqualsManagePasswordsSuggestion()));
 }
 #endif  // !BUILDFLAG(IS_ANDROID) && !BUILDFLAG(IS_IOS)
 
@@ -716,7 +725,7 @@ TEST_F(PasswordSuggestionGeneratorTest,
                               /*realm_label=*/u"", favicon()),
                           EqualsAccountStorageResignin(),
                           EqualsSuggestion(SuggestionType::kSeparator),
-                          EqualsManageManagePasswordsSuggestion()));
+                          EqualsManagePasswordsSuggestion()));
 }
 
 // Test the suggestion order when all possible suggestions should be generated.
@@ -787,7 +796,7 @@ TEST_F(PasswordSuggestionGeneratorTest, DomainSuggestions_SuggestionOrder) {
               /*has_passkey_sync=*/false),
           EqualsAccountStorageResignin(),
           EqualsSuggestion(SuggestionType::kSeparator),
-          EqualsManageManagePasswordsSuggestion(
+          EqualsManagePasswordsSuggestion(
               /*has_webauthn_credential=*/true)));
 }
 
@@ -815,7 +824,7 @@ TEST_F(PasswordSuggestionGeneratorTest,
                                   u"password", u"google.com",
                                   /*is_cross_domain=*/false)),
                           EqualsSuggestion(SuggestionType::kSeparator),
-                          EqualsManageManagePasswordsSuggestion()));
+                          EqualsManagePasswordsSuggestion()));
 }
 
 TEST_F(PasswordSuggestionGeneratorTest,
@@ -832,7 +841,7 @@ TEST_F(PasswordSuggestionGeneratorTest,
                                   u"password", u"google.com",
                                   /*is_cross_domain=*/true)),
                           EqualsSuggestion(SuggestionType::kSeparator),
-                          EqualsManageManagePasswordsSuggestion()));
+                          EqualsManagePasswordsSuggestion()));
 }
 
 TEST_F(PasswordSuggestionGeneratorTest,
@@ -849,7 +858,7 @@ TEST_F(PasswordSuggestionGeneratorTest,
                       Suggestion::PasswordSuggestionDetails(
                           u"password", u"Netflix", /*is_cross_domain=*/true)),
                   EqualsSuggestion(SuggestionType::kSeparator),
-                  EqualsManageManagePasswordsSuggestion()));
+                  EqualsManagePasswordsSuggestion()));
 }
 
 TEST_F(PasswordSuggestionGeneratorTest,
@@ -868,7 +877,7 @@ TEST_F(PasswordSuggestionGeneratorTest,
               Suggestion::PasswordSuggestionDetails(u"password", u"google.com",
                                                     /*is_cross_domain=*/false)),
           EqualsSuggestion(SuggestionType::kSeparator),
-          EqualsManageManagePasswordsSuggestion()));
+          EqualsManagePasswordsSuggestion()));
 }
 
 TEST_F(PasswordSuggestionGeneratorTest,
@@ -887,7 +896,7 @@ TEST_F(PasswordSuggestionGeneratorTest,
               Suggestion::PasswordSuggestionDetails(u"password", u"google.com",
                                                     /*is_cross_domain=*/true)),
           EqualsSuggestion(SuggestionType::kSeparator),
-          EqualsManageManagePasswordsSuggestion()));
+          EqualsManagePasswordsSuggestion()));
 }
 
 TEST_F(PasswordSuggestionGeneratorTest,
@@ -904,7 +913,7 @@ TEST_F(PasswordSuggestionGeneratorTest,
                                   u"password", u"google.com",
                                   /*is_cross_domain=*/false)),
                           EqualsSuggestion(SuggestionType::kSeparator),
-                          EqualsManageManagePasswordsSuggestion()));
+                          EqualsManagePasswordsSuggestion()));
 }
 
 TEST_F(PasswordSuggestionGeneratorTest,
@@ -921,7 +930,7 @@ TEST_F(PasswordSuggestionGeneratorTest,
                                   u"password", u"google.com",
                                   /*is_cross_domain=*/true)),
                           EqualsSuggestion(SuggestionType::kSeparator),
-                          EqualsManageManagePasswordsSuggestion()));
+                          EqualsManagePasswordsSuggestion()));
 }
 
 TEST_F(PasswordSuggestionGeneratorTest,
@@ -953,7 +962,7 @@ TEST_F(PasswordSuggestionGeneratorTest,
               Suggestion::PasswordSuggestionDetails(u"password", u"google.com",
                                                     /*is_cross_domain=*/true)),
           EqualsSuggestion(SuggestionType::kSeparator),
-          EqualsManageManagePasswordsSuggestion()));
+          EqualsManagePasswordsSuggestion()));
 }
 
 TEST_F(PasswordSuggestionGeneratorTest,
@@ -1007,7 +1016,7 @@ TEST_F(PasswordSuggestionGeneratorTest,
               Suggestion::PasswordSuggestionDetails(u"second", u"netflix.com",
                                                     /*is_cross_domain=*/true)),
           EqualsSuggestion(SuggestionType::kSeparator),
-          EqualsManageManagePasswordsSuggestion()));
+          EqualsManagePasswordsSuggestion()));
 }
 
 TEST_F(PasswordSuggestionGeneratorTest,
@@ -1178,7 +1187,7 @@ TEST_F(PasswordSuggestionGeneratorTest,
               Suggestion::PasswordSuggestionDetails(u"first", u"microsoft.com",
                                                     /*is_cross_domain=*/false)),
           EqualsSuggestion(SuggestionType::kSeparator),
-          EqualsManageManagePasswordsSuggestion()));
+          EqualsManagePasswordsSuggestion()));
 }
 
 #endif  // !BUILDFLAG(IS_ANDROID) && !BUILDFLAG(IS_IOS)
