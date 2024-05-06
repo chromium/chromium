@@ -7,6 +7,10 @@
 
 #include "ash/ash_export.h"
 
+namespace views {
+class View;
+}
+
 namespace ash {
 
 enum class PickerSectionType;
@@ -18,6 +22,9 @@ class ASH_EXPORT PickerSearchResultsViewDelegate {
   virtual void SelectSearchResult(const PickerSearchResult& result) = 0;
 
   virtual void SelectMoreResults(PickerSectionType type) = 0;
+
+  // `view` may be `nullptr` if there's no pseudo focused view.
+  virtual void NotifyPseudoFocusChanged(views::View* view) = 0;
 };
 
 }  // namespace ash

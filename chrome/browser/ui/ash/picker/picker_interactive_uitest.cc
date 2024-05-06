@@ -385,19 +385,55 @@ IN_PROC_BROWSER_TEST_F(PickerSpokenFeedbackInteractiveUiTest,
 
         sm.ExpectSpeechPattern("*Browsing history*");
         // TODO: b/338142316 - Use correct role for zero state items.
-        sm.ExpectSpeechPattern("*");
+        sm.ExpectSpeechPattern("Button");
         sm.Replay();
 
         SendKeyPress(ui::VKEY_DOWN);
         sm.ExpectSpeechPattern("*Emojis*");
         // TODO: b/338142316 - Use correct role for zero state items.
-        sm.ExpectSpeechPattern("*");
+        sm.ExpectSpeechPattern("Button");
         sm.Replay();
 
         SendKeyPress(ui::VKEY_UP);
         sm.ExpectSpeechPattern("*Browsing history*");
         // TODO: b/338142316 - Use correct role for zero state items.
+        sm.ExpectSpeechPattern("Button");
+        sm.Replay();
+      }));
+}
+
+IN_PROC_BROWSER_TEST_F(PickerSpokenFeedbackInteractiveUiTest,
+                       AnnouncesKeyboardNavigationOnResultsPage) {
+  ASSERT_TRUE(CreateBrowserWindow(
+      GURL("data:text/html,<input type=\"text\" autofocus/>")));
+  const ui::ElementContext browser_context =
+      chrome::FindLastActive()->window()->GetElementContext();
+  views::Textfield* picker_search_field = nullptr;
+
+  RunTestSequence(
+      InContext(browser_context, Steps(InstrumentTab(kWebContentsElementId),
+                                       WaitForWebInputFieldFocus())),
+      Do([]() { TogglePicker(); }),
+      AfterShow(ash::kPickerSearchFieldTextfieldElementId,
+                [&picker_search_field](ui::TrackedElement* el) {
+                  picker_search_field = AsView<views::Textfield>(el);
+                }),
+      ObserveState(kSearchFieldFocusedState, std::ref(picker_search_field)),
+      WaitForState(kSearchFieldFocusedState, true),
+      // Enter a query that is guaranteed to have some results.
+      EnterText(ash::kPickerSearchFieldTextfieldElementId, u"a"),
+      WaitForShow(ash::kPickerSearchResultsListItemElementId),
+      WaitForShow(ash::kPickerSearchResultsPageElementId), Do([&sm = sm_]() {
+        SendKeyPress(ui::VKEY_DOWN);
         sm.ExpectSpeechPattern("*");
+        // TODO: b/338142316 - Use correct role for result items.
+        sm.ExpectSpeechPattern("Button");
+        sm.Replay();
+
+        SendKeyPress(ui::VKEY_UP);
+        sm.ExpectSpeechPattern("*");
+        // TODO: b/338142316 - Use correct role for result items.
+        sm.ExpectSpeechPattern("Button");
         sm.Replay();
       }));
 }

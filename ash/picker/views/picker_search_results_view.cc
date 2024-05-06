@@ -206,6 +206,7 @@ void PickerSearchResultsView::AdvancePseudoFocus(
 }
 
 void PickerSearchResultsView::ClearSearchResults() {
+  delegate_->NotifyPseudoFocusChanged(nullptr);
   pseudo_focused_view_ = nullptr;
   section_views_.clear();
   section_list_view_->ClearSectionList();
@@ -386,6 +387,7 @@ void PickerSearchResultsView::SetPseudoFocusedView(views::View* view) {
   pseudo_focused_view_ = view;
   ApplyPickerPseudoFocusToView(pseudo_focused_view_);
   ScrollPseudoFocusedViewToVisible();
+  delegate_->NotifyPseudoFocusChanged(view);
 }
 
 void PickerSearchResultsView::OnTrailingLinkClicked(

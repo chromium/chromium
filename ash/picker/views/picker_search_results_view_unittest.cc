@@ -34,6 +34,7 @@
 namespace ash {
 namespace {
 
+using ::testing::_;
 using ::testing::AllOf;
 using ::testing::ElementsAre;
 using ::testing::IsEmpty;
@@ -83,6 +84,7 @@ class MockSearchResultsViewDelegate : public PickerSearchResultsViewDelegate {
               SelectSearchResult,
               (const PickerSearchResult&),
               (override));
+  MOCK_METHOD(void, NotifyPseudoFocusChanged, (views::View*), (override));
 };
 
 TEST_F(PickerSearchResultsViewTest, CreatesResultsSections) {
@@ -107,7 +109,7 @@ TEST_F(PickerSearchResultsViewTest, CreatesResultsSections) {
           Pointee(MatchesResultSection(PickerSectionType::kLinks, 2))));
 }
 
-TEST_F(PickerSearchResultsViewTest, ClearSearchResults) {
+TEST_F(PickerSearchResultsViewTest, ClearSearchResultsClearsView) {
   MockSearchResultsViewDelegate mock_delegate;
   MockPickerAssetFetcher asset_fetcher;
   PickerSearchResultsView view(&mock_delegate, kPickerWidth, &asset_fetcher);
@@ -118,6 +120,19 @@ TEST_F(PickerSearchResultsViewTest, ClearSearchResults) {
   view.ClearSearchResults();
 
   EXPECT_THAT(view.section_list_view_for_testing()->children(), IsEmpty());
+}
+
+TEST_F(PickerSearchResultsViewTest, ClearSearchResultsClearsPseudoFocus) {
+  MockSearchResultsViewDelegate mock_delegate;
+  MockPickerAssetFetcher asset_fetcher;
+  PickerSearchResultsView view(&mock_delegate, kPickerWidth, &asset_fetcher);
+  view.AppendSearchResults(PickerSearchResultsSection(
+      PickerSectionType::kExpressions, {{PickerSearchResult::Text(u"Result")}},
+      /*has_more_results=*/false));
+
+  EXPECT_CALL(mock_delegate, NotifyPseudoFocusChanged(nullptr));
+
+  view.ClearSearchResults();
 }
 
 TEST_F(PickerSearchResultsViewTest, CreatesResultsSectionWithGif) {
@@ -230,6 +245,7 @@ TEST_F(PickerSearchResultsViewTest, PseudoFocusedActionDefaultsToFirstResult) {
 
   EXPECT_CALL(mock_delegate,
               SelectSearchResult(PickerSearchResult::Emoji(u"😊")));
+  EXPECT_CALL(mock_delegate, NotifyPseudoFocusChanged(_));
 
   view.AppendSearchResults(PickerSearchResultsSection(
       PickerSectionType::kExpressions,
@@ -243,14 +259,14 @@ TEST_F(PickerSearchResultsViewTest, MovesPseudoFocusRight) {
   MockSearchResultsViewDelegate mock_delegate;
   MockPickerAssetFetcher asset_fetcher;
   PickerSearchResultsView view(&mock_delegate, kPickerWidth, &asset_fetcher);
-
-  EXPECT_CALL(mock_delegate,
-              SelectSearchResult(PickerSearchResult::Symbol(u"♬")));
-
   view.AppendSearchResults(PickerSearchResultsSection(
       PickerSectionType::kExpressions,
       {{PickerSearchResult::Emoji(u"😊"), PickerSearchResult::Symbol(u"♬")}},
       /*has_more_results=*/false));
+
+  EXPECT_CALL(mock_delegate,
+              SelectSearchResult(PickerSearchResult::Symbol(u"♬")));
+  EXPECT_CALL(mock_delegate, NotifyPseudoFocusChanged(_));
 
   EXPECT_TRUE(view.MovePseudoFocusRight());
   EXPECT_TRUE(view.DoPseudoFocusedAction());
@@ -260,15 +276,15 @@ TEST_F(PickerSearchResultsViewTest, MovesPseudoFocusDown) {
   MockSearchResultsViewDelegate mock_delegate;
   MockPickerAssetFetcher asset_fetcher;
   PickerSearchResultsView view(&mock_delegate, kPickerWidth, &asset_fetcher);
-
-  EXPECT_CALL(mock_delegate, SelectSearchResult(PickerSearchResult::Category(
-                                 PickerCategory::kClipboard)));
-
   view.AppendSearchResults(PickerSearchResultsSection(
       PickerSectionType::kCategories,
       {{PickerSearchResult::Category(PickerCategory::kExpressions),
         PickerSearchResult::Category(PickerCategory::kClipboard)}},
       /*has_more_results=*/false));
+
+  EXPECT_CALL(mock_delegate, SelectSearchResult(PickerSearchResult::Category(
+                                 PickerCategory::kClipboard)));
+  EXPECT_CALL(mock_delegate, NotifyPseudoFocusChanged(_));
 
   EXPECT_TRUE(view.MovePseudoFocusDown());
   EXPECT_TRUE(view.DoPseudoFocusedAction());
@@ -292,6 +308,7 @@ TEST_F(PickerSearchResultsViewTest, AdvancesPseudoFocusForward) {
 
   EXPECT_CALL(mock_delegate, SelectSearchResult(PickerSearchResult::Category(
                                  PickerCategory::kClipboard)));
+  EXPECT_CALL(mock_delegate, NotifyPseudoFocusChanged(_));
 
   view->AdvancePseudoFocus(
       PickerPseudoFocusHandler::PseudoFocusDirection::kForward);
@@ -316,6 +333,7 @@ TEST_F(PickerSearchResultsViewTest, AdvancesPseudoFocusBackward) {
 
   EXPECT_CALL(mock_delegate, SelectSearchResult(PickerSearchResult::Category(
                                  PickerCategory::kExpressions)));
+  EXPECT_CALL(mock_delegate, NotifyPseudoFocusChanged(_)).Times(2);
 
   view->AdvancePseudoFocus(
       PickerPseudoFocusHandler::PseudoFocusDirection::kForward);
