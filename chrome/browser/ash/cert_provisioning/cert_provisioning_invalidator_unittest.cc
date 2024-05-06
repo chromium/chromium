@@ -67,29 +67,24 @@ class CertProvisioningInvalidationHandlerTest
     return invalidation::Invalidation(topic, 42, "foo");
   }
 
+  // Will send invalidation to handler if `IsInvalidatorRegistered(topic) ==
+  // true`.
   invalidation::Invalidation FireInvalidation(
       const invalidation::Topic& topic) {
     const invalidation::Invalidation invalidation = CreateInvalidation(topic);
     invalidation_service_.EmitInvalidationForTest(invalidation);
-    base::RunLoop().RunUntilIdle();
     return invalidation;
-  }
-
-  bool IsInvalidationSent(const invalidation::Invalidation& invalidation) {
-    return !invalidation_service_.GetFakeAckHandler()->IsUnsent(invalidation);
-  }
-
-  bool IsInvalidationAcknowledged(
-      const invalidation::Invalidation& invalidation) {
-    return invalidation_service_.GetFakeAckHandler()->IsAcknowledged(
-        invalidation);
   }
 
   bool IsInvalidatorRegistered(
       CertProvisioningInvalidationHandler* invalidator) const {
-    return !invalidation_service_.invalidator_registrar()
-                .GetRegisteredTopics(invalidator)
-                .empty();
+    return invalidation_service_.HasObserver(invalidator);
+  }
+
+  bool IsInvalidatorRegistered(const invalidation::Topic& topic) {
+    return invalidation_service_.invalidator_registrar()
+        .GetRegisteredTopics(invalidation_handler_.get())
+        .contains(topic);
   }
 
   bool IsInvalidatorRegistered() const {
@@ -132,40 +127,20 @@ TEST_P(CertProvisioningInvalidationHandlerTest,
 
 TEST_P(CertProvisioningInvalidationHandlerTest,
        ShouldReceiveInvalidationForRegisteredTopic) {
-  EXPECT_TRUE(IsInvalidatorRegistered());
+  EXPECT_TRUE(IsInvalidatorRegistered(kInvalidatorTopic));
 
-  const auto invalidation = FireInvalidation(kInvalidatorTopic);
+  FireInvalidation(kInvalidatorTopic);
 
-  EXPECT_TRUE(IsInvalidationSent(invalidation));
-  EXPECT_TRUE(IsInvalidationAcknowledged(invalidation));
   EXPECT_EQ(invalidation_events_.Take(),
             InvalidationEvent::kInvalidationReceived);
 }
 
-TEST_P(CertProvisioningInvalidationHandlerTest,
-       ShouldNotReceiveInvalidationForDifferentTopic) {
-  EXPECT_TRUE(IsInvalidatorRegistered());
-
-  const auto invalidation = FireInvalidation(kSomeOtherTopic);
-
-  EXPECT_FALSE(IsInvalidationSent(invalidation));
-  EXPECT_FALSE(IsInvalidationAcknowledged(invalidation));
-  EXPECT_FALSE(invalidation_events_.IsReady());
-}
-
-TEST_P(CertProvisioningInvalidationHandlerTest,
-       ShouldNotReceiveInvalidationWhenUnregistered) {
-  EXPECT_TRUE(IsInvalidatorRegistered());
+TEST_P(CertProvisioningInvalidationHandlerTest, ShouldUnregister) {
+  EXPECT_TRUE(IsInvalidatorRegistered(kInvalidatorTopic));
 
   invalidation_handler_->Unregister();
 
   EXPECT_FALSE(IsInvalidatorRegistered());
-
-  const auto invalidation = FireInvalidation(kInvalidatorTopic);
-
-  EXPECT_FALSE(IsInvalidationSent(invalidation));
-  EXPECT_FALSE(IsInvalidationAcknowledged(invalidation));
-  EXPECT_FALSE(invalidation_events_.IsReady());
 }
 
 TEST_P(CertProvisioningInvalidationHandlerTest,
@@ -174,10 +149,8 @@ TEST_P(CertProvisioningInvalidationHandlerTest,
 
   invalidation_handler_.reset();
 
-  // Ensure that invalidator is unregistered and incoming invalidation does not
-  // cause undefined behaviour.
+  // Ensure that invalidator is unregistered.
   EXPECT_FALSE(IsInvalidatorRegistered());
-  FireInvalidation(kInvalidatorTopic);
   EXPECT_FALSE(invalidation_events_.IsReady());
 
   // Ensure that topic is still subscribed.

@@ -89,8 +89,6 @@ void RemoteCommandsInvalidator::OnIncomingInvalidation(
 
   CHECK(invalidation.topic() == topic_);
 
-  invalidation.Acknowledge();
-
   DoRemoteCommandsFetch(invalidation);
 }
 

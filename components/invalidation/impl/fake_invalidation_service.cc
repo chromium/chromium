@@ -60,25 +60,7 @@ void FakeInvalidationService::SetInvalidatorState(InvalidatorState state) {
 
 void FakeInvalidationService::EmitInvalidationForTest(
     const Invalidation& invalidation) {
-  // This function might need to modify the |invalidation|, so we start by
-  // making an identical copy of it.
-  Invalidation invalidation_copy(invalidation);
-
-  // If no one is listening to this invalidation, do not send it out.
-  TopicMap subscribed_topics = invalidator_registrar_->GetAllSubscribedTopics();
-  if (subscribed_topics.find(invalidation.topic()) == subscribed_topics.end()) {
-    fake_ack_handler_.RegisterUnsentInvalidation(&invalidation_copy);
-    return;
-  }
-
-  // Otherwise, register the invalidation with the fake_ack_handler_ and deliver
-  // it to the appropriate consumer.
-  fake_ack_handler_.RegisterInvalidation(&invalidation_copy);
-  invalidator_registrar_->DispatchInvalidationToHandlers(invalidation_copy);
-}
-
-FakeAckHandler* FakeInvalidationService::GetFakeAckHandler() {
-  return &fake_ack_handler_;
+  invalidator_registrar_->DispatchInvalidationToHandlers(invalidation);
 }
 
 }  // namespace invalidation

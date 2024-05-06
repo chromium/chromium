@@ -81,6 +81,12 @@ class DriveNotificationManagerTest : public testing::Test {
         drive_notification_observer_.get());
   }
 
+  bool IsInvalidatorRegistered(const invalidation::Topic& topic) {
+    return fake_invalidation_service_->invalidator_registrar()
+        .GetRegisteredTopics(drive_notification_manager_.get())
+        .contains(topic);
+  }
+
   scoped_refptr<base::TestMockTimeTaskRunner> task_runner_;
   std::unique_ptr<invalidation::FakeInvalidationService>
       fake_invalidation_service_;
@@ -159,6 +165,7 @@ TEST_F(DriveNotificationManagerTest, RegisterTeamDrives) {
 
 TEST_F(DriveNotificationManagerTest, TestBatchInvalidation) {
   // By default we'll be registered for the default change notification.
+  EXPECT_TRUE(IsInvalidatorRegistered(kDefaultCorpusTopic));
 
   // Emitting an invalidation should not call our observer until the timer
   // expires.
@@ -180,6 +187,7 @@ TEST_F(DriveNotificationManagerTest, TestBatchInvalidation) {
   const auto team_drive_1_topic =
       CreateTeamDriveInvalidationTopic(team_drive_id_1);
   drive_notification_manager_->UpdateTeamDriveIds({team_drive_id_1}, {});
+  EXPECT_TRUE(IsInvalidatorRegistered(team_drive_1_topic));
 
   // Emit invalidation for default corpus, should not emit a team drive
   // invalidation.

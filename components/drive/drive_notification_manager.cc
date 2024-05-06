@@ -105,11 +105,6 @@ void DriveNotificationManager::OnIncomingInvalidation(
     it->second = invalidation.version();
   }
 
-  // This effectively disables 'local acks'.  It tells the invalidations system
-  // to not bother saving invalidations across restarts for us.
-  // See crbug.com/320878.
-  invalidation.Acknowledge();
-
   if (!batch_timer_.IsRunning() && !invalidated_change_ids_.empty()) {
     // Stop the polling timer as we'll be sending a batch soon.
     polling_timer_.Stop();

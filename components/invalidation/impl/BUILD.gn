@@ -19,8 +19,6 @@ static_library("impl") {
   sources = [
     "channels_states.cc",
     "channels_states.h",
-    "fake_ack_handler.cc",
-    "fake_ack_handler.h",
     "fcm_invalidation_listener.cc",
     "fcm_invalidation_listener.h",
     "fcm_invalidation_service.cc",
