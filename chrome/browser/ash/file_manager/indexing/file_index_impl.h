@@ -26,6 +26,9 @@ class FileIndexImpl : public FileIndex {
   FileIndexImpl(const FileIndexImpl&) = delete;
   FileIndexImpl& operator=(const FileIndexImpl&) = delete;
 
+  // Initializes this index.
+  bool Init() override;
+
   // Overrides base implementation to store association between terms
   // and info in in-memory maps.
   OpResults UpdateFile(const std::vector<Term>& terms,

@@ -26,6 +26,8 @@ enum OpResults {
   kGenericError,
   // An error indicating that the arguments of the method were invalid.
   kArgumentError,
+  // Returned by operations called if the index was not initialized.
+  kUninitialized,
 };
 
 // Abstract class that defines the interface of the file index.
@@ -33,6 +35,10 @@ class FileIndex {
  public:
   FileIndex() = default;
   virtual ~FileIndex() = default;
+
+  // Initializes this index; must be called before any index operations are
+  // invoked. Returns false if the initialization failed.
+  virtual bool Init() = 0;
 
   // Updates terms associated with the file. The given `file_info` is associated
   // with the specified terms. Please note that only the passed terms are

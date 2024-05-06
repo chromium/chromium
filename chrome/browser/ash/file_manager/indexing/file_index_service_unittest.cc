@@ -50,6 +50,7 @@ class FileIndexServiceTest : public testing::Test {
 
   void SetUp() override {
     index_service_ = std::make_unique<FileIndexService>(&profile_);
+    ASSERT_TRUE(index_service_->Init());
   }
 
   void TearDown() override { index_service_.reset(); }

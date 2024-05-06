@@ -49,6 +49,9 @@ class FileIndexService : public KeyedService, FileIndex {
   FileIndexService(const FileIndexService&) = delete;
   FileIndexService& operator=(const FileIndexService&) = delete;
 
+  // Initializes this service; must be called before the service is used.
+  bool Init() override;
+
   // Updates terms associated with the file. If the term vector is empty
   // this removes the file info from the index. Otherwise, the given `file_info`
   // is associated with the specified terms. Please note that only the passed
@@ -83,6 +86,9 @@ class FileIndexService : public KeyedService, FileIndex {
  private:
   // The actual implementation of the index used by this service.
   std::unique_ptr<FileIndex> file_index_impl_;
+
+  // Remembers if init was called to prevent multiple calls.
+  bool inited_ = false;
 };
 
 }  // namespace file_manager

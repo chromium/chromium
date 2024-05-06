@@ -50,7 +50,7 @@ class SqlStorage : public IndexStorage {
   // Initializes the database. Returns whether or not the initialization was
   // successful. No other public method may be called until this method finishes
   // and returns true.
-  bool Init() override;
+  [[nodiscard]] bool Init() override;
 
   // Closes the database. Returns true if successful.
   bool Close() override;

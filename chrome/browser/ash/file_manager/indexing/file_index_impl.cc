@@ -12,6 +12,10 @@ FileIndexImpl::FileIndexImpl(std::unique_ptr<IndexStorage> storage)
     : storage_(std::move(storage)) {}
 FileIndexImpl::~FileIndexImpl() = default;
 
+bool FileIndexImpl::Init() {
+  return storage_->Init();
+}
+
 OpResults FileIndexImpl::UpdateFile(const std::vector<Term>& terms,
                                     const FileInfo& info) {
   if (terms.empty()) {
