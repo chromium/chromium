@@ -40,6 +40,8 @@ DEFAULT_CATAPULT_DIR = os.path.abspath(os.path.join(
 CATAPULT_DIR = os.environ.get('CATAPULT_DIR', DEFAULT_CATAPULT_DIR)
 CATAPULT_REPO = 'https://github.com/catapult-project/catapult.git'
 DEVIL_PATH = os.path.abspath(os.path.join(CATAPULT_DIR, 'devil'))
+sys.path.append(DEVIL_PATH)
+from devil.android.sdk import version_codes
 
 # The base URL for stored build archives.
 CHROMIUM_BASE_URL = ('http://commondatastorage.googleapis.com'
@@ -176,8 +178,14 @@ PATH_CONTEXT = {
     'official': {
         'android-arm': {
             'binary_name': None,
-            'listing_platform_dir': 'Android Builder/',
-            'archive_name': 'chrome-perf-arm.zip',
+            'listing_platform_dir': 'android-builder-perf/',
+            'archive_name': 'full-build-linux.zip',
+            'archive_extract_dir': 'full-build-linux'
+        },
+        'android-arm64': {
+            'binary_name': None,
+            'listing_platform_dir': 'android_arm64-builder-perf/',
+            'archive_name': 'full-build-linux.zip',
             'archive_extract_dir': 'full-build-linux'
         },
         'linux64': {
@@ -299,12 +307,41 @@ PATH_CONTEXT = {
     }
 }
 
-# Currently we support only ChromePublic.apk produced by
-# perf builders.
 CHROME_APK_FILENAMES = {
-  'chromium': 'ChromePublic.apk',
+    'chrome': 'Chrome.apk',
+    'chrome_beta': 'ChromeBeta.apk',
+    'chrome_canary': 'ChromeCanary.apk',
+    'chrome_dev': 'ChromeDev.apk',
+    'chrome_stable': 'ChromeStable.apk',
+    'chromium': 'ChromePublic.apk',
 }
 
+CHROME_MODERN_APK_FILENAMES = {
+    'chrome': 'ChromeModern.apk',
+    'chrome_beta': 'ChromeModernBeta.apk',
+    'chrome_canary': 'ChromeModernCanary.apk',
+    'chrome_dev': 'ChromeModernDev.apk',
+    'chrome_stable': 'ChromeModernStable.apk',
+    'chromium': 'ChromePublic.apk',
+}
+
+MONOCHROME_APK_FILENAMES = {
+    'chrome': 'Monochrome.apk',
+    'chrome_beta': 'MonochromeBeta.apk',
+    'chrome_canary': 'MonochromeCanary.apk',
+    'chrome_dev': 'MonochromeDev.apk',
+    'chrome_stable': 'MonochromeStable.apk',
+    'chromium': 'ChromePublic.apk',
+}
+
+WEBVIEW_APK_FILENAMES = {
+    # clank release
+    'android_webview': 'AndroidWebview.apk',
+    # clank official
+    'system_webview_google': 'SystemWebViewGoogle.apk',
+    # upstream
+    'system_webview': 'SystemWebView.apk',
+}
 
 # Old storage locations for per CL builds
 OFFICIAL_BACKUP_BUILDS = {
@@ -1004,7 +1041,28 @@ def RunRevisionForAndroid(context, revision, zip_file):
   try:
     tempdir = tempfile.mkdtemp(prefix='bisect_tmp')
     UnzipFilenameToDir(zip_file, tempdir)
-    apk_path = os.path.join(tempdir, CHROME_APK_FILENAMES[context.apk])
+    sdk = context.device.build_version_sdk
+    if 'webview' in context.apk:
+      apk_filename = WEBVIEW_APK_FILENAMES[context.apk]
+    # Need these logic to bisect very old build. Release binaries are stored
+    # forever and occasionally there are requests to bisect issues introduced
+    # in very old versions.
+    elif sdk < version_codes.LOLLIPOP:
+      apk_filename = CHROME_APK_FILENAMES[context.apk]
+    elif sdk < version_codes.NOUGAT:
+      apk_filename = CHROME_MODERN_APK_FILENAMES[context.apk]
+    else:
+      apk_filename = MONOCHROME_APK_FILENAMES[context.apk]
+
+    apk_dir = os.path.join(tempdir, context._archive_extract_dir, 'apks')
+    apk_path = os.path.join(apk_dir, apk_filename)
+    if not os.path.exists(apk_path):
+      print('%s does not exist.' % apk_path)
+      if os.path.exists(apk_dir):
+        print('Are you using the correct apk? The list of available apks:')
+        apk_files = [f for f in os.listdir(apk_dir) if f.endswith('.apk')]
+        print(apk_files)
+      exit(1)
     InstallonAndroid(context.device, apk_path)
     LaunchOnAndroid(context.device, context.apk)
   finally:
@@ -1692,6 +1750,9 @@ def InstallonAndroid(device, apk_path ):
 
 def LaunchOnAndroid(device, apk):
   """Launches the chromium build on a given device."""
+  if 'webview' in apk:
+    return
+
   print('Launching  chrome on android device...')
   device.StartActivity(
       intent.Intent(
@@ -1816,11 +1877,15 @@ Tip: add "-- --no-first-run" to bypass the first run prompts.
                     help='Test the first and last revisions in the range ' +
                          'before proceeding with the bisect.')
   parser.add_option('--apk',
-                      choices=list(CHROME_APK_FILENAMES.keys()),
-                      dest='apk',
-                      default='chromium',
-                      help='Apk you want to bisect.')
-  parser.add_option('-d', '--device-id',
+                    choices=list(set().union(CHROME_APK_FILENAMES,
+                                             CHROME_MODERN_APK_FILENAMES,
+                                             MONOCHROME_APK_FILENAMES,
+                                             WEBVIEW_APK_FILENAMES)),
+                    dest='apk',
+                    default='chromium',
+                    help='Apk you want to bisect.')
+  parser.add_option('-d',
+                    '--device-id',
                     dest='device_id',
                     type='str',
                     help='Device to run the bisect on.')
