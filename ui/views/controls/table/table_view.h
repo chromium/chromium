@@ -583,4 +583,26 @@ END_VIEW_BUILDER
 
 DEFINE_VIEW_BUILDER(VIEWS_EXPORT, views::TableView)
 
+namespace base {
+
+// Allow use of ScopedObservation with TableView, which requires use of
+// SetObserver and only supports a single TableViewObserver at a time.
+template <>
+struct ScopedObservationTraits<views::TableView, views::TableViewObserver> {
+  static void AddObserver(views::TableView* source,
+                          views::TableViewObserver* observer) {
+    CHECK(!source->GetObserver())
+        << "TableView does not support multiple observers";
+    source->SetObserver(observer);
+  }
+  static void RemoveObserver(views::TableView* source,
+                             views::TableViewObserver* observer) {
+    CHECK_EQ(source->GetObserver(), observer)
+        << "TableView does not support multiple observers";
+    source->SetObserver(nullptr);
+  }
+};
+
+}  // namespace base
+
 #endif  // UI_VIEWS_CONTROLS_TABLE_TABLE_VIEW_H_

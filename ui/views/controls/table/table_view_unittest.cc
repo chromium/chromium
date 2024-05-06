@@ -13,6 +13,7 @@
 
 #include "base/i18n/rtl.h"
 #include "base/memory/raw_ptr.h"
+#include "base/scoped_observation.h"
 #include "base/strings/string_number_conversions.h"
 #include "base/strings/utf_string_conversions.h"
 #include "base/test/bind.h"
@@ -163,12 +164,6 @@ class TableViewTestHelper {
 };
 
 namespace {
-
-#if BUILDFLAG(IS_MAC)
-constexpr int kCtrlOrCmdMask = ui::EF_COMMAND_DOWN;
-#else
-constexpr int kCtrlOrCmdMask = ui::EF_CONTROL_DOWN;
-#endif
 
 // TestTableModel2 -------------------------------------------------------------
 
@@ -481,7 +476,7 @@ class TableViewTest : public ViewsTestBase,
     Widget::InitParams params =
         CreateParams(Widget::InitParams::TYPE_WINDOW_FRAMELESS);
     params.bounds = gfx::Rect(0, 0, 650, 650);
-    params.delegate = GetWidgetDelegate(widget_.get());
+    params.delegate = ConfigureWidgetDelegate();
     widget_->Init(std::move(params));
     test::RunScheduledLayout(
         widget_->GetRootView()->AddChildView(std::move(scroll_view)));
@@ -568,7 +563,7 @@ class TableViewTest : public ViewsTestBase,
       const std::vector<std::vector<gfx::Rect>>& expected_bounds) {
     auto& virtual_children = view_accessibility.virtual_children();
     EXPECT_EQ(virtual_children.size(), expected_bounds.size());
-    EXPECT_EQ((size_t)(table_->GetRowCount()) + 1U, expected_bounds.size());
+    EXPECT_EQ(table_->GetRowCount() + 1U, expected_bounds.size());
 
     for (size_t row_index = 0; row_index < virtual_children.size();
          row_index++) {
@@ -630,7 +625,7 @@ class TableViewTest : public ViewsTestBase,
   bool use_rtl() const { return std::get<1>(GetParam()); }
 
  protected:
-  virtual WidgetDelegate* GetWidgetDelegate(Widget* widget) { return nullptr; }
+  virtual WidgetDelegate* ConfigureWidgetDelegate() { return nullptr; }
 
   std::unique_ptr<TestTableModel2> model_;
 
@@ -1293,7 +1288,11 @@ namespace {
 
 class TableViewObserverImpl : public TableViewObserver {
  public:
-  TableViewObserverImpl() = default;
+  explicit TableViewObserverImpl(TableView* view) {
+    observation_.Observe(view);
+  }
+
+  ~TableViewObserverImpl() override = default;
 
   TableViewObserverImpl(const TableViewObserverImpl&) = delete;
   TableViewObserverImpl& operator=(const TableViewObserverImpl&) = delete;
@@ -1308,15 +1307,16 @@ class TableViewObserverImpl : public TableViewObserver {
   void OnSelectionChanged() override { selection_changed_count_++; }
 
  private:
+  const raw_ptr<TableView> view_;
   int selection_changed_count_ = 0;
+  base::ScopedObservation<TableView, TableViewObserver> observation_{this};
 };
 
 }  // namespace
 
 // Assertions around changing the selection.
 TEST_P(TableViewTest, Selection) {
-  TableViewObserverImpl observer;
-  table_->set_observer(&observer);
+  TableViewObserverImpl observer(table_);
 
   // Initially no selection.
   EXPECT_EQ("active=<none> anchor=<none> selection=", SelectionStateAsString());
@@ -1406,13 +1406,10 @@ TEST_P(TableViewTest, Selection) {
   model_->RemoveRows(4, 2);
   EXPECT_EQ(1, observer.GetChangedCountAndClear());
   EXPECT_EQ("active=0 anchor=0 selection=0", SelectionStateAsString());
-
-  table_->set_observer(nullptr);
 }
 
 TEST_P(TableViewTest, SelectAll) {
-  TableViewObserverImpl observer;
-  table_->set_observer(&observer);
+  TableViewObserverImpl observer(table_);
 
   // Initially no selection.
   EXPECT_EQ("active=<none> anchor=<none> selection=", SelectionStateAsString());
@@ -1435,8 +1432,7 @@ TEST_P(TableViewTest, SelectAll) {
 }
 
 TEST_P(TableViewTest, RemoveUnselectedRows) {
-  TableViewObserverImpl observer;
-  table_->set_observer(&observer);
+  TableViewObserverImpl observer(table_);
 
   // Select a middle row.
   table_->Select(2);
@@ -1455,9 +1451,6 @@ TEST_P(TableViewTest, RemoveUnselectedRows) {
 }
 
 TEST_P(TableViewTest, AddingRemovingMultipleRows) {
-  TableViewObserverImpl observer;
-  table_->set_observer(&observer);
-
   VerifyTableViewAndAXOrder("[0, 1], [1, 1], [2, 2], [3, 0]");
 
   model_->AddRows(0, 3, 10);
@@ -1478,8 +1471,7 @@ TEST_P(TableViewTest, AddingRemovingMultipleRows) {
 // select 0 -> [0] 1
 // remove 0 -> 0 (none selected)
 TEST_P(TableViewTest, SelectionNoSelectOnRemove) {
-  TableViewObserverImpl observer;
-  table_->set_observer(&observer);
+  TableViewObserverImpl observer(table_);
   table_->SetSelectOnRemove(false);
 
   // Initially no selection.
@@ -1516,8 +1508,6 @@ TEST_P(TableViewTest, SelectionNoSelectOnRemove) {
   model_->RemoveRow(0);
   EXPECT_EQ(1, observer.GetChangedCountAndClear());
   EXPECT_EQ("active=<none> anchor=<none> selection=", SelectionStateAsString());
-
-  table_->set_observer(nullptr);
 }
 
 // No touch on desktop Mac. Tracked in http://crbug.com/445520.
@@ -1527,8 +1517,7 @@ TEST_P(TableViewTest, SelectOnTap) {
   // Initially no selection.
   EXPECT_EQ("active=<none> anchor=<none> selection=", SelectionStateAsString());
 
-  TableViewObserverImpl observer;
-  table_->set_observer(&observer);
+  TableViewObserverImpl observer(table_);
 
   // Tap on the first row, should select it and focus the table.
   EXPECT_FALSE(table_->HasFocus());
@@ -1536,8 +1525,6 @@ TEST_P(TableViewTest, SelectOnTap) {
   EXPECT_TRUE(table_->HasFocus());
   EXPECT_EQ(1, observer.GetChangedCountAndClear());
   EXPECT_EQ("active=0 anchor=0 selection=0", SelectionStateAsString());
-
-  table_->set_observer(nullptr);
 }
 #endif
 
@@ -1554,8 +1541,7 @@ TEST_P(TableViewTest, KeyUpDown) {
   grouper.SetRanges({2, 1, 2});
   table_->SetGrouper(&grouper);
 
-  TableViewObserverImpl observer;
-  table_->set_observer(&observer);
+  TableViewObserverImpl observer(table_);
   table_->RequestFocus();
 
   // Initially no selection.
@@ -1661,8 +1647,6 @@ TEST_P(TableViewTest, KeyUpDown) {
   EXPECT_TRUE(table_->header_row_is_active());
   EXPECT_EQ(1, observer.GetChangedCountAndClear());
   EXPECT_EQ("active=<none> anchor=<none> selection=", SelectionStateAsString());
-
-  table_->set_observer(nullptr);
 }
 
 // Verifies left/right correctly navigate through visible columns.
@@ -1671,8 +1655,7 @@ TEST_P(TableViewTest, KeyLeftRight) {
     GTEST_SKIP() << "platform doesn't support table keyboard navigation";
   }
 
-  TableViewObserverImpl observer;
-  table_->set_observer(&observer);
+  TableViewObserverImpl observer(table_);
   table_->RequestFocus();
 
   // Initially no active visible column.
@@ -1761,8 +1744,6 @@ TEST_P(TableViewTest, KeyLeftRight) {
   EXPECT_EQ(1u, helper_->GetActiveVisibleColumnIndex());
   EXPECT_EQ(0, observer.GetChangedCountAndClear());
   EXPECT_EQ("active=1 anchor=1 selection=1", SelectionStateAsString());
-
-  table_->set_observer(nullptr);
 }
 
 // Verify table view that the left/right navigation scrolls the visible rect
@@ -1915,8 +1896,7 @@ TEST_P(TableViewTest, HomeEnd) {
   grouper.SetRanges({2, 1, 2});
   table_->SetGrouper(&grouper);
 
-  TableViewObserverImpl observer;
-  table_->set_observer(&observer);
+  TableViewObserverImpl observer(table_);
   table_->RequestFocus();
 
   // Initially no selection.
@@ -1933,8 +1913,6 @@ TEST_P(TableViewTest, HomeEnd) {
   PressKey(ui::VKEY_HOME);
   EXPECT_EQ(1, observer.GetChangedCountAndClear());
   EXPECT_EQ("active=0 anchor=0 selection=0 1", SelectionStateAsString());
-
-  table_->set_observer(nullptr);
 }
 
 // Verifies multiple selection gestures work (control-click, shift-click ...).
@@ -1953,8 +1931,7 @@ TEST_P(TableViewTest, Multiselection) {
   // Initially no selection.
   EXPECT_EQ("active=<none> anchor=<none> selection=", SelectionStateAsString());
 
-  TableViewObserverImpl observer;
-  table_->set_observer(&observer);
+  TableViewObserverImpl observer(table_);
 
   // Click on the first row, should select it and the second row.
   ClickOnRow(0, 0);
@@ -1972,12 +1949,12 @@ TEST_P(TableViewTest, Multiselection) {
   EXPECT_EQ("active=2 anchor=4 selection=2 3 4", SelectionStateAsString());
 
   // Control click on third row, should toggle it.
-  ClickOnRow(2, kCtrlOrCmdMask);
+  ClickOnRow(2, ui::EF_PLATFORM_ACCELERATOR);
   EXPECT_EQ(1, observer.GetChangedCountAndClear());
   EXPECT_EQ("active=2 anchor=2 selection=3 4", SelectionStateAsString());
 
   // Control-shift click on second row, should extend selection to it.
-  ClickOnRow(1, kCtrlOrCmdMask | ui::EF_SHIFT_DOWN);
+  ClickOnRow(1, ui::EF_PLATFORM_ACCELERATOR | ui::EF_SHIFT_DOWN);
   EXPECT_EQ(1, observer.GetChangedCountAndClear());
   EXPECT_EQ("active=1 anchor=2 selection=0 1 2 3 4", SelectionStateAsString());
 
@@ -1985,8 +1962,6 @@ TEST_P(TableViewTest, Multiselection) {
   ClickOnRow(4, 0);
   EXPECT_EQ(1, observer.GetChangedCountAndClear());
   EXPECT_EQ("active=4 anchor=4 selection=3 4", SelectionStateAsString());
-
-  table_->set_observer(nullptr);
 }
 
 // Verifies multiple selection gestures work when sorted.
@@ -2014,8 +1989,7 @@ TEST_P(TableViewTest, MultiselectionWithSort) {
   // Initially no selection.
   EXPECT_EQ("active=<none> anchor=<none> selection=", SelectionStateAsString());
 
-  TableViewObserverImpl observer;
-  table_->set_observer(&observer);
+  TableViewObserverImpl observer(table_);
 
   // Click on the third row, should select it and the second row.
   ClickOnRow(2, 0);
@@ -2034,8 +2008,7 @@ TEST_P(TableViewTest, MoveRowsWithMultipleSelection) {
   // Hide column 1.
   table_->SetColumnVisibility(1, false);
 
-  TableViewObserverImpl observer;
-  table_->set_observer(&observer);
+  TableViewObserverImpl observer(table_);
 
   // Select three rows.
   ClickOnRow(2, 0);
@@ -2080,8 +2053,6 @@ TEST_P(TableViewTest, MoveRowsWithMultipleSelection) {
   EXPECT_EQ(0, observer.GetChangedCountAndClear());
   EXPECT_EQ("active=4 anchor=3 selection=1 3 4", SelectionStateAsString());
   VerifyTableViewAndAXOrder("[1], [77], [0], [2], [3]");
-
-  table_->set_observer(nullptr);
 }
 
 TEST_P(TableViewTest, MoveRowsWithMultipleSelectionAndSort) {
@@ -2094,8 +2065,7 @@ TEST_P(TableViewTest, MoveRowsWithMultipleSelectionAndSort) {
   const char* kViewOrder = "[0], [1], [2], [3], [77]";
   VerifyTableViewAndAXOrder(kViewOrder);
 
-  TableViewObserverImpl observer;
-  table_->set_observer(&observer);
+  TableViewObserverImpl observer(table_);
 
   // Select three rows.
   ClickOnRow(2, 0);
@@ -2139,8 +2109,6 @@ TEST_P(TableViewTest, MoveRowsWithMultipleSelectionAndSort) {
   EXPECT_EQ(0, observer.GetChangedCountAndClear());
   EXPECT_EQ("active=3 anchor=2 selection=2 3 4", SelectionStateAsString());
   VerifyTableViewAndAXOrder(kViewOrder);
-
-  table_->set_observer(nullptr);
 }
 
 // Verifies we don't crash after removing the selected row when there is
@@ -2257,40 +2225,6 @@ TEST_P(TableViewTest, TableHeaderColumnAccessibleViewsFocusable) {
             view_accessibility.FocusedVirtualChild());
 }
 
-namespace {
-
-class RemoveFocusChangeListenerDelegate : public WidgetDelegate {
- public:
-  explicit RemoveFocusChangeListenerDelegate(Widget* widget)
-      : listener_(nullptr) {
-    RegisterDeleteDelegateCallback(base::BindOnce(
-        [](Widget* widget, RemoveFocusChangeListenerDelegate* delegate) {
-          widget->GetFocusManager()->RemoveFocusChangeListener(
-              delegate->listener_);
-        },
-        base::Unretained(widget), base::Unretained(this)));
-  }
-
-  RemoveFocusChangeListenerDelegate(const RemoveFocusChangeListenerDelegate&) =
-      delete;
-  RemoveFocusChangeListenerDelegate& operator=(
-      const RemoveFocusChangeListenerDelegate&) = delete;
-
-  ~RemoveFocusChangeListenerDelegate() override = default;
-
-  void SetFocusChangeListener(FocusChangeListener* listener);
-
- private:
-  raw_ptr<FocusChangeListener> listener_;
-};
-
-void RemoveFocusChangeListenerDelegate::SetFocusChangeListener(
-    FocusChangeListener* listener) {
-  listener_ = listener;
-}
-
-}  // namespace
-
 class TableViewFocusTest : public TableViewTest {
  public:
   TableViewFocusTest() = default;
@@ -2298,21 +2232,31 @@ class TableViewFocusTest : public TableViewTest {
   TableViewFocusTest(const TableViewFocusTest&) = delete;
   TableViewFocusTest& operator=(const TableViewFocusTest&) = delete;
 
- protected:
-  WidgetDelegate* GetWidgetDelegate(Widget* widget) override;
+  TestFocusChangeListener* listener() { return &listener_; }
 
-  RemoveFocusChangeListenerDelegate* GetFocusChangeListenerDelegate() {
-    return delegate_.get();
+ protected:
+  WidgetDelegate* ConfigureWidgetDelegate() override {
+    delegate_.RegisterDeleteDelegateCallback(base::BindOnce(
+        &TableViewFocusTest::OnDeleteDelegate, base::Unretained(this)));
+    delegate_.RegisterWidgetInitializedCallback(base::BindOnce(
+        &TableViewFocusTest::OnWidgetInitialized, base::Unretained(this)));
+    return &delegate_;
+  }
+
+  void OnWidgetInitialized() {
+    delegate_.GetWidget()->GetFocusManager()->AddFocusChangeListener(
+        &listener_);
+  }
+
+  void OnDeleteDelegate() {
+    delegate_.GetWidget()->GetFocusManager()->RemoveFocusChangeListener(
+        &listener_);
   }
 
  private:
-  std::unique_ptr<RemoveFocusChangeListenerDelegate> delegate_;
+  WidgetDelegate delegate_;
+  TestFocusChangeListener listener_;
 };
-
-WidgetDelegate* TableViewFocusTest::GetWidgetDelegate(Widget* widget) {
-  delegate_ = std::make_unique<RemoveFocusChangeListenerDelegate>(widget);
-  return delegate_.get();
-}
 
 INSTANTIATE_TEST_SUITE_P(
     All,
@@ -2324,21 +2268,17 @@ INSTANTIATE_TEST_SUITE_P(
 // In MD mode, if that doesn't happen a DCHECK in View::DoRemoveChildView(...)
 // will trigger due to an attempt to modify the child view list while iterating.
 TEST_P(TableViewFocusTest, FocusClearedDuringWidgetDestruction) {
-  TestFocusChangeListener listener;
-  GetFocusChangeListenerDelegate()->SetFocusChangeListener(&listener);
-
-  widget_->GetFocusManager()->AddFocusChangeListener(&listener);
   table_->RequestFocus();
 
-  ASSERT_EQ(1u, listener.focus_changes().size());
-  EXPECT_EQ(listener.focus_changes()[0], ViewPair(nullptr, table_));
-  listener.ClearFocusChanges();
+  ASSERT_EQ(1u, listener()->focus_changes().size());
+  EXPECT_EQ(listener()->focus_changes()[0], ViewPair(nullptr, table_));
+  listener()->ClearFocusChanges();
 
   // Now destroy the widget. This should *not* cause a DCHECK in
   // View::DoRemoveChildView(...).
   widget_.reset();
-  ASSERT_EQ(1u, listener.focus_changes().size());
-  EXPECT_EQ(listener.focus_changes()[0], ViewPair(table_, nullptr));
+  ASSERT_EQ(1u, listener()->focus_changes().size());
+  EXPECT_EQ(listener()->focus_changes()[0], ViewPair(table_, nullptr));
 }
 
 class TableViewDefaultConstructabilityTest : public ViewsTestBase {
@@ -2416,8 +2356,8 @@ class TableViewPaintIconBoundsTest : public ViewsTestBase {
     columns[1].id = 1;
     columns[1].sortable = true;
 
-    std::unique_ptr<TableView> table = std::make_unique<TableView>(
-        model_.get(), columns, TableType::kTextOnly, false);
+    auto table = std::make_unique<TableView>(model_.get(), columns,
+                                             TableType::kTextOnly, false);
     table_ = table.get();
     auto scroll_view = TableView::CreateScrollViewWithTable(std::move(table));
     scroll_view->SetBounds(0, 0, 1000, 1000);
