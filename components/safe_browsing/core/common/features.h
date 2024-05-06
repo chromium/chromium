@@ -247,9 +247,6 @@ BASE_DECLARE_FEATURE(kTailoredSecurityObserverRetries);
 // Controls whether the integration of tailored security settings is enabled.
 BASE_DECLARE_FEATURE(kTailoredSecurityIntegration);
 
-// Enable new updated strings and icons for the Tailored Security dialogs.
-BASE_DECLARE_FEATURE(kTailoredSecurityUpdatedMessages);
-
 // Specifies which non-resource HTML Elements to collect based on their tag and
 // attributes. It's a single param containing a comma-separated list of pairs.
 // For example: "tag1,id,tag1,height,tag2,foo" - this will collect elements with

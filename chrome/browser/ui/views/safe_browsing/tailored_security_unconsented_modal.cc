@@ -35,7 +35,6 @@ namespace safe_browsing {
 
 namespace {
 
-constexpr int kAvatarSize = 40;
 constexpr int kAvatarOffset = 45;
 constexpr int kImageOffset = 5;
 
@@ -100,19 +99,15 @@ TailoredSecurityUnconsentedModal::TailoredSecurityUnconsentedModal(
   SetModalType(ui::MODAL_TYPE_CHILD);
 
   SetTitle(IDS_TAILORED_SECURITY_UNCONSENTED_MODAL_TITLE);
-  if (base::FeatureList::IsEnabled(
-          safe_browsing::kTailoredSecurityUpdatedMessages)) {
-    auto* bodyLabel =
-        AddChildView(std::make_unique<views::Label>(l10n_util::GetStringUTF16(
-            IDS_TAILORED_SECURITY_UNCONSENTED_MODAL_BODY)));
-    bodyLabel->SetMultiLine(true);
-    bodyLabel->SetHorizontalAlignment(gfx::ALIGN_LEFT);
-    SetLayoutManager(std::make_unique<views::BoxLayout>(
-        views::BoxLayout::Orientation::kVertical,
-        ChromeLayoutProvider::Get()->GetInsetsMetric(views::INSETS_DIALOG)));
-    set_fixed_width(ChromeLayoutProvider::Get()->GetDistanceMetric(
-        views::DISTANCE_MODAL_DIALOG_PREFERRED_WIDTH));
-  }
+  auto* bodyLabel = AddChildView(std::make_unique<views::Label>(
+      l10n_util::GetStringUTF16(IDS_TAILORED_SECURITY_UNCONSENTED_MODAL_BODY)));
+  bodyLabel->SetMultiLine(true);
+  bodyLabel->SetHorizontalAlignment(gfx::ALIGN_LEFT);
+  SetLayoutManager(std::make_unique<views::BoxLayout>(
+      views::BoxLayout::Orientation::kVertical,
+      ChromeLayoutProvider::Get()->GetInsetsMetric(views::INSETS_DIALOG)));
+  set_fixed_width(ChromeLayoutProvider::Get()->GetDistanceMetric(
+      views::DISTANCE_MODAL_DIALOG_PREFERRED_WIDTH));
   SetButtonLabel(ui::DIALOG_BUTTON_OK,
                  l10n_util::GetStringUTF16(
                      IDS_TAILORED_SECURITY_UNCONSENTED_ACCEPT_BUTTON));
@@ -154,46 +149,12 @@ void TailoredSecurityUnconsentedModal::AddedToWidget() {
     return;
 
   ui::ResourceBundle& bundle = ui::ResourceBundle::GetSharedInstance();
-  if (base::FeatureList::IsEnabled(
-          safe_browsing::kTailoredSecurityUpdatedMessages)) {
-    gfx::ImageSkia header_image =
-        *bundle.GetImageSkiaNamed(IDR_TAILORED_SECURITY_UNCONSENTED_UPDATED);
-    auto image_view = std::make_unique<views::ImageView>(
-        ui::ImageModel::FromImageSkia(header_image));
-    image_view->SetVerticalAlignment(views::ImageView::Alignment::kLeading);
-    GetBubbleFrameView()->SetHeaderView(std::move(image_view));
-  } else {
-    gfx::ImageSkia avatar_image = identity_manager
-                                      ->FindExtendedAccountInfoByAccountId(
-                                          identity_manager->GetPrimaryAccountId(
-                                              signin::ConsentLevel::kSignin))
-                                      .account_image.AsImageSkia();
-
-    gfx::ImageSkia sized_avatar_image =
-        gfx::ImageSkiaOperations::CreateResizedImage(
-            avatar_image, skia::ImageOperations::RESIZE_BEST,
-            gfx::Size(kAvatarSize, kAvatarSize));
-    // The color used in `circle_mask` is irrelevant as long as it's opaque;
-    // only the alpha channel matters.
-    gfx::ImageSkia circle_mask =
-        gfx::ImageSkiaOperations::CreateImageWithCircleBackground(
-            kAvatarSize / 2, SK_ColorWHITE, gfx::ImageSkia());
-    gfx::ImageSkia cropped_avatar_image =
-        gfx::ImageSkiaOperations::CreateMaskedImage(sized_avatar_image,
-                                                    circle_mask);
-    gfx::ImageSkia header_image =
-        *bundle.GetImageSkiaNamed(IDR_TAILORED_SECURITY_UNCONSENTED);
-    gfx::ImageSkia header_and_avatar(
-        std::make_unique<SuperimposedOffsetImageSource>(header_image,
-                                                        cropped_avatar_image),
-        gfx::Size(header_image.size().width(),
-                  header_image.size().height() + kImageOffset));
-
-    auto image_view = std::make_unique<views::ImageView>(
-        ui::ImageModel::FromImageSkia(header_and_avatar));
-    image_view->SetVerticalAlignment(views::ImageView::Alignment::kLeading);
-    GetBubbleFrameView()->SetHeaderView(std::move(image_view));
-  }
+  gfx::ImageSkia header_image =
+      *bundle.GetImageSkiaNamed(IDR_TAILORED_SECURITY_UNCONSENTED);
+  auto image_view = std::make_unique<views::ImageView>(
+      ui::ImageModel::FromImageSkia(header_image));
+  image_view->SetVerticalAlignment(views::ImageView::Alignment::kLeading);
+  GetBubbleFrameView()->SetHeaderView(std::move(image_view));
 }
 
 BEGIN_METADATA(TailoredSecurityUnconsentedModal)

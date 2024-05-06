@@ -1340,12 +1340,6 @@ const char kEnableSuspiciousSiteDetectionRTLookupsName[] =
 const char kEnableSuspiciousSiteDetectionRTLookupsDescription[] =
     "Enables suspicious site detection for real time URL lookups.";
 
-const char kEnableTailoredSecurityUpdatedMessagesName[] =
-    "Enable tailored security updated messages";
-const char kEnableTailoredSecurityUpdatedMessagesDescription[] =
-    "Updates the tailored security dialog strings and icons for their "
-    "respective platforms.";
-
 const char kEnableNetworkLoggingToFileName[] = "Enable network logging to file";
 const char kEnableNetworkLoggingToFileDescription[] =
     "Enables network logging to a file named netlog.json in the user data "
