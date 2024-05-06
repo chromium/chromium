@@ -83,8 +83,6 @@ struct DidOverscrollParams;
 - (void)setCloseOnDeactivate:(BOOL)b;
 // Indicate that the host was destroyed and can't be called back into.
 - (void)setHostDisconnected;
-// True for always-on-top special windows (e.g. Balloons and Panels).
-- (BOOL)acceptsMouseEventsWhenInactive;
 // Cancel ongoing composition (abandon the marked text).
 - (void)cancelComposition;
 // Confirm ongoing composition.

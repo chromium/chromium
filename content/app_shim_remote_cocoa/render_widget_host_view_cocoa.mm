@@ -743,15 +743,27 @@ void ExtractUnderlines(NSAttributedString* string,
   _canBeKeyView = can;
 }
 
-- (BOOL)acceptsMouseEventsWhenInactive {
-  // Some types of windows (balloons, always-on-top panels) want to accept mouse
-  // clicks w/o the first click being treated as 'activation'. Same applies to
-  // mouse move events.
-  return [[self window] level] > NSNormalWindowLevel;
+- (AcceptMouseEventsOption)acceptsMouseEventsOption {
+  // Always-on-top windows, e.g picture-in-picture window, accepts all mouse
+  // events even if the window or the application is inactive.
+  if ([[self window] level] > NSNormalWindowLevel) {
+    return kAcceptMouseEventsAlways;
+  }
+
+  // By default, only active window accepts mouse events. The embedder may
+  // override this to mimic the hover and click behavior of native UIs.
+  if (_responderDelegate && [_responderDelegate respondsToSelector:@selector
+                                                (acceptsMouseEventsOption)]) {
+    return [_responderDelegate acceptsMouseEventsOption];
+  }
+
+  // By default, only active window accepts mouse events.
+  return kAcceptMouseEventsInActiveWindow;
 }
 
 - (BOOL)acceptsFirstMouse:(NSEvent*)theEvent {
-  return [self acceptsMouseEventsWhenInactive];
+  // Enable "click-through" if mouse clicks are accepted in inactive windows
+  return [self acceptsMouseEventsOption] > kAcceptMouseEventsInActiveWindow;
 }
 
 - (void)setCloseOnDeactivate:(BOOL)b {
@@ -820,12 +832,21 @@ void ExtractUnderlines(NSAttributedString* string,
 
 - (BOOL)shouldIgnoreMouseEvent:(NSEvent*)theEvent {
   NSWindow* window = [self window];
-  // If this is a background window, don't handle mouse movement events. This
-  // is the expected behavior on the Mac as evidenced by other applications.
-  if ([theEvent type] == NSEventTypeMouseMoved &&
-      ![self acceptsMouseEventsWhenInactive] && ![window isMainWindow] &&
-      ![window isKeyWindow]) {
-    return YES;
+  if ([theEvent type] == NSEventTypeMouseMoved) {
+    bool inActiveWindow = [window isMainWindow] || [window isKeyWindow];
+    bool inActiveApp = [[NSApplication sharedApplication] isActive];
+    AcceptMouseEventsOption option = [self acceptsMouseEventsOption];
+    // If events are accepted only in active window but this window is inactive,
+    // ignore this event. This is the default behavior.
+    if (option == kAcceptMouseEventsInActiveWindow && !inActiveWindow) {
+      return YES;
+    }
+    // If events are accepted in active app but the app in active, ignore this
+    // event. This only happens if the content embedder overrides the default
+    // behavior.
+    if (option == kAcceptMouseEventsInActiveApp && !inActiveApp) {
+      return YES;
+    }
   }
 
   NSView* contentView = [window contentView];

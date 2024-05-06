@@ -7,8 +7,13 @@
 
 class GURL;
 
-// Returns true if `url` is the URL of a Top Chrome WebUI on
-// desktop browsers. Such a URL ends with the ".top-chrome" TLD.
+// Returns true if `url` is the URL of a trusted Top Chrome WebUI on desktop
+// browsers. These URLs always have the format "chrome://*.top-chrome".
 bool IsTopChromeWebUIURL(const GURL& url);
+
+// Returns true if `url` is the URL of an untrusted Top Chrome WebUI on desktop
+// browsers. These URLs always have the format
+// "chrome-untrusted://*.top-chrome".
+bool IsTopChromeUntrustedWebUIURL(const GURL& url);
 
 #endif  // CHROME_BROWSER_UI_WEBUI_TOP_CHROME_WEBUI_URL_UTILS_H_
