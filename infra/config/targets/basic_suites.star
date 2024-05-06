@@ -3418,6 +3418,26 @@ targets.legacy_basic_suite(
 )
 
 targets.legacy_basic_suite(
+    name = "gpu_webgl_conformance_gles_passthrough_graphite_telemetry_tests",
+    tests = {
+        "webgl_conformance_gles_passthrough_graphite_tests": targets.legacy_test_config(
+            mixins = [
+                "gpu_integration_test_common_args",
+            ],
+            args = [
+                # On dual-GPU devices we want the high-performance GPU to be active
+                "--extra-browser-args=--use-gl=angle --use-angle=gles --use-cmd-decoder=passthrough --force_high_performance_gpu --enable-features=SkiaGraphite",
+                "$$MAGIC_SUBSTITUTION_GPUWebGLRuntimeFile",
+            ],
+            ci_only = True,
+            swarming = targets.swarming(
+                shards = 3,
+            ),
+        ),
+    },
+)
+
+targets.legacy_basic_suite(
     name = "gpu_webgl_conformance_metal_passthrough_ganesh_telemetry_tests",
     tests = {
         "webgl_conformance_metal_passthrough_ganesh_tests": targets.legacy_test_config(

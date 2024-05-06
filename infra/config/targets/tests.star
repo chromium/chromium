@@ -2491,6 +2491,14 @@ targets.tests.gpu_telemetry_test(
 )
 
 targets.tests.gpu_telemetry_test(
+    name = "webgl_conformance_gles_passthrough_graphite_tests",
+    telemetry_test_name = "webgl1_conformance",
+    mixins = [
+        "has_native_resultdb_integration",
+    ],
+)
+
+targets.tests.gpu_telemetry_test(
     name = "webgl_conformance_metal_passthrough_ganesh_tests",
     telemetry_test_name = "webgl1_conformance",
     mixins = [

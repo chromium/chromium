@@ -3562,6 +3562,24 @@
       },
     },
 
+    'gpu_webgl_conformance_gles_passthrough_graphite_telemetry_tests': {
+      'webgl_conformance_gles_passthrough_graphite_tests': {
+        'telemetry_test_name': 'webgl1_conformance',
+        'mixins': [
+          'has_native_resultdb_integration',
+          'gpu_integration_test_common_args',
+        ],
+        'args': [
+          '--extra-browser-args=--use-gl=angle --use-angle=gles --use-cmd-decoder=passthrough --force_high_performance_gpu --enable-features=SkiaGraphite',
+          '$$MAGIC_SUBSTITUTION_GPUWebGLRuntimeFile',
+        ],
+        'ci_only': True,
+        'swarming': {
+          'shards': 3,
+        },
+      },
+    },
+
     'gpu_webgl_conformance_gles_passthrough_telemetry_tests': {
       'webgl_conformance_gles_passthrough_tests': {
         'telemetry_test_name': 'webgl1_conformance',
@@ -6209,6 +6227,7 @@
       'gpu_webcodecs_validating_telemetry_test',
       'gpu_webgl2_conformance_gles_passthrough_telemetry_tests',
       'gpu_webgl2_conformance_validating_telemetry_tests',
+      'gpu_webgl_conformance_gles_passthrough_graphite_telemetry_tests',
       'gpu_webgl_conformance_gles_passthrough_telemetry_tests',
       'gpu_webgl_conformance_validating_telemetry_tests',
     ],
