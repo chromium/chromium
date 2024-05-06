@@ -83,6 +83,8 @@ export class PrintTicketManager extends EventTarget {
     } else {
       this.printTicket.destination = activeDest.id;
       this.printTicket.printerType = activeDest.printerType;
+      this.printTicket.printerManuallySelected =
+          activeDest.printerManuallySelected;
     }
 
     // TODO(b/323421684): Apply default settings from destination capabilities
@@ -157,6 +159,8 @@ export class PrintTicketManager extends EventTarget {
     if (this.printTicket!.destination === '') {
       this.printTicket!.destination = activeDest.id;
       this.printTicket!.printerType = activeDest.printerType;
+      this.printTicket!.printerManuallySelected =
+          activeDest.printerManuallySelected;
     }
 
     this.eventTracker.remove(

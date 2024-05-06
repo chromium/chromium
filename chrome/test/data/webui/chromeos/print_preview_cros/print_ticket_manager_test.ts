@@ -286,6 +286,11 @@ suite('PrintTicketManager', () => {
         assertEquals(
             PDF_DESTINATION.printerType, ticket!.printerType,
             'printerType set from DestinationManager active destination');
+        assertEquals(
+            PDF_DESTINATION.printerManuallySelected,
+            ticket!.printerManuallySelected,
+            'printerManuallySelected set from DestinationManager active' +
+                ' destination');
       });
 
   // Verify PrintTicket destination set to empty string if no active
@@ -390,6 +395,11 @@ suite('PrintTicketManager', () => {
         assertEquals(
             PDF_DESTINATION.printerType, ticket!.printerType,
             `printerType should be ${PDF_DESTINATION.printerType}`);
+        assertEquals(
+            PDF_DESTINATION.printerManuallySelected,
+            ticket!.printerManuallySelected,
+            `printerManuallySelected should be ${
+                PDF_DESTINATION.printerManuallySelected}`);
         getActiveDestinationFn.returnValue = {
           id: 'fake_id',
           displayName: 'Fake Destination',
@@ -484,6 +494,11 @@ suite('PrintTicketManager', () => {
         assertEquals(
             DEFAULT_PARTIAL_PRINT_TICKET.printerType, ticket.printerType,
             'Ticket printerType should match DEFAULT_PARTIAL_PRINT_TICKET');
+        assertEquals(
+            DEFAULT_PARTIAL_PRINT_TICKET.printerManuallySelected,
+            ticket.printerManuallySelected,
+            'Ticket printerManuallySelected should match ' +
+                'DEFAULT_PARTIAL_PRINT_TICKET');
         assertEquals(
             DEFAULT_PARTIAL_PRINT_TICKET.rasterizePDF, ticket.rasterizePDF,
             'Ticket rasterizePDF should match DEFAULT_PARTIAL_PRINT_TICKET');

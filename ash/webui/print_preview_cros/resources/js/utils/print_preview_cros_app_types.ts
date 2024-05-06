@@ -21,6 +21,10 @@ export interface Destination {
 
   // Type of destination.
   printerType: PrinterType;
+
+  // Used for metrics, true when destination manually selected during CrOS
+  // preview session.
+  printerManuallySelected: boolean;
 }
 
 export interface PrintRequestOutcome {
@@ -180,6 +184,10 @@ export interface PrintTicket {
   // Width of page from generated PDF summing content, left margin, and right
   // margin.
   pageWidth: number;
+
+  // Used for metrics. True when user updates the destination in the preview UI;
+  // otherwise false.
+  printerManuallySelected: boolean;
 
   // Printer type used determine correct logic and handler for print job
   // destination.
