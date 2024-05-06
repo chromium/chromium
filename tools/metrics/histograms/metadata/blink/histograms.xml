@@ -212,7 +212,7 @@ chromium-metrics-reviews@google.com.
 </histogram>
 
 <histogram base="true" name="Blink.Animate.UpdateTime" units="microseconds"
-    expires_after="2024-06-01">
+    expires_after="2025-06-01">
 <!-- Name completed by histogram_suffixes name="BlinkUpdateTimeSuffixes" -->
 
   <owner>pdr@chromium.org</owner>
@@ -2260,7 +2260,7 @@ chromium-metrics-reviews@google.com.
 </histogram>
 
 <histogram base="true" name="Blink.HandleInputEvents.UpdateTime"
-    units="microseconds" expires_after="2024-06-01">
+    units="microseconds" expires_after="2025-06-01">
 <!-- Name completed by histogram_suffixes name="BlinkUpdateTimeSuffixes" -->
 
   <owner>pdr@chromium.org</owner>
@@ -2280,7 +2280,7 @@ chromium-metrics-reviews@google.com.
 </histogram>
 
 <histogram base="true" name="Blink.HitTestDocumentUpdate.UpdateTime"
-    units="microseconds" expires_after="2024-06-01">
+    units="microseconds" expires_after="2025-06-01">
 <!-- Name completed by histogram_suffixes name="BlinkUpdateTimeSuffixes" -->
 
   <owner>pdr@chromium.org</owner>
