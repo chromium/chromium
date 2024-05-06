@@ -24,6 +24,7 @@ import org.chromium.base.task.PostTask;
 import org.chromium.base.task.TaskTraits;
 import org.chromium.base.test.util.Batch;
 import org.chromium.base.test.util.CommandLineFlags;
+import org.chromium.base.test.util.DisableIf;
 import org.chromium.base.test.util.DisabledTest;
 import org.chromium.chrome.browser.flags.ChromeSwitches;
 import org.chromium.chrome.browser.offlinepages.OfflinePageBridge.OfflinePageModelObserver;
@@ -42,6 +43,7 @@ import org.chromium.content_public.browser.LoadUrlParams;
 import org.chromium.content_public.browser.test.util.TestThreadUtils;
 import org.chromium.net.NetworkChangeNotifier;
 import org.chromium.net.test.EmbeddedTestServer;
+import org.chromium.ui.test.util.UiDisableIf;
 
 import java.io.File;
 import java.io.FileInputStream;
@@ -458,6 +460,7 @@ public class OfflinePageBridgeTest {
 
     @Test
     @MediumTest
+    @DisableIf.Device(type = {UiDisableIf.TABLET}) // https://crbug.com/338976971
     public void testGetLoadUrlParamsForOpeningMhtmlFileUrl() throws Exception {
         sActivityTestRule.loadUrl(mTestPage);
         savePage(SavePageResult.SUCCESS, mTestPage);
