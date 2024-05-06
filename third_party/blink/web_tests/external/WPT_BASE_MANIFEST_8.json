@@ -152593,6 +152593,19 @@
         {}
        ]
       ],
+      "mask-image-svg-viewport-changed.html": [
+       "156317b2517d639b8521d510b7e5bf3c793273ed",
+       [
+        null,
+        [
+         [
+          "/css/css-masking/clip-path/reference/green-100x100.html",
+          "=="
+         ]
+        ],
+        {}
+       ]
+      ],
       "mask-image-url-image-hash.html": [
        "b1efc90818bec85d5022a9b908a14c2e0c35ff3b",
        [
@@ -344179,6 +344192,10 @@
       "e86302f50f838a96441640c0f9a090d03ae6e900",
       []
      ],
+     "CSSStyleSheet-constructable-baseURL-expected.txt": [
+      "e0e6df8d61f13e901716a16769483e32fd922043",
+      []
+     ],
      "CSSStyleSheet-constructable-baseURL.tentative-expected.txt": [
       "e0e6df8d61f13e901716a16769483e32fd922043",
       []
@@ -382830,6 +382847,10 @@
      "d7b1f473416baf9f060e2d3d843f7943df0f25e0",
      []
     ],
+    "WEB_FEATURES.yml": [
+     "384fd1a3e54bc7784406de3651be747a69c99bad",
+     []
+    ],
     "avoid-prefetching-on-text-plain-inner.html": [
      "518e2465418ad6aaecc5a6fb3957eeef38259240",
      []
@@ -387481,6 +387502,10 @@
        ]
       }
      },
+     "WEB_FEATURES.yml": [
+      "9ddc5b400dc0e116b9c3c8a14203d3a475422c69",
+      []
+     ],
      "about-blank-replacement.https-expected.txt": [
       "329f457fa2222f17c030be4aa02bb826a36f49a7",
       []
@@ -402293,6 +402318,10 @@
      }
     },
     "modules": {
+     "WEB_FEATURES.yml": [
+      "ab73efc0d041258d2e778479391523c2960156e8",
+      []
+     ],
      "dedicated-worker-import-failure-expected.txt": [
       "5e21ea7c0e8df406b5469f3c6b7831f47ce8c721",
       []
@@ -462597,7 +462626,7 @@
       ]
      ],
      "invalidation-part-pseudo.html": [
-      "fca4a964dce5c5c61b8f4fed4ef25510a9099298",
+      "66df33a4b7019768d29ea64fda7265d63d9436fc",
       [
        null,
        {
@@ -474917,8 +474946,8 @@
        {}
       ]
      ],
-     "CSSStyleSheet-constructable-baseURL.tentative.html": [
-      "8997a59e9c18238b661c5b3592bdfd86e266b754",
+     "CSSStyleSheet-constructable-baseURL.html": [
+      "d0f0f828b03ead6083ca8e3aad6a9070bd2a1f97",
       [
        null,
        {}
