@@ -288,16 +288,6 @@ net::Error IpProtectionProxyDelegate::OnBeforeTunnelRequest(
     VLOG(2) << "NSPD::OnBeforeTunnelRequest() - " << message;
   };
   if (proxy_chain.is_for_ip_protection()) {
-    // Temporarily support a pre-shared key for access to proxyB.
-    if (chain_index == 1) {
-      std::string proxy_b_psk = net::features::kIpPrivacyProxyBPsk.Get();
-      if (!proxy_b_psk.empty()) {
-        vlog("adding proxyB PSK");
-        extra_headers->SetHeader(net::HttpRequestHeaders::kProxyAuthorization,
-                                 base::StrCat({"Preshared ", proxy_b_psk}));
-        return net::OK;
-      }
-    }
     std::optional<network::mojom::BlindSignedAuthTokenPtr> token =
         ipp_config_cache_->GetAuthToken(chain_index);
     if (token) {

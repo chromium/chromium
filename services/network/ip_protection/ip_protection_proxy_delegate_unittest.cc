@@ -260,39 +260,6 @@ TEST_F(IpProtectionProxyDelegateTest, AddsTokenToTunnelRequest) {
   EXPECT_THAT(headers, Contain("Authorization", "Bearer: a-token"));
 }
 
-TEST_F(IpProtectionProxyDelegateTest, AddsPskToTunnelRequest) {
-  std::map<std::string, std::string> parameters;
-  parameters[net::features::kIpPrivacyProxyBPsk.name] = "seekrit";
-  base::test::ScopedFeatureList scoped_feature_list;
-  scoped_feature_list.InitAndEnableFeatureWithParameters(
-      net::features::kEnableIpProtectionProxy, std::move(parameters));
-
-  auto network_service_proxy_allow_list =
-      NetworkServiceProxyAllowList::CreateForTesting(/*first_party_map=*/{});
-  auto ipp_config_cache = std::make_unique<MockIpProtectionConfigCache>();
-  ipp_config_cache->SetProxyList({MakeChain({"proxya", "proxyb"})});
-  ipp_config_cache->SetNextAuthToken(MakeAuthToken("Bearer: a-token"));
-  auto delegate = CreateDelegate(&network_service_proxy_allow_list,
-                                 std::move(ipp_config_cache));
-
-  net::HttpRequestHeaders headers;
-  auto ip_protection_proxy_chain = net::ProxyChain::ForIpProtection(
-      {net::ProxyServer::FromSchemeHostAndPort(net::ProxyServer::SCHEME_HTTPS,
-                                               "proxya", std::nullopt),
-       net::ProxyServer::FromSchemeHostAndPort(net::ProxyServer::SCHEME_HTTPS,
-                                               "proxyb", std::nullopt)});
-  EXPECT_THAT(delegate->OnBeforeTunnelRequest(ip_protection_proxy_chain,
-                                              /*chain_index=*/0, &headers),
-              IsOk());
-  EXPECT_THAT(headers, testing::Not(Contain("Proxy-Authorization",
-                                            "Preshared seekrit")));
-
-  EXPECT_THAT(delegate->OnBeforeTunnelRequest(ip_protection_proxy_chain,
-                                              /*chain_index=*/1, &headers),
-              IsOk());
-  EXPECT_THAT(headers, Contain("Proxy-Authorization", "Preshared seekrit"));
-}
-
 TEST_F(IpProtectionProxyDelegateTest, ErrorIfConnectionWithNoTokens) {
   auto network_service_proxy_allow_list =
       NetworkServiceProxyAllowList::CreateForTesting(/*first_party_map=*/{});

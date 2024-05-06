@@ -392,10 +392,6 @@ NET_EXPORT extern const base::FeatureParam<std::string>
 // connections that _would_ have been proxied, but were not.
 NET_EXPORT extern const base::FeatureParam<bool> kIpPrivacyDirectOnly;
 
-// The PSK added to connections to proxyB with `Proxy-Authorization: Preshared
-// $PSK`.
-NET_EXPORT extern const base::FeatureParam<std::string> kIpPrivacyProxyBPsk;
-
 // If true, pass OAuth token to Phosphor in GetProxyConfig API for IP
 // Protection.
 NET_EXPORT extern const base::FeatureParam<bool>
