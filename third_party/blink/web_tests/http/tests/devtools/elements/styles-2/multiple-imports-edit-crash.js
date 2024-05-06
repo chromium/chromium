@@ -25,14 +25,14 @@ import * as SDK from 'devtools/core/sdk/sdk.js';
       <div id="inspected">Text</div>
     </body>
   `);
-  var initialAddsExpected = 3;
+  var initialAddsExpected = 4;
   var initialAdded = [];
   await new Promise(f => TestRunner.cssModel.addEventListener(SDK.CSSModel.Events.StyleSheetAdded, function styleSheetAdded(event) {
-    if (event.data.sourceURL === "") {
+    const name = resourceName(event.data.sourceURL);
+    if (name) {
       // Don't include the <style> element sheet.
-      return;
+      initialAdded.push(name);
     }
-    initialAdded.push(resourceName(event.data.sourceURL));
     if (!(--initialAddsExpected)) {
       initialAdded.sort();
       TestRunner.addResult('Initially added:');
