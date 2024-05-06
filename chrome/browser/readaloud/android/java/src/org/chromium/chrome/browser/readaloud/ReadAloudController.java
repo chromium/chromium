@@ -447,6 +447,16 @@ public class ReadAloudController
                             notifyReadabilityMayHaveChanged();
                             if (tab != null && tab.getUrl() != null && tab.getUrl().isValid()) {
                                 maybeCheckReadability(tab.getUrl());
+                            }
+                        }
+
+                        @Override
+                        public void onLoadStarted(Tab tab, boolean toDifferentDocument) {
+                            Log.d(TAG, "onLoadStarted");
+                            if (tab != null
+                                    && tab.getUrl() != null
+                                    && tab.getUrl().isValid()
+                                    && toDifferentDocument) {
                                 maybeHandleTabReload(tab, tab.getUrl());
                                 maybeStopPlayback(tab);
                             }
