@@ -36,7 +36,7 @@ void EnablePartitionAllocThreadCacheForRootIfDisabled(PartitionRoot* root) {
   root->settings.with_thread_cache = true;
 }
 
-#if BUILDFLAG(USE_PARTITION_ALLOC_AS_MALLOC)
+#if PA_BUILDFLAG(USE_PARTITION_ALLOC_AS_MALLOC)
 void DisablePartitionAllocThreadCacheForProcess() {
   PA_CHECK(allocator_shim::internal::PartitionAllocMalloc::
                AllocatorConfigurationFinalized());
@@ -45,7 +45,7 @@ void DisablePartitionAllocThreadCacheForProcess() {
   DisableThreadCacheForRootIfEnabled(
       allocator_shim::internal::PartitionAllocMalloc::OriginalAllocator());
 }
-#endif  // BUILDFLAG(USE_PARTITION_ALLOC_AS_MALLOC)
+#endif  // PA_BUILDFLAG(USE_PARTITION_ALLOC_AS_MALLOC)
 
 }  // namespace
 
@@ -63,7 +63,7 @@ ThreadAllocStats GetAllocStatsForCurrentThread() {
 ThreadCacheProcessScopeForTesting::ThreadCacheProcessScopeForTesting(
     PartitionRoot* root)
     : root_(root) {
-#if BUILDFLAG(USE_PARTITION_ALLOC_AS_MALLOC)
+#if PA_BUILDFLAG(USE_PARTITION_ALLOC_AS_MALLOC)
   auto* regular_allocator =
       allocator_shim::internal::PartitionAllocMalloc::Allocator();
   regular_was_enabled_ =
@@ -86,13 +86,13 @@ ThreadCacheProcessScopeForTesting::ThreadCacheProcessScopeForTesting(
   PA_CHECK(!ThreadCache::IsValid(ThreadCache::Get()));
   EnablePartitionAllocThreadCacheForRootIfDisabled(root_);
   ThreadCache::SwapForTesting(root_);
-#endif  // BUILDFLAG(USE_PARTITION_ALLOC_AS_MALLOC)
+#endif  // PA_BUILDFLAG(USE_PARTITION_ALLOC_AS_MALLOC)
 
   PA_CHECK(ThreadCache::Get());
 }
 
 ThreadCacheProcessScopeForTesting::~ThreadCacheProcessScopeForTesting() {
-#if BUILDFLAG(USE_PARTITION_ALLOC_AS_MALLOC)
+#if PA_BUILDFLAG(USE_PARTITION_ALLOC_AS_MALLOC)
   auto* regular_allocator =
       allocator_shim::internal::PartitionAllocMalloc::Allocator();
   bool regular_enabled =
@@ -122,7 +122,7 @@ ThreadCacheProcessScopeForTesting::~ThreadCacheProcessScopeForTesting() {
   DisableThreadCacheForRootIfEnabled(root_);
 
   ThreadCache::SwapForTesting(nullptr);
-#endif  // BUILDFLAG(USE_PARTITION_ALLOC_AS_MALLOC)
+#endif  // PA_BUILDFLAG(USE_PARTITION_ALLOC_AS_MALLOC)
 }
 #endif  // PA_CONFIG(THREAD_CACHE_SUPPORTED)
 

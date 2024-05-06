@@ -4,7 +4,7 @@
 
 #include "partition_alloc/thread_isolation/thread_isolation.h"
 
-#if BUILDFLAG(ENABLE_THREAD_ISOLATION)
+#if PA_BUILDFLAG(ENABLE_THREAD_ISOLATION)
 
 #include "partition_alloc/address_pool_manager.h"
 #include "partition_alloc/page_allocator.h"
@@ -12,13 +12,13 @@
 #include "partition_alloc/partition_alloc_constants.h"
 #include "partition_alloc/reservation_offset_table.h"
 
-#if BUILDFLAG(ENABLE_PKEYS)
+#if PA_BUILDFLAG(ENABLE_PKEYS)
 #include "partition_alloc/thread_isolation/pkey.h"
 #endif
 
 namespace partition_alloc::internal {
 
-#if BUILDFLAG(PA_DCHECK_IS_ON)
+#if PA_BUILDFLAG(PA_DCHECK_IS_ON)
 ThreadIsolationSettings ThreadIsolationSettings::settings;
 #endif
 
@@ -37,7 +37,7 @@ void WriteProtectThreadIsolatedMemory(ThreadIsolationOption thread_isolation,
                 : PageAccessibilityConfiguration::Permissions::kReadWrite));
     return;
   }
-#if BUILDFLAG(ENABLE_PKEYS)
+#if PA_BUILDFLAG(ENABLE_PKEYS)
   partition_alloc::internal::TagMemoryWithPkey(
       thread_isolation.enabled ? thread_isolation.pkey : kDefaultPkey, address,
       size);
@@ -59,7 +59,7 @@ int MprotectWithThreadIsolation(void* addr,
                                 size_t len,
                                 int prot,
                                 ThreadIsolationOption thread_isolation) {
-#if BUILDFLAG(ENABLE_PKEYS)
+#if PA_BUILDFLAG(ENABLE_PKEYS)
   return PkeyMprotect(addr, len, prot, thread_isolation.pkey);
 #endif
 }
@@ -80,7 +80,7 @@ void WriteProtectThreadIsolatedGlobals(ThreadIsolationOption thread_isolation) {
       thread_isolation, pkey_reservation_offset_table,
       ReservationOffsetTable::kReservationOffsetTableLength);
 
-#if BUILDFLAG(PA_DCHECK_IS_ON)
+#if PA_BUILDFLAG(PA_DCHECK_IS_ON)
   WriteProtectThreadIsolatedVariable(thread_isolation,
                                      ThreadIsolationSettings::settings);
 #endif
@@ -92,4 +92,4 @@ void UnprotectThreadIsolatedGlobals() {
 
 }  // namespace partition_alloc::internal
 
-#endif  // BUILDFLAG(ENABLE_THREAD_ISOLATION)
+#endif  // PA_BUILDFLAG(ENABLE_THREAD_ISOLATION)

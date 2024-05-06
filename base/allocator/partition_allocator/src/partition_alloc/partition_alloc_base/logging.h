@@ -337,7 +337,7 @@ constexpr LogSeverity LOGGING_0 = LOGGING_ERROR;
 
 // Definitions for DLOG et al.
 
-#if BUILDFLAG(PA_DCHECK_IS_ON)
+#if PA_BUILDFLAG(PA_DCHECK_IS_ON)
 
 #define PA_DLOG_IS_ON(severity) PA_LOG_IS_ON(severity)
 #define PA_DLOG_IF(severity, condition) PA_LOG_IF(severity, condition)
@@ -347,11 +347,11 @@ constexpr LogSeverity LOGGING_0 = LOGGING_ERROR;
 #define PA_DVPLOG_IF(verboselevel, condition) \
   PA_VPLOG_IF(verboselevel, condition)
 
-#else  // BUILDFLAG(PA_DCHECK_IS_ON)
+#else  // PA_BUILDFLAG(PA_DCHECK_IS_ON)
 
 // If !BUILDFLAG(PA_DCHECK_IS_ON), we want to avoid emitting any references to
 // |condition| (which may reference a variable defined only if
-// BUILDFLAG(PA_DCHECK_IS_ON)). Contrast this with DCHECK et al., which has
+// PA_BUILDFLAG(PA_DCHECK_IS_ON)). Contrast this with DCHECK et al., which has
 // different behavior.
 
 #define PA_DLOG_IS_ON(severity) false
@@ -361,7 +361,7 @@ constexpr LogSeverity LOGGING_0 = LOGGING_ERROR;
 #define PA_DVLOG_IF(verboselevel, condition) PA_EAT_STREAM_PARAMETERS
 #define PA_DVPLOG_IF(verboselevel, condition) PA_EAT_STREAM_PARAMETERS
 
-#endif  // BUILDFLAG(PA_DCHECK_IS_ON)
+#endif  // PA_BUILDFLAG(PA_DCHECK_IS_ON)
 
 #define PA_DLOG(severity) \
   PA_LAZY_STREAM(PA_LOG_STREAM(severity), PA_DLOG_IS_ON(severity))
@@ -375,11 +375,11 @@ constexpr LogSeverity LOGGING_0 = LOGGING_ERROR;
 
 // Definitions for DCHECK et al.
 
-#if BUILDFLAG(PA_DCHECK_IS_CONFIGURABLE)
+#if PA_BUILDFLAG(PA_DCHECK_IS_CONFIGURABLE)
 PA_COMPONENT_EXPORT(PARTITION_ALLOC_BASE) extern LogSeverity LOGGING_DCHECK;
 #else
 constexpr LogSeverity LOGGING_DCHECK = LOGGING_FATAL;
-#endif  // BUILDFLAG(PA_DCHECK_IS_CONFIGURABLE)
+#endif  // PA_BUILDFLAG(PA_DCHECK_IS_CONFIGURABLE)
 
 // Redefine the standard assert to use our nice log files
 #undef assert

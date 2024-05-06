@@ -49,7 +49,7 @@ AlignUpInSlotMetadataSizeForApple(size_t in_slot_metadata_size) {
 #endif  // BUILDFLAG(IS_APPLE)
 }
 
-#if BUILDFLAG(ENABLE_BACKUP_REF_PTR_SUPPORT)
+#if PA_BUILDFLAG(ENABLE_BACKUP_REF_PTR_SUPPORT)
 
 namespace {
 // Utility functions to define a bit field.
@@ -189,7 +189,7 @@ class PA_COMPONENT_EXPORT(PARTITION_ALLOC) InSlotMetadata {
   // Similar to |Acquire()|, but for raw_ptr<T, DisableDanglingPtrDetection>
   // instead of raw_ptr<T>.
   PA_ALWAYS_INLINE void AcquireFromUnprotectedPtr() {
-#if BUILDFLAG(ENABLE_DANGLING_RAW_PTR_CHECKS)
+#if PA_BUILDFLAG(ENABLE_DANGLING_RAW_PTR_CHECKS)
     CheckCookieIfSupported();
     CountType old_count =
         count_.fetch_add(kUnprotectedPtrInc, std::memory_order_relaxed);
@@ -209,7 +209,7 @@ class PA_COMPONENT_EXPORT(PARTITION_ALLOC) InSlotMetadata {
     // Check underflow.
     PA_DCHECK(old_count & kPtrCountMask);
 
-#if BUILDFLAG(ENABLE_DANGLING_RAW_PTR_CHECKS)
+#if PA_BUILDFLAG(ENABLE_DANGLING_RAW_PTR_CHECKS)
     // If a dangling raw_ptr<> was detected, report it.
     if (PA_UNLIKELY((old_count & kDanglingRawPtrDetectedBit) ==
                     kDanglingRawPtrDetectedBit)) {
@@ -224,7 +224,7 @@ class PA_COMPONENT_EXPORT(PARTITION_ALLOC) InSlotMetadata {
   // Similar to |Release()|, but for raw_ptr<T, DisableDanglingPtrDetection>
   // instead of raw_ptr<T>.
   PA_ALWAYS_INLINE bool ReleaseFromUnprotectedPtr() {
-#if BUILDFLAG(ENABLE_DANGLING_RAW_PTR_CHECKS)
+#if PA_BUILDFLAG(ENABLE_DANGLING_RAW_PTR_CHECKS)
     CheckCookieIfSupported();
 
     CountType old_count =
@@ -359,7 +359,7 @@ class PA_COMPONENT_EXPORT(PARTITION_ALLOC) InSlotMetadata {
   // If there are some dangling raw_ptr<>. Turn on the error flag, and
   // emit the `DanglingPtrDetected` once to embedders.
   PA_ALWAYS_INLINE void CheckDanglingPointersOnFree(CountType count) {
-#if BUILDFLAG(ENABLE_DANGLING_RAW_PTR_CHECKS)
+#if PA_BUILDFLAG(ENABLE_DANGLING_RAW_PTR_CHECKS)
     // The `kPtrCountMask` counts the number of raw_ptr<T>. It is expected to be
     // zero when there are no unexpected dangling pointers.
     if (PA_LIKELY((count & kPtrCountMask) == 0)) {
@@ -384,7 +384,7 @@ class PA_COMPONENT_EXPORT(PARTITION_ALLOC) InSlotMetadata {
 
     partition_alloc::internal::DanglingRawPtrDetected(
         reinterpret_cast<uintptr_t>(this));
-#endif  // BUILDFLAG(ENABLE_DANGLING_RAW_PTR_CHECKS)
+#endif  // PA_BUILDFLAG(ENABLE_DANGLING_RAW_PTR_CHECKS)
   }
 
   // The common parts shared by Release() and ReleaseFromUnprotectedPtr().
@@ -477,7 +477,7 @@ static_assert(kAlignment % alignof(InSlotMetadata) == 0,
 
 static constexpr size_t kInSlotMetadataBufferSize = sizeof(InSlotMetadata);
 
-#if BUILDFLAG(ENABLE_DANGLING_RAW_PTR_CHECKS)
+#if PA_BUILDFLAG(ENABLE_DANGLING_RAW_PTR_CHECKS)
 
 #if PA_CONFIG(IN_SLOT_METADATA_CHECK_COOKIE) || \
     PA_CONFIG(IN_SLOT_METADATA_STORE_REQUESTED_SIZE)
@@ -486,7 +486,7 @@ static constexpr size_t kInSlotMetadataSizeShift = 4;
 static constexpr size_t kInSlotMetadataSizeShift = 3;
 #endif
 
-#else  // BUILDFLAG(ENABLE_DANGLING_RAW_PTR_CHECKS)
+#else  // PA_BUILDFLAG(ENABLE_DANGLING_RAW_PTR_CHECKS)
 
 #if PA_CONFIG(IN_SLOT_METADATA_CHECK_COOKIE) && \
     PA_CONFIG(IN_SLOT_METADATA_STORE_REQUESTED_SIZE)
@@ -540,7 +540,8 @@ PA_ALWAYS_INLINE InSlotMetadata* InSlotMetadataPointer(uintptr_t slot_start,
   if (PA_LIKELY(slot_start & SystemPageOffsetMask())) {
     uintptr_t refcount_address =
         slot_start + slot_size - sizeof(InSlotMetadata);
-#if BUILDFLAG(PA_DCHECK_IS_ON) || BUILDFLAG(ENABLE_BACKUP_REF_PTR_SLOW_CHECKS)
+#if PA_BUILDFLAG(PA_DCHECK_IS_ON) || \
+    PA_BUILDFLAG(ENABLE_BACKUP_REF_PTR_SLOW_CHECKS)
     PA_CHECK(refcount_address % alignof(InSlotMetadata) == 0);
 #endif
     // TODO(bartekn): Plumb the tag from the callers, so that MTE tag can be
@@ -552,7 +553,8 @@ PA_ALWAYS_INLINE InSlotMetadata* InSlotMetadataPointer(uintptr_t slot_start,
         (slot_start & kSuperPageBaseMask) + SystemPageSize() * 2);
     size_t index = ((slot_start & kSuperPageOffsetMask) >> SystemPageShift())
                    << GetInSlotMetadataIndexMultiplierShift();
-#if BUILDFLAG(PA_DCHECK_IS_ON) || BUILDFLAG(ENABLE_BACKUP_REF_PTR_SLOW_CHECKS)
+#if PA_BUILDFLAG(PA_DCHECK_IS_ON) || \
+    PA_BUILDFLAG(ENABLE_BACKUP_REF_PTR_SLOW_CHECKS)
     PA_CHECK(sizeof(InSlotMetadata) * index <= SystemPageSize());
 #endif
     return table_base + index;
@@ -562,11 +564,11 @@ PA_ALWAYS_INLINE InSlotMetadata* InSlotMetadataPointer(uintptr_t slot_start,
 static_assert(sizeof(InSlotMetadata) <= kInSlotMetadataBufferSize,
               "InSlotMetadata should fit into the in-slot buffer.");
 
-#else  // BUILDFLAG(ENABLE_BACKUP_REF_PTR_SUPPORT)
+#else  // PA_BUILDFLAG(ENABLE_BACKUP_REF_PTR_SUPPORT)
 
 static constexpr size_t kInSlotMetadataBufferSize = 0;
 
-#endif  // BUILDFLAG(ENABLE_BACKUP_REF_PTR_SUPPORT)
+#endif  // PA_BUILDFLAG(ENABLE_BACKUP_REF_PTR_SUPPORT)
 
 constexpr size_t kInSlotMetadataSizeAdjustment = kInSlotMetadataBufferSize;
 

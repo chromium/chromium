@@ -13,7 +13,7 @@
 
 #include "partition_alloc/partition_alloc_buildflags.h"
 
-#if BUILDFLAG(USE_ALLOCATOR_SHIM)
+#if PA_BUILDFLAG(USE_ALLOCATOR_SHIM)
 #include "partition_alloc/partition_alloc_base/component_export.h"
 
 namespace allocator_shim {
@@ -47,6 +47,6 @@ PA_COMPONENT_EXPORT(ALLOCATOR_SHIM) void WinHeapAlignedFree(void* ptr);
 
 }  // namespace allocator_shim
 
-#endif  // BUILDFLAG(USE_ALLOCATOR_SHIM)
+#endif  // PA_BUILDFLAG(USE_ALLOCATOR_SHIM)
 
 #endif  // PARTITION_ALLOC_SHIM_WINHEAP_STUBS_WIN_H_

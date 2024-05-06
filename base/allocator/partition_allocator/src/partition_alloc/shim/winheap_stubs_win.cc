@@ -104,12 +104,12 @@ struct AlignedPrefix {
   static_assert(
       kMaxWindowsAllocation < std::numeric_limits<unsigned int>::max(),
       "original_allocation_offset must be able to fit into an unsigned int");
-#if BUILDFLAG(PA_DCHECK_IS_ON)
+#if PA_BUILDFLAG(PA_DCHECK_IS_ON)
   // Magic value used to check that _aligned_free() and _aligned_realloc() are
   // only ever called on an aligned allocated chunk.
   static constexpr unsigned int kMagic = 0x12003400;
   unsigned int magic;
-#endif  // BUILDFLAG(PA_DCHECK_IS_ON)
+#endif  // PA_BUILDFLAG(PA_DCHECK_IS_ON)
 };
 
 // Compute how large an allocation we need to fit an allocation with the given
@@ -134,18 +134,18 @@ void* AlignAllocation(void* ptr, size_t alignment) {
   prefix->original_allocation_offset =
       partition_alloc::internal::base::checked_cast<unsigned int>(
           address - reinterpret_cast<uintptr_t>(ptr));
-#if BUILDFLAG(PA_DCHECK_IS_ON)
+#if PA_BUILDFLAG(PA_DCHECK_IS_ON)
   prefix->magic = AlignedPrefix::kMagic;
-#endif  // BUILDFLAG(PA_DCHECK_IS_ON)
+#endif  // PA_BUILDFLAG(PA_DCHECK_IS_ON)
   return reinterpret_cast<void*>(address);
 }
 
 // Return the original allocation from an aligned allocation.
 void* UnalignAllocation(void* ptr) {
   AlignedPrefix* prefix = reinterpret_cast<AlignedPrefix*>(ptr) - 1;
-#if BUILDFLAG(PA_DCHECK_IS_ON)
+#if PA_BUILDFLAG(PA_DCHECK_IS_ON)
   PA_DCHECK(prefix->magic == AlignedPrefix::kMagic);
-#endif  // BUILDFLAG(PA_DCHECK_IS_ON)
+#endif  // PA_BUILDFLAG(PA_DCHECK_IS_ON)
   void* unaligned =
       static_cast<uint8_t*>(ptr) - prefix->original_allocation_offset;
   PA_CHECK(unaligned < ptr);

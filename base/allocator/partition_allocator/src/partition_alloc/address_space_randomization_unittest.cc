@@ -135,8 +135,8 @@ void RandomBitCorrelation(int random_bit) {
     return;  // bit is always 0.
   }
 
-#if BUILDFLAG(PA_DCHECK_IS_ON)
-  // Do fewer checks when BUILDFLAG(PA_DCHECK_IS_ON). Exercized code only
+#if PA_BUILDFLAG(PA_DCHECK_IS_ON)
+  // Do fewer checks when PA_BUILDFLAG(PA_DCHECK_IS_ON). Exercized code only
   // changes when the random number generator does, which should be almost
   // never. However it's expensive to run all the tests. So keep iterations
   // faster for local development builds, while having the stricter version run

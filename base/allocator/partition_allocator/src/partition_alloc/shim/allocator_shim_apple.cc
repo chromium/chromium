@@ -13,7 +13,7 @@
 #include "partition_alloc/partition_alloc_check.h"
 #include "partition_alloc/shim/allocator_interception_apple.h"
 
-#if BUILDFLAG(USE_PARTITION_ALLOC_AS_MALLOC)
+#if PA_BUILDFLAG(USE_PARTITION_ALLOC_AS_MALLOC)
 #include "partition_alloc/shim/allocator_shim_default_dispatch_to_partition_alloc.h"
 #endif
 
@@ -59,7 +59,7 @@ void TryFreeDefaultFallbackToFindZoneAndFree(void* ptr) {
 
 #include "partition_alloc/shim/shim_alloc_functions.h"
 
-#if BUILDFLAG(USE_PARTITION_ALLOC_AS_MALLOC)
+#if PA_BUILDFLAG(USE_PARTITION_ALLOC_AS_MALLOC)
 // Cpp symbols (new / delete) should always be routed through the shim layer
 // except on Windows and macOS (except for PartitionAlloc-Everywhere) where the
 // malloc intercept is deep enough that it also catches the cpp calls.
@@ -72,11 +72,11 @@ void TryFreeDefaultFallbackToFindZoneAndFree(void* ptr) {
 #include "partition_alloc/shim/allocator_shim_override_cpp_symbols.h"
 #endif
 
-#if BUILDFLAG(USE_PARTITION_ALLOC_AS_MALLOC)
+#if PA_BUILDFLAG(USE_PARTITION_ALLOC_AS_MALLOC)
 #include "partition_alloc/shim/allocator_shim_override_apple_default_zone.h"
-#else  // BUILDFLAG(USE_PARTITION_ALLOC_AS_MALLOC)
+#else  // PA_BUILDFLAG(USE_PARTITION_ALLOC_AS_MALLOC)
 #include "partition_alloc/shim/allocator_shim_override_apple_symbols.h"
-#endif  // BUILDFLAG(USE_PARTITION_ALLOC_AS_MALLOC)
+#endif  // PA_BUILDFLAG(USE_PARTITION_ALLOC_AS_MALLOC)
 
 namespace allocator_shim {
 

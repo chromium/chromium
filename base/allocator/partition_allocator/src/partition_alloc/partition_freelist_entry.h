@@ -27,7 +27,7 @@ namespace partition_alloc::internal {
 // We are assessing an alternate implementation using an alternate
 // encoding (pool offsets). When build support is enabled, the
 // freelist implementation is determined at runtime.
-#if BUILDFLAG(USE_FREELIST_DISPATCHER)
+#if PA_BUILDFLAG(USE_FREELIST_DISPATCHER)
 #include "partition_alloc/pool_offset_freelist.h"  // IWYU pragma: export
 #endif
 
@@ -37,7 +37,7 @@ namespace partition_alloc::internal {
 
 static_assert(kSmallestBucket >= sizeof(EncodedNextFreelistEntry),
               "Need enough space for freelist entries in the smallest slot");
-#if BUILDFLAG(USE_FREELIST_DISPATCHER)
+#if PA_BUILDFLAG(USE_FREELIST_DISPATCHER)
 static_assert(kSmallestBucket >= sizeof(PoolOffsetFreelistEntry),
               "Need enough space for freelist entries in the smallest slot");
 #endif
@@ -47,22 +47,22 @@ enum class PartitionFreelistEncoding {
   kPoolOffsetFreeList,
 };
 
-#if BUILDFLAG(USE_FREELIST_DISPATCHER)
+#if PA_BUILDFLAG(USE_FREELIST_DISPATCHER)
 union PartitionFreelistEntry {
   EncodedNextFreelistEntry encoded_entry_;
   PoolOffsetFreelistEntry pool_offset_entry_;
 };
 #else
 using PartitionFreelistEntry = EncodedNextFreelistEntry;
-#endif  // BUILDFLAG(USE_FREELIST_DISPATCHER)
+#endif  // PA_BUILDFLAG(USE_FREELIST_DISPATCHER)
 
-#if BUILDFLAG(USE_FREELIST_DISPATCHER)
+#if PA_BUILDFLAG(USE_FREELIST_DISPATCHER)
 static_assert(offsetof(PartitionFreelistEntry, encoded_entry_) == 0ull);
 static_assert(offsetof(PartitionFreelistEntry, pool_offset_entry_) == 0ull);
 #endif
 
 struct PartitionFreelistDispatcher {
-#if BUILDFLAG(USE_FREELIST_DISPATCHER)
+#if PA_BUILDFLAG(USE_FREELIST_DISPATCHER)
   static const PartitionFreelistDispatcher* Create(
       PartitionFreelistEncoding encoding);
 
@@ -186,10 +186,10 @@ struct PartitionFreelistDispatcher {
   }
 
   ~PartitionFreelistDispatcher() = default;
-#endif  // BUILDFLAG(USE_FREELIST_DISPATCHER)
+#endif  // PA_BUILDFLAG(USE_FREELIST_DISPATCHER)
 };
 
-#if BUILDFLAG(USE_FREELIST_DISPATCHER)
+#if PA_BUILDFLAG(USE_FREELIST_DISPATCHER)
 template <PartitionFreelistEncoding encoding>
 struct PartitionFreelistDispatcherImpl : PartitionFreelistDispatcher {
   using Entry =
@@ -312,7 +312,7 @@ PartitionFreelistDispatcher::Create(PartitionFreelistEncoding encoding) {
     }
   }
 }
-#endif  // BUILDFLAG(USE_FREELIST_DISPATCHER)
+#endif  // PA_BUILDFLAG(USE_FREELIST_DISPATCHER)
 }  // namespace partition_alloc::internal
 
 #endif  // PARTITION_ALLOC_PARTITION_FREELIST_ENTRY_H_

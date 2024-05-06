@@ -22,12 +22,12 @@
 #include "partition_alloc/partition_alloc_forward.h"
 #include "partition_alloc/thread_isolation/alignment.h"
 
-#if BUILDFLAG(ENABLE_THREAD_ISOLATION)
+#if PA_BUILDFLAG(ENABLE_THREAD_ISOLATION)
 #include "partition_alloc/thread_isolation/thread_isolation.h"
 #endif
 
 // The feature is not applicable to 32-bit address space.
-#if BUILDFLAG(HAS_64_BIT_POINTERS)
+#if PA_BUILDFLAG(HAS_64_BIT_POINTERS)
 
 namespace partition_alloc {
 
@@ -69,13 +69,13 @@ class PA_COMPONENT_EXPORT(PARTITION_ALLOC) PartitionAddressSpace {
     pool_handle pool = kNullPoolHandle;
     uintptr_t base = 0;
     uintptr_t base_mask = 0;
-#if BUILDFLAG(ENABLE_BACKUP_REF_PTR_SUPPORT)
+#if PA_BUILDFLAG(ENABLE_BACKUP_REF_PTR_SUPPORT)
     if (IsInBRPPool(address)) {
       pool = kBRPPoolHandle;
       base = setup_.brp_pool_base_address_;
       base_mask = BRPPoolBaseMask();
     } else
-#endif  // BUILDFLAG(ENABLE_BACKUP_REF_PTR_SUPPORT)
+#endif  // PA_BUILDFLAG(ENABLE_BACKUP_REF_PTR_SUPPORT)
       if (IsInRegularPool(address)) {
         pool = kRegularPoolHandle;
         base = setup_.regular_pool_base_address_;
@@ -85,7 +85,7 @@ class PA_COMPONENT_EXPORT(PARTITION_ALLOC) PartitionAddressSpace {
         pool = kConfigurablePoolHandle;
         base = setup_.configurable_pool_base_address_;
         base_mask = setup_.configurable_pool_base_mask_;
-#if BUILDFLAG(ENABLE_THREAD_ISOLATION)
+#if PA_BUILDFLAG(ENABLE_THREAD_ISOLATION)
       } else if (IsInThreadIsolatedPool(address)) {
         pool = kThreadIsolatedPoolHandle;
         base = setup_.thread_isolated_pool_base_address_;
@@ -116,7 +116,7 @@ class PA_COMPONENT_EXPORT(PARTITION_ALLOC) PartitionAddressSpace {
   //
   // This function must only be called from the main thread.
   static void InitConfigurablePool(uintptr_t pool_base, size_t size);
-#if BUILDFLAG(ENABLE_THREAD_ISOLATION)
+#if PA_BUILDFLAG(ENABLE_THREAD_ISOLATION)
   static void InitThreadIsolatedPool(ThreadIsolationOption thread_isolation);
   static void UninitThreadIsolatedPoolForTesting();
 #endif
@@ -140,7 +140,7 @@ class PA_COMPONENT_EXPORT(PARTITION_ALLOC) PartitionAddressSpace {
            kUninitializedPoolBaseAddress;
   }
 
-#if BUILDFLAG(ENABLE_THREAD_ISOLATION)
+#if PA_BUILDFLAG(ENABLE_THREAD_ISOLATION)
   PA_ALWAYS_INLINE static bool IsThreadIsolatedPoolInitialized() {
     return setup_.thread_isolated_pool_base_address_ !=
            kUninitializedPoolBaseAddress;
@@ -172,7 +172,7 @@ class PA_COMPONENT_EXPORT(PARTITION_ALLOC) PartitionAddressSpace {
     return (address & brp_pool_base_mask) == setup_.brp_pool_base_address_;
   }
 
-#if BUILDFLAG(GLUE_CORE_POOLS)
+#if PA_BUILDFLAG(GLUE_CORE_POOLS)
   // Checks whether the address belongs to either regular or BRP pool.
   // Returns false for nullptr.
   PA_ALWAYS_INLINE static bool IsInCorePools(uintptr_t address) {
@@ -198,7 +198,7 @@ class PA_COMPONENT_EXPORT(PARTITION_ALLOC) PartitionAddressSpace {
     return RegularPoolSize() * 2;
   }
 #endif  // PA_CONFIG(DYNAMICALLY_SELECT_POOL_SIZE)
-#endif  // BUILDFLAG(GLUE_CORE_POOLS)
+#endif  // PA_BUILDFLAG(GLUE_CORE_POOLS)
 
   PA_ALWAYS_INLINE static uintptr_t OffsetInBRPPool(uintptr_t address) {
     PA_DCHECK(IsInBRPPool(address));
@@ -215,7 +215,7 @@ class PA_COMPONENT_EXPORT(PARTITION_ALLOC) PartitionAddressSpace {
     return setup_.configurable_pool_base_address_;
   }
 
-#if BUILDFLAG(ENABLE_THREAD_ISOLATION)
+#if PA_BUILDFLAG(ENABLE_THREAD_ISOLATION)
   // Returns false for nullptr.
   PA_ALWAYS_INLINE static bool IsInThreadIsolatedPool(uintptr_t address) {
     return (address & kThreadIsolatedPoolBaseMask) ==
@@ -258,7 +258,7 @@ class PA_COMPONENT_EXPORT(PARTITION_ALLOC) PartitionAddressSpace {
   }
 #endif  // PA_CONFIG(DYNAMICALLY_SELECT_POOL_SIZE)
 
-#if BUILDFLAG(ENABLE_THREAD_ISOLATION)
+#if PA_BUILDFLAG(ENABLE_THREAD_ISOLATION)
   PA_ALWAYS_INLINE static constexpr size_t ThreadIsolatedPoolSize() {
     return kThreadIsolatedPoolSize;
   }
@@ -287,7 +287,7 @@ class PA_COMPONENT_EXPORT(PARTITION_ALLOC) PartitionAddressSpace {
   static constexpr size_t kBRPPoolSize = kPoolMaxSize;
   static_assert(std::has_single_bit(kRegularPoolSize));
   static_assert(std::has_single_bit(kBRPPoolSize));
-#if BUILDFLAG(ENABLE_THREAD_ISOLATION)
+#if PA_BUILDFLAG(ENABLE_THREAD_ISOLATION)
   static constexpr size_t kThreadIsolatedPoolSize = kGiB / 4;
   static_assert(std::has_single_bit(kThreadIsolatedPoolSize));
 #endif
@@ -324,7 +324,7 @@ class PA_COMPONENT_EXPORT(PARTITION_ALLOC) PartitionAddressSpace {
   static constexpr uintptr_t kBRPPoolBaseMask = ~kBRPPoolOffsetMask;
 #endif  // !PA_CONFIG(DYNAMICALLY_SELECT_POOL_SIZE)
 
-#if BUILDFLAG(ENABLE_THREAD_ISOLATION)
+#if PA_BUILDFLAG(ENABLE_THREAD_ISOLATION)
   static constexpr uintptr_t kThreadIsolatedPoolOffsetMask =
       static_cast<uintptr_t>(kThreadIsolatedPoolSize) - 1;
   static constexpr uintptr_t kThreadIsolatedPoolBaseMask =
@@ -346,23 +346,23 @@ class PA_COMPONENT_EXPORT(PARTITION_ALLOC) PartitionAddressSpace {
     uintptr_t regular_pool_base_address_ = kUninitializedPoolBaseAddress;
     uintptr_t brp_pool_base_address_ = kUninitializedPoolBaseAddress;
     uintptr_t configurable_pool_base_address_ = kUninitializedPoolBaseAddress;
-#if BUILDFLAG(ENABLE_THREAD_ISOLATION)
+#if PA_BUILDFLAG(ENABLE_THREAD_ISOLATION)
     uintptr_t thread_isolated_pool_base_address_ =
         kUninitializedPoolBaseAddress;
 #endif
 #if PA_CONFIG(DYNAMICALLY_SELECT_POOL_SIZE)
     uintptr_t regular_pool_base_mask_ = 0;
     uintptr_t brp_pool_base_mask_ = 0;
-#if BUILDFLAG(GLUE_CORE_POOLS)
+#if PA_BUILDFLAG(GLUE_CORE_POOLS)
     uintptr_t core_pools_base_mask_ = 0;
 #endif
 #endif  // PA_CONFIG(DYNAMICALLY_SELECT_POOL_SIZE)
     uintptr_t configurable_pool_base_mask_ = 0;
-#if BUILDFLAG(ENABLE_THREAD_ISOLATION)
+#if PA_BUILDFLAG(ENABLE_THREAD_ISOLATION)
     ThreadIsolationOption thread_isolation_;
 #endif
   };
-#if BUILDFLAG(ENABLE_THREAD_ISOLATION)
+#if PA_BUILDFLAG(ENABLE_THREAD_ISOLATION)
   static_assert(sizeof(PoolSetup) % SystemPageSize() == 0,
                 "PoolSetup has to fill a page(s)");
 #else
@@ -382,7 +382,7 @@ class PA_COMPONENT_EXPORT(PARTITION_ALLOC) PartitionAddressSpace {
   static std::ptrdiff_t brp_pool_shadow_offset_;
 #endif
 
-#if BUILDFLAG(ENABLE_THREAD_ISOLATION)
+#if PA_BUILDFLAG(ENABLE_THREAD_ISOLATION)
   // If we use thread isolation, we need to write-protect its metadata.
   // Allow the function to get access to the PoolSetup.
   friend void WriteProtectThreadIsolatedGlobals(ThreadIsolationOption);
@@ -417,10 +417,10 @@ PA_ALWAYS_INLINE bool IsManagedByPartitionAlloc(uintptr_t address) {
   PA_DCHECK(!internal::PartitionAddressSpace::IsInBRPPool(address));
 #endif
   return internal::PartitionAddressSpace::IsInRegularPool(address)
-#if BUILDFLAG(ENABLE_BACKUP_REF_PTR_SUPPORT)
+#if PA_BUILDFLAG(ENABLE_BACKUP_REF_PTR_SUPPORT)
          || internal::PartitionAddressSpace::IsInBRPPool(address)
 #endif
-#if BUILDFLAG(ENABLE_THREAD_ISOLATION)
+#if PA_BUILDFLAG(ENABLE_THREAD_ISOLATION)
          || internal::PartitionAddressSpace::IsInThreadIsolatedPool(address)
 #endif
          || internal::PartitionAddressSpace::IsInConfigurablePool(address);
@@ -436,13 +436,13 @@ PA_ALWAYS_INLINE bool IsManagedByPartitionAllocBRPPool(uintptr_t address) {
   return internal::PartitionAddressSpace::IsInBRPPool(address);
 }
 
-#if BUILDFLAG(GLUE_CORE_POOLS)
+#if PA_BUILDFLAG(GLUE_CORE_POOLS)
 // Checks whether the address belongs to either regular or BRP pool.
 // Returns false for nullptr.
 PA_ALWAYS_INLINE bool IsManagedByPartitionAllocCorePools(uintptr_t address) {
   return internal::PartitionAddressSpace::IsInCorePools(address);
 }
-#endif  // BUILDFLAG(GLUE_CORE_POOLS)
+#endif  // PA_BUILDFLAG(GLUE_CORE_POOLS)
 
 // Returns false for nullptr.
 PA_ALWAYS_INLINE bool IsManagedByPartitionAllocConfigurablePool(
@@ -450,7 +450,7 @@ PA_ALWAYS_INLINE bool IsManagedByPartitionAllocConfigurablePool(
   return internal::PartitionAddressSpace::IsInConfigurablePool(address);
 }
 
-#if BUILDFLAG(ENABLE_THREAD_ISOLATION)
+#if PA_BUILDFLAG(ENABLE_THREAD_ISOLATION)
 // Returns false for nullptr.
 PA_ALWAYS_INLINE bool IsManagedByPartitionAllocThreadIsolatedPool(
     uintptr_t address) {
@@ -464,6 +464,6 @@ PA_ALWAYS_INLINE bool IsConfigurablePoolAvailable() {
 
 }  // namespace partition_alloc
 
-#endif  // BUILDFLAG(HAS_64_BIT_POINTERS)
+#endif  // PA_BUILDFLAG(HAS_64_BIT_POINTERS)
 
 #endif  // PARTITION_ALLOC_PARTITION_ADDRESS_SPACE_H_

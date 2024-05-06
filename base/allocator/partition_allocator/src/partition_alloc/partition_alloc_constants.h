@@ -23,7 +23,7 @@
 #include <mach/vm_page_size.h>
 #endif
 
-#if BUILDFLAG(HAS_MEMORY_TAGGING)
+#if PA_BUILDFLAG(HAS_MEMORY_TAGGING)
 #include "partition_alloc/tagging.h"
 #endif
 
@@ -286,13 +286,13 @@ enum pool_handle : unsigned {
 
   kRegularPoolHandle,
   kBRPPoolHandle,
-#if BUILDFLAG(HAS_64_BIT_POINTERS)
+#if PA_BUILDFLAG(HAS_64_BIT_POINTERS)
   kConfigurablePoolHandle,
 #endif
 
 // New pool_handles will be added here.
 
-#if BUILDFLAG(ENABLE_THREAD_ISOLATION)
+#if PA_BUILDFLAG(ENABLE_THREAD_ISOLATION)
   // The thread isolated pool must come last since we write-protect its entry in
   // the metadata tables, e.g. AddressPoolManager::aligned_pools_
   kThreadIsolatedPoolHandle,
@@ -314,19 +314,19 @@ constexpr size_t kNumPools = kMaxPoolHandle - 1;
 //
 // When pointer compression is enabled, we cannot use large pools (at most
 // 8GB for each of the glued pools).
-#if BUILDFLAG(HAS_64_BIT_POINTERS)
+#if PA_BUILDFLAG(HAS_64_BIT_POINTERS)
 #if BUILDFLAG(IS_ANDROID) || BUILDFLAG(IS_IOS) || \
-    BUILDFLAG(ENABLE_POINTER_COMPRESSION)
+    PA_BUILDFLAG(ENABLE_POINTER_COMPRESSION)
 constexpr size_t kPoolMaxSize = 8 * kGiB;
 #else
 constexpr size_t kPoolMaxSize = 16 * kGiB;
 #endif
-#else  // BUILDFLAG(HAS_64_BIT_POINTERS)
+#else  // PA_BUILDFLAG(HAS_64_BIT_POINTERS)
 constexpr size_t kPoolMaxSize = 4 * kGiB;
 #endif
 constexpr size_t kMaxSuperPagesInPool = kPoolMaxSize / kSuperPageSize;
 
-#if BUILDFLAG(ENABLE_THREAD_ISOLATION)
+#if PA_BUILDFLAG(ENABLE_THREAD_ISOLATION)
 static_assert(kThreadIsolatedPoolHandle == kNumPools,
               "The thread isolated pool must come last since we write-protect "
               "its metadata.");
@@ -338,7 +338,7 @@ static_assert(kThreadIsolatedPoolHandle == kNumPools,
 // of large areas which are less likely to benefit from MTE protection.
 constexpr size_t kMaxMemoryTaggingSize = 1024;
 
-#if BUILDFLAG(HAS_MEMORY_TAGGING)
+#if PA_BUILDFLAG(HAS_MEMORY_TAGGING)
 // Returns whether the tag of |object| overflowed, meaning the containing slot
 // needs to be moved to quarantine.
 PA_ALWAYS_INLINE bool HasOverflowTag(void* object) {
@@ -348,7 +348,7 @@ PA_ALWAYS_INLINE bool HasOverflowTag(void* object) {
                 "Overflow tag must be in tag bits");
   return (reinterpret_cast<uintptr_t>(object) & kPtrTagMask) == kOverflowTag;
 }
-#endif  // BUILDFLAG(HAS_MEMORY_TAGGING)
+#endif  // PA_BUILDFLAG(HAS_MEMORY_TAGGING)
 
 PA_ALWAYS_INLINE PAGE_ALLOCATOR_CONSTANTS_DECLARE_CONSTEXPR size_t
 NumPartitionPagesPerSuperPage() {
@@ -359,7 +359,7 @@ PA_ALWAYS_INLINE constexpr size_t MaxSuperPagesInPool() {
   return kMaxSuperPagesInPool;
 }
 
-#if BUILDFLAG(HAS_64_BIT_POINTERS)
+#if PA_BUILDFLAG(HAS_64_BIT_POINTERS)
 // In 64-bit mode, the direct map allocation granularity is super page size,
 // because this is the reservation granularity of the pools.
 PA_ALWAYS_INLINE constexpr size_t DirectMapAllocationGranularity() {
@@ -369,7 +369,7 @@ PA_ALWAYS_INLINE constexpr size_t DirectMapAllocationGranularity() {
 PA_ALWAYS_INLINE constexpr size_t DirectMapAllocationGranularityShift() {
   return kSuperPageShift;
 }
-#else   // BUILDFLAG(HAS_64_BIT_POINTERS)
+#else   // PA_BUILDFLAG(HAS_64_BIT_POINTERS)
 // In 32-bit mode, address space is space is a scarce resource. Use the system
 // allocation granularity, which is the lowest possible address space allocation
 // unit. However, don't go below partition page size, so that pool bitmaps
@@ -383,7 +383,7 @@ PA_ALWAYS_INLINE PAGE_ALLOCATOR_CONSTANTS_DECLARE_CONSTEXPR size_t
 DirectMapAllocationGranularityShift() {
   return std::max(PageAllocationGranularityShift(), PartitionPageShift());
 }
-#endif  // BUILDFLAG(HAS_64_BIT_POINTERS)
+#endif  // PA_BUILDFLAG(HAS_64_BIT_POINTERS)
 
 PA_ALWAYS_INLINE PAGE_ALLOCATOR_CONSTANTS_DECLARE_CONSTEXPR size_t
 DirectMapAllocationGranularityOffsetMask() {
@@ -470,7 +470,7 @@ constexpr size_t kBitsPerSizeT = sizeof(void*) * CHAR_BIT;
 // PurgeFlags::kDecommitEmptySlotSpans flag will eagerly decommit all entries
 // in the ring buffer, so with periodic purge enabled, this typically happens
 // every few seconds.
-#if BUILDFLAG(USE_LARGE_EMPTY_SLOT_SPAN_RING)
+#if PA_BUILDFLAG(USE_LARGE_EMPTY_SLOT_SPAN_RING)
 // USE_LARGE_EMPTY_SLOT_SPAN_RING results in two size. kMaxEmptyCacheIndexBits,
 // which is used when the renderer is in the foreground, and
 // kMinEmptyCacheIndexBits which is used when the renderer is in the background.

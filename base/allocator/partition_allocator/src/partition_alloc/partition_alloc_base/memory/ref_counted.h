@@ -28,12 +28,12 @@ class PA_COMPONENT_EXPORT(PARTITION_ALLOC_BASE) RefCountedThreadSafeBase {
   explicit constexpr RefCountedThreadSafeBase(StartRefCountFromZeroTag) {}
   explicit constexpr RefCountedThreadSafeBase(StartRefCountFromOneTag)
       : ref_count_(1) {
-#if BUILDFLAG(PA_DCHECK_IS_ON)
+#if PA_BUILDFLAG(PA_DCHECK_IS_ON)
     needs_adopt_ref_ = true;
 #endif
   }
 
-#if BUILDFLAG(PA_DCHECK_IS_ON)
+#if PA_BUILDFLAG(PA_DCHECK_IS_ON)
   ~RefCountedThreadSafeBase();
 #else
   ~RefCountedThreadSafeBase() = default;
@@ -59,14 +59,14 @@ class PA_COMPONENT_EXPORT(PARTITION_ALLOC_BASE) RefCountedThreadSafeBase {
   friend scoped_refptr<U> AdoptRef(U*);
 
   void Adopted() const {
-#if BUILDFLAG(PA_DCHECK_IS_ON)
+#if PA_BUILDFLAG(PA_DCHECK_IS_ON)
     PA_BASE_DCHECK(needs_adopt_ref_);
     needs_adopt_ref_ = false;
 #endif
   }
 
   PA_ALWAYS_INLINE void AddRefImpl() const {
-#if BUILDFLAG(PA_DCHECK_IS_ON)
+#if PA_BUILDFLAG(PA_DCHECK_IS_ON)
     PA_BASE_DCHECK(!in_dtor_);
     // This RefCounted object is created with non-zero reference count.
     // The first reference to such a object has to be made by AdoptRef or
@@ -77,7 +77,7 @@ class PA_COMPONENT_EXPORT(PARTITION_ALLOC_BASE) RefCountedThreadSafeBase {
   }
 
   PA_ALWAYS_INLINE void AddRefWithCheckImpl() const {
-#if BUILDFLAG(PA_DCHECK_IS_ON)
+#if PA_BUILDFLAG(PA_DCHECK_IS_ON)
     PA_BASE_DCHECK(!in_dtor_);
     // This RefCounted object is created with non-zero reference count.
     // The first reference to such a object has to be made by AdoptRef or
@@ -88,12 +88,12 @@ class PA_COMPONENT_EXPORT(PARTITION_ALLOC_BASE) RefCountedThreadSafeBase {
   }
 
   PA_ALWAYS_INLINE bool ReleaseImpl() const {
-#if BUILDFLAG(PA_DCHECK_IS_ON)
+#if PA_BUILDFLAG(PA_DCHECK_IS_ON)
     PA_BASE_DCHECK(!in_dtor_);
     PA_BASE_DCHECK(!ref_count_.IsZero());
 #endif
     if (!ref_count_.Decrement()) {
-#if BUILDFLAG(PA_DCHECK_IS_ON)
+#if PA_BUILDFLAG(PA_DCHECK_IS_ON)
       in_dtor_ = true;
 #endif
       return true;
@@ -102,7 +102,7 @@ class PA_COMPONENT_EXPORT(PARTITION_ALLOC_BASE) RefCountedThreadSafeBase {
   }
 
   mutable AtomicRefCount ref_count_{0};
-#if BUILDFLAG(PA_DCHECK_IS_ON)
+#if PA_BUILDFLAG(PA_DCHECK_IS_ON)
   mutable bool needs_adopt_ref_ = false;
   mutable bool in_dtor_ = false;
 #endif

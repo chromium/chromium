@@ -246,7 +246,7 @@ inline T& ts_unchecked_read(T& v) PA_NO_THREAD_SAFETY_ANALYSIS {
 
 // The above is imported as-is from abseil-cpp. The following Chromium-specific
 // synonyms are added for Chromium concepts (SequenceChecker/ThreadChecker).
-#if BUILDFLAG(PA_DCHECK_IS_ON)
+#if PA_BUILDFLAG(PA_DCHECK_IS_ON)
 
 // Equivalent to PA_GUARDED_BY for SequenceChecker/ThreadChecker. Currently,
 #define PA_GUARDED_BY_CONTEXT(name) PA_GUARDED_BY(name)
@@ -254,11 +254,11 @@ inline T& ts_unchecked_read(T& v) PA_NO_THREAD_SAFETY_ANALYSIS {
 // Equivalent to PA_EXCLUSIVE_LOCKS_REQUIRED for SequenceChecker/ThreadChecker.
 #define PA_VALID_CONTEXT_REQUIRED(name) PA_EXCLUSIVE_LOCKS_REQUIRED(name)
 
-#else  // BUILDFLAG(PA_DCHECK_IS_ON)
+#else  // PA_BUILDFLAG(PA_DCHECK_IS_ON)
 
 #define PA_GUARDED_BY_CONTEXT(name)
 #define PA_VALID_CONTEXT_REQUIRED(name)
 
-#endif  // BUILDFLAG(PA_DCHECK_IS_ON)
+#endif  // PA_BUILDFLAG(PA_DCHECK_IS_ON)
 
 #endif  // PARTITION_ALLOC_PARTITION_ALLOC_BASE_THREAD_ANNOTATIONS_H_

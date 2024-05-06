@@ -4,7 +4,7 @@
 
 #include "partition_alloc/thread_isolation/pkey.h"
 
-#if BUILDFLAG(ENABLE_PKEYS)
+#if PA_BUILDFLAG(ENABLE_PKEYS)
 
 #include <sys/mman.h>
 #include <sys/syscall.h>
@@ -61,7 +61,7 @@ void Wrpkru(uint32_t pkru) {
   asm volatile(".byte 0x0f,0x01,0xef\n" : : "a"(pkru), "c"(0), "d"(0));
 }
 
-#if BUILDFLAG(PA_DCHECK_IS_ON)
+#if PA_BUILDFLAG(PA_DCHECK_IS_ON)
 
 LiftPkeyRestrictionsScope::LiftPkeyRestrictionsScope()
     : saved_pkey_value_(kDefaultPkeyValue) {
@@ -83,8 +83,8 @@ LiftPkeyRestrictionsScope::~LiftPkeyRestrictionsScope() {
   }
 }
 
-#endif  // BUILDFLAG(PA_DCHECK_IS_ON)
+#endif  // PA_BUILDFLAG(PA_DCHECK_IS_ON)
 
 }  // namespace partition_alloc::internal
 
-#endif  // BUILDFLAG(ENABLE_PKEYS)
+#endif  // PA_BUILDFLAG(ENABLE_PKEYS)

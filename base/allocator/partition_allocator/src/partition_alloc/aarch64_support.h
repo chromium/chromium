@@ -35,7 +35,7 @@ constexpr bool IsBtiEnabled(uint64_t ifunc_hwcap,
 constexpr bool IsMteEnabled(uint64_t ifunc_hwcap,
                             struct __ifunc_arg_t* ifunc_hw) {
 #if defined(ARCH_CPU_ARM64) && defined(HAS_HW_CAPS) && \
-    BUILDFLAG(HAS_MEMORY_TAGGING)
+    PA_BUILDFLAG(HAS_MEMORY_TAGGING)
   return (ifunc_hwcap & _IFUNC_ARG_HWCAP) && (ifunc_hw->_hwcap2 & HWCAP2_MTE);
 #else
   return false;

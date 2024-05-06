@@ -14,7 +14,7 @@
 #include "partition_alloc/partition_alloc_base/component_export.h"
 #include "partition_alloc/partition_alloc_buildflags.h"
 
-#if BUILDFLAG(ENABLE_POINTER_COMPRESSION)
+#if PA_BUILDFLAG(ENABLE_POINTER_COMPRESSION)
 
 #if !BUILDFLAG(GLUE_CORE_POOLS)
 #error "Pointer compression only works with glued pools"
@@ -23,7 +23,7 @@
 #error "Pointer compression currently supports constant pool size"
 #endif
 
-#endif  // BUILDFLAG(ENABLE_POINTER_COMPRESSION)
+#endif  // PA_BUILDFLAG(ENABLE_POINTER_COMPRESSION)
 
 namespace partition_alloc {
 
@@ -33,7 +33,7 @@ template <typename T1, typename T2>
 constexpr bool IsDecayedSame =
     std::is_same_v<std::decay_t<T1>, std::decay_t<T2>>;
 
-#if BUILDFLAG(ENABLE_POINTER_COMPRESSION)
+#if PA_BUILDFLAG(ENABLE_POINTER_COMPRESSION)
 
 // Pointer compression works by storing only the 'useful' 32-bit part of the
 // pointer. The other half (the base) is stored in a global variable
@@ -118,11 +118,11 @@ class CompressedPointerBaseGlobal final {
   friend class PartitionAddressSpace;
 };
 
-#endif  // BUILDFLAG(ENABLE_POINTER_COMPRESSION)
+#endif  // PA_BUILDFLAG(ENABLE_POINTER_COMPRESSION)
 
 }  // namespace internal
 
-#if BUILDFLAG(ENABLE_POINTER_COMPRESSION)
+#if PA_BUILDFLAG(ENABLE_POINTER_COMPRESSION)
 
 template <typename T>
 class PA_TRIVIAL_ABI CompressedPointer final {
@@ -232,7 +232,7 @@ class PA_TRIVIAL_ABI CompressedPointer final {
     static constexpr size_t kMinimalRequiredAlignment = 8;
     static_assert((1 << kOverallBitsToShift) == kMinimalRequiredAlignment);
 
-#if BUILDFLAG(PA_DCHECK_IS_ON)
+#if PA_BUILDFLAG(PA_DCHECK_IS_ON)
     PA_DCHECK(reinterpret_cast<uintptr_t>(ptr) % kMinimalRequiredAlignment ==
               0);
     PA_DCHECK(internal::CompressedPointerBaseGlobal::IsSet());
@@ -243,7 +243,7 @@ class PA_TRIVIAL_ABI CompressedPointer final {
     PA_DCHECK(!ptr ||
               (base & kCorePoolsBaseMask) ==
                   (reinterpret_cast<uintptr_t>(ptr) & kCorePoolsBaseMask));
-#endif  // BUILDFLAG(PA_DCHECK_IS_ON)
+#endif  // PA_BUILDFLAG(PA_DCHECK_IS_ON)
 
     const auto uptr = reinterpret_cast<uintptr_t>(ptr);
     // Shift the pointer and truncate.
@@ -444,7 +444,7 @@ PA_ALWAYS_INLINE constexpr bool operator>=(T* a, CompressedPointer<U> b) {
   return static_cast<CompressedPointer<T>>(a) >= b;
 }
 
-#endif  // BUILDFLAG(ENABLE_POINTER_COMPRESSION)
+#endif  // PA_BUILDFLAG(ENABLE_POINTER_COMPRESSION)
 
 // Simple wrapper over the raw pointer.
 template <typename T>

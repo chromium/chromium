@@ -7,7 +7,7 @@
 
 #include "partition_alloc/partition_alloc_buildflags.h"
 
-#if BUILDFLAG(ENABLE_THREAD_ISOLATION)
+#if PA_BUILDFLAG(ENABLE_THREAD_ISOLATION)
 
 #include <cstddef>
 #include <cstdint>
@@ -15,7 +15,7 @@
 #include "partition_alloc/partition_alloc_base/component_export.h"
 #include "partition_alloc/partition_alloc_base/debug/debugging_buildflags.h"
 
-#if BUILDFLAG(ENABLE_PKEYS)
+#if PA_BUILDFLAG(ENABLE_PKEYS)
 #include "partition_alloc/thread_isolation/pkey.h"
 #endif
 
@@ -29,21 +29,21 @@ struct ThreadIsolationOption {
   constexpr ThreadIsolationOption() = default;
   explicit ThreadIsolationOption(bool enabled) : enabled(enabled) {}
 
-#if BUILDFLAG(ENABLE_PKEYS)
+#if PA_BUILDFLAG(ENABLE_PKEYS)
   explicit ThreadIsolationOption(int pkey) : pkey(pkey) {
     enabled = pkey != internal::kInvalidPkey;
   }
   int pkey = -1;
-#endif  // BUILDFLAG(ENABLE_PKEYS)
+#endif  // PA_BUILDFLAG(ENABLE_PKEYS)
 
   bool enabled = false;
 
   bool operator==(const ThreadIsolationOption& other) const {
-#if BUILDFLAG(ENABLE_PKEYS)
+#if PA_BUILDFLAG(ENABLE_PKEYS)
     if (pkey != other.pkey) {
       return false;
     }
-#endif  // BUILDFLAG(ENABLE_PKEYS)
+#endif  // PA_BUILDFLAG(ENABLE_PKEYS)
     return enabled == other.enabled;
   }
 };
@@ -52,19 +52,19 @@ struct ThreadIsolationOption {
 
 namespace partition_alloc::internal {
 
-#if BUILDFLAG(PA_DCHECK_IS_ON)
+#if PA_BUILDFLAG(PA_DCHECK_IS_ON)
 
 struct PA_THREAD_ISOLATED_ALIGN ThreadIsolationSettings {
   bool enabled = false;
   static ThreadIsolationSettings settings PA_CONSTINIT;
 };
 
-#if BUILDFLAG(ENABLE_PKEYS)
+#if PA_BUILDFLAG(ENABLE_PKEYS)
 
 using LiftThreadIsolationScope = LiftPkeyRestrictionsScope;
 
-#endif  // BUILDFLAG(ENABLE_PKEYS)
-#endif  // BUILDFLAG(PA_DCHECK_IS_ON)
+#endif  // PA_BUILDFLAG(ENABLE_PKEYS)
+#endif  // PA_BUILDFLAG(PA_DCHECK_IS_ON)
 
 void WriteProtectThreadIsolatedGlobals(ThreadIsolationOption thread_isolation);
 void UnprotectThreadIsolatedGlobals();
@@ -76,6 +76,6 @@ void UnprotectThreadIsolatedGlobals();
 
 }  // namespace partition_alloc::internal
 
-#endif  // BUILDFLAG(ENABLE_THREAD_ISOLATION)
+#endif  // PA_BUILDFLAG(ENABLE_THREAD_ISOLATION)
 
 #endif  // PARTITION_ALLOC_THREAD_ISOLATION_THREAD_ISOLATION_H_

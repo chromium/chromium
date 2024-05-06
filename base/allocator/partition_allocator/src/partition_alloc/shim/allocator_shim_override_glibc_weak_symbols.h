@@ -22,7 +22,7 @@
 
 #include "partition_alloc/partition_alloc_buildflags.h"
 
-#if BUILDFLAG(USE_ALLOCATOR_SHIM)
+#if PA_BUILDFLAG(USE_ALLOCATOR_SHIM)
 #include <features.h>  // for __GLIBC__
 #include <malloc.h>
 #include <unistd.h>
@@ -123,6 +123,6 @@ SHIM_ALWAYS_EXPORT int __posix_memalign(void** r, size_t a, size_t s) {
 shim by setting use_allocator_shim=false in GN args.
 #endif
 
-#endif  // BUILDFLAG(USE_ALLOCATOR_SHIM)
+#endif  // PA_BUILDFLAG(USE_ALLOCATOR_SHIM)
 
 #endif  // PARTITION_ALLOC_SHIM_ALLOCATOR_SHIM_OVERRIDE_GLIBC_WEAK_SYMBOLS_H_

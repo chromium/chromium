@@ -185,7 +185,7 @@ class PA_COMPONENT_EXPORT(PARTITION_ALLOC_BASE) NotImplemented
 
 #endif
 
-#if BUILDFLAG(PA_DCHECK_IS_ON)
+#if PA_BUILDFLAG(PA_DCHECK_IS_ON)
 
 #define PA_BASE_DCHECK(condition)                                \
   PA_LAZY_CHECK_STREAM(                                          \

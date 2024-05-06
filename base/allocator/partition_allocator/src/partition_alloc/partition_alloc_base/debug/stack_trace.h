@@ -15,7 +15,7 @@
 namespace partition_alloc::internal::base::debug {
 
 // Returns end of the stack, or 0 if we couldn't get it.
-#if BUILDFLAG(PA_CAN_UNWIND_WITH_FRAME_POINTERS)
+#if PA_BUILDFLAG(PA_CAN_UNWIND_WITH_FRAME_POINTERS)
 PA_COMPONENT_EXPORT(PARTITION_ALLOC_BASE)
 uintptr_t GetStackEnd();
 #endif
@@ -37,7 +37,7 @@ void OutputStackTrace(unsigned index,
                       uintptr_t offset);
 #endif
 
-#if BUILDFLAG(PA_CAN_UNWIND_WITH_FRAME_POINTERS)
+#if PA_BUILDFLAG(PA_CAN_UNWIND_WITH_FRAME_POINTERS)
 
 // For stack scanning to be efficient it's very important for the thread to
 // be started by Chrome. In that case we naturally terminate unwinding once
@@ -67,7 +67,7 @@ size_t TraceStackFramePointers(const void** out_trace,
                                size_t skip_initial,
                                bool enable_scanning = kEnableScanningByDefault);
 
-#endif  // BUILDFLAG(PA_CAN_UNWIND_WITH_FRAME_POINTERS)
+#endif  // PA_BUILDFLAG(PA_CAN_UNWIND_WITH_FRAME_POINTERS)
 
 }  // namespace partition_alloc::internal::base::debug
 
