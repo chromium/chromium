@@ -1463,3 +1463,6 @@ crbug.com/328860404 virtual/disable-intersection-optimization/external/wpt/html/
 crbug.com/328849073 virtual/no-auto-wpt-origin-isolation/external/wpt/html/semantics/embedded-content/the-iframe-element/sandbox-top-navigation-escalate-privileges.tentative.sub.window.html [ Slow ]
 
 crbug.com/328501805 external/wpt/html/semantics/interactive-elements/the-summary-element/interactive-content.html [ Slow ]
+
+# Slow because it waits for an asynchronous operation to complete, leading to potential timeouts if the operation takes too long.
+crbug.com/338556791 external/wpt/fledge/tentative/service-worker-request-visibility.https.window.js [ Slow ]
