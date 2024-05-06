@@ -5,6 +5,7 @@
 #include "components/plus_addresses/affiliations/plus_address_affiliation_match_helper.h"
 
 #include "components/affiliations/core/browser/affiliation_service.h"
+#include "components/plus_addresses/features.h"
 #include "components/plus_addresses/plus_address_service.h"
 #include "components/plus_addresses/plus_address_types.h"
 
@@ -22,6 +23,12 @@ PlusAddressAffiliationMatchHelper::~PlusAddressAffiliationMatchHelper() =
 void PlusAddressAffiliationMatchHelper::GetAffiliatedPlusProfiles(
     const PlusProfile& plus_profile,
     AffiliatedPlusProfilesCallback result_callback) {
+  if (!base::FeatureList::IsEnabled(
+          plus_addresses::features::kPlusAddressAffiliations)) {
+    std::move(result_callback).Run({plus_profile});
+    return;
+  }
+
   // TODO(b/324553908): Complete.
 }
 
