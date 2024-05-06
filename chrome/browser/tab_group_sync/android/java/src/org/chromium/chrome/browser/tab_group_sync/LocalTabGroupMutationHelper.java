@@ -148,6 +148,8 @@ public class LocalTabGroupMutationHelper {
 
         // Update the remaining tabs. If the tab is already there, ensure its URL is up-to-date.
         // If the tab doesn't exist yet, create a new one.
+        // Note, root ID might have changed due to the close operations. Query it again.
+        rootId = TabGroupSyncUtils.getRootId(mTabGroupModelFilter, tabGroup.localId);
         tabs = mTabGroupModelFilter.getRelatedTabListForRootId(rootId);
         int groupStartIndex = TabModelUtils.getTabIndexById(getTabModel(), tabs.get(0).getId());
         Tab parent = tabs.get(0);
