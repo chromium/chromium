@@ -40,6 +40,7 @@
 #include "ash/wm/overview/overview_test_util.h"
 #include "ash/wm/splitview/split_view_constants.h"
 #include "ash/wm/splitview/split_view_divider.h"
+#include "ash/wm/splitview/split_view_divider_view.h"
 #include "ash/wm/splitview/split_view_drag_indicators.h"
 #include "ash/wm/splitview/split_view_metrics_controller.h"
 #include "ash/wm/splitview/split_view_overview_session.h"
@@ -71,6 +72,7 @@
 #include "ui/compositor_extra/shadow.h"
 #include "ui/display/screen.h"
 #include "ui/display/test/display_manager_test_api.h"
+#include "ui/events/base_event_utils.h"
 #include "ui/events/test/event_generator.h"
 #include "ui/gfx/geometry/point_conversions.h"
 #include "ui/views/bubble/bubble_dialog_delegate_view.h"
@@ -591,6 +593,62 @@ TEST_F(SplitViewControllerTest,
       static_cast<float>(window2->GetBoundsInScreen().width() + divider_delta) /
           work_area.width(),
       0.5f);
+}
+
+// Verify that dragging the divider to the edge of the display to trigger
+// `SplitViewDividerView::EndResizing()` and tapping it does not cause a crash.
+// See regression at http://b/338665640.
+TEST_F(SplitViewControllerTest,
+       NoCrashWhenDraggingDividerOutOfScreenAndTapDivider) {
+  UpdateDisplay("900x600");
+  SplitViewController* controller = split_view_controller();
+  std::unique_ptr<aura::Window> window1(
+      CreateWindow(gfx::Rect(0, 0, 520, 500)));
+  std::unique_ptr<aura::Window> window2(
+      CreateWindow(gfx::Rect(200, 100, 520, 200)));
+  EXPECT_FALSE(controller->IsWindowInSplitView(window1.get()));
+
+  controller->SnapWindow(window1.get(), SnapPosition::kPrimary,
+                         WindowSnapActionSource::kSnapByWindowLayoutMenu,
+                         /*activate_window=*/false,
+                         chromeos::kDefaultSnapRatio);
+  EXPECT_EQ(SplitViewController::State::kPrimarySnapped, controller->state());
+  OverviewController* overview_controller = OverviewController::Get();
+  ASSERT_TRUE(overview_controller->InOverviewSession());
+  OverviewSession* overview_session = overview_controller->overview_session();
+  ASSERT_TRUE(overview_session);
+
+  auto* event_generator = GetEventGenerator();
+  event_generator->PressTouch(gfx::ToRoundedPoint(
+      overview_session->GetOverviewItemForWindow(window2.get())
+          ->target_bounds()
+          .CenterPoint()));
+  event_generator->ReleaseTouch();
+  EXPECT_EQ(SplitViewController::State::kBothSnapped, controller->state());
+
+  SplitViewDivider* divider = split_view_divider();
+  auto* divider_Widget = divider->divider_widget();
+  EXPECT_TRUE(divider_Widget);
+
+  // Use the initial tap to move the divider to the edge of the screen.
+  event_generator->PressTouchId(
+      /*touch_id=*/0,
+      divider->GetDividerBoundsInScreen(/*is_dragging=*/false).CenterPoint());
+  event_generator->MoveTouchId(gfx::Point(-10, 0), 0);
+  ASSERT_TRUE(divider);
+  auto* divider_view = divider->divider_view_for_testing();
+  ASSERT_TRUE(divider_view);
+  ui::GestureEvent gesture_end(0, 0, 0, ui::EventTimeForNow(),
+                               ui::GestureEventDetails(ui::ET_GESTURE_END));
+  divider->divider_view_for_testing()->OnGestureEvent(&gesture_end);
+
+  // Trigger a second tap, using a different `touch_id` for this tap, to
+  // simulate the crash scenario.
+  event_generator->PressTouchId(
+      /*touch_id=*/1,
+      divider->GetDividerBoundsInScreen(/*is_dragging=*/true).CenterPoint());
+  event_generator->ReleaseTouchId(1);
+  EXPECT_FALSE(controller->InSplitViewMode());
 }
 
 // Tests that when creating a new window while dragging the divider there will

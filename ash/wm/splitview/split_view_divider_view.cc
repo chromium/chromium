@@ -228,11 +228,16 @@ void SplitViewDividerView::OnGestureEvent(ui::GestureEvent* event) {
       divider_->EnlargeOrShrinkDivider(/*should_enlarge=*/false);
       RefreshFeedbackButton(/*visible=*/false);
       break;
-    case ui::ET_GESTURE_END:
+    case ui::ET_GESTURE_END: {
       EndResizing(location, /*swap_windows=*/false);
-      divider_->EnlargeOrShrinkDivider(/*should_enlarge=*/false);
+
+      // `EndResizing()` may set `divider_` to nullptr and causing crash.
+      if (divider_) {
+        divider_->EnlargeOrShrinkDivider(/*should_enlarge=*/false);
+      }
       RefreshFeedbackButton(/*visible=*/true);
       break;
+    }
 
     default:
       break;
