@@ -309,6 +309,10 @@ chromium-metrics-reviews@google.com.
   <int value="22" label="Custom color clicked"/>
 </enum>
 
+<enum name="NTPCustomizeChromeSidePanelImpression">
+  <int value="0" label="Extensions card section displayed"/>
+</enum>
+
 <enum name="NTPCustomizedFeatures">
   <int value="0" label="Background customized"/>
   <int value="1" label="Shortcut customized"/>
