@@ -124,6 +124,9 @@ export interface PrintTicket {
   // Whether to print full document or selected section.
   shouldPrintSelectionOnly: boolean;
 
+  // Additional vendor/advance job configuration such as 'job-sheet'.
+  advancedSettings?: Map<string, any>;
+
   // Whether media should use borderless variant.
   borderless: boolean;
 

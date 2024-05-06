@@ -434,6 +434,9 @@ suite('PrintTicketManager', () => {
         } as PrintTicket;
         const ticket = instance.getPrintTicketForTesting() as PrintTicket;
         assertEquals(
+            undefined, ticket.advancedSettings,
+            'Ticket advancedSettings optional property should not be set');
+        assertEquals(
             DEFAULT_PARTIAL_PRINT_TICKET.borderless, ticket.borderless,
             'Ticket borderless should match DEFAULT_PARTIAL_PRINT_TICKET');
         assertEquals(
