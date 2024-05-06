@@ -347,21 +347,20 @@ public class MainSettings extends ChromeBaseSettingsFragment
                                 .getIdentityManager(getProfile())
                                 .getPrimaryAccountInfo(ConsentLevel.SIGNIN));
 
-        SyncService syncService = SyncServiceFactory.getForProfile(getProfile());
-
-        boolean showManageSync =
-                primaryAccountName != null
-                        && (!ChromeFeatureList.isEnabled(
-                                        ChromeFeatureList.REPLACE_SYNC_PROMOS_WITH_SIGN_IN_PROMOS)
-                                || syncService.hasSyncConsent());
-        mManageSync.setVisible(showManageSync);
-        if (!showManageSync) return;
-
+        // TODO(crbug.com/40067770): Remove usage of ConsentLevel.SYNC after kSync users are
+        // migrated to kSignin in phase 3. See ConsentLevel::kSync documentation for details.
         boolean isSyncConsentAvailable =
                 IdentityServicesProvider.get()
                                 .getIdentityManager(getProfile())
                                 .getPrimaryAccountInfo(ConsentLevel.SYNC)
                         != null;
+        boolean showManageSync =
+                primaryAccountName != null
+                        && (!ChromeFeatureList.isEnabled(
+                                        ChromeFeatureList.REPLACE_SYNC_PROMOS_WITH_SIGN_IN_PROMOS)
+                                || isSyncConsentAvailable);
+        mManageSync.setVisible(showManageSync);
+        if (!showManageSync) return;
 
         mManageSync.setIcon(SyncSettingsUtils.getSyncStatusIcon(getActivity(), getProfile()));
         mManageSync.setSummary(SyncSettingsUtils.getSyncStatusSummary(getActivity(), getProfile()));
@@ -376,6 +375,10 @@ public class MainSettings extends ChromeBaseSettingsFragment
                         SettingsLauncher settingsLauncher = new SettingsLauncherImpl();
                         settingsLauncher.launchSettingsActivity(context, ManageSyncSettings.class);
                     } else {
+                        // TODO(crbug.com/40067770): Remove after rolling out
+                        // REPLACE_SYNC_PROMOS_WITH_SIGN_IN_PROMOS.
+                        assert !ChromeFeatureList.isEnabled(
+                                ChromeFeatureList.REPLACE_SYNC_PROMOS_WITH_SIGN_IN_PROMOS);
                         SyncConsentActivityLauncherImpl.get()
                                 .launchActivityForPromoDefaultFlow(
                                         context,
