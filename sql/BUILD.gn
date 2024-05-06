@@ -2,7 +2,6 @@
 # Use of this source code is governed by a BSD-style license that can be
 # found in the LICENSE file.
 
-import("//testing/libfuzzer/fuzzer_test.gni")
 import("//testing/test.gni")
 
 component("sql") {
@@ -119,17 +118,6 @@ test("sql_unittests") {
     "//testing/gtest",
     "//third_party/sqlite",
   ]
-}
-
-fuzzer_test("sql_recovery_fuzzer") {
-  sources = [ "recovery_fuzzer.cc" ]
-  deps = [
-    ":sql",
-    "//base",
-    "//base/test:test_support",
-  ]
-
-  libfuzzer_options = [ "rss_limit_mb=4096" ]
 }
 
 group("fuzzers") {
