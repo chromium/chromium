@@ -375,6 +375,16 @@ void TabGroupSyncServiceImpl::HandleTabGroupRemoved(
   }
 }
 
+void TabGroupSyncServiceImpl::SavedTabGroupLocalIdChanged(
+    const base::Uuid& group_guid) {
+  VLOG(2) << __func__;
+  const SavedTabGroup* saved_tab_group = model_->Get(group_guid);
+  CHECK(saved_tab_group);
+  for (auto& observer : observers_) {
+    observer.OnTabGroupUpdated(*saved_tab_group, TriggerSource::LOCAL);
+  }
+}
+
 void TabGroupSyncServiceImpl::SavedTabGroupModelLoaded() {
   VLOG(2) << __func__;
 

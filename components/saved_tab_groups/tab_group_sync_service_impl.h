@@ -107,6 +107,7 @@ class TabGroupSyncServiceImpl : public TabGroupSyncService,
   void SavedTabGroupRemovedFromSync(
       const SavedTabGroup* removed_group) override;
   void SavedTabGroupRemovedLocally(const SavedTabGroup* removed_group) override;
+  void SavedTabGroupLocalIdChanged(const base::Uuid& saved_group_id) override;
   void SavedTabGroupModelLoaded() override;
 
   // Called on reading ID mapping from tab group store.

@@ -563,6 +563,11 @@ void SavedTabGroupModel::OnGroupClosedInTabStrip(
   SavedTabGroup& saved_group = saved_tab_groups_[index.value()];
   saved_group.SetLocalGroupId(std::nullopt);
 
+  // Remove the ID mappings from the tabs as well, since the group is closed.
+  for (SavedTabGroupTab& saved_tab : saved_group.saved_tabs()) {
+    saved_tab.SetLocalTabID(std::nullopt);
+  }
+
   for (auto& observer : observers_) {
     observer.SavedTabGroupLocalIdChanged(saved_group.saved_guid());
   }

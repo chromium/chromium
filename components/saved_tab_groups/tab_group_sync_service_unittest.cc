@@ -528,6 +528,35 @@ TEST_F(TabGroupSyncServiceTest, OnTabGroupUpdatedFromLocalSource) {
   model_->UpdateVisualData(group_1_.saved_guid(), &visual_data);
 }
 
+TEST_F(TabGroupSyncServiceTest, OnTabGroupUpdatedOnTabGroupIdMappingChange) {
+  // Close a group.
+  EXPECT_CALL(*observer_, OnTabGroupUpdated(UuidEq(group_1_.saved_guid()),
+                                            Eq(TriggerSource::LOCAL)))
+      .Times(1);
+  model_->OnGroupClosedInTabStrip(local_group_id_1_);
+
+  // Open a group.
+  EXPECT_CALL(*observer_, OnTabGroupUpdated(UuidEq(group_2_.saved_guid()),
+                                            Eq(TriggerSource::LOCAL)))
+      .Times(1);
+  model_->OnGroupOpenedInTabStrip(group_2_.saved_guid(),
+                                  test::GenerateRandomTabGroupID());
+}
+
+TEST_F(TabGroupSyncServiceTest, TabIDMappingIsCleardOnGroupClose) {
+  auto group = tab_group_sync_service_->GetGroup(group_1_.saved_guid());
+  EXPECT_TRUE(group->local_group_id().has_value());
+  EXPECT_TRUE(group->saved_tabs()[0].local_tab_id().has_value());
+
+  // Close a group.
+  model_->OnGroupClosedInTabStrip(local_group_id_1_);
+
+  // Verify that tab IDs are unmapped.
+  group = tab_group_sync_service_->GetGroup(group_1_.saved_guid());
+  EXPECT_FALSE(group->local_group_id().has_value());
+  EXPECT_FALSE(group->saved_tabs()[0].local_tab_id().has_value());
+}
+
 TEST_F(TabGroupSyncServiceTest, OnTabGroupAddedNoTabs) {
   // Create a group with no tabs. Observers won't be notified.
   SavedTabGroup group_4 = test::CreateTestSavedTabGroupWithNoTabs();
