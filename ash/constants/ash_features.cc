@@ -1457,7 +1457,11 @@ BASE_FEATURE(kHibernate, "Hibernate", base::FEATURE_DISABLED_BY_DEFAULT);
 // Enables image search for productivity launcher.
 BASE_FEATURE(kProductivityLauncherImageSearch,
              "ProductivityLauncherImageSearch",
+#if BUILDFLAG(ENABLE_MERGE_REQUEST)
+             base::FEATURE_ENABLED_BY_DEFAULT);
+#else   //  BUILDFLAG(ENABLE_MERGE_REQUEST)
              base::FEATURE_DISABLED_BY_DEFAULT);
+#endif  // !BUILDFLAG(ENABLE_MERGE_REQUEST)
 
 // Enables a warning about connecting to hidden WiFi networks.
 // https://crbug.com/903908
@@ -1816,6 +1820,15 @@ BASE_FEATURE(kLauncherNudgeSessionReset,
 // If enabled, the launcher will only provide results based on the user control.
 BASE_FEATURE(kLauncherSearchControl,
              "LauncherSearchControl",
+#if BUILDFLAG(ENABLE_MERGE_REQUEST)
+             base::FEATURE_ENABLED_BY_DEFAULT);
+#else   //  BUILDFLAG(ENABLE_MERGE_REQUEST)
+             base::FEATURE_DISABLED_BY_DEFAULT);
+#endif  // !BUILDFLAG(ENABLE_MERGE_REQUEST)
+
+// Segmentation flag for local image search.
+BASE_FEATURE(kFeatureManagementLocalImageSearch,
+             "FeatureManagementLocalImageSearch",
              base::FEATURE_DISABLED_BY_DEFAULT);
 
 // Enables new flow for license packaged devices with enterprise license.
@@ -3888,7 +3901,8 @@ bool IsLauncherNudgeSessionResetEnabled() {
 }
 
 bool IsLauncherSearchControlEnabled() {
-  return base::FeatureList::IsEnabled(kLauncherSearchControl);
+  return base::FeatureList::IsEnabled(kLauncherSearchControl) &&
+         base::FeatureList::IsEnabled(kFeatureManagementLocalImageSearch);
 }
 
 bool IsLicensePackagedOobeFlowEnabled() {
@@ -3937,7 +3951,8 @@ bool IsLockScreenNotificationsEnabled() {
 }
 
 bool IsProductivityLauncherImageSearchEnabled() {
-  return base::FeatureList::IsEnabled(kProductivityLauncherImageSearch);
+  return base::FeatureList::IsEnabled(kProductivityLauncherImageSearch) &&
+         base::FeatureList::IsEnabled(kFeatureManagementLocalImageSearch);
 }
 
 bool IsMacAddressRandomizationEnabled() {

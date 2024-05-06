@@ -193,7 +193,8 @@ class SpokenFeedbackAppListBaseTest : public LoggedInSpokenFeedbackTest {
 
     scoped_feature_list_.InitWithFeatures(
         {features::kProductivityLauncherImageSearch,
-         features::kLauncherSearchControl},
+         features::kLauncherSearchControl,
+         features::kFeatureManagementLocalImageSearch},
         {});
 
     LoggedInSpokenFeedbackTest::SetUp();

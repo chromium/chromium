@@ -3953,6 +3953,7 @@ static_library("ui") {
       "//chromeos/components/editor_menu/public/cpp",
       "//chromeos/components/in_session_auth",
       "//chromeos/components/kiosk",
+      "//chromeos/components/libsegmentation:buildflags",
       "//chromeos/components/mahi/public/cpp:cpp",
       "//chromeos/components/mgs",
       "//chromeos/components/onc",

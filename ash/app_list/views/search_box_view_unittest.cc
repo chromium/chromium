@@ -688,7 +688,9 @@ class SearchBoxViewFilterButtonTest : public SearchBoxViewTest {
   SearchBoxViewFilterButtonTest() {
     scoped_feature_list_.Reset();
     scoped_feature_list_.InitWithFeatures(
-        {chromeos::features::kJelly, features::kLauncherSearchControl}, {});
+        {chromeos::features::kJelly, features::kLauncherSearchControl,
+         features::kFeatureManagementLocalImageSearch},
+        {});
   }
   SearchBoxViewFilterButtonTest(const SearchBoxViewFilterButtonTest&) = delete;
   SearchBoxViewFilterButtonTest& operator=(

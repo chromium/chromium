@@ -345,8 +345,10 @@ TEST_F(OmniboxLacrosProviderTest, WebSearchControl) {
   auto search_producer = std::make_unique<TestSearchResultProducer>();
   RegisterSearchController(search_producer->BindToRemote());
   base::test::ScopedFeatureList scoped_feature_list_;
-  scoped_feature_list_.InitAndEnableFeature(
-      ash::features::kLauncherSearchControl);
+  scoped_feature_list_.InitWithFeatures(
+      {ash::features::kLauncherSearchControl,
+       ash::features::kFeatureManagementLocalImageSearch},
+      {});
   DisableWebSearch();
 
   StartSearch(u"query");
