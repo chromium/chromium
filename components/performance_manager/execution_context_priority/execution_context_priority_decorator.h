@@ -13,6 +13,7 @@
 #include "components/performance_manager/execution_context_priority/frame_capturing_media_stream_voter.h"
 #include "components/performance_manager/execution_context_priority/frame_visibility_voter.h"
 #include "components/performance_manager/execution_context_priority/inherit_client_priority_voter.h"
+#include "components/performance_manager/execution_context_priority/loading_page_voter.h"
 #include "components/performance_manager/execution_context_priority/max_vote_aggregator.h"
 #include "components/performance_manager/execution_context_priority/override_vote_aggregator.h"
 #include "components/performance_manager/execution_context_priority/root_vote_observer.h"
@@ -74,6 +75,9 @@ class ExecutionContextPriorityDecorator final : public GraphOwned {
 
   // Casts a vote for each child worker with the client's priority.
   InheritClientPriorityVoter inherit_client_priority_voter_;
+
+  // Casts a USER_VISIBLE vote for all frames in a loading page.
+  LoadingPageVoter loading_page_voter_;
 
 #if BUILDFLAG(IS_MAC)
   //  Boosts the priority of non-ad child frames.

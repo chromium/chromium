@@ -4,6 +4,7 @@
 
 #include "components/performance_manager/execution_context_priority/execution_context_priority_decorator.h"
 
+#include "base/feature_list.h"
 #include "components/performance_manager/public/execution_context/execution_context_registry.h"
 #include "components/performance_manager/public/features.h"
 
@@ -61,6 +62,7 @@ ExecutionContextPriorityDecorator::ExecutionContextPriorityDecorator() {
       max_vote_aggregator_.GetVotingChannel());
   inherit_client_priority_voter_.SetVotingChannel(
       max_vote_aggregator_.GetVotingChannel());
+  loading_page_voter_.SetVotingChannel(max_vote_aggregator_.GetVotingChannel());
 }
 
 ExecutionContextPriorityDecorator::~ExecutionContextPriorityDecorator() =
@@ -76,6 +78,10 @@ void ExecutionContextPriorityDecorator::OnPassedToGraph(Graph* graph) {
   graph->AddInitializingFrameNodeObserver(&frame_capturing_media_stream_voter_);
   graph->AddFrameNodeObserver(&inherit_client_priority_voter_);
   graph->AddWorkerNodeObserver(&inherit_client_priority_voter_);
+  if (base::FeatureList::IsEnabled(features::kPMLoadingPageVoter)) {
+    graph->AddPageNodeObserver(&loading_page_voter_);
+    graph->AddInitializingFrameNodeObserver(&loading_page_voter_);
+  }
 #if BUILDFLAG(IS_MAC)
   if (features::kBoostChildFrames.Get()) {
     graph->AddInitializingFrameNodeObserver(child_frame_booster_.get());
@@ -90,6 +96,10 @@ void ExecutionContextPriorityDecorator::OnTakenFromGraph(Graph* graph) {
     graph->RemoveInitializingFrameNodeObserver(child_frame_booster_.get());
   }
 #endif
+  if (base::FeatureList::IsEnabled(features::kPMLoadingPageVoter)) {
+    graph->RemoveInitializingFrameNodeObserver(&loading_page_voter_);
+    graph->RemovePageNodeObserver(&loading_page_voter_);
+  }
   graph->RemoveWorkerNodeObserver(&inherit_client_priority_voter_);
   graph->RemoveFrameNodeObserver(&inherit_client_priority_voter_);
   graph->RemoveInitializingFrameNodeObserver(

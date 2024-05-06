@@ -135,6 +135,10 @@ const base::FeatureParam<bool> kBoostChildFrames{&kPMProcessPriorityPolicy,
 const base::FeatureParam<bool> kDownvoteAdFrames{&kPMProcessPriorityPolicy,
                                                  "downvote_ad_frames", false};
 
+BASE_FEATURE(kPMLoadingPageVoter,
+             "PMLoadingPageVoter",
+             base::FEATURE_DISABLED_BY_DEFAULT);
+
 BASE_FEATURE(kModalMemorySaver,
              "ModalMemorySaver",
              base::FEATURE_ENABLED_BY_DEFAULT);

@@ -137,6 +137,8 @@ extern const base::FeatureParam<bool> kBoostChildFrames;
 
 extern const base::FeatureParam<bool> kDownvoteAdFrames;
 
+BASE_DECLARE_FEATURE(kPMLoadingPageVoter);
+
 // When enabled, Memory Saver supports the different modes defined in the
 // `ModalMemorySaverMode` enum.
 BASE_DECLARE_FEATURE(kModalMemorySaver);
