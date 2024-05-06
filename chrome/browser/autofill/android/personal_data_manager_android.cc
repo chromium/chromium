@@ -24,6 +24,7 @@
 #include "chrome/browser/browser_process.h"
 #include "chrome/browser/profiles/profile.h"
 #include "chrome/common/pref_names.h"
+#include "components/autofill/core/browser/address_data_manager.h"
 #include "components/autofill/core/browser/autofill_data_util.h"
 #include "components/autofill/core/browser/autofill_experiments.h"
 #include "components/autofill/core/browser/autofill_type.h"
@@ -250,9 +251,9 @@ ScopedJavaLocalRef<jstring> PersonalDataManagerAndroid::SetProfile(
       g_browser_process->GetApplicationLocale());
 
   if (guid.empty()) {
-    personal_data_manager_->AddProfile(profile);
+    personal_data_manager_->address_data_manager().AddProfile(profile);
   } else {
-    personal_data_manager_->UpdateProfile(profile);
+    personal_data_manager_->address_data_manager().UpdateProfile(profile);
   }
 
   return ConvertUTF8ToJavaString(env, profile.guid());
@@ -269,9 +270,9 @@ ScopedJavaLocalRef<jstring> PersonalDataManagerAndroid::SetProfileToLocal(
       jprofile, target_profile, g_browser_process->GetApplicationLocale());
 
   if (target_profile != nullptr) {
-    personal_data_manager_->UpdateProfile(profile);
+    personal_data_manager_->address_data_manager().UpdateProfile(profile);
   } else {
-    personal_data_manager_->AddProfile(profile);
+    personal_data_manager_->address_data_manager().AddProfile(profile);
   }
 
   return ConvertUTF8ToJavaString(env, profile.guid());
@@ -535,7 +536,7 @@ void PersonalDataManagerAndroid::ClearServerDataForTesting(JNIEnv* env) {
 }
 
 jboolean PersonalDataManagerAndroid::HasProfiles(JNIEnv* env) {
-  return !personal_data_manager_->GetProfiles().empty();
+  return !personal_data_manager_->address_data_manager().GetProfiles().empty();
 }
 
 jboolean PersonalDataManagerAndroid::HasCreditCards(JNIEnv* env) {

@@ -24,6 +24,7 @@
 #include "components/autofill/content/browser/test_autofill_manager_injector.h"
 #include "components/autofill/content/browser/test_content_autofill_client.h"
 #include "components/autofill/content/browser/test_content_autofill_driver.h"
+#include "components/autofill/core/browser/address_data_manager.h"
 #include "components/autofill/core/browser/autofill_driver.h"
 #include "components/autofill/core/browser/autofill_test_utils.h"
 #include "components/autofill/core/browser/data_model/autofill_profile.h"
@@ -110,10 +111,10 @@ std::unique_ptr<KeyedService> BuildTestPersonalDataManager(
   personal_data_manager->SetAutofillProfileEnabled(true);
   personal_data_manager->SetAutofillPaymentMethodsEnabled(true);
   personal_data_manager->SetAutofillWalletImportEnabled(true);
-  personal_data_manager->AddProfile(kProfile1);
-  personal_data_manager->AddProfile(kProfile2);
+  personal_data_manager->address_data_manager().AddProfile(kProfile1);
+  personal_data_manager->address_data_manager().AddProfile(kProfile2);
   // Add incomplete autofill profile, should not be shown on the sheet.
-  personal_data_manager->AddProfile(kIncompleteProfile);
+  personal_data_manager->address_data_manager().AddProfile(kIncompleteProfile);
   personal_data_manager->AddCreditCard(kCreditCard1);
   personal_data_manager->AddCreditCard(kCreditCard2);
   // Add empty credit card, should not be shown on the sheet.
@@ -348,7 +349,8 @@ class DISABLED_FastCheckoutClientImplTest
             autofill::test::GetFullProfile());
     autofill_profile_unique_ptr->set_profile_label(
         base::UTF16ToUTF8(kAutofillProfileLabel));
-    personal_data_manager()->AddProfile(*autofill_profile_unique_ptr);
+    personal_data_manager()->address_data_manager().AddProfile(
+        *autofill_profile_unique_ptr);
     auto credit_card_unique_ptr = std::make_unique<autofill::CreditCard>(
         local_card ? autofill::test::GetCreditCard()
                    : autofill::test::GetMaskedServerCard());
@@ -586,7 +588,8 @@ TEST_F(DISABLED_FastCheckoutClientImplTest,
   // User removes all the profiles.
   personal_data_manager()->ClearProfiles();
   // User adds an incomplete profile only.
-  personal_data_manager()->AddProfile(autofill::test::GetIncompleteProfile1());
+  personal_data_manager()->address_data_manager().AddProfile(
+      autofill::test::GetIncompleteProfile1());
 
   // `FastCheckoutClient` is not running anymore.
   EXPECT_FALSE(fast_checkout_client()->IsRunning());

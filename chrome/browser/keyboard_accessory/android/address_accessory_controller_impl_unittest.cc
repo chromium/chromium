@@ -9,14 +9,16 @@
 #include <ostream>
 #include <string>
 #include <vector>
+
 #include "base/strings/utf_string_conversions.h"
 #include "base/test/mock_callback.h"
+#include "chrome/browser/autofill/personal_data_manager_factory.h"
 #include "chrome/browser/keyboard_accessory/android/accessory_controller.h"
 #include "chrome/browser/keyboard_accessory/test_utils/android/mock_manual_filling_controller.h"
-#include "chrome/browser/autofill/personal_data_manager_factory.h"
 #include "chrome/grit/generated_resources.h"
 #include "chrome/test/base/chrome_render_view_host_test_harness.h"
 #include "chrome/test/base/testing_profile.h"
+#include "components/autofill/core/browser/address_data_manager.h"
 #include "components/autofill/core/browser/autofill_test_utils.h"
 #include "components/autofill/core/browser/test_personal_data_manager.h"
 #include "components/strings/grit/components_strings.h"
@@ -108,7 +110,7 @@ TEST_F(AddressAccessoryControllerTest, IsNotRecreatedForSameWebContents) {
 
 TEST_F(AddressAccessoryControllerTest, ProvidesNoSheetBeforeInitialRefresh) {
   AutofillProfile canadian = test::GetFullValidProfileForCanada();
-  personal_data_manager()->AddProfile(canadian);
+  personal_data_manager()->address_data_manager().AddProfile(canadian);
   controller()->RegisterFillingSourceObserver(filling_source_observer_.Get());
 
   EXPECT_FALSE(controller()->GetSheetData().has_value());
@@ -122,7 +124,7 @@ TEST_F(AddressAccessoryControllerTest, ProvidesNoSheetBeforeInitialRefresh) {
 
 TEST_F(AddressAccessoryControllerTest, RefreshSuggestionsCallsUI) {
   AutofillProfile canadian = test::GetFullValidProfileForCanada();
-  personal_data_manager()->AddProfile(canadian);
+  personal_data_manager()->address_data_manager().AddProfile(canadian);
 
   AccessorySheetData result(AccessoryTabType::PASSWORDS, std::u16string());
   EXPECT_CALL(mock_manual_filling_controller_, RefreshSuggestions(_))
@@ -176,7 +178,7 @@ TEST_F(AddressAccessoryControllerTest, TriggersRefreshWhenDataChanges) {
 
   // When new data is added, a refresh is automatically triggered.
   AutofillProfile email = test::GetIncompleteProfile2();
-  personal_data_manager()->AddProfile(email);
+  personal_data_manager()->address_data_manager().AddProfile(email);
   EXPECT_EQ(result, controller()->GetSheetData());
   EXPECT_EQ(result,
             AddressAccessorySheetDataBuilder(std::u16string())
