@@ -10,6 +10,7 @@
 #include <vector>
 
 #include "base/strings/stringprintf.h"
+#include "base/test/bind.h"
 #include "base/test/metrics/histogram_tester.h"
 #include "base/test/scoped_feature_list.h"
 #include "base/test/task_environment.h"
@@ -250,6 +251,35 @@ TEST_F(IpProtectionConfigCacheImplTest, GetProxyListFromManagerWithQuic) {
   base::RunLoop().RunUntilIdle();
 
   EXPECT_EQ(ipp_config_cache_->GetProxyChainList(), proxy_chain_list_with_quic);
+}
+
+// When the network changes, a new proxy list is requested.
+TEST_F(IpProtectionConfigCacheImplTest, RefreshProxyListOnNetworkChange) {
+  std::map<std::string, std::string> parameters;
+  parameters[net::features::kIpPrivacyUseQuicProxies.name] = "true";
+  base::test::ScopedFeatureList scoped_feature_list;
+  scoped_feature_list.InitAndEnableFeatureWithParameters(
+      net::features::kEnableIpProtectionProxy, std::move(parameters));
+
+  std::unique_ptr<net::NetworkChangeNotifier> network_change_notifier =
+      net::NetworkChangeNotifier::CreateMockIfNeeded();
+
+  ipp_config_cache_ =
+      std::make_unique<IpProtectionConfigCacheImpl>(mojo::NullRemote());
+
+  auto ipp_proxy_list_manager_ =
+      std::make_unique<MockIpProtectionProxyListManager>();
+  bool refresh_requested = false;
+  ipp_proxy_list_manager_->SetOnRequestRefreshProxyList(
+      base::BindLambdaForTesting([&]() { refresh_requested = true; }));
+  ipp_config_cache_->SetIpProtectionProxyListManagerForTesting(
+      std::move(ipp_proxy_list_manager_));
+
+  net::NetworkChangeNotifier::NotifyObserversOfNetworkChangeForTests(
+      net::NetworkChangeNotifier::ConnectionType::CONNECTION_2G);
+  base::RunLoop().RunUntilIdle();
+
+  EXPECT_TRUE(refresh_requested);
 }
 
 }  // namespace network

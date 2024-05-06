@@ -177,9 +177,10 @@ void IpProtectionConfigCacheImpl::RequestRefreshProxyList() {
 void IpProtectionConfigCacheImpl::OnNetworkChanged(
     net::NetworkChangeNotifier::ConnectionType type) {
   // When the network changes, but there is still a network, reset the
-  // tracking of whether QUIC proxies work.
+  // tracking of whether QUIC proxies work, and try to fetch a new proxy list.
   if (type != net::NetworkChangeNotifier::ConnectionType::CONNECTION_NONE) {
     ipp_over_quic_ = net::features::kIpPrivacyUseQuicProxies.Get();
+    RequestRefreshProxyList();
   }
 }
 
