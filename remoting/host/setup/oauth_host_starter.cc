@@ -89,10 +89,15 @@ void OAuthHostStarter::RemoveOldHostFromDirectory(
     base::OnceClosure on_host_removed) {
   DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
   on_host_removed_ = std::move(on_host_removed);
-  directory_service_client_.DeleteHost(
-      *existing_host_id(),
-      base::BindOnce(&OAuthHostStarter::OnDeleteHostResponse,
-                     weak_ptr_factory_.GetWeakPtr()));
+
+  if (existing_host_id().has_value()) {
+    directory_service_client_.DeleteHost(
+        *existing_host_id(),
+        base::BindOnce(&OAuthHostStarter::OnDeleteHostResponse,
+                       weak_ptr_factory_.GetWeakPtr()));
+  } else {
+    std::move(on_host_removed_).Run();
+  }
 }
 
 void OAuthHostStarter::OnRegisterHostResponse(
