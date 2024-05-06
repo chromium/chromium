@@ -15,6 +15,7 @@
 #include "media/base/video_decoder.h"
 #include "media/mojo/mojom/interface_factory.mojom.h"
 #include "media/mojo/mojom/stable/stable_video_decoder.mojom.h"
+#include "media/mojo/mojom/video_decoder.mojom.h"
 #include "media/video/gpu_video_accelerator_factories.h"
 #include "mojo/public/cpp/bindings/remote.h"
 

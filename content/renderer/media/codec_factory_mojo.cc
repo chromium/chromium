@@ -12,6 +12,7 @@
 #include "media/base/overlay_info.h"
 #include "media/mojo/clients/mojo_video_decoder.h"
 #include "media/mojo/mojom/interface_factory.mojom.h"
+#include "media/mojo/mojom/video_decoder.mojom.h"
 #include "media/video/gpu_video_accelerator_factories.h"
 #include "mojo/public/cpp/bindings/pending_remote.h"
 
