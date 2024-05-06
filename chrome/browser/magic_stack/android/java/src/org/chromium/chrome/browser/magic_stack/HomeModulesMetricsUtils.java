@@ -82,6 +82,12 @@ public class HomeModulesMetricsUtils {
 
     private static final String FRESHNESS_INPUT_CONTEXT_SUFFIX = "_freshness";
 
+    private static final String SINGLE_TAB_FRESHNESS_INPUT_CONTEXT = "single_tab_freshness";
+
+    private static final String PRICE_CHANGE_FRESHNESS_INPUT_CONTEXT = "price_change_freshness";
+
+    private static final String TAB_RESUMPTION_FRESHNESS_INPUT_CONTEXT = "tab_resumption_freshness";
+
     private static final String HOME_MODULES_SHOW_ALL_MODULES_PARAM = "show_all_modules";
     public static final BooleanCachedFieldTrialParameter HOME_MODULES_SHOW_ALL_MODULES =
             ChromeFeatureList.newBooleanCachedFieldTrialParameter(
@@ -112,6 +118,25 @@ public class HomeModulesMetricsUtils {
         }
     }
 
+    /**
+     * Returns the freshness score key used by InputContext for the given module. Remember to update
+     * the variant ModuleType in tools/metrics/histograms/metadata/magic_stack/histograms.xml when
+     * adding a new module type
+     */
+    public static String getFreshnessInputContextString(@ModuleType int moduleType) {
+        switch (moduleType) {
+            case SINGLE_TAB:
+                return SINGLE_TAB_FRESHNESS_INPUT_CONTEXT;
+            case (PRICE_CHANGE):
+                return PRICE_CHANGE_FRESHNESS_INPUT_CONTEXT;
+            case (TAB_RESUMPTION):
+                return TAB_RESUMPTION_FRESHNESS_INPUT_CONTEXT;
+            default:
+                assert false : "Module type not supported!";
+                return null;
+        }
+    }
+
     public static Integer convertLabelToModuleType(String label) {
         switch (label) {
             case "SingleTab":
@@ -124,11 +149,6 @@ public class HomeModulesMetricsUtils {
                 assert false : "Module type not supported!";
                 return ModuleType.NUM_ENTRIES;
         }
-    }
-
-    /** Returns the freshness score key used by InputContext for the given module. */
-    static String getFreshnessInputContextString(@ModuleType int moduleType) {
-        return HomeModulesMetricsUtils.getModuleName(moduleType) + FRESHNESS_INPUT_CONTEXT_SUFFIX;
     }
 
     /**

@@ -813,7 +813,7 @@ public class HomeModulesMediatorUnitTest {
     @SmallTest
     public void testInput() {
         @ModuleType int moduleType = ModuleType.TAB_RESUMPTION;
-        String expectedFreshnessString = "TabResumption_freshness";
+        String expectedFreshnessString = "tab_resumption_freshness";
         TextUtils.equals(
                 expectedFreshnessString,
                 HomeModulesMetricsUtils.getFreshnessInputContextString(moduleType));

@@ -30,7 +30,7 @@ TEST_F(AndroidHomeModuleRankerTest, ExecuteModelWithInputForAllModules) {
 
   EXPECT_FALSE(ExecuteWithInput(/*inputs=*/{}));
 
-  std::vector<float> input(24, 0);
+  std::vector<float> input(27, 0);
   ExpectClassifierResults(
       input, {kPriceChange, kSingleTab, kTabResumptionForAndroidHome});
 }

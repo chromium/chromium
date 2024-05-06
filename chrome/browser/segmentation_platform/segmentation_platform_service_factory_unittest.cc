@@ -567,15 +567,26 @@ TEST_F(SegmentationPlatformServiceFactoryTest, TestFeedUserModel) {
 }
 
 TEST_F(SegmentationPlatformServiceFactoryTest, TestAndroidHomeModuleRanker) {
-  InitServiceAndCacheResults(
-      segmentation_platform::kAndroidHomeModuleRankerKey);
+  InitService();
   PredictionOptions prediction_options;
+  prediction_options.on_demand_execution = true;
+
+  auto input_context = base::MakeRefCounted<InputContext>();
+  input_context->metadata_args.emplace(
+      segmentation_platform::kSingleTabFreshness,
+      segmentation_platform::processing::ProcessedValue::FromFloat(-1));
+  input_context->metadata_args.emplace(
+      segmentation_platform::kPriceChangeFreshness,
+      segmentation_platform::processing::ProcessedValue::FromFloat(-1));
+  input_context->metadata_args.emplace(
+      segmentation_platform::kTabResumptionForAndroidHomeFreshness,
+      segmentation_platform::processing::ProcessedValue::FromFloat(-1));
 
   std::vector<std::string> result = {kPriceChange, kSingleTab,
                                      kTabResumptionForAndroidHome};
   ExpectGetClassificationResult(
       segmentation_platform::kAndroidHomeModuleRankerKey, prediction_options,
-      nullptr,
+      input_context,
       /*expected_status=*/segmentation_platform::PredictionStatus::kSucceeded,
       /*expected_labels=*/result);
 }

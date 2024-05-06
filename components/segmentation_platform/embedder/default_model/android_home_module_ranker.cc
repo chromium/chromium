@@ -32,6 +32,10 @@ constexpr int64_t kResultTTLDays = 7;
 constexpr std::array<const char*, 3> kAndroidHomeModuleLabels = {
     kSingleTab, kPriceChange, kTabResumptionForAndroidHome};
 
+constexpr std::array<const char*, 3> kAndroidHomeModuleInputContextKeys = {
+    kSingleTabFreshness, kPriceChangeFreshness,
+    kTabResumptionForAndroidHomeFreshness};
+
 // InputFeatures.
 
 // Enum values for the MagicStack.Clank.NewTabPage|StartSurface.Module.Click and
@@ -232,6 +236,12 @@ AndroidHomeModuleRanker::GetModelConfig() {
   // Set features.
   writer.AddUmaFeatures(kUMAFeatures.data(), kUMAFeatures.size());
 
+  // Add freshness for all modules as custom input.
+  writer.AddFromInputContext("single_tab_input", kSingleTabFreshness);
+  writer.AddFromInputContext("price_change_input", kPriceChangeFreshness);
+  writer.AddFromInputContext("tab_resumption_input",
+                             kTabResumptionForAndroidHomeFreshness);
+
   return std::make_unique<ModelConfig>(std::move(metadata), kModelVersion);
 }
 
@@ -239,11 +249,14 @@ void AndroidHomeModuleRanker::ExecuteModelWithInput(
     const ModelProvider::Request& inputs,
     ExecutionCallback callback) {
   // Invalid inputs.
-  if (inputs.size() != kUMAFeatures.size()) {
+  if (inputs.size() !=
+      kUMAFeatures.size() + kAndroidHomeModuleInputContextKeys.size()) {
     base::SequencedTaskRunner::GetCurrentDefault()->PostTask(
         FROM_HERE, base::BindOnce(std::move(callback), std::nullopt));
     return;
   }
+
+  // Add logic here.
 
   ModelProvider::Response response(kAndroidHomeModuleLabels.size(), 0);
   // Default ranking
