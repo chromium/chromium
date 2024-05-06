@@ -7404,7 +7404,7 @@ chromium-metrics-reviews@google.com.
 <histogram name="Manifest.ParseIdResult" enum="ManifestParseIdResultType"
     expires_after="2024-09-15">
   <owner>phillis@chromium.org</owner>
-  <owner>desktop-pwas-team@chromium.org</owner>
+  <owner>pwa-team@chromium.org</owner>
   <summary>Tracks the result of parsing id field in the Manifest.</summary>
 </histogram>
 
