@@ -79,6 +79,7 @@ void InSessionAuthDialogControllerImpl::CreateAndShowAuthPanel(
     auth_panel::AuthCompletionCallback on_auth_complete,
     Reason reason,
     const AccountId& account_id) {
+  state_ = State::kShowing;
   on_auth_complete_ = std::move(on_auth_complete);
 
   auto* auth_hub = AuthHub::Get();
@@ -100,8 +101,6 @@ void InSessionAuthDialogControllerImpl::ShowAuthDialog(
         .Run(false, ash::AuthProofToken{}, base::TimeDelta{});
     return;
   }
-
-  state_ = State::kShowing;
 
   auto account_id = Shell::Get()->session_controller()->GetActiveAccountId();
   DCHECK(account_id.is_valid());
