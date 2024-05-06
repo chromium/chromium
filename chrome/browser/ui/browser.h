@@ -1169,6 +1169,11 @@ class Browser : public TabStripModelObserver,
   // downloads running.
   void InProgressDownloadResponse(bool cancel_downloads);
 
+  // Called when the user has decided whether to proceed or not with the browser
+  // closure, in case the cookie migration notice was shown. |proceed_closing|
+  // is true if the browser can  be closed.
+  void CookieMigrationNoticeResponse(bool proceed_closing);
+
   // Called when all warnings have completed when attempting to close the
   // browser directly (e.g. via hotkey, close button, terminate signal, etc.)
   // Used as a WarnBeforeClosingCallback by HandleBeforeClose().
