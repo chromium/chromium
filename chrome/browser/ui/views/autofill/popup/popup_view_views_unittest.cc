@@ -107,12 +107,20 @@ bool IsClickable(SuggestionType id) {
 }
 
 Suggestion CreateSuggestionWithChildren(
+    const SuggestionType suggestion_type,
     std::vector<Suggestion> children,
     const std::u16string& name = u"Suggestion") {
   Suggestion parent(name);
-  parent.type = SuggestionType::kAddressEntry;
+  parent.type = suggestion_type;
   parent.children = std::move(children);
   return parent;
+}
+
+Suggestion CreateSuggestionWithChildren(
+    std::vector<Suggestion> children,
+    const std::u16string& name = u"Suggestion") {
+  return CreateSuggestionWithChildren(SuggestionType::kAddressEntry,
+                                      std::move(children), name);
 }
 
 }  // namespace
@@ -838,7 +846,7 @@ TEST_F(PopupViewViewsTest, RemoveAutofillInvokesController) {
 }
 
 // Tests that pressing TAB selects a previously unselected Compose suggestion.
-TEST_F(PopupViewViewsTest, TabSelectsComposeSuggestion) {
+TEST_F(PopupViewViewsTest, ComposeSuggestion_TabSelects) {
   CreateAndShowView({SuggestionType::kCompose});
   ASSERT_FALSE(view().GetSelectedCell().has_value());
   SimulateKeyPress(ui::VKEY_TAB, /*shift_modifier_pressed=*/false);
@@ -847,7 +855,7 @@ TEST_F(PopupViewViewsTest, TabSelectsComposeSuggestion) {
 
 // Tests that pressing Shift+TAB in the presence of an unselected Compose
 // suggestion does nothing.
-TEST_F(PopupViewViewsTest, ShiftTabDoesNotAffectComposeSuggestion) {
+TEST_F(PopupViewViewsTest, ComposeSuggestion_ShiftTabDoesNotAffect) {
   EXPECT_CALL(controller(), Hide).Times(0);
 
   CreateAndShowView({SuggestionType::kCompose});
@@ -856,9 +864,94 @@ TEST_F(PopupViewViewsTest, ShiftTabDoesNotAffectComposeSuggestion) {
   EXPECT_FALSE(view().GetSelectedCell().has_value());
 }
 
+TEST_F(PopupViewViewsTest, ComposeSuggestion_LeftAndRightKeyEventsAreHandled) {
+  controller().set_suggestions({CreateSuggestionWithChildren(
+      SuggestionType::kCompose, {Suggestion(u"Child #1")})});
+  CreateAndShowView();
+  view().SetSelectedCell(CellIndex{0, CellType::kContent},
+                         PopupCellSelectionSource::kNonUserInput);
+
+  EXPECT_TRUE(SimulateKeyPress(ui::VKEY_RIGHT));
+  EXPECT_EQ(view().GetSelectedCell()->second, CellType::kControl);
+
+  // Hitting right again does not do anything.
+  EXPECT_FALSE(SimulateKeyPress(ui::VKEY_RIGHT));
+  EXPECT_EQ(view().GetSelectedCell()->second, CellType::kControl);
+
+  EXPECT_TRUE(SimulateKeyPress(ui::VKEY_LEFT));
+  EXPECT_EQ(view().GetSelectedCell()->second, CellType::kContent);
+
+  EXPECT_FALSE(SimulateKeyPress(ui::VKEY_LEFT));
+  EXPECT_EQ(view().GetSelectedCell()->second, CellType::kContent);
+}
+
+TEST_F(PopupViewViewsTest,
+       ComposeSuggestion_LeftAndRightKeyEventsAreHandledForRTL) {
+  base::i18n::SetRTLForTesting(true);
+
+  controller().set_suggestions({CreateSuggestionWithChildren(
+      SuggestionType::kCompose, {Suggestion(u"Child #1")})});
+  CreateAndShowView();
+  view().SetSelectedCell(CellIndex{0, CellType::kContent},
+                         PopupCellSelectionSource::kNonUserInput);
+
+  view().SetSelectedCell(CellIndex{0, CellType::kControl},
+                         PopupCellSelectionSource::kNonUserInput);
+
+  EXPECT_TRUE(SimulateKeyPress(ui::VKEY_RIGHT));
+  EXPECT_EQ(view().GetSelectedCell()->second, CellType::kContent);
+
+  // Hitting right again does not do anything.
+  EXPECT_FALSE(SimulateKeyPress(ui::VKEY_RIGHT));
+  EXPECT_EQ(view().GetSelectedCell()->second, CellType::kContent);
+
+  EXPECT_TRUE(SimulateKeyPress(ui::VKEY_LEFT));
+  EXPECT_EQ(view().GetSelectedCell()->second, CellType::kControl);
+
+  EXPECT_FALSE(SimulateKeyPress(ui::VKEY_LEFT));
+  EXPECT_EQ(view().GetSelectedCell()->second, CellType::kControl);
+
+  base::i18n::SetRTLForTesting(false);
+}
+
+TEST_F(
+    PopupViewViewsTest,
+    ComposeSuggestion_SuggestionAlreadySelected_CursorUpDownForSelectableCells) {
+  // Set up the popup.
+  CreateAndShowView(
+      // These are supopup compose suggestion types.
+      {SuggestionType::kComposeDisable, SuggestionType::kComposeGoToSettings});
+
+  // By default, no row is selected.
+  EXPECT_FALSE(view().GetSelectedCell().has_value());
+
+  // When a suggestion is not already selected, the compose popup does not
+  // handle up and down arrow keys. In practice they are only handled in the
+  // context of an open subpopup (there can only be one top level compose
+  // suggestion), therefore select the first cell/suggestion as if the user had
+  // open a subpopup.
+  view().SetSelectedCell(CellIndex{0u, CellType::kContent},
+                         PopupCellSelectionSource::kNonUserInput);
+
+  // Test wrapping before the front.
+  SimulateKeyPress(ui::VKEY_UP);
+  EXPECT_EQ(view().GetSelectedCell(),
+            std::make_optional<CellIndex>(1u, CellType::kContent));
+
+  // Test wrapping after the end.
+  SimulateKeyPress(ui::VKEY_DOWN);
+  EXPECT_EQ(view().GetSelectedCell(),
+            std::make_optional<CellIndex>(0u, CellType::kContent));
+
+  SimulateKeyPress(ui::VKEY_DOWN);
+  EXPECT_EQ(view().GetSelectedCell(),
+            std::make_optional<CellIndex>(1u, CellType::kContent));
+}
+
 // Tests that pressing TAB in the presence of a selected Compose suggestion
 // closes the popup.
-TEST_F(PopupViewViewsTest, TabWithSelectedComposeSuggestionHidesPopup) {
+TEST_F(PopupViewViewsTest,
+       ComposeSuggestion_TabWithSelectedComposeSuggestionHidesPopup) {
   EXPECT_CALL(controller(), Hide(SuggestionHidingReason::kUserAborted));
 
   CreateAndShowView({SuggestionType::kCompose});
@@ -868,8 +961,9 @@ TEST_F(PopupViewViewsTest, TabWithSelectedComposeSuggestionHidesPopup) {
 }
 
 // Tests that pressing Shift+TAB in the presence of a selected Compose
-// suggestion unselects the suggestion, but does not close the popup.
-TEST_F(PopupViewViewsTest, ShiftTabUnselectsComposeSuggestion) {
+// suggestion without an open subpopup, unselects the suggestion, but does not
+// close the popup.
+TEST_F(PopupViewViewsTest, ComposeSuggestion_NoSubPopup_ShiftTabUnselects) {
   EXPECT_CALL(controller(), Hide).Times(0);
 
   CreateAndShowView({SuggestionType::kCompose});
@@ -879,8 +973,31 @@ TEST_F(PopupViewViewsTest, ShiftTabUnselectsComposeSuggestion) {
   EXPECT_FALSE(view().GetSelectedCell().has_value());
 }
 
+// Tests that pressing Shift+TAB in the presence of a selected Compose
+// suggestion with an open subpopup, closes the subpopup and selects the root
+// suggestion's content cell.
+TEST_F(
+    PopupViewViewsTest,
+    ComposeSuggestion_SubPopupOpen_ShiftTabClosesSubpopupAndSelectsContentCell) {
+  controller().set_suggestions({CreateSuggestionWithChildren(
+      SuggestionType::kCompose, {Suggestion(u"Child #1")})});
+  CreateAndShowView();
+
+  CellIndex cell_content = CellIndex{0, CellType::kContent};
+  CellIndex cell_control = CellIndex{0, CellType::kControl};
+  view().SetSelectedCell(cell_control, PopupCellSelectionSource::kNonUserInput);
+  task_environment()->FastForwardBy(PopupViewViews::kNonMouseOpenSubPopupDelay);
+  ASSERT_EQ(test_api(view()).GetOpenSubPopupRow(), cell_control.first);
+
+  SimulateKeyPress(ui::VKEY_TAB, /*shift_modifier_pressed=*/true);
+
+  EXPECT_EQ(view().GetSelectedCell(), cell_content);
+  task_environment()->FastForwardBy(PopupViewViews::kNonMouseOpenSubPopupDelay);
+  EXPECT_EQ(test_api(view()).GetOpenSubPopupRow(), std::nullopt);
+}
+
 // Tests that pressing up/down cursor keys does not select a Compose suggestion.
-TEST_F(PopupViewViewsTest, CursorUpDownDoesNotSelectComposeSuggestion) {
+TEST_F(PopupViewViewsTest, ComposeSuggestion_CursorUpDownDoesNotSelect) {
   CreateAndShowView({SuggestionType::kCompose});
   ASSERT_FALSE(view().GetSelectedCell().has_value());
   SimulateKeyPress(ui::VKEY_DOWN, /*shift_modifier_pressed=*/false);
@@ -890,7 +1007,7 @@ TEST_F(PopupViewViewsTest, CursorUpDownDoesNotSelectComposeSuggestion) {
 }
 
 // Tests that pressing Esc closes a popup with a Compose suggestion.
-TEST_F(PopupViewViewsTest, EscapeClosesComposePopup) {
+TEST_F(PopupViewViewsTest, ComposeSuggestion_EscapeClosesComposePopup) {
   EXPECT_CALL(controller(), Hide(SuggestionHidingReason::kUserAborted));
 
   CreateAndShowView({SuggestionType::kCompose});

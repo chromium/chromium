@@ -240,6 +240,11 @@ class PopupViewViews : public PopupBaseView,
   // filter with the `query` argument.
   void OnSearchBarInputChanged(const std::u16string& query);
 
+  // Attempts to select the content cell of the row with the currently open
+  // sub-popup. This closes the sub-popup and has the effect of going one menu
+  // level up. Returns whether this was successful.
+  bool SelectParentPopupContentCell();
+
   // Controller for this view.
   base::WeakPtr<AutofillPopupController> controller_ = nullptr;
 
