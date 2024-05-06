@@ -68,6 +68,7 @@
 #include "chrome/browser/ui/views/page_action/page_action_icon_container.h"
 #include "chrome/browser/ui/views/page_action/page_action_icon_controller.h"
 #include "chrome/browser/ui/views/performance_controls/battery_saver_button.h"
+#include "chrome/browser/ui/views/performance_controls/performance_intervention_button.h"
 #include "chrome/browser/ui/views/send_tab_to_self/send_tab_to_self_toolbar_icon_view.h"
 #include "chrome/browser/ui/views/side_panel/side_panel_toolbar_container.h"
 #include "chrome/browser/ui/views/tabs/tab_strip.h"
@@ -438,6 +439,12 @@ void ToolbarView::Init() {
           performance_manager::features::kPerformanceControlsSidePanel)) {
     battery_saver_button_ = container_view_->AddChildView(
         std::make_unique<BatterySaverButton>(browser_view_));
+  }
+
+  if (base::FeatureList::IsEnabled(
+          performance_manager::features::kPerformanceCPUIntervention)) {
+    performance_intervention_button_ = container_view_->AddChildView(
+        std::make_unique<PerformanceInterventionButton>());
   }
 
   if (cast)
