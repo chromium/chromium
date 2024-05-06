@@ -15,7 +15,10 @@ import("//v8/gni/v8.gni")
 declare_args() {
   # If set, both snapshots are included. At this time, this only applicable to
   # android. In other words, it will not work correctly on other platforms.
-  include_both_v8_snapshots = false
+  # Building the context snapshots on android requires building blink multiple
+  # times. To avoid impacting developer productivity the context snapshot is
+  # only built for official builds.
+  include_both_v8_snapshots = is_official_build && target_os == "android"
 }
 
 declare_args() {
