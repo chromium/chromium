@@ -220,7 +220,7 @@ void PermissionPromptBubbleOneOriginView::AddRequestLine(
       provider->GetDistanceMetric(
           DISTANCE_PERMISSION_PROMPT_HORIZONTAL_ICON_LABEL_PADDING)));
 
-  const int kPermissionIconSize = features::IsChromeRefresh2023() ? 20 : 18;
+  constexpr int kPermissionIconSize = 20;
   auto* icon = line_container->AddChildView(
       std::make_unique<views::ImageView>(ui::ImageModel::FromVectorIcon(
           permissions::GetIconId(request->request_type()), ui::kColorIcon,
@@ -241,15 +241,13 @@ void PermissionPromptBubbleOneOriginView::AddRequestLine(
   }
 #endif
 
-  if (features::IsChromeRefresh2023()) {
-    label->SetTextStyle(views::style::STYLE_BODY_3);
-    label->SetEnabledColorId(kColorPermissionPromptRequestText);
+  label->SetTextStyle(views::style::STYLE_BODY_3);
+  label->SetEnabledColorId(kColorPermissionPromptRequestText);
 
-    if (index == 0u) {
-      constexpr int kPermissionBodyTopMargin = 10;
-      line_container->SetProperty(
-          views::kMarginsKey, gfx::Insets().set_top(kPermissionBodyTopMargin));
-    }
+  if (index == 0u) {
+    constexpr int kPermissionBodyTopMargin = 10;
+    line_container->SetProperty(
+        views::kMarginsKey, gfx::Insets().set_top(kPermissionBodyTopMargin));
   }
 }
 

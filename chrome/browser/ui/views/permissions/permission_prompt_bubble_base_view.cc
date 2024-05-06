@@ -121,11 +121,9 @@ void PermissionPromptBubbleBaseView::CreatePermissionButtons(
                               kBlockButtonElementId);
     block_button->SetID(GetViewId(PermissionDialogButton::kDeny));
 
-    if (features::IsChromeRefresh2023()) {
-      allow_once_button->SetStyle(ui::ButtonStyle::kTonal);
-      allow_always_button->SetStyle(ui::ButtonStyle::kTonal);
-      block_button->SetStyle(ui::ButtonStyle::kTonal);
-    }
+    allow_once_button->SetStyle(ui::ButtonStyle::kTonal);
+    allow_always_button->SetStyle(ui::ButtonStyle::kTonal);
+    block_button->SetStyle(ui::ButtonStyle::kTonal);
 
     if (permissions::feature_params::kShowAllowAlwaysAsFirstButton.Get()) {
       buttons_container->AddChildView(std::move(allow_always_button));
@@ -157,10 +155,8 @@ void PermissionPromptBubbleBaseView::CreatePermissionButtons(
         &PermissionPromptBubbleBaseView::RunButtonCallback,
         base::Unretained(this), GetViewId(PermissionDialogButton::kDeny)));
 
-    if (features::IsChromeRefresh2023()) {
-      SetButtonStyle(ui::DIALOG_BUTTON_OK, ui::ButtonStyle::kTonal);
-      SetButtonStyle(ui::DIALOG_BUTTON_CANCEL, ui::ButtonStyle::kTonal);
-    }
+    SetButtonStyle(ui::DIALOG_BUTTON_OK, ui::ButtonStyle::kTonal);
+    SetButtonStyle(ui::DIALOG_BUTTON_CANCEL, ui::ButtonStyle::kTonal);
   }
 }
 
@@ -173,10 +169,8 @@ void PermissionPromptBubbleBaseView::CreateExtraTextLabel(
                               .SetID(permissions::PermissionPromptViewID::
                                          VIEW_ID_PERMISSION_PROMPT_EXTRA_TEXT)
                               .Build();
-  if (features::IsChromeRefresh2023()) {
-    extra_text_label->SetTextStyle(views::style::STYLE_BODY_3);
-    extra_text_label->SetEnabledColorId(kColorPermissionPromptRequestText);
-  }
+  extra_text_label->SetTextStyle(views::style::STYLE_BODY_3);
+  extra_text_label->SetEnabledColorId(kColorPermissionPromptRequestText);
   AddChildView(std::move(extra_text_label));
 }
 

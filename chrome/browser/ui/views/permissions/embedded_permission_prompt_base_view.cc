@@ -70,7 +70,7 @@ std::unique_ptr<views::View> AddSpacer() {
 }
 
 int GetPermissionIconSize() {
-  return features::IsChromeRefresh2023() ? 20 : 18;
+  return 20;
 }
 
 }  // namespace
@@ -274,13 +274,11 @@ void EmbeddedPermissionPromptBaseView::AddRequestLine(
   label->SetMultiLine(true);
   AddElementIdentifierToLabel(*label, index);
 
-  if (features::IsChromeRefresh2023()) {
-    label->SetTextStyle(views::style::STYLE_BODY_3);
-    label->SetEnabledColorId(kColorPermissionPromptRequestText);
+  label->SetTextStyle(views::style::STYLE_BODY_3);
+  label->SetEnabledColorId(kColorPermissionPromptRequestText);
 
-    line_container->SetProperty(views::kMarginsKey,
-                                gfx::Insets().set_top(BODY_TOP_MARGIN));
-  }
+  line_container->SetProperty(views::kMarginsKey,
+                              gfx::Insets().set_top(BODY_TOP_MARGIN));
 }
 
 void EmbeddedPermissionPromptBaseView::AddButton(

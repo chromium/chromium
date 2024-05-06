@@ -170,13 +170,9 @@ IN_PROC_BROWSER_TEST_F(MidiPermissionsFlowInteractiveUITest,
           base::BindOnce([](ui::TrackedElement* element) {
             auto* element_view = AsView<ContentSettingImageView>(element);
             EXPECT_EQ(element_view->get_icon_for_testing(),
-                      base::FeatureList::IsEnabled(features::kChromeRefresh2023)
-                          ? &vector_icons::kMidiOffChromeRefreshIcon
-                          : &vector_icons::kMidiIcon);
+                      &vector_icons::kMidiOffChromeRefreshIcon);
             EXPECT_EQ(element_view->get_icon_badge_for_testing(),
-                      base::FeatureList::IsEnabled(features::kChromeRefresh2023)
-                          ? &gfx::kNoneIcon
-                          : &vector_icons::kBlockedBadgeIcon);
+                      &gfx::kNoneIcon);
             EXPECT_EQ(
                 element_view->get_tooltip_text_for_testing(),
                 l10n_util::GetStringUTF16(IDS_BLOCKED_MIDI_SYSEX_MESSAGE));
@@ -195,9 +191,7 @@ IN_PROC_BROWSER_TEST_F(MidiPermissionsFlowInteractiveUITest,
           base::BindOnce([](ui::TrackedElement* element) {
             auto* element_view = AsView<ContentSettingImageView>(element);
             EXPECT_EQ(element_view->get_icon_for_testing(),
-                      base::FeatureList::IsEnabled(features::kChromeRefresh2023)
-                          ? &vector_icons::kMidiChromeRefreshIcon
-                          : &vector_icons::kMidiIcon);
+                      &vector_icons::kMidiChromeRefreshIcon);
             EXPECT_EQ(element_view->get_icon_badge_for_testing(),
                       &gfx::kNoneIcon);
             EXPECT_EQ(

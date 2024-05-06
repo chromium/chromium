@@ -116,9 +116,7 @@ IN_PROC_BROWSER_TEST_F(PermissionIndicatorsInteractiveUITest,
       CheckViewProperty(
           ContentSettingImageView::kMediaActivityIndicatorElementId,
           &ContentSettingImageView::get_icon_for_testing,
-          base::FeatureList::IsEnabled(features::kChromeRefresh2023)
-              ? &vector_icons::kVideocamChromeRefreshIcon
-              : &vector_icons::kVideocamIcon),
+          &vector_icons::kVideocamChromeRefreshIcon),
       // Permission is granted, there is no badge.
       CheckViewProperty(
           ContentSettingImageView::kMediaActivityIndicatorElementId,
@@ -144,9 +142,7 @@ IN_PROC_BROWSER_TEST_F(PermissionIndicatorsInteractiveUITest,
       CheckViewProperty(
           ContentSettingImageView::kMediaActivityIndicatorElementId,
           &ContentSettingImageView::get_icon_for_testing,
-          base::FeatureList::IsEnabled(features::kChromeRefresh2023)
-              ? &vector_icons::kMicChromeRefreshIcon
-              : &vector_icons::kMicIcon),
+          &vector_icons::kMicChromeRefreshIcon),
       // Permission is granted, there is no badge.
       CheckViewProperty(
           ContentSettingImageView::kMediaActivityIndicatorElementId,
@@ -159,9 +155,7 @@ IN_PROC_BROWSER_TEST_F(PermissionIndicatorsInteractiveUITest,
       CheckViewProperty(
           ContentSettingImageView::kMediaActivityIndicatorElementId,
           &ContentSettingImageView::get_icon_for_testing,
-          base::FeatureList::IsEnabled(features::kChromeRefresh2023)
-              ? &vector_icons::kVideocamChromeRefreshIcon
-              : &vector_icons::kVideocamIcon),
+          &vector_icons::kVideocamChromeRefreshIcon),
       // Permission is granted, there is no badge.
       CheckViewProperty(
           ContentSettingImageView::kMediaActivityIndicatorElementId,
