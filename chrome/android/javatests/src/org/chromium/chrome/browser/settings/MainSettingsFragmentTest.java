@@ -343,8 +343,9 @@ public class MainSettingsFragmentTest {
         launchSettingsActivity();
 
         onView(withId(R.id.recycler_view))
-                .perform(scrollTo(hasDescendant(withText(R.string.sync_promo_turn_on_sync))));
-        onView(withText(R.string.sync_promo_turn_on_sync)).perform(click());
+                .perform(scrollTo(hasDescendant(withText(R.string.signin_settings_title))));
+        onView(withText(R.string.signin_settings_subtitle)).check(matches(isDisplayed()));
+        onView(withText(R.string.signin_settings_title)).perform(click());
 
         verify(mSigninAndHistoryOptInActivityLauncher)
                 .launchActivityIfAllowed(

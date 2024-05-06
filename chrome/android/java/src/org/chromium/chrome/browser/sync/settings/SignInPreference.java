@@ -172,8 +172,14 @@ public class SignInPreference extends Preference
     }
 
     private void setupGenericPromo() {
-        setTitle(R.string.sync_promo_turn_on_sync);
-        setSummary(R.string.signin_pref_summary);
+        if (ChromeFeatureList.isEnabled(
+                ChromeFeatureList.REPLACE_SYNC_PROMOS_WITH_SIGN_IN_PROMOS)) {
+            setTitle(R.string.signin_settings_title);
+            setSummary(R.string.signin_settings_subtitle);
+        } else {
+            setTitle(R.string.sync_promo_turn_on_sync);
+            setSummary(R.string.signin_pref_summary);
+        }
 
         setFragment(null);
         setIcon(AppCompatResources.getDrawable(getContext(), R.drawable.logo_avatar_anonymous));

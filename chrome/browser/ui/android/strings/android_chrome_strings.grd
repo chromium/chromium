@@ -3450,6 +3450,12 @@ To change this setting, <ph name="BEGIN_LINK">BEGIN_LINK</ph>delete the Chrome d
       <message name="IDS_SIGNIN_PROMO_TURN_ON" translateable="false">
         Turn on
       </message>
+      <message name="IDS_SIGNIN_SETTINGS_TITLE" desc="Title of the sign-in row in the settings page that offers the user to sign-in to Chrome.">
+        Sign in
+      </message>
+      <message name="IDS_SIGNIN_SETTINGS_SUBTITLE" desc="Subtitle of the sign-in row in the settings page that offers the user to sign-in to Chrome. It explains the overarching user benefit of signing in (access to bookmarks, passwords, history, settings, etc.).">
+        Get your bookmarks, passwords and more on all your devices
+      </message>
 
       <message name="IDS_EXTERNAL_APP_RESTRICTED_ACCESS_ERROR" desc="A message shown to the user if Chrome receives a file view request to something Chrome does not have access to view.">
         Chrome does not have access to the requested resource.
