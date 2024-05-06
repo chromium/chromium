@@ -13017,6 +13017,18 @@
                         "ActiveContentSettingExpiry",
                         "OneTimePermission"
                     ]
+                },
+                {
+                    "name": "EnabledWithAllowWhileVisitingFirst",
+                    "params": {
+                        "show_allow_always_as_first_button": "true",
+                        "use_stronger_prompt_language": "true",
+                        "use_while_visiting_language": "true"
+                    },
+                    "enable_features": [
+                        "ActiveContentSettingExpiry",
+                        "OneTimePermission"
+                    ]
                 }
             ]
         }
@@ -13095,6 +13107,21 @@
                     "params": {
                         "show_allow_always_as_first_button": "true",
                         "use_stronger_prompt_language": "false"
+                    },
+                    "enable_features": [
+                        "ActiveContentSettingExpiry",
+                        "OneTimePermission"
+                    ],
+                    "disable_features": [
+                        "PermissionsPromptSurvey"
+                    ]
+                },
+                {
+                    "name": "EnabledWithAllowWhileVisitingFirst",
+                    "params": {
+                        "show_allow_always_as_first_button": "true",
+                        "use_stronger_prompt_language": "true",
+                        "use_while_visiting_language": "true"
                     },
                     "enable_features": [
                         "ActiveContentSettingExpiry",

@@ -318,7 +318,10 @@ std::u16string PermissionPromptBubbleBaseView::GetAllowAlwaysText(
   }
 
   // Use the generic text.
-  return l10n_util::GetStringUTF16(IDS_PERMISSION_ALLOW_EVERY_VISIT);
+  return l10n_util::GetStringUTF16(
+      permissions::feature_params::kUseWhileVisitingLanguage.Get()
+          ? IDS_PERMISSION_ALLOW_WHILE_VISITING
+          : IDS_PERMISSION_ALLOW_EVERY_VISIT);
 }
 
 BEGIN_METADATA(PermissionPromptBubbleBaseView)

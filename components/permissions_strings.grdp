@@ -187,6 +187,9 @@ This will otherwise be blocked by your privacy settings. This will allow the con
   <message name="IDS_PERMISSION_ALLOW_EVERY_VISIT" desc="Label on button to permanent grant in a one-time granting use case">
     Allow on every visit
   </message>
+  <message name="IDS_PERMISSION_ALLOW_WHILE_VISITING" desc="Label on button to grant a permission to a site to do X permanently, that is, on the user's current visit and subsequent visits. This contrasts with the temporary grant through a button labeled [Allow this time], which only allows the site to do X on the current visit. The context for this choice is a prompt that says [The site wants to do X]. Therefore, for some languages it might be possible to drop the _the site_ suffix if it is evident from this context and its absensce does not feel dangling in the language.">
+    Allow while visiting the site
+  </message>
   <message name="IDS_PERMISSION_DONT_ALLOW" desc="Label on button to permanent deny in a one-time granting use case">
     Don't allow
   </message>
