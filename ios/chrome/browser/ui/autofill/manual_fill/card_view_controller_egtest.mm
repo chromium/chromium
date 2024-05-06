@@ -25,6 +25,7 @@
 #import "url/gurl.h"
 
 using base::test::ios::kWaitForActionTimeout;
+using chrome_test_util::ButtonWithAccessibilityLabelId;
 using chrome_test_util::CancelButton;
 using chrome_test_util::ManualFallbackAddPaymentMethodMatcher;
 using chrome_test_util::ManualFallbackCreditCardIconMatcher;
@@ -138,6 +139,13 @@ id<GREYMatcher> OverflowMenuButton() {
 id<GREYMatcher> OverflowMenuEditAction() {
   return grey_allOf(chrome_test_util::ButtonWithAccessibilityLabelId(
                         IDS_IOS_EDIT_ACTION_TITLE),
+                    grey_interactable(), nullptr);
+}
+
+// Matcher for the "Autofill Form" button shown in the payment method cells.
+id<GREYMatcher> AutofillFormButton() {
+  return grey_allOf(ButtonWithAccessibilityLabelId(
+                        IDS_IOS_MANUAL_FALLBACK_AUTOFILL_FORM_BUTTON_TITLE),
                     grey_interactable(), nullptr);
 }
 
@@ -853,6 +861,33 @@ void OpenPaymentMethodManualFillViewWithNoSavedPaymentMethods() {
       performAction:grey_tap()];
 
   // TODO(crbug.com/326413453): Check that the card details opened.
+}
+
+// Tests that tapping the "Autofill Form" button fills the payment form with
+// the right data.
+- (void)testAutofillFormButtonFillsForm {
+  if (![AutofillAppInterface isKeyboardAccessoryUpgradeEnabled]) {
+    EARL_GREY_TEST_DISABLED(@"This test is not relevant when the Keyboard "
+                            @"Accessory Upgrade feature is disabled.")
+  }
+
+  // Save a card.
+  [AutofillAppInterface saveLocalCreditCard];
+
+  // Bring up the keyboard
+  [[EarlGrey selectElementWithMatcher:chrome_test_util::WebViewMatcher()]
+      performAction:TapWebElementWithId(kFormElementName)];
+  GREYAssertTrue([EarlGrey isKeyboardShownWithError:nil],
+                 @"Keyboard Should be Shown");
+
+  // Open the payment method manual fill view.
+  OpenPaymentMethodManualFillView();
+
+  [[EarlGrey selectElementWithMatcher:AutofillFormButton()]
+      assertWithMatcher:grey_sufficientlyVisible()];
+
+  // TODO(crbug.com/326413323): Perform tap on the button and assert that the
+  // form was filled.
 }
 
 #pragma mark - Private

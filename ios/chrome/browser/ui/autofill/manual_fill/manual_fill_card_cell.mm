@@ -139,6 +139,9 @@ using base::SysNSStringToUTF8;
 // the rest of the cell.
 @property(nonatomic, strong) UIView* virtualCardInstructionsSeparator;
 
+// Button to autofill the current form with the card's data.
+@property(nonatomic, strong) UIButton* autofillFormButton;
+
 @end
 
 @implementation ManualFillCardCell
@@ -273,6 +276,11 @@ using base::SysNSStringToUTF8;
     [self.contentView addSubview:self.cardholderButton];
   }
 
+  if (IsKeyboardAccessoryUpgradeEnabled()) {
+    self.autofillFormButton = CreateAutofillFormButton();
+    [self.contentView addSubview:self.autofillFormButton];
+  }
+
   [self horizontallyArrangeViews:expirationDateSeparatorLabel];
 }
 
@@ -322,6 +330,11 @@ using base::SysNSStringToUTF8;
         staticConstraints, @[ self.cardholderButton ], self.layoutGuide,
         kChipsHorizontalMargin,
         AppendConstraintsHorizontalEqualOrSmallerThanGuide);
+  }
+
+  if (IsKeyboardAccessoryUpgradeEnabled()) {
+    AppendHorizontalConstraintsForViews(
+        staticConstraints, @[ self.autofillFormButton ], self.layoutGuide);
   }
 
   // Without this set, Voice Over will read the content vertically instead of
@@ -473,6 +486,12 @@ using base::SysNSStringToUTF8;
 
   AddChipGroupsToVerticalLeadViews(@[ cardInfoGroupVerticalLeadChips ],
                                    verticalLeadViews);
+
+  if (IsKeyboardAccessoryUpgradeEnabled()) {
+    AddViewToVerticalLeadViews(self.autofillFormButton,
+                               ManualFillCellView::ElementType::kOther,
+                               verticalLeadViews);
+  }
 
   // Set and activate constraints.
   AppendVerticalConstraintsSpacingForViews(self.dynamicConstraints,
