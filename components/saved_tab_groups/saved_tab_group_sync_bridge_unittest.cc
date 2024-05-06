@@ -594,6 +594,62 @@ TEST_F(SavedTabGroupSyncBridgeTest, DeleteSyncData) {
   EXPECT_FALSE(saved_tab_group_model_.Contains(group.saved_guid()));
 }
 
+// Verify that the deleted elements are processed last. We process deleted
+// elements last for consistency since the ordering of messages is not
+// guaranteed.
+TEST_F(SavedTabGroupSyncBridgeTest, DeleteSyncDataProcessedLast) {
+  syncer::EntityChangeList empty_change_list;
+  bridge_->MergeFullSyncData(bridge_->CreateMetadataChangeList(),
+                             std::move(empty_change_list));
+
+  SavedTabGroup group(u"Test Title", tab_groups::TabGroupColorId::kBlue, {},
+                      /*position=*/0);
+  SavedTabGroupTab tab_1(GURL("https://website.com"), u"Website Title",
+                         group.saved_guid(), /*position=*/std::nullopt);
+  SavedTabGroupTab tab_2(GURL("https://google.com"), u"Google",
+                         group.saved_guid(), /*position=*/std::nullopt);
+  SavedTabGroupTab tab_3(GURL("https://youtube.com"), u"Youtube",
+                         group.saved_guid(), /*position=*/2);
+  group.AddTabLocally(tab_1).AddTabLocally(tab_2);
+  EXPECT_EQ(group.saved_tabs().size(), 2u);
+
+  bridge_->ApplyIncrementalSyncChanges(
+      bridge_->CreateMetadataChangeList(),
+      CreateEntityChangeListFromGroup(
+          group, syncer::EntityChange::ChangeType::ACTION_ADD));
+
+  ASSERT_TRUE(saved_tab_group_model_.Contains(group.saved_guid()));
+  const SavedTabGroup* group_from_model =
+      saved_tab_group_model_.Get(group.saved_guid());
+
+  // Ensure the deleted tabs are removed from the group correctly.
+  base::Uuid removed_tab_1 = group.saved_tabs()[0].saved_tab_guid();
+  base::Uuid removed_tab_2 = group.saved_tabs()[1].saved_tab_guid();
+
+  // Remove both tabs in the group first, then add the new tab.
+  syncer::EntityChangeList change_list;
+  change_list.push_back(
+      CreateEntityChange(group.saved_tabs()[0].ToSpecifics(),
+                         syncer::EntityChange::ChangeType::ACTION_DELETE));
+  change_list.push_back(
+      CreateEntityChange(group.saved_tabs()[1].ToSpecifics(),
+                         syncer::EntityChange::ChangeType::ACTION_DELETE));
+  change_list.push_back(CreateEntityChange(
+      tab_3.ToSpecifics(), syncer::EntityChange::ChangeType::ACTION_ADD));
+  bridge_->ApplyIncrementalSyncChanges(bridge_->CreateMetadataChangeList(),
+                                       std::move(change_list));
+
+  // The group should still exist with only `tab_3`.
+  ASSERT_TRUE(saved_tab_group_model_.Contains(group.saved_guid()));
+  EXPECT_EQ(group_from_model->saved_tabs().size(), 1u);
+  EXPECT_TRUE(AreTabSpecificsEqual(
+      *tab_3.ToSpecifics(), *group_from_model->saved_tabs()[0].ToSpecifics()));
+
+  EXPECT_FALSE(group_from_model->ContainsTab(removed_tab_1));
+  EXPECT_FALSE(group_from_model->ContainsTab(removed_tab_2));
+  EXPECT_TRUE(group_from_model->ContainsTab(tab_3.saved_tab_guid()));
+}
+
 // Verify that locally added groups call add all group data to the processor.
 TEST_F(SavedTabGroupSyncBridgeTest, AddGroupLocally) {
   EXPECT_TRUE(saved_tab_group_model_.saved_tab_groups().empty());
