@@ -5,6 +5,7 @@
 #ifndef COMPONENTS_PASSWORD_MANAGER_CORE_BROWSER_PASSWORD_SAVE_MANAGER_H_
 #define COMPONENTS_PASSWORD_MANAGER_CORE_BROWSER_PASSWORD_SAVE_MANAGER_H_
 
+#include "components/password_manager/core/browser/password_store/password_store.h"
 #include "components/password_manager/core/browser/password_store/password_store_interface.h"
 
 namespace autofill {
@@ -116,6 +117,13 @@ class PasswordSaveManager {
 
   // Signals that the user updated the username value in the bubble prompt.
   virtual void UsernameUpdatedInBubble() = 0;
+
+  // Returns the password store type into which the form is going to be saved or
+  // updated. It might be that the credential is updated in both stores; in this
+  // case the result will be the enum value with both bits set (the account and
+  // the profile store bits).
+  virtual PasswordForm::Store GetPasswordStoreForSaving(
+      const PasswordForm& parsed_submitted_form) const = 0;
 
   virtual std::unique_ptr<PasswordSaveManager> Clone() = 0;
 };

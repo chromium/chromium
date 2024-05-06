@@ -4414,6 +4414,10 @@ class MockPasswordSaveManager : public PasswordSaveManager {
   MOCK_METHOD1(MoveCredentialsToAccountStore,
                void(metrics_util::MoveToAccountStoreTrigger));
   MOCK_METHOD1(BlockMovingToAccountStoreFor, void(const signin::GaiaIdHash&));
+  MOCK_METHOD(PasswordForm::Store,
+              GetPasswordStoreForSaving,
+              (const PasswordForm& password_form),
+              (const override));
 };
 
 class PasswordFormManagerTestWithMockedSaver : public PasswordFormManagerTest {

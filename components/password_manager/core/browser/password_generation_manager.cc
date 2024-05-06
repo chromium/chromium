@@ -13,6 +13,7 @@
 #include "base/ranges/algorithm.h"
 #include "components/password_manager/core/browser/form_saver.h"
 #include "components/password_manager/core/browser/password_feature_manager.h"
+#include "components/password_manager/core/browser/password_form.h"
 #include "components/password_manager/core/browser/password_form_manager_for_ui.h"
 #include "components/password_manager/core/browser/password_manager_client.h"
 #include "components/password_manager/core/browser/password_manager_driver.h"
@@ -391,7 +392,7 @@ void PasswordGenerationManager::CommitGeneratedPassword(
     PasswordForm generated,
     const std::vector<raw_ptr<const PasswordForm, VectorExperimental>>& matches,
     const std::u16string& old_password,
-    const PendingCredentialsStates& states,
+    PasswordForm::Store store_to_save,
     FormSaver* profile_store_form_saver,
     FormSaver* account_store_form_saver) {
   DCHECK(presaved_);
@@ -404,14 +405,16 @@ void PasswordGenerationManager::CommitGeneratedPassword(
         initial_generated_password_, generated.password_value);
   }
 
-  if (account_store_form_saver &&
-      client_->GetPasswordFeatureManager()->IsOptedInForAccountStorage()) {
+  if ((store_to_save & PasswordForm::Store::kAccountStore) ==
+      PasswordForm::Store::kAccountStore) {
     account_store_form_saver->UpdateReplace(
         generated, AccountStoreMatches(matches), old_password,
         presaved_.value() /* old_primary_key */);
     // When the credential with the same username is detected in the profile
-    // store, then update in there too.
-    if (states.profile_store_state == PendingCredentialsState::UPDATE) {
+    // store, then update in there too (here UpdateReplace is not necessary
+    // because the pre-saved one would be saved in the account store).
+    if ((store_to_save & PasswordForm::Store::kProfileStore) ==
+        PasswordForm::Store::kProfileStore) {
       profile_store_form_saver->Update(generated, ProfileStoreMatches(matches),
                                        old_password);
     }

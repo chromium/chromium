@@ -2177,6 +2177,86 @@ TEST_F(MultiStorePasswordSaveManagerTest,
       parsed_submitted_form_);
 }
 
+TEST_F(MultiStorePasswordSaveManagerTest,
+       GetPasswordStoreForSavingReturnsAccountForNewPasswordWhenEnabled) {
+  SetAccountStoreEnabled(/*is_enabled=*/true);
+  SetDefaultPasswordStore(PasswordForm::Store::kAccountStore);
+  PasswordForm::Store store_to_save =
+      password_save_manager_impl()->GetPasswordStoreForSaving(
+          parsed_observed_form_);
+  EXPECT_EQ(PasswordForm::Store::kAccountStore, store_to_save);
+}
+
+TEST_F(
+    MultiStorePasswordSaveManagerTest,
+    GetPasswordStoreForSavingReturnsProfileForNewPasswordWhenAccountDisabled) {
+  SetAccountStoreEnabled(/*is_enabled=*/false);
+  PasswordForm::Store store_to_save =
+      password_save_manager_impl()->GetPasswordStoreForSaving(
+          parsed_observed_form_);
+  EXPECT_EQ(PasswordForm::Store::kProfileStore, store_to_save);
+}
+
+TEST_F(MultiStorePasswordSaveManagerTest,
+       GetPasswordStoreForSavingReturnsProfileWhenUpdatingInProfile) {
+  SetAccountStoreEnabled(/*is_enabled=*/true);
+  SetDefaultPasswordStore(PasswordForm::Store::kAccountStore);
+
+  saved_match_.in_store = PasswordForm::Store::kProfileStore;
+  SetNonFederatedAndNotifyFetchCompleted({&saved_match_});
+
+  PasswordForm::Store store_to_save =
+      password_save_manager_impl()->GetPasswordStoreForSaving(
+          parsed_observed_form_);
+  EXPECT_EQ(PasswordForm::Store::kProfileStore, store_to_save);
+}
+
+TEST_F(MultiStorePasswordSaveManagerTest,
+       GetPasswordStoreForSavingReturnsBothWhenCredentialDuplicated) {
+  SetAccountStoreEnabled(/*is_enabled=*/true);
+  SetDefaultPasswordStore(PasswordForm::Store::kAccountStore);
+
+  saved_match_.in_store =
+      PasswordForm::Store::kProfileStore | PasswordForm::Store::kAccountStore;
+  SetNonFederatedAndNotifyFetchCompleted({&saved_match_});
+
+  PasswordForm::Store store_to_save =
+      password_save_manager_impl()->GetPasswordStoreForSaving(
+          parsed_observed_form_);
+  EXPECT_EQ(
+      PasswordForm::Store::kProfileStore | PasswordForm::Store::kAccountStore,
+      store_to_save);
+}
+
+TEST_F(
+    MultiStorePasswordSaveManagerTest,
+    GetPasswordStoreForSavingReturnsBothForUpdateInProfileWithGeneratedPassword) {
+  SetAccountStoreEnabled(/*is_enabled=*/true);
+  SetDefaultPasswordStore(PasswordForm::Store::kAccountStore);
+
+  saved_match_.in_store = PasswordForm::Store::kProfileStore;
+  SetNonFederatedAndNotifyFetchCompleted({&saved_match_});
+
+  password_save_manager_impl()->PresaveGeneratedPassword(parsed_observed_form_);
+  PasswordForm::Store store_to_save =
+      password_save_manager_impl()->GetPasswordStoreForSaving(
+          parsed_observed_form_);
+  EXPECT_EQ(
+      PasswordForm::Store::kProfileStore | PasswordForm::Store::kAccountStore,
+      store_to_save);
+}
+
+TEST_F(MultiStorePasswordSaveManagerTest,
+       GetPasswordStoreForSavingReturnsProfileWhenAccountDisabled) {
+  SetAccountStoreEnabled(/*is_enabled=*/false);
+
+  password_save_manager_impl()->PresaveGeneratedPassword(parsed_observed_form_);
+  PasswordForm::Store store_to_save =
+      password_save_manager_impl()->GetPasswordStoreForSaving(
+          parsed_observed_form_);
+  EXPECT_EQ(PasswordForm::Store::kProfileStore, store_to_save);
+}
+
 // Since conflicts in the profile store should not be taken into account during
 // generation, below is a parameterized fixture to run the same tests for all 4
 // combinations that can exist there (no matches, same username match, empty

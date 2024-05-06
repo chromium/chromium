@@ -88,7 +88,7 @@ class PasswordGenerationManager {
       const std::vector<raw_ptr<const PasswordForm, VectorExperimental>>&
           matches,
       const std::u16string& old_password,
-      const PendingCredentialsStates& states,
+      PasswordForm::Store store_to_save,
       FormSaver* profile_store_form_saver,
       FormSaver* account_store_form_saver);
 
