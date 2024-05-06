@@ -157,22 +157,8 @@ class PersonalDataManager : public KeyedService,
   // Returns whether the personal data has been loaded from the web database.
   virtual bool IsDataLoaded() const;
 
-  // All of the following functions simply forward the call to a function of the
-  // same name in the `address_data_manager()` or the `payments_data_manager().
-  // They should not be used anymore. Instead, callers should use the function
-  // in the address/payments data manager instead.
-  // TODO(b/322170538): Migrate existing callers.
-  void AddCreditCard(const CreditCard& credit_card);
-  void UpdateCreditCard(const CreditCard& credit_card);
-  void ClearAllServerDataForTesting();
-  void AddServerCreditCardForTest(std::unique_ptr<CreditCard> credit_card);
-  CreditCard* GetCreditCardByGUID(const std::string& guid);
-  CreditCard* GetCreditCardByInstrumentId(int64_t instrument_id);
-  CreditCard* GetCreditCardByServerId(const std::string& server_id);
-  std::vector<CreditCard*> GetCreditCards() const;
-  std::vector<const AutofillOfferData*>
-  GetActiveAutofillPromoCodeOffersForOrigin(GURL origin) const;
-  std::vector<CreditCard*> GetCreditCardsToSuggest() const;
+  // TODO(b/322170538): This function simply forwards to the payments data
+  // manager. Migrate existing callers to go through `payments_data_manager()`.
   void SetSyncingForTest(bool is_syncing_for_test);
 
   // Re-loads profiles, credit cards, and IBANs from the WebDatabase

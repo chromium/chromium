@@ -110,24 +110,6 @@ void PersonalDataManager::RemoveObserver(
   observers_.RemoveObserver(observer);
 }
 
-void PersonalDataManager::AddCreditCard(const CreditCard& credit_card) {
-  payments_data_manager_->AddCreditCard(credit_card);
-}
-
-void PersonalDataManager::UpdateCreditCard(const CreditCard& credit_card) {
-  payments_data_manager_->UpdateCreditCard(credit_card);
-}
-
-void PersonalDataManager::ClearAllServerDataForTesting() {
-  payments_data_manager_->ClearAllServerDataForTesting();  // IN-TEST
-}
-
-void PersonalDataManager::AddServerCreditCardForTest(
-    std::unique_ptr<CreditCard> credit_card) {
-  payments_data_manager_->AddServerCreditCardForTest(
-      std::move(credit_card));  // IN-TEST
-}
-
 void PersonalDataManager::SetSyncServiceForTest(
     syncer::SyncService* sync_service) {
   address_data_manager_->SetSyncServiceForTest(sync_service);   // IN-TEST
@@ -140,34 +122,9 @@ void PersonalDataManager::RemoveByGUID(const std::string& guid) {
   }
 }
 
-CreditCard* PersonalDataManager::GetCreditCardByGUID(const std::string& guid) {
-  return payments_data_manager_->GetCreditCardByGUID(guid);
-}
-
-CreditCard* PersonalDataManager::GetCreditCardByInstrumentId(
-    int64_t instrument_id) {
-  return payments_data_manager_->GetCreditCardByInstrumentId(instrument_id);
-}
-
-CreditCard* PersonalDataManager::GetCreditCardByServerId(
-    const std::string& server_id) {
-  return payments_data_manager_->GetCreditCardByServerId(server_id);
-}
-
 bool PersonalDataManager::IsDataLoaded() const {
   return address_data_manager_->has_initial_load_finished() &&
          payments_data_manager_->is_payments_data_loaded();
-}
-
-std::vector<CreditCard*> PersonalDataManager::GetCreditCards() const {
-  return payments_data_manager_->GetCreditCards();
-}
-
-std::vector<const AutofillOfferData*>
-PersonalDataManager::GetActiveAutofillPromoCodeOffersForOrigin(
-    GURL origin) const {
-  return payments_data_manager_->GetActiveAutofillPromoCodeOffersForOrigin(
-      origin);
 }
 
 void PersonalDataManager::SetSyncingForTest(bool is_syncing_for_test) {
@@ -177,10 +134,6 @@ void PersonalDataManager::SetSyncingForTest(bool is_syncing_for_test) {
 void PersonalDataManager::Refresh() {
   address_data_manager_->LoadProfiles();
   payments_data_manager_->Refresh();
-}
-
-std::vector<CreditCard*> PersonalDataManager::GetCreditCardsToSuggest() const {
-  return payments_data_manager_->GetCreditCardsToSuggest();
 }
 
 bool PersonalDataManager::IsAutofillEnabled() const {
