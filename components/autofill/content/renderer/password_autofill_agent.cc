@@ -19,6 +19,7 @@
 #include "base/i18n/case_conversion.h"
 #include "base/memory/raw_ptr.h"
 #include "base/metrics/field_trial_params.h"
+#include "base/metrics/histogram_functions.h"
 #include "base/metrics/histogram_macros.h"
 #include "base/no_destructor.h"
 #include "base/notreached.h"
@@ -1439,6 +1440,7 @@ void PasswordAutofillAgent::SetPasswordFillData(
     return;
   }
 
+  times_received_fill_data_[form_data.form_renderer_id]++;
   StoreDataForFillOnAccountSelect(form_data, username_element,
                                   password_element);
 
@@ -1763,6 +1765,12 @@ void PasswordAutofillAgent::CleanupOnDocumentShutdown() {
 #if !BUILDFLAG(IS_ANDROID) && !BUILDFLAG(IS_IOS)
   page_passwords_analyser_.Reset();
 #endif
+
+  for (const auto& [_, times_received_data] : times_received_fill_data_) {
+    base::UmaHistogramCounts100("PasswordManager.TimesReceivedFillDataForForm",
+                                times_received_data);
+  }
+  times_received_fill_data_.clear();
 }
 
 void PasswordAutofillAgent::InformBrowserAboutUserInput(

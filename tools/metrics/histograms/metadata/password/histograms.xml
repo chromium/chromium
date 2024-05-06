@@ -3620,6 +3620,17 @@ chromium-metrics-reviews@google.com.
   </summary>
 </histogram>
 
+<histogram name="PasswordManager.TimesReceivedFillDataForForm" units="count"
+    expires_after="2024-11-01">
+  <owner>kazinova@google.com</owner>
+  <owner>vasilii@chromium.org</owner>
+  <summary>
+    How many times the browser sent fill data for the given form to the
+    renderer. Recorded only for forms, for which the data was sent at least
+    once. Recorded when the form dissapears (e.g. upon page navigation).
+  </summary>
+</histogram>
+
 <histogram name="PasswordManager.TouchToFill.CredentialIndex" units="index"
     expires_after="2024-09-22">
   <owner>ioanap@chromium.org</owner>

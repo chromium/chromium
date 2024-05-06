@@ -4925,6 +4925,32 @@ TEST_F(PasswordAutofillAgentTest, JSFieldModificationUnrelatedField) {
   EXPECT_EQ(fake_driver_.called_inform_about_user_input_count(), 0);
 }
 
+// Tests that the metric for the number of times form fill data is stored
+// for a form is recorded correctly.
+TEST_F(PasswordAutofillAgentTest, TimesReceivedFillDataForFormMetric) {
+  // Simulate the browser sending back the login info, it triggers the
+  // autocomplete.
+  SimulateOnFillPasswordForm(fill_data_);
+
+  // Simulate form fill data changing after form reparsing.
+  fill_data_.username_element_renderer_id = FieldRendererId();
+  SimulateOnFillPasswordForm(fill_data_);
+
+  // Simulate receiving form fill data that cannot be used, e.g. because
+  // the fields are not present on the page.
+  // Simulate form fill data changing after form reparsing.
+  fill_data_.username_element_renderer_id = FieldRendererId(404);
+  fill_data_.password_element_renderer_id = FieldRendererId(40404);
+  SimulateOnFillPasswordForm(fill_data_);
+
+  // Simulate navigating to a new document.
+  password_autofill_agent_->ReadyToCommitNavigation(nullptr);
+  // The histogram should be recorded only for the form present on a
+  // page.
+  histogram_tester_.ExpectUniqueSample(
+      "PasswordManager.TimesReceivedFillDataForForm", 2, 1);
+}
+
 #if BUILDFLAG(IS_ANDROID)
 // If a password field is hidden, the field unlikely has an Enter listener. So,
 // trigger a form submission on the username field.

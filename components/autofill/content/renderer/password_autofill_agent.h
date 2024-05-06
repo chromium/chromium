@@ -575,6 +575,12 @@ class PasswordAutofillAgent : public content::RenderFrameObserver,
   // triggered.
   FieldRendererId field_renderer_id_to_submit_;
 
+  // Tracks how many times PasswordFormFillData was received from the browser
+  // for every form.
+  // Can be used to estimate how many times forms are actually reparsed
+  // during their lifetime.
+  std::map<FormRendererId, size_t> times_received_fill_data_;
+
 #if BUILDFLAG(IS_ANDROID)
   // Current state of the keyboard replacing surface. This is reset during
   // CleanupOnDocumentShutdown.
