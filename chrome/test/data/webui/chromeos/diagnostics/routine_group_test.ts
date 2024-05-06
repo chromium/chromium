@@ -7,46 +7,38 @@ import 'chrome://webui-test/chromeos/mojo_webui_test_support.js';
 import {createRoutine} from 'chrome://diagnostics/diagnostics_utils.js';
 import {RoutineGroup} from 'chrome://diagnostics/routine_group.js';
 import {ExecutionProgress, ResultStatusItem} from 'chrome://diagnostics/routine_list_executor.js';
-import {RoutineResult, RoutineType, StandardRoutineResult} from 'chrome://diagnostics/system_routine_controller.mojom-webui.js';
+import {RoutineType, StandardRoutineResult} from 'chrome://diagnostics/system_routine_controller.mojom-webui.js';
 import {assertEquals, assertFalse, assertTrue} from 'chrome://webui-test/chromeos/chai_assert.js';
 
-/**
- * @param {!RoutineType} routineType
- * @return {!ResultStatusItem}
- */
-function getRoutineRunningStatusItem(routineType) {
+function getRoutineRunningStatusItem(routineType: RoutineType):
+    ResultStatusItem {
   return new ResultStatusItem(routineType, ExecutionProgress.RUNNING);
 }
 
-/**
- * @param {!RoutineType} routineType
- * @return {!ResultStatusItem}
- */
-function getRoutinedPassedStatusItem(routineType) {
+function getRoutinedPassedStatusItem(routineType: RoutineType):
+    ResultStatusItem {
   const item = new ResultStatusItem(routineType, ExecutionProgress.COMPLETED);
-  item.result = /** @type {!RoutineResult} */ (
-      {simpleResult: StandardRoutineResult.kTestPassed});
+  item.result = {
+    simpleResult: StandardRoutineResult.kTestPassed,
+    powerResult: undefined,
+  };
   return item;
 }
 
-/**
- * @param {!RoutineType} routineType
- * @return {!ResultStatusItem}
- */
-function getRoutinedFailedStatusItem(routineType) {
+function getRoutinedFailedStatusItem(routineType: RoutineType):
+    ResultStatusItem {
   const item = new ResultStatusItem(routineType, ExecutionProgress.COMPLETED);
-  item.result = /** @type {!RoutineResult} */ (
-      {simpleResult: StandardRoutineResult.kTestFailed});
+  item.result = {
+    simpleResult: StandardRoutineResult.kTestFailed,
+    powerResult: undefined,
+  };
   return item;
 }
 
 /**
  * Get nonBlockingRoutines private member for testing.
- * @suppress {visibility} // access private member
- * @param {!RoutineGroup} routineGroup
- * @return {!Set<!RoutineType>}
  */
-function getNonBlockingRoutines(routineGroup) {
+function getNonBlockingRoutines(routineGroup: RoutineGroup): Set<RoutineType> {
   return routineGroup.nonBlockingRoutines;
 }
 
