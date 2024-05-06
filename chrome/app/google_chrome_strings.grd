@@ -1117,6 +1117,9 @@ Permissions you've already given to websites and apps may apply to this account.
         <message name="IDS_PROFILE_MENU_MANAGE_PROFILES" desc="The text label of the Manage Chrome Profiles item in the Profile Menu.">
           Manage Chrome profiles
         </message>
+        <message name="IDS_PROFILE_MENU_SIGN_OUT" desc="The text label of the Sign out of Chrome button in the Profile Menu.">
+          Sign out of Chrome
+        </message>
       </if>
       <if expr="use_titlecase">
         <message name="IDS_PROFILE_MENU_CUSTOMIZE_PROFILE_BUTTON" desc="The text label of the Customize Chrome button in the Profile Menu.">
@@ -1127,6 +1130,9 @@ Permissions you've already given to websites and apps may apply to this account.
         </message>
         <message name="IDS_PROFILE_MENU_MANAGE_PROFILES" desc="The text label of the Manage Chrome Profiles item in the Profile Menu.">
           Manage Chrome Profiles
+        </message>
+        <message name="IDS_PROFILE_MENU_SIGN_OUT" desc="The text label of the Sign out of Chrome button in the Profile Menu.">
+          Sign Out of Chrome
         </message>
       </if>
 

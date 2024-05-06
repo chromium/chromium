@@ -842,7 +842,10 @@ void ProfileMenuView::BuildFeatureButtons() {
   // The sign-out button is always at the bottom.
   if (add_sign_out_button) {
     AddFeatureButton(
-        l10n_util::GetStringUTF16(IDS_SCREEN_LOCK_SIGN_OUT),
+        l10n_util::GetStringUTF16(
+            switches::IsExplicitBrowserSigninUIOnDesktopEnabled()
+                ? IDS_PROFILE_MENU_SIGN_OUT
+                : IDS_SCREEN_LOCK_SIGN_OUT),
         base::BindRepeating(&ProfileMenuView::OnSignoutButtonClicked,
                             base::Unretained(this)),
         kSignOutIcon);
