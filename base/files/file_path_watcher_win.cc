@@ -10,6 +10,7 @@
 #include "base/files/file_path.h"
 #include "base/files/file_util.h"
 #include "base/functional/bind.h"
+#include "base/functional/callback_helpers.h"
 #include "base/logging.h"
 #include "base/memory/ptr_util.h"
 #include "base/memory/raw_ptr.h"
@@ -102,6 +103,18 @@ class FilePathWatcherImpl : public FilePathWatcher::PlatformDelegate,
   bool Watch(const FilePath& path,
              Type type,
              const FilePathWatcher::Callback& callback) override;
+
+  // FilePathWatcher::PlatformDelegate implementation:
+  bool WatchWithOptions(const FilePath& path,
+                        const WatchOptions& flags,
+                        const FilePathWatcher::Callback& callback) override;
+
+  // FilePathWatcher::PlatformDelegate implementation:
+  bool WatchWithChangeInfo(
+      const FilePath& path,
+      const WatchOptions& options,
+      const FilePathWatcher::CallbackWithChangeInfo& callback) override;
+
   void Cancel() override;
 
   // base::win::ObjectWatcher::Delegate implementation:
@@ -115,7 +128,7 @@ class FilePathWatcherImpl : public FilePathWatcher::PlatformDelegate,
   void CloseWatchHandle();
 
   // Callback to notify upon changes.
-  FilePathWatcher::Callback callback_;
+  FilePathWatcher::CallbackWithChangeInfo callback_;
 
   // Path we're supposed to watch (passed to callback).
   FilePath target_;
@@ -147,12 +160,32 @@ FilePathWatcherImpl::~FilePathWatcherImpl() {
 bool FilePathWatcherImpl::Watch(const FilePath& path,
                                 Type type,
                                 const FilePathWatcher::Callback& callback) {
+  return WatchWithChangeInfo(
+      path, WatchOptions{.type = type},
+      base::IgnoreArgs<const FilePathWatcher::ChangeInfo&>(
+          base::BindRepeating(std::move(callback))));
+}
+
+bool FilePathWatcherImpl::WatchWithOptions(
+    const FilePath& path,
+    const WatchOptions& options,
+    const FilePathWatcher::Callback& callback) {
+  return WatchWithChangeInfo(
+      path, options,
+      base::IgnoreArgs<const FilePathWatcher::ChangeInfo&>(
+          base::BindRepeating(std::move(callback))));
+}
+
+bool FilePathWatcherImpl::WatchWithChangeInfo(
+    const FilePath& path,
+    const WatchOptions& options,
+    const FilePathWatcher::CallbackWithChangeInfo& callback) {
   DCHECK(target_.empty());  // Can only watch one path.
 
   set_task_runner(SequencedTaskRunner::GetCurrentDefault());
   callback_ = callback;
   target_ = path;
-  type_ = type;
+  type_ = options.type;
 
   File::Info file_info;
   if (GetFileInfo(target_, &file_info)) {
@@ -192,7 +225,7 @@ void FilePathWatcherImpl::OnObjectSignaled(HANDLE object) {
 
   if (!SetupWatchHandleForTarget()) {
     // `this` may be deleted after `callback_` is run.
-    callback_.Run(target_, /*error=*/true);
+    callback_.Run(FilePathWatcher::ChangeInfo(), target_, /*error=*/true);
     return;
   }
 
@@ -212,14 +245,14 @@ void FilePathWatcherImpl::OnObjectSignaled(HANDLE object) {
     // http://qualapps.blogspot.com/2010/05/understanding-readdirectorychangesw.html
 
     // `this` may be deleted after `callback_` is run.
-    callback_.Run(target_, /*error=*/false);
+    callback_.Run(FilePathWatcher::ChangeInfo(), target_, /*error=*/false);
   } else if (file_exists && (last_modified_.is_null() ||
                              last_modified_ != file_info.last_modified)) {
     last_modified_ = file_info.last_modified;
     first_notification_ = Time::Now();
 
     // `this` may be deleted after `callback_` is run.
-    callback_.Run(target_, /*error=*/false);
+    callback_.Run(FilePathWatcher::ChangeInfo(), target_, /*error=*/false);
   } else if (file_exists && last_modified_ == file_info.last_modified &&
              !first_notification_.is_null()) {
     // The target's last modification time is equal to what's on record. This
@@ -242,12 +275,12 @@ void FilePathWatcherImpl::OnObjectSignaled(HANDLE object) {
     }
 
     // `this` may be deleted after `callback_` is run.
-    callback_.Run(target_, /*error=*/false);
+    callback_.Run(FilePathWatcher::ChangeInfo(), target_, /*error=*/false);
   } else if (!file_exists && !last_modified_.is_null()) {
     last_modified_ = Time();
 
     // `this` may be deleted after `callback_` is run.
-    callback_.Run(target_, /*error=*/false);
+    callback_.Run(FilePathWatcher::ChangeInfo(), target_, /*error=*/false);
   }
 
   // The watch may have been cancelled by the callback.
