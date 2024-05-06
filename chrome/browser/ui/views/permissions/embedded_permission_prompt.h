@@ -46,18 +46,18 @@ class EmbeddedPermissionPrompt
     // Permission prompt that informs the user they already granted permission.
     // Offers additional options to modify the permission decision.
     kPreviouslyGranted = 2,
-    // Informs the user that they need to go to OS system settings to grant
-    // access to Chrome.
-    kOsSystemSettings = 3,
     // Informs the user that Chrome needs permission from the OS level, in order
     // for the site to be able to access a permission.
-    kOsPrompt = 4,
+    kOsPrompt = 3,
     // Permission prompt that asks the user for site-level permission.
-    kAsk = 5,
+    kAsk = 4,
     // Permission prompt that additionally informs the user that they have
     // previously denied permission to the site. May offer different options
     // (buttons) to the site-level prompt |kAsk|.
-    kPreviouslyDenied = 6,
+    kPreviouslyDenied = 5,
+    // Informs the user that they need to go to OS system settings to grant
+    // access to Chrome.
+    kOsSystemSettings = 6,
     // Informs the user that the permission was denied by their administrator.
     kAdministratorDenied = 7,
   };

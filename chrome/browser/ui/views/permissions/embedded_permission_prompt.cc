@@ -131,24 +131,30 @@ EmbeddedPermissionPrompt::DeterminePromptVariant(
     ContentSetting setting,
     const content_settings::SettingInfo& info,
     ContentSettingsType type) {
-  // First determine if we can directly show one of the OS views, if the
-  // permission was granted (previously or by Administrator).
-  if (setting == CONTENT_SETTING_ALLOW) {
-    // TODO(crbug.com/40275129): Handle going to Windows settings.
-#if BUILDFLAG(IS_MAC)
-    if (ShouldShowSystemSettingsViewOnMacOS(type)) {
-      return Variant::kOsSystemSettings;
-    }
-
-    if (ShouldShowOSPromptViewOnMacOS(type)) {
-      return Variant::kOsPrompt;
-    }
-#endif
+  // If the administrator blocked the permission, there is nothing the user can
+  // do. Presenting them with a different screen in unproductive.
+  if (IsPermissionSetByAdministator(setting, info) &&
+      setting == CONTENT_SETTING_BLOCK) {
+    return Variant::kAdministratorDenied;
   }
 
+  // Determine if we can directly show one of the OS views. The "System
+  // Settings" view is higher priority then all the other remaining options,
+  // whereas the "OS Prompt" view is only higher priority then the views that
+  // are associated with a site-level allowed state.
+  // TODO(crbug.com/40275129): Handle going to Windows settings.
+#if BUILDFLAG(IS_MAC)
+  if (ShouldShowSystemSettingsViewOnMacOS(type)) {
+    return Variant::kOsSystemSettings;
+  }
+
+  if (setting == CONTENT_SETTING_ALLOW && ShouldShowOSPromptViewOnMacOS(type)) {
+    return Variant::kOsPrompt;
+  }
+#endif
+
   if (IsPermissionSetByAdministator(setting, info)) {
-    return setting == CONTENT_SETTING_ALLOW ? Variant::kAdministratorGranted
-                                            : Variant::kAdministratorDenied;
+    return Variant::kAdministratorGranted;
   }
 
   switch (setting) {
