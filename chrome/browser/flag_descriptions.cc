@@ -2010,6 +2010,11 @@ const char kCrasProcessorDedicatedThreadName[] =
 const char kCrasProcessorDedicatedThreadDescription[] =
     "Run CrasProcessor in a separate thread out of the audio thread";
 
+const char kCrasProcessorWavDumpName[] = "Enable CrasProcessor WAVE file dumps";
+const char kCrasProcessorWavDumpDescription[] =
+    "Make CrasProcessor produce WAVE file dumps for the audio processing "
+    "pipeline";
+
 const char kCrasSplitAlsaUsbInternalName[] =
     "CRAS Split USB/Internal refactor control";
 const char kCrasSplitAlsaUsbInternalDescription[] =

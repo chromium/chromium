@@ -1145,6 +1145,9 @@ extern const char kTabAudioMutingDescription[];
 extern const char kCrasProcessorDedicatedThreadName[];
 extern const char kCrasProcessorDedicatedThreadDescription[];
 
+extern const char kCrasProcessorWavDumpName[];
+extern const char kCrasProcessorWavDumpDescription[];
+
 extern const char kCrasSplitAlsaUsbInternalName[];
 extern const char kCrasSplitAlsaUsbInternalDescription[];
 

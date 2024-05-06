@@ -18479,6 +18479,7 @@ from previous Chrome versions.
   <int value="-1246477455" label="ClipboardUnsanitizedContent:disabled"/>
   <int value="-1245617305" label="NewProfilePicker:enabled"/>
   <int value="-1244772303" label="NtpRealboxMatchOmniboxTheme:enabled"/>
+  <int value="-1243870410" label="CrOSLateBootCrasProcessorWavDump:disabled"/>
   <int value="-1243694853" label="DeferAllScript:disabled"/>
   <int value="-1243449299" label="WebPrinting:disabled"/>
   <int value="-1241868814" label="WebAuthenticationPhoneSupport:disabled"/>
@@ -19516,6 +19517,7 @@ from previous Chrome versions.
   <int value="-775952696" label="FeedStamp:enabled"/>
   <int value="-775361878" label="ReadAnythingImagesViaAlgorithm:disabled"/>
   <int value="-775321548" label="UseNewDoodleApi:disabled"/>
+  <int value="-774940991" label="CrOSLateBootCrasProcessorWavDump:enabled"/>
   <int value="-774513654" label="ShareSheetCustomActionsPolish:disabled"/>
   <int value="-773238824" label="AutoplayWhitelistSettings:disabled"/>
   <int value="-772787642" label="MediaAppCustomColors:disabled"/>
