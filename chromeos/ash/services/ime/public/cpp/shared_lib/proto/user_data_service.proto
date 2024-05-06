@@ -3,7 +3,7 @@ syntax = "proto2";
 package chromeos_input;
 
 import "fetch_japanese_legacy_config.proto";
-import "fetch_japanese_dictionary.proto";
+import "japanese_dictionary.proto";
 
 message Status {
   optional bool success = 1;

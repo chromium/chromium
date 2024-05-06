@@ -9,8 +9,8 @@ assert(is_chromeos_ash)
 
 proto_library("proto") {
   sources = [
-    "fetch_japanese_dictionary.proto",
     "fetch_japanese_legacy_config.proto",
+    "japanese_dictionary.proto",
     "user_data_service.proto",
   ]
   cc_generator_options = "lite"
