@@ -178,7 +178,7 @@ class VIEWS_EXPORT ViewAccessibility {
   // follow the established pattern and be named GetName()
   // TODO(accessibility): Rename to GetName once the ViewsAX project is
   // completed and we don't have ViewAXPlatformNodeDelegate anymore.
-  const std::string& GetCachedName() const;
+  std::u16string GetCachedName() const;
 
   // Returns the source type of the accessible name.
   //
@@ -210,10 +210,10 @@ class VIEWS_EXPORT ViewAccessibility {
   // * kTitle: Name from a title attribute or element (HTML or SVG).
   // * kValue: Name from a value attribute (e.g. button).
   // * kPopoverAttribute: Name from a tooltip-style popover.
+  void SetName(std::u16string name, ax::mojom::NameFrom name_from);
   void SetName(const std::string& name, ax::mojom::NameFrom name_from);
-  void SetName(const std::u16string& name, ax::mojom::NameFrom name_from);
-  void SetName(const std::string& name);
   void SetName(const std::u16string& name);
+  void SetName(const std::string& name);
 
   // Sets the accessible name of this view to that of `naming_view`. Often
   // `naming_view` is a `views::Label`, but any view with an accessible name

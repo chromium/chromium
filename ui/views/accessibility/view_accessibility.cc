@@ -182,6 +182,18 @@ void ViewAccessibility::GetAccessibleNodeData(ui::AXNodeData* data) const {
     return;
   }
 
+  // The role and the name needs to be set on the data member passed to
+  // View::GetAccessibleNodeData in case the view changes either or both.
+  //
+  // TODO(accessibility): This won't be necessary once all Views initialize
+  // their role and name in Views::GetAccessibleNodeData, and that function
+  // is only called once to initialize the cached data.
+  data->role = data_.role;
+  data->SetNameFrom(GetCachedNameFrom());
+  if (!GetCachedName().empty()) {
+    data->SetName(GetCachedName());
+  }
+
   view_->GetAccessibleNodeData(data);
 
   // TODO(accessibility): This next check should be added to SetRole.
@@ -426,16 +438,14 @@ void ViewAccessibility::SetRole(const ax::mojom::Role role,
   SetRole(role);
 }
 
-void ViewAccessibility::SetName(const std::string& name,
+void ViewAccessibility::SetName(std::u16string name,
                                 ax::mojom::NameFrom name_from) {
-  DCHECK_NE(name_from, ax::mojom::NameFrom::kNone);
+  // Allow subclasses to adjust the name.
+  view_->AdjustAccessibleName(name, name_from);
+
   // Ensure we have a current `name_from` value. For instance, the name might
   // still be an empty string, but a view is now indicating that this is by
   // design by setting `NameFrom::kAttributeExplicitlyEmpty`.
-  DCHECK_EQ(name.empty(),
-            name_from == ax::mojom::NameFrom::kAttributeExplicitlyEmpty)
-      << "If the name is being removed to improve the user experience, "
-         "|name_from| should be set to |kAttributeExplicitlyEmpty|.";
   data_.SetNameFrom(name_from);
 
   if (name == GetCachedName()) {
@@ -460,23 +470,22 @@ void ViewAccessibility::SetName(const std::string& name,
     data_.SetName(name);
   }
 
+  view_->OnAccessibleNameChanged(name);
   view_->NotifyAccessibilityEvent(ax::mojom::Event::kTextChanged, true);
 }
 
-void ViewAccessibility::SetName(const std::u16string& name,
+void ViewAccessibility::SetName(const std::string& name,
                                 ax::mojom::NameFrom name_from) {
-  std::string string_name = base::UTF16ToUTF8(name);
+  std::u16string string_name = base::UTF8ToUTF16(name);
   SetName(string_name, name_from);
 }
 
 void ViewAccessibility::SetName(const std::string& name) {
-  SetName(name, static_cast<ax::mojom::NameFrom>(data_.GetIntAttribute(
-                    ax::mojom::IntAttribute::kNameFrom)));
+  SetName(name, GetCachedNameFrom());
 }
 
 void ViewAccessibility::SetName(const std::u16string& name) {
-  SetName(name, static_cast<ax::mojom::NameFrom>(data_.GetIntAttribute(
-                    ax::mojom::IntAttribute::kNameFrom)));
+  SetName(name, GetCachedNameFrom());
 }
 
 void ViewAccessibility::SetName(View& naming_view) {
@@ -497,8 +506,7 @@ void ViewAccessibility::SetName(View& naming_view) {
     DCHECK(!name.empty());
     SetName(name, ax::mojom::NameFrom::kRelatedElement);
   } else {
-    const std::string& name =
-        naming_view.GetViewAccessibility().GetCachedName();
+    std::u16string name = naming_view.GetViewAccessibility().GetCachedName();
     DCHECK(!name.empty());
     SetName(name, ax::mojom::NameFrom::kRelatedElement);
   }
@@ -508,8 +516,8 @@ void ViewAccessibility::SetName(View& naming_view) {
       {naming_view.GetViewAccessibility().GetUniqueId().Get()});
 }
 
-const std::string& ViewAccessibility::GetCachedName() const {
-  return data_.GetStringAttribute(ax::mojom::StringAttribute::kName);
+std::u16string ViewAccessibility::GetCachedName() const {
+  return data_.GetString16Attribute(ax::mojom::StringAttribute::kName);
 }
 
 ax::mojom::NameFrom ViewAccessibility::GetCachedNameFrom() const {
@@ -600,8 +608,7 @@ void ViewAccessibility::SetDescription(
 void ViewAccessibility::SetDescription(View& describing_view) {
   DCHECK_NE(view_, &describing_view);
 
-  const std::string& name =
-      describing_view.GetViewAccessibility().GetCachedName();
+  std::u16string name = describing_view.GetViewAccessibility().GetCachedName();
   if (name.empty()) {
     // TODO(javiercon): This is a temporary workaround for the scenarios where
     // the name is set via View::SetAccessibleName, which means that

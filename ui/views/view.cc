@@ -237,8 +237,6 @@ View::View() {
     SetProperty(kViewStackTraceKey,
                 std::make_unique<base::debug::StackTrace>());
   }
-
-  ax_node_data_ = std::make_unique<ui::AXNodeData>();
 }
 
 View::~View() {
@@ -2069,19 +2067,6 @@ ViewAccessibility& View::GetViewAccessibility() const {
   return *view_accessibility_;
 }
 
-void View::GetAccessibleNodeData(ui::AXNodeData* node_data) {
-  // `ViewAccessibility::GetAccessibleNodeData` populates the id and classname
-  // values prior to asking the View for its data. We don't want to stomp on
-  // those values.
-  ax_node_data_->id = node_data->id;
-  ax_node_data_->AddStringAttribute(
-      ax::mojom::StringAttribute::kClassName,
-      node_data->GetStringAttribute(ax::mojom::StringAttribute::kClassName));
-
-  // Copy everything set by the property setters.
-  *node_data = *ax_node_data_;
-}
-
 void View::SetAccessibilityProperties(
     std::optional<ax::mojom::Role> role,
     std::optional<std::u16string> name,
@@ -2124,101 +2109,34 @@ void View::SetAccessibilityProperties(
 }
 
 void View::SetAccessibleName(const std::u16string& name) {
-  SetAccessibleName(
-      name, static_cast<ax::mojom::NameFrom>(ax_node_data_->GetIntAttribute(
-                ax::mojom::IntAttribute::kNameFrom)));
+  SetAccessibleName(name, GetViewAccessibility().GetCachedNameFrom());
 }
 
 void View::SetAccessibleName(std::u16string name,
                              ax::mojom::NameFrom name_from) {
-  // Allow subclasses to adjust the name.
-  AdjustAccessibleName(name, name_from);
-
-  // Ensure we have a current `name_from` value. For instance, the name might
-  // still be an empty string, but a view is now indicating that this is by
-  // design by setting `NameFrom::kAttributeExplicitlyEmpty`.
-  ax_node_data_->SetNameFrom(name_from);
-
-  if (name == accessible_name_) {
-    return;
-  }
-
-  if (name.empty()) {
-    ax_node_data_->RemoveStringAttribute(ax::mojom::StringAttribute::kName);
-  } else if (ax_node_data_->role != ax::mojom::Role::kUnknown &&
-             ax_node_data_->role != ax::mojom::Role::kNone) {
-    // TODO(accessibility): This is to temporarily work around the DCHECK
-    // in `AXNodeData` that wants to have a role to calculate a name-from.
-    // If we don't have a role yet, don't add it to the data until we do.
-    // See `SetAccessibleRole` where we check for and handle this condition.
-    // Also note that the `SetAccessibilityProperties` function allows view
-    // authors to set the role and name at once, if all views use it, we can
-    // remove this workaround.
-    ax_node_data_->SetName(name);
-  }
-
-  accessible_name_ = name;
-  OnPropertyChanged(&accessible_name_, kPropertyEffectsNone);
-  OnAccessibleNameChanged(name);
-  NotifyAccessibilityEvent(ax::mojom::Event::kTextChanged, true);
+  GetViewAccessibility().SetName(name, name_from);
 }
 
 void View::SetAccessibleName(View* naming_view) {
   DCHECK(naming_view);
-  DCHECK_NE(this, naming_view);
-
-  const std::u16string& name = naming_view->GetAccessibleName();
-  DCHECK(!name.empty());
-
-  SetAccessibleName(name, ax::mojom::NameFrom::kRelatedElement);
-  ax_node_data_->AddIntListAttribute(
-      ax::mojom::IntListAttribute::kLabelledbyIds,
-      {naming_view->GetViewAccessibility().GetUniqueId().Get()});
+  GetViewAccessibility().SetName(*naming_view);
 }
 
-const std::u16string& View::GetAccessibleName() const {
-  return accessible_name_;
+std::u16string View::GetAccessibleName() const {
+  return GetViewAccessibility().GetCachedName();
 }
 
 void View::SetAccessibleRole(const ax::mojom::Role role) {
-  if (role == accessible_role_) {
-    return;
-  }
-
-  ax_node_data_->role = role;
-  if (role != ax::mojom::Role::kUnknown && role != ax::mojom::Role::kNone) {
-    if (ax_node_data_->GetStringAttribute(ax::mojom::StringAttribute::kName)
-            .empty() &&
-        !accessible_name_.empty()) {
-      // TODO(accessibility): This is to temporarily work around the DCHECK
-      // that wants to have a role to calculate a name-from. If we have a
-      // name in our properties but not in our `AXNodeData`, the name was
-      // set prior to the role. Now that we have a valid role, we can set
-      // the name. See `SetAccessibleName` for where we delayed setting it.
-      ax_node_data_->SetName(accessible_name_);
-    }
-  }
-
-  accessible_role_ = role;
-  OnPropertyChanged(&accessible_role_, kPropertyEffectsNone);
+  GetViewAccessibility().SetRole(role);
 }
 
 void View::SetAccessibleRole(const ax::mojom::Role role,
                              const std::u16string& role_description) {
-  if (!role_description.empty()) {
-    ax_node_data_->AddStringAttribute(
-        ax::mojom::StringAttribute::kRoleDescription,
-        base::UTF16ToUTF8(role_description));
-  } else {
-    ax_node_data_->RemoveStringAttribute(
-        ax::mojom::StringAttribute::kRoleDescription);
-  }
-
-  SetAccessibleRole(role);
+  GetViewAccessibility().SetRole(role, role_description);
 }
 
 ax::mojom::Role View::GetAccessibleRole() const {
-  return accessible_role_;
+  return GetViewAccessibility().GetCachedRole();
 }
 
 void View::SetAccessibleDescription(const std::u16string& description) {

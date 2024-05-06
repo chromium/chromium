@@ -116,12 +116,14 @@ class MediaViewControllerBaseTestParameterized
     return controller_->GetNoDeviceLabelViewForTesting()->GetVisible();
   }
 
-  const std::u16string& GetComboboxAccessibleName() const {
+  std::u16string GetComboboxAccessibleName() const {
     return controller_->GetComboboxForTesting()->GetAccessibleName();
   }
+
   const std::u16string& GetDeviceNameLabel() const {
     return controller_->GetDeviceNameLabelViewForTesting()->GetText();
   }
+
   const std::u16string& GetNoDeviceLabel() const {
     return controller_->GetNoDeviceLabelViewForTesting()->GetText();
   }
