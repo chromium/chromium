@@ -145,24 +145,15 @@ SVGLayoutResult SVGContentContainer::Layout(const SVGLayoutInfo& layout_info) {
       }
     }
 
-    // Resource containers are nasty: they can invalidate clients outside the
-    // containers.
-    // Since they only care about viewport size changes (to resolve their
-    // relative lengths), we trigger their invalidation directly from
-    // SVGSVGElement::svgAttributeChange() or at the LayoutView. We do not mark
-    // them for resources here, because their ability to reference each other
-    // leads to circular layout.
-    // TODO(layout-dev): Do we still need this special treatment?
-    if (!child->IsSVGResourceContainer()) {
-      DCHECK(!child->IsSVGRoot());
-      if (force_child_layout) {
-        child->SetNeedsLayout(layout_invalidation_reason::kSvgChanged,
-                              kMarkOnlyThis);
-      }
-
-      // Lay out any referenced resources before the child.
-      LayoutMarkerResourcesIfNeeded(*child, layout_info);
+    DCHECK(!child->IsSVGRoot());
+    if (force_child_layout) {
+      child->SetNeedsLayout(layout_invalidation_reason::kSvgChanged,
+                            kMarkOnlyThis);
     }
+
+    // Lay out any referenced resources before the child.
+    LayoutMarkerResourcesIfNeeded(*child, layout_info);
+
     if (!child->NeedsLayout()) {
       continue;
     }
