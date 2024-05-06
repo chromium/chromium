@@ -30,7 +30,7 @@ class HoldingSpaceDisplayClient : public DisplayClient {
 
  private:
   // The data used during download updates.
-  struct UpdateMetadata : public base::SupportsWeakPtr<UpdateMetadata> {
+  struct UpdateMetadata final {
     UpdateMetadata();
     UpdateMetadata(const UpdateMetadata&) = delete;
     UpdateMetadata& operator=(const UpdateMetadata&) = delete;
@@ -41,6 +41,13 @@ class HoldingSpaceDisplayClient : public DisplayClient {
 
     // The nullable icons that override the default holding space icon.
     crosapi::mojom::DownloadStatusIconsPtr icons;
+
+    base::WeakPtr<UpdateMetadata> AsWeakPtr() {
+      return weak_ptr_factory_.GetWeakPtr();
+    }
+
+   private:
+    base::WeakPtrFactory<UpdateMetadata> weak_ptr_factory_{this};
   };
 
   // DisplayClient:
