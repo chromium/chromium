@@ -29,6 +29,8 @@
 #include "chrome/browser/ash/input_method/input_method_quick_settings_helpers.h"
 #include "chrome/browser/ash/input_method/input_method_settings.h"
 #include "chrome/browser/ash/input_method/japanese/japanese_legacy_config.h"
+#include "chrome/browser/ash/input_method/japanese/japanese_prefs.h"
+#include "chrome/browser/ash/input_method/japanese/japanese_prefs_constants.h"
 #include "chrome/browser/ash/input_method/suggestion_enums.h"
 #include "chrome/browser/ash/input_method/ui/input_method_menu_manager.h"
 #include "chrome/browser/profiles/profile_manager.h"
@@ -94,6 +96,16 @@ bool IsChineseEngine(const std::string& engine_id) {
 
 bool IsJapaneseEngine(const std::string& engine_id) {
   return engine_id == "nacl_mozc_jp" || engine_id == "nacl_mozc_us";
+}
+
+bool ShouldInitializeJapanesePrefService(const std::string& engine_id,
+                                         PrefService* prefs) {
+  if (!IsJapaneseEngine(engine_id) ||
+      !base::FeatureList::IsEnabled(features::kSystemJapanesePhysicalTyping)) {
+    return false;
+  }
+
+  return ShouldInitializeJpPrefsFromLegacyConfig(*prefs);
 }
 
 bool IsUsEnglishEngine(const std::string& engine_id) {
@@ -784,13 +796,13 @@ void NativeInputMethodEngineObserver::SetJapanesePrefsFromLegacyConfig(
       *prefs_, kJapanesePrefsEngineId,
       CreatePrefsDictFromJapaneseLegacyConfig(
           std::move(response->get_response())));
+
+  // Set a flag saying PrefService is now used for JP config.
+  SetJpOptionsSourceAsPrefService(*prefs_);
 }
 
 void NativeInputMethodEngineObserver::OnActivate(const std::string& engine_id) {
-  if (IsJapaneseEngine(engine_id) &&
-      base::FeatureList::IsEnabled(features::kSystemJapanesePhysicalTyping)) {
-    // TODO(b/333041130): Add a check to see if migration has been completed
-    // already instead of copying over every single time.
+  if (ShouldInitializeJapanesePrefService(engine_id, prefs_)) {
     if (!user_data_service_.is_bound()) {
       auto* ime_manager = InputMethodManager::Get();
       ime_manager->BindInputMethodUserDataService(
@@ -800,6 +812,7 @@ void NativeInputMethodEngineObserver::OnActivate(const std::string& engine_id) {
         &NativeInputMethodEngineObserver::SetJapanesePrefsFromLegacyConfig,
         weak_ptr_factory_.GetWeakPtr()));
   }
+
   // Always hide the candidates window and clear the quick settings menu when
   // switching input methods.
   UpdateCandidatesWindowSync(nullptr);
@@ -811,8 +824,8 @@ void NativeInputMethodEngineObserver::OnActivate(const std::string& engine_id) {
     editor_event_sink_->OnActivateIme(engine_id);
   }
 
-  // TODO(b/181077907): Always launch the IME service and let IME service decide
-  // whether it should shutdown or not.
+  // TODO(b/181077907): Always launch the IME service and let IME service
+  // decide whether it should shutdown or not.
   if (IsFstEngine(engine_id) && ShouldRouteToNativeMojoEngine(engine_id) &&
       // The FST Mojo engine is only needed if autocorrect is enabled ...
       !IsPhysicalKeyboardAutocorrectEnabled(prefs_, engine_id) &&
@@ -827,8 +840,8 @@ void NativeInputMethodEngineObserver::OnActivate(const std::string& engine_id) {
   }
 
   if (ShouldRouteToFirstPartyVietnameseInput(engine_id)) {
-    // TODO(b/251679480): Make this part of ShouldRouteToNativeMojoEngine logic
-    // once flag is baked in.
+    // TODO(b/251679480): Make this part of ShouldRouteToNativeMojoEngine
+    // logic once flag is baked in.
     ConnectToImeService(engine_id);
     // Notify the virtual keyboard extension that the IME has changed.
     ime_base_observer_->OnActivate(engine_id);
@@ -847,10 +860,10 @@ void NativeInputMethodEngineObserver::OnActivate(const std::string& engine_id) {
     input_method_.reset();
     host_receiver_.reset();
 
-    // It is possible that the extension has missed changes to the input method
-    // options because the options were changed while it was sleeping.
-    // Trigger an input method option changed event to ensure the extension has
-    // the latest options.
+    // It is possible that the extension has missed changes to the input
+    // method options because the options were changed while it was sleeping.
+    // Trigger an input method option changed event to ensure the extension
+    // has the latest options.
     ime_base_observer_->OnInputMethodOptionsChanged(engine_id);
     ime_base_observer_->OnActivate(engine_id);
   }
@@ -902,8 +915,8 @@ void NativeInputMethodEngineObserver::HandleOnFocusAsyncForNativeMojoEngine(
     const TextInputMethod::InputContext& context,
     const AssistiveSuggesterSwitch::EnabledSuggestions& enabled_suggestions) {
   // It is possible the text client got unfocused/or changed before this async
-  // function is run, if the new focus/blur event occurred fast enough. In that
-  // case, this async OnFocus call is obsolete, and should be skipped.
+  // function is run, if the new focus/blur event occurred fast enough. In
+  // that case, this async OnFocus call is obsolete, and should be skipped.
   if (!text_client_.has_value() || text_client_->context_id != context_id ||
       text_client_->state != TextClientState::kPending) {
     return;
@@ -1013,8 +1026,8 @@ void NativeInputMethodEngineObserver::OnKeyEvent(
       const bool filtered = event.type() == ui::ET_KEY_PRESSED &&
                             character_composer_.FilterKeyPress(event);
 
-      // Don't send dead keys to the system IME. Dead keys should be handled at
-      // the OS level and not exposed to IMEs.
+      // Don't send dead keys to the system IME. Dead keys should be handled
+      // at the OS level and not exposed to IMEs.
       if (event.GetDomKey().IsDeadKey()) {
         std::move(callback).Run(ui::ime::KeyEventHandledState::kHandledByIME);
         return;
@@ -1034,8 +1047,8 @@ void NativeInputMethodEngineObserver::OnKeyEvent(
       }
 
       if (filtered) {
-        // TODO(b/174612548): Transform the corresponding KEY_RELEASED event to
-        // use the composed character as well.
+        // TODO(b/174612548): Transform the corresponding KEY_RELEASED event
+        // to use the composed character as well.
         key_event->key = mojom::DomKey::NewCodepoint(
             Utf16ToCodepoint(character_composer_.composed_character()));
       }
@@ -1134,7 +1147,8 @@ void NativeInputMethodEngineObserver::OnAssistiveWindowButtonClicked(
           ash::ime::AssistiveWindowType::kEmojiSuggestion) {
         base::RecordAction(base::UserMetricsAction(
             "ChromeOS.Settings.SmartInputs.EmojiSuggestions.Open"));
-        // TODO(crbug.com/40138453): Add subpath for emoji suggestions settings.
+        // TODO(crbug.com/40138453): Add subpath for emoji suggestions
+        // settings.
         chrome::SettingsWindowManager::GetInstance()->ShowOSSettings(
             ProfileManager::GetActiveUserProfile(),
             SettingToQueryString(

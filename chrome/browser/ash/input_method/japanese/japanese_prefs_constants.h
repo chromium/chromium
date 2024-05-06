@@ -6,7 +6,11 @@
 #define CHROME_BROWSER_ASH_INPUT_METHOD_JAPANESE_JAPANESE_PREFS_CONSTANTS_H_
 
 namespace ash::input_method {
-// Encapsulates the constants for each of the options for Japanese prefs.
+
+// Japanese Prefs should be should be set only the nacl_mozc_jp, and shared
+// across both "nacl_mozc_jp" and "nacl_mozc_us"
+static constexpr std::string_view kJpPrefsEngineId = "nacl_mozc_jp";
+
 // Top level option categories:
 // LINT.IfChange(JpOptionCategories)
 static constexpr std::string_view kJpPrefAutomaticallySwitchToHalfwidth =
@@ -72,6 +76,21 @@ static constexpr std::string_view kJpPrefShiftKeyModeStyleAlphanumeric =
     "Alphanumeric";
 static constexpr std::string_view kJpPrefShiftKeyModeStyleKatakana = "Katakana";
 // LINT.ThenChange(/chrome/browser/resources/ash/settings/os_languages_page/input_method_types.ts:JpOptionValues)
+
+// Pref key and values related to the "source of truth" for the options data.
+// These are not accessible via the OsSettings app and is only used as a way
+// to detect when configuration data needs to be copied over from one source to
+// another.
+static constexpr std::string_view kJpPrefMetadataOptionsSource =
+    "Metadata-OptionsSource";
+// This is the special "legacy" configuration file that is used directly by the
+// extension on disk to set configurations.
+static constexpr std::string_view kJpPrefMetadataOptionsSourceLegacyConfig1Db =
+    "LegacyConfig1Db";
+// In SystemPK Japanese, the source of truth is the chromeos PrefService like
+// the rest of the IMEs.
+static constexpr std::string_view kJpPrefMetadataOptionsSourcePrefService =
+    "PrefService";
 
 }  // namespace ash::input_method
 
