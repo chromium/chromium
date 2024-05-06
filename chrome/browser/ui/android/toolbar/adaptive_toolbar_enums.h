@@ -35,7 +35,9 @@ enum class AdaptiveToolbarButtonVariant {
   kAddToBookmarks = 9,
   // ReadAloud action.
   kReadAloud = 10,
-  kMaxValue = kReadAloud,
+  // Value for testing.
+  kTestButton = 11,
+  kMaxValue = kTestButton,
 };
 
 #endif  // CHROME_BROWSER_UI_ANDROID_TOOLBAR_ADAPTIVE_TOOLBAR_ENUMS_H_

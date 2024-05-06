@@ -45,10 +45,7 @@ import org.chromium.components.commerce.core.ShoppingService;
 /** Unit tests for {@link ContextualPageActionController} */
 @RunWith(BaseRobolectricTestRunner.class)
 @Config(manifest = Config.NONE)
-@EnableFeatures({
-    ChromeFeatureList.CONTEXTUAL_PAGE_ACTIONS,
-    ChromeFeatureList.CONTEXTUAL_PAGE_ACTION_PRICE_TRACKING,
-})
+@EnableFeatures({ChromeFeatureList.CONTEXTUAL_PAGE_ACTIONS})
 public class ContextualPageActionControllerUnitTest {
     private ObservableSupplierImpl<Profile> mProfileSupplier;
     private ObservableSupplierImpl<Tab> mTabSupplier;
@@ -151,8 +148,6 @@ public class ContextualPageActionControllerUnitTest {
         testValues.addFeatureFlagOverride(ChromeFeatureList.CONTEXTUAL_PAGE_ACTIONS, true);
         testValues.addFieldTrialParamOverride(
                 ChromeFeatureList.CONTEXTUAL_PAGE_ACTIONS, "enable_ui", "false");
-        testValues.addFeatureFlagOverride(
-                ChromeFeatureList.CONTEXTUAL_PAGE_ACTION_PRICE_TRACKING, true);
         FeatureList.setTestValues(testValues);
 
         createContextualPageActionController();
