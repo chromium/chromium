@@ -126,7 +126,7 @@ class UkmXmlValidation(object):
     errors = []
     warnings = []
 
-    enum_tree = merge_xml.MergeFiles([histogram_paths.ENUMS_XML])
+    enum_tree = merge_xml.MergeFiles(histogram_paths.ENUMS_XMLS)
     enums, _ = extract_histograms.ExtractEnumsFromXmlTree(enum_tree)
 
     for event_node in self.config.getElementsByTagName('event'):

@@ -61,6 +61,8 @@ chromium-metrics-reviews@google.com.
 </histogram-configuration>
 """
 
+ENUMS_PATH = path_util.GetInputFile('tools/metrics/histograms/enums.xml')
+
 
 def _get_enums_from_files(files):
   """Finds the names of all referenced enums from the specified XML files."""
@@ -79,7 +81,7 @@ def _get_enums_from_files(files):
 def _get_enums_from_ukm():
   """Finds enums used by ukm.xml."""
   ukm_xml_path = path_util.GetInputFile('tools/metrics/ukm/ukm.xml')
-  with open(ukm_xml_path, 'r') as f:
+  with open(ukm_xml_path, 'r', encoding='utf-8') as f:
     document = minidom.parse(f)
 
   enums_used_in_file = set()
@@ -93,7 +95,7 @@ def _get_enums_from_ukm():
 
 def _extract_enum_nodes_by_names(enum_names):
   """Returns the <enum> nodes corresponding to the specified names."""
-  with io.open(histogram_paths.ENUMS_XML, 'r', encoding='utf-8') as f:
+  with io.open(ENUMS_PATH, 'r', encoding='utf-8') as f:
     document = minidom.parse(f)
 
   enum_nodes = []
@@ -141,7 +143,7 @@ def _split_enums(dir_name):
   print(f'Reading XML files...')
 
   # Get the enums referenced by the given histograms.xml file.
-  relevant_files = [histograms_file, histogram_paths.ENUMS_XML]
+  relevant_files = [histograms_file, ENUMS_PATH]
   if os.path.isfile(enums_file):
     relevant_files.append(enums_file)
   enum_names = _get_enums_from_files(relevant_files)
@@ -164,10 +166,10 @@ def _split_enums(dir_name):
 
   enums_file_did_not_exist = not os.path.isfile(enums_file)
   print(f'Writing updated file: {enums_file}')
-  with open(enums_file, 'w') as f:
+  with open(enums_file, 'w', encoding='utf-8', newline='') as f:
     f.write(new_enums_xml)
-  print(f'Writing updated file: {histogram_paths.ENUMS_XML}')
-  with open(histogram_paths.ENUMS_XML, 'w') as f:
+  print(f'Writing updated file: {ENUMS_PATH}')
+  with open(ENUMS_PATH, 'w', encoding='utf-8', newline='') as f:
     f.write(updated_full_xml)
 
   print('')
