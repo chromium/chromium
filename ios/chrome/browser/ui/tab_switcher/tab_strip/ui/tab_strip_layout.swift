@@ -30,6 +30,9 @@ class TabStripLayout: UICollectionViewFlowLayout {
   private var indexPathsOfDeletingItems: [IndexPath] = []
   private var indexPathsOfInsertingItems: [IndexPath] = []
 
+  /// The currently selected item.
+  public var selectedItem: TabSwitcherItem? = nil
+
   //// Leading constraint of the `newTabButton`.
   private var newTabButtonLeadingConstraint: NSLayoutConstraint?
 
@@ -97,8 +100,9 @@ class TabStripLayout: UICollectionViewFlowLayout {
 
   // Returns the selected item index path.
   private var selectedIndexPath: IndexPath? {
-    guard let collectionView = collectionView else { return nil }
-    return collectionView.indexPathsForSelectedItems?.first
+    return TabStripItemIdentifier(selectedItem).flatMap {
+      dataSource?.indexPath(for: $0)
+    }
   }
 
   // MARK: - UICollectionViewLayout
@@ -353,7 +357,12 @@ class TabStripLayout: UICollectionViewFlowLayout {
     else { return nil }
 
     var indexPathToConsider = superAttributes.map(\.indexPath)
-    if let selectedIndexPath = selectedIndexPath {
+    // If there is a selected tab, and its index path is one of the visible
+    // index paths of the collection view, add it to the list of index paths to
+    // consider.
+    if let selectedIndexPath = selectedIndexPath,
+      collectionView?.indexPathsForVisibleItems.contains(selectedIndexPath) == true
+    {
       if !indexPathToConsider.contains(selectedIndexPath) {
         indexPathToConsider.append(selectedIndexPath)
       }

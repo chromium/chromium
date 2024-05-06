@@ -96,6 +96,7 @@ class TabStripViewController: UIViewController,
     collectionView.dragDelegate = self
     collectionView.dropDelegate = self
     collectionView.showsHorizontalScrollIndicator = false
+    collectionView.allowsMultipleSelection = false
   }
 
   required init?(coder: NSCoder) {
@@ -716,28 +717,18 @@ class TabStripViewController: UIViewController,
   /// `self.selectedItem`.
   func ensureSelectedItemIsSelected() {
     let expectedIndexPathForSelectedItem =
-      self.selectedItem.flatMap(TabStripItemIdentifier.tabIdentifier).map {
-        dataSource.indexPath(for: $0)
-      }
+      TabStripItemIdentifier(selectedItem).flatMap { dataSource.indexPath(for: $0) }
     let observedIndexPathForSelectedItem = collectionView.indexPathsForSelectedItems?.first
 
     // If the observed selected indexPath doesn't match the expected selected
     // indexPath, update the observed selected item.
     if expectedIndexPathForSelectedItem != observedIndexPathForSelectedItem {
-      // Clear the selection.
-      if let indexPaths = collectionView.indexPathsForSelectedItems {
-        for indexPath in indexPaths {
-          collectionView.deselectItem(at: indexPath, animated: false)
-        }
-      }
-
-      // If `expectedIndexPathForSelectedItem` is not nil, select it.
-      guard let expectedIndexPathForSelectedItem = expectedIndexPathForSelectedItem else { return }
       collectionView.selectItem(
         at: expectedIndexPathForSelectedItem, animated: false, scrollPosition: [])
     }
 
     /// Invalidate the layout to correctly recalculate the frame of the `selected` cell.
+    layout.selectedItem = selectedItem
     layout.invalidateLayout()
   }
 
