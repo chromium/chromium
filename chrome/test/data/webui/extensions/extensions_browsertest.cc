@@ -316,6 +316,10 @@ IN_PROC_BROWSER_TEST_F(CrExtensionsItemListTest, NoSearchResults) {
   RunTestCase("NoSearchResults");
 }
 
+IN_PROC_BROWSER_TEST_F(CrExtensionsItemListTest, SectionsVisibility) {
+  RunTestCase("SectionsVisibility");
+}
+
 IN_PROC_BROWSER_TEST_F(CrExtensionsItemListTest, LoadTimeData) {
   RunTestCase("LoadTimeData");
 }
