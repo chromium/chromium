@@ -28,6 +28,7 @@ import org.chromium.base.test.transit.Station;
 import org.chromium.base.test.transit.TravelException;
 import org.chromium.base.test.transit.Trip;
 import org.chromium.base.test.transit.ViewElement;
+import org.chromium.chrome.browser.ChromeTabbedActivity;
 import org.chromium.chrome.browser.hub.HubFieldTrial;
 import org.chromium.chrome.browser.hub.PaneId;
 import org.chromium.chrome.browser.hub.R;
@@ -75,6 +76,8 @@ public abstract class HubBaseStation extends Station {
 
     @Override
     public void declareElements(Elements.Builder elements) {
+        elements.declareActivity(ChromeTabbedActivity.class);
+
         elements.declareView(HUB_TOOLBAR);
         elements.declareView(HUB_PANE_HOST);
         elements.declareView(HUB_MENU_BUTTON);

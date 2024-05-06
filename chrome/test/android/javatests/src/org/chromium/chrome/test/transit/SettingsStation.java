@@ -9,6 +9,7 @@ import static androidx.test.espresso.matcher.ViewMatchers.withText;
 import org.chromium.base.test.transit.Elements;
 import org.chromium.base.test.transit.Station;
 import org.chromium.base.test.transit.ViewElement;
+import org.chromium.chrome.browser.settings.SettingsActivity;
 
 /**
  * The initial and main Settings screen.
@@ -18,6 +19,7 @@ import org.chromium.base.test.transit.ViewElement;
 public class SettingsStation extends Station {
     @Override
     public void declareElements(Elements.Builder elements) {
+        elements.declareActivity(SettingsActivity.class);
         elements.declareView(ViewElement.sharedViewElement(withText("Search engine")));
     }
 }

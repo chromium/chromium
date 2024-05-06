@@ -11,6 +11,7 @@ import static androidx.test.espresso.matcher.ViewMatchers.withId;
 import static org.chromium.base.test.transit.ViewElement.unscopedViewElement;
 
 import org.chromium.base.ThreadUtils;
+import org.chromium.base.test.transit.ActivityElement;
 import org.chromium.base.test.transit.CallbackCondition;
 import org.chromium.base.test.transit.Condition;
 import org.chromium.base.test.transit.ConditionStatus;
@@ -22,6 +23,7 @@ import org.chromium.base.test.transit.Trip;
 import org.chromium.base.test.transit.ViewElement;
 import org.chromium.base.test.util.CallbackHelper;
 import org.chromium.chrome.R;
+import org.chromium.chrome.browser.ChromeTabbedActivity;
 import org.chromium.chrome.browser.hub.PaneId;
 import org.chromium.chrome.browser.tab.Tab;
 import org.chromium.chrome.browser.tabmodel.TabModel;
@@ -115,6 +117,7 @@ public class PageStation extends Station {
             unscopedViewElement(withId(R.id.tab_switcher_button));
     public static final ViewElement MENU_BUTTON = unscopedViewElement(withId(R.id.menu_button));
 
+    protected ActivityElement<ChromeTabbedActivity> mActivityElement;
     protected PageStationTabModelObserver mTabModelObserver;
     protected PageLoadedCondition mPageLoadedEnterCondition;
 
@@ -170,6 +173,7 @@ public class PageStation extends Station {
 
     @Override
     public void declareElements(Elements.Builder elements) {
+        mActivityElement = elements.declareActivity(ChromeTabbedActivity.class);
         elements.declareView(HOME_BUTTON);
         elements.declareView(TAB_SWITCHER_BUTTON);
         elements.declareView(MENU_BUTTON);

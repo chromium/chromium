@@ -4,6 +4,7 @@
 
 package org.chromium.base.test.transit;
 
+import android.app.Activity;
 import android.view.View;
 
 import org.hamcrest.Matcher;
@@ -62,6 +63,13 @@ public class Elements {
         /** Instantiate by calling {@link Elements#newBuilder()}. */
         private Builder(Elements elements) {
             mElements = elements;
+        }
+
+        /** Declare as an element an Android Activity of type |activityClass|. */
+        public <T extends Activity> ActivityElement<T> declareActivity(Class<T> activityClass) {
+            ActivityElement<T> element = new ActivityElement<>(activityClass);
+            mElements.mElementsInState.add(element);
+            return element;
         }
 
         /** Declare as an element a View that matches |viewMatcher|. */

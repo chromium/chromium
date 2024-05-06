@@ -31,6 +31,7 @@ import org.chromium.base.test.transit.Station;
 import org.chromium.base.test.transit.Trip;
 import org.chromium.base.test.transit.ViewElement;
 import org.chromium.base.test.util.ViewActionOnDescendant;
+import org.chromium.chrome.browser.ChromeTabbedActivity;
 import org.chromium.chrome.browser.hub.HubFieldTrial;
 import org.chromium.chrome.browser.layouts.LayoutManager;
 import org.chromium.chrome.browser.layouts.LayoutType;
@@ -107,6 +108,8 @@ public abstract class TabSwitcherStation extends Station {
     @Override
     @CallSuper
     public void declareElements(Elements.Builder elements) {
+        elements.declareActivity(ChromeTabbedActivity.class);
+
         elements.declareView(TOOLBAR);
         elements.declareView(TOOLBAR_NEW_TAB_BUTTON);
 
