@@ -60,24 +60,21 @@ suite('Metrics', function() {
 
   test('History.HistoryPageView', async () => {
     await finishSetup([]);
-    await flush();
 
     const histogram = histogramMap['History.HistoryPageView'];
     assertTrue(!!histogram);
     assertEquals(1, histogram[HistoryPageViewHistogram.HISTORY]);
 
     navigateTo('/syncedTabs', app);
-    await flush();
     assertEquals(1, histogram[HistoryPageViewHistogram.SIGNIN_PROMO]);
     await testService.whenCalled('otherDevicesInitialized');
 
     testService.resetResolver('recordHistogram');
     webUIListenerCallback('sign-in-state-changed', true);
     await testService.whenCalled('recordHistogram');
-    assertEquals(1, histogram[HistoryPageViewHistogram.SYNCED_TABS]);
 
+    assertEquals(1, histogram[HistoryPageViewHistogram.SYNCED_TABS]);
     navigateTo('/history', app);
-    await flush();
     assertEquals(2, histogram[HistoryPageViewHistogram.HISTORY]);
   });
 
