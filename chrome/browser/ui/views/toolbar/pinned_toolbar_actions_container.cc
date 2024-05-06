@@ -177,7 +177,7 @@ gfx::Size PinnedToolbarActionsContainer::CustomFlexRule(
 
   if ((remaining_pinned_available_width > 0) &&
       (remaining_pinned_available_width < minimum_pinned_container_width) &&
-      shrink_to_hide_divider) {
+      shrink_to_hide_divider && !GetAnimatingLayoutManager()->is_animating()) {
     return gfx::Size(popped_out_buttons_width,
                      DefaultFlexRule(size_bounds).height());
   }
