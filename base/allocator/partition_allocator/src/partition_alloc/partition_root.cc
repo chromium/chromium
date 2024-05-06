@@ -346,6 +346,7 @@ MinPurgeableSlotSize() {
 //
 // If `accounting_only` is set to true, no action is performed and the function
 // merely returns the number of bytes in the would-be discarded pages.
+PA_NOPROFILE
 static size_t PartitionPurgeSlotSpan(PartitionRoot* root,
                                      internal::SlotSpanMetadata* slot_span,
                                      bool accounting_only)
@@ -659,6 +660,7 @@ static size_t PartitionPurgeSlotSpan(PartitionRoot* root,
   return discardable_bytes;
 }
 
+PA_NOPROFILE
 static void PartitionPurgeBucket(PartitionRoot* root,
                                  internal::PartitionBucket* bucket)
     PA_EXCLUSIVE_LOCKS_REQUIRED(internal::PartitionRootLock(root)) {

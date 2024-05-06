@@ -302,4 +302,16 @@ inline constexpr bool AnalyzerAssumeTrue(bool arg) {
 #define PA_LIFETIME_BOUND
 #endif
 
+// Clang instrumentation may allocate, leading to reentrancy in the allocator,
+// and crashes when generating a PGO profile. This attribute disables profiling
+// for a function.
+//
+// See
+// https://clang.llvm.org/docs/AttributeReference.html#no-profile-instrument-function
+#if PA_HAS_CPP_ATTRIBUTE(gnu::no_profile_instrument_function)
+#define PA_NOPROFILE [[gnu::no_profile_instrument_function]]
+#else
+#define PA_NOPROFILE
+#endif
+
 #endif  // PARTITION_ALLOC_PARTITION_ALLOC_BASE_COMPILER_SPECIFIC_H_
