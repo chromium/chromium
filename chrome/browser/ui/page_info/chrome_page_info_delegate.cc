@@ -51,7 +51,10 @@
 #include "chrome/browser/ui/webui/ash/settings/app_management/app_management_uma.h"
 #endif
 
-#if !BUILDFLAG(IS_ANDROID)
+#if BUILDFLAG(IS_ANDROID)
+#include "chrome/grit/branded_strings.h"
+#include "ui/base/l10n/l10n_util.h"
+#else
 #include "chrome/browser/certificate_viewer.h"
 #include "chrome/browser/hid/hid_chooser_context.h"
 #include "chrome/browser/hid/hid_chooser_context_factory.h"
@@ -69,12 +72,10 @@
 #include "chrome/browser/ui/web_applications/app_browser_controller.h"
 #include "chrome/browser/ui/web_applications/web_app_ui_utils.h"
 #include "chrome/browser/web_applications/web_app_provider.h"
+#include "chrome/browser/web_applications/web_app_registrar.h"
 #include "chrome/browser/web_applications/web_app_tab_helper.h"
 #include "components/webapps/common/web_app_id.h"
 #include "ui/events/event.h"
-#else
-#include "chrome/grit/branded_strings.h"
-#include "ui/base/l10n/l10n_util.h"
 #endif
 
 namespace {

@@ -27,7 +27,6 @@
 
 #if BUILDFLAG(IS_CHROMEOS_ASH)
 #include "chrome/browser/ash/system_web_apps/system_web_app_manager.h"
-#include "chrome/browser/web_applications/web_app_provider.h"
 #endif
 
 namespace payments {

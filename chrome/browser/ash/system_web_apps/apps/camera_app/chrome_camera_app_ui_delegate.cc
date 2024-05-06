@@ -44,7 +44,6 @@
 #include "chrome/browser/ui/webui/ash/internet_config_dialog.h"
 #include "chrome/browser/web_applications/web_app_id_constants.h"
 #include "chrome/browser/web_applications/web_app_launch_queue.h"
-#include "chrome/browser/web_applications/web_app_provider.h"
 #include "chrome/browser/web_applications/web_app_tab_helper.h"
 #include "chrome/common/pref_names.h"
 #include "chrome/services/pdf/public/mojom/pdf_searchifier.mojom.h"

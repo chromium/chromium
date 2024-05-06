@@ -46,7 +46,6 @@
 #include "chrome/browser/web_applications/test/with_crosapi_param.h"
 #include "chrome/browser/web_applications/web_app_id_constants.h"
 #include "chrome/browser/web_applications/web_app_install_info.h"
-#include "chrome/browser/web_applications/web_app_provider.h"
 #include "chrome/test/base/chromeos/ash_browser_test_starter.h"
 #include "chrome/test/base/ui_test_utils.h"
 #include "chromeos/ash/components/standalone_browser/feature_refs.h"

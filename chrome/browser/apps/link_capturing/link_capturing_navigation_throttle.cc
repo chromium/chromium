@@ -16,7 +16,6 @@
 #include "chrome/browser/profiles/keep_alive/scoped_profile_keep_alive.h"  // nogncheck https://crbug.com/1474116
 #include "chrome/browser/profiles/profile.h"
 #include "chrome/browser/ui/browser_finder.h"  // nogncheck https://crbug.com/1474984
-#include "chrome/browser/web_applications/web_app_provider.h"
 #include "chrome/browser/web_applications/web_app_ui_manager.h"
 #include "chrome/browser/web_applications/web_app_utils.h"
 #include "components/keep_alive_registry/keep_alive_types.h"

@@ -7,7 +7,6 @@
 #include "chrome/browser/badging/badge_manager.h"
 #include "chrome/browser/badging/badge_manager_delegate.h"
 #include "chrome/browser/profiles/profile.h"
-#include "chrome/browser/web_applications/web_app_registrar.h"
 
 namespace badging {
 

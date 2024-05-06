@@ -50,8 +50,6 @@
 #include "chrome/browser/media/webrtc/system_media_capture_permissions_mac.h"
 #include "chrome/browser/web_applications/app_shim_registry_mac.h"
 #include "chrome/browser/web_applications/os_integration/web_app_shortcut_mac.h"
-#include "chrome/browser/web_applications/web_app_provider.h"
-#include "chrome/browser/web_applications/web_app_registrar.h"
 #include "chrome/browser/web_applications/web_app_tab_helper.h"
 #include "components/content_settings/core/common/features.h"
 #endif

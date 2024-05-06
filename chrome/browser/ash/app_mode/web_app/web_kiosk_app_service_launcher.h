@@ -15,7 +15,6 @@
 #include "chrome/browser/chromeos/app_mode/kiosk_app_service_launcher.h"
 #include "chrome/browser/chromeos/app_mode/web_kiosk_app_installer.h"
 #include "chrome/browser/web_applications/externally_managed_app_manager.h"
-#include "chrome/browser/web_applications/web_app_provider.h"
 #include "chromeos/crosapi/mojom/chrome_app_kiosk_service.mojom-forward.h"
 #include "chromeos/crosapi/mojom/chrome_app_kiosk_service.mojom-shared.h"
 #include "components/account_id/account_id.h"

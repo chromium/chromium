@@ -27,7 +27,6 @@
 #include "chrome/browser/ui/browser_tabstrip.h"
 #include "chrome/browser/ui/browser_window.h"
 #include "chrome/browser/ui/tabs/tab_group_model.h"
-#include "chrome/browser/web_applications/web_app_provider.h"
 #include "components/app_constants/constants.h"
 #include "components/app_restore/app_restore_data.h"
 #include "components/app_restore/app_restore_utils.h"

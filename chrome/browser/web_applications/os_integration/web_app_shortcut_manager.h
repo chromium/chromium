@@ -16,7 +16,6 @@
 #include "chrome/browser/web_applications/os_integration/web_app_shortcuts_menu.h"
 #include "chrome/browser/web_applications/web_app_constants.h"
 #include "chrome/browser/web_applications/web_app_install_info.h"
-#include "chrome/browser/web_applications/web_app_registrar.h"
 #include "third_party/skia/include/core/SkBitmap.h"
 
 class Profile;

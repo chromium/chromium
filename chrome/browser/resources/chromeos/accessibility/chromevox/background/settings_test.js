@@ -16,7 +16,6 @@ ChromeVoxSettingsPagesTest = class extends ChromeVoxE2ETest {
     super.testGenCppIncludes();
     GEN(`
       #include "chrome/browser/ash/system_web_apps/system_web_app_manager.h"
-      #include "chrome/browser/web_applications/web_app_provider.h"
     `);
   }
 

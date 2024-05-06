@@ -10,7 +10,6 @@
 #include "chrome/browser/web_applications/proto/web_app.pb.h"
 #include "chrome/browser/web_applications/web_app.h"
 #include "chrome/browser/web_applications/web_app_helpers.h"
-#include "chrome/browser/web_applications/web_app_registrar.h"
 #include "components/sync/protocol/web_app_specifics.pb.h"
 #include "components/webapps/common/web_app_id.h"
 #include "testing/gtest/include/gtest/gtest.h"
