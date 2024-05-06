@@ -24,8 +24,31 @@
 #import "net/base/net_errors.h"
 #import "ui/base/l10n/l10n_util.h"
 
-DownloadManagerMediator::DownloadManagerMediator() : weak_ptr_factory_(this) {}
+DownloadManagerMediator::DownloadManagerMediator() : weak_ptr_factory_(this) {
+  // Register for backgrounding and foregrounding notifications.
+  application_backgrounding_observer_ = [[NSNotificationCenter defaultCenter]
+      addObserverForName:UIApplicationDidEnterBackgroundNotification
+                  object:nil
+                   queue:nil
+              usingBlock:
+                  base::CallbackToBlock(
+                      base::IgnoreArgs<NSNotification*>(base::BindRepeating(
+                          &DownloadManagerMediator::AppDidEnterBackground,
+                          weak_ptr_factory_.GetWeakPtr())))];
+
+  application_foregrounding_observer_ = [[NSNotificationCenter defaultCenter]
+      addObserverForName:UIApplicationWillEnterForegroundNotification
+                  object:nil
+                   queue:nil
+              usingBlock:
+                  base::CallbackToBlock(
+                      base::IgnoreArgs<NSNotification*>(base::BindRepeating(
+                          &DownloadManagerMediator::AppWillEnterForeground,
+                          weak_ptr_factory_.GetWeakPtr())))];
+}
 DownloadManagerMediator::~DownloadManagerMediator() {
+  DCHECK(!application_foregrounding_observer_);
+  DCHECK(!application_backgrounding_observer_);
   SetDownloadTask(nullptr);
   if (identity_manager_) {
     identity_manager_->RemoveObserver(this);
@@ -147,9 +170,27 @@ bool DownloadManagerMediator::IsSaveToDriveAvailable() const {
                                        drive_service_, pref_service_);
 }
 
+void DownloadManagerMediator::Disconnect() {
+  if (application_backgrounding_observer_) {
+    [[NSNotificationCenter defaultCenter]
+        removeObserver:application_backgrounding_observer_];
+    application_backgrounding_observer_ = nil;
+  }
+
+  if (application_foregrounding_observer_) {
+    [[NSNotificationCenter defaultCenter]
+        removeObserver:application_foregrounding_observer_];
+    application_foregrounding_observer_ = nil;
+  }
+}
+
 #pragma mark - Private
 
 void DownloadManagerMediator::UpdateConsumer() {
+  if (app_in_background_) {
+    // If the app is in the background, do nothing.
+    return;
+  }
   if (!download_task_) {
     // If there is no download task, keep the latest state (not started or
     // finished) as it is not possible to determine what is the new state).
@@ -285,6 +326,15 @@ void DownloadManagerMediator::SetUploadTask(UploadTask* task) {
     upload_task_->AddObserver(this);
     UpdateConsumer();
   }
+}
+
+void DownloadManagerMediator::AppDidEnterBackground() {
+  app_in_background_ = true;
+}
+
+void DownloadManagerMediator::AppWillEnterForeground() {
+  app_in_background_ = false;
+  UpdateConsumer();
 }
 
 #pragma mark - web::DownloadTaskObserver overrides

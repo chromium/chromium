@@ -151,6 +151,7 @@
   _mediator.SetDriveService(nullptr);
   _mediator.SetPrefService(nullptr);
   _mediator.SetIdentityManager(nullptr);
+  _mediator.Disconnect();
 
   if (_viewController) {
     [self.presenter dismissAnimated:self.animatesPresentation];
