@@ -14,7 +14,7 @@ import java.util.concurrent.Callable;
  *
  * <p>LogicalElements should be declared by calling {@link
  * Elements.Builder#declareLogicalElement(LogicalElement)} passing in an instance created by one of
- * the factory methods here such as {@link #sharedUiThreadLogicalElement(String, Callable)}.
+ * the factory methods here such as {@link #uiThreadLogicalElement(String, Callable)}.
  *
  * <p>Generates ENTER and EXIT Conditions for the ConditionalState to ensure the LogicalElement is
  * in the right state.
@@ -29,9 +29,27 @@ public class LogicalElement implements ElementInState {
     @Nullable private Condition mExitCondition;
 
     /**
+     * Alias for {@link #unscopedUiThreadLogicalElement(String, Callable)} as the default way to
+     * declare LogicalElements.
+     */
+    public static LogicalElement uiThreadLogicalElement(
+            String description, Callable<Boolean> checkFunction) {
+        return unscopedUiThreadLogicalElement(description, checkFunction);
+    }
+
+    /**
+     * Alias for {@link #unscopedInstrumentationThreadLogicalElement(String, Callable)} as the
+     * default way to declare LogicalElements.
+     */
+    public static LogicalElement instrumentationThreadLogicalElement(
+            String description, Callable<Boolean> checkFunction) {
+        return unscopedInstrumentationThreadLogicalElement(description, checkFunction);
+    }
+
+    /**
      * Create a shared-scope LogicalElement that runs the check on the UI Thread.
      *
-     * <p>Unscoped LogicalElements wait for the function to be true as an ENTER Condition. It also
+     * <p>Shared LogicalElements wait for the function to be true as an ENTER Condition. It also
      * waits for the function to be false as an EXIT Condition when transitioning to a
      * ConditionalState that does not declare the LogicalElement too.
      */
