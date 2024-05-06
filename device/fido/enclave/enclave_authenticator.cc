@@ -19,6 +19,7 @@
 #include "crypto/random.h"
 #include "device/fido/discoverable_credential_metadata.h"
 #include "device/fido/enclave/constants.h"
+#include "device/fido/enclave/metrics.h"
 #include "device/fido/enclave/transact.h"
 #include "device/fido/enclave/types.h"
 #include "device/fido/fido_constants.h"
@@ -132,6 +133,8 @@ void EnclaveAuthenticator::MakeCredential(CtapMakeCredentialRequest request,
     return;
   }
 
+  RecordEvent(Event::kMakeCredential);
+
   Transact(network_context_factory_, GetEnclaveIdentity(),
            std::move(ui_request_->access_token),
            /*reauthentication_token=*/std::nullopt,
@@ -187,6 +190,8 @@ void EnclaveAuthenticator::GetAssertion(CtapGetAssertionRequest request,
             weak_factory_.GetWeakPtr()));
     return;
   }
+
+  RecordEvent(Event::kGetAssertion);
 
   Transact(network_context_factory_, GetEnclaveIdentity(),
            std::move(ui_request_->access_token),

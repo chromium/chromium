@@ -874,6 +874,7 @@ class AuthenticatorGpmOnboardingSheetModel
   bool IsAcceptButtonVisible() const override;
   std::u16string GetAcceptButtonLabel() const override;
   void OnAccept() override;
+  void OnBack() override;
 };
 
 // The sheet shown for bootstrapping Google Password Manager passkeys during

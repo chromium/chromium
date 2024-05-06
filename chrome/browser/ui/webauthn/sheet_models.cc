@@ -23,6 +23,7 @@
 #include "chrome/grit/generated_resources.h"
 #include "components/strings/grit/components_strings.h"
 #include "device/fido/discoverable_credential_metadata.h"
+#include "device/fido/enclave/metrics.h"
 #include "device/fido/features.h"
 #include "device/fido/fido_constants.h"
 #include "device/fido/fido_types.h"
@@ -2050,6 +2051,7 @@ AuthenticatorGpmOnboardingSheetModel::AuthenticatorGpmOnboardingSheetModel(
                                   OtherMechanismButtonVisibility::kVisible) {
   lottie_illustrations_.emplace(IDR_WEBAUTHN_GPM_PASSKEY_LIGHT,
                                 IDR_WEBAUTHN_GPM_PASSKEY_DARK);
+  device::enclave::RecordEvent(device::enclave::Event::kOnboarding);
 }
 
 AuthenticatorGpmOnboardingSheetModel::~AuthenticatorGpmOnboardingSheetModel() =
@@ -2098,7 +2100,13 @@ std::u16string AuthenticatorGpmOnboardingSheetModel::GetAcceptButtonLabel()
 }
 
 void AuthenticatorGpmOnboardingSheetModel::OnAccept() {
+  device::enclave::RecordEvent(device::enclave::Event::kOnboardingAccepted);
   dialog_model()->OnGPMOnboardingAccepted();
+}
+
+void AuthenticatorGpmOnboardingSheetModel::OnBack() {
+  device::enclave::RecordEvent(device::enclave::Event::kOnboardingRejected);
+  AuthenticatorSheetModelBase::OnBack();
 }
 
 // AuthenticatorTrustThisComputerCreationSheetModel ---------------------

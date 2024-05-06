@@ -31,6 +31,7 @@
 #include "components/trusted_vault/trusted_vault_connection.h"
 #include "components/trusted_vault/trusted_vault_server_constants.h"
 #include "content/public/browser/render_frame_host.h"
+#include "device/fido/enclave/metrics.h"
 #include "device/fido/features.h"
 #include "device/fido/fido_constants.h"
 #include "device/fido/fido_discovery_factory.h"
@@ -584,6 +585,7 @@ void GPMEnclaveController::OnKeysStored() {
   CHECK(enclave_manager_->has_pending_keys());
   CHECK(!enclave_manager_->is_ready());
 
+  device::enclave::RecordEvent(device::enclave::Event::kRecoverySuccessful);
   if (pin_metadata_.has_value() || *can_make_uv_keys_) {
     if (!enclave_manager_->AddDeviceToAccount(
             std::move(pin_metadata_),

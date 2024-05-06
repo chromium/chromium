@@ -173,6 +173,8 @@ component("fido") {
         "enclave/enclave_protocol_utils.h",
         "enclave/enclave_websocket_client.cc",
         "enclave/enclave_websocket_client.h",
+        "enclave/metrics.cc",
+        "enclave/metrics.h",
         "enclave/transact.cc",
         "enclave/transact.h",
         "enclave/types.cc",

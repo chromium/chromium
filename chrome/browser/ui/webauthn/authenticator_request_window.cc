@@ -16,6 +16,7 @@
 #include "chrome/browser/webauthn/webauthn_switches.h"
 #include "content/public/browser/navigation_handle.h"
 #include "content/public/browser/web_contents_observer.h"
+#include "device/fido/enclave/metrics.h"
 #include "google_apis/gaia/gaia_urls.h"
 #include "net/base/url_util.h"
 #include "net/http/http_response_headers.h"
@@ -144,6 +145,7 @@ class AuthenticatorRequestWindow
         // produce the "kdi" parameter's value.
         url = GaiaUrls::GetInstance()->gaia_url().Resolve(
             "/encryption/unlock/desktop?kdi=CAESDgoMaHdfcHJvdGVjdGVk");
+        device::enclave::RecordEvent(device::enclave::Event::kRecoveryShown);
         break;
 
       case AuthenticatorRequestDialogModel::Step::kGPMReauthAccount:

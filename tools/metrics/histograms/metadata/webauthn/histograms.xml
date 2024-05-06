@@ -196,6 +196,16 @@ chromium-metrics-reviews@google.com.
   </summary>
 </histogram>
 
+<histogram name="WebAuthentication.EnclaveEvent"
+    enum="WebAuthenticationEnclaveEvent" expires_after="2024-12-31">
+  <owner>agl@chromium.org</owner>
+  <owner>chrome-webauthn@google.com</owner>
+  <summary>
+    Records events related to the enclave (i.e. Google Password Manager passkeys
+    on the desktop).
+  </summary>
+</histogram>
+
 <histogram name="WebAuthentication.GetAssertion.Result"
     enum="WebAuthenticationGetAssertionResult" expires_after="2024-10-01">
   <owner>nsatragno@chromium.org</owner>

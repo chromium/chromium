@@ -443,8 +443,7 @@ class EnclaveAuthenticatorBrowserTest : public SyncTest {
 #if BUILDFLAG(IS_WIN)
         webauthn_dll_override_(&fake_webauthn_dll_),
 #endif
-        recovery_key_store_(FakeRecoveryKeyStore::New())
-  {
+        recovery_key_store_(FakeRecoveryKeyStore::New()) {
 #if BUILDFLAG(IS_WIN)
     // Make webauthn.dll unavailable to ensure a consistent test environment on
     // Windows. Otherwise the version of webauthn.dll can differ between

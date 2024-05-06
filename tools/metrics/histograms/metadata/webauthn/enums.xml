@@ -180,6 +180,18 @@ chromium-metrics-reviews@google.com.
   <int value="8" label="Canceled"/>
 </enum>
 
+<enum name="WebAuthenticationEnclaveEvent">
+  <int value="0" label="Onboarding sheet was shown to the user"/>
+  <int value="1"
+      label="User rejected the onboarding sheet by requesting to save the
+             passkey in a different authenticator"/>
+  <int value="2" label="User accepted the onboarding sheet"/>
+  <int value="3" label="A MagicArch window was shown"/>
+  <int value="4" label="MagicArch provided the security domain secret"/>
+  <int value="5" label="A create() request was sent to the enclave"/>
+  <int value="6" label="A get() request was sent to the enclave"/>
+</enum>
+
 <enum name="WebAuthenticationFidoTransport">
   <int value="0" label="USB HID"/>
   <int value="1" label="Near Field Communication"/>
