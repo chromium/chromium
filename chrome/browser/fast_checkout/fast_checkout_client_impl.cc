@@ -23,6 +23,7 @@
 #include "components/autofill/core/browser/data_model/credit_card.h"
 #include "components/autofill/core/browser/payments/credit_card_cvc_authenticator.h"
 #include "components/autofill/core/browser/payments/payments_autofill_client.h"
+#include "components/autofill/core/browser/payments_data_manager.h"
 #include "components/autofill/core/browser/ui/fast_checkout_enums.h"
 #include "components/autofill/core/common/dense_set.h"
 #include "components/autofill/core/common/mojom/autofill_types.mojom-shared.h"
@@ -483,13 +484,14 @@ FastCheckoutClientImpl::GetSelectedAutofillProfile() {
 autofill::CreditCard* FastCheckoutClientImpl::GetSelectedCreditCard() {
   autofill::CreditCard* credit_card = nullptr;
   if (selected_credit_card_is_local_) {
-    credit_card =
-        personal_data_helper_->GetPersonalDataManager()->GetCreditCardByGUID(
-            selected_credit_card_id_.value());
+    credit_card = personal_data_helper_->GetPersonalDataManager()
+                      ->payments_data_manager()
+                      .GetCreditCardByGUID(selected_credit_card_id_.value());
   } else {
     credit_card =
         personal_data_helper_->GetPersonalDataManager()
-            ->GetCreditCardByServerId(selected_credit_card_id_.value());
+            ->payments_data_manager()
+            .GetCreditCardByServerId(selected_credit_card_id_.value());
   }
   if (!credit_card) {
     OnRunComplete(FastCheckoutRunOutcome::kCreditCardDeleted);

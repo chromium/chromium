@@ -64,7 +64,7 @@ class AutofillKeyboardAccessoryControllerImplTest
 
   CreditCard ShowLocalCardSuggestion() {
     CreditCard local_card = test::GetCreditCard();
-    personal_data().AddCreditCard(local_card);
+    personal_data().payments_data_manager().AddCreditCard(local_card);
     ShowSuggestions(manager(),
                     {test::CreateAutofillSuggestion(
                         SuggestionType::kCreditCardEntry, u"Local credit card",

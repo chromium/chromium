@@ -18,6 +18,7 @@
 #include "components/autofill/core/browser/payments/payments_network_interface.h"
 #include "components/autofill/core/browser/payments/virtual_card_enrollment_flow.h"
 #include "components/autofill/core/browser/payments/virtual_card_enrollment_manager.h"
+#include "components/autofill/core/browser/payments_data_manager.h"
 #include "components/autofill/core/browser/personal_data_manager.h"
 #include "services/network/public/cpp/shared_url_loader_factory.h"
 #include "url/android/gurl_android.h"
@@ -72,8 +73,8 @@ void AutofillPaymentMethodsDelegate::InitVirtualCardEnrollment(
     JNIEnv* env,
     int64_t instrument_id,
     const JavaParamRef<jobject>& jcallback) {
-  CreditCard* credit_card =
-      personal_data_manager_->GetCreditCardByInstrumentId(instrument_id);
+  CreditCard* credit_card = personal_data_manager_->payments_data_manager()
+                                .GetCreditCardByInstrumentId(instrument_id);
   virtual_card_enrollment_manager_->InitVirtualCardEnroll(
       *credit_card, VirtualCardEnrollmentSource::kSettingsPage, std::nullopt,
       profile_->GetPrefs(), base::BindOnce(&risk_util::LoadRiskDataHelper),

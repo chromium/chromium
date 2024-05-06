@@ -18,6 +18,7 @@
 #include "chrome/test/base/testing_profile.h"
 #include "components/autofill/core/browser/autofill_test_utils.h"
 #include "components/autofill/core/browser/metrics/payments/credit_card_save_metrics.h"
+#include "components/autofill/core/browser/payments_data_manager.h"
 #include "components/autofill/core/browser/personal_data_manager.h"
 #include "components/autofill/core/browser/test_personal_data_manager.h"
 #include "components/browser_ui/device_lock/android/device_lock_bridge.h"
@@ -262,7 +263,8 @@ TEST_F(AutofillSaveCardInfoBarDelegateMobileTest, Metrics_Local_Main) {
     base::HistogramTester histogram_tester;
 
     CheckInfobarAcceptReturnValue(infobar.get());
-    ASSERT_EQ(1U, personal_data_->GetCreditCards().size());
+    ASSERT_EQ(1U,
+              personal_data_->payments_data_manager().GetCreditCards().size());
     histogram_tester.ExpectUniqueSample("Autofill.CreditCardInfoBar.Local",
                                         AutofillMetrics::INFOBAR_ACCEPTED, 1);
     histogram_tester.ExpectUniqueSample(
@@ -339,7 +341,8 @@ TEST_F(AutofillSaveCardInfoBarDelegateMobileTest, Metrics_Server_Main) {
 
     base::HistogramTester histogram_tester;
     CheckInfobarAcceptReturnValue(infobar.get());
-    ASSERT_EQ(1U, personal_data_->GetCreditCards().size());
+    ASSERT_EQ(1U,
+              personal_data_->payments_data_manager().GetCreditCards().size());
     histogram_tester.ExpectUniqueSample("Autofill.CreditCardInfoBar.Server",
                                         AutofillMetrics::INFOBAR_ACCEPTED, 1);
     histogram_tester.ExpectUniqueSample(
@@ -358,7 +361,8 @@ TEST_F(AutofillSaveCardInfoBarDelegateMobileTest, Metrics_Server_Main) {
 
     base::HistogramTester histogram_tester;
     CheckInfobarAcceptReturnValue(infobar.get());
-    ASSERT_EQ(1U, personal_data_->GetCreditCards().size());
+    ASSERT_EQ(1U,
+              personal_data_->payments_data_manager().GetCreditCards().size());
     histogram_tester.ExpectUniqueSample("Autofill.CreditCardInfoBar.Server",
                                         AutofillMetrics::INFOBAR_ACCEPTED, 1);
     histogram_tester.ExpectUniqueSample(
@@ -385,7 +389,8 @@ TEST_F(AutofillSaveCardInfoBarDelegateMobileTest, Metrics_Server_Main) {
 
     base::HistogramTester histogram_tester;
     CheckInfobarAcceptReturnValue(infobar.get());
-    ASSERT_EQ(1U, personal_data_->GetCreditCards().size());
+    ASSERT_EQ(1U,
+              personal_data_->payments_data_manager().GetCreditCards().size());
     histogram_tester.ExpectUniqueSample("Autofill.CreditCardInfoBar.Server",
                                         AutofillMetrics::INFOBAR_ACCEPTED, 1);
     histogram_tester.ExpectUniqueSample(
@@ -550,7 +555,8 @@ TEST_F(AutofillSaveCardInfoBarDelegateMobileTest, Metrics_Cvc_Local_Main) {
     base::HistogramTester histogram_tester;
 
     CheckInfobarAcceptReturnValue(infobar.get());
-    ASSERT_EQ(1U, personal_data_->GetCreditCards().size());
+    ASSERT_EQ(1U,
+              personal_data_->payments_data_manager().GetCreditCards().size());
     histogram_tester.ExpectUniqueSample("Autofill.CvcInfoBar.Local",
                                         AutofillMetrics::INFOBAR_ACCEPTED, 1);
   }
@@ -609,7 +615,8 @@ TEST_F(AutofillSaveCardInfoBarDelegateMobileTest, Metrics_Cvc_Server_Main) {
 
     base::HistogramTester histogram_tester;
     CheckInfobarAcceptReturnValue(infobar.get());
-    ASSERT_EQ(1U, personal_data_->GetCreditCards().size());
+    ASSERT_EQ(1U,
+              personal_data_->payments_data_manager().GetCreditCards().size());
     histogram_tester.ExpectUniqueSample("Autofill.CvcInfoBar.Upload",
                                         AutofillMetrics::INFOBAR_ACCEPTED, 1);
   }

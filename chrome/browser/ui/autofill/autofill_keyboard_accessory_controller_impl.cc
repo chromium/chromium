@@ -25,6 +25,7 @@
 #include "chrome/browser/ui/autofill/autofill_suggestion_controller_utils.h"
 #include "components/autofill/core/browser/address_data_manager.h"
 #include "components/autofill/core/browser/metrics/granular_filling_metrics.h"
+#include "components/autofill/core/browser/payments_data_manager.h"
 #include "components/autofill/core/browser/personal_data_manager.h"
 #include "components/autofill/core/browser/ui/autofill_popup_delegate.h"
 #include "components/autofill/core/browser/ui/suggestion_hiding_reason.h"
@@ -545,8 +546,9 @@ bool AutofillKeyboardAccessoryControllerImpl::GetRemovalConfirmationText(
   PersonalDataManager* pdm = PersonalDataManagerFactory::GetForBrowserContext(
       web_contents_->GetBrowserContext());
 
-  if (const CreditCard* credit_card = pdm->GetCreditCardByGUID(
-          absl::get<Suggestion::Guid>(backend_id).value())) {
+  if (const CreditCard* credit_card =
+          pdm->payments_data_manager().GetCreditCardByGUID(
+              absl::get<Suggestion::Guid>(backend_id).value())) {
     if (!CreditCard::IsLocalCard(credit_card)) {
       return false;
     }

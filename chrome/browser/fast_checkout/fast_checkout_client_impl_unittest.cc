@@ -32,6 +32,7 @@
 #include "components/autofill/core/browser/heuristic_source.h"
 #include "components/autofill/core/browser/payments/credit_card_cvc_authenticator.h"
 #include "components/autofill/core/browser/payments/payments_autofill_client.h"
+#include "components/autofill/core/browser/payments_data_manager.h"
 #include "components/autofill/core/browser/test_autofill_client.h"
 #include "components/autofill/core/browser/test_autofill_driver.h"
 #include "components/autofill/core/browser/test_browser_autofill_manager.h"
@@ -115,10 +116,11 @@ std::unique_ptr<KeyedService> BuildTestPersonalDataManager(
   personal_data_manager->address_data_manager().AddProfile(kProfile2);
   // Add incomplete autofill profile, should not be shown on the sheet.
   personal_data_manager->address_data_manager().AddProfile(kIncompleteProfile);
-  personal_data_manager->AddCreditCard(kCreditCard1);
-  personal_data_manager->AddCreditCard(kCreditCard2);
+  personal_data_manager->payments_data_manager().AddCreditCard(kCreditCard1);
+  personal_data_manager->payments_data_manager().AddCreditCard(kCreditCard2);
   // Add empty credit card, should not be shown on the sheet.
-  personal_data_manager->AddCreditCard(kEmptyCreditCard);
+  personal_data_manager->payments_data_manager().AddCreditCard(
+      kEmptyCreditCard);
   return personal_data_manager;
 }
 
@@ -356,7 +358,8 @@ class DISABLED_FastCheckoutClientImplTest
                    : autofill::test::GetMaskedServerCard());
     credit_card_unique_ptr->SetNickname(kCreditCardNickname);
     if (local_card) {
-      personal_data_manager()->AddCreditCard(*credit_card_unique_ptr);
+      personal_data_manager()->payments_data_manager().AddCreditCard(
+          *credit_card_unique_ptr);
     } else {
       personal_data_manager()->AddServerCreditCard(*credit_card_unique_ptr);
     }
@@ -380,10 +383,15 @@ class DISABLED_FastCheckoutClientImplTest
         personal_data_manager()->address_data_manager().GetProfileByGUID(
             fast_checkout_client()->selected_autofill_profile_guid_.value()),
         (local_card
-             ? personal_data_manager()->GetCreditCardByGUID(
-                   fast_checkout_client()->selected_credit_card_id_.value())
-             : personal_data_manager()->GetCreditCardByServerId(
-                   fast_checkout_client()->selected_credit_card_id_.value()))};
+             ? personal_data_manager()
+                   ->payments_data_manager()
+                   .GetCreditCardByGUID(
+                       fast_checkout_client()->selected_credit_card_id_.value())
+             : personal_data_manager()
+                   ->payments_data_manager()
+                   .GetCreditCardByServerId(
+                       fast_checkout_client()
+                           ->selected_credit_card_id_.value()))};
   }
 
   std::unique_ptr<autofill::FormStructure> SetUpCreditCardForm() {
@@ -629,7 +637,7 @@ TEST_F(DISABLED_FastCheckoutClientImplTest,
 
   // User removes all valid credit cards and adds a valid card.
   personal_data_manager()->test_payments_data_manager().ClearCreditCards();
-  personal_data_manager()->AddCreditCard(kCreditCard1);
+  personal_data_manager()->payments_data_manager().AddCreditCard(kCreditCard1);
 
   // `FastCheckoutClient` is still running.
   EXPECT_TRUE(fast_checkout_client()->IsRunning());

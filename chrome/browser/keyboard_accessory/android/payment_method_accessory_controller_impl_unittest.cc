@@ -24,6 +24,7 @@
 #include "components/autofill/core/browser/test_autofill_client.h"
 #include "components/autofill/core/browser/test_autofill_driver.h"
 #include "components/autofill/core/browser/test_browser_autofill_manager.h"
+#include "components/autofill/core/browser/test_payments_data_manager.h"
 #include "components/autofill/core/browser/test_personal_data_manager.h"
 #include "components/autofill/core/common/autofill_features.h"
 #include "components/autofill/core/common/autofill_payments_features.h"
@@ -164,7 +165,7 @@ class PaymentMethodAccessoryControllerTestSupportingPromoCodeOffers
 
 TEST_F(PaymentMethodAccessoryControllerTest, RefreshSuggestions) {
   CreditCard card = test::GetCreditCard();
-  data_manager_.AddCreditCard(card);
+  data_manager_.payments_data_manager().AddCreditCard(card);
   AccessorySheetData result(AccessoryTabType::CREDIT_CARDS, std::u16string());
 
   EXPECT_CALL(mock_mf_controller_, RefreshSuggestions(_))
@@ -191,7 +192,7 @@ TEST_F(PaymentMethodAccessoryControllerTest, RefreshSuggestions) {
 
 TEST_F(PaymentMethodAccessoryControllerTest, PreventsFillingInsecureContexts) {
   CreditCard card = test::GetCreditCard();
-  data_manager_.AddCreditCard(card);
+  data_manager_.payments_data_manager().AddCreditCard(card);
   AccessorySheetData result(autofill::AccessoryTabType::CREDIT_CARDS,
                             std::u16string());
   SetFormOrigin(GURL("http://insecure.http-site.com"));
@@ -268,7 +269,7 @@ TEST_P(PaymentMethodAccessoryControllerCardUnmaskTest, CardUnmask) {
   controller()->RegisterFillingSourceObserver(filling_source_observer_.Get());
 
   CreditCard card = GetCreditCard();
-  data_manager_.AddCreditCard(card);
+  data_manager_.payments_data_manager().AddCreditCard(card);
   EXPECT_CALL(filling_source_observer_,
               Run(controller(), IsFillingSourceAvailable(true)));
   ASSERT_TRUE(controller());
@@ -310,7 +311,7 @@ TEST_F(PaymentMethodAccessoryControllerTest,
   // unmasked_cards_cache.
   CreditCard card = test::GetCreditCard();
   card.set_record_type(CreditCard::RecordType::kFullServerCard);
-  data_manager_.AddCreditCard(card);
+  data_manager_.payments_data_manager().AddCreditCard(card);
   std::u16string cvc = u"123";
   autofill_manager().GetCreditCardAccessManager().CacheUnmaskedCardInfo(card,
                                                                         cvc);
@@ -345,7 +346,7 @@ TEST_F(PaymentMethodAccessoryControllerTest,
        RefreshSuggestionsAddsCachedVirtualCards) {
   // Add a masked card to PersonalDataManager.
   CreditCard unmasked_card = test::GetCreditCard();
-  data_manager_.AddCreditCard(unmasked_card);
+  data_manager_.payments_data_manager().AddCreditCard(unmasked_card);
   // Update the record type to kVirtualCard and add it to the unmasked cards
   // cache.
   unmasked_card.set_record_type(CreditCard::RecordType::kVirtualCard);
@@ -402,7 +403,7 @@ TEST_F(
   CreditCard masked_card = test::GetMaskedServerCard();
   masked_card.set_virtual_card_enrollment_state(
       CreditCard::VirtualCardEnrollmentState::kEnrolled);
-  data_manager_.AddCreditCard(masked_card);
+  data_manager_.payments_data_manager().AddCreditCard(masked_card);
 
   AccessorySheetData result(autofill::AccessoryTabType::CREDIT_CARDS,
                             std::u16string());
@@ -453,7 +454,7 @@ TEST_F(PaymentMethodAccessoryControllerTest,
   masked_card.set_card_art_url(GURL("http://www.example.com/image.png"));
   masked_card.set_virtual_card_enrollment_state(
       CreditCard::VirtualCardEnrollmentState::kEnrolled);
-  data_manager_.AddCreditCard(masked_card);
+  data_manager_.payments_data_manager().AddCreditCard(masked_card);
 
   AccessorySheetData result(autofill::AccessoryTabType::CREDIT_CARDS,
                             std::u16string());
@@ -485,7 +486,7 @@ TEST_F(
   masked_card.set_card_art_url(GURL(kCapitalOneCardArtUrl));
   masked_card.set_virtual_card_enrollment_state(
       CreditCard::VirtualCardEnrollmentState::kEnrolled);
-  data_manager_.AddCreditCard(masked_card);
+  data_manager_.payments_data_manager().AddCreditCard(masked_card);
 
   AccessorySheetData result(autofill::AccessoryTabType::CREDIT_CARDS,
                             std::u16string());
@@ -509,7 +510,7 @@ TEST_F(
 TEST_F(PaymentMethodAccessoryControllerTestSupportingPromoCodeOffers,
        RefreshSuggestionsWithPromoCodeOffers) {
   CreditCard card = test::GetCreditCard();
-  data_manager_.AddCreditCard(card);
+  data_manager_.payments_data_manager().AddCreditCard(card);
   // Getting a promo code whose |merchant_origins| contains AutofillClient's
   // |last_committed_url_|.
   AutofillOfferData promo_code_valid = test::GetPromoCodeOfferData(
@@ -521,9 +522,12 @@ TEST_F(PaymentMethodAccessoryControllerTestSupportingPromoCodeOffers,
   AutofillOfferData promo_code_expired = test::GetPromoCodeOfferData(
       /*merchant_origin=*/GURL(kExampleSite),
       /*is_expired=*/true);
-  data_manager_.AddAutofillOfferData(promo_code_valid);
-  data_manager_.AddAutofillOfferData(promo_code_origin_mismatch);
-  data_manager_.AddAutofillOfferData(promo_code_expired);
+  data_manager_.test_payments_data_manager().AddAutofillOfferData(
+      promo_code_valid);
+  data_manager_.test_payments_data_manager().AddAutofillOfferData(
+      promo_code_origin_mismatch);
+  data_manager_.test_payments_data_manager().AddAutofillOfferData(
+      promo_code_expired);
   AccessorySheetData result(autofill::AccessoryTabType::CREDIT_CARDS,
                             std::u16string());
 

@@ -26,6 +26,7 @@
 #include "components/autofill/core/browser/browser_autofill_manager.h"
 #include "components/autofill/core/browser/data_model/credit_card.h"
 #include "components/autofill/core/browser/payments/constants.h"
+#include "components/autofill/core/browser/payments_data_manager.h"
 #include "components/autofill/core/common/autofill_features.h"
 #include "components/autofill/core/common/autofill_payments_features.h"
 #include "components/strings/grit/components_strings.h"
@@ -376,8 +377,8 @@ PaymentMethodAccessoryControllerImpl::GetAllCreditCards() const {
     return std::vector<CardOrVirtualCard>();
 
   std::vector<CardOrVirtualCard> cards;
-  for (const CreditCard* card :
-       personal_data_manager_->GetCreditCardsToSuggest()) {
+  for (const CreditCard* card : personal_data_manager_->payments_data_manager()
+                                    .GetCreditCardsToSuggest()) {
     // If any of cards is enrolled for virtual cards and the feature is active,
     // then insert a virtual card suggestion right before the actual card.
     if (ShouldCreateVirtualCard(card)) {
@@ -415,10 +416,11 @@ PaymentMethodAccessoryControllerImpl::GetPromoCodeOffers() const {
   if (!personal_data_manager_ || !autofill_manager)
     return std::vector<const AutofillOfferData*>();
 
-  return personal_data_manager_->GetActiveAutofillPromoCodeOffersForOrigin(
-      autofill_manager->client()
-          .GetLastCommittedPrimaryMainFrameURL()
-          .DeprecatedGetOriginAsURL());
+  return personal_data_manager_->payments_data_manager()
+      .GetActiveAutofillPromoCodeOffersForOrigin(
+          autofill_manager->client()
+              .GetLastCommittedPrimaryMainFrameURL()
+              .DeprecatedGetOriginAsURL());
 }
 
 base::WeakPtr<ManualFillingController>

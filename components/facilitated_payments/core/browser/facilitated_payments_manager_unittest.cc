@@ -155,7 +155,8 @@ class FacilitatedPaymentsManagerTest : public testing::Test {
     api_client_ = nullptr;
     allowlist_decision_timer_.Stop();
     page_load_timer_.Stop();
-    personal_data_manager_->ClearAllServerDataForTesting();
+    personal_data_manager_->payments_data_manager()
+        .ClearAllServerDataForTesting();
     personal_data_manager_.reset();
   }
 

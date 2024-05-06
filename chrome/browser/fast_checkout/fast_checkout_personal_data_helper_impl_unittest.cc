@@ -9,6 +9,7 @@
 #include "chrome/test/base/chrome_render_view_host_test_harness.h"
 #include "components/autofill/core/browser/address_data_manager.h"
 #include "components/autofill/core/browser/autofill_test_utils.h"
+#include "components/autofill/core/browser/payments_data_manager.h"
 #include "components/autofill/core/browser/test_personal_data_manager.h"
 #include "testing/gmock/include/gmock/gmock.h"
 #include "testing/gtest/include/gtest/gtest.h"
@@ -108,33 +109,48 @@ TEST_F(FastCheckoutPersonalDataHelperTest,
 
 TEST_F(FastCheckoutPersonalDataHelperTest,
        NoValidCreditCards_HasValidCreditCards_ReturnsFalse) {
-  personal_data_helper()->GetPersonalDataManager()->AddCreditCard(kCreditCard);
+  personal_data_helper()
+      ->GetPersonalDataManager()
+      ->payments_data_manager()
+      .AddCreditCard(kCreditCard);
 
   EXPECT_FALSE(personal_data_helper()->GetValidCreditCards().empty());
 }
 
 TEST_F(FastCheckoutPersonalDataHelperTest,
        NoValidCreditCards_HasOnlyInvalidCreditCards_ReturnsTrue) {
-  personal_data_helper()->GetPersonalDataManager()->AddCreditCard(
-      kEmptyCreditCard);
+  personal_data_helper()
+      ->GetPersonalDataManager()
+      ->payments_data_manager()
+      .AddCreditCard(kEmptyCreditCard);
 
   EXPECT_TRUE(personal_data_helper()->GetValidCreditCards().empty());
 }
 
 TEST_F(FastCheckoutPersonalDataHelperTest,
        NoValidCreditCards_HasValidAndInvalidCreditCards_ReturnsFalse) {
-  personal_data_helper()->GetPersonalDataManager()->AddCreditCard(kCreditCard);
-  personal_data_helper()->GetPersonalDataManager()->AddCreditCard(
-      kEmptyCreditCard);
+  personal_data_helper()
+      ->GetPersonalDataManager()
+      ->payments_data_manager()
+      .AddCreditCard(kCreditCard);
+  personal_data_helper()
+      ->GetPersonalDataManager()
+      ->payments_data_manager()
+      .AddCreditCard(kEmptyCreditCard);
 
   EXPECT_FALSE(personal_data_helper()->GetValidCreditCards().empty());
 }
 
 TEST_F(FastCheckoutPersonalDataHelperTest,
        GetCreditCardsToSuggest_ReturnsOnlyCardsWithNumber) {
-  personal_data_helper()->GetPersonalDataManager()->AddCreditCard(kCreditCard);
-  personal_data_helper()->GetPersonalDataManager()->AddCreditCard(
-      kEmptyCreditCard);
+  personal_data_helper()
+      ->GetPersonalDataManager()
+      ->payments_data_manager()
+      .AddCreditCard(kCreditCard);
+  personal_data_helper()
+      ->GetPersonalDataManager()
+      ->payments_data_manager()
+      .AddCreditCard(kEmptyCreditCard);
 
   std::vector<autofill::CreditCard*> cards =
       personal_data_helper()->GetCreditCardsToSuggest();

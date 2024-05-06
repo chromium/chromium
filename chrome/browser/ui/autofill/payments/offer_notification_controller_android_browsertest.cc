@@ -19,6 +19,7 @@
 #include "components/autofill/core/browser/data_model/autofill_offer_data.h"
 #include "components/autofill/core/browser/metrics/payments/offers_metrics.h"
 #include "components/autofill/core/browser/payments/autofill_offer_manager.h"
+#include "components/autofill/core/browser/payments_data_manager.h"
 #include "components/autofill/core/browser/payments_data_manager_test_api.h"
 #include "components/autofill/core/browser/personal_data_manager.h"
 #include "components/autofill/core/common/autofill_clock.h"
@@ -88,7 +89,7 @@ class OfferNotificationControllerAndroidBrowserTest
   Profile* GetProfile() { return chrome_test_utils::GetProfile(this); }
 
   AutofillOfferData* SetUpOfferDataWithDomains(const GURL& url) {
-    personal_data_->ClearAllServerDataForTesting();
+    personal_data_->payments_data_manager().ClearAllServerDataForTesting();
     std::vector<GURL> merchant_origins;
     merchant_origins.emplace_back(url.DeprecatedGetOriginAsURL());
     std::vector<int64_t> eligible_instrument_ids = {0x4444};
@@ -100,7 +101,8 @@ class OfferNotificationControllerAndroidBrowserTest
         .AddOfferData(std::move(offer));
     auto card = std::make_unique<CreditCard>();
     card->set_instrument_id(0x4444);
-    personal_data_->AddServerCreditCardForTest(std::move(card));
+    personal_data_->payments_data_manager().AddServerCreditCardForTest(
+        std::move(card));
     personal_data_->NotifyPersonalDataObserver();
     return offer_ptr;
   }
