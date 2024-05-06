@@ -81,7 +81,10 @@ export class PasswordDetailsCardElement extends PasswordDetailsCardElementBase {
 
   static get properties() {
     return {
-      password: Object,
+      password: {
+        type: Object,
+        observer: 'onPasswordChanged_',
+      },
       groupName: String,
       iconUrl: String,
       toastMessage_: String,
@@ -318,6 +321,10 @@ export class PasswordDetailsCardElement extends PasswordDetailsCardElementBase {
 
   private onMovePasswordDialogClose_(): void {
     this.showMovePasswordDialog_ = false;
+  }
+
+  private onPasswordChanged_(): void {
+    this.isPasswordVisible = false;
   }
 
   maybeRegisterSharingHelpBubble(): void {
