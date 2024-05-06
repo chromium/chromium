@@ -35089,6 +35089,19 @@ This is true even if the type has been removed from the mojom file.
   <int value="35" label="'All sites' settings opened with a filter for FPS"/>
 </enum>
 
+<enum name="WebUIPreloadResult">
+  <int value="0"
+      label="No Preload: no preloaded WebUI is available when a WebUI is
+             requested"/>
+  <int value="1" label="Hit: the preloaded WebUI matches the requested WebUI"/>
+  <int value="2"
+      label="Hit (redirected): the preloaded WebUI is redirected to the
+             requested WebUI"/>
+  <int value="3"
+      label="Miss: the preloaded WebUI does not match the requested WebUI and
+             cannot be redirected"/>
+</enum>
+
 <enum name="WebUISettingsPathHashes">
   <int value="-2108276563" label="/adPrivacy/sites"/>
   <int value="-2088016711" label="/startupPages"/>
