@@ -162,8 +162,6 @@ class PersonalDataManager : public KeyedService,
   // They should not be used anymore. Instead, callers should use the function
   // in the address/payments data manager instead.
   // TODO(b/322170538): Migrate existing callers.
-  void AddProfile(const AutofillProfile& profile);
-  void UpdateProfile(const AutofillProfile& profile);
   void AddCreditCard(const CreditCard& credit_card);
   void UpdateCreditCard(const CreditCard& credit_card);
   void ClearAllServerDataForTesting();
@@ -171,9 +169,6 @@ class PersonalDataManager : public KeyedService,
   CreditCard* GetCreditCardByGUID(const std::string& guid);
   CreditCard* GetCreditCardByInstrumentId(int64_t instrument_id);
   CreditCard* GetCreditCardByServerId(const std::string& server_id);
-  std::vector<AutofillProfile*> GetProfiles(
-      AddressDataManager::ProfileOrder order =
-          AddressDataManager::ProfileOrder::kNone) const;
   std::vector<CreditCard*> GetCreditCards() const;
   std::vector<const AutofillOfferData*>
   GetActiveAutofillPromoCodeOffersForOrigin(GURL origin) const;

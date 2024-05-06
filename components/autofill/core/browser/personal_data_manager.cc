@@ -110,14 +110,6 @@ void PersonalDataManager::RemoveObserver(
   observers_.RemoveObserver(observer);
 }
 
-void PersonalDataManager::AddProfile(const AutofillProfile& profile) {
-  address_data_manager_->AddProfile(profile);
-}
-
-void PersonalDataManager::UpdateProfile(const AutofillProfile& profile) {
-  address_data_manager_->UpdateProfile(profile);
-}
-
 void PersonalDataManager::AddCreditCard(const CreditCard& credit_card) {
   payments_data_manager_->AddCreditCard(credit_card);
 }
@@ -165,11 +157,6 @@ CreditCard* PersonalDataManager::GetCreditCardByServerId(
 bool PersonalDataManager::IsDataLoaded() const {
   return address_data_manager_->has_initial_load_finished() &&
          payments_data_manager_->is_payments_data_loaded();
-}
-
-std::vector<AutofillProfile*> PersonalDataManager::GetProfiles(
-    AddressDataManager::ProfileOrder order) const {
-  return address_data_manager_->GetProfiles(order);
 }
 
 std::vector<CreditCard*> PersonalDataManager::GetCreditCards() const {
