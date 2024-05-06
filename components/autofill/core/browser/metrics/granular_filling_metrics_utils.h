@@ -9,7 +9,7 @@
 
 #include "base/containers/flat_map.h"
 #include "components/autofill/core/browser/autofill_granular_filling_utils.h"
-#include "components/autofill/core/browser/metrics/autofill_metrics_utils.h"
+#include "components/autofill/core/browser/metrics/field_filling_stats_and_score_metrics.h"
 
 // Helper methods specific for granular filling metrics.
 namespace autofill {
@@ -24,6 +24,7 @@ std::string_view FillingMethodToCompactStringView(FillingMethod filling_method);
 
 // Computes and adds the `FillingStats` of `field` to the correct key
 // (`FillingMethod`) in `field_stats_by_filling_method`.
+// TODO(crbug.com/40274514): Remove this on cleanup.
 void AddFillingStatsForFillingMethod(
     const AutofillField& field,
     base::flat_map<FillingMethod, FormGroupFillingStats>&

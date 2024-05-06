@@ -540,33 +540,6 @@ class AutofillMetrics {
     kMaxValue = AUTOFILLED_FIELD_WAS_NOT_EDITED,
   };
 
-  // The filling status of an autofilled field.
-  // These values are persisted to logs. Entries should not be renumbered and
-  // numeric values should never be reused.
-  enum class FieldFillingStatus {
-    // The field was filled and accepted.
-    kAccepted = 0,
-    // The field was filled and corrected to a value of the same type.
-    kCorrectedToSameType = 1,
-    // The field was filled and corrected to a value of a different type.
-    kCorrectedToDifferentType = 2,
-    // The field was filled and corrected to a value of an unknown type.
-    kCorrectedToUnknownType = 3,
-    // The field was filled and the value was cleared afterwards.
-    kCorrectedToEmpty = 4,
-    // The field was manually filled to a value of the same type as the
-    // field was predicted to.
-    kManuallyFilledToSameType = 5,
-    // The field was manually filled to a value of a different type as the field
-    // was predicted to.
-    kManuallyFilledToDifferentType = 6,
-    // The field was manually filled to a value of an unknown type.
-    kManuallyFilledToUnknownType = 7,
-    // The field was left empty.
-    kLeftEmpty = 8,
-    kMaxValue = kLeftEmpty
-  };
-
   enum class AutocompleteState {
     kNone = 0,
     kValid = 1,

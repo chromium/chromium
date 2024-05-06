@@ -111,61 +111,6 @@ void LogPreFillMetrics(const FormStructure& form) {
   }
 }
 
-void LogFieldFillingStatsAndScoreMetrics(const FormStructure& form) {
-  // Tracks how many fields are filled, unfilled or corrected.
-  autofill_metrics::FormGroupFillingStats address_field_stats;
-  autofill_metrics::FormGroupFillingStats cc_field_stats;
-  autofill_metrics::FormGroupFillingStats ac_unrecognized_address_field_stats;
-  // Same as above, but keyed by `FillingMethod`.
-  base::flat_map<FillingMethod, autofill_metrics::FormGroupFillingStats>
-      address_field_stats_by_filling_method;
-  for (const std::unique_ptr<AutofillField>& field : form) {
-    // For any field that belongs to either an address or a credit card form,
-    // collect the type-unspecific field filling statistics.
-    // Those are only emitted when autofill was used on at least one field of
-    // the form.
-    const FormType form_type_of_field =
-        FieldTypeGroupToFormType(field->Type().group());
-    const bool is_address_form_field =
-        form_type_of_field == FormType::kAddressForm;
-    const bool credit_card_form_field =
-        form_type_of_field == FormType::kCreditCardForm;
-    if (!is_address_form_field && !credit_card_form_field) {
-      continue;
-    }
-    // Address and credit cards fields are mutually exclusive.
-    autofill_metrics::FormGroupFillingStats& group_stats =
-        is_address_form_field ? address_field_stats : cc_field_stats;
-    // Get the filling status of this field and add it to the form group
-    // counter.
-    group_stats.AddFieldFillingStatus(
-        autofill_metrics::GetFieldFillingStatus(*field));
-    if (is_address_form_field &&
-        field->ShouldSuppressSuggestionsAndFillingByDefault()) {
-      ac_unrecognized_address_field_stats.AddFieldFillingStatus(
-          autofill_metrics::GetFieldFillingStatus(*field));
-    }
-    // For address forms we want to emit filling stats metrics per
-    // `FillingMethod`. Therefore, the stats generated are added to
-    // a map keyed by `FillingMethod`, so that later, metrics can
-    // emitted for each method used.
-    if (base::FeatureList::IsEnabled(
-            features::kAutofillGranularFillingAvailable) &
-        is_address_form_field) {
-      AddFillingStatsForFillingMethod(*field,
-                                      address_field_stats_by_filling_method);
-    }
-  }
-  // Log the field filling statistics if autofill was used.
-  // The metrics are only emitted if there was at least one field in the
-  // corresponding form group that is or was filled by autofill.
-  // TODO(crbug.com/40274514): Remove this metric on cleanup.
-  autofill_metrics::LogFieldFillingStatsAndScore(
-      address_field_stats, cc_field_stats, ac_unrecognized_address_field_stats);
-  LogAddressFieldFillingStatsAndScoreByFillingMethod(
-      address_field_stats_by_filling_method);
-}
-
 // Logs metrics related to how long it took the user from load/interaction time
 // till form submission.
 void LogDurationMetrics(const FormStructure& form,
@@ -265,7 +210,7 @@ void LogFillingMetrics(
   }
   LogPerfectFillingMetric(form);
   LogPreFillMetrics(form);
-  LogFieldFillingStatsAndScoreMetrics(form);
+  autofill_metrics::LogFieldFillingStatsAndScore(form);
 
   FieldTypeSet autofilled_field_types;
   for (const std::unique_ptr<AutofillField>& field : form) {
@@ -325,21 +270,6 @@ void LogQualityMetricsBasedOnAutocomplete(
           form_interactions_ukm_logger, form_structure, *field, metric_type);
     }
   }
-}
-
-autofill_metrics::FormGroupFillingStats GetFormFillingStatsForFormType(
-    FormType form_type,
-    const FormStructure& form_structure) {
-  autofill_metrics::FormGroupFillingStats filling_stats_for_form_type;
-
-  for (auto& field : form_structure) {
-    if (FieldTypeGroupToFormType(field->Type().group()) != form_type) {
-      continue;
-    }
-    filling_stats_for_form_type.AddFieldFillingStatus(
-        autofill_metrics::GetFieldFillingStatus(*field));
-  }
-  return filling_stats_for_form_type;
 }
 
 }  // namespace autofill::autofill_metrics

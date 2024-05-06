@@ -3,13 +3,17 @@
 // found in the LICENSE file.
 
 #include "components/autofill/core/browser/metrics/field_filling_stats_and_score_metrics.h"
+
 #include "base/containers/flat_map.h"
 #include "base/metrics/histogram_functions.h"
 #include "base/strings/strcat.h"
 #include "components/autofill/core/browser/autofill_granular_filling_utils.h"
+#include "components/autofill/core/browser/field_type_utils.h"
+#include "components/autofill/core/browser/form_structure.h"
 #include "components/autofill/core/browser/form_types.h"
 #include "components/autofill/core/browser/metrics/autofill_metrics_utils.h"
 #include "components/autofill/core/browser/metrics/granular_filling_metrics_utils.h"
+#include "components/autofill/core/common/autofill_features.h"
 
 namespace autofill::autofill_metrics {
 
@@ -58,7 +62,7 @@ void LogFieldFillingStatsWithHistogramPrefix(
   base::UmaHistogramCounts100(
       base::StrCat(
           {histogram_prefix_with_form_type, "ManuallyFilledToDifferentType"}),
-      filling_stats.num_manually_filled_to_differt_type);
+      filling_stats.num_manually_filled_to_different_type);
 
   base::UmaHistogramCounts100(
       base::StrCat(
@@ -200,28 +204,169 @@ void LogFormFillingComplexScore(FormType form_type,
 
 }  // namespace
 
-void LogFieldFillingStatsAndScore(
-    const FormGroupFillingStats& address_filling_stats,
-    const FormGroupFillingStats& cc_filling_stats,
-    const FormGroupFillingStats& ac_unrecognized_address_field_stats) {
-  LogFieldFillingStats(FormType::kAddressForm, address_filling_stats);
-  LogFieldFillingStats(FormType::kCreditCardForm, cc_filling_stats);
+void FormGroupFillingStats::AddFieldFillingStatus(FieldFillingStatus status) {
+  switch (status) {
+    case FieldFillingStatus::kAccepted:
+      num_accepted++;
+      return;
+    case FieldFillingStatus::kCorrectedToSameType:
+      num_corrected_to_same_type++;
+      return;
+    case FieldFillingStatus::kCorrectedToDifferentType:
+      num_corrected_to_different_type++;
+      return;
+    case FieldFillingStatus::kCorrectedToUnknownType:
+      num_corrected_to_unknown_type++;
+      return;
+    case FieldFillingStatus::kCorrectedToEmpty:
+      num_corrected_to_empty++;
+      return;
+    case FieldFillingStatus::kManuallyFilledToSameType:
+      num_manually_filled_to_same_type++;
+      return;
+    case FieldFillingStatus::kManuallyFilledToDifferentType:
+      num_manually_filled_to_different_type++;
+      return;
+    case FieldFillingStatus::kManuallyFilledToUnknownType:
+      num_manually_filled_to_unknown_type++;
+      return;
+    case FieldFillingStatus::kLeftEmpty:
+      num_left_empty++;
+      return;
+  }
+  NOTREACHED();
+}
+
+FieldFillingStatus GetFieldFillingStatus(const AutofillField& field) {
+  const bool is_empty = field.IsEmpty();
+  const bool possible_types_empty =
+      !FieldHasMeaningfulPossibleFieldTypes(field);
+  const bool possible_types_contain_type = TypeOfFieldIsPossibleType(field);
+  if (field.is_autofilled()) {
+    return FieldFillingStatus::kAccepted;
+  }
+  if (field.previously_autofilled()) {
+    if (is_empty) {
+      return FieldFillingStatus::kCorrectedToEmpty;
+    }
+    if (possible_types_contain_type) {
+      return FieldFillingStatus::kCorrectedToSameType;
+    }
+    if (possible_types_empty) {
+      return FieldFillingStatus::kCorrectedToUnknownType;
+    }
+    return FieldFillingStatus::kCorrectedToDifferentType;
+  }
+  if (is_empty) {
+    return FieldFillingStatus::kLeftEmpty;
+  }
+  if (possible_types_contain_type) {
+    return FieldFillingStatus::kManuallyFilledToSameType;
+  }
+  if (possible_types_empty) {
+    return FieldFillingStatus::kManuallyFilledToUnknownType;
+  }
+  return FieldFillingStatus::kManuallyFilledToDifferentType;
+}
+
+void MergeFormGroupFillingStats(const FormGroupFillingStats& first,
+                                FormGroupFillingStats& second) {
+  second.num_accepted = first.num_accepted + second.num_accepted;
+  second.num_corrected_to_same_type =
+      first.num_corrected_to_same_type + second.num_corrected_to_same_type;
+  second.num_corrected_to_different_type =
+      first.num_corrected_to_different_type +
+      second.num_corrected_to_different_type;
+  second.num_corrected_to_unknown_type = first.num_corrected_to_unknown_type +
+                                         second.num_corrected_to_unknown_type;
+  second.num_corrected_to_empty =
+      first.num_corrected_to_empty + second.num_corrected_to_empty;
+  second.num_manually_filled_to_same_type =
+      first.num_manually_filled_to_same_type +
+      second.num_manually_filled_to_same_type;
+  second.num_manually_filled_to_different_type =
+      first.num_manually_filled_to_different_type +
+      second.num_manually_filled_to_different_type;
+  second.num_manually_filled_to_unknown_type =
+      first.num_manually_filled_to_unknown_type +
+      second.num_manually_filled_to_unknown_type;
+  second.num_left_empty = first.num_left_empty + second.num_left_empty;
+}
+
+autofill_metrics::FormGroupFillingStats GetFormFillingStatsForFormType(
+    FormType form_type,
+    const FormStructure& form_structure) {
+  autofill_metrics::FormGroupFillingStats filling_stats_for_form_type;
+
+  for (auto& field : form_structure) {
+    if (FieldTypeGroupToFormType(field->Type().group()) != form_type) {
+      continue;
+    }
+    filling_stats_for_form_type.AddFieldFillingStatus(
+        autofill_metrics::GetFieldFillingStatus(*field));
+  }
+  return filling_stats_for_form_type;
+}
+
+void LogFieldFillingStatsAndScore(const FormStructure& form) {
+  // Tracks how many fields are filled, unfilled or corrected.
+  autofill_metrics::FormGroupFillingStats address_field_stats;
+  autofill_metrics::FormGroupFillingStats cc_field_stats;
+  autofill_metrics::FormGroupFillingStats ac_unrecognized_address_field_stats;
+  // Same as above, but keyed by `FillingMethod`.
+  base::flat_map<FillingMethod, autofill_metrics::FormGroupFillingStats>
+      address_field_stats_by_filling_method;
+  for (const std::unique_ptr<AutofillField>& field : form) {
+    // For any field that belongs to either an address or a credit card form,
+    // collect the type-unspecific field filling statistics.
+    // Those are only emitted when autofill was used on at least one field of
+    // the form.
+    const FormType form_type_of_field =
+        FieldTypeGroupToFormType(field->Type().group());
+    const bool is_address_form_field =
+        form_type_of_field == FormType::kAddressForm;
+    const bool credit_card_form_field =
+        form_type_of_field == FormType::kCreditCardForm;
+    if (!is_address_form_field && !credit_card_form_field) {
+      continue;
+    }
+    // Address and credit cards fields are mutually exclusive.
+    autofill_metrics::FormGroupFillingStats& group_stats =
+        is_address_form_field ? address_field_stats : cc_field_stats;
+    // Get the filling status of this field and add it to the form group
+    // counter.
+    group_stats.AddFieldFillingStatus(
+        autofill_metrics::GetFieldFillingStatus(*field));
+    if (is_address_form_field &&
+        field->ShouldSuppressSuggestionsAndFillingByDefault()) {
+      ac_unrecognized_address_field_stats.AddFieldFillingStatus(
+          autofill_metrics::GetFieldFillingStatus(*field));
+    }
+    // For address forms we want to emit filling stats metrics per
+    // `FillingMethod`. Therefore, the stats generated are added to
+    // a map keyed by `FillingMethod`, so that later, metrics can
+    // emitted for each method used.
+    if (base::FeatureList::IsEnabled(
+            features::kAutofillGranularFillingAvailable) &
+        is_address_form_field) {
+      AddFillingStatsForFillingMethod(*field,
+                                      address_field_stats_by_filling_method);
+    }
+  }
+  LogFieldFillingStats(FormType::kAddressForm, address_field_stats);
+  LogFieldFillingStats(FormType::kCreditCardForm, cc_field_stats);
   LogAutocompleteUnrecognizedFieldFillingStats(
       FormType::kCreditCardForm, ac_unrecognized_address_field_stats);
 
-  LogFormFillingScore(FormType::kAddressForm, address_filling_stats);
-  LogFormFillingScore(FormType::kCreditCardForm, cc_filling_stats);
+  LogFormFillingScore(FormType::kAddressForm, address_field_stats);
+  LogFormFillingScore(FormType::kCreditCardForm, cc_field_stats);
 
-  LogFormFillingComplexScore(FormType::kAddressForm, address_filling_stats);
-  LogFormFillingComplexScore(FormType::kCreditCardForm, cc_filling_stats);
-}
+  LogFormFillingComplexScore(FormType::kAddressForm, address_field_stats);
+  LogFormFillingComplexScore(FormType::kCreditCardForm, cc_field_stats);
 
-void LogAddressFieldFillingStatsAndScoreByFillingMethod(
-    const base::flat_map<FillingMethod,
-                         autofill_metrics::FormGroupFillingStats>&
-        address_filling_stats_by_filling_method) {
+  // TODO(crbug.com/40274514): Remove these metrics on cleanup.
   autofill_metrics::FormGroupFillingStats any;
-  for (const auto& filling_stats : address_filling_stats_by_filling_method) {
+  for (const auto& filling_stats : address_field_stats_by_filling_method) {
     LogAddressFieldFillingStatsForFillingMethod(filling_stats.first,
                                                 filling_stats.second);
     MergeFormGroupFillingStats(filling_stats.second, any);

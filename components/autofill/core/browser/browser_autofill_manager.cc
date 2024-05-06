@@ -87,6 +87,7 @@
 #include "components/autofill/core/browser/logging/log_manager.h"
 #include "components/autofill/core/browser/metrics/autofill_metrics.h"
 #include "components/autofill/core/browser/metrics/fallback_autocomplete_unrecognized_metrics.h"
+#include "components/autofill/core/browser/metrics/field_filling_stats_and_score_metrics.h"
 #include "components/autofill/core/browser/metrics/form_events/form_event_logger_base.h"
 #include "components/autofill/core/browser/metrics/form_events/form_events.h"
 #include "components/autofill/core/browser/metrics/log_event.h"
@@ -203,7 +204,8 @@ std::map<std::string, std::string> FormFillingStatsToSurveyStringData(
       {"Manually filled to same type",
        base::NumberToString(filling_stats.num_manually_filled_to_same_type)},
       {"Manually filled to a different type",
-       base::NumberToString(filling_stats.num_manually_filled_to_differt_type)},
+       base::NumberToString(
+           filling_stats.num_manually_filled_to_different_type)},
       {"Manually filled to an unknown type",
        base::NumberToString(filling_stats.num_manually_filled_to_unknown_type)},
       {"Total corrected", base::NumberToString(filling_stats.TotalCorrected())},
