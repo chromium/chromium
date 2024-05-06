@@ -2,7 +2,6 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-import type {CrToastElement} from '//resources/cr_elements/cr_toast/cr_toast.js';
 import type {CrIconButtonElement} from 'chrome://resources/cr_elements/cr_icon_button/cr_icon_button.js';
 import type {CrInputElement} from 'chrome://resources/cr_elements/cr_input/cr_input.js';
 import {assert} from 'chrome://resources/js/assert.js';
@@ -16,7 +15,6 @@ export interface CredentialFieldElement {
   $: {
     inputValue: CrInputElement,
     copyButton: CrIconButtonElement,
-    toast: CrToastElement,
   };
 }
 
@@ -82,12 +80,20 @@ export class CredentialFieldElement extends PolymerElement {
 
   private onCopyValueClick_() {
     navigator.clipboard.writeText(this.value).catch(() => {});
-    this.$.toast.show();
+    this.showToast_();
     PasswordManagerImpl.getInstance().extendAuthValidity();
     if (this.interactionId) {
       PasswordManagerImpl.getInstance().recordPasswordViewInteraction(
           this.interactionId);
     }
+  }
+
+  private showToast_() {
+    this.dispatchEvent(new CustomEvent('value-copied', {
+      bubbles: true,
+      composed: true,
+      detail: {toastMessage: this.valueCopiedToastLabel},
+    }));
   }
 }
 

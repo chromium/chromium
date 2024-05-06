@@ -59,6 +59,8 @@ function isEditable(element: Element): boolean {
 export type PasswordsMovedEvent =
     CustomEvent<{accountEmail: string, numberOfPasswords: number}>;
 
+export type ValueCopiedEvent = CustomEvent<{toastMessage: string}>;
+
 export interface PasswordManagerAppElement {
   $: {
     checkup: CheckupSectionElement,
@@ -296,6 +298,12 @@ export class PasswordManagerAppElement extends PasswordManagerAppElementBase {
             .getPluralString(
                 'passwordsMovedToastMessage', event.detail.numberOfPasswords)
             .then(label => label.replace('$1', event.detail.accountEmail));
+    this.$.toast.show();
+  }
+
+  private async onValueCopied_(event: ValueCopiedEvent) {
+    this.showUndo_ = false;
+    this.toastMessage_ = event.detail.toastMessage;
     this.$.toast.show();
   }
 

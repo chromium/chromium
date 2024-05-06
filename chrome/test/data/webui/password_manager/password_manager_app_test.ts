@@ -242,6 +242,55 @@ suite('PasswordManagerAppTest', function() {
                    .includes(testEmail));
   });
 
+  test('Only one toast is visible', async () => {
+    const group = createCredentialGroup({
+      name: 'test.com',
+      credentials: [
+        createPasswordEntry({id: 0, username: 'test1'}),
+      ],
+    });
+    Router.getInstance().navigateTo(Page.PASSWORD_DETAILS, group);
+    const VALUE_COPIED_TOAST_LABEL = 'Username copied!';
+
+    await flushTasks();
+
+    assertFalse(app.$.toast.open);
+    const detailsSection =
+        app.shadowRoot!.querySelector('password-details-section');
+    assertTrue(!!detailsSection);
+
+    // Copy password.
+    detailsSection.dispatchEvent(new CustomEvent('value-copied', {
+      bubbles: true,
+      composed: true,
+      detail: {
+        toastMessage: 'Password copied!',
+      },
+    }));
+    await flushTasks();
+    assertTrue(app.$.toast.open);
+
+    // Copy username.
+    detailsSection.dispatchEvent(new CustomEvent('value-copied', {
+      bubbles: true,
+      composed: true,
+      detail: {
+        toastMessage: VALUE_COPIED_TOAST_LABEL,
+      },
+    }));
+
+    await flushTasks();
+    assertEquals(app.shadowRoot!.querySelectorAll('cr-toast').length, 1);
+    assertTrue(app.$.toast.open);
+
+    const button = app.shadowRoot!.querySelector<HTMLElement>('#undo');
+    assertTrue(!!button);
+    assertFalse(isVisible(button));
+    assertTrue(app.$.toast.querySelector<HTMLElement>(
+                              '#toast-message')!.textContent!.trim()
+                   .includes(VALUE_COPIED_TOAST_LABEL));
+  });
+
   // TODO(crbug.com/331450809): This test is flaky.
   test.skip('settings password moved toast', async () => {
     const testEmail = 'test.user@gmail.com';

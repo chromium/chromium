@@ -89,9 +89,9 @@ suite('PasswordDetailsCardTest', function() {
     const card = await createCardElement(password);
 
     assertTrue(isVisible(card.$.copyPasswordButton));
-    assertFalse(card.$.toast.open);
 
     card.$.copyPasswordButton.click();
+    await eventToPromise('value-copied', card);
     await passwordManager.whenCalled('extendAuthValidity');
     const {id, reason} =
         await passwordManager.whenCalled('requestPlaintextPassword');
@@ -102,10 +102,6 @@ suite('PasswordDetailsCardTest', function() {
         await passwordManager.whenCalled('recordPasswordViewInteraction'));
 
     await flushTasks();
-    assertTrue(card.$.toast.open);
-    assertEquals(
-        loadTimeData.getString('passwordCopiedToClipboard'),
-        card.$.toast.textContent!.trim());
   });
 
   test('Links properly displayed', async function() {
