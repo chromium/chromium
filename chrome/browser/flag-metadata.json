@@ -8566,6 +8566,11 @@
     "expiry_milestone" : 130
   },
   {
+    "name": "view-transition-on-navigation-iframe",
+    "owners": [ "khushalsagar@chromium.org", "vmpstr@chromium.org", "bokan@chromium.org" ],
+    "expiry_milestone" : 130
+  },
+  {
     "name": "viewport-segments",
     "owners": [ "alexis.menard@intel.com" ],
     "expiry_milestone": 130

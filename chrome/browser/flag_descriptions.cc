@@ -964,6 +964,13 @@ const char kViewTransitionOnNavigationDescription[] =
     "Controls the availability of the viewTransition API on document "
     "navigations.";
 
+const char kViewTransitionOnNavigationIframeName[] =
+    "viewTransition API for sub-frame navigations";
+const char kViewTransitionOnNavigationIframeDescription[] =
+    "Controls the availability of the viewTransition API on document "
+    "navigations in a subframe. Must be used with "
+    "view-transition-on-navigation";
+
 const char kEnableAutoDisableAccessibilityName[] = "Auto-disable Accessibility";
 const char kEnableAutoDisableAccessibilityDescription[] =
     "When accessibility APIs are no longer being requested, automatically "

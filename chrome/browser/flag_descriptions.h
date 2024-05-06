@@ -590,6 +590,9 @@ extern const char kDisallowManagedProfileSignoutDescription[];
 extern const char kViewTransitionOnNavigationName[];
 extern const char kViewTransitionOnNavigationDescription[];
 
+extern const char kViewTransitionOnNavigationIframeName[];
+extern const char kViewTransitionOnNavigationIframeDescription[];
+
 extern const char kEnableAutofillAddressSavePromptName[];
 extern const char kEnableAutofillAddressSavePromptDescription[];
 

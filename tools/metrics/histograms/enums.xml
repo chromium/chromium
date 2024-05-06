@@ -20041,6 +20041,8 @@ from previous Chrome versions.
   <int value="-544906308" label="WebAuthenticationScreenReaderMode:enabled"/>
   <int value="-544685871" label="NewOsSettingsSearch:enabled"/>
   <int value="-544629557" label="CSSBackdropFilter:enabled"/>
+  <int value="-544301617"
+      label="ViewTransitionOnNavigationForIframes:disabled"/>
   <int value="-543611786" label="disable-search-engine-choice-screen"/>
   <int value="-541989470" label="AccessCodeCastRememberDevices:enabled"/>
   <int value="-541764089" label="AudioPlayerJsModules:disabled"/>
@@ -23026,6 +23028,7 @@ from previous Chrome versions.
   <int value="767545979" label="SendTabToSelfSigninPromo:enabled"/>
   <int value="767549069" label="ScreenTime:enabled"/>
   <int value="767970385" label="ResamplingScrollEvents:enabled"/>
+  <int value="768158833" label="ViewTransitionOnNavigationForIframes:enabled"/>
   <int value="768287307" label="OmniboxCr2023Umbrella:enabled"/>
   <int value="768468500" label="FedCmAddAccount:disabled"/>
   <int value="768675159" label="FastPairDebugMetadata:enabled"/>
