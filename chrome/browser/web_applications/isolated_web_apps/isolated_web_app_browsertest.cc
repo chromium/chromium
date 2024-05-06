@@ -66,6 +66,7 @@
 #include "content/public/test/test_navigation_observer.h"
 #include "extensions/test/result_catcher.h"
 #include "net/test/embedded_test_server/embedded_test_server.h"
+#include "testing/gmock/include/gmock/gmock.h"
 #include "third_party/blink/public/common/features.h"
 #include "third_party/blink/public/mojom/service_worker/service_worker_database.mojom-forward.h"
 #include "third_party/skia/include/core/SkBitmap.h"
@@ -445,6 +446,13 @@ class IsolatedWebAppApiAccessBrowserTest : public IsolatedWebAppBrowserTest {
                ManifestBuilder().AddPermissionsPolicy(
                    blink::mojom::PermissionsPolicyFeature::kDirectSockets,
                    /*self=*/true, {}))
+        .AddJs("/csp_violation_handler.js", R"(
+            console.log('In bundled script');
+            window.addEventListener('securitypolicyviolation', (e) => {
+              window.cspViolation = e;
+            });
+            window.ranBundledScript = true;
+        )")
         .BuildBundle();
   }
 
@@ -526,6 +534,155 @@ IN_PROC_BROWSER_TEST_F(IsolatedWebAppApiAccessBrowserTest,
   EXPECT_THAT(iframe->GetLastCommittedOrigin().opaque(), Eq(true));
   EXPECT_THAT(iframe->GetWebExposedIsolationLevel(),
               Eq(content::WebExposedIsolationLevel::kNotIsolated));
+}
+
+IN_PROC_BROWSER_TEST_F(IsolatedWebAppApiAccessBrowserTest,
+                       CspInheritedInSrcdocIframe) {
+  std::unique_ptr<ScopedBundledIsolatedWebApp> app =
+      CreateAppWithSocketPermission();
+  app->TrustSigningKey();
+  ASSERT_OK_AND_ASSIGN(auto url_info, app->Install(profile()));
+  content::RenderFrameHost* app_frame = OpenApp(url_info.app_id());
+
+  // Create a srcdoc iframe with an inline <script> tag that should
+  // be blocked by the inherited CSP.
+  ASSERT_TRUE(ExecJs(app_frame, R"(
+      const noopPolicy = trustedTypes.createPolicy("policy", {
+        createHTML: (string) => string,
+      });
+      new Promise(resolve => {
+        const f = document.createElement('iframe');
+        f.srcdoc = noopPolicy.createHTML(`
+            <!DOCTYPE html>
+            <p>srcdoc iframe</p>
+            <script src="/csp_violation_handler.js"></script>
+            <script>window.ranScript = true;</script>
+        `);
+        f.addEventListener('load', resolve);
+        document.body.appendChild(f);
+      });
+  )"));
+  content::RenderFrameHost* iframe = ChildFrameAt(app_frame, 0);
+  ASSERT_THAT(iframe, Ne(nullptr));
+
+  EXPECT_THAT(EvalJs(iframe, "location.href"), Eq("about:srcdoc"));
+  EXPECT_THAT(EvalJs(iframe, "window.origin"),
+              Eq(url_info.origin().Serialize()));
+  EXPECT_THAT(EvalJs(iframe, "window.isSecureContext"), Eq(true));
+  EXPECT_THAT(EvalJs(iframe, "window.crossOriginIsolated"), Eq(true));
+  EXPECT_THAT(iframe->GetLastCommittedURL(), Eq("about:srcdoc"));
+  EXPECT_THAT(iframe->GetLastCommittedOrigin(), Eq(url_info.origin()));
+  // Non-sandboxed srcdoc iframes are same-origin with their parent, meaning
+  // they also have application isolation level (i.e. are IsolatedContexts).
+  // This is safe because they also inherit the strict CSP.
+  EXPECT_THAT(iframe->GetWebExposedIsolationLevel(),
+              Eq(content::WebExposedIsolationLevel::kIsolatedApplication));
+  EXPECT_THAT(EvalJs(iframe, "String(window.ranScript)"), Eq("undefined"));
+  EXPECT_THAT(EvalJs(iframe, "String(window.ranBundledScript)"), Eq("true"));
+  EXPECT_THAT(
+      EvalJs(iframe,
+             "window.cspViolation instanceof SecurityPolicyViolationEvent"),
+      Eq(true));
+}
+
+IN_PROC_BROWSER_TEST_F(IsolatedWebAppApiAccessBrowserTest,
+                       CspInheritedInBlobIframe) {
+  std::unique_ptr<ScopedBundledIsolatedWebApp> app =
+      CreateAppWithSocketPermission();
+  app->TrustSigningKey();
+  ASSERT_OK_AND_ASSIGN(auto url_info, app->Install(profile()));
+  content::RenderFrameHost* app_frame = OpenApp(url_info.app_id());
+
+  ASSERT_TRUE(
+      ExecJs(app_frame, content::JsReplace(R"(
+          const blobSource = `
+              <!DOCTYPE html>
+              <p>blob html page</p>
+              <script src=$1></script>
+              <script>window.ranScript = true;</script>
+          `;
+          const blob = new Blob([blobSource], {
+            type: 'text/html'
+          });
+          const url = URL.createObjectURL(blob);
+          new Promise(resolve => {
+            const f = document.createElement('iframe');
+            f.src = url;
+            f.addEventListener('load', resolve);
+            document.body.appendChild(f);
+          });
+      )",
+                                           url_info.origin().GetURL().Resolve(
+                                               "/csp_violation_handler.js"))));
+  content::RenderFrameHost* iframe = ChildFrameAt(app_frame, 0);
+  ASSERT_THAT(iframe, Ne(nullptr));
+
+  EXPECT_THAT(EvalJs(iframe, "location.href").ExtractString(),
+              StartsWith("blob:"));
+  EXPECT_THAT(EvalJs(iframe, "window.origin"),
+              Eq(url_info.origin().Serialize()));
+  EXPECT_THAT(EvalJs(iframe, "window.isSecureContext"), Eq(true));
+  EXPECT_THAT(EvalJs(iframe, "window.crossOriginIsolated"), Eq(true));
+  EXPECT_THAT(iframe->GetLastCommittedURL().SchemeIsBlob(), Eq(true));
+  EXPECT_THAT(iframe->GetLastCommittedOrigin(), Eq(url_info.origin()));
+  EXPECT_THAT(iframe->GetWebExposedIsolationLevel(),
+              Eq(content::WebExposedIsolationLevel::kIsolatedApplication));
+  EXPECT_THAT(EvalJs(iframe, "String(window.ranScript)"), Eq("undefined"));
+  EXPECT_THAT(EvalJs(iframe, "String(window.ranBundledScript)"), Eq("true"));
+  EXPECT_THAT(
+      EvalJs(iframe,
+             "window.cspViolation instanceof SecurityPolicyViolationEvent"),
+      Eq(true));
+}
+
+IN_PROC_BROWSER_TEST_F(IsolatedWebAppApiAccessBrowserTest,
+                       CspInheritedInBlobNavigation) {
+  std::unique_ptr<ScopedBundledIsolatedWebApp> app =
+      CreateAppWithSocketPermission();
+  app->TrustSigningKey();
+  ASSERT_OK_AND_ASSIGN(auto url_info, app->Install(profile()));
+  content::RenderFrameHost* app_frame = OpenApp(url_info.app_id());
+
+  content::TestNavigationObserver navigation_observer(
+      content::WebContents::FromRenderFrameHost(app_frame));
+  ASSERT_TRUE(
+      ExecJs(app_frame, content::JsReplace(R"(
+          const blobSource = `
+              <!DOCTYPE html>
+              <p>blob html page</p>
+              <script src=$1></script>
+              <script>window.ranScript = true;</script>
+          `;
+          const blob = new Blob([blobSource], {
+            type: 'text/html'
+          });
+          location.href = URL.createObjectURL(blob);
+      )",
+                                           url_info.origin().GetURL().Resolve(
+                                               "/csp_violation_handler.js"))));
+  navigation_observer.Wait();
+
+  EXPECT_THAT(navigation_observer.last_navigation_succeeded(), Eq(true));
+  EXPECT_THAT(navigation_observer.last_net_error_code(), Eq(net::OK));
+  EXPECT_THAT(navigation_observer.last_navigation_url().spec(),
+              StartsWith("blob:" + url_info.origin().GetURL().spec()));
+
+  EXPECT_THAT(EvalJs(app_frame, "location.href").ExtractString(),
+              StartsWith("blob:"));
+  EXPECT_THAT(EvalJs(app_frame, "window.origin"),
+              Eq(url_info.origin().Serialize()));
+  EXPECT_THAT(EvalJs(app_frame, "window.isSecureContext"), Eq(true));
+  EXPECT_THAT(EvalJs(app_frame, "window.crossOriginIsolated"), Eq(true));
+  EXPECT_THAT(app_frame->GetLastCommittedURL().SchemeIsBlob(), Eq(true));
+  EXPECT_THAT(app_frame->GetLastCommittedOrigin(), Eq(url_info.origin()));
+  EXPECT_THAT(app_frame->GetWebExposedIsolationLevel(),
+              Eq(content::WebExposedIsolationLevel::kIsolatedApplication));
+  EXPECT_THAT(EvalJs(app_frame, "String(window.ranScript)"), Eq("undefined"));
+  EXPECT_THAT(EvalJs(app_frame, "String(window.ranBundledScript)"), Eq("true"));
+  EXPECT_THAT(
+      EvalJs(app_frame,
+             "window.cspViolation instanceof SecurityPolicyViolationEvent"),
+      Eq(true));
 }
 
 class IsolatedWebAppBrowserCookieTest : public IsolatedWebAppBrowserTest {
