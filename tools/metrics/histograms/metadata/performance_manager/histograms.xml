@@ -83,6 +83,22 @@ each histogram.
     same time as the Memory.Browser.PrivateMemoryFootprint. This slice is the
     memory used to store {ResourceContextType} that are {ResourceContextState}.
   </summary>
+  <token key="ResourceContextType">
+    <variant name="AllContexts" summary="all ResourceContexts"/>
+    <variant name="FrameContexts"/>
+    <variant name="OpaqueOriginContexts"
+        summary="OriginInPageContexts with opaque origins"/>
+    <variant name="OriginInPageContexts"/>
+    <variant name="PageContexts"/>
+    <variant name="ProcessContexts"/>
+    <variant name="WorkerContexts"/>
+  </token>
+  <token key="ResourceContextState">
+    <variant name="Dead"
+        summary="associated with a resource that no longer exists"/>
+    <variant name="Live" summary="associated with an existing resource"/>
+    <variant name="Total" summary="in any state"/>
+  </token>
 </histogram>
 
 <histogram name="PerformanceManager.Experimental.AccessibilityModeFlag"
