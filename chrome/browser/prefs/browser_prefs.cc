@@ -2256,6 +2256,15 @@ void RegisterProfilePrefs(user_prefs::PrefRegistrySyncable* registry,
 #if !BUILDFLAG(IS_ANDROID)
   registry->RegisterIntegerPref(prefs::kChromeDataRegionSetting, 0);
 #endif
+
+  registry->RegisterBooleanPref(prefs::kTabGroupsDeletionSkipDialogOnDelete,
+                                false);
+  registry->RegisterBooleanPref(prefs::kTabGroupsDeletionSkipDialogOnUngroup,
+                                false);
+  registry->RegisterBooleanPref(prefs::kTabGroupsDeletionSkipDialogOnRemoveTab,
+                                false);
+  registry->RegisterBooleanPref(prefs::kTabGroupsDeletionSkipDialogOnCloseTab,
+                                false);
 }
 
 void RegisterUserProfilePrefs(user_prefs::PrefRegistrySyncable* registry) {

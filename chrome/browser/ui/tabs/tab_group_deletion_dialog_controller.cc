@@ -9,9 +9,12 @@
 
 #include "base/functional/callback.h"
 #include "base/no_destructor.h"
+#include "chrome/browser/profiles/profile.h"
 #include "chrome/browser/ui/browser.h"
 #include "chrome/browser/ui/browser_dialogs.h"
 #include "chrome/browser/ui/browser_element_identifiers.h"
+#include "chrome/common/pref_names.h"
+#include "components/prefs/pref_service.h"
 #include "ui/base/models/dialog_model.h"
 
 namespace tab_groups {
@@ -60,6 +63,7 @@ struct DialogText {
   const std::u16string ok_text;
 };
 
+// Returns the list of strings that are needed for a given dialog type.
 DialogText GetDialogText(DeletionDialogController::DialogType type) {
   switch (type) {
     case DeletionDialogController::DialogType::DeleteSingle: {
@@ -79,12 +83,71 @@ DialogText GetDialogText(DeletionDialogController::DialogType type) {
   }
 }
 
+// Returns the the value from the settings pref for a given dialog type.
+bool IsDialogSkippedByUserSettings(Profile* profile,
+                                   DeletionDialogController::DialogType type) {
+  if (!profile) {
+    return false;
+  }
+  PrefService* pref_service = profile->GetPrefs();
+  switch (type) {
+    case DeletionDialogController::DialogType::DeleteSingle: {
+      return pref_service->GetBoolean(
+          prefs::kTabGroupsDeletionSkipDialogOnDelete);
+    }
+    case DeletionDialogController::DialogType::UngroupSingle: {
+      return pref_service->GetBoolean(
+          prefs::kTabGroupsDeletionSkipDialogOnUngroup);
+    }
+    case DeletionDialogController::DialogType::RemoveTabAndDelete: {
+      return pref_service->GetBoolean(
+          prefs::kTabGroupsDeletionSkipDialogOnRemoveTab);
+    }
+    case DeletionDialogController::DialogType::CloseTabAndDelete: {
+      return pref_service->GetBoolean(
+          prefs::kTabGroupsDeletionSkipDialogOnCloseTab);
+    }
+  }
+}
+
+void SetSkipDialogForType(Profile* profile,
+                          DeletionDialogController::DialogType type,
+                          bool new_value) {
+  if (!profile) {
+    return;
+  }
+
+  PrefService* pref_service = profile->GetPrefs();
+  switch (type) {
+    case DeletionDialogController::DialogType::DeleteSingle: {
+      return pref_service->SetBoolean(
+          prefs::kTabGroupsDeletionSkipDialogOnDelete, new_value);
+    }
+    case DeletionDialogController::DialogType::UngroupSingle: {
+      return pref_service->SetBoolean(
+          prefs::kTabGroupsDeletionSkipDialogOnUngroup, new_value);
+    }
+    case DeletionDialogController::DialogType::RemoveTabAndDelete: {
+      return pref_service->SetBoolean(
+          prefs::kTabGroupsDeletionSkipDialogOnRemoveTab, new_value);
+    }
+    case DeletionDialogController::DialogType::CloseTabAndDelete: {
+      return pref_service->SetBoolean(
+          prefs::kTabGroupsDeletionSkipDialogOnCloseTab, new_value);
+    }
+  }
+}
+
 }  // anonymous namespace
 
 DeletionDialogController::DialogState::DialogState(
+    DialogType type_,
+    ui::DialogModel* dialog_model_,
     base::OnceCallback<void()> on_ok_button_pressed_,
     base::OnceCallback<void()> on_cancel_button_pressed_)
-    : on_ok_button_pressed(std::move(on_ok_button_pressed_)),
+    : type(type_),
+      dialog_model(dialog_model_),
+      on_ok_button_pressed(std::move(on_ok_button_pressed_)),
       on_cancel_button_pressed(std::move(on_cancel_button_pressed_)) {}
 
 DeletionDialogController::DialogState::~DialogState() = default;
@@ -102,22 +165,33 @@ bool DeletionDialogController::IsShowingDialog() {
   return state_ != nullptr;
 }
 
-// Attempt to show the dialog. The dialog will only show if it is not already
-// showing.
 bool DeletionDialogController::MaybeShowDialog(
     DialogType type,
     base::OnceCallback<void()> on_ok_callback) {
   if (!CanShowDialog()) {
     return false;
   }
-  state_ = std::make_unique<DeletionDialogController::DialogState>(
-      std::move(on_ok_callback), base::DoNothing());
 
-  chrome::ShowBrowserModal(browser_, BuildDialogModel(type));
+  if (IsDialogSkippedByUserSettings(browser_->profile(), type)) {
+    return false;
+  }
+
+  std::unique_ptr<ui::DialogModel> dialog_model = BuildDialogModel(type);
+
+  state_ = std::make_unique<DeletionDialogController::DialogState>(
+      type, dialog_model.get(), std::move(on_ok_callback), base::DoNothing());
+
+  chrome::ShowBrowserModal(browser_, std::move(dialog_model));
   return true;
 }
 
 void DeletionDialogController::OnDialogOk() {
+  if (state_->dialog_model &&
+      state_->dialog_model
+          ->GetCheckboxByUniqueId(kDeletionDialogDontAskCheckboxId)
+          ->is_checked()) {
+    SetSkipDialogForType(browser_->profile(), state_->type, true);
+  }
   std::move(state_->on_ok_button_pressed).Run();
   state_.reset();
 }
