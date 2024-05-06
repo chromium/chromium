@@ -11,7 +11,7 @@
 namespace plus_addresses {
 namespace {
 using affiliations::FacetURI;
-}
+}  // namespace
 
 PlusAddressAffiliationSourceAdapter::PlusAddressAffiliationSourceAdapter(
     PlusAddressService* service)
