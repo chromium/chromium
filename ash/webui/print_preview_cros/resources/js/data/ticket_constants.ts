@@ -33,6 +33,7 @@ export const DEFAULT_PARTIAL_PRINT_TICKET: Partial<PrintTicket> = {
   dpiVertical: 0,
   dpiDefault: false,
   duplex: DuplexMode.LONG_EDGE,
+  headerFooterEnabled: true,
   landscape: false,
   marginsType: MarginType.DEFAULT_MARGINS,
   mediaSize: DEFAULT_MEDIA_SIZE,

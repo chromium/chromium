@@ -121,6 +121,9 @@ export interface PrintTicket {
   // of the media.
   duplex: DuplexMode;
 
+  // Whether the header and footer content will be added to generated PDF.
+  headerFooterEnabled: boolean;
+
   // Whether orientation should be in landscape or portrait mode.
   landscape: boolean;
 

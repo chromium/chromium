@@ -88,9 +88,10 @@ export class PrintTicketManager extends EventTarget {
         createCustomEvent(PRINT_TICKET_MANAGER_SESSION_INITIALIZED));
   }
 
-  // Handles notifying start and finish print request.
-  // TODO(b/323421684): Takes current print ticket uses PrintPreviewPageHandler
-  // to initiate actual print request.
+  // Handles notifying start and finish print request. Sends latest print ticket
+  // state along with request.
+  // TODO(b/323421684): Update print ticket prior to sending to set
+  // headerFooterEnabled to false to align with Chrome preview behavior.
   sendPrintRequest(): void {
     assert(this.printPreviewPageHandler);
 
