@@ -412,6 +412,10 @@ public final class ProductionSupportedFlagList {
                 BlinkFeatures.PAINT_HOLDING_CROSS_ORIGIN,
                 "Defers the first commit until FCP or timeout for cross-origin navigations."),
         Flag.baseFeature(
+                BlinkFeatures.PAINT_HOLDING_FOR_IFRAMES,
+                "Show stale paint from old Document until new Document is ready for subframe"
+                        + " navigations."),
+        Flag.baseFeature(
                 ContentFeatures.NAVIGATION_NETWORK_RESPONSE_QUEUE,
                 "Schedules tasks related to the navigation network responses on a higher "
                         + "priority task queue."),
