@@ -109,6 +109,15 @@ ScriptInjection::InjectionResult ScriptInjection::TryToInject(
     mojom::RunLocation current_location,
     ScriptsRunInfo* scripts_run_info,
     StatusUpdatedCallback async_updated_callback) {
+  if (current_location == mojom::RunLocation::kUndefined &&
+      render_frame_->IsInFencedFrameTree() && render_frame_->IsMainFrame()) {
+    // Fenced frames do not navigate to about:blank by default the way iframes
+    // do. They cannot accept script injections until they perform an initial
+    // navigation.
+    NotifyWillNotInject(ScriptInjector::NOT_ALLOWED);
+    return INJECTION_FINISHED;  // We're done.
+  }
+
   if (current_location < run_location_)
     return INJECTION_WAITING;  // Wait for the right location.
 
