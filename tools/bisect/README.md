@@ -65,9 +65,8 @@ use google.com account.
 3.  Use this commandline to download the script to the depot_tools folder.
 
 `depot_tools$ curl -s --basic -n
-"https://chromium.googlesource.com/
-chromium/src/+/main/tools/bisect/bisect_builds.py?format=TEXT" |
- base64 -d > bisect_builds.py`
+"https://chromium.googlesource.com/chromium/src/+/main/tools/bisect/bisect_builds.py?format=TEXT"
+| base64 -d > bisect_builds.py`
 
 4.  Start bisection
 
