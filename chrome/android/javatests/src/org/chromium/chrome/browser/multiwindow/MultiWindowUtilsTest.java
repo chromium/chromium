@@ -45,6 +45,7 @@ import org.chromium.chrome.test.ChromeJUnit4ClassRunner;
 import org.chromium.chrome.test.ChromeTabbedActivityTestRule;
 import org.chromium.chrome.test.R;
 import org.chromium.content_public.browser.test.util.TestThreadUtils;
+import org.chromium.ui.test.util.UiDisableIf;
 
 import java.util.concurrent.TimeoutException;
 
@@ -75,6 +76,7 @@ public class MultiWindowUtilsTest {
     /** Tests that ChromeTabbedActivity2 is used for intents when EXTRA_WINDOW_ID is set to 2. */
     @Test
     @SmallTest
+    @DisableIf.Device(type = {UiDisableIf.TABLET}) // https://crbug.com/338976206
     @Feature("MultiWindow")
     public void testTabbedActivityForIntentWithExtraWindowId() {
         ChromeTabbedActivity activity1 = mActivityTestRule.getActivity();
@@ -95,6 +97,7 @@ public class MultiWindowUtilsTest {
      */
     @Test
     @SmallTest
+    @DisableIf.Device(type = {UiDisableIf.TABLET}) // https://crbug.com/338976206
     @Feature("MultiWindow")
     public void testTabbedActivityForIntentLastResumedActivity() {
         ChromeTabbedActivity activity1 = mActivityTestRule.getActivity();
@@ -155,6 +158,7 @@ public class MultiWindowUtilsTest {
      */
     @Test
     @SmallTest
+    @DisableIf.Device(type = {UiDisableIf.TABLET}) // https://crbug.com/338976206
     @Feature("MultiWindow")
     public void testTabbedActivityForIntentOnlyActivity2IsRunning() {
         ChromeTabbedActivity activity1 = mActivityTestRule.getActivity();
@@ -211,6 +215,7 @@ public class MultiWindowUtilsTest {
      */
     @Test
     @SmallTest
+    @DisableIf.Device(type = {UiDisableIf.TABLET}) // https://crbug.com/338976206
     @Feature("MultiWindow")
     public void testAreMultipleChromeInstancesRunningSecondInstanceKilledFirst()
             throws TimeoutException {
@@ -307,6 +312,7 @@ public class MultiWindowUtilsTest {
     @DisableIf.Build(
             sdk_is_less_than = Build.VERSION_CODES.O,
             message = "https://crbug.com/1077249")
+    @DisableIf.Device(type = {UiDisableIf.TABLET}) // https://crbug.com/338976206
     public void testAreMultipleChromeInstancesRunningFirstInstanceKilledFirst()
             throws TimeoutException {
         ChromeTabbedActivity activity1 = mActivityTestRule.getActivity();

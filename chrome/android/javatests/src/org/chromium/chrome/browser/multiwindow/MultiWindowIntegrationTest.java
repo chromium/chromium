@@ -22,6 +22,7 @@ import org.junit.runner.RunWith;
 import org.chromium.base.test.util.CommandLineFlags;
 import org.chromium.base.test.util.Criteria;
 import org.chromium.base.test.util.CriteriaHelper;
+import org.chromium.base.test.util.DisableIf;
 import org.chromium.base.test.util.DisabledTest;
 import org.chromium.base.test.util.Feature;
 import org.chromium.base.test.util.Restriction;
@@ -39,6 +40,7 @@ import org.chromium.chrome.test.R;
 import org.chromium.chrome.test.util.MenuUtils;
 import org.chromium.content_public.browser.test.util.TestThreadUtils;
 import org.chromium.net.test.EmbeddedTestServer;
+import org.chromium.ui.test.util.UiDisableIf;
 import org.chromium.ui.test.util.UiRestriction;
 
 /** Integration testing for Android's N+ MultiWindow. */
@@ -102,6 +104,7 @@ public class MultiWindowIntegrationTest {
 
     @Test
     @MediumTest
+    @DisableIf.Device(type = {UiDisableIf.TABLET}) // https://crbug.com/338976206
     @Feature("MultiWindow")
     @CommandLineFlags.Add({
         ChromeSwitches.DISABLE_TAB_MERGING_FOR_TESTING,
