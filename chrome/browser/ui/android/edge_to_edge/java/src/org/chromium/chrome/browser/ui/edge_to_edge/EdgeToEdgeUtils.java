@@ -169,9 +169,4 @@ public class EdgeToEdgeUtils {
         }
         return ChromeFeatureList.sDrawWebEdgeToEdge.isEnabled();
     }
-
-    /** Whether enable the inset management through InsetObserver. */
-    public static boolean isInsetsManagementEnabled() {
-        return ChromeFeatureList.sDrawEdgeToEdgeInsetsManagement.isEnabled();
-    }
 }

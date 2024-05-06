@@ -8,8 +8,6 @@ import android.view.View;
 import android.view.Window;
 
 import androidx.annotation.NonNull;
-import androidx.annotation.Nullable;
-import androidx.core.view.OnApplyWindowInsetsListener;
 
 /** Wraps calls to the Android OS Edge To Edge APIs so we can easily instrument them. */
 public interface EdgeToEdgeOSWrapper {
@@ -26,11 +24,11 @@ public interface EdgeToEdgeOSWrapper {
     void setDecorFitsSystemWindows(@NonNull Window window, boolean decorFitsSystemWindows);
 
     /**
-     * Wraps {@link View#setPadding(int, int, int, int)}.
-     * Sets the padding for the given View.
-     * The view may add on the space required to display the scrollbars, depending on the style and
+     * Wraps {@link View#setPadding(int, int, int, int)}. Sets the padding for the given View. The
+     * view may add on the space required to display the scrollbars, depending on the style and
      * visibility of the scrollbars. So the values returned from getPaddingLeft(), getPaddingTop(),
      * getPaddingRight() and getPaddingBottom() may be different from the values set in this call.
+     *
      * @param view The {@link View} to pad.
      * @param left int: the left padding in pixels
      * @param top int: the top padding in pixels
@@ -38,15 +36,4 @@ public interface EdgeToEdgeOSWrapper {
      * @param bottom int: the bottom padding in pixels
      */
     void setPadding(View view, int left, int top, int right, int bottom);
-
-    /**
-     * Wraps {@code ViewCompat#setOnApplyWindowInsetsListener}.
-     * Set an {@link OnApplyWindowInsetsListener} to take over the policy for applying window insets
-     * to this view. This will only take effect on devices with API 21 or above.
-     * @param view The {@link View} to listen to.
-     * @param listener An {@link OnApplyWindowInsetsListener} to be called when the insets change
-     *         for the {@link Window} that contains the view.
-     */
-    void setOnApplyWindowInsetsListener(
-            @NonNull View view, @Nullable OnApplyWindowInsetsListener listener);
 }

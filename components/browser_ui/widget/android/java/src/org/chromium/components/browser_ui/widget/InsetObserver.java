@@ -42,7 +42,6 @@ public class InsetObserver implements OnApplyWindowInsetsListener {
     private final View mRootView;
     // Insets to be added to the current safe area.
     private int mBottomInsetsForEdgeToEdge;
-    private final boolean mInsetsManagementEnabled;
     private final Rect mDisplayCutoutRect;
 
     // Cached state
@@ -112,11 +111,9 @@ public class InsetObserver implements OnApplyWindowInsetsListener {
      * Creates an instance of {@link InsetObserver}.
      *
      * @param rootView The root view of the app.
-     * @param insetsManagementEnabled Whether the edge-to-edge insets management flag is enabled.
      */
-    public InsetObserver(View rootView, boolean insetsManagementEnabled) {
+    public InsetObserver(View rootView) {
         mRootView = rootView;
-        mInsetsManagementEnabled = insetsManagementEnabled;
         mWindowInsets = new Rect();
         mCurrentSafeArea = new Rect();
         mDisplayCutoutRect = new Rect();
@@ -320,11 +317,7 @@ public class InsetObserver implements OnApplyWindowInsetsListener {
         mCurrentSafeArea.set(newSafeArea);
         // Create a new rect to avoid rect being changed by observers.
         for (WindowInsetObserver mObserver : mObservers) {
-            if (mInsetsManagementEnabled) {
-                mObserver.onSafeAreaChanged(new Rect(mCurrentSafeArea));
-            } else {
-                mObserver.onSafeAreaChanged(mCurrentSafeArea);
-            }
+            mObserver.onSafeAreaChanged(new Rect(mCurrentSafeArea));
         }
     }
 

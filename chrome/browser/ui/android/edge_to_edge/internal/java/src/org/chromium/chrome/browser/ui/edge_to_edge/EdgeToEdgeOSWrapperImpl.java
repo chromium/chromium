@@ -8,9 +8,6 @@ import android.view.View;
 import android.view.Window;
 
 import androidx.annotation.NonNull;
-import androidx.annotation.Nullable;
-import androidx.core.view.OnApplyWindowInsetsListener;
-import androidx.core.view.ViewCompat;
 import androidx.core.view.WindowCompat;
 
 /** Wraps calls to the Android OS Edge To Edge APIs so we can easily instrument them. */
@@ -23,11 +20,5 @@ public class EdgeToEdgeOSWrapperImpl implements EdgeToEdgeOSWrapper {
     @Override
     public void setPadding(View view, int left, int top, int right, int bottom) {
         view.setPadding(left, top, right, bottom);
-    }
-
-    @Override
-    public void setOnApplyWindowInsetsListener(
-            @NonNull View view, @Nullable OnApplyWindowInsetsListener listener) {
-        ViewCompat.setOnApplyWindowInsetsListener(view, listener);
     }
 }

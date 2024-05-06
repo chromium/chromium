@@ -7,14 +7,12 @@ package org.chromium.chrome.browser.ui.edge_to_edge;
 import static org.chromium.chrome.browser.ui.edge_to_edge.EdgeToEdgeUtils.shouldDrawToEdge;
 
 import android.app.Activity;
-import android.graphics.Rect;
 import android.os.Build.VERSION_CODES;
 import android.view.View;
 
 import androidx.annotation.CallSuper;
 import androidx.annotation.NonNull;
 import androidx.annotation.Nullable;
-import androidx.annotation.Px;
 import androidx.annotation.RequiresApi;
 import androidx.annotation.VisibleForTesting;
 import androidx.core.graphics.Insets;
@@ -302,12 +300,7 @@ public class EdgeToEdgeControllerImpl
             mEdgeToEdgeOSWrapper.setDecorFitsSystemWindows(mActivity.getWindow(), false);
             mWindowInsetsConsumer =
                     (view, windowInsets) -> handleWindowInsets(windowInsets, viewId, webContents);
-            if (EdgeToEdgeUtils.isInsetsManagementEnabled()) {
-                mInsetObserver.addInsetsConsumer(mWindowInsetsConsumer);
-            } else {
-                mEdgeToEdgeOSWrapper.setOnApplyWindowInsetsListener(
-                        rootView, mWindowInsetsConsumer);
-            }
+            mInsetObserver.addInsetsConsumer(mWindowInsetsConsumer);
         } else if (mSystemInsets != null) {
             // It's possible for toEdge to change more than once prior to the first time
             // #handleWindowInsets is called. #handleWindowInsets will call #adjustEdges using
@@ -392,28 +385,8 @@ public class EdgeToEdgeControllerImpl
             observer.onToEdgeChange(isToEdge() ? mSystemInsets.bottom : 0);
         }
 
-        if (EdgeToEdgeUtils.isInsetsManagementEnabled()) {
-            int bottomInsetOnSaveArea = toEdge ? mSystemInsets.bottom : 0;
-            mInsetObserver.updateBottomInsetForEdgeToEdge(bottomInsetOnSaveArea);
-        } else if (webContents != null) {
-            pushInsetsToBlink(toEdge, webContents);
-        }
-    }
-
-    /**
-     * Pushes the current insets to Blink so the page will know how to pad bottom UI.
-     *
-     * @param toEdge Whether we're drawing all the way to the edge of the screen.
-     * @param webContents A {@link WebContents} that leads to a Blink Renderer.
-     */
-    private void pushInsetsToBlink(boolean toEdge, @NonNull WebContents webContents) {
-        // Push the insets back to the webpage if we have one.
-        // TODO(crbug.com/40279791) Move this work into the nascent
-        // SafeAreaInsetsTracker.
-        assert mSystemInsets != null : "Error, trying to notify Blink without system insets set";
-        Rect insetsRect = new Rect(0, 0, 0, toEdge ? scale(mSystemInsets.bottom) : 0);
-        Log.v(TAG, "Pushing back insets to Blink %s", insetsRect);
-        webContents.setDisplayCutoutSafeArea(insetsRect);
+        int bottomInsetOnSaveArea = toEdge ? mSystemInsets.bottom : 0;
+        mInsetObserver.updateBottomInsetForEdgeToEdge(bottomInsetOnSaveArea);
     }
 
     /**
@@ -425,13 +398,6 @@ public class EdgeToEdgeControllerImpl
     @VisibleForTesting
     void drawToEdge(int viewId, boolean toEdge) {
         drawToEdge(viewId, toEdge, null);
-    }
-
-    /**
-     * @return the value of the pixel input when scaled back to density-independent pixels.
-     */
-    private int scale(@Px int unscaledValuePx) {
-        return (int) Math.ceil(unscaledValuePx * mPxToDp);
     }
 
     @CallSuper

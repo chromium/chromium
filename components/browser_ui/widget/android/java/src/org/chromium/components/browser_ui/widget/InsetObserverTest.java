@@ -89,7 +89,7 @@ public class InsetObserverTest {
                 .when(mContentView)
                 .onApplyWindowInsets(mModifiedNonCompatInsets);
 
-        mInsetObserver = new InsetObserver(mContentView, true);
+        mInsetObserver = new InsetObserver(mContentView);
         mInsetObserver.addObserver(mObserver);
     }
 
@@ -264,7 +264,7 @@ public class InsetObserverTest {
     @Config(sdk = VERSION_CODES.R)
     public void initializeWithLastSeenRawWindowInsets() {
         doReturn(mNonCompatInsets).when(mContentView).getRootWindowInsets();
-        mInsetObserver = new InsetObserver(mContentView, true);
+        mInsetObserver = new InsetObserver(mContentView);
         assertEquals(
                 "WindowInsets is different.",
                 WindowInsetsCompat.toWindowInsetsCompat(mNonCompatInsets),
