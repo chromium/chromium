@@ -178,6 +178,11 @@ class ASH_EXPORT InputDeviceSettingsControllerImpl
       const mojom::GraphicsTablet& graphics_tablet,
       const mojom::Button& button);
 
+  void DispatchKeyboardBatteryInfoChanged(DeviceId id);
+  void DispatchGraphicsTabletBatteryInfoChanged(DeviceId id);
+  void DispatchMouseBatteryInfoChanged(DeviceId id);
+  void DispatchTouchpadBatteryInfoChanged(DeviceId id);
+
   void InitializePolicyHandler();
   void OnKeyboardPoliciesChanged();
   void OnMousePoliciesChanged();

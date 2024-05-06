@@ -69,6 +69,14 @@ class ASH_PUBLIC_EXPORT InputDeviceSettingsController {
     virtual void OnCustomizableMouseObservingStarted(
         const mojom::Mouse& mouse) {}
     virtual void OnCustomizableMouseObservingStopped() {}
+
+    virtual void OnKeyboardBatteryInfoChanged(const mojom::Keyboard& keyboard) {
+    }
+    virtual void OnGraphicsTabletBatteryInfoChanged(
+        const mojom::GraphicsTablet& graphics_tablet) {}
+    virtual void OnMouseBatteryInfoChanged(const mojom::Mouse& mouse) {}
+    virtual void OnTouchpadBatteryInfoChanged(const mojom::Touchpad& touchpad) {
+    }
   };
 
   static InputDeviceSettingsController* Get();

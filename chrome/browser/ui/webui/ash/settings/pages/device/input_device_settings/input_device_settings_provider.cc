@@ -498,6 +498,30 @@ void InputDeviceSettingsProvider::OnCustomizableTabletButtonPressed(
   }
 }
 
+void InputDeviceSettingsProvider::OnKeyboardBatteryInfoChanged(
+    const ::ash::mojom::Keyboard& keyboard) {
+  CHECK(features::IsWelcomeExperienceEnabled());
+  NotifyKeyboardsUpdated();
+}
+
+void InputDeviceSettingsProvider::OnGraphicsTabletBatteryInfoChanged(
+    const ::ash::mojom::GraphicsTablet& graphics_tablet) {
+  CHECK(features::IsWelcomeExperienceEnabled());
+  NotifyGraphicsTabletUpdated();
+}
+
+void InputDeviceSettingsProvider::OnMouseBatteryInfoChanged(
+    const ::ash::mojom::Mouse& mouse) {
+  CHECK(features::IsWelcomeExperienceEnabled());
+  NotifyMiceUpdated();
+}
+
+void InputDeviceSettingsProvider::OnTouchpadBatteryInfoChanged(
+    const ::ash::mojom::Touchpad& touchpad) {
+  CHECK(features::IsWelcomeExperienceEnabled());
+  NotifyTouchpadsUpdated();
+}
+
 void InputDeviceSettingsProvider::OnKeyboardConnected(
     const ::ash::mojom::Keyboard& keyboard) {
   NotifyKeyboardsUpdated();

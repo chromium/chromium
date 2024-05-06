@@ -443,6 +443,20 @@ class FakeInputDeviceSettingsControllerObserver
     num_mouse_observing_stopped_++;
   }
 
+  void OnKeyboardBatteryInfoChanged(const mojom::Keyboard& keyboard) override {
+    num_keyboard_battery_info_updated_++;
+  }
+  void OnGraphicsTabletBatteryInfoChanged(
+      const mojom::GraphicsTablet& graphics_tablet) override {
+    num_graphics_tablets_battery_info_updated_++;
+  }
+  void OnMouseBatteryInfoChanged(const mojom::Mouse& mouse) override {
+    num_mouse_battery_info_updated_++;
+  }
+  void OnTouchpadBatteryInfoChanged(const mojom::Touchpad& touchpad) override {
+    num_touchpad_battery_info_updated_++;
+  }
+
   uint32_t num_keyboards_connected() { return num_keyboards_connected_; }
   uint32_t num_graphics_tablets_connected() {
     return num_graphics_tablets_connected_;
@@ -469,6 +483,18 @@ class FakeInputDeviceSettingsControllerObserver
   uint32_t num_mouse_observing_stopped() {
     return num_mouse_observing_stopped_;
   }
+  uint32_t num_keyboard_battery_info_updated() {
+    return num_keyboard_battery_info_updated_;
+  }
+  uint32_t num_graphics_tablets_battery_info_updated() {
+    return num_graphics_tablets_battery_info_updated_;
+  }
+  uint32_t num_mouse_battery_info_updated() {
+    return num_mouse_battery_info_updated_;
+  }
+  uint32_t num_touchpad_battery_info_updated() {
+    return num_touchpad_battery_info_updated_;
+  }
 
  private:
   uint32_t num_keyboards_connected_ = 0;
@@ -483,6 +509,10 @@ class FakeInputDeviceSettingsControllerObserver
   uint32_t num_pen_buttons_pressed_ = 0;
   uint32_t num_mouse_observing_started_ = 0;
   uint32_t num_mouse_observing_stopped_ = 0;
+  uint32_t num_keyboard_battery_info_updated_ = 0;
+  uint32_t num_graphics_tablets_battery_info_updated_ = 0;
+  uint32_t num_mouse_battery_info_updated_ = 0;
+  uint32_t num_touchpad_battery_info_updated_ = 0;
 };
 
 class InputDeviceSettingsControllerTest : public NoSessionAshTestBase {
@@ -1828,6 +1858,7 @@ TEST_F(InputDeviceSettingsControllerTest, BatteryInfoUpdates) {
       device::BluetoothDevice::BatteryType::kDefault, 65));
   keyboard = controller_->GetKeyboard(bluetooth_keyboard.id);
   ASSERT_EQ(65, keyboard->battery_info->battery_percentage);
+  ASSERT_EQ(1u, observer_->num_keyboard_battery_info_updated());
 
   // Disconnecting the bluetooth device should remove the corresponding
   // entry from the bluetooth address map.

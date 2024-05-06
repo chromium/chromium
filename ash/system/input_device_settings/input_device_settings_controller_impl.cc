@@ -2304,6 +2304,46 @@ void InputDeviceSettingsControllerImpl::DispatchCustomizablePenButtonPressed(
   }
 }
 
+void InputDeviceSettingsControllerImpl::DispatchKeyboardBatteryInfoChanged(
+    DeviceId id) {
+  CHECK(base::Contains(keyboards_, id));
+  CHECK(features::IsWelcomeExperienceEnabled());
+  const auto& keyboard = *keyboards_.at(id);
+  for (auto& observer : observers_) {
+    observer.OnKeyboardBatteryInfoChanged(keyboard);
+  }
+}
+
+void InputDeviceSettingsControllerImpl::
+    DispatchGraphicsTabletBatteryInfoChanged(DeviceId id) {
+  CHECK(base::Contains(graphics_tablets_, id));
+  CHECK(features::IsWelcomeExperienceEnabled());
+  const auto& graphics_tablet = *graphics_tablets_.at(id);
+  for (auto& observer : observers_) {
+    observer.OnGraphicsTabletBatteryInfoChanged(graphics_tablet);
+  }
+}
+
+void InputDeviceSettingsControllerImpl::DispatchMouseBatteryInfoChanged(
+    DeviceId id) {
+  CHECK(base::Contains(mice_, id));
+  CHECK(features::IsWelcomeExperienceEnabled());
+  const auto& mouse = *mice_.at(id);
+  for (auto& observer : observers_) {
+    observer.OnMouseBatteryInfoChanged(mouse);
+  }
+}
+
+void InputDeviceSettingsControllerImpl::DispatchTouchpadBatteryInfoChanged(
+    DeviceId id) {
+  CHECK(base::Contains(touchpads_, id));
+  CHECK(features::IsWelcomeExperienceEnabled());
+  const auto& touchpad = *touchpads_.at(id);
+  for (auto& observer : observers_) {
+    observer.OnTouchpadBatteryInfoChanged(touchpad);
+  }
+}
+
 void InputDeviceSettingsControllerImpl::RefreshInternalPointingStickSettings() {
   for (auto& [id, pointing_stick] : pointing_sticks_) {
     if (pointing_stick->is_external) {
@@ -2464,24 +2504,28 @@ void InputDeviceSettingsControllerImpl::DeviceBatteryChanged(
       updated_battery_info->percentage.value(),
       GetChargeStateFromBluetoothDevice(updated_battery_info->charge_state));
 
-  if (auto* keyboard = FindKeyboard(device_id); keyboard != nullptr) {
-    keyboard->battery_info = std::move(mojom_battery_info);
+  if (auto* kb = FindKeyboard(device_id); kb != nullptr) {
+    kb->battery_info = std::move(mojom_battery_info);
+    DispatchKeyboardBatteryInfoChanged(device_id);
     return;
   }
 
   if (auto* mouse = FindMouse(device_id); mouse != nullptr) {
     mouse->battery_info = std::move(mojom_battery_info);
+    DispatchMouseBatteryInfoChanged(device_id);
     return;
   }
 
   if (auto* touchpad = FindTouchpad(device_id); touchpad != nullptr) {
     touchpad->battery_info = std::move(mojom_battery_info);
+    DispatchTouchpadBatteryInfoChanged(device_id);
     return;
   }
 
   if (auto* graphics_tablet = FindGraphicsTablet(device_id);
       graphics_tablet != nullptr) {
     graphics_tablet->battery_info = std::move(mojom_battery_info);
+    DispatchGraphicsTabletBatteryInfoChanged(device_id);
     return;
   }
 }

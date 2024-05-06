@@ -115,6 +115,13 @@ class InputDeviceSettingsProvider
   void OnCustomizableTabletButtonPressed(
       const ::ash::mojom::GraphicsTablet& graphics_tablet,
       const ::ash::mojom::Button& button) override;
+  void OnKeyboardBatteryInfoChanged(
+      const ::ash::mojom::Keyboard& keyboard) override;
+  void OnGraphicsTabletBatteryInfoChanged(
+      const ::ash::mojom::GraphicsTablet& graphics_tablet) override;
+  void OnMouseBatteryInfoChanged(const ::ash::mojom::Mouse& mouse) override;
+  void OnTouchpadBatteryInfoChanged(
+      const ::ash::mojom::Touchpad& touchpad) override;
 
   void StartObserving(uint32_t device_id) override;
   void StopObserving() override;
