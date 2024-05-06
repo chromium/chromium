@@ -3,9 +3,16 @@
 # found in the LICENSE file.
 
 import("//build/config/android/rules.gni")
+import("//third_party/jni_zero/jni_zero.gni")
+
+generate_jni("jni_headers") {
+  sources =
+      [ "java/src/org/chromium/chrome/browser/safety_hub/PermissionsData.java" ]
+}
 
 android_library("java") {
   sources = [
+    "java/src/org/chromium/chrome/browser/safety_hub/PermissionsData.java",
     "java/src/org/chromium/chrome/browser/safety_hub/SafetyHubFetchService.java",
     "java/src/org/chromium/chrome/browser/safety_hub/SafetyHubFragment.java",
     "java/src/org/chromium/chrome/browser/safety_hub/SafetyHubModuleDelegate.java",
@@ -27,6 +34,7 @@ android_library("java") {
     "//components/background_task_scheduler:factory_java",
     "//components/background_task_scheduler:public_java",
     "//components/browser_ui/settings/android:java",
+    "//components/content_settings/core/common:content_settings_types_java",
     "//components/password_manager/core/browser:password_manager_java_enums",
     "//components/prefs/android:java",
     "//components/sync/android:sync_java",
@@ -35,8 +43,11 @@ android_library("java") {
     "//third_party/androidx:androidx_annotation_annotation_java",
     "//third_party/androidx:androidx_fragment_fragment_java",
     "//third_party/androidx:androidx_preference_preference_java",
+    "//third_party/jni_zero:jni_zero_java",
     "//ui/android:ui_java",
+    "//url:url_java",
   ]
+  srcjar_deps = [ ":jni_headers" ]
   resources_package = "org.chromium.chrome.browser.safety_hub"
 }
 
@@ -83,12 +94,28 @@ source_set("android") {
   sources = [
     "prefs.cc",
     "prefs.h",
+    "unused_site_permissions_bridge.cc",
+    "unused_site_permissions_bridge.h",
   ]
 
   deps = [
+    ":jni_headers",
+    "//chrome/browser/ui",
     "//chrome/common:constants",
+    "//components/content_settings/core/common",
     "//components/pref_registry",
     "//components/prefs",
+  ]
+}
+
+source_set("unit_tests") {
+  testonly = true
+  sources = [ "unused_site_permissions_bridge_unittest.cc" ]
+  deps = [
+    ":android",
+    "//base/test:test_support",
+    "//chrome/browser/ui",
+    "//components/content_settings/core/common",
   ]
 }
 

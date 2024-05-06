@@ -42,11 +42,12 @@ const char kOneTimePermissionPromptsDecidedCount[] =
 
 // Boolean that specifies whether or not unused site permissions should be
 // revoked by Safety Hub. It is used only when kSafetyHub flag is on.
-// Conditioned because currently Safety Hub is available only on desktop.
-#if !BUILDFLAG(IS_ANDROID) && !BUILDFLAG(IS_IOS)
+// Conditioned because currently Safety Hub is available only on desktop and
+// Android.
+#if !BUILDFLAG(IS_IOS)
 const char kUnusedSitePermissionsRevocationEnabled[] =
     "safety_hub.unused_site_permissions_revocation.enabled";
-#endif  // !BUILDFLAG(IS_ANDROID) && !BUILDFLAG(IS_IOS)
+#endif  // !BUILDFLAG(IS_IOS)
 }  // namespace prefs
 
 void RegisterProfilePrefs(user_prefs::PrefRegistrySyncable* registry) {

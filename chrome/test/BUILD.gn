@@ -7647,6 +7647,7 @@ test("unit_tests") {
       "//chrome/browser/password_manager/android:utils",
       "//chrome/browser/reading_list/android:reading_list",
       "//chrome/browser/reading_list/android:unit_tests",
+      "//chrome/browser/safety_hub/android:unit_tests",
       "//chrome/browser/share",
       "//chrome/browser/thumbnail:unit_tests",
       "//chrome/browser/touch_to_fill/autofill/android:public",
