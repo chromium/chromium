@@ -1,0 +1,5 @@
+This is a testharness.js-based test.
+[FAIL] TCPSocket exchanges packets with TCPServerSocket
+  promise_test: Unhandled rejection with value: object "ReferenceError: TCPServerSocket is not defined"
+Harness: the test ran to completion.
+

@@ -636,8 +636,7 @@
   {
     "prefix": "direct-sockets",
     "platforms": ["Linux", "Mac", "Win"],
-    "bases": ["external/wpt/direct-sockets",
-              "wpt_internal/direct-sockets"],
+    "bases": ["external/wpt/direct-sockets"],
     "exclusive_tests": "ALL",
     "args": ["--isolated-context-origins=https://web-platform.test",
              "--disable-threaded-compositing", "--disable-threaded-animation"],
