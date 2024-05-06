@@ -33,10 +33,12 @@
 
 #include <optional>
 
+#include "base/feature_list.h"
 #include "base/trace_event/common/trace_event_common.h"
 #include "base/trace_event/trace_event.h"
 #include "components/viz/common/frame_timing_details.h"
 #include "services/metrics/public/cpp/ukm_builders.h"
+#include "services/network/public/mojom/load_timing_info.mojom-blink.h"
 #include "third_party/blink/public/common/features.h"
 #include "third_party/blink/public/common/frame/frame_owner_element_type.h"
 #include "third_party/blink/public/platform/platform.h"
@@ -270,9 +272,109 @@ MemoryInfo* WindowPerformance::memory(ScriptState* script_state) const {
   return memory_info;
 }
 
+namespace {
+
+BASE_FEATURE(kAdjustNavigationalPrefetchTiming,
+             "AdjustNavigationalPrefetchTiming",
+             base::FEATURE_ENABLED_BY_DEFAULT);
+
+enum class AdjustNavigationalPrefetchTimingBehavior {
+  kRemoveLoadTiming,
+  kClampToFetchStart,
+};
+
+constexpr base::FeatureParam<AdjustNavigationalPrefetchTimingBehavior>::Option
+    kAdjustNavigationalPrefetchTimingBehaviorOptions[] = {
+        {AdjustNavigationalPrefetchTimingBehavior::kRemoveLoadTiming,
+         "remove_load_timing"},
+        {AdjustNavigationalPrefetchTimingBehavior::kClampToFetchStart,
+         "clamp_to_fetch_start"},
+};
+
+constexpr base::FeatureParam<AdjustNavigationalPrefetchTimingBehavior>
+    kAdjustNavigationalPrefetchTimingBehavior{
+        &kAdjustNavigationalPrefetchTiming,
+        "adjust_navigational_prefetch_timing_behavior",
+        AdjustNavigationalPrefetchTimingBehavior::kClampToFetchStart,
+        &kAdjustNavigationalPrefetchTimingBehaviorOptions};
+
+network::mojom::blink::LoadTimingInfoPtr
+AdjustLoadTimingForNavigationalPrefetch(
+    const DocumentLoadTiming& document_load_timing,
+    network::mojom::blink::LoadTimingInfoPtr timing) {
+  if (!base::FeatureList::IsEnabled(kAdjustNavigationalPrefetchTiming)) {
+    return timing;
+  }
+
+  static const auto behavior = kAdjustNavigationalPrefetchTimingBehavior.Get();
+  switch (behavior) {
+    case AdjustNavigationalPrefetchTimingBehavior::kRemoveLoadTiming:
+      return nullptr;
+
+    case AdjustNavigationalPrefetchTimingBehavior::kClampToFetchStart:
+      break;
+  }
+
+  // Everything that happened before the fetch start (this is the value that
+  // will be exposed as fetchStart on PerformanceNavigationTiming).
+  using network::mojom::blink::LoadTimingInfo;
+  using network::mojom::blink::LoadTimingInfoConnectTiming;
+  const base::TimeTicks min_ticks = document_load_timing.FetchStart();
+  auto new_timing = LoadTimingInfo::New();
+  new_timing->socket_reused = timing->socket_reused;
+  new_timing->socket_log_id = timing->socket_log_id;
+
+  // Copy the basic members of LoadTimingInfo, and clamp them.
+  for (base::TimeTicks LoadTimingInfo::*ts :
+       {&LoadTimingInfo::request_start, &LoadTimingInfo::send_start,
+        &LoadTimingInfo::send_end, &LoadTimingInfo::receive_headers_start,
+        &LoadTimingInfo::receive_headers_end,
+        &LoadTimingInfo::receive_non_informational_headers_start,
+        &LoadTimingInfo::first_early_hints_time}) {
+    if (!((*timing).*ts).is_null()) {
+      (*new_timing).*ts = std::max((*timing).*ts, min_ticks);
+    }
+  }
+
+  // If connect timing is available, do the same to it.
+  if (auto* connect_timing = timing->connect_timing.get()) {
+    new_timing->connect_timing = LoadTimingInfoConnectTiming::New();
+    auto& new_connect_timing = *new_timing->connect_timing;
+    for (base::TimeTicks LoadTimingInfoConnectTiming::*ts : {
+             &LoadTimingInfoConnectTiming::domain_lookup_start,
+             &LoadTimingInfoConnectTiming::domain_lookup_end,
+             &LoadTimingInfoConnectTiming::connect_start,
+             &LoadTimingInfoConnectTiming::connect_end,
+             &LoadTimingInfoConnectTiming::ssl_start,
+             &LoadTimingInfoConnectTiming::ssl_end,
+         }) {
+      if (!(connect_timing->*ts).is_null()) {
+        new_connect_timing.*ts = std::max(connect_timing->*ts, min_ticks);
+      }
+    }
+  }
+
+  return new_timing;
+}
+
+}  // namespace
+
 void WindowPerformance::CreateNavigationTimingInstance(
     mojom::blink::ResourceTimingInfoPtr info) {
   DCHECK(DomWindow());
+
+  // If this is navigational prefetch, it may be necessary to partially redact
+  // the timings to avoid exposing when events that occurred during the prefetch
+  // happened. Instead, they look like they happened very fast.
+  DocumentLoader* loader = DomWindow()->document()->Loader();
+  if (loader &&
+      loader->GetNavigationDeliveryType() ==
+          network::mojom::NavigationDeliveryType::kNavigationalPrefetch &&
+      info->timing) {
+    info->timing = AdjustLoadTimingForNavigationalPrefetch(
+        loader->GetTiming(), std::move(info->timing));
+  }
+
   navigation_timing_ = MakeGarbageCollected<PerformanceNavigationTiming>(
       *DomWindow(), std::move(info), time_origin_);
 }

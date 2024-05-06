@@ -1951,7 +1951,7 @@
     "exclusive_tests": "ALL",
     "args": [
       "--enable-blink-features=SpeculationRulesFetchFromHeader,SpeculationRulesDocumentRules,NoVarySearchPrefetch,SpeculationRulesNoVarySearchHint,SpeculationRulesEagerness,SpeculationRulesDocumentRulesSelectorMatches",
-      "--enable-features=PrefetchUseContentRefactor:block_until_head_eager_prefetch/true,PrefetchRedirects",
+      "--enable-features=PrefetchUseContentRefactor:block_until_head_eager_prefetch/true/block_until_head_timeout_eager_prefetch/0,PrefetchRedirects",
       "--bypass-prefetch-proxy-for-host=not-web-platform.test",
       "--disable-threaded-compositing", "--disable-threaded-animation"
     ],
@@ -1984,7 +1984,7 @@
     "exclusive_tests": "ALL",
     "args": [
       "--enable-blink-features=SpeculationRulesFetchFromHeader,SpeculationRulesDocumentRules,NoVarySearchPrefetch,SpeculationRulesNoVarySearchHint,SpeculationRulesEagerness,SpeculationRulesDocumentRulesSelectorMatches",
-      "--enable-features=PrefetchUseContentRefactor:block_until_head_eager_prefetch/true,PrefetchRedirects,PrefetchReusable",
+      "--enable-features=PrefetchUseContentRefactor:block_until_head_eager_prefetch/true/block_until_head_timeout_eager_prefetch/0,PrefetchRedirects,PrefetchReusable",
       "--bypass-prefetch-proxy-for-host=not-web-platform.test",
       "--disable-threaded-compositing", "--disable-threaded-animation"
     ],
