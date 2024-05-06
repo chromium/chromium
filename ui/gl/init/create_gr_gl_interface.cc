@@ -4,7 +4,6 @@
 
 #include "ui/gl/init/create_gr_gl_interface.h"
 
-#include "base/metrics/histogram_macros.h"
 #include "base/no_destructor.h"
 #include "base/trace_event/trace_event.h"
 #include "base/traits_bag.h"
@@ -283,39 +282,6 @@ sk_sp<GrGLInterface> CreateGrGLInterface(
   auto get_stringi = bind_with_api(&gl::GLApi::glGetStringiFn, api);
   auto get_integerv = bind_with_api(&gl::GLApi::glGetIntegervFn, api);
 
-  auto timed_compile_shader = [gl, progress_reporter](GLuint shader) {
-    gl::ScopedProgressReporter scoped_reporter(progress_reporter);
-    SCOPED_UMA_HISTOGRAM_TIMER_MICROS("Gpu.GrCompileShaderUs");
-
-    gl->glCompileShaderFn(shader);
-
-    // Force the compile to resolve by querying the status.
-    GLint compile_result = 0;
-    gl->glGetShaderivFn(shader, GL_COMPILE_STATUS, &compile_result);
-  };
-
-  auto timed_link_program = [gl, progress_reporter](GLuint program) {
-    gl::ScopedProgressReporter scoped_reporter(progress_reporter);
-    SCOPED_UMA_HISTOGRAM_TIMER_MICROS("Gpu.GrLinkProgramUs");
-
-    gl->glLinkProgramFn(program);
-
-    // Force the link to resolve by querying the status.
-    GLint link_result = 0;
-    gl->glGetProgramivFn(program, GL_LINK_STATUS, &link_result);
-  };
-
-  auto timed_program_binary = [gl](GLuint program, GLenum binary_format,
-                                   const void* binary, GLsizei length) {
-    SCOPED_UMA_HISTOGRAM_TIMER_MICROS("Gpu.GrProgramBinaryUs");
-
-    gl->glProgramBinaryFn(program, binary_format, binary, length);
-
-    // Force the link to resolve by querying the status.
-    GLint link_result = 0;
-    gl->glGetProgramivFn(program, GL_LINK_STATUS, &link_result);
-  };
-
   GrGLExtensions extensions;
   if (!extensions.init(standard, get_string, get_stringi, get_integerv)) {
     LOG(ERROR) << "Failed to initialize extensions";
@@ -352,7 +318,7 @@ sk_sp<GrGLInterface> CreateGrGLInterface(
   BIND(ClearTexImage);
   BIND(ClearTexSubImage);
   BIND(ColorMask);
-  functions->fCompileShader = timed_compile_shader;
+  BIND(CompileShader, Slow);
   BIND(CompressedTexImage2D, Slow, NeedFlushOnMac);
   BIND(CompressedTexSubImage2D, Slow);
   BIND(CopyBufferSubData);
@@ -428,7 +394,7 @@ sk_sp<GrGLInterface> CreateGrGLInterface(
   BIND(GetUniformLocation);
   BIND(IsTexture);
   BIND(LineWidth);
-  functions->fLinkProgram = timed_link_program;
+  BIND(LinkProgram, Slow);
   BIND(MapBuffer);
 
   // GL 4.3 or GL_ARB_multi_draw_indirect or ES+GL_EXT_multi_draw_indirect
@@ -441,7 +407,7 @@ sk_sp<GrGLInterface> CreateGrGLInterface(
 
   // TODO(vasilyt): Figure out why BIND(fProgramBinary) doesn't fit in
   // GrFunction
-  functions->fProgramBinary = timed_program_binary;
+  functions->fProgramBinary = gl->glProgramBinaryFn;
 
   BIND(ProgramParameteri);
 
