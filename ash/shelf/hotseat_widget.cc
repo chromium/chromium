@@ -504,7 +504,7 @@ class HotseatWidget::DelegateView : public HotseatTransitionAnimator::Observer,
   // TODO(sammiequon): This is temporary while the secret key exists. After the
   // secret key is removed, entering/exiting overview should never need to
   // remove/readd blur.
-  bool was_forest_on_overview_enter_ = false;
+  std::optional<bool> was_forest_on_overview_enter_;
 };
 
 HotseatWidget::DelegateView::~DelegateView() {
@@ -723,7 +723,7 @@ bool HotseatWidget::DelegateView::CanActivate() const {
 void HotseatWidget::DelegateView::OnOverviewModeWillStart() {
   // Forest uses background blur in overview.
   was_forest_on_overview_enter_ = IsForestFeatureEnabled();
-  if (was_forest_on_overview_enter_) {
+  if (*was_forest_on_overview_enter_) {
     return;
   }
   DCHECK_LE(blur_lock_, 2);
@@ -735,8 +735,8 @@ void HotseatWidget::DelegateView::OnOverviewModeWillStart() {
 void HotseatWidget::DelegateView::OnOverviewModeEndingAnimationComplete(
     bool canceled) {
   // Forest uses background blur in overview.
-  if (was_forest_on_overview_enter_) {
-    was_forest_on_overview_enter_ = false;
+  if (was_forest_on_overview_enter_.value_or(true)) {
+    was_forest_on_overview_enter_.reset();
     return;
   }
   DCHECK_GT(blur_lock_, 0);
