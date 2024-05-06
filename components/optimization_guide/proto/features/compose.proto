@@ -50,13 +50,20 @@ enum ComposeLength {
 message ComposePageMetadata {
   // URL of the page the input field is on.
   string page_url = 1;
+
   // The title of the page the input field is on.
   string page_title = 2;
+
   // The innerText of the page the input field is on. This is temporary. We do
   // not intend to send inner text in the long run.
   string page_inner_text = 3;
+
   // The offset into the inner text of the selected input field.
   uint64 page_inner_text_offset = 4;
+
+  // A trimmed innerText of the page the input field is on, to be used by
+  // on device models.
+  string trimmed_page_inner_text = 5;
 }
 
 // The final status of the feature.
