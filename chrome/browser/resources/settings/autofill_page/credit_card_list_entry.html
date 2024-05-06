@@ -26,10 +26,6 @@
         margin-inline-end: 16px;
         vertical-align: middle;
       }
-
-      #summaryTermsLink {
-        text-decoration: none;
-      }
     </style>
     <div class="list-item" role="row">
       <div class="type-column" role="cell">
@@ -45,12 +41,12 @@
           <div id="summarySublabel" class="sub-label">
             <span aria-hidden="true">[[getSummarySublabel_(creditCard)]]</span>
             <template is="dom-if" if="[[isCardBenefitsProductUrlAvailable_(creditCard)]]">
-              (<a id="summaryTermsLink"
+              | <a id="summaryTermsLink"
                   aria-label="[[getBenefitsTermsAriaLabel_(creditCard)]]"
                   aria-description="$i18n{opensInNewTab}"
                   on-click="onSummarySublabelTermsLinkClick_"
                   href="[[getCardBenefitsProductUrl_(creditCard)]]"
-                  target="_blank">$i18n{benefitsTermsTagForCreditCardListEntry}</a>)
+                  target="_blank">$i18n{benefitsTermsTagForCreditCardListEntry}</a>
             </template>
           </div>
         </div>

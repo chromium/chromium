@@ -525,11 +525,7 @@ suite('PaymentsSectionCardRows', function() {
           loadTimeData.getString('virtualCardTurnedOn');
       if (benefitsAvailable && productTermsUrlAvailable) {
         benefitExpectedSublabel += ' | ' +
-            loadTimeData.getString(
-                'benefitsAvailableTagForCreditCardListEntry') +
-            ' (' +
-            loadTimeData.getString('benefitsTermsTagForCreditCardListEntry') +
-            ')';
+            loadTimeData.getString('benefitsTermsTagForCreditCardListEntry');
       }
 
       assertEquals(
@@ -594,11 +590,7 @@ suite('PaymentsSectionCardRows', function() {
           loadTimeData.getString('cvcTagForCreditCardListEntry');
       if (benefitsAvailable && productTermsUrlAvailable) {
         benefitExpectedSublabel += ' | ' +
-            loadTimeData.getString(
-                'benefitsAvailableTagForCreditCardListEntry') +
-            ' (' +
-            loadTimeData.getString('benefitsTermsTagForCreditCardListEntry') +
-            ')';
+            loadTimeData.getString('benefitsTermsTagForCreditCardListEntry');
       }
 
       assertEquals(
@@ -658,11 +650,7 @@ suite('PaymentsSectionCardRows', function() {
           serverCreditCard.expirationYear!.toString().substring(2);
       if (benefitsAvailable && productTermsUrlAvailable) {
         benefitExpectedSublabel += ' | ' +
-            loadTimeData.getString(
-                'benefitsAvailableTagForCreditCardListEntry') +
-            ' (' +
-            loadTimeData.getString('benefitsTermsTagForCreditCardListEntry') +
-            ')';
+            loadTimeData.getString('benefitsTermsTagForCreditCardListEntry');
       }
 
       assertEquals(
@@ -722,11 +710,7 @@ suite('PaymentsSectionCardRows', function() {
           loadTimeData.getString('cvcTagForCreditCardListEntry');
       if (benefitsAvailable && productTermsUrlAvailable) {
         benefitExpectedSublabel += ' | ' +
-            loadTimeData.getString(
-                'benefitsAvailableTagForCreditCardListEntry') +
-            ' (' +
-            loadTimeData.getString('benefitsTermsTagForCreditCardListEntry') +
-            ')';
+            loadTimeData.getString('benefitsTermsTagForCreditCardListEntry');
       }
       assertEquals(
           benefitExpectedSublabel,

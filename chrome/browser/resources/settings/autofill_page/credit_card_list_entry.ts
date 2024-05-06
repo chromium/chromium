@@ -215,10 +215,6 @@ export class SettingsCreditCardListEntryElement extends
     if (this.isCardCvcAvailable_()) {
       summarySublabel += separator + this.i18n('cvcTagForCreditCardListEntry');
     }
-    if (this.isCardBenefitsProductUrlAvailable_()) {
-      summarySublabel +=
-          separator + this.i18n('benefitsAvailableTagForCreditCardListEntry');
-    }
     return summarySublabel;
   }
 
