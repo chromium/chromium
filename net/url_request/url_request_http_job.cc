@@ -381,9 +381,6 @@ void URLRequestHttpJob::Start() {
           IsSameSiteIgnoringWebSocketProtocol(request_initiator_site().value(),
                                               request()->url()));
 
-  UMA_HISTOGRAM_BOOLEAN("Net.HttpJob.CanIncludeCookies",
-                        ShouldAddCookieHeader());
-
   CookieStore* cookie_store = request()->context()->cookie_store();
   const CookieAccessDelegate* delegate =
       cookie_store ? cookie_store->cookie_access_delegate() : nullptr;
