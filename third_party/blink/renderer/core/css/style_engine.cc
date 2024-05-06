@@ -1304,7 +1304,7 @@ void StyleEngine::InvalidateElementAffectedByHas(
     element.SetNeedsStyleRecalc(
         StyleChangeType::kLocalStyleChange,
         StyleChangeReasonForTracing::Create(
-            blink::style_change_reason::kStyleInvalidator));
+            blink::style_change_reason::kAffectedByHas));
 
     if (GetRuleFeatureSet().UsesHasInsideNth()) {
       PossiblyScheduleNthPseudoInvalidations(element);
@@ -1920,7 +1920,7 @@ void StyleEngine::ApplyRuleSetInvalidationForElement(
     // functions call other functions on some level.
     element.SetNeedsStyleRecalc(kLocalStyleChange,
                                 StyleChangeReasonForTracing::Create(
-                                    style_change_reason::kStyleInvalidator));
+                                    style_change_reason::kFunctionRuleChange));
     return;
   }
   ElementResolveContext element_resolve_context(element);
@@ -1956,7 +1956,7 @@ void StyleEngine::ApplyRuleSetInvalidationForElement(
   if (matched_any) {
     element.SetNeedsStyleRecalc(kLocalStyleChange,
                                 StyleChangeReasonForTracing::Create(
-                                    style_change_reason::kStyleInvalidator));
+                                    style_change_reason::kStyleRuleChange));
   }
 }
 
@@ -2142,12 +2142,12 @@ void StyleEngine::InvalidateStyle() {
   style_invalidation_root_.Clear();
 }
 
-void StyleEngine::InvalidateSlottedElements(HTMLSlotElement& slot) {
+void StyleEngine::InvalidateSlottedElements(
+    HTMLSlotElement& slot,
+    const StyleChangeReasonForTracing& reason) {
   for (auto& node : slot.FlattenedAssignedNodes()) {
     if (node->IsElementNode()) {
-      node->SetNeedsStyleRecalc(kLocalStyleChange,
-                                StyleChangeReasonForTracing::Create(
-                                    style_change_reason::kStyleSheetChange));
+      node->SetNeedsStyleRecalc(kLocalStyleChange, reason);
     }
   }
 }
@@ -2264,7 +2264,7 @@ void StyleEngine::ApplyRuleSetInvalidationForSubtree(
     // attribute, just invalidate it.
     element.SetNeedsStyleRecalc(kLocalStyleChange,
                                 StyleChangeReasonForTracing::Create(
-                                    style_change_reason::kStyleInvalidator));
+                                    style_change_reason::kStyleRuleChange));
   } else {
     ApplyRuleSetInvalidationForElement(tree_scope, element, selector_filter,
                                        style_scope_frame, rule_sets,
@@ -2274,7 +2274,9 @@ void StyleEngine::ApplyRuleSetInvalidationForSubtree(
 
   auto* html_slot_element = DynamicTo<HTMLSlotElement>(element);
   if (html_slot_element && invalidate_slotted) {
-    InvalidateSlottedElements(*html_slot_element);
+    InvalidateSlottedElements(*html_slot_element,
+                              StyleChangeReasonForTracing::Create(
+                                  style_change_reason::kStyleRuleChange));
   }
 
   if (invalidation_scope == kInvalidateAllScopes) {

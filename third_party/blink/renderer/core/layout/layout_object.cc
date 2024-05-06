@@ -5157,7 +5157,7 @@ void LayoutObject::InvalidateSubtreePositionTry(bool mark_style_dirty) {
         // fallback styles.
         node->SetNeedsStyleRecalc(kLocalStyleChange,
                                   StyleChangeReasonForTracing::Create(
-                                      style_change_reason::kStyleSheetChange));
+                                      style_change_reason::kPositionTryChange));
       }
     }
   }

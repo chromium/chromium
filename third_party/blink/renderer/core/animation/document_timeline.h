@@ -86,7 +86,8 @@ class CORE_EXPORT DocumentTimeline : public AnimationTimeline {
 
   void PauseAnimationsForTesting(AnimationTimeDelta);
 
-  void InvalidateKeyframeEffects(const TreeScope&);
+  void InvalidateKeyframeEffects(const TreeScope&,
+                                 const StyleChangeReasonForTracing&);
 
   void SetPlaybackRate(double);
   double PlaybackRate() const;

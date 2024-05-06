@@ -32,7 +32,7 @@ void PendingInvalidations::ScheduleInvalidationSetsForNode(
         auto* subtree_root = shadow_root ? &shadow_root->host() : &node;
         subtree_root->SetNeedsStyleRecalc(
             kSubtreeStyleChange, StyleChangeReasonForTracing::Create(
-                                     style_change_reason::kStyleInvalidator));
+                                     style_change_reason::kRelatedStyleRule));
         requires_descendant_invalidation = false;
         break;
       }
@@ -40,7 +40,7 @@ void PendingInvalidations::ScheduleInvalidationSetsForNode(
       if (invalidation_set->InvalidatesSelf() && node.IsElementNode()) {
         node.SetNeedsStyleRecalc(kLocalStyleChange,
                                  StyleChangeReasonForTracing::Create(
-                                     style_change_reason::kStyleInvalidator));
+                                     style_change_reason::kRelatedStyleRule));
       }
 
       if (invalidation_set->InvalidatesNth()) {
@@ -130,7 +130,7 @@ void PendingInvalidations::ScheduleSiblingInvalidationsAsDescendants(
         (descendants && descendants->WholeSubtreeInvalid())) {
       subtree_root->SetNeedsStyleRecalc(
           kSubtreeStyleChange, StyleChangeReasonForTracing::Create(
-                                   style_change_reason::kStyleInvalidator));
+                                   style_change_reason::kRelatedStyleRule));
       return;
     }
 

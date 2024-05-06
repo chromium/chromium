@@ -181,7 +181,7 @@ bool StyleInvalidator::SiblingData::MatchCurrentInvalidationSets(
       if (descendants->WholeSubtreeInvalid()) {
         element.SetNeedsStyleRecalc(
             kSubtreeStyleChange, StyleChangeReasonForTracing::Create(
-                                     style_change_reason::kStyleInvalidator));
+                                     style_change_reason::kRelatedStyleRule));
         return true;
       }
 
@@ -307,7 +307,7 @@ void StyleInvalidator::Invalidate(Element& element, SiblingData& sibling_data) {
     } else if (CheckInvalidationSetsAgainstElement(element, sibling_data)) {
       element.SetNeedsStyleRecalc(kLocalStyleChange,
                                   StyleChangeReasonForTracing::Create(
-                                      style_change_reason::kStyleInvalidator));
+                                      style_change_reason::kRelatedStyleRule));
     }
     if (UNLIKELY(element.NeedsStyleInvalidation())) {
       PushInvalidationSetsForContainerNode(element, sibling_data);
@@ -349,7 +349,7 @@ void StyleInvalidator::InvalidateSlotDistributedElements(
     if (MatchesCurrentInvalidationSetsAsSlotted(*element)) {
       distributed_node->SetNeedsStyleRecalc(
           kLocalStyleChange, StyleChangeReasonForTracing::Create(
-                                 style_change_reason::kStyleInvalidator));
+                                 style_change_reason::kRelatedStyleRule));
     }
   }
 }

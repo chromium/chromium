@@ -206,9 +206,11 @@ double DocumentTimeline::PlaybackRate() const {
   return playback_rate_;
 }
 
-void DocumentTimeline::InvalidateKeyframeEffects(const TreeScope& tree_scope) {
+void DocumentTimeline::InvalidateKeyframeEffects(
+    const TreeScope& tree_scope,
+    const StyleChangeReasonForTracing& reason) {
   for (const auto& animation : animations_)
-    animation->InvalidateKeyframeEffect(tree_scope);
+    animation->InvalidateKeyframeEffect(tree_scope, reason);
 }
 
 cc::AnimationTimeline* DocumentTimeline::EnsureCompositorTimeline() {

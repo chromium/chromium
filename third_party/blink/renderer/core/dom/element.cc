@@ -8978,7 +8978,7 @@ void Element::StyleAttributeChanged(
 
   SetNeedsStyleRecalc(kLocalStyleChange,
                       StyleChangeReasonForTracing::Create(
-                          style_change_reason::kStyleSheetChange));
+                          style_change_reason::kStyleAttributeChange));
   probe::DidInvalidateStyleAttr(this);
 }
 

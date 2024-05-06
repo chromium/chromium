@@ -788,7 +788,8 @@ class CORE_EXPORT StyleEngine final : public GarbageCollected<StyleEngine>,
       const HeapHashSet<Member<RuleSet>>& rule_sets,
       unsigned changed_rule_flags,
       bool is_shadow_host);
-  void InvalidateSlottedElements(HTMLSlotElement&);
+  void InvalidateSlottedElements(HTMLSlotElement&,
+                                 const StyleChangeReasonForTracing&);
   void InvalidateForRuleSetChanges(
       TreeScope& tree_scope,
       const HeapHashSet<Member<RuleSet>>& changed_rule_sets,

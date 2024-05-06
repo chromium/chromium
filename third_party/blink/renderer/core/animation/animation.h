@@ -57,6 +57,7 @@ namespace blink {
 class AnimationTimeline;
 class Element;
 class PaintArtifactCompositor;
+class StyleChangeReasonForTracing;
 class TreeScope;
 class TimelineRange;
 
@@ -333,7 +334,8 @@ class CORE_EXPORT Animation : public EventTarget,
   bool EffectSuppressed() const override { return effect_suppressed_; }
   void SetEffectSuppressed(bool);
 
-  void InvalidateKeyframeEffect(const TreeScope&);
+  void InvalidateKeyframeEffect(const TreeScope&,
+                                const StyleChangeReasonForTracing&);
   void InvalidateEffectTargetStyle();
   void InvalidateNormalizedTiming();
 

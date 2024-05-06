@@ -3460,8 +3460,7 @@ void Document::SetPrinting(PrintingState state) {
     GetStyleEngine().MarkViewportStyleDirty();
     // Separate UA sheet for printing.
     GetStyleEngine().MarkAllElementsForStyleRecalc(
-        StyleChangeReasonForTracing::Create(
-            style_change_reason::kStyleSheetChange));
+        StyleChangeReasonForTracing::Create(style_change_reason::kPrinting));
 
     if (documentElement() && GetFrame() && !GetFrame()->IsMainFrame() &&
         GetFrame()->Owner() && GetFrame()->Owner()->IsDisplayNone()) {

@@ -230,20 +230,21 @@ void ScopedStyleResolver::KeyframesRulesAdded(const TreeScope& tree_scope) {
     had_unresolved_keyframes = true;
   }
 
+  StyleChangeReasonForTracing reason = StyleChangeReasonForTracing::Create(
+      style_change_reason::kKeyframesRuleChange);
   if (had_unresolved_keyframes) {
     // If an animation ended up not being started because no @keyframes
     // rules were found for the animation-name, we need to recalculate style
     // for the elements in the scope, including its shadow host if
     // applicable.
     InvalidationRootForTreeScope(tree_scope)
-        .SetNeedsStyleRecalc(kSubtreeStyleChange,
-                             StyleChangeReasonForTracing::Create(
-                                 style_change_reason::kStyleSheetChange));
+        .SetNeedsStyleRecalc(kSubtreeStyleChange, reason);
     return;
   }
 
   // If we have animations running, added/removed @keyframes may affect these.
-  tree_scope.GetDocument().Timeline().InvalidateKeyframeEffects(tree_scope);
+  tree_scope.GetDocument().Timeline().InvalidateKeyframeEffects(tree_scope,
+                                                                reason);
 }
 
 namespace {
