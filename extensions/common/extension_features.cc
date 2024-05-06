@@ -142,10 +142,6 @@ BASE_FEATURE(kExtensionsZipFileInstalledInProfileDir,
              "ExtensionsZipFileInstalledInProfileDir",
              base::FEATURE_ENABLED_BY_DEFAULT);
 
-BASE_FEATURE(kExtensionsServiceWorkerOptimizedEventDispatch,
-             "ExtensionsServiceWorkerOptimizedEventDispatch",
-             base::FEATURE_DISABLED_BY_DEFAULT);
-
 BASE_FEATURE(kNewWebstoreURL,
              "NewWebstoreURL",
              base::FEATURE_ENABLED_BY_DEFAULT);

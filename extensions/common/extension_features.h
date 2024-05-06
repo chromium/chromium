@@ -175,11 +175,6 @@ BASE_DECLARE_FEATURE(kTelemetryExtensionPendingApprovalApi);
 // persist until removed by the user.
 BASE_DECLARE_FEATURE(kExtensionsZipFileInstalledInProfileDir);
 
-// If enabled, extensions with service workers use an optimized event
-// dispatching flow that does not start the worker for every event. It only
-// starts a worker if it is not already running.
-BASE_DECLARE_FEATURE(kExtensionsServiceWorkerOptimizedEventDispatch);
-
 // If enabled, the button for visiting the chrome webstore in both the
 // extensions menu in the app menu and the chrome://extensions sidebar will send
 // the user to the new chrome webstore URL.

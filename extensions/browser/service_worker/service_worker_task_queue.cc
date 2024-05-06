@@ -381,15 +381,10 @@ void ServiceWorkerTaskQueue::SetObserverForTest(TestObserver* observer) {
 bool ServiceWorkerTaskQueue::ShouldEnqueueTask(
     BrowserContext* context,
     const Extension* extension) const {
-  if (base::FeatureList::IsEnabled(
-          extensions_features::
-              kExtensionsServiceWorkerOptimizedEventDispatch)) {
-    return !IsReadyToRunTasks(context, extension);
-  }
-
-  // We call StartWorker every time we want to dispatch an event to an extension
-  // Service worker.
-  // TODO(crbug.com/40276609): This is a problem.
+  // TODO(crbug.com/40276609): This is unnecessary, we should make it so we
+  // don't try to start a worker that is ready to run tasks. We request the
+  // worker to start every time we want to dispatch an event to an extension
+  // service worker.
   return true;
 }
 

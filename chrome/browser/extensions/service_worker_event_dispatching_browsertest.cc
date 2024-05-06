@@ -93,16 +93,9 @@ class TestExtensionServiceWorkerRunningStatusObserver
   base::OnceCallback<void()> test_event_dispatch_callback_;
 };
 
-class ServiceWorkerEventDispatchingBrowserTest
-    : public ExtensionBrowserTest,
-      public testing::WithParamInterface<bool> {
+class ServiceWorkerEventDispatchingBrowserTest : public ExtensionBrowserTest {
  public:
-  ServiceWorkerEventDispatchingBrowserTest() {
-    scoped_feature_list_.InitWithFeatureState(
-        extensions_features::kExtensionsServiceWorkerOptimizedEventDispatch,
-        GetParam());
-  }
-
+  ServiceWorkerEventDispatchingBrowserTest() = default;
   ServiceWorkerEventDispatchingBrowserTest(
       const ServiceWorkerEventDispatchingBrowserTest&) = delete;
   ServiceWorkerEventDispatchingBrowserTest& operator=(
@@ -148,7 +141,7 @@ class ServiceWorkerEventDispatchingBrowserTest
 
 // Tests that dispatching an event to a worker with status
 // `blink::EmbeddedWorkerStatus::kRunning` succeeds.
-IN_PROC_BROWSER_TEST_P(ServiceWorkerEventDispatchingBrowserTest,
+IN_PROC_BROWSER_TEST_F(ServiceWorkerEventDispatchingBrowserTest,
                        DispatchToRunningWorker) {
   TestServiceWorkerContextObserver sw_started_observer(profile(),
                                                        kTestExtensionId);
@@ -216,7 +209,7 @@ IN_PROC_BROWSER_TEST_P(ServiceWorkerEventDispatchingBrowserTest,
 // `blink::EmbeddedWorkerStatus::kStopped` succeeds. This logic is laid out
 // differently than in the other test cases because we can't currently detect
 // precisely when a worker enters the stopped status.
-IN_PROC_BROWSER_TEST_P(ServiceWorkerEventDispatchingBrowserTest,
+IN_PROC_BROWSER_TEST_F(ServiceWorkerEventDispatchingBrowserTest,
                        DispatchToStoppedWorker) {
   TestServiceWorkerContextObserver sw_started_stopped_observer(
       profile(), kTestExtensionId);
@@ -280,7 +273,7 @@ IN_PROC_BROWSER_TEST_P(ServiceWorkerEventDispatchingBrowserTest,
 // TODO(jlulejian): If we suspect or see worker bugs that occur on extension
 // install then create test cases where we dispatch events immediately on
 // extension install.
-IN_PROC_BROWSER_TEST_P(ServiceWorkerEventDispatchingBrowserTest,
+IN_PROC_BROWSER_TEST_F(ServiceWorkerEventDispatchingBrowserTest,
                        DispatchToStartingWorker) {
   TestServiceWorkerContextObserver sw_started_stopped_observer(
       profile(), kTestExtensionId);
@@ -344,7 +337,7 @@ IN_PROC_BROWSER_TEST_P(ServiceWorkerEventDispatchingBrowserTest,
 
 // Tests that dispatching an event to a
 // worker with status `blink::EmbeddedWorkerStatus::kStopping` succeeds.
-IN_PROC_BROWSER_TEST_P(ServiceWorkerEventDispatchingBrowserTest,
+IN_PROC_BROWSER_TEST_F(ServiceWorkerEventDispatchingBrowserTest,
                        DispatchToStoppingWorker) {
   TestServiceWorkerContextObserver sw_started_observer(profile(),
                                                        kTestExtensionId);
@@ -400,7 +393,7 @@ IN_PROC_BROWSER_TEST_P(ServiceWorkerEventDispatchingBrowserTest,
 // Tests that we will not attempt to redundantly start a worker if it is
 // in the kStarting status (meaning: there are pending events/tasks to
 // process).
-IN_PROC_BROWSER_TEST_P(ServiceWorkerEventDispatchingBrowserTest,
+IN_PROC_BROWSER_TEST_F(ServiceWorkerEventDispatchingBrowserTest,
                        StartingWorkerIsNotStartRequested) {
   TestServiceWorkerContextObserver sw_started_stopped_observer(
       profile(), kTestExtensionId);
@@ -467,11 +460,8 @@ IN_PROC_BROWSER_TEST_P(ServiceWorkerEventDispatchingBrowserTest,
 }
 
 // Tests the behavior of service worker start requests when a worker is already
-// running. extensions_features::kExtensionsServiceWorkerOptimizedEventDispatch
-// feature disabled means we will redundantly try to start a worker when it is
-// already started. The feature enabled means that we will not redundantly
-// attempt to start a started worker for every event dispatch.
-IN_PROC_BROWSER_TEST_P(ServiceWorkerEventDispatchingBrowserTest,
+// running.
+IN_PROC_BROWSER_TEST_F(ServiceWorkerEventDispatchingBrowserTest,
                        StartedWorkerRedundantStarts) {
   TestServiceWorkerContextObserver sw_started_stopped_observer(
       profile(), kTestExtensionId);
@@ -500,28 +490,11 @@ IN_PROC_BROWSER_TEST_P(ServiceWorkerEventDispatchingBrowserTest,
 
   // Confirm the expected number of start requests that are sent to the
   // extension worker during event dispatch.
-  if (GetParam()) {
-    // extensions_features::kExtensionsServiceWorkerOptimizedEventDispatch true
-    // No start is requested when dispatching to the worker since the worker is
-    // running ready to receive tasks.
-    EXPECT_EQ(0, start_count_observer.GetRequestedWorkerStartedCount(
-                     extension->id()));
-  } else {
-    // extensions_features::kExtensionsServiceWorkerOptimizedEventDispatch false
-    // Since the feature is disabled, we will attempt to start a worker on every
-    // event dispatch even though it is already started/running and can run the
-    // event.
-    EXPECT_EQ(1, start_count_observer.GetRequestedWorkerStartedCount(
-                     extension->id()));
-  }
+  // TODO(crbug.com/40276609): Once we no longer unnecessarily start the worker
+  // this will become 0.
+  EXPECT_EQ(
+      1, start_count_observer.GetRequestedWorkerStartedCount(extension->id()));
 }
-
-INSTANTIATE_TEST_SUITE_P(
-    All,
-    ServiceWorkerEventDispatchingBrowserTest,
-    /* extensions_features::kExtensionsServiceWorkerOptimizedEventDispatch
-       enabled status */
-    testing::Bool());
 
 // TODO(crbug.com/40276609): Create test for event dispatching that uses the
 // `EventRouter::DispatchEventToSender()` event flow.

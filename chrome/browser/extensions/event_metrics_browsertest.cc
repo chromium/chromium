@@ -530,31 +530,10 @@ IN_PROC_BROWSER_TEST_F(EventMetricsBrowserTest,
       /*expected_count=*/0);
 }
 
-// TODO: refactor to be generic for this feature, then do these two metrics with
-// using to avoid code duplication.
-class ServiceWorkerRedundantWorkerStartMetricsBrowserTest
-    : public EventMetricsBrowserTest,
-      public testing::WithParamInterface<bool> {
- public:
-  ServiceWorkerRedundantWorkerStartMetricsBrowserTest() {
-    if (GetParam()) {
-      scoped_feature_list_.InitAndEnableFeature(
-          extensions_features::kExtensionsServiceWorkerOptimizedEventDispatch);
-    } else {
-      scoped_feature_list_.InitAndDisableFeature(
-          extensions_features::kExtensionsServiceWorkerOptimizedEventDispatch);
-    }
-  }
-
- protected:
-  base::test::ScopedFeatureList scoped_feature_list_;
-};
-
-// Tests that a running service worker will be redundantly started when it
-// receives an event while it is already started if
-// extensions_features::kExtensionsServiceWorkerOptimizedEventDispatch is
-// disabled. If enabled, the worker is not redundantly started.
-IN_PROC_BROWSER_TEST_P(ServiceWorkerRedundantWorkerStartMetricsBrowserTest,
+// Tests that a running service worker will be unnecessarily started when it
+// receives an event while it is already started if there are no pending events
+// (the worker worker isn't in the process of starting).
+IN_PROC_BROWSER_TEST_F(EventMetricsBrowserTest,
                        ServiceWorkerRedundantStartCountTest) {
   ASSERT_TRUE(embedded_test_server()->Start());
   ExtensionTestMessageListener extension_oninstall_listener_fired(
@@ -584,48 +563,26 @@ IN_PROC_BROWSER_TEST_P(ServiceWorkerRedundantWorkerStartMetricsBrowserTest,
       embedded_test_server()->GetURL("example.com", "/simple.html")));
   ASSERT_TRUE(test_event_listener_fired.WaitUntilSatisfied());
 
-  if (GetParam()) {
-    // extensions_features::kExtensionsServiceWorkerOptimizedEventDispatch true.
-    // Since the feature prevents starting a worker when it is running, the
-    // event/task will not be added as pending and therefore this UMA is not
-    // emitted. But as per the assertions, we still run the event successfully.
-    histogram_tester.ExpectTotalCount(
-        "Extensions.ServiceWorkerBackground."
-        "RequestedWorkerStartForStartedWorker2",
-        /*expected_count=*/0);
-  } else {
-    {
-      SCOPED_TRACE("Waiting for the worker to start.");
-      ready_observer.WaitForWorkerStarted(extension->id());
-    }
-    // TODO(crbug.com/40909770): Additionally test the case when
-    // BrowserState::kReady but !RendererState::kStarted.
-
-    // extensions_features::kExtensionsServiceWorkerOptimizedEventDispatch false
-    // Since the feature is disabled, we will redundantly attempt to start the
-    // worker.
-    histogram_tester.ExpectTotalCount(
-        "Extensions.ServiceWorkerBackground."
-        "RequestedWorkerStartForStartedWorker2",
-        /*expected_count=*/1);
-    // Verify that the value is `true` since the without the feature the worker
-    // will be redundantly started.
-    histogram_tester.ExpectBucketCount(
-        "Extensions.ServiceWorkerBackground."
-        "RequestedWorkerStartForStartedWorker2",
-        /*sample=*/true, /*expected_count=*/1);
+  {
+    SCOPED_TRACE("Waiting for the worker to start.");
+    ready_observer.WaitForWorkerStarted(extension->id());
   }
+  // TODO(crbug.com/40276609): Once we no longer unnecessarily start the
+  // worker
+  // this will become 0.
+  // Since we don't check if a worker is ready before dispatching the the
+  // event we will attempt to start the worker.
+  histogram_tester.ExpectTotalCount(
+      "Extensions.ServiceWorkerBackground."
+      "RequestedWorkerStartForStartedWorker2",
+      /*expected_count=*/1);
+  // Verify that the value is `true` since the worker
+  // will be unnecessarily started.
+  histogram_tester.ExpectBucketCount(
+      "Extensions.ServiceWorkerBackground."
+      "RequestedWorkerStartForStartedWorker2",
+      /*sample=*/true, /*expected_count=*/1);
 }
-
-INSTANTIATE_TEST_SUITE_P(
-    All,
-    ServiceWorkerRedundantWorkerStartMetricsBrowserTest,
-    /* extensions_features::kExtensionsServiceWorkerOptimizedEventDispatch
-       enabled status */
-    testing::Bool());
-
-using ServiceWorkerPendingTasksForRunningWorkerMetricsBrowserTest =
-    ServiceWorkerRedundantWorkerStartMetricsBrowserTest;
 
 class EventMetricsDispatchToSenderBrowserTest
     : public ExtensionBrowserTest,
