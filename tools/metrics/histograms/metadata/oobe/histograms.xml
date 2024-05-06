@@ -555,7 +555,7 @@ chromium-metrics-reviews@google.com.
 </histogram>
 
 <histogram name="OOBE.ConsumerUpdateScreen.UpdateTime.{ConsumerUpdateType}"
-    units="ms" expires_after="2024-05-12">
+    units="ms" expires_after="2024-11-12">
   <owner>osamafathy@google.com</owner>
   <owner>cros-oobe@google.com</owner>
   <summary>
@@ -1124,7 +1124,7 @@ chromium-metrics-reviews@google.com.
 </histogram>
 
 <histogram name="OOBE.SyncConsentScreen.ReviewFollowingSetup"
-    enum="BooleanChecked" expires_after="2024-05-05">
+    enum="BooleanChecked" expires_after="2024-11-05">
   <owner>dkuzmin@google.com</owner>
   <owner>cros-oac@google.com</owner>
   <summary>
@@ -1134,7 +1134,7 @@ chromium-metrics-reviews@google.com.
 </histogram>
 
 <histogram name="OOBE.SyncConsentScreen.SyncEnabled" enum="BooleanEnabled"
-    expires_after="2024-05-05">
+    expires_after="2024-11-05">
   <owner>osamafathy@google.com</owner>
   <owner>cros-oac@google.com</owner>
   <summary>
