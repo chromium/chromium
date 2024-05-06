@@ -2363,8 +2363,8 @@ CSSValue* ComputedStyleUtils::ValueForWillChange(
 
 namespace {
 
-template <typename T, typename Func, typename... Args>
-CSSValue* CreateAnimationValueList(const Vector<T>& values,
+template <typename T, wtf_size_t C, typename Func, typename... Args>
+CSSValue* CreateAnimationValueList(const Vector<T, C>& values,
                                    Func item_func,
                                    Args&&... args) {
   CSSValueList* list = CSSValueList::CreateCommaSeparated();
@@ -2385,8 +2385,9 @@ CSSValue* ComputedStyleUtils::ValueForAnimationDelay(
 CSSValue* ComputedStyleUtils::ValueForAnimationDelayList(
     const CSSTimingData* timing_data) {
   return CreateAnimationValueList(
-      timing_data ? timing_data->DelayStartList()
-                  : Vector<Timing::Delay>{CSSTimingData::InitialDelayStart()},
+      timing_data
+          ? timing_data->DelayStartList()
+          : Vector<Timing::Delay, 1>{CSSTimingData::InitialDelayStart()},
       &ValueForAnimationDelay);
 }
 
@@ -2441,18 +2442,18 @@ CSSValue* ComputedStyleUtils::ValueForAnimationDurationList(
       (phase == CSSValuePhase::kResolvedValue) &&
       (!animation_data || animation_data->HasSingleInitialTimeline());
   return CreateAnimationValueList(
-      animation_data
-          ? animation_data->DurationList()
-          : Vector<std::optional<double>>{CSSAnimationData::InitialDuration()},
+      animation_data ? animation_data->DurationList()
+                     : Vector<std::optional<double>,
+                              1>{CSSAnimationData::InitialDuration()},
       ValueForAnimationDuration, resolve_auto_to_zero);
 }
 
 CSSValue* ComputedStyleUtils::ValueForAnimationDurationList(
     const CSSTransitionData* transition_data) {
   return CreateAnimationValueList(
-      transition_data
-          ? transition_data->DurationList()
-          : Vector<std::optional<double>>{CSSTransitionData::InitialDuration()},
+      transition_data ? transition_data->DurationList()
+                      : Vector<std::optional<double>,
+                               1>{CSSTransitionData::InitialDuration()},
       ValueForAnimationDuration,
       /* resolve_auto_to_zero */ false);
 }
@@ -2634,10 +2635,9 @@ CSSValue* ComputedStyleUtils::ValueForAnimationTimingFunction(
 CSSValue* ComputedStyleUtils::ValueForAnimationTimingFunctionList(
     const CSSTimingData* timing_data) {
   return CreateAnimationValueList(
-      timing_data
-          ? timing_data->TimingFunctionList()
-          : Vector<scoped_refptr<TimingFunction>>{CSSAnimationData::
-                                                      InitialTimingFunction()},
+      timing_data ? timing_data->TimingFunctionList()
+                  : Vector<scoped_refptr<TimingFunction>,
+                           1>{CSSAnimationData::InitialTimingFunction()},
       &ValueForAnimationTimingFunction);
 }
 
