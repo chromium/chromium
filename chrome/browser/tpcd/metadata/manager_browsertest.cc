@@ -181,14 +181,17 @@ class ManagerBrowserTest : public PlatformBrowserTest {
     return settings;
   }
 
-  void ExpectCookie(content::RenderFrameHost* frame, const bool expected) {
-    EXPECT_EQ(content::EvalJs(frame, "navigator.cookieEnabled").ExtractBool(),
-              expected);
-
-    if (expected) {
-      EXPECT_TRUE(content::EvalJs(frame, "setCookie()").ExtractBool());
-      EXPECT_TRUE(content::EvalJs(frame, "hasCookie()").ExtractBool());
-    }
+  void ExpectCookie(content::RenderFrameHost* frame, bool expected) {
+    // navigator.cookieEnabled only checks the browser setting, not if
+    // unpartitioned cookies are enabled.
+    EXPECT_TRUE(
+        content::EvalJs(frame, "navigator.cookieEnabled").ExtractBool());
+    // This returns true even if the cookie fails to be set because
+    // unpartitioned cookies are blocked.
+    EXPECT_TRUE(content::EvalJs(frame, "setCookie()").ExtractBool());
+    // This is the only step that actually verifies if unpartitioned cookies
+    // are accessible.
+    EXPECT_EQ(content::EvalJs(frame, "hasCookie()").ExtractBool(), expected);
   }
 
   // third-party storage should only be accessible when:
@@ -362,7 +365,7 @@ IN_PROC_BROWSER_TEST_F(ManagerBrowserTest,
                                            /*num_expected_calls=*/2);
     NavigateToPageWithFrame(kFirstPartyHost);
     NavigateFrameTo(kThirdPartyHost1, "/browsing_data/site_data.html");
-    ExpectCookie(GetFrame(), true);
+    ExpectCookie(GetFrame(), /*expected=*/true);
     observer.Wait();
     EXPECT_TRUE(
         ui_test_utils::NavigateToURL(browser(), GURL(url::kAboutBlankURL)));
@@ -380,7 +383,7 @@ IN_PROC_BROWSER_TEST_F(ManagerBrowserTest,
                                            /*num_expected_calls=*/2);
     NavigateToPageWithFrame(kFirstPartyHost);
     NavigateFrameTo(kThirdPartyHost2, "/browsing_data/site_data.html");
-    ExpectCookie(GetFrame(), true);
+    ExpectCookie(GetFrame(), /*expected=*/true);
     observer.Wait();
     EXPECT_TRUE(
         ui_test_utils::NavigateToURL(browser(), GURL(url::kAboutBlankURL)));
@@ -398,7 +401,7 @@ IN_PROC_BROWSER_TEST_F(ManagerBrowserTest,
                                            /*num_expected_calls=*/2);
     NavigateToPageWithFrame(kFirstPartyHost);
     NavigateFrameTo(kThirdPartyHost3, "/browsing_data/site_data.html");
-    ExpectCookie(GetFrame(), true);
+    ExpectCookie(GetFrame(), /*expected=*/true);
     observer.Wait();
     EXPECT_TRUE(
         ui_test_utils::NavigateToURL(browser(), GURL(url::kAboutBlankURL)));
@@ -464,7 +467,7 @@ IN_PROC_BROWSER_TEST_F(ManagerBrowserTest,
                                            /*num_expected_calls=*/2);
     NavigateToPageWithFrame(kFirstPartyHost);
     NavigateFrameTo(kThirdPartyHost1, "/browsing_data/site_data.html");
-    ExpectCookie(GetFrame(), true);
+    ExpectCookie(GetFrame(), /*expected=*/true);
     observer.Wait();
     EXPECT_TRUE(
         ui_test_utils::NavigateToURL(browser(), GURL(url::kAboutBlankURL)));
@@ -480,7 +483,7 @@ IN_PROC_BROWSER_TEST_F(ManagerBrowserTest,
     base::HistogramTester histogram_tester;
     NavigateToPageWithFrame(kFirstPartyHost);
     NavigateFrameTo(kThirdPartyHost2, "/browsing_data/site_data.html");
-    ExpectCookie(GetFrame(), false);
+    ExpectCookie(GetFrame(), /*expected=*/false);
     EXPECT_TRUE(
         ui_test_utils::NavigateToURL(browser(), GURL(url::kAboutBlankURL)));
 
@@ -497,7 +500,7 @@ IN_PROC_BROWSER_TEST_F(ManagerBrowserTest,
                                            /*num_expected_calls=*/2);
     NavigateToPageWithFrame(kFirstPartyHost);
     NavigateFrameTo(kThirdPartyHost3, "/browsing_data/site_data.html");
-    ExpectCookie(GetFrame(), true);
+    ExpectCookie(GetFrame(), /*expected=*/true);
     observer.Wait();
     EXPECT_TRUE(
         ui_test_utils::NavigateToURL(browser(), GURL(url::kAboutBlankURL)));
@@ -605,7 +608,7 @@ IN_PROC_BROWSER_TEST_P(ManagerPrefsBrowserTest,
 
   NavigateToPageWithFrame(kFirstPartyHost);
   NavigateFrameTo(kThirdPartyHost1, "/browsing_data/site_data.html");
-  ExpectCookie(GetFrame(), false);
+  ExpectCookie(GetFrame(), /*expected=*/false);
   ExpectStorage(GetFrame(), false, true,
                 ThirdPartyStoragePartitioningEnabled());
 }

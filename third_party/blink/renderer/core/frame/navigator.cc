@@ -78,10 +78,7 @@ bool Navigator::cookieEnabled() const {
   }
 
   Settings* settings = DomWindow()->GetFrame()->GetSettings();
-  if (!settings || !settings->GetCookieEnabled())
-    return false;
-
-  return DomWindow()->document()->CookiesEnabled();
+  return settings && settings->GetCookieEnabled();
 }
 
 bool Navigator::webdriver() const {
