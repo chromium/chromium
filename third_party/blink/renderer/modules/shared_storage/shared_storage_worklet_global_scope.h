@@ -109,14 +109,13 @@ class MODULES_EXPORT SharedStorageWorkletGlobalScope final
       const String& name,
       const Vector<KURL>& urls,
       BlinkCloneableMessage serialized_data,
-      mojo::PendingRemote<mojom::blink::PrivateAggregationHost>
-          private_aggregation_host,
+      mojom::blink::PrivateAggregationOperationDetailsPtr pa_operation_details,
       RunURLSelectionOperationCallback callback) override;
-  void RunOperation(const String& name,
-                    BlinkCloneableMessage serialized_data,
-                    mojo::PendingRemote<mojom::blink::PrivateAggregationHost>
-                        private_aggregation_host,
-                    RunOperationCallback callback) override;
+  void RunOperation(
+      const String& name,
+      BlinkCloneableMessage serialized_data,
+      mojom::blink::PrivateAggregationOperationDetailsPtr pa_operation_details,
+      RunOperationCallback callback) override;
 
   // SharedStorageWorkletGlobalScope IDL
   SharedStorage* sharedStorage(ScriptState*, ExceptionState&);
@@ -169,8 +168,7 @@ class MODULES_EXPORT SharedStorageWorkletGlobalScope final
   // particular operation invocation later, even after asynchronous operations.
   // Returns a closure that should be run when the operation finishes.
   base::OnceClosure StartOperation(
-      mojo::PendingRemote<mojom::blink::PrivateAggregationHost>
-          private_aggregation_host);
+      mojom::blink::PrivateAggregationOperationDetailsPtr pa_operation_details);
 
   // Notifies the `private_aggregation_` that the operation with the given ID
   // has finished.
@@ -232,7 +230,7 @@ class MODULES_EXPORT SharedStorageWorkletGlobalScope final
 
   // Whether the "private-aggregation" permissions policy is enabled in the
   // worklet.
-  bool private_aggregation_permissions_policy_allowed_ = false;
+  bool private_aggregation_permissions_policy_allowed_;
 
   const SharedStorageWorkletToken token_;
 };

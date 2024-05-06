@@ -21,6 +21,8 @@ class ScriptState;
 class ScriptPromiseResolverBase;
 class SharedStorageRunOperationMethodOptions;
 
+static constexpr size_t kMaximumFilteringIdMaxBytes = 8;
+
 // Helper method to convert v8 string to WTF::String.
 bool StringFromV8(v8::Isolate* isolate,
                   v8::Local<v8::Value> val,
@@ -48,7 +50,9 @@ bool CheckSharedStoragePermissionsPolicy(ScriptState& script_state,
 // `out_private_aggregation_config->context_id` is populated with it; otherwise,
 // it's left default (a null String). If a valid aggregation coordinator is
 // provided, `out_private_aggregation_config->aggregation_coodinator_origin` is
-// populated with it; otherwise, it's left default (nullptr).
+// populated with it; otherwise, it's left default (nullptr). If a valid
+// filteringIdMaxBytes is provided, `out_filtering_id_max_bytes` is populated
+// with it; otherwise, it's populated with the default of 1.
 bool CheckPrivateAggregationConfig(
     const SharedStorageRunOperationMethodOptions& options,
     ScriptState& script_state,

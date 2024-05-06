@@ -43,8 +43,9 @@ enum SharedStorageGetStatus {
 // Bundles information passed to the worklet via the `privateAggregationConfig`
 // parameter on `sharedStorage.run()` or `sharedStorage.selectURL()`.
 struct PrivateAggregationConfig {
-  string? context_id;
   url.mojom.Origin? aggregation_coordinator_origin;
+  string? context_id;
+  uint32 filtering_id_max_bytes;
 };
 
 // Implemented by the browser and exposed to the renderer process on a

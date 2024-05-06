@@ -206,11 +206,12 @@ class CONTENT_EXPORT SharedStorageWorkletHost
   blink::mojom::SharedStorageWorkletService*
   GetAndConnectToSharedStorageWorkletService();
 
-  // Binds a receiver to the `PrivateAggregationManager` and returns the
-  // `PendingRemote`. If there is no `PrivateAggregationManger`, returns an
-  // invalid `PendingRemote`.
-  mojo::PendingRemote<blink::mojom::PrivateAggregationHost>
-  MaybeBindPrivateAggregationHost(
+  // Constructs a `PrivateAggregationOperationDetails` object, including binding
+  // a receiver to the `PrivateAggregationManager` and returning the
+  // `PendingRemote`. If there is no `PrivateAggregationManger`, returns a null
+  // pointer.
+  blink::mojom::PrivateAggregationOperationDetailsPtr
+  MaybeConstructPrivateAggregationOperationDetails(
       const blink::mojom::PrivateAggregationConfigPtr&
           private_aggregation_config);
 

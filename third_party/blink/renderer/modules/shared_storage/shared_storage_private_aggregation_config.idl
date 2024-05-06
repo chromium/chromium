@@ -1,4 +1,6 @@
 dictionary SharedStoragePrivateAggregationConfig {
   USVString aggregationCoordinatorOrigin;
   USVString contextId;
+  [EnforceRange, RuntimeEnabled=PrivateAggregationApiFilteringIds]
+  unsigned long long filteringIdMaxBytes;
 };

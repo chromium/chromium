@@ -6,12 +6,14 @@
 
 #include <stdint.h>
 
+#include <bit>
 #include <iterator>
 #include <memory>
 #include <optional>
 #include <utility>
 
 #include "base/check.h"
+#include "base/feature_list.h"
 #include "base/ranges/algorithm.h"
 #include "third_party/abseil-cpp/absl/numeric/int128.h"
 #include "third_party/blink/public/common/features.h"
@@ -43,6 +45,8 @@ namespace {
 constexpr char kPermissionsPolicyErrorMessage[] =
     "The \"private-aggregation\" Permissions Policy denied the method on "
     "privateAggregation";
+
+constexpr size_t kBitsPerByte = 8;
 
 }  // namespace
 
@@ -78,6 +82,7 @@ void PrivateAggregation::contributeToHistogram(
     return;
   }
 
+  // TODO(alexmt): Align error types with Protected Audience implementation.
   std::optional<absl::uint128> bucket = contribution->bucket().ToUInt128();
   if (!bucket) {
     exception_state.ThrowDOMException(
@@ -93,12 +98,42 @@ void PrivateAggregation::contributeToHistogram(
     return;
   }
 
+  std::optional<uint64_t> filtering_id;
+  if (contribution->hasFilteringId() &&
+      base::FeatureList::IsEnabled(
+          features::kPrivateAggregationApiFilteringIds)) {
+    EnsureFilteringIdUseCounterIsRecorded();
+    std::optional<absl::uint128> filtering_id_128 =
+        contribution->filteringId().ToUInt128();
+    if (!filtering_id_128 || absl::Uint128High64(*filtering_id_128) != 0) {
+      exception_state.ThrowDOMException(
+          DOMExceptionCode::kDataError,
+          "contribution['filteringId'] is negative or does not fit in byte "
+          "size");
+      return;
+    }
+    filtering_id = absl::Uint128Low64(*filtering_id_128);
+
+    int64_t operation_id = global_scope_->GetCurrentOperationId();
+    CHECK(base::Contains(operation_states_, operation_id));
+    OperationState* operation_state = operation_states_.at(operation_id);
+
+    if (static_cast<size_t>(std::bit_width(*filtering_id)) >
+        kBitsPerByte * operation_state->filtering_id_max_bytes) {
+      exception_state.ThrowDOMException(
+          DOMExceptionCode::kDataError,
+          "contribution['filteringId'] is negative or does not fit in byte "
+          "size");
+      return;
+    }
+  }
+
   // TODO(crbug.com/330744610): Allow filtering ID to be set.
   Vector<mojom::blink::AggregatableReportHistogramContributionPtr>
       mojom_contribution_vector;
   mojom_contribution_vector.push_back(
       mojom::blink::AggregatableReportHistogramContribution::New(
-          bucket.value(), value, /*filtering_id=*/std::nullopt));
+          bucket.value(), value, filtering_id));
 
   int64_t operation_id = global_scope_->GetCurrentOperationId();
   CHECK(operation_states_.Contains(operation_id));
@@ -169,13 +204,14 @@ void PrivateAggregation::enableDebugMode(
 
 void PrivateAggregation::OnOperationStarted(
     int64_t operation_id,
-    mojo::PendingRemote<mojom::blink::PrivateAggregationHost>
-        private_aggregation_host) {
+    mojom::blink::PrivateAggregationOperationDetailsPtr pa_operation_details) {
   CHECK(!operation_states_.Contains(operation_id));
   auto map_it = operation_states_.insert(
-      operation_id, MakeGarbageCollected<OperationState>(global_scope_));
+      operation_id,
+      MakeGarbageCollected<OperationState>(
+          global_scope_, pa_operation_details->filtering_id_max_bytes));
   map_it.stored_value->value->private_aggregation_host.Bind(
-      std::move(private_aggregation_host),
+      std::move(pa_operation_details->pa_host),
       global_scope_->GetTaskRunner(blink::TaskType::kMiscPlatformAPI));
 }
 
@@ -214,6 +250,14 @@ void PrivateAggregation::EnsureEnableDebugModeUseCounterIsRecorded() {
     has_recorded_enable_debug_mode_use_counter_ = true;
     global_scope_->GetSharedStorageWorkletServiceClient()->RecordUseCounters(
         {mojom::blink::WebFeature::kPrivateAggregationApiEnableDebugMode});
+  }
+}
+
+void PrivateAggregation::EnsureFilteringIdUseCounterIsRecorded() {
+  if (!has_recorded_filtering_id_use_counter_) {
+    has_recorded_filtering_id_use_counter_ = true;
+    global_scope_->GetSharedStorageWorkletServiceClient()->RecordUseCounters(
+        {mojom::blink::WebFeature::kPrivateAggregationApiFilteringIds});
   }
 }
 

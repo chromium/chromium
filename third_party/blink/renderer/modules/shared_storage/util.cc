@@ -4,6 +4,7 @@
 
 #include "third_party/blink/renderer/modules/shared_storage/util.h"
 
+#include "base/feature_list.h"
 #include "base/memory/scoped_refptr.h"
 #include "components/aggregation_service/aggregation_coordinator_utils.h"
 #include "components/aggregation_service/features.h"
@@ -97,6 +98,10 @@ bool CheckPrivateAggregationConfig(
   WTF::String& out_context_id = out_private_aggregation_config->context_id;
   scoped_refptr<const SecurityOrigin>& out_aggregation_coordinator_origin =
       out_private_aggregation_config->aggregation_coordinator_origin;
+  uint32_t& out_filtering_id_max_bytes =
+      out_private_aggregation_config->filtering_id_max_bytes;
+
+  out_filtering_id_max_bytes = kPrivateAggregationApiDefaultFilteringIdMaxBytes;
 
   if (!options.hasPrivateAggregationConfig()) {
     return true;
@@ -136,6 +141,26 @@ bool CheckPrivateAggregationConfig(
       return false;
     }
     out_aggregation_coordinator_origin = parsed_coordinator;
+  }
+
+  if (options.privateAggregationConfig()->hasFilteringIdMaxBytes() &&
+      base::FeatureList::IsEnabled(
+          features::kPrivateAggregationApiFilteringIds)) {
+    if (options.privateAggregationConfig()->filteringIdMaxBytes() < 1) {
+      resolver.Reject(V8ThrowDOMException::CreateOrEmpty(
+          script_state.GetIsolate(), DOMExceptionCode::kDataError,
+          "filteringIdMaxBytes must be positive"));
+      return false;
+    }
+    if (options.privateAggregationConfig()->filteringIdMaxBytes() >
+        kMaximumFilteringIdMaxBytes) {
+      resolver.Reject(V8ThrowDOMException::CreateOrEmpty(
+          script_state.GetIsolate(), DOMExceptionCode::kDataError,
+          "filteringIdMaxBytes is too big"));
+      return false;
+    }
+    out_filtering_id_max_bytes = static_cast<uint32_t>(
+        options.privateAggregationConfig()->filteringIdMaxBytes());
   }
 
   return true;

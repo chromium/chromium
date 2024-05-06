@@ -89,9 +89,11 @@ enum class SharedStorageWorkletErrorType {
   kSelectURLNonWebVisibleUnexpectedIndexReturned = 33,
   kSelectURLNonWebVisibleInsufficientBudget = 34,
   kSelectURLNonWebVisibleOther = 35,
+  kRunNonWebVisibleInvalidFilteringIdMaxBytes = 36,
+  kSelectURLNonWebVisibleInvalidFilteringIdMaxBytes = 37,
 
   // Keep this at the end and equal to the last entry.
-  kMaxValue = kSelectURLNonWebVisibleOther,
+  kMaxValue = kSelectURLNonWebVisibleInvalidFilteringIdMaxBytes,
 };
 
 // Whether or not there is sufficient budget for the `selectURL()` call, and if
@@ -137,7 +139,14 @@ BLINK_COMMON_EXPORT bool IsValidPrivateAggregationContextId(
     std::string_view context_id);
 
 // Maximum allowed length of the context_id string.
-constexpr int kPrivateAggregationApiContextIdMaxLength = 64;
+static constexpr int kPrivateAggregationApiContextIdMaxLength = 64;
+
+// Whether the `filtering_id_max_bytes` has a valid value.
+BLINK_COMMON_EXPORT bool IsValidPrivateAggregationFilteringIdMaxBytes(
+    size_t filtering_id_max_bytes);
+
+static constexpr size_t kPrivateAggregationApiDefaultFilteringIdMaxBytes = 1;
+static constexpr size_t kPrivateAggregationApiMaxFilteringIdMaxBytes = 8;
 
 }  // namespace blink
 

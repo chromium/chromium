@@ -5,4 +5,5 @@
 dictionary PrivateAggregationHistogramContribution {
   required bigint bucket;
   required long value;
+  [RuntimeEnabled=PrivateAggregationApiFilteringIds] bigint filteringId;
 };

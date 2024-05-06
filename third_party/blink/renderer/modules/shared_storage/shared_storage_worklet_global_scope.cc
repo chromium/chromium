@@ -21,6 +21,7 @@
 #include "third_party/blink/public/common/shared_storage/module_script_downloader.h"
 #include "third_party/blink/public/common/shared_storage/shared_storage_utils.h"
 #include "third_party/blink/public/mojom/private_aggregation/private_aggregation_host.mojom-blink.h"
+#include "third_party/blink/public/mojom/shared_storage/shared_storage_worklet_service.mojom-blink.h"
 #include "third_party/blink/public/platform/cross_variant_mojo_util.h"
 #include "third_party/blink/renderer/bindings/core/v8/idl_types.h"
 #include "third_party/blink/renderer/bindings/core/v8/native_value_traits_impl.h"
@@ -361,8 +362,7 @@ void SharedStorageWorkletGlobalScope::RunURLSelectionOperation(
     const String& name,
     const Vector<KURL>& urls,
     BlinkCloneableMessage serialized_data,
-    mojo::PendingRemote<mojom::blink::PrivateAggregationHost>
-        private_aggregation_host,
+    mojom::blink::PrivateAggregationOperationDetailsPtr pa_operation_details,
     RunURLSelectionOperationCallback callback) {
   String error_message;
   SharedStorageOperationDefinition* operation_definition = nullptr;
@@ -375,7 +375,7 @@ void SharedStorageWorkletGlobalScope::RunURLSelectionOperation(
   }
 
   base::OnceClosure operation_completion_cb =
-      StartOperation(std::move(private_aggregation_host));
+      StartOperation(std::move(pa_operation_details));
   RunURLSelectionOperationCallback combined_operation_completion_cb =
       std::move(callback).Then(std::move(operation_completion_cb));
 
@@ -442,8 +442,7 @@ void SharedStorageWorkletGlobalScope::RunURLSelectionOperation(
 void SharedStorageWorkletGlobalScope::RunOperation(
     const String& name,
     BlinkCloneableMessage serialized_data,
-    mojo::PendingRemote<mojom::blink::PrivateAggregationHost>
-        private_aggregation_host,
+    mojom::blink::PrivateAggregationOperationDetailsPtr pa_operation_details,
     RunOperationCallback callback) {
   String error_message;
   SharedStorageOperationDefinition* operation_definition = nullptr;
@@ -455,7 +454,7 @@ void SharedStorageWorkletGlobalScope::RunOperation(
   }
 
   base::OnceClosure operation_completion_cb =
-      StartOperation(std::move(private_aggregation_host));
+      StartOperation(std::move(pa_operation_details));
   mojom::blink::SharedStorageWorkletService::RunOperationCallback
       combined_operation_completion_cb =
           std::move(callback).Then(std::move(operation_completion_cb));
@@ -678,10 +677,9 @@ bool SharedStorageWorkletGlobalScope::PerformCommonOperationChecks(
 }
 
 base::OnceClosure SharedStorageWorkletGlobalScope::StartOperation(
-    mojo::PendingRemote<mojom::blink::PrivateAggregationHost>
-        private_aggregation_host) {
+    mojom::blink::PrivateAggregationOperationDetailsPtr pa_operation_details) {
   CHECK(add_module_finished_);
-  CHECK_EQ(!!private_aggregation_host,
+  CHECK_EQ(!!pa_operation_details,
            ShouldDefinePrivateAggregationInSharedStorage());
 
   int64_t operation_id = operation_counter_++;
@@ -697,7 +695,7 @@ base::OnceClosure SharedStorageWorkletGlobalScope::StartOperation(
 
   if (ShouldDefinePrivateAggregationInSharedStorage()) {
     GetOrCreatePrivateAggregation()->OnOperationStarted(
-        operation_id, std::move(private_aggregation_host));
+        operation_id, std::move(pa_operation_details));
   }
 
   return WTF::BindOnce(&SharedStorageWorkletGlobalScope::FinishOperation,

@@ -354,6 +354,14 @@ chromium-metrics-reviews@google.com.
   <int value="35" label="SelectURLNonWebVisibleOther">
     Other errors in `selectURL()` not visible to the document.
   </int>
+  <int value="36" label="RunNonWebVisibleInvalidFilteringIdMaxBytes">
+    Error in `run()` not visible to the document: browser received message from
+    renderer with invalid filtering ID byte size.
+  </int>
+  <int value="37" label="SelectURLNonWebVisibleInvalidFilteringIdMaxBytes">
+    Error in `selectURL()` not visible to the document: browser received message
+    from renderer with invalid filtering ID byte size.
+  </int>
 </enum>
 
 <enum name="SqlRecoveryResult">
