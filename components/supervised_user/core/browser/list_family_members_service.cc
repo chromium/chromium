@@ -48,12 +48,6 @@ ListFamilyMembersService::SubscribeToSuccessfulFetches(
   return successful_fetch_repeating_consumers_.Add(callback);
 }
 
-base::CallbackListSubscription
-ListFamilyMembersService::SubscribeToNextSuccessfulFetch(
-    base::OnceCallback<SuccessfulFetchCallback> callback) {
-  return successful_fetch_disposable_consumers_.Add(std::move(callback));
-}
-
 void ListFamilyMembersService::Start() {
   fetcher_ = FetchListFamilyMembers(
       *identity_manager_, url_loader_factory_,
@@ -84,7 +78,6 @@ void ListFamilyMembersService::OnResponse(
   }
 
   successful_fetch_repeating_consumers_.Notify(*response);
-  successful_fetch_disposable_consumers_.Notify(*response);
   ScheduleNextUpdate(NextUpdate(status));
 }
 

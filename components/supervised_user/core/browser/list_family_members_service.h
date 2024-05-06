@@ -51,13 +51,6 @@ class ListFamilyMembersService : public KeyedService {
   base::CallbackListSubscription SubscribeToSuccessfulFetches(
       base::RepeatingCallback<SuccessfulFetchCallback> callback);
 
-  // `callback` will receive only one next update of family members. Can be
-  // unsubscribed by destroying the `base::CallbackListSubscription` handle.
-  // After use, must be cleaned-up (see
-  // base::OnceCallbackList::null_callbacks_).
-  base::CallbackListSubscription SubscribeToNextSuccessfulFetch(
-      base::OnceCallback<SuccessfulFetchCallback> callback);
-
  private:
   void OnResponse(
       const ProtoFetcherStatus& status,
@@ -73,10 +66,6 @@ class ListFamilyMembersService : public KeyedService {
   // Repeating consumers.
   base::RepeatingCallbackList<SuccessfulFetchCallback>
       successful_fetch_repeating_consumers_;
-
-  // One-shot consumers.
-  base::OnceCallbackList<SuccessfulFetchCallback>
-      successful_fetch_disposable_consumers_;
 
   // Attributes.
   std::unique_ptr<ProtoFetcher<kidsmanagement::ListMembersResponse>> fetcher_;
