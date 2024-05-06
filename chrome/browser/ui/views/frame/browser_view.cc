@@ -5356,17 +5356,6 @@ void BrowserView::DestroyAnyExclusiveAccessBubble() {
   exclusive_access_bubble_.reset();
 }
 
-bool BrowserView::CanTriggerOnMousePointer() const {
-  // Returning false here can prevent the exclusive access bubble from showing
-  // in certain situations in macOS immersive fullscreen. This check only
-  // exists for Chrome running on ChromeOS in a Public Session.
-#if BUILDFLAG(IS_MAC)
-  return true;
-#else
-  return !IsImmersiveModeEnabled();
-#endif
-}
-
 ///////////////////////////////////////////////////////////////////////////////
 // BrowserView, extension::ExtensionKeybindingRegistry::Delegate implementation:
 content::WebContents* BrowserView::GetWebContentsForExtension() {

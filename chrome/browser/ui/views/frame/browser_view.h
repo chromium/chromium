@@ -774,7 +774,6 @@ class BrowserView : public BrowserWindow,
   bool IsImmersiveModeEnabled() const override;
   gfx::Rect GetTopContainerBoundsInScreen() override;
   void DestroyAnyExclusiveAccessBubble() override;
-  bool CanTriggerOnMousePointer() const override;
 
   // extension::ExtensionKeybindingRegistry::Delegate:
   content::WebContents* GetWebContentsForExtension() override;

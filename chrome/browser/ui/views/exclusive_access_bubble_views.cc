@@ -110,17 +110,14 @@ ExclusiveAccessBubbleViews::ExclusiveAccessBubbleViews(
   view_->SetBounds(0, 0, size.width(), size.height());
   popup_->AddObserver(this);
 
-  auto* fullscreen_controller =
-      bubble_view_context_->GetExclusiveAccessManager()
-          ->fullscreen_controller();
-  fullscreen_observation_.Observe(fullscreen_controller);
-
-  UpdateMousePointerWatcher();
+  ShowAndStartTimers();
 
   const bool entering_tab_fullscreen = IsTabFullscreenType(params.type);
   // If the tab enters fullscreen without any recent user interaction, re-show
   // the bubble on the first user input event, by clearing the snooze time.
-  content::WebContents* tab = fullscreen_controller->exclusive_access_tab();
+  content::WebContents* tab = bubble_view_context_->GetExclusiveAccessManager()
+                                  ->fullscreen_controller()
+                                  ->exclusive_access_tab();
   if (entering_tab_fullscreen && tab && !tab->HasRecentInteraction()) {
     snooze_until_ = base::TimeTicks::Min();
   }
@@ -182,14 +179,7 @@ void ExclusiveAccessBubbleViews::Update(
   UpdateViewContent(params_.type);
   view_->SizeToPreferredSize();
   popup_->SetBounds(GetPopupRect());
-  Show();
-
-  // Stop watching the mouse pointer even if UpdateMousePointerWatcher() will
-  // start watching it again so that the popup with the new content is visible
-  // for at least `kShowTime`.
-  StopWatchingMousePointer();
-
-  UpdateMousePointerWatcher();
+  ShowAndStartTimers();
 
   // If the tab enters fullscreen without any recent user interaction, re-show
   // the bubble on the first user input event, by clearing the snooze time.
@@ -222,21 +212,6 @@ bool ExclusiveAccessBubbleViews::IsShowing() const {
 
 views::View* ExclusiveAccessBubbleViews::GetView() {
   return view_;
-}
-
-void ExclusiveAccessBubbleViews::UpdateMousePointerWatcher() {
-  bool should_watch_pointer =
-      popup_->IsVisible() || bubble_view_context_->CanTriggerOnMousePointer();
-
-  if (should_watch_pointer == IsWatchingMousePointer()) {
-    return;
-  }
-
-  if (should_watch_pointer) {
-    StartWatchingMousePointer();
-  } else {
-    StopWatchingMousePointer();
-  }
 }
 
 void ExclusiveAccessBubbleViews::UpdateBounds() {
@@ -358,10 +333,6 @@ void ExclusiveAccessBubbleViews::Show() {
   animation_->Show();
 }
 
-void ExclusiveAccessBubbleViews::OnFullscreenStateChanged() {
-  UpdateMousePointerWatcher();
-}
-
 void ExclusiveAccessBubbleViews::OnWidgetDestroyed(views::Widget* widget) {
   // Although SubtleNotificationView uses WIDGET_OWNS_NATIVE_WIDGET, a close can
   // originate from the OS or some Chrome shutdown codepaths that bypass the
@@ -377,12 +348,6 @@ void ExclusiveAccessBubbleViews::OnWidgetDestroyed(views::Widget* widget) {
   // Note: |this| is destroyed on the line above. Check that the destructor was
   // invoked. This is safe to do since |popup_| is deleted via a posted task.
   DCHECK(!popup_on_stack->HasObserver(this));
-}
-
-void ExclusiveAccessBubbleViews::OnWidgetVisibilityChanged(
-    views::Widget* widget,
-    bool visible) {
-  UpdateMousePointerWatcher();
 }
 
 void ExclusiveAccessBubbleViews::RunHideCallbackIfNeeded(

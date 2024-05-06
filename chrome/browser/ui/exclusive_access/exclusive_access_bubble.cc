@@ -28,20 +28,6 @@ void ExclusiveAccessBubble::OnUserInput() {
   snooze_until_ = base::TimeTicks::Now() + kSnoozeTime;
 }
 
-void ExclusiveAccessBubble::StartWatchingMousePointer() {
-  ShowAndStartTimers();
-  legacy_is_watching_mouse_pointer_ = true;
-}
-
-void ExclusiveAccessBubble::StopWatchingMousePointer() {
-  hide_timeout_.Stop();
-  legacy_is_watching_mouse_pointer_ = false;
-}
-
-bool ExclusiveAccessBubble::IsWatchingMousePointer() const {
-  return legacy_is_watching_mouse_pointer_;
-}
-
 void ExclusiveAccessBubble::ShowAndStartTimers() {
   Show();
 

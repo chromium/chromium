@@ -386,10 +386,6 @@ void PresentationReceiverWindowView::DestroyAnyExclusiveAccessBubble() {
   exclusive_access_bubble_.reset();
 }
 
-bool PresentationReceiverWindowView::CanTriggerOnMousePointer() const {
-  return true;
-}
-
 bool PresentationReceiverWindowView::GetAcceleratorForCommandId(
     int command_id,
     ui::Accelerator* accelerator) const {

@@ -8,11 +8,8 @@
 #include <memory>
 
 #include "base/memory/raw_ptr.h"
-#include "base/scoped_observation.h"
 #include "chrome/browser/ui/exclusive_access/exclusive_access_bubble.h"
 #include "chrome/browser/ui/exclusive_access/exclusive_access_bubble_hide_callback.h"
-#include "chrome/browser/ui/exclusive_access/fullscreen_controller.h"
-#include "chrome/browser/ui/exclusive_access/fullscreen_observer.h"
 #include "ui/gfx/animation/animation_delegate.h"
 #include "ui/views/widget/widget_observer.h"
 
@@ -27,12 +24,9 @@ class Widget;
 
 class SubtleNotificationView;
 
-// ExclusiveAccessBubbleViews is responsible for showing a bubble atop the
-// screen in fullscreen/pointer lock mode, telling users how to exit and
-// providing a click target. The bubble auto-hides, and re-shows when the user
-// moves to the screen top.
+// ExclusiveAccessBubbleViews is shows a bubble informing users of fullscreen,
+// keyboard lock, and pointer lock modes, with instructions for exiting.
 class ExclusiveAccessBubbleViews : public ExclusiveAccessBubble,
-                                   public FullscreenObserver,
                                    public gfx::AnimationDelegate,
                                    public views::WidgetObserver {
  public:
@@ -67,10 +61,6 @@ class ExclusiveAccessBubbleViews : public ExclusiveAccessBubble,
   bool IsVisibleForTesting() const { return IsVisible(); }
 
  private:
-  // Starts or stops polling the mouse pointer location based on |popup_| and
-  // |bubble_type_|.
-  void UpdateMousePointerWatcher();
-
   // Updates |popup|'s bounds given |animation_| and |animated_attribute_|.
   void UpdateBounds();
 
@@ -90,12 +80,8 @@ class ExclusiveAccessBubbleViews : public ExclusiveAccessBubble,
   void Hide() override;
   void Show() override;
 
-  // FullscreenObserver:
-  void OnFullscreenStateChanged() override;
-
   // views::WidgetObserver:
   void OnWidgetDestroyed(views::Widget* widget) override;
-  void OnWidgetVisibilityChanged(views::Widget* widget, bool visible) override;
 
   void RunHideCallbackIfNeeded(ExclusiveAccessBubbleHideReason reason);
 
@@ -115,9 +101,6 @@ class ExclusiveAccessBubbleViews : public ExclusiveAccessBubble,
 
   // Whether the bubble was updated for a download while showing.
   bool notify_overridden_ = false;
-
-  base::ScopedObservation<FullscreenController, FullscreenObserver>
-      fullscreen_observation_{this};
 };
 
 #endif  // CHROME_BROWSER_UI_VIEWS_EXCLUSIVE_ACCESS_BUBBLE_VIEWS_H_

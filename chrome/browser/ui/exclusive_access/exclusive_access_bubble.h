@@ -36,10 +36,6 @@ class ExclusiveAccessBubble {
   // Shows the bubble.
   virtual void Show() = 0;
 
-  void StartWatchingMousePointer();
-  void StopWatchingMousePointer();
-  bool IsWatchingMousePointer() const;
-
   // Shows the bubble and sets up timers to auto-hide and snooze.
   void ShowAndStartTimers();
 
@@ -55,9 +51,6 @@ class ExclusiveAccessBubble {
  private:
   friend class ExclusiveAccessTest;
   friend class ExclusiveAccessBubbleViewsTest;
-
-  // TODO(msw): Remove this legacy signal used by ExclusiveAccessBubbleViews.
-  bool legacy_is_watching_mouse_pointer_ = false;
 };
 
 #endif  // CHROME_BROWSER_UI_EXCLUSIVE_ACCESS_EXCLUSIVE_ACCESS_BUBBLE_H_

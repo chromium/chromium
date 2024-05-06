@@ -551,10 +551,6 @@ void ChromeNativeAppWindowViewsAuraAsh::DestroyAnyExclusiveAccessBubble() {
   exclusive_access_bubble_.reset();
 }
 
-bool ChromeNativeAppWindowViewsAuraAsh::CanTriggerOnMousePointer() const {
-  return true;
-}
-
 void ChromeNativeAppWindowViewsAuraAsh::OnWidgetActivationChanged(
     views::Widget* widget,
     bool active) {
