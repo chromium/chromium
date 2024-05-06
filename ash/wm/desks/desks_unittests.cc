@@ -47,6 +47,7 @@
 #include "ash/test/ash_test_base.h"
 #include "ash/test/ash_test_helper.h"
 #include "ash/test/test_widget_builder.h"
+#include "ash/utility/forest_util.h"
 #include "ash/wm/desks/default_desk_button.h"
 #include "ash/wm/desks/desk.h"
 #include "ash/wm/desks/desk_action_button.h"
@@ -9622,6 +9623,9 @@ struct DeskBarTestBasicCase {
 TEST_P(DeskBarTest, Basic) {
   UpdateDisplay("800x600");
 
+  const int expected_expanded_overview_height =
+      IsForestFeatureEnabled() ? 114 : 98;
+
   const DeskBarTestBasicCase tests[] = {
       {.test_name = "single desk + bottom shelf + saved desks",
        .desks = {0},
@@ -9666,8 +9670,10 @@ TEST_P(DeskBarTest, Basic) {
        .has_saved_desks = true,
        .desk_button_bar_widget_bounds = {221, 446, 358, 98},
        .desk_button_bar_view_bounds = {0, 0, 358, 98},
-       .overview_bar_widget_bounds = {0, 0, 800, 98},
-       .overview_bar_view_bounds = {0, 0, 800, 98}},
+       .overview_bar_widget_bounds = {0, 0, 800,
+                                      expected_expanded_overview_height},
+       .overview_bar_view_bounds = {0, 0, 800,
+                                    expected_expanded_overview_height}},
   };
 
   auto* desks_controller = DesksController::Get();
@@ -9751,10 +9757,14 @@ TEST_P(DeskBarTest, BasicSecondaryDisplay) {
   auto* desk_bar_widget = desk_bar_view->GetWidget();
   ASSERT_TRUE(desk_bar_widget);
 
+  const int expected_expanded_overview_height =
+      IsForestFeatureEnabled() ? 114 : 98;
+
   if (bar_type_ == DeskBarViewBase::Type::kOverview) {
     EXPECT_THAT(desk_bar_widget->GetWindowBoundsInScreen(),
-                gfx::Rect(800, 0, 800, 98));
-    EXPECT_THAT(desk_bar_view->bounds(), gfx::Rect(0, 0, 800, 98));
+                gfx::Rect(800, 0, 800, expected_expanded_overview_height));
+    EXPECT_THAT(desk_bar_view->bounds(),
+                gfx::Rect(0, 0, 800, expected_expanded_overview_height));
     EXPECT_FALSE(desk_bar_view->IsZeroState());
   } else {
     EXPECT_THAT(desk_bar_widget->GetWindowBoundsInScreen(),
