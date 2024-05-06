@@ -17,6 +17,9 @@ enum ClientId {
 
   // Tracked at launch/4225832.
   Bookmarks,
+
+  // Tracked at launch/4279123.
+  NtpTabResumption,
 };
 
 // Options for image fetching.

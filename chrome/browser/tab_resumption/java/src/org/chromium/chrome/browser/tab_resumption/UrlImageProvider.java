@@ -67,10 +67,9 @@ public class UrlImageProvider {
                             ImageFetcherConfig.IN_MEMORY_WITH_DISK_CACHE,
                             profile.getProfileKey(),
                             GlobalDiscardableReferencePool.getReferencePool());
-            // TODO(hanxi@): Add a client id for tab resumption module.
             mImageServiceBridge =
                     new ImageServiceBridge(
-                            ClientId.BOOKMARKS,
+                            ClientId.NTP_TAB_RESUMPTION,
                             ImageFetcher.TAB_RESUMPTION_MODULE_NAME,
                             profile,
                             mImageFetcher);

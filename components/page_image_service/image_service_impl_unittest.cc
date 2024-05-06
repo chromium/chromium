@@ -172,6 +172,9 @@ TEST_F(ImageServiceImplTest, GetConsentToFetchImage) {
             PageImageServiceConsentStatus::kTimedOut);
   EXPECT_EQ(GetConsentStatusToFetchImageAwaitResult(mojom::ClientId::Bookmarks),
             PageImageServiceConsentStatus::kTimedOut);
+  EXPECT_EQ(GetConsentStatusToFetchImageAwaitResult(
+                mojom::ClientId::NtpTabResumption),
+            PageImageServiceConsentStatus::kTimedOut);
 
   test_sync_service_->SetDownloadStatusFor(
       {syncer::ModelType::HISTORY_DELETE_DIRECTIVES},
@@ -191,6 +194,9 @@ TEST_F(ImageServiceImplTest, GetConsentToFetchImage) {
             PageImageServiceConsentStatus::kSuccess);
   EXPECT_EQ(GetConsentStatusToFetchImageAwaitResult(mojom::ClientId::Bookmarks),
             PageImageServiceConsentStatus::kTimedOut);
+  EXPECT_EQ(GetConsentStatusToFetchImageAwaitResult(
+                mojom::ClientId::NtpTabResumption),
+            PageImageServiceConsentStatus::kSuccess);
 }
 
 TEST_F(ImageServiceImplTest, SyncInitialization) {
