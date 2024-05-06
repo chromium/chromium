@@ -878,6 +878,7 @@ void ChromeAutofillClient::ScanCreditCard(CreditCardScanCallback callback) {
                                               std::move(callback));
 }
 
+// TODO(b/309163844): Add follow-up ManualFallback for showing IBANs.
 bool ChromeAutofillClient::ShowTouchToFillCreditCard(
     base::WeakPtr<TouchToFillDelegate> delegate,
     base::span<const autofill::CreditCard> cards_to_suggest) {
@@ -894,8 +895,20 @@ bool ChromeAutofillClient::ShowTouchToFillCreditCard(
       delegate, std::move(cards_to_suggest));
 #else
   // Touch To Fill is not supported on Desktop.
-  NOTREACHED();
-  return false;
+  NOTREACHED_NORETURN();
+#endif
+}
+
+bool ChromeAutofillClient::ShowTouchToFillIban(
+    base::WeakPtr<TouchToFillDelegate> delegate,
+    base::span<const autofill::Iban> ibans_to_suggest) {
+#if BUILDFLAG(IS_ANDROID)
+  return touch_to_fill_payment_method_controller_.Show(
+      std::make_unique<TouchToFillPaymentMethodViewImpl>(web_contents()),
+      delegate, std::move(ibans_to_suggest));
+#else
+  // Touch To Fill is not supported on Desktop.
+  NOTREACHED_NORETURN();
 #endif
 }
 

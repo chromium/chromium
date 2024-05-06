@@ -212,7 +212,8 @@ inline constexpr char kIbanValue_2[] = "CH93 0076 2011 6238 5295 7";
 // single IBAN field). Note that this actually appends fields to the form data,
 // which can be useful for building up more complex test forms.
 [[nodiscard]] FormData CreateTestIbanFormData(
-    std::string_view value = kIbanValue);
+    std::string_view value = kIbanValue,
+    bool is_https = true);
 
 // Creates a 'FormData` with a username and a password fields.
 [[nodiscard]] FormData CreateTestPasswordFormData();

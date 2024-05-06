@@ -11,6 +11,7 @@
 
 #include "base/check.h"
 #include "base/location.h"
+#include "base/strings/strcat.h"
 #include "base/strings/utf_string_conversions.h"
 #include "base/test/scoped_feature_list.h"
 #include "base/unguessable_token.h"
@@ -23,6 +24,22 @@
 #include "url/origin.h"
 
 namespace autofill::test {
+
+namespace {
+
+FormData ConstructFormWithNameRenderIdAndProtocol(bool is_https) {
+  FormData form;
+  form.name = u"MyForm";
+  form.renderer_id = MakeFormRendererId();
+  std::string_view protocol = is_https ? "https://" : "http://";
+  form.url = GURL(base::StrCat({protocol, "myform.com/form.html"}));
+  form.action = GURL(base::StrCat({protocol, "myform.com/submit.html"}));
+  form.main_frame_origin = url::Origin::Create(
+      GURL(base::StrCat({protocol, "myform_root.com/form.html"})));
+  return form;
+}
+
+}  // namespace
 
 AutofillTestEnvironment* AutofillTestEnvironment::current_instance_ = nullptr;
 
@@ -246,13 +263,7 @@ FormFieldData CreateTestDatalistField(std::string_view label,
 }
 
 FormData CreateTestPersonalInformationFormData() {
-  FormData form;
-  form.renderer_id = MakeFormRendererId();
-  form.name = u"MyForm";
-  form.url = GURL("https://myform.com/form.html");
-  form.action = GURL("https://myform.com/submit.html");
-  form.main_frame_origin =
-      url::Origin::Create(GURL("https://myform_root.com/form.html"));
+  FormData form = ConstructFormWithNameRenderIdAndProtocol(/*is_https=*/true);
   form.fields = {
       CreateTestFormField("First Name", "firstname", "",
                           FormControlType::kInputText),
@@ -267,20 +278,7 @@ FormData CreateTestPersonalInformationFormData() {
 FormData CreateTestCreditCardFormData(bool is_https,
                                       bool use_month_type,
                                       bool split_names) {
-  FormData form;
-  form.renderer_id = MakeFormRendererId();
-  form.name = u"MyForm";
-  if (is_https) {
-    form.url = GURL("https://myform.com/form.html");
-    form.action = GURL("https://myform.com/submit.html");
-    form.main_frame_origin =
-        url::Origin::Create(GURL("https://myform_root.com/form.html"));
-  } else {
-    form.url = GURL("http://myform.com/form.html");
-    form.action = GURL("http://myform.com/submit.html");
-    form.main_frame_origin =
-        url::Origin::Create(GURL("http://myform_root.com/form.html"));
-  }
+  FormData form = ConstructFormWithNameRenderIdAndProtocol(is_https);
 
   if (split_names) {
     form.fields.push_back(
@@ -309,9 +307,8 @@ FormData CreateTestCreditCardFormData(bool is_https,
   return form;
 }
 
-FormData CreateTestIbanFormData(std::string_view value) {
-  FormData form;
-  form.url = GURL("https://www.foo.com");
+FormData CreateTestIbanFormData(std::string_view value, bool is_https) {
+  FormData form = ConstructFormWithNameRenderIdAndProtocol(is_https);
   form.fields = {CreateTestFormField("IBAN Value:", "iban_value", value,
                                      FormControlType::kInputText)};
   return form;

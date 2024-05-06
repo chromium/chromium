@@ -210,6 +210,12 @@ void AutofillClient::ConfirmUploadIbanToCloud(
     bool should_show_prompt,
     SaveIbanPromptCallback callback) {}
 
+bool AutofillClient::ShowTouchToFillIban(
+    base::WeakPtr<TouchToFillDelegate> delegate,
+    base::span<const autofill::Iban> ibans_to_suggest) {
+  return false;
+}
+
 void AutofillClient::UpdateOfferNotification(
     const AutofillOfferData* offer,
     const OfferNotificationOptions& options) {

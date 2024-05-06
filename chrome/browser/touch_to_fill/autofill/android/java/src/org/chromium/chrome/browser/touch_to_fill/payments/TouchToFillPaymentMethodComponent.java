@@ -66,7 +66,7 @@ interface TouchToFillPaymentMethodComponent {
     void showSheet(List<PersonalDataManager.CreditCard> cards, boolean shouldShowScanCreditCard);
 
     /** Displays a new IBAN bottom sheet. */
-    void showSheet(PersonalDataManager.Iban[] ibans);
+    void showSheet(List<PersonalDataManager.Iban> ibans);
 
     /** Hides the bottom sheet if shown. */
     void hideSheet();

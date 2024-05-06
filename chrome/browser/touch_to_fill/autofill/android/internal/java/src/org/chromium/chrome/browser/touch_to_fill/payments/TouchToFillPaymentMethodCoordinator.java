@@ -74,7 +74,7 @@ public class TouchToFillPaymentMethodCoordinator implements TouchToFillPaymentMe
     }
 
     @Override
-    public void showSheet(Iban[] ibans) {
+    public void showSheet(List<Iban> ibans) {
         mMediator.showSheet(ibans);
     }
 

@@ -42,7 +42,6 @@ import org.chromium.url.GURL;
 
 import java.lang.annotation.Retention;
 import java.lang.annotation.RetentionPolicy;
-import java.util.Arrays;
 import java.util.List;
 import java.util.Locale;
 import java.util.function.Function;
@@ -147,22 +146,22 @@ class TouchToFillPaymentMethodMediator {
         RecordHistogram.recordCount100Histogram(TOUCH_TO_FILL_NUMBER_OF_CARDS_SHOWN, mCards.size());
     }
 
-    public void showSheet(Iban[] ibans) {
+    public void showSheet(List<Iban> ibans) {
         mInputProtector.markShowTime();
 
         assert ibans != null;
-        mIbans = Arrays.asList(ibans);
+        mIbans = ibans;
 
         ModelList sheetItems = mModel.get(SHEET_ITEMS);
         sheetItems.clear();
 
-        for (int i = 0; i < ibans.length; ++i) {
-            Iban iban = ibans[i];
+        for (int i = 0; i < mIbans.size(); ++i) {
+            Iban iban = mIbans.get(i);
             final PropertyModel model = createIbanModel(iban);
             sheetItems.add(new ListItem(IBAN, model));
         }
 
-        if (ibans.length == 1) {
+        if (mIbans.size() == 1) {
             // Use the IBAN model as the property model for the fill button too.
             assert sheetItems.get(0).type == IBAN;
             sheetItems.add(new ListItem(FILL_BUTTON, sheetItems.get(0).model));

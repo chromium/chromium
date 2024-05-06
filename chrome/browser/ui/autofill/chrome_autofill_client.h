@@ -207,6 +207,9 @@ class ChromeAutofillClient : public ContentAutofillClient,
   bool ShowTouchToFillCreditCard(
       base::WeakPtr<TouchToFillDelegate> delegate,
       base::span<const autofill::CreditCard> cards_to_suggest) override;
+  bool ShowTouchToFillIban(
+      base::WeakPtr<TouchToFillDelegate> delegate,
+      base::span<const autofill::Iban> ibans_to_suggest) override;
   void HideTouchToFillCreditCard() override;
   void ShowAutofillSuggestions(
       const PopupOpenArgs& open_args,

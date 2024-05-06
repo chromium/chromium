@@ -129,7 +129,8 @@ TouchToFillDelegateAndroidImpl::DryRunForIban() {
   CHECK(pdm);
   std::vector<Iban> ibans_to_suggest =
       pdm->payments_data_manager().GetOrderedIbansToSuggest();
-  return ibans_to_suggest.empty()
+  return ibans_to_suggest.empty() || !base::FeatureList::IsEnabled(
+                                         features::kAutofillEnableLocalIban)
              ? DryRunResult(TriggerOutcome::kNoValidPaymentMethods, {})
              : DryRunResult(TriggerOutcome::kShown,
                             std::move(ibans_to_suggest));
@@ -197,8 +198,10 @@ bool TouchToFillDelegateAndroidImpl::TryToShowTouchToFill(
       dry_run.outcome = TriggerOutcome::kFailedToDisplayBottomSheet;
     } else if (std::vector<Iban>* ibans_to_suggest =
                    absl::get_if<std::vector<Iban>>(&dry_run.items_to_suggest);
-               ibans_to_suggest) {
-      // TODO(b/309163844): Handle dry_run.ibans_to_suggest case.
+               ibans_to_suggest &&
+               !manager_->client().ShowTouchToFillIban(
+                   GetWeakPtr(), std::move(*ibans_to_suggest))) {
+      dry_run.outcome = TriggerOutcome::kFailedToDisplayBottomSheet;
     }
   }
 

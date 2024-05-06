@@ -21,6 +21,7 @@
 #include "testing/gmock/include/gmock/gmock.h"
 #include "testing/gtest/include/gtest/gtest.h"
 
+using ::testing::_;
 using ::testing::ElementsAreArray;
 using ::testing::Return;
 
@@ -31,7 +32,8 @@ namespace {
 class MockTouchToFillPaymentMethodViewImpl : public TouchToFillPaymentMethodView {
  public:
   MockTouchToFillPaymentMethodViewImpl() {
-    ON_CALL(*this, Show).WillByDefault(Return(true));
+    ON_CALL(*this, Show(_, _, _)).WillByDefault(Return(true));
+    ON_CALL(*this, Show(_, _)).WillByDefault(Return(true));
   }
   ~MockTouchToFillPaymentMethodViewImpl() override = default;
 
@@ -40,6 +42,10 @@ class MockTouchToFillPaymentMethodViewImpl : public TouchToFillPaymentMethodView
               (TouchToFillPaymentMethodViewController * controller,
                base::span<const CreditCard> cards_to_suggest,
                bool should_show_scan_credit_card));
+  MOCK_METHOD(bool,
+              Show,
+              (TouchToFillPaymentMethodViewController * controller,
+               base::span<const Iban> ibans_to_suggest));
   MOCK_METHOD(void, Hide, ());
 };
 
@@ -109,6 +115,12 @@ class TouchToFillPaymentMethodControllerTest
     mock_view_ = std::make_unique<MockTouchToFillPaymentMethodViewImpl>();
   }
 
+  void SetUpIbanFormField() {
+    some_form_data_ = autofill::test::CreateTestIbanFormData();
+    some_form_ = some_form_data_.global_id();
+    some_field_ = test::MakeFieldGlobalId();
+  }
+
   void TearDown() override {
     mock_view_.reset();
     ChromeRenderViewHostTestHarness::TearDown();
@@ -134,6 +146,8 @@ class TouchToFillPaymentMethodControllerTest
 
   const std::vector<CreditCard> credit_cards_ = {test::GetCreditCard(),
                                                  test::GetCreditCard2()};
+  const std::vector<Iban> ibans_ = {test::GetLocalIban(),
+                                    test::GetServerIban()};
   std::unique_ptr<MockTouchToFillPaymentMethodViewImpl> mock_view_;
 
   void OnBeforeAskForValuesToFill() {
@@ -186,6 +200,17 @@ TEST_F(TouchToFillPaymentMethodControllerTest, ShowPassesCardsToTheView) {
   OnAfterAskForValuesToFill();
 }
 
+TEST_F(TouchToFillPaymentMethodControllerTest, ShowPassesIbansToTheView) {
+  SetUpIbanFormField();
+  // Test that the IBANs have propagated to the view.
+  EXPECT_CALL(*mock_view_,
+              Show(&payment_method_controller(), ElementsAreArray(ibans_)));
+  OnBeforeAskForValuesToFill();
+  payment_method_controller().Show(std::move(mock_view_),
+                                   ttf_delegate().GetWeakPointer(), ibans_);
+  OnAfterAskForValuesToFill();
+}
+
 TEST_F(TouchToFillPaymentMethodControllerTest, ScanCreditCardIsCalled) {
   OnBeforeAskForValuesToFill();
   payment_method_controller().Show(std::move(mock_view_),
@@ -195,10 +220,22 @@ TEST_F(TouchToFillPaymentMethodControllerTest, ScanCreditCardIsCalled) {
   payment_method_controller().ScanCreditCard(nullptr);
 }
 
-TEST_F(TouchToFillPaymentMethodControllerTest, ShowPaymentMethodSettingsIsCalled) {
+TEST_F(TouchToFillPaymentMethodControllerTest,
+       ShowPaymentMethodSettingsIsCalledForCards) {
   OnBeforeAskForValuesToFill();
   payment_method_controller().Show(std::move(mock_view_),
                                 ttf_delegate().GetWeakPointer(), credit_cards_);
+  OnAfterAskForValuesToFill();
+  EXPECT_CALL(ttf_delegate(), ShowPaymentMethodSettings);
+  payment_method_controller().ShowPaymentMethodSettings(nullptr);
+}
+
+TEST_F(TouchToFillPaymentMethodControllerTest,
+       ShowPaymentMethodSettingsIsCalledForIbans) {
+  SetUpIbanFormField();
+  OnBeforeAskForValuesToFill();
+  payment_method_controller().Show(std::move(mock_view_),
+                                   ttf_delegate().GetWeakPointer(), ibans_);
   OnAfterAskForValuesToFill();
   EXPECT_CALL(ttf_delegate(), ShowPaymentMethodSettings);
   payment_method_controller().ShowPaymentMethodSettings(nullptr);

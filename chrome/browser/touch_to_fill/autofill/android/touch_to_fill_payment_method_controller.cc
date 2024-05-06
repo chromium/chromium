@@ -109,6 +109,29 @@ bool TouchToFillPaymentMethodController::Show(
   return true;
 }
 
+bool TouchToFillPaymentMethodController::Show(
+    std::unique_ptr<TouchToFillPaymentMethodView> view,
+    base::WeakPtr<TouchToFillDelegate> delegate,
+    base::span<const Iban> ibans_to_suggest) {
+  if (!keyboard_suppressor_.is_suppressing()) {
+    return false;
+  }
+
+  // Abort if TTF surface is already shown.
+  if (view_) {
+    return false;
+  }
+
+  if (!view->Show(this, ibans_to_suggest)) {
+    java_object_.Reset();
+    return false;
+  }
+
+  view_ = std::move(view);
+  delegate_ = std::move(delegate);
+  return true;
+}
+
 void TouchToFillPaymentMethodController::Hide() {
   if (view_)
     view_->Hide();

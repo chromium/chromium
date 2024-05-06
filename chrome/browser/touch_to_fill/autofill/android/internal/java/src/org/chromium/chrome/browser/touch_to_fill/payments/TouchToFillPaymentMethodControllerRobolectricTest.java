@@ -445,14 +445,14 @@ public class TouchToFillPaymentMethodControllerRobolectricTest {
         assertNotNull(mTouchToFillPaymentMethodModel.get(DISMISS_HANDLER));
         assertThat(mTouchToFillPaymentMethodModel.get(VISIBLE), is(false));
 
-        mCoordinator.showSheet(new Iban[] {LOCAL_IBAN});
+        mCoordinator.showSheet(List.of(LOCAL_IBAN));
 
         assertThat(mTouchToFillPaymentMethodModel.get(VISIBLE), is(true));
     }
 
     @Test
     public void testScanNewCardNotShownForIbans() {
-        mCoordinator.showSheet(new Iban[] {LOCAL_IBAN});
+        mCoordinator.showSheet(List.of(LOCAL_IBAN));
         int lastItemPos = mTouchToFillPaymentMethodModel.get(SHEET_ITEMS).size() - 1;
 
         assertNull(
@@ -465,7 +465,7 @@ public class TouchToFillPaymentMethodControllerRobolectricTest {
 
     @Test
     public void testShowIbansWithOneEntry() throws TimeoutException {
-        mCoordinator.showSheet(new Iban[] {LOCAL_IBAN});
+        mCoordinator.showSheet(List.of(LOCAL_IBAN));
 
         ModelList itemList = mTouchToFillPaymentMethodModel.get(SHEET_ITEMS);
         assertThat(getModelsOfType(itemList, IBAN).size(), is(1));
@@ -480,7 +480,7 @@ public class TouchToFillPaymentMethodControllerRobolectricTest {
 
     @Test
     public void testShowIbansWithTwoEntries() throws TimeoutException {
-        mCoordinator.showSheet(new Iban[] {LOCAL_IBAN, LOCAL_IBAN_NO_NICKNAME});
+        mCoordinator.showSheet(List.of(LOCAL_IBAN, LOCAL_IBAN_NO_NICKNAME));
 
         ModelList itemList = mTouchToFillPaymentMethodModel.get(SHEET_ITEMS);
         assertThat(getModelsOfType(itemList, IBAN).size(), is(2));
@@ -499,7 +499,7 @@ public class TouchToFillPaymentMethodControllerRobolectricTest {
 
     @Test
     public void testShowPaymentMethodSettingsForIbans() {
-        mCoordinator.showSheet(new Iban[] {LOCAL_IBAN, LOCAL_IBAN_NO_NICKNAME});
+        mCoordinator.showSheet(List.of(LOCAL_IBAN, LOCAL_IBAN_NO_NICKNAME));
         int lastItemPos = mTouchToFillPaymentMethodModel.get(SHEET_ITEMS).size() - 1;
         mTouchToFillPaymentMethodModel
                 .get(SHEET_ITEMS)
@@ -512,7 +512,7 @@ public class TouchToFillPaymentMethodControllerRobolectricTest {
 
     @Test
     public void testShowsContinueButtonWhenOneIban() {
-        mCoordinator.showSheet(new Iban[] {LOCAL_IBAN});
+        mCoordinator.showSheet(List.of(LOCAL_IBAN));
 
         ModelList itemList = mTouchToFillPaymentMethodModel.get(SHEET_ITEMS);
         assertEquals(getModelsOfType(itemList, FILL_BUTTON).size(), 1);
@@ -520,7 +520,7 @@ public class TouchToFillPaymentMethodControllerRobolectricTest {
 
     @Test
     public void testNoContinueButtonWhenManyIbans() {
-        mCoordinator.showSheet(new Iban[] {LOCAL_IBAN, LOCAL_IBAN_NO_NICKNAME});
+        mCoordinator.showSheet(List.of(LOCAL_IBAN, LOCAL_IBAN_NO_NICKNAME));
 
         ModelList itemList = mTouchToFillPaymentMethodModel.get(SHEET_ITEMS);
         assertEquals(getModelsOfType(itemList, FILL_BUTTON).size(), 0);

@@ -370,7 +370,7 @@ public class TouchToFillPaymentMethodRenderTest {
     public void testShowsOneIban() throws IOException {
         runOnUiThreadBlocking(
                 () -> {
-                    mCoordinator.showSheet(new Iban[] {LOCAL_IBAN});
+                    mCoordinator.showSheet(List.of(LOCAL_IBAN));
                 });
         BottomSheetTestSupport.waitForOpen(mBottomSheetController);
 
@@ -384,7 +384,7 @@ public class TouchToFillPaymentMethodRenderTest {
     public void testShowsOneIbanHalfState() throws IOException {
         runOnUiThreadBlocking(
                 () -> {
-                    mCoordinator.showSheet(new Iban[] {LOCAL_IBAN});
+                    mCoordinator.showSheet(List.of(LOCAL_IBAN));
                 });
         BottomSheetTestSupport.waitForOpen(mBottomSheetController);
 
@@ -401,7 +401,7 @@ public class TouchToFillPaymentMethodRenderTest {
     public void testShowsTwoIbans() throws IOException {
         runOnUiThreadBlocking(
                 () -> {
-                    mCoordinator.showSheet(new Iban[] {LOCAL_IBAN, LOCAL_IBAN_NO_NICKNAME});
+                    mCoordinator.showSheet(List.of(LOCAL_IBAN, LOCAL_IBAN_NO_NICKNAME));
                 });
         BottomSheetTestSupport.waitForOpen(mBottomSheetController);
 
@@ -415,7 +415,7 @@ public class TouchToFillPaymentMethodRenderTest {
     public void testShowsTwoIbansHalfState() throws IOException {
         runOnUiThreadBlocking(
                 () -> {
-                    mCoordinator.showSheet(new Iban[] {LOCAL_IBAN, LOCAL_IBAN_NO_NICKNAME});
+                    mCoordinator.showSheet(List.of(LOCAL_IBAN, LOCAL_IBAN_NO_NICKNAME));
                 });
         BottomSheetTestSupport.waitForOpen(mBottomSheetController);
 

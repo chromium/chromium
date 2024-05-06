@@ -71,6 +71,11 @@ class TouchToFillPaymentMethodViewBridge {
     }
 
     @CalledByNative
+    private void showSheet(@JniType("std::vector") Object[] ibans) {
+        mComponent.showSheet((List<PersonalDataManager.Iban>) (List<?>) Arrays.asList(ibans));
+    }
+
+    @CalledByNative
     private void hideSheet() {
         mComponent.hideSheet();
     }

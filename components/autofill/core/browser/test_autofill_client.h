@@ -403,6 +403,12 @@ class TestAutofillClientTemplate : public T {
     return false;
   }
 
+  bool ShowTouchToFillIban(
+      base::WeakPtr<TouchToFillDelegate> delegate,
+      base::span<const autofill::Iban> ibans_to_suggest) override {
+    return false;
+  }
+
   void HideTouchToFillCreditCard() override {}
 
   void ShowAutofillSuggestions(

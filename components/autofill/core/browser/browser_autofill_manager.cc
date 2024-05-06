@@ -1887,7 +1887,6 @@ void BrowserAutofillManager::OnGetSingleFieldSuggestionsCallback(
   // TODO(b/309163415): Replace parameter of FormFieldData in
   // `TryToShowTouchToFill` by FieldGlobalId.
   if (form_element_was_clicked && touch_to_fill_delegate_ &&
-      base::FeatureList::IsEnabled(features::kAutofillEnableServerIban) &&
       touch_to_fill_delegate_->TryToShowTouchToFill(
           form, *form.FindFieldByGlobalId(field_id))) {
     return;

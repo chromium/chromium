@@ -16,8 +16,9 @@ class WebContents;
 
 namespace autofill {
 
-class TouchToFillPaymentMethodViewController;
 class CreditCard;
+class Iban;
+class TouchToFillPaymentMethodViewController;
 
 // Android implementation of the surface to select a credit card or IBAN to fill.
 // Uses Java TouchToFillPaymentMethodComponent to present a bottom sheet.
@@ -30,10 +31,16 @@ class TouchToFillPaymentMethodViewImpl : public TouchToFillPaymentMethodView {
   ~TouchToFillPaymentMethodViewImpl() override;
 
  private:
+  // Returns true if `env`, `java_object_` and `controller` are in a state
+  // where TTF view can be rendered.
+  bool IsReadyToShow(TouchToFillPaymentMethodViewController* controller,
+                     JNIEnv* env);
   // TouchToFillPaymentMethodView:
   bool Show(TouchToFillPaymentMethodViewController* controller,
             base::span<const autofill::CreditCard> cards_to_suggest,
             bool should_show_scan_credit_card) override;
+  bool Show(TouchToFillPaymentMethodViewController* controller,
+            base::span<const autofill::Iban> ibans_to_suggest) override;
   void Hide() override;
 
   // The corresponding Java TouchToFillPaymentMethodViewBridge.
