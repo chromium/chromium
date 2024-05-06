@@ -160,6 +160,10 @@ CreateObjectsMojomArrayFromServerResponse(
 
   auto response_objects = response.objects_response().overlay_objects();
   for (auto response_object : response_objects) {
+    if (!response_object.has_interaction_properties() ||
+        !response_object.interaction_properties().select_on_tap()) {
+      continue;
+    }
     lens::mojom::OverlayObjectPtr overlay_object =
         lens::mojom::OverlayObject::New();
     overlay_object->id = std::string(response_object.id());

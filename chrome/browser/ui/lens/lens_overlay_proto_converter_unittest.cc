@@ -92,6 +92,7 @@ class LensOverlayProtoConverterTest : public testing::Test {
   lens::OverlayObject CreateServerOverlayObject(BoundingBoxStruct box) {
     lens::OverlayObject object;
     object.set_id(box.id);
+    object.mutable_interaction_properties()->set_select_on_tap(true);
     CreateServerGeometry(box, object.mutable_geometry());
     return object;
   }
@@ -100,6 +101,7 @@ class LensOverlayProtoConverterTest : public testing::Test {
       BoundingBoxStruct box) {
     lens::OverlayObject object;
     object.set_id(box.id);
+    object.mutable_interaction_properties()->set_select_on_tap(true);
     CreateServerGeometryWithPolygon(box, object.mutable_geometry());
     return object;
   }
@@ -198,16 +200,23 @@ class LensOverlayProtoConverterTest : public testing::Test {
 
 TEST_F(LensOverlayProtoConverterTest,
        CreateObjectsMojomArrayFromServerResponse) {
+  lens::OverlayObject no_tap_object =
+      CreateServerOverlayObject(kTestBoundingBox1);
+  no_tap_object.mutable_interaction_properties()->set_select_on_tap(false);
   std::vector<lens::OverlayObject> server_objects = {
       CreateServerOverlayObject(kTestBoundingBox1),
+      CreateServerOverlayObjectWithPolygon(kTestBoundingBox2), no_tap_object};
+  std::vector<lens::OverlayObject> server_objects_with_tap = {
+      CreateServerOverlayObject(kTestBoundingBox1),
       CreateServerOverlayObjectWithPolygon(kTestBoundingBox2)};
+
   lens::LensOverlayServerResponse server_response =
       CreateLensServerOverlayResponse(server_objects);
 
   std::vector<lens::mojom::OverlayObjectPtr> mojo_objects =
       lens::CreateObjectsMojomArrayFromServerResponse(server_response);
   EXPECT_FALSE(mojo_objects.empty());
-  VerifyOverlayObjectsAreEqual(std::move(server_objects),
+  VerifyOverlayObjectsAreEqual(std::move(server_objects_with_tap),
                                std::move(mojo_objects));
 }
 
