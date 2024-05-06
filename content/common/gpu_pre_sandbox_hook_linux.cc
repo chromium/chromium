@@ -6,6 +6,7 @@
 
 #include <dlfcn.h>
 #include <errno.h>
+#include <stdlib.h>
 #include <sys/stat.h>
 
 #include <memory>
@@ -83,6 +84,10 @@ inline bool UseV4L2Codec(
   return false;
 #endif
 }
+
+#if BUILDFLAG(IS_CHROMEOS) && defined(ARCH_CPU_ARM_FAMILY)
+static const char kMaliConfPath[] = "/etc/mali_platform.conf";
+#endif
 
 #if BUILDFLAG(IS_CHROMEOS) && defined(__aarch64__)
 static const char kLibGlesPath[] = "/usr/lib64/libGLESv2.so.2";
@@ -194,6 +199,13 @@ void AddArmMaliGpuPermissions(std::vector<BrokerFilePermission>* permissions) {
   static const char kMali0Path[] = "/dev/mali0";
 
   permissions->push_back(BrokerFilePermission::ReadWrite(kMali0Path));
+
+#if BUILDFLAG(IS_CHROMEOS) && defined(ARCH_CPU_ARM_FAMILY)
+  // Files needed for protected DMA allocations.
+  static const char kDmaHeapPath[] = "/dev/dma_heap/restricted_mtk_cma";
+  permissions->push_back(BrokerFilePermission::ReadWrite(kDmaHeapPath));
+  permissions->push_back(BrokerFilePermission::ReadOnly(kMaliConfPath));
+#endif
 
   // Non-privileged render nodes for format enumeration.
   // https://dri.freedesktop.org/docs/drm/gpu/drm-uapi.html#render-nodes
@@ -526,6 +538,16 @@ std::vector<BrokerFilePermission> FilePermissionsForGpu(
 }
 
 void LoadArmGpuLibraries() {
+#if BUILDFLAG(IS_CHROMEOS) && defined(ARCH_CPU_ARM_FAMILY)
+  // This environmental variable needs to be set before we load libMali if we
+  // want to instantiate protected Vulkan device queues.
+  static const char kMaliConfVar[] = "MALI_PLATFORM_CONFIG";
+  // Note this function will only fail if we run out of memory entirely, in
+  // which case we would have much bigger problems, so we don't bother to check
+  // the return value.
+  setenv(kMaliConfVar, kMaliConfPath, 1);
+#endif
+
   // Preload the Mali library.
   if (UseChromecastSandboxAllowlist()) {
     for (const char* path : kAllowedChromecastPaths) {
