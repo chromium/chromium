@@ -106,6 +106,46 @@ public class Sample {
 }
 """.strip(), data.strip())
 
+  def testPreserveComments(self):
+    with tempfile.NamedTemporaryFile(mode='w') as f:
+      template = f.name
+      f.file.write("""
+// Copyright header ...
+package org.chromium.fake;
+/**
+ * Some javadoc.
+ */
+public class Sample {
+    // This is a comment outside the #if block.
+#if defined(_ENABLE_ASSERTS)
+    // Inside the #if block.
+    public boolean ENABLE_ASSERTS = true;
+#else
+    // Inside the #else block.
+    public boolean ENABLE_ASSERTS = false;
+#endif
+}
+""")
+      f.file.flush()
+      defines = [
+          '_ENABLE_ASSERTS',
+      ]
+      package_name, data = gcc_preprocess.ProcessJavaFile(template, defines, [])
+      self.assertEqual('org.chromium.fake', package_name)
+      self.assertEqual(
+          """
+// Copyright header ...
+package org.chromium.fake;
+/**
+ * Some javadoc.
+ */
+public class Sample {
+    // This is a comment outside the #if block.
+    // Inside the #if block.
+    public boolean ENABLE_ASSERTS = true;
+}
+""".strip(), data.strip())
+
 
 if __name__ == '__main__':
   unittest.main()

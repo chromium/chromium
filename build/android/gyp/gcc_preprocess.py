@@ -21,7 +21,7 @@ _LLVM_CLANG_PATH = os.path.join(_CHROMIUM_SRC, 'third_party', 'llvm-build',
                                 'Release+Asserts', 'bin', 'clang')
 
 def _ParsePackageName(data):
-  m = re.match(r'^\s*package\s+(.*?)\s*;', data, re.MULTILINE)
+  m = re.search(r'^\s*package\s+(.*?)\s*;', data, re.MULTILINE)
   return m.group(1) if m else ''
 
 
@@ -29,6 +29,7 @@ def ProcessJavaFile(template, defines, include_dirs):
   clang_cmd = [
       _LLVM_CLANG_PATH,
       '-E',  # stop after preprocessing.
+      '-CC',  # Keep comments
       '-DANDROID',  # Specify ANDROID define for pre-processor.
       '-x',
       'c-header',  # treat sources as C header files
