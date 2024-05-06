@@ -135,7 +135,7 @@ TEST_P(ClientResourceProviderTest, TransferableResourceReleased) {
   // The same SyncToken that was sent is returned when the resource was never
   // exported. The SyncToken may be from any context, and the ReleaseCallback
   // may need to wait on it before interacting with the resource on its context.
-  EXPECT_CALL(release, Released(tran.mailbox_holder.sync_token, false));
+  EXPECT_CALL(release, Released(tran.sync_token(), false));
   provider().RemoveImportedResource(id);
 }
 
@@ -155,16 +155,15 @@ TEST_P(ClientResourceProviderTest, TransferableResourceSendToParent) {
   // Exported resource matches except for the id which was mapped
   // to the local ResourceProvider, and the sync token should be
   // verified if it's a gpu resource.
-  gpu::SyncToken verified_sync_token = tran.mailbox_holder.sync_token;
+  gpu::SyncToken verified_sync_token = tran.sync_token();
   if (!tran.is_software)
     verified_sync_token.SetVerifyFlush();
   EXPECT_EQ(exported[0].id, id);
   EXPECT_EQ(exported[0].is_software, tran.is_software);
   EXPECT_EQ(exported[0].size, tran.size);
-  EXPECT_EQ(exported[0].mailbox_holder.mailbox, tran.mailbox_holder.mailbox);
-  EXPECT_EQ(exported[0].mailbox_holder.sync_token, verified_sync_token);
-  EXPECT_EQ(exported[0].mailbox_holder.texture_target,
-            tran.mailbox_holder.texture_target);
+  EXPECT_EQ(exported[0].mailbox(), tran.mailbox());
+  EXPECT_EQ(exported[0].sync_token(), verified_sync_token);
+  EXPECT_EQ(exported[0].texture_target(), tran.texture_target());
 
   // Exported resources are not released when removed, until the export returns.
   EXPECT_CALL(release, Released(_, _)).Times(0);
@@ -200,17 +199,15 @@ TEST_P(ClientResourceProviderTest, TransferableResourceSendTwoToParent) {
   // to the local ResourceProvider, and the sync token should be
   // verified if it's a gpu resource.
   for (int i = 0; i < 2; ++i) {
-    gpu::SyncToken verified_sync_token = tran[i].mailbox_holder.sync_token;
+    gpu::SyncToken verified_sync_token = tran[i].sync_token();
     if (!tran[i].is_software)
       verified_sync_token.SetVerifyFlush();
     EXPECT_EQ(exported[i].id, to_send[i]);
     EXPECT_EQ(exported[i].is_software, tran[i].is_software);
     EXPECT_EQ(exported[i].size, tran[i].size);
-    EXPECT_EQ(exported[i].mailbox_holder.mailbox,
-              tran[i].mailbox_holder.mailbox);
-    EXPECT_EQ(exported[i].mailbox_holder.sync_token, verified_sync_token);
-    EXPECT_EQ(exported[i].mailbox_holder.texture_target,
-              tran[i].mailbox_holder.texture_target);
+    EXPECT_EQ(exported[i].mailbox(), tran[i].mailbox());
+    EXPECT_EQ(exported[i].sync_token(), verified_sync_token);
+    EXPECT_EQ(exported[i].texture_target(), tran[i].texture_target());
   }
 
   provider().RemoveImportedResource(id1);
@@ -298,7 +295,7 @@ TEST_P(ClientResourceProviderTest, TransferableResourceSendToParentManyUnsent) {
   // Exported resource matches except for the id which was mapped
   // to the local ResourceProvider, and the sync token should be
   // verified if it's a gpu resource.
-  gpu::SyncToken verified_sync_token = data[2].tran.mailbox_holder.sync_token;
+  gpu::SyncToken verified_sync_token = data[2].tran.sync_token();
   if (!data[2].tran.is_software)
     verified_sync_token.SetVerifyFlush();
 
@@ -561,25 +558,24 @@ TEST_P(ClientResourceProviderTest, ReturnedSyncTokensArePassedToClient) {
       tran, base::BindOnce(&MockReleaseCallback::Released,
                            base::Unretained(&release)));
 
-  EXPECT_TRUE(tran.mailbox_holder.sync_token.HasData());
+  EXPECT_TRUE(tran.sync_token().HasData());
   // All the logic below assumes that the sync token releases are all positive.
-  EXPECT_LT(0u, tran.mailbox_holder.sync_token.release_count());
+  EXPECT_LT(0u, tran.sync_token().release_count());
 
   // Transfer the resource, expect the sync points to be consistent.
   std::vector<TransferableResource> list;
   provider().PrepareSendToParent({resource}, &list, context_provider());
   ASSERT_EQ(1u, list.size());
-  EXPECT_LE(sync_token.release_count(),
-            list[0].mailbox_holder.sync_token.release_count());
-  EXPECT_EQ(0, memcmp(mailbox.name, list[0].mailbox_holder.mailbox.name,
-                      sizeof(mailbox.name)));
+  EXPECT_LE(sync_token.release_count(), list[0].sync_token().release_count());
+  EXPECT_EQ(0,
+            memcmp(mailbox.name, list[0].mailbox().name, sizeof(mailbox.name)));
 
   // Make a new texture id from the mailbox.
   context_provider()->RasterInterface()->WaitSyncTokenCHROMIUM(
-      list[0].mailbox_holder.sync_token.GetConstData());
+      list[0].sync_token().GetConstData());
   context_provider()->RasterInterface()->GenSyncTokenCHROMIUM(
-      list[0].mailbox_holder.sync_token.GetData());
-  EXPECT_TRUE(list[0].mailbox_holder.sync_token.HasData());
+      list[0].mutable_sync_token().GetData());
+  EXPECT_TRUE(list[0].sync_token().HasData());
 
   // Receive the resource, then delete it, expect the SyncTokens to be
   // consistent.
@@ -591,7 +587,7 @@ TEST_P(ClientResourceProviderTest, ReturnedSyncTokensArePassedToClient) {
       .WillOnce(testing::SaveArg<0>(&returned_sync_token));
   provider().RemoveImportedResource(resource);
   EXPECT_GE(returned_sync_token.release_count(),
-            list[0].mailbox_holder.sync_token.release_count());
+            list[0].sync_token().release_count());
 }
 
 TEST_P(ClientResourceProviderTest, LostResourcesAreReturnedLost) {

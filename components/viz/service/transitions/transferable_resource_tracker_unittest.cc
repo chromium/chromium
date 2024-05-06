@@ -39,7 +39,7 @@ class TransferableResourceTrackerTest : public testing::Test {
   // Returns if there is a SharedBitmap in SharedBitmapManager for |resource|.
   bool HasBitmapResource(const TransferableResource& resource) {
     DCHECK(resource.is_software);
-    SharedBitmapId id = resource.mailbox_holder.mailbox;
+    SharedBitmapId id = resource.mailbox();
     return !!shared_bitmap_manager_.GetSharedBitmapFromId(
         gfx::Size(1, 1), SinglePlaneFormat::kRGBA_8888, id);
   }

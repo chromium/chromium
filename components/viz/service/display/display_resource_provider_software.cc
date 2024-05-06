@@ -60,11 +60,10 @@ DisplayResourceProviderSoftware::LockForRead(ResourceId id) {
     DCHECK(shared_image_manager_ && sync_point_manager_);
     auto it = resource_shared_images_.find(id);
     if (it == resource_shared_images_.end()) {
-      const gpu::Mailbox& mailbox =
-          resource->transferable.mailbox_holder.mailbox;
+      const gpu::Mailbox& mailbox = resource->transferable.mailbox();
       auto access = std::make_unique<SharedImageAccess>();
       access->representation = GetSharedImageRepresentation(
-          mailbox, resource->transferable.mailbox_holder.sync_token);
+          mailbox, resource->transferable.sync_token());
       if (!access->representation) {
         return nullptr;
       }
@@ -74,8 +73,7 @@ DisplayResourceProviderSoftware::LockForRead(ResourceId id) {
     }
   } else {
     if (!resource->shared_bitmap) {
-      const SharedBitmapId& shared_bitmap_id =
-          resource->transferable.mailbox_holder.mailbox;
+      const SharedBitmapId& shared_bitmap_id = resource->transferable.mailbox();
       std::unique_ptr<SharedBitmap> bitmap =
           shared_bitmap_manager_->GetSharedBitmapFromId(
               resource->transferable.size, resource->transferable.format,

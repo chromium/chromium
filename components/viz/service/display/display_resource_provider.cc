@@ -105,8 +105,7 @@ bool DisplayResourceProvider::OnMemoryDump(
       pmd->CreateSharedMemoryOwnershipEdge(
           dump->guid(), resource.shared_bitmap_tracing_guid, kImportance);
     } else {
-      auto guid = GetSharedImageGUIDForTracing(
-          resource.transferable.mailbox_holder.mailbox);
+      auto guid = GetSharedImageGUIDForTracing(resource.transferable.mailbox());
       pmd->CreateSharedGlobalAllocatorDump(guid);
       pmd->AddOwnershipEdge(dump->guid(), guid, kImportance);
     }
@@ -235,7 +234,7 @@ void DisplayResourceProvider::ReceiveFromChild(
     }
 
     if (transferable_resource.is_software != IsSoftware() ||
-        transferable_resource.mailbox_holder.mailbox.IsZero()) {
+        transferable_resource.is_empty()) {
       TRACE_EVENT0(
           "viz", "DisplayResourceProvider::ReceiveFromChild dropping invalid");
       std::vector<ReturnedResource> returned;
@@ -282,7 +281,7 @@ gpu::Mailbox DisplayResourceProvider::GetMailbox(ResourceId resource_id) const {
   const ChildResource* resource = TryGetResource(resource_id);
   if (!resource)
     return gpu::Mailbox();
-  return resource->transferable.mailbox_holder.mailbox;
+  return resource->transferable.mailbox();
 }
 
 const std::unordered_map<ResourceId, ResourceId, ResourceIdHasher>&
@@ -559,7 +558,7 @@ DisplayResourceProvider::ChildResource::ChildResource(
     const TransferableResource& transferable)
     : child_id(child_id), transferable(transferable) {
   if (is_gpu_resource_type())
-    UpdateSyncToken(transferable.mailbox_holder.sync_token);
+    UpdateSyncToken(transferable.sync_token());
 }
 
 DisplayResourceProvider::ChildResource::ChildResource(ChildResource&& other) =

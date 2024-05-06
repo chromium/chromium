@@ -134,7 +134,7 @@ class VIZ_SERVICE_EXPORT DisplayResourceProvider
 
     const gpu::Mailbox& mailbox() const {
       DCHECK(resource_);
-      return resource_->transferable.mailbox_holder.mailbox;
+      return resource_->transferable.mailbox();
     }
     const gpu::SyncToken& sync_token() const {
       DCHECK(resource_);
