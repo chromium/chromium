@@ -87,6 +87,12 @@ LensOverlaySidePanelNavigationThrottle::HandleSidePanelRequest() {
   // has the parameters needed to preserve lens overlay features (e.g. framing).
   // If no such parameters were needed, we can just proceed.
   if (lens::HasCommonSearchQueryParameters(url)) {
+    // This is the only time we should add to the search query history stack for
+    // a user navigating to a SRP. If the SRP url did not have the common search
+    // query parameters, it will reload the frame and go through this flow
+    // anyway.
+    controller->AddQueryToHistory(std::move(text_query),
+                                  navigation_handle()->GetURL());
     return content::NavigationThrottle::PROCEED;
   }
 

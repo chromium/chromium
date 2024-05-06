@@ -13,7 +13,6 @@ import type {DomRepeat} from '//resources/polymer/v3_0/polymer/polymer_bundled.m
 import {BrowserProxyImpl} from './browser_proxy.js';
 import {CenterRotatedBox_CoordinateType} from './geometry.mojom-webui.js';
 import {bestHit} from './hit.js';
-import type {LensPageCallbackRouter} from './lens.mojom-webui.js';
 import type {CursorData, TextContextMenuData} from './selection_overlay.js';
 import {CursorType} from './selection_utils.js';
 import type {GestureEvent} from './selection_utils.js';
@@ -130,33 +129,31 @@ export class TextLayerElement extends PolymerElement {
   private lines: Line[];
   // The paragraphs received from OnTextReceived.
   private paragraphs: Paragraph[];
-  private readonly router: LensPageCallbackRouter;
-  private textReceivedListenerId: number|null = null;
-
-  constructor() {
-    super();
-    // Need to save the router so that if the BrowserProxyImpl instance changes,
-    // we are still adding and removing listeners to the correct router.
-    this.router = BrowserProxyImpl.getInstance().callbackRouter;
-  }
+  private listenerIds: number[];
 
   override connectedCallback() {
     super.connectedCallback();
 
-    // Set up listener to receive text from C++.
-    this.textReceivedListenerId =
-        BrowserProxyImpl.getInstance().callbackRouter.textReceived.addListener(
-            this.onTextReceived.bind(this));
+    // Set up listener to listen to events from C++.
+    this.listenerIds = [
+      BrowserProxyImpl.getInstance().callbackRouter.textReceived.addListener(
+          this.onTextReceived.bind(this)),
+      BrowserProxyImpl.getInstance()
+          .callbackRouter.clearAllSelections.addListener(
+              this.unselectWords.bind(this)),
+      BrowserProxyImpl.getInstance()
+          .callbackRouter.setTextSelection.addListener(
+              this.selectWords.bind(this)),
+    ];
   }
 
   override disconnectedCallback() {
     super.disconnectedCallback();
 
-    // Set up listener to receive text from C++.
-    assert(this.textReceivedListenerId);
-    BrowserProxyImpl.getInstance().callbackRouter.removeListener(
-        this.textReceivedListenerId);
-    this.textReceivedListenerId = null;
+    this.listenerIds.forEach(
+        id => assert(
+            BrowserProxyImpl.getInstance().callbackRouter.removeListener(id)));
+    this.listenerIds = [];
   }
 
   private handlePointerEnter() {
@@ -216,12 +213,14 @@ export class TextLayerElement extends PolymerElement {
             right: containingRect.right,
             top: containingRect.top,
             bottom: containingRect.bottom,
+            selectionStartIndex: this.selectionStartIndex,
+            selectionEndIndex: this.selectionEndIndex,
           },
         }));
 
     // On drag complete, send the selected text to C++.
     BrowserProxyImpl.getInstance().handler.issueTextSelectionRequest(
-        highlightedText);
+        highlightedText, this.selectionStartIndex, this.selectionEndIndex);
   }
 
   cancelGesture() {
@@ -233,6 +232,11 @@ export class TextLayerElement extends PolymerElement {
     this.selectionEndIndex = -1;
     this.dispatchEvent(new CustomEvent(
         'hide-text-context-menu', {bubbles: true, composed: true}));
+  }
+
+  private selectWords(selectionStartIndex: number, selectionEndIndex: number) {
+    this.selectionStartIndex = selectionStartIndex;
+    this.selectionEndIndex = selectionEndIndex;
   }
 
   private onTextReceived(text: Text) {

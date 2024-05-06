@@ -68,6 +68,25 @@ class LensOverlayController : public LensSearchboxClient,
   DECLARE_CLASS_ELEMENT_IDENTIFIER_VALUE(kOverlayId);
   DECLARE_CLASS_ELEMENT_IDENTIFIER_VALUE(kOverlaySidePanelWebViewId);
 
+  // Data struct representing a previous search query.
+  struct SearchQuery {
+    explicit SearchQuery(std::string text_query, GURL url);
+    SearchQuery(const SearchQuery& other);
+    SearchQuery& operator=(const SearchQuery& other);
+    ~SearchQuery();
+
+    // The text query of the SRP panel.
+    std::string search_query_text_;
+    // The selected region for this query, if any.
+    lens::mojom::CenterRotatedBoxPtr search_query_region_;
+    // The selected text for this query, if any.
+    std::optional<std::pair<int, int>> selected_text_;
+    // The data URI of the thumbnail in the searchbox.
+    std::string search_query_region_thumbnail_;
+    // The url that the search query loaded into the results frame.
+    GURL search_query_url_;
+  };
+
   // Returns whether the lens overlay feature is enabled. This value is
   // guaranteed not to change over the lifetime of a LensOverlayController.
   bool Enabled();
@@ -215,12 +234,22 @@ class LensOverlayController : public LensSearchboxClient,
   // it stores it in `pending_text_query_` instead.
   void SetSearchboxInputText(const std::string& text);
 
+  // Adds a text query to the history stack for this lens overlay. This allows
+  // the user to navigate to previous SRP results after sending new queries.
+  void AddQueryToHistory(std::string query, GURL search_url);
+
+  // Pops the most recent search query from the history stack to load in the
+  // side panel.
+  void PopAndLoadQueryFromHistory();
+
   // Handles when the side panel has been deregistered to do any required
   // cleanup.
   void OnSidePanelEntryDeregistered();
 
   // Testing function to issue a text request.
-  void IssueTextSelectionRequestForTesting(const std::string& text_query);
+  void IssueTextSelectionRequestForTesting(const std::string& text_query,
+                                           int selection_start_index,
+                                           int selection_end_index);
 
   // Gets the WebContents housed in the side panel for testing.
   content::WebContents* GetSidePanelWebContentsForTesting();
@@ -230,9 +259,16 @@ class LensOverlayController : public LensSearchboxClient,
   GetLensResponseForTesting() {
     return GetLensResponse();
   }
-
   // Returns the current page URL for testing.
   const GURL& GetPageURLForTesting() { return GetPageURL(); }
+
+  const std::vector<SearchQuery>& GetSearchQueryHistoryForTesting() {
+    return initialization_data_->search_query_history_stack_;
+  }
+
+  const std::optional<SearchQuery>& GetLoadedSearchQueryForTesting() {
+    return initialization_data_->currently_loaded_search_query_;
+  }
 
  protected:
   // Override these methods to stub out network requests for testing.
@@ -294,6 +330,11 @@ class LensOverlayController : public LensSearchboxClient,
     // query.
     lens::mojom::CenterRotatedBoxPtr selected_region_;
 
+    // A pair representing the start and end selection indexes for the currently
+    // selected text. This needs to be an optional since std::pair will
+    // initialize with default values.
+    std::optional<std::pair<int, int>> selected_text_;
+
     // Text returned from the full image response.
     lens::mojom::TextPtr text_;
 
@@ -303,6 +344,13 @@ class LensOverlayController : public LensSearchboxClient,
     // The additional query parameters to pass to the query controller for
     // generating urls, set by the search box.
     std::map<std::string, std::string> additional_search_query_params_;
+
+    // A list representing the search query stack that hosts the history of the
+    // SRPs the user has navigated to.
+    std::vector<SearchQuery> search_query_history_stack_;
+
+    // The search query that is currently loaded in the results frame.
+    std::optional<SearchQuery> currently_loaded_search_query_;
   };
 
   class UnderlyingWebContentsObserver;
@@ -359,20 +407,15 @@ class LensOverlayController : public LensSearchboxClient,
   void AddBackgroundBlur() override;
   void CloseRequestedByOverlay() override;
   void FeedbackRequestedByOverlay() override;
+  // TODO: rename this to IssueRegionSearchRequest.
+  void IssueLensRequest(lens::mojom::CenterRotatedBoxPtr region) override;
+  void IssueObjectSelectionRequest(const std::string& object_id);
+  void IssueTextSelectionRequest(const std::string& text_query,
+                                 int selection_start_index,
+                                 int selection_end_index) override;
 
   // Closes search bubble.
   void CloseSearchBubble() override;
-
-  // TODO: rename this to IssueRegionSearchRequest.
-  void IssueLensRequest(lens::mojom::CenterRotatedBoxPtr region) override;
-
-  // Handles an object selection by sending the request to the query
-  // controller.
-  void IssueObjectSelectionRequest(const std::string& object_id);
-
-  // Handles a text selection by sending a text-only request to the query
-  // controller and to the search box.
-  void IssueTextSelectionRequest(const std::string& text_query) override;
 
   // Handles a request (either region or multimodal) trigger by sending
   // the request to the query controller.

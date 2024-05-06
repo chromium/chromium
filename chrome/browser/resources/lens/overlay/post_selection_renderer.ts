@@ -7,11 +7,11 @@ import {EventTracker} from '//resources/js/event_tracker.js';
 import {PolymerElement} from '//resources/polymer/v3_0/polymer/polymer_bundled.min.js';
 
 import {BrowserProxyImpl} from './browser_proxy.js';
-import {toPercent} from './values_converter.js';
 import {CenterRotatedBox_CoordinateType} from './geometry.mojom-webui.js';
 import type {CenterRotatedBox} from './geometry.mojom-webui.js';
 import {getTemplate} from './post_selection_renderer.html.js';
 import type {GestureEvent} from './selection_utils.js';
+import {toPercent} from './values_converter.js';
 
 // Bounding box send to PostSelectionRendererElement to render a bounding box.
 // The numbers should be normalized to the image dimensions, between 0 and 1
@@ -89,7 +89,8 @@ export class PostSelectionRendererElement extends PolymerElement {
   // IDs used to generate the corner hitbox divs.
   private cornerIds: string[] =
       ['topLeft', 'topRight', 'bottomRight', 'bottomLeft'];
-
+  // Listener IDs for events tracked from the browser.
+  private listenerIds: number[];
   // The original bounds from the start of a drag.
   private originalBounds:
       PostSelectionBoundingBox = {left: 0, top: 0, width: 0, height: 0};
@@ -101,11 +102,24 @@ export class PostSelectionRendererElement extends PolymerElement {
         (e: CustomEvent<PostSelectionBoundingBox>) => {
           this.onRenderPostSelection(e);
         });
+    // Set up listener to listen to events from C++.
+    this.listenerIds = [
+      BrowserProxyImpl.getInstance()
+          .callbackRouter.clearAllSelections.addListener(
+              this.clearSelection.bind(this)),
+      BrowserProxyImpl.getInstance()
+          .callbackRouter.setPostRegionSelection.addListener(
+              this.setSelection.bind(this)),
+    ];
   }
 
   override disconnectedCallback() {
     super.disconnectedCallback();
     this.eventTracker_.removeAll();
+    this.listenerIds.forEach(
+        id => assert(
+            BrowserProxyImpl.getInstance().callbackRouter.removeListener(id)));
+    this.listenerIds = [];
   }
 
   clearSelection() {
@@ -278,6 +292,20 @@ export class PostSelectionRendererElement extends PolymerElement {
   cancelGesture() {
     this.originalBounds = {left: 0, top: 0, width: 0, height: 0};
     this.currentDragTarget = DragTarget.NONE;
+  }
+
+  private setSelection(region: CenterRotatedBox) {
+    const normalizedTop = region.box.y - (region.box.height / 2);
+    const normalizedLeft = region.box.x - (region.box.width / 2);
+
+    this.top = normalizedTop;
+    this.left = normalizedLeft;
+    this.height = region.box.height;
+    this.width = region.box.width;
+    this.originalBounds = {left: 0, top: 0, width: 0, height: 0};
+
+    this.rerender();
+    this.triggerNewBoxAnimation();
   }
 
   private onRenderPostSelection(e: CustomEvent<PostSelectionBoundingBox>) {

@@ -166,6 +166,36 @@ DEFINE_CLASS_ELEMENT_IDENTIFIER_VALUE(LensOverlayController, kOverlayId);
 DEFINE_CLASS_ELEMENT_IDENTIFIER_VALUE(LensOverlayController,
                                       kOverlaySidePanelWebViewId);
 
+LensOverlayController::SearchQuery::SearchQuery(std::string text_query,
+                                                GURL url)
+    : search_query_text_(std::move(text_query)),
+      search_query_url_(std::move(url)) {}
+
+LensOverlayController::SearchQuery::SearchQuery(const SearchQuery& other) {
+  search_query_text_ = other.search_query_text_;
+  if (other.search_query_region_) {
+    search_query_region_ = other.search_query_region_->Clone();
+  }
+  search_query_region_thumbnail_ = other.search_query_region_thumbnail_;
+  search_query_url_ = other.search_query_url_;
+  selected_text_ = other.selected_text_;
+}
+
+LensOverlayController::SearchQuery&
+LensOverlayController::SearchQuery::operator=(
+    const LensOverlayController::SearchQuery& other) {
+  search_query_text_ = other.search_query_text_;
+  if (other.search_query_region_) {
+    search_query_region_ = other.search_query_region_->Clone();
+  }
+  search_query_region_thumbnail_ = other.search_query_region_thumbnail_;
+  search_query_url_ = other.search_query_url_;
+  selected_text_ = other.selected_text_;
+  return *this;
+}
+
+LensOverlayController::SearchQuery::~SearchQuery() = default;
+
 bool LensOverlayController::Enabled() {
   return lens::features::IsLensOverlayEnabled();
 }
@@ -435,13 +465,78 @@ void LensOverlayController::SetSearchboxInputText(const std::string& text) {
   }
 }
 
+void LensOverlayController::AddQueryToHistory(std::string query,
+                                              GURL search_url) {
+  CHECK(initialization_data_);
+  // If we are loading the query that was just popped, do not add it to the
+  // stack.
+  auto loaded_search_query =
+      initialization_data_->currently_loaded_search_query_;
+  if (loaded_search_query &&
+      loaded_search_query->search_query_url_ == search_url) {
+    return;
+  }
+
+  // Create the search query struct.
+  SearchQuery search_query(std::move(query), std::move(search_url));
+  if (initialization_data_->selected_region_) {
+    search_query.search_query_region_ =
+        initialization_data_->selected_region_->Clone();
+    search_query.search_query_region_thumbnail_ = thumbnail_uri_;
+  }
+  if (initialization_data_->selected_text_.has_value()) {
+    search_query.selected_text_ = initialization_data_->selected_text_.value();
+  }
+
+  // Add the last loaded search query to the query stack if it is present.
+  if (loaded_search_query) {
+    initialization_data_->search_query_history_stack_.push_back(
+        loaded_search_query.value());
+  }
+
+  // Set the currently loaded search query to the one we just created.
+  initialization_data_->currently_loaded_search_query_ = search_query;
+}
+
+void LensOverlayController::PopAndLoadQueryFromHistory() {
+  if (initialization_data_->search_query_history_stack_.empty()) {
+    return;
+  }
+
+  // Get the query that we want to load in the results frame and then pop it
+  // from the list.
+  auto query = initialization_data_->search_query_history_stack_.back();
+  initialization_data_->search_query_history_stack_.pop_back();
+
+  // Clear any active selections on the page and then re-add selections for this
+  // query.
+  CHECK(page_);
+  page_->ClearAllSelections();
+  if (query.selected_text_.has_value()) {
+    page_->SetTextSelection(query.selected_text_->first,
+                            query.selected_text_->second);
+  } else if (query.search_query_region_) {
+    page_->SetPostRegionSelection(query.search_query_region_->Clone());
+  }
+
+  // Update the searchbox state and the results frame URL. After, set the
+  // currently loaded query to the one we just popped.
+  SetSearchboxInputText(query.search_query_text_);
+  SetSearchboxThumbnail(query.search_query_region_thumbnail_);
+  LoadURLInResultsFrame(query.search_query_url_);
+  initialization_data_->currently_loaded_search_query_ = query;
+}
+
 void LensOverlayController::OnSidePanelEntryDeregistered() {
   CloseUIAsync();
 }
 
 void LensOverlayController::IssueTextSelectionRequestForTesting(
-    const std::string& text_query) {
-  IssueTextSelectionRequest(text_query);
+    const std::string& text_query,
+    int selection_start_index,
+    int selection_end_index) {
+  IssueTextSelectionRequest(text_query, selection_start_index,
+                            selection_end_index);
 }
 
 content::WebContents*
@@ -822,6 +917,54 @@ void LensOverlayController::FeedbackRequestedByOverlay() {
       /*extra_diagnostics=*/std::string());
 }
 
+void LensOverlayController::IssueLensRequest(
+    lens::mojom::CenterRotatedBoxPtr region) {
+  CHECK(initialization_data_);
+  CHECK(region);
+  SetSearchboxInputText(std::string());
+  initialization_data_->selected_region_ = region.Clone();
+  initialization_data_->selected_text_.reset();
+  // TODO(b/332787629): Append the 'mactx' param.
+  // TODO(b/335718601): Remove query parameters from region search.
+  lens_overlay_query_controller_->SendRegionSearch(
+      region.Clone(), initialization_data_->additional_search_query_params_);
+  results_side_panel_coordinator_->RegisterEntryAndShow();
+  state_ = State::kOverlayAndResults;
+}
+
+void LensOverlayController::IssueObjectSelectionRequest(
+    const std::string& object_id) {
+  SetSearchboxInputText(std::string());
+  // TODO(b/332787629): Append the 'mactx' param.
+  initialization_data_->additional_search_query_params_.clear();
+  initialization_data_->selected_region_.reset();
+  initialization_data_->selected_text_.reset();
+  // TODO(b/335718601): Remove query parameters from object selection.
+  lens_overlay_query_controller_->SendObjectSelection(
+      object_id, initialization_data_->additional_search_query_params_);
+  results_side_panel_coordinator_->RegisterEntryAndShow();
+  state_ = State::kOverlayAndResults;
+}
+
+void LensOverlayController::IssueTextSelectionRequest(const std::string& query,
+                                                      int selection_start_index,
+                                                      int selection_end_index) {
+  initialization_data_->additional_search_query_params_.clear();
+  initialization_data_->selected_region_.reset();
+  thumbnail_uri_.clear();
+  initialization_data_->selected_text_ =
+      std::make_pair(selection_start_index, selection_end_index);
+
+  SetSearchboxInputText(query);
+  SetSearchboxThumbnail(std::string());
+
+  // TODO(b/332787629): Append the 'mactx' param.
+  lens_overlay_query_controller_->SendTextOnlyQuery(
+      query, initialization_data_->additional_search_query_params_);
+  results_side_panel_coordinator_->RegisterEntryAndShow();
+  state_ = State::kOverlayAndResults;
+}
+
 void LensOverlayController::CloseSearchBubble() {
   if (Browser* tab_browser = chrome::FindBrowserWithTab(tab_->GetContents())) {
     if (auto* controller =
@@ -842,45 +985,6 @@ void LensOverlayController::CloseUIAsync() {
   base::SequencedTaskRunner::GetCurrentDefault()->PostTask(
       FROM_HERE, base::BindOnce(&LensOverlayController::CloseUI,
                                 weak_factory_.GetWeakPtr()));
-}
-
-void LensOverlayController::IssueLensRequest(
-    lens::mojom::CenterRotatedBoxPtr region) {
-  CHECK(initialization_data_);
-  CHECK(region);
-  SetSearchboxInputText(std::string());
-  initialization_data_->selected_region_ = region.Clone();
-  // TODO(b/335718601): Remove query parameters from region search.
-  lens_overlay_query_controller_->SendRegionSearch(
-      region.Clone(), initialization_data_->additional_search_query_params_);
-  results_side_panel_coordinator_->RegisterEntryAndShow();
-  state_ = State::kOverlayAndResults;
-}
-
-void LensOverlayController::IssueObjectSelectionRequest(
-    const std::string& object_id) {
-  SetSearchboxInputText(std::string());
-  initialization_data_->additional_search_query_params_.clear();
-  initialization_data_->selected_region_.reset();
-  // TODO(b/335718601): Remove query parameters from object selection.
-  lens_overlay_query_controller_->SendObjectSelection(
-      object_id, initialization_data_->additional_search_query_params_);
-  results_side_panel_coordinator_->RegisterEntryAndShow();
-  state_ = State::kOverlayAndResults;
-}
-
-void LensOverlayController::IssueTextSelectionRequest(
-    const std::string& query) {
-  initialization_data_->additional_search_query_params_.clear();
-  initialization_data_->selected_region_.reset();
-  thumbnail_uri_.clear();
-
-  SetSearchboxInputText(query);
-  SetSearchboxThumbnail(std::string());
-  lens_overlay_query_controller_->SendTextOnlyQuery(
-      query, initialization_data_->additional_search_query_params_);
-  results_side_panel_coordinator_->RegisterEntryAndShow();
-  state_ = State::kOverlayAndResults;
 }
 
 void LensOverlayController::IssueSearchBoxRequest(

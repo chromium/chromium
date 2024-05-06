@@ -352,6 +352,42 @@ suite('TextSelection', function() {
     assertEquals(0, highlightedLines.length);
   });
 
+  test('TextLayerClearAllSelectionsCallback', async () => {
+    const wordsOnPage = getRenderedWords();
+    const firstWord = wordsOnPage[0]!.getBoundingClientRect();
+    const secondWord = wordsOnPage[1]!.getBoundingClientRect();
+
+    // Highlight some words.
+    await simulateDrag(
+        selectionOverlayElement,
+        {x: getCenterX(firstWord), y: getCenterY(firstWord)},
+        {x: getCenterX(secondWord), y: getCenterY(secondWord)});
+    let highlightedLines = getHighlightedLines();
+    assertEquals(1, highlightedLines.length);
+
+    // Mojo call to clear all selections.
+    callbackRouterRemote.clearAllSelections();
+    await flushTasks();
+
+    // Verify words unhighlight.
+    highlightedLines = getHighlightedLines();
+    assertEquals(0, highlightedLines.length);
+  });
+
+  test('TextLayerSetTextSelectionCallback', async () => {
+    // Verify no words are highlighted.
+    let highlightedLines = getHighlightedLines();
+    assertEquals(0, highlightedLines.length);
+
+    // Mojo call to clear all selections.
+    callbackRouterRemote.setTextSelection(0, 1);
+    await flushTasks();
+
+    // Verify words are now highlighted.
+    highlightedLines = getHighlightedLines();
+    assertEquals(1, highlightedLines.length);
+  });
+
   // TODO(b/336797761): Add tests that test rotated bounding boxes and top to
   // bottom writing directions.
 });

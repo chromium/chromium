@@ -43,6 +43,10 @@ export interface TextContextMenuData {
   top: number;
   // The lowest position of the selected text.
   bottom: number;
+  // The selection start index of the text.
+  selectionStartIndex: number;
+  // The end selection index of the text.
+  selectionEndIndex: number;
 }
 
 export interface SelectionOverlayElement {
@@ -105,6 +109,8 @@ export class SelectionOverlayElement extends SelectionOverlayElementBase {
   private contextMenuX: number;
   private contextMenuY: number;
   private highlightedText: string = '';
+  private textSelectionStartIndex: number = -1;
+  private textSelectionEndIndex: number = -1;
   // The data URI of the current overlay screenshot.
   private screenshotDataUri: string;
   private cursorImgUri: string = 'lens.svg';
@@ -152,13 +158,17 @@ export class SelectionOverlayElement extends SelectionOverlayElementBase {
     this.eventTracker_.add(
         document, 'show-text-context-menu',
         (e: CustomEvent<TextContextMenuData>) => {
+          this.showTextContextMenu = true;
           this.contextMenuX = e.detail.left;
           this.contextMenuY = e.detail.bottom;
-          this.showTextContextMenu = true;
           this.highlightedText = e.detail.text;
+          this.textSelectionStartIndex = e.detail.selectionStartIndex;
+          this.textSelectionEndIndex = e.detail.selectionEndIndex;
         });
     this.eventTracker_.add(document, 'hide-text-context-menu', () => {
       this.showTextContextMenu = false;
+      this.textSelectionStartIndex = -1;
+      this.textSelectionEndIndex = -1;
     });
   }
 
@@ -449,7 +459,8 @@ export class SelectionOverlayElement extends SelectionOverlayElementBase {
 
   private handleTranslate() {
     BrowserProxyImpl.getInstance().handler.issueTextSelectionRequest(
-        '"' + this.highlightedText + '" ' + this.i18n('translateSuffix'));
+        '"' + this.highlightedText + '" ' + this.i18n('translateSuffix'),
+        this.textSelectionStartIndex, this.textSelectionEndIndex);
   }
 
   // Make the cursor disappear over the context menu, as if leaving the overlay.
