@@ -185,6 +185,9 @@ export interface PrintTicket {
   // margin.
   pageWidth: number;
 
+  // String containing a four digit numeric code when set.
+  pinValue?: string;
+
   // Used for metrics. True when user updates the destination in the preview UI;
   // otherwise false.
   printerManuallySelected: boolean;

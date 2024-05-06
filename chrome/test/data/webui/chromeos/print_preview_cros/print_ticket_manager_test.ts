@@ -492,6 +492,12 @@ suite('PrintTicketManager', () => {
             DEFAULT_PARTIAL_PRINT_TICKET.pageWidth, ticket.pageWidth,
             'Ticket pageWidth should match DEFAULT_PARTIAL_PRINT_TICKET');
         assertEquals(
+            DEFAULT_PARTIAL_PRINT_TICKET.pinValue, ticket.pinValue,
+            'Ticket pinValue should match DEFAULT_PARTIAL_PRINT_TICKET');
+        assertEquals(
+            undefined, ticket.pinValue,
+            'Ticket pinValue optional property should not be set');
+        assertEquals(
             DEFAULT_PARTIAL_PRINT_TICKET.printerType, ticket.printerType,
             'Ticket printerType should match DEFAULT_PARTIAL_PRINT_TICKET');
         assertEquals(
