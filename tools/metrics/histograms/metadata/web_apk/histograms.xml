@@ -304,7 +304,7 @@ chromium-metrics-reviews@google.com.
   <summary>
     Records which app type the Universal Install dialog was shown. Recorded once
     per dialog shown, after we've figured out which type app it is. Note: In
-    versions prior to 124 this metric overcounted app types in scenarios where
+    versions prior to 125 this metric overcounted app types in scenarios where
     the dialog redirects to the install dialog (instead of showing) because we
     detect that only one action was meaningful to the user.
   </summary>
