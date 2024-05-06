@@ -14,7 +14,8 @@ found in the LICENSE file.
         <TextView
             android:id="@+id/device_picker_toolbar"
             android:layout_width="match_parent"
-            android:layout_height="@dimen/min_touch_target_size"
+            android:layout_height="wrap_content"
+            android:minHeight="@dimen/min_touch_target_size"
             android:gravity="center_vertical"
             android:paddingStart="30dp"
             android:paddingEnd="30dp"
