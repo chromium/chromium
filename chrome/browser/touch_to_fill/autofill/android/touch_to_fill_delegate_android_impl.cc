@@ -40,6 +40,18 @@ bool IsFieldFocusableAndEmpty(const FormData& received_form,
          SanitizedFieldIsEmpty(form_field->value());
 }
 
+bool IsTriggeredOnIbanField(const FormStructure* form_field,
+                            const FormFieldData& field) {
+  if (!form_field) {
+    return false;
+  }
+
+  const autofill::AutofillField* autofill_field =
+      form_field->GetFieldById(field.global_id());
+  return autofill_field &&
+         autofill_field->Type().group() == FieldTypeGroup::kIban;
+}
+
 }  // namespace
 
 TouchToFillDelegateAndroidImpl::DryRunResult::DryRunResult(
@@ -190,10 +202,13 @@ bool TouchToFillDelegateAndroidImpl::TryToShowTouchToFill(
     }
   }
 
-  // TODO(b/309163888): Revisit how to log IBAN related metrics.
-  if (dry_run.outcome != TriggerOutcome::kUnsupportedFieldType) {
-    base::UmaHistogramEnumeration(kUmaTouchToFillCreditCardTriggerOutcome,
-                                  dry_run.outcome);
+  if (!IsTriggeredOnIbanField(manager_->FindCachedFormById(form.global_id()),
+                              field)) {
+    // TODO(b/309163888): Revisit how to log IBAN related metrics.
+    if (dry_run.outcome != TriggerOutcome::kUnsupportedFieldType) {
+      base::UmaHistogramEnumeration(kUmaTouchToFillCreditCardTriggerOutcome,
+                                    dry_run.outcome);
+    }
   }
   LOG_AF(manager_->client().GetLogManager())
       << LoggingScope::kTouchToFill << LogMessage::kTouchToFill
