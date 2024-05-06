@@ -35,85 +35,9 @@ indexeddb-bucket {
     white-space: nowrap;
 }
 
-.indexeddb-database {
-    margin-bottom: 6px;
-    margin-top: 6px;
-    margin-inline-start: 12px;
-
-    position: relative;
-}
-
-.indexeddb-database > div {
-    margin-inline-start: 12px;
-}
-
-.indexeddb-connection-count {
-    margin: 0 8px;
-}
-.indexeddb-connection-count.pending {
-    font-weight: bold;
-}
-
 .indexeddb-path {
-    display: block;
+  display: block;
     margin-inline-start: 1em;
-}
-
-.indexeddb-transaction-list {
-    margin-inline-start: 10px;
-    border-collapse: collapse;
-}
-
-.indexeddb-transaction-list th,
-.indexeddb-transaction-list td {
-    padding: 2px 10px;
-    min-width: 50px;
-    max-width: 75px;
-}
-
-td.indexeddb-transaction-scope {
-    min-width: 200px;
-    max-width: 500px;
-}
-
-.indexeddb-transaction-list th {
-    background-color: rgb(249, 249, 249);
-    border: 1px solid rgb(156, 194, 239);
-    font-weight: normal;
-    text-align: start;
-}
-
-.indexeddb-transaction {
-    background-color: rgb(235, 239, 249);
-    border-bottom: 2px solid white;
-}
-
-.indexeddb-transaction.created {
-    font-weight: italic;
-}
-.indexeddb-transaction.started {
-    font-weight: bold;
-}
-.indexeddb-transaction.running {
-    font-weight: bold;
-}
-.indexeddb-transaction.committing {
-    font-weight: bold;
-}
-.indexeddb-transaction.blocked {
-}
-
-.indexeddb-transaction.started .indexeddb-transaction-state {
-    background-color: rgb(249, 249, 235);
-}
-.indexeddb-transaction.running .indexeddb-transaction-state {
-    background-color: rgb(235, 249, 235);
-}
-.indexeddb-transaction.committing .indexeddb-transaction-state {
-    background-color: rgb(235, 235, 249);
-}
-.indexeddb-transaction.blocked .indexeddb-transaction-state {
-    background-color: rgb(249, 235, 235);
 }
 
 .controls .control {

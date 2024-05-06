@@ -47,7 +47,7 @@ IndexedDBInternalsUI::IndexedDBInternalsUI(WebUI* web_ui)
       "script-src chrome://resources 'self' 'unsafe-eval';");
   source->OverrideContentSecurityPolicy(
       network::mojom::CSPDirectiveName::TrustedTypes,
-      "trusted-types jstemplate;");
+      "trusted-types jstemplate static-types;");
   source->UseStringsJs();
   source->AddResourcePaths(
       base::make_span(kIndexedDbResources, kIndexedDbResourcesSize));

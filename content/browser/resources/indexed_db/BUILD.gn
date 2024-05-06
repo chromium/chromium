@@ -12,6 +12,8 @@ build_webui("build") {
     "indexeddb_internals.css",
   ]
 
+  web_component_files = [ "database.ts" ]
+  html_to_wrapper_template = "native"
   non_web_component_files = [ "indexeddb_internals.ts" ]
 
   ts_tsconfig_base = "tsconfig_base.json"

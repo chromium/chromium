@@ -31,7 +31,7 @@
                         jsvalues="href:$url" target="_blank"></a>
                 </span>
                 <div class="metadata-list-item" jsselect="storageKeys">
-                  <span>Storage partition - top level site: 
+                  <span>Storage partition - top level site:
                     <span jsvalues="$url:stringifymojo.schemefulSite(topLevelSite)">
                       <a class="indexeddb-url" jscontent="$url"
                               jsvalues="href:$url" target="_blank"></a>
@@ -42,7 +42,7 @@
                       <span jscontent="serializedStorageKey"></span>
                   </div>
                   <indexeddb-bucket class="metadata-list-item"
-                                    jsselect="buckets" 
+                                    jsselect="buckets"
                                     jsvalues=".idbBucketId:bucketLocator.id;">
                       <div>
                           <span>Bucket:</span>
@@ -74,112 +74,8 @@
                             target="_blank">?</a>
                           <span class="download-status" style="display: none">Loading...</span>
                       </div>
-                      <div class="indexeddb-database" jsselect="$this.databases">
-
-                        <span>Open database:</span>
-                        <span jscontent="stringifymojo.string16(name)"></span>
-
-                        <div>
-                          <span>Connections:</span>
-
-                          <span class="indexeddb-connection-count"
-                                jsdisplay="connectionCount">
-                            <span>open:</span>
-                            <span jscontent="connectionCount"></span>
-                          </span>
-
-                          <span class="indexeddb-connection-count pending"
-                                jsdisplay="active_open_delete">
-                            <span>active opens/deletes:</span>
-                            <span jscontent="active_open_delete"></span>
-                          </span>
-
-                          <span class="indexeddb-connection-count pending"
-                                jsdisplay="pending_open_delete">
-                            <span>pending opens/deletes:</span>
-                            <span jscontent="pending_open_delete"></span>
-                          </span>
-
-                        </div>
-                        <div jsdisplay="$this.transactions &amp;&amp;
-                                        $this.transactions.length">
-                          <span>Transactions:</span>
-
-                          <table class="indexeddb-transaction-list">
-                            <tbody>
-                              <tr>
-                                <th title="Transaction ID (unique within Process)">
-                                  ID
-                                </th>
-                                <th title="Type of transaction">
-                                  Mode
-                                </th>
-                                <th title="Names of object stores used by the transaction">
-                                  Scope
-                                </th>
-                                <th title="Number of requests that have been executed">
-                                  Completed Requests
-                                </th>
-                                <th title="Number of requests that have not yet been executed">
-                                  Pending Requests
-                                </th>
-                                <th title="Time since transaction creation">
-                                  Age (ms)
-                                </th>
-                                <th title="Time since transaction started">
-                                  Runtime (ms)
-                                </th>
-                                <th title="Status in the transaction queue">
-                                  Status
-                                </th>
-                              </tr>
-                              <tr class="indexeddb-transaction"
-                                  jsselect="$this.transactions"
-                                  jsvalues=
-                                    "$status:stringifymojo.transactionState($this.status);
-                                    $status_lower:$status.toLowerCase()"
-                                  jseval="this.classList.add($status_lower)">
-
-                                <td class="indexeddb-transaction-tid"
-                                    jscontent="tid">
-                                </td>
-
-                                <td class="indexeddb-transaction-mode"
-                                    jscontent="stringifymojo.transactionMode(mode)">
-                                </td>
-
-                                <td class="indexeddb-transaction-scope"
-                                    jscontent="stringifymojo.scope(scope)">
-                                </td>
-
-                                <td class="indexeddb-transaction-requests-complete"
-                                    jscontent="tasksCompleted">
-                                </td>
-
-                                <td class="indexeddb-transaction-requests-pending"
-                                    jscontent="tasksScheduled - tasksCompleted">
-                                </td>
-
-                                <td class="indexeddb-transaction-age"
-                                    jscontent="Math.round(age)">
-                                </td>
-
-                                <td class="indexeddb-transaction-age">
-                                  <span jsdisplay="$status_lower == 'started' ||
-                                                   $status_lower == 'running' ||
-                                                   $status_lower == 'committing'"
-                                        jscontent="Math.round(runtime)">
-                                  </span>
-                                </td>
-
-                                <td class="indexeddb-transaction-state"
-                                    jscontent="$status">
-                                </td>
-                              </tr>
-                            </tbody>
-                          </table>
-                        </div>
-                      </div>
+                      <indexeddb-database jsselect="$this.databases" jsvalues=".data:$this;">
+                      </indexeddb-database>
                   </div>
                 </div>
               </div>
