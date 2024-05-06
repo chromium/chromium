@@ -2568,6 +2568,7 @@ crbug.com/626703 external/wpt/uievents/mouse/mouse_boundary_events_after_removin
 
 # ====== New tests from wpt-importer added here ======
 crbug.com/338576660 [ Win11-arm64 ] external/wpt/css/css-break/flexbox/single-line-column-flex-fragmentation-069b-print.html [ Failure ]
+crbug.com/338576660 [ Win11 ] external/wpt/css/css-break/flexbox/single-line-column-flex-fragmentation-069b-print.html [ Failure ]
 crbug.com/338576660 [ Win10.20h2 ] external/wpt/css/css-break/flexbox/single-line-column-flex-fragmentation-069b-print.html [ Failure ]
 crbug.com/338576660 [ Linux ] external/wpt/css/css-break/flexbox/single-line-column-flex-fragmentation-069b-print.html [ Failure ]
 crbug.com/338576660 [ Mac ] external/wpt/css/css-break/flexbox/single-line-column-flex-fragmentation-069b-print.html [ Failure ]
