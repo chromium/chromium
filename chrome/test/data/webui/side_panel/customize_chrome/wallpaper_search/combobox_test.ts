@@ -33,8 +33,7 @@ suite('ComboboxTest', () => {
   }
 
   function toggleGroupExpand(groupIndex: number) {
-    getGroup(groupIndex)
-        .querySelector('label')!.dispatchEvent(new Event('click'));
+    getGroup(groupIndex).querySelector('label')!.click();
   }
 
   function getHighlightedElement() {
@@ -208,7 +207,7 @@ suite('ComboboxTest', () => {
 
     // Open dropdown, click on first option to select it.
     combobox.$.input.click();
-    optionA1.dispatchEvent(new Event('click', {composed: true, bubbles: true}));
+    optionA1.click();
     assertTrue(optionA1.hasAttribute('selected'));
     assertEquals('true', optionA1.ariaSelected);
     assertFalse(isVisible(combobox.$.dropdown));
@@ -235,7 +234,7 @@ suite('ComboboxTest', () => {
     combobox.dispatchEvent(new KeyboardEvent('keydown', {key: 'Enter'}));
     await groupAClickEvent;
     assertFalse(groupA.hasAttribute('selected'));
-    groupA.dispatchEvent(new Event('click', {composed: true, bubbles: true}));
+    groupA.click();
     assertFalse(groupA.hasAttribute('selected'));
     assertTrue(optionA2.hasAttribute('selected'));
     assertEquals('true', optionA2.ariaSelected);
@@ -272,14 +271,14 @@ suite('ComboboxTest', () => {
 
     let valueChangeEvent = eventToPromise('value-changed', combobox);
     combobox.$.input.click();
-    option1.dispatchEvent(new Event('click', {composed: true, bubbles: true}));
+    option1.click();
     await valueChangeEvent;
     assertEquals('Option 1', combobox.value);
     assertTrue(option1.hasAttribute('selected'));
 
     valueChangeEvent = eventToPromise('value-changed', combobox);
     combobox.$.input.click();
-    option2.dispatchEvent(new Event('click', {composed: true, bubbles: true}));
+    option2.click();
     assertEquals('Option 2', combobox.value);
     assertTrue(option2.hasAttribute('selected'));
   });
@@ -390,13 +389,11 @@ suite('ComboboxTest', () => {
 
   test('SelectingDefaultOptionResetsValue', async () => {
     combobox.$.input.click();
-    getOption(0).dispatchEvent(
-        new Event('click', {composed: true, bubbles: true}));
+    getOption(0).click();
     await flushTasks();
     assertEquals('Option 1', combobox.value);
 
-    getDefaultOption().dispatchEvent(
-        new Event('click', {composed: true, bubbles: true}));
+    getDefaultOption().click();
     await flushTasks();
     assertEquals(undefined, combobox.value);
     assertEquals('true', getDefaultOption().getAttribute('aria-selected'));
