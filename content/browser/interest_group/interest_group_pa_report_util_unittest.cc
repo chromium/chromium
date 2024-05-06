@@ -6,13 +6,16 @@
 
 #include <stdint.h>
 
+#include <limits>
 #include <optional>
 #include <string>
 #include <utility>
 
+#include "base/test/scoped_feature_list.h"
 #include "content/services/auction_worklet/public/mojom/private_aggregation_request.mojom.h"
 #include "testing/gtest/include/gtest/gtest.h"
 #include "third_party/abseil-cpp/absl/numeric/int128.h"
+#include "third_party/blink/public/common/features.h"
 #include "third_party/blink/public/mojom/aggregation_service/aggregatable_report.mojom.h"
 
 namespace content {
@@ -55,12 +58,13 @@ auction_worklet::mojom::SignalValuePtr CreateSignalValue(
 // uint128 `bucket` and int `value`.
 auction_worklet::mojom::PrivateAggregationRequestPtr CreateHistogramRequest(
     absl::uint128 bucket,
-    int32_t value) {
+    int32_t value,
+    std::optional<uint64_t> filtering_id = std::nullopt) {
   return auction_worklet::mojom::PrivateAggregationRequest::New(
       auction_worklet::mojom::AggregatableReportContribution::
           NewHistogramContribution(
               blink::mojom::AggregatableReportHistogramContribution::New(
-                  bucket, value, /*filtering_id=*/std::nullopt)),
+                  bucket, value, filtering_id)),
       blink::mojom::AggregationServiceMode::kDefault,
       blink::mojom::DebugModeDetails::New());
 }
@@ -70,12 +74,13 @@ auction_worklet::mojom::PrivateAggregationRequestPtr CreateHistogramRequest(
 auction_worklet::mojom::PrivateAggregationRequestPtr CreateForEventRequest(
     absl::uint128 bucket,
     int32_t value,
-    const std::string& event_type) {
+    const std::string& event_type,
+    std::optional<uint64_t> filtering_id = std::nullopt) {
   auto contribution =
       auction_worklet::mojom::AggregatableReportForEventContribution::New(
           auction_worklet::mojom::ForEventSignalBucket::NewIdBucket(bucket),
           auction_worklet::mojom::ForEventSignalValue::NewIntValue(value),
-          event_type);
+          filtering_id, event_type);
 
   return auction_worklet::mojom::PrivateAggregationRequest::New(
       auction_worklet::mojom::AggregatableReportContribution::
@@ -90,13 +95,14 @@ auction_worklet::mojom::PrivateAggregationRequestPtr
 CreateForEventRequestWithBucketObject(
     auction_worklet::mojom::SignalBucketPtr bucket,
     int32_t value,
-    const std::string& event_type) {
+    const std::string& event_type,
+    std::optional<uint64_t> filtering_id = std::nullopt) {
   auto contribution =
       auction_worklet::mojom::AggregatableReportForEventContribution::New(
           auction_worklet::mojom::ForEventSignalBucket::NewSignalBucket(
               std::move(bucket)),
           auction_worklet::mojom::ForEventSignalValue::NewIntValue(value),
-          event_type);
+          filtering_id, event_type);
 
   return auction_worklet::mojom::PrivateAggregationRequest::New(
       auction_worklet::mojom::AggregatableReportContribution::
@@ -111,13 +117,14 @@ auction_worklet::mojom::PrivateAggregationRequestPtr
 CreateForEventRequestWithValueObject(
     absl::uint128 bucket,
     auction_worklet::mojom::SignalValuePtr value,
-    const std::string& event_type) {
+    const std::string& event_type,
+    std::optional<uint64_t> filtering_id = std::nullopt) {
   auto contribution =
       auction_worklet::mojom::AggregatableReportForEventContribution::New(
           auction_worklet::mojom::ForEventSignalBucket::NewIdBucket(bucket),
           auction_worklet::mojom::ForEventSignalValue::NewSignalValue(
               std::move(value)),
-          event_type);
+          filtering_id, event_type);
 
   return auction_worklet::mojom::PrivateAggregationRequest::New(
       auction_worklet::mojom::AggregatableReportContribution::
@@ -728,6 +735,94 @@ TEST_F(InterestGroupPaReportUtilTest, ForEventContributionCalculateValue) {
     } else {
       EXPECT_FALSE(request);
     }
+  }
+}
+
+TEST_F(InterestGroupPaReportUtilTest,
+       FilteringIdPassedUnchangedIfFeatureEnabled) {
+  base::test::ScopedFeatureList scoped_feature_list{
+      blink::features::kPrivateAggregationApiFilteringIds};
+
+  const std::optional<uint64_t> kFilteringIdTestCases[] = {std::nullopt, 0, 1,
+                                                           255};
+  for (std::optional<uint64_t> filtering_id : kFilteringIdTestCases) {
+    // Filtering ID here is expected to be unchanged
+    std::optional<uint64_t> expected_filtering_id = filtering_id;
+    EXPECT_EQ(CreatePrivateAggregationRequestWithEventType(
+                  CreateHistogramRequest(/*bucket=*/123, /*value=*/45,
+                                         expected_filtering_id),
+                  /*event_type=*/"click"),
+              FillInPrivateAggregationRequest(
+                  CreateForEventRequest(
+                      /*bucket=*/123, /*value=*/45,
+                      /*event_type=*/"click", filtering_id),
+                  /*winning_bid=*/1, /*highest_scoring_other_bid=*/2,
+                  /*reject_reason=*/std::nullopt, PrivateAggregationTimings(),
+                  /*is_winner=*/true));
+  }
+}
+
+TEST_F(InterestGroupPaReportUtilTest, HasValidFilteringId_FeatureEnabled) {
+  base::test::ScopedFeatureList scoped_feature_list;
+  scoped_feature_list.InitAndEnableFeature(
+      blink::features::kPrivateAggregationApiFilteringIds);
+
+  const struct {
+    std::optional<uint64_t> filtering_id;
+    bool expected_to_be_valid;
+  } kTestCases[] = {
+      {.filtering_id = std::nullopt, .expected_to_be_valid = true},
+      {.filtering_id = 0, .expected_to_be_valid = true},
+      {.filtering_id = 1, .expected_to_be_valid = true},
+      {.filtering_id = 255, .expected_to_be_valid = true},
+      {.filtering_id = 256, .expected_to_be_valid = false},
+      {.filtering_id = std::numeric_limits<uint64_t>::max(),
+       .expected_to_be_valid = false}};
+
+  for (const auto& test_case : kTestCases) {
+    auction_worklet::mojom::PrivateAggregationRequestPtr
+        for_event_contribution = CreateForEventRequest(
+            /*bucket=*/123, /*value=*/45,
+            /*event_type=*/"click", test_case.filtering_id);
+    auction_worklet::mojom::PrivateAggregationRequestPtr
+        histogram_contribution = CreateHistogramRequest(
+            /*bucket=*/123, /*value=*/45, test_case.filtering_id);
+    EXPECT_EQ(HasValidFilteringId(for_event_contribution),
+              test_case.expected_to_be_valid);
+    EXPECT_EQ(HasValidFilteringId(histogram_contribution),
+              test_case.expected_to_be_valid);
+  }
+}
+
+TEST_F(InterestGroupPaReportUtilTest, HasValidFilteringId_FeatureDisabled) {
+  base::test::ScopedFeatureList scoped_feature_list;
+  scoped_feature_list.InitAndDisableFeature(
+      blink::features::kPrivateAggregationApiFilteringIds);
+
+  const struct {
+    std::optional<uint64_t> filtering_id;
+    bool expected_to_be_valid;
+  } kTestCases[] = {
+      {.filtering_id = std::nullopt, .expected_to_be_valid = true},
+      {.filtering_id = 0, .expected_to_be_valid = false},
+      {.filtering_id = 1, .expected_to_be_valid = false},
+      {.filtering_id = 255, .expected_to_be_valid = false},
+      {.filtering_id = 256, .expected_to_be_valid = false},
+      {.filtering_id = std::numeric_limits<uint64_t>::max(),
+       .expected_to_be_valid = false}};
+
+  for (const auto& test_case : kTestCases) {
+    auction_worklet::mojom::PrivateAggregationRequestPtr
+        for_event_contribution = CreateForEventRequest(
+            /*bucket=*/123, /*value=*/45,
+            /*event_type=*/"click", test_case.filtering_id);
+    auction_worklet::mojom::PrivateAggregationRequestPtr
+        histogram_contribution = CreateHistogramRequest(
+            /*bucket=*/123, /*value=*/45, test_case.filtering_id);
+    EXPECT_EQ(HasValidFilteringId(for_event_contribution),
+              test_case.expected_to_be_valid);
+    EXPECT_EQ(HasValidFilteringId(histogram_contribution),
+              test_case.expected_to_be_valid);
   }
 }
 

@@ -70,7 +70,7 @@ const auction_worklet::mojom::PrivateAggregationRequestPtr
                     blink::mojom::AggregatableReportHistogramContribution::New(
                         /*bucket=*/3,
                         /*value=*/4,
-                        /*filtering_id=*/std::nullopt)),
+                        /*filtering_id=*/1)),
             blink::mojom::AggregationServiceMode::kDefault,
             blink::mojom::DebugModeDetails::New());
 

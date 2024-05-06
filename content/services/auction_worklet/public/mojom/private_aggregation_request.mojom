@@ -65,11 +65,15 @@ union ForEventSignalValue {
   SignalValue signal_value;
 };
 
-// A for-event contribution contains a bucket, a value, and an event_type.
+// A for-event contribution contains a bucket, a value, a filtering ID, and an
+// event_type.
 // See https://github.com/WICG/turtledove/blob/main/FLEDGE_extended_PA_reporting.md#reporting-api-informal-specification
 struct AggregatableReportForEventContribution {
   ForEventSignalBucket bucket;
   ForEventSignalValue value;
+
+  // Null if not explicitly specified.
+  uint64? filtering_id;
 
   // Identifies the event type that triggers sending this report.
   string event_type;

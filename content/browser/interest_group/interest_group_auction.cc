@@ -1886,19 +1886,11 @@ class InterestGroupAuction::BuyerHelper
                      request_ptr) { return request_ptr.is_null(); }),
           base::NotFatalUntil::M128);
 
-    // TODO(crbug.com/330744610): Allow filtering IDs to be set.
-    if (base::ranges::any_of(
-            pa_requests,
-            [](const auction_worklet::mojom::PrivateAggregationRequestPtr&
-                   request_ptr) {
-              return request_ptr->contribution->is_histogram_contribution() &&
-                     request_ptr->contribution->get_histogram_contribution()
-                         ->filtering_id.has_value();
-            })) {
+    if (!base::ranges::all_of(pa_requests, HasValidFilteringId)) {
       mojo_bids.clear();
       pa_requests.clear();
       generate_bid_client_receiver_set_.ReportBadMessage(
-          "Filtering ID set inappropriately");
+          "Private Aggregation filtering ID invalid");
     }
     if (base::ranges::any_of(
             non_kanon_pa_requests,
@@ -3333,6 +3325,7 @@ bool InterestGroupAuction::ReportPaBuyersValueIfAllowed(
   // TODO(caraitto): Consider adding renderer and Mojo validation to ensure that
   // bucket sums can't be out of range, and scales can't be negative, infinite,
   // or NaN.
+  // TODO(crbug.com/330744610): Consider allowing filtering ID to be set.
   InterestGroupAuctionReporter::PrivateAggregationKey agg_key = {
       config_->seller, config_->aggregation_coordinator_origin};
   PrivateAggregationRequests& destination_vector =
@@ -3345,7 +3338,6 @@ bool InterestGroupAuction::ReportPaBuyersValueIfAllowed(
                       *bucket_base + report_buyers_config->bucket,
                       base::saturated_cast<int32_t>(
                           std::max(0.0, value * report_buyers_config->scale)),
-                      // TODO(crbug.com/330744610): Allow filtering ID to be set
                       /*filtering_id=*/std::nullopt)),
           // TODO(caraitto): Consider allowing this to be set.
           blink::mojom::AggregationServiceMode::kDefault,
@@ -4606,18 +4598,12 @@ bool InterestGroupAuction::ValidateScoreBidCompleteResult(
     return false;
   }
 
-  // TODO(crbug.com/330744610): Allow filtering IDs to be set.
-  if (base::ranges::any_of(
-          pa_requests,
-          [](const auction_worklet::mojom::PrivateAggregationRequestPtr&
-                 request_ptr) {
-            return request_ptr->contribution->is_histogram_contribution() &&
-                   request_ptr->contribution->get_histogram_contribution()
-                       ->filtering_id.has_value();
-          })) {
-    score_ad_receivers_.ReportBadMessage("Filtering ID set inappropriately");
+  if (!base::ranges::all_of(pa_requests, HasValidFilteringId)) {
+    score_ad_receivers_.ReportBadMessage(
+        "Private Aggregation filtering ID invalid");
     return false;
   }
+
   return true;
 }
 

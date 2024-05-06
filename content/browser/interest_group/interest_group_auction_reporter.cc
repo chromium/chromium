@@ -597,11 +597,8 @@ void InterestGroupAuctionReporter::OnSellerReportResultComplete(
   timings.script_run_time = reporting_latency;
   for (auction_worklet::mojom::PrivateAggregationRequestPtr& request :
        pa_requests) {
-    // TODO(crbug.com/330744610): Allow filtering ID to be set.
-    if (request->contribution->is_histogram_contribution() &&
-        request->contribution->get_histogram_contribution()
-            ->filtering_id.has_value()) {
-      mojo::ReportBadMessage("Filtering ID set inappropriately");
+    if (!HasValidFilteringId(request)) {
+      mojo::ReportBadMessage("Private Aggregation filtering ID invalid");
     }
 
     // reportResult() only gets executed for seller when there was an auction
@@ -919,11 +916,8 @@ void InterestGroupAuctionReporter::OnBidderReportWinComplete(
   timings.script_run_time = reporting_latency;
   for (auction_worklet::mojom::PrivateAggregationRequestPtr& request :
        pa_requests) {
-    // TODO(crbug.com/330744610): Allow filtering ID to be set.
-    if (request->contribution->is_histogram_contribution() &&
-        request->contribution->get_histogram_contribution()
-            ->filtering_id.has_value()) {
-      mojo::ReportBadMessage("Filtering ID set inappropriately");
+    if (!HasValidFilteringId(request)) {
+      mojo::ReportBadMessage("Private Aggregation filtering ID invalid");
     }
 
     // Only winner's reportWin() gets executed, so is_winner is true, which

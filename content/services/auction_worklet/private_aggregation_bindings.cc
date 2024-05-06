@@ -277,12 +277,37 @@ auction_worklet::mojom::ForEventSignalValuePtr GetValue(
   }
 }
 
+// Returns false in case of an error.
+bool GetFilteringId(v8::Isolate* isolate,
+                    std::optional<v8::Local<v8::BigInt>> idl_filtering_id,
+                    std::optional<uint64_t>* out_filtering_id,
+                    std::string* error) {
+  if (!idl_filtering_id.has_value()) {
+    *out_filtering_id = std::nullopt;
+    return true;
+  }
+
+  std::optional<absl::uint128> maybe_filtering_id =
+      ConvertBigIntToUint128(idl_filtering_id.value(), error);
+  if (!maybe_filtering_id.has_value()) {
+    return false;
+  }
+  if (maybe_filtering_id.value() > 255) {
+    *error = "Filtering ID is too large";
+    return false;
+  }
+
+  *out_filtering_id = absl::Uint128Low64(maybe_filtering_id.value());
+  return true;
+}
+
 auction_worklet::mojom::AggregatableReportForEventContributionPtr
 ParseForEventContribution(
     v8::Isolate* isolate,
     const std::string& event_type,
     absl::variant<PASignalValue, v8::Local<v8::BigInt>> idl_bucket,
     absl::variant<PASignalValue, int32_t> idl_value,
+    std::optional<v8::Local<v8::BigInt>> idl_filtering_id,
     std::string* error) {
   auction_worklet::mojom::ForEventSignalBucketPtr bucket =
       GetBucket(isolate, std::move(idl_bucket), error);
@@ -294,9 +319,14 @@ ParseForEventContribution(
   if (!value) {
     return nullptr;
   }
+  std::optional<uint64_t> filtering_id;
+  if (!GetFilteringId(isolate, std::move(idl_filtering_id), &filtering_id,
+                      error)) {
+    return nullptr;
+  }
 
   return auction_worklet::mojom::AggregatableReportForEventContribution::New(
-      std::move(bucket), std::move(value), std::move(event_type));
+      std::move(bucket), std::move(value), filtering_id, std::move(event_type));
 }
 
 // In case of failure, will return `std::nullopt` and output an error to
@@ -437,6 +467,7 @@ void PrivateAggregationBindings::ContributeToHistogram(
   args_converter.ConvertArg(0, "contribution", contribution_val);
   v8::Local<v8::BigInt> idl_bucket;
   int32_t idl_value;
+  std::optional<v8::Local<v8::BigInt>> idl_filtering_id;
   if (args_converter.is_success()) {
     // https://patcg-individual-drafts.github.io/private-aggregation-api/#dictdef-pahistogramcontribution
     //
@@ -444,6 +475,7 @@ void PrivateAggregationBindings::ContributeToHistogram(
     // dictionary PAHistogramContribution {
     //   required bigint bucket;
     //   required long value;
+    //   bigint filteringId;
     // };
     DictConverter contribution_converter(
         v8_helper, time_limit_scope,
@@ -451,6 +483,10 @@ void PrivateAggregationBindings::ContributeToHistogram(
         contribution_val);
     contribution_converter.GetRequired("bucket", idl_bucket);
     contribution_converter.GetRequired("value", idl_value);
+    if (base::FeatureList::IsEnabled(
+            blink::features::kPrivateAggregationApiFilteringIds)) {
+      contribution_converter.GetOptional("filteringId", idl_filtering_id);
+    }
     args_converter.SetStatus(contribution_converter.TakeStatus());
   }
 
@@ -476,12 +512,20 @@ void PrivateAggregationBindings::ContributeToHistogram(
     return;
   }
 
-  // TODO(crbug.com/330744610): Allow filtering ID to be set.
+  std::optional<uint64_t> filtering_id;
+  if (!GetFilteringId(isolate, std::move(idl_filtering_id), &filtering_id,
+                      &error)) {
+    CHECK(base::IsStringUTF8(error));
+    isolate->ThrowException(v8::Exception::TypeError(
+        v8_helper->CreateUtf8String(error).ToLocalChecked()));
+    return;
+  }
+
   bindings->private_aggregation_contributions_.push_back(
       auction_worklet::mojom::AggregatableReportContribution::
           NewHistogramContribution(
               blink::mojom::AggregatableReportHistogramContribution::New(
-                  bucket, idl_value, /*filtering_id=*/std::nullopt)));
+                  bucket, idl_value, filtering_id)));
 }
 
 void PrivateAggregationBindings::ContributeToHistogramOnEvent(
@@ -506,10 +550,12 @@ void PrivateAggregationBindings::ContributeToHistogramOnEvent(
   // dictionary PAExtendedHistogramContribution {
   //   required (PASignalValue or bigint) bucket;
   //   required (PASignalValue or long) value;
+  //   bigint filteringId;
   // };
 
   absl::variant<PASignalValue, v8::Local<v8::BigInt>> bucket;
   absl::variant<PASignalValue, int32_t> value;
+  std::optional<v8::Local<v8::BigInt>> filtering_id;
   if (args_converter.is_success()) {
     DictConverter contribution_converter(
         v8_helper, time_limit_scope,
@@ -530,6 +576,10 @@ void PrivateAggregationBindings::ContributeToHistogramOnEvent(
             "privateAggregation.contributeToHistogramOnEvent() 'contribution' "
             "argument: ",
             "value", value_val, contribution_converter, value);
+    if (base::FeatureList::IsEnabled(
+            blink::features::kPrivateAggregationApiFilteringIds)) {
+      contribution_converter.GetOptional("filteringId", filtering_id);
+    }
     args_converter.SetStatus(contribution_converter.TakeStatus());
   }
 
@@ -548,7 +598,8 @@ void PrivateAggregationBindings::ContributeToHistogramOnEvent(
   std::string error;
   auction_worklet::mojom::AggregatableReportForEventContributionPtr
       contribution = ParseForEventContribution(
-          isolate, event_type, std::move(bucket), std::move(value), &error);
+          isolate, event_type, std::move(bucket), std::move(value),
+          std::move(filtering_id), &error);
 
   if (contribution.is_null()) {
     CHECK(base::IsStringUTF8(error));

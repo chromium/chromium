@@ -78,6 +78,10 @@ CONTENT_EXPORT void SplitContributionsIntoBatchesThenSendToHost(
     std::optional<url::Origin> aggregation_coordinator_origin,
     const url::Origin& main_frame_origin);
 
+// Returns false if request has an invalid filtering ID.
+CONTENT_EXPORT bool HasValidFilteringId(
+    const auction_worklet::mojom::PrivateAggregationRequestPtr& request);
+
 }  // namespace content
 
 #endif  // CONTENT_BROWSER_INTEREST_GROUP_INTEREST_GROUP_PA_REPORT_UTIL_H_

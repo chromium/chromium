@@ -120,9 +120,13 @@ class InterestGroupAuctionReporterTest
       : RenderViewHostTestHarness(
             base::test::TaskEnvironment::TimeSource::MOCK_TIME),
         winning_bid_info_(GetWinningBidInfo()) {
-    feature_list_.InitAndEnableFeatureWithParameters(
-        blink::features::kPrivateAggregationApi,
-        {{"fledge_extensions_enabled", "true"}});
+    feature_list_.InitWithFeaturesAndParameters(
+        /*enabled_features=*/{{blink::features::kPrivateAggregationApi,
+                               {{"fledge_extensions_enabled", "true"}}},
+                              {blink::features::
+                                   kPrivateAggregationApiFilteringIds,
+                               {}}},
+        /*disabled_features=*/{});
 
     mojo::SetDefaultProcessErrorHandler(
         base::BindRepeating(&InterestGroupAuctionReporterTest::OnBadMessage,
@@ -519,7 +523,7 @@ class InterestGroupAuctionReporterTest
                       blink::mojom::AggregatableReportHistogramContribution::
                           New(/*bucket=*/3,
                               /*value=*/4,
-                              /*filtering_id=*/std::nullopt)),
+                              /*filtering_id=*/0)),
               blink::mojom::AggregationServiceMode::kDefault,
               blink::mojom::DebugModeDetails::New());
   const auction_worklet::mojom::PrivateAggregationRequestPtr
@@ -530,7 +534,7 @@ class InterestGroupAuctionReporterTest
                       blink::mojom::AggregatableReportHistogramContribution::
                           New(/*bucket=*/5,
                               /*value=*/6,
-                              /*filtering_id=*/std::nullopt)),
+                              /*filtering_id=*/1)),
               blink::mojom::AggregationServiceMode::kDefault,
               blink::mojom::DebugModeDetails::New());
   const auction_worklet::mojom::PrivateAggregationRequestPtr
@@ -541,7 +545,7 @@ class InterestGroupAuctionReporterTest
                       blink::mojom::AggregatableReportHistogramContribution::
                           New(/*bucket=*/7,
                               /*value=*/8,
-                              /*filtering_id=*/std::nullopt)),
+                              /*filtering_id=*/255)),
               blink::mojom::AggregationServiceMode::kDefault,
               blink::mojom::DebugModeDetails::New());
   const auction_worklet::mojom::PrivateAggregationRequestPtr
@@ -577,6 +581,7 @@ class InterestGroupAuctionReporterTest
                                   NewIdBucket(1),
                               auction_worklet::mojom::ForEventSignalValue::
                                   NewIntValue(2),
+                              /*filtering_id=*/std::nullopt,
                               "event_type")),
               blink::mojom::AggregationServiceMode::kDefault,
               blink::mojom::DebugModeDetails::New());
@@ -591,6 +596,7 @@ class InterestGroupAuctionReporterTest
                                   NewIdBucket(42),
                               auction_worklet::mojom::ForEventSignalValue::
                                   NewIntValue(24),
+                              /*filtering_id=*/std::nullopt,
                               "event_type2")),
               blink::mojom::AggregationServiceMode::kDefault,
               blink::mojom::DebugModeDetails::New());
@@ -605,6 +611,7 @@ class InterestGroupAuctionReporterTest
                                   NewIdBucket(3),
                               auction_worklet::mojom::ForEventSignalValue::
                                   NewIntValue(4),
+                              /*filtering_id=*/0,
                               "event_type")),
               blink::mojom::AggregationServiceMode::kDefault,
               blink::mojom::DebugModeDetails::New());

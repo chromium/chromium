@@ -227,9 +227,14 @@ CalculateContributionBucketAndValue(
     value = value_opt.value();
   }
 
-  // TODO(crbug.com/330744610): Allow filtering ID to be set.
+  std::optional<uint64_t> filtering_id;
+  if (base::FeatureList::IsEnabled(
+          blink::features::kPrivateAggregationApiFilteringIds)) {
+    filtering_id = contribution->filtering_id;
+  }
+
   return blink::mojom::AggregatableReportHistogramContribution::New(
-      bucket, value, /*filtering_id=*/std::nullopt);
+      bucket, value, filtering_id);
 }
 
 }  // namespace
@@ -397,6 +402,26 @@ void SplitContributionsIntoBatchesThenSendToHost(
     remote_host->ContributeToHistogram(std::move(contributions));
     remote_host.reset();
   }
+}
+
+bool HasValidFilteringId(
+    const auction_worklet::mojom::PrivateAggregationRequestPtr& request) {
+  std::optional<uint64_t> filtering_id;
+  if (request->contribution->is_histogram_contribution()) {
+    filtering_id =
+        request->contribution->get_histogram_contribution()->filtering_id;
+  } else {
+    CHECK(request->contribution->is_for_event_contribution());
+    filtering_id =
+        request->contribution->get_for_event_contribution()->filtering_id;
+  }
+
+  if (!base::FeatureList::IsEnabled(
+          blink::features::kPrivateAggregationApiFilteringIds)) {
+    return filtering_id == std::nullopt;
+  }
+
+  return filtering_id.value_or(0) <= 255;
 }
 
 }  // namespace content

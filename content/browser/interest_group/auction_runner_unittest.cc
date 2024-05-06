@@ -39,6 +39,7 @@
 #include "components/cbor/values.h"
 #include "components/cbor/writer.h"
 #include "components/ukm/test_ukm_recorder.h"
+#include "content/browser/aggregation_service/aggregation_service_features.h"
 #include "content/browser/fenced_frame/fenced_frame_reporter.h"
 #include "content/browser/interest_group/ad_auction_page_data.h"
 #include "content/browser/interest_group/additional_bids_test_util.h"
@@ -1244,7 +1245,8 @@ const auction_worklet::mojom::PrivateAggregationRequestPtr
 BuildPrivateAggregationRequest(
     absl::uint128 bucket,
     int value,
-    blink::mojom::DebugModeDetailsPtr debug_mode_details = nullptr) {
+    blink::mojom::DebugModeDetailsPtr debug_mode_details = nullptr,
+    std::optional<uint64_t> filtering_id = std::nullopt) {
   if (!debug_mode_details) {
     debug_mode_details = blink::mojom::DebugModeDetails::New();
   }
@@ -1252,19 +1254,21 @@ BuildPrivateAggregationRequest(
       auction_worklet::mojom::AggregatableReportContribution::
           NewHistogramContribution(
               blink::mojom::AggregatableReportHistogramContribution::New(
-                  bucket, value, /*filtering_id=*/std::nullopt)),
+                  bucket, value, filtering_id)),
       blink::mojom::AggregationServiceMode::kDefault,
       std::move(debug_mode_details));
 }
 
 const auction_worklet::mojom::PrivateAggregationRequestPtr
-BuildPrivateAggregationForEventRequest(absl::uint128 bucket,
-                                       int value,
-                                       std::string event_type) {
+BuildPrivateAggregationForEventRequest(
+    absl::uint128 bucket,
+    int value,
+    std::string event_type,
+    std::optional<uint64_t> filtering_id = std::nullopt) {
   auction_worklet::mojom::AggregatableReportForEventContribution contribution(
       auction_worklet::mojom::ForEventSignalBucket::NewIdBucket(bucket),
       auction_worklet::mojom::ForEventSignalValue::NewIntValue(value),
-      event_type);
+      filtering_id, event_type);
 
   return auction_worklet::mojom::PrivateAggregationRequest::New(
       auction_worklet::mojom::AggregatableReportContribution::
@@ -1277,13 +1281,14 @@ auction_worklet::mojom::PrivateAggregationRequestPtr
 BuildPrivateAggregationForBaseValue(
     absl::uint128 bucket,
     auction_worklet::mojom::BaseValue base_value,
-    std::string event_type) {
+    std::string event_type,
+    std::optional<uint64_t> filtering_id = std::nullopt) {
   auction_worklet::mojom::AggregatableReportForEventContribution contribution(
       auction_worklet::mojom::ForEventSignalBucket::NewIdBucket(bucket),
       auction_worklet::mojom::ForEventSignalValue::NewSignalValue(
           auction_worklet::mojom::SignalValue::New(base_value, /*scale=*/1.0,
                                                    /*offset=*/0)),
-      event_type);
+      filtering_id, event_type);
 
   return auction_worklet::mojom::PrivateAggregationRequest::New(
       auction_worklet::mojom::AggregatableReportContribution::
@@ -14996,6 +15001,128 @@ TEST_F(AuctionRunnerTest,
                   BuildPrivateAggregationRequest(/*bucket=*/10, /*value=*/20),
                   BuildPrivateAggregationRequest(/*bucket=*/9, /*value=*/19),
                   BuildPrivateAggregationRequest(/*bucket=*/0, /*value=*/1)))));
+}
+
+TEST_F(AuctionRunnerTest, PrivateAggregationRequestForEventFilteringId) {
+  base::test::ScopedFeatureList scoped_feature_list;
+  scoped_feature_list.InitWithFeatures(
+      /*enabled_features=*/{blink::features::kPrivateAggregationApiFilteringIds,
+                            kPrivacySandboxAggregationServiceFilteringIds},
+      /*disabled_features=*/{});
+
+  // Only one bidder participating the auction, to keep things simple.
+  interest_group_buyers_ = {{kBidder1}};
+
+  const char kBidScript[] = R"(
+    const bid = %d;
+
+    function generateBid(
+        interestGroup, auctionSignals, perBuyerSignals, trustedBiddingSignals,
+        browserSignals) {
+      privateAggregation.contributeToHistogramOnEvent('reserved.always', {
+        bucket: 123n,
+        value: 4,
+        filteringId: 1n,
+      });
+      return {bid: bid, render: interestGroup.ads[0].renderURL};
+    }
+
+    function reportWin(
+        auctionSignals, perBuyerSignals, sellerSignals, browserSignals) {
+      privateAggregation.contributeToHistogramOnEvent('click', {
+        bucket: 456n,
+        value: 7,
+        filteringId: 2n,
+      });
+      privateAggregation.contributeToHistogramOnEvent('reserved.always', {
+        bucket: 123n,
+        value: 4,
+        // filteringId not specified
+      });
+    }
+  )";
+
+  const std::string kSellerScript = R"(
+    function scoreAd(adMetadata, bid, auctionConfig, browserSignals) {
+      privateAggregation.contributeToHistogramOnEvent('reserved.always', {
+        bucket: 234n,
+        value: 5,
+        filteringId: 0n,
+      });
+      return bid;
+    }
+
+    function reportResult(auctionConfig, browserSignals) {
+      privateAggregation.contributeToHistogramOnEvent('reserved.always', {
+        bucket: 234n,
+        value: 5,
+        filteringId: 255n,
+      });
+    }
+  )";
+
+  auction_worklet::AddJavascriptResponse(&url_loader_factory_, kBidder1Url,
+                                         base::StringPrintf(kBidScript, 1));
+  auction_worklet::AddJavascriptResponse(&url_loader_factory_, kSellerUrl,
+                                         kSellerScript);
+
+  RunStandardAuction(/*request_trusted_bidding_signals=*/false);
+  EXPECT_THAT(result_.errors, testing::UnorderedElementsAre());
+  EXPECT_FALSE(result_.aborted_by_script);
+  EXPECT_EQ(kBidder1Key, result_.winning_group_id);
+  EXPECT_EQ(GURL("https://ad1.com/"), result_.ad_descriptor->url);
+
+  EXPECT_THAT(
+      private_aggregation_manager_.TakePrivateAggregationRequests(),
+      testing::UnorderedElementsAre(
+          testing::Pair(
+              kBidder1,
+              ElementsAreRequests(
+                  // generateBid().
+                  BuildPrivateAggregationRequest(
+                      /*bucket=*/123, /*value=*/4, /*debug_mode_details=*/
+                      blink::mojom::DebugModeDetails::New(),
+                      /*filtering_id=*/1),
+                  // reportWin().
+                  BuildPrivateAggregationRequest(
+                      /*bucket=*/123, /*value=*/4, /*debug_mode_details=*/
+                      blink::mojom::DebugModeDetails::New(),
+                      /*filtering_id=*/std::nullopt))),
+          testing::Pair(
+              kSeller,
+              ElementsAreRequests(
+                  // scoreAd().
+                  BuildPrivateAggregationRequest(
+                      /*bucket=*/234, /*value=*/5, /*debug_mode_details=*/
+                      blink::mojom::DebugModeDetails::New(),
+                      /*filtering_id=*/0),
+                  // reportResult().
+                  BuildPrivateAggregationRequest(
+                      /*bucket=*/234, /*value=*/5, /*debug_mode_details=*/
+                      blink::mojom::DebugModeDetails::New(),
+                      /*filtering_id=*/255)))));
+  EXPECT_THAT(
+      private_aggregation_manager_.TakeLoggedPrivateAggregationRequests(),
+      ElementsAreRequests(
+          BuildPrivateAggregationForEventRequest(
+              /*bucket=*/123, /*value=*/4,
+              /*event_type=*/"reserved.always",
+              /*filtering_id=*/1),
+          BuildPrivateAggregationForEventRequest(
+              /*bucket=*/123, /*value=*/4,
+              /*event_type=*/"reserved.always",
+              /*filtering_id=*/std::nullopt),
+          BuildPrivateAggregationForEventRequest(
+              /*bucket=*/234, /*value=*/5,
+              /*event_type=*/"reserved.always",
+              /*filtering_id=*/0),
+          BuildPrivateAggregationForEventRequest(
+              /*bucket=*/234, /*value=*/5,
+              /*event_type=*/"reserved.always",
+              /*filtering_id=*/255),
+          BuildPrivateAggregationForEventRequest(/*bucket=*/456, /*value=*/7,
+                                                 /*event_type=*/"click",
+                                                 /*filtering_id=*/2)));
 }
 
 TEST_F(AuctionRunnerTest,
