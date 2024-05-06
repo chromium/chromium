@@ -13,6 +13,18 @@ function testGetPdfThumbnail() {
       });
 }
 
+// For https://crbug.com/334272439
+function testGetPdfThumbnailNeedsUtilitySandbox() {
+  chrome.imageLoaderPrivate.getPdfThumbnail(
+      'filesystem:chrome-extension://dflhahjnheihhcfhnhcflfdgacjoocip/' +
+          'external/Downloads-user/combobox_form.pdf',
+      100, 100, (thumbnailDataUrl) => {
+        chrome.test.assertTrue(
+            thumbnailDataUrl.startsWith('data:image/png;base64,'));
+        chrome.test.succeed();
+      });
+}
+
 function testNonExistentFile() {
   chrome.imageLoaderPrivate.getPdfThumbnail(
       'filesystem:chrome-extension://dflhahjnheihhcfhnhcflfdgacjoocip/' +
@@ -31,5 +43,7 @@ function testWrongUrlScheme() {
       });
 }
 
-chrome.test.runTests(
-    [testGetPdfThumbnail, testNonExistentFile, testWrongUrlScheme]);
+chrome.test.runTests([
+  testGetPdfThumbnail, testGetPdfThumbnailNeedsUtilitySandbox,
+  testNonExistentFile, testWrongUrlScheme
+]);

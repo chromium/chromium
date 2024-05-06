@@ -11,7 +11,7 @@ import "chrome/services/pdf/public/mojom/pdf_thumbnailer.mojom";
 
 // The main interface to Chrome's PDF Service, which performs various PDF
 // conversion operations in an isolated sandboxed process.
-[ServiceSandbox=sandbox.mojom.Sandbox.kService]
+[ServiceSandbox=sandbox.mojom.Sandbox.kUtility]
 interface PdfService {
   // Binds an interface that is used to generate thumbnails for PDF content.
   [EnableIf=is_chromeos_ash]

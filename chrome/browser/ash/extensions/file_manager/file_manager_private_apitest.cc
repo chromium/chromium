@@ -763,11 +763,12 @@ IN_PROC_BROWSER_TEST_F(FileManagerPrivateApiTest, GetPdfThumbnail) {
 
   {
     base::ScopedAllowBlockingForTesting allow_io;
-    base::FilePath source = base::PathService::CheckedGet(chrome::DIR_TEST_DATA)
-                                .AppendASCII("pdf")
-                                .AppendASCII("test.pdf");
-    base::FilePath destination = downloads.AppendASCII("test.pdf");
-    ASSERT_TRUE(base::CopyFile(source, destination));
+    base::FilePath source_dir =
+        base::PathService::CheckedGet(chrome::DIR_TEST_DATA).AppendASCII("pdf");
+    ASSERT_TRUE(base::CopyFile(source_dir.AppendASCII("test.pdf"),
+                               downloads.AppendASCII("test.pdf")));
+    ASSERT_TRUE(base::CopyFile(source_dir.AppendASCII("combobox_form.pdf"),
+                               downloads.AppendASCII("combobox_form.pdf")));
   }
 
   EXPECT_TRUE(RunExtensionTest("image_loader_private/get_pdf_thumbnail",
