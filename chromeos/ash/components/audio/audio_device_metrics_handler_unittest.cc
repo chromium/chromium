@@ -68,7 +68,7 @@ TEST_F(AudioDeviceMetricsHandlerTest,
       }
       histogram_tester().ExpectBucketCount(device_count_histogram_name,
                                            current_devices.size(),
-                                           /*bucket_count=*/1);
+                                           /*expected_count=*/1);
 
       std::string device_set_histogram_name;
       if (is_switched) {
@@ -88,7 +88,7 @@ TEST_F(AudioDeviceMetricsHandlerTest,
 
       histogram_tester().ExpectBucketCount(
           device_set_histogram_name, EncodeAudioDeviceSet(current_devices),
-          /*bucket_count=*/1);
+          /*expected_count=*/1);
 
       std::string before_and_after_device_set_histogram_name;
       if (is_switched) {
@@ -110,13 +110,13 @@ TEST_F(AudioDeviceMetricsHandlerTest,
           before_and_after_device_set_histogram_name,
           EncodeBeforeAndAfterAudioDeviceSets(previous_devices,
                                               current_devices),
-          /*bucket_count=*/1);
+          /*expected_count=*/1);
 
       // Test user override metrics.
       audio_device_metrics_handler()
           .RecordUserOverrideMetricsSeparatedByChromeRestarts(
               is_input, is_switched, /*is_chrome_restarts=*/false,
-              /*time_delta=*/kTimeDeltaInMinute);
+              /*time_delta_since_system_decision=*/kTimeDeltaInMinute);
 
       std::string user_override_histogram_name;
       if (is_switched) {
@@ -137,7 +137,7 @@ TEST_F(AudioDeviceMetricsHandlerTest,
       }
 
       histogram_tester().ExpectTotalCount(user_override_histogram_name,
-                                          /*bucket_count=*/1);
+                                          /*expected_count=*/1);
       histogram_tester().ExpectTimeBucketCount(
           user_override_histogram_name,
           base::Minutes(kTimeDeltaInMinute) / base::Minutes(1).InMilliseconds(),
@@ -184,7 +184,7 @@ TEST_F(AudioDeviceMetricsHandlerTest,
       }
       histogram_tester().ExpectBucketCount(device_count_histogram_name,
                                            current_devices.size(),
-                                           /*bucket_count=*/1);
+                                           /*expected_count=*/1);
 
       std::string device_set_histogram_name;
       if (is_switched) {
@@ -202,7 +202,7 @@ TEST_F(AudioDeviceMetricsHandlerTest,
       }
       histogram_tester().ExpectBucketCount(
           device_set_histogram_name, EncodeAudioDeviceSet(current_devices),
-          /*bucket_count=*/1);
+          /*expected_count=*/1);
 
       std::string before_and_after_device_set_histogram_name;
       if (is_switched) {
@@ -224,13 +224,13 @@ TEST_F(AudioDeviceMetricsHandlerTest,
           before_and_after_device_set_histogram_name,
           EncodeBeforeAndAfterAudioDeviceSets(previous_devices,
                                               current_devices),
-          /*bucket_count=*/1);
+          /*expected_count=*/1);
 
       // Test user override metrics.
       audio_device_metrics_handler()
           .RecordUserOverrideMetricsSeparatedByChromeRestarts(
               is_input, is_switched, /*is_chrome_restarts=*/true,
-              /*time_delta=*/kTimeDeltaInMinute);
+              /*time_delta_since_system_decision=*/kTimeDeltaInMinute);
 
       std::string user_override_histogram_name;
       if (is_switched) {
@@ -250,11 +250,92 @@ TEST_F(AudioDeviceMetricsHandlerTest,
       }
 
       histogram_tester().ExpectTotalCount(user_override_histogram_name,
-                                          /*bucket_count=*/1);
+                                          /*expected_count=*/1);
       histogram_tester().ExpectTimeBucketCount(
           user_override_histogram_name,
           base::Minutes(kTimeDeltaInMinute) / base::Minutes(1).InMilliseconds(),
           /*expected_count=*/1);
+    }
+  }
+}
+
+// Tests that no audio selection metrics are fired when device set hasn't
+// changed.
+TEST_F(AudioDeviceMetricsHandlerTest,
+       NoAudioSelectionMetricsRecordedWhenNoDeviceChanges) {
+  AudioDevice input_USB = AudioDevice(NewInputNode("USB"));
+  AudioDevice input_BLUETOOTH = AudioDevice(NewInputNode("BLUETOOTH"));
+  AudioDeviceMap previous_devices_map;
+  previous_devices_map[input_USB.id] = input_USB;
+  previous_devices_map[input_BLUETOOTH.id] = input_BLUETOOTH;
+  AudioDeviceMap current_devices_map;
+  current_devices_map[input_USB.id] = input_USB;
+  current_devices_map[input_BLUETOOTH.id] = input_BLUETOOTH;
+  AudioDeviceList previous_devices = {input_USB, input_BLUETOOTH};
+  AudioDeviceList current_devices = {input_USB, input_BLUETOOTH};
+
+  for (const bool is_input : {true, false}) {
+    for (const bool is_switched : {true, false}) {
+      audio_device_metrics_handler().MaybeRecordSystemSwitchDecisionAndContext(
+          is_input, /*has_alternative_device=*/true, is_switched,
+          current_devices_map, previous_devices_map);
+
+      std::string system_switch_histogram_name =
+          is_input ? AudioDeviceMetricsHandler::kSystemSwitchInputAudio
+                   : AudioDeviceMetricsHandler::kSystemSwitchOutputAudio;
+      histogram_tester().ExpectTotalCount(system_switch_histogram_name, 0);
+
+      std::string device_count_histogram_name;
+      if (is_switched) {
+        device_count_histogram_name =
+            is_input
+                ? AudioDeviceMetricsHandler::kSystemSwitchInputAudioDeviceCount
+                : AudioDeviceMetricsHandler::
+                      kSystemSwitchOutputAudioDeviceCount;
+      } else {
+        device_count_histogram_name =
+            is_input ? AudioDeviceMetricsHandler::
+                           kSystemNotSwitchInputAudioDeviceCount
+                     : AudioDeviceMetricsHandler::
+                           kSystemNotSwitchOutputAudioDeviceCount;
+      }
+      histogram_tester().ExpectTotalCount(device_count_histogram_name,
+                                          /*expected_count=*/0);
+
+      std::string device_set_histogram_name;
+      if (is_switched) {
+        device_set_histogram_name =
+            is_input
+                ? AudioDeviceMetricsHandler::kSystemSwitchInputAudioDeviceSet
+                : AudioDeviceMetricsHandler::kSystemSwitchOutputAudioDeviceSet;
+      } else {
+        device_set_histogram_name =
+            is_input
+                ? AudioDeviceMetricsHandler::kSystemNotSwitchInputAudioDeviceSet
+                : AudioDeviceMetricsHandler::
+                      kSystemNotSwitchOutputAudioDeviceSet;
+      }
+
+      histogram_tester().ExpectTotalCount(device_set_histogram_name,
+                                          /*expected_count=*/0);
+
+      std::string before_and_after_device_set_histogram_name;
+      if (is_switched) {
+        before_and_after_device_set_histogram_name =
+            is_input ? AudioDeviceMetricsHandler::
+                           kSystemSwitchInputBeforeAndAfterAudioDeviceSet
+                     : AudioDeviceMetricsHandler::
+                           kSystemSwitchOutputBeforeAndAfterAudioDeviceSet;
+      } else {
+        before_and_after_device_set_histogram_name =
+            is_input ? AudioDeviceMetricsHandler::
+                           kSystemNotSwitchInputBeforeAndAfterAudioDeviceSet
+                     : AudioDeviceMetricsHandler::
+                           kSystemNotSwitchOutputBeforeAndAfterAudioDeviceSet;
+      }
+      histogram_tester().ExpectTotalCount(
+          before_and_after_device_set_histogram_name,
+          /*expected_count=*/0);
     }
   }
 }
@@ -312,8 +393,8 @@ TEST_F(AudioDeviceMetricsHandlerTest,
         is_input ? AudioDeviceMetricsHandler::kConsecutiveInputDevicsChanged
                  : AudioDeviceMetricsHandler::kConsecutiveOutputDevicsChanged;
     histogram_tester().ExpectBucketCount(devices_changed_histogram_name,
-                                         /*bucket=*/kTimeDeltaInSecondA,
-                                         /*count=*/1);
+                                         /*sample=*/kTimeDeltaInSecondA,
+                                         /*expected_count=*/1);
 
     // Test consecutive devices addition.
     audio_device_metrics_handler()
@@ -329,8 +410,8 @@ TEST_F(AudioDeviceMetricsHandlerTest,
         is_input ? AudioDeviceMetricsHandler::kConsecutiveInputDevicsAdded
                  : AudioDeviceMetricsHandler::kConsecutiveOutputDevicsAdded;
     histogram_tester().ExpectBucketCount(devices_added_histogram_name,
-                                         /*bucket=*/kTimeDeltaInSecondB,
-                                         /*count=*/1);
+                                         /*sample=*/kTimeDeltaInSecondB,
+                                         /*expected_count=*/1);
   }
 }
 
@@ -350,19 +431,19 @@ TEST_F(AudioDeviceMetricsHandlerTest, RecordExceptionRulesMet) {
     // No histogram is recorded before firing.
     histogram_tester().ExpectBucketCount(
         AudioDeviceMetricsHandler::kAudioSelectionExceptionRuleMetrics,
-        /*bucket=*/rule,
-        /*count=*/0);
+        /*sample=*/rule,
+        /*expected_count=*/0);
 
     audio_device_metrics_handler().RecordExceptionRulesMet(rule);
 
     // Histogram is recorded after firing.
     histogram_tester().ExpectBucketCount(
         AudioDeviceMetricsHandler::kAudioSelectionExceptionRuleMetrics,
-        /*bucket=*/rule,
-        /*count=*/1);
+        /*sample=*/rule,
+        /*expected_count=*/1);
     histogram_tester().ExpectTotalCount(
         AudioDeviceMetricsHandler::kAudioSelectionExceptionRuleMetrics,
-        /*count=*/ruleInt + 1);
+        /*expected_count=*/ruleInt + 1);
   }
 }
 

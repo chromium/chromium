@@ -39,15 +39,34 @@ void AudioDeviceMetricsHandler::MaybeRecordSystemSwitchDecisionAndContext(
       return;
     }
 
+    AudioDeviceList input_devices =
+        CrasAudioHandler::GetSimpleUsageAudioDevices(audio_devices_,
+                                                     /*is_input=*/true);
+    uint32_t input_devices_bits = EncodeAudioDeviceSet(input_devices);
+    AudioDeviceList previous_input_devices =
+        CrasAudioHandler::GetSimpleUsageAudioDevices(previous_audio_devices_,
+                                                     /*is_input=*/true);
+    uint32_t previous_input_devices_bits =
+        EncodeAudioDeviceSet(previous_input_devices);
+
+    // Do not record system decision metrics since the device set doesn't
+    // change. No interested system selection decision in this case. This could
+    // happen when cras lost the active device, or cras fires extra node change
+    // signal.
+    if (input_devices_bits == previous_input_devices_bits) {
+      // Reset timestamp since no interested system selection decision is made
+      // and to prevent previous system decision from being used to record the
+      // user override.
+      ResetSystemSwitchTimestamp(is_input);
+      return;
+    }
+
     base::UmaHistogramBoolean(kSystemSwitchInputAudio, is_switched);
     base::UmaHistogramEnumeration(
         kAudioSelectionPerformance,
         is_switched ? AudioSelectionEvents::kSystemSwitchInput
                     : AudioSelectionEvents::kSystemNotSwitchInput);
 
-    AudioDeviceList input_devices =
-        CrasAudioHandler::GetSimpleUsageAudioDevices(audio_devices_,
-                                                     /*is_input=*/true);
     // Record the number of audio devices at the moment.
     base::UmaHistogramExactLinear(is_switched
                                       ? kSystemSwitchInputAudioDeviceCount
@@ -57,11 +76,8 @@ void AudioDeviceMetricsHandler::MaybeRecordSystemSwitchDecisionAndContext(
     // Record the encoded device set.
     base::UmaHistogramSparse(is_switched ? kSystemSwitchInputAudioDeviceSet
                                          : kSystemNotSwitchInputAudioDeviceSet,
-                             EncodeAudioDeviceSet(input_devices));
+                             input_devices_bits);
 
-    AudioDeviceList previous_input_devices =
-        CrasAudioHandler::GetSimpleUsageAudioDevices(previous_audio_devices_,
-                                                     /*is_input=*/true);
     // Record the before and after encoded device sets.
     base::UmaHistogramSparse(
         is_switched ? kSystemSwitchInputBeforeAndAfterAudioDeviceSet
@@ -90,15 +106,34 @@ void AudioDeviceMetricsHandler::MaybeRecordSystemSwitchDecisionAndContext(
       return;
     }
 
+    AudioDeviceList output_devices =
+        CrasAudioHandler::GetSimpleUsageAudioDevices(audio_devices_,
+                                                     /*is_input=*/false);
+    uint32_t output_devices_bits = EncodeAudioDeviceSet(output_devices);
+    AudioDeviceList previous_output_devices =
+        CrasAudioHandler::GetSimpleUsageAudioDevices(previous_audio_devices_,
+                                                     /*is_input=*/false);
+    uint32_t previous_output_devices_bits =
+        EncodeAudioDeviceSet(previous_output_devices);
+
+    // Do not record system decision metrics since the device set doesn't
+    // change. No interested system selection decision in this case. This could
+    // happen when cras lost the active device, or cras fires extra node change
+    // signal.
+    if (output_devices_bits == previous_output_devices_bits) {
+      // Reset timestamp since no interested system selection decision is made
+      // and to prevent previous system decision from being used to record the
+      // user override.
+      ResetSystemSwitchTimestamp(is_input);
+      return;
+    }
+
     base::UmaHistogramBoolean(kSystemSwitchOutputAudio, is_switched);
     base::UmaHistogramEnumeration(
         kAudioSelectionPerformance,
         is_switched ? AudioSelectionEvents::kSystemSwitchOutput
                     : AudioSelectionEvents::kSystemNotSwitchOutput);
 
-    AudioDeviceList output_devices =
-        CrasAudioHandler::GetSimpleUsageAudioDevices(audio_devices_,
-                                                     /*is_input=*/false);
     // Record the number of audio devices at the moment.
     base::UmaHistogramExactLinear(is_switched
                                       ? kSystemSwitchOutputAudioDeviceCount
@@ -108,10 +143,7 @@ void AudioDeviceMetricsHandler::MaybeRecordSystemSwitchDecisionAndContext(
     // Record the encoded device set.
     base::UmaHistogramSparse(is_switched ? kSystemSwitchOutputAudioDeviceSet
                                          : kSystemNotSwitchOutputAudioDeviceSet,
-                             EncodeAudioDeviceSet(output_devices));
-    AudioDeviceList previous_output_devices =
-        CrasAudioHandler::GetSimpleUsageAudioDevices(previous_audio_devices_,
-                                                     /*is_input=*/false);
+                             output_devices_bits);
 
     // Record the before and after encoded device sets.
     base::UmaHistogramSparse(
