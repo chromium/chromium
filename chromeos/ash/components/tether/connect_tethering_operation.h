@@ -17,14 +17,6 @@
 #include "base/time/time.h"
 #include "chromeos/ash/components/tether/message_transfer_operation.h"
 
-namespace ash::device_sync {
-class DeviceSyncClient;
-}
-
-namespace ash::secure_channel {
-class SecureChannelClient;
-}
-
 namespace ash::tether {
 
 class MessageWrapper;
@@ -57,8 +49,7 @@ class ConnectTetheringOperation : public MessageTransferOperation {
    public:
     static std::unique_ptr<ConnectTetheringOperation> Create(
         const TetherHost& tether_host,
-        device_sync::DeviceSyncClient* device_sync_client,
-        secure_channel::SecureChannelClient* secure_channel_client,
+        raw_ptr<HostConnection::Factory> host_connection_factory,
         bool setup_required);
 
     static void SetFactoryForTesting(Factory* factory);
@@ -67,8 +58,7 @@ class ConnectTetheringOperation : public MessageTransferOperation {
     virtual ~Factory();
     virtual std::unique_ptr<ConnectTetheringOperation> CreateInstance(
         const TetherHost& tether_host,
-        device_sync::DeviceSyncClient* device_sync_client,
-        secure_channel::SecureChannelClient* secure_channel_client,
+        raw_ptr<HostConnection::Factory> host_connection_factory,
         bool setup_required) = 0;
 
    private:
@@ -97,8 +87,7 @@ class ConnectTetheringOperation : public MessageTransferOperation {
  protected:
   ConnectTetheringOperation(
       const TetherHost& tether_host,
-      device_sync::DeviceSyncClient* device_sync_client,
-      secure_channel::SecureChannelClient* secure_channel_client,
+      raw_ptr<HostConnection::Factory> host_connection_factory,
       bool setup_required);
 
   // MessageTransferOperation:
@@ -107,7 +96,6 @@ class ConnectTetheringOperation : public MessageTransferOperation {
       std::unique_ptr<MessageWrapper> message_wrapper) override;
   void OnOperationFinished() override;
   MessageType GetMessageTypeForConnection() override;
-  void OnMessageSent(int sequence_number) override;
   uint32_t GetMessageTimeoutSeconds() override;
 
   void NotifyConnectTetheringRequestSent();
@@ -146,7 +134,6 @@ class ConnectTetheringOperation : public MessageTransferOperation {
   static const uint32_t kSetupRequiredResponseTimeoutSeconds;
 
   raw_ptr<base::Clock> clock_;
-  int connect_message_sequence_number_ = -1;
   bool setup_required_;
 
   // These values are saved in OnMessageReceived() and returned in
@@ -157,6 +144,8 @@ class ConnectTetheringOperation : public MessageTransferOperation {
   base::Time connect_tethering_request_start_time_;
 
   base::ObserverList<Observer>::Unchecked observer_list_;
+
+  base::WeakPtrFactory<ConnectTetheringOperation> weak_ptr_factory_{this};
 };
 
 }  // namespace ash::tether

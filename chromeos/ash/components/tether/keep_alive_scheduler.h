@@ -13,15 +13,8 @@
 #include "base/timer/timer.h"
 #include "chromeos/ash/components/tether/active_host.h"
 #include "chromeos/ash/components/tether/device_status_util.h"
+#include "chromeos/ash/components/tether/host_connection.h"
 #include "chromeos/ash/components/tether/keep_alive_operation.h"
-
-namespace ash::device_sync {
-class DeviceSyncClient;
-}
-
-namespace ash::secure_channel {
-class SecureChannelClient;
-}
 
 namespace ash::tether {
 
@@ -36,8 +29,7 @@ class KeepAliveScheduler : public ActiveHost::Observer,
                            public KeepAliveOperation::Observer {
  public:
   KeepAliveScheduler(
-      device_sync::DeviceSyncClient* device_sync_client,
-      secure_channel::SecureChannelClient* secure_channel_client,
+      raw_ptr<HostConnection::Factory> host_connection_factory,
       ActiveHost* active_host,
       HostScanCache* host_scan_cache,
       DeviceIdTetherNetworkGuidMap* device_id_tether_network_guid_map);
@@ -59,8 +51,7 @@ class KeepAliveScheduler : public ActiveHost::Observer,
   friend class KeepAliveSchedulerTest;
 
   KeepAliveScheduler(
-      device_sync::DeviceSyncClient* device_sync_client,
-      secure_channel::SecureChannelClient* secure_channel_client,
+      raw_ptr<HostConnection::Factory> host_connection_factory,
       ActiveHost* active_host,
       HostScanCache* host_scan_cache,
       DeviceIdTetherNetworkGuidMap* device_id_tether_network_guid_map,
@@ -70,8 +61,7 @@ class KeepAliveScheduler : public ActiveHost::Observer,
 
   static const uint32_t kKeepAliveIntervalMinutes;
 
-  raw_ptr<device_sync::DeviceSyncClient> device_sync_client_;
-  raw_ptr<secure_channel::SecureChannelClient> secure_channel_client_;
+  raw_ptr<HostConnection::Factory> host_connection_factory_;
   raw_ptr<ActiveHost> active_host_;
   raw_ptr<HostScanCache> host_scan_cache_;
   raw_ptr<DeviceIdTetherNetworkGuidMap> device_id_tether_network_guid_map_;

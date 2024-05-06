@@ -7,6 +7,7 @@
 
 #include "chromeos/ash/components/tether/tether_availability_operation_orchestrator.h"
 #include "chromeos/ash/components/tether/tether_host_fetcher.h"
+#include "chromeos/ash/services/device_sync/public/cpp/device_sync_client.h"
 
 namespace ash::tether {
 
@@ -17,7 +18,7 @@ class SecureChannelTetherAvailabilityOperationOrchestrator
    public:
     Factory(raw_ptr<TetherHostFetcher> tether_host_fetcher,
             raw_ptr<device_sync::DeviceSyncClient> device_sync_client,
-            raw_ptr<secure_channel::SecureChannelClient> secure_channel_client,
+            raw_ptr<HostConnection::Factory> host_connection_factory,
             raw_ptr<TetherHostResponseRecorder> tether_host_response_recorder,
             raw_ptr<ConnectionPreserver> connection_preserver);
 
@@ -29,8 +30,8 @@ class SecureChannelTetherAvailabilityOperationOrchestrator
 
    private:
     raw_ptr<device_sync::DeviceSyncClient> device_sync_client_;
-    raw_ptr<secure_channel::SecureChannelClient> secure_channel_client_;
     raw_ptr<TetherHostResponseRecorder> tether_host_response_recorder_;
+    raw_ptr<HostConnection::Factory> host_connection_factory_;
     raw_ptr<ConnectionPreserver> connection_preserver_;
     raw_ptr<TetherHostFetcher> tether_host_fetcher_;
   };

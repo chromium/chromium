@@ -11,12 +11,12 @@ namespace ash::tether {
 SecureChannelTetherAvailabilityOperationOrchestrator::Factory::Factory(
     raw_ptr<TetherHostFetcher> tether_host_fetcher,
     raw_ptr<device_sync::DeviceSyncClient> device_sync_client,
-    raw_ptr<secure_channel::SecureChannelClient> secure_channel_client,
+    raw_ptr<HostConnection::Factory> host_connection_factory,
     raw_ptr<TetherHostResponseRecorder> tether_host_response_recorder,
     raw_ptr<ConnectionPreserver> connection_preserver)
     : device_sync_client_(device_sync_client),
-      secure_channel_client_(secure_channel_client),
       tether_host_response_recorder_(tether_host_response_recorder),
+      host_connection_factory_(host_connection_factory),
       connection_preserver_(connection_preserver),
       tether_host_fetcher_(tether_host_fetcher) {}
 
@@ -28,8 +28,8 @@ SecureChannelTetherAvailabilityOperationOrchestrator::Factory::
     CreateInstance() {
   return std::make_unique<SecureChannelTetherAvailabilityOperationOrchestrator>(
       std::make_unique<TetherAvailabilityOperation::Initializer>(
-          device_sync_client_, secure_channel_client_,
-          tether_host_response_recorder_, connection_preserver_),
+          host_connection_factory_, tether_host_response_recorder_,
+          connection_preserver_),
       tether_host_fetcher_);
 }
 

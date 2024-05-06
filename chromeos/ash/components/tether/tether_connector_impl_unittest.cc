@@ -22,6 +22,7 @@
 #include "chromeos/ash/components/tether/device_id_tether_network_guid_map.h"
 #include "chromeos/ash/components/tether/fake_active_host.h"
 #include "chromeos/ash/components/tether/fake_disconnect_tethering_request_sender.h"
+#include "chromeos/ash/components/tether/fake_host_connection.h"
 #include "chromeos/ash/components/tether/fake_host_scan_cache.h"
 #include "chromeos/ash/components/tether/fake_notification_presenter.h"
 #include "chromeos/ash/components/tether/fake_tether_host_fetcher.h"
@@ -30,9 +31,6 @@
 #include "chromeos/ash/components/tether/host_connection_metrics_logger.h"
 #include "chromeos/ash/components/tether/mock_host_connection_metrics_logger.h"
 #include "chromeos/ash/components/tether/mock_tether_host_response_recorder.h"
-#include "chromeos/ash/services/device_sync/public/cpp/fake_device_sync_client.h"
-#include "chromeos/ash/services/secure_channel/public/cpp/client/fake_secure_channel_client.h"
-#include "chromeos/ash/services/secure_channel/public/cpp/client/secure_channel_client.h"
 #include "testing/gmock/include/gmock/gmock.h"
 #include "testing/gtest/include/gtest/gtest.h"
 #include "third_party/cros_system_api/dbus/shill/dbus-constants.h"
@@ -68,12 +66,10 @@ class FakeConnectTetheringOperation : public ConnectTetheringOperation {
  public:
   FakeConnectTetheringOperation(
       const TetherHost& tether_host,
-      device_sync::DeviceSyncClient* device_sync_client,
-      secure_channel::SecureChannelClient* secure_channel_client,
+      HostConnection::Factory* host_connection_factory,
       bool setup_required)
       : ConnectTetheringOperation(tether_host,
-                                  device_sync_client,
-                                  secure_channel_client,
+                                  host_connection_factory,
                                   setup_required),
         tether_host_(tether_host),
         setup_required_(setup_required) {}
@@ -118,12 +114,10 @@ class FakeConnectTetheringOperationFactory
   // ConnectTetheringOperation::Factory:
   std::unique_ptr<ConnectTetheringOperation> CreateInstance(
       const TetherHost& tether_host,
-      device_sync::DeviceSyncClient* device_sync_client,
-      secure_channel::SecureChannelClient* secure_channel_client,
+      raw_ptr<HostConnection::Factory> host_connection_factory,
       bool setup_required) override {
     FakeConnectTetheringOperation* operation =
-        new FakeConnectTetheringOperation(tether_host, device_sync_client,
-                                          secure_channel_client,
+        new FakeConnectTetheringOperation(tether_host, host_connection_factory,
                                           setup_required);
     created_operations_.push_back(operation);
     return base::WrapUnique(operation);
@@ -154,11 +148,6 @@ class TetherConnectorImplTest : public testing::Test {
         base::WrapUnique(new FakeConnectTetheringOperationFactory());
     ConnectTetheringOperation::Factory::SetFactoryForTesting(
         fake_operation_factory_.get());
-
-    fake_device_sync_client_ =
-        std::make_unique<device_sync::FakeDeviceSyncClient>();
-    fake_secure_channel_client_ =
-        std::make_unique<secure_channel::FakeSecureChannelClient>();
     fake_wifi_hotspot_connector_ =
         std::make_unique<FakeWifiHotspotConnector>(NetworkHandler::Get());
     fake_active_host_ = std::make_unique<FakeActiveHost>();
@@ -178,11 +167,13 @@ class TetherConnectorImplTest : public testing::Test {
         std::make_unique<FakeDisconnectTetheringRequestSender>();
     fake_wifi_hotspot_disconnector_ =
         std::make_unique<FakeWifiHotspotDisconnector>();
+    fake_host_connection_factory_ =
+        std::make_unique<FakeHostConnection::Factory>();
 
     result_.clear();
 
     tether_connector_ = base::WrapUnique(new TetherConnectorImpl(
-        fake_device_sync_client_.get(), fake_secure_channel_client_.get(),
+        fake_host_connection_factory_.get(),
         NetworkHandler::Get()->network_state_handler(),
         fake_wifi_hotspot_connector_.get(), fake_active_host_.get(),
         fake_tether_host_fetcher_.get(),
@@ -281,6 +272,8 @@ class TetherConnectorImplTest : public testing::Test {
         test_devices_[setup_required ? 1 : 0];
 
     fake_tether_host_fetcher_->SetTetherHost(test_device);
+    fake_host_connection_factory_->SetupConnectionAttempt(
+        TetherHost(test_device));
     CallConnect(GetTetherNetworkGuid(test_device.GetDeviceId()));
     EXPECT_EQ(ActiveHost::ActiveHostStatus::CONNECTING,
               fake_active_host_->GetActiveHostStatus());
@@ -328,10 +321,8 @@ class TetherConnectorImplTest : public testing::Test {
   std::unique_ptr<FakeConnectTetheringOperationFactory> fake_operation_factory_;
   std::unique_ptr<FakeWifiHotspotConnector> fake_wifi_hotspot_connector_;
   std::unique_ptr<FakeActiveHost> fake_active_host_;
+  std::unique_ptr<FakeHostConnection::Factory> fake_host_connection_factory_;
   std::unique_ptr<FakeTetherHostFetcher> fake_tether_host_fetcher_;
-  std::unique_ptr<device_sync::FakeDeviceSyncClient> fake_device_sync_client_;
-  std::unique_ptr<secure_channel::SecureChannelClient>
-      fake_secure_channel_client_;
   std::unique_ptr<MockTetherHostResponseRecorder>
       mock_tether_host_response_recorder_;
   // TODO(hansberry): Use a fake for this when a real mapping scheme is created.
@@ -383,6 +374,8 @@ TEST_F(TetherConnectorImplTest, TestCancelWhileOperationActive) {
                       USER_CANCELLATION,
                   test_devices_[0].GetDeviceId(), Eq(std::nullopt)));
 
+  fake_host_connection_factory_->SetupConnectionAttempt(
+      TetherHost(test_devices_[0]));
   CallConnect(GetTetherNetworkGuid(test_devices_[0].GetDeviceId()));
   EXPECT_EQ(ActiveHost::ActiveHostStatus::CONNECTING,
             fake_active_host_->GetActiveHostStatus());
@@ -525,6 +518,8 @@ TEST_F(TetherConnectorImplTest,
   fake_notification_presenter_->NotifyConnectionToHostFailed();
 
   // Starting a connection should result in it being removed.
+  fake_host_connection_factory_->SetupConnectionAttempt(
+      TetherHost(test_devices_[0]));
   CallConnect(GetTetherNetworkGuid(test_devices_[0].GetDeviceId()));
   EXPECT_FALSE(
       fake_notification_presenter_->is_connection_failed_notification_shown());
@@ -539,6 +534,8 @@ TEST_F(TetherConnectorImplTest, TestConnectingToWifiFails) {
           Optional(HostConnectionMetricsLogger::ConnectionToHostInternalError::
                        CLIENT_CONNECTION_TIMEOUT)));
 
+  fake_host_connection_factory_->SetupConnectionAttempt(
+      TetherHost(test_devices_[0]));
   CallConnect(GetTetherNetworkGuid(test_devices_[0].GetDeviceId()));
   EXPECT_EQ(ActiveHost::ActiveHostStatus::CONNECTING,
             fake_active_host_->GetActiveHostStatus());
@@ -584,6 +581,8 @@ TEST_F(TetherConnectorImplTest, TestCancelWhileConnectingToWifi) {
                       USER_CANCELLATION,
                   test_devices_[0].GetDeviceId(), Eq(std::nullopt)));
 
+  fake_host_connection_factory_->SetupConnectionAttempt(
+      TetherHost(test_devices_[0]));
   CallConnect(GetTetherNetworkGuid(test_devices_[0].GetDeviceId()));
   EXPECT_EQ(ActiveHost::ActiveHostStatus::CONNECTING,
             fake_active_host_->GetActiveHostStatus());
@@ -640,6 +639,8 @@ TEST_F(TetherConnectorImplTest, TestSuccessfulConnection) {
       RecordSuccessfulConnectTetheringResponse(test_devices_[0].GetDeviceId()));
 
   fake_tether_host_fetcher_->SetTetherHost(test_devices_[0]);
+  fake_host_connection_factory_->SetupConnectionAttempt(
+      TetherHost(test_devices_[0]));
   CallConnect(GetTetherNetworkGuid(test_devices_[0].GetDeviceId()));
   EXPECT_EQ(ActiveHost::ActiveHostStatus::CONNECTING,
             fake_active_host_->GetActiveHostStatus());
@@ -695,6 +696,8 @@ TEST_F(TetherConnectorImplTest, TestSuccessfulConnection_SetupRequired) {
       fake_notification_presenter_->is_setup_required_notification_shown());
 
   fake_tether_host_fetcher_->SetTetherHost(test_devices_[1]);
+  fake_host_connection_factory_->SetupConnectionAttempt(
+      TetherHost(test_devices_[0]));
   CallConnect(GetTetherNetworkGuid(test_devices_[1].GetDeviceId()));
   EXPECT_FALSE(
       fake_notification_presenter_->is_setup_required_notification_shown());
@@ -734,7 +737,10 @@ TEST_F(TetherConnectorImplTest,
                   test_devices_[1].GetDeviceId(), Eq(std::nullopt)));
 
   fake_tether_host_fetcher_->SetTetherHost(test_devices_[0]);
+  fake_host_connection_factory_->SetupConnectionAttempt(
+      TetherHost(test_devices_[0]));
   CallConnect(GetTetherNetworkGuid(test_devices_[0].GetDeviceId()));
+
   EXPECT_EQ(ActiveHost::ActiveHostStatus::CONNECTING,
             fake_active_host_->GetActiveHostStatus());
   EXPECT_EQ(test_devices_[0].GetDeviceId(),
@@ -748,7 +754,10 @@ TEST_F(TetherConnectorImplTest,
 
   // Before the created operation replies, start a new connection to device 1.
   fake_tether_host_fetcher_->SetTetherHost(test_devices_[1]);
+  fake_host_connection_factory_->SetupConnectionAttempt(
+      TetherHost(test_devices_[0]));
   CallConnect(GetTetherNetworkGuid(test_devices_[1].GetDeviceId()));
+
   // The first connection attempt should have resulted in a connect canceled
   // error.
   EXPECT_EQ(NetworkConnectionHandler::kErrorConnectCanceled,
@@ -801,7 +810,10 @@ TEST_F(TetherConnectorImplTest,
                   test_devices_[1].GetDeviceId(), Eq(std::nullopt)));
 
   fake_tether_host_fetcher_->SetTetherHost(test_devices_[0]);
+  fake_host_connection_factory_->SetupConnectionAttempt(
+      TetherHost(test_devices_[0]));
   CallConnect(GetTetherNetworkGuid(test_devices_[0].GetDeviceId()));
+
   EXPECT_EQ(ActiveHost::ActiveHostStatus::CONNECTING,
             fake_active_host_->GetActiveHostStatus());
   EXPECT_EQ(test_devices_[0].GetDeviceId(),
@@ -822,7 +834,10 @@ TEST_F(TetherConnectorImplTest,
   // While the connection to the Wi-Fi network is in progress, start a new
   // connection attempt.
   fake_tether_host_fetcher_->SetTetherHost(test_devices_[1]);
+  fake_host_connection_factory_->SetupConnectionAttempt(
+      TetherHost(test_devices_[0]));
   CallConnect(GetTetherNetworkGuid(test_devices_[1].GetDeviceId()));
+
   // The first connection attempt should have resulted in a connect canceled
   // error.
   EXPECT_EQ(NetworkConnectionHandler::kErrorConnectCanceled,

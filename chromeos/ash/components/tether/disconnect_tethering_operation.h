@@ -12,14 +12,6 @@
 #include "base/time/time.h"
 #include "chromeos/ash/components/tether/message_transfer_operation.h"
 
-namespace ash::device_sync {
-class DeviceSyncClient;
-}
-
-namespace ash::secure_channel {
-class SecureChannelClient;
-}
-
 namespace ash::tether {
 
 // Operation which sends a disconnect message to a tether host.
@@ -29,8 +21,7 @@ class DisconnectTetheringOperation : public MessageTransferOperation {
    public:
     static std::unique_ptr<DisconnectTetheringOperation> Create(
         const TetherHost& tether_host,
-        device_sync::DeviceSyncClient* device_sync_client,
-        secure_channel::SecureChannelClient* secure_channel_client);
+        raw_ptr<HostConnection::Factory> host_connection_factory);
 
     static void SetFactoryForTesting(Factory* factory);
 
@@ -38,8 +29,7 @@ class DisconnectTetheringOperation : public MessageTransferOperation {
     virtual ~Factory();
     virtual std::unique_ptr<DisconnectTetheringOperation> CreateInstance(
         const TetherHost& tether_host,
-        device_sync::DeviceSyncClient* device_sync_client,
-        secure_channel::SecureChannelClient* secure_channel_client) = 0;
+        raw_ptr<HostConnection::Factory> host_connection_factory) = 0;
 
    private:
     static Factory* factory_instance_;
@@ -66,8 +56,7 @@ class DisconnectTetheringOperation : public MessageTransferOperation {
  protected:
   DisconnectTetheringOperation(
       const TetherHost& tether_host,
-      device_sync::DeviceSyncClient* device_sync_client,
-      secure_channel::SecureChannelClient* secure_channel_client);
+      raw_ptr<HostConnection::Factory> host_connection_factory);
 
   void NotifyObserversOperationFinished(bool success);
 
@@ -75,7 +64,8 @@ class DisconnectTetheringOperation : public MessageTransferOperation {
   void OnDeviceAuthenticated() override;
   void OnOperationFinished() override;
   MessageType GetMessageTypeForConnection() override;
-  void OnMessageSent(int sequence_number) override;
+
+  void OnMessageSent();
 
  private:
   friend class DisconnectTetheringOperationTest;
@@ -87,11 +77,11 @@ class DisconnectTetheringOperation : public MessageTransferOperation {
   void SetClockForTest(base::Clock* clock_for_test);
 
   base::ObserverList<Observer>::Unchecked observer_list_;
-  int disconnect_message_sequence_number_ = -1;
   bool has_sent_message_;
 
   raw_ptr<base::Clock> clock_;
   base::Time disconnect_start_time_;
+  base::WeakPtrFactory<DisconnectTetheringOperation> weak_ptr_factory_{this};
 };
 
 }  // namespace ash::tether

@@ -17,7 +17,6 @@
 #include "chromeos/ash/components/tether/message_wrapper.h"
 #include "chromeos/ash/components/tether/proto/tether.pb.h"
 #include "chromeos/ash/components/tether/tether_host_response_recorder.h"
-#include "chromeos/ash/services/secure_channel/public/cpp/client/secure_channel_client.h"
 
 namespace ash::tether {
 
@@ -75,12 +74,10 @@ bool AreGmsCoreNotificationsDisabled(
 }  // namespace
 
 TetherAvailabilityOperation::Initializer::Initializer(
-    raw_ptr<device_sync::DeviceSyncClient> device_sync_client,
-    raw_ptr<secure_channel::SecureChannelClient> secure_channel_client,
+    raw_ptr<HostConnection::Factory> host_connection_factory,
     raw_ptr<TetherHostResponseRecorder> tether_host_response_recorder,
     raw_ptr<ConnectionPreserver> connection_preserver)
-    : device_sync_client_(device_sync_client),
-      secure_channel_client_(secure_channel_client),
+    : host_connection_factory_(host_connection_factory),
       tether_host_response_recorder_(tether_host_response_recorder),
       connection_preserver_(connection_preserver) {}
 
@@ -92,9 +89,8 @@ TetherAvailabilityOperation::Initializer::Initialize(
     TetherAvailabilityOperation::OnTetherAvailabilityOperationFinishedCallback
         callback) {
   auto operation = std::make_unique<TetherAvailabilityOperation>(
-      tether_host, std::move(callback), device_sync_client_,
-      secure_channel_client_, tether_host_response_recorder_,
-      connection_preserver_);
+      tether_host, std::move(callback), host_connection_factory_,
+      tether_host_response_recorder_, connection_preserver_);
   operation->Initialize();
   return operation;
 }
@@ -103,14 +99,13 @@ TetherAvailabilityOperation::TetherAvailabilityOperation(
     const TetherHost& tether_host,
     TetherAvailabilityOperation::OnTetherAvailabilityOperationFinishedCallback
         callback,
-    device_sync::DeviceSyncClient* device_sync_client,
-    secure_channel::SecureChannelClient* secure_channel_client,
+    raw_ptr<HostConnection::Factory> host_connection_factory,
     TetherHostResponseRecorder* tether_host_response_recorder,
     ConnectionPreserver* connection_preserver)
-    : MessageTransferOperation(tether_host,
-                               secure_channel::ConnectionPriority::kLow,
-                               device_sync_client,
-                               secure_channel_client),
+    : MessageTransferOperation(
+          tether_host,
+          HostConnection::Factory::ConnectionPriority::kLow,
+          host_connection_factory),
       tether_host_(tether_host),
       tether_host_response_recorder_(tether_host_response_recorder),
       connection_preserver_(connection_preserver),
@@ -125,8 +120,8 @@ void TetherAvailabilityOperation::OnDeviceAuthenticated() {
   tether_availability_request_start_time_ = clock_->Now();
   PA_LOG(VERBOSE) << "Sending TetherAvailabilityRequest message to "
                   << GetDeviceId(/*truncate_for_logs=*/true) << ".";
-  SendMessageToDevice(
-      std::make_unique<MessageWrapper>(TetherAvailabilityRequest()));
+  SendMessage(std::make_unique<MessageWrapper>(TetherAvailabilityRequest()),
+              /*on_message_sent=*/base::DoNothing());
 }
 
 void TetherAvailabilityOperation::OnMessageReceived(

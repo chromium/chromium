@@ -6,10 +6,9 @@
 #define CHROMEOS_ASH_COMPONENTS_TETHER_ASYNCHRONOUS_SHUTDOWN_OBJECT_CONTAINER_H_
 
 #include "base/functional/callback_forward.h"
+#include "chromeos/ash/components/tether/host_connection.h"
 
-namespace ash {
-
-namespace tether {
+namespace ash::tether {
 
 class TetherHostFetcher;
 class DisconnectTetheringRequestSender;
@@ -41,10 +40,9 @@ class AsynchronousShutdownObjectContainer {
   disconnect_tethering_request_sender() = 0;
   virtual NetworkConfigurationRemover* network_configuration_remover() = 0;
   virtual WifiHotspotDisconnector* wifi_hotspot_disconnector() = 0;
+  virtual HostConnection::Factory* host_connection_factory() = 0;
 };
 
-}  // namespace tether
-
-}  // namespace ash
+}  // namespace ash::tether
 
 #endif  // CHROMEOS_ASH_COMPONENTS_TETHER_ASYNCHRONOUS_SHUTDOWN_OBJECT_CONTAINER_H_

@@ -17,6 +17,7 @@ class HostConnection {
  public:
   class PayloadListener {
    public:
+    virtual ~PayloadListener() = default;
     virtual void OnMessageReceived(std::unique_ptr<MessageWrapper> message) = 0;
   };
 

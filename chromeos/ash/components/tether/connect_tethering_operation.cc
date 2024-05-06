@@ -10,7 +10,6 @@
 #include "chromeos/ash/components/multidevice/logging/logging.h"
 #include "chromeos/ash/components/tether/message_wrapper.h"
 #include "chromeos/ash/components/tether/proto/tether.pb.h"
-#include "chromeos/ash/services/secure_channel/public/cpp/client/secure_channel_client.h"
 
 namespace ash::tether {
 
@@ -36,16 +35,15 @@ ConnectTetheringOperation::Factory*
 std::unique_ptr<ConnectTetheringOperation>
 ConnectTetheringOperation::Factory::Create(
     const TetherHost& tether_host,
-    device_sync::DeviceSyncClient* device_sync_client,
-    secure_channel::SecureChannelClient* secure_channel_client,
+    raw_ptr<HostConnection::Factory> host_connection_factory,
     bool setup_required) {
   if (factory_instance_) {
     return factory_instance_->CreateInstance(
-        tether_host, device_sync_client, secure_channel_client, setup_required);
+        tether_host, host_connection_factory, setup_required);
   }
 
   return base::WrapUnique(new ConnectTetheringOperation(
-      tether_host, device_sync_client, secure_channel_client, setup_required));
+      tether_host, host_connection_factory, setup_required));
 }
 
 // static
@@ -58,13 +56,12 @@ ConnectTetheringOperation::Factory::~Factory() = default;
 
 ConnectTetheringOperation::ConnectTetheringOperation(
     const TetherHost& tether_host,
-    device_sync::DeviceSyncClient* device_sync_client,
-    secure_channel::SecureChannelClient* secure_channel_client,
+    raw_ptr<HostConnection::Factory> host_connection_factory,
     bool setup_required)
-    : MessageTransferOperation(tether_host,
-                               secure_channel::ConnectionPriority::kHigh,
-                               device_sync_client,
-                               secure_channel_client),
+    : MessageTransferOperation(
+          tether_host,
+          HostConnection::Factory::ConnectionPriority::kHigh,
+          host_connection_factory),
       clock_(base::DefaultClock::GetInstance()),
       setup_required_(setup_required),
       error_code_to_return_(HostResponseErrorCode::NO_RESPONSE) {}
@@ -81,8 +78,10 @@ void ConnectTetheringOperation::RemoveObserver(Observer* observer) {
 
 void ConnectTetheringOperation::OnDeviceAuthenticated() {
   connect_tethering_request_start_time_ = clock_->Now();
-  connect_message_sequence_number_ = SendMessageToDevice(
-      std::make_unique<MessageWrapper>(ConnectTetheringRequest()));
+  SendMessage(std::make_unique<MessageWrapper>(ConnectTetheringRequest()),
+              base::BindOnce(
+                  &ConnectTetheringOperation::NotifyConnectTetheringRequestSent,
+                  weak_ptr_factory_.GetWeakPtr()));
 }
 
 void ConnectTetheringOperation::OnMessageReceived(
@@ -135,7 +134,7 @@ void ConnectTetheringOperation::OnMessageReceived(
       "InstantTethering.Performance.ConnectTetheringResponseDuration",
       clock_->Now() - connect_tethering_request_start_time_);
 
-  // Now that a response has been received, the operation may finish.
+  // Now that a response has been received, the device can be unregistered.
   StopOperation();
 }
 
@@ -153,14 +152,6 @@ void ConnectTetheringOperation::OnOperationFinished() {
 
 MessageType ConnectTetheringOperation::GetMessageTypeForConnection() {
   return MessageType::CONNECT_TETHERING_REQUEST;
-}
-
-void ConnectTetheringOperation::OnMessageSent(int sequence_number) {
-  if (sequence_number != connect_message_sequence_number_) {
-    return;
-  }
-
-  NotifyConnectTetheringRequestSent();
 }
 
 void ConnectTetheringOperation::NotifyConnectTetheringRequestSent() {

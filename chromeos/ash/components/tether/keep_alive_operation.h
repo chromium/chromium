@@ -12,14 +12,6 @@
 #include "base/time/time.h"
 #include "chromeos/ash/components/tether/message_transfer_operation.h"
 
-namespace ash::device_sync {
-class DeviceSyncClient;
-}
-
-namespace ash::secure_channel {
-class SecureChannelClient;
-}
-
 namespace ash::tether {
 
 // Operation which sends a keep-alive message to a tether host and receives an
@@ -30,8 +22,7 @@ class KeepAliveOperation : public MessageTransferOperation {
    public:
     static std::unique_ptr<KeepAliveOperation> Create(
         const TetherHost& tether_host,
-        device_sync::DeviceSyncClient* device_sync_client,
-        secure_channel::SecureChannelClient* secure_channel_client);
+        raw_ptr<HostConnection::Factory> host_connection_factory);
 
     static void SetFactoryForTesting(Factory* factory);
 
@@ -39,8 +30,7 @@ class KeepAliveOperation : public MessageTransferOperation {
     virtual ~Factory();
     virtual std::unique_ptr<KeepAliveOperation> CreateInstance(
         const TetherHost& tether_host,
-        device_sync::DeviceSyncClient* device_sync_client,
-        secure_channel::SecureChannelClient* secure_channel_client) = 0;
+        raw_ptr<HostConnection::Factory> host_connection_factory) = 0;
 
    private:
     static Factory* factory_instance_;
@@ -63,10 +53,8 @@ class KeepAliveOperation : public MessageTransferOperation {
   void RemoveObserver(Observer* observer);
 
  protected:
-  KeepAliveOperation(
-      const TetherHost& tether_host,
-      device_sync::DeviceSyncClient* device_sync_client,
-      secure_channel::SecureChannelClient* secure_channel_client);
+  KeepAliveOperation(const TetherHost& tether_host,
+                     raw_ptr<HostConnection::Factory> host_connection_factory);
 
   // MessageTransferOperation:
   void OnDeviceAuthenticated() override;
