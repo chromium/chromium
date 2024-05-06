@@ -846,12 +846,19 @@ IN_PROC_BROWSER_TEST_F(ServiceWorkerLifetimeKeepaliveBrowsertest,
 
   Profile* incognito_profile =
       profile()->GetPrimaryOTRProfile(/*create_if_needed=*/true);
-  TestServiceWorkerContextObserver registration_observer(incognito_profile);
+  // TODO(crbug.com/335829868): Refactor to use
+  // ServiceWorkerTaskQueue::TestObserver::DidStartWorker() to ensure worker is
+  // ready to receive event in BackgroundScriptExecutor::ExecuteScript().
+  TestServiceWorkerContextObserver sw_observer_opener_extension(
+      incognito_profile, opener_extension->id());
+  TestServiceWorkerContextObserver sw_observer_listener_extension(
+      incognito_profile, listener_extension->id());
   // Open a new tab in incognito. This spawns the new process for the split mode
   // extensions.
   Browser* incognito_browser = OpenURLOffTheRecord(
       profile(), embedded_test_server()->GetURL("example.com", "/simple.html"));
-  registration_observer.WaitForWorkerActivated();
+  sw_observer_listener_extension.WaitForWorkerStarted();
+  sw_observer_opener_extension.WaitForWorkerStarted();
 
   // Send a message from one extension to the other, opening a message pipe.
   // Since the listener extension never responds, the message pipe will
@@ -992,10 +999,18 @@ IN_PROC_BROWSER_TEST_F(
       spanning_mode_dir.UnpackedPath(), {.allow_in_incognito = true});
   ASSERT_TRUE(spanning_mode_extension);
 
+  Profile* incognito_profile =
+      profile()->GetPrimaryOTRProfile(/*create_if_needed=*/true);
+  // Wait for the single worker from split_mode_extension.
+  // TODO(crbug.com/335829868): Refactor to use
+  // ServiceWorkerTaskQueue::TestObserver::DidStartWorker() to ensure worker is
+  // ready to receive event in BackgroundScriptExecutor::ExecuteScript().
+  TestServiceWorkerContextObserver sw_observer(incognito_profile);
   // Open a new tab in incognito. This spawns the new process for the split mode
   // extension.
   Browser* incognito_browser = OpenURLOffTheRecord(
       profile(), embedded_test_server()->GetURL("example.com", "/simple.html"));
+  sw_observer.WaitForWorkerStarted();
 
   // Send a message to the spanning mode extension from the incognito context of
   // the split mode extension.
@@ -1008,7 +1023,6 @@ IN_PROC_BROWSER_TEST_F(
            // Note: Pass a callback to signal a reply is expected.
            chrome.runtime.sendMessage('%s', 'hello', () => {});
          })();)";
-  Profile* incognito_profile = incognito_browser->profile();
   base::Value script_result = BackgroundScriptExecutor::ExecuteScript(
       incognito_profile, split_mode_extension->id(),
       base::StringPrintf(kOpenMessagePipe,
