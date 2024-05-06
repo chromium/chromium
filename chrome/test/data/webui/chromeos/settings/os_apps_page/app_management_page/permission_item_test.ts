@@ -15,7 +15,7 @@ import {getPermissionValueBool} from 'chrome://resources/cr_components/app_manag
 import {loadTimeData} from 'chrome://resources/js/load_time_data.js';
 import {flush} from 'chrome://resources/polymer/v3_0/polymer/polymer_bundled.min.js';
 import {assertEquals, assertFalse, assertNull, assertTrue} from 'chrome://webui-test/chai_assert.js';
-import {flushTasks} from 'chrome://webui-test/polymer_test_util.js';
+import {flushTasks, waitAfterNextRender} from 'chrome://webui-test/polymer_test_util.js';
 
 import {FakePageHandler} from '../../app_management/fake_page_handler.js';
 import {fakeComponentBrowserProxy, replaceStore, setupFakeHandler} from '../../app_management/test_util.js';
@@ -179,7 +179,7 @@ suite('AppManagementPermissionItemTest', function() {
       const link = permissionDescription.shadowRoot!.querySelector('a');
       assertTrue(!!link);
       link.click();
-      await flushTasks();
+      await waitAfterNextRender(permissionItem);
     }
 
     test('Open dialog and close using cancel button', async () => {
@@ -208,7 +208,7 @@ suite('AppManagementPermissionItemTest', function() {
               '#cancelButton');
       assertTrue(!!cancelButton);
       cancelButton.click();
-      await flushTasks();
+      await waitAfterNextRender(permissionItem);
 
       // Dialog not visible anymore.
       assertNull(getDialogElement());
@@ -240,8 +240,10 @@ suite('AppManagementPermissionItemTest', function() {
               '#confirmButton');
       assertTrue(!!confirmButton);
       confirmButton.click();
-      await flushTasks();
+      await waitAfterNextRender(permissionItem);
 
+      // Dialog not visible anymore.
+      assertNull(getDialogElement());
       // Sensor access is turned ON.
       assertEquals(
           GeolocationAccessLevel.ALLOWED,
