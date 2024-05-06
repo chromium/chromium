@@ -209,10 +209,7 @@ test("device_unittests") {
       "//services/data_decoder/public/cpp:test_support",
     ]
 
-    data = [
-      "fido/enclave/verify/testdata/logentry.json",
-      "fido/enclave/verify/testdata/logentry_noverification.json",
-    ]
+    data = [ "fido/enclave/verify/testdata/" ]
 
     if (is_chromeos_lacros) {
       deps += [ "//chromeos/startup" ]

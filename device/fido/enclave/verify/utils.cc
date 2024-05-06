@@ -9,8 +9,35 @@
 
 #include "base/base64.h"
 #include "base/strings/string_util.h"
+#include "third_party/boringssl/src/include/openssl/base.h"
+#include "third_party/boringssl/src/include/openssl/bytestring.h"
+#include "third_party/boringssl/src/include/openssl/ec.h"
+#include "third_party/boringssl/src/include/openssl/ec_key.h"
+#include "third_party/boringssl/src/include/openssl/ecdsa.h"
+#include "third_party/boringssl/src/include/openssl/evp.h"
+#include "third_party/boringssl/src/include/openssl/mem.h"
 
 namespace device::enclave {
+
+namespace {
+
+bssl::UniquePtr<EC_KEY> GetECKey(base::span<const uint8_t> public_key) {
+  CBS cbs;
+  CBS_init(&cbs, public_key.data(), public_key.size());
+  bssl::UniquePtr<EVP_PKEY> parsed_key(EVP_parse_public_key(&cbs));
+  if (!parsed_key || CBS_len(&cbs) != 0 ||
+      EVP_PKEY_id(parsed_key.get()) != EVP_PKEY_EC) {
+    return nullptr;
+  }
+  bssl::UniquePtr<EC_KEY> ec_key(EVP_PKEY_get1_EC_KEY(parsed_key.get()));
+  if (!ec_key || EC_GROUP_get_curve_name(EC_KEY_get0_group(ec_key.get())) !=
+                     NID_X9_62_prime256v1) {
+    return nullptr;
+  }
+  return ec_key;
+}
+
+}  // namespace
 
 constexpr std::string_view kPemHeader = "-----BEGIN PUBLIC KEY-----";
 constexpr std::string_view kPemFooter = "-----END PUBLIC KEY-----";
@@ -39,7 +66,7 @@ base::expected<std::vector<uint8_t>, std::string> ConvertPemToRaw(
   return resultVector;
 }
 
-std::string ConvertRawToPem(std::vector<uint8_t> public_key) {
+std::string ConvertRawToPem(base::span<const uint8_t> public_key) {
   std::string before(public_key.begin(), public_key.end());
   std::string encoded = base::Base64Encode(before);
   std::vector<char> tempResult(kPemHeader.begin(), kPemHeader.end());
@@ -53,6 +80,23 @@ std::string ConvertRawToPem(std::vector<uint8_t> public_key) {
   std::string result(tempResult.begin(), tempResult.end());
   result = result + std::string(kPemFooter) + "\n";
   return result;
+}
+
+base::expected<void, std::string> COMPONENT_EXPORT(DEVICE_FIDO)
+    VerifySignatureRaw(base::span<const uint8_t> signature,
+                       base::span<const uint8_t> contents,
+                       base::span<const uint8_t> public_key) {
+  bssl::UniquePtr<EC_KEY> ec_key(GetECKey(public_key));
+  if (!ec_key) {
+    return base::unexpected("Could not parse public_key");
+  }
+  bssl::UniquePtr<ECDSA_SIG> sig(
+      ECDSA_SIG_from_bytes(signature.data(), signature.size()));
+  if (!ECDSA_do_verify(contents.data(), contents.size(), sig.get(),
+                       ec_key.get())) {
+    return base::unexpected("Could not verify the signature");
+  }
+  return base::expected<void, std::string>();
 }
 
 }  // namespace device::enclave
