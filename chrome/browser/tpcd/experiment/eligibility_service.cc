@@ -9,13 +9,12 @@
 #include "base/check.h"
 #include "base/functional/bind.h"
 #include "base/metrics/histogram_functions.h"
-#include "chrome/browser/privacy_sandbox/privacy_sandbox_settings_factory.h"
-#include "chrome/browser/privacy_sandbox/tracking_protection_onboarding_factory.h"
 #include "chrome/browser/tpcd/experiment/eligibility_service_factory.h"
 #include "chrome/browser/tpcd/experiment/experiment_manager.h"
 #include "chrome/browser/tpcd/experiment/tpcd_experiment_features.h"
 #include "components/privacy_sandbox/privacy_sandbox_settings.h"
 #include "components/privacy_sandbox/tpcd_experiment_eligibility.h"
+#include "components/privacy_sandbox/tracking_protection_onboarding.h"
 #include "content/public/browser/cookie_deprecation_label_manager.h"
 #include "content/public/browser/storage_partition.h"
 #include "content/public/common/content_features.h"
@@ -48,15 +47,20 @@ inline void UmaHistogramProfileEligibilityMismatch(
   }
 }
 
-EligibilityService::EligibilityService(Profile* profile,
-                                       ExperimentManager* experiment_manager)
+EligibilityService::EligibilityService(
+    Profile* profile,
+    privacy_sandbox::TrackingProtectionOnboarding*
+        tracking_protection_onboarding,
+    privacy_sandbox::PrivacySandboxSettings* privacy_sandbox_settings,
+    ExperimentManager* experiment_manager)
     : profile_(profile),
-      onboarding_service_(
-          TrackingProtectionOnboardingFactory::GetForProfile(profile_)),
+      onboarding_service_(tracking_protection_onboarding),
+      privacy_sandbox_settings_(privacy_sandbox_settings),
       experiment_manager_(experiment_manager) {
   CHECK(base::FeatureList::IsEnabled(
       features::kCookieDeprecationFacilitatedTesting));
   CHECK(experiment_manager_);
+  CHECK(privacy_sandbox_settings_);
 
   if (onboarding_service_) {
     onboarding_observation_.Observe(onboarding_service_);
@@ -78,7 +82,11 @@ EligibilityService* EligibilityService::Get(Profile* profile) {
 }
 
 void EligibilityService::Shutdown() {
-  onboarding_service_ = nullptr;
+  if (onboarding_service_) {
+    onboarding_observation_.Reset();
+    onboarding_service_ = nullptr;
+  }
+  privacy_sandbox_settings_ = nullptr;
 }
 
 void EligibilityService::BroadcastProfileEligibility() {
@@ -141,11 +149,8 @@ void EligibilityService::MarkProfileEligibility(bool is_client_eligible) {
 
 privacy_sandbox::TpcdExperimentEligibility
 EligibilityService::ProfileEligibility() {
-  auto* privacy_sandbox_settings =
-      PrivacySandboxSettingsFactory::GetForProfile(profile_);
-  CHECK(privacy_sandbox_settings);
-
-  return privacy_sandbox_settings
+  CHECK(privacy_sandbox_settings_);
+  return privacy_sandbox_settings_
       ->GetCookieDeprecationExperimentCurrentEligibility();
 }
 

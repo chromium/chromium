@@ -147,6 +147,8 @@ void PrefWatcher::RegisterRendererPreferenceWatcher(
 }
 
 void PrefWatcher::Shutdown() {
+  tracking_protection_settings_ = nullptr;
+  tracking_protection_settings_observation_.Reset();
   profile_pref_change_registrar_.RemoveAll();
   local_state_pref_change_registrar_.RemoveAll();
 }

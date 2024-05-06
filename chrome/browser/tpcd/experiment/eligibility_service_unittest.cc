@@ -65,7 +65,7 @@ class EligibilityServiceTestBase : public testing::Test {
     ON_CALL(*experiment_manager_, DidVersionChange)
         .WillByDefault(Return(false));
 
-    auto* privacy_sandbox_settings =
+    privacy_sandbox_settings_ =
         PrivacySandboxSettingsFactory::GetForProfile(&profile_);
     auto privacy_sandbox_delegate = std::make_unique<
         privacy_sandbox_test_util::MockPrivacySandboxSettingsDelegate>();
@@ -73,8 +73,11 @@ class EligibilityServiceTestBase : public testing::Test {
     privacy_sandbox_delegate_
         ->SetUpGetCookieDeprecationExperimentCurrentEligibility(
             TpcdExperimentEligibility::Reason::kEligible);
-    privacy_sandbox_settings->SetDelegateForTesting(
+    privacy_sandbox_settings_->SetDelegateForTesting(
         std::move(privacy_sandbox_delegate));
+
+    onboarding_service_ =
+        TrackingProtectionOnboardingFactory::GetForProfile(&profile_);
   }
 
  protected:
@@ -82,8 +85,10 @@ class EligibilityServiceTestBase : public testing::Test {
   ScopedTestingLocalState local_state_;
   TestingProfile profile_;
   std::unique_ptr<MockExperimentManager> experiment_manager_;
+  raw_ptr<privacy_sandbox::PrivacySandboxSettings> privacy_sandbox_settings_;
   raw_ptr<privacy_sandbox_test_util::MockPrivacySandboxSettingsDelegate>
       privacy_sandbox_delegate_;
+  raw_ptr<privacy_sandbox::TrackingProtectionOnboarding> onboarding_service_;
 };
 
 class EligibilityServiceTest : public EligibilityServiceTestBase {
@@ -94,10 +99,8 @@ class EligibilityServiceTest : public EligibilityServiceTestBase {
   }
 
  protected:
-  void SetChannelVersion(Profile& profile, version_info::Channel channel) {
-    auto* onboarding_service =
-        TrackingProtectionOnboardingFactory::GetForProfile(&profile);
-    onboarding_service->channel_ = channel;
+  void SetChannelVersion(version_info::Channel channel) {
+    onboarding_service_->channel_ = channel;
   }
 
  private:
@@ -110,7 +113,9 @@ TEST_F(EligibilityServiceTest, ClientEligibilityKnown_ClientEligibilityNotSet) {
   EXPECT_CALL(*experiment_manager_, IsClientEligible).WillOnce(Return(false));
   EXPECT_CALL(*experiment_manager_, SetClientEligibility).Times(0);
 
-  EligibilityService eligibility_service(&profile_, experiment_manager_.get());
+  EligibilityService eligibility_service(&profile_, onboarding_service_,
+                                         privacy_sandbox_settings_,
+                                         experiment_manager_.get());
 
   histograms.ExpectTotalCount(kReasonForEligibilityStoredInPrefsHistogram, 0);
   histograms.ExpectUniqueSample(
@@ -134,7 +139,9 @@ TEST_F(EligibilityServiceTest,
   EXPECT_CALL(*experiment_manager_, SetClientEligibility(false, _))
       .WillOnce(base::test::RunOnceCallback<1>(false));
 
-  EligibilityService eligibility_service(&profile_, experiment_manager_.get());
+  EligibilityService eligibility_service(&profile_, onboarding_service_,
+                                         privacy_sandbox_settings_,
+                                         experiment_manager_.get());
 
   histograms.ExpectUniqueSample(
       kReasonForEligibilityStoredInPrefsHistogram,
@@ -161,7 +168,9 @@ TEST_F(EligibilityServiceTest,
   EXPECT_CALL(*experiment_manager_, SetClientEligibility(true, _))
       .WillOnce(base::test::RunOnceCallback<1>(true));
 
-  EligibilityService eligibility_service(&profile_, experiment_manager_.get());
+  EligibilityService eligibility_service(&profile_, onboarding_service_,
+                                         privacy_sandbox_settings_,
+                                         experiment_manager_.get());
 
   histograms.ExpectUniqueSample(
       kReasonForEligibilityStoredInPrefsHistogram,
@@ -176,23 +185,23 @@ TEST_F(EligibilityServiceTest,
 TEST_F(EligibilityServiceTest, VersionChange_OnboardingPrefsReset) {
   EXPECT_CALL(*experiment_manager_, DidVersionChange).WillOnce(Return(true));
 
-  SetChannelVersion(profile_, version_info::Channel::BETA);
+  SetChannelVersion(version_info::Channel::BETA);
 
-  auto* onboarding_service =
-      TrackingProtectionOnboardingFactory::GetForProfile(&profile_);
   // Simulate onboarding a profile.
-  onboarding_service->MaybeMarkEligible();
-  onboarding_service->OnboardingNoticeShown();
-  onboarding_service->NoticeActionTaken(
+  onboarding_service_->MaybeMarkEligible();
+  onboarding_service_->OnboardingNoticeShown();
+  onboarding_service_->NoticeActionTaken(
       privacy_sandbox::TrackingProtectionOnboarding::NoticeType::kOnboarding,
       privacy_sandbox::TrackingProtectionOnboarding::NoticeAction::kGotIt);
 
-  EXPECT_EQ(onboarding_service->GetOnboardingStatus(),
+  EXPECT_EQ(onboarding_service_->GetOnboardingStatus(),
             privacy_sandbox::TrackingProtectionOnboarding::OnboardingStatus::
                 kOnboarded);
 
-  EligibilityService eligibility_service(&profile_, experiment_manager_.get());
-  EXPECT_EQ(onboarding_service->GetOnboardingStatus(),
+  EligibilityService eligibility_service(&profile_, onboarding_service_,
+                                         privacy_sandbox_settings_,
+                                         experiment_manager_.get());
+  EXPECT_EQ(onboarding_service_->GetOnboardingStatus(),
             privacy_sandbox::TrackingProtectionOnboarding::OnboardingStatus::
                 kIneligible);
 }
@@ -286,7 +295,9 @@ TEST_P(EligibilityServiceHistogramTest, ProfileEligibilityMismatch) {
               ? TpcdExperimentEligibility::Reason::kEligible
               : TpcdExperimentEligibility::Reason::kHasNotSeenNotice)));
 
-  EligibilityService eligibility_service(&profile_, experiment_manager_.get());
+  EligibilityService eligibility_service(&profile_, onboarding_service_,
+                                         privacy_sandbox_settings_,
+                                         experiment_manager_.get());
 
   // Expect mismatch value recorded in histogram.
   histograms().ExpectBucketCount(ProfileEligibilityMismatchHistogramName,
@@ -311,14 +322,14 @@ class EligibilityServiceDisable3PCsTest : public EligibilityServiceTestBase {
 
 TEST_F(EligibilityServiceDisable3PCsTest, Onboarded_NotifyManager) {
   EXPECT_CALL(*experiment_manager_, IsClientEligible).WillOnce(Return(true));
-  EligibilityService eligibility_service(&profile_, experiment_manager_.get());
+  EligibilityService eligibility_service(&profile_, onboarding_service_,
+                                         privacy_sandbox_settings_,
+                                         experiment_manager_.get());
 
   EXPECT_CALL(*experiment_manager_, NotifyProfileTrackingProtectionOnboarded);
 
-  auto* onboarding_service =
-      TrackingProtectionOnboardingFactory::GetForProfile(&profile_);
   // Simulate onboarding a profile.
-  onboarding_service->OnboardingNoticeShown();
+  onboarding_service_->OnboardingNoticeShown();
 }
 
 class EligibilityServiceSilentOnboardingTest
@@ -337,14 +348,14 @@ class EligibilityServiceSilentOnboardingTest
 
 TEST_F(EligibilityServiceSilentOnboardingTest, Onboarded_NotifyManager) {
   EXPECT_CALL(*experiment_manager_, IsClientEligible).WillOnce(Return(true));
-  EligibilityService eligibility_service(&profile_, experiment_manager_.get());
+  EligibilityService eligibility_service(&profile_, onboarding_service_,
+                                         privacy_sandbox_settings_,
+                                         experiment_manager_.get());
 
   EXPECT_CALL(*experiment_manager_, NotifyProfileTrackingProtectionOnboarded);
 
-  auto* onboarding_service =
-      TrackingProtectionOnboardingFactory::GetForProfile(&profile_);
   // Simulate onboarding a profile.
-  onboarding_service->SilentOnboardingNoticeShown();
+  onboarding_service_->SilentOnboardingNoticeShown();
 }
 
 }  // namespace tpcd::experiment

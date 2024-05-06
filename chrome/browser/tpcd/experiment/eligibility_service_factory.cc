@@ -6,6 +6,7 @@
 
 #include "base/feature_list.h"
 #include "chrome/browser/browser_process.h"
+#include "chrome/browser/privacy_sandbox/privacy_sandbox_settings_factory.h"
 #include "chrome/browser/privacy_sandbox/tracking_protection_onboarding_factory.h"
 #include "chrome/browser/profiles/profile.h"
 #include "chrome/browser/tpcd/experiment/eligibility_service.h"
@@ -35,6 +36,7 @@ EligibilityServiceFactory::EligibilityServiceFactory()
               .WithGuest(ProfileSelection::kOwnInstance)
               .WithAshInternals(ProfileSelection::kNone)
               .Build()) {
+  DependsOn(PrivacySandboxSettingsFactory::GetInstance());
   DependsOn(TrackingProtectionOnboardingFactory::GetInstance());
 }
 
@@ -46,9 +48,15 @@ std::unique_ptr<KeyedService>
 EligibilityServiceFactory::BuildServiceInstanceForBrowserContext(
     content::BrowserContext* context) const {
   Profile* profile = Profile::FromBrowserContext(context);
+  auto* onboarding_service =
+      TrackingProtectionOnboardingFactory::GetForProfile(profile);
+  auto* privacy_sandbox_settings =
+      PrivacySandboxSettingsFactory::GetForProfile(profile);
   if (auto* experiment_manager =
           ExperimentManagerImpl::GetForProfile(profile)) {
-    return std::make_unique<EligibilityService>(profile, experiment_manager);
+    return std::make_unique<EligibilityService>(profile, onboarding_service,
+                                                privacy_sandbox_settings,
+                                                experiment_manager);
   }
 
   if (base::FeatureList::IsEnabled(
@@ -56,8 +64,6 @@ EligibilityServiceFactory::BuildServiceInstanceForBrowserContext(
     return nullptr;
   }
 
-  auto* onboarding_service =
-      TrackingProtectionOnboardingFactory::GetForProfile(profile);
   if (onboarding_service) {
     onboarding_service->MaybeResetOnboardingPrefs();
   }
