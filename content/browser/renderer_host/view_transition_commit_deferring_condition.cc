@@ -37,6 +37,12 @@ ViewTransitionCommitDeferringCondition::MaybeCreate(
       return nullptr;
   };
 
+  if (!navigation_request.IsInMainFrame() &&
+      !base::FeatureList::IsEnabled(
+          blink::features::kViewTransitionOnNavigationForIframes)) {
+    return nullptr;
+  }
+
   if (!navigation_request.ShouldDispatchPageSwapEvent()) {
     return nullptr;
   }

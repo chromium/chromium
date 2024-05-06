@@ -685,9 +685,8 @@
       status: "stable",
     },
     {
-      name: "ConcurrentViewTransitions",
+      name: "ConcurrentViewTransitionsSPA",
       status: "test",
-      implied_by: ["ViewTransitionOnNavigation"],
     },
     {
       name: "ContactsManager",
@@ -1373,7 +1372,6 @@
       // https://chromestatus.com/feature/5113053598711808
       name: "DocumentRenderBlocking",
       status: "stable",
-      implied_by: ["ViewTransitionOnNavigation"],
     },
     {
       name: "DocumentWrite",
@@ -2868,17 +2866,15 @@
     {
       name: "PageRevealEvent",
       status: "stable",
-      implied_by: ["ViewTransitionOnNavigation"],
     },
     {
       name: "PageSwapEvent",
       status: "stable",
-      implied_by: ["ViewTransitionOnNavigation"],
     },
     {
       name: "PaintHoldingForIframes",
       status: "test",
-      implied_by: ["ViewTransitionOnNavigation"],
+      implied_by: ["ViewTransitionOnNavigationForIframes"],
     },
     {
       name: "PaintHoldingForLocalIframes",
@@ -4124,6 +4120,10 @@
       // cross-document transitions.
       // See https://drafts.csswg.org/css-view-transitions-1/.
       name: "ViewTransitionOnNavigation",
+    },
+    {
+      name: "ViewTransitionOnNavigationForIframes",
+      status: "test",
     },
     {
       // https://chromestatus.com/feature/5089552511533056
