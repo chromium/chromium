@@ -22,6 +22,10 @@ class SavedTabGroupWebContentsListener : public content::WebContentsObserver {
   SavedTabGroupWebContentsListener(content::WebContents* web_contents,
                                    base::Token token,
                                    SavedTabGroupModel* model);
+  SavedTabGroupWebContentsListener(content::WebContents* web_contents,
+                                   content::NavigationHandle* navigation_handle,
+                                   base::Token token,
+                                   SavedTabGroupModel* model);
   ~SavedTabGroupWebContentsListener() override;
 
   // content::WebContentsObserver

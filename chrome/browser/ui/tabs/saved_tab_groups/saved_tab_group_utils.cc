@@ -234,7 +234,7 @@ SavedTabGroupTab SavedTabGroupUtils::CreateSavedTabGroupTabFromWebContents(
   return tab;
 }
 
-content::WebContents* SavedTabGroupUtils::OpenTabInBrowser(
+content::NavigationHandle* SavedTabGroupUtils::OpenTabInBrowser(
     const GURL& url,
     Browser* browser,
     Profile* profile,
@@ -247,7 +247,7 @@ content::WebContents* SavedTabGroupUtils::OpenTabInBrowser(
   params.tabstrip_index = tabstrip_index.value_or(params.tabstrip_index);
   params.group = local_group_id;
   base::WeakPtr<content::NavigationHandle> handle = Navigate(&params);
-  return handle ? handle->GetWebContents() : nullptr;
+  return handle.get();
 }
 
 // static

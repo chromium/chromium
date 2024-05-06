@@ -298,15 +298,17 @@ void LocalTabGroupListener::OpenWebContentsFromSync(SavedTabGroupTab tab,
     url_to_open = GURL(chrome::kChromeUINewTabURL);
   }
 
-  content::WebContents* opened_contents = SavedTabGroupUtils::OpenTabInBrowser(
+  auto* navigation_handle = SavedTabGroupUtils::OpenTabInBrowser(
       url_to_open, browser, browser->profile(),
       WindowOpenDisposition::NEW_BACKGROUND_TAB, index_in_tabstrip, local_id_);
+  auto* opened_contents =
+      navigation_handle ? navigation_handle->GetWebContents() : nullptr;
 
   // Listen to navigations.
   base::Token token = base::Token::CreateRandom();
   model_->UpdateLocalTabId(tab.saved_group_guid(), tab, token);
   web_contents_to_tab_id_map_.try_emplace(opened_contents, opened_contents,
-                                          token, model_);
+                                          navigation_handle, token, model_);
 }
 
 void LocalTabGroupListener::RemoveLocalWebContentsNotInSavedGroup() {

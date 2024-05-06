@@ -74,7 +74,7 @@ class SavedTabGroupUtils {
       content::WebContents* contents,
       base::Uuid saved_tab_group_id);
 
-  static content::WebContents* OpenTabInBrowser(
+  static content::NavigationHandle* OpenTabInBrowser(
       const GURL& url,
       Browser* browser,
       Profile* profile,

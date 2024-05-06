@@ -401,10 +401,11 @@ void SavedTabGroupKeyedService::AddMissingTabsToOutOfSyncLocalTabGroup(
         saved_group->saved_tabs()[relative_index_in_group].url();
 
     // Open the tab in the tabstrip and add it to the end of the group.
+    auto* navigation_handle = SavedTabGroupUtils::OpenTabInBrowser(
+        url_to_add, browser, profile_,
+        WindowOpenDisposition::NEW_BACKGROUND_TAB);
     const content::WebContents* const new_tab =
-        SavedTabGroupUtils::OpenTabInBrowser(
-            url_to_add, browser, profile_,
-            WindowOpenDisposition::NEW_BACKGROUND_TAB);
+        navigation_handle ? navigation_handle->GetWebContents() : nullptr;
 
     const int tab_index =
         browser->tab_strip_model()->GetIndexOfWebContents(new_tab);
@@ -487,10 +488,11 @@ SavedTabGroupKeyedService::GetWebContentsToTabGuidMappingForOpening(
       continue;
     }
 
+    auto* navigation_handle = SavedTabGroupUtils::OpenTabInBrowser(
+        saved_tab.url(), browser, profile_,
+        WindowOpenDisposition::NEW_BACKGROUND_TAB);
     content::WebContents* created_contents =
-        SavedTabGroupUtils::OpenTabInBrowser(
-            saved_tab.url(), browser, profile_,
-            WindowOpenDisposition::NEW_BACKGROUND_TAB);
+        navigation_handle ? navigation_handle->GetWebContents() : nullptr;
 
     if (!created_contents) {
       continue;

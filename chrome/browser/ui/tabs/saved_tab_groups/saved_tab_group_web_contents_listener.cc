@@ -49,6 +49,18 @@ SavedTabGroupWebContentsListener::SavedTabGroupWebContentsListener(
   Observe(web_contents_);
 }
 
+SavedTabGroupWebContentsListener::SavedTabGroupWebContentsListener(
+    content::WebContents* web_contents,
+    content::NavigationHandle* navigation_handle,
+    base::Token token,
+    SavedTabGroupModel* model)
+    : token_(token),
+      web_contents_(web_contents),
+      model_(model),
+      handle_from_sync_update_(navigation_handle) {
+  Observe(web_contents_);
+}
+
 SavedTabGroupWebContentsListener::~SavedTabGroupWebContentsListener() = default;
 
 void SavedTabGroupWebContentsListener::NavigateToUrl(const GURL& url) {
