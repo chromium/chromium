@@ -113,7 +113,18 @@ std::optional<AppInstallData> ParseAppInstallResponseProto(
     }
   }
 
-  if (instance.has_web_extras()) {
+  if (instance.has_install_url()) {
+    result.install_url = GURL(instance.install_url());
+  }
+
+  if (instance.has_android_extras()) {
+    if (result.package_id.package_type() != PackageType::kArc) {
+      return std::nullopt;
+    }
+  } else if (instance.has_web_extras()) {
+    if (result.package_id.package_type() != PackageType::kWeb) {
+      return std::nullopt;
+    }
     WebAppInstallData& web_app_data =
         result.app_type_data.emplace<WebAppInstallData>();
     web_app_data.document_url = GURL(instance.web_extras().document_url());
@@ -129,8 +140,16 @@ std::optional<AppInstallData> ParseAppInstallResponseProto(
     if (!web_app_data.proxied_manifest_url.is_valid()) {
       return std::nullopt;
     }
-  } else if (instance.has_android_extras()) {
-    result.app_type_data.emplace<AndroidAppInstallData>();
+  } else if (instance.has_gfn_extras()) {
+    if (result.package_id.package_type() != PackageType::kGeForceNow) {
+      return std::nullopt;
+    }
+  } else if (instance.has_steam_extras()) {
+    if (result.package_id.package_type() != PackageType::kBorealis) {
+      return std::nullopt;
+    }
+  } else {
+    return std::nullopt;
   }
 
   return result;

@@ -115,6 +115,7 @@ TEST_F(AppInstallAlmanacEndpointTest, GetAppInstallInfoSuccessfulResponse) {
     screenshot.set_width_in_pixels(800);
     screenshot.set_height_in_pixels(800);
   }
+  instance.set_install_url("https://example.com/install");
   proto::AppInstallResponse_WebExtras& web_app_extras =
       *instance.mutable_web_extras();
   web_app_extras.set_document_url("https://example.com/start.html");
@@ -155,6 +156,7 @@ TEST_F(AppInstallAlmanacEndpointTest, GetAppInstallInfoSuccessfulResponse) {
           .width_in_pixels = 800,
           .height_in_pixels = 800,
       }};
+  expected_data.install_url = GURL("https://example.com/install");
   auto& web_app_data = expected_data.app_type_data.emplace<WebAppInstallData>();
   web_app_data.original_manifest_url =
       GURL("https://example.com/manifest.json");
@@ -191,6 +193,26 @@ TEST_F(AppInstallAlmanacEndpointTest, GetAppInstallInfoMalformedResponse) {
   app_install_almanac_endpoint::GetAppInstallInfo(kTestPackageId, DeviceInfo(),
                                test_url_loader_factory_,
                                response_future.GetCallback());
+  EXPECT_EQ(response_future.Get().error().type, QueryError::kBadResponse);
+}
+
+TEST_F(AppInstallAlmanacEndpointTest, GetAppInstallInfoWrongExtras) {
+  proto::AppInstallResponse response;
+  proto::AppInstallResponse_AppInstance& instance =
+      *response.mutable_app_instance();
+  instance.set_package_id("web:https://example.com/");
+  instance.set_name("Example");
+  instance.set_description("Description.");
+  instance.mutable_android_extras();
+
+  test_url_loader_factory_.AddResponse(
+      app_install_almanac_endpoint::GetEndpointUrlForTesting().spec(),
+      response.SerializeAsString());
+
+  ResponseFuture response_future;
+  app_install_almanac_endpoint::GetAppInstallInfo(
+      PackageId(PackageType::kWeb, "https://example.com/"), DeviceInfo(),
+      test_url_loader_factory_, response_future.GetCallback());
   EXPECT_EQ(response_future.Get().error().type, QueryError::kBadResponse);
 }
 

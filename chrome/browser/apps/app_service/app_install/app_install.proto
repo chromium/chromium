@@ -78,15 +78,21 @@ message AppInstallResponse {
     // A screenshot for the app if available. Note: this is empty for most apps.
     repeated Screenshot screenshots = 5;
 
+    // An optional install URL for this app. Whether this is used or not is
+    // platform specific and determined by the client.
+    optional string install_url = 10;
+
     // Every platform has its own [Platform]Extras message to store platform
     // specific metadata.
     oneof extras {
       AndroidExtras android_extras = 6;
       WebExtras web_extras = 7;
+      GeForceNowExtras gfn_extras = 8;
+      SteamExtras steam_extras = 9;
     }
   }
 
-  // For Android-only metadata. TBD
+  // For Android-only metadata.
   message AndroidExtras {}
 
   // For Web-only metadata.
@@ -100,6 +106,12 @@ message AppInstallResponse {
     // The (JSON) first-party Google Url for the manifest for this app.
     optional string scs_url = 3;
   }
+
+  // For GFN-only metadata.
+  message GeForceNowExtras {}
+
+  // For Steam-only metadata.
+  message SteamExtras {}
 
   // The App Instance for the requested package_id.
   optional AppInstance app_instance = 1;

@@ -88,6 +88,19 @@ struct WebAppInstallData {
 
 std::ostream& operator<<(std::ostream& out, const WebAppInstallData& data);
 
+// GeForce Now specific data for use during GeForce Now app installation.
+// Currently empty but available to be extended with data if needed.
+struct GeForceNowAppInstallData {};
+
+std::ostream& operator<<(std::ostream& out,
+                         const GeForceNowAppInstallData& data);
+
+// Steam specific data for use during Steam app installation.
+// Currently empty but available to be extended with data if needed.
+struct SteamAppInstallData {};
+
+std::ostream& operator<<(std::ostream& out, const SteamAppInstallData& data);
+
 // Generic app metadata for use in dialogs during app installation plus any app
 // type specific information necessary for performing the app installation.
 struct AppInstallData {
@@ -108,7 +121,13 @@ struct AppInstallData {
 
   std::vector<AppInstallScreenshot> screenshots;
 
-  absl::variant<AndroidAppInstallData, WebAppInstallData> app_type_data;
+  GURL install_url;
+
+  absl::variant<AndroidAppInstallData,
+                WebAppInstallData,
+                GeForceNowAppInstallData,
+                SteamAppInstallData>
+      app_type_data;
 };
 
 std::ostream& operator<<(std::ostream& out, const AppInstallData& data);
