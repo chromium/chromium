@@ -62,6 +62,7 @@ def main(request, response):
     contentType = "application/json"
     adAuctionAllowed = "true"
     dataVersion = None
+    cors = False
     for urlList in urlLists:
         for renderUrl in urlList["urls"]:
             value = "default value"
@@ -124,10 +125,18 @@ def main(request, response):
                         value = fledge_http_server_util.headers_to_ascii(request.headers)
                     elif signalsParam == "url":
                         value = request.url
+                    elif signalsParam == "cors":
+                        cors = True
             if addValue:
                 if urlList["type"] not in responseBody:
                     responseBody[urlList["type"]] = {}
                 responseBody[urlList["type"]][renderUrl] = value
+
+    # If the signalsParam embedded inside a render URL calls for CORS, add
+    # appropriate response headers, and fully handle preflights.
+    if cors and fledge_http_server_util.handle_cors_headers_and_preflight(
+            request, response):
+        return
 
     if contentType:
         response.headers.set("Content-Type", contentType)

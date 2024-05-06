@@ -21,17 +21,20 @@
 // to worklet scripts, and handling the Data-Version header.
 
 // Helper for trusted scoring signals tests. Runs an auction with
-// TRUSTED_SCORING_SIGNALS_URL and a single interest group, failing the test
-// if there's no winner. "scoreAdCheck" is an expression that should be true
+// trustedSignalsURL and a single interest group, failing the test if there's no
+// winner. "scoreAdCheck" is an expression that should be true
 // when evaluated in scoreAd(). "renderURL" can be used to control the response
-// given for TRUSTED_SCORING_SIGNALS_URL.
+// given for trustedSignalsURL.
 async function runTrustedScoringSignalsTest(test, uuid, renderURL, scoreAdCheck,
-                                            additionalInterestGroupOverrides) {
+                                            additionalInterestGroupOverrides,
+                                            trustedSignalsURL = TRUSTED_SCORING_SIGNALS_URL,
+                                            decisionScriptParamOverrides = {}) {
   const auctionConfigOverrides = {
-      trustedScoringSignalsURL: TRUSTED_SCORING_SIGNALS_URL,
+      trustedScoringSignalsURL: trustedSignalsURL,
       decisionLogicURL:
           createDecisionScriptURL(uuid, {
-                  scoreAd: `if (!(${scoreAdCheck})) throw "error";` })};
+                  scoreAd: `if (!(${scoreAdCheck})) throw "error";`,
+                  ...decisionScriptParamOverrides})};
   await joinGroupAndRunBasicFledgeTestExpectingWinner(
       test,
       {
@@ -304,6 +307,70 @@ subsetTest(promise_test, async test => {
   assert_true(config instanceof FencedFrameConfig,
       `Wrong value type returned from second auction: ${config.constructor.type}`);
 }, 'Trusted scoring signals multiple renderURLs.');
+
+/////////////////////////////////////////////////////////////////////////////
+// Cross-origin trusted scoring signals tests
+/////////////////////////////////////////////////////////////////////////////
+subsetTest(promise_test, async test => {
+  const uuid = generateUuid(test);
+  const renderURL = createRenderURL(uuid, /*script=*/null,
+      /*signalsParam=*/'string-value,data-version:3,cors');
+  await runTrustedScoringSignalsTest(
+      test, uuid, renderURL,
+      `trustedScoringSignals === null &&
+       !('dataVersion' in browserSignals) &&
+       crossOriginTrustedScoringSignals['${OTHER_ORIGIN1}'].renderURL[
+           "${renderURL}"] === "1" &&
+       browserSignals.crossOriginDataVersion === 3`,
+       /*additionalInterestGroupOverrides=*/ {},
+      CROSS_ORIGIN_TRUSTED_SCORING_SIGNALS_URL,
+      {permitCrossOriginTrustedSignals: `"${OTHER_ORIGIN1}"`});
+}, 'Basic cross-origin trusted scoring signals.');
+
+subsetTest(promise_test, async test => {
+  const uuid = generateUuid(test);
+  const renderURL = createRenderURL(uuid, /*script=*/null,
+      /*signalsParam=*/'string-value,data-version:3');
+  await runTrustedScoringSignalsTest(
+      test, uuid, renderURL,
+      `trustedScoringSignals === null &&
+       !('dataVersion' in browserSignals) &&
+       crossOriginTrustedScoringSignals === null &&
+       !('crossOriginDataVersion' in browserSignals)`,
+       /*additionalInterestGroupOverrides=*/ {},
+      CROSS_ORIGIN_TRUSTED_SCORING_SIGNALS_URL,
+      {permitCrossOriginTrustedSignals: `"${OTHER_ORIGIN1}"`});
+}, 'Cross-origin trusted scoring signals w/o CORS authorization.');
+
+subsetTest(promise_test, async test => {
+  const uuid = generateUuid(test);
+  const renderURL = createRenderURL(uuid, /*script=*/null,
+      /*signalsParam=*/'string-value,data-version:3, cors');
+  await runTrustedScoringSignalsTest(
+      test, uuid, renderURL,
+      `trustedScoringSignals === null &&
+       !('dataVersion' in browserSignals) &&
+       crossOriginTrustedScoringSignals === null &&
+       !('crossOriginDataVersion' in browserSignals)`,
+       /*additionalInterestGroupOverrides=*/ {},
+      CROSS_ORIGIN_TRUSTED_SCORING_SIGNALS_URL);
+}, 'Cross-origin trusted scoring signals w/o script allow header.');
+
+subsetTest(promise_test, async test => {
+  const uuid = generateUuid(test);
+  const renderURL = createRenderURL(uuid, /*script=*/null,
+      /*signalsParam=*/'string-value,data-version:3');
+  await runTrustedScoringSignalsTest(
+      test, uuid, renderURL,
+      `trustedScoringSignals === null &&
+       !('dataVersion' in browserSignals) &&
+       crossOriginTrustedScoringSignals === null &&
+       !('crossOriginDataVersion' in browserSignals)`,
+       /*additionalInterestGroupOverrides=*/ {},
+      CROSS_ORIGIN_TRUSTED_SCORING_SIGNALS_URL,
+      {permitCrossOriginTrustedSignals:
+          `"${OTHER_ORIGIN2}", "${window.location.origin}"`});
+}, 'Cross-origin trusted scoring signals with wrong script allow header.');
 
 /////////////////////////////////////////////////////////////////////////////
 // Data-Version tests

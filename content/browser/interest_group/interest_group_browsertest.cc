@@ -727,6 +727,7 @@ class InterestGroupBrowserTest : public ContentBrowserTest {
         /*disabled_features=*/
         {blink::features::kFencedFrames,
          blink::features::kFledgeEnforceKAnonymity,
+         blink::features::kFledgePermitCrossOriginTrustedSignals,
          features::kCookieDeprecationFacilitatedTesting});
   }
 
