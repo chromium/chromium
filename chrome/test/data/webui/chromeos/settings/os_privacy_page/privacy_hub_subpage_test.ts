@@ -5,7 +5,7 @@
 import 'chrome://os-settings/lazy_load.js';
 
 import {MediaDevicesProxy, PrivacyHubBrowserProxyImpl, SettingsPrivacyHubSubpage} from 'chrome://os-settings/lazy_load.js';
-import {CrLinkRowElement, CrToggleElement, MetricsConsentBrowserProxyImpl, OsSettingsPrivacyPageElement, PaperTooltipElement, PrivacyHubSensorSubpageUserAction, Router, routes, SecureDnsMode, settingMojom, SettingsToggleButtonElement} from 'chrome://os-settings/os_settings.js';
+import {CrLinkRowElement, CrToggleElement, GeolocationAccessLevel, MetricsConsentBrowserProxyImpl, OsSettingsPrivacyPageElement, PaperTooltipElement, PrivacyHubSensorSubpageUserAction, Router, routes, SecureDnsMode, settingMojom, SettingsToggleButtonElement} from 'chrome://os-settings/os_settings.js';
 import {assert} from 'chrome://resources/js/assert.js';
 import {webUIListenerCallback} from 'chrome://resources/js/cr.js';
 import {loadTimeData} from 'chrome://resources/js/load_time_data.js';
@@ -32,6 +32,11 @@ const PRIVACY_HUB_PREFS = {
       },
       'microphone_allowed': {
         value: true,
+      },
+      'geolocation_access_level': {
+        key: 'ash.user.geolocation_access_level',
+        type: chrome.settingsPrivate.PrefType.NUMBER,
+        value: GeolocationAccessLevel.ALLOWED,
       },
     },
   },
@@ -976,6 +981,47 @@ suite('<settings-privacy-hub-subpage> AllBuilds app permissions', () => {
         privacyHubSubpage.i18n('cameraToggleTitle'),
         getCameraToggleAriaLabel());
     assertEquals(getCameraRowSubtext(), getCameraToggleAriaDescription());
+  });
+
+  function setGeolocationAccessLevel(accessLevel: GeolocationAccessLevel) {
+    privacyHubSubpage.set(
+        'prefs.ash.user.geolocation_access_level.value', accessLevel);
+  }
+
+  function getGeolocationSubtext(): string {
+    return privacyHubSubpage.shadowRoot!
+        .querySelector<CrLinkRowElement>('#geolocationAreaLinkRow')!.shadowRoot!
+        .querySelector<HTMLElement>('#subLabel')!.innerText;
+  }
+
+  test('Geolocation row subtext', async () => {
+    // Location should be allowed by default
+    assertEquals(
+        privacyHubSubpage.prefs.ash.user.geolocation_access_level.value,
+        GeolocationAccessLevel.ALLOWED);
+    assertEquals(
+        privacyHubSubpage.i18n('geolocationAreaAllowedSubtext'),
+        getGeolocationSubtext());
+
+    // Set Location setting to system only
+    setGeolocationAccessLevel(GeolocationAccessLevel.ONLY_ALLOWED_FOR_SYSTEM);
+    await waitAfterNextRender(privacyHubSubpage);
+    assertEquals(
+        privacyHubSubpage.prefs.ash.user.geolocation_access_level.value,
+        GeolocationAccessLevel.ONLY_ALLOWED_FOR_SYSTEM);
+    assertEquals(
+        privacyHubSubpage.i18n('geolocationAreaOnlyAllowedForSystemSubtext'),
+        getGeolocationSubtext());
+
+    // Disable location
+    setGeolocationAccessLevel(GeolocationAccessLevel.DISALLOWED);
+    await waitAfterNextRender(privacyHubSubpage);
+    assertEquals(
+        privacyHubSubpage.prefs.ash.user.geolocation_access_level.value,
+        GeolocationAccessLevel.DISALLOWED);
+    assertEquals(
+        privacyHubSubpage.i18n('geolocationAreaDisallowedSubtext'),
+        getGeolocationSubtext());
   });
 });
 

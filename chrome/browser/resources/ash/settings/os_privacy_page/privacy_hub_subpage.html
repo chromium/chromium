@@ -18,15 +18,11 @@
       id="geolocationAreaLinkRow"
       start-icon="app-management:location"
       on-click="onGeolocationAreaClick_"
+      label="$i18n{geolocationAreaTitle}"
+      sub-label="[[locationSubLabel_]]"
       role-description="$i18n{subpageArrowRoleDescription}"
       deep-link-focus-id$="[[Setting.kGeolocationOnOff]]"
       using-slotted-label>
-    <div slot="label">$i18n{geolocationAreaTitle}</div>
-    <div slot="sub-label">
-      <localized-link
-          localized-string="$i18n{geolocationAreaDescription}"
-          link-url="$i18n{geolocationAreaLearnMoreURL}">
-      </localized-link>
     </div>
   </cr-link-row>
 </template>

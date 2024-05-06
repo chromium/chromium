@@ -28,6 +28,7 @@ import {Route, Router, routes} from '../router.js';
 
 import {MediaDevicesProxy} from './media_devices_proxy.js';
 import {PrivacyHubBrowserProxy, PrivacyHubBrowserProxyImpl} from './privacy_hub_browser_proxy.js';
+import {GeolocationAccessLevel} from './privacy_hub_geolocation_subpage.js';
 import {PrivacyHubSensorSubpageUserAction} from './privacy_hub_metrics_util.js';
 import {getTemplate} from './privacy_hub_subpage.html.js';
 
@@ -65,6 +66,12 @@ export class SettingsPrivacyHubSubpage extends SettingsPrivacyHubSubpageBase {
         value: function() {
           return loadTimeData.getBoolean('showPrivacyHubLocationControl');
         },
+      },
+
+      locationSubLabel_: {
+        type: String,
+        computed: 'computeLocationRowSubtext_(' +
+            'prefs.ash.user.geolocation_access_level.value)',
       },
 
       cameraSubLabel_: String,
@@ -185,6 +192,8 @@ export class SettingsPrivacyHubSubpage extends SettingsPrivacyHubSubpageBase {
   }
 
   private browserProxy_: PrivacyHubBrowserProxy;
+  private showPrivacyHubLocationControl_: boolean;
+  private locationSublabel_: string;
   private cameraFallbackMechanismEnabled_: boolean;
   private cameraRowSubtext_: string;
   private cameraSubLabel_: string;
@@ -199,7 +208,6 @@ export class SettingsPrivacyHubSubpage extends SettingsPrivacyHubSubpageBase {
   private cameraSwitchForceDisabled_: boolean;
   private shouldDisableCameraToggle_: boolean;
   private showAppPermissions_: boolean;
-  private showPrivacyHubLocationControl_: boolean;
   private showSpeakOnMuteDetectionPage_: boolean;
 
   constructor() {
@@ -352,6 +360,26 @@ export class SettingsPrivacyHubSubpage extends SettingsPrivacyHubSubpageBase {
         Object.keys(PrivacyHubSensorSubpageUserAction).length);
 
     Router.getInstance().navigateTo(routes.PRIVACY_HUB_GEOLOCATION);
+  }
+
+  private computeLocationRowSubtext_(): string {
+    if (!this.prefs) {
+      return '';
+    }
+
+    const locationAccessLevel: GeolocationAccessLevel =
+        this.getPref<GeolocationAccessLevel>(
+                'ash.user.geolocation_access_level')
+            .value;
+
+    switch (locationAccessLevel) {
+      case GeolocationAccessLevel.ALLOWED:
+        return this.i18n('geolocationAreaAllowedSubtext');
+      case GeolocationAccessLevel.ONLY_ALLOWED_FOR_SYSTEM:
+        return this.i18n('geolocationAreaOnlyAllowedForSystemSubtext');
+      case GeolocationAccessLevel.DISALLOWED:
+        return this.i18n('geolocationAreaDisallowedSubtext');
+    }
   }
 
   private computeCameraRowSubtext_(): string {
