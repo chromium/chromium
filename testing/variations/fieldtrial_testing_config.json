@@ -22146,6 +22146,21 @@
             ]
         }
     ],
+    "WebRTC-Aec3BufferingMaxAllowedExcessRenderBlocksOverride": [
+        {
+            "platforms": [
+                "chromeos",
+                "linux",
+                "mac",
+                "windows"
+            ],
+            "experiments": [
+                {
+                    "name": "1"
+                }
+            ]
+        }
+    ],
     "WebRTC-Aec3DelayEstimateSmoothingDelayFoundOverride": [
         {
             "platforms": [
