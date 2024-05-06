@@ -9,6 +9,7 @@
 #include <string>
 
 #include "base/strings/utf_string_conversions.h"
+#include "chrome/browser/ui/autofill/autofill_popup_controller.h"
 #include "chrome/browser/ui/autofill/mock_autofill_popup_controller.h"
 #include "chrome/browser/ui/browser.h"
 #include "chrome/browser/ui/test/test_browser_ui.h"
@@ -20,6 +21,7 @@
 #include "components/user_education/common/new_badge_controller.h"
 #include "content/public/test/browser_test.h"
 #include "testing/gtest/include/gtest/gtest.h"
+#include "ui/gfx/range/range.h"
 #include "ui/views/test/widget_test.h"
 #include "ui/views/widget/widget.h"
 
@@ -128,13 +130,16 @@ class CreatePopupRowViewTest
     UiBrowserTest::TearDownOnMainThread();
   }
 
-  void CreateRowView(Suggestion suggestion,
-                     std::optional<PopupRowView::CellType> selected_cell) {
+  void CreateRowView(
+      Suggestion suggestion,
+      std::optional<PopupRowView::CellType> selected_cell,
+      std::optional<AutofillPopupController::SuggestionFilterMatch>
+          filter_match = std::nullopt) {
     controller().set_suggestions({std::move(suggestion)});
 
-    auto view = CreatePopupRowView(controller_.GetWeakPtr(),
-                                   mock_a11y_selection_delegate_,
-                                   mock_selection_delegate_, /*line_number=*/0);
+    auto view = CreatePopupRowView(
+        controller_.GetWeakPtr(), mock_a11y_selection_delegate_,
+        mock_selection_delegate_, /*line_number=*/0, std::move(filter_match));
     view->SetSelectedCell(selected_cell);
 
     widget_->SetContentsView(std::move(view));
@@ -203,5 +208,15 @@ INSTANTIATE_TEST_SUITE_P(
                            std::optional(PopupRowView::CellType::kControl),
                        })),
     CreatePopupRowViewTest::GetTestName);
+
+IN_PROC_BROWSER_TEST_F(CreatePopupRowViewTest, FilterMatchHighlighting) {
+  CreateRowView(
+      Suggestion("Address_entry", "Minor text", "label",
+                 Suggestion::Icon::kLocation, SuggestionType::kAddressEntry),
+      std::nullopt,
+      AutofillPopupController::SuggestionFilterMatch{.main_text_match =
+                                                         gfx::Range(1, 5)});
+  ShowAndVerifyUi();
+}
 
 }  // namespace autofill

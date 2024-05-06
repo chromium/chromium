@@ -4,9 +4,14 @@
 
 #include "chrome/browser/ui/autofill/mock_autofill_popup_controller.h"
 
+#include "testing/gmock/include/gmock/gmock.h"
+
 namespace autofill {
 
-MockAutofillPopupController::MockAutofillPopupController() = default;
+MockAutofillPopupController::MockAutofillPopupController() {
+  ON_CALL(*this, GetSuggestionFilterMatches)
+      .WillByDefault(::testing::ReturnRef(filter_matches_));
+}
 
 MockAutofillPopupController::~MockAutofillPopupController() = default;
 

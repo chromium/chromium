@@ -6,20 +6,24 @@
 #define CHROME_BROWSER_UI_VIEWS_AUTOFILL_POPUP_POPUP_ROW_FACTORY_UTILS_H_
 
 #include <memory>
-#include "base/memory/weak_ptr.h"
+#include <optional>
 
+#include "base/memory/weak_ptr.h"
+#include "chrome/browser/ui/autofill/autofill_popup_controller.h"
 #include "chrome/browser/ui/views/autofill/popup/popup_row_view.h"
 
 namespace autofill {
 
-class AutofillPopupController;
-
 // Creates a row view depending on the suggestion type at `line_number`.
+// If `filter_match` is provided, it is used for highlighting the suggestion
+// label parts accordingly.
 std::unique_ptr<PopupRowView> CreatePopupRowView(
     base::WeakPtr<AutofillPopupController> controller,
     PopupRowView::AccessibilitySelectionDelegate& a11y_selection_delegate,
     PopupRowView::SelectionDelegate& selection_delegate,
-    int line_number);
+    int line_number,
+    std::optional<AutofillPopupController::SuggestionFilterMatch> filter_match =
+        std::nullopt);
 
 }  // namespace autofill
 

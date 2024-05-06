@@ -800,10 +800,17 @@ void PopupViewViews::CreateSuggestionViews() {
         // The default section contains all selectable rows and includes
         // autocomplete, address, credit cards and passwords.
         default:
+          std::optional<AutofillPopupController::SuggestionFilterMatch>
+              filter_match =
+                  controller_->GetSuggestionFilterMatches().empty()
+                      ? std::nullopt
+                      : std::optional(controller_->GetSuggestionFilterMatches()
+                                          [current_line_number]);
           PopupRowView* row_view =
               body_container->AddChildView(CreatePopupRowView(
                   controller(), /*a11y_selection_delegate=*/*this,
-                  /*selection_delegate=*/*this, current_line_number));
+                  /*selection_delegate=*/*this, current_line_number,
+                  std::move(filter_match)));
           rows_.push_back(row_view);
 
           const base::Feature* const feature_for_iph =

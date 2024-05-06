@@ -171,13 +171,19 @@ std::vector<std::unique_ptr<views::View>> CreateAndTrackPasswordSubtextViews(
 }
 
 std::unique_ptr<PopupRowContentView> CreatePasswordPopupRowContentView(
-    const Suggestion& suggestion) {
+    const Suggestion& suggestion,
+    std::optional<AutofillPopupController::SuggestionFilterMatch>
+        filter_match) {
   auto view = std::make_unique<PopupRowContentView>();
 
   // Add the actual views.
   std::unique_ptr<views::Label> main_text_label =
       popup_cell_utils::CreateMainTextLabel(suggestion, GetPrimaryTextStyle());
   main_text_label->SetMaximumWidthSingleLine(kAutofillPopupUsernameMaxWidth);
+  if (filter_match) {
+    main_text_label->SetTextStyleRange(views::style::STYLE_BODY_3_BOLD,
+                                       filter_match->main_text_match);
+  }
 
   popup_cell_utils::AddSuggestionContentToView(
       suggestion, std::move(main_text_label),
@@ -213,10 +219,17 @@ std::unique_ptr<PopupRowContentView> CreateComposePopupRowContentView(
 // created by corresponding `Create*PopupRowContentView()` methods.
 std::unique_ptr<PopupRowContentView> CreatePopupRowContentView(
     const Suggestion& suggestion,
-    FillingProduct main_filling_product) {
+    FillingProduct main_filling_product,
+    std::optional<AutofillPopupController::SuggestionFilterMatch>
+        filter_match) {
   auto view = std::make_unique<PopupRowContentView>();
   std::unique_ptr<views::Label> main_text_label =
       popup_cell_utils::CreateMainTextLabel(suggestion, GetPrimaryTextStyle());
+  if (filter_match) {
+    main_text_label->SetTextStyleRange(views::style::STYLE_BODY_3_BOLD,
+                                       filter_match->main_text_match);
+  }
+
   popup_cell_utils::FormatLabel(
       *main_text_label, suggestion.main_text, main_filling_product,
       popup_cell_utils::GetMaxPopupAddressProfileWidth());
@@ -302,7 +315,9 @@ std::unique_ptr<PopupRowView> CreatePopupRowView(
     base::WeakPtr<AutofillPopupController> controller,
     PopupRowView::AccessibilitySelectionDelegate& a11y_selection_delegate,
     PopupRowView::SelectionDelegate& selection_delegate,
-    int line_number) {
+    int line_number,
+    std::optional<AutofillPopupController::SuggestionFilterMatch>
+        filter_match) {
   CHECK(controller);
 
   const Suggestion& suggestion = controller->GetSuggestionAt(line_number);
@@ -330,7 +345,8 @@ std::unique_ptr<PopupRowView> CreatePopupRowView(
     case SuggestionType::kAccountStoragePasswordEntry:
       return std::make_unique<PopupRowView>(
           a11y_selection_delegate, selection_delegate, controller, line_number,
-          CreatePasswordPopupRowContentView(suggestion));
+          CreatePasswordPopupRowContentView(suggestion,
+                                            std::move(filter_match)));
     case SuggestionType::kCompose: {
       const bool show_new_badge = UserEducationService::MaybeShowNewBadge(
           controller->GetWebContents()->GetBrowserContext(),
@@ -342,7 +358,8 @@ std::unique_ptr<PopupRowView> CreatePopupRowView(
     default:
       return std::make_unique<PopupRowView>(
           a11y_selection_delegate, selection_delegate, controller, line_number,
-          CreatePopupRowContentView(suggestion, main_filling_product));
+          CreatePopupRowContentView(suggestion, main_filling_product,
+                                    std::move(filter_match)));
   }
 
   NOTREACHED_NORETURN();
