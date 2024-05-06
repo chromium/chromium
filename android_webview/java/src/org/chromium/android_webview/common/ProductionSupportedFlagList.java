@@ -257,9 +257,6 @@ public final class ProductionSupportedFlagList {
                 AutofillFeatures.AUTOFILL_NEW_FOCUS_EVENTS,
                 "Changes the semantics of Autofill's focus-change events"),
         Flag.baseFeature(
-                AutofillFeatures.AUTOFILL_PARSING_PATTERN_PROVIDER,
-                "Enables Autofill to use its new method to retrieve parsing patterns."),
-        Flag.baseFeature(
                 AutofillFeatures.AUTOFILL_PAGE_LANGUAGE_DETECTION,
                 "Enables Autofill to retrieve the page language for form parsing."),
         Flag.baseFeature(

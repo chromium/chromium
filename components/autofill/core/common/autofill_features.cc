@@ -468,7 +468,7 @@ BASE_FEATURE(kAutofillSkipPreFilledFields,
 // TODO(crbug.com/40146444): Remove once launched.
 BASE_FEATURE(kAutofillParsingPatternProvider,
              "AutofillParsingPatternProvider",
-             base::FEATURE_DISABLED_BY_DEFAULT);
+             base::FEATURE_ENABLED_BY_DEFAULT);
 
 // The specific pattern set is controlled by the `kAutofillParsingPatternActive`
 // parameter. One of "default", "experimental", "nextgen".
