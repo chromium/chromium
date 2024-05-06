@@ -506,8 +506,11 @@ void CheckOutput(
       auto accessing_origin =
           GetItemValueForKey<url::Origin>(InputKey::kAccessingOrigin, input);
       auto return_value = GetItemValue<bool>(output_value);
-      ASSERT_EQ(return_value, privacy_sandbox_settings->IsSharedStorageAllowed(
-                                  top_frame_origin, accessing_origin));
+      ASSERT_EQ(return_value,
+                privacy_sandbox_settings->IsSharedStorageAllowed(
+                    top_frame_origin, accessing_origin,
+                    /*out_debug_message=*/nullptr, /*console_frame=*/nullptr,
+                    /*out_block_is_site_setting_specific=*/nullptr));
       return;
     }
 
@@ -518,9 +521,11 @@ void CheckOutput(
       auto accessing_origin =
           GetItemValueForKey<url::Origin>(InputKey::kAccessingOrigin, input);
       auto return_value = GetItemValue<bool>(output_value);
-      ASSERT_EQ(return_value,
-                privacy_sandbox_settings->IsSharedStorageSelectURLAllowed(
-                    top_frame_origin, accessing_origin));
+      ASSERT_EQ(
+          return_value,
+          privacy_sandbox_settings->IsSharedStorageSelectURLAllowed(
+              top_frame_origin, accessing_origin, /*out_debug_message=*/nullptr,
+              /*out_block_is_site_setting_specific=*/nullptr));
       return;
     }
 
@@ -533,7 +538,8 @@ void CheckOutput(
       auto return_value = GetItemValue<bool>(output_value);
       ASSERT_EQ(return_value,
                 privacy_sandbox_settings->IsPrivateAggregationAllowed(
-                    top_frame_origin, reporting_origin));
+                    top_frame_origin, reporting_origin,
+                    /*out_block_is_site_setting_specific=*/nullptr));
       return;
     }
 
@@ -686,7 +692,9 @@ void CheckOutput(
       auto accessing_origin =
           GetItemValueForKey<url::Origin>(InputKey::kAccessingOrigin, input);
       std::ignore = privacy_sandbox_settings->IsSharedStorageAllowed(
-          top_frame_origin, accessing_origin);
+          top_frame_origin, accessing_origin, /*out_debug_message=*/nullptr,
+          /*console_frame=*/nullptr,
+          /*out_block_is_site_setting_specific=*/nullptr);
       auto histogram_value = GetItemValue<int>(output_value);
       histogram_tester.ExpectUniqueSample(
           "PrivacySandbox.IsSharedStorageAllowed", histogram_value, 1);
@@ -701,7 +709,8 @@ void CheckOutput(
       auto accessing_origin =
           GetItemValueForKey<url::Origin>(InputKey::kAccessingOrigin, input);
       std::ignore = privacy_sandbox_settings->IsSharedStorageSelectURLAllowed(
-          top_frame_origin, accessing_origin);
+          top_frame_origin, accessing_origin, /*out_debug_message=*/nullptr,
+          /*out_block_is_site_setting_specific=*/nullptr);
       auto histogram_value = GetItemValue<int>(output_value);
       histogram_tester.ExpectUniqueSample(
           "PrivacySandbox.IsSharedStorageSelectURLAllowed", histogram_value, 1);
@@ -715,7 +724,8 @@ void CheckOutput(
       auto reporting_origin = GetItemValueForKey<url::Origin>(
           InputKey::kAdMeasurementReportingOrigin, input);
       std::ignore = privacy_sandbox_settings->IsPrivateAggregationAllowed(
-          top_frame_origin, reporting_origin);
+          top_frame_origin, reporting_origin,
+          /*out_block_is_site_setting_specific=*/nullptr);
       auto histogram_value = GetItemValue<int>(output_value);
       histogram_tester.ExpectUniqueSample(
           "PrivacySandbox.IsPrivateAggregationAllowed", histogram_value, 1);
@@ -898,7 +908,9 @@ void CheckOutput(
       std::string* actual_out_debug_message = GetItemValueForKey<std::string*>(
           InputKey::kOutSharedStorageDebugMessage, input);
       privacy_sandbox_settings->IsSharedStorageAllowed(
-          top_frame_origin, accessing_origin, actual_out_debug_message);
+          top_frame_origin, accessing_origin, actual_out_debug_message,
+          /*console_frame=*/nullptr,
+          /*out_block_is_site_setting_specific=*/nullptr);
       std::string* expected_out_debug_message =
           GetItemValue<std::string*>(output_value);
       ASSERT_EQ(!!actual_out_debug_message, !!expected_out_debug_message);
@@ -919,12 +931,83 @@ void CheckOutput(
       std::string* actual_out_debug_message = GetItemValueForKey<std::string*>(
           InputKey::kOutSharedStorageSelectURLDebugMessage, input);
       privacy_sandbox_settings->IsSharedStorageSelectURLAllowed(
-          top_frame_origin, accessing_origin, actual_out_debug_message);
+          top_frame_origin, accessing_origin, actual_out_debug_message,
+          /*out_block_is_site_setting_specific=*/nullptr);
       std::string* expected_out_debug_message =
           GetItemValue<std::string*>(output_value);
       ASSERT_EQ(!!actual_out_debug_message, !!expected_out_debug_message);
       if (expected_out_debug_message) {
         ASSERT_EQ(*actual_out_debug_message, *expected_out_debug_message);
+      }
+      return;
+    }
+    case (OutputKey::kIsSharedStorageBlockSiteSettingSpecific): {
+      SCOPED_TRACE(
+          "Check Output: Verify out_is_block_site_specific in "
+          "IsSharedStorageAllowed()");
+      auto top_frame_origin =
+          GetItemValueForKey<url::Origin>(InputKey::kTopFrameOrigin, input);
+      auto accessing_origin =
+          GetItemValueForKey<url::Origin>(InputKey::kAccessingOrigin, input);
+      bool* actual_out_is_block_site_specific = GetItemValueForKey<bool*>(
+          InputKey::kOutSharedStorageBlockIsSiteSettingSpecific, input);
+      privacy_sandbox_settings->IsSharedStorageAllowed(
+          top_frame_origin, accessing_origin, /*out_debug_message=*/nullptr,
+          /*console_frame=*/nullptr, actual_out_is_block_site_specific);
+      bool* expected_out_is_block_site_specific =
+          GetItemValue<bool*>(output_value);
+      ASSERT_EQ(!!actual_out_is_block_site_specific,
+                !!expected_out_is_block_site_specific);
+      if (expected_out_is_block_site_specific) {
+        ASSERT_EQ(*actual_out_is_block_site_specific,
+                  *expected_out_is_block_site_specific);
+      }
+      return;
+    }
+    case (OutputKey::kIsSharedStorageSelectURLBlockSiteSettingSpecific): {
+      SCOPED_TRACE(
+          "Check Output: Verify out_is_block_site_specific in "
+          "IsSharedStorageSelectURLAllowed()");
+      auto top_frame_origin =
+          GetItemValueForKey<url::Origin>(InputKey::kTopFrameOrigin, input);
+      auto accessing_origin =
+          GetItemValueForKey<url::Origin>(InputKey::kAccessingOrigin, input);
+      bool* actual_out_is_block_site_specific = GetItemValueForKey<bool*>(
+          InputKey::kOutSharedStorageSelectURLBlockIsSiteSettingSpecific,
+          input);
+      privacy_sandbox_settings->IsSharedStorageSelectURLAllowed(
+          top_frame_origin, accessing_origin, /*out_debug_message=*/nullptr,
+          actual_out_is_block_site_specific);
+      bool* expected_out_is_block_site_specific =
+          GetItemValue<bool*>(output_value);
+      ASSERT_EQ(!!actual_out_is_block_site_specific,
+                !!expected_out_is_block_site_specific);
+      if (expected_out_is_block_site_specific) {
+        ASSERT_EQ(*actual_out_is_block_site_specific,
+                  *expected_out_is_block_site_specific);
+      }
+      return;
+    }
+    case (OutputKey::kIsPrivateAggregationBlockSiteSettingSpecific): {
+      SCOPED_TRACE(
+          "Check Output: Verify out_is_block_site_specific in "
+          "IsPrivateAggregationAllowed()");
+      auto top_frame_origin =
+          GetItemValueForKey<url::Origin>(InputKey::kTopFrameOrigin, input);
+      auto accessing_origin =
+          GetItemValueForKey<url::Origin>(InputKey::kAccessingOrigin, input);
+      bool* actual_out_is_block_site_specific = GetItemValueForKey<bool*>(
+          InputKey::kOutPrivateAggregationBlockIsSiteSettingSpecific, input);
+      privacy_sandbox_settings->IsPrivateAggregationAllowed(
+          top_frame_origin, accessing_origin,
+          actual_out_is_block_site_specific);
+      bool* expected_out_is_block_site_specific =
+          GetItemValue<bool*>(output_value);
+      ASSERT_EQ(!!actual_out_is_block_site_specific,
+                !!expected_out_is_block_site_specific);
+      if (expected_out_is_block_site_specific) {
+        ASSERT_EQ(*actual_out_is_block_site_specific,
+                  *expected_out_is_block_site_specific);
       }
       return;
     }

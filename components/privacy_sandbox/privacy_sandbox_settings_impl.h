@@ -87,15 +87,18 @@ class PrivacySandboxSettingsImpl : public PrivacySandboxSettings,
   bool IsSharedStorageAllowed(
       const url::Origin& top_frame_origin,
       const url::Origin& accessing_origin,
-      std::string* out_debug_message = nullptr,
-      content::RenderFrameHost* console_frame = nullptr) const override;
+      std::string* out_debug_message,
+      content::RenderFrameHost* console_frame,
+      bool* out_block_is_site_setting_specific) const override;
   bool IsSharedStorageSelectURLAllowed(
       const url::Origin& top_frame_origin,
       const url::Origin& accessing_origin,
-      std::string* out_debug_message = nullptr) const override;
+      std::string* out_debug_message,
+      bool* out_block_is_site_setting_specific) const override;
   bool IsPrivateAggregationAllowed(
       const url::Origin& top_frame_origin,
-      const url::Origin& reporting_origin) const override;
+      const url::Origin& reporting_origin,
+      bool* out_block_is_site_setting_specific) const override;
   bool IsPrivateAggregationDebugModeAllowed(
       const url::Origin& top_frame_origin,
       const url::Origin& reporting_origin) const override;
@@ -205,6 +208,12 @@ class PrivacySandboxSettingsImpl : public PrivacySandboxSettings,
 
   // From TrackingProtectionSettingsObserver.
   void OnBlockAllThirdPartyCookiesChanged() override;
+
+  // Sets the out parameter `out_block_is_site_setting_specific` if it is
+  // non-null, based on the given `status`.
+  void SetOutBlockIsSiteSettingSpecificFromStatus(
+      Status status,
+      bool* out_block_is_site_setting_specific) const;
 
   base::ObserverList<Observer>::Unchecked observers_;
 

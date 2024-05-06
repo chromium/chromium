@@ -82,15 +82,16 @@ class MockPrivacySandboxSettings
               (const url::Origin&,
                const url::Origin&,
                std::string*,
-               content::RenderFrameHost*),
+               content::RenderFrameHost*,
+               bool*),
               (override, const));
   MOCK_METHOD(bool,
               IsSharedStorageSelectURLAllowed,
-              (const url::Origin&, const url::Origin&, std::string*),
+              (const url::Origin&, const url::Origin&, std::string*, bool*),
               (override, const));
   MOCK_METHOD(bool,
               IsPrivateAggregationAllowed,
-              (const url::Origin&, const url::Origin&),
+              (const url::Origin&, const url::Origin&, bool*),
               (override, const));
   MOCK_METHOD(bool,
               IsPrivateAggregationDebugModeAllowed,

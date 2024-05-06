@@ -3403,8 +3403,10 @@ bool ChromeContentBrowserClient::IsSharedStorageAllowed(
   auto* privacy_sandbox_settings =
       PrivacySandboxSettingsFactory::GetForProfile(profile);
   DCHECK(privacy_sandbox_settings);
+  // TODO(335839125): Plumb in a non-null `out_block_is_site_setting_specific`.
   bool allowed = privacy_sandbox_settings->IsSharedStorageAllowed(
-      top_frame_origin, accessing_origin, out_debug_message, rfh);
+      top_frame_origin, accessing_origin, out_debug_message, rfh,
+      /*out_block_is_site_setting_specific=*/nullptr);
   if (rfh) {
     content_settings::PageSpecificContentSettings::BrowsingDataAccessed(
         rfh, blink::StorageKey::CreateFirstParty(accessing_origin),
@@ -3422,8 +3424,10 @@ bool ChromeContentBrowserClient::IsSharedStorageSelectURLAllowed(
   auto* privacy_sandbox_settings =
       PrivacySandboxSettingsFactory::GetForProfile(profile);
   DCHECK(privacy_sandbox_settings);
+  // TODO(335839125): Plumb in a non-null `out_block_is_site_setting_specific`.
   return privacy_sandbox_settings->IsSharedStorageSelectURLAllowed(
-      top_frame_origin, accessing_origin, out_debug_message);
+      top_frame_origin, accessing_origin, out_debug_message,
+      /*out_block_is_site_setting_specific=*/nullptr);
 }
 
 bool ChromeContentBrowserClient::IsPrivateAggregationAllowed(
@@ -3435,8 +3439,10 @@ bool ChromeContentBrowserClient::IsPrivateAggregationAllowed(
       PrivacySandboxSettingsFactory::GetForProfile(profile);
   DCHECK(privacy_sandbox_settings);
 
+  // TODO(335839125): Plumb in a non-null `out_block_is_site_setting_specific`.
   return privacy_sandbox_settings->IsPrivateAggregationAllowed(
-      top_frame_origin, reporting_origin);
+      top_frame_origin, reporting_origin,
+      /*out_block_is_site_setting_specific=*/nullptr);
 }
 
 bool ChromeContentBrowserClient::IsPrivateAggregationDebugModeAllowed(
