@@ -40,7 +40,6 @@ const CGFloat kContainersMaxWidth = 400;
 // Group color selection constants.
 const CGFloat kColoredButtonSize = 24;
 const CGFloat kColoredButtonContentInset = 8;
-const CGFloat kColorSelectionImageSize = 13;
 const CGFloat kColoredButtonWidthAndHeight = 40;
 const CGFloat kColorListBottomMargin = 16;
 const CGFloat kColoredDotSize = 21;
@@ -423,38 +422,21 @@ const CGFloat kButtonBackgroundCornerRadius = 15;
         configurationWithPointSize:kColoredButtonSize
                             weight:UIImageSymbolWeightRegular
                              scale:UIImageSymbolScaleDefault];
-    UIImage* baseImage =
+
+    UIImage* normalSymbolImage =
         DefaultSymbolWithConfiguration(kCircleFillSymbol, configuration);
-    baseImage =
-        [baseImage imageWithTintColor:TabGroup::ColorForTabGroupColorId(colorID)
-                        renderingMode:UIImageRenderingModeAlwaysOriginal];
-
-    UIImageSymbolConfiguration* selectionConfiguration =
-        [UIImageSymbolConfiguration
-            configurationWithPointSize:kColorSelectionImageSize
-                                weight:UIImageSymbolWeightBold
-                                 scale:UIImageSymbolScaleLarge];
-    UIImage* selectionRingImage =
-        DefaultSymbolWithConfiguration(kCircleSymbol, selectionConfiguration);
-    selectionRingImage = [selectionRingImage
-        imageWithTintColor:[UIColor colorNamed:kGrey100Color]
+    normalSymbolImage = [normalSymbolImage
+        imageWithTintColor:TabGroup::ColorForTabGroupColorId(colorID)
              renderingMode:UIImageRenderingModeAlwaysOriginal];
-    UIGraphicsBeginImageContextWithOptions(baseImage.size, NO, 0.0f);
-    [baseImage drawInRect:CGRectMake(0, 0, baseImage.size.width,
-                                     baseImage.size.height)];
-    [selectionRingImage
-        drawInRect:CGRectMake(baseImage.size.width / 2 -
-                                  selectionRingImage.size.width / 2,
-                              baseImage.size.height / 2 -
-                                  selectionRingImage.size.height / 2,
-                              selectionRingImage.size.width,
-                              selectionRingImage.size.height)];
-    UIImage* selectionImage = UIGraphicsGetImageFromCurrentImageContext();
-    UIGraphicsEndImageContext();
 
-    [colorButton setImage:baseImage forState:UIControlStateNormal];
-    [colorButton setImage:selectionImage forState:UIControlStateSelected];
+    UIImage* selectedSymbolImage =
+        DefaultSymbolWithConfiguration(kCircleCircleFillSymbol, configuration);
+    selectedSymbolImage = [selectedSymbolImage
+        imageWithTintColor:TabGroup::ColorForTabGroupColorId(colorID)
+             renderingMode:UIImageRenderingModeAlwaysOriginal];
 
+    [colorButton setImage:normalSymbolImage forState:UIControlStateNormal];
+    [colorButton setImage:selectedSymbolImage forState:UIControlStateSelected];
     [colorButton addTarget:self
                     action:@selector(coloredButtonTapped:)
           forControlEvents:UIControlEventTouchUpInside];
