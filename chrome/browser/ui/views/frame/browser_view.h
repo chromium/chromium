@@ -63,11 +63,6 @@
 #include "ui/views/widget/widget_observer.h"
 #include "ui/views/window/client_view.h"
 
-#if BUILDFLAG(ENTERPRISE_WATERMARK)
-#include "chrome/browser/enterprise/data_protection/data_protection_navigation_observer.h"
-#include "chrome/browser/enterprise/watermark/watermark_view.h"
-#endif
-
 #if BUILDFLAG(IS_CHROMEOS_ASH)
 #include "ui/compositor/throughput_tracker.h"
 #endif
@@ -98,6 +93,10 @@ class WebAppFrameToolbarView;
 class WebContentsCloseHandler;
 class WebUITabStripContainerView;
 
+namespace enterprise_data_protection {
+struct UrlSettings;
+}
+
 namespace ui {
 class NativeTheme;
 }  // namespace ui
@@ -115,6 +114,12 @@ namespace webapps {
 enum class InstallableWebAppCheckResult;
 struct WebAppBannerData;
 }  // namespace webapps
+
+#if BUILDFLAG(ENTERPRISE_WATERMARK)
+namespace enterprise_watermark {
+class WatermarkView;
+}
+#endif
 
 ///////////////////////////////////////////////////////////////////////////////
 // BrowserView
