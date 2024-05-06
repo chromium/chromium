@@ -181,3 +181,13 @@ select::select-fallback-button-text {
   overflow: hidden;
   display: inline;
 }
+
+/* TODO(crbug.com/1511354): These hover styles should only be applied when
+ * the select has appearance:base-select. This will be challenging because
+ * the selector is targeting an option rather than the select itself. However,
+ * these hover rules don't seem to affect appearance:auto options in the popup
+ * for now. */
+select:not(:-internal-list-box) option:not(:disabled):hover {
+  background-color: SelectedItem;
+  color: SelectedItemText;
+}
