@@ -266,6 +266,8 @@ vs-chromium-project.txt
 /testing/location_tags.json
 /testing/rts/
 /testserver.log
+/tools/bisect/.bisect-builds-cache.json
+/tools/bisect/catapult_bisect_dep/
 # See third_party/.gitignore for entries covering src/third_party.
 /tools/.bisect-builds-cache.json
 /tools/cygprofile/*.wprgo
