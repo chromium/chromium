@@ -91,6 +91,17 @@ export enum PrinterType {
   CLOUD_PRINTER_DEPRECATED = 4
 }
 
+/**
+ * Must be kept in sync with the C++ ScalingType enum in
+ * printing/print_job_constants.h.
+ */
+export enum ScalingType {
+  DEFAULT = 0,
+  FIT_TO_PAGE = 1,
+  FIT_TO_PAPER = 2,
+  CUSTOM = 3,
+}
+
 // PrintTicket represents the data required to start print job. Ticket will be
 // used to create a settings dictionary with fields matching the existing Chrome
 // preview print settings for reusability.
@@ -176,6 +187,12 @@ export interface PrintTicket {
 
   // Whether to treat source as an image when generating PDF.
   rasterizePDF: boolean;
+
+  // Percent to scale source as integer.
+  scaleFactor: number;
+
+  // Whether to use custom scale or presets.
+  scalingType: ScalingType;
 
   // Whether to generate PDF with CSS backgrounds included.
   shouldPrintBackgrounds: boolean;

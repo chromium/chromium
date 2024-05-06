@@ -488,6 +488,12 @@ suite('PrintTicketManager', () => {
             DEFAULT_PARTIAL_PRINT_TICKET.rasterizePDF, ticket.rasterizePDF,
             'Ticket rasterizePDF should match DEFAULT_PARTIAL_PRINT_TICKET');
         assertEquals(
+            DEFAULT_PARTIAL_PRINT_TICKET.scaleFactor, ticket.scaleFactor,
+            'Ticket scaleFactor should match DEFAULT_PARTIAL_PRINT_TICKET');
+        assertEquals(
+            DEFAULT_PARTIAL_PRINT_TICKET.scalingType, ticket.scalingType,
+            'Ticket scalingType should match DEFAULT_PARTIAL_PRINT_TICKET');
+        assertEquals(
             DEFAULT_PARTIAL_PRINT_TICKET.shouldPrintBackgrounds,
             ticket.shouldPrintBackgrounds,
             'Ticket shouldPrintBackgrounds should match ' +
