@@ -123,7 +123,8 @@ inline constexpr char16_t kCountryRe[] =
     u"|국가|나라"                         // ko-KR
     u"|(\\b|_)(ülke|ulce|ulke)(\\b|_)"    // tr
     u"|کشور"                              // fa
-    u"|negara";                           // id
+    u"|negara"                            // id
+    u"|(?<!o)kraj|pa[nń]stwo";            // pl
 inline constexpr char16_t kCountryLocationRe[] = u"location";
 inline constexpr char16_t kZipCodeRe[] =
     u"((?<!\\.))zip"  // .zip indicates a file extension
