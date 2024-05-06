@@ -122,7 +122,7 @@ class ASH_EXPORT PickerView : public views::WidgetDelegateView,
   void PublishCategoryResults(std::vector<PickerSearchResultsSection> results);
 
   void AddSearchFieldView();
-  void AddContentsView(PickerLayoutType layout_type);
+  void AddContentsViewWithSeparator(PickerLayoutType layout_type);
 
   // Sets `page_view` as the active page in `contents_view_`.
   void SetActivePage(PickerPageView* page_view);

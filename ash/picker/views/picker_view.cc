@@ -167,18 +167,8 @@ PickerView::PickerView(PickerViewDelegate* delegate,
   SetLayoutManager(std::make_unique<views::FlexLayout>())
       ->SetOrientation(views::LayoutOrientation::kVertical);
 
-  switch (layout_type) {
-    case PickerLayoutType::kResultsBelowSearchField:
-      AddSearchFieldView();
-      AddChildView(CreateSeparator());
-      AddContentsView(layout_type);
-      break;
-    case PickerLayoutType::kResultsAboveSearchField:
-      AddContentsView(layout_type);
-      AddChildView(CreateSeparator());
-      AddSearchFieldView();
-      break;
-  }
+  AddSearchFieldView();
+  AddContentsViewWithSeparator(layout_type);
 
   // Automatically focus on the search field.
   SetInitiallyFocusedView(search_field_view_);
@@ -384,9 +374,20 @@ void PickerView::AddSearchFieldView() {
       &key_event_handler_, &performance_metrics_));
 }
 
-void PickerView::AddContentsView(PickerLayoutType layout_type) {
-  contents_view_ =
-      AddChildView(std::make_unique<PickerContentsView>(layout_type));
+void PickerView::AddContentsViewWithSeparator(PickerLayoutType layout_type) {
+  switch (layout_type) {
+    case PickerLayoutType::kResultsBelowSearchField:
+      AddChildView(CreateSeparator());
+      contents_view_ =
+          AddChildView(std::make_unique<PickerContentsView>(layout_type));
+      break;
+    case PickerLayoutType::kResultsAboveSearchField:
+      contents_view_ =
+          AddChildViewAt(std::make_unique<PickerContentsView>(layout_type), 0);
+      AddChildViewAt(CreateSeparator(), 1);
+      break;
+  }
+
   contents_view_->SetProperty(
       views::kFlexBehaviorKey,
       views::FlexSpecification(views::MinimumFlexSizeRule::kScaleToZero,

@@ -104,6 +104,10 @@ class FakePickerViewDelegate : public PickerViewDelegate {
   explicit FakePickerViewDelegate(Options options = {}) : options_(options) {}
 
   std::vector<PickerCategory> GetAvailableCategories() override {
+    if (options_.available_categories.empty()) {
+      // Use at least one category.
+      return {PickerCategory::kExpressions};
+    }
     return options_.available_categories;
   }
 
