@@ -151,7 +151,6 @@ IN_PROC_BROWSER_TEST_F(PersonalizationAppComponentTest, SeaPenTemplateQuery) {
           "mocha.run()");
 }
 
-// TODO(b/322108635): Re-enable when the flakiness is resolved.
 IN_PROC_BROWSER_TEST_F(PersonalizationAppComponentTest, SeaPenTemplates) {
   RunTest("chromeos/personalization_app/sea_pen_templates_element_test.js",
           "mocha.run()");
@@ -187,9 +186,7 @@ IN_PROC_BROWSER_TEST_F(PersonalizationAppComponentTest, WallpaperGridItem) {
           "mocha.run()");
 }
 
-// TODO(crbug.com/336418721): Re-enable this test flakily failing.
-IN_PROC_BROWSER_TEST_F(PersonalizationAppComponentTest,
-                       DISABLED_WallpaperImages) {
+IN_PROC_BROWSER_TEST_F(PersonalizationAppComponentTest, WallpaperImages) {
   RunTest("chromeos/personalization_app/wallpaper_images_element_test.js",
           "mocha.run()");
 }
