@@ -805,8 +805,7 @@ gin::ObjectTemplateBuilder ReadAnythingAppController::GetObjectTemplateBuilder(
       .SetMethod("getImageDataUrl", &ReadAnythingAppController::GetImageDataUrl)
       .SetMethod("getDisplayNameForLocale",
                  &ReadAnythingAppController::GetDisplayNameForLocale)
-      .SetMethod("logMetric",
-                 &ReadAnythingAppController::LogUmaHistogramLongTimes)
+      .SetMethod("logMetric", &ReadAnythingAppController::LogUmaHistogramTimes)
       .SetMethod("logSpeechError",
                  &ReadAnythingAppController::LogSpeechErrorEvent)
       .SetMethod("sendGetVoicePackInfoRequest",
@@ -1612,8 +1611,8 @@ int ReadAnythingAppController::GetNextWordHighlightLength(int index) {
   return model_.GetNextWordHighlightLength(index);
 }
 
-void ReadAnythingAppController::LogUmaHistogramLongTimes(int64_t time,
-                                                         std::string metric) {
+void ReadAnythingAppController::LogUmaHistogramTimes(int64_t time,
+                                                     std::string metric) {
   base::UmaHistogramTimes(metric, base::Milliseconds(time));
 }
 

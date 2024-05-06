@@ -317,7 +317,7 @@ class ReadAnythingAppController
   void SetLanguageForTesting(const std::string& language_code);
 
   // Helper for logging UmaHistograms based on times recorded in WebUI.
-  void LogUmaHistogramLongTimes(int64_t time, std::string metric);
+  void LogUmaHistogramTimes(int64_t time, std::string metric);
 
   void LogSpeechErrorEvent(std::string error_code);
 
