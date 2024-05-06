@@ -15,6 +15,11 @@ bool IsWordCountWithinBounds(const std::string& prompt,
                              unsigned int minimum,
                              unsigned int maximum);
 
+std::string GetTrimmedPageText(std::string inner_text,
+                               int max_length,
+                               int element_offset,
+                               int header_length);
+
 }  // namespace compose
 
 #endif  // COMPONENTS_COMPOSE_CORE_BROWSER_COMPOSE_UTILS_H_
