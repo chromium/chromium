@@ -110,6 +110,13 @@ bool AXComputedNodeData::HasOrCanComputeAttribute(
       // The value attribute could be computed on the browser for content
       // editables and ARIA text/search boxes.
       return owner_->data().IsNonAtomicTextField();
+
+    case ax::mojom::StringAttribute::kName:
+      return ::features::IsAccessibilityPruneRedundantInlineTextEnabled() &&
+             owner_->data().role == ax::mojom::Role::kInlineTextBox &&
+             owner_->GetParent()->data().HasStringAttribute(
+                 ax::mojom::StringAttribute::kName);
+
     default:
       return false;
   }
@@ -151,6 +158,16 @@ const std::string& AXComputedNodeData::GetOrComputeAttributeUTF8(
       // such controls on the browser. The same for all other controls, other
       // than non-atomic text fields.
       return base::EmptyString();
+
+    case ax::mojom::StringAttribute::kName:
+      // The name may be suppressed when serializing an AXInlineTextBox if it
+      // can be inferred from the parent.
+      if (::features::IsAccessibilityPruneRedundantInlineTextEnabled() &&
+          owner_->data().role == ax::mojom::Role::kInlineTextBox) {
+        return GetOrComputeTextContentUTF8();
+      }
+      return base::EmptyString();
+
     default:
       return base::EmptyString();
   }
@@ -463,7 +480,6 @@ std::string AXComputedNodeData::ComputeTextContentUTF8() const {
   // set and kNone if the text content is to be inferred from the parent.
   if (::features::IsAccessibilityPruneRedundantInlineTextEnabled()) {
     if (owner_->data().role == ax::mojom::Role::kInlineTextBox &&
-        owner_->data().GetNameFrom() == ax::mojom::NameFrom::kNone &&
         !owner_->data().HasStringAttribute(ax::mojom::StringAttribute::kName)) {
       return owner_->GetParent()->data().GetStringAttribute(
           ax::mojom::StringAttribute::kName);

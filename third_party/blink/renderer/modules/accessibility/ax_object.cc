@@ -1764,6 +1764,7 @@ void AXObject::SerializeNameAndDescriptionAttributes(
         IsOnlyChild()) {
       // The text of an only-child inline text box can be inferred directly
       // from the parent. No need to serialize redundant data.
+      node_data->SetNameFrom(ax::mojom::blink::NameFrom::kContents);
       return;
     }
   }
