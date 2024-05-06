@@ -87,6 +87,7 @@ constexpr char kTestMemberPublicKey[] =
     "13C99EDFC5B28BD119C80AD034DE52819963F3056E0F230264D62828";
 constexpr int kTestKeyVersion = 100;
 constexpr int kTestGPMExpirySeconds = 1000000;
+constexpr int kTestLSKFExpirySeconds = 1000001;
 
 enum class Member {
   kPhysical,
@@ -135,11 +136,16 @@ trusted_vault_pb::ListSecurityDomainMembersResponse MakeSecurityDomainMembers(
         member->set_member_type(trusted_vault_pb::SecurityDomainMember::
                                     MEMBER_TYPE_LOCKSCREEN_KNOWLEDGE_FACTOR);
         break;
-      case Member::kUsableVirtual:
+      case Member::kUsableVirtual: {
         member->set_member_type(trusted_vault_pb::SecurityDomainMember::
                                     MEMBER_TYPE_LOCKSCREEN_KNOWLEDGE_FACTOR);
         member->mutable_member_metadata()->set_usable_for_retrieval(true);
+        auto* metadata =
+            member->mutable_member_metadata()->mutable_lskf_metadata();
+        metadata->mutable_expiration_time()->set_seconds(
+            kTestLSKFExpirySeconds);
         break;
+      }
       case Member::kICloudKeychain:
         member->set_member_type(trusted_vault_pb::SecurityDomainMember::
                                     MEMBER_TYPE_ICLOUD_KEYCHAIN);
@@ -1137,6 +1143,7 @@ TEST_P(TrustedVaultConnectionImplTest,
   const GpmPinMetadata gpm_pin_metadata(
       std::move(member_public_key_bytes), kTestSerializedWrappedPIN,
       /*expiry=*/base::Time::FromTimeT(kTestGPMExpirySeconds));
+  const base::Time lskf_expiry = base::Time::FromTimeT(kTestLSKFExpirySeconds);
   const struct TestCase {
     // responses contains the set of security domain members included in each
     // page of results from the "server".
@@ -1144,6 +1151,7 @@ TEST_P(TrustedVaultConnectionImplTest,
     State expected_result;
     std::optional<int> expected_key_version;
     std::optional<GpmPinMetadata> expected_gpm_pin_metadata;
+    std::vector<base::Time> expected_lskf_expiries;
     std::vector<std::string> expected_icloud_keys;
   } kTestCases[] = {
       {
@@ -1151,66 +1159,77 @@ TEST_P(TrustedVaultConnectionImplTest,
           State::kEmpty,
           /*expected_key_version=*/std::nullopt,
           /*expected_gpm_pin_metadata=*/std::nullopt,
+          /*expected_lskf_expiries=*/{},
       },
       {
           {{}, {}},
           State::kEmpty,
           /*expected_key_version=*/std::nullopt,
           /*expected_gpm_pin_metadata=*/std::nullopt,
+          /*expected_lskf_expiries=*/{},
       },
       {
           {{Member::kOtherSecurityDomain}, {Member::kOtherSecurityDomain}},
           State::kEmpty,
           /*expected_key_version=*/std::nullopt,
           /*expected_gpm_pin_metadata=*/std::nullopt,
+          /*expected_lskf_expiries=*/{},
       },
       {
           {{Member::kPhysical}},
           State::kIrrecoverable,
           /*expected_key_version=*/kTestKeyVersion,
           /*expected_gpm_pin_metadata=*/std::nullopt,
+          /*expected_lskf_expiries=*/{},
       },
       {
           {{Member::kPhysical, Member::kUsableVirtual}},
           State::kRecoverable,
           /*expected_key_version=*/kTestKeyVersion,
           /*expected_gpm_pin_metadata=*/std::nullopt,
+          /*expected_lskf_expiries=*/{lskf_expiry},
       },
       {
           {{Member::kPhysical, Member::kUnusableVirtual}},
           State::kIrrecoverable,
           /*expected_key_version=*/kTestKeyVersion,
           /*expected_gpm_pin_metadata=*/std::nullopt,
+          /*expected_lskf_expiries=*/{},
       },
       {
           {{Member::kPhysical}, {}, {Member::kUsableVirtual}},
           State::kRecoverable,
           /*expected_key_version=*/kTestKeyVersion,
           /*expected_gpm_pin_metadata=*/std::nullopt,
+          /*expected_lskf_expiries=*/{lskf_expiry},
       },
       {
           {{Member::kUsableVirtual}, {}, {Member::kPhysical}},
           State::kRecoverable,
           /*expected_key_version=*/kTestKeyVersion,
           /*expected_gpm_pin_metadata=*/std::nullopt,
+          /*expected_lskf_expiries=*/{lskf_expiry},
       },
       {
           {{Member::kPhysical}, {}, {Member::kUnusableVirtual}},
           State::kIrrecoverable,
           /*expected_key_version=*/kTestKeyVersion,
           /*expected_gpm_pin_metadata=*/std::nullopt,
+          /*expected_lskf_expiries=*/{},
       },
       {
           {{Member::kPhysical}, {}, {Member::kOtherSecurityDomain}},
           State::kIrrecoverable,
           /*expected_key_version=*/kTestKeyVersion,
           /*expected_gpm_pin_metadata=*/std::nullopt,
+          /*expected_lskf_expiries=*/{},
       },
       {
           {{Member::kGooglePasswordManagerPIN}, {Member::kOtherSecurityDomain}},
           State::kRecoverable,
           /*expected_key_version=*/kTestKeyVersion,
           /*expected_gpm_pin_metadata=*/gpm_pin_metadata,
+          /*expected_lskf_expiries=*/{},
       },
       {
           {{Member::kGooglePasswordManagerPIN},
@@ -1218,12 +1237,14 @@ TEST_P(TrustedVaultConnectionImplTest,
           State::kRecoverable,
           /*expected_key_version=*/kTestKeyVersion,
           /*expected_gpm_pin_metadata=*/gpm_pin_metadata,
+          /*expected_lskf_expiries=*/{},
       },
       {
           {{Member::kICloudKeychain}},
           State::kIrrecoverable,
           /*expected_key_version=*/kTestKeyVersion,
           /*expected_gpm_pin_metadata=*/std::nullopt,
+          /*expected_lskf_expiries=*/{},
           /*expected_icloud_keys=*/{kTestMemberPublicKey},
       },
       {
@@ -1231,6 +1252,15 @@ TEST_P(TrustedVaultConnectionImplTest,
           State::kIrrecoverable,
           /*expected_key_version=*/kTestKeyVersion,
           /*expected_gpm_pin_metadata=*/std::nullopt,
+          /*expected_lskf_expiries=*/{},
+          /*expected_icloud_keys=*/{},
+      },
+      {
+          {{Member::kUsableVirtual, Member::kUsableVirtual}},
+          State::kRecoverable,
+          /*expected_key_version=*/kTestKeyVersion,
+          /*expected_gpm_pin_metadata=*/std::nullopt,
+          /*expected_lskf_expiries=*/{lskf_expiry, lskf_expiry},
           /*expected_icloud_keys=*/{},
       },
   };
@@ -1279,6 +1309,7 @@ TEST_P(TrustedVaultConnectionImplTest,
     EXPECT_EQ(num_pages_downloaded, test.responses.size());
     EXPECT_EQ(result->state, test.expected_result);
     EXPECT_EQ(result->gpm_pin_metadata, test.expected_gpm_pin_metadata);
+    EXPECT_EQ(result->lskf_expiries, test.expected_lskf_expiries);
     std::vector<std::string> result_icloud_keys;
     for (const auto& key : result->icloud_keys) {
       result_icloud_keys.push_back(base::HexEncode(key->ExportToBytes()));

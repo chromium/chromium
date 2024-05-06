@@ -426,6 +426,12 @@ class DownloadAuthenticationFactorsRegistrationStateRequest
         if (public_key) {
           result_.icloud_keys.push_back(std::move(public_key));
         }
+      } else if (member.member_type() ==
+                     trusted_vault_pb::SecurityDomainMember::
+                         MEMBER_TYPE_LOCKSCREEN_KNOWLEDGE_FACTOR &&
+                 member.member_metadata().has_lskf_metadata()) {
+        const auto& metadata = member.member_metadata().lskf_metadata();
+        result_.lskf_expiries.push_back(ToTime(metadata.expiration_time()));
       }
     }
 

@@ -139,6 +139,9 @@ struct DownloadAuthenticationFactorsRegistrationStateResult {
   // version.
   std::optional<int> key_version;
 
+  // The expiry time of any LSKF virtual devices.
+  std::vector<base::Time> lskf_expiries;
+
   // If a Google Password Manager PIN is a member of the domain, and is usable
   // for retrieval, then this will contain its metadata.
   std::optional<GpmPinMetadata> gpm_pin_metadata;
