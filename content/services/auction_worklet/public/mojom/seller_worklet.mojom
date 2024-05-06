@@ -5,6 +5,7 @@
 module auction_worklet.mojom;
 
 import "content/services/auction_worklet/public/mojom/private_aggregation_request.mojom";
+import "content/services/auction_worklet/public/mojom/real_time_reporting.mojom";
 import "content/services/auction_worklet/public/mojom/reject_reason.mojom";
 import "mojo/public/mojom/base/time.mojom";
 import "services/network/public/mojom/url_loader_factory.mojom";
@@ -105,6 +106,8 @@ interface ScoreAdClient {
   //
   // `pa_requests` The various requests made to the Private Aggregation API.
   //
+  // `real_time_contributions` Real time reporting contributions.
+  //
   // `scoring_latency` How long it took to execute the scoreAd() JavaScript,
   //  (including the top-level).
   //
@@ -124,6 +127,7 @@ interface ScoreAdClient {
                     url.mojom.Url? debug_loss_report_url,
                     url.mojom.Url? debug_win_report_url,
                     array<PrivateAggregationRequest> pa_requests,
+                    array<RealTimeReportingContribution> real_time_contributions,
                     mojo_base.mojom.TimeDelta scoring_latency,
                     ScoreAdDependencyLatencies score_ad_dependency_latencies,
                     array<string> errors);

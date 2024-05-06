@@ -79,9 +79,6 @@ class CONTENT_EXPORT AuctionRunner : public blink::mojom::AbortableAdAuction {
   // optional size returned by the winning bidder. Null if there is no winner or
   // no list was returned.
   //
-  // `report_urls` Reporting URLs returned by seller worklet reportResult()
-  //  methods and the winning bidder's reportWin() methods, if any.
-  //
   // `errors` are various error messages to be used for debugging. These are too
   //  sensitive for the renderers to see.
   using RunAuctionCallback = base::OnceCallback<void(

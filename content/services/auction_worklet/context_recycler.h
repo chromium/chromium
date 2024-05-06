@@ -25,13 +25,14 @@ class AuctionSharedStorageHost;
 class AuctionV8Logger;
 class ForDebuggingOnlyBindings;
 class PrivateAggregationBindings;
-class SharedStorageBindings;
+class RealTimeReportingBindings;
 class RegisterAdBeaconBindings;
 class RegisterAdMacroBindings;
 class ReportBindings;
 class SetBidBindings;
 class SetPriorityBindings;
 class SetPrioritySignalsOverrideBindings;
+class SharedStorageBindings;
 class AuctionConfigLazyFiller;
 class BiddingBrowserSignalsLazyFiller;
 class InterestGroupLazyFiller;
@@ -97,11 +98,9 @@ class CONTENT_EXPORT ContextRecycler {
     return private_aggregation_bindings_.get();
   }
 
-  void AddSharedStorageBindings(
-      mojom::AuctionSharedStorageHost* shared_storage_host,
-      bool shared_storage_permissions_policy_allowed);
-  SharedStorageBindings* shared_storage_bindings() {
-    return shared_storage_bindings_.get();
+  void AddRealTimeReportingBindings();
+  RealTimeReportingBindings* real_time_reporting_bindings() {
+    return real_time_reporting_bindings_.get();
   }
 
   void AddRegisterAdBeaconBindings();
@@ -128,6 +127,13 @@ class CONTENT_EXPORT ContextRecycler {
   void AddSetPrioritySignalsOverrideBindings();
   SetPrioritySignalsOverrideBindings* set_priority_signals_override_bindings() {
     return set_priority_signals_override_bindings_.get();
+  }
+
+  void AddSharedStorageBindings(
+      mojom::AuctionSharedStorageHost* shared_storage_host,
+      bool shared_storage_permissions_policy_allowed);
+  SharedStorageBindings* shared_storage_bindings() {
+    return shared_storage_bindings_.get();
   }
 
   void AddInterestGroupLazyFiller();
@@ -173,7 +179,7 @@ class CONTENT_EXPORT ContextRecycler {
 
   std::unique_ptr<ForDebuggingOnlyBindings> for_debugging_only_bindings_;
   std::unique_ptr<PrivateAggregationBindings> private_aggregation_bindings_;
-  std::unique_ptr<SharedStorageBindings> shared_storage_bindings_;
+  std::unique_ptr<RealTimeReportingBindings> real_time_reporting_bindings_;
   std::unique_ptr<RegisterAdBeaconBindings> register_ad_beacon_bindings_;
   std::unique_ptr<RegisterAdMacroBindings> register_ad_macro_bindings_;
   std::unique_ptr<ReportBindings> report_bindings_;
@@ -181,6 +187,7 @@ class CONTENT_EXPORT ContextRecycler {
   std::unique_ptr<SetPriorityBindings> set_priority_bindings_;
   std::unique_ptr<SetPrioritySignalsOverrideBindings>
       set_priority_signals_override_bindings_;
+  std::unique_ptr<SharedStorageBindings> shared_storage_bindings_;
 
   // everything here is owned by one of the unique_ptr's above.
   std::vector<raw_ptr<Bindings, VectorExperimental>> bindings_list_;

@@ -27,9 +27,9 @@
 #include "content/services/auction_worklet/context_recycler.h"
 #include "content/services/auction_worklet/direct_from_seller_signals_requester.h"
 #include "content/services/auction_worklet/public/mojom/auction_shared_storage_host.mojom.h"
-#include "content/services/auction_worklet/public/mojom/auction_worklet_service.mojom-forward.h"
 #include "content/services/auction_worklet/public/mojom/auction_worklet_service.mojom.h"
 #include "content/services/auction_worklet/public/mojom/private_aggregation_request.mojom.h"
+#include "content/services/auction_worklet/public/mojom/real_time_reporting.mojom.h"
 #include "content/services/auction_worklet/public/mojom/seller_worklet.mojom.h"
 #include "content/services/auction_worklet/trusted_signals.h"
 #include "content/services/auction_worklet/trusted_signals_request_manager.h"
@@ -63,6 +63,9 @@ class CONTENT_EXPORT SellerWorklet : public mojom::SellerWorklet {
 
   using PrivateAggregationRequests =
       std::vector<auction_worklet::mojom::PrivateAggregationRequestPtr>;
+
+  using RealTimeReportingContributions =
+      std::vector<auction_worklet::mojom::RealTimeReportingContributionPtr>;
 
   // Classification of how trusted signals related to this worklet.
   enum class SignalsOriginRelation {
@@ -305,6 +308,7 @@ class CONTENT_EXPORT SellerWorklet : public mojom::SellerWorklet {
         std::optional<GURL> debug_loss_report_url,
         std::optional<GURL> debug_win_report_url,
         PrivateAggregationRequests pa_requests,
+        RealTimeReportingContributions real_time_contributions,
         base::TimeDelta scoring_latency,
         std::vector<std::string> errors)>;
     using ReportResultCallbackInternal =
@@ -405,7 +409,8 @@ class CONTENT_EXPORT SellerWorklet : public mojom::SellerWorklet {
         ScoreAdCallbackInternal callback,
         base::TimeDelta scoring_latency,
         std::vector<std::string> errors,
-        PrivateAggregationRequests pa_requests = {});
+        PrivateAggregationRequests pa_requests = {},
+        RealTimeReportingContributions real_time_contributions = {});
 
     void PostScoreAdCallbackToUserThread(
         ScoreAdCallbackInternal callback,
@@ -418,6 +423,7 @@ class CONTENT_EXPORT SellerWorklet : public mojom::SellerWorklet {
         std::optional<GURL> debug_loss_report_url,
         std::optional<GURL> debug_win_report_url,
         PrivateAggregationRequests pa_requests,
+        RealTimeReportingContributions real_time_contributions,
         base::TimeDelta scoring_latency,
         std::vector<std::string> errors);
 
@@ -514,6 +520,7 @@ class CONTENT_EXPORT SellerWorklet : public mojom::SellerWorklet {
       std::optional<GURL> debug_loss_report_url,
       std::optional<GURL> debug_win_report_url,
       PrivateAggregationRequests pa_requests,
+      RealTimeReportingContributions real_time_contributions,
       base::TimeDelta scoring_latency,
       std::vector<std::string> errors);
 

@@ -31,6 +31,7 @@
 #include "content/services/auction_worklet/public/mojom/auction_worklet_service.mojom.h"
 #include "content/services/auction_worklet/public/mojom/bidder_worklet.mojom-forward.h"
 #include "content/services/auction_worklet/public/mojom/private_aggregation_request.mojom.h"
+#include "content/services/auction_worklet/public/mojom/real_time_reporting.mojom.h"
 #include "content/services/auction_worklet/worklet_devtools_debug_test_util.h"
 #include "content/services/auction_worklet/worklet_test_util.h"
 #include "content/services/auction_worklet/worklet_v8_debug_test_util.h"
@@ -67,6 +68,8 @@ namespace {
 
 using base::test::TaskEnvironment;
 using PrivateAggregationRequests = BidderWorklet::PrivateAggregationRequests;
+using RealTimeReportingContributions =
+    BidderWorklet::RealTimeReportingContributions;
 
 // This was produced by running wat2wasm on this:
 // (module
@@ -153,6 +156,7 @@ class GenerateBidClientWithCallbacks : public mojom::GenerateBidClient {
           update_priority_signals_overrides,
       PrivateAggregationRequests pa_requests,
       PrivateAggregationRequests non_kanon_pa_requests,
+      RealTimeReportingContributions real_time_contributions,
       base::TimeDelta bidding_latency,
       mojom::GenerateBidDependencyLatenciesPtr
           generate_bid_dependency_latencies,
@@ -205,6 +209,7 @@ class GenerateBidClientWithCallbacks : public mojom::GenerateBidClient {
                update_priority_signals_overrides,
            PrivateAggregationRequests pa_requests,
            PrivateAggregationRequests non_kanon_pa_requests,
+           RealTimeReportingContributions real_time_contributions,
            base::TimeDelta bidding_latency,
            mojom::GenerateBidDependencyLatenciesPtr
                generate_bid_dependency_latencies,
@@ -245,6 +250,7 @@ class GenerateBidClientWithCallbacks : public mojom::GenerateBidClient {
           update_priority_signals_overrides,
       PrivateAggregationRequests pa_requests,
       PrivateAggregationRequests non_kanon_pa_requests,
+      RealTimeReportingContributions real_time_contributions,
       base::TimeDelta bidding_latency,
       mojom::GenerateBidDependencyLatenciesPtr
           generate_bid_dependency_latencies,
@@ -258,8 +264,9 @@ class GenerateBidClientWithCallbacks : public mojom::GenerateBidClient {
              debug_win_report_url, set_priority,
              std::move(update_priority_signals_overrides),
              std::move(pa_requests), std::move(non_kanon_pa_requests),
-             bidding_latency, std::move(generate_bid_dependency_latencies),
-             reject_reason, errors);
+             std::move(real_time_contributions), bidding_latency,
+             std::move(generate_bid_dependency_latencies), reject_reason,
+             errors);
   }
 
  private:
@@ -413,14 +420,16 @@ class BidderWorkletTest : public testing::Test {
           expected_update_priority_signals_overrides =
               base::flat_map<std::string, std::optional<double>>(),
       PrivateAggregationRequests expected_pa_requests = {},
-      PrivateAggregationRequests expected_non_kanon_pa_requests = {}) {
+      PrivateAggregationRequests expected_non_kanon_pa_requests = {},
+      RealTimeReportingContributions expected_real_time_contributions = {}) {
     RunGenerateBidWithJavascriptExpectingResult(
         CreateGenerateBidScript(raw_return_value), std::move(expected_bids),
         expected_data_version, expected_errors, expected_debug_loss_report_url,
         expected_debug_win_report_url, expected_set_priority,
         expected_update_priority_signals_overrides,
         std::move(expected_pa_requests),
-        std::move(expected_non_kanon_pa_requests));
+        std::move(expected_non_kanon_pa_requests),
+        std::move(expected_real_time_contributions));
   }
 
   // Configures `url_loader_factory_` to return a script with the specified
@@ -438,7 +447,8 @@ class BidderWorkletTest : public testing::Test {
           expected_update_priority_signals_overrides =
               base::flat_map<std::string, std::optional<double>>(),
       PrivateAggregationRequests expected_pa_requests = {},
-      PrivateAggregationRequests expected_non_kanon_pa_requests = {}) {
+      PrivateAggregationRequests expected_non_kanon_pa_requests = {},
+      RealTimeReportingContributions expected_real_time_contributions = {}) {
     SCOPED_TRACE(javascript);
     AddJavascriptResponse(&url_loader_factory_, interest_group_bidding_url_,
                           javascript);
@@ -447,7 +457,8 @@ class BidderWorkletTest : public testing::Test {
         expected_debug_loss_report_url, expected_debug_win_report_url,
         expected_set_priority, expected_update_priority_signals_overrides,
         std::move(expected_pa_requests),
-        std::move(expected_non_kanon_pa_requests));
+        std::move(expected_non_kanon_pa_requests),
+        std::move(expected_real_time_contributions));
   }
 
   // Loads and runs a generateBid() script, expecting the provided result to
@@ -467,7 +478,8 @@ class BidderWorkletTest : public testing::Test {
           expected_update_priority_signals_overrides =
               base::flat_map<std::string, std::optional<double>>(),
       PrivateAggregationRequests expected_pa_requests = {},
-      PrivateAggregationRequests expected_non_kanon_pa_requests = {}) {
+      PrivateAggregationRequests expected_non_kanon_pa_requests = {},
+      RealTimeReportingContributions expected_real_time_contributions = {}) {
     std::vector<mojom::BidderWorkletBidPtr> expected_bids;
     if (absl::holds_alternative<mojom::BidderWorkletBidPtr>(
             expected_bid_or_bids)) {
@@ -511,6 +523,7 @@ class BidderWorkletTest : public testing::Test {
     EXPECT_EQ(expected_debug_win_report_url, bid_debug_win_report_url_);
     EXPECT_EQ(expected_pa_requests, pa_requests_);
     EXPECT_EQ(expected_non_kanon_pa_requests, non_kanon_pa_requests_);
+    EXPECT_EQ(expected_real_time_contributions, real_time_contributions_);
     EXPECT_EQ(expected_set_priority, set_priority_);
     EXPECT_EQ(expected_update_priority_signals_overrides,
               update_priority_signals_overrides_);
@@ -834,6 +847,7 @@ class BidderWorkletTest : public testing::Test {
           update_priority_signals_overrides,
       PrivateAggregationRequests pa_requests,
       PrivateAggregationRequests non_kanon_pa_requests,
+      RealTimeReportingContributions real_time_contributions,
       base::TimeDelta bidding_latency,
       mojom::GenerateBidDependencyLatenciesPtr
           generate_bid_dependency_latencies,
@@ -856,6 +870,7 @@ class BidderWorkletTest : public testing::Test {
 
     pa_requests_ = std::move(pa_requests);
     non_kanon_pa_requests_ = std::move(non_kanon_pa_requests);
+    real_time_contributions_ = std::move(real_time_contributions);
     generate_bid_dependency_latencies_ =
         std::move(generate_bid_dependency_latencies);
     reject_reason_ = reject_reason;
@@ -1016,6 +1031,7 @@ class BidderWorkletTest : public testing::Test {
       update_priority_signals_overrides_;
   PrivateAggregationRequests pa_requests_;
   PrivateAggregationRequests non_kanon_pa_requests_;
+  RealTimeReportingContributions real_time_contributions_;
   mojom::GenerateBidDependencyLatenciesPtr generate_bid_dependency_latencies_;
   mojom::RejectReason reject_reason_ = mojom::RejectReason::kNotAvailable;
   std::vector<std::string> bid_errors_;
@@ -4350,6 +4366,7 @@ TEST_F(BidderWorkletTest, GenerateBidParallel) {
                       update_priority_signals_overrides,
                   PrivateAggregationRequests pa_requests,
                   PrivateAggregationRequests non_kanon_pa_requests,
+                  RealTimeReportingContributions real_time_contributions,
                   base::TimeDelta bidding_latency,
                   mojom::GenerateBidDependencyLatenciesPtr
                       generate_bid_dependency_latencies,
@@ -4469,6 +4486,7 @@ TEST_F(BidderWorkletTest, GenerateBidTrustedBiddingSignalsParallelBatched1) {
                     update_priority_signals_overrides,
                 PrivateAggregationRequests pa_requests,
                 PrivateAggregationRequests non_kanon_pa_requests,
+                RealTimeReportingContributions real_time_contributions,
                 base::TimeDelta bidding_latency,
                 mojom::GenerateBidDependencyLatenciesPtr
                     generate_bid_dependency_latencies,
@@ -4597,6 +4615,7 @@ TEST_F(BidderWorkletTest, GenerateBidTrustedBiddingSignalsParallelBatched2) {
                     update_priority_signals_overrides,
                 PrivateAggregationRequests pa_requests,
                 PrivateAggregationRequests non_kanon_pa_requests,
+                RealTimeReportingContributions real_time_contributions,
                 base::TimeDelta bidding_latency,
                 mojom::GenerateBidDependencyLatenciesPtr
                     generate_bid_dependency_latencies,
@@ -4731,6 +4750,7 @@ TEST_F(BidderWorkletTest, GenerateBidTrustedBiddingSignalsParallelBatched3) {
                     update_priority_signals_overrides,
                 PrivateAggregationRequests pa_requests,
                 PrivateAggregationRequests non_kanon_pa_requests,
+                RealTimeReportingContributions real_time_contributions,
                 base::TimeDelta bidding_latency,
                 mojom::GenerateBidDependencyLatenciesPtr
                     generate_bid_dependency_latencies,
@@ -4844,6 +4864,7 @@ TEST_F(BidderWorkletTest, GenerateBidTrustedBiddingSignalsParallelNotBatched) {
                     update_priority_signals_overrides,
                 PrivateAggregationRequests pa_requests,
                 PrivateAggregationRequests non_kanon_pa_requests,
+                RealTimeReportingContributions real_time_contributions,
                 base::TimeDelta bidding_latency,
                 mojom::GenerateBidDependencyLatenciesPtr
                     generate_bid_dependency_latencies,
@@ -9644,12 +9665,11 @@ TEST_F(BidderWorkletSharedStorageAPIEnabledTest,
 class BidderWorkletPrivateAggregationEnabledTest : public BidderWorkletTest {
  public:
   BidderWorkletPrivateAggregationEnabledTest() {
-    scoped_feature_list_.InitAndEnableFeature(
-        blink::features::kPrivateAggregationApi);
+    feature_list_.InitAndEnableFeature(blink::features::kPrivateAggregationApi);
   }
 
  private:
-  base::test::ScopedFeatureList scoped_feature_list_;
+  base::test::ScopedFeatureList feature_list_;
 };
 
 TEST_F(BidderWorkletPrivateAggregationEnabledTest, GenerateBid) {
@@ -10286,12 +10306,12 @@ TEST_F(BidderWorkletPrivateAggregationEnabledTest, ReportWin) {
 class BidderWorkletPrivateAggregationDisabledTest : public BidderWorkletTest {
  public:
   BidderWorkletPrivateAggregationDisabledTest() {
-    scoped_feature_list_.InitAndDisableFeature(
+    feature_list_.InitAndDisableFeature(
         blink::features::kPrivateAggregationApi);
   }
 
  private:
-  base::test::ScopedFeatureList scoped_feature_list_;
+  base::test::ScopedFeatureList feature_list_;
 };
 
 TEST_F(BidderWorkletPrivateAggregationDisabledTest, GenerateBid) {
@@ -11725,14 +11745,14 @@ TEST_F(BidderWorkletTest,
 class BidderWorkletAdMacroReportingEnabledTest : public BidderWorkletTest {
  public:
   BidderWorkletAdMacroReportingEnabledTest() {
-    scoped_feature_list_.InitWithFeatures(
+    feature_list_.InitWithFeatures(
         /*enabled_features=*/{blink::features::kAdAuctionReportingWithMacroApi,
                               blink::features::kFencedFramesM120FeaturesPart1},
         /*disabled_features=*/{});
   }
 
  private:
-  base::test::ScopedFeatureList scoped_feature_list_;
+  base::test::ScopedFeatureList feature_list_;
 };
 
 TEST_F(BidderWorkletAdMacroReportingEnabledTest, ReportWinRegisterAdMacro) {
@@ -11856,12 +11876,12 @@ TEST_F(BidderWorkletAdMacroReportingEnabledTest,
 class BidderWorkletSampleDebugReportsDisabledTest : public BidderWorkletTest {
  public:
   BidderWorkletSampleDebugReportsDisabledTest() {
-    scoped_feature_list_.InitAndDisableFeature(
+    feature_list_.InitAndDisableFeature(
         blink::features::kFledgeSampleDebugReports);
   }
 
  private:
-  base::test::ScopedFeatureList scoped_feature_list_;
+  base::test::ScopedFeatureList feature_list_;
 };
 
 TEST_F(BidderWorkletSampleDebugReportsDisabledTest,
@@ -11966,6 +11986,158 @@ TEST_F(BidderWorkletCrossOriginTrustedSignalsTest, CrossOrigin) {
 
   RunGenerateBidExpectingExpressionIsTrue("trustedBiddingSignals === null",
                                           /*expected_data_version=*/5);
+}
+
+class BidderWorkletRealTimeReportingEnabledTest : public BidderWorkletTest {
+ public:
+  BidderWorkletRealTimeReportingEnabledTest() {
+    feature_list_.InitAndEnableFeature(
+        blink::features::kFledgeRealTimeReporting);
+  }
+
+ private:
+  base::test::ScopedFeatureList feature_list_;
+};
+
+TEST_F(BidderWorkletRealTimeReportingEnabledTest, RealTimeReporting) {
+  auction_worklet::mojom::RealTimeReportingContribution expected_histogram(
+      /*bucket=*/100, /*priority_weight=*/0.5,
+      /*latency_threshold=*/std::nullopt);
+
+  // Worklet latency contribution is tested in ScriptTimeout.
+  // Cannot reliably test worklet latency contribution here since the script
+  // takes 0ms to run some times, which is not higher than the smallest allowed
+  // latency threshold (0ms), in which case the contribution will be dropped.
+  constexpr char kExtraCode[] = R"(
+realTimeReporting.contributeToRealTimeHistogram(100, {priorityWeight: 0.5})
+)";
+
+  RealTimeReportingContributions expected_real_time_contributions;
+  expected_real_time_contributions.push_back(expected_histogram.Clone());
+
+  RunGenerateBidWithJavascriptExpectingResult(
+      // TODO: rename the function, if really need to use it, to
+      //  CreateBasicGenerateBidScriptWithExtraReport.
+      CreateBasicGenerateBidScriptWithDebuggingReport(kExtraCode),
+      mojom::BidderWorkletBid::New(
+          auction_worklet::mojom::BidRole::kUnenforcedKAnon, "[\"ad\"]", 1,
+          /*bid_currency=*/std::nullopt,
+          /*ad_cost=*/std::nullopt,
+          blink::AdDescriptor(GURL("https://response.test/")),
+          /*ad_component_descriptors=*/std::nullopt,
+          /*modeling_signals=*/std::nullopt, base::TimeDelta()),
+      /*expected_data_version=*/std::nullopt,
+      /*expected_errors=*/{}, std::nullopt, std::nullopt,
+      /*expected_set_priority=*/std::nullopt,
+      /*expected_update_priority_signals_overrides=*/{},
+      /*expected_pa_requests=*/{},
+      /*expected_non_kanon_pa_requests=*/{},
+      std::move(expected_real_time_contributions));
+}
+
+// Real time reporting contributions are allowed when an IG does not bid.
+TEST_F(BidderWorkletRealTimeReportingEnabledTest, NoBid) {
+  auction_worklet::mojom::RealTimeReportingContribution expected_histogram(
+      /*bucket=*/100, /*priority_weight=*/0.5,
+      /*latency_threshold=*/std::nullopt);
+
+  constexpr char kExtraCode[] = R"(
+realTimeReporting.contributeToRealTimeHistogram(100, {priorityWeight: 0.5});
+)";
+
+  RealTimeReportingContributions expected_real_time_contributions;
+  expected_real_time_contributions.push_back(expected_histogram.Clone());
+
+  RunGenerateBidWithJavascriptExpectingResult(
+      CreateGenerateBidScript(R"({bid: 0})", kExtraCode),
+      /*expected_bids=*/mojom::BidderWorkletBidPtr(),
+      /*expected_data_version=*/std::nullopt,
+      /*expected_errors=*/{}, std::nullopt, std::nullopt,
+      /*expected_set_priority=*/std::nullopt,
+      /*expected_update_priority_signals_overrides=*/{},
+      /*expected_pa_requests=*/{},
+      /*expected_non_kanon_pa_requests=*/{},
+      std::move(expected_real_time_contributions));
+}
+
+// Real time reporting contributions registered before script timeout are kept.
+TEST_F(BidderWorkletRealTimeReportingEnabledTest, ScriptTimeout) {
+  // Set timeout to a small number, and use a while loop in the script to let it
+  // timeout. Then the execution time would be higher than the latency threshold
+  // of 1ms thus the latency contribution will be kept.
+  per_buyer_timeout_ = base::Milliseconds(3);
+
+  auction_worklet::mojom::RealTimeReportingContribution expected_histogram(
+      /*bucket=*/100, /*priority_weight=*/0.5,
+      /*latency_threshold=*/std::nullopt);
+  auction_worklet::mojom::RealTimeReportingContribution
+      expected_latency_histogram(
+          /*bucket=*/200, /*priority_weight=*/2, /*latency_threshold=*/1);
+  constexpr char kExtraCode[] = R"(
+realTimeReporting.contributeToRealTimeHistogram(100, {priorityWeight: 0.5});
+realTimeReporting.contributeOnWorkletLatency(
+    200, {priorityWeight: 2, latencyThreshold: 1});
+while (1);
+)";
+
+  RealTimeReportingContributions expected_real_time_contributions;
+  expected_real_time_contributions.push_back(expected_histogram.Clone());
+  expected_real_time_contributions.push_back(
+      expected_latency_histogram.Clone());
+
+  RunGenerateBidWithJavascriptExpectingResult(
+      // TODO(qingxinwu): rename the function, if really need to use it, to
+      //  CreateBasicGenerateBidScriptWithExtraReport.
+      CreateBasicGenerateBidScriptWithDebuggingReport(kExtraCode),
+      /*expected_bids=*/mojom::BidderWorkletBidPtr(),
+      /*expected_data_version=*/std::nullopt,
+      /*expected_errors=*/
+      {"https://url.test/ execution of `generateBid` timed out."}, std::nullopt,
+      std::nullopt,
+      /*expected_set_priority=*/std::nullopt,
+      /*expected_update_priority_signals_overrides=*/{},
+      /*expected_pa_requests=*/{},
+      /*expected_non_kanon_pa_requests=*/{},
+      std::move(expected_real_time_contributions));
+}
+
+// contributeOnWorkletLatency's is dropped when the script's latency does not
+// exceed the threshold.
+TEST_F(BidderWorkletRealTimeReportingEnabledTest,
+       NotExceedingLatencyThreshold) {
+  auction_worklet::mojom::RealTimeReportingContribution expected_histogram(
+      /*bucket=*/100, /*priority_weight=*/0.5,
+      /*latency_threshold=*/std::nullopt);
+  constexpr char kExtraCode[] = R"(
+realTimeReporting.contributeToRealTimeHistogram(100, {priorityWeight: 0.5});
+realTimeReporting.contributeOnWorkletLatency(
+    200, {priorityWeight: 2, latencyThreshold: 10000000})
+)";
+
+  // Only contributeToRealTimeHistogram's contribution is kept.
+  // contributeOnWorkletLatency's is filtered out since the script's latency
+  // didn't exceed the threshold.
+  RealTimeReportingContributions expected_real_time_contributions;
+  expected_real_time_contributions.push_back(expected_histogram.Clone());
+
+  RunGenerateBidWithJavascriptExpectingResult(
+      // TODO: rename the function, if really need to use it, to
+      //  CreateBasicGenerateBidScriptWithExtraReport.
+      CreateBasicGenerateBidScriptWithDebuggingReport(kExtraCode),
+      mojom::BidderWorkletBid::New(
+          auction_worklet::mojom::BidRole::kUnenforcedKAnon, "[\"ad\"]", 1,
+          /*bid_currency=*/std::nullopt,
+          /*ad_cost=*/std::nullopt,
+          blink::AdDescriptor(GURL("https://response.test/")),
+          /*ad_component_descriptors=*/std::nullopt,
+          /*modeling_signals=*/std::nullopt, base::TimeDelta()),
+      /*expected_data_version=*/std::nullopt,
+      /*expected_errors=*/{}, std::nullopt, std::nullopt,
+      /*expected_set_priority=*/std::nullopt,
+      /*expected_update_priority_signals_overrides=*/{},
+      /*expected_pa_requests=*/{},
+      /*expected_non_kanon_pa_requests=*/{},
+      std::move(expected_real_time_contributions));
 }
 
 }  // namespace

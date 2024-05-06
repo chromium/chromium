@@ -27,6 +27,8 @@
 #include "content/services/auction_worklet/auction_v8_helper.h"
 #include "content/services/auction_worklet/public/mojom/auction_network_events_handler.mojom.h"
 #include "content/services/auction_worklet/public/mojom/auction_worklet_service.mojom.h"
+#include "content/services/auction_worklet/public/mojom/private_aggregation_request.mojom.h"
+#include "content/services/auction_worklet/public/mojom/real_time_reporting.mojom.h"
 #include "content/services/auction_worklet/public/mojom/seller_worklet.mojom.h"
 #include "content/services/auction_worklet/worklet_devtools_debug_test_util.h"
 #include "content/services/auction_worklet/worklet_test_util.h"
@@ -52,8 +54,9 @@ using testing::StartsWith;
 namespace auction_worklet {
 namespace {
 
-using PrivateAggregationRequests =
-    std::vector<mojom::PrivateAggregationRequestPtr>;
+using PrivateAggregationRequests = SellerWorklet::PrivateAggregationRequests;
+using RealTimeReportingContributions =
+    SellerWorklet::RealTimeReportingContributions;
 
 // Very short time used by some tests that want to wait until just before a
 // timer triggers.
@@ -124,6 +127,7 @@ class TestScoreAdClient : public mojom::ScoreAdClient {
       const std::optional<GURL>& debug_loss_report_url,
       const std::optional<GURL>& debug_win_report_url,
       PrivateAggregationRequests pa_requests,
+      RealTimeReportingContributions real_time_contributions,
       base::TimeDelta scoring_latency,
       mojom::ScoreAdDependencyLatenciesPtr score_ad_dependency_latencies,
       const std::vector<std::string>& errors)>;
@@ -154,6 +158,7 @@ class TestScoreAdClient : public mojom::ScoreAdClient {
       const std::optional<GURL>& debug_loss_report_url,
       const std::optional<GURL>& debug_win_report_url,
       PrivateAggregationRequests pa_requests,
+      RealTimeReportingContributions real_time_contributions,
       base::TimeDelta scoring_latency,
       mojom::ScoreAdDependencyLatenciesPtr score_ad_dependency_latencies,
       const std::vector<std::string>& errors) override {
@@ -162,7 +167,8 @@ class TestScoreAdClient : public mojom::ScoreAdClient {
              std::move(component_auction_modified_bid_params),
              std::move(bid_in_seller_currency),
              std::move(scoring_signals_data_version), debug_loss_report_url,
-             debug_win_report_url, std::move(pa_requests), scoring_latency,
+             debug_win_report_url, std::move(pa_requests),
+             std::move(real_time_contributions), scoring_latency,
              std::move(score_ad_dependency_latencies), errors);
   }
 
@@ -176,6 +182,7 @@ class TestScoreAdClient : public mojom::ScoreAdClient {
            const std::optional<GURL>& debug_loss_report_url,
            const std::optional<GURL>& debug_win_report_url,
            PrivateAggregationRequests pa_requests,
+           RealTimeReportingContributions real_time_contributions,
            base::TimeDelta scoring_latency,
            mojom::ScoreAdDependencyLatenciesPtr score_ad_dependency_latencies,
            const std::vector<std::string>& errors) {
@@ -272,13 +279,16 @@ class SellerWorkletTest : public testing::Test {
       mojom::RejectReason expected_reject_reason =
           mojom::RejectReason::kNotAvailable,
       PrivateAggregationRequests expected_pa_requests = {},
+      RealTimeReportingContributions expected_real_time_contributions = {},
       std::optional<double> expected_bid_in_seller_currency = std::nullopt) {
     RunScoreAdWithJavascriptExpectingResult(
         CreateScoreAdScript(raw_return_value), expected_score, expected_errors,
         std::move(expected_component_auction_modified_bid_params),
         expected_data_version, expected_debug_loss_report_url,
         expected_debug_win_report_url, expected_reject_reason,
-        std::move(expected_pa_requests), expected_bid_in_seller_currency);
+        std::move(expected_pa_requests),
+        std::move(expected_real_time_contributions),
+        expected_bid_in_seller_currency);
   }
 
   // Behaves just like RunScoreAdWithReturnValueExpectingResult(), but
@@ -301,6 +311,7 @@ class SellerWorkletTest : public testing::Test {
       mojom::RejectReason expected_reject_reason =
           mojom::RejectReason::kNotAvailable,
       PrivateAggregationRequests expected_pa_requests = {},
+      RealTimeReportingContributions expected_real_time_contributions = {},
       std::optional<double> expected_bid_in_seller_currency = std::nullopt) {
     AddJavascriptResponse(&url_loader_factory_, decision_logic_url_,
                           CreateScoreAdScript(raw_return_value),
@@ -313,7 +324,9 @@ class SellerWorkletTest : public testing::Test {
         std::move(expected_component_auction_modified_bid_params),
         expected_data_version, expected_debug_loss_report_url,
         expected_debug_win_report_url, expected_reject_reason,
-        std::move(expected_pa_requests), expected_bid_in_seller_currency,
+        std::move(expected_pa_requests),
+        std::move(expected_real_time_contributions),
+        expected_bid_in_seller_currency,
         /*expected_score_ad_timeout=*/false,
         /*expected_signals_fetch_latency=*/std::nullopt,
         /*expected_code_ready_latency=*/std::nullopt, run_loop.QuitClosure());
@@ -339,6 +352,7 @@ class SellerWorkletTest : public testing::Test {
       mojom::RejectReason expected_reject_reason =
           mojom::RejectReason::kNotAvailable,
       PrivateAggregationRequests expected_pa_requests = {},
+      RealTimeReportingContributions expected_real_time_contributions = {},
       std::optional<double> expected_bid_in_seller_currency = std::nullopt) {
     SCOPED_TRACE(javascript);
     AddJavascriptResponse(&url_loader_factory_, decision_logic_url_, javascript,
@@ -348,7 +362,9 @@ class SellerWorkletTest : public testing::Test {
         std::move(expected_component_auction_modified_bid_params),
         expected_data_version, expected_debug_loss_report_url,
         expected_debug_win_report_url, expected_reject_reason,
-        std::move(expected_pa_requests), expected_bid_in_seller_currency);
+        std::move(expected_pa_requests),
+        std::move(expected_real_time_contributions),
+        expected_bid_in_seller_currency);
   }
 
   // Runs score_ad() script, checking result and invoking provided closure
@@ -364,6 +380,7 @@ class SellerWorkletTest : public testing::Test {
       const std::optional<GURL>& expected_debug_win_report_url,
       mojom::RejectReason expected_reject_reason,
       PrivateAggregationRequests expected_pa_requests,
+      RealTimeReportingContributions expected_real_time_contributions,
       std::optional<double> expected_bid_in_seller_currency,
       bool expected_score_ad_timeout,
       std::optional<base::TimeDelta> expected_signals_fetch_latency,
@@ -391,6 +408,7 @@ class SellerWorkletTest : public testing::Test {
                const std::optional<GURL>& expected_debug_loss_report_url,
                const std::optional<GURL>& expected_debug_win_report_url,
                PrivateAggregationRequests expected_pa_requests,
+               RealTimeReportingContributions expected_real_time_contributions,
                std::optional<double> expected_bid_in_seller_currency,
                std::optional<base::TimeDelta> expected_score_ad_timeout,
                std::optional<base::TimeDelta> expected_signals_fetch_latency,
@@ -405,6 +423,7 @@ class SellerWorkletTest : public testing::Test {
                const std::optional<GURL>& debug_loss_report_url,
                const std::optional<GURL>& debug_win_report_url,
                PrivateAggregationRequests pa_requests,
+               RealTimeReportingContributions real_time_contributions,
                base::TimeDelta scoring_latency,
                mojom::ScoreAdDependencyLatenciesPtr
                    score_ad_dependency_latencies,
@@ -425,9 +444,11 @@ class SellerWorkletTest : public testing::Test {
               EXPECT_EQ(expected_debug_loss_report_url, debug_loss_report_url);
               EXPECT_EQ(expected_debug_win_report_url, debug_win_report_url);
               EXPECT_EQ(expected_data_version, scoring_signals_data_version);
+              EXPECT_EQ(expected_pa_requests, pa_requests);
+              EXPECT_EQ(expected_real_time_contributions,
+                        real_time_contributions);
               EXPECT_EQ(expected_bid_in_seller_currency,
                         bid_in_seller_currency);
-              EXPECT_EQ(expected_pa_requests, pa_requests);
               if (expected_score_ad_timeout) {
                 // We only know that about the time of the timeout should have
                 // elapsed, and there may also be some thread skew.
@@ -450,6 +471,7 @@ class SellerWorkletTest : public testing::Test {
             std::move(expected_component_auction_modified_bid_params),
             expected_data_version, expected_debug_loss_report_url,
             expected_debug_win_report_url, std::move(expected_pa_requests),
+            std::move(expected_real_time_contributions),
             expected_bid_in_seller_currency,
             expected_score_ad_timeout
                 ? std::make_optional(
@@ -493,6 +515,7 @@ class SellerWorkletTest : public testing::Test {
       mojom::RejectReason expected_reject_reason =
           mojom::RejectReason::kNotAvailable,
       PrivateAggregationRequests expected_pa_requests = {},
+      RealTimeReportingContributions expected_real_time_contributions = {},
       std::optional<double> expected_bid_in_seller_currency = std::nullopt) {
     base::RunLoop run_loop;
     RunScoreAdOnWorkletAsync(
@@ -500,7 +523,9 @@ class SellerWorkletTest : public testing::Test {
         std::move(expected_component_auction_modified_bid_params),
         expected_data_version, expected_debug_loss_report_url,
         expected_debug_win_report_url, expected_reject_reason,
-        std::move(expected_pa_requests), expected_bid_in_seller_currency,
+        std::move(expected_pa_requests),
+        std::move(expected_real_time_contributions),
+        expected_bid_in_seller_currency,
         /*expected_score_ad_timeout=*/false,
         /*expected_signals_fetch_latency=*/std::nullopt,
         /*expected_code_ready_latency=*/std::nullopt, run_loop.QuitClosure());
@@ -521,6 +546,7 @@ class SellerWorkletTest : public testing::Test {
       mojom::RejectReason expected_reject_reason =
           mojom::RejectReason::kNotAvailable,
       PrivateAggregationRequests expected_pa_requests = {},
+      RealTimeReportingContributions expected_real_time_contributions = {},
       std::optional<double> expected_bid_in_seller_currency = std::nullopt) {
     auto seller_worklet = CreateWorklet();
     ASSERT_TRUE(seller_worklet);
@@ -529,7 +555,9 @@ class SellerWorkletTest : public testing::Test {
         std::move(expected_component_auction_modified_bid_params),
         expected_data_version, expected_debug_loss_report_url,
         expected_debug_win_report_url, expected_reject_reason,
-        std::move(expected_pa_requests), expected_bid_in_seller_currency);
+        std::move(expected_pa_requests),
+        std::move(expected_real_time_contributions),
+        expected_bid_in_seller_currency);
   }
 
   // Configures `url_loader_factory_` to return a report_result() script created
@@ -1387,6 +1415,7 @@ TEST_F(SellerWorkletTest, ScoreAdIncomingBidInSellerCurrency) {
       /*expected_reject_reason=*/
       mojom::RejectReason::kNotAvailable,
       /*expected_pa_requests=*/{},
+      /*expected_real_time_contributions=*/{},
       /*expected_bid_in_seller_currency=*/100);
 
   // When bid currency matches seller currency, incomingBidInSellerCurrency
@@ -1408,6 +1437,7 @@ TEST_F(SellerWorkletTest, ScoreAdIncomingBidInSellerCurrency) {
       /*expected_reject_reason=*/
       mojom::RejectReason::kNotAvailable,
       /*expected_pa_requests=*/{},
+      /*expected_real_time_contributions=*/{},
       /*expected_bid_in_seller_currency=*/1);
 
   // ...can also have that same-currency bid directly forwarded.
@@ -1422,6 +1452,7 @@ TEST_F(SellerWorkletTest, ScoreAdIncomingBidInSellerCurrency) {
       /*expected_reject_reason=*/
       mojom::RejectReason::kNotAvailable,
       /*expected_pa_requests=*/{},
+      /*expected_real_time_contributions=*/{},
       /*expected_bid_in_seller_currency=*/3.14);
 
   // This should also work if we use the number-only shorthand.
@@ -1435,6 +1466,7 @@ TEST_F(SellerWorkletTest, ScoreAdIncomingBidInSellerCurrency) {
       /*expected_reject_reason=*/
       mojom::RejectReason::kNotAvailable,
       /*expected_pa_requests=*/{},
+      /*expected_real_time_contributions=*/{},
       /*expected_bid_in_seller_currency=*/3.14);
 }
 
@@ -1974,6 +2006,7 @@ TEST_F(SellerWorkletTest, ScoreAdTrustedScoringSignalsLatency) {
       /*expected_debug_win_report_url=*/std::nullopt,
       mojom::RejectReason::kNotAvailable,
       /*expected_pa_requests=*/{},
+      /*expected_real_time_contributions=*/{},
       /*expected_bid_in_seller_currency=*/std::nullopt,
       /*expected_score_ad_timeout=*/false,
       /*expected_signals_fetch_latency=*/kDelay,
@@ -2007,6 +2040,7 @@ TEST_F(SellerWorkletTest, ScoreAdCodeReadyLatency) {
       /*expected_debug_win_report_url=*/std::nullopt,
       mojom::RejectReason::kNotAvailable,
       /*expected_pa_requests=*/{},
+      /*expected_real_time_contributions=*/{},
       /*expected_bid_in_seller_currency=*/std::nullopt,
       /*expected_score_ad_timeout=*/false,
       /*expected_signals_fetch_latency=*/std::nullopt,
@@ -2074,6 +2108,7 @@ TEST_F(SellerWorkletTest, ScoreAdParallelBeforeLoadComplete) {
                              /*expected_reject_reason=*/
                              mojom::RejectReason::kNotAvailable,
                              /*expected_pa_requests=*/{},
+                             /*expected_real_time_contributions=*/{},
                              /*expected_bid_in_seller_currency=*/std::nullopt,
                              /*expected_score_ad_timeout=*/false,
                              /*expected_signals_fetch_latency=*/std::nullopt,
@@ -2123,6 +2158,7 @@ TEST_F(SellerWorkletTest, ScoreAdParallelAfterLoadComplete) {
                              /*expected_reject_reason=*/
                              mojom::RejectReason::kNotAvailable,
                              /*expected_pa_requests=*/{},
+                             /*expected_real_time_contributions=*/{},
                              /*expected_bid_in_seller_currency=*/std::nullopt,
                              /*expected_score_ad_timeout=*/false,
                              /*expected_signals_fetch_latency=*/std::nullopt,
@@ -2194,6 +2230,7 @@ TEST_F(SellerWorkletTest, ScoreAdParallelTrustedScoringSignalsNotBatched) {
                              /*expected_reject_reason=*/
                              mojom::RejectReason::kNotAvailable,
                              /*expected_pa_requests=*/{},
+                             /*expected_real_time_contributions=*/{},
                              /*expected_bid_in_seller_currency=*/std::nullopt,
                              /*expected_score_ad_timeout=*/false,
                              /*expected_signals_fetch_latency=*/std::nullopt,
@@ -2268,6 +2305,7 @@ TEST_F(SellerWorkletTest, ScoreAdParallelTrustedScoringSignalsBatched1) {
                              /*expected_reject_reason=*/
                              mojom::RejectReason::kNotAvailable,
                              /*expected_pa_requests=*/{},
+                             /*expected_real_time_contributions=*/{},
                              /*expected_bid_in_seller_currency=*/std::nullopt,
                              /*expected_score_ad_timeout=*/false,
                              /*expected_signals_fetch_latency=*/std::nullopt,
@@ -2333,6 +2371,7 @@ TEST_F(SellerWorkletTest, ScoreAdParallelTrustedScoringSignalsBatched2) {
                              /*expected_reject_reason=*/
                              mojom::RejectReason::kNotAvailable,
                              /*expected_pa_requests=*/{},
+                             /*expected_real_time_contributions=*/{},
                              /*expected_bid_in_seller_currency=*/std::nullopt,
                              /*expected_score_ad_timeout=*/false,
                              /*expected_signals_fetch_latency=*/std::nullopt,
@@ -2407,6 +2446,7 @@ TEST_F(SellerWorkletTest, ScoreAdParallelTrustedScoringSignalsBatched3) {
                              /*expected_reject_reason=*/
                              mojom::RejectReason::kNotAvailable,
                              /*expected_pa_requests=*/{},
+                             /*expected_real_time_contributions=*/{},
                              /*expected_bid_in_seller_currency=*/std::nullopt,
                              /*expected_score_ad_timeout=*/false,
                              /*expected_signals_fetch_latency=*/std::nullopt,
@@ -2509,6 +2549,7 @@ TEST_F(SellerWorkletTest, ScoreAdLoadCompletionOrder) {
         /*expected_reject_reason=*/
         mojom::RejectReason::kNotAvailable,
         /*expected_pa_requests=*/{},
+        /*expected_real_time_contributions=*/{},
         /*expected_bid_in_seller_currency=*/std::nullopt,
         /*expected_score_ad_timeout=*/false,
         /*expected_signals_fetch_latency=*/std::nullopt,
@@ -2611,6 +2652,7 @@ if (auctionSignalsJson !== '{"worklet":2}') {
       /*expected_reject_reason=*/
       mojom::RejectReason::kNotAvailable,
       /*expected_pa_requests=*/{},
+      /*expected_real_time_contributions=*/{},
       /*expected_bid_in_seller_currency=*/std::nullopt,
       /*expected_score_ad_timeout=*/false,
       /*expected_signals_fetch_latency=*/std::nullopt,
@@ -2627,6 +2669,7 @@ if (auctionSignalsJson !== '{"worklet":2}') {
       /*expected_reject_reason=*/
       mojom::RejectReason::kNotAvailable,
       /*expected_pa_requests=*/{},
+      /*expected_real_time_contributions=*/{},
       /*expected_bid_in_seller_currency=*/std::nullopt,
       /*expected_score_ad_timeout=*/false,
       /*expected_signals_fetch_latency=*/std::nullopt,
@@ -3815,18 +3858,20 @@ TEST_F(SellerWorkletTest, ScriptIsolation) {
           seller_timeout_,
           /*trace_id=*/1,
           TestScoreAdClient::Create(base::BindLambdaForTesting(
-              [&run_loop](double score, mojom::RejectReason reject_reason,
-                          mojom::ComponentAuctionModifiedBidParamsPtr
-                              component_auction_modified_bid_params,
-                          std::optional<double> bid_in_seller_currency,
-                          std::optional<uint32_t> scoring_signals_data_version,
-                          const std::optional<GURL>& debug_loss_report_url,
-                          const std::optional<GURL>& debug_win_report_url,
-                          PrivateAggregationRequests pa_requests,
-                          base::TimeDelta scoring_latency,
-                          mojom::ScoreAdDependencyLatenciesPtr
-                              score_ad_dependency_latencies,
-                          const std::vector<std::string>& errors) {
+              [&run_loop](
+                  double score, mojom::RejectReason reject_reason,
+                  mojom::ComponentAuctionModifiedBidParamsPtr
+                      component_auction_modified_bid_params,
+                  std::optional<double> bid_in_seller_currency,
+                  std::optional<uint32_t> scoring_signals_data_version,
+                  const std::optional<GURL>& debug_loss_report_url,
+                  const std::optional<GURL>& debug_win_report_url,
+                  PrivateAggregationRequests pa_requests,
+                  RealTimeReportingContributions real_time_contributions,
+                  base::TimeDelta scoring_latency,
+                  mojom::ScoreAdDependencyLatenciesPtr
+                      score_ad_dependency_latencies,
+                  const std::vector<std::string>& errors) {
                 EXPECT_EQ(2, score);
                 EXPECT_FALSE(scoring_signals_data_version.has_value());
                 EXPECT_TRUE(errors.empty());
@@ -3921,6 +3966,7 @@ TEST_F(SellerWorkletTest,
                 const std::optional<GURL>& debug_loss_report_url,
                 const std::optional<GURL>& debug_win_report_url,
                 PrivateAggregationRequests pa_requests,
+                RealTimeReportingContributions real_time_contributions,
                 base::TimeDelta scoring_latency,
                 mojom::ScoreAdDependencyLatenciesPtr
                     score_ad_dependency_latencies,
@@ -4009,6 +4055,7 @@ TEST_F(SellerWorkletTest, ContextReuseDoesNotCrashLazyFiller) {
                 const std::optional<GURL>& debug_loss_report_url,
                 const std::optional<GURL>& debug_win_report_url,
                 PrivateAggregationRequests pa_requests,
+                RealTimeReportingContributions real_time_contributions,
                 base::TimeDelta scoring_latency,
                 mojom::ScoreAdDependencyLatenciesPtr
                     score_ad_dependency_latencies,
@@ -4110,6 +4157,7 @@ TEST_F(SellerWorkletTest, PauseOnStart) {
       /*expected_reject_reason=*/
       mojom::RejectReason::kNotAvailable,
       /*expected_pa_requests=*/{},
+      /*expected_real_time_contributions=*/{},
       /*expected_bid_in_seller_currency=*/std::nullopt,
       /*expected_score_ad_timeout=*/false,
       /*expected_signals_fetch_latency=*/std::nullopt,
@@ -4199,6 +4247,7 @@ TEST_F(SellerWorkletTest, BasicV8Debug) {
       /*expected_reject_reason=*/
       mojom::RejectReason::kNotAvailable,
       /*expected_pa_requests=*/{},
+      /*expected_real_time_contributions=*/{},
       /*expected_bid_in_seller_currency=*/std::nullopt,
       /*expected_score_ad_timeout=*/false,
       /*expected_signals_fetch_latency=*/std::nullopt,
@@ -4218,6 +4267,7 @@ TEST_F(SellerWorkletTest, BasicV8Debug) {
       /*expected_reject_reason=*/
       mojom::RejectReason::kNotAvailable,
       /*expected_pa_requests=*/{},
+      /*expected_real_time_contributions=*/{},
       /*expected_bid_in_seller_currency=*/std::nullopt,
       /*expected_score_ad_timeout=*/false,
       /*expected_signals_fetch_latency=*/std::nullopt,
@@ -4344,6 +4394,7 @@ TEST_F(SellerWorkletTest, BasicDevToolsDebug) {
       /*expected_reject_reason=*/
       mojom::RejectReason::kNotAvailable,
       /*expected_pa_requests=*/{},
+      /*expected_real_time_contributions=*/{},
       /*expected_bid_in_seller_currency=*/std::nullopt,
       /*expected_score_ad_timeout=*/false,
       /*expected_signals_fetch_latency=*/std::nullopt,
@@ -4363,6 +4414,7 @@ TEST_F(SellerWorkletTest, BasicDevToolsDebug) {
       /*expected_reject_reason=*/
       mojom::RejectReason::kNotAvailable,
       /*expected_pa_requests=*/{},
+      /*expected_real_time_contributions=*/{},
       /*expected_bid_in_seller_currency=*/std::nullopt,
       /*expected_score_ad_timeout=*/false,
       /*expected_signals_fetch_latency=*/std::nullopt,
@@ -4517,6 +4569,7 @@ TEST_F(SellerWorkletTest, InstrumentationBreakpoints) {
       /*expected_reject_reason=*/
       mojom::RejectReason::kNotAvailable,
       /*expected_pa_requests=*/{},
+      /*expected_real_time_contributions=*/{},
       /*expected_bid_in_seller_currency=*/std::nullopt,
       /*expected_score_ad_timeout=*/false,
       /*expected_signals_fetch_latency=*/std::nullopt,
@@ -4602,6 +4655,7 @@ TEST_F(SellerWorkletTest, InstrumentationBreakpoints) {
       /*expected_reject_reason=*/
       mojom::RejectReason::kNotAvailable,
       /*expected_pa_requests=*/{},
+      /*expected_real_time_contributions=*/{},
       /*expected_bid_in_seller_currency=*/std::nullopt,
       /*expected_score_ad_timeout=*/false,
       /*expected_signals_fetch_latency=*/std::nullopt,
@@ -4671,6 +4725,7 @@ TEST_F(SellerWorkletTest, UnloadWhilePaused) {
       /*expected_reject_reason=*/
       mojom::RejectReason::kNotAvailable,
       /*expected_pa_requests=*/{},
+      /*expected_real_time_contributions=*/{},
       /*expected_bid_in_seller_currency=*/std::nullopt,
       /*expected_score_ad_timeout=*/false,
       /*expected_signals_fetch_latency=*/std::nullopt,
@@ -5170,6 +5225,7 @@ TEST_F(SellerWorkletRealTimeTest, ScoreAdDefaultTimeout) {
       /*expected_debug_win_report_url=*/std::nullopt,
       mojom::RejectReason::kNotAvailable,
       /*expected_pa_requests=*/{},
+      /*expected_real_time_contributions=*/{},
       /*expected_bid_in_seller_currency=*/std::nullopt,
       /*expected_score_ad_timeout=*/true,
       /*expected_signals_fetch_latency=*/std::nullopt,
@@ -5218,6 +5274,7 @@ TEST_F(SellerWorkletRealTimeTest, ScoreAdSellerTimeoutFromAuctionConfig) {
       /*expected_debug_win_report_url=*/std::nullopt,
       mojom::RejectReason::kNotAvailable,
       /*expected_pa_requests=*/{},
+      /*expected_real_time_contributions=*/{},
       /*expected_bid_in_seller_currency=*/std::nullopt,
       /*expected_score_ad_timeout=*/true,
       /*expected_signals_fetch_latency=*/std::nullopt,
@@ -5471,6 +5528,7 @@ TEST_F(SellerWorkletBiddingAndScoringDebugReportingAPIEnabledTest,
                         const std::optional<GURL>& debug_loss_report_url,
                         const std::optional<GURL>& debug_win_report_url,
                         PrivateAggregationRequests pa_requests,
+                        RealTimeReportingContributions real_time_contributions,
                         base::TimeDelta scoring_latency,
                         mojom::ScoreAdDependencyLatenciesPtr
                             score_ad_dependency_latencies,
@@ -5495,12 +5553,12 @@ TEST_F(SellerWorkletBiddingAndScoringDebugReportingAPIEnabledTest,
 class SellerWorkletSampleDebugReportsDisabledTest : public SellerWorkletTest {
  public:
   SellerWorkletSampleDebugReportsDisabledTest() {
-    scoped_feature_list_.InitAndDisableFeature(
+    feature_list_.InitAndDisableFeature(
         blink::features::kFledgeSampleDebugReports);
   }
 
  private:
-  base::test::ScopedFeatureList scoped_feature_list_;
+  base::test::ScopedFeatureList feature_list_;
 };
 
 TEST_F(SellerWorkletSampleDebugReportsDisabledTest,
@@ -5514,12 +5572,11 @@ TEST_F(SellerWorkletSampleDebugReportsDisabledTest,
 class SellerWorkletPrivateAggregationEnabledTest : public SellerWorkletTest {
  public:
   SellerWorkletPrivateAggregationEnabledTest() {
-    scoped_feature_list_.InitAndEnableFeature(
-        blink::features::kPrivateAggregationApi);
+    feature_list_.InitAndEnableFeature(blink::features::kPrivateAggregationApi);
   }
 
  private:
-  base::test::ScopedFeatureList scoped_feature_list_;
+  base::test::ScopedFeatureList feature_list_;
 };
 
 TEST_F(SellerWorkletPrivateAggregationEnabledTest, ScoreAd) {
@@ -5984,12 +6041,12 @@ TEST_F(SellerWorkletPrivateAggregationEnabledTest, ReportResult) {
 class SellerWorkletPrivateAggregationDisabledTest : public SellerWorkletTest {
  public:
   SellerWorkletPrivateAggregationDisabledTest() {
-    scoped_feature_list_.InitAndDisableFeature(
+    feature_list_.InitAndDisableFeature(
         blink::features::kPrivateAggregationApi);
   }
 
  private:
-  base::test::ScopedFeatureList scoped_feature_list_;
+  base::test::ScopedFeatureList feature_list_;
 };
 
 TEST_F(SellerWorkletPrivateAggregationDisabledTest, ScoreAd) {
@@ -6189,6 +6246,7 @@ TEST_F(SellerWorkletCrossOriginTrustedSignalsTest,
                              /*expected_debug_win_report_url=*/std::nullopt,
                              mojom::RejectReason::kNotAvailable,
                              /*expected_pa_requests=*/{},
+                             /*expected_real_time_contributions=*/{},
                              /*expected_bid_in_seller_currency=*/std::nullopt,
                              /*expected_score_ad_timeout=*/false,
                              /*expected_signals_fetch_latency=*/std::nullopt,
@@ -6296,6 +6354,7 @@ TEST_F(SellerWorkletCrossOriginTrustedSignalsTest, AllowedCrossOriginTiming) {
       /*expected_debug_win_report_url=*/std::nullopt,
       mojom::RejectReason::kNotAvailable,
       /*expected_pa_requests=*/{},
+      /*expected_real_time_contributions=*/{},
       /*expected_bid_in_seller_currency=*/std::nullopt,
       /*expected_score_ad_timeout=*/false,
       /*expected_signals_fetch_latency=*/std::nullopt,
@@ -6354,6 +6413,136 @@ TEST_F(SellerWorkletCrossOriginTrustedSignalsTest, ErrorCrossOrigin) {
       "'crossOriginDataVersion' in browserSignals ? 0 : 1", 1, expected_errors,
       mojom::ComponentAuctionModifiedBidParamsPtr(),
       /*expected_data_version=*/std::nullopt);
+}
+
+// Need to use SYSTEM_TIME, because scoring latency uses elapsed_timer, which is
+// always 0 if not using SYSTEM_TIME.
+class SellerWorkletRealTimeReportingEnabledTest : public SellerWorkletTest {
+ public:
+  SellerWorkletRealTimeReportingEnabledTest()
+      : SellerWorkletTest(
+            base::test::TaskEnvironment::TimeSource::SYSTEM_TIME) {
+    feature_list_.InitAndEnableFeature(
+        blink::features::kFledgeRealTimeReporting);
+  }
+
+ private:
+  base::test::ScopedFeatureList feature_list_;
+};
+
+TEST_F(SellerWorkletRealTimeReportingEnabledTest, RealTimeReporting) {
+  mojom::RealTimeReportingContribution expected_histogram(
+      /*bucket=*/100, /*priority_weight=*/0.5,
+      /*latency_threshold=*/std::nullopt);
+
+  // Worklet latency contribution is tested in ScriptTimeout.
+  // Cannot reliably test worklet latency contribution here since the script
+  // takes 0ms to run some times, which is not higher than the smallest allowed
+  // latency threshold (0ms), in which case the contribution will be dropped.
+  constexpr char kExtraCode[] = R"(
+realTimeReporting.contributeToRealTimeHistogram(100, {priorityWeight: 0.5})
+)";
+
+  RealTimeReportingContributions expected_real_time_contributions;
+  expected_real_time_contributions.push_back(expected_histogram.Clone());
+
+  RunScoreAdWithJavascriptExpectingResult(
+      CreateScoreAdScript("5", kExtraCode), 5, /*expected_errors=*/{},
+      mojom::ComponentAuctionModifiedBidParamsPtr(),
+      /*expected_data_version=*/std::nullopt,
+      /*expected_debug_loss_report_url=*/std::nullopt,
+      /*expected_debug_win_report_url=*/std::nullopt,
+      /*expected_reject_reason=*/mojom::RejectReason::kNotAvailable,
+      /*expected_pa_requests=*/{}, std::move(expected_real_time_contributions));
+}
+
+TEST_F(SellerWorkletRealTimeReportingEnabledTest, InvalidScore) {
+  mojom::RealTimeReportingContribution expected_histogram(
+      /*bucket=*/100, /*priority_weight=*/0.5,
+      /*latency_threshold=*/std::nullopt);
+
+  constexpr char kExtraCode[] = R"(
+realTimeReporting.contributeToRealTimeHistogram(100, {priorityWeight: 0.5})
+)";
+
+  RealTimeReportingContributions expected_real_time_contributions;
+  expected_real_time_contributions.push_back(expected_histogram.Clone());
+
+  RunScoreAdWithJavascriptExpectingResult(
+      CreateScoreAdScript("\"invalid_score\"", kExtraCode), 0,
+      /*expected_errors=*/
+      {"https://url.test/ scoreAd() return: Value passed as dictionary is "
+       "neither object, null, nor undefined."},
+      mojom::ComponentAuctionModifiedBidParamsPtr(),
+      /*expected_data_version=*/std::nullopt,
+      /*expected_debug_loss_report_url=*/std::nullopt,
+      /*expected_debug_win_report_url=*/std::nullopt,
+      /*expected_reject_reason=*/mojom::RejectReason::kNotAvailable,
+      /*expected_pa_requests=*/{}, std::move(expected_real_time_contributions));
+}
+
+TEST_F(SellerWorkletRealTimeReportingEnabledTest, ScriptTimeout) {
+  // Set timeout to a small number, and use a while loop in the script to let it
+  // timeout. Then the execution time would be higher than the latency threshold
+  // of 1ms thus the latency contribution will be kept.
+  seller_timeout_ = base::Milliseconds(3);
+
+  mojom::RealTimeReportingContribution expected_histogram(
+      /*bucket=*/100, /*priority_weight=*/0.5,
+      /*latency_threshold=*/std::nullopt);
+  mojom::RealTimeReportingContribution expected_latency_histogram(
+      /*bucket=*/200, /*priority_weight=*/2, /*latency_threshold=*/1);
+  constexpr char kExtraCode[] = R"(
+realTimeReporting.contributeToRealTimeHistogram(100, {priorityWeight: 0.5});
+realTimeReporting.contributeOnWorkletLatency(
+    200, {priorityWeight: 2, latencyThreshold: 1});
+while (1);
+)";
+
+  RealTimeReportingContributions expected_real_time_contributions;
+  expected_real_time_contributions.push_back(expected_histogram.Clone());
+  expected_real_time_contributions.push_back(
+      expected_latency_histogram.Clone());
+
+  RunScoreAdWithJavascriptExpectingResult(
+      CreateScoreAdScript("5", kExtraCode), 0,
+      /*expected_errors=*/
+      {"https://url.test/ execution of `scoreAd` timed out."},
+      mojom::ComponentAuctionModifiedBidParamsPtr(),
+      /*expected_data_version=*/std::nullopt,
+      /*expected_debug_loss_report_url=*/std::nullopt,
+      /*expected_debug_win_report_url=*/std::nullopt,
+      /*expected_reject_reason=*/mojom::RejectReason::kNotAvailable,
+      /*expected_pa_requests=*/{}, std::move(expected_real_time_contributions));
+}
+
+// contributeOnWorkletLatency's is dropped when the script's latency does not
+// exceed the threshold.
+TEST_F(SellerWorkletRealTimeReportingEnabledTest,
+       NotExceedingLatencyThreshold) {
+  mojom::RealTimeReportingContribution expected_histogram(
+      /*bucket=*/100, /*priority_weight=*/0.5,
+      /*latency_threshold=*/std::nullopt);
+  constexpr char kExtraCode[] = R"(
+realTimeReporting.contributeToRealTimeHistogram(100, {priorityWeight: 0.5});
+realTimeReporting.contributeOnWorkletLatency(
+    200, {priorityWeight: 2, latencyThreshold: 10000000})
+)";
+
+  // Only contributeToRealTimeHistogram's contribution is kept.
+  // contributeOnWorkletLatency's is filtered out since the script's latency
+  // didn't exceed the threshold.
+  RealTimeReportingContributions expected_real_time_contributions;
+  expected_real_time_contributions.push_back(expected_histogram.Clone());
+
+  RunScoreAdWithJavascriptExpectingResult(
+      CreateScoreAdScript("5", kExtraCode), 5, /*expected_errors=*/{},
+      mojom::ComponentAuctionModifiedBidParamsPtr(),
+      /*expected_data_version=*/std::nullopt,
+      /*expected_debug_loss_report_url=*/std::nullopt,
+      /*expected_debug_win_report_url=*/std::nullopt,
+      /*expected_reject_reason=*/mojom::RejectReason::kNotAvailable,
+      /*expected_pa_requests=*/{}, std::move(expected_real_time_contributions));
 }
 
 }  // namespace
