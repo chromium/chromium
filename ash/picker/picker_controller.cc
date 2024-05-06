@@ -313,6 +313,7 @@ void PickerController::ToggleWidget(
     widget_->Close();
     model_.reset();
   } else {
+    session_metrics_ = std::make_unique<PickerSessionMetrics>();
     show_editor_callback_ = client_->CacheEditorContext();
 
     model_ = std::make_unique<PickerModel>(
@@ -327,7 +328,6 @@ void PickerController::ToggleWidget(
     widget_->Show();
 
     feature_usage_metrics_.StartUsage();
-    session_metrics_ = std::make_unique<PickerSessionMetrics>();
     session_metrics_->OnStartSession(GetFocusedTextInputClient());
     widget_observation_.Observe(widget_.get());
   }
@@ -481,6 +481,10 @@ void PickerController::GetSuggestedEditorResults(
 
 PickerAssetFetcher* PickerController::GetAssetFetcher() {
   return asset_fetcher_.get();
+}
+
+PickerSessionMetrics& PickerController::GetSessionMetrics() {
+  return *session_metrics_;
 }
 
 void PickerController::OnWidgetDestroying(views::Widget* widget) {

@@ -8,6 +8,7 @@
 #include <utility>
 
 #include "ash/ash_element_identifiers.h"
+#include "ash/picker/metrics/picker_session_metrics.h"
 #include "ash/picker/model/picker_search_results_section.h"
 #include "ash/picker/views/picker_category_view.h"
 #include "ash/picker/views/picker_contents_view.h"
@@ -260,6 +261,7 @@ gfx::Rect PickerView::GetTargetBounds(const gfx::Rect& anchor_bounds,
 }
 
 void PickerView::StartSearch(const std::u16string& query) {
+  delegate_->GetSessionMetrics().UpdateSearchQuery(query);
   if (!query.empty()) {
     SetActivePage(search_results_view_);
     published_first_results_ = false;
@@ -303,6 +305,8 @@ void PickerView::SelectCategory(PickerCategory category) {
 
 void PickerView::SelectCategoryWithQuery(PickerCategory category,
                                          std::u16string_view query) {
+  PickerSessionMetrics& session_metrics = delegate_->GetSessionMetrics();
+  session_metrics.SetAction(category);
   selected_category_ = category;
 
   if (category == PickerCategory::kExpressions) {
@@ -312,6 +316,8 @@ void PickerView::SelectCategoryWithQuery(PickerCategory category,
       // open emoji picker in the correct location in some other way.
       widget->CloseWithReason(views::Widget::ClosedReason::kLostFocus);
     }
+    session_metrics.SetOutcome(
+        PickerSessionMetrics::SessionOutcome::kRedirected);
     delegate_->ShowEmojiPicker(ui::EmojiPickerCategory::kEmojis);
     return;
   }
@@ -325,6 +331,8 @@ void PickerView::SelectCategoryWithQuery(PickerCategory category,
       widget->CloseWithReason(views::Widget::ClosedReason::kLostFocus);
     }
     CHECK(query.empty());
+    session_metrics.SetOutcome(
+        PickerSessionMetrics::SessionOutcome::kRedirected);
     delegate_->ShowEditor(/*preset_query_id*/ std::nullopt,
                           /*freeform_text=*/std::nullopt);
     return;
@@ -332,6 +340,7 @@ void PickerView::SelectCategoryWithQuery(PickerCategory category,
 
   if (GetPickerCategoryType(category) ==
       PickerCategoryType::kCaseTransformations) {
+    session_metrics.SetOutcome(PickerSessionMetrics::SessionOutcome::kFormat);
     delegate_->TransformSelectedText(category);
     GetWidget()->Close();
     return;
@@ -339,8 +348,9 @@ void PickerView::SelectCategoryWithQuery(PickerCategory category,
 
   if (category == PickerCategory::kCapsOn ||
       category == PickerCategory::kCapsOff) {
-    GetWidget()->Close();
+    session_metrics.SetOutcome(PickerSessionMetrics::SessionOutcome::kFormat);
     delegate_->SetCapsLockEnabled(category == PickerCategory::kCapsOn);
+    GetWidget()->Close();
     return;
   }
 

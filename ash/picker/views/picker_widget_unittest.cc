@@ -6,6 +6,7 @@
 
 #include <memory>
 
+#include "ash/picker/metrics/picker_session_metrics.h"
 #include "ash/picker/views/picker_preview_bubble.h"
 #include "ash/picker/views/picker_view.h"
 #include "ash/picker/views/picker_view_delegate.h"
@@ -46,6 +47,12 @@ class FakePickerViewDelegate : public PickerViewDelegate {
   void GetSuggestedEditorResults(
       SuggestedEditorResultsCallback callback) override {}
   PickerAssetFetcher* GetAssetFetcher() override { return nullptr; }
+  PickerSessionMetrics& GetSessionMetrics() override {
+    return session_metrics_;
+  }
+
+ private:
+  PickerSessionMetrics session_metrics_;
 };
 
 using PickerWidgetTest = AshTestBase;

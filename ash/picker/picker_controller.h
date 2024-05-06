@@ -90,6 +90,7 @@ class ASH_EXPORT PickerController
   void GetSuggestedEditorResults(
       SuggestedEditorResultsCallback callback) override;
   PickerAssetFetcher* GetAssetFetcher() override;
+  PickerSessionMetrics& GetSessionMetrics() override;
 
   // views:WidgetObserver:
   void OnWidgetDestroying(views::Widget* widget) override;

@@ -18,6 +18,7 @@ namespace ash {
 class PickerAssetFetcher;
 class PickerSearchResult;
 class PickerSearchResultsSection;
+class PickerSessionMetrics;
 
 // Delegate for `PickerView`.
 class ASH_EXPORT PickerViewDelegate {
@@ -69,6 +70,8 @@ class ASH_EXPORT PickerViewDelegate {
       SuggestedEditorResultsCallback callback) = 0;
 
   virtual PickerAssetFetcher* GetAssetFetcher() = 0;
+
+  virtual PickerSessionMetrics& GetSessionMetrics() = 0;
 };
 
 }  // namespace ash

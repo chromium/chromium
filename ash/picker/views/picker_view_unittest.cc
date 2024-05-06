@@ -7,6 +7,7 @@
 #include <optional>
 #include <string>
 
+#include "ash/picker/metrics/picker_session_metrics.h"
 #include "ash/picker/mock_picker_asset_fetcher.h"
 #include "ash/picker/model/picker_search_results_section.h"
 #include "ash/picker/views/picker_category_type.h"
@@ -28,6 +29,8 @@
 #include "base/test/bind.h"
 #include "base/test/metrics/histogram_tester.h"
 #include "base/test/test_future.h"
+#include "components/metrics/structured/structured_events.h"
+#include "components/metrics/structured/test/test_structured_metrics_recorder.h"
 #include "testing/gmock/include/gmock/gmock-matchers.h"
 #include "testing/gmock/include/gmock/gmock.h"
 #include "testing/gtest/include/gtest/gtest.h"
@@ -52,7 +55,11 @@
 namespace ash {
 namespace {
 
+namespace cros_events = metrics::structured::events::v2::cr_os_events;
+
+using ::testing::AllOf;
 using ::testing::ElementsAre;
+using ::testing::Eq;
 using ::testing::IsEmpty;
 using ::testing::Not;
 using ::testing::Optional;
@@ -62,10 +69,26 @@ using ::testing::Truly;
 
 constexpr gfx::Rect kDefaultAnchorBounds(200, 100, 0, 10);
 
+auto ContainsEvent(const metrics::structured::Event& event) {
+  return Contains(AllOf(
+      Property("event name", &metrics::structured::Event::event_name,
+               Eq(event.event_name())),
+      Property("metric values", &metrics::structured::Event::metric_values,
+               Eq(std::ref(event.metric_values())))));
+}
+
 class PickerViewTest : public AshTestBase {
  public:
   PickerViewTest()
       : AshTestBase(base::test::TaskEnvironment::TimeSource::MOCK_TIME) {}
+
+  void SetUp() override {
+    AshTestBase::SetUp();
+    metrics_recorder_.Initialize();
+  }
+
+ protected:
+  metrics::structured::TestStructuredMetricsRecorder metrics_recorder_;
 };
 
 class FakePickerViewDelegate : public PickerViewDelegate {
@@ -124,6 +147,10 @@ class FakePickerViewDelegate : public PickerViewDelegate {
 
   PickerAssetFetcher* GetAssetFetcher() override { return &asset_fetcher_; }
 
+  PickerSessionMetrics& GetSessionMetrics() override {
+    return session_metrics_;
+  }
+
   std::optional<PickerSearchResult> last_inserted_result() const {
     return last_inserted_result_;
   }
@@ -138,6 +165,7 @@ class FakePickerViewDelegate : public PickerViewDelegate {
  private:
   Options options_;
   MockPickerAssetFetcher asset_fetcher_;
+  PickerSessionMetrics session_metrics_;
   std::optional<PickerSearchResult> last_inserted_result_;
   bool showed_emoji_picker_ = false;
   bool showed_editor_ = false;
@@ -263,22 +291,34 @@ TEST_F(PickerViewTest, LeftClickSearchResultSelectsResult) {
 }
 
 TEST_F(PickerViewTest, SwitchesToCategoryView) {
-  FakePickerViewDelegate delegate({
-      .available_categories = {PickerCategory::kLinks},
-  });
-  auto widget = PickerWidget::Create(&delegate, kDefaultAnchorBounds);
-  widget->Show();
+  {
+    FakePickerViewDelegate delegate({
+        .available_categories = {PickerCategory::kLinks},
+    });
+    auto widget = PickerWidget::Create(&delegate, kDefaultAnchorBounds);
+    widget->Show();
 
-  PickerView* picker_view = GetPickerViewFromWidget(*widget);
-  views::View* category_item_view = GetFirstCategoryItemView(picker_view);
+    PickerView* picker_view = GetPickerViewFromWidget(*widget);
+    views::View* category_item_view = GetFirstCategoryItemView(picker_view);
 
-  category_item_view->ScrollViewToVisible();
-  ViewDrawnWaiter().Wait(category_item_view);
-  LeftClickOn(category_item_view);
+    category_item_view->ScrollViewToVisible();
+    ViewDrawnWaiter().Wait(category_item_view);
+    LeftClickOn(category_item_view);
 
-  EXPECT_TRUE(picker_view->category_view_for_testing().GetVisible());
-  EXPECT_FALSE(picker_view->zero_state_view_for_testing().GetVisible());
-  EXPECT_FALSE(picker_view->search_results_view_for_testing().GetVisible());
+    EXPECT_TRUE(picker_view->category_view_for_testing().GetVisible());
+    EXPECT_FALSE(picker_view->zero_state_view_for_testing().GetVisible());
+    EXPECT_FALSE(picker_view->search_results_view_for_testing().GetVisible());
+  }
+
+  cros_events::Picker_FinishSession expected_event;
+  expected_event.SetOutcome(cros_events::PickerSessionOutcome::UNKNOWN)
+      .SetAction(cros_events::PickerAction::OPEN_LINKS)
+      .SetResultSource(cros_events::PickerResultSource::UNKNOWN)
+      .SetResultType(cros_events::PickerResultType::UNKNOWN)
+      .SetTotalEdits(0)
+      .SetFinalQuerySize(0)
+      .SetResultIndex(-1);
+  EXPECT_THAT(metrics_recorder_.GetEvents(), ContainsEvent(expected_event));
 }
 
 TEST_F(PickerViewTest, ClickingCategoryResultsSwitchesToCategoryView) {
