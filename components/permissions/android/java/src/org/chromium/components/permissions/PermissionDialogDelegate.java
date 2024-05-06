@@ -54,7 +54,10 @@ public class PermissionDialogDelegate {
      */
     private String mPositiveEphemeralButtonText;
 
-    /** The {@link ContentSettingsType}s requested in this dialog.  */
+    /** Whether to show the persistent grant button first, followed by the ephemeral option. */
+    private boolean mShowPositiveNonEphemeralAsFirstButton;
+
+    /** The {@link ContentSettingsType}s requested in this dialog. */
     private int[] mContentSettingsTypes;
 
     /**
@@ -97,6 +100,10 @@ public class PermissionDialogDelegate {
 
     public String getPositiveEphemeralButtonText() {
         return mPositiveEphemeralButtonText;
+    }
+
+    public boolean shouldShowPositiveNonEphemeralAsFirstButton() {
+        return mShowPositiveNonEphemeralAsFirstButton;
     }
 
     public void onAccept() {
@@ -181,7 +188,8 @@ public class PermissionDialogDelegate {
             int[] boldedRanges,
             String positiveButtonText,
             String negativeButtonText,
-            String positiveEphemeralButtonText) {
+            String positiveEphemeralButtonText,
+            boolean showPositiveNonEphemeralAsFirstButton) {
         assert (boldedRanges.length % 2 == 0); // Contains a list of offset and length values
 
         return new PermissionDialogDelegate(
@@ -193,7 +201,8 @@ public class PermissionDialogDelegate {
                 boldedRanges,
                 positiveButtonText,
                 negativeButtonText,
-                positiveEphemeralButtonText);
+                positiveEphemeralButtonText,
+                showPositiveNonEphemeralAsFirstButton);
     }
 
     /** Upon construction, this class takes ownership of the passed in native delegate. */
@@ -206,7 +215,8 @@ public class PermissionDialogDelegate {
             int[] boldedRanges,
             String positiveButtonText,
             String negativeButtonText,
-            String positiveEphemeralButtonText) {
+            String positiveEphemeralButtonText,
+            boolean showPositiveNonEphemeralAsFirstButton) {
         mNativeDelegatePtr = nativeDelegatePtr;
         mWindow = window;
         mContentSettingsTypes = contentSettingsTypes;
@@ -218,6 +228,7 @@ public class PermissionDialogDelegate {
         mPositiveButtonText = positiveButtonText;
         mNegativeButtonText = negativeButtonText;
         mPositiveEphemeralButtonText = positiveEphemeralButtonText;
+        mShowPositiveNonEphemeralAsFirstButton = showPositiveNonEphemeralAsFirstButton;
     }
 
     @NativeMethods

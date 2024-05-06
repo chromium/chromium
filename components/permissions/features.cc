@@ -138,6 +138,9 @@ namespace feature_params {
 const base::FeatureParam<bool> kUseStrongerPromptLanguage{
     &features::kOneTimePermission, "use_stronger_prompt_language", false};
 
+const base::FeatureParam<bool> kShowAllowAlwaysAsFirstButton{
+    &features::kOneTimePermission, "show_allow_always_as_first_button", false};
+
 const base::FeatureParam<base::TimeDelta> kOneTimePermissionTimeout{
     &features::kOneTimePermission, "one_time_permission_timeout",
     base::Minutes(5)};

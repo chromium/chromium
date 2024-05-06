@@ -44,6 +44,7 @@ void PermissionDialogJavaDelegate::CreateJavaDelegate(
   base::android::ScopedJavaLocalRef<jstring> negativeButtonText;
   base::android::ScopedJavaLocalRef<jstring> positiveEphemeralButtonText;
 
+  bool showPositiveNonEphemeralAsFirstButton = false;
   if (isOneTime) {
     positiveButtonText = ConvertUTF16ToJavaString(
         env, l10n_util::GetStringUTF16(IDS_PERMISSION_ALLOW_EVERY_VISIT));
@@ -54,6 +55,8 @@ void PermissionDialogJavaDelegate::CreateJavaDelegate(
                      : IDS_PERMISSION_DONT_ALLOW));
     positiveEphemeralButtonText = ConvertUTF16ToJavaString(
         env, l10n_util::GetStringUTF16(IDS_PERMISSION_ALLOW_THIS_TIME));
+    showPositiveNonEphemeralAsFirstButton =
+        permissions::feature_params::kShowAllowAlwaysAsFirstButton.Get();
   } else {
     positiveButtonText = ConvertUTF16ToJavaString(
         env, l10n_util::GetStringUTF16(IDS_PERMISSION_ALLOW));
@@ -85,7 +88,8 @@ void PermissionDialogJavaDelegate::CreateJavaDelegate(
           permission_prompt_->GetIconId()),
       ConvertUTF16ToJavaString(env, annotatedMessageText.text),
       base::android::ToJavaIntArray(env, bolded_ranges), positiveButtonText,
-      negativeButtonText, positiveEphemeralButtonText));
+      negativeButtonText, positiveEphemeralButtonText,
+      showPositiveNonEphemeralAsFirstButton));
 }
 
 void PermissionDialogJavaDelegate::CreateDialog(
