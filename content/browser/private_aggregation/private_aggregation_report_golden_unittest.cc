@@ -4,6 +4,7 @@
 
 #include <stdint.h>
 
+#include <limits>
 #include <optional>
 #include <string>
 #include <string_view>
@@ -109,7 +110,8 @@ class PrivateAggregationReportGoldenLatestVersionTest : public testing::Test {
           contributions,
       PrivateAggregationBudgetKey::Api api_identifier,
       std::string_view report_file,
-      std::string_view cleartext_payloads_file) {
+      std::string_view cleartext_payloads_file,
+      size_t filtering_id_max_bytes) {
     const url::Origin kExampleOrigin =
         url::Origin::Create(GURL("https://report.test"));
 
@@ -138,6 +140,7 @@ class PrivateAggregationReportGoldenLatestVersionTest : public testing::Test {
             /*context_id=*/std::nullopt,
             // TODO(alexmt): Generate golden reports for multiple coordinators.
             /*aggregation_coordinator_origin=*/std::nullopt,
+            /*specified_filtering_id_max_bytes=*/filtering_id_max_bytes,
             std::move(contributions));
 
     base::RunLoop run_loop;
@@ -342,6 +345,7 @@ TEST_F(PrivateAggregationReportGoldenLatestVersionTest, VerifyGoldenReport) {
     PrivateAggregationBudgetKey::Api api_identifier;
     std::string_view report_file;
     std::string_view cleartext_payloads_file;
+    size_t filtering_id_max_bytes = 1;
   } kTestCases[] = {
       {.debug_details = blink::mojom::DebugModeDetails::New(
            /*is_enabled=*/true,
@@ -353,7 +357,7 @@ TEST_F(PrivateAggregationReportGoldenLatestVersionTest, VerifyGoldenReport) {
        .cleartext_payloads_file = "report_1_cleartext_payloads.json"},
       {.debug_details = blink::mojom::DebugModeDetails::New(),
        .contributions = {blink::mojom::AggregatableReportHistogramContribution(
-           /*bucket==*/1, /*value=*/2, /*filtering_id=*/std::nullopt)},
+           /*bucket=*/1, /*value=*/2, /*filtering_id=*/std::nullopt)},
        .api_identifier = PrivateAggregationBudgetKey::Api::kProtectedAudience,
        .report_file = "report_2.json",
        .cleartext_payloads_file = "report_2_cleartext_payloads.json"},
@@ -361,20 +365,20 @@ TEST_F(PrivateAggregationReportGoldenLatestVersionTest, VerifyGoldenReport) {
            /*is_enabled=*/true,
            /*debug_key=*/blink::mojom::DebugKey::New(/*value=*/123u)),
        .contributions = {blink::mojom::AggregatableReportHistogramContribution(
-                             /*bucket==*/1, /*value=*/2,
+                             /*bucket=*/1, /*value=*/2,
                              /*filtering_id=*/std::nullopt),
                          blink::mojom::AggregatableReportHistogramContribution(
-                             /*bucket==*/3, /*value=*/4,
+                             /*bucket=*/3, /*value=*/4,
                              /*filtering_id=*/std::nullopt)},
        .api_identifier = PrivateAggregationBudgetKey::Api::kSharedStorage,
        .report_file = "report_3.json",
        .cleartext_payloads_file = "report_3_cleartext_payloads.json"},
       {.debug_details = blink::mojom::DebugModeDetails::New(),
        .contributions = {blink::mojom::AggregatableReportHistogramContribution(
-                             /*bucket==*/1, /*value=*/2,
+                             /*bucket=*/1, /*value=*/2,
                              /*filtering_id=*/std::nullopt),
                          blink::mojom::AggregatableReportHistogramContribution(
-                             /*bucket==*/3, /*value=*/4,
+                             /*bucket=*/3, /*value=*/4,
                              /*filtering_id=*/std::nullopt)},
        .api_identifier = PrivateAggregationBudgetKey::Api::kSharedStorage,
        .report_file = "report_4.json",
@@ -383,29 +387,53 @@ TEST_F(PrivateAggregationReportGoldenLatestVersionTest, VerifyGoldenReport) {
            /*is_enabled=*/true,
            /*debug_key=*/blink::mojom::DebugKey::New(/*value=*/123u)),
        .contributions = {blink::mojom::AggregatableReportHistogramContribution(
-           /*bucket==*/1, /*value=*/2, /*filtering_id=*/std::nullopt)},
+           /*bucket=*/1, /*value=*/2, /*filtering_id=*/std::nullopt)},
        .api_identifier = PrivateAggregationBudgetKey::Api::kProtectedAudience,
        .report_file = "report_5.json",
        .cleartext_payloads_file = "report_5_cleartext_payloads.json"},
       {.debug_details = blink::mojom::DebugModeDetails::New(),
        .contributions = {blink::mojom::AggregatableReportHistogramContribution(
-           /*bucket==*/1, /*value=*/2, /*filtering_id=*/std::nullopt)},
+           /*bucket=*/1, /*value=*/2, /*filtering_id=*/std::nullopt)},
        .api_identifier = PrivateAggregationBudgetKey::Api::kProtectedAudience,
        .report_file = "report_6.json",
        .cleartext_payloads_file = "report_6_cleartext_payloads.json"},
       {.debug_details = blink::mojom::DebugModeDetails::New(),
        .contributions = {blink::mojom::AggregatableReportHistogramContribution(
-           /*bucket==*/0, /*value=*/0, /*filtering_id=*/std::nullopt)},
+           /*bucket=*/0, /*value=*/0, /*filtering_id=*/std::nullopt)},
        .api_identifier = PrivateAggregationBudgetKey::Api::kSharedStorage,
        .report_file = "report_7.json",
        .cleartext_payloads_file = "report_7_cleartext_payloads.json"},
+      {.debug_details = blink::mojom::DebugModeDetails::New(
+           /*is_enabled=*/true,
+           /*debug_key=*/blink::mojom::DebugKey::New(/*value=*/123u)),
+       .contributions = {blink::mojom::AggregatableReportHistogramContribution(
+           /*bucket=*/1, /*value=*/2, /*filtering_id=*/3)},
+       .api_identifier = PrivateAggregationBudgetKey::Api::kProtectedAudience,
+       .report_file = "report_8.json",
+       .cleartext_payloads_file = "report_8_cleartext_payloads.json"},
+      {.debug_details = blink::mojom::DebugModeDetails::New(),
+       .contributions = {blink::mojom::AggregatableReportHistogramContribution(
+           /*bucket=*/1, /*value=*/2, /*filtering_id=*/3)},
+       .api_identifier = PrivateAggregationBudgetKey::Api::kProtectedAudience,
+       .report_file = "report_9.json",
+       .cleartext_payloads_file = "report_9_cleartext_payloads.json"},
+      {.debug_details = blink::mojom::DebugModeDetails::New(
+           /*is_enabled=*/true,
+           /*debug_key=*/blink::mojom::DebugKey::New(/*value=*/123u)),
+       .contributions = {blink::mojom::AggregatableReportHistogramContribution(
+           /*bucket=*/1, /*value=*/2,
+           /*filtering_id=*/std::numeric_limits<uint64_t>::max())},
+       .api_identifier = PrivateAggregationBudgetKey::Api::kProtectedAudience,
+       .report_file = "report_10.json",
+       .cleartext_payloads_file = "report_10_cleartext_payloads.json",
+       .filtering_id_max_bytes = 8},
   };
 
   for (auto& test_case : kTestCases) {
     AssembleAndVerifyReport(
         std::move(test_case.debug_details), std::move(test_case.contributions),
         std::move(test_case.api_identifier), test_case.report_file,
-        test_case.cleartext_payloads_file);
+        test_case.cleartext_payloads_file, test_case.filtering_id_max_bytes);
   }
 }
 

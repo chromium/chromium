@@ -22,6 +22,7 @@
 #include "base/numerics/clamped_math.h"
 #include "components/aggregation_service/aggregation_coordinator_utils.h"
 #include "components/aggregation_service/features.h"
+#include "content/browser/private_aggregation/private_aggregation_host.h"
 #include "content/browser/private_aggregation/private_aggregation_manager.h"
 #include "content/common/content_export.h"
 #include "content/services/auction_worklet/public/mojom/private_aggregation_request.mojom.h"
@@ -382,6 +383,7 @@ void SplitContributionsIntoBatchesThenSendToHost(
         PrivateAggregationBudgetKey::Api::kProtectedAudience,
         /*context_id=*/std::nullopt,
         /*timeout=*/std::nullopt, aggregation_coordinator_origin,
+        PrivateAggregationHost::kDefaultFilteringIdMaxBytes,
         remote_host.BindNewPipeAndPassReceiver());
 
     // The worklet origin should be potentially trustworthy (and no context ID

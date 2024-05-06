@@ -1335,11 +1335,13 @@ SharedStorageWorkletHost::MaybeBindPrivateAggregationHost(
           ? std::optional<base::TimeDelta>(base::Seconds(5))
           : std::nullopt;
 
+  // TODO(crbug.com/330744610): Allow filtering ID byte size to be set.
   bool success = private_aggregation_manager->BindNewReceiver(
       shared_storage_origin_, main_frame_origin_,
       PrivateAggregationBudgetKey::Api::kSharedStorage,
       private_aggregation_config->context_id, std::move(timeout),
       private_aggregation_config->aggregation_coordinator_origin,
+      PrivateAggregationHost::kDefaultFilteringIdMaxBytes,
       pending_pa_host_remote.InitWithNewPipeAndPassReceiver());
   CHECK(success);
 

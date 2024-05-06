@@ -4,6 +4,8 @@
 
 #include "content/browser/private_aggregation/private_aggregation_manager_impl.h"
 
+#include <stddef.h>
+
 #include <memory>
 #include <numeric>
 #include <optional>
@@ -110,12 +112,14 @@ bool PrivateAggregationManagerImpl::BindNewReceiver(
     std::optional<std::string> context_id,
     std::optional<base::TimeDelta> timeout,
     std::optional<url::Origin> aggregation_coordinator_origin,
+    size_t filtering_id_max_bytes,
     mojo::PendingReceiver<blink::mojom::PrivateAggregationHost>
         pending_receiver) {
   return host_->BindNewReceiver(
       std::move(worklet_origin), std::move(top_frame_origin), api_for_budgeting,
       std::move(context_id), std::move(timeout),
-      std::move(aggregation_coordinator_origin), std::move(pending_receiver));
+      std::move(aggregation_coordinator_origin), filtering_id_max_bytes,
+      std::move(pending_receiver));
 }
 
 void PrivateAggregationManagerImpl::ClearBudgetData(

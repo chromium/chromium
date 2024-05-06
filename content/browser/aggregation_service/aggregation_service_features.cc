@@ -22,6 +22,6 @@ BASE_FEATURE(kPrivacySandboxAggregationServiceReportPadding,
 
 BASE_FEATURE(kPrivacySandboxAggregationServiceFilteringIds,
              "PrivacySandboxAggregationServiceFilteringIds",
-             base::FEATURE_DISABLED_BY_DEFAULT);
+             base::FEATURE_ENABLED_BY_DEFAULT);
 
 }  // namespace content

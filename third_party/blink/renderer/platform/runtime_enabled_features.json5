@@ -3061,6 +3061,12 @@
       origin_trial_allows_third_party: true,
     },
     {
+      // Controls whether filtering IDs can be specified for Private Aggregation
+      // contributions. If disabled, any IDs will be ignored.
+      name: "PrivateAggregationApiFilteringIds",
+      status: "experimental",
+    },
+    {
       name: "PrivateAggregationAuctionReportBuyerDebugModeConfig",
       status: "stable",
     },

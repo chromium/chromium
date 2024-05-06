@@ -4,6 +4,8 @@
 
 #include "content/browser/interest_group/ad_auction_service_impl.h"
 
+#include <stddef.h>
+
 #include <memory>
 #include <optional>
 #include <string>
@@ -10249,6 +10251,7 @@ TEST_F(AdAuctionServiceImplPrivateAggregationMultiCloudTest,
                      std::optional<std::string> context_id,
                      std::optional<base::TimeDelta> timeout,
                      std::optional<url::Origin> aggregation_coordinator_origin,
+                     size_t filtering_id_max_bytes,
                      mojo::PendingReceiver<blink::mojom::PrivateAggregationHost>
                          pending_receiver) -> bool {
                 check_coordinator_.Run(aggregation_coordinator_origin,
@@ -10257,7 +10260,7 @@ TEST_F(AdAuctionServiceImplPrivateAggregationMultiCloudTest,
                     std::move(worklet_origin), std::move(top_frame_origin),
                     api_for_budgeting, std::move(context_id), timeout,
                     std::move(aggregation_coordinator_origin),
-                    std::move(pending_receiver));
+                    filtering_id_max_bytes, std::move(pending_receiver));
               });
     }
 
@@ -10271,6 +10274,7 @@ TEST_F(AdAuctionServiceImplPrivateAggregationMultiCloudTest,
                  std::optional<std::string>,
                  std::optional<base::TimeDelta>,
                  std::optional<url::Origin>,
+                 size_t,
                  mojo::PendingReceiver<blink::mojom::PrivateAggregationHost>),
                 (override));
 

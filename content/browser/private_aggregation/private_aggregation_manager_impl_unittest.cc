@@ -892,40 +892,43 @@ TEST_F(PrivateAggregationManagerImplTest,
                           example_origin, example_main_frame_origin,
                           PrivateAggregationBudgetKey::Api::kProtectedAudience,
                           testing::Eq(std::nullopt), testing::Eq(std::nullopt),
-                          testing::Eq(std::nullopt), _))
+                          testing::Eq(std::nullopt), 1, _))
       .WillOnce(Return(true));
   EXPECT_TRUE(manager_.BindNewReceiver(
       example_origin, example_main_frame_origin,
       PrivateAggregationBudgetKey::Api::kProtectedAudience,
       /*context_id=*/std::nullopt, /*timeout=*/std::nullopt,
       /*aggregation_coordinator_origin=*/std::nullopt,
+      /*filtering_id_max_bytes=*/1,
       mojo::PendingReceiver<blink::mojom::PrivateAggregationHost>()));
 
   EXPECT_CALL(*host_, BindNewReceiver(
                           example_origin, example_main_frame_origin,
                           PrivateAggregationBudgetKey::Api::kSharedStorage,
                           testing::Eq(std::nullopt), testing::Eq(std::nullopt),
-                          testing::Eq(std::nullopt), _))
+                          testing::Eq(std::nullopt), 1, _))
       .WillOnce(Return(false));
   EXPECT_FALSE(manager_.BindNewReceiver(
       example_origin, example_main_frame_origin,
       PrivateAggregationBudgetKey::Api::kSharedStorage,
       /*context_id=*/std::nullopt, /*timeout=*/std::nullopt,
       /*aggregation_coordinator_origin=*/std::nullopt,
+      /*filtering_id_max_bytes=*/1,
       mojo::PendingReceiver<blink::mojom::PrivateAggregationHost>()));
 
-  EXPECT_CALL(
-      *host_,
-      BindNewReceiver(example_origin, example_main_frame_origin,
-                      PrivateAggregationBudgetKey::Api::kProtectedAudience,
-                      testing::Eq("example_context_id"),
-                      testing::Eq(std::nullopt), testing::Eq(std::nullopt), _))
+  EXPECT_CALL(*host_,
+              BindNewReceiver(
+                  example_origin, example_main_frame_origin,
+                  PrivateAggregationBudgetKey::Api::kProtectedAudience,
+                  testing::Eq("example_context_id"), testing::Eq(std::nullopt),
+                  testing::Eq(std::nullopt), 1, _))
       .WillOnce(Return(true));
   EXPECT_TRUE(manager_.BindNewReceiver(
       example_origin, example_main_frame_origin,
       PrivateAggregationBudgetKey::Api::kProtectedAudience,
       "example_context_id", /*timeout=*/std::nullopt,
       /*aggregation_coordinator_origin=*/std::nullopt,
+      /*filtering_id_max_bytes=*/1,
       mojo::PendingReceiver<blink::mojom::PrivateAggregationHost>()));
 
   EXPECT_CALL(*host_,
@@ -933,26 +936,41 @@ TEST_F(PrivateAggregationManagerImplTest,
                               PrivateAggregationBudgetKey::Api::kSharedStorage,
                               testing::Eq("example_context_id"),
                               testing::Eq(base::Seconds(5)),
-                              testing::Eq(std::nullopt), _))
+                              testing::Eq(std::nullopt), 1, _))
       .WillOnce(Return(true));
   EXPECT_TRUE(manager_.BindNewReceiver(
       example_origin, example_main_frame_origin,
       PrivateAggregationBudgetKey::Api::kSharedStorage, "example_context_id",
       /*timeout=*/base::Seconds(5),
       /*aggregation_coordinator_origin=*/std::nullopt,
+      /*filtering_id_max_bytes=*/1,
       mojo::PendingReceiver<blink::mojom::PrivateAggregationHost>()));
 
   EXPECT_CALL(*host_, BindNewReceiver(
                           example_origin, example_main_frame_origin,
                           PrivateAggregationBudgetKey::Api::kProtectedAudience,
                           testing::Eq(std::nullopt), testing::Eq(std::nullopt),
-                          testing::Eq(example_coordinator_origin), _))
+                          testing::Eq(example_coordinator_origin), 1, _))
       .WillOnce(Return(true));
   EXPECT_TRUE(manager_.BindNewReceiver(
       example_origin, example_main_frame_origin,
       PrivateAggregationBudgetKey::Api::kProtectedAudience,
       /*context_id=*/std::nullopt, /*timeout=*/std::nullopt,
-      example_coordinator_origin,
+      example_coordinator_origin, /*filtering_id_max_bytes=*/1,
+      mojo::PendingReceiver<blink::mojom::PrivateAggregationHost>()));
+
+  EXPECT_CALL(*host_, BindNewReceiver(
+                          example_origin, example_main_frame_origin,
+                          PrivateAggregationBudgetKey::Api::kProtectedAudience,
+                          testing::Eq(std::nullopt), testing::Eq(std::nullopt),
+                          testing::Eq(std::nullopt), 8, _))
+      .WillOnce(Return(true));
+  EXPECT_TRUE(manager_.BindNewReceiver(
+      example_origin, example_main_frame_origin,
+      PrivateAggregationBudgetKey::Api::kProtectedAudience,
+      /*context_id=*/std::nullopt, /*timeout=*/std::nullopt,
+      /*aggregation_coordinator_origin=*/std::nullopt,
+      /*filtering_id_max_bytes=*/8,
       mojo::PendingReceiver<blink::mojom::PrivateAggregationHost>()));
 }
 
