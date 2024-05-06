@@ -103,6 +103,13 @@ export class VoiceSelectionMenuElement extends VoiceSelectionMenuElementBase {
       minX: parseInt(spBodyPadding, 10),
       maxX: document.body.clientWidth - parseInt(spBodyPadding, 10),
     });
+
+    // Scroll to the selected voice.
+    requestAnimationFrame(() => {
+      const selectedItem =
+          menu.querySelector<HTMLElement>('.item-invisible-false');
+      selectedItem?.scrollIntoViewIfNeeded();
+    });
   }
 
   private computeEnabledVoices_(
