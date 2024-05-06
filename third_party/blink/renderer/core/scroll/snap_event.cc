@@ -11,15 +11,18 @@
 namespace blink {
 
 SnapEvent* SnapEvent::Create(const AtomicString& type,
+                             Bubbles bubbles,
                              Member<Node>& block_target,
                              Member<Node>& inline_target) {
-  return MakeGarbageCollected<SnapEvent>(type, block_target, inline_target);
+  return MakeGarbageCollected<SnapEvent>(type, bubbles, block_target,
+                                         inline_target);
 }
 
 SnapEvent::SnapEvent(const AtomicString& type,
+                     Bubbles bubbles,
                      Member<Node>& block_target,
                      Member<Node>& inline_target)
-    : Event(type, Bubbles::kNo, Cancelable::kNo),
+    : Event(type, bubbles, Cancelable::kNo),
       snap_target_block_(block_target),
       snap_target_inline_(inline_target) {}
 

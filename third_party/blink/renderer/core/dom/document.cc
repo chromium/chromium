@@ -6064,8 +6064,10 @@ void Document::EnqueueOverscrollEventForNode(Node* target,
 void Document::EnqueueSnapChangedEvent(Node* target,
                                        Member<Node>& block_target,
                                        Member<Node>& inline_target) {
-  Event* snapchanged_event = SnapEvent::Create(event_type_names::kSnapchanged,
-                                               block_target, inline_target);
+  Event* snapchanged_event = SnapEvent::Create(
+      event_type_names::kSnapchanged,
+      (target->IsDocumentNode() ? Event::Bubbles::kYes : Event::Bubbles::kNo),
+      block_target, inline_target);
   snapchanged_event->SetTarget(target);
   scripted_animation_controller_->EnqueuePerFrameEvent(snapchanged_event);
 }
@@ -6073,10 +6075,12 @@ void Document::EnqueueSnapChangedEvent(Node* target,
 void Document::EnqueueSnapChangingEvent(Node* target,
                                         Member<Node>& block_target,
                                         Member<Node>& inline_target) {
-  Event* snapchanged_event = SnapEvent::Create(event_type_names::kSnapchanging,
-                                               block_target, inline_target);
-  snapchanged_event->SetTarget(target);
-  scripted_animation_controller_->EnqueuePerFrameEvent(snapchanged_event);
+  Event* snapchanging_event = SnapEvent::Create(
+      event_type_names::kSnapchanging,
+      (target->IsDocumentNode() ? Event::Bubbles::kYes : Event::Bubbles::kNo),
+      block_target, inline_target);
+  snapchanging_event->SetTarget(target);
+  scripted_animation_controller_->EnqueuePerFrameEvent(snapchanging_event);
 }
 
 void Document::EnqueueMoveEvent() {

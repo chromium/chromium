@@ -24,9 +24,11 @@ class SnapEvent : public Event {
 
  public:
   static SnapEvent* Create(const AtomicString& type,
+                           Bubbles bubbles,
                            Member<Node>& block_target,
                            Member<Node>& inline_target);
   SnapEvent(const AtomicString& type,
+            Bubbles bubbles,
             Member<Node>& block_target,
             Member<Node>& inline_target);
 
