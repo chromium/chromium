@@ -74,6 +74,10 @@ class ASH_EXPORT InputDeviceSettingsNotificationController {
   // to the chromebook for the first time.
   void ShowKeyboardSettingsNotification(const mojom::Keyboard& keyboard);
 
+  // Used to display a notification when a customizable touchpad is connected
+  // to the chromebook for the first time.
+  void ShowTouchpadSettingsNotification(const mojom::Touchpad& touchpad);
+
   // Use to display a notification when a mouse is first connected.
   void NotifyMouseFirstTimeConnected(const mojom::Mouse& mouse);
 

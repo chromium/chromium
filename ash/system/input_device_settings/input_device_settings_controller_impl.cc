@@ -1850,6 +1850,10 @@ void InputDeviceSettingsControllerImpl::OnTouchpadListUpdated(
           touchpad, bluetooth_devices_observer_.get())] = mojom_touchpad->id;
     }
     InitializeTouchpadSettings(mojom_touchpad.get());
+    if (features::IsWelcomeExperienceEnabled()) {
+      notification_controller_->NotifyTouchpadFirstTimeConnected(
+          *mojom_touchpad);
+    }
     touchpads_.insert_or_assign(touchpad.id, std::move(mojom_touchpad));
     DispatchTouchpadConnected(touchpad.id);
   }

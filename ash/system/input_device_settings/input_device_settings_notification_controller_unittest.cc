@@ -750,4 +750,44 @@ TEST_F(InputDeviceSettingsNotificationControllerTest,
       "welcome_experience_keyboards_2"));
 }
 
+TEST_F(InputDeviceSettingsNotificationControllerTest,
+       NotifyTouchpadFirstTimeConnected) {
+  size_t expected_notification_count = 1;
+  mojom::TouchpadPtr mojom_touchpad = mojom::Touchpad::New();
+  mojom_touchpad->device_key = "0001:0001";
+  mojom_touchpad->id = 1;
+  mojom_touchpad->settings = mojom::TouchpadSettings::New();
+
+  PrefService* prefs =
+      Shell::Get()->session_controller()->GetActivePrefService();
+
+  EXPECT_TRUE(prefs->GetList(prefs::kTouchpadsWelcomeNotificationSeen).empty());
+  controller()->NotifyTouchpadFirstTimeConnected(*mojom_touchpad);
+  EXPECT_EQ(prefs->GetList(prefs::kTouchpadsWelcomeNotificationSeen).size(),
+            1u);
+  EXPECT_TRUE(
+      base::Contains(prefs->GetList(prefs::kTouchpadsWelcomeNotificationSeen),
+                     base::Value("0001:0001")));
+  controller()->NotifyTouchpadFirstTimeConnected(*mojom_touchpad);
+  EXPECT_EQ(prefs->GetList(prefs::kTouchpadsWelcomeNotificationSeen).size(),
+            1u);
+  EXPECT_EQ(expected_notification_count++,
+            message_center()->NotificationCount());
+  EXPECT_TRUE(message_center()->FindVisibleNotificationById(
+      "welcome_experience_touchpad_1"));
+
+  mojom_touchpad->id = 2;
+  mojom_touchpad->device_key = "0001:0002";
+
+  controller()->NotifyTouchpadFirstTimeConnected(*mojom_touchpad);
+  EXPECT_EQ(prefs->GetList(prefs::kTouchpadsWelcomeNotificationSeen).size(),
+            2u);
+  EXPECT_TRUE(
+      base::Contains(prefs->GetList(prefs::kTouchpadsWelcomeNotificationSeen),
+                     base::Value("0001:0002")));
+  EXPECT_EQ(expected_notification_count, message_center()->NotificationCount());
+  EXPECT_TRUE(message_center()->FindVisibleNotificationById(
+      "welcome_experience_touchpad_2"));
+}
+
 }  // namespace ash
