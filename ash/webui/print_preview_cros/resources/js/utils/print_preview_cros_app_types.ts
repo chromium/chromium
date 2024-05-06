@@ -174,6 +174,9 @@ export interface PrintTicket {
   // destination.
   printerType: PrinterType;
 
+  // Whether to treat source as an image when generating PDF.
+  rasterizePDF: boolean;
+
   // Whether to generate PDF with CSS backgrounds included.
   shouldPrintBackgrounds: boolean;
 }
