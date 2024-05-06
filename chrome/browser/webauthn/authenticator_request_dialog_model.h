@@ -768,8 +768,12 @@ class AuthenticatorRequestDialogController
   // authentication. `crededential_id` must match one of the credentials in
   // `transport_availability_.recognized_credentials`. Returns the source of the
   // credential.
+  //
+  // Note: it's important not to pass a reference to `credential_id` here
+  // because this function clears `model_->creds`, which is where such a
+  // reference would often point.
   device::AuthenticatorType OnAccountPreselected(
-      const std::vector<uint8_t>& credential_id);
+      const std::vector<uint8_t> credential_id);
 
   void OnAccountPreselectedIndex(size_t index) override;
   void SetSelectedAuthenticatorForTesting(AuthenticatorReference authenticator);

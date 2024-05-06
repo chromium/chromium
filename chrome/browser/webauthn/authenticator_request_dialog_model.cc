@@ -1402,7 +1402,7 @@ void AuthenticatorRequestDialogController::OnAccountSelected(size_t index) {
 
 device::AuthenticatorType
 AuthenticatorRequestDialogController::OnAccountPreselected(
-    const std::vector<uint8_t>& credential_id) {
+    const std::vector<uint8_t> credential_id) {
   // User selected one of the platform authenticator credentials enumerated in
   // Conditional or regular modal UI prior to collecting user verification.
   // Run `account_preselected_callback_` to narrow the request to the selected
@@ -1430,7 +1430,7 @@ AuthenticatorRequestDialogController::OnAccountPreselected(
   if (!base::FeatureList::IsEnabled(device::kWebAuthnEnclaveAuthenticator)) {
     ContactPriorityPhone();
   } else {
-    model_->OnGPMPasskeySelected(credential_id);
+    model_->OnGPMPasskeySelected(std::move(credential_id));
   }
   return source;
 }
