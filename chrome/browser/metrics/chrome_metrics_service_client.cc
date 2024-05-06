@@ -85,6 +85,7 @@
 #include "components/metrics/demographics/demographic_metrics_provider.h"
 #include "components/metrics/drive_metrics_provider.h"
 #include "components/metrics/entropy_state_provider.h"
+#include "components/metrics/install_date_provider.h"
 #include "components/metrics/metrics_log_uploader.h"
 #include "components/metrics/metrics_pref_names.h"
 #include "components/metrics/metrics_reporting_default_state.h"
@@ -969,6 +970,10 @@ void ChromeMetricsServiceClient::RegisterUKMProviders() {
   ukm_service_->RegisterMetricsProvider(
       std::make_unique<LacrosMetricsProvider>());
 #endif  // BUILDFLAG(IS_CHROMEOS_LACROS)
+
+  PrefService* local_state = g_browser_process->local_state();
+  ukm_service_->RegisterMetricsProvider(
+      std::make_unique<metrics::InstallDateProvider>(local_state));
 
   ukm_service_->RegisterMetricsProvider(
       std::make_unique<metrics::GPUMetricsProvider>());

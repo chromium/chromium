@@ -34,6 +34,7 @@
 #include "chrome/browser/unified_consent/unified_consent_service_factory.h"
 #include "components/metrics/demographics/demographic_metrics_provider.h"
 #include "components/metrics/demographics/demographic_metrics_test_utils.h"
+#include "components/metrics/metrics_pref_names.h"
 #include "components/metrics_services_manager/metrics_services_manager.h"
 #include "components/signin/public/base/signin_buildflags.h"
 #include "components/signin/public/identity_manager/identity_manager.h"
@@ -820,6 +821,37 @@ IN_PROC_BROWSER_TEST_F(UkmBrowserTest, NetworkProviderPopulatesSystemProfile) {
   CloseBrowserSynchronously(sync_browser);
 }
 #endif  // !BUILDFLAG(IS_ANDROID)
+
+// Verifies that install date is attached.
+IN_PROC_BROWSER_TEST_F(UkmBrowserTest,
+                       InstallDateProviderPopulatesSystemProfile) {
+  PrefService* local_state = g_browser_process->local_state();
+  local_state->SetInt64(prefs::kInstallDate, 123456);
+
+  ukm::UkmTestHelper ukm_test_helper(GetUkmService());
+
+  MetricsConsentOverride metrics_consent(true);
+
+  Profile* profile = ProfileManager::GetLastUsedProfileIfLoaded();
+  std::unique_ptr<SyncServiceImplHarness> harness =
+      EnableSyncForProfile(profile);
+
+  PlatformBrowser browser = CreatePlatformBrowser(profile);
+  EXPECT_TRUE(ukm_test_helper.IsRecordingEnabled());
+  uint64_t original_client_id = ukm_test_helper.GetClientId();
+  EXPECT_NE(0U, original_client_id);
+
+  // Make sure there is a persistent log.
+  ukm_test_helper.BuildAndStoreLog();
+  EXPECT_TRUE(ukm_test_helper.HasUnsentLogs());
+  // Check log contents.
+  std::unique_ptr<ukm::Report> report = ukm_test_helper.GetUkmReport();
+
+  // Rounded from the 123456 we set earlier, to nearest hour.
+  EXPECT_EQ(122400, report->system_profile().install_date());
+
+  ClosePlatformBrowser(browser);
+}
 
 // Make sure that providing consent doesn't enable UKM when sync is disabled.
 // Keep in sync with testConsentAddedButNoSync in ios/chrome/browser/metrics/
