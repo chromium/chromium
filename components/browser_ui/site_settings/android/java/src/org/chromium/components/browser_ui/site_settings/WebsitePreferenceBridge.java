@@ -10,6 +10,7 @@ import org.jni_zero.NativeMethods;
 import org.chromium.base.Callback;
 import org.chromium.components.content_settings.ContentSettingValues;
 import org.chromium.components.content_settings.ContentSettingsType;
+import org.chromium.components.content_settings.ProviderType;
 import org.chromium.components.content_settings.SessionModel;
 import org.chromium.components.location.LocationUtils;
 import org.chromium.content_public.browser.BrowserContextHandle;
@@ -134,7 +135,7 @@ public class WebsitePreferenceBridge {
 
         List<ContentSettingException> managedExceptions = new ArrayList<ContentSettingException>();
         for (ContentSettingException exception : exceptions) {
-            if (exception.getSource().equals("policy")) {
+            if (exception.getSource() == ProviderType.POLICY_PROVIDER) {
                 managedExceptions.add(exception);
             }
         }
@@ -219,18 +220,17 @@ public class WebsitePreferenceBridge {
             String primaryPattern,
             String secondaryPattern,
             int contentSetting,
-            String source,
+            @ProviderType.EnumType int source,
             final boolean hasExpiration,
             final int expirationInDays,
             boolean isEmbargoed) {
-        String nonNullSource = (source == null) ? "" : source;
         ContentSettingException exception =
                 new ContentSettingException(
                         contentSettingsType,
                         primaryPattern,
                         secondaryPattern,
                         contentSetting,
-                        nonNullSource,
+                        source,
                         hasExpiration ? expirationInDays : null,
                         isEmbargoed);
         list.add(exception);

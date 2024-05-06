@@ -11,6 +11,7 @@ import androidx.annotation.Nullable;
 
 import org.chromium.components.content_settings.ContentSettingValues;
 import org.chromium.components.content_settings.ContentSettingsType;
+import org.chromium.components.content_settings.ProviderType;
 import org.chromium.content_public.browser.BrowserContextHandle;
 
 import java.io.Serializable;
@@ -22,7 +23,7 @@ public class ContentSettingException implements Serializable {
     private final String mSecondaryPattern;
     // TODO(crbug.com/40231949): Convert {@link #mSource} to enum to enable merging {@link #mSource}
     // and {@link #mIsEmbargoed}.
-    private final String mSource;
+    private final @ProviderType.EnumType int mSource;
     private final Integer mExpirationInDays;
     private final boolean mIsEmbargoed;
     private @ContentSettingValues @Nullable Integer mContentSetting;
@@ -42,7 +43,7 @@ public class ContentSettingException implements Serializable {
             String primaryPattern,
             String secondaryPattern,
             @ContentSettingValues @Nullable Integer setting,
-            String source,
+            @ProviderType.EnumType int source,
             final Integer expirationInDays,
             boolean isEmbargoed) {
         mContentSettingType = type;
@@ -61,7 +62,7 @@ public class ContentSettingException implements Serializable {
             @ContentSettingsType.EnumType int type,
             String primaryPattern,
             @ContentSettingValues @Nullable Integer setting,
-            String source,
+            @ProviderType.EnumType int source,
             boolean isEmbargoed) {
         this(
                 type,
@@ -85,7 +86,7 @@ public class ContentSettingException implements Serializable {
         return (mSecondaryPattern == null) ? SITE_WILDCARD : mSecondaryPattern;
     }
 
-    public String getSource() {
+    public @ProviderType.EnumType int getSource() {
         return mSource;
     }
 

@@ -12,6 +12,7 @@ import org.chromium.base.metrics.RecordUserAction;
 import org.chromium.components.browser_ui.site_settings.WebsitePreferenceBridge.StorageInfoClearedCallback;
 import org.chromium.components.content_settings.ContentSettingValues;
 import org.chromium.components.content_settings.ContentSettingsType;
+import org.chromium.components.content_settings.ProviderType;
 import org.chromium.components.url_formatter.UrlFormatter;
 import org.chromium.content_public.browser.BrowserContextHandle;
 import org.chromium.url.GURL;
@@ -281,7 +282,7 @@ public final class Website implements WebsiteEntry {
                                 ContentSettingsType.ADS,
                                 getAddress().getOrigin(),
                                 ContentSettingValues.BLOCK,
-                                "",
+                                ProviderType.NONE,
                                 /* isEmbargoed= */ false);
                 setContentSettingException(type, exception);
             }
@@ -295,7 +296,7 @@ public final class Website implements WebsiteEntry {
                                 ContentSettingsType.JAVASCRIPT,
                                 getAddress().getHost(),
                                 value,
-                                "",
+                                ProviderType.NONE,
                                 /* isEmbargoed= */ false);
                 setContentSettingException(type, exception);
             }
@@ -315,7 +316,7 @@ public final class Website implements WebsiteEntry {
                                 ContentSettingsType.SOUND,
                                 getAddress().getHost(),
                                 value,
-                                "",
+                                ProviderType.NONE,
                                 /* isEmbargoed= */ false);
                 setContentSettingException(type, exception);
             }

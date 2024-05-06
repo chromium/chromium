@@ -6,6 +6,7 @@
 
 #include "base/containers/fixed_flat_map.h"
 #include "base/metrics/histogram_functions.h"
+#include "base/notreached.h"
 #include "base/strings/strcat.h"
 #include "components/content_settings/core/common/content_settings.h"
 
@@ -179,6 +180,9 @@ std::string GetProviderNameForHistograms(
       return "ProviderForTests";
     case ProviderType::kOtherProviderForTests:
       return "OtherProviderForTests";
+    case ProviderType::kNone:
+      NOTREACHED();
+      return "";
   }
 }
 

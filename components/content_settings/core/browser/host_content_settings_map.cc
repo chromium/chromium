@@ -99,6 +99,7 @@ constexpr auto kProviderNamesSourceMap =
          {"one_time", SettingSource::kUser}},
         {ProviderType::kPrefProvider, {"preference", SettingSource::kUser}},
         {ProviderType::kDefaultProvider, {"default", SettingSource::kUser}},
+        {ProviderType::kNone, {"none", SettingSource::kNone}},
         {ProviderType::kProviderForTests, {"tests", SettingSource::kUser}},
         {ProviderType::kOtherProviderForTests,
          {"tests_other", SettingSource::kUser}},

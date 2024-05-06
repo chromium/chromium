@@ -130,6 +130,7 @@ import org.chromium.components.browsing_data.DeleteBrowsingDataAction;
 import org.chromium.components.content_settings.ContentSettingValues;
 import org.chromium.components.content_settings.ContentSettingsType;
 import org.chromium.components.content_settings.CookieControlsMode;
+import org.chromium.components.content_settings.ProviderType;
 import org.chromium.components.embedder_support.util.Origin;
 import org.chromium.components.location.LocationUtils;
 import org.chromium.components.permissions.nfc.NfcSystemLevelSetting;
@@ -381,7 +382,7 @@ public class SiteSettingsTest {
                         "primary.com",
                         "secondary1.com",
                         ContentSettingValues.ALLOW,
-                        "preference",
+                        ProviderType.PREF_PROVIDER,
                         30,
                         false));
         site.addEmbeddedPermission(
@@ -390,7 +391,7 @@ public class SiteSettingsTest {
                         "primary.com",
                         "secondary3.com",
                         ContentSettingValues.ALLOW,
-                        "preference",
+                        ProviderType.PREF_PROVIDER,
                         30,
                         false));
 

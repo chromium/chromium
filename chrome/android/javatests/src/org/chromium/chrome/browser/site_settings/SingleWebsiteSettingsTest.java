@@ -51,6 +51,7 @@ import org.chromium.components.browser_ui.site_settings.WebsiteAddress;
 import org.chromium.components.browser_ui.site_settings.WebsitePreferenceBridge;
 import org.chromium.components.content_settings.ContentSettingValues;
 import org.chromium.components.content_settings.ContentSettingsType;
+import org.chromium.components.content_settings.ProviderType;
 import org.chromium.content_public.browser.test.util.TestThreadUtils;
 import org.chromium.url.GURL;
 
@@ -331,7 +332,7 @@ public class SingleWebsiteSettingsTest {
                         type,
                         website.getAddress().getOrigin(),
                         value,
-                        "preference",
+                        ProviderType.PREF_PROVIDER,
                         /* isEmbargoed= */ false));
 
         return website;
@@ -347,7 +348,7 @@ public class SingleWebsiteSettingsTest {
                         origin,
                         embedder,
                         ContentSettingValues.ASK,
-                        /* source= */ "",
+                        ProviderType.NONE,
                         /* expiration= */ 0,
                         /* isEmbargoed= */ false);
         // Set setting explicitly to write it to prefs.

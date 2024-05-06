@@ -63,6 +63,7 @@ import org.chromium.components.browsing_data.content.BrowsingDataInfo;
 import org.chromium.components.browsing_data.content.BrowsingDataModel;
 import org.chromium.components.content_settings.ContentSettingValues;
 import org.chromium.components.content_settings.ContentSettingsType;
+import org.chromium.components.content_settings.ProviderType;
 import org.chromium.components.content_settings.SessionModel;
 import org.chromium.content_public.browser.BrowserContextHandle;
 import org.chromium.content_public.browser.test.util.TestThreadUtils;
@@ -318,7 +319,6 @@ public class WebsitePermissionsFetcherTest {
 
     private static final String ORIGIN = "https://google.com:443";
     private static final String EMBEDDER = "https://embedder.com";
-    private static final String PREFERENCE_SOURCE = "preference";
     private static final int EXPIRATION_IN_DAYS = 30;
 
     public static class EmbargoedParams implements ParameterProvider {
@@ -706,98 +706,98 @@ public class WebsitePermissionsFetcherTest {
                         ContentSettingsType.COOKIES,
                         ORIGIN,
                         ContentSettingValues.DEFAULT,
-                        PREFERENCE_SOURCE,
+                        ProviderType.PREF_PROVIDER,
                         /* isEmbargoed= */ false));
         websitePreferenceBridge.addContentSettingException(
                 new ContentSettingException(
                         ContentSettingsType.POPUPS,
                         ORIGIN,
                         ContentSettingValues.DEFAULT,
-                        PREFERENCE_SOURCE,
+                        ProviderType.PREF_PROVIDER,
                         /* isEmbargoed= */ false));
         websitePreferenceBridge.addContentSettingException(
                 new ContentSettingException(
                         ContentSettingsType.ADS,
                         ORIGIN,
                         ContentSettingValues.DEFAULT,
-                        PREFERENCE_SOURCE,
+                        ProviderType.PREF_PROVIDER,
                         /* isEmbargoed= */ false));
         websitePreferenceBridge.addContentSettingException(
                 new ContentSettingException(
                         ContentSettingsType.JAVASCRIPT,
                         ORIGIN,
                         ContentSettingValues.DEFAULT,
-                        PREFERENCE_SOURCE,
+                        ProviderType.PREF_PROVIDER,
                         /* isEmbargoed= */ false));
         websitePreferenceBridge.addContentSettingException(
                 new ContentSettingException(
                         ContentSettingsType.SOUND,
                         ORIGIN,
                         ContentSettingValues.DEFAULT,
-                        PREFERENCE_SOURCE,
+                        ProviderType.PREF_PROVIDER,
                         /* isEmbargoed= */ false));
         websitePreferenceBridge.addContentSettingException(
                 new ContentSettingException(
                         ContentSettingsType.BACKGROUND_SYNC,
                         ORIGIN,
                         ContentSettingValues.DEFAULT,
-                        PREFERENCE_SOURCE,
+                        ProviderType.PREF_PROVIDER,
                         /* isEmbargoed= */ false));
         websitePreferenceBridge.addContentSettingException(
                 new ContentSettingException(
                         ContentSettingsType.AUTOMATIC_DOWNLOADS,
                         ORIGIN,
                         ContentSettingValues.DEFAULT,
-                        PREFERENCE_SOURCE,
+                        ProviderType.PREF_PROVIDER,
                         /* isEmbargoed= */ false));
         websitePreferenceBridge.addContentSettingException(
                 new ContentSettingException(
                         ContentSettingsType.INSECURE_PRIVATE_NETWORK,
                         ORIGIN,
                         ContentSettingValues.DEFAULT,
-                        PREFERENCE_SOURCE,
+                        ProviderType.PREF_PROVIDER,
                         /* isEmbargoed= */ false));
         websitePreferenceBridge.addContentSettingException(
                 new ContentSettingException(
                         ContentSettingsType.JAVASCRIPT_JIT,
                         ORIGIN,
                         ContentSettingValues.DEFAULT,
-                        PREFERENCE_SOURCE,
+                        ProviderType.PREF_PROVIDER,
                         /* isEmbargoed= */ false));
         websitePreferenceBridge.addContentSettingException(
                 new ContentSettingException(
                         ContentSettingsType.AUTO_DARK_WEB_CONTENT,
                         ORIGIN,
                         ContentSettingValues.DEFAULT,
-                        PREFERENCE_SOURCE,
+                        ProviderType.PREF_PROVIDER,
                         /* isEmbargoed= */ false));
         websitePreferenceBridge.addContentSettingException(
                 new ContentSettingException(
                         ContentSettingsType.REQUEST_DESKTOP_SITE,
                         ORIGIN,
                         ContentSettingValues.DEFAULT,
-                        PREFERENCE_SOURCE,
+                        ProviderType.PREF_PROVIDER,
                         /* isEmbargoed= */ false));
         websitePreferenceBridge.addContentSettingException(
                 new ContentSettingException(
                         ContentSettingsType.FEDERATED_IDENTITY_API,
                         ORIGIN,
                         ContentSettingValues.DEFAULT,
-                        PREFERENCE_SOURCE,
+                        ProviderType.PREF_PROVIDER,
                         /* isEmbargoed= */ false));
         websitePreferenceBridge.addContentSettingException(
                 new ContentSettingException(
                         ContentSettingsType.FEDERATED_IDENTITY_AUTO_REAUTHN_PERMISSION,
                         ORIGIN,
                         ContentSettingValues.DEFAULT,
-                        PREFERENCE_SOURCE,
+                        ProviderType.PREF_PROVIDER,
                         /* isEmbargoed= */ false));
         websitePreferenceBridge.addContentSettingException(
                 new ContentSettingException(
                         ContentSettingsType.ANTI_ABUSE,
                         ORIGIN,
                         ContentSettingValues.DEFAULT,
-                        PREFERENCE_SOURCE,
+                        ProviderType.PREF_PROVIDER,
                         /* isEmbargoed= */ false));
 
         int storageSize = 256;
@@ -1140,7 +1140,7 @@ public class WebsitePermissionsFetcherTest {
                                 type,
                                 ORIGIN,
                                 ContentSettingValues.DEFAULT,
-                                PREFERENCE_SOURCE,
+                                ProviderType.PREF_PROVIDER,
                                 isEmbargoed);
                 websitePreferenceBridge.addContentSettingException(fakeContentSettingException);
 
@@ -1164,7 +1164,7 @@ public class WebsitePermissionsFetcherTest {
                                 type,
                                 ORIGIN,
                                 ContentSettingValues.BLOCK,
-                                PREFERENCE_SOURCE,
+                                ProviderType.PREF_PROVIDER,
                                 isEmbargoed);
                 websitePreferenceBridge.addContentSettingException(fakeContentSettingException);
 
@@ -1215,7 +1215,7 @@ public class WebsitePermissionsFetcherTest {
                                 pair.first,
                                 pair.second,
                                 ContentSettingValues.DEFAULT,
-                                PREFERENCE_SOURCE,
+                                ProviderType.PREF_PROVIDER,
                                 EXPIRATION_IN_DAYS,
                                 isEmbargoed);
                 websitePreferenceBridge.addContentSettingException(fakeContentSettingException);
@@ -1241,7 +1241,7 @@ public class WebsitePermissionsFetcherTest {
                                 pair.first,
                                 pair.second,
                                 ContentSettingValues.BLOCK,
-                                PREFERENCE_SOURCE,
+                                ProviderType.PREF_PROVIDER,
                                 EXPIRATION_IN_DAYS,
                                 isEmbargoed);
                 websitePreferenceBridge.addContentSettingException(fakeContentSettingException);
@@ -1466,7 +1466,7 @@ public class WebsitePermissionsFetcherTest {
                             ContentSettingsType.COOKIES,
                             origin,
                             ContentSettingValues.ALLOW,
-                            PREFERENCE_SOURCE,
+                            ProviderType.PREF_PROVIDER,
                             /* isEmbargoed= */ false));
         }
 
@@ -1528,7 +1528,7 @@ public class WebsitePermissionsFetcherTest {
                         origin,
                         origin,
                         ContentSettingValues.ALLOW,
-                        "source",
+                        ProviderType.NONE,
                         null,
                         false));
         websitePreferenceBridge.addContentSettingException(
@@ -1537,7 +1537,7 @@ public class WebsitePermissionsFetcherTest {
                         origin,
                         origin,
                         ContentSettingValues.ASK,
-                        "source",
+                        ProviderType.NONE,
                         null,
                         false));
         fetcher.fetchAllPreferences(waiter);
@@ -1578,7 +1578,7 @@ public class WebsitePermissionsFetcherTest {
                         ORIGIN,
                         EMBEDDER,
                         ContentSettingValues.DEFAULT,
-                        PREFERENCE_SOURCE,
+                        ProviderType.PREF_PROVIDER,
                         EXPIRATION_IN_DAYS,
                         /* isEmbargoed= */ false));
         websitePreferenceBridge.addContentSettingException(
@@ -1587,7 +1587,7 @@ public class WebsitePermissionsFetcherTest {
                         ORIGIN,
                         null,
                         ContentSettingValues.DEFAULT,
-                        PREFERENCE_SOURCE,
+                        ProviderType.PREF_PROVIDER,
                         EXPIRATION_IN_DAYS,
                         /* isEmbargoed= */ true));
 
@@ -1665,7 +1665,7 @@ public class WebsitePermissionsFetcherTest {
                             ORIGIN,
                             embedder,
                             ContentSettingValues.DEFAULT,
-                            PREFERENCE_SOURCE,
+                            ProviderType.PREF_PROVIDER,
                             EXPIRATION_IN_DAYS,
                             isEmbargoed);
             websitePreferenceBridge.addContentSettingException(fakeContentSetting);

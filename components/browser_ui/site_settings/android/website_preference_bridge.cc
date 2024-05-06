@@ -1016,7 +1016,9 @@ static void JNI_WebsitePreferenceBridge_GetContentSettingsExceptions(
     Java_WebsitePreferenceBridge_addContentSettingExceptionToList(
         env, list, content_settings_type, ConvertUTF8ToJavaString(env, origin),
         ConvertUTF8ToJavaString(env, entry.secondary_pattern.ToString()),
-        entry.GetContentSetting(), ConvertUTF8ToJavaString(env, entry.source),
+        entry.GetContentSetting(),
+        static_cast<int>(
+            HostContentSettingsMap::GetProviderTypeFromSource(entry.source)),
         hasExpiration, expirationInDays,
         /*is_embargoed=*/false);
   }
@@ -1036,7 +1038,8 @@ static void JNI_WebsitePreferenceBridge_GetContentSettingsExceptions(
     Java_WebsitePreferenceBridge_addContentSettingExceptionToList(
         env, list, content_settings_type,
         ConvertUTF8ToJavaString(env, embargoed_origin_pattern), jembedder,
-        CONTENT_SETTING_BLOCK, /*source=*/ScopedJavaLocalRef<jstring>(),
+        CONTENT_SETTING_BLOCK,
+        static_cast<int>(content_settings::ProviderType::kNone),
         /*isTemporary=*/false,
         /*expiration=*/0, /*is_embargoed=*/true);
   }

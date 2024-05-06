@@ -668,6 +668,7 @@ SiteSettingSource ProviderTypeToSiteSettingsSource(
     case content_settings::ProviderType::kDefaultProvider:
       return SiteSettingSource::kDefault;
 
+    case content_settings::ProviderType::kNone:
     case content_settings::ProviderType::kNotificationAndroidProvider:
     case content_settings::ProviderType::kProviderForTests:
     case content_settings::ProviderType::kOtherProviderForTests:

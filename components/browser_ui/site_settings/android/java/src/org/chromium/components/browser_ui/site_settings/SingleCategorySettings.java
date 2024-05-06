@@ -72,6 +72,7 @@ import org.chromium.components.browser_ui.widget.RadioButtonWithDescriptionLayou
 import org.chromium.components.content_settings.ContentSettingValues;
 import org.chromium.components.content_settings.ContentSettingsType;
 import org.chromium.components.content_settings.CookieControlsMode;
+import org.chromium.components.content_settings.ProviderType;
 import org.chromium.components.embedder_support.util.UrlUtilities;
 import org.chromium.components.prefs.PrefService;
 import org.chromium.components.user_prefs.UserPrefs;
@@ -1626,8 +1627,8 @@ public class SingleCategorySettings extends BaseSiteSettingsFragment
                         websitePref
                                 .site()
                                 .getContentSettingException(mCategory.getContentSettingsType());
-                if (exception != null && exception.getSource() != null) {
-                    return exception.getSource().equals(POLICY);
+                if (exception != null) {
+                    return exception.getSource() == ProviderType.POLICY_PROVIDER;
                 }
                 return false;
             }
