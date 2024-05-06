@@ -14,7 +14,7 @@ namespace manta {
 SettingsData::SettingsData(const std::string& pref_name,
                            const PrefType& pref_type,
                            std::optional<base::Value> value)
-    : pref_name(pref_name), value(std::move(value)) {}
+    : pref_name(pref_name), pref_type(pref_type), value(std::move(value)) {}
 
 SettingsData::~SettingsData() = default;
 

@@ -15,12 +15,12 @@
 
 namespace manta {
 
-enum class COMPONENT_EXPORT(MANTA) PrefType {
+enum class PrefType {
   kNone = 0,
   kBoolean,
-  kNumber,
+  kInt,
+  kDouble,
   kString,
-  kUrl,
   kList,
   kDictionary,
   kMaxValue = kDictionary,
@@ -56,7 +56,6 @@ class COMPONENT_EXPORT(MANTA) SparkyDelegate {
   virtual ~SparkyDelegate();
 
   virtual bool SetSettings(std::unique_ptr<SettingsData> settings_data) = 0;
-  virtual void UpdateSettingsList() = 0;
   virtual SettingsDataList* GetSettingsList() = 0;
 };
 
