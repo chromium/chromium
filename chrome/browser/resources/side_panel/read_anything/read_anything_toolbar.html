@@ -139,7 +139,7 @@
     <cr-icon-button
       class="toolbar-button"
       id="rate"
-      tabindex="-1"
+      tabindex$="[[getRateTabIndex_(isReadAloudPlayable)]]"
       aria-label="$i18n{voiceSpeedLabel}"
       title="$i18n{voiceSpeedLabel}"
       aria-haspopup="menu"

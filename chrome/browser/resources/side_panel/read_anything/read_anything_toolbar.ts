@@ -347,6 +347,7 @@ export class ReadAnythingToolbarElement extends ReadAnythingToolbarElementBase {
   private areFontsLoaded_: boolean = false;
   private colorSuffix_: string = '';
 
+  private currentFocusId_: string = '';
   private toolbarContainerObserver_: ResizeObserver|null;
   private windowResizeCallback_: () => void;
 
@@ -840,10 +841,7 @@ export class ReadAnythingToolbarElement extends ReadAnythingToolbarElementBase {
   }
 
   private onToolbarKeyDown_(e: KeyboardEvent) {
-    const shadowRoot = this.shadowRoot;
-    assert(shadowRoot);
-    const toolbar = shadowRoot.getElementById('toolbarContainer');
-    assert(toolbar);
+    const toolbar = this.$.toolbarContainer;
     const buttons = Array.from(toolbar.querySelectorAll('.toolbar-button')) as
         HTMLElement[];
     assert(buttons, 'no toolbar buttons');
@@ -858,8 +856,7 @@ export class ReadAnythingToolbarElement extends ReadAnythingToolbarElementBase {
 
     // Allow focusing the font selection if it's visible.
     if (!this.isReadAloudEnabled_) {
-      const select = this.$.toolbarContainer.querySelector<HTMLSelectElement>(
-          '#font-select');
+      const select = toolbar.querySelector<HTMLSelectElement>('#font-select');
       assert(select, 'no font select menu');
       focusableElements.unshift(select);
     }
@@ -945,11 +942,16 @@ export class ReadAnythingToolbarElement extends ReadAnythingToolbarElementBase {
       el.tabIndex = -1;
     });
     elementToFocus.tabIndex = 0;
+    this.currentFocusId_ = elementToFocus.id;
 
     // Wait for the next animation frame for the overflow menu to show or hide.
     requestAnimationFrame(() => {
       elementToFocus.focus();
     });
+  }
+
+  private getRateTabIndex_(isReadAloudPlayable: boolean): number {
+    return (!isReadAloudPlayable || this.currentFocusId_ === 'rate') ? 0 : -1;
   }
 
   private onFontSelectKeyDown_(e: KeyboardEvent) {
