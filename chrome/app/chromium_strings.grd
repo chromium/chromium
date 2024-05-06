@@ -852,6 +852,9 @@ Permissions you've already given to websites and apps may apply to this account.
       <message name="IDS_EXTENSIONS_SAFETY_CHECK_OFFSTORE_OFF" desc="Alerts the user that the extension is not from the Chrome web store.">
         Off • Chromium can't verify where this extension comes from
       </message>
+      <message name="IDS_EXTENSIONS_SAFETY_CHECK_NO_PRIVACY_PRACTICES" desc="Alerts the user that the extension has not disclosed its privacy practices.">
+        This extension hasn't published privacy practices, such as how it collects and uses data. Chromium recommends that you remove it.
+      </message>
 
       <!-- chrome://settings/extensions page -->
   <message name="IDS_EXTENSIONS_SC_DESCRIPTION" desc="Detailed message displayed in the Safety Check description section.">

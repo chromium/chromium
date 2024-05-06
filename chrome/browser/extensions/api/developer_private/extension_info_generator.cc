@@ -903,11 +903,11 @@ ExtensionInfoGenerator::CreateSafetyCheckDisplayString(
                           ? IDS_EXTENSIONS_SC_UNPUBLISHED_ON
                           : IDS_EXTENSIONS_SC_UNPUBLISHED_OFF;
   } else if (no_privacy_practice) {
-    // TODO(crbug.com/335430214): Update strings to real values once finalized.
-    detail_string_id = IDS_EXTENSIONS_SAFETY_CHECK_OFFSTORE;
-    panel_string_id = state == developer::ExtensionState::kEnabled
-                          ? IDS_EXTENSIONS_SAFETY_CHECK_OFFSTORE_ON
-                          : IDS_EXTENSIONS_SAFETY_CHECK_OFFSTORE_OFF;
+    detail_string_id = IDS_EXTENSIONS_SAFETY_CHECK_NO_PRIVACY_PRACTICES;
+    panel_string_id =
+        state == developer::ExtensionState::kEnabled
+            ? IDS_EXTENSIONS_SAFETY_CHECK_NO_PRIVACY_PRACTICES_ON
+            : IDS_EXTENSIONS_SAFETY_CHECK_NO_PRIVACY_PRACTICES_OFF;
   } else if (warn_for_offstore_extension) {
     detail_string_id = IDS_EXTENSIONS_SAFETY_CHECK_OFFSTORE;
     panel_string_id = state == developer::ExtensionState::kEnabled

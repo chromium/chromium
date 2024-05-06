@@ -566,6 +566,12 @@
   <message name="IDS_EXTENSIONS_SC_UNPUBLISHED_ON" desc="The text explaining the reason for extension being potentially unsafe. The extension was unpublished by its developer and is turned on.">
     On • This extension was unpublished by its developer
   </message>
+  <message name="IDS_EXTENSIONS_SAFETY_CHECK_NO_PRIVACY_PRACTICES_ON" desc="The text explaining that an enabled extension has not disclosed its privacy practices.">
+    On • This extension hasn't published privacy practices, such as how it collects and uses data
+  </message>
+  <message name="IDS_EXTENSIONS_SAFETY_CHECK_NO_PRIVACY_PRACTICES_OFF" desc="The text explaining that a disabled extension has not disclosed its privacy practices.">
+    Off • This extension hasn't published privacy practices, such as how it collects and uses data
+  </message>
   <message name="IDS_EXTENSIONS_SC_TITLE" desc="Header text displayed in the Safety Check title.">
     {NUM_EXTENSIONS, plural,
      =1 {Review 1 extension that may be unsafe}

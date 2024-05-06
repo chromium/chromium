@@ -251,12 +251,11 @@ class ExtensionInfoGeneratorUnitTest : public ExtensionServiceTestWithInstall {
                                        : IDS_EXTENSIONS_SC_POLICY_VIOLATION_OFF;
         break;
       case SafetyCheckWarningReason::kNoPrivacyPractice:
-        // TODO(crbug.com/335430214): Update strings to real values
-        // once finalized.
-        detail_page_string = IDS_EXTENSIONS_SAFETY_CHECK_OFFSTORE;
-        panel_string = extension_state
-                           ? IDS_EXTENSIONS_SAFETY_CHECK_OFFSTORE_ON
-                           : IDS_EXTENSIONS_SAFETY_CHECK_OFFSTORE_OFF;
+        detail_page_string = IDS_EXTENSIONS_SAFETY_CHECK_NO_PRIVACY_PRACTICES;
+        panel_string =
+            extension_state
+                ? IDS_EXTENSIONS_SAFETY_CHECK_NO_PRIVACY_PRACTICES_ON
+                : IDS_EXTENSIONS_SAFETY_CHECK_NO_PRIVACY_PRACTICES_OFF;
         break;
       case SafetyCheckWarningReason::kNone:
         EXPECT_FALSE(info->safety_check_text->detail_string.has_value());
