@@ -424,7 +424,9 @@ void HashPasswordManager::MigrateEnterprisePasswordHashes() {
   base::Value::List& update_list = update.Get();
   base::Value::List& enterprise_update_list = enterprise_update.Get();
   for (auto it = update_list.begin(); it != update_list.end();) {
-    if (!IsGaiaPassword(*it)) {
+    if (!IsGaiaPassword(*it) &&
+        base::FeatureList::IsEnabled(
+            features::kLocalStateEnterprisePasswordHashes)) {
       enterprise_update_list.Append(std::move(it->GetDict()));
       it = update_list.erase(it);
       continue;

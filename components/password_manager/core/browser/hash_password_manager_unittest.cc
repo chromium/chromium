@@ -436,6 +436,35 @@ TEST_F(HashPasswordManagerTest, RetrievingPasswordHashData) {
 }
 
 TEST_F(HashPasswordManagerTest,
+       EnterprisePasswordHashesAreNotMigratedToLocalState) {
+  scoped_feature_list_.InitAndDisableFeature(
+      password_manager::features::kLocalStateEnterprisePasswordHashes);
+  HashPasswordManager hash_password_manager;
+  hash_password_manager.set_prefs(&prefs_);
+  hash_password_manager.set_local_prefs(&local_prefs_);
+
+  std::u16string password(u"password");
+  PasswordHashData phd1("user1", password, /*force_update=*/true);
+  PasswordHashData phd2("user2", password, /*force_update=*/true,
+                        /*is_gaia_password=*/false);
+  PasswordHashData phd3("user3", password, /*force_update=*/true);
+  PasswordHashData phd4("user4", password, /*force_update=*/true,
+                        /*is_gaia_password=*/false);
+  EncryptAndSave(phd1, &prefs_, prefs::kPasswordHashDataList);
+  EncryptAndSave(phd2, &prefs_, prefs::kPasswordHashDataList);
+  EncryptAndSave(phd3, &prefs_, prefs::kPasswordHashDataList);
+  EncryptAndSave(phd4, &prefs_, prefs::kPasswordHashDataList);
+
+  // Verify that all password hashes are saved under the profile pref.
+  EXPECT_EQ(4u, prefs_.GetList(prefs::kPasswordHashDataList).size());
+  // Try migrating enterprise password hashes to the local state pref.
+  hash_password_manager.MigrateEnterprisePasswordHashes();
+  // Verify that enterprise password hashes have not been moved.
+  EXPECT_EQ(4u, prefs_.GetList(prefs::kPasswordHashDataList).size());
+  EXPECT_EQ(0u, local_prefs_.GetList(prefs::kLocalPasswordHashDataList).size());
+}
+
+TEST_F(HashPasswordManagerTest,
        EnterprisePasswordHashesAreMigratedToLocalState) {
   scoped_feature_list_.InitAndEnableFeature(
       password_manager::features::kLocalStateEnterprisePasswordHashes);
