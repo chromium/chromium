@@ -604,16 +604,6 @@ const FeatureEntry::FeatureVariation kOneTapForMapsWithVariations[] = {
      std::size(kOneTapForMapsConsentModeDisabled), nullptr},
 };
 
-const FeatureEntry::Choice kEnablePasswordSharingChoices[] = {
-    {"Default", "", ""},
-    {"Bootstraping Only", switches::kEnableFeatures,
-     "SharingOfferKeyPairBootstrap"},
-    {"Enabled", switches::kEnableFeatures,
-     "SharingOfferKeyPairBootstrap,SendPasswords,"
-     "PasswordManagerEnableSenderService,"
-     "PasswordManagerEnableReceiverService,SharedPasswordNotificationUI"},
-};
-
 const flags_ui::FeatureEntry::FeatureParam kParcelTrackingTestDataDelivered[] =
     {{commerce::kParcelTrackingTestDataParam,
       commerce::kParcelTrackingTestDataParamDelivered}};
@@ -1327,7 +1317,7 @@ const flags_ui::FeatureEntry kFeatureEntries[] = {
      FEATURE_VALUE_TYPE(kIOSSaveToDrive)},
     {"password-sharing", flag_descriptions::kPasswordSharingName,
      flag_descriptions::kPasswordSharingDescription, flags_ui::kOsIos,
-     MULTI_VALUE_TYPE(kEnablePasswordSharingChoices)},
+     FEATURE_VALUE_TYPE(password_manager::features::kSendPasswords)},
     {"omnibox-company-entity-icon-adjustment",
      flag_descriptions::kOmniboxCompanyEntityIconAdjustmentName,
      flag_descriptions::kOmniboxCompanyEntityIconAdjustmentDescription,

@@ -420,16 +420,6 @@ const FeatureEntry::Choice kTouchTextSelectionStrategyChoices[] = {
      blink::switches::kTouchTextSelectionStrategy,
      blink::switches::kTouchTextSelectionStrategy_Direction}};
 
-const FeatureEntry::Choice kEnablePasswordSharingChoices[] = {
-    {"Default", "", ""},
-    {"Bootstraping Only", switches::kEnableFeatures,
-     "SharingOfferKeyPairBootstrap"},
-    {"Enabled", switches::kEnableFeatures,
-     "SharingOfferKeyPairBootstrap,SendPasswords,"
-     "PasswordManagerEnableSenderService,"
-     "PasswordManagerEnableReceiverService,SharedPasswordNotificationUI"},
-};
-
 const FeatureEntry::Choice kEnableSearchEngineChoice[] = {
     {"Default", "", ""},
     {"Enabled", switches::kEnableFeatures,
@@ -5061,11 +5051,11 @@ const FeatureEntry kFeatureEntries[] = {
      flag_descriptions::kCastEnableStreamingWithHiDPIName,
      flag_descriptions::kCastEnableStreamingWithHiDPIDescription, kOsDesktop,
      FEATURE_VALUE_TYPE(mirroring::features::kCastEnableStreamingWithHiDPI)},
-#endif  // !BUILDFLAG(IS_ANDROID)
 
     {"password-sharing", flag_descriptions::kEnablePasswordSharingName,
-     flag_descriptions::kEnablePasswordSharingDescription, kOsAll,
-     MULTI_VALUE_TYPE(kEnablePasswordSharingChoices)},
+     flag_descriptions::kEnablePasswordSharingDescription, kOsDesktop,
+     FEATURE_VALUE_TYPE(password_manager::features::kSendPasswords)},
+#endif  // !BUILDFLAG(IS_ANDROID)
 
     {"enable-search-engine-choice",
      flag_descriptions::kEnableSearchEngineChoiceName,

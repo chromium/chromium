@@ -17488,6 +17488,7 @@ from previous Chrome versions.
   <int value="-1666519913"
       label="PrivateNetworkAccessPreflightShortTimeout:disabled"/>
   <int value="-1664795930" label="StorageAccessAPI:disabled"/>
+  <int value="-1664497967" label="SendPasswords:enabled"/>
   <int value="-1664290318" label="ComputePressure:enabled"/>
   <int value="-1663410466" label="top-document-isolation"/>
   <int value="-1663125441" label="OptInImeMenu:enabled"/>
@@ -24816,6 +24817,7 @@ from previous Chrome versions.
   <int value="1573860827" label="EnableImeSandbox:enabled"/>
   <int value="1575011129" label="WelcomeTour:disabled"/>
   <int value="1575978252" label="PasswordLeakDetection:enabled"/>
+  <int value="1575982187" label="SendPasswords:disabled"/>
   <int value="1576879780" label="StarterPackExpansion:enabled"/>
   <int value="1577205328"
       label="DataReductionProxyEnabledWithNetworkService:enabled"/>
