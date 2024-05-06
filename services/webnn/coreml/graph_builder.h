@@ -254,6 +254,9 @@ class GraphBuilder {
   [[nodiscard]] base::expected<void, mojom::ErrorPtr> AddOperationForLeakyRelu(
       const mojom::LeakyRelu& operation,
       CoreML::Specification::MILSpec::Block& block);
+  [[nodiscard]] base::expected<void, mojom::ErrorPtr> AddOperationForLinear(
+      const mojom::Linear& operation,
+      CoreML::Specification::MILSpec::Block& block);
   [[nodiscard]] base::expected<void, mojom::ErrorPtr> AddOperationForMatmul(
       uint64_t input_x_operand_id,
       uint64_t input_y_operand_id,

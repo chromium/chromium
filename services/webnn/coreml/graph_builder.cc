@@ -660,6 +660,10 @@ GraphBuilder::BuildCoreMLModel() {
             AddOperationForLeakyRelu(*operation->get_leaky_relu(), block));
         break;
       }
+      case mojom::Operation::Tag::kLinear: {
+        RETURN_IF_ERROR(AddOperationForLinear(*operation->get_linear(), block));
+        break;
+      }
       case mojom::Operation::Tag::kMatmul: {
         RETURN_IF_ERROR(AddOperationForMatmul(*operation->get_matmul(), block));
         break;
@@ -729,7 +733,6 @@ GraphBuilder::BuildCoreMLModel() {
       case mojom::Operation::Tag::kHardSwish:
       case mojom::Operation::Tag::kLayerNormalization:
       case mojom::Operation::Tag::kInstanceNormalization:
-      case mojom::Operation::Tag::kLinear:
       case mojom::Operation::Tag::kLstm:
       case mojom::Operation::Tag::kLstmCell:
       case mojom::Operation::Tag::kPad:
@@ -1698,6 +1701,49 @@ base::expected<void, mojom::ErrorPtr> GraphBuilder::AddOperationForLeakyRelu(
     CoreML::Specification::MILSpec::Block& block) {
   return AddOperationForLeakyRelu(operation.input_operand_id, operation.alpha,
                                   operation.output_operand_id, block);
+}
+
+base::expected<void, mojom::ErrorPtr> GraphBuilder::AddOperationForLinear(
+    const mojom::Linear& operation,
+    CoreML::Specification::MILSpec::Block& block) {
+  const OperandInfo& input_operand_info =
+      GetOperandInfo(operation.input_operand_id);
+  CHECK(kFloatDataTypes.contains(input_operand_info.mil_data_type));
+
+  // WebNN's linear operator (alpha * a + beta) is far simpler than CoreML's
+  // "linear" operator (a fully connected layer), so just implement it as
+  //   add(mul(alpha, a), beta)
+
+  // Perform: mul(alpha, a)
+  //
+  // TODO: crbug.com/338667172 - Use float16 when the input is float16.
+  uint64_t alpha_operand_id = GenerateInternalOperandInfo(
+      CoreML::Specification::MILSpec::DataType::FLOAT32, /*dimensions=*/{});
+  RETURN_IF_ERROR(AddInternalConstantWithValue(
+      alpha_operand_id, CreateScalarImmediateValue(operation.alpha), block));
+
+  uint64_t mul_output = GenerateInternalOperandInfo(
+      input_operand_info.mil_data_type, input_operand_info.dimensions);
+  RETURN_IF_ERROR(AddOperationForElementwiseBinary(
+      /*lhs_operand_id=*/operation.input_operand_id,
+      /*rhs_operand_id=*/alpha_operand_id,
+      /*output_operand_id=*/mul_output, mojom::ElementWiseBinary::Kind::kMul,
+      block));
+
+  // Perform: add(mul_output, beta)
+  //
+  // TODO: crbug.com/338667172 - Use float16 when the input is float16.
+  uint64_t beta_operand_id = GenerateInternalOperandInfo(
+      CoreML::Specification::MILSpec::DataType::FLOAT32, /*dimensions=*/{});
+  RETURN_IF_ERROR(AddInternalConstantWithValue(
+      beta_operand_id, CreateScalarImmediateValue(operation.beta), block));
+
+  RETURN_IF_ERROR(AddOperationForElementwiseBinary(
+      /*lhs_operand_id=*/mul_output,
+      /*rhs_operand_id=*/beta_operand_id,
+      /*output_operand_id=*/operation.output_operand_id,
+      mojom::ElementWiseBinary::Kind::kAdd, block));
+  return base::ok();
 }
 
 [[nodiscard]] base::expected<void, mojom::ErrorPtr>
