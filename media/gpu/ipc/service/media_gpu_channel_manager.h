@@ -30,8 +30,7 @@ namespace media {
 
 class MediaGpuChannel;
 
-class MediaGpuChannelManager
-    : public base::SupportsWeakPtr<MediaGpuChannelManager> {
+class MediaGpuChannelManager final {
  public:
   explicit MediaGpuChannelManager(gpu::GpuChannelManager* channel_manager);
   MediaGpuChannelManager(const MediaGpuChannelManager&) = delete;
@@ -51,6 +50,10 @@ class MediaGpuChannelManager
 
   scoped_refptr<gpu::SharedContextState> GetSharedContextState();
 
+  base::WeakPtr<MediaGpuChannelManager> AsWeakPtr() {
+    return weak_ptr_factory_.GetWeakPtr();
+  }
+
  private:
   const raw_ptr<gpu::GpuChannelManager> channel_manager_;
   std::unordered_map<int32_t, std::unique_ptr<MediaGpuChannel>>
@@ -58,6 +61,7 @@ class MediaGpuChannelManager
   std::map<base::UnguessableToken, int32_t> token_to_channel_;
   std::map<int32_t, base::UnguessableToken> channel_to_token_;
   AndroidOverlayMojoFactoryCB overlay_factory_cb_;
+  base::WeakPtrFactory<MediaGpuChannelManager> weak_ptr_factory_{this};
 };
 
 }  // namespace media
