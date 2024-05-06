@@ -204,7 +204,7 @@ TEST_F(PressureServiceForFrameTest, AddClientTwice) {
             PressureStatus::kOk);
 
   // Simulate the renderer calling AddClient twice for the same PressureSource
-  // and wait for the PressureServiceImpl to finish the call.
+  // and wait for the PressureServiceBase to finish the call.
   FakePressureClient client2;
   mojo::test::BadMessageObserver bad_message_observer;
   pressure_manager_->AddClient(client2.BindNewPipeAndPassRemote(),
@@ -224,7 +224,7 @@ TEST_F(PressureServiceForFrameTest, DisconnectFromBlink) {
                               PressureSource::kCpu),
             PressureStatus::kOk);
 
-  // Simulate the renderer disconnecting and wait for the PressureServiceImpl
+  // Simulate the renderer disconnecting and wait for the PressureServiceBase
   // to observe the pipe close.
   pressure_manager_.reset();
   task_environment()->RunUntilIdle();

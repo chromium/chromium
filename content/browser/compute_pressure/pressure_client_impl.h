@@ -17,7 +17,7 @@ namespace content {
 
 class PressureServiceBase;
 
-// PressureServiceImpl owns instances of this class for different
+// PressureServiceBase owns instances of this class for different
 // PressureSources.
 //
 // This class implements the "device::mojom::PressureClient" interface to

@@ -8,7 +8,7 @@ This directory contains the service-side implementation of the
 The system is made up of the following components.
 
 `device::mojom::PressureManager`, defined in services, is the interface
-implemented in the browser side (`content::PressureServiceImpl`) to communicate
+implemented in the browser side (`content::PressureServiceBase`) to communicate
 with the renderer and implemented in services (`device::PressureManagerImpl`)
 to communicate with the browser side.
 
