@@ -510,5 +510,17 @@
   <message name="IDS_PRODUCT_SPECIFICATIONS_EMPTY_PRODUCT_SELECTOR" translateable="false" desc="The text displayed in the product selector when there is no currently selected product.">
     Add a tab
   </message>
+  <message name="IDS_PRODUCT_SPECIFICATIONS_PAGE_ACTION_ADD_DEFAULT" translateable="false" desc="The default text for the Product Specifications page action chip before adding the current page.">
+    Add to analysis?
+  </message>
+  <message name="IDS_PRODUCT_SPECIFICATIONS_PAGE_ACTION_ADDED_DEFAULT" translateable="false" desc="The default text for the Product Specifications page action chip after adding the current page.">
+    Added to analysis
+  </message>
+  <message name="IDS_PRODUCT_SPECIFICATIONS_PAGE_ACTION_ADD" translateable="false" desc="The text for the Product Specifications page action chip with a placeholder for what the specifications are for, before adding the current page.">
+    Add to <ph name="SPECIFICATION">$1<ex>analysis</ex></ph>?
+  </message>
+  <message name="IDS_PRODUCT_SPECIFICATIONS_PAGE_ACTION_ADDED" translateable="false" desc="The text for the Product Specifications page action chip with a placeholder for what the specifications are for, after adding the current page.">
+    Added to <ph name="SPECIFICATION">$1<ex>analysis</ex></ph>
+  </message>
 
 </grit-part>
