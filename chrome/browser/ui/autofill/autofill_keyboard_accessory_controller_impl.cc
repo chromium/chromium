@@ -46,6 +46,11 @@ using FillingSource = ManualFillingController::FillingSource;
 constexpr std::u16string_view kLabelSeparator = u" ";
 constexpr size_t kMaxBulletCount = 8;
 
+// Creates a text label used by the keyboard accessory. For password
+// suggestions, constructs the label from the password stored in
+// `Suggestion::additional_label` and an optional signon realm stored in
+// `Suggestion::labels`. For other suggestions, constructs the label from
+// `Suggestion::labels`.
 Suggestion::Text CreateLabel(const Suggestion& suggestion) {
   std::u16string password =
       suggestion.additional_label.substr(0, kMaxBulletCount);
@@ -589,14 +594,7 @@ void AutofillKeyboardAccessoryControllerImpl::
   labels_.clear();
   labels_.reserve(suggestions_.size());
   for (const Suggestion& suggestion : suggestions_) {
-    if (suggestion.type != SuggestionType::kClearForm) {
-      labels_.push_back(CreateLabel(suggestion));
-    } else if (suggestion.labels.empty()) {
-      labels_.emplace_back();
-    } else {
-      CHECK(!suggestion.labels[0].empty());
-      labels_.push_back(suggestion.labels[0][0]);
-    }
+    labels_.push_back(CreateLabel(suggestion));
   }
 }
 
