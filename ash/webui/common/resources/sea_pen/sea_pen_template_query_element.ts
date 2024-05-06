@@ -48,6 +48,12 @@ function isSameOption(
   return true;
 }
 
+export interface SeaPenTemplateQueryElement {
+  $: {
+    container: HTMLDivElement,
+  };
+}
+
 export class SeaPenTemplateQueryElement extends WithSeaPenStore {
   static get is() {
     return 'sea-pen-template-query';
@@ -140,6 +146,8 @@ export class SeaPenTemplateQueryElement extends WithSeaPenStore {
   private searchButtonText_: string;
   private searchButtonIcon_: string;
   private isSelectingOptions: boolean;
+  private containerOriginalHeight_: number;
+  private resizeObserver_: ResizeObserver;
 
   static get observers() {
     return [
@@ -158,13 +166,43 @@ export class SeaPenTemplateQueryElement extends WithSeaPenStore {
         'seaPenQuery_', state => state.currentSeaPenQuery);
     this.updateFromStore();
 
+    this.resizeObserver_ =
+        new ResizeObserver(() => this.animateContainerHeight());
+
     beforeNextRender(this, () => {
       this.inspireMeAnimation_ =
           this.shadowRoot?.querySelector<LottieRenderer>('#inspireMeAnimation');
       if (this.inspireMeAnimation_) {
         this.inspireMeAnimation_.autoplay = false;
       }
+
+      this.containerOriginalHeight_ = this.$.container.scrollHeight;
+      this.$.container.style.height = `${this.containerOriginalHeight_}px`;
     });
+  }
+
+  override disconnectedCallback() {
+    super.disconnectedCallback();
+    this.resizeObserver_.disconnect();
+    this.removeEventListener('click', this.onClick_);
+  }
+
+  // Called when there is a custom dom-change event dispatched from
+  // `sea-pen-options` element.
+  private onSeaPenOptionsDomChanged_() {
+    const optionsContainer = this.shadowRoot!.querySelector('sea-pen-options');
+    if (optionsContainer) {
+      this.resizeObserver_.observe(optionsContainer);
+    }
+  }
+
+  // Updates main container's height and applies transition style.
+  private animateContainerHeight() {
+    const optionsContainer = this.shadowRoot!.querySelector('sea-pen-options');
+    const optionsContainerHeight =
+        optionsContainer ? optionsContainer.scrollHeight : 0;
+    this.$.container.style.height =
+        `${this.containerOriginalHeight_ + optionsContainerHeight}px`;
   }
 
   // After exiting from the option selection (by "Esc" key or clicking on
