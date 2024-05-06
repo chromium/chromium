@@ -31,6 +31,10 @@ message CrossUserSharingPrivateKey {
   // The key version, used for key rotation.
   optional int32 version = 1;
   // Private key on Curve25519 (32 bytes).
+  // Encryption: Hybrid Public Key Encryption (HPKE)
+  // KEM: DHKEM_X25519_HKDF_SHA256
+  // KDF: HKDF_SHA256
+  // AEAD: CHACHA20_POLY1305
   optional bytes x25519_private_key = 2;
 }
 
@@ -38,6 +42,10 @@ message CrossUserSharingPublicKey {
   // The key version, used for key rotation and consensus.
   optional int32 version = 1;
   // Public key on Curve25519 (32 bytes).
+  // Encryption: Hybrid Public Key Encryption (HPKE)
+  // KEM: DHKEM_X25519_HKDF_SHA256
+  // KDF: HKDF_SHA256
+  // AEAD: CHACHA20_POLY1305
   optional bytes x25519_public_key = 2;
 }
 
