@@ -221,8 +221,8 @@ void AppDiscoveryMetrics::OnInstanceRegistryWillBeDestroyed(
 }
 
 bool AppDiscoveryMetrics::ShouldRecordUkmForAppId(const std::string& app_id) {
-  return ShouldRecordUkm(profile_) &&
-         ::apps::ShouldRecordUkmForAppId(app_id, app_registry_cache_.get());
+  return ::apps::ShouldRecordUkmForAppId(profile_, app_registry_cache_.get(),
+                                         app_id);
 }
 
 bool AppDiscoveryMetrics::IsAnyAppInstanceActive(

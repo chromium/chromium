@@ -30,6 +30,7 @@
 #include "chromeos/constants/chromeos_features.h"
 #include "components/app_constants/constants.h"
 #include "components/services/app_service/public/cpp/app_launch_util.h"
+#include "components/services/app_service/public/cpp/app_registry_cache.h"
 #include "components/services/app_service/public/cpp/app_types.h"
 #include "components/services/app_service/public/cpp/instance_registry.h"
 #include "components/services/app_service/public/cpp/instance_update.h"
@@ -451,8 +452,13 @@ bool ShouldRecordUkm(Profile* profile) {
   }
 }
 
-bool ShouldRecordUkmForAppId(const std::string& app_id,
-                             const apps::AppRegistryCache& cache) {
+bool ShouldRecordUkmForAppId(Profile* profile,
+                             const AppRegistryCache& cache,
+                             const std::string& app_id) {
+  if (!ShouldRecordUkm(profile)) {
+    return false;
+  }
+
   if (chromeos::IsManagedGuestSession() &&
       !UkmReportingIsAllowedForAppInManagedGuestSession(app_id, cache)) {
     return false;

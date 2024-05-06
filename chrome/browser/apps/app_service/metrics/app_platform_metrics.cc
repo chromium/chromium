@@ -727,8 +727,8 @@ void AppPlatformMetrics::RecordAppLaunchUkm(AppType app_type,
     observer.OnAppLaunched(app_id, app_type, launch_source);
   }
 
-  if (app_type == AppType::kUnknown || !ShouldRecordUkm(profile_) ||
-      !ShouldRecordUkmForAppId(app_id, app_registry_cache_.get())) {
+  if (app_type == AppType::kUnknown ||
+      !ShouldRecordUkmForAppId(profile_, app_registry_cache_.get(), app_id)) {
     return;
   }
 
@@ -758,7 +758,7 @@ void AppPlatformMetrics::RecordAppUninstallUkm(
   for (auto& observer : observers_) {
     observer.OnAppUninstalled(app_id, app_type, uninstall_source);
   }
-  if (!ShouldRecordUkmForAppId(app_id, app_registry_cache_.get())) {
+  if (!ShouldRecordUkmForAppId(profile_, app_registry_cache_.get(), app_id)) {
     return;
   }
 
@@ -818,8 +818,8 @@ void AppPlatformMetrics::OnAppUpdate(const apps::AppUpdate& update) {
                             install_time);
   }
 
-  if (!ShouldRecordUkm(profile_) ||
-      !ShouldRecordUkmForAppId(update.AppId(), app_registry_cache_.get())) {
+  if (!ShouldRecordUkmForAppId(profile_, app_registry_cache_.get(),
+                               update.AppId())) {
     return;
   }
 
@@ -1066,7 +1066,8 @@ void AppPlatformMetrics::ClearRunningDuration() {
 
 void AppPlatformMetrics::ReadInstalledApps() {
   app_registry_cache_->ForEachApp([this](const apps::AppUpdate& update) {
-    if (ShouldRecordUkmForAppId(update.AppId(), app_registry_cache_.get())) {
+    if (ShouldRecordUkmForAppId(profile_, app_registry_cache_.get(),
+                                update.AppId())) {
       RecordAppsInstallUkm(update, InstallTime::kInit);
     }
   });
@@ -1192,8 +1193,8 @@ void AppPlatformMetrics::RecordAppsUsageTimeUkm() {
     ukm::SourceId source_id = it.second.source_id;
     DCHECK_NE(source_id, ukm::kInvalidSourceId);
     if (!it.second.running_time.is_zero()) {
-      if (ShouldRecordUkmForAppId(it.second.app_id,
-                                  app_registry_cache_.get())) {
+      if (ShouldRecordUkmForAppId(profile_, app_registry_cache_.get(),
+                                  it.second.app_id)) {
         auto new_source_id = GetSourceId(profile_, it.second.app_id);
         if (new_source_id != ukm::kInvalidSourceId) {
           ukm::builders::ChromeOSApp_UsageTime builder(new_source_id);
@@ -1339,7 +1340,8 @@ void AppPlatformMetrics::RecordAppsUsageTimeUkmFromPref() {
   }
 
   for (auto& it : usage_times_from_pref_) {
-    if (ShouldRecordUkmForAppId(it->app_id, app_registry_cache_.get())) {
+    if (ShouldRecordUkmForAppId(profile_, app_registry_cache_.get(),
+                                it->app_id)) {
       auto source_id = GetSourceId(profile_, it->app_id);
       if (source_id != ukm::kInvalidSourceId) {
         ukm::builders::ChromeOSApp_UsageTime builder(source_id);

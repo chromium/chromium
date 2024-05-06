@@ -399,7 +399,7 @@ void AppPlatformInputMetrics::RecordInputEventsUkmFromPref() {
 }
 
 bool AppPlatformInputMetrics::ShouldRecordUkmForApp(const std::string& app_id) {
-  return ShouldRecordUkmForAppId(app_id, app_registry_cache_.get()) &&
+  return ShouldRecordUkmForAppId(profile_, app_registry_cache_.get(), app_id) &&
          ShouldRecordUkmForAppTypeName(GetAppType(profile_, app_id));
 }
 
