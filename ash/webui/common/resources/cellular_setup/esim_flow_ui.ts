@@ -718,12 +718,6 @@ export class EsimFlowUiElement extends EsimFlowUiElementBase {
     }
   }
 
-  private shouldShowSubpageBusy_(): boolean {
-    return this.state_ === EsimUiState.ACTIVATION_CODE_ENTRY_INSTALLING ||
-        this.state_ === EsimUiState.CONFIRMATION_CODE_ENTRY_INSTALLING ||
-        this.state_ === EsimUiState.PROFILE_SELECTION_INSTALLING;
-  }
-
   private computeHeader_(): string {
     if (this.selectedEsimPageName_ === EsimPageName.FINAL && !this.showError_) {
       return this.i18n('eSimFinalPageSuccessHeader');

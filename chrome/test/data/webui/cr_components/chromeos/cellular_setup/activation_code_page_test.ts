@@ -15,7 +15,6 @@ import {flushTasks, waitAfterNextRender} from 'chrome://webui-test/polymer_test_
 import {eventToPromise} from 'chrome://webui-test/test_util.js';
 import {assertFalse, assertTrue, assertEquals} from 'chrome://webui-test/chai_assert.js';
 import {loadTimeData} from 'chrome://resources/js/load_time_data.js';
-import type {CrButtonElement} from 'chrome://resources/ash/common/cr_elements/cr_button/cr_button.js';
 import type {CrInputElement} from 'chrome://resources/ash/common/cr_elements/cr_input/cr_input.js';
 
 import {FakeBarcodeDetector, FakeImageCapture} from './fake_barcode_detector.js';
@@ -170,8 +169,6 @@ suite('CrComponentsActivationCodePageTest', function() {
     assertFalse(!!getUseCameraAgainButton());
     assertTrue(!!scanSuccessContainer);
     assertTrue(!!scanFailureContainer);
-    assertFalse(
-        !!activationCodePage.shadowRoot!.querySelector('paper-spinner-lite'));
 
     // Initial state should only be showing the start scanning UI.
     assertFalse(startScanningContainer.hidden);
@@ -179,8 +176,6 @@ suite('CrComponentsActivationCodePageTest', function() {
     assertTrue(video.hidden);
     assertTrue(scanFinishContainer.hidden);
     assertTrue(switchCameraButton.hidden);
-    assertFalse(
-        !!activationCodePage.shadowRoot!.querySelector('paper-spinner-lite'));
 
     // Click the start scanning button.
     startScanningButton.click();
@@ -226,13 +221,8 @@ suite('CrComponentsActivationCodePageTest', function() {
     assertTrue(video.hidden);
     assertTrue(scanFinishContainer.hidden);
     assertTrue(switchCameraButton.hidden);
-    assertFalse(
-        !!activationCodePage.shadowRoot!.querySelector('paper-spinner-lite'));
 
-    activationCodePage.showBusy = true;
     await flushAsync();
-    assertTrue(
-        !!activationCodePage.shadowRoot!.querySelector('paper-spinner-lite'));
 
     // Mock, no media devices present
     mediaDevices.removeDevice();
@@ -319,34 +309,6 @@ suite('CrComponentsActivationCodePageTest', function() {
     await flushAsync();
 
     assertTrue(video.hidden);
-  });
-
-  test('UI is disabled when showBusy property is set', async function() {
-    const startScanningButton =
-        activationCodePage.shadowRoot!.querySelector<CrButtonElement>('#startScanningButton');
-    const switchCameraButton =
-        activationCodePage.shadowRoot!.querySelector<CrButtonElement>('#switchCameraButton');
-    const tryAgainButton =
-        activationCodePage.shadowRoot!.querySelector<CrButtonElement>('#tryAgainButton');
-    const input =
-        activationCodePage.shadowRoot!.querySelector<CrInputElement>('#activationCode');
-
-    assertTrue(!!startScanningButton);
-    assertTrue(!!switchCameraButton);
-    assertTrue(!!tryAgainButton);
-    assertTrue(!!input);
-
-    assertFalse(startScanningButton.disabled);
-    assertFalse(switchCameraButton.disabled);
-    assertFalse(tryAgainButton.disabled);
-    assertFalse(input.disabled);
-
-    activationCodePage.showBusy = true;
-
-    assertTrue(startScanningButton.disabled);
-    assertTrue(switchCameraButton.disabled);
-    assertTrue(tryAgainButton.disabled);
-    assertTrue(input.disabled);
   });
 
   test(

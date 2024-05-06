@@ -209,7 +209,7 @@
         <cr-button id="switchCameraButton"
             on-click="onSwitchCameraButtonPressed_"
             hidden$="[[isUiElementHidden_(UiElement.SWITCH_CAMERA, state_, cameraCount_)]]"
-            disabled="[[isUiElementDisabled_(UiElement.SWITCH_CAMERA, state_, showBusy)]]">
+            disabled="[[isUiElementDisabled_(UiElement.SWITCH_CAMERA, state_)]]">
           <iron-icon class="button-image" icon="cellular-setup:switch-camera"></iron-icon>
           [[i18n('switchCamera')]]
         </cr-button>
@@ -226,7 +226,7 @@
           <cr-button class="label"
               id="startScanningButton"
               on-click="startScanning_"
-              disabled="[[isUiElementDisabled_(UiElement.START_SCANNING, state_, showBusy)]]">
+              disabled="[[isUiElementDisabled_(UiElement.START_SCANNING, state_)]]">
             <iron-icon class="button-image" icon="cellular-setup:camera"></iron-icon>
             [[i18n('useCamera')]]
           </cr-button>
@@ -270,7 +270,7 @@
               </div>
               <cr-button id="tryAgainButton" class="blue-icon"
                   on-click="startScanning_"
-                  disabled="[[isUiElementDisabled_(UiElement.SCAN_FAILURE, state_, showBusy)]]">
+                  disabled="[[isUiElementDisabled_(UiElement.SCAN_FAILURE, state_)]]">
                 <iron-icon class="button-image" icon="cellular-setup:try-again"></iron-icon>
                 [[i18n('qrCodeRetry')]]
               </cr-button>
@@ -284,23 +284,16 @@
       <cr-input id="activationCode"
           label="[[i18n('activationCode')]]"
           value="{{activationCode}}"
-          disabled="[[showBusy]]"
           on-keydown="onKeyDown_"
           invalid="[[shouldActivationCodeInputBeInvalid_(state_,
               isActivationCodeInvalidFormat_)]]"
           error-message="[[getInputErrorMessage_()]]"
-          aria-description="[[getInputSubtitle_(showBusy)]]">
-        <template is="dom-if" if="[[showBusy]]">
-          <div slot="suffix">
-            <paper-spinner-lite active>
-            </paper-spinner-lite>
-          </div>
-        </template>
+          aria-description="[[getInputSubtitle_()]]">
       </cr-input>
       <div id="inputSubtitle"
           hidden$="[[shouldActivationCodeInputBeInvalid_(state_,
               isActivationCodeInvalidFormat_)]]">
-        [[getInputSubtitle_(showBusy)]]
+        [[getInputSubtitle_()]]
       </div>
     </div>
   </div>
