@@ -25,9 +25,8 @@ NSString* const kCustomMinimizedDetentIdentifier = @"customMinimizedDetent";
 // Custom detent identifier for when the bottom sheet is expanded.
 NSString* const kCustomExpandedDetentIdentifier = @"customExpandedDetent";
 
-// Estimated height of the header/footer, used to speed the constraints.
-const CGFloat kEstimatedHeaderFooterHeight = 10;
-
+// Deafult height of the footer, used to speed the constraints.
+const CGFloat kDefaultFooterHeight = 20;
 }  // namespace
 
 @interface AutofillEditProfileBottomSheetTableViewController () <
@@ -64,9 +63,6 @@ const CGFloat kEstimatedHeaderFooterHeight = 10;
   [self setUpBottomSheetPresentationController];
   [self setUpBottomSheetDetents];
 
-  self.tableView.sectionHeaderHeight = kEstimatedHeaderFooterHeight;
-  self.tableView.sectionFooterHeight = kEstimatedHeaderFooterHeight;
-  self.tableView.estimatedRowHeight = 56;
   [self.tableView
       setSeparatorInset:UIEdgeInsetsMake(0, kTableViewHorizontalSpacing, 0, 0)];
 
@@ -158,19 +154,16 @@ const CGFloat kEstimatedHeaderFooterHeight = 10;
 }
 
 - (CGFloat)tableView:(UITableView*)tableView
-    heightForHeaderInSection:(NSInteger)section {
-  if ([self.handler heightForHeaderShouldBeZeroInSection:section]) {
-    return 0;
-  }
-  return [super tableView:tableView heightForHeaderInSection:section];
-}
-
-- (CGFloat)tableView:(UITableView*)tableView
     heightForFooterInSection:(NSInteger)section {
   if ([self.handler heightForFooterShouldBeZeroInSection:section]) {
     return 0;
   }
-  return [super tableView:tableView heightForFooterInSection:section];
+
+  if ([self.tableViewModel footerForSectionIndex:section]) {
+    return UITableViewAutomaticDimension;
+  }
+
+  return kDefaultFooterHeight;
 }
 
 #pragma mark - Actions

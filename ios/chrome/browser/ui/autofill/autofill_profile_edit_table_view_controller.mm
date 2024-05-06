@@ -282,12 +282,7 @@ const CGFloat kLineSpacingBetweenErrorAndFooter = 12.0f;
   NSInteger sectionIdentifier =
       [_controller.tableViewModel sectionIdentifierForSectionIndex:section];
 
-  AutofillProfileDetailsSectionIdentifier firstFieldSection =
-      _dynamicallyLoadInputFieldsEnabled
-          ? AutofillProfileDetailsSectionIdentifierName
-          : AutofillProfileDetailsSectionIdentifierFields;
-
-  return sectionIdentifier == firstFieldSection ||
+  return sectionIdentifier == AutofillProfileDetailsSectionIdentifierFooter ||
          sectionIdentifier ==
              AutofillProfileDetailsSectionIdentifierErrorFooter;
 }
@@ -296,12 +291,12 @@ const CGFloat kLineSpacingBetweenErrorAndFooter = 12.0f;
   NSInteger sectionIdentifier =
       [_controller.tableViewModel sectionIdentifierForSectionIndex:section];
 
-  AutofillProfileDetailsSectionIdentifier lastFieldSection =
-      _dynamicallyLoadInputFieldsEnabled
-          ? AutofillProfileDetailsSectionIdentifierPhoneEmail
-          : AutofillProfileDetailsSectionIdentifierFields;
+  if (_dynamicallyLoadInputFieldsEnabled) {
+    return sectionIdentifier ==
+           AutofillProfileDetailsSectionIdentifierPhoneEmail;
+  }
 
-  return (sectionIdentifier == lastFieldSection) ||
+  return (sectionIdentifier == AutofillProfileDetailsSectionIdentifierFields) ||
          (!_settingsView &&
           sectionIdentifier == AutofillProfileDetailsSectionIdentifierFooter);
 }
@@ -321,17 +316,27 @@ const CGFloat kLineSpacingBetweenErrorAndFooter = 12.0f;
 - (void)loadMessageAndButtonForModalIfSaveOrUpdate:(BOOL)update {
   CHECK(!_settingsView);
   TableViewModel* model = _controller.tableViewModel;
+
+  if (self.accountProfile || self.migrationPrompt) {
+    CHECK([_userEmail length] > 0);
+    if (_dynamicallyLoadInputFieldsEnabled) {
+      [model addSectionWithIdentifier:
+                 AutofillProfileDetailsSectionIdentifierFooter];
+      [model setFooter:[self footerItem]
+          forSectionWithIdentifier:
+              AutofillProfileDetailsSectionIdentifierFooter];
+    } else {
+      [model addItem:[self footerItemForModalViewIfSaveOrUpdate:update]
+          toSectionWithIdentifier:
+              AutofillProfileDetailsSectionIdentifierFields];
+    }
+  }
+
   AutofillProfileDetailsSectionIdentifier sectionIdentifier =
       AutofillProfileDetailsSectionIdentifierFields;
   if (_dynamicallyLoadInputFieldsEnabled) {
     sectionIdentifier = AutofillProfileDetailsSectionIdentifierButton;
     [model addSectionWithIdentifier:sectionIdentifier];
-  }
-
-  if (self.accountProfile || self.migrationPrompt) {
-    DCHECK([_userEmail length] > 0);
-    [model addItem:[self footerItemForModalViewIfSaveOrUpdate:update]
-        toSectionWithIdentifier:sectionIdentifier];
   }
 
   [model addItem:[self saveButtonIfSaveOrUpdate:update]
@@ -426,7 +431,6 @@ const CGFloat kLineSpacingBetweenErrorAndFooter = 12.0f;
 
 // Creates and returns the `TableViewLinkHeaderFooterItem` footer item.
 - (TableViewLinkHeaderFooterItem*)footerItem {
-  CHECK(_settingsView);
   TableViewLinkHeaderFooterItem* item = [[TableViewLinkHeaderFooterItem alloc]
       initWithType:AutofillProfileDetailsItemTypeFooter];
   item.text = [self footerMessage];

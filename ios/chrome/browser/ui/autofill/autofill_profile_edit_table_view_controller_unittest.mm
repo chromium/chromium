@@ -459,26 +459,33 @@ INSTANTIATE_TEST_SUITE_P(
 TEST_P(AutofillProfileEditTableViewControllerTestWithDynamicFieldsEnabled,
        SectionsAndItems) {
   auto test_case = GetParam();
-  EXPECT_EQ(NumberOfSections(),
-            (test_case.is_settings && !test_case.account_profile) ? 3 : 4);
+  if (test_case.is_settings) {
+    EXPECT_EQ(NumberOfSections(), test_case.account_profile ? 4 : 3);
+  } else {
+    EXPECT_EQ(NumberOfSections(),
+              (test_case.account_profile ||
+               test_case.prompt_mode ==
+                   AutofillSaveProfilePromptMode::kMigrateProfile)
+                  ? 5
+                  : 4);
+  }
+
   EXPECT_EQ(NumberOfItemsInSection(0), 2);
   EXPECT_EQ(NumberOfItemsInSection(1), 5);
   EXPECT_EQ(NumberOfItemsInSection(2), 2);
 
-  if (test_case.account_profile) {
-    EXPECT_EQ(NumberOfItemsInSection(3), test_case.is_settings ? 0 : 2);
-    if (test_case.is_settings) {
-      NSString* expected_footer_text = l10n_util::GetNSStringF(
-          IDS_IOS_SETTINGS_AUTOFILL_ACCOUNT_ADDRESS_FOOTER_TEXT,
-          kTestSyncingEmail);
-      CheckSectionFooter(expected_footer_text, 3);
+  if ((test_case.account_profile ||
+       test_case.prompt_mode ==
+           AutofillSaveProfilePromptMode::kMigrateProfile)) {
+    EXPECT_EQ(NumberOfItemsInSection(3), 0);
+    NSString* expected_footer_text = l10n_util::GetNSStringF(
+        IDS_IOS_SETTINGS_AUTOFILL_ACCOUNT_ADDRESS_FOOTER_TEXT,
+        kTestSyncingEmail);
+    CheckSectionFooter(expected_footer_text, 3);
+
+    if (!test_case.is_settings) {
+      EXPECT_EQ(NumberOfItemsInSection(4), 1);
     }
-  } else if (!test_case.is_settings) {
-    EXPECT_EQ(
-        NumberOfItemsInSection(3),
-        test_case.prompt_mode == AutofillSaveProfilePromptMode::kMigrateProfile
-            ? 2
-            : 1);
   }
 
   CountryItem* countryItem =
