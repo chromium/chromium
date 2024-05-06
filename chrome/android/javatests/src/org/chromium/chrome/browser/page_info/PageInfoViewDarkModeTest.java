@@ -23,6 +23,7 @@ import org.junit.Test;
 import org.junit.runner.RunWith;
 
 import org.chromium.base.test.util.CommandLineFlags;
+import org.chromium.base.test.util.DisableIf;
 import org.chromium.base.test.util.DisabledTest;
 import org.chromium.base.test.util.Feature;
 import org.chromium.base.test.util.Features.DisableFeatures;
@@ -40,6 +41,7 @@ import org.chromium.content_public.browser.test.util.TestThreadUtils;
 import org.chromium.content_public.common.ContentSwitches;
 import org.chromium.net.test.EmbeddedTestServerRule;
 import org.chromium.ui.test.util.RenderTestRule;
+import org.chromium.ui.test.util.UiDisableIf;
 
 import java.io.IOException;
 
@@ -141,6 +143,7 @@ public class PageInfoViewDarkModeTest {
     /** Tests PageInfo on internal page. */
     @Test
     @MediumTest
+    @DisableIf.Device(type = {UiDisableIf.TABLET}) // https://crbug.com/338978357
     @Feature({"RenderTest"})
     public void testChromePage() throws IOException {
         loadUrlAndOpenPageInfo("chrome://version/");
