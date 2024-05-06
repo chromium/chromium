@@ -635,7 +635,7 @@ IN_PROC_BROWSER_TEST_F(SingleClientWalletCredentialSyncTest,
 
   autofill::PersonalDataManager* pdm = GetPersonalDataManager(0);
   ASSERT_NE(nullptr, pdm);
-  ASSERT_EQ(1uL, pdm->GetCreditCards().size());
+  ASSERT_EQ(1uL, pdm->payments_data_manager().GetCreditCards().size());
 
   // Add 2 wallet credential entities (CVC) on the fake server. One of them is
   // linked to the card created above and the other credential has no linkage to
@@ -646,7 +646,7 @@ IN_PROC_BROWSER_TEST_F(SingleClientWalletCredentialSyncTest,
                 /*last_updated_timestamp=*/base::Time::UnixEpoch() +
                     base::Milliseconds(50000)});
   WaitForCvcOnCard(pdm);
-  EXPECT_FALSE(pdm->GetCreditCards()[0]->cvc().empty());
+  EXPECT_FALSE(pdm->payments_data_manager().GetCreditCards()[0]->cvc().empty());
 
   // The count for CVCs on the fake server is still 2 as we reconcile the CVC
   // data on the wallet sync bridge.
@@ -664,5 +664,5 @@ IN_PROC_BROWSER_TEST_F(SingleClientWalletCredentialSyncTest,
   // Verify that Chrome sync server has deleted the orphaned CVC by verifying
   // the count and the CVC value on the card.
   EXPECT_TRUE(ServerCvcChecker(/*expected_count=*/1ul).Wait());
-  EXPECT_FALSE(pdm->GetCreditCards()[0]->cvc().empty());
+  EXPECT_FALSE(pdm->payments_data_manager().GetCreditCards()[0]->cvc().empty());
 }
