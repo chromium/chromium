@@ -259,6 +259,21 @@ bool IsSystemFontName(const AtomicString& font_name) {
   return !font_name.empty() && font_name[0] == '.';
 }
 
+inline bool IsAppKitFontWeightBold(NSInteger app_kit_font_weight) {
+  return app_kit_font_weight >= 7;
+}
+
+void FontCacheRegisteredFontsChangedNotificationCallback(
+    CFNotificationCenterRef,
+    void* observer,
+    CFStringRef name,
+    const void*,
+    CFDictionaryRef) {
+  DCHECK_EQ(observer, &FontCache::Get());
+  DCHECK(CFEqual(name, kCTFontManagerRegisteredFontsChangedNotification));
+  FontCache::InvalidateFromAnyThread();
+}
+
 }  // namespace
 
 const char kColorEmojiFontMac[] = "Apple Color Emoji";
@@ -280,27 +295,12 @@ void FontCache::InvalidateFromAnyThread() {
   FontCache::Get().Invalidate();
 }
 
-static void FontCacheRegisteredFontsChangedNotificationCallback(
-    CFNotificationCenterRef,
-    void* observer,
-    CFStringRef name,
-    const void*,
-    CFDictionaryRef) {
-  DCHECK_EQ(observer, &FontCache::Get());
-  DCHECK(CFEqual(name, kCTFontManagerRegisteredFontsChangedNotification));
-  FontCache::InvalidateFromAnyThread();
-}
-
 void FontCache::PlatformInit() {
   CFNotificationCenterAddObserver(
       CFNotificationCenterGetLocalCenter(), this,
       FontCacheRegisteredFontsChangedNotificationCallback,
       kCTFontManagerRegisteredFontsChangedNotification, /*object=*/nullptr,
       CFNotificationSuspensionBehaviorDeliverImmediately);
-}
-
-static inline bool IsAppKitFontWeightBold(NSInteger app_kit_font_weight) {
-  return app_kit_font_weight >= 7;
 }
 
 const SimpleFontData* FontCache::PlatformFallbackFontForCharacter(
