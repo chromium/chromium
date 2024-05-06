@@ -1117,7 +1117,7 @@ void WebRequestEventRouter::OnSendHeaders(
 
 int WebRequestEventRouter::OnHeadersReceived(
     content::BrowserContext* browser_context,
-    const WebRequestInfo* request,
+    WebRequestInfo* request,
     net::CompletionOnceCallback callback,
     const net::HttpResponseHeaders* original_response_headers,
     scoped_refptr<net::HttpResponseHeaders>* override_response_headers,
@@ -1187,18 +1187,9 @@ int WebRequestEventRouter::OnHeadersReceived(
         case DNRRequestAction::Type::ALLOW:
         case DNRRequestAction::Type::ALLOW_ALL_REQUESTS:
           DCHECK_EQ(1u, actions.size());
-
           // Prune any actions matched during previous request stages that are
           // outprioritized by allow rules matched during this request stage.
-          std::erase_if(
-              *request->dnr_actions,
-              [request](const DNRRequestAction& before_request_action) {
-                return before_request_action.index_priority <
-                       request
-                           ->allow_rule_max_priority[before_request_action
-                                                         .extension_id]
-                           .value_or(0);
-              });
+          request->EraseOutprioritizedDNRActions();
 
           // Only record a rule match if no other actions will be taken on the
           // request, based on examining actions matched in the onBeforeRequest
@@ -1239,9 +1230,45 @@ int WebRequestEventRouter::OnHeadersReceived(
                   preserve_fragment_on_redirect_url);
           return net::OK;
         case DNRRequestAction::Type::MODIFY_HEADERS:
-          // TODO(crbug.com/40727004): Implement support for modify header rules
-          // that match on response headers.
-          NOTREACHED();
+          // Modify header actions can only combine with actions of the same
+          // type, see RulesetManager::EvaluateRequestInternal for the
+          // implementation.
+          DCHECK(base::ranges::all_of(actions, [](const auto& action) {
+            return action.type == DNRRequestAction::Type::MODIFY_HEADERS;
+          }));
+
+          // Prune any actions matched during previous request stages that are
+          // outprioritized by allow rules matched during this request stage.
+          request->EraseOutprioritizedDNRActions();
+
+          // For other action types, actions matched here don't need to be saved
+          // to `request->dnr_actions` since said action(s) can be taken on the
+          // request now. Modify header actions need to be saved since they will
+          // take effect later.
+
+          // If no modify header actions were matched in previous request
+          // stages, then `request->dnr_actions` can simply be overwritten by
+          // actions matched at this stage.
+          if (request->dnr_actions->empty() ||
+              (*request->dnr_actions)[0].type !=
+                  DNRRequestAction::Type::MODIFY_HEADERS) {
+            request->dnr_actions = std::move(actions);
+          } else {
+            // Otherwise, modify header actions from all request stages will
+            // need to be merged. MergeModifyHeaderActions will also sort these
+            // actions by descending order of priority.
+            request->dnr_actions = ruleset_manager->MergeModifyHeaderActions(
+                std::move(*request->dnr_actions), std::move(actions));
+
+            // Verify that if `request->dnr_actions` contains any modify headers
+            // actions, then all actions in `request->dnr_actions` must be
+            // modify headers actions.
+            DCHECK(base::ranges::all_of(
+                *request->dnr_actions, [](const auto& action) {
+                  return action.type == DNRRequestAction::Type::MODIFY_HEADERS;
+                }));
+          }
+
           break;
       }
     }

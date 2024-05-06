@@ -175,7 +175,8 @@ TEST_F(CompositeMatcherTest, GetModifyHeadersActions) {
                                PageAccess::kAllowed);
 
   std::vector<RequestAction> actions =
-      composite_matcher->GetModifyHeadersActions(google_params);
+      composite_matcher->GetModifyHeadersActions(
+          google_params, RulesetMatchingStage::kOnBeforeRequest);
 
   // Construct expected request actions to be taken for a request to google.com.
   RequestAction action_1 =
@@ -228,7 +229,8 @@ TEST_F(CompositeMatcherTest, GetModifyHeadersActions) {
 
   // Re-create |action_1| and |action_2| with the updated rule
   // priorities. The headers modified by each action should not change.
-  actions = composite_matcher->GetModifyHeadersActions(google_params);
+  actions = composite_matcher->GetModifyHeadersActions(
+      google_params, RulesetMatchingStage::kOnBeforeRequest);
   action_1 =
       CreateRequestActionForTesting(RequestAction::Type::MODIFY_HEADERS,
                                     *rule_1.id, *rule_1.priority, kSource1ID);
@@ -339,7 +341,8 @@ TEST_F(CompositeMatcherTest, GetModifyHeadersActions_Priority) {
                                PageAccess::kAllowed);
 
   std::vector<RequestAction> actions =
-      composite_matcher->GetModifyHeadersActions(google_params);
+      composite_matcher->GetModifyHeadersActions(
+          google_params, RulesetMatchingStage::kOnBeforeRequest);
 
   auto create_action_for_rule =
       [](const TestRule& rule, const RulesetID& ruleset_id,
@@ -379,7 +382,8 @@ TEST_F(CompositeMatcherTest, GetModifyHeadersActions_Priority) {
   composite_matcher->GetAction(google_params,
                                RulesetMatchingStage::kOnBeforeRequest,
                                PageAccess::kAllowed);
-  actions = composite_matcher->GetModifyHeadersActions(google_params);
+  actions = composite_matcher->GetModifyHeadersActions(
+      google_params, RulesetMatchingStage::kOnBeforeRequest);
 
   RequestAction header_1_action = create_action_for_rule(
       url_rule_1, kSource1ID,

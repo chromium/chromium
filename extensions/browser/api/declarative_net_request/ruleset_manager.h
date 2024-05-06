@@ -115,6 +115,12 @@ class RulesetManager {
   // request matching `stage`.
   bool HasRulesets(RulesetMatchingStage stage) const;
 
+  // Merges two lists of modifyHeaders actions and returns a list containing
+  // actions from both lists sorted in descending order of priority.
+  std::vector<RequestAction> MergeModifyHeaderActions(
+      std::vector<RequestAction> lhs_actions,
+      std::vector<RequestAction> rhs_actions) const;
+
   // Returns the number of CompositeMatchers currently being managed.
   size_t GetMatcherCountForTest() const { return rulesets_.size(); }
 
@@ -156,7 +162,8 @@ class RulesetManager {
   std::vector<RequestAction> GetModifyHeadersActions(
       const std::vector<RulesetAndPageAccess>& rulesets,
       const WebRequestInfo& request,
-      const RequestParams& params) const;
+      const RequestParams& params,
+      RulesetMatchingStage stage) const;
 
   // Helper for EvaluateRequest.
   std::vector<RequestAction> EvaluateRequestInternal(
@@ -181,6 +188,11 @@ class RulesetManager {
   // O(n), but it's fine since the no. of rulesets are expected to be quite
   // small.
   base::flat_set<ExtensionRulesetData> rulesets_;
+  // Maps an extension ID to its install time. Used to determine an extension's
+  // ruleset matching priority order relative to other extensions, with matched
+  // rules/actions from more recently installed extensions having higher
+  // precedence.
+  std::map<ExtensionId, base::Time> extension_install_times_;
 
   // Non-owning pointer to BrowserContext.
   const raw_ptr<content::BrowserContext> browser_context_;

@@ -129,9 +129,10 @@ size_t RegexRulesMatcher::GetHeadersReceivedRulesCount() const {
 
 std::vector<RequestAction> RegexRulesMatcher::GetModifyHeadersActions(
     const RequestParams& params,
+    RulesetMatchingStage stage,
     std::optional<uint64_t> min_priority) const {
   const std::vector<RegexRuleInfo>& potential_matches =
-      before_request_matcher_.GetPotentialMatches(params);
+      GetMatcherForStage(stage).GetPotentialMatches(params);
 
   std::vector<const flat_rule::UrlRule*> rules;
   for (const RegexRuleInfo& info : potential_matches) {

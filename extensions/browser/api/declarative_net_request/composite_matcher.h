@@ -96,7 +96,8 @@ class CompositeMatcher {
   // modifyHeaders rules matched from this extension, sorted in descending order
   // by rule priority.
   std::vector<RequestAction> GetModifyHeadersActions(
-      const RequestParams& params) const;
+      const RequestParams& params,
+      RulesetMatchingStage stage) const;
 
   // Returns whether this modifies "extraHeaders".
   bool HasAnyExtraHeadersMatcher() const;

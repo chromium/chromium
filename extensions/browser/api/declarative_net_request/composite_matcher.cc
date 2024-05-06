@@ -198,7 +198,8 @@ ActionInfo CompositeMatcher::GetAction(
 }
 
 std::vector<RequestAction> CompositeMatcher::GetModifyHeadersActions(
-    const RequestParams& params) const {
+    const RequestParams& params,
+    RulesetMatchingStage stage) const {
   std::vector<RequestAction> modify_headers_actions;
   DCHECK(params.allow_rule_max_priority.contains(extension_id_));
 
@@ -212,7 +213,8 @@ std::vector<RequestAction> CompositeMatcher::GetModifyHeadersActions(
     // modifyHeaders rules with priorities less than or equal to the highest
     // priority matching allow/allowAllRequests rule are ignored.
     std::vector<RequestAction> actions_for_matcher =
-        matcher->GetModifyHeadersActions(params, max_allow_rule_priority);
+        matcher->GetModifyHeadersActions(params, stage,
+                                         max_allow_rule_priority);
 
     modify_headers_actions.insert(
         modify_headers_actions.end(),

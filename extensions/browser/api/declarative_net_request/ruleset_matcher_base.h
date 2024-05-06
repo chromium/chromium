@@ -45,11 +45,10 @@ class RulesetMatcherBase {
                                          RulesetMatchingStage stage) const;
 
   // Returns a vector of RequestAction for all matching modifyHeaders rules
-  // with priority greater than |min_priority| if specified.
-  // TODO(crbug.com/40727004): Add a version of this that matches modifyHeaders
-  // rules based on response headers too.
+  // with priority greater than `min_priority` if specified.
   virtual std::vector<RequestAction> GetModifyHeadersActions(
       const RequestParams& params,
+      RulesetMatchingStage stage,
       std::optional<uint64_t> min_priority) const = 0;
 
   // Returns whether this modifies "extraHeaders".

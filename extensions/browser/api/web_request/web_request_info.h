@@ -98,6 +98,13 @@ struct WebRequestInfo {
   // `extension_id`.
   void EraseDNRActionsForExtension(const ExtensionId& extension_id);
 
+  // Erases all actions in `dnr_actions` that have a priority less than that of
+  // the max priority allow rule for that action's extension in
+  // `allow_rule_max_priority`. This prevents lower priority actions matched in
+  // a different request stage to modify a request if they should've been
+  // bypassed by higher priority allow rules.
+  void EraseOutprioritizedDNRActions();
+
   // A unique identifier for this request.
   const uint64_t id;
 

@@ -58,6 +58,7 @@ class RulesetMatcher {
   // modifyHeaders rules with priority greater than |min_priority| if specified.
   std::vector<RequestAction> GetModifyHeadersActions(
       const RequestParams& params,
+      RulesetMatchingStage stage,
       std::optional<uint64_t> min_priority) const;
 
   bool IsExtraHeadersMatcher() const;

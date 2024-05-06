@@ -268,4 +268,15 @@ void WebRequestInfo::EraseDNRActionsForExtension(
   }
 }
 
+void WebRequestInfo::EraseOutprioritizedDNRActions() {
+  if (dnr_actions.has_value()) {
+    std::erase_if(
+        *dnr_actions,
+        [this](const declarative_net_request::RequestAction& action) {
+          return action.index_priority <
+                 allow_rule_max_priority[action.extension_id].value_or(0);
+        });
+  }
+}
+
 }  // namespace extensions

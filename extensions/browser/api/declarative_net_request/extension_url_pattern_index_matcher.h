@@ -39,6 +39,7 @@ class ExtensionUrlPatternIndexMatcher final : public RulesetMatcherBase {
   ~ExtensionUrlPatternIndexMatcher() override;
   std::vector<RequestAction> GetModifyHeadersActions(
       const RequestParams& params,
+      RulesetMatchingStage stage,
       std::optional<uint64_t> min_priority) const override;
   bool IsExtraHeadersMatcher() const override;
   size_t GetRulesCount() const override;

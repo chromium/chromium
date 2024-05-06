@@ -28,6 +28,7 @@
 #include "extensions/common/api/declarative_net_request.h"
 #include "extensions/common/api/declarative_net_request/constants.h"
 #include "extensions/common/api/declarative_net_request/test_utils.h"
+#include "extensions/common/extension_features.h"
 #include "extensions/common/file_util.h"
 #include "extensions/common/manifest_handlers/background_info.h"
 #include "extensions/common/url_pattern.h"
@@ -38,8 +39,7 @@
 #include "url/gurl.h"
 #include "url/origin.h"
 
-namespace extensions {
-namespace declarative_net_request {
+namespace extensions::declarative_net_request {
 
 namespace dnr_api = api::declarative_net_request;
 
@@ -47,7 +47,7 @@ namespace {
 
 class RulesetManagerTest : public DNRTestBase {
  public:
-  RulesetManagerTest() {}
+  RulesetManagerTest() = default;
 
   RulesetManagerTest(const RulesetManagerTest&) = delete;
   RulesetManagerTest& operator=(const RulesetManagerTest&) = delete;
@@ -786,11 +786,178 @@ TEST_P(RulesetManagerTest, HostPermissionForInitiator) {
   }
 }
 
+class RulesetManagerResponseHeadersTest : public RulesetManagerTest {
+ public:
+  RulesetManagerResponseHeadersTest() {
+    scoped_feature_list_.InitAndEnableFeature(
+        extensions_features::kDeclarativeNetRequestResponseHeaderMatching);
+  }
+
+ private:
+  base::test::ScopedFeatureList scoped_feature_list_;
+};
+
+// Test that multiple lists of modify header actions can be merged into a single
+// list that is still sorted in descending order of action precedence.
+TEST_P(RulesetManagerResponseHeadersTest, MergeModifyHeaderActions) {
+  // For 2 modify header actions, A and B, A has a higher priority than B if:
+  // A's extension is more recently installed than B's extension
+  // or if from the same extension:
+  // A's priority is greater than B's priority.
+
+  // Test setup: install 3 extensions, with extension N being more recently
+  // installed than extension N-1.
+  // Add the following (rule id, priority) for each extension:
+  // Extension 1:
+  // - OnHeadersReceived: (1, 100)
+  // Extension 2:
+  // - OnBeforeRequest:   (2, 10), (3, 1)
+  // - OnHeadersReceived: (4, 2)
+  // Extension 3:
+  // - OnBeforeRequest:   (5, 3)
+  // - OnHeadersReceived: (6, 2)
+
+  // Loads an extension with the given `rules`.
+  auto load_extension_with_rules = [this](const std::string& name,
+                                          const std::vector<TestRule>& rules) {
+    std::unique_ptr<CompositeMatcher> matcher;
+    ASSERT_NO_FATAL_FAILURE(
+        CreateMatcherForRules(rules, name, &matcher, {"<all_urls>"},
+                              /*has_background_script=*/false));
+    manager()->AddRuleset(last_loaded_extension()->id(), std::move(matcher));
+  };
+
+  // Creates a modifyHeaders rule with a given `id` and `priority`. If
+  // `headers_received_rule` is true, a trivial response header condition is
+  // added to the rule so it will be matched in onHeadersReceived instead of
+  // onBeforeRequest. Note: the action that the rule takes on a request is not
+  // important as it's not tested here.
+  auto create_rule = [](int id, int priority, bool headers_received_rule) {
+    TestRule rule = CreateGenericRule(id);
+    rule.priority = priority;
+    rule.condition->url_filter = std::string("example.com");
+    if (headers_received_rule) {
+      rule.condition->excluded_response_headers =
+          std::vector<TestHeaderCondition>(
+              {TestHeaderCondition("excludedKey", {}, {})});
+    }
+    rule.action->type = std::string("modifyHeaders");
+    rule.action->response_headers = std::vector<TestHeaderInfo>(
+        {TestHeaderInfo("header1", "append", "test")});
+    return rule;
+  };
+
+  auto get_rule_and_extension_ids =
+      [](const std::vector<RequestAction>& actions) {
+        std::vector<std::pair<int, ExtensionId>> rule_and_extension_ids;
+        for (const auto& action : actions) {
+          rule_and_extension_ids.emplace_back(action.rule_id,
+                                              action.extension_id);
+        }
+
+        return rule_and_extension_ids;
+      };
+
+  // Create the three extensions with their respective rules:
+  auto e1_hr_rule = create_rule(kMinValidID, 100, true);
+  load_extension_with_rules("extension 1", {e1_hr_rule});
+  auto extension_1_id = last_loaded_extension()->id();
+
+  auto e2_br_rule1 = create_rule(kMinValidID + 1, 10, false);
+  auto e2_br_rule2 = create_rule(kMinValidID + 2, 1, false);
+  auto e2_hr_rule = create_rule(kMinValidID + 3, 2, true);
+  load_extension_with_rules("extension 2",
+                            {e2_br_rule1, e2_br_rule2, e2_hr_rule});
+  auto extension_2_id = last_loaded_extension()->id();
+
+  auto e3_br_rule = create_rule(kMinValidID + 4, 3, false);
+  auto e3_hr_rule = create_rule(kMinValidID + 5, 2, true);
+  load_extension_with_rules("extension 3", {e3_br_rule, e3_hr_rule});
+  auto extension_3_id = last_loaded_extension()->id();
+
+  // Create a request to "example.com" and match with on before request actions.
+  WebRequestInfo request(
+      GetRequestParamsForURL("http://example.com", std::nullopt));
+  manager()->EvaluateBeforeRequest(request, /*is_incognito_context=*/false);
+
+  // The action from `extension_3` should come first since it was the most
+  // recently installed, followed by the 2 `extension_2` actions in descending
+  // order of priority, so:
+  //
+  // Extension 3:
+  // - e3_br_rule (pri = 3)
+  // Extension 2:
+  // - e2_br_rule1 (pri = 10)
+  // - e2_br_rule2 (pri = 1)
+  EXPECT_THAT(
+      get_rule_and_extension_ids(*request.dnr_actions),
+      testing::ElementsAre(std::make_pair(*e3_br_rule.id, extension_3_id),
+                           std::make_pair(*e2_br_rule1.id, extension_2_id),
+                           std::make_pair(*e2_br_rule2.id, extension_2_id)));
+
+  // Now match with actions in the on headers received phase.
+  auto base_headers = base::MakeRefCounted<net::HttpResponseHeaders>(
+      net::HttpUtil::AssembleRawHeaders("HTTP/1.0 200 OK\r\n"));
+  std::vector<RequestAction> headers_received_actions =
+      manager()->EvaluateRequestWithHeaders(request, base_headers.get(),
+                                            /*is_incognito_context=*/false);
+
+  // Each extension only has one response header matching rule each, so the
+  // actions returned should be in descending order of extension install time
+  // (most recent first), so:
+  //
+  // Extension 3:
+  // - e3_hr_rule (pri = 2)
+  // Extension 2:
+  // - e2_hr_rule (pri = 2)
+  // Extension 1:
+  // - e1_hr_rule (pri = 100)
+  EXPECT_THAT(
+      get_rule_and_extension_ids(headers_received_actions),
+      testing::ElementsAre(std::make_pair(*e3_hr_rule.id, extension_3_id),
+                           std::make_pair(*e2_hr_rule.id, extension_2_id),
+                           std::make_pair(*e1_hr_rule.id, extension_1_id)));
+
+  // Now merge actions matched in both request stages.
+  std::vector<RequestAction> merged_actions =
+      manager()->MergeModifyHeaderActions(std::move(*request.dnr_actions),
+                                          std::move(headers_received_actions));
+
+  // We should see [ext_3_actions, ext_2_actions, ext_1 actions], and actions
+  // within each block from the same extension should be sorted in descending
+  // order of priority, so, the merged actions in order are:
+  //
+  // Extension 3:
+  // - e3_br_rule (pri = 3)
+  // - e3_hr_rule (pri = 2)
+  // Extension 2:
+  // - e2_br_rule1 (pri = 10)
+  // - e2_hr_rule (pri = 2)
+  // - e2_br_rule2 (pri = 1)
+  // Extension 1:
+  // - e1_hr_rule (pri = 100)
+  EXPECT_THAT(
+      get_rule_and_extension_ids(merged_actions),
+      testing::ElementsAre(std::make_pair(*e3_br_rule.id, extension_3_id),
+                           std::make_pair(*e3_hr_rule.id, extension_3_id),
+                           std::make_pair(*e2_br_rule1.id, extension_2_id),
+                           std::make_pair(*e2_hr_rule.id, extension_2_id),
+                           std::make_pair(*e2_br_rule2.id, extension_2_id),
+                           std::make_pair(*e1_hr_rule.id, extension_1_id)));
+}
+
+// TODO(crbug.com/40727004): Add some end to end testing that involve modify
+// headers actions from both request phases.
+
 INSTANTIATE_TEST_SUITE_P(All,
                          RulesetManagerTest,
                          ::testing::Values(ExtensionLoadType::PACKED,
                                            ExtensionLoadType::UNPACKED));
 
+INSTANTIATE_TEST_SUITE_P(All,
+                         RulesetManagerResponseHeadersTest,
+                         ::testing::Values(ExtensionLoadType::PACKED,
+                                           ExtensionLoadType::UNPACKED));
+
 }  // namespace
-}  // namespace declarative_net_request
-}  // namespace extensions
+}  // namespace extensions::declarative_net_request

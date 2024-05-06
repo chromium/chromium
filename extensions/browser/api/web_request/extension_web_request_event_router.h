@@ -208,7 +208,7 @@ class WebRequestEventRouter : public KeyedService {
   // into |override_response_headers|.
   int OnHeadersReceived(
       content::BrowserContext* browser_context,
-      const WebRequestInfo* request,
+      WebRequestInfo* request,
       net::CompletionOnceCallback callback,
       const net::HttpResponseHeaders* original_response_headers,
       scoped_refptr<net::HttpResponseHeaders>* override_response_headers,
