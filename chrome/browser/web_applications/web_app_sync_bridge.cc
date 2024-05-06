@@ -43,6 +43,7 @@
 #include "chrome/browser/web_applications/web_app_registry_update.h"
 #include "chrome/browser/web_applications/web_app_utils.h"
 #include "chrome/common/channel_info.h"
+#include "components/sync/base/deletion_origin.h"
 #include "components/sync/base/model_type.h"
 #include "components/sync/base/report_unrecoverable_error.h"
 #include "components/sync/model/client_tag_based_model_type_processor.h"
@@ -555,7 +556,8 @@ void WebAppSyncBridge::UpdateSync(
       change_processor()->Put(app_id, CreateSyncEntityData(*new_state),
                               metadata_change_list);
     } else if (current_state->IsSynced()) {
-      change_processor()->Delete(app_id, metadata_change_list);
+      change_processor()->Delete(app_id, syncer::DeletionOrigin::Unspecified(),
+                                 metadata_change_list);
     }
   }
 
@@ -564,7 +566,9 @@ void WebAppSyncBridge::UpdateSync(
     DCHECK(current_state);
     // Exclude the app from the sync "view" if IsSynced flag was true.
     if (current_state->IsSynced())
-      change_processor()->Delete(app_id_to_delete, metadata_change_list);
+      change_processor()->Delete(app_id_to_delete,
+                                 syncer::DeletionOrigin::Unspecified(),
+                                 metadata_change_list);
   }
 }
 
@@ -816,6 +820,7 @@ std::optional<syncer::ModelError> WebAppSyncBridge::MergeFullSyncData(
     if (base::FeatureList::IsEnabled(kDeleteBadWebAppSyncEntitites) &&
         result != ManifestIdParseResult::kSuccess) {
       change_processor()->Delete(GetStorageKey(change->data()),
+                                 syncer::DeletionOrigin::Unspecified(),
                                  metadata_change_list.get());
     }
   }
