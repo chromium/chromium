@@ -8,6 +8,7 @@ import {PolymerElement} from '//resources/polymer/v3_0/polymer/polymer_bundled.m
 import {BrowserProxyImpl} from './browser_proxy.js';
 import {CenterRotatedBox_CoordinateType} from './geometry.mojom-webui.js';
 import type {CenterRotatedBox} from './geometry.mojom-webui.js';
+import {focusShimmerOnRegion, ShimmerControlRequester, unfocusShimmer} from './overlay_shimmer.js';
 import type {PostSelectionBoundingBox} from './post_selection_renderer.js';
 import {getTemplate} from './region_selection.html.js';
 import type {GestureEvent} from './selection_utils.js';
@@ -66,6 +67,9 @@ export class RegionSelectionElement extends PolymerElement {
     // Issue the Lens request
     BrowserProxyImpl.getInstance().handler.issueLensRequest(
         this.getNormalizedCenterRotatedBoxFromGesture(event));
+
+    // Relinquish control from the shimmer.
+    unfocusShimmer(this, ShimmerControlRequester.MANUAL_REGION);
 
     // Keep the region rendered on the page
     this.dispatchEvent(new CustomEvent('render-post-selection', {
@@ -130,10 +134,10 @@ export class RegionSelectionElement extends PolymerElement {
 
     this.context.lineWidth = 3;
     const gradient = this.context.createLinearGradient(
-      left,
-      bottom,
-      right,
-      top,
+        left,
+        bottom,
+        right,
+        top,
     );
     gradient.addColorStop(0, '#C5E9EB');
     gradient.addColorStop(0.5, '#FFB2BD');
@@ -149,8 +153,7 @@ export class RegionSelectionElement extends PolymerElement {
       !isDraggingDown || !isDraggingRight ? idealCornerRadius : 0,
       !isDraggingDown || isDraggingRight ? idealCornerRadius : 0,
     ];
-    this.context.roundRect(
-      left, top, width, height, radii);
+    this.context.roundRect(left, top, width, height, radii);
 
     // Draw the highlight image clipped to the path.
     this.context.save();
@@ -161,6 +164,12 @@ export class RegionSelectionElement extends PolymerElement {
 
     // Stroke the path on top of the image.
     this.context.stroke();
+
+    // Focus the shimmer on the new manually selected region.
+    focusShimmerOnRegion(
+        this, top / this.canvasHeight, left / this.canvasWidth,
+        width / this.canvasWidth, height / this.canvasHeight,
+        ShimmerControlRequester.MANUAL_REGION);
   }
 
   /**

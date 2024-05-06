@@ -9,6 +9,7 @@ import {PolymerElement} from '//resources/polymer/v3_0/polymer/polymer_bundled.m
 import {BrowserProxyImpl} from './browser_proxy.js';
 import {CenterRotatedBox_CoordinateType} from './geometry.mojom-webui.js';
 import type {CenterRotatedBox} from './geometry.mojom-webui.js';
+import {focusShimmerOnRegion, ShimmerControlRequester, unfocusShimmer} from './overlay_shimmer.js';
 import {getTemplate} from './post_selection_renderer.html.js';
 import type {GestureEvent} from './selection_utils.js';
 import {toPercent} from './values_converter.js';
@@ -123,6 +124,7 @@ export class PostSelectionRendererElement extends PolymerElement {
   }
 
   clearSelection() {
+    unfocusShimmer(this, ShimmerControlRequester.POST_SELECTION);
     this.height = 0;
     this.width = 0;
   }
@@ -324,6 +326,11 @@ export class PostSelectionRendererElement extends PolymerElement {
     this.style.setProperty('--selection-height', toPercent(this.height));
     this.style.setProperty('--selection-top', toPercent(this.top));
     this.style.setProperty('--selection-left', toPercent(this.left));
+
+    // Focus the shimmer on the new post selection region.
+    focusShimmerOnRegion(
+        this, this.top, this.left, this.width, this.height,
+        ShimmerControlRequester.POST_SELECTION);
   }
 
   private triggerNewBoxAnimation() {

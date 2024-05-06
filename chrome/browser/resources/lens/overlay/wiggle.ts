@@ -57,7 +57,7 @@ export class Wiggle {
   ];
 
   /** Wiggle angular frequency (2πf) */
-  private readonly angularFrequency: number;
+  private angularFrequency: number;
   /** The internal position of the simulation that is stepped forward */
   private angularPosition: number;
   /** Time in seconds of previous calculation */
@@ -68,6 +68,10 @@ export class Wiggle {
   ) {
     this.angularFrequency = frequencyToAngularFrequency(frequency);
     this.angularPosition = Math.random() * INITIAL_ANGULAR_POSITION_MULTIPLIER;
+  }
+
+  setFrequency(frequency: number) {
+    this.angularFrequency = frequencyToAngularFrequency(frequency);
   }
 
   /**

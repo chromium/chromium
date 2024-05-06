@@ -8,7 +8,8 @@ import {getTemplate} from './shimmer_circle.html.js';
 import {Wiggle} from './wiggle.js';
 
 /** The frequency val used in the Wiggle functions. */
-export const FREQ_VAL = 0.06;
+export const STEADY_STATE_FREQ_VAL = 0.06;
+export const INTERACTION_STATE_FREQ_VAL = 0.03;
 
 /*
  * Controls a single shimmer circle. This class is responsible for controlling
@@ -29,6 +30,14 @@ export class ShimmerCircleElement extends PolymerElement {
       colorHex: String,
       steadyStateCenterX: Number,
       steadyStateCenterY: Number,
+      isSteadyState: {
+        type: Boolean,
+        observer: 'isSteadyStateChanged',
+      },
+      isWiggling: {
+        type: Boolean,
+        observer: 'isWigglingChanged',
+      },
     };
   }
 
@@ -38,32 +47,61 @@ export class ShimmerCircleElement extends PolymerElement {
   private steadyStateCenterX: number;
   // The randomized Y value that this circle hovers around in the steady state.
   private steadyStateCenterY: number;
+  // Whether the circles are focusing the steady state center position.
+  private isSteadyState: boolean;
+  // Whether the circles are providing randomized movement.
+  private isWiggling: boolean;
+  // The animation transitioning the center positions to the steady state.
+  // Undefined if no steady state animation has played yet.
+  private steadyStateAnimation?: Animation;
+  // The current time in our wiggle animation.
+  private currentWiggleTime = 0;
+  // The time in MS of the last requestAnimationFrame call
+  private previousAnimationFrameTime = 0;
 
   // Wiggles.
-  private radiusWiggle!: Wiggle;
-  private centerXWiggle!: Wiggle;
-  private centerYWiggle!: Wiggle;
+  private radiusWiggle: Wiggle;
+  private centerXWiggle: Wiggle;
+  private centerYWiggle: Wiggle;
+
+  constructor() {
+    super();
+
+    // Initialize the wiggles
+    this.radiusWiggle = new Wiggle(STEADY_STATE_FREQ_VAL);
+    this.centerXWiggle = new Wiggle(STEADY_STATE_FREQ_VAL);
+    this.centerYWiggle = new Wiggle(STEADY_STATE_FREQ_VAL);
+  }
 
   override connectedCallback() {
     super.connectedCallback();
 
-    // Initialize the wiggles
-    this.radiusWiggle = new Wiggle(FREQ_VAL);
-    this.centerXWiggle = new Wiggle(FREQ_VAL);
-    this.centerYWiggle = new Wiggle(FREQ_VAL);
-
     // Set this circles color.
     this.style.setProperty('--shimmer-circle-color', this.colorHex);
-
-
-    // Start the invocation animation.
-    this.startAnimation();
 
     // Begin following a randomized motion.
     this.stepRandomMotion(0);
   }
 
-  private async startAnimation() {
+  private isSteadyStateChanged() {
+    if (this.isSteadyState) {
+      this.focusSteadyState();
+    } else {
+      this.unfocusSteadyState();
+    }
+  }
+
+  private isWigglingChanged() {
+    if (this.isWiggling) {
+      this.startWiggles();
+    }
+  }
+
+  private async focusSteadyState() {
+    this.radiusWiggle.setFrequency(STEADY_STATE_FREQ_VAL);
+    this.centerXWiggle.setFrequency(STEADY_STATE_FREQ_VAL);
+    this.centerYWiggle.setFrequency(STEADY_STATE_FREQ_VAL);
+
     const animation = this.animate(
         [
           {
@@ -76,6 +114,7 @@ export class ShimmerCircleElement extends PolymerElement {
           easing: 'cubic-bezier(0.05, 0.7, 0.1, 1.0)',
           fill: 'forwards',
         });
+    this.steadyStateAnimation = animation;
 
     // Animation styles do not get automatically applied as CSS styles. Since
     // animation styles take precedence over CSS styles, leaving a finished
@@ -87,7 +126,30 @@ export class ShimmerCircleElement extends PolymerElement {
     animation.cancel();
   }
 
+  private unfocusSteadyState() {
+    if (this.steadyStateAnimation) {
+      // Cancel any current state state animations so they don't override the
+      // new inherit properties.
+      this.steadyStateAnimation.cancel();
+    }
+
+    this.radiusWiggle.setFrequency(INTERACTION_STATE_FREQ_VAL);
+    this.centerXWiggle.setFrequency(INTERACTION_STATE_FREQ_VAL);
+    this.centerYWiggle.setFrequency(INTERACTION_STATE_FREQ_VAL);
+
+    // Unset the center point so the region to focus is controlled by
+    // OverlayShimmerElement.
+    this.style.setProperty('--shimmer-circle-center-x', 'inherit');
+    this.style.setProperty('--shimmer-circle-center-y', 'inherit');
+  }
+
+  private startWiggles() {
+    this.stepRandomMotion(this.currentWiggleTime);
+  }
+
   private stepRandomMotion(timeMs: number) {
+    this.currentWiggleTime += timeMs - this.previousAnimationFrameTime;
+    this.previousAnimationFrameTime = timeMs;
     this.style.setProperty(
         '--shimmer-circle-radius-wiggle',
         this.radiusWiggle.calculateNext(timeMs / 1000).toString());
@@ -97,7 +159,10 @@ export class ShimmerCircleElement extends PolymerElement {
     this.style.setProperty(
         '--shimmer-circle-center-y-wiggle',
         this.centerYWiggle.calculateNext(timeMs / 1000).toString());
-    requestAnimationFrame(this.stepRandomMotion.bind(this));
+    // If not wiggling, stop requesting new animation frames.
+    if (this.isWiggling) {
+      requestAnimationFrame(this.stepRandomMotion.bind(this));
+    }
   }
 }
 

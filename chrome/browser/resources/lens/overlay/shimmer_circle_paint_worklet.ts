@@ -4,11 +4,10 @@
 
 import {assert, assertInstanceof} from '//resources/js/assert.js';
 
-const BLUR_PX = 300;
-
 interface ShimmerCircleProperties {
   circleColor: string;
   circleRadius: CSSUnitValue;
+  circleBlur: CSSUnitValue;
   circleCenterX: CSSUnitValue;
   circleCenterY: CSSUnitValue;
   circleRadiusAmplitude: CSSUnitValue;
@@ -24,6 +23,7 @@ class ShimmerCircleWorklet {
     return [
       '--shimmer-circle-color',
       '--shimmer-circle-radius',
+      '--shimmer-circle-blur',
       '--shimmer-circle-center-x',
       '--shimmer-circle-center-y',
       '--shimmer-circle-radius-amplitude',
@@ -41,9 +41,10 @@ class ShimmerCircleWorklet {
     const props = this.getAndAssertProperties(properties);
 
     // Get the base values from percentages to pixels.
+    // We double the radius to increase the blurriness.
     const baseRadius =
-        (props.circleRadius.value / 100 * Math.max(size.width, size.height)) +
-        BLUR_PX / 2;
+        (props.circleRadius.value / 100 * Math.max(size.width, size.height)) *
+        props.circleBlur.value;
     const baseCircleX = props.circleCenterX.value / 100 * size.width;
     const baseCircleY = props.circleCenterY.value / 100 * size.height;
 
@@ -79,8 +80,16 @@ class ShimmerCircleWorklet {
         centerY,
         radius,
     );
-    radialGradient.addColorStop(0.05, colorRgb);
-    // Fade into transparent version of the color.
+    // Simulate a Gaussian full page blur by mimicking a smooth step alpha
+    // change through the circle radius.
+    radialGradient.addColorStop(0, this.rgbToRgba(colorRgb, 1));
+    radialGradient.addColorStop(0.125, this.rgbToRgba(colorRgb, 0.957));
+    radialGradient.addColorStop(0.25, this.rgbToRgba(colorRgb, 0.84375));
+    radialGradient.addColorStop(0.375, this.rgbToRgba(colorRgb, 0.68359));
+    radialGradient.addColorStop(0.5, this.rgbToRgba(colorRgb, 0.5));
+    radialGradient.addColorStop(0.625, this.rgbToRgba(colorRgb, 0.3164));
+    radialGradient.addColorStop(0.75, this.rgbToRgba(colorRgb, 0.15625));
+    radialGradient.addColorStop(0.875, this.rgbToRgba(colorRgb, 0.04297));
     radialGradient.addColorStop(1, this.rgbToRgba(colorRgb, 0));
     return radialGradient;
   }
@@ -95,6 +104,7 @@ class ShimmerCircleWorklet {
       ShimmerCircleProperties {
     const circleColor = properties.get('--shimmer-circle-color');
     const circleRadius = properties.get('--shimmer-circle-radius');
+    const circleBlur = properties.get('--shimmer-circle-blur');
     const circleCenterX = properties.get('--shimmer-circle-center-x');
     const circleCenterY = properties.get('--shimmer-circle-center-y');
     const circleRadiusAmplitude =
@@ -111,6 +121,7 @@ class ShimmerCircleWorklet {
 
     assert(circleColor);
     assertInstanceof(circleRadius, CSSUnitValue);
+    assertInstanceof(circleBlur, CSSUnitValue);
     assertInstanceof(circleCenterX, CSSUnitValue);
     assertInstanceof(circleCenterY, CSSUnitValue);
     assertInstanceof(circleRadiusAmplitude, CSSUnitValue);
@@ -122,6 +133,9 @@ class ShimmerCircleWorklet {
     assert(
         circleRadius.unit === 'percent',
         '--shimmer-circle-radius must be a percent value');
+    assert(
+        circleBlur.unit === 'number',
+        '--shimmer-circle-blur must be a number value');
     assert(
         circleCenterX.unit === 'percent',
         '--shimmer-circle-center-x must be a percent value');
@@ -150,6 +164,7 @@ class ShimmerCircleWorklet {
     return {
       circleColor: circleColor.toString(),
       circleRadius,
+      circleBlur,
       circleCenterX,
       circleCenterY,
       circleRadiusAmplitude,

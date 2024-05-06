@@ -15,6 +15,7 @@ import type {CenterRotatedBox} from './geometry.mojom-webui.js';
 import type {LensPageCallbackRouter} from './lens.mojom-webui.js';
 import {getTemplate} from './object_layer.html.js';
 import type {OverlayObject} from './overlay_object.mojom-webui.js';
+import {focusShimmerOnRegion, ShimmerControlRequester, unfocusShimmer} from './overlay_shimmer.js';
 import {Polygon_CoordinateType} from './polygon.mojom-webui.js';
 import type {PostSelectionBoundingBox} from './post_selection_renderer.js';
 import type {CursorData} from './selection_overlay.js';
@@ -171,6 +172,7 @@ export class ObjectLayerElement extends PolymerElement {
 
   private handlePointerLeave() {
     this.clearCanvas();
+    unfocusShimmer(this, ShimmerControlRequester.SEGMENTATION);
     this.dispatchEvent(new CustomEvent<CursorData>(
         'set-cursor',
         {bubbles: true, composed: true, detail: {cursor: CursorType.DEFAULT}}));
@@ -202,6 +204,11 @@ export class ObjectLayerElement extends PolymerElement {
     const bottom =
         (objectBoundingBox.box.y + longestEdge / 2) * this.canvasHeight;
 
+    let leftMostPoint = 0;
+    let rightMostPoint = 0;
+    let topMostPoint = 0;
+    let bottomMostPoint = 0;
+
     this.context.beginPath();
     for (const polygon of polygons) {
       // TODO(b/330183480): Currently, we are assuming that polygon
@@ -212,13 +219,28 @@ export class ObjectLayerElement extends PolymerElement {
       }
 
       const firstVertex = polygon.vertex[0];
+      topMostPoint = firstVertex.y;
+      bottomMostPoint = firstVertex.y;
+      leftMostPoint = firstVertex.x;
+      rightMostPoint = firstVertex.x;
+
       this.context.moveTo(
           firstVertex.x * this.canvasWidth, firstVertex.y * this.canvasHeight);
       for (const vertex of polygon.vertex.slice(1)) {
         this.context.lineTo(
             vertex.x * this.canvasWidth, vertex.y * this.canvasHeight);
+
+        topMostPoint = Math.min(topMostPoint, vertex.y);
+        bottomMostPoint = Math.max(bottomMostPoint, vertex.y);
+        leftMostPoint = Math.min(leftMostPoint, vertex.x);
+        rightMostPoint = Math.max(rightMostPoint, vertex.x);
       }
     }
+
+    // Focus the shimmer on the segmentation object.
+    focusShimmerOnRegion(
+        this, topMostPoint, leftMostPoint, rightMostPoint - leftMostPoint,
+        bottomMostPoint - topMostPoint, ShimmerControlRequester.SEGMENTATION);
 
     // Draw the highlight image clipped to the path.
     this.context.save();

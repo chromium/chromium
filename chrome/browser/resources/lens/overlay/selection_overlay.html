@@ -37,6 +37,10 @@
     pointer-events: none;
   }
 
+  :host([disable-shimmer]) #overlayShimmer{
+    display: none;
+  }
+
   #backgroundImage {
     max-width: 100vw;
     max-height: 100vh;
@@ -151,9 +155,7 @@
   background image. -->
   <div id="selectionElements">
     <!-- Other elements that need to be bounded to the image go here -->
-    <template is="dom-if" if="[[enableShimmer]]">
-      <overlay-shimmer></overlay-shimmer>
-    </template>
+    <overlay-shimmer id="overlayShimmer"></overlay-shimmer>
     <post-selection-renderer id="postSelectionRenderer"
         screenshot-data-uri="[[screenshotDataUri]]">
     </post-selection-renderer>

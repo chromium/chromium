@@ -19,6 +19,8 @@ import {PolymerElement} from '//resources/polymer/v3_0/polymer/polymer_bundled.m
 
 import {BrowserProxyImpl} from './browser_proxy.js';
 import type {ObjectLayerElement} from './object_layer.js';
+import {focusShimmerOnRegion, ShimmerControlRequester, unfocusShimmer} from './overlay_shimmer.js';
+import type {OverlayShimmerElement} from './overlay_shimmer.js';
 import type {PostSelectionRendererElement} from './post_selection_renderer.js';
 import type {RegionSelectionElement} from './region_selection.js';
 import {getTemplate} from './selection_overlay.html.js';
@@ -27,6 +29,9 @@ import type {TextLayerElement} from './text_layer.js';
 import {toPercent} from './values_converter.js';
 
 const RESIZE_THRESHOLD = 8;
+
+// The size of our custom cursor.
+export const CURSOR_SIZE_PIXEL = 32;
 
 export interface CursorData {
   cursor: CursorType;
@@ -56,6 +61,7 @@ export interface SelectionOverlayElement {
     copyToast: CrToastElement,
     cursor: HTMLElement,
     objectSelectionLayer: ObjectLayerElement,
+    overlayShimmer: OverlayShimmerElement,
     postSelectionRenderer: PostSelectionRendererElement,
     regionSelectionLayer: RegionSelectionElement,
     selectionOverlay: HTMLElement,
@@ -98,7 +104,10 @@ export class SelectionOverlayElement extends SelectionOverlayElementBase {
       cursorImgUri: String,
       isPointerInside: Boolean,
       currentGesture: emptyGestureEvent(),
-      enableShimmer: Boolean,
+      disableShimmer: {
+        type: Boolean,
+        reflectToAttribute: true,
+      },
     };
   }
 
@@ -118,7 +127,7 @@ export class SelectionOverlayElement extends SelectionOverlayElementBase {
   // The current gesture event. The coordinate values are only accurate if a
   // gesture has started.
   private currentGesture: GestureEvent = emptyGestureEvent();
-  private enableShimmer: boolean = loadTimeData.getBoolean('enableShimmer');
+  private disableShimmer: boolean = !loadTimeData.getBoolean('enableShimmer');
 
   private eventTracker_: EventTracker = new EventTracker();
   // The feature currently being dragged. Once a feature responds to a drag
@@ -201,8 +210,36 @@ export class SelectionOverlayElement extends SelectionOverlayElementBase {
     const mouseX = event.clientX;
     const mouseY = event.clientY;
 
-    this.$.cursor.style.transform = `translate3d(${
-        mouseX + this.cursorOffsetX}px, ${mouseY + this.cursorOffsetY}px, 0)`;
+    const cursorOffsetX = mouseX + this.cursorOffsetX;
+    const cursorOffsetY = mouseY + this.cursorOffsetY;
+
+    if (!this.disableShimmer &&
+        (this.isPointerInside ||
+         this.currentGesture.state === GestureState.DRAGGING)) {
+      this.updateShimmerForCursor(cursorOffsetX, cursorOffsetY);
+    }
+
+    this.$.cursor.style.transform =
+        `translate3d(${cursorOffsetX}px, ${cursorOffsetY}px, 0)`;
+  }
+
+  private updateShimmerForCursor(cursorLeft: number, cursorTop: number) {
+    const boundingRect = this.$.selectionOverlay.getBoundingClientRect();
+
+    const relativeXPercent =
+        Math.max(
+            0, Math.min(cursorLeft, boundingRect.right) - boundingRect.left) /
+        boundingRect.width;
+    const relativeYPercent =
+        Math.max(
+            0, Math.min(cursorTop, boundingRect.bottom) - boundingRect.top) /
+        boundingRect.height;
+
+    focusShimmerOnRegion(
+        this, relativeYPercent, relativeXPercent,
+        CURSOR_SIZE_PIXEL / boundingRect.width,
+        CURSOR_SIZE_PIXEL / boundingRect.height,
+        ShimmerControlRequester.CURSOR);
   }
 
   private getHiddenCursorClass(isPointerInside: boolean, state: GestureState):
@@ -254,6 +291,13 @@ export class SelectionOverlayElement extends SelectionOverlayElementBase {
 
   private handlePointerLeave() {
     this.isPointerInside = false;
+
+    // Unfocus the shimmer from the cursor. If the cursor is dragging, force
+    // shimmer to follow cursor.
+    if (!this.disableShimmer &&
+        this.currentGesture.state !== GestureState.DRAGGING) {
+      unfocusShimmer(this, ShimmerControlRequester.CURSOR);
+    }
   }
 
   private onImageLoad() {
@@ -263,13 +307,25 @@ export class SelectionOverlayElement extends SelectionOverlayElementBase {
     // visible.
     requestAnimationFrame(() => {
       requestAnimationFrame(() => {
-        setTimeout(() => {
-          BrowserProxyImpl.getInstance().handler.addBackgroundBlur();
-        }, 300);
-        this.dispatchEvent(new CustomEvent(
-            'screenshot-rendered', {bubbles: true, composed: true}));
+        this.onImageRendered();
       });
     });
+  }
+
+  private onImageRendered() {
+    // Tell the browser to blur the background.
+    setTimeout(() => {
+      BrowserProxyImpl.getInstance().handler.addBackgroundBlur();
+    }, 300);
+
+    // Let the parent know it is safe to blur the background.
+    this.dispatchEvent(new CustomEvent(
+        'screenshot-rendered', {bubbles: true, composed: true}));
+
+    if (!this.disableShimmer) {
+      // Don't start the shimmer animation until the image has been rendered.
+      this.$.overlayShimmer.startAnimation();
+    }
   }
 
   private onPointerDown(event: PointerEvent) {

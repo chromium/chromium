@@ -70,7 +70,7 @@ const base::FeatureParam<int> kLensOverlayHorizontalTextMargin{
 const base::FeatureParam<bool> kLensOverlaySearchBubble{&kLensOverlay,
                                                         "search-bubble", false};
 const base::FeatureParam<bool> kLensOverlayEnableShimmer{
-    &kLensOverlay, "enable-shimmer", false};
+    &kLensOverlay, "enable-shimmer", true};
 
 constexpr base::FeatureParam<std::string> kLensOverlayEndpointUrl{
     &kLensOverlay, "endpoint-url",

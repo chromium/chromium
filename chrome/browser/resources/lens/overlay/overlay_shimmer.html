@@ -4,8 +4,10 @@
     width: 100%;
   }
 </style>
-<template is="dom-repeat" items="[[circles]]" as="circle">
+<template id="circlesContainer" is="dom-repeat" items="[[circles]]" as="circle">
   <shimmer-circle color-hex="[[circle.colorHex]]"
       steady-state-center-x="[[circle.steadyStateCenterX]]"
-      steady-state-center-y="[[circle.steadyStateCenterY]]"></shimmer-circle>
+      steady-state-center-y="[[circle.steadyStateCenterY]]"
+      is-steady-state$="[[isSteadyState]]"
+      is-wiggling$="[[isWiggling]]"></shimmer-circle>
 </template>
