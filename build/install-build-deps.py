@@ -233,7 +233,6 @@ def dev_list():
       "libsctp-dev",
       "libspeechd-dev",
       "libsqlite3-dev",
-      "libssl-dev",
       "libsystemd-dev",
       "libudev-dev",
       "libva-dev",
@@ -325,6 +324,17 @@ def dev_list():
       packages.append("lib32gcc-s1")
     elif package_exists("lib32gcc1"):
       packages.append("lib32gcc1")
+
+  # TODO(b/339091434): Remove this workaround once this bug is fixed.  This
+  # workaround ensures the newer libssl-dev is used to prevent package conficts.
+  apt_cache_cmd = ["apt-cache", "show", "libssl-dev"]
+  output = subprocess.check_output(apt_cache_cmd).decode()
+  pattern = re.compile(r'^Version: (.+?)$', re.M)
+  versions = re.findall(pattern, output)
+  if set(versions) == {"3.2.1-3", "3.0.10-1"}:
+    packages.append("libssl-dev=3.2.1-3")
+  else:
+    packages.append("libssl-dev")
 
   return packages
 
