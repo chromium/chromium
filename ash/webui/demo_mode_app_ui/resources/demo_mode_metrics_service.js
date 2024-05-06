@@ -34,6 +34,7 @@ export const Page = {
  * @enum {string}
  */
 export const DetailsPage = {
+  // 2023 CBX first released:
   ADOBE: 'Adobe',
   BATTERY: 'Battery',
   COMPARISON: 'Comparison',
@@ -65,6 +66,21 @@ export const DetailsPage = {
   GEMINI_FOR_WORK_SPACE: 'GeminiForWorkSpace',
   AI_BACKGROUND: 'AIBackground',
   AI_PREMIUM_PLAN: 'AIPremiumPlan',
+
+  // CB, note that detail page for generic was not recorded before 2024 C1:
+  FAST_BOOT: 'FastBoot',
+  AUTO_UPDATE: 'AutoUpdate',
+  EASY_SETUP:'EasySetup',
+  LAUNCHER_SEARCH:'LauncherSearch',
+  GOOGLE_TOOLS_BUILT_IN:'GoogleToolsBuiltIn',
+  TITAN_C2:'TitanC2',
+  CREATIVITY:'Creativity',
+  ENTERTAINMENT:'Entertainment',
+  PRODUCTIVITY:'Productivity',
+  PLAY_STORE:'PlayStore',
+
+  // Enum shared between CB & CBX are: BATTERY, GOOGLE_APPS, NEARBY_SHARE,
+  // MESSAGING, BUILT_IN_SECURITY,MS_365_APPS, SWITCHING, COMPARISON
 };
 
 /**

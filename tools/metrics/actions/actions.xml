@@ -43324,6 +43324,7 @@ should be able to be added at any place in this file.
   <suffix name="AIBackgroundButton" label="AI background details page button"/>
   <suffix name="AIPremiumPlanButton"
       label="Google One AI Premium Plan details page button"/>
+  <suffix name="AutoUpdateButton" label="Auto Update details page button"/>
   <suffix name="BatteryButton" label="Battery details page button"/>
   <suffix name="BuiltInSecurityButton"
       label="Built in security details page button"/>
@@ -43332,15 +43333,21 @@ should be able to be added at any place in this file.
       label="Display (Entertainment) details page button"/>
   <suffix name="DisplayPerformanceButton"
       label="Display (Performance) details page button"/>
+  <suffix name="EasySetupButton" label="Easy setup details page button"/>
   <suffix name="EntertainmentAppsButton"
       label="Entertainment Apps details page button"/>
+  <suffix name="FastBootButton" label="Fast boot details page button"/>
   <suffix name="GameDashboardButton"
       label="Game Dashboard details page button"/>
   <suffix name="GeminiForAllButton" label="Gemini for All details page button"/>
   <suffix name="GeminiForWorkSpaceButton"
       label="Gemini for Work space details page button"/>
   <suffix name="GoogleAppsButton" label="Google Apps details page button"/>
+  <suffix name="GoogleToolsBuiltInButton"
+      label="Google tools built in details page button"/>
   <suffix name="HelpMeWriteButton" label="Help me write page button"/>
+  <suffix name="LauncherSearchButton"
+      label="Launcher search details page button"/>
   <suffix name="LumaFusionButton" label="LumaFusion details page button"/>
   <suffix name="MessagingButton" label="Messaging details page button"/>
   <suffix name="MobileGamingButton" label="Mobile Gaming details page button"/>
@@ -43352,9 +43359,12 @@ should be able to be added at any place in this file.
   <suffix name="PCConsoleGamingButton"
       label="PC/Console Gaming details page button"/>
   <suffix name="PhotosButton" label="Photos details page button"/>
+  <suffix name="PlayStoreButton" label="Play Store details page button"/>
   <suffix name="ProcessorButton" label="Processor details page button"/>
+  <suffix name="ProductivityButton" label="Productivity details page button"/>
   <suffix name="StorageButton" label="Storage details page button"/>
   <suffix name="SwitchingButton" label="Switching details page button"/>
+  <suffix name="TitanC2Button" label="Titan C2 details page button"/>
   <suffix name="VideoCallButton" label="Video Call details page button"/>
   <suffix name="WebcamButton" label="Webcam details page button"/>
   <affected-action name="DemoMode_Highlights_DetailsPage_Clicked"/>

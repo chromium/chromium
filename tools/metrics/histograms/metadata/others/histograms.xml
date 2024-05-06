@@ -48,6 +48,7 @@ chromium-metrics-reviews@google.com.
       summary="Highlights app AI background detail page"/>
   <variant name="AIPremiumPlanPage"
       summary="Highlights app Google One AI Premium Plan detail page"/>
+  <variant name="AutoUpdatePage" summary="Auto Update detail page"/>
   <variant name="BatteryPage" summary="Highlights app Battery detail page"/>
   <variant name="BuiltInSecurityPage"
       summary="Highlights app Built In Security detail page"/>
@@ -57,8 +58,10 @@ chromium-metrics-reviews@google.com.
       summary="Highlights app Display (Entertainment) detail page"/>
   <variant name="DisplayPerformancePage"
       summary="Highlights app Display (Performance) detail page"/>
+  <variant name="EasySetupPage" summary="Easy setup detail page"/>
   <variant name="EntertainmentAppsPage"
       summary="Highlights app Entertainment Apps detail page"/>
+  <variant name="FastBootPage" summary="Fast boot detail page"/>
   <variant name="GameDashboardPage"
       summary="Highlights app Game Dashboard detail page"/>
   <variant name="GeminiForAllPage"
@@ -67,8 +70,11 @@ chromium-metrics-reviews@google.com.
       summary="Highlights app Gemini for Work space detail page"/>
   <variant name="GoogleAppsPage"
       summary="Highlights app Google Apps detail page"/>
+  <variant name="GoogleToolsBuiltInPage"
+      summary="Google tools built in detail page"/>
   <variant name="HelpMeWritePage"
       summary="Highlights app Help me write detail page"/>
+  <variant name="LauncherSearchPage" summary="Launcher search detail page"/>
   <variant name="LumaFusionPage"
       summary="Highlights app LumaFusion detail page"/>
   <variant name="MessagingPage" summary="Highlights app Messaging detail page"/>
@@ -84,9 +90,14 @@ chromium-metrics-reviews@google.com.
   <variant name="PCConsoleGamingPage"
       summary="Highlights app PC/Console Gaming detail page"/>
   <variant name="PhotosPage" summary="Highlights app Photos detail page"/>
+  <variant name="PlayStorePage" summary="Play Store detail page"/>
   <variant name="ProcessorPage" summary="Highlights app Processor detail page"/>
+  <variant name="ProductivityPage" summary="Productivity detail page"/>
   <variant name="StoragePage" summary="Highlights app Storage detail page"/>
   <variant name="SwitchingPage" summary="Highlights app Switching detail page"/>
+  <variant name="SwitchToChromeBookPage"
+      summary="Switch to ChromeBook detail page"/>
+  <variant name="TitanC2Page" summary="Titan C2 details page"/>
   <variant name="VideoCallPage"
       summary="Highlights app Video Call detail page"/>
   <variant name="WebcamPage" summary="Highlights app Webcam detail page"/>
