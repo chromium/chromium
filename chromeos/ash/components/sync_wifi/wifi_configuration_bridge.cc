@@ -30,6 +30,7 @@
 #include "components/device_event_log/device_event_log.h"
 #include "components/prefs/pref_registry_simple.h"
 #include "components/prefs/pref_service.h"
+#include "components/sync/base/deletion_origin.h"
 #include "components/sync/model/entity_change.h"
 #include "components/sync/model/metadata_batch.h"
 #include "components/sync/model/metadata_change_list.h"
@@ -605,7 +606,8 @@ void WifiConfigurationBridge::RemoveNetworkFromSync(
   std::unique_ptr<syncer::ModelTypeStore::WriteBatch> batch =
       store_->CreateWriteBatch();
   batch->DeleteData(storage_key);
-  change_processor()->Delete(storage_key, batch->GetMetadataChangeList());
+  change_processor()->Delete(storage_key, syncer::DeletionOrigin::Unspecified(),
+                             batch->GetMetadataChangeList());
   entries_.erase(storage_key);
   Commit(std::move(batch));
   NET_LOG(EVENT) << "Removed network from sync.";
