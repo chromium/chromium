@@ -96,6 +96,7 @@ constexpr base::TimeDelta kTemporaryBookmarkBarDuration = base::Seconds(15);
 constexpr int kDialogWidth = 240;
 constexpr const char kLearnMoreURL[] =
     "https://support.google.com/chrome/answer/165139";
+static constexpr int kDefaultIconSize = 20;
 
 std::unique_ptr<views::LabelButton> CreateMenuItem(
     int button_id,
@@ -190,8 +191,8 @@ void TabGroupEditorBubbleView::AddedToWidget() {
         old_image_model->IsVectorIcon()) {
       ui::VectorIconModel vector_icon_model = old_image_model->GetVectorIcon();
       const gfx::VectorIcon* icon = vector_icon_model.vector_icon();
-      const ui::ImageModel new_image_model =
-          ui::ImageModel::FromVectorIcon(*icon, icon_color);
+      const ui::ImageModel new_image_model = ui::ImageModel::FromVectorIcon(
+          *icon, icon_color, old_image_model->Size().width());
       menu_item->SetImageModel(button_state, new_image_model);
     }
   }
@@ -258,9 +259,8 @@ TabGroupEditorBubbleView::TabGroupEditorBubbleView(
       base::BindRepeating(
           &TabGroupEditorBubbleView::MoveGroupToNewWindowPressed,
           base::Unretained(this)),
-      ui::ImageModel::FromVectorIcon(features::IsChromeRefresh2023()
-                                         ? kMoveGroupToNewWindowRefreshIcon
-                                         : kMoveGroupToNewWindowIcon));
+      ui::ImageModel::FromVectorIcon(kMoveGroupToNewWindowRefreshIcon,
+                                     ui::kColorMenuIcon, kDefaultIconSize));
 
   // Create view hierarchy.
   title_field_ =
@@ -293,9 +293,8 @@ TabGroupEditorBubbleView::TabGroupEditorBubbleView(
     // utilizes a different view (view::Label) that does not have an option to
     // take in an image like the other line items do.
     save_group_icon_ = save_group_line_container->AddChildView(
-        std::make_unique<views::ImageView>(ui::ImageModel::FromVectorIcon(
-            features::IsChromeRefresh2023() ? kSaveGroupRefreshIcon
-                                            : kSaveGroupIcon)));
+        std::make_unique<views::ImageView>(
+            ui::ImageModel::FromVectorIcon(kSaveGroupRefreshIcon)));
 
     save_group_label_ =
         save_group_line_container->AddChildView(std::make_unique<views::Label>(
@@ -328,9 +327,8 @@ TabGroupEditorBubbleView::TabGroupEditorBubbleView(
       l10n_util::GetStringUTF16(IDS_TAB_GROUP_HEADER_CXMENU_NEW_TAB_IN_GROUP),
       base::BindRepeating(&TabGroupEditorBubbleView::NewTabInGroupPressed,
                           base::Unretained(this)),
-      ui::ImageModel::FromVectorIcon(features::IsChromeRefresh2023()
-                                         ? kNewTabInGroupRefreshIcon
-                                         : kNewTabInGroupIcon)));
+      ui::ImageModel::FromVectorIcon(kNewTabInGroupRefreshIcon,
+                                     ui::kColorMenuIcon, kDefaultIconSize)));
   menu_items_.push_back(new_tab_menu_item);
 
   views::LabelButton* move_menu_item_ptr;
@@ -343,17 +341,14 @@ TabGroupEditorBubbleView::TabGroupEditorBubbleView(
       l10n_util::GetStringUTF16(IDS_TAB_GROUP_HEADER_CXMENU_UNGROUP),
       base::BindRepeating(&TabGroupEditorBubbleView::UngroupPressed,
                           base::Unretained(this)),
-      ui::ImageModel::FromVectorIcon(features::IsChromeRefresh2023()
-                                         ? kUngroupRefreshIcon
-                                         : kUngroupIcon))));
+      ui::ImageModel::FromVectorIcon(kUngroupRefreshIcon))));
 
   views::LabelButton* close_group_menu_item = AddChildView(CreateMenuItem(
       TAB_GROUP_HEADER_CXMENU_CLOSE_GROUP, GetTextForCloseButton(),
       base::BindRepeating(&TabGroupEditorBubbleView::CloseGroupPressed,
                           base::Unretained(this)),
-      ui::ImageModel::FromVectorIcon(features::IsChromeRefresh2023()
-                                         ? kCloseGroupRefreshIcon
-                                         : kCloseGroupIcon)));
+      ui::ImageModel::FromVectorIcon(kCloseGroupRefreshIcon, ui::kColorMenuIcon,
+                                     kDefaultIconSize)));
   close_group_menu_item->SetProperty(views::kElementIdentifierKey,
                                      kTabGroupEditorBubbleCloseGroupButtonId);
   menu_items_.push_back(close_group_menu_item);
@@ -372,9 +367,7 @@ TabGroupEditorBubbleView::TabGroupEditorBubbleView(
         l10n_util::GetStringUTF16(IDS_TAB_GROUP_HEADER_CXMENU_DELETE_GROUP),
         base::BindRepeating(&TabGroupEditorBubbleView::DeleteGroupPressed,
                             base::Unretained(this)),
-        ui::ImageModel::FromVectorIcon(features::IsChromeRefresh2023()
-                                           ? kTrashCanRefreshIcon
-                                           : kTrashCanIcon))));
+        ui::ImageModel::FromVectorIcon(kTrashCanRefreshIcon))));
     footer_ = AddChildView(std::make_unique<Footer>(browser_));
   }
 

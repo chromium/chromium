@@ -32,6 +32,11 @@
 #include "ui/base/l10n/l10n_util.h"
 #include "url/gurl.h"
 
+namespace {
+static constexpr int kOldIconSize = 20;
+static constexpr int kUIUpdateIconSize = 16;
+}  // namespace
+
 namespace tab_groups {
 
 DEFINE_CLASS_ELEMENT_IDENTIFIER_VALUE(SavedTabGroupUtils, kDeleteGroupMenuItem);
@@ -151,8 +156,11 @@ SavedTabGroupUtils::CreateSavedTabGroupContextMenuModel(
                                         ->tab_count();
   }
 
+  bool is_ui_update = tab_groups::IsTabGroupsSaveUIUpdateEnabled();
   dialog_model.AddMenuItem(
-      ui::ImageModel::FromVectorIcon(kMoveGroupToNewWindowRefreshIcon),
+      ui::ImageModel::FromVectorIcon(
+          kMoveGroupToNewWindowRefreshIcon, ui::kColorMenuIcon,
+          is_ui_update ? kUIUpdateIconSize : kOldIconSize),
       move_or_open_group_text,
       base::BindRepeating(&SavedTabGroupUtils::OpenOrMoveSavedGroupToNewWindow,
                           browser, saved_group),
@@ -160,11 +168,13 @@ SavedTabGroupUtils::CreateSavedTabGroupContextMenuModel(
           .SetId(kMoveGroupToNewWindowMenuItem)
           .SetIsEnabled(should_enable_move_menu_item));
 
-  if (tab_groups::IsTabGroupsSaveUIUpdateEnabled() && show_pin_unpin_option) {
+  if (is_ui_update && show_pin_unpin_option) {
     dialog_model.AddMenuItem(
-        ui::ImageModel::FromVectorIcon(saved_group->is_pinned()
-                                           ? kKeepPinFilledChromeRefreshIcon
-                                           : kKeepPinChromeRefreshIcon),
+        ui::ImageModel::FromVectorIcon(
+            saved_group->is_pinned() ? kKeepPinFilledChromeRefreshIcon
+                                     : kKeepPinChromeRefreshIcon,
+            ui::kColorMenuIcon,
+            is_ui_update ? kUIUpdateIconSize : kOldIconSize),
         l10n_util::GetStringUTF16(saved_group->is_pinned()
                                       ? IDS_TAB_GROUP_HEADER_CXMENU_UNPIN_GROUP
                                       : IDS_TAB_GROUP_HEADER_CXMENU_PIN_GROUP),
@@ -175,14 +185,16 @@ SavedTabGroupUtils::CreateSavedTabGroupContextMenuModel(
 
   dialog_model
       .AddMenuItem(
-          ui::ImageModel::FromVectorIcon(kCloseGroupRefreshIcon),
+          ui::ImageModel::FromVectorIcon(
+              kCloseGroupRefreshIcon, ui::kColorMenuIcon,
+              is_ui_update ? kUIUpdateIconSize : kOldIconSize),
           l10n_util::GetStringUTF16(IDS_TAB_GROUP_HEADER_CXMENU_DELETE_GROUP),
           base::BindRepeating(&SavedTabGroupUtils::DeleteSavedTabGroup, browser,
                               saved_group),
           ui::DialogModelMenuItem::Params().SetId(kDeleteGroupMenuItem))
       .AddSeparator();
 
-  if (tab_groups::IsTabGroupsSaveUIUpdateEnabled()) {
+  if (is_ui_update) {
     dialog_model.AddTitleItem(l10n_util::GetStringUTF16(IDS_TABS_TITLE_CXMENU),
                               kTabsTitleItem);
   }

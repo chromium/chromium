@@ -20,6 +20,10 @@
 #include "ui/views/controls/menu/menu_model_adapter.h"
 #include "ui/views/widget/widget.h"
 
+namespace {
+static constexpr int kUIUpdateIconSize = 16;
+}
+
 namespace tab_groups {
 
 DEFINE_CLASS_ELEMENT_IDENTIFIER_VALUE(STGEverythingMenu, kCreateNewTabGroup);
@@ -78,7 +82,8 @@ std::unique_ptr<ui::SimpleMenuModel> STGEverythingMenu::CreateMenuModel() {
   menu_model->AddItemWithIcon(
       IDC_CREATE_NEW_TAB_GROUP,
       l10n_util::GetStringUTF16(IDS_CREATE_NEW_TAB_GROUP),
-      ui::ImageModel::FromVectorIcon(kCreateNewTabGroupIcon));
+      ui::ImageModel::FromVectorIcon(kCreateNewTabGroupIcon, ui::kColorMenuIcon,
+                                     kUIUpdateIconSize));
   menu_model->SetElementIdentifierAt(
       menu_model->GetIndexOfCommandId(IDC_CREATE_NEW_TAB_GROUP).value(),
       kCreateNewTabGroup);
