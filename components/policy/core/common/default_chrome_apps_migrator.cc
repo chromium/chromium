@@ -120,7 +120,8 @@ void DefaultChromeAppsMigrator::EnsurePolicyValueIsList(
         policies->Get(key::kExtensionInstallForcelist);
     PolicyMap::Entry policy_entry(
         forcelist_entry->level, forcelist_entry->scope, forcelist_entry->source,
-        base::Value(base::Value::Type::LIST), nullptr);
+        base::Value(base::Value::Type::LIST), /*external_data_fetcher=*/nullptr,
+        policies->GetPolicyDetails(policy_name));
     // If `policy_value` has wrong type, add message before overriding value.
     if (policy_value) {
       policy_entry.AddMessage(PolicyMap::MessageType::kError,

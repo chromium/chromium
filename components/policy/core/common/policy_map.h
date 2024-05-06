@@ -16,6 +16,7 @@
 #include "base/containers/flat_set.h"
 #include "base/functional/callback.h"
 #include "base/gtest_prod_util.h"
+#include "base/memory/raw_ptr.h"
 #include "base/values.h"
 #include "components/policy/core/common/external_data_fetcher.h"
 #include "components/policy/core/common/policy_details.h"
@@ -55,13 +56,18 @@ class POLICY_EXPORT PolicyMap {
     PolicySource source = POLICY_SOURCE_ENTERPRISE_DEFAULT;
     std::unique_ptr<ExternalDataFetcher> external_data_fetcher;
     std::vector<EntryConflict> conflicts;
+    // Unsupported raw_ptr: Pointer fields in classes/structs that are used as
+    // global.
+    // PolicyDetails is defined in gen/components/policy/policy_constants.cc
+    RAW_PTR_EXCLUSION const PolicyDetails* details = nullptr;
 
     Entry();
     Entry(PolicyLevel level,
           PolicyScope scope,
           PolicySource source,
           std::optional<base::Value> value,
-          std::unique_ptr<ExternalDataFetcher> external_data_fetcher);
+          std::unique_ptr<ExternalDataFetcher> external_data_fetcher,
+          const PolicyDetails* details = nullptr);
     ~Entry();
 
     Entry(Entry&&) noexcept;
@@ -323,8 +329,12 @@ class POLICY_EXPORT PolicyMap {
   // Returns the set containing device affiliation ID strings.
   const base::flat_set<std::string>& GetDeviceAffiliationIds() const;
 
-  // Sets the ChromePolicyDetailsCallback, which is used in IsPolicyExternal(),
-  // in test environments
+  // Returns the PolicyDetails which is generated with the yaml definition of
+  // the `policy`.
+  const PolicyDetails* GetPolicyDetails(const std::string& policy) const;
+
+  // Sets the ChromePolicyDetailsCallback, which is used in
+  // IsPolicyExternal(), in test environments
   void set_chrome_policy_details_callback_for_test(
       const GetChromePolicyDetailsCallback& details_callback);
 

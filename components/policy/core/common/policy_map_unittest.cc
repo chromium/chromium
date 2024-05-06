@@ -42,6 +42,13 @@ const char kTestPolicyName8[] = "policy.test.8";
 // Dummy error message.
 const char16_t kTestError[] = u"Test error message";
 
+const PolicyDetails kExternalDetails_ = {false, false, kProfile, 0, 10, {}};
+const PolicyDetails kNonExternalDetails_ = {false, false, kProfile, 0, 0, {}};
+#if !BUILDFLAG(IS_CHROMEOS)
+const PolicyDetails kUserCloudDetails = {false, false, kSingleProfile,
+                                         0,     0,     {}};
+#endif
+
 // Utility functions for the tests.
 void SetPolicy(PolicyMap* map, const char* name, base::Value value) {
   map->Set(name, POLICY_LEVEL_MANDATORY, POLICY_SCOPE_USER, POLICY_SOURCE_CLOUD,
@@ -81,16 +88,13 @@ class PolicyMapTest : public PolicyMapTestBase, public testing::Test {
  public:
   const PolicyDetails* GetPolicyDetailsExternalCallback(
       const std::string& policy_name) {
-    return &externalDetails_;
+    return &kExternalDetails_;
   }
 
   const PolicyDetails* GetPolicyDetailsNonExternalCallback(
       const std::string& policy_name) {
-    return &nonExternalDetails_;
+    return &kNonExternalDetails_;
   }
-
-  PolicyDetails externalDetails_ = {false, false, kProfile, 0, 10, {}};
-  PolicyDetails nonExternalDetails_ = {false, false, kProfile, 0, 0, {}};
 };
 
 TEST_F(PolicyMapTest, SetAndGet) {
@@ -1719,7 +1723,29 @@ class PolicyMapPriorityTest
 
   bool IsUserAffiliated() { return std::get<2>(GetParam()); }
 
-  void CheckPriorityConditions(PolicyMap& policy_map) {
+  void SetUp() override {
+    // Update the metapolicy values.
+    policy_map_.Set(key::kCloudPolicyOverridesPlatformPolicy,
+                    POLICY_LEVEL_MANDATORY, POLICY_SCOPE_MACHINE,
+                    POLICY_SOURCE_PLATFORM,
+                    base::Value(CloudPolicyOverridesPlatformPolicy()), nullptr);
+    policy_map_.Set(
+        key::kCloudUserPolicyOverridesCloudMachinePolicy,
+        POLICY_LEVEL_MANDATORY, POLICY_SCOPE_MACHINE, POLICY_SOURCE_PLATFORM,
+        base::Value(CloudUserPolicyOverridesCloudMachinePolicy()), nullptr);
+    // Causes the stored metapolicy values to be updated.
+    PolicyMap policy_map_empty;
+    policy_map_.MergeFrom(policy_map_empty);
+
+    if (IsUserAffiliated()) {
+      base::flat_set<std::string> affiliation_ids;
+      affiliation_ids.insert("a");
+      policy_map_.SetUserAffiliationIds(affiliation_ids);
+      policy_map_.SetDeviceAffiliationIds(affiliation_ids);
+    }
+  }
+
+  void CheckPriorityConditions() {
     PolicyMap::Entry platform_machine(
         POLICY_LEVEL_MANDATORY, POLICY_SCOPE_MACHINE, POLICY_SOURCE_PLATFORM,
         base::Value(), nullptr);
@@ -1742,101 +1768,119 @@ class PolicyMapPriorityTest
     if (CloudPolicyOverridesPlatformPolicy() &&
         CloudUserPolicyOverridesCloudMachinePolicy() && IsUserAffiliated()) {
       EXPECT_TRUE(
-          policy_map.EntryHasHigherPriority(platform_machine, platform_user));
+          policy_map_.EntryHasHigherPriority(platform_machine, platform_user));
       EXPECT_FALSE(
-          policy_map.EntryHasHigherPriority(platform_machine, cloud_machine));
+          policy_map_.EntryHasHigherPriority(platform_machine, cloud_machine));
       EXPECT_FALSE(
-          policy_map.EntryHasHigherPriority(platform_machine, cloud_user));
+          policy_map_.EntryHasHigherPriority(platform_machine, cloud_user));
       EXPECT_TRUE(
-          policy_map.EntryHasHigherPriority(cloud_machine, platform_user));
+          policy_map_.EntryHasHigherPriority(cloud_machine, platform_user));
       EXPECT_FALSE(
-          policy_map.EntryHasHigherPriority(cloud_machine, cloud_user));
+          policy_map_.EntryHasHigherPriority(cloud_machine, cloud_user));
       EXPECT_FALSE(
-          policy_map.EntryHasHigherPriority(platform_user, cloud_user));
-      EXPECT_TRUE(policy_map.EntryHasHigherPriority(cloud_user, command_line));
+          policy_map_.EntryHasHigherPriority(platform_user, cloud_user));
+      EXPECT_TRUE(policy_map_.EntryHasHigherPriority(cloud_user, command_line));
       EXPECT_TRUE(
-          policy_map.EntryHasHigherPriority(cloud_user, enterprise_default));
+          policy_map_.EntryHasHigherPriority(cloud_user, enterprise_default));
       EXPECT_TRUE(
-          policy_map.EntryHasHigherPriority(command_line, enterprise_default));
+          policy_map_.EntryHasHigherPriority(command_line, enterprise_default));
     } else if (CloudUserPolicyOverridesCloudMachinePolicy() &&
                IsUserAffiliated()) {
       EXPECT_TRUE(
-          policy_map.EntryHasHigherPriority(platform_machine, platform_user));
+          policy_map_.EntryHasHigherPriority(platform_machine, platform_user));
       EXPECT_TRUE(
-          policy_map.EntryHasHigherPriority(platform_machine, cloud_machine));
+          policy_map_.EntryHasHigherPriority(platform_machine, cloud_machine));
       EXPECT_TRUE(
-          policy_map.EntryHasHigherPriority(platform_machine, cloud_user));
+          policy_map_.EntryHasHigherPriority(platform_machine, cloud_user));
       EXPECT_TRUE(
-          policy_map.EntryHasHigherPriority(cloud_machine, platform_user));
+          policy_map_.EntryHasHigherPriority(cloud_machine, platform_user));
       EXPECT_FALSE(
-          policy_map.EntryHasHigherPriority(cloud_machine, cloud_user));
+          policy_map_.EntryHasHigherPriority(cloud_machine, cloud_user));
       EXPECT_FALSE(
-          policy_map.EntryHasHigherPriority(platform_user, cloud_user));
-      EXPECT_TRUE(policy_map.EntryHasHigherPriority(cloud_user, command_line));
+          policy_map_.EntryHasHigherPriority(platform_user, cloud_user));
+      EXPECT_TRUE(policy_map_.EntryHasHigherPriority(cloud_user, command_line));
       EXPECT_TRUE(
-          policy_map.EntryHasHigherPriority(cloud_user, enterprise_default));
+          policy_map_.EntryHasHigherPriority(cloud_user, enterprise_default));
       EXPECT_TRUE(
-          policy_map.EntryHasHigherPriority(command_line, enterprise_default));
+          policy_map_.EntryHasHigherPriority(command_line, enterprise_default));
     } else if (CloudPolicyOverridesPlatformPolicy()) {
       EXPECT_TRUE(
-          policy_map.EntryHasHigherPriority(platform_machine, platform_user));
+          policy_map_.EntryHasHigherPriority(platform_machine, platform_user));
       EXPECT_FALSE(
-          policy_map.EntryHasHigherPriority(platform_machine, cloud_machine));
+          policy_map_.EntryHasHigherPriority(platform_machine, cloud_machine));
       EXPECT_TRUE(
-          policy_map.EntryHasHigherPriority(platform_machine, cloud_user));
+          policy_map_.EntryHasHigherPriority(platform_machine, cloud_user));
       EXPECT_TRUE(
-          policy_map.EntryHasHigherPriority(cloud_machine, platform_user));
-      EXPECT_TRUE(policy_map.EntryHasHigherPriority(cloud_machine, cloud_user));
-      EXPECT_TRUE(policy_map.EntryHasHigherPriority(platform_user, cloud_user));
-      EXPECT_TRUE(policy_map.EntryHasHigherPriority(cloud_user, command_line));
+          policy_map_.EntryHasHigherPriority(cloud_machine, platform_user));
       EXPECT_TRUE(
-          policy_map.EntryHasHigherPriority(cloud_user, enterprise_default));
+          policy_map_.EntryHasHigherPriority(cloud_machine, cloud_user));
       EXPECT_TRUE(
-          policy_map.EntryHasHigherPriority(command_line, enterprise_default));
+          policy_map_.EntryHasHigherPriority(platform_user, cloud_user));
+      EXPECT_TRUE(policy_map_.EntryHasHigherPriority(cloud_user, command_line));
+      EXPECT_TRUE(
+          policy_map_.EntryHasHigherPriority(cloud_user, enterprise_default));
+      EXPECT_TRUE(
+          policy_map_.EntryHasHigherPriority(command_line, enterprise_default));
     } else {
       EXPECT_TRUE(
-          policy_map.EntryHasHigherPriority(platform_machine, platform_user));
+          policy_map_.EntryHasHigherPriority(platform_machine, platform_user));
       EXPECT_TRUE(
-          policy_map.EntryHasHigherPriority(platform_machine, cloud_machine));
+          policy_map_.EntryHasHigherPriority(platform_machine, cloud_machine));
       EXPECT_TRUE(
-          policy_map.EntryHasHigherPriority(platform_machine, cloud_user));
+          policy_map_.EntryHasHigherPriority(platform_machine, cloud_user));
       EXPECT_TRUE(
-          policy_map.EntryHasHigherPriority(cloud_machine, platform_user));
-      EXPECT_TRUE(policy_map.EntryHasHigherPriority(cloud_machine, cloud_user));
-      EXPECT_TRUE(policy_map.EntryHasHigherPriority(platform_user, cloud_user));
-      EXPECT_TRUE(policy_map.EntryHasHigherPriority(cloud_user, command_line));
+          policy_map_.EntryHasHigherPriority(cloud_machine, platform_user));
       EXPECT_TRUE(
-          policy_map.EntryHasHigherPriority(cloud_user, enterprise_default));
+          policy_map_.EntryHasHigherPriority(cloud_machine, cloud_user));
       EXPECT_TRUE(
-          policy_map.EntryHasHigherPriority(command_line, enterprise_default));
+          policy_map_.EntryHasHigherPriority(platform_user, cloud_user));
+      EXPECT_TRUE(policy_map_.EntryHasHigherPriority(cloud_user, command_line));
+      EXPECT_TRUE(
+          policy_map_.EntryHasHigherPriority(cloud_user, enterprise_default));
+      EXPECT_TRUE(
+          policy_map_.EntryHasHigherPriority(command_line, enterprise_default));
     }
   }
+
+  PolicyMap policy_map_;
 };
 
 TEST_P(PolicyMapPriorityTest, PriorityCheck) {
-  PolicyMap policy_map;
+  CheckPriorityConditions();
+}
 
-  // Update the metapolicy values.
-  policy_map.Set(key::kCloudPolicyOverridesPlatformPolicy,
-                 POLICY_LEVEL_MANDATORY, POLICY_SCOPE_MACHINE,
-                 POLICY_SOURCE_PLATFORM,
-                 base::Value(CloudPolicyOverridesPlatformPolicy()), nullptr);
-  policy_map.Set(
-      key::kCloudUserPolicyOverridesCloudMachinePolicy, POLICY_LEVEL_MANDATORY,
-      POLICY_SCOPE_MACHINE, POLICY_SOURCE_PLATFORM,
-      base::Value(CloudUserPolicyOverridesCloudMachinePolicy()), nullptr);
-  // Causes the stored metapolicy values to be updated.
-  PolicyMap policy_map_empty;
-  policy_map.MergeFrom(policy_map_empty);
+TEST_P(PolicyMapPriorityTest, SingleProfilePolicy) {
+  PolicyMap::Entry platform_machine(
+      POLICY_LEVEL_MANDATORY, POLICY_SCOPE_MACHINE, POLICY_SOURCE_PLATFORM,
+      base::Value(), nullptr, &kUserCloudDetails);
+  PolicyMap::Entry platform_user(POLICY_LEVEL_MANDATORY, POLICY_SCOPE_USER,
+                                 POLICY_SOURCE_PLATFORM, base::Value(), nullptr,
+                                 &kUserCloudDetails);
+  PolicyMap::Entry cloud_machine(POLICY_LEVEL_MANDATORY, POLICY_SCOPE_MACHINE,
+                                 POLICY_SOURCE_CLOUD, base::Value(), nullptr,
+                                 &kUserCloudDetails);
+  PolicyMap::Entry cloud_user(POLICY_LEVEL_MANDATORY, POLICY_SCOPE_USER,
+                              POLICY_SOURCE_CLOUD, base::Value(), nullptr,
+                              &kUserCloudDetails);
+  PolicyMap::Entry command_line(POLICY_LEVEL_MANDATORY, POLICY_SCOPE_MACHINE,
+                                POLICY_SOURCE_COMMAND_LINE, base::Value(),
+                                nullptr, &kUserCloudDetails);
 
-  if (IsUserAffiliated()) {
-    base::flat_set<std::string> affiliation_ids;
-    affiliation_ids.insert("a");
-    policy_map.SetUserAffiliationIds(affiliation_ids);
-    policy_map.SetDeviceAffiliationIds(affiliation_ids);
-  }
+  EXPECT_TRUE(policy_map_.EntryHasHigherPriority(cloud_user, cloud_machine));
+  EXPECT_TRUE(policy_map_.EntryHasHigherPriority(cloud_user, platform_user));
+  EXPECT_TRUE(policy_map_.EntryHasHigherPriority(cloud_user, platform_machine));
+  EXPECT_TRUE(policy_map_.EntryHasHigherPriority(cloud_user, platform_machine));
+}
 
-  CheckPriorityConditions(policy_map);
+TEST_P(PolicyMapPriorityTest, SingleProfilePolicyWithMissingDetails) {
+  PolicyMap::Entry cloud_machine(POLICY_LEVEL_MANDATORY, POLICY_SCOPE_MACHINE,
+                                 POLICY_SOURCE_CLOUD, base::Value(), nullptr,
+                                 &kUserCloudDetails);
+  PolicyMap::Entry cloud_user(POLICY_LEVEL_MANDATORY, POLICY_SCOPE_USER,
+                              POLICY_SOURCE_CLOUD, base::Value(), nullptr,
+                              nullptr);
+  EXPECT_TRUE(policy_map_.EntryHasHigherPriority(cloud_user, cloud_machine));
+  EXPECT_FALSE(policy_map_.EntryHasHigherPriority(cloud_machine, cloud_user));
 }
 
 INSTANTIATE_TEST_SUITE_P(PolicyMapPriorityTestInstance,

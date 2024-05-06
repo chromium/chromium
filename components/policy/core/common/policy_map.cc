@@ -68,7 +68,8 @@ PolicyPriorityBrowser GetPriority(
     PolicyScope scope,
     bool cloud_policy_overrides_platform_policy,
     bool cloud_user_policy_overrides_cloud_machine_policy,
-    bool is_user_affiliated) {
+    bool is_user_affiliated,
+    const PolicyDetails* details) {
   switch (source) {
     case POLICY_SOURCE_ENTERPRISE_DEFAULT:
       return POLICY_PRIORITY_BROWSER_ENTERPRISE_DEFAULT;
@@ -81,6 +82,11 @@ PolicyPriorityBrowser GetPriority(
         return cloud_policy_overrides_platform_policy
                    ? POLICY_PRIORITY_BROWSER_CLOUD_MACHINE_RAISED
                    : POLICY_PRIORITY_BROWSER_CLOUD_MACHINE;
+      }
+      // For policies that can only be set with managed account, raise the
+      // priority of correct source to highest.
+      if (details && details->scope == kSingleProfile) {
+        return POLICY_PRIORITY_BROWSER_CLOUD_USER_DOUBLE_RAISED;
       }
       if (cloud_user_policy_overrides_cloud_machine_policy &&
           is_user_affiliated) {
@@ -120,11 +126,13 @@ PolicyMap::Entry::Entry(
     PolicyScope scope,
     PolicySource source,
     std::optional<base::Value> value,
-    std::unique_ptr<ExternalDataFetcher> external_data_fetcher)
+    std::unique_ptr<ExternalDataFetcher> external_data_fetcher,
+    const PolicyDetails* details)
     : level(level),
       scope(scope),
       source(source),
       external_data_fetcher(std::move(external_data_fetcher)),
+      details(details),
       value_(std::move(value)) {}
 
 PolicyMap::Entry::~Entry() = default;
@@ -138,7 +146,8 @@ PolicyMap::Entry PolicyMap::Entry::DeepCopy() const {
       value_ ? std::make_optional<base::Value>(value_->Clone()) : std::nullopt,
       external_data_fetcher
           ? std::make_unique<ExternalDataFetcher>(*external_data_fetcher)
-          : nullptr);
+          : nullptr,
+      details);
   copy.ignored_ = ignored_;
   copy.message_ids_ = message_ids_;
   copy.is_default_value_ = is_default_value_;
@@ -378,7 +387,7 @@ void PolicyMap::Set(
     std::optional<base::Value> value,
     std::unique_ptr<ExternalDataFetcher> external_data_fetcher) {
   Entry entry(level, scope, source, std::move(value),
-              std::move(external_data_fetcher));
+              std::move(external_data_fetcher), GetPolicyDetails(policy));
   Set(policy, std::move(entry));
 }
 
@@ -541,10 +550,15 @@ void PolicyMap::set_chrome_policy_details_callback_for_test(
 }
 
 bool PolicyMap::IsPolicyExternal(const std::string& policy) {
-  const PolicyDetails* policy_details = details_callback_.Run(policy);
+  const PolicyDetails* policy_details = GetPolicyDetails(policy);
   if (policy_details && policy_details->max_external_data_size > 0)
     return true;
   return false;
+}
+
+const PolicyDetails* PolicyMap::GetPolicyDetails(
+    const std::string& policy) const {
+  return details_callback_.Run(policy);
 }
 
 void PolicyMap::LoadFrom(const base::Value::Dict& policies,
@@ -611,20 +625,21 @@ bool PolicyMap::EntryHasHigherPriority(const PolicyMap::Entry& lhs,
   return std::tie(lhs.level, lhs.scope, lhs.source) >
          std::tie(rhs.level, rhs.scope, rhs.source);
 #else   // BUILDFLAG(IS_CHROMEOS)
+  const PolicyDetails* details = lhs.details ? lhs.details : rhs.details;
   PolicyPriorityBrowser lhs_priority =
       using_default_precedence
-          ? GetPriority(lhs.source, lhs.scope, false, false, false)
+          ? GetPriority(lhs.source, lhs.scope, false, false, false, details)
           : GetPriority(lhs.source, lhs.scope,
                         cloud_policy_overrides_platform_policy_,
                         cloud_user_policy_overrides_cloud_machine_policy_,
-                        IsUserAffiliated());
+                        IsUserAffiliated(), details);
   PolicyPriorityBrowser rhs_priority =
       using_default_precedence
-          ? GetPriority(rhs.source, rhs.scope, false, false, false)
+          ? GetPriority(rhs.source, rhs.scope, false, false, false, details)
           : GetPriority(rhs.source, rhs.scope,
                         cloud_policy_overrides_platform_policy_,
                         cloud_user_policy_overrides_cloud_machine_policy_,
-                        IsUserAffiliated());
+                        IsUserAffiliated(), details);
   return std::tie(lhs.level, lhs_priority) > std::tie(rhs.level, rhs_priority);
 #endif  // BUILDFLAG(IS_CHROMEOS)
 }
