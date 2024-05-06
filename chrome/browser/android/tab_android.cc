@@ -343,8 +343,7 @@ void TabAndroid::InitWebContents(
   CHECK_EQ(profile()->IsOffTheRecord(), incognito);
 
   if (is_background_tab) {
-    BackgroundTabManager::GetInstance()->RegisterBackgroundTab(web_contents(),
-                                                               profile());
+    BackgroundTabManager::CreateForWebContents(web_contents(), profile());
   }
   content_layer_->InsertChild(web_contents_->GetNativeView()->GetLayer(), 0);
 

@@ -198,6 +198,7 @@ public class ReparentingTask implements UserData {
         assert mTab.getWebContents() == null
                 || mTab.getWebContents().getTopLevelNativeWindow() == null;
         mTab.updateAttachment(window, tabDelegateFactory);
+        if (mTab.getWebContents() == null) return;
         ReparentingTaskJni.get().attachTab(mTab.getWebContents());
     }
 
