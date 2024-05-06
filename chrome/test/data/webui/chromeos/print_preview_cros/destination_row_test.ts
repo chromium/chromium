@@ -67,6 +67,7 @@ suite('DestinationRow', () => {
       displayName: 'Fake Destination',
       printerType: PrinterType.LOCAL_PRINTER,
       printerManuallySelected: false,
+      printerStatusReason: null,
     };
     element.destination = destination;
 

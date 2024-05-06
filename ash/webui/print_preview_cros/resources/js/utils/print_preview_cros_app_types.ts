@@ -25,6 +25,9 @@ export interface Destination {
   // Used for metrics, true when destination manually selected during CrOS
   // preview session.
   printerManuallySelected: boolean;
+
+  // The printer status reason for a local Chrome OS printer.
+  printerStatusReason: PrinterStatusReason|null;
 }
 
 export interface PrintRequestOutcome {
@@ -104,6 +107,29 @@ export enum ScalingType {
   FIT_TO_PAGE = 1,
   FIT_TO_PAPER = 2,
   CUSTOM = 3,
+}
+
+/**
+ *  These values must be kept in sync with the Reason enum in
+ *  /chromeos/printing/cups_printer_status.h
+ */
+export enum PrinterStatusReason {
+  UNKNOWN_REASON = 0,
+  DEVICE_ERROR = 1,
+  DOOR_OPEN = 2,
+  LOW_ON_INK = 3,
+  LOW_ON_PAPER = 4,
+  NO_ERROR = 5,
+  OUT_OF_INK = 6,
+  OUT_OF_PAPER = 7,
+  OUTPUT_ALMOST_FULL = 8,
+  OUTPUT_FULL = 9,
+  PAPER_JAM = 10,
+  PAUSED = 11,
+  PRINTER_QUEUE_FULL = 12,
+  PRINTER_UNREACHABLE = 13,
+  STOPPED = 14,
+  TRAY_MISSING = 15,
 }
 
 // PrintTicket represents the data required to start print job. Ticket will be
@@ -194,6 +220,9 @@ export interface PrintTicket {
   // Used for metrics. True when user updates the destination in the preview UI;
   // otherwise false.
   printerManuallySelected: boolean;
+
+  // Used for metrics. Destination's PrinterStatus when launching print job.
+  printerStatusReason: PrinterStatusReason;
 
   // Printer type used determine correct logic and handler for print job
   // destination.

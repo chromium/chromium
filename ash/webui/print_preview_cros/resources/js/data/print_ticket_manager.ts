@@ -7,7 +7,7 @@ import {EventTracker} from 'chrome://resources/js/event_tracker.js';
 
 import {createCustomEvent} from '../utils/event_utils.js';
 import {getPrintPreviewPageHandler} from '../utils/mojo_data_providers.js';
-import {type PrintPreviewPageHandler, PrintTicket, SessionContext} from '../utils/print_preview_cros_app_types.js';
+import {PrinterStatusReason, type PrintPreviewPageHandler, PrintTicket, SessionContext} from '../utils/print_preview_cros_app_types.js';
 
 import {DESTINATION_MANAGER_ACTIVE_DESTINATION_CHANGED, DestinationManager} from './destination_manager.js';
 import {DEFAULT_PARTIAL_PRINT_TICKET} from './ticket_constants.js';
@@ -85,6 +85,8 @@ export class PrintTicketManager extends EventTarget {
       this.printTicket.printerType = activeDest.printerType;
       this.printTicket.printerManuallySelected =
           activeDest.printerManuallySelected;
+      this.printTicket.printerStatusReason =
+          activeDest.printerStatusReason || PrinterStatusReason.UNKNOWN_REASON;
     }
 
     // TODO(b/323421684): Apply default settings from destination capabilities
@@ -161,6 +163,8 @@ export class PrintTicketManager extends EventTarget {
       this.printTicket!.printerType = activeDest.printerType;
       this.printTicket!.printerManuallySelected =
           activeDest.printerManuallySelected;
+      this.printTicket!.printerStatusReason =
+          activeDest.printerStatusReason || PrinterStatusReason.UNKNOWN_REASON;
     }
 
     this.eventTracker.remove(

@@ -11,7 +11,7 @@ import {DEFAULT_PARTIAL_PRINT_TICKET} from 'chrome://os-print/js/data/ticket_con
 import {FAKE_PRINT_SESSION_CONTEXT_SUCCESSFUL, FakePrintPreviewPageHandler} from 'chrome://os-print/js/fakes/fake_print_preview_page_handler.js';
 import {createCustomEvent} from 'chrome://os-print/js/utils/event_utils.js';
 import {setPrintPreviewPageHandlerForTesting} from 'chrome://os-print/js/utils/mojo_data_providers.js';
-import {PrintTicket} from 'chrome://os-print/js/utils/print_preview_cros_app_types.js';
+import {PrinterStatusReason, PrintTicket} from 'chrome://os-print/js/utils/print_preview_cros_app_types.js';
 import {assertDeepEquals, assertEquals, assertFalse, assertNotEquals, assertTrue} from 'chrome://webui-test/chromeos/chai_assert.js';
 import {MockController} from 'chrome://webui-test/chromeos/mock_controller.m.js';
 import {MockTimer} from 'chrome://webui-test/mock_timer.js';
@@ -291,6 +291,9 @@ suite('PrintTicketManager', () => {
             ticket!.printerManuallySelected,
             'printerManuallySelected set from DestinationManager active' +
                 ' destination');
+        assertEquals(
+            PrinterStatusReason.UNKNOWN_REASON, ticket!.printerStatusReason,
+            'printerStatusReason fallback to UNKNOWN_REASON if null');
       });
 
   // Verify PrintTicket destination set to empty string if no active
@@ -400,6 +403,9 @@ suite('PrintTicketManager', () => {
             ticket!.printerManuallySelected,
             `printerManuallySelected should be ${
                 PDF_DESTINATION.printerManuallySelected}`);
+        assertEquals(
+            PrinterStatusReason.UNKNOWN_REASON, ticket!.printerStatusReason,
+            `printerStatusReason should fall back to UNKNOWN_REASON when null`);
         getActiveDestinationFn.returnValue = {
           id: 'fake_id',
           displayName: 'Fake Destination',
@@ -500,6 +506,14 @@ suite('PrintTicketManager', () => {
         assertEquals(
             undefined, ticket.pinValue,
             'Ticket pinValue optional property should not be set');
+        assertEquals(
+            PrinterStatusReason.UNKNOWN_REASON, ticket.printerStatusReason,
+            'Ticket printerStatusReason should match ' +
+                'DEFAULT_PARTIAL_PRINT_TICKET');
+        assertEquals(
+            PrinterStatusReason.UNKNOWN_REASON, ticket.printerStatusReason,
+            'Ticket printerStatusReason should be ' +
+                'PrinterStatusReason.UNKNOWN_REASON');
         assertEquals(
             DEFAULT_PARTIAL_PRINT_TICKET.printerType, ticket.printerType,
             'Ticket printerType should match DEFAULT_PARTIAL_PRINT_TICKET');
