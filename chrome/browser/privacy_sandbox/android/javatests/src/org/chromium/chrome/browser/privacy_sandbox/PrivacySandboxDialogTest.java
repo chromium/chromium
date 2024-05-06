@@ -255,6 +255,7 @@ public final class PrivacySandboxDialogTest {
 
     @Test
     @SmallTest
+    @DisabledTest(message = "Flaky test. crbug.com/338991368")
     public void testControllerShowsEEAConsent() throws IOException {
         PrivacySandboxDialogController.disableEEANoticeForTesting(true);
 
@@ -278,6 +279,7 @@ public final class PrivacySandboxDialogTest {
 
     @Test
     @SmallTest
+    @DisabledTest(message = "Flaky test. crbug.com/338991368")
     public void testControllerShowsEEAConsentDropdown() {
         PrivacySandboxDialogController.disableEEANoticeForTesting(true);
 
@@ -412,6 +414,7 @@ public final class PrivacySandboxDialogTest {
 
     @Test
     @SmallTest
+    @DisabledTest(message = "Flaky test. crbug.com/338991368")
     public void testControllerShowsROWNotice() throws IOException {
         mFakePrivacySandboxBridge.setRequiredPromptType(PromptType.M1_NOTICE_ROW);
         launchDialog();
@@ -462,6 +465,7 @@ public final class PrivacySandboxDialogTest {
 
     @Test
     @SmallTest
+    @DisabledTest(message = "Flaky test. crbug.com/338991368")
     public void testControllerShowsRestrictedNotice() throws IOException {
         mFakePrivacySandboxBridge.setRequiredPromptType(PromptType.M1_NOTICE_RESTRICTED);
         launchDialog();
