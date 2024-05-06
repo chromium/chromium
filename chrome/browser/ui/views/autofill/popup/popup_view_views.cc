@@ -23,6 +23,7 @@
 #include "build/build_config.h"
 #include "chrome/browser/platform_util.h"
 #include "chrome/browser/ui/autofill/autofill_popup_controller.h"
+#include "chrome/browser/ui/autofill/autofill_suggestion_controller_utils.h"
 #include "chrome/browser/ui/browser_element_identifiers.h"
 #include "chrome/browser/ui/browser_finder.h"
 #include "chrome/browser/ui/passwords/ui_utils.h"
@@ -102,21 +103,6 @@ constexpr std::array<views::BubbleArrowSide, 2> kDefaultSubPopupSidesRTL = {
 int GetContentsVerticalPadding() {
   return ChromeLayoutProvider::Get()->GetDistanceMetric(
       DISTANCE_CONTENT_LIST_VERTICAL_SINGLE);
-}
-
-// Returns true if the item at `line_number` is a footer item.
-bool IsFooterItem(const std::vector<Suggestion>& suggestions,
-                  size_t line_number) {
-  if (line_number >= suggestions.size()) {
-    return false;
-  }
-
-  // Separators are a special case: They belong into the footer iff the next
-  // item exists and is a footer item.
-  SuggestionType type = suggestions[line_number].type;
-  return type == SuggestionType::kSeparator
-             ? IsFooterItem(suggestions, line_number + 1)
-             : IsFooterSuggestionType(type);
 }
 
 bool CanShowRootPopup(AutofillSuggestionController& controller) {
@@ -834,6 +820,8 @@ void PopupViewViews::CreateSuggestionViews() {
 
   rows_.reserve(kSuggestions.size());
   size_t current_line_number = 0u;
+  // TODO(b/325246516): Add "No suggestions found" label if there is a filter
+  // and there are only footer suggestions in the list.
   // Add the body rows, if there are any.
   if (!kSuggestions.empty() && !IsFooterItem(kSuggestions, 0u)) {
     // Create a container to wrap the "regular" (non-footer) rows.

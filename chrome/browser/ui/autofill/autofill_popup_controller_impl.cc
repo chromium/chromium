@@ -65,9 +65,14 @@ SuggestionFiltrationResult FilterSuggestions(
     const AutofillPopupController::SuggestionFilter& filter) {
   SuggestionFiltrationResult result;
 
-  for (const Suggestion& suggestion : suggestions) {
-    if (size_t pos = suggestion.main_text.value.find(*filter);
-        pos != std::u16string::npos) {
+  for (size_t i = 0; i < suggestions.size(); ++i) {
+    const Suggestion& suggestion = suggestions[i];
+    // Footer suggestions cannot be filtered out.
+    if (IsFooterItem(suggestions, i)) {
+      result.first.push_back(suggestion);
+      result.second.emplace_back();
+    } else if (size_t pos = suggestion.main_text.value.find(*filter);
+               pos != std::u16string::npos) {
       result.first.push_back(suggestion);
       result.second.push_back(AutofillPopupController::SuggestionFilterMatch{
           .main_text_match = {pos, pos + filter->size()}});

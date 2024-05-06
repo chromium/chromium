@@ -26,6 +26,16 @@ struct Suggestion;
 // that even if this is true, the suggestion itself may still not be acceptable.
 bool IsAcceptableSuggestionType(SuggestionType id);
 
+// Returns whether the suggestion with this `type` belongs into
+// the footer section of the popup. Returns `false` for separators, which may
+// belong either to the main or the footer section.
+bool IsFooterSuggestionType(SuggestionType type);
+
+// Returns `true` if the item at `line_number` belongs into the footer section
+// of the popup. For separators, the result is that of the next item.
+bool IsFooterItem(const std::vector<Suggestion>& suggestions,
+                  size_t line_number);
+
 // Returns the RenderFrameHost` corresponding to an `AutofillPopupDelegate`.
 content::RenderFrameHost* GetRenderFrameHost(AutofillPopupDelegate& delegate);
 
