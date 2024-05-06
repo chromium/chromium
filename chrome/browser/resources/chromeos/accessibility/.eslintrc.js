@@ -66,7 +66,9 @@ module.exports = {
                       // Exclude initialisms such as JSON and IME
                       'toJSON|describeTextChangedByIME|' +
                       // Exclude the short name CVox
-                      'isCVoxModifierActive' +
+                      'isCVoxModifierActive|' +
+                      // Exclude the phrase OS.
+                      'addOSKeyboardShortcutsMenuItem' +
                       ')$',
                   match: false,
                 },

@@ -18,7 +18,7 @@ import {CommandStore} from '../common/command_store.js';
 import {EventSourceType} from '../common/event_source_type.js';
 import {GestureCommandData} from '../common/gesture_command_data.js';
 import {KeyMap} from '../common/key_map.js';
-import {KeySequence} from '../common/key_sequence.js';
+import {KeyBinding} from '../common/key_sequence.js';
 import {KeyUtil} from '../common/key_util.js';
 import {Msgs} from '../common/msgs.js';
 import {ALL_PANEL_MENU_NODE_DATA, PanelNodeMenuData, PanelNodeMenuId, PanelNodeMenuItemData} from '../common/panel_menu_data.js';
@@ -27,52 +27,30 @@ import {PanelInterface} from './panel_interface.js';
 import {PanelMenu, PanelNodeMenu, PanelSearchMenu} from './panel_menu.js';
 import {PanelMode} from './panel_mode.js';
 
-// TODO(anastasi): Import these types from key_sequence.js once this file is
-// converted to TypeScript.
+const $ = (id: string): HTMLElement | null => document.getElementById(id);
 
-/**
- * @typedef {{
-*   command: !Command,
-*   sequence: !KeySequence,
-*   keySeq: (string|undefined),
-*   title: (string|undefined),
-* }}
-*/
-let KeyBinding;
-
-const $ = (id) => document.getElementById(id);
+interface TouchMenuData {
+  titleText: string;
+  gestureText: string;
+  command: Command;
+}
 
 export class MenuManager {
-  constructor() {
-    /**
-     * The currently active menu, if any.
-     * @private {?PanelMenu}
-     */
-    this.activeMenu_ = null;
+  private activeMenu_: PanelMenu | null = null;
+  private lastMenu_ = '';
+  private menus_: PanelMenu[] = [];
+  private nodeMenuDictionary_: Record<PanelNodeMenuId, PanelNodeMenu> = {};
+  private searchMenu_: PanelSearchMenu | null = null;
 
-    /** @private {string} */
-    this.lastMenu_ = '';
-
-    /**
-     * The array of top-level menus.
-     * @private {!Array<!PanelMenu>}
-     */
-    this.menus_ = [];
-
-    /** @private {!Object<!PanelNodeMenuId, !PanelNodeMenu>} */
-    this.nodeMenuDictionary_ = {};
-
-    /** @private {?PanelSearchMenu} */
-    this.searchMenu_ = null;
-  }
+  static disableMissingMsgsErrorsForTesting = false;
 
   /**
    * Activate a menu, which implies hiding the previous active menu.
-   * @param {?PanelMenu} menu The new menu to activate.
-   * @param {boolean} activateFirstItem Whether or not we should activate the
+   * @param menu The new menu to activate.
+   * @param activateFirstItem Whether or not we should activate the
    *     menu's first item.
    */
-  activateMenu(menu, activateFirstItem) {
+  activateMenu(menu: PanelMenu | null, activateFirstItem: boolean): void {
     if (menu === this.activeMenu_) {
       return;
     }
@@ -83,18 +61,17 @@ export class MenuManager {
     }
 
     this.activeMenu_ = menu;
-    PanelInterface.instance.setPendingCallback(null);
+    // TODO(b/314203187): Not null asserted, check that this is correct.
+    PanelInterface.instance!.setPendingCallback(null);
 
     if (this.activeMenu_) {
       this.activeMenu_.activate(activateFirstItem);
     }
   }
 
-  /**
-   * @param {!PanelMenu} actionsMenu
-   * @param {!Map<!Command, !KeyBinding>} bindingMap
-   */
-  async addActionsMenuItems(actionsMenu, bindingMap) {
+  async addActionsMenuItems(
+      actionsMenu: PanelMenu,
+      bindingMap: Map<Command, KeyBinding>): Promise<void> {
     const actions =
         await BackgroundBridge.PanelBackground.getActionsForCurrentNode();
     for (const standardAction of actions.standardActions) {
@@ -106,7 +83,7 @@ export class MenuManager {
       let shortcutName = '';
       if (commandName) {
         const commandBinding = bindingMap.get(commandName);
-        shortcutName = commandBinding ? commandBinding.keySeq : '';
+        shortcutName = commandBinding ? commandBinding.keySeq as string : '';
       }
       const actionDesc = Msgs.getMsg(actionMsg);
       actionsMenu.addMenuItem(
@@ -127,33 +104,29 @@ export class MenuManager {
 
   /**
    * Create a new menu with the given name and add it to the menu bar.
-   * @param {string} menuMsg The msg id of the new menu to add.
-   * @return {!PanelMenu} The menu just created.
+   * @param menuMsg The msg id of the new menu to add.
+   * @return The menu just created.
    */
-  addMenu(menuMsg) {
+  addMenu(menuMsg: string): PanelMenu {
     const menu = new PanelMenu(menuMsg);
-    $('menu-bar').appendChild(menu.menuBarItemElement);
+    $('menu-bar')!.appendChild(menu.menuBarItemElement);
     menu.menuBarItemElement.addEventListener(
         'mouseover',
         () => this.activateMenu(menu, true /* activateFirstItem */), false);
     menu.menuBarItemElement.addEventListener(
         'mouseup', event => this.onMouseUpOnMenuTitle(menu, event), false);
-    $('menus_background').appendChild(menu.menuContainerElement);
+    $('menus_background')!.appendChild(menu.menuContainerElement);
     this.menus_.push(menu);
     return menu;
   }
 
-  /**
-   * @param {!KeyBinding} binding
-   * @param {PanelMenu} menu
-   * @param {boolean} isTouchScreen
-   */
-  addMenuItemFromKeyBinding(binding, menu, isTouchScreen) {
+  addMenuItemFromKeyBinding(
+      binding: KeyBinding, menu: PanelMenu | null,
+      isTouchScreen: boolean): void {
     if (!binding.title || !menu) {
       return;
     }
 
-    const gestures = Object.keys(GestureCommandData.GESTURE_COMMAND_MAP);
     let keyText;
     let brailleText;
     let gestureText;
@@ -176,28 +149,26 @@ export class MenuManager {
 
   /**
    * Create a new node menu with the given name and add it to the menu bar.
-   * @param {!PanelNodeMenuData} menuData The title/predicate for the new menu.
+   * @param menuData The title/predicate for the new menu.
    */
-  addNodeMenu(menuData) {
+  addNodeMenu(menuData: PanelNodeMenuData): void {
     const menu = new PanelNodeMenu(menuData.titleId);
-    $('menu-bar').appendChild(menu.menuBarItemElement);
+    $('menu-bar')!.appendChild(menu.menuBarItemElement);
     menu.menuBarItemElement.addEventListener(
         'mouseover',
         () => this.activateMenu(menu, true /* activateFirstItem */));
     menu.menuBarItemElement.addEventListener(
         'mouseup', event => this.onMouseUpOnMenuTitle(menu, event));
-    $('menus_background').appendChild(menu.menuContainerElement);
+    $('menus_background')!.appendChild(menu.menuContainerElement);
     this.menus_.push(menu);
     this.nodeMenuDictionary_[menuData.menuId] = menu;
   }
 
-  /** @param {!PanelNodeMenuItemData} itemData */
-  addNodeMenuItem(itemData) {
+  addNodeMenuItem(itemData: PanelNodeMenuItemData): void {
     this.nodeMenuDictionary_[itemData.menuId].addItemFromData(itemData);
   }
 
-  /** @param {!PanelMenu} menu */
-  async addOSKeyboardShortcutsMenuItem(menu) {
+  async addOSKeyboardShortcutsMenuItem(menu: PanelMenu): Promise<void> {
     let localizedSlash =
         await AsyncUtil.getLocalizedDomKeyStringForKeyCode(KeyCode.OEM_2);
     if (!localizedSlash) {
@@ -213,14 +184,15 @@ export class MenuManager {
 
   /**
    * Create a new search menu with the given name and add it to the menu bar.
-   * @param {string} menuMsg The msg id of the new menu to add.
-   * @return {!PanelMenu} The menu just created.
+   * @param menuMsg The msg id of the new menu to add.
+   * @return The menu just created.
    */
-  addSearchMenu(menuMsg) {
+  addSearchMenu(menuMsg: string): PanelMenu {
     this.searchMenu_ = new PanelSearchMenu(menuMsg);
     // Add event listeners to search bar.
     this.searchMenu_.searchBar.addEventListener(
-        'input', event => this.onSearchBarQuery(event), false);
+        'input',
+        (event: Event) => this.onSearchBarQuery(event as InputEvent), false);
     this.searchMenu_.searchBar.addEventListener('mouseup', event => {
       // Clicking in the panel causes us to either activate an item or close the
       // menus altogether. Prevent that from happening if we click the search
@@ -229,23 +201,22 @@ export class MenuManager {
       event.stopPropagation();
     }, false);
 
-    $('menu-bar').appendChild(this.searchMenu_.menuBarItemElement);
+    $('menu-bar')!.appendChild(this.searchMenu_.menuBarItemElement);
     this.searchMenu_.menuBarItemElement.addEventListener(
         'mouseover',
         () =>
             this.activateMenu(this.searchMenu_, false /* activateFirstItem */),
         false);
     this.searchMenu_.menuBarItemElement.addEventListener(
-        'mouseup', event => this.onMouseUpOnMenuTitle(this.searchMenu_, event),
+        'mouseup', event => this.onMouseUpOnMenuTitle(this.searchMenu_!, event),
         false);
-    $('menus_background').appendChild(this.searchMenu_.menuContainerElement);
+    $('menus_background')!.appendChild(this.searchMenu_.menuContainerElement);
     this.menus_.push(this.searchMenu_);
     return this.searchMenu_;
   }
 
-  /** @param {!PanelMenu} touchMenu */
-  addTouchGestureMenuItems(touchMenu) {
-    const touchGestureItems = [];
+  addTouchGestureMenuItems(touchMenu: PanelMenu): void {
+    const touchGestureItems: TouchMenuData[] = [];
     for (const data of Object.values(GestureCommandData.GESTURE_COMMAND_MAP)) {
       const command = data.command;
       if (!command) {
@@ -278,9 +249,9 @@ export class MenuManager {
 
   /**
    * Advance the index of the current active menu by |delta|.
-   * @param {number} delta The number to add to the active menu index.
+   * @param delta The number to add to the active menu index.
    */
-  advanceActiveMenuBy(delta) {
+  advanceActiveMenuBy(delta: number): void {
     let activeIndex = this.menus_.findIndex(menu => menu === this.activeMenu_);
 
     if (activeIndex >= 0) {
@@ -306,24 +277,25 @@ export class MenuManager {
    * Clear any previous menus. The menus are all regenerated each time the
    * menus are opened.
    */
-  clearMenus() {
+  clearMenus(): void {
     while (this.menus_.length) {
       const menu = this.menus_.pop();
-      $('menu-bar').removeChild(menu.menuBarItemElement);
-      $('menus_background').removeChild(menu.menuContainerElement);
+      $('menu-bar')!.removeChild(menu!.menuBarItemElement);
+      $('menus_background')!.removeChild(menu!.menuContainerElement);
+
+      if (this.activeMenu_) {
+        this.lastMenu_ = this.activeMenu_.menuMsg;
+      }
+      this.activeMenu_ = null;
     }
-    if (this.activeMenu_) {
-      this.lastMenu_ = this.activeMenu_.menuMsg;
-    }
-    this.activeMenu_ = null;
   }
 
   /** Disables menu items that are prohibited without a signed-in user. */
-  denySignedOut() {
+  denySignedOut(): void {
     for (const menu of this.menus_) {
       for (const item of menu.items) {
-        if (CommandStore.denySignedOut(
-                /** @type {!Command} */ (item.element.id))) {
+        // TODO(b/314203187): Not null asserted, check that this is correct.
+        if (CommandStore.denySignedOut(item.element!.id as Command)) {
           item.disable();
         }
       }
@@ -332,11 +304,9 @@ export class MenuManager {
 
   /**
    * Starting at |startIndex|, looks for an enabled menu.
-   * @param {number} startIndex
-   * @param {number} delta
-   * @return {number} The index of the enabled menu. -1 if not found.
+   * @return The index of the enabled menu. -1 if not found.
    */
-  findEnabledMenuIndex(startIndex, delta) {
+  findEnabledMenuIndex(startIndex: number, delta: number): number {
     const endIndex = (delta > 0) ? this.menus_.length : -1;
     while (startIndex !== endIndex) {
       if (this.menus_[startIndex].enabled) {
@@ -349,29 +319,25 @@ export class MenuManager {
 
   /**
    * Get the callback for whatever item is currently selected.
-   * @return {?Function} The callback for the current item.
+   * @return The callback for the current item.
+   *
+   * TODO(b/267329383): Specify this as Promise<void> once PanelMenu
+   * is converted to typescript.
    */
-  getCallbackForCurrentItem() {
+  getCallbackForCurrentItem(): (() => Promise<any>) | null{
     if (this.activeMenu_) {
       return this.activeMenu_.getCallbackForCurrentItem();
     }
     return null;
   }
 
-  /**
-   * @param {string|undefined} opt_menuTitle
-   * @return {!PanelMenu}
-   */
-  getSelectedMenu(opt_menuTitle) {
+  getSelectedMenu(menuTitle?: string): PanelMenu {
     const specifiedMenu =
-        this.menus_.find(menu => menu.menuMsg === opt_menuTitle);
+        this.menus_.find(menu => menu.menuMsg === menuTitle);
     return specifiedMenu || this.searchMenu_ || this.menus_[0];
   }
 
-  /**
-   * @return {!Promise<!Array<!KeyBinding>>}
-   */
-  async getSortedKeyBindings() {
+  async getSortedKeyBindings(): Promise<KeyBinding[]> {
     // TODO(accessibility): Commands should be based off of CommandStore and
     // not the keymap. There are commands that don't have a key binding (e.g.
     // commands for touch).
@@ -398,18 +364,13 @@ export class MenuManager {
     }
     sortedBindings.sort(
         (binding1, binding2) =>
-            binding1.title.localeCompare(String(binding2.title)));
+            binding1.title!.localeCompare(String(binding2.title)));
     return sortedBindings;
   }
 
-  /**
-   * @param {!PanelMenu} actionsMenu
-   * @param {!PanelMenu} chromevoxMenu
-   * @param {!PanelMenu} jumpMenu
-   * @param {!PanelMenu} speechMenu
-   * @return {!Object<!CommandCategory, ?PanelMenu>}
-   */
-  makeCategoryMapping(actionsMenu, chromevoxMenu, jumpMenu, speechMenu) {
+  makeCategoryMapping(
+      actionsMenu: PanelMenu, chromevoxMenu: PanelMenu, jumpMenu: PanelMenu,
+      speechMenu: PanelMenu): Record<CommandCategory, PanelMenu | null> {
     return {
       [CommandCategory.ACTIONS]: actionsMenu,
       [CommandCategory.BRAILLE]: null,
@@ -425,11 +386,8 @@ export class MenuManager {
       [CommandCategory.TABLES]: jumpMenu,
     };
   }
-  /**
-   * @param {!Array<!KeyBinding>} sortedBindings
-   * @return {!Map<!Command, !KeyBinding>}
-   */
-  makeBindingMap(sortedBindings) {
+
+  makeBindingMap(sortedBindings: KeyBinding[]): Map<Command, KeyBinding> {
     const bindingMap = new Map();
     for (const binding of sortedBindings) {
       bindingMap.set(binding.command, binding);
@@ -440,10 +398,10 @@ export class MenuManager {
   /**
    * Activate a menu whose title has been clicked. Stop event propagation at
    * this point so we don't close the ChromeVox menus and restore focus.
-   * @param {PanelMenu} menu The menu we would like to activate.
-   * @param {Event} mouseUpEvent The mouseup event.
+   * @param menu The menu we would like to activate.
+   * @param mouseUpEvent The mouseup event.
    */
-  onMouseUpOnMenuTitle(menu, mouseUpEvent) {
+  onMouseUpOnMenuTitle(menu: PanelMenu, mouseUpEvent: MouseEvent): void {
     this.activateMenu(menu, true /* activateFirstItem */);
     mouseUpEvent.preventDefault();
     mouseUpEvent.stopPropagation();
@@ -451,25 +409,27 @@ export class MenuManager {
 
   /**
    * Open / show the ChromeVox Menus.
-   * @param {Event=} opt_event An optional event that triggered this.
-   * @param {string=} opt_activateMenuTitle Title msg id of menu to open.
+   * @param {Event=} event An optional event that triggered this.
+   * @param {string=} activateMenuTitle?: string Title msg id of menu to open.
    */
-  async onOpenMenus(opt_event, opt_activateMenuTitle) {
+  async onOpenMenus(event?: Event, activateMenuTitle?: string): Promise<void> {
     // If the menu was already open, close it now and exit early.
-    if (PanelInterface.instance.mode !== PanelMode.COLLAPSED) {
-      PanelInterface.instance.setMode(PanelMode.COLLAPSED);
+    // TODO(b/314203187): Not null asserted, check that this is correct.
+    if (PanelInterface.instance!.mode !== PanelMode.COLLAPSED) {
+      PanelInterface.instance!.setMode(PanelMode.COLLAPSED);
       return;
     }
 
     // Eat the event so that a mousedown isn't turned into a drag, allowing
     // users to click-drag-release to select a menu item.
-    if (opt_event) {
-      opt_event.stopPropagation();
-      opt_event.preventDefault();
+    if (event) {
+      event.stopPropagation();
+      event.preventDefault();
     }
 
     await BackgroundBridge.PanelBackground.saveCurrentNode();
-    PanelInterface.instance.setMode(PanelMode.FULLSCREEN_MENUS);
+    // TODO(b/314203187): Not null asserted, check that this is correct.
+    PanelInterface.instance!.setMode(PanelMode.FULLSCREEN_MENUS);
 
     // The panel does not get focus immediately when we request to be full
     // screen (handled in ChromeVoxPanel natively on hash changed). Wait, if
@@ -482,7 +442,7 @@ export class MenuManager {
     const touchScreen = (eventSource === EventSourceType.TOUCH_GESTURE);
 
     // Build the top-level menus.
-    const searchMenu = this.addSearchMenu('panel_search_menu');
+    this.addSearchMenu('panel_search_menu');
     const jumpMenu = this.addMenu('panel_menu_jump');
     const speechMenu = this.addMenu('panel_menu_speech');
     const touchMenu =
@@ -516,25 +476,27 @@ export class MenuManager {
       this.addTouchGestureMenuItems(touchMenu);
     }
 
-    if (PanelInterface.instance.sessionState !== 'IN_SESSION') {
+    // TODO(b/314203187): Not null asserted, check that this is correct.
+    if (PanelInterface.instance!.sessionState !== 'IN_SESSION') {
       this.denySignedOut();
     }
 
     // Add a menu item that disables / closes ChromeVox.
+    // TODO(b/314203187): Not null asserted, check that this is correct.
     chromevoxMenu.addMenuItem(
         Msgs.getMsg('disable_chromevox'), 'Ctrl+Alt+Z', '', '',
-        async () => PanelInterface.instance.onClose());
+        async () => PanelInterface.instance!.onClose());
 
     for (const menuData of ALL_PANEL_MENU_NODE_DATA) {
       this.addNodeMenu(menuData);
     }
     await BackgroundBridge.PanelBackground.createAllNodeMenuBackgrounds(
-        opt_activateMenuTitle);
+        activateMenuTitle);
 
     await this.addActionsMenuItems(actionsMenu, bindingMap);
 
     // Activate either the specified menu or the search menu.
-    const selectedMenu = this.getSelectedMenu(opt_activateMenuTitle);
+    const selectedMenu = this.getSelectedMenu(activateMenuTitle);
 
     const activateFirstItem = (selectedMenu !== this.searchMenu);
     this.activateMenu(selectedMenu, activateFirstItem);
@@ -544,13 +506,13 @@ export class MenuManager {
    * Listens to changes in the menu search bar. Populates the search menu
    * with items that match the search bar's contents.
    * Note: we ignore PanelNodeMenu items and items without shortcuts.
-   * @param {Event} event The input event.
+   * @param event The input event.
    */
-  onSearchBarQuery(event) {
+  onSearchBarQuery(event: InputEvent): void {
     if (!this.searchMenu_) {
       throw Error('MenuManager.searchMenu_ must be defined');
     }
-    const query = event.target.value.toLowerCase();
+    const query = (event.target as HTMLInputElement).value.toLowerCase();
     this.searchMenu_.clear();
     // Show the search results menu.
     this.activateMenu(this.searchMenu_, false /* activateFirstItem */);
@@ -579,7 +541,8 @@ export class MenuManager {
 
     if (this.searchMenu_.items.length === 0) {
       this.searchMenu_.addMenuItem(
-          Msgs.getMsg('panel_menu_item_none'), '', '', '', function() {});
+          Msgs.getMsg(
+              'panel_menu_item_none'), '', '', '', () => Promise.resolve());
     }
     this.searchMenu_.activateItem(0);
   }
@@ -587,47 +550,35 @@ export class MenuManager {
   // The following getters and setters are temporary during the migration from
   // panel.js.
 
-  /** @return {?PanelMenu} */
-  get activeMenu() {
+  get activeMenu(): PanelMenu | null {
     return this.activeMenu_;
   }
-  /** @param {?PanelMenu} menu */
-  set activeMenu(menu) {
+  set activeMenu(menu: PanelMenu | null) {
     this.activeMenu_ = menu;
   }
 
-  /** @return {string} */
-  get lastMenu() {
+  get lastMenu(): string {
     return this.lastMenu_;
   }
-  /** @param {string} menuMsg */
-  set lastMenu(menuMsg) {
+  set lastMenu(menuMsg: string) {
     this.lastMenu_ = menuMsg;
   }
 
-  /** @return {!Array<!PanelMenu>} */
-  get menus() {
+  get menus(): PanelMenu[] {
     return this.menus_;
   }
 
-  /** @return {!Object<!PanelNodeMenuId, !PanelNodeMenu>} */
-  get nodeMenuDictionary() {
+  get nodeMenuDictionary(): Record<PanelNodeMenuId, PanelNodeMenu> {
     return this.nodeMenuDictionary_;
   }
 
-  /** @return {?PanelSearchMenu} */
-  get searchMenu() {
+  get searchMenu(): PanelSearchMenu | null {
     return this.searchMenu_;
   }
-  /** @param {?PanelSearchMenu} menu */
-  set searchMenu(menu) {
+  set searchMenu(menu: PanelSearchMenu | null) {
     this.searchMenu_ = menu;
   }
 }
-
-
-/** @type {boolean} */
-MenuManager.disableMissingMsgsErrorsForTesting = false;
 
 // Local to module.
 
@@ -646,7 +597,7 @@ const COMMANDS_WITH_NO_MSG_ID = [
   'copy',
 ];
 
-const ACTION_TO_MSG_ID = {
+const ACTION_TO_MSG_ID: Record<string, string> = {
   decrement: 'action_decrement_description',
   doDefault: 'perform_default_action',
   increment: 'action_increment_description',
@@ -656,7 +607,7 @@ const ACTION_TO_MSG_ID = {
   longClick: 'force_long_click_on_current_item',
 };
 
-async function waitForWindowFocus() {
+async function waitForWindowFocus(): Promise<any> {
   return new Promise(
       resolve => window.addEventListener('focus', resolve, {once: true}));
 }

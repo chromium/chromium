@@ -12,7 +12,7 @@ import {PanelNodeMenuItemData} from '../common/panel_menu_data.js';
 
 import {PanelMenuItem} from './panel_menu_item.js';
 
-type MenuCallback = () => Promise<void>;
+type MenuCallback = () => Promise<any>;
 
 export class PanelMenu {
   menuBarItemElement: HTMLDivElement;
