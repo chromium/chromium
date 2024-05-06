@@ -49,6 +49,7 @@
 #include "components/feature_engagement/public/feature_constants.h"
 #include "components/strings/grit/components_strings.h"
 #include "components/user_education/common/feature_promo_controller.h"
+#include "content/public/common/input/native_web_keyboard_event.h"
 #include "third_party/abseil-cpp/absl/types/variant.h"
 #include "third_party/blink/public/common/input/web_input_event.h"
 #include "ui/accessibility/ax_node_data.h"
@@ -56,6 +57,8 @@
 #include "ui/base/metadata/metadata_impl_macros.h"
 #include "ui/base/ui_base_features.h"
 #include "ui/color/color_id.h"
+#include "ui/events/blink/web_input_event.h"
+#include "ui/events/event.h"
 #include "ui/events/keycodes/keyboard_codes.h"
 #include "ui/events/types/event_type.h"
 #include "ui/gfx/geometry/insets.h"
@@ -707,6 +710,18 @@ void PopupViewViews::OnWidgetVisibilityChanged(views::Widget* widget,
       feature_engagement::kIPHAutofillCreditCardBenefitFeature);
 }
 
+bool PopupViewViews::SearchBarHandleKeyPressed(const ui::KeyEvent& event) {
+  if (!controller_) {
+    return false;
+  }
+
+  // Handling events in the controller (the delegate's handler is prioritized by
+  // the search bar) enables keyboard navigation when the search bar input
+  // field is focused.
+  return controller_->HandleKeyPressEvent(
+      content::NativeWebKeyboardEvent(event));
+}
+
 void PopupViewViews::SetSelectedCell(
     std::optional<CellIndex> cell_index,
     PopupCellSelectionSource source,
@@ -785,7 +800,8 @@ void PopupViewViews::InitViews(PopupViewSearchBarConfig search_bar_config) {
         base::BindRepeating(&PopupViewViews::OnSearchBarInputChanged,
                             base::Unretained(this)),
         base::BindRepeating(&PopupViewViews::OnSearchBarFocusLost,
-                            base::Unretained(this))));
+                            base::Unretained(this)),
+        *this));
     search_bar_->SetProperty(views::kMarginsKey,
                              gfx::Insets::VH(GetContentsVerticalPadding(), 0));
     AddChildView(std::make_unique<PopupSeparatorView>(/*vertical_padding=*/0));

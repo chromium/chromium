@@ -65,7 +65,8 @@ struct PopupViewSearchBarConfig {
 class PopupViewViews : public PopupBaseView,
                        public AutofillPopupView,
                        public PopupRowView::SelectionDelegate,
-                       public ExpandablePopupParentView {
+                       public ExpandablePopupParentView,
+                       public PopupSearchBarView::Delegate {
   METADATA_HEADER(PopupViewViews, PopupBaseView)
 
  public:
@@ -124,6 +125,9 @@ class PopupViewViews : public PopupBaseView,
 
   // PopupBaseView:
   void OnWidgetVisibilityChanged(views::Widget* widget, bool visible) override;
+
+  // PopupSearchBarView::Delegate:
+  bool SearchBarHandleKeyPressed(const ui::KeyEvent& event) override;
 
  private:
   friend class PopupViewViewsTestApi;

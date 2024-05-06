@@ -304,16 +304,6 @@ void AutofillPopupControllerImpl::ViewDestroyed() {
   Hide(SuggestionHidingReason::kViewDestroyed);
 }
 
-bool AutofillPopupControllerImpl::HandleKeyPressEvent(
-    const content::NativeWebKeyboardEvent& event) {
-  if (sub_popup_controller_ &&
-      sub_popup_controller_->HandleKeyPressEvent(event)) {
-    return true;
-  }
-
-  return view_ && view_->HandleKeyPressEvent(event);
-}
-
 void AutofillPopupControllerImpl::OnSuggestionsChanged() {
   if (view_) {
     view_->OnSuggestionsChanged();
@@ -760,6 +750,16 @@ void AutofillPopupControllerImpl::SetFilter(
     std::optional<SuggestionFilter> filter) {
   filter_ = std::move(filter);
   UpdateFilteredSuggestions(/*notify_suggestions_changed=*/true);
+}
+
+bool AutofillPopupControllerImpl::HandleKeyPressEvent(
+    const content::NativeWebKeyboardEvent& event) {
+  if (sub_popup_controller_ &&
+      sub_popup_controller_->HandleKeyPressEvent(event)) {
+    return true;
+  }
+
+  return view_ && view_->HandleKeyPressEvent(event);
 }
 
 void AutofillPopupControllerImpl::SetViewForTesting(

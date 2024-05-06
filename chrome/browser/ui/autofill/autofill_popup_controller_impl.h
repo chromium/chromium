@@ -24,7 +24,6 @@
 #include "third_party/abseil-cpp/absl/types/variant.h"
 
 namespace content {
-struct NativeWebKeyboardEvent;
 class WebContents;
 }  // namespace content
 
@@ -72,11 +71,6 @@ class AutofillPopupControllerImpl
   AutofillPopupControllerImpl& operator=(const AutofillPopupControllerImpl&) =
       delete;
 
-  // Handles a key press event and returns whether the event should be swallowed
-  // (meaning that no other handler, in not particular the default handler, can
-  // process it).
-  bool HandleKeyPressEvent(const content::NativeWebKeyboardEvent& event);
-
   // AutofillSuggestionController:
   void OnSuggestionsChanged() override;
   void AcceptSuggestion(int index) override;
@@ -112,6 +106,8 @@ class AutofillPopupControllerImpl
   const std::vector<SuggestionFilterMatch>& GetSuggestionFilterMatches()
       const override;
   void SetFilter(std::optional<SuggestionFilter> filter) override;
+  bool HandleKeyPressEvent(
+      const content::NativeWebKeyboardEvent& event) override;
   base::WeakPtr<AutofillPopupController> GetWeakPtr() override;
   void SetViewForTesting(base::WeakPtr<AutofillPopupView> view) override;
 

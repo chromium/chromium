@@ -69,6 +69,7 @@ namespace {
 
 using ::testing::_;
 using ::testing::AllOf;
+using ::testing::Eq;
 using ::testing::Field;
 using ::testing::InSequence;
 using ::testing::Mock;
@@ -1736,6 +1737,18 @@ TEST_F(PopupViewViewsTest, SearchBar_QueryIsSetAsFilterToController) {
   test_api(view()).SetSearchQuery(u"");
   task_environment()->FastForwardBy(
       PopupSearchBarView::kInputChangeCallbackDelay);
+}
+
+TEST_F(PopupViewViewsTest, SearchBar_PressedKeysPassedToController) {
+  CreateAndShowView({SuggestionType::kAddressEntry},
+                    CreateParamsForTestWidget(),
+                    /*search_bar_config=*/{.enabled = true});
+
+  EXPECT_CALL(controller(), HandleKeyPressEvent(
+                                Field(&content::NativeWebKeyboardEvent::dom_key,
+                                      ui::DomKey::Key::ARROW_DOWN)));
+
+  generator().PressAndReleaseKey(ui::VKEY_DOWN);
 }
 
 }  // namespace autofill

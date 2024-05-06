@@ -8,6 +8,10 @@
 #include "base/memory/weak_ptr.h"
 #include "chrome/browser/ui/autofill/autofill_suggestion_controller.h"
 
+namespace content {
+struct NativeWebKeyboardEvent;
+}  // namespace content
+
 namespace autofill {
 
 // The interface implemented by Desktop implementations of the
@@ -75,6 +79,14 @@ class AutofillPopupController : public AutofillSuggestionController {
   // suggestion indices (used in many `AutofillSuggestionController` methods,
   // e.g. `RemoveSuggestion()`) become invalid.
   virtual void SetFilter(std::optional<SuggestionFilter> filter) = 0;
+
+  // Handles a key press event and returns whether the event should be swallowed
+  // (meaning that no other handler, in particular not the default handler, can
+  // process it).
+  // TODO(b/325246516): Change the event type to `ui::KeyEvent` as events can
+  // come not only from blink, but from native UI too.
+  virtual bool HandleKeyPressEvent(
+      const content::NativeWebKeyboardEvent& event) = 0;
 
   virtual base::WeakPtr<AutofillPopupController> GetWeakPtr() = 0;
 
