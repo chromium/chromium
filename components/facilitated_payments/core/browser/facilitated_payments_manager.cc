@@ -15,6 +15,7 @@
 #include "components/facilitated_payments/core/browser/facilitated_payments_api_client.h"
 #include "components/facilitated_payments/core/browser/facilitated_payments_client.h"
 #include "components/facilitated_payments/core/features/features.h"
+#include "components/facilitated_payments/core/metrics/facilitated_payments_metrics.h"
 #include "services/metrics/public/cpp/ukm_builders.h"
 
 namespace payments::facilitated {
@@ -166,6 +167,7 @@ void FacilitatedPaymentsManager::OnPixCodeValidated(
   }
 
   initiate_payment_request_details_->pix_code_ = std::move(pix_code);
+  api_availability_check_latency_ = base::TimeTicks::Now();
   api_client_->IsAvailable(
       base::BindOnce(&FacilitatedPaymentsManager::OnApiAvailabilityReceived,
                      weak_ptr_factory_.GetWeakPtr()));
@@ -183,6 +185,8 @@ int64_t FacilitatedPaymentsManager::GetPixCodeDetectionLatencyInMillis() const {
 
 void FacilitatedPaymentsManager::OnApiAvailabilityReceived(
     bool is_api_available) {
+  LogIsApiAvailableResult(is_api_available, (base::TimeTicks::Now() -
+                                             api_availability_check_latency_));
   if (!is_api_available) {
     Reset();
     return;
@@ -235,7 +239,7 @@ void FacilitatedPaymentsManager::OnPixPaymentPromptResult(
     return;
   }
   initiate_payment_request_details_->instrument_id_ = selected_instrument_id;
-
+  get_client_token_loading_latency_ = base::TimeTicks::Now();
   api_client_->GetClientToken(
       base::BindOnce(&FacilitatedPaymentsManager::OnGetClientToken,
                      weak_ptr_factory_.GetWeakPtr()));
@@ -243,6 +247,9 @@ void FacilitatedPaymentsManager::OnPixPaymentPromptResult(
 
 void FacilitatedPaymentsManager::OnGetClientToken(
     std::vector<uint8_t> client_token) {
+  LogGetClientTokenResult(
+      !client_token.empty(),
+      (base::TimeTicks::Now() - get_client_token_loading_latency_));
   if (client_token.empty()) {
     Reset();
     return;

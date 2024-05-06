@@ -8,6 +8,7 @@
 
 #include "base/functional/callback.h"
 #include "base/test/gmock_callback_support.h"
+#include "base/test/metrics/histogram_tester.h"
 #include "base/test/scoped_feature_list.h"
 #include "base/test/task_environment.h"
 #include "base/types/expected.h"
@@ -871,6 +872,52 @@ TEST_F(FacilitatedPaymentsManagerTest,
                                      /*selected_instrument_id=*/-1);
 }
 
+// The GetClientToken async call is made after the user has accepted the payment
+// prompt. This test verifies that the result and latency of the GetClientToken
+// call is logged correctly.
+TEST_F(FacilitatedPaymentsManagerTest,
+       GetClientTokenHistogram_ClientTokenNotEmpty) {
+  base::HistogramTester histogram_tester;
+  EXPECT_CALL(*api_client_, GetClientToken(testing::_));
+  manager_->OnPixPaymentPromptResult(/*is_prompt_accepted=*/true,
+                                     /*selected_instrument_id=*/-1);
+  FastForwardBy(base::Seconds(2));
+
+  manager_->OnGetClientToken(std::vector<uint8_t>{'t', 'o', 'k', 'e', 'n'});
+
+  histogram_tester.ExpectUniqueSample(
+      "FacilitatedPayments.Pix.GetClientToken.Result",
+      /*sample=*/true,
+      /*expected_bucket_count=*/1);
+  histogram_tester.ExpectUniqueSample(
+      "FacilitatedPayments.Pix.GetClientToken.Latency",
+      /*sample=*/2000,
+      /*expected_bucket_count=*/1);
+}
+
+// The GetClientToken async call is made after the user has accepted the payment
+// prompt. This test verifies that the result and latency of the GetClientToken
+// call is logged correctly.
+TEST_F(FacilitatedPaymentsManagerTest,
+       GetClientTokenHistogram_ClientTokenEmpty) {
+  base::HistogramTester histogram_tester;
+  EXPECT_CALL(*api_client_, GetClientToken(testing::_));
+  manager_->OnPixPaymentPromptResult(/*is_prompt_accepted=*/true,
+                                     /*selected_instrument_id=*/-1);
+  FastForwardBy(base::Seconds(2));
+
+  manager_->OnGetClientToken(std::vector<uint8_t>{});
+
+  histogram_tester.ExpectUniqueSample(
+      "FacilitatedPayments.Pix.GetClientToken.Result",
+      /*sample=*/false,
+      /*expected_bucket_count=*/1);
+  histogram_tester.ExpectUniqueSample(
+      "FacilitatedPayments.Pix.GetClientToken.Latency",
+      /*sample=*/2000,
+      /*expected_bucket_count=*/1);
+}
+
 TEST_F(FacilitatedPaymentsManagerTest,
        TriggerPixDetectionOnDomContentLoadedExpDisabled_Ukm) {
   features_.InitAndDisableFeature(kEnablePixDetectionOnDomContentLoaded);
@@ -1081,6 +1128,31 @@ TEST_F(FacilitatedPaymentsManagerWithPixPaymentsEnabledTest,
   // The DataDecoder (utility process) validates the PIX code string
   // asynchronously.
   task_environment_.RunUntilIdle();
+}
+
+// The `IsAvailable` async call is made after a valid Pix code has been
+// detected. This test verifies that the result and latency are logged after the
+// async call is completed.
+TEST_F(FacilitatedPaymentsManagerWithPixPaymentsEnabledTest,
+       ApiAvailabilityHistogram) {
+  base::HistogramTester histogram_tester;
+  personal_data_manager_->payments_data_manager().AddMaskedBankAccountForTest(
+      CreatePixBankAccount(1));
+  EXPECT_CALL(*api_client_, IsAvailable(testing::_));
+  manager_->OnPixCodeValidated(/*pix_code=*/std::string(),
+                               /*is_pix_code_valid=*/true);
+  FastForwardBy(base::Seconds(2));
+
+  manager_->OnApiAvailabilityReceived(true);
+
+  histogram_tester.ExpectUniqueSample(
+      "FacilitatedPayments.Pix.IsApiAvailable.Result",
+      /*sample=*/true,
+      /*expected_bucket_count=*/1);
+  histogram_tester.ExpectUniqueSample(
+      "FacilitatedPayments.Pix.IsApiAvailable.Latency",
+      /*sample=*/2000,
+      /*expected_bucket_count=*/1);
 }
 
 }  // namespace payments::facilitated

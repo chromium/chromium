@@ -120,6 +120,10 @@ class FacilitatedPaymentsManager {
       DoesNotRetrieveClientTokenIfPixPaymentPromptRejected);
   FRIEND_TEST_ALL_PREFIXES(FacilitatedPaymentsManagerTest,
                            RetrievesClientTokenIfPixPaymentPromptAccepted);
+  FRIEND_TEST_ALL_PREFIXES(FacilitatedPaymentsManagerTest,
+                           GetClientTokenHistogram_ClientTokenNotEmpty);
+  FRIEND_TEST_ALL_PREFIXES(FacilitatedPaymentsManagerTest,
+                           GetClientTokenHistogram_ClientTokenEmpty);
   FRIEND_TEST_ALL_PREFIXES(
       FacilitatedPaymentsManagerTest,
       TriggerPixDetectionOnDomContentLoadedExpDisabled_Ukm);
@@ -147,6 +151,8 @@ class FacilitatedPaymentsManager {
                            PixCodeValidated_ApiClientTriggered);
   FRIEND_TEST_ALL_PREFIXES(FacilitatedPaymentsManagerWithPixPaymentsEnabledTest,
                            PixCodeValidationFailed_NoApiClientTriggered);
+  FRIEND_TEST_ALL_PREFIXES(FacilitatedPaymentsManagerWithPixPaymentsEnabledTest,
+                           ApiAvailabilityHistogram);
   FRIEND_TEST_ALL_PREFIXES(
       FacilitatedPaymentsManagerWithPixPaymentsEnabledTest,
       PixCodeValidatorTerminatedUnexpectedly_NoApiClientTriggered);
@@ -231,6 +237,14 @@ class FacilitatedPaymentsManager {
 
   // Measures the time taken to scan the document for the PIX code.
   base::TimeTicks pix_code_detection_latency_measuring_timestamp_;
+
+  // Measures the time taken to check the availability of the facilitated
+  // payments API client.
+  base::TimeTicks api_availability_check_latency_;
+
+  // Measures the time take to load the client token from the facilitated
+  // payments API client.
+  base::TimeTicks get_client_token_loading_latency_;
 
   // Contains the details required for the `InitiatePayment` request to be sent
   // to the Payments server.
