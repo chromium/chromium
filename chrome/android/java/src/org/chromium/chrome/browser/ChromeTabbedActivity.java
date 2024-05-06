@@ -1334,7 +1334,7 @@ public class ChromeTabbedActivity extends ChromeActivity<ChromeActivityComponent
         BookmarkUtils.maybeExpireLastBookmarkLocationForReadLater(
                 mInactivityTracker.getTimeSinceLastBackgroundedMs());
 
-        MultiWindowUtils.maybeRecordDesktopWindowActivityCountHistogram(
+        MultiWindowUtils.maybeRecordDesktopWindowCountHistograms(
                 mRootUiCoordinator.getDesktopWindowStateProvider(),
                 mInstanceAllocationType,
                 !mFromResumption);

@@ -126,6 +126,12 @@ chromium-metrics-reviews@google.com.
   <variant name="PreloadApk" summary="Preload-APK"/>
 </variants>
 
+<variants name="InstanceAllocationType">
+  <variant name="ExistingInstance"
+      summary="a restoration of a persisted instance"/>
+  <variant name="NewInstance" summary="a new instance"/>
+</variants>
+
 <variants name="MessageIdentifiers">
   <variant name=".AboutThisSite"/>
   <variant name=".AddToHomescreenIPH"/>
@@ -2385,11 +2391,7 @@ chromium-metrics-reviews@google.com.
     that have been destroyed regardless of whether their owning Android Task may
     be retrieved in Android Recents. Applicable to Android V+ only.
   </summary>
-  <token key="InstanceAllocationType">
-    <variant name="ExistingInstance"
-        summary="a restoration of a persisted instance"/>
-    <variant name="NewInstance" summary="a new instance"/>
-  </token>
+  <token key="InstanceAllocationType" variants="InstanceAllocationType"/>
 </histogram>
 
 <histogram name="Android.MultiInstance.NumInstances" units="instances"
@@ -2407,6 +2409,42 @@ chromium-metrics-reviews@google.com.
     Task. Recorded on every ChromeTabbedActivity start-up. Applicable to Android
     S+ only.
   </summary>
+</histogram>
+
+<histogram name="Android.MultiInstance.NumInstances.DesktopWindow"
+    units="instances" expires_after="2025-05-02">
+  <owner>aishwaryarj@google.com</owner>
+  <owner>wenyufu@chromium.org</owner>
+  <owner>clank-large-form-factors@google.com</owner>
+  <summary>
+    The number of allocated instance IDs which corresponds to the number of
+    retrievable Chrome instances (aka windows). An instance is considered
+    retrievable if it has tab state data on disk irrespective of whether that
+    data is currently assigned to a running ChromeTabbedActivity. These
+    instances may be retrieved from Chrome's in-app window manager from Android
+    Recents if they are associated with a live ChromeTabbedActivity or Android
+    Task. Recorded on every ChromeTabbedActivity start-up in a desktop window.
+    Applicable to Android V+ only.
+  </summary>
+</histogram>
+
+<histogram
+    name="Android.MultiInstance.NumInstances.DesktopWindow.{InstanceAllocationType}"
+    units="instances" expires_after="2025-05-02">
+  <owner>aishwaryarj@google.com</owner>
+  <owner>wenyufu@chromium.org</owner>
+  <owner>clank-large-form-factors@google.com</owner>
+  <summary>
+    The number of allocated instance IDs which corresponds to the number of
+    retrievable Chrome instances (aka windows). An instance is considered
+    retrievable if it has tab state data on disk irrespective of whether that
+    data is currently assigned to a running ChromeTabbedActivity. These
+    instances may be retrieved from Chrome's in-app window manager from Android
+    Recents if they are associated with a live ChromeTabbedActivity or Android
+    Task. Recorded when a ChromeTabbedActivity starts in a desktop window, as
+    {InstanceAllocationType}. Applicable to Android V+ only.
+  </summary>
+  <token key="InstanceAllocationType" variants="InstanceAllocationType"/>
 </histogram>
 
 <histogram name="Android.MultipleUserProfilesState"

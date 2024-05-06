@@ -76,9 +76,10 @@ public class MultiWindowUtils implements ActivityStateListener {
 
     static final String HISTOGRAM_NUM_ACTIVITIES_DESKTOP_WINDOW =
             "Android.MultiInstance.NumActivities.DesktopWindow";
-    static final String HISTOGRAM_NUM_ACTIVITIES_DESKTOP_WINDOW_NEW_INSTANCE_SUFFIX =
-            ".NewInstance";
-    static final String HISTOGRAM_NUM_ACTIVITIES_DESKTOP_WINDOW_EXISTING_INSTANCE_SUFFIX =
+    static final String HISTOGRAM_NUM_INSTANCES_DESKTOP_WINDOW =
+            "Android.MultiInstance.NumInstances.DesktopWindow";
+    static final String HISTOGRAM_DESKTOP_WINDOW_COUNT_NEW_INSTANCE_SUFFIX = ".NewInstance";
+    static final String HISTOGRAM_DESKTOP_WINDOW_COUNT_EXISTING_INSTANCE_SUFFIX =
             ".ExistingInstance";
 
     private static MultiWindowUtils sInstance = new MultiWindowUtils();
@@ -848,13 +849,13 @@ public class MultiWindowUtils implements ActivityStateListener {
     }
 
     /**
-     * Record the number of running ChromeTabbedActivity's when a new ChromeTabbedActivity is
-     * created in a desktop window.
+     * Record the number of running ChromeTabbedActivity's as well as the total number of Chrome
+     * instances when a new ChromeTabbedActivity is created in a desktop window.
      *
      * @param instanceAllocationType The {@link InstanceAllocationType} for the new activity.
      * @param isColdStart Whether app startup is a cold start.
      */
-    public static void maybeRecordDesktopWindowActivityCountHistogram(
+    public static void maybeRecordDesktopWindowCountHistograms(
             @Nullable DesktopWindowStateProvider desktopWindowStateProvider,
             @InstanceAllocationType int instanceAllocationType,
             boolean isColdStart) {
@@ -864,23 +865,31 @@ public class MultiWindowUtils implements ActivityStateListener {
         // Emit the histogram only for a newly created activity that is cold-started.
         if (!isColdStart) return;
 
-        // Emit generic histogram, irrespective of instance allocation type.
-        RecordHistogram.recordExactLinearHistogram(
+        // Emit histograms for running activity count.
+        recordDesktopWindowCountHistograms(
+                instanceAllocationType,
                 HISTOGRAM_NUM_ACTIVITIES_DESKTOP_WINDOW,
-                MultiInstanceManagerApi31.getRunningTabbedActivityCount(),
-                getMaxInstances() + 1);
+                MultiInstanceManagerApi31.getRunningTabbedActivityCount());
+
+        // Emit histograms for total instance count.
+        recordDesktopWindowCountHistograms(
+                instanceAllocationType, HISTOGRAM_NUM_INSTANCES_DESKTOP_WINDOW, getInstanceCount());
+    }
+
+    private static void recordDesktopWindowCountHistograms(
+            @InstanceAllocationType int instanceAllocationType, String histogramName, int count) {
+        // Emit generic histogram, irrespective of instance allocation type.
+        RecordHistogram.recordExactLinearHistogram(histogramName, count, getMaxInstances() + 1);
 
         // Emit histogram variant based on instance allocation type.
-        String histogramSuffix = HISTOGRAM_NUM_ACTIVITIES_DESKTOP_WINDOW_NEW_INSTANCE_SUFFIX;
+        String histogramSuffix = HISTOGRAM_DESKTOP_WINDOW_COUNT_NEW_INSTANCE_SUFFIX;
         if (instanceAllocationType != InstanceAllocationType.NEW_INSTANCE_NEW_TASK
                 && instanceAllocationType != InstanceAllocationType.PREFER_NEW_INSTANCE_NEW_TASK) {
-            histogramSuffix = HISTOGRAM_NUM_ACTIVITIES_DESKTOP_WINDOW_EXISTING_INSTANCE_SUFFIX;
+            histogramSuffix = HISTOGRAM_DESKTOP_WINDOW_COUNT_EXISTING_INSTANCE_SUFFIX;
         }
 
         RecordHistogram.recordExactLinearHistogram(
-                HISTOGRAM_NUM_ACTIVITIES_DESKTOP_WINDOW + histogramSuffix,
-                MultiInstanceManagerApi31.getRunningTabbedActivityCount(),
-                getMaxInstances() + 1);
+                histogramName + histogramSuffix, count, getMaxInstances() + 1);
     }
 
     public static void setInstanceForTesting(MultiWindowUtils instance) {
