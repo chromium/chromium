@@ -1245,7 +1245,7 @@ void PasswordManager::OnLoginSuccessful() {
       password_manager_util::IsAbleToSavePasswords(client_);
   UMA_HISTOGRAM_BOOLEAN("PasswordManager.AbleToSavePasswordsOnSuccessfulLogin",
                         able_to_save_passwords);
-  if (!able_to_save_passwords) {
+  if (!submitted_manager->IsPasswordUpdate() && !able_to_save_passwords) {
 #if BUILDFLAG(IS_ANDROID)
     MaybeNudgeToUpdateGMSCoreWhenSavingDisabled(client_);
 #endif

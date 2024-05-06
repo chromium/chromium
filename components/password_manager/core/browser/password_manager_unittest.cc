@@ -1529,6 +1529,44 @@ TEST_P(PasswordManagerTest, FormSubmitWhenPasswordsCannotBeSaved) {
   store->ShutdownOnUIThread();
 }
 
+TEST_P(PasswordManagerTest,
+       PasswordUpdateDoesNotCareAboutIsAbleToSavePasswords) {
+  // Test that a plain form submit doesn't result in offering to save passwords.
+  auto store = base::MakeRefCounted<PasswordStore>(
+      std::make_unique<FailingPasswordStoreBackend>());
+  store->Init(/*prefs=*/nullptr, /*affiliated_match_helper=*/nullptr);
+  PasswordForm form(MakeSimpleForm());
+  form.password_value = u"old_password";
+  store->AddLogin(form);
+
+  ON_CALL(client_, GetProfilePasswordStore())
+      .WillByDefault(Return(store.get()));
+
+  FormData form_data(MakeSimpleFormData());
+  std::vector<FormData> observed = {form_data};
+  EXPECT_FALSE(manager()->IsPasswordFieldDetectedOnPage());
+  manager()->OnPasswordFormsParsed(&driver_, observed);
+  EXPECT_TRUE(manager()->IsPasswordFieldDetectedOnPage());
+  manager()->OnPasswordFormsRendered(&driver_, observed);
+  task_environment_.RunUntilIdle();
+
+  EXPECT_CALL(client_, IsSavingAndFillingEnabled(form_data.url))
+      .WillRepeatedly(Return(true));
+  OnPasswordFormSubmitted(form_data);
+
+  // User is still prompted to update a password.
+  EXPECT_CALL(client_, PromptUserToSaveOrUpdatePassword);
+
+  observed.clear();
+  manager()->OnPasswordFormsParsed(&driver_, observed);
+  manager()->OnPasswordFormsRendered(&driver_, observed);
+  task_environment_.RunUntilIdle();
+  // Objects owned by the manager may keep references to the store - therefore
+  // destroy the manager prior to store destruction.
+  manager_.reset();
+  store->ShutdownOnUIThread();
+}
+
 #if BUILDFLAG(IS_ANDROID)
 TEST_P(PasswordManagerTest,
        FormSubmitWhenPasswordSavingDisabledNudgesToUpdateGMSCore) {
