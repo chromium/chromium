@@ -8,11 +8,13 @@
 #include <vector>
 
 #include "base/test/gtest_util.h"
+#include "base/test/metrics/histogram_tester.h"
 #include "base/test/scoped_feature_list.h"
 #include "base/values.h"
 #include "chrome/browser/extensions/extension_service.h"
 #include "chrome/browser/extensions/extension_service_test_base.h"
 #include "chrome/browser/profiles/profile.h"
+#include "chrome/browser/supervised_user/supervised_user_extensions_metrics_recorder.h"
 #include "chrome/browser/supervised_user/supervised_user_test_util.h"
 #include "chrome/test/base/testing_profile.h"
 #include "components/prefs/pref_service.h"
@@ -245,6 +247,7 @@ TEST_P(SupervisedUserExtensionsManagerTest,
 TEST_P(SupervisedUserExtensionsManagerTest,
        MigrateExtensionsToLocallyApproved) {
   ASSERT_TRUE(profile_->IsChild());
+  base::HistogramTester histogram_tester;
 
   // Register the extensions.
   scoped_refptr<const Extension> approved_extn =
@@ -291,11 +294,17 @@ TEST_P(SupervisedUserExtensionsManagerTest,
 
   // The extensions approved in the migration should be allowed and part
   // of the local-approved list.
+  int approved_extensions_count = has_local_approval_migration_run ? 1 : 0;
   EXPECT_EQ(
       has_local_approval_migration_run,
       local_approved_extensions_pref.contains(locally_approved_extn->id()));
   EXPECT_EQ(has_local_approval_migration_run,
             manager_->IsExtensionAllowed(*locally_approved_extn));
+  histogram_tester.ExpectBucketCount(
+      SupervisedUserExtensionsMetricsRecorder::kExtensionsHistogramName,
+      SupervisedUserExtensionsMetricsRecorder::UmaExtensionState::
+          kLocalApprovalGranted,
+      approved_extensions_count);
 }
 
 // Tests that extensions missing parent approval are granted parent approval
@@ -305,6 +314,7 @@ TEST_P(SupervisedUserExtensionsManagerTest,
 TEST_P(SupervisedUserExtensionsManagerTest,
        GrantParentApprovalOnInstallationWhenExtensionsToggleOn) {
   ASSERT_TRUE(profile_->IsChild());
+  base::HistogramTester histogram_tester;
 
 #if BUILDFLAG(IS_WIN) || BUILDFLAG(IS_MAC) || BUILDFLAG(IS_LINUX)
   // Mark the migration done to avoid any interference with the one-off
@@ -343,6 +353,19 @@ TEST_P(SupervisedUserExtensionsManagerTest,
   // switch manages them.
   supervised_user_test_util::SetSkipParentApprovalToInstallExtensionsPref(
       profile(), true);
+
+  // Toggling the extensions results in granting approval to the existing
+  // extension if the Extensions switch manages them.
+  int approved_extensions_count =
+      GetExtensionsManagingToggle() == ExtensionsManagingToggle::kExtensions
+          ? 1
+          : 0;
+  histogram_tester.ExpectBucketCount(
+      SupervisedUserExtensionsMetricsRecorder::kExtensionsHistogramName,
+      SupervisedUserExtensionsMetricsRecorder::UmaExtensionState::
+          kApprovalGrantedByDefault,
+      approved_extensions_count);
+
   // Install an extension.
   scoped_refptr<const Extension> extn_with_switch_on =
       MakeExtension("extension_test_2");
@@ -361,6 +384,19 @@ TEST_P(SupervisedUserExtensionsManagerTest,
                 ->GetPrefs()
                 ->GetDict(prefs::kSupervisedUserApprovedExtensions)
                 .contains(extn_with_switch_on->id()));
+
+  histogram_tester.ExpectBucketCount(
+      SupervisedUserExtensionsMetricsRecorder::kExtensionsHistogramName,
+      SupervisedUserExtensionsMetricsRecorder::UmaExtensionState::
+          kApprovalGrantedByDefault,
+      approved_extensions_count + (is_extension_approved ? 1 : 0));
+  // The migration to locally approved extensions has occurred before we
+  // installed any extensions, so not local approvals have been granted.
+  histogram_tester.ExpectBucketCount(
+      SupervisedUserExtensionsMetricsRecorder::kExtensionsHistogramName,
+      SupervisedUserExtensionsMetricsRecorder::UmaExtensionState::
+          kLocalApprovalGranted,
+      0);
 }
 
 // Tests that extensions missing parent approval are granted parent approval

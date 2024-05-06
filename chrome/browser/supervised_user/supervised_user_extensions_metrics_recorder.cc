@@ -19,6 +19,12 @@ const char SupervisedUserExtensionsMetricsRecorder::
 const char
     SupervisedUserExtensionsMetricsRecorder::kApprovalRemovedActionName[] =
         "SupervisedUsers_Extensions_ApprovalRemoved";
+const char
+    SupervisedUserExtensionsMetricsRecorder::kApprovalGrantedByDefaultName[] =
+        "SupervisedUsers_Extensions_ApprovalGrantedByDefault";
+const char
+    SupervisedUserExtensionsMetricsRecorder::kLocalApprovalGrantedName[] =
+        "SupervisedUsers_Extensions_LocalApprovalGranted";
 // Extension Install Dialog.
 const char SupervisedUserExtensionsMetricsRecorder::
     kExtensionInstallDialogHistogramName[] =
@@ -91,6 +97,15 @@ void SupervisedUserExtensionsMetricsRecorder::RecordExtensionsUmaMetrics(
     case UmaExtensionState::kApprovalRemoved:
       // Record UMA metrics for removing an extension.
       base::RecordAction(base::UserMetricsAction(kApprovalRemovedActionName));
+      break;
+    case UmaExtensionState::kApprovalGrantedByDefault:
+      // Record UMA metrics for auto-granting parental approval.
+      base::RecordAction(
+          base::UserMetricsAction(kApprovalGrantedByDefaultName));
+      break;
+    case UmaExtensionState::kLocalApprovalGranted:
+      // Record UMA metrics for granting local parental approval.
+      base::RecordAction(base::UserMetricsAction(kLocalApprovalGrantedName));
       break;
   }
 }

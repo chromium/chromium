@@ -374,9 +374,14 @@ void SupervisedUserExtensionsManager::UpdateApprovedExtension(
     case ApprovedExtensionChange::kAdd:
       CHECK(!approved_extensions.FindString(extension_id));
       approved_extensions.Set(extension_id, std::move(version));
+
       SupervisedUserExtensionsMetricsRecorder::RecordExtensionsUmaMetrics(
-          SupervisedUserExtensionsMetricsRecorder::UmaExtensionState::
-              kApprovalGranted);
+          supervised_user::SupervisedUserCanSkipExtensionParentApprovals(
+              *user_prefs_.get())
+              ? SupervisedUserExtensionsMetricsRecorder::UmaExtensionState::
+                    kApprovalGrantedByDefault
+              : SupervisedUserExtensionsMetricsRecorder::UmaExtensionState::
+                    kApprovalGranted);
       break;
     case ApprovedExtensionChange::kRemove:
       success = approved_extensions.Remove(extension_id);
@@ -516,6 +521,9 @@ void SupervisedUserExtensionsManager::DoExtensionsMigrationToParentApproved() {
     if (extension_registry_->GetInstalledExtension(extension_entry.first)) {
       ChangeExtensionStateIfNecessary(extension_entry.first);
     }
+    SupervisedUserExtensionsMetricsRecorder::RecordExtensionsUmaMetrics(
+        SupervisedUserExtensionsMetricsRecorder::UmaExtensionState::
+            kLocalApprovalGranted);
   }
 }
 #endif  // BUILDFLAG(IS_WIN) || BUILDFLAG(IS_MAC) || BUILDFLAG(IS_LINUX)

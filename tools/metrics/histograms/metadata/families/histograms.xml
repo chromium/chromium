@@ -658,13 +658,10 @@ chromium-metrics-reviews@google.com.
   <owner>courtneywong@chromium.org</owner>
   <owner>agawronska@chromium.org</owner>
   <owner>cros-families-eng@google.com</owner>
+  <owner>chrome-kids-eng@google.com</owner>
   <summary>
     Records the progress of supervised users as they try to install Chrome
-    extensions. Extension Approval Granted count increments when the custodian
-    initially grants approval to install the extension. Permissions Increase
-    Granted count increments when the supervised user approves a newer version
-    of an existing extension with increased permissions. Extension Approval
-    Removed count increments when the supervised user removes an extension.
+    extensions. See the descriptions in the individual enum buckets.
   </summary>
 </histogram>
 

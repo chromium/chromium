@@ -14,8 +14,9 @@ class SupervisedUserExtensionsMetricsRecorder
   // These enum values represent the state that the child user has attained
   // while trying to install an extension.
   // These values are logged to UMA. Entries should not be renumbered and
-  // numeric values should never be reused. Please keep in sync with
-  // "SupervisedUserExtension2" in src/tools/metrics/histograms/enums.xml.
+  // numeric values should never be reused.
+  //
+  // LINT.IfChange(UmaExtensionState)
   enum class UmaExtensionState {
     // Recorded when custodian grants child approval to install an extension.
     kApprovalGranted = 0,
@@ -24,11 +25,19 @@ class SupervisedUserExtensionsMetricsRecorder
     kPermissionsIncreaseGranted = 1,
     // Recorded when the child removes an extension.
     kApprovalRemoved = 2,
-    // Add future entries above this comment, in sync with
-    // "SupervisedUserExtension2" in src/tools/metrics/histograms/enums.xml.
-    // Update kMaxValue to the last value.
-    kMaxValue = kApprovalRemoved
+    // Recorded when an extension receives automatic parent approval, when
+    // it is installed under the `SkipParentApprovalToInstallExtensions` mode
+    // with the corresponding preference enabled.
+    kApprovalGrantedByDefault = 3,
+    // Recorded when an extension receives local parent approval, when
+    // the `SkipParentApprovalToInstallExtensions` feature is first
+    // released on Desktop (Windows/Linux/Mac).
+    kLocalApprovalGranted = 4,
+    // Add future entries above this comment, updating kMaxValue to the last
+    // value.
+    kMaxValue = kLocalApprovalGranted
   };
+  // LINT.ThenChange(//tools/metrics/histograms/metadata/families/enums.xml:SupervisedUserExtension2)
 
   // These enum values represent the state of the Extension Install Dialog for
   // installing and enabling extensions for supervised users.
@@ -107,7 +116,8 @@ class SupervisedUserExtensionsMetricsRecorder
   static const char kApprovalGrantedActionName[];
   static const char kPermissionsIncreaseGrantedActionName[];
   static const char kApprovalRemovedActionName[];
-
+  static const char kApprovalGrantedByDefaultName[];
+  static const char kLocalApprovalGrantedName[];
   // UMA metrics for the Extension Install Dialog.
   static const char kExtensionInstallDialogHistogramName[];
   static const char kExtensionInstallDialogOpenedActionName[];

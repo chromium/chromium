@@ -268,14 +268,39 @@ chromium-metrics-reviews@google.com.
   <int value="6" label="Requests Disabled"/>
 </enum>
 
+<!-- LINT.IfChange(SupervisedUserExtension2) -->
+
 <enum name="SupervisedUserExtension2">
   <summary>
     Tracks the state of a supervised user trying to install an extension.
   </summary>
-  <int value="0" label="Extension Approval Granted"/>
-  <int value="1" label="Permissions Increase Granted"/>
-  <int value="2" label="Extension Approval Removed"/>
+  <int value="0" label="Extension Approval Granted">
+    Incremented when the custodian explicitly grants approval to install an
+    extension for the first time. This is not output if the parent configuration
+    is set to not require approvals.
+  </int>
+  <int value="1" label="Permissions Increase Granted">
+    Incremeted when the custodian approves a newer version of an existing
+    extension with increased permissions.
+  </int>
+  <int value="2" label="Extension Approval Removed">
+    Incremented when the supervised user removes an extension (which removes the
+    previously granted custodian approval).
+  </int>
+  <int value="3" label="Extension Approval Granted by Default">
+    Incremented when the supervised user installs an extension, and the parent
+    configuration is set to not require approvals. The approval is therefore
+    granted implicitly.
+  </int>
+  <int value="4" label="Local Extension Approval Granted">
+    Incremented when an extension is marked as approved only on this device.
+    This happens on Windows/Mac/Linux when a supervised user had
+    previously-installed extensions, and the
+    SkipParentApprovalToInstallExtensions feature is first released.
+  </int>
 </enum>
+
+<!-- LINT.ThenChange(//chrome/browser/supervised_user/supervised_user_extensions_metrics_recorder.h:UmaExtensionState) -->
 
 <enum name="SupervisedUserExtensionEnablement">
   <summary>
