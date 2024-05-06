@@ -402,8 +402,17 @@ IN_PROC_BROWSER_TEST_F(PickerSpokenFeedbackInteractiveUiTest,
       }));
 }
 
+// TODO(b/328144222): Re-enable this test. Causes build failures with MSAN
+// enabled on CrOS.
+#if BUILDFLAG(IS_CHROMEOS) && defined(MEMORY_SANITIZER)
+#define MAYBE_AnnouncesKeyboardNavigationOnResultsPage \
+  DISABLED_AnnouncesKeyboardNavigationOnResultsPage
+#else
+#define MAYBE_AnnouncesKeyboardNavigationOnResultsPage \
+  AnnouncesKeyboardNavigationOnResultsPage
+#endif
 IN_PROC_BROWSER_TEST_F(PickerSpokenFeedbackInteractiveUiTest,
-                       AnnouncesKeyboardNavigationOnResultsPage) {
+                       MAYBE_AnnouncesKeyboardNavigationOnResultsPage) {
   ASSERT_TRUE(CreateBrowserWindow(
       GURL("data:text/html,<input type=\"text\" autofocus/>")));
   const ui::ElementContext browser_context =
