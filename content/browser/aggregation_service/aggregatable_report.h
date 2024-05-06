@@ -38,7 +38,7 @@ struct CONTENT_EXPORT AggregationServicePayloadContents {
     kHistogram,
   };
 
-  static constexpr size_t kMaximumFilteringIdByteSize = 8;
+  static constexpr size_t kMaximumFilteringIdMaxBytes = 8;
 
   // The default aggregation coordinator origin will be used if
   // `aggregation_coordinator_origin` is `std::nullopt`.
@@ -53,7 +53,7 @@ struct CONTENT_EXPORT AggregationServicePayloadContents {
       blink::mojom::AggregationServiceMode aggregation_mode,
       std::optional<url::Origin> aggregation_coordinator_origin,
       int max_contributions_allowed,
-      std::optional<size_t> filtering_id_byte_size);
+      std::optional<size_t> filtering_id_max_bytes);
 
   AggregationServicePayloadContents(
       const AggregationServicePayloadContents& other);
@@ -70,7 +70,7 @@ struct CONTENT_EXPORT AggregationServicePayloadContents {
   blink::mojom::AggregationServiceMode aggregation_mode;
   std::optional<url::Origin> aggregation_coordinator_origin;
   int max_contributions_allowed;
-  std::optional<size_t> filtering_id_byte_size;
+  std::optional<size_t> filtering_id_max_bytes;
 };
 
 // Represents the information that will be provided to both the reporting
@@ -297,10 +297,10 @@ class CONTENT_EXPORT AggregatableReportRequest {
   // `failed_send_attempts` is negative or if
   // `payload_contents.max_contributions_allowed` is less than the number of
   // contributions. Also returns `std::nullopt` if
-  // `payload_contents.filtering_id_byte_size` is non-null and either
-  // non-positive or greater than `kMaximumFilteringIdByteSize`. Also returns
+  // `payload_contents.filtering_id_max_bytes` is non-null and either
+  // non-positive or greater than `kMaximumFilteringIdMaxBytes`. Also returns
   // `std::nullopt` if any contribution's filtering ID does not fit in the given
-  // `payload_contents.filtering_id_byte_size`; if the given byte size is null,
+  // `payload_contents.filtering_id_max_bytes`; if the given max bytes is null,
   // only null filtering IDs are considered to 'fit', i.e. any non-null value
   // will mean this returns `std::nullopt`.
   // TODO(alexmt): Add validation for scheduled_report_time being non-null/inf.

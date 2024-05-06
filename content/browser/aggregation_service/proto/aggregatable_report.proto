@@ -35,7 +35,7 @@ message AggregationServicePayloadContents {
   AggregationServiceMode aggregation_mode = 3;
   int32 max_contributions_allowed = 5;
   optional string aggregation_coordinator_origin = 6;
-  optional uint32 filtering_id_byte_size = 7;
+  optional uint32 filtering_id_max_bytes = 7;
 
   reserved 4;
   reserved "aggregation_coordinator";

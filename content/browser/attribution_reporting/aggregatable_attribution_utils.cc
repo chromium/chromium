@@ -210,7 +210,7 @@ std::optional<AggregatableReportRequest> CreateAggregatableReportRequest(
               : std::nullopt,
           /*max_contributions_allowed=*/
           attribution_reporting::kMaxAggregationKeysPerSource,
-          /*filtering_id_byte_size=*/std::nullopt),
+          /*filtering_id_max_bytes=*/std::nullopt),
       AggregatableReportSharedInfo(
           report.initial_report_time(), report.external_report_id(),
           report.GetReportingOrigin(), debug_mode, std::move(additional_fields),

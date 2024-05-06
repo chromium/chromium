@@ -167,7 +167,7 @@ TEST_F(PrivateAggregationHostTest,
               blink::mojom::AggregationServiceMode::kDefault,
               /*aggregation_coordinator_origin=*/std::nullopt,
               PrivateAggregationHost::kMaxNumberOfContributions,
-              /*filtering_id_byte_size=*/std::nullopt),
+              /*filtering_id_max_bytes=*/std::nullopt),
           AggregatableReportSharedInfo(
               validated_request->shared_info().scheduled_report_time,
               validated_request->shared_info().report_id,

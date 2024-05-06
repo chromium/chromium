@@ -308,7 +308,7 @@ AggregatableReportRequest PrivateAggregationHost::GenerateReportRequest(
       blink::mojom::AggregationServiceMode::kDefault,
       std::move(aggregation_coordinator_origin), kMaxNumberOfContributions,
       // TODO(crbug.com/330744610): Allow this to be set.
-      /*filtering_id_byte_size=*/std::nullopt);
+      /*filtering_id_max_bytes=*/std::nullopt);
 
   CHECK(debug_mode_details);
   AggregatableReportSharedInfo shared_info(
