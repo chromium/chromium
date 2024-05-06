@@ -2181,22 +2181,6 @@
     "expires": "Jul 1, 2024"
   },
   {
-    "prefix": "date-input-inline-block-disabled",
-    "owners": ["jarhar@chromium.org", "tkent@chromium.org"],
-    "platforms": ["Linux"],
-    "bases": [
-      "external/wpt/html/rendering/non-replaced-elements/form-controls/resets.html",
-      "fast/forms/suggested-value.html",
-      "fast/forms/date/date-appearance-pseudo-elements.html",
-      "fast/forms/month/month-appearance-pseudo-elements.html",
-      "fast/forms/time/time-appearance-pseudo-elements.html",
-      "fast/forms/week/week-appearance-pseudo-elements.html"
-    ],
-    "args": ["--disable-blink-features=DateInputInlineBlock",
-             "--disable-threaded-compositing", "--disable-threaded-animation"],
-    "expires": "Oct 1, 2024"
-  },
-  {
     "prefix": "disable-device-id-pointer-event",
     "platforms": ["Linux", "Mac", "Win"],
     "bases": ["fast/events/pointerevents/device-id"],
