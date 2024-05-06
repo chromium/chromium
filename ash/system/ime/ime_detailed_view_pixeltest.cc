@@ -25,8 +25,7 @@ class IMEDetailedViewPixelTest : public AshTestBase {
  public:
   IMEDetailedViewPixelTest() {
     feature_list_.InitWithFeatures({::features::kChromeRefresh2023,
-                                    ::features::kChromeRefreshSecondary2023,
-                                    ::features::kChromeRefresh2023NTB},
+                                    ::features::kChromeRefreshSecondary2023},
                                    {});
   }
 

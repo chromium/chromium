@@ -21,8 +21,7 @@ class ScrollableShelfViewPixelRTLTestBase : public ShelfTestBase {
   // ScrollableShelfTestBase:
   void SetUp() override {
     scoped_features_.InitWithFeatures({::features::kChromeRefresh2023,
-                                       ::features::kChromeRefreshSecondary2023,
-                                       ::features::kChromeRefresh2023NTB},
+                                       ::features::kChromeRefreshSecondary2023},
                                       {});
     ShelfTestBase::SetUp();
     AddAppShortcutsUntilOverflow(/*use_alternative_color=*/true);
@@ -89,8 +88,7 @@ class ScrollableShelfViewWithGuestModePixelTest
 
   void SetUp() override {
     scoped_features_.InitWithFeatures({::features::kChromeRefresh2023,
-                                       ::features::kChromeRefreshSecondary2023,
-                                       ::features::kChromeRefresh2023NTB},
+                                       ::features::kChromeRefreshSecondary2023},
                                       {});
 
     set_start_session(false);

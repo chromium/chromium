@@ -29,7 +29,7 @@ class AudioDetailedViewPixelTest : public AshTestBase {
     scoped_features_.InitWithFeatures(
         {::features::kChromeRefresh2023,
          ::features::kChromeRefreshSecondary2023,
-         ::features::kChromeRefresh2023NTB, media::kLiveCaption,
+         media::kLiveCaption,
          features::kOnDeviceSpeechRecognition},
         {});
   }

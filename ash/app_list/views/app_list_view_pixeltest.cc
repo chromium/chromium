@@ -82,8 +82,7 @@ class AppListViewPixelRTLTest
  public:
   AppListViewPixelRTLTest() {
     scoped_features_.InitWithFeatures({::features::kChromeRefresh2023,
-                                       ::features::kChromeRefreshSecondary2023,
-                                       ::features::kChromeRefresh2023NTB},
+                                       ::features::kChromeRefreshSecondary2023},
                                       {});
   }
 
@@ -310,8 +309,7 @@ class AppListViewLauncherSearchIphTest
  public:
   AppListViewLauncherSearchIphTest() {
     scoped_features_.InitWithFeatures({::features::kChromeRefresh2023,
-                                       ::features::kChromeRefreshSecondary2023,
-                                       ::features::kChromeRefresh2023NTB},
+                                       ::features::kChromeRefreshSecondary2023},
                                       {});
   }
 
@@ -371,8 +369,7 @@ class AppListViewTabletPixelTest
  public:
   AppListViewTabletPixelTest() {
     scoped_features_.InitWithFeatures({::features::kChromeRefresh2023,
-                                       ::features::kChromeRefreshSecondary2023,
-                                       ::features::kChromeRefresh2023NTB},
+                                       ::features::kChromeRefreshSecondary2023},
                                       {});
   }
 
@@ -480,8 +477,7 @@ class AppListViewAssistantZeroStateTest
     scoped_feature_list_.InitWithFeatures(
         {feature_engagement::kIPHLauncherSearchHelpUiFeature,
          ::features::kChromeRefresh2023,
-         ::features::kChromeRefreshSecondary2023,
-         ::features::kChromeRefresh2023NTB},
+         ::features::kChromeRefreshSecondary2023},
         {});
 
     AssistantAshTestBase::SetUp();

@@ -57,8 +57,7 @@ class AshNotificationViewPixelTest : public AshTestBase {
   // AshTestBase:
   void SetUp() override {
     scoped_features_.InitWithFeatures({::features::kChromeRefresh2023,
-                                       ::features::kChromeRefreshSecondary2023,
-                                       ::features::kChromeRefresh2023NTB},
+                                       ::features::kChromeRefreshSecondary2023},
                                       {});
 
     AshTestBase::SetUp();

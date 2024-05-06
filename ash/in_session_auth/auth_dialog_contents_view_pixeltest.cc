@@ -46,8 +46,7 @@ class AuthDialogContentsViewPixelTest
     scoped_features_.InitWithFeatureStates(
         {{chromeos::features::kJelly, GetParam()},
          {::features::kChromeRefresh2023, true},
-         {::features::kChromeRefreshSecondary2023, true},
-         {::features::kChromeRefresh2023NTB, true}});
+         {::features::kChromeRefreshSecondary2023, true}});
   }
 
   AuthDialogContentsViewPixelTest(const AuthDialogContentsViewPixelTest&) =

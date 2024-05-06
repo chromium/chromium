@@ -67,8 +67,8 @@ class BubbleViewPixelTest
   void SetUp() override {
     std::vector<base::test::FeatureRef> enabled_features{
         features::kFeatureManagementVideoConference,
-        ::features::kChromeRefresh2023, ::features::kChromeRefreshSecondary2023,
-        ::features::kChromeRefresh2023NTB};
+        ::features::kChromeRefresh2023,
+        ::features::kChromeRefreshSecondary2023};
     // TODO(b/334375880): Add a specific pixel test for the feature
     // VcBackgroundReplace.
     std::vector<base::test::FeatureRef> disabled_features{
