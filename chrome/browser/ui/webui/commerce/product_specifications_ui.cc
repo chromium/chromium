@@ -66,7 +66,9 @@ ProductSpecificationsUI::ProductSpecificationsUI(content::WebUI* web_ui)
   source->AddString("summaryTitle", "Summary");
 
   static constexpr webui::LocalizedString kStrings[] = {
-      {"openTabsSectionTitle", IDS_PRODUCT_SPECIFICATIONS_OPEN_TABS_SECTION},
+      {"openTabs", IDS_PRODUCT_SPECIFICATIONS_OPEN_TABS_SECTION},
+      {"recentlyViewedTabs",
+       IDS_PRODUCT_SPECIFICATIONS_RECENTLY_VIEWED_TABS_SECTION},
   };
 
   source->AddLocalizedStrings(kStrings);

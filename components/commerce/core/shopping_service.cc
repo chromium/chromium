@@ -873,6 +873,9 @@ const std::vector<UrlInfo>
 ShoppingService::GetUrlInfosForRecentlyViewedWebWrappers() {
   std::vector<UrlInfo> info_list;
   for (auto info : recently_visited_tabs_) {
+    if (!info.url.SchemeIsHTTPOrHTTPS()) {
+      continue;
+    }
     info_list.push_back(info);
   }
   return info_list;

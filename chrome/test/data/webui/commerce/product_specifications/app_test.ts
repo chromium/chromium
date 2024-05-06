@@ -9,7 +9,7 @@ import {Router} from 'chrome://compare/router.js';
 import type {ProductInfo, ProductSpecifications, ProductSpecificationsProduct} from 'chrome://compare/shopping_service.mojom-webui.js';
 import {BrowserProxyImpl} from 'chrome://resources/cr_components/commerce/browser_proxy.js';
 import {PageCallbackRouter} from 'chrome://resources/cr_components/commerce/shopping_service.mojom-webui.js';
-import {stringToMojoString16, stringToMojoUrl} from 'chrome://resources/js/mojo_type_util.js';
+import {stringToMojoUrl} from 'chrome://resources/js/mojo_type_util.js';
 import {assertArrayEquals, assertEquals, assertTrue} from 'chrome://webui-test/chai_assert.js';
 import {flushTasks, waitAfterNextRender} from 'chrome://webui-test/polymer_test_util.js';
 import {TestMock} from 'chrome://webui-test/test_mock.js';
@@ -254,11 +254,13 @@ suite('AppTest', () => {
     test('hides empty state after product selection', async () => {
       const url = 'https://example.com';
       const openTabs = [{
-        title: stringToMojoString16('title'),
+        title: 'title',
         url: stringToMojoUrl(url),
       }];
       shoppingServiceApi.setResultFor(
           'getUrlInfosForOpenTabs', Promise.resolve({urlInfos: openTabs}));
+      shoppingServiceApi.setResultFor(
+          'getUrlInfosForRecentlyViewedTabs', Promise.resolve({urlInfos: []}));
       const promiseValues = createAppPromiseValues({
         urls: [],
         infos: [createInfo({clusterId: BigInt(123)})],

@@ -504,6 +504,9 @@
   <message name="IDS_PRODUCT_SPECIFICATIONS_OPEN_TABS_SECTION" translateable="false" desc="The title of the section in the product selection drop-down in the product specifications UI that shows a list of open tabs.">
     Open Tabs
   </message>
+  <message name="IDS_PRODUCT_SPECIFICATIONS_RECENTLY_VIEWED_TABS_SECTION" translateable="false" desc="The title of the section in the product selection drop-down in the product specifications UI that shows a list of recently viewed tabs.">
+    Recently Viewed
+  </message>
   <message name="IDS_TOOLTIP_PRODUCT_SPECIFICATIONS_ENTRY_POINT_CLOSE" translateable="false" desc="The tooltip text for the close button within the Product Specifications entry point button.">
     Dismiss suggestion
   </message>

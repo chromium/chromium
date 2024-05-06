@@ -6,7 +6,7 @@ import 'chrome://compare/product_selector.js';
 
 import type {ProductSelectorElement} from 'chrome://compare/product_selector.js';
 import {BrowserProxyImpl} from 'chrome://resources/cr_components/commerce/browser_proxy.js';
-import {stringToMojoString16, stringToMojoUrl} from 'chrome://resources/js/mojo_type_util.js';
+import {stringToMojoUrl} from 'chrome://resources/js/mojo_type_util.js';
 import {assertEquals, assertFalse, assertNotEquals, assertTrue} from 'chrome://webui-test/chai_assert.js';
 import {flushTasks} from 'chrome://webui-test/polymer_test_util.js';
 import {TestMock} from 'chrome://webui-test/test_mock.js';
@@ -28,13 +28,19 @@ suite('ProductSelectorTest', () => {
   }
 
   function initUrlInfos() {
-    const titleString = 'title';
     const openTabs = [{
-      title: stringToMojoString16(titleString),
+      title: 'title',
       url: stringToMojoUrl('http://example.com'),
+    }];
+    const recentlyViewedTabs = [{
+      title: 'title2',
+      url: stringToMojoUrl('http://example2.com'),
     }];
     shoppingServiceApi.setResultFor(
         'getUrlInfosForOpenTabs', Promise.resolve({urlInfos: openTabs}));
+    shoppingServiceApi.setResultFor(
+        'getUrlInfosForRecentlyViewedTabs',
+        Promise.resolve({urlInfos: recentlyViewedTabs}));
   }
 
   setup(async () => {

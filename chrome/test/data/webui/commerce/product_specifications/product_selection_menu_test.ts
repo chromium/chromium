@@ -6,7 +6,7 @@ import 'chrome://compare/product_selection_menu.js';
 
 import type {ProductSelectionMenuElement} from 'chrome://compare/product_selection_menu.js';
 import {BrowserProxyImpl} from 'chrome://resources/cr_components/commerce/browser_proxy.js';
-import {stringToMojoString16, stringToMojoUrl} from 'chrome://resources/js/mojo_type_util.js';
+import {stringToMojoUrl} from 'chrome://resources/js/mojo_type_util.js';
 import {assertEquals, assertFalse, assertTrue} from 'chrome://webui-test/chai_assert.js';
 import {flushTasks} from 'chrome://webui-test/polymer_test_util.js';
 import {TestMock} from 'chrome://webui-test/test_mock.js';
@@ -24,13 +24,26 @@ suite('ProductSelectionMenuTest', () => {
   }
 
   function initUrlInfos() {
-    const titleString = 'title';
-    const openTabs = [{
-      title: stringToMojoString16(titleString),
-      url: stringToMojoUrl('http://example.com'),
-    }];
+    initOpenTabUrlInfos();
+    initRecentlyViewedTabUrlInfos();
+  }
+
+  function initOpenTabUrlInfos(openTabs = [{
+                                 title: 'title',
+                                 url: stringToMojoUrl('http://example.com'),
+                               }]) {
     shoppingServiceApi.setResultFor(
         'getUrlInfosForOpenTabs', Promise.resolve({urlInfos: openTabs}));
+  }
+
+  function initRecentlyViewedTabUrlInfos(
+      recentlyViewedTabs = [{
+        title: 'title2',
+        url: stringToMojoUrl('http://example2.com'),
+      }]) {
+    shoppingServiceApi.setResultFor(
+        'getUrlInfosForRecentlyViewedTabs',
+        Promise.resolve({urlInfos: recentlyViewedTabs}));
   }
 
   setup(async () => {
@@ -40,23 +53,48 @@ suite('ProductSelectionMenuTest', () => {
   });
 
   test('open tabs shown', async () => {
-    const titleString = 'title';
+    initRecentlyViewedTabUrlInfos([]);
+    const title = 'title';
+    const url = stringToMojoUrl('http://example.com');
     const openTabs = [{
-      title: titleString,
-      url: stringToMojoUrl('http://example.com'),
+      title: title,
+      url: url,
     }];
+    initOpenTabUrlInfos(openTabs);
     const menu = await createMenu();
-    shoppingServiceApi.setResultFor(
-        'getUrlInfosForOpenTabs', Promise.resolve({urlInfos: openTabs}));
-    assertEquals(0, shoppingServiceApi.getCallCount('getUrlInfosForOpenTabs'));
+    menu.showAt(document.body);
+    await flushTasks();
+
+    // Ensure the number of open tab list items is equal to the number of open
+    // tabs.
+    assertEquals(2, menu.sections.length);
+    const menuOpenTabEntries = menu.sections[0]!.entries;
+    assertEquals(openTabs.length, menuOpenTabEntries.length);
+    assertEquals(title, menuOpenTabEntries[0]!.title);
+    assertEquals(url.url, menuOpenTabEntries[0]!.url);
+  });
+
+  test('recently viewed tabs shown', async () => {
+    initOpenTabUrlInfos([]);
+    const title = 'title2';
+    const url = stringToMojoUrl('http://example2.com');
+    const recentlyViewedTabs = [{
+      title: title,
+      url: url,
+    }];
+    initRecentlyViewedTabUrlInfos(recentlyViewedTabs);
+    const menu = await createMenu();
 
     menu.showAt(document.body);
-    await shoppingServiceApi.whenCalled('getUrlInfosForOpenTabs');
+    await flushTasks();
 
-    // Ensure the number of list items is equal to the number of open tabs.
-    assertEquals(openTabs.length, menu.openTabs.length);
-    assertEquals(titleString, menu.openTabs[0]!.title);
-    assertEquals(openTabs[0]!.url.url, menu.openTabs[0]!.url);
+    // Ensure the number of recently viewed list items is equal to the number
+    // of recently viewed tabs.
+    assertEquals(2, menu.sections.length);
+    const recentlyViewedTabEntries = menu.sections[1]!.entries;
+    assertEquals(recentlyViewedTabs.length, recentlyViewedTabEntries.length);
+    assertEquals(title, recentlyViewedTabEntries[0]!.title);
+    assertEquals(url.url, recentlyViewedTabEntries[0]!.url);
   });
 
   test('abbreviates URLs', async () => {
@@ -76,14 +114,15 @@ suite('ProductSelectionMenuTest', () => {
   });
 
   test('excludes current selection', async () => {
+    initRecentlyViewedTabUrlInfos([]);
     const titleString = 'title';
     const openTabs = [
       {
-        title: stringToMojoString16(titleString),
+        title: titleString,
         url: stringToMojoUrl('https://example.com'),
       },
       {
-        title: stringToMojoString16(titleString),
+        title: titleString,
         url: stringToMojoUrl('https://current-selection.com'),
       },
     ];
