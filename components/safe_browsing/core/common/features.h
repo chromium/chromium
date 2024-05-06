@@ -37,6 +37,10 @@ BASE_DECLARE_FEATURE(kClientSideDetectionKeyboardPointerLockRequest);
 // occurs on the page.
 BASE_DECLARE_FEATURE(kClientSideDetectionNotificationPrompt);
 
+// Send a sample CSPP ping when a URL matches the CSD allowlist and all other
+// preclassification check conditions pass.
+BASE_DECLARE_FEATURE(kClientSideDetectionSamplePing);
+
 // Creates and sends CSBRRs when notification permissions are accepted for an
 // abusive site whose interstitial has been bypassed.
 BASE_DECLARE_FEATURE(kCreateNotificationsAcceptedClientSafeBrowsingReports);

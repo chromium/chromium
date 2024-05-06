@@ -42,6 +42,10 @@ BASE_FEATURE(kClientSideDetectionNotificationPrompt,
              "ClientSideDetectionNotificationPrompt",
              base::FEATURE_DISABLED_BY_DEFAULT);
 
+BASE_FEATURE(kClientSideDetectionSamplePing,
+             "ClientSideDetectionSamplePing",
+             base::FEATURE_DISABLED_BY_DEFAULT);
+
 BASE_FEATURE(kCreateNotificationsAcceptedClientSafeBrowsingReports,
              "CreateNotificationsAcceptedClientSafeBrowsingReports",
              base::FEATURE_DISABLED_BY_DEFAULT);

@@ -232,6 +232,9 @@ class ClientSideDetectionHost
   void OnGotAccessToken(std::unique_ptr<ClientPhishingRequest> verdict,
                         const std::string& access_token);
 
+  // Check if sample ping can be sent to Safe Browsing.
+  bool CanSendSamplePing();
+
   // This pointer may be nullptr if client-side phishing detection is
   // disabled.
   base::WeakPtr<ClientSideDetectionService> csd_service_;
