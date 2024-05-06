@@ -5033,6 +5033,21 @@
             ]
         }
     ],
+    "CrOSLateBootAudioStyleTransferStudy": [
+        {
+            "platforms": [
+                "chromeos"
+            ],
+            "experiments": [
+                {
+                    "name": "Enabled",
+                    "enable_features": [
+                        "CrOSLateBootAudioStyleTransfer"
+                    ]
+                }
+            ]
+        }
+    ],
     "CrOSLateBootDiscardStaleAtModeratePressure": [
         {
             "platforms": [
