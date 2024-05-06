@@ -51,6 +51,7 @@ import org.chromium.chrome.test.ChromeTabbedActivityTestRule;
 import org.chromium.chrome.test.util.ChromeTabUtils;
 import org.chromium.content_public.browser.LoadUrlParams;
 import org.chromium.content_public.browser.test.util.TestThreadUtils;
+import org.chromium.ui.test.util.UiDisableIf;
 import org.chromium.ui.test.util.UiRestriction;
 
 import java.util.Collections;
@@ -613,6 +614,7 @@ public class TabModelMergingTest {
     @Test
     @LargeTest
     @DisableIf.Build(sdk_is_less_than = VERSION_CODES.P)
+    @DisableIf.Device(type = {UiDisableIf.TABLET}) // https://crbug.com/338997261
     public void testMergeOnMultiDisplay_CTA_Resumed_CTA2_Not_Resumed() throws TimeoutException {
         TestThreadUtils.runOnUiThreadBlocking(
                 () -> {
@@ -664,6 +666,7 @@ public class TabModelMergingTest {
     @Test
     @LargeTest
     @DisableIf.Build(sdk_is_less_than = VERSION_CODES.P)
+    @DisableIf.Device(type = {UiDisableIf.TABLET}) // https://crbug.com/338997261
     public void testMergeOnMultiDisplay_OnDisplayChanged() throws TimeoutException {
         TestThreadUtils.runOnUiThreadBlocking(
                 () -> {
