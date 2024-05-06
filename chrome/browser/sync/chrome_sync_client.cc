@@ -88,6 +88,7 @@
 #include "components/sync/service/model_type_controller.h"
 #include "components/sync/service/sync_api_component_factory.h"
 #include "components/sync/service/syncable_service_based_model_type_controller.h"
+#include "components/sync/service/trusted_vault_synthetic_field_trial.h"
 #include "components/sync_bookmarks/bookmark_sync_service.h"
 #include "components/sync_preferences/pref_service_syncable.h"
 #include "components/sync_sessions/session_sync_service.h"
@@ -809,6 +810,13 @@ void ChromeSyncClient::SetPasswordSyncAllowedChangeCb(
 #else
   // IsPasswordSyncAllowed() doesn't change outside of Android.
 #endif  // BUILDFLAG(IS_ANDROID)
+}
+
+void ChromeSyncClient::RegisterTrustedVaultAutoUpgradeSyntheticFieldTrial(
+    const syncer::TrustedVaultAutoUpgradeSyntheticFieldTrialGroup& group) {
+  CHECK(group.is_valid());
+
+  NOTIMPLEMENTED();
 }
 
 #if BUILDFLAG(ENABLE_EXTENSIONS)

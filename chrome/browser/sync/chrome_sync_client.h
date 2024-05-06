@@ -64,6 +64,9 @@ class ChromeSyncClient : public browser_sync::BrowserSyncClient {
   bool IsPasswordSyncAllowed() override;
   void SetPasswordSyncAllowedChangeCb(
       const base::RepeatingClosure& cb) override;
+  void RegisterTrustedVaultAutoUpgradeSyntheticFieldTrial(
+      const syncer::TrustedVaultAutoUpgradeSyntheticFieldTrialGroup& group)
+      override;
 
  private:
   // Convenience function used during controller creation.

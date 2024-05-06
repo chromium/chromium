@@ -40,6 +40,7 @@
 #include "components/sync/service/data_type_manager_impl.h"
 #include "components/sync/service/sync_service_observer.h"
 #include "components/sync/service/sync_token_status.h"
+#include "components/sync/service/trusted_vault_synthetic_field_trial.h"
 #include "components/sync/test/fake_model_type_controller.h"
 #include "components/sync/test/fake_sync_api_component_factory.h"
 #include "components/sync/test/fake_sync_engine.h"
@@ -67,11 +68,15 @@ namespace syncer {
 
 namespace {
 
+constexpr char kTestUser[] = "test_user@gmail.com";
+
 MATCHER_P(ContainsDataType, type, "") {
   return arg.Has(type);
 }
 
-constexpr char kTestUser[] = "test_user@gmail.com";
+MATCHER_P(IsValidFieldTrialGroupWithName, expected_name, "") {
+  return arg.is_valid() && arg.name() == expected_name;
+}
 
 SyncCycleSnapshot MakeDefaultSyncCycleSnapshot() {
   // It doesn't matter what exactly we set here, it's only relevant that the
@@ -2352,12 +2357,19 @@ TEST_F(SyncServiceImplTest, ShouldCacheTrustedVaultAutoUpgradeDebugInfo) {
     engine()->SetDetailedStatus(sync_status);
   }
 
-  // Once fully initialized, it is delegated to DataTypeManager.
+  // Completing initialization should exercise SyncClient's field trial
+  // registration.
+  EXPECT_CALL(*sync_client(),
+              RegisterTrustedVaultAutoUpgradeSyntheticFieldTrial(
+                  IsValidFieldTrialGroupWithName("Control_11")));
+
   base::RunLoop().RunUntilIdle();
   engine()->TriggerInitializationCompletion(/*success=*/true);
 
   ASSERT_EQ(SyncService::TransportState::ACTIVE,
             service()->GetTransportState());
+
+  testing::Mock::VerifyAndClearExpectations(sync_client());
 
   // Verify that the debug info has been cached in prefs.
   SyncPrefs sync_prefs(prefs());
@@ -2371,6 +2383,11 @@ TEST_F(SyncServiceImplTest, ShouldCacheTrustedVaultAutoUpgradeDebugInfo) {
             sync_prefs.GetCachedTrustedVaultAutoUpgradeDebugInfo()
                 .value_or(sync_pb::NigoriSpecifics::AutoUpgradeDebugInfo())
                 .auto_upgrade_cohort_id());
+
+  // The SyncClient API should not be invoked for the second time.
+  EXPECT_CALL(*sync_client(),
+              RegisterTrustedVaultAutoUpgradeSyntheticFieldTrial)
+      .Times(0);
 
   // Mimic another sync cycle that mutates the debug info.
   {

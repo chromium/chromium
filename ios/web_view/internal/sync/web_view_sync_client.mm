@@ -221,4 +221,9 @@ void WebViewSyncClient::SetPasswordSyncAllowedChangeCb(
   // IsPasswordSyncAllowed() doesn't change on //ios/web_view/.
 }
 
+void WebViewSyncClient::RegisterTrustedVaultAutoUpgradeSyntheticFieldTrial(
+    const syncer::TrustedVaultAutoUpgradeSyntheticFieldTrialGroup& group) {
+  // This code might be reached but synthetic field trials are not supported on
+  // iOS webview.
+}
 }  // namespace ios_web_view

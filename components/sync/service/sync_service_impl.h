@@ -410,6 +410,14 @@ class SyncServiceImpl : public SyncService,
 
   void OnPasswordSyncAllowedChanged();
 
+  // Updates PrefService (SyncPrefs) to cache the last known value for trusted
+  // vault AutoUpgradeDebugInfo. It also notifies SyncClient.
+  void CacheTrustedVaultDebugInfoToPrefsFromEngine();
+
+  // Exercises SyncClient to register synthetic field trials for trusted vault
+  // passphrase type.
+  void RegisterTrustedVaultSyntheticFieldTrialsIfNecessary();
+
   // This profile's SyncClient, which abstracts away non-Sync dependencies and
   // the Sync API component factory.
   const std::unique_ptr<SyncClient> sync_client_;
@@ -513,6 +521,10 @@ class SyncServiceImpl : public SyncService,
   // histogram needs to recorded. Set to false iff histogram was already
   // recorded or trusted vault passphrase type wasn't used on startup.
   bool should_record_trusted_vault_error_shown_on_startup_ = true;
+
+  // Whether or not SyncClient was exercised to register synthetic field trials
+  // related to trusted vault passphrase.
+  bool trusted_vault_auto_upgrade_synthetic_field_trial_registered_ = false;
 
   const bool sync_poll_immediately_on_every_startup_;
 

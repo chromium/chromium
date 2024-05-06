@@ -33,6 +33,7 @@
 #import "components/sync/base/sync_util.h"
 #import "components/sync/service/sync_api_component_factory.h"
 #import "components/sync/service/sync_service.h"
+#import "components/sync/service/trusted_vault_synthetic_field_trial.h"
 #import "components/sync_sessions/session_sync_service.h"
 #import "components/sync_user_events/user_event_service.h"
 #import "components/trusted_vault/trusted_vault_service.h"
@@ -312,4 +313,12 @@ void IOSChromeSyncClient::GetLocalDataDescriptions(
 void IOSChromeSyncClient::TriggerLocalDataMigration(
     syncer::ModelTypeSet types) {
   local_data_migration_helper_->Run(types);
+}
+
+void IOSChromeSyncClient::RegisterTrustedVaultAutoUpgradeSyntheticFieldTrial(
+    const syncer::TrustedVaultAutoUpgradeSyntheticFieldTrialGroup& group) {
+  CHECK(group.is_valid());
+
+  // TODO(crbug.com/338544832): Implement plumbing.
+  NOTIMPLEMENTED();
 }

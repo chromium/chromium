@@ -53,6 +53,7 @@
 #include "components/sync/service/sync_prefs_policy_handler.h"
 #include "components/sync/service/sync_service_utils.h"
 #include "components/sync/service/trusted_vault_histograms.h"
+#include "components/sync/service/trusted_vault_synthetic_field_trial.h"
 #include "google_apis/gaia/google_service_auth_error.h"
 #include "services/network/public/cpp/shared_url_loader_factory.h"
 
@@ -264,6 +265,40 @@ SyncServiceImpl::SyncServiceImpl(InitParams init_params)
   if (identity_manager_) {
     identity_manager_->AddObserver(this);
   }
+
+  // Based on the information cached in preferences, it might be required to
+  // register a synthetic field trial group. This should be done as early as
+  // possible to avoid untagged metrics if they get logged before other events
+  // like sync engine initialization, which could take arbitrarily long (e.g.
+  // persistent auth error).
+  RegisterTrustedVaultSyntheticFieldTrialsIfNecessary();
+}
+
+void SyncServiceImpl::RegisterTrustedVaultSyntheticFieldTrialsIfNecessary() {
+  const sync_pb::NigoriSpecifics::AutoUpgradeDebugInfo debug_info =
+      sync_prefs_.GetCachedTrustedVaultAutoUpgradeDebugInfo().value_or(
+          sync_pb::NigoriSpecifics::AutoUpgradeDebugInfo());
+
+  const TrustedVaultAutoUpgradeSyntheticFieldTrialGroup group =
+      TrustedVaultAutoUpgradeSyntheticFieldTrialGroup::FromProto(
+          debug_info.auto_upgrade_experiment_group(),
+          debug_info.auto_upgrade_cohort_id());
+
+  if (trusted_vault_auto_upgrade_synthetic_field_trial_registered_) {
+    // Registration function already invoked. It cannot be invoked twice, as
+    // runtime changes to the group assignment is not supported (e.g. signout).
+    return;
+  }
+
+  if (!group.is_valid()) {
+    // Broadcasting an invalid group isn't allowed, as it would otherwise use
+    // the only chance to invoke the registration function below, which may only
+    // be invoked once.
+    return;
+  }
+
+  trusted_vault_auto_upgrade_synthetic_field_trial_registered_ = true;
+  sync_client_->RegisterTrustedVaultAutoUpgradeSyntheticFieldTrial(group);
 }
 
 SyncServiceImpl::~SyncServiceImpl() {
@@ -1028,9 +1063,7 @@ void SyncServiceImpl::OnEngineInitialized(bool success,
 
   // Cache trusted vault debug info into prefs, to make it synchronously
   // available upon future profile startups.
-  sync_prefs_.SetCachedTrustedVaultAutoUpgradeDebugInfo(
-      engine_->GetDetailedStatus()
-          .trusted_vault_debug_info.auto_upgrade_debug_info());
+  CacheTrustedVaultDebugInfoToPrefsFromEngine();
 
   if (CanConfigureDataTypes(/*bypass_setup_in_progress_check=*/false)) {
     // Datatype downloads on restart are generally due to newly supported
@@ -1067,9 +1100,7 @@ void SyncServiceImpl::OnSyncCycleCompleted(const SyncCycleSnapshot& snapshot) {
   // OnEngineInitialized(), but it may also happen that the information was just
   // populated server-side and downloaded, after (or long after) the engine is
   // initialized.
-  sync_prefs_.SetCachedTrustedVaultAutoUpgradeDebugInfo(
-      engine_->GetDetailedStatus()
-          .trusted_vault_debug_info.auto_upgrade_debug_info());
+  CacheTrustedVaultDebugInfoToPrefsFromEngine();
 
   DVLOG(2) << "Notifying observers sync cycle completed";
   NotifySyncCycleCompleted();
@@ -2129,7 +2160,20 @@ SyncService::ModelTypeDownloadStatus SyncServiceImpl::GetDownloadStatusForImpl(
 }
 
 void SyncServiceImpl::OnPasswordSyncAllowedChanged() {
+  DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
   sync_prefs_.SetPasswordSyncAllowed(sync_client_->IsPasswordSyncAllowed());
+}
+
+void SyncServiceImpl::CacheTrustedVaultDebugInfoToPrefsFromEngine() {
+  DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
+  CHECK(engine_);
+  CHECK(engine_->IsInitialized());
+
+  sync_prefs_.SetCachedTrustedVaultAutoUpgradeDebugInfo(
+      engine_->GetDetailedStatus()
+          .trusted_vault_debug_info.auto_upgrade_debug_info());
+
+  RegisterTrustedVaultSyntheticFieldTrialsIfNecessary();
 }
 
 CoreAccountInfo SyncServiceImpl::GetAccountInfo() const {

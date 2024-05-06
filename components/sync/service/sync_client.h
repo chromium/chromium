@@ -30,6 +30,7 @@ struct LocalDataDescription;
 class SyncApiComponentFactory;
 class SyncInvalidationsService;
 class SyncService;
+class TrustedVaultAutoUpgradeSyntheticFieldTrialGroup;
 
 // Interface for clients of the Sync API to plumb through necessary dependent
 // components. This interface is purely for abstracting dependencies, and
@@ -105,6 +106,12 @@ class SyncClient {
   // TODO(crbug.com/40065374): Mark as pure virtual once all implementations
   // have overridden this.
   virtual void TriggerLocalDataMigration(ModelTypeSet types);
+
+  // Registers synthetic field trials corresponding to autoupgrading users to
+  // trusted vault passphrase type. `group` must be valid. Must be invoked at
+  // most once.
+  virtual void RegisterTrustedVaultAutoUpgradeSyntheticFieldTrial(
+      const TrustedVaultAutoUpgradeSyntheticFieldTrialGroup& group) = 0;
 };
 
 }  // namespace syncer

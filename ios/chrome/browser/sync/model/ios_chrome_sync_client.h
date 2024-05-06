@@ -74,6 +74,9 @@ class IOSChromeSyncClient : public browser_sync::BrowserSyncClient {
           std::map<syncer::ModelType, syncer::LocalDataDescription>)> callback)
       override;
   void TriggerLocalDataMigration(syncer::ModelTypeSet types) override;
+  void RegisterTrustedVaultAutoUpgradeSyntheticFieldTrial(
+      const syncer::TrustedVaultAutoUpgradeSyntheticFieldTrialGroup& group)
+      override;
 
  private:
   const raw_ptr<ChromeBrowserState> browser_state_;

@@ -64,6 +64,10 @@ class SyncClientMock : public SyncClient {
               TriggerLocalDataMigration,
               (ModelTypeSet types),
               (override));
+  MOCK_METHOD(void,
+              RegisterTrustedVaultAutoUpgradeSyntheticFieldTrial,
+              (const TrustedVaultAutoUpgradeSyntheticFieldTrialGroup&),
+              (override));
 };
 
 }  // namespace syncer

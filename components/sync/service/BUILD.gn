@@ -74,6 +74,8 @@ static_library("service") {
     "syncable_service_based_model_type_controller.h",
     "trusted_vault_histograms.cc",
     "trusted_vault_histograms.h",
+    "trusted_vault_synthetic_field_trial.cc",
+    "trusted_vault_synthetic_field_trial.h",
   ]
 
   public_deps = [
