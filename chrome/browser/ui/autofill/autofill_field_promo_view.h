@@ -25,6 +25,9 @@ namespace autofill {
 // This is an invisible view which is placed at the bottom of an DOM element.
 // It serves as an anchor for IPH's which need to be attached directly to an
 // DOM element.
+//
+// This class should not be instantiated by itself. Please use an
+// `AutofillFieldPromoController`.
 class AutofillFieldPromoView {
  public:
   // Creates and displays the view, and also maybe displays the IPH (the IPH is

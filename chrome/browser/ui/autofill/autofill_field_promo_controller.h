@@ -15,6 +15,60 @@ namespace autofill {
 
 // This class is the controller for the `AutofillFieldPromoView`. Its main
 // function is to control the view's lifetime.
+//
+// This controller is used in order to display IPHs attached directly to the
+// DOM. Normally, this is not possible. IPHs can only be attached to views (for
+// example, an IPH can easily be attached to the autofill popup).
+//
+// One controller can display only one IPH. To display a new IPH, a new
+// controller instance is needed.
+//
+// The controller receives (in the constructor) details about which IPH should
+// be displayed. The `Show()` method additionally receives the bounds of the DOM
+// element. The IPH will be displayed under this DOM element.
+//
+// On show, the controller creates an `AutofillFieldPromoView`, an invisible
+// view placed at the bottom of where the DOM element is displayed.
+//
+// The role of the invisible view is to serve as an anchor to the IPH (as IPHs
+// can only be attached to views).
+//
+// An IPH is hidden automatically when its anchor view gets hidden/destroyed.
+// For example, an IPH attached to the autofill popup is hidden when the
+// autofill popup is hidden (on tab change, on scroll, etc.). In this case, the
+// AutofillFieldPromoController takes care of hiding the anchor view.
+//
+// Responsibilities when creating a new `AutofillFieldPromoController` instance:
+//
+// 1. An `AutofillFieldPromoController` already exists as a member variable of
+// `ChromeAutofillClient`. Creating another instance of the controller should
+// also happen in `ChromeAutofillClient` and follow the already existing
+// implementation.
+//
+// 2. The IPH displayed by this controller has to be hidden in various
+// scenarios, which are explained below. The hide calls to the new controller
+// should happen in the same spot as the hide calls of the existing controller.
+//
+// 3. Hiding becomes trickier when some hiding events cannot be captured by
+// the `AutofillPopupHideHelper`. Two such events are interesting for the IPH:
+//
+// 3.a. Scrolling. The IPH should be hidden in the same place where the autofill
+// popup is hidden (currently in `BrowserAutofillManager::OnHidePopupImpl()`).
+// This method is called from the renderer not only on scroll, but hiding the
+// IPH in extra scenarios is not a disadvantage.
+//
+// 3.b. Overlapping with password generation prompt. The IPH should be hidden in
+// the same place where the autofill popup is hidden (currently in
+// `password_manager_util.cc::UserTriggeredManualGenerationFromContextMenu()`).
+//
+// 4. The IPH has to be hidden right before the autofill popup is shown
+// (currently in `ChromeAutofillClient::ShowAutofillSuggestions()`), because the
+// autofill popup cannot be shown if it overlaps with another view. Hiding the
+// IPH is an asynchronous task, that's why immediately after the IPH is hidden,
+// the task of showing the autofill popup is posted to the task thread.
+//
+// 5. (Optional) For more information, see go/mullet-m3-iph "Closing the bubble
+// section".
 class AutofillFieldPromoController {
  public:
   virtual ~AutofillFieldPromoController() = default;
