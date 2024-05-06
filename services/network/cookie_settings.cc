@@ -33,6 +33,7 @@
 #include "net/cookies/cookie_setting_override.h"
 #include "net/cookies/cookie_util.h"
 #include "net/cookies/static_cookie_policy.h"
+#include "net/first_party_sets/first_party_set_metadata.h"
 #include "services/network/tpcd/metadata/manager.h"
 #include "url/gurl.h"
 #include "url/origin.h"
@@ -271,39 +272,9 @@ bool CookieSettings::IsCookieAccessible(
   bool allowed = IsCookieAllowed(cookie, setting_with_metadata);
   bool is_third_party_request = IsThirdPartyRequest(url, site_for_cookies);
   if (cookie_inclusion_status) {
-    if (allowed) {
-      if (AffectedByThirdPartyCookiePhaseout(cookie.SameSite(),
-                                             is_third_party_request,
-                                             cookie.IsPartitioned())) {
-        if (ShouldBlockThirdPartyCookies()) {
-          cookie_inclusion_status->MaybeSetExemptionReason(GetExemptionReason(
-              setting_with_metadata.third_party_cookie_allow_mechanism()));
-        } else if (!setting_with_metadata.is_explicit_setting()) {
-          // The cookie should be allowed by default to have this warning
-          // reason.
-          cookie_inclusion_status->AddWarningReason(
-              net::CookieInclusionStatus::WARN_THIRD_PARTY_PHASEOUT);
-        }
-      }
-    } else {
-      if (IsThirdPartyPhaseoutEnabled() &&
-          AffectedByThirdPartyCookiePhaseout(cookie.SameSite(),
-                                             is_third_party_request,
-                                             cookie.IsPartitioned()) &&
-          !setting_with_metadata.is_explicit_setting()) {
-        cookie_inclusion_status->AddExclusionReason(
-            net::CookieInclusionStatus::EXCLUDE_THIRD_PARTY_PHASEOUT);
-
-        if (first_party_set_metadata.AreSitesInSameFirstPartySet()) {
-          cookie_inclusion_status->AddExclusionReason(
-              net::CookieInclusionStatus::
-                  EXCLUDE_THIRD_PARTY_BLOCKED_WITHIN_FIRST_PARTY_SET);
-        }
-      } else {
-        cookie_inclusion_status->AddExclusionReason(
-            net::CookieInclusionStatus::EXCLUDE_USER_PREFERENCES);
-      }
-    }
+    AugmentInclusionStatus(cookie, is_third_party_request,
+                           setting_with_metadata, first_party_set_metadata,
+                           *cookie_inclusion_status);
   }
   return allowed;
 }
@@ -377,52 +348,16 @@ bool CookieSettings::AnnotateAndMoveUserBlockedCookies(
   // that meets the conditions and add the `ExclusionReason` for cookies
   // that ought to be blocked.
   for (net::CookieWithAccessResult& cookie : maybe_included_cookies) {
-    if (IsCookieAllowed(cookie.cookie, setting_with_metadata)) {
-      is_any_allowed = true;
-      if (AffectedByThirdPartyCookiePhaseout(cookie.cookie.SameSite(),
-                                             is_third_party_request,
-                                             cookie.cookie.IsPartitioned())) {
-        if (ShouldBlockThirdPartyCookies()) {
-          cookie.access_result.status.MaybeSetExemptionReason(
-              GetExemptionReason(
-                  setting_with_metadata.third_party_cookie_allow_mechanism()));
-        } else if (!setting_with_metadata.is_explicit_setting()) {
-          // The cookie should be allowed by default to have this warning
-          // reason.
-          cookie.access_result.status.AddWarningReason(
-              net::CookieInclusionStatus::WARN_THIRD_PARTY_PHASEOUT);
-        }
-      }
-    } else {
-      // Use a different exclusion reason when the 3pc is blocked by browser.
-      if (IsThirdPartyPhaseoutEnabled() &&
-          AffectedByThirdPartyCookiePhaseout(cookie.cookie.SameSite(),
-                                             is_third_party_request,
-                                             cookie.cookie.IsPartitioned()) &&
-          !setting_with_metadata.is_explicit_setting()) {
-        cookie.access_result.status.AddExclusionReason(
-            net::CookieInclusionStatus::EXCLUDE_THIRD_PARTY_PHASEOUT);
-
-        if (first_party_set_metadata.AreSitesInSameFirstPartySet()) {
-          cookie.access_result.status.AddExclusionReason(
-              net::CookieInclusionStatus::
-                  EXCLUDE_THIRD_PARTY_BLOCKED_WITHIN_FIRST_PARTY_SET);
-        }
-      } else {
-        // User has a explicit setting to block 3pc.
-        cookie.access_result.status.AddExclusionReason(
-            net::CookieInclusionStatus::EXCLUDE_USER_PREFERENCES);
-      }
-    }
+    is_any_allowed =
+        is_any_allowed || IsCookieAllowed(cookie.cookie, setting_with_metadata);
+    AugmentInclusionStatus(cookie.cookie, is_third_party_request,
+                           setting_with_metadata, first_party_set_metadata,
+                           cookie.access_result.status);
   }
   for (net::CookieWithAccessResult& cookie : excluded_cookies) {
-    if (!IsCookieAllowed(cookie.cookie, setting_with_metadata)) {
-      if (!IsThirdPartyPhaseoutEnabled() ||
-          setting_with_metadata.is_explicit_setting()) {
-        cookie.access_result.status.AddExclusionReason(
-            net::CookieInclusionStatus::EXCLUDE_USER_PREFERENCES);
-      }
-    }
+    AugmentInclusionStatus(cookie.cookie, is_third_party_request,
+                           setting_with_metadata, first_party_set_metadata,
+                           cookie.access_result.status);
   }
   const auto to_be_moved = base::ranges::stable_partition(
       maybe_included_cookies, [](const net::CookieWithAccessResult& cookie) {
@@ -553,6 +488,49 @@ bool CookieSettings::IsThirdPartyPhaseoutEnabled() const {
 bool CookieSettings::MitigationsEnabledFor3pcd() const {
   return net::cookie_util::IsForceThirdPartyCookieBlockingEnabled() ||
          mitigations_enabled_for_3pcd_;
+}
+
+void CookieSettings::AugmentInclusionStatus(
+    const net::CanonicalCookie& cookie,
+    bool is_third_party_request,
+    const CookieSettings::CookieSettingWithMetadata& setting_with_metadata,
+    const net::FirstPartySetMetadata& first_party_set_metadata,
+    net::CookieInclusionStatus& out_status) const {
+  if (IsCookieAllowed(cookie, setting_with_metadata)) {
+    if (AffectedByThirdPartyCookiePhaseout(cookie.SameSite(),
+                                           is_third_party_request,
+                                           cookie.IsPartitioned())) {
+      if (ShouldBlockThirdPartyCookies()) {
+        out_status.MaybeSetExemptionReason(GetExemptionReason(
+            setting_with_metadata.third_party_cookie_allow_mechanism()));
+      } else if (!setting_with_metadata.is_explicit_setting()) {
+        // The cookie should be allowed by default to have this warning
+        // reason.
+        out_status.AddWarningReason(
+            net::CookieInclusionStatus::WARN_THIRD_PARTY_PHASEOUT);
+      }
+    }
+  } else {
+    // Use a different exclusion reason when the 3pc is blocked by browser.
+    if (IsThirdPartyPhaseoutEnabled() &&
+        AffectedByThirdPartyCookiePhaseout(cookie.SameSite(),
+                                           is_third_party_request,
+                                           cookie.IsPartitioned()) &&
+        !setting_with_metadata.is_explicit_setting()) {
+      out_status.AddExclusionReason(
+          net::CookieInclusionStatus::EXCLUDE_THIRD_PARTY_PHASEOUT);
+
+      if (first_party_set_metadata.AreSitesInSameFirstPartySet()) {
+        out_status.AddExclusionReason(
+            net::CookieInclusionStatus::
+                EXCLUDE_THIRD_PARTY_BLOCKED_WITHIN_FIRST_PARTY_SET);
+      }
+    } else {
+      // User has a explicit setting to block 3pc.
+      out_status.AddExclusionReason(
+          net::CookieInclusionStatus::EXCLUDE_USER_PREFERENCES);
+    }
+  }
 }
 
 }  // namespace network

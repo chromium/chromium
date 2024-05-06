@@ -1418,21 +1418,12 @@ TEST_P(CookieSettingsTestP, AnnotateAndMoveUserBlockedCookies_CrossSiteEmbed) {
                 net::MatchesCookieWithName("excluded_samesitelax"),
                 MatchesCookieAccessResult(
                     HasExactlyExclusionReasonsForTesting(
-                        IsForceThirdPartyCookieBlockingFlagEnabled() ||
-                        IsTrackingProtectionEnabledFor3pcd()
-                            ? std::vector<
-                                  net::CookieInclusionStatus::
-                                      ExclusionReason>{
-                                        net::CookieInclusionStatus::
-                                            EXCLUDE_SECURE_ONLY,
-                                    }
-                            : std::vector<
-                                  net::CookieInclusionStatus::
-                                      ExclusionReason>{
-                                        net::CookieInclusionStatus::
-                                            EXCLUDE_SECURE_ONLY,
-                                        net::CookieInclusionStatus::
-                                            EXCLUDE_USER_PREFERENCES}),
+                        std::vector<
+                            net::CookieInclusionStatus::ExclusionReason>{
+                            net::CookieInclusionStatus::EXCLUDE_SECURE_ONLY,
+                            net::CookieInclusionStatus::
+                                EXCLUDE_USER_PREFERENCES,
+                        }),
                     _, _, _))));
   }
 }

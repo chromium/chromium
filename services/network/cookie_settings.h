@@ -223,6 +223,15 @@ class COMPONENT_EXPORT(NETWORK_SERVICE) CookieSettings
       const net::SiteForCookies& site_for_cookies,
       const url::Origin* top_frame_origin);
 
+  // Adds exclusion reasons, warnings, etc. as appropriate to `out_status` for
+  // the given cookie in the given context.
+  void AugmentInclusionStatus(
+      const net::CanonicalCookie& cookie,
+      bool is_third_party_request,
+      const CookieSettings::CookieSettingWithMetadata& setting_with_metadata,
+      const net::FirstPartySetMetadata& first_party_set_metadata,
+      net::CookieInclusionStatus& out_status) const;
+
   // Returns true if at least one content settings is session only.
   bool HasSessionOnlyOrigins() const;
 
