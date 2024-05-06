@@ -107,8 +107,9 @@ constexpr char kOpClipTypeName[] = "clip";
 constexpr char kOpConcatTypeName[] = "concat";
 constexpr char kOpConv2dTypeName[] = "conv";
 constexpr char kOpEluTypeName[] = "elu";
-constexpr char kOpHardSigmoidTypeName[] = "sigmoid_hard";
 constexpr char kOpGatherTypeName[] = "gather_along_axis";
+constexpr char kOpHardSigmoidTypeName[] = "sigmoid_hard";
+constexpr char kOpInstanceNormalizationTypeName[] = "instance_norm";
 constexpr char kOpLeakyReluTypeName[] = "leaky_relu";
 constexpr char kOpMatmul[] = "matmul";
 constexpr char kOpReluTypeName[] = "relu";
@@ -655,6 +656,11 @@ GraphBuilder::BuildCoreMLModel() {
             AddOperationForHardSigmoid(*operation->get_hard_sigmoid(), block));
         break;
       }
+      case mojom::Operation::Tag::kInstanceNormalization: {
+        RETURN_IF_ERROR(AddOperationForInstanceNormalization(
+            *operation->get_instance_normalization(), block));
+        break;
+      }
       case mojom::Operation::Tag::kLeakyRelu: {
         RETURN_IF_ERROR(
             AddOperationForLeakyRelu(*operation->get_leaky_relu(), block));
@@ -732,7 +738,6 @@ GraphBuilder::BuildCoreMLModel() {
       case mojom::Operation::Tag::kGruCell:
       case mojom::Operation::Tag::kHardSwish:
       case mojom::Operation::Tag::kLayerNormalization:
-      case mojom::Operation::Tag::kInstanceNormalization:
       case mojom::Operation::Tag::kLstm:
       case mojom::Operation::Tag::kLstmCell:
       case mojom::Operation::Tag::kPad:
@@ -1070,7 +1075,7 @@ GraphBuilder::AddOperationForBatchNormalization(
   // TODO(crbug.com/338348440): Consider using float16 when the input is
   // float16.
   SetInputWithValue(*op->mutable_inputs(), kOpParamEpsilon,
-                    CreateScalarImmediateValue<float>(operation.epsilon));
+                    CreateScalarImmediateValue(operation.epsilon));
 
   CoreML::Specification::MILSpec::NamedValueType& output = *op->add_outputs();
   PopulateNamedValueType(operation.output_operand_id, output);
@@ -1676,6 +1681,46 @@ base::expected<void, mojom::ErrorPtr> GraphBuilder::AddOperationForHardSigmoid(
       });
 
   PopulateNamedValueType(operation.output_operand_id, *op->add_outputs());
+  return base::ok();
+}
+
+base::expected<void, mojom::ErrorPtr>
+GraphBuilder::AddOperationForInstanceNormalization(
+    const mojom::InstanceNormalization& operation,
+    CoreML::Specification::MILSpec::Block& block) {
+  const OperandInfo& input_operand_info =
+      GetOperandInfo(operation.input_operand_id);
+  CHECK(kFloatDataTypes.contains(input_operand_info.mil_data_type));
+
+  if (operation.layout != mojom::InputOperandLayout::kChannelsFirst) {
+    // TODO(crbug.com/338398666) Support channels-last by adding transposes.
+    return NewNotSupportedError("Unsupported input layout.");
+  }
+
+  CoreML::Specification::MILSpec::Operation* op = block.add_operations();
+  op->set_type(kOpInstanceNormalizationTypeName);
+  SetInputWithName(*op->mutable_inputs(), kOpParamX,
+                   input_operand_info.coreml_name);
+
+  static constexpr char kParamGamma[] = "gamma";
+
+  // TODO(crbug.com/338529226): These params must all be constant tensors.
+  if (operation.scale_operand_id.has_value()) {
+    SetInputWithName(*op->mutable_inputs(), kParamGamma,
+                     GetOperandInfo(*operation.scale_operand_id).coreml_name);
+  }
+  if (operation.bias_operand_id.has_value()) {
+    SetInputWithName(*op->mutable_inputs(), kOpParamBeta,
+                     GetOperandInfo(*operation.bias_operand_id).coreml_name);
+  }
+
+  // TODO(crbug.com/338348440): Consider using float16 when the input is
+  // float16.
+  SetInputWithValue(*op->mutable_inputs(), kOpParamEpsilon,
+                    CreateScalarImmediateValue(operation.epsilon));
+
+  CoreML::Specification::MILSpec::NamedValueType& output = *op->add_outputs();
+  PopulateNamedValueType(operation.output_operand_id, output);
   return base::ok();
 }
 
