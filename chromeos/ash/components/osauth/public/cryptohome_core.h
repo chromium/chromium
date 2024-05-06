@@ -50,7 +50,15 @@ class COMPONENT_EXPORT(CHROMEOS_ASH_COMPONENTS_OSAUTH) CryptohomeCore {
   virtual void EndAuthSession(Client* client) = 0;
   virtual AuthPerformer* GetAuthPerformer() const = 0;
   virtual UserContext* GetCurrentContext() const = 0;
-  virtual std::unique_ptr<UserContext> BorrowContext() = 0;
+
+  // Borrows the UserContext to perform Cryptohome actions in |callback|.
+  // If the UserContext has been borrowed, the callback will be queued
+  // to be called when the UserContext is returned.
+  virtual void BorrowContext(BorrowContextCallback callback) = 0;
+
+  // Returns the UserContext and if there are queued borrow callbacks,
+  // the first queued callback will take the returned context and
+  // get called.
   virtual void ReturnContext(std::unique_ptr<UserContext> context) = 0;
   virtual AuthProofToken StoreAuthenticationContext() = 0;
 };

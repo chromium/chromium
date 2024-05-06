@@ -9,9 +9,12 @@
 
 #include "base/component_export.h"
 #include "base/containers/enum_set.h"
+#include "base/functional/callback.h"
 #include "components/account_id/account_id.h"
 
 namespace ash {
+
+class UserContext;
 
 // This token represents authentication proof. It can be safely passed
 // between components, and can be used to obtain authenticated
@@ -76,6 +79,9 @@ struct COMPONENT_EXPORT(CHROMEOS_ASH_COMPONENTS_OSAUTH) AuthAttemptVector {
 
   bool operator==(const AuthAttemptVector&) const = default;
 };
+
+using BorrowContextCallback =
+    base::OnceCallback<void(std::unique_ptr<UserContext>)>;
 
 }  // namespace ash
 

@@ -104,7 +104,7 @@ std::unique_ptr<UserContext> AuthSessionStorageImpl::Borrow(
 
 void AuthSessionStorageImpl::BorrowAsync(const base::Location& location,
                                          const AuthProofToken& token,
-                                         BorrowCallback callback) {
+                                         BorrowContextCallback callback) {
   auto data_it = tokens_.find(token);
   if (data_it == std::end(tokens_)) {
     LOG(ERROR) << "Accessing expired token";
@@ -190,7 +190,7 @@ void AuthSessionStorageImpl::Return(const AuthProofToken& token,
   }
 
   if (!data_it->second->borrow_queue.empty()) {
-    std::pair<base::Location, BorrowCallback> pending_borrow =
+    std::pair<base::Location, BorrowContextCallback> pending_borrow =
         std::move(data_it->second->borrow_queue.front());
     data_it->second->borrow_queue.pop();
     BorrowAsync(pending_borrow.first, token, std::move(pending_borrow.second));
@@ -198,7 +198,7 @@ void AuthSessionStorageImpl::Return(const AuthProofToken& token,
 }
 
 void AuthSessionStorageImpl::Withdraw(const AuthProofToken& token,
-                                      BorrowCallback callback) {
+                                      BorrowContextCallback callback) {
   auto data_it = tokens_.find(token);
   if (data_it == std::end(tokens_)) {
     LOG(ERROR) << "Accessing expired token";
@@ -228,7 +228,7 @@ void AuthSessionStorageImpl::Withdraw(const AuthProofToken& token,
   CHECK_EQ(data_it->second->state, TokenState::kBorrowed);
   // Drain borrow queue.
   while (!data_it->second->borrow_queue.empty()) {
-    std::pair<base::Location, BorrowCallback> pending_borrow =
+    std::pair<base::Location, BorrowContextCallback> pending_borrow =
         std::move(data_it->second->borrow_queue.front());
     data_it->second->borrow_queue.pop();
     std::move(pending_borrow.second).Run(nullptr);
@@ -255,7 +255,7 @@ void AuthSessionStorageImpl::Invalidate(
   }
   // Drain borrow queue.
   while (!data_it->second->borrow_queue.empty()) {
-    std::pair<base::Location, BorrowCallback> pending_borrow =
+    std::pair<base::Location, BorrowContextCallback> pending_borrow =
         std::move(data_it->second->borrow_queue.front());
     data_it->second->borrow_queue.pop();
     std::move(pending_borrow.second).Run(nullptr);

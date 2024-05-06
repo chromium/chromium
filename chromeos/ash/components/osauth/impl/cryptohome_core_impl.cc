@@ -12,6 +12,7 @@
 #include "base/check_op.h"
 #include "base/functional/bind.h"
 #include "base/logging.h"
+#include "base/task/sequenced_task_runner.h"
 #include "chromeos/ash/components/dbus/userdataauth/userdataauth_client.h"
 #include "chromeos/ash/components/login/auth/auth_performer.h"
 #include "chromeos/ash/components/login/auth/public/auth_session_intent.h"
@@ -208,14 +209,30 @@ AuthProofToken CryptohomeCoreImpl::StoreAuthenticationContext() {
   return AuthSessionStorage::Get()->Store(std::move(context_));
 }
 
-std::unique_ptr<UserContext> CryptohomeCoreImpl::BorrowContext() {
-  CHECK(context_);
-  return std::move(context_);
+void CryptohomeCoreImpl::BorrowContext(BorrowContextCallback callback) {
+  if (!context_) {
+    borrow_callback_queue_.emplace(std::move(callback));
+    return;
+  }
+  BorrowContextAndRun(std::move(callback));
+  return;
 }
 
 void CryptohomeCoreImpl::ReturnContext(std::unique_ptr<UserContext> context) {
   CHECK(!context_);
   context_ = std::move(context);
+  if (!borrow_callback_queue_.empty()) {
+    auto callback = std::move(borrow_callback_queue_.front());
+    borrow_callback_queue_.pop();
+    BorrowContextAndRun(std::move(callback));
+    return;
+  }
+}
+
+void CryptohomeCoreImpl::BorrowContextAndRun(BorrowContextCallback callback) {
+  CHECK(context_);
+  base::SequencedTaskRunner::GetCurrentDefault()->PostTask(
+      FROM_HERE, base::BindOnce(std::move(callback), std::move(context_)));
 }
 
 }  // namespace ash

@@ -59,10 +59,9 @@ void CryptohomePasswordEngine::PerformPasswordAttempt(
   }
   CHECK(get_ref().has_value());
   get_observer()->OnFactorAttempt(GetFactor());
-  get_core()->GetAuthPerformer()->AuthenticateWithPassword(
-      get_ref()->label().value(), raw_password, get_core()->BorrowContext(),
-      base::BindOnce(&CryptohomePasswordEngine::OnAuthAttempt,
-                     weak_factory_.GetWeakPtr()));
+  get_core()->BorrowContext(
+      base::BindOnce(&CryptohomePasswordEngine::PerformAuthenticationAttempt,
+                     weak_factory_.GetWeakPtr(), raw_password));
 }
 
 void CryptohomePasswordEngine::OnAuthAttempt(
@@ -71,6 +70,15 @@ void CryptohomePasswordEngine::OnAuthAttempt(
   get_core()->ReturnContext(std::move(context));
   get_observer()->OnFactorAttemptResult(GetFactor(),
                                         /* success= */ !error.has_value());
+}
+
+void CryptohomePasswordEngine::PerformAuthenticationAttempt(
+    const std::string& raw_password,
+    std::unique_ptr<UserContext> context) {
+  get_core()->GetAuthPerformer()->AuthenticateWithPassword(
+      get_ref()->label().value(), raw_password, std::move(context),
+      base::BindOnce(&CryptohomePasswordEngine::OnAuthAttempt,
+                     weak_factory_.GetWeakPtr()));
 }
 
 CryptohomePasswordEngineFactory::CryptohomePasswordEngineFactory() = default;

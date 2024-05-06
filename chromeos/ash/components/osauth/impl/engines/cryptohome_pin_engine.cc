@@ -63,13 +63,10 @@ void CryptohomePinEngine::PerformPinAttempt(const std::string& raw_pin) {
     return;
   }
   CHECK(get_ref().has_value());
-  const AccountId& account_id = get_core()->GetCurrentContext()->GetAccountId();
   get_observer()->OnFactorAttempt(GetFactor());
-  get_core()->GetAuthPerformer()->AuthenticateWithPin(
-      raw_pin, GetUserSalt(account_id, local_state_),
-      get_core()->BorrowContext(),
-      base::BindOnce(&CryptohomePinEngine::OnAuthAttempt,
-                     weak_factory_.GetWeakPtr()));
+  get_core()->BorrowContext(
+      base::BindOnce(&CryptohomePinEngine::PerformAuthenticationAttempt,
+                     weak_factory_.GetWeakPtr(), raw_pin));
 }
 
 void CryptohomePinEngine::OnAuthAttempt(
@@ -78,6 +75,16 @@ void CryptohomePinEngine::OnAuthAttempt(
   get_core()->ReturnContext(std::move(context));
   get_observer()->OnFactorAttemptResult(GetFactor(),
                                         /* success= */ !error.has_value());
+}
+
+void CryptohomePinEngine::PerformAuthenticationAttempt(
+    const std::string& raw_pin,
+    std::unique_ptr<UserContext> context) {
+  const AccountId& account_id = context->GetAccountId();
+  get_core()->GetAuthPerformer()->AuthenticateWithPin(
+      raw_pin, GetUserSalt(account_id, local_state_), std::move(context),
+      base::BindOnce(&CryptohomePinEngine::OnAuthAttempt,
+                     weak_factory_.GetWeakPtr()));
 }
 
 std::string CryptohomePinEngine::GetUserSalt(const AccountId& account_id,

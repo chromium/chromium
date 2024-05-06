@@ -80,5 +80,6 @@ source_set("unit_tests") {
     "auth_hub_mode_lifecycle_unittest.cc",
     "auth_hub_vector_lifecycle_unittest.cc",
     "auth_session_storage_impl_unittest.cc",
+    "cryptohome_core_impl_unittest.cc",
   ]
 }

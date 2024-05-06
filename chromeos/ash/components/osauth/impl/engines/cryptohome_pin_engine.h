@@ -42,6 +42,8 @@ class CryptohomePinEngine : public CryptohomeBasedEngine {
  private:
   void OnAuthAttempt(std::unique_ptr<UserContext>,
                      std::optional<AuthenticationError>);
+  void PerformAuthenticationAttempt(const std::string& raw_pin,
+                                    std::unique_ptr<UserContext> context);
 
   std::string GetUserSalt(const AccountId& account_id,
                           PrefService* local_state) const;

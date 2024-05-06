@@ -7,6 +7,7 @@
 
 #include <memory>
 #include <optional>
+#include <queue>
 
 #include "base/containers/flat_set.h"
 #include "base/memory/raw_ptr.h"
@@ -20,7 +21,8 @@ namespace ash {
 class UserDataAuthClient;
 class UserContext;
 
-class CryptohomeCoreImpl : public CryptohomeCore {
+class COMPONENT_EXPORT(CHROMEOS_ASH_COMPONENTS_OSAUTH) CryptohomeCoreImpl
+    : public CryptohomeCore {
  public:
   explicit CryptohomeCoreImpl(UserDataAuthClient* client);
   ~CryptohomeCoreImpl() override;
@@ -30,8 +32,8 @@ class CryptohomeCoreImpl : public CryptohomeCore {
                         Client* client) override;
   void EndAuthSession(Client* client) override;
   UserContext* GetCurrentContext() const override;
+  void BorrowContext(BorrowContextCallback callback) override;
   AuthPerformer* GetAuthPerformer() const override;
-  std::unique_ptr<UserContext> BorrowContext() override;
   void ReturnContext(std::unique_ptr<UserContext> context) override;
   AuthProofToken StoreAuthenticationContext() override;
 
@@ -50,10 +52,12 @@ class CryptohomeCoreImpl : public CryptohomeCore {
   void OnInvalidateAuthSession(std::unique_ptr<UserContext> context,
                                std::optional<AuthenticationError> error);
   void EndAuthSessionImpl();
+  void BorrowContextAndRun(BorrowContextCallback callback);
 
   std::optional<AuthAttemptVector> current_attempt_;
   base::flat_set<raw_ptr<Client>> clients_;
   base::flat_set<raw_ptr<Client>> clients_being_removed_;
+  std::queue<BorrowContextCallback> borrow_callback_queue_;
 
   Stage current_stage_ = Stage::kIdle;
   bool auth_session_started_ = false;

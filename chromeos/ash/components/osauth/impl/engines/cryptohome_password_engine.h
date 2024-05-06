@@ -38,6 +38,8 @@ class CryptohomePasswordEngine : public CryptohomeBasedEngine {
  private:
   void OnAuthAttempt(std::unique_ptr<UserContext>,
                      std::optional<AuthenticationError>);
+  void PerformAuthenticationAttempt(const std::string& raw_password,
+                                    std::unique_ptr<UserContext> context);
 
   base::WeakPtrFactory<CryptohomePasswordEngine> weak_factory_{this};
 };
