@@ -69,6 +69,11 @@ Tests.testIsPlainHostName = function(t) {
   t.expectFalse(isPlainHostName("."));
   t.expectFalse(isPlainHostName(".:"));
 
+  // These are not really hostnames, but `isPlainHostName` accepts any dotless,
+  // non-IP string.
+  t.expectTrue(isPlainHostName("\uffff".repeat(256)));
+  t.expectTrue(isPlainHostName(""));
+
   // Valid IPv6 address
   t.expectFalse(isPlainHostName("::1"));
 
@@ -178,6 +183,7 @@ Tests.testSortIpAddressList = function(t) {
   t.expectEquals(null, sortIpAddressList());
   t.expectEquals(null, sortIpAddressList(null));
   t.expectEquals(null, sortIpAddressList(null, null));
+  t.expectEquals(null, sortIpAddressList("\uffff".repeat(256)));
 };
 
 Tests.testIsInNetEx = function(t) {
@@ -223,10 +229,14 @@ Tests.testIsInNetEx = function(t) {
   // Invalid IP address.
   t.expectFalse(isInNetEx("256.0.0.1", "198.95.249.79"));
   t.expectFalse(isInNetEx("127.0.0.1 ", "127.0.0.1/32"));  // Extra space.
+  t.expectFalse(isInNetEx("\uffff".repeat(256), "127.0.0.1/32"));
+  t.expectFalse(isInNetEx("", "127.0.0.1/32"));
 
   // Invalid prefix.
   t.expectFalse(isInNetEx("198.95.115.10", "198.95.0.0/34"));
   t.expectFalse(isInNetEx("127.0.0.1", "127.0.0.1"));  // Missing '/' in prefix.
+  t.expectFalse(isInNetEx("127.0.0.1", "\uffff".repeat(256)));
+  t.expectFalse(isInNetEx("127.0.0.1", ""));
 };
 
 Tests.testWeekdayRange = function(t) {
@@ -465,4 +475,3 @@ MockDate.setCurrent = function(currentDateString) {
 
 // Bind the methods to proxy requests to the wrapped Date().
 MockDate.init();
-
