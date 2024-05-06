@@ -461,8 +461,8 @@ IN_PROC_BROWSER_TEST_F(MAYBE_IsAnimatedLCPTest,
                    /*expected=*/true, /*entries=*/0);
 }
 
-// TODO(crbug.com/40866505): Flaky on lacros
-#if BUILDFLAG(IS_CHROMEOS_LACROS)
+// TODO(crbug.com/40866505): Flaky on lacros and Windows (crbug.com/336471594)
+#if BUILDFLAG(IS_CHROMEOS_LACROS) || BUILDFLAG(IS_WIN)
 #define MAYBE_MouseoverLCPTest DISABLED_MouseoverLCPTest
 #else
 #define MAYBE_MouseoverLCPTest MouseoverLCPTest
