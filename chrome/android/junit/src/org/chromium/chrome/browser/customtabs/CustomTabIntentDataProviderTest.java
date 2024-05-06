@@ -33,6 +33,7 @@ import android.app.PendingIntent;
 import android.content.ComponentName;
 import android.content.Context;
 import android.content.Intent;
+import android.content.pm.PackageManager;
 import android.graphics.Bitmap;
 import android.net.Uri;
 import android.os.Bundle;
@@ -52,8 +53,10 @@ import org.junit.Test;
 import org.junit.rules.TestRule;
 import org.junit.runner.RunWith;
 import org.mockito.Mockito;
+import org.robolectric.Shadows;
 import org.robolectric.annotation.Config;
 
+import org.chromium.base.BuildInfo;
 import org.chromium.base.IntentUtils;
 import org.chromium.base.test.BaseRobolectricTestRunner;
 import org.chromium.base.test.util.Batch;
@@ -1020,6 +1023,24 @@ public class CustomTabIntentDataProviderTest {
         var dataProvider =
                 spy(new CustomTabIntentDataProvider(intent, mContext, COLOR_SCHEME_LIGHT));
         when(dataProvider.isPartialCustomTab()).thenReturn(true);
+
+        when(connection.getClientPackageNameForSession(any())).thenReturn("com.a.b.c");
+        assertFalse(dataProvider.isInteractiveOmniboxAllowed());
+    }
+
+    @Test
+    @EnableFeatures({ChromeFeatureList.SEARCH_IN_CCT})
+    public void searchInCCT_notAllowedOnAutomotive() {
+        var shadowPkgMgr = Shadows.shadowOf(mContext.getPackageManager());
+        shadowPkgMgr.setSystemFeature(PackageManager.FEATURE_AUTOMOTIVE, /* supported= */ true);
+        assertTrue(BuildInfo.getInstance().isAutomotive);
+
+        CustomTabIntentDataProvider.OMNIBOX_ALLOWED_PACKAGE_NAMES.setForTesting("com.a.b.c");
+        CustomTabsConnection connection = Mockito.mock(CustomTabsConnection.class);
+        CustomTabsConnection.setInstanceForTesting(connection);
+
+        Intent intent = new CustomTabsIntent.Builder().build().intent;
+        var dataProvider = new CustomTabIntentDataProvider(intent, mContext, COLOR_SCHEME_LIGHT);
 
         when(connection.getClientPackageNameForSession(any())).thenReturn("com.a.b.c");
         assertFalse(dataProvider.isInteractiveOmniboxAllowed());

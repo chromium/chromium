@@ -1493,6 +1493,7 @@ public class CustomTabIntentDataProvider extends BrowserServicesIntentDataProvid
         if (!ChromeFeatureList.sSearchInCCT.isEnabled()) return false;
         if (isIncognito()) return false;
         if (isPartialCustomTab()) return false;
+        if (BuildInfo.getInstance().isAutomotive) return false;
 
         return isPackageNameInList(
                 getClientPackageName(), OMNIBOX_ALLOWED_PACKAGE_NAMES.getValue());
