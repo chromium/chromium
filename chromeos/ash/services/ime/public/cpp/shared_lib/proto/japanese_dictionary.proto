@@ -12,6 +12,35 @@ message FetchJapaneseDictionaryResponse {
   repeated JapaneseDictionary dictionaries = 1;
 }
 
+message EditJapaneseDictionaryEntryRequest {
+  optional int64 dictionary_id = 1;
+  optional int32 entry_index = 2;
+  optional JapaneseDictionary.Entry entry = 3;
+}
+
+message AddJapaneseDictionaryEntryRequest {
+  optional int64 dictionary_id = 1;
+  optional JapaneseDictionary.Entry entry = 2;
+}
+
+message DeleteJapaneseDictionaryEntryRequest {
+  optional int64 dictionary_id = 1;
+  optional int32 entry_index = 2;
+}
+
+message CreateJapaneseDictionaryRequest {
+  optional string name = 1;
+}
+
+message RenameJapaneseDictionaryRequest {
+  optional int64 dictionary_id = 1;
+  optional string name = 2;
+}
+
+message DeleteJapaneseDictionaryRequest {
+  optional int64 dictionary_id = 1;
+}
+
 // Based on:
 // https://github.com/google/mozc/blob/master/src/protocol/user_dictionary_storage.proto
 message JapaneseDictionary {
