@@ -5,6 +5,7 @@
 #include "headless/lib/browser/headless_request_context_manager.h"
 
 #include "base/command_line.h"
+#include "base/feature_list.h"
 #include "base/functional/bind.h"
 #include "base/task/single_thread_task_runner.h"
 #include "build/build_config.h"
@@ -14,6 +15,7 @@
 #include "headless/lib/browser/headless_browser_context_options.h"
 #include "headless/public/switches.h"
 #include "mojo/public/cpp/bindings/receiver.h"
+#include "net/base/features.h"
 #include "net/http/http_auth_preferences.h"
 #include "net/proxy_resolution/proxy_config_service.h"
 #include "services/cert_verifier/public/mojom/cert_verifier_service_factory.mojom.h"
@@ -258,6 +260,8 @@ void HeadlessRequestContextManager::ConfigureNetworkContextParamsInternal(
         cert_verifier_creation_params) {
   context_params->user_agent = user_agent_;
   context_params->accept_language = accept_language_;
+  context_params->enable_zstd =
+      base::FeatureList::IsEnabled(net::features::kZstdContentEncoding);
 
   // TODO(crbug.com/40405715): Allow
   // context_params->http_auth_static_network_context_params->allow_default_credentials
