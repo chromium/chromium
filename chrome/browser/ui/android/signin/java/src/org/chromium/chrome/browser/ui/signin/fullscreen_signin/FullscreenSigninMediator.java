@@ -30,7 +30,6 @@ import org.chromium.chrome.browser.ui.signin.SigninUtils;
 import org.chromium.chrome.browser.ui.signin.account_picker.AccountPickerCoordinator;
 import org.chromium.chrome.browser.ui.signin.account_picker.AccountPickerDialogCoordinator;
 import org.chromium.chrome.browser.ui.signin.fullscreen_signin.FullscreenSigninCoordinator.Delegate;
-import org.chromium.chrome.browser.ui.signin.fullscreen_signin.FullscreenSigninProperties.FrePolicy;
 import org.chromium.components.externalauth.ExternalAuthUtils;
 import org.chromium.components.signin.AccountManagerFacade;
 import org.chromium.components.signin.AccountManagerFacadeProvider;
@@ -229,10 +228,7 @@ public class FullscreenSigninMediator
                             + isSigninDisabledByPolicy);
             isMetricsReportingDisabledByPolicy =
                     !mPrivacyPreferencesManager.isUsageAndCrashReportingPermittedByPolicy();
-
-            final FrePolicy frePolicy = new FrePolicy();
-            frePolicy.metricsReportingDisabledByPolicy = isMetricsReportingDisabledByPolicy;
-            mModel.set(FullscreenSigninProperties.FRE_POLICY, frePolicy);
+            mModel.set(FullscreenSigninProperties.SHOW_ENTERPRISE_MANAGEMENT_NOTICE, true);
         }
 
         boolean isSigninSupported =

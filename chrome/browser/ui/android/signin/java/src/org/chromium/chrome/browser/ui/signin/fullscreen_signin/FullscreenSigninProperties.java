@@ -17,15 +17,6 @@ import org.chromium.ui.modelutil.PropertyModel.WritableBooleanPropertyKey;
 import org.chromium.ui.modelutil.PropertyModel.WritableObjectPropertyKey;
 
 class FullscreenSigninProperties {
-    /**
-     * This class regroups the policies supported by FRE.
-     * When forced sign-in will be supported, we could use an enum field in this class
-     * instead of the boolean property.
-     */
-    static class FrePolicy {
-        public boolean metricsReportingDisabledByPolicy;
-    }
-
     static final ReadableObjectPropertyKey<OnClickListener> ON_SELECTED_ACCOUNT_CLICKED =
             new ReadableObjectPropertyKey<>("on_selected_account_clicked");
     static final WritableObjectPropertyKey<DisplayableProfileData> SELECTED_ACCOUNT_DATA =
@@ -54,8 +45,8 @@ class FullscreenSigninProperties {
     static final WritableBooleanPropertyKey SHOW_INITIAL_LOAD_PROGRESS_SPINNER =
             new WritableBooleanPropertyKey("show_initial_load_progress_spinner");
 
-    static final WritableObjectPropertyKey<FrePolicy> FRE_POLICY =
-            new WritableObjectPropertyKey<>("fre_policy");
+    static final WritableBooleanPropertyKey SHOW_ENTERPRISE_MANAGEMENT_NOTICE =
+            new WritableBooleanPropertyKey("show_enterprise_management_notice");
 
     static final WritableBooleanPropertyKey IS_SIGNIN_SUPPORTED =
             new WritableBooleanPropertyKey("is_signin_supported");
@@ -76,7 +67,7 @@ class FullscreenSigninProperties {
                 SHOW_SIGNIN_PROGRESS_SPINNER_WITH_TEXT,
                 SHOW_SIGNIN_PROGRESS_SPINNER,
                 SHOW_INITIAL_LOAD_PROGRESS_SPINNER,
-                FRE_POLICY,
+                SHOW_ENTERPRISE_MANAGEMENT_NOTICE,
                 IS_SIGNIN_SUPPORTED,
                 TITLE_STRING_ID,
                 FOOTER_STRING,
@@ -97,7 +88,7 @@ class FullscreenSigninProperties {
                 .with(ON_CONTINUE_AS_CLICKED, v -> onContinueAsClicked.run())
                 .with(ON_DISMISS_CLICKED, v -> onDismissClicked.run())
                 .with(SHOW_INITIAL_LOAD_PROGRESS_SPINNER, true)
-                .with(FRE_POLICY, null)
+                .with(SHOW_ENTERPRISE_MANAGEMENT_NOTICE, false)
                 .with(IS_SIGNIN_SUPPORTED, isSigninSupported)
                 .with(TITLE_STRING_ID, titleStringId)
                 .with(FOOTER_STRING, footerString)

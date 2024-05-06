@@ -61,7 +61,7 @@ class FullscreenSigninViewBinder {
                 initialLoadProgressSpinner.setVisibility(View.GONE);
             }
             updateVisibility(view, model);
-        } else if (propertyKey == FullscreenSigninProperties.FRE_POLICY) {
+        } else if (propertyKey == FullscreenSigninProperties.SHOW_ENTERPRISE_MANAGEMENT_NOTICE) {
             updateBrowserManagedHeaderView(view, model);
         } else if (propertyKey == FullscreenSigninProperties.IS_SIGNIN_SUPPORTED) {
             if (!model.get(FullscreenSigninProperties.IS_SIGNIN_SUPPORTED)) {
@@ -86,23 +86,19 @@ class FullscreenSigninViewBinder {
 
     private static void updateBrowserManagedHeaderView(
             FullscreenSigninView view, PropertyModel model) {
-        // Supervised accounts do not have any enterprise policy set, but they set app
-        // restrictions which the policy load listener considers as policy. But if child
-        // accounts are loaded dynamically, policy load listener may say there are no
-        // policies on device. Because of the entangled nature of IS_SELECTED_ACCOUNT_SUPERVISED
-        // and FRE_POLICY they are both handled in this function as one of these properties
-        // will get updated before the other.
-        final boolean hasPolicy = model.get(FullscreenSigninProperties.FRE_POLICY) != null;
-        final boolean isAccountSupervised =
-                model.get(FullscreenSigninProperties.IS_SELECTED_ACCOUNT_SUPERVISED);
-
-        if (isAccountSupervised) {
+        // Supervised accounts do not have any enterprise policy set, but they set app restrictions
+        // which the policy load listener considers as policy. But if child accounts are loaded
+        // dynamically, policy load listener may say there are no policies on device. Because of the
+        // entangled nature of IS_SELECTED_ACCOUNT_SUPERVISED and SHOW_ENTERPRISE_MANAGEMENT_NOTICE
+        // they are both handled in this function as one of these properties will get updated before
+        // the other.
+        if (model.get(FullscreenSigninProperties.IS_SELECTED_ACCOUNT_SUPERVISED)) {
             view.getBrowserManagedHeaderView().setVisibility(View.VISIBLE);
             view.getPrivacyDisclaimer().setText(R.string.fre_browser_managed_by_parent);
             view.getPrivacyDisclaimer()
                     .setCompoundDrawablesRelativeWithIntrinsicBounds(
                             R.drawable.ic_account_child_20dp, 0, 0, 0);
-        } else if (hasPolicy) {
+        } else if (model.get(FullscreenSigninProperties.SHOW_ENTERPRISE_MANAGEMENT_NOTICE)) {
             view.getBrowserManagedHeaderView().setVisibility(View.VISIBLE);
             view.getPrivacyDisclaimer().setText(R.string.fre_browser_managed_by_organization);
             view.getPrivacyDisclaimer()
@@ -135,20 +131,21 @@ class FullscreenSigninViewBinder {
                 model.get(FullscreenSigninProperties.SHOW_INITIAL_LOAD_PROGRESS_SPINNER);
         final boolean isSelectedAccountSupervised =
                 model.get(FullscreenSigninProperties.IS_SELECTED_ACCOUNT_SUPERVISED);
-        final boolean hasPolicy = model.get(FullscreenSigninProperties.FRE_POLICY) != null;
+        final boolean showManagementNotice =
+                model.get(FullscreenSigninProperties.SHOW_ENTERPRISE_MANAGEMENT_NOTICE);
         view.getTitle().setVisibility(showInitialLoadProgressSpinner ? View.GONE : View.VISIBLE);
         view.getSubtitle()
                 .setVisibility(
                         !showInitialLoadProgressSpinner
                                         && !isSelectedAccountSupervised
-                                        && !hasPolicy
+                                        && !showManagementNotice
                                 ? View.VISIBLE
                                 : View.GONE);
 
         final int selectedAccountVisibility =
                 !showInitialLoadProgressSpinner
-                                && model
-                        .get(FullscreenSigninProperties.SELECTED_ACCOUNT_DATA) != null
+                                && model.get(FullscreenSigninProperties.SELECTED_ACCOUNT_DATA)
+                                        != null
                                 && model.get(FullscreenSigninProperties.IS_SIGNIN_SUPPORTED)
                         ? View.VISIBLE
                         : View.GONE;
