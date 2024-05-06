@@ -54,8 +54,7 @@ public class HtmlElementInState implements ElementInState {
     /** Click the HTML element to trigger a Transition. */
     public void click() {
         try {
-            DOMUtils.clickNode(
-                    mWebContentsElementInState.getWebContents(), mHtmlElement.getHtmlId());
+            DOMUtils.clickNode(mWebContentsElementInState.get(), mHtmlElement.getHtmlId());
         } catch (TimeoutException e) {
             throw TravelException.newTravelException("Timed out trying to click DOM element", e);
         }

@@ -26,6 +26,7 @@ import androidx.annotation.CallSuper;
 
 import org.hamcrest.Matcher;
 
+import org.chromium.base.test.transit.ActivityElement;
 import org.chromium.base.test.transit.Elements;
 import org.chromium.base.test.transit.Station;
 import org.chromium.base.test.transit.Trip;
@@ -96,6 +97,7 @@ public abstract class TabSwitcherStation extends Station {
 
     protected final ChromeTabbedActivityTestRule mChromeTabbedActivityTestRule;
     protected final boolean mIsIncognito;
+    private ActivityElement<ChromeTabbedActivity> mActivityElement;
 
     /** Instantiate one of the subclasses instead. */
     protected TabSwitcherStation(
@@ -108,7 +110,7 @@ public abstract class TabSwitcherStation extends Station {
     @Override
     @CallSuper
     public void declareElements(Elements.Builder elements) {
-        elements.declareActivity(ChromeTabbedActivity.class);
+        mActivityElement = elements.declareActivity(ChromeTabbedActivity.class);
 
         elements.declareView(TOOLBAR);
         elements.declareView(TOOLBAR_NEW_TAB_BUTTON);
@@ -137,8 +139,7 @@ public abstract class TabSwitcherStation extends Station {
     public <T extends TabSwitcherStation> T closeTabAtIndex(
             int index, Class<T> expectedDestinationType) {
 
-        TabModelSelector tabModelSelector =
-                mChromeTabbedActivityTestRule.getActivity().getTabModelSelector();
+        TabModelSelector tabModelSelector = mActivityElement.get().getTabModelSelector();
 
         // By default stay in the same tab switcher state, unless closing the last incognito tab.
         boolean landInIncognitoSwitcher = mIsIncognito;
@@ -190,8 +191,11 @@ public abstract class TabSwitcherStation extends Station {
     }
 
     private boolean isTabSwitcherLayoutShowing() {
-        LayoutManager layoutManager =
-                mChromeTabbedActivityTestRule.getActivity().getLayoutManager();
+        ChromeTabbedActivity activity = mActivityElement.get();
+        if (activity == null) {
+            return false;
+        }
+        LayoutManager layoutManager = activity.getLayoutManager();
         // TODO: Use #isLayoutFinishedShowing(LayoutType.TAB_SWITCHER) once available.
         return layoutManager.isLayoutVisible(LayoutType.TAB_SWITCHER);
     }

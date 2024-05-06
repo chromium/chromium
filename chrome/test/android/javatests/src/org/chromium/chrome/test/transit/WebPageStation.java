@@ -11,6 +11,8 @@ import static org.chromium.base.test.transit.ViewElement.unscopedViewElement;
 import org.chromium.base.test.transit.Elements;
 import org.chromium.base.test.transit.ViewElement;
 import org.chromium.chrome.R;
+import org.chromium.chrome.browser.ChromeTabbedActivity;
+import org.chromium.chrome.browser.tab.Tab;
 import org.chromium.content_public.browser.test.transit.WebContentsElementInState;
 
 /** The screen that shows a loaded webpage with the omnibox and the toolbar. */
@@ -37,6 +39,17 @@ public class WebPageStation extends PageStation {
         elements.declareView(URL_BAR);
         mWebContents =
                 elements.declareElementInState(
-                        new WebContentsElementInState(getTestRule()::getWebContents));
+                        new WebContentsElementInState(
+                                () -> {
+                                    ChromeTabbedActivity activity = mActivityElement.get();
+                                    if (activity == null) {
+                                        return null;
+                                    }
+                                    Tab activityTab = activity.getActivityTab();
+                                    if (activityTab == null) {
+                                        return null;
+                                    }
+                                    return activityTab.getWebContents();
+                                }));
     }
 }

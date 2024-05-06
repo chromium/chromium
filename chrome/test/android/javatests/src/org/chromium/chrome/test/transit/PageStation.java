@@ -8,6 +8,8 @@ import static androidx.test.espresso.action.ViewActions.click;
 import static androidx.test.espresso.action.ViewActions.longClick;
 import static androidx.test.espresso.matcher.ViewMatchers.withId;
 
+import static org.junit.Assert.fail;
+
 import static org.chromium.base.test.transit.ViewElement.unscopedViewElement;
 
 import org.chromium.base.ThreadUtils;
@@ -259,7 +261,11 @@ public class PageStation extends Station {
 
         @Override
         public ConditionStatus check() throws Exception {
-            Tab tab = getTestRule().getActivity().getActivityTab();
+            ChromeTabbedActivity activity = mActivityElement.get();
+            if (activity == null) {
+                return notFulfilled("no ChromeTabbedActivity");
+            }
+            Tab tab = activity.getActivityTab();
             if (tab == null) {
                 return notFulfilled("null ActivityTab");
             }
@@ -285,7 +291,11 @@ public class PageStation extends Station {
 
         @Override
         public ConditionStatus check() throws Exception {
-            Tab tab = getTestRule().getActivity().getActivityTab();
+            ChromeTabbedActivity activity = mActivityElement.get();
+            if (activity == null) {
+                return notFulfilled("no ChromeTabbedActivity");
+            }
+            Tab tab = activity.getActivityTab();
             if (tab == null) {
                 return notFulfilled("null ActivityTab");
             }
@@ -365,15 +375,30 @@ public class PageStation extends Station {
                 () -> {
                     @PageTransition
                     int transitionType = PageTransition.TYPED | PageTransition.FROM_ADDRESS_BAR;
-                    getTestRule()
-                            .getActivity()
-                            .getActivityTab()
-                            .loadUrl(new LoadUrlParams(url, transitionType));
+                    getActivity().getActivityTab().loadUrl(new LoadUrlParams(url, transitionType));
                 };
         return Trip.travelSync(
                 this,
                 destination,
                 Transition.timeoutOption(10000),
                 () -> ThreadUtils.runOnUiThread(r));
+    }
+
+    /**
+     * Returns the {@link ChromeTabbedActivity} matched to the ActivityCondition.
+     *
+     * <p>The element is only guaranteed to exist as long as the station is ACTIVE or in transition
+     * triggers when it is already TRANSITIONING_FROM.
+     */
+    public ChromeTabbedActivity getActivity() {
+        int phase = getPhase();
+        if (phase != Phase.ACTIVE && phase != Phase.TRANSITIONING_FROM) {
+            fail(
+                    String.format(
+                            "%s should have been ACTIVE or TRANSITIONING_FROM, but was %s",
+                            this, phaseToString(phase)));
+        }
+
+        return mActivityElement.get();
     }
 }

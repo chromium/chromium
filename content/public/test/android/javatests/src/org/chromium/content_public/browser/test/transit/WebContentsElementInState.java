@@ -16,7 +16,7 @@ import org.chromium.content_public.browser.WebContents;
 import java.util.Set;
 
 /** An available WebContents as an ElementInState to check whether HtmlElements are displayed. */
-public class WebContentsElementInState implements ElementInState {
+public class WebContentsElementInState implements ElementInState, Supplier<WebContents> {
 
     private Supplier<WebContents> mWebContentsSupplier;
 
@@ -51,7 +51,13 @@ public class WebContentsElementInState implements ElementInState {
         return null;
     }
 
-    public WebContents getWebContents() {
+    @Override
+    public WebContents get() {
         return mWebContentsSupplier.get();
+    }
+
+    @Override
+    public boolean hasValue() {
+        return mWebContentsSupplier.hasValue();
     }
 }

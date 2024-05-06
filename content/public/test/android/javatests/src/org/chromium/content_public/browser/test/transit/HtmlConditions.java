@@ -30,7 +30,7 @@ public class HtmlConditions {
 
         @Override
         public ConditionStatus check() throws Exception {
-            WebContents webContents = mWebContentsElementInState.getWebContents();
+            WebContents webContents = mWebContentsElementInState.get();
             if (webContents == null) {
                 return notFulfilled("null webContents");
             }
@@ -71,7 +71,7 @@ public class HtmlConditions {
 
         @Override
         public ConditionStatus check() throws TimeoutException {
-            WebContents webContents = mWebContentsElementInState.getWebContents();
+            WebContents webContents = mWebContentsElementInState.get();
             if (webContents == null) {
                 return fulfilled("null webContents");
             }

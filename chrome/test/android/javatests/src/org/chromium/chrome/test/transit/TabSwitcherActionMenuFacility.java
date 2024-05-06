@@ -58,8 +58,7 @@ public class TabSwitcherActionMenuFacility extends Facility<PageStation> {
     /** Select the "Close tab" menu option to close the current Tab. */
     public <T extends Station> T selectCloseTab(Class<T> expectedDestination) {
         T destination;
-        TabModelSelector tabModelSelector =
-                mHostStation.getTestRule().getActivity().getTabModelSelector();
+        TabModelSelector tabModelSelector = mHostStation.getActivity().getTabModelSelector();
         if (tabModelSelector.getCurrentModel().getCount() <= 1) {
             if (tabModelSelector.isIncognitoSelected()) {
                 // No tabs left, so closing the last will either take us to a normal tab, or the tab
