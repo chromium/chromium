@@ -109,6 +109,11 @@ inline constexpr char kSyncManaged[] = "sync.managed";
 inline constexpr char kSyncCachedPassphraseType[] =
     "sync.cached_passphrase_type";
 
+// The user's AutoUpgradeDebugInfo, determined the first time the engine is
+// successfully initialized.
+inline constexpr char kSyncCachedTrustedVaultAutoUpgradeDebugInfo[] =
+    "sync.cached_trusted_vault_auto_upgrade_debug_info";
+
 // A string that can be used to restore sync encryption infrastructure on
 // startup so that the user doesn't need to provide credentials on each start.
 inline constexpr char kSyncEncryptionBootstrapToken[] =

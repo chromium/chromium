@@ -18,6 +18,7 @@
 #include "components/prefs/pref_member.h"
 #include "components/sync/base/passphrase_enums.h"
 #include "components/sync/base/user_selectable_type.h"
+#include "components/sync/protocol/nigori_specifics.pb.h"
 
 class PrefRegistrySimple;
 class PrefService;
@@ -200,6 +201,15 @@ class SyncPrefs {
   std::optional<PassphraseType> GetCachedPassphraseType() const;
   void SetCachedPassphraseType(PassphraseType passphrase_type);
   void ClearCachedPassphraseType();
+
+  // The user's AutoUpgradeDebugInfo, determined the first time the engine is
+  // successfully initialized.
+  std::optional<sync_pb::NigoriSpecifics::AutoUpgradeDebugInfo>
+  GetCachedTrustedVaultAutoUpgradeDebugInfo() const;
+  void SetCachedTrustedVaultAutoUpgradeDebugInfo(
+      const sync_pb::NigoriSpecifics::AutoUpgradeDebugInfo&
+          auto_upgrade_debug_info);
+  void ClearCachedTrustedVaultAutoUpgradeDebugInfo();
 
   // The encryption bootstrap token is used for explicit passphrase users
   // (usually custom passphrase) and represents a user-entered passphrase.

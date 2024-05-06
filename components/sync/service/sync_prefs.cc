@@ -6,6 +6,7 @@
 
 #include <utility>
 
+#include "base/base64.h"
 #include "base/check_op.h"
 #include "base/containers/contains.h"
 #include "base/feature_list.h"
@@ -65,6 +66,28 @@ constexpr char kSyncEncryptionBootstrapTokenPerAccountMigrationDone[] =
 constexpr int kNotMigrated = 0;
 constexpr int kMigratedPart1ButNot2 = 1;
 constexpr int kMigratedPart2AndFullyDone = 2;
+
+// Encodes a protobuf instance of type
+// sync_pb::NigoriSpecifics::AutoUpgradeDebugInfo in a way that can be safely
+// stored in prefs, i.e. using base64 encoding.
+std::string EncodeTrustedVaultAutoUpgradeDebugInfoToString(
+    const sync_pb::NigoriSpecifics::AutoUpgradeDebugInfo& debug_info) {
+  return base::Base64Encode(debug_info.SerializeAsString());
+}
+
+// Does the opposite of EncodeTrustedVaultAutoUpgradeDebugInfoToString(), i.e.
+// transforms from a string representation to a protobuf instance.
+sync_pb::NigoriSpecifics::AutoUpgradeDebugInfo
+DecodeTrustedVaultAutoUpgradeDebugInfoFromString(
+    const std::string& encoded_debug_info) {
+  sync_pb::NigoriSpecifics::AutoUpgradeDebugInfo proto;
+  std::string serialized_proto;
+  if (!base::Base64Decode(encoded_debug_info, &serialized_proto)) {
+    return proto;
+  }
+  proto.ParseFromString(serialized_proto);
+  return proto;
+}
 
 }  // namespace
 
@@ -176,6 +199,10 @@ void SyncPrefs::RegisterProfilePrefs(PrefRegistrySimple* registry) {
   registry->RegisterIntegerPref(
       prefs::internal::kSyncCachedPassphraseType,
       sync_pb::NigoriSpecifics_PassphraseType_UNKNOWN);
+  // The user's AutoUpgradeDebugInfo, determined the first time the engine is
+  // successfully initialized.
+  registry->RegisterStringPref(
+      prefs::internal::kSyncCachedTrustedVaultAutoUpgradeDebugInfo, "");
   // The encryption bootstrap token represents a user-entered passphrase.
   registry->RegisterStringPref(prefs::internal::kSyncEncryptionBootstrapToken,
                                std::string());
@@ -549,17 +576,46 @@ bool SyncPrefs::IsSyncClientDisabledByPolicy() const {
 }
 
 std::optional<PassphraseType> SyncPrefs::GetCachedPassphraseType() const {
+  DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
   return ProtoPassphraseInt32ToEnum(
       pref_service_->GetInteger(prefs::internal::kSyncCachedPassphraseType));
 }
 
 void SyncPrefs::SetCachedPassphraseType(PassphraseType passphrase_type) {
+  DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
   pref_service_->SetInteger(prefs::internal::kSyncCachedPassphraseType,
                             EnumPassphraseTypeToProto(passphrase_type));
 }
 
 void SyncPrefs::ClearCachedPassphraseType() {
+  DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
   pref_service_->ClearPref(prefs::internal::kSyncCachedPassphraseType);
+}
+
+std::optional<sync_pb::NigoriSpecifics::AutoUpgradeDebugInfo>
+SyncPrefs::GetCachedTrustedVaultAutoUpgradeDebugInfo() const {
+  DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
+  const std::string& encoded_debug_info = pref_service_->GetString(
+      prefs::internal::kSyncCachedTrustedVaultAutoUpgradeDebugInfo);
+  if (encoded_debug_info.empty()) {
+    return std::nullopt;
+  }
+  return DecodeTrustedVaultAutoUpgradeDebugInfoFromString(encoded_debug_info);
+}
+
+void SyncPrefs::SetCachedTrustedVaultAutoUpgradeDebugInfo(
+    const sync_pb::NigoriSpecifics::AutoUpgradeDebugInfo&
+        auto_upgrade_debug_info) {
+  DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
+  pref_service_->SetString(
+      prefs::internal::kSyncCachedTrustedVaultAutoUpgradeDebugInfo,
+      EncodeTrustedVaultAutoUpgradeDebugInfoToString(auto_upgrade_debug_info));
+}
+
+void SyncPrefs::ClearCachedTrustedVaultAutoUpgradeDebugInfo() {
+  DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
+  pref_service_->ClearPref(
+      prefs::internal::kSyncCachedTrustedVaultAutoUpgradeDebugInfo);
 }
 
 void SyncPrefs::ClearAllEncryptionBootstrapTokens() {

@@ -1026,6 +1026,12 @@ void SyncServiceImpl::OnEngineInitialized(bool success,
       signin::GaiaIdHash::FromGaiaId(GetAccountInfo().gaia),
       user_settings_->IsUsingExplicitPassphrase());
 
+  // Cache trusted vault debug info into prefs, to make it synchronously
+  // available upon future profile startups.
+  sync_prefs_.SetCachedTrustedVaultAutoUpgradeDebugInfo(
+      engine_->GetDetailedStatus()
+          .trusted_vault_debug_info.auto_upgrade_debug_info());
+
   if (CanConfigureDataTypes(/*bypass_setup_in_progress_check=*/false)) {
     // Datatype downloads on restart are generally due to newly supported
     // datatypes (although it's also possible we're picking up where a failed
@@ -1051,8 +1057,19 @@ void SyncServiceImpl::OnEngineInitialized(bool success,
 
 void SyncServiceImpl::OnSyncCycleCompleted(const SyncCycleSnapshot& snapshot) {
   DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
+  CHECK(engine_);
+  CHECK(engine_->IsInitialized());
 
   last_snapshot_ = snapshot;
+
+  // Cache trusted vault debug info into prefs, to make it synchronously
+  // available upon future profile startups. In most cases this will happen in
+  // OnEngineInitialized(), but it may also happen that the information was just
+  // populated server-side and downloaded, after (or long after) the engine is
+  // initialized.
+  sync_prefs_.SetCachedTrustedVaultAutoUpgradeDebugInfo(
+      engine_->GetDetailedStatus()
+          .trusted_vault_debug_info.auto_upgrade_debug_info());
 
   DVLOG(2) << "Notifying observers sync cycle completed";
   NotifySyncCycleCompleted();
@@ -2207,8 +2224,9 @@ void SyncServiceImpl::StopAndClear() {
   sync_prefs_.ClearInitialSyncFeatureSetupComplete();
 #endif  // !BUILDFLAG(IS_CHROMEOS_ASH)
   sync_prefs_.ClearPassphrasePromptMutedProductVersion();
-  // The passphrase type is now undefined again.
+  // Cached information provided by SyncEngine must be cleared.
   sync_prefs_.ClearCachedPassphraseType();
+  sync_prefs_.ClearCachedTrustedVaultAutoUpgradeDebugInfo();
   // If the migration didn't finish before StopAndClear() was called, mark it as
   // done so it doesn't trigger again if the user signs in later.
   sync_prefs_.MarkPartialSyncToSigninMigrationFullyDone();

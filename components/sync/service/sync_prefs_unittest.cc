@@ -7,6 +7,7 @@
 #include <memory>
 #include <vector>
 
+#include "base/base64.h"
 #include "base/test/scoped_feature_list.h"
 #include "base/test/task_environment.h"
 #include "build/chromeos_buildflags.h"
@@ -113,6 +114,59 @@ TEST_F(SyncPrefsTest, CachedPassphraseType) {
 
   sync_prefs_->ClearCachedPassphraseType();
   EXPECT_FALSE(sync_prefs_->GetCachedPassphraseType().has_value());
+}
+
+TEST_F(SyncPrefsTest, CachedTrustedVaultAutoUpgradeDebugInfo) {
+  const int kTestCohortId = 123;
+
+  EXPECT_FALSE(
+      sync_prefs_->GetCachedTrustedVaultAutoUpgradeDebugInfo().has_value());
+
+  sync_pb::NigoriSpecifics::AutoUpgradeDebugInfo proto;
+  proto.set_auto_upgrade_cohort_id(kTestCohortId);
+  sync_prefs_->SetCachedTrustedVaultAutoUpgradeDebugInfo(proto);
+
+  EXPECT_TRUE(
+      sync_prefs_->GetCachedTrustedVaultAutoUpgradeDebugInfo().has_value());
+  EXPECT_EQ(kTestCohortId,
+            sync_prefs_->GetCachedTrustedVaultAutoUpgradeDebugInfo()
+                .value_or(sync_pb::NigoriSpecifics::AutoUpgradeDebugInfo())
+                .auto_upgrade_cohort_id());
+
+  sync_prefs_->ClearCachedTrustedVaultAutoUpgradeDebugInfo();
+  EXPECT_FALSE(
+      sync_prefs_->GetCachedTrustedVaultAutoUpgradeDebugInfo().has_value());
+}
+
+TEST_F(SyncPrefsTest, CachedTrustedVaultAutoUpgradeDebugInfoCorrupt) {
+  // Populate with a corrupt, non-base64 value.
+  pref_service_.SetString(
+      prefs::internal::kSyncCachedTrustedVaultAutoUpgradeDebugInfo, "corrupt");
+  EXPECT_TRUE(
+      sync_prefs_->GetCachedTrustedVaultAutoUpgradeDebugInfo().has_value());
+  EXPECT_EQ(0, sync_prefs_->GetCachedTrustedVaultAutoUpgradeDebugInfo()
+                   .value_or(sync_pb::NigoriSpecifics::AutoUpgradeDebugInfo())
+                   .auto_upgrade_cohort_id());
+  EXPECT_EQ(sync_pb::NigoriSpecifics::AutoUpgradeDebugInfo::
+                AUTO_UPGRADE_EXPERIMENT_GROUP_UNSPECIFIED,
+            sync_prefs_->GetCachedTrustedVaultAutoUpgradeDebugInfo()
+                .value_or(sync_pb::NigoriSpecifics::AutoUpgradeDebugInfo())
+                .auto_upgrade_experiment_group());
+
+  // Populate with a corrupt, unparsable value after base64-decoding.
+  pref_service_.SetString(
+      prefs::internal::kSyncCachedTrustedVaultAutoUpgradeDebugInfo,
+      base::Base64Encode("corrupt"));
+  EXPECT_TRUE(
+      sync_prefs_->GetCachedTrustedVaultAutoUpgradeDebugInfo().has_value());
+  EXPECT_EQ(0, sync_prefs_->GetCachedTrustedVaultAutoUpgradeDebugInfo()
+                   .value_or(sync_pb::NigoriSpecifics::AutoUpgradeDebugInfo())
+                   .auto_upgrade_cohort_id());
+  EXPECT_EQ(sync_pb::NigoriSpecifics::AutoUpgradeDebugInfo::
+                AUTO_UPGRADE_EXPERIMENT_GROUP_UNSPECIFIED,
+            sync_prefs_->GetCachedTrustedVaultAutoUpgradeDebugInfo()
+                .value_or(sync_pb::NigoriSpecifics::AutoUpgradeDebugInfo())
+                .auto_upgrade_experiment_group());
 }
 
 class MockSyncPrefObserver : public SyncPrefObserver {
