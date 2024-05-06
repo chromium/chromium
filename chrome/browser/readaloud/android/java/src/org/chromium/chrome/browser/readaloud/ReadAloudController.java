@@ -28,8 +28,6 @@ import org.chromium.base.UserData;
 import org.chromium.base.supplier.ObservableSupplier;
 import org.chromium.base.supplier.ObservableSupplierImpl;
 import org.chromium.base.supplier.OneShotCallback;
-import org.chromium.base.task.PostTask;
-import org.chromium.base.task.TaskTraits;
 import org.chromium.chrome.browser.browser_controls.BrowserControlsSizer;
 import org.chromium.chrome.browser.device.DeviceConditions;
 import org.chromium.chrome.browser.language.AppLocaleUtils;
@@ -86,9 +84,6 @@ public class ReadAloudController
     private final Activity mActivity;
     private final ObservableSupplier<Profile> mProfileSupplier;
     private final ObserverList<Runnable> mReadabilityUpdateObserverList = new ObserverList<>();
-    // Delay added to readability check that should run it after largest contentful paint for >85%
-    // of users http://uma/p/chrome/timeline_v2?sid=c975abf9022aac7b36bf28285f068dd6
-    private static final int READABILITY_DELAY = 3000;
     private static final int MAX_URL_ENTRIES = 300;
     private final LruCache<Integer, Boolean> mReadabilityMap = new LruCache<>(MAX_URL_ENTRIES);
     // the key is the url hash, the value is time it was added to the map
@@ -451,6 +446,7 @@ public class ReadAloudController
                             Log.d(TAG, "onUrlUpdated to %s", tab.getUrl().getPossiblyInvalidSpec());
                             notifyReadabilityMayHaveChanged();
                             if (tab != null && tab.getUrl() != null && tab.getUrl().isValid()) {
+                                maybeCheckReadability(tab.getUrl());
                                 maybeHandleTabReload(tab, tab.getUrl());
                                 maybeStopPlayback(tab);
                             }
@@ -476,12 +472,14 @@ public class ReadAloudController
                         }
 
                         @Override
-                        public void didFirstVisuallyNonEmptyPaint(Tab tab) {
-                            if (tab != null) {
-                                PostTask.postDelayedTask(
-                                        TaskTraits.USER_VISIBLE,
-                                        () -> maybeCheckReadability(tab.getUrl()),
-                                        READABILITY_DELAY);
+                        public void onShown(Tab tab, @TabSelectionType int type) {
+                            // This method is called when selecting and showing a cached tab (as
+                            // opposite to a tab that has to be loaded).
+                            Log.d(
+                                    TAG,
+                                    "onShown called for " + tab.getUrl().getPossiblyInvalidSpec());
+                            if (tab != null && tab.getUrl() != null) {
+                                maybeCheckReadability(tab.getUrl());
                             }
                         }
 
@@ -492,6 +490,7 @@ public class ReadAloudController
                                         TAG,
                                         "onRestoreCompleted called for "
                                                 + tab.getUrl().getPossiblyInvalidSpec());
+                                maybeCheckReadability(tab.getUrl());
                             }
                         }
 
@@ -636,7 +635,6 @@ public class ReadAloudController
             }
             mReadabilityMap.remove(sanitizedUrlHash);
             mReadabilityRequestTimeMap.remove(sanitizedUrlHash);
-            notifyReadabilityMayHaveChanged();
         }
         return false;
     }
@@ -688,6 +686,7 @@ public class ReadAloudController
                 Boolean isReadable = mReadabilityMap.get(sanitizedUrlHash);
                 return isReadable == null ? false : isReadable;
             }
+            maybeCheckReadability(tab.getUrl());
         }
         return false;
     }
@@ -1030,6 +1029,7 @@ public class ReadAloudController
         }
 
         if (language == null) {
+            Log.d(TAG, "Neither page nor app language known. Falling back to en.");
             language = "en";
         }
 
