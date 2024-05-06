@@ -16,6 +16,7 @@
 #include "base/strings/to_string.h"
 #include "base/test/gmock_expected_support.h"
 #include "build/branding_buildflags.h"
+#include "build/buildflag.h"
 #include "chrome/browser/shortcuts/image_test_utils.h"
 #include "testing/gtest/include/gtest/gtest.h"
 #include "third_party/skia/include/core/SkBitmap.h"
@@ -48,6 +49,9 @@ base::FilePath GetCompileTimeTestFolders() {
   base::FilePath compile_time_folder;
 #if BUILDFLAG(GOOGLE_CHROME_BRANDING)
   compile_time_folder = base::FilePath(FILE_PATH_LITERAL("chrome_branded"));
+#elif BUILDFLAG(GOOGLE_CHROME_FOR_TESTING_BRANDING)
+  compile_time_folder =
+      base::FilePath(FILE_PATH_LITERAL("chrome_for_testing_branded"));
 #else
   compile_time_folder = base::FilePath(FILE_PATH_LITERAL("chromium"));
 #endif

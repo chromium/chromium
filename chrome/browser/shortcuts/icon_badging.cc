@@ -17,6 +17,7 @@
 #include "base/numerics/safe_conversions.h"
 #include "base/version_info/channel.h"
 #include "build/branding_buildflags.h"
+#include "build/buildflag.h"
 #include "chrome/common/channel_info.h"
 #include "chrome/grit/chrome_unscaled_resources.h"
 #include "third_party/skia/include/core/SkBitmap.h"
@@ -189,6 +190,23 @@ static_assert(static_cast<int>(kBetaResourceMap.size()) == resource_map_size,
 static_assert(static_cast<int>(kDevResourceMap.size()) == resource_map_size,
               "Ensure icon resources are filled for all entries in BadgeSize "
               "for dev resource map");
+
+#elif BUILDFLAG(GOOGLE_CHROME_FOR_TESTING_BRANDING)
+constexpr SizeToResourceMap kChromeForTestingBrandedResourceMap =
+    base::MakeFixedFlatMap<BadgeSize, int>(
+        {{BadgeSize::k8, IDR_PRODUCT_LOGO_16_CFT_SHORTCUTS},
+         {BadgeSize::k12, IDR_PRODUCT_LOGO_16_CFT_SHORTCUTS},
+         {BadgeSize::k16, IDR_PRODUCT_LOGO_16_CFT_SHORTCUTS},
+         {BadgeSize::k24, IDR_PRODUCT_LOGO_24_CFT_SHORTCUTS},
+         {BadgeSize::k32, IDR_PRODUCT_LOGO_32_CFT_SHORTCUTS},
+         {BadgeSize::k48, IDR_PRODUCT_LOGO_48_CFT_SHORTCUTS},
+         {BadgeSize::k64, IDR_PRODUCT_LOGO_64_CFT_SHORTCUTS},
+         {BadgeSize::k128, IDR_PRODUCT_LOGO_128_CFT_SHORTCUTS}});
+
+static_assert(static_cast<int>(kChromeForTestingBrandedResourceMap.size()) ==
+                  resource_map_size,
+              "Ensure icon resources are filled for all entries in BadgeSize "
+              "for Chrome for testing resource map");
 #else
 constexpr SizeToResourceMap kChromiumResourceMap =
     base::MakeFixedFlatMap<BadgeSize, int>(
@@ -222,6 +240,8 @@ SizeToResourceMap GetResourceMapForCurrentChannel() {
     case version_info::Channel::BETA:
       return kBetaResourceMap;
   }
+#elif BUILDFLAG(GOOGLE_CHROME_FOR_TESTING_BRANDING)
+  return kChromeForTestingBrandedResourceMap;
 #else
   return kChromiumResourceMap;
 #endif  // BUILDFLAG(GOOGLE_CHROME_BRANDING)
