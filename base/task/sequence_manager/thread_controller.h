@@ -279,7 +279,7 @@ class BASE_EXPORT ThreadController {
 
     void EnableTimeKeeperMetrics(
         const char* thread_name,
-        bool wall_time_based_metrics_for_testing_enabled);
+        bool wall_time_based_metrics_enabled_for_testing);
 
     // Observes changes of state sent as trace-events so they can be tested.
     class TraceObserverForTesting {

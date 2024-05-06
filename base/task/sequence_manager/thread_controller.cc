@@ -331,8 +331,8 @@ ThreadController::RunLevelTracker::RunLevel::RunLevel(RunLevel&& other) =
 void ThreadController::RunLevelTracker::RunLevel::LogPercentageMetric(
     const char* name,
     int percentage) {
-  UmaHistogramPercentage(
-      base::StrCat({name, base::StrCat({".", GetThreadName()})}), percentage);
+  UmaHistogramPercentage(base::StrCat({name, ".", GetThreadName()}),
+                         percentage);
 }
 
 void ThreadController::RunLevelTracker::RunLevel::LogPercentageMetric(
