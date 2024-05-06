@@ -83,6 +83,8 @@ class ArcAppPerformanceTracingSession : public exo::SurfaceObserver {
   // to be called before returning, with either a successful or failed result.
   void Finish();
 
+  void set_trace_real_presents(bool trace) { trace_real_presents_ = trace; }
+
  private:
   // Starts tracing by observing commits to the |exo::Surface| attached to the
   // current |window_|.
@@ -132,6 +134,10 @@ class ArcAppPerformanceTracingSession : public exo::SurfaceObserver {
 
   // Indicates that tracing is in active state.
   bool tracing_active_ = false;
+
+  // Whether we use PresentFramesTracer::ListenForPresent or ::AddPresent to
+  // record traces.
+  bool trace_real_presents_ = true;
 
   TicksNowCallback ticks_now_callback_;
 

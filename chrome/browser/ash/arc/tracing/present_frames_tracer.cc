@@ -16,6 +16,10 @@ void PresentFramesTracer::AddCommit(base::TimeTicks commit_ts) {
   commits_.emplace_back((commit_ts - base::TimeTicks()).InMicroseconds());
 }
 
+void PresentFramesTracer::AddPresent(base::TimeTicks present_ts) {
+  presents_.emplace_back((present_ts - base::TimeTicks()).InMicroseconds());
+}
+
 void PresentFramesTracer::ListenForPresent(exo::Surface* surface) {
   surface->RequestPresentationCallback(
       base::BindRepeating(&PresentFramesTracer::RecordPresentedFrame,
