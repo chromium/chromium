@@ -8,13 +8,6 @@
 
 namespace device {
 
-#if BUILDFLAG(IS_MAC)
-// TODO(crbug.com/40074794): Resolve or mitigate this issue before launching.
-BASE_FEATURE(kNewUsbBackend,
-             "NewUsbBackend",
-             base::FEATURE_DISABLED_BY_DEFAULT);
-#endif  // BUILDFLAG(IS_MAC)
-
 #if BUILDFLAG(IS_WIN)
 // Controls whether a more reliable GATT session handling
 // implementation is used on Windows 10 1709 (RS3) and beyond.

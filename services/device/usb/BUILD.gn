@@ -92,15 +92,6 @@ static_library("usb") {
   }
 
   if (is_mac) {
-    sources += [
-      "usb_device_handle_mac.cc",
-      "usb_device_handle_mac.h",
-      "usb_device_mac.cc",
-      "usb_device_mac.h",
-      "usb_service_mac.cc",
-      "usb_service_mac.h",
-    ]
-
     # These sources and deps are required for libusb.
     # TODO(crbug.com/40136337) Remove these sources.
     sources += [
