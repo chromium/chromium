@@ -809,7 +809,8 @@ class CONTENT_EXPORT RenderFrameHostManager {
       SiteInstanceImpl* current_instance,
       SiteInstanceImpl* dest_instance,
       NavigationRequest::ErrorPageProcess error_page_process,
-      const BrowsingContextGroupSwap& browsing_context_group_swap);
+      const BrowsingContextGroupSwap& browsing_context_group_swap,
+      bool was_server_redirect);
 
   // Returns true if a navigation to |dest_url| that uses the specified
   // PageTransition in the current frame is allowed to swap BrowsingInstances.

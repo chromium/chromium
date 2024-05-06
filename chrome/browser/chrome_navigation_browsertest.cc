@@ -73,6 +73,7 @@
 #include "services/network/public/cpp/network_switches.h"
 #include "testing/gmock/include/gmock/gmock.h"
 #include "third_party/blink/public/common/features.h"
+#include "third_party/blink/public/common/page_state/page_state.h"
 #include "third_party/blink/public/mojom/context_menu/context_menu.mojom.h"
 #include "third_party/blink/public/mojom/use_counter/metrics/web_feature.mojom-shared.h"
 
@@ -994,6 +995,395 @@ IN_PROC_BROWSER_TEST_F(
                 popup->GetSiteInstance()->GetProcess());
     }
   }
+}
+
+// This test covers a navigation that:
+// 1. is initiated by a cross-site initiator,
+// 2. is a history navigation,
+// 3. gets redirected via webRequest API to a data: URL, but the original
+// navigation (that created the history entry) didn't get redirected.
+// This covers a scenario similar to the one that led to crashes in
+// https://crbug.com/40065692.
+IN_PROC_BROWSER_TEST_F(ChromeNavigationBrowserTest,
+                       HistoryNavigationRedirectedToDataUrl) {
+  const GURL kOpenerUrl(
+      embedded_test_server()->GetURL("opener.com", "/title1.html"));
+  const GURL kRedirectedUrl(
+      embedded_test_server()->GetURL("redirected.com", "/title2.html"));
+  const GURL kRedirectTargetUrl(
+      "data:text/html,%3Ch1%3EHello%2C%20World!%3C%2Fh1%3E");
+  const GURL kOtherUrl(
+      embedded_test_server()->GetURL("other.com", "/title3.html"));
+
+  // 1. Open a cross-site popup. Note that the navigation won't be
+  //    redirected yet, because we haven't installed the redirector extension.
+  ASSERT_TRUE(ui_test_utils::NavigateToURL(browser(), kOpenerUrl));
+  content::RenderFrameHost* opener = browser()
+                                         ->tab_strip_model()
+                                         ->GetActiveWebContents()
+                                         ->GetPrimaryMainFrame();
+  EXPECT_EQ(kOpenerUrl, opener->GetLastCommittedURL());
+  EXPECT_EQ(url::Origin::Create(kOpenerUrl), opener->GetLastCommittedOrigin());
+  content::WebContents* popup = nullptr;
+  {
+    content::WebContentsAddedObserver popup_observer;
+    ASSERT_TRUE(content::ExecJs(
+        opener, content::JsReplace("var popup = window.open($1, 'my-popup')",
+                                   kRedirectedUrl)));
+    popup = popup_observer.GetWebContents();
+    EXPECT_TRUE(WaitForLoadStop(popup));
+  }
+  url::Origin first_origin =
+      popup->GetPrimaryMainFrame()->GetLastCommittedOrigin();
+  EXPECT_FALSE(first_origin.opaque());
+  scoped_refptr<content::SiteInstance> first_instance(
+      popup->GetPrimaryMainFrame()->GetSiteInstance());
+
+  // 2. Navigate the popup elsewhere, so that we can do a back navigation.
+  content::TestNavigationObserver nav_observer(popup, 1);
+  ASSERT_TRUE(
+      ExecJs(opener, content::JsReplace("popup.location = $1", kOtherUrl)));
+  nav_observer.Wait();
+  EXPECT_EQ(kOtherUrl, popup->GetLastCommittedURL());
+
+  // 3. Install an extension, which will redirect all navigations to
+  //    redirected.com URLs to a data: URL. In general, web servers cannot
+  //    redirect to data: URLs, but extensions with webRequest API permissions
+  //    can.
+  const char kManifest[] = R"(
+      {
+        "name": "Test",
+        "version": "0.1",
+        "manifest_version": 2,
+        "background": {
+          "scripts": ["background.js"]
+        },
+        "permissions": ["webRequest", "webRequestBlocking", "<all_urls>"]
+      }
+  )";
+  const char kRulesScriptTemplate[] = R"(
+      chrome.webRequest.onBeforeRequest.addListener(function(d) {
+          console.log("onBeforeRequest: ", d);
+          return {redirectUrl: $1};
+        }, {urls: ["*://redirected.com/*"]}, ["blocking"]);
+      chrome.test.sendMessage('ready');
+  )";
+  extensions::TestExtensionDir ext_dir;
+  ext_dir.WriteManifest(kManifest);
+  ext_dir.WriteFile(
+      FILE_PATH_LITERAL("background.js"),
+      content::JsReplace(kRulesScriptTemplate, kRedirectTargetUrl));
+  ExtensionTestMessageListener ready_listener("ready");
+  extensions::ChromeTestExtensionLoader extension_loader(browser()->profile());
+  scoped_refptr<const extensions::Extension> extension =
+      extension_loader.LoadExtension(ext_dir.UnpackedPath());
+  ASSERT_TRUE(extension);
+  ASSERT_TRUE(ready_listener.WaitUntilSatisfied());
+  browser()
+      ->profile()
+      ->GetDefaultStoragePartition()
+      ->FlushNetworkInterfaceForTesting();
+
+  // 4. Do a history navigation to the redirected.com page, which will get
+  //    redirected to a data: URL. This used to crash, see also
+  //    https://crbug.com/40065692. The navigation should use a new opaque
+  //    origin with the opener's origin as the precursor (since the initiator
+  //    origin in the FrameNavigationEntry is still the opener's origin) and
+  //    a new SiteInstance. Because the request is redirected, the saved
+  //    PageState is reset.
+  //    TODO(https://crbug.com/1440543): Reconsider whether we should keep
+  //    using the initiator origin as the precursor here, since the data: URL
+  //    redirection is triggered by the extension and isn't actually related to
+  //    the initiator.
+  content::TestNavigationObserver nav_observer2(popup);
+  ASSERT_TRUE(ExecJs(popup->GetPrimaryMainFrame(), "history.back();"));
+  nav_observer2.Wait();
+  EXPECT_EQ(kRedirectTargetUrl, popup->GetLastCommittedURL());
+  url::Origin second_origin =
+      popup->GetPrimaryMainFrame()->GetLastCommittedOrigin();
+  EXPECT_TRUE(second_origin.opaque());
+  EXPECT_EQ(opener->GetLastCommittedOrigin().GetTupleOrPrecursorTupleIfOpaque(),
+            second_origin.GetTupleOrPrecursorTupleIfOpaque());
+  EXPECT_NE(first_origin, second_origin);
+  scoped_refptr<content::SiteInstance> second_instance(
+      popup->GetPrimaryMainFrame()->GetSiteInstance());
+  if (content::AreAllSitesIsolatedForTesting()) {
+    EXPECT_NE(first_instance, second_instance);
+  }
+
+  // 5. Go forward.
+  content::TestNavigationObserver nav_observer3(popup);
+  ASSERT_TRUE(ExecJs(popup->GetPrimaryMainFrame(), "history.forward();"));
+  nav_observer3.Wait();
+  EXPECT_EQ(kOtherUrl, popup->GetLastCommittedURL());
+
+  // 6. Go back again, and ensure we reuse the same SiteInstance as the last
+  // time we navigated from it, but use a new opaque origin (with the precursor
+  // still set to the opener origin).
+  content::TestNavigationObserver nav_observer4(popup);
+  ASSERT_TRUE(ExecJs(popup->GetPrimaryMainFrame(), "history.back();"));
+  nav_observer4.Wait();
+  EXPECT_EQ(kRedirectTargetUrl, popup->GetLastCommittedURL());
+
+  url::Origin third_origin =
+      popup->GetPrimaryMainFrame()->GetLastCommittedOrigin();
+  EXPECT_NE(second_origin, third_origin);
+  EXPECT_TRUE(third_origin.opaque());
+  EXPECT_EQ(opener->GetLastCommittedOrigin().GetTupleOrPrecursorTupleIfOpaque(),
+            third_origin.GetTupleOrPrecursorTupleIfOpaque());
+  scoped_refptr<content::SiteInstance> third_instance(
+      popup->GetPrimaryMainFrame()->GetSiteInstance());
+  if (content::AreAllSitesIsolatedForTesting()) {
+    EXPECT_NE(first_instance, third_instance);
+  }
+  EXPECT_EQ(second_instance, third_instance);
+}
+
+// Same as above but the history navigation got redirected to about:blank
+// instead.
+// TODO(https://crbug.com/1440543): This is currently disabled because of
+// a bug where we will reuse the previous SiteInstance on the about:blank
+// navigation, even if the origins don't match, resulting in a CHECK failure
+// during the redirect on step 4. See also the TODO with the same bug number in
+// `SiteInstanceImpl::IsSameSite()`.
+IN_PROC_BROWSER_TEST_F(ChromeNavigationBrowserTest,
+                       DISABLED_HistoryNavigationRedirectedToAboutBlank) {
+  const GURL kOpenerUrl(
+      embedded_test_server()->GetURL("opener.com", "/title1.html"));
+  const GURL kRedirectedUrl(
+      embedded_test_server()->GetURL("redirected.com", "/title2.html"));
+  const GURL kRedirectTargetUrl("about:blank");
+  const GURL kOtherUrl(
+      embedded_test_server()->GetURL("other.com", "/title3.html"));
+
+  // 1. Open a cross-site popup. Note that the navigation won't be
+  //    redirected yet, because we haven't installed the redirector extension.
+  ASSERT_TRUE(ui_test_utils::NavigateToURL(browser(), kOpenerUrl));
+  content::RenderFrameHost* opener = browser()
+                                         ->tab_strip_model()
+                                         ->GetActiveWebContents()
+                                         ->GetPrimaryMainFrame();
+  EXPECT_EQ(kOpenerUrl, opener->GetLastCommittedURL());
+  EXPECT_EQ(url::Origin::Create(kOpenerUrl), opener->GetLastCommittedOrigin());
+  content::WebContents* popup = nullptr;
+  {
+    content::WebContentsAddedObserver popup_observer;
+    ASSERT_TRUE(content::ExecJs(
+        opener, content::JsReplace("var popup = window.open($1, 'my-popup')",
+                                   kRedirectedUrl)));
+    popup = popup_observer.GetWebContents();
+    EXPECT_TRUE(WaitForLoadStop(popup));
+  }
+  url::Origin first_origin =
+      popup->GetPrimaryMainFrame()->GetLastCommittedOrigin();
+  EXPECT_FALSE(first_origin.opaque());
+  scoped_refptr<content::SiteInstance> first_instance(
+      popup->GetPrimaryMainFrame()->GetSiteInstance());
+
+  // 2. Navigate the popup elsewhere, so that we can do a back navigation.
+  content::TestNavigationObserver nav_observer(popup, 1);
+  ASSERT_TRUE(
+      ExecJs(opener, content::JsReplace("popup.location = $1", kOtherUrl)));
+  nav_observer.Wait();
+  EXPECT_EQ(kOtherUrl, popup->GetLastCommittedURL());
+
+  // 3. Install an extension, which will redirect all navigations to
+  //    redirected.com URLs to about:blank. In general, web servers cannot
+  //    redirect to about:blank, but extensions with webRequest API permissions
+  //    can.
+  const char kManifest[] = R"(
+      {
+        "name": "Test",
+        "version": "0.1",
+        "manifest_version": 2,
+        "background": {
+          "scripts": ["background.js"]
+        },
+        "permissions": ["webRequest", "webRequestBlocking", "<all_urls>"]
+      }
+  )";
+  const char kRulesScriptTemplate[] = R"(
+      chrome.webRequest.onBeforeRequest.addListener(function(d) {
+          console.log("onBeforeRequest: ", d);
+          return {redirectUrl: $1};
+        }, {urls: ["*://redirected.com/*"]}, ["blocking"]);
+      chrome.test.sendMessage('ready');
+  )";
+  extensions::TestExtensionDir ext_dir;
+  ext_dir.WriteManifest(kManifest);
+  ext_dir.WriteFile(
+      FILE_PATH_LITERAL("background.js"),
+      content::JsReplace(kRulesScriptTemplate, kRedirectTargetUrl));
+  ExtensionTestMessageListener ready_listener("ready");
+  extensions::ChromeTestExtensionLoader extension_loader(browser()->profile());
+  scoped_refptr<const extensions::Extension> extension =
+      extension_loader.LoadExtension(ext_dir.UnpackedPath());
+  ASSERT_TRUE(extension);
+  ASSERT_TRUE(ready_listener.WaitUntilSatisfied());
+  browser()
+      ->profile()
+      ->GetDefaultStoragePartition()
+      ->FlushNetworkInterfaceForTesting();
+
+  // 4. Do a history navigation to the redirected.com page, which will get
+  //    redirected to about:blank. The navigation will recalculate its
+  //    origin, which will inherit from the initiator origin in the
+  //    FrameNavigationEntry (the opener URL). The SiteInstance will also
+  //    use the opener's SiteInstance.
+  //    TODO(https://crbug.com/1440543): Reconsider whether we should keep
+  //    inheriting the initiator origin here, since the about:blank redirection
+  //    is triggered by the extension and isn't actually related to the
+  //    initiator.
+  content::TestNavigationObserver nav_observer2(popup);
+  ASSERT_TRUE(ExecJs(popup->GetPrimaryMainFrame(), "history.back();"));
+  nav_observer2.Wait();
+  EXPECT_EQ(kRedirectTargetUrl, popup->GetLastCommittedURL());
+  url::Origin second_origin =
+      popup->GetPrimaryMainFrame()->GetLastCommittedOrigin();
+  EXPECT_NE(first_origin, second_origin);
+  EXPECT_EQ(second_origin, opener->GetLastCommittedOrigin());
+  scoped_refptr<content::SiteInstance> second_instance(
+      popup->GetPrimaryMainFrame()->GetSiteInstance());
+  if (content::AreAllSitesIsolatedForTesting()) {
+    EXPECT_NE(first_instance, second_instance);
+  }
+  EXPECT_EQ(second_instance, opener->GetSiteInstance());
+
+  // 5. Go forward.
+  content::TestNavigationObserver nav_observer3(popup);
+  ASSERT_TRUE(ExecJs(popup->GetPrimaryMainFrame(), "history.forward();"));
+  nav_observer3.Wait();
+  EXPECT_EQ(kOtherUrl, popup->GetLastCommittedURL());
+
+  // 6. Go back again, and ensure we reuse the same SiteInstance and origin.
+  content::TestNavigationObserver nav_observer4(popup);
+  ASSERT_TRUE(ExecJs(popup->GetPrimaryMainFrame(), "history.back();"));
+  nav_observer4.Wait();
+  EXPECT_EQ(kRedirectTargetUrl, popup->GetLastCommittedURL());
+  EXPECT_EQ(second_origin,
+            popup->GetPrimaryMainFrame()->GetLastCommittedOrigin());
+  EXPECT_EQ(second_instance, popup->GetPrimaryMainFrame()->GetSiteInstance());
+}
+
+// Same as above but the history navigation is same-site with the previous page,
+// so the crash won't happen as the navigation is reusing the same SiteInstance.
+IN_PROC_BROWSER_TEST_F(ChromeNavigationBrowserTest,
+                       HistoryNavigationRedirectedToAboutBlank_SameSite) {
+  const GURL kOpenerUrl(
+      embedded_test_server()->GetURL("opener.com", "/title1.html"));
+  const GURL kRedirectedUrl(
+      embedded_test_server()->GetURL("redirected.com", "/title2.html"));
+  const GURL kRedirectTargetUrl("about:blank");
+  const GURL kOtherUrl(
+      embedded_test_server()->GetURL("opener.com", "/title3.html"));
+
+  // 1. Open a cross-site popup. Note that the navigation won't be
+  //    redirected yet, because we haven't installed the redirector extension.
+  ASSERT_TRUE(ui_test_utils::NavigateToURL(browser(), kOpenerUrl));
+  content::RenderFrameHost* opener = browser()
+                                         ->tab_strip_model()
+                                         ->GetActiveWebContents()
+                                         ->GetPrimaryMainFrame();
+  EXPECT_EQ(kOpenerUrl, opener->GetLastCommittedURL());
+  EXPECT_EQ(url::Origin::Create(kOpenerUrl), opener->GetLastCommittedOrigin());
+  content::WebContents* popup = nullptr;
+  {
+    content::WebContentsAddedObserver popup_observer;
+    ASSERT_TRUE(content::ExecJs(
+        opener, content::JsReplace("var popup = window.open($1, 'my-popup')",
+                                   kRedirectedUrl)));
+    popup = popup_observer.GetWebContents();
+    EXPECT_TRUE(WaitForLoadStop(popup));
+  }
+  url::Origin first_origin =
+      popup->GetPrimaryMainFrame()->GetLastCommittedOrigin();
+  EXPECT_FALSE(first_origin.opaque());
+  scoped_refptr<content::SiteInstance> first_instance(
+      popup->GetPrimaryMainFrame()->GetSiteInstance());
+
+  // 2. Navigate the popup elsewhere, so that we can do a back navigation.
+  content::TestNavigationObserver nav_observer(popup, 1);
+  ASSERT_TRUE(
+      ExecJs(opener, content::JsReplace("popup.location = $1", kOtherUrl)));
+  nav_observer.Wait();
+  EXPECT_EQ(kOtherUrl, popup->GetLastCommittedURL());
+
+  // 3. Install an extension, which will redirect all navigations to
+  //    redirected.com URLs to about:blank. In general, web servers cannot
+  //    redirect to about:blank, but extensions with webRequest API permissions
+  //    can.
+  const char kManifest[] = R"(
+      {
+        "name": "Test",
+        "version": "0.1",
+        "manifest_version": 2,
+        "background": {
+          "scripts": ["background.js"]
+        },
+        "permissions": ["webRequest", "webRequestBlocking", "<all_urls>"]
+      }
+  )";
+  const char kRulesScriptTemplate[] = R"(
+      chrome.webRequest.onBeforeRequest.addListener(function(d) {
+          console.log("onBeforeRequest: ", d);
+          return {redirectUrl: $1};
+        }, {urls: ["*://redirected.com/*"]}, ["blocking"]);
+      chrome.test.sendMessage('ready');
+  )";
+  extensions::TestExtensionDir ext_dir;
+  ext_dir.WriteManifest(kManifest);
+  ext_dir.WriteFile(
+      FILE_PATH_LITERAL("background.js"),
+      content::JsReplace(kRulesScriptTemplate, kRedirectTargetUrl));
+  ExtensionTestMessageListener ready_listener("ready");
+  extensions::ChromeTestExtensionLoader extension_loader(browser()->profile());
+  scoped_refptr<const extensions::Extension> extension =
+      extension_loader.LoadExtension(ext_dir.UnpackedPath());
+  ASSERT_TRUE(extension);
+  ASSERT_TRUE(ready_listener.WaitUntilSatisfied());
+  browser()
+      ->profile()
+      ->GetDefaultStoragePartition()
+      ->FlushNetworkInterfaceForTesting();
+
+  // 4. Do a history navigation to the redirected.com page, which will get
+  //    redirected to about:blank. The navigation will recalculate its
+  //    origin, which will inherit from the initiator origin in the
+  //    FrameNavigationEntry (the opener URL). The SiteInstance will also
+  //    use the opener's SiteInstance.
+  //    TODO(https://crbug.com/1440543): Reconsider whether we should keep
+  //    inheriting the initiator origin here, since the about:blank redirection
+  //    is triggered by the extension and isn't actually related to the
+  //    initiator.
+  content::TestNavigationObserver nav_observer2(popup);
+  ASSERT_TRUE(ExecJs(popup->GetPrimaryMainFrame(), "history.back();"));
+  nav_observer2.Wait();
+  EXPECT_EQ(kRedirectTargetUrl, popup->GetLastCommittedURL());
+  url::Origin second_origin =
+      popup->GetPrimaryMainFrame()->GetLastCommittedOrigin();
+  EXPECT_NE(first_origin, second_origin);
+  EXPECT_EQ(second_origin, opener->GetLastCommittedOrigin());
+  scoped_refptr<content::SiteInstance> second_instance(
+      popup->GetPrimaryMainFrame()->GetSiteInstance());
+  if (content::AreAllSitesIsolatedForTesting()) {
+    EXPECT_NE(first_instance, second_instance);
+  }
+  EXPECT_EQ(second_instance, opener->GetSiteInstance());
+
+  // 5. Go forward.
+  content::TestNavigationObserver nav_observer3(popup);
+  ASSERT_TRUE(ExecJs(popup->GetPrimaryMainFrame(), "history.forward();"));
+  nav_observer3.Wait();
+  EXPECT_EQ(kOtherUrl, popup->GetLastCommittedURL());
+
+  // 6. Go back again, and ensure we reuse the same SiteInstance and origin.
+  content::TestNavigationObserver nav_observer4(popup);
+  ASSERT_TRUE(ExecJs(popup->GetPrimaryMainFrame(), "history.back();"));
+  nav_observer4.Wait();
+  EXPECT_EQ(kRedirectTargetUrl, popup->GetLastCommittedURL());
+  EXPECT_EQ(second_origin,
+            popup->GetPrimaryMainFrame()->GetLastCommittedOrigin());
+  EXPECT_EQ(second_instance, popup->GetPrimaryMainFrame()->GetSiteInstance());
 }
 
 // Tests scenario where a blank iframe inside a blank popup (a popup with only
