@@ -78,6 +78,15 @@ config("dependants_extra_warnings") {
   }
 }
 
+# This will generate warnings when using Clang if code generates exit-time
+# destructors, which will slow down closing the program.
+# TODO(thakis): Make this a blocklist instead, http://crbug.com/101600
+config("wexit_time_destructors") {
+  if (is_clang) {
+    cflags = [ "-Wexit-time-destructors" ]
+  }
+}
+
 _remove_configs = []
 _add_configs = []
 if (!is_debug || partition_alloc_optimized_debug) {
@@ -112,7 +121,7 @@ component("raw_ptr") {
   ]
   sources = [ "pointers/instance_tracer.cc" ]
   public_configs = [ ":public_includes" ]
-  configs += [ "//build/config/compiler:wexit_time_destructors" ]
+  configs += [ ":wexit_time_destructors" ]
 
   if (use_raw_ptr_backup_ref_impl) {
     sources += [
@@ -552,7 +561,7 @@ if (is_clang_or_gcc) {
     configs += [
       ":partition_alloc_implementation",
       ":memory_tagging",
-      "//build/config/compiler:wexit_time_destructors",
+      ":wexit_time_destructors",
     ]
     deps = [ ":allocator_base" ]
     public_configs = []
@@ -777,7 +786,7 @@ if (is_clang_or_gcc) {
     public_configs = [ ":public_includes" ]
     configs += [
       ":partition_alloc_base_implementation",
-      "//build/config/compiler:wexit_time_destructors",
+      ":wexit_time_destructors",
     ]
 
     deps = []
@@ -807,7 +816,7 @@ if (is_clang_or_gcc) {
     public_configs = [ ":public_includes" ]
     configs += [
       ":allocator_shim_implementation",
-      "//build/config/compiler:wexit_time_destructors",
+      ":wexit_time_destructors",
     ]
     frameworks = []
 
