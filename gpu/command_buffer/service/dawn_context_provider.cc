@@ -336,9 +336,11 @@ bool DawnSharedState::Initialize(
   }
   // The following toggles are all device-scoped toggles so it's not necessary
   // to pass them when creating the Instance above.
-#if DCHECK_IS_ON()
+#if DCHECK_IS_ON() || BUILDFLAG(IS_WIN)
   enabled_toggles.push_back("use_user_defined_labels_in_backend");
-#else
+#endif
+
+#if !DCHECK_IS_ON()
   if (features::kSkiaGraphiteDawnSkipValidation.Get()) {
     enabled_toggles.push_back("skip_validation");
   }
