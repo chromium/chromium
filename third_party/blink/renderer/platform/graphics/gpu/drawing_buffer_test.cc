@@ -278,8 +278,7 @@ TEST_F(DrawingBufferTest, VerifyCachedRecycledResourcesAreKept) {
 
     bool recycled = false;
     for (auto& resource : resources) {
-      if (recycled_resource.mailbox_holder.mailbox ==
-          resource.mailbox_holder.mailbox) {
+      if (recycled_resource.mailbox() == resource.mailbox()) {
         recycled = true;
         break;
       }
@@ -294,8 +293,7 @@ TEST_F(DrawingBufferTest, VerifyCachedRecycledResourcesAreKept) {
   EXPECT_TRUE(drawing_buffer_->PrepareTransferableResource(
       nullptr, &next_recycled_resource, &next_recycled_release_callback));
   for (auto& resource : resources) {
-    EXPECT_NE(resource.mailbox_holder.mailbox,
-              next_recycled_resource.mailbox_holder.mailbox);
+    EXPECT_NE(resource.mailbox(), next_recycled_resource.mailbox());
   }
   recycled_release_callbacks.push_back(
       std::move(next_recycled_release_callback));
@@ -418,7 +416,7 @@ TEST_F(DrawingBufferImageChromiumTest, VerifyResizingReallocatesImages) {
   EXPECT_EQ(2u, sii->shared_image_count());
   EXPECT_TRUE(sii->CheckSharedImageExists(mailbox1));
   EXPECT_TRUE(sii->CheckSharedImageExists(mailbox2));
-  EXPECT_EQ(mailbox2, resource.mailbox_holder.mailbox);
+  EXPECT_EQ(mailbox2, resource.mailbox());
 
   // Resize to 100x50. The current backbuffer must be destroyed. The exported
   // resource should stay alive. A new backbuffer must be created.
@@ -454,7 +452,7 @@ TEST_F(DrawingBufferImageChromiumTest, VerifyResizingReallocatesImages) {
   EXPECT_EQ(2u, sii->shared_image_count());
   EXPECT_TRUE(sii->CheckSharedImageExists(mailbox3));
   EXPECT_TRUE(sii->CheckSharedImageExists(mailbox4));
-  EXPECT_EQ(mailbox4, resource.mailbox_holder.mailbox);
+  EXPECT_EQ(mailbox4, resource.mailbox());
   testing::Mock::VerifyAndClearExpectations(gl_);
 
   // Reset to initial size. The exported resource has to stay alive, but the

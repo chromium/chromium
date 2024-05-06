@@ -901,9 +901,9 @@ scoped_refptr<StaticBitmapImage> ExternalCanvasResource::Bitmap() {
       base::RetainedRef(this));
 
   return AcceleratedStaticBitmapImage::CreateFromCanvasMailbox(
-      transferable_resource_.mailbox_holder.mailbox, GetSyncToken(),
+      transferable_resource_.mailbox(), GetSyncToken(),
       /*shared_image_texture_id=*/0u, CreateSkImageInfo(),
-      transferable_resource_.mailbox_holder.texture_target, is_origin_top_left_,
+      transferable_resource_.texture_target(), is_origin_top_left_,
       context_provider_wrapper_, owning_thread_ref_, owning_thread_task_runner_,
       std::move(release_callback),
       /*supports_display_compositing=*/true,
@@ -920,21 +920,21 @@ const gpu::Mailbox& ExternalCanvasResource::GetOrCreateGpuMailbox(
     MailboxSyncMode sync_mode) {
   TRACE_EVENT0("blink", "ExternalCanvasResource::GetOrCreateGpuMailbox");
   DCHECK_EQ(sync_mode, kVerifiedSyncToken);
-  return transferable_resource_.mailbox_holder.mailbox;
+  return transferable_resource_.mailbox();
 }
 
 bool ExternalCanvasResource::HasGpuMailbox() const {
-  return !transferable_resource_.mailbox_holder.mailbox.IsZero();
+  return !transferable_resource_.is_empty();
 }
 
 const gpu::SyncToken ExternalCanvasResource::GetSyncToken() {
   GenOrFlushSyncToken();
-  return transferable_resource_.mailbox_holder.sync_token;
+  return transferable_resource_.sync_token();
 }
 
 void ExternalCanvasResource::GenOrFlushSyncToken() {
   TRACE_EVENT0("blink", "ExternalCanvasResource::GenOrFlushSyncToken");
-  auto& sync_token = transferable_resource_.mailbox_holder.sync_token;
+  auto& sync_token = transferable_resource_.mutable_sync_token();
   // This method is expected to be used both in WebGL and WebGPU, that's why it
   // uses InterfaceBase.
   if (!sync_token.HasData()) {
@@ -989,8 +989,7 @@ ExternalCanvasResource::ExternalCanvasResource(
       transferable_resource_(transferable_resource),
       release_callback_(std::move(out_callback)),
       is_origin_top_left_(is_origin_top_left) {
-  DCHECK(!release_callback_ ||
-         transferable_resource_.mailbox_holder.sync_token.HasData());
+  DCHECK(!release_callback_ || transferable_resource_.sync_token().HasData());
 }
 
 // CanvasResourceSwapChain

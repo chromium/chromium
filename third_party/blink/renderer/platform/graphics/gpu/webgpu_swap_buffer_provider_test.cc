@@ -396,8 +396,7 @@ TEST_F(WebGPUSwapBufferProviderTest, VerifyInsertAndWaitSyncTokenCorrectly) {
   // synchronize properly
   EXPECT_TRUE(provider_->PrepareTransferableResource(nullptr, &resource,
                                                      &release_callback));
-  EXPECT_EQ(webgpu_->most_recent_generated_token,
-            resource.mailbox_holder.sync_token);
+  EXPECT_EQ(webgpu_->most_recent_generated_token, resource.sync_token());
 
   // Check that the release token is used to synchronize the shared image
   // destruction

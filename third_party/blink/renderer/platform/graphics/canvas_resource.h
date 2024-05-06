@@ -546,7 +546,7 @@ class PLATFORM_EXPORT ExternalCanvasResource final : public CanvasResource {
  private:
   void TearDown() override;
   GLenum TextureTarget() const final {
-    return transferable_resource_.mailbox_holder.texture_target;
+    return transferable_resource_.texture_target();
   }
   bool IsOverlayCandidate() const final {
     return transferable_resource_.is_overlay_candidate;

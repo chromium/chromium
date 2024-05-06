@@ -821,8 +821,7 @@ TEST_F(Canvas2DLayerBridgeTest, ResourceRecycling) {
   DrawSomething(bridge.get());
   ASSERT_TRUE(Host()->PrepareTransferableResource(nullptr, &resources[1],
                                                   &callbacks[1]));
-  EXPECT_NE(resources[0].mailbox_holder.mailbox,
-            resources[1].mailbox_holder.mailbox);
+  EXPECT_NE(resources[0].mailbox(), resources[1].mailbox());
 
   // Now release the first resource and draw again. It should be reused due to
   // recycling.
@@ -831,8 +830,7 @@ TEST_F(Canvas2DLayerBridgeTest, ResourceRecycling) {
   DrawSomething(bridge.get());
   ASSERT_TRUE(Host()->PrepareTransferableResource(nullptr, &resources[2],
                                                   &callbacks[2]));
-  EXPECT_EQ(resources[0].mailbox_holder.mailbox,
-            resources[2].mailbox_holder.mailbox);
+  EXPECT_EQ(resources[0].mailbox(), resources[2].mailbox());
 
   std::move(callbacks[1]).Run(gpu::SyncToken(), false);
   std::move(callbacks[2]).Run(gpu::SyncToken(), false);
@@ -859,8 +857,7 @@ TEST_F(Canvas2DLayerBridgeTest, NoResourceRecyclingWhenPageHidden) {
   DrawSomething(bridge.get());
   ASSERT_TRUE(Host()->PrepareTransferableResource(nullptr, &resources[1],
                                                   &callbacks[1]));
-  EXPECT_NE(resources[0].mailbox_holder.mailbox,
-            resources[1].mailbox_holder.mailbox);
+  EXPECT_NE(resources[0].mailbox(), resources[1].mailbox());
 
   // Now release the first resource and mark the page hidden. The recycled
   // resource should be dropped.
