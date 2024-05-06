@@ -173,8 +173,6 @@ void NetworkPortalSigninController::ShowSignin(SigninSource source) {
       break;
     }
     case SigninMode::kIncognitoDisabledByPolicy:
-      ABSL_FALLTHROUGH_INTENDED;
-    case SigninMode::kIncognitoDisabledByParentalControls: {
       if (chromeos::features::IsCaptivePortalPopupWindowEnabled()) {
         // Since the signin window enables extensions and disables navigation,
         // no special handling is required when Incognito browsing is disabled
@@ -183,6 +181,11 @@ void NetworkPortalSigninController::ShowSignin(SigninSource source) {
       } else {
         ShowTab(ProfileManager::GetActiveUserProfile(), url);
       }
+      break;
+    case SigninMode::kIncognitoDisabledByParentalControls: {
+      // Supervised users require SupervisedUserNavigationThrottle which is
+      // only available to non OTR profiles.
+      ShowTab(ProfileManager::GetActiveUserProfile(), url);
       break;
     }
   }
@@ -200,6 +203,11 @@ NetworkPortalSigninController::GetSigninMode(
   if (user_manager::UserManager::Get()->IsLoggedInAsAnyKioskApp()) {
     NET_LOG(DEBUG) << "GetSigninMode: Kiosk app";
     return SigninMode::kSigninDialog;
+  }
+
+  if (user_manager::UserManager::Get()->IsLoggedInAsChildUser()) {
+    NET_LOG(DEBUG) << "GetSigninMode: Child User";
+    return SigninMode::kIncognitoDisabledByParentalControls;
   }
 
   Profile* profile = ProfileManager::GetActiveUserProfile();
@@ -226,11 +234,6 @@ NetworkPortalSigninController::GetSigninMode(
       &availability);
   if (availability == policy::IncognitoModeAvailability::kDisabled) {
     return SigninMode::kIncognitoDisabledByPolicy;
-  }
-
-  if (IncognitoModePrefs::GetAvailability(profile->GetPrefs()) ==
-      policy::IncognitoModeAvailability::kDisabled) {
-    return SigninMode::kIncognitoDisabledByParentalControls;
   }
 
   return SigninMode::kSigninDefault;
