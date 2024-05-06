@@ -2,7 +2,7 @@
 <!DOCTYPE translationbundle>
 <translationbundle lang="hy">
 <translation id="1011749477052068769">Տեղափոխել այստեղ</translation>
-<translation id="1014147525163127655">Այս սարքում <ph name="ORIGIN" />-ի համար անցաբառեր չկան</translation>
+<translation id="1014147525163127655">Այս սարքում <ph name="ORIGIN" />-ի համար մուտքի բանալիներ չկան</translation>
 <translation id="1016498331642356377">Արագ որոնեք ձայնային հրահանգների օգնությամբ։ Այս դյուրանցումը փոփոխելու համար հպեք դրան և պահեք։</translation>
 <translation id="1017104654974573432">Ընտրեք խնդիրը</translation>
 <translation id="1024113959924243553">Chrome Dev</translation>
@@ -174,7 +174,7 @@
 <translation id="1928696683969751773">Թարմացումներ</translation>
 <translation id="1933845786846280168">Ընտրված ներդիր</translation>
 <translation id="1943432128510653496">Պահել գաղտնաբառերը</translation>
-<translation id="1944535645109964458">Հասանելի անցաբառեր չկան</translation>
+<translation id="1944535645109964458">Հասանելի մուտքի բանալիներ չկան</translation>
 <translation id="1959679933317802873">Բովանդակության սպասում</translation>
 <translation id="1960290143419248813">Chrome-ն այլևս չի թարմացվում Android-ի այս տարբերակում</translation>
 <translation id="1963976881984600709">Սովորական պաշտպանություն</translation>
@@ -665,7 +665,7 @@
 <translation id="4523326818319942067">վերջին 1 ժամը</translation>
 <translation id="452750746583162491">Ստուգեք ձեր համաժամացված տվյալները</translation>
 <translation id="4532845899244822526">Պանակի ընտրություն</translation>
-<translation id="4543131175509360848">Հասանելի անցաբառեր չկան</translation>
+<translation id="4543131175509360848">Հասանելի մուտքի բանալիներ չկան</translation>
 <translation id="4547551584605870320">{TAB_COUNT,plural, =1{<ph name="TAB_COUNT_ONE" /> ներդիր}one{<ph name="TAB_COUNT_MANY" /> ներդիր, <ph name="TAB_COUNT_INCOGNITO" /> ինկոգնիտո ներդիր}other{<ph name="TAB_COUNT_MANY" /> ներդիր, <ph name="TAB_COUNT_INCOGNITO" /> ինկոգնիտո ներդիր}}</translation>
 <translation id="4554077758708533499">Միացված է USB մալուխով</translation>
 <translation id="4558311620361989323">Վեբէջերի դյուրանցումներ</translation>
@@ -942,7 +942,7 @@
 <translation id="5869522115854928033">Պահված գաղտնաբառեր</translation>
 <translation id="587735546353481577">Կայքին հետևելու համար անցեք այդ կայք, բացեք Chrome-ի ընտրացանկն ու հպեք «Հետևել»։</translation>
 <translation id="5879072387416556377">Ստացեք ավելի լավ առաջարկներ</translation>
-<translation id="5899667542927581604">«Հասանելի անցաբառեր չկան» թերթը փակվեց</translation>
+<translation id="5899667542927581604">«Հասանելի մուտքի բանալիներ չկան» թերթը փակվեց</translation>
 <translation id="5916664084637901428">Միացնել</translation>
 <translation id="5919204609460789179">Թարմացրեք <ph name="PRODUCT_NAME" />-ը՝ համաժամացումը սկսելու համար</translation>
 <translation id="5938820472109305350">Ավելացնել «<ph name="INTEREST" />» հետաքրքրությունը</translation>
@@ -1600,7 +1600,7 @@
 <translation id="9063523880881406963">Անջատել կայքի ամբողջական տարբերակը</translation>
 <translation id="9065203028668620118">Փոփոխել</translation>
 <translation id="9065383040763568503">Պահված տվյալները, որոնք ըստ Chrome-ի կարևոր չեն (օր.՝ առանց պահված կարգավորումների կայքերը կամ այն կայքերը, որոնք վաղուց չեք այցելել)</translation>
-<translation id="9067341854474068781">«Հասանելի անցաբառեր չկան» թերթը բացված է ամբողջությամբ</translation>
+<translation id="9067341854474068781">«Հասանելի մուտքի բանալիներ չկան» թերթը բացված է ամբողջությամբ</translation>
 <translation id="906781307897697745"><ph name="PRODUCT_NAME" />-ում</translation>
 <translation id="9069999660519089861">Չկարդացված էջեր չկան</translation>
 <translation id="9070377983101773829">Սկսել ձայնային որոնումը</translation>
