@@ -267,6 +267,10 @@ BASE_FEATURE(kSafeBrowsingSkipSubresources2,
              "SafeBrowsingSkipSubResources2",
              base::FEATURE_ENABLED_BY_DEFAULT);
 
+BASE_FEATURE(kSafetyHubAbusiveNotificationRevocation,
+             "SafetyHubAbusiveNotificationRevocation",
+             base::FEATURE_DISABLED_BY_DEFAULT);
+
 BASE_FEATURE(kSevenZipEvaluationEnabled,
              "SafeBrowsingSevenZipEvaluationEnabled",
              base::FEATURE_ENABLED_BY_DEFAULT);
@@ -380,6 +384,7 @@ constexpr struct {
     {&kSafeBrowsingAsyncRealTimeCheck, true},
     {&kSafeBrowsingRemoveCookiesInAuthRequests, true},
     {&kSafeBrowsingSkipSubresources2, true},
+    {&kSafetyHubAbusiveNotificationRevocation, true},
     {&kSevenZipEvaluationEnabled, true},
     {&kSimplifiedUrlDisplay, true},
     {&kStrictDownloadTimeout, true},

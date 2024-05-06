@@ -209,6 +209,9 @@ BASE_DECLARE_FEATURE(kSafeBrowsingRemoveCookiesInAuthRequests);
 // handshakes.
 BASE_DECLARE_FEATURE(kSafeBrowsingSkipSubresources2);
 
+// Automatically revoke abusive notifications in Safety Hub.
+BASE_DECLARE_FEATURE(kSafetyHubAbusiveNotificationRevocation);
+
 // Controls whether the new 7z evaluation is performed on downloads.
 BASE_DECLARE_FEATURE(kSevenZipEvaluationEnabled);
 

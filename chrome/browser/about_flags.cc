@@ -9662,6 +9662,13 @@ const FeatureEntry kFeatureEntries[] = {
      flag_descriptions::kSafetyHubDescription, kOsAll,
      FEATURE_VALUE_TYPE(features::kSafetyHub)},
 
+    {"safety-hub-abusive-notification-revocation",
+     flag_descriptions::kSafetyHubAbusiveNotificationRevocationName,
+     flag_descriptions::kSafetyHubAbusiveNotificationRevocationDescription,
+     kOsAll,
+     FEATURE_VALUE_TYPE(
+         safe_browsing::kSafetyHubAbusiveNotificationRevocation)},
+
 #if BUILDFLAG(IS_ANDROID)
     {"enable-commerce-hint-android",
      flag_descriptions::kCommerceHintAndroidName,

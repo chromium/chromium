@@ -3074,6 +3074,13 @@ const char kSafetyHubName[] = "Safety Check v2";
 const char kSafetyHubDescription[] =
     "When enabled, Safety Check v2 will be visible in settings.";
 
+const char kSafetyHubAbusiveNotificationRevocationName[] =
+    "Include abusive notification sites in the Permissions Module of Safety "
+    "Hub";
+const char kSafetyHubAbusiveNotificationRevocationDescription[] =
+    "When enabled, includes abusive notification permission revocation in the "
+    "site permission module of Safety Hub on desktop.";
+
 const char kSameAppWindowCycleName[] = "Cros Labs: Same App Window Cycling";
 const char kSameAppWindowCycleDescription[] =
     "Use Alt+` to cycle through the windows of the active application.";
