@@ -50,6 +50,8 @@ found in the LICENSE file.
     <dimen name="list_item_start_icon_right_margin">20dp</dimen>
     <dimen name="list_item_start_icon_width">36dp</dimen>
     <dimen name="list_item_end_icon_width">56dp</dimen>
+    <dimen name="list_item_start_icon_small_right_margin">16dp</dimen>
+    <dimen name="list_item_start_icon_small_width">20dp</dimen>
 
     <!-- SelectableListLayout dimensions -->
     <dimen name="selectable_list_action_bar_end_padding">6dp</dimen>

@@ -110,7 +110,9 @@ class AppFilterCoordinator implements View.OnLayoutChangeListener {
         var adapter = new SimpleRecyclerViewAdapter(listItems);
         adapter.registerType(
                 0,
-                (parent) -> layoutInflater.inflate(R.layout.modern_list_item_view, parent, false),
+                (parent) ->
+                        layoutInflater.inflate(
+                                R.layout.modern_list_item_small_icon_view, parent, false),
                 AppFilterViewBinder::bind);
         mItemListView.setAdapter(adapter);
 
@@ -169,7 +171,8 @@ class AppFilterCoordinator implements View.OnLayoutChangeListener {
             layoutParams = new ViewGroup.LayoutParams(ViewGroup.LayoutParams.MATCH_PARENT, 0);
         }
 
-        int rowHeight = mContext.getResources().getDimensionPixelSize(R.dimen.list_item_min_height);
+        int rowHeight =
+                mContext.getResources().getDimensionPixelSize(R.dimen.min_touch_target_size);
         layoutParams.height = calculateSheetHeight(rowHeight, mBaseView.getHeight(), mAppCount);
         mItemListView.setLayoutParams(layoutParams);
     }
