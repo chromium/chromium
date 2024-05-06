@@ -1317,6 +1317,27 @@ class PrintRenderFrameHelperPreviewTest
     preview_ui()->WaitUntilPreviewUpdate();
   }
 
+  // A function to set up the preview environment for `frame`. Done here to
+  // access private members of the test class.
+  void OnPrintPreviewForRenderFrame(WebLocalFrame* frame,
+                                    bool has_selection,
+                                    FakePrintPreviewUI* preview_ui) {
+    content::RenderFrame* render_frame =
+        content::RenderFrame::FromWebFrame(frame);
+    BindPrintManagerHost(render_frame);
+    PrintRenderFrameHelper* print_render_frame_helper =
+        GetPrintRenderFrameHelperForFrame(render_frame);
+    print_render_frame_helper->SetPrintPreviewUI(preview_ui->BindReceiver());
+    print_render_frame_helper->InitiatePrintPreview(
+#if BUILDFLAG(IS_CHROMEOS_ASH)
+        mojo::NullAssociatedRemote(),
+#endif
+        has_selection);
+
+    print_render_frame_helper->PrintPreview(print_settings().Clone());
+    preview_ui->WaitUntilPreviewUpdate();
+  }
+
   void OnClosePrintPreviewDialog() {
     GetPrintRenderFrameHelper()->OnPrintPreviewDialogClosed();
   }
@@ -1363,10 +1384,12 @@ class PrintRenderFrameHelperPreviewTest
   }
 
   // `page_index` is 0-based.
-  void VerifyDidPreviewPage(bool expect_generated, uint32_t page_index) {
+  void VerifyDidPreviewPage(bool expect_generated,
+                            uint32_t page_index,
+                            FakePrintPreviewUI* preview_ui) {
     bool msg_found = false;
     uint32_t data_size = 0;
-    for (const auto& preview : preview_ui()->print_preview_pages()) {
+    for (const auto& preview : preview_ui->print_preview_pages()) {
       if (preview.index == page_index) {
         msg_found = true;
         data_size = preview.content_data_size;
@@ -1377,6 +1400,10 @@ class PrintRenderFrameHelperPreviewTest
         << "For page at index " << page_index;
     if (expect_generated)
       EXPECT_NE(0U, data_size) << "For page at index " << page_index;
+  }
+
+  void VerifyDidPreviewPage(bool expect_generated, uint32_t page_index) {
+    VerifyDidPreviewPage(expect_generated, page_index, preview_ui());
   }
 
   void VerifyDefaultPageLayout(
@@ -1490,6 +1517,32 @@ TEST_F(PrintRenderFrameHelperPreviewTest, OnPrintPreview) {
   VerifyPagesPrinted(false);
 
   OnClosePrintPreviewDialog();
+}
+
+TEST_F(PrintRenderFrameHelperPreviewTest, PrintPreviewWithSrcdocSelection) {
+  static const char kHTMLWithSrcdocChildFrame[] =
+      "<html><body>"
+      "<iframe name='srcdoc_frame' srcdoc='foo'></iframe>"
+      "</body></html>";
+  LoadHTML(kHTMLWithSrcdocChildFrame);
+
+  // Create selection in the child frame.
+  WebLocalFrame* srcdoc_frame =
+      GetMainFrame()->FindFrameByName("srcdoc_frame")->ToWebLocalFrame();
+  srcdoc_frame->ExecuteCommand("SelectAll");
+  print_settings().Set(kSettingShouldPrintSelectionOnly, true);
+
+  // Verify that print preview succeeds.
+
+  // The subframe will need its own preview UI. Declare it here so it can be
+  // passed to `VerifyDidPreviewPage` after `OnPrintPreviewForRenderFrame`
+  // completes.
+  std::unique_ptr<FakePrintPreviewUI> subframe_preview_ui =
+      std::make_unique<FakePrintPreviewUI>();
+
+  OnPrintPreviewForRenderFrame(srcdoc_frame, /*has_selection=*/true,
+                               subframe_preview_ui.get());
+  VerifyDidPreviewPage(true, 0, subframe_preview_ui.get());
 }
 
 TEST_F(PrintRenderFrameHelperPreviewTest, PrintPreviewHTMLWithPageMarginsCss) {
