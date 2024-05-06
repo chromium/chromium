@@ -1390,9 +1390,11 @@ template("ios_framework_bundle") {
       # less error prone that having the developer duplicate the list of all
       # headers in addition to "sources".
       sources = []
-      foreach(_source, invoker.sources) {
-        if (get_path_info(_source, "extension") == "h") {
-          sources += [ _source ]
+      if (defined(invoker.sources)) {
+        foreach(_source, invoker.sources) {
+          if (get_path_info(_source, "extension") == "h") {
+            sources += [ _source ]
+          }
         }
       }
 
