@@ -131,13 +131,6 @@ class BASE_EXPORT DiscardableSharedMemory {
   // different process. Returns NULL time if purged.
   Time last_known_usage() const { return last_known_usage_; }
 
-  // Releases any allocated pages in the specified range, if supported by the
-  // platform. Address space in the specified range continues to be reserved.
-  // The memory is not guaranteed to be released immediately.
-  // |offset| and |length| are both in bytes. |offset| and |length| must both be
-  // page aligned.
-  void ReleaseMemoryIfPossible(size_t offset, size_t length);
-
   // This returns true and sets |last_known_usage_| to 0 if
   // DiscardableSharedMemory object was successfully purged. Purging can fail
   // for two reasons; object might be locked or our last known usage timestamp

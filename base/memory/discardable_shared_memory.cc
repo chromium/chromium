@@ -443,36 +443,6 @@ bool DiscardableSharedMemory::Purge(Time current_time) {
   return true;
 }
 
-void DiscardableSharedMemory::ReleaseMemoryIfPossible(size_t offset,
-                                                      size_t length) {
-#if BUILDFLAG(IS_POSIX) && !BUILDFLAG(IS_NACL)
-// Linux and Android provide MADV_REMOVE which is preferred as it has a
-// behavior that can be verified in tests. Other POSIX flavors (MacOSX, BSDs),
-// provide MADV_FREE which has the same result but memory is purged lazily.
-#if BUILDFLAG(IS_LINUX) || BUILDFLAG(IS_CHROMEOS) || BUILDFLAG(IS_ANDROID)
-#define MADV_PURGE_ARGUMENT MADV_REMOVE
-#elif BUILDFLAG(IS_APPLE)
-// MADV_FREE_REUSABLE is similar to MADV_FREE, but also marks the pages with the
-// reusable bit, which allows both Activity Monitor and memory-infra to
-// correctly track the pages.
-#define MADV_PURGE_ARGUMENT MADV_FREE_REUSABLE
-#else  // BUILDFLAG(IS_LINUX) || BUILDFLAG(IS_CHROMEOS) || BUILDFLAG(IS_ANDROID)
-#define MADV_PURGE_ARGUMENT MADV_FREE
-#endif  // BUILDFLAG(IS_LINUX) || BUILDFLAG(IS_CHROMEOS) ||
-        // BUILDFLAG(IS_ANDROID)
-  // Advise the kernel to remove resources associated with purged pages.
-  // Subsequent accesses of memory pages will succeed, but might result in
-  // zero-fill-on-demand pages.
-  base::span<uint8_t> span = memory().subspan(offset, length);
-  if (madvise(span.data(), span.size(), MADV_PURGE_ARGUMENT)) {
-    DPLOG(ERROR) << "madvise() failed";
-  }
-#else   // BUILDFLAG(IS_POSIX) && !BUILDFLAG(IS_NACL)
-  base::span<uint8_t> span = memory().subspan(offset, length);
-  partition_alloc::DiscardSystemPages(span.data(), span.size());
-#endif  // BUILDFLAG(IS_POSIX) && !BUILDFLAG(IS_NACL)
-}
-
 bool DiscardableSharedMemory::IsMemoryResident() const {
   DCHECK(shared_memory_mapping_.IsValid());
 
