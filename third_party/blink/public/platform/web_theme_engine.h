@@ -220,7 +220,6 @@ class WebThemeEngine {
   struct ScrollbarExtraParams {
     bool is_hovering = false;
     bool is_overlay = false;
-    mojom::ColorScheme scrollbar_theme = mojom::ColorScheme::kLight;
     ScrollbarOrientation orientation = ScrollbarOrientation::kVerticalOnRight;
     float scale_from_dip = 0;
     std::optional<SkColor> thumb_color;

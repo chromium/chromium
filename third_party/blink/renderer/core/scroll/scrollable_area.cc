@@ -877,6 +877,8 @@ void ScrollableArea::RecalculateScrollbarOverlayColorTheme() {
       GetScrollbarOverlayColorTheme();
 
   // Start with a scrollbar overlay theme based on the used color scheme.
+  // TODO(crbug.com/337859209): Remove the overlay scrollbar color theme
+  // conversion and directly return a mojom ColorScheme.
   ScrollbarOverlayColorTheme overlay_theme =
       UsedColorSchemeScrollbars() == mojom::blink::ColorScheme::kDark
           ? kScrollbarOverlayColorThemeLight

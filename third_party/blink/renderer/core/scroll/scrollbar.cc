@@ -918,6 +918,16 @@ bool Scrollbar::IsOpaque() const {
 }
 
 mojom::blink::ColorScheme Scrollbar::UsedColorScheme() const {
+  if (IsOverlayScrollbar()) {
+    // TODO(crbug.com/337859209): Remove the overlay scrollbar color theme
+    // conversion and directly return a mojom ColorScheme.
+    // Dark overlay color theme means to use a dark colored thumb which is
+    // achieved by  using a light mojo color scheme (light background with dark
+    // foreground objects), and vice-versa for the light colored overlay theme.
+    return GetScrollbarOverlayColorTheme() == kScrollbarOverlayColorThemeDark
+               ? mojom::blink::ColorScheme::kLight
+               : mojom::blink::ColorScheme::kDark;
+  }
   return scrollable_area_->UsedColorSchemeScrollbars();
 }
 

@@ -211,15 +211,7 @@ void ScrollbarThemeOverlay::PaintThumb(GraphicsContext& context,
 
   blink::WebThemeEngine::ExtraParams params(scrollbar_thumb);
 
-  // TODO(crbug.com/337859209): Rework the overlay scrollbar color theme.
-  // Dark overlay color theme means to use a dark colored thumb which is
-  // achieved by  using a light mojo color scheme (light background with dark
-  // foreground objects), and viceversa for the light colored overlay theme.
-  mojom::blink::ColorScheme color_scheme =
-      scrollbar.GetScrollbarOverlayColorTheme() ==
-              ScrollbarOverlayColorTheme::kScrollbarOverlayColorThemeDark
-          ? mojom::blink::ColorScheme::kLight
-          : mojom::blink::ColorScheme::kDark;
+  mojom::blink::ColorScheme color_scheme = scrollbar.UsedColorScheme();
   const ui::ColorProvider* color_provider =
       scrollbar.GetScrollableArea()->GetColorProvider(color_scheme);
 

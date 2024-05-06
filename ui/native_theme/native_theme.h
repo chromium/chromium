@@ -316,8 +316,6 @@ class NATIVE_THEME_EXPORT NativeTheme {
   struct ScrollbarExtraParams {
     bool is_hovering = false;
     bool is_overlay = false;
-    ScrollbarOverlayColorTheme scrollbar_theme =
-        ScrollbarOverlayColorTheme::kDefault;
     ScrollbarOrientation orientation =
         ScrollbarOrientation::kVerticalOnRight;  // Used on Mac for drawing
                                                  // gradients.

@@ -960,20 +960,11 @@
     "prefix": "fluent-overlay-scrollbar",
     "platforms": ["Linux", "Win"],
     "bases": ["virtual/fluent-non-overlay-scrollbar/hover-over-scrollbar-thumb.html",
-              "virtual/fluent-non-overlay-scrollbar/main/hover-over-main-thread.html"],
+              "virtual/fluent-non-overlay-scrollbar/main/hover-over-main-thread.html",
+              "virtual/overlay-scrollbar/overlay-scrollbar-smoke-test.html"],
     "args": ["--enable-features=FluentOverlayScrollbar",
              "--enable-threaded-compositing",
              "--disable-smooth-scrolling"],
-    "expires": "Jul 1, 2024",
-    "owners": ["gastonr@microsoft.com", "gerchiko@microsoft.com", "yshalivskyy@microsoft.com"]
-  },
-  {
-    "prefix": "fluent-overlay-scrollbar-dark-mode",
-    "platforms": ["Linux", "Win"],
-    "bases": ["virtual/fluent-non-overlay-scrollbar/hover-over-scrollbar-thumb.html"],
-    "args": ["--enable-features=FluentOverlayScrollbar",
-             "--enable-threaded-compositing",
-             "--blink-settings=preferredColorScheme=0,forceDarkModeEnabled=true"],
     "expires": "Jul 1, 2024",
     "owners": ["gastonr@microsoft.com", "gerchiko@microsoft.com", "yshalivskyy@microsoft.com"]
   },
