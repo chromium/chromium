@@ -257,6 +257,7 @@ void MediaStreamVideoCapturerSource::SendWheel(
   if (!session_id.has_value()) {
     std::move(callback).Run(MakeDOMException(DOMExceptionCode::kUnknownError,
                                              "Missing session ID."));
+    return;
   }
 
   GetMediaStreamDispatcherHost()->SendWheel(
@@ -276,6 +277,7 @@ void MediaStreamVideoCapturerSource::SetZoomLevel(
   if (!session_id.has_value()) {
     std::move(callback).Run(MakeDOMException(DOMExceptionCode::kUnknownError,
                                              "Missing session ID."));
+    return;
   }
 
   GetMediaStreamDispatcherHost()->SetZoomLevel(

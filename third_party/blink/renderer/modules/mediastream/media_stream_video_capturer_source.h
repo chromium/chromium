@@ -75,6 +75,10 @@ class MODULES_EXPORT MediaStreamVideoCapturerSource
   FRIEND_TEST_ALL_PREFIXES(MediaStreamVideoCapturerSourceTest,
                            CaptureTimeAndMetadataPlumbing);
   FRIEND_TEST_ALL_PREFIXES(MediaStreamVideoCapturerSourceTest, ChangeSource);
+  FRIEND_TEST_ALL_PREFIXES(MediaStreamVideoCapturerSourceTest,
+                           SendWheelWithoutSessionIdFails);
+  FRIEND_TEST_ALL_PREFIXES(MediaStreamVideoCapturerSourceTest,
+                           SetZoomLevelWithoutSessionIdFails);
 
   // MediaStreamVideoSource overrides.
   void OnSourceCanDiscardAlpha(bool can_discard_alpha) override;
