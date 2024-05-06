@@ -24,6 +24,8 @@
 #import "components/autofill/ios/common/field_data_manager_factory_ios.h"
 #import "components/autofill/ios/form_util/form_util_java_script_feature.h"
 #import "components/password_manager/ios/account_select_fill_data.h"
+#import "components/password_manager/ios/ios_password_manager_driver.h"
+#import "components/password_manager/ios/ios_password_manager_driver_factory.h"
 #import "components/password_manager/ios/password_manager_ios_util.h"
 #import "components/password_manager/ios/password_manager_java_script_feature.h"
 #import "components/password_manager/ios/password_manager_tab_helper.h"
@@ -248,7 +250,8 @@ const char kFrameIdKey[] = "frame_id";
 // operation is considered as a success.
 - (BOOL)handleFillResult:(const base::Value*)result
             fromFillData:(password_manager::FillData)fillData
-    withFieldDataManager:(autofill::FieldDataManager*)manager {
+    withFieldDataManager:(autofill::FieldDataManager*)manager
+                  driver:(IOSPasswordManagerDriver*)driver {
   if (!result->is_dict()) {
     return NO;
   }
@@ -271,11 +274,18 @@ const char kFrameIdKey[] = "frame_id";
     manager->UpdateFieldDataMap(fillData.username_element_id,
                                 fillData.username_value,
                                 FieldPropertiesFlags::kAutofilledOnUserTrigger);
+
+    driver->GetPasswordManager()->UpdateStateOnUserInput(
+        driver, fillData.form_id, fillData.username_element_id,
+        fillData.username_value);
   }
   if (fillData.password_element_id && success && *did_fill_password) {
     manager->UpdateFieldDataMap(fillData.password_element_id,
                                 fillData.password_value,
                                 FieldPropertiesFlags::kAutofilledOnUserTrigger);
+    driver->GetPasswordManager()->UpdateStateOnUserInput(
+        driver, fillData.form_id, fillData.password_element_id,
+        fillData.password_value);
   }
 
   return success;
@@ -288,6 +298,8 @@ const char kFrameIdKey[] = "frame_id";
                        (nullable void (^)(BOOL))completionHandler {
   const scoped_refptr<autofill::FieldDataManager> fieldDataManager =
       autofill::FieldDataManagerFactoryIOS::GetRetainable(frame);
+  const scoped_refptr<IOSPasswordManagerDriver> driver =
+      IOSPasswordManagerDriverFactory::GetRetainableDriver(_webState, frame);
 
   // Do not fill the username if filling was triggered on a password field and
   // the username field has user typed input.
@@ -300,10 +312,11 @@ const char kFrameIdKey[] = "frame_id";
                          UTF16ToUTF8(fillData.username_value),
                          UTF16ToUTF8(fillData.password_value),
                          base::BindOnce(^(const base::Value* result) {
-                           const BOOL success = [weakSelf
-                                   handleFillResult:result
-                                       fromFillData:fillData
-                               withFieldDataManager:fieldDataManager.get()];
+                           const BOOL success =
+                               [weakSelf handleFillResult:result
+                                             fromFillData:fillData
+                                     withFieldDataManager:fieldDataManager.get()
+                                                   driver:driver.get()];
 
                            if (completionHandler) {
                              completionHandler(success);

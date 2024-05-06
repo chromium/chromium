@@ -18,8 +18,10 @@
 #import "components/autofill/ios/browser/autofill_driver_ios_factory.h"
 #import "components/autofill/ios/browser/form_suggestion.h"
 #import "components/autofill/ios/browser/form_suggestion_provider_query.h"
+#import "components/autofill/ios/browser/password_autofill_agent.h"
 #import "components/autofill/ios/browser/test_autofill_manager_injector.h"
 #import "components/autofill/ios/form_util/form_activity_params.h"
+#import "components/password_manager/core/browser/mock_password_manager.h"
 #import "components/password_manager/core/browser/password_generation_frame_helper.h"
 #import "components/password_manager/core/browser/password_manager_interface.h"
 #import "components/password_manager/core/browser/stub_password_manager_client.h"
@@ -70,77 +72,6 @@ const std::string kTestURL = "https://www.chromium.org/";
 NSString* kTestFrameID = @"dummy-frame-id";
 
 }  // namespace
-class MockPasswordManager : public PasswordManagerInterface {
- public:
-  MOCK_METHOD(void, DidNavigateMainFrame, (bool), (override));
-  MOCK_METHOD(void,
-              OnPasswordFormsParsed,
-              (PasswordManagerDriver*, const std::vector<autofill::FormData>&),
-              (override));
-  MOCK_METHOD(void,
-              OnPasswordFormsRendered,
-              (PasswordManagerDriver*, const std::vector<autofill::FormData>&),
-              (override));
-  MOCK_METHOD(void,
-              OnPasswordFormSubmitted,
-              (PasswordManagerDriver*, const autofill::FormData&),
-              (override));
-  MOCK_METHOD(void,
-              OnPasswordFormCleared,
-              (PasswordManagerDriver*, const autofill::FormData&),
-              (override));
-  MOCK_METHOD(void,
-              SetGenerationElementAndTypeForForm,
-              (PasswordManagerDriver*,
-               autofill::FormRendererId,
-               autofill::FieldRendererId,
-               autofill::password_generation::PasswordGenerationType),
-              (override));
-  MOCK_METHOD(void,
-              OnPresaveGeneratedPassword,
-              (PasswordManagerDriver*,
-               const autofill::FormData&,
-               const std::u16string&),
-              (override));
-  MOCK_METHOD(void,
-              OnSubframeFormSubmission,
-              (PasswordManagerDriver*, const autofill::FormData&),
-              (override));
-  MOCK_METHOD(void,
-              UpdateStateOnUserInput,
-              (PasswordManagerDriver*,
-               autofill::FormRendererId,
-               autofill::FieldRendererId,
-               const std::u16string&),
-              (override));
-  MOCK_METHOD(void, OnPasswordNoLongerGenerated, (), (override));
-  MOCK_METHOD(void,
-              OnPasswordFormsRemoved,
-              (PasswordManagerDriver*,
-               const autofill::FieldDataManager&,
-               const std::set<autofill::FormRendererId>&,
-               const std::set<autofill::FieldRendererId>&),
-              (override));
-  MOCK_METHOD(void,
-              OnIframeDetach,
-              (const std::string&,
-               PasswordManagerDriver*,
-               const autofill::FieldDataManager&),
-              (override));
-  MOCK_METHOD(void,
-              PropagateFieldDataManagerInfo,
-              (const autofill::FieldDataManager&, const PasswordManagerDriver*),
-              (override));
-  MOCK_METHOD(
-      void,
-      ProcessAutofillPredictions,
-      (PasswordManagerDriver * driver,
-       const autofill::FormData&,
-       (const base::flat_map<autofill::FieldGlobalId,
-                             autofill::AutofillType::ServerPrediction>)&),
-      (override));
-  MOCK_METHOD(PasswordManagerClient*, GetClient, (), (override));
-};
 
 class MockPasswordGenerationFrameHelper : public PasswordGenerationFrameHelper {
  public:
@@ -1487,6 +1418,25 @@ TEST_F(SharedPasswordControllerTest, DeclinePasswordGenerationDialog) {
                    fieldRendererID:field_id
                            frameID:kTestFrameID
                  completionHandler:nil];
+}
+
+// Tests that upon calling DidFillField() on the agent, the delegate implemented
+// and owned by the SharedPasswordController correctly calls the password
+// manager to update its state.
+TEST_F(SharedPasswordControllerTest, DidFillField) {
+  GURL url("https://example.com");
+  auto frame = web::FakeWebFrame::Create("frameID", true, url);
+  autofill::FormRendererId form_id(1);
+  autofill::FieldRendererId field_id(2);
+  const std::u16string value(u"value");
+  auto* driver = IOSPasswordManagerDriverFactory::FromWebStateAndWebFrame(
+      &web_state_, frame.get());
+
+  EXPECT_CALL(password_manager_,
+              UpdateStateOnUserInput(driver, form_id, field_id, value));
+
+  auto* agent = autofill::PasswordAutofillAgent::FromWebState(&web_state_);
+  agent->DidFillField(frame.get(), form_id, field_id, value);
 }
 
 // TODO(crbug.com/40701292): Finish unit testing the rest of the public API.

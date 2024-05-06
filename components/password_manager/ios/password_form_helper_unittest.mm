@@ -6,6 +6,8 @@
 
 #import <stddef.h>
 
+#import <string>
+
 #import "base/apple/bundle_locations.h"
 #import "base/strings/sys_string_conversions.h"
 #import "base/strings/utf_string_conversions.h"
@@ -16,13 +18,19 @@
 #import "components/autofill/core/common/field_data_manager.h"
 #import "components/autofill/core/common/form_data.h"
 #import "components/autofill/core/common/password_form_fill_data.h"
+#import "components/autofill/core/common/unique_ids.h"
 #import "components/autofill/ios/browser/autofill_java_script_feature.h"
 #import "components/autofill/ios/common/field_data_manager_factory_ios.h"
 #import "components/autofill/ios/form_util/autofill_test_with_web_state.h"
 #import "components/autofill/ios/form_util/form_handlers_java_script_feature.h"
 #import "components/autofill/ios/form_util/form_util_java_script_feature.h"
+#import "components/password_manager/core/browser/mock_password_manager.h"
+#import "components/password_manager/core/browser/password_manager_driver.h"
+#import "components/password_manager/core/browser/password_manager_interface.h"
 #import "components/password_manager/ios/account_select_fill_data.h"
+#import "components/password_manager/ios/ios_password_manager_driver_factory.h"
 #import "components/password_manager/ios/password_manager_java_script_feature.h"
+#import "components/password_manager/ios/shared_password_controller.h"
 #import "components/password_manager/ios/test_helpers.h"
 #import "components/ukm/ios/ukm_url_recorder.h"
 #import "components/ukm/test_ukm_recorder.h"
@@ -91,6 +99,10 @@ class PasswordFormHelperTest : public AutofillTestWithWebState {
   void SetUp() override {
     WebTestWithWebState::SetUp();
 
+    IOSPasswordManagerDriverFactory::CreateForWebState(
+        web_state(), OCMStrictClassMock([SharedPasswordController class]),
+        &password_manager_);
+
     helper_ = [[PasswordFormHelper alloc] initWithWebState:web_state()];
     ukm::InitializeSourceUrlRecorderForWebState(web_state());
   }
@@ -158,6 +170,7 @@ class PasswordFormHelperTest : public AutofillTestWithWebState {
  protected:
   // PasswordFormHelper for testing.
   PasswordFormHelper* helper_;
+  password_manager::MockPasswordManager password_manager_;
 };
 
 struct FindPasswordFormTestData {
@@ -294,16 +307,35 @@ TEST_F(PasswordFormHelperTest, FillPasswordFormWithFillData_Success) {
 
   ASSERT_TRUE(SetUpUniqueIDs());
   const std::string base_url = BaseUrl();
+  FormRendererId form_id(1);
   FieldRendererId username_field_id(2);
+  const std::u16string username_value = u"john.doe@gmail.com";
   FieldRendererId password_field_id(3);
+  const std::u16string password_value = u"super!secret";
   FillData fill_data;
-  SetFillData(base_url, 1, username_field_id.value(), "john.doe@gmail.com",
-              password_field_id.value(), "super!secret", &fill_data);
+  SetFillData(base_url, form_id.value(), username_field_id.value(),
+              base::UTF16ToUTF8(username_value).c_str(),
+              password_field_id.value(),
+              base::UTF16ToUTF8(password_value).c_str(), &fill_data);
+
+  web::WebFrame* frame = GetMainFrame();
+
+  // Expect calls to the PasswordManager to update its state from the filled
+  // inputs.
+  IOSPasswordManagerDriver* driver =
+      IOSPasswordManagerDriverFactory::FromWebStateAndWebFrame(web_state(),
+                                                               frame);
+  EXPECT_CALL(password_manager_,
+              UpdateStateOnUserInput(driver, form_id, username_field_id,
+                                     username_value));
+  EXPECT_CALL(password_manager_,
+              UpdateStateOnUserInput(driver, form_id, password_field_id,
+                                     password_value));
 
   __block bool called = false;
   __block BOOL succeeded = false;
   [helper_ fillPasswordFormWithFillData:fill_data
-                                inFrame:GetMainFrame()
+                                inFrame:frame
                        triggeredOnField:username_field_id
                       completionHandler:^(BOOL success) {
                         called = true;
@@ -356,6 +388,10 @@ TEST_F(PasswordFormHelperTest, FillPasswordFormWithFillData_Success_NoFill) {
             "value='test-password'></form>");
 
   ASSERT_TRUE(SetUpUniqueIDs());
+
+  // Don't expect calls to the PasswordManager to update its state when failure
+  // to fill.
+  EXPECT_CALL(password_manager_, UpdateStateOnUserInput).Times(0);
 
   const std::string base_url = BaseUrl();
   FieldRendererId username_field_id(2);
@@ -412,9 +448,16 @@ TEST_F(PasswordFormHelperTest, FillPasswordFormWithFillData_Success_NoFill) {
 TEST_F(PasswordFormHelperTest, FillPasswordFormWithFillData_Failure) {
   ukm::TestAutoSetUkmRecorder test_recorder;
   base::HistogramTester histogram_tester;
+
   LoadHtml(@"<form><input id='p1' type='password' name='pw1'></form>");
+  web::WebFrame* frame = GetMainFrame();
 
   ASSERT_TRUE(SetUpUniqueIDs());
+
+  // Don't expect calls to the PasswordManager to update its state when failure
+  // to fill.
+  EXPECT_CALL(password_manager_, UpdateStateOnUserInput).Times(0);
+
   const std::string base_url = BaseUrl();
   FieldRendererId username_field_id(0);
   // The password renderer id does not exist, that's why the filling will fail
@@ -426,7 +469,7 @@ TEST_F(PasswordFormHelperTest, FillPasswordFormWithFillData_Failure) {
   __block bool called = false;
   __block BOOL succeeded = false;
   [helper_ fillPasswordFormWithFillData:fill_data
-                                inFrame:GetMainFrame()
+                                inFrame:frame
                        triggeredOnField:username_field_id
                       completionHandler:^(BOOL success) {
                         called = true;
@@ -444,7 +487,7 @@ TEST_F(PasswordFormHelperTest, FillPasswordFormWithFillData_Failure) {
   // Check that username and password fields were NOT updated as filled in the
   // FieldDataManager.
   autofill::FieldDataManager* fieldDataManager =
-      autofill::FieldDataManagerFactoryIOS::FromWebFrame(GetMainFrame());
+      autofill::FieldDataManagerFactoryIOS::FromWebFrame(frame);
   EXPECT_FALSE(fieldDataManager->WasAutofilledOnUserTrigger(username_field_id));
   EXPECT_FALSE(fieldDataManager->WasAutofilledOnUserTrigger(password_field_id));
 
@@ -468,8 +511,13 @@ TEST_F(PasswordFormHelperTest,
 
   ASSERT_TRUE(SetUpUniqueIDs());
 
+  FormRendererId form_id(1);
   FieldRendererId username_field_id(2);
+  const std::u16string username_value = u"john.doe@gmail.com";
   FieldRendererId password_field_id(3);
+  const std::u16string password_value = u"store!pw";
+
+  web::WebFrame* frame = GetMainFrame();
 
   // Type on username field.
   ExecuteJavaScript(
@@ -480,8 +528,24 @@ TEST_F(PasswordFormHelperTest,
 
   // Try to autofill the form.
   FillData fill_data;
-  SetFillData(BaseUrl(), 1, username_field_id.value(), "someacc@store.com",
-              password_field_id.value(), "store!pw", &fill_data);
+  SetFillData(BaseUrl(), form_id.value(), username_field_id.value(),
+              base::UTF16ToUTF8(username_value).c_str(),
+              password_field_id.value(),
+              base::UTF16ToUTF8(password_value).c_str(), &fill_data);
+
+  IOSPasswordManagerDriver* driver =
+      IOSPasswordManagerDriverFactory::FromWebStateAndWebFrame(web_state(),
+                                                               frame);
+  // Don't expect to update the state for the username field because it was
+  // skipped.
+  EXPECT_CALL(password_manager_,
+              UpdateStateOnUserInput(driver, form_id, username_field_id,
+                                     username_value))
+      .Times(0);
+  // Expect a state update on the password field.
+  EXPECT_CALL(password_manager_,
+              UpdateStateOnUserInput(driver, form_id, password_field_id,
+                                     password_value));
 
   __block bool called = NO;
   __block bool succeeded = NO;
@@ -594,6 +658,13 @@ TEST_F(PasswordFormHelperTest, FillUsernameAndPassword_MissingFillResultField) {
   main_frame->set_browser_state(GetBrowserState());
   auto* main_frame_ptr = main_frame.get();
   web_frames_manager_ptr->AddWebFrame(std::move(main_frame));
+
+  IOSPasswordManagerDriverFactory::CreateForWebState(
+      &fake_web_state, OCMStrictClassMock([SharedPasswordController class]),
+      &password_manager_);
+  // Don't expect calls to the PasswordManager to update its state when failure
+  // to fill.
+  EXPECT_CALL(password_manager_, UpdateStateOnUserInput).Times(0);
 
   FieldRendererId username_field_id(2);
   FieldRendererId password_field_id(3);

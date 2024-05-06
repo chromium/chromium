@@ -350,6 +350,8 @@ static_library("test_support") {
     "mock_password_form_cache.h",
     "mock_password_form_manager_for_ui.cc",
     "mock_password_form_manager_for_ui.h",
+    "mock_password_manager.cc",
+    "mock_password_manager.h",
     "mock_password_manager_settings_service.cc",
     "mock_password_manager_settings_service.h",
     "mock_password_reuse_manager.cc",

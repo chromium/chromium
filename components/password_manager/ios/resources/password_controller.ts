@@ -316,9 +316,8 @@ function fillUsernameAndPassword(
     }
   }
 
-  const isUsernameEditable: boolean =
-      (!!usernameInput && !usernameInput.readOnly && !usernameInput.disabled) as
-      boolean;
+  const isUsernameEditable: boolean = Boolean(
+      !!usernameInput && !usernameInput.readOnly && !usernameInput.disabled);
 
   // Fill the username if needed and if it doesn't look like it was already
   // pre-filled by the website.
@@ -327,8 +326,10 @@ function fillUsernameAndPassword(
        gCrWeb.fill.setInputElementValue(username, usernameInput)) as boolean;
 
   // Fill the password if needed.
-  const didFillPassword: boolean = !!passwordInput &&
-      gCrWeb.fill.setInputElementValue(password, passwordInput) as boolean;
+  const didFillPassword: boolean =
+      Boolean(
+          !!passwordInput &&
+          gCrWeb.fill.setInputElementValue(password, passwordInput)) as boolean;
 
   return {
     didFillUsername,

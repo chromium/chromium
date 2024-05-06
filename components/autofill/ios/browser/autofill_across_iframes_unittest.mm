@@ -16,6 +16,7 @@
 #import "components/autofill/ios/browser/autofill_driver_ios.h"
 #import "components/autofill/ios/browser/autofill_driver_ios_factory.h"
 #import "components/autofill/ios/browser/autofill_java_script_feature.h"
+#import "components/autofill/ios/browser/mock_password_autofill_agent_delegate.h"
 #import "components/autofill/ios/browser/test_autofill_manager_injector.h"
 #import "components/autofill/ios/form_util/autofill_test_with_web_state.h"
 #import "components/autofill/ios/form_util/child_frame_registrar.h"
@@ -120,6 +121,10 @@ class AutofillAcrossIframesTest : public AutofillTestWithWebState {
     autofill::AutofillDriverIOSFactory::CreateForWebState(
         web_state(), &autofill_client_, /*bridge=*/autofill_agent_,
         /*locale=*/"en");
+
+    // Password autofill agent needs to exist before any call to fill data.
+    autofill::PasswordAutofillAgent::CreateForWebState(web_state(),
+                                                       &delegate_mock_);
   }
 
   web::WebFrame* WaitForMainFrame() {
@@ -181,6 +186,7 @@ class AutofillAcrossIframesTest : public AutofillTestWithWebState {
   std::unique_ptr<PrefService> prefs_;
   autofill::TestAutofillClient autofill_client_;
   AutofillAgent* autofill_agent_;
+  autofill::MockPasswordAutofillAgentDelegate delegate_mock_;
   base::test::ScopedFeatureList feature_list_;
 
   net::EmbeddedTestServer test_server_;

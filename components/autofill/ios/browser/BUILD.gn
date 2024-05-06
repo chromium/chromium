@@ -27,6 +27,8 @@ source_set("browser") {
     "form_suggestion_provider.h",
     "form_suggestion_provider_query.h",
     "form_suggestion_provider_query.mm",
+    "password_autofill_agent.h",
+    "password_autofill_agent.mm",
     "personal_data_manager_observer_bridge.h",
     "personal_data_manager_observer_bridge.mm",
     "suggestion_controller_java_script_feature.h",
@@ -109,6 +111,8 @@ source_set("test_support") {
     "fake_autofill_agent.h",
     "fake_autofill_agent.mm",
     "ios_test_event_waiter.h",
+    "mock_password_autofill_agent_delegate.h",
+    "mock_password_autofill_agent_delegate.mm",
     "test_autofill_manager_injector.h",
   ]
   public_deps = [ ":browser" ]
@@ -130,6 +134,7 @@ source_set("unit_tests") {
     "autofill_util_unittests.mm",
     "autofill_xhr_sumission_detection_unittest.mm",
     "form_suggestion_provider_query_unittests.mm",
+    "password_autofill_agent_unittest.mm",
   ]
   deps = [
     ":browser",

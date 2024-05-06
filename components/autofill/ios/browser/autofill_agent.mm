@@ -6,11 +6,14 @@
 
 #import <UIKit/UIKit.h>
 
+#import <cstdint>
 #import <memory>
 #import <string>
+#import <tuple>
 #import <utility>
 
 #import "base/apple/foundation_util.h"
+#import "base/containers/map_util.h"
 #import "base/feature_list.h"
 #import "base/format_macros.h"
 #import "base/json/json_reader.h"
@@ -44,11 +47,13 @@
 #import "components/autofill/core/common/form_data.h"
 #import "components/autofill/core/common/form_data_predictions.h"
 #import "components/autofill/core/common/form_field_data.h"
+#import "components/autofill/core/common/unique_ids.h"
 #import "components/autofill/ios/browser/autofill_driver_ios.h"
 #import "components/autofill/ios/browser/autofill_java_script_feature.h"
 #import "components/autofill/ios/browser/autofill_util.h"
 #import "components/autofill/ios/browser/form_suggestion.h"
 #import "components/autofill/ios/browser/form_suggestion_provider.h"
+#import "components/autofill/ios/browser/password_autofill_agent.h"
 #import "components/autofill/ios/common/features.h"
 #import "components/autofill/ios/common/field_data_manager_factory_ios.h"
 #import "components/autofill/ios/form_util/form_activity_observer_bridge.h"
@@ -90,6 +95,17 @@ using base::SysUTF8ToNSString;
 namespace {
 
 using FormDataVector = std::vector<autofill::FormData>;
+// Maps each field id to their respective host form id. This is needed as the
+// information linking the fields to their host form is lost between the moment
+// of filling and when receiving the filling response.
+using FieldToFormLookupMap = std::map<FieldRendererId, FormRendererId>;
+
+// Contains the data for doing filling.
+struct AutofillData {
+  std::string frameID;
+  base::Value::Dict payload;
+  FieldToFormLookupMap fieldToFormLookupMap;
+};
 
 // The type of the completion handler block for
 // |fetchFormsWithName:completionHandler|
@@ -173,10 +189,8 @@ constexpr CGFloat kSuggestionIconWidth = 32;
   // BrowserAutofillManagerDelegate.
   base::WeakPtr<autofill::AutofillPopupDelegate> _popupDelegate;
 
-  // The autofill data that needs to be send when the |webState_| is shown.
-  // The pair contains the frame ID and the base::Value::Dict to send.
-  // If the value is nullopt, no data needs to be sent.
-  std::optional<std::pair<std::string, base::Value::Dict>> _pendingFormData;
+  // The autofill data that needs to be sent when the |webState_| is shown.
+  std::optional<AutofillData> _pendingFormData;
 
   // Bridge to listen to pref changes.
   std::unique_ptr<PrefObserverBridge> _prefObserverBridge;
@@ -399,19 +413,6 @@ constexpr CGFloat kSuggestionIconWidth = 32;
   completion(_mostRecentSuggestions, self);
 }
 
-- (void)updateFieldManagerForClearedIDs:(NSString*)jsonString
-                                inFrame:(web::WebFrame*)frame {
-  std::optional<std::set<FieldRendererId>> clearingResults =
-      autofill::ExtractIDs<FieldRendererId>(jsonString);
-
-  if (clearingResults) {
-    for (auto uniqueID : *clearingResults) {
-      FieldDataManagerFactoryIOS::FromWebFrame(frame)->UpdateFieldDataMap(
-          uniqueID, std::u16string(), kAutofilledOnUserTrigger);
-    }
-  }
-}
-
 - (void)didSelectSuggestion:(FormSuggestion*)suggestion
                        form:(NSString*)formName
              formRendererID:(FormRendererId)formRendererID
@@ -432,15 +433,17 @@ constexpr CGFloat kSuggestionIconWidth = 32;
                       kA11yAnnouncementQueueDelay.InNanoseconds()),
         dispatch_get_main_queue(), ^{
           AutofillAgent* strongSelf = weakSelf;
-          if (!strongSelf)
+          if (!strongSelf) {
             return;
+          }
 
-          // Queueing flag allows to preserve standard announcements, they
-          // are conveyed first and then announce this message.
-          // This is a tradeoff as there is no control over the standard
-          // utterances (they are interrupting) and it is not desirable
-          // to interrupt them. Hence acceptance announcement is done after
-          // standard ones (which takes seconds).
+          // Queueing flag allows to preserve standard announcements,
+          // they are conveyed first and then announce this message.
+          // This is a tradeoff as there is no control over the
+          // standard utterances (they are interrupting) and it is
+          // not desirable to interrupt them. Hence acceptance
+          // announcement is done after standard ones (which takes
+          // seconds).
           NSAttributedString* message = [[NSAttributedString alloc]
               initWithString:suggestion.acceptanceA11yAnnouncement
                   attributes:@{
@@ -501,22 +504,21 @@ constexpr CGFloat kSuggestionIconWidth = 32;
     // FormSuggestion is a simple, single value that can be filled out now.
     [self fillField:SysNSStringToUTF8(fieldIdentifier)
         fieldRendererID:fieldRendererID
+         formRendererID:formRendererID
                formName:SysNSStringToUTF8(formName)
                   value:SysNSStringToUTF16(suggestion.value)
                 inFrame:frame];
   } else if (suggestion.popupItemId == autofill::SuggestionType::kClearForm) {
-    __weak AutofillAgent* weakSelf = self;
+    __weak __typeof(self) weakSelf = self;
     SuggestionHandledCompletion suggestionHandledCompletionCopy =
         [_suggestionHandledCompletion copy];
     _suggestionHandledCompletion = nil;
     AutofillJavaScriptFeature::GetInstance()->ClearAutofilledFieldsForForm(
         frame, formRendererID, fieldRendererID,
         base::BindOnce(^(NSString* jsonString) {
-          AutofillAgent* strongSelf = weakSelf;
-          if (!strongSelf) {
-            return;
-          }
-          [strongSelf updateFieldManagerForClearedIDs:jsonString inFrame:frame];
+          [weakSelf onDidClearFields:jsonString
+                             inFrame:frame
+                              inForm:formRendererID];
           suggestionHandledCompletionCopy();
         }));
 
@@ -546,9 +548,9 @@ constexpr CGFloat kSuggestionIconWidth = 32;
 
 - (void)fillData:(const std::vector<autofill::FormFieldData::FillData>&)data
          inFrame:(web::WebFrame*)frame {
-  base::Value::Dict autofillData;
-
   base::Value::Dict fieldsData;
+  FieldToFormLookupMap fieldToFormLookupMap;
+
   for (const auto& field : data) {
     // Skip empty fields and those that are not autofilled.
     if (field.value.empty() || !field.is_autofilled) {
@@ -560,14 +562,19 @@ constexpr CGFloat kSuggestionIconWidth = 32;
     fieldData.Set("section", field.section.ToString());
     fieldData.Set("hostFormId", static_cast<int>(*field.host_form_id));
     fieldsData.Set(NumberToString(*field.renderer_id), std::move(fieldData));
+
+    fieldToFormLookupMap[field.renderer_id] = field.host_form_id;
   }
-  autofillData.Set("fields", std::move(fieldsData));
+  auto payload = base::Value::Dict().Set("fields", std::move(fieldsData));
+  AutofillData autofillData = {
+      .frameID = frame ? frame->GetFrameId() : "",
+      .payload = std::move(payload),
+      .fieldToFormLookupMap = std::move(fieldToFormLookupMap)};
 
   // Store the form data when WebState is not visible, to send it as soon as it
   // becomes visible again, e.g., when the CVC unmask prompt is showing.
   if (!_webState->IsVisible()) {
-    _pendingFormData = std::make_pair(frame ? frame->GetFrameId() : "",
-                                      std::move(autofillData));
+    _pendingFormData = std::move(autofillData);
   } else {
     [self sendData:std::move(autofillData) toFrame:frame];
   }
@@ -784,20 +791,18 @@ constexpr CGFloat kSuggestionIconWidth = 32;
 
 - (void)webStateWasShown:(web::WebState*)webState {
   DCHECK_EQ(_webState, webState);
-  if (!_pendingFormData.has_value()) {
+  if (!_pendingFormData) {
     return;
   }
 
-  std::pair<std::string, base::Value::Dict> pendingFormData =
-      std::move(_pendingFormData).value();
-  _pendingFormData = std::nullopt;
-
   // The frameID cannot be empty.
-  DCHECK(!pendingFormData.first.empty());
+  const std::string& frameID = _pendingFormData->frameID;
+  CHECK(!frameID.empty());
   web::WebFramesManager* frames_manager =
       AutofillJavaScriptFeature::GetInstance()->GetWebFramesManager(_webState);
-  web::WebFrame* frame = frames_manager->GetFrameWithId(pendingFormData.first);
-  [self sendData:std::move(pendingFormData.second) toFrame:frame];
+  web::WebFrame* frame = frames_manager->GetFrameWithId(frameID);
+  [self sendData:std::move(*_pendingFormData) toFrame:frame];
+  _pendingFormData.reset();
 }
 
 - (void)webState:(web::WebState*)webState didLoadPageWithSuccess:(BOOL)success {
@@ -1056,7 +1061,7 @@ constexpr CGFloat kSuggestionIconWidth = 32;
          _webState->ContentIsHTML();
 }
 
-// Complete a field identified with |fieldIdentifier| on the form named
+// Fills a field identified with |fieldIdentifier| on the form named
 // |formName| in |frame| using |value| then move the cursor.
 // TODO(crbug.com/41284261): |dataString| ends up at fillFormField() in
 // autofill_controller.js. fillFormField() expects an AutofillFormFieldData
@@ -1065,6 +1070,7 @@ constexpr CGFloat kSuggestionIconWidth = 32;
 // 'is_checked' to exist.
 - (void)fillField:(const std::string&)fieldIdentifier
     fieldRendererID:(FieldRendererId)fieldRendererID
+     formRendererID:(FormRendererId)formRendererID
            formName:(const std::string&)formName
               value:(const std::u16string)value
             inFrame:(web::WebFrame*)frame {
@@ -1085,23 +1091,66 @@ constexpr CGFloat kSuggestionIconWidth = 32;
         if (!strongSelf)
           return;
         if (success) {
-          [strongSelf updateFieldManagerForSpecificField:fieldRendererID
-                                                 inFrame:frame
-                                               withValue:value];
+          [strongSelf onDidFillField:fieldRendererID
+                                form:formRendererID
+                               frame:frame
+                               value:value];
         }
         suggestionHandledCompletionCopy();
       }));
 }
 
-- (void)updateFieldManagerWithFillingResults:(NSString*)jsonString
-                                     inFrame:(web::WebFrame*)frame {
+// Called when did fill a specific field.
+- (void)onDidFillField:(FieldRendererId)fieldID
+                  form:(FormRendererId)formID
+                 frame:(web::WebFrame*)frame
+                 value:(const std::u16string&)value {
+  [self updateFieldManagerForSpecificField:fieldID
+                                   inFrame:frame
+                                 withValue:value];
+  [self notifyAboutValueChangeOnField:fieldID
+                               inForm:formID
+                                frame:frame
+                            withValue:value];
+}
+
+// Called when did fill multiple fields and received results serialized in a
+// JSON string.
+- (void)onDidFillWithResults:(NSString*)resultsAsJsonStr
+                     inFrame:(web::WebFrame*)frame
+        fieldToFormLookupMap:(const FieldToFormLookupMap&)fieldToFormLookupMap {
   std::map<uint32_t, std::u16string> fillingResults;
-  if (autofill::ExtractFillingResults(jsonString, &fillingResults)) {
-    for (auto& fillData : fillingResults) {
-      FieldDataManagerFactoryIOS::FromWebFrame(frame)->UpdateFieldDataMap(
-          FieldRendererId(fillData.first), fillData.second,
-          kAutofilledOnUserTrigger);
-    }
+  if (!autofill::ExtractFillingResults(resultsAsJsonStr, &fillingResults)) {
+    return;
+  }
+  [self updateFieldManagerWithFillingResults:fillingResults inFrame:frame];
+  [self notifyAboutFormFillingResults:fillingResults
+                              inFrame:frame
+                 fieldToFormLookupMap:fieldToFormLookupMap];
+}
+
+// Called when did clear fields.
+- (void)onDidClearFields:(NSString*)clearedFieldsAsJsonStr
+                 inFrame:(web::WebFrame*)frame
+                  inForm:(FormRendererId)formID {
+  const auto clearedIDs =
+      autofill::ExtractIDs<FieldRendererId>(clearedFieldsAsJsonStr);
+  if (!clearedIDs) {
+    return;
+  }
+
+  [self updateFieldManagerForClearedIDs:*clearedIDs inFrame:frame];
+  [self notifyAboutClearedFields:*clearedIDs inFrame:frame inForm:formID];
+}
+
+// Updates field managers with filling results.
+- (void)updateFieldManagerWithFillingResults:
+            (const std::map<uint32_t, std::u16string>&)fillingResults
+                                     inFrame:(web::WebFrame*)frame {
+  for (auto& fillData : fillingResults) {
+    [self updateFieldManagerForSpecificField:FieldRendererId(fillData.first)
+                                     inFrame:frame
+                                   withValue:fillData.second];
   }
 
   // TODO(crbug.com/40150011): Remove once the experiment is over.
@@ -1120,8 +1169,65 @@ constexpr CGFloat kSuggestionIconWidth = 32;
       fieldRendererID, value, kAutofilledOnUserTrigger);
 }
 
+// Updates field managers for cleared fields.
+- (void)updateFieldManagerForClearedIDs:
+            (const std::set<FieldRendererId>&)clearedFields
+                                inFrame:(web::WebFrame*)frame {
+  for (const auto fieldID : clearedFields) {
+    [self updateFieldManagerForSpecificField:fieldID
+                                     inFrame:frame
+                                   withValue:u""];
+  }
+}
+
+// Notifies the PasswordAutofillAgent that the value of a field has changed.
+- (void)notifyAboutValueChangeOnField:(FieldRendererId)fieldID
+                               inForm:(FormRendererId)formID
+                                frame:(web::WebFrame*)frame
+                            withValue:(const std::u16string&)value {
+  CHECK(frame);
+
+  autofill::PasswordAutofillAgent* agent =
+      autofill::PasswordAutofillAgent::FromWebState(_webState);
+  agent->DidFillField(frame, formID, fieldID, value);
+}
+
+// Notifies that form filling results were received.
+- (void)notifyAboutFormFillingResults:
+            (const std::map<uint32_t, std::u16string>&)fillingResults
+                              inFrame:(web::WebFrame*)frame
+                 fieldToFormLookupMap:
+                     (const FieldToFormLookupMap&)fieldToFormLookupMap {
+  CHECK(frame);
+
+  for (auto& fillData : fillingResults) {
+    FieldRendererId fieldID = FieldRendererId(fillData.first);
+    if (const FormRendererId* formID =
+            base::FindOrNull(fieldToFormLookupMap, fieldID)) {
+      [self notifyAboutValueChangeOnField:fieldID
+                                   inForm:*formID
+                                    frame:frame
+                                withValue:fillData.second];
+    }
+  }
+}
+
+// Notifies that fields were cleared.
+- (void)notifyAboutClearedFields:(const std::set<FieldRendererId>&)clearedFields
+                         inFrame:(web::WebFrame*)frame
+                          inForm:(FormRendererId)formID {
+  CHECK(frame);
+
+  for (auto fieldID : clearedFields) {
+    [self notifyAboutValueChangeOnField:fieldID
+                                 inForm:formID
+                                  frame:frame
+                              withValue:u""];
+  }
+}
+
 // Sends the the |data| to |frame| to actually fill the data.
-- (void)sendData:(base::Value::Dict)data toFrame:(web::WebFrame*)frame {
+- (void)sendData:(AutofillData)data toFrame:(web::WebFrame*)frame {
   DCHECK(_webState->IsVisible());
   __weak AutofillAgent* weakSelf = self;
   SuggestionHandledCompletion suggestionHandledCompletionCopy =
@@ -1129,19 +1235,20 @@ constexpr CGFloat kSuggestionIconWidth = 32;
   _suggestionHandledCompletion = nil;
 
   AutofillJavaScriptFeature::GetInstance()->FillForm(
-      frame, std::move(data), _pendingAutocompleteFieldID,
-      base::BindOnce(^(NSString* jsonString) {
-        AutofillAgent* strongSelf = weakSelf;
-        if (!strongSelf)
-          return;
-        [strongSelf updateFieldManagerWithFillingResults:jsonString
-                                                 inFrame:frame];
-        // It is possible that the fill was not initiated by selecting
-        // a suggestion in this case the callback is nil.
-        if (suggestionHandledCompletionCopy) {
-          suggestionHandledCompletionCopy();
-        }
-      }));
+      frame, std::move(data.payload), _pendingAutocompleteFieldID,
+      base::BindOnce(
+          ^(const FieldToFormLookupMap& map, NSString* jsonString) {
+            [weakSelf onDidFillWithResults:jsonString
+                                   inFrame:frame
+                      fieldToFormLookupMap:map];
+
+            // It is possible that the fill was not initiated by selecting
+            // a suggestion in this case the callback is nil.
+            if (suggestionHandledCompletionCopy) {
+              suggestionHandledCompletionCopy();
+            }
+          },
+          std::move(data.fieldToFormLookupMap)));
 }
 
 // Helper method used to implement the aynchronous completion block of
