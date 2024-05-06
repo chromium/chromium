@@ -1116,8 +1116,14 @@ IN_PROC_BROWSER_TEST_F(PreventCloseBrowserNonClientFrameViewChromeOSTest,
   ClearWebAppSettings();
 }
 
+#if BUILDFLAG(IS_CHROMEOS_LACROS)
+// TODO(crbug.com/339083706): Flaky on Lacros.
+#define MAYBE_ImmersiveModeTopViewInset DISABLED_ImmersiveModeTopViewInset
+#else
+#define MAYBE_ImmersiveModeTopViewInset ImmersiveModeTopViewInset
+#endif
 IN_PROC_BROWSER_TEST_P(BrowserNonClientFrameViewChromeOSTest,
-                       ImmersiveModeTopViewInset) {
+                       MAYBE_ImmersiveModeTopViewInset) {
   Browser* app_browser =
       CreateBrowserForApp("test_browser_app", browser()->profile());
 
