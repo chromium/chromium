@@ -293,6 +293,25 @@ TEST_F(PickerClientImplTest, StartCrosSearch) {
   ASSERT_TRUE(test_done.Wait());
 }
 
+TEST_F(PickerClientImplTest, IgnoresWhatYouTypedResults) {
+  ash::PickerController controller;
+  PickerClientImpl client(&controller, user_manager());
+  base::test::TestFuture<void> test_done;
+
+  NiceMock<MockSearchResultsCallback> mock_search_callback;
+  EXPECT_CALL(mock_search_callback, Call(_, _)).Times(AnyNumber());
+  EXPECT_CALL(mock_search_callback,
+              Call(ash::AppListSearchResultType::kOmnibox, IsEmpty()))
+      .WillOnce([&]() { test_done.SetValue(); });
+
+  client.StartCrosSearch(
+      u"a.com", /*category=*/std::nullopt,
+      base::BindRepeating(&MockSearchResultsCallback::Call,
+                          base::Unretained(&mock_search_callback)));
+
+  ASSERT_TRUE(test_done.Wait());
+}
+
 TEST_F(PickerClientImplTest, GetRecentLocalFilesWithNoFiles) {
   ash::PickerController controller;
   PickerClientImpl client(&controller, user_manager());

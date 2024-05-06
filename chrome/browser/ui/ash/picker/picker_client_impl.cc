@@ -127,6 +127,10 @@ std::vector<ash::PickerSearchResult> ConvertSearchResults(
     switch (result->result_type()) {
       case ash::AppListSearchResultType::kOmnibox:
       case ash::AppListSearchResultType::kOpenTab: {
+        if (result->metrics_type() == ash::OMNIBOX_URL_WHAT_YOU_TYPED) {
+          continue;
+        }
+
         if (std::optional<GURL> result_url = result->url();
             result_url.has_value()) {
           picker_results.push_back(ash::PickerSearchResult::BrowsingHistory(
