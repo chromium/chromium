@@ -148,8 +148,6 @@ void ArcOptInPreferenceHandler::SendLocationServicesMode() {
     enabled = ash::PrivacyHubController::CrosToArcGeolocationPermissionMapping(
         static_cast<ash::GeolocationAccessLevel>(pref_service_->GetInteger(
             ash::prefs::kUserGeolocationAccessLevel)));
-    pref_service_->SetBoolean(ash::prefs::kUserGeolocationAccuracyEnabled,
-                              enabled);
     managed = pref_service_->IsManagedPreference(
         ash::prefs::kUserGeolocationAccessLevel);
   } else {
