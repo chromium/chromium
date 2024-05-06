@@ -300,11 +300,6 @@ class BrowserTestBase : public ::testing::Test {
 
   bool allow_network_access_to_host_resolutions_ = false;
 
-#if BUILDFLAG(IS_ANDROID)
-  // See GL switch `switches::kDisableAndroidNativeFenceSyncForTesting`.
-  bool disable_android_native_fence_sync_ = false;
-#endif
-
   raw_ptr<BrowserMainParts, AcrossTasksDanglingUntriaged> browser_main_parts_ =
       nullptr;
 

@@ -431,11 +431,6 @@ void BrowserTestBase::SetUp() {
 #if BUILDFLAG(IS_ANDROID)
   // On Android we always use hardware GL.
   use_software_gl = false;
-
-  if (disable_android_native_fence_sync_) {
-    command_line->AppendSwitch(
-        switches::kDisableAndroidNativeFenceSyncForTesting);
-  }
 #endif
 
 #if BUILDFLAG(IS_FUCHSIA)
@@ -1037,12 +1032,6 @@ void BrowserTestBase::PostTaskToInProcessRendererAndWait(
 void BrowserTestBase::EnablePixelOutput(float force_device_scale_factor) {
   enable_pixel_output_ = true;
   force_device_scale_factor_ = force_device_scale_factor;
-
-#if BUILDFLAG(IS_ANDROID)
-  if (base::SysInfo::GetAndroidHardwareEGL() == "emulation") {
-    disable_android_native_fence_sync_ = true;
-  }
-#endif
 }
 
 void BrowserTestBase::UseSoftwareCompositing() {
