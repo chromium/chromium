@@ -245,8 +245,8 @@ bool IsEmptyNTP(web::WebState* web_state) {
 
   // Close the excessive NTPs.
   UMA_HISTOGRAM_COUNTS_100(kExcessNTPTabsRemoved, indicesToRemove.size());
-  const WebStateList::ScopedBatchOperation batch =
-      webStateList->StartBatchOperation();
+  // TODO(crbug.com/338346284): Add a ScopedBatchOperation lock once all
+  // observers are correctly handling batched operations.
   webStateList->CloseWebStatesAtIndices(
       WebStateList::CLOSE_NO_FLAGS,
       RemovingIndexes(std::move(indicesToRemove)));
