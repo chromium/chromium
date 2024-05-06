@@ -600,13 +600,19 @@ class MultiInstanceManagerApi31 extends MultiInstanceManager implements Activity
     }
 
     private void recordActivityCountHistogram() {
+        RecordHistogram.recordExactLinearHistogram(
+                "Android.MultiInstance.NumActivities",
+                getRunningTabbedActivityCount(),
+                mMaxInstances + 1);
+    }
+
+    static int getRunningTabbedActivityCount() {
         int numActivities = 0;
         List<Activity> activities = getAllRunningActivities();
         for (Activity activity : activities) {
             if (activity instanceof ChromeTabbedActivity) numActivities++;
         }
-        RecordHistogram.recordExactLinearHistogram(
-                "Android.MultiInstance.NumActivities", numActivities, mMaxInstances + 1);
+        return numActivities;
     }
 
     private void recordInstanceCountHistogram() {

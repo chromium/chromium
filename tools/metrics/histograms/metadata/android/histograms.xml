@@ -2354,6 +2354,44 @@ chromium-metrics-reviews@google.com.
   </summary>
 </histogram>
 
+<histogram name="Android.MultiInstance.NumActivities.DesktopWindow"
+    units="activities" expires_after="2025-05-02">
+  <owner>aishwaryarj@google.com</owner>
+  <owner>wenyufu@chromium.org</owner>
+  <owner>clank-large-form-factors@google.com</owner>
+  <summary>
+    Records the number of running ChromeTabbedActivity's on every
+    ChromeTabbedActivity startup in a desktop window. This includes activities
+    that may not be visible on screen (i.e. it includes ChromeTabbedActivity's
+    in the &quot;stopped&quot; state). This does not include
+    ChromeTabbedActivity's that have been destroyed regardless of whether their
+    owning Android Task may be retrieved in Android Recents. Applicable to
+    Android V+ only.
+  </summary>
+</histogram>
+
+<histogram
+    name="Android.MultiInstance.NumActivities.DesktopWindow.{InstanceAllocationType}"
+    units="activities" expires_after="2025-05-02">
+  <owner>aishwaryarj@google.com</owner>
+  <owner>wenyufu@chromium.org</owner>
+  <owner>clank-large-form-factors@google.com</owner>
+  <summary>
+    Records the number of running ChromeTabbedActivity's when a new
+    ChromeTabbedActivity is started in a desktop window, as
+    {InstanceAllocationType}. This includes activities that may not be visible
+    on screen (i.e. it includes ChromeTabbedActivity's in the
+    &quot;stopped&quot; state). This does not include ChromeTabbedActivity's
+    that have been destroyed regardless of whether their owning Android Task may
+    be retrieved in Android Recents. Applicable to Android V+ only.
+  </summary>
+  <token key="InstanceAllocationType">
+    <variant name="ExistingInstance"
+        summary="a restoration of a persisted instance"/>
+    <variant name="NewInstance" summary="a new instance"/>
+  </token>
+</histogram>
+
 <histogram name="Android.MultiInstance.NumInstances" units="instances"
     expires_after="2024-09-22">
   <owner>jinsukkim@chromium.org</owner>

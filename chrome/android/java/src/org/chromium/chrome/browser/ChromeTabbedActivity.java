@@ -434,6 +434,8 @@ public class ChromeTabbedActivity extends ChromeActivity<ChromeActivityComponent
     // is supported. This can be explicitly set in the incoming Intent or internally assigned.
     private int mWindowId;
 
+    private @InstanceAllocationType int mInstanceAllocationType;
+
     // The URL of the last active Tab read from the Tab metadata file during cold startup.
     private String mLastActiveTabUrl;
 
@@ -1331,6 +1333,11 @@ public class ChromeTabbedActivity extends ChromeActivity<ChromeActivityComponent
         resetSavedInstanceState();
         BookmarkUtils.maybeExpireLastBookmarkLocationForReadLater(
                 mInactivityTracker.getTimeSinceLastBackgroundedMs());
+
+        MultiWindowUtils.maybeRecordDesktopWindowActivityCountHistogram(
+                mRootUiCoordinator.getDesktopWindowStateProvider(),
+                mInstanceAllocationType,
+                !mFromResumption);
     }
 
     @Override
@@ -2714,6 +2721,7 @@ public class ChromeTabbedActivity extends ChromeActivity<ChromeActivityComponent
     @Override
     protected boolean isStartedUpCorrectly(Intent intent) {
         mWindowId = 0;
+        mInstanceAllocationType = InstanceAllocationType.DEFAULT;
         Bundle savedInstanceState = getSavedInstanceState();
         int windowId = getExtraWindowIdFromIntent(intent);
         if (savedInstanceState != null && savedInstanceState.containsKey(WINDOW_INDEX)) {
@@ -2729,6 +2737,7 @@ public class ChromeTabbedActivity extends ChromeActivity<ChromeActivityComponent
                     mMultiInstanceManager.allocInstanceId(
                             windowId, ApplicationStatus.getTaskId(this), preferNew);
             mWindowId = instanceIdInfo.first;
+            mInstanceAllocationType = instanceIdInfo.second;
             logIntentInfo(intent);
             // If a new instance ID was allocated for the newly created activity, potentially
             // dispatch it to an existing activity under special circumstances. See

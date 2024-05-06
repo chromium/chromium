@@ -11,6 +11,7 @@ import static org.junit.Assert.assertTrue;
 import static org.mockito.ArgumentMatchers.any;
 import static org.mockito.ArgumentMatchers.anyInt;
 import static org.mockito.ArgumentMatchers.eq;
+import static org.mockito.Mockito.doNothing;
 import static org.mockito.Mockito.never;
 import static org.mockito.Mockito.times;
 import static org.mockito.Mockito.verify;
@@ -899,6 +900,26 @@ public class MultiInstanceManagerApi31UnitTest {
                 runningTabbedActivityIds.valueAt(0));
     }
 
+    @Test
+    @SmallTest
+    @Config(sdk = 31)
+    public void testGetRunningTabbedActivityCount() {
+        // Create 1 activity that is not a ChromeTabbedActivity and 2 ChromeTabbedActivity's.
+        assertEquals(0, allocInstanceIndex(PASSED_ID_INVALID, mActivityTask56));
+        assertEquals(1, allocInstanceIndex(PASSED_ID_INVALID, mTabbedActivityTask62));
+        assertEquals(2, allocInstanceIndex(PASSED_ID_INVALID, mTabbedActivityTask63));
+
+        // Remove ChromeTabbedActivity |mTabbedActivityTask62|, this will be considered a
+        // non-running activity subsequently.
+        removeTaskOnRecentsScreen(mTabbedActivityTask62);
+
+        int runningTabbedActivityCount = MultiInstanceManagerApi31.getRunningTabbedActivityCount();
+        assertEquals(
+                "There should be only 1 running ChromeTabbedActivity.",
+                1,
+                runningTabbedActivityCount);
+    }
+
     private void triggerSelectTab(TabModelObserver tabModelObserver, Tab tab) {
         // Set up the mocks to have |TabModelUtils.getCurrentTab(selector.getModel(false))|
         // return the last active normal tab.
@@ -1044,7 +1065,7 @@ public class MultiInstanceManagerApi31UnitTest {
         // Allocate and create two instances.
         assertEquals(0, allocInstanceIndex(PASSED_ID_INVALID, mTabbedActivityTask62, true));
         assertEquals(1, allocInstanceIndex(PASSED_ID_INVALID, mTabbedActivityTask63, true));
-        Mockito.doNothing()
+        doNothing()
                 .when(mMultiInstanceManager)
                 .moveAndReparentTabToNewWindow(
                         eq(mTab1), eq(INVALID_INSTANCE_ID), eq(true), eq(false), eq(true));
@@ -1068,7 +1089,7 @@ public class MultiInstanceManagerApi31UnitTest {
                 Mockito.spy(
                         createChromeInstance(
                                 INSTANCE_ID_1, TASK_ID_62, List.of(mTab1, mTab2, mTab3)));
-        Mockito.doNothing()
+        doNothing()
                 .when(multiInstanceManager1)
                 .moveAndReparentTabToNewWindow(
                         eq(mTab2), eq(INVALID_INSTANCE_ID), eq(true), eq(false), eq(true));
@@ -1101,7 +1122,7 @@ public class MultiInstanceManagerApi31UnitTest {
                 mMultiInstanceManager.mMaxInstances,
                 mMultiInstanceManager.getInstanceInfo().size());
 
-        Mockito.doNothing()
+        doNothing()
                 .when(mMultiInstanceManager)
                 .openNewWindow(eq("Android.WindowManager.NewWindow"));
 
@@ -1128,9 +1149,7 @@ public class MultiInstanceManagerApi31UnitTest {
         assertEquals(INSTANCE_ID_2, allocInstanceIndex(INSTANCE_ID_2, mTabbedActivityTask63, true));
         assertEquals(2, mMultiInstanceManager.getInstanceInfo().size());
 
-        Mockito.doNothing()
-                .when(mMultiInstanceManager)
-                .moveTabAction(any(), eq(mTab1), eq(tabAtIndex));
+        doNothing().when(mMultiInstanceManager).moveTabAction(any(), eq(mTab1), eq(tabAtIndex));
 
         // Action
         mMultiInstanceManager.moveTabToWindow(mTabbedActivityTask63, mTab1, tabAtIndex);
@@ -1151,9 +1170,7 @@ public class MultiInstanceManagerApi31UnitTest {
                 Mockito.spy(
                         createChromeInstance(
                                 INSTANCE_ID_1, TASK_ID_62, List.of(mTab1, mTab2, mTab3)));
-        Mockito.doNothing()
-                .when(multiInstanceManager)
-                .moveTabAction(any(), eq(mTab2), eq(tabAtIndex));
+        doNothing().when(multiInstanceManager).moveTabAction(any(), eq(mTab2), eq(tabAtIndex));
 
         // Action
         multiInstanceManager.moveTabToWindow(mTabbedActivityTask62, mTab2, tabAtIndex);

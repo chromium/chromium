@@ -10,6 +10,10 @@ import static org.junit.Assert.assertTrue;
 import static org.mockito.Mockito.mock;
 import static org.mockito.Mockito.when;
 
+import static org.chromium.chrome.browser.multiwindow.MultiWindowUtils.HISTOGRAM_NUM_ACTIVITIES_DESKTOP_WINDOW;
+import static org.chromium.chrome.browser.multiwindow.MultiWindowUtils.HISTOGRAM_NUM_ACTIVITIES_DESKTOP_WINDOW_EXISTING_INSTANCE_SUFFIX;
+import static org.chromium.chrome.browser.multiwindow.MultiWindowUtils.HISTOGRAM_NUM_ACTIVITIES_DESKTOP_WINDOW_NEW_INSTANCE_SUFFIX;
+
 import android.app.Activity;
 import android.content.Context;
 import android.os.Build.VERSION_CODES;
@@ -27,10 +31,14 @@ import org.robolectric.annotation.Implementation;
 import org.robolectric.annotation.Implements;
 
 import org.chromium.base.test.BaseRobolectricTestRunner;
+import org.chromium.base.test.util.HistogramWatcher;
 import org.chromium.chrome.browser.homepage.HomepageManager;
+import org.chromium.chrome.browser.multiwindow.MultiWindowUtils.InstanceAllocationType;
 import org.chromium.chrome.browser.multiwindow.MultiWindowUtilsUnitTest.ShadowMultiInstanceManagerApi31;
 import org.chromium.chrome.browser.tabmodel.TabModel;
 import org.chromium.chrome.browser.tabmodel.TabModelSelector;
+import org.chromium.chrome.browser.ui.desktop_windowing.AppHeaderState;
+import org.chromium.chrome.browser.ui.desktop_windowing.DesktopWindowStateProvider;
 import org.chromium.chrome.test.AutomotiveContextWrapperTestRule;
 import org.chromium.components.embedder_support.util.UrlConstants;
 import org.chromium.url.GURL;
@@ -45,6 +53,7 @@ public class MultiWindowUtilsUnitTest {
     @Implements(MultiInstanceManagerApi31.class)
     public static class ShadowMultiInstanceManagerApi31 {
         private static SparseIntArray sWindowIdsOfRunningTabbedActivities;
+        private static int sRunningTabbedActivityCount;
 
         public static void updateWindowIdsOfRunningTabbedActivities(int windowId, boolean remove) {
             if (sWindowIdsOfRunningTabbedActivities == null) {
@@ -57,13 +66,23 @@ public class MultiWindowUtilsUnitTest {
             }
         }
 
+        public static void updateRunningTabbedActivityCount(int count) {
+            sRunningTabbedActivityCount = count;
+        }
+
         public static void reset() {
             sWindowIdsOfRunningTabbedActivities = null;
+            sRunningTabbedActivityCount = 0;
         }
 
         @Implementation
         public static SparseIntArray getWindowIdsOfRunningTabbedActivities() {
             return sWindowIdsOfRunningTabbedActivities;
+        }
+
+        @Implementation
+        public static int getRunningTabbedActivityCount() {
+            return sRunningTabbedActivityCount;
         }
     }
 
@@ -425,6 +444,140 @@ public class MultiWindowUtilsUnitTest {
                         + " number of instances are open.",
                 MultiWindowUtils.INVALID_INSTANCE_ID,
                 instanceId);
+    }
+
+    @Test
+    @Config(sdk = 31)
+    public void testRecordDesktopWindowNumActivities_OnlyOnColdStart() {
+        int runningActivityCount = 2;
+        var watcher =
+                HistogramWatcher.newSingleRecordWatcher(
+                        HISTOGRAM_NUM_ACTIVITIES_DESKTOP_WINDOW, runningActivityCount);
+        var desktopWindowStateProvider = mock(DesktopWindowStateProvider.class);
+        var appHeaderState = mock(AppHeaderState.class);
+        when(desktopWindowStateProvider.getAppHeaderState()).thenReturn(appHeaderState);
+        when(appHeaderState.isInDesktopWindow()).thenReturn(true);
+        ShadowMultiInstanceManagerApi31.updateRunningTabbedActivityCount(runningActivityCount);
+
+        // Assume that the histogram is attempted to be recorded on a cold start of the app.
+        MultiWindowUtils.maybeRecordDesktopWindowActivityCountHistogram(
+                desktopWindowStateProvider,
+                InstanceAllocationType.NEW_INSTANCE_NEW_TASK,
+                /* isColdStart= */ true);
+
+        // Assume that the histogram is attempted to be recorded on a subsequent warm start.
+        MultiWindowUtils.maybeRecordDesktopWindowActivityCountHistogram(
+                desktopWindowStateProvider,
+                InstanceAllocationType.NEW_INSTANCE_NEW_TASK,
+                /* isColdStart= */ false);
+
+        // Histogram should be emitted only once.
+        watcher.assertExpected();
+    }
+
+    @Test
+    @Config(sdk = 31)
+    public void testRecordDesktopWindowNumActivities_ColdStartOfExistingInstance() {
+        int runningActivityCount = 2;
+        var desktopWindowStateProvider = mock(DesktopWindowStateProvider.class);
+        var appHeaderState = mock(AppHeaderState.class);
+        when(desktopWindowStateProvider.getAppHeaderState()).thenReturn(appHeaderState);
+        when(appHeaderState.isInDesktopWindow()).thenReturn(true);
+        ShadowMultiInstanceManagerApi31.updateRunningTabbedActivityCount(runningActivityCount);
+
+        int[] instanceAllocationTypes =
+                new int[] {
+                    InstanceAllocationType.DEFAULT,
+                    InstanceAllocationType.EXISTING_INSTANCE_MAPPED_TASK,
+                    InstanceAllocationType.EXISTING_INSTANCE_UNMAPPED_TASK,
+                    InstanceAllocationType.EXISTING_INSTANCE_NEW_TASK
+                };
+
+        // Assume that the histogram is attempted to be recorded on a cold start of an existing
+        // instance, for different instance allocation types.
+        for (int type : instanceAllocationTypes) {
+            var watcher =
+                    HistogramWatcher.newBuilder()
+                            .expectIntRecord(
+                                    HISTOGRAM_NUM_ACTIVITIES_DESKTOP_WINDOW, runningActivityCount)
+                            .expectIntRecord(
+                                    HISTOGRAM_NUM_ACTIVITIES_DESKTOP_WINDOW
+                                            + HISTOGRAM_NUM_ACTIVITIES_DESKTOP_WINDOW_EXISTING_INSTANCE_SUFFIX,
+                                    runningActivityCount)
+                            .expectNoRecords(
+                                    HISTOGRAM_NUM_ACTIVITIES_DESKTOP_WINDOW
+                                            + HISTOGRAM_NUM_ACTIVITIES_DESKTOP_WINDOW_NEW_INSTANCE_SUFFIX)
+                            .build();
+            MultiWindowUtils.maybeRecordDesktopWindowActivityCountHistogram(
+                    desktopWindowStateProvider, type, /* isColdStart= */ true);
+            watcher.assertExpected();
+        }
+    }
+
+    @Test
+    @Config(sdk = 31)
+    public void testRecordDesktopWindowNumActivities_ColdStartOfNewInstance() {
+        int runningActivityCount = 2;
+        var desktopWindowStateProvider = mock(DesktopWindowStateProvider.class);
+        var appHeaderState = mock(AppHeaderState.class);
+        when(desktopWindowStateProvider.getAppHeaderState()).thenReturn(appHeaderState);
+        when(appHeaderState.isInDesktopWindow()).thenReturn(true);
+        ShadowMultiInstanceManagerApi31.updateRunningTabbedActivityCount(runningActivityCount);
+
+        int[] instanceAllocationTypes =
+                new int[] {
+                    InstanceAllocationType.NEW_INSTANCE_NEW_TASK,
+                    InstanceAllocationType.PREFER_NEW_INSTANCE_NEW_TASK
+                };
+
+        // Assume that the histogram is attempted to be recorded on a cold start of a new instance,
+        // for different instance allocation types.
+        for (int type : instanceAllocationTypes) {
+            var watcher =
+                    HistogramWatcher.newBuilder()
+                            .expectIntRecord(
+                                    HISTOGRAM_NUM_ACTIVITIES_DESKTOP_WINDOW, runningActivityCount)
+                            .expectIntRecord(
+                                    HISTOGRAM_NUM_ACTIVITIES_DESKTOP_WINDOW
+                                            + HISTOGRAM_NUM_ACTIVITIES_DESKTOP_WINDOW_NEW_INSTANCE_SUFFIX,
+                                    runningActivityCount)
+                            .expectNoRecords(
+                                    HISTOGRAM_NUM_ACTIVITIES_DESKTOP_WINDOW
+                                            + HISTOGRAM_NUM_ACTIVITIES_DESKTOP_WINDOW_EXISTING_INSTANCE_SUFFIX)
+                            .build();
+            MultiWindowUtils.maybeRecordDesktopWindowActivityCountHistogram(
+                    desktopWindowStateProvider, type, /* isColdStart= */ true);
+            watcher.assertExpected();
+        }
+    }
+
+    @Test
+    @Config(sdk = 31)
+    public void testRecordDesktopWindowNumActivities_NotInDesktopWindow() {
+        var watcher =
+                HistogramWatcher.newBuilder()
+                        .expectNoRecords(HISTOGRAM_NUM_ACTIVITIES_DESKTOP_WINDOW)
+                        .expectNoRecords(
+                                HISTOGRAM_NUM_ACTIVITIES_DESKTOP_WINDOW
+                                        + HISTOGRAM_NUM_ACTIVITIES_DESKTOP_WINDOW_EXISTING_INSTANCE_SUFFIX)
+                        .expectNoRecords(
+                                HISTOGRAM_NUM_ACTIVITIES_DESKTOP_WINDOW
+                                        + HISTOGRAM_NUM_ACTIVITIES_DESKTOP_WINDOW_NEW_INSTANCE_SUFFIX)
+                        .build();
+        var desktopWindowStateProvider = mock(DesktopWindowStateProvider.class);
+        var appHeaderState = mock(AppHeaderState.class);
+        when(desktopWindowStateProvider.getAppHeaderState()).thenReturn(appHeaderState);
+        when(appHeaderState.isInDesktopWindow()).thenReturn(false);
+
+        // Assume that the histogram is attempted to be recorded on a cold start of the app, not in
+        // a desktop window.
+        MultiWindowUtils.maybeRecordDesktopWindowActivityCountHistogram(
+                desktopWindowStateProvider,
+                InstanceAllocationType.NEW_INSTANCE_NEW_TASK,
+                /* isColdStart= */ true);
+
+        // Histogram should not be emitted.
+        watcher.assertExpected();
     }
 
     private void writeInstanceInfo(
