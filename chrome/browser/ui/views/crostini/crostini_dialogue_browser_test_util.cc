@@ -13,7 +13,6 @@
 #include "chrome/browser/ash/crostini/fake_crostini_features.h"
 #include "chrome/browser/browser_process.h"
 #include "chrome/browser/chrome_browser_main.h"
-#include "chrome/browser/chrome_browser_main_extra_parts.h"
 #include "chrome/browser/ui/browser.h"
 #include "chrome/common/chrome_features.h"
 #include "components/component_updater/ash/fake_component_manager_ash.h"

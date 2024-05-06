@@ -15,6 +15,7 @@ static_library("profiling_host") {
   deps = [
     "//base",
     "//chrome/browser:browser_process",
+    "//chrome/browser:main_extra_parts",
     "//chrome/browser/profiles:profile",
     "//chrome/common:non_code_constants",
     "//components/heap_profiling/multi_process",

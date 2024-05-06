@@ -6421,6 +6421,7 @@ static_library("ui") {
       ":webui_name_variants",
       "side_search:side_search_tab_data_proto",
       "//base",
+      "//chrome/browser:main_extra_parts",
       "//chrome/browser/accessibility:utils",
       "//chrome/browser/apps:icon_standardizer",
       "//chrome/browser/promos:utils",

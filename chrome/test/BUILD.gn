@@ -126,7 +126,10 @@ static_library("chrome_test_launcher") {
     "base/chrome_test_launcher.h",
   ]
 
-  deps = [ ":test_support" ]
+  deps = [
+    ":test_support",
+    "//chrome/browser:main_extra_parts",
+  ]
 
   if (is_mac) {
     deps += [ "//chrome/app_shim" ]
@@ -1706,6 +1709,7 @@ if (!is_android) {
       "//chrome/browser",
       "//chrome/browser:browser_themes",
       "//chrome/browser:buildflags",
+      "//chrome/browser:main_extra_parts",
       "//chrome/browser:theme_properties",
       "//chrome/browser/accessibility:test_support",
       "//chrome/browser/accessibility:utils",
@@ -5548,7 +5552,10 @@ if (!is_android) {
         "../browser/ui/views/supervised_user/parent_permission_dialog_view_browsertest.cc",
         "../browser/ui/views/supervised_user/parent_permission_extension_flow_view_browsertest.cc",
       ]
-      deps += [ "../browser/enterprise/connectors/test:test_support" ]
+      deps += [
+        "../browser/enterprise/connectors/test:test_support",
+        "//chrome/browser:main_extra_parts",
+      ]
     }
 
     # Extension approvals tests for Desktop (including ChromeOS) platforms.
@@ -5749,6 +5756,7 @@ if (is_chromeos_lacros) {
       ":test_support_ui",
       ":webrtc_browser_tests_base",
       "//chrome/app:command_ids",
+      "//chrome/browser:main_extra_parts",
       "//chrome/browser/accessibility:test_support",
       "//chrome/browser/apps/app_service",
       "//chrome/browser/apps/app_service:app_registry_cache_waiter",
@@ -10644,6 +10652,7 @@ if (!is_android) {
       "//chrome/app:command_ids",
       "//chrome/browser",
       "//chrome/browser:browser_process",
+      "//chrome/browser:main_extra_parts",
       "//chrome/browser/apps/app_service",
       "//chrome/browser/apps/app_service:app_registry_cache_waiter",
       "//chrome/browser/apps/app_service/app_icon",
@@ -11089,6 +11098,7 @@ if (!is_android && !is_chromeos_device) {
       "//chrome/app:command_ids",
       "//chrome/browser",
       "//chrome/browser:buildflags",
+      "//chrome/browser:main_extra_parts",
       "//chrome/browser:unexpire_flags",
       "//chrome/browser/apps/app_service",
       "//chrome/browser/apps/app_service:app_registry_cache_waiter",
@@ -12717,6 +12727,7 @@ if (is_chromeos) {
       ]
       deps += [
         "//ash:test_support",
+        "//chrome/browser:main_extra_parts",
         "//chrome/browser/ash/crosapi",
         "//chrome/browser/ash/crosapi:test_support",
         "//chromeos/services/machine_learning/public/cpp:stub",
@@ -12748,6 +12759,8 @@ if (is_chromeos) {
         "base/chromeos/test_lacros_chrome_browser_main_extra_parts.h",
       ]
       deps += [
+        "//chrome/browser:main_extra_parts",
+
         # For StandaloneBrowserTestController.
         "//chrome/browser/apps/app_service",
         "//chrome/browser/extensions:test_support",
