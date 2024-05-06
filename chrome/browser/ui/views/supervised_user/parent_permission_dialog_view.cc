@@ -52,7 +52,6 @@
 #include "ui/gfx/color_palette.h"
 #include "ui/gfx/geometry/insets.h"
 #include "ui/gfx/image/image_skia.h"
-#include "ui/views/accessibility/view_accessibility.h"
 #include "ui/views/border.h"
 #include "ui/views/bubble/bubble_frame_view.h"
 #include "ui/views/controls/button/radio_button.h"
@@ -80,11 +79,7 @@ class MaybeEmptyLabel : public views::Label {
 
  public:
   MaybeEmptyLabel(const std::string& text, const CustomFont& font)
-      : views::Label(base::UTF8ToUTF16(text), font) {
-    // Set the role to kAlert as this is required for
-    // sending accessibility notification alerts.
-    GetViewAccessibility().SetRole(ax::mojom::Role::kAlert);
-  }
+      : views::Label(base::UTF8ToUTF16(text), font) {}
 
   MaybeEmptyLabel& operator=(const MaybeEmptyLabel&) = delete;
   MaybeEmptyLabel(const MaybeEmptyLabel&) = delete;
@@ -98,6 +93,10 @@ class MaybeEmptyLabel : public views::Label {
     } else {
       node_data->SetNameExplicitlyEmpty();
     }
+
+    // Set the role to kAlert as this is required for
+    // sending accessibility notification alerts.
+    node_data->role = ax::mojom::Role::kAlert;
   }
 };
 
