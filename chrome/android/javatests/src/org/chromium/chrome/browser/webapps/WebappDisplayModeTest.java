@@ -20,6 +20,7 @@ import org.junit.runner.RunWith;
 import org.chromium.base.test.util.Batch;
 import org.chromium.base.test.util.CommandLineFlags;
 import org.chromium.base.test.util.CriteriaHelper;
+import org.chromium.base.test.util.DisableIf;
 import org.chromium.base.test.util.Feature;
 import org.chromium.base.test.util.Restriction;
 import org.chromium.blink.mojom.DisplayMode;
@@ -32,6 +33,7 @@ import org.chromium.chrome.test.util.browser.webapps.WebappTestPage;
 import org.chromium.content_public.browser.WebContents;
 import org.chromium.content_public.browser.test.util.JavaScriptUtils;
 import org.chromium.content_public.browser.test.util.TouchCommon;
+import org.chromium.ui.test.util.UiDisableIf;
 import org.chromium.ui.test.util.UiRestriction;
 
 import java.util.concurrent.TimeoutException;
@@ -59,6 +61,7 @@ public class WebappDisplayModeTest {
 
     @Test
     @SmallTest
+    @DisableIf.Device(type = {UiDisableIf.TABLET}) // https://crbug.com/339000434
     @Feature({"Webapps"})
     public void testFullScreen() {
         WebappActivity activity = startActivity(DisplayMode.FULLSCREEN, "");
@@ -69,6 +72,7 @@ public class WebappDisplayModeTest {
 
     @Test
     @MediumTest
+    @DisableIf.Device(type = {UiDisableIf.TABLET}) // https://crbug.com/339000434
     @Feature({"Webapps"})
     public void testFullScreenInFullscreen() {
         WebappActivity activity = startActivity(DisplayMode.FULLSCREEN, "fullscreen_on_click");
