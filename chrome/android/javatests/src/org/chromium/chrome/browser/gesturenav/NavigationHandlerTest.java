@@ -24,6 +24,7 @@ import org.chromium.base.FeatureList;
 import org.chromium.base.test.util.CommandLineFlags;
 import org.chromium.base.test.util.Criteria;
 import org.chromium.base.test.util.CriteriaHelper;
+import org.chromium.base.test.util.DisableIf;
 import org.chromium.base.test.util.DisabledTest;
 import org.chromium.base.test.util.HistogramWatcher;
 import org.chromium.base.test.util.Restriction;
@@ -46,6 +47,7 @@ import org.chromium.content_public.browser.test.util.TestThreadUtils;
 import org.chromium.content_public.common.ContentUrlConstants;
 import org.chromium.net.test.EmbeddedTestServer;
 import org.chromium.ui.base.PageTransition;
+import org.chromium.ui.test.util.UiDisableIf;
 import org.chromium.ui.test.util.UiRestriction;
 
 import java.util.Map;
@@ -126,6 +128,7 @@ public class NavigationHandlerTest {
 
     @Test
     @SmallTest
+    @DisableIf.Device(type = {UiDisableIf.TABLET}) // https://crbug.com/338972492
     public void testCloseChromeAtHistoryStackHead() {
         loadNewTabPage();
         AsyncInitializationActivity.interceptMoveTaskToBackForTesting();
@@ -172,6 +175,7 @@ public class NavigationHandlerTest {
 
     @Test
     @SmallTest
+    @DisableIf.Device(type = {UiDisableIf.TABLET}) // https://crbug.com/338972492
     public void testSwipeNavigateOnNativePage() {
         HistogramWatcher histogramWatcher =
                 HistogramWatcher.newBuilder()
