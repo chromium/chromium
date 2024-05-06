@@ -337,6 +337,15 @@
     width: auto;
   }
 
+  select option {
+    --md-select-option-bg-color: var(--results-background_);
+    color: var(--compose-result-text-color);
+  }
+
+  select option:disabled {
+    color: var(--color-compose-dialog-select-option-disabled);
+  }
+
   :host([enable-ui-refinements]) #resultOptions .md-select {
     --md-select-side-padding: 8px;
     min-height: 24px;
