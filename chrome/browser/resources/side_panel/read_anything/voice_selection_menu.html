@@ -73,7 +73,8 @@
 <cr-lazy-render id="voiceSelectionMenu">
   <template>
     <cr-action-menu on-close="onClose_" on-keydown="onVoiceMenuKeyDown_"
-        accessibility-label="$i18n{voiceSelectionLabel}">
+        accessibility-label="$i18n{voiceSelectionLabel}"
+        role-description="$i18n{menu}">
       <template is="dom-repeat"
                 items="[[downloadingMessages_]]"
                 initial-count="0">
