@@ -525,16 +525,6 @@ chromium-metrics-reviews@google.com.
   <int value="2" label="keyboardUnlock()"/>
 </enum>
 
-<enum name="NQEEffectiveConnectionType">
-  <int value="0" label="Unknown"/>
-  <int value="1" label="Offline"/>
-  <int value="2" label="Slow 2G"/>
-  <int value="3" label="2G"/>
-  <int value="4" label="3G"/>
-  <int value="5" label="4G"/>
-  <int value="6" label="(Obsolete) Broadband. Deprecated as of 01/2017."/>
-</enum>
-
 <enum name="RaceTaskPriority">
   <int value="0" label="LowerPriority"/>
   <int value="1" label="NormalPriority"/>

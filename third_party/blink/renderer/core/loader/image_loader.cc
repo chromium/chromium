@@ -566,7 +566,6 @@ void ImageLoader::DoUpdateFromElement(const DOMWrapperWorld* world,
           lazy_image_load_state_ != LazyImageLoadState::kFullImage) {
         if (auto* html_image = DynamicTo<HTMLImageElement>(GetElement())) {
           if (LazyImageHelper::ShouldDeferImageLoad(*frame, html_image)) {
-            LazyImageHelper::StartMonitoringVisibilityMetrics(html_image);
             lazy_image_load_state_ = LazyImageLoadState::kDeferred;
             params.SetLazyImageDeferred();
           }

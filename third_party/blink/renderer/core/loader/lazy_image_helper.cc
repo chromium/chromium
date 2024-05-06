@@ -94,15 +94,6 @@ bool LazyImageHelper::ShouldDeferImageLoad(LocalFrame& frame,
   return true;
 }
 
-// static
-void LazyImageHelper::StartMonitoringVisibilityMetrics(
-    HTMLImageElement* html_image) {
-  if (Document* root_document = GetRootDocumentOrNull(html_image)) {
-    root_document->EnsureLazyLoadImageObserver().StartMonitoringVisibility(
-        root_document, html_image);
-  }
-}
-
 void LazyImageHelper::RecordMetricsOnLoadFinished(
     HTMLImageElement* image_element) {
   // TODO(pdr): We should only report metrics for images that were actually lazy
@@ -125,8 +116,6 @@ void LazyImageHelper::RecordMetricsOnLoadFinished(
                             response_size);
     }
   }
-
-  root_document->EnsureLazyLoadImageObserver().OnLoadFinished(image_element);
 }
 
 }  // namespace blink

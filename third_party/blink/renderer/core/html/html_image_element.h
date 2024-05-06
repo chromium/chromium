@@ -34,7 +34,6 @@
 #include "third_party/blink/renderer/core/html/forms/form_associated.h"
 #include "third_party/blink/renderer/core/html/html_element.h"
 #include "third_party/blink/renderer/core/html/html_image_loader.h"
-#include "third_party/blink/renderer/core/html/lazy_load_image_observer.h"
 #include "third_party/blink/renderer/core/resize_observer/resize_observer.h"
 #include "third_party/blink/renderer/platform/graphics/graphics_types.h"
 #include "third_party/blink/renderer/platform/graphics/image_orientation.h"
@@ -160,15 +159,6 @@ class CORE_EXPORT HTMLImageElement
   void AssociateWith(HTMLFormElement*) override;
 
   bool ElementCreatedByParser() const { return element_created_by_parser_; }
-
-  LazyLoadImageObserver::VisibleLoadTimeMetrics&
-  EnsureVisibleLoadTimeMetrics() {
-    if (!visible_load_time_metrics_) {
-      visible_load_time_metrics_ =
-          std::make_unique<LazyLoadImageObserver::VisibleLoadTimeMetrics>();
-    }
-    return *visible_load_time_metrics_;
-  }
 
   // Updates if any optimized image policy is violated. When any policy is
   // violated, the image should be rendered as a placeholder image.
@@ -304,9 +294,6 @@ class CORE_EXPORT HTMLImageElement
   bool is_predicted_lcp_element_ : 1;
 
   HashSet<String> creator_scripts_;
-
-  std::unique_ptr<LazyLoadImageObserver::VisibleLoadTimeMetrics>
-      visible_load_time_metrics_;
 
   bool image_ad_use_counter_recorded_ = false;
 

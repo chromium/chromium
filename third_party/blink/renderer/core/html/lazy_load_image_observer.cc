@@ -6,9 +6,6 @@
 
 #include <limits>
 
-#include "base/metrics/histogram_functions.h"
-#include "base/metrics/histogram_macros.h"
-#include "base/strings/strcat.h"
 #include "third_party/blink/public/platform/web_effective_connection_type.h"
 #include "third_party/blink/renderer/core/dom/document.h"
 #include "third_party/blink/renderer/core/dom/element.h"
@@ -49,66 +46,6 @@ bool IsElementInInvisibleSubTree(const Element& element) {
     }
   }
   return false;
-}
-
-void RecordVisibleLoadTimeForImage(
-    const LazyLoadImageObserver::VisibleLoadTimeMetrics&
-        visible_load_time_metrics) {
-  DCHECK(visible_load_time_metrics.has_initial_intersection_been_set);
-  DCHECK(!visible_load_time_metrics.time_when_first_visible.is_null());
-  DCHECK(!visible_load_time_metrics.time_when_first_load_finished.is_null());
-
-  base::TimeDelta visible_load_delay =
-      visible_load_time_metrics.time_when_first_load_finished -
-      visible_load_time_metrics.time_when_first_visible;
-  if (visible_load_delay.is_negative())
-    visible_load_delay = base::TimeDelta();
-
-  UMA_HISTOGRAM_MEDIUM_TIMES("Blink.VisibleLoadTime.LazyLoadImages",
-                             visible_load_delay);
-
-  if (visible_load_time_metrics.is_initially_intersecting) {
-    UMA_HISTOGRAM_MEDIUM_TIMES(
-        "Blink.VisibleLoadTime.LazyLoadImages.AboveTheFold3",
-        visible_load_delay);
-  } else {
-    UMA_HISTOGRAM_MEDIUM_TIMES(
-        "Blink.VisibleLoadTime.LazyLoadImages.BelowTheFold3",
-        visible_load_delay);
-  }
-
-  const char* network_type;
-  switch (GetNetworkStateNotifier().EffectiveType()) {
-    case WebEffectiveConnectionType::kTypeSlow2G:
-      network_type = "Slow2G";
-      break;
-    case WebEffectiveConnectionType::kType2G:
-      network_type = "2G";
-      break;
-    case WebEffectiveConnectionType::kType3G:
-      network_type = "3G";
-      break;
-    case WebEffectiveConnectionType::kType4G:
-      network_type = "4G";
-      break;
-    case WebEffectiveConnectionType::kTypeOffline:
-      network_type = "Offline";
-      break;
-    case WebEffectiveConnectionType::kTypeUnknown:
-      network_type = "Unknown";
-      break;
-    default:
-      NOTREACHED();
-  }
-
-  std::string uma_name = base::StrCat(
-      {"Blink.VisibleLoadTime.LazyLoadImages.",
-       visible_load_time_metrics.is_initially_intersecting ? "Above" : "Below",
-       "TheFold3.", network_type});
-  // Custom histogram times are used to exactly match the macro parameters of
-  // `UMA_HISTOGRAM_MEDIUM_TIMES` which is used for other metrics the area.
-  UmaHistogramCustomTimes(uma_name, visible_load_delay, base::Milliseconds(10),
-                          base::Minutes(3), 50);
 }
 
 bool IsDescendantOrSameDocument(Document& subject, Document& root) {
@@ -219,98 +156,8 @@ void LazyLoadImageObserver::LoadIfNearViewport(
   }
 }
 
-void LazyLoadImageObserver::StartMonitoringVisibility(
-    Document* root_document,
-    HTMLImageElement* image_element) {
-  VisibleLoadTimeMetrics& visible_load_time_metrics =
-      image_element->EnsureVisibleLoadTimeMetrics();
-  if (!visible_load_time_metrics.time_when_first_visible.is_null()) {
-    // The time when the image first became visible has already been measured,
-    // so there's no need to monitor the visibility of the image any more.
-    return;
-  }
-  if (!visibility_metrics_observer_) {
-    visibility_metrics_observer_ = IntersectionObserver::Create(
-        *root_document,
-        WTF::BindRepeating(&LazyLoadImageObserver::OnVisibilityChanged,
-                           WrapWeakPersistent(this)),
-        LocalFrameUkmAggregator::kLazyLoadIntersectionObserver,
-        IntersectionObserver::Params{
-            .thresholds = {std::numeric_limits<float>::min()},
-            .needs_initial_observation_with_detached_target = false,
-        });
-  }
-  visibility_metrics_observer_->observe(image_element);
-}
-
-void LazyLoadImageObserver::OnLoadFinished(HTMLImageElement* image_element) {
-  VisibleLoadTimeMetrics& visible_load_time_metrics =
-      image_element->EnsureVisibleLoadTimeMetrics();
-
-  if (!visible_load_time_metrics.time_when_first_load_finished.is_null())
-    return;
-  visible_load_time_metrics.time_when_first_load_finished =
-      base::TimeTicks::Now();
-
-  if (visible_load_time_metrics.time_when_first_visible.is_null())
-    return;
-
-  RecordVisibleLoadTimeForImage(visible_load_time_metrics);
-}
-
-void LazyLoadImageObserver::OnVisibilityChanged(
-    const HeapVector<Member<IntersectionObserverEntry>>& entries) {
-  DCHECK(!entries.empty());
-
-  for (auto entry : entries) {
-    auto* image_element = DynamicTo<HTMLImageElement>(entry->target());
-    if (!image_element)
-      continue;
-
-    VisibleLoadTimeMetrics& visible_load_time_metrics =
-        image_element->EnsureVisibleLoadTimeMetrics();
-    // The image's visiblity shouldn't still be monitored if the time when the
-    // image first became visible has already been measured.
-    if (!visible_load_time_metrics.time_when_first_visible.is_null()) {
-      visibility_metrics_observer_->unobserve(image_element);
-      continue;
-    }
-
-    if (!visible_load_time_metrics.has_initial_intersection_been_set) {
-      visible_load_time_metrics.has_initial_intersection_been_set = true;
-      visible_load_time_metrics.is_initially_intersecting =
-          entry->isIntersecting();
-    }
-    if (!entry->isIntersecting())
-      continue;
-
-    visible_load_time_metrics.time_when_first_visible = base::TimeTicks::Now();
-    if (visible_load_time_metrics.time_when_first_load_finished.is_null()) {
-      // Note: If the WebEffectiveConnectionType enum ever gets out of sync
-      // with mojom::blink::EffectiveConnectionType, then both the AboveTheFold
-      // and BelowTheFold histograms here will have to be updated to record the
-      // sample in terms of mojom::blink::EffectiveConnectionType instead of
-      // WebEffectiveConnectionType.
-      if (visible_load_time_metrics.is_initially_intersecting) {
-        UMA_HISTOGRAM_ENUMERATION(
-            "Blink.VisibleBeforeLoaded.LazyLoadImages.AboveTheFold3",
-            GetNetworkStateNotifier().EffectiveType());
-      } else {
-        UMA_HISTOGRAM_ENUMERATION(
-            "Blink.VisibleBeforeLoaded.LazyLoadImages.BelowTheFold3",
-            GetNetworkStateNotifier().EffectiveType());
-      }
-    } else {
-      RecordVisibleLoadTimeForImage(visible_load_time_metrics);
-    }
-
-    visibility_metrics_observer_->unobserve(image_element);
-  }
-}
-
 void LazyLoadImageObserver::Trace(Visitor* visitor) const {
   visitor->Trace(lazy_load_intersection_observer_);
-  visitor->Trace(visibility_metrics_observer_);
 }
 
 int LazyLoadImageObserver::GetLazyLoadingImageMarginPx(
