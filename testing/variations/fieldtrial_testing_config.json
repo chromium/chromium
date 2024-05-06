@@ -21838,6 +21838,24 @@
             ]
         }
     ],
+    "WaitForAccountCapabilitiesInSigninIntercept": [
+        {
+            "platforms": [
+                "linux",
+                "mac",
+                "windows"
+            ],
+            "experiments": [
+                {
+                    "name": "WaitForCapabilitiesWithPreconnect_20240503",
+                    "enable_features": [
+                        "CustomWebSignInInterceptForSupervisedUsers",
+                        "PreconnectAccountCapabilitiesPostSignin"
+                    ]
+                }
+            ]
+        }
+    ],
     "WaitUntilAccessTokenAvailableForClassifyUrl": [
         {
             "platforms": [
