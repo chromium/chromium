@@ -6,18 +6,18 @@ from .chrome import executor_kwargs as chrome_executor_kwargs
 from ..executors.executorwebdriver import WebDriverCrashtestExecutor  # noqa: F401
 from ..executors.base import WdspecExecutor  # noqa: F401
 from ..executors.executoredge import (  # noqa: F401
-    EdgeChromiumDriverPrintRefTestExecutor,
-    EdgeChromiumDriverRefTestExecutor,
-    EdgeChromiumDriverTestharnessExecutor,
+    EdgeDriverPrintRefTestExecutor,
+    EdgeDriverRefTestExecutor,
+    EdgeDriverTestharnessExecutor,
 )
 
 
-__wptrunner__ = {"product": "edgechromium",
+__wptrunner__ = {"product": "edge",
                  "check_args": "check_args",
-                 "browser": "EdgeChromiumBrowser",
-                 "executor": {"testharness": "EdgeChromiumDriverTestharnessExecutor",
-                              "reftest": "EdgeChromiumDriverRefTestExecutor",
-                              "print-reftest": "EdgeChromiumDriverPrintRefTestExecutor",
+                 "browser": "EdgeBrowser",
+                 "executor": {"testharness": "EdgeDriverTestharnessExecutor",
+                              "reftest": "EdgeDriverRefTestExecutor",
+                              "print-reftest": "EdgeDriverPrintRefTestExecutor",
                               "wdspec": "WdspecExecutor",
                               "crashtest": "WebDriverCrashtestExecutor"},
                  "browser_kwargs": "browser_kwargs",
@@ -58,9 +58,9 @@ def update_properties():
     return (["debug", "os", "processor"], {"os": ["version"], "processor": ["bits"]})
 
 
-class EdgeChromiumBrowser(WebDriverBrowser):
+class EdgeBrowser(WebDriverBrowser):
     """MicrosoftEdge is backed by MSEdgeDriver, which is supplied through
-    ``wptrunner.webdriver.EdgeChromiumDriverServer``.
+    ``wptrunner.webdriver.EdgeDriverServer``.
     """
 
     def make_command(self):
