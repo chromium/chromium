@@ -95,6 +95,12 @@ std::vector<CrtcConnectorPairs> BuildCrtcConnectorPermutations(
 
   return permutations;
 }
+
+// Constants for parsing CTM values.
+constexpr uint64_t kCtmSignMask = (1ull << 63);
+constexpr uint64_t kCtmValueMask = ~(1ull << 63);
+constexpr float kCtmValueScale = static_cast<float>(1ull << 32);
+
 }  // namespace
 
 ControllerConfigParams::ControllerConfigParams(
@@ -201,6 +207,25 @@ ScopedDrmColorLutPtr CreateLutBlob(const display::GammaCurve& source,
   return lut;
 }
 
+bool ParseLutBlob(const void* data, size_t size, display::GammaCurve& result) {
+  // LUT blobs are an array of drm_color_lut entries, and so the size of the
+  // blob must be a multiple of the size of drm_color_lut.
+  if (size % sizeof(drm_color_lut) != 0) {
+    LOG(ERROR) << "Invalid size for LUT blob.";
+    return false;
+  }
+  size_t entry_count = size / sizeof(drm_color_lut);
+  const drm_color_lut* entries = reinterpret_cast<const drm_color_lut*>(data);
+  std::vector<display::GammaRampRGBEntry> lut(entry_count);
+  for (size_t i = 0; i < entry_count; ++i) {
+    lut[i].r = entries[i].red;
+    lut[i].g = entries[i].green;
+    lut[i].b = entries[i].blue;
+  }
+  result = display::GammaCurve(lut);
+  return true;
+}
+
 ScopedDrmColorCtmPtr CreateCTMBlob(const skcms_Matrix3x3& color_matrix,
                                    bool negative_values_broken) {
   ScopedDrmColorCtmPtr ctm(
@@ -211,14 +236,32 @@ ScopedDrmColorCtmPtr CreateCTMBlob(const skcms_Matrix3x3& color_matrix,
       if (negative_values_broken) {
         ctm->matrix[i] = 0;
       } else {
-        ctm->matrix[i] = static_cast<uint64_t>(-value * (1ull << 32));
-        ctm->matrix[i] |= static_cast<uint64_t>(1) << 63;
+        ctm->matrix[i] =
+            static_cast<uint64_t>(-value * kCtmValueScale) & kCtmValueMask;
+        ctm->matrix[i] |= kCtmSignMask;
       }
     } else {
-      ctm->matrix[i] = static_cast<uint64_t>(value * (1ull << 32));
+      ctm->matrix[i] =
+          static_cast<uint64_t>(value * kCtmValueScale) & kCtmValueMask;
     }
   }
   return ctm;
+}
+
+bool ParseCTMBlob(const void* data, size_t size, skcms_Matrix3x3& result) {
+  // CTM blobs must contain exactly 9 (3x3) numbers which are encoded in
+  // uint64_ts.
+  if (size != 9 * sizeof(uint64_t)) {
+    LOG(ERROR) << "Invalid size for CTM blob.";
+    return false;
+  }
+  const uint64_t* data_u64 = reinterpret_cast<const uint64_t*>(data);
+  for (size_t i = 0; i < 9; ++i) {
+    float sign = (data_u64[i] & kCtmSignMask) ? -1.f : 1.f;
+    float value = (data_u64[i] & kCtmValueMask) / kCtmValueScale;
+    result.vals[i / 3][i % 3] = sign * value;
+  }
+  return true;
 }
 
 ScopedDrmModeRectPtr CreateDCBlob(const gfx::Rect& rect) {
@@ -289,4 +332,59 @@ std::vector<CrtcConnectorPairs> GetAllCrtcConnectorPermutations(
 
   return permutations;
 }
+
+void ApplyCrtcColorSpaceConversion(DrmWrapper* drm,
+                                   uint32_t crtc_id,
+                                   float rgb[3]) {
+  // Look up all properties on this CRTC and create a helper lambda to look up
+  // their blobs.
+  ScopedDrmObjectPropertyPtr props(
+      drm->GetObjectProperties(crtc_id, DRM_MODE_OBJECT_CRTC));
+  if (!props) {
+    return;
+  }
+  auto get_blob_by_name = [&](const char* name) {
+    DrmDevice::Property property;
+    if (!GetDrmPropertyForName(drm, props.get(), name, &property)) {
+      return ScopedDrmPropertyBlobPtr(nullptr);
+    }
+    return drm->GetPropertyBlob(property.value);
+  };
+
+  // Apply DEGAMMA.
+  ScopedDrmPropertyBlobPtr degamma_blob = get_blob_by_name("DEGAMMA_LUT");
+  if (degamma_blob) {
+    display::GammaCurve curve;
+    if (ParseLutBlob(degamma_blob->data, degamma_blob->length, curve)) {
+      curve.Evaluate(rgb);
+    }
+  }
+
+  // Apply CTM.
+  ScopedDrmPropertyBlobPtr ctm_blob = get_blob_by_name("CTM");
+  if (ctm_blob) {
+    skcms_Matrix3x3 ctm;
+    if (ParseCTMBlob(ctm_blob->data, ctm_blob->length, ctm)) {
+      float temp[3] = {0, 0, 0};
+      for (int i = 0; i < 3; ++i) {
+        for (int j = 0; j < 3; ++j) {
+          temp[i] += ctm.vals[i][j] * rgb[j];
+        }
+      }
+      for (int i = 0; i < 3; ++i) {
+        rgb[i] = temp[i];
+      }
+    }
+  }
+
+  // Apply GAMMA.
+  ScopedDrmPropertyBlobPtr gamma_blob = get_blob_by_name("GAMMA_LUT");
+  if (gamma_blob) {
+    display::GammaCurve curve;
+    if (ParseLutBlob(gamma_blob->data, gamma_blob->length, curve)) {
+      curve.Evaluate(rgb);
+    }
+  }
+}
+
 }  // namespace ui

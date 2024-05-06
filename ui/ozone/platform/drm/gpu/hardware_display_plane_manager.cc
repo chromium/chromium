@@ -42,9 +42,6 @@ gfx::Rect OverlayPlaneToDrmSrcRect(const DrmOverlayPlane& plane) {
                    crop_rect.width() << 16, crop_rect.height() << 16);
 }
 
-// TODO(b/335542790): The values that are written to the CTM blob are not
-// tested, and so the values written by this function are also not tested.
-// Add tests for these.
 skcms_Matrix3x3 PlaneToOutputMatrix(
     const HardwareDisplayPlaneManager::CrtcState& crtc_state) {
   skcms_Matrix3x3 plane_to_xyzd50;

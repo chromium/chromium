@@ -67,11 +67,17 @@ bool AddPropertyIfValid(drmModeAtomicReq* property_set,
 ScopedDrmColorLutPtr CreateLutBlob(const display::GammaCurve& source,
                                    size_t size);
 
+// Parse a Lut blob to retrieve a display::GammaCurve.
+bool ParseLutBlob(const void* data, size_t size, display::GammaCurve& result);
+
 // Converts |color_matrix| to a drm_color_ctm in U31.32 format where the most
 // significant bit is the sign. If `negative_values_broken` is true, then
 // clamp all negative values to 0.
 ScopedDrmColorCtmPtr CreateCTMBlob(const skcms_Matrix3x3& color_matrix,
                                    bool negative_values_broken);
+
+// Parse a CTM blob to retrieve a skcms_Matrix3x3.
+bool ParseCTMBlob(const void* data, size_t size, skcms_Matrix3x3& result);
 
 // Creates a FB Damage Clip Blob
 ScopedDrmModeRectPtr CreateDCBlob(const gfx::Rect& rect);
@@ -92,6 +98,12 @@ void DrmWriteIntoTraceHelper(const drmModeModeInfo& mode_info,
 std::vector<CrtcConnectorPairs> GetAllCrtcConnectorPermutations(
     const DrmDevice& drm,
     const std::vector<ControllerConfigParams>& controllers_params);
+
+// Apply the color space conversion of `crtc_id` in-place on the specified RGB
+// triple.
+void ApplyCrtcColorSpaceConversion(DrmWrapper* drm,
+                                   uint32_t crtc_id,
+                                   float rgb[3]);
 
 }  // namespace ui
 

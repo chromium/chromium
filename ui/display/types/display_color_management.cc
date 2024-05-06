@@ -143,6 +143,12 @@ void GammaCurve::Evaluate(float x,
   out_b = static_cast<uint16_t>(std::round(65535.f * b));
 }
 
+void GammaCurve::Evaluate(float rgb[3]) const {
+  for (size_t c = 0; c < 3; ++c) {
+    rgb[c] = Evaluate(rgb[c], c);
+  }
+}
+
 std::string GammaCurve::ToString() const {
   std::string str = "[";
   for (size_t i = 0; i < lut_.size(); ++i) {

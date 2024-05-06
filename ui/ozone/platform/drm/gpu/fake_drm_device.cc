@@ -754,6 +754,8 @@ bool FakeDrmDevice::SetObjectProperty(uint32_t object_id,
                                       uint32_t object_type,
                                       uint32_t property_id,
                                       uint32_t property_value) {
+  UpdateProperty(object_id, property_id, property_value,
+                 /*add_property_if_needed=*/false);
   set_object_property_count_++;
   return true;
 }

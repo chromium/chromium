@@ -1084,7 +1084,9 @@ TEST_P(HardwareDisplayPlaneManagerTest, ColorManagement_Profile) {
   }
 }
 
-TEST_P(HardwareDisplayPlaneManagerTest, ColorManagement_CtmColorManagement) {
+// The effect of color temperature adjustment (night light) on the CTM.
+TEST_P(HardwareDisplayPlaneManagerTest,
+       CtmColorManagement_ColorTemperatureAdjustment) {
   base::test::ScopedFeatureList scoped_feature_list;
   scoped_feature_list.InitWithFeatures({display::features::kCtmColorManagement},
                                        {});
@@ -1092,38 +1094,261 @@ TEST_P(HardwareDisplayPlaneManagerTest, ColorManagement_CtmColorManagement) {
   fake_drm_->ResetStateWithDefaultObjects(
       /*crtc_count=*/1, /*planes_per_crtc=*/1);
 
+  uint32_t crtc_id = fake_drm_->crtc_property(0).id;
+
   // This test has full CTM, DEGAMMA, and GAMMA.
-  fake_drm_->AddProperty(fake_drm_->crtc_property(0).id,
-                         {.id = kCtmPropId, .value = 0});
-  fake_drm_->AddProperty(fake_drm_->crtc_property(0).id,
-                         {.id = kDegammaLutSizePropId, .value = 1});
-  fake_drm_->AddProperty(fake_drm_->crtc_property(0).id,
-                         {.id = kDegammaLutPropId, .value = 0});
-  fake_drm_->AddProperty(fake_drm_->crtc_property(0).id,
-                         {.id = kGammaLutSizePropId, .value = 1});
-  fake_drm_->AddProperty(fake_drm_->crtc_property(0).id,
-                         {.id = kGammaLutPropId, .value = 0});
+  fake_drm_->AddProperty(crtc_id, {.id = kCtmPropId, .value = 0});
+  fake_drm_->AddProperty(crtc_id, {.id = kDegammaLutSizePropId, .value = 33});
+  fake_drm_->AddProperty(crtc_id, {.id = kDegammaLutPropId, .value = 0});
+  fake_drm_->AddProperty(crtc_id, {.id = kGammaLutSizePropId, .value = 33});
+  fake_drm_->AddProperty(crtc_id, {.id = kGammaLutPropId, .value = 0});
 
   // Color profile change will set all properties.
   fake_drm_->InitializeState(use_atomic_);
 
-  fake_drm_->plane_manager()->SetOutputColorSpace(
-      fake_drm_->crtc_property(0).id, SkNamedPrimariesExt::kP3);
-  fake_drm_->plane_manager()->SetColorSpaceForAllPlanes(
-      fake_drm_->crtc_property(0).id, SkNamedPrimariesExt::kRec2020);
+  // Apply color temperature adjustment. The CTM should be updated
+  // immediately.
+  display::ColorTemperatureAdjustment cta;
+  cta.srgb_matrix.vals[0][0] = 0.1f;
+  cta.srgb_matrix.vals[1][1] = 0.2f;
+  cta.srgb_matrix.vals[2][2] = 0.3f;
+  fake_drm_->plane_manager()->SetColorTemperatureAdjustment(
+      fake_drm_->crtc_property(0).id, cta);
 
-  if (use_atomic_) {
-    // We should not have committed the CTM yet.
-    EXPECT_EQ(0, fake_drm_->get_commit_count());
-    EXPECT_EQ(0u, GetCrtcPropertyValue(fake_drm_->crtc_property(0).id, "CTM"));
+  {
+    constexpr float kEpsilon = 0.001f;
+    float rgb[3] = {0.4f, 0.5f, 0.6f};
+    ApplyCrtcColorSpaceConversion(fake_drm_.get(), crtc_id, rgb);
+    EXPECT_NEAR(rgb[0], 0.1f * 0.4f, kEpsilon);
+    EXPECT_NEAR(rgb[1], 0.2f * 0.5f, kEpsilon);
+    EXPECT_NEAR(rgb[2], 0.3f * 0.6f, kEpsilon);
+  }
+}
 
-    // The CTM commit should happen at flip time.
+// The effect of gamma adjustment on the CTM.
+TEST_P(HardwareDisplayPlaneManagerTest, CtmColorManagement_GammaAdjustment) {
+  base::test::ScopedFeatureList scoped_feature_list;
+  scoped_feature_list.InitWithFeatures({display::features::kCtmColorManagement},
+                                       {});
+
+  fake_drm_->ResetStateWithDefaultObjects(
+      /*crtc_count=*/1, /*planes_per_crtc=*/1);
+
+  uint32_t crtc_id = fake_drm_->crtc_property(0).id;
+
+  // This test has full CTM, DEGAMMA, and GAMMA.
+  fake_drm_->AddProperty(crtc_id, {.id = kCtmPropId, .value = 0});
+  fake_drm_->AddProperty(crtc_id, {.id = kDegammaLutSizePropId, .value = 33});
+  fake_drm_->AddProperty(crtc_id, {.id = kDegammaLutPropId, .value = 0});
+  fake_drm_->AddProperty(crtc_id, {.id = kGammaLutSizePropId, .value = 33});
+  fake_drm_->AddProperty(crtc_id, {.id = kGammaLutPropId, .value = 0});
+
+  // Color profile change will set all properties.
+  fake_drm_->InitializeState(use_atomic_);
+
+  // Apply gamma adjustment.
+  display::GammaAdjustment gamma_adjustment;
+  gamma_adjustment.curve = display::GammaCurve::MakeScale(0.9, 0.8, 0.7);
+  fake_drm_->plane_manager()->SetGammaAdjustment(crtc_id, gamma_adjustment);
+
+  {
+    constexpr float kEpsilon = 0.001f;
+    float rgb[3] = {0.6f, 0.5f, 0.4f};
+    ApplyCrtcColorSpaceConversion(fake_drm_.get(), crtc_id, rgb);
+    EXPECT_NEAR(rgb[0], 0.9f * 0.6f, kEpsilon);
+    EXPECT_NEAR(rgb[1], 0.8f * 0.5f, kEpsilon);
+    EXPECT_NEAR(rgb[2], 0.7f * 0.4f, kEpsilon);
+  }
+}
+
+// The effect of color conversion (from input plane space to output space) on
+// the CTM.
+TEST_P(HardwareDisplayPlaneManagerAtomicTest,
+       CtmColorManagement_ColorConversion) {
+  base::test::ScopedFeatureList scoped_feature_list;
+  scoped_feature_list.InitWithFeatures({display::features::kCtmColorManagement},
+                                       {});
+
+  fake_drm_->ResetStateWithDefaultObjects(
+      /*crtc_count=*/1, /*planes_per_crtc=*/1);
+
+  uint32_t crtc_id = fake_drm_->crtc_property(0).id;
+
+  // This test has full CTM, DEGAMMA, and GAMMA.
+  fake_drm_->AddProperty(crtc_id, {.id = kCtmPropId, .value = 0});
+  fake_drm_->AddProperty(crtc_id, {.id = kDegammaLutSizePropId, .value = 33});
+  fake_drm_->AddProperty(crtc_id, {.id = kDegammaLutPropId, .value = 0});
+  fake_drm_->AddProperty(crtc_id, {.id = kGammaLutSizePropId, .value = 33});
+  fake_drm_->AddProperty(crtc_id, {.id = kGammaLutPropId, .value = 0});
+
+  // Color profile change will set all properties.
+  fake_drm_->InitializeState(use_atomic_);
+
+  fake_drm_->plane_manager()->SetOutputColorSpace(crtc_id,
+                                                  SkNamedPrimariesExt::kP3);
+
+  // We should not have committed the CTM yet.
+  EXPECT_EQ(0, fake_drm_->get_commit_count());
+  EXPECT_EQ(0u, GetCrtcPropertyValue(crtc_id, "CTM"));
+
+  // Commit a plane that is sRGB. Colors should be converted.
+  {
     HardwareDisplayPlaneList state;
-    PerformPageFlip(/*crtc_idx=*/0, &state);
+    auto buffer = CreateBuffer(kDefaultBufferSize);
+    DrmOverlayPlaneList planes;
+    planes.push_back(DrmOverlayPlane::TestPlane(buffer));
+    planes[0].color_space = gfx::ColorSpace::CreateSRGB();
+
+    PerformPageFlip(/*crtc_idx=*/0, &state, planes);
+  }
+
+  // This is the conversion of color(--display-p3-linear 0.25 0.5 0.75) to
+  // srgb-linear using https://colorjs.io/apps/convert/.
+  {
+    constexpr float kEpsilon = 0.001f;
+    float rgb[3] = {0.1937649f, 0.51051424f, 0.77947779f};
+    ApplyCrtcColorSpaceConversion(fake_drm_.get(), crtc_id, rgb);
+    EXPECT_NEAR(rgb[0], 0.25f, kEpsilon);
+    EXPECT_NEAR(rgb[1], 0.5f, kEpsilon);
+    EXPECT_NEAR(rgb[2], 0.75f, kEpsilon);
+  }
+}
+
+// The combined effects of color conversion, color temperature adjustment, and
+// gamma adjustment, on the CTM.
+TEST_P(HardwareDisplayPlaneManagerAtomicTest, CtmColorManagement_Combined) {
+  constexpr float kEpsilon = 0.001f;
+
+  base::test::ScopedFeatureList scoped_feature_list;
+  scoped_feature_list.InitWithFeatures({display::features::kCtmColorManagement},
+                                       {});
+
+  fake_drm_->ResetStateWithDefaultObjects(
+      /*crtc_count=*/1, /*planes_per_crtc=*/1);
+
+  uint32_t crtc_id = fake_drm_->crtc_property(0).id;
+
+  // This test has full CTM, DEGAMMA, and GAMMA.
+  fake_drm_->AddProperty(crtc_id, {.id = kCtmPropId, .value = 0});
+  fake_drm_->AddProperty(crtc_id, {.id = kDegammaLutSizePropId, .value = 33});
+  fake_drm_->AddProperty(crtc_id, {.id = kDegammaLutPropId, .value = 0});
+  fake_drm_->AddProperty(crtc_id, {.id = kGammaLutSizePropId, .value = 33});
+  fake_drm_->AddProperty(crtc_id, {.id = kGammaLutPropId, .value = 0});
+
+  // Color profile change will set all properties.
+  fake_drm_->InitializeState(use_atomic_);
+
+  fake_drm_->plane_manager()->SetOutputColorSpace(crtc_id,
+                                                  SkNamedPrimariesExt::kP3);
+
+  // We should not have committed the CTM yet.
+  EXPECT_EQ(0, fake_drm_->get_commit_count());
+  EXPECT_EQ(0u, GetCrtcPropertyValue(crtc_id, "CTM"));
+  HardwareDisplayPlaneList state;
+
+  auto buffer = CreateBuffer(kDefaultBufferSize);
+
+  // Constants for a test color value in P3 and sRGB. This is the conversion of
+  // color(--display-p3-linear 0.25 0.5 0.75) to srgb-linear using
+  // https://colorjs.io/apps/convert/.
+  const float kColorP3[3] = {0.25, 0.5, 0.75};
+  const float kColorSRGB[3] = {0.1937649f, 0.51051424f, 0.77947779f};
+
+  // Commit a plane that is P3. Color conversion should be a no-op.
+  {
+    DrmOverlayPlaneList planes;
+    planes.push_back(DrmOverlayPlane::TestPlane(buffer));
+    planes[0].color_space = gfx::ColorSpace::CreateDisplayP3D65();
+
+    PerformPageFlip(/*crtc_idx=*/0, &state, planes);
     EXPECT_EQ(1, fake_drm_->get_commit_count());
-    EXPECT_NE(0u, GetCrtcPropertyValue(fake_drm_->crtc_property(0).id, "CTM"));
-  } else {
-    EXPECT_EQ(0, fake_drm_->get_set_object_property_count());
+    EXPECT_NE(0u, GetCrtcPropertyValue(crtc_id, "CTM"));
+
+    float rgb[3] = {kColorP3[0], kColorP3[1], kColorP3[2]};
+    ApplyCrtcColorSpaceConversion(fake_drm_.get(), crtc_id, rgb);
+    EXPECT_NEAR(rgb[0], kColorP3[0], kEpsilon);
+    EXPECT_NEAR(rgb[1], kColorP3[1], kEpsilon);
+    EXPECT_NEAR(rgb[2], kColorP3[2], kEpsilon);
+  }
+
+  // Commit a plane that is sRGB. Colors should be converted.
+  {
+    DrmOverlayPlaneList planes;
+    planes.push_back(DrmOverlayPlane::TestPlane(buffer));
+    planes[0].color_space = gfx::ColorSpace::CreateSRGB();
+
+    PerformPageFlip(/*crtc_idx=*/0, &state, planes);
+    EXPECT_NE(0u, GetCrtcPropertyValue(crtc_id, "CTM"));
+
+    // This is the conversion of color(--display-p3-linear 0.25 0.5 0.75) to
+    // srgb-linear using https://colorjs.io/apps/convert/.
+    float rgb[3] = {kColorSRGB[0], kColorSRGB[1], kColorSRGB[2]};
+    ApplyCrtcColorSpaceConversion(fake_drm_.get(), crtc_id, rgb);
+    EXPECT_NEAR(rgb[0], kColorP3[0], kEpsilon);
+    EXPECT_NEAR(rgb[1], kColorP3[1], kEpsilon);
+    EXPECT_NEAR(rgb[2], kColorP3[2], kEpsilon);
+  }
+
+  // Apply color temperature adjustment. The CTM should be updated
+  // immediately.
+  {
+    display::ColorTemperatureAdjustment cta;
+    cta.srgb_matrix.vals[0][0] = 0.5;
+    cta.srgb_matrix.vals[1][1] = 1.0;
+    cta.srgb_matrix.vals[2][2] = 1.0;
+    fake_drm_->plane_manager()->SetColorTemperatureAdjustment(
+        fake_drm_->crtc_property(0).id, cta);
+
+    float rgb[3] = {2.f * kColorSRGB[0], kColorSRGB[1], kColorSRGB[2]};
+    ApplyCrtcColorSpaceConversion(fake_drm_.get(), crtc_id, rgb);
+    EXPECT_NEAR(rgb[0], kColorP3[0], kEpsilon);
+    EXPECT_NEAR(rgb[1], kColorP3[1], kEpsilon);
+    EXPECT_NEAR(rgb[2], kColorP3[2], kEpsilon);
+  }
+
+  // Change the output color space. Nothing should change yet.
+  {
+    fake_drm_->plane_manager()->SetOutputColorSpace(crtc_id,
+                                                    SkNamedPrimariesExt::kSRGB);
+
+    float rgb[3] = {2.f * kColorSRGB[0], kColorSRGB[1], kColorSRGB[2]};
+    ApplyCrtcColorSpaceConversion(fake_drm_.get(), crtc_id, rgb);
+    EXPECT_NEAR(rgb[0], kColorP3[0], kEpsilon);
+    EXPECT_NEAR(rgb[1], kColorP3[1], kEpsilon);
+    EXPECT_NEAR(rgb[2], kColorP3[2], kEpsilon);
+  }
+
+  // Commit the plane with the same color space as the last flip. The CTM
+  // should change now.
+  {
+    DrmOverlayPlaneList planes;
+    planes.push_back(
+        DrmOverlayPlane::TestPlane(CreateBuffer(kDefaultBufferSize)));
+    planes[0].color_space = gfx::ColorSpace::CreateSRGB();
+    planes[0].z_order = 1;
+
+    PerformPageFlip(/*crtc_idx=*/0, &state, planes);
+    EXPECT_NE(0u, GetCrtcPropertyValue(crtc_id, "CTM"));
+
+    float rgb[3] = {1.0f, 0.75f, 0.25f};
+    ApplyCrtcColorSpaceConversion(fake_drm_.get(), crtc_id, rgb);
+    EXPECT_NEAR(rgb[0], 0.5f, kEpsilon);
+    EXPECT_NEAR(rgb[1], 0.75f, kEpsilon);
+    EXPECT_NEAR(rgb[2], 0.25f, kEpsilon);
+  }
+
+  // Apply gamma adjustment.
+  {
+    display::GammaAdjustment gamma_adjustment;
+    gamma_adjustment.curve =
+        display::GammaCurve::MakeScale(0.5, 0.25 / 0.75, 0.1 / 0.25);
+    fake_drm_->plane_manager()->SetGammaAdjustment(crtc_id, gamma_adjustment);
+
+    float rgb[3] = {1.0f, 0.75f, 0.25f};
+    ApplyCrtcColorSpaceConversion(fake_drm_.get(), crtc_id, rgb);
+    EXPECT_NEAR(rgb[0], 0.25f, kEpsilon);
+    EXPECT_NEAR(rgb[1], 0.25f, kEpsilon);
+    EXPECT_NEAR(rgb[2], 0.1f, kEpsilon);
   }
 }
 

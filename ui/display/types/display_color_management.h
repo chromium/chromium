@@ -43,6 +43,10 @@ class DISPLAY_TYPES_EXPORT GammaCurve {
   // function will clamp `x` to [0, 1].
   void Evaluate(float x, uint16_t& r, uint16_t& g, uint16_t& b) const;
 
+  // Evaluate at the specified RGB values. Input values will be clamped to the
+  // [0, 1] interval.
+  void Evaluate(float rgb[3]) const;
+
   // Display as a string for debugging.
   std::string ToString() const;
 
