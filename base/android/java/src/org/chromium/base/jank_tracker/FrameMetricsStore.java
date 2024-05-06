@@ -18,7 +18,10 @@ import java.util.List;
  * This class stores relevant metrics from FrameMetrics between the calls to UMA reporting methods.
  */
 public class FrameMetricsStore {
-    private final ThreadChecker mThreadChecker = new ThreadChecker();
+    // FrameMetricsStore can only be accessed on the handler thread (from the
+    // JankReportingScheduler.getOrCreateHandler() method). However construction occurs on a
+    // separate thread so the ThreadChecker is instead constructed later.
+    private ThreadChecker mThreadChecker;
     // An arbitrary value from which to create a trace event async track. The only risk if this
     // clashes with another track is trace events will show up on both potentially looking weird in
     // the tracing UI. No other issue will occur.
@@ -87,10 +90,8 @@ public class FrameMetricsStore {
      * checking.
      */
     void initialize() {
-        // FrameMetricsStore can only be accessed on the handler thread (from the
-        // JankReportingScheduler.getOrCreateHandler() method). However construction occurs on a
-        // separate thread so the ThreadChecker is instead constructed later.
-        mThreadChecker.resetThreadId();
+        assert mThreadChecker == null;
+        mThreadChecker = new ThreadChecker();
     }
 
     /** Records the total draw duration and jankiness for a single frame. */
