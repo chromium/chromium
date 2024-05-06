@@ -8,6 +8,7 @@
 #include <string>
 #include <string_view>
 
+#include "base/base64.h"
 #include "base/json/json_reader.h"
 #include "base/json/json_value_converter.h"
 #include "base/time/time.h"
@@ -87,6 +88,33 @@ void LogEntryVerification::RegisterJSONConverter(
                                  &LogEntryVerification::signed_entry_timestamp);
 }
 
+void PublicKey::RegisterJSONConverter(
+    base::JSONValueConverter<PublicKey>* converter) {
+  converter->RegisterStringField("content", &PublicKey::content);
+}
+
+void GenericSignature::RegisterJSONConverter(
+    base::JSONValueConverter<GenericSignature>* converter) {
+  converter->RegisterStringField("content", &GenericSignature::content);
+  converter->RegisterStringField("format", &GenericSignature::format);
+  converter->RegisterNestedField("publicKey", &GenericSignature::public_key);
+}
+
+void Data::RegisterJSONConverter(base::JSONValueConverter<Data>* converter) {
+  converter->RegisterNestedField("hash", &Data::hash);
+}
+
+void Spec::RegisterJSONConverter(base::JSONValueConverter<Spec>* converter) {
+  converter->RegisterNestedField("data", &Spec::data);
+  converter->RegisterNestedField("signature", &Spec::generic_signature);
+}
+
+void Body::RegisterJSONConverter(base::JSONValueConverter<Body>* converter) {
+  converter->RegisterStringField("apiVersion", &Body::api_version);
+  converter->RegisterStringField("kind", &Body::kind);
+  converter->RegisterNestedField("spec", &Body::spec);
+}
+
 std::optional<LogEntry> GetRekorLogEntry(base::span<const uint8_t> log_entry) {
   std::string_view json = reinterpret_cast<const char*>(log_entry.data());
   std::optional<base::Value> log_entry_json = base::JSONReader::Read(json);
@@ -99,6 +127,27 @@ std::optional<LogEntry> GetRekorLogEntry(base::span<const uint8_t> log_entry) {
     return std::nullopt;
   }
   return log_entry_result;
+}
+
+std::optional<Body> GetRekorLogEntryBody(base::span<const uint8_t> log_entry) {
+  std::optional<LogEntry> log_entry_output = GetRekorLogEntry(log_entry);
+  if (!log_entry_output.has_value()) {
+    return std::nullopt;
+  }
+  std::string body;
+  if (!base::Base64Decode(log_entry_output->body, &body)) {
+    return std::nullopt;
+  }
+  std::optional<base::Value> body_json = base::JSONReader::Read(body);
+  if (!body_json.has_value()) {
+    return std::nullopt;
+  }
+  Body body_result;
+  base::JSONValueConverter<Body> converter;
+  if (!converter.Convert(body_json.value(), &body_result)) {
+    return std::nullopt;
+  }
+  return body_result;
 }
 
 }  // namespace device::enclave

@@ -8,16 +8,22 @@
 #include <cstdint>
 #include <vector>
 
+#include "base/component_export.h"
+#include "base/json/json_value_converter.h"
+
 namespace device::enclave {
 
 enum HashType {
   kSHA256,
 };
 
-struct Hash {
+struct COMPONENT_EXPORT(DEVICE_FIDO) Hash {
   Hash(std::vector<uint8_t> bytes, HashType hash_type);
   Hash();
   ~Hash();
+  Hash(const Hash& hash);
+
+  static void RegisterJSONConverter(base::JSONValueConverter<Hash>* converter);
 
   std::vector<uint8_t> bytes;
   HashType hash_type = kSHA256;

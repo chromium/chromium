@@ -62,17 +62,23 @@ struct COMPONENT_EXPORT(DEVICE_FIDO) LogEntry {
 // Based on
 // <https://github.com/sigstore/rekor/blob/2978cdc26fdf8f5bfede8459afd9735f0f231a2a/pkg/generated/models/rekord_v001_schema.go#L551.>
 struct PublicKey {
+  static void RegisterJSONConverter(
+      base::JSONValueConverter<PublicKey>* converter);
+
   // Base64 content of a public key.
-  std::string_view content;
+  std::string content;
 };
 
 // Struct representing a signature in the body of a Rekor LogEntry.
 // Based on
 // <https://github.com/sigstore/rekor/blob/2978cdc26fdf8f5bfede8459afd9735f0f231a2a/pkg/generated/models/rekord_v001_schema.go#L383>
 struct GenericSignature {
+  static void RegisterJSONConverter(
+      base::JSONValueConverter<GenericSignature>* converter);
+
   // Base64 content that is signed.
-  std::string_view content;
-  std::string_view format;
+  std::string content;
+  std::string format;
   PublicKey public_key;
 };
 
@@ -80,6 +86,8 @@ struct GenericSignature {
 // Based on
 // <https://github.com/sigstore/rekor/blob/2978cdc26fdf8f5bfede8459afd9735f0f231a2a/pkg/generated/models/rekord_v001_schema.go#L179.>
 struct Data {
+  static void RegisterJSONConverter(base::JSONValueConverter<Data>* converter);
+
   Hash hash;
 };
 
@@ -87,14 +95,18 @@ struct Data {
 // Based on
 // <https://github.com/sigstore/rekor/blob/2978cdc26fdf8f5bfede8459afd9735f0f231a2a/pkg/generated/models/rekord_v001_schema.go#L39.>
 struct Spec {
+  static void RegisterJSONConverter(base::JSONValueConverter<Spec>* converter);
+
   Data data;
   GenericSignature generic_signature;
 };
 
 // Struct representing the body in a Rekor LogEntry.
 struct Body {
-  std::string_view api_version;
-  std::string_view kind;
+  static void RegisterJSONConverter(base::JSONValueConverter<Body>* converter);
+
+  std::string api_version;
+  std::string kind;
   Spec spec;
 };
 
@@ -134,7 +146,8 @@ std::optional<LogEntry> COMPONENT_EXPORT(DEVICE_FIDO)
 
 // Parses the given bytes into a Rekor `LogEntry` object, and returns its
 // `body` parsed into an instance of `Body`.
-std::optional<Body> GetRekorLogEntryBody(base::span<const uint8_t> log_entry);
+std::optional<Body> COMPONENT_EXPORT(DEVICE_FIDO)
+    GetRekorLogEntryBody(base::span<const uint8_t> log_entry);
 
 // Parses a blob into a Rekor log entry and verifies the signature in
 // `signed_entry_timestamp` using Rekor's public key.

@@ -11,6 +11,7 @@
 #include "base/files/file_util.h"
 #include "base/json/json_reader.h"
 #include "base/path_service.h"
+#include "device/fido/enclave/verify/hash.h"
 #include "testing/gtest/include/gtest/gtest.h"
 
 namespace device::enclave {
@@ -34,6 +35,25 @@ constexpr char kLogID[] =
 constexpr char kSignedEntryTimestamp[] =
     "MEYCIQCd0RrIJrMSCBhTAwl+HOMU/9w81hs7xCXZRElft/"
     "jcCAIhAN07e5BrXL4xn8ZeZTAnfsCwyjO9e3NaTNt4zAFj96mV";
+
+constexpr char kApiVersion[] = "0.0.1";
+
+constexpr char kKind[] = "rekord";
+
+constexpr char kGenericSignatureContent[] =
+    "MEYCIQCyEHfQZxVza8oSg6GrPp9nZ3ETs+NWH6nXT7uHP2z/HgIhAJJGN56+pOSPF4gm/"
+    "J5As2306wOQD2KxIZmi9Gjyh6R9";
+
+constexpr char kGenericSignatureFormat[] = "x509";
+
+constexpr char kGenericSignaturePublicKeyContent[] =
+    "LS0tLS1CRUdJTiBQVUJMSUMgS0VZLS0tLS0KTUZrd0V3WUhLb1pJemowQ0FRWUlLb1pJemowRE"
+    "FRY0RRZ0FFYndSY1FZMll2VWhwOFFwakJEakRZdGdyakFXSgphL2V3VUt1N1VSS1ZNYnppTjhJ"
+    "ZHp1N25lS2N2ZjJRS1BrWVhSZXBseTZmT3VmZFhaSitTUFZxWEJnPT0KLS0tLS1FTkQgUFVCTE"
+    "lDIEtFWS0tLS0tCg==";
+
+constexpr char kHashValue[] =
+    "961f60acb9e5723b7b301860481529bc3f1661e5086c29cd56242e321ba7f959";
 
 constexpr uint64_t kLogIndex = 74497915;
 
@@ -76,6 +96,26 @@ TEST(RekorTest, GetRekorLogEntryNoVerification) {
   EXPECT_EQ(log_entry->log_id, kLogID);
   EXPECT_EQ(log_entry->log_index, kLogIndex);
   EXPECT_FALSE(log_entry->verification.has_value());
+}
+
+TEST(RekorTest, GetRekorLogEntryBody) {
+  std::string json = GetJsonFromFile("logentry");
+  base::span<const uint8_t> span = base::make_span(
+      reinterpret_cast<const uint8_t*>(json.data()), json.size());
+  std::optional<Body> log_entry_body = GetRekorLogEntryBody(span);
+  EXPECT_TRUE(log_entry_body.has_value());
+  EXPECT_EQ(log_entry_body->api_version, kApiVersion);
+  EXPECT_EQ(log_entry_body->kind, kKind);
+  EXPECT_EQ(log_entry_body->spec.generic_signature.content,
+            kGenericSignatureContent);
+  EXPECT_EQ(log_entry_body->spec.generic_signature.format,
+            kGenericSignatureFormat);
+  EXPECT_EQ(log_entry_body->spec.generic_signature.public_key.content,
+            kGenericSignaturePublicKeyContent);
+  const std::vector<uint8_t>& bytes = log_entry_body->spec.data.hash.bytes;
+  std::string hash_value = std::string(bytes.begin(), bytes.end());
+  EXPECT_EQ(hash_value, kHashValue);
+  EXPECT_EQ(log_entry_body->spec.data.hash.hash_type, HashType::kSHA256);
 }
 
 }  // namespace device::enclave
