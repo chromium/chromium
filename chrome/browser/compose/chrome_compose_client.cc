@@ -295,8 +295,14 @@ void ChromeComposeClient::CreateOrUpdateSession(
   bool has_session = HasSession(active_compose_ids_.value().first);
   bool resume_current_session =
       has_session &&
-      (ui_entry_point == ChromeComposeClient::EntryPoint::kAutofillPopup ||
-       selected_text.empty());
+      (ui_entry_point == EntryPoint::kAutofillPopup || selected_text.empty());
+
+  if (!has_session && ui_entry_point == EntryPoint::kAutofillPopup) {
+    // If this is a new session from the popup then the proactive nudge was
+    // clicked. Record nudge ctr metric.
+    compose::LogComposeProactiveNudgeCtr(
+        compose::ComposeProactiveNudgeCtrEvent::kDialogOpened);
+  }
 
   if (resume_current_session) {
     auto it = sessions_.find(active_compose_ids_.value().first);
@@ -510,6 +516,11 @@ bool ChromeComposeClient::ShouldTriggerPopup(
        should_show_nudge.error() ==
            compose::ComposeNudgeDenyReason::kProactiveNudgeDisabled)) {
     page_ukm_tracker_->ComposeProactiveNudgeShouldShow();
+  }
+
+  if (!ongoing_session && should_show_nudge.has_value()) {
+    compose::LogComposeProactiveNudgeCtr(
+        compose::ComposeProactiveNudgeCtrEvent::kNudgeDisplayed);
   }
 
   return should_show_nudge.has_value();

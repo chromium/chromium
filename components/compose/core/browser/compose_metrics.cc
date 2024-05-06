@@ -47,6 +47,9 @@ const char kComposeFirstRunSessionDialogShownCount[] =
 const char kInnerTextNodeOffsetFound[] =
     "Compose.Dialog.InnerTextNodeOffsetFound";
 const char kComposeContextMenuCtr[] = "Compose.ContextMenu.CTR";
+const char kComposeProactiveNudgeCtr[] = "Compose.ProactiveNudge.CTR";
+const char kComposeProactiveNudgeShowStatus[] =
+    "Compose.ProactiveNudge.ShowStatus";
 const char kOpenComposeDialogResult[] =
     "Compose.ContextMenu.OpenComposeDialogResult";
 const char kComposeSelectAll[] = "Compose.ContextMenu.SelectedAll";
@@ -249,6 +252,14 @@ void LogComposeContextMenuCtr(ComposeContextMenuCtrEvent event) {
 
 void LogComposeContextMenuShowStatus(ComposeShowStatus status) {
   base::UmaHistogramEnumeration(kComposeShowStatus, status);
+}
+
+void LogComposeProactiveNudgeCtr(ComposeProactiveNudgeCtrEvent event) {
+  base::UmaHistogramEnumeration(kComposeProactiveNudgeCtr, event);
+}
+
+void LogComposeProactiveNudgeShowStatus(ComposeShowStatus status) {
+  base::UmaHistogramEnumeration(kComposeProactiveNudgeShowStatus, status);
 }
 
 void LogOpenComposeDialogResult(OpenComposeDialogResult result) {

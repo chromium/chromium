@@ -59,6 +59,14 @@ chromium-metrics-reviews@google.com.
              suggestion"/>
 </enum>
 
+<enum name="ComposeProactiveNudgeCtrEvent">
+  <int value="0" label="Nudge shown"/>
+  <int value="1" label="Dialog opened from nudge"/>
+  <int value="2" label="Globally disabled from nudge"/>
+  <int value="3" label="Site disabled from nudge"/>
+  <int value="4" label="Open Settings from nudge"/>
+</enum>
+
 <enum name="ComposeRequestFeedback">
   <int value="0" label="No feedback given"/>
   <int value="1" label="Postivie feedback given"/>
@@ -158,17 +166,22 @@ chromium-metrics-reviews@google.com.
   <int value="5" label="Blocked for user language not supported"/>
   <int value="6"
       label="Blocked for form element appearing in cross-origin subframe"/>
-  <int value="7"
-      label="Blocked by Optimization Guide Result for main frame URL"/>
-  <int value="8"
-      label="Blocked for user was not allowed by optimization guide"/>
+  <int value="7" label="Compose disabled by optimization guide"/>
+  <int value="8" label="User not allowed by optimization guide"/>
   <int value="9" label="Feature not eligible, remotely disabled"/>
   <int value="10" label="Incorrect scheme, should be HTTP/HTTPS"/>
   <int value="11" label="Blocked for element appearing inside a fenced frame"/>
-  <int value="12"
-      label="Blocked for feature flag for Chrome Compose not enabled"/>
-  <int value="13"
-      label="Blocked for not being supported on this ChromeOS device"/>
+  <int value="12" label="Compose feature disabled"/>
+  <int value="13" label="Blocked for unsupported ChromeOS device"/>
+  <int value="14" label="Proactive nudge blocked for autocomplete=off"/>
+  <int value="15" label="Proactive nudge blocked for writingsuggestions=false"/>
+  <int value="16" label="Proactive nudge feature disabled"/>
+  <int value="17" label="Proactive nudge gloabally disabled by user"/>
+  <int value="18" label="Proactive nudge disabled for site by user"/>
+  <int value="19" label="Proactive nudge disabled by optimization guide"/>
+  <int value="20"
+      label="Proactive nudge disabled for unset optimization guide"/>
+  <int value="21" label="Proactive nudge disabled randomly"/>
 </enum>
 
 <enum name="OpenComposeDialogResult">

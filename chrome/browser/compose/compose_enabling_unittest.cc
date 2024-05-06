@@ -262,13 +262,29 @@ TEST_F(ComposeEnablingTest, FeatureNotEnabledTest) {
   SignIn(signin::ConsentLevel::kSync);
 
   CheckIsEnabledError(compose_enabling_.get(),
-                      compose::ComposeShowStatus::kFeatureFlagDisabled);
+                      compose::ComposeShowStatus::kComposeFeatureFlagDisabled);
 }
 
 TEST_F(ComposeEnablingTest, NotSignedInTest) {
+  base::HistogramTester histogram_tester;
   // Intentionally skip the signin step.
   CheckIsEnabledError(compose_enabling_.get(),
                       compose::ComposeShowStatus::kSignedOut);
+
+  std::string autocomplete_attribute;
+  // Check that the proactive nudge does not show.
+  EXPECT_FALSE(
+      compose_enabling_
+          ->ShouldTriggerPopup(
+              autocomplete_attribute, GetProfile(), GetProfile()->GetPrefs(),
+              mock_translate_manager_.get(),
+              /*ongoing_session=*/false, GetOrigin(), GetOrigin(),
+              GURL(kExampleURL),
+              autofill::AutofillSuggestionTriggerSource::kTextFieldDidChange)
+          .has_value());
+
+  histogram_tester.ExpectBucketCount(compose::kComposeProactiveNudgeShowStatus,
+                                     compose::ComposeShowStatus::kSignedOut, 1);
 }
 
 TEST_F(ComposeEnablingTest, SignedInErrorTest) {
@@ -563,6 +579,7 @@ TEST_F(ComposeEnablingTest, ShouldTriggerPopupEnableLanguageBypassTest) {
 
 TEST_F(ComposeEnablingTest, ShouldNotTriggerProactivePopupAutocompleteOffTest) {
   ResetFeaturesAndConfig({compose::features::kEnableComposeProactiveNudge}, {});
+  base::HistogramTester histogram_tester;
   // Enable everything.
   auto scoped_compose_enabled =
       ComposeEnabling::ScopedEnableComposeForTesting();
@@ -590,6 +607,10 @@ TEST_F(ComposeEnablingTest, ShouldNotTriggerProactivePopupAutocompleteOffTest) {
               GURL(kExampleURL),
               autofill::AutofillSuggestionTriggerSource::kTextFieldDidChange)
           .has_value());
+
+  histogram_tester.ExpectBucketCount(
+      compose::kComposeProactiveNudgeShowStatus,
+      compose::ComposeShowStatus::kAutocompleteOff, 1);
 }
 
 TEST_F(ComposeEnablingTest, ShouldTriggerPopupWithSavedStateTest) {
@@ -710,6 +731,7 @@ TEST_F(ComposeEnablingTest,
 }
 
 TEST_F(ComposeEnablingTest, ShouldTriggerPopupIncorrectSchemeTest) {
+  base::HistogramTester histogram_tester;
   // Enable everything.
   auto scoped_compose_enabled =
       ComposeEnabling::ScopedEnableComposeForTesting();
@@ -739,6 +761,10 @@ TEST_F(ComposeEnablingTest, ShouldTriggerPopupIncorrectSchemeTest) {
               GURL(kExampleBadURL),
               autofill::AutofillSuggestionTriggerSource::kTextFieldDidChange)
           .has_value());
+
+  histogram_tester.ExpectBucketCount(
+      compose::kComposeProactiveNudgeShowStatus,
+      compose::ComposeShowStatus::kIncorrectScheme, 1);
 }
 
 TEST_F(ComposeEnablingTest, ShouldTriggerPopupCrossOrigin) {
@@ -993,6 +1019,7 @@ TEST_F(ComposeEnablingTest, ShouldTriggerDisableNudgeByPolicy) {
 
 TEST_F(ComposeEnablingTest, ProactiveNudgePreferenceTest) {
   ResetFeaturesAndConfig({compose::features::kEnableComposeProactiveNudge}, {});
+  base::HistogramTester histogram_tester;
   // Enable the feature.
   auto scoped_compose_enabled =
       ComposeEnabling::ScopedEnableComposeForTesting();
@@ -1020,10 +1047,19 @@ TEST_F(ComposeEnablingTest, ProactiveNudgePreferenceTest) {
               GURL(kExampleURL),
               autofill::AutofillSuggestionTriggerSource::kTextFieldDidChange)
           .has_value());
+  histogram_tester.ExpectBucketCount(compose::kComposeProactiveNudgeShowStatus,
+                                     compose::ComposeShowStatus::kShouldShow,
+                                     1);
+  histogram_tester.ExpectBucketCount(
+      compose::kComposeProactiveNudgeShowStatus,
+      compose::ComposeShowStatus::
+          kPractiveNudgeDisabledGloballyByUserPreference,
+      1);
 }
 
 TEST_F(ComposeEnablingTest, ProactiveNudgeDisabledByRandomness) {
   ResetFeaturesAndConfig({compose::features::kEnableComposeProactiveNudge}, {});
+  base::HistogramTester histogram_tester;
   // Enable the feature.
   auto scoped_compose_enabled =
       ComposeEnabling::ScopedEnableComposeForTesting();
@@ -1049,4 +1085,8 @@ TEST_F(ComposeEnablingTest, ProactiveNudgeDisabledByRandomness) {
               GURL(kExampleURL),
               autofill::AutofillSuggestionTriggerSource::kTextFieldDidChange)
           .has_value());
+
+  histogram_tester.ExpectBucketCount(
+      compose::kComposeProactiveNudgeShowStatus,
+      compose::ComposeShowStatus::kRandomlyBlocked, 1);
 }

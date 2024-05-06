@@ -38,6 +38,8 @@ extern const char kComposeMSBBSessionCloseReason[];
 extern const char kComposeMSBBSessionDialogShownCount[];
 extern const char kInnerTextNodeOffsetFound[];
 extern const char kComposeContextMenuCtr[];
+extern const char kComposeProactiveNudgeCtr[];
+extern const char kComposeProactiveNudgeShowStatus[];
 extern const char kOpenComposeDialogResult[];
 
 // Enum for calculating the CTR of the Compose context menu item.
@@ -127,9 +129,9 @@ enum class ComposeSessionEventTypes {
   kMaxValue = kEditedResultInserted,
 };
 
-// Enum for recording the show status of the Compose context menu item.
-// These values are persisted to logs. Entries should not be renumbered and
-// numeric values should never be reused. Keep in sync with
+// Enum for recording the show status of both the HMW context menu item and
+// the proactive nudge. These values are persisted to logs. Entries should not
+// be renumbered and numeric values should never be reused. Keep in sync with
 // ComposeShowStatus in
 // src/tools/metrics/histograms/metadata/compose/enums.xml.
 enum class ComposeShowStatus {
@@ -146,9 +148,29 @@ enum class ComposeShowStatus {
   kNotComposeEligible = 9,
   kIncorrectScheme = 10,
   kFormFieldNestedInFencedFrame = 11,
-  kFeatureFlagDisabled = 12,
+  kComposeFeatureFlagDisabled = 12,
   kDisabledOnChromeOS = 13,
-  kMaxValue = kDisabledOnChromeOS,
+  kAutocompleteOff = 14,
+  kWritingSuggestionsFalse = 15,
+  kProactiveNudgeFeatureDisabled = 16,
+  kPractiveNudgeDisabledGloballyByUserPreference = 17,
+  kPractiveNudgeDisabledForSiteByUserPreference = 18,
+  kPractiveNudgeDisabledByServerConfig = 19,
+  kPractiveNudgeUnknownServerConfig = 20,
+  kRandomlyBlocked = 21,
+  kMaxValue = kRandomlyBlocked,
+};
+
+// Enum for calculating the CTR of the Compose proactive nudge.
+// Keep in sync with ComposeProactiveNudgeCtrEvent in
+// src/tools/metrics/histograms/metadata/compose/enums.xml.
+enum class ComposeProactiveNudgeCtrEvent {
+  kNudgeDisplayed = 0,
+  kDialogOpened = 1,
+  kUserDisabledProactiveNudge = 2,
+  kUserDisabledSite = 3,
+  kOpenSettings = 4,
+  kMaxValue = kOpenSettings,
 };
 
 enum class EvalLocation : int {
@@ -331,6 +353,10 @@ class PageUkmTracker {
 void LogComposeContextMenuCtr(ComposeContextMenuCtrEvent event);
 
 void LogComposeContextMenuShowStatus(ComposeShowStatus status);
+
+void LogComposeProactiveNudgeCtr(ComposeProactiveNudgeCtrEvent event);
+
+void LogComposeProactiveNudgeShowStatus(ComposeShowStatus status);
 
 void LogOpenComposeDialogResult(OpenComposeDialogResult result);
 

@@ -27,12 +27,11 @@ namespace compose {
 enum class ComposeNudgeDenyReason {
   kSavedStateNotificationDisabled = 0,
   kSavedStateNudgeDisabled = 1,
+  // The proactive nudge could have shown but was disabled by preference or
+  // config values.
   kProactiveNudgeDisabled = 2,
-  kOptimizationGuideChecks = 3,
-  kDOMLevelChecks = 4,
-  kPageLevelChecks = 5,
-  kProactiveNudgeDisabledByGlobalPreference = 6,
-  kRandomlyBlocked = 7,
+  // The proactive nudge can not be shown for this user, page, or field.
+  kProactiveNudgeBlocked = 3,
 };
 
 }  // namespace compose
@@ -94,14 +93,14 @@ class ComposeEnabling {
       const url::Origin& element_frame_origin,
       bool is_newsted_within_fenced_frame);
 
-  base::expected<void, compose::ComposeNudgeDenyReason>
-  ShouldTriggerNoStatePopup(std::string_view autocomplete_attribute,
-                            Profile* profile,
-                            PrefService* prefs,
-                            translate::TranslateManager* translate_manager,
-                            const url::Origin& top_level_frame_origin,
-                            const url::Origin& element_frame_origin,
-                            GURL url);
+  base::expected<void, compose::ComposeShowStatus> ShouldTriggerNoStatePopup(
+      std::string_view autocomplete_attribute,
+      Profile* profile,
+      PrefService* prefs,
+      translate::TranslateManager* translate_manager,
+      const url::Origin& top_level_frame_origin,
+      const url::Origin& element_frame_origin,
+      GURL url);
   base::expected<void, compose::ComposeNudgeDenyReason>
   ShouldTriggerSavedStatePopup(
       autofill::AutofillSuggestionTriggerSource trigger_source);

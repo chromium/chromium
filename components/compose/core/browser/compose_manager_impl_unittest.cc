@@ -194,11 +194,7 @@ TEST_F(
   // Checks that the 3 expected child suggestions exist.
   EXPECT_THAT(
       suggestion->children,
-      ElementsAre(
-          EqualsSuggestion(
-              autofill::SuggestionType::kComposeNeverShowOnThisSiteAgain),
-          EqualsSuggestion(autofill::SuggestionType::kComposeDisable),
-          EqualsSuggestion(autofill::SuggestionType::kComposeGoToSettings)));
+      ElementsAre(EqualsSuggestion(autofill::SuggestionType::kComposeDisable)));
 }
 
 TEST_F(
