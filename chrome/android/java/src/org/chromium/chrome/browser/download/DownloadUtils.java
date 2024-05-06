@@ -256,9 +256,15 @@ public class DownloadUtils {
 
     /**
      * Trigger the download of an Offline Page.
+     *
      * @param context Context to pull resources from.
+     * @param tab Tab triggering the download.
      */
     public static void downloadOfflinePage(Context context, Tab tab) {
+        if (tab.isNativePage() && tab.getNativePage().isPdf()) {
+            DownloadController.downloadUrl(tab.getUrl().getSpec(), tab);
+            return;
+        }
         OfflinePageOrigin origin = new OfflinePageOrigin(context, tab);
 
         if (tab.isShowingErrorPage()) {

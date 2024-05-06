@@ -170,7 +170,7 @@ static void JNI_DownloadController_OnAcquirePermissionResult(
     JNIEnv* env,
     jlong callback_id,
     jboolean granted,
-    const JavaParamRef<jstring>& jpermission_to_update) {
+    std::string& permission_to_update) {
   DCHECK_CURRENTLY_ON(BrowserThread::UI);
   DCHECK(callback_id);
 
@@ -180,11 +180,6 @@ static void JNI_DownloadController_OnAcquirePermissionResult(
     return;
   }
 
-  std::string permission_to_update;
-  if (jpermission_to_update) {
-    permission_to_update =
-        base::android::ConvertJavaStringToUTF8(env, jpermission_to_update);
-  }
   // Convert java long long int to c++ pointer, take ownership.
   std::unique_ptr<DownloadController::AcquirePermissionCallback> cb(
       reinterpret_cast<DownloadController::AcquirePermissionCallback*>(
@@ -192,20 +187,33 @@ static void JNI_DownloadController_OnAcquirePermissionResult(
   std::move(*cb).Run(granted, permission_to_update);
 }
 
-static void JNI_DownloadController_CancelDownload(
-    JNIEnv* env,
-    const JavaParamRef<jobject>& jprofile,
-    const JavaParamRef<jstring>& jdownload_guid) {
+static void JNI_DownloadController_CancelDownload(JNIEnv* env,
+                                                  Profile* profile,
+                                                  std::string& download_guid) {
   DCHECK_CURRENTLY_ON(BrowserThread::UI);
 
-  Profile* profile = ProfileAndroid::FromProfileAndroid(jprofile);
   DownloadManager* download_manager = profile->GetDownloadManager();
   if (download_manager) {
-    DownloadItem* download = download_manager->GetDownloadByGuid(
-        base::android::ConvertJavaStringToUTF8(env, jdownload_guid));
+    DownloadItem* download = download_manager->GetDownloadByGuid(download_guid);
     if (download) {
       download->Cancel(/*user_cancel=*/false);
     }
+  }
+}
+
+static void JNI_DownloadController_DownloadUrl(JNIEnv* env,
+                                               std::string& url,
+                                               Profile* profile) {
+  DCHECK_CURRENTLY_ON(BrowserThread::UI);
+
+  DownloadManager* download_manager = profile->GetDownloadManager();
+  if (download_manager) {
+    auto dl_params = std::make_unique<download::DownloadUrlParameters>(
+        GURL(url),
+        TRAFFIC_ANNOTATION_WITHOUT_PROTO("Download via toolbar menu"));
+    dl_params->set_content_initiated(false);
+    dl_params->set_download_source(download::DownloadSource::TOOLBAR_MENU);
+    download_manager->DownloadUrl(std::move(dl_params));
   }
 }
 

@@ -48,6 +48,9 @@ enum class DownloadSource {
 
   // Retry download triggered through the downloads bubble.
   RETRY_FROM_BUBBLE = 11,
+
+  // Toolbar menu, only available on Android.
+  TOOLBAR_MENU = 12,
 };
 
 }  // namespace download

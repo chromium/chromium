@@ -9,6 +9,7 @@ import android.Manifest.permission;
 import androidx.annotation.Nullable;
 
 import org.jni_zero.CalledByNative;
+import org.jni_zero.JniType;
 import org.jni_zero.NativeMethods;
 
 import org.chromium.chrome.browser.pdf.PdfPage;
@@ -26,6 +27,17 @@ import org.chromium.url.GURL;
 
 /** Java counterpart of android DownloadController. Owned by native. */
 public class DownloadController {
+    /**
+     * Called to download the given URL triggered from a tab.
+     *
+     * @param url Url to download.
+     * @param tab Tab triggering the download.
+     */
+    public static void downloadUrl(String url, Tab tab) {
+        assert hasFileAccess(tab.getWindowAndroid());
+        DownloadControllerJni.get().downloadUrl(url, tab.getProfile());
+    }
+
     /**
      * Notifies the download delegate that a download completed and passes along info about the
      * download. This can be either a POST download or a GET download with authentication.
@@ -71,14 +83,17 @@ public class DownloadController {
         if (windowAndroid == null) {
             DownloadControllerJni.get()
                     .onAcquirePermissionResult(
-                            callbackId, /* granted= */ false, /* permissionToUpdate= */ null);
+                            callbackId, /* granted= */ false, /* permissionToUpdate= */ "");
             return;
         }
         FileAccessPermissionHelper.requestFileAccessPermissionHelper(
                 windowAndroid,
                 result -> {
                     DownloadControllerJni.get()
-                            .onAcquirePermissionResult(callbackId, result.first, result.second);
+                            .onAcquirePermissionResult(
+                                    callbackId,
+                                    result.first,
+                                    result.second == null ? "" : result.second);
                 });
     }
 
@@ -148,8 +163,14 @@ public class DownloadController {
 
     @NativeMethods
     interface Natives {
-        void onAcquirePermissionResult(long callbackId, boolean granted, String permissionToUpdate);
+        void onAcquirePermissionResult(
+                long callbackId,
+                boolean granted,
+                @JniType("std::string") String permissionToUpdate);
 
-        void cancelDownload(Profile profile, String downloadGuid);
+        void downloadUrl(@JniType("std::string") String url, @JniType("Profile*") Profile profile);
+
+        void cancelDownload(
+                @JniType("Profile*") Profile profile, @JniType("std::string") String downloadGuid);
     }
 }

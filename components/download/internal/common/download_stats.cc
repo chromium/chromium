@@ -119,6 +119,9 @@ std::string CreateHistogramNameWithSuffix(const std::string& name,
     case DownloadSource::RETRY_FROM_BUBBLE:
       suffix = "RetryFromBubble";
       break;
+    case DownloadSource::TOOLBAR_MENU:
+      suffix = "ToolbarMenu";
+      break;
   }
 
   return name + "." + suffix;

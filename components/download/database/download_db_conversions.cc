@@ -87,6 +87,8 @@ DownloadSource DownloadDBConversions::DownloadSourceFromProto(
       return DownloadSource::RETRY;
     case download_pb::DownloadSource::RETRY_FROM_BUBBLE:
       return DownloadSource::RETRY_FROM_BUBBLE;
+    case download_pb::DownloadSource::TOOLBAR_MENU:
+      return DownloadSource::TOOLBAR_MENU;
   }
   NOTREACHED();
   return DownloadSource::UNKNOWN;
@@ -120,6 +122,8 @@ download_pb::DownloadSource DownloadDBConversions::DownloadSourceToProto(
       return download_pb::DownloadSource::RETRY;
     case DownloadSource::RETRY_FROM_BUBBLE:
       return download_pb::DownloadSource::RETRY_FROM_BUBBLE;
+    case DownloadSource::TOOLBAR_MENU:
+      return download_pb::DownloadSource::TOOLBAR_MENU;
   }
   NOTREACHED();
   return download_pb::DownloadSource::UNKNOWN;
