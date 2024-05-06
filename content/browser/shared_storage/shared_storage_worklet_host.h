@@ -262,7 +262,7 @@ class CONTENT_EXPORT SharedStorageWorkletHost
   // `IsSharedStorageAllowed()`, and to get the global URLLoaderFactory.
   raw_ptr<BrowserContext> browser_context_;
 
-  // The shared storage owner document's origin and site.
+  // The shared storage script's origin and site.
   url::Origin shared_storage_origin_;
   net::SchemefulSite shared_storage_site_;
 
