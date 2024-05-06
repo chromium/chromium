@@ -405,11 +405,8 @@ targets.legacy_basic_suite(
     tests = {
         "chrome_sizes": targets.legacy_test_config(
             remove_mixins = [
-                "android_r",
                 "bullhead",
-                "flame",
                 "marshmallow",
-                "mdarcy",
                 "oreo_fleet",
                 "oreo_mr1_fleet",
                 "pie_fleet",
@@ -1716,11 +1713,8 @@ targets.legacy_basic_suite(
     tests = {
         "cronet_sizes": targets.legacy_test_config(
             remove_mixins = [
-                "android_r",
                 "bullhead",
-                "flame",
                 "marshmallow",
-                "mdarcy",
                 "oreo_fleet",
                 "oreo_mr1_fleet",
                 "pie_fleet",
@@ -4197,11 +4191,8 @@ targets.legacy_basic_suite(
     tests = {
         "monochrome_public_apk_checker": targets.legacy_test_config(
             remove_mixins = [
-                "android_r",
                 "bullhead",
-                "flame",
                 "marshmallow",
-                "mdarcy",
                 "oreo_fleet",
                 "oreo_mr1_fleet",
                 "pie_fleet",

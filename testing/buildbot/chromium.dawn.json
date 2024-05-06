@@ -71,7 +71,7 @@
         },
         "swarming": {
           "dimensions": {
-            "device_os": "R",
+            "device_os": "RP1A.201105.002",
             "device_os_type": "userdebug",
             "device_type": "flame",
             "os": "Android",
@@ -110,7 +110,7 @@
         },
         "swarming": {
           "dimensions": {
-            "device_os": "R",
+            "device_os": "RP1A.201105.002",
             "device_os_type": "userdebug",
             "device_type": "flame",
             "os": "Android",
@@ -151,7 +151,7 @@
         },
         "swarming": {
           "dimensions": {
-            "device_os": "R",
+            "device_os": "RP1A.201105.002",
             "device_os_type": "userdebug",
             "device_type": "flame",
             "os": "Android",
@@ -191,7 +191,7 @@
         },
         "swarming": {
           "dimensions": {
-            "device_os": "R",
+            "device_os": "RP1A.201105.002",
             "device_os_type": "userdebug",
             "device_type": "flame",
             "os": "Android",
@@ -231,7 +231,7 @@
         },
         "swarming": {
           "dimensions": {
-            "device_os": "R",
+            "device_os": "RP1A.201105.002",
             "device_os_type": "userdebug",
             "device_type": "flame",
             "os": "Android",
@@ -272,7 +272,7 @@
         },
         "swarming": {
           "dimensions": {
-            "device_os": "R",
+            "device_os": "RP1A.201105.002",
             "device_os_type": "userdebug",
             "device_type": "flame",
             "os": "Android",
@@ -359,7 +359,7 @@
         },
         "swarming": {
           "dimensions": {
-            "device_os": "R",
+            "device_os": "RP1A.201105.002",
             "device_os_type": "userdebug",
             "device_type": "flame",
             "os": "Android",
@@ -398,7 +398,7 @@
         },
         "swarming": {
           "dimensions": {
-            "device_os": "R",
+            "device_os": "RP1A.201105.002",
             "device_os_type": "userdebug",
             "device_type": "flame",
             "os": "Android",
@@ -439,7 +439,7 @@
         },
         "swarming": {
           "dimensions": {
-            "device_os": "R",
+            "device_os": "RP1A.201105.002",
             "device_os_type": "userdebug",
             "device_type": "flame",
             "os": "Android",
@@ -479,7 +479,7 @@
         },
         "swarming": {
           "dimensions": {
-            "device_os": "R",
+            "device_os": "RP1A.201105.002",
             "device_os_type": "userdebug",
             "device_type": "flame",
             "os": "Android",
@@ -519,7 +519,7 @@
         },
         "swarming": {
           "dimensions": {
-            "device_os": "R",
+            "device_os": "RP1A.201105.002",
             "device_os_type": "userdebug",
             "device_type": "flame",
             "os": "Android",
@@ -560,7 +560,7 @@
         },
         "swarming": {
           "dimensions": {
-            "device_os": "R",
+            "device_os": "RP1A.201105.002",
             "device_os_type": "userdebug",
             "device_type": "flame",
             "os": "Android",

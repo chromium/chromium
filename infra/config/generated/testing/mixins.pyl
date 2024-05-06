@@ -204,34 +204,6 @@
       },
     },
   },
-  'android_r': {
-    'swarming': {
-      'dimensions': {
-        'device_os': 'R',
-      },
-    },
-  },
-  'android_t': {
-    'swarming': {
-      'dimensions': {
-        'device_os': 'TP1A.220624.021',
-      },
-    },
-  },
-  'android_u': {
-    'swarming': {
-      'dimensions': {
-        'device_os': 'AP1A.240405.002',
-      },
-    },
-  },
-  'android_user': {
-    'swarming': {
-      'dimensions': {
-        'device_os_type': 'user',
-      },
-    },
-  },
   'arm64': {
     'swarming': {
       'dimensions': {
@@ -472,14 +444,6 @@
       },
     },
   },
-  'flame': {
-    'swarming': {
-      'dimensions': {
-        'device_type': 'flame',
-        'os': 'Android',
-      },
-    },
-  },
   'fuchsia-code-coverage': {
     'args': [
       '--code-coverage-dir=${ISOLATED_OUTDIR}',
@@ -540,6 +504,94 @@
       '--use-weston',
       '--weston-use-gl',
     ],
+  },
+  'gpu_nvidia_shield_tv_stable': {
+    'swarming': {
+      'dimensions': {
+        'os': 'Android',
+        'device_type': 'mdarcy',
+        'device_os': 'PPR1.180610.011',
+        'device_os_type': 'userdebug',
+        'pool': 'chromium.tests.gpu',
+      },
+    },
+  },
+  'gpu_pixel_4_stable': {
+    'swarming': {
+      'dimensions': {
+        'os': 'Android',
+        'device_type': 'flame',
+        'device_os': 'RP1A.201105.002',
+        'device_os_type': 'userdebug',
+        'pool': 'chromium.tests.gpu',
+      },
+    },
+  },
+  'gpu_pixel_6_experimental': {
+    'swarming': {
+      'dimensions': {
+        'os': 'Android',
+        'device_type': 'oriole',
+        'device_os': 'AP1A.240405.002',
+        'device_os_type': 'userdebug',
+        'pool': 'chromium.tests.gpu',
+      },
+    },
+  },
+  'gpu_pixel_6_stable': {
+    'swarming': {
+      'dimensions': {
+        'os': 'Android',
+        'device_type': 'oriole',
+        'device_os': 'TP1A.220624.021',
+        'device_os_type': 'userdebug',
+        'pool': 'chromium.tests.gpu',
+      },
+    },
+  },
+  'gpu_samsung_a13_stable': {
+    'swarming': {
+      'dimensions': {
+        'os': 'Android',
+        'device_type': 'a13',
+        'device_os': 'S',
+        'device_os_type': 'user',
+        'pool': 'chromium.tests.gpu',
+      },
+    },
+  },
+  'gpu_samsung_a23_stable': {
+    'swarming': {
+      'dimensions': {
+        'os': 'Android',
+        'device_type': 'a23',
+        'device_os': 'SP1A.210812.016',
+        'device_os_type': 'user',
+        'pool': 'chromium.tests.gpu',
+      },
+    },
+  },
+  'gpu_samsung_s23_stable': {
+    'swarming': {
+      'dimensions': {
+        'device_type': 'dm1q',
+        'device_os': 'UP1A.231005.007',
+        'device_os_type': 'user',
+        'os': 'Android',
+        'pool': 'chromium.tests.gpu',
+      },
+    },
+  },
+  'gpu_samsung_s24_stable': {
+    'swarming': {
+      'dimensions': {
+        'device_type': 'e2s',
+        'device_os': 'UP1A.231005.007',
+        'device_os_type': 'user',
+        'os': 'Android',
+        'pool': 'chromium.tests.gpu',
+      },
+    },
   },
   'has_native_resultdb_integration': {
     'resultdb': {
@@ -1032,14 +1084,6 @@
       ],
     },
   },
-  'mdarcy': {
-    'swarming': {
-      'dimensions': {
-        'device_type': 'mdarcy',
-        'os': 'Android',
-      },
-    },
-  },
   'motorola_moto_g_power_5g': {
     'swarming': {
       'dimensions': {
@@ -1116,14 +1160,6 @@
       },
     },
   },
-  'oriole': {
-    'swarming': {
-      'dimensions': {
-        'device_type': 'oriole',
-        'os': 'Android',
-      },
-    },
-  },
   'out_dir_arg': {
     'args': [
       '--out-dir',
@@ -1156,13 +1192,6 @@
       },
     },
   },
-  'pie_generic': {
-    'swarming': {
-      'dimensions': {
-        'device_os': 'P',
-      },
-    },
-  },
   'puppet_production': {
     'swarming': {
       'dimensions': {
@@ -1175,51 +1204,6 @@
       '--record-video',
       'failed_only',
     ],
-  },
-  's_generic': {
-    'swarming': {
-      'dimensions': {
-        'device_os': 'S',
-      },
-    },
-  },
-  'samsung_a13': {
-    'swarming': {
-      'dimensions': {
-        'device_type': 'a13',
-        'os': 'Android',
-      },
-    },
-  },
-  'samsung_a23': {
-    'swarming': {
-      'dimensions': {
-        'device_type': 'a23',
-        'os': 'Android',
-      },
-    },
-  },
-  'samsung_s23': {
-    'swarming': {
-      'dimensions': {
-        'device_type': 'dm1q',
-        'device_os': 'UP1A.231005.007',
-        'device_os_type': 'user',
-        'os': 'Android',
-        'pool': 'chromium.tests.gpu',
-      },
-    },
-  },
-  'samsung_s24': {
-    'swarming': {
-      'dimensions': {
-        'device_type': 'e2s',
-        'device_os': 'UP1A.231005.007',
-        'device_os_type': 'user',
-        'os': 'Android',
-        'pool': 'chromium.tests.gpu',
-      },
-    },
   },
   'shards-10': {
     'shards': 10,

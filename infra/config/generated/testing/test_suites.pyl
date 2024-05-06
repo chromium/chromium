@@ -424,11 +424,8 @@
           'has_native_resultdb_integration',
         ],
         'remove_mixins': [
-          'android_r',
           'bullhead',
-          'flame',
           'marshmallow',
-          'mdarcy',
           'oreo_fleet',
           'pie_fleet',
           'walleye',
@@ -1016,11 +1013,11 @@
           'junit-swarming-emulator',
         ],
         'remove_mixins': [
+          'walleye',
+          'pie_fleet',
           'emulator-4-cores',
           'nougat-x86-emulator',
           'oreo-x86-emulator',
-          'walleye',
-          'pie_fleet',
         ],
       },
       'base_junit_tests': {
@@ -1268,11 +1265,11 @@
           'junit-swarming-emulator',
         ],
         'remove_mixins': [
+          'walleye',
+          'pie_fleet',
           'emulator-4-cores',
           'nougat-x86-emulator',
           'oreo-x86-emulator',
-          'walleye',
-          'pie_fleet',
         ],
       },
       'webapk_client_junit_tests': {
@@ -1750,11 +1747,8 @@
     'cronet_sizes_suite': {
       'cronet_sizes': {
         'remove_mixins': [
-          'android_r',
           'bullhead',
-          'flame',
           'marshmallow',
-          'mdarcy',
           'oreo_fleet',
           'pie_fleet',
           'walleye',
@@ -4324,11 +4318,8 @@
     'monochrome_public_apk_checker_isolated_script': {
       'monochrome_public_apk_checker': {
         'remove_mixins': [
-          'android_r',
           'bullhead',
-          'flame',
           'marshmallow',
-          'mdarcy',
           'oreo_fleet',
           'pie_fleet',
           'walleye',

@@ -238,42 +238,6 @@ targets.mixin(
 )
 
 targets.mixin(
-    name = "android_r",
-    swarming = targets.swarming(
-        dimensions = {
-            "device_os": "R",
-        },
-    ),
-)
-
-targets.mixin(
-    name = "android_t",
-    swarming = targets.swarming(
-        dimensions = {
-            "device_os": "TP1A.220624.021",
-        },
-    ),
-)
-
-targets.mixin(
-    name = "android_u",
-    swarming = targets.swarming(
-        dimensions = {
-            "device_os": "AP1A.240405.002",
-        },
-    ),
-)
-
-targets.mixin(
-    name = "android_user",
-    swarming = targets.swarming(
-        dimensions = {
-            "device_os_type": "user",
-        },
-    ),
-)
-
-targets.mixin(
     name = "arm64",
     swarming = targets.swarming(
         dimensions = {
@@ -607,17 +571,6 @@ targets.mixin(
     ),
 )
 
-# Pixel 4
-targets.mixin(
-    name = "flame",
-    swarming = targets.swarming(
-        dimensions = {
-            "device_type": "flame",
-            "os": "Android",
-        },
-    ),
-)
-
 targets.mixin(
     name = "fuchsia-code-coverage",
     args = [
@@ -689,6 +642,116 @@ targets.mixin(
         "--use-weston",
         "--weston-use-gl",
     ],
+)
+
+targets.mixin(
+    name = "gpu_nvidia_shield_tv_stable",
+    swarming = targets.swarming(
+        dimensions = {
+            "os": "Android",
+            "device_type": "mdarcy",
+            "device_os": "PPR1.180610.011",
+            "device_os_type": "userdebug",
+            "pool": "chromium.tests.gpu",
+        },
+    ),
+)
+
+targets.mixin(
+    name = "gpu_pixel_4_stable",
+    swarming = targets.swarming(
+        dimensions = {
+            "os": "Android",
+            "device_type": "flame",
+            "device_os": "RP1A.201105.002",
+            "device_os_type": "userdebug",
+            "pool": "chromium.tests.gpu",
+        },
+    ),
+)
+
+targets.mixin(
+    name = "gpu_pixel_6_experimental",
+    swarming = targets.swarming(
+        dimensions = {
+            "os": "Android",
+            "device_type": "oriole",
+            "device_os": "AP1A.240405.002",
+            "device_os_type": "userdebug",
+            "pool": "chromium.tests.gpu",
+        },
+    ),
+)
+
+targets.mixin(
+    name = "gpu_pixel_6_stable",
+    swarming = targets.swarming(
+        dimensions = {
+            "os": "Android",
+            "device_type": "oriole",
+            "device_os": "TP1A.220624.021",
+            "device_os_type": "userdebug",
+            "pool": "chromium.tests.gpu",
+        },
+    ),
+)
+
+targets.mixin(
+    name = "gpu_samsung_a13_stable",
+    swarming = targets.swarming(
+        dimensions = {
+            "os": "Android",
+            "device_type": "a13",
+            "device_os": "S",
+            "device_os_type": "user",
+            "pool": "chromium.tests.gpu",
+        },
+    ),
+)
+
+targets.mixin(
+    name = "gpu_samsung_a23_stable",
+    swarming = targets.swarming(
+        dimensions = {
+            "os": "Android",
+            "device_type": "a23",
+            "device_os": "SP1A.210812.016",
+            "device_os_type": "user",
+            "pool": "chromium.tests.gpu",
+        },
+    ),
+)
+
+targets.mixin(
+    name = "gpu_samsung_s23_stable",
+    swarming = targets.swarming(
+        dimensions = {
+            # Unfortunately, "s23" is not exposed as a dimension. "dm1q" appears
+            # to refer to the S23 specifically, while "kalama" is for the entire
+            # S23 family.
+            "device_type": "dm1q",
+            "device_os": "UP1A.231005.007",
+            "device_os_type": "user",
+            "os": "Android",
+            "pool": "chromium.tests.gpu",
+        },
+    ),
+)
+
+targets.mixin(
+    name = "gpu_samsung_s24_stable",
+    swarming = targets.swarming(
+        dimensions = {
+            # Unfortunately, "s24" is not exposed as a dimension. "e2s" appears
+            # to refer to the S24 specifically, while "s5e9945" is for the
+            # entire S24 family.
+            "device_type": "e2s",
+            "device_os": "UP1A.231005.007",
+            "device_os_type": "user",
+            "os": "Android",
+            "pool": "chromium.tests.gpu",
+        },
+    ),
 )
 
 targets.mixin(
@@ -1328,17 +1391,6 @@ targets.mixin(
     ),
 )
 
-# NVIDIA Shield TV 2019
-targets.mixin(
-    name = "mdarcy",
-    swarming = targets.swarming(
-        dimensions = {
-            "device_type": "mdarcy",
-            "os": "Android",
-        },
-    ),
-)
-
 targets.mixin(
     name = "motorola_moto_g_power_5g",
     swarming = targets.swarming(
@@ -1442,17 +1494,6 @@ targets.mixin(
     ),
 )
 
-# Pixel 6
-targets.mixin(
-    name = "oriole",
-    swarming = targets.swarming(
-        dimensions = {
-            "device_type": "oriole",
-            "os": "Android",
-        },
-    ),
-)
-
 # Pixel 8
 targets.mixin(
     name = "shiba",
@@ -1504,15 +1545,6 @@ targets.mixin(
 )
 
 targets.mixin(
-    name = "pie_generic",
-    swarming = targets.swarming(
-        dimensions = {
-            "device_os": "P",
-        },
-    ),
-)
-
-targets.mixin(
     name = "puppet_production",
     swarming = targets.swarming(
         dimensions = {
@@ -1527,67 +1559,6 @@ targets.mixin(
         "--record-video",
         "failed_only",
     ],
-)
-
-targets.mixin(
-    name = "s_generic",
-    swarming = targets.swarming(
-        dimensions = {
-            "device_os": "S",
-        },
-    ),
-)
-
-targets.mixin(
-    name = "samsung_a13",
-    swarming = targets.swarming(
-        dimensions = {
-            "device_type": "a13",
-            "os": "Android",
-        },
-    ),
-)
-
-targets.mixin(
-    name = "samsung_a23",
-    swarming = targets.swarming(
-        dimensions = {
-            "device_type": "a23",
-            "os": "Android",
-        },
-    ),
-)
-
-targets.mixin(
-    name = "samsung_s23",
-    swarming = targets.swarming(
-        dimensions = {
-            # Unfortunately, "s23" is not exposed as a dimension. "dm1q" appears
-            # to refer to the S23 specifically, while "kalama" is for the entire
-            # S23 family.
-            "device_type": "dm1q",
-            "device_os": "UP1A.231005.007",
-            "device_os_type": "user",
-            "os": "Android",
-            "pool": "chromium.tests.gpu",
-        },
-    ),
-)
-
-targets.mixin(
-    name = "samsung_s24",
-    swarming = targets.swarming(
-        dimensions = {
-            # Unfortunately, "s24" is not exposed as a dimension. "e2s" appears
-            # to refer to the S24 specifically, while "s5e9945" is for the
-            # entire S24 family.
-            "device_type": "e2s",
-            "device_os": "UP1A.231005.007",
-            "device_os_type": "user",
-            "os": "Android",
-            "pool": "chromium.tests.gpu",
-        },
-    ),
 )
 
 targets.mixin(
