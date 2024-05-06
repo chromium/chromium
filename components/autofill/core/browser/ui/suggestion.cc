@@ -8,7 +8,6 @@
 #include <utility>
 
 #include "base/strings/utf_string_conversions.h"
-#include "base/types/cxx23_to_underlying.h"
 #include "components/autofill/core/browser/data_model/credit_card.h"
 #include "components/autofill/core/browser/ui/suggestion_type.h"
 
@@ -164,8 +163,8 @@ std::string_view ConvertIconToPrintableString(Suggestion::Icon icon) {
 
 void PrintTo(const Suggestion& suggestion, std::ostream* os) {
   *os << std::endl
-      << "Suggestion (type:" << base::to_underlying(suggestion.type)
-      << ", main_text:\"" << suggestion.main_text.value << "\""
+      << "Suggestion (type:" << suggestion.type << ", main_text:\""
+      << suggestion.main_text.value << "\""
       << (suggestion.main_text.is_primary ? "(Primary)" : "(Not Primary)")
       << ", minor_text:\"" << suggestion.minor_text.value << "\""
       << (suggestion.minor_text.is_primary ? "(Primary)" : "(Not Primary)")
