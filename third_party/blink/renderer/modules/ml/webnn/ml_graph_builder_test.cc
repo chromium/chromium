@@ -1261,6 +1261,15 @@ class FakeMLGraphBackend final : public MLGraph {
                    ExceptionState& exception_state) override {
     resolver->Resolve();
   }
+
+  // Just return for testing the validation of inputs and outputs in
+  // MLGraph::Dispatch().
+  void DispatchImpl(ScopedMLTrace scoped_trace,
+                    const MLNamedBuffers& inputs,
+                    const MLNamedBuffers& outputs,
+                    ExceptionState& exception_state) override {
+    return;
+  }
 };
 
 FakeMLGraphBackend* ToFakeMLGraphBackend(V8TestingScope* scope,

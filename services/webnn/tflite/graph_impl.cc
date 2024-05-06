@@ -270,4 +270,12 @@ void GraphImpl::OnComputeComplete(ComputeCallback callback,
   std::move(callback).Run(std::move(result.first));
 }
 
+void GraphImpl::DispatchImpl(
+    const base::flat_map<std::string_view, WebNNBufferImpl*>& named_inputs,
+    const base::flat_map<std::string_view, WebNNBufferImpl*>& named_outputs) {
+  // TODO(crbug.com/1472888): Implement MLBuffer for TFLite. Involve
+  // an IPC security reviewer.
+  NOTIMPLEMENTED();
+}
+
 }  // namespace webnn::tflite

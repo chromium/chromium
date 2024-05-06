@@ -500,6 +500,13 @@ void GraphImpl::DidPredict(base::ElapsedTimer model_predict_timer,
   }
 }
 
+void GraphImpl::DispatchImpl(
+    const base::flat_map<std::string_view, WebNNBufferImpl*>& named_inputs,
+    const base::flat_map<std::string_view, WebNNBufferImpl*>& named_outputs) {
+  // TODO(crbug.com/1472888): Implement MLBuffer for CoreML.
+  NOTIMPLEMENTED();
+}
+
 GraphImpl::CompilationContext::CompilationContext(
     ComputeResourceInfo compute_resource_info,
     std::unique_ptr<CoreMLFeatureInfoMap> input_feature_info,

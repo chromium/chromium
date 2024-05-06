@@ -10,6 +10,7 @@
 #include "third_party/blink/renderer/bindings/modules/v8/v8_ml_compute_result.h"
 #include "third_party/blink/renderer/core/execution_context/execution_context.h"
 #include "third_party/blink/renderer/modules/ml/ml.h"
+#include "third_party/blink/renderer/modules/ml/webnn/ml_buffer_mojo.h"
 #include "third_party/blink/renderer/modules/ml/webnn/ml_error_mojo.h"
 #include "third_party/blink/renderer/modules/ml/webnn/ml_graph_type_converter.h"
 #include "third_party/blink/renderer/modules/ml/webnn/ml_graph_utils.h"
@@ -194,6 +195,51 @@ void MLGraphMojo::ComputeImpl(ScopedMLTrace scoped_trace,
       WTF::BindOnce(&MLGraphMojo::OnDidCompute, WrapPersistent(this),
                     std::move(scoped_trace), WrapPersistent(resolver),
                     std::move(inputs_info), std::move(outputs_info)));
+}
+
+void MLGraphMojo::DispatchImpl(ScopedMLTrace scoped_trace,
+                               const MLNamedBuffers& inputs,
+                               const MLNamedBuffers& outputs,
+                               ExceptionState& exception_state) {
+  // Remote graph gets automatically unbound when the execution context
+  // destructs.
+  if (!remote_graph_.is_bound()) {
+    exception_state.ThrowDOMException(DOMExceptionCode::kInvalidStateError,
+                                      "Invalid graph state");
+    return;
+  }
+
+  // The inputs and outputs were already verified in the base class so we can
+  // pass the buffer directly with the input and output tensors.
+  HashMap<String, base::UnguessableToken> mojo_inputs;
+  for (const auto& [name, input_buffer] : inputs) {
+    // Remote buffer gets automatically unbound when the execution context
+    // destructs.
+    MLBufferMojo* ml_buffer_mojo =
+        static_cast<MLBufferMojo*>(input_buffer.Get());
+    if (!ml_buffer_mojo->is_bound()) {
+      exception_state.ThrowDOMException(DOMExceptionCode::kInvalidStateError,
+                                        "Invalid input buffer state");
+      return;
+    }
+
+    mojo_inputs.insert(name, ml_buffer_mojo->handle());
+  }
+
+  HashMap<String, base::UnguessableToken> mojo_outputs;
+  for (const auto& [name, output_buffer] : outputs) {
+    MLBufferMojo* ml_buffer_mojo =
+        static_cast<MLBufferMojo*>(output_buffer.Get());
+    if (!ml_buffer_mojo->is_bound()) {
+      exception_state.ThrowDOMException(DOMExceptionCode::kInvalidStateError,
+                                        "Invalid output buffer state");
+      return;
+    }
+
+    mojo_outputs.insert(name, ml_buffer_mojo->handle());
+  }
+
+  remote_graph_->Dispatch(std::move(mojo_inputs), std::move(mojo_outputs));
 }
 
 void MLGraphMojo::OnDidCompute(

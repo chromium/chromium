@@ -2703,6 +2703,8 @@ crbug.com/1500120 [ Win11-arm64 ] external/wpt/webnn/* [ Skip ]
 # WebNN feature work in-progress.
 crbug.com/1472888 [ Mac ] virtual/webnn-service-with-gpu/external/wpt/webnn/conformance_tests/buffer.https.any.html?gpu [ Skip ]
 crbug.com/1472888 [ Mac ] virtual/webnn-service-with-gpu/external/wpt/webnn/conformance_tests/buffer.https.any.worker.html?gpu [ Skip ]
+crbug.com/1472888 [ Linux ] virtual/webnn-service-without-gpu/external/wpt/webnn/conformance_tests/buffer.https.any.html?gpu [ Skip ]
+crbug.com/1472888 [ Linux ] virtual/webnn-service-without-gpu/external/wpt/webnn/conformance_tests/buffer.https.any.worker.html?gpu [ Skip ]
 
 ######## Unload Deprecation
 # This is for tests in the "unload-allowed" virtual suite that

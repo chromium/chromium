@@ -39,6 +39,8 @@ class MODULES_EXPORT MLBufferMojo final : public MLBuffer {
 
   const base::UnguessableToken& handle() const { return webnn_handle_; }
 
+  bool is_bound() const { return remote_buffer_.is_bound(); }
+
  protected:
   void DestroyImpl() override;
 

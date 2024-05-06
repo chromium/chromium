@@ -4,6 +4,8 @@
 
 #include "third_party/blink/renderer/modules/ml/webnn/ml_graph.h"
 
+#include <cinttypes>
+
 #include "base/numerics/checked_math.h"
 #include "third_party/blink/renderer/bindings/core/v8/script_promise_resolver.h"
 #include "third_party/blink/renderer/core/dom/dom_exception.h"
@@ -12,6 +14,7 @@
 #include "third_party/blink/renderer/core/typed_arrays/dom_data_view.h"
 #include "third_party/blink/renderer/core/typed_arrays/dom_typed_array.h"
 #include "third_party/blink/renderer/modules/ml/ml_context.h"
+#include "third_party/blink/renderer/modules/ml/webnn/ml_buffer.h"
 #include "third_party/blink/renderer/modules/ml/webnn/ml_operand.h"
 #include "third_party/blink/renderer/modules/ml/webnn/ml_operator.h"
 #include "third_party/blink/renderer/platform/bindings/exception_state.h"
@@ -70,6 +73,71 @@ bool ValidateNamedArrayBufferViews(
   return true;
 }
 
+// TODO(crbug.com/1472888): switch validation functions to use base::unexpected.
+bool ValidateNamedMLBuffers(
+    const MLContext* context,
+    const MLNamedBuffers& named_buffers,
+    const HashMap<String, MLGraph::ResourceInfo>& resources_info,
+    String& error_message) {
+  if (named_buffers.size() !=
+      base::checked_cast<wtf_size_t>(resources_info.size())) {
+    error_message = String::Format(
+        "The number (%u) of MLBuffer(s) doesn't match the "
+        "expectation (%u).",
+        named_buffers.size(), resources_info.size());
+    return false;
+  }
+  for (const auto& [name, buffer] : named_buffers) {
+    if (!resources_info.Contains(name)) {
+      error_message = String::Format("The name \"%s\" isn't part of the graph.",
+                                     name.Utf8().c_str());
+      return false;
+    }
+    const auto& info = resources_info.at(name);
+    if (buffer->size() != info.byte_length) {
+      error_message =
+          String::Format("The size %" PRIu64
+                         ", of the MLBuffer with name \"%s\" "
+                         "doesn't match the expected byte length (%zu).",
+                         buffer->size(), name.Utf8().c_str(), info.byte_length);
+      return false;
+    }
+    if (buffer->context() != context) {
+      error_message = String::Format(
+          "The context of MLGraph doesn't match the context of the MLBuffer "
+          "with name \"%s\".",
+          name.Utf8().c_str());
+      return false;
+    }
+  }
+  return true;
+}
+
+bool ValidateMLBufferUsage(const MLNamedBuffers& named_inputs,
+                           const MLNamedBuffers& named_outputs,
+                           String& error_message) {
+  // Validate that output buffers are unique.
+  HeapHashSet<Member<MLBuffer>> output_buffers;
+  for (const auto& named_output : named_outputs) {
+    output_buffers.insert(named_output.second);
+  }
+
+  if (output_buffers.size() != named_outputs.size()) {
+    error_message =
+        "The same MLBuffer cannot be used more than once as output.";
+    return false;
+  }
+
+  // Validate buffers used for input and output are unique.
+  for (const auto& named_input : named_inputs) {
+    if (output_buffers.Contains(named_input.second)) {
+      error_message = "The same MLBuffer cannot be used as input and output.";
+      return false;
+    }
+  }
+  return true;
+}
+
 }  // namespace
 
 MLGraph::MLGraph(MLContext* context) : ml_context_(context) {}
@@ -117,6 +185,35 @@ void MLGraph::Compute(ScopedMLTrace scoped_trace,
   // Call ComputeImpl() implemented by an MLGraph backend.
   ComputeImpl(std::move(scoped_trace), inputs, outputs, resolver,
               exception_state);
+}
+
+void MLGraph::Dispatch(ScopedMLTrace scoped_trace,
+                       const MLNamedBuffers& inputs,
+                       const MLNamedBuffers& outputs,
+                       ExceptionState& exception_state) {
+  // The MLGraph object should be initialized before dispatching.
+  DCHECK(resources_info_initialized_);
+
+  // Validate the MLNamedBuffers.
+  String error_message;
+  if (!ValidateNamedMLBuffers(Context(), inputs, input_resources_info_,
+                              error_message)) {
+    exception_state.ThrowTypeError("Invalid inputs: " + error_message);
+    return;
+  }
+  if (!ValidateNamedMLBuffers(Context(), outputs, output_resources_info_,
+                              error_message)) {
+    exception_state.ThrowTypeError("Invalid outputs: " + error_message);
+    return;
+  }
+
+  if (!ValidateMLBufferUsage(inputs, outputs, error_message)) {
+    exception_state.ThrowTypeError("Invalid dispatch: " + error_message);
+    return;
+  }
+
+  // Call DispatchImpl() implemented by an MLGraph backend.
+  DispatchImpl(std::move(scoped_trace), inputs, outputs, exception_state);
 }
 
 void MLGraph::Build(ScopedMLTrace scoped_trace,

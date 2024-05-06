@@ -5851,6 +5851,7 @@ interface MLContext
     method compute
     method constructor
     method createBuffer
+    method dispatch
     method readBuffer
     method writeBuffer
 interface MLGraph

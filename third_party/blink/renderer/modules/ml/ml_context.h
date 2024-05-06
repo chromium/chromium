@@ -112,6 +112,12 @@ class MODULES_EXPORT MLContext : public ScriptWrappable {
                                            MLBuffer* src_buffer,
                                            ExceptionState& exception_state);
 
+  void dispatch(ScriptState* script_state,
+                MLGraph* graph,
+                const MLNamedBuffers& inputs,
+                const MLNamedBuffers& outputs,
+                ExceptionState& exception_state);
+
   // Creates a platform-specific compute graph described by `graph_info`.
   void CreateWebNNGraph(
       webnn::mojom::blink::GraphInfoPtr graph_info,

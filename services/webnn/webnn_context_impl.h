@@ -7,6 +7,7 @@
 
 #include "base/component_export.h"
 #include "base/containers/flat_set.h"
+#include "base/types/optional_ref.h"
 #include "mojo/public/cpp/base/big_buffer.h"
 #include "mojo/public/cpp/bindings/pending_receiver.h"
 #include "mojo/public/cpp/bindings/receiver.h"
@@ -46,6 +47,11 @@ class COMPONENT_EXPORT(WEBNN_SERVICE) WebNNContextImpl
   void OnWebNNGraphImplCreated(
       mojo::PendingAssociatedReceiver<mojom::WebNNGraph> receiver,
       std::unique_ptr<WebNNGraphImpl> graph_impl);
+
+  // Retrieves a `WebNNBufferImpl` instance created from this context.
+  // Emits a bad message if a buffer with the given handle does not exist.
+  base::optional_ref<WebNNBufferImpl> GetWebNNBufferImpl(
+      const base::UnguessableToken& handle);
 
  protected:
   void OnConnectionError();

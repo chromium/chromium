@@ -55,6 +55,11 @@ class GraphImpl final : public WebNNGraphImpl {
 
   void OnComputeComplete(ComputeCallback callback, AsyncComputeResult result);
 
+  void DispatchImpl(
+      const base::flat_map<std::string_view, WebNNBufferImpl*>& named_inputs,
+      const base::flat_map<std::string_view, WebNNBufferImpl*>& named_outputs)
+      override;
+
   // This class is owned by the `UniqueAssociatedReceiverSet` in `ContextImpl`.
   raw_ptr<ContextImpl> context_;
 

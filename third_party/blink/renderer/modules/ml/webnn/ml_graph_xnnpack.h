@@ -141,6 +141,11 @@ class MODULES_EXPORT MLGraphXnnpack final : public MLGraph {
                    ScriptPromiseResolver<MLComputeResult>* resolver,
                    ExceptionState& exception_state) override;
 
+  void DispatchImpl(ScopedMLTrace scoped_trace,
+                    const MLNamedBuffers& inputs,
+                    const MLNamedBuffers& outputs,
+                    ExceptionState& exception_state) override;
+
   // Invoking an XNNPACK Runtime object can be time-consuming. Calling this
   // method in a background thread avoids blocking the main thread. The
   // ownership of `input_buffers`, `external_values`, `inputs_info` and

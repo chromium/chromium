@@ -116,6 +116,11 @@ class API_AVAILABLE(macos(14.0)) GraphImpl final : public WebNNGraphImpl {
                   id<MLFeatureProvider> output_features,
                   NSError* error);
 
+  void DispatchImpl(
+      const base::flat_map<std::string_view, WebNNBufferImpl*>& named_inputs,
+      const base::flat_map<std::string_view, WebNNBufferImpl*>& named_outputs)
+      override;
+
  private:
   SEQUENCE_CHECKER(sequence_checker_);
 

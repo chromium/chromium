@@ -19,6 +19,8 @@ dictionary MLComputeResult {
   MLNamedArrayBufferViews outputs;
 };
 
+typedef record<DOMString, MLBuffer> MLNamedBuffers;
+
 [
   RuntimeEnabled=MachineLearningCommon,
   SecureContext,
@@ -68,4 +70,12 @@ dictionary MLComputeResult {
     RaisesException
   ] Promise<ArrayBuffer> readBuffer(
         MLBuffer srcBuffer);
+
+  // TODO(crbug.com/1273291): enable partial buffer dispatches.
+  [
+    RuntimeEnabled=MachineLearningNeuralNetwork,
+    CallWith=ScriptState,
+    RaisesException
+  ] void dispatch(
+      MLGraph graph, MLNamedBuffers inputs, MLNamedBuffers outputs);
 };

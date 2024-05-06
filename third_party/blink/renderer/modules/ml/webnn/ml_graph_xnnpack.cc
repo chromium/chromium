@@ -2192,6 +2192,14 @@ void MLGraphXnnpack::ComputeImpl(
                           resolver_task_runner_));
 }
 
+void MLGraphXnnpack::DispatchImpl(ScopedMLTrace scoped_trace,
+                                  const MLNamedBuffers& inputs,
+                                  const MLNamedBuffers& outputs,
+                                  ExceptionState& exception_state) {
+  exception_state.ThrowDOMException(DOMExceptionCode::kNotSupportedError,
+                                    "Not implemented");
+}
+
 // static
 void MLGraphXnnpack::ComputeOnBackgroundThread(
     ScopedMLTrace scoped_trace,

@@ -86,4 +86,14 @@ void WebNNContextImpl::OnWebNNGraphImplCreated(
   graph_impls_.Add(std::move(graph_impl), std::move(receiver));
 }
 
+base::optional_ref<WebNNBufferImpl> WebNNContextImpl::GetWebNNBufferImpl(
+    const base::UnguessableToken& buffer_handle) {
+  const auto it = buffer_impls_.find(buffer_handle);
+  if (it == buffer_impls_.end()) {
+    receiver_.ReportBadMessage(kBadMessageInvalidBuffer);
+    return std::nullopt;
+  }
+  return it->get();
+}
+
 }  // namespace webnn

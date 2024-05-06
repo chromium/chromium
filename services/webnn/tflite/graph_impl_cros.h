@@ -40,6 +40,11 @@ class GraphImplCrOS final : public WebNNGraphImpl {
       base::flat_map<std::string, mojo_base::BigBuffer> named_inputs,
       mojom::WebNNGraph::ComputeCallback callback) override;
 
+  void DispatchImpl(
+      const base::flat_map<std::string_view, WebNNBufferImpl*>& named_inputs,
+      const base::flat_map<std::string_view, WebNNBufferImpl*>& named_outputs)
+      override;
+
   mojo::Remote<ml::model_loader::mojom::Model> model_remote_;
 };
 

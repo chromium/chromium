@@ -414,4 +414,31 @@ void MLContext::WriteWebNNBuffer(ScriptState* script_state,
                                     "Not implemented");
 }
 
+void MLContext::dispatch(ScriptState* script_state,
+                         MLGraph* graph,
+                         const MLNamedBuffers& inputs,
+                         const MLNamedBuffers& outputs,
+                         ExceptionState& exception_state) {
+  ScopedMLTrace scoped_trace("MLContext::dispatch");
+  if (!script_state->ContextIsValid()) {
+    exception_state.ThrowDOMException(DOMExceptionCode::kInvalidStateError,
+                                      "Invalid script state");
+    return;
+  }
+
+  if (graph->Context() != this) {
+    exception_state.ThrowTypeError(
+        "The graph isn't built within this context.");
+    return;
+  }
+
+  if (device_type_ == V8MLDeviceType::Enum::kGpu) {
+    return graph->Dispatch(std::move(scoped_trace), inputs, outputs,
+                           exception_state);
+  }
+
+  exception_state.ThrowDOMException(DOMExceptionCode::kNotSupportedError,
+                                    "Not implemented");
+}
+
 }  // namespace blink
