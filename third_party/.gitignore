@@ -151,7 +151,7 @@
 /soda-win64
 /speex
 /sqlite4java/lib/
-/subresource-filter-ruleset/data/UnindexedRules
+/subresource-filter-ruleset/data/*
 /swift-format
 /swift-toolchain
 /swiftshader/

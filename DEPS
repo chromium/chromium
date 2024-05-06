@@ -539,6 +539,7 @@ allowed_hosts = [
   'webrtc.googlesource.com',
 
    # TODO(337061377): Move into a separate allowed gcs bucket list.
+  'chromium-ads-detection',
   'chromium-nodejs',
   'chrome-linux-sysroot',
   'chromium-fonts',
@@ -1898,6 +1899,21 @@ deps = {
       ],
       'condition': 'checkout_android',
       'dep_type': 'cipd',
+  },
+
+  'src/third_party/subresource-filter-ruleset/data': {
+      'dep_type': 'gcs',
+      'condition': 'non_git_source',
+      'bucket': 'chromium-ads-detection',
+      'objects': [
+          {
+              'object_name': 'e4d1c702ca1b5497a3abcdd9495a5d0758f19ffc',
+              'sha256sum': 'ae2fd01d2908591e0f39343a5b4a78baa8e7d6cac9d78ba79c502fe0a15ce3ee',
+              'size_bytes': 70106,
+              'generation': 1695223938564350,
+              'output_file': 'UnindexedRules',
+          },
+      ],
   },
 
   'src/third_party/swift-format': {
@@ -5148,17 +5164,6 @@ hooks = [
     'condition': 'checkout_android',
     'action': [ 'python3',
                 'src/third_party/arcore-android-sdk/test-apks/update.py',
-    ],
-  },
-  {
-    'name': 'subresource-filter-ruleset',
-    'pattern': '.',
-    'action': [ 'python3',
-                'src/third_party/depot_tools/download_from_google_storage.py',
-                '--no_resume',
-                '--no_auth',
-                '--bucket', 'chromium-ads-detection',
-                '-s', 'src/third_party/subresource-filter-ruleset/data/UnindexedRules.sha1',
     ],
   },
   # Download AFDO profiles for ChromeOS for each architecture.
