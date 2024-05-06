@@ -4,9 +4,9 @@
 
 #include "device/fido/mac/make_credential_operation.h"
 
-#include <string>
-
 #import <Foundation/Foundation.h>
+
+#include <string>
 
 #include "base/apple/foundation_util.h"
 #include "base/apple/osstatus_logging.h"
@@ -26,6 +26,7 @@
 #include "device/fido/mac/credential_metadata.h"
 #include "device/fido/mac/credential_store.h"
 #include "device/fido/mac/util.h"
+#include "device/fido/platform_user_verification_policy.h"
 #include "device/fido/public_key.h"
 #include "device/fido/strings/grit/fido_strings.h"
 #include "ui/base/l10n/l10n_util.h"
@@ -54,8 +55,7 @@ void MakeCredentialOperation::Run() {
   }
 
   const bool require_uv =
-      DeviceHasBiometricsAvailable() ||
-      request_.user_verification == UserVerificationRequirement::kRequired;
+      PlatformWillDoUserVerification(request_.user_verification);
   if (require_uv) {
     touch_id_context_->PromptTouchId(
         l10n_util::GetStringFUTF16(IDS_WEBAUTHN_TOUCH_ID_PROMPT_REASON,

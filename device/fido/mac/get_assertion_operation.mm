@@ -4,10 +4,10 @@
 
 #include "device/fido/mac/get_assertion_operation.h"
 
+#import <Foundation/Foundation.h>
+
 #include <set>
 #include <string>
-
-#import <Foundation/Foundation.h>
 
 #include "base/apple/foundation_util.h"
 #include "base/apple/osstatus_logging.h"
@@ -21,6 +21,7 @@
 #include "device/fido/fido_types.h"
 #include "device/fido/mac/credential_metadata.h"
 #include "device/fido/mac/util.h"
+#include "device/fido/platform_user_verification_policy.h"
 #include "device/fido/public_key_credential_descriptor.h"
 #include "device/fido/public_key_credential_user_entity.h"
 #include "device/fido/strings/grit/fido_strings.h"
@@ -63,8 +64,7 @@ void GetAssertionOperation::Run() {
   }
 
   bool require_uv =
-      DeviceHasBiometricsAvailable() ||
-      request_.user_verification == UserVerificationRequirement::kRequired ||
+      PlatformWillDoUserVerification(request_.user_verification) ||
       std::any_of(credentials->begin(), credentials->end(),
                   [](const Credential& credential) {
                     return credential.RequiresUvForSignature();
