@@ -87,6 +87,9 @@ const std::set<std::string> GetUnconsentedOAuth2Scopes() {
       GaiaConstants::kOptimizationGuideServiceGetHintsOAuth2Scope,
       GaiaConstants::kOptimizationGuideServiceModelExecutionOAuth2Scope,
 
+      // Required by Lens.
+      GaiaConstants::kLensOAuth2Scope,
+
       // Required by Omnibox / DocumentSuggestionsService.
       GaiaConstants::kCloudSearchQueryOAuth2Scope,
 

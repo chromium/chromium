@@ -98,6 +98,10 @@ extern const char kOptimizationGuideServiceGetHintsOAuth2Scope[];
 COMPONENT_EXPORT(GOOGLE_APIS)
 extern const char kOptimizationGuideServiceModelExecutionOAuth2Scope[];
 
+// OAuth2 scopes for Lens.
+COMPONENT_EXPORT(GOOGLE_APIS)
+extern const char kLensOAuth2Scope[];
+
 // Used by wallet sign in helper.
 COMPONENT_EXPORT(GOOGLE_APIS) extern const char kClientOAuthEmailKey[];
 

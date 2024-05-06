@@ -26,6 +26,7 @@
 #include "components/variations/variations_ids_provider.h"
 #include "components/version_info/channel.h"
 #include "google_apis/common/api_error_codes.h"
+#include "google_apis/gaia/gaia_constants.h"
 #include "google_apis/gaia/gaia_urls.h"
 #include "google_apis/google_api_keys.h"
 #include "net/base/url_util.h"
@@ -48,7 +49,6 @@ constexpr char kHttpMethod[] = "POST";
 constexpr char kContentType[] = "application/x-protobuf";
 constexpr char kDeveloperKey[] = "X-Developer-Key";
 constexpr char kSessionIdQueryParameterKey[] = "gsessionid";
-constexpr char kLensOAuthScope[] = "https://www.googleapis.com/auth/lens";
 constexpr char kOAuthConsumerName[] = "LensOverlayQueryController";
 constexpr base::TimeDelta kServerRequestTimeout = base::Minutes(1);
 
@@ -533,7 +533,7 @@ void LensOverlayQueryController::CreateAndFetchEndpointFetcher(
                                  std::move(fetcher_created_callback),
                                  std::move(fetched_response_callback)));
     signin::ScopeSet oauth_scopes;
-    oauth_scopes.insert(kLensOAuthScope);
+    oauth_scopes.insert(GaiaConstants::kLensOAuth2Scope);
 
     // If an access token fetcher is already in flight, it is intentionally
     // replaced by this newer one.
