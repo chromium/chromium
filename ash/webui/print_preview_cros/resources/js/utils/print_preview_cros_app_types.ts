@@ -140,6 +140,14 @@ export interface PrintTicket {
 
   // For n-up, number of pages to print on a single sheet.
   pagesPerSheet: PagesPerSheetValue;
+
+  // Height of page from generated PDF summing content, top margin, and bottom
+  // margin.
+  pageHeight: number;
+
+  // Width of page from generated PDF summing content, left margin, and right
+  // margin.
+  pageWidth: number;
 }
 
 // Immutable session configuration details for the current CrOS preview request.
