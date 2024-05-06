@@ -26,8 +26,11 @@ class ProductSpecificationsSet {
     virtual void OnProductSpecificationsSetAdded(
         const ProductSpecificationsSet& product_specifications_set) {}
 
+    // Invoked when a ProductSpecificationsSet is updated and provides the
+    // current and preious values.
     virtual void OnProductSpecificationsSetUpdate(
-        const ProductSpecificationsSet& product_specifications_set) {}
+        const ProductSpecificationsSet& before,
+        const ProductSpecificationsSet& after) {}
 
     virtual void OnProductSpecificationsSetRemoved(const base::Uuid& uuid) {}
 

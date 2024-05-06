@@ -168,6 +168,7 @@ void ClusterManager::OnProductSpecificationsSetAdded(
 }
 
 void ClusterManager::OnProductSpecificationsSetUpdate(
+    const ProductSpecificationsSet& before,
     const ProductSpecificationsSet& product_specifications_set) {
   OnProductSpecificationsSetAdded(product_specifications_set);
 }

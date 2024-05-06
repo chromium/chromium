@@ -746,6 +746,7 @@ void ShoppingServiceHandler::OnProductSpecificationsSetAdded(
 }
 
 void ShoppingServiceHandler::OnProductSpecificationsSetUpdate(
+    const ProductSpecificationsSet& before,
     const ProductSpecificationsSet& set) {
   remote_page_->OnProductSpecificationsSetUpdated(ProductSpecsSetToMojo(set));
 }

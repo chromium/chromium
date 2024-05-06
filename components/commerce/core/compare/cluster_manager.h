@@ -41,6 +41,7 @@ class ClusterManager : public ProductSpecificationsSet::Observer {
   void OnProductSpecificationsSetAdded(
       const ProductSpecificationsSet& product_specifications_set) override;
   void OnProductSpecificationsSetUpdate(
+      const ProductSpecificationsSet& before,
       const ProductSpecificationsSet& product_specifications_set) override;
   void OnProductSpecificationsSetRemoved(const base::Uuid& uuid) override;
 

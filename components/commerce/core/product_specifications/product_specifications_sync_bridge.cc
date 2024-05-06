@@ -76,13 +76,14 @@ ProductSpecificationsSyncBridge::ApplyIncrementalSyncChanges(
       case syncer::EntityChange::ACTION_UPDATE: {
         auto local_specifics = entries_.find(change->storage_key());
         if (local_specifics != entries_.end()) {
+          sync_pb::CompareSpecifics before = local_specifics->second;
           // Overwrite if specifics from sync are more recent.
           if (specifics.update_time_unix_epoch_micros() >
               local_specifics->second.update_time_unix_epoch_micros()) {
             entries_[change->storage_key()] = specifics;
             batch->WriteData(change->storage_key(),
                              specifics.SerializeAsString());
-            OnSpecificsUpdated(specifics);
+            OnSpecificsUpdated(before, specifics);
           }
         }
         break;
@@ -171,6 +172,7 @@ ProductSpecificationsSyncBridge::UpdateProductSpecificationsSet(
   // Sync is mandatory for this feature to be usable.
   CHECK(change_processor()->IsTrackingMetadata());
 
+  sync_pb::CompareSpecifics before = it->second;
   sync_pb::CompareSpecifics& specifics = it->second;
   specifics.set_update_time_unix_epoch_micros(
       base::Time::Now().InMillisecondsSinceUnixEpoch());
@@ -190,7 +192,7 @@ ProductSpecificationsSyncBridge::UpdateProductSpecificationsSet(
 
   batch->WriteData(specifics.uuid(), specifics.SerializeAsString());
   Commit(std::move(batch));
-  OnSpecificsUpdated(specifics);
+  OnSpecificsUpdated(before, specifics);
   return specifics;
 }
 
@@ -292,10 +294,12 @@ void ProductSpecificationsSyncBridge::OnSpecificsAdded(
 }
 
 void ProductSpecificationsSyncBridge::OnSpecificsUpdated(
-    const sync_pb::CompareSpecifics& compare_specifics) {
+    const sync_pb::CompareSpecifics& before,
+    const sync_pb::CompareSpecifics& after) {
   for (auto& observer : observers_) {
     observer.OnProductSpecificationsSetUpdate(
-        ProductSpecificationsSet::FromProto(compare_specifics));
+        ProductSpecificationsSet::FromProto(before),
+        ProductSpecificationsSet::FromProto(after));
   }
 }
 

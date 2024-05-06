@@ -168,7 +168,8 @@ class MockProductSpecificationsSetObserver
 
   MOCK_METHOD(void,
               OnProductSpecificationsSetUpdate,
-              (const ProductSpecificationsSet& set),
+              (const ProductSpecificationsSet& before,
+               const ProductSpecificationsSet& after),
               (override));
 
   MOCK_METHOD(void,
@@ -298,8 +299,9 @@ TEST_F(ProductSpecificationsServiceTest, TestSetUrls) {
 
   const base::Uuid uuid_to_modify = specifications[0].uuid();
 
-  EXPECT_CALL(*observer(),
-              OnProductSpecificationsSetUpdate(IsSetWithUuid(uuid_to_modify)))
+  EXPECT_CALL(*observer(), OnProductSpecificationsSetUpdate(
+                               HasAllProductSpecs(kCompareSpecifics[0]),
+                               IsSetWithUuid(uuid_to_modify)))
       .Times(1);
 
   const std::vector<GURL> new_urls = {GURL("http://example.com/updated")};
@@ -325,8 +327,9 @@ TEST_F(ProductSpecificationsServiceTest, TestSetName) {
 
   const base::Uuid uuid_to_modify = specifications[0].uuid();
 
-  EXPECT_CALL(*observer(),
-              OnProductSpecificationsSetUpdate(IsSetWithUuid(uuid_to_modify)))
+  EXPECT_CALL(*observer(), OnProductSpecificationsSetUpdate(
+                               HasAllProductSpecs(kCompareSpecifics[0]),
+                               IsSetWithUuid(uuid_to_modify)))
       .Times(1);
 
   const std::string new_name = "updated name";
@@ -353,7 +356,8 @@ TEST_F(ProductSpecificationsServiceTest, TestSetNameAndUrls_BadId) {
   const base::Uuid uuid_to_modify =
       base::Uuid::ParseLowercase("90000000-0000-0000-0000-000000000000");
 
-  EXPECT_CALL(*observer(), OnProductSpecificationsSetUpdate(testing::_))
+  EXPECT_CALL(*observer(),
+              OnProductSpecificationsSetUpdate(testing::_, testing::_))
       .Times(0);
 
   const std::vector<GURL> new_urls = {GURL("http://example.com/updated")};
@@ -388,9 +392,11 @@ TEST_F(ProductSpecificationsServiceTest, TestObserverUpdateSpecifics) {
       noupdate_specifics.uuid(), MakeEntityData(noupdate_specifics)));
 
   EXPECT_CALL(*observer(), OnProductSpecificationsSetUpdate(
+                               HasAllProductSpecs(kCompareSpecifics[0]),
                                HasAllProductSpecs(new_specifics)))
       .Times(1);
   EXPECT_CALL(*observer(), OnProductSpecificationsSetUpdate(
+                               HasAllProductSpecs(kCompareSpecifics[1]),
                                HasAllProductSpecs(noupdate_specifics)))
       .Times(0);
   bridge()->ApplyIncrementalSyncChanges(
