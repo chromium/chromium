@@ -221,6 +221,27 @@ static bool AttributeValueMatchesExact(const Attribute& attribute_item,
   return EqualIgnoringASCIICase(selector_value, value);
 }
 
+// SynchronizeAttribute() is rather expensive to call. We can determine ahead of
+// time if it's needed. The exact set needed for svg is rather large, so this
+// errors on the side of caution.
+static bool NeedsSynchronizeAttribute(const QualifiedName& qname,
+                                      bool is_html_doc) {
+  // Assume any known name needs synchronization.
+  if (qname.IsDefinedName()) {
+    return true;
+  }
+  const QualifiedName local_qname(qname.LocalName());
+  if (local_qname.IsDefinedName()) {
+    return true;
+  }
+  // HTML elements in an html doc use the lower case name.
+  if (!is_html_doc || qname.LocalName().IsLowerASCII()) {
+    return false;
+  }
+  const QualifiedName lower_local_qname(qname.LocalName().LowerASCII());
+  return lower_local_qname.IsDefinedName();
+}
+
 template <typename SelectorQueryTrait>
 static void CollectElementsByAttributeExact(
     ContainerNode& root_node,
@@ -239,14 +260,17 @@ static void CollectElementsByAttributeExact(
   // flag is set or not.
   const bool legacy_case_insensitive =
       is_html_doc && !selector.IsCaseSensitiveAttribute();
+  const bool needs_synchronize_attribute =
+      NeedsSynchronizeAttribute(selector_attr, is_html_doc);
 
   for (Element& element : ElementTraversal::DescendantsOf(root_node)) {
     QUERY_STATS_INCREMENT(fast_scan);
-    // Synchronize the attribute in case it is lazy-computed.
-    // Currently all lazy properties have a null namespace, so only pass
-    // localName().
-    // TODO: figure out how to only call this if necessary.
-    element.SynchronizeAttribute(selector_attr.LocalName());
+    if (needs_synchronize_attribute) {
+      // Synchronize the attribute in case it is lazy-computed.
+      // Currently all lazy properties have a null namespace, so only pass
+      // localName().
+      element.SynchronizeAttribute(selector_attr.LocalName());
+    }
     AttributeCollection attributes = element.AttributesWithoutUpdate();
     for (const auto& attribute_item : attributes) {
       if (!attribute_item.Matches(selector_attr)) {
