@@ -7,26 +7,13 @@
 
 #include <memory>
 #include <string>
-#include <string_view>
-#include <vector>
 
-#include "base/containers/span.h"
 #include "base/memory/raw_ptr.h"
 #include "base/observer_list.h"
 #include "base/scoped_observation.h"
-#include "components/autofill/core/browser/address_data_cleaner.h"
 #include "components/autofill/core/browser/address_data_manager.h"
 #include "components/autofill/core/browser/autofill_shared_storage_handler.h"
 #include "components/autofill/core/browser/country_type.h"
-#include "components/autofill/core/browser/data_model/autofill_offer_data.h"
-#include "components/autofill/core/browser/data_model/autofill_profile.h"
-#include "components/autofill/core/browser/data_model/bank_account.h"
-#include "components/autofill/core/browser/data_model/credit_card.h"
-#include "components/autofill/core/browser/data_model/credit_card_benefit.h"
-#include "components/autofill/core/browser/data_model/credit_card_cloud_token_data.h"
-#include "components/autofill/core/browser/field_types.h"
-#include "components/autofill/core/browser/geo/alternative_state_name_map_updater.h"
-#include "components/autofill/core/browser/payments/payments_customer_data.h"
 #include "components/autofill/core/browser/payments_data_manager.h"
 #include "components/autofill/core/browser/webdata/autofill_webdata_service.h"
 #include "components/history/core/browser/history_service.h"
@@ -199,13 +186,12 @@ class PersonalDataManager : public KeyedService,
   base::ScopedObservation<PaymentsDataManager, PaymentsDataManager::Observer>
       payments_data_manager_observation_{this};
 
-  // The observers.
-  base::ObserverList<PersonalDataManagerObserver>::Unchecked observers_;
-
   // The PrefService that this instance uses. Must outlive this instance.
   raw_ptr<PrefService> pref_service_ = nullptr;
 
  private:
+  base::ObserverList<PersonalDataManagerObserver>::Unchecked observers_;
+
   // Stores the |app_locale| supplied on construction.
   const std::string app_locale_;
 

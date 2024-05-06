@@ -8,6 +8,7 @@
 #import "base/strings/sys_string_conversions.h"
 #import "components/autofill/core/browser/address_data_manager.h"
 #import "components/autofill/core/browser/autofill_test_utils.h"
+#import "components/autofill/core/browser/geo/alternative_state_name_map_updater.h"
 #import "components/autofill/core/browser/geo/autofill_country.h"
 #import "components/autofill/core/browser/personal_data_manager.h"
 #import "components/autofill/core/browser/ui/country_combobox_model.h"

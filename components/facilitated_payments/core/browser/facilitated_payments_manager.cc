@@ -9,6 +9,7 @@
 
 #include "base/check.h"
 #include "base/functional/callback_helpers.h"
+#include "components/autofill/core/browser/data_model/bank_account.h"
 #include "components/autofill/core/browser/payments/payments_util.h"
 #include "components/autofill/core/browser/personal_data_manager.h"
 #include "components/facilitated_payments/core/browser/facilitated_payments_api_client.h"

@@ -19,6 +19,7 @@
 #import "components/autofill/core/browser/address_data_manager_test_api.h"
 #import "components/autofill/core/browser/browser_autofill_manager.h"
 #import "components/autofill/core/browser/form_structure.h"
+#import "components/autofill/core/browser/geo/alternative_state_name_map_updater.h"
 #import "components/autofill/core/browser/metrics/autofill_metrics.h"
 #import "components/autofill/core/browser/payments_data_manager.h"
 #import "components/autofill/core/browser/personal_data_manager.h"

@@ -13,6 +13,7 @@
 #include "base/notreached.h"
 #include "base/ranges/algorithm.h"
 #include "base/strings/utf_string_conversions.h"
+#include "components/autofill/core/browser/address_data_cleaner.h"
 #include "components/autofill/core/browser/country_type.h"
 #include "components/autofill/core/browser/geo/alternative_state_name_map_updater.h"
 #include "components/autofill/core/browser/geo/autofill_country.h"
