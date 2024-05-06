@@ -138,15 +138,6 @@ class QuicTestPacketMaker {
       quic::QuicStreamId data_stream_id,
       std::string_view data);
 
-  std::unique_ptr<quic::QuicReceivedPacket> MakeRetransmissionRstAndDataPacket(
-      const std::vector<uint64_t>& original_packet_numbers,
-      uint64_t packet_number,
-      quic::QuicStreamId rst_stream_id,
-      quic::QuicRstStreamErrorCode rst_error_code,
-      quic::QuicStreamId data_stream_id,
-      std::string_view data,
-      uint64_t retransmit_frame_count = 0);
-
   std::unique_ptr<quic::QuicReceivedPacket> MakeDataAndRstPacket(
       uint64_t packet_number,
       quic::QuicStreamId data_stream_id,
@@ -574,6 +565,13 @@ class QuicTestPacketBuilder {
   // Add a frame to the packet, coalescing adjacent stream frames for the same
   // stream ID into a single frame.
   QuicTestPacketBuilder& AddFrameWithCoalescing(const quic::QuicFrame& frame);
+
+  // Retransmit the frames in a previously-transmitted packet, optionally
+  // filtering frames with the given callback.
+  QuicTestPacketBuilder& AddPacketRetransmission(
+      uint64_t packet_number,
+      base::RepeatingCallback<bool(const quic::QuicFrame&)> filter =
+          base::RepeatingCallback<bool(const quic::QuicFrame&)>());
 
   // Complete the building process and return the resulting packet.
   std::unique_ptr<quic::QuicReceivedPacket> Build();

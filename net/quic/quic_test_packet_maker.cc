@@ -222,10 +222,7 @@ QuicTestPacketMaker::MakeRetransmissionAndRetireConnectionIdPacket(
     uint64_t sequence_number) {
   auto& builder = Packet(packet_number);
   for (auto it : original_packet_numbers) {
-    for (auto frame :
-         connection_state_.saved_frames[quic::QuicPacketNumber(it)]) {
-      builder.AddFrameWithCoalescing(frame);
-    }
+    builder.AddPacketRetransmission(it);
   }
 
   builder.AddRetireConnectionIdFrame(sequence_number);
@@ -278,35 +275,6 @@ QuicTestPacketMaker::MakeRstAndDataPacket(
       .AddRstStreamFrame(rst_stream_id, rst_error_code)
       .AddStreamFrame(data_stream_id, /* fin = */ false, data)
       .Build();
-}
-
-std::unique_ptr<quic::QuicReceivedPacket>
-QuicTestPacketMaker::MakeRetransmissionRstAndDataPacket(
-    const std::vector<uint64_t>& original_packet_numbers,
-    uint64_t packet_number,
-    quic::QuicStreamId rst_stream_id,
-    quic::QuicRstStreamErrorCode rst_error_code,
-    quic::QuicStreamId data_stream_id,
-    std::string_view data,
-    uint64_t retransmit_frame_count) {
-  DCHECK(connection_state_.save_packet_frames);
-  auto& builder = Packet(packet_number);
-  uint64_t frame_count = 0;
-  for (auto it : original_packet_numbers) {
-    for (auto frame :
-         connection_state_.saved_frames[quic::QuicPacketNumber(it)]) {
-      frame_count++;
-      if (retransmit_frame_count == 0 ||
-          frame_count <= retransmit_frame_count) {
-        builder.AddFrameWithCoalescing(frame);
-      }
-    }
-  }
-
-  builder.AddStopSendingFrame(rst_stream_id, rst_error_code);
-  builder.AddRstStreamFrame(rst_stream_id, rst_error_code);
-  builder.AddStreamFrame(data_stream_id, /* fin = */ false, data);
-  return builder.Build();
 }
 
 std::unique_ptr<quic::QuicReceivedPacket>
@@ -440,10 +408,7 @@ QuicTestPacketMaker::MakeAckAndRetransmissionPacket(
   auto& builder = Packet(packet_number);
   builder.AddAckFrame(first_received, largest_received, smallest_received);
   for (auto it : original_packet_numbers) {
-    for (auto frame :
-         connection_state_.saved_frames[quic::QuicPacketNumber(it)]) {
-      builder.AddFrameWithCoalescing(frame);
-    }
+    builder.AddPacketRetransmission(it);
   }
   return builder.Build();
 }
@@ -659,10 +624,7 @@ QuicTestPacketMaker::MakeAckRetransmissionAndDataPacket(
   builder.AddAckFrame(/*first_received=*/1, largest_received,
                       smallest_received);
   for (auto it : original_packet_numbers) {
-    for (auto frame :
-         connection_state_.saved_frames[quic::QuicPacketNumber(it)]) {
-      builder.AddFrameWithCoalescing(frame);
-    }
+    builder.AddPacketRetransmission(it);
   }
   builder.AddStreamFrame(stream_id, fin, data);
   return builder.Build();
@@ -735,10 +697,7 @@ QuicTestPacketMaker::MakeRetransmissionAndRequestHeadersPacket(
   DCHECK(connection_state_.save_packet_frames);
   auto& builder = Packet(packet_number);
   for (auto it : original_packet_numbers) {
-    for (auto frame :
-         connection_state_.saved_frames[quic::QuicPacketNumber(it)]) {
-      builder.AddFrameWithCoalescing(frame);
-    }
+    builder.AddPacketRetransmission(it);
   }
 
   builder.MaybeAddHttp3SettingsFrames();
@@ -852,11 +811,7 @@ QuicTestPacketMaker::MakeRetransmissionPacket(uint64_t original_packet_number,
                                               uint64_t new_packet_number) {
   DCHECK(connection_state_.save_packet_frames);
   auto& builder = Packet(new_packet_number);
-  for (auto frame :
-       connection_state_
-           .saved_frames[quic::QuicPacketNumber(original_packet_number)]) {
-    builder.AddFrameWithCoalescing(frame);
-  }
+  builder.AddPacketRetransmission(original_packet_number);
   return builder.Build();
 }
 
@@ -1308,6 +1263,18 @@ QuicTestPacketBuilder& QuicTestPacketBuilder::AddFrameWithCoalescing(
   // Copy the fin state from the last frame.
   previous_frame->fin = new_frame->fin;
 
+  return *this;
+}
+
+QuicTestPacketBuilder& QuicTestPacketBuilder::AddPacketRetransmission(
+    uint64_t packet_number,
+    base::RepeatingCallback<bool(const quic::QuicFrame&)> filter) {
+  for (auto frame :
+       connection_state_->saved_frames[quic::QuicPacketNumber(packet_number)]) {
+    if (!filter || filter.Run(frame)) {
+      AddFrameWithCoalescing(frame);
+    }
+  }
   return *this;
 }
 

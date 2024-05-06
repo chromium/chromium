@@ -319,6 +319,20 @@ class QuicSessionPoolTest : public QuicSessionPoolTestBase,
       std::vector<HostResolverEndpointResult> endpoints,
       bool expect_success);
 
+  // Creates a callback that filters for control-stream frames.
+  base::RepeatingCallback<bool(const quic::QuicFrame&)>
+  FilterControlStreamOnly() {
+    quic::QuicStreamId control_stream_id =
+        quic::QuicUtils::GetFirstUnidirectionalStreamId(
+            version_.transport_version, quic::Perspective::IS_CLIENT);
+    return base::BindRepeating(
+        [](quic::QuicStreamId control_stream_id, const quic::QuicFrame& frame) {
+          return frame.type == quic::STREAM_FRAME &&
+                 frame.stream_frame.stream_id == control_stream_id;
+        },
+        control_stream_id);
+  }
+
   scoped_refptr<TestTaskRunner> runner_;
 
  private:
@@ -7969,12 +7983,17 @@ void QuicSessionPoolTest::TestMigrationOnWriteErrorMixedStreams(
   ConstructGetRequestPacket(packet_number++,
                             GetNthClientInitiatedBidirectionalStreamId(0),
                             /*fin=*/true);
+  quic::QuicStreamId stream_1 = GetNthClientInitiatedBidirectionalStreamId(1);
   socket_data1.AddWrite(
-      SYNCHRONOUS, client_maker_.MakeRetransmissionRstAndDataPacket(
-                       /*original_packet_numbers=*/{1, 2}, packet_number++,
-                       GetNthClientInitiatedBidirectionalStreamId(1),
-                       quic::QUIC_STREAM_CANCELLED, GetQpackDecoderStreamId(),
-                       StreamCancellationQpackDecoderInstruction(1)));
+      SYNCHRONOUS,
+      client_maker_.Packet(packet_number++)
+          .AddPacketRetransmission(1)
+          .AddPacketRetransmission(2)
+          .AddStopSendingFrame(stream_1, quic::QUIC_STREAM_CANCELLED)
+          .AddRstStreamFrame(stream_1, quic::QUIC_STREAM_CANCELLED)
+          .AddStreamFrame(GetQpackDecoderStreamId(), /*fin=*/false,
+                          StreamCancellationQpackDecoderInstruction(1))
+          .Build());
   socket_data1.AddWrite(SYNCHRONOUS,
                         client_maker_.MakePingPacket(packet_number++));
   socket_data1.AddWrite(SYNCHRONOUS, client_maker_.MakeRetireConnectionIdPacket(
@@ -8012,7 +8031,8 @@ void QuicSessionPoolTest::TestMigrationOnWriteErrorMixedStreams(
   EXPECT_EQ(OK, stream1->InitializeStream(true, DEFAULT_PRIORITY, net_log_,
                                           CompletionOnceCallback()));
 
-  // Second request returns synchronously because it pools to existing session.
+  // Second request returns synchronously because it pools to existing
+  // session.
   TestCompletionCallback callback2;
   RequestBuilder builder2(this);
   builder2.callback = callback2.callback();
@@ -8113,16 +8133,20 @@ void QuicSessionPoolTest::TestMigrationOnWriteErrorMixedStreams2(
   ConstructGetRequestPacket(packet_number++,
                             GetNthClientInitiatedBidirectionalStreamId(1),
                             /*fin=*/true);
-  std::vector<uint64_t> original_packet_numbers = {1};
-  uint64_t retransmit_frame_count = 2;
-  original_packet_numbers.push_back(2);
+
+  base::RepeatingCallback<bool(const quic::QuicFrame&)> control_stream_only =
+      FilterControlStreamOnly();
+  quic::QuicStreamId stream_1 = GetNthClientInitiatedBidirectionalStreamId(1);
   socket_data1.AddWrite(
-      SYNCHRONOUS, client_maker_.MakeRetransmissionRstAndDataPacket(
-                       original_packet_numbers, packet_number++,
-                       GetNthClientInitiatedBidirectionalStreamId(1),
-                       quic::QUIC_STREAM_CANCELLED, GetQpackDecoderStreamId(),
-                       StreamCancellationQpackDecoderInstruction(1),
-                       retransmit_frame_count));
+      SYNCHRONOUS,
+      client_maker_.Packet(packet_number++)
+          .AddPacketRetransmission(1, control_stream_only)
+          .AddPacketRetransmission(2, control_stream_only)
+          .AddStopSendingFrame(stream_1, quic::QUIC_STREAM_CANCELLED)
+          .AddRstStreamFrame(stream_1, quic::QUIC_STREAM_CANCELLED)
+          .AddStreamFrame(GetQpackDecoderStreamId(), /*fin=*/false,
+                          StreamCancellationQpackDecoderInstruction(1))
+          .Build());
   socket_data1.AddWrite(SYNCHRONOUS,
                         client_maker_.MakePingPacket(packet_number++));
   socket_data1.AddWrite(SYNCHRONOUS, client_maker_.MakeRetireConnectionIdPacket(
@@ -8260,16 +8284,20 @@ void QuicSessionPoolTest::TestMigrationOnWriteErrorNonMigratableStream(
     ConstructGetRequestPacket(packet_num++,
                               GetNthClientInitiatedBidirectionalStreamId(0),
                               /*fin=*/true);
-    std::vector<uint64_t> original_packet_numbers = {1};
-    uint64_t retransmit_frame_count = 2;
-    original_packet_numbers.push_back(2);
+
+    base::RepeatingCallback<bool(const quic::QuicFrame&)> control_stream_only =
+        FilterControlStreamOnly();
+    quic::QuicStreamId stream_0 = GetNthClientInitiatedBidirectionalStreamId(0);
     socket_data.AddWrite(
-        SYNCHRONOUS, client_maker_.MakeRetransmissionRstAndDataPacket(
-                         original_packet_numbers, packet_num++,
-                         GetNthClientInitiatedBidirectionalStreamId(0),
-                         quic::QUIC_STREAM_CANCELLED, GetQpackDecoderStreamId(),
-                         StreamCancellationQpackDecoderInstruction(0),
-                         retransmit_frame_count));
+        SYNCHRONOUS,
+        client_maker_.Packet(packet_num++)
+            .AddPacketRetransmission(1, control_stream_only)
+            .AddPacketRetransmission(2, control_stream_only)
+            .AddStopSendingFrame(stream_0, quic::QUIC_STREAM_CANCELLED)
+            .AddRstStreamFrame(stream_0, quic::QUIC_STREAM_CANCELLED)
+            .AddStreamFrame(GetQpackDecoderStreamId(), /*fin=*/false,
+                            StreamCancellationQpackDecoderInstruction(0))
+            .Build());
     socket_data.AddWrite(SYNCHRONOUS,
                          client_maker_.MakePingPacket(packet_num++));
     socket_data.AddWrite(
