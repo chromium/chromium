@@ -16,9 +16,23 @@
 #include "chrome/browser/ui/android/tab_model/tab_model_list.h"
 #include "chrome/browser/ui/android/tab_model/tab_model_test_helper.h"
 #include "ui/android/window_android.h"
+#else  // !BUILDFLAG(IS_ANDROID)
+#include "chrome/browser/ui/autofill/payments/save_card_bubble_controller_impl.h"
 #endif  // BUILDFLAG(IS_ANDROID)
 
 namespace autofill {
+
+#if !BUILDFLAG(IS_ANDROID)
+class MockSaveCardBubbleController : public SaveCardBubbleControllerImpl {
+ public:
+  explicit MockSaveCardBubbleController(content::WebContents* web_contents)
+      : SaveCardBubbleControllerImpl(web_contents) {}
+  ~MockSaveCardBubbleController() override = default;
+
+  MOCK_METHOD(void, ShowConfirmationBubbleView, (bool), (override));
+};
+#endif
+
 class MockVirtualCardEnrollBubbleController
     : public VirtualCardEnrollBubbleControllerImpl {
  public:
@@ -50,6 +64,16 @@ class ChromePaymentsAutofillClientTest
     web_contents()->SetUserData(
         mock_virtual_card_bubble_controller->UserDataKey(),
         std::move(mock_virtual_card_bubble_controller));
+#if !BUILDFLAG(IS_ANDROID)
+    auto mock_save_card_bubble_controller =
+        std::make_unique<MockSaveCardBubbleController>(web_contents());
+    web_contents()->SetUserData(mock_save_card_bubble_controller->UserDataKey(),
+                                std::move(mock_save_card_bubble_controller));
+#endif
+  }
+
+  ChromeAutofillClient* client() {
+    return ChromeAutofillClient::FromWebContentsForTesting(web_contents());
   }
 
   payments::ChromePaymentsAutofillClient* chrome_payments_client() {
@@ -62,9 +86,12 @@ class ChromePaymentsAutofillClientTest
         *VirtualCardEnrollBubbleController::GetOrCreate(web_contents()));
   }
 
-  ChromeAutofillClient* client() {
-    return ChromeAutofillClient::FromWebContentsForTesting(web_contents());
+#if !BUILDFLAG(IS_ANDROID)
+  MockSaveCardBubbleController& save_card_bubble_controller() {
+    return static_cast<MockSaveCardBubbleController&>(
+        *SaveCardBubbleController::GetOrCreate(web_contents()));
   }
+#endif
 
  private:
   base::test::ScopedFeatureList feature_list_;
@@ -94,6 +121,14 @@ TEST_F(ChromePaymentsAutofillClientTest,
   EXPECT_CALL(virtual_card_bubble_controller(),
               ShowConfirmationBubbleView(true));
   chrome_payments_client()->VirtualCardEnrollCompleted(true);
+}
+
+// Test that calling CreditCardUploadCompleted calls
+// SaveCardBubbleControllerImpl::ShowConfirmationBubbleView.
+TEST_F(ChromePaymentsAutofillClientTest,
+       CreditCardUploadCompleted_CallsShowConfirmationBubbleView) {
+  EXPECT_CALL(save_card_bubble_controller(), ShowConfirmationBubbleView(true));
+  chrome_payments_client()->CreditCardUploadCompleted(true);
 }
 #endif  // BUILDFLAG(IS_ANDROID)
 
