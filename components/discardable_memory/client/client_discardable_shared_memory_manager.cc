@@ -146,7 +146,7 @@ void* ClientDiscardableSharedMemoryManager::DiscardableMemoryImpl::data()
     DCHECK(is_locked());
   }
 #endif
-  return reinterpret_cast<void*>(span_->start() * base::GetPageSize());
+  return span_->memory().data();
 }
 
 bool ClientDiscardableSharedMemoryManager::DiscardableMemoryImpl::is_locked()
@@ -284,9 +284,8 @@ ClientDiscardableSharedMemoryManager::AllocateLockedDiscardableMemory(
     // Attempt to lock |free_span|. Delete span and search free lists again
     // if locking failed.
     if (free_span->shared_memory()->Lock(
-            free_span->start() * base::GetPageSize() -
-                reinterpret_cast<size_t>(free_span->shared_memory()->memory()),
-            free_span->length() * base::GetPageSize()) ==
+            free_span->first_block() * base::GetPageSize(),
+            free_span->num_blocks() * base::GetPageSize()) ==
         base::DiscardableSharedMemory::FAILED) {
       DCHECK(!free_span->shared_memory()->IsMemoryResident());
       // We have to release purged memory before |free_span| can be destroyed.
@@ -354,9 +353,8 @@ ClientDiscardableSharedMemoryManager::AllocateLockedDiscardableMemory(
     std::unique_ptr<DiscardableSharedMemoryHeap::Span> leftover =
         heap_->Split(new_span.get(), pages);
     leftover->shared_memory()->Unlock(
-        leftover->start() * base::GetPageSize() -
-            reinterpret_cast<size_t>(leftover->shared_memory()->memory()),
-        leftover->length() * base::GetPageSize());
+        leftover->first_block() * base::GetPageSize(),
+        leftover->num_blocks() * base::GetPageSize());
     leftover->set_is_locked(false);
     heap_->MergeIntoFreeListsClean(std::move(leftover));
   }
@@ -486,9 +484,8 @@ bool ClientDiscardableSharedMemoryManager::LockSpan(
   if (!span->shared_memory())
     return false;
 
-  size_t offset = span->start() * base::GetPageSize() -
-                  reinterpret_cast<size_t>(span->shared_memory()->memory());
-  size_t length = span->length() * base::GetPageSize();
+  size_t offset = span->first_block() * base::GetPageSize();
+  size_t length = span->num_blocks() * base::GetPageSize();
 
   switch (span->shared_memory()->Lock(offset, length)) {
     case base::DiscardableSharedMemory::SUCCESS:
@@ -509,9 +506,8 @@ bool ClientDiscardableSharedMemoryManager::LockSpan(
 void ClientDiscardableSharedMemoryManager::UnlockSpan(
     DiscardableSharedMemoryHeap::Span* span) {
   DCHECK(span->shared_memory());
-  size_t offset = span->start() * base::GetPageSize() -
-                  reinterpret_cast<size_t>(span->shared_memory()->memory());
-  size_t length = span->length() * base::GetPageSize();
+  size_t offset = span->first_block() * base::GetPageSize();
+  size_t length = span->num_blocks() * base::GetPageSize();
 
   span->set_is_locked(false);
   return span->shared_memory()->Unlock(offset, length);

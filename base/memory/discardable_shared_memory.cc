@@ -2,11 +2,6 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#ifdef UNSAFE_BUFFERS_BUILD
-// TODO(crbug.com/40284755): Remove this and spanify to fix the errors.
-#pragma allow_unsafe_buffers
-#endif
-
 #include "base/memory/discardable_shared_memory.h"
 
 #include <stdint.h>
@@ -145,15 +140,11 @@ bool UseAshmemUnpinningForDiscardableMemory() {
 
 }  // namespace
 
-DiscardableSharedMemory::DiscardableSharedMemory()
-    : mapped_size_(0), locked_page_count_(0) {
-}
+DiscardableSharedMemory::DiscardableSharedMemory() = default;
 
 DiscardableSharedMemory::DiscardableSharedMemory(
     UnsafeSharedMemoryRegion shared_memory_region)
-    : shared_memory_region_(std::move(shared_memory_region)),
-      mapped_size_(0),
-      locked_page_count_(0) {}
+    : shared_memory_region_(std::move(shared_memory_region)) {}
 
 DiscardableSharedMemory::~DiscardableSharedMemory() = default;
 
@@ -173,10 +164,8 @@ bool DiscardableSharedMemory::CreateAndMap(size_t size) {
   if (!shared_memory_mapping_.IsValid())
     return false;
 
-  mapped_size_ = shared_memory_mapping_.mapped_size() -
-                 AlignToPageSize(sizeof(SharedState));
-
-  locked_page_count_ = AlignToPageSize(mapped_size_) / base::GetPageSize();
+  locked_page_count_ =
+      AlignToPageSize(mapped_memory().size()) / base::GetPageSize();
 #if DCHECK_IS_ON()
   for (size_t page = 0; page < locked_page_count_; ++page)
     locked_pages_.insert(page);
@@ -200,10 +189,8 @@ bool DiscardableSharedMemory::Map(size_t size) {
   if (!shared_memory_mapping_.IsValid())
     return false;
 
-  mapped_size_ = shared_memory_mapping_.mapped_size() -
-                 AlignToPageSize(sizeof(SharedState));
-
-  locked_page_count_ = AlignToPageSize(mapped_size_) / base::GetPageSize();
+  locked_page_count_ =
+      AlignToPageSize(mapped_memory().size()) / base::GetPageSize();
 #if DCHECK_IS_ON()
   for (size_t page = 0; page < locked_page_count_; ++page)
     locked_pages_.insert(page);
@@ -221,7 +208,6 @@ bool DiscardableSharedMemory::Unmap() {
 #if DCHECK_IS_ON()
   locked_pages_.clear();
 #endif
-  mapped_size_ = 0;
   return true;
 }
 
@@ -258,12 +244,12 @@ DiscardableSharedMemory::LockResult DiscardableSharedMemory::Lock(
 
   // Zero for length means "everything onward".
   if (!length)
-    length = AlignToPageSize(mapped_size_) - offset;
+    length = AlignToPageSize(mapped_memory().size()) - offset;
 
   size_t start = offset / base::GetPageSize();
   size_t end = start + length / base::GetPageSize();
   DCHECK_LE(start, end);
-  DCHECK_LE(end, AlignToPageSize(mapped_size_) / base::GetPageSize());
+  DCHECK_LE(end, AlignToPageSize(mapped_memory().size()) / base::GetPageSize());
 
   // Add pages to |locked_page_count_|.
   // Note: Locking a page that is already locked is an error.
@@ -299,9 +285,8 @@ DiscardableSharedMemory::LockResult DiscardableSharedMemory::Lock(
   //
   // For more information, see
   // https://bugs.chromium.org/p/chromium/issues/detail?id=823915.
-  madvise(static_cast<char*>(shared_memory_mapping_.memory()) +
-              AlignToPageSize(sizeof(SharedState)),
-          AlignToPageSize(mapped_size_), MADV_FREE_REUSE);
+  base::span<uint8_t> mapped = mapped_memory();
+  madvise(mapped.data(), AlignToPageSize(mapped.size()), MADV_FREE_REUSE);
   return DiscardableSharedMemory::SUCCESS;
 #else
   return DiscardableSharedMemory::SUCCESS;
@@ -316,9 +301,9 @@ void DiscardableSharedMemory::Unlock(size_t offset, size_t length) {
   DFAKE_SCOPED_LOCK(thread_collision_warner_);
 
   // Passing zero for |length| means "everything onward". Note that |length| may
-  // still be zero after this calculation, e.g. if |mapped_size_| is zero.
+  // still be zero after this calculation, e.g. if the mapped size is zero.
   if (!length)
-    length = AlignToPageSize(mapped_size_) - offset;
+    length = AlignToPageSize(mapped_memory().size()) - offset;
 
   DCHECK(shared_memory_mapping_.IsValid());
 
@@ -329,7 +314,7 @@ void DiscardableSharedMemory::Unlock(size_t offset, size_t length) {
   size_t start = offset / base::GetPageSize();
   size_t end = start + length / base::GetPageSize();
   DCHECK_LE(start, end);
-  DCHECK_LE(end, AlignToPageSize(mapped_size_) / base::GetPageSize());
+  DCHECK_LE(end, AlignToPageSize(mapped_memory().size()) / base::GetPageSize());
 
   // Remove pages from |locked_page_count_|.
   // Note: Unlocking a page that is not locked is an error.
@@ -369,9 +354,14 @@ void DiscardableSharedMemory::Unlock(size_t offset, size_t length) {
   last_known_usage_ = current_time;
 }
 
-void* DiscardableSharedMemory::memory() const {
-  return static_cast<uint8_t*>(shared_memory_mapping_.memory()) +
-         AlignToPageSize(sizeof(SharedState));
+span<uint8_t> DiscardableSharedMemory::memory() const {
+  return shared_memory_mapping_.GetMemoryAsSpan<uint8_t>().subspan(
+      AlignToPageSize(sizeof(SharedState)));
+}
+
+span<uint8_t> DiscardableSharedMemory::mapped_memory() const {
+  return shared_memory_mapping_.mapped_memory().subspan(
+      AlignToPageSize(sizeof(SharedState)));
 }
 
 bool DiscardableSharedMemory::Purge(Time current_time) {
@@ -420,17 +410,16 @@ bool DiscardableSharedMemory::Purge(Time current_time) {
   // Advise the kernel to remove resources associated with purged pages.
   // Subsequent accesses of memory pages will succeed, but might result in
   // zero-fill-on-demand pages.
-  if (madvise(static_cast<char*>(shared_memory_mapping_.memory()) +
-                  AlignToPageSize(sizeof(SharedState)),
-              AlignToPageSize(mapped_size_), MADV_PURGE_ARGUMENT)) {
+  base::span<uint8_t> map = mapped_memory();
+  if (madvise(map.data(), AlignToPageSize(map.size()), MADV_PURGE_ARGUMENT)) {
     DPLOG(ERROR) << "madvise() failed";
   }
 #elif BUILDFLAG(IS_WIN)
   // On Windows, discarded pages are not returned to the system immediately and
   // not guaranteed to be zeroed when returned to the application.
-  char* address = static_cast<char*>(shared_memory_mapping_.memory()) +
-                  AlignToPageSize(sizeof(SharedState));
-  size_t length = AlignToPageSize(mapped_size_);
+  base::span<uint8_t> mapped = mapped_memory();
+  uint8_t* address = mapped.data();
+  size_t length = AlignToPageSize(mapped.size());
 
   DWORD ret = DiscardVirtualMemory(address, length);
   // DiscardVirtualMemory is buggy in Win10 SP0, so fall back to MEM_RESET on
@@ -442,11 +431,10 @@ bool DiscardableSharedMemory::Purge(Time current_time) {
 #elif BUILDFLAG(IS_FUCHSIA)
   // De-commit via our VMAR, rather than relying on the VMO handle, since the
   // handle may have been closed after the memory was mapped into this process.
-  uint64_t address_int = reinterpret_cast<uint64_t>(
-      static_cast<char*>(shared_memory_mapping_.memory()) +
-      AlignToPageSize(sizeof(SharedState)));
+  base::span<uint8_t> mapped = mapped_memory();
+  uint64_t address_int = reinterpret_cast<uint64_t>(mapped.data());
   zx_status_t status = zx::vmar::root_self()->op_range(
-      ZX_VMO_OP_DECOMMIT, address_int, AlignToPageSize(mapped_size_), nullptr,
+      ZX_VMO_OP_DECOMMIT, address_int, AlignToPageSize(mapped.size()), nullptr,
       0);
   ZX_DCHECK(status == ZX_OK, status) << "zx_vmo_op_range(ZX_VMO_OP_DECOMMIT)";
 #endif  // BUILDFLAG(IS_FUCHSIA)
@@ -475,13 +463,13 @@ void DiscardableSharedMemory::ReleaseMemoryIfPossible(size_t offset,
   // Advise the kernel to remove resources associated with purged pages.
   // Subsequent accesses of memory pages will succeed, but might result in
   // zero-fill-on-demand pages.
-  if (madvise(static_cast<char*>(shared_memory_mapping_.memory()) + offset,
-              length, MADV_PURGE_ARGUMENT)) {
+  base::span<uint8_t> span = memory().subspan(offset, length);
+  if (madvise(span.data(), span.size(), MADV_PURGE_ARGUMENT)) {
     DPLOG(ERROR) << "madvise() failed";
   }
 #else   // BUILDFLAG(IS_POSIX) && !BUILDFLAG(IS_NACL)
-  partition_alloc::DiscardSystemPages(
-      static_cast<char*>(shared_memory_mapping_.memory()) + offset, length);
+  base::span<uint8_t> span = memory().subspan(offset, length);
+  partition_alloc::DiscardSystemPages(span.data(), span.size());
 #endif  // BUILDFLAG(IS_POSIX) && !BUILDFLAG(IS_NACL)
 }
 

@@ -65,6 +65,7 @@
 -clank/
 -codelabs/
 -components/
++components/discardable_memory
 -content/
 -courgette/
 -crypto/

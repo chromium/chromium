@@ -242,6 +242,18 @@ class BASE_EXPORT WritableSharedMemoryMapping : public SharedMemoryMapping {
                               size_t size,
                               const UnguessableToken& guid,
                               SharedMemoryMapper* mapper);
+
+  friend class DiscardableSharedMemory;
+  // Returns a span over the entire mapped memory, which may be more than the
+  // logical requested memory. Bytes outside of the logical size should not be
+  // used.
+  span<uint8_t> mapped_memory() const {
+    if (!IsValid()) {
+      return span<uint8_t>();
+    }
+    return UNSAFE_BUFFERS(
+        span(static_cast<uint8_t*>(raw_memory_ptr()), mapped_size()));
+  }
 };
 
 }  // namespace base

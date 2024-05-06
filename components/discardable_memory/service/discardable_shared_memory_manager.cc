@@ -2,6 +2,10 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
+#ifdef UNSAFE_BUFFERS_BUILD
+#pragma check_unsafe_buffers
+#endif
+
 #include "components/discardable_memory/service/discardable_shared_memory_manager.h"
 
 #include <algorithm>
@@ -129,7 +133,7 @@ class DiscardableMemoryImpl : public base::DiscardableMemory {
   }
   void* data() const override {
     DCHECK(is_locked_);
-    return shared_memory_->memory();
+    return shared_memory_->memory().data();
   }
 
   void DiscardForTesting() override {

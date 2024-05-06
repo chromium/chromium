@@ -8,6 +8,7 @@
 #include <stddef.h>
 
 #include "base/base_export.h"
+#include "base/containers/span.h"
 #include "base/dcheck_is_on.h"
 #include "base/memory/shared_memory_mapping.h"
 #include "base/memory/unsafe_shared_memory_region.h"
@@ -71,8 +72,15 @@ class BASE_EXPORT DiscardableSharedMemory {
   // not mapped.
   bool Unmap();
 
-  // The actual size of the mapped memory (may be larger than requested).
-  size_t mapped_size() const { return mapped_size_; }
+  // The actual size of the mapped memory (may be larger than requested). It is
+  // 0 when the memory has not been mapped via `Map()`.
+  size_t mapped_size() const {
+    if (shared_memory_mapping_.IsValid()) {
+      return mapped_memory().size();
+    } else {
+      return 0u;
+    }
+  }
 
   // Returns a duplicated shared memory region for this DiscardableSharedMemory
   // object.
@@ -109,9 +117,14 @@ class BASE_EXPORT DiscardableSharedMemory {
   // Passing 0 for |length| means "everything onward".
   void Unlock(size_t offset, size_t length);
 
-  // Gets a pointer to the opened discardable memory space. Discardable memory
+  // Gets a span over the opened discardable memory space. Discardable memory
   // must have been mapped via Map().
-  void* memory() const;
+  //
+  // This gives the logical memory region, matching the size of what was
+  // requested. The actual mapped memory may be larger due to system alignment
+  // requirements. See `SharedMemoryMapping::size()` vs
+  // `SharedMemoryMapping::mapped_size()`.
+  span<uint8_t> memory() const;
 
   // Returns the last known usage time for DiscardableSharedMemory object. This
   // may be earlier than the "true" usage time when memory has been used by a
@@ -166,6 +179,12 @@ class BASE_EXPORT DiscardableSharedMemory {
 #endif
 
  private:
+  // Returns the full mapped memory region after the internal bookkeeping
+  // header. This may be larger than the region exposed through `memory()` due
+  // to platform alignment requirements. Discardable memory must have been
+  // mapped via Map().
+  span<uint8_t> mapped_memory() const;
+
   // LockPages/UnlockPages are platform-native discardable page management
   // helper functions. Both expect |offset| to be specified relative to the
   // base address at which |memory| is mapped, and that |offset| and |length|
@@ -184,8 +203,7 @@ class BASE_EXPORT DiscardableSharedMemory {
 
   UnsafeSharedMemoryRegion shared_memory_region_;
   WritableSharedMemoryMapping shared_memory_mapping_;
-  size_t mapped_size_;
-  size_t locked_page_count_;
+  size_t locked_page_count_ = 0u;
 #if DCHECK_IS_ON()
   std::set<size_t> locked_pages_;
 #endif
