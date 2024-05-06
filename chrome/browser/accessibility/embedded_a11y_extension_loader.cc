@@ -65,8 +65,8 @@ extensions::ComponentLoader* GetComponentLoader(Profile* profile) {
 }  // namespace
 
 EmbeddedA11yExtensionLoader::ExtensionInfo::ExtensionInfo(
-    const std::string& extension_id,
-    const std::string& extension_path,
+    const std::string extension_id,
+    const std::string extension_path,
     const base::FilePath::CharType* extension_manifest_file,
     bool should_localize)
     : extension_id(extension_id),
@@ -108,23 +108,6 @@ void EmbeddedA11yExtensionLoader::Init() {
     UpdateAllProfiles(extension.first);
   }
   initialized_ = true;
-}
-
-void EmbeddedA11yExtensionLoader::InstallA11yHelperExtensionForReadingMode() {
-  // TODO(crbug.com/324143642): Install a11y helper extension for all platforms.
-#if BUILDFLAG(IS_CHROMEOS_LACROS)
-  InstallExtensionWithId(extension_misc::kEmbeddedA11yHelperExtensionId,
-                         extension_misc::kEmbeddedA11yHelperExtensionPath,
-                         extension_misc::kEmbeddedA11yHelperManifestFilename,
-                         /*should_localize=*/true);
-#endif
-}
-
-void EmbeddedA11yExtensionLoader::RemoveA11yHelperExtensionForReadingMode() {
-  // TODO(crbug.com/324143642): Remove a11y helper extension for all platforms.
-#if BUILDFLAG(IS_CHROMEOS_LACROS)
-  RemoveExtensionWithId(extension_misc::kEmbeddedA11yHelperExtensionId);
-#endif
 }
 
 void EmbeddedA11yExtensionLoader::InstallExtensionWithId(
@@ -234,9 +217,15 @@ void EmbeddedA11yExtensionLoader::MaybeInstallExtension(
   }
 
   base::FilePath resources_path;
+#if BUILDFLAG(IS_MAC)
+  base::FilePath root_path;
+  CHECK(base::PathService::Get(base::DIR_ASSETS, &root_path));
+  resources_path = root_path.Append("resources");
+#else
   if (!base::PathService::Get(chrome::DIR_RESOURCES, &resources_path)) {
     NOTREACHED();
   }
+#endif
 
   base::FilePath::StringType common_path;
 #if BUILDFLAG(IS_WIN)
@@ -278,4 +267,9 @@ void EmbeddedA11yExtensionLoader::InstallExtension(
   if (extension_installation_changed_callback_for_test_) {
     extension_installation_changed_callback_for_test_.Run();
   }
+}
+
+bool EmbeddedA11yExtensionLoader::IsExtensionInstalled(
+    const std::string& extension_id) {
+  return extension_map_.contains(extension_id);
 }

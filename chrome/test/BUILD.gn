@@ -2259,7 +2259,6 @@ if (!is_android) {
       "../../apps/load_and_launch_browsertest.cc",
       "../browser/accessibility/accessibility_labels_service_browsertest.cc",
       "../browser/accessibility/browser_accessibility_state_browsertest.cc",
-      "../browser/accessibility/embedded_a11y_extension_loader_browsertest.cc",
       "../browser/accessibility/image_annotation_browsertest.cc",
       "../browser/accessibility/interstitial_accessibility_browsertest.cc",
       "../browser/accessibility/page_colors_browsertest.cc",
@@ -3660,6 +3659,7 @@ if (!is_android) {
 
     if (enable_extensions) {
       sources += [
+        "../browser/accessibility/embedded_a11y_extension_loader_browsertest.cc",
         "../browser/apps/platform_apps/api/browser/browser_apitest.cc",
         "../browser/apps/platform_apps/api/media_galleries/media_galleries_watch_apitest.cc",
         "../browser/apps/platform_apps/api/sync_file_system/sync_file_system_apitest.cc",
@@ -4145,6 +4145,10 @@ if (!is_android) {
           "../browser/chrome_service_worker_browsertest.cc",
           "../browser/content_settings/content_settings_browsertest.cc",
         ]
+      }
+
+      if (!is_chromeos_lacros) {
+        data_deps += [ "//chrome/browser/resources/accessibility:reading_mode_gdocs_extension_resources" ]
       }
     }
 

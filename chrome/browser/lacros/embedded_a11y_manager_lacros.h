@@ -63,6 +63,10 @@ class EmbeddedA11yManagerLacros
   void AddFocusChangedCallbackForTest(
       base::RepeatingCallback<void(gfx::Rect)> callback);
 
+  void SetReadingModeEnabled(bool enabled);
+
+  bool IsReadingModeEnabled();
+
  private:
   EmbeddedA11yManagerLacros();
   ~EmbeddedA11yManagerLacros() override;
@@ -108,6 +112,7 @@ class EmbeddedA11yManagerLacros
   bool chromevox_enabled_ = false;
   bool select_to_speak_enabled_ = false;
   bool switch_access_enabled_ = false;
+  bool reading_mode_enabled_ = false;
   std::optional<bool> pdf_ocr_always_active_enabled_;
   std::optional<bool> overscroll_history_navigation_enabled_;
 
