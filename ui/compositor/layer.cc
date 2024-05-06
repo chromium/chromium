@@ -325,7 +325,7 @@ std::unique_ptr<Layer> Layer::Mirror() {
   auto mirror = Clone();
   mirrors_.emplace_back(std::make_unique<LayerMirror>(this, mirror.get()));
 
-  if (!transfer_resource_.mailbox_holder.mailbox.IsZero()) {
+  if (!transfer_resource_.is_empty()) {
     // Send an empty release callback because we don't want the resource to be
     // freed up until the original layer releases it.
     mirror->SetTransferableResource(
@@ -1089,7 +1089,7 @@ void Layer::SetTransferableResource(const viz::TransferableResource& resource,
                                     viz::ReleaseCallback release_callback,
                                     gfx::Size texture_size_in_dip) {
   DCHECK(type_ == LAYER_TEXTURED || type_ == LAYER_SOLID_COLOR);
-  DCHECK(!resource.mailbox_holder.mailbox.IsZero());
+  DCHECK(!resource.is_empty());
   DCHECK(release_callback);
   DCHECK(!resource.is_software);
   if (!texture_layer_.get()) {
@@ -1316,8 +1316,9 @@ bool Layer::SchedulePaint(const gfx::Rect& invalid_rect) {
   if (type_ == LAYER_NINE_PATCH) {
     return false;
   }
-  if (!delegate_ && transfer_resource_.mailbox_holder.mailbox.IsZero())
+  if (!delegate_ && transfer_resource_.is_empty()) {
     return false;
+  }
 
   damaged_region_.Union(invalid_rect);
   if (layer_mask_)
@@ -1349,8 +1350,9 @@ void Layer::SendDamagedRects() {
 
   if (damaged_region_.IsEmpty())
     return;
-  if (!delegate_ && transfer_resource_.mailbox_holder.mailbox.IsZero())
+  if (!delegate_ && transfer_resource_.is_empty()) {
     return;
+  }
   if (content_layer_ && deferred_paint_requests_)
     return;
 
