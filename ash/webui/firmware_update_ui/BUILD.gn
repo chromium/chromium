@@ -23,6 +23,7 @@ static_library("firmware_update_ui") {
     "//chromeos/strings/",
     "//content/public/browser",
     "//dbus",
+    "//ui/chromeos:chromeos",
     "//ui/resources:webui_resources_grd_grit",
     "//ui/web_dialogs:web_dialogs",
     "//ui/webui",

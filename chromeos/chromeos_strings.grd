@@ -5517,7 +5517,7 @@
           OK
         </message>
         <message name="IDS_FIRMWARE_UPDATING_TEXT" desc="Label for showing that a device is being updated.">
-          Updating firmware on <ph name="DEVICE_NAME">$1<ex>Logitech keyboard</ex></ph>
+          Updating <ph name="DEVICE_NAME">$1<ex>Logitech keyboard</ex></ph>
         </message>
         <message name="IDS_FIRMWARE_DEVICE_UP_TO_DATE_TEXT" desc="Label for when a device is up to date.">
           Your <ph name="DEVICE_NAME">$1<ex>Logitech keyboard</ex></ph> is now up to date
@@ -5572,26 +5572,26 @@
         </message>
         <!-- TODO(cambickel): Make these strings translatable. -->
         <message name="IDS_FIRMWARE_REQUEST_ID_REMOVE_REPLUG" desc="Request shown to the user during an update, requesting that the device USB cable be unplugged and reinserted." translateable="false">
-          Please unplug and then re-insert the device USB cable to continue the update process.
+          Unplug the <ph name="DEVICE_NAME">$1<ex>Logitech keyboard</ex></ph> power cable and then reinsert it to continue the update process
         </message>
         <message name="IDS_FIRMWARE_REQUEST_ID_REMOVE_USB_CABLE" desc="Request shown to the user during an update, requesting that the device USB cable be unplugged." translateable="false">
-          Please unplug the device USB cable to continue the update process.
+          Unplug the <ph name="DEVICE_NAME">$1<ex>Logitech keyboard</ex></ph> USB cable to continue the update process
         </message>
         <message name="IDS_FIRMWARE_REQUEST_ID_INSERT_USB_CABLE" desc="Request shown to the user during an update, requesting that the device USB cable be reinserted." translateable="false">
-          Please re-insert the device USB cable to continue the update process.
+          Reinsert the <ph name="DEVICE_NAME">$1<ex>Logitech keyboard</ex></ph> USB cable to continue the update process
         </message>
         <message name="IDS_FIRMWARE_REQUEST_ID_PRESS_UNLOCK" desc="Request shown to the user during an update, requesting that the user press unlock on the device being updated." translateable="false">
-          Press unlock on the device to continue the update process.
+          Unlock the <ph name="DEVICE_NAME">$1<ex>Logitech keyboard</ex></ph> to continue the update process
         </message>
         <message name="IDS_FIRMWARE_REQUEST_ID_DO_NOT_POWER_OFF" desc="Request shown to the user during an update, requesting that the user not turn off their computer during the update." translateable="false">
-          Do not turn off your computer or remove the AC adapter while the update is in progress.
+          Do not turn off your <ph name="DEVICE_TYPE">$1<ex>Chromebook</ex></ph> or unplug the <ph name="DEVICE_TYPE">$1<ex>Chromebook</ex></ph> power cable while the update is in progress
         </message>
         <message name="IDS_FIRMWARE_REQUEST_ID_REPLUG_INSTALL" desc="Request shown to the user during an update, requesting that the user unplug and replug the device and then install again." translateable="false">
-          Unplug and replug the device to continue the update process.
+          Unplug and replug the <ph name="DEVICE_NAME">$1<ex>Logitech keyboard</ex></ph> to continue the update process
         </message>
         <!-- TODO(cambickel): Upload screenshot for IDS_FIRMWARE_REQUEST_ID_REPLUG_POWER once it's approved by UX. -->
         <message name="IDS_FIRMWARE_REQUEST_ID_REPLUG_POWER" desc="Request shown to the user during an update, requesting that the device power cable be unplugged and reinserted." translateable="false">
-          Please unplug and then re-insert the device power cable to continue the update process.
+          Unplug and replug the <ph name="DEVICE_NAME">$1<ex>Logitech keyboard</ex></ph> power cable to continue the update process
         </message>
         <!-- Search Page -->
         <message name="IDS_FEEDBACK_TOOL_CONTINUE_BUTTON_LABEL" desc="Label of the continue button.">

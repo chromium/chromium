@@ -372,21 +372,33 @@ suite('FirmwareUpdateDialogTest', () => {
       [DeviceRequestId.kReplugInstall, 'requestIdReplugInstall'],
     ]);
 
-    for (const [id, expectedString] of idToExpectedString.entries()) {
-      updateDialogElement.onDeviceRequest(createDeviceRequest(id));
+    const deviceName =
+        mojoString16ToString(updateDialogElement.update!.deviceName);
+
+    for (const [deviceRequestID, expectedString] of idToExpectedString
+             .entries()) {
+      updateDialogElement.onDeviceRequest(createDeviceRequest(deviceRequestID));
       await flushTasks();
 
       // Title of dialog should be generic "Updating [device]"
       assertEquals(
           getTextContent('#updateDialogTitle'),
-          loadTimeData.getStringF(
-              'updating',
-              mojoString16ToString(updateDialogElement.update!.deviceName)));
+          loadTimeData.getStringF('updating', deviceName));
 
       // Body of dialog should correspond to the type of request.
-      assertEquals(
-          getTextContent('#updateDialogBody'),
-          loadTimeData.getString(expectedString));
+      // In the case of the "DoNotPowerOff" request type, the device name is not
+      // part of the body text, so the expected string does not include the
+      // device name.
+      if (deviceRequestID === DeviceRequestId.kDoNotPowerOff) {
+        assertEquals(
+            getTextContent('#updateDialogBody'),
+            loadTimeData.getString(expectedString));
+      } else {
+        assertEquals(
+            getTextContent('#updateDialogBody'),
+            loadTimeData.getStringF(expectedString, deviceName));
+      }
+
       assert(updateDialogElement?.shadowRoot);
       // For user requests, the dialog body should be an assertive aria-live
       // region.

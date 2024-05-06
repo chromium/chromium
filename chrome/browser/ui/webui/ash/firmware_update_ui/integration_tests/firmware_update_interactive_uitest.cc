@@ -151,9 +151,9 @@ IN_PROC_BROWSER_TEST_F(FirmwareUpdateInteractiveUiTest,
                                      kUpdateDialogProgressQuery,
                                      "Paused (60% complete)"),
           Log("Waiting for update dialog body to match expected value..."),
-          WaitForElementTextContains(
-              webcontents_id_, kUpdateDialogBodyQuery,
-              "Unplug and replug the device to continue the update process."),
+          WaitForElementTextContains(webcontents_id_, kUpdateDialogBodyQuery,
+                                     "Unplug and replug the fake_device to "
+                                     "continue the update process"),
           Log("Triggering successful update."), TriggerSuccessfulUpdate(),
           Log("Verifying existence of update done button."),
           WaitForElementExists(webcontents_id_,

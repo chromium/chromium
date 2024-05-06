@@ -34,16 +34,6 @@ const initialInstallationProgress: InstallationProgress = {
   state: UpdateState.kIdle,
 };
 
-const deviceRequestIdToStringId = new Map<DeviceRequestId, string>([
-  [DeviceRequestId.kDoNotPowerOff, 'requestIdDoNotPowerOff'],
-  [DeviceRequestId.kReplugInstall, 'requestIdReplugInstall'],
-  [DeviceRequestId.kInsertUSBCable, 'requestIdInsertUsbCable'],
-  [DeviceRequestId.kRemoveUSBCable, 'requestIdRemoveUsbCable'],
-  [DeviceRequestId.kPressUnlock, 'requestIdPressUnlock'],
-  [DeviceRequestId.kRemoveReplug, 'requestIdRemoveReplug'],
-  [DeviceRequestId.kReplugPower, 'requestIdReplugPower'],
-]);
-
 /**
  * @fileoverview
  * 'firmware-update-dialog' displays information related to a firmware update.
@@ -303,13 +293,12 @@ export class FirmwareUpdateDialogElement extends FirmwareUpdateDialogElementBase
     const {percentage} = this.installationProgress;
     assert(this.lastDeviceRequestId !== null);
 
-    const requestStringId =
-        deviceRequestIdToStringId.get(this.lastDeviceRequestId);
-    assert(!!requestStringId);
+    const deviceNameString: string = mojoString16ToString(deviceName);
 
     return {
-      title: this.i18n('updating', mojoString16ToString(deviceName)),
-      body: this.i18n(requestStringId),
+      title: this.i18n('updating', deviceNameString),
+      body: this.getI18nStringForDeviceRequestId(
+          this.lastDeviceRequestId, deviceNameString),
       footer: this.i18n('waitingFooterText', percentage),
     };
   }
@@ -447,6 +436,38 @@ export class FirmwareUpdateDialogElement extends FirmwareUpdateDialogElementBase
     // Use assertive aria-live value to ensure user requests are announced
     // before they time out.
     return this.isWaitingForUserAction() ? 'assertive' : '';
+  }
+
+  private getStringIdForDeviceRequestId(deviceRequestId: DeviceRequestId):
+      string {
+    switch (deviceRequestId) {
+      case (DeviceRequestId.kDoNotPowerOff):
+        return 'requestIdDoNotPowerOff';
+      case (DeviceRequestId.kReplugInstall):
+        return 'requestIdReplugInstall';
+      case (DeviceRequestId.kInsertUSBCable):
+        return 'requestIdInsertUsbCable';
+      case (DeviceRequestId.kRemoveUSBCable):
+        return 'requestIdRemoveUsbCable';
+      case (DeviceRequestId.kPressUnlock):
+        return 'requestIdPressUnlock';
+      case (DeviceRequestId.kRemoveReplug):
+        return 'requestIdRemoveReplug';
+      case (DeviceRequestId.kReplugPower):
+        return 'requestIdReplugPower';
+    }
+  }
+
+  private getI18nStringForDeviceRequestId(
+      deviceRequestId: DeviceRequestId, deviceName: string): string {
+    const requestStringId = this.getStringIdForDeviceRequestId(deviceRequestId);
+
+    // DoNotPowerOff request does not use the device name.
+    if (deviceRequestId == DeviceRequestId.kDoNotPowerOff) {
+      return this.i18n(requestStringId);
+    }
+
+    return this.i18n(requestStringId, deviceName);
   }
 }
 
