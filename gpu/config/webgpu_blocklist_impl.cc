@@ -8,6 +8,7 @@
 
 #include "base/strings/pattern.h"
 #include "base/strings/string_split.h"
+#include "build/build_config.h"
 
 #if BUILDFLAG(IS_MAC)
 #include "base/mac/mac_util.h"
@@ -34,6 +35,20 @@ bool IsWebGPUAdapterBlocklisted(const wgpu::AdapterProperties& properties,
     return true;
   }
 #endif
+
+  if (properties.backendType == wgpu::BackendType::D3D12) {
+#if defined(ARCH_CPU_X86)
+    constexpr uint32_t kNVIDIAVendorID = 0x10de;
+    if (properties.vendorID == kNVIDIAVendorID) {
+      // Blocklisted due to https://crbug.com/dawn/1196
+      return true;
+    }
+#endif  // defined(ARCH_CPU_X86)
+#if defined(ARCH_CPU_ARM_FAMILY)
+    // Blocklisted due to https://crbug.com/dawn/884
+    return true;
+#endif  // defined(ARCH_CPU_ARM_FAMILY)
+  }
 
 #if BUILDFLAG(IS_ANDROID)
   // Blocklist the OpenGLES backend on Android for now.
@@ -72,6 +87,23 @@ bool IsWebGPUAdapterBlocklisted(const wgpu::AdapterProperties& properties,
   // TODO(dawn:1705): d3d11 is not full implemented yet.
   if (properties.backendType == wgpu::BackendType::D3D11) {
     return true;
+  }
+
+  for (auto* chain = properties.nextInChain; chain != nullptr;
+       chain = chain->nextInChain) {
+    switch (chain->sType) {
+      case wgpu::SType::AdapterPropertiesD3D:
+#if defined(ARCH_CPU_X86)
+        if (static_cast<const wgpu::AdapterPropertiesD3D*>(chain)
+                ->shaderModel >= 60) {
+          // Blocklisted due to https://crbug.com/tint/1753
+          return true;
+        }
+#endif  // defined(ARCH_CPU_X86)
+        break;
+      default:
+        break;
+    }
   }
 
   auto U32ToHexString = [](uint32_t value) {
@@ -122,7 +154,12 @@ bool IsWebGPUAdapterBlocklisted(const wgpu::AdapterProperties& properties,
 bool IsWebGPUAdapterBlocklisted(const wgpu::Adapter& adapter,
                                 const std::string& blocklist_string) {
   wgpu::AdapterProperties properties;
+  wgpu::AdapterPropertiesD3D d3dProperties;
+  if (adapter.HasFeature(wgpu::FeatureName::AdapterPropertiesD3D)) {
+    properties.nextInChain = &d3dProperties;
+  }
   adapter.GetProperties(&properties);
+
   return detail::IsWebGPUAdapterBlocklisted(properties, blocklist_string);
 }
 
