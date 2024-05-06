@@ -52,7 +52,6 @@ namespace {
 constexpr int kAttentionIndicatorRadius = 3;
 constexpr int kLoadingAnimationStrokeWidthDp = 2;
 constexpr float kDiscardRingStrokeWidthDp = 1.5;
-constexpr int kLargerDiscardIndicatorRadiusDp = 2;
 
 // Discard Ring Segments
 constexpr int kNumSmallSegments = 4;
@@ -127,12 +126,7 @@ TabIcon::TabIcon()
       favicon_size_animation_(this),
       tab_discard_animation_(base::Seconds(1),
                              gfx::LinearAnimation::kDefaultFrameRate,
-                             this),
-      increased_discard_indicator_radius_(
-          base::FeatureList::IsEnabled(
-              performance_manager::features::kDiscardRingImprovements)
-              ? kLargerDiscardIndicatorRadiusDp
-              : 0) {
+                             this) {
   favicon_size_animation_.SetSlideDuration(base::Milliseconds(250));
 
   SetCanProcessEventsWithinSubtree(false);
@@ -141,9 +135,7 @@ TabIcon::TabIcon()
   // discard ring radius when kDiscardRingImprovements is enabled. Padding must
   // be symmetric on each side so that elements will anchor to the center of the
   // favicon.
-  const int padding =
-      std::max(increased_discard_indicator_radius_, kAttentionIndicatorRadius);
-  SetBorder(views::CreateEmptyBorder(padding));
+  SetBorder(views::CreateEmptyBorder(kAttentionIndicatorRadius));
 
   const int preferred_width = gfx::kFaviconSize + GetInsets().width();
   SetPreferredSize(gfx::Size(preferred_width, preferred_width));
@@ -241,6 +233,11 @@ void TabIcon::StepLoadingAnimation(const base::TimeDelta& elapsed_time) {
   if (GetShowingLoadingAnimation()) {
     SchedulePaint();
   }
+}
+
+void TabIcon::EnlargeDiscardIndicatorRadius(int radius) {
+  CHECK(radius <= GetInsets().left());
+  increased_discard_indicator_radius_ = radius;
 }
 
 void TabIcon::OnPaint(gfx::Canvas* canvas) {

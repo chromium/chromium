@@ -30,6 +30,7 @@
 #include "chrome/common/chrome_features.h"
 #include "chrome/test/views/chrome_views_test_base.h"
 #include "components/content_settings/core/common/features.h"
+#include "components/performance_manager/public/features.h"
 #include "components/tab_groups/tab_group_id.h"
 #include "components/tab_groups/tab_group_visual_data.h"
 #include "testing/gtest/include/gtest/gtest.h"
@@ -801,4 +802,37 @@ TEST_F(AlertIndicatorButtonTest, 1SecondFadeoutAnimationTest) {
   EXPECT_EQ(base::Time(), get_camera_mic_indicator_start_time(media_tab));
   EXPECT_EQ(base::Seconds(1),
             get_fadeout_animation_duration_for_testing_(media_tab));
+}
+
+class TabTestWithDiscardRingImprovements : public TabTest {
+ public:
+  void SetUp() override {
+    scoped_feature_list_.InitAndEnableFeature(
+        performance_manager::features::kDiscardRingImprovements);
+    TabTest::SetUp();
+  }
+
+ private:
+  base::test::ScopedFeatureList scoped_feature_list_;
+};
+
+TEST_F(TabTestWithDiscardRingImprovements, DiscardIndicatorResponsiveness) {
+  auto controller = std::make_unique<FakeTabSlotController>();
+  std::unique_ptr<views::Widget> widget = CreateTestWidget();
+  Tab* tab = widget->SetContentsView(std::make_unique<Tab>(controller.get()));
+  const TabIcon* tab_icon = GetTabIcon(tab);
+
+  struct TestCase {
+    int tab_width;
+    int expected_increased_radius;
+  };
+  std::list<TestCase> test_cases{
+      {256, 2}, {45, 2}, {44, 2}, {43, 0}, {32, 0},
+  };
+
+  for (auto const& test_case : test_cases) {
+    tab->SetBounds(0, 0, test_case.tab_width, 50);
+    EXPECT_EQ(test_case.expected_increased_radius,
+              tab_icon->increased_discard_indicator_radius_);
+  }
 }
