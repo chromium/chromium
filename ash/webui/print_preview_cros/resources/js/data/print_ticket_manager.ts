@@ -69,16 +69,20 @@ export class PrintTicketManager extends EventTarget {
       // Set print ticket defaults.
       ...DEFAULT_PARTIAL_PRINT_TICKET,
       printPreviewId: this.sessionContext.printPreviewId,
-      destination: this.destinationManager.getActiveDestination()?.id ?? '',
       previewModifiable: this.sessionContext.isModifiable,
       shouldPrintSelectionOnly: this.sessionContext.hasSelection,
     } as PrintTicket;
 
-    if (this.printTicket.destination === '') {
+    const activeDest = this.destinationManager.getActiveDestination();
+    if (activeDest === null) {
+      this.printTicket.destination = '';
       this.eventTracker.add(
           this.destinationManager,
           DESTINATION_MANAGER_ACTIVE_DESTINATION_CHANGED,
           (event: Event): void => this.onActiveDestinationChanged(event));
+    } else {
+      this.printTicket.destination = activeDest.id;
+      this.printTicket.printerType = activeDest.printerType;
     }
 
     // TODO(b/323421684): Apply default settings from destination capabilities
@@ -152,6 +156,7 @@ export class PrintTicketManager extends EventTarget {
 
     if (this.printTicket!.destination === '') {
       this.printTicket!.destination = activeDest.id;
+      this.printTicket!.printerType = activeDest.printerType;
     }
 
     this.eventTracker.remove(

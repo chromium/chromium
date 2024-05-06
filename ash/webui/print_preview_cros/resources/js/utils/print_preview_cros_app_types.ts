@@ -18,6 +18,9 @@ export interface Destination {
 
   // Display name from printer.
   displayName: string;
+
+  // Type of destination.
+  printerType: PrinterType;
 }
 
 export interface PrintRequestOutcome {
@@ -75,6 +78,18 @@ export interface MediaSize {
 // TODO(b/323421684): Revisit allowed values for pages-per-sheet after
 // understanding the expectations of the n-up service/engine.
 export type PagesPerSheetValue = 1|2|4|6|9|16;
+
+/**
+ * Printer types for capabilities and printer list requests.
+ * Must match PrinterType in printing/mojom/print.mojom
+ */
+export enum PrinterType {
+  PRIVET_PRINTER_DEPRECATED = 0,
+  EXTENSION_PRINTER = 1,
+  PDF_PRINTER = 2,
+  LOCAL_PRINTER = 3,
+  CLOUD_PRINTER_DEPRECATED = 4
+}
 
 // PrintTicket represents the data required to start print job. Ticket will be
 // used to create a settings dictionary with fields matching the existing Chrome
@@ -154,6 +169,10 @@ export interface PrintTicket {
   // Width of page from generated PDF summing content, left margin, and right
   // margin.
   pageWidth: number;
+
+  // Printer type used determine correct logic and handler for print job
+  // destination.
+  printerType: PrinterType;
 
   // Whether to generate PDF with CSS backgrounds included.
   shouldPrintBackgrounds: boolean;

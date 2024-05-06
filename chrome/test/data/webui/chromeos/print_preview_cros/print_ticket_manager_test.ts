@@ -263,7 +263,7 @@ suite('PrintTicketManager', () => {
             'Print request can be sent');
       });
 
-  // Verify PrintTicket destination set to active destination ID from
+  // Verify PrintTicket destination values set based on active destination from
   // destination manager.
   test(
       'PrintTicket destination set to DestinationManager active' +
@@ -282,7 +282,10 @@ suite('PrintTicketManager', () => {
         assertNotEquals(null, ticket, 'Ticket configured');
         assertEquals(
             PDF_DESTINATION.id, ticket!.destination,
-            'destination set from DestinationManager');
+            'destination set from DestinationManager active destination');
+        assertEquals(
+            PDF_DESTINATION.printerType, ticket!.printerType,
+            'printerType set from DestinationManager active destination');
       });
 
   // Verify PrintTicket destination set to empty string if no active
@@ -356,12 +359,12 @@ suite('PrintTicketManager', () => {
             'shouldPrintSelectionOnly should default to match session context');
       });
 
-  // Verify PrintTicket destination updates to active destination on first
-  // event if currently empty string and stops listening to active destination
-  // events after change.
+  // Verify PrintTicket destination values update on first active destination
+  // change event if currently empty string and stops listening to active
+  // destination events after change.
   test(
       'PrintTicket listens to active destination change until ' +
-          'print ticket destination set to non-empty value',
+          'print ticket destination set and updates ticket',
       async () => {
         const ticketManager = PrintTicketManager.getInstance();
         const destinationManager = DestinationManager.getInstance();
@@ -384,6 +387,9 @@ suite('PrintTicketManager', () => {
         assertEquals(
             PDF_DESTINATION.id, ticket!.destination,
             `destination should be ${PDF_DESTINATION.id}`);
+        assertEquals(
+            PDF_DESTINATION.printerType, ticket!.printerType,
+            `printerType should be ${PDF_DESTINATION.printerType}`);
         getActiveDestinationFn.returnValue = {
           id: 'fake_id',
           displayName: 'Fake Destination',
@@ -475,6 +481,9 @@ suite('PrintTicketManager', () => {
         assertEquals(
             DEFAULT_PARTIAL_PRINT_TICKET.pageWidth, ticket.pageWidth,
             'Ticket pageWidth should match DEFAULT_PARTIAL_PRINT_TICKET');
+        assertEquals(
+            DEFAULT_PARTIAL_PRINT_TICKET.printerType, ticket.printerType,
+            'Ticket printerType should match DEFAULT_PARTIAL_PRINT_TICKET');
         assertEquals(
             DEFAULT_PARTIAL_PRINT_TICKET.shouldPrintBackgrounds,
             ticket.shouldPrintBackgrounds,
