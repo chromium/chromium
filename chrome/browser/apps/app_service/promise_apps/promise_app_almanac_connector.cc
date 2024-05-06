@@ -17,6 +17,8 @@
 #include "services/network/public/cpp/simple_url_loader.h"
 #include "services/network/public/mojom/url_response_head.mojom.h"
 
+namespace apps {
+
 namespace {
 
 // Endpoint for requesting promise app data on the ChromeOS Almanac API.
@@ -60,9 +62,16 @@ constexpr net::NetworkTrafficAnnotationTag kTrafficAnnotation =
           "cannot be disabled by policy."
       }
     )");
-}  // namespace
 
-namespace apps {
+std::optional<PromiseAppWrapper> ConvertPromiseAppResponseProto(
+    base::expected<proto::PromiseAppResponse, QueryError> query_response) {
+  if (query_response.has_value()) {
+    return PromiseAppWrapper(std::move(query_response).value());
+  }
+  return std::nullopt;
+}
+
+}  // namespace
 
 PromiseAppAlmanacConnector::PromiseAppAlmanacConnector(Profile* profile)
     : url_loader_factory_(profile->GetURLLoaderFactory()),
@@ -101,19 +110,13 @@ void PromiseAppAlmanacConnector::SetSkipApiKeyCheckForTesting(
 void PromiseAppAlmanacConnector::GetPromiseAppInfoImpl(
     const PackageId& package_id,
     GetPromiseAppCallback callback) {
-  std::unique_ptr<network::SimpleURLLoader> loader = GetAlmanacUrlLoader(
-      kTrafficAnnotation, BuildGetPromiseAppRequestBody(package_id),
-      kPromiseAppAlmanacEndpoint);
-
-  // Retain a pointer while keeping the loader alive by std::moving it into the
-  // callback.
-  auto* loader_ptr = loader.get();
-  loader_ptr->DownloadToString(
-      url_loader_factory_.get(),
-      base::BindOnce(&PromiseAppAlmanacConnector::OnGetPromiseAppResponse,
-                     weak_ptr_factory_.GetWeakPtr(), package_id,
-                     std::move(loader), std::move(callback)),
-      kMaxResponseSizeInBytes);
+  QueryAlmanacApi<proto::PromiseAppResponse>(
+      *url_loader_factory_, kTrafficAnnotation,
+      BuildGetPromiseAppRequestBody(package_id), kPromiseAppAlmanacEndpoint,
+      kMaxResponseSizeInBytes,
+      /*error_histogram_name=*/std::nullopt,
+      base::BindOnce(&ConvertPromiseAppResponseProto)
+          .Then(std::move(callback)));
 }
 
 void PromiseAppAlmanacConnector::SetLocale(const PackageId& package_id,
@@ -129,28 +132,6 @@ std::string PromiseAppAlmanacConnector::BuildGetPromiseAppRequestBody(
   request_proto.set_language(locale_);
   request_proto.set_package_id(package_id.ToString());
   return request_proto.SerializeAsString();
-}
-
-void PromiseAppAlmanacConnector::OnGetPromiseAppResponse(
-    const PackageId& package_id,
-    std::unique_ptr<network::SimpleURLLoader> loader,
-    GetPromiseAppCallback callback,
-    std::unique_ptr<std::string> response_body) {
-  std::optional<DownloadError> error = GetDownloadError(
-      loader->NetError(), loader->ResponseInfo(), response_body.get());
-  if (error) {
-    LOG(ERROR) << *error;
-    std::move(callback).Run(std::nullopt);
-    return;
-  }
-
-  proto::PromiseAppResponse response;
-  if (!response.ParseFromString(*response_body)) {
-    LOG(ERROR) << "Parsing failed";
-    std::move(callback).Run(std::nullopt);
-    return;
-  }
-  std::move(callback).Run(PromiseAppWrapper(response));
 }
 
 }  // namespace apps

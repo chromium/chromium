@@ -1,8 +1,8 @@
-// Copyright 2023 The Chromium Authors
+// Copyright 2024 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#include "chrome/browser/apps/app_deduplication_service/app_deduplication_server_connector.h"
+#include "chrome/browser/apps/app_deduplication_service/app_deduplication_almanac_endpoint.h"
 
 #include <optional>
 
@@ -28,9 +28,9 @@
 
 namespace apps {
 
-class AppDeduplicationServerConnectorTest : public testing::Test {
+class AppDeduplicationAlmanacEndpointTest : public testing::Test {
  public:
-  AppDeduplicationServerConnectorTest()
+  AppDeduplicationAlmanacEndpointTest()
       : test_shared_loader_factory_(
             base::MakeRefCounted<network::WeakWrapperSharedURLLoaderFactory>(
                 &url_loader_factory_)) {}
@@ -44,14 +44,13 @@ class AppDeduplicationServerConnectorTest : public testing::Test {
   network::TestURLLoaderFactory url_loader_factory_;
   scoped_refptr<network::SharedURLLoaderFactory> test_shared_loader_factory_;
 
-  AppDeduplicationServerConnector server_connector_;
   DeviceInfo device_info_;
 
  private:
   content::BrowserTaskEnvironment task_environment_;
 };
 
-TEST_F(AppDeduplicationServerConnectorTest,
+TEST_F(AppDeduplicationAlmanacEndpointTest,
        GetDeduplicateAppsFromServerRequest) {
   std::string method;
   std::string method_override_header;
@@ -66,15 +65,15 @@ TEST_F(AppDeduplicationServerConnectorTest,
         method = request.method;
       }));
 
-  server_connector_.GetDeduplicateAppsFromServer(
-      device_info_, test_shared_loader_factory_, base::DoNothing());
+  app_deduplication_almanac_endpoint::GetDeduplicateAppsFromServer(
+      device_info_, *test_shared_loader_factory_, base::DoNothing());
 
   EXPECT_EQ(method, "POST");
   EXPECT_EQ(method_override_header, "GET");
   EXPECT_EQ(content_type, "application/x-protobuf");
 }
 
-TEST_F(AppDeduplicationServerConnectorTest,
+TEST_F(AppDeduplicationAlmanacEndpointTest,
        GetDeduplicateAppsFromServerSuccess) {
   proto::DeduplicateResponse response;
   auto* group = response.add_app_group();
@@ -83,49 +82,49 @@ TEST_F(AppDeduplicationServerConnectorTest,
   group->set_package_id(0, "website:https://web.skype.com/");
 
   url_loader_factory_.AddResponse(
-      AppDeduplicationServerConnector::GetServerUrl().spec(),
+      app_deduplication_almanac_endpoint::GetServerUrl().spec(),
       response.SerializeAsString());
 
   base::test::TestFuture<std::optional<proto::DeduplicateData>> test_callback;
-  server_connector_.GetDeduplicateAppsFromServer(
-      device_info_, test_shared_loader_factory_, test_callback.GetCallback());
+  app_deduplication_almanac_endpoint::GetDeduplicateAppsFromServer(
+      device_info_, *test_shared_loader_factory_, test_callback.GetCallback());
   auto observed_response = test_callback.Get();
   EXPECT_TRUE(observed_response.has_value());
   EXPECT_EQ(observed_response->app_group_size(), 1);
 }
 
-TEST_F(AppDeduplicationServerConnectorTest,
+TEST_F(AppDeduplicationAlmanacEndpointTest,
        GetDeduplicateAppsFromServerEmptyResponse) {
   url_loader_factory_.AddResponse(
-      AppDeduplicationServerConnector::GetServerUrl().spec(), "");
+      app_deduplication_almanac_endpoint::GetServerUrl().spec(), "");
 
   base::test::TestFuture<std::optional<proto::DeduplicateData>> response;
-  server_connector_.GetDeduplicateAppsFromServer(
-      device_info_, test_shared_loader_factory_, response.GetCallback());
+  app_deduplication_almanac_endpoint::GetDeduplicateAppsFromServer(
+      device_info_, *test_shared_loader_factory_, response.GetCallback());
   EXPECT_FALSE(response.Get().has_value());
 }
 
-TEST_F(AppDeduplicationServerConnectorTest, GetDeduplicateAppsFromServerError) {
+TEST_F(AppDeduplicationAlmanacEndpointTest, GetDeduplicateAppsFromServerError) {
   url_loader_factory_.AddResponse(
-      AppDeduplicationServerConnector::GetServerUrl().spec(), /*content=*/"",
+      app_deduplication_almanac_endpoint::GetServerUrl().spec(), /*content=*/"",
       net::HTTP_INTERNAL_SERVER_ERROR);
 
   base::test::TestFuture<std::optional<proto::DeduplicateData>> response;
-  server_connector_.GetDeduplicateAppsFromServer(
-      device_info_, test_shared_loader_factory_, response.GetCallback());
+  app_deduplication_almanac_endpoint::GetDeduplicateAppsFromServer(
+      device_info_, *test_shared_loader_factory_, response.GetCallback());
   EXPECT_FALSE(response.Get().has_value());
 }
 
-TEST_F(AppDeduplicationServerConnectorTest,
+TEST_F(AppDeduplicationAlmanacEndpointTest,
        GetDeduplicateAppsFromServerNetworkError) {
   url_loader_factory_.AddResponse(
-      AppDeduplicationServerConnector::GetServerUrl(),
+      app_deduplication_almanac_endpoint::GetServerUrl(),
       network::mojom::URLResponseHead::New(), /*content=*/"",
       network::URLLoaderCompletionStatus(net::ERR_INSUFFICIENT_RESOURCES));
 
   base::test::TestFuture<std::optional<proto::DeduplicateData>> response;
-  server_connector_.GetDeduplicateAppsFromServer(
-      device_info_, test_shared_loader_factory_, response.GetCallback());
+  app_deduplication_almanac_endpoint::GetDeduplicateAppsFromServer(
+      device_info_, *test_shared_loader_factory_, response.GetCallback());
   EXPECT_FALSE(response.Get().has_value());
 }
 

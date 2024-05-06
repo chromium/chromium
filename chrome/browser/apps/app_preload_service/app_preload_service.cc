@@ -19,6 +19,7 @@
 #include "base/strings/strcat.h"
 #include "base/time/time.h"
 #include "chrome/browser/apps/almanac_api_client/device_info_manager.h"
+#include "chrome/browser/apps/app_preload_service/app_preload_almanac_endpoint.h"
 #include "chrome/browser/apps/app_preload_service/app_preload_service_factory.h"
 #include "chrome/browser/apps/app_preload_service/preload_app_definition.h"
 #include "chrome/browser/apps/app_service/app_install/app_install_service.h"
@@ -83,7 +84,6 @@ BASE_FEATURE(kAppPreloadServiceEnableArcApps,
 
 AppPreloadService::AppPreloadService(Profile* profile)
     : profile_(profile),
-      server_connector_(std::make_unique<AppPreloadServerConnector>()),
       device_info_manager_(std::make_unique<DeviceInfoManager>(profile)) {
   if (g_disable_preloads_on_startup_for_testing_) {
     return;
@@ -154,8 +154,8 @@ void AppPreloadService::StartAppInstallationForFirstLogin(
     CHECK_IS_TEST();
     return;
   }
-  server_connector_->GetAppsForFirstLogin(
-      device_info, url_loader_factory,
+  app_preload_almanac_endpoint::GetAppsForFirstLogin(
+      device_info, *url_loader_factory,
       base::BindOnce(&AppPreloadService::OnGetAppsForFirstLoginCompleted,
                      weak_ptr_factory_.GetWeakPtr(), start_time));
 }

@@ -2,6 +2,8 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
+#include "chrome/browser/apps/app_deduplication_service/app_deduplication_service.h"
+
 #include <memory>
 #include <utility>
 
@@ -13,7 +15,7 @@
 #include "base/strings/string_util.h"
 #include "base/time/time.h"
 #include "chrome/browser/apps/almanac_api_client/device_info_manager.h"
-#include "chrome/browser/apps/app_deduplication_service/app_deduplication_service.h"
+#include "chrome/browser/apps/app_deduplication_service/app_deduplication_almanac_endpoint.h"
 #include "chrome/browser/apps/app_service/app_service_proxy.h"
 #include "chrome/browser/apps/app_service/app_service_proxy_factory.h"
 #include "chrome/browser/profiles/profile.h"
@@ -23,6 +25,7 @@
 #include "components/services/app_service/public/cpp/app_types.h"
 #include "components/services/app_service/public/cpp/package_id.h"
 #include "components/services/app_service/public/cpp/types_util.h"
+#include "services/network/public/cpp/shared_url_loader_factory.h"
 
 namespace {
 // Relative file path to where the deduplication data will be stored on disk.
@@ -63,7 +66,6 @@ constexpr char kLastGetDataFromServerTimestamp[] =
 
 AppDeduplicationService::AppDeduplicationService(Profile* profile)
     : profile_(profile),
-      server_connector_(std::make_unique<AppDeduplicationServerConnector>()),
       device_info_manager_(std::make_unique<DeviceInfoManager>(profile)) {
   app_registry_cache_observation_.Observe(
       &apps::AppServiceProxyFactory::GetForProfile(profile)
@@ -216,8 +218,8 @@ void AppDeduplicationService::GetDeduplicateDataFromServer(
     CHECK_IS_TEST();
     return;
   }
-  server_connector_->GetDeduplicateAppsFromServer(
-      device_info, url_loader_factory,
+  app_deduplication_almanac_endpoint::GetDeduplicateAppsFromServer(
+      device_info, *url_loader_factory,
       base::BindOnce(
           &AppDeduplicationService::OnGetDeduplicateDataFromServerCompleted,
           weak_ptr_factory_.GetWeakPtr()));

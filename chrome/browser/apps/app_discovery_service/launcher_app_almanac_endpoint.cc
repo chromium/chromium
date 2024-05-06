@@ -1,8 +1,8 @@
-// Copyright 2023 The Chromium Authors
+// Copyright 2024 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#include "chrome/browser/apps/app_discovery_service/launcher_app_almanac_connector.h"
+#include "chrome/browser/apps/app_discovery_service/launcher_app_almanac_endpoint.h"
 
 #include "base/functional/callback.h"
 #include "chrome/browser/apps/almanac_api_client/almanac_api_util.h"
@@ -12,7 +12,7 @@
 #include "services/network/public/cpp/simple_url_loader.h"
 #include "services/network/public/mojom/url_response_head.mojom.h"
 
-namespace apps {
+namespace apps::launcher_app_almanac_endpoint {
 namespace {
 
 // Endpoint for requesting Launcher apps on the ChromeOS Almanac API.
@@ -62,57 +62,29 @@ std::string BuildRequestBody(const DeviceInfo& info) {
   return request_proto.SerializeAsString();
 }
 
-}  // namespace
-
-LauncherAppAlmanacConnector::LauncherAppAlmanacConnector() = default;
-LauncherAppAlmanacConnector::~LauncherAppAlmanacConnector() = default;
-
-void LauncherAppAlmanacConnector::GetApps(
-    const DeviceInfo& device_info,
-    scoped_refptr<network::SharedURLLoaderFactory> url_loader_factory,
-    GetAppsCallback callback) {
-  std::unique_ptr<network::SimpleURLLoader> loader =
-      GetAlmanacUrlLoader(kTrafficAnnotation, BuildRequestBody(device_info),
-                          kAlmanacLauncherAppEndpoint);
-  if (!url_loader_factory.get()) {
-    std::move(callback).Run(std::nullopt);
-    return;
+std::optional<proto::LauncherAppResponse> MakeResponseOptional(
+    base::expected<proto::LauncherAppResponse, QueryError> query_response) {
+  if (query_response.has_value()) {
+    return std::move(query_response).value();
   }
-  // Retain a pointer while keeping the loader alive by std::moving it into the
-  // callback.
-  auto* loader_ptr = loader.get();
-  loader_ptr->DownloadToString(
-      url_loader_factory.get(),
-      base::BindOnce(&LauncherAppAlmanacConnector::OnGetAppsResponse,
-                     weak_ptr_factory_.GetWeakPtr(), std::move(loader),
-                     std::move(callback)),
-      kMaxResponseSizeInBytes);
+  return std::nullopt;
 }
 
-GURL LauncherAppAlmanacConnector::GetServerUrl() {
+}  // namespace
+
+void GetApps(
+    const DeviceInfo& device_info,
+    network::mojom::URLLoaderFactory& url_loader_factory,
+    GetAppsCallback callback) {
+  QueryAlmanacApi<proto::LauncherAppResponse>(
+      url_loader_factory, kTrafficAnnotation, BuildRequestBody(device_info),
+      kAlmanacLauncherAppEndpoint, kMaxResponseSizeInBytes,
+      /*error_histogram_name=*/std::nullopt,
+      base::BindOnce(&MakeResponseOptional).Then(std::move(callback)));
+}
+
+GURL GetServerUrl() {
   return GetAlmanacEndpointUrl(kAlmanacLauncherAppEndpoint);
 }
 
-void LauncherAppAlmanacConnector::OnGetAppsResponse(
-    std::unique_ptr<network::SimpleURLLoader> loader,
-    GetAppsCallback callback,
-    std::unique_ptr<std::string> response_body) {
-  std::optional<DownloadError> error = GetDownloadError(
-      loader->NetError(), loader->ResponseInfo(), response_body.get());
-  if (error) {
-    LOG(ERROR) << *error;
-    std::move(callback).Run(std::nullopt);
-    return;
-  }
-
-  proto::LauncherAppResponse response;
-  if (!response.ParseFromString(*response_body)) {
-    LOG(ERROR) << "Parsing failed.";
-    std::move(callback).Run(std::nullopt);
-    return;
-  }
-
-  std::move(callback).Run(std::move(response));
-}
-
-}  // namespace apps
+}  // namespace apps::launcher_app_almanac_endpoint

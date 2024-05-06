@@ -8,8 +8,8 @@ assert(is_chromeos_ash)
 
 source_set("app_preload_service") {
   sources = [
-    "app_preload_server_connector.cc",
-    "app_preload_server_connector.h",
+    "app_preload_almanac_endpoint.cc",
+    "app_preload_almanac_endpoint.h",
     "app_preload_service.cc",
     "app_preload_service.h",
     "app_preload_service_factory.cc",
@@ -49,7 +49,7 @@ source_set("unit_tests") {
   testonly = true
 
   sources = [
-    "app_preload_server_connector_unittest.cc",
+    "app_preload_almanac_endpoint_unittest.cc",
     "app_preload_service_unittest.cc",
     "preload_app_definition_unittest.cc",
   ]

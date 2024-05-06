@@ -1,8 +1,8 @@
-// Copyright 2023 The Chromium Authors
+// Copyright 2024 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#include "chrome/browser/apps/app_deduplication_service/app_deduplication_server_connector.h"
+#include "chrome/browser/apps/app_deduplication_service/app_deduplication_almanac_endpoint.h"
 
 #include "base/functional/callback.h"
 #include "chrome/browser/apps/almanac_api_client/almanac_api_util.h"
@@ -11,6 +11,8 @@
 #include "chrome/browser/apps/app_deduplication_service/proto/app_deduplication.pb.h"
 #include "services/network/public/cpp/simple_url_loader.h"
 #include "services/network/public/mojom/url_response_head.mojom.h"
+
+namespace apps::app_deduplication_almanac_endpoint {
 
 namespace {
 
@@ -54,85 +56,55 @@ constexpr net::NetworkTrafficAnnotationTag kTrafficAnnotation =
       }
     )");
 
-std::string BuildRequestBody(const apps::DeviceInfo& info) {
-  apps::proto::DeduplicateRequest request_proto;
+std::string BuildRequestBody(const DeviceInfo& info) {
+  proto::DeduplicateRequest request_proto;
   *request_proto.mutable_device_context() = info.ToDeviceContext();
   *request_proto.mutable_user_context() = info.ToUserContext();
 
   return request_proto.SerializeAsString();
 }
 
-}  // namespace
-
-namespace apps {
-
-AppDeduplicationServerConnector::AppDeduplicationServerConnector() = default;
-
-AppDeduplicationServerConnector::~AppDeduplicationServerConnector() = default;
-
-void AppDeduplicationServerConnector::GetDeduplicateAppsFromServer(
-    const DeviceInfo& device_info,
-    scoped_refptr<network::SharedURLLoaderFactory> url_loader_factory,
-    GetDeduplicateAppsCallback callback) {
-  std::unique_ptr<network::SimpleURLLoader> loader =
-      GetAlmanacUrlLoader(kTrafficAnnotation, BuildRequestBody(device_info),
-                          kAppDeduplicationAlmanacEndpoint);
-
-  // Retain a pointer while keeping the loader alive by std::moving it into the
-  // callback.
-  auto* loader_ptr = loader.get();
-  loader_ptr->DownloadToString(
-      url_loader_factory.get(),
-      base::BindOnce(
-          &AppDeduplicationServerConnector::OnGetDeduplicateAppsResponse,
-          weak_ptr_factory_.GetWeakPtr(), std::move(loader),
-          std::move(callback)),
-      kMaxResponseSizeInBytes);
-}
-
-GURL AppDeduplicationServerConnector::GetServerUrl() {
-  return GetAlmanacEndpointUrl(kAppDeduplicationAlmanacEndpoint);
-}
-
-void AppDeduplicationServerConnector::OnGetDeduplicateAppsResponse(
-    std::unique_ptr<network::SimpleURLLoader> loader,
-    GetDeduplicateAppsCallback callback,
-    std::unique_ptr<std::string> response_body) {
-  std::optional<DownloadError> error = GetDownloadError(
-      loader->NetError(), loader->ResponseInfo(), response_body.get());
-  if (error) {
-    LOG(ERROR) << *error;
-    std::move(callback).Run(std::nullopt);
-    return;
-  }
-
-  proto::DeduplicateResponse response;
-
-  if (!response.ParseFromString(*response_body)) {
-    LOG(ERROR) << "Parsing failed.";
-    std::move(callback).Run(std::nullopt);
-    return;
+std::optional<proto::DeduplicateData> ConvertDeduplicateResponseProto(
+    base::expected<proto::DeduplicateResponse, QueryError> query_response) {
+  if (!query_response.has_value()) {
+    return std::nullopt;
   }
 
   // Server should return all duplicate app data and cannot be empty.
-  if (response.app_group_size() == 0) {
+  if (query_response.value().app_group_size() == 0) {
     LOG(ERROR) << "Response is empty.";
-    std::move(callback).Run(std::nullopt);
-    return;
+    return std::nullopt;
   }
 
   deduplication::AppDeduplicationMapper mapper =
       deduplication::AppDeduplicationMapper();
   std::optional<proto::DeduplicateData> deduplicate_data =
-      mapper.ToDeduplicateData(response);
+      mapper.ToDeduplicateData(query_response.value());
 
   if (!deduplicate_data.has_value()) {
     LOG(ERROR) << "Mapping to deduplicate data proto failed.";
-    std::move(callback).Run(std::nullopt);
-    return;
+    return std::nullopt;
   }
 
-  std::move(callback).Run(std::move(deduplicate_data));
+  return deduplicate_data;
 }
 
-}  // namespace apps
+}  // namespace
+
+void GetDeduplicateAppsFromServer(
+    const DeviceInfo& device_info,
+    network::mojom::URLLoaderFactory& url_loader_factory,
+    GetDeduplicateAppsCallback callback) {
+  QueryAlmanacApi<proto::DeduplicateResponse>(
+      url_loader_factory, kTrafficAnnotation, BuildRequestBody(device_info),
+      kAppDeduplicationAlmanacEndpoint, kMaxResponseSizeInBytes,
+      /*error_histogram_name=*/std::nullopt,
+      base::BindOnce(&ConvertDeduplicateResponseProto)
+          .Then(std::move(callback)));
+}
+
+GURL GetServerUrl() {
+  return GetAlmanacEndpointUrl(kAppDeduplicationAlmanacEndpoint);
+}
+
+}  // namespace apps::app_deduplication_almanac_endpoint

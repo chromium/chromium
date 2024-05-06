@@ -11,7 +11,7 @@
 #include "chrome/browser/apps/app_discovery_service/almanac_api/launcher_app.pb.h"
 #include "chrome/browser/apps/app_discovery_service/app_discovery_service.h"
 #include "chrome/browser/apps/app_discovery_service/game_extras.h"
-#include "chrome/browser/apps/app_discovery_service/launcher_app_almanac_connector.h"
+#include "chrome/browser/apps/app_discovery_service/launcher_app_almanac_endpoint.h"
 #include "chrome/browser/profiles/profile.h"
 #include "chromeos/constants/chromeos_features.h"
 #include "components/pref_registry/pref_registry_syncable.h"
@@ -73,7 +73,6 @@ void OnIconDownloaded(GetIconCallback callback, const gfx::Image& icon) {
 AlmanacFetcher::AlmanacFetcher(Profile* profile,
                                std::unique_ptr<AlmanacIconCache> icon_cache)
     : profile_(profile),
-      server_connector_(std::make_unique<LauncherAppAlmanacConnector>()),
       device_info_manager_(std::make_unique<DeviceInfoManager>(profile)),
       icon_cache_(std::move(icon_cache)) {
   // The whole feature would not work unless the build includes the Google
@@ -150,9 +149,10 @@ void AlmanacFetcher::DownloadApps() {
 }
 
 void AlmanacFetcher::OnGetDeviceInfo(DeviceInfo device_info) {
-  server_connector_->GetApps(device_info, profile_->GetURLLoaderFactory(),
-                             base::BindOnce(&AlmanacFetcher::OnServerResponse,
-                                            weak_factory_.GetWeakPtr()));
+  launcher_app_almanac_endpoint::GetApps(
+      device_info, *profile_->GetURLLoaderFactory(),
+      base::BindOnce(&AlmanacFetcher::OnServerResponse,
+                     weak_factory_.GetWeakPtr()));
 }
 
 void AlmanacFetcher::OnServerResponse(

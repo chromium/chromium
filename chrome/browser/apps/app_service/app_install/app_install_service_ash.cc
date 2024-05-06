@@ -13,7 +13,6 @@
 #include "base/metrics/histogram_functions.h"
 #include "base/ranges/algorithm.h"
 #include "chrome/browser/apps/app_service/app_install/app_install.pb.h"
-#include "chrome/browser/apps/app_service/app_install/app_install_almanac_connector.h"
 #include "chrome/browser/apps/app_service/app_install/app_install_types.h"
 #include "chrome/browser/apps/app_service/launch_utils.h"
 #include "chrome/browser/ash/borealis/borealis_game_install_flow.h"
@@ -42,42 +41,21 @@ namespace apps {
 
 namespace {
 
-struct AppInstallDataFailure {
-  DownloadError::Type download_error;
-  AppInstallResult install_result;
-};
-
-std::optional<AppInstallDataFailure> VerifyAppInstallData(
-    const base::expected<AppInstallData, DownloadError>& data,
+std::optional<QueryError::Type> VerifyAppInstallData(
+    const base::expected<AppInstallData, QueryError>& data,
     const PackageId& expected_package_id) {
   if (data.has_value()) {
     if (data->package_id != expected_package_id) {
-      return AppInstallDataFailure{
-          DownloadError::kBadRequest,
-          AppInstallResult::kAppDataCorrupted,
-      };
+      return QueryError::kBadResponse;
     }
     if (expected_package_id.package_type() == PackageType::kWeb &&
         !absl::holds_alternative<WebAppInstallData>(data->app_type_data)) {
-      return AppInstallDataFailure{
-          DownloadError::kBadRequest,
-          AppInstallResult::kAppDataCorrupted,
-      };
+      return QueryError::kBadResponse;
     }
     return std::nullopt;
   }
 
-  return AppInstallDataFailure{
-      data.error().type,
-      [&]() {
-        switch (data.error().type) {
-          case DownloadError::kBadRequest:
-            return AppInstallResult::kBadAppRequest;
-          case DownloadError::kConnectionError:
-            return AppInstallResult::kAlmanacFetchFailed;
-        }
-      }(),
-  };
+  return data.error().type;
 }
 
 AppInstallResult InstallWebAppWithBrowserInstallDialog(
@@ -266,7 +244,7 @@ bool AppInstallServiceAsh::CanUserInstall() const {
 
 void AppInstallServiceAsh::FetchAppInstallData(
     PackageId package_id,
-    AppInstallAlmanacConnector::GetAppInstallInfoCallback data_callback) {
+    app_install_almanac_endpoint::GetAppInstallInfoCallback data_callback) {
   device_info_manager_.GetDeviceInfo(
       base::BindOnce(&AppInstallServiceAsh::FetchAppInstallDataWithDeviceInfo,
                      weak_ptr_factory_.GetWeakPtr(), std::move(package_id),
@@ -275,18 +253,18 @@ void AppInstallServiceAsh::FetchAppInstallData(
 
 void AppInstallServiceAsh::FetchAppInstallDataWithDeviceInfo(
     PackageId package_id,
-    AppInstallAlmanacConnector::GetAppInstallInfoCallback data_callback,
+    app_install_almanac_endpoint::GetAppInstallInfoCallback data_callback,
     DeviceInfo device_info) {
-  connector_.GetAppInstallInfo(package_id, std::move(device_info),
-                               *profile_->GetURLLoaderFactory(),
-                               std::move(data_callback));
+  app_install_almanac_endpoint::GetAppInstallInfo(
+      package_id, std::move(device_info), *profile_->GetURLLoaderFactory(),
+      std::move(data_callback));
 }
 
 void AppInstallServiceAsh::PerformInstallHeadless(
     AppInstallSurface surface,
     PackageId expected_package_id,
     base::OnceCallback<void(bool success)> callback,
-    base::expected<AppInstallData, DownloadError> data) {
+    base::expected<AppInstallData, QueryError> data) {
   // TODO(b/327535848): Record metrics for headless installs.
   if (!data.has_value()) {
     std::move(callback).Run(false);
@@ -302,33 +280,43 @@ void AppInstallServiceAsh::ShowDialogAndInstall(
     std::optional<gfx::NativeWindow> anchor_window,
     std::unique_ptr<views::NativeWindowTracker> anchor_window_tracker,
     base::OnceCallback<void(AppInstallResult)> callback,
-    base::expected<AppInstallData, DownloadError> data) {
+    base::expected<AppInstallData, QueryError> data) {
   gfx::NativeWindow parent =
       anchor_window.has_value() &&
               !anchor_window_tracker->WasNativeWindowDestroyed()
           ? anchor_window.value()
           : nullptr;
 
-  if (std::optional<AppInstallDataFailure> data_failure =
+  if (std::optional<QueryError::Type> query_error =
           VerifyAppInstallData(data, expected_package_id)) {
     if (ash::app_install::AppInstallDialog::IsEnabled()) {
       base::WeakPtr<ash::app_install::AppInstallDialog> dialog =
           ash::app_install::AppInstallDialog::CreateDialog();
-      switch (data_failure->download_error) {
-        case DownloadError::kBadRequest:
-          dialog->ShowNoAppError(parent);
-          break;
-        case DownloadError::kConnectionError:
+      switch (query_error.value()) {
+        case QueryError::kConnectionError:
           dialog->ShowConnectionError(
               parent, base::BindOnce(&AppInstallServiceAsh::InstallApp,
                                      weak_ptr_factory_.GetWeakPtr(), surface,
                                      expected_package_id, anchor_window,
                                      base::DoNothing()));
           break;
+        case QueryError::kBadRequest:
+        case QueryError::kBadResponse:
+          dialog->ShowNoAppError(parent);
+          break;
       }
     }
 
-    std::move(callback).Run(data_failure->install_result);
+    std::move(callback).Run([&] {
+      switch (query_error.value()) {
+        case QueryError::kConnectionError:
+          return AppInstallResult::kAlmanacFetchFailed;
+        case QueryError::kBadRequest:
+          return AppInstallResult::kBadAppRequest;
+        case QueryError::kBadResponse:
+          return AppInstallResult::kAppDataCorrupted;
+      }
+    }());
     return;
   }
 

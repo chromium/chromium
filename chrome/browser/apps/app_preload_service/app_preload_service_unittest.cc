@@ -11,6 +11,7 @@
 #include "base/memory/scoped_refptr.h"
 #include "base/test/scoped_feature_list.h"
 #include "base/test/test_future.h"
+#include "chrome/browser/apps/app_preload_service/app_preload_almanac_endpoint.h"
 #include "chrome/browser/apps/app_preload_service/app_preload_service_factory.h"
 #include "chrome/browser/apps/app_preload_service/proto/app_preload.pb.h"
 #include "chrome/browser/apps/app_service/app_service_proxy.h"
@@ -161,7 +162,7 @@ TEST_F(AppPreloadServiceTest, FirstLoginCompletedPrefSetAfterSuccess) {
   proto::AppPreloadListResponse response;
 
   url_loader_factory_.AddResponse(
-      AppPreloadServerConnector::GetServerUrl().spec(),
+      app_preload_almanac_endpoint::GetServerUrl().spec(),
       response.SerializeAsString());
 
   base::test::TestFuture<bool> result;
@@ -200,7 +201,7 @@ TEST_F(AppPreloadServiceTest, IgnoreAndroidAppInstall) {
   app->set_install_reason(proto::AppPreloadListResponse::INSTALL_REASON_OEM);
 
   url_loader_factory_.AddResponse(
-      AppPreloadServerConnector::GetServerUrl().spec(),
+      app_preload_almanac_endpoint::GetServerUrl().spec(),
       response.SerializeAsString());
 
   base::test::TestFuture<bool> result;
@@ -219,7 +220,7 @@ TEST_F(AppPreloadServiceTest, IgnoreAndroidAppInstall) {
 
 TEST_F(AppPreloadServiceTest, FirstLoginStartedNotCompletedAfterServerError) {
   url_loader_factory_.AddResponse(
-      AppPreloadServerConnector::GetServerUrl().spec(), /*content=*/"",
+      app_preload_almanac_endpoint::GetServerUrl().spec(), /*content=*/"",
       net::HTTP_INTERNAL_SERVER_ERROR);
 
   base::test::TestFuture<bool> result;

@@ -1,8 +1,8 @@
-// Copyright 2023 The Chromium Authors
+// Copyright 2024 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#include "chrome/browser/apps/app_discovery_service/launcher_app_almanac_connector.h"
+#include "chrome/browser/apps/app_discovery_service/launcher_app_almanac_endpoint.h"
 
 #include <optional>
 
@@ -23,9 +23,9 @@
 namespace apps {
 namespace {
 
-class LauncherAppAlmanacConnectorTest : public testing::Test {
+class LauncherAppAlmanacEndpointTest : public testing::Test {
  public:
-  LauncherAppAlmanacConnectorTest()
+  LauncherAppAlmanacEndpointTest()
       : test_shared_loader_factory_(
             base::MakeRefCounted<network::WeakWrapperSharedURLLoaderFactory>(
                 &url_loader_factory_)) {}
@@ -34,14 +34,13 @@ class LauncherAppAlmanacConnectorTest : public testing::Test {
   network::TestURLLoaderFactory url_loader_factory_;
   scoped_refptr<network::SharedURLLoaderFactory> test_shared_loader_factory_;
 
-  LauncherAppAlmanacConnector server_connector_;
   DeviceInfo device_info_;
 
  private:
   content::BrowserTaskEnvironment task_environment_;
 };
 
-TEST_F(LauncherAppAlmanacConnectorTest, GetAppsRequest) {
+TEST_F(LauncherAppAlmanacEndpointTest, GetAppsRequest) {
   std::string method;
   std::string method_override_header;
   std::string content_type;
@@ -55,61 +54,62 @@ TEST_F(LauncherAppAlmanacConnectorTest, GetAppsRequest) {
         method = request.method;
       }));
 
-  server_connector_.GetApps(device_info_, test_shared_loader_factory_,
-                            base::DoNothing());
+  launcher_app_almanac_endpoint::GetApps(
+      device_info_, *test_shared_loader_factory_, base::DoNothing());
 
   EXPECT_EQ(method, "POST");
   EXPECT_EQ(method_override_header, "GET");
   EXPECT_EQ(content_type, "application/x-protobuf");
 }
 
-TEST_F(LauncherAppAlmanacConnectorTest, GetAppsSuccess) {
+TEST_F(LauncherAppAlmanacEndpointTest, GetAppsSuccess) {
   proto::LauncherAppResponse response;
   response.add_app_groups();
 
   url_loader_factory_.AddResponse(
-      LauncherAppAlmanacConnector::GetServerUrl().spec(),
+      launcher_app_almanac_endpoint::GetServerUrl().spec(),
       response.SerializeAsString());
 
   base::test::TestFuture<std::optional<proto::LauncherAppResponse>>
       observed_response;
-  server_connector_.GetApps(device_info_, test_shared_loader_factory_,
-                            observed_response.GetCallback());
+  launcher_app_almanac_endpoint::GetApps(device_info_,
+                                       *test_shared_loader_factory_,
+                                       observed_response.GetCallback());
   ASSERT_TRUE(observed_response.Get().has_value());
   EXPECT_EQ(observed_response.Get()->app_groups_size(), 1);
 }
 
-TEST_F(LauncherAppAlmanacConnectorTest, GetAppsEmptyResponse) {
+TEST_F(LauncherAppAlmanacEndpointTest, GetAppsEmptyResponse) {
   url_loader_factory_.AddResponse(
-      LauncherAppAlmanacConnector::GetServerUrl().spec(), "");
+      launcher_app_almanac_endpoint::GetServerUrl().spec(), "");
   base::test::TestFuture<std::optional<proto::LauncherAppResponse>> response;
-  server_connector_.GetApps(device_info_, test_shared_loader_factory_,
-                            response.GetCallback());
+  launcher_app_almanac_endpoint::GetApps(
+      device_info_, *test_shared_loader_factory_, response.GetCallback());
   ASSERT_TRUE(response.Get().has_value());
   EXPECT_EQ(response.Get()->app_groups_size(), 0);
 }
 
-TEST_F(LauncherAppAlmanacConnectorTest, GetAppsError) {
+TEST_F(LauncherAppAlmanacEndpointTest, GetAppsError) {
   url_loader_factory_.AddResponse(
-      LauncherAppAlmanacConnector::GetServerUrl().spec(),
+      launcher_app_almanac_endpoint::GetServerUrl().spec(),
       /*content=*/"", net::HTTP_INTERNAL_SERVER_ERROR);
 
   base::test::TestFuture<std::optional<proto::LauncherAppResponse>> response;
-  server_connector_.GetApps(device_info_, test_shared_loader_factory_,
-                            response.GetCallback());
+  launcher_app_almanac_endpoint::GetApps(
+      device_info_, *test_shared_loader_factory_, response.GetCallback());
   EXPECT_FALSE(response.Get().has_value());
 }
 
-TEST_F(LauncherAppAlmanacConnectorTest, GetAppsNetworkError) {
+TEST_F(LauncherAppAlmanacEndpointTest, GetAppsNetworkError) {
   url_loader_factory_.AddResponse(
-      LauncherAppAlmanacConnector::GetServerUrl(),
+      launcher_app_almanac_endpoint::GetServerUrl(),
       network::mojom::URLResponseHead::New(),
       /*content=*/"",
       network::URLLoaderCompletionStatus(net::ERR_INSUFFICIENT_RESOURCES));
 
   base::test::TestFuture<std::optional<proto::LauncherAppResponse>> response;
-  server_connector_.GetApps(device_info_, test_shared_loader_factory_,
-                            response.GetCallback());
+  launcher_app_almanac_endpoint::GetApps(
+      device_info_, *test_shared_loader_factory_, response.GetCallback());
   EXPECT_FALSE(response.Get().has_value());
 }
 

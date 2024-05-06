@@ -340,7 +340,7 @@ Refer to README.md for content description and update process.
  <item id="send_message_express" added_in_milestone="108" content_hash_code="01b40a32" os_list="chromeos" file_path="chrome/browser/nearby_sharing/instantmessaging/send_message_express.cc" />
  <item id="cryptohome_recovery_fetch_epoch" added_in_milestone="108" content_hash_code="06e195ad" os_list="chromeos" file_path="chromeos/ash/components/login/auth/recovery/cryptohome_recovery_service_client.cc" />
  <item id="cryptohome_recovery_fetch_recovery_response" added_in_milestone="108" content_hash_code="01b13324" os_list="chromeos" file_path="chromeos/ash/components/login/auth/recovery/cryptohome_recovery_service_client.cc" />
- <item id="app_preload_service" added_in_milestone="108" content_hash_code="00720713" os_list="chromeos" file_path="chrome/browser/apps/app_preload_service/app_preload_server_connector.cc" />
+ <item id="app_preload_service" added_in_milestone="108" content_hash_code="03b0b13e" os_list="chromeos" file_path="chrome/browser/apps/app_preload_service/app_preload_almanac_endpoint.cc" />
  <item id="search_and_assistant_enabled_checker" added_in_milestone="106" content_hash_code="003a5b64" os_list="chromeos" file_path="chrome/browser/ui/ash/assistant/search_and_assistant_enabled_checker.cc" />
  <item id="user_image_downloader" added_in_milestone="108" content_hash_code="07c2217f" os_list="chromeos" file_path="chrome/browser/ash/login/users/avatar/user_image_loader.cc" />
  <item id="supervised_user_favicon_request" added_in_milestone="108" content_hash_code="06636c2a" os_list="chromeos" file_path="chrome/browser/supervised_user/chromeos/supervised_user_favicon_request_handler.cc" />
@@ -375,7 +375,7 @@ Refer to README.md for content description and update process.
  <item id="gstatic_fast_checkout_funnels" added_in_milestone="111" content_hash_code="0531d118" os_list="android" file_path="chrome/browser/fast_checkout/fast_checkout_capabilities_fetcher_impl.cc" />
  <item id="chromeos_emoji_picker_posts_fetcher" added_in_milestone="111" content_hash_code="06c44c7e" os_list="chromeos" file_path="chrome/browser/ui/webui/ash/emoji/gif_tenor_api_fetcher.cc" />
  <item id="webapk_minter_install_request" added_in_milestone="111" content_hash_code="042fed33" os_list="chromeos" file_path="chrome/browser/apps/app_service/webapk/webapk_install_task.cc" />
- <item id="deduplication_service" added_in_milestone="111" content_hash_code="06a77ea3" os_list="chromeos" file_path="chrome/browser/apps/app_deduplication_service/app_deduplication_server_connector.cc" />
+ <item id="deduplication_service" added_in_milestone="111" content_hash_code="06a77ea3" os_list="chromeos" file_path="chrome/browser/apps/app_deduplication_service/app_deduplication_almanac_endpoint.cc" />
  <item id="network_portal_detector" added_in_milestone="111" content_hash_code="023cdc21" os_list="chromeos" file_path="chrome/browser/ash/net/network_portal_detector_impl.cc" />
  <item id="android_feedback_connectivity_checker" added_in_milestone="111" content_hash_code="0011753d" os_list="android" file_path="chrome/android/java/src/org/chromium/chrome/browser/feedback/ConnectivityChecker.java" />
  <item id="printer_config_fetch" added_in_milestone="111" content_hash_code="042f8883" os_list="chromeos" file_path="chromeos/printing/printer_config_cache.cc" />
@@ -408,7 +408,7 @@ Refer to README.md for content description and update process.
  <item id="passkey_enclave_client" added_in_milestone="117" content_hash_code="06c3fa70" os_list="linux,windows,chromeos" file_path="device/fido/enclave/enclave_websocket_client.cc" />
  <item id="iwa_update_discovery_update_manifest" added_in_milestone="117" type="partial" second_id="iwa_update_manifest_fetcher" content_hash_code="07a5fb37" os_list="linux,windows,chromeos" semantics_fields="1,2,3,7,8,9" policy_fields="3,4" file_path="chrome/browser/web_applications/isolated_web_apps/isolated_web_app_update_discovery_task.cc" />
  <item id="iwa_update_discovery_web_bundle" added_in_milestone="117" type="partial" second_id="iwa_bundle_downloader" content_hash_code="0144c7d3" os_list="linux,windows,chromeos" semantics_fields="1,2,3,7,8,9" policy_fields="3,4" file_path="chrome/browser/web_applications/isolated_web_apps/isolated_web_app_update_discovery_task.cc" />
- <item id="almanac_launcher_app" added_in_milestone="118" content_hash_code="0556e032" os_list="chromeos" file_path="chrome/browser/apps/app_discovery_service/launcher_app_almanac_connector.cc" />
+ <item id="almanac_launcher_app" added_in_milestone="118" content_hash_code="0556e032" os_list="chromeos" file_path="chrome/browser/apps/app_discovery_service/launcher_app_almanac_endpoint.cc" />
  <item id="ip_protection_service_get_proxy_config" added_in_milestone="118" content_hash_code="025110db" os_list="windows,android,linux,chromeos" file_path="components/ip_protection/ip_protection_proxy_config_retriever.cc" />
  <item id="chrome_commerce_parcels_status" added_in_milestone="119" content_hash_code="0740f7f7" os_list="linux,windows,android,chromeos" file_path="components/commerce/core/parcel/parcels_server_proxy.cc" />
  <item id="chrome_commerce_start_tracking_parcel" added_in_milestone="119" content_hash_code="023a4c27" os_list="linux,windows,android,chromeos" file_path="components/commerce/core/parcel/parcels_server_proxy.cc" />
@@ -428,7 +428,7 @@ Refer to README.md for content description and update process.
  <item id="carrier_lock_manager_fetch_configuration" added_in_milestone="120" content_hash_code="05c49ee5" os_list="chromeos" file_path="chromeos/ash/components/carrier_lock/provisioning_config_fetcher_impl.cc" />
  <item id="carrier_lock_manager_check_membership" added_in_milestone="120" content_hash_code="0471f29c" os_list="chromeos" file_path="chromeos/ash/components/carrier_lock/psm_claim_verifier_impl.cc" />
  <item id="carrier_lock_manager_fcm_topic" added_in_milestone="120" content_hash_code="0389ee17" os_list="chromeos" file_path="chromeos/ash/components/carrier_lock/topic_subscription_request.cc" />
- <item id="almanac_app_install" added_in_milestone="120" content_hash_code="048af8ba" os_list="chromeos" file_path="chrome/browser/apps/app_service/app_install/app_install_almanac_connector.cc" />
+ <item id="almanac_app_install" added_in_milestone="120" content_hash_code="048af8ba" os_list="chromeos" file_path="chrome/browser/apps/app_service/app_install/app_install_almanac_endpoint.cc" />
  <item id="remoting_report_provisioning_error" added_in_milestone="120" content_hash_code="01928ee5" os_list="linux,windows,android,chromeos" file_path="remoting/base/corp_service_client.cc" />
  <item id="webauthn_rp_id_check" added_in_milestone="121" content_hash_code="048c3faa" os_list="linux,windows,android,chromeos" file_path="content/browser/webauth/webauth_request_security_checker.cc" />
  <item id="devtools_cdp_console_insights" added_in_milestone="121" content_hash_code="051d2911" os_list="linux,windows,chromeos" file_path="chrome/browser/devtools/devtools_ui_bindings.cc" />

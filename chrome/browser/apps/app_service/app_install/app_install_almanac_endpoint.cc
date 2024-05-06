@@ -1,8 +1,8 @@
-// Copyright 2023 The Chromium Authors
+// Copyright 2024 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#include "chrome/browser/apps/app_service/app_install/app_install_almanac_connector.h"
+#include "chrome/browser/apps/app_service/app_install/app_install_almanac_endpoint.h"
 
 #include "base/functional/callback.h"
 #include "chrome/browser/apps/almanac_api_client/almanac_api_util.h"
@@ -15,7 +15,7 @@
 #include "services/network/public/cpp/shared_url_loader_factory.h"
 #include "services/network/public/cpp/simple_url_loader.h"
 
-namespace apps {
+namespace apps::app_install_almanac_endpoint {
 
 namespace {
 
@@ -136,62 +136,40 @@ std::optional<AppInstallData> ParseAppInstallResponseProto(
   return result;
 }
 
+base::expected<AppInstallData, QueryError> ConvertAppInstallResponseProto(
+    base::expected<proto::AppInstallResponse, QueryError> query_response) {
+  if (!query_response.has_value()) {
+    return base::unexpected(std::move(query_response).error());
+  }
+
+  std::optional<AppInstallData> data =
+      ParseAppInstallResponseProto(query_response.value());
+  if (!data.has_value()) {
+    return base::unexpected(
+        QueryError{QueryError::kBadResponse, "Failed to convert proto"});
+  }
+
+  return base::ok(std::move(data).value());
+}
+
 }  // namespace
 
-GURL AppInstallAlmanacConnector::GetEndpointUrlForTesting() {
+GURL GetEndpointUrlForTesting() {
   return GetAlmanacEndpointUrl(kAlmanacAppInstallEndpoint);
 }
 
-AppInstallAlmanacConnector::AppInstallAlmanacConnector() = default;
-
-AppInstallAlmanacConnector::~AppInstallAlmanacConnector() = default;
-
-void AppInstallAlmanacConnector::GetAppInstallInfo(
+void GetAppInstallInfo(
     PackageId package_id,
     DeviceInfo device_info,
     network::mojom::URLLoaderFactory& url_loader_factory,
     GetAppInstallInfoCallback callback) {
-  std::unique_ptr<network::SimpleURLLoader> loader = GetAlmanacUrlLoader(
-      kTrafficAnnotation, BuildRequestBody(device_info, package_id),
-      kAlmanacAppInstallEndpoint);
-
-  // Retain a pointer while keeping the loader alive by std::moving it into the
-  // callback.
-  auto* loader_ptr = loader.get();
-  loader_ptr->DownloadToString(
-      &url_loader_factory,
-      base::BindOnce(&AppInstallAlmanacConnector::OnAppInstallResponse,
-                     weak_ptr_factory_.GetWeakPtr(), std::move(loader),
-                     std::move(callback)),
-      kMaxResponseSizeInBytes);
+  QueryAlmanacApi<proto::AppInstallResponse>(
+      url_loader_factory, kTrafficAnnotation,
+      BuildRequestBody(device_info, package_id), kAlmanacAppInstallEndpoint,
+      kMaxResponseSizeInBytes,
+      /*error_histogram_name=*/std::nullopt,
+      base::BindOnce(&ConvertAppInstallResponseProto)
+          .Then(std::move(callback)));
 }
 
-void AppInstallAlmanacConnector::OnAppInstallResponse(
-    std::unique_ptr<network::SimpleURLLoader> loader,
-    GetAppInstallInfoCallback callback,
-    std::unique_ptr<std::string> response_body) {
-  std::optional<DownloadError> error = GetDownloadError(
-      loader->NetError(), loader->ResponseInfo(), response_body.get());
-  if (error) {
-    LOG(ERROR) << *error;
-    std::move(callback).Run(base::unexpected(std::move(error).value()));
-    return;
-  }
-
-  proto::AppInstallResponse response;
-  if (!response.ParseFromString(*response_body)) {
-    std::move(callback).Run(
-        base::unexpected(DownloadError{DownloadError::kConnectionError}));
-    return;
-  }
-
-  std::optional<AppInstallData> data = ParseAppInstallResponseProto(response);
-  if (!data) {
-    std::move(callback).Run(
-        base::unexpected(DownloadError{DownloadError::kConnectionError}));
-    return;
-  }
-  std::move(callback).Run(base::ok(std::move(data).value()));
-}
-
-}  // namespace apps
+}  // namespace apps::app_install_almanac_endpoint

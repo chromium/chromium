@@ -1,8 +1,8 @@
-// Copyright 2022 The Chromium Authors
+// Copyright 2024 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#include "chrome/browser/apps/app_preload_service/app_preload_server_connector.h"
+#include "chrome/browser/apps/app_preload_service/app_preload_almanac_endpoint.h"
 
 #include <utility>
 
@@ -20,7 +20,7 @@
 #include "services/network/public/cpp/simple_url_loader.h"
 #include "services/network/public/mojom/url_response_head.mojom.h"
 
-namespace apps {
+namespace apps::app_preload_almanac_endpoint {
 namespace {
 
 // Endpoint for requesting app preload data on the ChromeOS Almanac API.
@@ -45,8 +45,17 @@ constexpr net::NetworkTrafficAnnotationTag kTrafficAnnotation =
         trigger:
           "A request can be sent when a device is being set up, or after a "
           "device update."
+        internal: {
+          contacts {
+            email: "cros-apps-foundation-system@google.com"
+          }
+        }
+        user_data: {
+          type: NONE
+        }
         data: "Device technical specifications (e.g. model)."
         destination: GOOGLE_OWNED_SERVICE
+        last_reviewed: "2024-05-03"
       }
       policy {
         cookies_allowed: NO
@@ -130,48 +139,14 @@ void ParseShelfPinOrdering(const google::protobuf::RepeatedPtrField<
   }
 }
 
-}  // namespace
-
-AppPreloadServerConnector::AppPreloadServerConnector() = default;
-
-AppPreloadServerConnector::~AppPreloadServerConnector() = default;
-
-void AppPreloadServerConnector::GetAppsForFirstLogin(
-    const DeviceInfo& device_info,
-    scoped_refptr<network::SharedURLLoaderFactory> url_loader_factory,
-    GetInitialAppsCallback callback) {
-  std::unique_ptr<network::SimpleURLLoader> loader = GetAlmanacUrlLoader(
-      kTrafficAnnotation, BuildGetAppsForFirstLoginRequestBody(device_info),
-      kAppPreloadAlmanacEndpoint);
-
-  // Retain a pointer while keeping the loader alive by std::moving it into the
-  // callback.
-  auto* loader_ptr = loader.get();
-  loader_ptr->DownloadToString(
-      url_loader_factory.get(),
-      base::BindOnce(&AppPreloadServerConnector::OnGetAppsForFirstLoginResponse,
-                     weak_ptr_factory_.GetWeakPtr(), std::move(loader),
-                     base::TimeTicks::Now(), std::move(callback)),
-      kMaxResponseSizeInBytes);
-}
-
-// static
-GURL AppPreloadServerConnector::GetServerUrl() {
-  return GetAlmanacEndpointUrl(kAppPreloadAlmanacEndpoint);
-}
-
-void AppPreloadServerConnector::OnGetAppsForFirstLoginResponse(
-    std::unique_ptr<network::SimpleURLLoader> loader,
+void ConvertAppPreloadListResponseProto(
     base::TimeTicks request_start_time,
     GetInitialAppsCallback callback,
-    std::unique_ptr<std::string> response_body) {
-  std::optional<DownloadError> error =
-      GetDownloadError(loader->NetError(), loader->ResponseInfo(),
-                       response_body.get(), kServerErrorHistogramName);
+    base::expected<proto::AppPreloadListResponse, QueryError> query_response) {
   LauncherOrdering launcher_ordering;
   ShelfPinOrdering shelf_pin_ordering;
-  if (error) {
-    LOG(ERROR) << *error;
+
+  if (!query_response.has_value()) {
     std::move(callback).Run(std::nullopt, std::move(launcher_ordering),
                             std::move(shelf_pin_ordering));
     return;
@@ -180,29 +155,41 @@ void AppPreloadServerConnector::OnGetAppsForFirstLoginResponse(
   base::UmaHistogramTimes(kServerRoundTripTimeForFirstLogin,
                           base::TimeTicks::Now() - request_start_time);
 
-  proto::AppPreloadListResponse response;
-
-  if (!response.ParseFromString(*response_body)) {
-    LOG(ERROR) << "Parsing failed";
-    std::move(callback).Run(std::nullopt, std::move(launcher_ordering),
-                            std::move(shelf_pin_ordering));
-    return;
-  }
 
   std::vector<PreloadAppDefinition> apps;
-  for (const auto& app : response.apps_to_install()) {
+  for (const auto& app : query_response->apps_to_install()) {
     apps.emplace_back(app);
   }
 
   std::string empty_root_folder;
-  ParseLauncherOrdering(response.launcher_config(), empty_root_folder,
-                        &launcher_ordering,
+  ParseLauncherOrdering(query_response->launcher_config(),
+                        empty_root_folder, &launcher_ordering,
                         /*allow_nested_folders=*/true);
 
-  ParseShelfPinOrdering(response.shelf_config(), &shelf_pin_ordering);
+  ParseShelfPinOrdering(query_response->shelf_config(),
+                        &shelf_pin_ordering);
 
   std::move(callback).Run(std::move(apps), std::move(launcher_ordering),
                           std::move(shelf_pin_ordering));
 }
 
-}  // namespace apps
+}  // namespace
+
+void GetAppsForFirstLogin(
+    const DeviceInfo& device_info,
+    network::mojom::URLLoaderFactory& url_loader_factory,
+    GetInitialAppsCallback callback) {
+  QueryAlmanacApi<proto::AppPreloadListResponse>(
+      url_loader_factory, kTrafficAnnotation,
+      BuildGetAppsForFirstLoginRequestBody(device_info),
+      kAppPreloadAlmanacEndpoint, kMaxResponseSizeInBytes,
+      kServerErrorHistogramName,
+      base::BindOnce(&ConvertAppPreloadListResponseProto,
+                     base::TimeTicks::Now(), std::move(callback)));
+}
+
+GURL GetServerUrl() {
+  return GetAlmanacEndpointUrl(kAppPreloadAlmanacEndpoint);
+}
+
+}  // namespace apps::app_preload_almanac_endpoint

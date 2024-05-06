@@ -1,8 +1,8 @@
-// Copyright 2022 The Chromium Authors
+// Copyright 2024 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#include "chrome/browser/apps/app_preload_service/app_preload_server_connector.h"
+#include "chrome/browser/apps/app_preload_service/app_preload_almanac_endpoint.h"
 
 #include <optional>
 #include <tuple>
@@ -39,9 +39,9 @@ constexpr char kServerRoundTripHistogram[] =
 
 namespace apps {
 
-class AppPreloadServerConnectorTest : public testing::Test {
+class AppPreloadAlmanacEndpointTest : public testing::Test {
  public:
-  AppPreloadServerConnectorTest()
+  AppPreloadAlmanacEndpointTest()
       : test_shared_loader_factory_(
             base::MakeRefCounted<network::WeakWrapperSharedURLLoaderFactory>(
                 &url_loader_factory_)) {
@@ -51,7 +51,6 @@ class AppPreloadServerConnectorTest : public testing::Test {
  protected:
   network::TestURLLoaderFactory url_loader_factory_;
   scoped_refptr<network::SharedURLLoaderFactory> test_shared_loader_factory_;
-  AppPreloadServerConnector server_connector_;
   base::HistogramTester histograms_;
   base::test::ScopedFeatureList feature_list_;
 
@@ -59,7 +58,7 @@ class AppPreloadServerConnectorTest : public testing::Test {
   content::BrowserTaskEnvironment task_environment_;
 };
 
-TEST_F(AppPreloadServerConnectorTest, GetAppsForFirstLoginRequest) {
+TEST_F(AppPreloadAlmanacEndpointTest, GetAppsForFirstLoginRequest) {
   // We only set enough fields to verify that context protos are attached to the
   // request.
   DeviceInfo device_info;
@@ -81,8 +80,8 @@ TEST_F(AppPreloadServerConnectorTest, GetAppsForFirstLoginRequest) {
         body = network::GetUploadData(request);
       }));
 
-  server_connector_.GetAppsForFirstLogin(
-      device_info, test_shared_loader_factory_, base::DoNothing());
+  app_preload_almanac_endpoint::GetAppsForFirstLogin(
+      device_info, *test_shared_loader_factory_, base::DoNothing());
 
   EXPECT_EQ(method, "POST");
   EXPECT_EQ(method_override_header, "GET");
@@ -96,7 +95,7 @@ TEST_F(AppPreloadServerConnectorTest, GetAppsForFirstLoginRequest) {
             apps::proto::ClientUserContext::USERTYPE_UNMANAGED);
 }
 
-TEST_F(AppPreloadServerConnectorTest, GetAppsForFirstLoginSuccessfulResponse) {
+TEST_F(AppPreloadAlmanacEndpointTest, GetAppsForFirstLoginSuccessfulResponse) {
   PackageId web_app1 = *PackageId::FromString("web::http://example.com/app1");
   PackageId android_app1 = *PackageId::FromString("android:com.example.app1");
   PackageId web_app2 = *PackageId::FromString("web::http://example.com/app2");
@@ -154,14 +153,14 @@ TEST_F(AppPreloadServerConnectorTest, GetAppsForFirstLoginSuccessfulResponse) {
   shelf_config_item->add_package_id(web_app3.ToString());
 
   url_loader_factory_.AddResponse(
-      AppPreloadServerConnector::GetServerUrl().spec(),
+      app_preload_almanac_endpoint::GetServerUrl().spec(),
       response.SerializeAsString());
 
   base::test::TestFuture<std::optional<std::vector<PreloadAppDefinition>>,
                          LauncherOrdering, ShelfPinOrdering>
       test_callback;
-  server_connector_.GetAppsForFirstLogin(
-      DeviceInfo(), test_shared_loader_factory_, test_callback.GetCallback());
+  app_preload_almanac_endpoint::GetAppsForFirstLogin(
+      DeviceInfo(), *test_shared_loader_factory_, test_callback.GetCallback());
 
   auto apps = std::get<0>(test_callback.Get());
   EXPECT_TRUE(apps.has_value());
@@ -191,32 +190,32 @@ TEST_F(AppPreloadServerConnectorTest, GetAppsForFirstLoginSuccessfulResponse) {
   histograms_.ExpectTotalCount(kServerRoundTripHistogram, 1);
 }
 
-TEST_F(AppPreloadServerConnectorTest, GetAppsForFirstLoginServerError) {
+TEST_F(AppPreloadAlmanacEndpointTest, GetAppsForFirstLoginServerError) {
   url_loader_factory_.AddResponse(
-      AppPreloadServerConnector::GetServerUrl().spec(), /*content=*/"",
+      app_preload_almanac_endpoint::GetServerUrl().spec(), /*content=*/"",
       net::HTTP_INTERNAL_SERVER_ERROR);
 
   base::test::TestFuture<std::optional<std::vector<PreloadAppDefinition>>,
                          LauncherOrdering, ShelfPinOrdering>
       result;
-  server_connector_.GetAppsForFirstLogin(
-      DeviceInfo(), test_shared_loader_factory_, result.GetCallback());
+  app_preload_almanac_endpoint::GetAppsForFirstLogin(
+      DeviceInfo(), *test_shared_loader_factory_, result.GetCallback());
   EXPECT_FALSE(std::get<0>(result.Get()).has_value());
 
   histograms_.ExpectTotalCount(kServerRoundTripHistogram, 0);
 }
 
-TEST_F(AppPreloadServerConnectorTest, GetAppsForFirstLoginNetworkError) {
+TEST_F(AppPreloadAlmanacEndpointTest, GetAppsForFirstLoginNetworkError) {
   url_loader_factory_.AddResponse(
-      AppPreloadServerConnector::GetServerUrl(),
+      app_preload_almanac_endpoint::GetServerUrl(),
       network::mojom::URLResponseHead::New(), /*content=*/"",
       network::URLLoaderCompletionStatus(net::ERR_TIMED_OUT));
 
   base::test::TestFuture<std::optional<std::vector<PreloadAppDefinition>>,
                          LauncherOrdering, ShelfPinOrdering>
       result;
-  server_connector_.GetAppsForFirstLogin(
-      DeviceInfo(), test_shared_loader_factory_, result.GetCallback());
+  app_preload_almanac_endpoint::GetAppsForFirstLogin(
+      DeviceInfo(), *test_shared_loader_factory_, result.GetCallback());
   EXPECT_FALSE(std::get<0>(result.Get()).has_value());
 
   histograms_.ExpectTotalCount(kServerRoundTripHistogram, 0);

@@ -10,7 +10,7 @@
 #include "base/test/scoped_feature_list.h"
 #include "base/test/test_future.h"
 #include "base/time/time.h"
-#include "chrome/browser/apps/app_deduplication_service/app_deduplication_server_connector.h"
+#include "chrome/browser/apps/app_deduplication_service/app_deduplication_almanac_endpoint.h"
 #include "chrome/browser/apps/app_deduplication_service/app_deduplication_service_factory.h"
 #include "chrome/browser/apps/app_deduplication_service/proto/deduplication_data.pb.h"
 #include "chrome/browser/apps/app_service/app_service_proxy.h"
@@ -195,7 +195,7 @@ TEST_F(AppDeduplicationServiceAlmanacTest,
 
 TEST_F(AppDeduplicationServiceAlmanacTest, PrefUnchangedAfterServerError) {
   url_loader_factory_.AddResponse(
-      AppDeduplicationServerConnector::GetServerUrl().spec(), /*content=*/"",
+      app_deduplication_almanac_endpoint::GetServerUrl().spec(), /*content=*/"",
       net::HTTP_INTERNAL_SERVER_ERROR);
 
   base::test::TestFuture<bool> result;
@@ -221,7 +221,7 @@ TEST_F(AppDeduplicationServiceAlmanacTest, PrefSetAfterServerSuccess) {
   group->set_package_id(0, "website:https://web.skype.com/");
 
   url_loader_factory_.AddResponse(
-      AppDeduplicationServerConnector::GetServerUrl().spec(),
+      app_deduplication_almanac_endpoint::GetServerUrl().spec(),
       data.SerializeAsString());
 
   base::test::TestFuture<bool> result;

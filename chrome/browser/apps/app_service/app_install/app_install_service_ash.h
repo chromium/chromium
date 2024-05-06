@@ -13,7 +13,7 @@
 #include "base/memory/weak_ptr.h"
 #include "build/build_config.h"
 #include "chrome/browser/apps/almanac_api_client/device_info_manager.h"
-#include "chrome/browser/apps/app_service/app_install/app_install_almanac_connector.h"
+#include "chrome/browser/apps/app_service/app_install/app_install_almanac_endpoint.h"
 #include "chrome/browser/apps/app_service/app_install/app_install_service.h"
 #include "chrome/browser/apps/app_service/app_install/arc_app_installer.h"
 #include "chrome/browser/apps/app_service/app_install/web_app_installer.h"
@@ -77,17 +77,16 @@ class AppInstallServiceAsh : public AppInstallService {
   bool MaybeLaunchApp(const PackageId& package_id);
   void FetchAppInstallData(
       PackageId package_id,
-      AppInstallAlmanacConnector::GetAppInstallInfoCallback data_callback);
+      app_install_almanac_endpoint::GetAppInstallInfoCallback data_callback);
   void FetchAppInstallDataWithDeviceInfo(
       PackageId package_id,
-      AppInstallAlmanacConnector::GetAppInstallInfoCallback data_callback,
+      app_install_almanac_endpoint::GetAppInstallInfoCallback data_callback,
       DeviceInfo device_info);
 
-  void PerformInstallHeadless(
-      AppInstallSurface surface,
-      PackageId expected_package_id,
-      base::OnceCallback<void(bool success)> callback,
-      base::expected<AppInstallData, DownloadError> data);
+  void PerformInstallHeadless(AppInstallSurface surface,
+                              PackageId expected_package_id,
+                              base::OnceCallback<void(bool success)> callback,
+                              base::expected<AppInstallData, QueryError> data);
 
   void ShowDialogAndInstall(
       AppInstallSurface surface,
@@ -95,7 +94,7 @@ class AppInstallServiceAsh : public AppInstallService {
       std::optional<gfx::NativeWindow> anchor_window,
       std::unique_ptr<views::NativeWindowTracker> anchor_window_tracker,
       base::OnceCallback<void(AppInstallResult)> callback,
-      base::expected<AppInstallData, DownloadError> data);
+      base::expected<AppInstallData, QueryError> data);
   void InstallIfDialogAccepted(
       AppInstallSurface surface,
       PackageId expected_package_id,
@@ -120,7 +119,6 @@ class AppInstallServiceAsh : public AppInstallService {
 
   raw_ref<Profile> profile_;
   DeviceInfoManager device_info_manager_;
-  AppInstallAlmanacConnector connector_;
   ArcAppInstaller arc_app_installer_;
   WebAppInstaller web_app_installer_;
 

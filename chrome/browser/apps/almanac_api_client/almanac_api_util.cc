@@ -46,7 +46,95 @@ std::optional<std::string>& GetAlmanacEndpointUrlOverride() {
   return *url_override;
 }
 
+std::unique_ptr<network::SimpleURLLoader> GetAlmanacUrlLoader(
+    const net::NetworkTrafficAnnotationTag& traffic_annotation,
+    const std::string& response_body,
+    std::string_view endpoint_suffix) {
+  std::unique_ptr<network::SimpleURLLoader> loader =
+      network::SimpleURLLoader::Create(
+          GetAlmanacResourceRequest(endpoint_suffix), traffic_annotation);
+  loader->AttachStringForUpload(response_body, "application/x-protobuf");
+  // Retry requests twice (so, three requests total) if requests fail due to
+  // network issues.
+  constexpr int kMaxRetries = 2;
+  loader->SetRetryOptions(
+      kMaxRetries, network::SimpleURLLoader::RETRY_ON_NETWORK_CHANGE |
+                       network::SimpleURLLoader::RETRY_ON_NAME_NOT_RESOLVED);
+  return loader;
+}
+
+base::expected<std::string, QueryError> ValidateDownloadedString(
+    std::unique_ptr<network::SimpleURLLoader> loader,
+    std::optional<std::string> error_histogram_name,
+    std::unique_ptr<std::string> response_body) {
+  int response_code = 0;
+  if (loader->ResponseInfo() && loader->ResponseInfo()->headers) {
+    response_code = loader->ResponseInfo()->headers->response_code();
+  }
+
+  if (error_histogram_name.has_value()) {
+    // If there is no response code, there was a net error.
+    base::UmaHistogramSparse(
+        error_histogram_name.value(),
+        response_code > 0 ? response_code : loader->NetError());
+  }
+
+  if (loader->NetError() != net::OK &&
+      loader->NetError() != net::ERR_HTTP_RESPONSE_CODE_FAILURE) {
+    return base::unexpected(QueryError{
+        QueryError::kConnectionError,
+        base::StrCat({"net error: ", net::ErrorToString(loader->NetError())})});
+  }
+
+  if ((response_code >= 200 && response_code < 300) || response_code == 0) {
+    if (!response_body) {
+      return base::unexpected(
+          QueryError{QueryError::kBadResponse, "request body is nullptr"});
+    }
+    return std::move(*response_body);
+  }
+
+  if (response_code >= 400 && response_code < 500) {
+    return base::unexpected(
+        QueryError{QueryError::kBadRequest,
+                   base::StrCat({"HTTP error code: ",
+                                 base::NumberToString(response_code)})});
+  }
+
+  return base::unexpected(
+      QueryError{QueryError::kConnectionError,
+                 base::StrCat({"HTTP error code: ",
+                               base::NumberToString(response_code)})});
+}
+
 }  // namespace
+
+namespace internal {
+
+void QueryAlmanacApiRaw(
+    network::mojom::URLLoaderFactory& url_loader_factory,
+    const net::NetworkTrafficAnnotationTag& traffic_annotation,
+    const std::string& request_body,
+    std::string_view endpoint_suffix,
+    int max_response_size,
+    std::optional<std::string> error_histogram_name,
+    base::OnceCallback<void(base::expected<std::string, QueryError>)>
+        callback) {
+  std::unique_ptr<network::SimpleURLLoader> loader = apps::GetAlmanacUrlLoader(
+      traffic_annotation, request_body, endpoint_suffix);
+
+  // Retain a pointer while keeping the loader alive by std::moving it into the
+  // callback.
+  auto* loader_ptr = loader.get();
+  loader_ptr->DownloadToString(
+      &url_loader_factory,
+      base::BindOnce(&ValidateDownloadedString, std::move(loader),
+                     std::move(error_histogram_name))
+          .Then(std::move(callback)),
+      max_response_size);
+}
+
+}  // namespace internal
 
 std::string GetAlmanacApiUrl() {
   auto* command_line = base::CommandLine::ForCurrentProcess();
@@ -66,74 +154,24 @@ void SetAlmanacEndpointUrlForTesting(std::optional<std::string> url_override) {
   GetAlmanacEndpointUrlOverride() = std::move(url_override);
 }
 
-std::unique_ptr<network::SimpleURLLoader> GetAlmanacUrlLoader(
-    const net::NetworkTrafficAnnotationTag& traffic_annotation,
-    const std::string& response_body,
-    std::string_view endpoint_suffix) {
-  std::unique_ptr<network::SimpleURLLoader> loader =
-      network::SimpleURLLoader::Create(
-          GetAlmanacResourceRequest(endpoint_suffix), traffic_annotation);
-  loader->AttachStringForUpload(response_body, "application/x-protobuf");
-  // Retry requests twice (so, three requests total) if requests fail due to
-  // network issues.
-  constexpr int kMaxRetries = 2;
-  loader->SetRetryOptions(
-      kMaxRetries, network::SimpleURLLoader::RETRY_ON_NETWORK_CHANGE |
-                       network::SimpleURLLoader::RETRY_ON_NAME_NOT_RESOLVED);
-  return loader;
+bool QueryError::operator==(const QueryError& other) const {
+  return type == other.type && message == other.message;
 }
 
-std::ostream& operator<<(std::ostream& out, const DownloadError& error) {
+std::ostream& operator<<(std::ostream& out, const QueryError& error) {
   switch (error.type) {
-    case DownloadError::kBadRequest:
+    case QueryError::kConnectionError:
+      out << "Connection error: ";
+      break;
+    case QueryError::kBadRequest:
       out << "Bad request: ";
       break;
-    case DownloadError::kConnectionError:
-      out << "Connection error: ";
+    case QueryError::kBadResponse:
+      out << "Bad response: ";
       break;
   }
   out << error.message;
   return out;
-}
-
-std::optional<DownloadError> GetDownloadError(
-    int net_error,
-    const network::mojom::URLResponseHead* response_info,
-    const std::string* response_body,
-    const std::optional<std::string>& histogram_name) {
-  int response_code = 0;
-  if (response_info && response_info->headers) {
-    response_code = response_info->headers->response_code();
-  }
-  if (histogram_name.has_value()) {
-    // If there is no response code, there was a net error.
-    base::UmaHistogramSparse(*histogram_name,
-                             response_code > 0 ? response_code : net_error);
-  }
-  if (net_error != net::OK &&
-      net_error != net::ERR_HTTP_RESPONSE_CODE_FAILURE) {
-    return DownloadError{
-        DownloadError::kConnectionError,
-        base::StrCat({"net error: ", net::ErrorToString(net_error)})};
-  }
-
-  if ((response_code >= 200 && response_code < 300) || response_code == 0) {
-    if (!response_body) {
-      return DownloadError{DownloadError::kConnectionError,
-                           "request body is nullptr"};
-    }
-    return std::nullopt;
-  }
-
-  if (response_code >= 400 && response_code < 500) {
-    return DownloadError{DownloadError::kBadRequest,
-                         base::StrCat({"HTTP error code: ",
-                                       base::NumberToString(response_code)})};
-  }
-
-  return DownloadError{
-      DownloadError::kConnectionError,
-      base::StrCat({"HTTP error code: ", base::NumberToString(response_code)})};
 }
 
 }  // namespace apps

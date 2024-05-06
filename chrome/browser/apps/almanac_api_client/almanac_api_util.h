@@ -10,6 +10,8 @@
 #include <string>
 #include <string_view>
 
+#include "base/functional/callback.h"
+#include "base/types/expected.h"
 #include "net/traffic_annotation/network_traffic_annotation.h"
 #include "services/network/public/mojom/url_response_head.mojom-forward.h"
 #include "third_party/abseil-cpp/absl/status/status.h"
@@ -17,10 +19,9 @@
 class GURL;
 
 namespace network {
-class SimpleURLLoader;
 namespace mojom {
-class URLResponseHead;
-}  // namespace mojom
+class URLLoaderFactory;
+}
 }  // namespace network
 
 namespace apps {
@@ -37,35 +38,68 @@ GURL GetAlmanacEndpointUrl(std::string_view endpoint_suffix);
 // Overrides the Almanac endpoint URL for testing.
 void SetAlmanacEndpointUrlForTesting(std::optional<std::string> url_override);
 
-// Returns a SimpleURLLoader for the ChromeOS Almanac API created from
-// the given parameters. request_body is a proto serialized as string.
-// An endpoint suffix is e.g. "v1/app-preload".
-std::unique_ptr<network::SimpleURLLoader> GetAlmanacUrlLoader(
-    const net::NetworkTrafficAnnotationTag& traffic_annotation,
-    const std::string& request_body,
-    std::string_view endpoint_suffix);
-
-struct DownloadError {
+struct QueryError {
   enum Type {
-    kBadRequest,
     kConnectionError,
+    kBadRequest,
+    kBadResponse,
   } type;
   std::string message;
+
+  bool operator==(const QueryError& other) const;
 };
 
-std::ostream& operator<<(std::ostream& out, const DownloadError& error);
+std::ostream& operator<<(std::ostream& out, const QueryError& error);
 
-// Returns a DownloadError with a descriptive message if an error occurred
-// during downloading. Note the response_body can be a nullptr even if no other
-// error occurred. So if the method returns std::nullopt, response_body is
-// guaranteed to be non-null (but can be empty).
-// Adds the error to UMA if a histogram name is specified. The histogram must be
-// defined in histograms.xml using enum "CombinedHttpResponseAndNetErrorCode".
-std::optional<DownloadError> GetDownloadError(
-    int net_error,
-    const network::mojom::URLResponseHead* response_info,
-    const std::string* response_body,
-    const std::optional<std::string>& histogram_name = std::nullopt);
+namespace internal {
+
+void QueryAlmanacApiRaw(
+    network::mojom::URLLoaderFactory& url_loader_factory,
+    const net::NetworkTrafficAnnotationTag& traffic_annotation,
+    const std::string& request_body,
+    std::string_view endpoint_suffix,
+    int max_response_size,
+    std::optional<std::string> error_histogram_name,
+    base::OnceCallback<void(base::expected<std::string, QueryError>)> callback);
+
+}  // namespace internal
+
+// Sends a network fetch to the `endpoint_suffix` of the Almanac server with
+// `request_body` and returns the T proto response or QueryError if there was a
+// failure.
+// Adds HTTP response codes to UMA if a histogram name is specified. The
+// histogram must be defined in apps/histograms.xml using enum
+// CombinedHttpResponseAndNetErrorCode.
+template <typename T>
+void QueryAlmanacApi(
+    network::mojom::URLLoaderFactory& url_loader_factory,
+    const net::NetworkTrafficAnnotationTag& traffic_annotation,
+    const std::string& request_body,
+    std::string_view endpoint_suffix,
+    int max_response_size,
+    std::optional<std::string> error_histogram_name,
+    base::OnceCallback<void(base::expected<T, QueryError>)> callback) {
+  internal::QueryAlmanacApiRaw(
+      url_loader_factory, traffic_annotation, request_body, endpoint_suffix,
+      max_response_size, error_histogram_name,
+      base::BindOnce([](base::expected<std::string, QueryError> string_response)
+                         -> base::expected<T, QueryError> {
+        if (!string_response.has_value()) {
+          return base::unexpected(std::move(string_response).error());
+        }
+
+        T result;
+        if (result.ParseFromString(*string_response)) {
+          return base::ok(result);
+        }
+
+        return base::unexpected(QueryError{
+            QueryError::kBadResponse,
+            "Parsing failed",
+        });
+      }).Then(std::move(callback)));
+}
+
 }  // namespace apps
 
 #endif  // CHROME_BROWSER_APPS_ALMANAC_API_CLIENT_ALMANAC_API_UTIL_H_

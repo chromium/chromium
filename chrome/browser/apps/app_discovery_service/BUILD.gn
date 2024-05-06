@@ -20,8 +20,8 @@ source_set("app_discovery_service") {
     "app_fetcher_manager.h",
     "game_extras.cc",
     "game_extras.h",
-    "launcher_app_almanac_connector.cc",
-    "launcher_app_almanac_connector.h",
+    "launcher_app_almanac_endpoint.cc",
+    "launcher_app_almanac_endpoint.h",
     "play_extras.cc",
     "play_extras.h",
     "recommended_arc_app_fetcher.cc",
@@ -60,7 +60,7 @@ source_set("unit_tests") {
   sources = [
     "almanac_fetcher_unittest.cc",
     "app_discovery_service_unittest.cc",
-    "launcher_app_almanac_connector_unittest.cc",
+    "launcher_app_almanac_endpoint_unittest.cc",
     "recommended_arc_app_fetcher_unittest.cc",
   ]
 

@@ -18,7 +18,7 @@
 #include "chrome/browser/apps/app_discovery_service/app_discovery_service.h"
 #include "chrome/browser/apps/app_discovery_service/app_discovery_util.h"
 #include "chrome/browser/apps/app_discovery_service/game_extras.h"
-#include "chrome/browser/apps/app_discovery_service/launcher_app_almanac_connector.h"
+#include "chrome/browser/apps/app_discovery_service/launcher_app_almanac_endpoint.h"
 #include "chrome/browser/web_applications/test/web_app_install_test_utils.h"
 #include "chrome/test/base/testing_profile.h"
 #include "chromeos/ash/components/system/fake_statistics_provider.h"
@@ -111,7 +111,7 @@ void SetServerResponse(network::TestURLLoaderFactory& url_loader_factory,
   std::string serialized_message;
   proto_loader->ParseFromText(text_proto, serialized_message);
   url_loader_factory.AddResponse(
-      LauncherAppAlmanacConnector::GetServerUrl().spec(), serialized_message,
+      launcher_app_almanac_endpoint::GetServerUrl().spec(), serialized_message,
       status);
 }
 
@@ -206,7 +206,7 @@ TEST_F(AlmanacFetcherTest, RegisterForUpdatesNoApps) {
   base::Time before_download = almanac_fetcher()->GetLastAppsUpdateTime();
   proto::LauncherAppResponse proto;
   url_loader_factory_.AddResponse(
-      LauncherAppAlmanacConnector::GetServerUrl().spec(),
+      launcher_app_almanac_endpoint::GetServerUrl().spec(),
       proto.SerializeAsString());
   base::test::TestFuture<const std::vector<Result>&> waiter;
   base::CallbackListSubscription subscription =
