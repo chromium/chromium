@@ -42,4 +42,5 @@ export const DEFAULT_PARTIAL_PRINT_TICKET: Partial<PrintTicket> = {
   pagesPerSheet: 1,
   pageHeight: 0,
   pageWidth: 0,
+  shouldPrintBackgrounds: false,
 };

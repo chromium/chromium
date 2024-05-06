@@ -475,5 +475,10 @@ suite('PrintTicketManager', () => {
         assertEquals(
             DEFAULT_PARTIAL_PRINT_TICKET.pageWidth, ticket.pageWidth,
             'Ticket pageWidth should match DEFAULT_PARTIAL_PRINT_TICKET');
+        assertEquals(
+            DEFAULT_PARTIAL_PRINT_TICKET.shouldPrintBackgrounds,
+            ticket.shouldPrintBackgrounds,
+            'Ticket shouldPrintBackgrounds should match ' +
+                'DEFAULT_PARTIAL_PRINT_TICKET');
       });
 });

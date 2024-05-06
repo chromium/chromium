@@ -154,6 +154,9 @@ export interface PrintTicket {
   // Width of page from generated PDF summing content, left margin, and right
   // margin.
   pageWidth: number;
+
+  // Whether to generate PDF with CSS backgrounds included.
+  shouldPrintBackgrounds: boolean;
 }
 
 // Immutable session configuration details for the current CrOS preview request.
