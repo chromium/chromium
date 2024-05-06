@@ -940,11 +940,18 @@ bool IsValidPaymentsSuggestionForFieldContents(
   if (trigger_field_type != CREDIT_CARD_NUMBER) {
     return suggestion_canon.starts_with(field_contents_canon);
   }
-  // For card number fields, suggest the card if:
+  // If `kAutofillDontPrefixMatchCreditCardNumbers` is enabled, we do not apply
+  // prefix matching to credit cards. If the feature is disabled, we suggest a
+  // card iff
   // - the number matches any part of the card, or
   // - it's a masked card and there are 6 or fewer typed so far.
   // - it's a masked card, field is autofilled, and the last 4 digits in the
   // field match the last 4 digits of the card.
+  if (base::FeatureList::IsEnabled(
+          features::kAutofillDontPrefixMatchCreditCardNumbers)) {
+    return true;
+  }
+
   if (suggestion_canon.find(field_contents_canon) != std::u16string::npos) {
     return true;
   }

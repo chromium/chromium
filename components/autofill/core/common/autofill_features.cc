@@ -80,6 +80,13 @@ BASE_FEATURE(kAutofillDefaultToCityAndNumber,
              "AutofillDefaultToCityAndNumber",
              base::FEATURE_ENABLED_BY_DEFAULT);
 
+// If enabled, no prefix matching is applied to filter credit card number
+// suggestions.
+// TODO(crbug.com/338932642): Clean up if launched.
+BASE_FEATURE(kAutofillDontPrefixMatchCreditCardNumbers,
+             "AutofillDontPrefixMatchCreditCardNumbers",
+             base::FEATURE_DISABLED_BY_DEFAULT);
+
 // FormStructure::RetrieveFromCache used to preserve an AutofillField's
 // is_autofilled from the cache of previously parsed forms. This makes little
 // sense because the renderer sends us the autofill state and has the most

@@ -67,6 +67,7 @@ using testing::ElementsAreArray;
 using testing::Field;
 using testing::IsEmpty;
 using testing::Matcher;
+using testing::UnorderedElementsAre;
 using testing::UnorderedElementsAreArray;
 
 constexpr auto kDefaultTriggerSource =
@@ -2348,6 +2349,37 @@ TEST_F(AutofillSuggestionGeneratorTest,
   constexpr char kHistogramName[] = "Autofill.CreditCardsSuppressedForDisuse";
   histogram_tester.ExpectTotalCount(kHistogramName, 1);
   histogram_tester.ExpectBucketCount(kHistogramName, 1, 1);
+}
+
+// Tests that credit card suggestions are not subject to prefix matching for the
+// credit card number if `kAutofillDontPrefixMatchCreditCardNumbers` is enabled.
+TEST_F(AutofillSuggestionGeneratorTest,
+       NoPrefixMatchingForCreditCardsIfFeatureIsTurnedOn) {
+  base::test::ScopedFeatureList features(
+      features::kAutofillDontPrefixMatchCreditCardNumbers);
+  CreditCard card1 = test::GetCreditCard();
+  card1.set_record_type(CreditCard::RecordType::kLocalCard);
+  personal_data().payments_data_manager().AddCreditCard(card1);
+  CreditCard card2 = test::GetCreditCard2();
+  card2.set_record_type(CreditCard::RecordType::kMaskedServerCard);
+  personal_data().AddServerCreditCard(card2);
+
+  auto get_cards = [&](std::u16string field_value) {
+    FormFieldData field;
+    field.set_value(std::move(field_value));
+    return test_api(suggestion_generator())
+        .GetOrderedCardsToSuggest(field, CREDIT_CARD_NUMBER,
+                                  /*suppress_disused_cards=*/false,
+                                  /*prefix_match=*/true,
+                                  /*include_virtual_cards=*/false);
+  };
+
+  EXPECT_THAT(get_cards(u""), UnorderedElementsAre(card1, card2));
+
+  ASSERT_NE(card1.number(), card2.number());
+  EXPECT_THAT(get_cards(card1.number()), UnorderedElementsAre(card1, card2));
+
+  EXPECT_THAT(get_cards(card2.number()), UnorderedElementsAre(card1, card2));
 }
 
 TEST_F(AutofillSuggestionGeneratorTest,
