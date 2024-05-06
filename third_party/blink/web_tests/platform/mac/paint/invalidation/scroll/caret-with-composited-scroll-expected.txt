@@ -28,9 +28,10 @@
     },
     {
       "name": "Caret",
+      "position": [3, 1003],
       "bounds": [1, 15],
       "contentsOpaque": true,
-      "transform": 3
+      "transform": 2
     },
     {
       "name": "LayoutTextControlSingleLine (inline) INPUT id='text'",
@@ -60,16 +61,6 @@
         [0, 1, 0, 0],
         [0, 0, 1, 0],
         [0, -921, 0, 1]
-      ]
-    },
-    {
-      "id": 3,
-      "parent": 2,
-      "transform": [
-        [1, 0, 0, 0],
-        [0, 1, 0, 0],
-        [0, 0, 1, 0],
-        [3, 1003, 0, 1]
       ]
     }
   ]

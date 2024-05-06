@@ -203,8 +203,11 @@ bool SelectionBoundsRecorder::IsVisible(const LayoutObject& rect_layout_object,
   if (!layout_object || !layout_object->IsBox())
     return true;
 
-  const PhysicalOffset sample_point = GetSamplePointForVisibility(
+  PhysicalOffset sample_point = GetSamplePointForVisibility(
       edge_start, edge_end, rect_layout_object.GetFrame()->PageZoomFactor());
+
+  // Convert from paint coordinates to local layout coordinates.
+  sample_point -= layout_object->FirstFragment().PaintOffset();
 
   auto* const text_control_object = To<LayoutBox>(layout_object);
   const PhysicalOffset position_in_input =
