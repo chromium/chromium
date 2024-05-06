@@ -20,7 +20,8 @@ const base::Feature* const kFeaturesExposedToJava[] = {
     &switches::kSeedAccountsRevamp, &switches::kEnterprisePolicyOnSignin,
     &switches::kRestoreSignedInAccountAndSettingsFromBackup,
     &switches::kMinorModeRestrictionsForHistorySyncOptIn,
-    &switches::kHideSettingsSignInPromo};
+    &switches::kHideSettingsSignInPromo,
+    &switches::kUpdateMetricsServicesStateInRestore};
 
 // static
 base::android::FeatureMap* GetFeatureMap() {
