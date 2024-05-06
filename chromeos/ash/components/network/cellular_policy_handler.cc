@@ -131,18 +131,7 @@ void CellularPolicyHandler::Init(
   network_state_handler_observer_.Observe(network_state_handler_.get());
 }
 
-void CellularPolicyHandler::InstallESim(const std::string& smdp_address,
-                                        const base::Value::Dict& onc_config) {
-  DCHECK(!ash::features::IsSmdsSupportEnabled());
-  PushRequestAndProcess(std::make_unique<InstallPolicyESimRequest>(
-      policy_util::SmdxActivationCode(
-          policy_util::SmdxActivationCode::Type::SMDP, smdp_address),
-      onc_config));
-}
-
 void CellularPolicyHandler::InstallESim(const base::Value::Dict& onc_config) {
-  DCHECK(ash::features::IsSmdsSupportEnabled());
-
   std::optional<policy_util::SmdxActivationCode> activation_code =
       policy_util::GetSmdxActivationCodeFromONC(onc_config);
 
@@ -339,40 +328,17 @@ void CellularPolicyHandler::PerformInstallESim(
     return;
   }
 
-  NET_LOG(EVENT) << "Installing policy eSIM profile: "
-                 << GetCurrentActivationCode().ToString();
+  NET_LOG(EVENT) << "Installing policy eSIM profile ("
+                 << GetCurrentActivationCode().ToString() << ") and inhibiting "
+                 << "cellular device to request available profiles for SM-DX "
+                    "activation code.";
 
-  if (ash::features::IsSmdsSupportEnabled()) {
-    NET_LOG(EVENT)
-        << "Inhibiting the cellular device to request available profiles for "
-        << "the policy eSIM profile SM-DX activation code";
-
-    // Confirmation codes are not required when installing policy eSIM profiles.
-    cellular_inhibitor_->InhibitCellularScanning(
-        CellularInhibitor::InhibitReason::kRequestingAvailableProfiles,
-        base::BindOnce(
-            &CellularPolicyHandler::OnInhibitedForRefreshSmdxProfiles,
-            weak_ptr_factory_.GetWeakPtr(), euicc_path,
-            std::move(new_shill_properties)));
-  } else {
-    const bool is_initial_install =
-        remaining_install_requests_.front()->retry_backoff.failure_count() == 0;
-    const bool is_smds =
-        remaining_install_requests_.front()->activation_code.type() ==
-        policy_util::SmdxActivationCode::Type::SMDS;
-
-    // Remote provisioning of eSIM profiles via SM-DP+ activation code in policy
-    // does not require confirmation code.
-    cellular_esim_installer_->InstallProfileFromActivationCode(
-        GetCurrentActivationCode().value(), /*confirmation_code=*/std::string(),
-        euicc_path, std::move(new_shill_properties),
-        base::BindOnce(
-            &CellularPolicyHandler::OnESimProfileInstallAttemptComplete,
-            weak_ptr_factory_.GetWeakPtr()),
-        is_initial_install,
-        is_smds ? ProfileInstallMethod::kViaSmds
-                : ProfileInstallMethod::kViaActivationCodeAfterSmds);
-  }
+  // Confirmation codes are not required when installing policy eSIM profiles.
+  cellular_inhibitor_->InhibitCellularScanning(
+      CellularInhibitor::InhibitReason::kRequestingAvailableProfiles,
+      base::BindOnce(&CellularPolicyHandler::OnInhibitedForRefreshSmdxProfiles,
+                     weak_ptr_factory_.GetWeakPtr(), euicc_path,
+                     std::move(new_shill_properties)));
 }
 
 void CellularPolicyHandler::OnConfigureESimService(
@@ -395,16 +361,11 @@ void CellularPolicyHandler::OnConfigureESimService(
       policy_util::GetIccidFromONC(current_request->onc_config);
   DCHECK(iccid);
 
-  if (ash::features::IsSmdsSupportEnabled()) {
-    const std::string* name =
-        current_request->onc_config.FindString(::onc::network_config::kName);
-    DCHECK(name);
-    managed_cellular_pref_handler_->AddESimMetadata(
-        *iccid, *name, current_request->activation_code);
-  } else {
-    managed_cellular_pref_handler_->AddIccidSmdpPair(
-        *iccid, current_request->activation_code.value());
-  }
+  const std::string* name =
+      current_request->onc_config.FindString(::onc::network_config::kName);
+  DCHECK(name);
+  managed_cellular_pref_handler_->AddESimMetadata(
+      *iccid, *name, current_request->activation_code);
   ProcessRequests();
 }
 
@@ -565,8 +526,7 @@ void CellularPolicyHandler::OnESimProfileInstallAttemptComplete(
   PopRequest();
 
   const bool has_error = status != HermesResponseStatus::kSuccess;
-  const bool was_installed =
-      profile_path.has_value() && ash::features::IsSmdsSupportEnabled();
+  const bool was_installed = profile_path.has_value();
 
   if (has_error && !was_installed) {
     if (!base::Contains(kHermesUserErrorCodes, status)) {
@@ -603,20 +563,13 @@ void CellularPolicyHandler::OnESimProfileInstallAttemptComplete(
   HermesProfileClient::Properties* profile_properties =
       HermesProfileClient::Get()->GetProperties(*profile_path);
 
-  if (ash::features::IsSmdsSupportEnabled()) {
-    const std::string* name =
-        current_request->onc_config.FindString(::onc::network_config::kName);
-    DCHECK(name);
-    managed_cellular_pref_handler_->AddESimMetadata(
-        profile_properties->iccid().value(), *name,
-        current_request->activation_code,
-        /*sync_stub_networks=*/false);
-  } else {
-    managed_cellular_pref_handler_->AddIccidSmdpPair(
-        profile_properties->iccid().value(),
-        current_request->activation_code.value(),
-        /*sync_stub_networks=*/false);
-  }
+  const std::string* name =
+      current_request->onc_config.FindString(::onc::network_config::kName);
+  DCHECK(name);
+  managed_cellular_pref_handler_->AddESimMetadata(
+      profile_properties->iccid().value(), *name,
+      current_request->activation_code,
+      /*sync_stub_networks=*/false);
 
   managed_network_configuration_handler_->NotifyPolicyAppliedToNetwork(
       *service_path);

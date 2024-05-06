@@ -35,15 +35,6 @@ class ManagedCellularPrefHandler;
 class ManagedNetworkConfigurationHandler;
 enum class HermesResponseStatus;
 
-// TODO(b/281904820): Remove this old description.
-// Handles provisioning eSIM profiles via policy.
-//
-// When installing policy eSIM profiles, the activation code is constructed from
-// the SM-DP+ address in the policy configuration. Install requests are queued
-// and installation is performed one by one. Install attempts are retried for
-// fixed number of tries and the request queue doesn't get blocked by the
-// requests that are waiting for retry attempt.
-
 // This class encapsulates the logic for installing eSIM profiles configured by
 // policy. Installation requests are added to a queue, and each request will be
 // retried a fixed number of times with a retry delay between each attempt.
@@ -65,16 +56,6 @@ class COMPONENT_EXPORT(CHROMEOS_NETWORK) CellularPolicyHandler
             ManagedCellularPrefHandler* managed_cellular_pref_handler,
             ManagedNetworkConfigurationHandler*
                 managed_network_configuration_handler);
-
-  // TODO(b/281904820): Remove this function once SM-DS Support is launched.
-  // Installs an eSIM profile and connects to its network from policy with
-  // given |smdp_address|. The Shill service configuration will also be updated
-  // to the policy guid and the new ICCID after installation completes. If
-  // another eSIM profile is already under installation process, the current
-  // request will wait until the previous one is completed. Each installation
-  // will be retried for a fixed number of tries.
-  void InstallESim(const std::string& smdp_address,
-                   const base::Value::Dict& onc_config);
 
   // Installs the policy eSIM profile defined in |onc_config|. The Shill service
   // configuration will be updated to match the GUID provided by |onc_config|

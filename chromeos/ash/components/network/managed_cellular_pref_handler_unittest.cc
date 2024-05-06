@@ -73,19 +73,6 @@ class ManagedCellularPrefHandlerTest : public testing::Test {
         set_to_null ? nullptr : &device_prefs_);
   }
 
-  void AddIccidSmdpPair(const std::string& iccid,
-                        const std::string& smdp_address) {
-    managed_cellular_pref_handler_->AddIccidSmdpPair(iccid, smdp_address);
-  }
-
-  void RemovePairForIccid(const std::string& iccid) {
-    managed_cellular_pref_handler_->RemovePairWithIccid(iccid);
-  }
-
-  const std::string* GetSmdpAddressFromIccid(const std::string& iccid) {
-    return managed_cellular_pref_handler_->GetSmdpAddressFromIccid(iccid);
-  }
-
   void AddApnMigratedIccid(const std::string& iccid) {
     managed_cellular_pref_handler_->AddApnMigratedIccid(iccid);
   }

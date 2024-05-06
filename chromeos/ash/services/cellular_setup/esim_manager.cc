@@ -46,8 +46,7 @@ void LogEuiccPaths(const std::set<dbus::ObjectPath>& new_euicc_paths) {
 std::string ESimManager::GetRootSmdsAddress() {
   // This function returns which server should be used when performing an SM-DS
   // scan and will only ever return the root GSM Association server or the Stork
-  // server; to use the Android staging server please enable the |SmdsSupport|
-  // feature flag.
+  // server.
   return features::ShouldUseStorkSmds() ? kStorkSmdsServerAddress
                                         : std::string();
 }

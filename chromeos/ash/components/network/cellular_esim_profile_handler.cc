@@ -74,8 +74,6 @@ void CellularESimProfileHandler::RefreshProfileListAndRestoreSlot(
 void CellularESimProfileHandler::RequestAvailableProfiles(
     const dbus::ObjectPath& euicc_path,
     RequestAvailableProfilesCallback callback) {
-  DCHECK(ash::features::IsSmdsSupportEnabled());
-
   std::unique_ptr<RequestAvailableProfilesInfo> info =
       std::make_unique<RequestAvailableProfilesInfo>();
   info->smds_activation_codes = cellular_utils::GetSmdsActivationCodes();

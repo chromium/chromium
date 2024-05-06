@@ -31,21 +31,6 @@ namespace {
 using InstallResultPair = std::pair<mojom::ProfileInstallResult,
                                     mojo::PendingRemote<mojom::ESimProfile>>;
 
-mojom::ESimOperationResult RequestPendingProfiles(
-    mojo::Remote<mojom::Euicc>& euicc) {
-  mojom::ESimOperationResult result;
-  base::RunLoop run_loop;
-  euicc->RequestPendingProfiles(base::BindOnce(
-      [](mojom::ESimOperationResult* out, base::OnceClosure quit_closure,
-         mojom::ESimOperationResult result) {
-        *out = result;
-        std::move(quit_closure).Run();
-      },
-      &result, run_loop.QuitClosure()));
-  run_loop.Run();
-  return result;
-}
-
 mojom::ESimOperationResult RefreshInstalledProfiles(
     mojo::Remote<mojom::Euicc>& euicc) {
   mojom::ESimOperationResult result;
@@ -302,27 +287,6 @@ TEST_F(EuiccTest, InstallPendingProfileFromActivationCode) {
 
   // Installing a profile causes a list change.
   EXPECT_EQ(3u, observer()->profile_list_change_calls().size());
-}
-
-TEST_F(EuiccTest, RequestPendingProfiles) {
-  mojo::Remote<mojom::Euicc> euicc = GetEuiccForEid(ESimTestBase::kTestEid);
-  ASSERT_TRUE(euicc.is_bound());
-
-  HermesEuiccClient::TestInterface* euicc_test =
-      HermesEuiccClient::Get()->GetTestInterface();
-  // Verify that pending profile request errors are return properly.
-  euicc_test->QueueHermesErrorStatus(HermesResponseStatus::kErrorNoResponse);
-  EXPECT_EQ(mojom::ESimOperationResult::kFailure,
-            RequestPendingProfiles(euicc));
-  EXPECT_EQ(0u, observer()->profile_list_change_calls().size());
-
-  constexpr base::TimeDelta kHermesInteractiveDelay = base::Milliseconds(3000);
-  HermesEuiccClient::Get()->GetTestInterface()->SetInteractiveDelay(
-      kHermesInteractiveDelay);
-
-  // Verify that successful request returns correct status code.
-  EXPECT_EQ(mojom::ESimOperationResult::kSuccess,
-            RequestPendingProfiles(euicc));
 }
 
 TEST_F(EuiccTest, GetEidQRCode) {

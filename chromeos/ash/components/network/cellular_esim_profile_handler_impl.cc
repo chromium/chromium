@@ -249,17 +249,15 @@ void CellularESimProfileHandlerImpl::UpdateProfilesFromHermes() {
   // Don't include pending profiles in the list to cache since we do not provide
   // a mechanism for installing a pending profile except through the dedicated
   // dialog which performs a fresh SM-DS scan each time it is opened.
-  if (ash::features::IsSmdsSupportEnabled()) {
-    std::erase_if(profiles_from_hermes, [](const CellularESimProfile& profile) {
-      if (profile.state() == CellularESimProfile::State::kPending) {
-        NET_LOG(DEBUG) << "Removing eSIM profile {iccid: " << profile.iccid()
-                       << ", eid: " << profile.eid()
-                       << "} from list to cache since it is pending";
-        return true;
-      }
-      return false;
-    });
-  }
+  std::erase_if(profiles_from_hermes, [](const CellularESimProfile& profile) {
+    if (profile.state() == CellularESimProfile::State::kPending) {
+      NET_LOG(DEBUG) << "Removing eSIM profile {iccid: " << profile.iccid()
+                     << ", eid: " << profile.eid()
+                     << "} from list to cache since it is pending";
+      return true;
+    }
+    return false;
+  });
 
   // Skip updating if there are profiles that haven't received ICCID updates
   // yet. This is required because property updates to eSIM profile objects

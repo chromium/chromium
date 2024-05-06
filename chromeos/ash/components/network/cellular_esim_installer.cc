@@ -108,53 +108,11 @@ ComputePolicyInstallMethod(ProfileInstallMethod install_method) {
 }  // namespace
 
 // static
-void CellularESimInstaller::RecordInstallESimProfileResultLegacy(
-    InstallESimProfileResult result,
-    bool is_managed,
-    bool is_initial_install,
-    bool is_install_via_qr_code) {
-  // Log all installation results.
-  base::UmaHistogramEnumeration("Network.Cellular.ESim.InstallationResult",
-                                result);
-
-  // Log eSIM installation via policy.
-  if (is_managed) {
-    base::UmaHistogramEnumeration(
-        "Network.Cellular.ESim.Policy.ESimInstall.OperationResult", result);
-    if (is_initial_install) {
-      base::UmaHistogramEnumeration(
-          "Network.Cellular.ESim.Policy.ESimInstall.OperationResult."
-          "InitialAttempt",
-          result);
-      return;
-    }
-    base::UmaHistogramEnumeration(
-        "Network.Cellular.ESim.Policy.ESimInstall.OperationResult.Retry",
-        result);
-    return;
-  }
-
-  // Log eSIM installation by user.
-  base::UmaHistogramEnumeration(
-      "Network.Cellular.ESim.UserInstall.OperationResult.All", result);
-  if (is_install_via_qr_code) {
-    base::UmaHistogramEnumeration(
-        "Network.Cellular.ESim.UserInstall.OperationResult.ViaQrCode", result);
-  } else {
-    base::UmaHistogramEnumeration(
-        "Network.Cellular.ESim.UserInstall.OperationResult.ViaCodeInput",
-        result);
-  }
-}
-
-// static
 void CellularESimInstaller::RecordInstallESimProfileResult(
     std::optional<HermesResponseStatus> status,
     bool is_managed,
     bool is_initial_install,
     ProfileInstallMethod install_method) {
-  DCHECK(ash::features::IsSmdsSupportEnabled());
-
   const bool is_user_error =
       status.has_value() &&
       CellularNetworkMetricsLogger::HermesResponseStatusIsUserError(*status);
@@ -217,19 +175,9 @@ void CellularESimInstaller::PerformInstallProfileFromActivationCode(
   if (!inhibit_lock) {
     NET_LOG(ERROR) << "Error inhibiting cellular device";
 
-    const bool is_managed = IsManagedNetwork(new_shill_properties);
-    const bool is_install_via_qr_code =
-        install_method == ProfileInstallMethod::kViaQrCodeAfterSmds ||
-        install_method == ProfileInstallMethod::kViaQrCodeSkippedSmds;
-
-    RecordInstallESimProfileResultLegacy(
-        InstallESimProfileResult::kInhibitFailed, is_managed,
-        is_initial_install, is_install_via_qr_code);
-    if (ash::features::IsSmdsSupportEnabled()) {
-      RecordInstallESimProfileResult(
-          /*status=*/std::nullopt, is_managed, is_initial_install,
-          install_method);
-    }
+    RecordInstallESimProfileResult(
+        /*status=*/std::nullopt, IsManagedNetwork(new_shill_properties),
+        is_initial_install, install_method);
 
     std::move(callback).Run(HermesResponseStatus::kErrorWrongState,
                             /*profile_path=*/std::nullopt,
@@ -264,22 +212,11 @@ void CellularESimInstaller::OnProfileInstallResult(
   hermes_metrics::LogInstallViaQrCodeResult(status, dbusResult,
                                             is_initial_install);
 
-  bool is_managed = IsManagedNetwork(new_shill_properties);
-  const bool is_install_via_qr_code =
-      install_method == ProfileInstallMethod::kViaQrCodeAfterSmds ||
-      install_method == ProfileInstallMethod::kViaQrCodeSkippedSmds;
+  RecordInstallESimProfileResult(status, IsManagedNetwork(new_shill_properties),
+                                 is_initial_install, install_method);
 
   if (status != HermesResponseStatus::kSuccess) {
     NET_LOG(ERROR) << "Error Installing profile status=" << status;
-
-    RecordInstallESimProfileResultLegacy(
-        InstallESimProfileResult::kHermesInstallFailed, is_managed,
-        is_initial_install, is_install_via_qr_code);
-    if (ash::features::IsSmdsSupportEnabled()) {
-      RecordInstallESimProfileResult(status, is_managed, is_initial_install,
-                                     install_method);
-    }
-
     std::move(callback).Run(status, /*profile_path=*/std::nullopt,
                             /*service_path=*/std::nullopt);
     return;
@@ -288,14 +225,6 @@ void CellularESimInstaller::OnProfileInstallResult(
   UMA_HISTOGRAM_LONG_TIMES_100(
       "Network.Cellular.ESim.ProfileDownload.ActivationCode.Latency",
       base::Time::Now() - installation_start_time);
-
-  RecordInstallESimProfileResultLegacy(InstallESimProfileResult::kSuccess,
-                                       is_managed, is_initial_install,
-                                       is_install_via_qr_code);
-  if (ash::features::IsSmdsSupportEnabled()) {
-    RecordInstallESimProfileResult(status, is_managed, is_initial_install,
-                                   install_method);
-  }
 
   pending_inhibit_locks_.emplace(*profile_path, std::move(inhibit_lock));
   ConfigureESimService(
@@ -427,19 +356,13 @@ void CellularESimInstaller::HandleNewProfileEnableFailure(
   NET_LOG(ERROR) << "Error enabling newly created profile path="
                  << profile_path.value() << ", service path=" << service_path
                  << ", error_name=" << error_name;
-  if (ash::features::IsSmdsSupportEnabled()) {
-    // Propagate |profile_path| and |service_path| so that the code that
-    // initiated the installation can handle the case where the profile was
-    // successfully installed, but the installation process failed for some
-    // other reason e.g. failed to enable the profile.
-    std::move(callback).Run(HermesResponseStatus::kErrorWrongState,
-                            /*profile_path=*/profile_path,
-                            /*service_path=*/service_path);
-  } else {
-    std::move(callback).Run(HermesResponseStatus::kErrorWrongState,
-                            /*profile_path=*/std::nullopt,
-                            /*service_path=*/std::nullopt);
-  }
+  // Propagate |profile_path| and |service_path| so that the code that
+  // initiated the installation can handle the case where the profile was
+  // successfully installed, but the installation process failed for some
+  // other reason e.g. failed to enable the profile.
+  std::move(callback).Run(HermesResponseStatus::kErrorWrongState,
+                          /*profile_path=*/profile_path,
+                          /*service_path=*/service_path);
 }
 
 }  // namespace ash

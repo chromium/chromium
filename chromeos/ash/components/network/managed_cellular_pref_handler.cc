@@ -36,21 +36,12 @@ void ManagedCellularPrefHandler::Init(
 void ManagedCellularPrefHandler::SetDevicePrefs(PrefService* device_prefs) {
   device_prefs_ = device_prefs;
 
-  if (!device_prefs_) {
+  if (!device_prefs_ ||
+      device_prefs_->HasPrefPath(prefs::kManagedCellularESimMetadata)) {
     return;
   }
 
-  const bool hasPref =
-      device_prefs_->HasPrefPath(prefs::kManagedCellularESimMetadata);
-  if (!ash::features::IsSmdsSupportEnabled()) {
-    if (hasPref) {
-      device_prefs_->ClearPref(prefs::kManagedCellularESimMetadata);
-    }
-    return;
-  }
-  if (!hasPref) {
-    MigrateExistingPrefs();
-  }
+  MigrateExistingPrefs();
 }
 
 void ManagedCellularPrefHandler::AddObserver(Observer* observer) {
@@ -70,71 +61,11 @@ void ManagedCellularPrefHandler::NotifyManagedCellularPrefChanged() {
     observer.OnManagedCellularPrefChanged();
 }
 
-void ManagedCellularPrefHandler::AddIccidSmdpPair(
-    const std::string& iccid,
-    const std::string& smdp_address,
-    bool sync_stub_networks) {
-  DCHECK(!ash::features::IsSmdsSupportEnabled());
-
-  if (!device_prefs_) {
-    NET_LOG(ERROR) << "Device pref not available yet.";
-    return;
-  }
-  const std::string* existed_smdp_address = GetSmdpAddressFromIccid(iccid);
-  if (existed_smdp_address && *existed_smdp_address == smdp_address)
-    return;
-
-  NET_LOG(EVENT) << "Adding iccid smdp pair to device pref, iccid: " << iccid
-                 << ", smdp: " << smdp_address;
-  ScopedDictPrefUpdate update(device_prefs_,
-                              prefs::kManagedCellularIccidSmdpPair);
-  update->SetByDottedPath(iccid, smdp_address);
-  if (sync_stub_networks) {
-    network_state_handler_->SyncStubCellularNetworks();
-  }
-
-  NotifyManagedCellularPrefChanged();
-}
-
-void ManagedCellularPrefHandler::RemovePairWithIccid(const std::string& iccid) {
-  DCHECK(!ash::features::IsSmdsSupportEnabled());
-
-  if (!device_prefs_) {
-    NET_LOG(ERROR) << "Device pref not available yet.";
-    return;
-  }
-  const std::string* existed_smdp_address = GetSmdpAddressFromIccid(iccid);
-  if (!existed_smdp_address)
-    return;
-
-  NET_LOG(EVENT) << "Removing iccid smdp pair from device pref, iccid: "
-                 << iccid;
-  ScopedDictPrefUpdate update(device_prefs_,
-                              prefs::kManagedCellularIccidSmdpPair);
-  update->RemoveByDottedPath(iccid);
-  network_state_handler_->SyncStubCellularNetworks();
-  NotifyManagedCellularPrefChanged();
-}
-
-const std::string* ManagedCellularPrefHandler::GetSmdpAddressFromIccid(
-    const std::string& iccid) const {
-  DCHECK(!ash::features::IsSmdsSupportEnabled());
-
-  if (!device_prefs_) {
-    NET_LOG(ERROR) << "Device pref not available yet.";
-    return nullptr;
-  }
-  const base::Value::Dict& iccid_smdp_pairs =
-      device_prefs_->GetDict(prefs::kManagedCellularIccidSmdpPair);
-  return iccid_smdp_pairs.FindString(iccid);
-}
-
 void ManagedCellularPrefHandler::AddESimMetadata(
     const std::string& iccid,
     const std::string& name,
     const policy_util::SmdxActivationCode& activation_code,
     bool sync_stub_networks) {
-  DCHECK(ash::features::IsSmdsSupportEnabled());
   DCHECK(!name.empty());
   DCHECK(!activation_code.value().empty());
 
@@ -172,7 +103,6 @@ void ManagedCellularPrefHandler::AddESimMetadata(
 
 const base::Value::Dict* ManagedCellularPrefHandler::GetESimMetadata(
     const std::string& iccid) {
-  DCHECK(ash::features::IsSmdsSupportEnabled());
 
   if (!device_prefs_) {
     NET_LOG(ERROR) << "Device pref not available yet";
@@ -184,8 +114,6 @@ const base::Value::Dict* ManagedCellularPrefHandler::GetESimMetadata(
 }
 
 void ManagedCellularPrefHandler::RemoveESimMetadata(const std::string& iccid) {
-  DCHECK(ash::features::IsSmdsSupportEnabled());
-
   if (!device_prefs_) {
     NET_LOG(ERROR) << "Device pref not available yet";
     return;
@@ -237,7 +165,6 @@ bool ManagedCellularPrefHandler::ContainsApnMigratedIccid(
 }
 
 void ManagedCellularPrefHandler::MigrateExistingPrefs() {
-  DCHECK(ash::features::IsSmdsSupportEnabled());
   DCHECK(device_prefs_);
 
   NET_LOG(EVENT) << "Starting migration of existing ICCID and SM-DP+ pairs";

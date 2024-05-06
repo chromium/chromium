@@ -42,17 +42,6 @@ class COMPONENT_EXPORT(CHROMEOS_NETWORK) ManagedCellularPrefHandler {
   void Init(NetworkStateHandler* network_state_handler);
   void SetDevicePrefs(PrefService* device_prefs);
 
-  // Add a new ICCID and SMDP+ address pair to device pref for a managed
-  // cellular network. If |sync_stub_networks| is set true,
-  // NetworkStateHandler::SyncStubCellularNetworks() will be called.
-  void AddIccidSmdpPair(const std::string& iccid,
-                        const std::string& smdp_address,
-                        bool sync_stub_networks = true);
-
-  // Remove the ICCID and SMDP+ address pair from the device pref with given
-  // |iccid|.
-  void RemovePairWithIccid(const std::string& iccid);
-
   // Persistes the eSIM metadata for a managed cellular network to device prefs.
   // If |sync_stub_networks| is set true,
   // NetworkStateHandler::SyncStubCellularNetworks() will be called.
@@ -74,10 +63,6 @@ class COMPONENT_EXPORT(CHROMEOS_NETWORK) ManagedCellularPrefHandler {
 
   // Return true if the |iccid| has been migrated to the APN Revamp feature.
   virtual bool ContainsApnMigratedIccid(const std::string& iccid) const;
-
-  // Returns the corresponding SMDP+ address for the given |iccid|. Returns
-  // nullptr if no such |iccid| is found.
-  const std::string* GetSmdpAddressFromIccid(const std::string& iccid) const;
 
   void AddObserver(Observer* observer);
   void RemoveObserver(Observer* observer);

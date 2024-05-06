@@ -122,8 +122,7 @@ struct NamedResourceId {
 const std::vector<NamedBoolean>& GetBooleanValues() {
   static const base::NoDestructor<std::vector<NamedBoolean>> named_bools(
       {{"useSecondEuicc",
-        base::FeatureList::IsEnabled(features::kCellularUseSecondEuicc)},
-       {"isSmdsSupportEnabled", ash::features::IsSmdsSupportEnabled()}});
+        base::FeatureList::IsEnabled(features::kCellularUseSecondEuicc)}});
   return *named_bools;
 }
 

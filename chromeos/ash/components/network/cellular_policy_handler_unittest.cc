@@ -76,12 +76,6 @@ const char kCellularPolicyCellularTypeWithIccidPattern[] =
       "ICCID": "%s"
     })";
 
-const char kInstallViaPolicyOperationHistogram[] =
-    "Network.Cellular.ESim.Policy.ESimInstall.OperationResult";
-const char kInstallViaPolicyInitialOperationHistogram[] =
-    "Network.Cellular.ESim.Policy.ESimInstall.OperationResult.InitialAttempt";
-const char kInstallViaPolicyRetryOperationHistogram[] =
-    "Network.Cellular.ESim.Policy.ESimInstall.OperationResult.Retry";
 
 std::string GenerateCellularPolicy(
     const policy_util::SmdxActivationCode& activation_code,
@@ -329,24 +323,6 @@ class CellularPolicyHandlerTest : public testing::Test {
   }
 
   void CheckHistogramState(const ExpectedHistogramState& state) {
-    CheckHistogram(
-        kInstallViaPolicyOperationHistogram,
-        /*success_count=*/state.success_initial_count +
-            state.success_retry_count,
-        /*inhibit_failed_count=*/state.inhibit_failed_initial_count +
-            state.inhibit_failed_retry_count,
-        /*hermes_install_failed=*/state.hermes_install_failed_initial_count +
-            state.hermes_install_failed_retry_count);
-    CheckHistogram(
-        kInstallViaPolicyInitialOperationHistogram,
-        /*success_count=*/state.success_initial_count,
-        /*inhibit_failed_count=*/state.inhibit_failed_initial_count,
-        /*hermes_install_failed=*/state.hermes_install_failed_initial_count);
-    CheckHistogram(
-        kInstallViaPolicyRetryOperationHistogram,
-        /*success_count=*/state.success_retry_count,
-        /*inhibit_failed_count=*/state.inhibit_failed_retry_count,
-        /*hermes_install_failed=*/state.hermes_install_failed_retry_count);
     histogram_tester_.ExpectTotalCount(
         CellularNetworkMetricsLogger::kSmdsScanProfileCount,
         /*expected_count=*/state.smds_scan_profile_total_count);

@@ -209,16 +209,16 @@ std::optional<dbus::ObjectPath> GetCurrentEuiccPath() {
 std::vector<std::string> GetSmdsActivationCodes() {
   std::vector<std::string> activation_codes;
   if (features::ShouldUseStorkSmds()) {
-    activation_codes.push_back(kSmdsStork);
+    activation_codes.emplace_back(kSmdsStork);
   }
   if (features::ShouldUseAndroidStagingSmds()) {
-    activation_codes.push_back(kSmdsAndroidStaging);
+    activation_codes.emplace_back(kSmdsAndroidStaging);
   }
   if (activation_codes.empty()) {
-    if (features::IsSmdsSupportEnabled()) {
-      activation_codes.push_back(kSmdsAndroidProduction);
-    }
-    activation_codes.push_back(kSmdsGsma);
+    activation_codes = {
+        kSmdsAndroidProduction,
+        kSmdsGsma,
+    };
   }
   return activation_codes;
 }

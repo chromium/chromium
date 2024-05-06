@@ -378,7 +378,6 @@ class EuiccStatusUploaderTest : public testing::Test {
   }
 
   void SetLastUploadedValue(const std::string& last_value) {
-    DCHECK(ash::features::IsSmdsSupportEnabled());
     local_state_.Set(EuiccStatusUploader::kLastUploadedEuiccStatusPref,
                      base::test::ParseJson(last_value));
   }

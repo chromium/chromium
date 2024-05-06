@@ -648,8 +648,7 @@ void CellularMetricsLogger::Init(
 
   esim_feature_usage_metrics_ =
       std::make_unique<ESimFeatureUsageMetrics>(network_state_handler_);
-  if (ash::features::IsSmdsSupportEnabled() &&
-      InstallAttributes::IsInitialized() &&
+  if (InstallAttributes::IsInitialized() &&
       InstallAttributes::Get()->IsEnterpriseManaged()) {
     enterprise_esim_feature_usage_metrics_ =
         std::make_unique<EnterpriseESimFeatureUsageMetrics>(

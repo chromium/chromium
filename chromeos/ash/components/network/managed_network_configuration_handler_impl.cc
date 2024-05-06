@@ -794,23 +794,7 @@ void ManagedNetworkConfigurationHandlerImpl::TriggerCellularPolicyApplication(
     const base::Value::Dict* network_policy = policies->GetPolicyByGuid(guid);
     DCHECK(network_policy);
 
-    if (ash::features::IsSmdsSupportEnabled()) {
-      cellular_policy_handler_->InstallESim(*network_policy);
-    } else {
-      const std::string* smdp_address =
-          policy_util::GetSMDPAddressFromONC(*network_policy);
-      if (smdp_address) {
-        NET_LOG(EVENT)
-            << "Found ONC configuration with SMDP: " << *smdp_address << ". "
-            << "Start installing policy eSim profile with ONC config: "
-            << *network_policy;
-        cellular_policy_handler_->InstallESim(*smdp_address, *network_policy);
-      } else {
-        NET_LOG(EVENT) << "Skip installing policy eSIM either because the eSIM "
-                       << "policy feature is not enabled or the SMDP address "
-                       << "is missing from ONC.";
-      }
-    }
+    cellular_policy_handler_->InstallESim(*network_policy);
   }
 }
 

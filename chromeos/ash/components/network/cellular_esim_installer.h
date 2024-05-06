@@ -113,19 +113,6 @@ class COMPONENT_EXPORT(CHROMEOS_NETWORK) CellularESimInstaller {
     kMaxValue = kHermesInstallFailed
   };
 
-  // TODO(b/281904820): Remove once SM-DS Support has fully launched and we have
-  // enough data to confirm that the new metrics are correct.
-  // Record the result of an attempt to install an eSIM profile either via a
-  // QR code or policy configuration. It also records to
-  // ESim.Policy.ESimInstall.Initial.OperationResult
-  // or ESim.Policy.ESimInstall.Retry.OperationResult histogram to indicate
-  // whether the policy eSIM profile installation is an initial attempt or not.
-  static void RecordInstallESimProfileResultLegacy(
-      InstallESimProfileResult result,
-      bool is_managed,
-      bool is_initial_install,
-      bool is_install_via_qr_code);
-
   // Record the result of an attempt to install an eSIM profile. This function
   // will emit to histograms that capture the method used and whether this is
   // the first installation attempt or not. When |status| is not provided this
