@@ -23,7 +23,7 @@ class SequenceBoundReceiver;
 namespace screen_ai {
 
 // A simple class to initialize and perform OCR service.
-// See how to use OCR section in `/services/screen_ai/README.md` for more info.
+// See OCR section in `chrome/browser/screen_ai/README.md` for more info.
 class OpticalCharacterRecognizer
     : public ProfileObserver,
       public base::RefCountedDeleteOnSequence<OpticalCharacterRecognizer> {
@@ -58,15 +58,13 @@ class OpticalCharacterRecognizer
   bool StatusAvailableForTesting() { return ready_.has_value(); }
 
   // Performs OCR on the given image and returns the results as a
-  // `VisualAnnotation` struct. If the client is not in the browser process, it
-  // needs to implement this function in its own process.
+  // `VisualAnnotation` struct.
   virtual void PerformOCR(
       const SkBitmap& image,
       base::OnceCallback<void(mojom::VisualAnnotationPtr)> callback);
 
   // Performs OCR on the given image and returns the results as an accessibility
-  // tree update. If the client is not in the browser process, it needs to
-  // implement this function in its own process.
+  // tree update.
   virtual void PerformOCR(
       const SkBitmap& image,
       base::OnceCallback<void(const ui::AXTreeUpdate& tree_update)> callback);
