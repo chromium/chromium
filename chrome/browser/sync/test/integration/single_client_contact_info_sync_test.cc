@@ -245,7 +245,14 @@ INSTANTIATE_TEST_SUITE_P(,
                          SingleClientContactInfoPassphraseSyncTest,
                          testing::Bool());
 
-IN_PROC_BROWSER_TEST_P(SingleClientContactInfoPassphraseSyncTest, Passphrase) {
+// TODO(336993637): Flaky on Android.
+#if BUILDFLAG(IS_ANDROID)
+#define MAYBE_Passphrase DISABLED_Passphrase
+#else
+#define MAYBE_Passphrase Passphrase
+#endif
+IN_PROC_BROWSER_TEST_P(SingleClientContactInfoPassphraseSyncTest,
+                       MAYBE_Passphrase) {
   ASSERT_TRUE(SetupSync());
   ASSERT_TRUE(
       GetSyncService(0)->GetActiveDataTypes().Has(syncer::CONTACT_INFO));
