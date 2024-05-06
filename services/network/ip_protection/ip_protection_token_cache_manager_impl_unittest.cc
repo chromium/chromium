@@ -285,6 +285,24 @@ TEST_F(IpProtectionTokenCacheManagerImplTest, EmptyBatch) {
       HistogramState{.success = 0, .failure = 1, .generated = 1});
 }
 
+// If `TryGetAuthTokens()` returns a batch smaller than the low-water mark, the
+// cache does not immediately refill.
+TEST_F(IpProtectionTokenCacheManagerImplTest, SmallBatch) {
+  mock_.ExpectTryGetAuthTokensCall(
+      expected_batch_size_,
+      TokenBatch(cache_low_water_mark_ - 1, kFutureExpiration));
+  CallTryGetAuthTokensAndWait(network::mojom::IpProtectionProxyLayer::kProxyA);
+  ASSERT_TRUE(mock_.GotAllExpectedMockCalls());
+
+  ASSERT_TRUE(ipp_proxy_a_token_cache_manager_->IsAuthTokenAvailable());
+  ASSERT_TRUE(ipp_proxy_a_token_cache_manager_->GetAuthToken());
+  ASSERT_TRUE(ipp_proxy_a_token_cache_manager_
+                  ->try_get_auth_tokens_after_for_testing() >
+              base::Time::Now());
+  ExpectHistogramState(
+      HistogramState{.success = 1, .failure = 0, .generated = 1});
+}
+
 // If `TryGetAuthTokens()` returns an backoff due to an error, the cache remains
 // empty.
 TEST_F(IpProtectionTokenCacheManagerImplTest, ErrorBatch) {

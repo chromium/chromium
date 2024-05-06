@@ -164,6 +164,14 @@ void IpProtectionTokenCacheManagerImpl::OnGotAuthTokens(
                 return a->expiration < b->expiration;
               });
 
+    // If the number of tokens in the cache is still below the low-water mark,
+    // we do not want to immediately re-request tokens, lest we overwhelm the
+    // server. This is unlikely to happen in practice, but exists as a safety
+    // check.
+    if (cache_.size() < cache_low_water_mark_) {
+      try_get_auth_tokens_after_ = base::Time::Now() + base::Minutes(1);
+    }
+
     base::UmaHistogramMediumTimes(
         "NetworkService.IpProtection.TokenBatchGenerationTime",
         base::TimeTicks::Now() - attempt_start_time_for_metrics);

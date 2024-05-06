@@ -83,11 +83,12 @@ class IpProtectionConfigGetterInterceptor
                         network::mojom::IpProtectionProxyLayer proxy_layer,
                         TryGetAuthTokensCallback callback) override {
     if (should_intercept_) {
-      // NOTE: We'll ignore batch size and just return one token.
       std::vector<network::mojom::BlindSignedAuthTokenPtr> tokens;
-      auto token =
-          network::mojom::BlindSignedAuthToken::New(token_, expiration_);
-      tokens.push_back(std::move(token));
+      for (uint32_t i = 0; i < batch_size; i++) {
+        auto token =
+            network::mojom::BlindSignedAuthToken::New(token_, expiration_);
+        tokens.push_back(std::move(token));
+      }
       std::move(callback).Run(std::move(tokens), base::Time());
       return;
     }
