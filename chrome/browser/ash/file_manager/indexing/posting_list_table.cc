@@ -14,6 +14,7 @@ namespace {
 #define AUGMENTED_TERM_ID "augmented_term_id"
 #define URL_ID "url_id"
 #define POSTING_LIST_INDEX "posting_list_index"
+#define URL_ID_INDEX "url_id_index"
 
 // The statement used to create the posting list table.
 static constexpr char kCreatePostingListTableQuery[] =
@@ -41,7 +42,7 @@ static constexpr char kCreatePostingIndexQuery[] =
 // given URL ID (and thus, a file).
 static constexpr char kCreateUrlIndexQuery[] =
     // clang-format off
-    "CREATE INDEX url_id_index ON posting_list_table(" URL_ID ")";
+    "CREATE INDEX " URL_ID_INDEX " ON posting_list_table(" URL_ID ")";
 // clang-format on
 
 // The statement used to insert a new association between the augmented term ID
@@ -68,6 +69,13 @@ static constexpr char kGetUrlIdsForTermQuery[] =
     POSTING_LIST_INDEX " WHERE " AUGMENTED_TERM_ID "=?";
 // clang-format on
 
+// A query that fetches all augmented term IDs for the given augmented URL ID.
+// This query utilizes the url_id_index.
+static constexpr char kGetAugmentedTermIdsForUrlQuery[] =
+    // clang-format off
+    "SELECT " AUGMENTED_TERM_ID " FROM " POSTING_LIST_TABLE " INDEXED BY "
+    URL_ID_INDEX " WHERE " URL_ID "=?";
+// clang-format on
 }  // namespace
 
 PostingListTable::PostingListTable(sql::Database* db) : db_(db) {}
@@ -152,6 +160,21 @@ std::set<int64_t> PostingListTable::GetUrlIdsForTerm(
     url_ids.emplace(get_url_ids.ColumnInt64(0));
   }
   return url_ids;
+}
+
+const std::set<int64_t> PostingListTable::GetAugmentedTermIdsForUrl(
+    int64_t url_id) const {
+  sql::Statement get_augmented_term_ids(
+      db_->GetCachedStatement(SQL_FROM_HERE, kGetAugmentedTermIdsForUrlQuery));
+  DCHECK(get_augmented_term_ids.is_valid())
+      << "Invalid select statement: \""
+      << get_augmented_term_ids.GetSQLStatement() << "\"";
+  get_augmented_term_ids.BindInt64(0, url_id);
+  std::set<int64_t> augmented_term_ids;
+  while (get_augmented_term_ids.Step()) {
+    augmented_term_ids.emplace(get_augmented_term_ids.ColumnInt64(0));
+  }
+  return augmented_term_ids;
 }
 
 }  // namespace file_manager

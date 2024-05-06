@@ -60,6 +60,11 @@ class IndexStorage {
       const std::set<int64_t>& augmented_term_ids,
       int64_t url_id) = 0;
 
+  // Removes association between terms and the file.
+  virtual void DeleteAugmentedTermIdsForUrl(
+      const std::set<int64_t>& augmented_term_ids,
+      int64_t url_id) = 0;
+
   // Adds to the posting list of the given `augmented_term_id` the given
   // `url_id`. This may be no-op if the `url_id` already is associated with the
   // given term_id. Returns the number of URL Ids added (1 or 0).
@@ -71,16 +76,6 @@ class IndexStorage {
   // the posting list for the given term. Returns the number of URLs removed.
   virtual int32_t DeleteFromPostingList(int64_t augmented_term_id,
                                         int64_t url_id) = 0;
-
-  // Adds to the inverted posting lists the specified `term_id`. This may be
-  // a no-op if the given term has previously been associated with the file
-  // info ID.
-  virtual void AddToTermList(int64_t url_id, int64_t term_id) = 0;
-
-  // Removes the given `term_id` from the inverted posting lists of the
-  // specified `url_id`. This may be a no-op if the term_id is not present
-  // on the term list for the given `url_id`.
-  virtual void DeleteFromTermList(int64_t url_id, int64_t term_id) = 0;
 
   // Returns the ID corresponding to the given augmented term. If the augmented
   // term cannot be located, the method returns -1.
@@ -112,8 +107,9 @@ class IndexStorage {
   // seen before, this method returns -1.
   virtual int64_t DeleteUrl(const GURL& url) = 0;
 
-  // Stores FileInfo. The ID must be that of the `file_info.file_url`.
-  virtual int64_t PutFileInfo(int64_t url_id, const FileInfo& file_info) = 0;
+  // Stores FileInfo. If successful, returns the ID generated from `file_url`
+  // field fo the `file_info`. Otherwise, it returns -1.
+  virtual int64_t PutFileInfo(const FileInfo& file_info) = 0;
 
   // Attempts to retrieve the unique FileInfo associated with the given URL.
   // Returns -1, if the file info was not found. Otherwise, returns URL ID and

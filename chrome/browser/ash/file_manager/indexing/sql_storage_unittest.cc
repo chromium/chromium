@@ -90,11 +90,19 @@ TEST_F(SqlStorageTest, GetAugmentedTermId) {
   // Must initialize before use.
   ASSERT_TRUE(storage_->Init());
 
-  EXPECT_EQ(storage_->GetAugmentedTermId(pinned_), -1);
-  EXPECT_EQ(storage_->GetOrCreateAugmentedTermId(pinned_), 1);
-  EXPECT_EQ(storage_->GetAugmentedTermId(pinned_), 1);
-  EXPECT_EQ(storage_->GetAugmentedTermId(downloaded_), -1);
-  EXPECT_EQ(storage_->GetOrCreateAugmentedTermId(downloaded_), 2);
+  int64_t pinned_term_id = storage_->GetOrCreateTermId(pinned_.text_bytes());
+  EXPECT_EQ(storage_->GetAugmentedTermId(pinned_.field(), pinned_term_id), -1);
+  EXPECT_EQ(
+      storage_->GetOrCreateAugmentedTermId(pinned_.field(), pinned_term_id), 1);
+  EXPECT_EQ(storage_->GetAugmentedTermId(pinned_.field(), pinned_term_id), 1);
+  int64_t downloaded_term_id =
+      storage_->GetOrCreateTermId(downloaded_.text_bytes());
+  EXPECT_EQ(
+      storage_->GetAugmentedTermId(downloaded_.field(), downloaded_term_id),
+      -1);
+  EXPECT_EQ(storage_->GetOrCreateAugmentedTermId(downloaded_.field(),
+                                                 downloaded_term_id),
+            2);
 }
 
 TEST_F(SqlStorageTest, DeleteAugmentedTerm) {
@@ -102,7 +110,8 @@ TEST_F(SqlStorageTest, DeleteAugmentedTerm) {
   ASSERT_TRUE(storage_->Init());
 
   EXPECT_EQ(storage_->DeleteAugmentedTerm(1), -1);
-  EXPECT_EQ(storage_->GetOrCreateAugmentedTermId(pinned_), 1);
+  int64_t term_id = storage_->GetOrCreateTermId(pinned_.text_bytes());
+  EXPECT_EQ(storage_->GetOrCreateAugmentedTermId(pinned_.field(), term_id), 1);
   EXPECT_EQ(storage_->DeleteAugmentedTerm(1), 1);
 }
 
@@ -136,28 +145,28 @@ TEST_F(SqlStorageTest, GetFileInfo) {
   ASSERT_TRUE(storage_->Init());
 
   FileInfo got_file_info(GURL(""), 0, base::Time::Now());
+  int64_t foo_url_id = storage_->GetOrCreateUrlId(foo_url_);
 
-  EXPECT_EQ(-1, storage_->GetFileInfo(foo_url_, &got_file_info));
+  EXPECT_EQ(-1, storage_->GetFileInfo(foo_url_id, &got_file_info));
 
   FileInfo put_file_info(foo_url_, 100, base::Time());
   EXPECT_FALSE(put_file_info.remote_id.has_value());
-  EXPECT_EQ(1, storage_->GetOrCreateUrlId(foo_url_));
-  EXPECT_EQ(1, storage_->PutFileInfo(put_file_info));
-  EXPECT_EQ(1, storage_->GetFileInfo(foo_url_, &got_file_info));
+  EXPECT_EQ(foo_url_id, storage_->PutFileInfo(put_file_info));
+  EXPECT_EQ(foo_url_id, storage_->GetFileInfo(foo_url_id, &got_file_info));
   EXPECT_EQ(put_file_info.file_url, got_file_info.file_url);
   EXPECT_EQ(put_file_info.last_modified, got_file_info.last_modified);
   EXPECT_EQ(put_file_info.size, got_file_info.size);
   EXPECT_FALSE(got_file_info.remote_id.has_value());
 
   put_file_info.size = put_file_info.size + 100;
-  EXPECT_EQ(1, storage_->PutFileInfo(put_file_info));
-  EXPECT_EQ(1, storage_->GetFileInfo(foo_url_, &got_file_info));
+  EXPECT_EQ(foo_url_id, storage_->PutFileInfo(put_file_info));
+  EXPECT_EQ(foo_url_id, storage_->GetFileInfo(foo_url_id, &got_file_info));
   EXPECT_EQ(put_file_info.size, got_file_info.size);
 
   const std::string remote_id = "i-am-a-remote-id";
   put_file_info.remote_id = remote_id;
-  EXPECT_EQ(1, storage_->PutFileInfo(put_file_info));
-  EXPECT_EQ(1, storage_->GetFileInfo(foo_url_, &got_file_info));
+  EXPECT_EQ(foo_url_id, storage_->PutFileInfo(put_file_info));
+  EXPECT_EQ(foo_url_id, storage_->GetFileInfo(foo_url_id, &got_file_info));
   EXPECT_EQ(put_file_info.remote_id, got_file_info.remote_id);
   EXPECT_EQ(remote_id, got_file_info.remote_id);
 }
@@ -167,46 +176,60 @@ TEST_F(SqlStorageTest, PutFileInfo) {
   ASSERT_TRUE(storage_->Init());
 
   FileInfo file_info(foo_url_, 100, base::Time());
-  // If the URL is unknown, expect put operation to fail.
-  EXPECT_EQ(-1, storage_->PutFileInfo(file_info));
-  // Store the URL first and expect the operation to succeed.
-  EXPECT_EQ(1, storage_->GetOrCreateUrlId(file_info.file_url));
-  EXPECT_EQ(1, storage_->PutFileInfo(file_info));
+  // Inserting file is always successful and the returned ID is equal to that
+  // of the ID generated from file_info.file_url.
+  int64_t gotten_url_id = storage_->PutFileInfo(file_info);
+  int64_t foo_url_id = storage_->GetUrlId(foo_url_);
+  EXPECT_EQ(foo_url_id, gotten_url_id);
 }
 
 TEST_F(SqlStorageTest, DeleteFileInfo) {
   // Must initialize before use.
   ASSERT_TRUE(storage_->Init());
 
-  EXPECT_EQ(-1, storage_->DeleteFileInfo(foo_url_));
+  int64_t foo_url_id = storage_->GetOrCreateUrlId(foo_url_);
+  EXPECT_EQ(foo_url_id, 1);
+  // Not deletion needed, but still signals that the file was "deleted"
+  // successfully, as it is no longer in the index.
+  EXPECT_EQ(foo_url_id, storage_->DeleteFileInfo(foo_url_id));
 
   FileInfo put_file_info(foo_url_, 100, base::Time());
-  EXPECT_EQ(1, storage_->GetOrCreateUrlId(foo_url_));
-  EXPECT_EQ(1, storage_->PutFileInfo(put_file_info));
-  EXPECT_EQ(1, storage_->DeleteFileInfo(foo_url_));
+  EXPECT_EQ(foo_url_id, storage_->PutFileInfo(put_file_info));
+  EXPECT_EQ(foo_url_id, storage_->DeleteFileInfo(foo_url_id));
+  EXPECT_EQ(foo_url_id, storage_->DeleteFileInfo(foo_url_id));
 }
 
 TEST_F(SqlStorageTest, AddToPostingList) {
   // Must initialize before use.
   ASSERT_TRUE(storage_->Init());
 
-  EXPECT_EQ(1, storage_->AddToPostingList(pinned_, foo_url_));
+  int64_t pinned_term_id = storage_->GetOrCreateTermId(pinned_.text_bytes());
+  int64_t pinned_id =
+      storage_->GetOrCreateAugmentedTermId(pinned_.field(), pinned_term_id);
+  int64_t foo_url_id = storage_->GetOrCreateUrlId(foo_url_);
+
+  EXPECT_EQ(1, storage_->AddToPostingList(pinned_id, foo_url_id));
   // Second time adding the term does not change the database.
-  EXPECT_EQ(0, storage_->AddToPostingList(pinned_, foo_url_));
+  EXPECT_EQ(0, storage_->AddToPostingList(pinned_id, foo_url_id));
 }
 
 TEST_F(SqlStorageTest, DeleteFromPostingList) {
   // Must initialize before use.
   ASSERT_TRUE(storage_->Init());
 
+  int64_t pinned_term_id = storage_->GetOrCreateTermId(pinned_.text_bytes());
+  int64_t pinned_id =
+      storage_->GetOrCreateAugmentedTermId(pinned_.field(), pinned_term_id);
+  int64_t foo_url_id = storage_->GetOrCreateUrlId(foo_url_);
+
   // Can delete something that was not added. Results in 0 changes.
-  EXPECT_EQ(0, storage_->DeleteFromPostingList(pinned_, foo_url_));
+  EXPECT_EQ(0, storage_->DeleteFromPostingList(pinned_id, foo_url_id));
 
   // Add and delete, expect it to succeed.
-  EXPECT_EQ(1, storage_->AddToPostingList(pinned_, foo_url_));
-  EXPECT_EQ(1, storage_->DeleteFromPostingList(pinned_, foo_url_));
+  EXPECT_EQ(1, storage_->AddToPostingList(pinned_id, foo_url_id));
+  EXPECT_EQ(1, storage_->DeleteFromPostingList(pinned_id, foo_url_id));
   // No more deletion after the first one.
-  EXPECT_EQ(0, storage_->DeleteFromPostingList(pinned_, foo_url_));
+  EXPECT_EQ(0, storage_->DeleteFromPostingList(pinned_id, foo_url_id));
 }
 
 TEST_F(SqlStorageTest, GetUrlIdsForTerm) {
@@ -216,31 +239,39 @@ TEST_F(SqlStorageTest, GetUrlIdsForTerm) {
   // Setup: prefetch URL IDs.
   int64_t foo_url_id = storage_->GetOrCreateUrlId(foo_url_);
   int64_t bar_url_id = storage_->GetOrCreateUrlId(bar_url_);
+  int64_t pinned_term_id = storage_->GetOrCreateTermId(pinned_.text_bytes());
+  int64_t pinned_id =
+      storage_->GetOrCreateAugmentedTermId(pinned_.field(), pinned_term_id);
 
   // No terms were associated with any files, so the results must be empty.
-  int64_t pinned_term_id = storage_->GetOrCreateAugmentedTermId(pinned_);
-  EXPECT_TRUE(storage_->GetUrlIdsForTerm(pinned_term_id).empty());
+  EXPECT_TRUE(storage_->GetUrlIdsForAugmentedTermId(pinned_term_id).empty());
 
   // Associate pinned with foo.
-  EXPECT_EQ(1, storage_->AddToPostingList(pinned_, foo_url_));
-  EXPECT_THAT(storage_->GetUrlIdsForTerm(pinned_term_id),
+  EXPECT_EQ(1, storage_->AddToPostingList(pinned_id, foo_url_id));
+  EXPECT_THAT(storage_->GetUrlIdsForAugmentedTermId(pinned_term_id),
               testing::UnorderedElementsAre(foo_url_id));
 
   // Associate downloaded_ with foo.
   int64_t downloaded_term_id =
-      storage_->GetOrCreateAugmentedTermId(downloaded_);
-  EXPECT_EQ(1, storage_->AddToPostingList(downloaded_, foo_url_));
-  EXPECT_THAT(storage_->GetUrlIdsForTerm(pinned_term_id),
+      storage_->GetOrCreateTermId(downloaded_.text_bytes());
+  int64_t downloaded_augmented_term_id = storage_->GetOrCreateAugmentedTermId(
+      downloaded_.field(), downloaded_term_id);
+  EXPECT_EQ(
+      1, storage_->AddToPostingList(downloaded_augmented_term_id, foo_url_id));
+  EXPECT_THAT(storage_->GetUrlIdsForAugmentedTermId(pinned_term_id),
               testing::UnorderedElementsAre(foo_url_id));
-  EXPECT_THAT(storage_->GetUrlIdsForTerm(downloaded_term_id),
-              testing::UnorderedElementsAre(foo_url_id));
+  EXPECT_THAT(
+      storage_->GetUrlIdsForAugmentedTermId(downloaded_augmented_term_id),
+      testing::UnorderedElementsAre(foo_url_id));
 
   // Associate downloaded with bar.
-  EXPECT_EQ(1, storage_->AddToPostingList(downloaded_, bar_url_));
-  EXPECT_THAT(storage_->GetUrlIdsForTerm(pinned_term_id),
+  EXPECT_EQ(
+      1, storage_->AddToPostingList(downloaded_augmented_term_id, bar_url_id));
+  EXPECT_THAT(storage_->GetUrlIdsForAugmentedTermId(pinned_term_id),
               testing::UnorderedElementsAre(foo_url_id));
-  EXPECT_THAT(storage_->GetUrlIdsForTerm(downloaded_term_id),
-              testing::UnorderedElementsAre(foo_url_id, bar_url_id));
+  EXPECT_THAT(
+      storage_->GetUrlIdsForAugmentedTermId(downloaded_augmented_term_id),
+      testing::UnorderedElementsAre(foo_url_id, bar_url_id));
 }
 
 }  // namespace

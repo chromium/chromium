@@ -29,7 +29,7 @@ static constexpr char kCreateAugmentedTermTableQuery[] =
 static constexpr char kInsertAugmentedTermQuery[] =
     // clang-format off
     "INSERT OR REPLACE INTO " AUGMENTED_TERM_TABLE "(" FIELD_NAME ", "
-    TERM_ID ") VALUES (?, ?) RETURNING " AUGMENTED_TERM_ID "";
+    TERM_ID ") VALUES (?, ?) RETURNING " AUGMENTED_TERM_ID;
 // clang-format on
 
 // The statement used to delete an augmented term ID from the database by

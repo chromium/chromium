@@ -58,17 +58,27 @@ class RamStorage : public IndexStorage {
   int64_t DeleteUrl(const GURL& url) override;
 
   // FileInfo management.
-  int64_t PutFileInfo(int64_t url_id, const FileInfo& file_info) override;
+  int64_t PutFileInfo(const FileInfo& file_info) override;
   int64_t GetFileInfo(int64_t url_id, FileInfo* info) const override;
   int64_t DeleteFileInfo(int64_t url_id) override;
 
   // Miscellaneous.
   void AddAugmentedTermIdsForUrl(const std::set<int64_t>& augmented_term_ids,
                                  int64_t url_id) override;
-  void AddToTermList(int64_t url_id, int64_t term_id) override;
-  void DeleteFromTermList(int64_t url_id, int64_t term_id) override;
+  void DeleteAugmentedTermIdsForUrl(const std::set<int64_t>& augmented_term_ids,
+                                    int64_t url_id) override;
 
  private:
+  // Adds to the inverted posting lists the specified `term_id`. This may be
+  // a no-op if the given term has previously been associated with the file
+  // info ID.
+  void AddToPlainIndex(int64_t url_id, int64_t term_id);
+
+  // Removes the given `term_id` from the inverted posting lists of the
+  // specified `url_id`. This may be a no-op if the term_id is not present
+  // on the term list for the given `url_id`.
+  void DeleteFromPlainIndex(int64_t url_id, int64_t term_id);
+
   // Maps from stringified terms to a unique ID.
   std::map<std::string, int64_t> term_map_;
   int64_t term_id_ = 0;
@@ -93,7 +103,9 @@ class RamStorage : public IndexStorage {
   std::map<int64_t, std::set<int64_t>> posting_lists_;
 
   // A map from URL ID to augmented term IDs that are stored for a given file.
-  std::map<int64_t, std::set<int64_t>> inverted_posting_lists_;
+  // This works like a plain index (mapping from URL ID to all terms known
+  // for that URL ID).
+  std::map<int64_t, std::set<int64_t>> plain_index_;
 
   // A pre-allocated empty ID set, returned when we have no ID set available.
   const std::set<int64_t> empty_id_set_;

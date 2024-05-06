@@ -113,33 +113,44 @@ void SqlStorage::OnErrorCallback(int error, sql::Statement* stmt) {
   }
 }
 
-std::set<int64_t> SqlStorage::GetUrlIdsForTerm(
+void SqlStorage::AddAugmentedTermIdsForUrl(
+    const std::set<int64_t>& augmented_term_ids,
+    int64_t url_id) {
+  for (const int64_t term_id : augmented_term_ids) {
+    AddToPostingList(term_id, url_id);
+  }
+}
+
+void SqlStorage::DeleteAugmentedTermIdsForUrl(
+    const std::set<int64_t>& augmented_term_ids,
+    int64_t url_id) {
+  for (const int64_t term_id : augmented_term_ids) {
+    DeleteFromPostingList(term_id, url_id);
+  }
+}
+
+const std::set<int64_t> SqlStorage::GetUrlIdsForAugmentedTermId(
     int64_t augmented_term_id) const {
   return posting_list_table_.GetUrlIdsForTerm(augmented_term_id);
 }
 
-int32_t SqlStorage::AddToPostingList(const Term& term, const GURL& url) {
-  DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
-  const int64_t augmented_term_id = GetOrCreateAugmentedTermId(term);
-  DCHECK(augmented_term_id != -1);
-  const int64_t url_id = GetOrCreateUrlId(url);
-  DCHECK(url_id != -1);
-  return posting_list_table_.AddToPostingList(augmented_term_id, url_id);
+const std::set<int64_t> SqlStorage::GetAugmentedTermIdsForUrl(
+    int64_t url_id) const {
+  return posting_list_table_.GetAugmentedTermIdsForUrl(url_id);
 }
 
-int32_t SqlStorage::DeleteFromPostingList(const Term& term, const GURL& url) {
+int32_t SqlStorage::AddToPostingList(int64_t term_id, int64_t url_id) {
   DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
-  const int64_t url_id = GetUrlId(url);
-  if (url_id == -1) {
-    // Unknownn file that association may not exists. Exit immediately.
-    return 0;
-  }
-  const int64_t augmented_term_id = GetAugmentedTermId(term);
-  if (augmented_term_id == -1) {
-    // Unknown term; no association. Exit immediately.
-    return 0;
-  }
-  return posting_list_table_.DeleteFromPostingList(augmented_term_id, url_id);
+  DCHECK(term_id != -1);
+  DCHECK(url_id != -1);
+  return posting_list_table_.AddToPostingList(term_id, url_id);
+}
+
+int32_t SqlStorage::DeleteFromPostingList(int64_t term_id, int64_t url_id) {
+  DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
+  DCHECK(term_id != -1);
+  DCHECK(url_id != -1);
+  return posting_list_table_.DeleteFromPostingList(term_id, url_id);
 }
 
 int64_t SqlStorage::GetTermId(const std::string& term_bytes) const {
@@ -157,23 +168,17 @@ int64_t SqlStorage::DeleteTerm(const std::string& term_bytes) {
   return term_table_.DeleteTerm(term_bytes);
 }
 
-int64_t SqlStorage::GetAugmentedTermId(const Term& term) const {
+int64_t SqlStorage::GetAugmentedTermId(const std::string& field_name,
+                                       int64_t term_id) const {
   DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
-  int64_t term_id = GetTermId(term.text_bytes());
-  if (term_id == -1) {
-    return -1;
-  }
-  return augmented_term_table_.GetAugmentedTermId(term.field(), term_id);
+  DCHECK(term_id != -1);
+  return augmented_term_table_.GetAugmentedTermId(field_name, term_id);
 }
 
-int64_t SqlStorage::GetOrCreateAugmentedTermId(const Term& term) {
+int64_t SqlStorage::GetOrCreateAugmentedTermId(const std::string& field_name,
+                                               int64_t term_id) {
   DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
-  int64_t term_id = GetOrCreateTermId(term.text_bytes());
-  if (term_id == -1) {
-    return -1;
-  }
-  return augmented_term_table_.GetOrCreateAugmentedTermId(term.field(),
-                                                          term_id);
+  return augmented_term_table_.GetOrCreateAugmentedTermId(field_name, term_id);
 }
 
 int64_t SqlStorage::DeleteAugmentedTerm(int64_t augmented_term_id) {
@@ -183,11 +188,17 @@ int64_t SqlStorage::DeleteAugmentedTerm(int64_t augmented_term_id) {
 
 int64_t SqlStorage::GetOrCreateUrlId(const GURL& url) {
   DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
+  if (!url.is_valid()) {
+    return -1;
+  }
   return url_table_.GetOrCreateUrlId(url);
 }
 
 int64_t SqlStorage::GetUrlId(const GURL& url) {
   DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
+  if (!url.is_valid()) {
+    return -1;
+  }
   return url_table_.GetUrlId(url);
 }
 
@@ -198,17 +209,24 @@ int64_t SqlStorage::DeleteUrl(const GURL& url) {
 
 int64_t SqlStorage::PutFileInfo(const FileInfo& file_info) {
   DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
-  int64_t url_id = url_table_.GetUrlId(file_info.file_url);
+  int64_t url_id = url_table_.GetOrCreateUrlId(file_info.file_url);
   if (url_id == -1) {
     return -1;
   }
   return file_info_table_.PutFileInfo(url_id, file_info);
 }
 
-int64_t SqlStorage::GetFileInfo(const GURL& url, FileInfo* file_info) {
+int64_t SqlStorage::GetFileInfo(int64_t url_id, FileInfo* file_info) const {
   DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
-  int64_t url_id = url_table_.GetUrlId(url);
   if (url_id == -1) {
+    return -1;
+  }
+  std::string url_spec;
+  if (url_table_.GetUrlSpec(url_id, &url_spec) == -1) {
+    return -1;
+  }
+  GURL url(url_spec);
+  if (!url.is_valid()) {
     return -1;
   }
   int64_t gotten_url_id = file_info_table_.GetFileInfo(url_id, file_info);
@@ -220,9 +238,8 @@ int64_t SqlStorage::GetFileInfo(const GURL& url, FileInfo* file_info) {
   return url_id;
 }
 
-int64_t SqlStorage::DeleteFileInfo(const GURL& url) {
+int64_t SqlStorage::DeleteFileInfo(int64_t url_id) {
   DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
-  int64_t url_id = url_table_.GetUrlId(url);
   if (url_id == -1) {
     return -1;
   }

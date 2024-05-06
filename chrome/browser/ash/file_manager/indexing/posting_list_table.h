@@ -47,6 +47,10 @@ class PostingListTable {
   // with that term.
   std::set<int64_t> GetUrlIdsForTerm(int64_t augmented_term_id) const;
 
+  // For the given `url_id` returns all known augmented_term_ids associated
+  // with it.
+  const std::set<int64_t> GetAugmentedTermIdsForUrl(int64_t url_id) const;
+
  private:
   raw_ptr<sql::Database> db_;
 };

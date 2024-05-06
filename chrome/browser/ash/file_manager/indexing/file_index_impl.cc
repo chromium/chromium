@@ -41,9 +41,8 @@ OpResults FileIndexImpl::AugmentFile(const std::vector<Term>& terms,
     return OpResults::kSuccess;
   }
 
-  int64_t url_id = storage_->GetOrCreateUrlId(info.file_url);
+  int64_t url_id = storage_->PutFileInfo(info);
   DCHECK(url_id >= 0);
-  storage_->PutFileInfo(url_id, info);
 
   std::set<int64_t> term_id_set = ConvertToAugmentedTermIds(terms);
   storage_->AddAugmentedTermIdsForUrl(term_id_set, url_id);
@@ -129,9 +128,8 @@ OpResults FileIndexImpl::SetFileTerms(const std::vector<Term>& terms,
 
   // Arrange terms by field and remove duplicates and convert to internal IDs.
   std::set<int64_t> term_id_set = ConvertToAugmentedTermIds(terms);
-  int64_t url_id = storage_->GetOrCreateUrlId(info.file_url);
+  int64_t url_id = storage_->PutFileInfo(info);
   DCHECK(url_id >= 0);
-  storage_->PutFileInfo(url_id, info);
 
   // If the given url_id already had some terms associated with it, remove terms
   // not specified in terms vector. Say, if url_id had terms {t1, t3, t8}
@@ -139,15 +137,12 @@ OpResults FileIndexImpl::SetFileTerms(const std::vector<Term>& terms,
   // the difference between two collections and remove those.
   std::set<int64_t> url_term_ids = storage_->GetAugmentedTermIdsForUrl(url_id);
   if (!url_term_ids.empty()) {
-    std::vector<int64_t> to_remove_terms;
+    std::set<int64_t> to_remove_terms;
     std::set_difference(
         url_term_ids.begin(), url_term_ids.end(), term_id_set.begin(),
         term_id_set.end(),
         std::inserter(to_remove_terms, to_remove_terms.begin()));
-    for (const int64_t term_id : to_remove_terms) {
-      storage_->DeleteFromPostingList(term_id, url_id);
-      storage_->DeleteFromTermList(url_id, term_id);
-    }
+    storage_->DeleteAugmentedTermIdsForUrl(to_remove_terms, url_id);
   }
   storage_->AddAugmentedTermIdsForUrl(term_id_set, url_id);
   return OpResults::kSuccess;
