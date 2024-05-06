@@ -35,7 +35,8 @@ int futimes(int fd, const struct timeval tv_ptr[2]) {
   ts[0].tv_nsec = tv[0].tv_usec * 1000;
   ts[1].tv_sec = tv[1].tv_sec;
   ts[1].tv_nsec = tv[1].tv_usec * 1000;
-  return base::checked_cast<int>(syscall(__NR_utimensat, fd, NULL, ts, 0));
+  return base::checked_cast<int>(
+      syscall(__NR_utimensat, fd, NULL, ts.data(), 0));
 }
 #endif
 
