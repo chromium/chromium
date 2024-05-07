@@ -23,17 +23,39 @@ found in the LICENSE file.
     android:paddingEnd="@dimen/tab_resumption_module_padding_lateral"
     android:background="@drawable/home_surface_ui_background">
 
-    <TextView
-        android:id="@+id/tab_resumption_title_description"
+    <LinearLayout
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
         android:layout_marginBottom="@dimen/tab_resumption_module_title_margin_bottom"
-        android:gravity="start"
-        android:singleLine="true"
-        android:textAlignment="viewStart"
-        android:textAppearance="@style/TextAppearance.TextAccentMediumThick.Secondary"
+        android:baselineAligned="false"
+        android:orientation="horizontal"
         android:paddingLeft="@dimen/tab_resumption_module_tile_bleed"
-        android:paddingRight="@dimen/tab_resumption_module_tile_bleed" />
+        android:paddingRight="@dimen/tab_resumption_module_tile_bleed">
+
+        <TextView
+            android:id="@+id/tab_resumption_title_description"
+            android:layout_width="wrap_content"
+            android:layout_weight="2"
+            android:layout_height="wrap_content"
+            android:layout_gravity="start"
+            android:singleLine="true"
+            android:textAlignment="viewStart"
+            android:textAppearance="@style/TextAppearance.TextAccentMediumThick.Secondary"
+            />
+
+        <TextView
+            android:id="@+id/tab_resumption_see_more_link"
+            android:visibility="gone"
+            android:layout_width="wrap_content"
+            android:layout_weight="1"
+            android:layout_height="wrap_content"
+            android:layout_gravity="end"
+            android:singleLine="true"
+            android:text="@string/tab_resumption_module_see_more"
+            android:textAlignment="viewEnd"
+            android:textAppearance="@style/TextAppearance.TextAccentMediumThick.Link"
+            />
+    </LinearLayout>
 
     <org.chromium.chrome.browser.tab_resumption.TabResumptionTileContainerView
         android:id="@+id/tab_resumption_module_tiles_container"

@@ -78,6 +78,7 @@ public class TabResumptionModuleMediatorUnitTest extends TestSupport {
                         /* urlImageProvider= */ mUrlImageProvider,
                         /* thumbnailProvider= */ mThumbnailProvider,
                         /* statusChangedCallback= */ () -> {},
+                        /* seeMoreLinkClickCallback= */ () -> {},
                         /* suggestionClickCallbacks= */ mClickCallbacks) {
                     @Override
                     long getCurrentTimeMs() {

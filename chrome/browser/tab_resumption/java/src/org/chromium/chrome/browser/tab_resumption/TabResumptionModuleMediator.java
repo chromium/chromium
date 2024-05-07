@@ -299,6 +299,7 @@ public class TabResumptionModuleMediator {
             @NonNull UrlImageProvider urlImageProvider,
             @NonNull ThumbnailProvider thumbnailProvider,
             @NonNull Runnable statusChangedCallback,
+            @NonNull Runnable seeMoreLinkClickCallback,
             @NonNull SuggestionClickCallbacks suggestionClickCallbacks) {
         mContext = context;
         mModuleDelegate = moduleDelegate;
@@ -311,6 +312,9 @@ public class TabResumptionModuleMediator {
 
         mModel.set(TabResumptionModuleProperties.URL_IMAGE_PROVIDER, mUrlImageProvider);
         mModel.set(TabResumptionModuleProperties.THUMBNAIL_PROVIDER, mThumbnailProvider);
+        mModel.set(
+                TabResumptionModuleProperties.SEE_MORE_LINK_CLICK_CALLBACK,
+                seeMoreLinkClickCallback);
         mModel.set(TabResumptionModuleProperties.CLICK_CALLBACK, mSuggestionClickCallbacks);
         mModel.set(
                 TabResumptionModuleProperties.USE_SALIENT_IMAGE,

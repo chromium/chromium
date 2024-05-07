@@ -49,6 +49,13 @@ public class TabResumptionModuleUtils {
                     TAB_RESUMPTION_USE_SALIENT_IMAGE_PARAM,
                     false);
 
+    private static final String TAB_RESUMPTION_SHOW_SEE_MORE_PARAM = "show_see_more";
+    public static final BooleanCachedFieldTrialParameter TAB_RESUMPTION_SHOW_SEE_MORE =
+            ChromeFeatureList.newBooleanCachedFieldTrialParameter(
+                    ChromeFeatureList.TAB_RESUMPTION_MODULE_ANDROID,
+                    TAB_RESUMPTION_SHOW_SEE_MORE_PARAM,
+                    false);
+
     /**
      * Computes the string representation of how recent an event was, given the time delta.
      *

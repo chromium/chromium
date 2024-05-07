@@ -18,6 +18,8 @@ interface TabResumptionModuleProperties {
             new WritableObjectPropertyKey();
     WritableObjectPropertyKey<ThumbnailProvider> THUMBNAIL_PROVIDER =
             new WritableObjectPropertyKey();
+    WritableObjectPropertyKey<Runnable> SEE_MORE_LINK_CLICK_CALLBACK =
+            new WritableObjectPropertyKey();
     WritableObjectPropertyKey<SuggestionClickCallbacks> CLICK_CALLBACK =
             new WritableObjectPropertyKey();
     WritableObjectPropertyKey<SuggestionBundle> SUGGESTION_BUNDLE = new WritableObjectPropertyKey();
@@ -29,6 +31,7 @@ interface TabResumptionModuleProperties {
                 USE_SALIENT_IMAGE,
                 URL_IMAGE_PROVIDER,
                 THUMBNAIL_PROVIDER,
+                SEE_MORE_LINK_CLICK_CALLBACK,
                 CLICK_CALLBACK,
                 SUGGESTION_BUNDLE,
                 TITLE,

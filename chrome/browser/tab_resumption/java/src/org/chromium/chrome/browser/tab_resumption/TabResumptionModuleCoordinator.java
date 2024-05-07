@@ -13,6 +13,7 @@ import org.chromium.chrome.browser.magic_stack.ModuleProvider;
 import org.chromium.chrome.browser.tab_resumption.TabResumptionDataProvider.TabResumptionDataProviderFactory;
 import org.chromium.chrome.browser.tab_resumption.TabResumptionModuleUtils.SuggestionClickCallbacks;
 import org.chromium.chrome.browser.tab_ui.ThumbnailProvider;
+import org.chromium.components.embedder_support.util.UrlConstants;
 import org.chromium.ui.modelutil.PropertyModel;
 import org.chromium.url.GURL;
 
@@ -61,6 +62,7 @@ public class TabResumptionModuleCoordinator implements ModuleProvider {
                         /* urlImageProvider= */ mUrlImageProvider,
                         /* thumbnailProvider= */ thumbnailProvider,
                         /* statusChangedCallback= */ this::showModule,
+                        /* seeMoreLinkClickCallback= */ this::onSeeMoreClicked,
                         /* suggestionClickCallbacks= */ wrappedClickCallbacks);
         mMediator.startSession(mDataProviderFactory.make());
     }
@@ -102,4 +104,8 @@ public class TabResumptionModuleCoordinator implements ModuleProvider {
 
     @Override
     public void onContextMenuCreated() {}
+
+    private void onSeeMoreClicked() {
+        mModuleDelegate.onUrlClicked(new GURL(UrlConstants.RECENT_TABS_URL), getModuleType());
+    }
 }

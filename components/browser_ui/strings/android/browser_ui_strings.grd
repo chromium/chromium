@@ -1089,6 +1089,9 @@
       </message>
 
       <!-- Tab resumption module strings -->
+      <message name="IDS_TAB_RESUMPTION_MODULE_SEE_MORE" desc="Text of a link shown beside the title of the module. Clicking the link launches the &quot;Recent tabs&quot; page.">
+        See more
+      </message>
       <message name="IDS_TAB_RESUMPTION_MODULE_SINGLE_PRE_INFO" desc="Pre-info text template for the singleton item of the tab resumption module, showing foreign session name.">
         From <ph name="FROM_DEVICE">%1$s<ex>My Tablet</ex></ph>
       </message>
