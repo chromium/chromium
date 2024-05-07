@@ -1,0 +1,2 @@
+# crbug.com/1415561
+-org.chromium.components.external_intents.ExternalNavigationHandlerTest.testFileAccessImage
