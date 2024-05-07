@@ -1,0 +1,3 @@
+# TODO(crbug.com/336474469): remove this after enabling the check in parent dir.
+InheritParentConfig: true
+Checks: misc-include-cleaner

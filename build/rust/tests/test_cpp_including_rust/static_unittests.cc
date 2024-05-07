@@ -6,14 +6,16 @@
 
 #include <memory>
 
-#include "base/allocator/buildflags.h"
-#include "base/allocator/partition_allocator/src/partition_alloc/address_pool_manager_bitmap.h"
-#include "base/allocator/partition_allocator/src/partition_alloc/partition_address_space.h"
-#include "build/build_config.h"
+#include "base/allocator/partition_allocator/src/partition_alloc/partition_alloc_buildflags.h"
 #include "build/buildflag.h"
+#include "build/rust/tests/test_rust_static_library/src/lib.rs.h"
 #include "testing/gtest/include/gtest/gtest.h"
 
-#include "build/rust/tests/test_rust_static_library/src/lib.rs.h"
+#if BUILDFLAG(HAS_64_BIT_POINTERS)
+#include "base/allocator/partition_allocator/src/partition_alloc/partition_address_space.h"
+#else
+#include "base/allocator/partition_allocator/src/partition_alloc/address_pool_manager_bitmap.h"
+#endif
 
 TEST(RustStaticTest, CppCallingIntoRust_BasicFFI) {
   EXPECT_EQ(7, add_two_ints_via_rust(3, 4));
