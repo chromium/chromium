@@ -5,6 +5,7 @@
 import 'chrome://resources/cr_elements/cr_collapse/cr_collapse.js';
 
 import type {CrCollapseElement} from 'chrome://resources/cr_elements/cr_collapse/cr_collapse.js';
+import {getTrustedHTML} from 'chrome://resources/js/static_types.js';
 import {html, PolymerElement} from 'chrome://resources/polymer/v3_0/polymer/polymer_bundled.min.js';
 import {assertEquals, assertFalse, assertTrue} from 'chrome://webui-test/chai_assert.js';
 import {eventToPromise, isVisible} from 'chrome://webui-test/test_util.js';
@@ -13,12 +14,13 @@ suite('cr-collapse', function() {
   let collapse: CrCollapseElement;
   let child: HTMLElement;
 
-  setup(async () => {
-    document.body.innerHTML = window.trustedTypes!.emptyHTML;
-    collapse = document.createElement('cr-collapse');
-    document.body.appendChild(collapse);
-    child = collapse.appendChild(document.createElement('div'));
-    child.textContent = 'Hello World';
+  setup(function() {
+    document.body.innerHTML = getTrustedHTML`
+       <cr-collapse>
+         <div style="height: 20px">Hello World</div>
+       </cr-collapse>`;
+    collapse = document.body.querySelector('cr-collapse')!;
+    child = document.body.querySelector('div')!;
   });
 
   function assertCollapsedState() {
@@ -32,6 +34,24 @@ suite('cr-collapse', function() {
     assertTrue(isVisible(child));
     assertEquals('none', window.getComputedStyle(collapse).maxHeight);
   }
+
+  test('does not animate on first render', async () => {
+    const transitions: string[] = [];
+    collapse.addEventListener('transitionend', e => {
+      assertEquals('max-height', e.propertyName);
+      transitions.push(
+          (collapse.computedStyleMap().get('max-height') as CSSKeywordValue)
+              .value);
+    });
+
+    // 310ms = default animation duration + 10ms.
+    await new Promise(resolve => setTimeout(resolve, 310));
+    assertEquals(0, transitions.length);
+    collapse.opened = true;
+    await eventToPromise('transitionend', collapse);
+    assertEquals(1, transitions.length);
+    assertEquals('none', transitions[0]);
+  });
 
   test('open/close with property', async() => {
     assertFalse(collapse.opened);

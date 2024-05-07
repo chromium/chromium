@@ -68,7 +68,7 @@ export class CrCollapseElement extends CrLitElement {
     this.setAttribute('aria-hidden', this.opened ? 'false' : 'true');
     this.classList.toggle('collapse-closed', false);
     this.classList.toggle('collapse-opened', false);
-    this.updateHeight_(this.opened);
+    this.updateHeight_(this.opened, changedProperties.get('opened'));
 
     // Focus the current collapse.
     if (this.opened) {
@@ -76,12 +76,12 @@ export class CrCollapseElement extends CrLitElement {
     }
   }
 
-  private updateHeight_(opening: boolean) {
+  private updateHeight_(opening: boolean, lastOpened?: boolean) {
     const finalMaxHeight = opening ? '' : '0px';
     const animationStartSize = `${this.getBoundingClientRect().height}px`;
     const animationEndSize = opening ? `${this.scrollHeight}px` : '0px';
 
-    const willAnimate = !this.noAnimation &&
+    const willAnimate = lastOpened !== undefined && !this.noAnimation &&
         this.style.maxHeight !== finalMaxHeight &&
         animationStartSize !== animationEndSize;
 
