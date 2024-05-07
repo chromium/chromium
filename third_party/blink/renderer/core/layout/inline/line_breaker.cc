@@ -3272,6 +3272,9 @@ LineInfo LineBreaker::CreateSubLineInfo(
   sub_line_breaker.disallow_auto_wrap_ = disallow_auto_wrap;
   sub_line_breaker.SetInputRange(start, end_item_index,
                                  initial_whitespace_state);
+  // OverrideAvailableWidth() prevents HandleFloat() from updating
+  // available_width_.
+  sub_line_breaker.OverrideAvailableWidth(limit);
   sub_line_breaker.NextLine(&sub_line_info);
   return sub_line_info;
 }

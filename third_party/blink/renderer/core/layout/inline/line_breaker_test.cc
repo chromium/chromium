@@ -1150,6 +1150,31 @@ TEST_F(LineBreakerTest, SetInputRange) {
   EXPECT_EQ(InlineItem::kCloseTag, line_info.Results()[2].item->Type());
 }
 
+// crbug.com/338350369 Floats should not update available_width_ for
+// sub-LineBreakers.
+TEST_F(LineBreakerTest, CreateSubLineInfoAvailableWidth) {
+  LoadAhem();
+  InlineNode node = CreateInlineNode(R"HTML(
+      <div id=container style="font: 40px Ahem"><ruby><b>
+      foo bar foo bar foo bar foo bar foo bar
+      foo bar foo bar foo bar foo bar foo bar
+      <button style="float:left;">f</button></b>
+      <rt>annotation</ruby></div>)HTML");
+  node.PrepareLayoutIfNeeded();
+  ExclusionSpace exclusion_space;
+  LeadingFloats leading_floats;
+  LayoutUnit width(30);
+  ConstraintSpace space = ConstraintSpaceForAvailableSize(width);
+  LineBreaker line_breaker(node, LineBreakerMode::kContent, space,
+                           LineLayoutOpportunity(width), leading_floats,
+                           nullptr, nullptr, &exclusion_space);
+  LineInfo line_info;
+  line_breaker.NextLine(&line_info);
+  // The line should contain the whole text.
+  EXPECT_EQ(InlineItem::kOpenRubyColumn, line_info.Results()[1].item->Type());
+  EXPECT_GE(line_info.Results()[1].ruby_column->base_line.EndTextOffset(), 79u);
+}
+
 struct CanBreakInsideTestData {
   bool can_break_insde;
   const char* html;
