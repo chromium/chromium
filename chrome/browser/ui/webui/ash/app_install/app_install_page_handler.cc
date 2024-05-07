@@ -53,7 +53,7 @@ void AppInstallPageHandler::SetAutoAcceptForTesting(bool auto_accept) {
 
 AppInstallPageHandler::AppInstallPageHandler(
     Profile* profile,
-    AppInstallDialogArgs dialog_args,
+    std::optional<AppInstallDialogArgs> dialog_args,
     CloseDialogCallback close_dialog_callback,
     mojo::PendingReceiver<mojom::PageHandler> pending_page_handler)
     : profile_{profile},
@@ -74,26 +74,20 @@ AppInstallPageHandler::AppInstallPageHandler(
 AppInstallPageHandler::~AppInstallPageHandler() = default;
 
 void AppInstallPageHandler::GetDialogArgs(GetDialogArgsCallback callback) {
-  std::move(callback).Run(absl::visit(
-      base::Overloaded(
-          [&](const AppInfoArgs& app_info_args) {
-            return mojom::DialogArgs::NewAppInfoArgs(mojom::AppInfoArgs::New(
-                app_info_args.data.Clone(),
-                app_info_actions_receiver_.BindNewPipeAndPassRemote()));
-          },
-          [&](const NoAppErrorArgs& no_app_error_args) {
-            return mojom::DialogArgs::NewNoAppErrorArgs(
-                mojom::NoAppErrorArgs::New());
-          },
-          [&](const ConnectionErrorArgs& connection_error_args) {
-            return mojom::DialogArgs::NewConnectionErrorActions(
-                connection_error_actions_receiver_.BindNewPipeAndPassRemote());
-          }),
-      dialog_args_));
+  if (!dialog_args_.has_value()) {
+    pending_dialog_args_callbacks_.push_back(std::move(callback));
+    return;
+  }
+
+  std::move(callback).Run(ConvertDialogArgsToMojom(dialog_args_.value()));
 }
 
 void AppInstallPageHandler::CloseDialog() {
-  if (auto* app_info_args = absl::get_if<AppInfoArgs>(&dialog_args_)) {
+  if (!dialog_args_.has_value()) {
+    return;
+  }
+
+  if (auto* app_info_args = absl::get_if<AppInfoArgs>(&dialog_args_.value())) {
     if (app_info_args->dialog_accepted_callback) {
       base::RecordAction(
           base::UserMetricsAction("ChromeOS.AppInstallDialog.Cancelled"));
@@ -117,7 +111,11 @@ void AppInstallPageHandler::CloseDialog() {
 }
 
 void AppInstallPageHandler::InstallApp(InstallAppCallback callback) {
-  AppInfoArgs& app_info_args = absl::get<AppInfoArgs>(dialog_args_);
+  if (!dialog_args_.has_value()) {
+    return;
+  }
+
+  AppInfoArgs& app_info_args = absl::get<AppInfoArgs>(dialog_args_.value());
 
   base::RecordAction(
       base::UserMetricsAction("ChromeOS.AppInstallDialog.Installed"));
@@ -133,12 +131,25 @@ void AppInstallPageHandler::InstallApp(InstallAppCallback callback) {
   std::move(app_info_args.dialog_accepted_callback).Run(true);
 }
 
+void AppInstallPageHandler::SetDialogArgs(AppInstallDialogArgs dialog_args) {
+  CHECK(!dialog_args_.has_value());
+  dialog_args_ = std::move(dialog_args);
+  for (GetDialogArgsCallback& callback : pending_dialog_args_callbacks_) {
+    std::move(callback).Run(ConvertDialogArgsToMojom(dialog_args_.value()));
+  }
+  pending_dialog_args_callbacks_.clear();
+}
+
 void AppInstallPageHandler::OnInstallComplete(
     bool success,
     std::optional<base::OnceCallback<void(bool accepted)>> retry_callback) {
+  if (!dialog_args_.has_value()) {
+    return;
+  }
+
   if (!success) {
     CHECK(retry_callback.has_value());
-    absl::get<AppInfoArgs>(dialog_args_).dialog_accepted_callback =
+    absl::get<AppInfoArgs>(dialog_args_.value()).dialog_accepted_callback =
         std::move(retry_callback.value());
   }
   if (install_app_callback_) {
@@ -147,8 +158,12 @@ void AppInstallPageHandler::OnInstallComplete(
 }
 
 void AppInstallPageHandler::LaunchApp() {
+  if (!dialog_args_.has_value()) {
+    return;
+  }
+
   std::optional<std::string> app_id = apps_util::GetAppWithPackageId(
-      &*profile_, absl::get<AppInfoArgs>(dialog_args_).package_id);
+      &*profile_, absl::get<AppInfoArgs>(dialog_args_.value()).package_id);
   if (!app_id.has_value()) {
     mojo::ReportBadMessage("Unable to launch app without an app_id.");
     return;
@@ -160,11 +175,35 @@ void AppInstallPageHandler::LaunchApp() {
 }
 
 void AppInstallPageHandler::TryAgain() {
+  if (!dialog_args_.has_value()) {
+    return;
+  }
+
   base::OnceClosure& callback =
-      absl::get<ConnectionErrorArgs>(dialog_args_).try_again_callback;
+      absl::get<ConnectionErrorArgs>(dialog_args_.value()).try_again_callback;
   if (callback) {
     std::move(callback).Run();
   }
+}
+
+mojom::DialogArgsPtr AppInstallPageHandler::ConvertDialogArgsToMojom(
+    const AppInstallDialogArgs& dialog_args) {
+  return absl::visit(
+      base::Overloaded(
+          [&](const AppInfoArgs& app_info_args) {
+            return mojom::DialogArgs::NewAppInfoArgs(mojom::AppInfoArgs::New(
+                app_info_args.data.Clone(),
+                app_info_actions_receiver_.BindNewPipeAndPassRemote()));
+          },
+          [&](const NoAppErrorArgs& no_app_error_args) {
+            return mojom::DialogArgs::NewNoAppErrorArgs(
+                mojom::NoAppErrorArgs::New());
+          },
+          [&](const ConnectionErrorArgs& connection_error_args) {
+            return mojom::DialogArgs::NewConnectionErrorActions(
+                connection_error_actions_receiver_.BindNewPipeAndPassRemote());
+          }),
+      dialog_args);
 }
 
 }  // namespace ash::app_install

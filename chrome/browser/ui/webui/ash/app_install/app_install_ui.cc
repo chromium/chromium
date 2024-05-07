@@ -74,7 +74,11 @@ AppInstallDialogUI::AppInstallDialogUI(content::WebUI* web_ui)
 AppInstallDialogUI::~AppInstallDialogUI() = default;
 
 void AppInstallDialogUI::SetDialogArgs(AppInstallDialogArgs dialog_args) {
-  dialog_args_ = std::move(dialog_args);
+  if (page_handler_) {
+    page_handler_->SetDialogArgs(std::move(dialog_args));
+  } else {
+    dialog_args_ = std::move(dialog_args);
+  }
 }
 
 void AppInstallDialogUI::SetInstallComplete(
@@ -103,7 +107,7 @@ void AppInstallDialogUI::BindInterface(
 void AppInstallDialogUI::CreatePageHandler(
     mojo::PendingReceiver<mojom::PageHandler> receiver) {
   page_handler_ = std::make_unique<AppInstallPageHandler>(
-      Profile::FromWebUI(web_ui()), std::move(dialog_args_).value(),
+      Profile::FromWebUI(web_ui()), std::move(dialog_args_),
       base::BindOnce(&AppInstallDialogUI::CloseDialog, base::Unretained(this)),
       std::move(receiver));
 }

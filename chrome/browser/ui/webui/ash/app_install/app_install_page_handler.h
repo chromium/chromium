@@ -32,7 +32,7 @@ class AppInstallPageHandler : public mojom::PageHandler,
   using CloseDialogCallback = base::OnceCallback<void()>;
   explicit AppInstallPageHandler(
       Profile* profile,
-      AppInstallDialogArgs dialog_args,
+      std::optional<AppInstallDialogArgs> dialog_args,
       CloseDialogCallback close_dialog_callback,
       mojo::PendingReceiver<mojom::PageHandler> pending_page_handler);
 
@@ -41,6 +41,7 @@ class AppInstallPageHandler : public mojom::PageHandler,
 
   ~AppInstallPageHandler() override;
 
+  void SetDialogArgs(AppInstallDialogArgs dialog_args);
   void OnInstallComplete(
       bool success,
       std::optional<base::OnceCallback<void(bool accepted)>> retry_callback);
@@ -57,8 +58,12 @@ class AppInstallPageHandler : public mojom::PageHandler,
   void TryAgain() override;
 
  private:
+  mojom::DialogArgsPtr ConvertDialogArgsToMojom(
+      const AppInstallDialogArgs& dialog_args);
+
   raw_ptr<Profile> profile_;
-  AppInstallDialogArgs dialog_args_;
+  std::optional<AppInstallDialogArgs> dialog_args_;
+  std::vector<GetDialogArgsCallback> pending_dialog_args_callbacks_;
   InstallAppCallback install_app_callback_;
   CloseDialogCallback close_dialog_callback_;
   mojo::Receiver<mojom::PageHandler> page_handler_receiver_;
