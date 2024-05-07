@@ -131,8 +131,7 @@ AndroidNonZPSSection::AndroidNonZPSSection(
           15,
           {{1,  // Default match, not part of the Grouping.
             {{omnibox::GROUP_SEARCH, {1}},
-             {omnibox::GROUP_OTHER_NAVS,
-              {show_only_search_suggestions ? 0u : 1u}},
+             {omnibox::GROUP_OTHER_NAVS, {1u}},
              {omnibox::GROUP_MOBILE_RICH_ANSWER,
               {OmniboxFieldTrial::kAnswerActionsShowRichCard.Get() &&
                        !OmniboxFieldTrial::kAnswerActionsShowAboveKeyboard.Get()

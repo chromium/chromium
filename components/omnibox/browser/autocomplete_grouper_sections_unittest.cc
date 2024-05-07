@@ -1561,7 +1561,19 @@ TEST(AutocompleteGrouperSectionsTest,
   {
     SCOPED_TRACE("Grouping top section only w/ URL.");
     test(kSearchesAndUrls, {make_url(100)}, {100});
-    test(kSearchesOnly, {make_url(100)}, {});
+    // Top URL is allowed.
+    test(kSearchesOnly, {make_url(100)}, {100});
+  }
+  {
+    SCOPED_TRACE("Grouping top section only w/ multiple URLs.");
+    ACMatches matches{
+        make_url(20),
+        make_url(19),
+        make_url(18),
+    };
+    test(kSearchesAndUrls, matches, {20, 19, 18});
+    // Only top URL is allowed.
+    test(kSearchesOnly, matches, {20});
   }
   {
     SCOPED_TRACE("Grouping top two sections.");
@@ -1577,8 +1589,9 @@ TEST(AutocompleteGrouperSectionsTest,
          {20, 10, 9, 19, 18});
 
     test(kSearchesOnly, matches,
+         // 20     -- default match (url).
          // 10, 9  -- top searches.
-         {10, 9});
+         {20, 10, 9});
   }
   {
     SCOPED_TRACE("Grouping all sections.");
@@ -1611,8 +1624,8 @@ TEST(AutocompleteGrouperSectionsTest,
 
     test(kSearchesOnly, matches,
          {
-             10,             // Default match is Search
-             9, 8, 7, 6, 5,  // top adaptive group.
+             20,                 // Default match is URL
+             10, 9, 8, 7, 6, 5,  // top adaptive group.
          });
   }
 }

@@ -82,6 +82,10 @@ class ZpsSectionWithMVTiles : public ZpsSection {
 // Android prefixed section for Adaptive Suggestions grouping.
 class AndroidNonZPSSection : public Section {
  public:
+  // Construct a new instance of the grouping class used in non-zero-prefix
+  // context.
+  // When `show_only_search_suggestions` is set to `true`, URLs will not be
+  // offered at any position other than position 0 (the Default Match).
   explicit AndroidNonZPSSection(bool show_only_search_suggestions,
                                 omnibox::GroupConfigMap& group_configs);
 
