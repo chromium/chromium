@@ -1373,6 +1373,17 @@ chromium-metrics-reviews@google.com.
   </summary>
 </histogram>
 
+<histogram name="Android.DynamicTopChrome.WindowResize.DesktopWindowModeState"
+    enum="DesktopWindowModeState" expires_after="2025-05-02">
+  <owner>aishwaryarj@google.com</owner>
+  <owner>wenyufu@chromium.org</owner>
+  <owner>clank-large-form-factors@google.com</owner>
+  <summary>
+    Records the desktop windowing mode state when the Chrome window is resized
+    on tablet or foldable devices.
+  </summary>
+</histogram>
+
 <histogram name="Android.EdgeToEdge.Eligible" enum="Boolean"
     expires_after="M130">
   <owner>lazzzis@google.com</owner>
@@ -2445,6 +2456,17 @@ chromium-metrics-reviews@google.com.
     {InstanceAllocationType}. Applicable to Android V+ only.
   </summary>
   <token key="InstanceAllocationType" variants="InstanceAllocationType"/>
+</histogram>
+
+<histogram name="Android.MultiInstance.WindowManager.DesktopWindowModeState"
+    enum="DesktopWindowModeState" expires_after="2025-05-02">
+  <owner>aishwaryarj@google.com</owner>
+  <owner>wenyufu@chromium.org</owner>
+  <owner>clank-large-form-factors@google.com</owner>
+  <summary>
+    Records the desktop windowing mode state when the Chrome window manager is
+    opened from the app menu.
+  </summary>
 </histogram>
 
 <histogram name="Android.MultipleUserProfilesState"

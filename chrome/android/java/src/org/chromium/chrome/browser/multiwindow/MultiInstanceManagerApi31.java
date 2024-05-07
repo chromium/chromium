@@ -131,11 +131,24 @@ class MultiInstanceManagerApi31 extends MultiInstanceManager implements Activity
                     mModalDialogManagerSupplier.get(),
                     new LargeIconBridge(getProfile()),
                     (item) -> openInstance(item.instanceId, item.taskId),
-                    (item) -> closeInstance(item.instanceId, item.taskId),
+                    (item) -> {
+                        RecordUserAction.record("MobileMenuWindowManagerCloseInstance");
+                        closeInstance(item.instanceId, item.taskId);
+                    },
                     () -> openNewWindow("Android.WindowManager.NewWindow"),
                     info.size() < MultiWindowUtils.getMaxInstances(),
                     info);
-            RecordUserAction.record("MobileMenuWindowManager");
+
+            if (AppHeaderUtils.isAppInDesktopWindow(mDesktopWindowStateProviderSupplier.get())) {
+                RecordUserAction.record("MobileMenuWindowManager.InDesktopWindow");
+            } else {
+                RecordUserAction.record("MobileMenuWindowManager");
+            }
+
+            AppHeaderUtils.recordDesktopWindowModeStateEnumHistogram(
+                    mDesktopWindowStateProviderSupplier.get(),
+                    "Android.MultiInstance.WindowManager.DesktopWindowModeState");
+
             Tracker tracker = TrackerFactory.getTrackerForProfile(getProfile());
             assert tracker.isInitialized();
             tracker.notifyEvent(EventConstants.INSTANCE_SWITCHER_IPH_USED);

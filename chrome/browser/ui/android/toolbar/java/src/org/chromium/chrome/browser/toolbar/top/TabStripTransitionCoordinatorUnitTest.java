@@ -55,6 +55,7 @@ import org.chromium.chrome.browser.toolbar.ControlContainer;
 import org.chromium.chrome.browser.toolbar.ToolbarFeatures;
 import org.chromium.chrome.browser.toolbar.top.TabStripTransitionCoordinator.TabStripHeightObserver;
 import org.chromium.chrome.browser.ui.desktop_windowing.AppHeaderState;
+import org.chromium.chrome.browser.ui.desktop_windowing.AppHeaderUtils.DesktopWindowModeState;
 import org.chromium.chrome.browser.ui.desktop_windowing.DesktopWindowStateProvider;
 import org.chromium.ui.base.TestActivity;
 import org.chromium.ui.resources.Resource;
@@ -621,6 +622,50 @@ public class TabStripTransitionCoordinatorUnitTest {
                 "Narrower width does not trigger tab strip hiding, instead use the height only.",
                 newHeight,
                 mObserver.heightRequested);
+    }
+
+    @Test
+    public void recordHistogramWindowResize_LayoutChangeInDesktopWindow() {
+        // Simulate desktop windowing mode.
+        mAppHeaderState = new AppHeaderState(new Rect(), new Rect(), /* isInDesktopWindow= */ true);
+        var watcher =
+                HistogramWatcher.newSingleRecordWatcher(
+                        "Android.DynamicTopChrome.WindowResize.DesktopWindowModeState",
+                        DesktopWindowModeState.ACTIVE);
+        // Histogram should be emitted only when the strip size is changing across multiple layout
+        // changes.
+        simulateLayoutChange(NARROW_WINDOW_WIDTH);
+        simulateLayoutChange(NARROW_WINDOW_WIDTH);
+        watcher.assertExpected();
+    }
+
+    @Test
+    public void recordHistogramWindowResize_LayoutChangeNotInDesktopWindow_SupportedDevice() {
+        // Simulate non-desktop windowing mode on a supported device.
+        mAppHeaderState =
+                new AppHeaderState(new Rect(), new Rect(), /* isInDesktopWindow= */ false);
+        var watcher =
+                HistogramWatcher.newSingleRecordWatcher(
+                        "Android.DynamicTopChrome.WindowResize.DesktopWindowModeState",
+                        DesktopWindowModeState.INACTIVE);
+        simulateLayoutChange(NARROW_WINDOW_WIDTH);
+        watcher.assertExpected();
+    }
+
+    @Test
+    public void recordHistogramWindowResize_LayoutChangeNotInDesktopWindow_UnsupportedDevice() {
+        // Create the transition coordinator with an initial null value of
+        // DesktopWindowStateProvider that is representative of an unsupported device.
+        mDesktopWindowStateProvider = null;
+        setUpTabStripTransitionCoordinator();
+        ShadowLooper.runUiThreadTasksIncludingDelayedTasks();
+
+        var watcher =
+                HistogramWatcher.newSingleRecordWatcher(
+                        "Android.DynamicTopChrome.WindowResize.DesktopWindowModeState",
+                        DesktopWindowModeState.UNAVAILABLE);
+        simulateLayoutChange(NARROW_WINDOW_WIDTH);
+        watcher.assertExpected();
     }
 
     private void setUpTabStripTransitionCoordinator() {

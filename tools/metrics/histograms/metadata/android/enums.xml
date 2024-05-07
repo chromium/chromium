@@ -720,6 +720,12 @@ chromium-metrics-reviews@google.com.
   <int value="6" label="Caption bar bounding rect has an invalid height."/>
 </enum>
 
+<enum name="DesktopWindowModeState">
+  <int value="0" label="Desktop windowing mode is not supported."/>
+  <int value="1" label="Desktop windowing mode is supported and inactive."/>
+  <int value="2" label="Desktop windowing mode is supported and active."/>
+</enum>
+
 <enum name="DeviceAuthSource">
   <int value="0" label="Password Manager"/>
   <int value="1" label="Autofill"/>

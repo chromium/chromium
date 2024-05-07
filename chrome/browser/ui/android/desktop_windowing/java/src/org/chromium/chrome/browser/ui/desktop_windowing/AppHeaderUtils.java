@@ -39,8 +39,24 @@ public class AppHeaderUtils {
         int NUM_ENTRIES = 7;
     }
 
+    // These values are persisted to logs. Entries should not be renumbered and
+    // numeric values should never be reused.
+    @IntDef({
+        DesktopWindowModeState.UNAVAILABLE,
+        DesktopWindowModeState.INACTIVE,
+        DesktopWindowModeState.ACTIVE,
+    })
+    public @interface DesktopWindowModeState {
+        int UNAVAILABLE = 0;
+        int INACTIVE = 1;
+        int ACTIVE = 2;
+
+        // Be sure to also update enums.xml when updating these values.
+        int NUM_ENTRIES = 3;
+    }
+
     /**
-     * Determine if the currently starting activity is focused, based on the {@link
+     * Determines whether the currently starting activity is focused, based on the {@link
      * ActivityLifecycleDispatcher} instance associated with it. Note that this method is intended
      * to be used during app startup flows and may not return the correct value at other times.
      *
@@ -69,7 +85,8 @@ public class AppHeaderUtils {
     }
 
     /**
-     * Record the result of the heuristics used to determine whether the app is in a desktop window.
+     * Records the result of the heuristics used to determine whether the app is in a desktop
+     * window.
      *
      * @param result The {@link DesktopWindowHeuristicResult} to record.
      */
@@ -80,5 +97,28 @@ public class AppHeaderUtils {
                 "Android.DesktopWindowHeuristicResult",
                 result,
                 DesktopWindowHeuristicResult.NUM_ENTRIES);
+    }
+
+    /**
+     * Records an enumerated histogram using {@link DesktopWindowModeState}.
+     *
+     * @param desktopWindowStateProvider The {@link DesktopWindowStateProvider} instance.
+     * @param histogramName The name of the histogram.
+     */
+    public static void recordDesktopWindowModeStateEnumHistogram(
+            @Nullable DesktopWindowStateProvider desktopWindowStateProvider, String histogramName) {
+        @DesktopWindowModeState int state;
+        // |desktopWindowStateProvider| will be null on a device that does not support desktop
+        // windowing.
+        if (desktopWindowStateProvider == null) {
+            state = DesktopWindowModeState.UNAVAILABLE;
+        } else {
+            state =
+                    isAppInDesktopWindow(desktopWindowStateProvider)
+                            ? DesktopWindowModeState.ACTIVE
+                            : DesktopWindowModeState.INACTIVE;
+        }
+        RecordHistogram.recordEnumeratedHistogram(
+                histogramName, state, DesktopWindowModeState.NUM_ENTRIES);
     }
 }

@@ -30,6 +30,7 @@ import org.chromium.chrome.browser.toolbar.ControlContainer;
 import org.chromium.chrome.browser.toolbar.R;
 import org.chromium.chrome.browser.toolbar.ToolbarFeatures;
 import org.chromium.chrome.browser.ui.desktop_windowing.AppHeaderState;
+import org.chromium.chrome.browser.ui.desktop_windowing.AppHeaderUtils;
 import org.chromium.chrome.browser.ui.desktop_windowing.DesktopWindowStateProvider;
 import org.chromium.chrome.browser.ui.desktop_windowing.DesktopWindowStateProvider.AppHeaderObserver;
 import org.chromium.ui.base.ViewUtils;
@@ -343,6 +344,10 @@ public class TabStripTransitionCoordinator implements ComponentCallbacks, AppHea
         if (width == mTabStripWidth && topPadding == mTopPadding) return;
         mTabStripWidth = width;
         mTopPadding = topPadding;
+
+        AppHeaderUtils.recordDesktopWindowModeStateEnumHistogram(
+                mDesktopWindowStateProvider,
+                "Android.DynamicTopChrome.WindowResize.DesktopWindowModeState");
 
         // Kick off tab strip transition once tab strip visibility is confirmed to be
         // changed. Do not change the mTabStripVisible until the transition actually
