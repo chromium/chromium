@@ -87,10 +87,6 @@ void V8PerContextData::Trace(Visitor* visitor) const {
   visitor->Trace(data_map_);
 }
 
-V8PerContextData* V8PerContextData::From(v8::Local<v8::Context> context) {
-  return ScriptState::From(context)->PerContextData();
-}
-
 v8::Local<v8::Object> V8PerContextData::CreateWrapperFromCacheSlowCase(
     const WrapperTypeInfo* type) {
   DCHECK(!wrapper_boilerplates_.Contains(type));
@@ -140,7 +136,7 @@ v8::Local<v8::Function> V8PerContextData::ConstructorForTypeSlowCase(
     parent_interface_object = ConstructorForType(parent);
   }
 
-  const DOMWrapperWorld& world = DOMWrapperWorld::World(context);
+  const DOMWrapperWorld& world = DOMWrapperWorld::World(isolate_, context);
   v8::Local<v8::Function> interface_object =
       V8ObjectConstructor::CreateInterfaceObject(
           type, context, world, isolate_, parent_interface_object,

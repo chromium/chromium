@@ -193,7 +193,7 @@ v8::MaybeLocal<v8::Value> ValueWrapperSyntheticModuleScript::EvaluationSteps(
     v8::Local<v8::Context> context,
     v8::Local<v8::Module> module) {
   v8::Isolate* isolate = context->GetIsolate();
-  ScriptState* script_state = ScriptState::From(context);
+  ScriptState* script_state = ScriptState::From(isolate, context);
   Modulator* modulator = Modulator::From(script_state);
   ModuleRecordResolver* module_record_resolver =
       modulator->GetModuleRecordResolver();

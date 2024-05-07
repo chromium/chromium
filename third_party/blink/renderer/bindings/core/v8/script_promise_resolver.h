@@ -213,7 +213,7 @@ class CORE_EXPORT ScriptPromiseResolverBase
   void OverrideScriptStateToCurrentContext() {
     v8::Isolate* isolate = script_state_->GetIsolate();
     CHECK(isolate->InContext());
-    script_state_ = ScriptState::From(isolate->GetCurrentContext());
+    script_state_ = ScriptState::ForCurrentRealm(isolate);
   }
 
   void NotifyResolveOrReject();

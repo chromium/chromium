@@ -380,8 +380,7 @@ v8::Local<v8::Object> ImageData::AssociateWithWrapper(
     //
     // This is a perf hack breaking the web interop.
 
-    ScriptState* script_state =
-        ScriptState::From(wrapper->GetCreationContextChecked());
+    ScriptState* script_state = ScriptState::ForRelevantRealm(isolate, wrapper);
     v8::Local<v8::Value> v8_data =
         ToV8Traits<V8ImageDataArray>::ToV8(script_state, data_);
     bool defined_property;

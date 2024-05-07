@@ -238,7 +238,8 @@ void PausableScriptExecutor::CreateAndRun(
     v8::Local<v8::Value> argv[],
     mojom::blink::WantResultOption want_result_option,
     WebScriptExecutionCallback callback) {
-  ScriptState* script_state = ScriptState::From(context);
+  v8::Isolate* isolate = context->GetIsolate();
+  ScriptState* script_state = ScriptState::From(isolate, context);
   if (!script_state->ContextIsValid()) {
     if (callback)
       std::move(callback).Run({}, {});

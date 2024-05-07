@@ -62,8 +62,6 @@ class PLATFORM_EXPORT V8PerContextData final
   V8PerContextData(const V8PerContextData&) = delete;
   V8PerContextData& operator=(const V8PerContextData&) = delete;
 
-  static V8PerContextData* From(v8::Local<v8::Context>);
-
   ~V8PerContextData();
 
   void Trace(Visitor* visitor) const;

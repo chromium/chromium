@@ -281,7 +281,7 @@ namespace bindings {
 
   CHECK(!creation_context_object.IsEmpty());
   ScriptState* script_state =
-      ScriptState::From(creation_context_object->GetCreationContextChecked());
+      ScriptState::ForRelevantRealm(isolate, creation_context_object);
   return script_wrappable->Wrap(script_state);
 }
 

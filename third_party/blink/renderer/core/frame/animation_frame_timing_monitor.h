@@ -83,7 +83,10 @@ class CORE_EXPORT AnimationFrameTimingMonitor final
   }
   void Will(const probe::ExecuteScript&);
   void Did(const probe::ExecuteScript& probe_data) {
-    PopScriptEntryPoint(ScriptState::From(probe_data.v8_context), &probe_data);
+    v8::Isolate* isolate = probe_data.context->GetIsolate();
+    ScriptState* script_state =
+        ScriptState::From(isolate, probe_data.v8_context);
+    PopScriptEntryPoint(script_state, &probe_data);
   }
   void Will(const probe::RecalculateStyle&);
   void Did(const probe::RecalculateStyle&);

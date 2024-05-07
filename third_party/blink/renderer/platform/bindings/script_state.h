@@ -132,40 +132,43 @@ class PLATFORM_EXPORT ScriptState : public GarbageCollected<ScriptState> {
 
   virtual void Trace(Visitor*) const;
 
-  static ScriptState* Current(v8::Isolate* isolate) {  // DEPRECATED
-    return From(isolate->GetCurrentContext());
+  static ScriptState* ForCurrentRealm(v8::Isolate* isolate) {
+    DCHECK(isolate->InContext());
+    return From(isolate, isolate->GetCurrentContext());
   }
 
   static ScriptState* ForCurrentRealm(
       const v8::FunctionCallbackInfo<v8::Value>& info) {
-    return From(info.GetIsolate()->GetCurrentContext());
+    return ForCurrentRealm(info.GetIsolate());
   }
 
   static ScriptState* ForCurrentRealm(
       const v8::PropertyCallbackInfo<v8::Value>& info) {
-    return From(info.GetIsolate()->GetCurrentContext());
+    return ForCurrentRealm(info.GetIsolate());
   }
 
-  static ScriptState* ForRelevantRealm(v8::Local<v8::Object> object) {
+  static ScriptState* ForRelevantRealm(v8::Isolate* isolate,
+                                       v8::Local<v8::Object> object) {
     DCHECK(!object.IsEmpty());
     ScriptState* script_state = static_cast<ScriptState*>(
         object->GetAlignedPointerFromEmbedderDataInCreationContext(
-            kV8ContextPerContextDataIndex));
+            isolate, kV8ContextPerContextDataIndex));
     // ScriptState::ForRelevantRealm() must be called only for objects having a
     // creation context while the context must have a valid embedder data in
     // the embedder field.
-    SECURITY_CHECK(script_state);
+    DCHECK(script_state);
     return script_state;
   }
 
-  static ScriptState* From(v8::Local<v8::Context> context) {
+  static ScriptState* From(v8::Isolate* isolate,
+                           v8::Local<v8::Context> context) {
     DCHECK(!context.IsEmpty());
     ScriptState* script_state =
         static_cast<ScriptState*>(context->GetAlignedPointerFromEmbedderData(
-            kV8ContextPerContextDataIndex));
+            isolate, kV8ContextPerContextDataIndex));
     // ScriptState::From() must not be called for a context that does not have
     // valid embedder data in the embedder field.
-    SECURITY_CHECK(script_state);
+    DCHECK(script_state);
     SECURITY_CHECK(script_state->context_ == context);
     return script_state;
   }
@@ -177,7 +180,8 @@ class PLATFORM_EXPORT ScriptState : public GarbageCollected<ScriptState> {
   // This is also called in some situations where DissociateContext() has
   // already been called and therefore the ScriptState pointer on the
   // v8::Context has already been nulled.
-  static ScriptState* MaybeFrom(v8::Local<v8::Context> context) {
+  static ScriptState* MaybeFrom(v8::Isolate* isolate,
+                                v8::Local<v8::Context> context) {
     DCHECK(!context.IsEmpty());
     if (context->GetNumberOfEmbedderDataFields() <=
         kV8ContextPerContextDataIndex) {
@@ -185,7 +189,7 @@ class PLATFORM_EXPORT ScriptState : public GarbageCollected<ScriptState> {
     }
     ScriptState* script_state =
         static_cast<ScriptState*>(context->GetAlignedPointerFromEmbedderData(
-            kV8ContextPerContextDataIndex));
+            isolate, kV8ContextPerContextDataIndex));
     SECURITY_CHECK(!script_state || script_state->context_ == context);
     return script_state;
   }

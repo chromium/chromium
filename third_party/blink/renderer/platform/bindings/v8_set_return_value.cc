@@ -50,7 +50,7 @@ v8::Local<v8::Value> GetExposedInterfaceObject(
   RUNTIME_CALL_TIMER_SCOPE_DISABLED_BY_DEFAULT(
       isolate, "Blink_GetInterfaceObjectExposedOnGlobal");
   ScriptState* script_state =
-      ScriptState::From(creation_context->GetCreationContextChecked());
+      ScriptState::ForRelevantRealm(isolate, creation_context);
   if (!script_state->ContextIsValid())
     return v8::Undefined(isolate);
 
@@ -64,19 +64,19 @@ v8::Local<v8::Value> GetExposedNamespaceObject(
   RUNTIME_CALL_TIMER_SCOPE_DISABLED_BY_DEFAULT(
       isolate, "Blink_GetInterfaceObjectExposedOnGlobal");
   ScriptState* script_state =
-      ScriptState::From(creation_context->GetCreationContextChecked());
+      ScriptState::ForRelevantRealm(isolate, creation_context);
   if (!script_state->ContextIsValid())
     return v8::Undefined(isolate);
 
-  v8::Context::Scope v8_context_scope(script_state->GetContext());
+  v8::Local<v8::Context> v8_context = script_state->GetContext();
+  v8::Context::Scope v8_context_scope(v8_context);
   v8::Local<v8::ObjectTemplate> namespace_template =
       wrapper_type_info->GetV8ClassTemplate(isolate, script_state->World())
           .As<v8::ObjectTemplate>();
   v8::Local<v8::Object> namespace_object =
-      namespace_template->NewInstance(script_state->GetContext())
-          .ToLocalChecked();
+      namespace_template->NewInstance(v8_context).ToLocalChecked();
   wrapper_type_info->InstallConditionalFeatures(
-      script_state->GetContext(), script_state->World(),
+      v8_context, script_state->World(),
       v8::Local<v8::Object>(),  // instance_object
       v8::Local<v8::Object>(),  // prototype_object
       namespace_object,         // interface_object

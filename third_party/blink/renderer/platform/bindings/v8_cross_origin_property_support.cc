@@ -18,7 +18,7 @@ v8::MaybeLocal<v8::Function> GetCrossOriginFunction(
     int func_length,
     const WrapperTypeInfo* wrapper_type_info) {
   v8::Local<v8::Context> current_context = isolate->GetCurrentContext();
-  ScriptState* script_state = ScriptState::From(current_context);
+  ScriptState* script_state = ScriptState::From(isolate, current_context);
   V8PerIsolateData* per_isolate_data = V8PerIsolateData::From(isolate);
   const void* callback_key = reinterpret_cast<const void*>(callback);
 

@@ -46,7 +46,8 @@ void WorldSafeV8ReferenceInternal::MaybeCheckCreationContextWorld(
   if (!value.As<v8::Object>()->GetCreationContext().ToLocal(&context))
     return;
 
-  ScriptState* script_state = ScriptState::From(context);
+  v8::Isolate* isolate = context->GetIsolate();
+  ScriptState* script_state = ScriptState::From(isolate, context);
   CHECK_EQ(&world, &script_state->World());
 }
 

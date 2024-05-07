@@ -83,8 +83,8 @@ v8::Local<v8::Value> V8ThrowDOMException::AttachStackProperty(
   // We use the isolate's current context here because we are creating an
   // exception object.
   v8::Local<v8::Object> exception_obj =
-      ToV8Traits<DOMException>::ToV8(ScriptState::From(current_context),
-                                     dom_exception)
+      ToV8Traits<DOMException>::ToV8(
+          ScriptState::From(isolate, current_context), dom_exception)
           .As<v8::Object>();
 
   // Attach an Error object to the DOMException. This is then lazily used to get

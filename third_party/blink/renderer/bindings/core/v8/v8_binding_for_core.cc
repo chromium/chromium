@@ -669,7 +669,8 @@ LocalDOMWindow* CurrentDOMWindow(v8::Isolate* isolate) {
 
 ExecutionContext* ToExecutionContext(v8::Local<v8::Context> context) {
   DCHECK(!context.IsEmpty());
-  ScriptState* script_state = ScriptState::MaybeFrom(context);
+  v8::Isolate* isolate = context->GetIsolate();
+  ScriptState* script_state = ScriptState::MaybeFrom(isolate, context);
   return script_state ? ToExecutionContext(script_state) : nullptr;
 }
 
@@ -694,7 +695,8 @@ static ScriptState* ToScriptStateImpl(LocalFrame* frame,
   v8::Local<v8::Context> context = ToV8ContextEvenIfDetached(frame, world);
   if (context.IsEmpty())
     return nullptr;
-  ScriptState* script_state = ScriptState::From(context);
+  v8::Isolate* isolate = context->GetIsolate();
+  ScriptState* script_state = ScriptState::From(isolate, context);
   if (!script_state->ContextIsValid())
     return nullptr;
   DCHECK_EQ(frame, ToLocalFrameIfNotDetached(context));
@@ -725,6 +727,8 @@ v8::Local<v8::Context> ToV8Context(LocalFrame* frame, DOMWrapperWorld& world) {
   return script_state->GetContext();
 }
 
+// TODO(ishell): return ScriptState* in order to avoid unnecessary hops
+// script_state -> context -> script_state on caller side.
 v8::Local<v8::Context> ToV8ContextEvenIfDetached(LocalFrame* frame,
                                                  DOMWrapperWorld& world) {
   // TODO(yukishiino): this method probably should not force context creation,

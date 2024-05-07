@@ -41,7 +41,7 @@ v8::Local<v8::Value> ScriptValue::V8Value() const {
     return v8::Local<v8::Value>();
 
   DCHECK(GetIsolate()->InContext());
-  return value_.Get(ScriptState::From(isolate_->GetCurrentContext()));
+  return value_.Get(ScriptState::ForCurrentRealm(isolate_));
 }
 
 v8::Local<v8::Value> ScriptValue::V8ValueFor(

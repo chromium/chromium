@@ -76,7 +76,7 @@ v8::Local<v8::Value> JSEventHandlerForContentAttribute::GetCompiledHandler(
     return v8::Null(GetIsolate());
 
   ScriptState* script_state_of_event_target =
-      ScriptState::From(v8_context_of_event_target);
+      ScriptState::From(GetIsolate(), v8_context_of_event_target);
   if (!script_state_of_event_target->ContextIsValid())
     return v8::Null(GetIsolate());
 

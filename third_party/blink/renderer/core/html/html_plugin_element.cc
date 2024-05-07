@@ -425,9 +425,9 @@ ScriptValue HTMLPlugInElement::AnonymousNamedGetter(const AtomicString& name) {
     return ScriptValue();
   }
 
-  v8::Local<v8::Context> context =
-      GetExecutionContext()->GetIsolate()->GetCurrentContext();
-  ScriptState* script_state = ScriptState::From(context);
+  v8::Isolate* isolate = GetExecutionContext()->GetIsolate();
+  v8::Local<v8::Context> context = isolate->GetCurrentContext();
+  ScriptState* script_state = ScriptState::From(isolate, context);
   if (!script_state->World().IsMainWorld()) {
     if (script_state->World().IsIsolatedWorld()) {
       UseCounter::Count(GetExecutionContext(),
@@ -467,9 +467,9 @@ NamedPropertySetterResult HTMLPlugInElement::AnonymousNamedSetter(
     return NamedPropertySetterResult::kDidNotIntercept;
   }
 
-  v8::Local<v8::Context> context =
-      GetExecutionContext()->GetIsolate()->GetCurrentContext();
-  ScriptState* script_state = ScriptState::From(context);
+  v8::Isolate* isolate = GetExecutionContext()->GetIsolate();
+  v8::Local<v8::Context> context = isolate->GetCurrentContext();
+  ScriptState* script_state = ScriptState::From(isolate, context);
   if (!script_state->World().IsMainWorld()) {
     // The plugin system cannot deal with multiple worlds, so block any
     // non-main world access.

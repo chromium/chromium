@@ -67,7 +67,7 @@ struct V8ReturnValue {
                          ScriptWrappable* wrappable,
                          v8::Local<v8::Context> creation_context) {
     v8::Local<v8::Value> wrapper =
-        wrappable->Wrap(ScriptState::From(creation_context));
+        wrappable->Wrap(ScriptState::From(info.GetIsolate(), creation_context));
     info.GetReturnValue().SetNonEmpty(wrapper);
   }
 };

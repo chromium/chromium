@@ -117,8 +117,8 @@ WebURL WebDOMFileSystem::RootURL() const {
 v8::Local<v8::Value> WebDOMFileSystem::ToV8Value(v8::Isolate* isolate) {
   if (!private_.Get())
     return v8::Local<v8::Value>();
-  return ToV8Traits<DOMFileSystem>::ToV8(
-      ScriptState::From(isolate->GetCurrentContext()), private_.Get());
+  return ToV8Traits<DOMFileSystem>::ToV8(ScriptState::ForCurrentRealm(isolate),
+                                         private_.Get());
 }
 
 v8::Local<v8::Value> WebDOMFileSystem::CreateV8Entry(
@@ -128,16 +128,16 @@ v8::Local<v8::Value> WebDOMFileSystem::CreateV8Entry(
   if (!private_.Get())
     return v8::Local<v8::Value>();
   v8::Local<v8::Value> value;
+  ScriptState* script_state = ScriptState::ForCurrentRealm(isolate);
   switch (entry_type) {
     case kEntryTypeDirectory:
       value = ToV8Traits<DirectoryEntry>::ToV8(
-          ScriptState::From(isolate->GetCurrentContext()),
+          script_state,
           MakeGarbageCollected<DirectoryEntry>(private_.Get(), path));
       break;
     case kEntryTypeFile:
       value = ToV8Traits<FileEntry>::ToV8(
-          ScriptState::From(isolate->GetCurrentContext()),
-          MakeGarbageCollected<FileEntry>(private_.Get(), path));
+          script_state, MakeGarbageCollected<FileEntry>(private_.Get(), path));
       break;
   }
   return value;

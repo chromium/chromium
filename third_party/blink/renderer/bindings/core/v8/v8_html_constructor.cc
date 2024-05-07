@@ -31,7 +31,7 @@ void V8HTMLConstructor::HtmlConstructor(
   DCHECK(info.IsConstructCall());
 
   v8::Isolate* isolate = info.GetIsolate();
-  ScriptState* script_state = ScriptState::Current(isolate);
+  ScriptState* script_state = ScriptState::ForCurrentRealm(isolate);
   v8::Local<v8::Value> new_target = info.NewTarget();
 
   if (!script_state->ContextIsValid()) {
@@ -118,8 +118,10 @@ void V8HTMLConstructor::HtmlConstructor(
 
   // 7. If Type(prototype) is not Object, then: ...
   if (!prototype->IsObject()) {
-    if (V8PerContextData* per_context_data = V8PerContextData::From(
-            new_target.As<v8::Object>()->GetCreationContextChecked())) {
+    ScriptState* new_target_script_state =
+        ScriptState::ForRelevantRealm(isolate, new_target.As<v8::Object>());
+    if (V8PerContextData* per_context_data =
+            new_target_script_state->PerContextData()) {
       prototype = per_context_data->PrototypeForType(&wrapper_type_info);
     } else {
       V8ThrowException::ThrowError(isolate, "The context has been destroyed");

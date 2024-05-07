@@ -198,7 +198,7 @@ v8::MaybeLocal<v8::Module> ModuleRecord::ResolveModuleCallback(
     v8::Local<v8::FixedArray> import_attributes,
     v8::Local<v8::Module> referrer) {
   v8::Isolate* isolate = context->GetIsolate();
-  Modulator* modulator = Modulator::From(ScriptState::From(context));
+  Modulator* modulator = Modulator::From(ScriptState::From(isolate, context));
   DCHECK(modulator);
 
   ModuleRequest module_request(

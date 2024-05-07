@@ -151,12 +151,13 @@ class PLATFORM_EXPORT DOMWrapperWorld final
   static void AllWorldsInIsolate(v8::Isolate* isolate,
                                  HeapVector<Member<DOMWrapperWorld>>& worlds);
 
-  static DOMWrapperWorld& World(v8::Local<v8::Context> context) {
-    return ScriptState::From(context)->World();
+  static DOMWrapperWorld& World(v8::Isolate* isolate,
+                                v8::Local<v8::Context> context) {
+    return ScriptState::From(isolate, context)->World();
   }
 
   static DOMWrapperWorld& Current(v8::Isolate* isolate) {
-    return World(isolate->GetCurrentContext());
+    return World(isolate, isolate->GetCurrentContext());
   }
 
   static DOMWrapperWorld& MainWorld(v8::Isolate* isolate);

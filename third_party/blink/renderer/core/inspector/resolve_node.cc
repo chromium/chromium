@@ -22,7 +22,7 @@ v8::Local<v8::Value> NodeV8Value(v8::Local<v8::Context> context, Node* node) {
       !BindingSecurity::ShouldAllowAccessTo(CurrentDOMWindow(isolate), node)) {
     return v8::Null(isolate);
   }
-  return ToV8Traits<Node>::ToV8(ScriptState::From(context), node);
+  return ToV8Traits<Node>::ToV8(ScriptState::From(isolate, context), node);
 }
 
 std::unique_ptr<v8_inspector::protocol::Runtime::API::RemoteObject> ResolveNode(

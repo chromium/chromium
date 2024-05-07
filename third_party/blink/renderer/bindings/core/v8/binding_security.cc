@@ -294,9 +294,10 @@ bool BindingSecurity::ShouldAllowAccessToV8Context(
   if (LIKELY(accessing_context == target_context))
     return true;
 
+  v8::Isolate* isolate = accessing_context->GetIsolate();
   return ShouldAllowAccessToV8ContextInternal(
-      ScriptState::From(accessing_context), ScriptState::From(target_context),
-      exception_state);
+      ScriptState::From(isolate, accessing_context),
+      ScriptState::From(isolate, target_context), exception_state);
 }
 
 void BindingSecurity::FailedAccessCheckFor(v8::Isolate* isolate,

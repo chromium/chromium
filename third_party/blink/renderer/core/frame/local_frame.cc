@@ -1108,7 +1108,7 @@ void LocalFrame::HookBackForwardCacheEviction() {
   static_cast<LocalWindowProxyManager*>(GetWindowProxyManager())
       ->SetAbortScriptExecution(
           [](v8::Isolate* isolate, v8::Local<v8::Context> context) {
-            ScriptState* script_state = ScriptState::From(context);
+            ScriptState* script_state = ScriptState::From(isolate, context);
             LocalDOMWindow* window = LocalDOMWindow::From(script_state);
             DCHECK(window);
             LocalFrame* frame = window->GetFrame();

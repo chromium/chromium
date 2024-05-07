@@ -73,7 +73,7 @@ void GenerateJavaScriptCallStack(v8::Isolate* isolate, void* data) {
   }
 
   v8::Local<v8::Context> context = isolate->GetCurrentContext();
-  ScriptState* script_state = ScriptState::MaybeFrom(context);
+  ScriptState* script_state = ScriptState::MaybeFrom(isolate, context);
   if (!script_state) {
     PostHandleCollectedCallStackTask(collector, builder);
     return;

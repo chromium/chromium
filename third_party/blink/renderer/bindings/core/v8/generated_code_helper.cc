@@ -230,7 +230,7 @@ void ReportInvalidEnumSetToAttribute(v8::Isolate* isolate,
                                      const String& value,
                                      const String& enum_type_name,
                                      ExceptionState& exception_state) {
-  ScriptState* script_state = ScriptState::From(isolate->GetCurrentContext());
+  ScriptState* script_state = ScriptState::ForCurrentRealm(isolate);
   ExecutionContext* execution_context = ExecutionContext::From(script_state);
 
   exception_state.ThrowTypeError("The provided value '" + value +
@@ -320,7 +320,7 @@ v8::MaybeLocal<v8::Value> CreateLegacyFactoryFunctionFunction(
   }
 
   v8::Local<v8::Context> context = script_state->GetContext();
-  V8PerContextData* per_context_data = V8PerContextData::From(context);
+  V8PerContextData* per_context_data = script_state->PerContextData();
   v8::Local<v8::Function> function;
   if (!function_template->GetFunction(context).ToLocal(&function)) {
     return v8::MaybeLocal<v8::Value>();

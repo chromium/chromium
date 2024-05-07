@@ -40,8 +40,10 @@ const uint32_t kBacktrackLimit = 1'000'000;
 
 ScriptState* GetScriptState(v8::Isolate* isolate) {
   v8::HandleScope handle_scope(isolate);
+  // TODO(ishell): make EnsureScriptRegexpContext() return ScriptState* to
+  // avoid unnecessary hops script_state -> context -> script_state.
   return ScriptState::From(
-      V8PerIsolateData::From(isolate)->EnsureScriptRegexpContext());
+      isolate, V8PerIsolateData::From(isolate)->EnsureScriptRegexpContext());
 }
 
 }  // namespace

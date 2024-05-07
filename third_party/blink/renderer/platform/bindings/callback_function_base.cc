@@ -18,7 +18,8 @@ CallbackFunctionBase::CallbackFunctionBase(
   v8::Isolate* isolate = callback_function->GetIsolate();
   callback_function_.Reset(isolate, callback_function);
 
-  incumbent_script_state_ = ScriptState::From(isolate->GetIncumbentContext());
+  incumbent_script_state_ =
+      ScriptState::From(isolate, isolate->GetIncumbentContext());
 
   // Set |callback_relevant_script_state_| iff the creation context and the
   // incumbent context are the same origin-domain. Otherwise, leave it as
@@ -30,14 +31,14 @@ CallbackFunctionBase::CallbackFunctionBase(
     // callsite to run arbitrary script in the context. No need to protect it.
     // This is an optimization faster than ShouldAllowAccessToV8Context below.
     callback_relevant_script_state_ =
-        ScriptState::ForRelevantRealm(callback_function);
+        ScriptState::ForRelevantRealm(isolate, callback_function);
   } else {
     v8::MaybeLocal<v8::Context> creation_context =
         callback_function->GetCreationContext();
     if (BindingSecurityForPlatform::ShouldAllowAccessToV8Context(
             incumbent_script_state_->GetContext(), creation_context)) {
       callback_relevant_script_state_ =
-          ScriptState::From(creation_context.ToLocalChecked());
+          ScriptState::From(isolate, creation_context.ToLocalChecked());
     }
   }
 }

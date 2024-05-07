@@ -545,7 +545,9 @@ void AnimationFrameTimingMonitor::Will(const probe::ExecuteScript& probe_data) {
   // In some cases we get here without a EvaluateScriptBlock, e.g. when
   // executing an imported module script.
   // This is true for both imported and element-created scripts.
-  if (PushScriptEntryPoint(ScriptState::From(probe_data.v8_context))) {
+  v8::Isolate* isolate = probe_data.context->GetIsolate();
+  ScriptState* script_state = ScriptState::From(isolate, probe_data.v8_context);
+  if (PushScriptEntryPoint(script_state)) {
     pending_script_info_ = PendingScriptInfo{
         .invoker_type = ScriptTimingInfo::InvokerType::kModuleScript,
         .start_time = probe_data.CaptureStartTime(),

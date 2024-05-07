@@ -45,7 +45,7 @@ v8::Local<v8::Object> V8DOMWrapper::CreateWrapper(ScriptState* script_state,
   const V8WrapperInstantiationScope scope(script_state);
 
   v8::Local<v8::Object> wrapper;
-  auto* per_context_data = V8PerContextData::From(scope.GetContext());
+  auto* per_context_data = script_state->PerContextData();
   if (LIKELY(per_context_data)) {
     wrapper = per_context_data->CreateWrapperFromCache(type);
     CHECK(!wrapper.IsEmpty());
@@ -55,7 +55,7 @@ v8::Local<v8::Object> V8DOMWrapper::CreateWrapper(ScriptState* script_state,
     // the correct settings.  Should follow the same way as
     // V8PerContextData::createWrapperFromCache, though there is no need to
     // cache resulting objects or their constructors.
-    const DOMWrapperWorld& world = DOMWrapperWorld::World(scope.GetContext());
+    const DOMWrapperWorld& world = script_state->World();
     wrapper = type->GetV8ClassTemplate(script_state->GetIsolate(), world)
                   .As<v8::FunctionTemplate>()
                   ->InstanceTemplate()

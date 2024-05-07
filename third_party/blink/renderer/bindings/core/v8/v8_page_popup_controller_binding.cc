@@ -27,10 +27,9 @@ void PagePopupControllerAttributeGetter(
     V8SetReturnValue(info, v8::Null(info.GetIsolate()));
     return;
   }
-  V8SetReturnValue(
-      info, ToV8Traits<PagePopupController>::ToV8(
-                ScriptState::From(info.GetIsolate()->GetCurrentContext()),
-                PagePopupController::From(*frame->GetPage())));
+  V8SetReturnValue(info, ToV8Traits<PagePopupController>::ToV8(
+                             ScriptState::ForCurrentRealm(info.GetIsolate()),
+                             PagePopupController::From(*frame->GetPage())));
 }
 
 void PagePopupControllerAttributeGetterCallback(

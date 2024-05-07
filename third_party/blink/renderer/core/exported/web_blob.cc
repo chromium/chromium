@@ -88,7 +88,7 @@ v8::Local<v8::Value> WebBlob::ToV8Value(v8::Isolate* isolate) {
   if (!private_.Get())
     return v8::Local<v8::Value>();
   v8::Local<v8::Value> value = ToV8Traits<Blob>::ToV8(
-      ScriptState::From(isolate->GetCurrentContext()), private_.Get());
+      ScriptState::ForCurrentRealm(isolate), private_.Get());
   return value;
 }
 

@@ -74,8 +74,8 @@ v8::Local<v8::Value> WindowProperties::AnonymousNamedGetter(
     if (frame->GetSecurityContext()->GetSecurityOrigin()->CanAccess(
             child->GetSecurityContext()->GetSecurityOrigin()) ||
         name == child->Owner()->BrowsingContextContainerName()) {
-      return ToV8Traits<DOMWindow>::ToV8(
-          ScriptState::From(isolate->GetCurrentContext()), child->DomWindow());
+      return ToV8Traits<DOMWindow>::ToV8(ScriptState::ForCurrentRealm(isolate),
+                                         child->DomWindow());
     }
 
     UseCounter::Count(

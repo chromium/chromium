@@ -81,7 +81,7 @@ class CORE_EXPORT ScriptIterator {
             v8::Local<v8::Value> value = v8::Local<v8::Value>());
 
   v8::MaybeLocal<v8::Value> GetValue() {
-    return value_.Get(ScriptState::From(isolate_->GetCurrentContext()));
+    return value_.Get(ScriptState::ForCurrentRealm(isolate_));
   }
 
   void Trace(Visitor* visitor) const {

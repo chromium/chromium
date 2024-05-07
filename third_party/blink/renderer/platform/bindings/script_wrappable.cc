@@ -37,7 +37,7 @@ v8::Local<v8::Value> ScriptWrappable::ToV8(
   }
   CHECK(!creation_context_object.IsEmpty());
   ScriptState* script_state =
-      ScriptState::From(creation_context_object->GetCreationContextChecked());
+      ScriptState::ForRelevantRealm(isolate, creation_context_object);
   return Wrap(script_state);
 }
 

@@ -319,8 +319,9 @@ def bind_callback_local_vars(code_node, cg_context):
                               "\"${class_like.identifier}\";")),
         S("current_context", ("v8::Local<v8::Context> ${current_context} = "
                               "${isolate}->GetCurrentContext();")),
-        S("current_script_state", ("ScriptState* ${current_script_state} = "
-                                   "ScriptState::From(${current_context});")),
+        S("current_script_state",
+          ("ScriptState* ${current_script_state} = "
+           "ScriptState::From(${isolate}, ${current_context});")),
         S("isolate", "v8::Isolate* ${isolate} = ${info}.GetIsolate();"),
         S("non_undefined_argument_length",
           ("const int ${non_undefined_argument_length} = "
@@ -486,7 +487,7 @@ def bind_callback_local_vars(code_node, cg_context):
         #   + ScriptState::GetContext
         # is faster than
         #     v8::Object::GetCreationContextChecked
-        #   + ScriptState::From(v8::Local<v8::Context>)
+        #   + ScriptState::From(v8::Isolate*, v8::Local<v8::Context>)
         # Depending on already-defined symbols, select the best way to get
         # ${receiver_script_state}.
         node.append(
@@ -494,11 +495,12 @@ def bind_callback_local_vars(code_node, cg_context):
                 SymbolSensitiveSelectionNode.Choice(
                     ["receiver_context"],
                     T("ScriptState* ${receiver_script_state} = "
-                      "ScriptState::From(${receiver_context});")),
+                      "ScriptState::From(${isolate}, ${receiver_context});")),
                 SymbolSensitiveSelectionNode.Choice(
                     [],
                     T("ScriptState* ${receiver_script_state} = "
-                      "ScriptState::ForRelevantRealm(${v8_receiver});")),
+                      "ScriptState::ForRelevantRealm(${isolate}, "
+                      "${v8_receiver});")),
             ]))
         return node
 
@@ -4402,8 +4404,8 @@ def bind_installer_local_vars(code_node, cg_context):
           ("const bool ${is_in_secure_context} = "
            "${execution_context}->IsSecureContext();")),
         S("isolate", "v8::Isolate* ${isolate} = ${v8_context}->GetIsolate();"),
-        S("script_state",
-          "ScriptState* ${script_state} = ScriptState::From(${v8_context});"),
+        S("script_state", ("ScriptState* ${script_state} = "
+                           "ScriptState::From(${isolate}, ${v8_context});")),
         S("wrapper_type_info",
           ("const WrapperTypeInfo* const ${wrapper_type_info} = "
            "${class_name}::GetWrapperTypeInfo();")),

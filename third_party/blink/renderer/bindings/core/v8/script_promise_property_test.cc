@@ -126,7 +126,7 @@ class ScriptPromisePropertyTestBase {
   }
   DOMWrapperWorld& OtherWorld() { return *other_world_; }
   ScriptState* CurrentScriptState() {
-    return ScriptState::Current(GetIsolate());
+    return ScriptState::ForCurrentRealm(GetIsolate());
   }
 
   void PerformMicrotaskCheckpoint() {
@@ -162,12 +162,13 @@ class ScriptPromisePropertyTestBase {
 
   ScriptValue Wrap(DOMWrapperWorld& world,
                    GarbageCollectedScriptWrappable* value) {
-    v8::HandleScope handle_scope(GetIsolate());
+    v8::Isolate* isolate = GetIsolate();
+    v8::HandleScope handle_scope(isolate);
     ScriptState* script_state =
-        ScriptState::From(ToV8Context(DomWindow(), world));
+        ScriptState::From(isolate, ToV8Context(DomWindow(), world));
     ScriptState::Scope scope(script_state);
     return ScriptValue(
-        GetIsolate(),
+        isolate,
         ToV8Traits<GarbageCollectedScriptWrappable>::ToV8(script_state, value));
   }
 

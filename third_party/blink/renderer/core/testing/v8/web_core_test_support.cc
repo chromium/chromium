@@ -44,7 +44,8 @@ namespace web_core_test_support {
 namespace {
 
 v8::Local<v8::Value> CreateInternalsObject(v8::Local<v8::Context> context) {
-  ScriptState* script_state = ScriptState::From(context);
+  v8::Isolate* isolate = context->GetIsolate();
+  ScriptState* script_state = ScriptState::From(isolate, context);
   ExecutionContext* execution_context = ExecutionContext::From(script_state);
   if (execution_context->IsWindow()) {
     return ToV8Traits<Internals>::ToV8(
@@ -60,17 +61,18 @@ v8::Local<v8::Value> CreateInternalsObject(v8::Local<v8::Context> context) {
 }  // namespace
 
 void InjectInternalsObject(v8::Local<v8::Context> context) {
-  ScriptState* script_state = ScriptState::From(context);
+  v8::Isolate* isolate = context->GetIsolate();
+  ScriptState* script_state = ScriptState::From(isolate, context);
   ScriptState::Scope scope(script_state);
-  v8::Local<v8::Object> global = script_state->GetContext()->Global();
   v8::Local<v8::Value> internals = CreateInternalsObject(context);
   if (internals.IsEmpty())
     return;
 
+  v8::Local<v8::Object> global = context->Global();
   global
       ->CreateDataProperty(
-          script_state->GetContext(),
-          V8AtomicString(script_state->GetIsolate(), "internals"), internals)
+          context, V8AtomicString(script_state->GetIsolate(), "internals"),
+          internals)
       .ToChecked();
 }
 
@@ -79,7 +81,8 @@ void ResetInternalsObject(v8::Local<v8::Context> context) {
   if (context.IsEmpty())
     return;
 
-  ScriptState* script_state = ScriptState::From(context);
+  v8::Isolate* isolate = context->GetIsolate();
+  ScriptState* script_state = ScriptState::From(isolate, context);
   ScriptState::Scope scope(script_state);
   LocalFrame* frame = LocalDOMWindow::From(script_state)->GetFrame();
   // Should the frame have been detached, the page is assumed being destroyed

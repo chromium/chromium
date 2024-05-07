@@ -434,10 +434,9 @@ v8::Local<v8::Object> MessageEvent::AssociateWithWrapper(
     case kDataTypeArrayBuffer:
       V8PrivateProperty::GetSymbol(isolate,
                                    kPrivatePropertyMessageEventCachedData)
-          .Set(wrapper,
-               ToV8Traits<DOMArrayBuffer>::ToV8(
-                   ScriptState::From(wrapper->GetCreationContextChecked()),
-                   data_as_array_buffer_));
+          .Set(wrapper, ToV8Traits<DOMArrayBuffer>::ToV8(
+                            ScriptState::ForRelevantRealm(isolate, wrapper),
+                            data_as_array_buffer_));
       break;
   }
 
