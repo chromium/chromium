@@ -995,6 +995,25 @@ void AdAuctionServiceImpl::MaybeLogPrivateAggregationFeatures(
     return;
   }
 
+  if (!has_logged_private_aggregation_filtering_id_web_feature_ &&
+      base::ranges::any_of(
+          private_aggregation_requests, [](const auto& request) {
+            auction_worklet::mojom::AggregatableReportContributionPtr&
+                contribution = request->contribution;
+            if (contribution->is_histogram_contribution()) {
+              return contribution->get_histogram_contribution()
+                  ->filtering_id.has_value();
+            }
+            CHECK(contribution->is_for_event_contribution());
+            return contribution->get_for_event_contribution()
+                ->filtering_id.has_value();
+          })) {
+    has_logged_private_aggregation_filtering_id_web_feature_ = true;
+    GetContentClient()->browser()->LogWebFeatureForCurrentPage(
+        &render_frame_host(),
+        blink::mojom::WebFeature::kPrivateAggregationApiFilteringIds);
+  }
+
   if (!has_logged_private_aggregation_enable_debug_mode_web_feature_ &&
       base::ranges::any_of(private_aggregation_requests,
                            [](const auto& request) {
