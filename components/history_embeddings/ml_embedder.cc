@@ -29,6 +29,7 @@ MlEmbedder::~MlEmbedder() {
 }
 
 void MlEmbedder::ComputePassagesEmbeddings(
+    PassageKind kind,
     std::vector<std::string> passages,
     ComputePassagesEmbeddingsCallback callback) {
   service_controller_->GetEmbeddings(std::move(passages), std::move(callback));

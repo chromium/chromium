@@ -44,4 +44,11 @@ const base::FeatureParam<bool> kOmniboxUnscoped(&kHistoryEmbeddings,
                                                 "OmniboxUnscoped",
                                                 false);
 
+const base::FeatureParam<int> kScheduledEmbeddingsMin(&kHistoryEmbeddings,
+                                                      "ScheduledEmbeddingsMin",
+                                                      1);
+const base::FeatureParam<int> kScheduledEmbeddingsMax(&kHistoryEmbeddings,
+                                                      "ScheduledEmbeddingsMax",
+                                                      1);
+
 }  // namespace history_embeddings

@@ -166,21 +166,6 @@ class HistoryEmbeddingsService : public KeyedService,
       const std::vector<page_content_annotations::BatchAnnotationResult>&
           annotation_results);
 
-  // Requests the embedder to embed the next query if one is pending.
-  void SubmitQueryToEmbedder();
-
-  // Time when last query was submitted, if awaiting an embedder response;
-  // or nullopt if no query is currently submitted.
-  std::optional<base::Time> query_submission_time_;
-
-  // The next query to submit for embedding. Empty query strings are allowed,
-  // so optional is used to determine whether a query is pending.
-  std::optional<std::string> next_query_;
-
-  // The callback associated with `next_query_` is also saved until it's
-  // submitted to the embedder.
-  ComputePassagesEmbeddingsCallback next_query_callback_;
-
   // The history service is used to fill in details about URLs and visits
   // found via search. It strictly outlives this due to the dependency
   // specified in HistoryEmbeddingsServiceFactory.

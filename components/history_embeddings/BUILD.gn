@@ -17,6 +17,8 @@ static_library("history_embeddings") {
     "passage_embeddings_service_controller.h",
     "passages_util.cc",
     "passages_util.h",
+    "scheduling_embedder.cc",
+    "scheduling_embedder.h",
     "sql_database.cc",
     "sql_database.h",
     "vector_database.cc",

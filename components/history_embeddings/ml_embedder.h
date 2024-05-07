@@ -27,6 +27,7 @@ class MlEmbedder : public Embedder,
 
   // Embedder:
   void ComputePassagesEmbeddings(
+      PassageKind kind,
       std::vector<std::string> passages,
       ComputePassagesEmbeddingsCallback callback) override;
 
