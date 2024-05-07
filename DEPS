@@ -543,6 +543,7 @@ allowed_hosts = [
   'chromium-nodejs',
   'chrome-linux-sysroot',
   'chromium-fonts',
+  'chromium-style-perftest',
   'chromium-webrtc-resources',
 ]
 
@@ -1199,6 +1200,77 @@ deps = {
 
   'src/third_party/anonymous_tokens/src':
     Var('chromium_git') + '/external/github.com/google/anonymous-tokens.git' + '@' + '76bfcccb6418239183df55111f2f24782d9f3680',
+
+    'src/third_party/blink/renderer/core/css/perftest_data': {
+      'dep_type': 'gcs',
+      'condition': 'non_git_source',
+      'bucket': 'chromium-style-perftest',
+      'objects': [
+          {
+              'object_name': 'e9ce994346c62f8c9fd6d0cecb2b2b0b93b4c2d8',
+              'sha256sum': '519019df16c628c6c0893df18928faeaa3150a9d8f26a787a16ce7c6b2cec2ad',
+              'size_bytes': 601672,
+              'generation': 1664794185950162,
+              'output_file': 'ecommerce.json',
+          },
+          {
+              'object_name': '756068da5e551516b23b0ba133e55c144f623d38',
+              'sha256sum': '84ef87a8163335a95111d9709306596f96742539da0b34fbe7397f799946a168',
+              'size_bytes': 2156935,
+              'generation': 1664794188995509,
+              'output_file': 'encyclopedia.json',
+          },
+          {
+              'object_name': '314e4e0d5e89ea9e9e9a234c617b4413adf48aa9',
+              'sha256sum': 'a721ada40011a286631baae6d76878f2023ff000151792228c83b1958ea8a197',
+              'size_bytes': 608840,
+              'generation': 1664794191929032,
+              'output_file': 'extension.json',
+          },
+          {
+              'object_name': '3a19b42a7c46257b716d55d6733f070c87180b1e',
+              'sha256sum': 'f203ff9e8c8a6a3b714f0a26db38cc940544a907435c62c79b21f4bd3f8bee8e',
+              'size_bytes': 1750837,
+              'generation': 1664794194891567,
+              'output_file': 'news.json',
+          },
+          {
+              'object_name': 'fdc43ee18cbd65487249441849f58aa13484aaef',
+              'sha256sum': '0e92de92f49abc9a521f7175106c80744196f8cefc0263bc0f4a6b4f724a7d10',
+              'size_bytes': 1310798,
+              'generation': 1664794197855470,
+              'output_file': 'search.json',
+          },
+          {
+              'object_name': '7fc9338af75b7d9d185c91ddf262a356def5623d',
+              'sha256sum': '34e92acae8aade2a186abe79ed1f379c266f04f72f1eb54bd3a912e889bc5cc0',
+              'size_bytes': 2280846,
+              'generation': 1664794200867034,
+              'output_file': 'social1.json',
+          },
+          {
+              'object_name': 'c2d7e9ce67522dad138c7feb0a6911b828bfb130',
+              'sha256sum': '95c6b148577b891310c024b2daa5d68faf644a37707ac0cb21501eefe8a399a3',
+              'size_bytes': 411708,
+              'generation': 1664794203829582,
+              'output_file': 'social2.json',
+          },
+          {
+              'object_name': '031d5599c8a21118754e30dbea141be66104f556',
+              'sha256sum': '8e7b765d72bb8e7742f5bf955f4bf64d5469f61197dad8b632304095a52322d7',
+              'size_bytes': 3203922,
+              'generation': 1664794206824773,
+              'output_file': 'sports.json',
+          },
+          {
+              'object_name': '8aac3db2a8c9e44babec81e539a3d60aeab4985c',
+              'sha256sum': '6aeb0036dfafaf5e905abdb0ffe515a3952ffe35a7c59afb0fc8b233b27c6ce4',
+              'size_bytes': 5902660,
+              'generation': 1664794209886788,
+              'output_file': 'video.json',
+          },
+      ],
+  },
 
   'src/third_party/content_analysis_sdk/src':
     Var('chromium_git') + '/external/github.com/chromium/content_analysis_sdk.git' + '@' + '9a408736204513e0e95dd2ab3c08de0d95963efc',
@@ -5581,17 +5653,6 @@ hooks = [
     'pattern': '.',
     'condition': 'host_os == "win"',
     'action': ['python3', 'src/build/del_ninja_deps_cache.py'],
-  },
-  # Download test resources for the style perftest.
-  {
-    'name': 'style_perftest_files',
-    'pattern': '.',
-    'action': ['python3',
-               'src/third_party/depot_tools/download_from_google_storage.py',
-               '--no_auth',
-               '--quiet',
-               '--bucket', 'chromium-style-perftest',
-               '-d', 'src/third_party/blink/renderer/core/css/perftest_data'],
   },
   # Configure remote exec cfg files
   {
