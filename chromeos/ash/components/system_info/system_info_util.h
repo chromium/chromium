@@ -31,6 +31,17 @@ enum class BatteryDataError {
   kMaxValue = kExpectationNotMet,
 };
 
+// Checks if current battery time is excessively long (more than 1 day) or short
+// (less than 1 minute). If so, the time should not be displayed as if the
+// current is close to 0, then the time estimates can be excessively large.
+bool COMPONENT_EXPORT(CHROMEOS_ASH_COMPONENTS_SYSTEM_INFO)
+    ShouldDisplayBatteryTime(const base::TimeDelta& time);
+
+// Converts the double of the battery percentage into an int, which has a
+// minimum value of 1.
+int COMPONENT_EXPORT(CHROMEOS_ASH_COMPONENTS_SYSTEM_INFO)
+    GetRoundedBatteryPercent(double battery_percent);
+
 // Copies the hour and minute components of `time` to `hours` and `minutes`.
 // The minute component is rounded rather than truncated: a `time` value
 // corresponding to 92 seconds will produce a `minutes` value of 2, for

@@ -67,6 +67,20 @@ bool CheckResponse(const TResult& result,
 
 }  // namespace
 
+bool ShouldDisplayBatteryTime(const base::TimeDelta& time) {
+  // Put limits on the maximum and minimum battery time-to-full or time-to-empty
+  // that should be displayed in the UI. If the current is close to zero,
+  // battery time estimates can get very large; avoid displaying these large
+  // numbers.
+  return time >= base::Minutes(1) && time <= base::Days(1);
+}
+
+int GetRoundedBatteryPercent(double battery_percent) {
+  // Minimum battery percentage rendered in UI.
+  constexpr int kMinBatteryPercent = 1;
+  return std::max(kMinBatteryPercent, base::ClampRound(battery_percent));
+}
+
 void SplitTimeIntoHoursAndMinutes(const base::TimeDelta& time,
                                   int* hours,
                                   int* minutes) {

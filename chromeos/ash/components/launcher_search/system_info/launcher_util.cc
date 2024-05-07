@@ -19,28 +19,12 @@
 
 namespace launcher_search {
 
-namespace {
-bool ShouldDisplayBatteryTime(const base::TimeDelta& time) {
-  // Put limits on the maximum and minimum battery time-to-full or time-to-empty
-  // that should be displayed in the UI. If the current is close to zero,
-  // battery time estimates can get very large; avoid displaying these large
-  // numbers.
-  return time >= base::Minutes(1) && time <= base::Days(1);
-}
-
-int GetRoundedBatteryPercent(double battery_percent) {
-  // Minimum battery percentage rendered in UI.
-  constexpr int kMinBatteryPercent = 1;
-  return std::max(kMinBatteryPercent, base::ClampRound(battery_percent));
-}
-}  // namespace
-
 void PopulatePowerStatus(const power_manager::PowerSupplyProperties& proto,
                          system_info::BatteryHealth& battery_health) {
   bool charging = proto.battery_state() ==
                   power_manager::PowerSupplyProperties_BatteryState_CHARGING;
   bool calculating = proto.is_calculating_battery_time();
-  int percent = GetRoundedBatteryPercent(proto.battery_percent());
+  int percent = system_info::GetRoundedBatteryPercent(proto.battery_percent());
   DCHECK(percent <= 100 && percent >= 0);
   base::TimeDelta time_left;
   bool show_time = false;
@@ -48,7 +32,7 @@ void PopulatePowerStatus(const power_manager::PowerSupplyProperties& proto,
   if (!calculating) {
     time_left = base::Seconds(charging ? proto.battery_time_to_full_sec()
                                        : proto.battery_time_to_empty_sec());
-    show_time = ShouldDisplayBatteryTime(time_left);
+    show_time = system_info::ShouldDisplayBatteryTime(time_left);
   }
 
   std::u16string status_text;
