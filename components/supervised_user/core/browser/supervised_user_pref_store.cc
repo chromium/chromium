@@ -163,10 +163,6 @@ void SupervisedUserPrefStore::OnNewSettingsAvailable(
 
 #if BUILDFLAG(ENABLE_EXTENSIONS)
     {
-      // TODO(crbug/1024646): Update Kids Management server to set a new bit for
-      // extension permissions. Until then, rely on other side effects of the
-      // "Permissions for sites, apps and extensions" setting, like geolocation
-      // being disallowed.
       bool permissions_disallowed =
           settings.FindBool(supervised_user::kGeolocationDisabled)
               .value_or(false);

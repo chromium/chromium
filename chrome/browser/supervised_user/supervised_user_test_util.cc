@@ -34,10 +34,6 @@ void AddCustodians(Profile* profile) {
 
 void SetSupervisedUserExtensionsMayRequestPermissionsPref(Profile* profile,
                                                           bool enabled) {
-  // TODO(crbug/1024646): kSupervisedUserExtensionsMayRequestPermissions is
-  // currently set indirectly by setting geolocation requests. Update Kids
-  // Management server to set a new bit for extension permissions and update
-  // this setter function.
   supervised_user::SupervisedUserSettingsService* settings_service =
       SupervisedUserSettingsServiceFactory::GetInstance()->GetForKey(
           profile->GetProfileKey());
