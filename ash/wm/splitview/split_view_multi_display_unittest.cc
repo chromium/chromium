@@ -2,6 +2,7 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
+#include "ash/screen_util.h"
 #include "ash/shell.h"
 #include "ash/test/ash_test_base.h"
 #include "ash/wm/overview/overview_controller.h"
@@ -10,6 +11,7 @@
 #include "ash/wm/overview/overview_test_util.h"
 #include "ash/wm/splitview/split_view_controller.h"
 #include "ash/wm/splitview/split_view_utils.h"
+#include "ash/wm/window_cycle/window_cycle_controller.h"
 #include "ui/display/test/display_manager_test_api.h"
 #include "ui/wm/core/window_util.h"
 
@@ -306,6 +308,65 @@ TEST_F(SplitViewMultiDisplayTest, LandscapeAndPortrait) {
   EXPECT_EQ(chromeos::WindowStateType::kSecondarySnapped,
             WindowState::Get(w1.get())->GetStateType());
   EXPECT_EQ(secondary_bounds2, w1->GetBoundsInScreen());
+}
+
+// Tests that the secondary window doesn't re-snap to primary when dragged to
+// snap. Regression test for http:://b/338228780.
+TEST_F(SplitViewMultiDisplayTest, SnapThenAltTab) {
+  UpdateDisplay("600x900");
+  std::unique_ptr<aura::Window> w1(
+      CreateAppWindow(gfx::Rect(400, 0, 200, 200)));
+  std::unique_ptr<aura::Window> w2(
+      CreateAppWindow(gfx::Rect(400, 0, 200, 200)));
+  std::unique_ptr<aura::Window> w3(
+      CreateAppWindow(gfx::Rect(400, 0, 200, 200)));
+
+  // Drag to snap `w1` to primary top.
+  const display::Display display1 = GetPrimaryDisplay();
+  ASSERT_FALSE(IsLayoutHorizontal(display1));
+  const gfx::Rect work_area =
+      screen_util::GetDisplayWorkAreaBoundsInScreenForActiveDeskContainer(
+          Shell::GetPrimaryRootWindow());
+  wm::ActivateWindow(w1.get());
+  auto* event_generator = GetEventGenerator();
+  event_generator->set_current_screen_location(GetDragPoint(w1.get()));
+  event_generator->PressLeftButton();
+  event_generator->MoveMouseTo(work_area.CenterPoint());
+  event_generator->DragMouseTo(work_area.top_center());
+  EXPECT_EQ(chromeos::WindowStateType::kPrimarySnapped,
+            WindowState::Get(w1.get())->GetStateType());
+  gfx::Rect top_half, bottom_half;
+  work_area.SplitHorizontally(top_half, bottom_half);
+  EXPECT_EQ(top_half, w1->GetBoundsInScreen());
+
+  // Select `w2` from overview to snap to secondary bottom.
+  event_generator->MoveMouseTo(
+      gfx::ToRoundedPoint(GetOverviewItemForWindow(w2.get())
+                              ->GetTransformedBounds()
+                              .CenterPoint()));
+  event_generator->ClickLeftButton();
+  EXPECT_EQ(chromeos::WindowStateType::kSecondarySnapped,
+            WindowState::Get(w2.get())->GetStateType());
+  EXPECT_EQ(bottom_half, w2->GetBoundsInScreen());
+
+  // Drag to snap `w3` to secondary bottom.
+  wm::ActivateWindow(w3.get());
+  event_generator->set_current_screen_location(GetDragPoint(w3.get()));
+  event_generator->PressLeftButton();
+  event_generator->MoveMouseTo(work_area.CenterPoint());
+  event_generator->DragMouseTo(work_area.bottom_center());
+  EXPECT_EQ(chromeos::WindowStateType::kSecondarySnapped,
+            WindowState::Get(w3.get())->GetStateType());
+  EXPECT_EQ(bottom_half, w3->GetBoundsInScreen());
+
+  // Alt tab to `w2`.
+  WindowCycleController* controller = Shell::Get()->window_cycle_controller();
+  controller->HandleCycleWindow(
+      WindowCycleController::WindowCyclingDirection::kForward);
+  controller->CompleteCycling();
+  base::RunLoop().RunUntilIdle();
+  EXPECT_TRUE(wm::IsActiveWindow(w2.get()));
+  EXPECT_EQ(bottom_half, w2->GetBoundsInScreen());
 }
 
 }  // namespace ash
