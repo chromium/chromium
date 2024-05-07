@@ -7,6 +7,7 @@ import("//components/viz/common/debugger/viz_debugger.gni")
 import("//components/viz/viz.gni")
 import("//gpu/vulkan/features.gni")
 import("//skia/features.gni")
+import("//testing/libfuzzer/fuzzer_test.gni")
 import("//testing/test.gni")
 
 import("//third_party/inspector_protocol/inspector_protocol.gni")
@@ -160,8 +161,12 @@ viz_component("common") {
     "gpu/raster_context_provider.cc",
     "gpu/raster_context_provider.h",
     "hit_test/aggregated_hit_test_region.h",
+    "hit_test/hit_test_data_provider.h",
+    "hit_test/hit_test_query.cc",
+    "hit_test/hit_test_query.h",
     "hit_test/hit_test_region_list.cc",
     "hit_test/hit_test_region_list.h",
+    "hit_test/hit_test_region_observer.h",
     "performance_hint_utils.cc",
     "performance_hint_utils.h",
     "quads/aggregated_render_pass.cc",
@@ -343,6 +348,7 @@ viz_source_set("unit_tests") {
     "frame_sinks/copy_output_util_unittest.cc",
     "frame_sinks/delay_based_time_source_unittest.cc",
     "gpu/context_cache_controller_unittest.cc",
+    "hit_test/hit_test_query_unittest.cc",
     "quads/compositor_frame_metadata_unittest.cc",
     "quads/compositor_frame_transition_directive_unittest.cc",
     "quads/compositor_render_pass_unittest.cc",
@@ -402,5 +408,18 @@ viz_source_set("perf_tests") {
     "//skia",
     "//testing/gtest",
     "//testing/perf",
+  ]
+}
+
+fuzzer_test("hit_test_query_fuzzer") {
+  sources = [ "hit_test/hit_test_query_fuzzer.cc" ]
+
+  libfuzzer_options = [ "max_len=4096" ]
+
+  deps = [
+    ":common",
+    "//base/test:test_support",
+    "//components/viz/test:test_support",
+    "//ui/gfx:test_support",
   ]
 }

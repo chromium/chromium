@@ -2,8 +2,8 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#ifndef COMPONENTS_VIZ_HOST_HIT_TEST_HIT_TEST_REGION_OBSERVER_H_
-#define COMPONENTS_VIZ_HOST_HIT_TEST_HIT_TEST_REGION_OBSERVER_H_
+#ifndef COMPONENTS_VIZ_COMMON_HIT_TEST_HIT_TEST_REGION_OBSERVER_H_
+#define COMPONENTS_VIZ_COMMON_HIT_TEST_HIT_TEST_REGION_OBSERVER_H_
 
 #include <vector>
 
@@ -31,4 +31,4 @@ class HitTestRegionObserver {
 
 }  // namespace viz
 
-#endif  // COMPONENTS_VIZ_HOST_HIT_TEST_HIT_TEST_REGION_OBSERVER_H_
+#endif  // COMPONENTS_VIZ_COMMON_HIT_TEST_HIT_TEST_REGION_OBSERVER_H_

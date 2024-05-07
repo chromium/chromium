@@ -340,6 +340,11 @@ void HostFrameSinkManager::RemoveHitTestRegionObserver(
   observers_.RemoveObserver(observer);
 }
 
+const DisplayHitTestQueryMap& HostFrameSinkManager::GetDisplayHitTestQuery()
+    const {
+  return display_hit_test_query_;
+}
+
 void HostFrameSinkManager::OnConnectionLost() {
   connection_was_lost_ = true;
 

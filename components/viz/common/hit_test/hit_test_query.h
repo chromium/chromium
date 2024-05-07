@@ -2,15 +2,15 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#ifndef COMPONENTS_VIZ_HOST_HIT_TEST_HIT_TEST_QUERY_H_
-#define COMPONENTS_VIZ_HOST_HIT_TEST_HIT_TEST_QUERY_H_
+#ifndef COMPONENTS_VIZ_COMMON_HIT_TEST_HIT_TEST_QUERY_H_
+#define COMPONENTS_VIZ_COMMON_HIT_TEST_HIT_TEST_QUERY_H_
 
 #include <string>
 #include <vector>
 
 #include "base/functional/callback.h"
 #include "components/viz/common/hit_test/aggregated_hit_test_region.h"
-#include "components/viz/host/viz_host_export.h"
+#include "components/viz/common/viz_common_export.h"
 #include "ui/gfx/geometry/point_f.h"
 
 namespace viz {
@@ -33,7 +33,7 @@ enum class EventSource {
 // Finds the target for a given location based on the AggregatedHitTestRegion
 // list aggregated by HitTestAggregator.
 // TODO(crbug.com/41460939): Handle 3d space cases correctly.
-class VIZ_HOST_EXPORT HitTestQuery {
+class VIZ_COMMON_EXPORT HitTestQuery {
  public:
   HitTestQuery();
 
@@ -159,4 +159,4 @@ class VIZ_HOST_EXPORT HitTestQuery {
 
 }  // namespace viz
 
-#endif  // COMPONENTS_VIZ_HOST_HIT_TEST_HIT_TEST_QUERY_H_
+#endif  // COMPONENTS_VIZ_COMMON_HIT_TEST_HIT_TEST_QUERY_H_

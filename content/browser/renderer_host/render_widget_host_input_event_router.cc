@@ -15,10 +15,9 @@
 #include "base/metrics/histogram_macros.h"
 #include "base/trace_event/trace_event.h"
 #include "components/viz/common/features.h"
+#include "components/viz/common/hit_test/hit_test_data_provider.h"
 #include "components/viz/common/hit_test/hit_test_region_list.h"
 #include "components/viz/common/quads/surface_draw_quad.h"
-#include "components/viz/host/host_frame_sink_manager.h"
-#include "content/browser/compositor/surface_utils.h"
 #include "content/browser/renderer_host/cursor_manager.h"
 #include "content/browser/renderer_host/input/touch_emulator.h"
 #include "content/common/input/render_input_router.h"
@@ -55,13 +54,11 @@ bool IsMouseButtonDown(const blink::WebMouseEvent& event) {
 namespace content {
 
 // Helper method also used from hit_test_debug_key_event_observer.cc
-viz::HitTestQuery* GetHitTestQuery(
-    viz::HostFrameSinkManager* host_frame_sink_manager,
-    const viz::FrameSinkId& frame_sink_id) {
+viz::HitTestQuery* GetHitTestQuery(viz::HitTestDataProvider* provider,
+                                   const viz::FrameSinkId& frame_sink_id) {
   if (!frame_sink_id.is_valid())
     return nullptr;
-  const auto& display_hit_test_query_map =
-      host_frame_sink_manager->display_hit_test_query();
+  const auto& display_hit_test_query_map = provider->GetDisplayHitTestQuery();
   const auto iter = display_hit_test_query_map.find(frame_sink_id);
   if (iter == display_hit_test_query_map.end())
     return nullptr;
@@ -428,22 +425,21 @@ void RenderWidgetHostInputEventRouter::ClearAllObserverRegistrations() {
       entry.second->RemoveObserver(this);
   }
   owner_map_.clear();
-  viz::HostFrameSinkManager* manager = GetHostFrameSinkManager();
-  if (manager)
-    manager->RemoveHitTestRegionObserver(this);
+  hit_test_provider_->RemoveHitTestRegionObserver(this);
 }
 
-RenderWidgetHostInputEventRouter::RenderWidgetHostInputEventRouter()
+RenderWidgetHostInputEventRouter::RenderWidgetHostInputEventRouter(
+    viz::HitTestDataProvider* provider)
     : last_mouse_move_target_(nullptr),
       last_mouse_move_root_view_(nullptr),
       last_emulated_event_root_view_(nullptr),
       last_device_scale_factor_(1.f),
       active_touches_(0),
+      hit_test_provider_(provider),
       event_targeter_(std::make_unique<RenderWidgetTargeter>(this)),
       touch_event_ack_queue_(new TouchEventAckQueue(this)) {
-  viz::HostFrameSinkManager* manager = GetHostFrameSinkManager();
-  DCHECK(manager);
-  manager->AddHitTestRegionObserver(this);
+  DCHECK(hit_test_provider_);
+  hit_test_provider_->AddHitTestRegionObserver(this);
 }
 
 RenderWidgetHostInputEventRouter::~RenderWidgetHostInputEventRouter() {
@@ -557,8 +553,8 @@ RenderWidgetTargetResult RenderWidgetHostInputEventRouter::FindViewAtLocation(
 
   viz::FrameSinkId frame_sink_id;
   bool query_renderer = false;
-  viz::HitTestQuery* query = GetHitTestQuery(GetHostFrameSinkManager(),
-                                             root_view->GetRootFrameSinkId());
+  viz::HitTestQuery* query =
+      GetHitTestQuery(hit_test_provider_, root_view->GetRootFrameSinkId());
   if (!query) {
     *transformed_point = point;
     return {root_view, false, *transformed_point, false};

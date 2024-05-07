@@ -11,7 +11,7 @@
 #include <vector>
 
 #include "base/command_line.h"
-#include "components/viz/host/hit_test/hit_test_query.h"
+#include "components/viz/common/hit_test/hit_test_query.h"
 #include "ui/gfx/geometry/test/fuzzer_util.h"
 
 namespace {

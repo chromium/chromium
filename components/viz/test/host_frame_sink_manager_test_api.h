@@ -31,7 +31,7 @@ class HostFrameSinkManagerTestApi {
   // Clears out the currently set hit test queries, and overrides it with |map|.
   // The HostFrameSinkManager will take ownership of |map|. There should only be
   // one HitTestQuery per root FrameSinkId.
-  void SetDisplayHitTestQuery(HostFrameSinkManager::DisplayHitTestQueryMap map);
+  void SetDisplayHitTestQuery(DisplayHitTestQueryMap map);
 
  private:
   // Not owned.

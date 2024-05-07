@@ -52,6 +52,7 @@
 #include "components/download/public/common/download_stats.h"
 #include "components/url_formatter/url_formatter.h"
 #include "components/viz/common/features.h"
+#include "components/viz/host/host_frame_sink_manager.h"
 #include "content/browser/accessibility/browser_accessibility.h"
 #include "content/browser/accessibility/browser_accessibility_state_impl.h"
 #include "content/browser/attribution_reporting/attribution_host.h"
@@ -63,6 +64,7 @@
 #include "content/browser/browser_plugin/browser_plugin_guest.h"
 #include "content/browser/child_process_security_policy_impl.h"
 #include "content/browser/closewatcher/close_listener_manager.h"
+#include "content/browser/compositor/surface_utils.h"
 #include "content/browser/device_posture/device_posture_provider_impl.h"
 #include "content/browser/devtools/protocol/page_handler.h"
 #include "content/browser/devtools/render_frame_devtools_agent_host.h"
@@ -3903,7 +3905,8 @@ RenderWidgetHostInputEventRouter* WebContentsImpl::GetInputEventRouter() {
 
     if (!rwh_input_event_router_.get()) {
       rwh_input_event_router_ =
-          std::make_unique<RenderWidgetHostInputEventRouter>();
+          std::make_unique<RenderWidgetHostInputEventRouter>(
+              GetHostFrameSinkManager());
     }
   }
   return rwh_input_event_router_.get();

@@ -18,7 +18,7 @@
 #include "components/viz/common/frame_sinks/begin_frame_args.h"
 #include "components/viz/common/frame_sinks/begin_frame_source.h"
 #include "components/viz/common/frame_timing_details_map.h"
-#include "components/viz/host/hit_test/hit_test_query.h"
+#include "components/viz/common/hit_test/hit_test_query.h"
 #include "components/viz/host/host_frame_sink_client.h"
 #include "components/viz/host/host_frame_sink_manager.h"
 #include "content/browser/renderer_host/dip_util.h"

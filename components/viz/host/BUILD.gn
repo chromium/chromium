@@ -4,7 +4,6 @@
 
 import("//build/config/ui.gni")
 import("//components/viz/viz.gni")
-import("//testing/libfuzzer/fuzzer_test.gni")
 
 viz_component("host") {
   defines = [ "VIZ_HOST_IMPLEMENTATION" ]
@@ -19,9 +18,6 @@ viz_component("host") {
     "gpu_client_delegate.h",
     "gpu_host_impl.cc",
     "gpu_host_impl.h",
-    "hit_test/hit_test_query.cc",
-    "hit_test/hit_test_query.h",
-    "hit_test/hit_test_region_observer.h",
     "host_display_client.cc",
     "host_display_client.h",
     "host_frame_sink_client.h",
@@ -75,7 +71,6 @@ viz_source_set("unit_tests") {
   testonly = true
 
   sources = [
-    "hit_test/hit_test_query_unittest.cc",
     "host_frame_sink_manager_unittest.cc",
     "host_gpu_memory_buffer_manager_unittest.cc",
   ]
@@ -99,17 +94,4 @@ viz_source_set("unit_tests") {
   if (use_ozone) {
     deps += [ "//ui/ozone" ]
   }
-}
-
-fuzzer_test("hit_test_query_fuzzer") {
-  sources = [ "hit_test/hit_test_query_fuzzer.cc" ]
-
-  libfuzzer_options = [ "max_len=4096" ]
-
-  deps = [
-    ":host",
-    "//base/test:test_support",
-    "//components/viz/test:test_support",
-    "//ui/gfx:test_support",
-  ]
 }

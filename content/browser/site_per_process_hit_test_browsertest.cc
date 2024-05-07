@@ -5637,7 +5637,7 @@ IN_PROC_BROWSER_TEST_F(SitePerProcessHitTestBrowserTest,
   // Clobber the real hit test data once it comes in.
   WaitForHitTestData(root->current_frame_host());
   ASSERT_TRUE(GetHostFrameSinkManager());
-  viz::HostFrameSinkManager::DisplayHitTestQueryMap empty_hit_test_map;
+  viz::DisplayHitTestQueryMap empty_hit_test_map;
   viz::HostFrameSinkManagerTestApi(GetHostFrameSinkManager())
       .SetDisplayHitTestQuery(std::move(empty_hit_test_map));
 

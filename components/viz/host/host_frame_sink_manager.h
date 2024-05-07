@@ -19,11 +19,12 @@
 #include "base/memory/weak_ptr.h"
 #include "base/observer_list.h"
 #include "base/time/time.h"
+#include "components/viz/common/hit_test/hit_test_data_provider.h"
+#include "components/viz/common/hit_test/hit_test_query.h"
+#include "components/viz/common/hit_test/hit_test_region_observer.h"
 #include "components/viz/common/surfaces/frame_sink_bundle_id.h"
 #include "components/viz/common/surfaces/frame_sink_id.h"
 #include "components/viz/host/client_frame_sink_video_capturer.h"
-#include "components/viz/host/hit_test/hit_test_query.h"
-#include "components/viz/host/hit_test/hit_test_region_observer.h"
 #include "components/viz/host/host_frame_sink_client.h"
 #include "components/viz/host/viz_host_export.h"
 #include "mojo/public/cpp/bindings/pending_receiver.h"
@@ -47,21 +48,15 @@ enum class ReportFirstSurfaceActivation { kYes, kNo };
 // UI thread. Manages frame sinks and is intended to replace all usage of
 // FrameSinkManagerImpl.
 class VIZ_HOST_EXPORT HostFrameSinkManager
-    : public mojom::FrameSinkManagerClient {
+    : public mojom::FrameSinkManagerClient,
+      public HitTestDataProvider {
  public:
-  using DisplayHitTestQueryMap =
-      base::flat_map<FrameSinkId, std::unique_ptr<HitTestQuery>>;
-
   HostFrameSinkManager();
 
   HostFrameSinkManager(const HostFrameSinkManager&) = delete;
   HostFrameSinkManager& operator=(const HostFrameSinkManager&) = delete;
 
   ~HostFrameSinkManager() override;
-
-  const DisplayHitTestQueryMap& display_hit_test_query() const {
-    return display_hit_test_query_;
-  }
 
   // Sets a local FrameSinkManagerImpl instance and connects directly to it.
   void SetLocalManager(mojom::FrameSinkManager* frame_sink_manager);
@@ -232,10 +227,10 @@ class VIZ_HOST_EXPORT HostFrameSinkManager
   void StartThrottlingAllFrameSinks(base::TimeDelta interval);
   void StopThrottlingAllFrameSinks();
 
-  // Add/Remove an observer to receive notifications of when the host receives
-  // new hit test data.
-  void AddHitTestRegionObserver(HitTestRegionObserver* observer);
-  void RemoveHitTestRegionObserver(HitTestRegionObserver* observer);
+  // HitTestDataProvider implementation.
+  void AddHitTestRegionObserver(HitTestRegionObserver* observer) override;
+  void RemoveHitTestRegionObserver(HitTestRegionObserver* observer) override;
+  const DisplayHitTestQueryMap& GetDisplayHitTestQuery() const override;
 
   void SetHitTestAsyncQueriedDebugRegions(
       const FrameSinkId& root_frame_sink_id,

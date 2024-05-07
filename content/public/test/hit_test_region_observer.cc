@@ -7,7 +7,7 @@
 #include <algorithm>
 
 #include "base/test/test_timeouts.h"
-#include "components/viz/host/hit_test/hit_test_query.h"
+#include "components/viz/common/hit_test/hit_test_query.h"
 #include "components/viz/host/host_frame_sink_manager.h"
 #include "content/browser/compositor/surface_utils.h"
 #include "content/browser/renderer_host/render_frame_host_impl.h"
@@ -57,7 +57,7 @@ HitTestRegionObserver::~HitTestRegionObserver() {
 void HitTestRegionObserver::WaitForHitTestData() {
   DCHECK(cached_hit_test_data_.empty());
 
-  for (auto& it : GetHostFrameSinkManager()->display_hit_test_query()) {
+  for (auto& it : GetHostFrameSinkManager()->GetDisplayHitTestQuery()) {
     if (it.second->ContainsActiveFrameSinkId(frame_sink_id_)) {
       cached_hit_test_data_ = it.second->GetHitTestData();
       return;
@@ -72,7 +72,7 @@ void HitTestRegionObserver::WaitForHitTestData() {
 void HitTestRegionObserver::WaitForHitTestDataChange() {
   DCHECK(!cached_hit_test_data_.empty());
 
-  for (auto& it : GetHostFrameSinkManager()->display_hit_test_query()) {
+  for (auto& it : GetHostFrameSinkManager()->GetDisplayHitTestQuery()) {
     DCHECK(it.second->ContainsActiveFrameSinkId(frame_sink_id_));
     if (it.second->GetHitTestData() != cached_hit_test_data_) {
       cached_hit_test_data_ = it.second->GetHitTestData();
@@ -109,7 +109,7 @@ void HitTestRegionObserver::OnAggregatedHitTestRegionListUpdated(
 const std::vector<viz::AggregatedHitTestRegion>&
 HitTestRegionObserver::GetHitTestData() {
   const auto& hit_test_query_map =
-      GetHostFrameSinkManager()->display_hit_test_query();
+      GetHostFrameSinkManager()->GetDisplayHitTestQuery();
   const auto iter = hit_test_query_map.find(frame_sink_id_);
   DCHECK(iter != hit_test_query_map.end());
   return iter->second.get()->GetHitTestData();

@@ -15,9 +15,9 @@
 #include "base/memory/raw_ptr.h"
 #include "base/memory/raw_ptr_exclusion.h"
 #include "base/memory/weak_ptr.h"
+#include "components/viz/common/hit_test/hit_test_query.h"
+#include "components/viz/common/hit_test/hit_test_region_observer.h"
 #include "components/viz/common/surfaces/surface_id.h"
-#include "components/viz/host/hit_test/hit_test_query.h"
-#include "components/viz/host/hit_test/hit_test_region_observer.h"
 #include "content/browser/renderer_host/input/touch_emulator_client.h"
 #include "content/browser/renderer_host/render_widget_targeter.h"
 #include "content/common/content_export.h"
@@ -48,7 +48,7 @@ class LatencyInfo;
 }
 
 namespace viz {
-class HostFrameSinkManager;
+class HitTestDataProvider;
 }
 
 namespace content {
@@ -59,9 +59,8 @@ class TouchEmulator;
 class TouchEventAckQueue;
 
 // Helper method also used from hit_test_debug_key_event_observer.cc
-viz::HitTestQuery* GetHitTestQuery(
-    viz::HostFrameSinkManager* host_frame_sink_manager,
-    const viz::FrameSinkId& frame_sink_id);
+viz::HitTestQuery* GetHitTestQuery(viz::HitTestDataProvider* provider,
+                                   const viz::FrameSinkId& frame_sink_id);
 
 // Class owned by WebContentsImpl for the purpose of directing input events
 // to the correct RenderWidgetHost on pages with multiple RenderWidgetHosts.
@@ -75,7 +74,7 @@ class CONTENT_EXPORT RenderWidgetHostInputEventRouter final
       public TouchEmulatorClient,
       public viz::HitTestRegionObserver {
  public:
-  RenderWidgetHostInputEventRouter();
+  explicit RenderWidgetHostInputEventRouter(viz::HitTestDataProvider* provider);
 
   RenderWidgetHostInputEventRouter(const RenderWidgetHostInputEventRouter&) =
       delete;
@@ -455,6 +454,9 @@ class CONTENT_EXPORT RenderWidgetHostInputEventRouter final
     PinchState state_;
   };
   TouchscreenPinchState touchscreen_pinch_state_;
+
+  // This is expected to outlive RenderWidgetHostInputEventRouter object.
+  const raw_ptr<viz::HitTestDataProvider> hit_test_provider_ = nullptr;
 
   std::unique_ptr<RenderWidgetTargeter> event_targeter_;
   bool events_being_flushed_ = false;

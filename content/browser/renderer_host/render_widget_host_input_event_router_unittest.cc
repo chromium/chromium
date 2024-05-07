@@ -3,13 +3,14 @@
 // found in the LICENSE file.
 
 #include "content/browser/renderer_host/render_widget_host_input_event_router.h"
+
 #include <memory>
 
 #include "base/memory/raw_ptr.h"
 #include "base/run_loop.h"
 #include "base/test/task_environment.h"
 #include "build/build_config.h"
-#include "components/viz/host/hit_test/hit_test_query.h"
+#include "components/viz/common/hit_test/hit_test_query.h"
 #include "components/viz/host/host_frame_sink_manager.h"
 #include "components/viz/test/host_frame_sink_manager_test_api.h"
 #include "content/browser/compositor/surface_utils.h"
@@ -144,7 +145,7 @@ class MockRootRenderWidgetHostView : public TestRenderWidgetHostView {
                         bool query_renderer) {
     DCHECK(GetHostFrameSinkManager());
 
-    viz::HostFrameSinkManager::DisplayHitTestQueryMap hit_test_map;
+    viz::DisplayHitTestQueryMap hit_test_map;
     hit_test_map[GetFrameSinkId()] =
         std::make_unique<StubHitTestQuery>(result_view, query_renderer);
 
@@ -195,12 +196,13 @@ class RenderWidgetHostInputEventRouterTest : public testing::Test {
   RenderWidgetHostInputEventRouterTest() = default;
 
   RenderWidgetHostInputEventRouter* rwhier() {
-    return delegate_.GetInputEventRouter();
+    return delegate_->GetInputEventRouter();
   }
 
   // testing::Test:
   void SetUp() override {
     browser_context_ = std::make_unique<TestBrowserContext>();
+    delegate_ = std::make_unique<MockRenderWidgetHostDelegate>();
 
 // ImageTransportFactory doesn't exist on Android. This is needed to create
 // a RenderWidgetHostViewChildFrame in the test.
@@ -209,7 +211,7 @@ class RenderWidgetHostInputEventRouterTest : public testing::Test {
         std::make_unique<TestImageTransportFactory>());
 #endif
 
-    delegate_.CreateInputEventRouter();
+    delegate_->CreateInputEventRouter();
 
     process_host_root_ =
         std::make_unique<MockRenderProcessHost>(browser_context_.get());
@@ -218,7 +220,7 @@ class RenderWidgetHostInputEventRouterTest : public testing::Test {
             browser_context_.get(), process_host_root_.get()));
     auto routing_id = process_host_root_->GetNextRoutingID();
     widget_host_root_ = RenderWidgetHostImpl::Create(
-        /*frame_tree=*/nullptr, &delegate_,
+        /*frame_tree=*/nullptr, delegate_.get(),
         RenderWidgetHostImpl::DefaultFrameSinkId(*site_instance_group_root_,
                                                  routing_id),
         site_instance_group_root_->GetSafeRef(), routing_id,
@@ -281,7 +283,7 @@ class RenderWidgetHostInputEventRouterTest : public testing::Test {
             site_instance_group_root_.get(), child.process_host.get()));
     auto routing_id = child.process_host->GetNextRoutingID();
     child.widget_host = RenderWidgetHostImpl::Create(
-        /*frame_tree=*/nullptr, &delegate_,
+        /*frame_tree=*/nullptr, delegate_.get(),
         RenderWidgetHostImpl::DefaultFrameSinkId(*child.site_instance_group,
                                                  routing_id),
         child.site_instance_group->GetSafeRef(), routing_id,
@@ -305,6 +307,8 @@ class RenderWidgetHostInputEventRouterTest : public testing::Test {
     process_host_root_->Cleanup();
     site_instance_group_root_.reset();
     process_host_root_.reset();
+    delegate_.reset();
+
     base::RunLoop().RunUntilIdle();
 
 #if !BUILDFLAG(IS_ANDROID)
@@ -332,7 +336,7 @@ class RenderWidgetHostInputEventRouterTest : public testing::Test {
 
   BrowserTaskEnvironment task_environment_;
 
-  MockRenderWidgetHostDelegate delegate_;
+  std::unique_ptr<MockRenderWidgetHostDelegate> delegate_;
   std::unique_ptr<BrowserContext> browser_context_;
 
   std::unique_ptr<MockRenderProcessHost> process_host_root_;

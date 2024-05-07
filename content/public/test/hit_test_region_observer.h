@@ -10,8 +10,8 @@
 
 #include "base/run_loop.h"
 #include "components/viz/common/hit_test/aggregated_hit_test_region.h"
+#include "components/viz/common/hit_test/hit_test_region_observer.h"
 #include "components/viz/common/surfaces/frame_sink_id.h"
-#include "components/viz/host/hit_test/hit_test_region_observer.h"
 
 namespace content {
 class RenderFrameHost;
