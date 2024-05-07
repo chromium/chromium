@@ -47,6 +47,11 @@ class AutofillSigninPromoTabHelper
   // Overrides signin::IdentityManager::Observer functions.
   void OnPrimaryAccountChanged(
       const signin::PrimaryAccountChangeEvent& event_details) override;
+  void OnErrorStateOfRefreshTokenUpdatedForAccount(
+      const CoreAccountInfo& account_info,
+      const GoogleServiceAuthError& error,
+      signin_metrics::SourceForRefreshTokenOperation token_operation_source)
+      override;
   void OnIdentityManagerShutdown(
       signin::IdentityManager* identity_manager) override;
 
@@ -71,6 +76,7 @@ class AutofillSigninPromoTabHelper
     base::Time initialization_time_;
     base::TimeDelta time_limit_;
     bool is_initialized_ = false;
+    bool needs_reauth_ = false;
   };
 
   std::unique_ptr<ResetableState> state_;

@@ -76,9 +76,6 @@ class ManagePasswordsTest : public InteractiveBrowserTest {
   // Put the controller, icon, and bubble into a moving-password state.
   void SetupMovingPasswords();
 
-  // Put the client into a state which induces password save to account store.
-  void SetupSaveToAccountStore();
-
   // Always configures a signed-in user, and when |is_enabled| is true, it also
   // configures the Sync service to sync passwords. |is_account_storage_enabled|
   // enables account storage for the user.

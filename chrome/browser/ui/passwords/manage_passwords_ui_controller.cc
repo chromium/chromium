@@ -934,16 +934,13 @@ void ManagePasswordsUIController::SignIn(const AccountInfo& account) {
       profile, account,
       signin_metrics::AccessPoint::ACCESS_POINT_PASSWORD_BUBBLE);
 
-  // Do nothing if the password is already using account store, it will be
-  // uploaded automatically after successful reauthentication.
-  if (pending_password.IsUsingAccountStore()) {
-    return;
-  }
-
   // If the sign in was already successful, move the password directly.
   // Otherwise, wait for a sign in event and move the password upon success.
-  if (IdentityManagerFactory::GetForProfile(profile)->HasPrimaryAccount(
-          signin::ConsentLevel::kSignin)) {
+  signin::IdentityManager* identity_manager =
+      IdentityManagerFactory::GetForProfile(profile);
+  if (identity_manager->HasPrimaryAccount(signin::ConsentLevel::kSignin) &&
+      !identity_manager->HasAccountWithRefreshTokenInPersistentErrorState(
+          account.account_id)) {
     MoveJustSavedPasswordAfterAccountStoreOptIn(
         pending_password,
         password_manager::PasswordManagerClient::ReauthSucceeded(true));

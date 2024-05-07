@@ -248,14 +248,6 @@ void ManagePasswordsTest::ConfigurePasswordSync(
   }
 }
 
-void ManagePasswordsTest::SetupSaveToAccountStore() {
-  ON_CALL(*client_.GetPasswordFeatureManager(), IsOptedInForAccountStorage())
-      .WillByDefault(testing::Return(true));
-  ON_CALL(*client_.GetPasswordFeatureManager(), GetDefaultPasswordStore())
-      .WillByDefault(testing::Return(
-          password_manager::PasswordForm::Store::kAccountStore));
-}
-
 std::unique_ptr<base::HistogramSamples> ManagePasswordsTest::GetSamples(
     const char* histogram) {
   // Ensure that everything has been properly recorded before pulling samples.

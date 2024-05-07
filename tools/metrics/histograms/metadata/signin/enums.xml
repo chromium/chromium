@@ -806,6 +806,9 @@ chromium-metrics-reviews@google.com.
   <int value="19" label="LogoutTabHelper::DidFinishNavigation"/>
   <int value="20" label="ForceSigninReauthWithDifferentAccount"/>
   <int value="21" label="AccountReconcilor::RevokeTokensNotInCookies"/>
+  <int value="22"
+      label="DiceResponseHandler::Signin from sign in promo after password
+             save"/>
 </enum>
 
 <enum name="SyncButtonClicked">
