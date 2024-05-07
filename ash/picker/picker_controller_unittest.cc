@@ -316,12 +316,12 @@ TEST_F(PickerControllerTest, ShowEmojiPickerCallsEmojiPanelCallback) {
       future;
   ui::SetShowEmojiKeyboardCallback(future.GetRepeatingCallback());
 
-  controller.ShowEmojiPicker(ui::EmojiPickerCategory::kSymbols);
+  controller.ShowEmojiPicker(ui::EmojiPickerCategory::kSymbols, u"abc");
 
   const auto& [category, focus_behavior, initial_query] = future.Get();
   EXPECT_EQ(category, ui::EmojiPickerCategory::kSymbols);
   EXPECT_EQ(focus_behavior, ui::EmojiPickerFocusBehavior::kAlwaysShow);
-  EXPECT_EQ(initial_query, "");
+  EXPECT_EQ(initial_query, "abc");
 }
 
 TEST_F(PickerControllerTest, SetCapsLockEnabledToTrueTurnsOnCapsLock) {

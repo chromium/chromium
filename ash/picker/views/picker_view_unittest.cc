@@ -136,8 +136,9 @@ class FakePickerViewDelegate : public PickerViewDelegate {
     last_inserted_result_ = result;
   }
 
-  void ShowEmojiPicker(ui::EmojiPickerCategory category) override {
-    showed_emoji_picker_ = true;
+  void ShowEmojiPicker(ui::EmojiPickerCategory category,
+                       std::u16string_view query) override {
+    emoji_picker_query_ = std::u16string(query);
   }
   void ShowEditor(std::optional<std::string> preset_query_id,
                   std::optional<std::string> freeform_text) override {
@@ -159,7 +160,9 @@ class FakePickerViewDelegate : public PickerViewDelegate {
     return last_inserted_result_;
   }
 
-  bool showed_emoji_picker() const { return showed_emoji_picker_; }
+  std::optional<std::u16string> emoji_picker_query() const {
+    return emoji_picker_query_;
+  }
   bool showed_editor() const { return showed_editor_; }
   std::optional<PickerCategory> requested_case_transformation_category() const {
     return requested_case_transformation_category_;
@@ -171,7 +174,7 @@ class FakePickerViewDelegate : public PickerViewDelegate {
   MockPickerAssetFetcher asset_fetcher_;
   PickerSessionMetrics session_metrics_;
   std::optional<PickerSearchResult> last_inserted_result_;
-  bool showed_emoji_picker_ = false;
+  std::optional<std::u16string> emoji_picker_query_;
   bool showed_editor_ = false;
   std::optional<PickerCategory> requested_case_transformation_category_ =
       std::nullopt;
@@ -784,7 +787,7 @@ TEST_F(PickerViewTest, ShowsEmojiPickerWhenClickingOnExpressions) {
   LeftClickOn(GetFirstCategoryItemView(GetPickerViewFromWidget(*widget)));
 
   EXPECT_TRUE(widget->IsClosed());
-  EXPECT_TRUE(delegate.showed_emoji_picker());
+  EXPECT_THAT(delegate.emoji_picker_query(), Optional(Eq(u"")));
 }
 
 TEST_F(PickerViewTest, ShowsEditorWhenClickingOnEditor) {
@@ -1066,6 +1069,36 @@ TEST_F(PickerViewTest, PerformsCategorySearchWhenClickingOnSeeMoreResults) {
   // Should call search a second time.
   EXPECT_TRUE(future.Wait());
   EXPECT_TRUE(view->search_results_view_for_testing().GetVisible());
+}
+
+TEST_F(PickerViewTest,
+       OpensEmojiPickerWithQueryCategorySearchWhenClickingOnSeeMoreResults) {
+  base::test::TestFuture<void> future;
+  FakePickerViewDelegate delegate({
+      .search_function = base::BindLambdaForTesting(
+          [&](FakePickerViewDelegate::SearchResultsCallback callback) {
+            future.SetValue();
+            callback.Run({
+                PickerSearchResultsSection(PickerSectionType::kExpressions, {},
+                                           /*has_more_results=*/true),
+            });
+          }),
+  });
+  auto widget = PickerWidget::Create(&delegate, kDefaultAnchorBounds);
+  widget->Show();
+  PressAndReleaseKey(ui::KeyboardCode::VKEY_A, ui::EF_NONE);
+  ASSERT_TRUE(future.Wait());
+  future.Clear();
+  PickerView* view = GetPickerViewFromWidget(*widget);
+  views::View* trailing_link = view->search_results_view_for_testing()
+                                   .section_views_for_testing()[0]
+                                   ->title_trailing_link_for_testing();
+
+  ViewDrawnWaiter().Wait(trailing_link);
+  LeftClickOn(trailing_link);
+
+  EXPECT_TRUE(widget->IsClosed());
+  EXPECT_THAT(delegate.emoji_picker_query(), Optional(Eq(u"a")));
 }
 
 TEST_F(PickerViewTest,

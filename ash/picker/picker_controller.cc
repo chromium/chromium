@@ -456,10 +456,11 @@ void PickerController::InsertResultOnNextFocus(
       PickerSessionMetrics::SessionOutcome::kInsertedOrCopied);
 }
 
-void PickerController::ShowEmojiPicker(ui::EmojiPickerCategory category) {
+void PickerController::ShowEmojiPicker(ui::EmojiPickerCategory category,
+                                       std::u16string_view query) {
   ui::ShowEmojiPanelInSpecificMode(category,
                                    ui::EmojiPickerFocusBehavior::kAlwaysShow,
-                                   /*initial_query=*/"");
+                                   base::UTF16ToUTF8(query));
 }
 
 void PickerController::ShowEditor(std::optional<std::string> preset_query_id,

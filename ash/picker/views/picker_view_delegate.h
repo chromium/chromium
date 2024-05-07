@@ -57,7 +57,8 @@ class ASH_EXPORT PickerViewDelegate {
   virtual void InsertResultOnNextFocus(const PickerSearchResult& result) = 0;
 
   // Shows the Emoji Picker with `category`.
-  virtual void ShowEmojiPicker(ui::EmojiPickerCategory category) = 0;
+  virtual void ShowEmojiPicker(ui::EmojiPickerCategory category,
+                               std::u16string_view query) = 0;
 
   // Shows the Editor.
   virtual void ShowEditor(std::optional<std::string> preset_query_id,

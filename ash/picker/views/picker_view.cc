@@ -310,7 +310,7 @@ void PickerView::SelectCategoryWithQuery(PickerCategory category,
     }
     session_metrics.SetOutcome(
         PickerSessionMetrics::SessionOutcome::kRedirected);
-    delegate_->ShowEmojiPicker(ui::EmojiPickerCategory::kEmojis);
+    delegate_->ShowEmojiPicker(ui::EmojiPickerCategory::kEmojis, query);
     return;
   }
 
