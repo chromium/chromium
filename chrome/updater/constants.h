@@ -431,6 +431,9 @@ inline constexpr int kErrorIdle = 45;
 // service.
 inline constexpr int kErrorEulaRequired = 46;
 
+// The current operating system is not supported.
+inline constexpr int kErrorUnsupportedOperatingSystem = 47;
+
 inline constexpr int kErrorTagParsing = 50;
 
 // Metainstaller errors.
