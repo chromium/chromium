@@ -12,6 +12,7 @@
 #include "chrome/services/sharing/nearby/platform/ble_v2_remote_peripheral.h"
 #include "chrome/services/sharing/nearby/platform/ble_v2_server_socket.h"
 #include "chrome/services/sharing/nearby/platform/bluetooth_utils.h"
+#include "chrome/services/sharing/nearby/platform/nearby_platform_metrics.h"
 #include "components/cross_device/logging/logging.h"
 #include "components/cross_device/nearby/nearby_features.h"
 #include "third_party/nearby/src/internal/platform/byte_array.h"
@@ -318,6 +319,7 @@ std::unique_ptr<api::ble_v2::GattServer> BleV2Medium::StartGattServer(
 
   bool is_dual_role_supported;
   adapter_->IsLeScatternetDualRoleSupported(&is_dual_role_supported);
+  metrics::RecordGattServerScatternetDualRoleSupported(is_dual_role_supported);
   if (!is_dual_role_supported) {
     return nullptr;
   }

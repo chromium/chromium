@@ -8,6 +8,8 @@
 
 #include "base/gtest_prod_util.h"
 #include "base/memory/raw_ptr.h"
+#include "base/task/thread_pool.h"
+#include "base/test/metrics/histogram_tester.h"
 #include "base/test/scoped_feature_list.h"
 #include "base/test/task_environment.h"
 #include "chrome/services/sharing/nearby/platform/count_down_latch.h"
@@ -102,6 +104,7 @@ class BleV2MediumTest : public testing::Test {
   raw_ptr<bluetooth::FakeAdapter> fake_adapter_;
   mojo::SharedRemote<bluetooth::mojom::Adapter> remote_adapter_;
   std::unique_ptr<BleV2Medium> ble_v2_medium_;
+  base::HistogramTester histogram_tester_;
 
  private:
   std::unique_ptr<BleV2Medium::ScanningSession> scanning_session_;
@@ -510,6 +513,9 @@ TEST_F(BleV2MediumTest, StartGattServer_DualRoleSupported_FlagEnabled) {
   fake_adapter_->is_dual_role_supported_ = true;
   auto gatt_server = ble_v2_medium_->StartGattServer({});
   EXPECT_TRUE(gatt_server);
+  histogram_tester_.ExpectBucketCount(
+      "Nearby.Connections.BleV2.ScatternetDualRoleSupported",
+      /*bucket: DualRole is supported=*/1, 1);
 
   // Clean up ble_v2_medium_ to prevent dangling raw_ptr in unit tests.
   ble_v2_medium_.reset();
@@ -519,6 +525,9 @@ TEST_F(BleV2MediumTest, StartGattServer_DualRoleNotSupported) {
   fake_adapter_->is_dual_role_supported_ = false;
   auto gatt_server = ble_v2_medium_->StartGattServer({});
   EXPECT_FALSE(gatt_server);
+  histogram_tester_.ExpectBucketCount(
+      "Nearby.Connections.BleV2.ScatternetDualRoleSupported",
+      /*bucket: DualRole is not supported=*/0, 1);
 }
 
 }  // namespace nearby::chrome

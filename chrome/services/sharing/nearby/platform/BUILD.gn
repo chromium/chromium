@@ -54,6 +54,8 @@ source_set("platform") {
     "log_message.h",
     "mutex.cc",
     "mutex.h",
+    "nearby_platform_metrics.cc",
+    "nearby_platform_metrics.h",
     "output_file.cc",
     "output_file.h",
     "output_stream_impl.cc",

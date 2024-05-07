@@ -38,6 +38,19 @@ chromium-metrics-reviews@google.com.
   <variant name=".WifiLan" summary="Wi-Fi LAN"/>
 </variants>
 
+<histogram name="Nearby.Connections.BleV2.ScatternetDualRoleSupported"
+    enum="Boolean" expires_after="2025-04-30">
+  <owner>julietlevesque@google.com</owner>
+  <owner>chromeos-cross-device-eng@google.com</owner>
+  <summary>
+    Records whether or not the local ChromeOS device supports the Scatternet
+    Dual Role which is used to decide to start a GATT server. Emitted after a
+    check on the local Bluetooth Adapter for supported roles when Nearby
+    Connections is deciding to start a GATT server when it begins BLE V2
+    advertising.
+  </summary>
+</histogram>
+
 <histogram name="Nearby.Connections.Bluetooth.Adapter.SetName.Result"
     enum="BooleanSuccess" expires_after="2024-09-15">
   <owner>hansenmichael@google.com</owner>
