@@ -89,7 +89,6 @@ import org.chromium.chrome.test.util.NewTabPageTestUtils;
 import org.chromium.chrome.test.util.OmniboxTestUtils;
 import org.chromium.components.browser_ui.styles.ChromeColors;
 import org.chromium.components.embedder_support.util.UrlConstants;
-import org.chromium.components.omnibox.OmniboxFeatureList;
 import org.chromium.components.search_engines.TemplateUrlService;
 import org.chromium.content_public.browser.test.util.TestThreadUtils;
 import org.chromium.ui.test.util.DisableAnimationsTestRule;
@@ -330,26 +329,6 @@ public class ToolbarPhoneTest {
                 });
         verify(mLocationbarBackgroundDrawable, atLeastOnce()).setTint(anyInt());
         verify(mLocationbarBackgroundDrawable, atLeastOnce()).setCornerRadius(nonFocusedRadius);
-    }
-
-    @Test
-    @MediumTest
-    @DisableFeatures(OmniboxFeatureList.OMNIBOX_MODERNIZE_VISUAL_UPDATE)
-    public void testLocationBarCornerShouldNeverUpdatedWithoutExperiment() {
-        LocationBarCoordinator locationBarCoordinator =
-                (LocationBarCoordinator) mToolbar.getLocationBar();
-        mToolbar.setLocationBarBackgroundDrawableForTesting(mLocationbarBackgroundDrawable);
-
-        // Focus on the Omnibox
-        mOmnibox.requestFocus();
-        verify(mLocationbarBackgroundDrawable, never()).setCornerRadius(anyInt());
-
-        // Clear focus on the Omnibox
-        TestThreadUtils.runOnUiThreadBlocking(
-                () -> {
-                    locationBarCoordinator.getPhoneCoordinator().getViewForDrawing().clearFocus();
-                });
-        verify(mLocationbarBackgroundDrawable, never()).setCornerRadius(anyInt());
     }
 
     @Test
