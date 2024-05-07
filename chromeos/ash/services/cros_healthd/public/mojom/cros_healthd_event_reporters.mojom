@@ -7,7 +7,6 @@
 
 // NOTE: This mojom should be kept in sync with the copy in ChromiumOS's repo in
 // src/platform2/diagnostics/mojom/public/cros_healthd_event_reporters.mojom.
-
 module ash.cros_healthd.mojom;
 
 import "ash/system/diagnostics/mojom/input.mojom";
@@ -17,7 +16,7 @@ import "ash/system/diagnostics/mojom/input.mojom";
 // NextMinVersion: 1, NextIndex: 1
 [Stable]
 interface AshEventReporter {
- // Send the event to HealthD.
- SendKeyboardDiagnosticEvent@0(
-    ash.diagnostics.mojom.KeyboardDiagnosticEventInfo info);
+  // Send the event to HealthD.
+  SendKeyboardDiagnosticEvent@0(
+      ash.diagnostics.mojom.KeyboardDiagnosticEventInfo info);
 };

@@ -6,7 +6,6 @@
 
 // NOTE: This mojom should be kept in sync with the copy in Chromium OS's repo
 // in src/platform2/diagnostics/mojom/public/cros_healthd_exception.mojom.
-
 module ash.cros_healthd.mojom;
 
 // A generic exception type for all HealthD public API.
@@ -56,7 +55,8 @@ struct Exception {
 [Stable, Extensible]
 union SupportStatus {
   // This is required for backwards compatibility. Don't use this.
-  [Default] int8 unmapped_union_field;
+  [Default]
+  int8 unmapped_union_field;
   // This is set if any exception happens before we can determine whether the
   // feature is supported. Note that exception with reason `kUnsupported` is
   // never set here.
@@ -94,5 +94,6 @@ struct Unsupported {
 [Stable, Extensible]
 union UnsupportedReason {
   // This is required for backwards compatibility. Don't use this.
-  [Default] int8 unmapped_union_field;
+  [Default]
+  int8 unmapped_union_field;
 };

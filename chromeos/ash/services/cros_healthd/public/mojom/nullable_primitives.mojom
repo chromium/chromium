@@ -10,7 +10,6 @@
 
 // NOTE: This mojom should be kept in sync with the copy in Chromium OS's repo
 // in src/plaform2/diagnostics/mojom/public/nullable_primitives.mojom.
-
 module ash.cros_healthd.mojom;
 
 // Optional uint8 field.

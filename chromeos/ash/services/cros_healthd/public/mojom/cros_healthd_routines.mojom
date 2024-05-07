@@ -7,12 +7,11 @@
 
 // NOTE: This mojom should be kept in sync with the copy in ChromiumOS repo in
 // src/platform2/diagnostics/mojom/public/cros_healthd_routines.mojom.
-
 module ash.cros_healthd.mojom;
 
+import "chromeos/ash/services/cros_healthd/public/mojom/cros_healthd_exception.mojom";
 import "mojo/public/mojom/base/time.mojom";
 import "mojo/public/mojom/base/uuid.mojom";
-import "chromeos/ash/services/cros_healthd/public/mojom/cros_healthd_exception.mojom";
 
 // Routines interface exposed by the cros_healthd daemon.
 //
@@ -56,8 +55,8 @@ interface CrosHealthdRoutinesService {
   // * |routine_observer| - an optional observer to receive status updates about
   //                        changing routine states.
   CreateRoutine@0(RoutineArgument routine_argument,
-      pending_receiver<RoutineControl> routine_receiver,
-      pending_remote<RoutineObserver>? routine_observer);
+                  pending_receiver<RoutineControl> routine_receiver,
+                  pending_remote<RoutineObserver>? routine_observer);
 
   // Checks whether a given `RoutineArgument` is supported.
   //
@@ -79,7 +78,8 @@ interface CrosHealthdRoutinesService {
 union RoutineArgument {
   // Default field is required by extensible unions for backward compatibility.
   // Any unrecognized Mojo field will deserialize to this field. Don't use this.
-  [Default] bool unrecognizedArgument@0;
+  [Default]
+  bool unrecognizedArgument@0;
   // Arguments to create a memory routine.
   MemoryRoutineArgument memory@1;
   // Arguments to create a volume button routine.
@@ -214,7 +214,7 @@ struct VolumeButtonRoutineArgument {
   enum ButtonType {
     // The default value is for backward compatibility, should not be used.
     [Default] kUnmappedEnumField = 0,
-    kVolumeUp = 1,    // Test for the volume up button.
+    kVolumeUp = 1,  // Test for the volume up button.
     kVolumeDown = 2,  // Test for the volume down button.
   };
   // The type of volume button to test.
@@ -347,21 +347,24 @@ interface RoutineControl {
   // Gets the current state of the routine. Note that if the routine fails to
   // initialize, the RoutineControl will disconnect before the callback is
   // called.
-  [MinVersion=1] GetState@0() => (RoutineState state);
+  [MinVersion=1]
+  GetState@0() => (RoutineState state);
 
   // Starts the routine. Each routine can only be started once. Calling this
   // method multiple times results in no-ops.
   //
   // See the error handling section above to know how to handle possible
   // exceptions that occur before and after the routine has been started.
-  [MinVersion=1] Start@1();
+  [MinVersion=1]
+  Start@1();
 
   // Reply to the routine inquiry requested in the waiting state. The routine
   // will raise an exception (by closing the connection of this
   // `RoutineControl`) if the routine is not in the waiting state or the reply
   // does not match the inquiry in the waiting state (see
   // `RoutineStateWaiting`).
-  [MinVersion=2] ReplyInquiry@2(RoutineInquiryReply reply);
+  [MinVersion=2]
+  ReplyInquiry@2(RoutineInquiryReply reply);
 };
 
 // Implemented by clients who desire routine update notifications.
@@ -373,7 +376,8 @@ interface RoutineObserver {
   // as a routine is initialized (right after calling `CreateRoutine`).
   // Note that if the routine fails to initialize, the RoutineControl may
   // disconnect before the first invocation of this observer method.
-  [MinVersion=1] OnRoutineStateChange@0(RoutineState state);
+  [MinVersion=1]
+  OnRoutineStateChange@0(RoutineState state);
 };
 
 // Used to pass information regarding routine state.
@@ -394,7 +398,8 @@ struct RoutineState {
 union RoutineStateUnion {
   // Default field is required by extensible unions for backward compatibility.
   // Any unrecognized Mojo field will deserialize to this field. Don't use this.
-  [Default] bool unrecognizedArgument @0;
+  [Default]
+  bool unrecognizedArgument@0;
   // Routine has been initialized but not yet started.
   RoutineStateInitialized initialized@1;
   // Routine is running.
@@ -416,7 +421,8 @@ struct RoutineStateInitialized {};
 // NextMinVersion: 2, NextIndex: 1
 [Stable]
 struct RoutineStateRunning {
-  [MinVersion=1] RoutineRunningInfo? info@0;
+  [MinVersion=1]
+  RoutineRunningInfo? info@0;
 };
 
 // Routine running info. Note that not every routine provides info during the
@@ -427,7 +433,8 @@ struct RoutineStateRunning {
 union RoutineRunningInfo {
   // Default field is required by extensible unions for backward compatibility.
   // Any unrecognized Mojo field will deserialize to this field. Don't use this.
-  [Default] bool unrecognizedArgument @0;
+  [Default]
+  bool unrecognizedArgument@0;
   // Running info of network bandwidth routine.
   NetworkBandwidthRoutineRunningInfo network_bandwidth@1;
 };
@@ -478,7 +485,8 @@ struct RoutineStateWaiting {
   // The requested interaction. This field is set if and only if `reason` is
   // kWaitingInteraction. When set, clients must respond to the interaction for
   // the routine to proceed.
-  [MinVersion=1] RoutineInteraction? interaction@2;
+  [MinVersion=1]
+  RoutineInteraction? interaction@2;
 };
 
 // An interaction that is requested by a routine in the waiting state. See the
@@ -494,7 +502,8 @@ struct RoutineStateWaiting {
 union RoutineInteraction {
   // Default field is required by extensible unions for backward compatibility.
   // Any unrecognized Mojo field will deserialize to this field. Don't use this.
-  [Default] bool unrecognizedInteraction@0;
+  [Default]
+  bool unrecognizedInteraction@0;
   // An interaction that needs to be replied using `ReplyInquiry`.
   RoutineInquiry inquiry@1;
 };
@@ -508,7 +517,8 @@ union RoutineInteraction {
 union RoutineInquiry {
   // Default field is required by extensible unions for backward compatibility.
   // Any unrecognized Mojo field will deserialize to this field. Don't use this.
-  [Default] bool unrecognizedInquiry@0;
+  [Default]
+  bool unrecognizedInquiry@0;
   // Details of the inquiry to check the LED lit up state.
   CheckLedLitUpStateInquiry check_led_lit_up_state@1;
 };
@@ -520,7 +530,8 @@ union RoutineInquiry {
 union RoutineInquiryReply {
   // Default field is required by extensible unions for backward compatibility.
   // Any unrecognized Mojo field will deserialize to this field. Don't use this.
-  [Default] bool unrecognizedReply@0;
+  [Default]
+  bool unrecognizedReply@0;
   // Details to resume a routine requesting to check the LED lit up state.
   CheckLedLitUpStateReply check_led_lit_up_state@1;
 };
@@ -547,7 +558,7 @@ struct CheckLedLitUpStateReply {
     // The LED is lit up with the correct color.
     kCorrectColor = 1,
     // The LED is not lit up with the correct color.
-    kNotLitUp = 2
+    kNotLitUp = 2,
   };
   State state@0;
 };
@@ -570,7 +581,8 @@ struct RoutineStateFinished {
 union RoutineDetail {
   // Default field is required by extensible unions for backward compatibility.
   // Any unrecognized Mojo field will deserialize to this field. Don't use this.
-  [Default] bool unrecognizedArgument@0;
+  [Default]
+  bool unrecognizedArgument@0;
   // Details of a completed memory routine.
   MemoryRoutineDetail memory@1;
   // Details of a completed fan routine.
@@ -590,7 +602,8 @@ union RoutineDetail {
   // Details of a completed camera availability routine.
   CameraAvailabilityRoutineDetail camera_availability@9;
   // Details of a completed network bandwidth routine.
-  [MinVersion=1] NetworkBandwidthRoutineDetail network_bandwidth@10;
+  [MinVersion=1]
+  NetworkBandwidthRoutineDetail network_bandwidth@10;
 };
 
 // Details regarding memory routine.
@@ -755,7 +768,8 @@ struct BluetoothScannedPeripheralInfo {
   string? peripheral_id@2;
   // The list of available services of peripheral, which is reported when the
   // average RSSI is higher than -60.
-  [MinVersion=1] array<mojo_base.mojom.Uuid>? uuids@3;
+  [MinVersion=1]
+  array<mojo_base.mojom.Uuid>? uuids@3;
 };
 
 // Details regarding Bluetooth scanning routine.

@@ -7,7 +7,6 @@
 
 // NOTE: This mojom should be kept in sync with the copy in Chromium's repo in
 // src/platform2/diagnostics/mojom/public/cros_healthd_diagnostics.mojom.
-
 module ash.cros_healthd.mojom;
 
 // Special id that will be returned if a routine was unable to be created.
@@ -94,6 +93,7 @@ enum DiagnosticRoutineStatusEnum {
   kCancelled = 6,  // Routine was cancelled before completion. A cancelled
                    // routine's information can still be accessed with a
                    // GetRoutineUpdateRequest.
+
   kFailedToStart = 7,  // Routine could not be created.
   kRemoved = 8,  // Routine has been removed and is no longer valid.
   kCancelling = 9,  // Routine is in the process of being cancelled.
@@ -110,8 +110,8 @@ enum DiagnosticRoutineUserMessageEnum {
   [Default] kUnknown = 2,
   kUnplugACPower = 0,  // The user needs to unplug the AC power cord.
   kPlugInACPower = 1,  // The user needs to plug in the AC power cord.
-  [MinVersion=1] kCheckLedColor = 3, // The user needs to check the LED color.
-  [MinVersion=2] kPressPowerButton = 4, // The user needs to press the power
+  [MinVersion=1] kCheckLedColor = 3,  // The user needs to check the LED color.
+  [MinVersion=2] kPressPowerButton = 4,  // The user needs to press the power
                                         // button.
 };
 
@@ -124,6 +124,7 @@ enum DiagnosticRoutineCommandEnum {
   kContinue = 0,  // Resume a routine that is waiting.
   kCancel = 1,  // Cancelled routines must still be removed before the routine
                 // is destroyed.
+
   kGetStatus = 2,  // Used to get status but not otherwise control a routine.
   kRemove = 3,  // All routines which started successfully must be removed,
                 // otherwise they will persist on the system. This makes sure
@@ -198,7 +199,7 @@ struct RoutineUpdate {
 [Stable, Extensible]
 enum AcPowerStatusEnum {
   [Default] kUnknown = 2,
-  kConnected = 0,     // Power supply is connected.
+  kConnected = 0,  // Power supply is connected.
   kDisconnected = 1,  // Power supply is disconnected.
 };
 
@@ -208,7 +209,7 @@ enum AcPowerStatusEnum {
 [Stable, Extensible]
 enum NvmeSelfTestTypeEnum {
   [Default] kUnknown = 2,
-  kShortSelfTest = 0, // Short time self-test.
+  kShortSelfTest = 0,  // Short time self-test.
   kLongSelfTest = 1,  // Long time self-test.
 };
 
