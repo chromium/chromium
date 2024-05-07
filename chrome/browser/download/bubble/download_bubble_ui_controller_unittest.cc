@@ -403,6 +403,7 @@ TEST_F(DownloadBubbleUIControllerTest, TransientDownloadShouldNotShow) {
   std::vector<DownloadUIModelPtr> models = controller().GetMainView();
   EXPECT_EQ(models.size(), 1ul);
   EXPECT_EQ(models[0]->GetContentId().id, ids[1]);
+  EXPECT_FALSE(controller().last_primary_view_was_partial());
 }
 
 TEST_F(DownloadBubbleUIControllerTest,
@@ -430,11 +431,13 @@ TEST_F(DownloadBubbleUIControllerTest,
   if (download::IsDownloadBubblePartialViewEnabled(profile())) {
     ASSERT_EQ(partial_view.size(), 1u);
     EXPECT_EQ(partial_view[0]->GetContentId().id, ids[1]);
+    EXPECT_TRUE(controller().last_primary_view_was_partial());
   } else {
     EXPECT_EQ(partial_view.size(), 0u);
   }
   std::vector<DownloadUIModelPtr> main_view = controller().GetMainView();
   EXPECT_EQ(main_view.size(), 2u);
+  EXPECT_FALSE(controller().last_primary_view_was_partial());
 }
 
 TEST_F(DownloadBubbleUIControllerTest,
@@ -446,7 +449,9 @@ TEST_F(DownloadBubbleUIControllerTest,
 
   if (download::IsDownloadBubblePartialViewEnabled(profile())) {
     EXPECT_EQ(controller().GetPartialView().size(), 2ul);
+    EXPECT_TRUE(controller().last_primary_view_was_partial());
     EXPECT_EQ(second_controller().GetPartialView().size(), 2ul);
+    EXPECT_TRUE(second_controller().last_primary_view_was_partial());
   } else {
     EXPECT_EQ(controller().GetPartialView().size(), 0ul);
     EXPECT_EQ(second_controller().GetPartialView().size(), 0ul);
@@ -455,9 +460,14 @@ TEST_F(DownloadBubbleUIControllerTest,
   UpdateDownloadItem(/*item_index=*/0, DownloadState::COMPLETE);
   UpdateOfflineItem(/*item_index=*/0, OfflineItemState::COMPLETE);
   EXPECT_EQ(controller().GetMainView().size(), 2ul);
+  EXPECT_FALSE(controller().last_primary_view_was_partial());
   // Download was removed from partial view because it is completed.
   EXPECT_EQ(controller().GetPartialView().size(), 0ul);
+  // The partial view wasn't actually shown, so this bit is not updated.
+  EXPECT_FALSE(controller().last_primary_view_was_partial());
   EXPECT_EQ(second_controller().GetPartialView().size(), 0ul);
+  EXPECT_EQ(second_controller().last_primary_view_was_partial(),
+            download::IsDownloadBubblePartialViewEnabled(profile()));
 }
 
 TEST_F(DownloadBubbleUIControllerTest,
@@ -469,6 +479,7 @@ TEST_F(DownloadBubbleUIControllerTest,
 
   if (download::IsDownloadBubblePartialViewEnabled(profile())) {
     EXPECT_EQ(controller().GetPartialView().size(), 2ul);
+    EXPECT_TRUE(controller().last_primary_view_was_partial());
   } else {
     EXPECT_EQ(controller().GetPartialView().size(), 0ul);
   }
@@ -476,8 +487,10 @@ TEST_F(DownloadBubbleUIControllerTest,
   // This does not remove the entries from the partial view because the items
   // are in progress.
   EXPECT_EQ(controller().GetMainView().size(), 2ul);
+  EXPECT_FALSE(controller().last_primary_view_was_partial());
   if (download::IsDownloadBubblePartialViewEnabled(profile())) {
     EXPECT_EQ(controller().GetPartialView().size(), 2ul);
+    EXPECT_TRUE(controller().last_primary_view_was_partial());
   } else {
     EXPECT_EQ(controller().GetPartialView().size(), 0ul);
   }
@@ -495,6 +508,7 @@ TEST_F(DownloadBubbleUIControllerTest, NoItemsReturnedForPartialViewTooSoon) {
                    download::DownloadItem::COMPLETE, ids[0]);
   if (download::IsDownloadBubblePartialViewEnabled(profile())) {
     EXPECT_EQ(controller().GetPartialView().size(), 1u);
+    EXPECT_TRUE(controller().last_primary_view_was_partial());
   } else {
     EXPECT_EQ(controller().GetPartialView().size(), 0u);
   }
@@ -505,6 +519,9 @@ TEST_F(DownloadBubbleUIControllerTest, NoItemsReturnedForPartialViewTooSoon) {
   InitDownloadItem(FILE_PATH_LITERAL("/foo/bar2.pdf"),
                    download::DownloadItem::COMPLETE, ids[1]);
   EXPECT_EQ(controller().GetPartialView().size(), 0u);
+  // The partial view wasn't actually shown, so this bit is not updated.
+  EXPECT_EQ(controller().last_primary_view_was_partial(),
+            download::IsDownloadBubblePartialViewEnabled(profile()));
 
   // Partial view can now be shown, and contains all the items.
   task_environment_.FastForwardBy(base::Seconds(1));
@@ -513,6 +530,7 @@ TEST_F(DownloadBubbleUIControllerTest, NoItemsReturnedForPartialViewTooSoon) {
                    download::DownloadItem::COMPLETE, ids[1]);
   if (download::IsDownloadBubblePartialViewEnabled(profile())) {
     EXPECT_EQ(controller().GetPartialView().size(), 3u);
+    EXPECT_TRUE(controller().last_primary_view_was_partial());
   } else {
     EXPECT_EQ(controller().GetPartialView().size(), 0u);
   }
@@ -520,7 +538,11 @@ TEST_F(DownloadBubbleUIControllerTest, NoItemsReturnedForPartialViewTooSoon) {
   // Showing the main view even before time is up should still work.
   task_environment_.FastForwardBy(base::Seconds(14));
   EXPECT_EQ(controller().GetPartialView().size(), 0u);
+  // The partial view wasn't actually shown, so this bit is not updated.
+  EXPECT_EQ(controller().last_primary_view_was_partial(),
+            download::IsDownloadBubblePartialViewEnabled(profile()));
   EXPECT_EQ(controller().GetMainView().size(), 3u);
+  EXPECT_FALSE(controller().last_primary_view_was_partial());
 
   // Main view resets the partial view time, so the partial view can now be
   // shown.
@@ -529,6 +551,7 @@ TEST_F(DownloadBubbleUIControllerTest, NoItemsReturnedForPartialViewTooSoon) {
                    download::DownloadItem::IN_PROGRESS, ids[3]);
   if (download::IsDownloadBubblePartialViewEnabled(profile())) {
     EXPECT_EQ(controller().GetPartialView().size(), 1u);
+    EXPECT_TRUE(controller().last_primary_view_was_partial());
   } else {
     EXPECT_EQ(controller().GetPartialView().size(), 0u);
   }
@@ -538,6 +561,7 @@ TEST_F(DownloadBubbleUIControllerTest, NoItemsReturnedForPartialViewTooSoon) {
 // empty and thus not shown.
 TEST_F(DownloadBubbleUIControllerTest, EmptyPartialViewDoesNotPreventOpening) {
   EXPECT_EQ(controller().GetPartialView().size(), 0u);
+  EXPECT_FALSE(controller().last_primary_view_was_partial());
 
   EXPECT_CALL(display_controller(), OnNewItem(true)).Times(1);
   InitDownloadItem(FILE_PATH_LITERAL("/foo/bar2.pdf"),
@@ -546,6 +570,7 @@ TEST_F(DownloadBubbleUIControllerTest, EmptyPartialViewDoesNotPreventOpening) {
   // 15 seconds ago.
   if (download::IsDownloadBubblePartialViewEnabled(profile())) {
     EXPECT_EQ(controller().GetPartialView().size(), 1u);
+    EXPECT_TRUE(controller().last_primary_view_was_partial());
   } else {
     EXPECT_EQ(controller().GetPartialView().size(), 0u);
   }
@@ -560,10 +585,12 @@ TEST_F(DownloadBubbleUIControllerTest, PrefSuppressesPartialView) {
                    download::DownloadItem::COMPLETE, "Download");
 
   EXPECT_EQ(controller().GetPartialView().size(), 0u);
+  EXPECT_FALSE(controller().last_primary_view_was_partial());
 
   download::SetDownloadBubblePartialViewEnabled(profile(), true);
   if (download::IsDownloadBubblePartialViewEnabled(profile())) {
     EXPECT_EQ(controller().GetPartialView().size(), 1u);
+    EXPECT_TRUE(controller().last_primary_view_was_partial());
   } else {
     EXPECT_EQ(controller().GetPartialView().size(), 0u);
   }

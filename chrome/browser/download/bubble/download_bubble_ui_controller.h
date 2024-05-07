@@ -120,6 +120,13 @@ class DownloadBubbleUIController {
 
   DownloadBubbleUpdateService* update_service() { return update_service_; }
 
+  // See comment on member below. This may not be correct/meaningful, do not
+  // rely on this for anything important. This is not meaningful if the partial
+  // view is not enabled.
+  bool last_primary_view_was_partial() const {
+    return last_primary_view_was_partial_;
+  }
+
   void SetDeepScanNoticeSeen();
 
   base::WeakPtr<DownloadBubbleUIController> GetWeakPtr();
@@ -147,6 +154,18 @@ class DownloadBubbleUIController {
       display_controller_;
 
   std::optional<base::Time> last_partial_view_shown_time_ = std::nullopt;
+
+  // Tracks whether the last time we provided models was for a partial view
+  // (true) or a main view (false). This is an approximation for whether the
+  // last incarnation of the download bubble that the user saw or interacted
+  // with was a partial or main view. (It's only an approximation because there
+  // are controllers for other browsers that are not accounted for here.) In
+  // most cases, this should be correct and meaningful if queried immediately
+  // after the user interacted with / clicked on the bubble. This value might
+  // be bogus if the download bubble is shown on multiple browsers at the same
+  // time, or if the primary view is bypassed altogether (e.g. by clicking on
+  // a desktop notification on ChromeOS to go to the security view directly).
+  bool last_primary_view_was_partial_ = false;
 
   base::WeakPtrFactory<DownloadBubbleUIController> weak_factory_{this};
 };
