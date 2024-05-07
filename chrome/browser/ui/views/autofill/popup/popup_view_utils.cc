@@ -489,12 +489,4 @@ bool IsExpandableSuggestionType(SuggestionType type) {
   }
 }
 
-views::style::TextStyle GetPrimaryTextStyle() {
-  return views::style::TextStyle::STYLE_BODY_3_MEDIUM;
-}
-
-views::style::TextStyle GetSecondaryTextStyle() {
-  return views::style::TextStyle::STYLE_BODY_4;
-}
-
 }  // namespace autofill

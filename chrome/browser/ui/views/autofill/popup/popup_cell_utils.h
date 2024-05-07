@@ -104,30 +104,6 @@ void AddSuggestionContentToView(
     std::vector<std::unique_ptr<views::View>> subtext_views,
     PopupRowContentView& content_view);
 
-void FormatLabel(views::Label& label,
-                 const Suggestion::Text& text,
-                 FillingProduct main_filling_product,
-                 int maximum_width_single_line);
-
-// Creates a label for the suggestion's main text.
-std::unique_ptr<views::Label> CreateMainTextLabel(const Suggestion& suggestion,
-                                                  int text_style);
-
-// Creates a label for the suggestion's minor text.
-std::unique_ptr<views::Label> CreateMinorTextLabel(
-    const Suggestion& suggestion);
-
-// Creates sub-text views and pass their references to `PopupRowContentView` for
-// centralized style management. If `text_style` is not provided, the default
-// style from GetSecondaryTextStyle() will be used for the label views."
-std::vector<std::unique_ptr<views::View>> CreateAndTrackSubtextViews(
-    PopupRowContentView& content_view,
-    const Suggestion& suggestion,
-    FillingProduct main_filling_product,
-    std::optional<int> text_style = std::nullopt);
-
-int GetMaxPopupAddressProfileWidth();
-
 std::unique_ptr<views::ImageView> ImageViewFromVectorIcon(
     const gfx::VectorIcon& vector_icon,
     int icon_size);

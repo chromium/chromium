@@ -128,10 +128,6 @@ bool PopupMayExceedContentAreaBounds(content::WebContents* web_contents);
 // suggestions.
 bool IsExpandableSuggestionType(SuggestionType type);
 
-// Returns styles for primary and secondary texts.
-views::style::TextStyle GetPrimaryTextStyle();
-views::style::TextStyle GetSecondaryTextStyle();
-
 }  // namespace autofill
 
 #endif  // CHROME_BROWSER_UI_VIEWS_AUTOFILL_POPUP_POPUP_VIEW_UTILS_H_
