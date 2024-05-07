@@ -147,7 +147,7 @@ std::unique_ptr<const AudioBus> AudioBus::WrapReadOnlyMemory(int channels,
                                                              int frames,
                                                              const void* data) {
   // Note: const_cast is generally dangerous but is used in this case since
-  // AudioBus accomodates both read-only and read/write use cases. A const
+  // AudioBus accommodates both read-only and read/write use cases. A const
   // AudioBus object is returned to ensure no one accidentally writes to the
   // read-only data.
   return WrapMemory(channels, frames, const_cast<void*>(data));
@@ -157,7 +157,7 @@ std::unique_ptr<const AudioBus> AudioBus::WrapReadOnlyMemory(
     const AudioParameters& params,
     const void* data) {
   // Note: const_cast is generally dangerous but is used in this case since
-  // AudioBus accomodates both read-only and read/write use cases. A const
+  // AudioBus accommodates both read-only and read/write use cases. A const
   // AudioBus object is returned to ensure no one accidentally writes to the
   // read-only data.
   return WrapMemory(params, const_cast<void*>(data));

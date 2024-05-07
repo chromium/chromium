@@ -30,7 +30,7 @@
 #include "media/gpu/windows/mf_audio_encoder.h"
 
 // The AAC tests are failing on Arm64. Disable the AAC part of these tests until
-// those failures can be fixed. TOOO(https://crbug.com/1424215): FIx tests,
+// those failures can be fixed. TODO(https://crbug.com/1424215): Fix tests,
 // and/or investigate if AAC support should be turned off in Chrome for Arm64
 // Windows, or if these are an issue with the tests.
 #if !defined(ARCH_CPU_ARM64)

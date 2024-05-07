@@ -307,9 +307,9 @@ TEST_P(VP9SVCLayersTest, VerifyMetadataMultipleTimes) {
       svc_layers.Reset();
     }
     for (size_t sid = 0; sid < num_spatial_layers; ++sid) {
-      const bool reaquire = frame_count % kReacquireInterval;
+      const bool reacquire = frame_count % kReacquireInterval;
       frame_count++;
-      const size_t call_get_times = 1 + reaquire;
+      const size_t call_get_times = 1 + reacquire;
       for (size_t j = 0; j < call_get_times; j++) {
         bool key_frame = false;
         size_t frame_num = svc_layers.frame_num();

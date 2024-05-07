@@ -320,7 +320,7 @@ class CAPTURE_EXPORT CameraDeviceDelegate final
   std::unique_ptr<Camera3AController> camera_3a_controller_;
 
   // Stores the static camera characteristics of the camera device. E.g. the
-  // supported formats and resolution, various available exposure and apeture
+  // supported formats and resolution, various available exposure and aperture
   // settings, etc.
   cros::mojom::CameraMetadataPtr static_metadata_;
 

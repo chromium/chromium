@@ -93,7 +93,7 @@ void AudioManagerAndroid::InitializeIfNeeded() {
 void AudioManagerAndroid::ShutdownOnAudioThread() {
   AudioManagerBase::ShutdownOnAudioThread();
 
-  // Destory java android manager here because it can only be accessed on the
+  // Destroy java android manager here because it can only be accessed on the
   // audio thread.
   if (!j_audio_manager_.is_null()) {
     DVLOG(2) << "Destroying Java part of the audio manager";

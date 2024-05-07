@@ -11,7 +11,7 @@ import org.jni_zero.NativeMethods;
 import org.chromium.base.Callback;
 
 /**
- * Origin isolated media drm scope id storage. Isolated origin is guranteed by native
+ * Origin isolated media drm scope id storage. Isolated origin is guaranteed by native
  * implementation. Thus no origin information is stored here.
  */
 @JNINamespace("media")

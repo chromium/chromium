@@ -55,7 +55,7 @@ class MidiManagerWin::PortManager {
   // Unregisters HMIDIIN handle.
   void UnregisterInHandle(HMIDIIN handle);
 
-  // Finds HMIDIIN handle and fullfil |out_index| with the port index.
+  // Finds HMIDIIN handle and fulfill |out_index| with the port index.
   bool FindInHandle(HMIDIIN hmi, size_t* out_index);
 
   // Restores used input buffer for the next data receive.
@@ -712,7 +712,7 @@ MidiManagerWin::MidiManagerWin(MidiService* service)
   base::AutoLock lock(*GetInstanceIdLock());
   CHECK_EQ(kInvalidInstanceId, g_active_instance_id);
 
-  // Obtains the task runner for the current thread that hosts this instnace.
+  // Obtains the task runner for the current thread that hosts this instance.
   thread_runner_ = base::SingleThreadTaskRunner::GetCurrentDefault();
 }
 

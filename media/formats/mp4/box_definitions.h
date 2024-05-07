@@ -94,7 +94,7 @@ struct MEDIA_EXPORT SampleEncryptionEntry {
 
   // Parse SampleEncryptionEntry from |reader|.
   // |iv_size| specifies the size of initialization vector. |has_subsamples|
-  // indicates whether this sample encryption entry constains subsamples.
+  // indicates whether this sample encryption entry contains subsamples.
   // Returns false if parsing fails.
   bool Parse(BufferReader* reader, uint8_t iv_size, bool has_subsamples);
 

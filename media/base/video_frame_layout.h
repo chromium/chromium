@@ -51,7 +51,7 @@ class MEDIA_EXPORT VideoFrameLayout {
 
   // Create a layout suitable for |format| at |coded_size|. The stride, offsets
   // and size of all planes are set to 0, since that information cannot reliably
-  // be infered from the arguments.
+  // be inferred from the arguments.
   static std::optional<VideoFrameLayout> Create(VideoPixelFormat format,
                                                 const gfx::Size& coded_size);
 

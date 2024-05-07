@@ -1215,7 +1215,7 @@ TEST(ImageProcessorBackendTest, VulkanMT2TDetileScaleTest) {
       output_size.width(), output_size.width(), output_size.height());
 
   // TODO(b/328227651): We have to keep this PSNR threshold pretty low because
-  // LibYUV produces innacurate results in the 10-bit YUV->ARGB conversion. We
+  // LibYUV produces inaccurate results in the 10-bit YUV->ARGB conversion. We
   // should try to fix this discrepancy though.
   constexpr double kPsnrThreshold = 25.0;
   ASSERT_TRUE(psnr >= kPsnrThreshold);

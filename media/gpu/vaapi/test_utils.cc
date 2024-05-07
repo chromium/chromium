@@ -264,7 +264,7 @@ class Tile4Mapping : public NativePixmapMapping {
 
       // We don't want to give the user the impression that this mapping is
       // bidirectional. We are performing a one-off detile operation to allow
-      // this Tile4 buffer to be read, but we have no way of propogating writes
+      // this Tile4 buffer to be read, but we have no way of propagating writes
       // from our temporary linear buffer to the underlying Tile4 buffer. So, we
       // mark these pages as read only.
       if (mprotect(dest, plane_sizes[plane_idx], PROT_READ)) {

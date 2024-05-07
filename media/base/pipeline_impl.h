@@ -74,7 +74,7 @@ using AsyncCreateRendererCB =
 // out and we start playing the media.
 //
 // If Stop() is ever called, this object will transition to "Stopped" state.
-// Pipeline::Stop() is never called from withing PipelineImpl. It's |client_|'s
+// Pipeline::Stop() is never called from within PipelineImpl. It's |client_|'s
 // responsibility to call stop when appropriate.
 //
 // TODO(sandersd): It should be possible to pass through Suspended when going

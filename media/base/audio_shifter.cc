@@ -173,7 +173,7 @@ void AudioShifter::Pull(AudioBus* output,
     // ahead of the scheduled playout time.
 
     // Skip any data that is simply too old, if we have
-    // better data somewhere in the qeueue.
+    // better data somewhere in the queue.
 
     // Reset bias
     bias_ = base::TimeDelta();
@@ -215,7 +215,7 @@ void AudioShifter::Pull(AudioBus* output,
       // Two possible scenarios:
       // Either we're really close to perfect sync, but the current ratio
       // would overshoot, or the current ratio is insufficient to get to
-      // perfect sync in the alloted time. Clamp.
+      // perfect sync in the allotted time. Clamp.
       double max_ratio = std::max(fast_ratio, slow_ratio);
       double min_ratio = std::min(fast_ratio, slow_ratio);
       current_ratio_ = std::clamp(current_ratio_, min_ratio, max_ratio);

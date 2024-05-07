@@ -177,9 +177,9 @@ MEDIA_EXPORT scoped_refptr<VideoFrame> WrapAsI420VideoFrame(
     scoped_refptr<VideoFrame> frame);
 
 // Copy I420 video frame to match the required coded size and pad the region
-// outside the visible rect repeatly with the last column / row up to the coded
-// size of |dst_frame|. Return false when |dst_frame| is empty or visible rect
-// is empty.
+// outside the visible rect repeatedly with the last column / row up to the
+// coded size of |dst_frame|. Return false when |dst_frame| is empty or visible
+// rect is empty.
 // One application is content mirroring using HW encoder. As the required coded
 // size for encoder is unknown before capturing, memory copy is needed when the
 // coded size does not match the requirement. Padding can improve the encoding

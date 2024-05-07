@@ -487,7 +487,7 @@ HRESULT GetAacAudioType(const AudioDecoderConfig& decoder_config,
 #if BUILDFLAG(ENABLE_PLATFORM_AC4_AUDIO)
 // An attribute defined to indicate if the input audio is already
 // previrtualized. Now it is used to indicate if the input stream is a Dolby AC4
-// IMS stream. That infomation will be used by Dolby AC4 MFT to create correct
+// IMS stream. That information will be used by Dolby AC4 MFT to create correct
 // output media types.
 // GUID: {4EACAB51-FFE5-421A-A2A7-8B7409A1CAC4}
 // Type: UINT32(BOOL)

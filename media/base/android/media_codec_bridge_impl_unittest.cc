@@ -498,7 +498,7 @@ TEST(MediaCodecBridgeTest, H264VideoEncodeAndValidate) {
                      input_timestamp);
   }
 
-  // Reuest key frame and encode 3 more frames. The second key frame should
+  // Request key frame and encode 3 more frames. The second key frame should
   // also contain SPS/PPS NALUs.
   media_codec->RequestKeyFrameSoon();
   for (int frame = 0; frame < num_frames && frame < 3; frame++) {

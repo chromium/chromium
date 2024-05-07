@@ -22,7 +22,7 @@
 
 /**
  * Top level hierarchy definitions for camera metadata. *_INFO sections are for
- * the static metadata that can be retrived without opening the camera device.
+ * the static metadata that can be retrieved without opening the camera device.
  * New sections must be added right before ANDROID_SECTION_COUNT to maintain
  * existing enumerations.
  */

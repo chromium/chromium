@@ -316,7 +316,7 @@ TEST_F(AlsaPcmOutputStreamTest, PcmOpenFailed) {
   ASSERT_FALSE(test_stream->Open());
   ASSERT_EQ(AlsaPcmOutputStream::kInError, test_stream->state());
 
-  // Ensure internal state is set for a no-op stream if PcmOpen() failes.
+  // Ensure internal state is set for a no-op stream if PcmOpen() fails.
   EXPECT_TRUE(test_stream->stop_stream_);
   EXPECT_FALSE(test_stream->playback_handle_);
   EXPECT_FALSE(test_stream->buffer_.get());
@@ -343,7 +343,7 @@ TEST_F(AlsaPcmOutputStreamTest, PcmSetParamsFailed) {
   ASSERT_FALSE(test_stream->Open());
   EXPECT_EQ(AlsaPcmOutputStream::kInError, test_stream->state());
 
-  // Ensure internal state is set for a no-op stream if PcmSetParams() failes.
+  // Ensure internal state is set for a no-op stream if PcmSetParams() fails.
   EXPECT_TRUE(test_stream->stop_stream_);
   EXPECT_FALSE(test_stream->playback_handle_);
   EXPECT_FALSE(test_stream->buffer_.get());

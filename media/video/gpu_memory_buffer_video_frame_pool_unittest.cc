@@ -87,7 +87,7 @@ class GpuMemoryBufferVideoFramePoolTest : public ::testing::Test {
       size_t bit_depth = 8,
       int visible_rect_crop = 0) {
     const int kDimension = 10;
-    // Data buffers are overdimensioned to acommodate up to 16bpc samples.
+    // Data buffers are overdimensioned to accommodate up to 16bpc samples.
     static uint8_t y_data[2 * kDimension * kDimension] = {0};
     static uint8_t u_data[2 * kDimension * kDimension / 4] = {0};
     static uint8_t v_data[2 * kDimension * kDimension / 4] = {0};

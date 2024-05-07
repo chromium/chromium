@@ -56,7 +56,7 @@ class ReceiverTimeOffsetEstimatorImpl final
                                base::TimeDelta* upper_bound) final;
 
  private:
-  // This helper uses the difference between sent and recived event
+  // This helper uses the difference between sent and received event
   // to calculate an upper bound on the difference between the clocks
   // on the sender and receiver. Note that this difference can take
   // very large positive or negative values, but the smaller value is

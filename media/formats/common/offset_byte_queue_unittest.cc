@@ -76,14 +76,14 @@ TEST_F(OffsetByteQueueTest, Trim) {
   EXPECT_EQ(400 - 256, buf[0]);
 
   // Trimming to the exact end of the buffer should return 'true'. This
-  // accomodates EOS cases.
+  // accommodates EOS cases.
   EXPECT_TRUE(queue_->Trim(512));
   EXPECT_EQ(512, queue_->head());
   queue_->Peek(&buf, &size);
   EXPECT_EQ(NULL, buf);
 
   // Trimming past the end of the buffer should return 'false'; we haven't seen
-  // the preceeding bytes.
+  // the preceding bytes.
   EXPECT_FALSE(queue_->Trim(513));
 
   // However, doing that shouldn't affect the EOS case. Only adding new data

@@ -38,7 +38,7 @@ class VideoRendererSink;
 // connected and passed in the constructor. Then Initialize() will be called on
 // the |task_runner| and starting from that point this class is bound to the
 // |task_runner|*. That means all Renderer and RendererClient methods will be
-// called/dispached on the |task_runner|. The only exception is GetMediaTime(),
+// called/dispatched on the |task_runner|. The only exception is GetMediaTime(),
 // which can be called on any thread.
 class MojoRenderer : public Renderer, public mojom::RendererClient {
  public:

@@ -302,7 +302,7 @@ bool VP9VaapiVideoEncoderDelegate::Initialize(
   }
 
   if (config.bitrate.mode() == Bitrate::Mode::kVariable) {
-    DVLOGF(1) << "Invalid configuraiton. VBR is not supported for VP9.";
+    DVLOGF(1) << "Invalid configuration. VBR is not supported for VP9.";
     return false;
   }
 

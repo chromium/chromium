@@ -100,7 +100,7 @@ AudioSessionManagerIOS::AudioSessionManagerIOS() {
         NSLog(@"Error overriding output audio port: %@",
               [error localizedDescription]);
       } else {
-        NSLog(@"Using System choosen default audio output device");
+        NSLog(@"Using System chosen default audio output device");
       }
     }
   }
@@ -127,12 +127,12 @@ bool AudioSessionManagerIOS::HasAudioHardware(bool is_input) {
   AVAudioSession* audio_session = [AVAudioSession sharedInstance];
   AVAudioSessionRouteDescription* route = [audio_session currentRoute];
   if (is_input) {
-    // Seach for a audio input hardware.
+    // Search for an audio input hardware.
     NSArray* inputs = [route inputs];
     return [inputs count];
   }
 
-  // Seach for a audio output hardware.
+  // Search for an audio output hardware.
   NSArray* outputs = [route outputs];
   return [outputs count];
 }

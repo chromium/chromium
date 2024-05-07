@@ -730,7 +730,7 @@ class MediaCodecBridge {
                     : translateCryptoExceptionPostS(e.getErrorCode());
         } catch (MediaCodec.CodecException e) {
             Log.e(TAG, "Failed to queue secure input buffer.", e);
-            Log.e(TAG, "Diagnotic: %s", e.getDiagnosticInfo());
+            Log.e(TAG, "Diagnostic: %s", e.getDiagnosticInfo());
             return MediaCodecStatus.ERROR;
         } catch (IllegalArgumentException e) {
             // IllegalArgumentException can occur when release() is called on the MediaCrypto

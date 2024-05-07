@@ -546,7 +546,7 @@ bool AVStreamToVideoDecoderConfig(const AVStream* stream,
 #if BUILDFLAG(ENABLE_PLATFORM_HEVC)
     case VideoCodec::kHEVC: {
       int hevc_profile = -1;
-      // We need to parse extradata each time, because we wont add ffmpeg
+      // We need to parse extradata each time, because we won't add ffmpeg
       // hevc decoder & parser to chromium and codec_context->profile
       // should always be FF_PROFILE_UNKNOWN (-99) here
       if (codec_context->extradata && codec_context->extradata_size) {

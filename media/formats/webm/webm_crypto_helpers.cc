@@ -20,7 +20,7 @@ namespace {
 
 // Generates a 16 byte CTR counter block. The CTR counter block format is a
 // CTR IV appended with a CTR block counter. |iv| is an 8 byte CTR IV.
-// |iv_size| is the size of |iv| in btyes. Returns a string of
+// |iv_size| is the size of |iv| in bytes. Returns a string of
 // kDecryptionKeySize bytes.
 std::string GenerateWebMCounterBlock(base::span<const uint8_t> iv) {
   std::string counter_block(iv.begin(), iv.end());

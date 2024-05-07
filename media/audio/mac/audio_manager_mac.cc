@@ -1415,7 +1415,7 @@ int AudioManagerMac::HardwareSampleRateForDevice(AudioDeviceID device_id) {
   if (result != noErr) {
     OSSTATUS_DLOG(WARNING, result)
         << "Could not get default sample rate for device: " << device_id
-        << ", returing fallback sample rate " << kFallbackSampleRate;
+        << ", returning fallback sample rate " << kFallbackSampleRate;
     return kFallbackSampleRate;
   }
 

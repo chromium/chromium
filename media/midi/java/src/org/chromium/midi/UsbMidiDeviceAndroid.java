@@ -274,13 +274,12 @@ class UsbMidiDeviceAndroid {
     }
 
     /**
-     * Returns the length of a USB-MIDI input.
-     * Since the Android API doesn't provide us the length,
+     * Returns the length of a USB-MIDI input. Since the Android API doesn't provide us the length,
      * we calculate it manually.
      */
     private static int getInputDataLength(ByteBuffer buffer) {
         int position = buffer.position();
-        // We assume that the data length is always divisable by 4.
+        // We assume that the data length is always divisible by 4.
         for (int i = 0; i < position; i += 4) {
             // Since Code Index Number 0 is reserved, it is not a valid USB-MIDI data.
             if (buffer.get(i) == 0) {

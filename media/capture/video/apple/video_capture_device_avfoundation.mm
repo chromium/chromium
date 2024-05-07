@@ -205,7 +205,7 @@ AVCaptureDeviceFormat* FindBestCaptureFormat(
   // Usage of GPU memory buffer is controlled by
   // `--disable-video-capture-use-gpu-memory-buffer` and
   // `--video-capture-use-gpu-memory-buffer` commandline switches. This flag
-  // handles whether to use a GPU memoery for a video frame or not.
+  // handles whether to use a GPU memory for a video frame or not.
   bool _useGPUMemoryBuffer;
 
   // The capture format that best matches the above attributes.

@@ -669,7 +669,7 @@ TEST_F(VideoDecodeStatsDBImplTest, EnableUnweightedEntries) {
   // Append 200 frames with 10% dropped, 1% efficient.
   AppendStats(kStatsKeyVp9, DecodeStatsEntry(200, 0.10 * 200, 0.01 * 200));
   // Use real doubles to keep track of these things to make sure the precision
-  // math for repeating decimals works out with whats done internally.
+  // math for repeating decimals works out with what's done internally.
   int num_appends = 1;
   double unweighted_smoothness_avg = 0.10;
   double unweighted_efficiency_avg = 0.01;

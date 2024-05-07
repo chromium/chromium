@@ -245,7 +245,7 @@ TEST(VideoCaptureOracleTest, SamplesAtCorrectTimesAroundRefreshRequests) {
         VideoCaptureOracle::kRefreshRequest, gfx::Rect(), t));
   }
 
-  // Now, complete the oustanding compositor-based capture and continue
+  // Now, complete the outstanding compositor-based capture and continue
   // providing refresh request events.  The oracle should start recommending
   // sampling again.
   ASSERT_TRUE(oracle.CompleteCapture(frame_number, true, &ignored));

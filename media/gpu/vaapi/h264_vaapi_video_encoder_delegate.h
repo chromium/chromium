@@ -45,7 +45,7 @@ class H264VaapiVideoEncoderDelegate : public VaapiVideoEncoderDelegate {
     uint8_t min_qp;
     uint8_t max_qp;
 
-    // Maxium Number of Reference frames.
+    // Maximum Number of Reference frames.
     size_t max_num_ref_frames;
 
     // Maximum size of reference picture list 0.

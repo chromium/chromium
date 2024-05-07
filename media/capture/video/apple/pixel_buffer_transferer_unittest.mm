@@ -184,7 +184,7 @@ TEST(PixelBufferTransfererTest, MAYBE_CanStretchYuvsAndVerifyColor) {
   std::unique_ptr<ByteArrayPixelBuffer> source =
       CreateYuvsPixelBufferFromSingleRgbColor(kSourceWidth, kSourceHeight,
                                               kColorR, kColorG, kColorB);
-  // Destination buffer: A streched YUVS buffer.
+  // Destination buffer: A stretched YUVS buffer.
   base::apple::ScopedCFTypeRef<CVPixelBufferRef> destination =
       PixelBufferPool::Create(kPixelFormat, kDestinationWidth,
                               kDestinationHeight, 1)
@@ -208,7 +208,7 @@ TEST(PixelBufferTransfererTest, CanConvertAndStretchSimultaneouslyYuvsToNv12) {
   std::unique_ptr<ByteArrayPixelBuffer> source =
       CreateYuvsPixelBufferFromSingleRgbColor(kSourceWidth, kSourceHeight,
                                               kColorR, kColorG, kColorB);
-  // Destination buffer: A streched NV12 buffer.
+  // Destination buffer: A stretched NV12 buffer.
   base::apple::ScopedCFTypeRef<CVPixelBufferRef> destination =
       PixelBufferPool::Create(kDestinationPixelFormat, kDestinationWidth,
                               kDestinationHeight, 1)

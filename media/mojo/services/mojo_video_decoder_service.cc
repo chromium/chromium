@@ -67,7 +67,7 @@ class VideoFrameHandleReleaserImpl final
 
   ~VideoFrameHandleReleaserImpl() final { DVLOG(3) << __func__; }
 
-  // Register a VideoFrame to recieve release callbacks. A reference to |frame|
+  // Register a VideoFrame to receive release callbacks. A reference to |frame|
   // will be held until the remote client calls ReleaseVideoFrame() or is
   // disconnected.
   //
@@ -423,7 +423,7 @@ void MojoVideoDecoderService::OnDecoderOutput(scoped_refptr<VideoFrame> frame) {
                "video_frame", frame->AsHumanReadableString());
 
   // All MojoVideoDecoder-based decoders are hardware decoders. If you're the
-  // first to implement an out-of-process decoder that is not power efficent,
+  // first to implement an out-of-process decoder that is not power efficient,
   // you can remove this DCHECK.
   DCHECK(frame->metadata().power_efficient);
 

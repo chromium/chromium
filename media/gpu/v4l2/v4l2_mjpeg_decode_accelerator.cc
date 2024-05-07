@@ -103,7 +103,7 @@ namespace media {
 // chrominance. The default huffman segment is constructed with the tables from
 // JPEG standard section K.3. Actually there are no default tables. They are
 // typical tables. These tables are useful for many applications. Lots of
-// softwares use them as standard tables such as ffmpeg.
+// software use them as standard tables such as ffmpeg.
 const uint8_t kDefaultDhtSeg[] = {
     0xFF, 0xC4, 0x01, 0xA2, 0x00, 0x00, 0x01, 0x05, 0x01, 0x01, 0x01, 0x01,
     0x01, 0x01, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x01, 0x02,

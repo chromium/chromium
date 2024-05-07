@@ -242,13 +242,13 @@ def SetupAndroidToolchain(target_arch):
     # libgcc.a -- clang still uses gcc for its linker when cross compiling.
     # It can't just be that simple though - the |libgcc.a| file is actually a
     # super secret linkerscript which links libgcc_real.a, because apparently
-    # someone decided that more flags are needed, including -lunwind; thats where
+    # someone decided that more flags are needed, including -lunwind; that's where
     # our story begins. ffmpeg doesn't use linunwind, and we dont really have a
     # good way to get a cross-compiled version anyway, but this silly linker
     # script insists that we must link with it, or face all sorts of horrible
     # consequences -- namely configure failures. Anyway, there is a way around it:
     # the "big old nasty hack" mentioned what feels like forever ago now. It's
-    # simple, we uhh, kill tha batman. Actually we just make a fake libunwind.a
+    # simple, we uhh, kill the batman. Actually we just make a fake libunwind.a
     # linker script and drop it someplace nobody will ever find, like I dunno, say
     # /tmp/fakelinkerscripts or something. Then we add that path to the ldflags
     # flags and everything works again.
@@ -512,7 +512,7 @@ def BuildFFmpeg(target_os, target_arch, host_os, host_arch, parallel_jobs,
         RewriteFile(os.path.join(config_dir, 'ffbuild/config.mak'),
                     [(r'(LDFLAGS=.*)', r'\1 -FORCE:UNRESOLVED')])
 
-    # TODO(crbug.com/41387829): Linking when targetting mac on linux is
+    # TODO(crbug.com/41387829): Linking when targeting mac on linux is
     # currently broken.
     # Replace the linker step with something that just creates the target.
     if target_os == 'mac' and host_os == 'linux':
@@ -544,7 +544,7 @@ def BuildFFmpeg(target_os, target_arch, host_os, host_arch, parallel_jobs,
             'Target arch : %s\n' %
             (host_os, target_os, host_arch, target_arch))
 
-    # These rewrites are necessary to faciliate various Chrome build options.
+    # These rewrites are necessary to facilitate various Chrome build options.
     post_make_rewrites = [
         (r'(#define FFMPEG_CONFIGURATION .*)',
          r'/* \1 -- elide long configuration string from binary */')

@@ -321,7 +321,7 @@ void AudioInputDevice::OnError(AudioCapturerSource::ErrorCode code) {
         code, code == AudioCapturerSource::ErrorCode::kSystemPermissions
                   ? "Unable to open due to failing an OS Permissions check."
                   : "Maximum allowed input device limit reached or an OS "
-                    "failure occured.");
+                    "failure occurred.");
   } else {
     // Don't dereference the callback object if the audio thread
     // is stopped or stopping.  That could mean that the callback

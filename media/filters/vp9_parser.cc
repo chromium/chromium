@@ -208,7 +208,7 @@ std::unique_ptr<DecryptConfig> SplitSubsamples(
         subsamples[*current_subsample_index].cypher_bytes;
 
     // if clear+cipher bytes would be over the max of uint32_t, we need to
-    // quit immediatly, to prevent malicious overflowing.
+    // quit immediately, to prevent malicious overflowing.
     if (0xFFFFFFFF - subsample_clear < subsample_cipher) {
       DVLOG(1) << "Invalid subsample alignment";
       return nullptr;

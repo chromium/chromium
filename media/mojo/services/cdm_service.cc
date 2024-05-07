@@ -79,7 +79,7 @@ class CdmFactoryImpl final : public DeferredDestroy<mojom::CdmFactory> {
                        std::move(callback)));
   }
 
-  // DeferredDestroy<mojom::CdmFactory> implemenation.
+  // DeferredDestroy<mojom::CdmFactory> implementation.
   void OnDestroyPending(base::OnceClosure destroy_cb) final {
     destroy_cb_ = std::move(destroy_cb);
     if (cdm_receivers_.empty())

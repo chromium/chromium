@@ -51,7 +51,7 @@ static bool ReadAllPsshBoxes(
 
   // Now that we have |input| parsed into |raw_pssh_boxes|, reparse each one
   // into a mp4::FullProtectionSystemSpecificHeader, which extracts all the
-  // relevant fields from the box. Since there may be unparseable 'pssh' boxes
+  // relevant fields from the box. Since there may be unparsable 'pssh' boxes
   // (due to unsupported version, for example), this is done one by one,
   // ignoring any boxes that can't be parsed.
   for (const auto& raw_pssh_box : raw_pssh_boxes) {

@@ -2034,7 +2034,7 @@ void MediaFoundationVideoEncodeAccelerator::ProcessOutput() {
     } else if (codec_ == VideoCodec::kVP9) {
       Vp9Metadata& vp9 = md.vp9.emplace();
       if (keyframe) {
-        // |spatial_layer_resolutions| has to be filled iif keyframe is
+        // |spatial_layer_resolutions| has to be filled if keyframe is
         // requested.
         vp9.spatial_layer_resolutions.emplace_back(input_visible_size_);
         vp9.begin_active_spatial_layer_index = 0;

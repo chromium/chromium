@@ -24,7 +24,7 @@ webrtc::AudioProcessing::Config CreateApmGetConfig(
   return apm->GetConfig();
 }
 
-// TOOD(b/260315490): Add missing tests with different `AudioProcessingSettings`
+// TODO(b/260315490): Add missing tests with different `AudioProcessingSettings`
 // values.
 
 // Verify that the default settings in AudioProcessingSettings are applied

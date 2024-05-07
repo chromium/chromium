@@ -18,19 +18,19 @@ import java.util.List;
 import java.util.UUID;
 
 /**
- * The class manages relations among eme session ID, drm session ID and keyset
- * ID. It also records the associated session information.
+ * The class manages relations among eme session ID, drm session ID and keyset ID. It also records
+ * the associated session information.
  *
- * For temporary session, it simply maintains the in memory map from session ID
- * to related informations. When session is closed, the mapping is also removed.
+ * <p>For temporary session, it simply maintains the in memory map from session ID to related
+ * information. When session is closed, the mapping is also removed.
  *
- * For persistent session, it also talks to persistent storage when loading
- * information back to memory and updating changes to disk.
+ * <p>For persistent session, it also talks to persistent storage when loading information back to
+ * memory and updating changes to disk.
  */
 class MediaDrmSessionManager {
     /**
-     * The class groups drm session ID, eme session ID and key set ID. It hides
-     * the conversion among the three different IDs.
+     * The class groups drm session ID, eme session ID and key set ID. It hides the conversion among
+     * the three different IDs.
      */
     static class SessionId {
         private static final char[] HEX_CHAR_LOOKUP = "0123456789ABCDEF".toCharArray();

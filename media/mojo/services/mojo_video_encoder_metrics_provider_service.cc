@@ -121,7 +121,7 @@ class MojoVideoEncoderMetricsProviderService::EncoderMetricsHandler {
     const std::string_view use_case_str = UseCaseStr();
     if (use_case_str.empty()) {
       mojo::ReportBadMessage(base::StrCat(
-          {"Unkown use case",
+          {"Unknown use case",
            base::NumberToString(static_cast<int>(encoder_use_case_))}));
     }
     const std::string uma_prefix =

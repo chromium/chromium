@@ -46,7 +46,7 @@ constexpr int kFrameToReceive = 3;
 #endif  // BUILDFLAG(IS_LINUX)
 
 // Base id and class identifiers for Controls to be modified and later tested
-// agains default values.
+// against default values.
 static struct {
   uint32_t control_base;
   uint32_t class_id;
@@ -164,8 +164,8 @@ static void SetControlsToMaxValues(int device_fd) {
       readback.id = range.id & ~V4L2_CTRL_FLAG_NEXT_CTRL;
       if (HANDLE_EINTR(ioctl(device_fd, VIDIOC_G_CTRL, &readback)) < 0)
         DPLOG(ERROR) << range.name << ", failed to be read.";
-      EXPECT_EQ(range.maximum, readback.value) << " control " << range.name
-                                               << " didnt set correctly";
+      EXPECT_EQ(range.maximum, readback.value)
+          << " control " << range.name << " didn't set correctly";
     }
   }
 }

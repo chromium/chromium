@@ -11,7 +11,7 @@ namespace media {
 
 enum class VideoCaptureWinBackend { kDirectShow, kMediaFoundation };
 
-// These values are presisted to logs.
+// These values are persisted to logs.
 enum class VideoCaptureWinBackendUsed : int {
   kUsingDirectShowAsDefault = 0,
   kUsingMediaFoundationAsDefault = 1,
@@ -19,7 +19,7 @@ enum class VideoCaptureWinBackendUsed : int {
   kCount
 };
 
-// These values are presisted to logs.
+// These values are persisted to logs.
 enum class ImageCaptureOutcome : int {
   kSucceededUsingVideoStream = 0,
   kSucceededUsingPhotoStream = 1,

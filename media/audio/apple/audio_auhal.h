@@ -71,7 +71,7 @@ class AudioPullFifo;
 
 // TODO(tommi): Since the callback audio thread is shared for all instances of
 // AUHALStream, one stream blocking, can cause others to be delayed.  Several
-// occurrances of this can cause a buildup of delay which forces the OS
+// occurrences of this can cause a buildup of delay which forces the OS
 // to skip rendering frames. One known cause of this is the synchronization
 // between the browser and render process in AudioSyncReader.
 // We need to fix this.
@@ -129,7 +129,7 @@ class AUHALStream : public AudioOutputStream {
   // Creates the AUHAL, sets its stream format, buffer-size, etc.
   bool ConfigureAUHAL();
 
-  // Creates the input and output busses.
+  // Creates the input and output buses.
   void CreateIOBusses();
 
   // Returns the playout time for a given AudioTimeStamp.

@@ -114,7 +114,7 @@ class InternalRefCountedPool
   friend class base::RefCountedThreadSafe<InternalRefCountedPool>;
   ~InternalRefCountedPool();
 
-  // Callback made whe a created VideoFrame is destroyed. Returns
+  // Callback made when a created VideoFrame is destroyed. Returns
   // `gpu_memory_buffer` to `frame_resources`, and then either returns
   // `frame_resources` to `available_frame_resources_` or destroys it.
   void OnVideoFrameDestroyed(

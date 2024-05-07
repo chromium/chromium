@@ -223,8 +223,8 @@ TEST_F(StatusTest, DifferentModesOfConstruction) {
   ASSERT_EQ(*unpacked->FindString("DataC"), "apple pie");
 
   NormalStatus root = NormalStatus::Codes::kFoo;
-  PackingStatus derrived = {PackingStatus::Codes::kFail, std::move(root)};
-  serialized = MediaSerialize(derrived).TakeDict();
+  PackingStatus derived = {PackingStatus::Codes::kFail, std::move(root)};
+  serialized = MediaSerialize(derived).TakeDict();
   unpacked = serialized.FindDict("cause");
   ASSERT_NE(unpacked, nullptr);
   ASSERT_EQ(unpacked->size(), 5ul);
@@ -232,8 +232,8 @@ TEST_F(StatusTest, DifferentModesOfConstruction) {
             static_cast<int>(NormalStatus::Codes::kFoo));
 
   root = NormalStatus::Codes::kFoo;
-  derrived = {PackingStatus::Codes::kFail, "blah", std::move(root)};
-  serialized = MediaSerialize(derrived).TakeDict();
+  derived = {PackingStatus::Codes::kFail, "blah", std::move(root)};
+  serialized = MediaSerialize(derived).TakeDict();
   unpacked = serialized.FindDict("cause");
   ASSERT_EQ(*serialized.FindString("message"), "blah");
   ASSERT_NE(unpacked, nullptr);

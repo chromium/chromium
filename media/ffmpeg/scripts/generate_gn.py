@@ -245,8 +245,8 @@ def GetSourceFileSet(object_to_sources, object_files):
   """
     source_set = set()
     for name in object_files:
-        # Intentially raise a KeyError if lookup fails since something is messed
-        # up with our source and object lists.
+        # Intentionally raise a KeyError if lookup fails since something is
+        # messed up with our source and object lists.
         source_set.add(object_to_sources[name])
     return source_set
 

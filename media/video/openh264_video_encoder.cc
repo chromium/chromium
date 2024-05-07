@@ -390,7 +390,7 @@ void OpenH264VideoEncoder::Encode(scoped_refptr<VideoFrame> frame,
 
   if (frame->format() != PIXEL_FORMAT_I420) {
     // OpenH264 can resize frame automatically, but since we're converting
-    // pixel fromat anyway we can do resize as well.
+    // pixel format anyway we can do resize as well.
     auto i420_frame = frame_pool_.CreateFrame(
         PIXEL_FORMAT_I420, options_.frame_size, gfx::Rect(options_.frame_size),
         options_.frame_size, frame->timestamp());

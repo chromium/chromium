@@ -859,7 +859,7 @@ TEST_F(AudioRendererAlgorithmTest, WsolaSpeedup) {
 
 TEST_F(AudioRendererAlgorithmTest, FillBufferOffset) {
   Initialize();
-  // Pad the queue capacity so fill requests for all rates bellow can be fully
+  // Pad the queue capacity so fill requests for all rates below can be fully
   // satisfied.
   algorithm_.IncreasePlaybackThreshold();
 
@@ -1124,7 +1124,7 @@ TEST_F(AudioRendererAlgorithmTest, ClampLatencyHint) {
 
   const base::TimeDelta kDefaultMax = base::Seconds(3);
   // Verify "full" and "adequate" thresholds increased, but to a known max well
-  // bellow the hinted value.
+  // below the hinted value.
   EXPECT_GT(algorithm_.QueueCapacity(), default_capacity);
   FillAlgorithmQueueUntilAdequate();
   EXPECT_EQ(BufferedTime(), kDefaultMax);

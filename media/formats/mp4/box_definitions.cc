@@ -1953,7 +1953,7 @@ std::string MediaHeader::language() const {
 
   if (lang_chars[0] < 'a' || lang_chars[0] > 'z' || lang_chars[1] < 'a' ||
       lang_chars[1] > 'z' || lang_chars[2] < 'a' || lang_chars[2] > 'z') {
-    // Got unexpected characteds in ISO 639-2/T language code. Something must be
+    // Got unexpected characters in ISO 639-2/T language code. Something must be
     // wrong with the input file, report 'und' language to be safe.
     DVLOG(2) << "Ignoring MDHD language_code (non ISO 639-2 compliant): "
              << lang_chars;

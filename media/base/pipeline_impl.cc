@@ -155,7 +155,7 @@ class PipelineImpl::RendererWrapper final : public DemuxerHost,
       DemuxerStream::Type stream_type,
       const std::vector<DemuxerStream*>& streams);
 
-  // DemuxerHost implementaion.
+  // DemuxerHost implementation.
   void OnBufferedTimeRangesChanged(const Ranges<base::TimeDelta>& ranges) final;
   void SetDuration(base::TimeDelta duration) final;
   void OnDemuxerError(PipelineStatus error) final;

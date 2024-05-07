@@ -115,7 +115,7 @@ TEST(RangesTest, IntersectionWith) {
   ASSERT_RANGES(a.IntersectionWith(b), "{ }");
   ASSERT_RANGES(b.IntersectionWith(a), "{ }");
 
-  // Test intersections with a completely overlaping range.
+  // Test intersections with a completely overlapping range.
   ASSERT_EQ(b.Add(-1, 13), 1u) << b;
   ASSERT_RANGES(a, "{ [0,1) [4,7) [10,12) }");
   ASSERT_RANGES(b, "{ [-1,13) }");

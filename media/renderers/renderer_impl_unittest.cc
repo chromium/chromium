@@ -313,7 +313,7 @@ class RendererImplTest : public ::testing::Test {
   void SetAudioTrackSwitchExpectations() {
     InSequence track_switch_seq;
 
-    // Called from withing OnEnabledAudioTracksChanged
+    // Called from within OnEnabledAudioTracksChanged
     EXPECT_CALL(time_source_, CurrentMediaTime());
     EXPECT_CALL(time_source_, CurrentMediaTime());
     EXPECT_CALL(time_source_, StopTicking());
@@ -332,7 +332,7 @@ class RendererImplTest : public ::testing::Test {
   void SetVideoTrackSwitchExpectations() {
     InSequence track_switch_seq;
 
-    // Called from withing OnSelectedVideoTrackChanged
+    // Called from within OnSelectedVideoTrackChanged
     EXPECT_CALL(time_source_, CurrentMediaTime());
     EXPECT_CALL(*video_renderer_, Flush(_));
 

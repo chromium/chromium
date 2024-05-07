@@ -87,7 +87,7 @@ int GetCameraRotation(VideoFacingMode facing) {
   }
 
   // When display is only on external monitors, the auto-rotation state still
-  // may be ENALBED on the target device. In that case, we shouldn't query the
+  // may be ENABLED on the target device. In that case, we shouldn't query the
   // display orientation and the built-in camera will be treated as an external
   // one.
   DISPLAY_DEVICE internal_display_device;

@@ -882,8 +882,8 @@ class D3D11VideoDecoderMock
   MOCK_STDCALL_METHOD1(GetDriverHandle, HRESULT(HANDLE*));
 };
 
-// This classs must mock QueryInterface, since a lot of things are
-// QueryInterfac()ed thru this class.
+// This class must mock QueryInterface, since a lot of things are
+// QueryInterface()ed thru this class.
 class D3D11DeviceContextMock
     : public Microsoft::WRL::RuntimeClass<
           Microsoft::WRL::RuntimeClassFlags<Microsoft::WRL::ClassicCom>,

@@ -19,7 +19,7 @@
 namespace media {
 namespace learning {
 
-// Helper class to report on predicted distrubutions vs target distributions.
+// Helper class to report on predicted distributions vs target distributions.
 // Use DistributionReporter::Create() to create one that's appropriate for a
 // specific learning task.
 class COMPONENT_EXPORT(LEARNING_IMPL) DistributionReporter {

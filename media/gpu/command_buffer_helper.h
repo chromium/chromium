@@ -104,7 +104,7 @@ class MEDIA_GPU_EXPORT CommandBufferHelper
       scoped_refptr<base::SequencedTaskRunner> task_runner);
 
   // TODO(sandersd): Deleting remaining textures upon destruction requires
-  // making the context current, which may be undesireable. Consider adding an
+  // making the context current, which may be undesirable. Consider adding an
   // explicit DestroyWithContext() API.
   virtual ~CommandBufferHelper() = default;
 

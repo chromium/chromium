@@ -206,7 +206,7 @@ class MEDIA_EXPORT AudioRendererImpl
 
   // Called upon AudioDecoderStream initialization, or failure thereof
   // (indicated by the value of |success|).
-  void OnAudioDecoderStreamInitialized(bool succes);
+  void OnAudioDecoderStreamInitialized(bool success);
 
   void FinishInitialization(PipelineStatus status);
   void FinishFlush();

@@ -82,7 +82,7 @@ void RemotingRendererFactory::OnReceivedRpc(
   if (message->proc() == openscreen::cast::RpcMessage::RPC_ACQUIRE_RENDERER)
     OnAcquireRenderer(std::move(message));
   else
-    VLOG(1) << __func__ << ": Unknow RPC message. proc=" << message->proc();
+    VLOG(1) << __func__ << ": Unknown RPC message. proc=" << message->proc();
 }
 
 void RemotingRendererFactory::OnAcquireRenderer(

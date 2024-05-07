@@ -58,7 +58,7 @@ constexpr int k480pArea = 720 * 480;
 constexpr int k1080pArea = 1920 * 1088;
 // We are aligning these with the Widevine spec for sample sizes for various
 // resolutions. 1MB for SD, 2MB for HD and 4MB for UHD.
-// Input bitstream buffer size fo rup to 480p streams.
+// Input bitstream buffer size for up to 480p streams.
 constexpr size_t kInputBuferMaxSizeFor480p = 1024 * 1024;
 // Input bitstream buffer size for up to 1080p streams.
 constexpr size_t kInputBufferMaxSizeFor1080p = 2 * kInputBuferMaxSizeFor480p;

@@ -73,7 +73,7 @@ class USB_MIDI_EXPORT UsbMidiDevice {
   // Return the name of the manufacturer.
   virtual std::string GetManufacturer() = 0;
 
-  // Retur the name of the device.
+  // Return the name of the device.
   virtual std::string GetProductName() = 0;
 
   // Return the device version.

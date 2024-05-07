@@ -92,7 +92,7 @@ TEST_F(AACTest, ImplicitSBR_ChannelConfig0) {
 
   EXPECT_TRUE(Parse(data));
 
-  // Test w/o implict SBR.
+  // Test w/o implicit SBR.
   EXPECT_EQ(aac_.GetOutputSamplesPerSecond(false), 24000);
   EXPECT_EQ(aac_.GetChannelLayout(false), CHANNEL_LAYOUT_MONO);
   EXPECT_EQ(aac_.GetProfile(), AudioCodecProfile::kUnknown);
@@ -112,7 +112,7 @@ TEST_F(AACTest, ImplicitSBR_ChannelConfig1) {
 
   EXPECT_TRUE(Parse(data));
 
-  // Test w/o implict SBR.
+  // Test w/o implicit SBR.
   EXPECT_EQ(aac_.GetOutputSamplesPerSecond(false), 24000);
   EXPECT_EQ(aac_.GetChannelLayout(false), CHANNEL_LAYOUT_STEREO);
   EXPECT_EQ(aac_.GetProfile(), AudioCodecProfile::kUnknown);

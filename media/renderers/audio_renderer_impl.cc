@@ -1250,7 +1250,7 @@ int AudioRendererImpl::Render(base::TimeDelta delay,
           first_packet_timestamp_ - audio_clock_->back_timestamp();
       if (play_delay.is_positive()) {
         MEDIA_LOG(ERROR, media_log_)
-            << "Cannot add delay for compressed audio bitstream foramt."
+            << "Cannot add delay for compressed audio bitstream format."
             << " Requested delay: " << play_delay;
       }
 
@@ -1258,7 +1258,7 @@ int AudioRendererImpl::Render(base::TimeDelta delay,
                                                playback_rate_);
 
       // See Initialize(), the |audio_bus| should be bigger than we need in
-      // bitstream cases. Fix |frames_requested| to avoid incorrent time
+      // bitstream cases. Fix |frames_requested| to avoid incorrect time
       // calculation of |audio_clock_| below.
       frames_requested = frames_written;
     } else if (algorithm_->BufferedFrames() > 0) {

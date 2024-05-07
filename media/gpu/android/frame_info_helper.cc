@@ -146,7 +146,7 @@ class FrameInfoHelperImpl : public FrameInfoHelper,
     // FrameInfoHelperHolder is used instead to mimic this weakPtr behavior of
     // OnGpu. FrameInfoHelperHolder is RefCountedThreadSafe, and has a pointer
     // to the OnGpu. OnGpu owns the FrameInfoHelperHolder and sets this pointer
-    // to null in its destructor so that it cant be used once OnGpu is
+    // to null in its destructor so that it can't be used once OnGpu is
     // destroyed. Note that since OnGpu::GetFrameInfoImpl needed to be called
     // from any gpu thread, we could not use WeakPtr to it.
     class FrameInfoHelperHolder

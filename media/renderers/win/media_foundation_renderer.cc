@@ -226,7 +226,7 @@ HRESULT MediaFoundationRenderer::CreateMediaEngine(
     }
   }
 
-  // Only call the followings when there is a video stream.
+  // Only call the following when there is a video stream.
   for (media::DemuxerStream* stream : media_resource->GetAllStreams()) {
     if (stream->type() == media::DemuxerStream::VIDEO) {
       RETURN_IF_FAILED(InitializeDXGIDeviceManager());
@@ -495,7 +495,8 @@ void MediaFoundationRenderer::SetCdm(CdmContext* cdm_context,
 
 void MediaFoundationRenderer::SetLatencyHint(
     std::optional<base::TimeDelta> /*latency_hint*/) {
-  // TODO(frankli): Ensure MFMediaEngine rendering pipeine is in real time mode.
+  // TODO(frankli): Ensure MFMediaEngine rendering pipeline is in real time
+  // mode.
   NOTIMPLEMENTED() << "We do not use the latency hint today";
 }
 

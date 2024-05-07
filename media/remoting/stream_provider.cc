@@ -180,7 +180,7 @@ void StreamProvider::MediaStream::OnReceivedRpc(
       OnReadUntilCallback(std::move(message));
       break;
     default:
-      VLOG(3) << __func__ << "Unknow RPC message.";
+      VLOG(3) << __func__ << "Unknown RPC message.";
   }
 }
 

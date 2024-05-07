@@ -1585,7 +1585,7 @@ TEST_F(PipelineIntegrationTest, MSE_RemoveUpdatesBufferedRanges) {
 // This test case imitates media playback with advancing media_time and
 // continuously adding new data. At some point we should reach the buffering
 // limit, after that MediaSource should evict some buffered data and that
-// evicted data shold be reflected in the change of media::Pipeline buffered
+// evicted data should be reflected in the change of media::Pipeline buffered
 // ranges (returned by GetBufferedTimeRanges). At that point the buffered ranges
 // will no longer start at 0.
 TEST_F(PipelineIntegrationTest, MSE_FillUpBuffer) {

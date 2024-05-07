@@ -11,7 +11,7 @@ struct AVPacket;
 
 namespace media {
 
-// Interface for classes that allow reformating of FFmpeg bitstreams
+// Interface for classes that allow reformatting of FFmpeg bitstreams
 class MEDIA_EXPORT FFmpegBitstreamConverter {
  public:
   virtual ~FFmpegBitstreamConverter() {}

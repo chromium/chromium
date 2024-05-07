@@ -27,7 +27,7 @@ struct MEDIA_EXPORT AudioDeviceDescription {
   // this device ID is passed to MakeAudioInputStream() the returned
   // AudioInputStream will be capturing audio currently being played on the
   // default playback device. At the moment this feature is supported only on
-  // some platforms. AudioInputStream::Intialize() will return an error on
+  // some platforms. AudioInputStream::Initialize() will return an error on
   // platforms that don't support it. GetInputStreamParameters() must be used
   // to get the parameters of the loopback device before creating a loopback
   // stream, otherwise stream initialization may fail.

@@ -118,7 +118,7 @@ mojom::BlobPtr RotateAndBlobify(const uint8_t* buffer,
       src_format = libyuv::FOURCC_UYVY;
       break;
     default:
-      NOTREACHED() << "Unsuported pixel format passed to RotateAndBlobify";
+      NOTREACHED() << "Unsupported pixel format passed to RotateAndBlobify";
       return nullptr;
   }
 

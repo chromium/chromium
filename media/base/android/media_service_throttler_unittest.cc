@@ -103,7 +103,7 @@ TEST_F(MediaServiceThrottlerTest,
   // Schedule clients until the next one would be over burst threshold.
   SimulateClientCreations(kMaxBurstClients);
 
-  // Delays between two clients should be |base_delay_| appart.
+  // Delays between two clients should be |base_delay_| apart.
   EXPECT_EQ(base_delay_, GetCurrentDelayBetweenClients());
 
   // Delays should remain constant (GetCurrentDelayBetweenClients() is not
@@ -274,7 +274,7 @@ TEST_F(MediaServiceThrottlerTest, CrashListener_NoRequests_ShouldShutDown) {
   test_task_runner_->RunTasks();
   EXPECT_TRUE(throttler_->IsCrashListenerAliveForTesting());
 
-  // Requesting a new client creation should reset the interal timer, and
+  // Requesting a new client creation should reset the internal timer, and
   // cancel the release request that was scheduled 59 seconds ago.
   throttler_->GetDelayForClientCreation();
 

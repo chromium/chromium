@@ -1954,9 +1954,9 @@ H266Parser::Result H266Parser::ParsePPS(const H266NALU& nalu, int* pps_id) {
   IN_RANGE_OR_RETURN(pps->pps_pic_height_in_luma_samples, 1,
                      sps->sps_pic_height_max_in_luma_samples);
 
-  int multipler = std::max(8, sps->min_cb_size_y);
-  if ((pps->pps_pic_width_in_luma_samples % multipler != 0) ||
-      (pps->pps_pic_height_in_luma_samples % multipler != 0)) {
+  int multiplier = std::max(8, sps->min_cb_size_y);
+  if ((pps->pps_pic_width_in_luma_samples % multiplier != 0) ||
+      (pps->pps_pic_height_in_luma_samples % multiplier != 0)) {
     DVLOG(1) << "Invalid pps pic width/height";
     return kInvalidStream;
   }
@@ -3793,7 +3793,7 @@ H266Parser::Result H266Parser::ParseSliceHeader(
 
   sps = GetSPS(pps->pps_seq_parameter_set_id);
   if (!sps) {
-    DVLOG(1) << "Cannnot find the SPS associated with current slice.";
+    DVLOG(1) << "Cannot find the SPS associated with current slice.";
     return kMissingParameterSet;
   }
 

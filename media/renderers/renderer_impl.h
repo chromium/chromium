@@ -122,7 +122,7 @@ class MEDIA_EXPORT RendererImpl final : public Renderer {
   // renderer must be flushed first, and when the re-init is completed the
   // corresponding callback will be invoked to restart playback.
   // The |stream| parameter specifies the new demuxer stream, and the |time|
-  // parameter specifies the time on media timeline where the switch occured.
+  // parameter specifies the time on media timeline where the switch occurred.
   void ReinitializeAudioRenderer(DemuxerStream* stream,
                                  base::TimeDelta time,
                                  base::OnceClosure reinitialize_completed_cb);

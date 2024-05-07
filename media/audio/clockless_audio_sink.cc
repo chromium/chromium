@@ -17,7 +17,7 @@
 
 namespace media {
 
-// Internal to ClocklessAudioSink. Class is used to call Render() on a seperate
+// Internal to ClocklessAudioSink. Class is used to call Render() on a separate
 // thread, running as fast as it can read the data.
 class ClocklessAudioSinkThread : public base::DelegateSimpleThread::Delegate {
  public:

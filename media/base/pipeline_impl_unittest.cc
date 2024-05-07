@@ -893,7 +893,7 @@ TEST_F(PipelineImplTest, GetMediaTime) {
   EXPECT_EQ(kMediaTime, pipeline_->GetMediaTime());
 
   // Media time should not go backwards even if the renderer returns an
-  // errorneous value. PipelineImpl should clamp it to last reported value.
+  // erroneous value. PipelineImpl should clamp it to last reported value.
   EXPECT_CALL(*renderer_, GetMediaTime())
       .WillRepeatedly(Return(base::Seconds(1)));
   EXPECT_EQ(kMediaTime, pipeline_->GetMediaTime());

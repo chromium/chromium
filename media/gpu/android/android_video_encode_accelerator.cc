@@ -407,7 +407,7 @@ void AndroidVideoEncodeAccelerator::QueueInput() {
   // MediaCodec encoder assumes the presentation timestamps to be monotonically
   // increasing at initialized framerate. But in Chromium, the video capture
   // may be paused for a while or drop some frames, so the timestamp in input
-  // frames won't be continious. Here we cache the timestamps of input frames,
+  // frames won't be continuous. Here we cache the timestamps of input frames,
   // mapping to the generated |presentation_timestamp_|, and will read them out
   // after encoding. Then encoder can work happily always and we can preserve
   // the timestamps in captured frames for other purpose.

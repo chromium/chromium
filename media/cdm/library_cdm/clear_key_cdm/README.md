@@ -1,6 +1,6 @@
 # Clear Key CDM
 
-This folder contains a library CDM implemenation that implements the
+This folder contains a library CDM implementation that implements the
 cdm::ContentDecryptionModule interface to support **External Clear Key** key
 system ("org.chromium.externalclearkey" and variants), which is a superset of
 the Clear Key key system.

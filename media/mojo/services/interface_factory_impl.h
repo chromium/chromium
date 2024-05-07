@@ -98,7 +98,7 @@ class InterfaceFactoryImpl final
 
   void CreateCdm(const CdmConfig& cdm_config, CreateCdmCallback callback) final;
 
-  // DeferredDestroy<mojom::InterfaceFactory> implemenation.
+  // DeferredDestroy<mojom::InterfaceFactory> implementation.
   void OnDestroyPending(base::OnceClosure destroy_cb) final;
 
  private:

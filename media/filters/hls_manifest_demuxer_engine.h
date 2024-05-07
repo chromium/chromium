@@ -278,7 +278,7 @@ class MEDIA_EXPORT HlsManifestDemuxerEngine : public ManifestDemuxer::Engine,
       GUARDED_BY_CONTEXT(media_sequence_checker_) = nullptr;
 
   // If the root playlist is multivariant, we need to store it for parsing the
-  // dependant media playlists.
+  // dependent media playlists.
   scoped_refptr<hls::MultivariantPlaylist> multivariant_root_
       GUARDED_BY_CONTEXT(media_sequence_checker_);
   std::unique_ptr<hls::RenditionManager> rendition_manager_

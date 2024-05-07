@@ -426,7 +426,7 @@ class AudioRendererImplTest : public ::testing::Test,
     EXPECT_CALL(demuxer_stream_, OnRead(_))
         .WillOnce(RunOnceCallback<0>(DemuxerStream::kOk, buffers));
 
-    // Satify pending |decode_cb_| to trigger a new DemuxerStream::Read().
+    // Satisfy pending |decode_cb_| to trigger a new DemuxerStream::Read().
     main_thread_task_runner_->PostTask(
         FROM_HERE,
         base::BindOnce(std::move(decode_cb_), DecoderStatus::Codes::kOk));
@@ -457,7 +457,7 @@ class AudioRendererImplTest : public ::testing::Test,
 
   // Consumes data from the buffer until what remains drops below the buffer's
   // capacity. Note that the buffer is often over-filled, such that consuming
-  // a fixed amount of data cannot guarantee we fall bellow the full line.
+  // a fixed amount of data cannot guarantee we fall below the full line.
   // Precondition: the buffer must be full when called.
   bool ConsumeBufferedDataUntilNotFull() {
     int buffered = frames_buffered().value;
@@ -1106,7 +1106,7 @@ TEST_F(AudioRendererImplTest, CurrentMediaTimeBehavior) {
   EXPECT_EQ(timestamp_helper.GetTimestamp(), CurrentMediaTime());
 
   // Advance current time well past all played audio to simulate an irregular or
-  // delayed OS callback. The value should be clamped to whats been rendered.
+  // delayed OS callback. The value should be clamped to what's been rendered.
   timestamp_helper.AddFrames(frames_to_consume.value);
   tick_clock_.Advance(kConsumptionDuration * 2);
   EXPECT_EQ(timestamp_helper.GetTimestamp(), CurrentMediaTime());

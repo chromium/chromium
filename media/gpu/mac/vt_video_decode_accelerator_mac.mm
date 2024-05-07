@@ -1271,7 +1271,7 @@ void VTVideoDecodeAccelerator::DecodeTaskH264(
       data_size += kNALUHeaderLength + pps_nalu.size;
       first_slice_index += 1;
 
-      // Update the configured SPS/SPSext/PPS in case VT referrence to the wrong
+      // Update the configured SPS/SPSext/PPS in case VT reference to the wrong
       // parameter sets.
       configured_sps_ = active_sps_;
       configured_spsext_ = active_spsext_;
@@ -1710,7 +1710,7 @@ void VTVideoDecodeAccelerator::DecodeTaskHEVC(
       data_size += kNALUHeaderLength + pps_nalu.size;
       first_slice_index += 1;
 
-      // Update the configured VPSs/SPSs/PPSs in case VT referrence to the wrong
+      // Update the configured VPSs/SPSs/PPSs in case VT reference to the wrong
       // parameter sets.
       configured_vpss_[active_vps_id].assign(
           active_vps_.data(), active_vps_.data() + active_vps_.size());
@@ -1832,7 +1832,7 @@ void VTVideoDecodeAccelerator::Output(void* source_frame_refcon,
   //
   // Sometimes, for unknown reasons (http://crbug.com/453050), |image_buffer| is
   // NULL, which causes CFGetTypeID() to crash. While the rest of the code would
-  // smoothly handle NULL as a dropped frame, we choose to fail permanantly here
+  // smoothly handle NULL as a dropped frame, we choose to fail permanently here
   // until the issue is better understood.
   if (!image_buffer || CFGetTypeID(image_buffer) != CVPixelBufferGetTypeID()) {
     DLOG(ERROR) << "Decoded frame is not a CVPixelBuffer";

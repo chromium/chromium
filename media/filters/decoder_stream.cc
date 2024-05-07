@@ -400,7 +400,7 @@ void DecoderStream<StreamType>::OnDecoderSelected(
   }
 
   // Attempt to decode buffers from previous decoders (when those decoders have
-  // never successfully outputed a frame).
+  // never successfully outputted a frame).
   fallback_buffers_ = pending_buffers_;
 
   if (!decoder_or_error.has_value()) {
@@ -693,7 +693,7 @@ void DecoderStream<StreamType>::OnDecodeOutputReady(
 
   if (read_cb_) {
     // If |ready_outputs_| was non-empty, the read would have already been
-    // satisifed by Read().
+    // satisfied by Read().
     DCHECK(ready_outputs_.empty());
     SatisfyRead(std::move(output));
     return;

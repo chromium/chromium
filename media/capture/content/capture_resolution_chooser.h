@@ -23,7 +23,7 @@ namespace media {
 // (i.e., usually less than a dozen) set of possibilities.  This is to prevent
 // the end-to-end system from having to deal with rapidly-changing video frame
 // resolutions that results from providing a fine-grained range of values.  The
-// possibile snapped frame sizes are computed relative to the resolution of the
+// possible snapped frame sizes are computed relative to the resolution of the
 // source content: They are the same or smaller in size, and are of the same
 // aspect ratio.
 class CAPTURE_EXPORT CaptureResolutionChooser {

@@ -499,9 +499,8 @@ TEST_F(H266ParserTest,
 
   // Calculated values or inferred values.
   EXPECT_EQ(sps->ctb_size_y, 128);
-  // The entire picture is splitted into 8 subpictures in 4 columns and
-  // 2 rows, so each subpicture contains 1 CTU (except those at the last
-  // column).
+  // The entire picture is split into 8 subpictures in 4 columns and 2 rows, so
+  // each subpicture contains 1 CTU (except those at the last column).
   EXPECT_EQ(sps->sps_subpic_ctu_top_left_x[0], 0);
   EXPECT_EQ(sps->sps_subpic_ctu_top_left_y[0], 0);
   EXPECT_EQ(sps->sps_subpic_ctu_top_left_x[1], 1);

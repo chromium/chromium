@@ -149,7 +149,7 @@ def write_patches_file(origin_branch, output_file):
     files_to_deleted_lines = {}
     patch_info = PatchInfo()
     filename = None
-    # Files that were delted in origin but exist in upstream.
+    # Files that were deleted in origin but exist in upstream.
     files_deleted_in_origin = set()
 
     last_minus_file = None

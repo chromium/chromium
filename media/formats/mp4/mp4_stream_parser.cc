@@ -553,7 +553,7 @@ bool MP4StreamParser::ParseMoov(BoxReader* reader) {
         }
 
         // Check if it is MPEG4 AAC defined in ISO 14496 Part 3 or
-        // supported MPEG2 AAC varients.
+        // supported MPEG2 AAC variants.
         if (ESDescriptor::IsAAC(audio_type)) {
           const AAC& aac = entry.esds.aac;
           codec = AudioCodec::kAAC;

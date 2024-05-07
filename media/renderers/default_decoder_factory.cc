@@ -101,7 +101,7 @@ void DefaultDecoderFactory::CreateVideoDecoders(
       std::make_unique<DecryptingVideoDecoder>(task_runner, media_log));
 #endif
 
-  // Perfer an external decoder since one will only exist if it is hardware
+  // Prefer an external decoder since one will only exist if it is hardware
   // accelerated.
   if (external_decoder_factory_ && gpu_factories &&
       gpu_factories->IsGpuVideoDecodeAcceleratorEnabled()) {

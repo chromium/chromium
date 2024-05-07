@@ -67,7 +67,7 @@ class MEDIA_EXPORT AudioRendererAlgorithm {
   // mask changes.
   //
   // E.g., If |channel_mask| is [true, false] only the first channel will be
-  // used to construct the playback rate adapated signal. This is useful if
+  // used to construct the playback rate adapted signal. This is useful if
   // channel upmixing has been performed prior to this point.
   void SetChannelMask(std::vector<bool> channel_mask);
 

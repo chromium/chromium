@@ -47,7 +47,7 @@ constexpr auto kMaxTimeSinceLastFeedbackUpdate = base::Seconds(1);
 
 // The amount of additional time, since content animation was last detected, to
 // continue being extra-careful about increasing the capture size.  This is used
-// to prevent breif periods of non-animating content from throwing off the
+// to prevent brief periods of non-animating content from throwing off the
 // heuristics that decide whether to increase the capture size.
 constexpr auto kDebouncingPeriodForAnimatedContent = base::Seconds(3);
 

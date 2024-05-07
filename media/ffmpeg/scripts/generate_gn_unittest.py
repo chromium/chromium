@@ -230,7 +230,7 @@ class SourceSetUnittest(unittest.TestCase):
         disjoint_sets = gg.CreatePairwiseDisjointSets([a, b])
 
         # This condition is bad because x86 && linux would pass. Admittedly a very
-        # fragile way to test this, but evaulating gn stanzas is hard, and it at
+        # fragile way to test this, but evaluating gn stanzas is hard, and it at
         # least serves to document the motivation for the associated changes to
         # our generate_gn.py
         bad_condition = ('(current_cpu == "x86" || current_cpu == "x64")'

@@ -21,7 +21,7 @@ namespace media {
 
 // For tests only. Creates AudioSystem callbacks to be passed to AudioSystem
 // methods. When AudioSystem calls such a callback, it verifies treading
-// expectations and checks recieved parameters against expected values passed
+// expectations and checks received parameters against expected values passed
 // during its creation. After that it calls |on_cb_received| closure.
 // Note AudioSystemCallbackExpectations object must outlive all the callbacks
 // it produced, since they contain raw pointers to it.

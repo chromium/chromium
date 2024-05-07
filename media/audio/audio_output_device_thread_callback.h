@@ -49,7 +49,7 @@ class MEDIA_EXPORT AudioOutputDeviceThreadCallback
 
   // Sets |first_play_start_time_| to the current time unless it's already set,
   // in which case it's a no-op. The first call to this method MUST have
-  // completed by the time we recieve our first Process() callback to avoid
+  // completed by the time we receive our first Process() callback to avoid
   // data races.
   void InitializePlayStartTime();
 

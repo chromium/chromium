@@ -64,7 +64,7 @@ class MEDIA_EXPORT VpxVideoDecoder : public OffloadableVideoDecoder {
     kAlphaPlaneProcessed,  // Alpha plane (if found) was decoded successfully.
     kNoAlphaPlaneData,  // Alpha plane was found, but decoder did not return any
                         // data.
-    kAlphaPlaneError  // Fatal error occured when trying to decode alpha plane.
+    kAlphaPlaneError  // Fatal error occurred when trying to decode alpha plane.
   };
 
   // Handles (re-)initializing the decoder with a (new) config.

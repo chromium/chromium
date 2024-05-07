@@ -352,7 +352,7 @@ class MediaCodecUtil {
                 // To work around an issue that we cannot get the codec info
                 // from the secure decoder, create an insecure decoder first
                 // so that we can query its codec info. http://b/15587335.
-                // Futhermore, it is impossible to create an insecure
+                // Furthermore, it is impossible to create an insecure
                 // decoder if the secure one is already created.
                 MediaCodec insecureCodec = MediaCodec.createByCodecName(decoderName);
                 result.supportsAdaptivePlayback =

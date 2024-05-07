@@ -278,7 +278,7 @@ class MEDIA_EXPORT MediaCodecLoop {
 
   // Dequeues an empty input buffer from the codec and returns the information
   // about it. InputBuffer.index is the index of the dequeued buffer or -1 if
-  // the codec is busy or an error occured.  InputBuffer.is_pending is set to
+  // the codec is busy or an error occurred.  InputBuffer.is_pending is set to
   // true if we tried to enqueue this buffer before. In this case the buffer is
   // already filled with data.
   // In the case of an error sets STATE_ERROR.

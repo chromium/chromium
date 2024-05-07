@@ -806,7 +806,7 @@ void V4L2ImageProcessorBackend::Dequeue() {
     // Jobs are always processed in FIFO order.
     if (running_jobs_.empty() ||
         running_jobs_.front()->output_buffer_id != buffer->BufferId()) {
-      DVLOGF(3) << "previous Reset() abondoned the job, ignore.";
+      DVLOGF(3) << "previous Reset() abandoned the job, ignore.";
       continue;
     }
     std::unique_ptr<JobRecord> job_record = std::move(running_jobs_.front());

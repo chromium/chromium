@@ -463,7 +463,7 @@ bool CodecWrapperImpl::ReleaseCodecOutputBuffer(int64_t id, bool render) {
     // earlier release(s) (with no intervening renders, since those are
     // ordered).  In this case, though, the loop below will still release
     // everything earlier than the rendered buffer, so the codec still sees the
-    // same sequence of calls -- some releases follwed by a render.
+    // same sequence of calls -- some releases followed by a render.
     //
     // Of course, if releases and renders are posted from different threads,
     // then it's unclear what the ordering was anyway.

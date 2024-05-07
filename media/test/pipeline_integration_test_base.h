@@ -76,7 +76,7 @@ class PipelineIntegrationTestBase : public Pipeline::Client {
     kFuzzing = 64,
   };
 
-  // Setup method to intialize various state according to flags.
+  // Setup method to initialize various state according to flags.
   void ParseTestTypeFlags(uint8_t flags);
 
   // Starts the pipeline with a file specified by |filename|, optionally with a

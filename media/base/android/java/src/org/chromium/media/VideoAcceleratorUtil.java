@@ -426,7 +426,7 @@ class VideoAcceleratorUtil {
                 }
 
                 // Not all platforms seem to have a populated `profileLevels`, e.g., the
-                // x86 emulator. In these cases, populate whats required by Android:
+                // x86 emulator. In these cases, populate what's required by Android:
                 // https://developer.android.com/guide/topics/media/media-formats
                 //
                 // The decoder selection will choose the decoder if the supported level is

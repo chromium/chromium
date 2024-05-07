@@ -181,7 +181,7 @@ class MojoAndroidOverlayTest : public ::testing::Test {
   gl::ScopedJavaSurface surface_;
   int surface_key_ = 0;
 
-  // Inital config for |CreateOverlay|.
+  // Initial config for |CreateOverlay|.
   // Set to sane values, but feel free to modify before CreateOverlay().
   AndroidOverlayConfig config_;
   MockClientCallbacks callbacks_;

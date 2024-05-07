@@ -211,7 +211,7 @@ struct FrameSenderConfig {
   int channels = 0;
 
   // For now, only fixed bitrate is used for audio encoding. So for audio,
-  // |max_bitrate| is used, and the other two will be overriden if they are not
+  // |max_bitrate| is used, and the other two will be overridden if they are not
   // equal to |max_bitrate|.
   int max_bitrate = 0;
   int min_bitrate = 0;

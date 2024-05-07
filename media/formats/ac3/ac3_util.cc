@@ -73,7 +73,7 @@ Ac3Header::Ac3Header(const uint8_t* data, int size) {
   eac3_number_of_audio_block_code_ = ac3_frame_size_code_ >> 4;
 }
 
-// Search for next synchronization word, wihch is 0x0B-0x77.
+// Search for next synchronization word, which is 0x0B-0x77.
 const uint8_t* FindNextSyncWord(const uint8_t* const begin,
                                 const uint8_t* const end) {
   DCHECK(begin);

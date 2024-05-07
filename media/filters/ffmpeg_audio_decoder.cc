@@ -400,8 +400,7 @@ int FFmpegAudioDecoder::GetAudioBuffer(struct AVCodecContext* s,
 
   // Since this routine is called by FFmpeg when a buffer is required for
   // audio data, use the values supplied by FFmpeg (ignoring the current
-  // settings). FFmpegDecode() gets to determine if the buffer is useable or
-  // not.
+  // settings). FFmpegDecode() gets to determine if the buffer is usable or not.
   AVSampleFormat format = static_cast<AVSampleFormat>(frame->format);
   SampleFormat sample_format =
       AVSampleFormatToSampleFormat(format, s->codec_id);

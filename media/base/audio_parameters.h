@@ -90,7 +90,7 @@ class AudioParameters;
 
 // These convenience function safely computes the size required for
 // |shared_memory_count| AudioInputBuffers, with enough memory for AudioBus
-// data, using |paremeters| (or alternatively |channels| and |frames|). The
+// data, using |parameters| (or alternatively |channels| and |frames|). The
 // functions not returning a CheckedNumeric will CHECK on overflow.
 MEDIA_SHMEM_EXPORT base::CheckedNumeric<uint32_t>
 ComputeAudioInputBufferSizeChecked(const AudioParameters& parameters,

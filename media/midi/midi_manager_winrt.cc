@@ -582,13 +582,13 @@ class MidiManagerWinrt::MidiPortManager {
     }
   }
 
-  // Overrided by MidiInPortManager to listen to input ports.
+  // Overridden by MidiInPortManager to listen to input ports.
   virtual bool RegisterOnMessageReceived(InterfaceType* handle,
                                          EventRegistrationToken* p_token) {
     return true;
   }
 
-  // Overrided by MidiInPortManager to remove MessageReceived event handler.
+  // Overridden by MidiInPortManager to remove MessageReceived event handler.
   virtual void RemovePortEventHandlers(MidiPort<InterfaceType>* port) {}
 
   // Calls midi_manager_->Add{Input,Output}Port.

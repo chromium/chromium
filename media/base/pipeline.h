@@ -112,7 +112,7 @@ class MEDIA_EXPORT Pipeline {
                      PipelineStatusCallback seek_cb) = 0;
 
   // Track switching works similarly for both audio and video. Callbacks are
-  // used to notify when it is time to procede to the next step, since many of
+  // used to notify when it is time to proceed to the next step, since many of
   // the operations are asynchronous.
   // ──────────────────── Track Switch Control Flow ───────────────────────
   //  pipeline | demuxer | demuxer_stream | renderer | video/audio_renderer

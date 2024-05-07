@@ -17,7 +17,7 @@ namespace media {
 
 class MuteableAudioOutputStream;
 
-// Android implemention of AudioManager.
+// Android implementation of AudioManager.
 class MEDIA_EXPORT AudioManagerAndroid : public AudioManagerBase {
  public:
   AudioManagerAndroid(std::unique_ptr<AudioThread> audio_thread,

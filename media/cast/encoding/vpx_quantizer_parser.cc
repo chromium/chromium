@@ -36,7 +36,7 @@ class VpxBitReader {
   unsigned int DecodeValue(unsigned int num_bits);
 
  private:
-  // Read new bytes frome the encoded data buffer until |bit_count_| > 0.
+  // Read new bytes from the encoded data buffer until |bit_count_| > 0.
   void VpxDecoderReadBytes();
 
   const uint8_t* encoded_data_;            // Current byte to decode.

@@ -388,7 +388,7 @@ void WASAPIAudioOutputStream::Start(AudioSourceCallback* callback) {
   last_position_ = 0;
   last_qpc_position_ = 0;
 
-  // Recreate `peak_detector_` everytime we create a new `render_thread_`, to
+  // Recreate `peak_detector_` every time we create a new `render_thread_`, to
   // avoid ThreadChecker DCHECKs.
   peak_detector_ = std::make_unique<AmplitudePeakDetector>(base::BindRepeating(
       &AudioManager::TraceAmplitudePeak, base::Unretained(manager_),

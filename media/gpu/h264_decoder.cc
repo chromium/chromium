@@ -1639,7 +1639,7 @@ H264Decoder::DecodeResult H264Decoder::Decode() {
           ref_pic_list_b0_.clear();
           ref_pic_list_b1_.clear();
         }
-        // Perfer config changes over color space changes.
+        // Prefer config changes over color space changes.
         if (need_new_buffers) {
           return kConfigChange;
         }
