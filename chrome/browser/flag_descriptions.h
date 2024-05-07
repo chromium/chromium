@@ -2440,6 +2440,9 @@ extern const char kFeedDynamicColorsDescription[];
 extern const char kFeedDiscoFeedEndpointName[];
 extern const char kFeedDiscoFeedEndpointDescription[];
 
+extern const char kFetchGaiaHashOnSignInName[];
+extern const char kFetchGaiaHashOnSignInDescription[];
+
 extern const char kFullscreenInsetsApiMigrationName[];
 extern const char kFullscreenInsetsApiMigrationDescription[];
 

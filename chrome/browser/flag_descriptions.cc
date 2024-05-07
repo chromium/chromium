@@ -4120,6 +4120,12 @@ const char kFeedDynamicColorsName[] = "Enable dynamic colors in the feed";
 const char kFeedDynamicColorsDescription[] =
     "Allows feed to fully respect dynamic colors if supported by the client.";
 
+const char kFetchGaiaHashOnSignInName[] =
+    "Enable Fetching Gaia credentials from SharedPreferences.";
+const char kFetchGaiaHashOnSignInDescription[] =
+    "Enable retrieving email, salt, and hashed password from SharedPreferences "
+    "for password reuse detection when a user signs in.";
+
 const char kFullscreenInsetsApiMigrationName[] =
     "Migrate to the new fullscreen insets APIs";
 const char kFullscreenInsetsApiMigrationDescription[] =

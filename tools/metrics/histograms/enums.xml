@@ -16987,6 +16987,7 @@ from previous Chrome versions.
   <int value="-1899342084" label="ArcGhostWindow:enabled"/>
   <int value="-1898963163"
       label="OmniboxKeywordSpaceTriggeringSetting:disabled"/>
+  <int value="-1898905225" label="FetchGaiaHashOnSignIn:enabled"/>
   <int value="-1898386671" label="PasswordCheck:enabled"/>
   <int value="-1898229093" label="WebApkGenerator:enabled"/>
   <int value="-1898129939" label="U2fPermissionPrompt:enabled"/>
@@ -21604,6 +21605,7 @@ from previous Chrome versions.
   <int value="141482401" label="ConsumerAutoUpdateToggleAllowed:disabled"/>
   <int value="141830539" label="MediaAppPdfSignature:enabled"/>
   <int value="143725809" label="DownloadProgressInfoBar:enabled"/>
+  <int value="143972631" label="FetchGaiaHashOnSignIn:disabled"/>
   <int value="144868136" label="DesktopPWAsNotificationIconAndTitle:enabled"/>
   <int value="145296783" label="CameraMicPreview:disabled"/>
   <int value="146139744" label="CrOSLateBootPermissiveUsbPassthrough:disabled"/>

@@ -11212,6 +11212,12 @@ const FeatureEntry kFeatureEntries[] = {
      FEATURE_VALUE_TYPE(
          password_manager::features::kShowWebauthnSuggestionsOnAutofocus)},
 
+#if BUILDFLAG(IS_ANDROID)
+    {"fetch-gaia-hash-on-sign-in",
+     flag_descriptions::kFetchGaiaHashOnSignInName,
+     flag_descriptions::kFetchGaiaHashOnSignInDescription, kOsAndroid,
+     FEATURE_VALUE_TYPE(password_manager::features::kFetchGaiaHashOnSignIn)},
+#endif
     // NOTE: Adding a new flag requires adding a corresponding entry to enum
     // "LoginCustomFlags" in tools/metrics/histograms/enums.xml. See "Flag
     // Histograms" in tools/metrics/histograms/README.md (run the

@@ -4450,6 +4450,11 @@
     "expiry_milestone": 115
   },
   {
+    "name": "fetch-gaia-hash-on-sign-in",
+    "owners":["nwokedi@chromium.org"],
+    "expiry_milestone": 130
+  },
+  {
     "name": "file-handling-icons",
     "owners": [ "dmurph@chromium.org", "mgiuca@chromium.org", "cmp@chromium.org" ],
     "expiry_milestone": 110
