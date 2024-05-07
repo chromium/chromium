@@ -86,6 +86,7 @@
 #include "third_party/blink/renderer/core/html/html_table_row_element.h"
 #include "third_party/blink/renderer/core/html/html_title_element.h"
 #include "third_party/blink/renderer/core/html/html_ulist_element.h"
+#include "third_party/blink/renderer/core/html/shadow/shadow_element_names.h"
 #include "third_party/blink/renderer/core/html_names.h"
 #include "third_party/blink/renderer/core/input_type_names.h"
 #include "third_party/blink/renderer/core/layout/inline/abstract_inline_text_box.h"
@@ -108,9 +109,6 @@
 #include "third_party/blink/renderer/modules/accessibility/ax_inline_text_box.h"
 #include "third_party/blink/renderer/modules/accessibility/ax_media_control.h"
 #include "third_party/blink/renderer/modules/accessibility/ax_media_element.h"
-#include "third_party/blink/renderer/modules/accessibility/ax_menu_list.h"
-#include "third_party/blink/renderer/modules/accessibility/ax_menu_list_option.h"
-#include "third_party/blink/renderer/modules/accessibility/ax_menu_list_popup.h"
 #include "third_party/blink/renderer/modules/accessibility/ax_node_object.h"
 #include "third_party/blink/renderer/modules/accessibility/ax_progress_indicator.h"
 #include "third_party/blink/renderer/modules/accessibility/ax_relation_cache.h"
@@ -472,31 +470,7 @@ bool IsShadowContentRelevantForAccessibility(const Node* node) {
     return false;
   }
 
-  // Don't use non-<option> descendants of an AXMenuList.
-  // If the UseAXMenuList flag is on, we use a specialized class AXMenuList
-  // for handling the user-agent shadow DOM exposed by a <select> element.
-  // That class adds a mock AXMenuListPopup, which adds AXMenuListOption
-  // children for <option> descendants only.
-  if (AXObjectCacheImpl::UseAXMenuList() && node->IsInUserAgentShadowRoot() &&
-      !IsA<HTMLOptionElement>(node)) {
-    // Find any ancestor <select> if it is present.
-    Node* host = node->OwnerShadowHost();
-    auto* select_element = DynamicTo<HTMLSelectElement>(host);
-    if (!select_element) {
-      // An <optgroup> can be a shadow host too -- look for it's owner <select>.
-      if (auto* opt_group_element = DynamicTo<HTMLOptGroupElement>(host))
-        select_element = opt_group_element->OwnerSelectElement();
-    }
-    if (select_element) {
-      if (!select_element->GetLayoutObject())
-        return select_element->IsInCanvasSubtree();
-      // Non-option: only create AXObject if not inside an AXMenuList.
-      return !AXObjectCacheImpl::ShouldCreateAXMenuListFor(select_element);
-    }
-  }
-
-  // Outside of AXMenuList descendants, all other non-slot user agent shadow
-  // nodes are relevant.
+  // All other non-slot user agent shadow nodes are relevant.
   const HTMLSlotElement* slot_element =
       ToHTMLSlotElementIfSupportsAssignmentOrNull(node);
   if (!slot_element)
@@ -540,12 +514,6 @@ bool IsLayoutObjectRelevantForAccessibility(const LayoutObject& layout_object) {
   if (layout_object.IsText())
     return IsLayoutTextRelevantForAccessibility(To<LayoutText>(layout_object));
 
-  // An AXMenuListOption will be created, which does not store the LayoutObject.
-  if (AXObjectCacheImpl::ShouldCreateAXMenuListOptionFor(
-          layout_object.GetNode())) {
-    return false;
-  }
-
   // An AXImageMapLink will be created, which does not store the LayoutObject.
   if (IsA<HTMLAreaElement>(layout_object.GetNode()))
     return false;
@@ -574,14 +542,6 @@ bool IsSubtreePrunedForAccessibility(const Element* node) {
           ToHTMLSlotElementIfSupportsAssignmentOrNull(node)) {
     if (!AXObjectCacheImpl::IsRelevantSlotElement(*slot))
       return true;
-  }
-
-  // <optgroup> is irrelevant inside of a <select> menulist.
-  if (auto* opt_group = DynamicTo<HTMLOptGroupElement>(node)) {
-    if (auto* select = opt_group->OwnerSelectElement()) {
-      if (select->UsesMenuList())
-        return true;
-    }
   }
 
   // An HTML <title> does not require an AXObject: the document's name is
@@ -767,9 +727,6 @@ void LogNodeDataSizeDistribution(
 }  // namespace
 
 // static
-bool AXObjectCacheImpl::use_ax_menu_list_ = false;
-
-// static
 AXObjectCache* AXObjectCacheImpl::Create(Document& document,
                                          const ui::AXMode& ax_mode) {
   return MakeGarbageCollected<AXObjectCacheImpl>(document, ax_mode);
@@ -786,7 +743,6 @@ AXObjectCacheImpl::AXObjectCacheImpl(Document& document,
       permission_observer_receiver_(this, document.GetExecutionContext()),
       render_accessibility_host_(document.GetExecutionContext()),
       ax_tree_source_(BlinkAXTreeSource::Create(*this)) {
-  use_ax_menu_list_ = GetSettings()->GetUseAXMenuList();
 }
 
 AXObjectCacheImpl::~AXObjectCacheImpl() {
@@ -1145,15 +1101,6 @@ AXObject* AXObjectCacheImpl::CreateFromRenderer(LayoutObject* layout_object) {
     }
   }
 
-  if (auto* select_element = DynamicTo<HTMLSelectElement>(node)) {
-    if (select_element->UsesMenuList()) {
-      if (use_ax_menu_list_) {
-        DCHECK(ShouldCreateAXMenuListFor(node));
-        return MakeGarbageCollected<AXMenuList>(layout_object, *this);
-      }
-    }
-  }
-
   if (IsA<HTMLProgressElement>(node)) {
     return MakeGarbageCollected<AXProgressIndicator>(layout_object, *this);
   }
@@ -1161,46 +1108,14 @@ AXObject* AXObjectCacheImpl::CreateFromRenderer(LayoutObject* layout_object) {
   return MakeGarbageCollected<AXNodeObject>(layout_object, *this);
 }
 
-// Returns true if |node| is an <option> element and its parent <select>
-// is a menu list (not a list box).
-// static
-bool AXObjectCacheImpl::ShouldCreateAXMenuListOptionFor(const Node* node) {
-  auto* option_element = DynamicTo<HTMLOptionElement>(node);
-  if (!option_element)
-    return false;
-
-  if (auto* select = option_element->OwnerSelectElement())
-    return ShouldCreateAXMenuListFor(select);
-
-  return false;
-}
-
-// static
-bool AXObjectCacheImpl::ShouldCreateAXMenuListFor(const Node* node) {
-  if (!AXObjectCacheImpl::UseAXMenuList())
-    return false;
-
-  if (auto* select = DynamicTo<HTMLSelectElement>(node)) {
-    return select->UsesMenuList();
-  }
-
-  return false;
-}
-
 // static
 bool AXObjectCacheImpl::IsRelevantSlotElement(const HTMLSlotElement& slot) {
   DCHECK(AXObject::CanSafelyUseFlatTreeTraversalNow(slot.GetDocument()));
   DCHECK(slot.SupportsAssignment());
 
-  // Don't use a <slot> inside of an AXMenuList.
-  // TODO(accessibility) Remove AXMenuList and follow the shadow DOM.
-  if (slot.IsInUserAgentShadowRoot()) {
-    if (HTMLSelectElement* select =
-            DynamicTo<HTMLSelectElement>(slot.OwnerShadowHost())) {
-      if (ShouldCreateAXMenuListFor(select)) {
-        return false;
-      }
-    }
+  if (slot.IsInUserAgentShadowRoot() &&
+      IsA<HTMLSelectElement>(slot.OwnerShadowHost())) {
+    return slot.GetIdAttribute() == shadow_element_names::kSelectOptions;
   }
 
   // HasAssignedNodesNoRecalc() will return false when  the slot is not in the
@@ -1294,23 +1209,8 @@ bool AXObjectCacheImpl::IsRelevantPseudoElementDescendant(
 }
 
 AXObject* AXObjectCacheImpl::CreateFromNode(Node* node) {
-  if (ShouldCreateAXMenuListOptionFor(node)) {
-    return MakeGarbageCollected<AXMenuListOption>(To<HTMLOptionElement>(node),
-                                                  *this);
-  }
-
   if (auto* area = DynamicTo<HTMLAreaElement>(node))
     return MakeGarbageCollected<AXImageMapLink>(area, *this);
-
-  // Create AXMenuList even if no LayoutObject is available (e.g. in <canvas>).
-  if (auto* select_element = DynamicTo<HTMLSelectElement>(node)) {
-    if (select_element->UsesMenuList()) {
-      if (use_ax_menu_list_) {
-        DCHECK(ShouldCreateAXMenuListFor(node));
-        return MakeGarbageCollected<AXMenuList>(node, *this);
-      }
-    }
-  }
 
   return MakeGarbageCollected<AXNodeObject>(node, *this);
 }
@@ -1410,19 +1310,16 @@ AXObject* AXObjectCacheImpl::CreateAndInit(Node* node,
   CHECK(!has_been_disposed_)
       << "Don't attempt to create AXObject during teardown: " << node << " "
       << layout_object;
-  // The object must be in one of two documents:
-  // 1. The main document retrieved from GetDocument().
-  // 2. The popup document retrieved from GetPopupDocumentIfShowing(). Note
-  // that this must be null iff the current popup is <select size=1>, as
-  // we do not want to create objects inside of that kind of popup document
-  // since they would be duplicating objects in the subtree built by
-  // AXMenuList* classes.
-  // TODO(accessibility) turn into a CHECK once we stop supporting AXMenuList.
-  Document& document_for_ax_object =
-      node ? node->GetDocument() : layout_object->GetDocument();
-  if (document_for_ax_object != GetDocument() &&
-      &document_for_ax_object != GetPopupDocumentIfShowing()) {
-    return nullptr;
+
+  if (IsA<Document>(node) && parent) {
+    // Root of a popup document:
+    if (IsA<HTMLSelectElement>(parent->GetNode())) {
+      // HTML <select> has a popup that duplicates nodes from the main
+      // document, and therefore we ignore that popup and any nodes in it.
+      return nullptr;
+    }
+    // All other document nodes with a parent must match the current popup.
+    CHECK_EQ(node, GetPopupDocumentIfShowing());
   }
 
   // Determine the type of accessibility object to be created.
@@ -1591,30 +1488,6 @@ AXObject* AXObjectCacheImpl::GetOrCreate(AbstractInlineTextBox* inline_text_box,
   inline_text_box_object_mapping_.Set(inline_text_box, axid);
   new_obj->Init(parent);
   return new_obj;
-}
-
-AXObject* AXObjectCacheImpl::CreateAndInit(ax::mojom::blink::Role role,
-                                           AXObject* parent) {
-  DCHECK(parent);
-  DCHECK(parent->CanHaveChildren());
-  AXObject* obj = nullptr;
-
-  switch (role) {
-    case ax::mojom::blink::Role::kMenuListPopup:
-      DCHECK(use_ax_menu_list_);
-      obj = MakeGarbageCollected<AXMenuListPopup>(*this);
-      break;
-    default:
-      obj = nullptr;
-  }
-
-  if (!obj)
-    return nullptr;
-
-  AssociateAXID(obj);
-
-  obj->Init(parent);
-  return obj;
 }
 
 void AXObjectCacheImpl::Remove(AXObject* object, bool notify_parent) {
@@ -1800,12 +1673,8 @@ void AXObjectCacheImpl::RemovePopup(Document* popup_document) {
   DCHECK(popup_document);
 
   // This can be called even when GetPopupDocumentIfShowing() when the popup
-  // is from a <select size=1>, which is a special case since AXMenuList*
-  // classes build their subtrees manually, and in order to avoid duplicate
-  // objects, which treat that situations as if there is no popup showing.
-  // TODO(accessibility) Remove this early return once AXMenuList* is removed,
-  // because at that point, the popup document will not be null in the
-  // select size=1 case anymore.
+  // is from a <select size=1>, and in order to avoid duplicate objects, which
+  // treat that situations as if there is no popup showing.
   if (!GetPopupDocumentIfShowing()) {
     return;
   }
@@ -2506,12 +2375,6 @@ void AXObjectCacheImpl::SubtreeIsAttached(Node* node) {
     return;
   }
 
-  // TODO(accessibility) Remove AXMenuList* cases once these classes go away.
-  if (IsA<AXMenuListOption>(obj) || IsA<AXMenuList>(obj)) {
-    Remove(obj, /* notify_parent */ true);
-    return;
-  }
-
   // Note that technically we do not need to remove the root node for a
   // display-locking (content-visibility) change, since it is only the
   // descendants that gain or lose their objects, but its easier to be
@@ -2552,13 +2415,12 @@ void AXObjectCacheImpl::NodeIsAttached(Node* node) {
   Document* document = DynamicTo<Document>(node);
   if (document) {
     Element* focused_element = GetDocument().FocusedElement();
-    if (IsA<HTMLSelectElement>(focused_element) &&
-        ShouldCreateAXMenuListFor(focused_element)) {
-      // HTML <select> has its own specialized handling.
-      // TODO(accessibility) Remove this rule once we stop using AXMenuList*.
+    // A popup is being shown.
+    if (IsA<HTMLSelectElement>(focused_element)) {
+      // HTML <select> has a popup that duplicates nodes from the main
+      // document, and therefore we ignore that popup and any nodes in it.
       return;
     }
-    // A popup is being shown.
     DCHECK(*document != GetDocument());
     DCHECK(!popup_document_) << "Last popup was not cleared.";
     DCHECK(!popup_document_ || popup_document_ == document)
@@ -2813,14 +2675,7 @@ void AXObjectCacheImpl::ChildrenChangedWithCleanLayout(Node* optional_node,
 #endif  // DCHECK_IS_ON()
 
   obj->ChildrenChangedWithCleanLayout();
-  // TODO(accessibility) Only needed for <select> size changes.
-  // This can turn into a DCHECK if the shadow DOM is used for <select size=1>
-  // elements instead of AXMenuList* classes.
-  if (obj->IsDetached()) {
-    RemoveSubtreeWhenSafe(optional_node);
-    return;
-  }
-
+  DUMP_WILL_BE_CHECK(!obj->IsDetached());
   if (optional_node) {
     CHECK(relation_cache_);
     relation_cache_->UpdateRelatedTree(optional_node, obj);
@@ -3434,8 +3289,6 @@ bool AXObjectCacheImpl::IsPopup(Document& document) const {
     Page* main_page = GetDocument().GetPage();
     DCHECK(main_page);
 #endif
-    // TODO(accessibility) Change back to DCHECK once AXMenuList* is removed.
-    // DCHECK_EQ(&document, popup_document_);
     return &document == GetPopupDocumentIfShowing();
   }
   return is_popup;
@@ -3680,11 +3533,8 @@ void AXObjectCacheImpl::FireTreeUpdatedEventForNode(
     case TreeUpdateReason::kAriaSelectedChanged:
       HandleAriaSelectedChangedWithCleanLayout(node);
       break;
-    case TreeUpdateReason::kDidHideMenuListPopup:
-      DidHideMenuListPopupWithCleanLayout(node);
-      break;
     case TreeUpdateReason::kDidShowMenuListPopup:
-      DidShowMenuListPopupWithCleanLayout(node);
+      HandleUpdateMenuListPopupWithCleanLayout(node, /*did_show*/ true);
       break;
     case TreeUpdateReason::kEditableTextContentChanged:
       HandleEditableTextContentChangedWithCleanLayout(node);
@@ -3719,6 +3569,7 @@ void AXObjectCacheImpl::FireTreeUpdatedEventForNode(
       break;
     case TreeUpdateReason::kRoleMaybeChangedFromEventListener:
     case TreeUpdateReason::kRoleMaybeChangedFromHref:
+    case TreeUpdateReason::kRoleMaybeChangedOnSelect:
       HandleRoleMaybeChangedWithCleanLayout(node);
       break;
     case TreeUpdateReason::kSectionOrRegionRoleMaybeChangedFromLabel:
@@ -3734,7 +3585,7 @@ void AXObjectCacheImpl::FireTreeUpdatedEventForNode(
       HandleTextMarkerDataAddedWithCleanLayout(node);
       break;
     case TreeUpdateReason::kUpdateActiveMenuOption:
-      HandleUpdateActiveMenuOptionWithCleanLayout(node);
+      HandleUpdateMenuListPopupWithCleanLayout(node);
       break;
     case TreeUpdateReason::kNodeIsAttached:
       NodeIsAttachedWithCleanLayout(node);
@@ -3861,7 +3712,6 @@ void AXObjectCacheImpl::SetMenuListOptionsBounds(
     const WTF::Vector<gfx::Rect>& options_bounds) {
   CHECK(select->PopupIsVisible());
   CHECK_EQ(select->GetDocument(), GetDocument());
-
   options_bounds_ = options_bounds;
   current_menu_list_axid_ = select->GetDomNodeId();
 }
@@ -3990,7 +3840,7 @@ void AXObjectCacheImpl::HandleAriaSelectedChangedWithCleanLayout(Node* node) {
   if (!obj)
     return;
 
-  // Mark the previous selected item dirty if it was selected viaa "selection
+  // Mark the previous selected item dirty if it was selected via "selection
   // follows focus".
   if (last_selected_from_active_descendant_)
     MarkElementDirtyWithCleanLayout(last_selected_from_active_descendant_);
@@ -4002,6 +3852,8 @@ void AXObjectCacheImpl::HandleAriaSelectedChangedWithCleanLayout(Node* node) {
 
   PostNotification(obj, ax::mojom::Event::kCheckedStateChanged);
 
+  // TODO(accessibility): this may no longer be needed as it can be generated
+  // from the browser side, and could be expensive for many items.
   AXObject* listbox = obj->ParentObjectUnignored();
   if (listbox && listbox->RoleValue() == ax::mojom::Role::kListBox) {
     // Ensure listbox options are in sync as selection status may have changed
@@ -4153,7 +4005,7 @@ void AXObjectCacheImpl::HandleRoleChangeWithCleanLayout(Node* node) {
     if (!obj->IsDetached()) {
       // When the role of `obj` is changed, its AXObject needs to be destroyed
       // and a new one needs to be created in its place.
-      if (RolePresentationPropagates(node)) {
+      if (RolePresentationPropagates(node) || IsA<HTMLSelectElement>(node)) {
         // If role changes on a table, menu, or list invalidate the subtree of
         // objects that may require a specific parent role in order to keep
         // their role. For example, rows and cells require a table ancestor, and
@@ -4278,12 +4130,7 @@ void AXObjectCacheImpl::HandleAttributeChanged(const QualifiedName& attr_name,
   } else if (attr_name == html_names::kSizeAttr ||
              attr_name == html_names::kMultipleAttr) {
     if (IsA<HTMLSelectElement>(element)) {
-      // <select> size or multiple attribute changes can cause major structural
-      // changes that we don't get good notifications for, because the popup
-      // object can be an AXMenuListPopup, which is a mock object that has no
-      // DOM node or layout object backing. The simplest thing in this case is
-      // to just wipe the subtree and start over.
-      RemoveSubtreeWhenSafe(element);
+      DeferTreeUpdate(TreeUpdateReason::kRoleMaybeChangedOnSelect, element);
     }
   } else if (attr_name == html_names::kAltAttr) {
     TextChanged(element);
@@ -4651,13 +4498,11 @@ bool AXObjectCacheImpl::IsImmediateProcessingRequiredForEvent(
       return true;
 
     case ax::mojom::blink::Event::kDocumentTitleChanged:
-    case ax::mojom::blink::Event::kHide:
     case ax::mojom::blink::Event::kLayoutComplete:
     case ax::mojom::blink::Event::kLocationChanged:
     case ax::mojom::blink::Event::kRowCollapsed:
     case ax::mojom::blink::Event::kRowCountChanged:
     case ax::mojom::blink::Event::kScrollPositionChanged:
-    case ax::mojom::blink::Event::kShow:
     case ax::mojom::blink::Event::kTextChanged:
       return false;
 
@@ -4671,6 +4516,7 @@ bool AXObjectCacheImpl::IsImmediateProcessingRequiredForEvent(
     case ax::mojom::blink::Event::kEndOfTest:
     case ax::mojom::blink::Event::kFocusAfterMenuClose:
     case ax::mojom::blink::Event::kFocusContext:
+    case ax::mojom::blink::Event::kHide:
     case ax::mojom::blink::Event::kHitTestResult:
     case ax::mojom::blink::Event::kImageFrameUpdated:
     case ax::mojom::blink::Event::kLiveRegionCreated:
@@ -4690,6 +4536,7 @@ bool AXObjectCacheImpl::IsImmediateProcessingRequiredForEvent(
     case ax::mojom::blink::Event::kSelection:
     case ax::mojom::blink::Event::kSelectionAdd:
     case ax::mojom::blink::Event::kSelectionRemove:
+    case ax::mojom::blink::Event::kShow:
     case ax::mojom::blink::Event::kStateChanged:
     case ax::mojom::blink::Event::kTextSelectionChanged:
     case ax::mojom::blink::Event::kTooltipClosed:
@@ -4740,7 +4587,6 @@ bool AXObjectCacheImpl::IsImmediateProcessingRequired(
     case TreeUpdateReason::kAriaExpandedChanged:
     case TreeUpdateReason::kAriaPressedChanged:
     case TreeUpdateReason::kAriaSelectedChanged:
-    case TreeUpdateReason::kDidHideMenuListPopup:
     case TreeUpdateReason::kDidShowMenuListPopup:
     case TreeUpdateReason::kEditableTextContentChanged:
     case TreeUpdateReason::kNodeGainedFocus:
@@ -4765,6 +4611,7 @@ bool AXObjectCacheImpl::IsImmediateProcessingRequired(
     case TreeUpdateReason::kRoleChangeFromRoleOrType:
     case TreeUpdateReason::kRoleMaybeChangedFromEventListener:
     case TreeUpdateReason::kRoleMaybeChangedFromHref:
+    case TreeUpdateReason::kRoleMaybeChangedOnSelect:
     case TreeUpdateReason::kSectionOrRegionRoleMaybeChangedFromLabel:
     case TreeUpdateReason::kSectionOrRegionRoleMaybeChangedFromLabelledBy:
     case TreeUpdateReason::kSectionOrRegionRoleMaybeChangedFromTitle:
@@ -5700,62 +5547,55 @@ void AXObjectCacheImpl::HandleValueChanged(Node* node) {
 }
 
 void AXObjectCacheImpl::HandleUpdateActiveMenuOption(Node* menu_list) {
-  if (!use_ax_menu_list_) {
-    MarkElementDirty(menu_list);
-    return;
-  }
-
   DeferTreeUpdate(TreeUpdateReason::kUpdateActiveMenuOption, menu_list);
 }
 
-void AXObjectCacheImpl::HandleUpdateActiveMenuOptionWithCleanLayout(
-    Node* menu_list) {
-  if (AXMenuList* ax_menu_list = DynamicTo<AXMenuList>(Get(menu_list))) {
-    ax_menu_list->DidUpdateActiveOption();
+void AXObjectCacheImpl::HandleUpdateMenuListPopupWithCleanLayout(
+    Node* menu_list,
+    bool did_show) {
+  AXObject* ax_menu_list = Get(menu_list);
+  if (!ax_menu_list) {
+    return;
+  }
+  AXObject* ax_popup = ax_menu_list->FirstChildIncludingIgnored();
+  if (!ax_popup ||
+      ax_popup->RoleValue() != ax::mojom::blink::Role::kMenuListPopup) {
+    last_selected_from_active_descendant_ = nullptr;
+    return;
+  }
+  AXObject* active_descendant = ax_popup->ActiveDescendant();
+  if (did_show) {
+    // On first appearance, mark everything dirty, because the hidden state
+    // will change on most descendants.
+    MarkAXSubtreeDirtyWithCleanLayout(ax_menu_list);
+  } else {
+    // Mark the previously selected item dirty so that its updated selection
+    // state is reserialized.
+    if (last_selected_from_active_descendant_) {
+      MarkElementDirtyWithCleanLayout(last_selected_from_active_descendant_);
+    }
+  }
+  if (active_descendant) {
+    MarkAXObjectDirtyWithCleanLayout(active_descendant);
+    PostNotification(ax_popup,
+                     ax::mojom::blink::Event::kActiveDescendantChanged);
+    last_selected_from_active_descendant_ = active_descendant->GetNode();
   }
 }
 
 void AXObjectCacheImpl::DidShowMenuListPopup(LayoutObject* menu_list) {
   SCOPED_DISALLOW_LIFECYCLE_TRANSITION();
-
-  DCHECK(menu_list->GetNode());
+  CHECK(menu_list->GetNode());
   DeferTreeUpdate(TreeUpdateReason::kDidShowMenuListPopup,
                   menu_list->GetNode());
-  MarkSubtreeDirty(menu_list->GetNode());
-}
-
-void AXObjectCacheImpl::DidShowMenuListPopupWithCleanLayout(Node* menu_list) {
-  if (!use_ax_menu_list_) {
-    MarkAXObjectDirtyWithCleanLayout(Get(menu_list));
-    return;
-  }
-
-  auto* ax_object = DynamicTo<AXMenuList>(Get(menu_list));
-  if (ax_object)
-    ax_object->DidShowPopup();
 }
 
 void AXObjectCacheImpl::DidHideMenuListPopup(LayoutObject* menu_list) {
   SCOPED_DISALLOW_LIFECYCLE_TRANSITION();
-
-  DCHECK(menu_list->GetNode());
-
+  CHECK(menu_list->GetNode());
   current_menu_list_axid_ = 0;
   options_bounds_ = {};
-
-  DeferTreeUpdate(TreeUpdateReason::kDidHideMenuListPopup,
-                  menu_list->GetNode());
-}
-
-void AXObjectCacheImpl::DidHideMenuListPopupWithCleanLayout(Node* menu_list) {
-  if (!use_ax_menu_list_) {
-    MarkAXObjectDirtyWithCleanLayout(Get(menu_list));
-    return;
-  }
-
-  auto* ax_object = DynamicTo<AXMenuList>(Get(menu_list));
-  if (ax_object)
-    ax_object->DidHidePopup();
+  MarkAXSubtreeDirty(Get(menu_list));
 }
 
 void AXObjectCacheImpl::HandleLoadStart(Document* document) {

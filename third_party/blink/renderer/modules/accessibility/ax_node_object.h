@@ -141,6 +141,7 @@ class MODULES_EXPORT AXNodeObject : public AXObject {
   bool IsNativeSpinButton() const override;
   bool IsEmbeddingElement() const override;
   bool IsLinked() const override;
+  bool IsVisible() const override;
   bool IsVisited() const override;
 
   // Check object state.
@@ -359,8 +360,6 @@ class MODULES_EXPORT AXNodeObject : public AXObject {
   bool HasInternalsAttribute(Element&, const QualifiedName&) const;
   const AtomicString& GetInternalsAttribute(Element&,
                                             const QualifiedName&) const;
-
-  bool IsNativeCheckboxInMixedState() const;
 
   // This function returns the text of a tooltip associated with the element.
   // Although there are two ways of doing this, it is unlikely that an author

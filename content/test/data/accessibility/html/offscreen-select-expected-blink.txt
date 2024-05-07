@@ -8,7 +8,7 @@ rootWebArea
 ++++++++++menuListOption invisible name='Onscreen 3' selected=false
 ++++++genericContainer ignored
 ++++++comboBoxSelect collapsed offscreen value='Offscreen 1'
-++++++++menuListPopup invisible
+++++++++menuListPopup invisible offscreen
 ++++++++++menuListOption offscreen name='Offscreen 1' selected=true
 ++++++++++menuListOption invisible offscreen name='Offscreen 2' selected=false
 ++++++++++menuListOption invisible offscreen name='Offscreen 3' selected=false

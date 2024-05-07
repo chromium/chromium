@@ -4261,10 +4261,10 @@ TEST(AXTreeTest, SetSizePosInSetPopUpButtonAndSelect) {
   // The first popupbutton should have SetSize of 0.
   AXNode* popup_button_1 = tree.GetFromId(2);
   EXPECT_OPTIONAL_EQ(0, popup_button_1->GetSetSize());
-  // The select should have SetSize of 2, since the menulistpopup
+  // The combo box select should have SetSize of 2, since the menulistpopup
   // that it wraps has a SetSize of 2.
-  AXNode* popup_button_2 = tree.GetFromId(3);
-  EXPECT_OPTIONAL_EQ(2, popup_button_2->GetSetSize());
+  AXNode* combo_box_select = tree.GetFromId(3);
+  EXPECT_OPTIONAL_EQ(2, combo_box_select->GetSetSize());
 }
 
 // Tests that PosInSet and SetSize are still correctly calculated when there

@@ -817,6 +817,9 @@ void MenuListSelectType::DidUpdateActiveOption(HTMLOptionElement* option) {
   int option_index = option ? option->index() : -1;
   if (ax_menulist_last_active_index_ == option_index)
     return;
+
+  HTMLOptionElement* prev_selected_option =
+      select_->OptionAtListIndex(ax_menulist_last_active_index_);
   ax_menulist_last_active_index_ = option_index;
 
   // We skip sending accessiblity notifications for the very first option,
@@ -826,6 +829,7 @@ void MenuListSelectType::DidUpdateActiveOption(HTMLOptionElement* option) {
     return;
   }
 
+  document.ExistingAXObjectCache()->MarkElementDirty(prev_selected_option);
   document.ExistingAXObjectCache()->HandleUpdateActiveMenuOption(select_);
 }
 

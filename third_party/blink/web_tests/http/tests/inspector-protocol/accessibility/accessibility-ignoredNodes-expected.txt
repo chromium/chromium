@@ -427,9 +427,6 @@ RootWebArea
     none
       *combobox
         MenuListPopup
-          option "Options should be"
-          option "sent down even though"
-          option "they are grandchildren"
 {
     childIds : <object>
     chromeRole : {
@@ -498,7 +495,7 @@ RootWebArea
     }
     value : {
         type : string
-        value : Options should be
+        value : Options are not sent
     }
 }
 
@@ -507,7 +504,7 @@ RootWebArea
     none
       combobox
         MenuListPopup
-          *option "Options should be"
+          *option "Options are not sent"
 {
     childIds : <object>
     chromeRole : {
@@ -530,12 +527,17 @@ RootWebArea
                 type : contents
                 value : {
                     type : computedString
-                    value : Options should be
+                    value : Options are not sent
                 }
+            }
+            [3] : {
+                attribute : title
+                superseded : true
+                type : attribute
             }
         ]
         type : computedString
-        value : Options should be
+        value : Options are not sent
     }
     nodeId : <string>
     parentId : <string>

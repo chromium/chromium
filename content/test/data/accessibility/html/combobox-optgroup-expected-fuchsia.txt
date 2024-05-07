@@ -3,7 +3,11 @@ UNKNOWN focusable has_input_focus
 ++++UNKNOWN
 ++++++UNKNOWN focusable actions='{DEFAULT}' value='Mercedes Label'
 ++++++++UNKNOWN hidden
-++++++++++UNKNOWN hidden focusable label='Volvo Label' actions='{DEFAULT}'
-++++++++++UNKNOWN hidden focusable label='Saab Label' actions='{DEFAULT}'
-++++++++++UNKNOWN focusable selected label='Mercedes Label' actions='{DEFAULT}'
-++++++++++UNKNOWN hidden focusable label='Audi Label' actions='{DEFAULT}'
+++++++++++UNKNOWN hidden label='Swedish Cars Label' actions='{DEFAULT}'
+++++++++++++UNKNOWN hidden
+++++++++++++++UNKNOWN hidden focusable label='Volvo Label' actions='{DEFAULT}'
+++++++++++++++UNKNOWN hidden focusable label='Saab Label' actions='{DEFAULT}'
+++++++++++UNKNOWN hidden label='German Cars' actions='{DEFAULT}'
+++++++++++++UNKNOWN hidden
+++++++++++++++UNKNOWN focusable selected label='Mercedes Label' actions='{DEFAULT}'
+++++++++++++++UNKNOWN hidden focusable label='Audi Label' actions='{DEFAULT}'

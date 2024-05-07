@@ -29,9 +29,8 @@
     <canvas role='presentation' data-dump><div>Canvas fallback content</div></canvas>
 
     <select data-dump>
-      <option data-dump>Options should be</option>
-      <option>sent down even though</option>
-      <option>they are grandchildren</option>
+      <option data-dump>Options are not sent</option>
+      <option>because they are inside of shadow root.</option>
     </select>
 
     <button inert data-dump>inert button</button>

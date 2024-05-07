@@ -3,4 +3,6 @@ rootWebArea
 ++++genericContainer
 ++++++comboBoxSelect collapsed
 ++++++++menuListPopup invisible
-++++++++++menuListOption selected=true
+++++++++++group invisible name='A'
+++++++++++++genericContainer ignored invisible
+++++++++++++++menuListOption selected=true
