@@ -19,6 +19,7 @@ import {getTemplate} from './lens_overlay_app.html.js';
 
 export interface LensOverlayAppElement {
   $: {
+    backgroundScrim: HTMLElement,
     closeButton: CrIconButtonElement,
     feedbackButton: CrIconButtonElement,
     initialToast: InitialToastElement,
@@ -41,10 +42,7 @@ export class LensOverlayAppElement extends PolymerElement {
         type: Boolean,
         reflectToAttribute: true,
       },
-      isImageRendered: {
-        type: Boolean,
-        reflectToAttribute: true,
-      },
+      isImageRendered: Boolean,
     };
   }
 
@@ -75,6 +73,10 @@ export class LensOverlayAppElement extends PolymerElement {
     this.listenerIds.forEach(
         id => assert(this.browserProxy.callbackRouter.removeListener(id)));
     this.listenerIds = [];
+  }
+
+  private onBackgroundScrimClicked() {
+    BrowserProxyImpl.getInstance().handler.closeRequestedByOverlay();
   }
 
   private onCloseButtonClick() {

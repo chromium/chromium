@@ -1,12 +1,13 @@
 <style>
   .app-container {
-    width: 100%;
     height: 100%;
+    width: 100%;
   }
 
-  :host([is-image-rendered]) .app-container {
-    /* Background color #151C26 with 30% transparency */
+  #backgroundScrim {
     background-color: #151C264D;
+    inset: 0;
+    position: absolute;
   }
 
   #buttonContainer {
@@ -42,6 +43,8 @@
 </style>
 <div class="app-container" on-selection-overlay-clicked="closeInitialToast"
     on-screenshot-rendered="onScreenshotRendered">
+  <div id="backgroundScrim" on-click="onBackgroundScrimClicked"
+      hidden$="[[!isImageRendered]]"></div>
   <!-- Do not render selection overlay if data URI is empty. -->
   <template is="dom-if" if="[[screenshotDataUri.length]]">
     <lens-selection-overlay
@@ -50,10 +53,10 @@
   <initial-toast id="initialToast"></initial-toast>
   <div id="buttonContainer">
     <cr-icon-button id="feedbackButton" class="action-button"
-      on-click="onFeedbackButtonClick" aria-label="$i18n{sendFeedback}"
-      title="$i18n{sendFeedback}"></cr-icon-button>
+        on-click="onFeedbackButtonClick" aria-label="$i18n{sendFeedback}"
+        title="$i18n{sendFeedback}"></cr-icon-button>
     <cr-icon-button id="closeButton" class="action-button"
-      on-click="onCloseButtonClick" aria-label="$i18n{close}"
-      title="$i18n{close}"></cr-icon-button>
+        on-click="onCloseButtonClick" aria-label="$i18n{close}"
+        title="$i18n{close}"></cr-icon-button>
   </div>
 </div>

@@ -93,6 +93,11 @@ class LensOverlayTest : public LensWebUIBrowserTest {
   }
 };
 
+IN_PROC_BROWSER_TEST_F(LensOverlayTest, OverlayBackgroundScrim) {
+  RunOverlayTest("lens/overlay/overlay_background_scrim_test.js",
+                 "mocha.run()");
+}
+
 IN_PROC_BROWSER_TEST_F(LensOverlayTest, OverlayCloseButton) {
   RunOverlayTest("lens/overlay/overlay_close_button_test.js", "mocha.run()");
 }
