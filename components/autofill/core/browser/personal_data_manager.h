@@ -74,16 +74,9 @@ class PersonalDataManager : public KeyedService,
                             public AddressDataManager::Observer,
                             public PaymentsDataManager::Observer {
  public:
-  // Kicks off asynchronous loading of profiles and credit cards.
-  // |profile_database| is a profile-scoped database that will be used to save
-  // local cards. |account_database| is scoped to the currently signed-in
-  // account, and is wiped on signout and browser exit. This can be a nullptr
-  // if personal_data_manager should use |profile_database| for all data.
-  // If passed in, the |account_database| is used by default for server cards.
-  // |pref_service| must outlive this instance. |sync_service| is either null
-  // (sync disabled by CLI) or outlives this object, it may not have started yet
-  // but its preferences can already be queried. |image_fetcher| is to fetch the
-  // customized images for autofill data.
+  // Initializes the `address_data_manager_` and `payments_data_manager_` with
+  // the provided services and triggers asynchronous loading of address and
+  // payments data.
   PersonalDataManager(
       scoped_refptr<AutofillWebDataService> profile_database,
       scoped_refptr<AutofillWebDataService> account_database,
@@ -102,8 +95,8 @@ class PersonalDataManager : public KeyedService,
   ~PersonalDataManager() override;
 
   // The (Address|Payments)DataManager classes are responsible for handling
-  // address/payments specific functionality. All new address or payments
-  // specific code should go through them.
+  // address/payments specific functionality. All address or payments specific
+  // code should go through them.
   AddressDataManager& address_data_manager() { return *address_data_manager_; }
   const AddressDataManager& address_data_manager() const {
     return *address_data_manager_;
@@ -124,7 +117,7 @@ class PersonalDataManager : public KeyedService,
   // PaymentsDataManager::Observer:
   void OnPaymentsDataChanged() override;
 
-  // history::HistoryServiceObserver
+  // history::HistoryServiceObserver:
   // TODO(b/322170538): This is used to clear the crowdsourcing manager's
   // history. Consider moving the observer there.
   void OnHistoryDeletions(history::HistoryService* history_service,
@@ -159,10 +152,8 @@ class PersonalDataManager : public KeyedService,
   // Returns the |app_locale_| that was provided during construction.
   const std::string& app_locale() const { return app_locale_; }
 
-  // Triggers `OnPersonalDataChanged()` for all `observers_`.
-  // Additionally, if all of the PDM's pending operations have finished, meaning
-  // that the data exposed through the PDM matches the database,
-  // `OnPersonalDataFinishedProfileTasks()` is triggered.
+  // Triggers `OnPersonalDataChanged()` for all `observers_` if no address or
+  // payment changes are pending.
   void NotifyPersonalDataObserver();
 
   // Returns true if either Profile or CreditCard Autofill is enabled.

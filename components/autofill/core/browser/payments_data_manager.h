@@ -71,6 +71,11 @@ class PaymentsDataManager : public AutofillWebDataServiceObserverOnUISequence,
     virtual void OnPaymentsDataChanged() = 0;
   };
 
+  // `profile_database` is a profile-scoped database that will be used to save
+  // local data. `account_database` is scoped to the currently signed-in
+  // account, and is wiped on signout and browser exit. This can be a nullptr
+  // if PaymentsDataManager should use `profile_database` for all data.
+  // If passed in, the `account_database` is used by default for server data.
   PaymentsDataManager(
       scoped_refptr<AutofillWebDataService> profile_database,
       scoped_refptr<AutofillWebDataService> account_database,
