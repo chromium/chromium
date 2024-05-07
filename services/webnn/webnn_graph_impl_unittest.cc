@@ -5327,14 +5327,36 @@ TEST_F(WebNNGraphImplTest, PreluTest) {
         .Test();
   }
   {
-    // Test the invalid graph when the datatype isn't floating point.
+    // Test prelu operator with input data type and slope data type = int32.
     PreluTester{.input = {.type = mojom::Operand::DataType::kInt32,
                           .dimensions = {3, 2, 5}},
                 .slope = {.type = mojom::Operand::DataType::kInt32,
                           .dimensions = {3, 2, 5}},
                 .output = {.type = mojom::Operand::DataType::kInt32,
                            .dimensions = {3, 2, 5}},
-                .expected = false}
+                .expected = true}
+        .Test();
+  }
+  {
+    // Test prelu operator with input data type and slope data type = float16.
+    PreluTester{.input = {.type = mojom::Operand::DataType::kFloat16,
+                          .dimensions = {3, 2, 5}},
+                .slope = {.type = mojom::Operand::DataType::kFloat16,
+                          .dimensions = {3, 2, 5}},
+                .output = {.type = mojom::Operand::DataType::kFloat16,
+                           .dimensions = {3, 2, 5}},
+                .expected = true}
+        .Test();
+  }
+  {
+    // Test prelu operator with input data type and slope data type = int8.
+    PreluTester{.input = {.type = mojom::Operand::DataType::kInt8,
+                          .dimensions = {3, 2, 5}},
+                .slope = {.type = mojom::Operand::DataType::kInt8,
+                          .dimensions = {3, 2, 5}},
+                .output = {.type = mojom::Operand::DataType::kInt8,
+                           .dimensions = {3, 2, 5}},
+                .expected = true}
         .Test();
   }
   {
@@ -5345,6 +5367,18 @@ TEST_F(WebNNGraphImplTest, PreluTest) {
                 .slope = {.type = mojom::Operand::DataType::kFloat32,
                           .dimensions = {3, 2, 5}},
                 .output = {.type = mojom::Operand::DataType::kFloat16,
+                           .dimensions = {3, 2, 5}},
+                .expected = false}
+        .Test();
+  }
+  {
+    // Test the invalid graph when the input data type and slope data type =
+    // uint32.
+    PreluTester{.input = {.type = mojom::Operand::DataType::kUint32,
+                          .dimensions = {3, 2, 5}},
+                .slope = {.type = mojom::Operand::DataType::kUint32,
+                          .dimensions = {3, 2, 5}},
+                .output = {.type = mojom::Operand::DataType::kUint32,
                            .dimensions = {3, 2, 5}},
                 .expected = false}
         .Test();

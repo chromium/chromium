@@ -1986,9 +1986,15 @@ base::expected<void, mojom::ErrorPtr> CreateOperatorNodeForPrelu(
   const NodeOutput* input =
       GetNodeOutputForOperand(id_to_node_output_map, prelu->input_operand_id);
   const auto& input_tensor_desc = input->GetTensorDesc();
+  CHECK(input_tensor_desc.GetDataType() == DML_TENSOR_DATA_TYPE_FLOAT32 ||
+        input_tensor_desc.GetDataType() == DML_TENSOR_DATA_TYPE_FLOAT16 ||
+        input_tensor_desc.GetDataType() == DML_TENSOR_DATA_TYPE_INT32 ||
+        input_tensor_desc.GetDataType() == DML_TENSOR_DATA_TYPE_INT8);
+
   const NodeOutput* slope =
       GetNodeOutputForOperand(id_to_node_output_map, prelu->slope_operand_id);
   auto slope_tensor_desc = slope->GetTensorDesc();
+  CHECK_EQ(input_tensor_desc.GetDataType(), slope_tensor_desc.GetDataType());
 
   uint64_t output_id = prelu->output_operand_id;
   const auto output_tensor_desc =

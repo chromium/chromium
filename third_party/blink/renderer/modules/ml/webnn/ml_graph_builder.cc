@@ -1802,9 +1802,7 @@ MLOperand* MLGraphBuilder::prelu(const MLOperand* input,
   auto validated_output = webnn::ValidatePreluAndInferOutput(
       ConvertToComponentOperand(input), ConvertToComponentOperand(slope));
   if (!validated_output.has_value()) {
-    exception_state.ThrowDOMException(
-        DOMExceptionCode::kDataError,
-        String::FromUTF8(validated_output.error()));
+    exception_state.ThrowTypeError(String::FromUTF8(validated_output.error()));
     return nullptr;
   }
 
@@ -1815,8 +1813,7 @@ MLOperand* MLGraphBuilder::prelu(const MLOperand* input,
       this, ComponentOperandTypeToBlink(validated_output->data_type),
       Vector<uint32_t>(validated_output->dimensions), prelu);
   if (!output.has_value()) {
-    exception_state.ThrowDOMException(DOMExceptionCode::kDataError,
-                                      output.error());
+    exception_state.ThrowTypeError(output.error());
     return nullptr;
   }
   prelu->Connect(std::move(inputs), {output.value()});

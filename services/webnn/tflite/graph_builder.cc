@@ -1439,12 +1439,16 @@ auto GraphBuilder::SerializePool2d(const mojom::Pool2d& pool2d)
 
 auto GraphBuilder::SerializePrelu(const mojom::Prelu& prelu)
     -> base::expected<OperatorOffset, std::string> {
+  const mojom::Operand& input_operand = GetOperand(prelu.input_operand_id);
+  CHECK(input_operand.data_type == mojom::Operand::DataType::kFloat32 ||
+        input_operand.data_type == mojom::Operand::DataType::kFloat16 ||
+        input_operand.data_type == mojom::Operand::DataType::kInt32 ||
+        input_operand.data_type == mojom::Operand::DataType::kInt8);
+  const mojom::Operand& slope_operand = GetOperand(prelu.slope_operand_id);
   // `ValidatePreluAndInferOutput` function has checked broadcastable shapes
   // between input and slope operand, but TFLite XNNPACK delegate doesn't
   // support to broadcast last dimension.
   // TODO(crbug.com/335517470): Support last dimension broadcastable.
-  const mojom::Operand& input_operand = GetOperand(prelu.input_operand_id);
-  const mojom::Operand& slope_operand = GetOperand(prelu.slope_operand_id);
   if (!input_operand.dimensions.empty() && !slope_operand.dimensions.empty() &&
       input_operand.dimensions.back() != slope_operand.dimensions.back()) {
     return base::unexpected(

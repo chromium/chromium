@@ -1851,14 +1851,16 @@ base::expected<Operand, std::string> ValidateConcatAndInferOutput(
 base::expected<Operand, std::string> ValidatePreluAndInferOutput(
     const Operand& input,
     const Operand& slope) {
+  if (!IsFloatingPointType(input.data_type) &&
+      input.data_type != Operand::DataType::kInt8 &&
+      input.data_type != Operand::DataType::kInt32) {
+    return base::unexpected(
+        "The data type of input and slope must be one of {float32, float16, "
+        "int32, int8}.");
+  }
   if (input.data_type != slope.data_type) {
     return base::unexpected(
         "The data type of slope doesn't match the data type of input.");
-  }
-  if (!IsFloatingPointType(input.data_type)) {
-    return base::unexpected(
-        "The data type of input and slope must be one of the floating point "
-        "types.");
   }
   // BroadcastShape unidirectionally broadcasts slope.dimensions to
   // input.dimensions.
