@@ -327,32 +327,34 @@ void BodyStreamBuffer::Tee(BodyStreamBuffer** branch1,
                                       cached_metadata_handler, side_data_blob);
 }
 
-ScriptPromiseUntyped BodyStreamBuffer::Pull(
+ScriptPromise<IDLUndefined> BodyStreamBuffer::Pull(
     ReadableByteStreamController* controller,
     ExceptionState& exception_state) {
   if (!consumer_) {
     // This is a speculative workaround for a crash. See
     // https://crbug.com/773525.
     // TODO(yhirano): Remove this branch or have a better comment.
-    return ScriptPromiseUntyped::CastUndefined(GetScriptState());
+    return ToResolvedUndefinedPromise(GetScriptState());
   }
 
   if (stream_needs_more_) {
-    return ScriptPromiseUntyped::CastUndefined(GetScriptState());
+    return ToResolvedUndefinedPromise(GetScriptState());
   }
   stream_needs_more_ = true;
   if (!in_process_data_) {
     ProcessData(exception_state);
   }
-  return ScriptPromiseUntyped::CastUndefined(GetScriptState());
+  return ToResolvedUndefinedPromise(GetScriptState());
 }
 
-ScriptPromiseUntyped BodyStreamBuffer::Cancel(ExceptionState& exception_state) {
+ScriptPromise<IDLUndefined> BodyStreamBuffer::Cancel(
+    ExceptionState& exception_state) {
   return Cancel(v8::Undefined(GetScriptState()->GetIsolate()), exception_state);
 }
 
-ScriptPromiseUntyped BodyStreamBuffer::Cancel(v8::Local<v8::Value> reason,
-                                              ExceptionState& exception_state) {
+ScriptPromise<IDLUndefined> BodyStreamBuffer::Cancel(
+    v8::Local<v8::Value> reason,
+    ExceptionState& exception_state) {
   ReadableStreamController* controller = Stream()->GetController();
   DCHECK(controller->IsByteStreamController());
   ReadableByteStreamController* byte_controller =
@@ -360,7 +362,7 @@ ScriptPromiseUntyped BodyStreamBuffer::Cancel(v8::Local<v8::Value> reason,
   byte_controller->Close(GetScriptState(), byte_controller, exception_state);
   DCHECK(!exception_state.HadException());
   CancelConsumer();
-  return ScriptPromiseUntyped::CastUndefined(GetScriptState());
+  return ToResolvedUndefinedPromise(GetScriptState());
 }
 
 ScriptState* BodyStreamBuffer::GetScriptState() {

@@ -5,6 +5,7 @@
 #ifndef THIRD_PARTY_BLINK_RENDERER_CORE_STREAMS_UNDERLYING_BYTE_SOURCE_BASE_H_
 #define THIRD_PARTY_BLINK_RENDERER_CORE_STREAMS_UNDERLYING_BYTE_SOURCE_BASE_H_
 
+#include "third_party/blink/renderer/bindings/core/v8/script_promise.h"
 #include "third_party/blink/renderer/core/core_export.h"
 #include "third_party/blink/renderer/platform/heap/garbage_collected.h"
 #include "third_party/blink/renderer/platform/heap/visitor.h"
@@ -14,7 +15,6 @@ namespace blink {
 
 class ExceptionState;
 class ReadableByteStreamController;
-class ScriptPromiseUntyped;
 class ScriptState;
 
 // Interface to be implemented by C++ code that needs to create a
@@ -29,12 +29,13 @@ class CORE_EXPORT UnderlyingByteSourceBase
   UnderlyingByteSourceBase& operator=(const UnderlyingByteSourceBase&) = delete;
   virtual ~UnderlyingByteSourceBase() = default;
 
-  virtual ScriptPromiseUntyped Pull(ReadableByteStreamController* controller,
-                                    ExceptionState&) = 0;
+  virtual ScriptPromise<IDLUndefined> Pull(
+      ReadableByteStreamController* controller,
+      ExceptionState&) = 0;
 
-  virtual ScriptPromiseUntyped Cancel(ExceptionState&) = 0;
-  virtual ScriptPromiseUntyped Cancel(v8::Local<v8::Value> reason,
-                                      ExceptionState&) = 0;
+  virtual ScriptPromise<IDLUndefined> Cancel(ExceptionState&) = 0;
+  virtual ScriptPromise<IDLUndefined> Cancel(v8::Local<v8::Value> reason,
+                                             ExceptionState&) = 0;
 
   // Returns the ScriptState associated with this UnderlyingByteSource.
   virtual ScriptState* GetScriptState() = 0;

@@ -45,19 +45,19 @@ class IncomingStream::UnderlyingByteSource final
                                 IncomingStream* stream)
       : script_state_(script_state), incoming_stream_(stream) {}
 
-  ScriptPromiseUntyped Pull(ReadableByteStreamController* controller,
-                            ExceptionState& exception_state) override {
+  ScriptPromise<IDLUndefined> Pull(ReadableByteStreamController* controller,
+                                   ExceptionState& exception_state) override {
     DCHECK_EQ(controller, incoming_stream_->controller_);
     incoming_stream_->ReadFromPipeAndEnqueue(exception_state);
-    return ScriptPromiseUntyped::CastUndefined(script_state_.Get());
+    return ToResolvedUndefinedPromise(script_state_.Get());
   }
 
-  ScriptPromiseUntyped Cancel(ExceptionState& exception_state) override {
+  ScriptPromise<IDLUndefined> Cancel(ExceptionState& exception_state) override {
     return Cancel(v8::Undefined(script_state_->GetIsolate()), exception_state);
   }
 
-  ScriptPromiseUntyped Cancel(v8::Local<v8::Value> reason,
-                              ExceptionState& exception_state) override {
+  ScriptPromise<IDLUndefined> Cancel(v8::Local<v8::Value> reason,
+                                     ExceptionState& exception_state) override {
     uint8_t code = 0;
     WebTransportError* exception =
         V8WebTransportError::ToWrappable(script_state_->GetIsolate(), reason);
@@ -65,7 +65,7 @@ class IncomingStream::UnderlyingByteSource final
       code = exception->streamErrorCode().value_or(0);
     }
     incoming_stream_->AbortAndReset(code);
-    return ScriptPromiseUntyped::CastUndefined(script_state_.Get());
+    return ToResolvedUndefinedPromise(script_state_.Get());
   }
 
   ScriptState* GetScriptState() override { return script_state_.Get(); }

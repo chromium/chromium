@@ -36,7 +36,7 @@ SerialPortUnderlyingSource::SerialPortUnderlyingSource(
                                     WrapWeakPersistent(this)));
 }
 
-ScriptPromiseUntyped SerialPortUnderlyingSource::Pull(
+ScriptPromise<IDLUndefined> SerialPortUnderlyingSource::Pull(
     ReadableByteStreamController* controller,
     ExceptionState&) {
   DCHECK(controller_ == nullptr || controller_ == controller);
@@ -49,10 +49,10 @@ ScriptPromiseUntyped SerialPortUnderlyingSource::Pull(
   // we allow the stream to be canceled before that data is received. pull()
   // will not be called again until a chunk is enqueued or if an error has been
   // signaled to the controller.
-  return ScriptPromiseUntyped::CastUndefined(script_state_.Get());
+  return ToResolvedUndefinedPromise(script_state_.Get());
 }
 
-ScriptPromiseUntyped SerialPortUnderlyingSource::Cancel(
+ScriptPromise<IDLUndefined> SerialPortUnderlyingSource::Cancel(
     ExceptionState& exception_state) {
   DCHECK(data_pipe_);
 
@@ -62,7 +62,7 @@ ScriptPromiseUntyped SerialPortUnderlyingSource::Cancel(
   // don't need to do it here.
   if (serial_port_->IsClosing()) {
     serial_port_->UnderlyingSourceClosed();
-    return ScriptPromiseUntyped::CastUndefined(script_state_.Get());
+    return ToResolvedUndefinedPromise(script_state_.Get());
   }
 
   auto* resolver =
@@ -74,7 +74,7 @@ ScriptPromiseUntyped SerialPortUnderlyingSource::Cancel(
   return resolver->Promise();
 }
 
-ScriptPromiseUntyped SerialPortUnderlyingSource::Cancel(
+ScriptPromise<IDLUndefined> SerialPortUnderlyingSource::Cancel(
     v8::Local<v8::Value> reason,
     ExceptionState& exception_state) {
   return Cancel(exception_state);

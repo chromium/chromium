@@ -66,20 +66,20 @@ class ForwardingUnderlyingByteSource : public UnderlyingByteSourceBase {
       ReadableByteStreamWrapper* readable_stream_wrapper)
       : readable_stream_wrapper_(readable_stream_wrapper) {}
 
-  ScriptPromiseUntyped Pull(ReadableByteStreamController* controller,
-                            ExceptionState&) override {
+  ScriptPromise<IDLUndefined> Pull(ReadableByteStreamController* controller,
+                                   ExceptionState&) override {
     DCHECK_EQ(readable_stream_wrapper_->Controller(), controller);
     readable_stream_wrapper_->Pull();
-    return ScriptPromiseUntyped::CastUndefined(GetScriptState());
+    return ToResolvedUndefinedPromise(GetScriptState());
   }
 
-  ScriptPromiseUntyped Cancel(ExceptionState&) override {
+  ScriptPromise<IDLUndefined> Cancel(ExceptionState&) override {
     readable_stream_wrapper_->CloseStream();
-    return ScriptPromiseUntyped::CastUndefined(GetScriptState());
+    return ToResolvedUndefinedPromise(GetScriptState());
   }
 
-  ScriptPromiseUntyped Cancel(v8::Local<v8::Value> reason,
-                              ExceptionState& exception_state) override {
+  ScriptPromise<IDLUndefined> Cancel(v8::Local<v8::Value> reason,
+                                     ExceptionState& exception_state) override {
     return Cancel(exception_state);
   }
 

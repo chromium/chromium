@@ -234,15 +234,15 @@ class WebTransport::DatagramUnderlyingSource final
                       &DatagramUnderlyingSource::ExpiryTimerFired) {}
 
   // Implementation of UnderlyingByteSourceBase.
-  ScriptPromiseUntyped Pull(ReadableByteStreamController* controller,
-                            ExceptionState& exception_state) override {
+  ScriptPromise<IDLUndefined> Pull(ReadableByteStreamController* controller,
+                                   ExceptionState& exception_state) override {
     DVLOG(1) << "DatagramUnderlyingSource::pull()";
 
     if (waiting_for_datagrams_) {
       // This can happen if a second read is issued while a read is already
       // pending.
       DCHECK(queue_.empty());
-      return ScriptPromiseUntyped::CastUndefined(script_state_.Get());
+      return ToResolvedUndefinedPromise(script_state_.Get());
     }
 
     // If high water mark is reset to 0 and then read() is called, it should
@@ -255,11 +255,11 @@ class WebTransport::DatagramUnderlyingSource final
     if (queue_.empty()) {
       if (close_when_queue_empty_) {
         controller->close(script_state_, exception_state);
-        return ScriptPromiseUntyped::CastUndefined(script_state_.Get());
+        return ToResolvedUndefinedPromise(script_state_.Get());
       }
 
       waiting_for_datagrams_ = true;
-      return ScriptPromiseUntyped::CastUndefined(script_state_.Get());
+      return ToResolvedUndefinedPromise(script_state_.Get());
     }
 
     const QueueEntry* entry = queue_.front();
@@ -275,7 +275,7 @@ class WebTransport::DatagramUnderlyingSource final
                         NotShared<DOMUint8Array>(entry->datagram),
                         exception_state);
     if (exception_state.HadException()) {
-      return ScriptPromiseUntyped::CastUndefined(script_state_.Get());
+      return ToResolvedUndefinedPromise(script_state_.Get());
     }
 
     // JavaScript could have called some other method at this point.
@@ -286,15 +286,15 @@ class WebTransport::DatagramUnderlyingSource final
       controller->close(script_state_, exception_state);
     }
 
-    return ScriptPromiseUntyped::CastUndefined(script_state_.Get());
+    return ToResolvedUndefinedPromise(script_state_.Get());
   }
 
-  ScriptPromiseUntyped Cancel(ExceptionState& exception_state) override {
+  ScriptPromise<IDLUndefined> Cancel(ExceptionState& exception_state) override {
     return Cancel(v8::Undefined(script_state_->GetIsolate()), exception_state);
   }
 
-  ScriptPromiseUntyped Cancel(v8::Local<v8::Value> reason,
-                              ExceptionState&) override {
+  ScriptPromise<IDLUndefined> Cancel(v8::Local<v8::Value> reason,
+                                     ExceptionState&) override {
     uint32_t code = 0;
     WebTransportError* exception =
         V8WebTransportError::ToWrappable(script_state_->GetIsolate(), reason);
@@ -307,7 +307,7 @@ class WebTransport::DatagramUnderlyingSource final
     canceled_ = true;
     DiscardQueue();
 
-    return ScriptPromiseUntyped::CastUndefined(script_state_.Get());
+    return ToResolvedUndefinedPromise(script_state_.Get());
   }
 
   ScriptState* GetScriptState() override { return script_state_.Get(); }
