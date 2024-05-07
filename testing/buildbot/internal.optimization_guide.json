@@ -231,7 +231,7 @@
           "--chromedriver",
           "chromedriver",
           "--binary",
-          "Chromium.app/Contents/MacOS/Chromium"
+          "Google Chrome.app/Contents/MacOS/Google Chrome"
         ],
         "merge": {
           "script": "//testing/merge_scripts/standard_isolated_script_merge.py"
@@ -258,7 +258,7 @@
           "--chromedriver",
           "chromedriver",
           "--binary",
-          "Chromium.app/Contents/MacOS/Chromium"
+          "Google Chrome.app/Contents/MacOS/Google Chrome"
         ],
         "experiment_percentage": 100,
         "merge": {
@@ -285,7 +285,7 @@
           "--chromedriver",
           "chromedriver",
           "--binary",
-          "Chromium.app/Contents/MacOS/Chromium"
+          "Google Chrome.app/Contents/MacOS/Google Chrome"
         ],
         "merge": {
           "script": "//testing/merge_scripts/standard_isolated_script_merge.py"
@@ -432,7 +432,7 @@
           "--chromedriver",
           "chromedriver",
           "--binary",
-          "Chromium.app/Contents/MacOS/Chromium"
+          "Google Chrome.app/Contents/MacOS/Google Chrome"
         ],
         "merge": {
           "script": "//testing/merge_scripts/standard_isolated_script_merge.py"
@@ -459,7 +459,7 @@
           "--chromedriver",
           "chromedriver",
           "--binary",
-          "Chromium.app/Contents/MacOS/Chromium"
+          "Google Chrome.app/Contents/MacOS/Google Chrome"
         ],
         "experiment_percentage": 100,
         "merge": {
@@ -486,7 +486,7 @@
           "--chromedriver",
           "chromedriver",
           "--binary",
-          "Chromium.app/Contents/MacOS/Chromium"
+          "Google Chrome.app/Contents/MacOS/Google Chrome"
         ],
         "merge": {
           "script": "//testing/merge_scripts/standard_isolated_script_merge.py"
