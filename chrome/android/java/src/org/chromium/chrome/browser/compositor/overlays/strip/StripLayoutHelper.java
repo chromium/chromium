@@ -2693,6 +2693,9 @@ public class StripLayoutHelper implements StripLayoutTabDelegate, StripLayoutGro
         }
         for (int i = 0; i < mStripGroupTitles.length; i++) {
             StripLayoutGroupTitle groupTitle = mStripGroupTitles[i];
+            if (groupTitle == null) {
+                continue;
+            }
 
             if (groupTitle.isCollapsed()) {
                 continue;
@@ -2716,6 +2719,9 @@ public class StripLayoutHelper implements StripLayoutTabDelegate, StripLayoutGro
      */
     private float calculateBottomIndicatorWidth(
             StripLayoutGroupTitle groupTitle, int numOfTabsInGroup) {
+        if (groupTitle == null || numOfTabsInGroup == 0) {
+            return 0.f;
+        }
         float tabWidth = mCachedTabWidth - mTabOverlapWidth;
         float totalTabWidth = tabWidth * numOfTabsInGroup - TAB_GROUP_BOTTOM_INDICATOR_WIDTH_OFFSET;
         float bottomIndicatorWidth = groupTitle.getWidth() + totalTabWidth;
@@ -2724,6 +2730,9 @@ public class StripLayoutHelper implements StripLayoutTabDelegate, StripLayoutGro
     }
 
     public int getNumOfTabsInGroup(StripLayoutGroupTitle stripLayoutGroupTitle) {
+        if (stripLayoutGroupTitle == null) {
+            return 0;
+        }
         return mTabGroupModelFilter.getRelatedTabCountForRootId(stripLayoutGroupTitle.getRootId());
     }
 
@@ -2982,6 +2991,9 @@ public class StripLayoutHelper implements StripLayoutTabDelegate, StripLayoutGro
         // 6. Animate bottom indicator when tab width change.
         for (int i = 0; i < mStripGroupTitles.length; i++) {
             StripLayoutGroupTitle groupTitle = mStripGroupTitles[i];
+            if (groupTitle == null) {
+                continue;
+            }
             if (groupTitle.isCollapsed()) {
                 continue;
             }
