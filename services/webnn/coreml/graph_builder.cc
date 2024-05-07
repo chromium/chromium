@@ -657,6 +657,11 @@ GraphBuilder::BuildCoreMLModel() {
             AddOperationForHardSigmoid(*operation->get_hard_sigmoid(), block));
         break;
       }
+      case mojom::Operation::Tag::kHardSwish: {
+        RETURN_IF_ERROR(
+            AddOperationForHardSwish(*operation->get_hard_swish(), block));
+        break;
+      }
       case mojom::Operation::Tag::kInstanceNormalization: {
         RETURN_IF_ERROR(AddOperationForInstanceNormalization(
             *operation->get_instance_normalization(), block));
@@ -737,7 +742,6 @@ GraphBuilder::BuildCoreMLModel() {
       case mojom::Operation::Tag::kGelu:
       case mojom::Operation::Tag::kGru:
       case mojom::Operation::Tag::kGruCell:
-      case mojom::Operation::Tag::kHardSwish:
       case mojom::Operation::Tag::kLayerNormalization:
       case mojom::Operation::Tag::kLstm:
       case mojom::Operation::Tag::kLstmCell:
@@ -1696,10 +1700,12 @@ base::expected<void, mojom::ErrorPtr> GraphBuilder::AddOperationForGemm(
 }
 
 base::expected<void, mojom::ErrorPtr> GraphBuilder::AddOperationForHardSigmoid(
-    const mojom::HardSigmoid& operation,
+    uint64_t input_operand_id,
+    float alpha,
+    float beta,
+    uint64_t output_operand_id,
     CoreML::Specification::MILSpec::Block& block) {
-  const OperandInfo& input_operand_info =
-      GetOperandInfo(operation.input_operand_id);
+  const OperandInfo& input_operand_info = GetOperandInfo(input_operand_id);
   CHECK(kFloatDataTypes.contains(input_operand_info.mil_data_type));
 
   CoreML::Specification::MILSpec::Operation* op = block.add_operations();
@@ -1710,14 +1716,47 @@ base::expected<void, mojom::ErrorPtr> GraphBuilder::AddOperationForHardSigmoid(
 
   // TODO(crbug.com/338601192): Consider using float16 when the input is
   // float16.
-  SetInputsWithValues(
-      *op->mutable_inputs(),
-      {
-          {kOpParamAlpha, CreateScalarImmediateValue(operation.alpha)},
-          {kOpParamBeta, CreateScalarImmediateValue(operation.beta)},
-      });
+  SetInputsWithValues(*op->mutable_inputs(),
+                      {
+                          {kOpParamAlpha, CreateScalarImmediateValue(alpha)},
+                          {kOpParamBeta, CreateScalarImmediateValue(beta)},
+                      });
 
-  PopulateNamedValueType(operation.output_operand_id, *op->add_outputs());
+  PopulateNamedValueType(output_operand_id, *op->add_outputs());
+  return base::ok();
+}
+
+base::expected<void, mojom::ErrorPtr> GraphBuilder::AddOperationForHardSigmoid(
+    const mojom::HardSigmoid& operation,
+    CoreML::Specification::MILSpec::Block& block) {
+  return AddOperationForHardSigmoid(operation.input_operand_id, operation.alpha,
+                                    operation.beta, operation.output_operand_id,
+                                    block);
+}
+
+base::expected<void, mojom::ErrorPtr> GraphBuilder::AddOperationForHardSwish(
+    const mojom::HardSwish& operation,
+    CoreML::Specification::MILSpec::Block& block) {
+  // Hardswish is not supported in CoreML, the formula is:
+  //  x * max(0, min(6, (x + 3))) / 6
+  // This is mathematically equivalent to:
+  //  x * max(min((x+3)/6, 1), 0)
+  // Hardsigmoid is max(min(alpha * x + beta, 1), 0), so hardswish can be
+  // emulated by: mul(x, hardsigmoid(x, alpha=1.0/6, beta=0.5))
+  const OperandInfo& input_operand_info =
+      GetOperandInfo(operation.input_operand_id);
+  uint64_t hardsigmoid_output = GenerateInternalOperandInfo(
+      input_operand_info.mil_data_type, input_operand_info.dimensions);
+
+  // TODO: crbug.com/339238741 - Use float16 when input type is
+  constexpr static float alpha = float(1.0 / 6);
+  constexpr static float beta = float(0.5);
+  RETURN_IF_ERROR(AddOperationForHardSigmoid(operation.input_operand_id, alpha,
+                                             beta, hardsigmoid_output, block));
+  RETURN_IF_ERROR(AddOperationForElementwiseBinary(
+      operation.input_operand_id, hardsigmoid_output,
+      operation.output_operand_id, mojom::ElementWiseBinary::Kind::kMul,
+      block));
   return base::ok();
 }
 

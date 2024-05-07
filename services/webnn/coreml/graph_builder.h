@@ -244,8 +244,17 @@ class GraphBuilder {
       const mojom::Gemm& operation,
       CoreML::Specification::MILSpec::Block& block);
   [[nodiscard]] base::expected<void, mojom::ErrorPtr>
+  AddOperationForHardSigmoid(uint64_t input_operand_id,
+                             float alpha,
+                             float beta,
+                             uint64_t output_operand_id,
+                             CoreML::Specification::MILSpec::Block& block);
+  [[nodiscard]] base::expected<void, mojom::ErrorPtr>
   AddOperationForHardSigmoid(const mojom::HardSigmoid& operation,
                              CoreML::Specification::MILSpec::Block& block);
+  [[nodiscard]] base::expected<void, mojom::ErrorPtr> AddOperationForHardSwish(
+      const mojom::HardSwish& operation,
+      CoreML::Specification::MILSpec::Block& block);
   [[nodiscard]] base::expected<void, mojom::ErrorPtr>
   AddOperationForInstanceNormalization(
       const mojom::InstanceNormalization& operation,
