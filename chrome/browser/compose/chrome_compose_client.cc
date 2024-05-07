@@ -297,13 +297,6 @@ void ChromeComposeClient::CreateOrUpdateSession(
       has_session &&
       (ui_entry_point == EntryPoint::kAutofillPopup || selected_text.empty());
 
-  if (!has_session && ui_entry_point == EntryPoint::kAutofillPopup) {
-    // If this is a new session from the popup then the proactive nudge was
-    // clicked. Record nudge ctr metric.
-    compose::LogComposeProactiveNudgeCtr(
-        compose::ComposeProactiveNudgeCtrEvent::kDialogOpened);
-  }
-
   if (resume_current_session) {
     auto it = sessions_.find(active_compose_ids_.value().first);
     current_session = it->second.get();
@@ -365,6 +358,14 @@ void ChromeComposeClient::CreateOrUpdateSession(
         /*has_selection=*/!selected_text.empty());
   } else {
     current_session->InitializeWithText(selected_text);
+  }
+
+  if (!has_session && ui_entry_point == EntryPoint::kAutofillPopup) {
+    // If this is a new session from the popup then the proactive nudge was
+    // clicked. Record nudge ctr metric.
+    compose::LogComposeProactiveNudgeCtr(
+        compose::ComposeProactiveNudgeCtrEvent::kDialogOpened);
+    current_session->set_started_with_proactive_nudge();
   }
 }
 

@@ -620,6 +620,8 @@ void ComposeSession::ModelExecutionComplete(
     result.log_entry->quality_data<optimization_guide::ComposeFeatureTypeMap>()
         ->set_was_generated_via_edit(was_input_edited);
     result.log_entry->quality_data<optimization_guide::ComposeFeatureTypeMap>()
+        ->set_started_with_proactive_nudge(started_with_proactive_nudge_);
+    result.log_entry->quality_data<optimization_guide::ComposeFeatureTypeMap>()
         ->set_request_latency_ms(request_delta.InMilliseconds());
     optimization_guide::proto::Int128* token =
         result.log_entry
