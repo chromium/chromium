@@ -6,38 +6,29 @@ import 'chrome://diagnostics/percent_bar_chart.js';
 import 'chrome://webui-test/chromeos/mojo_webui_test_support.js';
 
 import {PercentBarChartElement} from 'chrome://diagnostics/percent_bar_chart.js';
-import {assertEquals, assertFalse, assertTrue} from 'chrome://webui-test/chromeos/chai_assert.js';
+import {strictQuery} from 'chrome://resources/ash/common/typescript_utils/strict_query.js';
+import {assert} from 'chrome://resources/js/assert.js';
+import type {PaperProgressElement} from 'chrome://resources/polymer/v3_0/paper-progress/paper-progress.js';
+import {assertEquals} from 'chrome://webui-test/chromeos/chai_assert.js';
 import {flushTasks} from 'chrome://webui-test/polymer_test_util.js';
 
-import * as dx_utils from './diagnostics_test_utils.js';
-
 suite('percentBarChartTestSuite', function() {
-  /** @type {?PercentBarChartElement} */
-  let percentBarChartElement = null;
+  let percentBarChartElement: PercentBarChartElement|null = null;
 
   setup(() => {
-    document.body.innerHTML = window.trustedTypes.emptyHTML;
+    document.body.innerHTML = window.trustedTypes!.emptyHTML;
   });
 
   teardown(() => {
-    if (percentBarChartElement) {
-      percentBarChartElement.remove();
-    }
+    percentBarChartElement?.remove();
     percentBarChartElement = null;
   });
 
-  /**
-   * @param {string} header
-   * @param {number} value
-   * @param {number} max
-   */
-  function initializePercentBarChart(header, value, max) {
-    assertFalse(!!percentBarChartElement);
-
+  function initializePercentBarChart(
+      header: string, value: number, max: number): Promise<void> {
     // Add the element to the DOM.
-    percentBarChartElement = /** @type {!PercentBarChartElement} */ (
-        document.createElement('percent-bar-chart'));
-    assertTrue(!!percentBarChartElement);
+    percentBarChartElement = document.createElement('percent-bar-chart');
+    assert(percentBarChartElement);
     percentBarChartElement.header = header;
     percentBarChartElement.value = value;
     percentBarChartElement.max = max;
@@ -50,17 +41,15 @@ suite('percentBarChartTestSuite', function() {
     const header = 'Test header';
     const value = 10;
     const max = 30;
-    const percent = Math.round(100 * value / max);
     return initializePercentBarChart(header, value, max).then(() => {
-      const paperProgress =
-          percentBarChartElement.shadowRoot.querySelector('paper-progress');
+      assert(percentBarChartElement);
+      const paperProgress = percentBarChartElement.shadowRoot!.querySelector(
+                                'paper-progress') as PaperProgressElement;
       assertEquals(value, paperProgress.value);
       assertEquals(max, paperProgress.max);
-
-      assertEquals(
-          header,
-          percentBarChartElement.shadowRoot.querySelector('#chartName')
-              .textContent.trim());
+      const chartName = strictQuery(
+          '#chartName', percentBarChartElement.shadowRoot, HTMLLabelElement);
+      assertEquals(header, chartName.textContent!.trim());
     });
   });
 
@@ -69,8 +58,9 @@ suite('percentBarChartTestSuite', function() {
     const value = 101;
     const max = 100;
     return initializePercentBarChart(header, value, max).then(() => {
-      const paperProgress =
-          percentBarChartElement.shadowRoot.querySelector('paper-progress');
+      assert(percentBarChartElement);
+      const paperProgress = percentBarChartElement.shadowRoot!.querySelector(
+                                'paper-progress') as PaperProgressElement;
       assertEquals(paperProgress.value, paperProgress.max);
     });
   });
