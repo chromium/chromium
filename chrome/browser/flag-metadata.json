@@ -8447,6 +8447,11 @@
     "expiry_milestone": 135
   },
   {
+    "name": "use-screen2x-v2",
+    "owners": [ "rhalavati@chromium.org", "//ui/accessibility/OWNERS" ],
+    "expiry_milestone": 136
+  },
+  {
     "name": "use-search-click-for-right-click",
     "owners": [ "zentaro@chromium.org", "jimmyxgong@chromium.org", "cros-peripherals@google.com" ],
     "expiry_milestone": 130

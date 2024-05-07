@@ -3010,6 +3010,9 @@ extern const char kUserDisplayModeSyncBrowserMitigationDescription[];
 extern const char kUserDisplayModeSyncStandaloneMitigationName[];
 extern const char kUserDisplayModeSyncStandaloneMitigationDescription[];
 
+extern const char kUseScreen2xV2Name[];
+extern const char kUseScreen2xV2Description[];
+
 extern const char kWebAppSystemMediaControlsWinName[];
 extern const char kWebAppSystemMediaControlsWinDescription[];
 

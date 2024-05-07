@@ -214,6 +214,11 @@ AX_BASE_EXPORT bool IsDataCollectionModeForScreen2xEnabled();
 AX_BASE_EXPORT BASE_DECLARE_FEATURE(kLayoutExtraction);
 AX_BASE_EXPORT bool IsLayoutExtractionEnabled();
 
+// Identify and annotate the main node of the AXTree where one was not already
+// provided.
+AX_BASE_EXPORT BASE_DECLARE_FEATURE(kMainNodeAnnotations);
+AX_BASE_EXPORT bool IsMainNodeAnnotationsEnabled();
+
 // Use OCR to make inaccessible (i.e. untagged) PDFs
 // accessibility. (Note: Due to the size of the OCR component, this feature
 // targets only desktop versions of Chrome for now.)
@@ -297,10 +302,9 @@ AX_BASE_EXPORT bool IsScreenAIOCREnabled();
 AX_BASE_EXPORT BASE_DECLARE_FEATURE(kScreenAITestMode);
 AX_BASE_EXPORT bool IsScreenAITestModeEnabled();
 
-// Identify and annotate the main node of the AXTree where one was not already
-// provided.
-AX_BASE_EXPORT BASE_DECLARE_FEATURE(kMainNodeAnnotations);
-AX_BASE_EXPORT bool IsMainNodeAnnotationsEnabled();
+// Use screen2x version 2.
+AX_BASE_EXPORT BASE_DECLARE_FEATURE(kUseScreen2xV2);
+AX_BASE_EXPORT bool UseScreen2xV2();
 
 #endif  // !BUILDFLAG(IS_ANDROID)
 

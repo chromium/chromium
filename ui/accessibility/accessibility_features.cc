@@ -277,6 +277,14 @@ bool IsLayoutExtractionEnabled() {
   return base::FeatureList::IsEnabled(::features::kLayoutExtraction);
 }
 
+// This feature is only used in tests and must not be enabled by default.
+BASE_FEATURE(kMainNodeAnnotations,
+             "MainNodeAnnotations",
+             base::FEATURE_DISABLED_BY_DEFAULT);
+bool IsMainNodeAnnotationsEnabled() {
+  return base::FeatureList::IsEnabled(::features::kMainNodeAnnotations);
+}
+
 BASE_FEATURE(kPdfOcr,
              "PdfOcr",
 #if BUILDFLAG(IS_CHROMEOS)
@@ -406,13 +414,13 @@ bool IsScreenAITestModeEnabled() {
   return base::FeatureList::IsEnabled(::features::kScreenAITestMode);
 }
 
-// This feature is only used in tests and must not be enabled by default.
-BASE_FEATURE(kMainNodeAnnotations,
-             "MainNodeAnnotations",
+BASE_FEATURE(kUseScreen2xV2,
+             "UseScreen2xV2",
              base::FEATURE_DISABLED_BY_DEFAULT);
-bool IsMainNodeAnnotationsEnabled() {
-  return base::FeatureList::IsEnabled(::features::kMainNodeAnnotations);
+bool UseScreen2xV2() {
+  return base::FeatureList::IsEnabled(::features::kUseScreen2xV2);
 }
+
 #endif  // !BUILDFLAG(IS_ANDROID)
 
 #if BUILDFLAG(IS_MAC)

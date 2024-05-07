@@ -8984,6 +8984,12 @@ const FeatureEntry kFeatureEntries[] = {
      FEATURE_VALUE_TYPE(features::kDefaultPassthroughCommandDecoder)},
 #endif  // BUILDFLAG(ENABLE_VALIDATING_COMMAND_DECODER)
 
+#if !BUILDFLAG(IS_ANDROID)
+    {"use-screen2x-v2", flag_descriptions::kUseScreen2xV2Name,
+     flag_descriptions::kUseScreen2xV2Description, kOsDesktop,
+     FEATURE_VALUE_TYPE(features::kUseScreen2xV2)},
+#endif
+
 #if BUILDFLAG(IS_CHROMEOS_ASH)
     {"focus-follows-cursor", flag_descriptions::kFocusFollowsCursorName,
      flag_descriptions::kFocusFollowsCursorDescription, kOsCrOS,
