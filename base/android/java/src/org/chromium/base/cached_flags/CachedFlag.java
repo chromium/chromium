@@ -12,6 +12,7 @@ import androidx.annotation.VisibleForTesting;
 import org.chromium.base.FeatureMap;
 import org.chromium.base.Flag;
 import org.chromium.base.shared_preferences.SharedPreferencesManager;
+import org.chromium.build.BuildConfig;
 
 import java.util.HashMap;
 import java.util.List;
@@ -47,6 +48,19 @@ public class CachedFlag extends Flag {
     public CachedFlag(FeatureMap featureMap, String featureName, boolean defaultValue) {
         super(featureMap, featureName);
         mDefaultValue = defaultValue;
+    }
+
+    /**
+     * Constructor to use when a |defaultValueInTests| is specified to mimic reading from
+     * field_trial_config.json.
+     */
+    public CachedFlag(
+            FeatureMap featureMap,
+            String featureName,
+            boolean defaultValue,
+            boolean defaultValueInTests) {
+        super(featureMap, featureName);
+        mDefaultValue = BuildConfig.IS_FOR_TEST ? defaultValueInTests : defaultValue;
     }
 
     /**

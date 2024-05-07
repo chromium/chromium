@@ -137,6 +137,12 @@ public abstract class ChromeFeatureList {
         return new CachedFlag(ChromeFeatureMap.getInstance(), featureName, defaultValue);
     }
 
+    private static CachedFlag newCachedFlag(
+            String featureName, boolean defaultValue, boolean defaultValueInTests) {
+        return new CachedFlag(
+                ChromeFeatureMap.getInstance(), featureName, defaultValue, defaultValueInTests);
+    }
+
     private static MutableFlagWithSafeDefault newMutableFlagWithSafeDefault(
             String featureName, boolean defaultValue) {
         return ChromeFeatureMap.getInstance().mutableFlagWithSafeDefault(featureName, defaultValue);
