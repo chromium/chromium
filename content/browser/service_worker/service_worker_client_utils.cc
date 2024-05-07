@@ -369,7 +369,7 @@ void DidGetExecutionReadyClient(
   }
 
   ServiceWorkerClient* service_worker_client =
-      context->GetContainerHostByClientID(client_uuid);
+      context->GetServiceWorkerClientByClientID(client_uuid);
   if (!service_worker_client || !service_worker_client->is_execution_ready()) {
     // The page was destroyed before it became execution ready.  Tell the
     // renderer the page opened but it doesn't have access to it.

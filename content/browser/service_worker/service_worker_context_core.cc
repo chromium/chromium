@@ -259,8 +259,8 @@ bool ServiceWorkerContextCore::ServiceWorkerClientIterator::IsAtEnd() const {
 }
 
 ServiceWorkerContextCore::ServiceWorkerClientIterator::
-    ServiceWorkerClientIterator(ContainerHostByClientUUIDMap* map,
-                                ContainerHostPredicate predicate)
+    ServiceWorkerClientIterator(ServiceWorkerClientByClientUUIDMap* map,
+                                ServiceWorkerClientPredicate predicate)
     : map_(map), predicate_(std::move(predicate)), iterator_(map_->begin()) {
   ForwardUntilMatchingServiceWorkerClient();
 }
@@ -419,7 +419,7 @@ void ServiceWorkerContextCore::HasMainFrameWindowClient(
 }
 
 base::WeakPtr<ServiceWorkerClient>
-ServiceWorkerContextCore::CreateContainerHostForWindow(
+ServiceWorkerContextCore::CreateServiceWorkerClientForWindow(
     mojo::PendingAssociatedReceiver<blink::mojom::ServiceWorkerContainerHost>
         host_receiver,
     bool are_ancestors_secure,
@@ -445,7 +445,7 @@ ServiceWorkerContextCore::CreateContainerHostForWindow(
 }
 
 base::WeakPtr<ServiceWorkerClient>
-ServiceWorkerContextCore::CreateContainerHostForWorker(
+ServiceWorkerContextCore::CreateServiceWorkerClientForWorker(
     mojo::PendingAssociatedReceiver<blink::mojom::ServiceWorkerContainerHost>
         host_receiver,
     int process_id,
@@ -470,7 +470,7 @@ ServiceWorkerContextCore::CreateContainerHostForWorker(
   return weak_client;
 }
 
-void ServiceWorkerContextCore::UpdateContainerHostClientID(
+void ServiceWorkerContextCore::UpdateServiceWorkerClientClientID(
     const std::string& current_client_uuid,
     const std::string& new_client_uuid) {
   auto it = service_worker_clients_by_uuid_.find(current_client_uuid);
@@ -486,7 +486,7 @@ void ServiceWorkerContextCore::UpdateContainerHostClientID(
   DCHECK(inserted);
 }
 
-ServiceWorkerClient* ServiceWorkerContextCore::GetContainerHostByClientID(
+ServiceWorkerClient* ServiceWorkerContextCore::GetServiceWorkerClientByClientID(
     const std::string& client_uuid) {
   auto it = service_worker_clients_by_uuid_.find(client_uuid);
   if (it == service_worker_clients_by_uuid_.end()) {
@@ -495,7 +495,7 @@ ServiceWorkerClient* ServiceWorkerContextCore::GetContainerHostByClientID(
   return it->second.get();
 }
 
-ServiceWorkerClient* ServiceWorkerContextCore::GetContainerHostByWindowId(
+ServiceWorkerClient* ServiceWorkerContextCore::GetServiceWorkerClientByWindowId(
     const base::UnguessableToken& window_id) {
   for (auto& it : service_worker_clients_by_uuid_) {
     if (it.second->fetch_request_window_id() == window_id)

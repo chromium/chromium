@@ -2030,7 +2030,7 @@ void StoragePartitionImpl::OnAuthRequired(
     // is valid here.
     if (service_worker_context_->context()) {
       auto* container_host =
-          service_worker_context_->context()->GetContainerHostByWindowId(
+          service_worker_context_->context()->GetServiceWorkerClientByWindowId(
               *window_id);
       if (container_host) {
         if (container_host->GetRenderFrameHostId()) {
@@ -2204,7 +2204,7 @@ void StoragePartitionImpl::OnCertificateRequested(
     // is valid here.
     if (service_worker_context_->context()) {
       auto* container_host =
-          service_worker_context_->context()->GetContainerHostByWindowId(
+          service_worker_context_->context()->GetServiceWorkerClientByWindowId(
               *window_id);
       if (container_host) {
         if (container_host->GetRenderFrameHostId()) {

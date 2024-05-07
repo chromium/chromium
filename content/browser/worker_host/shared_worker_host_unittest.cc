@@ -140,7 +140,7 @@ class SharedWorkerHostTest : public testing::Test {
     host_receiver =
         container_info->host_remote.InitWithNewEndpointAndPassReceiver();
 
-    helper_->context()->CreateContainerHostForWorker(
+    helper_->context()->CreateServiceWorkerClientForWorker(
         std::move(host_receiver), mock_render_process_host_->GetID(),
         std::move(client_remote), ServiceWorkerClientInfo(host->token()));
     service_worker_handle->OnCreatedContainerHost(std::move(container_info));

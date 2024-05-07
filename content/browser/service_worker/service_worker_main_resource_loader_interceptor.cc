@@ -171,7 +171,7 @@ void ServiceWorkerMainResourceLoaderInterceptor::MaybeCreateLoader(
     bool inherit_controller_only = false;
 
     if (blink::IsRequestDestinationFrame(request_destination_)) {
-      service_worker_client = context_core->CreateContainerHostForWindow(
+      service_worker_client = context_core->CreateServiceWorkerClientForWindow(
           std::move(host_receiver), are_ancestors_secure_,
           std::move(client_remote), frame_tree_node_id_);
     } else {
@@ -183,7 +183,7 @@ void ServiceWorkerMainResourceLoaderInterceptor::MaybeCreateLoader(
       ServiceWorkerClientInfo client_info =
           absl::ConvertVariantTo<ServiceWorkerClientInfo>(*worker_token_);
 
-      service_worker_client = context_core->CreateContainerHostForWorker(
+      service_worker_client = context_core->CreateServiceWorkerClientForWorker(
           std::move(host_receiver), process_id_, std::move(client_remote),
           client_info);
 

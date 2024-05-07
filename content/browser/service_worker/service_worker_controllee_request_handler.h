@@ -120,7 +120,7 @@ class CONTENT_EXPORT ServiceWorkerControlleeRequestHandler final {
                            ActivateWaitingVersion);
 
   // Does all initialization of |service_worker_client_| for a request.
-  void InitializeContainerHost(
+  void InitializeServiceWorkerClient(
       const network::ResourceRequest& tentative_request,
       const blink::StorageKey& storage_key);
 

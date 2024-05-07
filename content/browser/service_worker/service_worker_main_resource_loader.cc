@@ -91,7 +91,7 @@ std::string GetContainerHostClientId(int frame_tree_node_id) {
   if (frame_tree_node) {
     base::WeakPtr<ServiceWorkerClient> service_worker_client =
         frame_tree_node->current_frame_host()
-            ->GetLastCommittedServiceWorkerHost();
+            ->GetLastCommittedServiceWorkerClient();
     if (service_worker_client) {
       client_uuid = service_worker_client->client_uuid();
     }

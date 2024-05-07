@@ -520,7 +520,7 @@ class ServiceWorkerMainResourceLoaderTest : public testing::Test {
     // Create a ServiceWorkerClient and simulate what
     // ServiceWorkerControlleeRequestHandler does to assign it a controller.
     if (!service_worker_client_) {
-      service_worker_client_ = CreateContainerHostForWindow(
+      service_worker_client_ = CreateServiceWorkerClientForWindow(
           GlobalRenderFrameHostId(helper_->mock_render_process_id(),
                                   /*mock frame_routing_id=*/1),
           /*is_parent_frame_secure=*/true, helper_->context()->AsWeakPtr(),
@@ -663,7 +663,7 @@ TEST_F(ServiceWorkerMainResourceLoaderTest, NoActiveWorker) {
   base::HistogramTester histogram_tester;
 
   // Make a container host without a controller.
-  service_worker_client_ = CreateContainerHostForWindow(
+  service_worker_client_ = CreateServiceWorkerClientForWindow(
       GlobalRenderFrameHostId(helper_->mock_render_process_id(),
                               /*mock frame_routing_id=*/1),
       /*is_parent_frame_secure=*/true, helper_->context()->AsWeakPtr(),

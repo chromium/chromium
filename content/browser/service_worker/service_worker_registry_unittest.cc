@@ -3236,7 +3236,7 @@ TEST_F(ServiceWorkerRegistryResourceTest, DeleteRegistration_ActiveVersion) {
                                   base::DoNothing());
   ServiceWorkerRemoteContainerEndpoint remote_endpoint;
   base::WeakPtr<ServiceWorkerClient> service_worker_client =
-      CreateContainerHostForWindow(
+      CreateServiceWorkerClientForWindow(
           GlobalRenderFrameHostId(/*mock process_id=*/33,
                                   /*mock frame_routing_id=*/1),
           /*is_parent_frame_secure=*/true, context()->AsWeakPtr(),
@@ -3273,7 +3273,7 @@ TEST_F(ServiceWorkerRegistryResourceTest, UpdateRegistration) {
                                   base::DoNothing());
   ServiceWorkerRemoteContainerEndpoint remote_endpoint;
   base::WeakPtr<ServiceWorkerClient> service_worker_client =
-      CreateContainerHostForWindow(
+      CreateServiceWorkerClientForWindow(
           GlobalRenderFrameHostId(/*mock process_id=*/33,
                                   /*mock frame_routing_id=*/1),
           /*is_parent_frame_secure=*/true, context()->AsWeakPtr(),
@@ -3366,7 +3366,7 @@ TEST_F(ServiceWorkerRegistryResourceTest, CleanupOnRestart) {
                                   base::DoNothing());
   ServiceWorkerRemoteContainerEndpoint remote_endpoint;
   base::WeakPtr<ServiceWorkerClient> service_worker_client =
-      CreateContainerHostForWindow(
+      CreateServiceWorkerClientForWindow(
           GlobalRenderFrameHostId(/*mock process_id=*/33,
                                   /*mock frame_routing_id=*/1),
           /*is_parent_frame_secure=*/true, context()->AsWeakPtr(),

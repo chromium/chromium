@@ -210,7 +210,7 @@ class ServiceWorkerVersionTest
     }
 
     base::WeakPtr<ServiceWorkerClient> service_worker_client =
-        CreateContainerHostForWindow(
+        CreateServiceWorkerClientForWindow(
             GlobalRenderFrameHostId(controllee_process_id,
                                     /*mock frame_routing_id=*/1),
             /*is_parent_frame_secure=*/true, helper_->context()->AsWeakPtr(),
@@ -534,7 +534,7 @@ TEST_P(ServiceWorkerVersionTest, Doom) {
   registration_->SetActiveVersion(version_);
   ServiceWorkerRemoteContainerEndpoint remote_endpoint;
   base::WeakPtr<ServiceWorkerClient> service_worker_client =
-      CreateContainerHostForWindow(
+      CreateServiceWorkerClientForWindow(
           GlobalRenderFrameHostId(/*mock process_id=*/33,
                                   /*mock frame_routing_id=*/1),
           /*is_parent_frame_secure=*/true, helper_->context()->AsWeakPtr(),
@@ -1446,8 +1446,8 @@ TEST_P(ServiceWorkerVersionTest,
   // navigations.
   ServiceWorkerRemoteContainerEndpoint remote_endpoint;
   std::unique_ptr<ServiceWorkerClientAndInfo> client_and_info =
-      CreateContainerHostAndInfoForWindow(helper_->context()->AsWeakPtr(),
-                                          /*are_ancestors_secure=*/true);
+      CreateServiceWorkerClientAndInfoForWindow(helper_->context()->AsWeakPtr(),
+                                                /*are_ancestors_secure=*/true);
   base::WeakPtr<ServiceWorkerClient> service_worker_client =
       std::move(client_and_info->service_worker_client);
   remote_endpoint.BindForWindow(std::move(client_and_info->info));

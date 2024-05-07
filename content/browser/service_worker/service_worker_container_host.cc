@@ -219,7 +219,7 @@ ServiceWorkerClient::~ServiceWorkerClient() {
   if (IsContainerForWindowClient()) {
     auto* rfh = RenderFrameHostImpl::FromID(GetRenderFrameHostId());
     if (rfh) {
-      rfh->RemoveServiceWorkerContainerHost(client_uuid());
+      rfh->RemoveServiceWorkerClient(client_uuid());
     }
   }
 
@@ -1165,7 +1165,7 @@ void ServiceWorkerClient::OnBeginNavigationCommit(
   auto* rfh = RenderFrameHostImpl::FromID(rfh_id);
   // `rfh` may be null in tests (but it should not happen in production).
   if (rfh)
-    rfh->AddServiceWorkerContainerHost(client_uuid(), base::AsWeakPtr(this));
+    rfh->AddServiceWorkerClient(client_uuid(), base::AsWeakPtr(this));
 
   DCHECK_EQ(ukm_source_id_, ukm::kInvalidSourceId);
   ukm_source_id_ = document_ukm_source_id;
@@ -1251,7 +1251,8 @@ void ServiceWorkerClient::UpdateUrls(
     std::string previous_client_uuid = client_uuid_;
     client_uuid_ = base::Uuid::GenerateRandomV4().AsLowercaseString();
     if (context_)
-      context_->UpdateContainerHostClientID(previous_client_uuid, client_uuid_);
+      context_->UpdateServiceWorkerClientClientID(previous_client_uuid,
+                                                  client_uuid_);
   }
 
   SyncMatchingRegistrations();

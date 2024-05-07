@@ -325,7 +325,7 @@ TEST_F(ServiceWorkerRegistrationTest, FailedRegistrationNoCrash) {
   // Prepare a ServiceWorkerContainerHost.
   ServiceWorkerRemoteContainerEndpoint remote_endpoint;
   base::WeakPtr<ServiceWorkerClient> service_worker_client =
-      CreateContainerHostForWindow(
+      CreateServiceWorkerClientForWindow(
           GlobalRenderFrameHostId(helper_->mock_render_process_id(),
                                   /*mock frame_routing_id=*/1),
           /*is_parent_frame_secure=*/true, context()->AsWeakPtr(),
@@ -437,7 +437,7 @@ class ServiceWorkerActivationTest : public ServiceWorkerRegistrationTest,
     ASSERT_EQ(blink::ServiceWorkerStatusCode::kOk, status.value());
 
     // Give the active version a controllee.
-    service_worker_client_ = CreateContainerHostForWindow(
+    service_worker_client_ = CreateServiceWorkerClientForWindow(
         GlobalRenderFrameHostId(helper_->mock_render_process_id(),
                                 /*mock frame_routing_id=*/1),
         /*is_parent_frame_secure=*/true, context()->AsWeakPtr(),
@@ -957,7 +957,7 @@ class ServiceWorkerRegistrationObjectHostTest
       base::WeakPtr<ServiceWorkerClient>* out_service_worker_client) {
     ServiceWorkerRemoteContainerEndpoint remote_endpoint;
     base::WeakPtr<ServiceWorkerClient> service_worker_client =
-        CreateContainerHostForWindow(
+        CreateServiceWorkerClientForWindow(
             GlobalRenderFrameHostId(helper_->mock_render_process_id(),
                                     /*mock frame_routing_id=*/1),
             /*is_parent_frame_secure=*/true, context()->AsWeakPtr(),
@@ -1179,7 +1179,7 @@ TEST_P(ServiceWorkerRegistrationObjectHostUpdateTest,
 
   ServiceWorkerRemoteContainerEndpoint remote_endpoint;
   base::WeakPtr<ServiceWorkerClient> service_worker_client =
-      CreateContainerHostForWindow(
+      CreateServiceWorkerClientForWindow(
           GlobalRenderFrameHostId(helper_->mock_render_process_id(),
                                   /*mock frame_routing_id=*/1),
           /*is_parent_frame_secure=*/true, context()->AsWeakPtr(),

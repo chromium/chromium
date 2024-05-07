@@ -121,15 +121,16 @@ struct ServiceWorkerClientAndInfo {
 
 // Creates a container host that finished navigation. Test code can typically
 // use this function, but if more control is required
-// CreateContainerHostAndInfoForWindow() can be used instead.
-base::WeakPtr<ServiceWorkerClient> CreateContainerHostForWindow(
+// CreateServiceWorkerClientAndInfoForWindow() can be used instead.
+base::WeakPtr<ServiceWorkerClient> CreateServiceWorkerClientForWindow(
     const GlobalRenderFrameHostId& render_frame_host_id,
     bool is_parent_frame_secure,
     base::WeakPtr<ServiceWorkerContextCore> context,
     ServiceWorkerRemoteContainerEndpoint* output_endpoint);
 
 // Creates a container host that can be used for a navigation.
-std::unique_ptr<ServiceWorkerClientAndInfo> CreateContainerHostAndInfoForWindow(
+std::unique_ptr<ServiceWorkerClientAndInfo>
+CreateServiceWorkerClientAndInfoForWindow(
     base::WeakPtr<ServiceWorkerContextCore> context,
     bool are_ancestors_secure);
 

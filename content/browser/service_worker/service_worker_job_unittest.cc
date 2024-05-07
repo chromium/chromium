@@ -319,7 +319,7 @@ ServiceWorkerJobTest::FindRegistrationForScope(
 ServiceWorkerClient* ServiceWorkerJobTest::CreateControllee() {
   remote_endpoints_.emplace_back();
   base::WeakPtr<ServiceWorkerClient> service_worker_client =
-      CreateContainerHostForWindow(
+      CreateServiceWorkerClientForWindow(
           GlobalRenderFrameHostId(/*mock process_id=*/33,
                                   /*mock frame_routing_id=*/1),
           /*is_parent_frame_secure=*/true, helper_->context()->AsWeakPtr(),
@@ -1438,8 +1438,8 @@ TEST_P(ServiceWorkerJobTest, AddRegistrationToMatchingerHosts) {
 
   // Make an in-scope reserved client.
   std::unique_ptr<ServiceWorkerClientAndInfo> client_and_info =
-      CreateContainerHostAndInfoForWindow(helper_->context()->AsWeakPtr(),
-                                          /*are_ancestors_secure=*/true);
+      CreateServiceWorkerClientAndInfoForWindow(helper_->context()->AsWeakPtr(),
+                                                /*are_ancestors_secure=*/true);
   base::WeakPtr<ServiceWorkerClient> reserved_client =
       client_and_info->service_worker_client;
   reserved_client->UpdateUrls(in_scope, url::Origin::Create(in_scope),

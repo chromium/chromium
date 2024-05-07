@@ -14764,7 +14764,7 @@ void RenderFrameHostImpl::SendBeforeUnload(
       is_reload, std::move(before_unload_closure));
 }
 
-void RenderFrameHostImpl::AddServiceWorkerContainerHost(
+void RenderFrameHostImpl::AddServiceWorkerClient(
     const std::string& uuid,
     base::WeakPtr<content::ServiceWorkerClient> service_worker_client) {
   if (IsInBackForwardCache()) {
@@ -14779,15 +14779,14 @@ void RenderFrameHostImpl::AddServiceWorkerContainerHost(
   service_worker_clients_[uuid] = std::move(service_worker_client);
 }
 
-void RenderFrameHostImpl::RemoveServiceWorkerContainerHost(
-    const std::string& uuid) {
+void RenderFrameHostImpl::RemoveServiceWorkerClient(const std::string& uuid) {
   DCHECK(!service_worker_clients_.empty());
   DCHECK(base::Contains(service_worker_clients_, uuid));
   service_worker_clients_.erase(uuid);
 }
 
 base::WeakPtr<ServiceWorkerClient>
-RenderFrameHostImpl::GetLastCommittedServiceWorkerHost() {
+RenderFrameHostImpl::GetLastCommittedServiceWorkerClient() {
   DCHECK_CURRENTLY_ON(BrowserThread::UI);
   return last_committed_service_worker_client_;
 }

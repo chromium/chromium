@@ -204,7 +204,7 @@ class ServiceWorkerControlleeRequestHandlerTest : public testing::Test {
 
     // An empty host.
     remote_endpoints_.emplace_back();
-    service_worker_client_ = CreateContainerHostForWindow(
+    service_worker_client_ = CreateServiceWorkerClientForWindow(
         GlobalRenderFrameHostId(helper_->mock_render_process_id(),
                                 /*mock frame_routing_id=*/1),
         is_parent_frame_secure, helper_->context()->AsWeakPtr(),

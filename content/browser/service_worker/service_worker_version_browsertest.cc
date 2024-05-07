@@ -458,7 +458,7 @@ class ServiceWorkerVersionBrowserTest : public ContentBrowserTest {
     ASSERT_TRUE(BrowserThread::CurrentlyOn(BrowserThread::UI));
     remote_endpoints_.emplace_back();
     base::WeakPtr<ServiceWorkerClient> service_worker_client =
-        CreateContainerHostForWindow(
+        CreateServiceWorkerClientForWindow(
             GlobalRenderFrameHostId(/*mock process_id=*/33,
                                     /*mock frame_routing_id=*/1),
             /*is_parent_frame_secure=*/true, wrapper()->context()->AsWeakPtr(),

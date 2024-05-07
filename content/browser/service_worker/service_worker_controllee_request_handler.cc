@@ -167,7 +167,7 @@ void ServiceWorkerControlleeRequestHandler::MaybeCreateLoader(
   // Update the host. This is important to do before falling back to network
   // below, so service worker APIs still work even if the service worker is
   // bypassed for request interception.
-  InitializeContainerHost(tentative_resource_request, storage_key);
+  InitializeServiceWorkerClient(tentative_resource_request, storage_key);
 
   // Fall back to network if we were instructed to bypass the service worker for
   // request interception, or if the context is gone so we have to bypass
@@ -213,7 +213,7 @@ void ServiceWorkerControlleeRequestHandler::MaybeCreateLoader(
           base::TimeTicks::Now()));
 }
 
-void ServiceWorkerControlleeRequestHandler::InitializeContainerHost(
+void ServiceWorkerControlleeRequestHandler::InitializeServiceWorkerClient(
     const network::ResourceRequest& tentative_resource_request,
     const blink::StorageKey& storage_key) {
   // Update the container host with this request, clearing old controller state

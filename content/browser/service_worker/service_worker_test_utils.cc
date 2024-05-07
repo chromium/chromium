@@ -306,13 +306,14 @@ ServiceWorkerClientAndInfo::ServiceWorkerClientAndInfo(
 
 ServiceWorkerClientAndInfo::~ServiceWorkerClientAndInfo() = default;
 
-base::WeakPtr<ServiceWorkerClient> CreateContainerHostForWindow(
+base::WeakPtr<ServiceWorkerClient> CreateServiceWorkerClientForWindow(
     const GlobalRenderFrameHostId& render_frame_host_id,
     bool is_parent_frame_secure,
     base::WeakPtr<ServiceWorkerContextCore> context,
     ServiceWorkerRemoteContainerEndpoint* output_endpoint) {
   std::unique_ptr<ServiceWorkerClientAndInfo> client_and_info =
-      CreateContainerHostAndInfoForWindow(context, is_parent_frame_secure);
+      CreateServiceWorkerClientAndInfoForWindow(context,
+                                                is_parent_frame_secure);
   base::WeakPtr<ServiceWorkerClient> service_worker_client =
       std::move(client_and_info->service_worker_client);
   output_endpoint->BindForWindow(std::move(client_and_info->info));
@@ -330,7 +331,8 @@ base::WeakPtr<ServiceWorkerClient> CreateContainerHostForWindow(
   return service_worker_client;
 }
 
-std::unique_ptr<ServiceWorkerClientAndInfo> CreateContainerHostAndInfoForWindow(
+std::unique_ptr<ServiceWorkerClientAndInfo>
+CreateServiceWorkerClientAndInfoForWindow(
     base::WeakPtr<ServiceWorkerContextCore> context,
     bool are_ancestors_secure) {
   mojo::PendingAssociatedRemote<blink::mojom::ServiceWorkerContainer>
@@ -341,7 +343,7 @@ std::unique_ptr<ServiceWorkerClientAndInfo> CreateContainerHostAndInfoForWindow(
   info->client_receiver = client_remote.InitWithNewEndpointAndPassReceiver();
   host_receiver = info->host_remote.InitWithNewEndpointAndPassReceiver();
   return std::make_unique<ServiceWorkerClientAndInfo>(
-      context->CreateContainerHostForWindow(
+      context->CreateServiceWorkerClientForWindow(
           std::move(host_receiver), are_ancestors_secure,
           std::move(client_remote), /*frame_tree_node_id=*/1),
       std::move(info));

@@ -302,7 +302,7 @@ void DedicatedWorkerHost::StartScriptLoad(
   if (creator_render_frame_host) {
     // The creator of this worker is a frame.
     service_worker_handle_->set_parent_service_worker_client(
-        creator_render_frame_host->GetLastCommittedServiceWorkerHost());
+        creator_render_frame_host->GetLastCommittedServiceWorkerClient());
   } else {
     base::WeakPtr<ServiceWorkerClient> creator_service_worker_client =
         creator_worker->service_worker_handle()->service_worker_client();
@@ -942,7 +942,7 @@ void DedicatedWorkerHost::MaybeCountWebFeature(const GURL& script_url) {
   }
 
   base::WeakPtr<ServiceWorkerClient> service_worker_client =
-      ancestor_render_frame_host->GetLastCommittedServiceWorkerHost();
+      ancestor_render_frame_host->GetLastCommittedServiceWorkerClient();
   if (!service_worker_client || !service_worker_client->controller()) {
     return;
   }

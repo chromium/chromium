@@ -256,7 +256,7 @@ TEST_F(ServiceWorkerObjectHostTest, OnVersionStateChanged) {
 
   ServiceWorkerRemoteContainerEndpoint remote_endpoint;
   base::WeakPtr<ServiceWorkerClient> service_worker_client =
-      CreateContainerHostForWindow(
+      CreateServiceWorkerClientForWindow(
           GlobalRenderFrameHostId(helper_->mock_render_process_id(),
                                   /*mock frame_routing_id=*/1),
           /*is_parent_frame_secure=*/true, helper_->context()->AsWeakPtr(),
@@ -421,7 +421,7 @@ TEST_F(ServiceWorkerObjectHostTest, DispatchExtendableMessageEvent_FromClient) {
   RenderFrameHost* frame_host = web_contents->GetPrimaryMainFrame();
   ServiceWorkerRemoteContainerEndpoint remote_endpoint;
   base::WeakPtr<ServiceWorkerClient> service_worker_client =
-      CreateContainerHostForWindow(
+      CreateServiceWorkerClientForWindow(
           frame_host->GetGlobalId(), /*is_parent_frame_secure=*/true,
           helper_->context()->AsWeakPtr(), &remote_endpoint);
   service_worker_client->UpdateUrls(scope, url::Origin::Create(scope), key);

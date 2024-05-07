@@ -1623,7 +1623,7 @@ void ServiceWorkerVersion::GetClient(const std::string& client_uuid,
     return;
   }
   ServiceWorkerClient* service_worker_client =
-      context_->GetContainerHostByClientID(client_uuid);
+      context_->GetServiceWorkerClientByClientID(client_uuid);
   if (!service_worker_client ||
       service_worker_client->url().DeprecatedGetOriginAsURL() !=
           script_url_.DeprecatedGetOriginAsURL()) {
@@ -1654,7 +1654,7 @@ void ServiceWorkerVersion::GetClientInternal(const std::string& client_uuid,
   }
 
   ServiceWorkerClient* service_worker_client =
-      context_->GetContainerHostByClientID(client_uuid);
+      context_->GetServiceWorkerClientByClientID(client_uuid);
   if (!service_worker_client || !service_worker_client->is_execution_ready()) {
     std::move(callback).Run(nullptr);
     return;
@@ -1705,7 +1705,7 @@ void ServiceWorkerVersion::PostMessageToClient(
   if (!context_)
     return;
   ServiceWorkerClient* service_worker_client =
-      context_->GetContainerHostByClientID(client_uuid);
+      context_->GetServiceWorkerClientByClientID(client_uuid);
   if (!service_worker_client) {
     // The client may already have been closed, just ignore.
     return;
@@ -1772,7 +1772,7 @@ void ServiceWorkerVersion::FocusClient(const std::string& client_uuid,
     return;
   }
   ServiceWorkerClient* service_worker_client =
-      context_->GetContainerHostByClientID(client_uuid);
+      context_->GetServiceWorkerClientByClientID(client_uuid);
   if (!service_worker_client) {
     // The client may already have been closed, just fail.
     std::move(callback).Run(nullptr /* client */);
@@ -1828,7 +1828,7 @@ void ServiceWorkerVersion::NavigateClient(const std::string& client_uuid,
   }
 
   ServiceWorkerClient* service_worker_client =
-      context_->GetContainerHostByClientID(client_uuid);
+      context_->GetServiceWorkerClientByClientID(client_uuid);
   if (!service_worker_client) {
     std::move(callback).Run(false /* success */, nullptr /* client */,
                             std::string("The client was not found."));

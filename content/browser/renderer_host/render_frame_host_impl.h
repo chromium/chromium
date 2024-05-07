@@ -1789,12 +1789,12 @@ class CONTENT_EXPORT RenderFrameHostImpl
     return has_test_disabled_proactive_browsing_instance_swap_;
   }
 
-  void AddServiceWorkerContainerHost(
+  void AddServiceWorkerClient(
       const std::string& uuid,
       base::WeakPtr<ServiceWorkerClient> service_worker_client);
-  void RemoveServiceWorkerContainerHost(const std::string& uuid);
+  void RemoveServiceWorkerClient(const std::string& uuid);
   // Returns the last committed ServiceWorkerClient of this frame.
-  base::WeakPtr<ServiceWorkerClient> GetLastCommittedServiceWorkerHost();
+  base::WeakPtr<ServiceWorkerClient> GetLastCommittedServiceWorkerClient();
 
   // Called to taint |this| so the pages which have requested MediaStream
   // (audio/video/etc capture stream) access would not enter BackForwardCache.

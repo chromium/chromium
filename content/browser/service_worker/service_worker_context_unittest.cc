@@ -479,7 +479,7 @@ TEST_F(ServiceWorkerContextTest, Observer_ControlleeEvents) {
 
   ServiceWorkerRemoteContainerEndpoint endpoint;
   base::WeakPtr<ServiceWorkerClient> service_worker_client =
-      CreateContainerHostForWindow(
+      CreateServiceWorkerClientForWindow(
           GlobalRenderFrameHostId(helper_->mock_render_process_id(),
                                   /*mock frame_routing_id=*/1),
           /*is_parent_frame_secure=*/true, context()->AsWeakPtr(), &endpoint);
@@ -1123,7 +1123,7 @@ TEST_F(ServiceWorkerContextTest, ContainerHostIterator) {
   // Host1 : process_id=1, origin1.
   remote_endpoints.emplace_back();
   base::WeakPtr<ServiceWorkerClient> service_worker_client1 =
-      CreateContainerHostForWindow(
+      CreateServiceWorkerClientForWindow(
           GlobalRenderFrameHostId(kRenderProcessId1,
                                   /*mock frame_routing_id=*/1),
           /*is_parent_frame_secure=*/true, context()->AsWeakPtr(),
@@ -1134,7 +1134,7 @@ TEST_F(ServiceWorkerContextTest, ContainerHostIterator) {
   // Host2 : process_id=2, origin2.
   remote_endpoints.emplace_back();
   base::WeakPtr<ServiceWorkerClient> service_worker_client2 =
-      CreateContainerHostForWindow(
+      CreateServiceWorkerClientForWindow(
           GlobalRenderFrameHostId(kRenderProcessId2,
                                   /*mock frame_routing_id=*/1),
           /*is_parent_frame_secure=*/true, context()->AsWeakPtr(),
@@ -1145,7 +1145,7 @@ TEST_F(ServiceWorkerContextTest, ContainerHostIterator) {
   // Host3 : process_id=2, origin1.
   remote_endpoints.emplace_back();
   base::WeakPtr<ServiceWorkerClient> service_worker_client3 =
-      CreateContainerHostForWindow(
+      CreateServiceWorkerClientForWindow(
           GlobalRenderFrameHostId(kRenderProcessId2,
                                   /*mock frame_routing_id=*/1),
           /*is_parent_frame_secure=*/true, context()->AsWeakPtr(),

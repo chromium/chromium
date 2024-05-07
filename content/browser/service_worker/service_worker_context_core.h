@@ -76,7 +76,7 @@ class CONTENT_EXPORT ServiceWorkerContextCore
                               int64_t registration_id)>;
   using UnregistrationCallback =
       base::OnceCallback<void(blink::ServiceWorkerStatusCode status)>;
-  using ContainerHostByClientUUIDMap =
+  using ServiceWorkerClientByClientUUIDMap =
       std::map<std::string, std::unique_ptr<ServiceWorkerClient>>;
   using WarmUpRequest =
       std::tuple<GURL,
@@ -84,7 +84,7 @@ class CONTENT_EXPORT ServiceWorkerContextCore
                  ServiceWorkerContext::WarmUpServiceWorkerCallback>;
 
   // Iterates over ServiceWorkerClient objects in the
-  // ContainerHostByClientUUIDMap.
+  // ServiceWorkerClientByClientUUIDMap.
   // Note: As ServiceWorkerClientIterator is operating on a member of
   // ServiceWorkerContextCore, users must ensure the ServiceWorkerContextCore
   // instance always outlives the ServiceWorkerClientIterator one.
@@ -104,15 +104,15 @@ class CONTENT_EXPORT ServiceWorkerContextCore
 
    private:
     friend class ServiceWorkerContextCore;
-    using ContainerHostPredicate =
+    using ServiceWorkerClientPredicate =
         base::RepeatingCallback<bool(ServiceWorkerClient&)>;
-    ServiceWorkerClientIterator(ContainerHostByClientUUIDMap* map,
-                                ContainerHostPredicate predicate);
+    ServiceWorkerClientIterator(ServiceWorkerClientByClientUUIDMap* map,
+                                ServiceWorkerClientPredicate predicate);
     void ForwardUntilMatchingServiceWorkerClient();
 
-    const raw_ptr<ContainerHostByClientUUIDMap, DanglingUntriaged> map_;
-    ContainerHostPredicate predicate_;
-    ContainerHostByClientUUIDMap::iterator iterator_;
+    const raw_ptr<ServiceWorkerClientByClientUUIDMap, DanglingUntriaged> map_;
+    ServiceWorkerClientPredicate predicate_;
+    ServiceWorkerClientByClientUUIDMap::iterator iterator_;
   };
 
   class TestVersionObserver : public base::CheckedObserver {
@@ -240,7 +240,7 @@ class CONTENT_EXPORT ServiceWorkerContextCore
   // navigation. |are_ancestors_secure| should be true for main frames.
   // Otherwise it is true iff all ancestor frames of this frame have a secure
   // origin. |frame_tree_node_id| is FrameTreeNode id.
-  base::WeakPtr<ServiceWorkerClient> CreateContainerHostForWindow(
+  base::WeakPtr<ServiceWorkerClient> CreateServiceWorkerClientForWindow(
       mojo::PendingAssociatedReceiver<blink::mojom::ServiceWorkerContainerHost>
           host_receiver,
       bool are_ancestors_secure,
@@ -250,7 +250,7 @@ class CONTENT_EXPORT ServiceWorkerContextCore
 
   // Used for starting a web worker (dedicated worker or shared worker). Returns
   // a service worker client for the worker.
-  base::WeakPtr<ServiceWorkerClient> CreateContainerHostForWorker(
+  base::WeakPtr<ServiceWorkerClient> CreateServiceWorkerClientForWorker(
       mojo::PendingAssociatedReceiver<blink::mojom::ServiceWorkerContainerHost>
           host_receiver,
       int process_id,
@@ -259,15 +259,15 @@ class CONTENT_EXPORT ServiceWorkerContextCore
       ServiceWorkerClientInfo client_info);
 
   // Updates the client UUID of an existing service worker client.
-  void UpdateContainerHostClientID(const std::string& current_client_uuid,
-                                   const std::string& new_client_uuid);
+  void UpdateServiceWorkerClientClientID(const std::string& current_client_uuid,
+                                         const std::string& new_client_uuid);
 
   // Retrieves a service worker client given its client UUID.
-  ServiceWorkerClient* GetContainerHostByClientID(
+  ServiceWorkerClient* GetServiceWorkerClientByClientID(
       const std::string& client_uuid);
 
   // Retrieves a service worker client given its window ID.
-  ServiceWorkerClient* GetContainerHostByWindowId(
+  ServiceWorkerClient* GetServiceWorkerClientByWindowId(
       const base::UnguessableToken& window_id);
 
   void OnContainerHostReceiverDisconnected();
@@ -524,7 +524,7 @@ class CONTENT_EXPORT ServiceWorkerContextCore
 
   // Owns `ServiceWorkerContainerForClient` (via `ServiceWorkerClient`).
   // `ServiceWorkerContainerForServiceWorker`s are owned by `ServiceWorkerHost`.
-  ContainerHostByClientUUIDMap service_worker_clients_by_uuid_;
+  ServiceWorkerClientByClientUUIDMap service_worker_clients_by_uuid_;
 
   std::unique_ptr<
       mojo::AssociatedReceiverSet<blink::mojom::ServiceWorkerContainerHost,
