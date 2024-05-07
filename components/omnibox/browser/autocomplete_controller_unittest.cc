@@ -1802,6 +1802,9 @@ TEST_F(AutocompleteControllerTest, ExplicitStop) {
 }
 
 TEST_F(AutocompleteControllerTest, UpdateResult_ForceAllowedToBeDefault) {
+  base::test::ScopedFeatureList feature_list;
+  feature_list.InitAndDisableFeature(omnibox::kGroupingFrameworkForNonZPS);
+
   auto set_feature = [](bool enabled) {
     base::test::ScopedFeatureList feature_list;
     feature_list.InitWithFeatureState(

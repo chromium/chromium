@@ -11,6 +11,7 @@
 
 #include "base/strings/utf_string_conversions.h"
 #include "base/test/metrics/histogram_tester.h"
+#include "base/test/scoped_feature_list.h"
 #include "base/test/task_environment.h"
 #include "build/build_config.h"
 #include "components/dom_distiller/core/url_constants.h"
@@ -884,6 +885,9 @@ TEST_F(OmniboxEditModelPopupTest, PopupStepSelection) {
 #endif  // !(BUILDFLAG(IS_IOS) || BUILDFLAG(IS_ANDROID))
 
 TEST_F(OmniboxEditModelPopupTest, PopupStepSelectionWithHiddenGroupIds) {
+  base::test::ScopedFeatureList feature_list;
+  feature_list.InitAndDisableFeature(omnibox::kGroupingFrameworkForNonZPS);
+
   ACMatches matches;
   for (size_t i = 0; i < 4; ++i) {
     AutocompleteMatch match(nullptr, 1000, false,
@@ -1027,6 +1031,8 @@ TEST_F(OmniboxEditModelPopupTest, PopupStepSelectionWithActions) {
 #endif
 
 TEST_F(OmniboxEditModelPopupTest, PopupInlineAutocompleteAndTemporaryText) {
+  base::test::ScopedFeatureList feature_list;
+  feature_list.InitAndDisableFeature(omnibox::kGroupingFrameworkForNonZPS);
   // Create a set of three matches "a|1" (inline autocompleted), "a2", "a3".
   // The third match has a suggestion group ID.
   ACMatches matches;

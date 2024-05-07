@@ -1095,6 +1095,9 @@ TEST_F(AutocompleteResultTest, SortAndCullWithMatchDups) {
 }
 
 TEST_F(AutocompleteResultTest, SortAndCullWithDemotionsByType) {
+  base::test::ScopedFeatureList feature_list;
+  feature_list.InitAndDisableFeature(omnibox::kGroupingFrameworkForNonZPS);
+
   // Add some matches.
   ACMatches matches;
   const AutocompleteMatchTestData data[] = {
@@ -1287,6 +1290,9 @@ TEST_F(AutocompleteResultTest, DemoteOnDeviceSearchSuggestions) {
 }
 
 TEST_F(AutocompleteResultTest, DemoteByType) {
+  base::test::ScopedFeatureList feature_list;
+  feature_list.InitAndDisableFeature(omnibox::kGroupingFrameworkForNonZPS);
+
   // Add some matches.
   ACMatches matches;
   const AutocompleteMatchTestData data[] = {
@@ -1978,6 +1984,9 @@ TEST_F(AutocompleteResultTest,
 }
 
 TEST_F(AutocompleteResultTest, SortAndCullMaxHistoryClusterSuggestions) {
+  base::test::ScopedFeatureList feature_list;
+  feature_list.InitAndDisableFeature(omnibox::kGroupingFrameworkForNonZPS);
+
   // Should limit history cluster suggestions to 1, even if there are no
   // alternative suggestions to display.
 
@@ -2009,7 +2018,7 @@ TEST_F(AutocompleteResultTest, SortAndCullMaxURLMatches) {
         {{OmniboxFieldTrial::kUIMaxAutocompleteMatchesParam, "6"}}},
        {omnibox::kOmniboxMaxURLMatches,
         {{OmniboxFieldTrial::kOmniboxMaxURLMatchesParam, "3"}}}},
-      {});
+      {omnibox::kGroupingFrameworkForNonZPS});
 
   EXPECT_TRUE(OmniboxFieldTrial::IsMaxURLMatchesFeatureEnabled());
   EXPECT_EQ(OmniboxFieldTrial::GetMaxURLMatches(), 3u);
@@ -2319,6 +2328,9 @@ TEST_F(AutocompleteResultTest, CalculateNumMatchesPerUrlCountTest) {
 }
 
 TEST_F(AutocompleteResultTest, ClipboardSuggestionOnTopOfSearchSuggestionTest) {
+  base::test::ScopedFeatureList feature_list;
+  feature_list.InitAndDisableFeature(omnibox::kGroupingFrameworkForNonZPS);
+
   // clang-format off
   TestData data[] = {
       {1, 1, 500,  false},
