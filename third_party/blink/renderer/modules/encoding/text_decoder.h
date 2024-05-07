@@ -60,7 +60,7 @@ class TextDecoder final : public ScriptWrappable {
   String encoding() const;
   bool fatal() const { return fatal_; }
   bool ignoreBOM() const { return ignore_bom_; }
-  String decode(const V8BufferSource* input,
+  String decode(std::optional<base::span<const uint8_t>> input,
                 const TextDecodeOptions* options,
                 ExceptionState& exception_state);
   String decode(ExceptionState&);

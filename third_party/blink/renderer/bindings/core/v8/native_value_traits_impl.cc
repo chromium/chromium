@@ -94,4 +94,23 @@ EventListener* NativeValueTraits<IDLOnErrorEventHandler>::NativeValue(
       value, JSEventHandler::HandlerType::kOnErrorEventHandler);
 }
 
+namespace internal {
+
+// static
+SpanWithInlineStorage SpanWithInlineStorage::GetViewData(
+    v8::Local<v8::ArrayBufferView> view) {
+  const size_t length = view->ByteLength();
+  if (!view->HasBuffer() && length <= sizeof inline_storage_) {
+    SpanWithInlineStorage res(length);
+    view->CopyContents(res.inline_storage_, sizeof inline_storage_);
+    return res;
+  }
+  auto buffer_span =
+      base::make_span(reinterpret_cast<const uint8_t*>(view->Buffer()->Data()),
+                      view->Buffer()->ByteLength());
+  return SpanWithInlineStorage(buffer_span.subspan(view->ByteOffset(), length));
+}
+
+}  // namespace internal
+
 }  // namespace blink

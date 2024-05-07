@@ -803,6 +803,22 @@ Usage: `[NotEnumerable]` can be specified on methods and attributes
 
 `[NotEnumerable]` indicates that the method or attribute is not enumerable.
 
+### [PassAsSpan]
+
+Summary: Denotes that an argument should be passed as `base::span<const
+uint8_t>`
+
+Usage: `[PassAsSpan]` can only be used on `ArrayBuffer`-like operation arguments
+(including `ArrayBufferView`s and typed arrays) that are read-only
+and not retained by the implementation.
+
+This extended attribute denotes that the implementation accepts this argument as
+a span of bytes (`base::span<const uint8_t>`).  The memory referred by the span
+is only valid for the duration of the bindings call. Passing array buffers as
+spans is much faster compared to passing a union of several array-like types
+(such as `BufferSource` union) both on the generated bindings side and on the
+implementation side.
+
 ### [RaisesException]
 
 Summary: Tells the code generator to append an `ExceptionState&` argument when calling the Blink implementation.

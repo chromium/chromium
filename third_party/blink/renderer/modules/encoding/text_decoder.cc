@@ -78,34 +78,21 @@ String TextDecoder::encoding() const {
   return name;
 }
 
-String TextDecoder::decode(const V8BufferSource* input,
+String TextDecoder::decode(std::optional<base::span<const uint8_t>> input,
                            const TextDecodeOptions* options,
                            ExceptionState& exception_state) {
   DCHECK(options);
-  // In case of `input` == IDL "missing" special value, default to (nullptr, 0).
-  void* start = nullptr;
-  size_t length = 0;
-  if (input) {
-    switch (input->GetContentType()) {
-      case V8BufferSource::ContentType::kArrayBuffer:
-        start = input->GetAsArrayBuffer()->Data();
-        length = input->GetAsArrayBuffer()->ByteLength();
-        break;
-      case V8BufferSource::ContentType::kArrayBufferView:
-        start = input->GetAsArrayBufferView()->BaseAddress();
-        length = input->GetAsArrayBufferView()->byteLength();
-        break;
-    }
-  }
-
-  if (length > std::numeric_limits<uint32_t>::max()) {
+  base::span<const uint8_t> input_span =
+      input.value_or(base::span<const uint8_t>());
+  if (input_span.size() > std::numeric_limits<uint32_t>::max()) {
     exception_state.ThrowRangeError(
         "Buffer size exceeds maximum heap object size.");
     return String();
   }
 
-  return decode(static_cast<const char*>(start), static_cast<uint32_t>(length),
-                options, exception_state);
+  return decode(reinterpret_cast<const char*>(input_span.data()),
+                static_cast<uint32_t>(input_span.size()), options,
+                exception_state);
 }
 
 String TextDecoder::decode(const char* start,
