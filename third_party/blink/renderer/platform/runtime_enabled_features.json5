@@ -3992,10 +3992,10 @@
       },
     },
     {
-      // Makes root scrollbars follow the preferred color scheme by default.
-      // https://chromestatus.com/feature/5089486318075904
+      // Makes the global root scrollbars follow the preferred color scheme
+      // by default. Please see more details: crbug.com/1423087.
       name: "UsedColorSchemeRootScrollbars",
-      status: "stable",
+      status: "experimental",
     },
     {
       name: "UserActivationSameOriginVisibility",
