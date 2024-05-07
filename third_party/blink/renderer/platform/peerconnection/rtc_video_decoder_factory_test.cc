@@ -63,11 +63,13 @@ const webrtc::SdpVideoFormat kH264MainPacketizatonMode1Sdp(
 const webrtc::SdpVideoFormat kH265MainProfileSdp("H265",
                                                  {{"profile-id", "1"},
                                                   {"tier-flag", "0"},
-                                                  {"level-id", "93"}});
+                                                  {"level-id", "93"},
+                                                  {"tx-mode", "SRST"}});
 const webrtc::SdpVideoFormat kH265Main10ProfileSdp("H265",
                                                    {{"profile-id", "2"},
                                                     {"tier-flag", "0"},
-                                                    {"level-id", "93"}});
+                                                    {"level-id", "93"},
+                                                    {"tx-mode", "SRST"}});
 #endif  // BUILDFLAG(RTC_USE_H265)
 
 bool Equals(webrtc::VideoDecoderFactory::CodecSupport a,

@@ -32,6 +32,13 @@ constexpr webrtc::VideoEncoderFactory::CodecSupport kUnsupported = {false,
                                                                     false};
 constexpr gfx::Size kMaxResolution = {1920, 1080};
 constexpr uint32_t kMaxFramerateNumerator = 30;
+
+#if BUILDFLAG(RTC_USE_H265)
+// Settings from video toolbox encoder.
+constexpr gfx::Size kHEVCMaxResolution = {4096, 2304};
+constexpr uint32_t kHEVCMaxFramerateNumerator = 120;
+#endif  // BUILDFLAG(RTC_USE_H265)
+
 constexpr uint32_t kMaxFramerateDenominator = 1;
 const std::vector<media::SVCScalabilityMode> kScalabilityModes = {
     media::SVCScalabilityMode::kL1T1, media::SVCScalabilityMode::kL1T2,
@@ -65,9 +72,9 @@ class MockGpuVideoEncodeAcceleratorFactories
          kMaxFramerateDenominator, media::VideoEncodeAccelerator::kConstantMode,
          kScalabilityModes},
 #if BUILDFLAG(RTC_USE_H265)
-        {media::HEVCPROFILE_MAIN, kMaxResolution, kMaxFramerateNumerator,
-         kMaxFramerateDenominator, media::VideoEncodeAccelerator::kConstantMode,
-         kScalabilityModes}
+        {media::HEVCPROFILE_MAIN, kHEVCMaxResolution,
+         kHEVCMaxFramerateNumerator, kMaxFramerateDenominator,
+         media::VideoEncodeAccelerator::kConstantMode, kScalabilityModes}
 #endif  //  BUILDFLAG(RTC_USE_H265)
     };
     return profiles;
@@ -219,6 +226,21 @@ TEST_F(RTCVideoEncoderFactoryTest,
   // implies level 93, and tier-flag defaults to main tier.
   EXPECT_TRUE(Equals(encoder_factory_.QueryCodecSupport(
                          webrtc::SdpVideoFormat("H265", {{"profile-id", "1"}}),
+                         /*scalability_mode=*/std::nullopt),
+                     kSupportedPowerEfficient));
+
+  // GPU factory reports maximum supported level to be 5.2, which is higher than
+  // 3.1. As a result, RTC encoder factory reports level 3.1 to be supported as
+  // well.
+  EXPECT_TRUE(Equals(encoder_factory_.QueryCodecSupport(
+                         webrtc::SdpVideoFormat(
+                             "H265", {{"profile-id", "1"}, {"level-id", "93"}}),
+                         /*scalability_mode=*/std::nullopt),
+                     kSupportedPowerEfficient));
+
+  EXPECT_TRUE(Equals(encoder_factory_.QueryCodecSupport(
+                         webrtc::SdpVideoFormat("H265", {{"profile-id", "1"},
+                                                         {"level-id", "156"}}),
                          /*scalability_mode=*/std::nullopt),
                      kSupportedPowerEfficient));
 

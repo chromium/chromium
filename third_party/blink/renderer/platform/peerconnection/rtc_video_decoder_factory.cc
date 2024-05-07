@@ -174,7 +174,8 @@ std::optional<webrtc::SdpVideoFormat> VdcToWebRtcFormat(
           {cricket::kH265FmtpTierFlag,
            webrtc::H265TierToString(profile_tier_level.tier)},
           {cricket::kH265FmtpLevelId,
-           webrtc::H265LevelToString(profile_tier_level.level)}};
+           webrtc::H265LevelToString(profile_tier_level.level)},
+          {cricket::kH265FmtpTxMode, "SRST"}};
       return format;
 #else
       return std::nullopt;

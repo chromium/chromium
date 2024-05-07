@@ -208,7 +208,8 @@ std::optional<webrtc::SdpVideoFormat> VEAToWebRTCFormat(
         {cricket::kH265FmtpTierFlag,
          webrtc::H265TierToString(profile_tier_level.tier)},
         {cricket::kH265FmtpLevelId,
-         webrtc::H265LevelToString(profile_tier_level.level)}};
+         webrtc::H265LevelToString(profile_tier_level.level)},
+        {cricket::kH265FmtpTxMode, "SRST"}};
     return format;
 #else
     return std::nullopt;
@@ -253,6 +254,26 @@ SupportedFormats GetSupportedFormatsInternal(
       // Supported H.265 formats must be added to the end of supported codecs.
 #if BUILDFLAG(RTC_USE_H265)
       if (format->name == cricket::kH265CodecName) {
+        const std::optional<webrtc::H265ProfileTierLevel> profile_tier_level =
+            webrtc::ParseSdpForH265ProfileTierLevel(format->parameters);
+        // https://datatracker.ietf.org/doc/draft-ietf-avtcore-hevc-webrtc/:
+        // according to above spec, level 3.1 is mandatory to support. So
+        // unlike H.264 which has level-asymmetry-allowed parameter in SDP to
+        // signal support for asymmetric levels, we need to add level 3.1
+        // explicitly if GPU factory reports supporting of level higher than
+        // 3.1, to make sure that if remote only supports level 3.1, we still
+        // allow the SDP negotiation to succeed.
+        if (profile_tier_level &&
+            profile_tier_level->level > webrtc::H265Level::kLevel3_1) {
+          webrtc::SdpVideoFormat level_3_1_format(*format);
+          format->parameters[cricket::kH265FmtpLevelId] =
+              webrtc::H265LevelToString(webrtc::H265Level::kLevel3_1);
+          low_priority_formats.profiles.push_back(profile.profile);
+          low_priority_formats.scalability_modes.push_back(
+              profile.scalability_modes);
+          low_priority_formats.sdp_formats.push_back(level_3_1_format);
+        }
+
         low_priority_formats.profiles.push_back(profile.profile);
         low_priority_formats.scalability_modes.push_back(
             profile.scalability_modes);
