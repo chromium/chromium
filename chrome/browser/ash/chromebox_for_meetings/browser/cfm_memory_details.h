@@ -36,7 +36,7 @@ class CfmMemoryDetails final : public MemoryDetails {
 
   base::GraphicsMemoryInfoKB gpu_meminfo_;
   std::vector<chromeos::cfm::mojom::ProcessDataPtr> proc_data_list_;
-  std::map<base::ProcessId, chromeos::cfm::mojom::ProcessMemoryInformationPtr*>
+  std::map<base::ProcessId, chromeos::cfm::mojom::ProcessMemoryInformation*>
       proc_mem_info_map_;
   chromeos::cfm::mojom::CfmBrowser::GetMemoryDetailsCallback callback_;
 };

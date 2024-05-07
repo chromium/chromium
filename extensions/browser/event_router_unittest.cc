@@ -437,6 +437,9 @@ class EventRouterObserver : public EventRouter::TestObserver {
 // A fake that pretends that all contexts are WebUI.
 class ProcessMapFake : public ProcessMap {
  public:
+  explicit ProcessMapFake(content::BrowserContext* browser_context)
+      : ProcessMap(browser_context) {}
+
   mojom::ContextType GetMostLikelyContextType(const Extension* extension,
                                               int process_id,
                                               const GURL* url) const override {
@@ -446,7 +449,7 @@ class ProcessMapFake : public ProcessMap {
 
 std::unique_ptr<KeyedService> BuildProcessMap(
     content::BrowserContext* profile) {
-  return std::make_unique<ProcessMapFake>();
+  return std::make_unique<ProcessMapFake>(profile);
 }
 
 }  // namespace

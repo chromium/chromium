@@ -1273,48 +1273,38 @@ ukm::UkmRecorder* ProcessMemoryMetricsEmitter::GetUkmRecorder() {
 
 int ProcessMemoryMetricsEmitter::GetNumberOfExtensions(base::ProcessId pid) {
   DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
-
-  int number_of_extensions = 0;
 #if BUILDFLAG(ENABLE_EXTENSIONS)
   // Retrieve the renderer process host for the given pid.
-  int rph_id = -1;
-  bool found = false;
+
+  content::RenderProcessHost* rph = nullptr;
   for (auto iter = content::RenderProcessHost::AllHostsIterator();
        !iter.IsAtEnd(); iter.Advance()) {
     if (!iter.GetCurrentValue()->GetProcess().IsValid())
       continue;
 
     if (iter.GetCurrentValue()->GetProcess().Pid() == pid) {
-      found = true;
-      rph_id = iter.GetCurrentValue()->GetID();
+      rph = iter.GetCurrentValue();
       break;
     }
   }
-  if (!found)
+  if (!rph) {
     return 0;
-
-  // Count the number of extensions associated with that renderer process host
-  // in all profiles.
-  for (Profile* profile :
-       g_browser_process->profile_manager()->GetLoadedProfiles()) {
-    extensions::ProcessMap* process_map = extensions::ProcessMap::Get(profile);
-    extensions::ExtensionRegistry* registry =
-        extensions::ExtensionRegistry::Get(profile);
-    if (!process_map || !registry)
-      continue;
-
-    std::set<std::string> extension_ids =
-        process_map->GetExtensionsInProcess(rph_id);
-    for (const std::string& extension_id : extension_ids) {
-      // Only count non hosted apps extensions.
-      const extensions::Extension* extension =
-          registry->enabled_extensions().GetByID(extension_id);
-      if (extension && !extension->is_hosted_app())
-        number_of_extensions++;
-    }
   }
+
+  // Count the number of extensions associated with this `rph`'s profile.
+  extensions::ProcessMap* process_map =
+      extensions::ProcessMap::Get(rph->GetBrowserContext());
+  if (!process_map) {
+    return 0;
+  }
+
+  const extensions::Extension* extension =
+      process_map->GetEnabledExtensionByProcessID(rph->GetID());
+  // Only include this extension if it's not a hosted app.
+  return (extension && !extension->is_hosted_app()) ? 1 : 0;
+#else
+  return 0;
 #endif
-  return number_of_extensions;
 }
 
 std::optional<base::TimeDelta> ProcessMemoryMetricsEmitter::GetProcessUptime(

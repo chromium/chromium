@@ -78,26 +78,21 @@ void RendererFreezer::OnRenderProcessHostCreated(
   // iterate over all the extensions in the newly created process and take the
   // appropriate action based on whether we find an extension using GCM.
   content::BrowserContext* context = rph->GetBrowserContext();
-  extensions::ExtensionRegistry* registry =
-      extensions::ExtensionRegistry::Get(context);
-  for (const std::string& extension_id :
-       extensions::ProcessMap::Get(context)->GetExtensionsInProcess(rph_id)) {
-    const extensions::Extension* extension =
-        registry->enabled_extensions().GetByID(extension_id);
-    if (!extension || !extension->permissions_data()->HasAPIPermission(
-                          extensions::mojom::APIPermissionID::kGcm)) {
-      continue;
+  if (const extensions::Extension* extension =
+          extensions::ProcessMap::Get(context)->GetEnabledExtensionByProcessID(
+              rph_id)) {
+    if (extension->permissions_data()->HasAPIPermission(
+            extensions::mojom::APIPermissionID::kGcm)) {
+      // This renderer has an extension that is using GCM.  Make sure it is not
+      // frozen during suspend.
+      delegate_->SetShouldFreezeRenderer(rph->GetProcess().Handle(), false);
+      gcm_extension_processes_.insert(rph_id);
+
+      // Watch to see if the renderer process or the RenderProcessHost is
+      // destroyed.
+      rph->AddObserver(this);
+      return;
     }
-
-    // This renderer has an extension that is using GCM.  Make sure it is not
-    // frozen during suspend.
-    delegate_->SetShouldFreezeRenderer(rph->GetProcess().Handle(), false);
-    gcm_extension_processes_.insert(rph_id);
-
-    // Watch to see if the renderer process or the RenderProcessHost is
-    // destroyed.
-    rph->AddObserver(this);
-    return;
   }
 
   // We didn't find an extension in this RenderProcessHost that is using GCM so

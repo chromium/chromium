@@ -111,25 +111,12 @@ MonitoredProcessType GetMonitoredProcessTypeForRenderProcess(
     return MonitoredProcessType::kRenderer;
   }
 
-  extensions::ProcessMap* extension_process_map =
-      extensions::ProcessMap::Get(browser_context);
-  DCHECK(extension_process_map);
-  std::set<std::string> extension_ids =
-      extension_process_map->GetExtensionsInProcess(host->GetID());
-
-  // We only collect more granular metrics when there's only one extension
-  // running in a given renderer, to reduce noise.
-  if (extension_ids.size() != 1)
-    return MonitoredProcessType::kRenderer;
-
-  extensions::ExtensionRegistry* extension_registry =
-      extensions::ExtensionRegistry::Get(browser_context);
-
   const extensions::Extension* extension =
-      extension_registry->enabled_extensions().GetByID(*extension_ids.begin());
-
-  if (!extension)
-    return MonitoredProcessType::kRenderer;
+      extensions::ProcessMap::Get(browser_context)
+          ->GetEnabledExtensionByProcessID(host->GetID());
+  if (!extension) {
+    return kRenderer;
+  }
 
   return extensions::BackgroundInfo::HasPersistentBackgroundPage(extension)
              ? MonitoredProcessType::kExtensionPersistent

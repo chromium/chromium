@@ -7,8 +7,9 @@
 
 #include <stddef.h>
 
-#include <set>
+#include <optional>
 
+#include "base/containers/flat_map.h"
 #include "components/keyed_service/core/keyed_service.h"
 #include "content/public/browser/site_instance.h"
 #include "extensions/common/extension_id.h"
@@ -17,7 +18,7 @@
 
 namespace content {
 class BrowserContext;
-}
+}  // namespace content
 
 namespace extensions {
 class Extension;
@@ -33,14 +34,13 @@ class Extension;
 // - There are also hosted apps, which are a kind of extensions, and those
 //   usually have a process model similar to normal web sites: multiple
 //   processes per-profile.
-// - A single hosted app can have more than one SiteInstance in the same process
-//   if we're over the process limit and force them to share a process.
 // - An extension can also opt into Cross Origin Isolation in which case it can
 //   have multiple processes per profile since cross-origin-isolated and
 //   non-cross-origin-isolated contexts don't share a process.
 //
-// In general, we seem to play with the process model of extensions a lot, so
-// it is safest to assume it is many-to-many in most places in the codebase.
+// Under the current model, a single extension can correspond to multiple
+// processes (see explanation below), but a single process cannot be shared by
+// multiple extensions.
 //
 // Note that because of content scripts, frames, and other edge cases in
 // Chrome's process isolation, extension code can still end up running outside
@@ -78,12 +78,14 @@ class Extension;
 //               enforce single thread. Investigation required.
 class ProcessMap : public KeyedService {
  public:
-  ProcessMap();
+  explicit ProcessMap(content::BrowserContext* browser_context);
 
   ProcessMap(const ProcessMap&) = delete;
   ProcessMap& operator=(const ProcessMap&) = delete;
 
   ~ProcessMap() override;
+
+  void Shutdown() override;
 
   // Returns the instance for |browser_context|. An instance is shared between
   // an incognito and a regular context.
@@ -93,12 +95,16 @@ class ProcessMap : public KeyedService {
 
   bool Insert(const ExtensionId& extension_id, int process_id);
 
-  int RemoveAllFromProcess(int process_id);
+  int Remove(int process_id);
 
   bool Contains(const ExtensionId& extension_id, int process_id) const;
   bool Contains(int process_id) const;
 
-  std::set<ExtensionId> GetExtensionsInProcess(int process_id) const;
+  // Returns a pointer to an enabled extension running in `process_id` or
+  // nullptr.
+  const Extension* GetEnabledExtensionByProcessID(int process_id) const;
+
+  std::optional<ExtensionId> GetExtensionIdForProcess(int process_id) const;
 
   // Returns true if the given `process_id` is considered a privileged context
   // for the given `extension`. That is, if it would *probably* correspond to a
@@ -200,13 +206,14 @@ class ProcessMap : public KeyedService {
 
  private:
   using ProcessId = int;
-  using Item = std::pair<ExtensionId, ProcessId>;
 
-  std::set<Item> items_;
+  base::flat_map<ProcessId, ExtensionId> items_;
 
   // Whether the process map belongs to the browser context used on Chrome OS
   // lock screen.
   bool is_lock_screen_context_ = false;
+
+  raw_ptr<content::BrowserContext> browser_context_;
 };
 
 }  // namespace extensions

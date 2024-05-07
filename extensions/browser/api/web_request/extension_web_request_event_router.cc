@@ -215,23 +215,10 @@ bool IsRequestFromExtension(const WebRequestInfo& request,
     return false;
   }
 
-  const std::set<std::string> extension_ids =
-      ProcessMap::Get(context)->GetExtensionsInProcess(
+  const Extension* extension =
+      ProcessMap::Get(context)->GetEnabledExtensionByProcessID(
           request.render_process_id);
-  if (extension_ids.empty()) {
-    return false;
-  }
-
-  // Treat hosted apps as normal web pages (crbug.com/526413).
-  for (const ExtensionId& extension_id : extension_ids) {
-    const Extension* extension =
-        ExtensionRegistry::Get(context)->enabled_extensions().GetByID(
-            extension_id);
-    if (extension && !extension->is_hosted_app()) {
-      return true;
-    }
-  }
-  return false;
+  return extension && !extension->is_hosted_app();
 }
 
 // Sends an event to subscribers of chrome.declarativeWebRequest.onMessage or
