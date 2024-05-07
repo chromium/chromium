@@ -422,6 +422,7 @@ TEST_F(PrivacyIndicatorsTrayItemViewTest, VisibilityAnimation) {
   double progress = 0.5;
 
   // Firstly, expand animation will be performed.
+  expand_animation()->Start();
   AnimateToValue(expand_animation(), progress);
   EXPECT_EQ(PrivacyIndicatorsTrayItemView::AnimationState::kExpand,
             animation_state());
@@ -495,6 +496,7 @@ TEST_F(PrivacyIndicatorsTrayItemViewTest, SideShelfVisibilityAnimation) {
   double progress = 0.5;
 
   // Firstly, expand animation will be performed.
+  expand_animation()->Start();
   AnimateToValue(expand_animation(), progress);
   EXPECT_EQ(PrivacyIndicatorsTrayItemView::AnimationState::kExpand,
             animation_state());
@@ -560,6 +562,7 @@ TEST_F(PrivacyIndicatorsTrayItemViewTest, StateChangeDuringAnimation) {
   double progress = 0.5;
 
   // Firstly, expand animation will be performed.
+  expand_animation()->Start();
   AnimateToValue(expand_animation(), progress);
 
   // Update state in mid animation, shouldn't crash anything.

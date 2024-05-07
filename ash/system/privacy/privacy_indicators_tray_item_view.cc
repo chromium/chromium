@@ -473,8 +473,8 @@ void PrivacyIndicatorsTrayItemView::PerformAnimation() {
   // 3. kOnlyLongerSideShrink: After that, collapses the long side first.
   // 4. kBothSideShrink: Before the long side shrinks completely, collapses the
   //    short side to the final size (a green dot).
-  expand_animation_->Start();
   animation_state_ = AnimationState::kExpand;
+  expand_animation_->Start();
   StartRecordAnimationSmoothness(GetWidget(), throughput_tracker_);
 
   // At the same time, fade in icons.
