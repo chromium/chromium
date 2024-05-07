@@ -13,6 +13,7 @@
 #include "content/common/content_export.h"
 #include "content/public/browser/digital_identity_provider.h"
 #include "content/public/browser/document_service.h"
+#include "services/data_decoder/public/cpp/data_decoder.h"
 #include "third_party/blink/public/mojom/webid/digital_identity_request.mojom.h"
 #include "url/gurl.h"
 
@@ -36,6 +37,10 @@ class CONTENT_EXPORT DigitalIdentityRequestImpl
       RenderFrameHost&,
       mojo::PendingReceiver<blink::mojom::DigitalIdentityRequest>);
 
+  // Returns true is the passed-in OpenId4Vp request is solely requesting an
+  // mdoc age_over_xx assertion.
+  static bool IsOnlyRequestingAge(const base::Value& request);
+
   DigitalIdentityRequestImpl(const DigitalIdentityRequestImpl&) = delete;
   DigitalIdentityRequestImpl& operator=(const DigitalIdentityRequestImpl&) =
       delete;
@@ -52,8 +57,14 @@ class CONTENT_EXPORT DigitalIdentityRequestImpl
       RenderFrameHost&,
       mojo::PendingReceiver<blink::mojom::DigitalIdentityRequest>);
 
+  // Called when the request JSON has been parsed.
+  void OnRequestJsonParsed(
+      std::string request_to_send,
+      data_decoder::DataDecoder::ValueOrError parsed_result);
+
   // Called after fetching the user's identity. Shows an interstitial if needed.
   void ShowInterstitialIfNeeded(
+      bool is_only_requesting_age,
       const std::string& response,
       DigitalIdentityProvider::RequestStatusForMetrics status_for_metrics);
 

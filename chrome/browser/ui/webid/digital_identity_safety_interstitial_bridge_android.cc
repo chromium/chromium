@@ -29,6 +29,7 @@ DigitalIdentitySafetyInterstitialBridgeAndroid::
 void DigitalIdentitySafetyInterstitialBridgeAndroid::ShowInterstitialIfNeeded(
     content::WebContents& web_contents,
     const url::Origin& origin,
+    bool is_only_requesting_age,
     content::ContentBrowserClient::DigitalIdentityInterstitialCallback
         callback) {
   callback_ = std::move(callback);
@@ -41,7 +42,7 @@ void DigitalIdentitySafetyInterstitialBridgeAndroid::ShowInterstitialIfNeeded(
   }
 
   Java_DigitalIdentitySafetyInterstitialBridge_showInterstitialIfNeeded(
-      env, j_bridge_, j_window, j_origin);
+      env, j_bridge_, j_window, j_origin, is_only_requesting_age);
 }
 
 void DigitalIdentitySafetyInterstitialBridgeAndroid::OnInterstitialDone(

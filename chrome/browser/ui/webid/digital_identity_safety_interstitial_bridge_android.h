@@ -34,6 +34,7 @@ class DigitalIdentitySafetyInterstitialBridgeAndroid {
   void ShowInterstitialIfNeeded(
       content::WebContents& web_contents,
       const url::Origin& origin,
+      bool is_only_requesting_age,
       content::ContentBrowserClient::DigitalIdentityInterstitialCallback
           callback);
 

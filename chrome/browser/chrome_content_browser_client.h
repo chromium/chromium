@@ -903,6 +903,7 @@ class ChromeContentBrowserClient : public content::ContentBrowserClient {
   void ShowDigitalIdentityInterstitialIfNeeded(
       content::WebContents& web_contents,
       const url::Origin& origin,
+      bool is_only_requesting_age,
       DigitalIdentityInterstitialCallback callback) override;
 #endif
 

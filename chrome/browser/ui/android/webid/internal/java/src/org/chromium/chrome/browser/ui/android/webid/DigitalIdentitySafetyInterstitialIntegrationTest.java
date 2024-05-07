@@ -210,13 +210,15 @@ public class DigitalIdentitySafetyInterstitialIntegrationTest {
     }
 
     public void checkDigitalIdentityRequestWithDialogFieldTrialParam(
-            String dialogParamValue, int expectedInterstitialParagraph1ResourceId)
+            String dialogParamValue,
+            String jsMethodToCall,
+            int expectedInterstitialParagraph1ResourceId)
             throws TimeoutException {
         setFieldTrialParam(dialogParamValue);
         addModalDialogObserver(expectedInterstitialParagraph1ResourceId);
 
         JavaScriptUtils.executeJavaScriptAndWaitForResult(
-                mActivityTestRule.getWebContents(), "request()");
+                mActivityTestRule.getWebContents(), jsMethodToCall);
 
         waitTillLogTextAreaHasTextContent("\"token\"");
 
@@ -240,6 +242,7 @@ public class DigitalIdentitySafetyInterstitialIntegrationTest {
         checkDigitalIdentityRequestWithDialogFieldTrialParam(
                 DigitalIdentitySafetyInterstitialBridge
                         .DIGITAL_IDENTITY_LOW_RISK_DIALOG_PARAM_VALUE,
+                "requestAgeOnly()",
                 R.string.digital_identity_interstitial_low_risk_dialog_text);
     }
 
@@ -255,6 +258,22 @@ public class DigitalIdentitySafetyInterstitialIntegrationTest {
         checkDigitalIdentityRequestWithDialogFieldTrialParam(
                 DigitalIdentitySafetyInterstitialBridge
                         .DIGITAL_IDENTITY_HIGH_RISK_DIALOG_PARAM_VALUE,
+                "requestAgeOnly()",
+                R.string.digital_identity_interstitial_high_risk_dialog_text);
+    }
+
+    /**
+     * Test that the high risk interstitial is shown when credentials other than age are requested.
+     */
+    @Test
+    @LargeTest
+    @EnableFeatures(ContentFeatureList.WEB_IDENTITY_DIGITAL_CREDENTIALS)
+    public void testShowHighRiskInterstitialWhenRequestCredentialsOtherThanAge()
+            throws TimeoutException {
+        checkDigitalIdentityRequestWithDialogFieldTrialParam(
+                DigitalIdentitySafetyInterstitialBridge
+                        .DIGITAL_IDENTITY_HIGH_RISK_DIALOG_PARAM_VALUE,
+                "requestAgeAndName()",
                 R.string.digital_identity_interstitial_high_risk_dialog_text);
     }
 
@@ -264,7 +283,9 @@ public class DigitalIdentitySafetyInterstitialIntegrationTest {
     @EnableFeatures(ContentFeatureList.WEB_IDENTITY_DIGITAL_CREDENTIALS)
     public void testNoDialogByDefault() throws TimeoutException {
         checkDigitalIdentityRequestWithDialogFieldTrialParam(
-                /* dialogParamValue= */ "", /* expectedInterstitialParagraph1ResourceId= */ -1);
+                /* dialogParamValue= */ "",
+                "requestAgeOnly()",
+                /* expectedInterstitialParagraph1ResourceId= */ -1);
     }
 
     /**
@@ -285,7 +306,7 @@ public class DigitalIdentitySafetyInterstitialIntegrationTest {
         addModalDialogObserver(/* expectedInterstitialParagraph1ResourceId= */ -1);
 
         JavaScriptUtils.executeJavaScriptAndWaitForResult(
-                mActivityTestRule.getWebContents(), "request()");
+                mActivityTestRule.getWebContents(), "requestAgeOnly()");
 
         // Do page navigation during the Android OS call.
         mActivityTestRule.loadUrl(mTestServer.getURL("/chrome/test/data/android/simple.html"));

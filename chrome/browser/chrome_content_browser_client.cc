@@ -7821,13 +7821,14 @@ void RunDigitalIdentityCallback(
 void ChromeContentBrowserClient::ShowDigitalIdentityInterstitialIfNeeded(
     content::WebContents& web_contents,
     const url::Origin& origin,
+    bool is_only_requesting_age,
     DigitalIdentityInterstitialCallback callback) {
   auto bridge =
       std::make_unique<DigitalIdentitySafetyInterstitialBridgeAndroid>();
   auto* bridge_ptr = bridge.get();
   // Callback takes ownership of |bridge|.
   bridge_ptr->ShowInterstitialIfNeeded(
-      web_contents, origin,
+      web_contents, origin, is_only_requesting_age,
       base::BindOnce(&RunDigitalIdentityCallback, std::move(bridge),
                      std::move(callback)));
 }

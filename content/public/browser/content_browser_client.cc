@@ -1522,6 +1522,7 @@ ContentBrowserClient::CreateIdentityRequestDialogController(
 void ContentBrowserClient::ShowDigitalIdentityInterstitialIfNeeded(
     WebContents& web_contents,
     const url::Origin& origin,
+    bool is_only_requesting_age,
     DigitalIdentityInterstitialCallback callback) {
   std::move(callback).Run(
       DigitalIdentityProvider::RequestStatusForMetrics::kErrorOther);

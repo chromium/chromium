@@ -2624,11 +2624,15 @@ class CONTENT_EXPORT ContentBrowserClient {
   // share their identity with the web page. Shows the interstitial if one is
   // needed. Runs callback immediately if no interestitial is needed or after
   // the user dismisses the interstitial if an interstitial is needed.
+  // `is_only_requesting_age` indicates whether the real-world-identity request
+  // is only requesting an assertion about whether the user is over a specific
+  // age.
   using DigitalIdentityInterstitialCallback = base::OnceCallback<void(
       DigitalIdentityProvider::RequestStatusForMetrics status_for_metrics)>;
   virtual void ShowDigitalIdentityInterstitialIfNeeded(
       WebContents& web_contents,
       const url::Origin& origin,
+      bool is_only_requesting_age,
       DigitalIdentityInterstitialCallback callback);
 
   // Creates a digital credential provider to fetch from native apps.

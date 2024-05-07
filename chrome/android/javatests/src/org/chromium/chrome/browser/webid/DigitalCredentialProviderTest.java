@@ -74,7 +74,7 @@ public class DigitalCredentialProviderTest {
 
         mActivityTestRule.loadUrl(mTestServer.getURL(TEST_PAGE));
         JavaScriptUtils.executeJavaScriptAndWaitForResult(
-                mActivityTestRule.getWebContents(), "request()");
+                mActivityTestRule.getWebContents(), "requestAgeOnly()");
         CriteriaHelper.pollInstrumentationThread(
                 () -> {
                     try {

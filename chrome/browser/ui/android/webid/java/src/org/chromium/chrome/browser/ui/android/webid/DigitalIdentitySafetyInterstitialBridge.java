@@ -54,7 +54,8 @@ public class DigitalIdentitySafetyInterstitialBridge {
     }
 
     @CalledByNative
-    public void showInterstitialIfNeeded(WindowAndroid window, Origin origin) {
+    public void showInterstitialIfNeeded(
+            WindowAndroid window, Origin origin, boolean isOnlyRequestingAge) {
         if (window == null) {
             onDone(DigitalIdentityRequestStatusForMetrics.ERROR_OTHER);
             return;
@@ -71,15 +72,19 @@ public class DigitalIdentitySafetyInterstitialBridge {
             return;
         }
 
-        String dialogParamValue =
-                ContentFeatureMap.getInstance()
-                        .getFieldTrialParamByFeature(
-                                ContentFeatureList.WEB_IDENTITY_DIGITAL_CREDENTIALS,
-                                DIGITAL_IDENTITY_DIALOG_PARAM);
-        boolean showLowRiskDialog =
-                dialogParamValue.equals(DIGITAL_IDENTITY_LOW_RISK_DIALOG_PARAM_VALUE);
-        boolean showHighRiskDialog =
-                dialogParamValue.equals(DIGITAL_IDENTITY_HIGH_RISK_DIALOG_PARAM_VALUE);
+        boolean showLowRiskDialog = false;
+        boolean showHighRiskDialog = !isOnlyRequestingAge;
+        if (isOnlyRequestingAge) {
+            String dialogParamValue =
+                    ContentFeatureMap.getInstance()
+                            .getFieldTrialParamByFeature(
+                                    ContentFeatureList.WEB_IDENTITY_DIGITAL_CREDENTIALS,
+                                    DIGITAL_IDENTITY_DIALOG_PARAM);
+            showLowRiskDialog =
+                    dialogParamValue.equals(DIGITAL_IDENTITY_LOW_RISK_DIALOG_PARAM_VALUE);
+            showHighRiskDialog =
+                    dialogParamValue.equals(DIGITAL_IDENTITY_HIGH_RISK_DIALOG_PARAM_VALUE);
+        }
 
         if (!showLowRiskDialog && !showHighRiskDialog) {
             onDone(DigitalIdentityRequestStatusForMetrics.SUCCESS);
