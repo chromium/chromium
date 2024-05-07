@@ -286,6 +286,12 @@ source_set("fuzztest_internal") {
     "//third_party/abseil-cpp:absl_full",
   ]
 
+  # TODO(https://crbug.com/337736622): Remove this after M129 when V8 moves
+  # protobuf back to //third_party/protobuf.
+  if (!defined(protobuf_target_prefix)) {
+    protobuf_target_prefix = "//third_party/protobuf"
+  }
+
   public_deps = [
     "//third_party/abseil-cpp:absl",
 
@@ -295,7 +301,7 @@ source_set("fuzztest_internal") {
     "//third_party/re2",
 
     # For protobuf mutators
-    "//third_party/protobuf:protobuf_lite",
+    "$protobuf_target_prefix:protobuf_lite",
   ]
 
   public_configs = [ ":fuzztest_internal_config" ]
