@@ -780,8 +780,8 @@ scoped_refptr<CanvasResource> DrawingBuffer::ExportLowLatencyCanvasResource(
       using_swap_chain_ ? front_color_buffer_ : back_color_buffer_;
   viz::TransferableResource resource;
 
-  resource.mailbox_holder.mailbox = color_buffer->shared_image->mailbox();
-  resource.mailbox_holder.texture_target = color_buffer->texture_target;
+  resource.set_mailbox(color_buffer->shared_image->mailbox());
+  resource.set_texture_target(color_buffer->texture_target);
   resource.size = color_buffer->size;
   resource.format = color_buffer->format;
   resource.is_overlay_candidate = color_buffer->is_overlay_candidate;

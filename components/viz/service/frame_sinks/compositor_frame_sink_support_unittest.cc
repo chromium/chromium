@@ -149,8 +149,8 @@ class CompositorFrameSinkSupportTest : public testing::Test {
     for (size_t i = 0u; i < num_resource_ids; ++i) {
       TransferableResource resource;
       resource.id = resource_ids[i];
-      resource.mailbox_holder.texture_target = GL_TEXTURE_2D;
-      resource.mailbox_holder.sync_token = frame_sync_token_;
+      resource.set_texture_target(GL_TEXTURE_2D);
+      resource.set_sync_token(frame_sync_token_);
       frame->resource_list.push_back(resource);
     }
   }
@@ -858,7 +858,7 @@ TEST_P(OnBeginFrameAcksCompositorFrameSinkSupportTest,
 
   TransferableResource resource;
   resource.id = ResourceId(1);
-  resource.mailbox_holder.texture_target = GL_TEXTURE_2D;
+  resource.set_texture_target(GL_TEXTURE_2D);
   auto frame = CompositorFrameBuilder()
                    .AddDefaultRenderPass()
                    .AddTransferableResource(resource)

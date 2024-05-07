@@ -81,10 +81,10 @@ class ClientResourceProviderTest : public testing::TestWithParam<bool> {
     r.id = ResourceId(mailbox_char);
     r.is_software = !gpu;
     r.size = gfx::Size(10, 11);
-    r.mailbox_holder.mailbox = MailboxFromChar(mailbox_char);
+    r.set_mailbox(MailboxFromChar(mailbox_char));
     if (gpu) {
-      r.mailbox_holder.sync_token = SyncTokenFromUInt(sync_token_value);
-      r.mailbox_holder.texture_target = 6;
+      r.set_sync_token(SyncTokenFromUInt(sync_token_value));
+      r.set_texture_target(6);
     }
     return r;
   }

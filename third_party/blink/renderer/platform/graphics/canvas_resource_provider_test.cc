@@ -554,9 +554,9 @@ TEST_F(CanvasResourceProviderTest,
   EXPECT_TRUE(provider->IsSingleBuffered());
 
   viz::TransferableResource tr;
-  tr.mailbox_holder.mailbox = gpu::Mailbox::GenerateForSharedImage();
-  tr.mailbox_holder.texture_target = GL_TEXTURE_2D;
-  tr.mailbox_holder.sync_token = gpu::SyncToken();
+  tr.set_mailbox(gpu::Mailbox::GenerateForSharedImage());
+  tr.set_texture_target(GL_TEXTURE_2D);
+  tr.set_sync_token(gpu::SyncToken());
   tr.size = kSize;
   tr.is_overlay_candidate = true;
 

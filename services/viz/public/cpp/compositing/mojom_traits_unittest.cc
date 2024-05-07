@@ -1209,7 +1209,9 @@ TEST_F(StructTraitsTest, TransferableResource) {
   input.id = id;
   input.format = format;
   input.size = size;
-  input.mailbox_holder = mailbox_holder;
+  input.set_mailbox(mailbox_holder.mailbox);
+  input.set_sync_token(mailbox_holder.sync_token);
+  input.set_texture_target(mailbox_holder.texture_target);
   input.synchronization_type = sync_type;
   input.is_software = is_software;
   input.is_overlay_candidate = is_overlay_candidate;
@@ -1221,10 +1223,9 @@ TEST_F(StructTraitsTest, TransferableResource) {
   EXPECT_EQ(id, output.id);
   EXPECT_EQ(format, output.format);
   EXPECT_EQ(size, output.size);
-  EXPECT_EQ(mailbox_holder.mailbox, output.mailbox_holder.mailbox);
-  EXPECT_EQ(mailbox_holder.sync_token, output.mailbox_holder.sync_token);
-  EXPECT_EQ(mailbox_holder.texture_target,
-            output.mailbox_holder.texture_target);
+  EXPECT_EQ(mailbox_holder.mailbox, output.mailbox());
+  EXPECT_EQ(mailbox_holder.sync_token, output.sync_token());
+  EXPECT_EQ(mailbox_holder.texture_target, output.texture_target());
   EXPECT_EQ(sync_type, output.synchronization_type);
   EXPECT_EQ(is_software, output.is_software);
   EXPECT_EQ(is_overlay_candidate, output.is_overlay_candidate);

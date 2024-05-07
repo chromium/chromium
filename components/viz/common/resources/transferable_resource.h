@@ -140,10 +140,19 @@ struct VIZ_COMMON_EXPORT TransferableResource {
   // The |mailbox| inside here holds the gpu::Mailbox when this is a gpu
   // resource, or the SharedBitmapId when it is a software resource.
   // The |texture_target| inside here only apply for gpu resources.
-  // TODO(crbug.com/337538024): Replace all access to this field with usage of
-  // the accessors below and remove this field in favor of TransferableResource
-  // directly storing the fields.
+  // TODO(crbug.com/337538024): Remove this field in favor of
+  // TransferableResource directly storing the fields.
   gpu::MailboxHolder mailbox_holder;
+
+  void set_mailbox(const gpu::Mailbox& mailbox) {
+    mailbox_holder.mailbox = mailbox;
+  }
+  void set_sync_token(const gpu::SyncToken& sync_token) {
+    mailbox_holder.sync_token = sync_token;
+  }
+  void set_texture_target(const uint32_t texture_target) {
+    mailbox_holder.texture_target = texture_target;
+  }
 
   const gpu::Mailbox& mailbox() const { return mailbox_holder.mailbox; }
   const gpu::SyncToken& sync_token() const { return mailbox_holder.sync_token; }
