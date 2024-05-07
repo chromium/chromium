@@ -659,7 +659,6 @@ ci.builder(
             "release_builder",
             "minimal_symbols",
             "no_clang",
-            "siso",
         ],
     ),
     # Focal is needed for better C++20 support. See crbug.com/1284275.
@@ -669,7 +668,6 @@ ci.builder(
         short_name = "gcc",
     ),
     contact_team_email = "build@chromium.org",
-    reclient_instance = None,
 )
 
 ci.builder(
