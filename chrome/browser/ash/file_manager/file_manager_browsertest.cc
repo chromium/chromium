@@ -116,8 +116,9 @@ class LoggedInUserFilesAppBrowserTest : public FilesAppBrowserTest {
         &mixin_host_, DeviceStateFor(GetOptions().device_mode));
 
     logged_in_user_mixin_ = std::make_unique<ash::LoggedInUserMixin>(
-        &mixin_host_, LogInTypeFor(GetOptions().test_account_type),
-        embedded_test_server(), this, /*should_launch_browser=*/false,
+        &mixin_host_, /*test_base=*/this, embedded_test_server(),
+        LogInTypeFor(GetOptions().test_account_type),
+        /*include_initial_user=*/true,
         AccountIdFor(GetOptions().test_account_type));
 
     // Set up owner email of a device. We set up owner email only if a device is
@@ -145,7 +146,8 @@ class LoggedInUserFilesAppBrowserTest : public FilesAppBrowserTest {
   }
 
   void SetUpOnMainThread() override {
-    logged_in_user_mixin_->LogInUser();
+    logged_in_user_mixin_->LogInUser(
+        {ash::LoggedInUserMixin::LoginDetails::kNoBrowserLaunch});
     FilesAppBrowserTest::SetUpOnMainThread();
   }
 

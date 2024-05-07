@@ -502,7 +502,7 @@ class TokenAfterCrash : public MixinBasedInProcessBrowserTest {
  public:
   TokenAfterCrash() {
     login_mixin_.set_session_restore_enabled();
-    login_mixin_.set_should_obtain_handles(true);
+    login_mixin_.SetShouldObtainHandle(true);
     login_mixin_.AppendRegularUsers(1);
   }
 

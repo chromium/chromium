@@ -181,7 +181,7 @@ class LoginLogoutReporterBrowserTest
   ~LoginLogoutReporterBrowserTest() override = default;
 
   void SetUpOnMainThread() override {
-    login_manager_.set_should_launch_browser(true);
+    login_manager_.SetShouldLaunchBrowser(true);
     FakeSessionManagerClient::Get()->set_supports_browser_restart(true);
     policy::DevicePolicyCrosBrowserTest::SetUpOnMainThread();
   }

@@ -283,14 +283,15 @@ class CrashRestoreChildUserTest : public MixinBasedInProcessBrowserTest {
     MixinBasedInProcessBrowserTest::SetUpInProcessBrowserTestFixture();
   }
 
-  LoggedInUserMixin logged_in_user_mixin_{
-      &mixin_host_, LoggedInUserMixin::LogInType::kChild,
-      embedded_test_server(), this, /*should_launch_browser=*/false};
+  LoggedInUserMixin logged_in_user_mixin_{&mixin_host_, /*test_base=*/this,
+                                          embedded_test_server(),
+                                          LoggedInUserMixin::LogInType::kChild};
 };
 
 IN_PROC_BROWSER_TEST_F(CrashRestoreChildUserTest, PRE_SessionRestore) {
   // Verify that child user can log in.
-  logged_in_user_mixin_.LogInUser();
+  logged_in_user_mixin_.LogInUser(
+      {ash::LoggedInUserMixin::LoginDetails::kNoBrowserLaunch});
 }
 
 IN_PROC_BROWSER_TEST_F(CrashRestoreChildUserTest, SessionRestore) {

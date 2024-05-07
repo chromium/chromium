@@ -347,7 +347,7 @@ class ContainerAppInteractiveUiTestBase
 
     return absl::variant<ash::GuestSessionMixin, ash::LoggedInUserMixin>(
         absl::in_place_type_t<ash::LoggedInUserMixin>(), &mixin_host_,
-        login_type.value(), embedded_test_server(), this);
+        /*test_base=*/this, embedded_test_server(), login_type.value());
   }
 
   // Returns whether the user should be logged in as part of test setup.

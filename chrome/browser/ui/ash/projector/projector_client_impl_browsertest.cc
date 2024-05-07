@@ -368,10 +368,9 @@ class ProjectorClientManagedTest
   DeviceStateMixin device_state_{
       &mixin_host_, DeviceStateMixin::State::OOBE_COMPLETED_CONSUMER_OWNED};
   LoggedInUserMixin logged_in_user_mixin_{
-      &mixin_host_,
+      &mixin_host_, /*test_base=*/this, embedded_test_server(),
       is_child() ? LoggedInUserMixin::LogInType::kChild
-                 : LoggedInUserMixin::LogInType::kManaged,
-      embedded_test_server(), this};
+                 : LoggedInUserMixin::LogInType::kManaged};
 };
 
 IN_PROC_BROWSER_TEST_P(ProjectorClientManagedTest,

@@ -249,7 +249,7 @@ class SystemTrayTrayCastAccessCodeChromeOSTest
   SystemTrayTrayCastAccessCodeChromeOSTest() {
     // Use consumer emails to avoid having to fake a policy fetch.
     login_mixin_.AppendRegularUsers(2);
-    login_mixin_.set_should_launch_browser(true);
+    login_mixin_.SetShouldLaunchBrowser(true);
     account_id1_ = login_mixin_.users()[0].account_id;
     account_id2_ = login_mixin_.users()[1].account_id;
   }

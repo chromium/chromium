@@ -26,9 +26,9 @@ class ChildUserInteractiveBaseTest : public InteractiveAshTest {
   void SetUpOnMainThread() override;
 
  protected:
-  LoggedInUserMixin logged_in_user_mixin_{&mixin_host_,
-                                          LoggedInUserMixin::LogInType::kChild,
-                                          embedded_test_server(), this};
+  LoggedInUserMixin logged_in_user_mixin_{&mixin_host_, /*test_base=*/this,
+                                          embedded_test_server(),
+                                          LoggedInUserMixin::LogInType::kChild};
 };
 
 }  // namespace ash

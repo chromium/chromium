@@ -55,8 +55,9 @@ class ChromeOSMetricsProviderTest
     : public MixinBasedInProcessBrowserTest,
       public testing::WithParamInterface<user_manager::UserType> {
  protected:
-  ash::LoggedInUserMixin logged_in_user_mixin_{
-      &mixin_host_, GetLogInType(GetParam()), embedded_test_server(), this};
+  ash::LoggedInUserMixin logged_in_user_mixin_{&mixin_host_, /*test_base=*/this,
+                                               embedded_test_server(),
+                                               GetLogInType(GetParam())};
 };
 
 IN_PROC_BROWSER_TEST_P(ChromeOSMetricsProviderTest, PrimaryUserType) {

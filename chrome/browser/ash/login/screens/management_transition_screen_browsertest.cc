@@ -50,15 +50,12 @@ const test::UIPath kAcceptButton = {kManagementTransitionId, "accept-button"};
 
 struct TransitionScreenTestParams {
   TransitionScreenTestParams(LoggedInUserMixin::LogInType pre_test_user_type,
-                             LoggedInUserMixin::LogInType test_user_type,
-                             bool use_managed_account = false)
+                             LoggedInUserMixin::LogInType test_user_type)
       : pre_test_user_type(pre_test_user_type),
-        test_user_type(test_user_type),
-        use_managed_account(use_managed_account) {}
+        test_user_type(test_user_type) {}
 
   LoggedInUserMixin::LogInType pre_test_user_type;
   LoggedInUserMixin::LogInType test_user_type;
-  bool use_managed_account;
 };
 
 // Param returns the original user type.
@@ -94,7 +91,7 @@ class ManagementTransitionScreenTest
 
     MixinBasedInProcessBrowserTest::SetUpOnMainThread();
     // Allow ARC by policy for managed users.
-    if (use_managed_account()) {
+    if (GetTargetUserType() == LoggedInUserMixin::LogInType::kManaged) {
       logged_in_user_mixin()
           .GetUserPolicyMixin()
           ->RequestPolicyUpdate()
@@ -103,14 +100,16 @@ class ManagementTransitionScreenTest
           ->set_value(true);
     }
 
-    // For this test class, the PRE tests just happen to always wait for active
-    // session immediately after logging in, while the main tests do some checks
-    // and then postpone WaitForActiveSession() until later. So wait for active
-    // session immediately if IsPreTest() and postpone the call to
-    // WaitForActiveSession() otherwise.
-    logged_in_user_mixin_.LogInUser(
-        false /*issue_any_scope_token*/,
-        content::IsPreTest() /*wait_for_active_session*/);
+    // For this test class, the PRE tests just set up necessary state,
+    // so they follow usual pattern and wait for user session to start.
+    // Main tests do some checks and then explicitly trigger
+    // WaitForActiveSession().
+    base::flat_set<ash::LoggedInUserMixin::LoginDetails> details(
+        {ash::LoggedInUserMixin::LoginDetails::kNoBrowserLaunch});
+    if (!content::IsPreTest()) {
+      details.insert(ash::LoggedInUserMixin::LoginDetails::kDontWaitForSession);
+    }
+    logged_in_user_mixin_.LogInUser(details);
   }
 
   LoggedInUserMixin::LogInType GetTargetUserType() const {
@@ -122,18 +121,6 @@ class ManagementTransitionScreenTest
     return GetTargetUserType() == LoggedInUserMixin::LogInType::kChild;
   }
 
-  bool use_managed_account() { return GetParam().use_managed_account; }
-
-  std::optional<AccountId> GetAccountId() {
-    if (use_managed_account()) {
-      return AccountId::FromUserEmailGaiaId(
-          FakeGaiaMixin::kEnterpriseUser1,
-          FakeGaiaMixin::kEnterpriseUser1GaiaId);
-    }
-
-    return std::nullopt;
-  }
-
  protected:
   LoggedInUserMixin& logged_in_user_mixin() { return logged_in_user_mixin_; }
 
@@ -141,12 +128,9 @@ class ManagementTransitionScreenTest
   DeviceStateMixin device_state_{
       &mixin_host_,
       DeviceStateMixin::State::OOBE_COMPLETED_PERMANENTLY_UNOWNED};
-  LoggedInUserMixin logged_in_user_mixin_{&mixin_host_,
-                                          GetTargetUserType(),
+  LoggedInUserMixin logged_in_user_mixin_{&mixin_host_, /*test_base=*/this,
                                           embedded_test_server(),
-                                          this,
-                                          false /*should_launch_browser*/,
-                                          GetAccountId()};
+                                          GetTargetUserType()};
 
   base::test::ScopedFeatureList feature_list_;
 };
@@ -229,9 +213,8 @@ INSTANTIATE_TEST_SUITE_P(
                                    LoggedInUserMixin::LogInType::kConsumer),
         TransitionScreenTestParams(LoggedInUserMixin::LogInType::kConsumer,
                                    LoggedInUserMixin::LogInType::kChild),
-        TransitionScreenTestParams(LoggedInUserMixin::LogInType::kConsumer,
-                                   LoggedInUserMixin::LogInType::kConsumer,
-                                   true /* use_managed_account */)));
+        TransitionScreenTestParams(LoggedInUserMixin::LogInType::kManaged,
+                                   LoggedInUserMixin::LogInType::kManaged)));
 
 }  // namespace
 }  // namespace ash

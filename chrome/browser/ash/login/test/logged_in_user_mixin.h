@@ -5,6 +5,7 @@
 #ifndef CHROME_BROWSER_ASH_LOGIN_TEST_LOGGED_IN_USER_MIXIN_H_
 #define CHROME_BROWSER_ASH_LOGIN_TEST_LOGGED_IN_USER_MIXIN_H_
 
+#include <initializer_list>
 #include <optional>
 
 #include "base/memory/raw_ptr.h"
@@ -67,34 +68,54 @@ class LoggedInUserMixin : public InProcessBrowserTestMixin {
     kManaged,
   };
 
+  // Flags for fine-tuning login flow in some edge cases.
+  enum class LoginDetails {
+    // Prevents browser launch after successful login.
+    kNoBrowserLaunch,
+    // FakeGaiaMixin will issue a special all-access
+    // token associated with the test refresh token. Only matters for child
+    // login.
+    kUseAnyScopeToken,
+    // Without this LoginManagerMixin will wait for the session
+    // state to change to ACTIVE after logging in. Use if some errors
+    // are expected during login, or if user expected to go through
+    // onboarding after login.
+    kDontWaitForSession,
+    // This can be used by policy-related test to set up
+    // situations when policy can not be fetched for the user.
+    kNoPolicyForUser,
+    // By default mixin would skip onboarding in OOBE even for
+    // new users. This can be used to prevent that and
+    // let test interact with respective UIs.
+    // Implies `kDontWaitForSession`.
+    kUserOnboarding,
+  };
+
   // `mixin_host` coordinates the other mixins. Since your browser test class
   // inherits from MixinBasedInProcessBrowserTest, there is an inherited
+  // `test_base`: just pass in a pointer to the browser test class.
   // mixin_host_ member that can be passed into this constructor.
-  // `type` specifies the desired user log in type, see `LogInType` above.
   // `embedded_test_server`: your browser test class should already inherit from
   // BrowserTestBase. That means there is an inherited embedded_test_server()
   // that can be passed into this constructor.
-  // `test_base`: just pass in a pointer to the browser test class.
-  // `should_launch_browser` determines whether a browser instance is launched
-  // after successful login.
+  // `type` specifies the desired user log in type, see `LogInType` above.
+  // `include_initial_user` if true, then the user already exists on the login
+  // screen. Otherwise, the user is newly added to the device and the OOBE Gaia
+  // screen will show on start-up.
   // `account_id` is the desired test account id for logging in. The default
   // test account already works for the majority of test cases, unless an
   // enterprise account is needed for setting up policy.
   // `auth_config` defines the factors set up for the user. The default user
   // will have the (gaia) password set to `ash::test:kGaiaPassword`. This
   // parameter allows tests to define more complex configurations if needed.
-  // `include_initial_user` if true, then the user already exists on the login
-  // screen. Otherwise, the user is newly added to the device and the OOBE Gaia
-  // screen will show on start-up.
   LoggedInUserMixin(
       InProcessBrowserTestMixinHost* mixin_host,
-      LogInType type,
-      net::EmbeddedTestServer* embedded_test_server,
       InProcessBrowserTest* test_base,
-      bool should_launch_browser = true,
+      net::EmbeddedTestServer* embedded_test_server,
+      LogInType type,
+      bool include_initial_user = true,
       std::optional<AccountId> account_id = std::nullopt,
-      std::optional<test::UserAuthConfig> auth_config = std::nullopt,
-      bool include_initial_user = true);
+      std::optional<test::UserAuthConfig> auth_config = std::nullopt);
   LoggedInUserMixin(const LoggedInUserMixin&) = delete;
   LoggedInUserMixin& operator=(const LoggedInUserMixin&) = delete;
   ~LoggedInUserMixin() override;
@@ -113,10 +134,8 @@ class LoggedInUserMixin : public InProcessBrowserTestMixin {
   // screens. Default value is true (skip). Note that `wait_for_active_session`
   // must be false if this value is false as there won't be no active session
   // immediately after login.
-  void LogInUser(bool issue_any_scope_token = false,
-                 bool wait_for_active_session = true,
-                 bool request_policy_update = true,
-                 bool skip_post_login_screens = true);
+  void LogInUser(std::initializer_list<LoginDetails> login_details = {});
+  void LogInUser(base::flat_set<LoginDetails> login_details);
 
   LoginManagerMixin* GetLoginManagerMixin() { return &login_manager_; }
 

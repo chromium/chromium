@@ -78,7 +78,7 @@ class OsUpdatesReporterBrowserTest
   }
 
   void SetUpOnMainThread() override {
-    login_manager_mixin_.set_should_launch_browser(true);
+    login_manager_mixin_.SetShouldLaunchBrowser(true);
     policy::DevicePolicyCrosBrowserTest::SetUpOnMainThread();
   }
 

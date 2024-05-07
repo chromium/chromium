@@ -31,11 +31,15 @@ void SigninProfileExtensionsPolicyTestBase::SetUpCommandLine(
 }
 
 void SigninProfileExtensionsPolicyTestBase::SetUpOnMainThread() {
-  DevicePolicyCrosBrowserTest::SetUpOnMainThread();
-
+  // Mixins might configure and start test server
   extensions::policy_test_utils::SetUpEmbeddedTestServer(
       embedded_test_server());
-  ASSERT_TRUE(embedded_test_server()->Start());
+
+  DevicePolicyCrosBrowserTest::SetUpOnMainThread();
+
+  if (!embedded_test_server()->Started()) {
+    ASSERT_TRUE(embedded_test_server()->Start());
+  }
 }
 
 void SigninProfileExtensionsPolicyTestBase::AddExtensionForForceInstallation(

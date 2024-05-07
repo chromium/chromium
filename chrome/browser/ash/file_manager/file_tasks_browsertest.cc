@@ -984,8 +984,8 @@ class TestAccountBrowserTest : public MixinBasedInProcessBrowserTest {
     std::optional<AccountId> account_id = AccountIdFor(test_account_type);
 
     logged_in_user_mixin_ = std::make_unique<ash::LoggedInUserMixin>(
-        &mixin_host_, log_in_type, embedded_test_server(), this,
-        /*should_launch_browser=*/true, account_id);
+        &mixin_host_, /*test_base=*/this, embedded_test_server(), log_in_type,
+        /*include_initial_user=*/true, account_id);
   }
 
   // Launch Files app and wait for it to open.

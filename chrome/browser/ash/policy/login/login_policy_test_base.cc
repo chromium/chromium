@@ -45,7 +45,7 @@ constexpr char kAccountGaiaId[] = "user-example-com-test-gaia-id";
 LoginPolicyTestBase::LoginPolicyTestBase()
     : account_id_(AccountId::FromUserEmailGaiaId(kAccountId, kAccountGaiaId)) {
   set_open_about_blank_on_browser_launch(false);
-  login_manager_.set_should_launch_browser(true);
+  login_manager_.SetShouldLaunchBrowser(true);
 }
 
 LoginPolicyTestBase::~LoginPolicyTestBase() = default;

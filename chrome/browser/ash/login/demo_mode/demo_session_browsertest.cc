@@ -271,7 +271,7 @@ class DemoSessionLoginTest : public LoginManagerTest,
                              public chromeos::FakePowerManagerClient::Observer {
  public:
   DemoSessionLoginTest() {
-    login_manager_mixin_.set_should_launch_browser(true);
+    login_manager_mixin_.SetShouldLaunchBrowser(true);
     BrowserList::AddObserver(this);
   }
 

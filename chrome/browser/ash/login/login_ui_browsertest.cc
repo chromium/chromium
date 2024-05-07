@@ -421,16 +421,17 @@ class UserManagementDisclosureChildTest
   ~UserManagementDisclosureChildTest() override = default;
 
  protected:
-  LoggedInUserMixin logged_in_user_mixin_{
-      &mixin_host_, LoggedInUserMixin::LogInType::kChild,
-      embedded_test_server(), this, false /*should_launch_browser*/};
+  LoggedInUserMixin logged_in_user_mixin_{&mixin_host_, /*test_base=*/this,
+                                          embedded_test_server(),
+                                          LoggedInUserMixin::LogInType::kChild};
 };
 
 // Check if the user management disclosure is hidden on the lock screen after
 // having logged a child account into a session and having locked the screen.
 IN_PROC_BROWSER_TEST_F(UserManagementDisclosureChildTest,
                        PRE_EnterpriseIconVisibleChildUser) {
-  logged_in_user_mixin_.LogInUser();
+  logged_in_user_mixin_.LogInUser(
+      {ash::LoggedInUserMixin::LoginDetails::kNoBrowserLaunch});
   ScreenLockerTester screen_locker_tester;
   screen_locker_tester.Lock();
   EXPECT_FALSE(LoginScreenTestApi::IsManagedIconShown(

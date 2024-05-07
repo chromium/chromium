@@ -9,6 +9,7 @@
 
 #include "ash/components/arc/arc_features.h"
 #include "ash/components/arc/arc_prefs.h"
+#include "base/containers/flat_set.h"
 #include "base/test/scoped_feature_list.h"
 #include "base/values.h"
 #include "chrome/browser/ash/login/test/logged_in_user_mixin.h"
@@ -66,9 +67,14 @@ class UserCloudPolicyManagerTest
   // Sets up fake GAIA for specified user login, and requests login for the user
   // (using LoggedInUserMixin).
   void StartUserLogIn(bool wait_for_active_session) {
-    logged_in_user_mixin_.LogInUser(true /*issue_any_scope_token*/,
-                                    wait_for_active_session,
-                                    /*request_policy_update=*/false);
+    base::flat_set<ash::LoggedInUserMixin::LoginDetails> details{
+        ash::LoggedInUserMixin::LoginDetails::kUseAnyScopeToken,
+        ash::LoggedInUserMixin::LoginDetails::kNoPolicyForUser};
+
+    if (!wait_for_active_session) {
+      details.insert(ash::LoggedInUserMixin::LoginDetails::kDontWaitForSession);
+    }
+    logged_in_user_mixin_.LogInUser(details);
   }
 
  protected:
@@ -83,13 +89,12 @@ class UserCloudPolicyManagerTest
     }
   }
 
-  ash::LoggedInUserMixin logged_in_user_mixin_{
-      &mixin_host_, std::get<1>(GetParam()) /*type*/, embedded_test_server(),
-      this, true /*should_launch_browser*/, GetTestAccountId(),
-      /*auth_config=*/std::nullopt,
-      // Initializing the login manager with no user will cause GAIA screen to
-      // be shown on start-up.
-      false /*include_initial_user*/};
+  ash::LoggedInUserMixin logged_in_user_mixin_{&mixin_host_,
+                                               /*test_base=*/this,
+                                               embedded_test_server(),
+                                               std::get<1>(GetParam()) /*type*/,
+                                               /*include_initial_user=*/false,
+                                               GetTestAccountId()};
 
  private:
   base::test::ScopedFeatureList scoped_feature_list_;

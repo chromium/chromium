@@ -1877,8 +1877,8 @@ class AccessibilityManagerUserTypeTest
       guest_session_ = std::make_unique<GuestSessionMixin>(&mixin_host_);
     } else if (GetParam() == user_manager::UserType::kChild) {
       logged_in_user_mixin_ = std::make_unique<LoggedInUserMixin>(
-          &mixin_host_, LoggedInUserMixin::LogInType::kChild,
-          embedded_test_server(), this);
+          &mixin_host_, /*test_base=*/this, embedded_test_server(),
+          LoggedInUserMixin::LogInType::kChild);
     }
   }
 

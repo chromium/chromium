@@ -49,13 +49,7 @@ class FamilyUserDeviceMetricsTest
   raw_ptr<FakeChromeUserManager, DanglingUntriaged> user_manager_ = nullptr;
 
   LoggedInUserMixin logged_in_user_mixin_{
-      &mixin_host_,
-      GetLogInType(),
-      embedded_test_server(),
-      this,
-      /*should_launch_browser=*/false,
-      /*account_id=*/std::nullopt,
-      /*auth_config=*/std::nullopt,
+      &mixin_host_, /*test_base=*/this, embedded_test_server(), GetLogInType(),
       /*include_initial_user=*/IsUserExisting()};
 
   // MixinBasedInProcessBrowserTest:
@@ -96,7 +90,8 @@ IN_PROC_BROWSER_TEST_P(FamilyUserDeviceMetricsTest, MAYBE_IsDeviceOwner) {
 
   // Set the device owner to the logged in user.
   user_manager_->SetOwnerId(logged_in_user_mixin_.GetAccountId());
-  logged_in_user_mixin_.LogInUser();
+  logged_in_user_mixin_.LogInUser(
+      {ash::LoggedInUserMixin::LoginDetails::kNoBrowserLaunch});
 
   histogram_tester.ExpectUniqueSample(
       FamilyUserDeviceMetrics::GetDeviceOwnerHistogramNameForTest(),
@@ -111,7 +106,8 @@ IN_PROC_BROWSER_TEST_P(FamilyUserDeviceMetricsTest, MAYBE_IsNotDeviceOwner) {
 
   // Set the device owner to an arbitrary account that's not logged in.
   user_manager_->SetOwnerId(kDefaultOwnerAccountId);
-  logged_in_user_mixin_.LogInUser();
+  logged_in_user_mixin_.LogInUser(
+      {ash::LoggedInUserMixin::LoginDetails::kNoBrowserLaunch});
 
   histogram_tester.ExpectUniqueSample(
       FamilyUserDeviceMetrics::GetDeviceOwnerHistogramNameForTest(),
@@ -121,7 +117,8 @@ IN_PROC_BROWSER_TEST_P(FamilyUserDeviceMetricsTest, MAYBE_IsNotDeviceOwner) {
 IN_PROC_BROWSER_TEST_P(FamilyUserDeviceMetricsTest, SingleUserAdded) {
   base::HistogramTester histogram_tester;
 
-  logged_in_user_mixin_.LogInUser();
+  logged_in_user_mixin_.LogInUser(
+      {ash::LoggedInUserMixin::LoginDetails::kNoBrowserLaunch});
 
   if (IsUserExisting()) {
     // This user has signed into this device before, so they are not new.
@@ -145,7 +142,8 @@ IN_PROC_BROWSER_TEST_P(FamilyUserDeviceMetricsTest, SingleUserCount) {
   }
   base::HistogramTester histogram_tester;
 
-  logged_in_user_mixin_.LogInUser();
+  logged_in_user_mixin_.LogInUser(
+      {ash::LoggedInUserMixin::LoginDetails::kNoBrowserLaunch});
 
   // Current user + extra user from setup.
   const int gaia_users_count = 2;

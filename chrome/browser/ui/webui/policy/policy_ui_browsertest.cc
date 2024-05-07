@@ -305,8 +305,8 @@ class PolicyUIStatusTest : public MixinBasedInProcessBrowserTest {
       &mixin_host_,
       ash::DeviceStateMixin::State::OOBE_COMPLETED_CLOUD_ENROLLED};
   ash::LoggedInUserMixin logged_in_user_mixin_{
-      &mixin_host_, ash::LoggedInUserMixin::LogInType::kManaged,
-      embedded_test_server(), this};
+      &mixin_host_, /*test_base=*/this, embedded_test_server(),
+      ash::LoggedInUserMixin::LogInType::kManaged};
 };
 
 bool PolicyUIStatusTest::ReadStatusFor(

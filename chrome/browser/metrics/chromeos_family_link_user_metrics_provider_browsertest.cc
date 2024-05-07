@@ -76,9 +76,9 @@ class ChromeOSFamilyLinkUserMetricsProviderTest
       public testing::WithParamInterface<
           ChromeOSFamilyLinkUserMetricsProvider::LogSegment> {
  protected:
-  ash::LoggedInUserMixin logged_in_user_mixin_{
-      &mixin_host_, GetLogInType(GetParam()), embedded_test_server(),
-      /*test_base=*/this};
+  ash::LoggedInUserMixin logged_in_user_mixin_{&mixin_host_, /*test_base=*/this,
+                                               embedded_test_server(),
+                                               GetLogInType(GetParam())};
 };
 
 IN_PROC_BROWSER_TEST_P(ChromeOSFamilyLinkUserMetricsProviderTest,
@@ -103,7 +103,8 @@ IN_PROC_BROWSER_TEST_P(ChromeOSFamilyLinkUserMetricsProviderTest,
   logged_in_user_mixin_.GetFakeGaiaMixin()->set_initialize_child_id_token(
       log_segment ==
       ChromeOSFamilyLinkUserMetricsProvider::LogSegment::kUnderConsentAge);
-  logged_in_user_mixin_.LogInUser(/*issue_any_scope_token=*/true);
+  logged_in_user_mixin_.LogInUser(
+      {ash::LoggedInUserMixin::LoginDetails::kUseAnyScopeToken});
 
   run_loop.Run();
 

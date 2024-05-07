@@ -312,7 +312,7 @@ class LoggedInUserMixin : public InProcessBrowserTestMixin {
         test_base_(test_base),
         user_context_(LoginManagerMixin::CreateDefaultUserContext(user)) {
     // Tell LoginManagerMixin to launch the browser when the user is logged in.
-    login_manager_.set_should_launch_browser(true);
+    login_manager_.SetShouldLaunchBrowser(true);
   }
 
   ~LoggedInUserMixin() override = default;

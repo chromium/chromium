@@ -332,8 +332,8 @@ class EolNotificationTest : public MixinBasedInProcessBrowserTest,
   NotificationDisplayServiceMixin notifications_mixin_{&mixin_host_};
 
   ash::LoggedInUserMixin logged_in_user_mixin_{
-      &mixin_host_, LoggedInUserMixin::LogInType::kConsumer,
-      embedded_test_server(), this};
+      &mixin_host_, /*test_base=*/this, embedded_test_server(),
+      LoggedInUserMixin::LogInType::kConsumer};
 
  private:
   base::test::ScopedFeatureList scoped_feature_list_;
@@ -366,8 +366,8 @@ class ManagedDeviceEolNotificationTest
       ash::DeviceStateMixin::State::OOBE_COMPLETED_CLOUD_ENROLLED};
 
   ash::LoggedInUserMixin logged_in_user_mixin_{
-      &mixin_host_, LoggedInUserMixin::LogInType::kManaged,
-      embedded_test_server(), this};
+      &mixin_host_, /*test_base=*/this, embedded_test_server(),
+      LoggedInUserMixin::LogInType::kManaged};
 
  private:
   base::test::ScopedFeatureList scoped_feature_list_;
@@ -397,8 +397,8 @@ class ChildUserEolNotificationTest
   NotificationDisplayServiceMixin notifications_mixin_{&mixin_host_};
 
   ash::LoggedInUserMixin logged_in_user_mixin_{
-      &mixin_host_, LoggedInUserMixin::LogInType::kChild,
-      embedded_test_server(), this};
+      &mixin_host_, /*test_base=*/this, embedded_test_server(),
+      LoggedInUserMixin::LogInType::kChild};
 
  private:
   base::test::ScopedFeatureList scoped_feature_list_;
@@ -426,8 +426,8 @@ class SuppressedNotificationTest : public MixinBasedInProcessBrowserTest,
   EolStatusMixin eol_status_mixin_{&mixin_host_};
   NotificationDisplayServiceMixin notifications_mixin_{&mixin_host_};
   ash::LoggedInUserMixin logged_in_user_mixin_{
-      &mixin_host_, LoggedInUserMixin::LogInType::kConsumer,
-      embedded_test_server(), this};
+      &mixin_host_, /*test_base=*/this, embedded_test_server(),
+      LoggedInUserMixin::LogInType::kConsumer};
 
  private:
   base::test::ScopedFeatureList scoped_feature_list_;

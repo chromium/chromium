@@ -1000,7 +1000,7 @@ class PublicSessionOobeTest : public MixinBasedInProcessBrowserTest,
         observer_(std::make_unique<NativeWindowVisibilityObserver>()) {
     // Prevents Chrome from starting to quit right after login display is
     // finalized.
-    login_manager_.set_should_launch_browser(true);
+    login_manager_.SetShouldLaunchBrowser(true);
   }
 
   ~PublicSessionOobeTest() override = default;
@@ -1119,7 +1119,7 @@ class EphemeralUserOobeTest : public OobeBaseTest,
                               public ::testing::WithParamInterface<
                                   std::tuple<bool, bool, bool, ArcState>> {
  public:
-  EphemeralUserOobeTest() { login_manager_.set_should_launch_browser(true); }
+  EphemeralUserOobeTest() { login_manager_.SetShouldLaunchBrowser(true); }
   ~EphemeralUserOobeTest() override = default;
 
   // OobeBaseTest:

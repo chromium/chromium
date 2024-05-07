@@ -88,8 +88,8 @@ class SigninDataCollectorBrowserTestAsh
 
  protected:
   ash::LoggedInUserMixin logged_in_user_mixin_{
-      &mixin_host_, ash::LoggedInUserMixin::LogInType::kManaged,
-      embedded_test_server(), this};
+      &mixin_host_, /*test_base=*/this, embedded_test_server(),
+      ash::LoggedInUserMixin::LogInType::kManaged};
 
   base::ScopedTempDir temp_dir_;
   scoped_refptr<base::SequencedTaskRunner> task_runner_for_redaction_tool_;

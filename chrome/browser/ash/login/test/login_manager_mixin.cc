@@ -206,6 +206,27 @@ void LoginManagerMixin::SetUpOnMainThread() {
       should_launch_browser_);
   session_manager_test_api.SetShouldObtainTokenHandleInTests(
       should_obtain_handles_);
+  set_up_on_main_thread_ = true;
+}
+
+void LoginManagerMixin::SetShouldLaunchBrowser(bool value) {
+  should_launch_browser_ = value;
+  if (set_up_on_main_thread_) {
+    test::UserSessionManagerTestApi session_manager_test_api(
+        UserSessionManager::GetInstance());
+    session_manager_test_api.SetShouldLaunchBrowserInTests(
+        should_launch_browser_);
+  }
+}
+
+void LoginManagerMixin::SetShouldObtainHandle(bool value) {
+  should_obtain_handles_ = value;
+  if (set_up_on_main_thread_) {
+    test::UserSessionManagerTestApi session_manager_test_api(
+        UserSessionManager::GetInstance());
+    session_manager_test_api.SetShouldObtainTokenHandleInTests(
+        should_obtain_handles_);
+  }
 }
 
 void LoginManagerMixin::TearDownOnMainThread() {

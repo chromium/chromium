@@ -389,8 +389,8 @@ class UserTypeByDeviceTypeMetricsProviderTest
 
  private:
   ash::LoggedInUserMixin logged_in_user_mixin_{
-      &mixin_host_, ash::LoggedInUserMixin::LogInType::kManaged,
-      embedded_test_server(), this};
+      &mixin_host_, /*test_base=*/this, embedded_test_server(),
+      ash::LoggedInUserMixin::LogInType::kManaged};
   policy::UserPolicyBuilder device_local_account_policy_;
 
   const AccountId account_id_1_ =

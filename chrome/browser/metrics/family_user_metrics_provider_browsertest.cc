@@ -89,8 +89,8 @@ class FamilyUserMetricsProviderTest
   }
 
   ash::LoggedInUserMixin logged_in_user_mixin_{
-      &mixin_host_, GetPrimaryLogInType(GetFamilyUserLogSegment()),
-      embedded_test_server(), this};
+      &mixin_host_, /*test_base=*/this, embedded_test_server(),
+      GetPrimaryLogInType(GetFamilyUserLogSegment())};
 };
 
 IN_PROC_BROWSER_TEST_P(FamilyUserMetricsProviderTest, UserCategory) {
@@ -210,8 +210,8 @@ class FamilyUserMetricsProviderEphemeralUserTest
       ash::DeviceStateMixin::State::OOBE_COMPLETED_CLOUD_ENROLLED};
 
   ash::LoggedInUserMixin logged_in_user_mixin_{
-      &mixin_host_, ash::LoggedInUserMixin::LogInType::kConsumer,
-      embedded_test_server(), this};
+      &mixin_host_, /*test_base=*/this, embedded_test_server(),
+      ash::LoggedInUserMixin::LogInType::kConsumer};
 
   ash::ScopedTestingCrosSettings scoped_testing_cros_settings_;
 };
