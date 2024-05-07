@@ -12848,9 +12848,6 @@ This can include information about installed software, files, your browser, and 
         <message name="IDS_CHROME_SIGNOUT_CONFIRMATION_PROMPT_TITLE"  desc="This is the title of an error message dialog that appears when the user opens the Chrome Profile Menu and chooses 'Sign out of Chrome'. The error message appears when the user has saved some data (like a password or payment method) to Chrome, but Chrome wasn't able to save the data to the user's Google Account due to a sign-in error; but, the data has been saved locally to Chrome. This title is before the 'Chrome needs to verify it’s you before some data can be saved in your Google Account and used on all your devices. If you sign out, this data will stay on this device.' string. The tone should be cautionary.">
           Some data isn’t saved in your account yet
         </message>
-        <message name="IDS_CHROME_SIGNOUT_CONFIRMATION_PROMPT_VERIFY_BUTTON" translateable="false"  desc="Text displayed the default button of the Chrome signout confirmation prompt. The user will then be asked to reauthenticate.">
-          Verify it’s you
-        </message>
         <message name="IDS_CHROME_SIGNOUT_CONFIRMATION_PROMPT_SIGNOUT_BUTTON" desc="This string is found on a button that lets the user sign out of Chrome when the user taps it. It is on an error message dialog that appears when the user opens the Chrome Profile Menu and chooses 'Sign out of Chrome'. The error message appears when the user has saved some data (like a password or payment method) to Chrome, but Chrome wasn't able to save the data to the user's Google Account due to a sign-in error; but, the data has been saved locally to Chrome. This text is a verb and is short for the longer phrase 'Sign out of Chrome anyway.'">
           Sign out anyway
         </message>

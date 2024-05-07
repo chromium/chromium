@@ -40,7 +40,7 @@ CreateChromeSignoutConfirmationPromptDialogModel(
       break;
     case ChromeSignoutConfirmationPromptVariant::kUnsyncedDataWithReauthButton:
       body_string_id = IDS_CHROME_SIGNOUT_CONFIRMATION_PROMPT_VERIFY_BODY;
-      ok_string_id = IDS_CHROME_SIGNOUT_CONFIRMATION_PROMPT_VERIFY_BUTTON;
+      ok_string_id = IDS_PROFILES_VERIFY_ACCOUNT_BUTTON;
       ok_choice = ChromeSignoutConfirmationChoice::kReauth;
       break;
   }

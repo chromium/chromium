@@ -705,10 +705,8 @@ void ProfileMenuView::BuildSyncInfo() {
       // Sign-in pending state.
       description =
           l10n_util::GetStringUTF16(IDS_SIGNIN_PAUSED_USER_MENU_VERIFY_MESSAGE);
-      // TODO(b/331902320): Create a new string id for the button text instead
-      // of reusing the one from sync.
-      button_text = l10n_util::GetStringUTF16(
-          IDS_SYNC_ERROR_USER_MENU_RECOVERABILITY_BUTTON);
+      button_text =
+          l10n_util::GetStringUTF16(IDS_PROFILES_VERIFY_ACCOUNT_BUTTON);
     } else {
       // Signed-in not-syncing state.
       description = l10n_util::GetStringUTF16(
