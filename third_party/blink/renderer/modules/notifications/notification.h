@@ -46,7 +46,6 @@
 #include "third_party/blink/renderer/platform/heap/garbage_collected.h"
 #include "third_party/blink/renderer/platform/mojo/heap_mojo_receiver.h"
 #include "third_party/blink/renderer/platform/timer.h"
-#include "third_party/blink/renderer/platform/weborigin/kurl.h"
 
 namespace blink {
 

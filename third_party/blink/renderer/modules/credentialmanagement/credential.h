@@ -8,12 +8,12 @@
 #include "third_party/blink/renderer/modules/modules_export.h"
 #include "third_party/blink/renderer/platform/bindings/script_wrappable.h"
 #include "third_party/blink/renderer/platform/heap/garbage_collected.h"
-#include "third_party/blink/renderer/platform/weborigin/kurl.h"
 #include "third_party/blink/renderer/platform/wtf/text/wtf_string.h"
 
 namespace blink {
 
 class ExceptionState;
+class KURL;
 
 class MODULES_EXPORT Credential : public ScriptWrappable {
   DEFINE_WRAPPERTYPEINFO();
