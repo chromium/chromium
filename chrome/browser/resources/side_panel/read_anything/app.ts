@@ -1073,6 +1073,14 @@ export class ReadAnythingElement extends ReadAnythingElementBase {
       this.previewVoicePlaying = null;
     };
 
+    // TODO(b/40927698): There should probably be more sophisticated error
+    // handling for voice previews, but for now, simply setting the preview
+    // voice to null should be sufficient to reset state if an error is
+    // encountered during a preview.
+    utterance.onerror = () => {
+      this.previewVoicePlaying = null;
+    };
+
     this.synth.speak(utterance);
   }
 
