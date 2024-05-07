@@ -11,7 +11,7 @@ import {CustomizeChromeApiProxy} from 'chrome://customize-chrome-side-panel.top-
 import type {Descriptors, InspirationGroup, ResultDescriptors, WallpaperSearchClientRemote, WallpaperSearchHandlerInterface} from 'chrome://customize-chrome-side-panel.top-chrome/wallpaper_search.mojom-webui.js';
 import {DescriptorDName, UserFeedback, WallpaperSearchClientCallbackRouter, WallpaperSearchHandlerRemote, WallpaperSearchStatus} from 'chrome://customize-chrome-side-panel.top-chrome/wallpaper_search.mojom-webui.js';
 import type {CustomizeChromeCombobox} from 'chrome://customize-chrome-side-panel.top-chrome/wallpaper_search/combobox/customize_chrome_combobox.js';
-import type {WallpaperSearchElement} from 'chrome://customize-chrome-side-panel.top-chrome/wallpaper_search/wallpaper_search.js';
+import type {WallpaperSearchElement, WallpaperSearchResponse} from 'chrome://customize-chrome-side-panel.top-chrome/wallpaper_search/wallpaper_search.js';
 import {DESCRIPTOR_D_VALUE} from 'chrome://customize-chrome-side-panel.top-chrome/wallpaper_search/wallpaper_search.js';
 import {WallpaperSearchProxy} from 'chrome://customize-chrome-side-panel.top-chrome/wallpaper_search/wallpaper_search_proxy.js';
 import {WindowProxy} from 'chrome://customize-chrome-side-panel.top-chrome/window_proxy.js';
@@ -25,7 +25,6 @@ import type {IronCollapseElement} from 'chrome://resources/polymer/v3_0/iron-col
 import {assertDeepEquals, assertEquals, assertFalse, assertGE, assertNotEquals, assertTrue} from 'chrome://webui-test/chai_assert.js';
 import type {MetricsTracker} from 'chrome://webui-test/metrics_test_support.js';
 import {fakeMetricsPrivate} from 'chrome://webui-test/metrics_test_support.js';
-import {flushTasks, waitAfterNextRender} from 'chrome://webui-test/polymer_test_util.js';
 import type {TestMock} from 'chrome://webui-test/test_mock.js';
 import {eventToPromise, isVisible, microtasksFinished, whenCheck} from 'chrome://webui-test/test_util.js';
 
@@ -122,7 +121,7 @@ suite('WallpaperSearchTest', () => {
               {wallpaperSearchInspirationCardEnabled: false});
 
           createWallpaperSearchElement();
-          await flushTasks();
+          await microtasksFinished();
 
           assertEquals(0, handler.getCallCount('getInspirations'));
           assertFalse(!!wallpaperSearchElement.shadowRoot!.querySelector(
@@ -138,7 +137,7 @@ suite('WallpaperSearchTest', () => {
 
     test('descriptor menus populate correctly', async () => {
       createWallpaperSearchElementWithDescriptors();
-      await flushTasks();
+      await microtasksFinished();
 
       assertEquals(
           1,
@@ -164,7 +163,7 @@ suite('WallpaperSearchTest', () => {
 
     test('check marks one item in descriptorMenuD at a time', async () => {
       createWallpaperSearchElementWithDescriptors();
-      await flushTasks();
+      await microtasksFinished();
 
       assertFalse(
           !!$$(wallpaperSearchElement, '#descriptorMenuD button [checked]'));
@@ -203,7 +202,7 @@ suite('WallpaperSearchTest', () => {
 
     test('unselects colors', async () => {
       createWallpaperSearchElementWithDescriptors();
-      await flushTasks();
+      await microtasksFinished();
 
       assertFalse(
           !!$$(wallpaperSearchElement, '#descriptorMenuD button [checked]'));
@@ -227,26 +226,26 @@ suite('WallpaperSearchTest', () => {
           'getWallpaperSearchResults',
           Promise.resolve({status: WallpaperSearchStatus.kOk, results: []}));
       wallpaperSearchElement.$.submitButton.click();
-      await flushTasks();
+      await microtasksFinished();
       assertEquals(1, handler.getCallCount('getWallpaperSearchResults'));
       assertEquals(null, handler.getArgs('getWallpaperSearchResults')[0].color);
     });
 
     test('unselects hue', async () => {
       createWallpaperSearchElementWithDescriptors();
-      await flushTasks();
+      await microtasksFinished();
       assertTrue(wallpaperSearchElement.$.deleteSelectedHueButton.hidden);
 
       // Select a hue and verify delete button becomes visible.
       wallpaperSearchElement.$.hueSlider.selectedHue = 10;
       wallpaperSearchElement.$.hueSlider.dispatchEvent(
           new Event('selected-hue-changed'));
-      await flushTasks();
+      await microtasksFinished();
       assertFalse(wallpaperSearchElement.$.deleteSelectedHueButton.hidden);
 
       // Click on delete button.
       wallpaperSearchElement.$.deleteSelectedHueButton.click();
-      await flushTasks();
+      await microtasksFinished();
 
       // Verify there are no checked colors.
       assertEquals(
@@ -260,7 +259,7 @@ suite('WallpaperSearchTest', () => {
           'getWallpaperSearchResults',
           Promise.resolve({status: WallpaperSearchStatus.kOk, results: []}));
       wallpaperSearchElement.$.submitButton.click();
-      await flushTasks();
+      await microtasksFinished();
       assertEquals(1, handler.getCallCount('getWallpaperSearchResults'));
       assertEquals(null, handler.getArgs('getWallpaperSearchResults')[0].color);
     });
@@ -269,7 +268,7 @@ suite('WallpaperSearchTest', () => {
   suite('Search', () => {
     test('clicking search invokes backend', async () => {
       createWallpaperSearchElementWithDescriptors();
-      await flushTasks();
+      await microtasksFinished();
 
       handler.setResultFor(
           'getWallpaperSearchResults',
@@ -289,7 +288,7 @@ suite('WallpaperSearchTest', () => {
         descriptorB: [{label: 'foo', imagePath: 'bar.png'}],
         descriptorC: ['baz'],
       });
-      await flushTasks();
+      await microtasksFinished();
 
       $$<CustomizeChromeCombobox>(
           wallpaperSearchElement, '#descriptorComboboxA')!.value = 'bar';
@@ -318,7 +317,7 @@ suite('WallpaperSearchTest', () => {
           Promise.resolve(
               {status: WallpaperSearchStatus.kOk, results: ['123', '456']}));
       createWallpaperSearchElementWithDescriptors();
-      await flushTasks();
+      await microtasksFinished();
 
       $$<HTMLElement>(
           wallpaperSearchElement, '#descriptorMenuD button')!.click();
@@ -327,7 +326,7 @@ suite('WallpaperSearchTest', () => {
       wallpaperSearchElement.$.hueSlider.dispatchEvent(
           new Event('selected-hue-changed'));
       wallpaperSearchElement.$.submitButton.click();
-      await flushTasks();
+      await microtasksFinished();
 
       assertEquals(1, handler.getCallCount('getWallpaperSearchResults'));
       assertDeepEquals(
@@ -341,12 +340,12 @@ suite('WallpaperSearchTest', () => {
             results: ['123', '456'],
           }));
           createWallpaperSearchElementWithDescriptors();
-          await flushTasks();
+          await microtasksFinished();
           assertEquals(
               undefined, wallpaperSearchElement.$.descriptorComboboxA.value);
 
           wallpaperSearchElement.$.submitButton.click();
-          await flushTasks();
+          await microtasksFinished();
           assertEquals(1, handler.getCallCount('getWallpaperSearchResults'));
           assertNotEquals(
               undefined, wallpaperSearchElement.$.descriptorComboboxA.value);
@@ -364,11 +363,11 @@ suite('WallpaperSearchTest', () => {
         descriptorB: [{label: 'foo', imagePath: 'bar.png'}],
         descriptorC: ['baz'],
       });
-      await flushTasks();
+      await microtasksFinished();
 
       $$<CustomizeChromeCombobox>(
           wallpaperSearchElement, '#descriptorComboboxA')!.value = 'bar';
-      await flushTasks();
+      await microtasksFinished();
       wallpaperSearchElement.$.submitButton.click();
 
       assertEquals(1, handler.getCallCount('getWallpaperSearchResults'));
@@ -385,10 +384,10 @@ suite('WallpaperSearchTest', () => {
           'getWallpaperSearchResults',
           Promise.resolve({status: WallpaperSearchStatus.kOk, results: []}));
       createWallpaperSearchElementWithDescriptors();
-      await flushTasks();
+      await microtasksFinished();
 
       wallpaperSearchElement.$.submitButton.click();
-      await waitAfterNextRender(wallpaperSearchElement);
+      await microtasksFinished();
 
       assertTrue(!wallpaperSearchElement.shadowRoot!.querySelector('.tile'));
     });
@@ -402,10 +401,10 @@ suite('WallpaperSearchTest', () => {
         ],
       }));
       createWallpaperSearchElementWithDescriptors();
-      await flushTasks();
+      await microtasksFinished();
 
       wallpaperSearchElement.$.submitButton.click();
-      await waitAfterNextRender(wallpaperSearchElement);
+      await microtasksFinished();
 
       // There should always be 6 tiles total. Since there are 2 images in the
       // response, there should be 2 result tiles and the remaining 4 should be
@@ -433,12 +432,13 @@ suite('WallpaperSearchTest', () => {
         results: [{image: '123', id: {high: 10, low: 1}}],
       }));
       createWallpaperSearchElementWithDescriptors();
-      await flushTasks();
+      await microtasksFinished();
 
       assertFalse(isVisible(wallpaperSearchElement.$.loading));
       wallpaperSearchElement.$.submitButton.click();
+      await wallpaperSearchElement.updateComplete;
       assertTrue(isVisible(wallpaperSearchElement.$.loading));
-      await waitAfterNextRender(wallpaperSearchElement);
+      await wallpaperSearchElement.updateComplete;
       assertFalse(isVisible(wallpaperSearchElement.$.loading));
 
       assertGE(handler.getCallCount('setResultRenderTime'), 1);
@@ -446,10 +446,10 @@ suite('WallpaperSearchTest', () => {
           [[{high: 10, low: 1}], 321],
           handler.getArgs('setResultRenderTime').at(-1));
 
-      const result =
-          $$(wallpaperSearchElement, '#wallpaperSearch .tile.result');
+      const result = $$<HTMLElement>(
+          wallpaperSearchElement, '#wallpaperSearch .tile.result');
       assertTrue(!!result);
-      (result as HTMLElement).click();
+      result.click();
       assertEquals(
           1, handler.getCallCount('setBackgroundToWallpaperSearchResult'));
       assertEquals(
@@ -462,16 +462,17 @@ suite('WallpaperSearchTest', () => {
     });
 
     test('results reset between search results', async () => {
-      const exampleResults = {
-        results: [{image: '123', id: {high: 10, low: 1}}],
+      const exampleResults: WallpaperSearchResponse = {
+        status: WallpaperSearchStatus.kOk,
+        results: [{image: '123', id: {high: 10n, low: 1n}, descriptors: null}],
       };
       handler.setResultFor(
           'getWallpaperSearchResults', Promise.resolve(exampleResults));
       createWallpaperSearchElementWithDescriptors();
-      await flushTasks();
+      await microtasksFinished();
 
       wallpaperSearchElement.$.submitButton.click();
-      await waitAfterNextRender(wallpaperSearchElement);
+      await microtasksFinished();
 
       // Check that there are tiles.
       let result = $$(wallpaperSearchElement, '#wallpaperSearch .tile.result');
@@ -486,13 +487,13 @@ suite('WallpaperSearchTest', () => {
       // Check that the previous tiles disappear after click until promise is
       // resolved, including the empty tiles.
       wallpaperSearchElement.$.submitButton.click();
-      await waitAfterNextRender(wallpaperSearchElement);
+      await microtasksFinished();
       result =
           $$(wallpaperSearchElement,
              '#wallpaperSearch .tile.result, #wallpaperSearch .tile.empty');
       assertFalse(!!result);
       newResultsResolver.resolve(exampleResults);
-      await waitAfterNextRender(wallpaperSearchElement);
+      await microtasksFinished();
       result =
           $$(wallpaperSearchElement,
              '#wallpaperSearch .tile.result, #wallpaperSearch .tile.empty');
@@ -505,14 +506,14 @@ suite('WallpaperSearchTest', () => {
         results: [{image: '123', id: {high: 10, low: 1}}],
       }));
       createWallpaperSearchElementWithDescriptors();
-      await flushTasks();
+      await microtasksFinished();
 
       // Force a width on the element for more consistent testing.
       wallpaperSearchElement.style.display = 'block';
       wallpaperSearchElement.style.width = '300px';
 
       wallpaperSearchElement.$.submitButton.click();
-      await waitAfterNextRender(wallpaperSearchElement);
+      await microtasksFinished();
 
       // Assert that the svg takes the full width of the content area.
       const svg =
@@ -557,17 +558,17 @@ suite('WallpaperSearchTest', () => {
         ],
       }));
       createWallpaperSearchElementWithDescriptors();
-      await flushTasks();
+      await microtasksFinished();
 
       // Set a default theme.
       let theme = createTheme();
       callbackRouterRemote.setTheme(theme);
       await callbackRouterRemote.$.flushForTesting();
-      await waitAfterNextRender(wallpaperSearchElement);
+      await microtasksFinished();
 
       // Populate results.
       wallpaperSearchElement.$.submitButton.click();
-      await waitAfterNextRender(wallpaperSearchElement);
+      await microtasksFinished();
 
       // There should be no checked tiles.
       assertFalse(!!$$(wallpaperSearchElement, '.tile [checked]'));
@@ -581,7 +582,7 @@ suite('WallpaperSearchTest', () => {
       };
       callbackRouterRemote.setTheme(theme);
       await callbackRouterRemote.$.flushForTesting();
-      await waitAfterNextRender(wallpaperSearchElement);
+      await microtasksFinished();
 
       // The first result should be checked and be the only one checked.
       const firstResult = $$(wallpaperSearchElement, '.tile .image-check-mark');
@@ -614,14 +615,14 @@ suite('WallpaperSearchTest', () => {
         descriptorB: [{label: 'Label B', imagePath: 'bar.png'}],
         descriptorC: ['Label C'],
       });
-      await flushTasks();
+      await microtasksFinished();
 
       // Select only descriptor A.
       $$<CustomizeChromeCombobox>(
           wallpaperSearchElement, '#descriptorComboboxA')!.value = 'Label A1';
-      await flushTasks();
+      await microtasksFinished();
       wallpaperSearchElement.$.submitButton.click();
-      await waitAfterNextRender(wallpaperSearchElement);
+      await microtasksFinished();
 
       function getAriaLabelOfTile(index: number): string|null {
         return wallpaperSearchElement.shadowRoot!
@@ -634,18 +635,18 @@ suite('WallpaperSearchTest', () => {
       // Select descriptor B.
       $$<CustomizeChromeCombobox>(
           wallpaperSearchElement, '#descriptorComboboxB')!.value = 'Label B';
-      await flushTasks();
+      await microtasksFinished();
       wallpaperSearchElement.$.submitButton.click();
-      await waitAfterNextRender(wallpaperSearchElement);
+      await microtasksFinished();
       assertEquals('Image 1 of Label A1, Label B', getAriaLabelOfTile(0));
       assertEquals('Image 2 of Label A1, Label B', getAriaLabelOfTile(1));
 
       // Select descriptor C.
       $$<CustomizeChromeCombobox>(
           wallpaperSearchElement, '#descriptorComboboxC')!.value = 'Label C';
-      await flushTasks();
+      await microtasksFinished();
       wallpaperSearchElement.$.submitButton.click();
-      await waitAfterNextRender(wallpaperSearchElement);
+      await microtasksFinished();
       assertEquals(
           'Image 1 of Label A1, Label B, Label C', getAriaLabelOfTile(0));
       assertEquals(
@@ -658,14 +659,14 @@ suite('WallpaperSearchTest', () => {
         descriptorB: [{label: 'Label B', imagePath: 'bar.png'}],
         descriptorC: ['Label C'],
       });
-      await flushTasks();
+      await microtasksFinished();
       $$<CustomizeChromeCombobox>(
           wallpaperSearchElement, '#descriptorComboboxA')!.value = 'Label A1';
       $$<CustomizeChromeCombobox>(
           wallpaperSearchElement, '#descriptorComboboxC')!.value = 'Label C';
-      await flushTasks();
+      await microtasksFinished();
       wallpaperSearchElement.$.submitButton.click();
-      await waitAfterNextRender(wallpaperSearchElement);
+      await microtasksFinished();
       assertEquals('Image 1 of Label A1, Label C', getAriaLabelOfTile(0));
       assertEquals('Image 2 of Label A1, Label C', getAriaLabelOfTile(1));
     });
@@ -683,7 +684,7 @@ suite('WallpaperSearchTest', () => {
         descriptorB: [{label: 'Label B', imagePath: 'bar.png'}],
         descriptorC: ['Label C'],
       });
-      await flushTasks();
+      await microtasksFinished();
 
       const loadingEventPromise =
           eventToPromise('cr-a11y-announcer-messages-sent', document.body);
@@ -707,23 +708,27 @@ suite('WallpaperSearchTest', () => {
     test('shows results from latest search request', async () => {
       windowProxy.setResultFor('now', 321);
       createWallpaperSearchElementWithDescriptors();
-      await flushTasks();
+      await microtasksFinished();
       assertFalse(isVisible(wallpaperSearchElement.$.loading));
 
       const resultsPromise1 = new PromiseResolver();
       handler.setResultFor(
           'getWallpaperSearchResults', resultsPromise1.promise);
       wallpaperSearchElement.$.submitButton.click();
+      await microtasksFinished();
+
       const resultsPromise2 = new PromiseResolver();
       handler.setResultFor(
           'getWallpaperSearchResults', resultsPromise2.promise);
       wallpaperSearchElement.$.submitButton.click();
+      await microtasksFinished();
+
       assertTrue(isVisible(wallpaperSearchElement.$.loading));
       resultsPromise1.resolve({
         status: WallpaperSearchStatus.kOk,
         results: [{image: '123', id: {high: 9, low: 1}}],
       });
-      await flushTasks();
+      await microtasksFinished();
 
       assertTrue(isVisible(wallpaperSearchElement.$.loading));
       assertFalse(isVisible($$(wallpaperSearchElement, '#error')!));
@@ -732,7 +737,7 @@ suite('WallpaperSearchTest', () => {
         status: WallpaperSearchStatus.kOk,
         results: [{image: '123', id: {high: 7, low: 8}}],
       });
-      await flushTasks();
+      await microtasksFinished();
 
       assertFalse(isVisible(wallpaperSearchElement.$.loading));
       assertGE(handler.getCallCount('getWallpaperSearchResults'), 2);
@@ -746,21 +751,25 @@ suite('WallpaperSearchTest', () => {
     test('error status is ignored if there is another request', async () => {
       windowProxy.setResultFor('now', 321);
       createWallpaperSearchElementWithDescriptors();
-      await flushTasks();
+      await microtasksFinished();
       assertFalse(isVisible(wallpaperSearchElement.$.loading));
 
       const resultsPromise1 = new PromiseResolver();
       handler.setResultFor(
           'getWallpaperSearchResults', resultsPromise1.promise);
       wallpaperSearchElement.$.submitButton.click();
+      await microtasksFinished();
+
       const resultsPromise2 = new PromiseResolver();
       handler.setResultFor(
           'getWallpaperSearchResults', resultsPromise2.promise);
       wallpaperSearchElement.$.submitButton.click();
+      await microtasksFinished();
+
       assertTrue(isVisible(wallpaperSearchElement.$.loading));
       resultsPromise1.resolve(
           {status: WallpaperSearchStatus.kError, results: []});
-      await flushTasks();
+      await microtasksFinished();
 
       assertTrue(isVisible(wallpaperSearchElement.$.loading));
       assertFalse(isVisible($$(wallpaperSearchElement, '#error')!));
@@ -769,7 +778,7 @@ suite('WallpaperSearchTest', () => {
         status: WallpaperSearchStatus.kOk,
         results: [{image: '123', id: {high: 10, low: 1}}],
       });
-      await flushTasks();
+      await microtasksFinished();
 
       assertFalse(isVisible(wallpaperSearchElement.$.loading));
       assertGE(handler.getCallCount('getWallpaperSearchResults'), 2);
@@ -782,24 +791,24 @@ suite('WallpaperSearchTest', () => {
 
     test('triggers hats survey on success', async () => {
       createWallpaperSearchElementWithDescriptors();
-      await flushTasks();
+      await microtasksFinished();
       handler.setResultFor('getWallpaperSearchResults', Promise.resolve({
         status: WallpaperSearchStatus.kOk,
         results: [{image: '123', id: {high: 10, low: 1}}],
       }));
       wallpaperSearchElement.$.submitButton.click();
-      await flushTasks();
+      await microtasksFinished();
       assertEquals(1, handler.getCallCount('launchHatsSurvey'));
     });
 
     test('does not trigger hats survey on error', async () => {
       createWallpaperSearchElementWithDescriptors();
-      await flushTasks();
+      await microtasksFinished();
       handler.setResultFor(
           'getWallpaperSearchResults',
           Promise.resolve({status: WallpaperSearchStatus.kError, results: []}));
       wallpaperSearchElement.$.submitButton.click();
-      await flushTasks();
+      await microtasksFinished();
       assertEquals(0, handler.getCallCount('launchHatsSurvey'));
     });
   });
@@ -1001,7 +1010,7 @@ suite('WallpaperSearchTest', () => {
     suite('Descriptors', () => {
       test('shows error ui for failed descriptor fetch', async () => {
         createWallpaperSearchElement(/*descriptors=*/ null);
-        await flushTasks();
+        await microtasksFinished();
 
         assertNotStyle(
             $$(wallpaperSearchElement, '#error')!, 'display', 'none');
@@ -1015,7 +1024,7 @@ suite('WallpaperSearchTest', () => {
             loadTimeData.overrideValues(
                 {genericErrorDescription: 'generic error'});
             createWallpaperSearchElement();
-            await flushTasks();
+            await microtasksFinished();
 
             assertEquals(1, handler.getCallCount('getDescriptors'));
             assertNotStyle(
@@ -1100,7 +1109,7 @@ suite('WallpaperSearchTest', () => {
                 ],
               },
             ]);
-        await flushTasks();
+        await microtasksFinished();
 
         assertNotStyle(
             $$(wallpaperSearchElement, '#error')!, 'display', 'none');
@@ -1171,7 +1180,7 @@ suite('WallpaperSearchTest', () => {
             loadTimeData.overrideValues({offlineDescription: 'offline error'});
             windowProxy.setResultFor('onLine', false);
             createWallpaperSearchElement();
-            await flushTasks();
+            await microtasksFinished();
 
             assertEquals(1, handler.getCallCount('getDescriptors'));
             assertNotStyle(
@@ -1228,16 +1237,16 @@ suite('WallpaperSearchTest', () => {
             'getWallpaperSearchResults',
             Promise.resolve({status: WallpaperSearchStatus.kOk, results: []}));
         createWallpaperSearchElementWithDescriptors();
-        await flushTasks();
+        await microtasksFinished();
 
-        assertStyle($$(wallpaperSearchElement, '#error')!, 'display', 'none');
+        assertEquals(null, $$(wallpaperSearchElement, '#error'));
         assertNotStyle(
             $$(wallpaperSearchElement, '#wallpaperSearch')!, 'display', 'none');
 
         wallpaperSearchElement.$.submitButton.click();
-        await waitAfterNextRender(wallpaperSearchElement);
+        await microtasksFinished();
 
-        assertStyle($$(wallpaperSearchElement, '#error')!, 'display', 'none');
+        assertEquals(null, $$(wallpaperSearchElement, '#error'));
         assertNotStyle(
             $$(wallpaperSearchElement, '#wallpaperSearch')!, 'display', 'none');
       });
@@ -1246,10 +1255,10 @@ suite('WallpaperSearchTest', () => {
         loadTimeData.overrideValues({offlineDescription: 'offline error'});
         windowProxy.setResultFor('onLine', false);
         createWallpaperSearchElementWithDescriptors();
-        await flushTasks();
+        await microtasksFinished();
 
         wallpaperSearchElement.$.submitButton.click();
-        await waitAfterNextRender(wallpaperSearchElement);
+        await microtasksFinished();
 
         assertEquals(1, windowProxy.getCallCount('onLine'));
         assertNotStyle(
@@ -1265,19 +1274,19 @@ suite('WallpaperSearchTest', () => {
       test('checks if browser is back online', async () => {
         windowProxy.setResultFor('onLine', false);
         createWallpaperSearchElementWithDescriptors();
-        await flushTasks();
+        await microtasksFinished();
 
         wallpaperSearchElement.$.submitButton.click();
-        await waitAfterNextRender(wallpaperSearchElement);
+        await microtasksFinished();
 
         assertEquals(1, windowProxy.getCallCount('onLine'));
         windowProxy.setResultFor('onLine', true);
 
         $$<HTMLElement>(wallpaperSearchElement, '#errorCTA')!.click();
-        await waitAfterNextRender(wallpaperSearchElement);
+        await microtasksFinished();
 
         assertEquals(1, windowProxy.getCallCount('onLine'));
-        assertStyle($$(wallpaperSearchElement, '#error')!, 'display', 'none');
+        assertEquals(null, $$(wallpaperSearchElement, '#error'));
         assertNotStyle(
             $$(wallpaperSearchElement, '#wallpaperSearch')!, 'display', 'none');
       });
@@ -1296,10 +1305,10 @@ suite('WallpaperSearchTest', () => {
               'getWallpaperSearchResults',
               Promise.resolve({status: status, results: []}));
           createWallpaperSearchElementWithDescriptors();
-          await flushTasks();
+          await microtasksFinished();
 
           wallpaperSearchElement.$.submitButton.click();
-          await waitAfterNextRender(wallpaperSearchElement);
+          await microtasksFinished();
 
           assertNotStyle(
               $$(wallpaperSearchElement, '#error')!, 'display', 'none');
@@ -1321,7 +1330,7 @@ suite('WallpaperSearchTest', () => {
             Promise.resolve(
                 {status: WallpaperSearchStatus.kError, results: []}));
         createWallpaperSearchElementWithDescriptors();
-        await flushTasks();
+        await microtasksFinished();
 
         wallpaperSearchCallbackRouterRemote.setHistory([
           {
@@ -1337,7 +1346,7 @@ suite('WallpaperSearchTest', () => {
         ]);
         await wallpaperSearchCallbackRouterRemote.$.flushForTesting();
         wallpaperSearchElement.$.submitButton.click();
-        await waitAfterNextRender(wallpaperSearchElement);
+        await microtasksFinished();
 
         assertNotStyle(
             $$(wallpaperSearchElement, '#error')!, 'display', 'none');
@@ -1375,10 +1384,10 @@ suite('WallpaperSearchTest', () => {
             },
           ],
         }]);
-        await flushTasks();
+        await microtasksFinished();
 
         wallpaperSearchElement.$.submitButton.click();
-        await waitAfterNextRender(wallpaperSearchElement);
+        await microtasksFinished();
 
         assertNotStyle(
             $$(wallpaperSearchElement, '#error')!, 'display', 'none');
@@ -1418,7 +1427,7 @@ suite('WallpaperSearchTest', () => {
                 },
               ],
             }]);
-            await flushTasks();
+            await microtasksFinished();
 
             wallpaperSearchCallbackRouterRemote.setHistory([
               {
@@ -1434,7 +1443,7 @@ suite('WallpaperSearchTest', () => {
             ]);
             await wallpaperSearchCallbackRouterRemote.$.flushForTesting();
             wallpaperSearchElement.$.submitButton.click();
-            await waitAfterNextRender(wallpaperSearchElement);
+            await microtasksFinished();
 
             assertNotStyle(
                 $$(wallpaperSearchElement, '#error')!, 'display', 'none');
@@ -1453,19 +1462,20 @@ suite('WallpaperSearchTest', () => {
           'getWallpaperSearchResults',
           Promise.resolve({status: WallpaperSearchStatus.kError, results: []}));
       createWallpaperSearchElementWithDescriptors();
-      await flushTasks();
+      await microtasksFinished();
 
       assertEquals(
           wallpaperSearchElement.$.wallpaperSearch,
           wallpaperSearchElement.shadowRoot!.activeElement);
 
       wallpaperSearchElement.$.submitButton.click();
-      await waitAfterNextRender(wallpaperSearchElement);
+      await microtasksFinished();
 
       assertEquals(
-          wallpaperSearchElement.$.error,
+          $$<HTMLElement>(wallpaperSearchElement, '#error'),
           wallpaperSearchElement.shadowRoot!.activeElement);
       $$<HTMLElement>(wallpaperSearchElement, '#errorCTA')!.click();
+      await microtasksFinished();
 
       assertEquals(
           wallpaperSearchElement.$.wallpaperSearch,
@@ -1475,7 +1485,7 @@ suite('WallpaperSearchTest', () => {
           'getWallpaperSearchResults',
           Promise.resolve({status: WallpaperSearchStatus.kOk, results: []}));
       wallpaperSearchElement.$.submitButton.click();
-      await waitAfterNextRender(wallpaperSearchElement);
+      await microtasksFinished();
 
       assertEquals(
           wallpaperSearchElement.$.wallpaperSearch,
@@ -1490,11 +1500,11 @@ suite('WallpaperSearchTest', () => {
         results: [{image: '123', id: {high: 10, low: 1}}],
       }));
       createWallpaperSearchElementWithDescriptors();
-      await flushTasks();
+      await microtasksFinished();
       assertFalse(isVisible(wallpaperSearchElement.$.feedbackButtons));
 
       wallpaperSearchElement.$.submitButton.click();
-      await waitAfterNextRender(wallpaperSearchElement);
+      await microtasksFinished();
       assertTrue(isVisible(wallpaperSearchElement.$.feedbackButtons));
 
       // Mock interacting with the feedback buttons.
@@ -1520,9 +1530,9 @@ suite('WallpaperSearchTest', () => {
         results: [{image: '123', id: {high: 10, low: 1}}],
       }));
       createWallpaperSearchElementWithDescriptors();
-      await flushTasks();
+      await microtasksFinished();
       wallpaperSearchElement.$.submitButton.click();
-      await waitAfterNextRender(wallpaperSearchElement);
+      await microtasksFinished();
 
       updateCrFeedbackButtons(CrFeedbackOption.THUMBS_UP);
       await handler.whenCalled('setUserFeedback');
@@ -1534,7 +1544,7 @@ suite('WallpaperSearchTest', () => {
         results: [{image: '321', id: {high: 10, low: 1}}],
       }));
       wallpaperSearchElement.$.submitButton.click();
-      await waitAfterNextRender(wallpaperSearchElement);
+      await microtasksFinished();
 
       // Verify feedback option was reset, but this shouldn't call the back-end.
       assertEquals(
@@ -1547,7 +1557,7 @@ suite('WallpaperSearchTest', () => {
   suite('Metrics', () => {
     test('clicking submit sets metric', async () => {
       createWallpaperSearchElementWithDescriptors();
-      await flushTasks();
+      await microtasksFinished();
 
       handler.setResultFor(
           'getWallpaperSearchResults',
@@ -1570,10 +1580,10 @@ suite('WallpaperSearchTest', () => {
         results: [{image: '123', id: {high: 10, low: 1}}],
       }));
       createWallpaperSearchElementWithDescriptors();
-      await flushTasks();
+      await microtasksFinished();
 
       wallpaperSearchElement.$.submitButton.click();
-      await waitAfterNextRender(wallpaperSearchElement);
+      await microtasksFinished();
 
       const result =
           $$(wallpaperSearchElement, '#wallpaperSearch .tile.result');
@@ -1624,10 +1634,10 @@ suite('WallpaperSearchTest', () => {
         results: [{image: '123', id: {high: 10, low: 1}}],
       }));
       createWallpaperSearchElementWithDescriptors();
-      await flushTasks();
+      await microtasksFinished();
 
       wallpaperSearchElement.$.submitButton.click();
-      await waitAfterNextRender(wallpaperSearchElement);
+      await microtasksFinished();
 
       // Set metric on thumbs down.
       updateCrFeedbackButtons(CrFeedbackOption.THUMBS_DOWN);
@@ -1652,11 +1662,11 @@ suite('WallpaperSearchTest', () => {
 
     test('changing subject descriptor sets metric', async () => {
       createWallpaperSearchElementWithDescriptors();
-      await flushTasks();
+      await microtasksFinished();
 
       $$<CustomizeChromeCombobox>(
           wallpaperSearchElement, '#descriptorComboboxA')!.value = 'bar';
-      await flushTasks();
+      await microtasksFinished();
 
       assertEquals(
           1, metrics.count('NewTabPage.CustomizeChromeSidePanelAction'));
@@ -1670,11 +1680,11 @@ suite('WallpaperSearchTest', () => {
 
     test('changing style descriptor sets metric', async () => {
       createWallpaperSearchElementWithDescriptors();
-      await flushTasks();
+      await microtasksFinished();
 
       $$<CustomizeChromeCombobox>(
           wallpaperSearchElement, '#descriptorComboboxB')!.value = 'foo';
-      await flushTasks();
+      await microtasksFinished();
 
       assertEquals(
           1, metrics.count('NewTabPage.CustomizeChromeSidePanelAction'));
@@ -1687,11 +1697,11 @@ suite('WallpaperSearchTest', () => {
 
     test('changing mood descriptor sets metric', async () => {
       createWallpaperSearchElementWithDescriptors();
-      await flushTasks();
+      await microtasksFinished();
 
       $$<CustomizeChromeCombobox>(
           wallpaperSearchElement, '#descriptorComboboxC')!.value = 'foo';
-      await flushTasks();
+      await microtasksFinished();
 
       assertEquals(
           1, metrics.count('NewTabPage.CustomizeChromeSidePanelAction'));
@@ -1704,7 +1714,7 @@ suite('WallpaperSearchTest', () => {
 
     test('changing color descriptor sets metric', async () => {
       createWallpaperSearchElementWithDescriptors();
-      await flushTasks();
+      await microtasksFinished();
 
       // Set a default color.
       $$<HTMLElement>(
@@ -1735,10 +1745,10 @@ suite('WallpaperSearchTest', () => {
             'getWallpaperSearchResults',
             Promise.resolve({status: status, results: []}));
         createWallpaperSearchElementWithDescriptors();
-        await flushTasks();
+        await microtasksFinished();
 
         wallpaperSearchElement.$.submitButton.click();
-        await waitAfterNextRender(wallpaperSearchElement);
+        await microtasksFinished();
 
         assertEquals(2, metrics.count('NewTabPage.WallpaperSearch.Status'));
         assertEquals(
@@ -1750,10 +1760,10 @@ suite('WallpaperSearchTest', () => {
     test('onLine/offLine status sets metric', async () => {
       windowProxy.setResultFor('onLine', false);
       createWallpaperSearchElementWithDescriptors();
-      await flushTasks();
+      await microtasksFinished();
 
       wallpaperSearchElement.$.submitButton.click();
-      await waitAfterNextRender(wallpaperSearchElement);
+      await microtasksFinished();
 
       assertEquals(2, metrics.count('NewTabPage.WallpaperSearch.Status'));
       assertEquals(
@@ -1765,7 +1775,7 @@ suite('WallpaperSearchTest', () => {
       windowProxy.setResultFor('onLine', true);
 
       $$<HTMLElement>(wallpaperSearchElement, '#errorCTA')!.click();
-      await waitAfterNextRender(wallpaperSearchElement);
+      await microtasksFinished();
 
       assertEquals(3, metrics.count('NewTabPage.WallpaperSearch.Status'));
       assertEquals(
@@ -1797,7 +1807,7 @@ suite('WallpaperSearchTest', () => {
               ],
             },
           ]);
-      await flushTasks();
+      await microtasksFinished();
 
       const result =
           $$(wallpaperSearchElement, '#inspirationCard .tile.result');
@@ -1822,7 +1832,7 @@ suite('WallpaperSearchTest', () => {
 
     test('inspiration card shows if inspiration is enabled', async () => {
       createWallpaperSearchElement();
-      await flushTasks();
+      await microtasksFinished();
 
       assertTrue(!!wallpaperSearchElement.shadowRoot!.querySelector(
           '#inspirationCard'));
@@ -1876,7 +1886,7 @@ suite('WallpaperSearchTest', () => {
               ],
             },
           ]);
-      await flushTasks();
+      await microtasksFinished();
 
       // Ensure inspiration titles are correct.
       const inspirationTitles =
@@ -1956,7 +1966,7 @@ suite('WallpaperSearchTest', () => {
               ],
             },
           ]);
-      await flushTasks();
+      await microtasksFinished();
 
       const inspirationTitles =
           wallpaperSearchElement.shadowRoot!.querySelectorAll(
@@ -1990,7 +2000,7 @@ suite('WallpaperSearchTest', () => {
               ],
             },
           ]);
-      await flushTasks();
+      await microtasksFinished();
 
       const result =
           $$(wallpaperSearchElement, '#inspirationCard .tile.result');
@@ -2052,7 +2062,7 @@ suite('WallpaperSearchTest', () => {
               ],
             },
           ]);
-      await flushTasks();
+      await microtasksFinished();
 
       const groupTitles = wallpaperSearchElement.shadowRoot!.querySelectorAll(
           '.inspiration-title');
@@ -2064,7 +2074,7 @@ suite('WallpaperSearchTest', () => {
       let loadingEventPromise =
           eventToPromise('cr-a11y-announcer-messages-sent', document.body);
       (firstGroupTitle as HTMLElement).click();
-      await flushTasks();
+      await microtasksFinished();
 
       assertEquals(
           'baz',
@@ -2091,7 +2101,7 @@ suite('WallpaperSearchTest', () => {
           eventToPromise('cr-a11y-announcer-messages-sent', document.body);
       (secondGroupTitle as HTMLElement)
           .dispatchEvent(new KeyboardEvent('keydown', {key: ' '}));
-      await flushTasks();
+      await microtasksFinished();
 
       assertEquals(
           'bar',
@@ -2157,7 +2167,7 @@ suite('WallpaperSearchTest', () => {
               ],
             },
           ]);
-      await flushTasks();
+      await microtasksFinished();
       assertEquals(
           undefined,
           $$<CustomizeChromeCombobox>(
@@ -2182,7 +2192,7 @@ suite('WallpaperSearchTest', () => {
       let inspirationTile = inspirationGroupGrids[0]!.querySelector('.tile');
       assertTrue(!!inspirationTile);
       (inspirationTile as HTMLElement).click();
-      await flushTasks();
+      await microtasksFinished();
 
       assertEquals(
           'baz',
@@ -2208,7 +2218,7 @@ suite('WallpaperSearchTest', () => {
       inspirationTile = inspirationGroupGrids[1]!.querySelector('.tile');
       assertTrue(!!inspirationTile);
       (inspirationTile as HTMLElement).click();
-      await flushTasks();
+      await microtasksFinished();
 
       assertEquals(
           'bar',
@@ -2229,8 +2239,8 @@ suite('WallpaperSearchTest', () => {
     });
 
     test('inspiration card toggles on click', async () => {
-      createWallpaperSearchElement();
-      await flushTasks();
+      createWallpaperSearchElementWithDescriptors();
+      await microtasksFinished();
 
       const ironCollapse =
           $$<IronCollapseElement>(wallpaperSearchElement, 'iron-collapse')!;
@@ -2246,6 +2256,7 @@ suite('WallpaperSearchTest', () => {
 
       $$<CrIconButtonElement>(
           wallpaperSearchElement, '#inspirationToggle')!.click();
+      await microtasksFinished();
 
       assertTrue(ironCollapse.opened);
       assertEquals(
@@ -2259,6 +2270,7 @@ suite('WallpaperSearchTest', () => {
 
       $$<CrIconButtonElement>(wallpaperSearchElement, '#inspirationToggle')!
           .dispatchEvent(new KeyboardEvent('keydown', {key: ' '}));
+      await microtasksFinished();
 
       assertFalse(ironCollapse.opened);
       assertEquals(
@@ -2272,8 +2284,23 @@ suite('WallpaperSearchTest', () => {
     });
 
     test('inspiration card collapsible reacts to history updates', async () => {
-      createWallpaperSearchElement();
-      await flushTasks();
+      createWallpaperSearchElementWithDescriptors([{
+        descriptors: {
+          subject: 'foobar',
+          style: null,
+          mood: null,
+          color: null,
+        },
+        inspirations: [
+          {
+            id: {high: BigInt(10), low: BigInt(1)},
+            description: 'Description',
+            backgroundUrl: {url: 'https://example.com/foo_1.png'},
+            thumbnailUrl: {url: 'https://example.com/foo_2.png'},
+          },
+        ],
+      }]);
+      await microtasksFinished();
 
       // Card collapsed when the element is created.
       const ironCollapse =
@@ -2283,6 +2310,7 @@ suite('WallpaperSearchTest', () => {
       // Card opens if there is no history.
       wallpaperSearchCallbackRouterRemote.setHistory([]);
       await wallpaperSearchCallbackRouterRemote.$.flushForTesting();
+      await microtasksFinished();
 
       assertTrue(ironCollapse.opened);
 
@@ -2300,6 +2328,7 @@ suite('WallpaperSearchTest', () => {
         },
       ]);
       await wallpaperSearchCallbackRouterRemote.$.flushForTesting();
+      await microtasksFinished();
 
       assertTrue(!!$$(wallpaperSearchElement, '#historyCard .tile.result'));
       assertFalse(ironCollapse.opened);
@@ -2307,7 +2336,7 @@ suite('WallpaperSearchTest', () => {
 
     test('inspiration card hides if inspiration is empty', async () => {
       createWallpaperSearchElement();
-      await flushTasks();
+      await microtasksFinished();
 
       const inspirationCard = $$(wallpaperSearchElement, '#inspirationCard');
       assertTrue(!!inspirationCard);
@@ -2334,7 +2363,7 @@ suite('WallpaperSearchTest', () => {
               ],
             },
           ]);
-      await flushTasks();
+      await microtasksFinished();
 
       const inspirationCard = $$(wallpaperSearchElement, '#inspirationCard');
       assertTrue(!!inspirationCard);
@@ -2367,13 +2396,13 @@ suite('WallpaperSearchTest', () => {
               ],
             },
           ]);
-      await flushTasks();
+      await microtasksFinished();
 
       // Set a default theme.
       let theme = createTheme();
       callbackRouterRemote.setTheme(theme);
       await callbackRouterRemote.$.flushForTesting();
-      await waitAfterNextRender(wallpaperSearchElement);
+      await microtasksFinished();
       // There should be no checked tiles.
       assertFalse(!!$$(wallpaperSearchElement, '.tile [checked]'));
 
@@ -2386,7 +2415,7 @@ suite('WallpaperSearchTest', () => {
       };
       callbackRouterRemote.setTheme(theme);
       await callbackRouterRemote.$.flushForTesting();
-      await waitAfterNextRender(wallpaperSearchElement);
+      await microtasksFinished();
 
       // The first inspiration should be the only tile checked.
       const firstResult = $$(

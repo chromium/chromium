@@ -60,6 +60,20 @@ class WallpaperSearchInteractiveTest : public InteractiveBrowserTest {
                                         signin::ConsentLevel::kSignin);
   }
 
+  InteractiveTestApi::MultiStep WaitForElementExists(
+      const ui::ElementIdentifier& contents_id,
+      const DeepQuery& element,
+      const bool& exists) {
+    DEFINE_LOCAL_CUSTOM_ELEMENT_EVENT_TYPE(kElementExists);
+    StateChange element_exists;
+    element_exists.type =
+        exists ? StateChange::Type::kExists : StateChange::Type::kDoesNotExist;
+    element_exists.where = element;
+    element_exists.event = kElementExists;
+
+    return WaitForStateChange(contents_id, element_exists);
+  }
+
   InteractiveTestApi::MultiStep WaitForElementVisible(
       const ui::ElementIdentifier& contents_id,
       const DeepQuery& element) {
@@ -472,6 +486,7 @@ IN_PROC_BROWSER_TEST_F(WallpaperSearchOptimizationGuideInteractiveTest,
       Steps(Do(base::BindLambdaForTesting([&]() { offline = true; })),
             OpenNewTabPage(), OpenWallpaperSearchAt(kCustomizeChromeElementId)),
       // 2. Wait for the error CTA to show.
+      WaitForElementExists(kCustomizeChromeElementId, kErrorCTA, true),
       WaitForElementVisible(kCustomizeChromeElementId, kErrorCTA),
       // 3. Assert that the themes page isn't showing yet.
       CheckJsResultAt(kCustomizeChromeElementId, kThemesPage,
@@ -485,6 +500,5 @@ IN_PROC_BROWSER_TEST_F(WallpaperSearchOptimizationGuideInteractiveTest,
             ClickElement(kCustomizeChromeElementId, kWallpaperSearchTile)),
       // 7. Ensure that the error state went away.
       Steps(WaitForElementVisible(kCustomizeChromeElementId, kSubmitButton),
-            CheckJsResultAt(kCustomizeChromeElementId, kErrorCTA,
-                            "(el) => el.offsetParent === null")));
+            WaitForElementExists(kCustomizeChromeElementId, kErrorCTA, false)));
 }
