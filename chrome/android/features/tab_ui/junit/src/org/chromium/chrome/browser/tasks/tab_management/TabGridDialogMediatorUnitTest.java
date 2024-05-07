@@ -124,6 +124,8 @@ public class TabGridDialogMediatorUnitTest {
     @Mock Runnable mShowShareBottomSheetRunnable;
     @Mock Runnable mShowColorPickerPopupRunnable;
     @Mock Runnable mShowInviteFlowUIRunnable;
+    @Mock ActionConfirmationManager mActionConfirmationManager;
+
     @Captor ArgumentCaptor<TabModelObserver> mTabModelObserverCaptor;
 
     private final ObservableSupplierImpl<TabModelFilter> mCurrentTabModelFilterSupplier =
@@ -187,7 +189,8 @@ public class TabGridDialogMediatorUnitTest {
                         mShowShareBottomSheetRunnable,
                         "",
                         mShowColorPickerPopupRunnable,
-                        mShowInviteFlowUIRunnable);
+                        mShowInviteFlowUIRunnable,
+                        mActionConfirmationManager);
 
         mMediator.initWithNative(() -> mTabListEditorController, mTabGroupTitleEditor);
         assertThat(mTabModelObserverCaptor.getAllValues().isEmpty(), equalTo(false));
@@ -1139,7 +1142,8 @@ public class TabGridDialogMediatorUnitTest {
                         mShowShareBottomSheetRunnable,
                         "",
                         mShowColorPickerPopupRunnable,
-                        mShowInviteFlowUIRunnable);
+                        mShowInviteFlowUIRunnable,
+                        mActionConfirmationManager);
         mMediator.initWithNative(
                 () -> {
                     return mTabListEditorController;
@@ -1201,7 +1205,8 @@ public class TabGridDialogMediatorUnitTest {
                         mShowShareBottomSheetRunnable,
                         "",
                         mShowColorPickerPopupRunnable,
-                        mShowInviteFlowUIRunnable);
+                        mShowInviteFlowUIRunnable,
+                        mActionConfirmationManager);
         mMediator.initWithNative(
                 () -> {
                     return mTabListEditorController;
@@ -1254,7 +1259,8 @@ public class TabGridDialogMediatorUnitTest {
                         mShowShareBottomSheetRunnable,
                         "",
                         mShowColorPickerPopupRunnable,
-                        mShowInviteFlowUIRunnable);
+                        mShowInviteFlowUIRunnable,
+                        mActionConfirmationManager);
         mMediator.initWithNative(
                 () -> {
                     return mTabListEditorController;

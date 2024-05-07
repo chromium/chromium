@@ -94,7 +94,8 @@ public class TabGridDialogCoordinator implements TabGridDialogMediator.DialogCon
             TabGridDialogMediator.AnimationSourceViewProvider animationSourceViewProvider,
             ScrimCoordinator scrimCoordinator,
             TabGroupTitleEditor tabGroupTitleEditor,
-            ViewGroup rootView) {
+            ViewGroup rootView,
+            @Nullable ActionConfirmationManager actionConfirmationManager) {
         try (TraceEvent e = TraceEvent.scoped("TabGridDialogCoordinator.constructor")) {
             mActivity = activity;
             mComponentName =
@@ -182,7 +183,8 @@ public class TabGridDialogCoordinator implements TabGridDialogMediator.DialogCon
                             showShareBottomSheetRunnable,
                             mComponentName,
                             showColorPickerPopupRunnable,
-                            getInviteFlowUIRunnable(bottomSheetController));
+                            getInviteFlowUIRunnable(bottomSheetController),
+                            actionConfirmationManager);
 
             // TODO(crbug.com/40662311) : Remove the inline mode logic here, make the constructor to
             // take in a mode parameter instead.

@@ -92,6 +92,7 @@ public class TabSwitcherPaneCoordinatorFactoryUnitTest {
     @Mock private TabSwitcherResetHandler mResetHandler;
     @Mock private Callback<Integer> mOnTabClickedCallback;
     @Mock private BottomSheetController mBottomSheetController;
+    @Mock private ProfileProvider mProfileProvider;
 
     @Captor private ArgumentCaptor<TabModelSelectorObserver> mTabModelSelectorObserverCaptor;
 
@@ -104,6 +105,7 @@ public class TabSwitcherPaneCoordinatorFactoryUnitTest {
     @Before
     public void setUp() {
         mTab1 = TabUiUnitTestUtils.prepareTab(TAB1_ID, TAB1_TITLE);
+        mProfileProviderSupplier.set(mProfileProvider);
 
         when(mTabModelSelector.getTabModelFilterProvider()).thenReturn(mTabModelFilterProvider);
         when(mTabModelSelector.getModel(false)).thenReturn(mTabModel);

@@ -332,6 +332,7 @@ public class TabSwitcherCoordinator
     private void initTabGridDialogCoordinator() {
         var currentTabModelFilterSupplier =
                 mTabModelSelector.getTabModelFilterProvider().getCurrentTabModelFilterSupplier();
+
         mTabGridDialogCoordinator =
                 new TabGridDialogCoordinator(
                         mActivity,
@@ -347,7 +348,8 @@ public class TabSwitcherCoordinator
                         TabSwitcherCoordinator.this::getTabGridDialogAnimationSourceView,
                         mGridDialogScrimCoordinator,
                         mTabListCoordinator.getTabGroupTitleEditor(),
-                        mRootView);
+                        mRootView,
+                        /* actionConfirmationManager= */ null);
     }
 
     private ScrimCoordinator createScrimCoordinator() {

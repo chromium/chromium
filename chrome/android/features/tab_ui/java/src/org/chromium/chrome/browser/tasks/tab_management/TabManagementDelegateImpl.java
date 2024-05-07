@@ -137,7 +137,8 @@ public class TabManagementDelegateImpl implements TabManagementDelegate {
             @NonNull Supplier<DynamicResourceLoader> dynamicResourceLoaderSupplier,
             @NonNull TabCreatorManager tabCreatorManager,
             @NonNull OneshotSupplier<LayoutStateProvider> layoutStateProviderSupplier,
-            @NonNull SnackbarManager snackbarManager) {
+            @NonNull SnackbarManager snackbarManager,
+            @NonNull ModalDialogManager modalDialogManager) {
         return new TabGroupUiCoordinator(
                 activity,
                 parentView,
@@ -154,7 +155,8 @@ public class TabManagementDelegateImpl implements TabManagementDelegate {
                 dynamicResourceLoaderSupplier,
                 tabCreatorManager,
                 layoutStateProviderSupplier,
-                snackbarManager);
+                snackbarManager,
+                modalDialogManager);
     }
 
     @Override

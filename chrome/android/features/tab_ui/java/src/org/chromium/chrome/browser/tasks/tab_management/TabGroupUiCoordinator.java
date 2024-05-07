@@ -23,6 +23,7 @@ import org.chromium.chrome.browser.browser_controls.BrowserControlsStateProvider
 import org.chromium.chrome.browser.layouts.LayoutStateProvider;
 import org.chromium.chrome.browser.lifecycle.ActivityLifecycleDispatcher;
 import org.chromium.chrome.browser.lifecycle.PauseResumeWithNativeObserver;
+import org.chromium.chrome.browser.profiles.Profile;
 import org.chromium.chrome.browser.tab.Tab;
 import org.chromium.chrome.browser.tab_ui.TabContentManager;
 import org.chromium.chrome.browser.tabmodel.IncognitoStateProvider;
@@ -38,6 +39,7 @@ import org.chromium.chrome.tab_ui.R;
 import org.chromium.components.browser_ui.bottomsheet.BottomSheetController;
 import org.chromium.components.browser_ui.widget.scrim.ScrimCoordinator;
 import org.chromium.components.feature_engagement.FeatureConstants;
+import org.chromium.ui.modaldialog.ModalDialogManager;
 import org.chromium.ui.modelutil.PropertyModel;
 import org.chromium.ui.modelutil.PropertyModelChangeProcessor;
 import org.chromium.ui.resources.dynamics.DynamicResourceLoader;
@@ -74,6 +76,7 @@ public class TabGroupUiCoordinator
     private final TabCreatorManager mTabCreatorManager;
     private final Supplier<DynamicResourceLoader> mDynamicResourceLoaderSupplier;
     private final TabContentManager mTabContentManager;
+    private final ModalDialogManager mModalDialogManager;
     private PropertyModelChangeProcessor mModelChangeProcessor;
     private TabGridDialogCoordinator mTabGridDialogCoordinator;
     private LazyOneshotSupplierImpl<TabGridDialogMediator.DialogController>
@@ -98,7 +101,8 @@ public class TabGroupUiCoordinator
             @NonNull Supplier<DynamicResourceLoader> dynamicResourceLoaderSupplier,
             @NonNull TabCreatorManager tabCreatorManager,
             @NonNull OneshotSupplier<LayoutStateProvider> layoutStateProviderSupplier,
-            @NonNull SnackbarManager snackbarManager) {
+            @NonNull SnackbarManager snackbarManager,
+            @NonNull ModalDialogManager modalDialogManager) {
         try (TraceEvent e = TraceEvent.scoped("TabGroupUiCoordinator.constructor")) {
             mActivity = activity;
             mContext = parentView.getContext();
@@ -123,6 +127,7 @@ public class TabGroupUiCoordinator
             mTabCreatorManager = tabCreatorManager;
             mDynamicResourceLoaderSupplier = dynamicResourceLoaderSupplier;
             mTabContentManager = tabContentManager;
+            mModalDialogManager = modalDialogManager;
             parentView.addView(mToolbarView);
         }
     }
@@ -133,6 +138,11 @@ public class TabGroupUiCoordinator
 
         var currentTabModelFilterSupplier =
                 mTabModelSelector.getTabModelFilterProvider().getCurrentTabModelFilterSupplier();
+        Profile profile = mTabModelSelector.getModel(false).getProfile();
+        TabGroupModelFilter filter = (TabGroupModelFilter) currentTabModelFilterSupplier.get();
+        ActionConfirmationManager actionConfirmationManager =
+                new ActionConfirmationManager(profile, mActivity, filter, mModalDialogManager);
+
         mTabGridDialogCoordinator =
                 new TabGridDialogCoordinator(
                         mActivity,
@@ -148,7 +158,8 @@ public class TabGroupUiCoordinator
                         null,
                         mScrimCoordinator,
                         mTabStripCoordinator.getTabGroupTitleEditor(),
-                        mRootView);
+                        mRootView,
+                        actionConfirmationManager);
         mTabGridDialogControllerSupplier.set(mTabGridDialogCoordinator);
     }
 

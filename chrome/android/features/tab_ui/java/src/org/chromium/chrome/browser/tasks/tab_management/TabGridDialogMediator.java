@@ -139,6 +139,7 @@ public class TabGridDialogMediator
     private final @NonNull BottomSheetController mBottomSheetController;
     private final Runnable mShowColorPickerPopupRunnable;
     private final Runnable mShowInviteFlowUIRunnable;
+    private final ActionConfirmationManager mActionConfirmationManager;
 
     private TabGroupTitleEditor mTabGroupTitleEditor;
     private Supplier<TabListEditorController> mTabListEditorControllerSupplier;
@@ -165,7 +166,8 @@ public class TabGridDialogMediator
             Runnable showShareBottomSheetRunnable,
             String componentName,
             Runnable showColorPickerPopupRunnable,
-            Runnable showInviteFlowUIRunnable) {
+            Runnable showInviteFlowUIRunnable,
+            @Nullable ActionConfirmationManager actionConfirmationManager) {
         mContext = activity;
         mModel = model;
         mCurrentTabModelFilterSupplier = currentTabModelFilterSupplier;
@@ -183,6 +185,7 @@ public class TabGridDialogMediator
         mShowShareBottomSheetRunnable = showShareBottomSheetRunnable;
         mShowColorPickerPopupRunnable = showColorPickerPopupRunnable;
         mShowInviteFlowUIRunnable = showInviteFlowUIRunnable;
+        mActionConfirmationManager = actionConfirmationManager;
 
         // Register for tab model.
         mTabModelObserver =
@@ -659,7 +662,8 @@ public class TabGridDialogMediator
                         mContext,
                         ShowMode.MENU_ONLY,
                         ButtonType.ICON_AND_TEXT,
-                        IconPosition.START));
+                        IconPosition.START,
+                        mActionConfirmationManager));
         actions.add(
                 TabListEditorBookmarkAction.createAction(
                         mActivity,

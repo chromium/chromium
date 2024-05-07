@@ -192,4 +192,11 @@ public class ActionConfirmationManager {
                 new ActionConfirmationDialog(mProfile, mContext, mModalDialogManager);
         dialog.show(titleRes, descriptionResolver, actionRes, onDialogResult);
     }
+
+    public static void clearStopShowingPrefsForTesting(PrefService prefService) {
+        prefService.clearPref(Pref.STOP_SHOWING_TAB_GROUP_CONFIRMATION_ON_CLOSE);
+        prefService.clearPref(Pref.STOP_SHOWING_TAB_GROUP_CONFIRMATION_ON_UNGROUP);
+        prefService.clearPref(Pref.STOP_SHOWING_TAB_GROUP_CONFIRMATION_ON_TAB_REMOVE);
+        prefService.clearPref(Pref.STOP_SHOWING_TAB_GROUP_CONFIRMATION_ON_TAB_CLOSE);
+    }
 }

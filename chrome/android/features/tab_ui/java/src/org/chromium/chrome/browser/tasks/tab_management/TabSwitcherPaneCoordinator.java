@@ -44,6 +44,7 @@ import org.chromium.chrome.browser.tabmodel.TabModel;
 import org.chromium.chrome.browser.tabmodel.TabModelFilter;
 import org.chromium.chrome.browser.tasks.pseudotab.PseudoTab;
 import org.chromium.chrome.browser.tasks.pseudotab.PseudoTab.TitleProvider;
+import org.chromium.chrome.browser.tasks.tab_groups.TabGroupModelFilter;
 import org.chromium.chrome.browser.tasks.tab_management.TabGridDialogMediator.DialogController;
 import org.chromium.chrome.browser.tasks.tab_management.TabListCoordinator.TabListMode;
 import org.chromium.chrome.browser.tasks.tab_management.TabListMediator.GridCardOnClickListenerProvider;
@@ -144,6 +145,10 @@ public class TabSwitcherPaneCoordinator implements BackPressHandler {
                             .with(MODE, mode)
                             .build();
             mContainerViewModel = containerViewModel;
+            Profile profile = mProfileProviderSupplier.get().getOriginalProfile();
+            TabGroupModelFilter filter = (TabGroupModelFilter) tabModelFilterSupplier.get();
+            ActionConfirmationManager actionConfirmationManager =
+                    new ActionConfirmationManager(profile, mActivity, filter, mModalDialogManager);
 
             mDialogControllerSupplier =
                     LazyOneshotSupplier.fromSupplier(
@@ -164,7 +169,8 @@ public class TabSwitcherPaneCoordinator implements BackPressHandler {
                                                         ::getTabGridDialogAnimationSourceView,
                                                 scrimCoordinator,
                                                 getTabGroupTitleEditor(),
-                                                /* rootView= */ coordinatorView);
+                                                /* rootView= */ coordinatorView,
+                                                actionConfirmationManager);
                                 return mTabGridDialogCoordinator.getDialogController();
                             });
 
