@@ -16530,9 +16530,10 @@
             ],
             "experiments": [
                 {
-                    "name": "Enabled",
+                    "name": "EnabledWithMetrics_20240507",
                     "enable_features": [
-                        "RestoreSignedInAccountAndSettingsFromBackup"
+                        "RestoreSignedInAccountAndSettingsFromBackup",
+                        "UpdateMetricsServicesStateInRestore"
                     ]
                 }
             ]
