@@ -1782,7 +1782,6 @@ void BrowserAutofillManager::AnalyzeJavaScriptChangedAutofilledValue(
       base::FeatureList::IsEnabled(
           features::kAutofillFixCachingOnJavaScriptChanges)) {
     field.set_is_autofilled(false);
-    field.set_previously_autofilled(true);
   }
   // We are interested in reporting the events where JavaScript resets an
   // autofilled value immediately after filling. For a reset, the value
