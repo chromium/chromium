@@ -118,6 +118,18 @@ std::vector<lens::mojom::OverlayObjectPtr> CopyObjects(
   return objects_copy;
 }
 
+gfx::Rect ComputeOverlayBounds(content::WebContents* contents) {
+  auto bounds = contents->GetContainerBounds();
+#if BUILDFLAG(IS_CHROMEOS_ASH)
+  gfx::NativeWindow top_level_native_window =
+      contents->GetTopLevelNativeWindow();
+  if (!top_level_native_window->GetProperty(wm::kUsesScreenCoordinatesKey)) {
+    wm::ConvertRectFromScreen(top_level_native_window, &bounds);
+  }
+#endif
+  return bounds;
+}
+
 }  // namespace
 
 LensOverlayController::LensOverlayController(
@@ -406,7 +418,7 @@ views::Widget* LensOverlayController::GetOverlayWidgetForTesting() {
 
 void LensOverlayController::ResetUIBounds() {
   content::WebContents* active_web_contents = tab_->GetContents();
-  overlay_widget_->SetBounds(active_web_contents->GetContainerBounds());
+  overlay_widget_->SetBounds(ComputeOverlayBounds(active_web_contents));
 }
 
 void LensOverlayController::CreateGlueForWebView(views::WebView* web_view) {
@@ -730,7 +742,7 @@ views::Widget::InitParams LensOverlayController::CreateWidgetInitParams() {
   params.layer_type = ui::LAYER_NOT_DRAWN;
 
   params.opacity = views::Widget::InitParams::WindowOpacity::kTranslucent;
-  params.bounds = active_web_contents->GetContainerBounds();
+  params.bounds = ComputeOverlayBounds(active_web_contents);
   return params;
 }
 
