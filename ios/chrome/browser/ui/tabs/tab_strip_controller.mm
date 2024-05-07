@@ -10,6 +10,7 @@
 
 #import "base/apple/bundle_locations.h"
 #import "base/apple/foundation_util.h"
+#import "base/debug/dump_without_crashing.h"
 #import "base/i18n/rtl.h"
 #import "base/ios/ios_util.h"
 #import "base/memory/raw_ptr.h"
@@ -1258,16 +1259,12 @@ const CGFloat kSymbolSize = 18;
       break;
     }
     case WebStateListChange::Type::kGroupCreate:
-      NOTREACHED() << "Old Tab Strip doesn't support Tab Groups.";
-      break;
     case WebStateListChange::Type::kGroupVisualDataUpdate:
-      NOTREACHED() << "Old Tab Strip doesn't support Tab Groups.";
-      break;
     case WebStateListChange::Type::kGroupMove:
-      NOTREACHED() << "Old Tab Strip doesn't support Tab Groups.";
-      break;
     case WebStateListChange::Type::kGroupDelete:
-      NOTREACHED() << "Old Tab Strip doesn't support Tab Groups.";
+      // This can happen on iPad if tab-groups-in-grid and tab-groups-on-ipad
+      // are enabled, but not modern-tab-strip.
+      base::debug::DumpWithoutCrashing();
       break;
   }
 
