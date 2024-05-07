@@ -121,113 +121,6 @@ std::string MediumSelectionToString(
   return ss.str();
 }
 
-// TODO(b/311040986): Migrate these to a conversions class.
-// `NearbyConnectionsManagerImpl` can't use the same conversion functions from
-// //chrome/services/sharing/nearby/nearby_presence_conversions.h.
-ash::nearby::presence::mojom::ActionType ActionTypeToMojom(uint32_t action) {
-  switch (::nearby::presence::ActionBit(action)) {
-    case ::nearby::presence::ActionBit::kActiveUnlockAction:
-      return ash::nearby::presence::mojom::ActionType::kActiveUnlockAction;
-    case ::nearby::presence::ActionBit::kNearbyShareAction:
-      return ash::nearby::presence::mojom::ActionType::kNearbyShareAction;
-    case ::nearby::presence::ActionBit::kInstantTetheringAction:
-      return ash::nearby::presence::mojom::ActionType::kInstantTetheringAction;
-    case ::nearby::presence::ActionBit::kPhoneHubAction:
-      return ash::nearby::presence::mojom::ActionType::kPhoneHubAction;
-    case ::nearby::presence::ActionBit::kPresenceManagerAction:
-      return ash::nearby::presence::mojom::ActionType::kPresenceManagerAction;
-    case ::nearby::presence::ActionBit::kFinderAction:
-      return ash::nearby::presence::mojom::ActionType::kFinderAction;
-    case ::nearby::presence::ActionBit::kFastPairSassAction:
-      return ash::nearby::presence::mojom::ActionType::kFastPairSassAction;
-    case ::nearby::presence::ActionBit::kTapToTransferAction:
-      return ash::nearby::presence::mojom::ActionType::kTapToTransferAction;
-    case ::nearby::presence::ActionBit::kLastAction:
-      return ash::nearby::presence::mojom::ActionType::kLastAction;
-  }
-}
-
-ash::nearby::presence::mojom::MetadataPtr MetadataToMojom(
-    ::nearby::internal::DeviceIdentityMetaData metadata) {
-  return ash::nearby::presence::mojom::Metadata::New(
-      ash::nearby::presence::proto::DeviceTypeToMojom(metadata.device_type()),
-      metadata.device_name(),
-      std::vector<uint8_t>(metadata.bluetooth_mac_address().begin(),
-                           metadata.bluetooth_mac_address().end()),
-      std::vector<uint8_t>(metadata.device_id().begin(),
-                           metadata.device_id().end()));
-}
-
-ash::nearby::presence::mojom::CredentialType CredentialTypeToMojom(
-    ::nearby::internal::CredentialType credential_type) {
-  switch (credential_type) {
-    case ::nearby::internal::CredentialType::CREDENTIAL_TYPE_UNKNOWN:
-      return ash::nearby::presence::mojom::CredentialType::
-          kCredentialTypeUnknown;
-    case ::nearby::internal::CredentialType::CREDENTIAL_TYPE_DEVICE:
-      return ash::nearby::presence::mojom::CredentialType::
-          kCredentialTypeDevice;
-    case ::nearby::internal::CredentialType::CREDENTIAL_TYPE_GAIA:
-      return ash::nearby::presence::mojom::CredentialType::kCredentialTypeGaia;
-    default:
-      return ash::nearby::presence::mojom::CredentialType::
-          kCredentialTypeUnknown;
-  }
-}
-
-ash::nearby::presence::mojom::SharedCredentialPtr SharedCredentialToMojom(
-    ::nearby::internal::SharedCredential shared_credential) {
-  return ash::nearby::presence::mojom::SharedCredential::New(
-      std::vector<uint8_t>(shared_credential.key_seed().begin(),
-                           shared_credential.key_seed().end()),
-      shared_credential.start_time_millis(),
-      shared_credential.end_time_millis(),
-      std::vector<uint8_t>(
-          shared_credential.encrypted_metadata_bytes_v0().begin(),
-          shared_credential.encrypted_metadata_bytes_v0().end()),
-      std::vector<uint8_t>(
-          shared_credential.metadata_encryption_key_tag_v0().begin(),
-          shared_credential.metadata_encryption_key_tag_v0().end()),
-      std::vector<uint8_t>(
-          shared_credential.connection_signature_verification_key().begin(),
-          shared_credential.connection_signature_verification_key().end()),
-      std::vector<uint8_t>(
-          shared_credential.advertisement_signature_verification_key().begin(),
-          shared_credential.advertisement_signature_verification_key().end()),
-      ash::nearby::presence::proto::IdentityTypeToMojom(
-          shared_credential.identity_type()),
-      std::vector<uint8_t>(shared_credential.version().begin(),
-                           shared_credential.version().end()),
-      CredentialTypeToMojom(shared_credential.credential_type()),
-      std::vector<uint8_t>(
-          shared_credential.encrypted_metadata_bytes_v1().begin(),
-          shared_credential.encrypted_metadata_bytes_v1().end()),
-      std::vector<uint8_t>(
-          shared_credential.metadata_encryption_key_unsigned_adv_tag_v1()
-              .begin(),
-          shared_credential.metadata_encryption_key_unsigned_adv_tag_v1()
-              .end()),
-      shared_credential.id(), shared_credential.dusi(),
-      std::vector<uint8_t>(shared_credential.signature_version().begin(),
-                           shared_credential.signature_version().end()));
-}
-
-ash::nearby::presence::mojom::PresenceDevicePtr BuildPresenceMojomDevice(
-    nearby::presence::PresenceDevice device) {
-  std::vector<ash::nearby::presence::mojom::ActionType> actions;
-  for (auto action : device.GetActions()) {
-    actions.push_back(ActionTypeToMojom(action.GetActionIdentifier()));
-  }
-
-  return ash::nearby::presence::mojom::PresenceDevice::New(
-      device.GetEndpointId(), std::move(actions),
-      /*stable_device_id=*/std::nullopt,
-      MetadataToMojom(device.GetDeviceIdentityMetadata()),
-      device.GetDecryptSharedCredential()
-          ? SharedCredentialToMojom(device.GetDecryptSharedCredential().value())
-          : nullptr);
-}
-
 }  // namespace
 
 NearbyConnectionsManagerImpl::NearbyConnectionsManagerImpl(
@@ -752,7 +645,8 @@ void NearbyConnectionsManagerImpl::ConnectV3(
       *endpoint_id_to_presence_device_map_.at(endpoint_id).get();
 
   nearby_connections->RequestConnectionV3(
-      service_id_, BuildPresenceMojomDevice(presence_device),
+      service_id_,
+      ash::nearby::presence::BuildPresenceMojomDevice(presence_device),
       ConnectionOptions::New(std::move(allowed_mediums),
                              /*bluetooth_mac_address=*/std::nullopt,
                              /*keep_alive_interval_millis=*/std::nullopt,
@@ -769,7 +663,8 @@ void NearbyConnectionsManagerImpl::DisconnectV3(
   }
 
   process_reference_->GetNearbyConnections()->DisconnectFromDeviceV3(
-      service_id_, BuildPresenceMojomDevice(remote_presence_device),
+      service_id_,
+      ash::nearby::presence::BuildPresenceMojomDevice(remote_presence_device),
       base::BindOnce([](ConnectionsStatus status) {
         CD_LOG(VERBOSE, Feature::NEARBY_INFRA)
             << __func__ << ": Disconnect (V3) from device "
@@ -1087,7 +982,8 @@ void NearbyConnectionsManagerImpl::OnConnectionInitiatedV3(
         this, payload_listener.InitWithNewPipeAndPassReceiver());
 
     process_reference_->GetNearbyConnections()->AcceptConnectionV3(
-        service_id_, BuildPresenceMojomDevice(presence_device),
+        service_id_,
+        ash::nearby::presence::BuildPresenceMojomDevice(presence_device),
         std::move(payload_listener),
         base::BindOnce([](ConnectionsStatus status) {
           CD_LOG(VERBOSE, Feature::NEARBY_INFRA)
@@ -1097,7 +993,8 @@ void NearbyConnectionsManagerImpl::OnConnectionInitiatedV3(
         }));
   } else {
     process_reference_->GetNearbyConnections()->RejectConnectionV3(
-        service_id_, BuildPresenceMojomDevice(presence_device),
+        service_id_,
+        ash::nearby::presence::BuildPresenceMojomDevice(presence_device),
         base::BindOnce([](ConnectionsStatus status) {
           CD_LOG(VERBOSE, Feature::NEARBY_INFRA)
               << __func__ << ": Reject connection (V3) attempted to device "

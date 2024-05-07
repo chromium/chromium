@@ -144,9 +144,9 @@ struct SharedCredential {
   // The encrypted Metadata in bytes. Encrypted by the v1.
   // metadata_encryption_key.
   array<uint8> encrypted_metadata_bytes_v1;
-  // The tag for verifying metadata_encryption_key for an unsigned v1
-  // advertisement.
-  array<uint8> metadata_encryption_key_unsigned_adv_tag_v1;
+  // The HMAC of the plaintext identity token included (in encrypted form) in an
+  // unsigned, short salt, V1 advertisement.
+  array<uint8> identity_token_short_salt_adv_hmac_key_v1;
   // The randomly generated positive unique id of the shared credential.
   int64 id;
   // The Device User Session ID number related to the uploader of this shared
@@ -154,7 +154,13 @@ struct SharedCredential {
   string dusi;
   // Signature algorithm version. Used to determine which algorithm to use to
   // verify incoming signatures.
-  array<uint8> signature_version;
+  string signature_version;
+  // The HMAC of the plaintext identity token included (in encrypted form) in an
+  // unsigned, extended salt, V1 advertisement.
+  array<uint8> identity_token_extended_salt_adv_hmac_key_v1;
+  // The HMAC of the plaintext identity token included (in encrypted form) in a
+  // signed V1 advertisement.
+  array<uint8> identity_token_signed_adv_hmac_key_v1;
 };
 
 // Presence Device information to specify the device information when a device
@@ -192,8 +198,16 @@ struct LocalCredential {
   IdentityType identity_type;
   // The set of 2-byte salts already used to encrypt the metadata key.
   map<uint32, bool> consumed_salts;
-  // The 16 bytes aes key to encrypt metadata in SharedCredential.
-  array<uint8> metadata_encryption_key_v1;
+  // 16 bytes of crypto-grade random data that the credential's identity
+  // provider can use to encrypt metadata in a DiscoveryCredential
+  // (SharedCredential).
+  array<uint8> identity_token_v1;
+  // The positive unique ID of (and hashed based on) a pair of Secret Key and
+  // X509Certificate's public key.
+  int64 id;
+  // Signature algorithm version. Used to determine which algorithm to use to
+  // sign data.
+  string signature_version;
 };
 
 // Intentionally left empty. The ScanSession remote is used by the client

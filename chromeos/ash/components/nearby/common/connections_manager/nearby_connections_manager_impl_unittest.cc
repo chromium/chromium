@@ -15,6 +15,7 @@
 #include "base/test/scoped_feature_list.h"
 #include "chrome/test/base/testing_browser_process.h"
 #include "chromeos/ash/components/nearby/common/connections_manager/nearby_connection_impl.h"
+#include "chromeos/ash/components/nearby/presence/conversions/nearby_presence_conversions.h"
 #include "chromeos/ash/services/nearby/public/cpp/mock_nearby_connections.h"
 #include "chromeos/ash/services/nearby/public/cpp/mock_nearby_process_manager.h"
 #include "chromeos/ash/services/nearby/public/mojom/nearby_connections_types.mojom.h"
@@ -87,62 +88,6 @@ base::FilePath InitializeTemporaryFile(base::File& file) {
   return path;
 }
 
-ash::nearby::presence::mojom::ActionType ConvertActionTypeToMojom(
-    uint32_t action) {
-  switch (::nearby::presence::ActionBit(action)) {
-    case ::nearby::presence::ActionBit::kActiveUnlockAction:
-      return ash::nearby::presence::mojom::ActionType::kActiveUnlockAction;
-    case ::nearby::presence::ActionBit::kNearbyShareAction:
-      return ash::nearby::presence::mojom::ActionType::kNearbyShareAction;
-    case ::nearby::presence::ActionBit::kInstantTetheringAction:
-      return ash::nearby::presence::mojom::ActionType::kInstantTetheringAction;
-    case ::nearby::presence::ActionBit::kPhoneHubAction:
-      return ash::nearby::presence::mojom::ActionType::kPhoneHubAction;
-    case ::nearby::presence::ActionBit::kPresenceManagerAction:
-      return ash::nearby::presence::mojom::ActionType::kPresenceManagerAction;
-    case ::nearby::presence::ActionBit::kFinderAction:
-      return ash::nearby::presence::mojom::ActionType::kFinderAction;
-    case ::nearby::presence::ActionBit::kFastPairSassAction:
-      return ash::nearby::presence::mojom::ActionType::kFastPairSassAction;
-    case ::nearby::presence::ActionBit::kTapToTransferAction:
-      return ash::nearby::presence::mojom::ActionType::kTapToTransferAction;
-    case ::nearby::presence::ActionBit::kLastAction:
-      return ash::nearby::presence::mojom::ActionType::kLastAction;
-  }
-}
-
-ash::nearby::presence::mojom::PresenceDeviceType DeviceTypeToMojom(
-    ::nearby::internal::DeviceType device_type) {
-  switch (device_type) {
-    case ::nearby::internal::DeviceType::DEVICE_TYPE_UNKNOWN:
-      return ash::nearby::presence::mojom::PresenceDeviceType::kUnknown;
-    case ::nearby::internal::DeviceType::DEVICE_TYPE_PHONE:
-      return ash::nearby::presence::mojom::PresenceDeviceType::kPhone;
-    case ::nearby::internal::DeviceType::DEVICE_TYPE_TABLET:
-      return ash::nearby::presence::mojom::PresenceDeviceType::kTablet;
-    case ::nearby::internal::DeviceType::DEVICE_TYPE_DISPLAY:
-      return ash::nearby::presence::mojom::PresenceDeviceType::kDisplay;
-    case ::nearby::internal::DeviceType::DEVICE_TYPE_TV:
-      return ash::nearby::presence::mojom::PresenceDeviceType::kTv;
-    case ::nearby::internal::DeviceType::DEVICE_TYPE_WATCH:
-      return ash::nearby::presence::mojom::PresenceDeviceType::kWatch;
-    case ::nearby::internal::DeviceType::DEVICE_TYPE_CHROMEOS:
-      return ash::nearby::presence::mojom::PresenceDeviceType::kChromeos;
-    default:
-      return ash::nearby::presence::mojom::PresenceDeviceType::kUnknown;
-  }
-}
-
-ash::nearby::presence::mojom::MetadataPtr MetadataToMojom(
-    ::nearby::internal::DeviceIdentityMetaData metadata) {
-  return ash::nearby::presence::mojom::Metadata::New(
-      DeviceTypeToMojom(metadata.device_type()), metadata.device_name(),
-      std::vector<uint8_t>(metadata.bluetooth_mac_address().begin(),
-                           metadata.bluetooth_mac_address().end()),
-      std::vector<uint8_t>(metadata.device_id().begin(),
-                           metadata.device_id().end()));
-}
-
 nearby::presence::PresenceDevice CreatePresenceDevice() {
   nearby::internal::DeviceIdentityMetaData metadata;
   metadata.set_device_type(nearby::internal::DeviceType::DEVICE_TYPE_PHONE);
@@ -157,20 +102,6 @@ nearby::presence::PresenceDevice CreatePresenceDevice() {
       nearby::presence::ActionBit::kPresenceManagerAction));
 
   return presence_device;
-}
-
-ash::nearby::presence::mojom::PresenceDevicePtr BuildPresenceMojomDevice(
-    nearby::presence::PresenceDevice device) {
-  std::vector<ash::nearby::presence::mojom::ActionType> actions;
-  for (auto action : device.GetActions()) {
-    actions.push_back(ConvertActionTypeToMojom(action.GetActionIdentifier()));
-  }
-
-  return ash::nearby::presence::mojom::PresenceDevice::New(
-      device.GetEndpointId(), std::move(actions),
-      /*stable_device_id=*/std::nullopt,
-      MetadataToMojom(device.GetDeviceIdentityMetadata()),
-      /*decrypt_shared_credential=*/nullptr);
 }
 
 }  // namespace
@@ -532,7 +463,7 @@ class NearbyConnectionsManagerImplTest : public testing::Test {
       nearby::connections::mojom::InitialConnectionInfoV3Ptr info_v3,
       Status on_connection_result_status) {
     ash::nearby::presence::mojom::PresenceDevicePtr presence_device_mojom =
-        BuildPresenceMojomDevice(remote_presence_device);
+        ash::nearby::presence::BuildPresenceMojomDevice(remote_presence_device);
 
     base::RunLoop request_connection_run_loop;
     EXPECT_CALL(nearby_connections_, RequestConnectionV3)
@@ -2252,7 +2183,7 @@ TEST_F(NearbyConnectionsManagerImplTest, OnBandwidthChangedV3) {
           });
 
   ash::nearby::presence::mojom::PresenceDevicePtr presence_device_mojom =
-      BuildPresenceMojomDevice(presence_device);
+      ash::nearby::presence::BuildPresenceMojomDevice(presence_device);
   nearby_connections_manager_->ConnectV3(
       presence_device, NearbyConnectionsManager::DataUsage::kOffline,
       base::DoNothing());

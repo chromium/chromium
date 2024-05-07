@@ -234,13 +234,18 @@ mojom::SharedCredentialPtr SharedCredentialToMojom(
           shared_credential.encrypted_metadata_bytes_v1().begin(),
           shared_credential.encrypted_metadata_bytes_v1().end()),
       std::vector<uint8_t>(
-          shared_credential.metadata_encryption_key_unsigned_adv_tag_v1()
-              .begin(),
-          shared_credential.metadata_encryption_key_unsigned_adv_tag_v1()
-              .end()),
+          shared_credential.identity_token_short_salt_adv_hmac_key_v1().begin(),
+          shared_credential.identity_token_short_salt_adv_hmac_key_v1().end()),
       shared_credential.id(), shared_credential.dusi(),
-      std::vector<uint8_t>(shared_credential.signature_version().begin(),
-                           shared_credential.signature_version().end()));
+      shared_credential.signature_version(),
+      std::vector<uint8_t>(
+          shared_credential.identity_token_extended_salt_adv_hmac_key_v1()
+              .begin(),
+          shared_credential.identity_token_extended_salt_adv_hmac_key_v1()
+              .end()),
+      std::vector<uint8_t>(
+          shared_credential.identity_token_signed_adv_hmac_key_v1().begin(),
+          shared_credential.identity_token_signed_adv_hmac_key_v1().end()));
 }
 
 ::nearby::internal::SharedCredential SharedCredentialFromMojom(
@@ -271,14 +276,18 @@ mojom::SharedCredentialPtr SharedCredentialToMojom(
   proto.set_encrypted_metadata_bytes_v1(
       std::string(shared_credential->encrypted_metadata_bytes_v1.begin(),
                   shared_credential->encrypted_metadata_bytes_v1.end()));
-  proto.set_metadata_encryption_key_unsigned_adv_tag_v1(std::string(
-      shared_credential->metadata_encryption_key_unsigned_adv_tag_v1.begin(),
-      shared_credential->metadata_encryption_key_unsigned_adv_tag_v1.end()));
+  proto.set_identity_token_short_salt_adv_hmac_key_v1(std::string(
+      shared_credential->identity_token_short_salt_adv_hmac_key_v1.begin(),
+      shared_credential->identity_token_short_salt_adv_hmac_key_v1.end()));
   proto.set_id(shared_credential->id);
   proto.set_dusi(shared_credential->dusi);
-  proto.set_signature_version(
-      std::string(shared_credential->signature_version.begin(),
-                  shared_credential->signature_version.end()));
+  proto.set_signature_version(shared_credential->signature_version);
+  proto.set_identity_token_extended_salt_adv_hmac_key_v1(std::string(
+      shared_credential->identity_token_extended_salt_adv_hmac_key_v1.begin(),
+      shared_credential->identity_token_extended_salt_adv_hmac_key_v1.end()));
+  proto.set_identity_token_signed_adv_hmac_key_v1(std::string(
+      shared_credential->identity_token_signed_adv_hmac_key_v1.begin(),
+      shared_credential->identity_token_signed_adv_hmac_key_v1.end()));
   return proto;
 }
 

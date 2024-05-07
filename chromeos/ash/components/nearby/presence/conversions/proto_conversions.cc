@@ -180,14 +180,18 @@ mojom::MetadataPtr MetadataToMojom(
   proto.set_encrypted_metadata_bytes_v1(
       std::string(shared_credential->encrypted_metadata_bytes_v1.begin(),
                   shared_credential->encrypted_metadata_bytes_v1.end()));
-  proto.set_metadata_encryption_key_unsigned_adv_tag_v1(std::string(
-      shared_credential->metadata_encryption_key_unsigned_adv_tag_v1.begin(),
-      shared_credential->metadata_encryption_key_unsigned_adv_tag_v1.end()));
+  proto.set_identity_token_short_salt_adv_hmac_key_v1(std::string(
+      shared_credential->identity_token_short_salt_adv_hmac_key_v1.begin(),
+      shared_credential->identity_token_short_salt_adv_hmac_key_v1.end()));
   proto.set_id(shared_credential->id);
   proto.set_dusi(shared_credential->dusi);
-  proto.set_signature_version(
-      std::string(shared_credential->signature_version.begin(),
-                  shared_credential->signature_version.end()));
+  proto.set_signature_version(shared_credential->signature_version);
+  proto.set_identity_token_extended_salt_adv_hmac_key_v1(std::string(
+      shared_credential->identity_token_extended_salt_adv_hmac_key_v1.begin(),
+      shared_credential->identity_token_extended_salt_adv_hmac_key_v1.end()));
+  proto.set_identity_token_signed_adv_hmac_key_v1(std::string(
+      shared_credential->identity_token_signed_adv_hmac_key_v1.begin(),
+      shared_credential->identity_token_signed_adv_hmac_key_v1.end()));
   return proto;
 }
 
@@ -223,9 +227,11 @@ mojom::MetadataPtr MetadataToMojom(
     proto.mutable_consumed_salts()->insert(map_pair);
   }
 
-  proto.set_metadata_encryption_key_v1(
-      std::string(local_credential->metadata_encryption_key_v1.begin(),
-                  local_credential->metadata_encryption_key_v1.end()));
+  proto.set_identity_token_v1(
+      std::string(local_credential->identity_token_v1.begin(),
+                  local_credential->identity_token_v1.end()));
+  proto.set_id(local_credential->id);
+  proto.set_signature_version(local_credential->signature_version);
 
   return proto;
 }
@@ -289,13 +295,18 @@ mojom::SharedCredentialPtr SharedCredentialToMojom(
           shared_credential.encrypted_metadata_bytes_v1().begin(),
           shared_credential.encrypted_metadata_bytes_v1().end()),
       std::vector<uint8_t>(
-          shared_credential.metadata_encryption_key_unsigned_adv_tag_v1()
-              .begin(),
-          shared_credential.metadata_encryption_key_unsigned_adv_tag_v1()
-              .end()),
+          shared_credential.identity_token_short_salt_adv_hmac_key_v1().begin(),
+          shared_credential.identity_token_short_salt_adv_hmac_key_v1().end()),
       shared_credential.id(), shared_credential.dusi(),
-      std::vector<uint8_t>(shared_credential.signature_version().begin(),
-                           shared_credential.signature_version().end()));
+      shared_credential.signature_version(),
+      std::vector<uint8_t>(
+          shared_credential.identity_token_extended_salt_adv_hmac_key_v1()
+              .begin(),
+          shared_credential.identity_token_extended_salt_adv_hmac_key_v1()
+              .end()),
+      std::vector<uint8_t>(
+          shared_credential.identity_token_signed_adv_hmac_key_v1().begin(),
+          shared_credential.identity_token_signed_adv_hmac_key_v1().end()));
 }
 
 mojom::LocalCredentialPtr LocalCredentialToMojom(
@@ -316,9 +327,9 @@ mojom::LocalCredentialPtr LocalCredentialToMojom(
       PrivateKeyToMojom(local_credential.advertisement_signing_key()),
       PrivateKeyToMojom(local_credential.connection_signing_key()),
       IdentityTypeToMojom(local_credential.identity_type()), salt_flat_map,
-      std::vector<uint8_t>(
-          local_credential.metadata_encryption_key_v1().begin(),
-          local_credential.metadata_encryption_key_v1().end()));
+      std::vector<uint8_t>(local_credential.identity_token_v1().begin(),
+                           local_credential.identity_token_v1().end()),
+      local_credential.id(), local_credential.signature_version());
 }
 
 ash::nearby::proto::PublicCertificate PublicCertificateFromSharedCredential(
@@ -377,36 +388,42 @@ int64_t MillisecondsToSeconds(int64_t milliseconds) {
 RemoteSharedCredentialToThirdPartySharedCredential(
     ash::nearby::proto::SharedCredential remote_shared_credential) {
   ::nearby::internal::SharedCredential shared_credential;
-
   shared_credential.set_id(remote_shared_credential.id());
   shared_credential.set_key_seed(remote_shared_credential.key_seed());
-  shared_credential.set_connection_signature_verification_key(
-      remote_shared_credential.connection_signature_verification_key());
-
-  shared_credential.set_advertisement_signature_verification_key(
-      remote_shared_credential.advertisement_signature_verification_key());
-
   shared_credential.set_start_time_millis(
       remote_shared_credential.start_time_millis());
   shared_credential.set_end_time_millis(
       remote_shared_credential.end_time_millis());
 
+  shared_credential.set_encrypted_metadata_bytes_v0(
+      remote_shared_credential.encrypted_metadata_bytes_v0());
+  shared_credential.set_metadata_encryption_key_tag_v0(
+      remote_shared_credential.metadata_encryption_key_tag_v0());
+  shared_credential.set_connection_signature_verification_key(
+      remote_shared_credential.connection_signature_verification_key());
+  shared_credential.set_advertisement_signature_verification_key(
+      remote_shared_credential.advertisement_signature_verification_key());
+
+  shared_credential.set_identity_type(
+      RemoteIdentityTypeToThirdPartyIdentityType(
+          remote_shared_credential.identity_type()));
   shared_credential.set_version(remote_shared_credential.version());
   shared_credential.set_credential_type(
       RemoteCredentialTypeToThirdPartyCredentialType(
           remote_shared_credential.credential_type()));
   shared_credential.set_encrypted_metadata_bytes_v1(
       remote_shared_credential.encrypted_metadata_bytes_v1());
-  shared_credential.set_metadata_encryption_key_unsigned_adv_tag_v1(
-      remote_shared_credential.metadata_encryption_key_unsigned_adv_tag_v1());
+  shared_credential.set_identity_token_short_salt_adv_hmac_key_v1(
+      remote_shared_credential.identity_token_short_salt_adv_hmac_key_v1());
 
-  shared_credential.set_encrypted_metadata_bytes_v0(
-      remote_shared_credential.encrypted_metadata_bytes_v0());
-  shared_credential.set_metadata_encryption_key_tag_v0(
-      remote_shared_credential.metadata_encryption_key_tag_v0());
-  shared_credential.set_identity_type(
-      RemoteIdentityTypeToThirdPartyIdentityType(
-          remote_shared_credential.identity_type()));
+  shared_credential.set_dusi(remote_shared_credential.dusi());
+  shared_credential.set_signature_version(
+      remote_shared_credential.signature_version());
+
+  shared_credential.set_identity_token_extended_salt_adv_hmac_key_v1(
+      remote_shared_credential.identity_token_extended_salt_adv_hmac_key_v1());
+  shared_credential.set_identity_token_signed_adv_hmac_key_v1(
+      remote_shared_credential.identity_token_signed_adv_hmac_key_v1());
 
   return shared_credential;
 }

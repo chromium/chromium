@@ -40,7 +40,7 @@ enum CredentialType {
 // The shared credential is derived from local credential, and distributed to
 // remote devices based on the trust token for identity decryption and
 // authentication.
-// NEXT_ID=15
+// NEXT_ID=18
 message SharedCredential {
   // The randomly generated unique id of the shared credential.
   int64 id = 1;
@@ -89,12 +89,24 @@ message SharedCredential {
   bytes encrypted_metadata_bytes_v1 = 12;
 
   // The tag for verifying metadata_encryption_key for an unsigned V1 adv.
-  bytes metadata_encryption_key_unsigned_adv_tag_v1 = 13;
+  bytes identity_token_short_salt_adv_hmac_key_v1 = 13;
 
   // The dusi of the device, for debugging purpose only.
   // The server will fill this field ONLY IF the device group is in the debug
   // group by the experiment flag: nearby_presence_chime_debug
   string dusi = 14;
+
+  // Signature algorithm version. Used to determine which algorithm to use to
+  // verify incoming signatures.
+  string signature_version = 15;
+
+  // The HMAC of the plaintext identity token included (in encrypted form) in an
+  // unsigned, extended salt, V1 advertisement.
+  bytes identity_token_extended_salt_adv_hmac_key_v1 = 16;
+
+  // The HMAC of the plaintext identity token included (in encrypted form) in a
+  // signed V1 advertisement.
+  bytes identity_token_signed_adv_hmac_key_v1 = 17;
 }
 
 // A PublicCertificate contains a secret key used when recognizing another
