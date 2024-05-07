@@ -558,6 +558,9 @@ void CloudFileSystem::OnOpenFileCompleted(
         file_handle,
         OpenedCloudFile(file_path, mode, GetVersionTag(metadata.get()),
                         GetCloudSize(metadata.get())));
+  } else if (result == base::File::FILE_ERROR_NOT_FOUND) {
+    // The file doesn't exist on the FSP, evict it from the cache.
+    content_cache_->Evict(file_path);
   }
   std::move(callback).Run(file_handle, result, std::move(metadata));
 }

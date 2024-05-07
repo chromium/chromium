@@ -491,5 +491,33 @@ TEST_F(FileSystemProviderCloudFileSystemTest,
             base::File::FILE_ERROR_NOT_FOUND);
 }
 
+TEST_F(FileSystemProviderCloudFileSystemTest,
+       NotFoundFromOpenFileEvictsCachedFile) {
+  // Underlying FakeProvidedFileSystem is (always) initialised with fake file
+  // with kFakeFilePath.
+  const base::FilePath fake_file_path(kFakeFilePath);
+  auto [mock_content_cache, cloud_file_system] =
+      CreateMockContentCacheAndCloudFileSystem();
+
+  // The file won't be evicted after the successful `OpenFile` request.
+  EXPECT_CALL(*mock_content_cache, Evict(fake_file_path)).Times(0);
+  OpenFileFuture open_file_future1;
+  cloud_file_system->OpenFile(fake_file_path, OPEN_FILE_MODE_READ,
+                              open_file_future1.GetRepeatingCallback());
+  EXPECT_EQ(open_file_future1.Get<base::File::Error>(), base::File::FILE_OK);
+
+  // Remove the entry from the underlying FSP, this should result in a
+  // base::File::FILE_ERROR_NOT_FOUND on the `OpenFile` request.
+  DeleteEntryOnFakeFileSystem(fake_file_path);
+
+  // The file will be evicted after the unsuccessful `OpenFile` request.
+  EXPECT_CALL(*mock_content_cache, Evict(fake_file_path)).Times(1);
+  OpenFileFuture open_file_future2;
+  cloud_file_system->OpenFile(fake_file_path, OPEN_FILE_MODE_READ,
+                              open_file_future2.GetRepeatingCallback());
+  EXPECT_EQ(open_file_future2.Get<base::File::Error>(),
+            base::File::FILE_ERROR_NOT_FOUND);
+}
+
 }  // namespace
 }  // namespace ash::file_system_provider
