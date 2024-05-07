@@ -32,10 +32,12 @@ import org.chromium.base.FakeTimeTestRule;
 import org.chromium.base.test.util.DoNotBatch;
 import org.chromium.base.test.util.Feature;
 import org.chromium.base.test.util.Features;
+import org.chromium.base.test.util.HistogramWatcher;
 import org.chromium.base.test.util.UrlUtils;
 import org.chromium.blink_public.common.BlinkFeatures;
 import org.chromium.components.embedder_support.util.WebResourceResponseInfo;
 import org.chromium.content_public.browser.test.util.TestCallbackHelperContainer.OnPageStartedHelper;
+import org.chromium.content_public.browser.test.util.TestThreadUtils;
 
 import java.io.FileInputStream;
 import java.io.UnsupportedEncodingException;
@@ -599,5 +601,69 @@ public class AwPrerenderTest extends AwParameterizedTest {
         Assert.assertEquals(0, data.mPorts.length);
 
         Assert.assertTrue(mWebMessageListener.hasNoMoreOnPostMessage());
+    }
+
+    // Tests that WebView.addJavascriptInterface() cancels prerendered pages.
+    @Test
+    @LargeTest
+    @Feature({"AndroidWebView"})
+    @Features.EnableFeatures({AwFeatures.WEBVIEW_PRERENDER2})
+    @Features.DisableFeatures({BlinkFeatures.PRERENDER2_MEMORY_CONTROLS})
+    public void testPrerenderingCanceledWhenAddingJSInterface() throws Throwable {
+        var histogramWatcher =
+                HistogramWatcher.newBuilder()
+                        .expectIntRecord(
+                                "Prerender.Experimental.PrerenderHostFinalStatus.SpeculationRule",
+                                /*kJavaScriptInterfaceAdded*/ 79)
+                        .build();
+
+        // Start prerendering.
+        injectSpeculationRulesAndWait(mPrerenderingUrl);
+
+        // Inject a JavaScript object. This should cancel prerendering.
+        Object testInjectedObject =
+                new Object() {
+                    @JavascriptInterface
+                    public void mock() {}
+                };
+        AwActivityTestRule.addJavascriptInterfaceOnUiThread(
+                mAwContents, testInjectedObject, "testInjectedObject");
+
+        // Wait until prerendering is canceled for the interface addition.
+        histogramWatcher.pollInstrumentationThreadUntilSatisfied();
+    }
+
+    // Tests that WebView.removeJavascriptInterface() cancels prerendered pages.
+    @Test
+    @LargeTest
+    @Feature({"AndroidWebView"})
+    @Features.EnableFeatures({AwFeatures.WEBVIEW_PRERENDER2})
+    @Features.DisableFeatures({BlinkFeatures.PRERENDER2_MEMORY_CONTROLS})
+    public void testPrerenderingCanceledWhenRemovingJSInterface() throws Throwable {
+        var histogramWatcher =
+                HistogramWatcher.newBuilder()
+                        .expectIntRecord(
+                                "Prerender.Experimental.PrerenderHostFinalStatus.SpeculationRule",
+                                /*kJavaScriptInterfaceRemoved*/ 80)
+                        .build();
+
+        // Inject a JavaScript object.
+        Object testInjectedObject =
+                new Object() {
+                    @JavascriptInterface
+                    public void mock() {}
+                };
+        AwActivityTestRule.addJavascriptInterfaceOnUiThread(
+                mAwContents, testInjectedObject, "testInjectedObject");
+
+        // Start prerendering.
+        injectSpeculationRulesAndWait(mPrerenderingUrl);
+
+        // Remove the JavaScript object. This should cancel prerendering.
+        TestThreadUtils.runOnUiThreadBlocking(
+                () -> mAwContents.removeJavascriptInterface("testInjectedObject"));
+
+        // Wait until prerendering is canceled for the interface removal.
+        histogramWatcher.pollInstrumentationThreadUntilSatisfied();
     }
 }

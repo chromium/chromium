@@ -12125,6 +12125,8 @@ experimental domain Preload
       PrerenderingUrlHasEffectiveUrl
       RedirectedPrerenderingUrlHasEffectiveUrl
       ActivationUrlHasEffectiveUrl
+      JavaScriptInterfaceAdded
+      JavaScriptInterfaceRemoved
 
   # Fired when a preload enabled state is updated.
   event preloadEnabledStateUpdated

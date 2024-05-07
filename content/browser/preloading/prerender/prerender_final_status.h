@@ -155,7 +155,10 @@ enum class PrerenderFinalStatus {
   kRedirectedPrerenderingUrlHasEffectiveUrl = 77,
   kActivationUrlHasEffectiveUrl = 78,
 
-  kMaxValue = kActivationUrlHasEffectiveUrl,
+  kJavaScriptInterfaceAdded = 79,
+  kJavaScriptInterfaceRemoved = 80,
+
+  kMaxValue = kJavaScriptInterfaceRemoved,
 };
 // LINT.ThenChange()
 

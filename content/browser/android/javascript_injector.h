@@ -15,6 +15,7 @@
 namespace content {
 
 class GinJavaBridgeDispatcherHost;
+class WebContentsImpl;
 
 class JavascriptInjector : public WebContentsUserData<JavascriptInjector> {
  public:
@@ -45,6 +46,9 @@ class JavascriptInjector : public WebContentsUserData<JavascriptInjector> {
                        const base::android::JavaParamRef<jstring>& name);
  private:
   friend class content::WebContentsUserData<JavascriptInjector>;
+
+  WebContentsImpl& GetWebContentsImpl();
+
   // A weak reference to the Java JavascriptInjectorImpl object.
   JavaObjectWeakGlobalRef java_ref_;
 

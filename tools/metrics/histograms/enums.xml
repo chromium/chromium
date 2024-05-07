@@ -30278,6 +30278,8 @@ Called by update_net_error_codes.py.-->
   <int value="76" label="kPrerenderingUrlHasEffectiveUrl"/>
   <int value="77" label="kRedirectedPrerenderingUrlHasEffectiveUrl"/>
   <int value="78" label="kActivationUrlHasEffectiveUrl"/>
+  <int value="79" label="kJavaScriptInterfaceAdded"/>
+  <int value="80" label="kJavaScriptInterfaceRemoved"/>
 </enum>
 
 <enum name="PreviewsCoinFlipResult">
