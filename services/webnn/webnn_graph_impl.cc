@@ -909,24 +909,29 @@ bool ValidateElu(const IdToOperandMap& id_to_operand_map,
   return true;
 }
 
-static constexpr auto kUnaryOperatorConstraints = base::MakeFixedFlatMap<
-    mojom::ElementWiseUnary::Kind,
-    webnn::DataTypeConstraintSet>({
-    {mojom::ElementWiseUnary::Kind::kAbs, DataTypeConstraint::kSignedNumber},
-    {mojom::ElementWiseUnary::Kind::kCeil, DataTypeConstraint::kFloat},
-    {mojom::ElementWiseUnary::Kind::kCos, DataTypeConstraint::kFloat},
-    {mojom::ElementWiseUnary::Kind::kExp, DataTypeConstraint::kFloat},
-    {mojom::ElementWiseUnary::Kind::kFloor, DataTypeConstraint::kFloat},
-    {mojom::ElementWiseUnary::Kind::kLog, DataTypeConstraint::kFloat},
-    {mojom::ElementWiseUnary::Kind::kNeg, DataTypeConstraint::kSignedNumber},
-    {mojom::ElementWiseUnary::Kind::kSin, DataTypeConstraint::kFloat},
-    {mojom::ElementWiseUnary::Kind::kTan, DataTypeConstraint::kFloat},
-    {mojom::ElementWiseUnary::Kind::kLogicalNot, {Operand::DataType::kUint8}},
-    {mojom::ElementWiseUnary::Kind::kIdentity, DataTypeConstraintSet::All()},
-    {mojom::ElementWiseUnary::Kind::kSqrt, DataTypeConstraint::kFloat},
-    {mojom::ElementWiseUnary::Kind::kErf, DataTypeConstraint::kFloat},
-    {mojom::ElementWiseUnary::Kind::kReciprocal, DataTypeConstraint::kFloat},
-});
+static constexpr auto kUnaryOperatorConstraints =
+    base::MakeFixedFlatMap<mojom::ElementWiseUnary::Kind,
+                           webnn::DataTypeConstraintSet>({
+        {mojom::ElementWiseUnary::Kind::kAbs,
+         DataTypeConstraint::kFloat16To32Int8To32},
+        {mojom::ElementWiseUnary::Kind::kCeil, DataTypeConstraint::kFloat},
+        {mojom::ElementWiseUnary::Kind::kCos, DataTypeConstraint::kFloat},
+        {mojom::ElementWiseUnary::Kind::kExp, DataTypeConstraint::kFloat},
+        {mojom::ElementWiseUnary::Kind::kFloor, DataTypeConstraint::kFloat},
+        {mojom::ElementWiseUnary::Kind::kLog, DataTypeConstraint::kFloat},
+        {mojom::ElementWiseUnary::Kind::kNeg,
+         DataTypeConstraint::kFloat16To32Int8To32},
+        {mojom::ElementWiseUnary::Kind::kSin, DataTypeConstraint::kFloat},
+        {mojom::ElementWiseUnary::Kind::kTan, DataTypeConstraint::kFloat},
+        {mojom::ElementWiseUnary::Kind::kLogicalNot,
+         {Operand::DataType::kUint8}},
+        {mojom::ElementWiseUnary::Kind::kIdentity,
+         DataTypeConstraintSet::All()},
+        {mojom::ElementWiseUnary::Kind::kSqrt, DataTypeConstraint::kFloat},
+        {mojom::ElementWiseUnary::Kind::kErf, DataTypeConstraint::kFloat},
+        {mojom::ElementWiseUnary::Kind::kReciprocal,
+         DataTypeConstraint::kFloat},
+    });
 
 bool ValidateElementWiseUnary(const IdToOperandMap& id_to_operand_map,
                               const mojom::ElementWiseUnaryPtr& operation,
@@ -2062,7 +2067,7 @@ bool ValidateOperation(const IdToOperandMap& id_to_operand_map,
                              processed_operands);
     case mojom::Operation::Tag::kRelu:
       return ValidateUnaryOperation(id_to_operand_map, operation->get_relu(),
-                                    DataTypeConstraintSet::All(),
+                                    DataTypeConstraint::kFloat16To32Int8To32,
                                     processed_operands);
     case mojom::Operation::Tag::kSlice:
       return ValidateSlice(id_to_operand_map, operation->get_slice(),

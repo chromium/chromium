@@ -2211,33 +2211,46 @@ base::expected<void, mojom::ErrorPtr> CreateOperatorNodeForElementWiseUnary(
     const mojom::ElementWiseUnaryPtr& operation,
     GraphBuilder& graph_builder,
     IdToNodeOutputMap& id_to_node_output_map) {
+  const NodeOutput* input = GetNodeOutputForOperand(
+      id_to_node_output_map, operation->input_operand_id);
+  const DML_TENSOR_DATA_TYPE input_data_type =
+      input->GetTensorDesc().GetDataType();
+
   switch (operation->kind) {
     case mojom::ElementWiseUnary::Kind::kAbs: {
+      CHECK(kDmlFloatDataTypes.contains(input_data_type) ||
+            input_data_type == DML_TENSOR_DATA_TYPE_INT32 ||
+            input_data_type == DML_TENSOR_DATA_TYPE_INT8);
       return CreateOperatorNodeForUnary<DML_ELEMENT_WISE_ABS_OPERATOR_DESC,
                                         DML_OPERATOR_ELEMENT_WISE_ABS>(
           id_to_operand_map, operation, graph_builder, id_to_node_output_map);
     }
     case mojom::ElementWiseUnary::Kind::kCeil: {
+      CHECK(kDmlFloatDataTypes.contains(input_data_type));
       return CreateOperatorNodeForUnary<DML_ELEMENT_WISE_CEIL_OPERATOR_DESC,
                                         DML_OPERATOR_ELEMENT_WISE_CEIL>(
           id_to_operand_map, operation, graph_builder, id_to_node_output_map);
     }
     case mojom::ElementWiseUnary::Kind::kCos: {
+      CHECK(kDmlFloatDataTypes.contains(input_data_type));
       return CreateOperatorNodeForUnary<DML_ELEMENT_WISE_COS_OPERATOR_DESC,
                                         DML_OPERATOR_ELEMENT_WISE_COS>(
           id_to_operand_map, operation, graph_builder, id_to_node_output_map);
     }
     case mojom::ElementWiseUnary::Kind::kExp: {
+      CHECK(kDmlFloatDataTypes.contains(input_data_type));
       return CreateOperatorNodeForUnary<DML_ELEMENT_WISE_EXP_OPERATOR_DESC,
                                         DML_OPERATOR_ELEMENT_WISE_EXP>(
           id_to_operand_map, operation, graph_builder, id_to_node_output_map);
     }
     case mojom::ElementWiseUnary::Kind::kFloor: {
+      CHECK(kDmlFloatDataTypes.contains(input_data_type));
       return CreateOperatorNodeForUnary<DML_ELEMENT_WISE_FLOOR_OPERATOR_DESC,
                                         DML_OPERATOR_ELEMENT_WISE_FLOOR>(
           id_to_operand_map, operation, graph_builder, id_to_node_output_map);
     }
     case mojom::ElementWiseUnary::Kind::kLog: {
+      CHECK(kDmlFloatDataTypes.contains(input_data_type));
       return CreateOperatorNodeForUnary<DML_ELEMENT_WISE_LOG_OPERATOR_DESC,
                                         DML_OPERATOR_ELEMENT_WISE_LOG>(
           id_to_operand_map, operation, graph_builder, id_to_node_output_map);
@@ -2247,20 +2260,26 @@ base::expected<void, mojom::ErrorPtr> CreateOperatorNodeForElementWiseUnary(
     // DML_FEATURE_LEVEL_5_0.
     // https://learn.microsoft.com/en-us/windows/win32/api/directml/ns-directml-dml_element_wise_negate_operator_desc#availability
     case mojom::ElementWiseUnary::Kind::kNeg: {
+      CHECK(kDmlFloatDataTypes.contains(input_data_type) ||
+            input_data_type == DML_TENSOR_DATA_TYPE_INT32 ||
+            input_data_type == DML_TENSOR_DATA_TYPE_INT8);
       return CreateOperatorNodeForNeg(id_to_operand_map, operation,
                                       graph_builder, id_to_node_output_map);
     }
     case mojom::ElementWiseUnary::Kind::kSin: {
+      CHECK(kDmlFloatDataTypes.contains(input_data_type));
       return CreateOperatorNodeForUnary<DML_ELEMENT_WISE_SIN_OPERATOR_DESC,
                                         DML_OPERATOR_ELEMENT_WISE_SIN>(
           id_to_operand_map, operation, graph_builder, id_to_node_output_map);
     }
     case mojom::ElementWiseUnary::Kind::kTan: {
+      CHECK(kDmlFloatDataTypes.contains(input_data_type));
       return CreateOperatorNodeForUnary<DML_ELEMENT_WISE_TAN_OPERATOR_DESC,
                                         DML_OPERATOR_ELEMENT_WISE_TAN>(
           id_to_operand_map, operation, graph_builder, id_to_node_output_map);
     }
     case mojom::ElementWiseUnary::Kind::kLogicalNot: {
+      CHECK_EQ(input_data_type, DML_TENSOR_DATA_TYPE_UINT8);
       return CreateOperatorNodeForUnary<
           DML_ELEMENT_WISE_LOGICAL_NOT_OPERATOR_DESC,
           DML_OPERATOR_ELEMENT_WISE_LOGICAL_NOT>(
@@ -2272,16 +2291,19 @@ base::expected<void, mojom::ErrorPtr> CreateOperatorNodeForElementWiseUnary(
           id_to_operand_map, operation, graph_builder, id_to_node_output_map);
     }
     case mojom::ElementWiseUnary::Kind::kSqrt: {
+      CHECK(kDmlFloatDataTypes.contains(input_data_type));
       return CreateOperatorNodeForUnary<DML_ELEMENT_WISE_SQRT_OPERATOR_DESC,
                                         DML_OPERATOR_ELEMENT_WISE_SQRT>(
           id_to_operand_map, operation, graph_builder, id_to_node_output_map);
     }
     case mojom::ElementWiseUnary::Kind::kErf: {
+      CHECK(kDmlFloatDataTypes.contains(input_data_type));
       return CreateOperatorNodeForUnary<DML_ELEMENT_WISE_ERF_OPERATOR_DESC,
                                         DML_OPERATOR_ELEMENT_WISE_ERF>(
           id_to_operand_map, operation, graph_builder, id_to_node_output_map);
     }
     case mojom::ElementWiseUnary::Kind::kReciprocal: {
+      CHECK(kDmlFloatDataTypes.contains(input_data_type));
       return CreateOperatorNodeForUnary<DML_ELEMENT_WISE_RECIP_OPERATOR_DESC,
                                         DML_OPERATOR_ELEMENT_WISE_RECIP>(
           id_to_operand_map, operation, graph_builder, id_to_node_output_map);
@@ -2292,7 +2314,6 @@ base::expected<void, mojom::ErrorPtr> CreateOperatorNodeForElementWiseUnary(
           id_to_operand_map, operation, graph_builder, id_to_node_output_map);
     }
   }
-  NOTREACHED_NORETURN();
 }
 
 base::expected<void, mojom::ErrorPtr> CreateOperatorNodeForResample2d(

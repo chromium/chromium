@@ -1430,8 +1430,14 @@ base::expected<void, mojom::ErrorPtr>
 GraphBuilder::AddOperationForElementwiseUnary(
     const mojom::ElementWiseUnary& operation,
     CoreML::Specification::MILSpec::Block& block) {
+  const CoreML::Specification::MILSpec::DataType input_data_type =
+      GetOperandInfo(operation.input_operand_id).mil_data_type;
   switch (operation.kind) {
     case mojom::ElementWiseUnary::Kind::kAbs: {
+      CHECK(kFloatDataTypes.contains(input_data_type) ||
+            input_data_type ==
+                CoreML::Specification::MILSpec::DataType::INT32 ||
+            input_data_type == CoreML::Specification::MILSpec::DataType::INT8);
       return AddUnaryOperation(SupportedDataType::kFloatsAndInt32,
                                kOpAbsTypeName, operation, block);
     }
@@ -1440,18 +1446,22 @@ GraphBuilder::AddOperationForElementwiseUnary(
                                  operation.output_operand_id, block);
     }
     case mojom::ElementWiseUnary::Kind::kCeil: {
+      CHECK(kFloatDataTypes.contains(input_data_type));
       return AddUnaryOperation(SupportedDataType::kFloats, kOpCeilTypeName,
                                operation, block);
     }
     case mojom::ElementWiseUnary::Kind::kCos: {
+      CHECK(kFloatDataTypes.contains(input_data_type));
       return AddUnaryOperation(SupportedDataType::kFloats, kOpCosTypeName,
                                operation, block);
     }
     case mojom::ElementWiseUnary::Kind::kExp: {
+      CHECK(kFloatDataTypes.contains(input_data_type));
       return AddUnaryOperation(SupportedDataType::kFloats, kOpExpTypeName,
                                operation, block);
     }
     case mojom::ElementWiseUnary::Kind::kFloor: {
+      CHECK(kFloatDataTypes.contains(input_data_type));
       return AddUnaryOperation(SupportedDataType::kFloats, kOpFloorTypeName,
                                operation, block);
     }
@@ -1460,22 +1470,27 @@ GraphBuilder::AddOperationForElementwiseUnary(
                                kOpIdentityTypeName, operation, block);
     }
     case mojom::ElementWiseUnary::Kind::kSin: {
+      CHECK(kFloatDataTypes.contains(input_data_type));
       return AddUnaryOperation(SupportedDataType::kFloats, kOpSinTypeName,
                                operation, block);
     }
     case mojom::ElementWiseUnary::Kind::kTan: {
+      CHECK(kFloatDataTypes.contains(input_data_type));
       return AddUnaryOperation(SupportedDataType::kFloats, kOpTanTypeName,
                                operation, block);
     }
     case mojom::ElementWiseUnary::Kind::kErf: {
+      CHECK(kFloatDataTypes.contains(input_data_type));
       return AddUnaryOperation(SupportedDataType::kFloats, kOpErfTypeName,
                                operation, block);
     }
     case mojom::ElementWiseUnary::Kind::kSqrt: {
+      CHECK(kFloatDataTypes.contains(input_data_type));
       return AddUnaryOperation(SupportedDataType::kFloats, kOpSqrtTypeName,
                                operation, block);
     }
     case mojom::ElementWiseUnary::Kind::kReciprocal: {
+      CHECK(kFloatDataTypes.contains(input_data_type));
       // CoreML's reciprocal operator requires an epsilon value, the default
       // value as per the documentation 1e-4 results in expressions like
       // reciprocal(4) returning  0.24999 rather than 0.25.
@@ -1485,6 +1500,7 @@ GraphBuilder::AddOperationForElementwiseUnary(
           kOpReciprocalTypeName, operation, /*epsilon=*/0, block);
     }
     case mojom::ElementWiseUnary::Kind::kLog: {
+      CHECK(kFloatDataTypes.contains(input_data_type));
       // CoreML's log operator requires an epsilon value, the default
       // value as per the documentation 1e-45 potentially could result
       // in different result compared to other platforms.
@@ -1494,8 +1510,16 @@ GraphBuilder::AddOperationForElementwiseUnary(
                                                 /*epsilon=*/0, block);
     }
     case mojom::ElementWiseUnary::Kind::kNeg:
+      CHECK(kFloatDataTypes.contains(input_data_type) ||
+            input_data_type ==
+                CoreML::Specification::MILSpec::DataType::INT32 ||
+            input_data_type == CoreML::Specification::MILSpec::DataType::INT8);
+      return NewNotSupportedError("This operator (neg) is not implemented.");
     case mojom::ElementWiseUnary::Kind::kLogicalNot:
-      return NewNotSupportedError("Unimplemented Unary Operator.");
+      CHECK_EQ(input_data_type,
+               CoreML::Specification::MILSpec::DataType::UINT8);
+      return NewNotSupportedError(
+          "This operator (logicalNot) is not implemented.");
   }
 }
 

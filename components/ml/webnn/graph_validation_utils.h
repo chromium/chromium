@@ -64,14 +64,9 @@ namespace DataTypeConstraint {
 static constexpr DataTypeConstraintSet kFloat = {Operand::DataType::kFloat32,
                                                  Operand::DataType::kFloat16};
 
-static constexpr DataTypeConstraintSet kSignedInteger = {
-    Operand::DataType::kInt32, Operand::DataType::kInt64,
-    Operand::DataType::kInt8};
-
-static constexpr DataTypeConstraintSet kSignedNumber = {
+static constexpr DataTypeConstraintSet kFloat16To32Int8To32 = {
     Operand::DataType::kFloat32, Operand::DataType::kFloat16,
-    Operand::DataType::kInt32, Operand::DataType::kInt64,
-    Operand::DataType::kInt8};
+    Operand::DataType::kInt32, Operand::DataType::kInt8};
 
 static constexpr DataTypeConstraintSet kGatherOperatorIndexDataTypes = {
     Operand::DataType::kInt32, Operand::DataType::kUint32,

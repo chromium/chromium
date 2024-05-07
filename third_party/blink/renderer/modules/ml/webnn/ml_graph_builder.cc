@@ -1066,8 +1066,7 @@ BUILD_ELEMENTWISE_BINARY_OP(lesserOrEqual, kLesserOrEqual)
 
 BUILD_ELEMENTWISE_UNARY_OP(abs,
                            kAbs,
-                           Union(webnn::DataTypeConstraint::kFloat,
-                                 webnn::DataTypeConstraint::kSignedInteger))
+                           webnn::DataTypeConstraint::kFloat16To32Int8To32)
 BUILD_ELEMENTWISE_UNARY_OP(ceil, kCeil, webnn::DataTypeConstraint::kFloat)
 BUILD_ELEMENTWISE_UNARY_OP(cos, kCos, webnn::DataTypeConstraint::kFloat)
 BUILD_ELEMENTWISE_UNARY_OP(exp, kExp, webnn::DataTypeConstraint::kFloat)
@@ -1075,8 +1074,7 @@ BUILD_ELEMENTWISE_UNARY_OP(floor, kFloor, webnn::DataTypeConstraint::kFloat)
 BUILD_ELEMENTWISE_UNARY_OP(log, kLog, webnn::DataTypeConstraint::kFloat)
 BUILD_ELEMENTWISE_UNARY_OP(neg,
                            kNeg,
-                           Union(webnn::DataTypeConstraint::kFloat,
-                                 webnn::DataTypeConstraint::kSignedInteger))
+                           webnn::DataTypeConstraint::kFloat16To32Int8To32)
 BUILD_ELEMENTWISE_UNARY_OP(sin, kSin, webnn::DataTypeConstraint::kFloat)
 BUILD_ELEMENTWISE_UNARY_OP(tan, kTan, webnn::DataTypeConstraint::kFloat)
 BUILD_ELEMENTWISE_UNARY_OP(erf, kErf, webnn::DataTypeConstraint::kFloat)
@@ -1832,9 +1830,9 @@ MLOperand* MLGraphBuilder::relu(const MLOperand* input,
   // According to WebNN spec
   // https://www.w3.org/TR/webnn/#api-mlgraphbuilder-relu, the output tensor of
   // relu has the same data type and dimensions as its input.
-  return BuildUnaryOperator(this, exception_state,
-                            webnn::mojom::blink::Operation::Tag::kRelu,
-                            webnn::DataTypeConstraintSet::All(), input);
+  return BuildUnaryOperator(
+      this, exception_state, webnn::mojom::blink::Operation::Tag::kRelu,
+      webnn::DataTypeConstraint::kFloat16To32Int8To32, input);
 }
 
 MLActivation* MLGraphBuilder::relu(ExceptionState& exception_state) {

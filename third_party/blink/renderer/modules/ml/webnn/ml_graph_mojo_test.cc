@@ -2014,6 +2014,7 @@ TEST_P(MLGraphTestMojo, ReduceTest) {
         .Test(*this, scope, builder);
   }
 }
+
 template <typename T>
 struct ConstantTester {
   OperandInfo<T> constant;
@@ -2114,34 +2115,12 @@ TEST_P(MLGraphTestMojo, ConstantTest) {
         .Test(*this, scope, builder);
   }
   {
-    // Test Constant operand for UInt32 data type.
-    ConstantTester<uint32_t>{
-        .constant = {.data_type = V8MLOperandDataType::Enum::kUint32,
-                     .dimensions = {2, 3},
-                     .values = {1, 2, 3, 4, 5, 6}},
-        .expected = {.data_type = blink_mojom::Operand::DataType::kUint32,
-                     .dimensions = {2, 3}},
-        .expected_constant_data = {1, 2, 3, 4, 5, 6}}
-        .Test(*this, scope, builder);
-  }
-  {
     // Test Constant operand for Int8 data type.
     ConstantTester<int8_t>{
         .constant = {.data_type = V8MLOperandDataType::Enum::kInt8,
                      .dimensions = {2, 3},
                      .values = {1, 2, 3, 4, 5, 6}},
         .expected = {.data_type = blink_mojom::Operand::DataType::kInt8,
-                     .dimensions = {2, 3}},
-        .expected_constant_data = {1, 2, 3, 4, 5, 6}}
-        .Test(*this, scope, builder);
-  }
-  {
-    // Test Constant operand for UInt8 data type.
-    ConstantTester<uint8_t>{
-        .constant = {.data_type = V8MLOperandDataType::Enum::kUint8,
-                     .dimensions = {2, 3},
-                     .values = {1, 2, 3, 4, 5, 6}},
-        .expected = {.data_type = blink_mojom::Operand::DataType::kUint8,
                      .dimensions = {2, 3}},
         .expected_constant_data = {1, 2, 3, 4, 5, 6}}
         .Test(*this, scope, builder);

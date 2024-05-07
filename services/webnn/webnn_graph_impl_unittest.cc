@@ -5637,6 +5637,15 @@ TEST_F(WebNNGraphImplTest, ReluTest) {
         .Test();
   }
   {
+    // Test the invalid graph if the data type is not supported.
+    ReluTester{.input = {.type = mojom::Operand::DataType::kUint32,
+                         .dimensions = {4, 2}},
+               .output = {.type = mojom::Operand::DataType::kUint32,
+                          .dimensions = {4, 2}},
+               .expected = false}
+        .Test();
+  }
+  {
     // Test the invalid graph for the output shapes are not expected.
     ReluTester{.input = {.type = mojom::Operand::DataType::kFloat32,
                          .dimensions = {4, 2}},

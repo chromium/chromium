@@ -7,6 +7,7 @@
 #include <cstdint>
 #include <vector>
 
+#include "base/containers/fixed_flat_set.h"
 #include "base/containers/span.h"
 #include "base/numerics/checked_math.h"
 #include "base/numerics/safe_conversions.h"
@@ -50,6 +51,11 @@ struct TensorTypeMap<uint32_t> {
   static constexpr ::tflite::TensorType value =
       ::tflite::TensorType::TensorType_UINT32;
 };
+
+static constexpr auto kFloatDataTypes =
+    base::MakeFixedFlatSet<mojom::Operand::DataType>(
+        {mojom::Operand::DataType::kFloat16,
+         mojom::Operand::DataType::kFloat32});
 
 // Useful for converting dimension arrays coming from mojo as uint32 to the
 // int32 vectors used by TFLite.
@@ -972,32 +978,47 @@ auto GraphBuilder::SerializeElementWiseUnary(const mojom::ElementWiseUnary& op)
       operand_to_index_map_.at(op.input_operand_id);
   const int32_t output_tensor_index =
       operand_to_index_map_.at(op.output_operand_id);
+  const mojom::Operand::DataType input_data_type =
+      GetOperand(op.input_operand_id).data_type;
   switch (op.kind) {
     case mojom::ElementWiseUnary::Kind::kAbs:
+      CHECK(kFloatDataTypes.contains(input_data_type) ||
+            input_data_type == mojom::Operand::DataType::kInt32 ||
+            input_data_type == mojom::Operand::DataType::kInt8);
       return SerializeUnaryOperation(::tflite::BuiltinOperator_ABS,
                                      input_tensor_index, output_tensor_index);
     case mojom::ElementWiseUnary::Kind::kCeil:
+      CHECK(kFloatDataTypes.contains(input_data_type));
       return SerializeUnaryOperation(::tflite::BuiltinOperator_CEIL,
                                      input_tensor_index, output_tensor_index);
     case mojom::ElementWiseUnary::Kind::kCos:
+      CHECK(kFloatDataTypes.contains(input_data_type));
       return SerializeUnaryOperation(::tflite::BuiltinOperator_COS,
                                      input_tensor_index, output_tensor_index);
     case mojom::ElementWiseUnary::Kind::kExp:
+      CHECK(kFloatDataTypes.contains(input_data_type));
       return SerializeUnaryOperation(::tflite::BuiltinOperator_EXP,
                                      input_tensor_index, output_tensor_index);
     case mojom::ElementWiseUnary::Kind::kFloor:
+      CHECK(kFloatDataTypes.contains(input_data_type));
       return SerializeUnaryOperation(::tflite::BuiltinOperator_FLOOR,
                                      input_tensor_index, output_tensor_index);
     case mojom::ElementWiseUnary::Kind::kLog:
+      CHECK(kFloatDataTypes.contains(input_data_type));
       return SerializeUnaryOperation(::tflite::BuiltinOperator_LOG,
                                      input_tensor_index, output_tensor_index);
     case mojom::ElementWiseUnary::Kind::kNeg:
+      CHECK(kFloatDataTypes.contains(input_data_type) ||
+            input_data_type == mojom::Operand::DataType::kInt32 ||
+            input_data_type == mojom::Operand::DataType::kInt8);
       return SerializeUnaryOperation(::tflite::BuiltinOperator_NEG,
                                      input_tensor_index, output_tensor_index);
     case mojom::ElementWiseUnary::Kind::kSin:
+      CHECK(kFloatDataTypes.contains(input_data_type));
       return SerializeUnaryOperation(::tflite::BuiltinOperator_SIN,
                                      input_tensor_index, output_tensor_index);
     case mojom::ElementWiseUnary::Kind::kSqrt:
+      CHECK(kFloatDataTypes.contains(input_data_type));
       return SerializeUnaryOperation(::tflite::BuiltinOperator_SQRT,
                                      input_tensor_index, output_tensor_index);
     case mojom::ElementWiseUnary::Kind::kCast:
@@ -1007,6 +1028,7 @@ auto GraphBuilder::SerializeElementWiseUnary(const mojom::ElementWiseUnary& op)
           output_tensor_index,
           MojoOperandTypeToTFLite(GetOperand(op.output_operand_id).data_type));
     case mojom::ElementWiseUnary::Kind::kLogicalNot:
+      CHECK_EQ(input_data_type, mojom::Operand::DataType::kUint8);
       return SerializeLogicalNot(op);
     case mojom::ElementWiseUnary::Kind::kIdentity:
       // Implement WebNN identity operation with TFLite reshape operator, the
@@ -1015,9 +1037,11 @@ auto GraphBuilder::SerializeElementWiseUnary(const mojom::ElementWiseUnary& op)
       // redirecting output tensor to input.
       return SerializeReshape(op.input_operand_id, op.output_operand_id);
     case mojom::ElementWiseUnary::Kind::kTan:
+      CHECK(kFloatDataTypes.contains(input_data_type));
       return SerializeTan(op);
     case mojom::ElementWiseUnary::Kind::kErf:
     case mojom::ElementWiseUnary::Kind::kReciprocal:
+      CHECK(kFloatDataTypes.contains(input_data_type));
       return base::unexpected(
           base::StrCat({base::ToString(op.kind), " is not implemented."}));
   }
@@ -1492,6 +1516,13 @@ auto GraphBuilder::SerializeReduce(const mojom::Reduce& reduce)
 }
 
 auto GraphBuilder::SerializeRelu(const mojom::Relu& relu) -> OperatorOffset {
+  const mojom::Operand::DataType input_data_type =
+      GetOperand(relu.input_operand_id).data_type;
+  CHECK(input_data_type == mojom::Operand::DataType::kFloat32 ||
+        input_data_type == mojom::Operand::DataType::kFloat16 ||
+        input_data_type == mojom::Operand::DataType::kInt32 ||
+        input_data_type == mojom::Operand::DataType::kInt8);
+
   return SerializeUnaryOperation(
       ::tflite::BuiltinOperator::BuiltinOperator_RELU,
       operand_to_index_map_.at(relu.input_operand_id),
