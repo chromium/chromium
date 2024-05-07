@@ -87,7 +87,7 @@ export class ProductSpecificationsElement extends PolymerElement {
     ColorChangeUpdater.forDocument().start();
   }
 
-  override connectedCallback() {
+  override async connectedCallback() {
     super.connectedCallback();
 
     this.listenerIds_.push(
@@ -98,6 +98,15 @@ export class ProductSpecificationsElement extends PolymerElement {
 
     const router = Router.getInstance();
     const params = new URLSearchParams(router.getCurrentQuery());
+    const idParam = params.get('id');
+    if (idParam) {
+      const {set} = await this.shoppingApi_.getProductSpecificationsSetByUuid(
+          {value: idParam});
+      if (set) {
+        this.populateTable_(set.urls.map(url => (url.url)));
+        return;
+      }
+    }
     const urlsParam = params.get('urls');
     if (!urlsParam) {
       this.showEmptyState_ = true;
@@ -109,6 +118,14 @@ export class ProductSpecificationsElement extends PolymerElement {
       urls = JSON.parse(urlsParam);
     } catch (_) {
       return;
+    }
+
+    const {createdSet} = await this.shoppingApi_.addProductSpecificationsSet(
+        // TODO(b/338118596): Add UI for choosing the name.
+        /* name= */ 'Product specs', urls.map(url => ({url})));
+    if (createdSet) {
+      window.history.replaceState(
+          undefined, '', '?id=' + createdSet.uuid.value);
     }
 
     this.populateTable_(urls);

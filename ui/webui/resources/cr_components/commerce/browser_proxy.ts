@@ -38,6 +38,8 @@ export interface BrowserProxy {
       Promise<{productSpecs: ProductSpecifications}>;
   getAllProductSpecificationsSets():
       Promise<{sets: ProductSpecificationsSet[]}>;
+  getProductSpecificationsSetByUuid(uuid: Uuid):
+      Promise<{set: ProductSpecificationsSet | null}>;
   addProductSpecificationsSet(name: string, urls: Url[]):
       Promise<{createdSet: ProductSpecificationsSet | null}>;
   deleteProductSpecificationsSet(uuid: Uuid): void;
@@ -136,6 +138,10 @@ export class BrowserProxyImpl implements BrowserProxy {
 
   getAllProductSpecificationsSets() {
     return this.handler.getAllProductSpecificationsSets();
+  }
+
+  getProductSpecificationsSetByUuid(uuid: Uuid) {
+    return this.handler.getProductSpecificationsSetByUuid(uuid);
   }
 
   addProductSpecificationsSet(name: string, urls: Url[]) {

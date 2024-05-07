@@ -116,6 +116,9 @@ class ShoppingServiceHandler
   void ShowFeedback() override;
   void GetAllProductSpecificationsSets(
       GetAllProductSpecificationsSetsCallback callback) override;
+  void GetProductSpecificationsSetByUuid(
+      const base::Uuid& uuid,
+      GetProductSpecificationsSetByUuidCallback callback) override;
   void AddProductSpecificationsSet(
       const std::string& name,
       const std::vector<GURL>& urls,

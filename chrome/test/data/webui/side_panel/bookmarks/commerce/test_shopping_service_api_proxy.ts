@@ -64,6 +64,7 @@ export class TestBrowserProxy extends BaseTestBrowserProxy implements
       'getProductInfoForUrl',
       'getProductSpecificationsForUrls',
       'getAllProductSpecificationsSets',
+      'getProductSpecificationsSetByUuid',
       'addProductSpecificationsSet',
       'deleteProductSpecificationsSet',
     ]);
@@ -173,6 +174,11 @@ export class TestBrowserProxy extends BaseTestBrowserProxy implements
   getAllProductSpecificationsSets() {
     this.methodCalled('getAllProductSpecificationsSets');
     return Promise.resolve({sets: []});
+  }
+
+  getProductSpecificationsSetByUuid(uuid: Uuid) {
+    this.methodCalled('getProductSpecificationsSetByUuid', uuid);
+    return Promise.resolve({set: null});
   }
 
   addProductSpecificationsSet(name: string, urls: Url[]) {

@@ -700,8 +700,8 @@ void ShoppingServiceHandler::GetAllProductSpecificationsSets(
     return;
   }
 
-  const auto all_sets = shopping_service_->GetProductSpecificationsService()
-                            ->GetAllProductSpecifications();
+  const auto& all_sets = shopping_service_->GetProductSpecificationsService()
+                             ->GetAllProductSpecifications();
   std::vector<shopping_service::mojom::ProductSpecificationsSetPtr>
       all_sets_mojo;
   for (const auto& set : all_sets) {
@@ -709,6 +709,23 @@ void ShoppingServiceHandler::GetAllProductSpecificationsSets(
   }
 
   std::move(callback).Run(std::move(all_sets_mojo));
+}
+
+void ShoppingServiceHandler::GetProductSpecificationsSetByUuid(
+    const base::Uuid& uuid,
+    GetProductSpecificationsSetByUuidCallback callback) {
+  if (!shopping_service_ ||
+      !shopping_service_->GetProductSpecificationsService()) {
+    std::move(callback).Run(nullptr);
+    return;
+  }
+  const auto& set =
+      shopping_service_->GetProductSpecificationsService()->GetSetByUuid(uuid);
+  if (set.has_value()) {
+    std::move(callback).Run(ProductSpecsSetToMojo(set.value()));
+  } else {
+    std::move(callback).Run(nullptr);
+  }
 }
 
 void ShoppingServiceHandler::AddProductSpecificationsSet(

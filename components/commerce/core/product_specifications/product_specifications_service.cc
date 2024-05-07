@@ -40,7 +40,7 @@ ProductSpecificationsService::GetAllProductSpecifications() {
   return product_specifications;
 }
 
-std::optional<ProductSpecificationsSet>
+const std::optional<ProductSpecificationsSet>
 ProductSpecificationsService::GetSetByUuid(const base::Uuid& uuid) {
   // TODO(b:337263623): Consider centralizing ID logic for product
   //                    specifications.

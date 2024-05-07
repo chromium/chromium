@@ -117,6 +117,10 @@ class MockProductSpecificationsService : public ProductSpecificationsService {
               (),
               (override));
   MOCK_METHOD(const std::optional<ProductSpecificationsSet>,
+              GetSetByUuid,
+              (const base::Uuid& uuid),
+              (override));
+  MOCK_METHOD(const std::optional<ProductSpecificationsSet>,
               AddProductSpecificationsSet,
               (const std::string& name, const std::vector<GURL>& urls),
               (override));
@@ -828,24 +832,50 @@ TEST_F(ShoppingServiceHandlerTest, TestBookmarkNodeMoved) {
 
 TEST_F(ShoppingServiceHandlerTest, TestGetAllProductSpecificationsSets) {
   const std::string uuid = base::Uuid::GenerateRandomV4().AsLowercaseString();
-  std::vector<ProductSpecificationsSet> specs;
-  specs.push_back(ProductSpecificationsSet(
+  std::vector<ProductSpecificationsSet> sets;
+  sets.push_back(ProductSpecificationsSet(
       uuid, 0, 0, {GURL("https://example.com/")}, "set1"));
   ON_CALL(*product_spec_service_, GetAllProductSpecifications)
-      .WillByDefault(testing::Return(std::move(specs)));
+      .WillByDefault(testing::Return(std::move(sets)));
 
   base::RunLoop run_loop;
   handler_->GetAllProductSpecificationsSets(base::BindOnce(
       [](base::RunLoop* run_loop, const std::string* uuid,
          const std::vector<shopping_service::mojom::ProductSpecificationsSetPtr>
-             sets) {
-        ASSERT_EQ(1u, sets.size());
-        ASSERT_EQ("set1", sets[0]->name);
-        ASSERT_EQ("https://example.com/", sets[0]->urls[0]);
-        ASSERT_EQ(*uuid, sets[0]->uuid.AsLowercaseString());
+             sets_ptr) {
+        ASSERT_EQ(1u, sets_ptr.size());
+        const auto& set1 = sets_ptr[0];
+        ASSERT_EQ("set1", set1->name);
+        ASSERT_EQ(1u, set1->urls.size());
+        ASSERT_EQ("https://example.com/", set1->urls[0]);
+        ASSERT_EQ(*uuid, set1->uuid.AsLowercaseString());
         run_loop->Quit();
       },
       &run_loop, &uuid));
+
+  run_loop.Run();
+}
+
+TEST_F(ShoppingServiceHandlerTest, TestGetProductSpecificationsSetByUuid) {
+  const base::Uuid& uuid = base::Uuid::GenerateRandomV4();
+  ProductSpecificationsSet set = ProductSpecificationsSet(
+      uuid.AsLowercaseString(), 0, 0, {GURL("https://example.com/")}, "set1");
+  ON_CALL(*product_spec_service_, GetSetByUuid)
+      .WillByDefault(testing::Return(std::move(set)));
+
+  base::RunLoop run_loop;
+  handler_->GetProductSpecificationsSetByUuid(
+      uuid,
+      base::BindOnce(
+          [](base::RunLoop* run_loop, const base::Uuid* uuid,
+             shopping_service::mojom::ProductSpecificationsSetPtr set_ptr) {
+            ASSERT_EQ(*uuid, set_ptr->uuid);
+            ASSERT_EQ("set1", set_ptr->name);
+            ASSERT_EQ(1u, set_ptr->urls.size());
+            ASSERT_EQ("https://example.com/", set_ptr->urls[0]);
+            run_loop->Quit();
+          },
+          &run_loop, &uuid));
 
   run_loop.Run();
 }

@@ -29,7 +29,8 @@ class ProductSpecificationsService : public KeyedService {
   virtual const std::vector<ProductSpecificationsSet>
   GetAllProductSpecifications();
 
-  std::optional<ProductSpecificationsSet> GetSetByUuid(const base::Uuid& uuid);
+  virtual const std::optional<ProductSpecificationsSet> GetSetByUuid(
+      const base::Uuid& uuid);
 
   // Add new product specifications set called |name| with product pages
   // corresponding to |urls|.
