@@ -13,11 +13,9 @@ namespace content {
 ContextMenuInterceptor::ContextMenuInterceptor(
     content::RenderFrameHost* render_frame_host,
     ShowBehavior behavior)
-    : render_frame_host_impl_(
-          static_cast<RenderFrameHostImpl*>(render_frame_host)),
-      swapped_impl_(
-          render_frame_host_impl_->local_frame_host_receiver_for_testing(),
-          this),
+    : swapped_impl_(RenderFrameHostImpl::From(render_frame_host)
+                        ->local_frame_host_receiver_for_testing(),
+                    this),
       run_loop_(std::make_unique<base::RunLoop>()),
       quit_closure_(run_loop_->QuitClosure()),
       show_behavior_(behavior) {}
@@ -37,7 +35,7 @@ void ContextMenuInterceptor::Reset() {
 }
 
 blink::mojom::LocalFrameHost* ContextMenuInterceptor::GetForwardingInterface() {
-  return render_frame_host_impl_;
+  return swapped_impl_.old_impl();
 }
 
 void ContextMenuInterceptor::ShowContextMenu(

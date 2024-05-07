@@ -332,6 +332,11 @@ class CONTENT_EXPORT RenderFrameHostImpl
   // Data used with IsClipboardPasteAllowedByPolicy() method.
   using ClipboardPasteData = content::ClipboardPasteData;
 
+  static RenderFrameHostImpl* From(RenderFrameHost* render_frame_host) {
+    // It is assumed that all RenderFrameHosts are RenderFrameHostImpls.
+    return static_cast<RenderFrameHostImpl*>(render_frame_host);
+  }
+
   static RenderFrameHostImpl* FromID(GlobalRenderFrameHostId id);
   static RenderFrameHostImpl* FromID(int process_id, int routing_id);
   // Returns the `RenderFrameHostImpl` with the given `blink::LocalFrameToken`,

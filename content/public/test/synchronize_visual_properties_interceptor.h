@@ -59,8 +59,6 @@ class SynchronizeVisualPropertiesInterceptor
 
   base::RunLoop run_loop_;
 
-  raw_ptr<RenderFrameProxyHost> render_frame_proxy_host_;
-
   std::unique_ptr<base::RunLoop> local_root_rect_run_loop_;
   bool local_root_rect_received_ = false;
   gfx::Rect last_rect_;

@@ -8,7 +8,6 @@
 #include <memory>
 
 #include "base/functional/callback_forward.h"
-#include "base/memory/raw_ptr.h"
 #include "base/run_loop.h"
 #include "mojo/public/cpp/bindings/associated_receiver.h"
 #include "mojo/public/cpp/test_support/test_utils.h"
@@ -18,7 +17,6 @@
 namespace content {
 
 class RenderFrameHost;
-class RenderFrameHostImpl;
 
 // This class intercepts for ShowContextMenu Mojo method called from a
 // renderer process, and allows observing the UntrustworthyContextMenuParams as
@@ -49,7 +47,6 @@ class ContextMenuInterceptor
   blink::UntrustworthyContextMenuParams get_params() { return last_params_; }
 
  private:
-  raw_ptr<content::RenderFrameHostImpl> render_frame_host_impl_;
   mojo::test::ScopedSwapImplForTesting<blink::mojom::LocalFrameHost>
       swapped_impl_;
   std::unique_ptr<base::RunLoop> run_loop_;

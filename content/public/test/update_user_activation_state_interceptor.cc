@@ -9,12 +9,10 @@
 namespace content {
 
 UpdateUserActivationStateInterceptor::UpdateUserActivationStateInterceptor(
-    content::RenderFrameHost* render_frame_host)
-    : render_frame_host_impl_(
-          static_cast<RenderFrameHostImpl*>(render_frame_host)),
-      swapped_impl_(
-          render_frame_host_impl_->local_frame_host_receiver_for_testing(),
-          this) {}
+    RenderFrameHost* render_frame_host)
+    : swapped_impl_(RenderFrameHostImpl::From(render_frame_host)
+                        ->local_frame_host_receiver_for_testing(),
+                    this) {}
 
 UpdateUserActivationStateInterceptor::~UpdateUserActivationStateInterceptor() =
     default;
@@ -26,7 +24,7 @@ void UpdateUserActivationStateInterceptor::set_quit_handler(
 
 blink::mojom::LocalFrameHost*
 UpdateUserActivationStateInterceptor::GetForwardingInterface() {
-  return render_frame_host_impl_;
+  return swapped_impl_.old_impl();
 }
 
 void UpdateUserActivationStateInterceptor::UpdateUserActivationState(

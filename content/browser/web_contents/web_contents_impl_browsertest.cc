@@ -5395,7 +5395,7 @@ class DidStopLoadingInterceptor : public mojom::FrameHostInterceptorForTesting {
       delete;
 
   mojom::FrameHost* GetForwardingInterface() override {
-    return render_frame_host_;
+    return swapped_impl_.old_impl();
   }
 
   void DidStopLoading() override {

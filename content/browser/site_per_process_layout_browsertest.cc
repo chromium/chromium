@@ -103,10 +103,7 @@ class UpdateViewportIntersectionMessageFilter
   explicit UpdateViewportIntersectionMessageFilter(
       content::RenderFrameProxyHost* rfph)
       : intersection_state_(blink::mojom::ViewportIntersectionState::New()),
-        render_frame_proxy_host_(rfph),
-        swapped_impl_(
-            render_frame_proxy_host_->frame_host_receiver_for_testing(),
-            this) {}
+        swapped_impl_(rfph->frame_host_receiver_for_testing(), this) {}
 
   ~UpdateViewportIntersectionMessageFilter() override = default;
 
@@ -115,8 +112,8 @@ class UpdateViewportIntersectionMessageFilter
     return intersection_state_;
   }
 
-  RenderFrameProxyHost* GetForwardingInterface() override {
-    return render_frame_proxy_host_;
+  blink::mojom::RemoteFrameHost* GetForwardingInterface() override {
+    return swapped_impl_.old_impl();
   }
 
   void UpdateViewportIntersection(
@@ -155,7 +152,6 @@ class UpdateViewportIntersectionMessageFilter
   raw_ptr<base::RunLoop> run_loop_ = nullptr;
   bool msg_received_;
   blink::mojom::ViewportIntersectionStatePtr intersection_state_;
-  raw_ptr<content::RenderFrameProxyHost> render_frame_proxy_host_;
   mojo::test::ScopedSwapImplForTesting<blink::mojom::RemoteFrameHost>
       swapped_impl_;
 };
@@ -231,15 +227,14 @@ class TextAutosizerPageInfoInterceptor
  public:
   explicit TextAutosizerPageInfoInterceptor(
       RenderFrameHostImpl* render_frame_host)
-      : render_frame_host_(render_frame_host),
-        swapped_impl_(
-            render_frame_host_->local_main_frame_host_receiver_for_testing(),
+      : swapped_impl_(
+            render_frame_host->local_main_frame_host_receiver_for_testing(),
             this) {}
 
   ~TextAutosizerPageInfoInterceptor() override = default;
 
   LocalMainFrameHost* GetForwardingInterface() override {
-    return render_frame_host_;
+    return swapped_impl_.old_impl();
   }
 
   void WaitForPageInfo(std::optional<int> target_main_frame_width,
@@ -275,7 +270,6 @@ class TextAutosizerPageInfoInterceptor
   }
 
  private:
-  raw_ptr<RenderFrameHostImpl> render_frame_host_;
   bool remote_page_info_seen_ = false;
   blink::mojom::TextAutosizerPageInfoPtr remote_page_info_ =
       blink::mojom::TextAutosizerPageInfo::New(/*main_frame_width=*/0,

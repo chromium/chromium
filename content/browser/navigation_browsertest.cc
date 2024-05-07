@@ -4219,17 +4219,16 @@ class InitiatorClosingOpenURLInterceptor
   InitiatorClosingOpenURLInterceptor(content::RenderFrameProxyHost* proxy_host,
                                      std::unique_ptr<Shell> shell_to_close,
                                      RenderProcessHost* renderer_to_exit)
-      : proxy_host_(proxy_host),
-        shell_to_close_(std::move(shell_to_close)),
+      : shell_to_close_(std::move(shell_to_close)),
         renderer_to_exit_(renderer_to_exit),
         swapped_impl_(std::make_unique<mojo::test::ScopedSwapImplForTesting<
                           blink::mojom::RemoteFrameHost>>(
-            proxy_host_->frame_host_receiver_for_testing(),
+            proxy_host->frame_host_receiver_for_testing(),
             this)) {}
   ~InitiatorClosingOpenURLInterceptor() override = default;
 
   blink::mojom::RemoteFrameHost* GetForwardingInterface() override {
-    return proxy_host_;
+    return swapped_impl_->old_impl();
   }
 
   // This closes `shell_to_close_` and causes `renderer_to_exit_` to exit
@@ -4252,22 +4251,19 @@ class InitiatorClosingOpenURLInterceptor
 
     // Clear the other raw_ptrs to avoid dangling pointers.
     renderer_to_exit_ = nullptr;
-    proxy_host_ = nullptr;
   }
 
  private:
-  raw_ptr<content::RenderFrameProxyHost> proxy_host_;
   std::unique_ptr<Shell> shell_to_close_;
   raw_ptr<RenderProcessHost> renderer_to_exit_;
 
   // The `swapped_impl_` is a unique_ptr, so the member can be deleted before
-  // `this` gets destroyed. `proxy_host_` would normally be swapped back to be
-  // the real impl when `this` gets destroyed. However, `proxy_host_` gets
-  // deleted shortly after the OpenURL IPC is handled, and exchanging the
-  // pointer at interceptor destruction thus causes a use-after-free. To avoid
-  // this, we delete the `swapped_impl_` and swap `proxy_host_` back in place as
-  // soon as we've processed the OpenURL IPC, where we can ensure that
-  // `proxy_host_` is still alive.
+  // `this` gets destroyed. The original implementation would normally be
+  // swapped back in when `this` is destroyed. However, in this test, the
+  // `RenderFrameProxyHost` is deleted shortly after the OpenURL IPC is handled,
+  // and relying on normal scoper cleanup would cause a use-after-free. To avoid
+  // this, we early delete the `swapped_impl_` to swap back the original
+  // implementation as soon as `OpenURL()` has been processed.
   std::unique_ptr<
       mojo::test::ScopedSwapImplForTesting<blink::mojom::RemoteFrameHost>>
       swapped_impl_;

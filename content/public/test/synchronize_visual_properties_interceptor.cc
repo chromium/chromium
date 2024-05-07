@@ -11,9 +11,8 @@ namespace content {
 
 SynchronizeVisualPropertiesInterceptor::SynchronizeVisualPropertiesInterceptor(
     RenderFrameProxyHost* render_frame_proxy_host)
-    : render_frame_proxy_host_(render_frame_proxy_host),
-      local_root_rect_run_loop_(std::make_unique<base::RunLoop>()),
-      swapped_impl_(render_frame_proxy_host_->frame_host_receiver_for_testing(),
+    : local_root_rect_run_loop_(std::make_unique<base::RunLoop>()),
+      swapped_impl_(render_frame_proxy_host->frame_host_receiver_for_testing(),
                     this) {}
 
 SynchronizeVisualPropertiesInterceptor::
@@ -21,7 +20,7 @@ SynchronizeVisualPropertiesInterceptor::
 
 blink::mojom::RemoteFrameHost*
 SynchronizeVisualPropertiesInterceptor::GetForwardingInterface() {
-  return render_frame_proxy_host_;
+  return swapped_impl_.old_impl();
 }
 
 void SynchronizeVisualPropertiesInterceptor::WaitForRect() {

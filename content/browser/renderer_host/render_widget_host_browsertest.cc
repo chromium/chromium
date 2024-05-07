@@ -729,15 +729,14 @@ class ShowPopupMenuInterceptor
   explicit ShowPopupMenuInterceptor(RenderFrameHostImpl* render_frame_host,
                                     const gfx::Rect& overriden_bounds)
       : overriden_bounds_(overriden_bounds),
-        render_frame_host_(render_frame_host->GetWeakPtr()),
         swapped_impl_(
-            render_frame_host_->local_frame_host_receiver_for_testing(),
+            render_frame_host->local_frame_host_receiver_for_testing(),
             this) {}
 
   ~ShowPopupMenuInterceptor() override = default;
 
   LocalFrameHost* GetForwardingInterface() override {
-    return render_frame_host_.get();
+    return swapped_impl_.old_impl();
   }
 
   void Wait() { run_loop_.Run(); }
@@ -774,7 +773,6 @@ class ShowPopupMenuInterceptor
   base::RunLoop run_loop_;
   bool is_cancelled_{false};
   gfx::Rect overriden_bounds_;
-  base::WeakPtr<RenderFrameHostImpl> render_frame_host_;
   mojo::test::ScopedSwapImplForTesting<blink::mojom::LocalFrameHost>
       swapped_impl_;
   mojo::Receiver<blink::mojom::PopupMenuClient> receiver_{this};
