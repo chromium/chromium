@@ -31,15 +31,24 @@ public class TabListGroupMenuCoordinator extends TabGroupOverflowMenuCoordinator
      * @param onItemClicked The clicked listener callback that handles clicks on menu items.
      * @param tabId The tabId that represents which tab to perform the onItemClicked action on.
      * @param isIncognito Whether the current tab group model filter is in an incognito state.
+     * @param shouldShowDeleteGroup Whether to show the delete group menu item.
      * @return A {@link View.OnClickListener} for the button that opens up the menu.
      */
     static View.OnClickListener getTabListGroupMenuOnClickListener(
-            OnItemClickedCallback onItemClicked, int tabId, boolean isIncognito) {
+            OnItemClickedCallback onItemClicked,
+            int tabId,
+            boolean isIncognito,
+            boolean shouldShowDeleteGroup) {
         return view -> {
             Context context = view.getContext();
             TabListGroupMenuCoordinator menu =
                     new TabListGroupMenuCoordinator(
-                            context, view, onItemClicked, tabId, isIncognito);
+                            context,
+                            view,
+                            onItemClicked,
+                            tabId,
+                            isIncognito,
+                            shouldShowDeleteGroup);
             menu.display();
         };
     }
@@ -49,8 +58,9 @@ public class TabListGroupMenuCoordinator extends TabGroupOverflowMenuCoordinator
             View anchorView,
             OnItemClickedCallback onItemClicked,
             int tabId,
-            boolean isIncognito) {
-        super(context, anchorView, null, onItemClicked, tabId, isIncognito);
+            boolean isIncognito,
+            boolean shouldShowDeleteGroup) {
+        super(context, anchorView, null, onItemClicked, tabId, isIncognito, shouldShowDeleteGroup);
     }
 
     @Override
@@ -77,13 +87,15 @@ public class TabListGroupMenuCoordinator extends TabGroupOverflowMenuCoordinator
                         R.style.TextAppearance_TextLarge_Primary_Baseline_Light,
                         isIncognito,
                         true));
-        itemList.add(
-                BrowserUiListMenuUtils.buildMenuListItemWithIncognitoText(
-                        R.string.delete_tab_group_menu_item,
-                        R.id.delete_tab,
-                        R.style.TextAppearance_TextLarge_Primary_Baseline_Light,
-                        isIncognito,
-                        true));
+        if (mShouldShowDeleteGroup) {
+            itemList.add(
+                    BrowserUiListMenuUtils.buildMenuListItemWithIncognitoText(
+                            R.string.delete_tab_group_menu_item,
+                            R.id.delete_tab,
+                            R.style.TextAppearance_TextLarge_Primary_Baseline_Light,
+                            isIncognito,
+                            true));
+        }
         return itemList;
     }
 

@@ -19,7 +19,7 @@ public final class TabGroupSyncFeatures {
     }
 
     @NativeMethods
-    interface Natives {
+    public interface Natives {
         boolean isTabGroupSyncEnabled(@JniType("Profile*") Profile profile);
     }
 }

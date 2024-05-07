@@ -119,6 +119,8 @@ import org.chromium.chrome.browser.tab.TabSelectionType;
 import org.chromium.chrome.browser.tab.state.PersistedTabDataConfiguration;
 import org.chromium.chrome.browser.tab.state.ShoppingPersistedTabData;
 import org.chromium.chrome.browser.tab.state.ShoppingPersistedTabData.PriceDrop;
+import org.chromium.chrome.browser.tab_group_sync.TabGroupSyncFeatures;
+import org.chromium.chrome.browser.tab_group_sync.TabGroupSyncFeaturesJni;
 import org.chromium.chrome.browser.tab_ui.TabContentManager;
 import org.chromium.chrome.browser.tab_ui.TabListFaviconProvider;
 import org.chromium.chrome.browser.tab_ui.TabListFaviconProvider.TabFavicon;
@@ -288,6 +290,7 @@ public class TabListMediatorUnitTest {
     @Mock ModalDialogManager mModalDialogManager;
     @Mock Runnable mRefreshTabListRunnable;
     @Mock ActionConfirmationManager mActionConfirmationManager;
+    @Mock TabGroupSyncFeatures.Natives mTabGroupSyncFeaturesJniMock;
 
     @Captor ArgumentCaptor<TabModelObserver> mTabModelObserverCaptor;
     @Captor ArgumentCaptor<TabObserver> mTabObserverCaptor;
@@ -332,6 +335,7 @@ public class TabListMediatorUnitTest {
         mMocker.mock(
                 OptimizationGuideBridgeFactoryJni.TEST_HOOKS,
                 mOptimizationGuideBridgeFactoryJniMock);
+        mMocker.mock(TabGroupSyncFeaturesJni.TEST_HOOKS, mTabGroupSyncFeaturesJniMock);
         doReturn(mOptimizationGuideBridge)
                 .when(mOptimizationGuideBridgeFactoryJniMock)
                 .getForProfile(mProfile);
@@ -3425,6 +3429,8 @@ public class TabListMediatorUnitTest {
     public void testIsTabGroup_TabSwitcher() {
         mMediator.setComponentNameForTesting(TabSwitcherCoordinator.COMPONENT_NAME);
 
+        doReturn(true).when(mTabGroupSyncFeaturesJniMock).isTabGroupSyncEnabled(mProfile);
+
         List<Tab> tabs = new ArrayList<>();
         for (int i = 0; i < mTabModel.getCount(); i++) {
             tabs.add(mTabModel.getTabAt(i));
@@ -3437,7 +3443,7 @@ public class TabListMediatorUnitTest {
         mMediator.resetWithListOfTabs(PseudoTab.getListOfPseudoTab(tabs), false);
 
         // Assert that a tab group status was recorded.
-        assertTrue(mModel.get(POSITION1).model.get(TabProperties.IS_TAB_GROUP));
+        assertTrue(mModel.get(POSITION1).model.get(TabProperties.TAB_GROUP_INFO).getIsTabGroup());
     }
 
     @Test

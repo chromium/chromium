@@ -1939,8 +1939,10 @@ public class TabSwitcherLayoutTest {
     @Test
     @MediumTest
     @EnableFeatures({
+        ChromeFeatureList.ANDROID_TAB_GROUP_STABLE_IDS,
         ChromeFeatureList.TAB_GROUP_PARITY_ANDROID,
         ChromeFeatureList.TAB_GROUP_PANE_ANDROID,
+        ChromeFeatureList.TAB_GROUP_SYNC_ANDROID,
     })
     public void testTabGroupOverflowMenuInTabSwitcher_deleteGroupAccept() {
         final ChromeTabbedActivity cta = mActivityTestRule.getActivity();
@@ -1971,8 +1973,10 @@ public class TabSwitcherLayoutTest {
     @Test
     @MediumTest
     @EnableFeatures({
+        ChromeFeatureList.ANDROID_TAB_GROUP_STABLE_IDS,
         ChromeFeatureList.TAB_GROUP_PARITY_ANDROID,
         ChromeFeatureList.TAB_GROUP_PANE_ANDROID,
+        ChromeFeatureList.TAB_GROUP_SYNC_ANDROID,
     })
     public void testTabGroupOverflowMenuInTabSwitcher_deleteGroupDecline() {
         final ChromeTabbedActivity cta = mActivityTestRule.getActivity();
@@ -2003,8 +2007,10 @@ public class TabSwitcherLayoutTest {
     @Test
     @MediumTest
     @EnableFeatures({
+        ChromeFeatureList.ANDROID_TAB_GROUP_STABLE_IDS,
         ChromeFeatureList.TAB_GROUP_PARITY_ANDROID,
         ChromeFeatureList.TAB_GROUP_PANE_ANDROID,
+        ChromeFeatureList.TAB_GROUP_SYNC_ANDROID,
     })
     public void testTabGroupOverflowMenuInTabSwitcher_deleteGroupDoNotShowAgain() {
         final ChromeTabbedActivity cta = mActivityTestRule.getActivity();
@@ -2062,6 +2068,32 @@ public class TabSwitcherLayoutTest {
         verifyTabSwitcherCardCount(cta, 0);
         CriteriaHelper.pollInstrumentationThread(TabUiTestHelper::verifyUndoBarShowingAndClickUndo);
         verifyTabSwitcherCardCount(cta, 1);
+    }
+
+    @Test
+    @MediumTest
+    @EnableFeatures({
+        ChromeFeatureList.TAB_GROUP_PARITY_ANDROID,
+        ChromeFeatureList.TAB_GROUP_PANE_ANDROID,
+    })
+    @DisableFeatures({
+        ChromeFeatureList.TAB_GROUP_SYNC_ANDROID,
+    })
+    public void testTabGroupOverflowMenuInTabSwitcher_deleteGroupNoShowSyncDisabled() {
+        final ChromeTabbedActivity cta = mActivityTestRule.getActivity();
+        createTabs(cta, false, 2);
+        enterTabSwitcher(cta);
+        verifyTabSwitcherCardCount(cta, 2);
+        // Create a tab group.
+        mergeAllNormalTabsToAGroup(cta);
+        verifyGroupVisualDataDialogOpenedAndDismiss(cta);
+        verifyTabSwitcherCardCount(cta, 1);
+
+        // Verify the delete action button does not exist
+        String deleteButtonText = cta.getString(R.string.delete_tab_group_menu_item);
+        onView(withId(R.id.action_button)).perform(click());
+        onView(allOf(withText(deleteButtonText), withId(R.id.menu_item_text)))
+                .check(doesNotExist());
     }
 
     @Test

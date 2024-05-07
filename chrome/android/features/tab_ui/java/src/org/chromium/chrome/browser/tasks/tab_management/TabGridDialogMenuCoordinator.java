@@ -42,7 +42,14 @@ public class TabGridDialogMenuCoordinator extends TabGroupOverflowMenuCoordinato
             View anchorView,
             Callback<Integer> onItemClicked,
             boolean isIncognito) {
-        super(context, anchorView, onItemClicked, null, null, isIncognito);
+        super(
+                context,
+                anchorView,
+                onItemClicked,
+                null,
+                null,
+                isIncognito,
+                /* shouldShowDeleteGroup= */ false);
     }
 
     @Override

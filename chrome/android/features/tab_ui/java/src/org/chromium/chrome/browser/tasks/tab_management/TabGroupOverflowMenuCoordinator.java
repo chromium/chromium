@@ -41,6 +41,7 @@ public abstract class TabGroupOverflowMenuCoordinator {
     protected final @Nullable TabListGroupMenuCoordinator.OnItemClickedCallback
             mOnItemClickedListGroupCallback;
     protected final @Nullable Integer mTabId;
+    protected final boolean mShouldShowDeleteGroup;
     private final ComponentCallbacks mComponentCallbacks;
     private final LifetimeAssert mLifetimeAssert = LifetimeAssert.create(this);
     private AnchoredPopupWindow mMenuWindow;
@@ -51,11 +52,13 @@ public abstract class TabGroupOverflowMenuCoordinator {
             @Nullable Callback<Integer> onItemClickedGridDialog,
             @Nullable TabListGroupMenuCoordinator.OnItemClickedCallback onItemClickedListGroup,
             @Nullable Integer tabId,
-            boolean isIncognito) {
+            boolean isIncognito,
+            boolean shouldShowDeleteGroup) {
         mContext = context;
         mOnItemClickedGridDialogCallback = onItemClickedGridDialog;
         mOnItemClickedListGroupCallback = onItemClickedListGroup;
         mTabId = tabId;
+        mShouldShowDeleteGroup = shouldShowDeleteGroup;
         mComponentCallbacks =
                 new ComponentCallbacks() {
                     @Override

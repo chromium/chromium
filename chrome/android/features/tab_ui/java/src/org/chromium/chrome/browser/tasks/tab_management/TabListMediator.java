@@ -68,6 +68,7 @@ import org.chromium.chrome.browser.tab.TabLaunchType;
 import org.chromium.chrome.browser.tab.TabObserver;
 import org.chromium.chrome.browser.tab.TabSelectionType;
 import org.chromium.chrome.browser.tab.state.ShoppingPersistedTabData;
+import org.chromium.chrome.browser.tab_group_sync.TabGroupSyncFeatures;
 import org.chromium.chrome.browser.tab_ui.TabListFaviconProvider;
 import org.chromium.chrome.browser.tab_ui.TabListFaviconProvider.TabFaviconFetcher;
 import org.chromium.chrome.browser.tab_ui.ThumbnailProvider;
@@ -322,6 +323,25 @@ class TabListMediator {
          * @param fromActionButton Whether it is called from the Action button on the card.
          */
         void onTabSelecting(int tabId, boolean fromActionButton);
+    }
+
+    /** A class that stores shared info regarding a tab group's state. */
+    public class TabGroupInfo {
+        private boolean mShouldShowDeleteTabGroup;
+        private boolean mIsTabGroup;
+
+        TabGroupInfo(boolean shouldShowDeleteGroup, boolean isTabGroup) {
+            mShouldShowDeleteTabGroup = shouldShowDeleteGroup;
+            mIsTabGroup = isTabGroup;
+        }
+
+        boolean getShouldShowDeleteTabGroup() {
+            return mShouldShowDeleteTabGroup;
+        }
+
+        boolean getIsTabGroup() {
+            return mIsTabGroup;
+        }
     }
 
     @IntDef({
@@ -1569,7 +1589,13 @@ class TabListMediator {
         // Only set this for tab group representation cards. An onClickListener will be set in the
         // view as part of the accompanying logic.
         if (ChromeFeatureList.sTabGroupPaneAndroid.isEnabled()) {
-            mModel.get(index).model.set(TabProperties.IS_TAB_GROUP, isTabGroup);
+            mModel.get(index)
+                    .model
+                    .set(
+                            TabProperties.TAB_GROUP_INFO,
+                            new TabGroupInfo(
+                                    TabGroupSyncFeatures.isTabGroupSyncEnabled(mProfile),
+                                    isTabGroup));
         }
 
         updateDescriptionString(pseudoTab, mModel.get(index).model);
@@ -1946,7 +1972,10 @@ class TabListMediator {
             // Only set this for tab group representation cards. An onClickListener will be set in
             // the view as part of the accompanying logic.
             if (ChromeFeatureList.sTabGroupPaneAndroid.isEnabled()) {
-                tabInfo.set(TabProperties.IS_TAB_GROUP, isTabGroup);
+                tabInfo.set(
+                        TabProperties.TAB_GROUP_INFO,
+                        new TabGroupInfo(
+                                TabGroupSyncFeatures.isTabGroupSyncEnabled(mProfile), isTabGroup));
             }
 
             updateDescriptionString(pseudoTab, tabInfo);
@@ -2602,8 +2631,6 @@ class TabListMediator {
     }
 
     private void onMenuItemClicked(@IdRes int menuId, int tabId) {
-        // TODO(b/337866283): Update the overflow tab group menu action for delete tab group when
-        // the associated helper is implemented on the TabGroupModelFilter.
         if (menuId == R.id.close_tab) {
             closeTabGroup(tabId, /* hideTabGroups= */ true);
         } else if (menuId == R.id.edit_group_name) {

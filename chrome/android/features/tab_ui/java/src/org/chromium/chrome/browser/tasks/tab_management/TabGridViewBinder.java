@@ -218,24 +218,27 @@ class TabGridViewBinder {
             ((ClosableTabGridView) view)
                     .hideTabGridCardViewForQuickDelete(
                             model.get(TabProperties.QUICK_DELETE_ANIMATION_STATUS));
-        } else if (TabProperties.IS_TAB_GROUP == propertyKey
+        } else if (TabProperties.TAB_GROUP_INFO == propertyKey
                 || TabProperties.TAB_ID == propertyKey) {
             // Only change the drawable if the property key in question is for tab groups.
-            if (TabProperties.IS_TAB_GROUP == propertyKey) {
+            if (TabProperties.TAB_GROUP_INFO == propertyKey) {
                 ((ClosableTabGridView) view)
-                        .setTabActionButtonDrawable(model.get(TabProperties.IS_TAB_GROUP));
+                        .setTabActionButtonDrawable(
+                                model.get(TabProperties.TAB_GROUP_INFO).getIsTabGroup());
             }
 
-            // Note: TAB_ID changes are NOT flag guarded, so this code block will be used.
-            // However, IS_TAB_GROUP will never be set since it is flag guarded and will be
-            // defaulted to false so in theory this should never cause problems.
-            if (model.get(TabProperties.IS_TAB_GROUP)) {
+            // Note: TAB_ID changes are NOT flag guarded, so this code will still be used.
+            // However, TAB_GROUP_INFO will never be set since it is flag guarded and will be
+            // defaulted to null so in theory this should never cause problems.
+            if (model.get(TabProperties.TAB_GROUP_INFO) != null) {
                 ImageView actionButton = (ImageView) view.fastFindViewById(R.id.action_button);
                 actionButton.setOnClickListener(
                         TabListGroupMenuCoordinator.getTabListGroupMenuOnClickListener(
                                 model.get(TabProperties.ON_MENU_ITEM_CLICKED_CALLBACK),
                                 model.get(TabProperties.TAB_ID),
-                                model.get(TabProperties.IS_INCOGNITO)));
+                                model.get(TabProperties.IS_INCOGNITO),
+                                model.get(TabProperties.TAB_GROUP_INFO)
+                                        .getShouldShowDeleteTabGroup()));
             } else {
                 if (model.get(TabProperties.TAB_ACTION_BUTTON_LISTENER) == null) {
                     view.fastFindViewById(R.id.action_button).setOnClickListener(null);
