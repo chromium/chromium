@@ -15,6 +15,7 @@
 #include "base/time/time.h"
 #include "chrome/browser/ip_protection/ip_protection_config_http.h"
 #include "chrome/browser/ip_protection/ip_protection_config_provider_factory.h"
+#include "components/ip_protection/ip_protection_config_provider_helper.h"
 #include "components/ip_protection/ip_protection_proxy_config_retriever.h"
 #include "components/privacy_sandbox/tracking_protection_settings.h"
 #include "components/privacy_sandbox/tracking_protection_settings_observer.h"
@@ -37,43 +38,6 @@ class BlindSignAuth;
 struct BlindSignToken;
 }  // namespace quiche
 
-// The result of a fetch of tokens from the IP Protection auth token server.
-//
-// These values are persisted to logs. Entries should not be renumbered and
-// numeric values should never be reused. Keep this in sync with
-// IpProtectionTokenBatchRequestResult in enums.xml.
-enum class IpProtectionTryGetAuthTokensResult {
-  // The request was successful and resulted in new tokens.
-  kSuccess = 0,
-  // No primary account is set.
-  kFailedNoAccount = 1,
-  // Chrome determined the primary account is not eligible.
-  kFailedNotEligible = 2,
-  // There was a failure fetching an OAuth token for the primary account.
-  // Deprecated in favor of `kFailedOAuthToken{Transient,Persistent}`.
-  kFailedOAuthTokenDeprecated = 3,
-  // There was a failure in BSA with the given status code.
-  kFailedBSA400 = 4,
-  kFailedBSA401 = 5,
-  kFailedBSA403 = 6,
-
-  // Any other issue calling BSA.
-  kFailedBSAOther = 7,
-
-  // There was a transient failure fetching an OAuth token for the primary
-  // account.
-  kFailedOAuthTokenTransient = 8,
-  // There was a persistent failure fetching an OAuth token for the primary
-  // account.
-  kFailedOAuthTokenPersistent = 9,
-
-  // The attempt to request tokens failed because IP Protection was disabled by
-  // the user.
-  kFailedDisabledByUser = 10,
-
-  kMaxValue = kFailedDisabledByUser,
-};
-
 // Fetches IP protection tokens on demand for the network service.
 //
 // This class handles both requesting OAuth2 tokens for the signed-in user, and
@@ -93,23 +57,19 @@ class IpProtectionConfigProvider
 
   ~IpProtectionConfigProvider() override;
 
-  // Get a batch of blind-signed auth tokens.
+  // IpProtectionConfigGetter:
   //
-  // It is forbidden for two calls to this method to be outstanding at the same
-  // time.
+  // Get a batch of blind-signed auth tokens. It is forbidden for two calls to
+  // this method to be outstanding at the same time.
   void TryGetAuthTokens(uint32_t batch_size,
                         network::mojom::IpProtectionProxyLayer proxy_layer,
                         TryGetAuthTokensCallback callback) override;
-
   // Get the list of IP Protection proxies.
   void GetProxyList(GetProxyListCallback callback) override;
 
-  // KeyedService:
-  void Shutdown() override;
-
-  static IpProtectionConfigProvider* Get(Profile* profile);
-
   static bool CanIpProtectionBeEnabled();
+
+  // Checks if IP Protection is disabled via user settings.
   bool IsIpProtectionEnabled();
 
   // Add bidirectional pipes to a new network service.
@@ -118,6 +78,11 @@ class IpProtectionConfigProvider
           pending_receiver,
       mojo::PendingRemote<network::mojom::IpProtectionProxyDelegate>
           pending_remote);
+
+  // KeyedService:
+  void Shutdown() override;
+
+  static IpProtectionConfigProvider* Get(Profile* profile);
 
   mojo::ReceiverSet<network::mojom::IpProtectionConfigGetter>&
   receivers_for_testing() {
@@ -137,11 +102,6 @@ class IpProtectionConfigProvider
       std::unique_ptr<IpProtectionConfigHttp> ip_protection_config_http,
       quiche::BlindSignAuthInterface* bsa);
 
-  // Base time deltas for calculating `try_again_after`.
-  static constexpr base::TimeDelta kNotEligibleBackoff = base::Days(1);
-  static constexpr base::TimeDelta kTransientBackoff = base::Seconds(5);
-  static constexpr base::TimeDelta kBugBackoff = base::Minutes(10);
-
  private:
   friend class IpProtectionConfigProviderTest;
   FRIEND_TEST_ALL_PREFIXES(IpProtectionConfigProviderTest, CalculateBackoff);
@@ -155,6 +115,46 @@ class IpProtectionConfigProvider
   // This accomplishes lazy loading of these components to break dependency
   // loops in browser startup.
   void SetUp();
+
+  // TODO(crbug.com/40216037): Once `google_apis::GetAPIKey()` handles this
+  // logic we can remove this helper.
+  std::string GetAPIKey();
+
+  // Wrapping `ip_protection_config_http_->GetProxyConfig()` method
+  // to enable OAuth Token inclusion in the GetProxyConfig API call to Phosphor.
+  void CallGetProxyConfig(GetProxyListCallback callback,
+                          std::optional<std::string> oauth_token);
+
+  void OnGetProxyConfigCompleted(
+      GetProxyListCallback callback,
+      base::expected<ip_protection::GetProxyConfigResponse, std::string>
+          response);
+
+  // `FetchBlindSignedToken()` calls into the `quiche::BlindSignAuth` library to
+  // request a blind-signed auth token for use at the IP Protection proxies.
+  void FetchBlindSignedToken(
+      std::optional<signin::AccessTokenInfo> access_token_info,
+      uint32_t batch_size,
+      network::mojom::IpProtectionProxyLayer proxy_layer,
+      TryGetAuthTokensCallback callback);
+
+  void OnFetchBlindSignedTokenCompleted(
+      base::TimeTicks bsa_get_tokens_start_time,
+      TryGetAuthTokensCallback callback,
+      absl::StatusOr<absl::Span<quiche::BlindSignToken>>);
+
+  // Finish a call to `TryGetAuthTokens()` by recording the result and invoking
+  // its callback.
+  void TryGetAuthTokensComplete(
+      std::optional<std::vector<network::mojom::BlindSignedAuthTokenPtr>>
+          bsa_tokens,
+      TryGetAuthTokensCallback callback,
+      IpProtectionTryGetAuthTokensResult result);
+
+  // Calculates the backoff time for the given result, based on
+  // `last_try_get_auth_tokens_..` fields, and updates those fields.
+  std::optional<base::TimeDelta> CalculateBackoff(
+      IpProtectionTryGetAuthTokensResult result);
 
   // Creating a generic callback in order for `RequestOAuthToken()` to work for
   // `TryGetAuthTokens()` and `GetProxyList()`.
@@ -187,28 +187,6 @@ class IpProtectionConfigProvider
       GoogleServiceAuthError error,
       signin::AccessTokenInfo access_token_info);
 
-  // Wrapping `ip_protection_config_http_->GetProxyConfig()` method
-  // to enable OAuth Token inclusion in the GetProxyConfig API call to Phosphor.
-  void CallGetProxyConfig(GetProxyListCallback callback,
-                          std::optional<std::string> oauth_token);
-  void OnGetProxyConfigCompleted(
-      GetProxyListCallback callback,
-      base::expected<ip_protection::GetProxyConfigResponse, std::string>
-          response);
-
-  // `FetchBlindSignedToken()` calls into the `quiche::BlindSignAuth` library to
-  // request a blind-signed auth token for use at the IP Protection proxies.
-  void FetchBlindSignedToken(signin::AccessTokenInfo access_token_info,
-                             uint32_t batch_size,
-                             network::mojom::IpProtectionProxyLayer proxy_layer,
-                             TryGetAuthTokensCallback callback);
-  void OnFetchBlindSignedTokenCompleted(
-      base::TimeTicks bsa_get_tokens_start_time,
-      TryGetAuthTokensCallback callback,
-      absl::StatusOr<absl::Span<quiche::BlindSignToken>>);
-  static network::mojom::BlindSignedAuthTokenPtr CreateBlindSignedAuthToken(
-      quiche::BlindSignToken bsa_token);
-
   void ClearOAuthTokenProblemBackoff();
 
   // The object used to get an OAuth token. `identity_manager_` will be set to
@@ -228,19 +206,6 @@ class IpProtectionConfigProvider
   // NOTE: If this is used in any `GetForProfile()` call, ensure that there is a
   // corresponding dependency (if needed) registered in the factory class.
   raw_ptr<Profile> profile_;
-
-  // Finish a call to `TryGetAuthTokens()` by recording the result and invoking
-  // its callback.
-  void TryGetAuthTokensComplete(
-      std::optional<std::vector<network::mojom::BlindSignedAuthTokenPtr>>
-          bsa_tokens,
-      TryGetAuthTokensCallback callback,
-      IpProtectionTryGetAuthTokensResult result);
-
-  // Calculates the backoff time for the given result, based on
-  // `last_try_get_auth_tokens_..` fields, and updates those fields.
-  std::optional<base::TimeDelta> CalculateBackoff(
-      IpProtectionTryGetAuthTokensResult result);
 
   // Instruct the `IpProtectionConfigCache()`(s) in the Network Service to
   // ignore any previously sent `try_again_after` times.

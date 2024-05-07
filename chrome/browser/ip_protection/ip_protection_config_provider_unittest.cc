@@ -16,6 +16,7 @@
 #include "base/time/time.h"
 #include "base/types/expected.h"
 #include "components/content_settings/core/browser/host_content_settings_map.h"
+#include "components/ip_protection/ip_protection_config_provider_helper.h"
 #include "components/prefs/testing_pref_service.h"
 #include "components/privacy_sandbox/privacy_sandbox_features.h"
 #include "components/privacy_sandbox/privacy_sandbox_prefs.h"
@@ -324,7 +325,7 @@ class IpProtectionConfigProviderTest : public testing::Test {
       base::Time expiration) {
     quiche::BlindSignToken blind_sign_token =
         CreateMockBlindSignToken(token_value, expiration);
-    return IpProtectionConfigProvider::CreateBlindSignedAuthToken(
+    return IpProtectionConfigProviderHelper::CreateBlindSignedAuthToken(
         std::move(blind_sign_token));
   }
 
@@ -406,7 +407,7 @@ TEST_F(IpProtectionConfigProviderTest, NoTokens) {
   EXPECT_EQ(bsa_->proxy_layer_, quiche::ProxyLayer::kProxyA);
   EXPECT_EQ(bsa_->oauth_token_, "access_token");
   ExpectTryGetAuthTokensResultFailed(
-      IpProtectionConfigProvider::kTransientBackoff);
+      IpProtectionConfigProviderHelper::kTransientBackoff);
   histogram_tester_.ExpectUniqueSample(
       kTryGetAuthTokensResultHistogram,
       IpProtectionTryGetAuthTokensResult::kFailedBSAOther, 1);
@@ -426,7 +427,7 @@ TEST_F(IpProtectionConfigProviderTest, MalformedTokens) {
   EXPECT_EQ(bsa_->proxy_layer_, quiche::ProxyLayer::kProxyB);
   EXPECT_EQ(bsa_->oauth_token_, "access_token");
   ExpectTryGetAuthTokensResultFailed(
-      IpProtectionConfigProvider::kTransientBackoff);
+      IpProtectionConfigProviderHelper::kTransientBackoff);
   histogram_tester_.ExpectUniqueSample(
       kTryGetAuthTokensResultHistogram,
       IpProtectionTryGetAuthTokensResult::kFailedBSAOther, 1);
@@ -445,7 +446,8 @@ TEST_F(IpProtectionConfigProviderTest, BlindSignedTokenError400) {
   EXPECT_EQ(bsa_->num_tokens_, 1);
   EXPECT_EQ(bsa_->proxy_layer_, quiche::ProxyLayer::kProxyA);
   EXPECT_EQ(bsa_->oauth_token_, "access_token");
-  ExpectTryGetAuthTokensResultFailed(IpProtectionConfigProvider::kBugBackoff);
+  ExpectTryGetAuthTokensResultFailed(
+      IpProtectionConfigProviderHelper::kBugBackoff);
   histogram_tester_.ExpectUniqueSample(
       kTryGetAuthTokensResultHistogram,
       IpProtectionTryGetAuthTokensResult::kFailedBSA400, 1);
@@ -464,7 +466,8 @@ TEST_F(IpProtectionConfigProviderTest, BlindSignedTokenError401) {
   EXPECT_EQ(bsa_->num_tokens_, 1);
   EXPECT_EQ(bsa_->proxy_layer_, quiche::ProxyLayer::kProxyB);
   EXPECT_EQ(bsa_->oauth_token_, "access_token");
-  ExpectTryGetAuthTokensResultFailed(IpProtectionConfigProvider::kBugBackoff);
+  ExpectTryGetAuthTokensResultFailed(
+      IpProtectionConfigProviderHelper::kBugBackoff);
   histogram_tester_.ExpectUniqueSample(
       kTryGetAuthTokensResultHistogram,
       IpProtectionTryGetAuthTokensResult::kFailedBSA401, 1);
@@ -484,7 +487,7 @@ TEST_F(IpProtectionConfigProviderTest, BlindSignedTokenError403) {
   EXPECT_EQ(bsa_->proxy_layer_, quiche::ProxyLayer::kProxyA);
   EXPECT_EQ(bsa_->oauth_token_, "access_token");
   ExpectTryGetAuthTokensResultFailed(
-      IpProtectionConfigProvider::kNotEligibleBackoff);
+      IpProtectionConfigProviderHelper::kNotEligibleBackoff);
   histogram_tester_.ExpectUniqueSample(
       kTryGetAuthTokensResultHistogram,
       IpProtectionTryGetAuthTokensResult::kFailedBSA403, 1);
@@ -504,7 +507,7 @@ TEST_F(IpProtectionConfigProviderTest, BlindSignedTokenErrorOther) {
   EXPECT_EQ(bsa_->proxy_layer_, quiche::ProxyLayer::kProxyB);
   EXPECT_EQ(bsa_->oauth_token_, "access_token");
   ExpectTryGetAuthTokensResultFailed(
-      IpProtectionConfigProvider::kTransientBackoff);
+      IpProtectionConfigProviderHelper::kTransientBackoff);
   histogram_tester_.ExpectUniqueSample(
       kTryGetAuthTokensResultHistogram,
       IpProtectionTryGetAuthTokensResult::kFailedBSAOther, 1);
@@ -545,7 +548,7 @@ TEST_F(IpProtectionConfigProviderTest, AuthTokenTransientError) {
 
   EXPECT_FALSE(bsa_->get_tokens_called_);
   ExpectTryGetAuthTokensResultFailed(
-      IpProtectionConfigProvider::kTransientBackoff);
+      IpProtectionConfigProviderHelper::kTransientBackoff);
   histogram_tester_.ExpectUniqueSample(
       kTryGetAuthTokensResultHistogram,
       IpProtectionTryGetAuthTokensResult::kFailedOAuthTokenTransient, 1);
@@ -680,12 +683,16 @@ TEST_F(IpProtectionConfigProviderTest, CalculateBackoff) {
   };
 
   check(kSuccess, std::nullopt, false);
-  check(kFailedNotEligible, getter_->kNotEligibleBackoff, false);
-  check(kFailedBSA400, getter_->kBugBackoff, true);
-  check(kFailedBSA401, getter_->kBugBackoff, true);
-  check(kFailedBSA403, getter_->kNotEligibleBackoff, false);
-  check(kFailedBSAOther, getter_->kTransientBackoff, true);
-  check(kFailedOAuthTokenTransient, getter_->kTransientBackoff, true);
+  check(kFailedNotEligible,
+        IpProtectionConfigProviderHelper::kNotEligibleBackoff, false);
+  check(kFailedBSA400, IpProtectionConfigProviderHelper::kBugBackoff, true);
+  check(kFailedBSA401, IpProtectionConfigProviderHelper::kBugBackoff, true);
+  check(kFailedBSA403, IpProtectionConfigProviderHelper::kNotEligibleBackoff,
+        false);
+  check(kFailedBSAOther, IpProtectionConfigProviderHelper::kTransientBackoff,
+        true);
+  check(kFailedOAuthTokenTransient,
+        IpProtectionConfigProviderHelper::kTransientBackoff, true);
 
   check(kFailedNoAccount, base::TimeDelta::Max(), false);
   // The account-related backoffs should not be changed except by account change
@@ -694,7 +701,7 @@ TEST_F(IpProtectionConfigProviderTest, CalculateBackoff) {
   AccountInfo account_info = identity_test_env_.MakePrimaryAccountAvailable(
       kTestEmail, signin::ConsentLevel::kSignin);
   // The backoff time should have been reset.
-  check(kFailedBSA400, getter_->kBugBackoff, true);
+  check(kFailedBSA400, IpProtectionConfigProviderHelper::kBugBackoff, true);
 
   check(kFailedOAuthTokenPersistent, base::TimeDelta::Max(), false);
   check(kFailedBSA400, base::TimeDelta::Max(), false);
@@ -707,7 +714,7 @@ TEST_F(IpProtectionConfigProviderTest, CalculateBackoff) {
   identity_test_env_.UpdatePersistentErrorOfRefreshTokenForAccount(
       account_info.account_id,
       GoogleServiceAuthError(GoogleServiceAuthError::State::NONE));
-  check(kFailedBSA400, getter_->kBugBackoff, true);
+  check(kFailedBSA400, IpProtectionConfigProviderHelper::kBugBackoff, true);
 }
 
 TEST_F(IpProtectionConfigProviderTest, GetProxyListProxyChains) {

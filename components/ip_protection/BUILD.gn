@@ -7,6 +7,8 @@ import("//third_party/protobuf/proto_library.gni")
 
 source_set("ip_protection") {
   sources = [
+    "ip_protection_config_provider_helper.cc",
+    "ip_protection_config_provider_helper.h",
     "ip_protection_proxy_config_retriever.cc",
     "ip_protection_proxy_config_retriever.h",
   ]
@@ -15,6 +17,11 @@ source_set("ip_protection") {
     "//base",
     "//build:branding_buildflags",
     "//google_apis:google_apis",
+    "//mojo/public/cpp/bindings:bindings",
+    "//net:net",
+    "//net/third_party/quiche:blind_sign_auth",
+    "//services/network/public/cpp:cpp",
+    "//services/network/public/mojom:mojom",
   ]
 }
 

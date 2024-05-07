@@ -16,6 +16,7 @@
 #include "chrome/browser/ip_protection/ip_protection_switches.h"
 #include "chrome/browser/profiles/profile.h"
 #include "chrome/common/channel_info.h"
+#include "components/ip_protection/ip_protection_config_provider_helper.h"
 #include "components/prefs/pref_service.h"
 #include "components/privacy_sandbox/privacy_sandbox_features.h"
 #include "components/privacy_sandbox/tracking_protection_prefs.h"
@@ -34,17 +35,6 @@
 #include "net/third_party/quiche/src/quiche/blind_sign_auth/blind_sign_auth.h"
 #include "net/third_party/quiche/src/quiche/blind_sign_auth/proto/blind_sign_auth_options.pb.h"
 #include "net/third_party/quiche/src/quiche/blind_sign_auth/proto/spend_token_data.pb.h"
-
-namespace {
-// TODO(crbug.com/40216037): Once `google_apis::GetAPIKey()` handles this
-// logic we can remove this helper.
-std::string GetAPIKey() {
-  return chrome::GetChannel() == version_info::Channel::STABLE
-             ? google_apis::GetAPIKey()
-             : google_apis::GetNonStableAPIKey();
-}
-constexpr char kChromeIpBlinding[] = "chromeipblinding";
-}  // namespace
 
 IpProtectionConfigProvider::IpProtectionConfigProvider(
     signin::IdentityManager* identity_manager,
@@ -75,7 +65,8 @@ void IpProtectionConfigProvider::SetUp() {
   if (!ip_protection_proxy_config_retriever_) {
     ip_protection_proxy_config_retriever_ =
         std::make_unique<IpProtectionProxyConfigRetriever>(
-            url_loader_factory_.get(), kChromeIpBlinding, GetAPIKey());
+            url_loader_factory_.get(),
+            IpProtectionConfigProviderHelper::kChromeIpBlinding, GetAPIKey());
   }
   if (!bsa_) {
     if (!blind_sign_auth_) {
@@ -87,6 +78,12 @@ void IpProtectionConfigProvider::SetUp() {
     }
     bsa_ = blind_sign_auth_.get();
   }
+}
+
+std::string IpProtectionConfigProvider::GetAPIKey() {
+  return chrome::GetChannel() == version_info::Channel::STABLE
+             ? google_apis::GetAPIKey()
+             : google_apis::GetNonStableAPIKey();
 }
 
 void IpProtectionConfigProvider::SetUpForTesting(
@@ -304,64 +301,14 @@ void IpProtectionConfigProvider::OnGetProxyConfigCompleted(
     return;
   }
 
-  // Shortcut to create a ProxyServer with SCHEME_HTTPS from a string in the
-  // proto.
-  auto add_server = [](std::vector<net::ProxyServer>& proxies,
-                       std::string host) {
-    net::ProxyServer proxy_server = net::ProxySchemeHostAndPortToProxyServer(
-        net::ProxyServer::SCHEME_HTTPS, host);
-    if (!proxy_server.is_valid()) {
-      return false;
-    }
-    proxies.push_back(proxy_server);
-    return true;
-  };
-
-  std::vector<net::ProxyChain> proxy_list;
-  for (const auto& proxy_chain : response->proxy_chain()) {
-    std::vector<net::ProxyServer> proxies;
-    bool ok = true;
-    bool overridden = false;
-    if (const std::string a_override =
-            net::features::kIpPrivacyProxyAHostnameOverride.Get();
-        a_override != "") {
-      overridden = true;
-      ok = ok && add_server(proxies, a_override);
-    } else {
-      ok = ok && add_server(proxies, proxy_chain.proxy_a());
-    }
-    if (const std::string b_override =
-            net::features::kIpPrivacyProxyBHostnameOverride.Get();
-        ok && b_override != "") {
-      overridden = true;
-      ok = ok && add_server(proxies, b_override);
-    } else {
-      ok = ok && add_server(proxies, proxy_chain.proxy_b());
-    }
-
-    // Create a new ProxyChain if the proxies were all valid.
-    if (ok) {
-      // If the `chain_id` is out of range or local features overrode the
-      // chain, use the proxy chain anyway, but with the default `chain_id`.
-      // This allows adding new IDs on the server side without breaking older
-      // browsers.
-      int chain_id = proxy_chain.chain_id();
-      if (overridden || chain_id < 0 ||
-          chain_id > net::ProxyChain::kMaxIpProtectionChainId) {
-        chain_id = net::ProxyChain::kDefaultIpProtectionChainId;
-      }
-      proxy_list.push_back(
-          net::ProxyChain::ForIpProtection(std::move(proxies), chain_id));
-    }
-  }
-
-  VLOG(2) << "IPATP::GetProxyList got proxy list of length "
-          << proxy_list.size();
+  std::vector<net::ProxyChain> proxy_list =
+      IpProtectionConfigProviderHelper::GetProxyListFromProxyConfigResponse(
+          response.value());
   std::move(callback).Run(std::move(proxy_list));
 }
 
 void IpProtectionConfigProvider::FetchBlindSignedToken(
-    signin::AccessTokenInfo access_token_info,
+    std::optional<signin::AccessTokenInfo> access_token_info,
     uint32_t batch_size,
     network::mojom::IpProtectionProxyLayer proxy_layer,
     TryGetAuthTokensCallback callback) {
@@ -371,7 +318,7 @@ void IpProtectionConfigProvider::FetchBlindSignedToken(
           ? quiche::ProxyLayer::kProxyA
           : quiche::ProxyLayer::kProxyB;
   bsa_->GetTokens(
-      access_token_info.token, batch_size, quiche_proxy_layer,
+      access_token_info.value().token, batch_size, quiche_proxy_layer,
       quiche::BlindSignAuthServiceType::kChromeIpBlinding,
       [weak_ptr = weak_ptr_factory_.GetWeakPtr(), bsa_get_tokens_start_time,
        callback = std::move(callback)](
@@ -425,7 +372,7 @@ void IpProtectionConfigProvider::OnFetchBlindSignedTokenCompleted(
   std::vector<network::mojom::BlindSignedAuthTokenPtr> bsa_tokens;
   for (const quiche::BlindSignToken& token : tokens.value()) {
     network::mojom::BlindSignedAuthTokenPtr converted_token =
-        CreateBlindSignedAuthToken(token);
+        IpProtectionConfigProviderHelper::CreateBlindSignedAuthToken(token);
     if (converted_token->token.empty()) {
       TryGetAuthTokensComplete(
           std::nullopt, std::move(callback),
@@ -442,27 +389,6 @@ void IpProtectionConfigProvider::OnFetchBlindSignedTokenCompleted(
   TryGetAuthTokensComplete(std::make_optional(std::move(bsa_tokens)),
                            std::move(callback),
                            IpProtectionTryGetAuthTokensResult::kSuccess);
-}
-
-// static
-network::mojom::BlindSignedAuthTokenPtr
-IpProtectionConfigProvider::CreateBlindSignedAuthToken(
-    quiche::BlindSignToken bsa_token) {
-  base::Time expiration =
-      base::Time::FromTimeT(absl::ToTimeT(bsa_token.expiration));
-
-  // What the network service will receive as a "token" is the fully constructed
-  // authorization header value.
-  std::string token_header_value = "";
-  privacy::ppn::PrivacyPassTokenData privacy_pass_token_data;
-  if (privacy_pass_token_data.ParseFromString(bsa_token.token)) {
-    token_header_value =
-        base::StrCat({"PrivateToken token=\"", privacy_pass_token_data.token(),
-                      "\", extensions=\"",
-                      privacy_pass_token_data.encoded_extensions(), "\""});
-  }
-  return network::mojom::BlindSignedAuthToken::New(
-      std::move(token_header_value), expiration);
 }
 
 void IpProtectionConfigProvider::TryGetAuthTokensComplete(
@@ -520,19 +446,19 @@ std::optional<base::TimeDelta> IpProtectionConfigProvider::CalculateBackoff(
     case IpProtectionTryGetAuthTokensResult::kFailedBSA403:
       // Eligibility, whether determined locally or on the server, is unlikely
       // to change quickly.
-      backoff = kNotEligibleBackoff;
+      backoff = IpProtectionConfigProviderHelper::kNotEligibleBackoff;
       break;
     case IpProtectionTryGetAuthTokensResult::kFailedOAuthTokenTransient:
     case IpProtectionTryGetAuthTokensResult::kFailedBSAOther:
       // Transient failure to fetch an OAuth token, or some other error from
       // BSA that is probably transient.
-      backoff = kTransientBackoff;
+      backoff = IpProtectionConfigProviderHelper::kTransientBackoff;
       exponential = true;
       break;
     case IpProtectionTryGetAuthTokensResult::kFailedBSA400:
     case IpProtectionTryGetAuthTokensResult::kFailedBSA401:
       // Both 400 and 401 suggest a bug, so do not retry aggressively.
-      backoff = kBugBackoff;
+      backoff = IpProtectionConfigProviderHelper::kBugBackoff;
       exponential = true;
       break;
     case IpProtectionTryGetAuthTokensResult::kFailedOAuthTokenDeprecated:

@@ -58,6 +58,7 @@ source_set("unit_tests") {
     ":ip_protection",
     "//base/test:test_support",
     "//chrome/test:test_support",
+    "//components/ip_protection:ip_protection",
     "//components/prefs:test_support",
     "//components/privacy_sandbox:features",
     "//components/privacy_sandbox:privacy_sandbox_prefs",
