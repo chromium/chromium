@@ -200,7 +200,7 @@ bool LensOverlayController::Enabled() {
   return lens::features::IsLensOverlayEnabled();
 }
 
-void LensOverlayController::ShowUI() {
+void LensOverlayController::ShowUI(InvocationSource invocation_source) {
   // If UI is already showing or in the process of showing, do nothing.
   if (state_ != State::kOff) {
     return;
@@ -261,6 +261,8 @@ void LensOverlayController::ShowUI() {
           base::BindOnce(&LensOverlayController::DidCaptureScreenshot,
                          weak_factory_.GetWeakPtr(),
                          ++screenshot_attempt_id_)));
+
+  base::UmaHistogramEnumeration("Lens.Overlay.Invoked", invocation_source);
 }
 
 void LensOverlayController::CloseUI() {

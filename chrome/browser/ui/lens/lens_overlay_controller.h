@@ -58,6 +58,39 @@ class LensOverlayController : public LensSearchboxClient,
                               public lens::mojom::LensPageHandler,
                               public lens::mojom::LensSidePanelPageHandler {
  public:
+  // Designates the source of any lens overlay invocation (in other words, any
+  // call to `ShowUI()`).
+  //
+  // These values are persisted to logs. Entries should not be renumbered and
+  // numeric values should never be reused.
+  //
+  // LINT.IfChange(InvocationSource)
+  enum InvocationSource {
+    // The Chrome app ("3-dot") menu entry.
+    kAppMenu = 0,
+
+    // The content area context menu entry that is available when the user
+    // right-clicks on any area of the page that doesn't contain text, links or
+    // media.
+    kContentAreaContextMenuPage = 1,
+
+    // The content area context menu entry that is available when the user
+    // right-clicks on an image.
+    kContentAreaContextMenuImage = 2,
+
+    // The pinned toolbar action button.
+    kToolbar = 3,
+
+    // The find in page (Ctrl/Cmd-f) dialog button.
+    kFindInPage = 4,
+
+    // The button in the omnibox (address bar).
+    kOmnibox = 5,
+
+    kMaxValue = kOmnibox
+  };
+  // LINT.ThenChange(//tools/metrics/histograms/metadata/others/enums.xml:LensOverlayInvocationSource)
+
   LensOverlayController(tabs::TabInterface* tab,
                         variations::VariationsClient* variations_client,
                         signin::IdentityManager* identity_manager,
@@ -92,8 +125,10 @@ class LensOverlayController : public LensSearchboxClient,
   bool Enabled();
 
   // This is entry point for showing the overlay UI. This has no effect if state
-  // is not kOff. This has no effect if the tab is not in the foreground.
-  void ShowUI();
+  // is not kOff. This has no effect if the tab is not in the foreground. If the
+  // overlay is successfully invoked, then the value of `invocation_source` will
+  // be recorded in the relevant metrics.
+  void ShowUI(InvocationSource invocation_source);
 
   // Closes the overlay UI and sets state to kOff. This method should be
   // idempotent. This synchronously destroys any associated WebUIs, so should

@@ -2234,7 +2234,7 @@ void ExecLensOverlay(Browser* browser) {
   LensOverlayController* const controller =
       LensOverlayController::GetController(web_contents);
   if (controller && controller->Enabled()) {
-    controller->ShowUI();
+    controller->ShowUI(LensOverlayController::kAppMenu);
   }
 }
 

@@ -4259,7 +4259,7 @@ void RenderViewContextMenu::ExecRegionSearch(
     LensOverlayController* const controller =
         LensOverlayController::GetController(source_web_contents_);
     if (controller && controller->Enabled()) {
-      controller->ShowUI();
+      controller->ShowUI(LensOverlayController::kContentAreaContextMenuPage);
       return;
     }
   }

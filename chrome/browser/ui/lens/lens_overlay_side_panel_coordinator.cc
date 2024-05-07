@@ -92,7 +92,7 @@ LensOverlaySidePanelCoordinator::CreateSidePanelActionCallback(
         if (controller->IsOverlayShowing()) {
           controller->CloseUI();
         } else {
-          controller->ShowUI();
+          controller->ShowUI(LensOverlayController::kToolbar);
         }
       },
       browser);

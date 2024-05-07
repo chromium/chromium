@@ -7059,6 +7059,24 @@ chromium-metrics-reviews@google.com.
   </summary>
 </histogram>
 
+<histogram name="Lens.Overlay.Invoked" enum="LensOverlayInvocationSource"
+    expires_after="2025-05-06">
+  <owner>jdonnelly@chromium.org</owner>
+  <owner>mercerd@google.com</owner>
+  <summary>
+    Recorded once when the Lens Overlay feature is invoked, enumerated by the UI
+    entry point used. In general, it should not be possible to attempt to invoke
+    the feature if the overlay is already showing but if this happens, nothing
+    will be recorded.
+
+    See also Desktop.LensOverlay.Shown, which is recoded when the overlay is
+    successfully shown.
+
+    This UMA histogram is used to track feature usage and retention, and thus
+    should never expire.
+  </summary>
+</histogram>
+
 <histogram name="Lens.QuickActionSearchWidget.LensSupportStatus"
     enum="LensSupportStatus" expires_after="2024-06-21">
   <owner>benwgold@chromium.org</owner>
