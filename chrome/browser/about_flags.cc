@@ -7335,6 +7335,9 @@ const FeatureEntry kFeatureEntries[] = {
     {"cct-revamped-branding", flag_descriptions::kCCTRevampedBrandingName,
      flag_descriptions::kCCTRevampedBrandingDescription, kOsAndroid,
      FEATURE_VALUE_TYPE(chrome::android::kCCTRevampedBranding)},
+    {"cct-nested-security-icon", flag_descriptions::kCCTNestedSecurityIconName,
+     flag_descriptions::kCCTNestedSecurityIconDescription, kOsAndroid,
+     FEATURE_VALUE_TYPE(chrome::android::kCCTNestedSecurityIcon)},
 #endif
 
 #if BUILDFLAG(IS_CHROMEOS)

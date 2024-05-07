@@ -3956,6 +3956,12 @@ const char kCCTMinimizedName[] = "Allow Custom Tabs to be minimized";
 const char kCCTMinimizedDescription[] =
     "When enabled, CCTs can be minimized into picture-in-picture (PiP) mode.";
 
+const char kCCTNestedSecurityIconName[] =
+    "Nest the CCT security icon under the title.";
+const char kCCTNestedSecurityIconDescription[] =
+    "When enabled, the CCT toolbar security icon will be nested under the "
+    "title.";
+
 const char kCCTPageInsightsHubName[] = "Page Insights Hub";
 const char kCCTPageInsightsHubDescription[] =
     "Show Page Insights Hub on Chrome Custom Tabs.";

@@ -20309,6 +20309,7 @@ from previous Chrome versions.
   <int value="-428556995" label="DesktopPWAsTabStripSettings:enabled"/>
   <int value="-428111342" label="FilesInlineSyncStatus:enabled"/>
   <int value="-428082036" label="AnimatedImageResume:disabled"/>
+  <int value="-428064763" label="CCTNestedSecurityIcon:enabled"/>
   <int value="-427835676" label="FullscreenInsetsApiMigration:enabled"/>
   <int value="-427163069" label="isolation-by-default"/>
   <int value="-426815606" label="HomepageTile:enabled"/>
@@ -25196,6 +25197,7 @@ from previous Chrome versions.
   <int value="1720399117" label="SkiaGraphite:enabled"/>
   <int value="1721854955" label="EnableEdidBasedDisplayIds:disabled"/>
   <int value="1722521465" label="CrosBatterySaverAlwaysOn:disabled"/>
+  <int value="1722739418" label="CCTNestedSecurityIcon:disabled"/>
   <int value="1722748383" label="EnableAppReinstallZeroState:disabled"/>
   <int value="1723601083" label="enable-app-window-controls"/>
   <int value="1723629395" label="AutofillSharedStorageServerCardData:enabled"/>

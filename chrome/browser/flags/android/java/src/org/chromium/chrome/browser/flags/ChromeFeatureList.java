@@ -231,6 +231,7 @@ public abstract class ChromeFeatureList {
             "CCTIncognitoAvailableToThirdParty";
     public static final String CCT_MINIMIZED = "CCTMinimized";
     public static final String CCT_MINIMIZED_ENABLED_BY_DEFAULT = "CCTMinimizedEnabledByDefault";
+    public static final String CCT_NESTED_SECURITY_ICON = "CCTNestedSecurityIcon";
     public static final String CCT_INTENT_FEATURE_OVERRIDES = "CCTIntentFeatureOverrides";
     public static final String CCT_PAGE_INSIGHTS_HUB = "CCTPageInsightsHub";
     public static final String CCT_PAGE_INSIGHTS_HUB_BETTER_SCROLL =
@@ -543,6 +544,8 @@ public abstract class ChromeFeatureList {
             newCachedFlag(CCT_RESIZABLE_FOR_THIRD_PARTIES, true);
     public static final CachedFlag sCctRevampedBranding =
             newCachedFlag(CCT_REVAMPED_BRANDING, false);
+    public static final CachedFlag sCctNestedSecurityIcon =
+            newCachedFlag(CCT_NESTED_SECURITY_ICON, false);
     public static final CachedFlag sCctTabModalDialog = newCachedFlag(CCT_TAB_MODAL_DIALOG, true);
     public static final CachedFlag sCollectAndroidFrameTimelineMetrics =
             newCachedFlag(COLLECT_ANDROID_FRAME_TIMELINE_METRICS, false);
@@ -679,6 +682,7 @@ public abstract class ChromeFeatureList {
                     sCctGoogleBottomBar,
                     sCctResizableForThirdParties,
                     sCctRevampedBranding,
+                    sCctNestedSecurityIcon,
                     sCctTabModalDialog,
                     sCollectAndroidFrameTimelineMetrics,
                     sCommandLineOnNonRooted,
