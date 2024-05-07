@@ -78,7 +78,6 @@ VaapiWebPDecoder::VaapiWebPDecoder() : VaapiImageDecoder(kWebPVAProfile) {}
 VaapiWebPDecoder::~VaapiWebPDecoder() = default;
 
 gpu::ImageDecodeAcceleratorType VaapiWebPDecoder::GetType() const {
-  DCHECK_CALLED_ON_VALID_SEQUENCE(decoder_sequence_checker_);
   return gpu::ImageDecodeAcceleratorType::kWebP;
 }
 
