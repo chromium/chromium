@@ -4,6 +4,7 @@
 
 package org.chromium.chrome.browser.rlz;
 
+import androidx.annotation.Nullable;
 import androidx.annotation.VisibleForTesting;
 
 import org.jni_zero.JNINamespace;
@@ -58,10 +59,24 @@ public class RevenueStats {
         RevenueStatsJni.get().setRlzParameterValue(rlz);
     }
 
+    /**
+     * Specify SearchClient to use within the Chrome Custom Tab session.
+     *
+     * <p>A non-null value will override any value specified by {@link setSearchClient(String)}, so
+     * this should only be called when initiating a search from a Custom Tab instance.
+     *
+     * @param client the client value to use, or null to reset.
+     */
+    public static void setCustomTabSearchClient(@Nullable String client) {
+        RevenueStatsJni.get().setCustomTabSearchClient(client);
+    }
+
     @NativeMethods
     @VisibleForTesting
     public interface Natives {
         void setSearchClient(@JniType("std::string") String client);
+
+        void setCustomTabSearchClient(String client);
 
         void setRlzParameterValue(@JniType("std::u16string") String rlz);
     }

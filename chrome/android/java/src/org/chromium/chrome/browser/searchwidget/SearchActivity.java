@@ -57,6 +57,7 @@ import org.chromium.chrome.browser.privacy.settings.PrivacyPreferencesManagerImp
 import org.chromium.chrome.browser.profiles.OTRProfileID;
 import org.chromium.chrome.browser.profiles.Profile;
 import org.chromium.chrome.browser.profiles.ProfileProvider;
+import org.chromium.chrome.browser.rlz.RevenueStats;
 import org.chromium.chrome.browser.search_engines.TemplateUrlServiceFactory;
 import org.chromium.chrome.browser.settings.SettingsLauncherImpl;
 import org.chromium.chrome.browser.tab.Tab;
@@ -110,6 +111,8 @@ public class SearchActivity extends AsyncInitializationActivity
     @VisibleForTesting
     /* package */ static final String HISTOGRAM_LAUNCHED_WITH_QUERY =
             "Android.Omnibox.SearchActivity.LaunchedWithQuery";
+
+    @VisibleForTesting /* package */ static final String CCT_CLIENT_PACKAGE_PREFIX = "app-cct-";
 
     /** Notified about events happening inside a SearchActivity. */
     public static class SearchActivityDelegate {
@@ -171,7 +174,7 @@ public class SearchActivity extends AsyncInitializationActivity
     private final SearchBoxDataProvider mSearchBoxDataProvider = new SearchBoxDataProvider();
     private final LocationBarEmbedderUiOverrides mLocationBarUiOverrides =
             new LocationBarEmbedderUiOverrides();
-    private final UmaActivityObserver mUmaActivityObserver;
+    private UmaActivityObserver mUmaActivityObserver;
 
     public SearchActivity() {
         mUmaActivityObserver = new UmaActivityObserver(this);
@@ -507,6 +510,7 @@ public class SearchActivity extends AsyncInitializationActivity
     @Override
     public void onPauseWithNative() {
         umaSessionEnd();
+        RevenueStats.setCustomTabSearchClient(null);
         super.onPauseWithNative();
     }
 
@@ -514,6 +518,9 @@ public class SearchActivity extends AsyncInitializationActivity
     public void onResumeWithNative() {
         // Start a new UMA session for the new activity.
         umaSessionResume();
+        if (mIntentOrigin == IntentOrigin.CUSTOM_TAB && !TextUtils.isEmpty(getCallingPackage())) {
+            RevenueStats.setCustomTabSearchClient(CCT_CLIENT_PACKAGE_PREFIX + getCallingPackage());
+        }
 
         // Inform the actity lifecycle observers. Among other things, the observers record
         // metrics pertaining to the "resumed" activity. This needs to happens after
@@ -700,11 +707,15 @@ public class SearchActivity extends AsyncInitializationActivity
         return mLocationBarUiOverrides;
     }
 
-    /* package */ ObservableSupplier getProfileSupplierForTesting() {
+    /* package */ ObservableSupplier<Profile> getProfileSupplierForTesting() {
         return mProfileSupplier;
     }
 
     /* package */ void setLocationBarLayoutForTesting(SearchActivityLocationBarLayout layout) {
         mSearchBox = layout;
+    }
+
+    /* package */ void setUmaActivityObserverForTesting(UmaActivityObserver observer) {
+        mUmaActivityObserver = observer;
     }
 }

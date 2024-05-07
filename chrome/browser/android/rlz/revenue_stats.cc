@@ -17,6 +17,17 @@ static void JNI_RevenueStats_SetSearchClient(JNIEnv* env, std::string& client) {
   SearchTermsDataAndroid::search_client_.Get() = client;
 }
 
+static void JNI_RevenueStats_SetCustomTabSearchClient(
+    JNIEnv* env,
+    const jni_zero::JavaParamRef<jstring>& j_client) {
+  if (j_client.is_null()) {
+    SearchTermsDataAndroid::custom_tab_search_client_.Get().reset();
+  } else {
+    SearchTermsDataAndroid::custom_tab_search_client_.Get().emplace(
+        base::android::ConvertJavaStringToUTF8(j_client));
+  }
+}
+
 static void JNI_RevenueStats_SetRlzParameterValue(JNIEnv* env,
                                                   std::u16string& rlz) {
   SearchTermsDataAndroid::rlz_parameter_value_.Get() = rlz;

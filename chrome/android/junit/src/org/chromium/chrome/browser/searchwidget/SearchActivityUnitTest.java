@@ -50,10 +50,13 @@ import org.chromium.base.test.util.UserActionTester;
 import org.chromium.chrome.R;
 import org.chromium.chrome.browser.content.WebContentsFactory;
 import org.chromium.chrome.browser.firstrun.FirstRunStatus;
+import org.chromium.chrome.browser.flags.ActivityType;
+import org.chromium.chrome.browser.metrics.UmaActivityObserver;
 import org.chromium.chrome.browser.omnibox.suggestions.OmniboxLoadUrlParams;
 import org.chromium.chrome.browser.profiles.Profile;
 import org.chromium.chrome.browser.profiles.ProfileManager;
 import org.chromium.chrome.browser.profiles.ProfileProvider;
+import org.chromium.chrome.browser.rlz.RevenueStats;
 import org.chromium.chrome.browser.search_engines.TemplateUrlServiceFactory;
 import org.chromium.chrome.browser.search_engines.TemplateUrlServiceFactoryJni;
 import org.chromium.chrome.browser.signin.services.IdentityServicesProvider;
@@ -77,6 +80,7 @@ import java.util.Set;
             SearchActivityUnitTest.ShadowSearchActivityUtils.class,
             SearchActivityUnitTest.ShadowWebContentsFactory.class,
             SearchActivityUnitTest.ShadowProfileManager.class,
+            SearchActivityUnitTest.ShadowRevenueStats.class,
             SearchActivityUnitTest.ShadowTabBuilder.class,
         })
 public class SearchActivityUnitTest {
@@ -157,6 +161,16 @@ public class SearchActivityUnitTest {
         }
     }
 
+    @Implements(RevenueStats.class)
+    public static class ShadowRevenueStats {
+        static Callback<String> sSetCustomTabSearchClient;
+
+        @Implementation
+        public static void setCustomTabSearchClient(String client) {
+            sSetCustomTabSearchClient.onResult(client);
+        }
+    }
+
     public @Rule MockitoRule mMockitoRule = MockitoJUnit.rule();
     public @Rule JniMocker mJniMocker = new JniMocker();
     private @Mock TestSearchActivityUtils mUtils;
@@ -167,6 +181,8 @@ public class SearchActivityUnitTest {
     private @Mock Tab mTab;
     private @Mock SearchActivity.SearchActivityDelegate mDelegate;
     private @Mock SearchActivityLocationBarLayout mLocationBar;
+    private @Mock UmaActivityObserver mUmaObserver;
+    private @Mock Callback<String> mSetCustomTabSearchClient;
     private ObservableSupplier<Profile> mProfileSupplier;
     private OneshotSupplier<ProfileProvider> mProfileProviderSupplier;
 
@@ -195,11 +211,13 @@ public class SearchActivityUnitTest {
         SearchActivity.setDelegateForTests(mDelegate);
         mActivity.setActivityUsableForTesting(true);
         mActivity.setLocationBarLayoutForTesting(mLocationBar);
+        mActivity.setUmaActivityObserverForTesting(mUmaObserver);
         mProfileProviderSupplier = mActivity.createProfileProvider();
 
         ShadowSearchActivityUtils.sMockUtils = mUtils;
         ShadowWebContentsFactory.sMockWebContents = mWebContents;
         ShadowTabBuilder.sMockTab = mTab;
+        ShadowRevenueStats.sSetCustomTabSearchClient = mSetCustomTabSearchClient;
     }
 
     @After
@@ -704,5 +722,56 @@ public class SearchActivityUnitTest {
         mActivity.onNewIntent(intent);
         verify(mLocationBar)
                 .beginQuery(eq(IntentOrigin.CUSTOM_TAB), eq(SearchType.TEXT), eq(null), any());
+    }
+
+    @Test
+    public void onResumeWithNative_fromSearchWidget() {
+        doReturn(IntentOrigin.SEARCH_WIDGET).when(mUtils).getIntentOrigin(any());
+        mActivity.onNewIntent(new Intent());
+        mActivity.onResumeWithNative();
+
+        verify(mUmaObserver).startUmaSession(eq(ActivityType.TABBED), eq(null), any());
+        verifyNoMoreInteractions(mUmaObserver, mSetCustomTabSearchClient);
+    }
+
+    @Test
+    public void onResumeWithNative_fromQuickActionWidget() {
+        doReturn(IntentOrigin.QUICK_ACTION_SEARCH_WIDGET).when(mUtils).getIntentOrigin(any());
+        mActivity.onNewIntent(new Intent());
+        mActivity.onResumeWithNative();
+
+        verify(mUmaObserver).startUmaSession(eq(ActivityType.TABBED), eq(null), any());
+        verifyNoMoreInteractions(mUmaObserver, mSetCustomTabSearchClient);
+    }
+
+    @Test
+    public void onResumeWithNative_fromCustomTabs_withoutPackage() {
+        doReturn(IntentOrigin.CUSTOM_TAB).when(mUtils).getIntentOrigin(any());
+        mActivity.onNewIntent(new Intent());
+        mActivity.onResumeWithNative();
+
+        verify(mUmaObserver).startUmaSession(eq(ActivityType.CUSTOM_TAB), eq(null), any());
+        verifyNoMoreInteractions(mUmaObserver, mSetCustomTabSearchClient);
+    }
+
+    @Test
+    public void onResumeWithNative_fromCustomTabs_withPackage() {
+        doReturn(IntentOrigin.CUSTOM_TAB).when(mUtils).getIntentOrigin(any());
+        mActivity.onNewIntent(new Intent());
+        doReturn("com.package.name").when(mActivity).getCallingPackage();
+        mActivity.onResumeWithNative();
+
+        verify(mUmaObserver).startUmaSession(eq(ActivityType.CUSTOM_TAB), eq(null), any());
+        verify(mSetCustomTabSearchClient).onResult("app-cct-com.package.name");
+        verifyNoMoreInteractions(mUmaObserver, mSetCustomTabSearchClient);
+    }
+
+    @Test
+    public void onPauseWithNative() {
+        mActivity.onPauseWithNative();
+
+        verify(mUmaObserver).endUmaSession();
+        verify(mSetCustomTabSearchClient).onResult(null);
+        verifyNoMoreInteractions(mUmaObserver, mSetCustomTabSearchClient);
     }
 }
