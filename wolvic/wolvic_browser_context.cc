@@ -31,11 +31,11 @@
 #include "components/prefs/pref_service.h"
 #include "components/prefs/pref_service_factory.h"
 #include "components/prefs/segregated_pref_store.h"
+#include "components/signin/public/identity_manager/identity_manager_builder.h"
 #include "components/user_prefs/user_prefs.h"
 #include "components/password_manager/core/browser/password_manager.h"
 #include "components/password_manager/core/browser/password_manager_constants.h"
 #include "components/safe_browsing/core/common/safe_browsing_prefs.h"
-#include "components/signin/public/identity_manager/identity_manager_builder.h"
 #include "components/visitedlink/browser/visitedlink_writer.h"
 #include "content/public/browser/browser_task_traits.h"
 #include "content/public/browser/browser_thread.h"
@@ -98,13 +98,10 @@ void WolvicBrowserContext::FinishInitWhileIOAllowed() {
   visitedlink_writer_ =
       std::make_unique<visitedlink::VisitedLinkWriter>(this, this, true);
   visitedlink_writer_->Init();
+}
 
-  CreateAutocompleteHistoryManager();
-  CreateIdentityManger();
-  CreatePasswordStore();
-  field_info_manager_ =
-      std::make_unique<password_manager::FieldInfoManager>(
-          base::SingleThreadTaskRunner::GetCurrentDefault());
+void WolvicBrowserContext::CreateSigninClient() {
+  signin_client_ = std::make_unique<wolvic::WolvicSigninClient>(this);
 }
 
 void WolvicBrowserContext::CreateAutocompleteHistoryManager() {
@@ -131,15 +128,19 @@ void WolvicBrowserContext::CreatePasswordStore() {
 void WolvicBrowserContext::CreateIdentityManger() {
   signin::IdentityManagerBuildParams params;
 
-  signin_client_ = std::make_unique<wolvic::WolvicSigninClient>(this);
-
-  params.signin_client = signin_client_.get();
+  params.signin_client = GetSigninClient();
   params.local_state = GetPrefService();
   params.network_connection_tracker = content::GetNetworkConnectionTracker();
   params.pref_service = GetPrefService();
   params.profile_path = GetPrefStorePath();
   params.image_decoder = std::make_unique<wolvic::WolvicImageDecoder>();
   identity_manager_ = signin::BuildIdentityManager(&params);
+}
+
+void WolvicBrowserContext::CreateFieldInfoManager() {
+  field_info_manager_ =
+      std::make_unique<password_manager::FieldInfoManager>(
+          base::SingleThreadTaskRunner::GetCurrentDefault());
 }
 
 base::FilePath WolvicBrowserContext::GetPrefStorePath() {
@@ -304,6 +305,36 @@ WolvicBrowserContext::RebuildTable(
   // can change in the lifetime of this WebView and may not yet be set here.
   // Therefore this initialization path is not used.
   enumerator->OnComplete(true);
+}
+
+autofill::AutocompleteHistoryManager* WolvicBrowserContext::GetAutocompleteHistoryManager() {
+  if (!autocomplete_history_manager_)
+    CreateAutocompleteHistoryManager();
+  return autocomplete_history_manager_.get();
+}
+
+password_manager::PasswordStore* WolvicBrowserContext::GetPasswordStore() {
+  if (!password_store_)
+    CreatePasswordStore();
+  return password_store_.get();
+}
+
+password_manager::FieldInfoManager* WolvicBrowserContext::GetFieldInfoManager() {
+  if (!field_info_manager_)
+    CreateFieldInfoManager();
+  return field_info_manager_.get();
+}
+
+signin::IdentityManager* WolvicBrowserContext::GetIdentityManager() {
+  if (!identity_manager_)
+    CreateIdentityManger();
+  return identity_manager_.get();
+}
+
+wolvic::WolvicSigninClient* WolvicBrowserContext::GetSigninClient() {
+  if (!signin_client_)
+    CreateSigninClient();
+  return signin_client_.get();
 }
 
 }  // namespace content

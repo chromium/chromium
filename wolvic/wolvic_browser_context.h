@@ -80,25 +80,11 @@ class WolvicBrowserContext : public BrowserContext,
   // visitedlink::VisitedLinkDelegate implementation.
   void RebuildTable(const scoped_refptr<URLEnumerator>& enumerator) override;
 
-  autofill::AutocompleteHistoryManager* GetAutocompleteHistoryManager() {
-    return autocomplete_history_manager_.get();
-  }
-
-  password_manager::PasswordStore* GetPasswordStore() {
-    return password_store_.get();
-  }
-
-  password_manager::FieldInfoManager* GetFieldInfoManager() {
-    return field_info_manager_.get();
-  }
-
-  signin::IdentityManager* GetIdentityManager() {
-    return identity_manager_.get();
-  }
-
-  wolvic::WolvicSigninClient* GetSigninClient() {
-    return signin_client_.get();
-  }
+  autofill::AutocompleteHistoryManager* GetAutocompleteHistoryManager();
+  password_manager::PasswordStore* GetPasswordStore();
+  password_manager::FieldInfoManager* GetFieldInfoManager();
+  signin::IdentityManager* GetIdentityManager();
+  wolvic::WolvicSigninClient* GetSigninClient();
 
  protected:
   std::unique_ptr<BackgroundSyncController> background_sync_controller_;
@@ -121,9 +107,11 @@ class WolvicBrowserContext : public BrowserContext,
   void RegisterPrefs(user_prefs::PrefRegistrySyncable* registry,
                      PrefNameSet* persistent_prefs);
   void MigrateLocalStatePrefs();
+  void CreateSigninClient();
   void CreateAutocompleteHistoryManager();
   void CreatePasswordStore();
   void CreateIdentityManger();
+  void CreateFieldInfoManager();
 
   const bool off_the_record_;
   std::unique_ptr<PrefService> user_pref_service_;
