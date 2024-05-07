@@ -19,9 +19,6 @@ BASE_DECLARE_FEATURE(kStructuredMetrics);
 
 namespace metrics::structured {
 
-// Controls whether nearby share logging is enabled or not.
-BASE_DECLARE_FEATURE(kNearbyShareMetrics);
-
 // Controls whether the structured metrics service is recorder instead of the
 // provider.
 BASE_DECLARE_FEATURE(kEnabledStructuredMetricsService);
