@@ -11545,6 +11545,7 @@ Called by update_use_counter_feature_enum.py.-->
   <int value="4965" label="InvertedColorsMediaFeature"/>
   <int value="4966" label="CSSLightDark"/>
   <int value="4967" label="PrivateAggregationApiFilteringIds"/>
+  <int value="4968" label="HTMLInputInSelect"/>
 </enum>
 
 <enum name="FeaturePolicyFeature">
