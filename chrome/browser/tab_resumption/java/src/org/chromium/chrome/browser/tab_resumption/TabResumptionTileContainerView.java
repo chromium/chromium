@@ -220,14 +220,16 @@ public class TabResumptionTileContainerView extends LinearLayout {
             boolean useSalientImage) {
         UrlImageCallback callback =
                 (Bitmap bitmap) -> {
-                    onImageAvailable(bitmap, tileView, /* isSalientImage= */ false);
+                    onImageAvailable(
+                            bitmap, tileView, useSalientImage, /* isSalientImage= */ false);
                 };
         if (useSalientImage) {
             urlImageProvider.fetchSalientImageWithFallback(
                     entry.url,
                     isSingle,
                     (bitmap) -> {
-                        onImageAvailable(bitmap, tileView, /* isSalientImage= */ true);
+                        onImageAvailable(
+                                bitmap, tileView, useSalientImage, /* isSalientImage= */ true);
                     },
                     callback);
         } else {
@@ -240,15 +242,22 @@ public class TabResumptionTileContainerView extends LinearLayout {
      *
      * @param bitmap The image bitmap returned.
      * @param tileView The tile view to show the image.
+     * @param useSalientImage Whether a salient image is requested.
      * @param isSalientImage Whether the returned image is a salient image.
      */
     private void onImageAvailable(
-            Bitmap bitmap, TabResumptionTileView tileView, boolean isSalientImage) {
+            Bitmap bitmap,
+            TabResumptionTileView tileView,
+            boolean useSalientImage,
+            boolean isSalientImage) {
         Resources res = getContext().getResources();
         Drawable urlDrawable = new BitmapDrawable(res, bitmap);
         tileView.setImageDrawable(urlDrawable);
         if (isSalientImage) {
             tileView.updateForSalientImage();
+        }
+        if (useSalientImage) {
+            TabResumptionModuleMetricsUtils.recordSalientImageAvailability(isSalientImage);
         }
     }
 

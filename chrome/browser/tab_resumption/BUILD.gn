@@ -97,6 +97,7 @@ robolectric_library("junit") {
     "junit/src/org/chromium/chrome/browser/tab_resumption/MixedTabResumptionDataProviderTest.java",
     "junit/src/org/chromium/chrome/browser/tab_resumption/TabResumptionModuleEnablementUnitTest.java",
     "junit/src/org/chromium/chrome/browser/tab_resumption/TabResumptionModuleMediatorUnitTest.java",
+    "junit/src/org/chromium/chrome/browser/tab_resumption/TabResumptionModuleMetricsUtilsUnitTest.java",
     "junit/src/org/chromium/chrome/browser/tab_resumption/TabResumptionModuleSuggestionsUnitTest.java",
     "junit/src/org/chromium/chrome/browser/tab_resumption/TabResumptionModuleUtilsUnitTest.java",
     "junit/src/org/chromium/chrome/browser/tab_resumption/TabResumptionModuleViewUnitTest.java",

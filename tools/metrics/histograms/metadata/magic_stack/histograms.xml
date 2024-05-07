@@ -75,6 +75,17 @@ chromium-metrics-reviews@google.com.
   </summary>
 </histogram>
 
+<histogram name="MagicStack.Clank.TabResumption.IsSalientImageAvailable"
+    enum="Boolean" expires_after="2024-10-28">
+  <owner>hanxi@google.com</owner>
+  <owner>huangs@google.com</owner>
+  <summary>
+    Records whether a salient image is fetched successfully. The histogram is
+    logged when a tile is shown and a image is fetched for the tile.
+    Android-only.
+  </summary>
+</histogram>
+
 <histogram name="MagicStack.Clank.TabResumption.ModuleNotShownReason"
     enum="MagicStack.Clank.TabResumption.ModuleNotShownReason"
     expires_after="2024-11-03">
