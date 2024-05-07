@@ -828,7 +828,7 @@ static void AdjustStyleForInert(ComputedStyleBuilder& builder,
 }
 
 void StyleAdjuster::AdjustForForcedColorsMode(ComputedStyleBuilder& builder,
-                                              Element* element) {
+                                              Document& document) {
   if (!builder.InForcedColorsMode() ||
       builder.ForcedColorAdjust() != EForcedColorAdjust::kAuto) {
     return;
@@ -847,14 +847,12 @@ void StyleAdjuster::AdjustForForcedColorsMode(ComputedStyleBuilder& builder,
   }
 
   mojom::blink::ColorScheme color_scheme = mojom::blink::ColorScheme::kLight;
-  if (element &&
-      element->GetDocument().GetStyleEngine().GetPreferredColorScheme() ==
-          mojom::blink::PreferredColorScheme::kDark) {
+  if (document.GetStyleEngine().GetPreferredColorScheme() ==
+      mojom::blink::PreferredColorScheme::kDark) {
     color_scheme = mojom::blink::ColorScheme::kDark;
   }
   const ui::ColorProvider* color_provider =
-      element ? element->GetDocument().GetColorProviderForPainting(color_scheme)
-              : nullptr;
+      document.GetColorProviderForPainting(color_scheme);
 
   // Re-resolve some internal forced color properties whose initial
   // values are system colors. This is necessary to ensure we get
@@ -1072,7 +1070,7 @@ void StyleAdjuster::AdjustComputedStyle(StyleResolverState& state,
 
   // A subset of CSS properties should be forced at computed value time:
   // https://drafts.csswg.org/css-color-adjust-1/#forced-colors-properties.
-  AdjustForForcedColorsMode(builder, element);
+  AdjustForForcedColorsMode(builder, state.GetDocument());
 
   // Let the theme also have a crack at adjusting the style.
   LayoutTheme::GetTheme().AdjustStyle(element, builder);
