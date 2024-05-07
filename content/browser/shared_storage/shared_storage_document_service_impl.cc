@@ -147,12 +147,17 @@ void SharedStorageDocumentServiceImpl::CreateWorklet(
   }
 
   std::string debug_message;
-  if (!IsSharedStorageAddModuleAllowedForOrigin(
-          url::Origin::Create(script_source_url), &debug_message)) {
+  bool prefs_failure_is_site_specific = false;
+  bool prefs_success = IsSharedStorageAddModuleAllowedForOrigin(
+      url::Origin::Create(script_source_url), &debug_message,
+      &prefs_failure_is_site_specific);
+
+  if (!prefs_success && (is_same_origin || !prefs_failure_is_site_specific)) {
     OnCreateWorkletResponseIntercepted(
-        is_same_origin, std::move(callback),
-        /*prefs_success=*/false,
-        /*success=*/false,
+        is_same_origin,
+        /*prefs_success=*/false, prefs_failure_is_site_specific,
+        std::move(callback),
+        /*post_prefs_success=*/false,
         /*error_message=*/
         GetSharedStorageErrorMessage(debug_message,
                                      kSharedStorageAddModuleDisabledMessage));
@@ -164,8 +169,8 @@ void SharedStorageDocumentServiceImpl::CreateWorklet(
       credentials_mode, origin_trial_features, std::move(worklet_host),
       base::BindOnce(
           &SharedStorageDocumentServiceImpl::OnCreateWorkletResponseIntercepted,
-          weak_ptr_factory_.GetWeakPtr(), is_same_origin, std::move(callback),
-          /*prefs_success=*/true));
+          weak_ptr_factory_.GetWeakPtr(), is_same_origin, prefs_success,
+          prefs_failure_is_site_specific, std::move(callback)));
 }
 
 void SharedStorageDocumentServiceImpl::SharedStorageGet(
@@ -345,33 +350,35 @@ SharedStorageDocumentServiceImpl::SharedStorageDocumentServiceImpl(
 
 void SharedStorageDocumentServiceImpl::OnCreateWorkletResponseIntercepted(
     bool is_same_origin,
-    CreateWorkletCallback original_callback,
     bool prefs_success,
-    bool success,
+    bool prefs_failure_is_site_specific,
+    CreateWorkletCallback original_callback,
+    bool post_prefs_success,
     const std::string& error_message) {
+  bool web_visible_prefs_error =
+      !prefs_success && (is_same_origin || !prefs_failure_is_site_specific);
+  bool other_web_visible_error = !post_prefs_success;
+
+  if (web_visible_prefs_error || other_web_visible_error) {
+    std::move(original_callback).Run(/*success=*/false, error_message);
+    return;
+  }
+
   // When the worklet and the worklet creator are not same-origin, the user
-  // preferences for the worklet origin should not be revealed.
-  if (!is_same_origin) {
-    if (!prefs_success) {
-      LogSharedStorageWorkletError(
-          blink::SharedStorageWorkletErrorType::
-              kAddModuleNonWebVisibleCrossOriginSharedStorageDisabled);
-    } else if (!success) {
-      LogSharedStorageWorkletError(
-          blink::SharedStorageWorkletErrorType::kAddModuleNonWebVisibleOther);
-    } else {
-      LogSharedStorageWorkletError(
-          blink::SharedStorageWorkletErrorType::kSuccess);
-    }
+  // preferences for the worklet origin should not be revealed. So any
+  // site-specific preference error will be suppressed.
+  if (!prefs_success) {
+    CHECK(!is_same_origin && prefs_failure_is_site_specific);
+    LogSharedStorageWorkletError(
+        blink::SharedStorageWorkletErrorType::
+            kAddModuleNonWebVisibleCrossOriginSharedStorageDisabled);
     std::move(original_callback).Run(/*success=*/true, /*error_message=*/{});
     return;
   }
 
-  if (success) {
-    LogSharedStorageWorkletError(
-        blink::SharedStorageWorkletErrorType::kSuccess);
-  }
-  std::move(original_callback).Run(success, error_message);
+  CHECK(post_prefs_success);
+  LogSharedStorageWorkletError(blink::SharedStorageWorkletErrorType::kSuccess);
+  std::move(original_callback).Run(/*success=*/true, /*error_message=*/{});
 }
 
 storage::SharedStorageManager*
@@ -397,49 +404,59 @@ SharedStorageDocumentServiceImpl::GetSharedStorageWorkletHostManager() {
 }
 
 bool SharedStorageDocumentServiceImpl::IsSharedStorageAllowed(
-    std::string* out_debug_message) {
+    std::string* out_debug_message,
+    bool* out_block_is_site_setting_specific) {
   // Will trigger a call to
   // `content_settings::PageSpecificContentSettings::BrowsingDataAccessed()` for
   // reporting purposes.
   return IsSharedStorageAllowedForOrigin(
-      render_frame_host().GetLastCommittedOrigin(), out_debug_message);
+      render_frame_host().GetLastCommittedOrigin(), out_debug_message,
+      out_block_is_site_setting_specific);
 }
 
 bool SharedStorageDocumentServiceImpl::IsSharedStorageAllowedForOrigin(
     const url::Origin& accessing_origin,
-    std::string* out_debug_message) {
+    std::string* out_debug_message,
+    bool* out_block_is_site_setting_specific) {
   // Will trigger a call to
   // `content_settings::PageSpecificContentSettings::BrowsingDataAccessed()` for
   // reporting purposes.
-  //
-  // TODO(335839125): Plumb in a non-null `out_block_is_site_setting_specific`.
   return GetContentClient()->browser()->IsSharedStorageAllowed(
       render_frame_host().GetBrowserContext(), &render_frame_host(),
       main_frame_origin_, accessing_origin, out_debug_message,
-      /*out_block_is_site_setting_specific=*/nullptr);
+      out_block_is_site_setting_specific);
 }
 
 bool SharedStorageDocumentServiceImpl::IsSharedStorageAddModuleAllowedForOrigin(
     const url::Origin& accessing_origin,
-    std::string* out_debug_message) {
+    std::string* out_debug_message,
+    bool* out_block_is_site_setting_specific) {
   // Will trigger a call to
   // `content_settings::PageSpecificContentSettings::BrowsingDataAccessed()` for
   // reporting purposes.
-  //
-  // TODO(335839125): Plumb in a non-null `out_block_is_site_setting_specific`.
-  if (!IsSharedStorageAllowedForOrigin(accessing_origin, out_debug_message)) {
+  if (!IsSharedStorageAllowedForOrigin(accessing_origin, out_debug_message,
+                                       out_block_is_site_setting_specific)) {
     return false;
   }
 
-  // TODO(335839125): Plumb in a non-null `out_block_is_site_setting_specific`.
-  return GetContentClient()->browser()->IsSharedStorageSelectURLAllowed(
-             render_frame_host().GetBrowserContext(), main_frame_origin_,
-             accessing_origin, out_debug_message,
-             /*out_block_is_site_setting_specific=*/nullptr) ||
-         GetContentClient()->browser()->IsPrivateAggregationAllowed(
-             render_frame_host().GetBrowserContext(), main_frame_origin_,
-             accessing_origin,
-             /*out_block_is_site_setting_specific=*/nullptr);
+  bool select_url_block_is_site_setting_specific = false;
+  bool private_aggregation_block_is_site_setting_specific = false;
+
+  bool add_module_allowed =
+      GetContentClient()->browser()->IsSharedStorageSelectURLAllowed(
+          render_frame_host().GetBrowserContext(), main_frame_origin_,
+          accessing_origin, out_debug_message,
+          &select_url_block_is_site_setting_specific) ||
+      GetContentClient()->browser()->IsPrivateAggregationAllowed(
+          render_frame_host().GetBrowserContext(), main_frame_origin_,
+          accessing_origin,
+          &private_aggregation_block_is_site_setting_specific);
+
+  *out_block_is_site_setting_specific =
+      !add_module_allowed &&
+      (select_url_block_is_site_setting_specific ||
+       private_aggregation_block_is_site_setting_specific);
+  return add_module_allowed;
 }
 
 std::string SharedStorageDocumentServiceImpl::SerializeLastCommittedOrigin()

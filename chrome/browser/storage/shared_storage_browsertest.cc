@@ -2883,15 +2883,20 @@ IN_PROC_BROWSER_TEST_P(
   SetPrefs(/*enable_privacy_sandbox=*/false,
            /*allow_third_party_cookies=*/true);
 
-  GURL script_url = https_server()->GetURL(kCrossOriginHost,
-                                           "/shared_storage/simple_module.js");
+  GURL script_url = https_server()->GetURL(
+      kCrossOriginHost,
+      net::test_server::GetFilePathWithReplacements(
+          "/shared_storage/module_with_custom_header.js",
+          content::SharedStorageCrossOriginWorkletResponseHeaderReplacement(
+              "Access-Control-Allow-Origin: *",
+              "Shared-Storage-Cross-Origin-Worklet-Allowed: ?1")));
 
-  // The prefs error for `createWorklet()` won't be revealed to the cross-origin
-  // caller. But we can verify the error indirectly, by checking that no worklet
-  // host is created.
-  EXPECT_TRUE(content::ExecJs(
+  content::EvalJsResult result = content::EvalJs(
       GetActiveWebContents(),
-      content::JsReplace("sharedStorage.createWorklet($1)", script_url)));
+      content::JsReplace("sharedStorage.createWorklet($1)", script_url));
+
+  EXPECT_TRUE(base::StartsWith(
+      result.error, GetSharedStorageAddModuleDisabledErrorMessage()));
 
   EXPECT_EQ(0u, content::GetAttachedSharedStorageWorkletHostsCount(
                     GetActiveWebContents()
@@ -2901,9 +2906,7 @@ IN_PROC_BROWSER_TEST_P(
   WaitForHistograms({kErrorTypeHistogram});
   histogram_tester_.ExpectUniqueSample(
       kErrorTypeHistogram,
-      blink::SharedStorageWorkletErrorType::
-          kAddModuleNonWebVisibleCrossOriginSharedStorageDisabled,
-      1);
+      blink::SharedStorageWorkletErrorType::kAddModuleWebVisible, 1);
 }
 
 // This test shows that the correct origin is used for the
@@ -2914,20 +2917,28 @@ IN_PROC_BROWSER_TEST_P(
   Set3PCSettingAndAttestMainHostPlusAdditionalSitesThenNavigateToMainHostPage(
       {kCrossOriginHost});
 
-  GURL script_url = https_server()->GetURL(kCrossOriginHost,
-                                           "/shared_storage/simple_module.js");
+  GURL script_url = https_server()->GetURL(
+      kCrossOriginHost,
+      net::test_server::GetFilePathWithReplacements(
+          "/shared_storage/module_with_custom_header.js",
+          content::SharedStorageCrossOriginWorkletResponseHeaderReplacement(
+              "Access-Control-Allow-Origin: *",
+              "Shared-Storage-Cross-Origin-Worklet-Allowed: ?1")));
 
   // Set a site exception blocking `script_url`.
   SetSiteException(script_url, ContentSetting::CONTENT_SETTING_BLOCK);
 
   // The prefs error for `createWorklet()` won't be revealed to the cross-origin
-  // caller. But we can verify the error indirectly, by checking that no worklet
-  // host is created.
-  EXPECT_TRUE(content::ExecJs(
-      GetActiveWebContents(),
-      content::JsReplace("sharedStorage.createWorklet($1)", script_url)));
+  // caller. We verify the error indirectly using the histogram.
+  EXPECT_TRUE(
+      content::ExecJs(GetActiveWebContents(), content::JsReplace(R"(
+        (async function() {
+          await sharedStorage.createWorklet($1);
+        })()
+      )",
+                                                                 script_url)));
 
-  EXPECT_EQ(0u, content::GetAttachedSharedStorageWorkletHostsCount(
+  EXPECT_EQ(1u, content::GetAttachedSharedStorageWorkletHostsCount(
                     GetActiveWebContents()
                         ->GetPrimaryMainFrame()
                         ->GetStoragePartition()));
@@ -2947,18 +2958,20 @@ IN_PROC_BROWSER_TEST_P(SharedStorageChromeBrowserTest,
   // Only the main frame site will be attested.
   Set3rdPartyCookieAndMainHostAttestationSettingsThenNavigateToMainHostPage();
 
-  GURL script_url = https_server()->GetURL(kCrossOriginHost,
-                                           "/shared_storage/simple_module.js");
+  GURL script_url = https_server()->GetURL(
+      kCrossOriginHost,
+      net::test_server::GetFilePathWithReplacements(
+          "/shared_storage/module_with_custom_header.js",
+          content::SharedStorageCrossOriginWorkletResponseHeaderReplacement(
+              "Access-Control-Allow-Origin: *",
+              "Shared-Storage-Cross-Origin-Worklet-Allowed: ?1")));
 
-  // The attestation error for `createWorklet()` won't be revealed to the
-  // cross-origin caller. But we can verify the error indirectly, by checking
-  // that no worklet host is created.
-  // TODO(cammie): Update this test when we update the code to reveal this error
-  // to JS. It's technically already revealed to JS via the
-  // PrivacySandboxSettings code, which sends an error message to the console.
-  EXPECT_TRUE(content::ExecJs(
+  content::EvalJsResult result = content::EvalJs(
       GetActiveWebContents(),
-      content::JsReplace("sharedStorage.createWorklet($1)", script_url)));
+      content::JsReplace("sharedStorage.createWorklet($1)", script_url));
+
+  EXPECT_TRUE(base::StartsWith(
+      result.error, GetSharedStorageAddModuleDisabledErrorMessage()));
 
   EXPECT_EQ(0u, content::GetAttachedSharedStorageWorkletHostsCount(
                     GetActiveWebContents()
@@ -2968,9 +2981,7 @@ IN_PROC_BROWSER_TEST_P(SharedStorageChromeBrowserTest,
   WaitForHistograms({kErrorTypeHistogram});
   histogram_tester_.ExpectUniqueSample(
       kErrorTypeHistogram,
-      blink::SharedStorageWorkletErrorType::
-          kAddModuleNonWebVisibleCrossOriginSharedStorageDisabled,
-      1);
+      blink::SharedStorageWorkletErrorType::kAddModuleWebVisible, 1);
 }
 
 IN_PROC_BROWSER_TEST_P(SharedStorageChromeBrowserTest,
@@ -2998,12 +3009,7 @@ IN_PROC_BROWSER_TEST_P(SharedStorageChromeBrowserTest,
   SetPrefs(/*enable_privacy_sandbox=*/false,
            /*allow_third_party_cookies=*/true);
 
-  content::WebContentsConsoleObserver console_observer(GetActiveWebContents());
-
-  // The prefs error for `selectURL()` won't be revealed to the cross-origin
-  // caller. But we can verify the error indirectly, by checking that no console
-  // messages are logged, which indicates that the operation did not execute.
-  EXPECT_TRUE(content::ExecJs(GetActiveWebContents(), R"(
+  content::EvalJsResult result = content::EvalJs(GetActiveWebContents(), R"(
         window.testWorklet.selectURL(
             'test-url-selection-operation',
             [
@@ -3015,22 +3021,17 @@ IN_PROC_BROWSER_TEST_P(SharedStorageChromeBrowserTest,
               data: {'mockResult': 0}
             }
           )
-      )"));
+      )");
 
-  base::RunLoop run_loop;
-  base::SequencedTaskRunner::GetCurrentDefault()->PostDelayedTask(
-      FROM_HERE, run_loop.QuitClosure(), TestTimeouts::tiny_timeout());
-  run_loop.Run();
+  EXPECT_TRUE(base::StartsWith(
+      result.error, GetSharedStorageSelectURLDisabledErrorMessage()));
 
-  EXPECT_EQ(0u, console_observer.messages().size());
   WaitForHistograms({kErrorTypeHistogram});
   histogram_tester_.ExpectBucketCount(
       kErrorTypeHistogram, blink::SharedStorageWorkletErrorType::kSuccess, 1);
   histogram_tester_.ExpectBucketCount(
       kErrorTypeHistogram,
-      blink::SharedStorageWorkletErrorType::
-          kSelectURLNonWebVisibleCrossOriginSharedStorageDisabled,
-      1);
+      blink::SharedStorageWorkletErrorType::kSelectURLWebVisible, 1);
 }
 
 IN_PROC_BROWSER_TEST_P(SharedStorageChromeBrowserTest,
@@ -3117,28 +3118,18 @@ IN_PROC_BROWSER_TEST_P(SharedStorageChromeBrowserTest,
   SetPrefs(/*enable_privacy_sandbox=*/false,
            /*allow_third_party_cookies=*/true);
 
-  content::WebContentsConsoleObserver console_observer(GetActiveWebContents());
-
-  // The prefs error for `run()` won't be revealed to the cross-origin caller.
-  // But we can verify the error indirectly, by checking that no console
-  // messages are logged, which indicates that the operation did not execute.
-  EXPECT_TRUE(content::ExecJs(GetActiveWebContents(), R"(
+  content::EvalJsResult result = content::EvalJs(GetActiveWebContents(), R"(
         window.testWorklet.run('test-operation')
-      )"));
+      )");
 
-  base::RunLoop run_loop;
-  base::SequencedTaskRunner::GetCurrentDefault()->PostDelayedTask(
-      FROM_HERE, run_loop.QuitClosure(), TestTimeouts::tiny_timeout());
-  run_loop.Run();
+  EXPECT_TRUE(
+      base::StartsWith(result.error, GetSharedStorageDisabledErrorMessage()));
 
-  EXPECT_EQ(0u, console_observer.messages().size());
   WaitForHistograms({kErrorTypeHistogram});
   histogram_tester_.ExpectBucketCount(
       kErrorTypeHistogram, blink::SharedStorageWorkletErrorType::kSuccess, 1);
   histogram_tester_.ExpectBucketCount(
-      kErrorTypeHistogram,
-      blink::SharedStorageWorkletErrorType::
-          kRunNonWebVisibleCrossOriginSharedStorageDisabled,
+      kErrorTypeHistogram, blink::SharedStorageWorkletErrorType::kRunWebVisible,
       1);
 }
 
@@ -3202,38 +3193,20 @@ IN_PROC_BROWSER_TEST_P(
   GURL script_url = https_server()->GetURL(kCrossOriginHost,
                                            "/shared_storage/simple_module.js");
 
-  // The network error for `createWorklet()` won't be revealed to the
-  // cross-origin caller. But we can verify the error indirectly, by running a
-  // subsequent operation and checking the console error.
-  EXPECT_TRUE(
-      content::ExecJs(GetActiveWebContents(), content::JsReplace(R"(
+  content::EvalJsResult result =
+      content::EvalJs(GetActiveWebContents(), content::JsReplace(R"(
         (async function() {
           window.testWorklet = await sharedStorage.createWorklet($1);
         })()
       )",
-                                                                 script_url)));
+                                                                 script_url));
 
-  content::WebContentsConsoleObserver console_observer(GetActiveWebContents());
-  console_observer.SetFilter(MakeFilter({"Cannot find operation name."}));
-
-  EXPECT_TRUE(content::ExecJs(GetActiveWebContents(), R"(
-        window.testWorklet.run('test-operation')
-      )"));
-
-  ASSERT_TRUE(console_observer.Wait());
-
-  EXPECT_EQ(1u, console_observer.messages().size());
-  EXPECT_EQ("Cannot find operation name.",
-            base::UTF16ToUTF8(console_observer.messages()[0].message));
+  EXPECT_THAT(result.error, testing::HasSubstr("Error: Failed to load"));
 
   WaitForHistograms({kErrorTypeHistogram});
-  histogram_tester_.ExpectBucketCount(
+  histogram_tester_.ExpectUniqueSample(
       kErrorTypeHistogram,
-      blink::SharedStorageWorkletErrorType::kAddModuleNonWebVisibleOther, 1);
-  histogram_tester_.ExpectBucketCount(
-      kErrorTypeHistogram,
-      blink::SharedStorageWorkletErrorType::kRunNonWebVisibleOperationNotFound,
-      1);
+      blink::SharedStorageWorkletErrorType::kAddModuleWebVisible, 1);
 }
 
 IN_PROC_BROWSER_TEST_P(SharedStorageChromeBrowserTest,
@@ -3246,38 +3219,20 @@ IN_PROC_BROWSER_TEST_P(SharedStorageChromeBrowserTest,
   GURL script_url = https_server()->GetURL(
       kCrossOriginHost, "/shared_storage/nonexistent_module.js");
 
-  // The network error for `createWorklet()` won't be revealed to the
-  // cross-origin caller. But we can verify the error indirectly, by running a
-  // subsequent operation and checking the console error.
-  EXPECT_TRUE(
-      content::ExecJs(GetActiveWebContents(), content::JsReplace(R"(
+  content::EvalJsResult result =
+      content::EvalJs(GetActiveWebContents(), content::JsReplace(R"(
         (async function() {
           window.testWorklet = await sharedStorage.createWorklet($1);
         })()
       )",
-                                                                 script_url)));
+                                                                 script_url));
 
-  content::WebContentsConsoleObserver console_observer(GetActiveWebContents());
-  console_observer.SetFilter(MakeFilter({"Cannot find operation name."}));
-
-  EXPECT_TRUE(content::ExecJs(GetActiveWebContents(), R"(
-        window.testWorklet.run('test-operation')
-      )"));
-
-  ASSERT_TRUE(console_observer.Wait());
-
-  EXPECT_EQ(1u, console_observer.messages().size());
-  EXPECT_EQ("Cannot find operation name.",
-            base::UTF16ToUTF8(console_observer.messages()[0].message));
+  EXPECT_THAT(result.error, testing::HasSubstr("Error: Failed to load"));
 
   WaitForHistograms({kErrorTypeHistogram});
-  histogram_tester_.ExpectBucketCount(
+  histogram_tester_.ExpectUniqueSample(
       kErrorTypeHistogram,
-      blink::SharedStorageWorkletErrorType::kAddModuleNonWebVisibleOther, 1);
-  histogram_tester_.ExpectBucketCount(
-      kErrorTypeHistogram,
-      blink::SharedStorageWorkletErrorType::kRunNonWebVisibleOperationNotFound,
-      1);
+      blink::SharedStorageWorkletErrorType::kAddModuleWebVisible, 1);
 }
 
 IN_PROC_BROWSER_TEST_P(SharedStorageChromeBrowserTest,

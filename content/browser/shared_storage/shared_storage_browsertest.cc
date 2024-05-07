@@ -4627,45 +4627,11 @@ IN_PROC_BROWSER_TEST_P(SharedStorageBrowserTest,
                         kEmptyAccessControlAllowOriginReplacement,
                         "Shared-Storage-Cross-Origin-Worklet-Allowed: ?1")));
 
-  // The network error for `createWorklet()` won't be revealed to the
-  // cross-origin caller. But we can verify the error indirectly, by running a
-  // subsequent operation and checking the console error.
-  EXPECT_TRUE(ExecJs(shell(), JsReplace(R"(
-      new Promise((resolve, reject) => {
-        sharedStorage.createWorklet($1).then((worklet) => {
-          window.testWorklet = worklet;
-          resolve();
-        });
-      })
-    )",
-                                        module_script_url.spec())));
+  EvalJsResult result = EvalJs(
+      shell(),
+      JsReplace("sharedStorage.createWorklet($1)", module_script_url.spec()));
 
-  WebContentsConsoleObserver console_observer(shell()->web_contents());
-
-  // Expect the run() operation.
-  test_worklet_host_manager()
-      .GetAttachedWorkletHost()
-      ->SetExpectedWorkletResponsesCount(1);
-
-  EXPECT_TRUE(ExecJs(shell(), R"(
-      window.testWorklet.run('test-operation', {
-        data: {
-          'set-key': 'key0',
-          'set-value': 'value0'
-        },
-        keepAlive: true
-      });
-    )"));
-
-  test_worklet_host_manager()
-      .GetAttachedWorkletHost()
-      ->WaitForWorkletResponses();
-
-  EXPECT_EQ(1u, console_observer.messages().size());
-  EXPECT_EQ("Cannot find operation name.",
-            base::UTF16ToUTF8(console_observer.messages()[0].message));
-  EXPECT_EQ(blink::mojom::ConsoleMessageLevel::kError,
-            console_observer.messages()[0].log_level);
+  EXPECT_THAT(result.error, testing::HasSubstr("Failed to load"));
 }
 
 IN_PROC_BROWSER_TEST_P(
@@ -4681,45 +4647,11 @@ IN_PROC_BROWSER_TEST_P(
                         "Access-Control-Allow-Origin: *",
                         kEmptySharedStorageCrossOriginAllowedReplacement)));
 
-  // The network error for `createWorklet()` won't be revealed to the
-  // cross-origin caller. But we can verify the error indirectly, by running a
-  // subsequent operation and checking the console error.
-  EXPECT_TRUE(ExecJs(shell(), JsReplace(R"(
-      new Promise((resolve, reject) => {
-        sharedStorage.createWorklet($1).then((worklet) => {
-          window.testWorklet = worklet;
-          resolve();
-        });
-      })
-    )",
-                                        module_script_url.spec())));
+  EvalJsResult result = EvalJs(
+      shell(),
+      JsReplace("sharedStorage.createWorklet($1)", module_script_url.spec()));
 
-  WebContentsConsoleObserver console_observer(shell()->web_contents());
-
-  // Expect the run() operation.
-  test_worklet_host_manager()
-      .GetAttachedWorkletHost()
-      ->SetExpectedWorkletResponsesCount(1);
-
-  EXPECT_TRUE(ExecJs(shell(), R"(
-      window.testWorklet.run('test-operation', {
-        data: {
-          'set-key': 'key0',
-          'set-value': 'value0'
-        },
-        keepAlive: true
-      });
-    )"));
-
-  test_worklet_host_manager()
-      .GetAttachedWorkletHost()
-      ->WaitForWorkletResponses();
-
-  EXPECT_EQ(1u, console_observer.messages().size());
-  EXPECT_EQ("Cannot find operation name.",
-            base::UTF16ToUTF8(console_observer.messages()[0].message));
-  EXPECT_EQ(blink::mojom::ConsoleMessageLevel::kError,
-            console_observer.messages()[0].log_level);
+  EXPECT_THAT(result.error, testing::HasSubstr("Failed to load"));
 }
 
 IN_PROC_BROWSER_TEST_P(SharedStorageBrowserTest,

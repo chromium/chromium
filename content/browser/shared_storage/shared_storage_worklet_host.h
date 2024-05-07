@@ -215,9 +215,12 @@ class CONTENT_EXPORT SharedStorageWorkletHost
       const blink::mojom::PrivateAggregationConfigPtr&
           private_aggregation_config);
 
-  bool IsSharedStorageAllowed(std::string* out_debug_message = nullptr);
+  bool IsSharedStorageAllowed(
+      std::string* out_debug_message,
+      bool* out_block_is_site_setting_specific = nullptr);
   bool IsSharedStorageSelectURLAllowed(
-      std::string* out_debug_message = nullptr);
+      std::string* out_debug_message,
+      bool* out_block_is_site_setting_specific);
 
   // RAII helper object for talking to `SharedStorageWorkletDevToolsManager`.
   std::unique_ptr<ScopedDevToolsHandle> devtools_handle_;

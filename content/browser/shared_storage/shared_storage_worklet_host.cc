@@ -517,8 +517,10 @@ void SharedStorageWorkletHost::SelectURL(
   GURL urn_uuid = pending_urn_uuid.value();
 
   std::string debug_message;
-  if (!IsSharedStorageSelectURLAllowed(&debug_message)) {
-    if (is_same_origin_worklet_) {
+  bool prefs_failure_is_site_setting_specific = false;
+  if (!IsSharedStorageSelectURLAllowed(
+          &debug_message, &prefs_failure_is_site_setting_specific)) {
+    if (is_same_origin_worklet_ || !prefs_failure_is_site_setting_specific) {
       std::move(callback).Run(
           /*success=*/false,
           /*error_message=*/
@@ -637,8 +639,10 @@ void SharedStorageWorkletHost::Run(
   keep_alive_after_operation_ = keep_alive_after_operation;
 
   std::string debug_message;
-  if (!IsSharedStorageAllowed(&debug_message)) {
-    if (is_same_origin_worklet_) {
+  bool prefs_failure_is_site_setting_specific = false;
+  if (!IsSharedStorageAllowed(&debug_message,
+                              &prefs_failure_is_site_setting_specific)) {
+    if (is_same_origin_worklet_ || !prefs_failure_is_site_setting_specific) {
       std::move(callback).Run(
           /*success=*/false,
           /*error_message=*/GetSharedStorageErrorMessage(
@@ -1371,28 +1375,31 @@ SharedStorageWorkletHost::MaybeConstructPrivateAggregationOperationDetails(
 }
 
 bool SharedStorageWorkletHost::IsSharedStorageAllowed(
-    std::string* out_debug_message) {
+    std::string* out_debug_message,
+    bool* out_block_is_site_setting_specific) {
   RenderFrameHost* rfh =
       document_service_ ? &(document_service_->render_frame_host()) : nullptr;
   return GetContentClient()->browser()->IsSharedStorageAllowed(
       browser_context_, rfh, main_frame_origin_, shared_storage_origin_,
-      out_debug_message, /*out_block_is_site_setting_specific=*/nullptr);
+      out_debug_message, out_block_is_site_setting_specific);
 }
 
 bool SharedStorageWorkletHost::IsSharedStorageSelectURLAllowed(
-    std::string* out_debug_message) {
+    std::string* out_debug_message,
+    bool* out_block_is_site_setting_specific) {
   CHECK(document_service_);
 
   // Will trigger a call to
   // `content_settings::PageSpecificContentSettings::BrowsingDataAccessed()` for
   // reporting purposes.
-  if (!IsSharedStorageAllowed(out_debug_message)) {
+  if (!IsSharedStorageAllowed(out_debug_message,
+                              out_block_is_site_setting_specific)) {
     return false;
   }
 
   return GetContentClient()->browser()->IsSharedStorageSelectURLAllowed(
       browser_context_, main_frame_origin_, shared_storage_origin_,
-      out_debug_message, /*out_block_is_site_setting_specific=*/nullptr);
+      out_debug_message, out_block_is_site_setting_specific);
 }
 
 }  // namespace content
