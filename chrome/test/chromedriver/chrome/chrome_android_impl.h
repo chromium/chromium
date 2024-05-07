@@ -23,8 +23,7 @@ class ChromeAndroidImpl : public ChromeImpl {
                         devtools_event_listeners,
                     std::optional<MobileDevice> mobile_device,
                     std::string page_load_strategy,
-                    std::unique_ptr<Device> device,
-                    bool autoaccept_beforeunload);
+                    std::unique_ptr<Device> device);
   ~ChromeAndroidImpl() override;
 
   // Overridden from Chrome:

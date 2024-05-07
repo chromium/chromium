@@ -43,16 +43,14 @@ class WebViewImpl : public WebView {
       const BrowserInfo* browser_info,
       std::unique_ptr<DevToolsClient> client,
       std::optional<MobileDevice> mobile_device,
-      std::string page_load_strategy,
-      bool autoaccept_beforeunload);
+      std::string page_load_strategy);
   WebViewImpl(const std::string& id,
               const bool w3c_compliant,
               const WebViewImpl* parent,
               const BrowserInfo* browser_info,
               std::unique_ptr<DevToolsClient> client,
               std::optional<MobileDevice> mobile_device,
-              std::string page_load_strategy,
-              bool autoaccept_beforeunload);
+              std::string page_load_strategy);
   ~WebViewImpl() override;
   std::unique_ptr<WebViewImpl> CreateChild(const std::string& session_id,
                                            const std::string& target_id) const;
@@ -272,7 +270,6 @@ class WebViewImpl : public WebView {
   std::unique_ptr<CastTracker> cast_tracker_;
   std::unique_ptr<FedCmTracker> fedcm_tracker_;
   bool is_service_worker_;
-  bool autoaccept_beforeunload_ = false;
 };
 
 // Responsible for locking a WebViewImpl and its associated data structure to

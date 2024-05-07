@@ -18,8 +18,7 @@ class Status;
 // Tracks the opening and closing of JavaScript dialogs (e.g., alerts).
 class JavaScriptDialogManager : public DevToolsEventListener {
  public:
-  explicit JavaScriptDialogManager(DevToolsClient* client,
-                                   bool autoaccept_beforeunload);
+  explicit JavaScriptDialogManager(DevToolsClient* client);
 
   JavaScriptDialogManager(const JavaScriptDialogManager&) = delete;
   JavaScriptDialogManager& operator=(const JavaScriptDialogManager&) = delete;
@@ -50,8 +49,6 @@ class JavaScriptDialogManager : public DevToolsEventListener {
   std::list<std::string> dialog_type_queue_;
 
   std::string prompt_text_;
-
-  bool autoaccept_beforeunload_ = false;
 };
 
 #endif  // CHROME_TEST_CHROMEDRIVER_CHROME_JAVASCRIPT_DIALOG_MANAGER_H_

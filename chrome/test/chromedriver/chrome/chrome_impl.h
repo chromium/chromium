@@ -96,8 +96,7 @@ class ChromeImpl : public Chrome {
              std::vector<std::unique_ptr<DevToolsEventListener>>
                  devtools_event_listeners,
              std::optional<MobileDevice> mobile_device,
-             std::string page_load_strategy,
-             bool autoaccept_beforeunload);
+             std::string page_load_strategy);
 
   virtual Status QuitImpl() = 0;
   Status CloseTarget(const std::string& id);
@@ -119,7 +118,6 @@ class ChromeImpl : public Chrome {
   BrowserInfo browser_info_;
   std::set<WebViewInfo::Type> window_types_;
   std::unique_ptr<DevToolsClient> devtools_websocket_client_;
-  bool autoaccept_beforeunload_ = false;
 
  private:
   static Status PermissionNameToChromePermissions(

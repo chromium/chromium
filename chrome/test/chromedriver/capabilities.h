@@ -193,7 +193,7 @@ struct Capabilities {
 
   std::set<WebViewInfo::Type> window_types;
 
-  bool web_socket_url = false;
+  bool webSocketUrl = false;
 };
 
 bool GetChromeOptionsDictionary(const base::Value::Dict& params,

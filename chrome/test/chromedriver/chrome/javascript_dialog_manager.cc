@@ -7,9 +7,8 @@
 #include "chrome/test/chromedriver/chrome/devtools_client.h"
 #include "chrome/test/chromedriver/chrome/status.h"
 
-JavaScriptDialogManager::JavaScriptDialogManager(DevToolsClient* client,
-                                                 bool autoaccept_beforeunload)
-    : client_(client), autoaccept_beforeunload_(autoaccept_beforeunload) {
+JavaScriptDialogManager::JavaScriptDialogManager(DevToolsClient* client)
+    : client_(client) {
   client_->AddListener(this);
 }
 
@@ -96,10 +95,6 @@ Status JavaScriptDialogManager::OnEvent(DevToolsClient* client,
                     "dialog event missing or invalid 'defaultPrompt'");
     }
     prompt_text_ = *prompt_text;
-
-    if (*type == "beforeunload" && autoaccept_beforeunload_) {
-      return HandleDialog(true, nullptr);
-    }
   } else if (method == "Page.javascriptDialogClosed") {
     // Inspector only sends this event when all dialogs have been closed.
     // Clear the unhandled queue in case the user closed a dialog manually.

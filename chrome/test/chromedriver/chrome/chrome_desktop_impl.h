@@ -35,8 +35,7 @@ class ChromeDesktopImpl : public ChromeImpl {
                     const base::CommandLine& command,
                     base::ScopedTempDir* user_data_dir,
                     base::ScopedTempDir* extension_dir,
-                    bool network_emulation_enabled,
-                    bool autoaccept_beforeunload);
+                    bool network_emulation_enabled);
   ~ChromeDesktopImpl() override;
 
   // Waits for a page with the given URL to appear and finish loading.

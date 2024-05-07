@@ -44,7 +44,6 @@ enum StatusCode {
   kTabCrashed,
   kTargetDetached,
   kUnexpectedAlertOpen_Keep,
-  kNavigationDetectedByRemoteEnd,
 };
 
 // Represents a WebDriver status, which may be an error or ok.

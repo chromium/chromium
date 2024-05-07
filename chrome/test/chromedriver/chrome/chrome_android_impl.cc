@@ -22,15 +22,13 @@ ChromeAndroidImpl::ChromeAndroidImpl(
         devtools_event_listeners,
     std::optional<MobileDevice> mobile_device,
     std::string page_load_strategy,
-    std::unique_ptr<Device> device,
-    bool autoaccept_beforeunload)
+    std::unique_ptr<Device> device)
     : ChromeImpl(std::move(browser_info),
                  std::move(window_types),
                  std::move(websocket_client),
                  std::move(devtools_event_listeners),
                  std::move(mobile_device),
-                 page_load_strategy,
-                 autoaccept_beforeunload),
+                 page_load_strategy),
       device_(std::move(device)) {}
 
 ChromeAndroidImpl::~ChromeAndroidImpl() = default;
