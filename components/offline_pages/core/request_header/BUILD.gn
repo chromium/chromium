@@ -29,5 +29,6 @@ source_set("unit_tests") {
     "//base",
     "//base/test:test_support",
     "//testing/gtest",
+    "//url:url",
   ]
 }
