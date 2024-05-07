@@ -144,7 +144,8 @@ import java.util.function.Consumer;
 @Config(shadows = {ShadowPostTask.class})
 @EnableFeatures({
     SyncFeatureMap.ENABLE_BOOKMARK_FOLDERS_FOR_ACCOUNT_STORAGE,
-    ChromeFeatureList.ANDROID_IMPROVED_BOOKMARKS
+    ChromeFeatureList.ANDROID_IMPROVED_BOOKMARKS,
+    ChromeFeatureList.REPLACE_SYNC_PROMOS_WITH_SIGN_IN_PROMOS
 })
 public class BookmarkManagerMediatorTest {
     private static final GURL EXAMPLE_URL = JUnitTestGURLs.EXAMPLE_URL;
@@ -981,7 +982,10 @@ public class BookmarkManagerMediatorTest {
     }
 
     @Test
-    @DisableFeatures(SyncFeatureMap.ENABLE_BOOKMARK_FOLDERS_FOR_ACCOUNT_STORAGE)
+    @DisableFeatures({
+        SyncFeatureMap.ENABLE_BOOKMARK_FOLDERS_FOR_ACCOUNT_STORAGE,
+        ChromeFeatureList.REPLACE_SYNC_PROMOS_WITH_SIGN_IN_PROMOS
+    })
     public void testBuildImprovedBookmarkRow_Folder_Visual() {
         finishLoading();
         mMediator.openFolder(mFolderId1);
@@ -1306,7 +1310,10 @@ public class BookmarkManagerMediatorTest {
     }
 
     @Test
-    @DisableFeatures(SyncFeatureMap.ENABLE_BOOKMARK_FOLDERS_FOR_ACCOUNT_STORAGE)
+    @DisableFeatures({
+        SyncFeatureMap.ENABLE_BOOKMARK_FOLDERS_FOR_ACCOUNT_STORAGE,
+        ChromeFeatureList.REPLACE_SYNC_PROMOS_WITH_SIGN_IN_PROMOS
+    })
     public void testParentFolderUpdatedWhenChildDeleted() {
         finishLoading();
 

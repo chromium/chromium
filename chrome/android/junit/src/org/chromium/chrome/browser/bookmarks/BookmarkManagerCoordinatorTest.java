@@ -58,7 +58,8 @@ import org.chromium.ui.base.TestActivity;
 })
 @EnableFeatures({
     SyncFeatureMap.ENABLE_BOOKMARK_FOLDERS_FOR_ACCOUNT_STORAGE,
-    ChromeFeatureList.ANDROID_IMPROVED_BOOKMARKS
+    ChromeFeatureList.ANDROID_IMPROVED_BOOKMARKS,
+    ChromeFeatureList.REPLACE_SYNC_PROMOS_WITH_SIGN_IN_PROMOS
 })
 public class BookmarkManagerCoordinatorTest {
     @Rule public MockitoRule mMockitoRule = MockitoJUnit.rule();
