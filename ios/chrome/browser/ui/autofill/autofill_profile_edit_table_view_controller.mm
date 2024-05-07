@@ -111,12 +111,14 @@ const CGFloat kLineSpacingBetweenErrorAndFooter = 12.0f;
 
 - (void)updateProfileData {
   if (_dynamicallyLoadInputFieldsEnabled) {
-    [self updateProfileDataForSection:
-              AutofillProfileDetailsSectionIdentifierName];
-    [self updateProfileDataForSection:
-              AutofillProfileDetailsSectionIdentifierAddress];
-    [self updateProfileDataForSection:
-              AutofillProfileDetailsSectionIdentifierPhoneEmail];
+    const std::array<AutofillProfileDetailsSectionIdentifier, 3> allSections = {
+        AutofillProfileDetailsSectionIdentifierName,
+        AutofillProfileDetailsSectionIdentifierAddress,
+        AutofillProfileDetailsSectionIdentifierPhoneEmail};
+
+    for (const AutofillProfileDetailsSectionIdentifier section : allSections) {
+      [self updateProfileDataForSection:section];
+    }
   } else {
     [self updateProfileDataForSection:
               AutofillProfileDetailsSectionIdentifierFields];
@@ -371,15 +373,15 @@ const CGFloat kLineSpacingBetweenErrorAndFooter = 12.0f;
 - (void)tableViewItemDidChange:(TableViewTextEditItem*)tableViewItem {
   if ((self.accountProfile || self.migrationPrompt ||
        _moveToAccountFromSettings)) {
-    [self computeErrorIfRequiredTextField:base::apple::ObjCCastStrict<
-                                              AutofillProfileEditItem>(
-                                              tableViewItem)];
-    if (_settingsView) {
-      [self updateDoneButtonStatus];
-    } else {
-      [self updateSaveButtonStatus];
-    }
+    AutofillProfileEditItem* profileItem =
+        base::apple::ObjCCastStrict<AutofillProfileEditItem>(tableViewItem);
+    tableViewItem.hasValidText = [_delegate
+          fieldContainsValidValue:profileItem.autofillFieldType
+                    hasEmptyValue:(profileItem.textFieldValue.length == 0)
+        moveToAccountFromSettings:_moveToAccountFromSettings];
+    [self validateFieldsAndChangeButtonStatus];
   }
+
   [_controller reconfigureCellsForItems:@[ tableViewItem ]];
 }
 
@@ -439,7 +441,6 @@ const CGFloat kLineSpacingBetweenErrorAndFooter = 12.0f;
 
 // Returns the error message item as a footer.
 - (TableViewAttributedStringHeaderFooterItem*)errorMessageItem {
-  CHECK(_settingsView);
   TableViewAttributedStringHeaderFooterItem* item =
       [[TableViewAttributedStringHeaderFooterItem alloc]
           initWithType:AutofillProfileDetailsItemTypeError];
@@ -589,18 +590,9 @@ const CGFloat kLineSpacingBetweenErrorAndFooter = 12.0f;
 
 #pragma mark - Private
 
-// Computes whether the `profileItem` is a required field and empty.
-- (void)computeErrorIfRequiredTextField:(AutofillProfileEditItem*)profileItem {
-  profileItem.hasValidText = [_delegate
-        fieldContainsValidValue:profileItem.autofillFieldType
-                  hasEmptyValue:(profileItem.textFieldValue.length == 0)
-      moveToAccountFromSettings:_moveToAccountFromSettings];
-}
-
 // Removes the given section if it exists.
 - (void)removeSectionWithIdentifier:(NSInteger)sectionIdentifier
                    withRowAnimation:(UITableViewRowAnimation)animation {
-  CHECK(_settingsView);
   TableViewModel* model = _controller.tableViewModel;
   if ([model hasSectionForSectionIdentifier:sectionIdentifier]) {
     NSInteger section = [model sectionForSectionIdentifier:sectionIdentifier];
@@ -617,7 +609,6 @@ const CGFloat kLineSpacingBetweenErrorAndFooter = 12.0f;
                                addSection:
                                    (AutofillProfileDetailsSectionIdentifier)
                                        addSection {
-  CHECK(_settingsView);
   TableViewModel* model = _controller.tableViewModel;
   __weak AutofillProfileEditTableViewController* weakSelf = self;
   [_controller
@@ -655,44 +646,44 @@ const CGFloat kLineSpacingBetweenErrorAndFooter = 12.0f;
                         completion:nil];
 }
 
-// Updates the Done button status based on the required fields that are empty
-// and shows/removes the error footer if required.
-- (void)updateDoneButtonStatus {
-  CHECK(_settingsView);
+// Responsible for the showing the error if a required field does not have a
+// value, or just updating the error message if multiple required fields have
+// missing values or just removing the error if all the requirements are met.
+// Also, updates the button status if the error is shown.
+- (void)validateFieldsAndChangeButtonStatus {
   BOOL shouldShowError = ([_delegate requiredFieldsWithEmptyValuesCount] > 0);
-  _controller.navigationItem.rightBarButtonItem.enabled = !shouldShowError;
-  if (shouldShowError != _errorSectionPresented) {
-    AutofillProfileDetailsSectionIdentifier addSection =
-        shouldShowError ? AutofillProfileDetailsSectionIdentifierErrorFooter
-                        : AutofillProfileDetailsSectionIdentifierFooter;
-    AutofillProfileDetailsSectionIdentifier removeSection =
-        shouldShowError ? AutofillProfileDetailsSectionIdentifierFooter
-                        : AutofillProfileDetailsSectionIdentifierErrorFooter;
-    [self changeFooterStatusToRemoveSection:removeSection
-                                 addSection:addSection];
-    _errorSectionPresented = shouldShowError;
-  } else if (shouldShowError && [self shouldChangeErrorMessage]) {
-    [self
-        changeFooterStatusToRemoveSection:
-            AutofillProfileDetailsSectionIdentifierErrorFooter
-                               addSection:
-                                   AutofillProfileDetailsSectionIdentifierErrorFooter];
-  }
-}
 
-// Updates the Save/Update button status based on the required fields that are
-// empty.
-- (void)updateSaveButtonStatus {
-  CHECK(!_settingsView);
-  BOOL shouldShowError = ([_delegate requiredFieldsWithEmptyValuesCount] > 0);
-  _modalSaveUpdateButton.enabled = !shouldShowError;
-  [_controller reconfigureCellsForItems:@[ _modalSaveUpdateButton ]];
+  if (_settingsView || _dynamicallyLoadInputFieldsEnabled) {
+    if (shouldShowError != _errorSectionPresented) {
+      AutofillProfileDetailsSectionIdentifier addSection =
+          shouldShowError ? AutofillProfileDetailsSectionIdentifierErrorFooter
+                          : AutofillProfileDetailsSectionIdentifierFooter;
+      AutofillProfileDetailsSectionIdentifier removeSection =
+          shouldShowError ? AutofillProfileDetailsSectionIdentifierFooter
+                          : AutofillProfileDetailsSectionIdentifierErrorFooter;
+      [self changeFooterStatusToRemoveSection:removeSection
+                                   addSection:addSection];
+      _errorSectionPresented = shouldShowError;
+    } else if (shouldShowError && [self shouldChangeErrorMessage]) {
+      [self
+          changeFooterStatusToRemoveSection:
+              AutofillProfileDetailsSectionIdentifierErrorFooter
+                                 addSection:
+                                     AutofillProfileDetailsSectionIdentifierErrorFooter];
+    }
+  }
+
+  if (_settingsView) {
+    _controller.navigationItem.rightBarButtonItem.enabled = !shouldShowError;
+  } else {
+    _modalSaveUpdateButton.enabled = !shouldShowError;
+    [_controller reconfigureCellsForItems:@[ _modalSaveUpdateButton ]];
+  }
 }
 
 // Returns YES, if the error message needs to be changed. This happens when
 // there are multiple required fields that become empty.
 - (BOOL)shouldChangeErrorMessage {
-  CHECK(_settingsView);
   TableViewHeaderFooterItem* currentFooter = [_controller.tableViewModel
       footerForSectionWithIdentifier:
           AutofillProfileDetailsSectionIdentifierErrorFooter];
@@ -722,7 +713,6 @@ const CGFloat kLineSpacingBetweenErrorAndFooter = 12.0f;
 // Returns the error message combined with footer.
 - (NSAttributedString*)errorAndFooterMessage {
   CHECK([_delegate requiredFieldsWithEmptyValuesCount] > 0);
-  CHECK(_settingsView);
   NSString* error = l10n_util::GetPluralNSStringF(
       IDS_IOS_SETTINGS_EDIT_AUTOFILL_ADDRESS_REQUIREMENT_ERROR,
       [_delegate requiredFieldsWithEmptyValuesCount]);
@@ -782,20 +772,18 @@ const CGFloat kLineSpacingBetweenErrorAndFooter = 12.0f;
       // No requirement checks for local profiles.
       if (self.accountProfile || self.migrationPrompt ||
           _moveToAccountFromSettings) {
-        [self
-            computeErrorIfRequiredTextField:base::apple::ObjCCastStrict<
-                                                AutofillProfileEditItem>(item)];
+        AutofillProfileEditItem* profileItem =
+            base::apple::ObjCCastStrict<AutofillProfileEditItem>(item);
+        profileItem.hasValidText = [_delegate
+              fieldContainsValidValue:profileItem.autofillFieldType
+                        hasEmptyValue:(profileItem.textFieldValue.length == 0)
+            moveToAccountFromSettings:_moveToAccountFromSettings];
       }
     }
   }
 
+  [self validateFieldsAndChangeButtonStatus];
   [self reconfigureCells];
-
-  if (_settingsView) {
-    [self updateDoneButtonStatus];
-  } else {
-    [self updateSaveButtonStatus];
-  }
 }
 
 // Returns the currently selected country value.
