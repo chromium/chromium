@@ -405,6 +405,11 @@ TEST(VideoLayerImplTest, NativeYUVFrameGeneratesYUVQuad) {
   scoped_refptr<gpu::ClientSharedImage>
       shared_images[media::VideoFrame::kMaxPlanes];
   shared_images[0] = gpu::ClientSharedImage::CreateForTesting();
+  // Continue legacy path if feature is not enabled.
+  if (!media::IsWritePixelsYUVEnabled()) {
+    shared_images[1] = gpu::ClientSharedImage::CreateForTesting();
+    shared_images[2] = gpu::ClientSharedImage::CreateForTesting();
+  }
 
   scoped_refptr<media::VideoFrame> video_frame =
       media::VideoFrame::WrapSharedImages(
