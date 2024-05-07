@@ -94,6 +94,7 @@
       "build_with_internal_optimization_guide": true,
       "dcheck_always_on": false,
       "enable_ml_internal": true,
+      "is_chrome_branded": true,
       "is_debug": false,
       "symbol_level": 1,
       "target_cpu": "arm64",

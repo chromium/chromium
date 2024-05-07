@@ -905,7 +905,7 @@
     ],
 
     'optimization_guide_mac_arm64_rel': [
-      'minimal_symbols', 'ml_internal', 'optimization_guide', 'reclient', 'release', 'arm64',
+      'chrome_branded', 'minimal_symbols', 'ml_internal', 'optimization_guide', 'reclient', 'release', 'arm64',
     ],
 
     'optimization_guide_official_rel': [
