@@ -62,12 +62,17 @@ wgpu::Texture DawnOzoneImageRepresentation::BeginAccess(
 
   std::vector<gfx::GpuFenceHandle> fences;
   bool need_end_fence;
+  // We will treat this access as a write if the client 'usage' implies write
+  // access and if the image has been initialized (cleared). The latter test is
+  // necessary because internally dawn will initialize (clear) the buffer if it
+  // has not yet been cleared.
+  is_readonly_ = (usage & kWriteUsage) == 0 && IsCleared();
   if (!ozone_backing()->BeginAccess(
-          /*readonly=*/false, OzoneImageBacking::AccessStream::kWebGPU, &fences,
-          need_end_fence)) {
+          /*readonly=*/is_readonly_, OzoneImageBacking::AccessStream::kWebGPU,
+          &fences, need_end_fence)) {
     return nullptr;
   }
-  DCHECK(need_end_fence);
+  DCHECK(need_end_fence || is_readonly_);
 
   gfx::Size pixmap_size = pixmap_->GetBufferSize();
   wgpu::TextureDescriptor texture_descriptor;
@@ -81,14 +86,17 @@ wgpu::Texture DawnOzoneImageRepresentation::BeginAccess(
   texture_descriptor.mipLevelCount = 1;
   texture_descriptor.sampleCount = 1;
 
-  // We need to have internal usages of CopySrc for copies,
-  // RenderAttachment for clears, and TextureBinding for copyTextureForBrowser.
+  // We need to have internal usages of CopySrc for copies and TextureBinding
+  // for copyTextureForBrowser.
   wgpu::DawnTextureInternalUsageDescriptor internalDesc;
   internalDesc.internalUsage = wgpu::TextureUsage::CopySrc;
   // No write access to multi-planar pixmaps.
   if (pixmap_->GetNumberOfPlanes() == 1) {
-    internalDesc.internalUsage |= wgpu::TextureUsage::RenderAttachment |
-                                  wgpu::TextureUsage::TextureBinding;
+    internalDesc.internalUsage |= wgpu::TextureUsage::TextureBinding;
+    if (!IsCleared()) {
+      // RenderAttachment for (lazy) clears.
+      internalDesc.internalUsage |= wgpu::TextureUsage::RenderAttachment;
+    }
   }
   texture_descriptor.nextInChain = &internalDesc;
 
@@ -118,7 +126,7 @@ wgpu::Texture DawnOzoneImageRepresentation::BeginAccess(
   texture_ = wgpu::Texture::Acquire(
       dawn::native::vulkan::WrapVulkanImage(device_.Get(), &descriptor));
   if (!texture_) {
-    ozone_backing()->EndAccess(/*readonly=*/false,
+    ozone_backing()->EndAccess(is_readonly_,
                                OzoneImageBacking::AccessStream::kWebGPU,
                                gfx::GpuFenceHandle());
     close(fd);
@@ -146,7 +154,7 @@ void DawnOzoneImageRepresentation::EndAccess() {
     DCHECK(export_info.semaphoreHandles.size() == 1);
     gfx::GpuFenceHandle fence;
     fence.Adopt(base::ScopedFD(export_info.semaphoreHandles[0]));
-    ozone_backing()->EndAccess(/*readonly=*/false,
+    ozone_backing()->EndAccess(is_readonly_,
                                OzoneImageBacking::AccessStream::kWebGPU,
                                std::move(fence));
   }

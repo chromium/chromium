@@ -52,6 +52,7 @@ class DawnOzoneImageRepresentation : public DawnImageRepresentation {
   std::vector<wgpu::TextureFormat> view_formats_;
   scoped_refptr<gfx::NativePixmap> pixmap_;
   wgpu::Texture texture_;
+  bool is_readonly_ = false;
 };
 
 }  // namespace gpu
