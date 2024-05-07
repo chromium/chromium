@@ -28,10 +28,6 @@ namespace auction_worklet {
 
 namespace {
 
-// Total number of buckets. Supported buckets will be [0, kNumBuckets).
-// [0, kNumReservedBuckets) are reserved, and [kNumReservedBuckets, kNumBuckets)
-// are for real time reporting APIs to use.
-static const int kNumBuckets = 1024;
 // Reserved buckets, [0, kNumReservedBuckets), for errors not detectable in
 // worklet JS, such as failures to fetch the bidding script, trusted real-time
 // signals.
@@ -83,9 +79,11 @@ void ParseAndCollectContribution(
     return;
   }
 
-  // [0, kNumBuckets) are supported buckets, while [0, kNumReservedBuckets) are
-  // reserved buckets which cannot be used by real time reporting APIs.
-  if (bucket < kNumReservedBuckets || bucket >= kNumBuckets) {
+  // [0, features::kFledgeRealTimeReportingNumBuckets) are supported buckets,
+  // while [0, kNumReservedBuckets) are reserved buckets which cannot be used by
+  // real time reporting APIs.
+  if (bucket < kNumReservedBuckets ||
+      bucket >= blink::features::kFledgeRealTimeReportingNumBuckets.Get()) {
     // Don't throw, to be forward compatible.
     return;
   }

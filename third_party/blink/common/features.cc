@@ -1039,6 +1039,11 @@ BASE_FEATURE(kFledgeAlwaysReuseSellerContext,
              "FledgeAlwaysReuseSellerContext",
              base::FEATURE_DISABLED_BY_DEFAULT);
 
+const base::FeatureParam<int> kFledgeRealTimeReportingNumBuckets{
+    &kFledgeRealTimeReporting, "FledgeRealTimeReportingNumBuckets", 1024};
+const base::FeatureParam<double> kFledgeRealTimeReportingEpsilon{
+    &kFledgeRealTimeReporting, "FledgeRealTimeReportingEpsilon", 1};
+
 BASE_FEATURE(kForceDeferScriptIntervention,
              "ForceDeferScriptIntervention",
              base::FEATURE_DISABLED_BY_DEFAULT);

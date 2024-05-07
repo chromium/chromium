@@ -569,6 +569,15 @@ BLINK_COMMON_EXPORT BASE_DECLARE_FEATURE(kFledgeAlwaysReuseBidderContext);
 // Reuse a single V8 context to score all ads in a seller worklet.
 BLINK_COMMON_EXPORT BASE_DECLARE_FEATURE(kFledgeAlwaysReuseSellerContext);
 
+// Feature params for feature kFledgeRealTimeReporting.
+// Epsilon of Rappor noise algorithm.
+BLINK_COMMON_EXPORT extern const base::FeatureParam<double>
+    kFledgeRealTimeReportingEpsilon;
+// Total number of buckets supported for real time reporting. Supported buckets
+// will be [0, kFledgeRealTimeReportingNumBuckets).
+BLINK_COMMON_EXPORT extern const base::FeatureParam<int>
+    kFledgeRealTimeReportingNumBuckets;
+
 BLINK_COMMON_EXPORT BASE_DECLARE_FEATURE(kForceWebContentsDarkMode);
 BLINK_COMMON_EXPORT extern const base::FeatureParam<ForceDarkInversionMethod>
     kForceDarkInversionMethodParam;
