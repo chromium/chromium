@@ -3,16 +3,16 @@
 // found in the LICENSE file.
 
 import 'chrome://customize-chrome-side-panel.top-chrome/shared/sp_heading.js';
-import 'chrome://customize-chrome-side-panel.top-chrome/shared/sp_shared_style.css.js';
 
-import type {SpHeadingElement} from 'chrome://customize-chrome-side-panel.top-chrome/shared/sp_heading.js';
 import type {CrToggleElement} from '//resources/cr_elements/cr_toggle/cr_toggle.js';
-import {PolymerElement} from 'chrome://resources/polymer/v3_0/polymer/polymer_bundled.min.js';
+import type {SpHeadingElement} from 'chrome://customize-chrome-side-panel.top-chrome/shared/sp_heading.js';
+import {CrLitElement} from 'chrome://resources/lit/v3_0/lit.rollup.js';
 
 import type {CustomizeToolbarHandlerInterface} from '../customize_toolbar.mojom-webui.js';
 
 import {CustomizeToolbarApiProxy} from './customize_toolbar_api_proxy.js';
-import {getTemplate} from './toolbar.html.js';
+import {getCss} from './toolbar.css.js';
+import {getHtml} from './toolbar.html.js';
 
 export interface ToolbarElement {
   $: {
@@ -22,17 +22,17 @@ export interface ToolbarElement {
   };
 }
 
-export class ToolbarElement extends PolymerElement {
+export class ToolbarElement extends CrLitElement {
   static get is() {
     return 'customize-chrome-toolbar';
   }
 
-  static get template() {
-    return getTemplate();
+  static override get styles() {
+    return getCss();
   }
 
-  static get properties() {
-    return {};
+  override render() {
+    return getHtml.bind(this)();
   }
 
   private handler_: CustomizeToolbarHandlerInterface;
@@ -59,7 +59,7 @@ export class ToolbarElement extends PolymerElement {
     const callbackRouter =
         CustomizeToolbarApiProxy.getInstance().callbackRouter;
     this.listenerIds_.push(callbackRouter.setActionPinned.addListener(
-        this.setActionPinned.bind(this)));
+        this.setActionPinned_.bind(this)));
   }
 
   override disconnectedCallback() {
@@ -67,21 +67,22 @@ export class ToolbarElement extends PolymerElement {
     const callbackRouter =
         CustomizeToolbarApiProxy.getInstance().callbackRouter;
     this.listenerIds_.forEach(id => callbackRouter.removeListener(id));
+    this.listenerIds_ = [];
   }
 
   focusOnBackButton() {
     this.$.heading.getBackButton().focus();
   }
 
-  private onBackClick_() {
-    this.dispatchEvent(new Event('back-click'));
+  protected onBackClick_() {
+    this.fire('back-click');
   }
 
-  private onActionToggle_(event: CustomEvent) {
+  protected onActionToggle_(event: CustomEvent<boolean>) {
     this.handler_.pinAction(this.actionId_, event.detail);
   }
 
-  private setActionPinned(actionId: number, pinned: boolean) {
+  private setActionPinned_(actionId: number, pinned: boolean) {
     if (actionId !== this.actionId_) {
       return;
     }

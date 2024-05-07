@@ -47,6 +47,7 @@ build_webui("build") {
     "cards.css",
     "categories.css",
     "check_mark_wrapper.css",
+    "customize_toolbar/toolbar.css",
     "hover_button.css",
     "shortcuts.css",
     "themes.css",

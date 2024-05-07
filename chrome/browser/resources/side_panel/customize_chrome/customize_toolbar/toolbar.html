@@ -1,28 +1,5 @@
-<style include="sp-shared-style">
-  .sp-card {
-    padding: var(--sp-card-padding);
-  }
-
-  .sp-card sp-heading {
-    padding: 0;
-  }
-
-  .toggle-container {
-    align-items: center;
-    display: flex;
-    justify-content: space-between;
-  }
-
-  .choose-icons-row {
-    margin: 16px 0;
-  }
-
-  .toggle-title {
-    margin: 0;
-  }
-</style>
 <div class="sp-card">
-  <sp-heading id="heading" on-back-button-click="onBackClick_"
+  <sp-heading id="heading" @back-button-click="${this.onBackClick_}"
       back-button-aria-label="$i18n{backButton}"
       back-button-title="$i18n{backButton}">
     <h2 slot="heading">$i18n{toolbarHeader}</h2>
@@ -36,6 +13,6 @@
   <h4 class="choose-icons-row">Tools and Actions</h4>
   <div class="toggle-container choose-icons-row">
     <h4 id="actionLabel" class="toggle-title"></h4>
-    <cr-toggle id="actionToggle" on-change="onActionToggle_"></cr-toggle>
+    <cr-toggle id="actionToggle" @change="${this.onActionToggle_}"></cr-toggle>
   </div>
 </div>

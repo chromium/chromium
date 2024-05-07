@@ -1,0 +1,32 @@
+/* Copyright 2024 The Chromium Authors
+ * Use of this source code is governed by a BSD-style license that can be
+ * found in the LICENSE file. */
+
+/* #css_wrapper_metadata_start
+ * #type=style-lit
+ * #import=chrome://customize-chrome-side-panel.top-chrome/shared/sp_shared_style_lit.css.js
+ * #scheme=relative
+ * #include=sp-shared-style-lit
+ * #css_wrapper_metadata_end */
+
+.sp-card {
+  padding: var(--sp-card-padding);
+}
+
+.sp-card sp-heading {
+  padding: 0;
+}
+
+.toggle-container {
+  align-items: center;
+  display: flex;
+  justify-content: space-between;
+}
+
+.choose-icons-row {
+  margin: 16px 0;
+}
+
+.toggle-title {
+  margin: 0;
+}
