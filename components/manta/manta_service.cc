@@ -19,6 +19,7 @@
 #include "components/manta/mahi_provider.h"
 #include "components/manta/orca_provider.h"
 #include "components/manta/snapper_provider.h"
+#include "components/manta/sparky/sparky_provider.h"
 #endif  // BUILDFLAG(IS_CHROMEOS_ASH)
 
 namespace manta {
@@ -108,6 +109,16 @@ std::unique_ptr<MahiProvider> MantaService::CreateMahiProvider() {
   return std::make_unique<MahiProvider>(shared_url_loader_factory_,
                                         identity_manager_, is_demo_mode_,
                                         chrome_version_);
+}
+
+std::unique_ptr<SparkyProvider> MantaService::CreateSparkyProvider(
+    std::unique_ptr<SparkyDelegate> sparky_delegate) {
+  if (!identity_manager_ or !sparky_delegate) {
+    return nullptr;
+  }
+  return std::make_unique<SparkyProvider>(
+      shared_url_loader_factory_, identity_manager_, is_demo_mode_,
+      chrome_version_, std::move(sparky_delegate));
 }
 
 #endif  // BUILDFLAG(IS_CHROMEOS_ASH)

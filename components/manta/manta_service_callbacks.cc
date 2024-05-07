@@ -80,6 +80,10 @@ void LogTimeCost(const MantaMetricType request_type,
       base::UmaHistogramTimes("Ash.MantaService.MahiProvider.QA.TimeCost",
                               time_cost);
       break;
+    case manta::MantaMetricType::kSparky:
+      base::UmaHistogramTimes("Ash.MantaService.SparkyProvider.TimeCost",
+                              time_cost);
+      break;
   }
 }
 }  // namespace

@@ -26,6 +26,7 @@ enum class MantaMetricType {
   kSnapper,
   kMahiSummary,
   kMahiQA,
+  kSparky,
 };
 
 // Manta service uses this callback to return a Response proto parsed

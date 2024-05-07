@@ -12,6 +12,7 @@
 #include "base/memory/scoped_refptr.h"
 #include "build/chromeos_buildflags.h"
 #include "components/keyed_service/core/keyed_service.h"
+#include "components/manta/sparky/sparky_delegate.h"
 
 namespace signin {
 class IdentityManager;
@@ -31,6 +32,7 @@ enum class FeatureSupportStatus {
 class MahiProvider;
 class OrcaProvider;
 class SnapperProvider;
+class SparkyProvider;
 
 // The MantaService class is a KeyedService for the Chrome/ChromeOS Manta
 // project. It serves two main functions:
@@ -59,6 +61,8 @@ class COMPONENT_EXPORT(MANTA) MantaService : public KeyedService {
   std::unique_ptr<MahiProvider> CreateMahiProvider();
   std::unique_ptr<OrcaProvider> CreateOrcaProvider();
   virtual std::unique_ptr<SnapperProvider> CreateSnapperProvider();
+  std::unique_ptr<SparkyProvider> CreateSparkyProvider(
+      std::unique_ptr<SparkyDelegate> sparky_delegate);
 #endif  // BUILDFLAG(IS_CHROMEOS_ASH)
 
   // Determines whether the profile for this KeyedService support Orca feature.

@@ -27,6 +27,7 @@ all,chrome/services/cups_proxy/socket_manager.cc
 missing,ash/birch/birch_item.cc
 missing,chrome/browser/ui/webui/ash/emoji/seal.cc
 missing,components/manta/mahi_provider.cc
+missing,components/manta/sparky/sparky_provider.cc
 
 # Android-specific annotations.
 # TODO(crbug.com/40641204): Complete these.
