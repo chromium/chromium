@@ -97,6 +97,9 @@
 // Layout guide for the cell's content.
 @property(nonatomic, strong) UILayoutGuide* layoutGuide;
 
+// Button to autofill the current form with the address' data.
+@property(nonatomic, strong) UIButton* autofillFormButton;
+
 @end
 
 @implementation ManualFillAddressCell
@@ -349,6 +352,12 @@
       ],
       verticalLeadViews);
 
+  if (IsKeyboardAccessoryUpgradeEnabled()) {
+    AddViewToVerticalLeadViews(self.autofillFormButton,
+                               ManualFillCellView::ElementType::kOther,
+                               verticalLeadViews);
+  }
+
   // Set and activate constraints.
   AppendVerticalConstraintsSpacingForViews(self.dynamicConstraints,
                                            verticalLeadViews, self.layoutGuide);
@@ -446,6 +455,13 @@
       staticConstraints, @[ self.emailAddressButton ], self.layoutGuide,
       kChipsHorizontalMargin,
       AppendConstraintsHorizontalEqualOrSmallerThanGuide);
+
+  if (IsKeyboardAccessoryUpgradeEnabled()) {
+    self.autofillFormButton = CreateAutofillFormButton();
+    [self.contentView addSubview:self.autofillFormButton];
+    AppendHorizontalConstraintsForViews(
+        staticConstraints, @[ self.autofillFormButton ], self.layoutGuide);
+  }
 
   // Without this set, Voice Over will read the content vertically instead of
   // horizontally.
