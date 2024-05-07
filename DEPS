@@ -3984,7 +3984,7 @@ deps = {
 
   'src/ash/webui/conch': {
       'url': Var('chrome_git') + '/ash/webui/conch.git' + '@' +
-        'afd1f4f33165cb3ee4cf55afbfbd5ecaa38b613f',
+        '51912b7cb18c609a443f5726c58701c570f46ce7',
       'condition': 'checkout_src_internal and checkout_chromeos',
   },
 
