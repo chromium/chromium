@@ -887,16 +887,27 @@ void ShoppingService::HandleOptGuideProductInfoResponse(
     ProductInfoCallback callback,
     optimization_guide::OptimizationGuideDecision decision,
     const optimization_guide::OptimizationMetadata& metadata) {
+  CommerceInfoCache::CacheEntry* entry =
+      commerce_info_cache_.GetEntryForUrl(url);
+
   // If optimization guide returns negative, return a negative signal with an
   // empty data object.
   if (decision != optimization_guide::OptimizationGuideDecision::kTrue) {
+    if (entry &&
+        decision == optimization_guide::OptimizationGuideDecision::kFalse) {
+      entry->run_product_info_on_demand = false;
+    }
+
     // Receiving a negative signal could simply mean that opt guide no longer
     // has the information available, it doesn't mean the backend doesn't know.
     // We may be allowed to fetch information on-demand if we're referencing
     // the URL in the cache. Only do this for explicit requests from a feature
     // rather than populating as a result of navigation (signified by the lack
     // of a web wrapper).
-    if (commerce_info_cache_.IsUrlReferenced(url) && !web) {
+    if (commerce_info_cache_.IsUrlReferenced(url) && !web && entry &&
+        entry->run_product_info_on_demand) {
+      entry->run_product_info_on_demand = false;
+
       // We're wrapping this in a repeating callback but it should only ever be
       // called once. This is necessary because the on-demand api requires a
       // repeating callback but we primarily use once callbacks in the shopping
@@ -929,6 +940,11 @@ void ShoppingService::HandleOptGuideProductInfoResponse(
     }
 
     return;
+  }
+
+  // If we got a positive result, we don't need to run on-demand.
+  if (entry) {
+    entry->run_product_info_on_demand = false;
   }
 
   std::unique_ptr<ProductInfo> info = OptGuideResultToProductInfo(metadata);

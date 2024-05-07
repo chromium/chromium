@@ -23,6 +23,7 @@
 #include "components/optimization_guide/core/optimization_metadata.h"
 #include "components/optimization_guide/proto/hints.pb.h"
 #include "services/data_decoder/public/cpp/test_support/in_process_data_decoder.h"
+#include "testing/gmock/include/gmock/gmock.h"
 #include "testing/gtest/include/gtest/gtest.h"
 
 using optimization_guide::OnDemandOptimizationGuideDecisionRepeatingCallback;
@@ -65,8 +66,18 @@ class MockOptGuideDecider
   MockOptGuideDecider operator=(const MockOptGuideDecider&) = delete;
   ~MockOptGuideDecider() override;
 
-  void RegisterOptimizationTypes(
-      const std::vector<OptimizationType>& optimization_types) override;
+  MOCK_METHOD(void,
+              RegisterOptimizationTypes,
+              (const std::vector<OptimizationType>& optimization_types),
+              (override));
+  MOCK_METHOD(void,
+              CanApplyOptimizationOnDemand,
+              (const std::vector<GURL>& urls,
+               const base::flat_set<OptimizationType>& optimization_types,
+               RequestContext request_context,
+               OnDemandOptimizationGuideDecisionRepeatingCallback callback,
+               std::optional<RequestContextMetadata> request_context_metadata),
+              (override));
 
   void CanApplyOptimization(
       const GURL& url,
@@ -77,14 +88,6 @@ class MockOptGuideDecider
       const GURL& url,
       OptimizationType optimization_type,
       OptimizationMetadata* optimization_metadata) override;
-
-  void CanApplyOptimizationOnDemand(
-      const std::vector<GURL>& urls,
-      const base::flat_set<OptimizationType>& optimization_types,
-      RequestContext request_context,
-      OnDemandOptimizationGuideDecisionRepeatingCallback callback,
-      std::optional<RequestContextMetadata> request_context_metadata =
-          std::nullopt) override;
 
   void AddOnDemandShoppingResponse(const GURL& url,
                                    const OptimizationGuideDecision decision,
@@ -238,6 +241,8 @@ class ShoppingServiceTestBase : public testing::Test {
 
   // Gets a handle to the cache.
   CommerceInfoCache& GetCache();
+
+  MockOptGuideDecider* GetMockOptGuideDecider();
 
  protected:
   base::test::TaskEnvironment task_environment_{

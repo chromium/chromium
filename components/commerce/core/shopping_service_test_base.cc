@@ -48,11 +48,34 @@ namespace commerce {
 
 const uint64_t kInvalidDiscountId = 0;
 
-MockOptGuideDecider::MockOptGuideDecider() = default;
-MockOptGuideDecider::~MockOptGuideDecider() = default;
+MockOptGuideDecider::MockOptGuideDecider() {
+  ON_CALL(*this, CanApplyOptimizationOnDemand)
+      .WillByDefault(
+          [&](const std::vector<GURL>& urls,
+              const base::flat_set<OptimizationType>& optimization_types,
+              RequestContext request_context,
+              OnDemandOptimizationGuideDecisionRepeatingCallback callback,
+              std::optional<RequestContextMetadata> request_context_metadata) {
+            if (optimization_types.contains(OptimizationType::PRICE_TRACKING)) {
+              for (const GURL& url : urls) {
+                if (on_demand_shopping_responses_.find(url.spec()) ==
+                    on_demand_shopping_responses_.end()) {
+                  continue;
+                }
 
-void MockOptGuideDecider::RegisterOptimizationTypes(
-    const std::vector<OptimizationType>& optimization_types) {}
+                base::flat_map<OptimizationType,
+                               OptimizationGuideDecisionWithMetadata>
+                    decision_map;
+                decision_map[OptimizationType::PRICE_TRACKING] =
+                    on_demand_shopping_responses_[url.spec()];
+                base::SequencedTaskRunner::GetCurrentDefault()->PostTask(
+                    FROM_HERE,
+                    base::BindOnce(callback, url, std::move(decision_map)));
+              }
+            }
+          });
+}
+MockOptGuideDecider::~MockOptGuideDecider() = default;
 
 void MockOptGuideDecider::CanApplyOptimization(
     const GURL& url,
@@ -100,29 +123,6 @@ OptimizationGuideDecision MockOptGuideDecider::CanApplyOptimization(
   NOTREACHED();
 
   return OptimizationGuideDecision::kUnknown;
-}
-
-void MockOptGuideDecider::CanApplyOptimizationOnDemand(
-    const std::vector<GURL>& urls,
-    const base::flat_set<OptimizationType>& optimization_types,
-    RequestContext request_context,
-    OnDemandOptimizationGuideDecisionRepeatingCallback callback,
-    std::optional<RequestContextMetadata> request_context_metadata) {
-  if (optimization_types.contains(OptimizationType::PRICE_TRACKING)) {
-    for (const GURL& url : urls) {
-      if (on_demand_shopping_responses_.find(url.spec()) ==
-          on_demand_shopping_responses_.end()) {
-        continue;
-      }
-
-      base::flat_map<OptimizationType, OptimizationGuideDecisionWithMetadata>
-          decision_map;
-      decision_map[OptimizationType::PRICE_TRACKING] =
-          on_demand_shopping_responses_[url.spec()];
-      base::SequencedTaskRunner::GetCurrentDefault()->PostTask(
-          FROM_HERE, base::BindOnce(callback, url, std::move(decision_map)));
-    }
-  }
 }
 
 void MockOptGuideDecider::AddOnDemandShoppingResponse(
@@ -537,6 +537,10 @@ const ProductInfo* ShoppingServiceTestBase::GetFromProductInfoCache(
 
 CommerceInfoCache& ShoppingServiceTestBase::GetCache() {
   return shopping_service_->commerce_info_cache_;
+}
+
+MockOptGuideDecider* ShoppingServiceTestBase::GetMockOptGuideDecider() {
+  return opt_guide_.get();
 }
 
 }  // namespace commerce
