@@ -36,6 +36,7 @@
 #include "device/fido/fido_constants.h"
 #include "device/fido/fido_discovery_factory.h"
 #include "device/fido/fido_types.h"
+#include "device/fido/platform_user_verification_policy.h"
 #include "services/network/public/cpp/shared_url_loader_factory.h"
 
 #if BUILDFLAG(IS_MAC)
@@ -245,34 +246,30 @@ EnclaveUserVerificationMethod PickEnclaveUserVerificationMethod(
     bool have_added_device,
     bool has_pin,
     EnclaveManager::UvKeyState uv_key_state) {
-  switch (uv) {
-    case device::UserVerificationRequirement::kDiscouraged:
-      return EnclaveUserVerificationMethod::kNone;
+  if (have_added_device) {
+    return EnclaveUserVerificationMethod::kImplicit;
+  }
 
-    case device::UserVerificationRequirement::kPreferred:
-    case device::UserVerificationRequirement::kRequired:
-      if (have_added_device) {
-        return EnclaveUserVerificationMethod::kImplicit;
+  if (!device::fido::PlatformWillDoUserVerification(uv)) {
+    return EnclaveUserVerificationMethod::kNone;
+  }
+
+  switch (uv_key_state) {
+    case EnclaveManager::UvKeyState::kNone:
+      if (has_pin) {
+        return EnclaveUserVerificationMethod::kPIN;
+      } else {
+        return EnclaveUserVerificationMethod::kUnsatisfiable;
       }
-      switch (uv_key_state) {
-        case EnclaveManager::UvKeyState::kNone:
-          if (has_pin) {
-            return EnclaveUserVerificationMethod::kPIN;
-          } else if (uv == device::UserVerificationRequirement::kPreferred) {
-            return EnclaveUserVerificationMethod::kNone;
-          } else {
-            return EnclaveUserVerificationMethod::kUnsatisfiable;
-          }
 
-        case EnclaveManager::UvKeyState::kUsesSystemUI:
-          return EnclaveUserVerificationMethod::kUVKeyWithSystemUI;
+    case EnclaveManager::UvKeyState::kUsesSystemUI:
+      return EnclaveUserVerificationMethod::kUVKeyWithSystemUI;
 
-        case EnclaveManager::UvKeyState::kUsesSystemUIDeferredCreation:
-          return EnclaveUserVerificationMethod::kDeferredUVKeyWithSystemUI;
+    case EnclaveManager::UvKeyState::kUsesSystemUIDeferredCreation:
+      return EnclaveUserVerificationMethod::kDeferredUVKeyWithSystemUI;
 
-        case EnclaveManager::UvKeyState::kUsesChromeUI:
-          return EnclaveUserVerificationMethod::kUVKeyWithChromeUI;
-      }
+    case EnclaveManager::UvKeyState::kUsesChromeUI:
+      return EnclaveUserVerificationMethod::kUVKeyWithChromeUI;
   }
 }
 

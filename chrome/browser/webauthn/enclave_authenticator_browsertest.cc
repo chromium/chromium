@@ -253,6 +253,19 @@ static constexpr char kGetAssertionUvRequired[] = R"((() => {
            e => window.domAutomationController.send('error ' + e));
 })())";
 
+bool IsReady(GPMEnclaveController::AccountState state) {
+  switch (state) {
+    case GPMEnclaveController::AccountState::kReady:
+    case GPMEnclaveController::AccountState::kReadyWithPIN:
+    case GPMEnclaveController::AccountState::kReadyWithBiometrics:
+      return true;
+    default:
+      LOG(ERROR) << "State " << static_cast<int>(state)
+                 << " is not a ready state";
+      return false;
+  }
+}
+
 struct TempDir {
  public:
   TempDir() { CHECK(dir_.CreateUniqueTempDir()); }
@@ -846,9 +859,19 @@ IN_PROC_BROWSER_TEST_F(EnclaveAuthenticatorWithPinBrowserTest,
       AuthenticatorRequestDialogController::Step::kGPMCreatePasskey);
   SimulateEnclaveMechanismSelection();
   model_observer()->WaitForStep();
+#if !BUILDFLAG(IS_MAC)
+  model_observer()->SetStepToObserve(
+      AuthenticatorRequestDialogController::Step::kGPMEnterPin);
+#endif
   dialog_model()->OnGPMCreatePasskey();
 
+#if !BUILDFLAG(IS_MAC)
+  model_observer()->WaitForStep();
+  dialog_model()->OnGPMPinEntered(u"123456");
+#endif
+
   ASSERT_TRUE(message_queue.WaitForMessage(&script_result));
+
   std::tie(enabled, first, second) = ParsePrfResult(script_result);
   EXPECT_TRUE(enabled);
   EXPECT_EQ(first, "none");
@@ -1339,10 +1362,9 @@ IN_PROC_BROWSER_TEST_F(EnclaveAuthenticatorWithPinBrowserTest,
   // Checks that a following request goes straight to ready state.
   content::ExecuteScriptAsync(web_contents, kMakeCredentialUvDiscouraged);
   delegate_observer()->WaitForUI();
-  EXPECT_EQ(request_delegate()
-                ->enclave_controller_for_testing()
-                ->account_state_for_testing(),
-            GPMEnclaveController::AccountState::kReady);
+  EXPECT_TRUE(IsReady(request_delegate()
+                          ->enclave_controller_for_testing()
+                          ->account_state_for_testing()));
 }
 
 class EnclaveAuthenticatorWithoutPinBrowserTest
