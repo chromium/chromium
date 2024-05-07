@@ -12,6 +12,7 @@
 #include "base/location.h"
 #include "base/memory/ptr_util.h"
 #include "base/memory/raw_ptr.h"
+#include "base/memory/scoped_refptr.h"
 #include "base/metrics/histogram_functions.h"
 #include "base/task/single_thread_task_runner.h"
 #include "net/base/io_buffer.h"
@@ -105,7 +106,7 @@ void QuicChromiumClientStream::Handle::OnDataAvailable() {
   DCHECK(read_body_buffer_);
   DCHECK_GT(read_body_buffer_len_, 0);
 
-  int rv = stream_->Read(read_body_buffer_, read_body_buffer_len_);
+  int rv = stream_->Read(read_body_buffer_.get(), read_body_buffer_len_);
   if (rv == ERR_IO_PENDING)
     return;  // Spurrious, likely because of trailers?
 
@@ -160,6 +161,12 @@ void QuicChromiumClientStream::Handle::InvokeCallbacksOnClose(int error) {
   // Invoking a callback may cause |this| to be deleted. If this happens, no
   // more callbacks should be invoked. Guard against this by holding a WeakPtr
   // to |this| and ensuring it's still valid.
+
+  // Free read buffer, if present. Reads are synchronous and pull-based, so
+  // there is no ongoing asynchronous read that could write to the buffer.
+  read_body_buffer_ = nullptr;
+  read_body_buffer_len_ = 0;
+
   auto guard(weak_factory_.GetWeakPtr());
   for (auto* callback :
        {&read_headers_callback_, &read_body_callback_, &write_callback_}) {
