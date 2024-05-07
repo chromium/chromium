@@ -5,6 +5,7 @@
 package org.chromium.chrome.browser.tab_group_sync;
 
 import org.chromium.base.Callback;
+import org.chromium.base.supplier.Supplier;
 import org.chromium.chrome.browser.preferences.Pref;
 import org.chromium.chrome.browser.tabmodel.TabModel;
 import org.chromium.chrome.browser.tasks.tab_groups.TabGroupModelFilter;
@@ -28,6 +29,7 @@ public final class TabGroupSyncRemoteObserver implements TabGroupSyncService.Obs
     private final Callback<Boolean> mEnableLocalObserverCallback;
     private final Runnable mOnSyncInitializedCallback;
     private final PrefService mPrefService;
+    private final Supplier<Boolean> mIsActiveWindowSupplier;
 
     /**
      * Constructor.
@@ -39,6 +41,7 @@ public final class TabGroupSyncRemoteObserver implements TabGroupSyncService.Obs
      * @param enableLocalObserverCallback Callback to enable/disable local observation.
      * @param onSyncInitializedCallback Callback to be notified about sync backend initialization.
      * @param prefService The {@link PrefService} to check the value of auto-open.
+     * @param isActiveWindowSupplier To query whether we are in the active window.
      */
     public TabGroupSyncRemoteObserver(
             TabGroupModelFilter tabGroupModelFilter,
@@ -46,13 +49,15 @@ public final class TabGroupSyncRemoteObserver implements TabGroupSyncService.Obs
             LocalTabGroupMutationHelper localTabGroupMutationHelper,
             Callback<Boolean> enableLocalObserverCallback,
             Runnable onSyncInitializedCallback,
-            PrefService prefService) {
+            PrefService prefService,
+            Supplier<Boolean> isActiveWindowSupplier) {
         mTabGroupModelFilter = tabGroupModelFilter;
         mTabGroupSyncService = tabGroupSyncService;
         mLocalTabGroupMutationHelper = localTabGroupMutationHelper;
         mEnableLocalObserverCallback = enableLocalObserverCallback;
         mOnSyncInitializedCallback = onSyncInitializedCallback;
         mPrefService = prefService;
+        mIsActiveWindowSupplier = isActiveWindowSupplier;
 
         // Start observing sync.
         mTabGroupSyncService.addObserver(this);
@@ -71,6 +76,7 @@ public final class TabGroupSyncRemoteObserver implements TabGroupSyncService.Obs
     @Override
     public void onTabGroupAdded(SavedTabGroup tabGroup, @TriggerSource int source) {
         if (source != TriggerSource.REMOTE) return;
+        if (!mIsActiveWindowSupplier.get()) return;
 
         LogUtils.log(TAG, "onTabGroupAdded, tabGroup = " + tabGroup);
         assert tabGroup.localId == null;

@@ -25,6 +25,7 @@ import org.mockito.junit.MockitoRule;
 import org.robolectric.annotation.Config;
 
 import org.chromium.base.Token;
+import org.chromium.base.supplier.Supplier;
 import org.chromium.base.test.BaseRobolectricTestRunner;
 import org.chromium.chrome.browser.profiles.Profile;
 import org.chromium.chrome.browser.tabmodel.TabCreatorManager;
@@ -52,6 +53,7 @@ public class TabGroupSyncControllerUnitTest {
     private MockTabModel mTabModel;
     private @Mock TabGroupModelFilter mTabGroupModelFilter;
     private @Mock PrefService mPrefService;
+    private @Mock Supplier<Boolean> mIsActiveWindowSupplier;
     private TabGroupSyncController mController;
 
     private @Captor ArgumentCaptor<TabModelSelectorObserver> mTabModelSelectorObserverCaptor;
@@ -70,7 +72,11 @@ public class TabGroupSyncControllerUnitTest {
                 .addObserver(mTabGroupSyncServiceObserverCaptor.capture());
         mController =
                 new TabGroupSyncController(
-                        mTabModelSelector, mTabCreatorManager, mTabGroupSyncService, mPrefService);
+                        mTabModelSelector,
+                        mTabCreatorManager,
+                        mTabGroupSyncService,
+                        mPrefService,
+                        mIsActiveWindowSupplier);
     }
 
     @After

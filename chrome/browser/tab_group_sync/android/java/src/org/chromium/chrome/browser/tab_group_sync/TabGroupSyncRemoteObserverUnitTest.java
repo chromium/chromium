@@ -23,6 +23,7 @@ import org.mockito.junit.MockitoRule;
 import org.robolectric.annotation.Config;
 
 import org.chromium.base.Token;
+import org.chromium.base.supplier.Supplier;
 import org.chromium.base.test.BaseRobolectricTestRunner;
 import org.chromium.chrome.browser.preferences.Pref;
 import org.chromium.chrome.browser.profiles.Profile;
@@ -60,6 +61,7 @@ public class TabGroupSyncRemoteObserverUnitTest {
     @Mock private TabGroupModelFilter mTabGroupModelFilter;
     @Mock private TabGroupSyncService mTabGroupSyncService;
     @Mock private PrefService mPrefService;
+    private @Mock Supplier<Boolean> mIsActiveWindowSupplier;
 
     private NavigationTracker mNavigationTracker;
     @Mock private LocalTabGroupMutationHelper mLocalMutationHelper;
@@ -83,13 +85,15 @@ public class TabGroupSyncRemoteObserverUnitTest {
                             mEnabledLocalObservers = enable;
                         },
                         () -> {},
-                        mPrefService);
+                        mPrefService,
+                        mIsActiveWindowSupplier);
         mEnabledLocalObservers = true;
 
         when(mTabGroupModelFilter.getRootIdFromStableId(any())).thenReturn(Tab.INVALID_TAB_ID);
         when(mTabGroupModelFilter.getRootIdFromStableId(eq(TOKEN_1))).thenReturn(ROOT_ID_1);
         when(mTabGroupModelFilter.getStableIdFromRootId(eq(ROOT_ID_1))).thenReturn(TOKEN_1);
         when(mPrefService.getBoolean(eq(Pref.AUTO_OPEN_SYNCED_TAB_GROUPS))).thenReturn(true);
+        when(mIsActiveWindowSupplier.get()).thenReturn(true);
     }
 
     @After
@@ -110,6 +114,15 @@ public class TabGroupSyncRemoteObserverUnitTest {
         SavedTabGroup savedTabGroup = TabGroupSyncTestUtils.createSavedTabGroup();
         mRemoteObserver.onTabGroupAdded(savedTabGroup, TriggerSource.REMOTE);
         verify(mLocalMutationHelper).createNewTabGroup(any());
+    }
+
+    @Test
+    public void testTabGroupAddedOnNonActiveWindow() {
+        SavedTabGroup savedTabGroup = TabGroupSyncTestUtils.createSavedTabGroup();
+        when(mIsActiveWindowSupplier.get()).thenReturn(false);
+
+        mRemoteObserver.onTabGroupAdded(savedTabGroup, TriggerSource.REMOTE);
+        verify(mLocalMutationHelper, never()).createNewTabGroup(any());
     }
 
     @Test

@@ -4,6 +4,7 @@
 
 package org.chromium.chrome.browser.tab_group_sync;
 
+import org.chromium.base.supplier.Supplier;
 import org.chromium.chrome.browser.tab.Tab;
 import org.chromium.chrome.browser.tabmodel.TabCreatorManager;
 import org.chromium.chrome.browser.tabmodel.TabModelSelector;
@@ -71,7 +72,8 @@ public final class TabGroupSyncController implements TabGroupUiActionHandler {
             TabModelSelector tabModelSelector,
             TabCreatorManager tabCreatorManager,
             TabGroupSyncService tabGroupSyncService,
-            PrefService prefService) {
+            PrefService prefService,
+            Supplier<Boolean> isActiveWindowSupplier) {
         mTabModelSelector = tabModelSelector;
         mTabCreatorManager = tabCreatorManager;
         mTabGroupSyncService = tabGroupSyncService;
@@ -114,7 +116,8 @@ public final class TabGroupSyncController implements TabGroupUiActionHandler {
                         mLocalMutationHelper,
                         enable -> mLocalObserver.enableObservers(enable),
                         this::onSyncBackendInitialized,
-                        prefService);
+                        prefService,
+                        isActiveWindowSupplier);
         TabModelUtils.runOnTabStateInitialized(
                 tabModelSelector, selector -> maybeCompleteInitialization());
     }

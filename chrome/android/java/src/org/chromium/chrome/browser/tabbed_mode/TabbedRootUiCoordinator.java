@@ -15,6 +15,7 @@ import androidx.annotation.NonNull;
 import androidx.annotation.Nullable;
 import androidx.appcompat.app.AppCompatActivity;
 
+import org.chromium.base.ApplicationStatus;
 import org.chromium.base.Callback;
 import org.chromium.base.CommandLine;
 import org.chromium.base.ResettersForTesting;
@@ -728,7 +729,8 @@ public class TabbedRootUiCoordinator extends RootUiCoordinator {
                             mTabModelSelectorSupplier.get(),
                             mTabCreatorManagerSupplier.get(),
                             TabGroupSyncServiceFactory.getForProfile(currentlySelectedProfile),
-                            UserPrefs.get(currentlySelectedProfile));
+                            UserPrefs.get(currentlySelectedProfile),
+                            () -> ApplicationStatus.getLastTrackedFocusedActivity() == mActivity);
         }
     }
 
