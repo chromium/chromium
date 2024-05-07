@@ -199,7 +199,8 @@ struct GPMEnclaveController::DownloadedAccountState {
       trusted_vault::DownloadAuthenticationFactorsRegistrationStateResult
           result)
       : state(result.state),
-        gpm_pin_metadata(std::move(result.gpm_pin_metadata)) {
+        gpm_pin_metadata(std::move(result.gpm_pin_metadata)),
+        lskf_expiries(std::move(result.lskf_expiries)) {
     std::ranges::transform(result.icloud_keys, std::back_inserter(icloud_keys),
                            &trusted_vault::SecureBoxPublicKey::ExportToBytes);
   }
@@ -208,6 +209,7 @@ struct GPMEnclaveController::DownloadedAccountState {
       state;
   std::optional<trusted_vault::GpmPinMetadata> gpm_pin_metadata;
   std::vector<std::vector<uint8_t>> icloud_keys;
+  std::vector<base::Time> lskf_expiries;
 };
 
 namespace {
@@ -322,6 +324,15 @@ class AccountStateCache {
 AccountStateCache* GetAccountStateCache() {
   static base::NoDestructor<AccountStateCache> cache;
   return cache.get();
+}
+
+bool ExpiryTooSoon(base::Time expiry) {
+  const base::Time now = base::Time::Now();
+  // LSKFs must have at least 18 weeks of validity on them because we don't want
+  // users depending on an LSKF from a device that they've stopped using.
+  // Validities are generally six months, thus this implies that the device was
+  // used in the previous six weeks.
+  return expiry < now || (expiry - now) < base::Days(7 * 18);
 }
 
 }  // namespace
@@ -529,6 +540,20 @@ void GPMEnclaveController::OnHaveAccountState(DownloadedAccountState result) {
   FIDO_LOG(EVENT) << "Account state: " << ToString(result.state)
                   << ", has PIN: " << result.gpm_pin_metadata.has_value()
                   << ", iCloud Keychain keys: " << result.icloud_keys.size();
+
+  if (!base::FeatureList::IsEnabled(device::kWebAuthnGpmPin) &&
+      result.state == Result::State::kRecoverable &&
+      !result.lskf_expiries.empty() &&
+      base::ranges::all_of(result.lskf_expiries, ExpiryTooSoon)) {
+    std::vector<std::string> expiries;
+    base::ranges::transform(
+        result.lskf_expiries, std::back_inserter(expiries),
+        [](const auto& time) { return base::TimeFormatAsIso8601(time); });
+    FIDO_LOG(EVENT) << "Account considered irrecoverable because no LSKF has "
+                       "acceptable expiry: "
+                    << base::JoinString(expiries, ", ");
+    result.state = Result::State::kIrrecoverable;
+  }
 
   switch (result.state) {
     case Result::State::kError:

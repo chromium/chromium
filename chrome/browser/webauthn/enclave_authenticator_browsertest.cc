@@ -1461,6 +1461,36 @@ IN_PROC_BROWSER_TEST_F(EnclaveAuthenticatorWithoutPinBrowserTest,
       request_delegate()->enclave_controller_for_testing()->is_active());
 }
 
+#if BUILDFLAG(IS_WIN) && defined(ARCH_CPU_ARM64)
+#define MAYBE_NotAvailableIfLskfsAreTooOld DISABLED_NotAvailableIfLskfsAreTooOld
+#else
+#define MAYBE_NotAvailableIfLskfsAreTooOld NotAvailableIfLskfsAreTooOld
+#endif
+IN_PROC_BROWSER_TEST_F(EnclaveAuthenticatorWithoutPinBrowserTest,
+                       MAYBE_NotAvailableIfLskfsAreTooOld) {
+  EnableUVKeySupport();
+  trusted_vault::DownloadAuthenticationFactorsRegistrationStateResult
+      registration_state_result;
+  registration_state_result.state = trusted_vault::
+      DownloadAuthenticationFactorsRegistrationStateResult::State::kRecoverable;
+  registration_state_result.lskf_expiries = {base::Time::Now() + base::Days(1)};
+  SetMockVaultConnectionOnRequestDelegate(std::move(registration_state_result));
+
+  content::WebContents* web_contents =
+      browser()->tab_strip_model()->GetActiveWebContents();
+  content::DOMMessageQueue message_queue(web_contents);
+  content::ExecuteScriptAsync(web_contents, kMakeCredentialUvDiscouraged);
+  delegate_observer()->WaitForUI();
+
+  EXPECT_TRUE(
+      base::ranges::none_of(dialog_model()->mechanisms, [](const auto& m) {
+        return absl::holds_alternative<
+            AuthenticatorRequestDialogModel::Mechanism::Enclave>(m.type);
+      }));
+  EXPECT_FALSE(
+      request_delegate()->enclave_controller_for_testing()->is_active());
+}
+
 IN_PROC_BROWSER_TEST_F(EnclaveAuthenticatorWithoutPinBrowserTest,
                        EnrollAndCreate) {
   EnableUVKeySupport();
