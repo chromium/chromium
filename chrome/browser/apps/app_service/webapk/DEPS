@@ -1,0 +1,10 @@
+include_rules = [
+  "-chrome/browser/apps/app_service",
+  "+chrome/browser/apps/app_service/webapk",
+]
+
+specific_include_rules = {
+  "webapk_install_task_unittest\.cc": [
+    "+chrome/browser/apps/app_service/app_service_test.h",
+  ],
+}
