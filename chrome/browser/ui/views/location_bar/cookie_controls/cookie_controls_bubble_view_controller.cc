@@ -285,7 +285,7 @@ void CookieControlsBubbleViewController::OnFeedbackButtonPressed() {
       base::UserMetricsAction("CookieControls.Bubble.SendFeedback"));
   chrome::ShowFeedbackPage(
       chrome::FindBrowserWithTab(web_contents_.get()),
-      chrome::kFeedbackSourceCookieControls,
+      feedback::kFeedbackSourceCookieControls,
       /*description_template=*/std::string(),
       l10n_util::GetStringUTF8(
           IDS_COOKIE_CONTROLS_BUBBLE_SEND_FEEDBACK_FORM_PLACEHOLDER),

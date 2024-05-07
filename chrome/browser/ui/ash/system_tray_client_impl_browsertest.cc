@@ -659,13 +659,13 @@ IN_PROC_BROWSER_TEST_F(SystemTrayClientShowChannelInfoGiveFeedbackTest,
   LoginUser(account_id_);
 
   histograms.ExpectBucketCount("Feedback.RequestSource",
-                               chrome::kFeedbackSourceChannelIndicator,
+                               feedback::kFeedbackSourceChannelIndicator,
                                /*expected_count=*/0);
   ash::Shell::Get()
       ->system_tray_model()
       ->client()
       ->ShowChannelInfoGiveFeedback();
   histograms.ExpectBucketCount("Feedback.RequestSource",
-                               chrome::kFeedbackSourceChannelIndicator,
+                               feedback::kFeedbackSourceChannelIndicator,
                                /*expected_count=*/1);
 }

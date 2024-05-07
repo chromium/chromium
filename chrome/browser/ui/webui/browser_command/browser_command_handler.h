@@ -31,12 +31,12 @@ struct FeedbackCommandSettings {
   FeedbackCommandSettings() = default;
 
   FeedbackCommandSettings(const GURL& url,
-                          chrome::FeedbackSource source,
+                          feedback::FeedbackSource source,
                           std::string category)
       : url(url), source(source), category(category) {}
 
   GURL url;
-  chrome::FeedbackSource source = chrome::kFeedbackSourceCount;
+  feedback::FeedbackSource source = feedback::kFeedbackSourceCount;
   std::string category;
 };
 

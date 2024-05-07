@@ -254,7 +254,7 @@ void MahiManagerImpl::OpenFeedbackDialog() {
   chrome::ShowFeedbackPage(
       /*browser=*/chrome::FindBrowserWithProfile(
           ProfileManager::GetActiveUserProfile()),
-      /*source=*/chrome::kFeedbackSourceAI, description_template,
+      /*source=*/feedback::kFeedbackSourceAI, description_template,
       /*description_placeholder_text=*/
       base::UTF16ToUTF8(
           l10n_util::GetStringUTF16(IDS_MAHI_FEEDBACK_PLACEHOLDER)),

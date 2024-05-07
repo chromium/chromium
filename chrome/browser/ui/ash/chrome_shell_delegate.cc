@@ -122,24 +122,24 @@ content::WebContents* GetActiveWebContentsForNativeBrowserWindow(
   return tab_strip_model ? tab_strip_model->GetActiveWebContents() : nullptr;
 }
 
-chrome::FeedbackSource ToChromeFeedbackSource(
+feedback::FeedbackSource ToChromeFeedbackSource(
     ash::ShellDelegate::FeedbackSource source) {
   switch (source) {
     case ash::ShellDelegate::FeedbackSource::kBirch:
-      return chrome::FeedbackSource::kFeedbackSourceBirch;
+      return feedback::FeedbackSource::kFeedbackSourceBirch;
     case ash::ShellDelegate::FeedbackSource::kFocusMode:
-      return chrome::FeedbackSource::kFeedbackSourceFocusMode;
+      return feedback::FeedbackSource::kFeedbackSourceFocusMode;
     case ash::ShellDelegate::FeedbackSource::kGameDashboard:
-      return chrome::FeedbackSource::kFeedbackSourceGameDashboard;
+      return feedback::FeedbackSource::kFeedbackSourceGameDashboard;
     case ash::ShellDelegate::FeedbackSource::kOverview:
-      return chrome::FeedbackSource::kFeedbackSourceOverview;
+      return feedback::FeedbackSource::kFeedbackSourceOverview;
     case ash::ShellDelegate::FeedbackSource::kSnapGroups:
-      return chrome::FeedbackSource::kFeedbackSourceSnapGroups;
+      return feedback::FeedbackSource::kFeedbackSourceSnapGroups;
     case ash::ShellDelegate::FeedbackSource::kWindowLayoutMenu:
-      return chrome::FeedbackSource::kFeedbackSourceWindowLayoutMenu;
+      return feedback::FeedbackSource::kFeedbackSourceWindowLayoutMenu;
   }
-  NOTREACHED_NORETURN()
-      << "Unable to retrieve FeedbackSource due to unknown source type.";
+  NOTREACHED_NORETURN() << "Unable to retrieve feedback::FeedbackSource due to "
+                           "unknown source type.";
 }
 
 }  // namespace

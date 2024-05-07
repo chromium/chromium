@@ -34,7 +34,7 @@ void OnProfileErrorDialogDismissed(const std::string& diagnostics,
   std::string feedback_description =
       l10n_util::GetStringUTF8(IDS_PROFILE_ERROR_FEEDBACK_DESCRIPTION);
 
-  chrome::ShowFeedbackPage(nullptr, chrome::kFeedbackSourceProfileErrorDialog,
+  chrome::ShowFeedbackPage(nullptr, feedback::kFeedbackSourceProfileErrorDialog,
                            feedback_description,
                            std::string() /* description_placeholder_text */,
                            kProfileErrorFeedbackCategory, diagnostics);

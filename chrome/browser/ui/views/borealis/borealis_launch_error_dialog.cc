@@ -200,7 +200,7 @@ class BorealisLaunchErrorDialog : public DialogDelegate {
 
   void ShowFeedbackPage(Profile* profile) {
     chrome::ShowFeedbackPage(
-        /*page_url=*/GURL(), profile, chrome::kFeedbackSourceBorealis,
+        /*page_url=*/GURL(), profile, feedback::kFeedbackSourceBorealis,
         /*description_template=*/std::string(),
         /*description_placeholder_text=*/
         l10n_util::GetStringUTF8(IDS_BOREALIS_FEEDBACK_PLACEHOLDER),

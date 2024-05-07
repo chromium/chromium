@@ -91,7 +91,7 @@ std::optional<std::string> ChromeHelpAppUIDelegate::OpenFeedbackDialog() {
   // We don't change the default description, or add extra diagnostics so those
   // are empty strings.
   chrome::ShowFeedbackPage(GURL(kChromeUIHelpAppURL), profile,
-                           chrome::kFeedbackSourceHelpApp,
+                           feedback::kFeedbackSourceHelpApp,
                            std::string() /* description_template */,
                            std::string() /* description_placeholder_text */,
                            kHelpAppFeedbackCategoryTag /* category_tag */,

@@ -75,11 +75,11 @@ Profile* GetFeedbackProfile(const Browser* browser) {
 
 void ShowFeedbackDialogForWebUI(WebUIFeedbackSource webui_source,
                                 const std::string& extra_diagnostics) {
-  FeedbackSource source;
+  feedback::FeedbackSource source;
   std::string category;
   switch (webui_source) {
     case WebUIFeedbackSource::kConnectivityDiagnostics:
-      source = FeedbackSource::kFeedbackSourceConnectivityDiagnostics;
+      source = feedback::FeedbackSource::kFeedbackSourceConnectivityDiagnostics;
       category = "connectivity-diagnostics";
       break;
   }

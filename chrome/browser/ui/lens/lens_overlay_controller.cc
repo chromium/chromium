@@ -923,7 +923,7 @@ void LensOverlayController::FeedbackRequestedByOverlay() {
     return;
   }
   chrome::ShowFeedbackPage(
-      tab_browser, chrome::kFeedbackSourceLensOverlay,
+      tab_browser, feedback::kFeedbackSourceLensOverlay,
       /*description_template=*/std::string(),
       /*description_placeholder_text=*/
       l10n_util::GetStringUTF8(IDS_LENS_SEND_FEEDBACK_PLACEHOLDER),

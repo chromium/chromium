@@ -145,7 +145,7 @@ void ProjectorAppClientImpl::OpenFeedbackDialog() const {
   Profile* profile = ProfileManager::GetActiveUserProfile();
   constexpr char kProjectorAppFeedbackCategoryTag[] = "FromProjectorApp";
   chrome::ShowFeedbackPage(GURL(ash::kChromeUIUntrustedProjectorUrl), profile,
-                           chrome::kFeedbackSourceProjectorApp,
+                           feedback::kFeedbackSourceProjectorApp,
                            /*description_template=*/std::string(),
                            /*description_placeholder_text=*/std::string(),
                            kProjectorAppFeedbackCategoryTag,

@@ -75,8 +75,8 @@ void FeedbackDialog::CreateOrShow(
   // ShowDialogAsync is being called.
   if (info.flow == extensions::api::feedback_private::FeedbackFlow::kLogin) {
     UMA_HISTOGRAM_ENUMERATION("Feedback.RequestSource",
-                              chrome::kFeedbackSourceLogin,
-                              chrome::kFeedbackSourceCount);
+                              feedback::kFeedbackSourceLogin,
+                              feedback::kFeedbackSourceCount);
   }
 
   current_instance_ = new FeedbackDialog(profile, info);

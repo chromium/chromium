@@ -13,35 +13,35 @@ namespace internal {
 namespace {
 
 crosapi::mojom::LacrosFeedbackSource ToMojoLacrosFeedbackSource(
-    FeedbackSource source) {
+    feedback::FeedbackSource source) {
   switch (source) {
-    case kFeedbackSourceBrowserCommand:
+    case feedback::kFeedbackSourceBrowserCommand:
       return crosapi::mojom::LacrosFeedbackSource::kLacrosBrowserCommand;
-    case kFeedbackSourceMdSettingsAboutPage:
+    case feedback::kFeedbackSourceMdSettingsAboutPage:
       return crosapi::mojom::LacrosFeedbackSource::kLacrosSettingsAboutPage;
-    case kFeedbackSourceAutofillContextMenu:
+    case feedback::kFeedbackSourceAutofillContextMenu:
       return crosapi::mojom::LacrosFeedbackSource::kLacrosAutofillContextMenu;
-    case kFeedbackSourceSadTabPage:
+    case feedback::kFeedbackSourceSadTabPage:
       return crosapi::mojom::LacrosFeedbackSource::kLacrosSadTabPage;
-    case kFeedbackSourceChromeLabs:
+    case feedback::kFeedbackSourceChromeLabs:
       return crosapi::mojom::LacrosFeedbackSource::kLacrosChromeLabs;
-    case kFeedbackSourceQuickAnswers:
+    case feedback::kFeedbackSourceQuickAnswers:
       return crosapi::mojom::LacrosFeedbackSource::kLacrosQuickAnswers;
-    case kFeedbackSourceWindowLayoutMenu:
+    case feedback::kFeedbackSourceWindowLayoutMenu:
       return crosapi::mojom::LacrosFeedbackSource::
           kDeprecatedLacrosWindowLayoutMenu;
-    case kFeedbackSourceCookieControls:
+    case feedback::kFeedbackSourceCookieControls:
       return crosapi::mojom::LacrosFeedbackSource::
           kFeedbackSourceCookieControls;
-    case kFeedbackSourceSettingsPerformancePage:
+    case feedback::kFeedbackSourceSettingsPerformancePage:
       return crosapi::mojom::LacrosFeedbackSource::
           kFeedbackSourceSettingsPerformancePage;
-    case kFeedbackSourceProfileErrorDialog:
+    case feedback::kFeedbackSourceProfileErrorDialog:
       return crosapi::mojom::LacrosFeedbackSource::
           kFeedbackSourceProfileErrorDialog;
-    case kFeedbackSourceQuickOffice:
+    case feedback::kFeedbackSourceQuickOffice:
       return crosapi::mojom::LacrosFeedbackSource::kFeedbackSourceQuickOffice;
-    case kFeedbackSourceAI:
+    case feedback::kFeedbackSourceAI:
       return crosapi::mojom::LacrosFeedbackSource::kFeedbackSourceAI;
     default:
       LOG(ERROR) << "ShowFeedbackPage is called by unknown Lacros source: "
@@ -53,7 +53,7 @@ crosapi::mojom::LacrosFeedbackSource ToMojoLacrosFeedbackSource(
 
 crosapi::mojom::FeedbackInfoPtr ToMojoFeedbackInfo(
     const GURL& page_url,
-    FeedbackSource source,
+    feedback::FeedbackSource source,
     const std::string& description_template,
     const std::string& description_placeholder_text,
     const std::string& category_tag,
@@ -77,14 +77,14 @@ crosapi::mojom::FeedbackInfoPtr ToMojoFeedbackInfo(
 // Requests to show Feedback ui remotely in ash via crosapi mojo call.
 // Note: This function should only be called from show_feedback_page.cc.
 void ShowFeedbackPageLacros(const GURL& page_url,
-                            FeedbackSource source,
+                            feedback::FeedbackSource source,
                             const std::string& description_template,
                             const std::string& description_placeholder_text,
                             const std::string& category_tag,
                             const std::string& extra_diagnostics,
                             base::Value::Dict autofill_metadata,
                             base::Value::Dict ai_metadata) {
-  if (source == kFeedbackSourceAI) {
+  if (source == feedback::kFeedbackSourceAI) {
     auto capabilities = chromeos::BrowserParamsProxy::Get()->AshCapabilities();
     if (!capabilities || !base::Contains(*capabilities, "crbug/1501057")) {
       LOG(WARNING) << "Unsupported feedback source AI for ash.";

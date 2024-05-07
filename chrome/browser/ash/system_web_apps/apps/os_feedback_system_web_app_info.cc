@@ -140,8 +140,8 @@ Browser* OSFeedbackAppDelegate::LaunchAndNavigateSystemWebApp(
       // Record an UMA histogram when feedback app is open from Launcher.
       if (params.launch_source != apps::LaunchSource::kFromChromeInternal) {
         UMA_HISTOGRAM_ENUMERATION("Feedback.RequestSource",
-                                  chrome::kFeedbackSourceLauncher,
-                                  chrome::kFeedbackSourceCount);
+                                  feedback::kFeedbackSourceLauncher,
+                                  feedback::kFeedbackSourceCount);
       }
     }
   }

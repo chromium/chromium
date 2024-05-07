@@ -51,8 +51,8 @@ void OsFeedbackDialog::ShowDialogAsync(
   // ShowDialogAsync is being called.
   if (info.flow == extensions::api::feedback_private::FeedbackFlow::kLogin) {
     UMA_HISTOGRAM_ENUMERATION("Feedback.RequestSource",
-                              chrome::kFeedbackSourceLogin,
-                              chrome::kFeedbackSourceCount);
+                              feedback::kFeedbackSourceLogin,
+                              feedback::kFeedbackSourceCount);
   }
 
   // Take a screenshot and open the app afterward, regardless of screenshot

@@ -579,7 +579,7 @@ void WallpaperSearchHandler::ShowFeedbackPage() {
                                         .execution_id());
   }
   chrome::ShowFeedbackPage(
-      browser, chrome::kFeedbackSourceAI,
+      browser, feedback::kFeedbackSourceAI,
       /*description_template=*/std::string(),
       /*description_placeholder_text=*/
       l10n_util::GetStringUTF8(IDS_NTP_WALLPAPER_SEARCH_FEEDBACK_PLACEHOLDER),

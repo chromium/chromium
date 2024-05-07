@@ -527,7 +527,7 @@ void ChromeCameraAppUIDelegate::OpenFeedbackDialog(
   // reports to end up in.
   Profile* profile = Profile::FromWebUI(web_ui_);
   chrome::ShowFeedbackPage(GURL(ash::kChromeUICameraAppURL), profile,
-                           chrome::kFeedbackSourceCameraApp,
+                           feedback::kFeedbackSourceCameraApp,
                            std::string() /* description_template */,
                            placeholder /* description_placeholder_text */,
                            "chromeos-camera-app" /* category_tag */,

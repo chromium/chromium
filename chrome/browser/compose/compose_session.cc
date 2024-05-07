@@ -889,7 +889,7 @@ void ComposeSession::OpenFeedbackPage(std::string feedback_id) {
   chrome::ShowFeedbackPage(
       web_contents_->GetLastCommittedURL(),
       Profile::FromBrowserContext(web_contents_->GetBrowserContext()),
-      chrome::kFeedbackSourceAI,
+      feedback::kFeedbackSourceAI,
       /*description_template=*/std::string(),
       /*description_placeholder_text=*/
       l10n_util::GetStringUTF8(IDS_COMPOSE_FEEDBACK_PLACEHOLDER),

@@ -108,7 +108,7 @@ void ShoppingUiHandlerDelegate::ShowFeedback() {
   }
 
   chrome::ShowFeedbackPage(
-      browser, chrome::kFeedbackSourcePriceInsights,
+      browser, feedback::kFeedbackSourcePriceInsights,
       /*description_template=*/std::string(),
       /*description_placeholder_text=*/
       l10n_util::GetStringUTF8(IDS_SHOPPING_INSIGHTS_FEEDBACK_FORM_TITLE),

@@ -280,7 +280,7 @@ void AutofillContextMenuManager::ExecuteAutofillFeedbackCommand(
   auto& client = static_cast<ContentAutofillClient&>(manager.client());
   Browser* browser = chrome::FindBrowserWithTab(&client.GetWebContents());
   chrome::ShowFeedbackPage(
-      browser, chrome::kFeedbackSourceAutofillContextMenu,
+      browser, feedback::kFeedbackSourceAutofillContextMenu,
       /*description_template=*/std::string(),
       /*description_placeholder_text=*/kFeedbackPlaceholder,
       /*category_tag=*/"dogfood_autofill_feedback",

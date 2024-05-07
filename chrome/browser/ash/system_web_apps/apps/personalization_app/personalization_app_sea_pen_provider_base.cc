@@ -261,7 +261,7 @@ void PersonalizationAppSeaPenProviderBase::OpenFeedbackDialog(
   base::RecordAction(base::UserMetricsAction("SeaPen_FeedbackPressed"));
   chrome::ShowFeedbackPage(
       /*browser=*/chrome::FindBrowserWithProfile(profile_),
-      /*source=*/chrome::kFeedbackSourceAI,
+      /*source=*/feedback::kFeedbackSourceAI,
       /*description_template=*/feedback_text,
       /*description_placeholder_text=*/
       base::UTF16ToUTF8(

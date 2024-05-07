@@ -49,7 +49,7 @@ std::optional<std::string> ChromeMediaAppUIDelegate::OpenFeedbackDialog() {
   // Note that category_tag is the name of the listnr bucket we want our
   // reports to end up in.
   chrome::ShowFeedbackPage(GURL(ash::kChromeUIMediaAppURL), profile,
-                           chrome::kFeedbackSourceMediaApp,
+                           feedback::kFeedbackSourceMediaApp,
                            std::string() /* description_template */,
                            std::string() /* description_placeholder_text */,
                            kMediaAppFeedbackCategoryTag /* category_tag */,

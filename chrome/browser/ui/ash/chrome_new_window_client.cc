@@ -112,18 +112,18 @@ std::string GetPathAndQuery(const GURL& url) {
   return result;
 }
 
-chrome::FeedbackSource MapToChromeSource(
+feedback::FeedbackSource MapToChromeSource(
     ash::NewWindowDelegate::FeedbackSource source) {
   switch (source) {
     case ash::NewWindowDelegate::FeedbackSource::kFeedbackSourceAsh:
-      return chrome::FeedbackSource::kFeedbackSourceAsh;
+      return feedback::FeedbackSource::kFeedbackSourceAsh;
     case ash::NewWindowDelegate::FeedbackSource::kFeedbackSourceAssistant:
-      return chrome::FeedbackSource::kFeedbackSourceAssistant;
+      return feedback::FeedbackSource::kFeedbackSourceAssistant;
     case ash::NewWindowDelegate::FeedbackSource::kFeedbackSourceQuickAnswers:
-      return chrome::FeedbackSource::kFeedbackSourceQuickAnswers;
+      return feedback::FeedbackSource::kFeedbackSourceQuickAnswers;
     case ash::NewWindowDelegate::FeedbackSource::
         kFeedbackSourceChannelIndicator:
-      return chrome::FeedbackSource::kFeedbackSourceChannelIndicator;
+      return feedback::FeedbackSource::kFeedbackSourceChannelIndicator;
   }
 }
 

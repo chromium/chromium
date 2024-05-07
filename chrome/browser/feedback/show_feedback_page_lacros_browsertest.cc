@@ -21,7 +21,7 @@ class ShowFeedbackPageBrowserTest : public InProcessBrowserTest {
   ~ShowFeedbackPageBrowserTest() override = default;
 
  protected:
-  void ShowFeedbackPageWithFeedbackSource(chrome::FeedbackSource source) {
+  void ShowFeedbackPageWithFeedbackSource(feedback::FeedbackSource source) {
     std::string unused;
     chrome::ShowFeedbackPage(browser(), source,
                              /*description_template=*/unused,
@@ -50,7 +50,7 @@ class ShowFeedbackPageBrowserTest : public InProcessBrowserTest {
 IN_PROC_BROWSER_TEST_F(ShowFeedbackPageBrowserTest,
                        ShowFeedbackPageFromBrowserCommand) {
   base::HistogramTester histogram_tester;
-  ShowFeedbackPageWithFeedbackSource(chrome::kFeedbackSourceBrowserCommand);
+  ShowFeedbackPageWithFeedbackSource(feedback::kFeedbackSourceBrowserCommand);
   histogram_tester.ExpectTotalCount("Feedback.RequestSource", 1);
 }
 
@@ -58,7 +58,7 @@ IN_PROC_BROWSER_TEST_F(ShowFeedbackPageBrowserTest,
                        ShowFeedbackPageFromBrowserSettingsAboutPage) {
   base::HistogramTester histogram_tester;
   ShowFeedbackPageWithFeedbackSource(
-      chrome::kFeedbackSourceMdSettingsAboutPage);
+      feedback::kFeedbackSourceMdSettingsAboutPage);
   histogram_tester.ExpectTotalCount("Feedback.RequestSource", 1);
 }
 
@@ -66,42 +66,42 @@ IN_PROC_BROWSER_TEST_F(ShowFeedbackPageBrowserTest,
                        ShowFeedbackPageFromAutofillContextMenu) {
   base::HistogramTester histogram_tester;
   ShowFeedbackPageWithFeedbackSource(
-      chrome::kFeedbackSourceAutofillContextMenu);
+      feedback::kFeedbackSourceAutofillContextMenu);
   histogram_tester.ExpectTotalCount("Feedback.RequestSource", 1);
 }
 
 IN_PROC_BROWSER_TEST_F(ShowFeedbackPageBrowserTest,
                        ShowFeedbackPageFromQuickAnswers) {
   base::HistogramTester histogram_tester;
-  ShowFeedbackPageWithFeedbackSource(chrome::kFeedbackSourceQuickAnswers);
+  ShowFeedbackPageWithFeedbackSource(feedback::kFeedbackSourceQuickAnswers);
   histogram_tester.ExpectTotalCount("Feedback.RequestSource", 1);
 }
 
 IN_PROC_BROWSER_TEST_F(ShowFeedbackPageBrowserTest,
                        ShowFeedbackPageFromChromeLabs) {
   base::HistogramTester histogram_tester;
-  ShowFeedbackPageWithFeedbackSource(chrome::kFeedbackSourceChromeLabs);
+  ShowFeedbackPageWithFeedbackSource(feedback::kFeedbackSourceChromeLabs);
   histogram_tester.ExpectTotalCount("Feedback.RequestSource", 1);
 }
 
 IN_PROC_BROWSER_TEST_F(ShowFeedbackPageBrowserTest,
                        ShowFeedbackPageFromSadTabPage) {
   base::HistogramTester histogram_tester;
-  ShowFeedbackPageWithFeedbackSource(chrome::kFeedbackSourceSadTabPage);
+  ShowFeedbackPageWithFeedbackSource(feedback::kFeedbackSourceSadTabPage);
   histogram_tester.ExpectTotalCount("Feedback.RequestSource", 1);
 }
 
 IN_PROC_BROWSER_TEST_F(ShowFeedbackPageBrowserTest,
                        ShowFeedbackPageFromWindowLayoutMenu) {
   base::HistogramTester histogram_tester;
-  ShowFeedbackPageWithFeedbackSource(chrome::kFeedbackSourceWindowLayoutMenu);
+  ShowFeedbackPageWithFeedbackSource(feedback::kFeedbackSourceWindowLayoutMenu);
   histogram_tester.ExpectTotalCount("Feedback.RequestSource", 1);
 }
 
 IN_PROC_BROWSER_TEST_F(ShowFeedbackPageBrowserTest,
                        ShowFeedbackPageFromCookieControls) {
   base::HistogramTester histogram_tester;
-  ShowFeedbackPageWithFeedbackSource(chrome::kFeedbackSourceCookieControls);
+  ShowFeedbackPageWithFeedbackSource(feedback::kFeedbackSourceCookieControls);
   histogram_tester.ExpectTotalCount("Feedback.RequestSource", 1);
 }
 
@@ -109,21 +109,22 @@ IN_PROC_BROWSER_TEST_F(ShowFeedbackPageBrowserTest,
                        ShowFeedbackPageFromSettingsPerformancePage) {
   base::HistogramTester histogram_tester;
   ShowFeedbackPageWithFeedbackSource(
-      chrome::kFeedbackSourceSettingsPerformancePage);
+      feedback::kFeedbackSourceSettingsPerformancePage);
   histogram_tester.ExpectTotalCount("Feedback.RequestSource", 1);
 }
 
 IN_PROC_BROWSER_TEST_F(ShowFeedbackPageBrowserTest,
                        ShowFeedbackPageFromProfileErrorDialog) {
   base::HistogramTester histogram_tester;
-  ShowFeedbackPageWithFeedbackSource(chrome::kFeedbackSourceProfileErrorDialog);
+  ShowFeedbackPageWithFeedbackSource(
+      feedback::kFeedbackSourceProfileErrorDialog);
   histogram_tester.ExpectTotalCount("Feedback.RequestSource", 1);
 }
 
 IN_PROC_BROWSER_TEST_F(ShowFeedbackPageBrowserTest,
                        ShowFeedbackPageFromQuickOffice) {
   base::HistogramTester histogram_tester;
-  ShowFeedbackPageWithFeedbackSource(chrome::kFeedbackSourceQuickOffice);
+  ShowFeedbackPageWithFeedbackSource(feedback::kFeedbackSourceQuickOffice);
   histogram_tester.ExpectTotalCount("Feedback.RequestSource", 1);
 }
 
@@ -137,7 +138,7 @@ IN_PROC_BROWSER_TEST_F(ShowFeedbackPageBrowserTest, ShowFeedbackPageFromAI) {
 
   // AI flow uses the Chrome feedback dialog instead so no new ash window will
   // be created.
-  chrome::ShowFeedbackPage(browser(), chrome::kFeedbackSourceAI,
+  chrome::ShowFeedbackPage(browser(), feedback::kFeedbackSourceAI,
                            /*description_template=*/unused,
                            /*description_placeholder_text=*/unused,
                            /*category_tag=*/unused,

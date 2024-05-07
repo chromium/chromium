@@ -1861,7 +1861,7 @@ void ArcSessionManager::OnErrorPageShown(bool network_tests_shown) {
 
 void ArcSessionManager::OnSendFeedbackClicked() {
   DCHECK(support_host_);
-  chrome::OpenFeedbackDialog(nullptr, chrome::kFeedbackSourceArcApp);
+  chrome::OpenFeedbackDialog(nullptr, feedback::kFeedbackSourceArcApp);
 
   // If network-related error occurred, collect UMA stats on user action.
   if (support_host_->GetShouldShowRunNetworkTests()) {

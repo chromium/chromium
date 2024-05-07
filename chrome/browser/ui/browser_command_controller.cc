@@ -802,7 +802,7 @@ bool BrowserCommandController::ExecuteCommandWithDisposition(
 #endif
 #if BUILDFLAG(GOOGLE_CHROME_BRANDING)
     case IDC_FEEDBACK:
-      OpenFeedbackDialog(browser_, kFeedbackSourceBrowserCommand);
+      OpenFeedbackDialog(browser_, feedback::kFeedbackSourceBrowserCommand);
       break;
     case IDC_SHOW_SEARCH_COMPANION:
       SidePanelUI::GetSidePanelUIForBrowser(browser_)->Show(

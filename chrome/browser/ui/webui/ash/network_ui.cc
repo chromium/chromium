@@ -208,10 +208,10 @@ class NetworkDiagnosticsMessageHandler : public content::WebUIMessageHandler {
 
  private:
   void OpenFeedbackDialog(const base::Value::List& value) {
-    chrome::ShowFeedbackPage(nullptr, chrome::kFeedbackSourceNetworkHealthPage,
-                             "" /*description_template*/,
-                             "" /*description_template_placeholder*/,
-                             "network-health", "" /*extra_diagnostics*/);
+    chrome::ShowFeedbackPage(
+        nullptr, feedback::kFeedbackSourceNetworkHealthPage,
+        "" /*description_template*/, "" /*description_template_placeholder*/,
+        "network-health", "" /*extra_diagnostics*/);
   }
 };
 

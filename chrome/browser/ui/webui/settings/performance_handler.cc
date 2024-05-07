@@ -143,7 +143,7 @@ void PerformanceHandler::HandleOpenFeedbackDialog(
   DCHECK(browser);
   std::string unused;
   chrome::ShowFeedbackPage(browser,
-                           chrome::kFeedbackSourceSettingsPerformancePage,
+                           feedback::kFeedbackSourceSettingsPerformancePage,
                            unused, unused, category_tag, unused);
 }
 

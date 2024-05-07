@@ -54,7 +54,7 @@ void AudioHandler::GetActiveInputDeviceName(
 
 void AudioHandler::OpenFeedbackDialog() {
   chrome::OpenFeedbackDialog(chrome::FindBrowserWithActiveWindow(),
-                             chrome::kFeedbackSourceMdSettingsAboutPage);
+                             feedback::kFeedbackSourceMdSettingsAboutPage);
 }
 
 void AudioHandler::OnAudioNodesChanged() {

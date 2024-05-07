@@ -1927,7 +1927,7 @@ void OpenTaskManager(Browser* browser) {
 }
 
 void OpenFeedbackDialog(Browser* browser,
-                        FeedbackSource source,
+                        feedback::FeedbackSource source,
                         const std::string& description_template,
                         const std::string& category_tag) {
   base::RecordAction(UserMetricsAction("Feedback"));

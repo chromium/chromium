@@ -14,6 +14,7 @@
 #include "build/branding_buildflags.h"
 #include "build/build_config.h"
 #include "build/chromeos_buildflags.h"
+#include "chrome/browser/feedback/public/feedback_source.h"
 #include "components/content_settings/core/common/content_settings_types.h"
 #include "components/signin/public/base/signin_buildflags.h"
 #include "url/gurl.h"
@@ -72,75 +73,6 @@ enum HelpSource {
   HELP_SOURCE_WEBUSB,
 };
 
-// Sources of feedback requests.
-//
-// WARNING: The below enum MUST never be renamed, modified or reordered, as
-// they're written to logs. You can only insert a new element immediately
-// before the last. Also, 'FeedbackSource' in
-// 'tools/metrics/histograms/enums.xml' MUST be kept in sync with the enum
-// below.
-// Note: Many feedback sources are being deprecated, or don't apply for Lacros
-// (e.g. Ash only). Therefore, we won't support all the values listed below in
-// Lacros. "enum LacrosFeedbackSource" in chromeos/crosapi/mojom/feedback.mojom
-// lists all the feedback sources we allow in Lacros to the current. When you
-// need to show feedack from Lacros with a new feedback source, please add it to
-// LacrosFeedbackSource, handles the mojom serialization accordingly, and add a
-// new test case in:
-// chrome/browser/feedback/show_feedback_page_lacros_browertest.cc.
-enum FeedbackSource {
-  kFeedbackSourceArcApp = 0,
-  kFeedbackSourceAsh,
-  kFeedbackSourceBrowserCommand,
-  kFeedbackSourceMdSettingsAboutPage,
-  kFeedbackSourceOldSettingsAboutPage,
-  kFeedbackSourceProfileErrorDialog,
-  kFeedbackSourceSadTabPage,
-  kFeedbackSourceSupervisedUserInterstitial,
-  kFeedbackSourceAssistant,
-  kFeedbackSourceDesktopTabGroups,
-  kFeedbackSourceMediaApp,
-  kFeedbackSourceHelpApp,
-  kFeedbackSourceKaleidoscope,
-  kFeedbackSourceNetworkHealthPage,
-  kFeedbackSourceTabSearch,
-  kFeedbackSourceCameraApp,
-  kFeedbackSourceCaptureMode,
-  kFeedbackSourceChromeLabs,
-  kFeedbackSourceBentoBar_DEPRECATED,
-  kFeedbackSourceQuickAnswers,
-  kFeedbackSourceWhatsNew,
-  kFeedbackSourceConnectivityDiagnostics,
-  kFeedbackSourceProjectorApp,
-  kFeedbackSourceDesksTemplates,
-  kFeedbackSourceFilesApp,
-  kFeedbackSourceChannelIndicator,
-  kFeedbackSourceLauncher,
-  kFeedbackSourceSettingsPerformancePage,
-  kFeedbackSourceQuickOffice,
-  kFeedbackSourceOsSettingsSearch,
-  kFeedbackSourceAutofillContextMenu,
-  kFeedbackSourceUnknownLacrosSource,
-  kFeedbackSourceWindowLayoutMenu,
-  kFeedbackSourcePriceInsights,
-  kFeedbackSourceCookieControls,
-  kFeedbackSourceGameDashboard,
-  kFeedbackSourceLensOverlay,
-  kFeedbackSourceLogin,
-  kFeedbackSourceAI,
-  kFeedbackSourceFocusMode,
-  kFeedbackSourceOverview,
-  kFeedbackSourceSnapGroups,
-  kFeedbackSourceBirch,
-  kFeedbackSourceBorealis,
-
-  // ATTENTION: Before making any changes or adding to feedback collection,
-  // please ensure the teams that operationalize feedback are aware and
-  // supportive. Contact: chrome-gtech@
-
-  // Must be last.
-  kFeedbackSourceCount,
-};
-
 void ShowBookmarkManager(Browser* browser);
 void ShowBookmarkManagerForNode(Browser* browser, int64_t node_id);
 void ShowHistory(Browser* browser, const std::string& host_name);
@@ -152,7 +84,7 @@ void ShowExtensions(Browser* browser,
 // ShowFeedbackPage() uses |browser| to determine the URL of the current tab.
 // |browser| should be NULL if there are no currently open browser windows.
 void ShowFeedbackPage(const Browser* browser,
-                      FeedbackSource source,
+                      feedback::FeedbackSource source,
                       const std::string& description_template,
                       const std::string& description_placeholder_text,
                       const std::string& category_tag,
@@ -163,7 +95,7 @@ void ShowFeedbackPage(const Browser* browser,
 // Displays the Feedback ui.
 void ShowFeedbackPage(const GURL& page_url,
                       Profile* profile,
-                      FeedbackSource source,
+                      feedback::FeedbackSource source,
                       const std::string& description_template,
                       const std::string& description_placeholder_text,
                       const std::string& category_tag,

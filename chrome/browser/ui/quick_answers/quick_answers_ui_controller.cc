@@ -240,7 +240,7 @@ void QuickAnswersUiController::OnReportQueryButtonPressed() {
 #elif BUILDFLAG(IS_CHROMEOS_LACROS)
   chrome::OpenFeedbackDialog(
       chrome::FindBrowserWithActiveWindow(),
-      chrome::FeedbackSource::kFeedbackSourceQuickAnswers, feedback_template);
+      feedback::FeedbackSource::kFeedbackSourceQuickAnswers, feedback_template);
 #endif
 }
 

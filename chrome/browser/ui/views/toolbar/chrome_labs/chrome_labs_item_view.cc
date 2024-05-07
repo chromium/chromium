@@ -37,7 +37,7 @@ void ShowFeedbackPage(Browser* browser,
                       std::string feedback_category_name,
                       std::u16string visible_name) {
   chrome::ShowFeedbackPage(
-      browser, chrome::FeedbackSource::kFeedbackSourceChromeLabs,
+      browser, feedback::FeedbackSource::kFeedbackSourceChromeLabs,
       /*description_template=*/std::string(),
       /*description_placeholder_text=*/
       l10n_util::GetStringFUTF8(

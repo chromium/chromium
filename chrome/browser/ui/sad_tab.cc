@@ -208,9 +208,9 @@ void SadTab::PerformAction(SadTab::Action action) {
       RecordEvent(show_feedback_button_,
                   ui_metrics::SadTabEvent::BUTTON_CLICKED);
       if (show_feedback_button_) {
-        ShowFeedbackPage(
+        chrome::ShowFeedbackPage(
             chrome::FindBrowserWithTab(web_contents_),
-            chrome::kFeedbackSourceSadTabPage,
+            feedback::kFeedbackSourceSadTabPage,
             std::string() /* description_template */,
             l10n_util::GetStringUTF8(kind_ == SAD_TAB_KIND_CRASHED
                                          ? IDS_CRASHED_TAB_FEEDBACK_MESSAGE

@@ -51,7 +51,7 @@ void TestOpenOsFeedbackDialog() {
   // Verify an instance exists now.
   EXPECT_TRUE(HasInstanceOfOsFeedbackDialog());
   histogram_tester.ExpectBucketCount("Feedback.RequestSource",
-                                     chrome::kFeedbackSourceLogin, 1);
+                                     feedback::kFeedbackSourceLogin, 1);
   histogram_tester.ExpectTotalCount("Feedback.RequestSource", 1);
 }
 

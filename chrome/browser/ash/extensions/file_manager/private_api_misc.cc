@@ -1172,7 +1172,7 @@ FileManagerPrivateSendFeedbackFunction::Run() {
   }
 
   Profile* profile = Profile::FromBrowserContext(browser_context());
-  chrome::ShowFeedbackPage(url, profile, chrome::kFeedbackSourceFilesApp,
+  chrome::ShowFeedbackPage(url, profile, feedback::kFeedbackSourceFilesApp,
                            /*description_template=*/std::string(),
                            /*description_placeholder_text=*/std::string(),
                            /*category_tag=*/"chromeos-files-app",

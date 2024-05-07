@@ -275,7 +275,7 @@ void ChromeFeedbackPrivateDelegate::OpenFeedback(
 
   Profile* profile = Profile::FromBrowserContext(context);
   chrome::ShowFeedbackPage(url, profile,
-                           /*source=*/chrome::kFeedbackSourceQuickOffice,
+                           /*source=*/feedback::kFeedbackSourceQuickOffice,
                            /*description_template=*/std::string(),
                            /*description_placeholder_text=*/std::string(),
                            /*category_tag=*/std::string(),

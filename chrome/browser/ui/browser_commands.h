@@ -225,7 +225,7 @@ bool CanOpenTaskManager();
 // Opens task manager UI. Note that |browser| can be nullptr as input.
 void OpenTaskManager(Browser* browser);
 void OpenFeedbackDialog(Browser* browser,
-                        FeedbackSource source,
+                        feedback::FeedbackSource source,
                         const std::string& description_template = std::string(),
                         const std::string& category_tag = std::string());
 void ToggleBookmarkBar(Browser* browser);
