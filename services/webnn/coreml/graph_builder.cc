@@ -1077,7 +1077,7 @@ GraphBuilder::AddOperationForBatchNormalization(
                      GetOperandInfo(*operation.bias_operand_id).coreml_name);
   }
 
-  // TODO(crbug.com/338348440): Consider using float16 when the input is
+  // TODO(crbug.com/339238741): Consider using float16 when the input is
   // float16.
   SetInputWithValue(*op->mutable_inputs(), kOpParamEpsilon,
                     CreateScalarImmediateValue(operation.epsilon));
@@ -1647,7 +1647,7 @@ base::expected<void, mojom::ErrorPtr> GraphBuilder::AddOperationForGemm(
       operation.b_transpose, matmul_output, block));
 
   if (operation.alpha != 1.0f) {
-    // TODO: crbug.com/338449299 - figure out how to support fp16. For
+    // TODO: crbug.com/339238741 - figure out how to support fp16. For
     // `mul(alpha, matmul(A, B))`, the two inputs to `mul` must match.
     if (a_operand_info.mil_data_type !=
         CoreML::Specification::MILSpec::FLOAT32) {
@@ -1676,7 +1676,7 @@ base::expected<void, mojom::ErrorPtr> GraphBuilder::AddOperationForGemm(
   uint64_t c_operand_id = operation.c_operand_id.value();
 
   if (operation.beta != 1.0f) {
-    // TODO: crbug.com/338449299 - figure out how to support fp16. For
+    // TODO: crbug.com/339238741 - figure out how to support fp16. For
     // `mul(beta, C)`, the two inputs to `mul` must match.
     if (GetOperandInfo(c_operand_id).mil_data_type !=
         CoreML::Specification::MILSpec::FLOAT32) {
@@ -1714,7 +1714,7 @@ base::expected<void, mojom::ErrorPtr> GraphBuilder::AddOperationForHardSigmoid(
   SetInputWithName(*op->mutable_inputs(), kOpParamX,
                    input_operand_info.coreml_name);
 
-  // TODO(crbug.com/338601192): Consider using float16 when the input is
+  // TODO(crbug.com/339238741): Consider using float16 when the input is
   // float16.
   SetInputsWithValues(*op->mutable_inputs(),
                       {
@@ -1748,7 +1748,7 @@ base::expected<void, mojom::ErrorPtr> GraphBuilder::AddOperationForHardSwish(
   uint64_t hardsigmoid_output = GenerateInternalOperandInfo(
       input_operand_info.mil_data_type, input_operand_info.dimensions);
 
-  // TODO: crbug.com/339238741 - Use float16 when input type is
+  // TODO: crbug.com/339238741 - Use float16 when input type is float16.
   constexpr static float alpha = float(1.0 / 6);
   constexpr static float beta = float(0.5);
   RETURN_IF_ERROR(AddOperationForHardSigmoid(operation.input_operand_id, alpha,
@@ -1790,7 +1790,7 @@ GraphBuilder::AddOperationForInstanceNormalization(
                      GetOperandInfo(*operation.bias_operand_id).coreml_name);
   }
 
-  // TODO(crbug.com/338348440): Consider using float16 when the input is
+  // TODO(crbug.com/339238741): Consider using float16 when the input is
   // float16.
   SetInputWithValue(*op->mutable_inputs(), kOpParamEpsilon,
                     CreateScalarImmediateValue(operation.epsilon));
@@ -1829,6 +1829,8 @@ base::expected<void, mojom::ErrorPtr> GraphBuilder::AddOperationForLinear(
     CoreML::Specification::MILSpec::Block& block) {
   const OperandInfo& input_operand_info =
       GetOperandInfo(operation.input_operand_id);
+  // TODO: crbug.com/338667172 - Consider enhancing the data type support to
+  // include int32.
   CHECK(kFloatDataTypes.contains(input_operand_info.mil_data_type));
 
   // WebNN's linear operator (alpha * a + beta) is far simpler than CoreML's
@@ -1837,7 +1839,7 @@ base::expected<void, mojom::ErrorPtr> GraphBuilder::AddOperationForLinear(
 
   // Perform: mul(alpha, a)
   //
-  // TODO: crbug.com/338667172 - Use float16 when the input is float16.
+  // TODO: crbug.com/339238741 - Use float16 when the input is float16.
   uint64_t alpha_operand_id = GenerateInternalOperandInfo(
       CoreML::Specification::MILSpec::DataType::FLOAT32, /*dimensions=*/{});
   RETURN_IF_ERROR(AddInternalConstantWithValue(
@@ -1853,7 +1855,7 @@ base::expected<void, mojom::ErrorPtr> GraphBuilder::AddOperationForLinear(
 
   // Perform: add(mul_output, beta)
   //
-  // TODO: crbug.com/338667172 - Use float16 when the input is float16.
+  // TODO: crbug.com/339238741 - Use float16 when the input is float16.
   uint64_t beta_operand_id = GenerateInternalOperandInfo(
       CoreML::Specification::MILSpec::DataType::FLOAT32, /*dimensions=*/{});
   RETURN_IF_ERROR(AddInternalConstantWithValue(
