@@ -106,6 +106,25 @@ class COMPONENT_EXPORT(CHROMEOS_ASH_COMPONENTS_AUDIO)
       "ChromeOS.AudioSelection.Output.SystemNotSwitchAudio."
       "BeforeAndAfterAudioDeviceSet";
 
+  // A series of histogram metrics to record the before and after condition
+  // of audio device types when users override the system selection decision.
+  static constexpr char
+      kUserOverrideSystemSwitchInputBeforeAndAfterAudioDeviceSet[] =
+          "ChromeOS.AudioSelection.Input.UserOverrideSystemSwitchAudio."
+          "BeforeAndAfterAudioDeviceSet";
+  static constexpr char
+      kUserOverrideSystemNotSwitchInputBeforeAndAfterAudioDeviceSet[] =
+          "ChromeOS.AudioSelection.Input.UserOverrideSystemNotSwitchAudio."
+          "BeforeAndAfterAudioDeviceSet";
+  static constexpr char
+      kUserOverrideSystemSwitchOutputBeforeAndAfterAudioDeviceSet[] =
+          "ChromeOS.AudioSelection.Output.UserOverrideSystemSwitchAudio."
+          "BeforeAndAfterAudioDeviceSet";
+  static constexpr char
+      kUserOverrideSystemNotSwitchOutputBeforeAndAfterAudioDeviceSet[] =
+          "ChromeOS.AudioSelection.Output.UserOverrideSystemNotSwitchAudio."
+          "BeforeAndAfterAudioDeviceSet";
+
   // A series of histogram metrics to record system selection decision after
   // audio device has changed.
   static constexpr char kSystemSwitchInputAudioChromeRestarts[] =
@@ -427,6 +446,12 @@ class COMPONENT_EXPORT(CHROMEOS_ASH_COMPONENTS_AUDIO)
   std::optional<base::TimeTicks> output_switched_by_system_at_ = std::nullopt;
   std::optional<base::TimeTicks> output_not_switched_by_system_at_ =
       std::nullopt;
+
+  // The device set bits calculated by EncodeBeforeAndAfterAudioDeviceSets
+  // function to record the audio devices types when users override the system
+  // decision.
+  uint32_t before_and_after_input_device_set_bits_ = 0;
+  uint32_t before_and_after_output_device_set_bits_ = 0;
 
   // The timestamp when devices have changed, including devices added/removed
   // and devices changed. Used for recording the time elaspsed between two

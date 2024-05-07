@@ -79,11 +79,13 @@ void AudioDeviceMetricsHandler::MaybeRecordSystemSwitchDecisionAndContext(
                              input_devices_bits);
 
     // Record the before and after encoded device sets.
+    uint32_t before_and_after_input_device_set_bits =
+        EncodeBeforeAndAfterAudioDeviceSets(previous_input_devices,
+                                            input_devices);
     base::UmaHistogramSparse(
         is_switched ? kSystemSwitchInputBeforeAndAfterAudioDeviceSet
                     : kSystemNotSwitchInputBeforeAndAfterAudioDeviceSet,
-        EncodeBeforeAndAfterAudioDeviceSets(previous_input_devices,
-                                            input_devices));
+        before_and_after_input_device_set_bits);
 
     // Record chrome restarts related metrics.
     RecordAudioSelectionMetricsSeparatedByChromeRestarts(
@@ -98,6 +100,8 @@ void AudioDeviceMetricsHandler::MaybeRecordSystemSwitchDecisionAndContext(
     input_not_switched_by_system_at_ =
         is_switched ? std::nullopt : std::make_optional(base::TimeTicks::Now());
     is_system_decision_at_chrome_restarts_ = is_chrome_restarts_;
+    before_and_after_input_device_set_bits_ =
+        before_and_after_input_device_set_bits;
   } else {
     // Do not record if there is only one audio device. Same as above.
     if (!has_alternative_device) {
@@ -146,11 +150,13 @@ void AudioDeviceMetricsHandler::MaybeRecordSystemSwitchDecisionAndContext(
                              output_devices_bits);
 
     // Record the before and after encoded device sets.
+    uint32_t before_and_after_output_device_set_bits =
+        EncodeBeforeAndAfterAudioDeviceSets(previous_output_devices,
+                                            output_devices);
     base::UmaHistogramSparse(
         is_switched ? kSystemSwitchOutputBeforeAndAfterAudioDeviceSet
                     : kSystemNotSwitchOutputBeforeAndAfterAudioDeviceSet,
-        EncodeBeforeAndAfterAudioDeviceSets(previous_output_devices,
-                                            output_devices));
+        before_and_after_output_device_set_bits);
 
     // Record chrome restarts related metrics.
     RecordAudioSelectionMetricsSeparatedByChromeRestarts(
@@ -165,6 +171,8 @@ void AudioDeviceMetricsHandler::MaybeRecordSystemSwitchDecisionAndContext(
     output_not_switched_by_system_at_ =
         is_switched ? std::nullopt : std::make_optional(base::TimeTicks::Now());
     is_system_decision_at_chrome_restarts_ = is_chrome_restarts_;
+    before_and_after_output_device_set_bits_ =
+        before_and_after_output_device_set_bits;
   }
 }
 
@@ -225,11 +233,17 @@ void AudioDeviceMetricsHandler::MaybeRecordUserOverrideSystemDecision(
                                     time_delta_since_system_decision);
 
     // Record user override metrics separated by chrome restarts.
-
     RecordUserOverrideMetricsSeparatedByChromeRestarts(
         is_input, /*is_switched=*/true,
         /*is_chrome_restarts=*/is_system_decision_at_chrome_restarts,
         time_delta_since_system_decision);
+
+    // Record the before and after encoded device sets.
+    base::UmaHistogramSparse(
+        is_input ? kUserOverrideSystemSwitchInputBeforeAndAfterAudioDeviceSet
+                 : kUserOverrideSystemSwitchOutputBeforeAndAfterAudioDeviceSet,
+        is_input ? before_and_after_input_device_set_bits_
+                 : before_and_after_output_device_set_bits_);
 
     // Reset the system_switch timestamp since user has activated an audio
     // device now. User activating again is not considered overriding system
@@ -253,11 +267,18 @@ void AudioDeviceMetricsHandler::MaybeRecordUserOverrideSystemDecision(
                                     time_delta_since_system_decision);
 
     // Record user override metrics separated by chrome restarts.
-
     RecordUserOverrideMetricsSeparatedByChromeRestarts(
         is_input, /*is_switched=*/false,
         /*is_chrome_restarts=*/is_system_decision_at_chrome_restarts,
         time_delta_since_system_decision);
+
+    // Record the before and after encoded device sets.
+    base::UmaHistogramSparse(
+        is_input
+            ? kUserOverrideSystemNotSwitchInputBeforeAndAfterAudioDeviceSet
+            : kUserOverrideSystemNotSwitchOutputBeforeAndAfterAudioDeviceSet,
+        is_input ? before_and_after_input_device_set_bits_
+                 : before_and_after_output_device_set_bits_);
 
     // Reset the system_not_switch timestamp since user has activated an audio
     // device now.

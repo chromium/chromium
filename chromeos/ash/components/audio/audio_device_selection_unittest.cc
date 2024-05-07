@@ -634,6 +634,15 @@ TEST_F(AudioDeviceSelectionTest, PlugUnplugHistogramMetrics) {
   // device.
   Select(input_internal);
 
+  histogram_tester().ExpectBucketCount(
+      AudioDeviceMetricsHandler::
+          kUserOverrideSystemSwitchInputBeforeAndAfterAudioDeviceSet,
+      EncodeBeforeAndAfterAudioDeviceSets(
+          /*device_set_before=*/{AudioDevice(input_internal)},
+          /*device_set_after=*/{AudioDevice(input_internal),
+                                AudioDevice(input_USB)}),
+      /*bucket_count=*/1);
+
   ExpectUserOverrideSystemDecisionHistogramCount(
       histogram_tester(), ++expected_user_override_system_switch_input_count,
       expected_user_override_system_not_switch_input_count,
@@ -657,6 +666,15 @@ TEST_F(AudioDeviceSelectionTest, PlugUnplugHistogramMetrics) {
   FastForwardBy(base::Minutes(kTimeDeltaInMinuteA));
   Select(output_internal);
 
+  histogram_tester().ExpectBucketCount(
+      AudioDeviceMetricsHandler::
+          kUserOverrideSystemSwitchOutputBeforeAndAfterAudioDeviceSet,
+      EncodeBeforeAndAfterAudioDeviceSets(
+          /*device_set_before=*/{AudioDevice(output_internal)},
+          /*device_set_after=*/{AudioDevice(output_internal),
+                                AudioDevice(output_USB)}),
+      /*bucket_count=*/1);
+
   ExpectUserOverrideSystemDecisionHistogramCount(
       histogram_tester(), expected_user_override_system_switch_input_count,
       expected_user_override_system_not_switch_input_count,
@@ -678,6 +696,15 @@ TEST_F(AudioDeviceSelectionTest, PlugUnplugHistogramMetrics) {
   // Do not record since user has just switched output device previously and
   // there is no system switch or not switch decision in between.
   Select(output_USB);
+
+  histogram_tester().ExpectBucketCount(
+      AudioDeviceMetricsHandler::
+          kUserOverrideSystemSwitchOutputBeforeAndAfterAudioDeviceSet,
+      EncodeBeforeAndAfterAudioDeviceSets(
+          /*device_set_before=*/{AudioDevice(output_internal)},
+          /*device_set_after=*/{AudioDevice(output_internal),
+                                AudioDevice(output_USB)}),
+      /*bucket_count=*/1);
 
   ExpectUserOverrideSystemDecisionHistogramCount(
       histogram_tester(), expected_user_override_system_switch_input_count,
@@ -760,6 +787,17 @@ TEST_F(AudioDeviceSelectionTest, PlugUnplugHistogramMetrics) {
   FastForwardBy(base::Minutes(kTimeDeltaInMinuteB));
   Select(input_USB);
 
+  histogram_tester().ExpectBucketCount(
+      AudioDeviceMetricsHandler::
+          kUserOverrideSystemNotSwitchInputBeforeAndAfterAudioDeviceSet,
+      EncodeBeforeAndAfterAudioDeviceSets(
+          /*device_set_before=*/{AudioDevice(input_internal),
+                                 AudioDevice(input_USB)},
+          /*device_set_after=*/{AudioDevice(input_internal),
+                                AudioDevice(input_USB),
+                                AudioDevice(input_bluetooth_nb)}),
+      /*bucket_count=*/1);
+
   ExpectUserOverrideSystemDecisionHistogramCount(
       histogram_tester(), expected_user_override_system_switch_input_count,
       ++expected_user_override_system_not_switch_input_count,
@@ -841,6 +879,17 @@ TEST_F(AudioDeviceSelectionTest, PlugUnplugHistogramMetrics) {
   // Expect to record user overrides system decision of switching input device.
   FastForwardBy(base::Minutes(kTimeDeltaInMinuteC));
   Select(input_bluetooth_nb);
+
+  histogram_tester().ExpectBucketCount(
+      AudioDeviceMetricsHandler::
+          kUserOverrideSystemSwitchInputBeforeAndAfterAudioDeviceSet,
+      EncodeBeforeAndAfterAudioDeviceSets(
+          /*device_set_before=*/{AudioDevice(input_internal),
+                                 AudioDevice(input_bluetooth_nb),
+                                 AudioDevice(input_USB)},
+          /*device_set_after=*/{AudioDevice(input_internal),
+                                AudioDevice(input_bluetooth_nb)}),
+      /*bucket_count=*/1);
 
   ExpectUserOverrideSystemDecisionHistogramCount(
       histogram_tester(), ++expected_user_override_system_switch_input_count,
@@ -989,6 +1038,15 @@ TEST_F(AudioDeviceSelectionTest, SystemBootsHistogramMetrics) {
 
   // Mock user switching to internal mic.
   Select(input_internal);
+
+  histogram_tester().ExpectBucketCount(
+      AudioDeviceMetricsHandler::
+          kUserOverrideSystemSwitchInputBeforeAndAfterAudioDeviceSet,
+      EncodeBeforeAndAfterAudioDeviceSets(
+          /*device_set_before=*/{},
+          /*device_set_after=*/{AudioDevice(input_internal),
+                                AudioDevice(input_USB)}),
+      /*bucket_count=*/1);
 
   ExpectUserOverrideSystemDecisionHistogramCount(
       histogram_tester(), ++expected_user_override_system_switch_input_count,
