@@ -222,7 +222,15 @@ _BROWSER_AND_PLATFORM_SPECIFIC_FILTER['chrome-headless-shell']['mac'] = [
     'ChromeDriverSecureContextTest.testGetVirtualSensorInformation',
     'ChromeDriverSecureContextTest.testUpdateVirtualSensor',
     # Flaky on Mac: https://crbug.com/1503101
-    'BidiTest.*'
+    'BidiTest.*',
+    # Failing on macOS 14 due to https://crbug.com/40233722
+    'ChromeDriverSecureContextTest.testAddVirtualAuthenticator',
+    'ChromeDriverSecureContextTest.testAddVirtualAuthenticatorDefaultBackupSettings',
+    'ChromeDriverSecureContextTest.testAddVirtualAuthenticatorDefaultParams',
+    'ChromeDriverSecureContextTest.testGetCredentials',
+    'ChromeDriverSecureContextTest.testRemoveAllCredentials',
+    'ChromeDriverSecureContextTest.testRemoveCredential',
+    'ChromeDriverSecureContextTest.testSetUserVerified'
 ]
 _BROWSER_AND_PLATFORM_SPECIFIC_FILTER['chrome-headless-shell']['win'] = [
     # https://bugs.chromium.org/p/chromium/issues/detail?id=1196363
