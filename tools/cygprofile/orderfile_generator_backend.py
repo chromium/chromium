@@ -372,25 +372,6 @@ class OrderfileUpdater:
     self._repository_root = repository_root
     self._step_recorder = step_recorder
 
-  def CommitStashedFileHashes(self, files):
-    """Commits unpatched and patched orderfiles hashes if changed.
-
-    The files are committed only if their associated sha1 hash files match, and
-    are modified in git. In normal operations the hash files are changed only
-    when a file is uploaded to cloud storage. If the hash file is not modified
-    in git, the file is skipped.
-
-    Args:
-      files: [str or None] specifies file paths. None items are ignored.
-
-    Raises:
-      Exception if the hash file does not match the file.
-      NotImplementedError when the commit logic hasn't been overridden.
-    """
-    files_to_commit = [_f for _f in files if _f]
-    if files_to_commit:
-      self._CommitStashedFiles(files_to_commit)
-
   def UploadToCloudStorage(self, filename, use_debug_location):
     """Uploads a file to cloud storage.
 
@@ -1193,6 +1174,8 @@ def CreateOrderfile(options, orderfile_updater_class=None):
       return generator.UploadReadyOrderfiles()
     else:
       return generator.Generate()
+  except Exception:
+    logging.exception('Generator failure')
   finally:
     json_output = json.dumps(generator.GetReportingData(),
                              indent=2) + '\n'
