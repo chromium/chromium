@@ -44,9 +44,18 @@ struct StructTraits<viz::mojom::TransferableResourceDataView,
     return resource.size;
   }
 
-  static const gpu::MailboxHolder& mailbox_holder(
+  static const gpu::Mailbox& mailbox(
       const viz::TransferableResource& resource) {
-    return resource.mailbox_holder;
+    return resource.mailbox();
+  }
+
+  static const gpu::SyncToken& sync_token(
+      const viz::TransferableResource& resource) {
+    return resource.sync_token();
+  }
+
+  static uint32_t texture_target(const viz::TransferableResource& resource) {
+    return resource.texture_target();
   }
 
   static viz::TransferableResource::SynchronizationType synchronization_type(

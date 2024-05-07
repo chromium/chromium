@@ -4,7 +4,8 @@
 
 module viz.mojom;
 
-import "gpu/ipc/common/mailbox_holder.mojom";
+import "gpu/ipc/common/mailbox.mojom";
+import "gpu/ipc/common/sync_token.mojom";
 import "gpu/ipc/common/vulkan_ycbcr_info.mojom";
 import "services/viz/public/mojom/compositing/shared_image_format.mojom";
 import "services/viz/public/mojom/compositing/resource_id.mojom";
@@ -20,12 +21,20 @@ enum SynchronizationType {
   kReleaseFence,
 };
 
-// See components/viz/common/resources/transferable_resource.h.
+
+// Represents a visual resource (e.g., image, video frame) that can be
+// transferred between processes for rendering and compositing within Chromium's
+// Viz display system. Encapsulates the resource's data, format, and metadata
+// necessary for efficient display and manipulation by the compositor.
+//
+// See components/viz/common/resources/transferable_resource.h for more details.
 struct TransferableResource {
   ResourceId id;
   SharedImageFormat format;
   gfx.mojom.Size size;
-  gpu.mojom.MailboxHolder mailbox_holder;
+  gpu.mojom.Mailbox mailbox;
+  gpu.mojom.SyncToken sync_token;
+  uint32 texture_target;
   SynchronizationType synchronization_type;
   bool is_software;
   bool is_overlay_candidate;

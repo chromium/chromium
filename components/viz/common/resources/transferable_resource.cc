@@ -17,8 +17,8 @@ TransferableResource TransferableResource::MakeSoftware(
     ResourceSource source) {
   TransferableResource r;
   r.is_software = true;
-  r.mailbox_holder.mailbox = id;
-  r.mailbox_holder.sync_token = sync_token;
+  r.mailbox_ = id;
+  r.sync_token_ = sync_token;
   r.size = size;
   r.format = format;
   r.resource_source = source;
@@ -57,9 +57,9 @@ TransferableResource TransferableResource::MakeGpu(
     ResourceSource source) {
   TransferableResource r;
   r.is_software = false;
-  r.mailbox_holder.mailbox = mailbox;
-  r.mailbox_holder.texture_target = texture_target;
-  r.mailbox_holder.sync_token = sync_token;
+  r.mailbox_ = mailbox;
+  r.texture_target_ = texture_target;
+  r.sync_token_ = sync_token;
   r.size = size;
   r.format = format;
   r.is_overlay_candidate = is_overlay_candidate;
@@ -91,7 +91,7 @@ TransferableResource& TransferableResource::operator=(
 ReturnedResource TransferableResource::ToReturnedResource() const {
   ReturnedResource returned;
   returned.id = id;
-  returned.sync_token = mailbox_holder.sync_token;
+  returned.sync_token = sync_token_;
   returned.count = 1;
   return returned;
 }
@@ -108,7 +108,7 @@ std::vector<ReturnedResource> TransferableResource::ReturnResources(
 
 bool TransferableResource::IsSoftwareSharedImage() const {
   CHECK(is_software);
-  return mailbox_holder.mailbox.IsSharedImage();
+  return mailbox_.IsSharedImage();
 }
 
 }  // namespace viz

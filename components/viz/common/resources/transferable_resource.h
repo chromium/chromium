@@ -110,7 +110,7 @@ struct VIZ_COMMON_EXPORT TransferableResource {
   ReturnedResource ToReturnedResource() const;
   static std::vector<ReturnedResource> ReturnResources(
       const std::vector<TransferableResource>& input);
-  bool is_null() const { return mailbox_holder.mailbox.IsZero(); }
+  bool is_null() const { return mailbox_.IsZero(); }
 
   // Returns true if this resource (which must be software) is holding a
   // SharedImage ID rather than a SharedBitmapId.
@@ -137,32 +137,23 @@ struct VIZ_COMMON_EXPORT TransferableResource {
   // and must be RGBA_8888 always for software resources.
   SharedImageFormat format = SinglePlaneFormat::kRGBA_8888;
 
-  // The |mailbox| inside here holds the gpu::Mailbox when this is a gpu
-  // resource, or the SharedBitmapId when it is a software resource.
-  // The |texture_target| inside here only apply for gpu resources.
-  // TODO(crbug.com/337538024): Remove this field in favor of
-  // TransferableResource directly storing the fields.
-  gpu::MailboxHolder mailbox_holder;
-
-  void set_mailbox(const gpu::Mailbox& mailbox) {
-    mailbox_holder.mailbox = mailbox;
-  }
+  void set_mailbox(const gpu::Mailbox& mailbox) { mailbox_ = mailbox; }
   void set_sync_token(const gpu::SyncToken& sync_token) {
-    mailbox_holder.sync_token = sync_token;
+    sync_token_ = sync_token;
   }
   void set_texture_target(const uint32_t texture_target) {
-    mailbox_holder.texture_target = texture_target;
+    texture_target_ = texture_target;
   }
 
-  const gpu::Mailbox& mailbox() const { return mailbox_holder.mailbox; }
-  const gpu::SyncToken& sync_token() const { return mailbox_holder.sync_token; }
-  gpu::SyncToken& mutable_sync_token() { return mailbox_holder.sync_token; }
-  uint32_t texture_target() const { return mailbox_holder.texture_target; }
+  const gpu::Mailbox& mailbox() const { return mailbox_; }
+  const gpu::SyncToken& sync_token() const { return sync_token_; }
+  gpu::SyncToken& mutable_sync_token() { return sync_token_; }
+  uint32_t texture_target() const { return texture_target_; }
 
   // NOTE: This explicitly accesses the mailbox field directly so that we will
   // be forced to update it when we change the Mailbox and the SharedBitmapId to
   // be held in an std::variant.
-  bool is_empty() const { return mailbox_holder.mailbox.IsZero(); }
+  bool is_empty() const { return mailbox_.IsZero(); }
 
   // The color space that is used for pixel path operations (e.g, TexImage,
   // CopyTexImage, DrawPixels) and when displaying as an overlay.
@@ -219,10 +210,9 @@ struct VIZ_COMMON_EXPORT TransferableResource {
 
   bool operator==(const TransferableResource& o) const {
     return id == o.id && is_software == o.is_software && size == o.size &&
-           format == o.format &&
-           mailbox_holder.mailbox == o.mailbox_holder.mailbox &&
-           mailbox_holder.sync_token == o.mailbox_holder.sync_token &&
-           mailbox_holder.texture_target == o.mailbox_holder.texture_target &&
+           format == o.format && mailbox_ == o.mailbox_ &&
+           sync_token_ == o.sync_token_ &&
+           texture_target_ == o.texture_target_ &&
            color_space == o.color_space && hdr_metadata == o.hdr_metadata &&
            is_overlay_candidate == o.is_overlay_candidate &&
 #if BUILDFLAG(IS_ANDROID)
@@ -246,6 +236,22 @@ struct VIZ_COMMON_EXPORT TransferableResource {
       const gfx::Size& size,
       SharedImageFormat format,
       ResourceSource source = ResourceSource::kUnknown);
+
+  // The ID of the SharedImage or SharedBitmap that holds the actual memory
+  // buffer of this resource (which may either be backed by a GPU texture or be
+  // shared memory).
+  gpu::Mailbox mailbox_;
+
+  // The SyncToken associated with the above buffer. Allows the receiver to wait
+  // until the producer has finished using the texture before it begins using
+  // the texture.
+  gpu::SyncToken sync_token_;
+
+  // When the shared memory buffer is backed by a GPU texture, the
+  // `texture_target` is that texture's type.
+  // See here for OpenGL texture types:
+  // https://www.opengl.org/wiki/Texture#Texture_Objects
+  uint32_t texture_target_;
 };
 
 }  // namespace viz
