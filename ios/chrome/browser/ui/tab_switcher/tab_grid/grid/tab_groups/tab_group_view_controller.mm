@@ -161,6 +161,7 @@ constexpr CGFloat kSpace = 8;
 - (void)viewDidLoad {
   [super viewDidLoad];
   self.view.accessibilityIdentifier = kTabGroupViewIdentifier;
+  self.view.accessibilityViewIsModal = YES;
   self.view.backgroundColor = UIColor.clearColor;
   if (!UIAccessibilityIsReduceTransparencyEnabled()) {
     _blurView = [[UIVisualEffectView alloc] initWithEffect:nil];

@@ -165,6 +165,9 @@ constexpr CGFloat kTabGroupBackgroundElementDurationFactor = 0.75;
                      [viewController animateGridPresentation];
                    }
                    completion:nil];
+
+  UIAccessibilityPostNotification(UIAccessibilityScreenChangedNotification,
+                                  nil);
 }
 
 - (void)hideViewControllerAnimated:(BOOL)animated {
@@ -174,6 +177,8 @@ constexpr CGFloat kTabGroupBackgroundElementDurationFactor = 0.75;
     [viewController willMoveToParentViewController:nil];
     [viewController.view removeFromSuperview];
     [viewController removeFromParentViewController];
+    UIAccessibilityPostNotification(UIAccessibilityScreenChangedNotification,
+                                    nil);
   };
 
   if (!animated) {
