@@ -30,6 +30,9 @@ void RegisterLocalStatePrefs(PrefRegistrySimple* registry) {
   registry->RegisterIntegerPref(
       kMemorySaverModeState, static_cast<int>(MemorySaverModeState::kDisabled));
   registry->RegisterIntegerPref(
+      kMemorySaverModeAggressiveness,
+      static_cast<int>(MemorySaverModeAggressiveness::kMedium));
+  registry->RegisterIntegerPref(
       kBatterySaverModeState,
       static_cast<int>(BatterySaverModeState::kEnabledBelowThreshold));
   registry->RegisterTimePref(kLastBatteryUseTimestamp, base::Time());

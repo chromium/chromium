@@ -40,6 +40,15 @@ inline constexpr char kMemorySaverModeTimeBeforeDiscardInMinutes[] =
 
 constexpr int kDefaultMemorySaverModeTimeBeforeDiscardInMinutes = 120;
 
+enum class MemorySaverModeAggressiveness {
+  kConservative = 0,
+  kMedium = 1,
+  kAggressive = 2,
+};
+
+inline constexpr char kMemorySaverModeAggressiveness[] =
+    "performance_tuning.high_efficiency_mode.aggressiveness";
+
 enum class BatterySaverModeState {
   kDisabled = 0,
   kEnabledBelowThreshold = 1,

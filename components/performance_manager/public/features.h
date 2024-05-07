@@ -78,6 +78,9 @@ extern const base::FeatureParam<bool> kMemorySaverShowRecommendedBadge;
 
 // Round 2.5 Performance Controls features
 
+// This enables the UI for adjusting the aggresiveness of memory saver mode.
+BASE_DECLARE_FEATURE(kMemorySaverModeAggressiveness);
+
 // Whether to enable showing improvements to the discarded tab indicator, namely
 // increasing the size of the favicon, as well as removing the transparency and
 // updating the color of the discard ring.
