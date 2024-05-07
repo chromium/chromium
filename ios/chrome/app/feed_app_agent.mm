@@ -8,17 +8,26 @@
 #import <UserNotifications/UserNotifications.h>
 
 #import "components/metrics/metrics_service.h"
+#import "components/search_engines/prepopulated_engines.h"
+#import "components/search_engines/template_url.h"
+#import "components/search_engines/template_url_prepopulate_data.h"
+#import "components/search_engines/template_url_service.h"
+#import "components/signin/public/identity_manager/identity_manager.h"
 #import "ios/chrome/app/application_delegate/app_state.h"
+#import "ios/chrome/browser/content_notification/model/content_notification_util.h"
 #import "ios/chrome/browser/discover_feed/model/discover_feed_service.h"
 #import "ios/chrome/browser/discover_feed/model/discover_feed_service_factory.h"
 #import "ios/chrome/browser/discover_feed/model/feed_constants.h"
 #import "ios/chrome/browser/push_notification/model/provisional_push_notification_util.h"
 #import "ios/chrome/browser/push_notification/model/push_notification_client_id.h"
+#import "ios/chrome/browser/search_engines/model/template_url_service_factory.h"
 #import "ios/chrome/browser/shared/model/application_context/application_context.h"
+#import "ios/chrome/browser/shared/model/browser_state/chrome_browser_state.h"
 #import "ios/chrome/browser/shared/model/utils/first_run_util.h"
 #import "ios/chrome/browser/shared/public/features/features.h"
 #import "ios/chrome/browser/signin/model/authentication_service.h"
 #import "ios/chrome/browser/signin/model/authentication_service_factory.h"
+#import "ios/chrome/browser/signin/model/identity_manager_factory.h"
 #import "ios/chrome/browser/ui/ntp/metrics/feed_metrics_constants.h"
 #import "ios/chrome/browser/ui/ntp/metrics/feed_metrics_recorder.h"
 
@@ -72,8 +81,25 @@ NSString* const kFeedLastBackgroundRefreshTimestamp =
             self.appState.mainBrowserState);
       }
     }
+
+    bool isUserSignedIn =
+        IdentityManagerFactory::GetForBrowserState(
+            self.appState.mainBrowserState)
+            ->HasPrimaryAccount(signin::ConsentLevel::kSignin);
+
+    const TemplateURL* defaultSearchURLTemplate =
+        ios::TemplateURLServiceFactory::GetForBrowserState(
+            self.appState.mainBrowserState)
+            ->GetDefaultSearchProvider();
+
+    bool isDefaultSearchEngine = defaultSearchURLTemplate &&
+                                 defaultSearchURLTemplate->prepopulate_id() ==
+                                     TemplateURLPrepopulateData::google.id;
+
+    PrefService* pref_service = self.appState.mainBrowserState->GetPrefs();
     if ((!IsFirstRunRecent(base::Days(30)) &&
-         IsContentPushNotificationsProvisionalEnabled()) ||
+         IsContentNotificationProvisionalEnabled(
+             isUserSignedIn, isDefaultSearchEngine, pref_service)) ||
         IsContentPushNotificationsProvisionalBypass()) {
       // This method does not show a UI prompt to the user. Provisional
       // notifications are authorized without any user input if the user hasn't

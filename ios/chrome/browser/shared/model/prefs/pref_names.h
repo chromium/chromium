@@ -67,6 +67,11 @@ inline constexpr char kBrowsingDataMigrationHasBeenPossible[] =
 inline constexpr char kClearBrowsingDataHistoryNoticeShownTimes[] =
     "browser.clear_data.history_notice_shown_times";
 
+// A dictionary mapping content notification enrollment eligibilities. This is
+// stored in BrowserState prefs.
+inline constexpr char kContentNotificationsEnrollmentEligibility[] =
+    "ios.content_notification.enrollment_eligibility";
+
 // String indicating the Contextual Search enabled state.
 // "false" - opt-out (disabled)
 // "" (empty string) - undecided

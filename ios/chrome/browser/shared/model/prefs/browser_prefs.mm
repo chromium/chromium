@@ -793,6 +793,9 @@ void RegisterBrowserStatePrefs(user_prefs::PrefRegistrySyncable* registry) {
   registry->RegisterIntegerPref(spotlight::kSpotlightLastIndexingVersionKey, 0);
   registry->RegisterTimePref(spotlight::kSpotlightLastIndexingDateKey,
                              base::Time());
+
+  registry->RegisterDictionaryPref(
+      prefs::kContentNotificationsEnrollmentEligibility);
 }
 
 // This method should be periodically pruned of year+ old migrations.
