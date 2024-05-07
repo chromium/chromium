@@ -43,17 +43,24 @@ export function openMenu(
   });
   target.classList.add(ACTIVE_CSS_CLASS);
 
+  // TODO(b/337058857): We shouldn't need to wrap this twice in
+  // requestAnimationFrame in order to get an accessible label to be read by
+  // ChromeVox. We should investigate more in what's going on with
+  // cr-action-menu to find a better long-term solution. This is sufficient
+  // for now.
   requestAnimationFrame(() => {
-    const minY = target.getBoundingClientRect().bottom;
-    menuToOpen.showAt(
-        target,
-        Object.assign(
-            {
-              minY: minY,
-              anchorAlignmentX: AnchorAlignment.AFTER_START,
-              anchorAlignmentY: AnchorAlignment.AFTER_END,
-              noOffset: true,
-            },
-            showAtConfig));
+    requestAnimationFrame(() => {
+      const minY = target.getBoundingClientRect().bottom;
+      menuToOpen.showAt(
+          target,
+          Object.assign(
+              {
+                minY: minY,
+                anchorAlignmentX: AnchorAlignment.AFTER_START,
+                anchorAlignmentY: AnchorAlignment.AFTER_END,
+                noOffset: true,
+              },
+              showAtConfig));
+    });
   });
 }
