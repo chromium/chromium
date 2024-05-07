@@ -21,7 +21,7 @@ HelpBubble::~HelpBubble() {
   CHECK(is_closed());
 }
 
-bool HelpBubble::Close() {
+bool HelpBubble::Close(CloseReason close_reason) {
   // This prevents us from re-entrancy during CloseBubbleImpl() or after the
   // bubble is closed.
   if (is_closed()) {
@@ -42,7 +42,7 @@ bool HelpBubble::Close() {
 
   // Call any on-close callbacks.
   if (callbacks) {
-    callbacks->Notify(this);
+    callbacks->Notify(this, close_reason);
   }
 
   return true;

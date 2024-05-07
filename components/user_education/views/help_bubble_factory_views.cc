@@ -52,7 +52,7 @@ HelpBubbleViews::HelpBubbleViews(HelpBubbleView* help_bubble_view,
 HelpBubbleViews::~HelpBubbleViews() {
   // Needs to be called here while we still have access to HelpBubbleViews-
   // specific logic.
-  Close();
+  Close(CloseReason::kBubbleDestroyed);
 }
 
 bool HelpBubbleViews::ToggleFocusForAccessibility() {
@@ -165,7 +165,7 @@ void HelpBubbleViews::CloseBubbleImpl() {
 }
 
 void HelpBubbleViews::OnWidgetDestroying(views::Widget* widget) {
-  Close();
+  Close(CloseReason::kBubbleElementDestroyed);
 }
 
 void HelpBubbleViews::OnElementHidden(ui::TrackedElement* element) {
@@ -177,7 +177,7 @@ void HelpBubbleViews::OnElementHidden(ui::TrackedElement* element) {
   anchor_hidden_subscription_ = base::CallbackListSubscription();
   anchor_bounds_changed_subscription_ = base::CallbackListSubscription();
   anchor_element_ = nullptr;
-  Close();
+  Close(CloseReason::kAnchorHidden);
 }
 
 void HelpBubbleViews::OnElementBoundsChanged(ui::TrackedElement* element) {

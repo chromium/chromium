@@ -37,7 +37,7 @@ TestHelpBubble::TestHelpBubble(ui::TrackedElement* element,
 TestHelpBubble::~TestHelpBubble() {
   // Needs to be called here while we still have access to derived class
   // methods.
-  Close();
+  Close(CloseReason::kBubbleDestroyed);
 }
 
 bool TestHelpBubble::ToggleFocusForAccessibility() {
@@ -49,16 +49,18 @@ bool TestHelpBubble::ToggleFocusForAccessibility() {
 void TestHelpBubble::SimulateDismiss() {
   auto weak_ptr = weak_ptr_factory_.GetWeakPtr();
   std::move(params_.dismiss_callback).Run();
-  if (weak_ptr)
-    weak_ptr->Close();
+  if (weak_ptr) {
+    weak_ptr->Close(CloseReason::kProgrammaticallyClosed);
+  }
 }
 
 // Simulates the bubble timing out.
 void TestHelpBubble::SimulateTimeout() {
   auto weak_ptr = weak_ptr_factory_.GetWeakPtr();
   std::move(params_.timeout_callback).Run();
-  if (weak_ptr)
-    weak_ptr->Close();
+  if (weak_ptr) {
+    weak_ptr->Close(CloseReason::kProgrammaticallyClosed);
+  }
 }
 
 // Simulates the user pressing one of the bubble buttons.
@@ -66,8 +68,9 @@ void TestHelpBubble::SimulateButtonPress(int button_index) {
   CHECK_LT(button_index, static_cast<int>(params_.buttons.size()));
   auto weak_ptr = weak_ptr_factory_.GetWeakPtr();
   std::move(params_.buttons[button_index].callback).Run();
-  if (weak_ptr)
-    weak_ptr->Close();
+  if (weak_ptr) {
+    weak_ptr->Close(CloseReason::kProgrammaticallyClosed);
+  }
 }
 
 // Provides the index of a button with a given string value as its text
@@ -94,7 +97,7 @@ ui::ElementContext TestHelpBubble::GetContext() const {
 void TestHelpBubble::OnElementHidden(ui::TrackedElement* element) {
   if (element == anchor_element_) {
     if (is_open()) {
-      Close();
+      Close(CloseReason::kAnchorHidden);
     } else {
       anchor_element_ = nullptr;
       element_hidden_subscription_ = base::CallbackListSubscription();

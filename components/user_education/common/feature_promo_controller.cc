@@ -199,7 +199,7 @@ FeaturePromoResult FeaturePromoControllerCommon::MaybeShowPromoCommon(
   // If the session policy allows overriding other help bubbles, close them.
   if (auto* const help_bubble =
           bubble_factory_registry_->GetHelpBubble(anchor_element->context())) {
-    help_bubble->Close();
+    help_bubble->Close(HelpBubble::CloseReason::kProgrammaticallyClosed);
   }
 
   // TODO(crbug.com/40200981): Currently this must be called before
@@ -360,7 +360,7 @@ bool FeaturePromoControllerCommon::EndPromo(
   auto close_reason_internal =
       end_promo_reason == EndFeaturePromoReason::kFeatureEngaged
           ? FeaturePromoClosedReason::kFeatureEngaged
-          : FeaturePromoClosedReason::kAbortPromo;
+          : FeaturePromoClosedReason::kAbortedByFeature;
   return EndPromo(iph_feature, close_reason_internal);
 }
 
@@ -909,7 +909,9 @@ void FeaturePromoControllerCommon::FinishContinuedPromo(
   }
 }
 
-void FeaturePromoControllerCommon::OnHelpBubbleClosed(HelpBubble* bubble) {
+void FeaturePromoControllerCommon::OnHelpBubbleClosed(
+    HelpBubble* bubble,
+    HelpBubble::CloseReason reason) {
   // Since we're in the middle of processing callbacks we can't reset our
   // subscription but since it's a weak pointer (internally) and since we should
   // should only get called here once, it's not a big deal if we don't reset
@@ -917,7 +919,7 @@ void FeaturePromoControllerCommon::OnHelpBubbleClosed(HelpBubble* bubble) {
   if (bubble == critical_promo_bubble_) {
     critical_promo_bubble_ = nullptr;
   } else if (bubble == promo_bubble()) {
-    if (current_promo_->OnPromoBubbleClosed()) {
+    if (current_promo_->OnPromoBubbleClosed(reason)) {
       current_promo_.reset();
     }
   }

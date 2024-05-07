@@ -40883,12 +40883,41 @@ should be able to be added at any place in this file.
 </action>
 
 <action name="UserEducation.MessageAction.Abort.IPH">
-  <owner>mickeyburks@chromium.org</owner>
+  <owner>dfried@chromium.org</owner>
   <owner>frizzle-team@google.com</owner>
   <description>
     The In-Product Help Bubble was aborted due to leaving the flow of the
-    feature promotion. This is specific to the IPH implementation and could mean
-    navigation or hiding a surface.
+    feature promotion. This is a catch-all for cases not handled by the other
+    Abort* actions below.
+  </description>
+</action>
+
+<action name="UserEducation.MessageAction.AbortedByAnchorHidden.IPH"
+    not_user_triggered="true">
+  <owner>dfried@chromium.org</owner>
+  <owner>frizzle-team@google.com</owner>
+  <description>
+    The In-Product Help Bubble was closed because the UI element it was attached
+    to disappeared.
+  </description>
+</action>
+
+<action name="UserEducation.MessageAction.AbortedByBubbleDestroyed.IPH"
+    not_user_triggered="true">
+  <owner>dfried@chromium.org</owner>
+  <owner>frizzle-team@google.com</owner>
+  <description>
+    The In-Product Help Bubble itself was closed or destroyed.
+  </description>
+</action>
+
+<action name="UserEducation.MessageAction.AbortedByFeature.IPH"
+    not_user_triggered="true">
+  <owner>dfried@chromium.org</owner>
+  <owner>frizzle-team@google.com</owner>
+  <description>
+    The In-Product Help Bubble was closed by feature code because it was no
+    longer relevant.
   </description>
 </action>
 

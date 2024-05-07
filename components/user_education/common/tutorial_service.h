@@ -14,6 +14,7 @@
 #include "base/functional/callback_helpers.h"
 #include "base/memory/raw_ptr.h"
 #include "base/timer/timer.h"
+#include "components/user_education/common/help_bubble.h"
 #include "components/user_education/common/tutorial.h"
 #include "components/user_education/common/tutorial_identifier.h"
 #include "ui/base/interaction/element_tracker.h"
@@ -23,7 +24,6 @@ class TutorialInteractiveUitest;
 
 namespace user_education {
 
-class HelpBubble;
 class HelpBubbleFactoryRegistry;
 class TutorialRegistry;
 
@@ -113,7 +113,8 @@ class TutorialService {
 
   // Called when a non-final bubble is closed. Used to trigger the broken
   // tutorial timeout.
-  void OnNonFinalBubbleClosed(HelpBubble* bubble);
+  void OnNonFinalBubbleClosed(HelpBubble* bubble,
+                              HelpBubble::CloseReason reason);
 
   // Calls the completion code for the running tutorial.
   // TODO (dpenning): allow for registering a callback that performs any

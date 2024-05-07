@@ -75,7 +75,8 @@ HelpBubble* HelpBubbleFactoryRegistry::GetHelpBubble(
   return nullptr;
 }
 
-void HelpBubbleFactoryRegistry::OnHelpBubbleClosed(HelpBubble* bubble) {
+void HelpBubbleFactoryRegistry::OnHelpBubbleClosed(HelpBubble* bubble,
+                                                   HelpBubble::CloseReason) {
   const auto result = help_bubbles_.erase(bubble);
   DCHECK(result);
 }

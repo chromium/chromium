@@ -456,7 +456,7 @@ class FeaturePromoControllerCommon : public FeaturePromoController {
       ShowPromoBubbleParams show_params);
 
   // Callback that cleans up a help bubble when it is closed.
-  void OnHelpBubbleClosed(HelpBubble* bubble);
+  void OnHelpBubbleClosed(HelpBubble* bubble, HelpBubble::CloseReason reason);
 
   // Callback when the help bubble times out.
   void OnHelpBubbleTimedOut(const base::Feature* feature);

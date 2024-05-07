@@ -500,7 +500,8 @@ void HelpBubbleHandlerBase::OnFloatingHelpBubbleCreated(
 
 void HelpBubbleHandlerBase::OnFloatingHelpBubbleClosed(
     ui::ElementIdentifier anchor_id,
-    HelpBubble* help_bubble) {
+    HelpBubble* help_bubble,
+    HelpBubble::CloseReason) {
   const auto it = element_data_.find(anchor_id);
   if (it == element_data_.end()) {
     return;

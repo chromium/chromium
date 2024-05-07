@@ -200,7 +200,8 @@ void TutorialService::AbortTutorial(std::optional<int> abort_step) {
   }
 }
 
-void TutorialService::OnNonFinalBubbleClosed(HelpBubble* bubble) {
+void TutorialService::OnNonFinalBubbleClosed(HelpBubble* bubble,
+                                             HelpBubble::CloseReason) {
   if (bubble != currently_displayed_bubble_.get()) {
     return;
   }
@@ -237,7 +238,7 @@ void TutorialService::SetCurrentBubble(std::unique_ptr<HelpBubble> bubble,
     is_final_bubble_ = true;
     bubble_closed_subscription_ =
         currently_displayed_bubble_->AddOnCloseCallback(base::BindOnce(
-            [](TutorialService* service, user_education::HelpBubble*) {
+            [](TutorialService* service, HelpBubble*, HelpBubble::CloseReason) {
               service->CompleteTutorial();
             },
             base::Unretained(this)));

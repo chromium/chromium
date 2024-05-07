@@ -27392,6 +27392,9 @@ Called by update_use_counter_css.py.-->
   <int value="6" label="Feature engaged"/>
   <int value="7" label="Override for UI region conflict"/>
   <int value="10" label="Override for precedence"/>
+  <int value="11" label="Aborted by feature"/>
+  <int value="12" label="Aborted by anchor hidden"/>
+  <int value="13" label="Aborted by bubble destroyed"/>
 </enum>
 
 <enum name="MessageDismissReason">

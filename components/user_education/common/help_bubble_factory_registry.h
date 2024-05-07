@@ -11,6 +11,7 @@
 
 #include "base/callback_list.h"
 #include "base/functional/callback_forward.h"
+#include "components/user_education/common/help_bubble.h"
 #include "components/user_education/common/help_bubble_factory.h"
 #include "components/user_education/common/help_bubble_params.h"
 #include "ui/base/interaction/element_identifier.h"
@@ -60,7 +61,7 @@ class HelpBubbleFactoryRegistry {
   }
 
  private:
-  void OnHelpBubbleClosed(HelpBubble* help_bubble);
+  void OnHelpBubbleClosed(HelpBubble* help_bubble, HelpBubble::CloseReason);
 
   // The list of known factories.
   ui::FrameworkSpecificRegistrationList<HelpBubbleFactory> factories_;

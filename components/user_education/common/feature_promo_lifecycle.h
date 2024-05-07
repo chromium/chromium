@@ -14,14 +14,13 @@
 #include "components/user_education/common/feature_promo_result.h"
 #include "components/user_education/common/feature_promo_specification.h"
 #include "components/user_education/common/feature_promo_storage_service.h"
+#include "components/user_education/common/help_bubble.h"
 
 namespace base {
 struct Feature;
 }
 
 namespace user_education {
-
-class HelpBubble;
 
 // Implements business logic around the lifecycle of an IPH feature promo,
 // depending on promo type and subtype. Tracks information about the IPH in
@@ -81,7 +80,7 @@ class FeaturePromoLifecycle {
   // bubble was closed programmatically without user input.
   //
   // Returns whether the promo was aborted as a result.
-  bool OnPromoBubbleClosed();
+  bool OnPromoBubbleClosed(HelpBubble::CloseReason close_reason);
 
   // Notifies that the promo was ended for the specified `close_reason`.
   // May result in pref data and/or histogram logging. If `continue_promo` is

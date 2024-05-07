@@ -137,7 +137,10 @@ class ShowPromoInPageImpl : public ShowPromoInPage {
     std::move(callback_).Run(this, true);
   }
 
-  void OnBubbleClosed(user_education::HelpBubble* help_bubble) { delete this; }
+  void OnBubbleClosed(user_education::HelpBubble*,
+                      user_education::HelpBubble::CloseReason) {
+    delete this;
+  }
 
   void OnTimeout() {
     DCHECK_CALLED_ON_VALID_THREAD(thread_checker_);

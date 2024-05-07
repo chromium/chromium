@@ -35,7 +35,12 @@ enum class FeaturePromoClosedReason {
   kOverrideForTesting = 9,           // Promo aborted for tests.
   kOverrideForPrecedence = 10,       // Promo aborted for higher priority Promo.
 
-  kMaxValue = kOverrideForPrecedence,
+  // Additional ways a promo can be aborted.
+  kAbortedByFeature = 11,          // EndPromo() explicitly called.
+  kAbortedByAnchorHidden = 12,     // Anchor element disappeared.
+  kAbortedByBubbleDestroyed = 13,  // HelpBubble object destroyed.
+
+  kMaxValue = kAbortedByBubbleDestroyed,
 };
 
 std::ostream& operator<<(std::ostream& oss,

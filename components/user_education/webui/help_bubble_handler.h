@@ -13,6 +13,7 @@
 #include "base/gtest_prod_util.h"
 #include "base/memory/raw_ptr.h"
 #include "base/memory/weak_ptr.h"
+#include "components/user_education/common/help_bubble.h"
 #include "components/user_education/common/help_bubble_params.h"
 #include "components/user_education/webui/tracked_element_webui.h"
 #include "content/public/browser/web_ui_controller.h"
@@ -28,7 +29,6 @@ class WebContents;
 
 namespace user_education {
 
-class HelpBubble;
 class HelpBubbleWebUI;
 
 // Base class abstracting away IPC so that handler functionality can be tested
@@ -137,7 +137,8 @@ class HelpBubbleHandlerBase : public help_bubble::mojom::HelpBubbleHandler {
   void OnFloatingHelpBubbleCreated(ui::ElementIdentifier anchor_id,
                                    HelpBubble* help_bubble);
   void OnFloatingHelpBubbleClosed(ui::ElementIdentifier anchor_id,
-                                  HelpBubble* help_bubble);
+                                  HelpBubble* help_bubble,
+                                  HelpBubble::CloseReason);
   void OnWebContentsVisibilityChanged(std::optional<bool> visibility);
 
   // mojom::HelpBubbleHandler:

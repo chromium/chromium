@@ -39,6 +39,8 @@
 #include "content/public/test/browser_test.h"
 #include "testing/gmock/include/gmock/gmock.h"
 #include "testing/gtest/include/gtest/gtest.h"
+#include "ui/events/event_modifiers.h"
+#include "ui/events/keycodes/keyboard_codes.h"
 #include "ui/views/view.h"
 #include "ui/views/widget/widget.h"
 
@@ -356,8 +358,23 @@ IN_PROC_BROWSER_TEST_F(FeaturePromoLifecycleUiTest, WidgetCloseSetsPrefs) {
       WithView(user_education::HelpBubbleView::kHelpBubbleElementIdForTesting,
                base::BindOnce([](user_education::HelpBubbleView* bubble) {
                  bubble->GetWidget()->CloseWithReason(
-                     views::Widget::ClosedReason::kEscKeyPressed);
+                     views::Widget::ClosedReason::kUnspecified);
                })),
+      WaitForHide(
+          user_education::HelpBubbleView::kHelpBubbleElementIdForTesting),
+      CheckSnoozePrefs(/* is_dismiss */ false,
+                       /* show_count */ 1,
+                       /* snooze_count */ 0));
+}
+
+IN_PROC_BROWSER_TEST_F(FeaturePromoLifecycleUiTest, AnchorViewHiddenSetsPrefs) {
+  RunTestSequence(
+      ShowPromoRecordingTime(kFeaturePromoLifecycleTestPromo),
+      WithView(user_education::HelpBubbleView::kHelpBubbleElementIdForTesting,
+               [](user_education::HelpBubbleView* bubble) {
+                 // This should yank the bubble out from under us.
+                 bubble->GetAnchorView()->SetVisible(false);
+               }),
       WaitForHide(
           user_education::HelpBubbleView::kHelpBubbleElementIdForTesting),
       CheckSnoozePrefs(/* is_dismiss */ false,
@@ -399,7 +416,7 @@ IN_PROC_BROWSER_TEST_F(FeaturePromoLifecycleUiTest,
       ShowPromoRecordingTime(kFeaturePromoLifecycleTestPromo),
       AbortPromo(kFeaturePromoLifecycleTestPromo),
       CheckMessageActionHistogram(kFeaturePromoLifecycleTestPromo,
-                                  FeaturePromoClosedReason::kAbortPromo));
+                                  FeaturePromoClosedReason::kAbortedByFeature));
 }
 
 IN_PROC_BROWSER_TEST_F(FeaturePromoLifecycleUiTest,
@@ -414,6 +431,19 @@ IN_PROC_BROWSER_TEST_F(FeaturePromoLifecycleUiTest,
                        CancelPromoRecordsHistogram) {
   RunTestSequence(
       ShowPromoRecordingTime(kFeaturePromoLifecycleTestPromo), DismissIPH(),
+      CheckMessageActionHistogram(kFeaturePromoLifecycleTestPromo,
+                                  FeaturePromoClosedReason::kCancel));
+}
+
+IN_PROC_BROWSER_TEST_F(FeaturePromoLifecycleUiTest,
+                       PressingEscRecordsHistogram) {
+  const ui::Accelerator kEsc(ui::VKEY_ESCAPE, ui::MODIFIER_NONE);
+  RunTestSequence(
+      ShowPromoRecordingTime(kFeaturePromoLifecycleTestPromo),
+      SendAccelerator(
+          user_education::HelpBubbleView::kHelpBubbleElementIdForTesting, kEsc),
+      WaitForHide(
+          user_education::HelpBubbleView::kHelpBubbleElementIdForTesting),
       CheckMessageActionHistogram(kFeaturePromoLifecycleTestPromo,
                                   FeaturePromoClosedReason::kCancel));
 }
@@ -448,13 +478,14 @@ IN_PROC_BROWSER_TEST_F(FeaturePromoLifecycleUiTest,
       WithView(user_education::HelpBubbleView::kHelpBubbleElementIdForTesting,
                [](user_education::HelpBubbleView* bubble) {
                  bubble->GetWidget()->CloseWithReason(
-                     views::Widget::ClosedReason::kEscKeyPressed);
+                     views::Widget::ClosedReason::kUnspecified);
                }),
       WaitForHide(
           user_education::HelpBubbleView::kHelpBubbleElementIdForTesting),
       FlushEvents(),
-      CheckMessageActionHistogram(kFeaturePromoLifecycleTestPromo,
-                                  FeaturePromoClosedReason::kAbortPromo));
+      CheckMessageActionHistogram(
+          kFeaturePromoLifecycleTestPromo,
+          FeaturePromoClosedReason::kAbortedByBubbleDestroyed));
 }
 
 IN_PROC_BROWSER_TEST_F(FeaturePromoLifecycleUiTest,
@@ -468,8 +499,9 @@ IN_PROC_BROWSER_TEST_F(FeaturePromoLifecycleUiTest,
                }),
       WaitForHide(
           user_education::HelpBubbleView::kHelpBubbleElementIdForTesting),
-      CheckMessageActionHistogram(kFeaturePromoLifecycleTestPromo,
-                                  FeaturePromoClosedReason::kAbortPromo));
+      CheckMessageActionHistogram(
+          kFeaturePromoLifecycleTestPromo,
+          FeaturePromoClosedReason::kAbortedByAnchorHidden));
 }
 
 IN_PROC_BROWSER_TEST_F(FeaturePromoLifecycleUiTest,

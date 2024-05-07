@@ -184,10 +184,25 @@ void FeaturePromoLifecycle::OnPromoShownForDemo(
   OnPromoShown(std::move(help_bubble), nullptr);
 }
 
-bool FeaturePromoLifecycle::OnPromoBubbleClosed() {
+bool FeaturePromoLifecycle::OnPromoBubbleClosed(
+    HelpBubble::CloseReason reason) {
   help_bubble_.reset();
   if (state_ == State::kRunning) {
-    MaybeRecordClosedReason(FeaturePromoClosedReason::kAbortPromo);
+    FeaturePromoClosedReason closed_reason;
+    switch (reason) {
+      case HelpBubble::CloseReason::kProgrammaticallyClosed:
+        // A different close reason should have already been recorded elsewhere.
+        closed_reason = FeaturePromoClosedReason::kAbortPromo;
+        break;
+      case HelpBubble::CloseReason::kAnchorHidden:
+        closed_reason = FeaturePromoClosedReason::kAbortedByAnchorHidden;
+        break;
+      case HelpBubble::CloseReason::kBubbleElementDestroyed:
+      case HelpBubble::CloseReason::kBubbleDestroyed:
+        closed_reason = FeaturePromoClosedReason::kAbortedByBubbleDestroyed;
+        break;
+    }
+    MaybeRecordClosedReason(closed_reason);
     CHECK(MaybeEndPromo());
     return true;
   }
@@ -207,7 +222,7 @@ void FeaturePromoLifecycle::OnPromoEnded(FeaturePromoClosedReason close_reason,
         close_reason != FeaturePromoClosedReason::kAction) {
       MaybeWriteClosedPromoData(close_reason);
     }
-    help_bubble_->Close();
+    help_bubble_->Close(HelpBubble::CloseReason::kProgrammaticallyClosed);
   } else {
     CHECK(MaybeEndPromo());
     MaybeWriteClosedPromoData(close_reason);
@@ -357,6 +372,9 @@ void FeaturePromoLifecycle::MaybeWriteClosedPromoData(
     case FeaturePromoClosedReason::kOverrideForPrecedence:
     case FeaturePromoClosedReason::kOverrideForTesting:
     case FeaturePromoClosedReason::kOverrideForUIRegionConflict:
+    case FeaturePromoClosedReason::kAbortedByFeature:
+    case FeaturePromoClosedReason::kAbortedByAnchorHidden:
+    case FeaturePromoClosedReason::kAbortedByBubbleDestroyed:
       // No additional action required.
       break;
   }
@@ -464,6 +482,15 @@ void FeaturePromoLifecycle::MaybeRecordClosedReason(
       break;
     case FeaturePromoClosedReason::kOverrideForPrecedence:
       action_name.append("OverrideForPrecedence");
+      break;
+    case FeaturePromoClosedReason::kAbortedByFeature:
+      action_name.append("AbortedByFeature");
+      break;
+    case FeaturePromoClosedReason::kAbortedByAnchorHidden:
+      action_name.append("AbortedByAnchorHidden");
+      break;
+    case FeaturePromoClosedReason::kAbortedByBubbleDestroyed:
+      action_name.append("AbortedByBubbleDestroyed");
       break;
     case FeaturePromoClosedReason::kOverrideForDemo:
       // Not used for metrics.

@@ -128,7 +128,8 @@ UserEducationHelpBubbleController::CreateScopedHelpBubble(
       help_bubble_->AddOnCloseCallback(base::BindOnce(
           [](UserEducationHelpBubbleController* self,
              base::OnceClosure close_callback, base::CancelableOnceClosure*,
-             user_education::HelpBubble* help_bubble) {
+             user_education::HelpBubble* help_bubble,
+             user_education::HelpBubble::CloseReason) {
             CHECK_EQ(self->help_bubble_.get(), help_bubble);
             self->help_bubble_.reset();
             self->help_bubble_close_subscription_ =

@@ -387,7 +387,8 @@ class HoldingSpaceWallpaperNudgeControllerTestBase
     base::RunLoop run_loop;
     base::CallbackListSubscription help_bubble_close_subscription =
         help_bubble_->AddOnCloseCallback(base::BindLambdaForTesting(
-            [&](user_education::HelpBubble* help_bubble) { run_loop.Quit(); }));
+            [&](user_education::HelpBubble*,
+                user_education::HelpBubble::CloseReason) { run_loop.Quit(); }));
     run_loop.Run();
   }
 
@@ -439,7 +440,8 @@ class HoldingSpaceWallpaperNudgeControllerTestBase
                   help_bubble_
                       ? help_bubble_->AddOnCloseCallback(
                             base::BindLambdaForTesting(
-                                [&](user_education::HelpBubble* help_bubble) {
+                                [&](user_education::HelpBubble* help_bubble,
+                                    user_education::HelpBubble::CloseReason) {
                                   if (help_bubble == help_bubble_) {
                                     help_bubble_ = nullptr;
                                     help_bubble_close_subscription_ =
