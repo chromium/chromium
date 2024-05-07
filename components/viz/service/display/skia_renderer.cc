@@ -673,7 +673,7 @@ SkiaRenderer::ScopedSkImageBuilder::ScopedSkImageBuilder(
   auto* resource_provider = skia_renderer->resource_provider();
   DCHECK(IsTextureResource(resource_provider, resource_id));
 
-  auto* image_context = skia_renderer->lock_set_for_external_use_->LockResource(
+  auto* image_context = skia_renderer->lock_set_for_external_use_.LockResource(
       resource_id, maybe_concurrent_reads, raw_draw_if_possible);
 
   // |ImageContext::image| provides thread safety: (a) this ImageContext is
@@ -734,21 +734,21 @@ class SkiaRenderer::ScopedYUVSkImageBuilder {
     contexts.reserve(number_of_textures);
     // Skia API ignores the color space information on the individual planes.
     // Dropping them here avoids some LOG spam.
-    auto* y_context = skia_renderer->lock_set_for_external_use_->LockResource(
+    auto* y_context = skia_renderer->lock_set_for_external_use_.LockResource(
         quad->y_plane_resource_id(), /*maybe_concurrent_reads=*/true);
     contexts.push_back(std::move(y_context));
-    auto* u_context = skia_renderer->lock_set_for_external_use_->LockResource(
+    auto* u_context = skia_renderer->lock_set_for_external_use_.LockResource(
         quad->u_plane_resource_id(), /*maybe_concurrent_reads=*/true);
     contexts.push_back(std::move(u_context));
     if (plane_config == SkYUVAInfo::PlaneConfig::kY_U_V ||
         plane_config == SkYUVAInfo::PlaneConfig::kY_U_V_A) {
-      auto* v_context = skia_renderer->lock_set_for_external_use_->LockResource(
+      auto* v_context = skia_renderer->lock_set_for_external_use_.LockResource(
           quad->v_plane_resource_id(), /*maybe_concurrent_reads=*/true);
       contexts.push_back(std::move(v_context));
     }
 
     if (SkYUVAInfo::HasAlpha(plane_config)) {
-      auto* a_context = skia_renderer->lock_set_for_external_use_->LockResource(
+      auto* a_context = skia_renderer->lock_set_for_external_use_.LockResource(
           quad->a_plane_resource_id(), /*maybe_concurrent_reads=*/true);
       contexts.push_back(std::move(a_context));
     }
@@ -1044,11 +1044,11 @@ SkiaRenderer::SkiaRenderer(const RendererSettings* settings,
       can_skip_render_pass_overlay_(
           base::FeatureList::IsEnabled(features::kCanSkipRenderPassOverlay)),
 #endif
+      lock_set_for_external_use_(resource_provider, skia_output_surface_),
       is_using_raw_draw_(features::IsUsingRawDraw()) {
   use_render_pass_drawn_rect_ =
       base::FeatureList::IsEnabled(features::kRenderPassDrawnRect);
   DCHECK(skia_output_surface_);
-  lock_set_for_external_use_.emplace(resource_provider, skia_output_surface_);
 
   // There can be different synchronization types requested for different
   // resources. Some of them may require SyncToken, others - ReadLockFence, and
@@ -3630,7 +3630,7 @@ void SkiaRenderer::AllocateRenderPassResourceIfNeeded(
 
 void SkiaRenderer::FlushOutputSurface() {
   auto sync_token = skia_output_surface_->Flush();
-  lock_set_for_external_use_->UnlockResources(sync_token);
+  lock_set_for_external_use_.UnlockResources(sync_token);
 }
 
 #if BUILDFLAG(IS_APPLE) || BUILDFLAG(IS_OZONE) || BUILDFLAG(IS_WIN)

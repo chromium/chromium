@@ -427,8 +427,7 @@ class VIZ_SERVICE_EXPORT SkiaRenderer : public DirectRenderer {
   // the compositor thread. And the sync token will be released when the DDL
   // for the current frame is replayed on the GPU thread.
   // It is only used with DDL.
-  std::optional<DisplayResourceProviderSkia::LockSetForExternalUse>
-      lock_set_for_external_use_;
+  DisplayResourceProviderSkia::LockSetForExternalUse lock_set_for_external_use_;
 
 #if BUILDFLAG(IS_APPLE) || BUILDFLAG(IS_OZONE) || BUILDFLAG(IS_WIN)
   // A reference to an entry in |in_flight_render_pass_overlay_backings_|. If
