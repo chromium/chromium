@@ -764,17 +764,10 @@ void SplitViewController::AttachToBeSnappedWindow(
   RemoveSnappingWindowFromOverviewIfApplicable(overview_session, window);
 
   if (state_ == State::kNoSnap) {
-    Shell* shell = Shell::Get();
-    // Add observers when the split view mode starts.
-    shell->AddShellObserver(this);
-    OverviewController::Get()->AddObserver(this);
-    keyboard::KeyboardUIController::Get()->AddObserver(this);
-    shell->activation_client()->AddObserver(this);
-
-    auto_snap_controller_ = std::make_unique<AutoSnapController>(root_window_);
-
     default_snap_position_ = snap_position;
 
+    // TODO(b/339066590): Add new histogram for splitview starting in
+    // `OnWindowSnapped|UpdateStateAndNotifyObservers()`.
     splitview_start_time_ = base::Time::Now();
     // We are about to enter split view on |root_window_|. If split view is
     // already active on exactly one root, then |root_window_| will be the
@@ -1854,7 +1847,7 @@ void SplitViewController::StopObserving(SnapPosition snap_position) {
 }
 
 void SplitViewController::UpdateStateAndNotifyObservers() {
-  State previous_state = state_;
+  const State previous_state = state_;
   if (IsSnapped(primary_window_) && IsSnapped(secondary_window_)) {
     state_ = State::kBothSnapped;
   } else if (IsSnapped(primary_window_)) {
@@ -1876,6 +1869,27 @@ void SplitViewController::UpdateStateAndNotifyObservers() {
          end_reason_ == EndReason::kSnapGroups);
   for (auto& observer : observers_) {
     observer.OnSplitViewStateChanged(previous_state, state_);
+  }
+  const bool was_in_split_view = previous_state != State::kNoSnap;
+  const bool is_in_split_view = InSplitViewMode();
+  // If we just started split view, add observers. Don't do this unless we just
+  // started split view to avoid adding observers twice.
+  if (!was_in_split_view && is_in_split_view) {
+    Shell* shell = Shell::Get();
+    // Add observers when the split view mode starts.
+    shell->AddShellObserver(this);
+    OverviewController::Get()->AddObserver(this);
+    keyboard::KeyboardUIController::Get()->AddObserver(this);
+    shell->activation_client()->AddObserver(this);
+
+    auto_snap_controller_ = std::make_unique<AutoSnapController>(root_window_);
+  }
+  // If we are ending split view, ensure that `EndSplitView()` has been called
+  // to remove the observers and `auto_snap_controller_` has been destroyed.
+  // Note this assumes that `auto_snap_controller_` is always destroyed in the
+  // same scope that observers are removed.
+  if (was_in_split_view && !is_in_split_view) {
+    CHECK(!auto_snap_controller_);
   }
 }
 
