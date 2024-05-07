@@ -82,8 +82,8 @@ class FrameRateDeciderTest : public testing::Test,
     SurfaceId surface_id(frame_sink_id, local_surface_id);
     SurfaceInfo surface_info(surface_id, frame_.device_scale_factor(),
                              frame_.size_in_pixels());
-    auto* surface =
-        surface_manager_->CreateSurface(surface_client(), surface_info);
+    auto* surface = surface_manager_->CreateSurface(surface_client(),
+                                                    surface_info, SurfaceId());
 
     {
       FrameRateDecider::ScopedAggregate scope(frame_rate_decider_.get());

@@ -10,6 +10,7 @@
 #include <algorithm>
 #include <map>
 #include <set>
+#include <string>
 #include <utility>
 #include <vector>
 
@@ -17,6 +18,7 @@
 #include "base/functional/bind.h"
 #include "base/memory/raw_ptr.h"
 #include "base/memory/weak_ptr.h"
+#include "base/run_loop.h"
 #include "base/strings/stringprintf.h"
 #include "base/test/scoped_feature_list.h"
 #include "base/time/time.h"
@@ -50,6 +52,7 @@
 #include "components/viz/test/draw_quad_matchers.h"
 #include "components/viz/test/fake_compositor_frame_sink_client.h"
 #include "components/viz/test/fake_surface_observer.h"
+#include "components/viz/test/stub_surface_client.h"
 #include "components/viz/test/test_surface_id_allocator.h"
 #include "testing/gmock/include/gmock/gmock.h"
 #include "testing/gtest/include/gtest/gtest.h"
@@ -11248,5 +11251,240 @@ TEST_F(SurfaceAggregatorVulkanSecondaryCB,
   auto aggregated_frame = AggregateFrame(surface_id);
   EXPECT_EQ(2u, aggregated_frame.render_pass_list.size());
 }
+
+namespace {
+
+// Blocks until `OnScreenshotCaptured()` is called.
+class OnScreenshotCapturedWaiter : public mojom::FrameSinkManagerClient {
+ public:
+  OnScreenshotCapturedWaiter() = default;
+  ~OnScreenshotCapturedWaiter() override = default;
+  OnScreenshotCapturedWaiter(const OnScreenshotCapturedWaiter&) = delete;
+  OnScreenshotCapturedWaiter& operator=(const OnScreenshotCapturedWaiter&) =
+      delete;
+
+  // mojom::FrameSinkManagerClient:
+  void OnFirstSurfaceActivation(const SurfaceInfo&) override {}
+  void OnFrameTokenChanged(const FrameSinkId&,
+                           uint32_t,
+                           base::TimeTicks) override {}
+  void OnAggregatedHitTestRegionListUpdated(
+      const FrameSinkId& frame_sink_id,
+      const std::vector<AggregatedHitTestRegion>& hit_test_data) override {}
+#if BUILDFLAG(IS_ANDROID)
+  void VerifyThreadIdsDoNotBelongToHost(
+      const std::vector<int32_t>& thread_ids,
+      VerifyThreadIdsDoNotBelongToHostCallback callback) override {}
+#endif
+  void OnScreenshotCaptured(
+      const blink::SameDocNavigationScreenshotDestinationToken&
+          destination_token,
+      std::unique_ptr<CopyOutputResult> copy_output_result) override {
+    observed_token_ = destination_token;
+    run_loop_.Quit();
+  }
+
+  void Wait() { run_loop_.Run(); }
+
+  const blink::SameDocNavigationScreenshotDestinationToken& observed_token() {
+    return observed_token_;
+  }
+
+ private:
+  blink::SameDocNavigationScreenshotDestinationToken observed_token_;
+  base::RunLoop run_loop_;
+};
+
+class SurfaceAggregatorCopyRequestAgainstPreviousSurfaceTest
+    : public SurfaceAggregatorValidSurfaceTest,
+      public ::testing::WithParamInterface<bool> {
+ public:
+  SurfaceAggregatorCopyRequestAgainstPreviousSurfaceTest() = default;
+  ~SurfaceAggregatorCopyRequestAgainstPreviousSurfaceTest() override = default;
+
+  bool DestroyFrameSinkBeforeResult() { return GetParam(); }
+};
+
+std::string DescribeParam(const ::testing::TestParamInfo<bool>& info) {
+  if (info.param) {
+    return "CompositorFrameSinkSupportDestroyedBeforeResult";
+  } else {
+    return "CopyResultSent";
+  }
+}
+
+}  // namespace
+
+TEST_P(SurfaceAggregatorCopyRequestAgainstPreviousSurfaceTest,
+       CopyAgainstPreviousSurface) {
+  OnScreenshotCapturedWaiter waiter;
+  manager_.SetLocalClient(&waiter);
+
+  TestSurfaceIdAllocator child_allocator(child_sink_->frame_sink_id());
+  SurfaceId prev_sid = child_allocator.Get();
+  child_allocator.Increment();
+  SurfaceId current_sid = child_allocator.Get();
+
+  TestSurfaceIdAllocator root_allocator(root_sink_->frame_sink_id());
+  SurfaceId root_sid = root_allocator.Get();
+
+  // Submit one frame against the previous child surface.
+  {
+    SCOPED_TRACE("previous surface");
+    CompositorFrame new_frame = MakeEmptyCompositorFrame();
+    std::vector<Quad> quads = {
+        Quad::SolidColorQuad(SkColors::kGreen, gfx::Rect(5, 5))};
+    std::vector<Pass> passes = {
+        Pass(quads, CompositorRenderPassId{1}, gfx::Size(100, 100))};
+    AddPasses(&new_frame.render_pass_list, passes,
+              &new_frame.metadata.referenced_surfaces);
+    child_sink_->SubmitCompositorFrame(prev_sid.local_surface_id(),
+                                       std::move(new_frame));
+  }
+
+  // Submit a frame against the root surface.
+  {
+    SCOPED_TRACE("root surface -> previous surface");
+    CompositorFrame new_frame = MakeEmptyCompositorFrame();
+    // The previous surface is reachable from the root surface.
+    new_frame.metadata.referenced_surfaces = {SurfaceRange(prev_sid)};
+    std::vector<Quad> quads = {
+        Quad::SolidColorQuad(SkColors::kBlue, gfx::Rect(5, 5))};
+    std::vector<Pass> passes = {
+        Pass(quads, CompositorRenderPassId{2}, gfx::Size(100, 100))};
+    AddPasses(&new_frame.render_pass_list, passes,
+              &new_frame.metadata.referenced_surfaces);
+    root_sink_->SubmitCompositorFrame(root_sid.local_surface_id(),
+                                      std::move(new_frame));
+  }
+
+  // Activate the previous surface, and removes previous surface's temporary
+  // reference.
+  std::ignore = AggregateFrame(root_sid);
+
+  // A new frame against the root surface and aggregate. This removes the
+  // reference from root to the previous surface, but make the new surface
+  // reachable.
+  {
+    SCOPED_TRACE("root surface -> current surface");
+    CompositorFrame new_frame = MakeEmptyCompositorFrame();
+    new_frame.metadata.referenced_surfaces = {SurfaceRange(current_sid)};
+    std::vector<Quad> quads = {
+        Quad::SolidColorQuad(SkColors::kBlue, gfx::Rect(5, 5))};
+    std::vector<Pass> passes = {
+        Pass(quads, CompositorRenderPassId{3}, gfx::Size(100, 100))};
+    AddPasses(&new_frame.render_pass_list, passes,
+              &new_frame.metadata.referenced_surfaces);
+    root_sink_->SubmitCompositorFrame(root_sid.local_surface_id(),
+                                      std::move(new_frame));
+  }
+
+  // Another frame against the current child surface, with the CopyOutputRequest
+  // destination.
+  const auto expected_token = base::UnguessableToken::Create();
+  {
+    SCOPED_TRACE("current surface with a COR");
+    CompositorFrame new_frame = MakeEmptyCompositorFrame();
+    new_frame.metadata.screenshot_destination =
+        blink::SameDocNavigationScreenshotDestinationToken(expected_token);
+    std::vector<Quad> quads = {
+        Quad::SolidColorQuad(SkColors::kRed, gfx::Rect(5, 5))};
+    std::vector<Pass> passes = {
+        Pass(quads, CompositorRenderPassId{4}, gfx::Size(100, 100))};
+    AddPasses(&new_frame.render_pass_list, passes,
+              &new_frame.metadata.referenced_surfaces);
+    child_sink_->SubmitCompositorFrame(current_sid.local_surface_id(),
+                                       std::move(new_frame));
+  }
+
+  // Check that the current child surface has `pending_copy_surface_id_` set.
+  ASSERT_EQ(manager_.surface_manager()
+                ->GetSurfaceForId(current_sid)
+                ->pending_copy_surface_id_for_testing(),
+            prev_sid);
+
+  // Check the references.
+  ASSERT_THAT(
+      manager_.surface_manager()->GetSurfacesReferencedByParent(current_sid),
+      ::testing::UnorderedElementsAre(prev_sid));
+  ASSERT_THAT(
+      manager_.surface_manager()->GetSurfacesThatReferenceChildForTesting(
+          prev_sid),
+      ::testing::UnorderedElementsAre(current_sid));
+
+  // Check that the CopyOutputRequest is taken during aggregation.
+  auto result = AggregateFrame(root_sid);
+  ASSERT_TRUE(result.has_copy_requests);
+  ASSERT_EQ(result.render_pass_list.size(), 2U);
+  ASSERT_EQ(result.render_pass_list[0]->copy_requests.size(), 1U);
+
+  if (DestroyFrameSinkBeforeResult()) {
+    child_sink_.reset();
+
+    // The destruction of the frame sink doesn't remove the reference.
+    ASSERT_EQ(manager_.surface_manager()
+                  ->GetSurfaceForId(current_sid)
+                  ->pending_copy_surface_id_for_testing(),
+              prev_sid);
+    ASSERT_THAT(
+        manager_.surface_manager()->GetSurfacesReferencedByParent(current_sid),
+        ::testing::UnorderedElementsAre(prev_sid));
+    ASSERT_THAT(
+        manager_.surface_manager()->GetSurfacesThatReferenceChildForTesting(
+            prev_sid),
+        ::testing::UnorderedElementsAre(current_sid));
+
+    // The destruction of `current_sid` removes the reference.
+    {
+      SCOPED_TRACE("deref current surface from root");
+      CompositorFrame new_frame = MakeEmptyCompositorFrame();
+      std::vector<Quad> quads = {
+          Quad::SolidColorQuad(SkColors::kBlue, gfx::Rect(5, 5))};
+      std::vector<Pass> passes = {
+          Pass(quads, CompositorRenderPassId{3}, gfx::Size(100, 100))};
+      AddPasses(&new_frame.render_pass_list, passes,
+                &new_frame.metadata.referenced_surfaces);
+      root_sink_->SubmitCompositorFrame(root_sid.local_surface_id(),
+                                        std::move(new_frame));
+    }
+    manager_.surface_manager()->GarbageCollectSurfaces();
+
+    ASSERT_FALSE(manager_.surface_manager()->GetSurfaceForId(current_sid));
+    ASSERT_FALSE(manager_.surface_manager()->GetSurfaceForId(prev_sid));
+    ASSERT_TRUE(manager_.surface_manager()
+                    ->GetSurfacesReferencedByParent(current_sid)
+                    .empty());
+    ASSERT_TRUE(manager_.surface_manager()
+                    ->GetSurfacesThatReferenceChildForTesting(prev_sid)
+                    .empty());
+  } else {
+    auto empty_result = std::make_unique<CopyOutputResult>(
+        CopyOutputResult::Format::RGBA,
+        CopyOutputResult::Destination::kSystemMemory, gfx::Rect(),
+        /*needs_lock_for_bitmap=*/false);
+    result.render_pass_list[0]->copy_requests[0]->SendResult(
+        std::move(empty_result));
+    {
+      SCOPED_TRACE("Waiting for OnScreenshotCaptured()");
+      waiter.Wait();
+    }
+    ASSERT_EQ(waiter.observed_token().value(), expected_token);
+    ASSERT_FALSE(manager_.surface_manager()
+                     ->GetSurfaceForId(current_sid)
+                     ->pending_copy_surface_id_for_testing()
+                     .is_valid());
+    ASSERT_TRUE(manager_.surface_manager()
+                    ->GetSurfacesReferencedByParent(current_sid)
+                    .empty());
+    ASSERT_TRUE(manager_.surface_manager()
+                    ->GetSurfacesThatReferenceChildForTesting(prev_sid)
+                    .empty());
+  }
+}
+
+INSTANTIATE_TEST_SUITE_P(All,
+                         SurfaceAggregatorCopyRequestAgainstPreviousSurfaceTest,
+                         ::testing::Bool(),
+                         &DescribeParam);
 
 }  // namespace viz

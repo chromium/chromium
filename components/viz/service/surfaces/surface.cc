@@ -88,10 +88,12 @@ Surface::Surface(const SurfaceInfo& surface_info,
                  SurfaceManager* surface_manager,
                  SurfaceAllocationGroup* allocation_group,
                  base::WeakPtr<SurfaceClient> surface_client,
+                 const SurfaceId& pending_copy_surface_id,
                  size_t max_uncommitted_frames)
     : surface_info_(surface_info),
       surface_manager_(surface_manager),
       surface_client_(std::move(surface_client)),
+      pending_copy_surface_id_(pending_copy_surface_id),
       allocation_group_(allocation_group),
       max_uncommitted_frames_(max_uncommitted_frames) {
   TRACE_EVENT_ASYNC_BEGIN1(TRACE_DISABLED_BY_DEFAULT("viz.surface_lifetime"),
@@ -479,6 +481,12 @@ std::optional<uint64_t> Surface::GetUncommitedFrameIndexNewerThan(
   return std::nullopt;
 }
 
+void Surface::ResetPendingCopySurfaceId() {
+  CHECK(pending_copy_surface_id_.is_valid());
+  pending_copy_surface_id_ = SurfaceId();
+  RecomputeActiveReferencedSurfaces();
+}
+
 void Surface::UpdateReferencedAllocationGroups(
     std::vector<SurfaceAllocationGroup*> new_referenced_allocation_groups) {
   base::flat_set<raw_ptr<SurfaceAllocationGroup, CtnExperimental>> new_set(
@@ -502,7 +510,6 @@ void Surface::RecomputeActiveReferencedSurfaces() {
   // Extract the latest in flight surface from the ranges in the frame then
   // notify SurfaceManager of the new references.
   active_referenced_surfaces_.clear();
-  last_surface_id_for_range_.clear();
   std::vector<SurfaceAllocationGroup*> new_referenced_allocation_groups;
   for (const SurfaceRange& surface_range :
        active_frame_data_->frame.metadata.referenced_surfaces) {
@@ -511,9 +518,6 @@ void Surface::RecomputeActiveReferencedSurfaces() {
         surface_manager_->GetLatestInFlightSurface(surface_range);
     if (surface) {
       active_referenced_surfaces_.insert(surface->surface_id());
-      last_surface_id_for_range_.push_back(surface->surface_id());
-    } else {
-      last_surface_id_for_range_.emplace_back();
     }
     // The allocation group for the end of the SurfaceRange should always be
     // referenced.
@@ -540,6 +544,13 @@ void Surface::RecomputeActiveReferencedSurfaces() {
       }
     }
   }
+
+  // Makes sure `pending_copy_surface_id_` is reachable from `this` during
+  // aggregation.
+  if (pending_copy_surface_id_.is_valid()) {
+    active_referenced_surfaces_.insert(pending_copy_surface_id_);
+  }
+
   UpdateReferencedAllocationGroups(std::move(new_referenced_allocation_groups));
   UpdateSurfaceReferences();
 }

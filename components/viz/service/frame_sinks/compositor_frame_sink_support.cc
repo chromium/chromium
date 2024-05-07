@@ -96,14 +96,19 @@ gfx::Rect IntersectInSpace(const gfx::Rect& rect,
 
 void RemoveSurfaceReferenceAndDispatchCopyOutputRequestCallback(
     base::WeakPtr<FrameSinkManagerImpl> frame_sink_manager,
-    SurfaceId copied_surface,
+    const SurfaceId& holds_ref_surface_id,
     const blink::SameDocNavigationScreenshotDestinationToken& destination_token,
     std::unique_ptr<CopyOutputResult> result) {
   if (!frame_sink_manager) {
     return;
   }
-  frame_sink_manager->surface_manager()->RemoveTemporaryReferenceAfterCopy(
-      copied_surface);
+  if (auto* surface_holds_ref =
+          frame_sink_manager->surface_manager()->GetSurfaceForId(
+              holds_ref_surface_id)) {
+    surface_holds_ref->ResetPendingCopySurfaceId();
+  }
+  // Send the IPC to the browser process even if `result` is empty. The empty
+  // result will be handled on the browser side.
   frame_sink_manager->OnScreenshotCaptured(destination_token,
                                            std::move(result));
 }
@@ -888,18 +893,30 @@ SubmitResult CompositorFrameSinkSupport::MaybeSubmitCompositorFrame(
       return SubmitResult::ACCEPTED;
     }
 
+    const bool has_copy_request_against_prev_surface =
+        frame.metadata.screenshot_destination.has_value() && prev_surface;
+
     current_surface = surface_manager_->CreateSurface(
-        weak_factory_.GetWeakPtr(), surface_info);
+        weak_factory_.GetWeakPtr(), surface_info,
+        has_copy_request_against_prev_surface ? last_created_surface_id_
+                                              : SurfaceId());
 
     // The previous surface needs to be valid to generate a screenshot.
-    if (frame.metadata.screenshot_destination.has_value() && prev_surface) {
-      surface_manager_->AddTemporaryReference(last_created_surface_id_);
+    //
+    // NOTE: In order for the previous surface to be copied, it needs to be
+    // reachable and kept alive. This is achieved by adding a reference from the
+    // current surface to the previous surface. Normally this reference is
+    // removed when the copy is finished in Viz. However we could run into an
+    // edge case where the frame sink is destroyed before the copy is finished.
+    // If that happens, we will rely on the GC of the current surface to remove
+    // the reference.
+    if (has_copy_request_against_prev_surface) {
       auto copy_request = std::make_unique<CopyOutputRequest>(
           CopyOutputRequest::ResultFormat::RGBA,
           CopyOutputRequest::ResultDestination::kSystemMemory,
           base::BindOnce(
               &RemoveSurfaceReferenceAndDispatchCopyOutputRequestCallback,
-              frame_sink_manager_->GetWeakPtr(), last_created_surface_id_,
+              frame_sink_manager_->GetWeakPtr(), surface_info.id(),
               frame.metadata.screenshot_destination.value()));
       copy_request->set_result_task_runner(
           base::SequencedTaskRunner::GetCurrentDefault());

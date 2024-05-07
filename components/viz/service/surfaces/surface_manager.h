@@ -88,7 +88,8 @@ class VIZ_SERVICE_EXPORT SurfaceManager {
   // dependencies are satisfied, and it is not reachable from the root surface.
   // A temporary reference will be added to the new Surface.
   Surface* CreateSurface(base::WeakPtr<SurfaceClient> surface_client,
-                         const SurfaceInfo& surface_info);
+                         const SurfaceInfo& surface_info,
+                         const SurfaceId& pending_copy_surface_id);
 
   // Marks |surface_id| for destruction. The surface will get destroyed when
   // it's not reachable from the root or any other surface that is not marked
@@ -188,13 +189,6 @@ class VIZ_SERVICE_EXPORT SurfaceManager {
   // next display frame. We will notify SurfaceObservers accordingly.
   void SurfaceWillBeDrawn(Surface* surface);
 
-  // Adds a temporary reference to |surface_id|. The reference will not have an
-  // owner initially.
-  void AddTemporaryReference(const SurfaceId& surface_id);
-
-  // Removes the temporary reference after the `surface_id` is copied.
-  void RemoveTemporaryReferenceAfterCopy(const SurfaceId& surface_id);
-
   // Removes temporary reference to |surface_id| and older surfaces.
   void DropTemporaryReference(const SurfaceId& surface_id);
 
@@ -273,6 +267,10 @@ class VIZ_SERVICE_EXPORT SurfaceManager {
 
   // Returns whether |surface_id| has a temporary reference or not.
   bool HasTemporaryReference(const SurfaceId& surface_id) const;
+
+  // Adds a temporary reference to |surface_id|. The reference will not have an
+  // owner initially.
+  void AddTemporaryReference(const SurfaceId& surface_id);
 
   // Removes temporary reference to |surface_id| and older surfaces. The
   // |reason| for removing will be recorded with UMA.
