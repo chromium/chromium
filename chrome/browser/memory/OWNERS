@@ -1,4 +1,4 @@
-chrisha@chromium.org
+file://chrome/browser/resource_coordinator/OWNERS
 
 # OOM and memory kills logging
 per-file memory_kills_*=vovoy@chromium.org
