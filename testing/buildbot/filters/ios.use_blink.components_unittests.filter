@@ -148,6 +148,16 @@
 -PasswordFormHelperTest.HandleFormSubmittedMessage_NoTrustedUrl
 -PasswordFormHelperTest.HandleFormSubmittedMessage_NoWebState
 
+# TODO(crbug.com/339074797): PasswordFormHelperTest have been failing since
+# https://crrev.com/c/5494354. Currently they fail with use_blink due to
+# spinning up on an unexpected thread.
+-PasswordFormHelperTest.FillPasswordFormWithFillData_Failure
+-PasswordFormHelperTest.FillPasswordFormWithFillData_Success
+-PasswordFormHelperTest.FillPasswordFormWithFillData_Success_NoFill
+-PasswordFormHelperTest.FillPasswordIntoForm_UserTypedUsername_FillFromPassword
+-PasswordFormHelperTest.FillPasswordIntoForm_UserTypedUsername_FillFromUsername
+-PasswordFormHelperTest.FillUsernameAndPassword_MissingFillResultField
+
 # TODO(crbug.com/40281649): Test currently fails on iOS blink.
 -SharedPasswordControllerTest.PasswordManagerIsNotNotifiedAboutHeuristicsPredictions
 -SharedPasswordControllerTest.CheckIfSuggestionsAvailableForFormCrossOriginIframe
