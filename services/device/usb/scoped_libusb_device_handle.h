@@ -30,7 +30,6 @@ class ScopedLibusbDeviceHandle {
 
   libusb_device_handle* get() const { return handle_; }
 
-  void Reset();
   bool IsValid() const;
 
  private:
