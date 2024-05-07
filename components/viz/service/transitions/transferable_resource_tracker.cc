@@ -89,7 +89,7 @@ TransferableResourceTracker::ImportResource(
     release_callback = base::BindOnce(
         [](SharedBitmapManager* manager, const TransferableResource& resource,
            const gpu::SyncToken& sync_token) {
-          const SharedBitmapId& id = resource.mailbox();
+          const SharedBitmapId& id = resource.shared_bitmap_id();
           manager->ChildDeletedSharedBitmap(id);
         },
         shared_bitmap_manager_);

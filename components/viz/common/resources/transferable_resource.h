@@ -146,6 +146,13 @@ struct VIZ_COMMON_EXPORT TransferableResource {
   }
 
   const gpu::Mailbox& mailbox() const { return mailbox_; }
+  // Returns the SharedBitmapId that this instance (which must have been created
+  // via MakeSoftwareSharedBitmap()) is storing.
+  // TODO(crbug.com/337538024): Decouple SharedBitmapId from Mailbox.
+  const SharedBitmapId& shared_bitmap_id() const {
+    CHECK(is_software && !IsSoftwareSharedImage());
+    return mailbox_;
+  }
   const gpu::SyncToken& sync_token() const { return sync_token_; }
   gpu::SyncToken& mutable_sync_token() { return sync_token_; }
   uint32_t texture_target() const { return texture_target_; }

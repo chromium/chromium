@@ -73,7 +73,8 @@ DisplayResourceProviderSoftware::LockForRead(ResourceId id) {
     }
   } else {
     if (!resource->shared_bitmap) {
-      const SharedBitmapId& shared_bitmap_id = resource->transferable.mailbox();
+      const SharedBitmapId& shared_bitmap_id =
+          resource->transferable.shared_bitmap_id();
       std::unique_ptr<SharedBitmap> bitmap =
           shared_bitmap_manager_->GetSharedBitmapFromId(
               resource->transferable.size, resource->transferable.format,
