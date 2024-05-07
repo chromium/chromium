@@ -3810,7 +3810,7 @@ TEST_F(AutofillCreditCardSuggestionContentTest,
   card_number_field_suggestion =
       test_api(suggestion_generator())
           .CreateCreditCardSuggestion(server_card, CREDIT_CARD_NUMBER,
-                                      /*virtual_card_option=*/false,
+                                      /*virtual_card_option=*/true,
                                       /*card_linked_offer_available=*/false);
 
   // From a virtual credit card, the suggestion should show the card name and

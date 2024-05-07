@@ -734,6 +734,7 @@ bool InputTriggersKeyboard(std::string field_type, bool default_value) {
   } else if (self.currentProvider.type == SuggestionProviderTypeAutofill) {
     switch (popupItemId) {
       case autofill::SuggestionType::kCreditCardEntry:
+      case autofill::SuggestionType::kVirtualCreditCardEntry:
         histogramName = "IOS.Reauth.CreditCard.Autofill";
         break;
       case autofill::SuggestionType::kAddressEntry:

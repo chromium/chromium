@@ -2086,6 +2086,13 @@ void AutofillSuggestionGenerator::AdjustVirtualCardSuggestionContent(
   suggestion.feature_for_iph =
       &feature_engagement::kIPHAutofillVirtualCardSuggestionFeature;
 
+  // If ShouldFormatForLargeKeyboardAccessory() is true, `suggestion` has been
+  // properly formatted by `SetSuggestionLabelsForCard` and does not need further
+  // changes.
+  if (autofill_client_->ShouldFormatForLargeKeyboardAccessory()) {
+    return;
+  }
+
   // Add virtual card labelling to suggestions. For keyboard accessory, it is
   // prefixed to the suggestion, and for the dropdown, it is shown as a label on
   // a separate line.
