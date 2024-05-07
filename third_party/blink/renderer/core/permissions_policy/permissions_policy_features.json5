@@ -216,6 +216,11 @@
       permissions_policy_name: "cross-origin-isolated",
     },
     {
+      name: "DeferredFetch",
+      permissions_policy_name: "deferred-fetch",
+      depends_on: ["FetchLaterAPI"],
+    },
+    {
       name: "DirectSockets",
       permissions_policy_name: "direct-sockets",
       depends_on: ["DirectSockets"],

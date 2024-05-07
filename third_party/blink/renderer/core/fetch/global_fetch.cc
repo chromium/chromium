@@ -123,16 +123,10 @@ class GlobalFetchImpl final : public GarbageCollected<GlobalFetchImpl<T>>,
       return nullptr;
     }
 
-    // https://whatpr.org/fetch/1647/9ca4bda...9994c1d.html#dom-global-fetch-later
+    // https://whatpr.org/fetch/1647.html#dom-global-fetch-later
     // Run the fetchLater(input, init) method steps:
 
-    // 1. If the user-agent has determined that deferred fetching is not
-    // allowed in this context, then throw a NotAllowedError.
-    // TODO(crbug.com/1465781): Define Permissions-Policy to allow disabling
-    // this feature. It should be enabled by default:
-    // https://github.com/WICG/pending-beacon/issues/77.
-
-    // 2. Let `r` be the result of invoking the initial value of Request as
+    // 1. Let `r` be the result of invoking the initial value of Request as
     // constructor with `input` and `init` as arguments. This may throw an
     // exception.
     Request* r =
@@ -146,7 +140,7 @@ class GlobalFetchImpl final : public GarbageCollected<GlobalFetchImpl<T>>,
     FetchRequestData* request_data =
         r->PassRequestData(script_state, exception_state);
     MeasureFetchProperties(ec, request_data);
-    // 6. If init is given and init ["activateAfter"] exists, then set
+    // 5. If init is given and init ["activateAfter"] exists, then set
     // `activate_after` to init ["activateAfter"].
     std::optional<DOMHighResTimeStamp> activate_after =
         (init->hasActivateAfter() ? std::make_optional(init->activateAfter())
