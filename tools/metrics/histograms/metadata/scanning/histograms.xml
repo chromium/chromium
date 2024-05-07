@@ -43,7 +43,7 @@ chromium-metrics-reviews@google.com.
 </histogram>
 
 <histogram name="Scanning.DiscoverySession.NumScanners" units="scanners"
-    expires_after="2024-09-01">
+    expires_after="2024-11-03">
   <owner>bmgordon@chromium.org</owner>
   <owner>project-bolton@google.com</owner>
   <summary>

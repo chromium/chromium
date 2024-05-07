@@ -77,7 +77,7 @@ chromium-metrics-reviews@google.com.
 
 <histogram name="MagicStack.Clank.TabResumption.ModuleNotShownReason"
     enum="MagicStack.Clank.TabResumption.ModuleNotShownReason"
-    expires_after="2024-09-01">
+    expires_after="2024-11-03">
   <owner>huangs@google.com</owner>
   <owner>hanxi@google.com</owner>
   <summary>
@@ -92,7 +92,7 @@ chromium-metrics-reviews@google.com.
 
 <histogram name="MagicStack.Clank.TabResumption.ModuleShowConfig"
     enum="MagicStack.Clank.TabResumption.ModuleShowConfig"
-    expires_after="2024-09-01">
+    expires_after="2024-11-03">
   <owner>huangs@google.com</owner>
   <owner>hanxi@google.com</owner>
   <summary>
@@ -104,7 +104,7 @@ chromium-metrics-reviews@google.com.
 </histogram>
 
 <histogram name="MagicStack.Clank.TabResumption.StabilityDelay" units="ms"
-    expires_after="2024-09-01">
+    expires_after="2024-11-03">
   <owner>huangs@google.com</owner>
   <owner>hanxi@google.com</owner>
   <summary>
