@@ -106,10 +106,6 @@ namespace tpcd::experiment {
 class ExperimentManagerImpl;
 }
 
-namespace SearchEngineChoiceClientSideTrial {
-void RegisterSyntheticTrials();
-}
-
 namespace readaloud {
 class SyntheticTrial;
 }
@@ -174,7 +170,6 @@ class ChromeMetricsServiceAccessor : public metrics::MetricsServiceAccessor {
   friend class WebUITabStripFieldTrial;
   friend class feed::FeedServiceDelegateImpl;
   friend class FirstRunService;
-  friend void SearchEngineChoiceClientSideTrial::RegisterSyntheticTrials();
   friend class browser_sync::DeviceInfoSyncClientImpl;
   friend class feed::WebFeedSubscriptionCoordinator;
   friend class HttpsFirstModeService;

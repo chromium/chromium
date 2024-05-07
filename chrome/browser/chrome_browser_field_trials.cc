@@ -31,8 +31,6 @@
 #include "chrome/browser/android/flags/chrome_cached_flags.h"
 #include "chrome/browser/flags/android/chrome_feature_list.h"
 #include "chrome/common/chrome_features.h"
-#else
-#include "chrome/browser/search_engine_choice/search_engine_choice_client_side_trial.h"
 #endif
 
 #if BUILDFLAG(IS_CHROMEOS_ASH)
@@ -101,10 +99,6 @@ void ChromeBrowserFieldTrials::SetUpClientSideFieldTrials(
 #if BUILDFLAG(IS_CHROMEOS_ASH)
     ash::multidevice_setup::CreateFirstRunFieldTrial(feature_list);
 #endif
-#if !BUILDFLAG(IS_ANDROID)
-    SearchEngineChoiceClientSideTrial::SetUpIfNeeded(
-        entropy_providers.default_entropy(), feature_list, local_state_);
-#endif
   }
 }
 
@@ -149,8 +143,6 @@ void ChromeBrowserFieldTrials::RegisterSyntheticTrials() {
     ChromeMetricsServiceAccessor::RegisterSyntheticFieldTrial(
         kBackgroundThreadPoolTrial, group_name);
   }
-#else
-  SearchEngineChoiceClientSideTrial::RegisterSyntheticTrials();
 #endif  // BUILDFLAG(IS_ANDROID)
 
 #if !BUILDFLAG(IS_ANDROID) && !BUILDFLAG(IS_CHROMEOS)

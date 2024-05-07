@@ -1953,8 +1953,6 @@ static_library("browser") {
       "privacy_sandbox/tracking_protection_notice_factory.h",
       "privacy_sandbox/tracking_protection_notice_service.cc",
       "privacy_sandbox/tracking_protection_notice_service.h",
-      "search_engine_choice/search_engine_choice_client_side_trial.cc",
-      "search_engine_choice/search_engine_choice_client_side_trial.h",
       "search_engine_choice/search_engine_choice_dialog_service.cc",
       "search_engine_choice/search_engine_choice_dialog_service.h",
       "search_engine_choice/search_engine_choice_dialog_service_factory.cc",
