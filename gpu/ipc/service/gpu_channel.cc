@@ -457,13 +457,6 @@ void GpuChannelMessageFilter::CreateGpuMemoryBuffer(
     const viz::SharedImageFormat& format,
     gfx::BufferUsage buffer_usage,
     CreateGpuMemoryBufferCallback callback) {
-  if (!format.is_single_plane()) {
-    // Only single plane format is supported as of now.
-    LOG(ERROR) << "Invalid format." << format.ToString();
-    std::move(callback).Run(gfx::GpuMemoryBufferHandle());
-    return;
-  }
-
   if (!viz::HasEquivalentBufferFormat(format)) {
     // Client GMB code still operates on BufferFormat so the SharedImageFormat
     // received here must have an equivalent BufferFormat.
@@ -471,7 +464,7 @@ void GpuChannelMessageFilter::CreateGpuMemoryBuffer(
     std::move(callback).Run(gfx::GpuMemoryBufferHandle());
     return;
   }
-  auto buffer_format = SinglePlaneSharedImageFormatToBufferFormat(format);
+  auto buffer_format = ToBufferFormat(format);
   gfx::GpuMemoryBufferHandle handle;
 
   // Hardcoding the GpuMemoryBufferId to 1 here instead of having a different
