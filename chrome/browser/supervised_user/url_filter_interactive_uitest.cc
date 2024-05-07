@@ -131,7 +131,8 @@ class UrlFilterUiTest : public InteractiveFamilyLiveTest,
   }
 };
 
-IN_PROC_BROWSER_TEST_P(UrlFilterUiTest, ParentBlocksPage) {
+// TODO(https://crbug.com/328036610): fails on win-live-tests-tester-rel
+IN_PROC_BROWSER_TEST_P(UrlFilterUiTest, DISABLED_ParentBlocksPage) {
   DEFINE_LOCAL_ELEMENT_IDENTIFIER_VALUE(kChildElementId);
   DEFINE_LOCAL_STATE_IDENTIFIER_VALUE(BrowserState::Observer,
                                       kSetSafeSitesStateObserverId);
@@ -167,7 +168,8 @@ IN_PROC_BROWSER_TEST_P(UrlFilterUiTest, ParentBlocksPage) {
 
 // Sanity test, if it fails it means that resetting the test state is not
 // functioning properly.
-IN_PROC_BROWSER_TEST_P(UrlFilterUiTest, ClearFamilyLinkSettings) {
+// TODO(https://crbug.com/328036610): fails on win-live-tests-tester-rel
+IN_PROC_BROWSER_TEST_P(UrlFilterUiTest, DISABLED_ClearFamilyLinkSettings) {
   DEFINE_LOCAL_STATE_IDENTIFIER_VALUE(BrowserState::Observer, kObserverId);
 
   TurnOnSyncFor(head_of_household());
@@ -178,7 +180,9 @@ IN_PROC_BROWSER_TEST_P(UrlFilterUiTest, ClearFamilyLinkSettings) {
                                       BrowserState::Reset()));
 }
 
-IN_PROC_BROWSER_TEST_P(UrlFilterUiTest, ParentAllowsPageBlockedBySafeSites) {
+// TODO(https://crbug.com/328036610): fails on win-live-tests-tester-rel
+IN_PROC_BROWSER_TEST_P(UrlFilterUiTest,
+                       DISABLED_ParentAllowsPageBlockedBySafeSites) {
   DEFINE_LOCAL_ELEMENT_IDENTIFIER_VALUE(kChildElementId);
   DEFINE_LOCAL_STATE_IDENTIFIER_VALUE(BrowserState::Observer,
                                       kDefineStateObserverId);
