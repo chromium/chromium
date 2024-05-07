@@ -1466,14 +1466,18 @@ TEST_F(HistoryURLProviderTest, KeywordModeExtractUserInput) {
   ASSERT_GT(matches_.size(), 0u);
   EXPECT_EQ(matches_[0].destination_url, GURL("http://www.google.com/"));
 
-  // Test result for "@history" and "@history google" while NOT in keyword mode,
-  // we should get a result for history.com and not for google since we're
-  // searching for the whole input text including "@history".
-  matches_ = test(u"@history");
-  ASSERT_GT(matches_.size(), 0u);
-  EXPECT_EQ(matches_[0].destination_url, GURL("https://history.com/"));
-
+  // Test result for "@history", "@history.c", and "@history google" while NOT
+  // in keyword mode, we should not get results for history.com or google since
+  // we're searching for the whole input text including "@".
+  EXPECT_TRUE(test(u"@history").empty());
+  EXPECT_TRUE(test(u"@history.c").empty());
   EXPECT_TRUE(test(u"@history google").empty());
+
+  // Test results for "@history.co"; we should see a URL what you type
+  // suggestion because that's a valid URL.
+  matches_ = test(u"@history.co");
+  ASSERT_GT(matches_.size(), 0u);
+  EXPECT_EQ(matches_[0].destination_url, GURL("http://history.co/"));
 
   // Turn on keyword mode, test result again, we should get back the result for
   // google.com since we're searching only for the user text after the keyword.

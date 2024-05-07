@@ -438,9 +438,16 @@ void HistoryURLProvider::Start(const AutocompleteInput& input,
 
   // Do some fixup on the user input before matching against it, so we provide
   // good results for local file paths, input with spaces, etc.
-  const FixupReturn fixup_return(FixupUserInput(autocomplete_input));
+  FixupReturn fixup_return(FixupUserInput(autocomplete_input));
   if (!fixup_return.first)
     return;
+  // Inputs like '@hist' shouldn't match 'history.com' because users are more
+  // likely to be looking for a starer pack scope than a URL. However,
+  // URLs containing '@' before the host, such as '@history.com', area valid
+  // URLs and still needs to run autocompletion.
+  if (autocomplete_input.text().starts_with('@'))
+    fixup_return.second = u"@" + fixup_return.second;
+
   url::Parsed parts;
   url_formatter::SegmentURL(fixup_return.second, &parts);
   AutocompleteInput fixed_up_input(autocomplete_input);
