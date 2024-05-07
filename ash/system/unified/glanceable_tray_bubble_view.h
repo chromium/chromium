@@ -94,6 +94,10 @@ class GlanceableTrayBubbleView : public TrayBubbleView,
       std::vector<std::unique_ptr<GlanceablesClassroomAssignment>> assignments)
       const;
 
+  // Updates `time_management_container_view_` layout according to the number of
+  // its children.
+  void UpdateTimeManagementContainerLayout();
+
   const raw_ptr<Shelf> shelf_;
 
   // Whether the bubble view has been initialized.

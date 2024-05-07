@@ -119,8 +119,6 @@ GlanceablesListFooterView::GlanceablesListFooterView(
 
 void GlanceablesListFooterView::UpdateItemsCount(size_t visible_items_count,
                                                  size_t total_items_count) {
-  // Glanceable tasks in stable launch doesn't show the item count.
-  CHECK(!features::AreAnyGlanceablesTimeManagementViewsEnabled());
   CHECK_LE(visible_items_count, total_items_count);
   items_count_label_->SetText(
       l10n_util::GetStringFUTF16(IDS_GLANCEABLES_LIST_FOOTER_ITEMS_COUNT_LABEL,

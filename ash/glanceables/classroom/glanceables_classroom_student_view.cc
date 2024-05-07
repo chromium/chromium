@@ -41,9 +41,11 @@
 #include "ui/base/metadata/metadata_impl_macros.h"
 #include "ui/base/models/combobox_model.h"
 #include "ui/chromeos/styles/cros_tokens_color_mappings.h"
+#include "ui/compositor/layer.h"
 #include "ui/gfx/geometry/insets.h"
 #include "ui/gfx/geometry/size.h"
 #include "ui/views/accessibility/view_accessibility.h"
+#include "ui/views/background.h"
 #include "ui/views/controls/label.h"
 #include "ui/views/layout/box_layout.h"
 #include "ui/views/layout/box_layout_view.h"
@@ -251,6 +253,12 @@ void GlanceablesClassroomStudentView::CancelUpdates() {
   weak_ptr_factory_.InvalidateWeakPtrs();
 }
 
+void GlanceablesClassroomStudentView::CreateElevatedBackground() {
+  SetBackground(views::CreateThemedRoundedRectBackground(
+      cros_tokens::kCrosSysSystemOnBaseOpaque, 16.f));
+  force_hide_footer_view_ = true;
+}
+
 void GlanceablesClassroomStudentView::OnSeeAllPressed() {
   base::RecordAction(
       base::UserMetricsAction("Glanceables_Classroom_SeeAllPressed"));
@@ -381,7 +389,7 @@ void GlanceablesClassroomStudentView::OnGetAssignments(
 
   const bool is_list_empty = shown_assignments == 0;
   empty_list_label_->SetVisible(is_list_empty);
-  list_footer_view_->SetVisible(!is_list_empty);
+  list_footer_view_->SetVisible(!is_list_empty && !force_hide_footer_view_);
   list_footer_view_->SetProperty(views::kMarginsKey, kFooterMargins);
 
   list_container_view_->SetAccessibleName(l10n_util::GetStringFUTF16(

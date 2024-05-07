@@ -71,7 +71,12 @@ class TimeManagementContainer : public views::FlexLayoutView {
     layer()->SetRoundedCornerRadius(
         gfx::RoundedCornersF(kGlanceablesContainerCornerRadius));
     SetOrientation(views::LayoutOrientation::kVertical);
+
+    // Set all inner margins and the spacing between children to 8.
     SetInteriorMargin(gfx::Insets(8));
+    SetCollapseMargins(true);
+    SetDefault(views::kMarginsKey, gfx::Insets::VH(8, 0));
+
     SetBackground(views::CreateThemedSolidBackground(
         cros_tokens::kCrosSysSystemBaseElevated));
     SetBorder(std::make_unique<views::HighlightBorder>(
@@ -172,8 +177,8 @@ void GlanceableTrayBubbleView::InitializeContents() {
       Shell::Get()->glanceables_controller()->GetClassroomClient();
   const bool is_classroom_enabled_via_flags =
       features::IsGlanceablesTimeManagementClassroomStudentDataEnabled() ||
-      (features::AreGlanceablesV2Enabled() &&
-       !features::AreAnyGlanceablesTimeManagementViewsEnabled());
+      features::IsGlanceablesTimeManagementClassroomStudentViewEnabled() ||
+      features::AreGlanceablesV2Enabled();
   if (should_show_non_calendar_glanceables && is_classroom_enabled_via_flags &&
       classroom_client) {
     CHECK(!classroom_bubble_student_view_);
@@ -229,13 +234,14 @@ void GlanceableTrayBubbleView::AddClassroomBubbleStudentViewIfNeeded(
     return;
   }
 
-  if (features::AreGlanceablesV2Enabled() &&
-      !features::AreAnyGlanceablesTimeManagementViewsEnabled()) {
+  if (features::AreGlanceablesV2Enabled() ||
+      features::IsGlanceablesTimeManagementClassroomStudentViewEnabled()) {
     // Adds classroom bubble before `calendar_view_`.
     MaybeCreateTimeManagementContainer();
     classroom_bubble_student_view_ =
         time_management_container_view_->AddChildView(
             std::make_unique<GlanceablesClassroomStudentView>());
+    UpdateTimeManagementContainerLayout();
     UpdateBubble();
 
     AdjustChildrenFocusOrder();
@@ -259,8 +265,9 @@ void GlanceableTrayBubbleView::AddTaskBubbleViewIfNeeded(
 
   // Add tasks bubble before everything.
   MaybeCreateTimeManagementContainer();
-  tasks_bubble_view_ = time_management_container_view_->AddChildView(
-      std::make_unique<GlanceablesTasksView>(task_lists));
+  tasks_bubble_view_ = time_management_container_view_->AddChildViewAt(
+      std::make_unique<GlanceablesTasksView>(task_lists), 0);
+  UpdateTimeManagementContainerLayout();
   UpdateBubble();
 
   AdjustChildrenFocusOrder();
@@ -312,6 +319,13 @@ void GlanceableTrayBubbleView::OnPotentialStudentAssignmentsLoaded(
   RecordClassromInitialLoadTime(
       /*first_occurrence=*/controller->bubble_shown_count() == 1,
       base::TimeTicks::Now() - controller->last_bubble_show_time());
+}
+
+void GlanceableTrayBubbleView::UpdateTimeManagementContainerLayout() {
+  if (time_management_container_view_->children().size() > 1) {
+    tasks_bubble_view_->CreateElevatedBackground();
+    classroom_bubble_student_view_->CreateElevatedBackground();
+  }
 }
 
 BEGIN_METADATA(GlanceableTrayBubbleView)

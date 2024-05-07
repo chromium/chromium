@@ -372,6 +372,13 @@ IN_PROC_BROWSER_TEST_F(GlanceablesMvpBrowserTest,
 
 class GlanceablesTasksBrowserTest : public GlanceablesBrowserTest {
  public:
+  GlanceablesTasksBrowserTest() {
+    features_.InitWithFeatures(
+        /*enabled_features=*/{features::kGlanceablesTimeManagementTasksView},
+        /*disabled_features=*/{
+            features::kGlanceablesTimeManagementClassroomStudentView});
+  }
+
   void SetUpOnMainThread() override {
     GlanceablesBrowserTest::SetUpOnMainThread();
     ASSERT_TRUE(glanceables_controller()->GetTasksClient());
@@ -384,8 +391,7 @@ class GlanceablesTasksBrowserTest : public GlanceablesBrowserTest {
   }
 
  private:
-  base::test::ScopedFeatureList features_{
-      features::kGlanceablesTimeManagementTasksView};
+  base::test::ScopedFeatureList features_;
 };
 
 IN_PROC_BROWSER_TEST_F(GlanceablesTasksBrowserTest, ViewAndSwitchTaskLists) {

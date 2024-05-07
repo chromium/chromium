@@ -79,6 +79,9 @@ class ASH_EXPORT GlanceablesClassroomStudentView
   // glanceables bubble widget starts closing to avoid unnecessary UI updates.
   void CancelUpdates();
 
+  // Creates `this` view's own background and updates layout accordingly.
+  void CreateElevatedBackground();
+
  private:
   // Handles press on the "See all" button in `GlanceablesListFooterView`. Opens
   // classroom web UI based on the selected menu option.
@@ -134,6 +137,9 @@ class ASH_EXPORT GlanceablesClassroomStudentView
   // The number of times that the selected list has changed during the lifetime
   // of this view.
   int selected_list_change_count_ = 0;
+
+  // If true, always sets `list_footer_view_` to invisible.
+  bool force_hide_footer_view_ = false;
 
   // The currently selected assignment list.
   StudentAssignmentsListType selected_list_type_ =

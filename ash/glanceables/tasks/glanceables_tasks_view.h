@@ -61,6 +61,9 @@ class ASH_EXPORT GlanceablesTasksView : public GlanceableTrayChildBubble,
   // supposed to show.
   void UpdateTaskLists(const ui::ListModel<api::TaskList>* task_lists);
 
+  // Creates `this` view's own background and updates layout accordingly.
+  void CreateElevatedBackground();
+
  private:
   // The context of why the current task list is shown.
   enum class ListShownContext {
