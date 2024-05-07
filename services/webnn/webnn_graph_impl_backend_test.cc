@@ -350,7 +350,6 @@ void WebNNGraphImplBackendTest::SetUp() {
       "BuildAndComputeConcatWithConstants",
       "BuildAndComputeSingleOperatorElementWiseBinary",
       "BuildAndComputeSingleOperatorElementWiseUnary",
-      "BuildSingleOperatorInstanceNormalization",
       "BuildAndComputeSingleOperatorLeakyRelu",
       "BuildAndComputeSingleOperatorRelu",
       "BuildAndComputeSingleOperatorSigmoid",
