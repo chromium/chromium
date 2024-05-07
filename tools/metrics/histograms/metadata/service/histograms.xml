@@ -1892,7 +1892,7 @@ chromium-metrics-reviews@google.com.
 </histogram>
 
 <histogram name="ServiceWorkerCache.ListOriginsIndexValidity"
-    enum="CacheStorageIndexResult" expires_after="2024-05-26">
+    enum="CacheStorageIndexResult" expires_after="2025-05-26">
   <owner>ayui@chromium.org</owner>
   <owner>chrome-owp-storage@google.com</owner>
   <summary>
@@ -1944,7 +1944,7 @@ chromium-metrics-reviews@google.com.
 
 <histogram
     name="ServiceWorkerCache.{ServiceWorkerCacheSchedulerOpClientType}.Scheduler.OperationDuration2.{ServiceWorkerSchedulerOp}"
-    units="ms" expires_after="2024-05-26">
+    units="ms" expires_after="2025-05-26">
   <owner>ayui@chromium.org</owner>
   <owner>chrome-owp-storage@google.com</owner>
   <summary>
