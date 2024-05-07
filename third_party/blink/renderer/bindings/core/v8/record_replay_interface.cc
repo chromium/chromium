@@ -2703,11 +2703,18 @@ static void InitializeReplayScripts(v8::Isolate* isolate, LocalFrame* localFrame
 
 void OnRootFrameInit(v8::Isolate* isolate, LocalFrame* localFrame, v8::Local<v8::Context> context) {
   recordreplay::AutoMarkReplayCode amrc;
-  recordreplay::Print(
-    "[RUN-2739] OnRootFrameInit win=%d frame=%d %d \"%s\"",
+  recordreplay::Trace(
+    "[RUN-2739] OnRootFrameInit win=%d frame=%d %d %d %d %d parent=%d" " \"%s\"",
       localFrame->DomWindow()->RecordReplayId(),
       localFrame->RecordReplayId(),
+
       localFrame->IsCrossOriginToParentOrOuterDocument(),
+      localFrame->IsFencedFrameRoot(),
+      localFrame->IsInFencedFrameTree(),
+      localFrame->IsMainFrame(),
+
+      localFrame->Parent() ? localFrame->Parent()->IsMainFrame() : -1,
+      
       localFrame->GetDocument()->Url().GetString().Utf8().c_str()
       );
   

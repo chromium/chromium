@@ -115,8 +115,6 @@ MatchedPropertiesCache::Key::Key(const MatchResult& result)
     : Key(result,
           result.IsCacheable() ? ComputeMatchedPropertiesHash(result)
                                : HashTraits<unsigned>::EmptyValue()) {
-  recordreplay::Assert("[RUN-2424-2425] MatchedPropertiesCache::Key::Key %u",
-                       hash_);
 }
 
 MatchedPropertiesCache::Key::Key(const MatchResult& result, unsigned hash)
@@ -127,30 +125,19 @@ const CachedMatchedProperties* MatchedPropertiesCache::Find(
     const StyleResolverState& style_resolver_state) {
   DCHECK(key.IsValid());
   Cache::iterator it = cache_.find(key.hash_);
-  recordreplay::Assert("[RUN-2424-2425] MatchedPropertiesCache::Find A %u %d",
-                       key.hash_, it != cache_.end());
   if (it == cache_.end())
     return nullptr;
   CachedMatchedProperties* cache_item = it->value.Get();
-  recordreplay::Assert(
-      "[RUN-2424-2425] MatchedPropertiesCache::Find B %d %d", !!cache_item,
-      cache_item  && *cache_item != key.result_.GetMatchedProperties());
   if (!cache_item)
     return nullptr;
   if (*cache_item != key.result_.GetMatchedProperties())
     return nullptr;
-
-  recordreplay::Assert("[RUN-2424-2425] MatchedPropertiesCache::Find C %d",
-                       cache_item->computed_style->InsideLink() !=
-                           style_resolver_state.Style()->InsideLink());
 
   if (cache_item->computed_style->InsideLink() !=
       style_resolver_state.Style()->InsideLink())
     return nullptr;
   if (!cache_item->DependenciesEqual(style_resolver_state))
     return nullptr;
-
-  recordreplay::Assert("[RUN-2424-2425] MatchedPropertiesCache::Find D");
   return cache_item;
 }
 

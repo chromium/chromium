@@ -582,12 +582,10 @@ int NewIdAnyThread(const char* name) {
 }
 
 void Crash(const char* format, ...) {
-  if (IsRecordingOrReplaying()) {
-    va_list args;
-    va_start(args, format);
-    V8RecordReplayCrash(format, args);
-    va_end(args);
-  }
+  va_list args;
+  va_start(args, format);
+  V8RecordReplayCrash(format, args);
+  va_end(args);
 }
 
 bool IsInReplayCode(const char* why) {
