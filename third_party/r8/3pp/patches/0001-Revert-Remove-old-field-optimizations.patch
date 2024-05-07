@@ -1,0 +1,1148 @@
+From c5008711f5ca2f62746ac5dbb0bfdfc4905eb89a Mon Sep 17 00:00:00 2001
+From: Andrew Grieve <agrieve@google.com>
+Date: Tue, 7 May 2024 13:08:30 -0400
+Subject: [PATCH] Revert "Remove old field optimizations"
+
+This reverts commit ba2df6588388753b2cf6a9e3738daa0c2685056d.
+---
+ .../fieldaccess/FieldAccessAnalysis.java      |  32 ++
+ .../fieldaccess/FieldAssignmentTracker.java   | 531 ++++++++++++++++++
+ .../TrivialFieldAccessReprocessor.java        |  21 +-
+ .../r8/ir/analysis/type/DynamicType.java      |   5 -
+ .../ir/analysis/type/NotNullDynamicType.java  |   6 -
+ .../tools/r8/ir/conversion/IRConverter.java   |  25 +-
+ .../ir/conversion/PrimaryR8IRConverter.java   |   7 +
+ ...RedundantFieldLoadAndStoreElimination.java |   7 -
+ .../r8/ir/optimize/enums/EnumUnboxerImpl.java |  12 +-
+ .../ir/optimize/enums/EnumValueOptimizer.java |   6 +-
+ .../tools/r8/utils/InternalOptions.java       |   1 +
+ .../internal/proto/Proto2ShrinkingTest.java   |   2 +
+ .../proto/ProtoShrinkingTestBase.java         |   8 +
+ .../fieldaccess/FieldBitAccessInfoTest.java   |   2 +-
+ .../FieldWriteBeforeFieldReadTest.java        |  55 +-
+ .../InstanceFieldValuePropagationTest.java    |  13 +-
+ .../FieldStateArgumentPropagationTest.java    |   1 +
+ 17 files changed, 651 insertions(+), 83 deletions(-)
+ create mode 100644 src/main/java/com/android/tools/r8/ir/analysis/fieldaccess/FieldAssignmentTracker.java
+
+diff --git a/src/main/java/com/android/tools/r8/ir/analysis/fieldaccess/FieldAccessAnalysis.java b/src/main/java/com/android/tools/r8/ir/analysis/fieldaccess/FieldAccessAnalysis.java
+index d87ade4e21..b9f074c965 100644
+--- a/src/main/java/com/android/tools/r8/ir/analysis/fieldaccess/FieldAccessAnalysis.java
++++ b/src/main/java/com/android/tools/r8/ir/analysis/fieldaccess/FieldAccessAnalysis.java
+@@ -4,14 +4,19 @@
+ 
+ package com.android.tools.r8.ir.analysis.fieldaccess;
+ 
++import static com.android.tools.r8.graph.DexProgramClass.asProgramClassOrNull;
++
+ import com.android.tools.r8.graph.AppInfoWithClassHierarchy;
+ import com.android.tools.r8.graph.AppView;
++import com.android.tools.r8.graph.DexProgramClass;
+ import com.android.tools.r8.graph.ProgramField;
+ import com.android.tools.r8.graph.bytecodemetadata.BytecodeMetadataProvider;
+ import com.android.tools.r8.ir.code.FieldInstruction;
+ import com.android.tools.r8.ir.code.IRCode;
+ import com.android.tools.r8.ir.code.Instruction;
++import com.android.tools.r8.ir.code.NewInstance;
+ import com.android.tools.r8.ir.conversion.MethodProcessor;
++import com.android.tools.r8.ir.optimize.ClassInitializerDefaultsOptimization.ClassInitializerDefaultsResult;
+ import com.android.tools.r8.ir.optimize.info.OptimizationFeedback;
+ import com.android.tools.r8.shaking.AppInfoWithLiveness;
+ import com.android.tools.r8.utils.InternalOptions;
+@@ -20,6 +25,7 @@ import com.google.common.annotations.VisibleForTesting;
+ public class FieldAccessAnalysis {
+ 
+   private final AppView<? extends AppInfoWithClassHierarchy> appView;
++  private final FieldAssignmentTracker fieldAssignmentTracker;
+   private final FieldBitAccessAnalysis fieldBitAccessAnalysis;
+   private final FieldReadForInvokeReceiverAnalysis fieldReadForInvokeReceiverAnalysis;
+   private final FieldReadForWriteAnalysis fieldReadForWriteAnalysis;
+@@ -29,6 +35,8 @@ public class FieldAccessAnalysis {
+     this.appView = appView;
+     this.fieldBitAccessAnalysis =
+         options.enableFieldBitAccessAnalysis ? new FieldBitAccessAnalysis() : null;
++    this.fieldAssignmentTracker =
++        options.enableFieldAssignmentTracker ? new FieldAssignmentTracker(appView) : null;
+     this.fieldReadForInvokeReceiverAnalysis = new FieldReadForInvokeReceiverAnalysis(appView);
+     this.fieldReadForWriteAnalysis = new FieldReadForWriteAnalysis(appView);
+   }
+@@ -36,15 +44,28 @@ public class FieldAccessAnalysis {
+   @VisibleForTesting
+   public FieldAccessAnalysis(
+       AppView<? extends AppInfoWithClassHierarchy> appView,
++      FieldAssignmentTracker fieldAssignmentTracker,
+       FieldBitAccessAnalysis fieldBitAccessAnalysis,
+       FieldReadForInvokeReceiverAnalysis fieldReadForInvokeReceiverAnalysis,
+       FieldReadForWriteAnalysis fieldReadForWriteAnalysis) {
+     this.appView = appView;
++    this.fieldAssignmentTracker = fieldAssignmentTracker;
+     this.fieldBitAccessAnalysis = fieldBitAccessAnalysis;
+     this.fieldReadForInvokeReceiverAnalysis = fieldReadForInvokeReceiverAnalysis;
+     this.fieldReadForWriteAnalysis = fieldReadForWriteAnalysis;
+   }
+ 
++  public FieldAssignmentTracker fieldAssignmentTracker() {
++    return fieldAssignmentTracker;
++  }
++
++  public void acceptClassInitializerDefaultsResult(
++      ClassInitializerDefaultsResult classInitializerDefaultsResult) {
++    if (fieldAssignmentTracker != null) {
++      fieldAssignmentTracker.acceptClassInitializerDefaultsResult(classInitializerDefaultsResult);
++    }
++  }
++
+   public void recordFieldAccesses(
+       IRCode code,
+       BytecodeMetadataProvider.Builder bytecodeMetadataProviderBuilder,
+@@ -64,6 +85,9 @@ public class FieldAccessAnalysis {
+         ProgramField field =
+             appView.appInfo().resolveField(fieldInstruction.getField()).getProgramField();
+         if (field != null) {
++          if (fieldAssignmentTracker != null) {
++            fieldAssignmentTracker.recordFieldAccess(fieldInstruction, field);
++          }
+           if (fieldBitAccessAnalysis != null) {
+             fieldBitAccessAnalysis.recordFieldAccess(
+                 fieldInstruction, field.getDefinition(), feedback);
+@@ -77,6 +101,14 @@ public class FieldAccessAnalysis {
+                 fieldInstruction, field, bytecodeMetadataProviderBuilder);
+           }
+         }
++      } else if (instruction.isNewInstance()) {
++        NewInstance newInstance = instruction.asNewInstance();
++        DexProgramClass clazz = asProgramClassOrNull(appView.definitionFor(newInstance.clazz));
++        if (clazz != null) {
++          if (fieldAssignmentTracker != null) {
++            fieldAssignmentTracker.recordAllocationSite(newInstance, clazz, code.context());
++          }
++        }
+       }
+     }
+   }
+diff --git a/src/main/java/com/android/tools/r8/ir/analysis/fieldaccess/FieldAssignmentTracker.java b/src/main/java/com/android/tools/r8/ir/analysis/fieldaccess/FieldAssignmentTracker.java
+new file mode 100644
+index 0000000000..af58cdcdc5
+--- /dev/null
++++ b/src/main/java/com/android/tools/r8/ir/analysis/fieldaccess/FieldAssignmentTracker.java
+@@ -0,0 +1,531 @@
++// Copyright (c) 2020, the R8 project authors. Please see the AUTHORS file
++// for details. All rights reserved. Use of this source code is governed by a
++// BSD-style license that can be found in the LICENSE file.
++
++package com.android.tools.r8.ir.analysis.fieldaccess;
++
++import static com.android.tools.r8.ir.analysis.type.Nullability.definitelyNotNull;
++
++import com.android.tools.r8.graph.AppView;
++import com.android.tools.r8.graph.DexClassAndMethod;
++import com.android.tools.r8.graph.DexEncodedField;
++import com.android.tools.r8.graph.DexEncodedMethod;
++import com.android.tools.r8.graph.DexItemFactory;
++import com.android.tools.r8.graph.DexProgramClass;
++import com.android.tools.r8.graph.DexType;
++import com.android.tools.r8.graph.FieldAccessInfo;
++import com.android.tools.r8.graph.FieldAccessInfoCollection;
++import com.android.tools.r8.graph.ObjectAllocationInfoCollection;
++import com.android.tools.r8.graph.ProgramField;
++import com.android.tools.r8.graph.ProgramMethod;
++import com.android.tools.r8.ir.analysis.type.ClassTypeElement;
++import com.android.tools.r8.ir.analysis.type.DynamicType;
++import com.android.tools.r8.ir.analysis.type.DynamicTypeWithUpperBound;
++import com.android.tools.r8.ir.analysis.type.Nullability;
++import com.android.tools.r8.ir.analysis.value.AbstractValue;
++import com.android.tools.r8.ir.analysis.value.AbstractValueFactory;
++import com.android.tools.r8.ir.analysis.value.BottomValue;
++import com.android.tools.r8.ir.analysis.value.SingleValue;
++import com.android.tools.r8.ir.analysis.value.UnknownValue;
++import com.android.tools.r8.ir.code.FieldInstruction;
++import com.android.tools.r8.ir.code.InvokeDirect;
++import com.android.tools.r8.ir.code.NewInstance;
++import com.android.tools.r8.ir.code.Value;
++import com.android.tools.r8.ir.optimize.ClassInitializerDefaultsOptimization.ClassInitializerDefaultsResult;
++import com.android.tools.r8.ir.optimize.info.OptimizationFeedbackDelayed;
++import com.android.tools.r8.ir.optimize.info.field.InstanceFieldArgumentInitializationInfo;
++import com.android.tools.r8.ir.optimize.info.field.InstanceFieldInitializationInfo;
++import com.android.tools.r8.ir.optimize.info.field.InstanceFieldInitializationInfoCollection;
++import com.android.tools.r8.optimize.argumentpropagation.codescanner.ConcreteArrayTypeValueState;
++import com.android.tools.r8.optimize.argumentpropagation.codescanner.ConcreteClassTypeValueState;
++import com.android.tools.r8.optimize.argumentpropagation.codescanner.ConcretePrimitiveTypeValueState;
++import com.android.tools.r8.optimize.argumentpropagation.codescanner.ValueState;
++import com.android.tools.r8.optimize.argumentpropagation.utils.WideningUtils;
++import com.android.tools.r8.shaking.AppInfoWithLiveness;
++import com.android.tools.r8.utils.TraversalContinuation;
++import com.android.tools.r8.utils.collections.ProgramFieldMap;
++import com.android.tools.r8.utils.collections.ProgramMethodSet;
++import it.unimi.dsi.fastutil.objects.Reference2IntMap;
++import it.unimi.dsi.fastutil.objects.Reference2IntOpenHashMap;
++import java.util.ArrayList;
++import java.util.IdentityHashMap;
++import java.util.List;
++import java.util.Map;
++import java.util.Set;
++import java.util.concurrent.ConcurrentHashMap;
++import java.util.function.Consumer;
++
++// TODO(b/330674939): Remove legacy field optimizations.
++public class FieldAssignmentTracker {
++
++  private final AbstractValueFactory abstractValueFactory;
++  private final AppView<AppInfoWithLiveness> appView;
++  private final DexItemFactory dexItemFactory;
++
++  // A field access graph with edges from methods to the fields that they access. Edges are removed
++  // from the graph as we process methods, such that we can conclude that all field writes have been
++  // processed when a field no longer has any incoming edges.
++  private final FieldAccessGraph fieldAccessGraph;
++
++  // An object allocation graph with edges from methods to the classes they instantiate. Edges are
++  // removed from the graph as we process methods, such that we can conclude that all allocation
++  // sites have been seen when a class no longer has any incoming edges.
++  private final ObjectAllocationGraph objectAllocationGraph;
++
++  // Information about the fields in the program. If a field is not a key in the map then no writes
++  // has been seen to the field.
++  private final Map<DexEncodedField, ValueState> fieldStates = new ConcurrentHashMap<>();
++
++  private final Map<DexProgramClass, ProgramFieldMap<AbstractValue>>
++      abstractFinalInstanceFieldValues = new ConcurrentHashMap<>();
++
++  private final Set<DexProgramClass> classesWithPrunedInstanceInitializers =
++      ConcurrentHashMap.newKeySet();
++
++  FieldAssignmentTracker(AppView<AppInfoWithLiveness> appView) {
++    this.abstractValueFactory = appView.abstractValueFactory();
++    this.appView = appView;
++    this.dexItemFactory = appView.dexItemFactory();
++    this.fieldAccessGraph = new FieldAccessGraph();
++    this.objectAllocationGraph = new ObjectAllocationGraph();
++  }
++
++  public void initialize() {
++    fieldAccessGraph.initialize(appView);
++    objectAllocationGraph.initialize(appView);
++    initializeAbstractInstanceFieldValues();
++  }
++
++  /**
++   * For each class with known allocation sites, adds a mapping from clazz -> instance field ->
++   * bottom.
++   *
++   * <p>If an entry (clazz, instance field) is missing in {@link #abstractFinalInstanceFieldValues},
++   * it is interpreted as if we known nothing about the value of the field.
++   */
++  private void initializeAbstractInstanceFieldValues() {
++    FieldAccessInfoCollection<?> fieldAccessInfos =
++        appView.appInfo().getFieldAccessInfoCollection();
++    ObjectAllocationInfoCollection objectAllocationInfos =
++        appView.appInfo().getObjectAllocationInfoCollection();
++    objectAllocationInfos.forEachClassWithKnownAllocationSites(
++        (clazz, allocationSites) -> {
++          if (appView.appInfo().isInstantiatedIndirectly(clazz)) {
++            // TODO(b/147652121): Handle classes that are instantiated indirectly.
++            return;
++          }
++          List<DexEncodedField> instanceFields = clazz.instanceFields();
++          if (instanceFields.isEmpty()) {
++            // No instance fields to track.
++            return;
++          }
++          ProgramFieldMap<AbstractValue> abstractFinalInstanceFieldValuesForClass =
++              ProgramFieldMap.create();
++          clazz.forEachProgramInstanceField(
++              field -> {
++                if (field.isFinalOrEffectivelyFinal(appView)) {
++                  FieldAccessInfo fieldAccessInfo = fieldAccessInfos.get(field.getReference());
++                  if (fieldAccessInfo != null && !fieldAccessInfo.hasReflectiveAccess()) {
++                    abstractFinalInstanceFieldValuesForClass.put(field, BottomValue.getInstance());
++                  }
++                }
++              });
++          if (!abstractFinalInstanceFieldValuesForClass.isEmpty()) {
++            abstractFinalInstanceFieldValues.put(clazz, abstractFinalInstanceFieldValuesForClass);
++          }
++        });
++    for (DexProgramClass clazz : appView.appInfo().classes()) {
++      clazz.forEachProgramField(
++          field -> {
++            FieldAccessInfo accessInfo = fieldAccessInfos.get(field.getReference());
++            if (!appView.getKeepInfo(field).isValuePropagationAllowed(appView, field)
++                || (accessInfo != null && accessInfo.isWrittenFromMethodHandle())) {
++              fieldStates.put(field.getDefinition(), ValueState.unknown());
++            }
++          });
++    }
++  }
++
++  @SuppressWarnings("ReferenceEquality")
++  void acceptClassInitializerDefaultsResult(
++      ClassInitializerDefaultsResult classInitializerDefaultsResult) {
++    classInitializerDefaultsResult.forEachOptimizedField(
++        (field, value) -> {
++          DexType fieldType = field.getType();
++          if (value.isDefault(field.getType())) {
++            return;
++          }
++          assert fieldType.isClassType() || fieldType.isPrimitiveType();
++          fieldStates.compute(
++              field,
++              (f, fieldState) -> {
++                if (fieldState == null) {
++                  AbstractValue abstractValue = value.toAbstractValue(abstractValueFactory);
++                  if (fieldType.isClassType()) {
++                    assert abstractValue.isSingleStringValue()
++                        || abstractValue.isSingleDexItemBasedStringValue();
++                    if (fieldType == dexItemFactory.stringType) {
++                      return ConcreteClassTypeValueState.create(
++                          abstractValue, DynamicType.definitelyNotNull());
++                    } else {
++                      ClassTypeElement nonNullableStringType =
++                          dexItemFactory
++                              .stringType
++                              .toTypeElement(appView, definitelyNotNull())
++                              .asClassType();
++                      return ConcreteClassTypeValueState.create(
++                          abstractValue, DynamicType.createExact(nonNullableStringType));
++                    }
++                  } else {
++                    assert fieldType.isPrimitiveType();
++                    return ConcretePrimitiveTypeValueState.create(abstractValue);
++                  }
++                }
++                // If the field is already assigned outside the class initializer then just give up.
++                return ValueState.unknown();
++              });
++        });
++  }
++
++  void recordFieldAccess(FieldInstruction instruction, ProgramField field) {
++    if (instruction.isFieldPut()) {
++      recordFieldPut(field, instruction.value());
++    }
++  }
++
++  private void recordFieldPut(ProgramField field, Value value) {
++    // For now only attempt to prove that fields are definitely null. In order to prove a single
++    // value for fields that are not definitely null, we need to prove that the given field is never
++    // read before it is written.
++    AbstractValue abstractValue =
++        value.isZero()
++            ? abstractValueFactory.createDefaultValue(field.getType())
++            : AbstractValue.unknown();
++    Nullability nullability = value.getType().nullability();
++    fieldStates.compute(
++        field.getDefinition(),
++        (f, fieldState) -> {
++          if (fieldState == null || fieldState.isBottom()) {
++            DexType fieldType = field.getType();
++            if (fieldType.isArrayType()) {
++              return ConcreteArrayTypeValueState.create(nullability);
++            }
++            if (fieldType.isPrimitiveType()) {
++              return ConcretePrimitiveTypeValueState.create(abstractValue);
++            }
++            assert fieldType.isClassType();
++            DynamicType dynamicType =
++                WideningUtils.widenDynamicNonReceiverType(
++                    appView,
++                    value.getDynamicType(appView).withNullability(Nullability.maybeNull()),
++                    field.getType());
++            return ConcreteClassTypeValueState.create(abstractValue, dynamicType);
++          }
++
++          if (fieldState.isUnknown()) {
++            return fieldState;
++          }
++
++          assert fieldState.isConcrete();
++
++          if (fieldState.isArrayState()) {
++            ConcreteArrayTypeValueState arrayFieldState = fieldState.asArrayState();
++            return arrayFieldState.mutableJoin(appView, field, nullability);
++          }
++
++          if (fieldState.isPrimitiveState()) {
++            ConcretePrimitiveTypeValueState primitiveFieldState = fieldState.asPrimitiveState();
++            return primitiveFieldState.mutableJoin(appView, field, abstractValue);
++          }
++
++          assert fieldState.isClassState();
++
++          ConcreteClassTypeValueState classFieldState = fieldState.asClassState();
++          DexType inStaticType = null;
++          return classFieldState.mutableJoin(
++              appView, abstractValue, value.getDynamicType(appView), inStaticType, field);
++        });
++  }
++
++  void recordAllocationSite(NewInstance instruction, DexProgramClass clazz, ProgramMethod context) {
++    ProgramFieldMap<AbstractValue> abstractInstanceFieldValuesForClass =
++        abstractFinalInstanceFieldValues.get(clazz);
++    if (abstractInstanceFieldValuesForClass == null) {
++      // We are not tracking the value of any of clazz' instance fields.
++      return;
++    }
++
++    InvokeDirect invoke = instruction.getUniqueConstructorInvoke(dexItemFactory);
++    if (invoke == null) {
++      // We just lost track.
++      abstractFinalInstanceFieldValues.remove(clazz);
++      return;
++    }
++
++    DexClassAndMethod singleTarget = invoke.lookupSingleTarget(appView, context);
++    if (singleTarget == null) {
++      // We just lost track.
++      abstractFinalInstanceFieldValues.remove(clazz);
++      return;
++    }
++
++    InstanceFieldInitializationInfoCollection initializationInfoCollection =
++        singleTarget
++            .getDefinition()
++            .getOptimizationInfo()
++            .getInstanceInitializerInfo(invoke)
++            .fieldInitializationInfos();
++
++    // Synchronize on the lattice element (abstractInstanceFieldValuesForClass) in case we process
++    // another allocation site of `clazz` concurrently.
++    synchronized (abstractInstanceFieldValuesForClass) {
++      abstractInstanceFieldValuesForClass.removeIf(
++          (field, abstractValue, entry) -> {
++            InstanceFieldInitializationInfo initializationInfo =
++                initializationInfoCollection.get(field);
++            if (initializationInfo.isArgumentInitializationInfo()) {
++              InstanceFieldArgumentInitializationInfo argumentInitializationInfo =
++                  initializationInfo.asArgumentInitializationInfo();
++              Value argument =
++                  invoke.arguments().get(argumentInitializationInfo.getArgumentIndex());
++              AbstractValue argumentAbstractValue = argument.getAbstractValue(appView, context);
++              abstractValue =
++                  appView
++                      .getAbstractValueFieldJoiner()
++                      .join(abstractValue, argumentAbstractValue, field);
++            } else if (initializationInfo.isSingleValue()) {
++              SingleValue singleValueInitializationInfo = initializationInfo.asSingleValue();
++              abstractValue =
++                  appView
++                      .getAbstractValueFieldJoiner()
++                      .join(abstractValue, singleValueInitializationInfo, field);
++            } else if (initializationInfo.isTypeInitializationInfo()) {
++              // TODO(b/149732532): Not handled, for now.
++              abstractValue = UnknownValue.getInstance();
++            } else {
++              assert initializationInfo.isUnknown();
++              abstractValue = UnknownValue.getInstance();
++            }
++
++            assert !abstractValue.isBottom();
++            entry.setValue(abstractValue);
++            return abstractValue.isUnknown();
++          });
++    }
++  }
++
++  private void recordAllFieldPutsProcessed(
++      ProgramField field, OptimizationFeedbackDelayed feedback) {
++    ValueState fieldState =
++        fieldStates.getOrDefault(field.getDefinition(), ValueState.bottom(field));
++    AbstractValue abstractValue =
++        fieldState.isBottom()
++            ? appView.abstractValueFactory().createDefaultValue(field.getType())
++            : fieldState.getAbstractValue(appView);
++    if (abstractValue.isNonTrivial()) {
++      feedback.recordFieldHasAbstractValue(field, appView, abstractValue);
++    }
++
++    if (fieldState.isClassState() && field.getOptimizationInfo().getDynamicType().isUnknown()) {
++      ConcreteClassTypeValueState classFieldState = fieldState.asClassState();
++      DynamicType dynamicType = classFieldState.getDynamicType();
++      if (!dynamicType.isUnknown()) {
++        assert WideningUtils.widenDynamicNonReceiverType(appView, dynamicType, field.getType())
++            .equals(dynamicType);
++        if (dynamicType.isNotNullType()) {
++          feedback.markFieldHasDynamicType(field, dynamicType);
++        } else {
++          DynamicTypeWithUpperBound staticType = field.getType().toDynamicType(appView);
++          if (dynamicType.asDynamicTypeWithUpperBound().strictlyLessThan(staticType, appView)) {
++            feedback.markFieldHasDynamicType(field, dynamicType);
++          }
++        }
++      }
++    }
++
++    if (!field.getAccessFlags().isStatic()) {
++      recordAllInstanceFieldPutsProcessed(field, feedback);
++    }
++  }
++
++  private void recordAllInstanceFieldPutsProcessed(
++      ProgramField field, OptimizationFeedbackDelayed feedback) {
++    if (!appView.appInfo().isInstanceFieldWrittenOnlyInInstanceInitializers(field)) {
++      return;
++    }
++    DexProgramClass clazz = field.getHolder();
++    if (classesWithPrunedInstanceInitializers.contains(clazz)) {
++      // The current method is analyzing the instance-puts to the field in the instance initializers
++      // of the holder class. Due to single caller inlining of instance initializers some of the
++      // methods needed for the analysis may have been pruned from the app, in which case the
++      // analysis result will not be conservative.
++      return;
++    }
++    AbstractValue abstractValue = BottomValue.getInstance();
++    for (DexEncodedMethod method : clazz.directMethods(DexEncodedMethod::isInstanceInitializer)) {
++      InstanceFieldInitializationInfo fieldInitializationInfo =
++          method
++              .getOptimizationInfo()
++              .getContextInsensitiveInstanceInitializerInfo()
++              .fieldInitializationInfos()
++              .get(field);
++      if (fieldInitializationInfo.isSingleValue()) {
++        abstractValue =
++            appView
++                .getAbstractValueFieldJoiner()
++                .join(abstractValue, fieldInitializationInfo.asSingleValue(), field);
++        if (abstractValue.isUnknown()) {
++          break;
++        }
++      } else if (fieldInitializationInfo.isTypeInitializationInfo()) {
++        // TODO(b/149732532): Not handled, for now.
++        abstractValue = UnknownValue.getInstance();
++        break;
++      } else {
++        assert fieldInitializationInfo.isArgumentInitializationInfo()
++            || fieldInitializationInfo.isUnknown();
++        abstractValue = UnknownValue.getInstance();
++        break;
++      }
++    }
++
++    assert !abstractValue.isBottom();
++
++    if (!abstractValue.isUnknown()) {
++      feedback.recordFieldHasAbstractValue(field, appView, abstractValue);
++    }
++  }
++
++  private void recordAllAllocationsSitesProcessed(
++      DexProgramClass clazz, OptimizationFeedbackDelayed feedback) {
++    ProgramFieldMap<AbstractValue> abstractInstanceFieldValuesForClass =
++        abstractFinalInstanceFieldValues.get(clazz);
++    if (abstractInstanceFieldValuesForClass == null) {
++      return;
++    }
++
++    clazz.traverseProgramInstanceFields(
++        field -> {
++          AbstractValue abstractValue =
++              abstractInstanceFieldValuesForClass.getOrDefault(field, UnknownValue.getInstance());
++          if (abstractValue.isBottom()) {
++            feedback.modifyAppInfoWithLiveness(modifier -> modifier.removeInstantiatedType(clazz));
++            return TraversalContinuation.doBreak();
++          }
++          if (abstractValue.isNonTrivial()) {
++            feedback.recordFieldHasAbstractValue(field, appView, abstractValue);
++          }
++          return TraversalContinuation.doContinue();
++        });
++  }
++
++  public void onMethodPruned(ProgramMethod method) {
++    onMethodCodePruned(method);
++  }
++
++  public void onMethodCodePruned(ProgramMethod method) {
++    if (method.getDefinition().isInstanceInitializer()) {
++      classesWithPrunedInstanceInitializers.add(method.getHolder());
++    }
++  }
++
++  public void waveDone(ProgramMethodSet wave, OptimizationFeedbackDelayed feedback) {
++    // This relies on the instance initializer info in the method optimization feedback. It is
++    // therefore important that the optimization info has been flushed in advance.
++    assert feedback.noUpdatesLeft();
++    for (ProgramMethod method : wave) {
++      fieldAccessGraph.markProcessed(method, field -> recordAllFieldPutsProcessed(field, feedback));
++      objectAllocationGraph.markProcessed(
++          method, clazz -> recordAllAllocationsSitesProcessed(clazz, feedback));
++    }
++    feedback.refineAppInfoWithLiveness(appView.appInfo().withLiveness());
++    feedback.updateVisibleOptimizationInfo();
++  }
++
++  static class FieldAccessGraph {
++
++    // The fields written by each method.
++    private final Map<DexEncodedMethod, List<ProgramField>> fieldWrites = new IdentityHashMap<>();
++
++    // The number of writes that have not yet been processed per field.
++    private final Reference2IntMap<DexEncodedField> pendingFieldWrites =
++        new Reference2IntOpenHashMap<>();
++
++    FieldAccessGraph() {}
++
++    public void initialize(AppView<AppInfoWithLiveness> appView) {
++      FieldAccessInfoCollection<?> fieldAccessInfoCollection =
++          appView.appInfo().getFieldAccessInfoCollection();
++      fieldAccessInfoCollection.forEach(
++          info -> {
++            ProgramField field =
++                appView.appInfo().resolveField(info.getField()).getSingleProgramField();
++            if (field == null) {
++              return;
++            }
++            if (!info.hasReflectiveAccess() && !info.isWrittenFromMethodHandle()) {
++              info.forEachWriteContext(
++                  context ->
++                      fieldWrites
++                          .computeIfAbsent(context.getDefinition(), ignore -> new ArrayList<>())
++                          .add(field));
++              pendingFieldWrites.put(field.getDefinition(), info.getNumberOfWriteContexts());
++            }
++          });
++    }
++
++    void markProcessed(ProgramMethod method, Consumer<ProgramField> allWritesSeenConsumer) {
++      List<ProgramField> fieldWritesInMethod = fieldWrites.get(method.getDefinition());
++      if (fieldWritesInMethod != null) {
++        for (ProgramField field : fieldWritesInMethod) {
++          int numberOfPendingFieldWrites = pendingFieldWrites.removeInt(field.getDefinition()) - 1;
++          if (numberOfPendingFieldWrites > 0) {
++            pendingFieldWrites.put(field.getDefinition(), numberOfPendingFieldWrites);
++          } else {
++            allWritesSeenConsumer.accept(field);
++          }
++        }
++      }
++    }
++  }
++
++  static class ObjectAllocationGraph {
++
++    // The classes instantiated by each method.
++    private final Map<DexEncodedMethod, List<DexProgramClass>> objectAllocations =
++        new IdentityHashMap<>();
++
++    // The number of allocation sites that have not yet been processed per class.
++    private final Reference2IntMap<DexProgramClass> pendingObjectAllocations =
++        new Reference2IntOpenHashMap<>();
++
++    ObjectAllocationGraph() {}
++
++    public void initialize(AppView<AppInfoWithLiveness> appView) {
++      ObjectAllocationInfoCollection objectAllocationInfos =
++          appView.appInfo().getObjectAllocationInfoCollection();
++      objectAllocationInfos.forEachClassWithKnownAllocationSites(
++          (clazz, contexts) -> {
++            for (DexEncodedMethod context : contexts) {
++              objectAllocations.computeIfAbsent(context, ignore -> new ArrayList<>()).add(clazz);
++            }
++            pendingObjectAllocations.put(clazz, contexts.size());
++          });
++    }
++
++    void markProcessed(
++        ProgramMethod method, Consumer<DexProgramClass> allAllocationsSitesSeenConsumer) {
++      List<DexProgramClass> allocationSitesInMethod = objectAllocations.get(method.getDefinition());
++      if (allocationSitesInMethod != null) {
++        for (DexProgramClass type : allocationSitesInMethod) {
++          int numberOfPendingAllocationSites = pendingObjectAllocations.removeInt(type) - 1;
++          if (numberOfPendingAllocationSites > 0) {
++            pendingObjectAllocations.put(type, numberOfPendingAllocationSites);
++          } else {
++            allAllocationsSitesSeenConsumer.accept(type);
++          }
++        }
++      }
++    }
++  }
++}
+diff --git a/src/main/java/com/android/tools/r8/ir/analysis/fieldaccess/TrivialFieldAccessReprocessor.java b/src/main/java/com/android/tools/r8/ir/analysis/fieldaccess/TrivialFieldAccessReprocessor.java
+index b18d828256..23bebb52a3 100644
+--- a/src/main/java/com/android/tools/r8/ir/analysis/fieldaccess/TrivialFieldAccessReprocessor.java
++++ b/src/main/java/com/android/tools/r8/ir/analysis/fieldaccess/TrivialFieldAccessReprocessor.java
+@@ -135,7 +135,7 @@ public final class TrivialFieldAccessReprocessor {
+ 
+   private void computeFieldsWithNonTrivialValue() {
+     for (DexProgramClass clazz : appView.appInfo().classes()) {
+-      for (DexEncodedField field : clazz.fields()) {
++      for (DexEncodedField field : clazz.instanceFields()) {
+         FieldClassification fieldClassification = classifyField(field, appView);
+         switch (fieldClassification) {
+           case CONSTANT:
+@@ -143,7 +143,7 @@ public final class TrivialFieldAccessReprocessor {
+             constantFields.add(field);
+             break;
+           case NON_CONSTANT:
+-            // Reprocess reads to allow branch pruning and value propagation.
++            // Only reprocess writes, to allow branch pruning.
+             nonConstantFields.add(field);
+             break;
+           default:
+@@ -151,6 +151,17 @@ public final class TrivialFieldAccessReprocessor {
+             break;
+         }
+       }
++      if (appView.canUseInitClass() || !clazz.classInitializationMayHaveSideEffects(appView)) {
++        for (DexEncodedField field : clazz.staticFields()) {
++          FieldClassification fieldClassification = classifyField(field, appView);
++          if (fieldClassification == FieldClassification.CONSTANT) {
++            constantFields.add(field);
++          } else {
++            assert fieldClassification == FieldClassification.NON_CONSTANT
++                || fieldClassification == FieldClassification.UNKNOWN;
++          }
++        }
++      }
+     }
+     assert verifyNoConstantFieldsOnSynthesizedClasses(appView);
+   }
+@@ -192,6 +203,7 @@ public final class TrivialFieldAccessReprocessor {
+         });
+   }
+ 
++  @SuppressWarnings("ReferenceEquality")
+   private static FieldClassification classifyField(
+       DexEncodedField field, AppView<AppInfoWithLiveness> appView) {
+     FieldAccessInfo fieldAccessInfo =
+@@ -214,13 +226,10 @@ public final class TrivialFieldAccessReprocessor {
+       if (singleValue.isSingleFieldValue()) {
+         SingleFieldValue singleFieldValue = singleValue.asSingleFieldValue();
+         DexField singleField = singleFieldValue.getField();
+-        if (singleField.isNotIdenticalTo(field.getReference())
++        if (singleField != field.getReference()
+             && !singleFieldValue.mayHaveFinalizeMethodDirectlyOrIndirectly(appView)) {
+           return FieldClassification.CONSTANT;
+         }
+-        if (singleFieldValue.hasObjectState()) {
+-          return FieldClassification.NON_CONSTANT;
+-        }
+       }
+       return FieldClassification.UNKNOWN;
+     }
+diff --git a/src/main/java/com/android/tools/r8/ir/analysis/type/DynamicType.java b/src/main/java/com/android/tools/r8/ir/analysis/type/DynamicType.java
+index 5f0acbe469..971a56ed63 100644
+--- a/src/main/java/com/android/tools/r8/ir/analysis/type/DynamicType.java
++++ b/src/main/java/com/android/tools/r8/ir/analysis/type/DynamicType.java
+@@ -206,11 +206,6 @@ public abstract class DynamicType {
+   @Override
+   public abstract int hashCode();
+ 
+-  public DynamicType uncanonicalizeNotNullType(
+-      AppView<AppInfoWithLiveness> appView, DexType staticType) {
+-    return this;
+-  }
+-
+   private static boolean verifyNotEffectivelyFinalClassType(
+       AppView<AppInfoWithLiveness> appView, TypeElement type) {
+     if (type.isClassType()) {
+diff --git a/src/main/java/com/android/tools/r8/ir/analysis/type/NotNullDynamicType.java b/src/main/java/com/android/tools/r8/ir/analysis/type/NotNullDynamicType.java
+index d5f7fe1b5d..7645341617 100644
+--- a/src/main/java/com/android/tools/r8/ir/analysis/type/NotNullDynamicType.java
++++ b/src/main/java/com/android/tools/r8/ir/analysis/type/NotNullDynamicType.java
+@@ -75,10 +75,4 @@ public class NotNullDynamicType extends DynamicType {
+   public String toString() {
+     return "NotNullDynamicType";
+   }
+-
+-  @Override
+-  public DynamicType uncanonicalizeNotNullType(
+-      AppView<AppInfoWithLiveness> appView, DexType staticType) {
+-    return DynamicType.create(appView, staticType.toNonNullTypeElement(appView));
+-  }
+ }
+diff --git a/src/main/java/com/android/tools/r8/ir/conversion/IRConverter.java b/src/main/java/com/android/tools/r8/ir/conversion/IRConverter.java
+index e87d0a8ee8..d9f658add3 100644
+--- a/src/main/java/com/android/tools/r8/ir/conversion/IRConverter.java
++++ b/src/main/java/com/android/tools/r8/ir/conversion/IRConverter.java
+@@ -596,16 +596,6 @@ public class IRConverter {
+       previous = printMethod(code, "IR after identifier-name strings (SSA)", previous);
+     }
+ 
+-    timing.begin("Run proto shrinking tasks");
+-    appView.withGeneratedExtensionRegistryShrinker(shrinker -> shrinker.rewriteCode(method, code));
+-
+-    previous = printMethod(code, "IR after generated extension registry shrinking (SSA)", previous);
+-
+-    appView.withGeneratedMessageLiteShrinker(shrinker -> shrinker.run(code));
+-    timing.end();
+-
+-    previous = printMethod(code, "IR after generated message lite shrinking (SSA)", previous);
+-
+     if (memberValuePropagation != null) {
+       timing.begin("Propagate member values");
+       memberValuePropagation.run(code);
+@@ -642,6 +632,16 @@ public class IRConverter {
+ 
+     previous = printMethod(code, "IR after inserting assume instructions (SSA)", previous);
+ 
++    timing.begin("Run proto shrinking tasks");
++    appView.withGeneratedExtensionRegistryShrinker(shrinker -> shrinker.rewriteCode(method, code));
++
++    previous = printMethod(code, "IR after generated extension registry shrinking (SSA)", previous);
++
++    appView.withGeneratedMessageLiteShrinker(shrinker -> shrinker.run(code));
++    timing.end();
++
++    previous = printMethod(code, "IR after generated message lite shrinking (SSA)", previous);
++
+     if (!isDebugMode && options.inlinerOptions().enableInlining && inliner != null) {
+       timing.begin("Inlining");
+       inliner.performInlining(code.context(), code, feedback, methodProcessor, timing);
+@@ -900,6 +900,9 @@ public class IRConverter {
+       timing.begin("Analyze field accesses");
+       fieldAccessAnalysis.recordFieldAccesses(
+           code, bytecodeMetadataProviderBuilder, feedback, methodProcessor);
++      if (classInitializerDefaultsResult != null) {
++        fieldAccessAnalysis.acceptClassInitializerDefaultsResult(classInitializerDefaultsResult);
++      }
+       timing.end();
+     }
+ 
+@@ -1090,6 +1093,7 @@ public class IRConverter {
+     assert method.getHolder().lookupMethod(method.getReference()) == null;
+     appView.withArgumentPropagator(argumentPropagator -> argumentPropagator.onMethodPruned(method));
+     enumUnboxer.onMethodPruned(method);
++    fieldAccessAnalysis.fieldAssignmentTracker().onMethodPruned(method);
+     numberUnboxer.onMethodPruned(method);
+     outliner.onMethodPruned(method);
+     if (inliner != null) {
+@@ -1107,6 +1111,7 @@ public class IRConverter {
+     appView.withArgumentPropagator(
+         argumentPropagator -> argumentPropagator.onMethodCodePruned(method));
+     enumUnboxer.onMethodCodePruned(method);
++    fieldAccessAnalysis.fieldAssignmentTracker().onMethodCodePruned(method);
+     numberUnboxer.onMethodCodePruned(method);
+     outliner.onMethodCodePruned(method);
+     if (inliner != null) {
+diff --git a/src/main/java/com/android/tools/r8/ir/conversion/PrimaryR8IRConverter.java b/src/main/java/com/android/tools/r8/ir/conversion/PrimaryR8IRConverter.java
+index 9215753047..035690f67d 100644
+--- a/src/main/java/com/android/tools/r8/ir/conversion/PrimaryR8IRConverter.java
++++ b/src/main/java/com/android/tools/r8/ir/conversion/PrimaryR8IRConverter.java
+@@ -73,6 +73,10 @@ public class PrimaryR8IRConverter extends IRConverter {
+     numberUnboxer.prepareForPrimaryOptimizationPass(timing, executorService);
+     outliner.prepareForPrimaryOptimizationPass(graphLensForPrimaryOptimizationPass);
+ 
++    if (fieldAccessAnalysis != null && fieldAccessAnalysis.fieldAssignmentTracker() != null) {
++      fieldAccessAnalysis.fieldAssignmentTracker().initialize();
++    }
++
+     // Process the application identifying outlining candidates.
+     OptimizationFeedbackDelayed feedback = delayedOptimizationFeedback;
+     PostMethodProcessor.Builder postMethodProcessorBuilder =
+@@ -251,6 +255,9 @@ public class PrimaryR8IRConverter extends IRConverter {
+   public void waveDone(ProgramMethodSet wave, ExecutorService executorService) {
+     delayedOptimizationFeedback.refineAppInfoWithLiveness(appView.appInfo().withLiveness());
+     delayedOptimizationFeedback.updateVisibleOptimizationInfo();
++    if (fieldAccessAnalysis.fieldAssignmentTracker() != null) {
++      fieldAccessAnalysis.fieldAssignmentTracker().waveDone(wave, delayedOptimizationFeedback);
++    }
+     appView.withArgumentPropagator(ArgumentPropagator::publishDelayedReprocessingCriteria);
+     if (appView.options().protoShrinking().enableRemoveProtoEnumSwitchMap()) {
+       appView.protoShrinker().protoEnumSwitchMapRemover.updateVisibleStaticFieldValues();
+diff --git a/src/main/java/com/android/tools/r8/ir/optimize/RedundantFieldLoadAndStoreElimination.java b/src/main/java/com/android/tools/r8/ir/optimize/RedundantFieldLoadAndStoreElimination.java
+index 23517ba68b..23ae714abe 100644
+--- a/src/main/java/com/android/tools/r8/ir/optimize/RedundantFieldLoadAndStoreElimination.java
++++ b/src/main/java/com/android/tools/r8/ir/optimize/RedundantFieldLoadAndStoreElimination.java
+@@ -5,7 +5,6 @@
+ package com.android.tools.r8.ir.optimize;
+ 
+ import static com.android.tools.r8.graph.ProgramField.asProgramFieldOrNull;
+-import static com.android.tools.r8.ir.optimize.info.OptimizationFeedback.getSimpleFeedback;
+ import static com.android.tools.r8.utils.MapUtils.ignoreKey;
+ import static com.android.tools.r8.utils.PredicateUtils.not;
+ 
+@@ -687,9 +686,6 @@ public class RedundantFieldLoadAndStoreElimination extends CodeRewriterPass<AppI
+       if (replacement != null) {
+         if (isRedundantFieldLoadEliminationAllowed(field)) {
+           replacement.eliminateRedundantRead(it, instanceGet);
+-          if (field.isProgramField()) {
+-            getSimpleFeedback().markFieldAsPropagated(field.getDefinition());
+-          }
+         }
+         return;
+       }
+@@ -778,9 +774,6 @@ public class RedundantFieldLoadAndStoreElimination extends CodeRewriterPass<AppI
+       FieldValue replacement = activeState.getStaticFieldValue(field.getReference());
+       if (replacement != null) {
+         replacement.eliminateRedundantRead(instructionIterator, staticGet);
+-        if (field.isProgramField()) {
+-          getSimpleFeedback().markFieldAsPropagated(field.getDefinition());
+-        }
+         return;
+       }
+ 
+diff --git a/src/main/java/com/android/tools/r8/ir/optimize/enums/EnumUnboxerImpl.java b/src/main/java/com/android/tools/r8/ir/optimize/enums/EnumUnboxerImpl.java
+index 7661efc9ee..65487d801b 100644
+--- a/src/main/java/com/android/tools/r8/ir/optimize/enums/EnumUnboxerImpl.java
++++ b/src/main/java/com/android/tools/r8/ir/optimize/enums/EnumUnboxerImpl.java
+@@ -967,14 +967,14 @@ public class EnumUnboxerImpl extends EnumUnboxer {
+                 unboxedValues.put(field.getReference(), ordinalToUnboxedInt(ordinal));
+                 ordinalToObjectState.put(ordinal, enumState);
+                 if (isEnumWithSubtypes) {
+-                  // If the dynamic type is a NotNull dynamic type, then uncanonicalize the dynamic
++                  DynamicType dynamicType = field.getOptimizationInfo().getDynamicType();
++                  // If the dynamic type is a NotNull dynamic type, then de-canonicalize the dynamic
+                   // type. If the static type is an effectively final class then this yields an
+                   // exact dynamic type.
+-                  DynamicType dynamicType =
+-                      field
+-                          .getOptimizationInfo()
+-                          .getDynamicType()
+-                          .uncanonicalizeNotNullType(appView, field.getType());
++                  if (dynamicType.isNotNullType()) {
++                    dynamicType =
++                        DynamicType.create(appView, field.getType().toNonNullTypeElement(appView));
++                  }
+                   if (dynamicType.isExactClassType()) {
+                     valueTypes.put(ordinal, dynamicType.getExactClassType().getClassType());
+                   } else {
+diff --git a/src/main/java/com/android/tools/r8/ir/optimize/enums/EnumValueOptimizer.java b/src/main/java/com/android/tools/r8/ir/optimize/enums/EnumValueOptimizer.java
+index 028437848c..9f3a782950 100644
+--- a/src/main/java/com/android/tools/r8/ir/optimize/enums/EnumValueOptimizer.java
++++ b/src/main/java/com/android/tools/r8/ir/optimize/enums/EnumValueOptimizer.java
+@@ -151,11 +151,7 @@ public class EnumValueOptimizer extends CodeRewriterPass<AppInfoWithLiveness> {
+ 
+         // Since the value is a single field value, the type should be exact.
+         assert abstractValue.isSingleFieldValue();
+-        ClassTypeElement enumFieldType =
+-            optimizationInfo
+-                .getDynamicType()
+-                .uncanonicalizeNotNullType(appView.withLiveness(), field.getType())
+-                .getExactClassType();
++        ClassTypeElement enumFieldType = optimizationInfo.getDynamicType().getExactClassType();
+         if (enumFieldType == null) {
+           assert false : "Expected to have an exact dynamic type for enum instance";
+           continue;
+diff --git a/src/main/java/com/android/tools/r8/utils/InternalOptions.java b/src/main/java/com/android/tools/r8/utils/InternalOptions.java
+index f61b479118..3f3e0f7005 100644
+--- a/src/main/java/com/android/tools/r8/utils/InternalOptions.java
++++ b/src/main/java/com/android/tools/r8/utils/InternalOptions.java
+@@ -404,6 +404,7 @@ public class InternalOptions implements GlobalKeepInfoConfiguration {
+   // Optimization-related flags. These should conform to -dontoptimize and disableAllOptimizations.
+   public boolean enableFieldBitAccessAnalysis =
+       System.getProperty("com.android.tools.r8.fieldBitAccessAnalysis") != null;
++  public boolean enableFieldAssignmentTracker = true;
+   public boolean enableFieldValueAnalysis = true;
+   public boolean enableUnusedInterfaceRemoval = true;
+   public boolean enableDevirtualization = true;
+diff --git a/src/test/java/com/android/tools/r8/internal/proto/Proto2ShrinkingTest.java b/src/test/java/com/android/tools/r8/internal/proto/Proto2ShrinkingTest.java
+index 270116ab9b..64e4c42fd2 100644
+--- a/src/test/java/com/android/tools/r8/internal/proto/Proto2ShrinkingTest.java
++++ b/src/test/java/com/android/tools/r8/internal/proto/Proto2ShrinkingTest.java
+@@ -80,6 +80,7 @@ public class Proto2ShrinkingTest extends ProtoShrinkingTestBase {
+             .addProgramFiles(PROGRAM_FILES)
+             .addKeepMainRule("proto2.TestClass")
+             .addKeepRuleFiles(PROTOBUF_LITE_PROGUARD_RULES)
++            .addKeepRules(allGeneratedMessageLiteSubtypesAreInstantiatedRule())
+             // TODO(b/173340579): This rule should not be needed to allow shrinking of
+             //  PartiallyUsed$Enum.
+             .addNoHorizontalClassMergingRule(PARTIALLY_USED + "$Enum$1")
+@@ -406,6 +407,7 @@ public class Proto2ShrinkingTest extends ProtoShrinkingTestBase {
+         .addKeepMainRule("proto2.TestClass")
+         .addKeepRuleFiles(PROTOBUF_LITE_PROGUARD_RULES)
+         .addKeepRules(findLiteExtensionByNumberInDuplicateCalledRule())
++        .addKeepRules(allGeneratedMessageLiteSubtypesAreInstantiatedRule())
+         // TODO(b/173340579): This rule should not be needed to allow shrinking of
+         //  PartiallyUsed$Enum.
+         .addNoHorizontalClassMergingRule(PARTIALLY_USED + "$Enum$1")
+diff --git a/src/test/java/com/android/tools/r8/internal/proto/ProtoShrinkingTestBase.java b/src/test/java/com/android/tools/r8/internal/proto/ProtoShrinkingTestBase.java
+index f0db90bee6..9bd5a746f8 100644
+--- a/src/test/java/com/android/tools/r8/internal/proto/ProtoShrinkingTestBase.java
++++ b/src/test/java/com/android/tools/r8/internal/proto/ProtoShrinkingTestBase.java
+@@ -75,6 +75,14 @@ public abstract class ProtoShrinkingTestBase extends TestBase {
+     }
+   }
+ 
++  static String allGeneratedMessageLiteSubtypesAreInstantiatedRule() {
++    return StringUtils.lines(
++        "-if class * extends com.google.protobuf.GeneratedMessageLite",
++        "-keep,allowobfuscation class <1> {",
++        "  <init>(...);",
++        "}");
++  }
++
+   static String findLiteExtensionByNumberInDuplicateCalledRule() {
+     return StringUtils.lines(
+         "-keep class com.google.protobuf.proto2_registryGeneratedExtensionRegistryLiteDuplicate {",
+diff --git a/src/test/java/com/android/tools/r8/ir/analysis/fieldaccess/FieldBitAccessInfoTest.java b/src/test/java/com/android/tools/r8/ir/analysis/fieldaccess/FieldBitAccessInfoTest.java
+index 1c8a244040..ea825ed11b 100644
+--- a/src/test/java/com/android/tools/r8/ir/analysis/fieldaccess/FieldBitAccessInfoTest.java
++++ b/src/test/java/com/android/tools/r8/ir/analysis/fieldaccess/FieldBitAccessInfoTest.java
+@@ -87,7 +87,7 @@ public class FieldBitAccessInfoTest extends TestBase {
+     OptimizationFeedbackMock feedback = new OptimizationFeedbackMock();
+     FieldBitAccessAnalysis fieldBitAccessAnalysis = new FieldBitAccessAnalysis();
+     FieldAccessAnalysis fieldAccessAnalysis =
+-        new FieldAccessAnalysis(appView, fieldBitAccessAnalysis, null, null);
++        new FieldAccessAnalysis(appView, null, fieldBitAccessAnalysis, null, null);
+ 
+     DexProgramClass clazz = appView.appInfo().classes().iterator().next();
+     assertEquals(TestClass.class.getTypeName(), clazz.type.toSourceString());
+diff --git a/src/test/java/com/android/tools/r8/ir/optimize/membervaluepropagation/FieldWriteBeforeFieldReadTest.java b/src/test/java/com/android/tools/r8/ir/optimize/membervaluepropagation/FieldWriteBeforeFieldReadTest.java
+index 16060c2166..a603d83d42 100644
+--- a/src/test/java/com/android/tools/r8/ir/optimize/membervaluepropagation/FieldWriteBeforeFieldReadTest.java
++++ b/src/test/java/com/android/tools/r8/ir/optimize/membervaluepropagation/FieldWriteBeforeFieldReadTest.java
+@@ -4,13 +4,14 @@
+ 
+ package com.android.tools.r8.ir.optimize.membervaluepropagation;
+ 
+-import static com.android.tools.r8.utils.codeinspector.Matchers.isAbsent;
+ import static com.android.tools.r8.utils.codeinspector.Matchers.isPresent;
++import static org.hamcrest.CoreMatchers.not;
+ import static org.hamcrest.MatcherAssert.assertThat;
+ import static org.junit.Assert.assertTrue;
+ 
+ import com.android.tools.r8.NeverClassInline;
+ import com.android.tools.r8.NeverInline;
++import com.android.tools.r8.NeverReprocessMethod;
+ import com.android.tools.r8.TestBase;
+ import com.android.tools.r8.TestParameters;
+ import com.android.tools.r8.TestParametersCollection;
+@@ -23,47 +24,49 @@ import java.util.function.Predicate;
+ import org.junit.Test;
+ import org.junit.runner.RunWith;
+ import org.junit.runners.Parameterized;
+-import org.junit.runners.Parameterized.Parameter;
+ import org.junit.runners.Parameterized.Parameters;
+ 
+ @RunWith(Parameterized.class)
+ public class FieldWriteBeforeFieldReadTest extends TestBase {
+ 
+-  @Parameter(0)
+-  public TestParameters parameters;
++  private final TestParameters parameters;
+ 
+   @Parameters(name = "{0}")
+   public static TestParametersCollection data() {
+     return getTestParameters().withAllRuntimesAndApiLevels().build();
+   }
+ 
++  public FieldWriteBeforeFieldReadTest(TestParameters parameters) {
++    this.parameters = parameters;
++  }
++
+   @Test
+   public void test() throws Exception {
+     testForR8(parameters.getBackend())
+         .addInnerClasses(FieldWriteBeforeFieldReadTest.class)
+         .addKeepMainRule(TestClass.class)
+         .addOptionsModification(
+-            options ->
+-                options.testing.waveModifier =
+-                    (waves) -> {
+-                      Function<String, Predicate<ProgramMethodSet>> wavePredicate =
+-                          methodName ->
+-                              wave ->
+-                                  wave.stream()
+-                                      .anyMatch(
+-                                          method -> method.toSourceString().contains(methodName));
+-                      int readFieldsWaveIndex =
+-                          IterableUtils.firstIndexMatching(
+-                              waves, wavePredicate.apply("readFields"));
+-                      assertTrue(readFieldsWaveIndex >= 0);
+-                      int writeFieldsWaveIndex =
+-                          IterableUtils.firstIndexMatching(
+-                              waves, wavePredicate.apply("writeFields"));
+-                      assertTrue(writeFieldsWaveIndex >= 0);
+-                      assertTrue(writeFieldsWaveIndex < readFieldsWaveIndex);
+-                    })
++            options -> {
++              options.testing.waveModifier =
++                  (waves) -> {
++                    Function<String, Predicate<ProgramMethodSet>> wavePredicate =
++                        methodName ->
++                            wave ->
++                                wave.stream()
++                                    .anyMatch(
++                                        method -> method.toSourceString().contains(methodName));
++                    int readFieldsWaveIndex =
++                        IterableUtils.firstIndexMatching(waves, wavePredicate.apply("readFields"));
++                    assertTrue(readFieldsWaveIndex >= 0);
++                    int writeFieldsWaveIndex =
++                        IterableUtils.firstIndexMatching(waves, wavePredicate.apply("writeFields"));
++                    assertTrue(writeFieldsWaveIndex >= 0);
++                    assertTrue(writeFieldsWaveIndex < readFieldsWaveIndex);
++                  };
++            })
+         .enableInliningAnnotations()
+         .enableNeverClassInliningAnnotations()
++        .enableNeverReprocessMethodAnnotations()
+         .setMinApi(parameters)
+         .compile()
+         .inspect(this::inspect)
+@@ -75,7 +78,7 @@ public class FieldWriteBeforeFieldReadTest extends TestBase {
+     ClassSubject testClassSubject = inspector.clazz(TestClass.class);
+     assertThat(testClassSubject, isPresent());
+     assertThat(testClassSubject.uniqueMethodWithOriginalName("live"), isPresent());
+-    assertThat(testClassSubject.uniqueMethodWithOriginalName("dead"), isAbsent());
++    assertThat(testClassSubject.uniqueMethodWithOriginalName("dead"), not(isPresent()));
+   }
+ 
+   static class TestClass {
+@@ -97,10 +100,8 @@ public class FieldWriteBeforeFieldReadTest extends TestBase {
+ 
+     static void increaseDistanceToNearestLeaf() {}
+ 
+-    // By processing writeFields() before readFields() and publishing the fact that alwaysFalse is
+-    // the constant false after processing writeFields(), it would be possible to optimize
+-    // readFields() in just a single optimization pass.
+     @NeverInline
++    @NeverReprocessMethod
+     static void readFields(A obj) {
+       if (alwaysFalse || obj.alwaysFalse) {
+         dead();
+diff --git a/src/test/java/com/android/tools/r8/ir/optimize/membervaluepropagation/InstanceFieldValuePropagationTest.java b/src/test/java/com/android/tools/r8/ir/optimize/membervaluepropagation/InstanceFieldValuePropagationTest.java
+index 2f716b73c9..9fdff7c2d2 100644
+--- a/src/test/java/com/android/tools/r8/ir/optimize/membervaluepropagation/InstanceFieldValuePropagationTest.java
++++ b/src/test/java/com/android/tools/r8/ir/optimize/membervaluepropagation/InstanceFieldValuePropagationTest.java
+@@ -6,8 +6,6 @@ package com.android.tools.r8.ir.optimize.membervaluepropagation;
+ 
+ import static com.android.tools.r8.utils.codeinspector.Matchers.isPresent;
+ import static org.hamcrest.MatcherAssert.assertThat;
+-import static org.junit.Assert.assertEquals;
+-import static org.junit.Assert.assertNotEquals;
+ import static org.junit.Assert.assertTrue;
+ 
+ import com.android.tools.r8.NeverClassInline;
+@@ -76,12 +74,10 @@ public class InstanceFieldValuePropagationTest extends TestBase {
+     MethodSubject testMaybeNullMethodSubject =
+         testClassSubject.uniqueMethodWithOriginalName("testMaybeNull");
+     assertThat(testMaybeNullMethodSubject, isPresent());
+-    // TODO(b/330674939): Should not have any instance-gets.
+-    assertEquals(
+-        parameters.canInitNewInstanceUsingSuperclassConstructor(),
++    assertTrue(
+         testMaybeNullMethodSubject
+             .streamInstructions()
+-            .anyMatch(InstructionSubject::isInstanceGet));
++            .noneMatch(InstructionSubject::isInstanceGet));
+     // TODO(b/125282093): Should be able to remove the new-instance instruction since the instance
+     //  ends up being unused.
+     assertTrue(
+@@ -91,10 +87,7 @@ public class InstanceFieldValuePropagationTest extends TestBase {
+ 
+     ClassSubject aClassSubject = inspector.clazz(A.class);
+     assertThat(aClassSubject, isPresent());
+-    // TODO(b/330674939): Should never have any instance fields.
+-    assertNotEquals(
+-        parameters.canInitNewInstanceUsingSuperclassConstructor(),
+-        aClassSubject.allInstanceFields().isEmpty());
++    assertTrue(aClassSubject.allInstanceFields().isEmpty());
+   }
+ 
+   static class TestClass {
+diff --git a/src/test/java/com/android/tools/r8/optimize/argumentpropagation/FieldStateArgumentPropagationTest.java b/src/test/java/com/android/tools/r8/optimize/argumentpropagation/FieldStateArgumentPropagationTest.java
+index b79e37acff..6272631120 100644
+--- a/src/test/java/com/android/tools/r8/optimize/argumentpropagation/FieldStateArgumentPropagationTest.java
++++ b/src/test/java/com/android/tools/r8/optimize/argumentpropagation/FieldStateArgumentPropagationTest.java
+@@ -37,6 +37,7 @@ public class FieldStateArgumentPropagationTest extends TestBase {
+         .addKeepMainRule(Main.class)
+         .addOptionsModification(
+             options -> {
++              options.enableFieldAssignmentTracker = false;
+               options.enableFieldValueAnalysis = false;
+             })
+         .enableInliningAnnotations()
+-- 
+2.45.0.118.g7fe29c98d7-goog
+

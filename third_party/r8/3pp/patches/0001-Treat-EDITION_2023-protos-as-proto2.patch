@@ -1,0 +1,29 @@
+From 9f08383ff5fa9667668033088c4c3b2b7f41ebf2 Mon Sep 17 00:00:00 2001
+From: Andrew Grieve <agrieve@google.com>
+Date: Tue, 7 May 2024 12:38:02 -0400
+Subject: [PATCH] Treat EDITION_2023 protos as proto2
+
+Band-aid fix until proper support & tests can be added for this new
+proto type.
+
+Bug: 339100248
+---
+ .../java/com/android/tools/r8/ir/analysis/proto/ProtoUtils.java | 2 +-
+ 1 file changed, 1 insertion(+), 1 deletion(-)
+
+diff --git a/src/main/java/com/android/tools/r8/ir/analysis/proto/ProtoUtils.java b/src/main/java/com/android/tools/r8/ir/analysis/proto/ProtoUtils.java
+index 36de73e6da..29b453648c 100644
+--- a/src/main/java/com/android/tools/r8/ir/analysis/proto/ProtoUtils.java
++++ b/src/main/java/com/android/tools/r8/ir/analysis/proto/ProtoUtils.java
+@@ -14,7 +14,7 @@ import com.android.tools.r8.utils.ValueUtils.ArrayValues;
+ 
+ public class ProtoUtils {
+ 
+-  public static final int IS_PROTO_2_MASK = 0x1;
++  public static final int IS_PROTO_2_MASK = 0x5;
+ 
+   @SuppressWarnings("ReferenceEquality")
+   public static Value getInfoValueFromMessageInfoConstructionInvoke(
+-- 
+2.45.0.118.g7fe29c98d7-goog
+
