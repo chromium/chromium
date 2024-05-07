@@ -23,6 +23,7 @@
 #include "base/strings/string_util.h"
 #include "base/time/time.h"
 #include "build/build_config.h"
+#include "printing/backend/cups_deleters.h"
 #include "printing/backend/print_backend.h"
 #include "printing/backend/print_backend_consts.h"
 #include "printing/mojom/print.mojom.h"
@@ -761,8 +762,7 @@ const int kDefaultIPPServerPort = 631;
 // functionality.
 HttpConnectionCUPS::HttpConnectionCUPS(const GURL& print_server_url,
                                        http_encryption_t encryption,
-                                       bool blocking)
-    : http_(nullptr) {
+                                       bool blocking) {
   // If we have an empty url, use default print server.
   if (print_server_url.is_empty())
     return;
@@ -772,15 +772,15 @@ HttpConnectionCUPS::HttpConnectionCUPS(const GURL& print_server_url,
     port = kDefaultIPPServerPort;
 
   if (httpConnect2) {
-    http_ = httpConnect2(print_server_url.host().c_str(), port,
-                         /*addrlist=*/nullptr, AF_UNSPEC, encryption,
-                         blocking ? 1 : 0, kCupsTimeout.InMilliseconds(),
-                         /*cancel=*/nullptr);
+    http_.reset(httpConnect2(print_server_url.host().c_str(), port,
+                             /*addrlist=*/nullptr, AF_UNSPEC, encryption,
+                             blocking ? 1 : 0, kCupsTimeout.InMilliseconds(),
+                             /*cancel=*/nullptr));
   } else {
     // Continue to use deprecated CUPS calls because because older Linux
     // distribution such as RHEL/CentOS 7 are shipped with CUPS 1.6.
-    http_ =
-        httpConnectEncrypt(print_server_url.host().c_str(), port, encryption);
+    http_.reset(
+        httpConnectEncrypt(print_server_url.host().c_str(), port, encryption));
   }
 
   if (!http_) {
@@ -789,17 +789,15 @@ HttpConnectionCUPS::HttpConnectionCUPS(const GURL& print_server_url,
     return;
   }
 
-  if (!httpConnect2)
-    httpBlocking(http_, blocking ? 1 : 0);
+  if (!httpConnect2) {
+    httpBlocking(http(), blocking ? 1 : 0);
+  }
 }
 
-HttpConnectionCUPS::~HttpConnectionCUPS() {
-  if (http_)
-    httpClose(http_);
-}
+HttpConnectionCUPS::~HttpConnectionCUPS() = default;
 
 http_t* HttpConnectionCUPS::http() {
-  return http_;
+  return http_.get();
 }
 
 bool ParsePpdCapabilities(cups_dest_t* dest,

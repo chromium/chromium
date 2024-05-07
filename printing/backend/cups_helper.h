@@ -10,7 +10,7 @@
 #include <string_view>
 
 #include "base/component_export.h"
-#include "base/memory/raw_ptr.h"
+#include "printing/backend/cups_deleters.h"
 
 class GURL;
 
@@ -43,7 +43,7 @@ class COMPONENT_EXPORT(PRINT_BACKEND) HttpConnectionCUPS {
   http_t* http();
 
  private:
-  raw_ptr<http_t> http_;
+  ScopedHttpPtr http_;
 };
 
 // Helper function to parse and convert PPD capabilitites to
