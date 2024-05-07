@@ -6,7 +6,9 @@
 
 import type {Bookmark, DocumentDimensions, LayoutOptions, PdfViewerElement} from 'chrome-extension://mhjfbmdgcfjbbpaeojofohoefgiehjai/pdf_viewer_wrapper.js';
 import {Viewport} from 'chrome-extension://mhjfbmdgcfjbbpaeojofohoefgiehjai/pdf_viewer_wrapper.js';
+import {assert} from 'chrome://resources/js/assert.js';
 import {html, PolymerElement} from 'chrome://resources/polymer/v3_0/polymer/polymer_bundled.min.js';
+import {eventToPromise} from 'chrome://webui-test/test_util.js';
 
 export class MockElement {
   dir: string = '';
@@ -309,4 +311,29 @@ export function assertShowAnnotationsButton(
   chrome.test.assertEq(
       enabled ? 'true' : 'false', button.getAttribute('aria-checked'));
   chrome.test.assertEq(enabled, !button.querySelector('iron-icon')!.hidden);
+}
+
+export async function ensureFullscreen(): Promise<void> {
+  const viewer = document.body.querySelector('pdf-viewer');
+  assert(viewer);
+
+  if (document.fullscreenElement !== null) {
+    return;
+  }
+
+  const toolbar = viewer.shadowRoot!.querySelector('viewer-toolbar');
+  assert(toolbar);
+  toolbar.dispatchEvent(new CustomEvent('present-click'));
+  await eventToPromise('fullscreenchange', viewer.$.scroller);
+}
+
+// Subsequent calls to requestFullScreen() fail with an "API can only be
+// initiated by a user gesture" error, so we need to run with user
+// gesture.
+export function enterFullscreenWithUserGesture(): Promise<void> {
+  return new Promise(res => {
+    chrome.test.runWithUserGesture(() => {
+      ensureFullscreen().then(res);
+    });
+  });
 }

@@ -292,6 +292,9 @@ export class PdfViewerElement extends PdfViewerBaseElement {
   // </if>
   private pluginController_: PluginController|null = null;
   private printingEnabled_: boolean;
+  // <if expr="enable_pdf_ink2">
+  private restoreAnnotationMode_: boolean = false;
+  // </if>
   private showPasswordDialog_: boolean;
   private showPropertiesDialog_: boolean;
   private sidenavCollapsed_: boolean;
@@ -498,9 +501,11 @@ export class PdfViewerElement extends PdfViewerBaseElement {
     const annotationMode = e.detail;
     // <if expr="enable_pdf_ink2">
     if (this.pdfInk2Enabled_) {
-      record(
-          annotationMode ? UserAction.ENTER_ANNOTATION_MODE :
-                           UserAction.EXIT_ANNOTATION_MODE);
+      if (!this.restoreAnnotationMode_) {
+        record(
+            annotationMode ? UserAction.ENTER_ANNOTATION_MODE :
+                             UserAction.EXIT_ANNOTATION_MODE);
+      }
       this.pluginController_!.setAnnotationMode(annotationMode);
       this.annotationMode_ = annotationMode;
       return;
@@ -582,6 +587,15 @@ export class PdfViewerElement extends PdfViewerBaseElement {
   }
 
   private async enterPresentationMode_(): Promise<void> {
+    // <if expr="enable_pdf_ink2">
+    // Exit annotation mode if it was enabled.
+    if (this.pdfInk2Enabled_ && this.annotationMode_) {
+      this.restoreAnnotationMode_ = true;
+      this.$.toolbar.toggleAnnotation();
+      assert(!this.annotationMode_);
+    }
+    // </if>
+
     const scroller = this.$.scroller;
 
     this.viewport.saveZoomState();
@@ -615,6 +629,16 @@ export class PdfViewerElement extends PdfViewerBaseElement {
 
     // Set zoom back to original zoom before presentation mode.
     this.viewport.restoreZoomState();
+
+    // <if expr="enable_pdf_ink2">
+    // Enter annotation mode again if it was enabled before entering
+    // Presentation mode.
+    if (this.restoreAnnotationMode_) {
+      this.$.toolbar.toggleAnnotation();
+      assert(this.annotationMode_);
+      this.restoreAnnotationMode_ = false;
+    }
+    // </if>
   }
 
   private async onPresentClick_() {

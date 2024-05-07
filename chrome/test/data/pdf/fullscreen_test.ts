@@ -9,33 +9,12 @@ import {getDeepActiveElement} from 'chrome://resources/js/util.js';
 import {keyDownOn} from 'chrome://resources/polymer/v3_0/iron-test-helpers/mock-interactions.js';
 import {eventToPromise} from 'chrome://webui-test/test_util.js';
 
-import {createWheelEvent} from './test_util.js';
+import {createWheelEvent, ensureFullscreen, enterFullscreenWithUserGesture} from './test_util.js';
 
 const viewer = document.body.querySelector('pdf-viewer')!;
 const scroller = viewer.$.scroller;
 
-async function ensureFullscreen(): Promise<void> {
-  if (document.fullscreenElement !== null) {
-    return;
-  }
-
-  const toolbar = viewer.shadowRoot!.querySelector('viewer-toolbar')!;
-  toolbar.dispatchEvent(new CustomEvent('present-click'));
-  await eventToPromise('fullscreenchange', scroller);
-}
-
 async function enterAndExitFullscreen(): Promise<void> {
-  // Subsequent calls to requestFullScreen() fail with an "API can only be
-  // initiated by a user gesture" error, so we need to run with user
-  // gesture.
-  function enterFullscreenWithUserGesture(): Promise<void> {
-    return new Promise(res => {
-      chrome.test.runWithUserGesture(() => {
-        ensureFullscreen().then(res);
-      });
-    });
-  }
-
   await enterFullscreenWithUserGesture();
   document.exitFullscreen();
   await eventToPromise('fullscreenchange', scroller);

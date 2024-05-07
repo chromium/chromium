@@ -3,8 +3,9 @@
 // found in the LICENSE file.
 
 import {PluginController} from 'chrome-extension://mhjfbmdgcfjbbpaeojofohoefgiehjai/pdf_viewer_wrapper.js';
+import {eventToPromise} from 'chrome://webui-test/test_util.js';
 
-import {assertShowAnnotationsButton, createMockPdfPluginForTest} from './test_util.js';
+import {assertShowAnnotationsButton, createMockPdfPluginForTest, enterFullscreenWithUserGesture} from './test_util.js';
 
 const viewer = document.body.querySelector('pdf-viewer')!;
 const viewerToolbar = viewer.$.toolbar;
@@ -81,6 +82,35 @@ chrome.test.runTests([
     const disableMessage = mockPlugin.findMessage('setAnnotationMode');
     chrome.test.assertTrue(disableMessage !== null);
     chrome.test.assertEq(disableMessage!.enable, false);
+    chrome.test.succeed();
+  },
+  // Test that entering presentation mode exits annotation mode, and exiting
+  // presentation mode re-enters annotation mode.
+  async function testPresentationModeExitsAnnotationMode() {
+    // First, check that there's no interaction with toggling presentation mode
+    // when annotation mode is disabled.
+    chrome.test.assertFalse(viewerToolbar.annotationMode);
+
+    await enterFullscreenWithUserGesture();
+    chrome.test.assertFalse(viewerToolbar.annotationMode);
+
+    document.exitFullscreen();
+    await eventToPromise('fullscreenchange', viewer.$.scroller);
+    chrome.test.assertFalse(viewerToolbar.annotationMode);
+
+    // Now, check the interaction of toggling presentation mode when annotation
+    // mode is enabled.
+    viewerToolbar.toggleAnnotation();
+    chrome.test.assertTrue(viewerToolbar.annotationMode);
+
+    // Entering presentation mode should disable annotation mode.
+    await enterFullscreenWithUserGesture();
+    chrome.test.assertFalse(viewerToolbar.annotationMode);
+
+    // Exiting presentation mode should re-enable annotation mode.
+    document.exitFullscreen();
+    await eventToPromise('fullscreenchange', viewer.$.scroller);
+    chrome.test.assertTrue(viewerToolbar.annotationMode);
     chrome.test.succeed();
   },
 ]);
