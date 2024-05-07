@@ -1052,13 +1052,15 @@ CreateReportResult AttributionStorageSql::MaybeCreateAndStoreReport(
 
   auto generate_null_reports_and_assemble_report_result =
       [&](std::optional<EventLevelResult> new_event_level_status,
-          std::optional<AggregatableResult> new_aggregatable_status)
+          std::optional<AggregatableResult> new_aggregatable_status,
+          sql::Transaction& transaction)
           VALID_CONTEXT_REQUIRED(sequence_checker_) {
             DCHECK(!new_aggregatable_report.has_value());
 
             if (!GenerateNullAggregatableReportsAndStoreReports(
                     trigger, attribution_info, new_aggregatable_report,
-                    min_null_aggregatable_report_time)) {
+                    min_null_aggregatable_report_time) ||
+                !transaction.Commit()) {
               min_null_aggregatable_report_time.reset();
             }
 
@@ -1076,10 +1078,16 @@ CreateReportResult AttributionStorageSql::MaybeCreateAndStoreReport(
 
   if (event_level_status.has_value() && aggregatable_status.has_value()) {
     return assemble_report_result(/*new_event_level_status=*/std::nullopt,
-                                  /*new_aggregaable_status=*/std::nullopt);
+                                  /*new_aggregatable_status=*/std::nullopt);
   }
 
   if (!LazyInit(DbCreationPolicy::kCreateIfAbsent)) {
+    return assemble_report_result(EventLevelResult::kInternalError,
+                                  AggregatableResult::kInternalError);
+  }
+
+  sql::Transaction transaction(&db_);
+  if (!transaction.Begin()) {
     return assemble_report_result(EventLevelResult::kInternalError,
                                   AggregatableResult::kInternalError);
   }
@@ -1096,7 +1104,7 @@ CreateReportResult AttributionStorageSql::MaybeCreateAndStoreReport(
   if (!source_id_to_attribute.has_value()) {
     return generate_null_reports_and_assemble_report_result(
         EventLevelResult::kNoMatchingImpressions,
-        AggregatableResult::kNoMatchingImpressions);
+        AggregatableResult::kNoMatchingImpressions, transaction);
   }
 
   source_to_attribute = ReadSourceToAttribute(*source_id_to_attribute);
@@ -1115,16 +1123,13 @@ CreateReportResult AttributionStorageSql::MaybeCreateAndStoreReport(
   if (!top_level_filters_match) {
     return generate_null_reports_and_assemble_report_result(
         EventLevelResult::kNoMatchingSourceFilterData,
-        AggregatableResult::kNoMatchingSourceFilterData);
+        AggregatableResult::kNoMatchingSourceFilterData, transaction);
   }
 
-  // Delete all unattributed sources.
-  if (!DeleteSources(source_ids_to_delete)) {
-    return assemble_report_result(EventLevelResult::kInternalError,
-                                  AggregatableResult::kInternalError);
-  }
-  // Deactivate all attributed sources not used.
-  if (!DeactivateSources(source_ids_to_deactivate)) {
+  // Delete all unattributed sources and deactivate all attributed sources not
+  // used.
+  if (!DeleteSources(source_ids_to_delete) ||
+      !DeactivateSources(source_ids_to_deactivate)) {
     return assemble_report_result(EventLevelResult::kInternalError,
                                   AggregatableResult::kInternalError);
   }
@@ -1164,7 +1169,7 @@ CreateReportResult AttributionStorageSql::MaybeCreateAndStoreReport(
   if (event_level_status.has_value() && aggregatable_status.has_value()) {
     return generate_null_reports_and_assemble_report_result(
         /*new_event_level_status=*/std::nullopt,
-        /*new_aggregaable_status=*/std::nullopt);
+        /*new_aggregatable_status=*/std::nullopt, transaction);
   }
 
   switch (rate_limit_table_.AttributionAllowedForReportingOriginLimit(
@@ -1177,16 +1182,10 @@ CreateReportResult AttributionStorageSql::MaybeCreateAndStoreReport(
       new_aggregatable_report.reset();
       return generate_null_reports_and_assemble_report_result(
           EventLevelResult::kExcessiveReportingOrigins,
-          AggregatableResult::kExcessiveReportingOrigins);
+          AggregatableResult::kExcessiveReportingOrigins, transaction);
     case RateLimitResult::kError:
       return assemble_report_result(EventLevelResult::kInternalError,
                                     AggregatableResult::kInternalError);
-  }
-
-  sql::Transaction transaction(&db_);
-  if (!transaction.Begin()) {
-    return assemble_report_result(EventLevelResult::kInternalError,
-                                  AggregatableResult::kInternalError);
   }
 
   std::optional<EventLevelResult> store_event_level_status;
