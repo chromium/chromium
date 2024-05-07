@@ -161,7 +161,10 @@ bool CSPSourceMatches(const network::mojom::blink::CSPSource& source,
     return false;
   }
 
-  return HostMatches(source, url.HostView()) &&
+  return HostMatches(source,
+                     base::FeatureList::IsEnabled(kAvoidWastefulHostCopies)
+                         ? url.HostView()
+                         : url.Host()) &&
          ports_match != PortMatchingResult::kNotMatching && paths_match;
 }
 
@@ -181,7 +184,10 @@ bool CSPSourceMatchesAsSelf(const network::mojom::blink::CSPSource& source,
     return true;
   }
 
-  bool hosts_match = HostMatches(source, url.HostView());
+  bool hosts_match =
+      HostMatches(source, base::FeatureList::IsEnabled(kAvoidWastefulHostCopies)
+                              ? url.HostView()
+                              : url.Host());
   PortMatchingResult ports_match = PortMatches(
       source, source.scheme, url.HasPort() ? url.Port() : url::PORT_UNSPECIFIED,
       url.Protocol());
