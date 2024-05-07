@@ -420,9 +420,11 @@ TEST_F(TabStatsTrackerTest, DailyDiscards) {
   constexpr size_t kExpectedDiscardsExternal = 3;
   constexpr size_t kExpectedDiscardsUrgent = 5;
   constexpr size_t kExpectedDiscardsProactive = 11;
+  constexpr size_t kExpectedDiscardsSuggested = 8;
   constexpr size_t kExpectedReloadsExternal = 7;
   constexpr size_t kExpectedReloadsUrgent = 9;
   constexpr size_t kExpectedReloadsProactive = 10;
+  constexpr size_t kExpectedReloadsSuggested = 6;
   for (size_t i = 0; i < kExpectedDiscardsExternal; ++i) {
     tab_stats_tracker_->DiscardedStateChange(
         this, LifecycleUnitDiscardReason::EXTERNAL, /*is_discarded*/ true);
@@ -435,6 +437,10 @@ TEST_F(TabStatsTrackerTest, DailyDiscards) {
     tab_stats_tracker_->DiscardedStateChange(
         this, LifecycleUnitDiscardReason::PROACTIVE, /*is_discarded*/ true);
   }
+  for (size_t i = 0; i < kExpectedDiscardsSuggested; ++i) {
+    tab_stats_tracker_->DiscardedStateChange(
+        this, LifecycleUnitDiscardReason::SUGGESTED, /*is_discarded*/ true);
+  }
   for (size_t i = 0; i < kExpectedReloadsExternal; ++i) {
     tab_stats_tracker_->DiscardedStateChange(
         this, LifecycleUnitDiscardReason::EXTERNAL, /*is_discarded*/ false);
@@ -446,6 +452,10 @@ TEST_F(TabStatsTrackerTest, DailyDiscards) {
   for (size_t i = 0; i < kExpectedReloadsProactive; ++i) {
     tab_stats_tracker_->DiscardedStateChange(
         this, LifecycleUnitDiscardReason::PROACTIVE, /*is_discarded*/ false);
+  }
+  for (size_t i = 0; i < kExpectedReloadsSuggested; ++i) {
+    tab_stats_tracker_->DiscardedStateChange(
+        this, LifecycleUnitDiscardReason::SUGGESTED, /*is_discarded*/ false);
   }
 
   // Triggers the daily event.
@@ -462,6 +472,9 @@ TEST_F(TabStatsTrackerTest, DailyDiscards) {
       UmaStatsReportingDelegate::kDailyDiscardsProactiveHistogramName,
       kExpectedDiscardsProactive, 1);
   histogram_tester_.ExpectUniqueSample(
+      UmaStatsReportingDelegate::kDailyDiscardsSuggestedHistogramName,
+      kExpectedDiscardsSuggested, 1);
+  histogram_tester_.ExpectUniqueSample(
       UmaStatsReportingDelegate::kDailyReloadsExternalHistogramName,
       kExpectedReloadsExternal, 1);
   histogram_tester_.ExpectUniqueSample(
@@ -470,14 +483,19 @@ TEST_F(TabStatsTrackerTest, DailyDiscards) {
   histogram_tester_.ExpectUniqueSample(
       UmaStatsReportingDelegate::kDailyReloadsProactiveHistogramName,
       kExpectedReloadsProactive, 1);
+  histogram_tester_.ExpectUniqueSample(
+      UmaStatsReportingDelegate::kDailyReloadsSuggestedHistogramName,
+      kExpectedReloadsSuggested, 1);
 
   // Checks that the second report also updates the histograms properly.
   constexpr size_t kExpectedDiscardsExternal2 = 15;
   constexpr size_t kExpectedDiscardsUrgent2 = 25;
   constexpr size_t kExpectedDiscardsProactive2 = 55;
+  constexpr size_t kExpectedDiscardsSuggested2 = 70;
   constexpr size_t kExpectedReloadsExternal2 = 35;
   constexpr size_t kExpectedReloadsUrgent2 = 45;
   constexpr size_t kExpectedReloadsProactive2 = 40;
+  constexpr size_t kExpectedReloadsSuggested2 = 27;
   for (size_t i = 0; i < kExpectedDiscardsExternal2; ++i) {
     tab_stats_tracker_->DiscardedStateChange(
         this, LifecycleUnitDiscardReason::EXTERNAL, /*is_discarded=*/true);
@@ -490,6 +508,10 @@ TEST_F(TabStatsTrackerTest, DailyDiscards) {
     tab_stats_tracker_->DiscardedStateChange(
         this, LifecycleUnitDiscardReason::PROACTIVE, /*is_discarded=*/true);
   }
+  for (size_t i = 0; i < kExpectedDiscardsSuggested2; ++i) {
+    tab_stats_tracker_->DiscardedStateChange(
+        this, LifecycleUnitDiscardReason::SUGGESTED, /*is_discarded=*/true);
+  }
   for (size_t i = 0; i < kExpectedReloadsExternal2; ++i) {
     tab_stats_tracker_->DiscardedStateChange(
         this, LifecycleUnitDiscardReason::EXTERNAL, /*is_discarded=*/false);
@@ -501,6 +523,10 @@ TEST_F(TabStatsTrackerTest, DailyDiscards) {
   for (size_t i = 0; i < kExpectedReloadsProactive2; ++i) {
     tab_stats_tracker_->DiscardedStateChange(
         this, LifecycleUnitDiscardReason::PROACTIVE, /*is_discarded=*/false);
+  }
+  for (size_t i = 0; i < kExpectedReloadsSuggested2; ++i) {
+    tab_stats_tracker_->DiscardedStateChange(
+        this, LifecycleUnitDiscardReason::SUGGESTED, /*is_discarded=*/false);
   }
 
   // Triggers the daily event again.
@@ -517,6 +543,9 @@ TEST_F(TabStatsTrackerTest, DailyDiscards) {
       UmaStatsReportingDelegate::kDailyDiscardsProactiveHistogramName,
       kExpectedDiscardsProactive2, 1);
   histogram_tester_.ExpectBucketCount(
+      UmaStatsReportingDelegate::kDailyDiscardsSuggestedHistogramName,
+      kExpectedDiscardsSuggested2, 1);
+  histogram_tester_.ExpectBucketCount(
       UmaStatsReportingDelegate::kDailyReloadsExternalHistogramName,
       kExpectedReloadsExternal2, 1);
   histogram_tester_.ExpectBucketCount(
@@ -525,6 +554,9 @@ TEST_F(TabStatsTrackerTest, DailyDiscards) {
   histogram_tester_.ExpectBucketCount(
       UmaStatsReportingDelegate::kDailyReloadsProactiveHistogramName,
       kExpectedReloadsProactive2, 1);
+  histogram_tester_.ExpectBucketCount(
+      UmaStatsReportingDelegate::kDailyReloadsSuggestedHistogramName,
+      kExpectedReloadsSuggested2, 1);
 }
 
 TEST_F(TabStatsTrackerTest, HeartbeatMetrics) {

@@ -310,16 +310,19 @@ PageDiscardingHelper::CanDiscardResult PageDiscardingHelper::CanDiscard(
     return CanDiscardResult::kMarked;
   }
 
-  bool is_proactive;
+  bool is_proactive_or_suggested;
   switch (discard_reason) {
     case DiscardReason::EXTERNAL:
       // Always allow discards from external sources like extensions.
       return CanDiscardResult::kEligible;
     case DiscardReason::URGENT:
-      is_proactive = false;
+      is_proactive_or_suggested = false;
       break;
     case DiscardReason::PROACTIVE:
-      is_proactive = true;
+      is_proactive_or_suggested = true;
+      break;
+    case DiscardReason::SUGGESTED:
+      is_proactive_or_suggested = true;
       break;
   }
 
@@ -380,8 +383,9 @@ PageDiscardingHelper::CanDiscardResult PageDiscardingHelper::CanDiscard(
     return CanDiscardResult::kProtected;
   }
 
-  if (is_proactive && page_node->GetNotificationPermissionStatus() ==
-                          blink::mojom::PermissionStatus::GRANTED) {
+  if (is_proactive_or_suggested &&
+      page_node->GetNotificationPermissionStatus() ==
+          blink::mojom::PermissionStatus::GRANTED) {
     return CanDiscardResult::kProtected;
   }
 
@@ -431,7 +435,8 @@ PageDiscardingHelper::CanDiscardResult PageDiscardingHelper::CanDiscard(
     if (live_state_data->IsDevToolsOpen()) {
       return CanDiscardResult::kProtected;
     }
-    if (is_proactive && live_state_data->UpdatedTitleOrFaviconInBackground()) {
+    if (is_proactive_or_suggested &&
+        live_state_data->UpdatedTitleOrFaviconInBackground()) {
       return CanDiscardResult::kProtected;
     }
 #if !BUILDFLAG(IS_CHROMEOS)

@@ -116,6 +116,8 @@ StateChangeReason DiscardReasonToStateChangeReason(
       return StateChangeReason::SYSTEM_MEMORY_PRESSURE;
     case LifecycleUnitDiscardReason::PROACTIVE:
       return StateChangeReason::BROWSER_INITIATED;
+    case LifecycleUnitDiscardReason::SUGGESTED:
+      return StateChangeReason::BROWSER_INITIATED;
   }
 }
 

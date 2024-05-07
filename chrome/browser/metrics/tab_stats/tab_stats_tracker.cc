@@ -104,11 +104,16 @@ const char TabStatsTracker::UmaStatsReportingDelegate::
     kDailyDiscardsProactiveHistogramName[] =
         "Discarding.DailyDiscards.Proactive";
 const char TabStatsTracker::UmaStatsReportingDelegate::
+    kDailyDiscardsSuggestedHistogramName[] =
+        "Discarding.DailyDiscards.Suggested";
+const char TabStatsTracker::UmaStatsReportingDelegate::
     kDailyReloadsExternalHistogramName[] = "Discarding.DailyReloads.External";
 const char TabStatsTracker::UmaStatsReportingDelegate::
     kDailyReloadsUrgentHistogramName[] = "Discarding.DailyReloads.Urgent";
 const char TabStatsTracker::UmaStatsReportingDelegate::
     kDailyReloadsProactiveHistogramName[] = "Discarding.DailyReloads.Proactive";
+const char TabStatsTracker::UmaStatsReportingDelegate::
+    kDailyReloadsSuggestedHistogramName[] = "Discarding.DailyReloads.Suggested";
 
 const TabStatsDataStore::TabsStats& TabStatsTracker::tab_stats() const {
   return tab_stats_data_store_->tab_stats();
@@ -226,9 +231,11 @@ void TabStatsTracker::RegisterPrefs(PrefRegistrySimple* registry) {
   registry->RegisterIntegerPref(::prefs::kTabStatsDiscardsExternal, 0);
   registry->RegisterIntegerPref(::prefs::kTabStatsDiscardsUrgent, 0);
   registry->RegisterIntegerPref(::prefs::kTabStatsDiscardsProactive, 0);
+  registry->RegisterIntegerPref(::prefs::kTabStatsDiscardsSuggested, 0);
   registry->RegisterIntegerPref(::prefs::kTabStatsReloadsExternal, 0);
   registry->RegisterIntegerPref(::prefs::kTabStatsReloadsUrgent, 0);
   registry->RegisterIntegerPref(::prefs::kTabStatsReloadsProactive, 0);
+  registry->RegisterIntegerPref(::prefs::kTabStatsReloadsSuggested, 0);
 }
 
 void TabStatsTracker::TabStatsDailyObserver::OnDailyEvent(
@@ -487,18 +494,24 @@ void TabStatsTracker::UmaStatsReportingDelegate::ReportDailyMetrics(
       static_cast<size_t>(LifecycleUnitDiscardReason::URGENT);
   const size_t proactive_index =
       static_cast<size_t>(LifecycleUnitDiscardReason::PROACTIVE);
+  const size_t suggested_index =
+      static_cast<size_t>(LifecycleUnitDiscardReason::SUGGESTED);
   base::UmaHistogramCounts10000(kDailyDiscardsExternalHistogramName,
                                 tab_stats.tab_discard_counts[external_index]);
   base::UmaHistogramCounts10000(kDailyDiscardsUrgentHistogramName,
                                 tab_stats.tab_discard_counts[urgent_index]);
   base::UmaHistogramCounts10000(kDailyDiscardsProactiveHistogramName,
                                 tab_stats.tab_discard_counts[proactive_index]);
+  base::UmaHistogramCounts10000(kDailyDiscardsSuggestedHistogramName,
+                                tab_stats.tab_discard_counts[suggested_index]);
   base::UmaHistogramCounts10000(kDailyReloadsExternalHistogramName,
                                 tab_stats.tab_reload_counts[external_index]);
   base::UmaHistogramCounts10000(kDailyReloadsUrgentHistogramName,
                                 tab_stats.tab_reload_counts[urgent_index]);
   base::UmaHistogramCounts10000(kDailyReloadsProactiveHistogramName,
                                 tab_stats.tab_reload_counts[proactive_index]);
+  base::UmaHistogramCounts10000(kDailyReloadsSuggestedHistogramName,
+                                tab_stats.tab_reload_counts[suggested_index]);
 }
 
 void TabStatsTracker::UmaStatsReportingDelegate::ReportHeartbeatMetrics(

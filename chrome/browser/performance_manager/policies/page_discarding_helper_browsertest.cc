@@ -123,6 +123,9 @@ class PageDiscardingHelperBrowserTest : public InProcessBrowserTest {
       case DiscardReason::EXTERNAL:
         discard_string = "External";
         break;
+      case DiscardReason::SUGGESTED:
+        discard_string = "Suggested";
+        break;
     }
     SCOPED_TRACE(::testing::Message()
                  << discard_string << " discard from " << location.ToString());

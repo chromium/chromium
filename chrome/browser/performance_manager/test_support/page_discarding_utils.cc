@@ -107,6 +107,8 @@ void MakePageNodeDiscardable(PageNodeImpl* page_node,
            CanDiscardResult::kEligible);
   CHECK_EQ(helper->CanDiscard(page_node, DiscardReason::EXTERNAL),
            CanDiscardResult::kEligible);
+  CHECK_EQ(helper->CanDiscard(page_node, DiscardReason::SUGGESTED),
+           CanDiscardResult::kEligible);
 }
 
 }  // namespace testing

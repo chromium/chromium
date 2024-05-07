@@ -46,6 +46,9 @@ chromium-metrics-reviews@google.com.
       summary="proactively by Performance Manager before the system is in a
                critical condition, such as when Memory Saver Mode discards
                the tab"/>
+  <variant name=".Suggested"
+      summary="suggested by the Performance Detection manager when the
+               resource usage health may improve from discarding the tab"/>
   <variant name=".Urgent"
       summary="urgently by TabManager when the system is in a critical
                condition"/>

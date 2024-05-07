@@ -63,4 +63,8 @@ enum LifecycleUnitDiscardReason {
   // memory before the system is under memory pressure, such as when Memory
   // Saver Mode initiates a discard.
   PROACTIVE = 2,
+  // The discard is requested by PerformanceDetectionManager because the
+  // manager has detected intensive resource usage and suggests discarding
+  // certain tabs in an attempt to improve resource usage.
+  SUGGESTED = 3,
 };

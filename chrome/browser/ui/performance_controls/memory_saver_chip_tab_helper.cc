@@ -112,7 +112,8 @@ void MemorySaverChipTabHelper::ComputeChipState(
       memory_saver::IsURLSupported(navigation_handle->GetURL());
 
   if (!(was_discarded &&
-        discard_reason == mojom::LifecycleUnitDiscardReason::PROACTIVE &&
+        (discard_reason == mojom::LifecycleUnitDiscardReason::PROACTIVE ||
+         discard_reason == mojom::LifecycleUnitDiscardReason::SUGGESTED) &&
         is_site_supported)) {
     chip_state_ = memory_saver::ChipState::HIDDEN;
   } else if (ComputeShouldEducateAboutMemorySavings()) {
