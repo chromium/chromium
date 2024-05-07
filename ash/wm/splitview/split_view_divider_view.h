@@ -5,9 +5,14 @@
 #ifndef ASH_WM_SPLITVIEW_SPLIT_VIEW_DIVIDER_VIEW_H_
 #define ASH_WM_SPLITVIEW_SPLIT_VIEW_DIVIDER_VIEW_H_
 
+#include "ash/ash_export.h"
 #include "base/memory/raw_ptr.h"
 #include "ui/views/view.h"
 #include "ui/views/view_targeter_delegate.h"
+
+namespace gfx {
+class Rect;
+}  // namespace gfx
 
 namespace ash {
 
@@ -57,7 +62,10 @@ class SplitViewDividerView : public views::View,
   bool DoesIntersectRect(const views::View* target,
                          const gfx::Rect& rect) const override;
 
-  IconButton* feedback_button_for_testing() const { return feedback_button_; }
+  ASH_EXPORT gfx::Rect GetHandlerViewBoundsInScreenForTesting() const;
+
+  DividerHandlerView* handler_view_for_testing() { return handler_view_; }
+  IconButton* feedback_button_for_testing() { return feedback_button_; }
 
  private:
   friend class SplitViewDivider;

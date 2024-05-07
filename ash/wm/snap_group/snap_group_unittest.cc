@@ -2767,30 +2767,55 @@ TEST_F(SnapGroupDividerTest, HoverToEnlargeDivider) {
   SplitViewDivider* divider = snap_group_divider();
   auto* divider_widget = divider->divider_widget();
   ASSERT_TRUE(divider_widget);
+  auto* divider_view = divider->divider_view_for_testing();
+  ASSERT_TRUE(divider_view);
+  auto* handler_view = divider_view->handler_view_for_testing();
+  ASSERT_TRUE(handler_view);
 
   const auto divider_bounds_before_hover =
       divider_widget->GetWindowBoundsInScreen();
   EXPECT_EQ(kSplitviewDividerShortSideLength,
             divider_bounds_before_hover.width());
 
+  const auto handler_view_bounds_before_hover =
+      divider_view->GetHandlerViewBoundsInScreenForTesting();
+  EXPECT_EQ(kDividerHandlerShortSideLength,
+            handler_view_bounds_before_hover.width());
+  EXPECT_EQ(kDividerHandlerLongSideLength,
+            handler_view_bounds_before_hover.height());
+
   auto* event_generator = GetEventGenerator();
 
   // Shift the hover point so that it is not right on the divider handler view
   // to trigger hover to enlarge.
-  const auto delta_vector = gfx::Vector2d(0, -10);
-  const gfx::Point hover_point =
-      divider_bounds_before_hover.CenterPoint() + delta_vector;
-  event_generator->MoveMouseTo(hover_point);
-  EXPECT_EQ(kSplitviewDividerEnlargedShortSideLength,
-            divider_widget->GetWindowBoundsInScreen().width());
+  event_generator->MoveMouseTo(
+      divider_bounds_before_hover.CenterPoint() +
+      gfx::Vector2d(0, kDividerHandlerEnlargedLongSideLength / 2 + 1));
+  EXPECT_EQ(kSplitviewDividerEnlargedShortSideLength, divider_view->width());
+  const auto handler_view_bounds_on_hover =
+      divider_view->GetHandlerViewBoundsInScreenForTesting();
+  EXPECT_EQ(kDividerHandlerEnlargedShortSideLength,
+            handler_view_bounds_on_hover.width());
+  EXPECT_EQ(kDividerHandlerEnlargedLongSideLength,
+            handler_view_bounds_on_hover.height());
 
   event_generator->MoveMouseBy(10, 0);
-  EXPECT_EQ(kSplitviewDividerEnlargedShortSideLength,
-            divider_widget->GetWindowBoundsInScreen().width());
+  EXPECT_EQ(kSplitviewDividerEnlargedShortSideLength, divider_view->width());
+  const auto handler_view_bounds_on_drag =
+      divider_view->GetHandlerViewBoundsInScreenForTesting();
+  EXPECT_EQ(kDividerHandlerEnlargedShortSideLength,
+            handler_view_bounds_on_drag.width());
+  EXPECT_EQ(kDividerHandlerEnlargedLongSideLength,
+            handler_view_bounds_on_drag.height());
 
   event_generator->MoveMouseTo(gfx::Point(0, 0));
-  EXPECT_EQ(kSplitviewDividerShortSideLength,
-            divider_widget->GetWindowBoundsInScreen().width());
+  EXPECT_EQ(kSplitviewDividerShortSideLength, divider_view->width());
+  const auto handler_view_bounds_after_hover =
+      divider_view->GetHandlerViewBoundsInScreenForTesting();
+  EXPECT_EQ(kDividerHandlerShortSideLength,
+            handler_view_bounds_after_hover.width());
+  EXPECT_EQ(kDividerHandlerLongSideLength,
+            handler_view_bounds_after_hover.height());
 }
 
 // Tests that the split view divider will be stacked on top of both windows in
@@ -2974,9 +2999,9 @@ TEST_F(SnapGroupDividerTest, FeedbackButtonTest) {
   EXPECT_FALSE(feedback_button->GetVisible());
 
   // Test that the feedback button becomes visible upon hover on the divider.
-  gfx::Point hover_location =
-      snap_group_divider_bounds_in_screen().CenterPoint();
-  hover_location.Offset(0, -10);
+  const gfx::Point hover_location =
+      snap_group_divider_bounds_in_screen().CenterPoint() +
+      gfx::Vector2d(0, kDividerHandlerEnlargedLongSideLength / 2 + 1);
 
   auto* event_generator = GetEventGenerator();
   event_generator->MoveMouseTo(hover_location);
