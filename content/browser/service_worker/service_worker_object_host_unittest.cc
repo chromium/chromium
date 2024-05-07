@@ -255,13 +255,13 @@ TEST_F(ServiceWorkerObjectHostTest, OnVersionStateChanged) {
   registration_->SetInstallingVersion(version_);
 
   ServiceWorkerRemoteContainerEndpoint remote_endpoint;
-  base::WeakPtr<ServiceWorkerContainerHost> container_host =
+  base::WeakPtr<ServiceWorkerClient> service_worker_client =
       CreateContainerHostForWindow(
           GlobalRenderFrameHostId(helper_->mock_render_process_id(),
                                   /*mock frame_routing_id=*/1),
           /*is_parent_frame_secure=*/true, helper_->context()->AsWeakPtr(),
           &remote_endpoint);
-  container_host->UpdateUrls(
+  service_worker_client->UpdateUrls(
       scope, url::Origin::Create(scope),
       blink::StorageKey::CreateFirstParty(url::Origin::Create(scope)));
   blink::mojom::ServiceWorkerRegistrationObjectInfoPtr registration_info =
@@ -411,7 +411,7 @@ TEST_F(ServiceWorkerObjectHostTest, DispatchExtendableMessageEvent_FromClient) {
   auto* worker =
       helper_->AddNewPendingServiceWorker<MessageEventWorker>(helper_.get());
 
-  // Prepare a ServiceWorkerContainerHost for a window client. A
+  // Prepare a ServiceWorkerClient for a window client. A
   // WebContents/RenderFrameHost must be created too because it's needed for
   // DispatchExtendableMessageEvent to populate ExtendableMessageEvent#source.
   RenderViewHostTestEnabler rvh_test_enabler;
@@ -420,19 +420,20 @@ TEST_F(ServiceWorkerObjectHostTest, DispatchExtendableMessageEvent_FromClient) {
                                                nullptr));
   RenderFrameHost* frame_host = web_contents->GetPrimaryMainFrame();
   ServiceWorkerRemoteContainerEndpoint remote_endpoint;
-  base::WeakPtr<ServiceWorkerContainerHost> container_host =
+  base::WeakPtr<ServiceWorkerClient> service_worker_client =
       CreateContainerHostForWindow(
           frame_host->GetGlobalId(), /*is_parent_frame_secure=*/true,
           helper_->context()->AsWeakPtr(), &remote_endpoint);
-  container_host->UpdateUrls(scope, url::Origin::Create(scope), key);
+  service_worker_client->UpdateUrls(scope, url::Origin::Create(scope), key);
 
   // Prepare a ServiceWorkerObjectHost for the worker.
   blink::mojom::ServiceWorkerObjectInfoPtr info =
-      container_host->version_object_manager()
+      service_worker_client->container_host()
+          .version_object_manager()
           .GetOrCreateHost(version_)
           ->CreateCompleteObjectInfoToSend();
-  ServiceWorkerObjectHost* object_host =
-      GetServiceWorkerObjectHost(container_host.get(), version_->version_id());
+  ServiceWorkerObjectHost* object_host = GetServiceWorkerObjectHost(
+      &service_worker_client->container_host(), version_->version_id());
 
   // Simulate postMessage() from the window client to the worker.
   blink::TransferableMessage message;
@@ -449,15 +450,15 @@ TEST_F(ServiceWorkerObjectHostTest, DispatchExtendableMessageEvent_FromClient) {
   EXPECT_EQ(blink::ServiceWorkerStatusCode::kOk, status);
 
   // The worker should have received an ExtendableMessageEvent whose
-  // source is |container_host|.
+  // source is |service_worker_client|.
   const std::vector<blink::mojom::ExtendableMessageEventPtr>& events =
       worker->events();
   EXPECT_EQ(1u, events.size());
   EXPECT_FALSE(events[0]->source_info_for_service_worker);
   EXPECT_TRUE(events[0]->source_info_for_client);
-  EXPECT_EQ(container_host->client_uuid(),
+  EXPECT_EQ(service_worker_client->client_uuid(),
             events[0]->source_info_for_client->client_uuid);
-  EXPECT_EQ(container_host->GetClientType(),
+  EXPECT_EQ(service_worker_client->GetClientType(),
             events[0]->source_info_for_client->client_type);
 }
 

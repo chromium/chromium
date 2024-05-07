@@ -13,7 +13,7 @@
 
 namespace content {
 
-class ServiceWorkerContainerHost;
+class ServiceWorkerClient;
 class ServiceWorkerObjectHost;
 
 // For NetworkService glues:
@@ -42,7 +42,7 @@ struct CONTENT_EXPORT SubresourceLoaderParams {
   // For `NavigationURLLoaderImpl` only, to detect the controller lost and
   // cancel ServiceWorker subresource interception. See the comment in
   // `NavigationURLLoaderImpl::NotifyResponseStarted()` for details.
-  base::WeakPtr<ServiceWorkerContainerHost> container_host;
+  base::WeakPtr<ServiceWorkerClient> service_worker_client;
 
   // When signed exchanges were prefetched in the previous page and were stored
   // to the PrefetchedSignedExchangeCache, and the main resource for the

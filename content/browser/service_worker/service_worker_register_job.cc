@@ -916,7 +916,6 @@ void ServiceWorkerRegisterJob::AddRegistrationToMatchingContainerHosts(
            registration->key(), true /* include_reserved_clients */,
            true /* include_back_forward_cached_clients */);
        !it.IsAtEnd(); ++it) {
-    DCHECK(it->IsContainerForClient());
     if (!blink::ServiceWorkerScopeMatches(registration->scope(),
                                           it->GetUrlForScopeMatch())) {
       continue;

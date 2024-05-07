@@ -106,7 +106,7 @@ class ServiceWorkerRemoteContainerEndpoint {
 
 struct ServiceWorkerContainerHostAndInfo {
   ServiceWorkerContainerHostAndInfo(
-      base::WeakPtr<ServiceWorkerContainerHost> host,
+      base::WeakPtr<ServiceWorkerClient> host,
       blink::mojom::ServiceWorkerContainerInfoForClientPtr);
 
   ServiceWorkerContainerHostAndInfo(const ServiceWorkerContainerHostAndInfo&) =
@@ -116,14 +116,14 @@ struct ServiceWorkerContainerHostAndInfo {
 
   ~ServiceWorkerContainerHostAndInfo();
 
-  base::WeakPtr<ServiceWorkerContainerHost> host;
+  base::WeakPtr<ServiceWorkerClient> host;
   blink::mojom::ServiceWorkerContainerInfoForClientPtr info;
 };
 
 // Creates a container host that finished navigation. Test code can typically
 // use this function, but if more control is required
 // CreateContainerHostAndInfoForWindow() can be used instead.
-base::WeakPtr<ServiceWorkerContainerHost> CreateContainerHostForWindow(
+base::WeakPtr<ServiceWorkerClient> CreateContainerHostForWindow(
     const GlobalRenderFrameHostId& render_frame_host_id,
     bool is_parent_frame_secure,
     base::WeakPtr<ServiceWorkerContextCore> context,

@@ -461,7 +461,7 @@ ServiceWorkerVersionInfo ServiceWorkerVersion::GetInfo() {
       embedded_worker()->worker_devtools_agent_route_id(), ukm_source_id(),
       ancestor_frame_type_, router_rules);
   for (const auto& controllee : controllee_map_) {
-    ServiceWorkerContainerHost* container_host = controllee.second.get();
+    ServiceWorkerClient* container_host = controllee.second.get();
     info.clients.emplace(container_host->client_uuid(),
                          container_host->GetServiceWorkerClientInfo());
   }
@@ -903,8 +903,7 @@ void ServiceWorkerVersion::RunAfterStartWorker(
                              weak_factory_.GetWeakPtr(), std::move(callback)));
 }
 
-void ServiceWorkerVersion::AddControllee(
-    ServiceWorkerContainerHost* container_host) {
+void ServiceWorkerVersion::AddControllee(ServiceWorkerClient* container_host) {
   DCHECK_CURRENTLY_ON(BrowserThread::UI);
   // TODO(crbug.com/40657227): Remove this CHECK once we figure out the cause of
   // crash.
@@ -1056,7 +1055,7 @@ void ServiceWorkerVersion::EvictBackForwardCachedControllees(
 }
 
 void ServiceWorkerVersion::EvictBackForwardCachedControllee(
-    ServiceWorkerContainerHost* controllee,
+    ServiceWorkerClient* controllee,
     BackForwardCacheMetrics::NotRestoredReason reason) {
   controllee->EvictFromBackForwardCache(reason);
   controllees_to_be_evicted_[controllee->client_uuid()] = reason;
@@ -1101,7 +1100,7 @@ void ServiceWorkerVersion::Doom() {
   // ServiceWorkerVersion::RemoveControllee(), so be careful with iterators.
   auto iter = controllee_map_.begin();
   while (iter != controllee_map_.end()) {
-    ServiceWorkerContainerHost* container_host = iter->second.get();
+    ServiceWorkerClient* container_host = iter->second.get();
     ++iter;
     container_host->NotifyControllerLost();
   }
@@ -1118,7 +1117,7 @@ void ServiceWorkerVersion::Doom() {
   // count as true controllees for service worker lifecycle purposes.
   auto bf_iter = bfcached_controllee_map_.begin();
   while (bf_iter != bfcached_controllee_map_.end()) {
-    ServiceWorkerContainerHost* bf_container_host = bf_iter->second.get();
+    ServiceWorkerClient* bf_container_host = bf_iter->second.get();
     ++bf_iter;
     bf_container_host->NotifyControllerLost();
   }
@@ -1620,7 +1619,7 @@ void ServiceWorkerVersion::GetClient(const std::string& client_uuid,
     std::move(callback).Run(nullptr);
     return;
   }
-  ServiceWorkerContainerHost* container_host =
+  ServiceWorkerClient* container_host =
       context_->GetContainerHostByClientID(client_uuid);
   if (!container_host || container_host->url().DeprecatedGetOriginAsURL() !=
                              script_url_.DeprecatedGetOriginAsURL()) {
@@ -1649,7 +1648,7 @@ void ServiceWorkerVersion::GetClientInternal(const std::string& client_uuid,
     return;
   }
 
-  ServiceWorkerContainerHost* container_host =
+  ServiceWorkerClient* container_host =
       context_->GetContainerHostByClientID(client_uuid);
   if (!container_host || !container_host->is_execution_ready()) {
     std::move(callback).Run(nullptr);
@@ -1699,7 +1698,7 @@ void ServiceWorkerVersion::PostMessageToClient(
     blink::TransferableMessage message) {
   if (!context_)
     return;
-  ServiceWorkerContainerHost* container_host =
+  ServiceWorkerClient* container_host =
       context_->GetContainerHostByClientID(client_uuid);
   if (!container_host) {
     // The client may already have been closed, just ignore.
@@ -1766,7 +1765,7 @@ void ServiceWorkerVersion::FocusClient(const std::string& client_uuid,
     std::move(callback).Run(nullptr /* client */);
     return;
   }
-  ServiceWorkerContainerHost* container_host =
+  ServiceWorkerClient* container_host =
       context_->GetContainerHostByClientID(client_uuid);
   if (!container_host) {
     // The client may already have been closed, just fail.
@@ -1822,7 +1821,7 @@ void ServiceWorkerVersion::NavigateClient(const std::string& client_uuid,
     return;
   }
 
-  ServiceWorkerContainerHost* container_host =
+  ServiceWorkerClient* container_host =
       context_->GetContainerHostByClientID(client_uuid);
   if (!container_host) {
     std::move(callback).Run(false /* success */, nullptr /* client */,
@@ -2011,7 +2010,7 @@ void ServiceWorkerVersion::CountFeature(blink::mojom::WebFeature feature) {
   // Take snapshot of the `controllee_map_` instead of iterating on it directly.
   // This is to rule out the possibility of `controllee_map_` being modified
   // while we call `CountFeature`.
-  std::vector<base::WeakPtr<ServiceWorkerContainerHost>> hosts_snapshot;
+  std::vector<base::WeakPtr<ServiceWorkerClient>> hosts_snapshot;
   hosts_snapshot.reserve(controllee_map_.size());
   for (auto container_host_by_uuid : controllee_map_) {
     hosts_snapshot.push_back(container_host_by_uuid.second);

@@ -478,7 +478,7 @@ TEST_F(ServiceWorkerContextTest, Observer_ControlleeEvents) {
   version->SetStatus(ServiceWorkerVersion::ACTIVATED);
 
   ServiceWorkerRemoteContainerEndpoint endpoint;
-  base::WeakPtr<ServiceWorkerContainerHost> container_host =
+  base::WeakPtr<ServiceWorkerClient> service_worker_client =
       CreateContainerHostForWindow(
           GlobalRenderFrameHostId(helper_->mock_render_process_id(),
                                   /*mock frame_routing_id=*/1),
@@ -486,7 +486,7 @@ TEST_F(ServiceWorkerContextTest, Observer_ControlleeEvents) {
 
   TestServiceWorkerContextObserver observer(context_wrapper());
 
-  version->AddControllee(container_host.get());
+  version->AddControllee(service_worker_client.get());
   base::RunLoop().RunUntilIdle();
 
   ASSERT_EQ(1u, observer.events().size());
@@ -494,7 +494,8 @@ TEST_F(ServiceWorkerContextTest, Observer_ControlleeEvents) {
             observer.events()[0].type);
 
   version->OnControlleeNavigationCommitted(
-      container_host->client_uuid(), container_host->GetRenderFrameHostId());
+      service_worker_client->client_uuid(),
+      service_worker_client->GetRenderFrameHostId());
   base::RunLoop().RunUntilIdle();
 
   ASSERT_EQ(2u, observer.events().size());
@@ -502,7 +503,7 @@ TEST_F(ServiceWorkerContextTest, Observer_ControlleeEvents) {
                 ControlleeNavigationCommitted,
             observer.events()[1].type);
 
-  version->RemoveControllee(container_host->client_uuid());
+  version->RemoveControllee(service_worker_client->client_uuid());
   base::RunLoop().RunUntilIdle();
 
   ASSERT_EQ(4u, observer.events().size());
@@ -1121,33 +1122,36 @@ TEST_F(ServiceWorkerContextTest, ContainerHostIterator) {
 
   // Host1 : process_id=1, origin1.
   remote_endpoints.emplace_back();
-  base::WeakPtr<ServiceWorkerContainerHost> container_host1 =
+  base::WeakPtr<ServiceWorkerClient> service_worker_client1 =
       CreateContainerHostForWindow(
           GlobalRenderFrameHostId(kRenderProcessId1,
                                   /*mock frame_routing_id=*/1),
           /*is_parent_frame_secure=*/true, context()->AsWeakPtr(),
           &remote_endpoints.back());
-  container_host1->UpdateUrls(kOrigin1, url::Origin::Create(kOrigin1), kKey1);
+  service_worker_client1->UpdateUrls(kOrigin1, url::Origin::Create(kOrigin1),
+                                     kKey1);
 
   // Host2 : process_id=2, origin2.
   remote_endpoints.emplace_back();
-  base::WeakPtr<ServiceWorkerContainerHost> container_host2 =
+  base::WeakPtr<ServiceWorkerClient> service_worker_client2 =
       CreateContainerHostForWindow(
           GlobalRenderFrameHostId(kRenderProcessId2,
                                   /*mock frame_routing_id=*/1),
           /*is_parent_frame_secure=*/true, context()->AsWeakPtr(),
           &remote_endpoints.back());
-  container_host2->UpdateUrls(kOrigin2, url::Origin::Create(kOrigin2), kKey2);
+  service_worker_client2->UpdateUrls(kOrigin2, url::Origin::Create(kOrigin2),
+                                     kKey2);
 
   // Host3 : process_id=2, origin1.
   remote_endpoints.emplace_back();
-  base::WeakPtr<ServiceWorkerContainerHost> container_host3 =
+  base::WeakPtr<ServiceWorkerClient> service_worker_client3 =
       CreateContainerHostForWindow(
           GlobalRenderFrameHostId(kRenderProcessId2,
                                   /*mock frame_routing_id=*/1),
           /*is_parent_frame_secure=*/true, context()->AsWeakPtr(),
           &remote_endpoints.back());
-  container_host3->UpdateUrls(kOrigin1, url::Origin::Create(kOrigin1), kKey1);
+  service_worker_client3->UpdateUrls(kOrigin1, url::Origin::Create(kOrigin1),
+                                     kKey1);
 
   // Host4 : process_id=2, origin2, for ServiceWorker.
   blink::mojom::ServiceWorkerRegistrationOptions registration_opt;
@@ -1167,19 +1171,19 @@ TEST_F(ServiceWorkerContextTest, ContainerHostIterator) {
           mojo::PendingRemote<storage::mojom::ServiceWorkerLiveVersionRef>(),
           helper_->context()->AsWeakPtr());
   remote_endpoints.emplace_back();
-  // ServiceWorkerHost creates ServiceWorkerContainerHost for a service worker
+  // ServiceWorkerHost creates ServiceWorkerClient for a service worker
   // execution context.
   std::unique_ptr<ServiceWorkerHost> worker_host4 = CreateServiceWorkerHost(
       kRenderProcessId2, true /* is_parent_frame_secure */, *version,
       context()->AsWeakPtr(), &remote_endpoints.back());
 
-  ASSERT_TRUE(container_host1);
-  ASSERT_TRUE(container_host2);
-  ASSERT_TRUE(container_host3);
+  ASSERT_TRUE(service_worker_client1);
+  ASSERT_TRUE(service_worker_client2);
+  ASSERT_TRUE(service_worker_client3);
   ASSERT_TRUE(worker_host4->container_host());
 
   // Iterate over the client container hosts that belong to kOrigin1.
-  std::set<ServiceWorkerContainerHost*> results;
+  std::set<ServiceWorkerClient*> results;
   for (auto it = context()->GetServiceWorkerClients(
            kKey1, true /* include_reserved_clients */,
            false /* include_back_forward_cached_clients */);
@@ -1187,11 +1191,11 @@ TEST_F(ServiceWorkerContextTest, ContainerHostIterator) {
     results.insert(&*it);
   }
   EXPECT_EQ(2u, results.size());
-  EXPECT_TRUE(base::Contains(results, container_host1.get()));
-  EXPECT_TRUE(base::Contains(results, container_host3.get()));
+  EXPECT_TRUE(base::Contains(results, service_worker_client1.get()));
+  EXPECT_TRUE(base::Contains(results, service_worker_client3.get()));
 
   // Iterate over the container hosts that belong to kOrigin2. This should not
-  // include worker_host4->container_host() as it's not for controllee.
+  // include worker_host4->service_worker_client() as it's not for controllee.
   results.clear();
   for (auto it = context()->GetServiceWorkerClients(
            kKey2, true /* include_reserved_clients */,
@@ -1200,7 +1204,7 @@ TEST_F(ServiceWorkerContextTest, ContainerHostIterator) {
     results.insert(&*it);
   }
   EXPECT_EQ(1u, results.size());
-  EXPECT_TRUE(base::Contains(results, container_host2.get()));
+  EXPECT_TRUE(base::Contains(results, service_worker_client2.get()));
 }
 
 class ServiceWorkerContextRecoveryTest

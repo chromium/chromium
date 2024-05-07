@@ -6,7 +6,6 @@
 #define CONTENT_BROWSER_SERVICE_WORKER_SERVICE_WORKER_CONTEXT_CORE_H_
 
 #include <stdint.h>
-
 #include <map>
 #include <memory>
 #include <optional>
@@ -43,12 +42,14 @@ class SpecialStoragePolicy;
 }  // namespace storage
 
 namespace content {
+class ServiceWorkerContainerHostForClient;
 class ServiceWorkerContextCoreObserver;
-struct ServiceWorkerContextSynchronousObserverList;
 class ServiceWorkerContextWrapper;
 class ServiceWorkerJobCoordinator;
 class ServiceWorkerQuotaClient;
 class ServiceWorkerRegistration;
+struct ServiceWorkerContextSynchronousObserverList;
+
 #if !BUILDFLAG(IS_ANDROID)
 class ServiceWorkerHidDelegateObserver;
 class ServiceWorkerUsbDelegateObserver;
@@ -76,13 +77,13 @@ class CONTENT_EXPORT ServiceWorkerContextCore
   using UnregistrationCallback =
       base::OnceCallback<void(blink::ServiceWorkerStatusCode status)>;
   using ContainerHostByClientUUIDMap =
-      std::map<std::string, std::unique_ptr<ServiceWorkerContainerHost>>;
+      std::map<std::string, std::unique_ptr<ServiceWorkerClient>>;
   using WarmUpRequest =
       std::tuple<GURL,
                  blink::StorageKey,
                  ServiceWorkerContext::WarmUpServiceWorkerCallback>;
 
-  // Iterates over ServiceWorkerContainerHost objects in the
+  // Iterates over ServiceWorkerClient objects in the
   // ContainerHostByClientUUIDMap.
   // Note: As ServiceWorkerClientIterator is operating on a member of
   // ServiceWorkerContextCore, users must ensure the ServiceWorkerContextCore
@@ -98,13 +99,13 @@ class CONTENT_EXPORT ServiceWorkerContextCore
     ServiceWorkerClientIterator& operator++();
     bool IsAtEnd() const;
 
-    ServiceWorkerContainerHost& operator*() const;
-    ServiceWorkerContainerHost* operator->() const;
+    ServiceWorkerClient& operator*() const;
+    ServiceWorkerClient* operator->() const;
 
    private:
     friend class ServiceWorkerContextCore;
     using ContainerHostPredicate =
-        base::RepeatingCallback<bool(ServiceWorkerContainerHost&)>;
+        base::RepeatingCallback<bool(ServiceWorkerClient&)>;
     ServiceWorkerClientIterator(ContainerHostByClientUUIDMap* map,
                                 ContainerHostPredicate predicate);
     void ForwardUntilMatchingServiceWorkerClient();
@@ -160,9 +161,8 @@ class CONTENT_EXPORT ServiceWorkerContextCore
   void OnClientNavigated(const GURL& script_url, const GURL& url);
 
   // OnControlleeAdded/Removed are called asynchronously. It is possible the
-  // container host identified by |client_uuid| was already destroyed when they
-  // are called.
-  // Note regarding BackForwardCache integration:
+  // service worker client identified by |client_uuid| was already destroyed
+  // when they are called. Note regarding BackForwardCache integration:
   // OnControlleeRemoved is called when a controllee enters back-forward
   // cache, and OnControlleeAdded is called when a controllee is restored from
   // back-forward cache.
@@ -228,19 +228,19 @@ class CONTENT_EXPORT ServiceWorkerContextCore
       const blink::StorageKey& key,
       bool include_reserved_clients);
 
-  // Runs the callback with true if there is a ContainerHost for `key` of
-  // type blink::mojom::ServiceWorkerContainerType::kForWindow which is a main
-  // (top-level) frame. Reserved clients are ignored.
+  // Runs the callback with true if there is a service worker client for `key`
+  // of type blink::mojom::ServiceWorkerContainerType::kForWindow which is a
+  // main (top-level) frame. Reserved clients are ignored.
   // TODO(crbug.com/40568315): Make this synchronously return bool when the core
   // thread is UI.
   void HasMainFrameWindowClient(const blink::StorageKey& key,
                                 BoolCallback callback);
 
-  // Used to create a ServiceWorkerContainerHost for a window during a
+  // Used to create a ServiceWorkerClient for a window during a
   // navigation. |are_ancestors_secure| should be true for main frames.
   // Otherwise it is true iff all ancestor frames of this frame have a secure
   // origin. |frame_tree_node_id| is FrameTreeNode id.
-  base::WeakPtr<ServiceWorkerContainerHost> CreateContainerHostForWindow(
+  base::WeakPtr<ServiceWorkerClient> CreateContainerHostForWindow(
       mojo::PendingAssociatedReceiver<blink::mojom::ServiceWorkerContainerHost>
           host_receiver,
       bool are_ancestors_secure,
@@ -249,8 +249,8 @@ class CONTENT_EXPORT ServiceWorkerContextCore
       int frame_tree_node_id);
 
   // Used for starting a web worker (dedicated worker or shared worker). Returns
-  // a container host for the worker.
-  base::WeakPtr<ServiceWorkerContainerHost> CreateContainerHostForWorker(
+  // a service worker client for the worker.
+  base::WeakPtr<ServiceWorkerClient> CreateContainerHostForWorker(
       mojo::PendingAssociatedReceiver<blink::mojom::ServiceWorkerContainerHost>
           host_receiver,
       int process_id,
@@ -258,16 +258,16 @@ class CONTENT_EXPORT ServiceWorkerContextCore
           container_remote,
       ServiceWorkerClientInfo client_info);
 
-  // Updates the client UUID of an existing container host.
+  // Updates the client UUID of an existing service worker client.
   void UpdateContainerHostClientID(const std::string& current_client_uuid,
                                    const std::string& new_client_uuid);
 
-  // Retrieves a container host given its client UUID.
-  ServiceWorkerContainerHost* GetContainerHostByClientID(
+  // Retrieves a service worker client given its client UUID.
+  ServiceWorkerClient* GetContainerHostByClientID(
       const std::string& client_uuid);
 
-  // Retrieves a container host given its window ID.
-  ServiceWorkerContainerHost* GetContainerHostByWindowId(
+  // Retrieves a service worker client given its window ID.
+  ServiceWorkerClient* GetContainerHostByWindowId(
       const base::UnguessableToken& window_id);
 
   void OnContainerHostReceiverDisconnected();
@@ -406,8 +406,7 @@ class CONTENT_EXPORT ServiceWorkerContextCore
 
   int GetNextEmbeddedWorkerId();
 
-  void NotifyClientIsExecutionReady(
-      const ServiceWorkerContainerHost& container_host);
+  void NotifyClientIsExecutionReady(const ServiceWorkerClient& container_host);
 
   bool MaybeHasRegistrationForStorageKey(const blink::StorageKey& key);
 
@@ -522,14 +521,13 @@ class CONTENT_EXPORT ServiceWorkerContextCore
   // Bind() to hold a reference to |wrapper_| until |this| is fully destroyed.
   raw_ptr<ServiceWorkerContextWrapper> wrapper_;
 
-  // |container_host_by_uuid_| owns container hosts for service worker clients.
-  // Container hosts for service worker execution contexts are owned by
-  // ServiceWorkerHost.
+  // Owns `ServiceWorkerContainerForClient` (via `ServiceWorkerClient`).
+  // `ServiceWorkerContainerForServiceWorker`s are owned by `ServiceWorkerHost`.
   ContainerHostByClientUUIDMap container_host_by_uuid_;
 
   std::unique_ptr<
       mojo::AssociatedReceiverSet<blink::mojom::ServiceWorkerContainerHost,
-                                  ServiceWorkerContainerHost*>>
+                                  ServiceWorkerContainerHostForClient*>>
       container_host_receivers_;
 
   std::unique_ptr<ServiceWorkerRegistry> registry_;

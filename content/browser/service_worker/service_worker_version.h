@@ -72,7 +72,7 @@
 
 namespace content {
 
-class ServiceWorkerContainerHost;
+class ServiceWorkerClient;
 class ServiceWorkerContextCore;
 class ServiceWorkerHost;
 class ServiceWorkerInstalledScriptsSender;
@@ -423,7 +423,7 @@ class CONTENT_EXPORT ServiceWorkerVersion
   }
 
   // Adds and removes the specified host as a controllee of this service worker.
-  void AddControllee(ServiceWorkerContainerHost* container_host);
+  void AddControllee(ServiceWorkerClient* container_host);
   void RemoveControllee(const std::string& client_uuid);
 
   // Called when the navigation for a window client commits to a render frame
@@ -448,7 +448,7 @@ class CONTENT_EXPORT ServiceWorkerVersion
   // Note regarding BackForwardCache:
   // Clients in back-forward cache don't count as controllees.
   bool HasControllee() const { return !controllee_map_.empty(); }
-  const std::map<std::string, base::WeakPtr<ServiceWorkerContainerHost>>&
+  const std::map<std::string, base::WeakPtr<ServiceWorkerClient>>&
   controllee_map() const {
     return controllee_map_;
   }
@@ -462,7 +462,7 @@ class CONTENT_EXPORT ServiceWorkerVersion
   void EvictBackForwardCachedControllees(
       BackForwardCacheMetrics::NotRestoredReason reason);
   void EvictBackForwardCachedControllee(
-      ServiceWorkerContainerHost* controllee,
+      ServiceWorkerClient* controllee,
       BackForwardCacheMetrics::NotRestoredReason reason);
 
   // The worker host hosting this version. Only valid while the version is
@@ -1156,18 +1156,17 @@ class CONTENT_EXPORT ServiceWorkerVersion
   std::unique_ptr<content::ServiceWorkerHost> worker_host_;
 
   // |controllee_map_| and |bfcached_controllee_map_| should not share the same
-  // controllee.  ServiceWorkerContainerHost in the controllee maps should be
+  // controllee.  ServiceWorkerClient in the controllee maps should be
   // non-null.
   // TODO(crbug.com/40199210): Fix cases where hosts can become nullptr while
   //                          stored in the maps.
-  std::map<std::string, base::WeakPtr<ServiceWorkerContainerHost>>
-      controllee_map_;
-  std::map<std::string, base::WeakPtr<ServiceWorkerContainerHost>>
+  std::map<std::string, base::WeakPtr<ServiceWorkerClient>> controllee_map_;
+  std::map<std::string, base::WeakPtr<ServiceWorkerClient>>
       bfcached_controllee_map_;
 
-  // Keeps track of the |client_uuid| of ContainerHost that is being evicted,
-  // and the reason why it is evicted. Once eviction is complete, the entry will
-  // be removed.
+  // Keeps track of the |client_uuid| of ServiceWorkerClient that is being
+  // evicted, and the reason why it is evicted. Once eviction is complete, the
+  // entry will be removed.
   // TODO(crbug.com/40657227): Remove this once we fix the crash.
   std::map<std::string, BackForwardCacheMetrics::NotRestoredReason>
       controllees_to_be_evicted_;

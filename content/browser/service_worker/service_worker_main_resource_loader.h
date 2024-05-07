@@ -36,7 +36,7 @@
 
 namespace content {
 
-class ServiceWorkerContainerHost;
+class ServiceWorkerClient;
 class ServiceWorkerVersion;
 
 // ServiceWorkerMainResourceLoader is the URLLoader used for main resource
@@ -75,7 +75,7 @@ class CONTENT_EXPORT ServiceWorkerMainResourceLoader
   // is used instead of NavigationURLLoaderImpl.
   ServiceWorkerMainResourceLoader(
       NavigationLoaderInterceptor::FallbackCallback fallback_callback,
-      base::WeakPtr<ServiceWorkerContainerHost> container_host,
+      base::WeakPtr<ServiceWorkerClient> container_host,
       int frame_tree_node_id,
       base::TimeTicks find_registration_start_time);
 
@@ -258,7 +258,7 @@ class CONTENT_EXPORT ServiceWorkerMainResourceLoader
 
   network::ResourceRequest resource_request_;
 
-  base::WeakPtr<ServiceWorkerContainerHost> container_host_;
+  base::WeakPtr<ServiceWorkerClient> container_host_;
   const int frame_tree_node_id_;
 
   std::unique_ptr<ServiceWorkerFetchDispatcher> fetch_dispatcher_;

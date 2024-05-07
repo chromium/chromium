@@ -517,7 +517,7 @@ class ServiceWorkerMainResourceLoaderTest : public testing::Test {
   // caller can use functions like client_.RunUntilComplete() to wait for
   // completion.
   void StartRequest(std::unique_ptr<network::ResourceRequest> request) {
-    // Create a ServiceWorkerContainerHost and simulate what
+    // Create a ServiceWorkerClient and simulate what
     // ServiceWorkerControlleeRequestHandler does to assign it a controller.
     if (!container_host_) {
       container_host_ = CreateContainerHostForWindow(
@@ -622,7 +622,7 @@ class ServiceWorkerMainResourceLoaderTest : public testing::Test {
   network::TestURLLoaderClient client_;
   std::unique_ptr<ServiceWorkerMainResourceLoader> loader_;
   mojo::Remote<network::mojom::URLLoader> loader_remote_;
-  base::WeakPtr<ServiceWorkerContainerHost> container_host_;
+  base::WeakPtr<ServiceWorkerClient> container_host_;
   ServiceWorkerRemoteContainerEndpoint container_endpoints_;
 
   bool did_call_fallback_callback_ = false;
@@ -1138,9 +1138,8 @@ TEST_F(ServiceWorkerMainResourceLoaderTest, ConnectionErrorDuringFetchEvent) {
 }
 
 TEST_F(ServiceWorkerMainResourceLoaderTest, CancelNavigationDuringFetchEvent) {
-  // This test simulates failure by resetting
-  // ServiceWorkerContainerHost.  But without disabling
-  // HighPriorityFetchResponseCallback,
+  // This test simulates failure by resetting ServiceWorkerClient.  But without
+  // disabling HighPriorityFetchResponseCallback,
   // `container_endpoints_.host_remote()->reset()` comes later than
   // request processing, and doesn't cancel navigation during the fetch
   // event.  This test is still valid after introducing

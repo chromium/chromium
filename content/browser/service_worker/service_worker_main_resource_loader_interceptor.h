@@ -81,7 +81,7 @@ class CONTENT_EXPORT ServiceWorkerMainResourceLoaderInterceptor final
 
   static void CompleteWithoutLoader(
       NavigationLoaderInterceptor::LoaderCallback loader_callback,
-      base::WeakPtr<ServiceWorkerContainerHost> container_host);
+      base::WeakPtr<ServiceWorkerClient> service_worker_client);
 
  private:
   friend class ServiceWorkerMainResourceLoaderInterceptorTest;

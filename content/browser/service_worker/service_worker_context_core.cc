@@ -134,8 +134,7 @@ bool IsSameOriginServiceWorkerClient(
     const blink::StorageKey& key,
     bool allow_reserved_client,
     bool allow_back_forward_cached_client,
-    ServiceWorkerContainerHost& service_worker_client) {
-  DCHECK(service_worker_client.IsContainerForClient());
+    ServiceWorkerClient& service_worker_client) {
   // If |service_worker_client| is in BackForwardCache, it should be skipped in
   // iteration, because (1) hosts in BackForwardCache should never be exposed to
   // web as clients and (2) hosts could be in an unknown state after eviction
@@ -153,8 +152,7 @@ bool IsSameOriginServiceWorkerClient(
 bool IsSameOriginWindowServiceWorkerClient(
     const blink::StorageKey& key,
     bool allow_reserved_client,
-    ServiceWorkerContainerHost& service_worker_client) {
-  DCHECK(service_worker_client.IsContainerForClient());
+    ServiceWorkerClient& service_worker_client) {
   // If |service_worker_client| is in BackForwardCache, it should be skipped in
   // iteration, because (1) service worker clients in BackForwardCache should
   // never be exposed to web as clients and (2) service worker clients could be
@@ -236,13 +234,13 @@ int GetWarmedUpServiceWorkerCount(
 ServiceWorkerContextCore::ServiceWorkerClientIterator::
     ~ServiceWorkerClientIterator() = default;
 
-ServiceWorkerContainerHost&
+ServiceWorkerClient&
 ServiceWorkerContextCore::ServiceWorkerClientIterator::operator*() const {
   DCHECK(!IsAtEnd());
   return *iterator_->second;
 }
 
-ServiceWorkerContainerHost*
+ServiceWorkerClient*
 ServiceWorkerContextCore::ServiceWorkerClientIterator::operator->() const {
   DCHECK(!IsAtEnd());
   return iterator_->second.get();
@@ -290,7 +288,7 @@ ServiceWorkerContextCore::ServiceWorkerContextCore(
     : wrapper_(wrapper),
       container_host_receivers_(std::make_unique<mojo::AssociatedReceiverSet<
                                     blink::mojom::ServiceWorkerContainerHost,
-                                    ServiceWorkerContainerHost*>>()),
+                                    ServiceWorkerContainerHostForClient*>>()),
       registry_(
           std::make_unique<ServiceWorkerRegistry>(this,
                                                   quota_manager_proxy,
@@ -419,7 +417,7 @@ void ServiceWorkerContextCore::HasMainFrameWindowClient(
       FROM_HERE, base::BindOnce(std::move(callback), has_main_frame));
 }
 
-base::WeakPtr<ServiceWorkerContainerHost>
+base::WeakPtr<ServiceWorkerClient>
 ServiceWorkerContextCore::CreateContainerHostForWindow(
     mojo::PendingAssociatedReceiver<blink::mojom::ServiceWorkerContainerHost>
         host_receiver,
@@ -427,26 +425,25 @@ ServiceWorkerContextCore::CreateContainerHostForWindow(
     mojo::PendingAssociatedRemote<blink::mojom::ServiceWorkerContainer>
         container_remote,
     int frame_tree_node_id) {
-  auto container_host = std::make_unique<ServiceWorkerContainerHostForClient>(
-      AsWeakPtr(), are_ancestors_secure, std::move(container_remote),
-      frame_tree_node_id);
-
-  ServiceWorkerContainerHost* container_host_ptr = container_host.get();
-
-  auto inserted =
-      container_host_by_uuid_
-          .emplace(container_host_ptr->client_uuid(), std::move(container_host))
-          .second;
+  auto client = std::make_unique<ServiceWorkerClient>(
+      AsWeakPtr(), are_ancestors_secure, frame_tree_node_id);
+  auto weak_client = client->AsWeakPtr();
+  auto inserted = container_host_by_uuid_
+                      .emplace(weak_client->client_uuid(), std::move(client))
+                      .second;
   DCHECK(inserted);
 
   // Bind the host receiver.
-  container_host_receivers_->Add(container_host_ptr, std::move(host_receiver),
-                                 container_host_ptr);
+  ServiceWorkerContainerHostForClient::Create(weak_client,
+                                              std::move(container_remote));
+  container_host_receivers_->Add(&weak_client->container_host(),
+                                 std::move(host_receiver),
+                                 &weak_client->container_host());
 
-  return base::AsWeakPtr(container_host_ptr);
+  return weak_client;
 }
 
-base::WeakPtr<ServiceWorkerContainerHost>
+base::WeakPtr<ServiceWorkerClient>
 ServiceWorkerContextCore::CreateContainerHostForWorker(
     mojo::PendingAssociatedReceiver<blink::mojom::ServiceWorkerContainerHost>
         host_receiver,
@@ -454,22 +451,22 @@ ServiceWorkerContextCore::CreateContainerHostForWorker(
     mojo::PendingAssociatedRemote<blink::mojom::ServiceWorkerContainer>
         container_remote,
     ServiceWorkerClientInfo client_info) {
-  auto container_host = std::make_unique<ServiceWorkerContainerHostForClient>(
-      AsWeakPtr(), process_id, std::move(container_remote), client_info);
-
-  ServiceWorkerContainerHost* container_host_ptr = container_host.get();
-
-  bool inserted =
-      container_host_by_uuid_
-          .emplace(container_host_ptr->client_uuid(), std::move(container_host))
-          .second;
+  auto client = std::make_unique<ServiceWorkerClient>(AsWeakPtr(), process_id,
+                                                      client_info);
+  auto weak_client = client->AsWeakPtr();
+  auto inserted = container_host_by_uuid_
+                      .emplace(weak_client->client_uuid(), std::move(client))
+                      .second;
   DCHECK(inserted);
 
   // Bind the host receiver.
-  container_host_receivers_->Add(container_host_ptr, std::move(host_receiver),
-                                 container_host_ptr);
+  ServiceWorkerContainerHostForClient::Create(weak_client,
+                                              std::move(container_remote));
+  container_host_receivers_->Add(&weak_client->container_host(),
+                                 std::move(host_receiver),
+                                 &weak_client->container_host());
 
-  return base::AsWeakPtr(container_host_ptr);
+  return weak_client;
 }
 
 void ServiceWorkerContextCore::UpdateContainerHostClientID(
@@ -477,8 +474,7 @@ void ServiceWorkerContextCore::UpdateContainerHostClientID(
     const std::string& new_client_uuid) {
   auto it = container_host_by_uuid_.find(current_client_uuid);
   DCHECK(it != container_host_by_uuid_.end());
-  std::unique_ptr<ServiceWorkerContainerHost> container_host =
-      std::move(it->second);
+  std::unique_ptr<ServiceWorkerClient> container_host = std::move(it->second);
   container_host_by_uuid_.erase(it);
 
   bool inserted = container_host_by_uuid_
@@ -487,18 +483,15 @@ void ServiceWorkerContextCore::UpdateContainerHostClientID(
   DCHECK(inserted);
 }
 
-ServiceWorkerContainerHost*
-ServiceWorkerContextCore::GetContainerHostByClientID(
+ServiceWorkerClient* ServiceWorkerContextCore::GetContainerHostByClientID(
     const std::string& client_uuid) {
   auto it = container_host_by_uuid_.find(client_uuid);
   if (it == container_host_by_uuid_.end())
     return nullptr;
-  DCHECK(it->second->IsContainerForClient());
   return it->second.get();
 }
 
-ServiceWorkerContainerHost*
-ServiceWorkerContextCore::GetContainerHostByWindowId(
+ServiceWorkerClient* ServiceWorkerContextCore::GetContainerHostByWindowId(
     const base::UnguessableToken& window_id) {
   for (auto& it : container_host_by_uuid_) {
     if (it.second->fetch_request_window_id() == window_id)
@@ -509,15 +502,17 @@ ServiceWorkerContextCore::GetContainerHostByWindowId(
 }
 
 void ServiceWorkerContextCore::OnContainerHostReceiverDisconnected() {
-  ServiceWorkerContainerHost* container_host =
+  ServiceWorkerContainerHostForClient* container_host =
       container_host_receivers_->current_context();
 
-  observer_list_->Notify(FROM_HERE,
-                         &ServiceWorkerContextCoreObserver::OnClientDestroyed,
-                         container_host->ukm_source_id(), container_host->url(),
-                         container_host->GetClientType());
+  observer_list_->Notify(
+      FROM_HERE, &ServiceWorkerContextCoreObserver::OnClientDestroyed,
+      container_host->service_worker_client().ukm_source_id(),
+      container_host->url(),
+      container_host->service_worker_client().GetClientType());
 
-  size_t removed = container_host_by_uuid_.erase(container_host->client_uuid());
+  size_t removed = container_host_by_uuid_.erase(
+      container_host->service_worker_client().client_uuid());
   DCHECK_EQ(removed, 1u);
 }
 
@@ -684,7 +679,7 @@ int ServiceWorkerContextCore::GetNextEmbeddedWorkerId() {
 }
 
 void ServiceWorkerContextCore::NotifyClientIsExecutionReady(
-    const ServiceWorkerContainerHost& container_host) {
+    const ServiceWorkerClient& container_host) {
   DCHECK(container_host.is_execution_ready());
   observer_list_->Notify(
       FROM_HERE, &ServiceWorkerContextCoreObserver::OnClientIsExecutionReady,

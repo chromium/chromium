@@ -89,7 +89,7 @@ std::string GetContainerHostClientId(int frame_tree_node_id) {
   std::string client_uuid;
   auto* frame_tree_node = FrameTreeNode::GloballyFindByID(frame_tree_node_id);
   if (frame_tree_node) {
-    base::WeakPtr<ServiceWorkerContainerHost> container_host =
+    base::WeakPtr<ServiceWorkerClient> container_host =
         frame_tree_node->current_frame_host()
             ->GetLastCommittedServiceWorkerHost();
     if (container_host) {
@@ -135,7 +135,7 @@ class ServiceWorkerMainResourceLoader::StreamWaiter
 
 ServiceWorkerMainResourceLoader::ServiceWorkerMainResourceLoader(
     NavigationLoaderInterceptor::FallbackCallback fallback_callback,
-    base::WeakPtr<ServiceWorkerContainerHost> container_host,
+    base::WeakPtr<ServiceWorkerClient> container_host,
     int frame_tree_node_id,
     base::TimeTicks find_registration_start_time)
     : fallback_callback_(std::move(fallback_callback)),

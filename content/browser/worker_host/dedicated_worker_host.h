@@ -61,7 +61,7 @@ struct CrossOriginEmbedderPolicy;
 
 namespace content {
 
-class ServiceWorkerContainerHost;
+class ServiceWorkerClient;
 class ServiceWorkerRegistration;
 class DedicatedWorkerServiceImpl;
 class ServiceWorkerMainResourceHandle;
@@ -184,7 +184,7 @@ class CONTENT_EXPORT DedicatedWorkerHost final
   // enabled by default.
   void ContinueOnMaybeCountWebFeature(
       const GURL& script_url,
-      base::WeakPtr<ServiceWorkerContainerHost> container_host,
+      base::WeakPtr<ServiceWorkerClient> container_host,
       blink::ServiceWorkerStatusCode status,
       const std::vector<scoped_refptr<ServiceWorkerRegistration>>&
           registrations);
@@ -256,7 +256,7 @@ class CONTENT_EXPORT DedicatedWorkerHost final
   const BackForwardCacheBlockingDetails& GetBackForwardCacheBlockingDetails()
       const;
 
-  base::WeakPtr<ServiceWorkerContainerHost> GetServiceWorkerContainerHost();
+  base::WeakPtr<ServiceWorkerClient> GetServiceWorkerClient();
 
   mojo::PendingRemote<blink::mojom::BackForwardCacheControllerHost>
   BindAndPassRemoteForBackForwardCacheControllerHost();

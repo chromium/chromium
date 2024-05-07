@@ -95,7 +95,7 @@ std::optional<int> ServiceWorkerControlleeRequestHandler::
 
 ServiceWorkerControlleeRequestHandler::ServiceWorkerControlleeRequestHandler(
     base::WeakPtr<ServiceWorkerContextCore> context,
-    base::WeakPtr<ServiceWorkerContainerHost> container_host,
+    base::WeakPtr<ServiceWorkerClient> container_host,
     network::mojom::RequestDestination destination,
     bool skip_service_worker,
     int frame_tree_node_id,
@@ -538,7 +538,7 @@ void ServiceWorkerControlleeRequestHandler::CreateLoaderAndStartRequest(
           base::MakeRefCounted<network::SingleRequestURLLoaderFactory>(
               base::BindOnce(&ServiceWorkerMainResourceLoader::StartRequest,
                              loader_wrapper_->get()->AsWeakPtr())),
-          ServiceWorkerContainerHost::MaybeCreateSubresourceLoaderParams(
+          ServiceWorkerClient::MaybeCreateSubresourceLoaderParams(
               container_host_)));
 }
 

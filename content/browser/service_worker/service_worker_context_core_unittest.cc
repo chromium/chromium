@@ -142,15 +142,15 @@ class ServiceWorkerContextCoreTest : public testing::Test,
     return status;
   }
 
-  ServiceWorkerContainerHost* CreateControllee() {
+  ServiceWorkerClient* CreateControllee() {
     remote_endpoints_.emplace_back();
-    base::WeakPtr<ServiceWorkerContainerHost> container_host =
+    base::WeakPtr<ServiceWorkerClient> service_worker_client =
         CreateContainerHostForWindow(
             GlobalRenderFrameHostId(/*mock process_id=*/33,
                                     /*mock frame_routing_id=*/1),
             /*is_parent_frame_secure=*/true, helper_->context()->AsWeakPtr(),
             &remote_endpoints_.back());
-    return container_host.get();
+    return service_worker_client.get();
   }
 
  protected:
@@ -271,10 +271,11 @@ TEST_F(ServiceWorkerContextCoreTest,
   RegisterServiceWorker(scope, key, options, &registration);
 
   // Add a controlled client.
-  ServiceWorkerContainerHost* container_host = CreateControllee();
-  container_host->UpdateUrls(scope, origin, key);
-  container_host->SetControllerRegistration(registration,
-                                            /*notify_controllerchange=*/false);
+  ServiceWorkerClient* service_worker_client = CreateControllee();
+  service_worker_client->UpdateUrls(scope, origin, key);
+  service_worker_client->SetControllerRegistration(
+      registration,
+      /*notify_controllerchange=*/false);
 
   // Unregister, which will wait to clear until the controlled client unloads.
   EXPECT_EQ(blink::ServiceWorkerStatusCode::kOk, Unregister(scope, key));

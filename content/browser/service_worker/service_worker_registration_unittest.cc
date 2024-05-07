@@ -324,7 +324,7 @@ TEST_F(ServiceWorkerRegistrationTest, FailedRegistrationNoCrash) {
       blink::mojom::AncestorFrameType::kNormalFrame);
   // Prepare a ServiceWorkerContainerHost.
   ServiceWorkerRemoteContainerEndpoint remote_endpoint;
-  base::WeakPtr<ServiceWorkerContainerHost> container_host =
+  base::WeakPtr<ServiceWorkerClient> service_worker_client =
       CreateContainerHostForWindow(
           GlobalRenderFrameHostId(helper_->mock_render_process_id(),
                                   /*mock frame_routing_id=*/1),
@@ -332,7 +332,8 @@ TEST_F(ServiceWorkerRegistrationTest, FailedRegistrationNoCrash) {
           &remote_endpoint);
   auto registration_object_host =
       std::make_unique<ServiceWorkerRegistrationObjectHost>(
-          context()->AsWeakPtr(), container_host.get(), registration);
+          context()->AsWeakPtr(), &service_worker_client->container_host(),
+          registration);
   // To enable the caller end point
   // |registration_object_host->remote_registration_| to make calls safely with
   // no need to pass |object_info_->receiver| through a message pipe endpoint.
@@ -436,15 +437,15 @@ class ServiceWorkerActivationTest : public ServiceWorkerRegistrationTest,
     ASSERT_EQ(blink::ServiceWorkerStatusCode::kOk, status.value());
 
     // Give the active version a controllee.
-    container_host_ = CreateContainerHostForWindow(
+    service_worker_client_ = CreateContainerHostForWindow(
         GlobalRenderFrameHostId(helper_->mock_render_process_id(),
                                 /*mock frame_routing_id=*/1),
         /*is_parent_frame_secure=*/true, context()->AsWeakPtr(),
         &remote_endpoint_);
     DCHECK(remote_endpoint_.client_receiver()->is_valid());
     DCHECK(remote_endpoint_.host_remote()->is_bound());
-    container_host_->UpdateUrls(kUrl, url::Origin::Create(kUrl), kKey);
-    container_host_->SetControllerRegistration(
+    service_worker_client_->UpdateUrls(kUrl, url::Origin::Create(kUrl), kKey);
+    service_worker_client_->SetControllerRegistration(
         registration_, false /* notify_controllerchange */);
 
     // Setup the Mojo implementation fakes for the renderer-side service worker.
@@ -511,12 +512,12 @@ class ServiceWorkerActivationTest : public ServiceWorkerRegistrationTest,
   int inflight_request_id() const { return inflight_request_id_; }
 
   void AddControllee() {
-    container_host_->SetControllerRegistration(
+    service_worker_client_->SetControllerRegistration(
         registration(), false /* notify_controllerchange */);
   }
 
   void RemoveControllee() {
-    container_host_->SetControllerRegistration(
+    service_worker_client_->SetControllerRegistration(
         nullptr, false /* notify_controllerchange */);
   }
 
@@ -572,7 +573,7 @@ class ServiceWorkerActivationTest : public ServiceWorkerRegistrationTest,
   raw_ptr<FakeEmbeddedWorkerInstanceClient> version_2_client_ = nullptr;
   raw_ptr<FakeServiceWorker> version_2_service_worker_ = nullptr;
 
-  base::WeakPtr<ServiceWorkerContainerHost> container_host_;
+  base::WeakPtr<ServiceWorkerClient> service_worker_client_;
   ServiceWorkerRemoteContainerEndpoint remote_endpoint_;
   int inflight_request_id_ = -1;
 };
@@ -951,21 +952,21 @@ class ServiceWorkerRegistrationObjectHostTest
     return registration->id();
   }
 
-  ServiceWorkerRemoteContainerEndpoint PrepareContainerHost(
+  ServiceWorkerRemoteContainerEndpoint PrepareServiceWorkerClient(
       const GURL& document_url,
-      base::WeakPtr<ServiceWorkerContainerHost>* out_container_host) {
+      base::WeakPtr<ServiceWorkerClient>* out_service_worker_client) {
     ServiceWorkerRemoteContainerEndpoint remote_endpoint;
-    base::WeakPtr<ServiceWorkerContainerHost> container_host =
+    base::WeakPtr<ServiceWorkerClient> service_worker_client =
         CreateContainerHostForWindow(
             GlobalRenderFrameHostId(helper_->mock_render_process_id(),
                                     /*mock frame_routing_id=*/1),
             /*is_parent_frame_secure=*/true, context()->AsWeakPtr(),
             &remote_endpoint);
-    container_host->UpdateUrls(
+    service_worker_client->UpdateUrls(
         document_url, url::Origin::Create(document_url),
         blink::StorageKey::CreateFirstParty(url::Origin::Create(document_url)));
-    if (out_container_host) {
-      *out_container_host = container_host;
+    if (out_service_worker_client) {
+      *out_service_worker_client = service_worker_client;
     }
     return remote_endpoint;
   }
@@ -1020,7 +1021,8 @@ TEST_F(ServiceWorkerRegistrationObjectHostTest, BreakConnection_Destroy) {
   const GURL kScriptUrl("https://www.example.com/sw.js");
   int64_t registration_id = SetUpRegistration(kScope, kScriptUrl);
   ServiceWorkerRemoteContainerEndpoint remote_endpoint =
-      PrepareContainerHost(kScope, nullptr /* out_container_host */);
+      PrepareServiceWorkerClient(kScope,
+                                 nullptr /* out_service_worker_client */);
   blink::mojom::ServiceWorkerRegistrationObjectInfoPtr info =
       GetRegistrationFromRemote(remote_endpoint.host_remote()->get(), kScope);
   mojo::AssociatedRemote<blink::mojom::ServiceWorkerRegistrationObjectHost>
@@ -1038,7 +1040,8 @@ TEST_P(ServiceWorkerRegistrationObjectHostUpdateTest, Update_Success) {
   const GURL kScriptUrl("https://www.example.com/sw.js");
   SetUpRegistration(kScope, kScriptUrl);
   ServiceWorkerRemoteContainerEndpoint remote_endpoint =
-      PrepareContainerHost(kScope, nullptr /* out_container_host */);
+      PrepareServiceWorkerClient(kScope,
+                                 nullptr /* out_service_worker_client */);
   mojo::AssociatedRemote<blink::mojom::ServiceWorkerRegistrationObjectHost>
       registration_host;
   blink::mojom::ServiceWorkerRegistrationObjectInfoPtr info =
@@ -1058,9 +1061,9 @@ TEST_P(ServiceWorkerRegistrationObjectHostUpdateTest,
   const GURL kScope("https://www.example.com/");
   const GURL kScriptUrl("https://www.example.com/sw.js");
   SetUpRegistration(kScope, kScriptUrl);
-  base::WeakPtr<ServiceWorkerContainerHost> container_host;
+  base::WeakPtr<ServiceWorkerClient> service_worker_client;
   ServiceWorkerRemoteContainerEndpoint remote_endpoint =
-      PrepareContainerHost(kScope, &container_host);
+      PrepareServiceWorkerClient(kScope, &service_worker_client);
   blink::mojom::ServiceWorkerRegistrationObjectInfoPtr info =
       GetRegistrationFromRemote(remote_endpoint.host_remote()->get(), kScope);
   mojo::AssociatedRemote<blink::mojom::ServiceWorkerRegistrationObjectHost>
@@ -1069,7 +1072,7 @@ TEST_P(ServiceWorkerRegistrationObjectHostUpdateTest,
 
   ASSERT_TRUE(bad_messages_.empty());
   GURL url("https://does.not.exist/");
-  container_host->UpdateUrls(
+  service_worker_client->UpdateUrls(
       url, url::Origin::Create(url),
       blink::StorageKey::CreateFirstParty(url::Origin::Create(url)));
   CallUpdate(registration_host.get(), /*out_error_msg=*/nullptr);
@@ -1082,7 +1085,8 @@ TEST_P(ServiceWorkerRegistrationObjectHostUpdateTest,
   const GURL kScriptUrl("https://www.example.com/sw.js");
   SetUpRegistration(kScope, kScriptUrl);
   ServiceWorkerRemoteContainerEndpoint remote_endpoint =
-      PrepareContainerHost(kScope, nullptr /* out_container_host */);
+      PrepareServiceWorkerClient(kScope,
+                                 nullptr /* out_service_worker_client */);
   blink::mojom::ServiceWorkerRegistrationObjectInfoPtr info =
       GetRegistrationFromRemote(remote_endpoint.host_remote()->get(), kScope);
   mojo::AssociatedRemote<blink::mojom::ServiceWorkerRegistrationObjectHost>
@@ -1109,7 +1113,8 @@ TEST_P(ServiceWorkerRegistrationObjectHostUpdateTest,
   const GURL kScriptUrl("https://www.example.com/sw.js");
   int64_t registration_id = SetUpRegistration(kScope, kScriptUrl);
   ServiceWorkerRemoteContainerEndpoint remote_endpoint =
-      PrepareContainerHost(kScope, nullptr /* out_container_host */);
+      PrepareServiceWorkerClient(kScope,
+                                 nullptr /* out_service_worker_client */);
   mojo::AssociatedRemote<blink::mojom::ServiceWorkerRegistrationObjectHost>
       registration_host;
 
@@ -1173,16 +1178,16 @@ TEST_P(ServiceWorkerRegistrationObjectHostUpdateTest,
   version->SetStatus(ServiceWorkerVersion::ACTIVATED);
 
   ServiceWorkerRemoteContainerEndpoint remote_endpoint;
-  base::WeakPtr<ServiceWorkerContainerHost> container_host =
+  base::WeakPtr<ServiceWorkerClient> service_worker_client =
       CreateContainerHostForWindow(
           GlobalRenderFrameHostId(helper_->mock_render_process_id(),
                                   /*mock frame_routing_id=*/1),
           /*is_parent_frame_secure=*/true, context()->AsWeakPtr(),
           &remote_endpoint);
-  container_host->UpdateUrls(
+  service_worker_client->UpdateUrls(
       kScope, url::Origin::Create(kScope),
       blink::StorageKey::CreateFirstParty(url::Origin::Create(kScope)));
-  version->AddControllee(container_host.get());
+  version->AddControllee(service_worker_client.get());
 
   // Initially set |self_update_delay| to zero.
   registration->set_self_update_delay(base::TimeDelta());
@@ -1203,7 +1208,8 @@ TEST_F(ServiceWorkerRegistrationObjectHostTest, Unregister_Success) {
   const GURL kScriptUrl("https://www.example.com/sw.js");
   int64_t registration_id = SetUpRegistration(kScope, kScriptUrl);
   ServiceWorkerRemoteContainerEndpoint remote_endpoint =
-      PrepareContainerHost(kScope, nullptr /* out_container_host */);
+      PrepareServiceWorkerClient(kScope,
+                                 nullptr /* out_service_worker_client */);
   mojo::AssociatedRemote<blink::mojom::ServiceWorkerRegistrationObjectHost>
       registration_host;
   blink::mojom::ServiceWorkerRegistrationObjectInfoPtr info =
@@ -1235,9 +1241,9 @@ TEST_F(ServiceWorkerRegistrationObjectHostTest,
   const GURL kScope("https://www.example.com/");
   const GURL kScriptUrl("https://www.example.com/sw.js");
   SetUpRegistration(kScope, kScriptUrl);
-  base::WeakPtr<ServiceWorkerContainerHost> container_host;
+  base::WeakPtr<ServiceWorkerClient> service_worker_client;
   ServiceWorkerRemoteContainerEndpoint remote_endpoint =
-      PrepareContainerHost(kScope, &container_host);
+      PrepareServiceWorkerClient(kScope, &service_worker_client);
   blink::mojom::ServiceWorkerRegistrationObjectInfoPtr info =
       GetRegistrationFromRemote(remote_endpoint.host_remote()->get(), kScope);
   mojo::AssociatedRemote<blink::mojom::ServiceWorkerRegistrationObjectHost>
@@ -1245,7 +1251,7 @@ TEST_F(ServiceWorkerRegistrationObjectHostTest,
   registration_host.Bind(std::move(info->host_remote));
 
   ASSERT_TRUE(bad_messages_.empty());
-  container_host->UpdateUrls(
+  service_worker_client->UpdateUrls(
       GURL("https://does.not.exist/"),
       url::Origin::Create(GURL("https://does.not.exist/")),
       blink::StorageKey::CreateFromStringForTesting("https://does.not.exist/"));
@@ -1259,7 +1265,8 @@ TEST_F(ServiceWorkerRegistrationObjectHostTest,
   const GURL kScriptUrl("https://www.example.com/sw.js");
   SetUpRegistration(kScope, kScriptUrl);
   ServiceWorkerRemoteContainerEndpoint remote_endpoint =
-      PrepareContainerHost(kScope, nullptr /* out_container_host */);
+      PrepareServiceWorkerClient(kScope,
+                                 nullptr /* out_service_worker_client */);
   blink::mojom::ServiceWorkerRegistrationObjectInfoPtr info =
       GetRegistrationFromRemote(remote_endpoint.host_remote()->get(), kScope);
   mojo::AssociatedRemote<blink::mojom::ServiceWorkerRegistrationObjectHost>
@@ -1279,7 +1286,8 @@ TEST_F(ServiceWorkerRegistrationObjectHostTest, SetVersionAttributes) {
   const GURL kScriptUrl("https://www.example.com/sw.js");
   int64_t registration_id = SetUpRegistration(kScope, kScriptUrl);
   ServiceWorkerRemoteContainerEndpoint remote_endpoint =
-      PrepareContainerHost(kScope, nullptr /* out_container_host */);
+      PrepareServiceWorkerClient(kScope,
+                                 nullptr /* out_service_worker_client */);
   blink::mojom::ServiceWorkerRegistrationObjectInfoPtr info =
       GetRegistrationFromRemote(remote_endpoint.host_remote()->get(), kScope);
   EXPECT_EQ(registration_id, info->registration_id);
@@ -1367,7 +1375,8 @@ TEST_F(ServiceWorkerRegistrationObjectHostTest, SetUpdateViaCache) {
   const GURL kScriptUrl("https://www.example.com/sw.js");
   int64_t registration_id = SetUpRegistration(kScope, kScriptUrl);
   ServiceWorkerRemoteContainerEndpoint remote_endpoint =
-      PrepareContainerHost(kScope, nullptr /* out_container_host */);
+      PrepareServiceWorkerClient(kScope,
+                                 nullptr /* out_service_worker_client */);
   blink::mojom::ServiceWorkerRegistrationObjectInfoPtr info =
       GetRegistrationFromRemote(remote_endpoint.host_remote()->get(), kScope);
   EXPECT_EQ(registration_id, info->registration_id);
@@ -1418,7 +1427,8 @@ TEST_P(ServiceWorkerRegistrationObjectHostUpdateTest, UpdateFound) {
   const GURL kScriptUrl("https://www.example.com/sw.js");
   int64_t registration_id = SetUpRegistration(kScope, kScriptUrl);
   ServiceWorkerRemoteContainerEndpoint remote_endpoint =
-      PrepareContainerHost(kScope, nullptr /* out_container_host */);
+      PrepareServiceWorkerClient(kScope,
+                                 nullptr /* out_service_worker_client */);
   blink::mojom::ServiceWorkerRegistrationObjectInfoPtr info =
       GetRegistrationFromRemote(remote_endpoint.host_remote()->get(), kScope);
   EXPECT_EQ(registration_id, info->registration_id);

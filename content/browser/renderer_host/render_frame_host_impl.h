@@ -288,7 +288,7 @@ class RenderFrameProxyHost;
 class RenderProcessHost;
 class RenderViewHostImpl;
 class RenderWidgetHostView;
-class ServiceWorkerContainerHost;
+class ServiceWorkerClient;
 class SiteInfo;
 class SpeechSynthesisImpl;
 class TimeoutMonitor;
@@ -1786,10 +1786,10 @@ class CONTENT_EXPORT RenderFrameHostImpl
 
   void AddServiceWorkerContainerHost(
       const std::string& uuid,
-      base::WeakPtr<ServiceWorkerContainerHost> host);
+      base::WeakPtr<ServiceWorkerClient> service_worker_client);
   void RemoveServiceWorkerContainerHost(const std::string& uuid);
-  // Returns the last committed ServiceWorkerContainerHost of this frame.
-  base::WeakPtr<ServiceWorkerContainerHost> GetLastCommittedServiceWorkerHost();
+  // Returns the last committed ServiceWorkerClient of this frame.
+  base::WeakPtr<ServiceWorkerClient> GetLastCommittedServiceWorkerHost();
 
   // Called to taint |this| so the pages which have requested MediaStream
   // (audio/video/etc capture stream) access would not enter BackForwardCache.
@@ -4872,16 +4872,17 @@ class CONTENT_EXPORT RenderFrameHostImpl
   // Salt for generating frame-specific media device IDs.
   std::string media_device_id_salt_base_;
 
-  // Keep the list of ServiceWorkerContainerHosts so that they can observe when
+  // Keep the list of ServiceWorkerClients so that they can observe when
   // the frame goes in/out of BackForwardCache.
   // TODO(yuzus): Make this a single pointer. A frame should only have a single
-  // container host, but probably during a navigation the old container host is
-  // still alive when the new container host is created and added to this
-  // vector, and the old container host is destroyed shortly after navigation.
-  std::map<std::string, base::WeakPtr<ServiceWorkerContainerHost>>
-      service_worker_container_hosts_;
-  // Keeps the track of the latest ServiceWorkerContainerHost.
-  base::WeakPtr<ServiceWorkerContainerHost> last_committed_service_worker_host_;
+  // service worker client, but probably during a navigation the old service
+  // worker client is still alive when the new service worker client is created
+  // and added to this vector, and the old service worker client is destroyed
+  // shortly after navigation.
+  std::map<std::string, base::WeakPtr<ServiceWorkerClient>>
+      service_worker_clients_;
+  // Keeps the track of the latest ServiceWorkerClient.
+  base::WeakPtr<ServiceWorkerClient> last_committed_service_worker_client_;
 
   // The fenced frames owned by this document, ordered with newer fenced frames
   // being appended to the end.

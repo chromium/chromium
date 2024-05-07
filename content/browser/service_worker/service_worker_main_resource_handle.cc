@@ -49,26 +49,27 @@ void ServiceWorkerMainResourceHandle::OnBeginNavigationCommit(
     return;
   *out_container_info = std::move(container_info_);
 
-  if (container_host_) {
-    container_host_->OnBeginNavigationCommit(rfh_id, policy_container_policies,
-                                             std::move(coep_reporter),
-                                             document_ukm_source_id);
+  if (service_worker_client_) {
+    service_worker_client_->OnBeginNavigationCommit(
+        rfh_id, policy_container_policies, std::move(coep_reporter),
+        document_ukm_source_id);
   }
 }
 
 void ServiceWorkerMainResourceHandle::OnEndNavigationCommit() {
   DCHECK_CURRENTLY_ON(BrowserThread::UI);
-  if (container_host_)
-    container_host_->OnEndNavigationCommit();
+  if (service_worker_client_) {
+    service_worker_client_->OnEndNavigationCommit();
+  }
 }
 
 void ServiceWorkerMainResourceHandle::OnBeginWorkerCommit(
     const PolicyContainerPolicies& policy_container_policies,
     ukm::SourceId worker_ukm_source_id) {
   DCHECK_CURRENTLY_ON(BrowserThread::UI);
-  if (container_host_) {
-    container_host_->CompleteWebWorkerPreparation(policy_container_policies,
-                                                  worker_ukm_source_id);
+  if (service_worker_client_) {
+    service_worker_client_->CompleteWebWorkerPreparation(
+        policy_container_policies, worker_ukm_source_id);
   }
 }
 

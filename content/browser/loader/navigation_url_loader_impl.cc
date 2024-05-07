@@ -1318,7 +1318,7 @@ bool NavigationURLLoaderImpl::MaybeCreateLoaderForResponse(
             new_interceptors;
         new_interceptors.push_back(std::move(interceptor));
         new_interceptors.swap(interceptors_);
-        // Reset the state of ServiceWorkerContainerHost.
+        // Reset the state of ServiceWorkerClient.
         // Currently we don't support Service Worker in Signed Exchange
         // pages. The page will not be controlled by service workers. And
         // Service Worker related APIs will fail with NoDocumentURL error.
@@ -1326,13 +1326,13 @@ bool NavigationURLLoaderImpl::MaybeCreateLoaderForResponse(
         // Service Worker integration. Properly populate all params below, and
         // storage key in particular, when we want to support it.
         if (service_worker_handle_) {
-          base::WeakPtr<ServiceWorkerContainerHost> container_host =
-              service_worker_handle_->container_host();
-          if (container_host) {
-            container_host->SetControllerRegistration(
+          base::WeakPtr<ServiceWorkerClient> service_worker_client =
+              service_worker_handle_->service_worker_client();
+          if (service_worker_client) {
+            service_worker_client->SetControllerRegistration(
                 nullptr, /*notify_controllerchange=*/false);
-            container_host->UpdateUrls(GURL(), std::nullopt,
-                                       blink::StorageKey());
+            service_worker_client->UpdateUrls(GURL(), std::nullopt,
+                                              blink::StorageKey());
           }
         }
       }
@@ -1734,8 +1734,8 @@ void NavigationURLLoaderImpl::NotifyResponseStarted(
   // There might be other cases where the controller is lost here, but probably
   // it's fine to reset ServiceWorker subresource interception as well, as the
   // controller is anyway lost.
-  if (!subresource_loader_params_.container_host ||
-      !subresource_loader_params_.container_host->controller()) {
+  if (!subresource_loader_params_.service_worker_client ||
+      !subresource_loader_params_.service_worker_client->controller()) {
     subresource_loader_params_.controller_service_worker_info = nullptr;
     subresource_loader_params_.controller_service_worker_object_host = nullptr;
   }

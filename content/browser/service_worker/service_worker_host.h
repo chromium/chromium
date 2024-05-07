@@ -99,7 +99,7 @@ class CONTENT_EXPORT ServiceWorkerHost : public BucketContext {
   void BindUsbService(
       mojo::PendingReceiver<blink::mojom::WebUsbService> receiver);
 
-  content::ServiceWorkerContainerHost* container_host() {
+  content::ServiceWorkerContainerHostForServiceWorker* container_host() {
     return container_host_.get();
   }
 
@@ -165,7 +165,7 @@ class CONTENT_EXPORT ServiceWorkerHost : public BucketContext {
   mojo::Receiver<blink::mojom::BrowserInterfaceBroker> broker_receiver_{
       &broker_};
 
-  std::unique_ptr<ServiceWorkerContainerHost> container_host_;
+  std::unique_ptr<ServiceWorkerContainerHostForServiceWorker> container_host_;
 
   service_manager::InterfaceProvider remote_interfaces_{
       base::SingleThreadTaskRunner::GetCurrentDefault()};

@@ -299,21 +299,21 @@ void ServiceWorkerRemoteContainerEndpoint::BindForServiceWorker(
 }
 
 ServiceWorkerContainerHostAndInfo::ServiceWorkerContainerHostAndInfo(
-    base::WeakPtr<ServiceWorkerContainerHost> host,
+    base::WeakPtr<ServiceWorkerClient> host,
     blink::mojom::ServiceWorkerContainerInfoForClientPtr info)
     : host(std::move(host)), info(std::move(info)) {}
 
 ServiceWorkerContainerHostAndInfo::~ServiceWorkerContainerHostAndInfo() =
     default;
 
-base::WeakPtr<ServiceWorkerContainerHost> CreateContainerHostForWindow(
+base::WeakPtr<ServiceWorkerClient> CreateContainerHostForWindow(
     const GlobalRenderFrameHostId& render_frame_host_id,
     bool is_parent_frame_secure,
     base::WeakPtr<ServiceWorkerContextCore> context,
     ServiceWorkerRemoteContainerEndpoint* output_endpoint) {
   std::unique_ptr<ServiceWorkerContainerHostAndInfo> host_and_info =
       CreateContainerHostAndInfoForWindow(context, is_parent_frame_secure);
-  base::WeakPtr<ServiceWorkerContainerHost> container_host =
+  base::WeakPtr<ServiceWorkerClient> container_host =
       std::move(host_and_info->host);
   output_endpoint->BindForWindow(std::move(host_and_info->info));
 

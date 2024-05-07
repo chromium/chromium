@@ -65,10 +65,11 @@ bool SchemeMaySupportRedirectingToHTTPS(BrowserContext* browser_context,
 // created for a worker with this |url|.
 bool ShouldCreateForWorker(
     const GURL& url,
-    base::WeakPtr<ServiceWorkerContainerHost> parent_container_host) {
+    base::WeakPtr<ServiceWorkerClient> parent_service_worker_client) {
   // Blob URL can be controlled by a parent's controller.
-  if (url.SchemeIsBlob() && parent_container_host)
+  if (url.SchemeIsBlob() && parent_service_worker_client) {
     return true;
+  }
   // Create the handler even for insecure HTTP since it's used in the
   // case of redirect to HTTPS.
   return url.SchemeIsHTTPOrHTTPS() || OriginCanAccessServiceWorkers(url);
@@ -113,9 +114,11 @@ ServiceWorkerMainResourceLoaderInterceptor::CreateForWorker(
              network::mojom::RequestDestination::kSharedWorker)
       << resource_request.destination;
 
-  if (!ShouldCreateForWorker(resource_request.url,
-                             navigation_handle->parent_container_host()))
+  if (!ShouldCreateForWorker(
+          resource_request.url,
+          navigation_handle->parent_service_worker_client())) {
     return nullptr;
+  }
 
   return base::WrapUnique(new ServiceWorkerMainResourceLoaderInterceptor(
       std::move(navigation_handle), resource_request.destination,
@@ -141,7 +144,7 @@ void ServiceWorkerMainResourceLoaderInterceptor::MaybeCreateLoader(
       handle_->context_wrapper()->context();
   if (!context_core || !browser_context) {
     CompleteWithoutLoader(std::move(loader_callback),
-                          handle_->container_host());
+                          handle_->service_worker_client());
     return;
   }
 
@@ -163,12 +166,12 @@ void ServiceWorkerMainResourceLoaderInterceptor::MaybeCreateLoader(
 
     // Create the ServiceWorkerContainerHost. Its lifetime is bound to
     // `container_info`.
-    DCHECK(!handle_->container_host());
-    base::WeakPtr<ServiceWorkerContainerHost> container_host;
+    DCHECK(!handle_->service_worker_client());
+    base::WeakPtr<ServiceWorkerClient> service_worker_client;
     bool inherit_controller_only = false;
 
     if (blink::IsRequestDestinationFrame(request_destination_)) {
-      container_host = context_core->CreateContainerHostForWindow(
+      service_worker_client = context_core->CreateContainerHostForWindow(
           std::move(host_receiver), are_ancestors_secure_,
           std::move(client_remote), frame_tree_node_id_);
     } else {
@@ -180,7 +183,7 @@ void ServiceWorkerMainResourceLoaderInterceptor::MaybeCreateLoader(
       ServiceWorkerClientInfo client_info =
           absl::ConvertVariantTo<ServiceWorkerClientInfo>(*worker_token_);
 
-      container_host = context_core->CreateContainerHostForWorker(
+      service_worker_client = context_core->CreateContainerHostForWorker(
           std::move(host_receiver), process_id_, std::move(client_remote),
           client_info);
 
@@ -197,19 +200,19 @@ void ServiceWorkerMainResourceLoaderInterceptor::MaybeCreateLoader(
         // For the blob worker case, inherit the controller from the worker's
         // parent. See
         // https://w3c.github.io/ServiceWorker/#control-and-use-worker-client
-        base::WeakPtr<ServiceWorkerContainerHost> parent_container_host =
-            handle_->parent_container_host();
-        if (parent_container_host &&
+        base::WeakPtr<ServiceWorkerClient> parent_service_worker_client =
+            handle_->parent_service_worker_client();
+        if (parent_service_worker_client &&
             tentative_resource_request.url.SchemeIsBlob()) {
-          container_host->InheritControllerFrom(
-              *parent_container_host,
+          service_worker_client->InheritControllerFrom(
+              *parent_service_worker_client,
               net::SimplifyUrlForRequest(tentative_resource_request.url));
           inherit_controller_only = true;
         }
       }
     }
-    DCHECK(container_host);
-    handle_->set_container_host(container_host);
+    DCHECK(service_worker_client);
+    handle_->set_service_worker_client(service_worker_client);
 
     // For the blob worker case, we only inherit the controller and do not let
     // it intercept the main resource request. Blob URLs are not eligible to
@@ -217,7 +220,7 @@ void ServiceWorkerMainResourceLoaderInterceptor::MaybeCreateLoader(
     // callback now.
     if (inherit_controller_only) {
       CompleteWithoutLoader(std::move(loader_callback),
-                            handle_->container_host());
+                            handle_->service_worker_client());
       return;
     }
   }
@@ -265,15 +268,15 @@ void ServiceWorkerMainResourceLoaderInterceptor::MaybeCreateLoader(
   // Create and start the handler for this request. It will invoke the loader
   // callback or fallback callback.
   request_handler_ = std::make_unique<ServiceWorkerControlleeRequestHandler>(
-      context_core->AsWeakPtr(), handle_->container_host(),
+      context_core->AsWeakPtr(), handle_->service_worker_client(),
       request_destination_, skip_service_worker, frame_tree_node_id_,
       handle_->service_worker_accessed_callback());
-  if (handle_->parent_container_host()) {
+  if (handle_->parent_service_worker_client()) {
     // Set a parent container's client UUID.
     // This is needed for PlzDedicatedWorker to have the client id for
     // nested case.
     request_handler_->set_parent_client_uuid(
-        handle_->parent_container_host()->client_uuid());
+        handle_->parent_service_worker_client()->client_uuid());
   }
 
   request_handler_->MaybeCreateLoader(
@@ -283,10 +286,10 @@ void ServiceWorkerMainResourceLoaderInterceptor::MaybeCreateLoader(
 
 void ServiceWorkerMainResourceLoaderInterceptor::CompleteWithoutLoader(
     LoaderCallback loader_callback,
-    base::WeakPtr<ServiceWorkerContainerHost> container_host) {
+    base::WeakPtr<ServiceWorkerClient> service_worker_client) {
   auto subresource_loader_params =
-      ServiceWorkerContainerHost::MaybeCreateSubresourceLoaderParams(
-          container_host);
+      ServiceWorkerClient::MaybeCreateSubresourceLoaderParams(
+          service_worker_client);
   if (subresource_loader_params.controller_service_worker_info) {
     std::move(loader_callback)
         .Run(NavigationLoaderInterceptor::Result(

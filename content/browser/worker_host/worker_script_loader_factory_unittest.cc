@@ -111,11 +111,11 @@ TEST_F(WorkerScriptLoaderFactoryTest, ServiceWorkerContainerHost) {
   EXPECT_EQ(net::OK, client.completion_status().error_code);
 
   // The container host should be set up.
-  base::WeakPtr<ServiceWorkerContainerHost> container_host =
-      service_worker_handle_->container_host();
-  EXPECT_TRUE(container_host->is_response_committed());
-  EXPECT_TRUE(container_host->is_execution_ready());
-  EXPECT_EQ(url, container_host->url());
+  base::WeakPtr<ServiceWorkerClient> service_worker_client =
+      service_worker_handle_->service_worker_client();
+  EXPECT_TRUE(service_worker_client->is_response_committed());
+  EXPECT_TRUE(service_worker_client->is_execution_ready());
+  EXPECT_EQ(url, service_worker_client->url());
 }
 
 // Test a null service worker handle. This typically only happens during

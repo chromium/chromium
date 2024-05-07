@@ -370,8 +370,8 @@ void SharedWorkerHost::Start(
       receiver_.BindNewPipeAndPassRemote(), std::move(worker_receiver_),
       std::move(browser_interface_broker), ukm_source_id_,
       instance_.DoesRequireCrossSiteRequestForCookies());
-  if (service_worker_handle_->container_host()) {
-    service_worker_handle_->container_host()->SetContainerReady();
+  if (service_worker_handle_->service_worker_client()) {
+    service_worker_handle_->service_worker_client()->SetContainerReady();
   }
 
   // |service_worker_remote_object| is an associated interface ptr, so calls

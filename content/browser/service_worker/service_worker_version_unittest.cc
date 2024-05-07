@@ -209,19 +209,19 @@ class ServiceWorkerVersionTest
       controllee_process_id = version_->embedded_worker()->process_id();
     }
 
-    base::WeakPtr<ServiceWorkerContainerHost> container_host =
+    base::WeakPtr<ServiceWorkerClient> service_worker_client =
         CreateContainerHostForWindow(
             GlobalRenderFrameHostId(controllee_process_id,
                                     /*mock frame_routing_id=*/1),
             /*is_parent_frame_secure=*/true, helper_->context()->AsWeakPtr(),
             &remote_endpoint);
-    container_host->UpdateUrls(registration_->scope(),
-                               registration_->key().origin(),
-                               registration_->key());
-    container_host->SetControllerRegistration(
+    service_worker_client->UpdateUrls(registration_->scope(),
+                                      registration_->key().origin(),
+                                      registration_->key());
+    service_worker_client->SetControllerRegistration(
         registration_, false /* notify_controllerchange */);
     EXPECT_TRUE(version_->HasControllee());
-    EXPECT_TRUE(container_host->controller());
+    EXPECT_TRUE(service_worker_client->controller());
     return remote_endpoint;
   }
 
@@ -533,18 +533,18 @@ TEST_P(ServiceWorkerVersionTest, Doom) {
   version_->SetStatus(ServiceWorkerVersion::ACTIVATED);
   registration_->SetActiveVersion(version_);
   ServiceWorkerRemoteContainerEndpoint remote_endpoint;
-  base::WeakPtr<ServiceWorkerContainerHost> container_host =
+  base::WeakPtr<ServiceWorkerClient> service_worker_client =
       CreateContainerHostForWindow(
           GlobalRenderFrameHostId(/*mock process_id=*/33,
                                   /*mock frame_routing_id=*/1),
           /*is_parent_frame_secure=*/true, helper_->context()->AsWeakPtr(),
           &remote_endpoint);
-  container_host->UpdateUrls(registration_->scope(),
-                             registration_->key().origin(),
-                             registration_->key());
-  container_host->SetControllerRegistration(registration_, false);
+  service_worker_client->UpdateUrls(registration_->scope(),
+                                    registration_->key().origin(),
+                                    registration_->key());
+  service_worker_client->SetControllerRegistration(registration_, false);
   EXPECT_TRUE(version_->HasControllee());
-  EXPECT_TRUE(container_host->controller());
+  EXPECT_TRUE(service_worker_client->controller());
 
   // Set main_script_load_params_.
   version_->set_main_script_load_params(
@@ -559,7 +559,7 @@ TEST_P(ServiceWorkerVersionTest, Doom) {
   // The controllee should have been removed.
   EXPECT_EQ(ServiceWorkerVersion::REDUNDANT, version_->status());
   EXPECT_FALSE(version_->HasControllee());
-  EXPECT_FALSE(container_host->controller());
+  EXPECT_FALSE(service_worker_client->controller());
 
   // Ensure that the params are released.
   EXPECT_TRUE(version_->main_script_load_params_.is_null());
@@ -1448,16 +1448,16 @@ TEST_P(ServiceWorkerVersionTest,
   std::unique_ptr<ServiceWorkerContainerHostAndInfo> host_and_info =
       CreateContainerHostAndInfoForWindow(helper_->context()->AsWeakPtr(),
                                           /*are_ancestors_secure=*/true);
-  base::WeakPtr<ServiceWorkerContainerHost> container_host =
+  base::WeakPtr<ServiceWorkerClient> service_worker_client =
       std::move(host_and_info->host);
   remote_endpoint.BindForWindow(std::move(host_and_info->info));
-  container_host->UpdateUrls(registration_->scope(),
-                             registration_->key().origin(),
-                             registration_->key());
-  container_host->SetControllerRegistration(
+  service_worker_client->UpdateUrls(registration_->scope(),
+                                    registration_->key().origin(),
+                                    registration_->key());
+  service_worker_client->SetControllerRegistration(
       registration_, false /* notify_controllerchange */);
   EXPECT_TRUE(version_->HasControllee());
-  EXPECT_TRUE(container_host->controller());
+  EXPECT_TRUE(service_worker_client->controller());
 
   // RenderProcessHost should be notified of foreground worker.
   base::RunLoop().RunUntilIdle();
@@ -1466,7 +1466,8 @@ TEST_P(ServiceWorkerVersionTest,
       helper_->mock_render_process_host()->foreground_service_worker_count());
 
   // This is necessary to make OnBeginNavigationCommit() work.
-  auto remote_controller = container_host->GetRemoteControllerServiceWorker();
+  auto remote_controller =
+      service_worker_client->GetRemoteControllerServiceWorker();
 
   // Establish a dummy connection to allow sending messages without errors.
   mojo::PendingRemote<network::mojom::CrossOriginEmbedderPolicyReporter>
@@ -1476,7 +1477,7 @@ TEST_P(ServiceWorkerVersionTest,
   // Now begin the navigation commit with the same process id used by the
   // worker. This should cause the worker to stop being considered foreground
   // priority.
-  container_host->OnBeginNavigationCommit(
+  service_worker_client->OnBeginNavigationCommit(
       GlobalRenderFrameHostId(version_->embedded_worker()->process_id(),
                               /*frame_routing_id=*/1),
       PolicyContainerPolicies(), std::move(reporter),

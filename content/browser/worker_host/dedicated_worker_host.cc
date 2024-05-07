@@ -301,12 +301,13 @@ void DedicatedWorkerHost::StartScriptLoad(
   // Also, we need the worker's parent to set FetchEvent::client_id.
   if (creator_render_frame_host) {
     // The creator of this worker is a frame.
-    service_worker_handle_->set_parent_container_host(
+    service_worker_handle_->set_parent_service_worker_client(
         creator_render_frame_host->GetLastCommittedServiceWorkerHost());
   } else {
-    base::WeakPtr<ServiceWorkerContainerHost> creator_container_host =
-        creator_worker->service_worker_handle()->container_host();
-    service_worker_handle_->set_parent_container_host(creator_container_host);
+    base::WeakPtr<ServiceWorkerClient> creator_service_worker_client =
+        creator_worker->service_worker_handle()->service_worker_client();
+    service_worker_handle_->set_parent_service_worker_client(
+        creator_service_worker_client);
   }
 
   network::mojom::ClientSecurityStatePtr client_security_state;
@@ -498,8 +499,8 @@ void DedicatedWorkerHost::DidStartScriptLoad(
       subresource_loader_updater_.BindNewPipeAndPassReceiver(),
       std::move(controller),
       BindAndPassRemoteForBackForwardCacheControllerHost());
-  if (service_worker_handle_->container_host()) {
-    service_worker_handle_->container_host()->SetContainerReady();
+  if (service_worker_handle_->service_worker_client()) {
+    service_worker_handle_->service_worker_client()->SetContainerReady();
   }
 
   // |service_worker_remote_object| is an associated remote, so calls can't be
@@ -940,24 +941,24 @@ void DedicatedWorkerHost::MaybeCountWebFeature(const GURL& script_url) {
     return;
   }
 
-  base::WeakPtr<ServiceWorkerContainerHost> container_host =
+  base::WeakPtr<ServiceWorkerClient> service_worker_client =
       ancestor_render_frame_host->GetLastCommittedServiceWorkerHost();
-  if (!container_host || !container_host->controller()) {
+  if (!service_worker_client || !service_worker_client->controller()) {
     return;
   }
 
-  if (!blink::ServiceWorkerScopeMatches(container_host->controller()->scope(),
-                                        script_url) ||
-      container_host->key() != storage_key_) {
+  if (!blink::ServiceWorkerScopeMatches(
+          service_worker_client->controller()->scope(), script_url) ||
+      service_worker_client->key() != storage_key_) {
     // Count the number of dedicated workers that 1) are controlled by a service
     // worker that is inherited from a controlled document, and 2) will not be
     // controlled by that service worker after PlzDedicatedWorker is enabled.
-    container_host->CountFeature(
+    service_worker_client->CountFeature(
         blink::mojom::WebFeature::kWorkerControlledByServiceWorkerOutOfScope);
 
-    DCHECK_NE(container_host->controller()->fetch_handler_existence(),
+    DCHECK_NE(service_worker_client->controller()->fetch_handler_existence(),
               ServiceWorkerVersion::FetchHandlerExistence::UNKNOWN);
-    if (container_host->controller()->fetch_handler_existence() ==
+    if (service_worker_client->controller()->fetch_handler_existence() ==
         ServiceWorkerVersion::FetchHandlerExistence::EXISTS) {
       // Count the number of dedicated workers that 1) are controlled by a
       // service worker that is inherited from a controlled document, 2) will
@@ -965,7 +966,7 @@ void DedicatedWorkerHost::MaybeCountWebFeature(const GURL& script_url) {
       // enabled, and 3) have a fetch event handler.
       // `kControlledWorkerWillBeUncontrolled` excludes the cases if a
       // dedicated worker is controlled by any registered service worker.
-      container_host->CountFeature(
+      service_worker_client->CountFeature(
           blink::mojom::WebFeature::
               kWorkerControlledByServiceWorkerWithFetchEventHandlerOutOfScope);
 
@@ -982,19 +983,19 @@ void DedicatedWorkerHost::MaybeCountWebFeature(const GURL& script_url) {
               ancestor_render_frame_host->GetLastCommittedOrigin()),
           base::BindOnce(&DedicatedWorkerHost::ContinueOnMaybeCountWebFeature,
                          weak_factory_.GetWeakPtr(), script_url,
-                         std::move(container_host)));
+                         std::move(service_worker_client)));
     }
   }
 }
 
 void DedicatedWorkerHost::ContinueOnMaybeCountWebFeature(
     const GURL& script_url,
-    base::WeakPtr<ServiceWorkerContainerHost> ancestor_container_host,
+    base::WeakPtr<ServiceWorkerClient> ancestor_service_worker_client,
     blink::ServiceWorkerStatusCode status,
     const std::vector<scoped_refptr<ServiceWorkerRegistration>>&
         registrations) {
   DCHECK(!base::FeatureList::IsEnabled(blink::features::kPlzDedicatedWorker));
-  if (!ancestor_container_host ||
+  if (!ancestor_service_worker_client ||
       status != blink::ServiceWorkerStatusCode::kOk) {
     return;
   }
@@ -1013,13 +1014,13 @@ void DedicatedWorkerHost::ContinueOnMaybeCountWebFeature(
   // Count the number of dedicated workers that are not controlled by any
   // service worker registered for the origin after PlzDedicatedWorker is
   // enabled.
-  ancestor_container_host->CountFeature(
+  ancestor_service_worker_client->CountFeature(
       blink::mojom::WebFeature::kControlledWorkerWillBeUncontrolled);
 
   // Exclude the cases that `script_url` is a blob URL from
   // kControlledWorkerWillBeUncontrolled.
   if (!script_url.SchemeIsBlob()) {
-    ancestor_container_host->CountFeature(
+    ancestor_service_worker_client->CountFeature(
         blink::mojom::WebFeature::
             kControlledNonBlobURLWorkerWillBeUncontrolled);
   }
@@ -1125,12 +1126,12 @@ DedicatedWorkerHost::GetBackForwardCacheBlockingDetails() const {
   return bfcache_blocking_details_;
 }
 
-base::WeakPtr<ServiceWorkerContainerHost>
-DedicatedWorkerHost::GetServiceWorkerContainerHost() {
+base::WeakPtr<ServiceWorkerClient>
+DedicatedWorkerHost::GetServiceWorkerClient() {
   if (!service_worker_handle_) {
     return nullptr;
   }
-  return service_worker_handle_->container_host();
+  return service_worker_handle_->service_worker_client();
 }
 
 mojo::PendingRemote<blink::mojom::BackForwardCacheControllerHost>

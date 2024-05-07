@@ -28,7 +28,7 @@
 
 namespace content {
 
-class ServiceWorkerContainerHost;
+class ServiceWorkerClient;
 class ServiceWorkerContextCore;
 class ServiceWorkerRegistration;
 class ServiceWorkerVersion;
@@ -38,7 +38,7 @@ class ServiceWorkerVersion;
 // live across redirects. ServiceWorkerMainResourceLoaderInterceptor creates
 // one instance of this class for each request/redirect.
 //
-// This class associates the ServiceWorkerContainerHost undergoing navigation
+// This class associates the ServiceWorkerClient undergoing navigation
 // with a controller service worker, after looking up the registration and
 // activating the service worker if needed.  Once ready, it creates
 // ServiceWorkerMainResourceLoader to perform the resource load.
@@ -84,7 +84,7 @@ class CONTENT_EXPORT ServiceWorkerControlleeRequestHandler final {
   // request interception.
   ServiceWorkerControlleeRequestHandler(
       base::WeakPtr<ServiceWorkerContextCore> context,
-      base::WeakPtr<ServiceWorkerContainerHost> container_host,
+      base::WeakPtr<ServiceWorkerClient> container_host,
       network::mojom::RequestDestination destination,
       bool skip_service_worker,
       int frame_tree_node_id,
@@ -170,7 +170,7 @@ class CONTENT_EXPORT ServiceWorkerControlleeRequestHandler final {
       start_service_worker_for_empty_fetch_handler_duration_for_testing_;
 
   const base::WeakPtr<ServiceWorkerContextCore> context_;
-  const base::WeakPtr<ServiceWorkerContainerHost> container_host_;
+  const base::WeakPtr<ServiceWorkerClient> container_host_;
   const network::mojom::RequestDestination destination_;
 
   // If true, service workers are bypassed for request interception.

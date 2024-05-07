@@ -457,7 +457,7 @@ class ServiceWorkerVersionBrowserTest : public ContentBrowserTest {
   void AddControllee() {
     ASSERT_TRUE(BrowserThread::CurrentlyOn(BrowserThread::UI));
     remote_endpoints_.emplace_back();
-    base::WeakPtr<ServiceWorkerContainerHost> container_host =
+    base::WeakPtr<ServiceWorkerClient> container_host =
         CreateContainerHostForWindow(
             GlobalRenderFrameHostId(/*mock process_id=*/33,
                                     /*mock frame_routing_id=*/1),
