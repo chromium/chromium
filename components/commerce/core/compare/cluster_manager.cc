@@ -173,11 +173,12 @@ void ClusterManager::OnProductSpecificationsSetUpdate(
   OnProductSpecificationsSetAdded(product_specifications_set);
 }
 
-void ClusterManager::OnProductSpecificationsSetRemoved(const base::Uuid& uuid) {
+void ClusterManager::OnProductSpecificationsSetRemoved(
+    const ProductSpecificationsSet& set) {
   // TODO(qinmin): Check if we still want to keep candidate product from
   // the removed product group in `candidate_product_map_` if tab is still
   // open.
-  product_group_map_.erase(uuid);
+  product_group_map_.erase(set.uuid());
 }
 
 void ClusterManager::WebWrapperDestroyed(const GURL& url) {

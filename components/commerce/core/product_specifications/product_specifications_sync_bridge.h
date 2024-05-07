@@ -87,7 +87,7 @@ class ProductSpecificationsSyncBridge : public syncer::ModelTypeSyncBridge {
   void OnSpecificsAdded(const sync_pb::CompareSpecifics& compare_specifics);
   void OnSpecificsUpdated(const sync_pb::CompareSpecifics& before,
                           const sync_pb::CompareSpecifics& compare_specifics);
-  void OnSpecificsRemoved(const std::string& uuid);
+  void OnSpecificsRemoved(const ProductSpecificationsSet& removed_set);
 
   CompareSpecificsEntries entries_;
 

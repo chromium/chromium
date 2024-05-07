@@ -143,7 +143,8 @@ class ShoppingServiceHandler
       const ProductSpecificationsSet& before,
       const ProductSpecificationsSet& set) override;
 
-  void OnProductSpecificationsSetRemoved(const base::Uuid& uuid) override;
+  void OnProductSpecificationsSetRemoved(
+      const ProductSpecificationsSet& set) override;
 
   static std::vector<shopping_service::mojom::BookmarkProductInfoPtr>
   BookmarkListToMojoList(

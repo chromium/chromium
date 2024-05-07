@@ -32,14 +32,11 @@ class ProductSpecificationsSet {
         const ProductSpecificationsSet& before,
         const ProductSpecificationsSet& after) {}
 
-    virtual void OnProductSpecificationsSetRemoved(const base::Uuid& uuid) {}
+    virtual void OnProductSpecificationsSetRemoved(
+        const ProductSpecificationsSet& product_specifications_set) {}
 
    private:
     friend commerce::ProductSpecificationsSyncBridge;
-
-    void OnProductSpecificationsSetRemoved(const std::string& uuid) {
-      OnProductSpecificationsSetRemoved(base::Uuid::ParseLowercase(uuid));
-    }
   };
 
   ProductSpecificationsSet(const std::string& uuid,

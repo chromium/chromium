@@ -43,7 +43,8 @@ class ClusterManager : public ProductSpecificationsSet::Observer {
   void OnProductSpecificationsSetUpdate(
       const ProductSpecificationsSet& before,
       const ProductSpecificationsSet& product_specifications_set) override;
-  void OnProductSpecificationsSetRemoved(const base::Uuid& uuid) override;
+  void OnProductSpecificationsSetRemoved(
+      const ProductSpecificationsSet& set) override;
 
   // A notification that a WebWrapper with `url` has been destroyed. This
   // signals that the web page backing the provided WebWrapper is about to be

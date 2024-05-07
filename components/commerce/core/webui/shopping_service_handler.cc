@@ -752,8 +752,8 @@ void ShoppingServiceHandler::OnProductSpecificationsSetUpdate(
 }
 
 void ShoppingServiceHandler::OnProductSpecificationsSetRemoved(
-    const base::Uuid& uuid) {
-  remote_page_->OnProductSpecificationsSetRemoved(uuid);
+    const ProductSpecificationsSet& set) {
+  remote_page_->OnProductSpecificationsSetRemoved(set.uuid());
 }
 
 }  // namespace commerce

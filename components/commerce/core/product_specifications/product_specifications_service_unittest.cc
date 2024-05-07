@@ -100,10 +100,6 @@ MATCHER_P(IsSetWithUuid, uuid, "") {
   return arg.uuid() == uuid;
 }
 
-MATCHER_P(IsUuid, uuid, "") {
-  return arg.AsLowercaseString() == uuid;
-}
-
 MATCHER_P2(HasProductSpecsNameUrl, name, urls, "") {
   return arg.name() == name && arg.urls() == urls;
 }
@@ -174,7 +170,7 @@ class MockProductSpecificationsSetObserver
 
   MOCK_METHOD(void,
               OnProductSpecificationsSetRemoved,
-              (const base::Uuid& uuid),
+              (const ProductSpecificationsSet& set),
               (override));
 };
 
@@ -269,8 +265,9 @@ TEST_F(ProductSpecificationsServiceTest, TestAddProductSpecificationsSuccess) {
 
 TEST_F(ProductSpecificationsServiceTest, TestRemoveProductSpecifications) {
   AddTestSpecifics(bridge());
-  EXPECT_CALL(*observer(), OnProductSpecificationsSetRemoved(
-                               IsUuid(kCompareSpecifics[0].uuid())))
+  EXPECT_CALL(*observer(),
+              OnProductSpecificationsSetRemoved(IsSetWithUuid(
+                  base::Uuid::ParseLowercase(kCompareSpecifics[0].uuid()))))
       .Times(1);
   service()->DeleteProductSpecificationsSet(kCompareSpecifics[0].uuid());
 }
@@ -410,8 +407,8 @@ TEST_F(ProductSpecificationsServiceTest, TestObserverRemoveSpecifics) {
   for (const auto& specifics : kCompareSpecifics) {
     remove_changes.push_back(
         syncer::EntityChange::CreateDelete(specifics.uuid()));
-    EXPECT_CALL(*observer(),
-                OnProductSpecificationsSetRemoved(IsUuid(specifics.uuid())))
+    EXPECT_CALL(*observer(), OnProductSpecificationsSetRemoved(IsSetWithUuid(
+                                 base::Uuid::ParseLowercase(specifics.uuid()))))
         .Times(1);
   }
   bridge()->ApplyIncrementalSyncChanges(

@@ -89,9 +89,15 @@ ProductSpecificationsSyncBridge::ApplyIncrementalSyncChanges(
         break;
       }
       case syncer::EntityChange::ACTION_DELETE:
+        auto it = entries_.find(change->storage_key());
+        if (it == entries_.end()) {
+          break;
+        }
+        ProductSpecificationsSet deleted_set =
+            ProductSpecificationsSet::FromProto(it->second);
         entries_.erase(change->storage_key());
         batch->DeleteData(change->storage_key());
-        OnSpecificsRemoved(change->storage_key());
+        OnSpecificsRemoved(deleted_set);
         break;
     }
   }
@@ -202,6 +208,13 @@ void ProductSpecificationsSyncBridge::DeleteProductSpecificationsSet(
     return;
   }
 
+  auto it = entries_.find(uuid);
+  if (it == entries_.end()) {
+    return;
+  }
+  ProductSpecificationsSet deleted_set =
+      ProductSpecificationsSet::FromProto(it->second);
+
   std::unique_ptr<syncer::ModelTypeStore::WriteBatch> batch =
       store_->CreateWriteBatch();
 
@@ -212,7 +225,7 @@ void ProductSpecificationsSyncBridge::DeleteProductSpecificationsSet(
   batch->DeleteData(uuid);
 
   Commit(std::move(batch));
-  OnSpecificsRemoved(uuid);
+  OnSpecificsRemoved(deleted_set);
 }
 
 void ProductSpecificationsSyncBridge::OnStoreCreated(
@@ -304,9 +317,9 @@ void ProductSpecificationsSyncBridge::OnSpecificsUpdated(
 }
 
 void ProductSpecificationsSyncBridge::OnSpecificsRemoved(
-    const std::string& uuid) {
+    const ProductSpecificationsSet& removed_set) {
   for (auto& observer : observers_) {
-    observer.OnProductSpecificationsSetRemoved(uuid);
+    observer.OnProductSpecificationsSetRemoved(removed_set);
   }
 }
 
