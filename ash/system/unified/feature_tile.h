@@ -230,6 +230,9 @@ class ASH_EXPORT FeatureTile : public views::Button {
     const ui::ColorId background_color_id_;
   };
 
+  // views::Button:
+  void OnSetTooltipText(const std::u16string& tooltip_text) override;
+
   // Creates child views of Feature Tile. The constructed view will vary
   // depending on the button's `type_`.
   void CreateChildViews();
@@ -308,11 +311,12 @@ class ASH_EXPORT FeatureTile : public views::Button {
   bool toggled_ = false;
 
   // The non-download-related (a.k.a. "client-specified") text of this tile's
-  // label. The tile's label may change when its downloading state changes, so
-  // this is used to store the original, client-specified label for later
-  // reference (e.g. when a download finishes and the tile needs to show the
-  // original label again).
+  // label/tooltip. The tile's label/tooltip may change when its downloading
+  // state changes, so this is used to store the original, client-specified
+  // label/tooltip for later reference (e.g. when a download finishes and the
+  // tile needs to show the original label again).
   std::u16string client_specified_label_text_;
+  std::u16string client_specified_tooltip_text_;
 
   // The type of the feature tile that determines how it lays out its view.
   TileType type_;
@@ -324,6 +328,9 @@ class ASH_EXPORT FeatureTile : public views::Button {
   // The download state this tile is in. A tile is not associated with a
   // download by default.
   DownloadState download_state_ = DownloadState::kNone;
+
+  // True when `UpdateLabelForDownloadState()` is happening.
+  bool updating_download_state_labels_ = false;
 
   // The download progress, as an integer percentage in the range [0, 100]. Only
   // has meaning when the tile is in an active download state.

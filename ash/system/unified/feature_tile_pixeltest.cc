@@ -363,4 +363,20 @@ TEST_F(FeatureTileVcDlcUiEnabledPixelTest, DownloadInProgress) {
       /*revision_number=*/1, widget_.get()));
 }
 
+// Tests the UI of a compact tile that has an error during download.
+TEST_F(FeatureTileVcDlcUiEnabledPixelTest, ErrorInDlcDownload) {
+  tile()->SetDownloadState(FeatureTile::DownloadState::kError, 0);
+  EXPECT_TRUE(GetPixelDiffer()->CompareUiComponentsOnPrimaryScreen(
+      "error",
+      /*revision_number=*/0, widget_.get()));
+}
+
+// Tests the UI of a compact tile that has a pending download.
+TEST_F(FeatureTileVcDlcUiEnabledPixelTest, PendingDownload) {
+  tile()->SetDownloadState(FeatureTile::DownloadState::kPending, 0);
+  EXPECT_TRUE(GetPixelDiffer()->CompareUiComponentsOnPrimaryScreen(
+      "pending",
+      /*revision_number=*/0, widget_.get()));
+}
+
 }  // namespace ash

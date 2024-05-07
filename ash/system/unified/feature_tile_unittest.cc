@@ -509,79 +509,105 @@ TEST_P(FeatureTileTest, AccessibilityRoles) {
   EXPECT_EQ(node_data4.role, ax::mojom::Role::kButton);
 }
 
-// Tests that the tile's label is set according to its download state.
-TEST_P(FeatureTileTest, DownloadLabel) {
+// Tests that the tile's label and tooltip are set according to the feature tile
+// DLC's download state.
+TEST_P(FeatureTileTest, DownloadLabelAndTooltip) {
   // Download states are only supported when `VcDlcUi` is enabled.
   if (!IsVcDlcUiEnabled()) {
     return;
   }
 
   // Create a tile and verify that it has its client-specified label by default.
-  std::u16string default_label(u"Default label");
+  std::u16string client_specified_label(u"Client Specified Label");
+  std::u16string client_specified_tooltip(u"Client Specified Tooltip");
   FeatureTile tile(views::Button::PressedCallback(),
                    /*is_togglable=*/true);
-  tile.SetLabel(default_label);
-  EXPECT_EQ(default_label, tile.label()->GetText());
+  tile.SetLabel(client_specified_label);
+  tile.SetTooltipText(client_specified_tooltip);
+  EXPECT_EQ(client_specified_label, tile.label()->GetText());
+  EXPECT_EQ(client_specified_tooltip, tile.GetTooltipText());
 
-  // Set the tile to have a pending download and verify that the label is
-  // updated accordingly.
+  // Set the tile to have a pending download and verify that the label and
+  // tooltip are updated.
   tile.SetDownloadState(FeatureTile::DownloadState::kPending, /*progress=*/0);
+
   EXPECT_EQ(GetExpectedDownloadPendingLabel(), tile.label()->GetText());
+  EXPECT_EQ(GetExpectedDownloadPendingLabel(), tile.GetTooltipText());
 
   // Set the tile to have an in-progress download and verify that the label is
   // updated accordingly.
   tile.SetDownloadState(FeatureTile::DownloadState::kDownloading,
                         /*progress=*/7);
+
   EXPECT_EQ(GetExpectedDownloadInProgressLabel(/*progress=*/7),
             tile.label()->GetText());
+  EXPECT_EQ(GetExpectedDownloadInProgressLabel(/*progress=*/7),
+            tile.GetTooltipText());
 
   // Set the tile to have a successfully-completed download and verify that the
   // label is set to the client-specified label.
   tile.SetDownloadState(FeatureTile::DownloadState::kDownloaded,
                         /*progress=*/0);
-  EXPECT_EQ(default_label, tile.label()->GetText());
+
+  EXPECT_EQ(client_specified_label, tile.label()->GetText());
+  EXPECT_EQ(client_specified_tooltip, tile.GetTooltipText());
 
   // Set the tile to have an error with its download and verify that the label
-  // is set to the client-specified label.
+  // is set to the client-specified label with additional info.
   tile.SetDownloadState(FeatureTile::DownloadState::kError, /*progress=*/0);
-  EXPECT_EQ(default_label, tile.label()->GetText());
+  EXPECT_EQ(l10n_util::GetStringFUTF16(IDS_ASH_FEATURE_TILE_DOWNLOAD_ERROR,
+                                       client_specified_label),
+            tile.label()->GetText());
+  EXPECT_EQ(l10n_util::GetStringFUTF16(IDS_ASH_FEATURE_TILE_DOWNLOAD_ERROR,
+                                       client_specified_label),
+            tile.GetTooltipText());
 
   // Set the tile to have no associated download and verify that the label is
   // set to the client-specified label.
   tile.SetDownloadState(FeatureTile::DownloadState::kNone, /*progress=*/0);
-  EXPECT_EQ(default_label, tile.label()->GetText());
+  EXPECT_EQ(client_specified_label, tile.label()->GetText());
+  EXPECT_EQ(client_specified_tooltip, tile.GetTooltipText());
 }
 
-// Tests that updates to the tile's client-specified label are delayed until the
-// current download is finished.
-TEST_P(FeatureTileTest, LabelUpdatesDelayedDuringDownload) {
+// Tests that updates to the tile's client-specified label and tooltip are
+// delayed until the current download is finished.
+TEST_P(FeatureTileTest, LabelAndTooltipUpdatesDelayedDuringDownload) {
   // Download states are only supported when `VcDlcUi` is enabled.
   if (!IsVcDlcUiEnabled()) {
     return;
   }
 
   // Create a tile and set it to have an in-progress download.
-  std::u16string label_1(u"Default label");
+  std::u16string label_1(u"Client Specified Label");
+  std::u16string tooltip_1(u"Client Specified Tooltip");
   FeatureTile tile(views::Button::PressedCallback(),
                    /*is_togglable=*/true);
   tile.SetLabel(label_1);
+  tile.SetTooltipText(tooltip_1);
   tile.SetDownloadState(FeatureTile::DownloadState::kDownloading,
                         /*progress=*/7);
   ASSERT_EQ(GetExpectedDownloadInProgressLabel(/*progress=*/7),
             tile.label()->GetText());
+  ASSERT_EQ(GetExpectedDownloadInProgressLabel(/*progress=*/7),
+            tile.GetTooltipText());
 
-  // Change the tile's client-specified label and verify that the change is not
-  // yet reflected due to the on-going download.
-  std::u16string label_2(u"New label");
+  // Change the tile's client-specified label and tooltip, and verify that the
+  // change is not yet reflected due to the on-going download.
+  std::u16string label_2(u"New Label");
+  std::u16string tooltip_2(u"New Tooltip");
   tile.SetLabel(label_2);
+  tile.SetTooltipText(tooltip_2);
   EXPECT_EQ(GetExpectedDownloadInProgressLabel(/*progress=*/7),
             tile.label()->GetText());
+  EXPECT_EQ(GetExpectedDownloadInProgressLabel(/*progress=*/7),
+            tile.GetTooltipText());
 
   // Set the tile's download to be finished and verify that the tile now has the
   // new client-specified label.
   tile.SetDownloadState(FeatureTile::DownloadState::kDownloaded,
                         /*progress=*/0);
   EXPECT_EQ(label_2, tile.label()->GetText());
+  EXPECT_EQ(tooltip_2, tile.GetTooltipText());
 
   // Set the tile to have a pending download.
   tile.SetDownloadState(FeatureTile::DownloadState::kPending, /*progress=*/0);
@@ -590,14 +616,22 @@ TEST_P(FeatureTileTest, LabelUpdatesDelayedDuringDownload) {
   // Change the tile's client-specified label and verify that the change is not
   // yet reflected due to the pending download.
   std::u16string label_3(u"Another new label");
+  std::u16string tooltip_3(u"Another new label");
   tile.SetLabel(label_3);
+  tile.SetTooltipText(tooltip_3);
   EXPECT_EQ(GetExpectedDownloadPendingLabel(), tile.label()->GetText());
+  EXPECT_EQ(GetExpectedDownloadPendingLabel(), tile.GetTooltipText());
 
   // Set the tile's download to be finished (with an error this time, for
   // for variety) and verify that the tile now has the new client-specified
-  // label.
+  // label with the error message.
   tile.SetDownloadState(FeatureTile::DownloadState::kError, /*progress=*/0);
-  EXPECT_EQ(label_3, tile.label()->GetText());
+  EXPECT_EQ(
+      l10n_util::GetStringFUTF16(IDS_ASH_FEATURE_TILE_DOWNLOAD_ERROR, label_3),
+      tile.label()->GetText());
+  EXPECT_EQ(
+      l10n_util::GetStringFUTF16(IDS_ASH_FEATURE_TILE_DOWNLOAD_ERROR, label_3),
+      tile.GetTooltipText());
 }
 
 }  // namespace ash
