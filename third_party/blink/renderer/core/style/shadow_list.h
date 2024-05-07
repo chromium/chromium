@@ -32,10 +32,7 @@
 #define THIRD_PARTY_BLINK_RENDERER_CORE_STYLE_SHADOW_LIST_H_
 
 #include "third_party/blink/renderer/core/style/shadow_data.h"
-#include "third_party/blink/renderer/platform/graphics/draw_looper_builder.h"
-#include "third_party/blink/renderer/platform/wtf/allocator/allocator.h"
-#include "third_party/blink/renderer/platform/wtf/ref_counted.h"
-#include "third_party/blink/renderer/platform/wtf/vector.h"
+#include "third_party/blink/renderer/platform/heap/collection_support/heap_vector.h"
 
 namespace gfx {
 class OutsetsF;
