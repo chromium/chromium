@@ -215,9 +215,6 @@ extern const char kGainmapHdrImagesDescription[];
 extern const char kAvifGainmapHdrImagesName[];
 extern const char kAvifGainmapHdrImagesDescription[];
 
-extern const char kCrabbyAvifName[];
-extern const char kCrabbyAvifDescription[];
-
 extern const char kTangibleSyncName[];
 extern const char kTangibleSyncDescription[];
 
