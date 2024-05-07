@@ -237,7 +237,7 @@ bool PpapiPluginProcessHost::Init(const ContentPluginInfo& info) {
 
 #if BUILDFLAG(IS_WIN)
   cmd_line->AppendArgNative(
-      app_launch_prefetch::GetPrefetchSwitch(SubprocessType::kPpapi));
+      app_launch_prefetch::GetPrefetchSwitch(app_launch_prefetch::SubprocessType::kPpapi));
 #endif  // BUILDFLAG(IS_WIN)
 
   // These switches are forwarded to plugin pocesses.
