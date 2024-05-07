@@ -45,13 +45,14 @@ class TextDecoderStream::Transformer final : public TransformStreamTransformer {
 
   // Implements the type conversion part of the "decode and enqueue a chunk"
   // algorithm.
-  ScriptPromiseUntyped Transform(v8::Local<v8::Value> chunk,
-                                 TransformStreamDefaultController* controller,
-                                 ExceptionState& exception_state) override {
+  ScriptPromise<IDLUndefined> Transform(
+      v8::Local<v8::Value> chunk,
+      TransformStreamDefaultController* controller,
+      ExceptionState& exception_state) override {
     auto* buffer_source = V8BufferSource::Create(script_state_->GetIsolate(),
                                                  chunk, exception_state);
     if (exception_state.HadException())
-      return ScriptPromiseUntyped();
+      return ScriptPromise<IDLUndefined>();
 
     // This implements the "get a copy of the bytes held by the buffer source"
     // algorithm (https://webidl.spec.whatwg.org/#dfn-get-buffer-source-copy).
@@ -59,22 +60,23 @@ class TextDecoderStream::Transformer final : public TransformStreamTransformer {
     if (array_piece.ByteLength() > std::numeric_limits<uint32_t>::max()) {
       exception_state.ThrowRangeError(
           "Buffer size exceeds maximum heap object size.");
-      return ScriptPromiseUntyped();
+      return ScriptPromise<IDLUndefined>();
     }
     DecodeAndEnqueue(static_cast<char*>(array_piece.Data()),
                      static_cast<uint32_t>(array_piece.ByteLength()),
                      WTF::FlushBehavior::kDoNotFlush, controller,
                      exception_state);
-    return ScriptPromiseUntyped::CastUndefined(script_state_.Get());
+    return ToResolvedUndefinedPromise(script_state_.Get());
   }
 
   // Implements the "encode and flush" algorithm.
-  ScriptPromiseUntyped Flush(TransformStreamDefaultController* controller,
-                             ExceptionState& exception_state) override {
+  ScriptPromise<IDLUndefined> Flush(
+      TransformStreamDefaultController* controller,
+      ExceptionState& exception_state) override {
     DecodeAndEnqueue(nullptr, 0u, WTF::FlushBehavior::kDataEOF, controller,
                      exception_state);
 
-    return ScriptPromiseUntyped::CastUndefined(script_state_.Get());
+    return ToResolvedUndefinedPromise(script_state_.Get());
   }
 
   ScriptState* GetScriptState() override { return script_state_.Get(); }

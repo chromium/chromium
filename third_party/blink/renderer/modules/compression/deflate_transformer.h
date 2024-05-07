@@ -24,12 +24,12 @@ class DeflateTransformer final : public TransformStreamTransformer {
 
   ~DeflateTransformer() override;
 
-  ScriptPromiseUntyped Transform(v8::Local<v8::Value> chunk,
-                                 TransformStreamDefaultController*,
-                                 ExceptionState&) override;
+  ScriptPromise<IDLUndefined> Transform(v8::Local<v8::Value> chunk,
+                                        TransformStreamDefaultController*,
+                                        ExceptionState&) override;
 
-  ScriptPromiseUntyped Flush(TransformStreamDefaultController*,
-                             ExceptionState&) override;
+  ScriptPromise<IDLUndefined> Flush(TransformStreamDefaultController*,
+                                    ExceptionState&) override;
 
   ScriptState* GetScriptState() override { return script_state_.Get(); }
 

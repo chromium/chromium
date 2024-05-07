@@ -55,27 +55,27 @@ InflateTransformer::~InflateTransformer() {
   }
 }
 
-ScriptPromiseUntyped InflateTransformer::Transform(
+ScriptPromise<IDLUndefined> InflateTransformer::Transform(
     v8::Local<v8::Value> chunk,
     TransformStreamDefaultController* controller,
     ExceptionState& exception_state) {
   auto* buffer_source = V8BufferSource::Create(script_state_->GetIsolate(),
                                                chunk, exception_state);
   if (exception_state.HadException())
-    return ScriptPromiseUntyped();
+    return ScriptPromise<IDLUndefined>();
   DOMArrayPiece array_piece(buffer_source);
   if (array_piece.ByteLength() > std::numeric_limits<wtf_size_t>::max()) {
     exception_state.ThrowRangeError(
         "Buffer size exceeds maximum heap object size.");
-    return ScriptPromiseUntyped();
+    return ScriptPromise<IDLUndefined>();
   }
   Inflate(array_piece.Bytes(),
           static_cast<wtf_size_t>(array_piece.ByteLength()), IsFinished(false),
           controller, exception_state);
-  return ScriptPromiseUntyped::CastUndefined(script_state_.Get());
+  return ToResolvedUndefinedPromise(script_state_.Get());
 }
 
-ScriptPromiseUntyped InflateTransformer::Flush(
+ScriptPromise<IDLUndefined> InflateTransformer::Flush(
     TransformStreamDefaultController* controller,
     ExceptionState& exception_state) {
   DCHECK(!was_flush_called_);
@@ -85,14 +85,14 @@ ScriptPromiseUntyped InflateTransformer::Flush(
   out_buffer_.clear();
 
   if (exception_state.HadException()) {
-    return ScriptPromiseUntyped();
+    return ScriptPromise<IDLUndefined>();
   }
 
   if (!reached_end_) {
     exception_state.ThrowTypeError("Compressed input was truncated.");
   }
 
-  return ScriptPromiseUntyped::CastUndefined(script_state_.Get());
+  return ToResolvedUndefinedPromise(script_state_.Get());
 }
 
 void InflateTransformer::Inflate(const uint8_t* start,

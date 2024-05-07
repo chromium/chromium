@@ -58,27 +58,27 @@ DeflateTransformer::~DeflateTransformer() {
   }
 }
 
-ScriptPromiseUntyped DeflateTransformer::Transform(
+ScriptPromise<IDLUndefined> DeflateTransformer::Transform(
     v8::Local<v8::Value> chunk,
     TransformStreamDefaultController* controller,
     ExceptionState& exception_state) {
   auto* buffer_source = V8BufferSource::Create(script_state_->GetIsolate(),
                                                chunk, exception_state);
   if (exception_state.HadException())
-    return ScriptPromiseUntyped();
+    return ScriptPromise<IDLUndefined>();
   DOMArrayPiece array_piece(buffer_source);
   if (array_piece.ByteLength() > std::numeric_limits<wtf_size_t>::max()) {
     exception_state.ThrowRangeError(
         "Buffer size exceeds maximum heap object size.");
-    return ScriptPromiseUntyped();
+    return ScriptPromise<IDLUndefined>();
   }
   Deflate(array_piece.Bytes(),
           static_cast<wtf_size_t>(array_piece.ByteLength()), IsFinished(false),
           controller, exception_state);
-  return ScriptPromiseUntyped::CastUndefined(script_state_.Get());
+  return ToResolvedUndefinedPromise(script_state_.Get());
 }
 
-ScriptPromiseUntyped DeflateTransformer::Flush(
+ScriptPromise<IDLUndefined> DeflateTransformer::Flush(
     TransformStreamDefaultController* controller,
     ExceptionState& exception_state) {
   Deflate(nullptr, 0u, IsFinished(true), controller, exception_state);
@@ -86,7 +86,7 @@ ScriptPromiseUntyped DeflateTransformer::Flush(
   deflateEnd(&stream_);
   out_buffer_.clear();
 
-  return ScriptPromiseUntyped::CastUndefined(script_state_.Get());
+  return ToResolvedUndefinedPromise(script_state_.Get());
 }
 
 void DeflateTransformer::Deflate(const uint8_t* start,

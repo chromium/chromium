@@ -5,6 +5,7 @@
 #ifndef THIRD_PARTY_BLINK_RENDERER_CORE_STREAMS_TRANSFORM_STREAM_TRANSFORMER_H_
 #define THIRD_PARTY_BLINK_RENDERER_CORE_STREAMS_TRANSFORM_STREAM_TRANSFORMER_H_
 
+#include "third_party/blink/renderer/bindings/core/v8/script_promise.h"
 #include "third_party/blink/renderer/core/core_export.h"
 #include "third_party/blink/renderer/platform/heap/garbage_collected.h"
 #include "third_party/blink/renderer/platform/heap/visitor.h"
@@ -13,7 +14,6 @@
 namespace blink {
 
 class ExceptionState;
-class ScriptPromiseUntyped;
 class ScriptState;
 class TransformStreamDefaultController;
 
@@ -30,11 +30,12 @@ class CORE_EXPORT TransformStreamTransformer
       delete;
   virtual ~TransformStreamTransformer() = default;
 
-  virtual ScriptPromiseUntyped Transform(v8::Local<v8::Value> chunk,
-                                         TransformStreamDefaultController*,
-                                         ExceptionState&) = 0;
-  virtual ScriptPromiseUntyped Flush(TransformStreamDefaultController*,
-                                     ExceptionState&) = 0;
+  virtual ScriptPromise<IDLUndefined> Transform(
+      v8::Local<v8::Value> chunk,
+      TransformStreamDefaultController*,
+      ExceptionState&) = 0;
+  virtual ScriptPromise<IDLUndefined> Flush(TransformStreamDefaultController*,
+                                            ExceptionState&) = 0;
 
   // Returns the ScriptState associated with this Transformer.
   virtual ScriptState* GetScriptState() = 0;
