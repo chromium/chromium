@@ -58,7 +58,7 @@ std::string GetOSVersion() {
   os_version += minor_version;
 
   int32_t final_os_version = os_version.ValueOrDie();
-  return std::to_string(final_os_version);
+  return base::NumberToString(final_os_version);
 }
 
 // Retrieves the users shared darwin dirs and adds it to the profile.

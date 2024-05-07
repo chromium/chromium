@@ -190,7 +190,7 @@ std::string IntAttrToString(const ui::AXNode& node,
   }
 
   // Just return the number
-  return std::to_string(value);
+  return base::NumberToString(value);
 }
 
 }  // namespace

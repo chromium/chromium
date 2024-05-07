@@ -12,6 +12,7 @@
 #include "base/functional/callback_helpers.h"
 #include "base/json/json_reader.h"
 #include "base/run_loop.h"
+#include "base/strings/string_number_conversions.h"
 #include "base/strings/stringprintf.h"
 #include "base/strings/utf_string_conversions.h"
 #include "base/task/single_thread_task_runner.h"
@@ -204,7 +205,7 @@ class TouchActionBrowserTest : public ContentBrowserTest {
 
   void JankMainThread(base::TimeDelta delta) {
     std::string script = "var end = performance.now() + ";
-    script.append(std::to_string(delta.InMilliseconds()));
+    script.append(base::NumberToString(delta.InMilliseconds()));
     script.append("; while (performance.now() < end) ; ");
     EXPECT_TRUE(ExecJs(shell(), script));
   }

@@ -8,6 +8,7 @@
 
 #include "base/numerics/clamped_math.h"
 #include "base/observer_list.h"
+#include "base/strings/string_number_conversions.h"
 #include "build/build_config.h"
 #include "content/browser/renderer_host/render_widget_host_impl.h"
 #include "content/browser/renderer_host/render_widget_host_view_base.h"
@@ -188,12 +189,13 @@ void TextInputManager::UpdateTextInputState(
       "ime", "TextInputManager::UpdateTextInputState", "changed", changed,
       "text_input_state - type, selection, composition, "
       "show_ime_if_needed, control_bounds",
-      std::to_string(text_input_state.type) + ", " +
+      base::NumberToString(text_input_state.type) + ", " +
           text_input_state.selection.ToString() + ", " +
           (text_input_state.composition.has_value()
                ? text_input_state.composition->ToString()
                : "") +
-          ", " + std::to_string(text_input_state.show_ime_if_needed) + ", " +
+          ", " + base::NumberToString(text_input_state.show_ime_if_needed) +
+          ", " +
           (text_input_state.edit_context_control_bounds.has_value()
                ? text_input_state.edit_context_control_bounds->ToString()
                : ""));

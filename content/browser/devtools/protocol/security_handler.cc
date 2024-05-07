@@ -10,6 +10,7 @@
 #include <vector>
 
 #include "base/containers/contains.h"
+#include "base/strings/string_number_conversions.h"
 #include "content/browser/devtools/devtools_agent_host_impl.h"
 #include "content/browser/renderer_host/back_forward_cache_disable.h"
 #include "content/browser/renderer_host/render_frame_host_impl.h"
@@ -127,7 +128,7 @@ Response SecurityHandler::HandleCertificateError(int event_id,
                                                  const String& action) {
   if (!base::Contains(cert_error_callbacks_, event_id)) {
     return Response::ServerError(
-        String("Unknown event id: " + std::to_string(event_id)));
+        String("Unknown event id: " + base::NumberToString(event_id)));
   }
   content::CertificateRequestResultType type =
       content::CERTIFICATE_REQUEST_RESULT_TYPE_CANCEL;

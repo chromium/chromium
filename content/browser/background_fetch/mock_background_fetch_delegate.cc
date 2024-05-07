@@ -2,13 +2,15 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
+#include "content/browser/background_fetch/mock_background_fetch_delegate.h"
+
 #include <utility>
 #include <vector>
 
 #include "base/files/file_util.h"
 #include "base/functional/bind.h"
+#include "base/strings/string_number_conversions.h"
 #include "base/task/single_thread_task_runner.h"
-#include "content/browser/background_fetch/mock_background_fetch_delegate.h"
 #include "content/public/browser/background_fetch_description.h"
 #include "content/public/browser/background_fetch_response.h"
 #include "content/public/browser/browser_thread.h"
@@ -26,7 +28,7 @@ MockBackgroundFetchDelegate::TestResponseBuilder::TestResponseBuilder(
     : response_(std::make_unique<TestResponse>()) {
   response_->succeeded = network::IsSuccessfulStatus(response_code);
   response_->headers = base::MakeRefCounted<net::HttpResponseHeaders>(
-      "HTTP/1.1 " + std::to_string(response_code));
+      "HTTP/1.1 " + base::NumberToString(response_code));
 }
 
 MockBackgroundFetchDelegate::TestResponseBuilder::~TestResponseBuilder() =

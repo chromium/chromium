@@ -21,6 +21,7 @@
 #include "base/metrics/persistent_histogram_allocator.h"
 #include "base/metrics/persistent_memory_allocator.h"
 #include "base/observer_list.h"
+#include "base/strings/string_number_conversions.h"
 #include "base/strings/string_util.h"
 #include "base/synchronization/waitable_event.h"
 #include "base/task/single_thread_task_runner.h"
@@ -440,7 +441,7 @@ void BrowserChildProcessHostImpl::OnBadMessageReceived(
     const IPC::Message& message) {
   std::string log_message = "Bad message received of type: ";
   if (message.IsValid()) {
-    log_message += std::to_string(message.type());
+    log_message += base::NumberToString(message.type());
   } else {
     log_message += "unknown";
   }
