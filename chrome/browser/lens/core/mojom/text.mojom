@@ -33,10 +33,10 @@ struct Word {
   // Required. The text in a plain text, which can be an empty string.
   string plain_text;
 
-  // Required. The text separator that should be appended after this word when
+  // Optional. The text separator that should be appended after this word when
   // it is concatenated with the subsequent word in the same or next
-  // line/paragraph into a single-line string. Can be an empty string.
-  string text_separator;
+  // line/paragraph into a single-line string.
+  string? text_separator;
 
   // Optional. The geometry of the word.
   Geometry? geometry;

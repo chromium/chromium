@@ -46,6 +46,11 @@ function isWordRenderable(word: Word): boolean {
       CenterRotatedBox_CoordinateType.kNormalized;
 }
 
+// Return the text separator if there is one, else returns a space.
+function getTextSeparator(word: Word): string {
+  return word.textSeparator ? word.textSeparator : ' ';
+}
+
 export interface TextLayerElement {
   $: {
     wordsContainer: DomRepeat,
@@ -421,7 +426,7 @@ export class TextLayerElement extends PolymerElement {
     return selectedWords
         .map((word, index) => {
           return word.plainText +
-              (index < selectedWords.length - 1 ? word.textSeparator : '');
+              (index < selectedWords.length - 1 ? getTextSeparator(word) : '');
         })
         .join('');
   }
