@@ -1175,7 +1175,6 @@ ContextResult WebGPUDecoderImpl::Initialize(
     force_fallback_adapter_ = true;
   }
 
-  dawn_instance_->EnableAdapterBlocklist(use_blocklist());
   // Create a Chrome-side EGL context. This isn't actually used by Dawn,
   // but it prevents rendering artifacts in Chrome. This workaround should
   // be revisited once EGL context creation is reworked. See crbug.com/1465911
