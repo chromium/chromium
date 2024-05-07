@@ -62,7 +62,13 @@ void WaitForDisplayed(Browser* browser) {
 //
 // Fullscreen tests.
 //
-IN_PROC_BROWSER_TEST_F(FullscreenControllerTest, FullscreenOnFileURL) {
+#if BUILDFLAG(IS_MAC)
+#define MAYBE_FullscreenOnFileURL DISABLED_FullscreenOnFileURL
+#else
+#define MAYBE_FullscreenOnFileURL FullscreenOnFileURL
+#endif
+// TODO(https://crbug.com/330729275): Re-enable when fixed on macOS 14.
+IN_PROC_BROWSER_TEST_F(FullscreenControllerTest, MAYBE_FullscreenOnFileURL) {
   static const base::FilePath::CharType* kEmptyFile =
       FILE_PATH_LITERAL("empty.html");
   GURL file_url(ui_test_utils::GetTestUrl(
