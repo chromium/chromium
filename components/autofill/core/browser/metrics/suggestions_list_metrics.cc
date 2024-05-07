@@ -37,9 +37,6 @@ void LogSuggestionsCount(size_t num_suggestions,
                          FillingProduct filling_product) {
   switch (filling_product) {
     case FillingProduct::kAddress:
-      // TODO(b/324029575): Remove when the metric below gets to Stable.
-      base::UmaHistogramCounts100("Autofill.AddressSuggestionsCount",
-                                  num_suggestions);
       base::UmaHistogramCounts100("Autofill.SuggestionsCount.Address",
                                   num_suggestions);
       break;

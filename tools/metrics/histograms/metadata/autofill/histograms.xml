@@ -687,17 +687,6 @@ chromium-metrics-reviews@google.com.
   </summary>
 </histogram>
 
-<histogram name="Autofill.AddressSuggestionsCount" units="units"
-    expires_after="2024-09-15">
-  <owner>battre@chromium.org</owner>
-  <owner>chrome-autofill-alerts@google.com</owner>
-  <summary>
-    The number of address suggestions shown in the Autofill popup. Recorded
-    whenever suggestions are shown. To be replaced by
-    Autofill.SuggestionCount.Address.
-  </summary>
-</histogram>
-
 <histogram
     name="Autofill.AddressTokenVerificationStatusAtProfileUsage.{AddressType}"
     enum="AufofillStructuredTokenVerificationStatus" expires_after="2024-06-30">

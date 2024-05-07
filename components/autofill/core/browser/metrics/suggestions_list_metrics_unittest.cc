@@ -47,8 +47,6 @@ TEST_F(SuggestionsListMetricsTest, SuggestionsCount) {
   {
     base::HistogramTester histogram_tester;
     autofill_manager().OnAskForValuesToFillTest(form, form.fields.front());
-    histogram_tester.ExpectUniqueSample("Autofill.AddressSuggestionsCount", 2,
-                                        1);
     histogram_tester.ExpectUniqueSample("Autofill.SuggestionsCount.Address", 2,
                                         1);
   }

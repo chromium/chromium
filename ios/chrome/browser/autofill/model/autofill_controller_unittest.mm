@@ -532,7 +532,7 @@ TEST_F(AutofillControllerTest, ProfileSuggestions) {
   ResetWaitForSuggestionRetrieval();
   web::test::ExecuteJavaScript(@"document.forms[0].name.focus()", web_state());
   WaitForSuggestionRetrieval(/*wait_for_trigger=*/YES);
-  ExpectMetric("Autofill.AddressSuggestionsCount", 1);
+  ExpectMetric("Autofill.SuggestionsCount.Address", 1);
   EXPECT_EQ(1U, [suggestion_controller() suggestions].count);
   FormSuggestion* suggestion = [suggestion_controller() suggestions][0];
   EXPECT_NSEQ(@"Homer Simpson", suggestion.value);
@@ -553,7 +553,7 @@ TEST_F(AutofillControllerTest, ProfileSuggestionsTwoAnonymousForms) {
   ResetWaitForSuggestionRetrieval();
   web::test::ExecuteJavaScript(@"document.forms[0].name.focus()", web_state());
   WaitForSuggestionRetrieval(/*wait_for_trigger=*/YES);
-  ExpectMetric("Autofill.AddressSuggestionsCount", 1);
+  ExpectMetric("Autofill.SuggestionsCount.Address", 1);
   EXPECT_EQ(1U, [suggestion_controller() suggestions].count);
   FormSuggestion* suggestion = [suggestion_controller() suggestions][0];
   EXPECT_NSEQ(@"Homer Simpson", suggestion.value);
@@ -573,7 +573,7 @@ TEST_F(AutofillControllerTest, ProfileSuggestionsFromSelectField) {
   ResetWaitForSuggestionRetrieval();
   web::test::ExecuteJavaScript(@"document.forms[0].state.focus()", web_state());
   WaitForSuggestionRetrieval(/*wait_for_trigger=*/YES);
-  ExpectMetric("Autofill.AddressSuggestionsCount", 1);
+  ExpectMetric("Autofill.SuggestionsCount.Address", 1);
   EXPECT_EQ(1U, [suggestion_controller() suggestions].count);
   FormSuggestion* suggestion = [suggestion_controller() suggestions][0];
   EXPECT_NSEQ(@"IL", suggestion.value);
@@ -621,7 +621,7 @@ TEST_F(AutofillControllerTest, MultipleProfileSuggestions) {
   ResetWaitForSuggestionRetrieval();
   web::test::ExecuteJavaScript(@"document.forms[0].name.focus()", web_state());
   WaitForSuggestionRetrieval(/*wait_for_trigger=*/YES);
-  ExpectMetric("Autofill.AddressSuggestionsCount", 2);
+  ExpectMetric("Autofill.SuggestionsCount.Address", 2);
   EXPECT_EQ(2U, [suggestion_controller() suggestions].count);
 }
 
