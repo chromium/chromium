@@ -362,6 +362,8 @@ NET_EXPORT void DCheckIncludedAndExcludedCookieLists(
 // --test-third-party-cookie-phaseout.
 NET_EXPORT bool IsForceThirdPartyCookieBlockingEnabled();
 
+NET_EXPORT bool PartitionedCookiesDisabledByCommandLine();
+
 }  // namespace cookie_util
 
 }  // namespace net

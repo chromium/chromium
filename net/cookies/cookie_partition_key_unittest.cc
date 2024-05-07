@@ -63,6 +63,15 @@ TEST_P(CookiePartitionKeyTest, TestFromStorage) {
       EXPECT_EQ(got.value()->IsThirdParty(), tc.third_party);
     }
   }
+
+  {
+    base::CommandLine::ForCurrentProcess()->AppendSwitch(
+        kDisablePartitionedCookiesSwitch);
+    EXPECT_FALSE(
+        CookiePartitionKey::FromStorage("https://toplevelsite.com",
+                                        /*has_cross_site_ancestor=*/true)
+            .has_value());
+  }
 }
 
 TEST_P(CookiePartitionKeyTest, TestFromUntrustedInput) {
@@ -105,6 +114,15 @@ TEST_P(CookiePartitionKeyTest, TestFromUntrustedInput) {
       EXPECT_EQ(got->site().Serialize(), kValidSite);
       EXPECT_EQ(got->IsThirdParty(), tc.expected_output->third_party);
     }
+  }
+
+  {
+    base::CommandLine::ForCurrentProcess()->AppendSwitch(
+        kDisablePartitionedCookiesSwitch);
+    EXPECT_FALSE(
+        CookiePartitionKey::FromUntrustedInput("https://toplevelsite.com",
+                                               /*has_cross_site_ancestor=*/true)
+            .has_value());
   }
 }
 

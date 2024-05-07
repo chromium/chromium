@@ -24,6 +24,7 @@ import org.chromium.android_webview.AwCookieManager;
 import org.chromium.android_webview.test.util.CommonResources;
 import org.chromium.android_webview.test.util.CookieUtils;
 import org.chromium.base.ThreadUtils;
+import org.chromium.base.test.util.CommandLineFlags;
 import org.chromium.base.test.util.Feature;
 import org.chromium.components.embedder_support.util.WebResourceResponseInfo;
 import org.chromium.net.test.util.TestWebServer;
@@ -92,6 +93,7 @@ public class CookieManagerStartupTest extends AwParameterizedTest {
     @Test
     @MediumTest
     @Feature({"AndroidWebView"})
+    @CommandLineFlags.Add("disable-partitioned-cookies")
     public void testStartup() throws Throwable {
         ThreadUtils.setWillOverrideUiThread();
         TestWebServer webServer = TestWebServer.start();
@@ -110,6 +112,7 @@ public class CookieManagerStartupTest extends AwParameterizedTest {
             Assert.assertTrue(cookieManager.acceptCookie());
 
             cookieManager.setCookie(url, "count=41");
+            cookieManager.setCookie(url, "partitioned_cookie=123;Secure;Partitioned");
 
             // Now start Chromium to cause the switch from the temporary cookie store to the real
             // Mojo store.
@@ -119,11 +122,12 @@ public class CookieManagerStartupTest extends AwParameterizedTest {
             mActivityTestRule.executeJavaScriptAndWaitForResult(
                     mAwContents,
                     mContentsClient,
-                    "var c=document.cookie.split('=');document.cookie=c[0]+'='+(1+(+c[1]));");
+                    "var c=document.cookie.split('=');"
+                            + "document.cookie=c[0]+'='+(1+(+c[1].split(';')[0]));");
 
             // Verify that the cookie value we set before was successfully passed through to the
             // Mojo store.
-            Assert.assertEquals("count=42", cookieManager.getCookie(url));
+            Assert.assertEquals("partitioned_cookie=123; count=42", cookieManager.getCookie(url));
         } finally {
             webServer.shutdown();
         }

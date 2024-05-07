@@ -318,6 +318,28 @@ public class CookieManagerTest extends AwParameterizedTest {
         }
     }
 
+    @Test
+    @MediumTest
+    @Feature({"AndroidWebView"})
+    @CommandLineFlags.Add("disable-partitioned-cookies")
+    public void setDisabledPartitionedCookieWithCookieManager() throws Throwable {
+        TestWebServer webServer = TestWebServer.start();
+        try {
+            final String url = "https://www.example.com";
+            mCookieManager.setCookie(
+                    url, "partitioned=foo;Path=/;Secure;Partitioned;SameSite=None");
+
+            final String expected =
+                    "partitioned=foo; domain=www.example.com; path=/; secure; samesite=none";
+            List<String> cookieInfo = mCookieManager.getCookieInfo(url);
+            Assert.assertNotNull(cookieInfo);
+            Assert.assertFalse("cookieInfo should not be empty", cookieInfo.isEmpty());
+            Assert.assertEquals(expected, cookieInfo.get(0));
+        } finally {
+            webServer.shutdown();
+        }
+    }
+
     private void setCookieWithDocumentCookieAPI(final String name, final String value)
             throws Throwable {
         JSUtils.executeJavaScriptAndWaitForResult(
@@ -1307,6 +1329,74 @@ public class CookieManagerTest extends AwParameterizedTest {
     @Test
     @MediumTest
     @Feature({"AndroidWebView", "Privacy"})
+    @CommandLineFlags.Add("disable-partitioned-cookies")
+    public void testDisabledPartitionedNetCookies() throws Throwable {
+        TestWebServer webServer = TestWebServer.startSsl();
+
+        // This test suite relies on an image to force a network request that has cookies attached.
+        // The AwParameterizedTest will disable this setting so force enabling it again so that
+        // we can still test the rest of the parameterized test settings.
+        mAwContents.getSettings().setImagesEnabled(true);
+
+        try {
+            String[] cookies = {
+                "partitioned_cookie=foo; SameSite=None; Secure; Partitioned",
+                "unpartitioned_cookie=bar; SameSite=None; Secure"
+            };
+            List<Pair<String, String>> responseHeaders = new ArrayList<Pair<String, String>>();
+            for (String cookie : cookies) {
+                responseHeaders.add(Pair.create("Set-Cookie", cookie));
+            }
+
+            String iframeWithNetRequest =
+                    """
+                    <html>
+                    <body>
+                    <!-- Force a network request to happen from the iframe with a navigation so -->
+                    <!-- that we can intercept it and see which cookies were attached -->
+                    <img src="/path_to_intercept" >
+                    </body>
+                    </html>
+                    """;
+            String iframeUrl = webServer.setResponse("/", iframeWithNetRequest, responseHeaders);
+            // We don't need this to do anything fancy, we just need the path to exist
+            webServer.setResponse("/path_to_intercept", "hello", responseHeaders);
+
+            String url = toThirdPartyUrl(makeIframeUrl(webServer, "/parent.html", iframeUrl));
+
+            allowFirstPartyCookies();
+            allowThirdPartyCookies(mAwContents);
+            mActivityTestRule.loadUrlSync(
+                    mAwContents, mContentsClient.getOnPageFinishedHelper(), url);
+            Assert.assertEquals(
+                    "All cookies should be returned when 3PCs are enabled",
+                    "partitioned_cookie=foo; unpartitioned_cookie=bar",
+                    webServer.getLastRequest("/path_to_intercept").headerValue("Cookie"));
+
+            blockThirdPartyCookies(mAwContents);
+            mActivityTestRule.loadUrlSync(
+                    mAwContents, mContentsClient.getOnPageFinishedHelper(), url);
+            Assert.assertEquals(
+                    "Partitioned cookies should not be returned while CHIPS is disabled",
+                    "",
+                    webServer.getLastRequest("/path_to_intercept").headerValue("Cookie"));
+
+            blockAllCookies();
+            mActivityTestRule.loadUrlSync(
+                    mAwContents, mContentsClient.getOnPageFinishedHelper(), url);
+            Assert.assertEquals(
+                    "No cookies should be returned when all cookies are disabled",
+                    "",
+                    webServer.getLastRequest("/path_to_intercept").headerValue("Cookie"));
+
+        } finally {
+            webServer.shutdown();
+        }
+    }
+
+    @Test
+    @MediumTest
+    @Feature({"AndroidWebView", "Privacy"})
     public void testPartitionedJSCookies() throws Throwable {
         String partitionedCookie = "partitioned-cookie=123";
         String unpartitionedCookie = "regular-cookie=456";
@@ -1365,6 +1455,86 @@ public class CookieManagerTest extends AwParameterizedTest {
             Assert.assertEquals(
                     "Only partitioned cookies should be returned when 3PCs are disabled",
                     partitionedCookie,
+                    iframeCookiesSupplier.get());
+
+            allowThirdPartyCookies(mAwContents);
+            Assert.assertEquals(
+                    "All cookies should be returned when 3PCs are enabled",
+                    partitionedCookie + "; " + unpartitionedCookie,
+                    iframeCookiesSupplier.get());
+
+            blockAllCookies();
+            Assert.assertEquals(
+                    "No cookies should ever be returned if all cookies are disabled",
+                    "",
+                    iframeCookiesSupplier.get());
+        } finally {
+            webServer.shutdown();
+        }
+    }
+
+    @Test
+    @MediumTest
+    @Feature({"AndroidWebView", "Privacy"})
+    @CommandLineFlags.Add("disable-partitioned-cookies")
+    public void testDisabledPartitionedJSCookies() throws Throwable {
+        String partitionedCookie = "partitioned-cookie=123";
+        String unpartitionedCookie = "regular-cookie=456";
+
+        // Using SSL server here since CookieStore API requires a secure schema.
+        TestWebServer webServer = TestWebServer.startSsl();
+        try {
+            // TODO(https://crbug.com/1523964): The WebView cookie manager API does not currently
+            // provide access to
+            // third party partitioned urls so we need to retrieve these cookies from the iframe
+            // itself to validate this
+            // behavior. We should refactor this test once support has been added to just use the
+            // CookieManager.
+            final LinkedBlockingQueue<String> javascriptInterfaceQueue =
+                    new LinkedBlockingQueue<>();
+            AwActivityTestRule.addJavascriptInterfaceOnUiThread(
+                    mAwContents,
+                    new Object() {
+                        @JavascriptInterface
+                        public void report(String cookies) {
+                            javascriptInterfaceQueue.add(cookies);
+                        }
+                    },
+                    "cookieResults");
+
+            Supplier<String> iframeCookiesSupplier =
+                    () -> {
+                        String iframeUrl =
+                                toThirdPartyUrl(
+                                        makeCookieScriptResultsUrl(
+                                                webServer,
+                                                "/iframe.html",
+                                                partitionedCookie
+                                                        + "; Secure; Path=/; SameSite=None;"
+                                                        + " Partitioned;",
+                                                unpartitionedCookie
+                                                        + "; Secure; Path=/; SameSite=None;"));
+
+                        String url = makeIframeUrl(webServer, "/parent.html", iframeUrl);
+
+                        try {
+                            mActivityTestRule.loadUrlSync(
+                                    mAwContents, mContentsClient.getOnPageFinishedHelper(), url);
+
+                            return AwActivityTestRule.waitForNextQueueElement(
+                                    javascriptInterfaceQueue);
+                        } catch (Exception e) {
+                            // Failed to retrieve so we can treat this as "no-data" - this in turn
+                            // will fail equality checks
+                            return "Failed to retrieve data";
+                        }
+                    };
+
+            allowFirstPartyCookies();
+            blockThirdPartyCookies(mAwContents);
+            Assert.assertEquals(
+                    "Partitioned cookies should not be returned while CHIPS is disabled",
+                    "",
                     iframeCookiesSupplier.get());
 
             allowThirdPartyCookies(mAwContents);

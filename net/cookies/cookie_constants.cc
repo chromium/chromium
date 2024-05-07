@@ -343,4 +343,6 @@ CookieSourceSchemeName GetSchemeNameEnum(const GURL& url) {
 
 const char kEmptyCookiePartitionKey[] = "";
 
+const char kDisablePartitionedCookiesSwitch[] = "disable-partitioned-cookies";
+
 }  // namespace net

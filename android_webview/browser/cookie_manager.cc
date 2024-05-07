@@ -488,12 +488,16 @@ void CookieManager::SetCookieHelper(const GURL& host,
   bool should_allow_cookie = true;
   const GURL& new_host = MaybeFixUpSchemeForSecureCookie(
       host, value, workaround_http_secure_cookies_, &should_allow_cookie);
+  std::optional<net::CookiePartitionKey> cookie_partition_key =
+      net::cookie_util::PartitionedCookiesDisabledByCommandLine()
+          ? std::nullopt
+          : std::make_optional(net::CookiePartitionKey::FromWire(
+                net::SchemefulSite(new_host),
+                net::CookiePartitionKey::AncestorChainBit::kSameSite));
 
   std::unique_ptr<net::CanonicalCookie> cc(net::CanonicalCookie::Create(
       new_host, value, base::Time::Now(), std::nullopt /* server_time */,
-      net::CookiePartitionKey::FromWire(
-          net::SchemefulSite(new_host),
-          net::CookiePartitionKey::AncestorChainBit::kSameSite),
+      cookie_partition_key,
       /*block_truncated=*/true, net::CookieSourceType::kOther,
       /*status=*/nullptr));
 

@@ -11,6 +11,7 @@
 #include <utility>
 
 #include "base/check.h"
+#include "base/command_line.h"
 #include "base/feature_list.h"
 #include "base/functional/bind.h"
 #include "base/functional/callback.h"
@@ -1095,6 +1096,15 @@ NET_EXPORT bool IsForceThirdPartyCookieBlockingEnabled() {
   return base::FeatureList::IsEnabled(
              features::kForceThirdPartyCookieBlocking) &&
          base::FeatureList::IsEnabled(features::kThirdPartyStoragePartitioning);
+}
+
+bool PartitionedCookiesDisabledByCommandLine() {
+  const base::CommandLine* command_line =
+      base::CommandLine::ForCurrentProcess();
+  if (!command_line) {
+    return false;
+  }
+  return command_line->HasSwitch(kDisablePartitionedCookiesSwitch);
 }
 
 }  // namespace net::cookie_util

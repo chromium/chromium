@@ -12,6 +12,7 @@
 #include "base/types/optional_util.h"
 #include "net/base/cronet_buildflags.h"
 #include "net/cookies/cookie_constants.h"
+#include "net/cookies/cookie_util.h"
 #include "net/cookies/site_for_cookies.h"
 
 #if !BUILDFLAG(CRONET_BUILD)
@@ -126,6 +127,10 @@ std::optional<CookiePartitionKey> CookiePartitionKey::FromNetworkIsolationKey(
     const NetworkIsolationKey& network_isolation_key,
     SiteForCookies site_for_cookies,
     SchemefulSite request_site) {
+  if (cookie_util::PartitionedCookiesDisabledByCommandLine()) {
+    return std::nullopt;
+  }
+
   const std::optional<base::UnguessableToken>& nonce =
       network_isolation_key.GetNonce();
 
@@ -155,6 +160,9 @@ std::optional<CookiePartitionKey> CookiePartitionKey::FromStorageKeyComponents(
     const SchemefulSite& site,
     AncestorChainBit ancestor_chain_bit,
     const std::optional<base::UnguessableToken>& nonce) {
+  if (cookie_util::PartitionedCookiesDisabledByCommandLine()) {
+    return std::nullopt;
+  }
   return CookiePartitionKey::FromWire(site, ancestor_chain_bit, nonce);
 }
 
@@ -198,6 +206,10 @@ CookiePartitionKey::DeserializeInternal(
     const std::string& top_level_site,
     CookiePartitionKey::AncestorChainBit has_cross_site_ancestor,
     CookiePartitionKey::ParsingMode parsing_mode) {
+  if (cookie_util::PartitionedCookiesDisabledByCommandLine()) {
+    return WarnAndCreateUnexpected("Partitioned cookies are disabled");
+  }
+
   auto schemeful_site = SchemefulSite::Deserialize(top_level_site);
   if (schemeful_site.opaque()) {
     return WarnAndCreateUnexpected(
