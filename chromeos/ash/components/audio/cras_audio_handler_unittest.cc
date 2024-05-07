@@ -723,6 +723,17 @@ class CrasAudioHandlerTest : public testing::TestWithParam<int> {
     return message_center->NotificationCount();
   }
 
+  // Helper function to call SyncDevicePrefSetMap.
+  void SyncDevicePrefSetMap(bool is_input) {
+    cras_audio_handler_->SyncDevicePrefSetMap(is_input);
+  }
+
+  // Retrieves input_device_pref_set_map_ or output_device_pref_set_map_.
+  std::map<std::string, std::string>& GetDevicePrefSetMap(bool is_input) {
+    return is_input ? cras_audio_handler_->input_device_pref_set_map_
+                    : cras_audio_handler_->output_device_pref_set_map_;
+  }
+
  protected:
   FakeCrasAudioClient* fake_cras_audio_client() {
     return FakeCrasAudioClient::Get();
@@ -7160,6 +7171,23 @@ TEST_P(CrasAudioHandlerTest,
   AudioDeviceList audio_devices;
   cras_audio_handler_->GetAudioDevices(&audio_devices);
   EXPECT_EQ(1u, audio_devices.size());
+}
+
+// Tests calling SyncDevicePrefSetMap with no active device will early return
+// and no crashes.
+TEST_P(CrasAudioHandlerTest, SyncDevicePrefSetMap) {
+  SetUpCrasAudioHandler({});
+  std::map<std::string, std::string>& input_device_pref_set_map =
+      GetDevicePrefSetMap(/*is_input=*/true);
+  std::map<std::string, std::string>& output_device_pref_set_map =
+      GetDevicePrefSetMap(/*is_input=*/false);
+  EXPECT_TRUE(input_device_pref_set_map.empty());
+  EXPECT_TRUE(output_device_pref_set_map.empty());
+
+  SyncDevicePrefSetMap(/*is_input=*/true);
+  SyncDevicePrefSetMap(/*is_input=*/false);
+  EXPECT_TRUE(input_device_pref_set_map.empty());
+  EXPECT_TRUE(output_device_pref_set_map.empty());
 }
 
 }  // namespace ash

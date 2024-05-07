@@ -3039,6 +3039,8 @@ void CrasAudioHandler::SyncDevicePrefSetMap(bool is_input) {
   const AudioDevice* active_device = GetDeviceFromId(active_node_id);
   if (!active_device) {
     VLOG(1) << "SyncDevicePrefSetMap: No active device found.";
+    // Early return since no active_device is available to sync.
+    return;
   }
 
   std::map<std::string, std::string>& device_pref_set_map =
