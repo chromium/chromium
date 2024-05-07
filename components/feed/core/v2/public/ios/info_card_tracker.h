@@ -68,6 +68,9 @@ class InfoCardTracker {
   // Creates or updates the tracking state for an info card.
   void SetInfoCardTrackingStateToPref(
       const feedwire::InfoCardTrackingState& tracking_state);
+
+  // Returns the histogram name for logging a given tracking type.
+  static std::string GetHistogramForTrackingType(TrackingType tracking_type);
 };
 
 }  // namespace ios_feed
