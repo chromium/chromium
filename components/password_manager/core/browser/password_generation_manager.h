@@ -58,7 +58,8 @@ class PasswordGenerationManager {
   // synchronously passed to |driver|. Otherwise, the UI on the client is
   // invoked to ask for overwrite permission. There is one corner case that is
   // still not covered. The user had the current password saved with empty
-  // username.
+  // username. |store_for_saving| indicates into which store the generated
+  // password will be pre-saved.
   // - The change password form has no username.
   // - The user generates a password and sees the bubble with an empty username.
   // - The user clicks 'Update'.
@@ -69,6 +70,7 @@ class PasswordGenerationManager {
           non_federated_matches,
       const std::vector<raw_ptr<const PasswordForm, VectorExperimental>>&
           federated_matches,
+      PasswordForm::Store store_for_saving,
       base::WeakPtr<PasswordManagerDriver> driver);
 
   // Called when generated password is accepted or changed by user.

@@ -3,7 +3,9 @@
 // found in the LICENSE file.
 
 #include "chrome/browser/password_manager/android/save_update_password_message_delegate.h"
+
 #include <jni.h>
+
 #include <algorithm>
 #include <memory>
 
@@ -310,6 +312,11 @@ SaveUpdatePasswordMessageDelegateTest::CreateFormManager(
   ON_CALL(*form_manager, Save())
       .WillByDefault(testing::Invoke(
           this, &SaveUpdatePasswordMessageDelegateTest::RecordPasswordSaved));
+  ON_CALL(*form_manager, GetPasswordStoreForSaving(_))
+      .WillByDefault([](const PasswordForm& form) -> PasswordForm::Store {
+        return form.IsUsingAccountStore() ? PasswordForm::Store::kAccountStore
+                                          : PasswordForm::Store::kProfileStore;
+      });
   return form_manager;
 }
 
@@ -1448,7 +1455,7 @@ TEST_F(SaveUpdatePasswordMessageDelegateTest,
 // set correctly for update password message.
 TEST_F(SaveUpdatePasswordMessageDelegateTest,
        MessagePropertyValues_UpdatePassword) {
-  SetPendingCredentials(kUsername, kPassword);
+  SetPendingCredentials(kUsername, kPassword, /*is_account_store=*/false);
   auto form_manager =
       CreateFormManager(GURL(kDefaultUrl), empty_best_matches());
   const bool is_signed_in = false;
@@ -1475,7 +1482,7 @@ TEST_F(SaveUpdatePasswordMessageDelegateTest,
 // password.
 TEST_F(SaveUpdatePasswordMessageDelegateTest,
        SignedInDescription_SavePassword) {
-  SetPendingCredentials(kUsername, kPassword);
+  SetPendingCredentials(kUsername, kPassword, /*is_account_store=*/true);
   auto form_manager =
       CreateFormManager(GURL(kDefaultUrl), empty_best_matches());
   const bool is_signed_in = true;
@@ -1494,7 +1501,7 @@ TEST_F(SaveUpdatePasswordMessageDelegateTest,
 // non-displayable email saves a password.
 TEST_F(SaveUpdatePasswordMessageDelegateTest,
        SignedInDescription_SavePasswordNonDisplayableEmail) {
-  SetPendingCredentials(kUsername, kPassword);
+  SetPendingCredentials(kUsername, kPassword, /*is_account_store=*/true);
   auto form_manager =
       CreateFormManager(GURL(kDefaultUrl), empty_best_matches());
   const bool is_signed_in = true;
@@ -1520,7 +1527,7 @@ TEST_F(SaveUpdatePasswordMessageDelegateTest,
 // password.
 TEST_F(SaveUpdatePasswordMessageDelegateTest,
        SignedInDescription_UpdatePassword) {
-  SetPendingCredentials(kUsername, kPassword);
+  SetPendingCredentials(kUsername, kPassword, /*is_account_store=*/true);
   auto form_manager =
       CreateFormManager(GURL(kDefaultUrl), empty_best_matches());
   const bool is_signed_in = true;
@@ -1586,38 +1593,11 @@ TEST_F(SaveUpdatePasswordMessageDelegateTest,
   DismissMessage(messages::DismissReason::UNKNOWN);
 }
 
-// Tests that the description is set correctly when the signed in user updated
-// the password, which is stored in both local and account stores.
-TEST_F(SaveUpdatePasswordMessageDelegateTest,
-       SignedInDescription_UpdatePasswordInBothStores) {
-  // Enables using split storages (local and account).
-  EnableUseUPMLocalAndSeparateStores();
-
-  SetPendingCredentials(kUsername, kPassword);
-  PasswordForm password_form = CreatePasswordForm(kUsername, kPassword);
-  password_form.in_store =
-      password_manager::PasswordForm::Store::kProfileStore |
-      password_manager::PasswordForm::Store::kAccountStore;
-  std::vector<PasswordForm> single_form_best_matches = {password_form};
-  auto form_manager =
-      CreateFormManager(GURL(kDefaultUrl), single_form_best_matches);
-  const bool is_update = true;
-  EnqueueMessage(std::move(form_manager), /*user_signed_in=*/true,
-                 /*update_password=*/is_update);
-
-  // Should display signed out message for updating the password in the local
-  // store (even when the user is signed in).
-  EXPECT_EQ(GetExpectedUPMMessageDescription(is_update, true, kAccountEmail16),
-            GetMessageWrapper()->GetDescription());
-
-  DismissMessage(messages::DismissReason::UNKNOWN);
-}
-
 // Tests that the description is set correctly when the signed-in user with a
 // non-displayable email updates a password.
 TEST_F(SaveUpdatePasswordMessageDelegateTest,
        SignedInDescription_UpdatePasswordNonDisplayableEmail) {
-  SetPendingCredentials(kUsername, kPassword);
+  SetPendingCredentials(kUsername, kPassword, /*is_account_store=*/true);
   auto form_manager =
       CreateFormManager(GURL(kDefaultUrl), empty_best_matches());
   const bool is_signed_in = true;
@@ -1635,55 +1615,5 @@ TEST_F(SaveUpdatePasswordMessageDelegateTest,
     EXPECT_EQ(GetExpectedUPMMessageDescription(is_update, is_signed_in,
                                                kAccountFullName16),
               GetMessageWrapper()->GetDescription());
-  DismissMessage(messages::DismissReason::UNKNOWN);
-}
-
-// Tests that SaveUpdatePasswordMessageDelegate::IsUsingAccountStorage returns
-// correct value for the updated credential.
-TEST_F(SaveUpdatePasswordMessageDelegateTest,
-       IsUsingProfileStore_UpdatingExistingValue) {
-  EnableUseUPMLocalAndSeparateStores();
-  SetPendingCredentials(kUsername, kPassword);
-  PasswordForm password_form1 = CreatePasswordForm(kUsername, kPassword, true);
-  PasswordForm password_form2 =
-      CreatePasswordForm(kUsername2, kPassword, false);
-  std::vector<PasswordForm> single_form_best_matches = {password_form1,
-                                                        password_form2};
-  auto form_manager =
-      CreateFormManager(GURL(kDefaultUrl), single_form_best_matches);
-
-  EnqueueMessage(std::move(form_manager), /*user_signed_in=*/true,
-                 /*update_password=*/true);
-
-  EXPECT_TRUE(get_password_edit_dialog_bridge_delegate()->IsUsingAccountStorage(
-      kUsername));
-  EXPECT_FALSE(
-      get_password_edit_dialog_bridge_delegate()->IsUsingAccountStorage(
-          kUsername2));
-
-  DismissMessage(messages::DismissReason::UNKNOWN);
-}
-
-// Tests that SaveUpdatePasswordMessageDelegate::IsUsingAccountStorage returns
-// correct value for the saved credential.
-TEST_F(SaveUpdatePasswordMessageDelegateTest,
-       IsUsingProfileStore_SavingNewCredentialFromUpdateDialog) {
-  EnableUseUPMLocalAndSeparateStores();
-  SetPendingCredentials(kUsername, kPassword);
-  PasswordForm password_form1 = CreatePasswordForm(kUsername, kPassword, false);
-  std::vector<PasswordForm> single_form_best_matches = {
-      CreatePasswordForm(kUsername, kPassword, false)};
-  auto form_manager =
-      CreateFormManager(GURL(kDefaultUrl), single_form_best_matches);
-
-  EnqueueMessage(std::move(form_manager), /*user_signed_in=*/true,
-                 /*update_password=*/true);
-
-  EXPECT_FALSE(
-      get_password_edit_dialog_bridge_delegate()->IsUsingAccountStorage(
-          kUsername));
-  EXPECT_TRUE(get_password_edit_dialog_bridge_delegate()->IsUsingAccountStorage(
-      kUsername2));
-
   DismissMessage(messages::DismissReason::UNKNOWN);
 }

@@ -115,6 +115,13 @@ class PasswordFormManagerForUI {
   // GetPendingCredentials() to the account store of the currently signed in
   // user.
   virtual void BlockMovingCredentialsToAccountStore() = 0;
+
+  // Returns the password store type into which the form is going to be saved or
+  // updated. It might be that the credential is updated in both stores; in this
+  // case the result will be the enum value with both bits set (the account and
+  // the profile store bits).
+  virtual PasswordForm::Store GetPasswordStoreForSaving(
+      const PasswordForm& password_form) const = 0;
 };
 
 }  // namespace  password_manager

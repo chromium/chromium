@@ -123,7 +123,7 @@ class PasswordSaveManager {
   // case the result will be the enum value with both bits set (the account and
   // the profile store bits).
   virtual PasswordForm::Store GetPasswordStoreForSaving(
-      const PasswordForm& parsed_submitted_form) const = 0;
+      const PasswordForm& password_form) const = 0;
 
   virtual std::unique_ptr<PasswordSaveManager> Clone() = 0;
 };

@@ -619,6 +619,11 @@ void PasswordFormManager::BlockMovingCredentialsToAccountStore() {
       GaiaIdHash::FromGaiaId(gaia_id));
 }
 
+PasswordForm::Store PasswordFormManager::GetPasswordStoreForSaving(
+    const PasswordForm& password_form) const {
+  return password_save_manager_->GetPasswordStoreForSaving(password_form);
+}
+
 bool PasswordFormManager::IsNewLogin() const {
   return password_save_manager_->IsNewLogin();
 }

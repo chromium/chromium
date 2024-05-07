@@ -107,7 +107,7 @@ class PasswordSaveManagerImpl : public PasswordSaveManager {
   void UsernameUpdatedInBubble() override;
 
   PasswordForm::Store GetPasswordStoreForSaving(
-      const PasswordForm& parsed_submitted_form) const override;
+      const PasswordForm& password_form) const override;
 
   std::unique_ptr<PasswordSaveManager> Clone() override;
 

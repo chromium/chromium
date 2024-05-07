@@ -188,6 +188,8 @@ class PasswordFormManager : public PasswordFormManagerForUI,
   void OnPasswordsRevealed() override;
   void MoveCredentialsToAccountStore() override;
   void BlockMovingCredentialsToAccountStore() override;
+  PasswordForm::Store GetPasswordStoreForSaving(
+      const PasswordForm& password_form) const override;
 
   bool IsNewLogin() const;
   FormFetcher* GetFormFetcher();

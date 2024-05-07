@@ -487,6 +487,9 @@ void PasswordSaveManagerImpl::GeneratedPasswordAccepted(
       std::move(parsed_form),
       GetRelevantMatchesForGeneration(form_fetcher_->GetNonFederatedMatches()),
       GetRelevantMatchesForGeneration(form_fetcher_->GetFederatedMatches()),
+      ShouldStoreGeneratedPasswordsInAccountStore()
+          ? PasswordForm::Store::kAccountStore
+          : PasswordForm::Store::kProfileStore,
       driver);
 }
 
@@ -993,9 +996,9 @@ void PasswordSaveManagerImpl::UsernameUpdatedInBubble() {
 }
 
 PasswordForm::Store PasswordSaveManagerImpl::GetPasswordStoreForSaving(
-    const PasswordForm& parsed_submitted_form) const {
+    const PasswordForm& password_form) const {
   PendingCredentialsStates states = ComputePendingCredentialsStates(
-      parsed_submitted_form, form_fetcher_->GetAllRelevantMatches(),
+      password_form, form_fetcher_->GetAllRelevantMatches(),
       username_updated_in_bubble_, generation_manager_.get());
   return GetPasswordStoreForSavingImpl(states);
 }
