@@ -163,17 +163,19 @@ void DawnAHardwareBufferImageRepresentation::EndAccess() {
   // BeginAccess().
   if (end_access_desc.fenceCount == 2u) {
     end_access_sync_fd = std::move(begin_access_sync_fd_);
-  } else {
-    DCHECK_EQ(end_access_desc.fenceCount, 1u);
+  } else if (end_access_desc.fenceCount == 1u) {
     end_access_desc.fences[0].ExportInfo(&export_info);
 
-    // Dawn will close its FD when `end_access_desc` falls out of scope, and so
-    // it is necessary to dup() it to give AndroidImageBacking an FD that it can
-    // own.
+    // Dawn will close its FD when `end_access_desc` falls out of scope, and
+    // so it is necessary to dup() it to give AndroidImageBacking an FD that
+    // it can own.
     end_access_sync_fd = base::ScopedFD(dup(sync_fd_export_info.handle));
 
     // In this case `begin_access_sync_fd_` is no longer needed, so drop it.
     begin_access_sync_fd_.reset();
+  } else {
+    DCHECK_EQ(end_access_desc.fenceCount, 0u);
+    DCHECK(!begin_access_sync_fd_.is_valid());
   }
 
   android_backing()->EndWrite(std::move(end_access_sync_fd));
