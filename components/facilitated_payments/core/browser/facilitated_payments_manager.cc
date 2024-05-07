@@ -47,7 +47,8 @@ void FacilitatedPaymentsManager::Reset() {
   pix_code_detection_attempt_count_ = 0;
   ukm_source_id_ = 0;
   pix_code_detection_triggering_timer_.Stop();
-  initiate_payment_request_details_->Reset();
+  initiate_payment_request_details_ =
+      std::make_unique<FacilitatedPaymentsInitiatePaymentRequestDetails>();
   weak_ptr_factory_.InvalidateWeakPtrs();
 }
 
@@ -264,6 +265,12 @@ void FacilitatedPaymentsManager::OnGetClientToken(
 void FacilitatedPaymentsManager::SendInitiatePaymentRequest() {
   // TODO(b/300334562): Populate the request details and send the initiate
   // payment request.
+}
+
+void FacilitatedPaymentsManager::ResetForTesting() {
+  is_test_ = false;
+  Reset();
+  is_test_ = true;
 }
 
 }  // namespace payments::facilitated

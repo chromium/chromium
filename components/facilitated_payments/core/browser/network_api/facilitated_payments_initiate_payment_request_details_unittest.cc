@@ -106,23 +106,4 @@ TEST_F(FacilitatedPaymentsInitiatePaymentRequestDetailsTest,
   EXPECT_TRUE(request_details_->IsReadyForPixPayment());
 }
 
-TEST_F(FacilitatedPaymentsInitiatePaymentRequestDetailsTest, Reset) {
-  request_details_->risk_data_ = "seems pretty risky";
-  request_details_->client_token_ =
-      std::vector<uint8_t>{'t', 'o', 'k', 'e', 'n'};
-  request_details_->billing_customer_number_ = 13;
-  request_details_->merchant_payment_page_url_ = GURL("https://foo.com/bar");
-  request_details_->instrument_id_ = 13;
-  request_details_->pix_code_ = "a valid code";
-
-  request_details_->Reset();
-
-  EXPECT_TRUE(request_details_->risk_data_.empty());
-  EXPECT_TRUE(request_details_->client_token_.empty());
-  EXPECT_EQ(request_details_->billing_customer_number_, std::nullopt);
-  EXPECT_EQ(request_details_->merchant_payment_page_url_, std::nullopt);
-  EXPECT_EQ(request_details_->instrument_id_, std::nullopt);
-  EXPECT_EQ(request_details_->pix_code_, std::nullopt);
-}
-
 }  // namespace payments::facilitated

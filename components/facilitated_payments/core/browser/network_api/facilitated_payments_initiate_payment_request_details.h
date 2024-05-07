@@ -24,9 +24,6 @@ class FacilitatedPaymentsInitiatePaymentRequestDetails {
       const FacilitatedPaymentsInitiatePaymentRequestDetails&) = delete;
   ~FacilitatedPaymentsInitiatePaymentRequestDetails();
 
-  // Resets to the default state.
-  void Reset();
-
   // Returns true if everything that's required for making a PIX payment request
   // is available.
   bool IsReadyForPixPayment();

@@ -129,6 +129,8 @@ class FacilitatedPaymentsManager {
       TriggerPixDetectionOnDomContentLoadedExpDisabled_Ukm);
   FRIEND_TEST_ALL_PREFIXES(FacilitatedPaymentsManagerTest,
                            TriggerPixDetectionOnDomContentLoadedExpEnabled_Ukm);
+  FRIEND_TEST_ALL_PREFIXES(FacilitatedPaymentsManagerTest,
+                           ResettingPreventsPayment);
   FRIEND_TEST_ALL_PREFIXES(
       FacilitatedPaymentsManagerWithPixPaymentsDisabledTest,
       ValidPixCodeDetectionResult_HasPixAccounts_ApiClientNotTriggered);
@@ -211,6 +213,10 @@ class FacilitatedPaymentsManager {
   // Makes a payment request to the Payments server after the user has selected
   // the account for making the payment.
   void SendInitiatePaymentRequest();
+
+  // Calling `Reset` has no effect in tests. Adding this method to specifically
+  // test `Resets` in tests.
+  void ResetForTesting();
 
   // Owner.
   raw_ref<FacilitatedPaymentsDriver> driver_;

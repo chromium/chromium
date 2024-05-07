@@ -954,6 +954,26 @@ TEST_F(FacilitatedPaymentsManagerTest,
             true);
 }
 
+TEST_F(FacilitatedPaymentsManagerTest, ResettingPreventsPayment) {
+  manager_->initiate_payment_request_details_->risk_data_ =
+      "seems pretty risky";
+  manager_->initiate_payment_request_details_->client_token_ =
+      std::vector<uint8_t>{'t', 'o', 'k', 'e', 'n'};
+  manager_->initiate_payment_request_details_->billing_customer_number_ = 13;
+  manager_->initiate_payment_request_details_->merchant_payment_page_url_ =
+      GURL("https://foo.com/bar");
+  manager_->initiate_payment_request_details_->instrument_id_ = 13;
+  manager_->initiate_payment_request_details_->pix_code_ = "a valid code";
+
+  EXPECT_TRUE(
+      manager_->initiate_payment_request_details_->IsReadyForPixPayment());
+
+  manager_->ResetForTesting();
+
+  EXPECT_FALSE(
+      manager_->initiate_payment_request_details_->IsReadyForPixPayment());
+}
+
 // A test fixture for the facilitated payment manager with the
 // kEnablePixPayments feature flag disabled.
 class FacilitatedPaymentsManagerWithPixPaymentsDisabledTest
