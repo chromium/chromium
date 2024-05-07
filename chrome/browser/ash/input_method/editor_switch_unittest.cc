@@ -11,6 +11,7 @@
 #include "base/test/scoped_feature_list.h"
 #include "base/types/cxx23_to_underlying.h"
 #include "chrome/browser/ash/input_method/editor_consent_enums.h"
+#include "chrome/browser/ash/input_method/editor_context.h"
 #include "chrome/browser/ash/input_method/editor_identity_utils.h"
 #include "chrome/browser/policy/profile_policy_connector.h"
 #include "chrome/browser/signin/identity_manager_factory.h"
@@ -39,9 +40,15 @@ const char kDeniedTestCountry[] = "br";
 
 const char kAllowedTestUrl[] = "https://allowed.testurl.com/allowed/path";
 
-class FakeEditorSwitchDelegate : public EditorSwitch::Delegate {
+class FakeEditorContextObserver : public EditorContext::Observer {
  public:
-  // EditorSwitch::Delegate overrides
+  // EditorContext::Observer overrides
+  void OnContextUpdated() override {}
+};
+
+class FakeEditorSwitchObserver : public EditorSwitch::Observer {
+ public:
+  // EditorSwitch::Observer overrides
   void OnEditorModeChanged(const EditorMode& mode) override {}
 };
 
@@ -165,13 +172,15 @@ TEST_P(EditorSwitchAvailabilityTest, TestEditorAvailability) {
   feature_list.InitWithFeatures(/*enabled_features=*/test_case.enabled_flags,
                                 /*disabled_features=*/test_case.disabled_flags);
 
-  TestingProfile profile_;
-  profile_.GetProfilePolicyConnector()->OverrideIsManagedForTesting(
+  TestingProfile profile;
+  profile.GetProfilePolicyConnector()->OverrideIsManagedForTesting(
       test_case.is_managed);
-  FakeEditorSwitchDelegate delegate;
-  EditorSwitch editor_switch(/*delegate=*/&delegate,
-                             /*profile=*/&profile_,
-                             /*country_code=*/test_case.country_code);
+  FakeEditorContextObserver context_observer;
+  FakeEditorSwitchObserver switch_observer;
+  EditorContext context(&context_observer, test_case.country_code);
+  EditorSwitch editor_switch(/*observer=*/&switch_observer,
+                             /*profile=*/&profile,
+                             /*context=*/&context);
 
   EXPECT_EQ(editor_switch.IsAllowedForUse(), test_case.expected_availability);
 }
@@ -509,10 +518,12 @@ TEST_P(EditorSwitchTriggerTest, TestEditorMode) {
 
   std::unique_ptr<TestingProfile> profile =
       CreateTestingProfile(test_case.email);
-  FakeEditorSwitchDelegate delegate;
-  EditorSwitch editor_switch(/*delegate=*/&delegate,
+  FakeEditorContextObserver context_observer;
+  FakeEditorSwitchObserver switch_observer;
+  EditorContext context(&context_observer, kAllowedTestCountry);
+  EditorSwitch editor_switch(/*observer=*/&switch_observer,
                              /*profile=*/profile.get(),
-                             /*country_code=*/kAllowedTestCountry);
+                             /*context=*/&context);
 
   auto mock_notifier = net::test::MockNetworkChangeNotifier::Create();
   profile->GetProfilePolicyConnector()->OverrideIsManagedForTesting(false);
@@ -522,13 +533,13 @@ TEST_P(EditorSwitchTriggerTest, TestEditorMode) {
   profile->GetPrefs()->SetBoolean(prefs::kOrcaEnabled, test_case.user_pref);
   profile->GetPrefs()->SetInteger(
       prefs::kOrcaConsentStatus, base::to_underlying(test_case.consent_status));
-  editor_switch.OnTabletModeUpdated(test_case.is_in_tablet_mode);
-  editor_switch.OnActivateIme(test_case.active_engine_id);
-  editor_switch.OnInputContextUpdated(
+  context.OnTabletModeUpdated(test_case.is_in_tablet_mode);
+  context.OnActivateIme(test_case.active_engine_id);
+  context.OnInputContextUpdated(
       TextInputMethod::InputContext(test_case.input_type),
       CreateFakeTextFieldContextualInfo(test_case.app_type, test_case.url,
                                         test_case.app_id));
-  editor_switch.OnTextSelectionLengthChanged(test_case.num_chars_selected);
+  context.OnTextSelectionLengthChanged(test_case.num_chars_selected);
 
   ASSERT_TRUE(editor_switch.IsAllowedForUse());
   EXPECT_EQ(editor_switch.GetEditorMode(), test_case.expected_editor_mode);
@@ -599,10 +610,12 @@ TEST_P(EditorSwitchEnglishOnlyTest, EditorIsEnabledForEnglishInputMethodsOnly) {
 
   std::unique_ptr<TestingProfile> profile =
       CreateTestingProfile("testuser@gmail.com");
-  FakeEditorSwitchDelegate delegate;
-  EditorSwitch editor_switch(/*delegate=*/&delegate,
+  FakeEditorContextObserver context_observer;
+  FakeEditorSwitchObserver switch_observer;
+  EditorContext context(&context_observer, kAllowedTestCountry);
+  EditorSwitch editor_switch(/*observer=*/&switch_observer,
                              /*profile=*/profile.get(),
-                             /*country_code=*/kAllowedTestCountry);
+                             /*context=*/&context);
 
   auto mock_notifier = net::test::MockNetworkChangeNotifier::Create();
   profile->GetProfilePolicyConnector()->OverrideIsManagedForTesting(false);
@@ -611,12 +624,12 @@ TEST_P(EditorSwitchEnglishOnlyTest, EditorIsEnabledForEnglishInputMethodsOnly) {
   profile->GetPrefs()->SetBoolean(prefs::kOrcaEnabled, true);
   profile->GetPrefs()->SetInteger(
       prefs::kOrcaConsentStatus, base::to_underlying(ConsentStatus::kApproved));
-  editor_switch.OnTabletModeUpdated(false);
-  editor_switch.OnActivateIme(engine_id);
-  editor_switch.OnInputContextUpdated(
+  context.OnTabletModeUpdated(false);
+  context.OnActivateIme(engine_id);
+  context.OnInputContextUpdated(
       TextInputMethod::InputContext(ui::TEXT_INPUT_TYPE_TEXT),
       CreateFakeTextFieldContextualInfo(AppType::BROWSER, kAllowedTestUrl, ""));
-  editor_switch.OnTextSelectionLengthChanged(0);
+  context.OnTextSelectionLengthChanged(0);
 
   EXPECT_TRUE(editor_switch.IsAllowedForUse());
   EXPECT_EQ(editor_switch.GetEditorMode(), expected_mode);
@@ -682,10 +695,12 @@ TEST_P(EditorSwitchInternationalizeTest,
 
   std::unique_ptr<TestingProfile> profile =
       CreateTestingProfile("testuser@gmail.com");
-  FakeEditorSwitchDelegate delegate;
-  EditorSwitch editor_switch(/*delegate=*/&delegate,
+  FakeEditorContextObserver context_observer;
+  FakeEditorSwitchObserver switch_observer;
+  EditorContext context(&context_observer, kAllowedTestCountry);
+  EditorSwitch editor_switch(/*observer=*/&switch_observer,
                              /*profile=*/profile.get(),
-                             /*country_code=*/kAllowedTestCountry);
+                             /*context=*/&context);
 
   auto mock_notifier = net::test::MockNetworkChangeNotifier::Create();
   profile->GetProfilePolicyConnector()->OverrideIsManagedForTesting(false);
@@ -694,12 +709,12 @@ TEST_P(EditorSwitchInternationalizeTest,
   profile->GetPrefs()->SetBoolean(prefs::kOrcaEnabled, true);
   profile->GetPrefs()->SetInteger(
       prefs::kOrcaConsentStatus, base::to_underlying(ConsentStatus::kApproved));
-  editor_switch.OnTabletModeUpdated(false);
-  editor_switch.OnActivateIme(engine_id);
-  editor_switch.OnInputContextUpdated(
+  context.OnTabletModeUpdated(false);
+  context.OnActivateIme(engine_id);
+  context.OnInputContextUpdated(
       TextInputMethod::InputContext(ui::TEXT_INPUT_TYPE_TEXT),
       CreateFakeTextFieldContextualInfo(AppType::BROWSER, kAllowedTestUrl, ""));
-  editor_switch.OnTextSelectionLengthChanged(0);
+  context.OnTextSelectionLengthChanged(0);
 
   EXPECT_TRUE(editor_switch.IsAllowedForUse());
   EXPECT_EQ(editor_switch.GetEditorMode(), expected_mode);
