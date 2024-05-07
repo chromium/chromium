@@ -69,6 +69,7 @@ class ChromeComposeClient
       autofill::AutofillSuggestionTriggerSource trigger_source) override;
   compose::PageUkmTracker* getPageUkmTracker() override;
   void DisableProactiveNudge() override;
+  void OpenProactiveNudgeSettings() override;
 
   // autofill::AutofillManager::Observer:
   // Used to observe field focus changes so that the saved state notification
