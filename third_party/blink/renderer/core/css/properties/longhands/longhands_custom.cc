@@ -590,28 +590,18 @@ const CSSValue* AspectRatio::ParseSingleValueFromRange(
     CSSParserTokenRange& range,
     const CSSParserContext& context,
     const CSSParserLocalContext&) const {
-  // Syntax: auto | auto 1/2 | 1/2 auto
+  // Syntax: auto | auto 1/2 | 1/2 auto | 1/2
   CSSValue* auto_value = nullptr;
   if (range.Peek().Id() == CSSValueID::kAuto) {
     auto_value = css_parsing_utils::ConsumeIdent(range);
   }
 
-  if (range.AtEnd()) {
-    return auto_value;
-  }
-
   CSSValue* ratio = css_parsing_utils::ConsumeRatio(range, context);
   if (!ratio) {
-    return nullptr;
+    return auto_value;  // Either auto alone, or failure.
   }
 
-  if (!range.AtEnd()) {
-    if (auto_value) {
-      return nullptr;
-    }
-    if (range.Peek().Id() != CSSValueID::kAuto) {
-      return nullptr;
-    }
+  if (!auto_value && range.Peek().Id() == CSSValueID::kAuto) {
     auto_value = css_parsing_utils::ConsumeIdent(range);
   }
 
@@ -1796,6 +1786,7 @@ const CSSValue* Clip::ParseSingleValueFromRange(
     return nullptr;
   }
 
+  CSSParserSavePoint savepoint(range);
   CSSParserTokenRange args = css_parsing_utils::ConsumeFunction(range);
   // rect(t, r, b, l) || rect(t r b l)
   CSSValue* top = ConsumeClipComponent(args, context);
@@ -1815,8 +1806,11 @@ const CSSValue* Clip::ParseSingleValueFromRange(
   }
   CSSValue* left = ConsumeClipComponent(args, context);
   if (!left || !args.AtEnd()) {
+    // NOTE: This AtEnd() is fine, because we test args, not range.
+    // But we need the savepoint to rewind in that case.
     return nullptr;
   }
+  savepoint.Release();
   return MakeGarbageCollected<CSSQuadValue>(top, right, bottom, left,
                                             CSSQuadValue::kSerializeAsRect);
 }
@@ -2063,7 +2057,7 @@ const CSSValue* ColorScheme::ParseSingleValueFromRange(
       value = css_parsing_utils::ConsumeCustomIdent(range, context);
     }
     if (!value) {
-      return nullptr;
+      break;
     }
     values->Append(*value);
   } while (!range.AtEnd());
@@ -2488,6 +2482,8 @@ CSSValue* ConsumeAttr(CSSParserTokenRange args,
   AtomicString attr_name =
       args.ConsumeIncludingWhitespace().Value().ToAtomicString();
   if (!args.AtEnd()) {
+    // NOTE: This AtEnd() is fine, because we don't take in the entire
+    // stream here, just the contents of a function.
     return nullptr;
   }
 
@@ -2539,6 +2535,8 @@ CSSValue* ConsumeCounterContent(CSSParserTokenRange args,
   }
 
   if (!list_style || !args.AtEnd()) {
+    // NOTE: This AtEnd() is fine, because we don't take in the entire
+    // stream here, just the contents of a function.
     return nullptr;
   }
   return MakeGarbageCollected<cssvalue::CSSCounterValue>(identifier, list_style,
@@ -2852,16 +2850,14 @@ const CSSValue* Cursor::ParseSingleValueFromRange(
   }
 
   CSSValueID id = range.Peek().Id();
-  if (!range.AtEnd()) {
-    if (id == CSSValueID::kWebkitZoomIn) {
-      context.Count(WebFeature::kPrefixedCursorZoomIn);
-    } else if (id == CSSValueID::kWebkitZoomOut) {
-      context.Count(WebFeature::kPrefixedCursorZoomOut);
-    } else if (id == CSSValueID::kWebkitGrab) {
-      context.Count(WebFeature::kPrefixedCursorGrab);
-    } else if (id == CSSValueID::kWebkitGrabbing) {
-      context.Count(WebFeature::kPrefixedCursorGrabbing);
-    }
+  if (id == CSSValueID::kWebkitZoomIn) {
+    context.Count(WebFeature::kPrefixedCursorZoomIn);
+  } else if (id == CSSValueID::kWebkitZoomOut) {
+    context.Count(WebFeature::kPrefixedCursorZoomOut);
+  } else if (id == CSSValueID::kWebkitGrab) {
+    context.Count(WebFeature::kPrefixedCursorGrab);
+  } else if (id == CSSValueID::kWebkitGrabbing) {
+    context.Count(WebFeature::kPrefixedCursorGrabbing);
   }
   CSSIdentifierValue* cursor_type = nullptr;
   if (id == CSSValueID::kHand) {
@@ -3121,13 +3117,10 @@ const CSSValue* ParseDisplayMultipleKeywords(
   CSSValueList* values = CSSValueList::CreateSpaceSeparated();
   values->Append(*first_value);
   values->Append(*css_parsing_utils::ConsumeIdent(range));
-  if (!range.AtEnd()) {
-    if (range.Peek().Id() == CSSValueID::kInvalid) {
-      return nullptr;
-    }
+  if (range.Peek().Id() != CSSValueID::kInvalid) {
     values->Append(*css_parsing_utils::ConsumeIdent(range));
   }
-  // `values` has two or three CSSIdentifierValue pointers.
+  // `values` now has two or three CSSIdentifierValue pointers.
 
   auto result = ValidateDisplayKeywords(*values);
   if (!result) {
@@ -3168,20 +3161,19 @@ const CSSValue* Display::ParseSingleValueFromRange(
   CSSValueID id = range.Peek().Id();
   if (id != CSSValueID::kInvalid) {
     const CSSIdentifierValue* value = css_parsing_utils::ConsumeIdent(range);
-    if (!range.AtEnd()) {
-      if (range.Peek().Id() == CSSValueID::kInvalid) {
-        return nullptr;
-      }
+    if (range.Peek().Id() != CSSValueID::kInvalid) {
       return ParseDisplayMultipleKeywords(range, value);
     }
-    // The property has only one keyword.
 
+    // The property has only one keyword (or one keyword and then junk,
+    // in which case the caller will abort for us).
     if (id == CSSValueID::kListItem || IsDisplayBox(id) ||
         IsDisplayInternal(id) || IsDisplayLegacy(id) || IsDisplayInside(id) ||
         IsDisplayOutside(id)) {
       return value;
+    } else {
+      return nullptr;
     }
-    return nullptr;
   }
 
   if (!RuntimeEnabledFeatures::CSSLayoutAPIEnabled()) {
@@ -3198,18 +3190,20 @@ const CSSValue* Display::ParseSingleValueFromRange(
     return nullptr;
   }
 
-  CSSParserTokenRange range_copy = range;
-  CSSParserTokenRange args = css_parsing_utils::ConsumeFunction(range_copy);
+  CSSParserSavePoint savepoint(range);
+  CSSParserTokenRange args = css_parsing_utils::ConsumeFunction(range);
   CSSCustomIdentValue* name =
       css_parsing_utils::ConsumeCustomIdent(args, context);
 
   // If we didn't get a custom-ident or didn't exhaust the function arguments
   // return nothing.
+  // NOTE: This AtEnd() is fine, because we test args, not range.
+  // But we need the savepoint to rewind in that case.
   if (!name || !args.AtEnd()) {
     return nullptr;
   }
 
-  range = range_copy;
+  savepoint.Release();
   return MakeGarbageCollected<cssvalue::CSSLayoutFunctionValue>(
       name, /* is_inline */ function == CSSValueID::kInlineLayout);
 }
@@ -3826,13 +3820,20 @@ const CSSValue* FontVariantEastAsian::ParseSingleValueFromRange(
     return css_parsing_utils::ConsumeIdent(range);
   }
 
+  bool found_any = false;
+
   FontVariantEastAsianParser east_asian_parser;
   do {
     if (east_asian_parser.ConsumeEastAsian(range) !=
         FontVariantEastAsianParser::ParseResult::kConsumedValue) {
-      return nullptr;
+      break;
     }
+    found_any = true;
   } while (!range.AtEnd());
+
+  if (!found_any) {
+    return nullptr;
+  }
 
   return east_asian_parser.FinalizeValue();
 }
@@ -3854,13 +3855,20 @@ const CSSValue* FontVariantLigatures::ParseSingleValueFromRange(
     return css_parsing_utils::ConsumeIdent(range);
   }
 
+  bool found_any = false;
+
   FontVariantLigaturesParser ligatures_parser;
   do {
     if (ligatures_parser.ConsumeLigature(range) !=
         FontVariantLigaturesParser::ParseResult::kConsumedValue) {
-      return nullptr;
+      break;
     }
+    found_any = true;
   } while (!range.AtEnd());
+
+  if (!found_any) {
+    return nullptr;
+  }
 
   return ligatures_parser.FinalizeValue();
 }
@@ -3881,13 +3889,20 @@ const CSSValue* FontVariantNumeric::ParseSingleValueFromRange(
     return css_parsing_utils::ConsumeIdent(range);
   }
 
+  bool found_any = false;
+
   FontVariantNumericParser numeric_parser;
   do {
     if (numeric_parser.ConsumeNumeric(range) !=
         FontVariantNumericParser::ParseResult::kConsumedValue) {
-      return nullptr;
+      break;
     }
+    found_any = true;
   } while (!range.AtEnd());
+
+  if (!found_any) {
+    return nullptr;
+  }
 
   return numeric_parser.FinalizeValue();
 }
@@ -3908,13 +3923,20 @@ const CSSValue* FontVariantAlternates::ParseSingleValueFromRange(
     return css_parsing_utils::ConsumeIdent(range);
   }
 
+  bool found_any = false;
+
   FontVariantAlternatesParser alternates_parser;
   do {
     if (alternates_parser.ConsumeAlternates(range, context) !=
         FontVariantAlternatesParser::ParseResult::kConsumedValue) {
-      return nullptr;
+      break;
     }
+    found_any = true;
   } while (!range.AtEnd());
+
+  if (!found_any) {
+    return nullptr;
+  }
 
   return alternates_parser.FinalizeValue();
 }
@@ -5444,11 +5466,7 @@ const CSSValue* LineClamp::ParseSingleValueFromRange(
     const CSSParserContext& context,
     const CSSParserLocalContext&) const {
   if (range.Peek().Id() == CSSValueID::kNone) {
-    const CSSIdentifierValue* value = css_parsing_utils::ConsumeIdent(range);
-    if (!range.AtEnd()) {
-      return nullptr;
-    }
-    return value;
+    return css_parsing_utils::ConsumeIdent(range);
   } else {
     return css_parsing_utils::ConsumePositiveInteger(range, context);
   }
@@ -6833,10 +6851,14 @@ const CSSValue* PaintOrder::ParseSingleValueFromRange(
     } else if (id == CSSValueID::kMarkers && !markers) {
       markers = css_parsing_utils::ConsumeIdent(range);
     } else {
-      return nullptr;
+      break;
     }
     paint_type_list.push_back(id);
   } while (!range.AtEnd());
+
+  if (paint_type_list.empty()) {
+    return nullptr;
+  }
 
   // After parsing we serialize the paint-order list. Since it is not possible
   // to pop a last list items from CSSValueList without bigger cost, we create
@@ -7088,7 +7110,13 @@ const CSSValue* Quotes::ParseSingleValueFromRange(
   while (!range.AtEnd()) {
     CSSStringValue* parsed_value = css_parsing_utils::ConsumeString(range);
     if (!parsed_value) {
-      return nullptr;
+      // NOTE: Technically, if we consumed an odd number of strings,
+      // we should have returned success here but un-consumed
+      // the last string (since we should allow any arbitrary junk).
+      // However, in practice, the only thing we need to care about
+      // is !important, since we're not part of a shorthand,
+      // so we let it slip.
+      break;
     }
     values->Append(*parsed_value);
   }
@@ -7438,7 +7466,10 @@ const CSSValue* ScrollbarGutter::ParseSingleValueFromRange(
     if (id == CSSValueID::kBothEdges && !both_edges) {
       both_edges = css_parsing_utils::ConsumeIdent(range);
     } else {
-      return nullptr;
+      // Something that didn't parse, or end-of-stream, or duplicate both-edges.
+      // End-of-stream is success; the caller will clean up for us in the
+      // failure case (since we didn't consume the erroneous token).
+      break;
     }
   }
   if (!stable) {
@@ -7697,9 +7728,6 @@ const CSSValue* ScrollSnapAlign::ParseSingleValueFromRange(
   if (!block_value) {
     return nullptr;
   }
-  if (range.AtEnd()) {
-    return block_value;
-  }
 
   CSSValue* inline_value =
       css_parsing_utils::ConsumeIdent<CSSValueID::kNone, CSSValueID::kStart,
@@ -7741,7 +7769,7 @@ const CSSValue* ScrollSnapType::ParseSingleValueFromRange(
     return nullptr;
   }
   CSSValue* axis_value = css_parsing_utils::ConsumeIdent(range);
-  if (range.AtEnd() || axis_id == CSSValueID::kNone) {
+  if (axis_id == CSSValueID::kNone) {
     return axis_value;
   }
 
@@ -8240,6 +8268,7 @@ const CSSValue* StrokeDasharray::ParseSingleValueFromRange(
     CSSParserTokenRange& range,
     const CSSParserContext& context,
     const CSSParserLocalContext&) const {
+  // Syntax: comma- or whitespace-separated list of <length-or-percent>
   CSSValueID id = range.Peek().Id();
   if (id == CSSValueID::kNone) {
     return css_parsing_utils::ConsumeIdent(range);
@@ -8247,15 +8276,20 @@ const CSSValue* StrokeDasharray::ParseSingleValueFromRange(
 
   CSSParserContext::ParserModeOverridingScope scope(context, kSVGAttributeMode);
   CSSValueList* dashes = CSSValueList::CreateCommaSeparated();
-  do {
+  bool need_next_value = true;
+  for (;;) {
     CSSPrimitiveValue* dash = css_parsing_utils::ConsumeLengthOrPercent(
         range, context, CSSPrimitiveValue::ValueRange::kNonNegative);
-    if (!dash || (css_parsing_utils::ConsumeCommaIncludingWhitespace(range) &&
-                  range.AtEnd())) {
-      return nullptr;
+    if (!dash) {
+      if (need_next_value) {
+        return nullptr;
+      } else {
+        break;
+      }
     }
     dashes->Append(*dash);
-  } while (!range.AtEnd());
+    need_next_value = css_parsing_utils::ConsumeCommaIncludingWhitespace(range);
+  }
   return dashes;
 }
 
@@ -8615,19 +8649,9 @@ const CSSValue* TextIndent::ParseSingleValueFromRange(
     const CSSParserContext& context,
     const CSSParserLocalContext&) const {
   // [ <length> | <percentage> ]
-  CSSValue* length_percentage = nullptr;
-  do {
-    if (!length_percentage) {
-      length_percentage = css_parsing_utils::ConsumeLengthOrPercent(
-          range, context, CSSPrimitiveValue::ValueRange::kAll,
-          css_parsing_utils::UnitlessQuirk::kAllow);
-      if (length_percentage) {
-        continue;
-      }
-    }
-    return nullptr;
-  } while (!range.AtEnd());
-
+  CSSValue* length_percentage = css_parsing_utils::ConsumeLengthOrPercent(
+      range, context, CSSPrimitiveValue::ValueRange::kAll,
+      css_parsing_utils::UnitlessQuirk::kAllow);
   if (!length_percentage) {
     return nullptr;
   }
@@ -8933,12 +8957,8 @@ const CSSValue* TouchAction::ParseSingleValueFromRange(
   if (!ConsumePan(range, pan_x, pan_y, pinch_zoom)) {
     return nullptr;
   }
-  if (!range.AtEnd() && !ConsumePan(range, pan_x, pan_y, pinch_zoom)) {
-    return nullptr;
-  }
-  if (!range.AtEnd() && !ConsumePan(range, pan_x, pan_y, pinch_zoom)) {
-    return nullptr;
-  }
+  ConsumePan(range, pan_x, pan_y, pinch_zoom);  // May fail.
+  ConsumePan(range, pan_x, pan_y, pinch_zoom);  // May fail.
 
   if (pan_x) {
     list->Append(*pan_x);
@@ -9652,28 +9672,22 @@ CSSValue* ConsumeReflect(CSSParserTokenRange& range,
     return nullptr;
   }
 
-  CSSPrimitiveValue* offset = nullptr;
-  if (range.AtEnd()) {
+  CSSPrimitiveValue* offset = ConsumeLengthOrPercent(
+      range, context, CSSPrimitiveValue::ValueRange::kAll,
+      css_parsing_utils::UnitlessQuirk::kForbid);
+  if (!offset) {
+    // End of stream or parse error; in the latter case,
+    // the caller will clean up since we're not at the end.
     offset =
         CSSNumericLiteralValue::Create(0, CSSPrimitiveValue::UnitType::kPixels);
-  } else {
-    offset = ConsumeLengthOrPercent(range, context,
-                                    CSSPrimitiveValue::ValueRange::kAll,
-                                    css_parsing_utils::UnitlessQuirk::kForbid);
-    if (!offset) {
-      return nullptr;
-    }
+    return MakeGarbageCollected<cssvalue::CSSReflectValue>(direction, offset,
+                                                           /*mask=*/nullptr);
   }
 
-  CSSValue* mask = nullptr;
-  if (!range.AtEnd()) {
-    mask = css_parsing_utils::ConsumeWebkitBorderImage(range, context);
-    if (!mask) {
-      return nullptr;
-    }
-  }
+  CSSValue* mask_or_null =
+      css_parsing_utils::ConsumeWebkitBorderImage(range, context);
   return MakeGarbageCollected<cssvalue::CSSReflectValue>(direction, offset,
-                                                         mask);
+                                                         mask_or_null);
 }
 
 }  // namespace

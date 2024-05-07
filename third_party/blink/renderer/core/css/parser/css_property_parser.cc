@@ -162,7 +162,8 @@ bool CSSPropertyParser::ParseValueStart(CSSPropertyID unresolved_property,
     // variable ref parser below.
     if (To<Shorthand>(property).ParseShorthand(important, value_.range,
                                                *context_, local_context,
-                                               *parsed_properties_)) {
+                                               *parsed_properties_) &&
+        value_.range.AtEnd()) {
       return true;
     }
   } else {

@@ -1776,6 +1776,8 @@ CSSPrimitiveValue* ConsumeResolution(CSSParserTokenRange& range,
 // <ratio> = <number [0,+inf]> [ / <number [0,+inf]> ]?
 CSSValue* ConsumeRatio(CSSParserTokenRange& range,
                        const CSSParserContext& context) {
+  CSSParserSavePoint savepoint(range);
+
   CSSPrimitiveValue* first = ConsumeNumber(
       range, context, CSSPrimitiveValue::ValueRange::kNonNegative);
   if (!first) {
@@ -1795,6 +1797,7 @@ CSSValue* ConsumeRatio(CSSParserTokenRange& range,
         1, CSSPrimitiveValue::UnitType::kInteger);
   }
 
+  savepoint.Release();
   return MakeGarbageCollected<cssvalue::CSSRatioValue>(*first, *second);
 }
 
@@ -4299,7 +4302,7 @@ bool ConsumeShorthandVia2Longhands(
   AddProperty(longhands[1]->PropertyID(), shorthand.id(), *end, important,
               IsImplicitProperty::kNotImplicit, properties);
 
-  return range.AtEnd();
+  return true;
 }
 
 bool ConsumeShorthandVia4Longhands(
@@ -4350,7 +4353,7 @@ bool ConsumeShorthandVia4Longhands(
   AddProperty(longhands[3]->PropertyID(), shorthand.id(), *left, important,
               IsImplicitProperty::kNotImplicit, properties);
 
-  return range.AtEnd();
+  return true;
 }
 
 bool ConsumeShorthandGreedilyViaLonghands(
@@ -4365,9 +4368,11 @@ bool ConsumeShorthandGreedilyViaLonghands(
   const CSSValue* longhands[6] = {nullptr, nullptr, nullptr,
                                   nullptr, nullptr, nullptr};
   const CSSProperty** shorthand_properties = shorthand.properties();
+  bool found_any = false;
+  bool found_longhand;
   do {
-    bool found_longhand = false;
-    for (size_t i = 0; !found_longhand && i < shorthand.length(); ++i) {
+    found_longhand = false;
+    for (size_t i = 0; i < shorthand.length(); ++i) {
       if (longhands[i]) {
         continue;
       }
@@ -4376,12 +4381,15 @@ bool ConsumeShorthandGreedilyViaLonghands(
 
       if (longhands[i]) {
         found_longhand = true;
+        found_any = true;
+        break;
       }
     }
-    if (!found_longhand) {
-      return false;
-    }
-  } while (!range.AtEnd());
+  } while (found_longhand && !range.AtEnd());
+
+  if (!found_any) {
+    return false;
+  }
 
   for (size_t i = 0; i < shorthand.length(); ++i) {
     if (longhands[i]) {
@@ -4582,10 +4590,12 @@ CSSValue* ConsumeContentDistributionOverflowPosition(
         CSSValueID::kInvalid);
   }
 
+  CSSParserSavePoint savepoint(range);
   CSSValueID overflow = IsOverflowKeyword(id)
                             ? range.ConsumeIncludingWhitespace().Id()
                             : CSSValueID::kInvalid;
   if (is_position_keyword(range.Peek().Id())) {
+    savepoint.Release();
     return MakeGarbageCollected<cssvalue::CSSContentDistributionValue>(
         CSSValueID::kInvalid, range.ConsumeIncludingWhitespace().Id(),
         overflow);
@@ -4847,6 +4857,7 @@ bool ConsumeAnimationShorthand(
 
   do {
     bool parsed_longhand[kMaxNumAnimationLonghands] = {false};
+    bool found_any = false;
     do {
       bool found_property = false;
       for (unsigned i = 0; i < longhand_count; ++i) {
@@ -4860,14 +4871,19 @@ bool ConsumeAnimationShorthand(
         if (value) {
           parsed_longhand[i] = true;
           found_property = true;
+          found_any = true;
           longhands[i]->Append(*value);
           break;
         }
       }
       if (!found_property) {
-        return false;
+        break;
       }
     } while (!range.AtEnd() && range.Peek().GetType() != kCommaToken);
+
+    if (!found_any) {
+      return false;
+    }
 
     for (unsigned i = 0; i < longhand_count; ++i) {
       const Longhand& longhand = *To<Longhand>(shorthand.properties()[i]);
@@ -5264,11 +5280,14 @@ bool ParseBackgroundOrMask(bool important,
   CHECK_LE(longhand_count, 10u);
 
   bool implicit = false;
+  bool previous_layer_had_background_color = false;
   do {
     bool parsed_longhand[10] = {false};
     CSSValue* origin_value = nullptr;
+    bool found_property;
+    bool found_any = false;
     do {
-      bool found_property = false;
+      found_property = false;
       bool bg_position_parsed_in_current_layer = false;
       for (unsigned i = 0; i < longhand_count; ++i) {
         if (parsed_longhand[i]) {
@@ -5317,6 +5336,7 @@ bool ParseBackgroundOrMask(bool important,
           }
           parsed_longhand[i] = true;
           found_property = true;
+          found_any = true;
           longhands[i].push_back(value);
           if (value_y) {
             parsed_longhand[i + 1] = true;
@@ -5324,23 +5344,28 @@ bool ParseBackgroundOrMask(bool important,
           }
         }
       }
-      if (!found_property) {
-        return false;
-      }
-    } while (!range.AtEnd() && range.Peek().GetType() != kCommaToken);
+    } while (found_property && !range.AtEnd() &&
+             range.Peek().GetType() != kCommaToken);
+
+    if (!found_any) {
+      return false;
+    }
+    if (previous_layer_had_background_color) {
+      // Colors are only allowed in the last layer; previous layer had
+      // a background color and we now know for sure it was not the last one,
+      // so return parse failure.
+      return false;
+    }
 
     // TODO(timloh): This will make invalid longhands, see crbug.com/386459
     for (unsigned i = 0; i < longhand_count; ++i) {
       const CSSProperty& property = *shorthand.properties()[i];
 
-      if (property.IDEquals(CSSPropertyID::kBackgroundColor) &&
-          !range.AtEnd()) {
+      if (property.IDEquals(CSSPropertyID::kBackgroundColor)) {
         if (parsed_longhand[i]) {
-          return false;  // Colors are only allowed in the last layer.
+          previous_layer_had_background_color = true;
         }
-        continue;
       }
-
       if (!parsed_longhand[i]) {
         if ((property.IDEquals(CSSPropertyID::kBackgroundClip) ||
              property.IDEquals(CSSPropertyID::kMaskClip)) &&
@@ -5357,16 +5382,21 @@ bool ParseBackgroundOrMask(bool important,
       }
     }
   } while (ConsumeCommaIncludingWhitespace(range));
-  if (!range.AtEnd()) {
-    return false;
-  }
 
   for (unsigned i = 0; i < longhand_count; ++i) {
     const CSSProperty& property = *shorthand.properties()[i];
 
-    // To conserve memory we don't wrap a single value in a list.
-    const CSSValue* longhand = GetSingleValueOrMakeList(
-        CSSValue::kCommaSeparator, std::move(longhands[i]));
+    const CSSValue* longhand;
+    if (property.IDEquals(CSSPropertyID::kBackgroundColor)) {
+      // There can only be one background-color (we've verified this earlier,
+      // by means of previous_layer_had_background_color), so pick out only
+      // the last one (any others will just be “initial” over and over again).
+      longhand = longhands[i].back().Get();
+    } else {
+      // To conserve memory we don't wrap a single value in a list.
+      longhand = GetSingleValueOrMakeList(CSSValue::kCommaSeparator,
+                                          std::move(longhands[i]));
+    }
 
     AddProperty(property.PropertyID(), shorthand.id(), *longhand, important,
                 implicit ? IsImplicitProperty::kImplicit
@@ -5448,6 +5478,7 @@ bool ConsumeBorderImageComponents(CSSParserTokenRange& range,
       }
     }
     if (!slice) {
+      CSSParserSavePoint savepoint(range);
       slice = ConsumeBorderImageSlice(range, context, default_fill);
       if (slice) {
         DCHECK(!width);
@@ -5457,19 +5488,23 @@ bool ConsumeBorderImageComponents(CSSParserTokenRange& range,
           if (ConsumeSlashIncludingWhitespace(range)) {
             outset = ConsumeBorderImageOutset(range, context);
             if (!outset) {
-              return false;
+              break;
             }
           } else if (!width) {
-            return false;
+            break;
           }
         }
       } else {
-        return false;
+        break;
       }
+      savepoint.Release();
     } else {
-      return false;
+      break;
     }
   } while (!range.AtEnd());
+  if (!source && !repeat && !slice) {
+    return false;
+  }
   return true;
 }
 
@@ -7079,7 +7114,7 @@ bool ConsumeGridItemPositionShorthand(bool important,
                     : CSSIdentifierValue::Create(CSSValueID::kAuto);
   }
 
-  return range.AtEnd();
+  return true;
 }
 
 bool ConsumeGridTemplateShorthand(bool important,
@@ -7094,41 +7129,51 @@ bool ConsumeGridTemplateShorthand(bool important,
 
   DCHECK_EQ(gridTemplateShorthand().length(), 3u);
 
-  CSSParserTokenRange range_copy = range;
-  template_rows = ConsumeIdent<CSSValueID::kNone>(range);
+  {
+    // 1- <grid-template-rows> / <grid-template-columns>
+    CSSParserSavePoint savepoint(range);
+    template_rows = ConsumeIdent<CSSValueID::kNone>(range);
+    if (!template_rows) {
+      template_rows = ConsumeGridTemplatesRowsOrColumns(range, context);
+    }
 
-  // 1- 'none' case.
-  if (template_rows && range.AtEnd()) {
+    if (template_rows && ConsumeSlashIncludingWhitespace(range)) {
+      template_columns = ConsumeGridTemplatesRowsOrColumns(range, context);
+      if (template_columns) {
+        template_areas = CSSIdentifierValue::Create(CSSValueID::kNone);
+        savepoint.Release();
+        return true;
+      }
+    }
+
+    template_rows = nullptr;
+    template_columns = nullptr;
+    template_areas = nullptr;
+  }
+
+  {
+    // 2- [ <line-names>? <string> <track-size>? <line-names>? ]+
+    // [ / <track-list> ]?
+    CSSParserSavePoint savepoint(range);
+    if (ConsumeGridTemplateRowsAndAreasAndColumns(
+            important, range, context, template_rows, template_columns,
+            template_areas)) {
+      savepoint.Release();
+      return true;
+    }
+  }
+
+  // 3- 'none' alone case. This must come after the others, since “none“
+  // could also be the start of case 1.
+  template_rows = ConsumeIdent<CSSValueID::kNone>(range);
+  if (template_rows) {
     template_rows = CSSIdentifierValue::Create(CSSValueID::kNone);
     template_columns = CSSIdentifierValue::Create(CSSValueID::kNone);
     template_areas = CSSIdentifierValue::Create(CSSValueID::kNone);
     return true;
   }
 
-  // 2- <grid-template-rows> / <grid-template-columns>
-  if (!template_rows) {
-    template_rows = ConsumeGridTemplatesRowsOrColumns(range, context);
-  }
-
-  if (template_rows) {
-    if (!ConsumeSlashIncludingWhitespace(range)) {
-      return false;
-    }
-    template_columns = ConsumeGridTemplatesRowsOrColumns(range, context);
-    if (!template_columns || !range.AtEnd()) {
-      return false;
-    }
-
-    template_areas = CSSIdentifierValue::Create(CSSValueID::kNone);
-    return true;
-  }
-
-  // 3- [ <line-names>? <string> <track-size>? <line-names>? ]+
-  // [ / <track-list> ]?
-  range = range_copy;
-  return ConsumeGridTemplateRowsAndAreasAndColumns(
-      important, range, context, template_rows, template_columns,
-      template_areas);
+  return false;
 }
 
 CSSValue* ConsumeHyphenateLimitChars(CSSParserTokenRange& range,
@@ -7145,7 +7190,7 @@ CSSValue* ConsumeHyphenateLimitChars(CSSParserTokenRange& range,
       list->Append(*ident);
       continue;
     }
-    return nullptr;
+    break;
   }
   if (list->length()) {
     return list;
@@ -7549,19 +7594,30 @@ bool ConsumeRadii(CSSValue* horizontal_radii[4],
                   const CSSParserContext& context,
                   bool use_legacy_parsing) {
   unsigned horizontal_value_count = 0;
-  for (; horizontal_value_count < 4 && !stream.AtEnd() &&
-         stream.Peek().GetType() != kDelimiterToken;
+  for (;
+       horizontal_value_count < 4 && stream.Peek().GetType() != kDelimiterToken;
        ++horizontal_value_count) {
     horizontal_radii[horizontal_value_count] = ConsumeLengthOrPercent(
         stream, context, CSSPrimitiveValue::ValueRange::kNonNegative);
     if (!horizontal_radii[horizontal_value_count]) {
-      return false;
+      break;
     }
   }
   if (!horizontal_radii[0]) {
     return false;
   }
-  if (stream.AtEnd()) {
+  if (ConsumeSlashIncludingWhitespace(stream)) {
+    for (unsigned i = 0; i < 4; ++i) {
+      vertical_radii[i] = ConsumeLengthOrPercent(
+          stream, context, CSSPrimitiveValue::ValueRange::kNonNegative);
+      if (!vertical_radii[i]) {
+        break;
+      }
+    }
+    if (!vertical_radii[0]) {
+      return false;
+    }
+  } else {
     // Legacy syntax: -webkit-border-radius: l1 l2; is equivalent to
     // border-radius: l1 / l2;
     if (use_legacy_parsing && horizontal_value_count == 2) {
@@ -7573,20 +7629,6 @@ bool ConsumeRadii(CSSValue* horizontal_radii[4],
         vertical_radii[i] = horizontal_radii[i];
       }
       return true;
-    }
-  } else {
-    if (!ConsumeSlashIncludingWhitespace(stream)) {
-      return false;
-    }
-    for (unsigned i = 0; i < 4 && !stream.AtEnd(); ++i) {
-      vertical_radii[i] = ConsumeLengthOrPercent(
-          stream, context, CSSPrimitiveValue::ValueRange::kNonNegative);
-      if (!vertical_radii[i]) {
-        return false;
-      }
-    }
-    if (!vertical_radii[0] || !stream.AtEnd()) {
-      return false;
     }
   }
   Complete4Sides(horizontal_radii);
@@ -7718,7 +7760,7 @@ CSSValue* ConsumeTextDecorationLine(CSSParserTokenRange& range) {
 // Consume the `text-box-edge` production.
 CSSValue* ConsumeTextBoxEdge(CSSParserTokenRange& range) {
   if (CSSIdentifierValue* leading = ConsumeIdent<CSSValueID::kLeading>(range)) {
-    return range.AtEnd() ? leading : nullptr;
+    return leading;
   }
   CSSIdentifierValue* over_type =
       ConsumeIdent<CSSValueID::kText, CSSValueID::kCap, CSSValueID::kEx>(range);
@@ -7732,7 +7774,7 @@ CSSValue* ConsumeTextBoxEdge(CSSParserTokenRange& range) {
   }
   if (CSSIdentifierValue* under_type =
           ConsumeIdent<CSSValueID::kText, CSSValueID::kAlphabetic>(range);
-      under_type && range.AtEnd()) {
+      under_type) {
     // Align with the CSS specification: "If only one value is specified,
     // both edges are assigned that same keyword if possible; else 'text' is
     // assumed as the missing value.".

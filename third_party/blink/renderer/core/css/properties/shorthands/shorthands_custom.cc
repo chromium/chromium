@@ -15,6 +15,7 @@
 #include "third_party/blink/renderer/core/css/parser/css_parser_context.h"
 #include "third_party/blink/renderer/core/css/parser/css_parser_fast_paths.h"
 #include "third_party/blink/renderer/core/css/parser/css_parser_local_context.h"
+#include "third_party/blink/renderer/core/css/parser/css_parser_save_point.h"
 #include "third_party/blink/renderer/core/css/parser/font_variant_alternates_parser.h"
 #include "third_party/blink/renderer/core/css/parser/font_variant_east_asian_parser.h"
 #include "third_party/blink/renderer/core/css/parser/font_variant_ligatures_parser.h"
@@ -118,7 +119,7 @@ bool ParseAnimationShorthand(const StylePropertyShorthand& shorthand,
         important, css_parsing_utils::IsImplicitProperty::kNotImplicit,
         properties);
   }
-  return range.AtEnd();
+  return true;
 }
 
 const CSSValue* CSSValueFromComputedAnimation(
@@ -192,8 +193,7 @@ bool ParseBackgroundOrMaskPosition(
   const CSSValue* result_y = nullptr;
   if (!css_parsing_utils::ConsumeBackgroundPosition(
           range, context, css_parsing_utils::UnitlessQuirk::kAllow,
-          three_value_position, result_x, result_y) ||
-      !range.AtEnd()) {
+          three_value_position, result_x, result_y)) {
     return false;
   }
   const CSSProperty** longhands = shorthand.properties();
@@ -333,7 +333,7 @@ bool AnimationRange::ParseShorthand(
               *end_list, important, IsImplicitProperty::kNotImplicit,
               properties);
 
-  return range.AtEnd();
+  return true;
 }
 
 const CSSValue* AnimationRange::CSSValueFromComputedStyleInternal(
@@ -465,7 +465,7 @@ bool BorderBlock::ParseShorthand(
   css_parsing_utils::AddExpandedPropertyForValue(
       CSSPropertyID::kBorderBlockColor, *color, important, properties);
 
-  return range.AtEnd();
+  return true;
 }
 
 const CSSValue* BorderBlock::CSSValueFromComputedStyleInternal(
@@ -610,7 +610,7 @@ bool Border::ParseShorthand(
                                                  *CSSInitialValue::Create(),
                                                  important, properties);
 
-  return range.AtEnd();
+  return true;
 }
 
 const CSSValue* Border::CSSValueFromComputedStyleInternal(
@@ -731,7 +731,7 @@ bool BorderInline::ParseShorthand(
   css_parsing_utils::AddExpandedPropertyForValue(
       CSSPropertyID::kBorderInlineColor, *color, important, properties);
 
-  return range.AtEnd();
+  return true;
 }
 
 const CSSValue* BorderInline::CSSValueFromComputedStyleInternal(
@@ -917,14 +917,11 @@ bool BorderSpacing::ParseShorthand(
   if (!horizontal_spacing) {
     return false;
   }
-  CSSValue* vertical_spacing = horizontal_spacing;
-  if (!range.AtEnd()) {
-    vertical_spacing = ConsumeLength(
-        range, context, CSSPrimitiveValue::ValueRange::kNonNegative,
-        css_parsing_utils::UnitlessQuirk::kAllow);
-  }
-  if (!vertical_spacing || !range.AtEnd()) {
-    return false;
+  CSSValue* vertical_spacing =
+      ConsumeLength(range, context, CSSPrimitiveValue::ValueRange::kNonNegative,
+                    css_parsing_utils::UnitlessQuirk::kAllow);
+  if (!vertical_spacing) {
+    vertical_spacing = horizontal_spacing;
   }
   css_parsing_utils::AddProperty(
       CSSPropertyID::kWebkitBorderHorizontalSpacing,
@@ -1042,9 +1039,6 @@ bool Columns::ParseShorthand(
   }
   css_parsing_utils::ConsumeColumnWidthOrCount(range, context, column_width,
                                                column_count);
-  if (!range.AtEnd()) {
-    return false;
-  }
   if (!column_width) {
     column_width = CSSIdentifierValue::Create(CSSValueID::kAuto);
   }
@@ -1117,10 +1111,6 @@ bool Container::ParseShorthand(
     }
   }
 
-  if (!range.AtEnd()) {
-    return false;
-  }
-
   css_parsing_utils::AddProperty(
       CSSPropertyID::kContainerName, CSSPropertyID::kContainer, *name,
       important, css_parsing_utils::IsImplicitProperty::kNotImplicit,
@@ -1159,25 +1149,27 @@ bool Flex::ParseShorthand(bool important,
     flex_basis = CSSIdentifierValue::Create(CSSValueID::kAuto);
     range.ConsumeIncludingWhitespace();
   } else {
-    unsigned index = 0;
-    while (!range.AtEnd() && index++ < 3) {
+    for (;;) {
+      CSSParserSavePoint savepoint(range);
       double num;
       if (css_parsing_utils::ConsumeNumberRaw(range, context, num)) {
         if (num < 0) {
-          return false;
+          break;
         }
         if (flex_grow == kUnsetValue) {
           flex_grow = num;
+          savepoint.Release();
         } else if (flex_shrink == kUnsetValue) {
           flex_shrink = num;
-        } else if (!num) {
-          // flex only allows a basis of 0 (sans units) if
-          // flex-grow and flex-shrink values have already been
-          // set.
+          savepoint.Release();
+        } else if (!num && !flex_basis) {
+          // Unitless zero is a valid <'flex-basis'>. All other <length>s
+          // must have some unit, and are handled by the other branch.
           flex_basis = CSSNumericLiteralValue::Create(
               0, CSSPrimitiveValue::UnitType::kPixels);
+          savepoint.Release();
         } else {
-          return false;
+          break;
         }
       } else if (!flex_basis) {
         if (css_parsing_utils::IdentMatches<
@@ -1190,12 +1182,23 @@ bool Flex::ParseShorthand(bool important,
           flex_basis = css_parsing_utils::ConsumeLengthOrPercent(
               range, context, CSSPrimitiveValue::ValueRange::kNonNegative);
         }
-        if (index == 2 && !range.AtEnd()) {
-          return false;
+        if (flex_basis) {
+          // <'flex-basis'> may not appear between <'flex-grow'> and
+          // <'flex-shrink'>. We therefore ensure that grow and shrink are
+          // either both set, or both unset, once <'flex-basis'> is seen.
+          if (flex_grow != kUnsetValue && flex_shrink == kUnsetValue) {
+            flex_shrink = 1;
+          }
+          DCHECK_EQ(flex_grow == kUnsetValue, flex_shrink == kUnsetValue);
+          savepoint.Release();
+        } else {
+          break;
         }
+      } else {
+        break;
       }
     }
-    if (index == 0) {
+    if (flex_grow == kUnsetValue && flex_shrink == kUnsetValue && !flex_basis) {
       return false;
     }
     if (flex_grow == kUnsetValue) {
@@ -1210,9 +1213,6 @@ bool Flex::ParseShorthand(bool important,
     }
   }
 
-  if (!range.AtEnd()) {
-    return false;
-  }
   css_parsing_utils::AddProperty(
       CSSPropertyID::kFlexGrow, CSSPropertyID::kFlex,
       *CSSNumericLiteralValue::Create(ClampTo<float>(flex_grow),
@@ -1269,9 +1269,6 @@ bool ConsumeSystemFont(bool important,
                        HeapVector<CSSPropertyValue, 64>& properties) {
   CSSValueID system_font_id = range.ConsumeIncludingWhitespace().Id();
   DCHECK(CSSParserFastPaths::IsValidSystemFont(system_font_id));
-  if (!range.AtEnd()) {
-    return false;
-  }
 
   css_parsing_utils::AddExpandedPropertyForValue(
       CSSPropertyID::kFont,
@@ -1301,6 +1298,9 @@ bool ConsumeFont(bool important,
         (id == CSSValueID::kItalic || id == CSSValueID::kOblique)) {
       font_style = css_parsing_utils::ConsumeFontStyle(range, context);
       if (!font_style) {
+        // NOTE: Strictly speaking, perhaps we should rewind the stream here
+        // and return true instead, but given that this rule exists solely
+        // for accepting !important, we can just as well give a parse error.
         return false;
       }
       continue;
@@ -1457,7 +1457,7 @@ bool ConsumeFont(bool important,
       important, css_parsing_utils::IsImplicitProperty::kNotImplicit,
       properties);
 
-  return range.AtEnd();
+  return true;
 }
 
 }  // namespace
@@ -1520,7 +1520,7 @@ bool FontVariant::ParseShorthand(
           *CSSIdentifierValue::Create(CSSValueID::kNormal), important,
           css_parsing_utils::IsImplicitProperty::kNotImplicit, properties);
     }
-    return range.AtEnd();
+    return true;
   }
 
   CSSIdentifierValue* caps_value = nullptr;
@@ -1530,6 +1530,7 @@ bool FontVariant::ParseShorthand(
   FontVariantAlternatesParser alternates_parser;
   CSSIdentifierValue* position_value = nullptr;
   CSSIdentifierValue* emoji_value = nullptr;
+  bool first_value = true;
   do {
     FontVariantLigaturesParser::ParseResult ligatures_parse_result =
         ligatures_parser.ConsumeLigature(range);
@@ -1562,6 +1563,7 @@ bool FontVariant::ParseShorthand(
     }
 
     CSSValueID id = range.Peek().Id();
+    bool fail = false;
     switch (id) {
       case CSSValueID::kSmallCaps:
       case CSSValueID::kAllSmallCaps:
@@ -1596,8 +1598,19 @@ bool FontVariant::ParseShorthand(
         emoji_value = css_parsing_utils::ConsumeIdent(range);
         break;
       default:
-        return false;
+        // Random junk at the end is allowed (could be “!important”,
+        // and if it's not, the caller will reject the value for us).
+        fail = true;
+        break;
     }
+    if (fail) {
+      if (first_value) {
+        // Need at least one good value.
+        return false;
+      }
+      break;
+    }
+    first_value = false;
   } while (!range.AtEnd());
 
   css_parsing_utils::AddProperty(
@@ -1668,13 +1681,15 @@ bool FontSynthesis::ParseShorthand(
         CSSPropertyID::kFontSynthesisSmallCaps, CSSPropertyID::kFontSynthesis,
         *CSSIdentifierValue::Create(CSSValueID::kNone), important,
         css_parsing_utils::IsImplicitProperty::kNotImplicit, properties);
-    return range.AtEnd();
+    return true;
   }
 
   CSSValue* font_synthesis_weight = nullptr;
   CSSValue* font_synthesis_style = nullptr;
   CSSValue* font_synthesis_small_caps = nullptr;
   do {
+    CSSParserSavePoint savepoint(range);
+    bool fail = false;
     CSSValueID id = range.ConsumeIncludingWhitespace().Id();
     switch (id) {
       case CSSValueID::kWeight:
@@ -1682,12 +1697,14 @@ bool FontSynthesis::ParseShorthand(
           return false;
         }
         font_synthesis_weight = CSSIdentifierValue::Create(CSSValueID::kAuto);
+        savepoint.Release();
         break;
       case CSSValueID::kStyle:
         if (font_synthesis_style) {
           return false;
         }
         font_synthesis_style = CSSIdentifierValue::Create(CSSValueID::kAuto);
+        savepoint.Release();
         break;
       case CSSValueID::kSmallCaps:
         if (font_synthesis_small_caps) {
@@ -1695,11 +1712,23 @@ bool FontSynthesis::ParseShorthand(
         }
         font_synthesis_small_caps =
             CSSIdentifierValue::Create(CSSValueID::kAuto);
+        savepoint.Release();
         break;
       default:
-        return false;
+        // Random junk at the end is allowed (could be “!important”,
+        // and if it's not, the caller will reject the value for us).
+        fail = true;
+        break;
+    }
+    if (fail) {
+      break;
     }
   } while (!range.AtEnd());
+
+  if (!font_synthesis_weight && !font_synthesis_style &&
+      !font_synthesis_small_caps) {
+    return false;
+  }
 
   css_parsing_utils::AddProperty(
       CSSPropertyID::kFontSynthesisWeight, CSSPropertyID::kFontSynthesis,
@@ -1740,7 +1769,7 @@ bool Gap::ParseShorthand(bool important,
   DCHECK_EQ(shorthandForProperty(CSSPropertyID::kGap).length(), 2u);
   CSSValue* row_gap = css_parsing_utils::ConsumeGapLength(range, context);
   CSSValue* column_gap = css_parsing_utils::ConsumeGapLength(range, context);
-  if (!row_gap || !range.AtEnd()) {
+  if (!row_gap) {
     return false;
   }
   if (!column_gap) {
@@ -1797,9 +1826,6 @@ bool GridArea::ParseShorthand(
         }
       }
     }
-  }
-  if (!range.AtEnd()) {
-    return false;
   }
   if (!column_start_value) {
     column_start_value = row_start_value->IsCustomIdentValue()
@@ -1930,9 +1956,18 @@ bool Grid::ParseShorthand(bool important,
   const CSSValue* template_columns = nullptr;
   const CSSValue* template_areas = nullptr;
 
-  if (css_parsing_utils::ConsumeGridTemplateShorthand(
-          important, range, context, template_rows, template_columns,
-          template_areas)) {
+  // NOTE: The test for range.AtEnd() here is a practical concession;
+  // we should accept any arbitrary junk afterwards, but for cases like
+  // “none / auto-flow 100px”, ConsumeGridTemplateShorthand() will consume
+  // the “none” alone and return success, which is not what we want
+  // (we want to fall back to the part below). So we make a quick fix
+  // to check for either end _or_ !important.
+  const bool ok = css_parsing_utils::ConsumeGridTemplateShorthand(
+      important, range, context, template_rows, template_columns,
+      template_areas);
+  range.ConsumeWhitespace();
+  if (ok && (range.AtEnd() || (range.Peek().GetType() == kDelimiterToken &&
+                               range.Peek().Delimiter() == '!'))) {
     DCHECK(template_rows);
     DCHECK(template_columns);
     DCHECK(template_areas);
@@ -2019,21 +2054,15 @@ bool Grid::ParseShorthand(bool important,
     if (!grid_auto_flow) {
       return false;
     }
-    if (range.AtEnd()) {
+    auto_columns_value = css_parsing_utils::ConsumeGridTrackList(
+        range, context, css_parsing_utils::TrackListType::kGridAuto);
+    if (!auto_columns_value) {
+      // End of stream or parse error; in the latter case,
+      // the caller will clean up since we're not at the end.
       auto_columns_value = GetCSSPropertyGridAutoColumns().InitialValue();
-    } else {
-      auto_columns_value = css_parsing_utils::ConsumeGridTrackList(
-          range, context, css_parsing_utils::TrackListType::kGridAuto);
-      if (!auto_columns_value) {
-        return false;
-      }
     }
     template_columns = GetCSSPropertyGridTemplateColumns().InitialValue();
     auto_rows_value = GetCSSPropertyGridAutoRows().InitialValue();
-  }
-
-  if (!range.AtEnd()) {
-    return false;
   }
 
   // It can only be specified the explicit or the implicit grid properties in a
@@ -2281,8 +2310,11 @@ bool ListStyle::ParseShorthand(
         continue;
       }
     }
-    return false;
+    break;
   } while (!range.AtEnd());
+  if (!none && !list_style_position && !list_style_image && !list_style_type) {
+    return false;
+  }
   if (none) {
     if (!list_style_type) {
       list_style_type = none;
@@ -2428,7 +2460,7 @@ bool Marker::ParseShorthand(
     HeapVector<CSSPropertyValue, 64>& properties) const {
   const CSSValue* marker = css_parsing_utils::ParseLonghand(
       CSSPropertyID::kMarkerStart, CSSPropertyID::kMarker, context, range);
-  if (!marker || !range.AtEnd()) {
+  if (!marker) {
     return false;
   }
 
@@ -2494,7 +2526,7 @@ bool Offset::ParseShorthand(
       return false;
     }
   }
-  if ((!offset_position && !offset_path) || !range.AtEnd()) {
+  if (!offset_position && !offset_path) {
     return false;
   }
 
@@ -2784,23 +2816,24 @@ bool PlaceContent::ParseShorthand(
     return false;
   }
 
-  const CSSValue* justify_content_value = nullptr;
-  if (range.AtEnd()) {
+  const CSSValue* justify_content_value =
+      GetCSSPropertyJustifyContent().ParseSingleValueFromRange(range, context,
+                                                               local_context);
+  if (!justify_content_value) {
     if (is_baseline) {
       justify_content_value =
           MakeGarbageCollected<cssvalue::CSSContentDistributionValue>(
               CSSValueID::kInvalid, CSSValueID::kStart, CSSValueID::kInvalid);
     } else {
+      // Rewind the parser and use the value we just parsed as align-content, as
+      // justify-content, too.
       range = range_copy;
+      justify_content_value =
+          GetCSSPropertyJustifyContent().ParseSingleValueFromRange(
+              range, context, local_context);
     }
   }
   if (!justify_content_value) {
-    justify_content_value =
-        GetCSSPropertyJustifyContent().ParseSingleValueFromRange(range, context,
-                                                                 local_context);
-  }
-
-  if (!justify_content_value || !range.AtEnd()) {
     return false;
   }
 
@@ -2845,15 +2878,21 @@ bool PlaceItems::ParseShorthand(
     return false;
   }
 
-  if (range.AtEnd()) {
-    range = range_copy;
-  }
-
   const CSSValue* justify_items_value =
       GetCSSPropertyJustifyItems().ParseSingleValueFromRange(range, context,
                                                              local_context);
-  if (!justify_items_value || !range.AtEnd()) {
-    return false;
+  if (!justify_items_value) {
+    // End-of-stream or parse error. If it's the former,
+    // we try to to parse what we already parsed as align-items again,
+    // just as justify-items. If it's the latter, the caller will
+    // clean up for us (as we won't end on end-of-stream).
+    justify_items_value =
+        GetCSSPropertyJustifyItems().ParseSingleValueFromRange(
+            range_copy, context, local_context);
+    if (!justify_items_value ||
+        range.RemainingSpan() != range_copy.RemainingSpan()) {
+      return false;
+    }
   }
 
   DCHECK(align_items_value);
@@ -2897,15 +2936,20 @@ bool PlaceSelf::ParseShorthand(
     return false;
   }
 
-  if (range.AtEnd()) {
-    range = range_copy;
-  }
-
   const CSSValue* justify_self_value =
       GetCSSPropertyJustifySelf().ParseSingleValueFromRange(range, context,
                                                             local_context);
-  if (!justify_self_value || !range.AtEnd()) {
-    return false;
+  if (!justify_self_value) {
+    // End-of-stream or parse error. If it's the former,
+    // we try to to parse what we already parsed as align-items again,
+    // just as justify-items. If it's the latter, the caller will
+    // clean up for us (as we won't end on end-of-stream).
+    justify_self_value = GetCSSPropertyJustifySelf().ParseSingleValueFromRange(
+        range_copy, context, local_context);
+    if (!justify_self_value ||
+        range.RemainingSpan() != range_copy.RemainingSpan()) {
+      return false;
+    }
   }
 
   DCHECK(align_self_value);
@@ -2956,7 +3000,7 @@ bool PositionTry::ParseShorthand(
         CSSPropertyID::kPositionTryOptions, CSSPropertyID::kPositionTry,
         *options, important,
         css_parsing_utils::IsImplicitProperty::kNotImplicit, properties);
-    return range.AtEnd();
+    return true;
   }
   return false;
 }
@@ -3200,7 +3244,7 @@ bool ParseTimelineShorthand(CSSPropertyID shorthand_id,
                 properties);
   }
 
-  return range.AtEnd();
+  return true;
 }
 
 static CSSValue* CSSValueForTimelineShorthand(
@@ -3256,7 +3300,7 @@ bool ScrollStart::ParseShorthand(
   AddProperty(scrollStartShorthand().properties()[1]->PropertyID(),
               scrollStartShorthand().id(), *inline_value, important,
               css_parsing_utils::IsImplicitProperty::kNotImplicit, properties);
-  return range.AtEnd();
+  return true;
 }
 
 const CSSValue* ScrollStart::CSSValueFromComputedStyleInternal(
@@ -3298,7 +3342,7 @@ bool ScrollStartTarget::ParseShorthand(
   AddProperty(scrollStartTargetShorthand().properties()[1]->PropertyID(),
               scrollStartTargetShorthand().id(), *inline_value, important,
               css_parsing_utils::IsImplicitProperty::kNotImplicit, properties);
-  return range.AtEnd();
+  return true;
 }
 
 const CSSValue* ScrollStartTarget::CSSValueFromComputedStyleInternal(
@@ -3455,7 +3499,7 @@ bool Transition::ParseShorthand(
         properties);
   }
 
-  return range.AtEnd();
+  return true;
 }
 
 const CSSValue* Transition::CSSValueFromComputedStyleInternal(
@@ -3740,22 +3784,15 @@ bool TextSpacing::ParseShorthand(
   // https://drafts.csswg.org/css-text-4/#text-spacing-property
   //
   // Try `none` first.
-  if (const CSSIdentifierValue* ident =
-          css_parsing_utils::ConsumeIdent<CSSValueID::kNone>(range);
-      ident && range.AtEnd()) {
+  if (css_parsing_utils::ConsumeIdent<CSSValueID::kNone>(range)) {
     autospace = CSSIdentifierValue::Create(CSSValueID::kNoAutospace);
     spacing_trim = CSSIdentifierValue::Create(CSSValueID::kSpaceAll);
-  }
-
-  // Try `<autospace> || <spacing-trim>`.
-  if (!autospace) {
+  } else {
+    // Try `<autospace> || <spacing-trim>`.
     range = original_range;
 
     wtf_size_t num_values = 0;
-    while (!range.AtEnd()) {
-      if (++num_values > 2) {
-        return false;
-      }
+    while (!range.AtEnd() && ++num_values <= 2) {
       if (css_parsing_utils::ConsumeIdent<CSSValueID::kNormal>(range)) {
         // `normal` can be either `text-autospace`, `text-spacing-trim`, or
         // both. Keep parsing without setting the value.
@@ -3769,7 +3806,10 @@ bool TextSpacing::ParseShorthand(
           (spacing_trim = css_parsing_utils::ConsumeSpacingTrim(range))) {
         continue;
       }
-      return false;
+
+      // Parse error, but we must accept whatever junk might be after our own
+      // tokens. Fail only if we didn't parse any useful values.
+      break;
     }
 
     if (!num_values) {
@@ -3869,7 +3909,19 @@ bool WhiteSpace::ParseShorthand(
           range)) {
     // Parse as a pre-defined keyword only if it is at the end. Some keywords
     // can be both a pre-defined keyword or a longhand value.
-    if (range.AtEnd()) {
+    //
+    // TODO(sesse): Figure out some less hacky way of figuring out
+    // whether we are at the end or not. In theory, we are supposed to
+    // accept arbitrary junk after our input, but we are being saved
+    // by the fact that shorthands only need to worry about !important
+    // (and none of our longhands accept anything involving the ! delimiter).
+    bool at_end = range.AtEnd();
+    if (!at_end) {
+      range.ConsumeWhitespace();
+      at_end = range.Peek().GetType() == kDelimiterToken &&
+               range.Peek().Delimiter() == '!';
+    }
+    if (at_end) {
       const EWhiteSpace whitespace =
           CssValueIDToPlatformEnum<EWhiteSpace>(value->GetValueID());
       DCHECK(IsValidWhiteSpace(whitespace));
