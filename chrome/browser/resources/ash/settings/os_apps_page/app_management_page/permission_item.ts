@@ -16,13 +16,13 @@ import {getPermission, getPermissionValueBool, recordAppManagementUserAction} fr
 import {loadTimeData} from 'chrome://resources/js/load_time_data.js';
 import {PolymerElement} from 'chrome://resources/polymer/v3_0/polymer/polymer_bundled.min.js';
 
-import {GeolocationAccessLevel} from '../../os_privacy_page/privacy_hub_geolocation_subpage.js';
-
 import {getTemplate} from './permission_item.html.js';
+import {PrivacyHubMixin} from './privacy_hub_mixin.js';
 import {AppManagementToggleRowElement} from './toggle_row.js';
 import {getPermissionDescriptionString} from './util.js';
 
-const AppManagementPermissionItemElementBase = PrefsMixin(PolymerElement);
+const AppManagementPermissionItemElementBase =
+    PrivacyHubMixin(PrefsMixin(PolymerElement));
 
 export class AppManagementPermissionItemElement extends
     AppManagementPermissionItemElementBase {
@@ -317,38 +317,11 @@ export class AppManagementPermissionItemElement extends
     }
   }
 
-  private isSensorBlocked_(permissionType: PermissionTypeIndex|
-                           undefined): boolean {
-    if (permissionType === undefined || !this.prefs) {
-      return false;
-    }
-
-    switch (PermissionType[permissionType]) {
-      case PermissionType.kCamera:
-        return !this.getPref('ash.user.camera_allowed').value;
-      case PermissionType.kLocation:
-        return loadTimeData.getBoolean(
-                   'privacyHubLocationAccessControlEnabled') &&
-            this.getPref<GeolocationAccessLevel>(
-                    'ash.user.geolocation_access_level')
-                .value !== GeolocationAccessLevel.ALLOWED;
-      case PermissionType.kMicrophone:
-        return !this.getPref('ash.user.microphone_allowed').value;
-      case PermissionType.kContacts:
-      case PermissionType.kStorage:
-      case PermissionType.kNotifications:
-      case PermissionType.kPrinting:
-        return false;
-      default:
-        assertNotReached();
-    }
-  }
-
   private getPermissionDescriptionString_(
       app: App|undefined,
       permissionType: PermissionTypeIndex|undefined): string {
     return getPermissionDescriptionString(
-        app, permissionType, this.isSensorBlocked_(permissionType));
+        app, permissionType, this.isSensorBlocked(permissionType));
   }
 
   private launchAllowSensorAccessDialog_(e: CustomEvent): void {

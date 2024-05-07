@@ -23,13 +23,27 @@
         find permission elements.
       -->
       <div id="label" class="permission-name">[[permissionLabel]]</div>
-      <div id="description" class="permission-state secondary-text">
-        [[getPermissionDescriptionString_(app, permissionType)]]
-      </div>
+      <localized-link
+          id="permissionDescription"
+          class="permission-state secondary-text"
+          localized-string="[[getPermissionDescriptionString_(app,
+            permissionType, prefs.ash.user.camera_allowed.value,
+            prefs.ash.user.microphone_allowed.value,
+            prefs.ash.user.geolocation_access_level.value)]]"
+          on-link-clicked="launchAllowSensorAccessDialog_">
+      </localized-link>
     </div>
   </div>
   <template is="dom-if" if="[[isManaged_(app, permissionType)]]">
     <cr-policy-indicator indicator-type="devicePolicy">
     </cr-policy-indicator>
+  </template>
+  <template is="dom-if" if="[[showAllowSensorAccessDialog_]]" restamp>
+    <settings-privacy-hub-allow-sensor-access-dialog
+        id="dialog"
+        prefs="{{prefs}}"
+        permission-type="[[permissionType]]"
+        on-close="onAllowSensorAccessDialogClose_">
+    </settings-privacy-hub-allow-sensor-access-dialog>
   </template>
 </template>

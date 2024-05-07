@@ -219,6 +219,7 @@ export {OsAboutPageElement} from './os_about_page/os_about_page.js';
 export {AndroidAppsBrowserProxy, AndroidAppsBrowserProxyImpl} from './os_apps_page/android_apps_browser_proxy.js';
 export {AppManagementFileHandlingItemElement} from './os_apps_page/app_management_page/file_handling_item.js';
 export {PluginVmBrowserProxy, PluginVmBrowserProxyImpl} from './os_apps_page/app_management_page/plugin_vm_page/plugin_vm_browser_proxy.js';
+export {AppManagementReadOnlyPermissionItemElement} from './os_apps_page/app_management_page/read_only_permission_item.js';
 export {AppManagementSupportedLinksItemElement} from './os_apps_page/app_management_page/supported_links_item.js';
 export {AppManagementToggleRowElement} from './os_apps_page/app_management_page/toggle_row.js';
 export {setAppNotificationProviderForTesting} from './os_apps_page/app_notifications_page/mojo_interface_provider.js';

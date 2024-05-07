@@ -5,17 +5,35 @@
 import 'chrome://os-settings/lazy_load.js';
 
 import {AppManagementArcDetailViewElement} from 'chrome://os-settings/lazy_load.js';
-import {AppManagementStore, CrToggleElement, updateSelectedAppId} from 'chrome://os-settings/os_settings.js';
+import {AppManagementReadOnlyPermissionItemElement, AppManagementStore, CrButtonElement, CrToggleElement, GeolocationAccessLevel, LocalizedLinkElement, updateSelectedAppId} from 'chrome://os-settings/os_settings.js';
 import {AppType, PermissionType, TriState} from 'chrome://resources/cr_components/app_management/app_management.mojom-webui.js';
 import {PermissionTypeIndex} from 'chrome://resources/cr_components/app_management/permission_constants.js';
 import {createBoolPermission, createTriStatePermission} from 'chrome://resources/cr_components/app_management/permission_util.js';
 import {getPermissionValueBool} from 'chrome://resources/cr_components/app_management/util.js';
 import {loadTimeData} from 'chrome://resources/js/load_time_data.js';
-import {assertEquals, assertFalse, assertTrue} from 'chrome://webui-test/chai_assert.js';
-import {flushTasks} from 'chrome://webui-test/polymer_test_util.js';
+import {assertEquals, assertFalse, assertNull, assertTrue} from 'chrome://webui-test/chai_assert.js';
+import {flushTasks, waitAfterNextRender} from 'chrome://webui-test/polymer_test_util.js';
 
 import {FakePageHandler} from '../../app_management/fake_page_handler.js';
 import {getPermissionCrToggleByType, getPermissionItemByType, isHidden, isHiddenByDomIf, replaceBody, replaceStore, setupFakeHandler} from '../../app_management/test_util.js';
+
+function getFakePrefs() {
+  return {
+    'ash': {
+      'user': {
+        'camera_allowed': {
+          value: true,
+        },
+        'microphone_allowed': {
+          value: true,
+        },
+        'geolocation_access_level': {
+          value: GeolocationAccessLevel.ALLOWED,
+        },
+      },
+    },
+  };
+}
 
 // TODO(b/270728282) - remove "as" cast once getPermissionCrToggleByType()
 // becomes a TS function.
@@ -66,6 +84,7 @@ suite('<app-management-arc-detail-view>', () => {
 
     arcPermissionView =
         document.createElement('app-management-arc-detail-view');
+    arcPermissionView.prefs = getFakePrefs();
     replaceBody(arcPermissionView);
     await flushTasks();
   });
@@ -189,6 +208,12 @@ suite('<app-management-arc-detail-view>', () => {
     });
   });
 
+  function getPermissionDescriptionString(permissionItem: Element): string {
+    return permissionItem.shadowRoot!
+        .querySelector<LocalizedLinkElement>(
+            '#permissionDescription')!.localizedString.toString();
+  }
+
   suite('Read-only permissions', () => {
     setup(async () => {
       loadTimeData.overrideValues(
@@ -197,6 +222,7 @@ suite('<app-management-arc-detail-view>', () => {
       // Re-render with the new loadTimeData.
       arcPermissionView =
           document.createElement('app-management-arc-detail-view');
+      arcPermissionView.prefs = getFakePrefs();
       replaceBody(arcPermissionView);
       await flushTasks();
     });
@@ -215,9 +241,7 @@ suite('<app-management-arc-detail-view>', () => {
           'app-management-read-only-permission-item',
           locationItem.tagName.toLowerCase());
 
-      let description = locationItem.shadowRoot!.querySelector('#description');
-      assertTrue(!!description);
-      assertEquals('Allowed', description.textContent!.trim());
+      assertEquals('Allowed', getPermissionDescriptionString(locationItem));
 
       // Simulate the permission being changed by the OS, and verify that the
       // description text updates.
@@ -228,9 +252,7 @@ suite('<app-management-arc-detail-view>', () => {
               /*is_managed=*/ false));
       await flushTasks();
 
-      description = locationItem.shadowRoot!.querySelector('#description');
-      assertTrue(!!description);
-      assertEquals('Denied', description.textContent!.trim());
+      assertEquals('Denied', getPermissionDescriptionString(locationItem));
     });
 
     test('Tri-state permission display', async () => {
@@ -244,9 +266,7 @@ suite('<app-management-arc-detail-view>', () => {
               /*is_managed=*/ false));
       await flushTasks();
 
-      let description = locationItem.shadowRoot!.querySelector('#description');
-      assertTrue(!!description);
-      assertEquals('Allowed', description.textContent!.trim());
+      assertEquals('Allowed', getPermissionDescriptionString(locationItem));
 
       fakeHandler.setPermission(
           arcPermissionView.get('app_').id,
@@ -255,9 +275,8 @@ suite('<app-management-arc-detail-view>', () => {
               /*is_managed=*/ false));
       await flushTasks();
 
-      description = locationItem.shadowRoot!.querySelector('#description');
-      assertTrue(!!description);
-      assertEquals('Ask every time', description.textContent!.trim());
+      assertEquals(
+          'Ask every time', getPermissionDescriptionString(locationItem));
 
       fakeHandler.setPermission(
           arcPermissionView.get('app_').id,
@@ -266,11 +285,8 @@ suite('<app-management-arc-detail-view>', () => {
               /*is_managed=*/ false));
       await flushTasks();
 
-      description = locationItem.shadowRoot!.querySelector('#description');
-      assertTrue(!!description);
-      assertEquals('Denied', description.textContent!.trim());
+      assertEquals('Denied', getPermissionDescriptionString(locationItem));
     });
-
 
     test('Permission display with detail', async () => {
       const permission = createBoolPermission(
@@ -284,18 +300,16 @@ suite('<app-management-arc-detail-view>', () => {
       const locationItem =
           getPermissionItemByType(arcPermissionView, 'kLocation');
 
-      let description = locationItem.shadowRoot!.querySelector('#description');
-      assertTrue(!!description);
-      assertTrue(description.textContent!.includes('While in use'));
+      assertTrue(getPermissionDescriptionString(locationItem)
+                     .includes('While in use'));
 
       permission.value.boolValue = false;
 
       fakeHandler.setPermission(arcPermissionView.get('app_').id, permission);
       await flushTasks();
 
-      description = locationItem.shadowRoot!.querySelector('#description');
-      assertTrue(!!description);
-      assertFalse(description.textContent!.includes('While in use'));
+      assertFalse(getPermissionDescriptionString(locationItem)
+                      .includes('While in use'));
     });
 
     test('Managed permission has policy indicator', async () => {
@@ -326,4 +340,140 @@ suite('<app-management-arc-detail-view>', () => {
           !!locationItem.shadowRoot!.querySelector('cr-policy-indicator'));
     });
   });
+
+  suite(
+      'System wide sensor access control from read-only permission items',
+      () => {
+        setup(async () => {
+          loadTimeData.overrideValues({
+            'appManagementArcReadOnlyPermissions': true,
+            'privacyHubAppPermissionsV2Enabled': true,
+            'privacyHubLocationAccessControlEnabled': true,
+          });
+
+          // Re-render with the new loadTimeData.
+          arcPermissionView =
+              document.createElement('app-management-arc-detail-view');
+          arcPermissionView.prefs = getFakePrefs();
+          replaceBody(arcPermissionView);
+          await flushTasks();
+        });
+
+        teardown(() => {
+          arcPermissionView.remove();
+          loadTimeData.overrideValues({
+            'appManagementArcReadOnlyPermissions': false,
+            'privacyHubAppPermissionsV2Enabled': false,
+            'privacyHubLocationAccessControlEnabled': false,
+          });
+        });
+
+        async function setPermission(value: TriState): Promise<void> {
+          fakeHandler.setPermission(
+              arcPermissionView.get('app_').id,
+              createTriStatePermission(
+                  PermissionType.kLocation, value, /*is_managed=*/ false));
+          await flushTasks();
+        }
+
+        function getDialogElement(permissionItem: HTMLElement): HTMLElement|
+            null {
+          return permissionItem.shadowRoot!.querySelector<HTMLElement>(
+              '#dialog');
+        }
+
+        async function openDialog(permissionItem: HTMLElement): Promise<void> {
+          const permissionDescription =
+              permissionItem.shadowRoot!.querySelector<LocalizedLinkElement>(
+                  '#permissionDescription');
+          assertTrue(!!permissionDescription);
+          const link = permissionDescription.shadowRoot!.querySelector('a');
+          assertTrue(!!link);
+          link.click();
+          await flushTasks();
+        }
+
+        test('Open dialog and close using cancel button', async () => {
+          const locationItem =
+              arcPermissionView.shadowRoot!
+                  .querySelector<AppManagementReadOnlyPermissionItemElement>(
+                      '[permission-type=kLocation]');
+          assertTrue(!!locationItem);
+
+          await setPermission(TriState.kAllow);
+
+          assertEquals(
+              loadTimeData.getString('appManagementPermissionAllowed'),
+              getPermissionDescriptionString(locationItem));
+
+          arcPermissionView.set(
+              'prefs.ash.user.geolocation_access_level.value',
+              GeolocationAccessLevel.DISALLOWED);
+
+          assertEquals(
+              loadTimeData.getString(
+                  'permissionAllowedTextWithTurnOnLocationAccessButton'),
+              getPermissionDescriptionString(locationItem));
+
+          // Dialog not visible initially.
+          assertNull(getDialogElement(locationItem));
+
+          await openDialog(locationItem);
+
+          // Dialog is visible.
+          assertTrue(!!getDialogElement(locationItem));
+
+          // Close dialog.
+          const cancelButton =
+              getDialogElement(locationItem)!.shadowRoot!
+                  .querySelector<CrButtonElement>('#cancelButton');
+          assertTrue(!!cancelButton);
+          cancelButton.click();
+          await waitAfterNextRender(locationItem);
+
+          // Dialog not visible anymore.
+          assertNull(getDialogElement(locationItem));
+        });
+
+        test('Open dialog and turn on sensor access', async () => {
+          const locationItem =
+              arcPermissionView.shadowRoot!
+                  .querySelector<AppManagementReadOnlyPermissionItemElement>(
+                      '[permission-type=kLocation]');
+          assertTrue(!!locationItem);
+
+          await setPermission(TriState.kAllow);
+          locationItem.set(
+              'prefs.ash.user.geolocation_access_level.value',
+              GeolocationAccessLevel.DISALLOWED);
+
+          assertEquals(
+              loadTimeData.getString(
+                  'permissionAllowedTextWithTurnOnLocationAccessButton'),
+              getPermissionDescriptionString(locationItem));
+
+          // Dialog not visible initially.
+          assertNull(getDialogElement(locationItem));
+
+          await openDialog(locationItem);
+
+          // Dialog is visible.
+          assertTrue(!!getDialogElement(locationItem));
+
+          // Turn on system sensor access.
+          const confirmButton =
+              getDialogElement(locationItem)!.shadowRoot!
+                  .querySelector<CrButtonElement>('#confirmButton');
+          assertTrue(!!confirmButton);
+          confirmButton.click();
+          await waitAfterNextRender(locationItem);
+
+          // Sensor access is turned ON.
+          assertNull(getDialogElement(locationItem));
+          assertEquals(
+              GeolocationAccessLevel.ALLOWED,
+              locationItem.get('prefs.ash.user.geolocation_access_level')
+                  .value);
+        });
+      });
 });
