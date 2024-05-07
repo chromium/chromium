@@ -3394,6 +3394,76 @@ IN_PROC_BROWSER_TEST_P(PDFExtensionIncognitoTest, IncognitoIframe) {
                   ->WaitUntilPdfLoadedInFirstChild());
 }
 
+class PDFExtensionSameSiteProcessTest : public PDFExtensionTest {
+ public:
+  PDFExtensionSameSiteProcessTest() = default;
+  ~PDFExtensionSameSiteProcessTest() override = default;
+
+ protected:
+  // Same as `PDFExtensionTestBase::LoadPdfGetExtensionHost()`, but with the PDF
+  // content host instead of the PDF extension host.
+  content::RenderFrameHost* LoadPdfGetContentHost(const GURL& url) {
+    if (!LoadPdf(url)) {
+      ADD_FAILURE() << "Failed to load PDF";
+      return nullptr;
+    }
+
+    return pdf_extension_test_util::GetOnlyPdfPluginFrame(
+        GetActiveWebContents());
+  }
+
+  // Same as `PDFExtensionTestBase::LoadPdfInNewTabGetExtensionHost()`, but with
+  // the PDF content host instead of the PDF extension host.
+  content::RenderFrameHost* LoadPdfInNewTabGetContentHost(const GURL& url) {
+    if (!LoadPdfInNewTab(url)) {
+      ADD_FAILURE() << "Failed to load PDF";
+      return nullptr;
+    }
+
+    return pdf_extension_test_util::GetOnlyPdfPluginFrame(
+        GetActiveWebContents());
+  }
+};
+
+// Test that multiple tabs containing same-site PDFs don't share a process for
+// the PDF content frame when under the process limit.
+IN_PROC_BROWSER_TEST_P(PDFExtensionSameSiteProcessTest,
+                       SameSitePdfContentFramesInSeparateProcesses) {
+  const GURL same_pdf_url = embedded_test_server()->GetURL("/pdf/test.pdf");
+
+  content::RenderFrameHost* content_host1 = LoadPdfGetContentHost(same_pdf_url);
+  ASSERT_TRUE(content_host1);
+
+  content::RenderFrameHost* content_host2 =
+      LoadPdfInNewTabGetContentHost(same_pdf_url);
+  ASSERT_TRUE(content_host2);
+
+  // The content frames should be in separate processes.
+  EXPECT_NE(content_host1, content_host2);
+  EXPECT_NE(content_host1->GetProcess(), content_host2->GetProcess());
+}
+
+// Test that multiple tabs containing same-site PDFs share a process for the PDF
+// content frame when at the process limit.
+IN_PROC_BROWSER_TEST_P(PDFExtensionSameSiteProcessTest,
+                       SameSitePdfContentFramesInSameProcess) {
+  // Set the process limit to 1.
+  content::RenderProcessHost::SetMaxRendererProcessCount(1);
+
+  const GURL same_pdf_url = embedded_test_server()->GetURL("/pdf/test.pdf");
+
+  content::RenderFrameHost* content_host1 = LoadPdfGetContentHost(same_pdf_url);
+  ASSERT_TRUE(content_host1);
+
+  content::RenderFrameHost* content_host2 =
+      LoadPdfInNewTabGetContentHost(same_pdf_url);
+  ASSERT_TRUE(content_host2);
+
+  // The content frames should be in the same process.
+  EXPECT_NE(content_host1, content_host2);
+  EXPECT_EQ(content_host1->GetProcess(), content_host2->GetProcess());
+}
+
 // PDF extension tests for the OOPIF PDF viewer.
 class PDFExtensionOopifTest : public PDFExtensionTestWithoutOopifOverride {
  public:
@@ -3893,3 +3963,4 @@ INSTANTIATE_FEATURE_OVERRIDE_TEST_SUITE(PDFExtensionSubmitFormTest);
 INSTANTIATE_FEATURE_OVERRIDE_TEST_SUITE(
     PDFExtensionPrerenderAndFencedFrameTest);
 INSTANTIATE_FEATURE_OVERRIDE_TEST_SUITE(PDFExtensionIncognitoTest);
+INSTANTIATE_FEATURE_OVERRIDE_TEST_SUITE(PDFExtensionSameSiteProcessTest);
