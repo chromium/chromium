@@ -193,22 +193,22 @@ class ServiceWorkerContainerHostTest : public testing::Test {
   base::WeakPtr<ServiceWorkerClient> CreateContainerHostWithInsecureParentFrame(
       const GURL& document_url) {
     remote_endpoints_.emplace_back();
-    base::WeakPtr<ServiceWorkerClient> container_host =
+    base::WeakPtr<ServiceWorkerClient> service_worker_client =
         CreateContainerHostForWindow(
             GlobalRenderFrameHostId(helper_->mock_render_process_id(),
                                     /*mock frame_routing_id=*/1),
             /*is_parent_frame_secure=*/false, helper_->context()->AsWeakPtr(),
             &remote_endpoints_.back());
-    container_host->UpdateUrls(
+    service_worker_client->UpdateUrls(
         document_url, url::Origin::Create(document_url),
         blink::StorageKey::CreateFirstParty(url::Origin::Create(document_url)));
-    return container_host;
+    return service_worker_client;
   }
 
-  void FinishNavigation(ServiceWorkerClient* container_host) {
+  void FinishNavigation(ServiceWorkerClient* service_worker_client) {
     // In production code, the loader/request handler does this.
     const GURL url("https://www.example.com/page");
-    container_host->UpdateUrls(
+    service_worker_client->UpdateUrls(
         url, url::Origin::Create(url),
         blink::StorageKey::CreateFirstParty(url::Origin::Create(url)));
 
@@ -219,13 +219,13 @@ class ServiceWorkerContainerHostTest : public testing::Test {
 
     // In production code this is called from NavigationRequest in the browser
     // process right before navigation commit.
-    container_host->OnBeginNavigationCommit(
+    service_worker_client->OnBeginNavigationCommit(
         GlobalRenderFrameHostId(helper_->mock_render_process_id(),
                                 1 /* route_id */),
         PolicyContainerPolicies(), std::move(reporter),
         ukm::UkmRecorder::GetNewSourceID());
     // After the navigation commit, it is ready to call the container's methods.
-    container_host->SetContainerReady();
+    service_worker_client->SetContainerReady();
   }
 
   blink::mojom::ServiceWorkerErrorType Register(
@@ -294,13 +294,14 @@ class ServiceWorkerContainerHostTest : public testing::Test {
 
   void OnMojoError(const std::string& error) { bad_messages_.push_back(error); }
 
-  bool CanFindClientContainerHost(ServiceWorkerClient* container_host) {
+  bool CanFindClientContainerHost(ServiceWorkerClient* service_worker_client) {
     if (context_) {
       for (auto it = context_->GetServiceWorkerClients(
-               container_host->key(), false /* include_reserved_clients */,
+               service_worker_client->key(),
+               false /* include_reserved_clients */,
                false /* include_back_forward_cached_clients */);
            !it.IsAtEnd(); ++it) {
-        if (container_host == &*it) {
+        if (service_worker_client == &*it) {
           return true;
         }
       }
@@ -318,15 +319,16 @@ class ServiceWorkerContainerHostTest : public testing::Test {
     EXPECT_FALSE(version->update_timer_.IsRunning());
   }
 
-  bool HasVersionToUpdate(ServiceWorkerClient* container_host) {
-    return !container_host->versions_to_update_.empty();
+  bool HasVersionToUpdate(ServiceWorkerClient* service_worker_client) {
+    return !service_worker_client->versions_to_update_.empty();
   }
 
   blink::StorageKey GetCorrectStorageKeyForWebSecurityState(
-      ServiceWorkerClient* container_host,
+      ServiceWorkerClient* service_worker_client,
       const GURL& url) const {
     return service_worker_security_utils::
-        GetCorrectStorageKeyForWebSecurityState(container_host->key(), url);
+        GetCorrectStorageKeyForWebSecurityState(service_worker_client->key(),
+                                                url);
   }
 
   void TestReservedClientsAreNotExposed(ServiceWorkerClientInfo client_info,
@@ -355,16 +357,16 @@ class ServiceWorkerContainerHostTest : public testing::Test {
       const GURL& document_url,
       const std::optional<url::Origin>& top_frame_origin,
       ServiceWorkerRemoteContainerEndpoint* remote_endpoint) {
-    base::WeakPtr<ServiceWorkerClient> container_host =
+    base::WeakPtr<ServiceWorkerClient> service_worker_client =
         CreateContainerHostForWindow(
             GlobalRenderFrameHostId(helper_->mock_render_process_id(),
                                     /*mock frame_routing_id=*/1),
             /*is_parent_frame_secure=*/true, helper_->context()->AsWeakPtr(),
             remote_endpoint);
-    container_host->UpdateUrls(
+    service_worker_client->UpdateUrls(
         document_url, top_frame_origin,
         blink::StorageKey::CreateFirstParty(url::Origin::Create(document_url)));
-    return container_host;
+    return service_worker_client;
   }
 
   url::ScopedSchemeRegistryForTests scoped_registry_;
@@ -388,66 +390,66 @@ class ServiceWorkerContainerHostTestWithPlzDedicatedWorker
 };
 
 TEST_F(ServiceWorkerContainerHostTest, MatchRegistration) {
-  base::WeakPtr<ServiceWorkerClient> container_host =
+  base::WeakPtr<ServiceWorkerClient> service_worker_client =
       CreateContainerHost(GURL("https://www.example.com/example1.html"));
 
   // Match registration should return the longest matching one.
-  ASSERT_EQ(registration2_, container_host->MatchRegistration());
-  container_host->RemoveMatchingRegistration(registration2_.get());
-  ASSERT_EQ(registration1_, container_host->MatchRegistration());
+  ASSERT_EQ(registration2_, service_worker_client->MatchRegistration());
+  service_worker_client->RemoveMatchingRegistration(registration2_.get());
+  ASSERT_EQ(registration1_, service_worker_client->MatchRegistration());
 
   // Should return nullptr after removing all matching registrations.
-  container_host->RemoveMatchingRegistration(registration1_.get());
-  ASSERT_EQ(nullptr, container_host->MatchRegistration());
+  service_worker_client->RemoveMatchingRegistration(registration1_.get());
+  ASSERT_EQ(nullptr, service_worker_client->MatchRegistration());
 
   // UpdateUrls sets all of matching registrations
-  container_host->UpdateUrls(
+  service_worker_client->UpdateUrls(
       GURL("https://www.example.com/example1"),
       url::Origin::Create(GURL("https://www.example.com/example1")),
       blink::StorageKey::CreateFromStringForTesting(
           "https://www.example.com/example1"));
-  ASSERT_EQ(registration2_, container_host->MatchRegistration());
-  container_host->RemoveMatchingRegistration(registration2_.get());
-  ASSERT_EQ(registration1_, container_host->MatchRegistration());
+  ASSERT_EQ(registration2_, service_worker_client->MatchRegistration());
+  service_worker_client->RemoveMatchingRegistration(registration2_.get());
+  ASSERT_EQ(registration1_, service_worker_client->MatchRegistration());
 
   // UpdateUrls with another origin also updates matching registrations
-  container_host->UpdateUrls(
+  service_worker_client->UpdateUrls(
       GURL("https://other.example.com/example"),
       url::Origin::Create(GURL("https://other.example.com/example")),
       blink::StorageKey::CreateFromStringForTesting(
           "https://other.example.com/example1"));
-  ASSERT_EQ(registration3_, container_host->MatchRegistration());
-  container_host->RemoveMatchingRegistration(registration3_.get());
-  ASSERT_EQ(nullptr, container_host->MatchRegistration());
+  ASSERT_EQ(registration3_, service_worker_client->MatchRegistration());
+  service_worker_client->RemoveMatchingRegistration(registration3_.get());
+  ASSERT_EQ(nullptr, service_worker_client->MatchRegistration());
 }
 
 TEST_F(ServiceWorkerContainerHostTest, ContextSecurity) {
-  base::WeakPtr<ServiceWorkerClient> container_host_secure_parent =
+  base::WeakPtr<ServiceWorkerClient> service_worker_client_secure_parent =
       CreateContainerHost(GURL("https://www.example.com/example1.html"));
-  base::WeakPtr<ServiceWorkerClient> container_host_insecure_parent =
+  base::WeakPtr<ServiceWorkerClient> service_worker_client_insecure_parent =
       CreateContainerHostWithInsecureParentFrame(
           GURL("https://www.example.com/example1.html"));
 
   // Insecure document URL.
-  container_host_secure_parent->UpdateUrls(
+  service_worker_client_secure_parent->UpdateUrls(
       GURL("http://host"), url::Origin::Create(GURL("http://host")),
       blink::StorageKey::CreateFromStringForTesting("http://host"));
-  EXPECT_FALSE(
-      container_host_secure_parent->IsEligibleForServiceWorkerController());
+  EXPECT_FALSE(service_worker_client_secure_parent
+                   ->IsEligibleForServiceWorkerController());
 
   // Insecure parent frame.
-  container_host_insecure_parent->UpdateUrls(
+  service_worker_client_insecure_parent->UpdateUrls(
       GURL("https://host"), url::Origin::Create(GURL("https://host")),
       blink::StorageKey::CreateFromStringForTesting("https://host"));
-  EXPECT_FALSE(
-      container_host_insecure_parent->IsEligibleForServiceWorkerController());
+  EXPECT_FALSE(service_worker_client_insecure_parent
+                   ->IsEligibleForServiceWorkerController());
 
   // Secure URL and parent frame.
-  container_host_secure_parent->UpdateUrls(
+  service_worker_client_secure_parent->UpdateUrls(
       GURL("https://host"), url::Origin::Create(GURL("https://host")),
       blink::StorageKey::CreateFromStringForTesting("https://host"));
-  EXPECT_TRUE(
-      container_host_secure_parent->IsEligibleForServiceWorkerController());
+  EXPECT_TRUE(service_worker_client_secure_parent
+                  ->IsEligibleForServiceWorkerController());
 
   // Exceptional service worker scheme.
   GURL url(std::string(kServiceWorkerScheme) + "://host");
@@ -455,67 +457,71 @@ TEST_F(ServiceWorkerContainerHostTest, ContextSecurity) {
   EXPECT_TRUE(url.is_valid());
   EXPECT_FALSE(network::IsUrlPotentiallyTrustworthy(url));
   EXPECT_TRUE(OriginCanAccessServiceWorkers(url));
-  container_host_secure_parent->UpdateUrls(
+  service_worker_client_secure_parent->UpdateUrls(
       url, origin, blink::StorageKey::CreateFirstParty(origin));
-  EXPECT_TRUE(
-      container_host_secure_parent->IsEligibleForServiceWorkerController());
+  EXPECT_TRUE(service_worker_client_secure_parent
+                  ->IsEligibleForServiceWorkerController());
 
   // Exceptional service worker scheme with insecure parent frame.
-  container_host_insecure_parent->UpdateUrls(
+  service_worker_client_insecure_parent->UpdateUrls(
       url, origin, blink::StorageKey::CreateFirstParty(origin));
-  EXPECT_FALSE(
-      container_host_insecure_parent->IsEligibleForServiceWorkerController());
+  EXPECT_FALSE(service_worker_client_insecure_parent
+                   ->IsEligibleForServiceWorkerController());
 }
 
 TEST_F(ServiceWorkerContainerHostTest, UpdateUrls_SameOriginRedirect) {
   const GURL url1("https://origin1.example.com/page1.html");
   const GURL url2("https://origin1.example.com/page2.html");
 
-  base::WeakPtr<ServiceWorkerClient> container_host = CreateContainerHost(url1);
-  const std::string uuid1 = container_host->client_uuid();
-  EXPECT_EQ(url1, container_host->url());
-  EXPECT_TRUE(
-      service_worker_security_utils::site_for_cookies(container_host->key())
-          .IsEquivalent(net::SiteForCookies::FromUrl(url1)));
+  base::WeakPtr<ServiceWorkerClient> service_worker_client =
+      CreateContainerHost(url1);
+  const std::string uuid1 = service_worker_client->client_uuid();
+  EXPECT_EQ(url1, service_worker_client->url());
+  EXPECT_TRUE(service_worker_security_utils::site_for_cookies(
+                  service_worker_client->key())
+                  .IsEquivalent(net::SiteForCookies::FromUrl(url1)));
 
-  container_host->UpdateUrls(
+  service_worker_client->UpdateUrls(
       url2, url::Origin::Create(url2),
       blink::StorageKey::CreateFirstParty(url::Origin::Create(url2)));
-  EXPECT_EQ(url2, container_host->url());
-  EXPECT_TRUE(
-      service_worker_security_utils::site_for_cookies(container_host->key())
-          .IsEquivalent(net::SiteForCookies::FromUrl(url2)));
-  EXPECT_EQ(uuid1, container_host->client_uuid());
+  EXPECT_EQ(url2, service_worker_client->url());
+  EXPECT_TRUE(service_worker_security_utils::site_for_cookies(
+                  service_worker_client->key())
+                  .IsEquivalent(net::SiteForCookies::FromUrl(url2)));
+  EXPECT_EQ(uuid1, service_worker_client->client_uuid());
 
   ASSERT_TRUE(context_);
-  EXPECT_EQ(container_host.get(), context_->GetContainerHostByClientID(
-                                      container_host->client_uuid()));
+  EXPECT_EQ(service_worker_client.get(),
+            context_->GetContainerHostByClientID(
+                service_worker_client->client_uuid()));
 }
 
 TEST_F(ServiceWorkerContainerHostTest, UpdateUrls_CrossOriginRedirect) {
   const GURL url1("https://origin1.example.com/page1.html");
   const GURL url2("https://origin2.example.com/page2.html");
 
-  base::WeakPtr<ServiceWorkerClient> container_host = CreateContainerHost(url1);
-  const std::string uuid1 = container_host->client_uuid();
-  EXPECT_EQ(url1, container_host->url());
-  EXPECT_TRUE(
-      service_worker_security_utils::site_for_cookies(container_host->key())
-          .IsEquivalent(net::SiteForCookies::FromUrl(url1)));
+  base::WeakPtr<ServiceWorkerClient> service_worker_client =
+      CreateContainerHost(url1);
+  const std::string uuid1 = service_worker_client->client_uuid();
+  EXPECT_EQ(url1, service_worker_client->url());
+  EXPECT_TRUE(service_worker_security_utils::site_for_cookies(
+                  service_worker_client->key())
+                  .IsEquivalent(net::SiteForCookies::FromUrl(url1)));
 
-  container_host->UpdateUrls(
+  service_worker_client->UpdateUrls(
       url2, url::Origin::Create(url2),
       blink::StorageKey::CreateFirstParty(url::Origin::Create(url2)));
-  EXPECT_EQ(url2, container_host->url());
-  EXPECT_TRUE(
-      service_worker_security_utils::site_for_cookies(container_host->key())
-          .IsEquivalent(net::SiteForCookies::FromUrl(url2)));
-  EXPECT_NE(uuid1, container_host->client_uuid());
+  EXPECT_EQ(url2, service_worker_client->url());
+  EXPECT_TRUE(service_worker_security_utils::site_for_cookies(
+                  service_worker_client->key())
+                  .IsEquivalent(net::SiteForCookies::FromUrl(url2)));
+  EXPECT_NE(uuid1, service_worker_client->client_uuid());
 
   ASSERT_TRUE(context_);
   EXPECT_FALSE(context_->GetContainerHostByClientID(uuid1));
-  EXPECT_EQ(container_host.get(), context_->GetContainerHostByClientID(
-                                      container_host->client_uuid()));
+  EXPECT_EQ(service_worker_client.get(),
+            context_->GetContainerHostByClientID(
+                service_worker_client->client_uuid()));
 }
 
 TEST_F(ServiceWorkerContainerHostTest, UpdateUrls_CorrectStorageKey) {
@@ -526,11 +532,12 @@ TEST_F(ServiceWorkerContainerHostTest, UpdateUrls_CorrectStorageKey) {
   const blink::StorageKey key2 =
       blink::StorageKey::CreateFirstParty(url::Origin::Create(url2));
 
-  base::WeakPtr<ServiceWorkerClient> container_host = CreateContainerHost(url1);
-  EXPECT_EQ(key1, container_host->key());
+  base::WeakPtr<ServiceWorkerClient> service_worker_client =
+      CreateContainerHost(url1);
+  EXPECT_EQ(key1, service_worker_client->key());
 
-  container_host->UpdateUrls(url2, url::Origin::Create(url2), key2);
-  EXPECT_EQ(key2, container_host->key());
+  service_worker_client->UpdateUrls(url2, url::Origin::Create(url2), key2);
+  EXPECT_EQ(key2, service_worker_client->key());
 }
 
 TEST_F(ServiceWorkerContainerHostTest, ForServiceWorker_CorrectStorageKey) {
@@ -574,41 +581,46 @@ TEST_F(ServiceWorkerContainerHostTest,
   const blink::StorageKey key3 =
       blink::StorageKey::CreateFirstParty(url::Origin::Create(url3));
 
-  base::WeakPtr<ServiceWorkerClient> container_host = CreateContainerHost(url1);
+  base::WeakPtr<ServiceWorkerClient> service_worker_client =
+      CreateContainerHost(url1);
 
-  EXPECT_EQ(container_host->key(), key1);
+  EXPECT_EQ(service_worker_client->key(), key1);
 
-  EXPECT_EQ(container_host->key(), GetCorrectStorageKeyForWebSecurityState(
-                                       container_host.get(), url1));
-  EXPECT_EQ(container_host->key(), GetCorrectStorageKeyForWebSecurityState(
-                                       container_host.get(), url2));
-  EXPECT_EQ(container_host->key(), GetCorrectStorageKeyForWebSecurityState(
-                                       container_host.get(), url3));
+  EXPECT_EQ(service_worker_client->key(),
+            GetCorrectStorageKeyForWebSecurityState(service_worker_client.get(),
+                                                    url1));
+  EXPECT_EQ(service_worker_client->key(),
+            GetCorrectStorageKeyForWebSecurityState(service_worker_client.get(),
+                                                    url2));
+  EXPECT_EQ(service_worker_client->key(),
+            GetCorrectStorageKeyForWebSecurityState(service_worker_client.get(),
+                                                    url3));
 
   // With disable-web-security we should get a new key for the cross-origin
   // urls.
   base::CommandLine* command_line = base::CommandLine::ForCurrentProcess();
   command_line->AppendSwitch(switches::kDisableWebSecurity);
 
-  EXPECT_EQ(container_host->key(), GetCorrectStorageKeyForWebSecurityState(
-                                       container_host.get(), url1));
-  EXPECT_EQ(key2, GetCorrectStorageKeyForWebSecurityState(container_host.get(),
-                                                          url2));
-  EXPECT_EQ(key3, GetCorrectStorageKeyForWebSecurityState(container_host.get(),
-                                                          url3));
+  EXPECT_EQ(service_worker_client->key(),
+            GetCorrectStorageKeyForWebSecurityState(service_worker_client.get(),
+                                                    url1));
+  EXPECT_EQ(key2, GetCorrectStorageKeyForWebSecurityState(
+                      service_worker_client.get(), url2));
+  EXPECT_EQ(key3, GetCorrectStorageKeyForWebSecurityState(
+                      service_worker_client.get(), url3));
 }
 
 TEST_F(ServiceWorkerContainerHostTest, RemoveProvider) {
   // Create a container host connected with the renderer process.
-  base::WeakPtr<ServiceWorkerClient> container_host =
+  base::WeakPtr<ServiceWorkerClient> service_worker_client =
       CreateContainerHost(GURL("https://www.example.com/example1.html"));
-  EXPECT_TRUE(container_host);
+  EXPECT_TRUE(service_worker_client);
 
   // Disconnect the mojo pipe from the renderer side.
   ASSERT_TRUE(remote_endpoints_.back().host_remote()->is_bound());
   remote_endpoints_.back().host_remote()->reset();
   base::RunLoop().RunUntilIdle();
-  EXPECT_FALSE(container_host);
+  EXPECT_FALSE(service_worker_client);
 }
 
 class MockServiceWorkerContainer : public blink::mojom::ServiceWorkerContainer {
@@ -641,7 +653,7 @@ TEST_F(ServiceWorkerContainerHostTest, Controller) {
   std::unique_ptr<ServiceWorkerClientAndInfo> client_and_info =
       CreateContainerHostAndInfoForWindow(helper_->context()->AsWeakPtr(),
                                           /*are_ancestors_secure=*/true);
-  base::WeakPtr<ServiceWorkerClient> container_host =
+  base::WeakPtr<ServiceWorkerClient> service_worker_client =
       std::move(client_and_info->service_worker_client);
   remote_endpoints_.emplace_back();
   remote_endpoints_.back().BindForWindow(std::move(client_and_info->info));
@@ -660,17 +672,17 @@ TEST_F(ServiceWorkerContainerHostTest, Controller) {
   registration1_->SetActiveVersion(version);
 
   // Finish the navigation.
-  FinishNavigation(container_host.get());
-  container_host->SetControllerRegistration(
+  FinishNavigation(service_worker_client.get());
+  service_worker_client->SetControllerRegistration(
       registration1_, false /* notify_controllerchange */);
   remote_endpoints_.back().host_remote()->get()->OnExecutionReady();
   base::RunLoop().RunUntilIdle();
 
   // The page should be controlled since there was an active version at the
   // time navigation started. The SetController IPC should have been sent.
-  EXPECT_TRUE(container_host->controller());
+  EXPECT_TRUE(service_worker_client->controller());
   EXPECT_TRUE(container->was_set_controller_called());
-  EXPECT_EQ(registration1_.get(), container_host->MatchRegistration());
+  EXPECT_EQ(registration1_.get(), service_worker_client->MatchRegistration());
 }
 
 TEST_F(ServiceWorkerContainerHostTest, UncontrolledWithMatchingRegistration) {
@@ -678,7 +690,7 @@ TEST_F(ServiceWorkerContainerHostTest, UncontrolledWithMatchingRegistration) {
   std::unique_ptr<ServiceWorkerClientAndInfo> client_and_info =
       CreateContainerHostAndInfoForWindow(helper_->context()->AsWeakPtr(),
                                           /*are_ancestors_secure=*/true);
-  base::WeakPtr<ServiceWorkerClient> container_host =
+  base::WeakPtr<ServiceWorkerClient> service_worker_client =
       std::move(client_and_info->service_worker_client);
   remote_endpoints_.emplace_back();
   remote_endpoints_.back().BindForWindow(std::move(client_and_info->info));
@@ -694,7 +706,7 @@ TEST_F(ServiceWorkerContainerHostTest, UncontrolledWithMatchingRegistration) {
   registration1_->SetInstallingVersion(version);
 
   // Finish the navigation.
-  FinishNavigation(container_host.get());
+  FinishNavigation(service_worker_client.get());
   // Promote the worker to active while navigation is still happening.
   registration1_->SetActiveVersion(version);
   base::RunLoop().RunUntilIdle();
@@ -702,11 +714,11 @@ TEST_F(ServiceWorkerContainerHostTest, UncontrolledWithMatchingRegistration) {
   // The page should not be controlled since there was no active version at the
   // time navigation started. Furthermore, no SetController IPC should have been
   // sent.
-  EXPECT_FALSE(container_host->controller());
+  EXPECT_FALSE(service_worker_client->controller());
   EXPECT_FALSE(container->was_set_controller_called());
   // However, the host should know the registration is its best match, for
   // .ready and claim().
-  EXPECT_EQ(registration1_.get(), container_host->MatchRegistration());
+  EXPECT_EQ(registration1_.get(), service_worker_client->MatchRegistration());
 }
 
 TEST_F(ServiceWorkerContainerHostTest,
@@ -1178,36 +1190,36 @@ void ServiceWorkerContainerHostTest::TestReservedClientsAreNotExposed(
         container_info->host_remote.InitWithNewEndpointAndPassReceiver();
 
     ASSERT_TRUE(context_);
-    base::WeakPtr<ServiceWorkerClient> container_host =
+    base::WeakPtr<ServiceWorkerClient> service_worker_client =
         context_->CreateContainerHostForWorker(
             std::move(host_receiver), helper_->mock_render_process_id(),
             std::move(client_remote), client_info);
-    container_host->UpdateUrls(
+    service_worker_client->UpdateUrls(
         url, url::Origin::Create(url),
         blink::StorageKey::CreateFirstParty(url::Origin::Create(url)));
-    EXPECT_FALSE(CanFindClientContainerHost(container_host.get()));
-    container_host->CompleteWebWorkerPreparation(
+    EXPECT_FALSE(CanFindClientContainerHost(service_worker_client.get()));
+    service_worker_client->CompleteWebWorkerPreparation(
         PolicyContainerPolicies(), ukm::UkmRecorder::GetNewSourceID());
-    EXPECT_TRUE(CanFindClientContainerHost(container_host.get()));
+    EXPECT_TRUE(CanFindClientContainerHost(service_worker_client.get()));
   }
 
   {
     std::unique_ptr<ServiceWorkerClientAndInfo> client_and_info =
         CreateContainerHostAndInfoForWindow(helper_->context()->AsWeakPtr(),
                                             /*are_ancestors_secure=*/true);
-    base::WeakPtr<ServiceWorkerClient> container_host =
+    base::WeakPtr<ServiceWorkerClient> service_worker_client =
         std::move(client_and_info->service_worker_client);
     ServiceWorkerRemoteContainerEndpoint remote_endpoint;
     remote_endpoint.BindForWindow(std::move(client_and_info->info));
 
-    FinishNavigation(container_host.get());
-    EXPECT_FALSE(CanFindClientContainerHost(container_host.get()));
+    FinishNavigation(service_worker_client.get());
+    EXPECT_FALSE(CanFindClientContainerHost(service_worker_client.get()));
 
     base::RunLoop run_loop;
-    container_host->AddExecutionReadyCallback(run_loop.QuitClosure());
+    service_worker_client->AddExecutionReadyCallback(run_loop.QuitClosure());
     remote_endpoint.host_remote()->get()->OnExecutionReady();
     run_loop.Run();
-    EXPECT_TRUE(CanFindClientContainerHost(container_host.get()));
+    EXPECT_TRUE(CanFindClientContainerHost(service_worker_client.get()));
   }
 }
 
@@ -1232,23 +1244,23 @@ TEST_F(ServiceWorkerContainerHostTest, ClientPhaseForWindow) {
   std::unique_ptr<ServiceWorkerClientAndInfo> client_and_info =
       CreateContainerHostAndInfoForWindow(helper_->context()->AsWeakPtr(),
                                           /*are_ancestors_secure=*/true);
-  base::WeakPtr<ServiceWorkerClient> container_host =
+  base::WeakPtr<ServiceWorkerClient> service_worker_client =
       std::move(client_and_info->service_worker_client);
   ServiceWorkerRemoteContainerEndpoint remote_endpoint;
   remote_endpoint.BindForWindow(std::move(client_and_info->info));
-  EXPECT_FALSE(container_host->is_response_committed());
-  EXPECT_FALSE(container_host->is_execution_ready());
+  EXPECT_FALSE(service_worker_client->is_response_committed());
+  EXPECT_FALSE(service_worker_client->is_execution_ready());
 
-  FinishNavigation(container_host.get());
-  EXPECT_TRUE(container_host->is_response_committed());
-  EXPECT_FALSE(container_host->is_execution_ready());
+  FinishNavigation(service_worker_client.get());
+  EXPECT_TRUE(service_worker_client->is_response_committed());
+  EXPECT_FALSE(service_worker_client->is_execution_ready());
 
   base::RunLoop run_loop;
-  container_host->AddExecutionReadyCallback(run_loop.QuitClosure());
+  service_worker_client->AddExecutionReadyCallback(run_loop.QuitClosure());
   remote_endpoint.host_remote()->get()->OnExecutionReady();
   run_loop.Run();
-  EXPECT_TRUE(container_host->is_response_committed());
-  EXPECT_TRUE(container_host->is_execution_ready());
+  EXPECT_TRUE(service_worker_client->is_response_committed());
+  EXPECT_TRUE(service_worker_client->is_execution_ready());
 }
 
 // Tests the client phase transitions for workers.
@@ -1266,21 +1278,21 @@ void ServiceWorkerContainerHostTest::TestClientPhaseTransition(
   host_receiver =
       container_info->host_remote.InitWithNewEndpointAndPassReceiver();
 
-  base::WeakPtr<ServiceWorkerClient> container_host =
+  base::WeakPtr<ServiceWorkerClient> service_worker_client =
       helper_->context()->CreateContainerHostForWorker(
           std::move(host_receiver), helper_->mock_render_process_id(),
           std::move(client_remote), client_info);
-  EXPECT_FALSE(container_host->is_response_committed());
-  EXPECT_FALSE(container_host->is_execution_ready());
+  EXPECT_FALSE(service_worker_client->is_response_committed());
+  EXPECT_FALSE(service_worker_client->is_execution_ready());
 
-  container_host->UpdateUrls(
+  service_worker_client->UpdateUrls(
       url, url::Origin::Create(url),
       blink::StorageKey::CreateFirstParty(url::Origin::Create(url)));
-  container_host->CompleteWebWorkerPreparation(
+  service_worker_client->CompleteWebWorkerPreparation(
       PolicyContainerPolicies(), ukm::UkmRecorder::GetNewSourceID());
 
-  EXPECT_TRUE(container_host->is_response_committed());
-  EXPECT_TRUE(container_host->is_execution_ready());
+  EXPECT_TRUE(service_worker_client->is_response_committed());
+  EXPECT_TRUE(service_worker_client->is_execution_ready());
 }
 
 TEST_F(ServiceWorkerContainerHostTestWithPlzDedicatedWorker,
@@ -1338,23 +1350,23 @@ void ServiceWorkerContainerHostTest::TestBackForwardCachedClientsAreNotExposed(
     std::unique_ptr<ServiceWorkerClientAndInfo> client_and_info =
         CreateContainerHostAndInfoForWindow(helper_->context()->AsWeakPtr(),
                                             /*are_ancestors_secure=*/true);
-    base::WeakPtr<ServiceWorkerClient> container_host =
+    base::WeakPtr<ServiceWorkerClient> service_worker_client =
         std::move(client_and_info->service_worker_client);
     ServiceWorkerRemoteContainerEndpoint remote_endpoint;
     remote_endpoint.BindForWindow(std::move(client_and_info->info));
 
-    FinishNavigation(container_host.get());
-    EXPECT_FALSE(CanFindClientContainerHost(container_host.get()));
+    FinishNavigation(service_worker_client.get());
+    EXPECT_FALSE(CanFindClientContainerHost(service_worker_client.get()));
 
     base::RunLoop run_loop;
-    container_host->AddExecutionReadyCallback(run_loop.QuitClosure());
+    service_worker_client->AddExecutionReadyCallback(run_loop.QuitClosure());
     remote_endpoint.host_remote()->get()->OnExecutionReady();
     run_loop.Run();
-    EXPECT_TRUE(CanFindClientContainerHost(container_host.get()));
-    container_host->EnterBackForwardCacheForTesting();
-    EXPECT_FALSE(CanFindClientContainerHost(container_host.get()));
-    container_host->LeaveBackForwardCacheForTesting();
-    EXPECT_TRUE(CanFindClientContainerHost(container_host.get()));
+    EXPECT_TRUE(CanFindClientContainerHost(service_worker_client.get()));
+    service_worker_client->EnterBackForwardCacheForTesting();
+    EXPECT_FALSE(CanFindClientContainerHost(service_worker_client.get()));
+    service_worker_client->LeaveBackForwardCacheForTesting();
+    EXPECT_TRUE(CanFindClientContainerHost(service_worker_client.get()));
   }
 }
 
@@ -1415,7 +1427,7 @@ TEST_F(ServiceWorkerContainerHostTestWithBackForwardCache, ControlleeEvents) {
   std::unique_ptr<ServiceWorkerClientAndInfo> client_and_info =
       CreateContainerHostAndInfoForWindow(helper_->context()->AsWeakPtr(),
                                           /*are_ancestors_secure=*/true);
-  base::WeakPtr<ServiceWorkerClient> container_host =
+  base::WeakPtr<ServiceWorkerClient> service_worker_client =
       std::move(client_and_info->service_worker_client);
   remote_endpoints_.emplace_back();
   remote_endpoints_.back().BindForWindow(std::move(client_and_info->info));
@@ -1434,8 +1446,8 @@ TEST_F(ServiceWorkerContainerHostTestWithBackForwardCache, ControlleeEvents) {
   registration1_->SetActiveVersion(version);
 
   // Finish the navigation.
-  FinishNavigation(container_host.get());
-  container_host->SetControllerRegistration(
+  FinishNavigation(service_worker_client.get());
+  service_worker_client->SetControllerRegistration(
       registration1_, false /* notify_controllerchange */);
   remote_endpoints_.back().host_remote()->get()->OnExecutionReady();
   base::RunLoop().RunUntilIdle();
@@ -1446,14 +1458,15 @@ TEST_F(ServiceWorkerContainerHostTestWithBackForwardCache, ControlleeEvents) {
 
   // The navigation commit ending should send the
   // OnControlleeNavigationCommitted() notification.
-  container_host->OnEndNavigationCommit();
+  service_worker_client->OnEndNavigationCommit();
   base::RunLoop().RunUntilIdle();
 
   EXPECT_EQ(observer.on_controllee_added_count(), 1);
   EXPECT_EQ(observer.on_controllee_navigation_committed_count(), 1);
   EXPECT_EQ(observer.on_controllee_removed_count(), 0);
 
-  version->MoveControlleeToBackForwardCacheMap(container_host->client_uuid());
+  version->MoveControlleeToBackForwardCacheMap(
+      service_worker_client->client_uuid());
   base::RunLoop().RunUntilIdle();
 
   EXPECT_EQ(observer.on_controllee_added_count(), 1);
@@ -1461,7 +1474,7 @@ TEST_F(ServiceWorkerContainerHostTestWithBackForwardCache, ControlleeEvents) {
   EXPECT_EQ(observer.on_controllee_removed_count(), 1);
 
   version->RestoreControlleeFromBackForwardCacheMap(
-      container_host->client_uuid());
+      service_worker_client->client_uuid());
   base::RunLoop().RunUntilIdle();
 
   EXPECT_EQ(observer.on_controllee_added_count(), 2);
@@ -1474,7 +1487,7 @@ TEST_F(ServiceWorkerContainerHostTestWithBackForwardCache, ControlleeEvents) {
 // destroyed.
 TEST_F(ServiceWorkerContainerHostTest, UpdateServiceWorkerOnDestruction) {
   // Make a window.
-  base::WeakPtr<ServiceWorkerClient> container_host =
+  base::WeakPtr<ServiceWorkerClient> service_worker_client =
       CreateContainerHost(GURL("https://www.example.com/example.html"));
 
   // Make an active version.
@@ -1498,8 +1511,8 @@ TEST_F(ServiceWorkerContainerHostTest, UpdateServiceWorkerOnDestruction) {
   version2->SetStatus(ServiceWorkerVersion::ACTIVATED);
   registration2_->SetActiveVersion(version1);
 
-  container_host->AddServiceWorkerToUpdate(version1);
-  container_host->AddServiceWorkerToUpdate(version2);
+  service_worker_client->AddServiceWorkerToUpdate(version1);
+  service_worker_client->AddServiceWorkerToUpdate(version2);
   ExpectUpdateIsNotScheduled(version1.get());
   ExpectUpdateIsNotScheduled(version2.get());
 
@@ -1528,14 +1541,14 @@ TEST_F(ServiceWorkerContainerHostTest, HintToUpdateServiceWorker) {
   registration1_->SetActiveVersion(version1);
 
   // Make a window.
-  base::WeakPtr<ServiceWorkerClient> container_host =
+  base::WeakPtr<ServiceWorkerClient> service_worker_client =
       CreateContainerHost(GURL("https://www.example.com/example.html"));
 
   // Mark the service worker as needing update. Update should not be scheduled
   // yet.
-  container_host->AddServiceWorkerToUpdate(version1);
+  service_worker_client->AddServiceWorkerToUpdate(version1);
   ExpectUpdateIsNotScheduled(version1.get());
-  EXPECT_TRUE(HasVersionToUpdate(container_host.get()));
+  EXPECT_TRUE(HasVersionToUpdate(service_worker_client.get()));
 
   // Send the hint from the renderer. Update should be scheduled.
   mojo::AssociatedRemote<blink::mojom::ServiceWorkerContainerHost>*
@@ -1543,7 +1556,7 @@ TEST_F(ServiceWorkerContainerHostTest, HintToUpdateServiceWorker) {
   (*host_remote)->HintToUpdateServiceWorker();
   base::RunLoop().RunUntilIdle();
   ExpectUpdateIsScheduled(version1.get());
-  EXPECT_FALSE(HasVersionToUpdate(container_host.get()));
+  EXPECT_FALSE(HasVersionToUpdate(service_worker_client.get()));
 }
 
 // Tests that the host receives a HintToUpdateServiceWorker message but
@@ -1552,7 +1565,7 @@ TEST_F(ServiceWorkerContainerHostTest, HintToUpdateServiceWorker) {
 TEST_F(ServiceWorkerContainerHostTest,
        HintToUpdateServiceWorkerButNoVersionToUpdate) {
   // Make a window.
-  base::WeakPtr<ServiceWorkerClient> container_host =
+  base::WeakPtr<ServiceWorkerClient> service_worker_client =
       CreateContainerHost(GURL("https://www.example.com/example.html"));
 
   // Make an active version.
@@ -1570,7 +1583,7 @@ TEST_F(ServiceWorkerContainerHostTest,
   // resource request, so AddServiceWorkerToUpdate() is not called.
 
   ExpectUpdateIsNotScheduled(version1.get());
-  EXPECT_FALSE(HasVersionToUpdate(container_host.get()));
+  EXPECT_FALSE(HasVersionToUpdate(service_worker_client.get()));
 
   // Send the hint from the renderer. Update should not be scheduled, since
   // AddServiceWorkerToUpdate() was not called.
@@ -1579,7 +1592,7 @@ TEST_F(ServiceWorkerContainerHostTest,
   (*host_remote)->HintToUpdateServiceWorker();
   base::RunLoop().RunUntilIdle();
   ExpectUpdateIsNotScheduled(version1.get());
-  EXPECT_FALSE(HasVersionToUpdate(container_host.get()));
+  EXPECT_FALSE(HasVersionToUpdate(service_worker_client.get()));
 }
 
 TEST_F(ServiceWorkerContainerHostTest, HintToUpdateServiceWorkerMultiple) {
@@ -1615,18 +1628,18 @@ TEST_F(ServiceWorkerContainerHostTest, HintToUpdateServiceWorkerMultiple) {
   registration3_->SetActiveVersion(version1);
 
   // Make a window.
-  base::WeakPtr<ServiceWorkerClient> container_host =
+  base::WeakPtr<ServiceWorkerClient> service_worker_client =
       CreateContainerHost(GURL("https://www.example.com/example.html"));
 
   // Mark the service worker as needing update. Update should not be scheduled
   // yet.
-  container_host->AddServiceWorkerToUpdate(version1);
-  container_host->AddServiceWorkerToUpdate(version2);
-  container_host->AddServiceWorkerToUpdate(version3);
+  service_worker_client->AddServiceWorkerToUpdate(version1);
+  service_worker_client->AddServiceWorkerToUpdate(version2);
+  service_worker_client->AddServiceWorkerToUpdate(version3);
   ExpectUpdateIsNotScheduled(version1.get());
   ExpectUpdateIsNotScheduled(version2.get());
   ExpectUpdateIsNotScheduled(version3.get());
-  EXPECT_TRUE(HasVersionToUpdate(container_host.get()));
+  EXPECT_TRUE(HasVersionToUpdate(service_worker_client.get()));
 
   // Pretend another page also used version3.
   version3->IncrementPendingUpdateHintCount();
@@ -1640,7 +1653,7 @@ TEST_F(ServiceWorkerContainerHostTest, HintToUpdateServiceWorkerMultiple) {
   ExpectUpdateIsScheduled(version1.get());
   ExpectUpdateIsScheduled(version2.get());
   ExpectUpdateIsNotScheduled(version3.get());
-  EXPECT_FALSE(HasVersionToUpdate(container_host.get()));
+  EXPECT_FALSE(HasVersionToUpdate(service_worker_client.get()));
 
   // Pretend the other page also finished for version3.
   version3->DecrementPendingUpdateHintCount();

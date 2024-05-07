@@ -184,7 +184,7 @@ class CONTENT_EXPORT DedicatedWorkerHost final
   // enabled by default.
   void ContinueOnMaybeCountWebFeature(
       const GURL& script_url,
-      base::WeakPtr<ServiceWorkerClient> container_host,
+      base::WeakPtr<ServiceWorkerClient> service_worker_client,
       blink::ServiceWorkerStatusCode status,
       const std::vector<scoped_refptr<ServiceWorkerRegistration>>&
           registrations);

@@ -89,11 +89,11 @@ std::string GetContainerHostClientId(int frame_tree_node_id) {
   std::string client_uuid;
   auto* frame_tree_node = FrameTreeNode::GloballyFindByID(frame_tree_node_id);
   if (frame_tree_node) {
-    base::WeakPtr<ServiceWorkerClient> container_host =
+    base::WeakPtr<ServiceWorkerClient> service_worker_client =
         frame_tree_node->current_frame_host()
             ->GetLastCommittedServiceWorkerHost();
-    if (container_host) {
-      client_uuid = container_host->client_uuid();
+    if (service_worker_client) {
+      client_uuid = service_worker_client->client_uuid();
     }
   }
   return client_uuid;
@@ -135,11 +135,11 @@ class ServiceWorkerMainResourceLoader::StreamWaiter
 
 ServiceWorkerMainResourceLoader::ServiceWorkerMainResourceLoader(
     NavigationLoaderInterceptor::FallbackCallback fallback_callback,
-    base::WeakPtr<ServiceWorkerClient> container_host,
+    base::WeakPtr<ServiceWorkerClient> service_worker_client,
     int frame_tree_node_id,
     base::TimeTicks find_registration_start_time)
     : fallback_callback_(std::move(fallback_callback)),
-      container_host_(std::move(container_host)),
+      service_worker_client_(std::move(service_worker_client)),
       frame_tree_node_id_(frame_tree_node_id),
       is_browser_startup_completed_(
           GetContentClient()->browser()->IsBrowserStartupComplete()),
@@ -150,7 +150,7 @@ ServiceWorkerMainResourceLoader::ServiceWorkerMainResourceLoader(
       TRACE_EVENT_FLAG_FLOW_OUT);
 
   scoped_refptr<ServiceWorkerVersion> active_worker =
-      container_host_->controller();
+      service_worker_client_->controller();
   if (active_worker) {
     auto running_status = active_worker->running_status();
     initial_service_worker_status_ = ConvertToServiceWorkerStatus(
@@ -213,9 +213,10 @@ void ServiceWorkerMainResourceLoader::StartRequest(
   DCHECK_CURRENTLY_ON(BrowserThread::UI);
 
   resource_request_ = resource_request;
-  if (container_host_ && container_host_->fetch_request_window_id()) {
+  if (service_worker_client_ &&
+      service_worker_client_->fetch_request_window_id()) {
     resource_request_.fetch_window_id =
-        std::make_optional(container_host_->fetch_request_window_id());
+        std::make_optional(service_worker_client_->fetch_request_window_id());
   }
 
   DCHECK(!receiver_.is_bound());
@@ -229,15 +230,15 @@ void ServiceWorkerMainResourceLoader::StartRequest(
   TransitionToStatus(Status::kStarted);
   CHECK_EQ(commit_responsibility(), FetchResponseFrom::kNoResponseYet);
 
-  if (!container_host_) {
-    // We lost |container_host_| (for the client) somehow before dispatching
-    // FetchEvent.
+  if (!service_worker_client_) {
+    // We lost |service_worker_client_| (for the client) somehow before
+    // dispatching FetchEvent.
     CommitCompleted(net::ERR_ABORTED, "No container host");
     return;
   }
 
   scoped_refptr<ServiceWorkerVersion> active_worker =
-      container_host_->controller();
+      service_worker_client_->controller();
   if (!active_worker) {
     CommitCompleted(net::ERR_FAILED, "No active worker");
     return;
@@ -387,7 +388,7 @@ void ServiceWorkerMainResourceLoader::StartRequest(
   fetch_dispatcher_ = std::make_unique<ServiceWorkerFetchDispatcher>(
       blink::mojom::FetchAPIRequest::From(resource_request_),
       resource_request_.destination, client_uuid,
-      container_host_->client_uuid(), active_worker,
+      service_worker_client_->client_uuid(), active_worker,
       base::BindOnce(&ServiceWorkerMainResourceLoader::DidPrepareFetchEvent,
                      weak_factory_.GetWeakPtr(), active_worker,
                      active_worker->running_status()),
@@ -395,7 +396,7 @@ void ServiceWorkerMainResourceLoader::StartRequest(
                      weak_factory_.GetWeakPtr()),
       /*is_offline_capability_check=*/false);
 
-  if (container_host_->IsContainerForWindowClient()) {
+  if (service_worker_client_->IsContainerForWindowClient()) {
     MaybeDispatchPreload(race_network_request_mode, context, active_worker);
   }
 
@@ -822,7 +823,7 @@ void ServiceWorkerMainResourceLoader::DidDispatchFetchEvent(
 
   ServiceWorkerMetrics::RecordFetchEventStatus(true /* is_main_resource */,
                                                status);
-  if (!container_host_) {
+  if (!service_worker_client_) {
     // The navigation or shared worker startup is cancelled. Just abort.
     CommitCompleted(net::ERR_ABORTED, "No container host");
     return;
@@ -839,7 +840,7 @@ void ServiceWorkerMainResourceLoader::DidDispatchFetchEvent(
     // The `SubresourceLoaderParams` previously returned by `loader_callback`
     // will be reset by `NavigationURLLoaderImpl` by detecting the controller
     // lost.
-    container_host_->NotifyControllerLost();
+    service_worker_client_->NotifyControllerLost();
     if (fallback_callback_) {
       std::move(fallback_callback_).Run(ResponseHeadUpdateParams());
     }

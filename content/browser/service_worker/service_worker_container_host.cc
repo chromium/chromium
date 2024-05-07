@@ -2129,10 +2129,10 @@ ServiceWorkerClient::GetRunningStatusCallbackReceiver() {
 }
 
 SubresourceLoaderParams ServiceWorkerClient::MaybeCreateSubresourceLoaderParams(
-    base::WeakPtr<ServiceWorkerClient> container_host) {
+    base::WeakPtr<ServiceWorkerClient> service_worker_client) {
   // We didn't find a matching service worker for this request, and
   // ServiceWorkerContainerHost::SetControllerRegistration() was not called.
-  if (!container_host || !container_host->controller()) {
+  if (!service_worker_client || !service_worker_client->controller()) {
     return {};
   }
 
@@ -2140,16 +2140,16 @@ SubresourceLoaderParams ServiceWorkerClient::MaybeCreateSubresourceLoaderParams(
   // with the navigation commit.
   SubresourceLoaderParams params;
   params.controller_service_worker_info =
-      container_host->CreateControllerServiceWorkerInfo();
+      service_worker_client->CreateControllerServiceWorkerInfo();
   if (base::WeakPtr<ServiceWorkerObjectHost> object_host =
-          container_host->container_host()
+          service_worker_client->container_host()
               .version_object_manager()
-              .GetOrCreateHost(container_host->controller())) {
+              .GetOrCreateHost(service_worker_client->controller())) {
     params.controller_service_worker_object_host = object_host;
     params.controller_service_worker_info->object_info =
         object_host->CreateIncompleteObjectInfo();
   }
-  params.service_worker_client = container_host;
+  params.service_worker_client = service_worker_client;
 
   return params;
 }

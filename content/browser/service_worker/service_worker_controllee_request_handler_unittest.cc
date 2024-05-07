@@ -84,7 +84,7 @@ class ServiceWorkerControlleeRequestHandlerTest : public testing::Test {
               TRAFFIC_ANNOTATION_FOR_TESTS)),
           handler_(std::make_unique<ServiceWorkerControlleeRequestHandler>(
               test->context()->AsWeakPtr(),
-              test->container_host_,
+              test->service_worker_client_,
               destination,
               /*skip_service_worker=*/false,
               /*frame_tree_node_id=*/RenderFrameHost::kNoFrameTreeNodeId,
@@ -204,7 +204,7 @@ class ServiceWorkerControlleeRequestHandlerTest : public testing::Test {
 
     // An empty host.
     remote_endpoints_.emplace_back();
-    container_host_ = CreateContainerHostForWindow(
+    service_worker_client_ = CreateContainerHostForWindow(
         GlobalRenderFrameHostId(helper_->mock_render_process_id(),
                                 /*mock frame_routing_id=*/1),
         is_parent_frame_secure, helper_->context()->AsWeakPtr(),
@@ -229,7 +229,7 @@ class ServiceWorkerControlleeRequestHandlerTest : public testing::Test {
   std::unique_ptr<EmbeddedWorkerTestHelper> helper_;
   scoped_refptr<ServiceWorkerRegistration> registration_;
   scoped_refptr<ServiceWorkerVersion> version_;
-  base::WeakPtr<ServiceWorkerClient> container_host_;
+  base::WeakPtr<ServiceWorkerClient> service_worker_client_;
   std::unique_ptr<net::URLRequestContext> url_request_context_;
   net::TestDelegate url_request_delegate_;
   GURL scope_;
@@ -436,8 +436,8 @@ TEST_F(ServiceWorkerControlleeRequestHandlerTest, InstallingRegistration) {
   // claim().
   EXPECT_FALSE(test_resources.loader());
   EXPECT_FALSE(version_->HasControllee());
-  EXPECT_FALSE(container_host_->controller());
-  EXPECT_EQ(registration_.get(), container_host_->MatchRegistration());
+  EXPECT_FALSE(service_worker_client_->controller());
+  EXPECT_EQ(registration_.get(), service_worker_client_->MatchRegistration());
 }
 
 // Test to not regress crbug/414118.
@@ -468,7 +468,7 @@ TEST_F(ServiceWorkerControlleeRequestHandlerTest, DeletedContainerHost) {
   // the database lookup.
   CloseRemotes();
   base::RunLoop().RunUntilIdle();
-  EXPECT_FALSE(container_host_);
+  EXPECT_FALSE(service_worker_client_);
   EXPECT_FALSE(test_resources.loader());
 }
 
@@ -491,7 +491,7 @@ TEST_F(ServiceWorkerControlleeRequestHandlerTest, SkipServiceWorker) {
       network::mojom::RequestDestination::kDocument);
   test_resources.SetHandler(
       std::make_unique<ServiceWorkerControlleeRequestHandler>(
-          context()->AsWeakPtr(), container_host_,
+          context()->AsWeakPtr(), service_worker_client_,
           network::mojom::RequestDestination::kDocument,
           /*skip_service_worker=*/true,
           /*frame_tree_node_id=*/RenderFrameHost::kNoFrameTreeNodeId,
@@ -508,7 +508,7 @@ TEST_F(ServiceWorkerControlleeRequestHandlerTest, SkipServiceWorker) {
   EXPECT_FALSE(version_->HasControllee());
 
   // The host should still have the correct URL.
-  EXPECT_EQ(GURL("https://host/scope/doc"), container_host_->url());
+  EXPECT_EQ(GURL("https://host/scope/doc"), service_worker_client_->url());
 }
 
 // Tests interception after the context core has been destroyed and the provider
@@ -534,7 +534,7 @@ TEST_F(ServiceWorkerControlleeRequestHandlerTest, NullContext) {
       network::mojom::RequestDestination::kDocument);
   test_resources.SetHandler(
       std::make_unique<ServiceWorkerControlleeRequestHandler>(
-          context()->AsWeakPtr(), container_host_,
+          context()->AsWeakPtr(), service_worker_client_,
           network::mojom::RequestDestination::kDocument,
           /*skip_service_worker=*/false,
           /*frame_tree_node_id=*/RenderFrameHost::kNoFrameTreeNodeId,
@@ -560,7 +560,7 @@ TEST_F(ServiceWorkerControlleeRequestHandlerTest, NullContext) {
   EXPECT_FALSE(version_->HasControllee());
 
   // The host should still have the correct URL.
-  EXPECT_EQ(GURL("https://host/scope/doc"), container_host_->url());
+  EXPECT_EQ(GURL("https://host/scope/doc"), service_worker_client_->url());
 }
 
 #if BUILDFLAG(ENABLE_OFFLINE_PAGES)

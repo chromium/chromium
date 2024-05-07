@@ -58,9 +58,9 @@ void DedicatedWorkerHostsForDocument::OnEnterBackForwardCache() {
             RenderFrameHost::LifecycleState::kInBackForwardCache);
 
   for (auto worker : dedicated_workers_) {
-    if (base::WeakPtr<ServiceWorkerClient> container_host =
+    if (base::WeakPtr<ServiceWorkerClient> service_worker_client =
             worker->GetServiceWorkerClient()) {
-      container_host->OnEnterBackForwardCache();
+      service_worker_client->OnEnterBackForwardCache();
     }
   }
 }
@@ -71,9 +71,9 @@ void DedicatedWorkerHostsForDocument::OnRestoreFromBackForwardCache() {
             RenderFrameHost::LifecycleState::kInBackForwardCache);
 
   for (auto worker : dedicated_workers_) {
-    if (base::WeakPtr<ServiceWorkerClient> container_host =
+    if (base::WeakPtr<ServiceWorkerClient> service_worker_client =
             worker->GetServiceWorkerClient()) {
-      container_host->OnRestoreFromBackForwardCache();
+      service_worker_client->OnRestoreFromBackForwardCache();
     }
   }
 }

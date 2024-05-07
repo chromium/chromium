@@ -478,7 +478,7 @@ class CONTENT_EXPORT ServiceWorkerClient final
   // a matching controller service worker for non-null |container_host|.
   // Otherwise this returns std::nullopt.
   static SubresourceLoaderParams MaybeCreateSubresourceLoaderParams(
-      base::WeakPtr<ServiceWorkerClient> container_host);
+      base::WeakPtr<ServiceWorkerClient> service_worker_client);
 
   ukm::SourceId ukm_source_id() const { return ukm_source_id_; }
 

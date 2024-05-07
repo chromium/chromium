@@ -457,17 +457,17 @@ class ServiceWorkerVersionBrowserTest : public ContentBrowserTest {
   void AddControllee() {
     ASSERT_TRUE(BrowserThread::CurrentlyOn(BrowserThread::UI));
     remote_endpoints_.emplace_back();
-    base::WeakPtr<ServiceWorkerClient> container_host =
+    base::WeakPtr<ServiceWorkerClient> service_worker_client =
         CreateContainerHostForWindow(
             GlobalRenderFrameHostId(/*mock process_id=*/33,
                                     /*mock frame_routing_id=*/1),
             /*is_parent_frame_secure=*/true, wrapper()->context()->AsWeakPtr(),
             &remote_endpoints_.back());
     const GURL url = embedded_test_server()->GetURL("/service_worker/host");
-    container_host->UpdateUrls(
+    service_worker_client->UpdateUrls(
         url, url::Origin::Create(url),
         blink::StorageKey::CreateFirstParty(url::Origin::Create(url)));
-    container_host->SetControllerRegistration(
+    service_worker_client->SetControllerRegistration(
         registration_, false /* notify_controllerchange */);
   }
 

@@ -423,7 +423,7 @@ class CONTENT_EXPORT ServiceWorkerVersion
   }
 
   // Adds and removes the specified host as a controllee of this service worker.
-  void AddControllee(ServiceWorkerClient* container_host);
+  void AddControllee(ServiceWorkerClient* service_worker_client);
   void RemoveControllee(const std::string& client_uuid);
 
   // Called when the navigation for a window client commits to a render frame

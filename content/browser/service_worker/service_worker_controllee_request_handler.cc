@@ -95,13 +95,13 @@ std::optional<int> ServiceWorkerControlleeRequestHandler::
 
 ServiceWorkerControlleeRequestHandler::ServiceWorkerControlleeRequestHandler(
     base::WeakPtr<ServiceWorkerContextCore> context,
-    base::WeakPtr<ServiceWorkerClient> container_host,
+    base::WeakPtr<ServiceWorkerClient> service_worker_client,
     network::mojom::RequestDestination destination,
     bool skip_service_worker,
     int frame_tree_node_id,
     ServiceWorkerAccessedCallback service_worker_accessed_callback)
     : context_(std::move(context)),
-      container_host_(std::move(container_host)),
+      service_worker_client_(std::move(service_worker_client)),
       destination_(destination),
       skip_service_worker_(skip_service_worker),
       force_update_started_(false),
@@ -126,7 +126,7 @@ ServiceWorkerControlleeRequestHandler::
 }
 
 void ServiceWorkerControlleeRequestHandler::MaybeScheduleUpdate() {
-  if (!container_host_ || !container_host_->controller()) {
+  if (!service_worker_client_ || !service_worker_client_->controller()) {
     return;
   }
 
@@ -146,7 +146,7 @@ void ServiceWorkerControlleeRequestHandler::MaybeScheduleUpdate() {
     return;
   }
 
-  container_host_->controller()->ScheduleUpdate();
+  service_worker_client_->controller()->ScheduleUpdate();
 }
 
 void ServiceWorkerControlleeRequestHandler::MaybeCreateLoader(
@@ -158,7 +158,7 @@ void ServiceWorkerControlleeRequestHandler::MaybeCreateLoader(
   loader_callback_ = std::move(loader_callback);
   fallback_callback_ = std::move(fallback_callback);
 
-  if (!container_host_) {
+  if (!service_worker_client_) {
     // We can't do anything other than to fall back to network.
     CompleteWithoutLoader();
     return;
@@ -218,21 +218,23 @@ void ServiceWorkerControlleeRequestHandler::InitializeContainerHost(
     const blink::StorageKey& storage_key) {
   // Update the container host with this request, clearing old controller state
   // if this is a redirect.
-  container_host_->SetControllerRegistration(nullptr,
-                                             /*notify_controllerchange=*/false);
+  service_worker_client_->SetControllerRegistration(
+      nullptr,
+      /*notify_controllerchange=*/false);
   stripped_url_ = net::SimplifyUrlForRequest(tentative_resource_request.url);
 
   storage_key_ = storage_key;
 
-  container_host_->UpdateUrls(stripped_url_,
-                              // The storage key only has a top_level_site, not
-                              // an origin, so we must extract the origin from
-                              // trusted_params.
-                              tentative_resource_request.trusted_params
-                                  ? tentative_resource_request.trusted_params
-                                        ->isolation_info.top_frame_origin()
-                                  : std::nullopt,
-                              storage_key_);
+  service_worker_client_->UpdateUrls(
+      stripped_url_,
+      // The storage key only has a top_level_site, not
+      // an origin, so we must extract the origin from
+      // trusted_params.
+      tentative_resource_request.trusted_params
+          ? tentative_resource_request.trusted_params->isolation_info
+                .top_frame_origin()
+          : std::nullopt,
+      storage_key_);
 }
 
 void ServiceWorkerControlleeRequestHandler::ContinueWithRegistration(
@@ -273,7 +275,7 @@ void ServiceWorkerControlleeRequestHandler::ContinueWithRegistration(
   }
   DCHECK(registration);
 
-  if (!container_host_) {
+  if (!service_worker_client_) {
     TRACE_EVENT_WITH_FLOW1(
         "ServiceWorker",
         "ServiceWorkerControlleeRequestHandler::ContinueWithRegistration",
@@ -283,7 +285,7 @@ void ServiceWorkerControlleeRequestHandler::ContinueWithRegistration(
     CompleteWithoutLoader();
     return;
   }
-  container_host_->AddMatchingRegistration(registration.get());
+  service_worker_client_->AddMatchingRegistration(registration.get());
 
   if (!context_) {
     TRACE_EVENT_WITH_FLOW1(
@@ -300,8 +302,8 @@ void ServiceWorkerControlleeRequestHandler::ContinueWithRegistration(
       GetContentClient()->browser()->AllowServiceWorker(
           registration->scope(),
           service_worker_security_utils::site_for_cookies(
-              container_host_->key()),
-          container_host_->top_frame_origin(), /*script_url=*/GURL(),
+              service_worker_client_->key()),
+          service_worker_client_->top_frame_origin(), /*script_url=*/GURL(),
           context_->wrapper()->browser_context());
 
   service_worker_accessed_callback_.Run(registration->scope(),
@@ -318,7 +320,7 @@ void ServiceWorkerControlleeRequestHandler::ContinueWithRegistration(
     return;
   }
 
-  if (!container_host_->IsEligibleForServiceWorkerController()) {
+  if (!service_worker_client_->IsEligibleForServiceWorkerController()) {
     // TODO(falken): Figure out a way to surface in the page's DevTools
     // console that the service worker was blocked for security.
     TRACE_EVENT_WITH_FLOW1(
@@ -406,7 +408,7 @@ void ServiceWorkerControlleeRequestHandler::ContinueWithActivatedVersion(
     scoped_refptr<ServiceWorkerRegistration> registration,
     scoped_refptr<ServiceWorkerVersion> active_version,
     base::TimeTicks find_registration_start_time) {
-  if (!context_ || !container_host_) {
+  if (!context_ || !service_worker_client_) {
     TRACE_EVENT_WITH_FLOW1(
         "ServiceWorker",
         "ServiceWorkerControlleeRequestHandler::ContinueWithActivatedVersion",
@@ -449,11 +451,11 @@ void ServiceWorkerControlleeRequestHandler::ContinueWithActivatedVersion(
     return;
   }
 
-  container_host_->SetControllerRegistration(
+  service_worker_client_->SetControllerRegistration(
       registration, false /* notify_controllerchange */);
 
   DCHECK_EQ(active_version, registration->active_version());
-  DCHECK_EQ(active_version, container_host_->controller());
+  DCHECK_EQ(active_version, service_worker_client_->controller());
   DCHECK_NE(active_version->fetch_handler_existence(),
             ServiceWorkerVersion::FetchHandlerExistence::UNKNOWN);
 
@@ -463,7 +465,7 @@ void ServiceWorkerControlleeRequestHandler::ContinueWithActivatedVersion(
       active_version->fetch_handler_type());
 
   if (blink::IsRequestDestinationFrame(destination_)) {
-    container_host_->AddServiceWorkerToUpdate(active_version);
+    service_worker_client_->AddServiceWorkerToUpdate(active_version);
   }
 
   // If the router evaluation is needed, always forward to the service worker.
@@ -530,8 +532,8 @@ void ServiceWorkerControlleeRequestHandler::CreateLoaderAndStartRequest(
     base::TimeTicks find_registration_start_time) {
   loader_wrapper_ = std::make_unique<ServiceWorkerMainResourceLoaderWrapper>(
       std::make_unique<ServiceWorkerMainResourceLoader>(
-          std::move(fallback_callback_), container_host_, frame_tree_node_id_,
-          std::move(find_registration_start_time)));
+          std::move(fallback_callback_), service_worker_client_,
+          frame_tree_node_id_, std::move(find_registration_start_time)));
   loader_wrapper_->get()->set_worker_parent_client_uuid(parent_client_uuid_);
   std::move(loader_callback_)
       .Run(NavigationLoaderInterceptor::Result(
@@ -539,7 +541,7 @@ void ServiceWorkerControlleeRequestHandler::CreateLoaderAndStartRequest(
               base::BindOnce(&ServiceWorkerMainResourceLoader::StartRequest,
                              loader_wrapper_->get()->AsWeakPtr())),
           ServiceWorkerClient::MaybeCreateSubresourceLoaderParams(
-              container_host_)));
+              service_worker_client_)));
 }
 
 void ServiceWorkerControlleeRequestHandler::DidStartWorker(
@@ -647,7 +649,7 @@ void ServiceWorkerControlleeRequestHandler::OnUpdatedVersionStatusChanged(
 void ServiceWorkerControlleeRequestHandler::CompleteWithoutLoader() {
   fallback_callback_.Reset();
   ServiceWorkerMainResourceLoaderInterceptor::CompleteWithoutLoader(
-      std::move(loader_callback_), container_host_);
+      std::move(loader_callback_), service_worker_client_);
 }
 
 void ServiceWorkerControlleeRequestHandler::MaybeStartServiceWorker(

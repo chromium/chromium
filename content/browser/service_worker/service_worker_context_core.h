@@ -406,7 +406,8 @@ class CONTENT_EXPORT ServiceWorkerContextCore
 
   int GetNextEmbeddedWorkerId();
 
-  void NotifyClientIsExecutionReady(const ServiceWorkerClient& container_host);
+  void NotifyClientIsExecutionReady(
+      const ServiceWorkerClient& service_worker_client);
 
   bool MaybeHasRegistrationForStorageKey(const blink::StorageKey& key);
 
@@ -523,7 +524,7 @@ class CONTENT_EXPORT ServiceWorkerContextCore
 
   // Owns `ServiceWorkerContainerForClient` (via `ServiceWorkerClient`).
   // `ServiceWorkerContainerForServiceWorker`s are owned by `ServiceWorkerHost`.
-  ContainerHostByClientUUIDMap container_host_by_uuid_;
+  ContainerHostByClientUUIDMap service_worker_clients_by_uuid_;
 
   std::unique_ptr<
       mojo::AssociatedReceiverSet<blink::mojom::ServiceWorkerContainerHost,

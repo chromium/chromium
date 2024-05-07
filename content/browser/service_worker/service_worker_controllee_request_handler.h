@@ -84,7 +84,7 @@ class CONTENT_EXPORT ServiceWorkerControlleeRequestHandler final {
   // request interception.
   ServiceWorkerControlleeRequestHandler(
       base::WeakPtr<ServiceWorkerContextCore> context,
-      base::WeakPtr<ServiceWorkerClient> container_host,
+      base::WeakPtr<ServiceWorkerClient> service_worker_client,
       network::mojom::RequestDestination destination,
       bool skip_service_worker,
       int frame_tree_node_id,
@@ -119,7 +119,7 @@ class CONTENT_EXPORT ServiceWorkerControlleeRequestHandler final {
   FRIEND_TEST_ALL_PREFIXES(ServiceWorkerControlleeRequestHandlerTest,
                            ActivateWaitingVersion);
 
-  // Does all initialization of |container_host_| for a request.
+  // Does all initialization of |service_worker_client_| for a request.
   void InitializeContainerHost(
       const network::ResourceRequest& tentative_request,
       const blink::StorageKey& storage_key);
@@ -170,7 +170,7 @@ class CONTENT_EXPORT ServiceWorkerControlleeRequestHandler final {
       start_service_worker_for_empty_fetch_handler_duration_for_testing_;
 
   const base::WeakPtr<ServiceWorkerContextCore> context_;
-  const base::WeakPtr<ServiceWorkerClient> container_host_;
+  const base::WeakPtr<ServiceWorkerClient> service_worker_client_;
   const network::mojom::RequestDestination destination_;
 
   // If true, service workers are bypassed for request interception.

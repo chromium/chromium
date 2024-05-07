@@ -318,13 +318,13 @@ ServiceWorkerJobTest::FindRegistrationForScope(
 
 ServiceWorkerClient* ServiceWorkerJobTest::CreateControllee() {
   remote_endpoints_.emplace_back();
-  base::WeakPtr<ServiceWorkerClient> container_host =
+  base::WeakPtr<ServiceWorkerClient> service_worker_client =
       CreateContainerHostForWindow(
           GlobalRenderFrameHostId(/*mock process_id=*/33,
                                   /*mock frame_routing_id=*/1),
           /*is_parent_frame_secure=*/true, helper_->context()->AsWeakPtr(),
           &remote_endpoints_.back());
-  return container_host.get();
+  return service_worker_client.get();
 }
 
 scoped_refptr<ServiceWorkerRegistration>
@@ -343,11 +343,12 @@ ServiceWorkerJobTest::CreateRegistrationWithControllee(const GURL& script_url,
   TestServiceWorkerObserver observer(helper_->context_wrapper());
   observer.RunUntilActivated(registration->installing_version(), runner);
 
-  ServiceWorkerClient* container_host = CreateControllee();
-  container_host->UpdateUrls(scope_url, url::Origin::Create(scope_url),
-                             storage_key);
-  container_host->SetControllerRegistration(registration,
-                                            /*notify_controllerchange=*/false);
+  ServiceWorkerClient* service_worker_client = CreateControllee();
+  service_worker_client->UpdateUrls(scope_url, url::Origin::Create(scope_url),
+                                    storage_key);
+  service_worker_client->SetControllerRegistration(
+      registration,
+      /*notify_controllerchange=*/false);
   return registration;
 }
 
@@ -1017,8 +1018,8 @@ TEST_P(ServiceWorkerJobTest,
   observer.RunUntilActivated(registration->installing_version(), runner);
   ASSERT_TRUE(registration.get());
 
-  ServiceWorkerClient* container_host = CreateControllee();
-  registration->active_version()->AddControllee(container_host);
+  ServiceWorkerClient* service_worker_client = CreateControllee();
+  registration->active_version()->AddControllee(service_worker_client);
 
   scoped_refptr<ServiceWorkerVersion> version = registration->active_version();
   EXPECT_EQ(blink::EmbeddedWorkerStatus::kRunning, version->running_status());
@@ -1031,7 +1032,7 @@ TEST_P(ServiceWorkerJobTest,
   EXPECT_EQ(ServiceWorkerVersion::ACTIVATED, version->status());
 
   registration->active_version()->RemoveControllee(
-      container_host->client_uuid());
+      service_worker_client->client_uuid());
   WaitForVersionRunningStatus(version, blink::EmbeddedWorkerStatus::kStopped);
 
   // The version should be stopped since there is no controllee.
@@ -1053,9 +1054,9 @@ TEST_P(ServiceWorkerJobTest, RegisterSameWhileUninstalling) {
   registration->SetTaskRunnerForTest(runner);
 
   // Add a controllee and queue an unregister to force the uninstalling state.
-  ServiceWorkerClient* container_host = CreateControllee();
+  ServiceWorkerClient* service_worker_client = CreateControllee();
   scoped_refptr<ServiceWorkerVersion> version = registration->active_version();
-  version->AddControllee(container_host);
+  version->AddControllee(service_worker_client);
   RunUnregisterJob(options.scope, key);
   // Make sure the registration is deleted and purgable resources
   // set for purging once the version goes dead.
@@ -1095,9 +1096,9 @@ TEST_P(ServiceWorkerJobTest, RegisterSameWhileUninstallingAndUnregister) {
   registration->SetTaskRunnerForTest(runner);
 
   // Add a controllee and queue an unregister to force the uninstalling state.
-  ServiceWorkerClient* container_host = CreateControllee();
+  ServiceWorkerClient* service_worker_client = CreateControllee();
   scoped_refptr<ServiceWorkerVersion> version = registration->active_version();
-  version->AddControllee(container_host);
+  version->AddControllee(service_worker_client);
   RunUnregisterJob(options.scope, key);
   // Make sure the registration is deleted and purgable resources
   // set for purging once the version goes dead.
@@ -1151,10 +1152,10 @@ TEST_P(ServiceWorkerJobTest, RegisterWhileUninstalling) {
   registration->SetTaskRunnerForTest(runner);
 
   // Add a controllee and queue an unregister to force the uninstalling state.
-  ServiceWorkerClient* container_host = CreateControllee();
+  ServiceWorkerClient* service_worker_client = CreateControllee();
   scoped_refptr<ServiceWorkerVersion> old_version =
       registration->active_version();
-  old_version->AddControllee(container_host);
+  old_version->AddControllee(service_worker_client);
   RunUnregisterJob(options.scope, key);
 
   // Register another script.
@@ -1175,7 +1176,7 @@ TEST_P(ServiceWorkerJobTest, RegisterWhileUninstalling) {
   EXPECT_EQ(ServiceWorkerVersion::INSTALLED, new_version->status());
 
   // Make the old version eligible for eviction.
-  old_version->RemoveControllee(container_host->client_uuid());
+  old_version->RemoveControllee(service_worker_client->client_uuid());
   RequestTermination(&initial_client->host());
 
   // Wait for activated.
@@ -1204,10 +1205,10 @@ TEST_P(ServiceWorkerJobTest, RegisterAndUnregisterWhileUninstalling) {
   base::RunLoop().RunUntilIdle();
 
   // Add a controllee and queue an unregister to force the uninstalling state.
-  ServiceWorkerClient* container_host = CreateControllee();
+  ServiceWorkerClient* service_worker_client = CreateControllee();
   scoped_refptr<ServiceWorkerVersion> old_version =
       registration->active_version();
-  old_version->AddControllee(container_host);
+  old_version->AddControllee(service_worker_client);
   RunUnregisterJob(options.scope, key);
 
   EXPECT_EQ(registration, RunRegisterJob(script2, key, options));
@@ -1237,7 +1238,7 @@ TEST_P(ServiceWorkerJobTest, RegisterAndUnregisterWhileUninstalling) {
             new_version->running_status());
   EXPECT_EQ(ServiceWorkerVersion::INSTALLED, new_version->status());
 
-  old_version->RemoveControllee(container_host->client_uuid());
+  old_version->RemoveControllee(service_worker_client->client_uuid());
 
   WaitForVersionRunningStatus(old_version,
                               blink::EmbeddedWorkerStatus::kStopped);
@@ -1273,10 +1274,10 @@ TEST_P(ServiceWorkerJobTest, RegisterSameScriptMultipleTimesWhileUninstalling) {
   registration->SetTaskRunnerForTest(runner);
 
   // Add a controllee and queue an unregister to force the uninstalling state.
-  ServiceWorkerClient* container_host = CreateControllee();
+  ServiceWorkerClient* service_worker_client = CreateControllee();
   scoped_refptr<ServiceWorkerVersion> old_version =
       registration->active_version();
-  old_version->AddControllee(container_host);
+  old_version->AddControllee(service_worker_client);
   RunUnregisterJob(options.scope, key);
 
   EXPECT_EQ(registration, RunRegisterJob(script2, key, options));
@@ -1307,7 +1308,7 @@ TEST_P(ServiceWorkerJobTest, RegisterSameScriptMultipleTimesWhileUninstalling) {
   EXPECT_FALSE(registration->is_uninstalling());
   EXPECT_EQ(new_version, registration->waiting_version());
 
-  old_version->RemoveControllee(container_host->client_uuid());
+  old_version->RemoveControllee(service_worker_client->client_uuid());
   RequestTermination(&initial_client->host());
 
   // Wait for activated.
@@ -2244,10 +2245,10 @@ TEST_P(ServiceWorkerUpdateJobTest, RegisterMultipleTimesWhileUninstalling) {
   registration->SetTaskRunnerForTest(runner);
 
   // Add a controllee and queue an unregister to force the uninstalling state.
-  ServiceWorkerClient* container_host = CreateControllee();
+  ServiceWorkerClient* service_worker_client = CreateControllee();
   scoped_refptr<ServiceWorkerVersion> first_version =
       registration->active_version();
-  first_version->AddControllee(container_host);
+  first_version->AddControllee(service_worker_client);
   RunUnregisterJob(options.scope, key);
 
   EXPECT_EQ(registration, RunRegisterJob(script2, key, options));
@@ -2273,7 +2274,7 @@ TEST_P(ServiceWorkerUpdateJobTest, RegisterMultipleTimesWhileUninstalling) {
   EXPECT_FALSE(registration->is_uninstalling());
   EXPECT_EQ(ServiceWorkerVersion::REDUNDANT, second_version->status());
 
-  first_version->RemoveControllee(container_host->client_uuid());
+  first_version->RemoveControllee(service_worker_client->client_uuid());
   RequestTermination(&initial_client->host());
 
   // Wait for activated.
@@ -2307,10 +2308,10 @@ TEST_P(ServiceWorkerUpdateJobTest, ActivateCancelsOnShutdown) {
   registration->SetTaskRunnerForTest(runner);
 
   // Add a controllee.
-  ServiceWorkerClient* container_host = CreateControllee();
+  ServiceWorkerClient* service_worker_client = CreateControllee();
   scoped_refptr<ServiceWorkerVersion> first_version =
       registration->active_version();
-  first_version->AddControllee(container_host);
+  first_version->AddControllee(service_worker_client);
 
   // Update. The new version should be waiting.
   // Change script body.
@@ -2334,7 +2335,7 @@ TEST_P(ServiceWorkerUpdateJobTest, ActivateCancelsOnShutdown) {
 
   // Remove the controllee. The new version should be activating, and delayed
   // until the runner runs again.
-  first_version->RemoveControllee(container_host->client_uuid());
+  first_version->RemoveControllee(service_worker_client->client_uuid());
   base::RunLoop().RunUntilIdle();
 
   // Activating the new version won't happen until
