@@ -66,7 +66,7 @@ namespace cros_events = metrics::structured::events::v2::cr_os_events;
 // which it may not be. Icon purpose also needs to be considered.
 apps::IconInfo GetIcon(const std::vector<apps::IconInfo>& manifest_icons) {
   for (const auto& icon_info : manifest_icons) {
-    if (icon_info.square_size_px > ash::app_install::kIconSize) {
+    if (icon_info.square_size_px.value_or(0) > ash::app_install::kIconSize) {
       return icon_info;
     }
   }
@@ -100,7 +100,7 @@ void OnManifestFetchedShowCrosDialog(
       base::UTF16ToUTF8(web_app_info->title),
       web_app_info->start_url.GetWithEmptyPath(),
       base::UTF16ToUTF8(web_app_info->description), icon.url,
-      icon.square_size_px.has_value() ? icon.square_size_px.value() : 0,
+      icon.square_size_px.value_or(0),
       icon.purpose == apps::IconInfo::Purpose::kMaskable,
       std::move(dialog_screenshots),
       base::BindOnce(
