@@ -11,16 +11,8 @@ package org.chromium.base.supplier;
  * @param <T> Return type.
  */
 public interface Supplier<T> extends java.util.function.Supplier<T> {
-    /**
-     * Returns whether the supplier holds a value currently.
-     *
-     * This default implementation should only be used with trivial implementation of #get(), where
-     * the supplier object is accessed. In case it is created on demand, or the Supplier
-     * implementation provides a new one every time, this method must be overridden.
-     */
+    /** Returns whether the supplier holds a value currently. */
     default boolean hasValue() {
-        T t = get();
-        assert t == get() : "Value provided by #get() must not change.";
-        return t != null;
+        return get() != null;
     }
 }
