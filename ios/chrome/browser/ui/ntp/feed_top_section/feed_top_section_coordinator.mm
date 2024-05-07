@@ -7,10 +7,15 @@
 #import "base/metrics/histogram_functions.h"
 #import "base/metrics/user_metrics.h"
 #import "base/metrics/user_metrics_action.h"
+#import "components/search_engines/prepopulated_engines.h"
+#import "components/search_engines/template_url.h"
+#import "components/search_engines/template_url_prepopulate_data.h"
+#import "components/search_engines/template_url_service.h"
 #import "components/signin/public/base/signin_metrics.h"
 #import "ios/chrome/browser/push_notification/model/push_notification_client_id.h"
 #import "ios/chrome/browser/push_notification/model/push_notification_service.h"
 #import "ios/chrome/browser/push_notification/model/push_notification_util.h"
+#import "ios/chrome/browser/search_engines/model/template_url_service_factory.h"
 #import "ios/chrome/browser/shared/coordinator/alert/alert_coordinator.h"
 #import "ios/chrome/browser/shared/model/browser/browser.h"
 #import "ios/chrome/browser/shared/model/browser_state/chrome_browser_state.h"
@@ -115,6 +120,14 @@ using base::UserMetricsAction;
         self.signinPromoMediator;
   }
 
+  const TemplateURL* defaultSearchURLTemplate =
+      ios::TemplateURLServiceFactory::GetForBrowserState(browserState)
+          ->GetDefaultSearchProvider();
+
+  bool isDefaultSearchEngine =
+      defaultSearchURLTemplate && defaultSearchURLTemplate->prepopulate_id() ==
+                                      TemplateURLPrepopulateData::google.id;
+  self.feedTopSectionMediator.isDefaultSearchEngine = isDefaultSearchEngine;
   self.feedTopSectionMediator.presenter = self;
   self.feedTopSectionMediator.NTPDelegate = self.NTPDelegate;
   self.feedTopSectionViewController.delegate = self.feedTopSectionMediator;

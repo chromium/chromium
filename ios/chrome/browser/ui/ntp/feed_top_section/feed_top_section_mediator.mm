@@ -14,6 +14,7 @@
 #import "components/prefs/pref_service.h"
 #import "components/signin/public/identity_manager/identity_manager.h"
 #import "components/signin/public/identity_manager/objc/identity_manager_observer_bridge.h"
+#import "ios/chrome/browser/content_notification/model/content_notification_util.h"
 #import "ios/chrome/browser/push_notification/model/provisional_push_notification_util.h"
 #import "ios/chrome/browser/push_notification/model/push_notification_client_id.h"
 #import "ios/chrome/browser/push_notification/model/push_notification_service.h"
@@ -226,21 +227,16 @@ using base::UserMetricsAction;
   return false;
 }
 
-// TODO(b/315161586): Disable notifications promo if DSE changes.
 - (BOOL)shouldShowNotificationsPromo {
-  // Check feature flag.
-  if (!IsContentPushNotificationsPromoEnabled()) {
-    return false;
-  }
-
-  // Check if user is signed in.
-  if (![self isUserSignedIn]) {
-    return false;
-  }
-
   // Check if override is active. Override only works if the user is signed in.
   if (experimental_flags::ShouldForceContentNotificationsPromo()) {
     return true;
+  }
+
+  if (!IsContentNotificationPromoEnabled([self isUserSignedIn],
+                                         self.isDefaultSearchEngine,
+                                         self.prefService)) {
+    return false;
   }
 
   // Check if notifications are enabled of any type at the Chime level.
