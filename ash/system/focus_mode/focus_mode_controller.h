@@ -22,7 +22,7 @@ class PrefRegistrySimple;
 namespace ash {
 
 namespace youtube_music {
-class YoutubeMusicController;
+class YouTubeMusicController;
 }  //  namespace youtube_music
 
 class FocusModeSoundsController;
@@ -98,7 +98,7 @@ class ASH_EXPORT FocusModeController : public SessionObserver {
   FocusModeSoundsController* focus_mode_sounds_controller() const {
     return focus_mode_sounds_controller_.get();
   }
-  youtube_music::YoutubeMusicController* youtube_music_controller() const {
+  youtube_music::YouTubeMusicController* youtube_music_controller() const {
     return youtube_music_controller_.get();
   }
   FocusModeDelegate* delegate() { return delegate_.get(); }
@@ -226,8 +226,8 @@ class ASH_EXPORT FocusModeController : public SessionObserver {
   // added later.
   std::unique_ptr<FocusModeSoundsController> focus_mode_sounds_controller_;
 
-  // Controller for youtube music API integration.
-  std::unique_ptr<youtube_music::YoutubeMusicController>
+  // Controller for YouTube Music API integration.
+  std::unique_ptr<youtube_music::YouTubeMusicController>
       youtube_music_controller_;
 
   std::unique_ptr<FocusModeDelegate> delegate_;

@@ -17,7 +17,7 @@ class TestFocusModeDelegate : public FocusModeDelegate {
   ~TestFocusModeDelegate() override;
 
   // FocusModeDelegate:
-  std::unique_ptr<youtube_music::YoutubeMusicClient> CreateYoutubeMusicClient()
+  std::unique_ptr<youtube_music::YouTubeMusicClient> CreateYouTubeMusicClient()
       override;
 };
 

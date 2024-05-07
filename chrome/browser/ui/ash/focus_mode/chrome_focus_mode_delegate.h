@@ -15,8 +15,8 @@ class ChromeFocusModeDelegate : public ash::FocusModeDelegate {
   ~ChromeFocusModeDelegate() override;
 
   // ash::FocusModeDelegate
-  std::unique_ptr<ash::youtube_music::YoutubeMusicClient>
-  CreateYoutubeMusicClient() override;
+  std::unique_ptr<ash::youtube_music::YouTubeMusicClient>
+  CreateYouTubeMusicClient() override;
 };
 
 #endif  // CHROME_BROWSER_UI_ASH_FOCUS_MODE_CHROME_FOCUS_MODE_DELEGATE_H_

@@ -6,9 +6,11 @@
 #define ASH_SYSTEM_FOCUS_MODE_YOUTUBE_MUSIC_YOUTUBE_MUSIC_TYPES_H_
 
 #include <string>
+#include <vector>
 
 #include "ash/ash_export.h"
 #include "base/functional/callback.h"
+#include "google_apis/common/api_error_codes.h"
 #include "ui/base/models/list_model.h"
 #include "url/gurl.h"
 
@@ -102,25 +104,13 @@ struct ASH_EXPORT PlaybackContext {
   std::string queue_name;
 };
 
-// Error codes for the Youtube Music API requests.
-enum class YoutubeMusicRequestReturnCode {
-  kSuccess,
-  kNoYoutubeMusicClient,
-  kNotDone,
-  kUnknown,
-};
-
-using GetMusicSectionsCallback =
-    base::OnceCallback<void(int http_error_code,
-                            const ui::ListModel<MusicSection>* music_sections)>;
-
 using GetPlaylistsCallback =
-    base::OnceCallback<void(int http_error_code,
-                            const ui::ListModel<Playlist>* playlists)>;
+    base::OnceCallback<void(google_apis::ApiErrorCode http_error_code,
+                            const std::vector<Playlist> playlists)>;
 
 using GetPlaybackContextCallback =
-    base::OnceCallback<void(int http_error_code,
-                            const PlaybackContext* playback_context)>;
+    base::OnceCallback<void(google_apis::ApiErrorCode http_error_code,
+                            const PlaybackContext playback_context)>;
 
 }  // namespace ash::youtube_music
 

@@ -10,8 +10,8 @@ TestFocusModeDelegate::TestFocusModeDelegate() = default;
 
 TestFocusModeDelegate::~TestFocusModeDelegate() = default;
 
-std::unique_ptr<youtube_music::YoutubeMusicClient>
-TestFocusModeDelegate::CreateYoutubeMusicClient() {
+std::unique_ptr<youtube_music::YouTubeMusicClient>
+TestFocusModeDelegate::CreateYouTubeMusicClient() {
   // TODO(yongshun): Return the active fake client.
   return nullptr;
 }

@@ -158,7 +158,7 @@ FocusModeController::FocusModeController(
 
   focus_mode_sounds_controller_ = std::make_unique<FocusModeSoundsController>();
   youtube_music_controller_ =
-      std::make_unique<youtube_music::YoutubeMusicController>();
+      std::make_unique<youtube_music::YouTubeMusicController>();
 
   Shell::Get()->session_controller()->AddObserver(this);
 }

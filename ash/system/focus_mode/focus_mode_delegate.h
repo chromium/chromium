@@ -12,7 +12,7 @@
 namespace ash {
 
 namespace youtube_music {
-class YoutubeMusicClient;
+class YouTubeMusicClient;
 }  // namespace youtube_music
 
 // Interface for focus mode delegate.
@@ -23,8 +23,8 @@ class ASH_EXPORT FocusModeDelegate {
   virtual ~FocusModeDelegate() = default;
 
   // Virtual function that is implemented in chrome to create the client.
-  virtual std::unique_ptr<youtube_music::YoutubeMusicClient>
-  CreateYoutubeMusicClient() = 0;
+  virtual std::unique_ptr<youtube_music::YouTubeMusicClient>
+  CreateYouTubeMusicClient() = 0;
 };
 
 }  // namespace ash
