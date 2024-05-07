@@ -6,18 +6,25 @@ package org.chromium.chrome.browser.password_manager.settings;
 
 import static androidx.test.espresso.Espresso.onView;
 import static androidx.test.espresso.action.ViewActions.click;
+import static androidx.test.espresso.matcher.ViewMatchers.hasDescendant;
+import static androidx.test.espresso.matcher.ViewMatchers.withId;
 import static androidx.test.espresso.matcher.ViewMatchers.withText;
 
 import static org.junit.Assert.assertEquals;
 import static org.junit.Assert.assertNotNull;
 
+import static org.chromium.ui.test.util.ViewUtils.onViewWaiting;
+
 import android.app.PendingIntent;
 import android.content.Context;
 import android.content.Intent;
+import android.view.View;
 
 import androidx.test.core.app.ApplicationProvider;
-import androidx.test.filters.MediumTest;
+import androidx.test.espresso.contrib.RecyclerViewActions;
+import androidx.test.filters.LargeTest;
 
+import org.hamcrest.Matcher;
 import org.junit.Before;
 import org.junit.Rule;
 import org.junit.Test;
@@ -78,18 +85,42 @@ public class CredentialManagerIntegrationTest {
     }
 
     @Test
-    @MediumTest
+    @LargeTest
     @Restriction({
         DeviceRestriction.RESTRICTION_TYPE_NON_AUTO,
         GmsCoreVersionRestriction.RESTRICTION_TYPE_VERSION_GE_22W30
     })
     public void testUseCredentialManagerFromChromeSettings() {
         mSettingsActivityTestRule.startSettingsActivity();
+        scrollToSetting(withText(R.string.password_manager_settings_title));
         onView(withText(R.string.password_manager_settings_title)).perform(click());
 
         // Verify that success callback was called.
         assertNotNull(mSuccessCallbackHelper.getOnlyPayloadBlocking());
         // Verify that failure callback was not called.
         assertEquals(0, mFailureCallbackHelper.getCallCount());
+    }
+
+    @Test
+    @LargeTest
+    @Restriction({
+        DeviceRestriction.RESTRICTION_TYPE_NON_AUTO,
+        GmsCoreVersionRestriction.RESTRICTION_TYPE_VERSION_GE_22W30
+    })
+    public void testUseCredentialManagerFromSafetyCheck() {
+        mSettingsActivityTestRule.startSettingsActivity();
+        scrollToSetting(withText(R.string.prefs_safety_check));
+        onView(withText(R.string.prefs_safety_check)).perform(click());
+        onViewWaiting(withText(R.string.safety_check_passwords_local_title)).perform(click());
+
+        // Verify that success callback was called.
+        assertNotNull(mSuccessCallbackHelper.getOnlyPayloadBlocking());
+        // Verify that failure callback was not called.
+        assertEquals(0, mFailureCallbackHelper.getCallCount());
+    }
+
+    private void scrollToSetting(Matcher<View> matcher) {
+        onView(withId(R.id.recycler_view))
+                .perform(RecyclerViewActions.scrollTo(hasDescendant(matcher)));
     }
 }
