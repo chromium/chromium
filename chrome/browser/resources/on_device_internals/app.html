@@ -82,7 +82,7 @@
     max-width: 400px;
   }
 
-  iron-collapse {
+  cr-collapse {
     padding: 10px var(--cr-section-padding);
   }
 
@@ -90,7 +90,7 @@
     margin-bottom: 10px;
   }
 
-  iron-collapse,
+  cr-collapse,
   cr-expand-button {
     background-color: var(--cr-card-background-color);
   }
@@ -121,7 +121,7 @@
     disabled="[[!model_]]">
   Context options (current size: [[contextLength_]] words)
 </cr-expand-button>
-<iron-collapse id="expandedContent" opened="[[contextExpanded_]]">
+<cr-collapse id="expandedContent" opened="[[contextExpanded_]]">
   <cr-textarea type="text" label="Context" value="{{contextText_}}">
   </cr-textarea>
   <cr-button on-click="onAddContextClick_">
@@ -130,7 +130,7 @@
   <cr-button class="cr-button-gap" on-click="startNewSession_">
     New session
   </cr-button>
-</iron-collapse>
+</cr-collapse>
 <div class="output-options">
   <cr-input id="topKInput" type="number" min="1" max="128" label="Top K"
     error-message="Top K must be between 1 and 128" auto-validate

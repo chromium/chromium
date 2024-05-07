@@ -42,12 +42,12 @@
 </style>
 <cr-expand-button class="cr-row first" expanded="{{request.expanded}}">
   <span class="label">[[getTimestamp_(request.startTime)]]</span>
-  <iron-icon class="label status" icon="[[getStatusIcon_(request.status)]]"
+  <cr-icon class="label status" icon="[[getStatusIcon_(request.status)]]"
       title="[[getStatusTitle_(request.endTime)]]">
-  </iron-icon>
+  </cr-icon>
   <span class="label">[[getRequestPath_(request)]]</span>
 </cr-expand-button>
-<iron-collapse opened="[[request.expanded]]">
+<cr-collapse opened="[[request.expanded]]">
   <div class="cr-row" hidden$="[[!requestDataJson_]]">
     <div class="content"
         inner-h-t-m-l="[[getRequestDataHtml_(requestDataJson_)]]">
@@ -76,4 +76,4 @@
       </cr-icon-button>
     </div>
   </div>
-</iron-collapse>
+</cr-collapse>

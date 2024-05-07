@@ -3,12 +3,12 @@
 // found in the LICENSE file.
 
 import '//resources/cr_elements/cr_button/cr_button.js';
+import '//resources/cr_elements/cr_collapse/cr_collapse.js';
 import '//resources/cr_elements/cr_hidden_style.css.js';
 import '//resources/cr_elements/cr_input/cr_input.js';
 import '//resources/cr_elements/cr_shared_vars.css.js';
 import '//resources/cr_elements/cr_textarea/cr_textarea.js';
 import '//resources/cr_elements/cr_expand_button/cr_expand_button.js';
-import '//resources/polymer/v3_0/iron-collapse/iron-collapse.js';
 
 import type {CrInputElement} from '//resources/cr_elements/cr_input/cr_input.js';
 import {PolymerElement} from '//resources/polymer/v3_0/polymer/polymer_bundled.min.js';
