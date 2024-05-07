@@ -27,6 +27,7 @@ import org.mockito.junit.MockitoRule;
 import org.chromium.base.Callback;
 import org.chromium.base.UserDataHost;
 import org.chromium.base.supplier.ObservableSupplierImpl;
+import org.chromium.base.supplier.OneshotSupplierImpl;
 import org.chromium.base.test.BaseJUnit4ClassRunner;
 import org.chromium.base.test.util.Batch;
 import org.chromium.base.test.util.Features;
@@ -250,12 +251,12 @@ public class MinimizeAppAndCloseTabBackPressHandlerUnitTest {
                 });
         mHandler =
                 TestThreadUtils.runOnUiThreadBlockingNoException(
-                        () -> {
-                            return new MinimizeAppAndCloseTabBackPressHandler(
-                                    mActivityTabSupplier,
-                                    mShouldCloseTab,
-                                    mSendToBackground,
-                                    mFinalCallback);
-                        });
+                        () ->
+                                new MinimizeAppAndCloseTabBackPressHandler(
+                                        mActivityTabSupplier,
+                                        mShouldCloseTab,
+                                        mSendToBackground,
+                                        mFinalCallback,
+                                        new OneshotSupplierImpl<>()));
     }
 }

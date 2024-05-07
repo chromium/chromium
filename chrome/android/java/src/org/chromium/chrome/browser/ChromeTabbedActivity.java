@@ -3213,7 +3213,8 @@ public class ChromeTabbedActivity extends ChromeActivity<ChromeActivityComponent
                             getActivityTabProvider(),
                             this::backShouldCloseTab,
                             this::sendToBackground,
-                            this::assertOnLastBackPress);
+                            this::assertOnLastBackPress,
+                            getLayoutStateProviderSupplier());
             mBackPressManager.addHandler(
                     mMinimizeAppAndCloseTabBackPressHandler,
                     BackPressHandler.Type.MINIMIZE_APP_AND_CLOSE_TAB);
