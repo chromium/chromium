@@ -222,8 +222,11 @@ class CORE_EXPORT LineBreaker {
                                              InlineItemResult*);
   // Returns false if we can't handle the current InlineItem as a ruby.
   bool HandleRuby(LineInfo* line_info);
+  // `mode`: Must be kMaxContent or kContent.
+  // `limit`: Must be non-negative or kIndefiniteSize, which means no auto-wrap.
   LineInfo CreateSubLineInfo(InlineItemTextIndex start,
                              wtf_size_t end_item_index,
+                             LineBreakerMode mode,
                              LayoutUnit limit,
                              WhitespaceState initial_whitespace_state);
   InlineItemResult* AddRubyColumnResult(
@@ -343,6 +346,9 @@ class CORE_EXPORT LineBreaker {
 
   // True when current box allows line wrapping.
   bool auto_wrap_ = false;
+
+  // Disallow line wrapping even if the ComputedStyle allows it.
+  bool disallow_auto_wrap_ = false;
 
   // True when current box should fallback to break anywhere if it overflows.
   bool break_anywhere_if_overflow_ = false;

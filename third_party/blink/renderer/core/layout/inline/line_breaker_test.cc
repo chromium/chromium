@@ -2,15 +2,16 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#include "third_party/blink/renderer/core/layout/base_layout_algorithm_test.h"
+#include "third_party/blink/renderer/core/layout/inline/line_breaker.h"
 
 #include "third_party/blink/renderer/bindings/core/v8/v8_binding_for_testing.h"
+#include "third_party/blink/renderer/core/layout/base_layout_algorithm_test.h"
 #include "third_party/blink/renderer/core/layout/box_fragment_builder.h"
 #include "third_party/blink/renderer/core/layout/constraint_space_builder.h"
 #include "third_party/blink/renderer/core/layout/inline/inline_break_token.h"
 #include "third_party/blink/renderer/core/layout/inline/inline_cursor.h"
+#include "third_party/blink/renderer/core/layout/inline/inline_item_result_ruby_column.h"
 #include "third_party/blink/renderer/core/layout/inline/inline_node.h"
-#include "third_party/blink/renderer/core/layout/inline/line_breaker.h"
 #include "third_party/blink/renderer/core/layout/inline/line_info.h"
 #include "third_party/blink/renderer/core/layout/layout_ng_block_flow.h"
 #include "third_party/blink/renderer/core/layout/positioned_float.h"
@@ -1097,6 +1098,34 @@ TEST_F(LineBreakerTest, BreakAtTrailingSpacesAfterAtomicInline) {
   EXPECT_EQ(line_info_list[1].Width(), LayoutUnit(20));
   EXPECT_EQ(line_info_list[0].Results().back().item_index, 3u);
   EXPECT_EQ(line_info_list[1].Results().front().item_index, 4u);
+}
+
+// We have a crash with content wider than LayoutUnit::Max() in a ruby.
+// crbug.com/338437458
+TEST_F(LineBreakerTest, WideContentInRuby) {
+  InlineNode node = CreateInlineNode(R"HTML(
+      <div id=container>
+      <ruby><div style="width:109162843px; margin-right:1000px"></div><div>
+      a</div><rt>a</ruby>
+      </div>)HTML");
+  GetDocument().Lifecycle().AdvanceTo(DocumentLifecycle::kInStyleRecalc);
+  GetDocument().Lifecycle().AdvanceTo(DocumentLifecycle::kStyleClean);
+  GetDocument().Lifecycle().AdvanceTo(DocumentLifecycle::kInPerformLayout);
+  node.PrepareLayoutIfNeeded();
+  ConstraintSpace space = ConstraintSpaceForAvailableSize(LayoutUnit::Max());
+  ExclusionSpace exclusion_space;
+  LeadingFloats leading_floats;
+  LineBreaker line_breaker(node, LineBreakerMode::kContent, space,
+                           LineLayoutOpportunity(LayoutUnit::Max()),
+                           leading_floats, nullptr, nullptr, &exclusion_space);
+  LineInfo line_info;
+  line_breaker.NextLine(&line_info);
+  EXPECT_EQ(InlineItem::kOpenRubyColumn, line_info.Results()[1].item->Type());
+  // The base result should contain both <div>s.
+  const auto& base_results =
+      line_info.Results()[1].ruby_column->base_line.Results();
+  EXPECT_EQ(InlineItem::kAtomicInline, base_results[1].item->Type());
+  EXPECT_EQ(InlineItem::kAtomicInline, base_results[2].item->Type());
 }
 
 TEST_F(LineBreakerTest, SetInputRange) {

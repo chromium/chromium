@@ -407,23 +407,7 @@ class FastMinTextContext {
 }  // namespace
 
 inline bool LineBreaker::ShouldAutoWrap(const ComputedStyle& style) const {
-  //  TODO(crbug.com/366553): SVG <text> should not be auto_wrap_ for now.
-  if (UNLIKELY(is_svg_text_))
-    return false;
-  // Combine text should not cause line break.
-  if (UNLIKELY(is_text_combine_))
-    return false;
-  // TODO(crbug.com/1276900): Once we implement multiple line initial letter,
-  // we should allow auto wrap. Below example causes multiple lines text in
-  // initial letter box.
-  //   <style>
-  //    p::.first-letter { line-break: anywhere; }
-  //    p { width: 0px; }
-  //  </style>
-  //  <p>(A) punctuation characters can be part of ::first-letter.</p>
-  if (UNLIKELY(is_initial_letter_box_))
-    return false;
-  return style.ShouldWrapLine();
+  return !UNLIKELY(disallow_auto_wrap_) && style.ShouldWrapLine();
 }
 
 void LineBreaker::UpdateAvailableWidth() {
@@ -496,6 +480,20 @@ LineBreaker::LineBreaker(InlineNode node,
               char_data_list);
     }
   }
+  // TODO(crbug.com/40362375): SVG <text> should not be auto_wrap_ for now.
+  //
+  // Combine text should not cause line break.
+  //
+  // TODO(crbug.com/40207613): Once we implement multiple line initial letter,
+  // we should allow auto wrap. Below example causes multiple lines text in
+  // initial letter box.
+  //   <style>
+  //    p::.first-letter { line-break: anywhere; }
+  //    p { width: 0px; }
+  //  </style>
+  //  <p>(A) punctuation characters can be part of ::first-letter.</p>
+  disallow_auto_wrap_ =
+      is_svg_text_ || is_text_combine_ || is_initial_letter_box_;
 
   if (!break_token)
     return;
@@ -3216,13 +3214,14 @@ bool LineBreaker::HandleRuby(LineInfo* line_info) {
   const InlineItem& item = Items()[open_column_item_index];
 
   LineInfo base_line_info = CreateSubLineInfo(
-      base_start, base_end_index, LayoutUnit::Max(), trailing_whitespace_);
+      base_start, base_end_index, LineBreakerMode::kMaxContent, kIndefiniteSize,
+      trailing_whitespace_);
 
   HeapVector<LineInfo, 1> annotation_line_list;
   for (const auto& data : annotation_data) {
-    annotation_line_list.push_back(
-        CreateSubLineInfo(data.start, data.end_item_index, LayoutUnit::Max(),
-                          WhitespaceState::kLeading));
+    annotation_line_list.push_back(CreateSubLineInfo(
+        data.start, data.end_item_index, LineBreakerMode::kMaxContent,
+        kIndefiniteSize, WhitespaceState::kLeading));
   }
 
   LayoutUnit ruby_size = MaxLineWidth(base_line_info, annotation_line_list);
@@ -3231,12 +3230,13 @@ bool LineBreaker::HandleRuby(LineInfo* line_info) {
     // Recreate lines because lines created with LineBreakerMode::kMaxContent
     // are not usable in InlineLayoutAlgorithm.
     base_line_info =
-        CreateSubLineInfo(base_start, base_end_index, LayoutUnit::NearlyMax(),
-                          trailing_whitespace_);
+        CreateSubLineInfo(base_start, base_end_index, LineBreakerMode::kContent,
+                          kIndefiniteSize, trailing_whitespace_);
     for (wtf_size_t i = 0; i < annotation_data.size(); ++i) {
       annotation_line_list[i] = CreateSubLineInfo(
           annotation_data[i].start, annotation_data[i].end_item_index,
-          LayoutUnit::NearlyMax(), WhitespaceState::kLeading);
+          LineBreakerMode::kContent, kIndefiniteSize,
+          WhitespaceState::kLeading);
     }
 
     AddRubyColumnResult(item, base_line_info, annotation_line_list,
@@ -3253,18 +3253,23 @@ bool LineBreaker::HandleRuby(LineInfo* line_info) {
 LineInfo LineBreaker::CreateSubLineInfo(
     InlineItemTextIndex start,
     wtf_size_t end_item_index,
+    LineBreakerMode mode,
     LayoutUnit limit,
     WhitespaceState initial_whitespace_state) {
+  bool disallow_auto_wrap = false;
+  if (limit == kIndefiniteSize) {
+    limit = LayoutUnit::Max();
+    disallow_auto_wrap = true;
+  }
   ExclusionSpace empty_exclusion_space;
   LeadingFloats empty_leading_floats;
   LineInfo sub_line_info;
   LineBreaker sub_line_breaker(
-      node_,
-      limit == LayoutUnit::Max() ? LineBreakerMode::kMaxContent
-                                 : LineBreakerMode::kContent,
-      constraint_space_, LineLayoutOpportunity(limit), empty_leading_floats,
+      node_, mode, constraint_space_, LineLayoutOpportunity(limit),
+      empty_leading_floats,
       /* break_token */ nullptr,
       /* column_spanner_path */ nullptr, &empty_exclusion_space);
+  sub_line_breaker.disallow_auto_wrap_ = disallow_auto_wrap;
   sub_line_breaker.SetInputRange(start, end_item_index,
                                  initial_whitespace_state);
   sub_line_breaker.NextLine(&sub_line_info);
