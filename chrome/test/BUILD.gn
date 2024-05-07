@@ -9237,6 +9237,7 @@ test("unit_tests") {
       "../browser/extensions/installed_loader_unittest.cc",
       "../browser/extensions/manifest_v2_experiment_manager_unittest.cc",
       "../browser/extensions/menu_manager_unittest.cc",
+      "../browser/extensions/mv2_deprecation_impact_checker_unittest.cc",
       "../browser/extensions/omaha_attributes_handler_unittest.cc",
       "../browser/extensions/pack_extension_unittest.cc",
       "../browser/extensions/permission_message_combinations_unittest.cc",

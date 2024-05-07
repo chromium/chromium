@@ -659,6 +659,8 @@ static_library("extensions") {
     "menu_manager.h",
     "menu_manager_factory.cc",
     "menu_manager_factory.h",
+    "mv2_deprecation_impact_checker.cc",
+    "mv2_deprecation_impact_checker.h",
     "mv2_experiment_stage.h",
     "navigation_extension_enabler.cc",
     "navigation_extension_enabler.h",

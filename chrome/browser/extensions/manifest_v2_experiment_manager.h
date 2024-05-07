@@ -6,6 +6,7 @@
 #define CHROME_BROWSER_EXTENSIONS_MANIFEST_V2_EXPERIMENT_MANAGER_H_
 
 #include "base/memory/raw_ptr.h"
+#include "chrome/browser/extensions/mv2_deprecation_impact_checker.h"
 #include "components/keyed_service/core/keyed_service.h"
 #include "extensions/common/extension_id.h"
 
@@ -17,7 +18,6 @@ class BrowserContext;
 
 namespace extensions {
 class Extension;
-class ExtensionManagement;
 enum class MV2ExperimentStage;
 
 // The central class responsible for managing experiments related to the MV2
@@ -50,9 +50,12 @@ class ManifestV2ExperimentManager : public KeyedService {
   bool IsExtensionAffected(const Extension& extension);
 
  private:
-  // The associated `ExtensionManagement` class. Guaranteed to be safe since
-  // this KeyedService depends upon it as another KeyedService.
-  raw_ptr<ExtensionManagement> extension_management_;
+  // The current stage of the MV2 deprecation experiments.
+  const MV2ExperimentStage experiment_stage_;
+
+  // A helper object to determine if a given extension is affected by the
+  // MV2 deprecation experiments.
+  MV2DeprecationImpactChecker impact_checker_;
 };
 
 }  // namespace extensions

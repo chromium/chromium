@@ -65,11 +65,25 @@ KeyedService* ManifestV2ExperimentManagerFactory::BuildServiceInstanceFor(
   return new ManifestV2ExperimentManager(context);
 }
 
+MV2ExperimentStage CalculateCurrentExperimentStage() {
+  if (base::FeatureList::IsEnabled(
+          extensions_features::kExtensionManifestV2DeprecationWarning)) {
+    return MV2ExperimentStage::kWarning;
+  }
+
+  return MV2ExperimentStage::kNone;
+}
+
 }  // namespace
 
 ManifestV2ExperimentManager::ManifestV2ExperimentManager(
     content::BrowserContext* browser_context)
-    : extension_management_(
+    : experiment_stage_(CalculateCurrentExperimentStage()),
+      // Note: passing `ExtensionManagement` is safe and guaranteed to outlive
+      // the `impact_checker_` because this class is a KeyedService that depends
+      // on `ExtensionManagement`.
+      impact_checker_(
+          experiment_stage_,
           ExtensionManagementFactory::GetForBrowserContext(browser_context)) {}
 ManifestV2ExperimentManager::~ManifestV2ExperimentManager() = default;
 
@@ -87,49 +101,12 @@ BrowserContextKeyedServiceFactory* ManifestV2ExperimentManager::GetFactory() {
 }
 
 MV2ExperimentStage ManifestV2ExperimentManager::GetCurrentExperimentStage() {
-  if (base::FeatureList::IsEnabled(
-          extensions_features::kExtensionManifestV2DeprecationWarning)) {
-    return MV2ExperimentStage::kWarning;
-  }
-
-  return MV2ExperimentStage::kNone;
+  return experiment_stage_;
 }
 
 bool ManifestV2ExperimentManager::IsExtensionAffected(
     const Extension& extension) {
-  // Only consider any extensions if the experiment is enabled.
-  if (GetCurrentExperimentStage() == MV2ExperimentStage::kNone) {
-    return false;
-  }
-
-  // Only extensions < MV3.
-  if (extension.manifest_version() >= 3) {
-    return false;
-  }
-
-  // Only extensions (not platform apps, etc).
-  if (!extension.is_extension() && !extension.is_login_screen_extension()) {
-    return false;
-  }
-
-  // Ignore component extensions (they're implementation details of Chrome).
-  if (Manifest::IsComponentLocation(extension.location())) {
-    return false;
-  }
-
-  // TODO(https://crbug.com/337191307): Finalize behavior for unpacked,
-  // commandline, default-installed, OS-installed, etc extensions.
-
-  // Ignore MV2 extensions that are allowed by policy.
-  if (extension_management_->IsExemptFromMV2DeprecationByPolicy(
-          extension.manifest_version(), extension.id(),
-          extension.manifest()->type())) {
-    return false;
-  }
-
-  // The extension is an MV2 (or lower) extension; we should warn the user
-  // about it.
-  return true;
+  return impact_checker_.IsExtensionAffected(extension);
 }
 
 }  // namespace extensions
