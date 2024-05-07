@@ -255,7 +255,6 @@ public final class PrivacySandboxDialogTest {
 
     @Test
     @SmallTest
-    @DisabledTest(message = "Flaky test. crbug.com/338991368")
     public void testControllerShowsEEAConsent() throws IOException {
         PrivacySandboxDialogController.disableEEANoticeForTesting(true);
 
@@ -263,7 +262,7 @@ public final class PrivacySandboxDialogTest {
         launchDialog();
 
         // Verify that the EEA consent is shown
-        onViewWaiting(withId(R.id.privacy_sandbox_m1_consent_title));
+        onViewWaiting(withId(R.id.privacy_sandbox_m1_consent_title), true);
         assertEquals(
                 "Last dialog action",
                 PromptAction.CONSENT_SHOWN,
@@ -279,7 +278,6 @@ public final class PrivacySandboxDialogTest {
 
     @Test
     @SmallTest
-    @DisabledTest(message = "Flaky test. crbug.com/338991368")
     public void testControllerShowsEEAConsentDropdown() {
         PrivacySandboxDialogController.disableEEANoticeForTesting(true);
 
@@ -287,21 +285,21 @@ public final class PrivacySandboxDialogTest {
         launchDialog();
 
         // Click on the expanding section and verify it worked correctly.
-        onViewWaiting(withId(R.id.privacy_sandbox_m1_consent_title));
-        onView(withId(R.id.dropdown_element)).perform(scrollTo(), click());
+        onViewWaiting(withId(R.id.privacy_sandbox_m1_consent_title), true);
+        onView(withId(R.id.dropdown_element)).inRoot(isDialog()).perform(scrollTo(), click());
         assertEquals(
                 "Last dialog action",
                 PromptAction.CONSENT_MORE_INFO_OPENED,
                 (int) mFakePrivacySandboxBridge.getLastPromptAction());
 
-        onView(withId(R.id.privacy_sandbox_consent_eea_dropdown)).perform(scrollTo());
-        onView(withId(R.id.privacy_sandbox_consent_eea_dropdown)).check(matches(isDisplayed()));
-        onView(withId(R.id.dropdown_element)).perform(scrollTo(), click());
+        onView(withId(R.id.privacy_sandbox_consent_eea_dropdown)).inRoot(isDialog()).perform(scrollTo());
+        onView(withId(R.id.privacy_sandbox_consent_eea_dropdown)).inRoot(isDialog()).check(matches(isDisplayed()));
+        onView(withId(R.id.dropdown_element)).inRoot(isDialog()).perform(scrollTo(), click());
         assertEquals(
                 "Last dialog action",
                 PromptAction.CONSENT_MORE_INFO_CLOSED,
                 (int) mFakePrivacySandboxBridge.getLastPromptAction());
-        onView(withId(R.id.privacy_sandbox_consent_eea_dropdown)).check(doesNotExist());
+        onView(withId(R.id.privacy_sandbox_consent_eea_dropdown)).inRoot(isDialog()).check(doesNotExist());
 
         // Decline the consent and verify it worked correctly.
         tryClickOn(withId(R.id.no_button));
@@ -382,7 +380,7 @@ public final class PrivacySandboxDialogTest {
 
         launchDialog();
         // Click on the expanding section and verify it worked correctly.
-        onViewWaiting(withId(R.id.privacy_sandbox_notice_title));
+        onViewWaiting(withId(R.id.privacy_sandbox_notice_title), true);
         onView(withId(R.id.dropdown_element)).perform(scrollTo(), click());
         assertEquals(
                 "Last dialog action",
@@ -414,12 +412,11 @@ public final class PrivacySandboxDialogTest {
 
     @Test
     @SmallTest
-    @DisabledTest(message = "Flaky test. crbug.com/338991368")
     public void testControllerShowsROWNotice() throws IOException {
         mFakePrivacySandboxBridge.setRequiredPromptType(PromptType.M1_NOTICE_ROW);
         launchDialog();
         // Verify that the ROW notice is shown
-        onViewWaiting(withId(R.id.privacy_sandbox_notice_title));
+        onViewWaiting(withId(R.id.privacy_sandbox_notice_title), true);
         assertEquals(
                 "Last dialog action",
                 PromptAction.NOTICE_SHOWN,
@@ -434,20 +431,20 @@ public final class PrivacySandboxDialogTest {
 
         launchDialog();
         // Click on the expanding section and verify it worked correctly.
-        onViewWaiting(withId(R.id.privacy_sandbox_notice_title));
-        onView(withId(R.id.dropdown_element)).perform(scrollTo(), click());
+        onViewWaiting(withId(R.id.privacy_sandbox_notice_title), true);
+        onView(withId(R.id.dropdown_element)).inRoot(isDialog()).perform(scrollTo(), click());
         assertEquals(
                 "Last dialog action",
                 PromptAction.NOTICE_MORE_INFO_OPENED,
                 (int) mFakePrivacySandboxBridge.getLastPromptAction());
 
-        onView(withId(R.id.privacy_sandbox_notice_row_dropdown)).check(matches(isDisplayed()));
-        onView(withId(R.id.dropdown_element)).perform(scrollTo(), click());
+        onView(withId(R.id.privacy_sandbox_notice_row_dropdown)).inRoot(isDialog()).check(matches(isDisplayed()));
+        onView(withId(R.id.dropdown_element)).inRoot(isDialog()).perform(scrollTo(), click());
         assertEquals(
                 "Last dialog action",
                 PromptAction.NOTICE_MORE_INFO_CLOSED,
                 (int) mFakePrivacySandboxBridge.getLastPromptAction());
-        onView(withId(R.id.privacy_sandbox_notice_row_dropdown)).check(doesNotExist());
+        onView(withId(R.id.privacy_sandbox_notice_row_dropdown)).inRoot(isDialog()).check(doesNotExist());
 
         // Click on the settings button and verify it worked correctly.
         tryClickOn(withId(R.id.settings_button));
@@ -465,12 +462,11 @@ public final class PrivacySandboxDialogTest {
 
     @Test
     @SmallTest
-    @DisabledTest(message = "Flaky test. crbug.com/338991368")
     public void testControllerShowsRestrictedNotice() throws IOException {
         mFakePrivacySandboxBridge.setRequiredPromptType(PromptType.M1_NOTICE_RESTRICTED);
         launchDialog();
         // Verify that the restricted notice is shown
-        onViewWaiting(withId(R.id.privacy_sandbox_notice_title));
+        onViewWaiting(withId(R.id.privacy_sandbox_notice_title), true);
         assertEquals(
                 "Last dialog action",
                 PromptAction.RESTRICTED_NOTICE_SHOWN,
