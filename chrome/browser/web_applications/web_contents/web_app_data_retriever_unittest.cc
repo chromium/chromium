@@ -63,14 +63,17 @@ class FakeWebPageMetadataAgent
   }
 
   // Set |web_app_info| to respond on |GetWebAppInstallInfo|.
-  void SetWebAppInstallInfo(const WebAppInstallInfo& web_app_info) {
-    web_app_info_ = std::make_unique<WebAppInstallInfo>(web_app_info.Clone());
+  void SetWebAppInstallInfo(std::unique_ptr<WebAppInstallInfo> web_app_info) {
+    web_app_info_ = std::move(web_app_info);
   }
 
   void GetWebPageMetadata(GetWebPageMetadataCallback callback) override {
     webapps::mojom::WebPageMetadataPtr web_page_metadata(
         webapps::mojom::WebPageMetadata::New());
-    CHECK(web_app_info_);
+    if (!web_app_info_) {
+      std::move(callback).Run(std::move(web_page_metadata));
+      return;
+    }
     web_page_metadata->application_name = web_app_info_->title;
     web_page_metadata->description = web_app_info_->description;
     web_page_metadata->application_url = web_app_info_->start_url;
@@ -119,8 +122,9 @@ class WebAppDataRetrieverTest : public ChromeRenderViewHostTestHarness {
         web_contents()->GetPrimaryMainFrame());
   }
 
-  void SetRendererWebAppInstallInfo(const WebAppInstallInfo& web_app_info) {
-    fake_chrome_render_frame_.SetWebAppInstallInfo(web_app_info);
+  void SetRendererWebAppInstallInfo(
+      std::unique_ptr<WebAppInstallInfo> web_app_info) {
+    fake_chrome_render_frame_.SetWebAppInstallInfo(std::move(web_app_info));
   }
 
   void GetWebAppInstallInfoCallback(
@@ -173,12 +177,8 @@ TEST_F(WebAppDataRetrieverTest, GetWebAppInstallInfo_AppUrlAbsent) {
   const GURL kFooUrl("https://foo.example");
   web_contents_tester()->NavigateAndCommit(kFooUrl);
 
-  // TODO(b/280862254): Use a nullptr WebAppInstallInfo instead of an invalid
-  // one.
-  WebAppInstallInfo original_web_app_info;
-  original_web_app_info.start_url = GURL();
-
-  SetRendererWebAppInstallInfo(original_web_app_info);
+  // No install info present.
+  SetRendererWebAppInstallInfo(nullptr);
 
   base::RunLoop run_loop;
   WebAppDataRetriever retriever;
@@ -198,10 +198,9 @@ TEST_F(WebAppDataRetrieverTest, GetWebAppInstallInfo_AppUrlPresent) {
 
   web_contents_tester()->NavigateAndCommit(GURL("https://foo.example"));
 
-  auto original_web_app_info = WebAppInstallInfo::CreateWithStartUrlForTesting(
-      GURL("https://bar.example"));
-
-  SetRendererWebAppInstallInfo(*original_web_app_info);
+  GURL other_app_url = GURL("https://bar.example");
+  SetRendererWebAppInstallInfo(
+      WebAppInstallInfo::CreateWithStartUrlForTesting(other_app_url));
 
   base::RunLoop run_loop;
   WebAppDataRetriever retriever;
@@ -211,7 +210,7 @@ TEST_F(WebAppDataRetrieverTest, GetWebAppInstallInfo_AppUrlPresent) {
                      base::Unretained(this), run_loop.QuitClosure()));
   run_loop.Run();
 
-  EXPECT_EQ(original_web_app_info->start_url, web_app_info()->start_url);
+  EXPECT_EQ(other_app_url, web_app_info()->start_url);
 }
 
 TEST_F(WebAppDataRetrieverTest, GetWebAppInstallInfo_TitleAbsentFromRenderer) {
@@ -221,10 +220,11 @@ TEST_F(WebAppDataRetrieverTest, GetWebAppInstallInfo_TitleAbsentFromRenderer) {
 
   web_contents_tester()->SetTitle(kFooTitle);
 
-  WebAppInstallInfo original_web_app_info;
-  original_web_app_info.title = u"";
+  auto original_web_app_info = WebAppInstallInfo::CreateWithStartUrlForTesting(
+      GURL("https://foo.example"));
+  original_web_app_info->title = u"";
 
-  SetRendererWebAppInstallInfo(original_web_app_info);
+  SetRendererWebAppInstallInfo(std::move(original_web_app_info));
 
   base::RunLoop run_loop;
   WebAppDataRetriever retriever;
@@ -247,10 +247,11 @@ TEST_F(WebAppDataRetrieverTest,
 
   web_contents_tester()->SetTitle(u"");
 
-  WebAppInstallInfo original_web_app_info;
-  original_web_app_info.title = u"";
+  auto original_web_app_info = WebAppInstallInfo::CreateWithStartUrlForTesting(
+      GURL("https://foo.example"));
+  original_web_app_info->title = u"";
 
-  SetRendererWebAppInstallInfo(original_web_app_info);
+  SetRendererWebAppInstallInfo(std::move(original_web_app_info));
 
   base::RunLoop run_loop;
   WebAppDataRetriever retriever;
@@ -361,9 +362,7 @@ TEST_F(WebAppDataRetrieverTest, GetWebAppInstallInfo_FrameNavigated) {
   const GURL kFooUrl("https://foo.example/bar");
   web_contents_tester()->NavigateAndCommit(kFooUrl.DeprecatedGetOriginAsURL());
 
-  // TODO(b/280862254): Use a nullptr WebAppInstallInfo instead of an invalid
-  // one.
-  SetRendererWebAppInstallInfo(WebAppInstallInfo());
+  SetRendererWebAppInstallInfo(nullptr);
 
   base::RunLoop run_loop;
   WebAppDataRetriever retriever;
