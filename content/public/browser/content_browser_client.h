@@ -1039,30 +1039,45 @@ class CONTENT_EXPORT ContentBrowserClient {
   // details about how the returned boolean result was obtained.
   //
   // Note that `rfh` can be nullptr.
+  //
+  // If non-null, the embedder can use `out_block_is_site_setting_specific` to
+  // relay whether or not a failure to be allowed is due to a site-specific
+  // reason.
   virtual bool IsSharedStorageAllowed(content::BrowserContext* browser_context,
                                       content::RenderFrameHost* rfh,
                                       const url::Origin& top_frame_origin,
                                       const url::Origin& accessing_origin,
-                                      std::string* out_debug_message = nullptr);
+                                      std::string* out_debug_message,
+                                      bool* out_block_is_site_setting_specific);
 
   // Allows the embedder to control if Shared Storage API `selectURL()` can
   // happen in a given context.
   //
   // If non-null, the embedder can use `out_debug_message` to relay further
   // details about how the returned boolean result was obtained.
+  //
+  // If non-null, the embedder can use `out_block_is_site_setting_specific` to
+  // relay whether or not a failure to be allowed is due to a site-specific
+  // reason.
   virtual bool IsSharedStorageSelectURLAllowed(
       content::BrowserContext* browser_context,
 
       const url::Origin& top_frame_origin,
       const url::Origin& accessing_origin,
-      std::string* out_debug_message = nullptr);
+      std::string* out_debug_message,
+      bool* out_block_is_site_setting_specific);
 
   // Allows the embedder to control if Private Aggregation API operations can
   // happen in a given context.
+  //
+  // If non-null, the embedder can use `out_block_is_site_setting_specific` to
+  // relay whether or not a failure to be allowed is due to a site-specific
+  // reason.
   virtual bool IsPrivateAggregationAllowed(
       content::BrowserContext* browser_context,
       const url::Origin& top_frame_origin,
-      const url::Origin& reporting_origin);
+      const url::Origin& reporting_origin,
+      bool* out_block_is_site_setting_specific);
 
   // Allows the embedder to control if Private Aggregation API debug mode
   // operations can happen in a given context.

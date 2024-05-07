@@ -284,7 +284,8 @@ class MockChromeContentBrowserClient : public ChromeContentBrowserClient {
       content::RenderFrameHost* rfh,
       const url::Origin& top_frame_origin,
       const url::Origin& accessing_origin,
-      std::string* out_debug_message = nullptr) override {
+      std::string* out_debug_message,
+      bool* out_block_is_site_setting_specific) override {
     if (bypass_shared_storage_allowed_count_ > 0) {
       bypass_shared_storage_allowed_count_--;
       return true;
@@ -292,21 +293,23 @@ class MockChromeContentBrowserClient : public ChromeContentBrowserClient {
 
     return ChromeContentBrowserClient::IsSharedStorageAllowed(
         browser_context, rfh, top_frame_origin, accessing_origin,
-        out_debug_message);
+        out_debug_message, out_block_is_site_setting_specific);
   }
 
   bool IsSharedStorageSelectURLAllowed(
       content::BrowserContext* browser_context,
       const url::Origin& top_frame_origin,
       const url::Origin& accessing_origin,
-      std::string* out_debug_message = nullptr) override {
+      std::string* out_debug_message,
+      bool* out_block_is_site_setting_specific) override {
     if (bypass_shared_storage_select_url_allowed_count_) {
       bypass_shared_storage_select_url_allowed_count_--;
       return true;
     }
 
     return ChromeContentBrowserClient::IsSharedStorageSelectURLAllowed(
-        browser_context, top_frame_origin, accessing_origin, out_debug_message);
+        browser_context, top_frame_origin, accessing_origin, out_debug_message,
+        out_block_is_site_setting_specific);
   }
 
   void set_bypass_shared_storage_allowed_count(int count) {

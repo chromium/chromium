@@ -707,8 +707,8 @@ TEST_F(PrivateAggregationHostTest, PrivateAggregationAllowed_RequestSucceeds) {
       remote.BindNewPipeAndPassReceiver()));
 
   // If the API is enabled, the call should succeed.
-  EXPECT_CALL(browser_client,
-              IsPrivateAggregationAllowed(_, kMainFrameOrigin, kExampleOrigin))
+  EXPECT_CALL(browser_client, IsPrivateAggregationAllowed(_, kMainFrameOrigin,
+                                                          kExampleOrigin, _))
       .Times(2)
       .WillRepeatedly(testing::Return(true));
   EXPECT_CALL(mock_callback_, Run);
@@ -749,8 +749,8 @@ TEST_F(PrivateAggregationHostTest, PrivateAggregationDisallowed_RequestFails) {
       remote.BindNewPipeAndPassReceiver()));
 
   // If the API is enabled, the call should succeed.
-  EXPECT_CALL(browser_client,
-              IsPrivateAggregationAllowed(_, kMainFrameOrigin, kExampleOrigin))
+  EXPECT_CALL(browser_client, IsPrivateAggregationAllowed(_, kMainFrameOrigin,
+                                                          kExampleOrigin, _))
       .WillOnce(testing::Return(false));
   EXPECT_CALL(mock_callback_, Run).Times(0);
 
@@ -1470,7 +1470,7 @@ TEST_F(PrivateAggregationHostTest,
     }
 
     EXPECT_CALL(browser_client, IsPrivateAggregationAllowed(_, kMainFrameOrigin,
-                                                            kExampleOrigin))
+                                                            kExampleOrigin, _))
         .WillRepeatedly(testing::Return(true));
 
     if (test_case.expected_debug_mode_settings_check) {

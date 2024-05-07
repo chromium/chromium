@@ -521,7 +521,8 @@ bool SharedStorageHeaderObserver::IsSharedStorageAllowedBySiteSettings(
                   : nullptr;
   return GetContentClient()->browser()->IsSharedStorageAllowed(
       storage_partition_->browser_context(), rfh, top_frame_origin,
-      request_origin, out_debug_message);
+      request_origin, out_debug_message,
+      /*out_block_is_site_setting_specific=*/nullptr);
 }
 
 void SharedStorageHeaderObserver::NotifySharedStorageAccessed(

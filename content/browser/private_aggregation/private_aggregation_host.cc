@@ -254,7 +254,7 @@ void PrivateAggregationHost::ContributeToHistogram(
 
   if (!GetContentClient()->browser()->IsPrivateAggregationAllowed(
           &*browser_context_, receiver_set_.current_context()->top_frame_origin,
-          reporting_origin)) {
+          reporting_origin, /*out_block_is_site_setting_specific=*/nullptr)) {
     CloseCurrentPipe(PipeResult::kApiDisabledInSettings);
     return;
   }
@@ -474,7 +474,7 @@ void PrivateAggregationHost::SendReportOnTimeoutOrDisconnect(
 
   if (!GetContentClient()->browser()->IsPrivateAggregationAllowed(
           &*browser_context_, receiver_context.top_frame_origin,
-          reporting_origin)) {
+          reporting_origin, /*out_block_is_site_setting_specific=*/nullptr)) {
     // No need to remove the pipe from `receiver_set_` as it's already
     // disconnected or will get disconnected synchronously.
     RecordPipeResultHistogram(PipeResult::kApiDisabledInSettings);

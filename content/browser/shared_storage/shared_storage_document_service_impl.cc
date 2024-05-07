@@ -411,9 +411,12 @@ bool SharedStorageDocumentServiceImpl::IsSharedStorageAllowedForOrigin(
   // Will trigger a call to
   // `content_settings::PageSpecificContentSettings::BrowsingDataAccessed()` for
   // reporting purposes.
+  //
+  // TODO(335839125): Plumb in a non-null `out_block_is_site_setting_specific`.
   return GetContentClient()->browser()->IsSharedStorageAllowed(
       render_frame_host().GetBrowserContext(), &render_frame_host(),
-      main_frame_origin_, accessing_origin, out_debug_message);
+      main_frame_origin_, accessing_origin, out_debug_message,
+      /*out_block_is_site_setting_specific=*/nullptr);
 }
 
 bool SharedStorageDocumentServiceImpl::IsSharedStorageAddModuleAllowedForOrigin(
@@ -422,16 +425,21 @@ bool SharedStorageDocumentServiceImpl::IsSharedStorageAddModuleAllowedForOrigin(
   // Will trigger a call to
   // `content_settings::PageSpecificContentSettings::BrowsingDataAccessed()` for
   // reporting purposes.
+  //
+  // TODO(335839125): Plumb in a non-null `out_block_is_site_setting_specific`.
   if (!IsSharedStorageAllowedForOrigin(accessing_origin, out_debug_message)) {
     return false;
   }
 
+  // TODO(335839125): Plumb in a non-null `out_block_is_site_setting_specific`.
   return GetContentClient()->browser()->IsSharedStorageSelectURLAllowed(
              render_frame_host().GetBrowserContext(), main_frame_origin_,
-             accessing_origin, out_debug_message) ||
+             accessing_origin, out_debug_message,
+             /*out_block_is_site_setting_specific=*/nullptr) ||
          GetContentClient()->browser()->IsPrivateAggregationAllowed(
              render_frame_host().GetBrowserContext(), main_frame_origin_,
-             accessing_origin);
+             accessing_origin,
+             /*out_block_is_site_setting_specific=*/nullptr);
 }
 
 std::string SharedStorageDocumentServiceImpl::SerializeLastCommittedOrigin()

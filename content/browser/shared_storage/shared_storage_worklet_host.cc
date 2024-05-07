@@ -1376,7 +1376,7 @@ bool SharedStorageWorkletHost::IsSharedStorageAllowed(
       document_service_ ? &(document_service_->render_frame_host()) : nullptr;
   return GetContentClient()->browser()->IsSharedStorageAllowed(
       browser_context_, rfh, main_frame_origin_, shared_storage_origin_,
-      out_debug_message);
+      out_debug_message, /*out_block_is_site_setting_specific=*/nullptr);
 }
 
 bool SharedStorageWorkletHost::IsSharedStorageSelectURLAllowed(
@@ -1392,7 +1392,7 @@ bool SharedStorageWorkletHost::IsSharedStorageSelectURLAllowed(
 
   return GetContentClient()->browser()->IsSharedStorageSelectURLAllowed(
       browser_context_, main_frame_origin_, shared_storage_origin_,
-      out_debug_message);
+      out_debug_message, /*out_block_is_site_setting_specific=*/nullptr);
 }
 
 }  // namespace content
