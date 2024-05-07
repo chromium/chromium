@@ -3120,11 +3120,19 @@ To change this setting, <ph name="BEGIN_LINK">BEGIN_LINK</ph>delete the Chrome d
       <message name="IDS_HISTORY_MANAGER_NO_RESULTS_NO_DSE" desc="Text explaining that no browsing history items match a search query when the default search engine is not set.">
         Can’t find that page. Check your spelling or try a web search.
       </message>
+
+      <message name="IDS_HISTORY_MANAGER_APP_SPECIFIC_EMPTY_STATE_TITLE" desc="Title text in app-specific history zero state that indicates that there are no history items.">
+        Nothing to show yet
+      </message>
+      <message name="IDS_HISTORY_MANAGER_APP_SPECIFIC_EMPTY_STATE_DESCRIPTION" desc="Description text in app-specific history zero state that states history for a specific-app will be displayed here.">
+        The pages you've opened in Chrome while using <ph name="APP_LABEL">%1$s<ex>YouTube</ex></ph> will show up here.
+      </message>
+
       <message name="IDS_HISTORY_MANAGER_APP_SPECIFIC_HISTORY_NO_RESULTS" desc="Text explaining that no browsing history items match a search query in app-specific history.">
         No search results found
       </message>
       <message name="IDS_HISTORY_MANAGER_EMPTY_STATE_VIEW_OR_OPEN_MORE_HISTORY" desc="Indicates that users can search something else or open more history">
-        Try searching for something else or open more history in Chrome to see more web history from other apps.
+        Try searching for something else or open full Chrome history to see more results.
       </message>
       <message name="IDS_HISTORY_MANAGER_SEARCH" desc="Placeholder text for the input field that allows users to search browsing history.">
         Search your history

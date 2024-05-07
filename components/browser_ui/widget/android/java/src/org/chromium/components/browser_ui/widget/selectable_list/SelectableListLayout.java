@@ -70,6 +70,7 @@ public class SelectableListLayout<E> extends FrameLayout
     private FadingShadowView mToolbarShadow;
 
     private int mEmptyStringResId;
+    private CharSequence mEmptySubheadingString;
 
     private UiConfig mUiConfig;
 
@@ -317,6 +318,7 @@ public class SelectableListLayout<E> extends FrameLayout
 
     /**
      * Initializes the empty state view with an image, heading, and subheading.
+     *
      * @param imageResId Image view to show when the selectable list is empty.
      * @param emptyHeadingStringResId Heading string to show when the selectable list is empty.
      * @param emptySubheadingStringResId SubString to show when the selectable list is empty.
@@ -325,6 +327,15 @@ public class SelectableListLayout<E> extends FrameLayout
     // @TODO: (crbugs.com/1443648) Refactor return value for ForTesting method
     public TextView initializeEmptyStateView(
             int imageResId, int emptyHeadingStringResId, int emptySubheadingStringResId) {
+        CharSequence emptySubheadingString = getResources().getString(emptySubheadingStringResId);
+        return initializeEmptyStateView(imageResId, emptyHeadingStringResId, emptySubheadingString);
+    }
+
+    /**
+     * @see {@link #initializeEmptyStateView(int, int, int)}
+     */
+    public TextView initializeEmptyStateView(
+            int imageResId, int emptyHeadingStringResId, CharSequence emptySubheadingString) {
         // Initialize and inflate empty state view stub.
         ViewStub emptyViewStub = findViewById(R.id.empty_state_view_stub);
         View emptyStateView = emptyViewStub.inflate();
@@ -337,7 +348,7 @@ public class SelectableListLayout<E> extends FrameLayout
 
         // Set empty state properties.
         setEmptyStateImageRes(imageResId);
-        setEmptyStateViewText(emptyHeadingStringResId, emptySubheadingStringResId);
+        setEmptyStateViewText(emptyHeadingStringResId, emptySubheadingString);
         return mEmptyView;
     }
 
@@ -361,14 +372,25 @@ public class SelectableListLayout<E> extends FrameLayout
 
     /**
      * Sets the view text when the selectable list is empty.
+     *
      * @param emptyStringResId Heading string to show when the selectable list is empty.
      * @param emptySubheadingStringResId SubString to show when the selectable list is empty.
      */
     public void setEmptyStateViewText(int emptyHeadingStringResId, int emptySubheadingStringResId) {
+        CharSequence emptySubheadingString = getResources().getString(emptySubheadingStringResId);
+        setEmptyStateViewText(emptyHeadingStringResId, emptySubheadingString);
+    }
+
+    /**
+     * @see {@link #setEmptyStateViewText(int, int)}
+     */
+    public void setEmptyStateViewText(
+            int emptyHeadingStringResId, CharSequence emptySubheadingString) {
         mEmptyStringResId = emptyHeadingStringResId;
+        mEmptySubheadingString = emptySubheadingString;
 
         mEmptyView.setText(mEmptyStringResId);
-        mEmptyStateSubHeadingView.setText(emptySubheadingStringResId);
+        mEmptyStateSubHeadingView.setText(emptySubheadingString);
     }
 
     /**
@@ -428,22 +450,35 @@ public class SelectableListLayout<E> extends FrameLayout
 
     /**
      * Called when a search is starting.
+     *
      * @param searchEmptyStringResId The string to show when the selectable list is empty during a
-     *         search.
+     *     search.
+     */
+    public void onStartSearch(String searchEmptyString) {
+        onStartSearch(searchEmptyString, 0);
+    }
+
+    /**
+     * @see {@link #onStartSearch(String, int)}
      */
     public void onStartSearch(@StringRes int searchEmptyStringResId) {
-        onStartSearch(getContext().getString(searchEmptyStringResId));
+        onStartSearch(getContext().getString(searchEmptyStringResId), 0);
     }
 
     /**
      * Called when a search is starting.
+     *
      * @param searchEmptyString The string to show when the selectable list is empty during a
-     *         search.
+     *     search.
+     * @param searchEmptySubheadingResId The resource ID of the string to show as the description.
      */
-    public void onStartSearch(String searchEmptyString) {
+    public void onStartSearch(String searchEmptyString, int searchEmptySubheadingResId) {
         mRecyclerView.setItemAnimator(null);
         mToolbarShadow.setVisibility(View.VISIBLE);
         mEmptyView.setText(searchEmptyString);
+        if (searchEmptySubheadingResId != 0) {
+            mEmptyStateSubHeadingView.setText(searchEmptySubheadingResId);
+        }
         onBackPressStateChanged();
     }
 
@@ -452,6 +487,8 @@ public class SelectableListLayout<E> extends FrameLayout
         mRecyclerView.setItemAnimator(mItemAnimator);
         setToolbarShadowVisibility();
         mEmptyView.setText(mEmptyStringResId);
+        mEmptyStateSubHeadingView.setText(mEmptySubheadingString);
+
         onBackPressStateChanged();
     }
 

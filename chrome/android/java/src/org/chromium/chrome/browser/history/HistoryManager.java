@@ -6,6 +6,7 @@ package org.chromium.chrome.browser.history;
 
 import android.app.Activity;
 import android.content.Intent;
+import android.content.res.Resources;
 import android.os.Build;
 import android.view.LayoutInflater;
 import android.view.MenuItem;
@@ -81,6 +82,8 @@ public class HistoryManager
     private final boolean mLaunchedForApp;
     private final HistoryUmaRecorder mUmaRecorder;
     private final InfoHeaderPref mHeaderPref;
+    private final String mAppId;
+
     private ViewGroup mRootView;
     private ViewGroup mContentView;
     @Nullable private final SelectableListLayout<HistoryItem> mSelectableListLayout;
@@ -150,6 +153,7 @@ public class HistoryManager
         mIsIncognito = profile.isOffTheRecord();
         mUmaRecorder = umaRecorder;
         mLaunchedForApp = launchedForApp;
+        mAppId = clientPackageName;
 
         mPrefService = UserPrefs.get(mProfile);
         mBackPressStateSupplier.set(false);
@@ -257,13 +261,17 @@ public class HistoryManager
                         : R.drawable.history_empty_state_illustration;
         int subjResId =
                 mLaunchedForApp
-                        ? R.string.history_manager_app_specific_history_no_results
+                        ? R.string.history_manager_app_specific_empty_state_title
                         : R.string.history_manager_empty_state;
-        int descResId =
+        Resources res = mActivity.getResources();
+        String descText =
                 mLaunchedForApp
-                        ? R.string.history_manager_empty_state_view_or_open_more_history
-                        : R.string.history_manager_empty_state_view_or_clear_page_visited;
-        mEmptyView = mSelectableListLayout.initializeEmptyStateView(imgResId, subjResId, descResId);
+                        ? res.getString(
+                                R.string.history_manager_app_specific_empty_state_description,
+                                mContentManager.getAppInfoCache().get(mAppId).label)
+                        : res.getString(
+                                R.string.history_manager_empty_state_view_or_clear_page_visited);
+        mEmptyView = mSelectableListLayout.initializeEmptyStateView(imgResId, subjResId, descText);
     }
 
     /**
@@ -331,7 +339,9 @@ public class HistoryManager
             mContentManager.getAdapter().onSearchStart();
             mToolbar.showSearchView(true);
             String searchEmptyString = getSearchEmptyString();
-            mSelectableListLayout.onStartSearch(searchEmptyString);
+            mSelectableListLayout.onStartSearch(
+                    searchEmptyString,
+                    R.string.history_manager_empty_state_view_or_open_more_history);
             mUmaRecorder.recordSearchHistory();
             mIsSearching = true;
             return true;

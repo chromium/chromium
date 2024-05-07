@@ -727,7 +727,9 @@ public class HistoryUITest {
 
     @Test
     @SmallTest
-    public void testAppSpecificToolbar() {
+    public void testAppSpecificToolbar() throws Exception {
+        final String appId = "org.chromium.app.AwesomeApp";
+        when(mPackageManager.getApplicationInfo(eq(appId), anyInt())).thenReturn(mPackageAppInfo);
         mHistoryManager =
                 new HistoryManager(
                         mActivity,
@@ -738,7 +740,7 @@ public class HistoryUITest {
                         /* Supplier<Tab>= */ null,
                         mHistoryProvider,
                         new HistoryUmaRecorder(),
-                        null,
+                        appId,
                         true,
                         true,
                         false);
@@ -760,7 +762,9 @@ public class HistoryUITest {
 
     @Test
     @SmallTest
-    public void testAppSpecificToolbarHeaderStateNotPersisted() {
+    public void testAppSpecificToolbarHeaderStateNotPersisted() throws Exception {
+        final String appId = "org.chromium.app.AwesomeApp";
+        when(mPackageManager.getApplicationInfo(eq(appId), anyInt())).thenReturn(mPackageAppInfo);
         mHistoryManager =
                 new HistoryManager(
                         mActivity,
@@ -771,7 +775,7 @@ public class HistoryUITest {
                         /* Supplier<Tab>= */ null,
                         mHistoryProvider,
                         new HistoryUmaRecorder(),
-                        null,
+                        appId,
                         true,
                         true,
                         false);
