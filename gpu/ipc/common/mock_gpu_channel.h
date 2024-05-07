@@ -78,7 +78,7 @@ class MockGpuChannel : public mojom::GpuChannel {
   MOCK_METHOD4(CopyToGpuMemoryBufferAsync,
                void(const Mailbox&,
                     const std::vector<SyncToken>&,
-                    uint32_t,
+                    uint64_t,
                     CopyToGpuMemoryBufferAsyncCallback));
 #endif  // BUILDFLAG(IS_WIN)
   MOCK_METHOD4(WaitForTokenInRange,

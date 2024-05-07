@@ -255,7 +255,8 @@ void CommandBufferProxyImpl::OrderingBarrierHelper(int32_t put_offset) {
     return;
   last_put_offset_ = put_offset;
   last_flush_id_ = channel_->OrderingBarrier(
-      route_id_, put_offset, std::move(pending_sync_token_fences_));
+      route_id_, put_offset, std::move(pending_sync_token_fences_),
+      last_fence_sync_release_);
 }
 
 gpu::CommandBuffer::State CommandBufferProxyImpl::WaitForTokenInRange(
@@ -387,7 +388,8 @@ void CommandBufferProxyImpl::DestroyTransferBuffer(int32_t id) {
       mojom::DeferredRequestParams::NewCommandBufferRequest(
           mojom::DeferredCommandBufferRequest::New(
               route_id_, mojom::DeferredCommandBufferRequestParams::
-                             NewDestroyTransferBuffer(id))));
+                             NewDestroyTransferBuffer(id))),
+      /*sync_token_fences=*/{}, /*release_count=*/0);
 }
 
 void CommandBufferProxyImpl::ForceLostContext(error::ContextLostReason reason) {
@@ -466,7 +468,7 @@ void CommandBufferProxyImpl::FlushPendingWork() {
 
 uint64_t CommandBufferProxyImpl::GenerateFenceSyncRelease() {
   CheckLock();
-  return next_fence_sync_release_++;
+  return ++last_fence_sync_release_;
 }
 
 // This can be called from any thread without holding |lock_|. Use a thread-safe
@@ -602,7 +604,7 @@ void CommandBufferProxyImpl::SetDefaultFramebufferSharedImage(
                       mojom::SetDefaultFramebufferSharedImageParams::New(
                           mailbox, samples_count, preserve, needs_depth,
                           needs_stencil)))),
-      {sync_token});
+      {sync_token}, /*release_count=*/0);
 }
 
 std::pair<base::UnsafeSharedMemoryRegion, base::WritableSharedMemoryMapping>

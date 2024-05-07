@@ -276,7 +276,8 @@ TEST_P(CommandBufferProxyImplTest,
       mojom::DeferredRequestParams::NewCommandBufferRequest(
           mojom::DeferredCommandBufferRequest::New(
               proxy1->route_id(), mojom::DeferredCommandBufferRequestParams::
-                                      NewDestroyTransferBuffer(3))));
+                                      NewDestroyTransferBuffer(3))),
+      /*sync_token_fences=*/{}, /*release_count=*/0);
 
   // Make sure the above requests don't hit our mock yet.
   base::RunLoop().RunUntilIdle();

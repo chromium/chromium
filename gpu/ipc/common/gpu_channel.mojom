@@ -256,7 +256,7 @@ interface GpuChannel {
   [EnableIf=is_win]
   CopyToGpuMemoryBufferAsync(
       Mailbox mailbox, array<SyncToken> sync_token_dependencies,
-      uint32 release_id) => (bool success);
+      uint64 release_count) => (bool success);
 };
 
 // Interface used to issue commands to a specific CommandBuffer instance in the
@@ -418,6 +418,11 @@ struct DeferredRequest {
   // A list of SyncTokens which must be released before the request can be
   // processed.
   array<SyncToken> sync_token_fences;
+
+  // The sync point release count that is expected to be reached after execution
+  // of this request.
+  // 0 means this request doesn't release.
+  uint64 release_count;
 };
 
 // Details of a batched request.
@@ -565,9 +570,6 @@ struct CreateSharedImageParams {
 
   // Information about the shared image.
   SharedImageInfo si_info;
-
-  // The fence to release once the image is created.
-  uint32 release_id;
 };
 
 // Creates a new shared image and populates it with pixel data from a shared
@@ -578,9 +580,6 @@ struct CreateSharedImageWithDataParams {
 
   // Information about the shared image.
   SharedImageInfo si_info;
-
-  // The fence to release once the image is created.
-  uint32 release_id;
 
   // Offset from which to copy data out of the current image upload shared
   // memory region.
@@ -605,9 +604,6 @@ struct CreateSharedImageWithBufferParams {
 
   // A handle to the existing GPU memory buffer.
   gfx.mojom.GpuMemoryBufferHandle buffer_handle;
-
-  // The fence to release once the image is created.
-  uint32 release_id;
 };
 
 // Creates a new shared image from an existing GPU memory buffer.
@@ -629,9 +625,6 @@ struct CreateGMBSharedImageParams {
 
   // Information about the shared image.
   SharedImageInfo si_info;
-
-  // The fence to release once the image is created.
-  uint32 release_id;
 };
 
 // Updates the contents of a shared image from whatever is backing it, if
@@ -639,9 +632,6 @@ struct CreateGMBSharedImageParams {
 struct UpdateSharedImageParams {
   // The mailbox identifying the shared image to update.
   Mailbox mailbox;
-
-  // The fence to release once the image has been updated.
-  uint32 release_id;
 
   // An optional GpuFenceHandle for the server to wait on before updating the
   // image from whatever backs it.
@@ -654,9 +644,6 @@ struct UpdateSharedImageParams {
 struct AddReferenceToSharedImageParams {
   // The mailbox identifying the shared image to add ref.
   Mailbox mailbox;
-
-  // The fence to release once the reference has been added.
-  uint32 release_id;
 };
 
 // Updates the contents of the GpuMemoryBuffer associated with the shared image.
@@ -667,9 +654,6 @@ struct AddReferenceToSharedImageParams {
 struct CopyToGpuMemoryBufferParams {
   // The mailbox identifying the shared image which should update its GMB.
   Mailbox mailbox;
-
-  // The fence to release once the GMB has been updated.
-  uint32 release_id;
 };
 
 [EnableIf=is_win]
@@ -693,9 +677,6 @@ struct CreateSwapChainParams {
   // gpu/command_buffer/common/shared_image_usage.h.
   uint32 usage;
 
-  // The fence to release once the swap chain is created.
-  uint32 release_id;
-
   // Which corner is considered the origin of the swap chain's buffers.
   skia.mojom.SurfaceOrigin surface_origin;
 
@@ -707,9 +688,6 @@ struct CreateSwapChainParams {
 struct PresentSwapChainParams {
   // Mailbox identifying the swap chain to present.
   Mailbox mailbox;
-
-  // The fence to release once the swap chain is presented.
-  uint32 release_id;
 };
 
 [EnableIf=is_win]

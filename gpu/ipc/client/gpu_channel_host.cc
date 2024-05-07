@@ -78,7 +78,8 @@ mojom::GpuChannel& GpuChannelHost::GetGpuChannel() {
 uint32_t GpuChannelHost::OrderingBarrier(
     int32_t route_id,
     int32_t put_offset,
-    std::vector<SyncToken> sync_token_fences) {
+    std::vector<SyncToken> sync_token_fences,
+    uint64_t release_count) {
   AutoLock lock(context_lock_);
 
   if (pending_ordering_barrier_ &&
@@ -94,18 +95,20 @@ uint32_t GpuChannelHost::OrderingBarrier(
       pending_ordering_barrier_->sync_token_fences.end(),
       std::make_move_iterator(sync_token_fences.begin()),
       std::make_move_iterator(sync_token_fences.end()));
+  pending_ordering_barrier_->release_count = release_count;
   return pending_ordering_barrier_->deferred_message_id;
 }
 
 uint32_t GpuChannelHost::EnqueueDeferredMessage(
     mojom::DeferredRequestParamsPtr params,
-    std::vector<SyncToken> sync_token_fences) {
+    std::vector<SyncToken> sync_token_fences,
+    uint64_t release_count) {
   AutoLock lock(context_lock_);
 
   EnqueuePendingOrderingBarrier();
   enqueued_deferred_message_id_ = next_deferred_message_id_++;
   deferred_messages_.push_back(mojom::DeferredRequest::New(
-      std::move(params), std::move(sync_token_fences)));
+      std::move(params), std::move(sync_token_fences), release_count));
   return enqueued_deferred_message_id_;
 }
 
@@ -113,13 +116,13 @@ uint32_t GpuChannelHost::EnqueueDeferredMessage(
 void GpuChannelHost::CopyToGpuMemoryBufferAsync(
     const Mailbox& mailbox,
     std::vector<SyncToken> sync_token_dependencies,
-    uint32_t release_id,
+    uint64_t release_count,
     base::OnceCallback<void(bool)> callback) {
   AutoLock lock(context_lock_);
   InternalFlush(UINT32_MAX);
-  GetGpuChannel().CopyToGpuMemoryBufferAsync(mailbox,
-                                             std::move(sync_token_dependencies),
-                                             release_id, std::move(callback));
+  GetGpuChannel().CopyToGpuMemoryBufferAsync(
+      mailbox, std::move(sync_token_dependencies), release_count,
+      std::move(callback));
 }
 #endif
 
@@ -192,7 +195,8 @@ void GpuChannelHost::EnqueuePendingOrderingBarrier() {
               pending_ordering_barrier_->route_id,
               mojom::DeferredCommandBufferRequestParams::NewAsyncFlush(
                   std::move(params)))),
-      std::move(pending_ordering_barrier_->sync_token_fences)));
+      std::move(pending_ordering_barrier_->sync_token_fences),
+      pending_ordering_barrier_->release_count));
   pending_ordering_barrier_.reset();
 }
 

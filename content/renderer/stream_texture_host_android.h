@@ -26,7 +26,6 @@ class Size;
 namespace gpu {
 class GpuChannelHost;
 struct Mailbox;
-struct SyncToken;
 struct VulkanYCbCrInfo;
 }
 
@@ -68,7 +67,6 @@ class CONTENT_EXPORT StreamTextureHost
   void ForwardStreamTextureForSurfaceRequest(
       const base::UnguessableToken& request_token);
   void UpdateRotatedVisibleSize(const gfx::Size& size);
-  gpu::SyncToken GenUnverifiedSyncToken();
 
  private:
   // gpu::mojom::StreamTextureClient:
@@ -82,7 +80,6 @@ class CONTENT_EXPORT StreamTextureHost
   int32_t route_id_;
   raw_ptr<Listener> listener_;
   scoped_refptr<gpu::GpuChannelHost> channel_;
-  uint32_t release_id_ = 0;
 
   // The StreamTextureHost may be created on another thread, but the Mojo
   // endpoints below are to be bound on the compositor thread. This holds the

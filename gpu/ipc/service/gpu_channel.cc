@@ -222,7 +222,7 @@ class GPU_IPC_SERVICE_EXPORT GpuChannelMessageFilter
   void CopyToGpuMemoryBufferAsync(
       const gpu::Mailbox& mailbox,
       const std::vector<gpu::SyncToken>& sync_token_dependencies,
-      uint32_t release_id,
+      uint64_t release_count,
       CopyToGpuMemoryBufferAsyncCallback callback) override;
 #endif  // BUILDFLAG(IS_WIN)
   void WaitForTokenInRange(int32_t routing_id,
@@ -401,7 +401,8 @@ void GpuChannelMessageFilter::FlushDeferredRequests(
     tasks.emplace_back(
         it->second /* sequence_id */,
         base::BindOnce(&gpu::GpuChannel::ExecuteDeferredRequest,
-                       gpu_channel_->AsWeakPtr(), std::move(request->params)),
+                       gpu_channel_->AsWeakPtr(), std::move(request->params),
+                       request->release_count),
         std::move(request->sync_token_fences));
   }
 
@@ -662,7 +663,7 @@ void GpuChannelMessageFilter::RegisterOverlayStateObserver(
 void GpuChannelMessageFilter::CopyToGpuMemoryBufferAsync(
     const gpu::Mailbox& mailbox,
     const std::vector<gpu::SyncToken>& sync_token_dependencies,
-    uint32_t release_id,
+    uint64_t release_count,
     CopyToGpuMemoryBufferAsyncCallback callback) {
   TRACE_EVENT0("gpu", "GpuChannelMessageFilter::CopyToGpuMemoryBufferAsync");
   base::AutoLock auto_lock(gpu_channel_lock_);
@@ -681,14 +682,14 @@ void GpuChannelMessageFilter::CopyToGpuMemoryBufferAsync(
   }
   auto run_on_main = base::BindOnce(
       [](base::WeakPtr<gpu::GpuChannel> channel, const gpu::Mailbox& mailbox,
-         uint32_t release_id, CopyToGpuMemoryBufferAsyncCallback callback) {
+         uint64_t release_count, CopyToGpuMemoryBufferAsyncCallback callback) {
         if (!channel) {
           std::move(callback).Run(false);
         }
         channel->shared_image_stub()->CopyToGpuMemoryBufferAsync(
-            mailbox, release_id, std::move(callback));
+            mailbox, release_count, std::move(callback));
       },
-      gpu_channel_->AsWeakPtr(), mailbox, release_id,
+      gpu_channel_->AsWeakPtr(), mailbox, release_count,
       base::BindPostTask(base::SequencedTaskRunner::GetCurrentDefault(),
                          std::move(callback)));
   scheduler_->ScheduleTask(Scheduler::Task(it->second, std::move(run_on_main),
@@ -901,8 +902,8 @@ void GpuChannel::RemoveRoute(int32_t route_id) {
     filter_->RemoveRoute(route_id);
 }
 
-void GpuChannel::ExecuteDeferredRequest(
-    mojom::DeferredRequestParamsPtr params) {
+void GpuChannel::ExecuteDeferredRequest(mojom::DeferredRequestParamsPtr params,
+                                        uint64_t release_count) {
   TRACE_EVENT0("gpu", "GpuChannel::ExecuteDeferredRequest");
   switch (params->which()) {
 #if BUILDFLAG(IS_ANDROID)
@@ -935,14 +936,14 @@ void GpuChannel::ExecuteDeferredRequest(
         scheduler_->ContinueTask(
             stub->sequence_id(),
             base::BindOnce(&GpuChannel::ExecuteDeferredRequest, AsWeakPtr(),
-                           std::move(params)));
+                           std::move(params), release_count));
       }
       break;
     }
 
     case mojom::DeferredRequestParams::Tag::kSharedImageRequest:
       shared_image_stub_->ExecuteDeferredRequest(
-          std::move(params->get_shared_image_request()));
+          std::move(params->get_shared_image_request()), release_count);
       break;
   }
 }

@@ -272,8 +272,8 @@ class GPU_EXPORT CommandBufferProxyImpl : public gpu::CommandBuffer,
   mojo::SharedAssociatedRemote<mojom::CommandBuffer> command_buffer_;
   mojo::AssociatedReceiver<mojom::CommandBufferClient> client_receiver_{this};
 
-  // Next generated fence sync.
-  uint64_t next_fence_sync_release_ = 1;
+  // Last generated fence sync.
+  uint64_t last_fence_sync_release_ = 0;
 
   // Sync token waits that haven't been flushed yet.
   std::vector<SyncToken> pending_sync_token_fences_;
