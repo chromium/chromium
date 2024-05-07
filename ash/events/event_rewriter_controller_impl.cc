@@ -22,6 +22,7 @@
 #include "ui/aura/env.h"
 #include "ui/aura/window_tree_host.h"
 #include "ui/base/ui_base_features.h"
+#include "ui/events/ash/caps_lock_event_rewriter.h"
 #include "ui/events/ash/keyboard_device_id_event_rewriter.h"
 #include "ui/events/ash/keyboard_modifier_event_rewriter.h"
 #include "ui/events/event_sink.h"
@@ -133,6 +134,16 @@ void EventRewriterControllerImpl::Initialize(
             ash::input_method::InputMethodManager::Get()->GetImeKeyboard());
     AddEventRewriter(std::move(keyboard_modifier_event_rewriter));
   }
+  // CapsLock event rewriter must come after modifier rewriting as it can effect
+  // its result. This means with the rewritter fix enabled, it must come before
+  // EventRewriterAsh, but with the fix disabled, it must come after.
+  if (features::IsKeyboardRewriterFixEnabled() &&
+      features::IsModifierSplitEnabled()) {
+    AddEventRewriter(std::make_unique<ui::CapsLockEventRewriter>(
+        ui::KeyboardLayoutEngineManager::GetKeyboardLayoutEngine(),
+        Shell::Get()->keyboard_capability(),
+        ash::input_method::InputMethodManager::Get()->GetImeKeyboard()));
+  }
   // EventRewriters are notified in the order they are added.
   if (features::IsPeripheralCustomizationEnabled() ||
       ::features::IsShortcutCustomizationEnabled()) {
@@ -147,6 +158,13 @@ void EventRewriterControllerImpl::Initialize(
   AddEventRewriter(std::move(accessibility_event_rewriter));
   AddEventRewriter(std::move(keyboard_driven_event_rewriter));
   AddEventRewriter(std::move(event_rewriter_ash));
+  if (!features::IsKeyboardRewriterFixEnabled() &&
+      features::IsModifierSplitEnabled()) {
+    AddEventRewriter(std::make_unique<ui::CapsLockEventRewriter>(
+        ui::KeyboardLayoutEngineManager::GetKeyboardLayoutEngine(),
+        Shell::Get()->keyboard_capability(),
+        ash::input_method::InputMethodManager::Get()->GetImeKeyboard()));
+  }
 }
 
 void EventRewriterControllerImpl::AddEventRewriter(

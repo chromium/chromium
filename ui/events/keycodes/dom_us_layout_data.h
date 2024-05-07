@@ -363,6 +363,9 @@ const struct DomKeyToKeyboardCodeEntry {
     {DomKey::F22, VKEY_F22},
     {DomKey::F23, VKEY_F23},
     {DomKey::F24, VKEY_F24},
+#if BUILDFLAG(IS_CHROMEOS_ASH)
+    {DomKey::FN, VKEY_FUNCTION},
+#endif
     // Multimedia Keys
     // http://www.w3.org/TR/DOM-Level-3-Events-key/#keys-multimedia
     {DomKey::MEDIA_PLAY_PAUSE, VKEY_MEDIA_PLAY_PAUSE},

@@ -1198,6 +1198,10 @@ void EventRewriterAsh::BuildRewrittenKeyEvent(
       key_event.type(), state.key_code, state.code, state.flags, state.key,
       key_event.time_stamp());
   key_event_ptr->set_scan_code(key_event.scan_code());
+  key_event_ptr->set_source_device_id(key_event.source_device_id());
+  if (key_event.properties()) {
+    key_event_ptr->SetProperties(*key_event.properties());
+  }
   // Rewrite to VKEY_RIGHT_ALT and set the property on the event to mark it as
   // being VKEY_RIGHT_ALT.
   if (state.key_code == VKEY_RIGHT_ALT) {
@@ -1426,7 +1430,8 @@ bool EventRewriterAsh::RewriteModifierKeys(const KeyEvent& key_event,
   // Implement the Caps Lock modifier here, rather than in the
   // AcceleratorController, so that the event is visible to apps (see
   // crbug.com/775743).
-  if (key_event.type() == ET_KEY_PRESSED && state->key_code == VKEY_CAPITAL) {
+  if (!ash::features::IsModifierSplitEnabled() &&
+      key_event.type() == ET_KEY_PRESSED && state->key_code == VKEY_CAPITAL) {
     // Toggle the EF_CAPS_LOCK_ON only when the key is pressed, so here it
     // checks whether the key is auto-repeat event. Unfortunately, EF_IS_REPEAT
     // for CapsLock is not reliable, because it checks whether flags are the
@@ -2111,7 +2116,7 @@ EventDispatchDetails EventRewriterAsh::RewriteKeyEventInContext(
             key_event.flags() & ~it->second.flags, it->second.key,
             key_event.time_stamp());
         dispatched_event->set_source_device_id(key_event.source_device_id());
-        std::ignore = SendEventFinally(continuation, dispatched_event.get());
+        std::ignore = SendEvent(continuation, dispatched_event.get());
       }
       // Remember consumed flags on rewriting.
       key_state.flags = key_event.flags() & ~key_state.flags;
@@ -2139,7 +2144,7 @@ EventDispatchDetails EventRewriterAsh::RewriteKeyEventInContext(
     }
 
     EventDispatchDetails details =
-        SendEventFinally(continuation, rewritten_event.get());
+        SendEvent(continuation, rewritten_event.get());
     if (status == EventRewriteStatus::EVENT_REWRITE_DISPATCH_ANOTHER &&
         !details.dispatcher_destroyed) {
       return SendStickyKeysReleaseEvents(std::move(rewritten_event),
@@ -2178,7 +2183,7 @@ EventDispatchDetails EventRewriterAsh::RewriteKeyEventInContext(
     }
 
     EventDispatchDetails details =
-        SendEventFinally(continuation, rewritten_event.get());
+        SendEvent(continuation, rewritten_event.get());
     if (status == EventRewriteStatus::EVENT_REWRITE_DISPATCH_ANOTHER &&
         !details.dispatcher_destroyed) {
       return SendStickyKeysReleaseEvents(std::move(rewritten_event),
@@ -2229,10 +2234,11 @@ EventDispatchDetails EventRewriterAsh::RewriteKeyEventInContext(
             key_state_iter->first.code, event_flags, key_state_iter->first.key,
             key_event.time_stamp());
         dispatched_event->set_scan_code(key_event.scan_code());
+        dispatched_event->set_source_device_id(key_event.source_device_id());
         if (!properties.empty()) {
           dispatched_event->SetProperties(properties);
         }
-        details = SendEventFinally(continuation, dispatched_event.get());
+        details = SendEvent(continuation, dispatched_event.get());
 
         key_state_iter = pressed_key_states_.erase(key_state_iter);
         continue;
@@ -2256,7 +2262,7 @@ EventDispatchDetails EventRewriterAsh::RewriteKeyEventInContext(
     }
 
     EventDispatchDetails details =
-        SendEventFinally(continuation, rewritten_event.get());
+        SendEvent(continuation, rewritten_event.get());
     if (status == EventRewriteStatus::EVENT_REWRITE_DISPATCH_ANOTHER &&
         !details.dispatcher_destroyed) {
       return SendStickyKeysReleaseEvents(std::move(rewritten_event),
