@@ -133,6 +133,7 @@ export class SettingsSliderV2Element extends SettingsSliderV2ElementBase {
   maxLabel: string;
   showMarkers: boolean;
   updateValueInstantly: boolean;
+  override validPrefTypes = [chrome.settingsPrivate.PrefType.NUMBER];
   value: number;
   private loaded_: boolean;
 

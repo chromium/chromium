@@ -4,12 +4,12 @@
 
 import 'chrome://os-settings/os_settings.js';
 
+import {CrSliderElement, SettingsSliderV2Element} from 'chrome://os-settings/os_settings.js';
 import {keyDownOn, keyUpOn} from 'chrome://resources/polymer/v3_0/iron-test-helpers/mock-interactions.js';
 import {flush} from 'chrome://resources/polymer/v3_0/polymer/polymer_bundled.min.js';
-import {CrSliderElement,SettingsSliderV2Element} from 'chrome://os-settings/os_settings.js';
-import {assertEquals, assertFalse, assertNotEquals, assertTrue} from 'chrome://webui-test/chai_assert.js';
-import {eventToPromise, isVisible} from 'chrome://webui-test/test_util.js';
+import {assertEquals, assertFalse, assertNotEquals, assertThrows, assertTrue} from 'chrome://webui-test/chai_assert.js';
 import {flushTasks} from 'chrome://webui-test/polymer_test_util.js';
+import {eventToPromise, isVisible} from 'chrome://webui-test/test_util.js';
 
 import {clearBody} from '../../utils.js';
 
@@ -209,6 +209,59 @@ suite(SettingsSliderV2Element.is, () => {
           const event = await prefChangeEventPromise;
           assertEquals(fakePrefObject.key, event.detail.prefKey);
           assertEquals(newValue, event.detail.value);
+        });
+
+        suite('Pref type validation', () => {
+          [{
+            prefType: chrome.settingsPrivate.PrefType.STRING,
+            testValue: 'foo',
+            isValid: false,
+          },
+           {
+             prefType: chrome.settingsPrivate.PrefType.NUMBER,
+             testValue: 1,
+             isValid: true,
+           },
+           {
+             prefType: chrome.settingsPrivate.PrefType.DICTIONARY,
+             testValue: {},
+             isValid: false,
+           },
+           {
+             prefType: chrome.settingsPrivate.PrefType.BOOLEAN,
+             testValue: true,
+             isValid: false,
+           },
+           {
+             prefType: chrome.settingsPrivate.PrefType.LIST,
+             testValue: [],
+             isValid: false,
+           },
+           {
+             prefType: chrome.settingsPrivate.PrefType.URL,
+             testValue: 'bar',
+             isValid: false,
+           },
+          ].forEach(({prefType, testValue, isValid}) => {
+            test(
+                `${prefType} pref type is ${isValid ? 'valid' : 'invalid'}`,
+                () => {
+                  function validatePref() {
+                    slider.pref = {
+                      key: 'settings.sample',
+                      type: prefType,
+                      value: testValue,
+                    };
+                    slider.validatePref();
+                  }
+
+                  if (isValid) {
+                    validatePref();
+                  } else {
+                    assertThrows(validatePref);
+                  }
+                });
+          });
         });
       }
 
