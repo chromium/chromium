@@ -247,6 +247,18 @@ chromium-metrics-reviews@google.com.
   </summary>
 </histogram>
 
+<histogram name="LevelDBEnv.SyncResult" enum="PlatformFileError"
+    expires_after="2024-08-06">
+  <owner>estade@chromium.org</owner>
+  <owner>chrome-owp-storage@google.com</owner>
+  <summary>
+    Logs the success/failure of LevelDB's calls to Sync() (which translates to
+    system calls of fsync(), FlushFileBuffers(), etc). Sync() is only called if
+    the client requests it (e.g. for a strict durability IndexedDB transaction)
+    and after an otherwise successful write.
+  </summary>
+</histogram>
+
 <histogram name="LevelDBWrapper.CommitDelay" units="ms"
     expires_after="2024-11-03">
   <owner>ayui@chromium.org</owner>

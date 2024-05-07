@@ -368,6 +368,9 @@ Status ChromiumWritableFile::Flush() {
 Status ChromiumWritableFile::Sync() {
   TRACE_EVENT0("leveldb", "WritableFile::Sync");
 
+  base::File::Error error = base::File::FILE_OK;
+  Status status = Status::OK();
+
   // leveldb's implicit contract for Sync() is that if this instance is for a
   // manifest file then the directory is also sync'ed, to ensure new files
   // referred to by the manifest are in the filesystem.
@@ -378,18 +381,21 @@ Status ChromiumWritableFile::Sync() {
   //
   // See leveldb's env_posix.cc.
   if (file_type_ == kManifest) {
-    Status status = SyncParent();
-    if (!status.ok())
-      return status;
+    status = SyncParent();
+    if (!status.ok()) {
+      error = base::File::GetLastFileError();
+    }
   }
 
-  if (!file_.Flush()) {
-    base::File::Error error = base::File::GetLastFileError();
-    return MakeIOError(filename_, base::File::ErrorToString(error),
-                       kWritableFileSync, error);
+  if (status.ok() && !file_.Flush()) {
+    error = base::File::GetLastFileError();
+    status = MakeIOError(filename_, base::File::ErrorToString(error),
+                         kWritableFileSync, error);
   }
 
-  return Status::OK();
+  base::UmaHistogramExactLinear("LevelDBEnv.SyncResult", -error,
+                                -base::File::FILE_ERROR_MAX);
+  return status;
 }
 
 // Return the maximum number of read-only files to keep open.
