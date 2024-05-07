@@ -13,7 +13,7 @@ import java.lang.annotation.Retention;
 import java.lang.annotation.RetentionPolicy;
 
 /**
- * The return value of {@link Condition#check()}.
+ * The return value of {@link Condition#checkWithSuppliers()}.
  *
  * <p>Includes whether the condition is fulfilled, an optional message and the timestamp of the
  * check.

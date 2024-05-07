@@ -45,7 +45,7 @@ public class CallbackCondition extends Condition {
     }
 
     @Override
-    public ConditionStatus check() {
+    protected ConditionStatus checkWithSuppliers() {
         int currentCount = mCallbackHelper.getCallCount();
         if (mStartingCount > 0) {
             return whether(

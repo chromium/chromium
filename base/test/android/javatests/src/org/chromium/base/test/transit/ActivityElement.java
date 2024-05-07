@@ -68,7 +68,7 @@ public class ActivityElement<ActivityT extends Activity>
         private ActivityT mMatchedActivity;
 
         @Override
-        public ConditionStatus check() {
+        protected ConditionStatus checkWithSuppliers() {
             ActivityT candidate = null;
             List<Activity> allActivities = ApplicationStatus.getRunningActivities();
             for (Activity activity : allActivities) {

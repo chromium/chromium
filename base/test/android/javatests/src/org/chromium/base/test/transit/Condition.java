@@ -4,10 +4,13 @@
 
 package org.chromium.base.test.transit;
 
+import android.util.ArrayMap;
+
 import androidx.annotation.Nullable;
 
 import com.google.errorprone.annotations.FormatMethod;
 
+import org.chromium.base.supplier.Supplier;
 import org.chromium.base.test.transit.ConditionStatus.Status;
 
 /**
@@ -20,6 +23,7 @@ public abstract class Condition {
     private String mDescription;
 
     private boolean mIsRunOnUiThread;
+    private ArrayMap<String, Supplier<?>> mDependentSuppliers;
 
     /**
      * @param isRunOnUiThread true if the Condition should be checked on the UI Thread, false if it
@@ -37,7 +41,7 @@ public abstract class Condition {
      * @return {@link ConditionStatus} stating whether the condition has been fulfilled and
      *     optionally more details about its state.
      */
-    public abstract ConditionStatus check() throws Exception;
+    protected abstract ConditionStatus checkWithSuppliers() throws Exception;
 
     /**
      * @return a short description to be printed as part of a list of conditions. Use {@link
@@ -78,7 +82,61 @@ public abstract class Condition {
         return mIsRunOnUiThread;
     }
 
-    /** {@link #check()} should return this when a Condition is fulfilled. */
+    /**
+     * Declare a Supplier this Condition's check() depends on.
+     *
+     * <p>Call this from the constructor to delay check() to be called until |supplier| has a value.
+     */
+    protected <T> Supplier<T> dependOnSupplier(Supplier<T> supplier, String inputName) {
+        if (mDependentSuppliers == null) {
+            mDependentSuppliers = new ArrayMap<>();
+        }
+        mDependentSuppliers.put(inputName, supplier);
+        return supplier;
+    }
+
+    /**
+     * The method called to actually check the Condition, including checking dependencies of
+     * check().
+     */
+    public final ConditionStatus check() throws Exception {
+        // If any Supplier is missing a value, the Condition can't be checked yet.
+        ConditionStatus status = checkDependentSuppliers();
+        if (status != null) {
+            return status;
+        }
+
+        // Call the subclass' checkWithSuppliers().
+        return checkWithSuppliers();
+    }
+
+    private ConditionStatus checkDependentSuppliers() {
+        if (mDependentSuppliers == null) {
+            return null;
+        }
+
+        StringBuilder suppliersMissing = null;
+        for (var kv : mDependentSuppliers.entrySet()) {
+            Supplier<?> supplier = kv.getValue();
+            if (!supplier.hasValue()) {
+                if (suppliersMissing == null) {
+                    suppliersMissing = new StringBuilder("waiting for suppliers for: ");
+                } else {
+                    suppliersMissing.append(", ");
+                }
+                String inputName = kv.getKey();
+                suppliersMissing.append(inputName);
+            }
+        }
+
+        if (suppliersMissing != null) {
+            return notFulfilled(suppliersMissing.toString());
+        }
+
+        return null;
+    }
+
+    /** {@link #checkWithSuppliers()} should return this when a Condition is fulfilled. */
     public static ConditionStatus fulfilled() {
         return fulfilled(/* message= */ null);
     }
@@ -94,7 +152,7 @@ public abstract class Condition {
         return new ConditionStatus(Status.FULFILLED, String.format(message, args));
     }
 
-    /** {@link #check()} should return this when a Condition is not fulfilled. */
+    /** {@link #checkWithSuppliers()} should return this when a Condition is not fulfilled. */
     public static ConditionStatus notFulfilled() {
         return notFulfilled(/* message= */ null);
     }
@@ -111,7 +169,8 @@ public abstract class Condition {
     }
 
     /**
-     * {@link #check()} should return this when an error happens while checking a Condition.
+     * {@link #checkWithSuppliers()} should return this when an error happens while checking a
+     * Condition.
      *
      * <p>A short message is required.
      *
@@ -127,7 +186,7 @@ public abstract class Condition {
         return new ConditionStatus(Status.ERROR, String.format(message, args));
     }
 
-    /** {@link #check()} should return this as a convenience method. */
+    /** {@link #checkWithSuppliers()} should return this as a convenience method. */
     public static ConditionStatus whether(boolean isFulfilled) {
         return isFulfilled ? fulfilled() : notFulfilled();
     }

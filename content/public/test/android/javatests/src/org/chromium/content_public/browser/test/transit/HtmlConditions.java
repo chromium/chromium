@@ -6,6 +6,7 @@ package org.chromium.content_public.browser.test.transit;
 
 import android.graphics.Rect;
 
+import org.chromium.base.supplier.Supplier;
 import org.chromium.base.test.transit.Condition;
 import org.chromium.base.test.transit.ConditionStatus;
 import org.chromium.base.test.transit.InstrumentationThreadCondition;
@@ -19,25 +20,19 @@ public class HtmlConditions {
     /** Fulfilled when a single DOM Element with the given id exists and has non-zero bounds. */
     public static class DisplayedCondition extends InstrumentationThreadCondition {
         private final String mHtmlId;
-        private final WebContentsElementInState mWebContentsElementInState;
+        private final Supplier<WebContents> mWebContentsSupplier;
 
-        public DisplayedCondition(
-                WebContentsElementInState webContentsElementInState, String htmlId) {
+        public DisplayedCondition(Supplier<WebContents> webContentsSupplier, String htmlId) {
             super();
-            mWebContentsElementInState = webContentsElementInState;
+            mWebContentsSupplier = dependOnSupplier(webContentsSupplier, "WebContents");
             mHtmlId = htmlId;
         }
 
         @Override
-        public ConditionStatus check() throws Exception {
-            WebContents webContents = mWebContentsElementInState.get();
-            if (webContents == null) {
-                return notFulfilled("null webContents");
-            }
-
+        protected ConditionStatus checkWithSuppliers() throws Exception {
             Rect bounds;
             try {
-                bounds = DOMUtils.getNodeBounds(webContents, mHtmlId);
+                bounds = DOMUtils.getNodeBounds(mWebContentsSupplier.get(), mHtmlId);
             } catch (AssertionError e) {
                 // HTML elements might not exist yet, but will be created.
                 return notFulfilled("getNodeBounds() threw assertion");
@@ -55,12 +50,11 @@ public class HtmlConditions {
     /** Fulfilled when no DOM Elements with the given id exist with non-zero bounds. */
     public static class NotDisplayedCondition extends InstrumentationThreadCondition {
         private final String mHtmlId;
-        private final WebContentsElementInState mWebContentsElementInState;
+        private final Supplier<WebContents> mWebContentsSupplier;
 
-        public NotDisplayedCondition(
-                WebContentsElementInState webContentsElementInState, String htmlId) {
+        public NotDisplayedCondition(Supplier<WebContents> webContentsSupplier, String htmlId) {
             super();
-            mWebContentsElementInState = webContentsElementInState;
+            mWebContentsSupplier = webContentsSupplier;
             mHtmlId = htmlId;
         }
 
@@ -70,8 +64,8 @@ public class HtmlConditions {
         }
 
         @Override
-        public ConditionStatus check() throws TimeoutException {
-            WebContents webContents = mWebContentsElementInState.get();
+        protected ConditionStatus checkWithSuppliers() throws TimeoutException {
+            WebContents webContents = mWebContentsSupplier.get();
             if (webContents == null) {
                 return fulfilled("null webContents");
             }

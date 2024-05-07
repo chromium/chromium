@@ -34,7 +34,7 @@ public class WebContentsElementInState implements ElementInState, Supplier<WebCo
     public Condition getEnterCondition() {
         return new InstrumentationThreadCondition() {
             @Override
-            public ConditionStatus check() {
+            protected ConditionStatus checkWithSuppliers() {
                 return whether(mWebContentsSupplier.get() != null);
             }
 

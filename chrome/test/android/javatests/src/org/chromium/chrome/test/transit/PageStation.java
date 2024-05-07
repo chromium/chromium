@@ -256,15 +256,12 @@ public class PageStation extends Station {
         public PageTitleCondition(String expectedTitle) {
             super(/* isRunOnUiThread= */ true);
             mExpectedTitle = expectedTitle;
+            dependOnSupplier(mActivityElement, "ChromeTabbedActivity");
         }
 
         @Override
-        public ConditionStatus check() throws Exception {
-            ChromeTabbedActivity activity = mActivityElement.get();
-            if (activity == null) {
-                return notFulfilled("no ChromeTabbedActivity");
-            }
-            Tab tab = activity.getActivityTab();
+        protected ConditionStatus checkWithSuppliers() throws Exception {
+            Tab tab = mActivityElement.get().getActivityTab();
             if (tab == null) {
                 return notFulfilled("null ActivityTab");
             }
@@ -286,15 +283,12 @@ public class PageStation extends Station {
         public PageUrlContainsCondition(String expectedUrl) {
             super(/* isRunOnUiThread= */ true);
             mExpectedUrlPiece = expectedUrl;
+            dependOnSupplier(mActivityElement, "ChromeTabbedActivity");
         }
 
         @Override
-        public ConditionStatus check() throws Exception {
-            ChromeTabbedActivity activity = mActivityElement.get();
-            if (activity == null) {
-                return notFulfilled("no ChromeTabbedActivity");
-            }
-            Tab tab = activity.getActivityTab();
+        protected ConditionStatus checkWithSuppliers() throws Exception {
+            Tab tab = mActivityElement.get().getActivityTab();
             if (tab == null) {
                 return notFulfilled("null ActivityTab");
             }

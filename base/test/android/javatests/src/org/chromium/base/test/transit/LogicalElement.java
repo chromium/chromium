@@ -170,7 +170,7 @@ public class LogicalElement implements ElementInState {
         mEnterCondition =
                 new Condition(mIsRunOnUiThread) {
                     @Override
-                    public ConditionStatus check() throws Exception {
+                    protected ConditionStatus checkWithSuppliers() throws Exception {
                         return whether(checkFunction.call());
                     }
 
@@ -184,7 +184,7 @@ public class LogicalElement implements ElementInState {
             mExitCondition =
                     new Condition(mIsRunOnUiThread) {
                         @Override
-                        public ConditionStatus check() throws Exception {
+                        protected ConditionStatus checkWithSuppliers() throws Exception {
                             return whether(!checkFunction.call());
                         }
 

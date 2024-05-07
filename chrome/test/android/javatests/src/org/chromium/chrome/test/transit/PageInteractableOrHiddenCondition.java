@@ -14,7 +14,7 @@ class PageInteractableOrHiddenCondition extends UiThreadCondition {
     private final Supplier<Tab> mLoadedTabSupplier;
 
     PageInteractableOrHiddenCondition(Supplier<Tab> loadedTabSupplier) {
-        mLoadedTabSupplier = loadedTabSupplier;
+        mLoadedTabSupplier = dependOnSupplier(loadedTabSupplier, "LoadedTab");
     }
 
     @Override
@@ -23,11 +23,8 @@ class PageInteractableOrHiddenCondition extends UiThreadCondition {
     }
 
     @Override
-    public ConditionStatus check() {
+    protected ConditionStatus checkWithSuppliers() {
         Tab tab = mLoadedTabSupplier.get();
-        if (tab == null) {
-            return notFulfilled("no loaded tab");
-        }
 
         boolean isUserInteractable = tab.isUserInteractable();
         boolean isHidden = tab.isHidden();

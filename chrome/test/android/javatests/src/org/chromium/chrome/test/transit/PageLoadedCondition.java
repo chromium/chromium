@@ -18,7 +18,7 @@ class PageLoadedCondition extends UiThreadCondition implements Supplier<Tab> {
     private Tab mMatchedTab;
 
     PageLoadedCondition(Supplier<ChromeTabbedActivity> activitySupplier, boolean incognito) {
-        mActivitySupplier = activitySupplier;
+        mActivitySupplier = dependOnSupplier(activitySupplier, "ChromeTabbedActivity");
         mIncognito = incognito;
     }
 
@@ -28,11 +28,8 @@ class PageLoadedCondition extends UiThreadCondition implements Supplier<Tab> {
     }
 
     @Override
-    public ConditionStatus check() {
+    protected ConditionStatus checkWithSuppliers() {
         ChromeTabbedActivity activity = mActivitySupplier.get();
-        if (activity == null) {
-            return notFulfilled("no ChromeTabbedActivity");
-        }
         Tab tab = activity.getActivityTab();
         if (tab == null) {
             return notFulfilled("null ActivityTab");

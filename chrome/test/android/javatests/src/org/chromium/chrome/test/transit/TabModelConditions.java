@@ -45,7 +45,7 @@ public class TabModelConditions {
         }
 
         @Override
-        public ConditionStatus check() {
+        protected ConditionStatus checkWithSuppliers() {
             int tabCount = mChromeTabbedActivityTestRule.tabsCount(mIncognito);
             return whether(tabCount == 0, "%d %s tabs", tabCount, mTabType);
         }
@@ -70,7 +70,7 @@ public class TabModelConditions {
         }
 
         @Override
-        public ConditionStatus check() {
+        protected ConditionStatus checkWithSuppliers() {
             int tabCount = mChromeTabbedActivityTestRule.tabsCount(mIncognito);
             return whether(tabCount > 0, "%d %s tabs", tabCount, mTabType);
         }

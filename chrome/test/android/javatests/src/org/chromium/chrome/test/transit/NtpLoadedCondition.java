@@ -18,7 +18,7 @@ class NtpLoadedCondition extends UiThreadCondition {
 
     NtpLoadedCondition(Supplier<Tab> loadedTabSupplier) {
         super();
-        mLoadedTabSupplier = loadedTabSupplier;
+        mLoadedTabSupplier = dependOnSupplier(loadedTabSupplier, "LoadedTab");
     }
 
     @Override
@@ -27,11 +27,8 @@ class NtpLoadedCondition extends UiThreadCondition {
     }
 
     @Override
-    public ConditionStatus check() {
+    protected ConditionStatus checkWithSuppliers() {
         Tab tab = mLoadedTabSupplier.get();
-        if (tab == null) {
-            return notFulfilled("no loaded tab");
-        }
 
         NativePage nativePage = tab.getNativePage();
         if (!tab.isIncognito()) {
