@@ -4361,7 +4361,7 @@ targets.legacy_basic_suite(
                 "--chromedriver",
                 "chromedriver",
                 "--binary",
-                "Google Chrome.app/Contents/MacOS/Google Chrome",
+                "Chromium.app/Contents/MacOS/Chromium",
             ],
             win_args = [
                 "--chromedriver",
@@ -4392,7 +4392,7 @@ targets.legacy_basic_suite(
                 "--chromedriver",
                 "chromedriver",
                 "--binary",
-                "Google Chrome.app/Contents/MacOS/Google Chrome",
+                "Chromium.app/Contents/MacOS/Chromium",
             ],
             win_args = [
                 "--chromedriver",
