@@ -111,6 +111,10 @@ class DMResponseValidator {
       const enterprise_management::PolicyFetchResponse& policy_response,
       PolicyValidationResult& validation_result) const;
 
+  // Validates that the policy response data is properly signed.
+  bool ValidatePolicyData(
+      const enterprise_management::PolicyFetchResponse& policy_response) const;
+
  private:
   // Extracts and validates the public key for for subsequent policy
   // verification. The public key is either the new key that signed the

@@ -52,6 +52,7 @@ constexpr char kListAppsSwitch[] = "list-apps";
 constexpr char kListUpdateSwitch[] = "list-update";
 constexpr char kListPoliciesSwitch[] = "list-policies";
 constexpr char kListCBCMPoliciesSwitch[] = "list-cbcm-policies";
+constexpr char kCBCMPolicyPathSwitch[] = "policy-path";
 constexpr char kJSONFormatSwitch[] = "json";
 constexpr char kUpdateSwitch[] = "update";
 
@@ -104,6 +105,10 @@ std::ostream& operator<<(std::ostream& os, edm::InstallValue value) {
 
 std::ostream& operator<<(std::ostream& os,
                          PolicyValidationResult::Status status) {
+  const std::string error_notes =
+      base::CommandLine::ForCurrentProcess()->HasSwitch(kCBCMPolicyPathSwitch)
+          ? ", expected"
+          : "";
   os << base::to_underlying(status) << " ";
   switch (status) {
     case PolicyValidationResult::Status::kValidationOK:
@@ -121,11 +126,11 @@ std::ostream& operator<<(std::ostream& os,
     case PolicyValidationResult::Status::kValidationWrongSettingsEntityID:
       return os << "(Wrong Settings Entity ID)";
     case PolicyValidationResult::Status::kValidationBadTimestamp:
-      return os << "(Bad Timestamp)";
+      return os << "(Bad Timestamp" << error_notes << ")";
     case PolicyValidationResult::Status::kValidationBadDMToken:
-      return os << "(Bad DMToken)";
+      return os << "(Bad DMToken" << error_notes << ")";
     case PolicyValidationResult::Status::kValidationBadDeviceID:
-      return os << "(Bad Device ID)";
+      return os << "(Bad Device ID" << error_notes << ")";
     case PolicyValidationResult::Status::kValidationBadUser:
       return os << "(Bad User)";
     case PolicyValidationResult::Status::kValidationPolicyParseError:
@@ -141,11 +146,32 @@ std::ostream& operator<<(std::ostream& os,
   }
 }
 
+scoped_refptr<DMStorage> GetDMStorage() {
+  const base::FilePath storage_path =
+      base::CommandLine::ForCurrentProcess()->GetSwitchValuePath(
+          kCBCMPolicyPathSwitch);
+  return storage_path.empty() ? GetDefaultDMStorage()
+                              : base::MakeRefCounted<DMStorage>(storage_path);
+}
+
+std::unique_ptr<CachedPolicyInfo> GetCachedPolicyInfo(
+    scoped_refptr<DMStorage> dm_storage) {
+  const base::FilePath policy_info_file =
+      dm_storage->policy_cache_folder().AppendASCII("CachedPolicyInfo");
+  auto cached_info = std::make_unique<CachedPolicyInfo>();
+  std::string policy_info_data;
+  if (base::PathExists(policy_info_file) &&
+      base::ReadFileToString(policy_info_file, &policy_info_data)) {
+    cached_info->Populate(policy_info_data);
+  }
+  return cached_info;
+}
+
 std::unique_ptr<edm::OmahaSettingsClientProto> GetOmahaPolicySettings() {
   std::string encoded_omaha_policy_type =
       base::Base64Encode(kGoogleUpdatePolicyType);
 
-  base::FilePath omaha_policy_file = GetDefaultDMStorage()
+  base::FilePath omaha_policy_file = GetDMStorage()
                                          ->policy_cache_folder()
                                          .AppendASCII(encoded_omaha_policy_type)
                                          .AppendASCII("PolicyFetchResponse");
@@ -185,9 +211,9 @@ void PrintCachedPolicy(const base::FilePath& policy_path) {
     return;
   }
 
-  scoped_refptr<DMStorage> storage = GetDefaultDMStorage();
+  scoped_refptr<DMStorage> storage = GetDMStorage();
   PolicyValidationResult status;
-  DMResponseValidator validator(*storage->GetCachedPolicyInfo(),
+  DMResponseValidator validator(*GetCachedPolicyInfo(storage),
                                 storage->GetDmToken(), storage->GetDeviceID());
   if (validator.ValidatePolicyResponse(response, status)) {
     std::cout << "  [" << policy_type << "]: satisfies all validation check."
@@ -199,11 +225,17 @@ void PrintCachedPolicy(const base::FilePath& policy_path) {
   std::cout << "    Policy type: " << status.policy_type << std::endl;
   std::cout << "    Policy token: " << status.policy_token << std::endl;
   std::cout << "    Validation status: " << status.status << std::endl;
-  std::cout << "    Issues: " << std::endl;
-  for (const auto& issue : status.issues) {
-    std::cout << "      [" << issue.policy_name << "]: " << issue.severity
-              << ":" << issue.message << std::endl;
+  if (!status.issues.empty()) {
+    std::cout << "    Issues: " << std::endl;
+    for (const auto& issue : status.issues) {
+      std::cout << "      [" << issue.policy_name << "]: " << issue.severity
+                << ":" << issue.message << std::endl;
+    }
   }
+
+  std::cout << "    Policy data check: "
+            << (validator.ValidatePolicyData(response) ? "OK" : "failed")
+            << std::endl;
 }
 
 void PrintCachedPolicyInfo(const CachedPolicyInfo& cached_info) {
@@ -226,7 +258,7 @@ void PrintCachedPolicyInfo(const CachedPolicyInfo& cached_info) {
 }
 
 void PrintCBCMPolicies() {
-  scoped_refptr<DMStorage> storage = GetDefaultDMStorage();
+  scoped_refptr<DMStorage> storage = GetDMStorage();
   if (!storage) {
     std::cerr << "Failed to instantiate DM storage instance." << std::endl;
     return;
@@ -239,8 +271,7 @@ void PrintCBCMPolicies() {
   std::cout << "DM token: " << storage->GetDmToken() << std::endl;
   std::cout << "-------------------------------------------------" << std::endl;
 
-  std::unique_ptr<CachedPolicyInfo> cached_info =
-      storage->GetCachedPolicyInfo();
+  std::unique_ptr<CachedPolicyInfo> cached_info = GetCachedPolicyInfo(storage);
   if (cached_info) {
     PrintCachedPolicyInfo(*cached_info);
     std::cout << "-------------------------------------------------"
@@ -518,6 +549,7 @@ void UpdaterUtilApp::PrintUsage(const std::string& error_message) {
         --background          Use background priority.
         --product             ProductID.
         --system              Use the system scope.
+        --policy-path         Location of the CBCM policy root path.
         --json                Use JSON as output format where applicable.)"
             << std::endl;
   Shutdown(error_message.empty() ? 0 : 1);

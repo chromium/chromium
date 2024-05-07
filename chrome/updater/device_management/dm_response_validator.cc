@@ -520,4 +520,11 @@ bool DMResponseValidator::ValidatePolicyResponse(
   return true;
 }
 
+bool DMResponseValidator::ValidatePolicyData(
+    const enterprise_management::PolicyFetchResponse& fetch_response) const {
+  PolicyValidationResult validation_result;
+  return ValidateSignature(fetch_response, policy_info_.public_key(),
+                           validation_result);
+}
+
 }  // namespace updater
