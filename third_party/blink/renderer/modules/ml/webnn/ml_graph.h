@@ -131,8 +131,8 @@ class MODULES_EXPORT MLGraph : public ScriptWrappable {
  private:
   // This helper method is called by Build(). It validates named outputs
   // and initializes the input and output resources info by graph traversal.
-  bool ValidateAndInitializeResourcesInfo(const MLNamedOperands& named_outputs,
-                                          String& error_message);
+  base::expected<void, String> ValidateAndInitializeResourcesInfo(
+      const MLNamedOperands& named_outputs);
 };
 
 }  // namespace blink
