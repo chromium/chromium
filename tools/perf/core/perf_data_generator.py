@@ -1504,7 +1504,7 @@ GTEST_BENCHMARKS = {
     'dawn_perf_tests':
     BenchmarkMetadata(
         'enga@chromium.org',
-        'Internals>GPU>Dawn',
+        'Dawn',
         'https://dawn.googlesource.com/dawn/+/HEAD/src/tests/perf_tests/README.md'
     ),
 }

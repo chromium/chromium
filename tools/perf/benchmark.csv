@@ -41,7 +41,7 @@ blink_perf.webgpu,"enga@chromium.org, cwallez@chromium.org, webgpu-developers@go
 blink_perf.webgpu_fast_call,"enga@chromium.org, cwallez@chromium.org, junov@chromium.org, webgpu-developers@google.com",Blink>WebGPU,https://bit.ly/blink-perf-benchmarks,
 chrome_sizes,chonggu@chromium.org,Build,https://chromium.googlesource.com/chromium/src/+/HEAD/tools/binary_size/README.md#resource_sizes_py,
 components_perftests,csharrison@chromium.org,,,
-dawn_perf_tests,enga@chromium.org,Internals>GPU>Dawn,https://dawn.googlesource.com/dawn/+/HEAD/src/tests/perf_tests/README.md,
+dawn_perf_tests,enga@chromium.org,Dawn,https://dawn.googlesource.com/dawn/+/HEAD/src/tests/perf_tests/README.md,
 desktop_ui,"yuhengh@chromium.org, tluk@chromium.org",UI>Browser,https://chromium.googlesource.com/chromium/src/+/main/docs/speed/benchmark/harnesses/desktop_ui.md,smoke_test
 dummy_benchmark.noisy_benchmark_1,"johnchen@chromium.org, wenbinzhang@google.com",Test>Telemetry,,
 dummy_benchmark.stable_benchmark_1,"johnchen@chromium.org, wenbinzhang@google.com",Test>Telemetry,,
