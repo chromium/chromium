@@ -258,7 +258,7 @@ struct VIZ_COMMON_EXPORT TransferableResource {
   // `texture_target` is that texture's type.
   // See here for OpenGL texture types:
   // https://www.opengl.org/wiki/Texture#Texture_Objects
-  uint32_t texture_target_;
+  uint32_t texture_target_ = 0;
 };
 
 }  // namespace viz
