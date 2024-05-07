@@ -6,6 +6,7 @@
 
 #include <algorithm>
 #include <memory>
+#include <string>
 #include <utility>
 
 #include "base/command_line.h"
@@ -621,10 +622,9 @@ void HistoryURLProvider::DoAutocomplete(history::HistoryBackend* backend,
 
   if (search_url_database_) {
     const URLPrefixes& prefixes = URLPrefix::GetURLPrefixes();
-    for (auto i(prefixes.begin()); i != prefixes.end(); ++i) {
+    for (const auto& prefix : prefixes) {
       if (params->cancel_flag.IsSet())
         return;  // Canceled in the middle of a query, give up.
-
       // We only need `max_matches` results in the end, but before we get there
       // we need to promote lower-quality matches that are prefixes of higher-
       // quality matches, and remove lower-quality redirects.  So we ask for
@@ -632,20 +632,19 @@ void HistoryURLProvider::DoAutocomplete(history::HistoryBackend* backend,
       // give us far more than enough to work with.  CullRedirects() will then
       // reduce the list to the best `max_matches` results.
       std::string prefixed_input =
-          base::UTF16ToUTF8(i->prefix + params->input.text());
+          base::UTF16ToUTF8(prefix.prefix + params->input.text());
       db->AutocompleteForPrefix(prefixed_input, max_matches * 2, !backend,
                                 &url_matches);
-      for (history::URLRows::const_iterator j(url_matches.begin());
-           j != url_matches.end(); ++j) {
-        const GURL& row_url = j->url();
+      for (const auto& url_match : url_matches) {
+        const GURL& row_url = url_match.url();
         const URLPrefix* best_prefix = URLPrefix::BestURLPrefix(
             base::UTF8ToUTF16(row_url.spec()), std::u16string());
         DCHECK(best_prefix);
         history::HistoryMatch match;
-        match.url_info = *j;
-        match.input_location = i->prefix.length();
+        match.url_info = url_match;
+        match.input_location = prefix.prefix.length();
         match.innermost_match =
-            i->num_components >= best_prefix->num_components;
+            prefix.num_components >= best_prefix->num_components;
 
         AutocompleteMatch::GetMatchComponents(
             row_url, {{match.input_location, prefixed_input.length()}},
