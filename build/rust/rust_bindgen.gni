@@ -155,13 +155,16 @@ template("rust_bindgen") {
     # The `--sysroot` flag is not working as expected and gets ignored (we don't
     # fully understand why, see b/328510249). But we add `-isystem` to point at
     # the headers in the sysroot which are otherwise not found.
-    if (is_win) {
-      args += [ "-I" + rebase_path(sysroot + "/usr/include/", root_build_dir) ]
-    } else {
-      args += [
-        "-isystem",
-        rebase_path(sysroot + "/usr/include/", root_build_dir),
-      ]
+    if (sysroot != "") {
+      if (is_win) {
+        args +=
+            [ "-I" + rebase_path(sysroot + "/usr/include/", root_build_dir) ]
+      } else {
+        args += [
+          "-isystem",
+          rebase_path(sysroot + "/usr/include/", root_build_dir),
+        ]
+      }
     }
 
     if (is_win) {
