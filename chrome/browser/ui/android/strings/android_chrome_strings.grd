@@ -1327,10 +1327,10 @@ Your Google account may have other forms of browsing history like searches and a
         Basic
       </message>
       <message name="IDS_ANDROID_APP_HISTORY_OPEN_FULL" desc="The informational message at the top of the history page letting users know that app-specific history may be missing some entries.">
-        Some of your web history might not show up here. To see a full web history, tap Open full Chrome history.
+        Some of your history might not show up here. To see all your Chrome history, open full Chrome history.
       </message>
       <message name="IDS_ANDROID_APP_HISTORY_OPEN_FULL_OTHER_FORMS" desc="The informational message at the top of the history page letting users know that app-specific history may be missing some entries, followed by the info on the other forms of browing history.">
-        Some of your web history might not show up here. If needed, tap Open full Chrome history. Also, Your Google Account may have other forms of browsing history at <ph name="BEGIN_LINK">&lt;link&gt;</ph>myactivity.google.com<ph name="END_LINK">&lt;/link&gt;</ph>.
+        Some of your history might not show up here. To see all your Chrome history, open full Chrome history. Also, Your Google Account may have other forms of browsing history at <ph name="BEGIN_LINK">&lt;link&gt;</ph>myactivity.google.com<ph name="END_LINK">&lt;/link&gt;</ph>.
       </message>
       <message name="IDS_ANDROID_HISTORY_OTHER_FORMS_OF_HISTORY" desc="The notification at the top of the history page indicating that deleting Chrome browsing history will not delete other forms of history stored at Google My Activity.">
         Your Google Account may have other forms of browsing history at <ph name="BEGIN_LINK">&lt;link&gt;</ph>myactivity.google.com<ph name="END_LINK">&lt;/link&gt;</ph>.
@@ -3741,7 +3741,7 @@ To change this setting, <ph name="BEGIN_LINK">BEGIN_LINK</ph>delete the Chrome d
         Collapse to side view
       </message>
       <message name="IDS_CUSTOM_TAB_HISTORY_IPH_BUBBLE_TEXT" desc="The message on the text bubble shown to educate the user about history in CCTs.">
-        View your web history here
+        View your Chrome history here
       </message>
       <message name="IDS_CUSTOM_TAB_MINIMIZE" desc="The accessibility text for minimize button for custom tabs.">
         Minimize tab
@@ -3862,8 +3862,8 @@ To change this setting, <ph name="BEGIN_LINK">BEGIN_LINK</ph>delete the Chrome d
       <message name="IDS_MENU_RECENT_TABS" desc="Menu item for opening the 'Recent tabs' page that shows recently closed tabs and pages the user has opened on his/her other devices. [CHAR_LIMIT=27]">
         Recent tabs
       </message>
-      <message name="IDS_MENU_WEB_HISTORY" desc="Menu item for opening the CCT history page. [CHAR_LIMIT=27]">
-        Web history
+      <message name="IDS_CHROME_HISTORY" desc="Menu item for opening the CCT history page. [CHAR_LIMIT=27]">
+        Chrome history
       </message>
       <message name="IDS_MENU_HISTORY" desc="Menu item for opening the history page. [CHAR_LIMIT=27]">
         History

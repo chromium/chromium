@@ -220,7 +220,7 @@ public class HistoryManager
                         mSelectableListLayout.initializeToolbar(
                                 R.layout.history_toolbar,
                                 mSelectionDelegate,
-                                launchedForApp ? R.string.menu_web_history : R.string.menu_history,
+                                launchedForApp ? R.string.chrome_history : R.string.menu_history,
                                 R.id.normal_menu_group,
                                 R.id.selection_mode_menu_group,
                                 this,
