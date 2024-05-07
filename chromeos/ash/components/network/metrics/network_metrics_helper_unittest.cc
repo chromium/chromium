@@ -965,6 +965,29 @@ TEST_F(NetworkMetricsHelperTest, WifiOpen) {
       NetworkMetricsHelper::ConnectionState::kDisconnectedWithoutUserAction,
       /*shill_error=*/ShillConnectResult::kUnknown);
   histogram_tester_->ExpectTotalCount(kWifiConnectionStateShillErrorHistogram,
+                                      0);
+  histogram_tester_->ExpectBucketCount(kWifiConnectionStateShillErrorHistogram,
+                                       ShillConnectResult::kUnknown, 0);
+  histogram_tester_->ExpectTotalCount(
+      kWifiOpenConnectionStateShillErrorHistogram, 0);
+  histogram_tester_->ExpectBucketCount(
+      kWifiOpenConnectionStateShillErrorHistogram, ShillConnectResult::kUnknown,
+      0);
+  histogram_tester_->ExpectTotalCount(
+      kWifiPasswordProtectedConnectionStateShillErrorHistogram, 0);
+  histogram_tester_->ExpectBucketCount(
+      kWifiPasswordProtectedConnectionStateShillErrorHistogram,
+      ShillConnectResult::kUnknown, 0);
+
+  shill_service_client_->SetServiceProperty(kTestServicePath,
+                                            shill::kStateProperty,
+                                            base::Value(shill::kStateFailure));
+  base::RunLoop().RunUntilIdle();
+  NetworkMetricsHelper::LogConnectionStateResult(
+      kTestGuid,
+      NetworkMetricsHelper::ConnectionState::kDisconnectedWithoutUserAction,
+      /*shill_error=*/ShillConnectResult::kUnknown);
+  histogram_tester_->ExpectTotalCount(kWifiConnectionStateShillErrorHistogram,
                                       1);
   histogram_tester_->ExpectBucketCount(kWifiConnectionStateShillErrorHistogram,
                                        ShillConnectResult::kUnknown, 1);
@@ -973,11 +996,6 @@ TEST_F(NetworkMetricsHelperTest, WifiOpen) {
   histogram_tester_->ExpectBucketCount(
       kWifiOpenConnectionStateShillErrorHistogram, ShillConnectResult::kUnknown,
       1);
-  histogram_tester_->ExpectTotalCount(
-      kWifiPasswordProtectedConnectionStateShillErrorHistogram, 0);
-  histogram_tester_->ExpectBucketCount(
-      kWifiPasswordProtectedConnectionStateShillErrorHistogram,
-      ShillConnectResult::kUnknown, 0);
 }
 
 TEST_F(NetworkMetricsHelperTest, WifiPasswordProtected) {
@@ -1049,14 +1067,32 @@ TEST_F(NetworkMetricsHelperTest, WifiPasswordProtected) {
       NetworkMetricsHelper::ConnectionState::kDisconnectedWithoutUserAction,
       /*shill_error=*/ShillConnectResult::kUnknown);
   histogram_tester_->ExpectTotalCount(kWifiConnectionStateShillErrorHistogram,
-                                      1);
+                                      0);
   histogram_tester_->ExpectBucketCount(kWifiConnectionStateShillErrorHistogram,
-                                       ShillConnectResult::kUnknown, 1);
+                                       ShillConnectResult::kUnknown, 0);
   histogram_tester_->ExpectTotalCount(
       kWifiOpenConnectionStateShillErrorHistogram, 0);
   histogram_tester_->ExpectBucketCount(
       kWifiOpenConnectionStateShillErrorHistogram, ShillConnectResult::kUnknown,
       0);
+  histogram_tester_->ExpectTotalCount(
+      kWifiPasswordProtectedConnectionStateShillErrorHistogram, 0);
+  histogram_tester_->ExpectBucketCount(
+      kWifiPasswordProtectedConnectionStateShillErrorHistogram,
+      ShillConnectResult::kUnknown, 0);
+
+  shill_service_client_->SetServiceProperty(kTestServicePath,
+                                            shill::kStateProperty,
+                                            base::Value(shill::kStateFailure));
+  base::RunLoop().RunUntilIdle();
+  NetworkMetricsHelper::LogConnectionStateResult(
+      kTestGuid,
+      NetworkMetricsHelper::ConnectionState::kDisconnectedWithoutUserAction,
+      /*shill_error=*/ShillConnectResult::kUnknown);
+  histogram_tester_->ExpectTotalCount(kWifiConnectionStateShillErrorHistogram,
+                                      1);
+  histogram_tester_->ExpectBucketCount(kWifiConnectionStateShillErrorHistogram,
+                                       ShillConnectResult::kUnknown, 1);
   histogram_tester_->ExpectTotalCount(
       kWifiPasswordProtectedConnectionStateShillErrorHistogram, 1);
   histogram_tester_->ExpectBucketCount(

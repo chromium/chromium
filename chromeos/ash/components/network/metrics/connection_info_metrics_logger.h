@@ -77,6 +77,10 @@ class COMPONENT_EXPORT(CHROMEOS_NETWORK) ConnectionInfoMetricsLogger
 
       // The network is disconnecting.
       kDisconnecting = 3,
+
+      // The network is in failure state which mapped to the corresponding
+      // shill error.
+      kFailure = 4,
     };
 
     explicit ConnectionInfo(const NetworkState* network,
