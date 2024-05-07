@@ -30,8 +30,12 @@ typedef base::StringTokenizerT<std::u16string, std::u16string::const_iterator>
     StringTokenizer16;
 
 // This is a hard upper bound on the number of tokens that will be processed.
-// The current value is determined from the existing body of translation data.
-constexpr size_t kMaxTokens = 61;
+// The value 61 was determined from the original body of translation data,
+// but translators gradually increased the length of strings. Each time
+// the limit is exceeded, the translation pipeline breaks, so 100 provides
+// some cushion; but it shouldn't be unbounded as that would adversely
+// affect performance. Pedals are checked on each keystroke in the omnibox.
+constexpr size_t kMaxTokens = 100;
 
 // All characters in this string get removed from text before processing.
 // U+200F is a RTL marker punctuation character that seems to throw
