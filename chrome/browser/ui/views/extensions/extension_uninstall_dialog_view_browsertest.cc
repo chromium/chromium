@@ -221,8 +221,8 @@ IN_PROC_BROWSER_TEST_F(ExtensionUninstallDialogViewBrowserTest,
         web_app::OsIntegrationTestOverrideBlockingRegistration>();
   }
   const GURL start_url = GURL("https://test.com/");
-  auto web_app_info = std::make_unique<web_app::WebAppInstallInfo>();
-  web_app_info->start_url = start_url;
+  auto web_app_info =
+      web_app::WebAppInstallInfo::CreateWithStartUrlForTesting(start_url);
   web_app_info->scope = start_url;
   web_app_info->user_display_mode =
       web_app::mojom::UserDisplayMode::kStandalone;

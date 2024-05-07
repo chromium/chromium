@@ -121,8 +121,9 @@ IN_PROC_BROWSER_TEST_P(AppServiceShelfContextMenuWebAppBrowserTest,
   Profile* profile = browser()->profile();
   base::UserActionTester user_action_tester;
 
-  auto web_app_install_info = std::make_unique<web_app::WebAppInstallInfo>();
-  web_app_install_info->start_url = GURL("https://example.org");
+  auto web_app_install_info =
+      web_app::WebAppInstallInfo::CreateWithStartUrlForTesting(
+          GURL("https://example.org"));
   web_app_install_info->display_mode = blink::mojom::DisplayMode::kMinimalUi;
   webapps::AppId app_id =
       web_app::test::InstallWebApp(profile, std::move(web_app_install_info));
@@ -165,8 +166,9 @@ IN_PROC_BROWSER_TEST_P(AppServiceShelfContextMenuWebAppBrowserTest,
   Profile* profile = browser()->profile();
   base::UserActionTester user_action_tester;
 
-  auto web_app_install_info = std::make_unique<web_app::WebAppInstallInfo>();
-  web_app_install_info->start_url = GURL("https://example.org");
+  auto web_app_install_info =
+      web_app::WebAppInstallInfo::CreateWithStartUrlForTesting(
+          GURL("https://example.org"));
   web_app_install_info->display_mode = blink::mojom::DisplayMode::kMinimalUi;
   webapps::AppId app_id =
       web_app::test::InstallWebApp(profile, std::move(web_app_install_info));
@@ -198,8 +200,9 @@ IN_PROC_BROWSER_TEST_P(AppServiceShelfContextMenuWebAppBrowserTest,
   Profile* profile = browser()->profile();
   base::UserActionTester user_action_tester;
 
-  auto web_app_install_info = std::make_unique<web_app::WebAppInstallInfo>();
-  web_app_install_info->start_url = GURL("https://example.org");
+  auto web_app_install_info =
+      web_app::WebAppInstallInfo::CreateWithStartUrlForTesting(
+          GURL("https://example.org"));
   webapps::AppId app_id =
       web_app::test::InstallWebApp(profile, std::move(web_app_install_info));
 
@@ -224,8 +227,9 @@ IN_PROC_BROWSER_TEST_P(AppServiceShelfContextMenuWebAppBrowserTest,
   }
 
   Profile* profile = browser()->profile();
-  auto web_app_install_info = std::make_unique<web_app::WebAppInstallInfo>();
-  web_app_install_info->start_url = GURL("https://example.org");
+  auto web_app_install_info =
+      web_app::WebAppInstallInfo::CreateWithStartUrlForTesting(
+          GURL("https://example.org"));
   webapps::AppId app_id =
       web_app::test::InstallWebApp(profile, std::move(web_app_install_info));
 
@@ -282,8 +286,9 @@ IN_PROC_BROWSER_TEST_F(AppServiceShelfContextMenuTabbedWebAppBrowserTest,
   Profile* profile = browser()->profile();
   base::UserActionTester user_action_tester;
 
-  auto web_app_install_info = std::make_unique<web_app::WebAppInstallInfo>();
-  web_app_install_info->start_url = GURL("https://example.org");
+  auto web_app_install_info =
+      web_app::WebAppInstallInfo::CreateWithStartUrlForTesting(
+          GURL("https://example.org"));
   web_app_install_info->display_mode = blink::mojom::DisplayMode::kStandalone;
   web_app_install_info->display_override = {blink::mojom::DisplayMode::kTabbed};
   webapps::AppId app_id =
@@ -326,8 +331,9 @@ IN_PROC_BROWSER_TEST_F(AppServiceShelfContextMenuNonTabbedWebAppBrowserTest,
   Profile* profile = browser()->profile();
   base::UserActionTester user_action_tester;
 
-  auto web_app_install_info = std::make_unique<web_app::WebAppInstallInfo>();
-  web_app_install_info->start_url = GURL("https://example.org");
+  auto web_app_install_info =
+      web_app::WebAppInstallInfo::CreateWithStartUrlForTesting(
+          GURL("https://example.org"));
   web_app_install_info->display_mode = blink::mojom::DisplayMode::kStandalone;
   web_app_install_info->display_override = {blink::mojom::DisplayMode::kTabbed};
   webapps::AppId app_id =

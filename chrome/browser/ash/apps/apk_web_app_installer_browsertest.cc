@@ -66,8 +66,8 @@ const char kAppScope1[] = "https://www.test.app/";
 
 std::unique_ptr<web_app::WebAppInstallInfo> CreateWebAppInstallInfo(
     const GURL& url) {
-  auto web_app_install_info = std::make_unique<web_app::WebAppInstallInfo>();
-  web_app_install_info->start_url = url;
+  auto web_app_install_info =
+      web_app::WebAppInstallInfo::CreateWithStartUrlForTesting(url);
   web_app_install_info->title = u"App Title";
   web_app_install_info->theme_color = SK_ColorBLUE;
   web_app_install_info->scope = url.Resolve("scope");

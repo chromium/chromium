@@ -172,10 +172,11 @@ class WebKioskAppServiceLauncherTest : public BrowserWithTestWindowTest {
     CreateWebAppWithManifest();
     InstallAppInternal(/*install_app_as_placeholder=*/false);
 
-    web_app::WebAppInstallInfo info;
-    info.start_url = GURL(kAppLaunchUrl);
-    info.title = kAppTitle;
-    app_manager_->UpdateAppByAccountId(account_id_, info);
+    GURL start_url(kAppLaunchUrl);
+    auto info =
+        web_app::WebAppInstallInfo::CreateWithStartUrlForTesting(start_url);
+    info->title = kAppTitle;
+    app_manager_->UpdateAppByAccountId(account_id_, *info);
   }
 
   bool IsAppInstalleAsPlaceholder() {

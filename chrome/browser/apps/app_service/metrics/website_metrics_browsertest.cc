@@ -170,8 +170,8 @@ class WebsiteMetricsBrowserTest : public MixinBasedInProcessBrowserTest {
   webapps::AppId InstallWebApp(
       const std::string& start_url,
       web_app::mojom::UserDisplayMode user_display_mode) {
-    auto info = std::make_unique<web_app::WebAppInstallInfo>();
-    info->start_url = GURL(start_url);
+    auto info = web_app::WebAppInstallInfo::CreateWithStartUrlForTesting(
+        GURL(start_url));
     info->user_display_mode = user_display_mode;
     auto app_id = web_app::test::InstallWebApp(profile(), std::move(info));
     return app_id;

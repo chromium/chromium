@@ -298,8 +298,9 @@ void StandaloneBrowserTestController::InstallSubApp(
       base::StrCat({chrome::kIsolatedAppScheme, url::kStandardSchemeSeparator,
                     parent_app_id}));
 
-  auto info = std::make_unique<web_app::WebAppInstallInfo>();
-  info->start_url = parent_app_url.Resolve(sub_app_path);
+  GURL start_url = parent_app_url.Resolve(sub_app_path);
+  auto info =
+      web_app::WebAppInstallInfo::CreateWithStartUrlForTesting(start_url);
   info->parent_app_id = parent_app_id;
   info->parent_app_manifest_id = parent_app_url;
   info->title = u"Sub App";

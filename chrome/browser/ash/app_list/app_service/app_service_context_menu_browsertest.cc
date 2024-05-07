@@ -58,8 +58,9 @@ IN_PROC_BROWSER_TEST_P(AppServiceContextMenuBrowserTest,
     GTEST_SKIP();
   }
   Profile* profile = browser()->profile();
-  auto web_app_install_info = std::make_unique<web_app::WebAppInstallInfo>();
-  web_app_install_info->start_url = GURL("https://example.org");
+  auto web_app_install_info =
+      web_app::WebAppInstallInfo::CreateWithStartUrlForTesting(
+          GURL("https://example.org"));
   webapps::AppId app_id =
       web_app::test::InstallWebApp(profile, std::move(web_app_install_info));
 

@@ -190,8 +190,8 @@ IN_PROC_BROWSER_TEST_F(LacrosAppsPublisherTest, NoRequestAccessingForWebApp) {
 
   ASSERT_TRUE(embedded_test_server()->Start());
   GURL url = embedded_test_server()->GetURL("app.com", "/ssl/google.html");
-  auto web_app_info = std::make_unique<web_app::WebAppInstallInfo>();
-  web_app_info->start_url = url;
+  auto web_app_info =
+      web_app::WebAppInstallInfo::CreateWithStartUrlForTesting(url);
   web_app_info->scope = url;
   auto app_id = web_app::test::InstallWebApp(browser()->profile(),
                                              std::move(web_app_info));

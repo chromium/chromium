@@ -292,8 +292,9 @@ class FullRestoreAppLaunchHandlerTestBase
   }
 
   void CreateWebApp() {
-    auto web_app_install_info = std::make_unique<web_app::WebAppInstallInfo>();
-    web_app_install_info->start_url = GURL("https://example.org");
+    auto web_app_install_info =
+        web_app::WebAppInstallInfo::CreateWithStartUrlForTesting(
+            GURL("https://example.org"));
     web_app::test::InstallWebApp(profile(), std::move(web_app_install_info));
   }
 

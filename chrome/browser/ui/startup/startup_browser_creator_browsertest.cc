@@ -1737,8 +1737,8 @@ IN_PROC_BROWSER_TEST_F(StartupBrowserCreatorTest,
 webapps::AppId InstallPWAWithName(Profile* profile,
                                   const GURL& start_url,
                                   const std::string& app_name) {
-  auto web_app_info = std::make_unique<web_app::WebAppInstallInfo>();
-  web_app_info->start_url = start_url;
+  auto web_app_info =
+      web_app::WebAppInstallInfo::CreateWithStartUrlForTesting(start_url);
   web_app_info->scope = start_url.GetWithoutFilename();
   web_app_info->user_display_mode =
       web_app::mojom::UserDisplayMode::kStandalone;
@@ -1964,8 +1964,8 @@ IN_PROC_BROWSER_TEST_F(StartupBrowserWithListAppsFeature,
 
 #if !BUILDFLAG(IS_CHROMEOS)
 webapps::AppId InstallPWA(Profile* profile, const GURL& start_url) {
-  auto web_app_info = std::make_unique<web_app::WebAppInstallInfo>();
-  web_app_info->start_url = start_url;
+  auto web_app_info =
+      web_app::WebAppInstallInfo::CreateWithStartUrlForTesting(start_url);
   web_app_info->scope = start_url.GetWithoutFilename();
   web_app_info->user_display_mode =
       web_app::mojom::UserDisplayMode::kStandalone;
@@ -2189,8 +2189,8 @@ IN_PROC_BROWSER_TEST_F(StartupBrowserWithWebAppTest,
   // Install web app set to open as a standalone window.
   {
     std::unique_ptr<web_app::WebAppInstallInfo> info =
-        std::make_unique<web_app::WebAppInstallInfo>();
-    info->start_url = GURL(kStartUrl);
+        web_app::WebAppInstallInfo::CreateWithStartUrlForTesting(
+            GURL(kStartUrl));
     info->title = kAppName;
     info->user_display_mode = web_app::mojom::UserDisplayMode::kStandalone;
     base::test::TestFuture<const webapps::AppId&, webapps::InstallResultCode>
@@ -2579,8 +2579,8 @@ class StartupBrowserWebAppProtocolHandlingTest : public InProcessBrowserTest {
       const std::vector<apps::ProtocolHandlerInfo>& protocol_handlers,
       const std::vector<apps::FileHandler>& file_handlers = {}) {
     std::unique_ptr<web_app::WebAppInstallInfo> info =
-        std::make_unique<web_app::WebAppInstallInfo>();
-    info->start_url = GURL(kStartUrl);
+        web_app::WebAppInstallInfo::CreateWithStartUrlForTesting(
+            GURL(kStartUrl));
     info->title = kAppName;
     info->user_display_mode = web_app::mojom::UserDisplayMode::kStandalone;
     info->protocol_handlers = protocol_handlers;

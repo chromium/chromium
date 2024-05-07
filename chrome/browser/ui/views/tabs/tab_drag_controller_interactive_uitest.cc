@@ -3064,8 +3064,8 @@ using DetachTabWithUrlControlledByWebApp = DetachToBrowserTabDragControllerTest;
 // browser window will be a normal browser window or an app window.
 IN_PROC_BROWSER_TEST_P(DetachTabWithUrlControlledByWebApp, TearOffWebApp) {
   // Install tabbed web app.
-  auto web_app_info = std::make_unique<web_app::WebAppInstallInfo>();
-  web_app_info->start_url = GURL("https://www.example.com");
+  auto web_app_info = web_app::WebAppInstallInfo::CreateWithStartUrlForTesting(
+      GURL("https://www.example.com"));
   web_app_info->title = u"A tabbed web app";
   web_app_info->user_display_mode =
       web_app::mojom::UserDisplayMode::kStandalone;
@@ -3123,8 +3123,9 @@ class DetachToBrowserTabDragControllerTestWithTabbedWebApp
   }
 
   webapps::AppId InstallMockApp(bool add_home_tab) {
-    auto web_app_info = std::make_unique<web_app::WebAppInstallInfo>();
-    web_app_info->start_url = GURL("https://www.example.com");
+    auto web_app_info =
+        web_app::WebAppInstallInfo::CreateWithStartUrlForTesting(
+            GURL("https://www.example.com"));
     web_app_info->title = u"A tabbed web app";
     web_app_info->user_display_mode =
         web_app::mojom::UserDisplayMode::kStandalone;

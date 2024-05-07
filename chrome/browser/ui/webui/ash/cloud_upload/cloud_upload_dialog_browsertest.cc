@@ -112,8 +112,9 @@ void CreateFakeWebApps(
   for (int i = 0; i < n; ++i) {
     std::string start_url =
         "https://www.example" + base::NumberToString(i) + ".com";
-    auto web_app_info = std::make_unique<web_app::WebAppInstallInfo>();
-    web_app_info->start_url = GURL(start_url);
+    auto web_app_info =
+        web_app::WebAppInstallInfo::CreateWithStartUrlForTesting(
+            GURL(start_url));
     web_app_info->scope = GURL(start_url);
     apps::FileHandler handler;
     std::string url = start_url + "/handle_file";

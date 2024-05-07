@@ -351,8 +351,8 @@ class MediaAccessWebAppsTest : public web_app::WebAppBrowserTestBase {
   ~MediaAccessWebAppsTest() override = default;
 
   std::string CreateWebApp(const GURL& url) const {
-    auto web_app_info = std::make_unique<web_app::WebAppInstallInfo>();
-    web_app_info->start_url = url;
+    auto web_app_info =
+        web_app::WebAppInstallInfo::CreateWithStartUrlForTesting(url);
     web_app_info->scope = url;
     return web_app::test::InstallWebApp(browser()->profile(),
                                         std::move(web_app_info));

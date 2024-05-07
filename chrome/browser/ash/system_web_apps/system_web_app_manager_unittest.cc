@@ -58,8 +58,7 @@ GURL AppUrl2() {
 std::unique_ptr<web_app::WebAppInstallInfo> GetWebAppInstallInfo(
     const GURL& url) {
   std::unique_ptr<web_app::WebAppInstallInfo> info =
-      std::make_unique<web_app::WebAppInstallInfo>();
-  info->start_url = url;
+      web_app::WebAppInstallInfo::CreateWithStartUrlForTesting(url);
   info->scope = url.GetWithoutFilename();
   info->title = u"Web App";
   return info;

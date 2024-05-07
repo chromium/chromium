@@ -83,6 +83,7 @@
 #include "components/sync/service/sync_user_settings.h"
 #include "components/sync/test/fake_server_network_resources.h"
 #include "components/user_education/common/feature_promo_controller.h"
+#include "components/webapps/common/web_app_id.h"
 #include "content/public/browser/navigation_entry.h"
 #include "content/public/test/browser_test.h"
 #include "content/public/test/test_navigation_observer.h"
@@ -162,10 +163,9 @@ const char kPasswordManagerId[] = "chrome://password-manager/";
 const char kPasswordManagerPWAUrl[] = "chrome://password-manager/?source=pwa";
 
 std::unique_ptr<web_app::WebAppInstallInfo> CreatePasswordManagerWebAppInfo() {
-  auto web_app_info = std::make_unique<web_app::WebAppInstallInfo>();
-  web_app_info->start_url = GURL(kPasswordManagerPWAUrl);
+  auto web_app_info = std::make_unique<web_app::WebAppInstallInfo>(
+      webapps::ManifestId(kPasswordManagerId), GURL(kPasswordManagerPWAUrl));
   web_app_info->title = u"Password Manager";
-  web_app_info->manifest_id = GURL(kPasswordManagerId);
   return web_app_info;
 }
 

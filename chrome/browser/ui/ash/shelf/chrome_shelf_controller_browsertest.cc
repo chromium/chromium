@@ -468,8 +468,8 @@ class ShelfWebAppBrowserTest : public ShelfAppBrowserTest {
   }
 
   webapps::AppId InstallWebApp(const GURL& start_url) {
-    auto web_app_info = std::make_unique<web_app::WebAppInstallInfo>();
-    web_app_info->start_url = start_url;
+    auto web_app_info =
+        web_app::WebAppInstallInfo::CreateWithStartUrlForTesting(start_url);
     web_app_info->scope = start_url.GetWithoutFilename();
     return web_app::test::InstallWebApp(browser()->profile(),
                                         std::move(web_app_info));
@@ -2568,8 +2568,8 @@ IN_PROC_BROWSER_TEST_F(ShelfWebAppBrowserTest, WebAppPolicy) {
 IN_PROC_BROWSER_TEST_F(ShelfWebAppBrowserTest, WebAppPolicyUpdate) {
   // Install web app.
   GURL app_url = GURL("https://example.org/");
-  auto web_app_info = std::make_unique<web_app::WebAppInstallInfo>();
-  web_app_info->start_url = app_url;
+  auto web_app_info =
+      web_app::WebAppInstallInfo::CreateWithStartUrlForTesting(app_url);
   web_app_info->scope = app_url;
   web_app_info->title = u"Example";
   webapps::AppId app_id =
@@ -3115,8 +3115,8 @@ class AppServiceShortcutShelfBrowserTest : public ShelfAppBrowserTest {
   std::string CreateWebApp(const GURL& app_url,
                            const std::u16string& app_name) {
     // Create web app.
-    auto web_app_info = std::make_unique<web_app::WebAppInstallInfo>();
-    web_app_info->start_url = app_url;
+    auto web_app_info =
+        web_app::WebAppInstallInfo::CreateWithStartUrlForTesting(app_url);
     web_app_info->title = app_name;
     web_app_info->scope = app_url;
     auto web_app_id = web_app::test::InstallWebApp(

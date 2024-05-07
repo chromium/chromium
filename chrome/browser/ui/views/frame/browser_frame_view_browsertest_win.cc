@@ -156,8 +156,8 @@ class WebAppBrowserFrameViewWinTest : public InProcessBrowserTest {
   }
 
   void InstallAndLaunchWebApp() {
-    auto web_app_info = std::make_unique<web_app::WebAppInstallInfo>();
-    web_app_info->start_url = GetStartURL();
+    auto web_app_info =
+        web_app::WebAppInstallInfo::CreateWithStartUrlForTesting(GetStartURL());
     web_app_info->scope = GetStartURL().GetWithoutFilename();
     if (theme_color_) {
       web_app_info->theme_color = *theme_color_;
@@ -285,8 +285,8 @@ class WebAppBrowserFrameViewWinWindowControlsOverlayTest
 
     std::vector<blink::mojom::DisplayMode> display_overrides = {
         blink::mojom::DisplayMode::kWindowControlsOverlay};
-    auto web_app_info = std::make_unique<web_app::WebAppInstallInfo>();
-    web_app_info->start_url = start_url;
+    auto web_app_info =
+        web_app::WebAppInstallInfo::CreateWithStartUrlForTesting(start_url);
     web_app_info->scope = start_url.GetWithoutFilename();
     web_app_info->display_mode = blink::mojom::DisplayMode::kStandalone;
     web_app_info->user_display_mode =

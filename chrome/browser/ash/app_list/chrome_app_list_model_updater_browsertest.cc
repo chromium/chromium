@@ -442,8 +442,8 @@ IN_PROC_BROWSER_TEST_F(ChromeAppListModelUpdaterTest,
 
   // Simluate installation of an app pinned to shelf by default after initial
   // sync data is merged: app with web_app::kMessagesAppId ID.
-  auto messages_info = std::make_unique<web_app::WebAppInstallInfo>();
-  messages_info->start_url = GURL("https://messages.google.com/web/");
+  auto messages_info = web_app::WebAppInstallInfo::CreateWithStartUrlForTesting(
+      GURL("https://messages.google.com/web/"));
   messages_info->display_mode = blink::mojom::DisplayMode::kMinimalUi;
   web_app::test::InstallWebApp(profile(), std::move(messages_info));
 

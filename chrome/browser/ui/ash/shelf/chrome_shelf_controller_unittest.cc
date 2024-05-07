@@ -1240,9 +1240,9 @@ class ChromeShelfControllerTestBase : public BrowserWithTestWindowTest,
   }
 
   void AddWebApp(const std::string& web_app_id) {
-    auto web_app_info = std::make_unique<web_app::WebAppInstallInfo>();
-
-    web_app_info->start_url = GetWebAppUrl(web_app_id);
+    auto web_app_info =
+        web_app::WebAppInstallInfo::CreateWithStartUrlForTesting(
+            GetWebAppUrl(web_app_id));
 
     webapps::AppId installed_app_id =
         web_app::test::InstallWebApp(profile(), std::move(web_app_info));
@@ -1254,8 +1254,9 @@ class ChromeShelfControllerTestBase : public BrowserWithTestWindowTest,
   webapps::AppId InstallExternalWebApp(
       const GURL& start_url,
       const std::optional<GURL>& install_url = {}) {
-    auto web_app_info = std::make_unique<web_app::WebAppInstallInfo>();
-    web_app_info->start_url = GURL(start_url);
+    auto web_app_info =
+        web_app::WebAppInstallInfo::CreateWithStartUrlForTesting(
+            GURL(start_url));
     web_app_info->install_url = GURL(install_url ? *install_url : start_url);
     const webapps::AppId expected_web_app_id = web_app::GenerateAppId(
         /*manifest_id=*/std::nullopt, web_app_info->start_url);
@@ -3506,8 +3507,8 @@ TEST_F(MultiProfileMultiBrowserShelfLayoutChromeShelfControllerTest,
   // *   the primary user has a test app pinned to shelf, and
   // *   secondary user has a tab with the URL associated with the app open (but
   //      does not have the app installed).
-  auto web_app_info = std::make_unique<web_app::WebAppInstallInfo>();
-  web_app_info->start_url = GURL(kWebAppUrl);
+  auto web_app_info = web_app::WebAppInstallInfo::CreateWithStartUrlForTesting(
+      GURL(kWebAppUrl));
   webapps::AppId installed_app_id =
       web_app::test::InstallWebApp(profile(), std::move(web_app_info));
   PinAppWithIDToShelf(installed_app_id);

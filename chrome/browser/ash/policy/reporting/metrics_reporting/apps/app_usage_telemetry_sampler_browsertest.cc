@@ -158,8 +158,8 @@ class AppUsageTelemetrySamplerBrowserTest
 
   // Helper that installs a standalone webapp with the specified start url.
   ::webapps::AppId InstallStandaloneWebApp(const GURL& start_url) {
-    auto web_app_info = std::make_unique<web_app::WebAppInstallInfo>();
-    web_app_info->start_url = start_url;
+    auto web_app_info =
+        web_app::WebAppInstallInfo::CreateWithStartUrlForTesting(start_url);
     web_app_info->scope = start_url.GetWithoutFilename();
     web_app_info->display_mode = ::blink::mojom::DisplayMode::kStandalone;
     web_app_info->user_display_mode =

@@ -713,8 +713,8 @@ IN_PROC_BROWSER_TEST_P(FileTasksBrowserTest, ProvidedFileSystemFileSource) {
 }
 
 IN_PROC_BROWSER_TEST_P(FileTasksBrowserTest, ExecuteWebApp) {
-  auto web_app_info = std::make_unique<web_app::WebAppInstallInfo>();
-  web_app_info->start_url = GURL("https://www.example.com/");
+  auto web_app_info = web_app::WebAppInstallInfo::CreateWithStartUrlForTesting(
+      GURL("https://www.example.com/"));
   web_app_info->scope = GURL("https://www.example.com/");
   apps::FileHandler handler;
   handler.action = GURL("https://www.example.com/handle_file");

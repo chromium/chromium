@@ -752,8 +752,8 @@ CreateSystemAppDelegateWithWindowConfig(
     SystemWebAppWindowConfig window_config) {
   auto* delegate = new UnittestingSystemAppDelegate(
       type, "Test App", app_url, base::BindLambdaForTesting([=]() {
-        auto info = std::make_unique<web_app::WebAppInstallInfo>();
-        info->start_url = app_url;
+        auto info =
+            web_app::WebAppInstallInfo::CreateWithStartUrlForTesting(app_url);
         info->scope = app_url.DeprecatedGetOriginAsURL();
         info->title = u"Test System App";
         info->theme_color = 0xFF00FF00;

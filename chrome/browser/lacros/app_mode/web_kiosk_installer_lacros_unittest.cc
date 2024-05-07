@@ -35,7 +35,6 @@ namespace {
 const char kAppInstallUrl[] = "https://example.com";
 const char kAppLaunchUrl[] = "https://example.com/launch";
 const char kManifestUrl[] = "https://example.com/manifest.json";
-const char16_t kAppTitle[] = u"app-title";
 
 std::optional<webapps::AppId> app_id() {
   return web_app::GenerateAppId(/*manifest_id=*/std::nullopt,
@@ -117,10 +116,6 @@ class WebKioskInstallerLacrosTest : public testing::Test {
   void InstallApp() {
     CreateWebAppWithManifest();
     InstallAppInternal(/*install_app_as_placeholder=*/false);
-
-    web_app::WebAppInstallInfo info;
-    info.start_url = GURL(kAppLaunchUrl);
-    info.title = kAppTitle;
   }
 
   webapps::AppId CreateWebAppWithManifest() {
