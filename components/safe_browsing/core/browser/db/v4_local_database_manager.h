@@ -415,9 +415,6 @@ class V4LocalDatabaseManager : public SafeBrowsingDatabaseManager {
   // SafeBrowsing service. Returns the swapped copy of the checks.
   PendingChecks CopyAndRemoveAllPendingChecks();
 
-  // Delete any *.store files from disk that are no longer used.
-  void DeleteUnusedStoreFiles();
-
   // Stores full hashes of URLs that have been artificially marked as unsafe.
   StoreAndHashPrefixes artificially_marked_store_and_hash_prefixes_;
 

@@ -63,8 +63,6 @@ const char kSkipHighConfidenceAllowlist[] =
 const ThreatSeverity kLeastSeverity =
     std::numeric_limits<ThreatSeverity>::max();
 
-const char* const kStoreFileNamesToDelete[] = {"IpMalware.store"};
-
 ListInfos GetListInfos() {
   using enum SBThreatType;
 
@@ -233,35 +231,6 @@ void RecordCheckUrlForHighConfidenceAllowlistBoolean(
   base::UmaHistogramBoolean(histogram_name, value);
 }
 
-void MaybeDeleteStore(const base::FilePath& path) {
-  bool path_exists = base::PathExists(path);
-  base::UmaHistogramBoolean(
-      "SafeBrowsing.V4UnusedStoreFileExists" + GetUmaSuffixForStore(path),
-      path_exists);
-
-  // The MmapHashPrefixMap maintains several helper files stored in the same
-  // directory as the main store file. These are usually found by looking at the
-  // `hash_files` field in the `V4StoreFileFormat`, but we haven't read the
-  // store at this point. Instead we use the fact that these helper files have a
-  // simple structure to delete them all.
-  std::vector<base::FilePath> paths_to_delete;
-  base::FileEnumerator enumerator(
-      path.DirName(), false, base::FileEnumerator::FILES,
-      path.BaseName().value() + FILE_PATH_LITERAL("*"),
-      // Since the search is non-recursive and only on files, the folder search
-      // policy doesn't matter. We set it to the default value here.
-      base::FileEnumerator::FolderSearchPolicy::MATCH_ONLY,
-      base::FileEnumerator::ErrorPolicy::STOP_ENUMERATION);
-  for (base::FilePath store_path = enumerator.Next(); !store_path.empty();
-       store_path = enumerator.Next()) {
-    paths_to_delete.push_back(std::move(store_path));
-  }
-
-  for (const base::FilePath& delete_path : paths_to_delete) {
-    base::DeleteFile(delete_path);
-  }
-}
-
 bool GetPrefixMatchesIsAsync() {
   return base::FeatureList::IsEnabled(kMmapSafeBrowsingDatabase) &&
          kMmapSafeBrowsingDatabaseAsync.Get();
@@ -380,8 +349,6 @@ V4LocalDatabaseManager::V4LocalDatabaseManager(
   DCHECK(this->ui_task_runner()->RunsTasksInCurrentSequence());
   DCHECK(!base_path_.empty());
   DCHECK(!list_infos_.empty());
-
-  DeleteUnusedStoreFiles();
 }
 
 V4LocalDatabaseManager::~V4LocalDatabaseManager() {
@@ -1348,25 +1315,6 @@ V4LocalDatabaseManager::CopyAndRemoveAllPendingChecks() {
     check->is_in_pending_checks = false;
   }
   return pending_checks;
-}
-
-void V4LocalDatabaseManager::DeleteUnusedStoreFiles() {
-  for (auto* const store_filename_to_delete : kStoreFileNamesToDelete) {
-    // Is the file marked for deletion also being used for a valid V4Store?
-    auto it = std::find_if(std::begin(list_infos_), std::end(list_infos_),
-                           [&store_filename_to_delete](ListInfo const& li) {
-                             return li.filename() == store_filename_to_delete;
-                           });
-    if (list_infos_.end() == it) {
-      const base::FilePath store_path =
-          base_path_.AppendASCII(store_filename_to_delete);
-      base::ThreadPool::PostTask(FROM_HERE, {base::MayBlock()},
-                                 base::BindOnce(&MaybeDeleteStore, store_path));
-    } else {
-      NOTREACHED() << "Trying to delete a store file that's in use: "
-                   << store_filename_to_delete;
-    }
-  }
 }
 
 }  // namespace safe_browsing

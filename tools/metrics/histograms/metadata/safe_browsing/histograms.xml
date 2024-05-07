@@ -3154,20 +3154,6 @@ security at risk. -->
   </summary>
 </histogram>
 
-<histogram name="SafeBrowsing.V4UnusedStoreFileExists.{Store}"
-    enum="BooleanExists" expires_after="2024-11-03">
-  <owner>drubery@chromium.org</owner>
-  <owner>chrome-safebrowsing-alerts@google.com</owner>
-  <summary>
-    Track the presence of store file {Store}.store, which was previously created
-    but has been deprecated and needs to be removed from disk. Logged once per
-    startup.
-  </summary>
-  <token key="Store">
-    <variant name="IpMalware" summary="IpMalware"/>
-  </token>
-</histogram>
-
 <histogram name="SafeBrowsing.V4Update.Network.Result"
     enum="CombinedHttpResponseAndNetErrorCode" expires_after="2024-11-03">
   <owner>vakh@chromium.org</owner>
