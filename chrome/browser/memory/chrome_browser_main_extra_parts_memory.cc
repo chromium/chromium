@@ -4,11 +4,21 @@
 
 #include "chrome/browser/memory/chrome_browser_main_extra_parts_memory.h"
 
+#include <utility>
+
+#include "base/functional/bind.h"
+#include "base/functional/callback.h"
 #include "base/memory/memory_pressure_monitor.h"
 #include "build/build_config.h"
 #include "build/chromeos_buildflags.h"
 #include "chrome/browser/browser_process.h"
 #include "chrome/browser/memory/enterprise_memory_limit_pref_observer.h"
+#include "components/heap_profiling/in_process/browser_process_snapshot_controller.h"
+#include "components/heap_profiling/in_process/mojom/snapshot_controller.mojom.h"
+#include "content/public/browser/browser_child_process_host.h"
+#include "content/public/browser/child_process_host.h"
+#include "content/public/browser/render_process_host.h"
+#include "mojo/public/cpp/bindings/pending_receiver.h"
 
 #if BUILDFLAG(IS_CHROMEOS_ASH)
 #include "base/logging.h"
@@ -16,10 +26,41 @@
 #include "chromeos/ash/components/memory/pressure/system_memory_pressure_evaluator.h"
 #endif
 
+namespace {
+
+// A shim to connect HeapProfilerController, which can't depend on content/, to
+// ChildProcessHost.
+void BindHeapSnapshotControllerToProcessHost(
+    int child_process_id,
+    mojo::PendingReceiver<heap_profiling::mojom::SnapshotController> receiver) {
+  // `child_process_id` could refer to a BrowserChildProcessHost or
+  // RenderProcessHost.
+  if (auto* browser_child_process_host =
+          content::BrowserChildProcessHost::FromID(child_process_id)) {
+    browser_child_process_host->GetHost()->BindReceiver(std::move(receiver));
+  } else if (auto* render_process_host =
+                 content::RenderProcessHost::FromID(child_process_id)) {
+    render_process_host->BindReceiver(std::move(receiver));
+  }
+}
+
+}  // namespace
+
 ChromeBrowserMainExtraPartsMemory::ChromeBrowserMainExtraPartsMemory() = default;
 
 ChromeBrowserMainExtraPartsMemory::~ChromeBrowserMainExtraPartsMemory() =
     default;
+
+void ChromeBrowserMainExtraPartsMemory::PostCreateThreads() {
+  // BrowserProcessSnapshotController may be null if heap profiling isn't
+  // enabled in this session, or if the kHeapProfilerCentralControl feature is
+  // disabled.
+  if (auto* snapshot_controller =
+          heap_profiling::BrowserProcessSnapshotController::GetInstance()) {
+    snapshot_controller->SetBindRemoteForChildProcessCallback(
+        base::BindRepeating(&BindHeapSnapshotControllerToProcessHost));
+  }
+}
 
 void ChromeBrowserMainExtraPartsMemory::PostBrowserStart() {
   // The MemoryPressureMonitor might not be available in some tests.

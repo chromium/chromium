@@ -6,6 +6,8 @@
 
 #include <cmath>
 #include <limits>
+#include <memory>
+#include <optional>
 #include <string>
 #include <utility>
 #include <vector>
@@ -18,6 +20,7 @@
 #include "base/functional/callback.h"
 #include "base/functional/callback_helpers.h"
 #include "base/memory/scoped_refptr.h"
+#include "base/memory/weak_ptr.h"
 #include "base/metrics/histogram_functions.h"
 #include "base/notreached.h"
 #include "base/numerics/clamped_math.h"
@@ -32,6 +35,8 @@
 #include "base/task/task_traits.h"
 #include "base/task/thread_pool.h"
 #include "base/time/time.h"
+#include "base/types/pass_key.h"
+#include "components/heap_profiling/in_process/browser_process_snapshot_controller.h"
 #include "components/heap_profiling/in_process/heap_profiler_parameters.h"
 #include "components/heap_profiling/in_process/switches.h"
 #include "components/metrics/call_stacks/call_stack_profile_builder.h"
@@ -162,15 +167,25 @@ bool DecideIfCollectionIsEnabled(version_info::Channel channel,
 }  // namespace
 
 HeapProfilerController::SnapshotParams::SnapshotParams(
-    base::TimeDelta mean_interval,
+    std::optional<base::TimeDelta> mean_interval,
     bool use_random_interval,
     scoped_refptr<StoppedFlag> stopped,
     ProcessType process_type,
     base::TimeTicks profiler_creation_time,
     base::OnceClosure on_first_snapshot_callback)
-    : mean_interval(mean_interval),
+    : mean_interval(std::move(mean_interval)),
       use_random_interval(use_random_interval),
       stopped(std::move(stopped)),
+      process_type(process_type),
+      profiler_creation_time(profiler_creation_time),
+      on_first_snapshot_callback(std::move(on_first_snapshot_callback)) {}
+
+HeapProfilerController::SnapshotParams::SnapshotParams(
+    scoped_refptr<StoppedFlag> stopped,
+    ProcessType process_type,
+    base::TimeTicks profiler_creation_time,
+    base::OnceClosure on_first_snapshot_callback)
+    : stopped(std::move(stopped)),
       process_type(process_type),
       profiler_creation_time(profiler_creation_time),
       on_first_snapshot_callback(std::move(on_first_snapshot_callback)) {}
@@ -205,6 +220,13 @@ HeapProfilerController::HeapProfilerController(version_info::Channel channel,
   // key to debug reentry into the profiler.
   // TODO(crbug.com/40062835): Remove this after diagnosing reentry crashes.
   base::allocator::dispatcher::ReentryGuard::RecordTLSSlotToCrashKey();
+
+  if (profiling_enabled_ && process_type_ == ProcessType::kBrowser &&
+      base::FeatureList::IsEnabled(kHeapProfilerCentralControl)) {
+    browser_process_snapshot_controller_ =
+        std::make_unique<BrowserProcessSnapshotController>(
+            snapshot_task_runner_);
+  }
 }
 
 HeapProfilerController::~HeapProfilerController() {
@@ -212,6 +234,13 @@ HeapProfilerController::~HeapProfilerController() {
   stopped_->data.Set();
   CHECK_EQ(g_instance, this);
   g_instance = nullptr;
+
+  // BrowserProcessSnapshotController must be deleted on the sequence that its
+  // WeakPtr's are bound to.
+  if (browser_process_snapshot_controller_) {
+    snapshot_task_runner_->DeleteSoon(
+        FROM_HERE, std::move(browser_process_snapshot_controller_));
+  }
 }
 
 bool HeapProfilerController::StartIfEnabled() {
@@ -237,11 +266,25 @@ bool HeapProfilerController::StartIfEnabled() {
         profiler_params.sampling_rate_bytes);
   }
   base::SamplingHeapProfiler::Get()->Start();
+
+  if (process_type_ != ProcessType::kBrowser &&
+      base::FeatureList::IsEnabled(kHeapProfilerCentralControl)) {
+    // ChildProcessSnapshotController will trigger snapshots.
+    return true;
+  }
+
   DCHECK(profiler_params.collection_interval.is_positive());
   SnapshotParams params(
       profiler_params.collection_interval,
       /*use_random_interval=*/!suppress_randomness_for_testing_, stopped_,
       process_type_, creation_time_, std::move(on_first_snapshot_callback_));
+  if (base::FeatureList::IsEnabled(kHeapProfilerCentralControl)) {
+    params.trigger_child_process_snapshot_closure = base::BindRepeating(
+        &BrowserProcessSnapshotController::TakeSnapshotsOnSnapshotSequence,
+        browser_process_snapshot_controller_->GetWeakPtr());
+  } else {
+    params.trigger_child_process_snapshot_closure = base::DoNothing();
+  }
   snapshot_task_runner_->PostTask(
       FROM_HERE, base::BindOnce(&HeapProfilerController::ScheduleNextSnapshot,
                                 std::move(params)));
@@ -261,18 +304,64 @@ void HeapProfilerController::SetFirstSnapshotCallbackForTesting(
 
 void HeapProfilerController::AppendCommandLineSwitchForChildProcess(
     base::CommandLine* command_line,
-    metrics::CallStackProfileParams::Process child_process_type) const {
+    metrics::CallStackProfileParams::Process child_process_type,
+    int child_process_id) const {
   DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
   CHECK_EQ(process_type_, ProcessType::kBrowser);
-  CHECK_NE(child_process_type, ProcessType::kBrowser);
   if (!base::FeatureList::IsEnabled(kHeapProfilerCentralControl)) {
     return;
   }
-  // Only enable subprocess profiling when the browser process is being
-  // profiled.
-  if (profiling_enabled_ &&
+  // If profiling is disabled in the browser process, pass a null
+  // BrowserProcessSnapshotController to disable it in the child process too.
+  BrowserProcessSnapshotController* snapshot_controller = nullptr;
+  if (profiling_enabled_) {
+    CHECK(browser_process_snapshot_controller_);
+    snapshot_controller = browser_process_snapshot_controller_.get();
+  }
+  AppendCommandLineSwitchInternal(command_line, child_process_type,
+                                  child_process_id, snapshot_controller);
+}
+
+BrowserProcessSnapshotController*
+HeapProfilerController::GetBrowserProcessSnapshotController() const {
+  DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
+  return browser_process_snapshot_controller_.get();
+}
+
+void HeapProfilerController::TakeSnapshotInChildProcess(
+    base::PassKey<ChildProcessSnapshotController>) {
+  DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
+  CHECK_NE(process_type_, ProcessType::kBrowser);
+  CHECK(base::FeatureList::IsEnabled(kHeapProfilerCentralControl));
+  snapshot_task_runner_->PostTask(
+      FROM_HERE,
+      base::BindOnce(&TakeSnapshot,
+                     SnapshotParams(stopped_, process_type_, creation_time_,
+                                    std::move(on_first_snapshot_callback_))));
+}
+
+// static
+void HeapProfilerController::AppendCommandLineSwitchForTesting(
+    base::CommandLine* command_line,
+    metrics::CallStackProfileParams::Process child_process_type,
+    int child_process_id,
+    BrowserProcessSnapshotController* snapshot_controller) {
+  AppendCommandLineSwitchInternal(command_line, child_process_type,
+                                  child_process_id, snapshot_controller);
+}
+
+// static
+void HeapProfilerController::AppendCommandLineSwitchInternal(
+    base::CommandLine* command_line,
+    metrics::CallStackProfileParams::Process child_process_type,
+    int child_process_id,
+    BrowserProcessSnapshotController* snapshot_controller) {
+  CHECK_NE(child_process_type, ProcessType::kBrowser);
+  CHECK(base::FeatureList::IsEnabled(kHeapProfilerCentralControl));
+  if (snapshot_controller &&
       GetHeapProfilerParametersForProcess(child_process_type).is_supported) {
     command_line->AppendSwitch(switches::kSubprocessHeapProfiling);
+    snapshot_controller->BindRemoteForChildProcess(child_process_id);
     return;
   }
   // Record that HeapProfilerController had a chance to update the child's
@@ -284,9 +373,11 @@ void HeapProfilerController::AppendCommandLineSwitchForChildProcess(
 
 // static
 void HeapProfilerController::ScheduleNextSnapshot(SnapshotParams params) {
+  // Should only be called for repeating snapshots.
+  CHECK(params.mean_interval.has_value());
   base::TimeDelta interval = params.use_random_interval
-                                 ? RandomInterval(params.mean_interval)
-                                 : params.mean_interval;
+                                 ? RandomInterval(params.mean_interval.value())
+                                 : params.mean_interval.value();
   base::SequencedTaskRunner::GetCurrentDefault()->PostDelayedTask(
       FROM_HERE,
       base::BindOnce(&HeapProfilerController::TakeSnapshot, std::move(params)),
@@ -304,9 +395,16 @@ void HeapProfilerController::TakeSnapshot(SnapshotParams params) {
   RetrieveAndSendSnapshot(
       params.process_type,
       base::TimeTicks::Now() - params.profiler_creation_time);
-  // Callback should be left as null for next snapshot.
-  CHECK(params.on_first_snapshot_callback.is_null());
-  ScheduleNextSnapshot(std::move(params));
+  if (params.process_type == ProcessType::kBrowser) {
+    // Also trigger snapshots in child processes.
+    params.trigger_child_process_snapshot_closure.Run();
+  }
+
+  if (params.mean_interval.has_value()) {
+    // Callback should be left as null for next snapshot.
+    CHECK(params.on_first_snapshot_callback.is_null());
+    ScheduleNextSnapshot(std::move(params));
+  }
 }
 
 // static

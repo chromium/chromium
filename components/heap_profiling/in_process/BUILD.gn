@@ -3,12 +3,22 @@
 # found in the LICENSE file.
 
 import("//base/allocator/allocator.gni")
+import("//mojo/public/tools/bindings/mojom.gni")
+
+mojom("mojom") {
+  sources = [ "mojom/snapshot_controller.mojom" ]
+  deps = [ "//mojo/public/mojom/base" ]
+}
 
 source_set("in_process") {
   # HeapProfilerController's dependencies are not compiled on iOS unless
   # use_allocator_shim is true.
   if (!is_ios || use_allocator_shim) {
     sources = [
+      "browser_process_snapshot_controller.cc",
+      "browser_process_snapshot_controller.h",
+      "child_process_snapshot_controller.cc",
+      "child_process_snapshot_controller.h",
       "heap_profiler_controller.cc",
       "heap_profiler_controller.h",
       "heap_profiler_parameters.cc",
@@ -18,12 +28,14 @@ source_set("in_process") {
     ]
 
     deps = [
+      ":mojom",
       "//base",
       "//components/metrics",
       "//components/metrics:child_call_stack_profile_builder",
       "//components/services/heap_profiling/public/cpp:cpp",
       "//components/variations",
       "//components/version_info",
+      "//mojo/public/cpp/bindings",
     ]
   }
 }
@@ -40,6 +52,7 @@ source_set("unit_tests") {
     ]
     deps = [
       ":in_process",
+      ":mojom",
       "//base/test:test_support",
       "//components/metrics",
       "//components/metrics:child_call_stack_profile_builder",

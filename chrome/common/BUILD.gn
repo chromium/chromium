@@ -262,6 +262,8 @@ static_library("common_lib") {
     "//build:chromeos_buildflags",
     "//components/crash/core/app",
     "//components/google/core/common",
+    "//components/heap_profiling/in_process",
+    "//components/heap_profiling/in_process:mojom",
     "//components/live_caption:constants",
     "//components/metrics:call_stack_profile_builder",
     "//components/no_state_prefetch/common",

@@ -5,6 +5,9 @@
 #ifndef COMPONENTS_HEAP_PROFILING_IN_PROCESS_HEAP_PROFILER_CONTROLLER_H_
 #define COMPONENTS_HEAP_PROFILING_IN_PROCESS_HEAP_PROFILER_CONTROLLER_H_
 
+#include <memory>
+#include <optional>
+
 #include "base/feature_list.h"
 #include "base/functional/callback.h"
 #include "base/memory/ref_counted.h"
@@ -13,6 +16,7 @@
 #include "base/synchronization/atomic_flag.h"
 #include "base/task/sequenced_task_runner.h"
 #include "base/time/time.h"
+#include "base/types/pass_key.h"
 #include "components/metrics/call_stacks/call_stack_profile_params.h"
 #include "components/version_info/channel.h"
 
@@ -30,6 +34,9 @@ BASE_DECLARE_FEATURE(kHeapProfilerIncludeZero);
 // If this is enabled, heap profiling in subprocesses is controlled centrally
 // from the browser process.
 BASE_DECLARE_FEATURE(kHeapProfilerCentralControl);
+
+class BrowserProcessSnapshotController;
+class ChildProcessSnapshotController;
 
 // HeapProfilerController controls collection of sampled heap allocation
 // snapshots for the current process.
@@ -76,7 +83,26 @@ class HeapProfilerController {
   // `child_process_type` to `command_line`.
   void AppendCommandLineSwitchForChildProcess(
       base::CommandLine* command_line,
-      metrics::CallStackProfileParams::Process child_process_type) const;
+      metrics::CallStackProfileParams::Process child_process_type,
+      int child_process_id) const;
+
+  // Returns the BrowserProcessSnapshotController or nullptr if none exists (if
+  // heap profiling is disabled or kHeapProfilerCentralControl is disabled).
+  BrowserProcessSnapshotController* GetBrowserProcessSnapshotController() const;
+
+  // Triggers an immediate snapshot in a child process. In the browser process,
+  // snapshots are scheduled internally by the HeapProfilerController.
+  void TakeSnapshotInChildProcess(
+      base::PassKey<ChildProcessSnapshotController>);
+
+  // Allows unit tests to call AppendCommandLineSwitchForChildProcess without
+  // creating a HeapProfilerController. `snapshot_controller` should be null if
+  // profiling is disabled in the browser process.
+  static void AppendCommandLineSwitchForTesting(
+      base::CommandLine* command_line,
+      metrics::CallStackProfileParams::Process child_process_type,
+      int child_process_id,
+      BrowserProcessSnapshotController* snapshot_controller);
 
  private:
   using ProcessType = metrics::CallStackProfileParams::Process;
@@ -86,12 +112,20 @@ class HeapProfilerController {
   // move-only so that it can be safely passed between threads to the static
   // snapshot functions.
   struct SnapshotParams {
-    SnapshotParams(base::TimeDelta mean_interval,
+    // Creates params for a repeating snapshot.
+    SnapshotParams(std::optional<base::TimeDelta> mean_interval,
                    bool use_random_interval,
                    scoped_refptr<StoppedFlag> stopped,
                    ProcessType process_type,
                    base::TimeTicks profiler_creation_time,
                    base::OnceClosure on_first_snapshot_callback);
+
+    // Creates params for a single snapshot.
+    SnapshotParams(scoped_refptr<StoppedFlag> stopped,
+                   ProcessType process_type,
+                   base::TimeTicks profiler_creation_time,
+                   base::OnceClosure on_first_snapshot_callback);
+
     ~SnapshotParams();
 
     // Move-only.
@@ -100,8 +134,9 @@ class HeapProfilerController {
     SnapshotParams(SnapshotParams&& other);
     SnapshotParams& operator=(SnapshotParams&& other);
 
-    // Mean interval until the next snapshot.
-    base::TimeDelta mean_interval;
+    // Mean interval until the next snapshot or nullopt if the params are used
+    // only for a single snapshot.
+    std::optional<base::TimeDelta> mean_interval;
 
     // If true, generate a random time centered around `mean_interval`.
     // Otherwise use `mean_interval` exactly.
@@ -119,7 +154,19 @@ class HeapProfilerController {
     // A callback to invoke for the first snapshot. Will be null for the
     // following snapshots. For testing.
     base::OnceClosure on_first_snapshot_callback;
+
+    // A callback to trigger snapshots in all known child processes. Only used
+    // in the browser process when kHeapProfilerCentralControl is enabled.
+    base::RepeatingClosure trigger_child_process_snapshot_closure;
   };
+
+  // Shared implementation of AppendCommandLineSwitchForChildProcess and
+  // AppendCommandLineSwitchForTesting.
+  static void AppendCommandLineSwitchInternal(
+      base::CommandLine* command_line,
+      ProcessType child_process_type,
+      int child_process_id,
+      BrowserProcessSnapshotController* snapshot_controller);
 
   // Schedules the next call to TakeSnapshot.
   static void ScheduleNextSnapshot(SnapshotParams params);
@@ -154,6 +201,13 @@ class HeapProfilerController {
   // A task runner to trigger snapshots in the background.
   scoped_refptr<base::SequencedTaskRunner> snapshot_task_runner_
       GUARDED_BY_CONTEXT(sequence_checker_);
+
+  // A controller that notifies the HeapProfilerController in child processes to
+  // take a snapshot at the same time as this HeapProfilerController. Created
+  // only in the browser process when kHeapProfilerCentralControl is enabled.
+  std::unique_ptr<BrowserProcessSnapshotController>
+      browser_process_snapshot_controller_
+          GUARDED_BY_CONTEXT(sequence_checker_);
 
   // If true, the sampling interval and time between samples won't have any
   // random variance added so that tests are repeatable.

@@ -11,6 +11,7 @@
 #include <string_view>
 #include <utility>
 
+#include "base/check.h"
 #include "base/containers/flat_set.h"
 #include "base/files/file_util.h"
 #include "base/functional/bind.h"
@@ -40,6 +41,9 @@
 #include "components/crash/core/common/crash_key.h"
 #include "components/dom_distiller/core/url_constants.h"
 #include "components/embedder_support/origin_trials/origin_trial_policy_impl.h"
+#include "components/heap_profiling/in_process/child_process_snapshot_controller.h"
+#include "components/heap_profiling/in_process/heap_profiler_controller.h"
+#include "components/heap_profiling/in_process/mojom/snapshot_controller.mojom.h"
 #include "components/services/heap_profiling/public/cpp/profiling_client.h"
 #include "components/strings/grit/components_strings.h"
 #include "content/public/common/cdm_info.h"
@@ -372,6 +376,9 @@ media::MediaDrmBridgeClient* ChromeContentClient::GetMediaDrmBridgeClient() {
 void ChromeContentClient::ExposeInterfacesToBrowser(
     scoped_refptr<base::SequencedTaskRunner> io_task_runner,
     mojo::BinderMap* binders) {
+  // Sets up the client side of the multi-process heap profiler service.
+  // TODO(crbug.com/40915258): Hook up chrome://memory-internals to the
+  // in-process heap profiler, and delete this service.
   binders->Add<heap_profiling::mojom::ProfilingClient>(
       base::BindRepeating(
           [](mojo::PendingReceiver<heap_profiling::mojom::ProfilingClient>
@@ -381,4 +388,16 @@ void ChromeContentClient::ExposeInterfacesToBrowser(
             profiling_client->BindToInterface(std::move(receiver));
           }),
       io_task_runner);
+
+  // Sets up the simplified in-process heap profiler, if it's enabled.
+  const auto* heap_profiler_controller =
+      heap_profiling::HeapProfilerController::GetInstance();
+  if (heap_profiler_controller && heap_profiler_controller->IsEnabled()) {
+    binders->Add<heap_profiling::mojom::SnapshotController>(
+        base::BindRepeating(&heap_profiling::ChildProcessSnapshotController::
+                                CreateSelfOwnedReceiver),
+        // ChildProcessSnapshotController calls into HeapProfilerController,
+        // which can only be accessed on this sequence.
+        base::SequencedTaskRunner::GetCurrentDefault());
+  }
 }

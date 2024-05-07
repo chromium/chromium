@@ -2282,6 +2282,7 @@ static_library("browser") {
     "//components/handoff",
     "//components/headless/select_file_dialog",
     "//components/heap_profiling/in_process",
+    "//components/heap_profiling/in_process:mojom",
     "//components/heavy_ad_intervention",
     "//components/history/content/browser",
     "//components/history/core/browser",

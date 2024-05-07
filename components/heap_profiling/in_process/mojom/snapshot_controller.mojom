@@ -1,0 +1,14 @@
+// Copyright 2024 The Chromium Authors
+// Use of this source code is governed by a BSD-style license that can be
+// found in the LICENSE file.
+
+module heap_profiling.mojom;
+
+// Lets HeapProfilerController in the browser process schedule heap snapshots in
+// child processes.
+interface SnapshotController {
+  // Triggers a heap snapshot. The snapshot data will be passed back to the
+  // browser process using metrics::ChildCallStackProfileCollector, for
+  // inclusion in the next metrics upload via CallStackProfileMetricsProvider.
+  TakeSnapshot();
+};
