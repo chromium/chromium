@@ -74,8 +74,9 @@ SystemToastView::SystemToastView(const std::u16string& text,
         gfx::Size(kToastLeadingIconPaddingWidth, kToastLeadingIconSize));
   }
 
-  auto* label = AddChildView(
+  AddChildView(
       views::Builder<views::Label>()
+          .CopyAddressTo(&label_)
           .SetID(VIEW_ID_TOAST_LABEL)
           .SetText(text)
           .SetTooltipText(text)
@@ -118,8 +119,8 @@ SystemToastView::SystemToastView(const std::u16string& text,
   }
 
   // Need to size label to get the required number of lines.
-  label->SizeToPreferredSize();
-  SetInteriorMargin(label->GetRequiredLines() > 1
+  label_->SizeToPreferredSize();
+  SetInteriorMargin(label_->GetRequiredLines() > 1
                         ? has_button ? kMultilineToastWithButtonInteriorMargin
                                      : kMultilineToastInteriorMargin
                     : has_button ? kToastWithButtonInteriorMargin
@@ -139,6 +140,10 @@ SystemToastView::SystemToastView(const std::u16string& text,
 }
 
 SystemToastView::~SystemToastView() = default;
+
+void SystemToastView::SetText(const std::u16string& text) {
+  label_->SetText(text);
+}
 
 void SystemToastView::ToggleButtonA11yFocus() {
   if (!dismiss_button_) {

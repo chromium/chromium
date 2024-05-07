@@ -28,7 +28,7 @@ class Layer;
 namespace ash {
 
 class CaptureModeSession;
-class SystemToastStyle;
+class SystemToastView;
 
 // Defines the capture toast type that Capture Mode is currently using.
 enum class CaptureToastType {
@@ -79,7 +79,7 @@ class ASH_EXPORT CaptureModeToastController : public views::WidgetObserver {
 
  private:
   // Initializes the toast widget and its contents.
-  void BuildCaptureToastWidget(const std::u16string& label);
+  void BuildCaptureToastWidget(const std::u16string& text);
 
   gfx::Rect CalculateToastWidgetBoundsInScreen() const;
 
@@ -89,7 +89,7 @@ class ASH_EXPORT CaptureModeToastController : public views::WidgetObserver {
 
   // The capture toast widget and its contents view.
   views::UniqueWidgetPtr capture_toast_widget_;
-  raw_ptr<SystemToastStyle> toast_contents_view_ = nullptr;
+  raw_ptr<SystemToastView> toast_contents_view_ = nullptr;
 
   // Stores the toast type of the `capture_toast_widget_` after it's created.
   std::optional<CaptureToastType> current_toast_type_;

@@ -12,6 +12,7 @@
 #include "ui/views/layout/flex_layout_view.h"
 
 namespace views {
+class Label;
 class LabelButton;
 }  // namespace views
 
@@ -42,12 +43,16 @@ class ASH_EXPORT SystemToastView : public views::FlexLayoutView {
 
   views::LabelButton* dismiss_button() const { return dismiss_button_; }
 
+  // Updates the toast label text.
+  void SetText(const std::u16string& text);
+
   // Toggles the dismiss button's focus. This function is necessary since toasts
   // are not directly focus accessible by tab traversal.
   void ToggleButtonA11yFocus();
 
  private:
   // Owned by the views hierarchy.
+  raw_ptr<views::Label> label_ = nullptr;
   raw_ptr<views::LabelButton> dismiss_button_ = nullptr;
   std::unique_ptr<SystemShadow> shadow_;
 
