@@ -592,6 +592,16 @@
   return action;
 }
 
+- (UIAction*)actionToShowDetailsWithBlock:(ProceduralBlock)block {
+  UIImage* image =
+      DefaultSymbolWithPointSize(kInfoCircleSymbol, kSymbolActionPointSize);
+  return [self
+      actionWithTitle:l10n_util::GetNSString(IDS_IOS_SHOW_DETAILS_ACTION_TITLE)
+                image:image
+                 type:MenuActionType::ShowDetails
+                block:block];
+}
+
 // Returns an array of group actions for a given set of groups. If
 // `currentGroup` is specified and is present in the set, it is selected.
 - (NSArray<UIMenuElement*>*)

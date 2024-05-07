@@ -186,6 +186,10 @@ class TabGroup;
 // Creates a UIAction instance for deleting a tab group.
 - (UIAction*)actionToDeleteTabGroupWithBlock:(ProceduralBlock)block;
 
+// Creates a UIAction instance whose title and icon are configured for showing
+// details, which will invoke the given `block` when executed.
+- (UIAction*)actionToShowDetailsWithBlock:(ProceduralBlock)block;
+
 @end
 
 #endif  // IOS_CHROME_BROWSER_UI_MENU_ACTION_FACTORY_H_

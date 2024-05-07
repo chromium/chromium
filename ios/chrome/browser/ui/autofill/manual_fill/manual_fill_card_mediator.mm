@@ -179,9 +179,11 @@ NSString* const kAddPaymentMethodAccessibilityIdentifier =
       // TODO(crbug.com/326413453): Handle tap.
   }];
 
-  // TODO(crbug.com/326413453): Add Show Details action.
+  UIAction* showDetailsAction = [actionFactory actionToShowDetailsWithBlock:^{
+      // TODO(crbug.com/326413453): Handle tap.
+  }];
 
-  return @[ editAction ];
+  return @[ editAction, showDetailsAction ];
 }
 
 #pragma mark - FullCardRequestResultDelegateObserving
