@@ -28,6 +28,10 @@
 
 class PrefService;
 
+namespace {
+class FacetURI;
+}
+
 namespace signin {
 class IdentityManager;
 }  // namespace signin
@@ -106,7 +110,14 @@ class PlusAddressService : public KeyedService,
 
   // Same as `GetPlusAddress`, but packages the plus address along with its
   // eTLD+1.
+  // TODO(b/322147254): Remove function when sync support is launched in favor
+  // of the version that uses facets.
   std::optional<PlusProfile> GetPlusProfile(const url::Origin& origin) const;
+
+  // Gets a plus address, if one exists, for the passed-in `facet`. Only valid
+  // facets are considered.
+  std::optional<PlusProfile> GetPlusProfile(
+      const affiliations::FacetURI& facet) const;
 
   // Returns all the cached plus profiles. There are no server requests
   // triggered by this method, only the cached responses are returned.

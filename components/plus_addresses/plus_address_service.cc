@@ -157,6 +157,20 @@ std::optional<PlusProfile> PlusAddressService::GetPlusProfile(
   return *it;
 }
 
+std::optional<PlusProfile> PlusAddressService::GetPlusProfile(
+    const affiliations::FacetURI& facet) const {
+  DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
+  if (!facet.is_valid()) {
+    return std::nullopt;
+  }
+  // `facet` is used as the comparator, so the other fields don't matter.
+  auto it = plus_profiles_.find(PlusProfile("", facet, "", false));
+  if (it == plus_profiles_.end()) {
+    return std::nullopt;
+  }
+  return *it;
+}
+
 void PlusAddressService::SavePlusProfile(url::Origin origin,
                                          const PlusProfile& profile) {
   DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);

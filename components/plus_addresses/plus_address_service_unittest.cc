@@ -19,6 +19,7 @@
 #include "base/test/task_environment.h"
 #include "base/test/test_future.h"
 #include "base/time/time.h"
+#include "components/affiliations/core/browser/affiliation_utils.h"
 #include "components/autofill/core/browser/ui/suggestion.h"
 #include "components/autofill/core/browser/ui/suggestion_test_helpers.h"
 #include "components/autofill/core/common/aliases.h"
@@ -149,6 +150,21 @@ TEST_F(PlusAddressServiceTest, BasicTest) {
   EXPECT_EQ(service().GetPlusAddress(url::Origin()), std::nullopt);
   EXPECT_EQ(service().GetPlusProfile(kSubdomainOrigin)->plus_address,
             profile.plus_address);
+}
+
+TEST_F(PlusAddressServiceTest, GetPlusProfileByFacet) {
+  const PlusProfile profile = test::CreatePlusProfile(/*use_full_domain=*/true);
+  EXPECT_FALSE(service().IsPlusAddress(profile.plus_address));
+  // The origin param is unused when using FacetURI(s).
+  service().SavePlusProfile(/*origin=*/url::Origin(), profile);
+  EXPECT_TRUE(service().IsPlusAddress(profile.plus_address));
+  EXPECT_EQ(
+      service().GetPlusProfile(
+          affiliations::FacetURI::FromPotentiallyInvalidSpec("invalid facet")),
+      std::nullopt);
+  EXPECT_EQ(service().GetPlusProfile(
+                absl::get<affiliations::FacetURI>(profile.facet)),
+            profile);
 }
 
 TEST_F(PlusAddressServiceTest, EnsureEtldPlusOneScope) {
