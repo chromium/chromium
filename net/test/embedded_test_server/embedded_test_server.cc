@@ -31,6 +31,7 @@
 #include "base/threading/thread_restrictions.h"
 #include "crypto/rsa_private_key.h"
 #include "net/base/hex_utils.h"
+#include "net/base/ip_address.h"
 #include "net/base/ip_endpoint.h"
 #include "net/base/net_errors.h"
 #include "net/base/port_util.h"
@@ -420,25 +421,22 @@ bool EmbeddedTestServer::GenerateCertAndKey() {
   std::unique_ptr<CertBuilder> leaf;
 
   if (cert_config_.intermediate != IntermediateType::kNone) {
-    intermediate = CertBuilder::FromFile(
-        certs_dir.AppendASCII("intermediate_ca_cert.pem"), static_root.get());
-    if (!intermediate)
-      return false;
+    intermediate = std::make_unique<CertBuilder>(nullptr, static_root.get());
     intermediate->SetValidity(now - base::Days(100), now + base::Days(1000));
+    intermediate->SetBasicConstraints(/*is_ca=*/true, /*path_len=*/-1);
+    intermediate->SetKeyUsages(
+        {bssl::KEY_USAGE_BIT_KEY_CERT_SIGN, bssl::KEY_USAGE_BIT_CRL_SIGN});
 
-    leaf = CertBuilder::FromFile(certs_dir.AppendASCII("ok_cert.pem"),
-                                 intermediate.get());
+    leaf = std::make_unique<CertBuilder>(nullptr, intermediate.get());
   } else {
-    leaf = CertBuilder::FromFile(certs_dir.AppendASCII("ok_cert.pem"),
-                                 static_root.get());
+    leaf = std::make_unique<CertBuilder>(nullptr, static_root.get());
   }
-  if (!leaf)
-    return false;
-
   std::vector<GURL> leaf_ca_issuers_urls;
   std::vector<GURL> leaf_ocsp_urls;
 
   leaf->SetValidity(now - base::Days(1), now + base::Days(20));
+  leaf->SetBasicConstraints(/*is_ca=*/false, /*path_len=*/-1);
+  leaf->SetExtendedKeyUsages({bssl::der::Input(bssl::kServerAuth)});
 
   if (!cert_config_.policy_oids.empty()) {
     leaf->SetCertificatePolicies(cert_config_.policy_oids);
@@ -448,10 +446,14 @@ bool EmbeddedTestServer::GenerateCertAndKey() {
 
   if (!cert_config_.dns_names.empty() || !cert_config_.ip_addresses.empty()) {
     leaf->SetSubjectAltNames(cert_config_.dns_names, cert_config_.ip_addresses);
+  } else {
+    leaf->SetSubjectAltNames({}, {net::IPAddress::IPv4Localhost()});
   }
 
   if (!cert_config_.key_usages.empty()) {
     leaf->SetKeyUsages(cert_config_.key_usages);
+  } else {
+    leaf->SetKeyUsages({bssl::KEY_USAGE_BIT_DIGITAL_SIGNATURE});
   }
 
   if (!cert_config_.embedded_scts.empty()) {
