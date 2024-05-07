@@ -40,6 +40,8 @@ constexpr char kStartSessionSourceHistogramName[] =
 constexpr char kToggleEndButtonDuringSessionHistogramName[] =
     "Ash.FocusMode.DuringSession.ToggleEndSessionSource";
 
+constexpr char kTasksSelectedHistogramName[] = "Ash.FocusMode.TasksSelected";
+
 }  // namespace ash::focus_mode_histogram_names
 
 #endif  // ASH_SYSTEM_FOCUS_MODE_FOCUS_MODE_HISTOGRAM_NAMES_H_

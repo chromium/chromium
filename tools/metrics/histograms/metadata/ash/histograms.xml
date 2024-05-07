@@ -3738,6 +3738,18 @@ chromium-metrics-reviews@google.com.
   </summary>
 </histogram>
 
+<histogram name="Ash.FocusMode.TasksSelected" units="count"
+    expires_after="2025-05-01">
+  <owner>hongyulong@chromium.org</owner>
+  <owner>richui@chromium.org</owner>
+  <owner>nupurjain@google.com</owner>
+  <owner>chromeos-wms@google.com</owner>
+  <summary>
+    Record the count of tasks selected throughout each focus session. Emitted
+    when a session ends. Note that only one task can be selected at a time.
+  </summary>
+</histogram>
+
 <histogram name="Ash.Frame.ColorChangeCount.{AppType}" units="count"
     expires_after="2024-11-03">
   <owner>lingyufeng@google.com</owner>

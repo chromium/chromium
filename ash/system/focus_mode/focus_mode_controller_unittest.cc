@@ -22,6 +22,7 @@
 #include "ash/system/toast/anchored_nudge_manager_impl.h"
 #include "ash/system/unified/unified_system_tray.h"
 #include "ash/test/ash_test_base.h"
+#include "base/test/metrics/histogram_tester.h"
 #include "base/test/scoped_feature_list.h"
 #include "base/time/time.h"
 #include "url/gurl.h"
@@ -310,6 +311,47 @@ TEST_F(FocusModeControllerMultiUserTest, EndingMomentNudgeTest) {
   LeftClickOn(focus_mode_tray);
   EXPECT_TRUE(controller->in_ending_moment());
   EXPECT_FALSE(IsEndingMomentNudgeShown());
+}
+
+// Tests that the histogram will record how many tasks we selected during a
+// focus session.
+TEST_F(FocusModeControllerMultiUserTest, CheckTasksSelectedHistogram) {
+  base::HistogramTester histogram_tester;
+
+  auto* controller = FocusModeController::Get();
+  EXPECT_FALSE(controller->in_focus_session());
+
+  // Start a focus session.
+  controller->ToggleFocusMode();
+  EXPECT_TRUE(controller->in_focus_session());
+  EXPECT_FALSE(controller->HasSelectedTask());
+
+  // Select a task during the session.
+  FocusModeTask task;
+  task.task_list_id = "abc";
+  task.task_id = "1";
+  task.title = "Focus Task";
+  task.updated = base::Time::Now();
+
+  controller->SetSelectedTask(task);
+  EXPECT_TRUE(controller->HasSelectedTask());
+
+  // Remove the task and select a new one.
+  controller->SetSelectedTask({});
+
+  task.task_list_id = "abc";
+  task.task_id = "2";
+  task.title = "A New Focus Task";
+  task.updated = base::Time::Now();
+  controller->SetSelectedTask(task);
+
+  // End the focus session and check the count.
+  controller->ToggleFocusMode();
+  EXPECT_FALSE(controller->in_focus_session());
+
+  histogram_tester.ExpectBucketCount(
+      focus_mode_histogram_names::kTasksSelectedHistogramName, /*sample=*/2,
+      /*expected_count=*/1);
 }
 
 }  // namespace ash

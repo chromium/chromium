@@ -222,6 +222,13 @@ class ASH_EXPORT FocusModeController : public SessionObserver {
   // created by the user.
   FocusModeTask selected_task_;
 
+  // Some data recorded during a session, which will be used on a session ended.
+  struct MetricsDataOnEnd {
+    // Counts the number of tasks selected during a session.
+    int tasks_selected_count = 0;
+  };
+  std::optional<MetricsDataOnEnd> metrics_data_on_end_ = std::nullopt;
+
   // This is used to display focus mode playlists. Playback controls will be
   // added later.
   std::unique_ptr<FocusModeSoundsController> focus_mode_sounds_controller_;

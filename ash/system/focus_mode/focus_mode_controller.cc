@@ -5,6 +5,7 @@
 #include "ash/system/focus_mode/focus_mode_controller.h"
 
 #include <memory>
+// #include <optional>
 
 #include "ash/accessibility/accessibility_controller.h"
 #include "ash/api/tasks/tasks_types.h"
@@ -281,6 +282,13 @@ void FocusModeController::ResetFocusSession() {
   const bool was_in_focus_session = in_focus_session();
   current_session_.reset();
 
+  if (metrics_data_on_end_.has_value()) {
+    base::UmaHistogramCounts100(
+        focus_mode_histogram_names::kTasksSelectedHistogramName,
+        metrics_data_on_end_.value().tasks_selected_count);
+    metrics_data_on_end_ = std::nullopt;
+  }
+
   if (was_in_focus_session) {
     for (auto& observer : observers_) {
       observer.OnFocusModeChanged(/*in_focus_session=*/false);
@@ -359,8 +367,15 @@ base::Time FocusModeController::GetActualEndTime() const {
 }
 
 void FocusModeController::SetSelectedTask(const FocusModeTask& task) {
+  if (selected_task_.task_id == task.task_id) {
+    return;
+  }
+
   selected_task_ = task;
   // TODO(b/305089077): Update user prefs.
+  if (metrics_data_on_end_.has_value() && !selected_task_.empty()) {
+    metrics_data_on_end_.value().tasks_selected_count++;
+  }
 }
 
 bool FocusModeController::HasSelectedTask() const {
@@ -406,6 +421,11 @@ void FocusModeController::StartFocusSession(
                                 kHasSelectedTaskOnSessionStartHistogramName,
                             /*sample=*/HasSelectedTask());
 
+  // Reset `tasks_selected_count_` to count how many tasks are selected during a
+  // focus session.
+  MetricsDataOnEnd data_on_end;
+  data_on_end.tasks_selected_count = HasSelectedTask() ? 1 : 0;
+  metrics_data_on_end_ = data_on_end;
   current_session_ = FocusModeSession(session_duration_,
                                       session_duration_ + base::Time::Now());
 

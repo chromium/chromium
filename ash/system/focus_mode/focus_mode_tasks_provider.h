@@ -23,6 +23,9 @@ struct ASH_EXPORT FocusModeTask {
   FocusModeTask& operator=(const FocusModeTask&);
   FocusModeTask& operator=(FocusModeTask&&);
 
+  // TODO: Replace the condition below with `FocusModeTask::IsValid()`.
+  bool empty() const { return task_list_id.empty(); }
+
   std::string task_list_id;
   std::string task_id;
   std::string title;
