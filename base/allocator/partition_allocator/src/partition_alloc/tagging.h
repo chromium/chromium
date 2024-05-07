@@ -17,7 +17,7 @@
 #include "partition_alloc/partition_alloc_buildflags.h"
 #include "partition_alloc/partition_alloc_config.h"
 
-#if PA_BUILDFLAG(HAS_MEMORY_TAGGING) && BUILDFLAG(IS_ANDROID)
+#if BUILDFLAG(HAS_MEMORY_TAGGING) && BUILDFLAG(IS_ANDROID)
 #include <csignal>
 #endif
 
@@ -43,11 +43,11 @@ void ChangeMemoryTaggingModeForCurrentThread(TagViolationReportingMode);
 namespace internal {
 
 constexpr uint64_t kMemTagGranuleSize = 16u;
-#if PA_BUILDFLAG(HAS_MEMORY_TAGGING)
+#if BUILDFLAG(HAS_MEMORY_TAGGING)
 constexpr uint64_t kPtrTagMask = 0xff00000000000000uLL;
 #else
 constexpr uint64_t kPtrTagMask = 0;
-#endif  // PA_BUILDFLAG(HAS_MEMORY_TAGGING)
+#endif  // BUILDFLAG(HAS_MEMORY_TAGGING)
 constexpr uint64_t kPtrUntagMask = ~kPtrTagMask;
 
 #if BUILDFLAG(IS_ANDROID)
@@ -66,24 +66,24 @@ TagViolationReportingMode GetMemoryTaggingModeForCurrentThread();
 
 // These forward-defined functions do not really exist in tagging.cc, they're
 // resolved by the dynamic linker to MTE-capable versions on the right hardware.
-#if PA_BUILDFLAG(HAS_MEMORY_TAGGING)
+#if BUILDFLAG(HAS_MEMORY_TAGGING)
 PA_COMPONENT_EXPORT(PARTITION_ALLOC)
 void* TagMemoryRangeIncrementInternal(void* ptr, size_t size);
 PA_COMPONENT_EXPORT(PARTITION_ALLOC)
 void* TagMemoryRangeRandomlyInternal(void* ptr, size_t size, uint64_t mask);
 PA_COMPONENT_EXPORT(PARTITION_ALLOC)
 void* RemaskPointerInternal(void* ptr);
-#endif  // PA_BUILDFLAG(HAS_MEMORY_TAGGING)
+#endif  // BUILDFLAG(HAS_MEMORY_TAGGING)
 
 // Increments the tag of the memory range ptr. Useful for provable revocations
 // (e.g. free). Returns the pointer with the new tag. Ensures that the entire
 // range is set to the same tag.
 PA_ALWAYS_INLINE void* TagMemoryRangeIncrement(void* ptr, size_t size) {
-#if PA_BUILDFLAG(HAS_MEMORY_TAGGING)
+#if BUILDFLAG(HAS_MEMORY_TAGGING)
   return TagMemoryRangeIncrementInternal(ptr, size);
 #else
   return ptr;
-#endif  // PA_BUILDFLAG(HAS_MEMORY_TAGGING)
+#endif  // BUILDFLAG(HAS_MEMORY_TAGGING)
 }
 
 PA_ALWAYS_INLINE void* TagMemoryRangeIncrement(uintptr_t address, size_t size) {
@@ -97,22 +97,22 @@ PA_ALWAYS_INLINE void* TagMemoryRangeRandomly(uintptr_t address,
                                               size_t size,
                                               uint64_t mask = 0u) {
   void* ptr = reinterpret_cast<void*>(address);
-#if PA_BUILDFLAG(HAS_MEMORY_TAGGING)
+#if BUILDFLAG(HAS_MEMORY_TAGGING)
   return reinterpret_cast<void*>(
       TagMemoryRangeRandomlyInternal(ptr, size, mask));
 #else
   return ptr;
-#endif  // PA_BUILDFLAG(HAS_MEMORY_TAGGING)
+#endif  // BUILDFLAG(HAS_MEMORY_TAGGING)
 }
 
 // Gets a version of ptr that's safe to dereference.
 template <typename T>
 PA_ALWAYS_INLINE T* TagPtr(T* ptr) {
-#if PA_BUILDFLAG(HAS_MEMORY_TAGGING)
+#if BUILDFLAG(HAS_MEMORY_TAGGING)
   return reinterpret_cast<T*>(RemaskPointerInternal(ptr));
 #else
   return ptr;
-#endif  // PA_BUILDFLAG(HAS_MEMORY_TAGGING)
+#endif  // BUILDFLAG(HAS_MEMORY_TAGGING)
 }
 
 // Gets a version of |address| that's safe to dereference, and casts to a
@@ -123,11 +123,11 @@ PA_ALWAYS_INLINE void* TagAddr(uintptr_t address) {
 
 // Strips the tag bits off |address|.
 PA_ALWAYS_INLINE uintptr_t UntagAddr(uintptr_t address) {
-#if PA_BUILDFLAG(HAS_MEMORY_TAGGING)
+#if BUILDFLAG(HAS_MEMORY_TAGGING)
   return address & internal::kPtrUntagMask;
 #else
   return address;
-#endif  // PA_BUILDFLAG(HAS_MEMORY_TAGGING)
+#endif  // BUILDFLAG(HAS_MEMORY_TAGGING)
 }
 
 }  // namespace internal
@@ -138,7 +138,7 @@ PA_ALWAYS_INLINE uintptr_t UntagPtr(T* ptr) {
   return internal::UntagAddr(reinterpret_cast<uintptr_t>(ptr));
 }
 
-#if PA_BUILDFLAG(HAS_MEMORY_TAGGING) && BUILDFLAG(IS_ANDROID)
+#if BUILDFLAG(HAS_MEMORY_TAGGING) && BUILDFLAG(IS_ANDROID)
 class PA_COMPONENT_EXPORT(PARTITION_ALLOC) PermissiveMte {
  public:
   static void SetEnabled(bool enabled);
@@ -147,7 +147,7 @@ class PA_COMPONENT_EXPORT(PARTITION_ALLOC) PermissiveMte {
  private:
   static bool enabled_;
 };
-#endif  // PA_BUILDFLAG(HAS_MEMORY_TAGGING)
+#endif  // BUILDFLAG(HAS_MEMORY_TAGGING)
 
 }  // namespace partition_alloc
 

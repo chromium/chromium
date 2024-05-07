@@ -136,12 +136,12 @@ namespace {
 }  // namespace
 
 void Stack::IteratePointers(StackVisitor* visitor) const {
-#if PA_BUILDFLAG(STACK_SCAN_SUPPORTED)
+#if BUILDFLAG(STACK_SCAN_SUPPORTED)
   PAPushAllRegistersAndIterateStack(this, visitor, &IteratePointersImpl);
   // No need to deal with callee-saved registers as they will be kept alive by
   // the regular conservative stack iteration.
   IterateSafeStackIfNecessary(visitor);
-#endif  // PA_BUILDFLAG(STACK_SCAN_SUPPORTED)
+#endif  // BUILDFLAG(STACK_SCAN_SUPPORTED)
 }
 
 StackTopRegistry::StackTopRegistry() = default;

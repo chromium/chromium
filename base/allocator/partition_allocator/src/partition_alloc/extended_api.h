@@ -32,7 +32,7 @@ class ThreadCacheProcessScopeForTesting {
 
  private:
   PartitionRoot* root_ = nullptr;
-#if PA_BUILDFLAG(USE_PARTITION_ALLOC_AS_MALLOC)
+#if BUILDFLAG(USE_PARTITION_ALLOC_AS_MALLOC)
   bool regular_was_enabled_ = false;
 #endif
 };

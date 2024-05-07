@@ -67,7 +67,7 @@ static constexpr uint16_t kOffsetTagNormalBuckets =
 class PA_COMPONENT_EXPORT(PARTITION_ALLOC)
     PA_THREAD_ISOLATED_ALIGN ReservationOffsetTable {
  public:
-#if PA_BUILDFLAG(HAS_64_BIT_POINTERS)
+#if BUILDFLAG(HAS_64_BIT_POINTERS)
   // There is one reservation offset table per Pool in 64-bit mode.
   static constexpr size_t kReservationOffsetTableCoverage = kPoolMaxSize;
   static constexpr size_t kReservationOffsetTableLength =
@@ -78,7 +78,7 @@ class PA_COMPONENT_EXPORT(PARTITION_ALLOC)
   static constexpr uint64_t kGiB = 1024 * 1024 * 1024ull;
   static constexpr size_t kReservationOffsetTableLength =
       4 * kGiB / kSuperPageSize;
-#endif  // PA_BUILDFLAG(HAS_64_BIT_POINTERS)
+#endif  // BUILDFLAG(HAS_64_BIT_POINTERS)
   static_assert(kReservationOffsetTableLength < kOffsetTagNormalBuckets,
                 "Offsets should be smaller than kOffsetTagNormalBuckets.");
 
@@ -96,7 +96,7 @@ class PA_COMPONENT_EXPORT(PARTITION_ALLOC)
       }
     }
   };
-#if PA_BUILDFLAG(HAS_64_BIT_POINTERS)
+#if BUILDFLAG(HAS_64_BIT_POINTERS)
   // If thread isolation support is enabled, we need to write-protect the tables
   // of the thread isolated pool. For this, we need to pad the tables so that
   // the thread isolated ones start on a page boundary.
@@ -115,10 +115,10 @@ class PA_COMPONENT_EXPORT(PARTITION_ALLOC)
 #else
   // A single table for the entire 32-bit address space.
   static PA_CONSTINIT struct _ReservationOffsetTable reservation_offset_table_;
-#endif  // PA_BUILDFLAG(HAS_64_BIT_POINTERS)
+#endif  // BUILDFLAG(HAS_64_BIT_POINTERS)
 };
 
-#if PA_BUILDFLAG(HAS_64_BIT_POINTERS)
+#if BUILDFLAG(HAS_64_BIT_POINTERS)
 PA_ALWAYS_INLINE uint16_t* GetReservationOffsetTable(pool_handle handle) {
   PA_DCHECK(kNullPoolHandle < handle && handle <= kNumPools);
   return ReservationOffsetTable::singleton_.tables[handle - 1].offsets;
@@ -148,7 +148,7 @@ PA_ALWAYS_INLINE uint16_t* ReservationOffsetPointer(pool_handle pool,
             ReservationOffsetTable::kReservationOffsetTableLength);
   return GetReservationOffsetTable(pool) + table_index;
 }
-#else   // PA_BUILDFLAG(HAS_64_BIT_POINTERS)
+#else   // BUILDFLAG(HAS_64_BIT_POINTERS)
 PA_ALWAYS_INLINE uint16_t* GetReservationOffsetTable(uintptr_t address) {
   return ReservationOffsetTable::reservation_offset_table_.offsets;
 }
@@ -158,10 +158,10 @@ PA_ALWAYS_INLINE const uint16_t* GetReservationOffsetTableEnd(
   return ReservationOffsetTable::reservation_offset_table_.offsets +
          ReservationOffsetTable::kReservationOffsetTableLength;
 }
-#endif  // PA_BUILDFLAG(HAS_64_BIT_POINTERS)
+#endif  // BUILDFLAG(HAS_64_BIT_POINTERS)
 
 PA_ALWAYS_INLINE uint16_t* ReservationOffsetPointer(uintptr_t address) {
-#if PA_BUILDFLAG(HAS_64_BIT_POINTERS)
+#if BUILDFLAG(HAS_64_BIT_POINTERS)
   // In 64-bit mode, find the owning Pool and compute the offset from its base.
   PartitionAddressSpace::PoolInfo info = GetPoolInfo(address);
   return ReservationOffsetPointer(info.handle, info.offset);
@@ -182,12 +182,12 @@ PA_ALWAYS_INLINE uintptr_t ComputeReservationStart(uintptr_t address,
 // If the given address doesn't point to direct-map allocated memory,
 // returns 0.
 PA_ALWAYS_INLINE uintptr_t GetDirectMapReservationStart(uintptr_t address) {
-#if PA_BUILDFLAG(PA_DCHECK_IS_ON)
+#if BUILDFLAG(PA_DCHECK_IS_ON)
   bool is_in_brp_pool = IsManagedByPartitionAllocBRPPool(address);
   bool is_in_regular_pool = IsManagedByPartitionAllocRegularPool(address);
   bool is_in_configurable_pool =
       IsManagedByPartitionAllocConfigurablePool(address);
-#if PA_BUILDFLAG(ENABLE_THREAD_ISOLATION)
+#if BUILDFLAG(ENABLE_THREAD_ISOLATION)
   bool is_in_thread_isolated_pool =
       IsManagedByPartitionAllocThreadIsolatedPool(address);
 #endif
@@ -196,14 +196,14 @@ PA_ALWAYS_INLINE uintptr_t GetDirectMapReservationStart(uintptr_t address) {
 #if !BUILDFLAG(ENABLE_BACKUP_REF_PTR_SUPPORT)
   PA_DCHECK(!is_in_brp_pool);
 #endif
-#endif  // PA_BUILDFLAG(PA_DCHECK_IS_ON)
+#endif  // BUILDFLAG(PA_DCHECK_IS_ON)
   uint16_t* offset_ptr = ReservationOffsetPointer(address);
   PA_DCHECK(*offset_ptr != kOffsetTagNotAllocated);
   if (*offset_ptr == kOffsetTagNormalBuckets) {
     return 0;
   }
   uintptr_t reservation_start = ComputeReservationStart(address, offset_ptr);
-#if PA_BUILDFLAG(PA_DCHECK_IS_ON)
+#if BUILDFLAG(PA_DCHECK_IS_ON)
   // MSVC workaround: the preprocessor seems to choke on an `#if` embedded
   // inside another macro (PA_DCHECK).
 #if !BUILDFLAG(HAS_64_BIT_POINTERS)
@@ -223,17 +223,17 @@ PA_ALWAYS_INLINE uintptr_t GetDirectMapReservationStart(uintptr_t address) {
             IsManagedByPartitionAllocRegularPool(reservation_start));
   PA_DCHECK(is_in_configurable_pool ==
             IsManagedByPartitionAllocConfigurablePool(reservation_start));
-#if PA_BUILDFLAG(ENABLE_THREAD_ISOLATION)
+#if BUILDFLAG(ENABLE_THREAD_ISOLATION)
   PA_DCHECK(is_in_thread_isolated_pool ==
             IsManagedByPartitionAllocThreadIsolatedPool(reservation_start));
 #endif
   PA_DCHECK(*ReservationOffsetPointer(reservation_start) == 0);
-#endif  // PA_BUILDFLAG(PA_DCHECK_IS_ON)
+#endif  // BUILDFLAG(PA_DCHECK_IS_ON)
 
   return reservation_start;
 }
 
-#if PA_BUILDFLAG(HAS_64_BIT_POINTERS)
+#if BUILDFLAG(HAS_64_BIT_POINTERS)
 // If the given address doesn't point to direct-map allocated memory,
 // returns 0.
 // This variant has better performance than the regular one on 64-bit builds if
@@ -254,7 +254,7 @@ GetDirectMapReservationStart(uintptr_t address,
   PA_DCHECK(*ReservationOffsetPointer(reservation_start) == 0);
   return reservation_start;
 }
-#endif  // PA_BUILDFLAG(HAS_64_BIT_POINTERS)
+#endif  // BUILDFLAG(HAS_64_BIT_POINTERS)
 
 // Returns true if |address| is the beginning of the first super page of a
 // reservation, i.e. either a normal bucket super page, or the first super page

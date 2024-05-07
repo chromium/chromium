@@ -28,7 +28,7 @@ class MockLogSource {
 TEST(FuchsiaLoggingTestPA, FuchsiaLogging) {
   MockLogSource mock_log_source;
   constexpr int kTimes =
-#if PA_BUILDFLAG(PA_DCHECK_IS_ON)
+#if BUILDFLAG(PA_DCHECK_IS_ON)
       2;
 #else
       1;

@@ -38,7 +38,7 @@
 #include "partition_alloc/reservation_offset_table.h"
 #include "partition_alloc/tagging.h"
 
-#if PA_BUILDFLAG(USE_STARSCAN)
+#if BUILDFLAG(USE_STARSCAN)
 #include "partition_alloc/starscan/pcscan.h"
 #endif
 
@@ -73,8 +73,7 @@ PA_ALWAYS_INLINE uintptr_t ShadowMetadataStart(uintptr_t super_page,
   PA_IMMEDIATE_CRASH();  // Not required, kept as documentation.
 }
 
-#if !BUILDFLAG(HAS_64_BIT_POINTERS) && \
-    PA_BUILDFLAG(ENABLE_BACKUP_REF_PTR_SUPPORT)
+#if !BUILDFLAG(HAS_64_BIT_POINTERS) && BUILDFLAG(ENABLE_BACKUP_REF_PTR_SUPPORT)
 // |start| has to be aligned to kSuperPageSize, but |end| doesn't. This means
 // that a partial super page is allowed at the end. Since the block list uses
 // kSuperPageSize granularity, a partial super page is considered blocked if
@@ -94,7 +93,7 @@ bool AreAllowedSuperPagesForBRPPool(uintptr_t start, uintptr_t end) {
   return true;
 }
 #endif  // !BUILDFLAG(HAS_64_BIT_POINTERS) &&
-        // PA_BUILDFLAG(ENABLE_BACKUP_REF_PTR_SUPPORT)
+        // BUILDFLAG(ENABLE_BACKUP_REF_PTR_SUPPORT)
 
 // Reserves |requested_size| worth of super pages from the specified pool.
 // If BRP pool is requested this function will honor BRP block list.
@@ -123,8 +122,7 @@ uintptr_t ReserveMemoryFromPool(pool_handle pool,
 
   // In 32-bit mode, when allocating from BRP pool, verify that the requested
   // allocation honors the block list. Find a better address otherwise.
-#if !BUILDFLAG(HAS_64_BIT_POINTERS) && \
-    PA_BUILDFLAG(ENABLE_BACKUP_REF_PTR_SUPPORT)
+#if !BUILDFLAG(HAS_64_BIT_POINTERS) && BUILDFLAG(ENABLE_BACKUP_REF_PTR_SUPPORT)
   if (pool == kBRPPoolHandle) {
     constexpr int kMaxRandomAddressTries = 10;
     for (int i = 0; i < kMaxRandomAddressTries; ++i) {
@@ -174,7 +172,7 @@ uintptr_t ReserveMemoryFromPool(pool_handle pool,
     }
   }
 #endif  // !BUILDFLAG(HAS_64_BIT_POINTERS) &&
-        // PA_BUILDFLAG(ENABLE_BACKUP_REF_PTR_SUPPORT)
+        // BUILDFLAG(ENABLE_BACKUP_REF_PTR_SUPPORT)
 
 #if !BUILDFLAG(HAS_64_BIT_POINTERS)
   // Only mark the region as belonging to the pool after it has passed the
@@ -266,7 +264,7 @@ SlotSpanMetadata* PartitionDirectMap(PartitionRoot* root,
     const size_t reservation_size = PartitionRoot::GetDirectMapReservationSize(
         raw_size + padding_for_alignment);
     PA_DCHECK(reservation_size >= raw_size);
-#if PA_BUILDFLAG(PA_DCHECK_IS_ON)
+#if BUILDFLAG(PA_DCHECK_IS_ON)
     const size_t available_reservation_size =
         reservation_size - padding_for_alignment -
         PartitionRoot::GetDirectMapMetadataAndGuardPagesSize();
@@ -757,7 +755,7 @@ PartitionBucket::InitializeSuperPage(PartitionRoot* root,
   uintptr_t state_bitmap =
       super_page + PartitionPageSize() +
       (is_direct_mapped() ? 0 : ReservedFreeSlotBitmapSize());
-#if PA_BUILDFLAG(USE_STARSCAN)
+#if BUILDFLAG(USE_STARSCAN)
   PA_DCHECK(SuperPageStateBitmapAddr(super_page) == state_bitmap);
   const size_t state_bitmap_reservation_size =
       root->IsQuarantineAllowed() ? ReservedStateBitmapSize() : 0;
@@ -769,7 +767,7 @@ PartitionBucket::InitializeSuperPage(PartitionRoot* root,
   uintptr_t payload = state_bitmap + state_bitmap_reservation_size;
 #else
   uintptr_t payload = state_bitmap;
-#endif  // PA_BUILDFLAG(USE_STARSCAN)
+#endif  // BUILDFLAG(USE_STARSCAN)
 
   root->next_partition_page = payload;
   root->next_partition_page_end = root->next_super_page - PartitionPageSize();
@@ -862,7 +860,7 @@ PartitionBucket::InitializeSuperPage(PartitionRoot* root,
   // sure to register the super-page after it has been fully initialized.
   // Otherwise, the concurrent scanner may try to access |extent->root| which
   // could be not initialized yet.
-#if PA_BUILDFLAG(USE_STARSCAN)
+#if BUILDFLAG(USE_STARSCAN)
   if (root->IsQuarantineEnabled()) {
     {
       ScopedSyscallTimer timer{root};
@@ -873,9 +871,9 @@ PartitionBucket::InitializeSuperPage(PartitionRoot* root,
     }
     PCScan::RegisterNewSuperPage(root, super_page);
   }
-#endif  // PA_BUILDFLAG(USE_STARSCAN)
+#endif  // BUILDFLAG(USE_STARSCAN)
 
-#if PA_BUILDFLAG(USE_FREESLOT_BITMAP)
+#if BUILDFLAG(USE_FREESLOT_BITMAP)
   // Commit the pages for freeslot bitmap.
   if (!is_direct_mapped()) {
     uintptr_t freeslot_bitmap_addr = super_page + PartitionPageSize();
@@ -966,14 +964,14 @@ PartitionBucket::ProvisionMoreSlotsAndAllocOne(PartitionRoot* root,
                 slot_span->num_unprovisioned_slots <=
             get_slots_per_span());
 
-#if PA_BUILDFLAG(HAS_MEMORY_TAGGING)
+#if BUILDFLAG(HAS_MEMORY_TAGGING)
   const bool use_tagging =
       root->IsMemoryTaggingEnabled() && slot_size <= kMaxMemoryTaggingSize;
   if (PA_LIKELY(use_tagging)) {
     // Ensure the MTE-tag of the memory pointed by |return_slot| is unguessable.
     TagMemoryRangeRandomly(return_slot, slot_size);
   }
-#endif  // PA_BUILDFLAG(HAS_MEMORY_TAGGING)
+#endif  // BUILDFLAG(HAS_MEMORY_TAGGING)
   // Add all slots that fit within so far committed pages to the free list.
   PartitionFreelistEntry* prev_entry = nullptr;
   uintptr_t next_slot_end = next_slot + slot_size;
@@ -983,7 +981,7 @@ PartitionBucket::ProvisionMoreSlotsAndAllocOne(PartitionRoot* root,
 
   while (next_slot_end <= commit_end) {
     void* next_slot_ptr;
-#if PA_BUILDFLAG(HAS_MEMORY_TAGGING)
+#if BUILDFLAG(HAS_MEMORY_TAGGING)
     if (PA_LIKELY(use_tagging)) {
       // Ensure the MTE-tag of the memory pointed by other provisioned slot is
       // unguessable. They will be returned to the app as is, and the MTE-tag
@@ -993,7 +991,7 @@ PartitionBucket::ProvisionMoreSlotsAndAllocOne(PartitionRoot* root,
       // No MTE-tagging for larger slots, just cast.
       next_slot_ptr = reinterpret_cast<void*>(next_slot);
     }
-#else  // PA_BUILDFLAG(HAS_MEMORY_TAGGING)
+#else  // BUILDFLAG(HAS_MEMORY_TAGGING)
     next_slot_ptr = reinterpret_cast<void*>(next_slot);
 #endif
 
@@ -1007,22 +1005,22 @@ PartitionBucket::ProvisionMoreSlotsAndAllocOne(PartitionRoot* root,
       PA_DCHECK(free_list_entries_added);
       freelist_dispatcher->SetNext(prev_entry, entry);
     }
-#if PA_BUILDFLAG(USE_FREESLOT_BITMAP)
+#if BUILDFLAG(USE_FREESLOT_BITMAP)
     FreeSlotBitmapMarkSlotAsFree(next_slot);
 #endif
     next_slot = next_slot_end;
     next_slot_end = next_slot + slot_size;
     prev_entry = entry;
-#if PA_BUILDFLAG(PA_DCHECK_IS_ON)
+#if BUILDFLAG(PA_DCHECK_IS_ON)
     free_list_entries_added++;
 #endif
   }
 
-#if PA_BUILDFLAG(USE_FREESLOT_BITMAP)
+#if BUILDFLAG(USE_FREESLOT_BITMAP)
   FreeSlotBitmapMarkSlotAsFree(return_slot);
 #endif
 
-#if PA_BUILDFLAG(PA_DCHECK_IS_ON)
+#if BUILDFLAG(PA_DCHECK_IS_ON)
   // The only provisioned slot not added to the free list is the one being
   // returned.
   PA_DCHECK(slots_to_provision == free_list_entries_added + 1);

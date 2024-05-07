@@ -13,7 +13,7 @@
 #include "partition_alloc/partition_alloc_base/threading/platform_thread_for_testing.h"
 #include "partition_alloc/partition_alloc_buildflags.h"
 
-#if PA_BUILDFLAG(USE_PARTITION_ALLOC_AS_MALLOC) && PA_BUILDFLAG(USE_STARSCAN)
+#if BUILDFLAG(USE_PARTITION_ALLOC_AS_MALLOC) && BUILDFLAG(USE_STARSCAN)
 #include "partition_alloc/stack/stack.h"
 #include "partition_alloc/starscan/pcscan.h"
 #endif
@@ -63,7 +63,7 @@ DWORD __stdcall ThreadFunc(void* params) {
                                  GetCurrentProcess(), &platform_handle, 0,
                                  FALSE, DUPLICATE_SAME_ACCESS);
 
-#if PA_BUILDFLAG(USE_PARTITION_ALLOC_AS_MALLOC) && PA_BUILDFLAG(USE_STARSCAN)
+#if BUILDFLAG(USE_PARTITION_ALLOC_AS_MALLOC) && BUILDFLAG(USE_STARSCAN)
   StackTopRegistry::Get().NotifyThreadCreated();
 #endif
 
@@ -75,7 +75,7 @@ DWORD __stdcall ThreadFunc(void* params) {
   delete thread_params;
   delegate->ThreadMain();
 
-#if PA_BUILDFLAG(USE_PARTITION_ALLOC_AS_MALLOC) && PA_BUILDFLAG(USE_STARSCAN)
+#if BUILDFLAG(USE_PARTITION_ALLOC_AS_MALLOC) && BUILDFLAG(USE_STARSCAN)
   StackTopRegistry::Get().NotifyThreadDestroyed();
 #endif
   return 0;

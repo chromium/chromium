@@ -28,17 +28,17 @@
 #include "partition_alloc/partition_superpage_extent_entry.h"
 #include "partition_alloc/reservation_offset_table.h"
 
-#if PA_BUILDFLAG(USE_STARSCAN)
+#if BUILDFLAG(USE_STARSCAN)
 #include "partition_alloc/starscan/state_bitmap.h"
 #endif
 
-#if PA_BUILDFLAG(PA_DCHECK_IS_ON)
+#if BUILDFLAG(PA_DCHECK_IS_ON)
 #include "partition_alloc/tagging.h"
 #endif
 
 namespace partition_alloc::internal {
 
-#if PA_BUILDFLAG(USE_STARSCAN)
+#if BUILDFLAG(USE_STARSCAN)
 using AllocationStateMap =
     StateBitmap<kSuperPageSize, kSuperPageAlignment, kAlignment>;
 #endif
@@ -376,7 +376,7 @@ PA_ALWAYS_INLINE PartitionSuperPageExtentEntry* PartitionSuperPageToExtent(
       PartitionSuperPageToMetadataArea(super_page));
 }
 
-#if PA_BUILDFLAG(USE_STARSCAN)
+#if BUILDFLAG(USE_STARSCAN)
 
 // Size that should be reserved for state bitmap (if present) inside a super
 // page. Elements of a super page are partition-page-aligned, hence the returned
@@ -408,14 +408,14 @@ PA_ALWAYS_INLINE AllocationStateMap* SuperPageStateBitmap(
       SuperPageStateBitmapAddr(super_page));
 }
 
-#else  // PA_BUILDFLAG(USE_STARSCAN)
+#else  // BUILDFLAG(USE_STARSCAN)
 
 PA_ALWAYS_INLINE PAGE_ALLOCATOR_CONSTANTS_DECLARE_CONSTEXPR size_t
 ReservedStateBitmapSize() {
   return 0ull;
 }
 
-#endif  // PA_BUILDFLAG(USE_STARSCAN)
+#endif  // BUILDFLAG(USE_STARSCAN)
 
 PA_ALWAYS_INLINE uintptr_t
 SuperPagePayloadStartOffset(bool is_managed_by_normal_buckets,
@@ -481,7 +481,7 @@ PA_ALWAYS_INLINE PartitionPageMetadata* PartitionPageMetadata::FromAddr(
     uintptr_t address) {
   uintptr_t super_page = address & kSuperPageBaseMask;
 
-#if PA_BUILDFLAG(PA_DCHECK_IS_ON)
+#if BUILDFLAG(PA_DCHECK_IS_ON)
   PA_DCHECK(IsReservationStart(super_page));
   DCheckIsWithInSuperPagePayload(address);
 #endif
@@ -556,11 +556,11 @@ PA_ALWAYS_INLINE SlotSpanMetadata* SlotSpanMetadata::FromAddr(
 PA_ALWAYS_INLINE SlotSpanMetadata* SlotSpanMetadata::FromSlotStart(
     uintptr_t slot_start) {
   auto* slot_span = FromAddr(slot_start);
-#if PA_BUILDFLAG(PA_DCHECK_IS_ON)
+#if BUILDFLAG(PA_DCHECK_IS_ON)
   // Checks that the pointer is a multiple of slot size.
   uintptr_t slot_span_start = ToSlotSpanStart(slot_span);
   PA_DCHECK(!((slot_start - slot_span_start) % slot_span->bucket->slot_size));
-#endif  // PA_BUILDFLAG(PA_DCHECK_IS_ON)
+#endif  // BUILDFLAG(PA_DCHECK_IS_ON)
   return slot_span;
 }
 
@@ -583,13 +583,13 @@ PA_ALWAYS_INLINE SlotSpanMetadata* SlotSpanMetadata::FromObject(void* object) {
 PA_ALWAYS_INLINE SlotSpanMetadata* SlotSpanMetadata::FromObjectInnerAddr(
     uintptr_t address) {
   auto* slot_span = FromAddr(address);
-#if PA_BUILDFLAG(PA_DCHECK_IS_ON)
+#if BUILDFLAG(PA_DCHECK_IS_ON)
   // Checks that the address is within the expected object boundaries.
   uintptr_t slot_span_start = ToSlotSpanStart(slot_span);
   uintptr_t shift_from_slot_start =
       (address - slot_span_start) % slot_span->bucket->slot_size;
   DCheckIsValidShiftFromSlotStart(slot_span, shift_from_slot_start);
-#endif  // PA_BUILDFLAG(PA_DCHECK_IS_ON)
+#endif  // BUILDFLAG(PA_DCHECK_IS_ON)
   return slot_span;
 }
 
@@ -614,7 +614,7 @@ PA_ALWAYS_INLINE size_t SlotSpanMetadata::GetRawSize() const {
 
 PA_ALWAYS_INLINE void SlotSpanMetadata::SetFreelistHead(
     PartitionFreelistEntry* new_head) {
-#if PA_BUILDFLAG(PA_DCHECK_IS_ON)
+#if BUILDFLAG(PA_DCHECK_IS_ON)
   // |this| is in the metadata region, hence isn't MTE-tagged. Untag |new_head|
   // as well.
   uintptr_t new_head_untagged = UntagPtr(new_head);
@@ -682,7 +682,7 @@ PA_ALWAYS_INLINE void SlotSpanMetadata::AppendFreeList(
     PartitionRoot* root,
     const PartitionFreelistDispatcher* freelist_dispatcher)
     PA_EXCLUSIVE_LOCKS_REQUIRED(PartitionRootLock(root)) {
-#if PA_BUILDFLAG(PA_DCHECK_IS_ON)
+#if BUILDFLAG(PA_DCHECK_IS_ON)
   DCheckRootLockIsAcquired(root);
   PA_DCHECK(!(freelist_dispatcher->GetNext(tail, bucket->slot_size)));
   PA_DCHECK(number_of_freed);
@@ -775,7 +775,7 @@ PA_ALWAYS_INLINE void SlotSpanMetadata::Reset() {
   next_slot_span = nullptr;
 }
 
-#if PA_BUILDFLAG(USE_STARSCAN)
+#if BUILDFLAG(USE_STARSCAN)
 // Returns the state bitmap from an address within a normal-bucket super page.
 // It's the caller's responsibility to ensure that the bitmap exists.
 PA_ALWAYS_INLINE AllocationStateMap* StateBitmapFromAddr(uintptr_t address) {
@@ -783,7 +783,7 @@ PA_ALWAYS_INLINE AllocationStateMap* StateBitmapFromAddr(uintptr_t address) {
   uintptr_t super_page = address & kSuperPageBaseMask;
   return SuperPageStateBitmap(super_page);
 }
-#endif  // PA_BUILDFLAG(USE_STARSCAN)
+#endif  // BUILDFLAG(USE_STARSCAN)
 
 // Iterates over all slot spans in a super-page. |Callback| must return true if
 // early return is needed.
@@ -791,7 +791,7 @@ template <typename Callback>
 void IterateSlotSpans(uintptr_t super_page,
                       bool with_quarantine,
                       Callback callback) {
-#if PA_BUILDFLAG(PA_DCHECK_IS_ON)
+#if BUILDFLAG(PA_DCHECK_IS_ON)
   PA_DCHECK(!(super_page % kSuperPageAlignment));
   auto* extent_entry = PartitionSuperPageToExtent(super_page);
   DCheckRootLockIsAcquired(extent_entry->root);

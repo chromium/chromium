@@ -30,8 +30,7 @@
 
 namespace base::internal {
 
-#if PA_BUILDFLAG(PA_DCHECK_IS_ON) || \
-    PA_BUILDFLAG(ENABLE_BACKUP_REF_PTR_SLOW_CHECKS)
+#if BUILDFLAG(PA_DCHECK_IS_ON) || BUILDFLAG(ENABLE_BACKUP_REF_PTR_SLOW_CHECKS)
 PA_COMPONENT_EXPORT(RAW_PTR)
 void CheckThatAddressIsntWithinFirstPartitionPage(uintptr_t address);
 #endif
@@ -71,12 +70,11 @@ struct RawPtrBackupRefImpl {
     // address is nullptr.
 #if PA_HAS_BUILTIN(__builtin_constant_p)
     if (__builtin_constant_p(address == 0) && (address == 0)) {
-#if PA_BUILDFLAG(PA_DCHECK_IS_ON) || \
-    PA_BUILDFLAG(ENABLE_BACKUP_REF_PTR_SLOW_CHECKS)
+#if BUILDFLAG(PA_DCHECK_IS_ON) || BUILDFLAG(ENABLE_BACKUP_REF_PTR_SLOW_CHECKS)
       PA_BASE_CHECK(
           !partition_alloc::IsManagedByPartitionAllocBRPPool(address));
-#endif  // PA_BUILDFLAG(PA_DCHECK_IS_ON) ||
-        // PA_BUILDFLAG(ENABLE_BACKUP_REF_PTR_SLOW_CHECKS)
+#endif  // BUILDFLAG(PA_DCHECK_IS_ON) ||
+        // BUILDFLAG(ENABLE_BACKUP_REF_PTR_SLOW_CHECKS)
       return false;
     }
 #endif  // PA_HAS_BUILTIN(__builtin_constant_p)
@@ -102,8 +100,7 @@ struct RawPtrBackupRefImpl {
     // IsManagedByPartitionAllocBRPPool returns true for a valid pointer,
     // it must be at least partition page away from the beginning of a super
     // page.
-#if PA_BUILDFLAG(PA_DCHECK_IS_ON) || \
-    PA_BUILDFLAG(ENABLE_BACKUP_REF_PTR_SLOW_CHECKS)
+#if BUILDFLAG(PA_DCHECK_IS_ON) || BUILDFLAG(ENABLE_BACKUP_REF_PTR_SLOW_CHECKS)
     if (use_brp) {
       CheckThatAddressIsntWithinFirstPartitionPage(address);
     }
@@ -112,7 +109,7 @@ struct RawPtrBackupRefImpl {
     return use_brp;
   }
 
-#if PA_BUILDFLAG(BACKUP_REF_PTR_POISON_OOB_PTR)
+#if BUILDFLAG(BACKUP_REF_PTR_POISON_OOB_PTR)
   // Out-Of-Bounds (OOB) poison bit is set when the pointer has overflowed by
   // one byte.
 #if defined(ARCH_CPU_X86_64)
@@ -142,12 +139,12 @@ struct RawPtrBackupRefImpl {
     return reinterpret_cast<T*>(reinterpret_cast<uintptr_t>(ptr) |
                                 OOB_POISON_BIT);
   }
-#else   // PA_BUILDFLAG(BACKUP_REF_PTR_POISON_OOB_PTR)
+#else   // BUILDFLAG(BACKUP_REF_PTR_POISON_OOB_PTR)
   template <typename T>
   PA_ALWAYS_INLINE static T* UnpoisonPtr(T* ptr) {
     return ptr;
   }
-#endif  // PA_BUILDFLAG(BACKUP_REF_PTR_POISON_OOB_PTR)
+#endif  // BUILDFLAG(BACKUP_REF_PTR_POISON_OOB_PTR)
 
  public:
   // Wraps a pointer.
@@ -158,8 +155,7 @@ struct RawPtrBackupRefImpl {
     }
     uintptr_t address = partition_alloc::UntagPtr(UnpoisonPtr(ptr));
     if (IsSupportedAndNotNull(address)) {
-#if PA_BUILDFLAG(PA_DCHECK_IS_ON) || \
-    PA_BUILDFLAG(ENABLE_BACKUP_REF_PTR_SLOW_CHECKS)
+#if BUILDFLAG(PA_DCHECK_IS_ON) || BUILDFLAG(ENABLE_BACKUP_REF_PTR_SLOW_CHECKS)
       PA_BASE_CHECK(ptr != nullptr);
 #endif
       AcquireInternal(address);
@@ -193,8 +189,7 @@ struct RawPtrBackupRefImpl {
     }
     uintptr_t address = partition_alloc::UntagPtr(UnpoisonPtr(wrapped_ptr));
     if (IsSupportedAndNotNull(address)) {
-#if PA_BUILDFLAG(PA_DCHECK_IS_ON) || \
-    PA_BUILDFLAG(ENABLE_BACKUP_REF_PTR_SLOW_CHECKS)
+#if BUILDFLAG(PA_DCHECK_IS_ON) || BUILDFLAG(ENABLE_BACKUP_REF_PTR_SLOW_CHECKS)
       PA_BASE_CHECK(wrapped_ptr != nullptr);
 #endif
       ReleaseInternal(address);
@@ -217,9 +212,8 @@ struct RawPtrBackupRefImpl {
     if (partition_alloc::internal::base::is_constant_evaluated()) {
       return wrapped_ptr;
     }
-#if PA_BUILDFLAG(PA_DCHECK_IS_ON) || \
-    PA_BUILDFLAG(ENABLE_BACKUP_REF_PTR_SLOW_CHECKS)
-#if PA_BUILDFLAG(BACKUP_REF_PTR_POISON_OOB_PTR)
+#if BUILDFLAG(PA_DCHECK_IS_ON) || BUILDFLAG(ENABLE_BACKUP_REF_PTR_SLOW_CHECKS)
+#if BUILDFLAG(BACKUP_REF_PTR_POISON_OOB_PTR)
     PA_BASE_CHECK(!IsPtrOOB(wrapped_ptr));
 #endif
     uintptr_t address = partition_alloc::UntagPtr(wrapped_ptr);
@@ -227,8 +221,8 @@ struct RawPtrBackupRefImpl {
       PA_BASE_CHECK(wrapped_ptr != nullptr);
       PA_BASE_CHECK(IsPointeeAlive(address));  // Detects use-after-free.
     }
-#endif  // PA_BUILDFLAG(PA_DCHECK_IS_ON) ||
-        // PA_BUILDFLAG(ENABLE_BACKUP_REF_PTR_SLOW_CHECKS)
+#endif  // BUILDFLAG(PA_DCHECK_IS_ON) ||
+        // BUILDFLAG(ENABLE_BACKUP_REF_PTR_SLOW_CHECKS)
     return wrapped_ptr;
   }
 
@@ -241,7 +235,7 @@ struct RawPtrBackupRefImpl {
       return wrapped_ptr;
     }
     T* unpoisoned_ptr = UnpoisonPtr(wrapped_ptr);
-#if PA_BUILDFLAG(BACKUP_REF_PTR_POISON_OOB_PTR)
+#if BUILDFLAG(BACKUP_REF_PTR_POISON_OOB_PTR)
     // Some code uses invalid pointer values as indicators, so those values must
     // be passed through unchanged during extraction. The following check will
     // pass invalid values through if those values do not fall within the BRP
@@ -254,7 +248,7 @@ struct RawPtrBackupRefImpl {
     // OOB conditions, e.g., in code that extracts an end-of-allocation pointer
     // for use in a loop termination condition. The poison bit would make that
     // pointer appear to reference a very high address.
-#endif  // PA_BUILDFLAG(BACKUP_REF_PTR_POISON_OOB_PTR)
+#endif  // BUILDFLAG(BACKUP_REF_PTR_POISON_OOB_PTR)
     return unpoisoned_ptr;
   }
 
@@ -318,11 +312,11 @@ struct RawPtrBackupRefImpl {
       constexpr size_t size = sizeof(T);
       [[maybe_unused]] const bool is_end =
           CheckPointerWithinSameAlloc(before_addr, after_addr, size);
-#if PA_BUILDFLAG(BACKUP_REF_PTR_POISON_OOB_PTR)
+#if BUILDFLAG(BACKUP_REF_PTR_POISON_OOB_PTR)
       if (is_end) {
         new_ptr = PoisonOOBPtr(new_ptr);
       }
-#endif  // PA_BUILDFLAG(BACKUP_REF_PTR_POISON_OOB_PTR)
+#endif  // BUILDFLAG(BACKUP_REF_PTR_POISON_OOB_PTR)
     } else {
       // Check that the new address didn't migrate into the BRP pool, as it
       // would result in more pointers pointing to an allocation than its
@@ -393,7 +387,7 @@ struct RawPtrBackupRefImpl {
 
     T* unpoisoned_ptr1 = UnpoisonPtr(wrapped_ptr1);
     T* unpoisoned_ptr2 = UnpoisonPtr(wrapped_ptr2);
-#if PA_BUILDFLAG(ENABLE_POINTER_SUBTRACTION_CHECK)
+#if BUILDFLAG(ENABLE_POINTER_SUBTRACTION_CHECK)
     if (partition_alloc::internal::base::is_constant_evaluated()) {
       return unpoisoned_ptr1 - unpoisoned_ptr2;
     }
@@ -409,7 +403,7 @@ struct RawPtrBackupRefImpl {
     } else {
       PA_BASE_CHECK(!IsSupportedAndNotNull(address2));
     }
-#endif  // PA_BUILDFLAG(ENABLE_POINTER_SUBTRACTION_CHECK)
+#endif  // BUILDFLAG(ENABLE_POINTER_SUBTRACTION_CHECK)
     return unpoisoned_ptr1 - unpoisoned_ptr2;
   }
 
@@ -451,7 +445,7 @@ struct RawPtrBackupRefImpl {
     }
   }
 
-#if PA_BUILDFLAG(ENABLE_BACKUP_REF_PTR_INSTANCE_TRACER)
+#if BUILDFLAG(ENABLE_BACKUP_REF_PTR_INSTANCE_TRACER)
   template <typename T>
   static constexpr void Trace(uint64_t owner_id, T* wrapped_ptr) {
     if (partition_alloc::internal::base::is_constant_evaluated()) {

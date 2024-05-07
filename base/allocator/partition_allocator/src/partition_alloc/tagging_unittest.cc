@@ -145,7 +145,7 @@ TEST(PartitionAllocMemoryTaggingTest, TagMemoryRangeIncrementBadAlign) {
 }
 #endif  // defined(ARCH_CPU_64_BITS)
 
-#if PA_BUILDFLAG(HAS_MEMORY_TAGGING)
+#if BUILDFLAG(HAS_MEMORY_TAGGING)
 #if BUILDFLAG(IS_ANDROID)
 TEST(PartitionAllocMemoryTaggingTest,
      ChangeMemoryTaggingModeForAllThreadsPerProcess) {
@@ -214,6 +214,6 @@ TEST(PartitionAllocMemoryTaggingTest, ChangeMemoryTaggingModeForCurrentThread) {
   // Restore mode to original.
   ChangeMemoryTaggingModeForCurrentThread(original_mode);
 }
-#endif  // PA_BUILDFLAG(HAS_MEMORY_TAGGING)
+#endif  // BUILDFLAG(HAS_MEMORY_TAGGING)
 
 }  // namespace partition_alloc::internal

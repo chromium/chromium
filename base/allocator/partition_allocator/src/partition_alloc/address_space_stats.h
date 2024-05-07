@@ -19,25 +19,25 @@ struct PoolStats {
   // On 32-bit, pools are mainly logical entities, intermingled with
   // allocations not managed by PartitionAlloc. The "largest available
   // reservation" is not possible to measure in that case.
-#if PA_BUILDFLAG(HAS_64_BIT_POINTERS)
+#if BUILDFLAG(HAS_64_BIT_POINTERS)
   size_t largest_available_reservation = 0;
 #endif
 };
 
 struct AddressSpaceStats {
   PoolStats regular_pool_stats;
-#if PA_BUILDFLAG(ENABLE_BACKUP_REF_PTR_SUPPORT)
+#if BUILDFLAG(ENABLE_BACKUP_REF_PTR_SUPPORT)
   PoolStats brp_pool_stats;
-#endif  // PA_BUILDFLAG(ENABLE_BACKUP_REF_PTR_SUPPORT)
-#if PA_BUILDFLAG(HAS_64_BIT_POINTERS)
+#endif  // BUILDFLAG(ENABLE_BACKUP_REF_PTR_SUPPORT)
+#if BUILDFLAG(HAS_64_BIT_POINTERS)
   PoolStats configurable_pool_stats;
 #else
-#if PA_BUILDFLAG(ENABLE_BACKUP_REF_PTR_SUPPORT)
+#if BUILDFLAG(ENABLE_BACKUP_REF_PTR_SUPPORT)
   size_t blocklist_size;  // measured in super pages
   size_t blocklist_hit_count;
-#endif  // PA_BUILDFLAG(ENABLE_BACKUP_REF_PTR_SUPPORT)
-#endif  // PA_BUILDFLAG(HAS_64_BIT_POINTERS)
-#if PA_BUILDFLAG(ENABLE_THREAD_ISOLATION)
+#endif  // BUILDFLAG(ENABLE_BACKUP_REF_PTR_SUPPORT)
+#endif  // BUILDFLAG(HAS_64_BIT_POINTERS)
+#if BUILDFLAG(ENABLE_THREAD_ISOLATION)
   PoolStats thread_isolated_pool_stats;
 #endif
 };

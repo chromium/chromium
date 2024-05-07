@@ -18,8 +18,7 @@
 
 // This test is disabled when MEMORY_TOOL_REPLACES_ALLOCATOR is defined because
 // we cannot locate the freeslot bitmap address in that case.
-#if PA_BUILDFLAG(USE_FREESLOT_BITMAP) && \
-    !defined(MEMORY_TOOL_REPLACES_ALLOCATOR)
+#if BUILDFLAG(USE_FREESLOT_BITMAP) && !defined(MEMORY_TOOL_REPLACES_ALLOCATOR)
 
 namespace partition_alloc::internal {
 
@@ -203,5 +202,5 @@ TEST_F(PartitionAllocFreeSlotBitmapTest, ResetSingleBitInMiddleOfCell) {
 
 }  // namespace partition_alloc::internal
 
-#endif  // PA_BUILDFLAG(USE_FREESLOT_BITMAP) &&
+#endif  // BUILDFLAG(USE_FREESLOT_BITMAP) &&
         // !defined(MEMORY_TOOL_REPLACES_ALLOCATOR)

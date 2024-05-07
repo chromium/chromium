@@ -19,7 +19,7 @@ extern "C" void* __libc_stack_end;
 namespace partition_alloc::internal::base::debug {
 namespace {
 
-#if PA_BUILDFLAG(PA_CAN_UNWIND_WITH_FRAME_POINTERS)
+#if BUILDFLAG(PA_CAN_UNWIND_WITH_FRAME_POINTERS)
 
 #if defined(__arm__) && defined(__GNUC__) && !defined(__clang__)
 // GCC and LLVM generate slightly different frames on ARM, see
@@ -141,11 +141,11 @@ uintptr_t ScanStackForNextFrame(uintptr_t fp, uintptr_t stack_end) {
   return 0;
 }
 
-#endif  // PA_BUILDFLAG(PA_CAN_UNWIND_WITH_FRAME_POINTERS)
+#endif  // BUILDFLAG(PA_CAN_UNWIND_WITH_FRAME_POINTERS)
 
 }  // namespace
 
-#if PA_BUILDFLAG(PA_CAN_UNWIND_WITH_FRAME_POINTERS)
+#if BUILDFLAG(PA_CAN_UNWIND_WITH_FRAME_POINTERS)
 
 // We force this function to be inlined into its callers (e.g.
 // TraceStackFramePointers()) in all build modes so we don't have to worry about
@@ -199,7 +199,7 @@ PA_NOINLINE size_t TraceStackFramePointers(const void** out_trace,
 
 #endif  // BUILDFLAG(CAN_UNWIND_WITH_FRAME_POINTERS)
 
-#if PA_BUILDFLAG(PA_CAN_UNWIND_WITH_FRAME_POINTERS)
+#if BUILDFLAG(PA_CAN_UNWIND_WITH_FRAME_POINTERS)
 uintptr_t GetStackEnd() {
 #if BUILDFLAG(IS_ANDROID)
   // Bionic reads proc/maps on every call to pthread_getattr_np() when called

@@ -18,10 +18,10 @@
 #include "partition_alloc/pointers/raw_ptr_counting_impl_for_test.h"
 #include "partition_alloc/pointers/raw_ptr_test_support.h"
 #include "testing/gtest/include/gtest/gtest.h"
-#if PA_BUILDFLAG(USE_ASAN_BACKUP_REF_PTR)
+#if BUILDFLAG(USE_ASAN_BACKUP_REF_PTR)
 #include "base/debug/asan_service.h"
 #include "base/memory/raw_ptr_asan_service.h"
-#endif  // PA_BUILDFLAG(USE_ASAN_BACKUP_REF_PTR)
+#endif  // BUILDFLAG(USE_ASAN_BACKUP_REF_PTR)
 
 namespace {
 
@@ -561,8 +561,8 @@ TEST(RawRef, GreaterThanOrEqual) {
 // `raw_ref` evaluate to nothing. Therefore, death tests relying on
 // these CHECKs firing are disabled in their absence.
 
-#if PA_BUILDFLAG(ENABLE_BACKUP_REF_PTR_SUPPORT) || \
-    PA_BUILDFLAG(USE_ASAN_BACKUP_REF_PTR) || PA_BUILDFLAG(PA_DCHECK_IS_ON)
+#if BUILDFLAG(ENABLE_BACKUP_REF_PTR_SUPPORT) || \
+    BUILDFLAG(USE_ASAN_BACKUP_REF_PTR) || BUILDFLAG(PA_DCHECK_IS_ON)
 
 TEST(RawRefDeathTest, CopyConstructAfterMove) {
   int i = 1;
@@ -802,9 +802,9 @@ TEST(RawRefDeathTest, GreaterThanOrEqualAfterMove) {
   }
 }
 
-#endif  // PA_BUILDFLAG(ENABLE_BACKUP_REF_PTR_SUPPORT) ||
-        // PA_BUILDFLAG(USE_ASAN_BACKUP_REF_PTR) ||
-        // PA_BUILDFLAG(PA_DCHECK_IS_ON)
+#endif  // BUILDFLAG(ENABLE_BACKUP_REF_PTR_SUPPORT) ||
+        // BUILDFLAG(USE_ASAN_BACKUP_REF_PTR) ||
+        // BUILDFLAG(PA_DCHECK_IS_ON)
 
 TEST(RawRef, CTAD) {
   int i = 1;
@@ -962,7 +962,7 @@ TEST(RawRef, CrossKindAssignment) {
               CountersMatch());
 }
 
-#if PA_BUILDFLAG(USE_ASAN_BACKUP_REF_PTR)
+#if BUILDFLAG(USE_ASAN_BACKUP_REF_PTR)
 
 TEST(AsanBackupRefPtrImpl, RawRefGet) {
   base::debug::AsanService::GetInstance()->Initialize();
@@ -1016,6 +1016,6 @@ TEST(AsanBackupRefPtrImpl, RawRefOperatorStar) {
   [[maybe_unused]] volatile int& ref = *safe_ref;
 }
 
-#endif  // PA_BUILDFLAG(USE_ASAN_BACKUP_REF_PTR)
+#endif  // BUILDFLAG(USE_ASAN_BACKUP_REF_PTR)
 
 }  // namespace

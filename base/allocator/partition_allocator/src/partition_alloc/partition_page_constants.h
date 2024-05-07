@@ -11,7 +11,7 @@
 
 namespace partition_alloc::internal {
 
-#if PA_BUILDFLAG(HAS_64_BIT_POINTERS) && BUILDFLAG(IS_APPLE)
+#if BUILDFLAG(HAS_64_BIT_POINTERS) && BUILDFLAG(IS_APPLE)
 // System page size is not a constant on Apple OSes, but is either 4 or 16kiB
 // (1 << 12 or 1 << 14), as checked in PartitionRoot::Init(). And
 // PartitionPageSize() is 4 times the OS page size.
@@ -26,7 +26,7 @@ static constexpr size_t kMaxSlotsPerSlotSpan = 4 * (1 << 14) / kSmallestBucket;
 // larger, so it doesn't have as many slots.
 static constexpr size_t kMaxSlotsPerSlotSpan =
     PartitionPageSize() / kSmallestBucket;
-#endif  // PA_BUILDFLAG(HAS_64_BIT_POINTERS) && BUILDFLAG(IS_APPLE)
+#endif  // BUILDFLAG(HAS_64_BIT_POINTERS) && BUILDFLAG(IS_APPLE)
 
 }  // namespace partition_alloc::internal
 

@@ -5,7 +5,7 @@
 #include "partition_alloc/compressed_pointer.h"
 #include "partition_alloc/partition_alloc_buildflags.h"
 
-#if PA_BUILDFLAG(ENABLE_POINTER_COMPRESSION)
+#if BUILDFLAG(ENABLE_POINTER_COMPRESSION)
 
 namespace partition_alloc::internal {
 
@@ -26,4 +26,4 @@ void CompressedPointerBaseGlobal::ResetBaseForTesting() {
 
 }  // namespace partition_alloc::internal
 
-#endif  // PA_BUILDFLAG(ENABLE_POINTER_COMPRESSION)
+#endif  // BUILDFLAG(ENABLE_POINTER_COMPRESSION)

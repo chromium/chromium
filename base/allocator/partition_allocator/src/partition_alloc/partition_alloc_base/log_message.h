@@ -41,7 +41,7 @@ constexpr LogSeverity LOGGING_NUM_SEVERITIES = 4;
 
 // LOGGING_DFATAL is LOGGING_FATAL in DCHECK-enabled builds, ERROR in normal
 // mode.
-#if PA_BUILDFLAG(PA_DCHECK_IS_ON)
+#if BUILDFLAG(PA_DCHECK_IS_ON)
 constexpr LogSeverity LOGGING_DFATAL = LOGGING_FATAL;
 #else
 constexpr LogSeverity LOGGING_DFATAL = LOGGING_ERROR;

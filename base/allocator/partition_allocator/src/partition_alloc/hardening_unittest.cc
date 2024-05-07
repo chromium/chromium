@@ -117,7 +117,7 @@ TEST(HardeningTest, SuccessfulCorruption) {
   root.get_freelist_dispatcher()->EmplaceAndInitForTest(
       root.ObjectToSlotStart(data), to_corrupt, true);
 
-#if PA_BUILDFLAG(USE_FREESLOT_BITMAP)
+#if BUILDFLAG(USE_FREESLOT_BITMAP)
   // This part crashes with freeslot bitmap because it detects freelist
   // corruptions, which is rather desirable behavior.
   EXPECT_DEATH_IF_SUPPORTED(root.Alloc(kAllocSize), "");
@@ -132,11 +132,11 @@ TEST(HardeningTest, SuccessfulCorruption) {
   void* new_data2 = root.Alloc(kAllocSize);
   // Now we have a pointer to the middle of an existing allocation.
   EXPECT_EQ(new_data2, to_corrupt);
-#endif  // PA_BUILDFLAG(USE_FREESLOT_BITMAP)
+#endif  // BUILDFLAG(USE_FREESLOT_BITMAP)
 }
 #endif  // !BUILDFLAG(IS_ANDROID)
 
-#if PA_BUILDFLAG(USE_FREELIST_DISPATCHER)
+#if BUILDFLAG(USE_FREELIST_DISPATCHER)
 #if PA_USE_DEATH_TESTS() && PA_CONFIG(HAS_FREELIST_SHADOW_ENTRY)
 TEST(HardeningTest, ConstructPoolOffsetFromStackPointerCrashing) {
   int num_to_corrupt = 12345;
@@ -201,7 +201,7 @@ TEST(HardeningTest, PoolOffsetSuccessfulCorruption) {
   root.get_freelist_dispatcher()->EmplaceAndInitForTest(
       root.ObjectToSlotStart(data), to_corrupt, true);
 
-#if PA_BUILDFLAG(USE_FREESLOT_BITMAP)
+#if BUILDFLAG(USE_FREESLOT_BITMAP)
   // This part crashes with freeslot bitmap because it detects freelist
   // corruptions, which is rather desirable behavior.
   EXPECT_DEATH_IF_SUPPORTED(root.Alloc(kAllocSize), "");
@@ -216,10 +216,10 @@ TEST(HardeningTest, PoolOffsetSuccessfulCorruption) {
   void* new_data2 = root.Alloc(kAllocSize);
   // Now we have a pointer to the middle of an existing allocation.
   EXPECT_EQ(new_data2, to_corrupt);
-#endif  // PA_BUILDFLAG(USE_FREESLOT_BITMAP)
+#endif  // BUILDFLAG(USE_FREESLOT_BITMAP)
 }
 #endif  // !BUILDFLAG(IS_ANDROID)
-#endif  // PA_BUILDFLAG(USE_FREELIST_DISPATCHER)
+#endif  // BUILDFLAG(USE_FREELIST_DISPATCHER)
 }  // namespace
 }  // namespace partition_alloc::internal
 

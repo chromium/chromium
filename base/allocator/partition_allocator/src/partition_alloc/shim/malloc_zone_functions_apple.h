@@ -7,7 +7,7 @@
 
 #include "partition_alloc/partition_alloc_buildflags.h"
 
-#if PA_BUILDFLAG(USE_ALLOCATOR_SHIM)
+#if BUILDFLAG(USE_ALLOCATOR_SHIM)
 #include <malloc/malloc.h>
 
 #include <cstddef>
@@ -114,6 +114,6 @@ inline MallocZoneFunctions& GetFunctionsForZone(void* zone) {
 
 }  // namespace allocator_shim
 
-#endif  // PA_BUILDFLAG(USE_ALLOCATOR_SHIM)
+#endif  // BUILDFLAG(USE_ALLOCATOR_SHIM)
 
 #endif  // PARTITION_ALLOC_SHIM_MALLOC_ZONE_FUNCTIONS_APPLE_H_

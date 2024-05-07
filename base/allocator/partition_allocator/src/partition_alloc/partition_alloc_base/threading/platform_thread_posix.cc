@@ -95,7 +95,7 @@ PlatformThreadId PlatformThread::CurrentId() {
       g_is_main_thread = false;
     }
   } else {
-#if PA_BUILDFLAG(PA_DCHECK_IS_ON)
+#if BUILDFLAG(PA_DCHECK_IS_ON)
     if (g_thread_id != syscall(__NR_gettid)) {
       PA_RAW_LOG(
           FATAL,

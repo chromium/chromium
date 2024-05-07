@@ -16,7 +16,7 @@
 #include "partition_alloc/shim/allocator_shim_default_dispatch_to_partition_alloc.h"
 #include "testing/gtest/include/gtest/gtest.h"
 
-#if PA_BUILDFLAG(USE_PARTITION_ALLOC_AS_MALLOC) && \
+#if BUILDFLAG(USE_PARTITION_ALLOC_AS_MALLOC) && \
     PA_CONFIG(THREAD_CACHE_SUPPORTED)
 #include "partition_alloc/extended_api.h"
 #include "partition_alloc/thread_cache.h"
@@ -101,7 +101,7 @@ TEST_F(MemoryReclaimerTest, Reclaim) {
   }
 }
 
-#if PA_BUILDFLAG(USE_PARTITION_ALLOC_AS_MALLOC) && \
+#if BUILDFLAG(USE_PARTITION_ALLOC_AS_MALLOC) && \
     PA_CONFIG(THREAD_CACHE_SUPPORTED)
 
 namespace {
@@ -142,7 +142,7 @@ TEST_F(MemoryReclaimerTest, DoNotAlwaysPurgeThreadCache) {
   EXPECT_LT(tcache->CachedMemory(), cached_size / 2);
 }
 
-#endif  // PA_BUILDFLAG(USE_PARTITION_ALLOC_AS_MALLOC) && \
+#endif  // BUILDFLAG(USE_PARTITION_ALLOC_AS_MALLOC) && \
         // PA_CONFIG(THREAD_CACHE_SUPPORTED)
 
 }  // namespace partition_alloc

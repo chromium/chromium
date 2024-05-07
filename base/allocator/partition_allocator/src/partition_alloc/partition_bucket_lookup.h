@@ -44,11 +44,11 @@ constexpr size_t OrderSubIndexMask(uint8_t order) {
          (kNumBucketsPerOrderBits + 1);
 }
 
-#if PA_BUILDFLAG(HAS_64_BIT_POINTERS)
+#if BUILDFLAG(HAS_64_BIT_POINTERS)
 static_assert(kBitsPerSizeT == 64, "");
 #else
 static_assert(kBitsPerSizeT == 32, "");
-#endif  // PA_BUILDFLAG(HAS_64_BIT_POINTERS)
+#endif  // BUILDFLAG(HAS_64_BIT_POINTERS)
 
 // Orders range from 0 to `kBitsPerSizeT`, inclusive.
 inline constexpr uint8_t kNumOrders = kBitsPerSizeT + 1;

@@ -51,7 +51,7 @@ PA_ALWAYS_INLINE void SecureMemset(void* ptr, uint8_t value, size_t size) {
 #pragma optimize("", on)
 #endif
 
-#if PA_BUILDFLAG(PA_EXPENSIVE_DCHECKS_ARE_ON)
+#if BUILDFLAG(PA_EXPENSIVE_DCHECKS_ARE_ON)
 // Used to memset() memory for debugging purposes only.
 PA_ALWAYS_INLINE void DebugMemset(void* ptr, int value, size_t size) {
   // Only set the first 512kiB of the allocation. This is enough to detect uses
@@ -59,13 +59,13 @@ PA_ALWAYS_INLINE void DebugMemset(void* ptr, int value, size_t size) {
   // faster. Note that for direct-mapped allocations, memory is decomitted at
   // free() time, so freed memory usage cannot happen.
 
-#if PA_BUILDFLAG(ENABLE_THREAD_ISOLATION)
+#if BUILDFLAG(ENABLE_THREAD_ISOLATION)
   LiftThreadIsolationScope lift_thread_isolation_restrictions;
 #endif
   size_t size_to_memset = std::min(size, size_t{1} << 19);
   memset(ptr, value, size_to_memset);
 }
-#endif  // PA_BUILDFLAG(PA_EXPENSIVE_DCHECKS_ARE_ON)
+#endif  // BUILDFLAG(PA_EXPENSIVE_DCHECKS_ARE_ON)
 
 // Returns true if we've hit the end of a random-length period. We don't want to
 // invoke `RandomValue` too often, because we call this function in a hot spot

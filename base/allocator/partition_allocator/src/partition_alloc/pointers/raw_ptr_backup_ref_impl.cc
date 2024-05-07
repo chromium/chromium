@@ -19,8 +19,7 @@ namespace base::internal {
 template <bool AllowDangling, bool DisableBRP>
 void RawPtrBackupRefImpl<AllowDangling, DisableBRP>::AcquireInternal(
     uintptr_t address) {
-#if PA_BUILDFLAG(PA_DCHECK_IS_ON) || \
-    PA_BUILDFLAG(ENABLE_BACKUP_REF_PTR_SLOW_CHECKS)
+#if BUILDFLAG(PA_DCHECK_IS_ON) || BUILDFLAG(ENABLE_BACKUP_REF_PTR_SLOW_CHECKS)
   PA_BASE_CHECK(UseBrp(address));
 #endif
   auto [slot_start, slot_size] =
@@ -39,8 +38,7 @@ void RawPtrBackupRefImpl<AllowDangling, DisableBRP>::AcquireInternal(
 template <bool AllowDangling, bool DisableBRP>
 void RawPtrBackupRefImpl<AllowDangling, DisableBRP>::ReleaseInternal(
     uintptr_t address) {
-#if PA_BUILDFLAG(PA_DCHECK_IS_ON) || \
-    PA_BUILDFLAG(ENABLE_BACKUP_REF_PTR_SLOW_CHECKS)
+#if BUILDFLAG(PA_DCHECK_IS_ON) || BUILDFLAG(ENABLE_BACKUP_REF_PTR_SLOW_CHECKS)
   PA_BASE_CHECK(UseBrp(address));
 #endif
   auto [slot_start, slot_size] =
@@ -89,7 +87,7 @@ bool RawPtrBackupRefImpl<AllowDangling, DisableBRP>::
   PA_BASE_CHECK(ptr_pos_within_alloc !=
                 partition_alloc::internal::PtrPosWithinAlloc::kFarOOB);
 
-#if PA_BUILDFLAG(BACKUP_REF_PTR_POISON_OOB_PTR)
+#if BUILDFLAG(BACKUP_REF_PTR_POISON_OOB_PTR)
   return ptr_pos_within_alloc ==
          partition_alloc::internal::PtrPosWithinAlloc::kAllocEnd;
 #else
@@ -100,8 +98,7 @@ bool RawPtrBackupRefImpl<AllowDangling, DisableBRP>::
 template <bool AllowDangling, bool DisableBRP>
 bool RawPtrBackupRefImpl<AllowDangling, DisableBRP>::IsPointeeAlive(
     uintptr_t address) {
-#if PA_BUILDFLAG(PA_DCHECK_IS_ON) || \
-    PA_BUILDFLAG(ENABLE_BACKUP_REF_PTR_SLOW_CHECKS)
+#if BUILDFLAG(PA_DCHECK_IS_ON) || BUILDFLAG(ENABLE_BACKUP_REF_PTR_SLOW_CHECKS)
   PA_BASE_CHECK(UseBrp(address));
 #endif
   auto [slot_start, slot_size] =
@@ -122,8 +119,7 @@ template struct RawPtrBackupRefImpl</*AllowDangling=*/true,
 template struct RawPtrBackupRefImpl</*AllowDangling=*/true,
                                     /*DisableBRP=*/true>;
 
-#if PA_BUILDFLAG(PA_DCHECK_IS_ON) || \
-    PA_BUILDFLAG(ENABLE_BACKUP_REF_PTR_SLOW_CHECKS)
+#if BUILDFLAG(PA_DCHECK_IS_ON) || BUILDFLAG(ENABLE_BACKUP_REF_PTR_SLOW_CHECKS)
 void CheckThatAddressIsntWithinFirstPartitionPage(uintptr_t address) {
   if (partition_alloc::internal::IsManagedByDirectMap(address)) {
     uintptr_t reservation_start =
@@ -136,7 +132,7 @@ void CheckThatAddressIsntWithinFirstPartitionPage(uintptr_t address) {
                   partition_alloc::PartitionPageSize());
   }
 }
-#endif  // PA_BUILDFLAG(PA_DCHECK_IS_ON) ||
-        // PA_BUILDFLAG(ENABLE_BACKUP_REF_PTR_SLOW_CHECKS)
+#endif  // BUILDFLAG(PA_DCHECK_IS_ON) ||
+        // BUILDFLAG(ENABLE_BACKUP_REF_PTR_SLOW_CHECKS)
 
 }  // namespace base::internal

@@ -41,7 +41,7 @@ struct PageAccessibilityConfiguration {
     kReadWriteExecute,
   };
 
-#if PA_BUILDFLAG(ENABLE_THREAD_ISOLATION)
+#if BUILDFLAG(ENABLE_THREAD_ISOLATION)
   constexpr explicit PageAccessibilityConfiguration(Permissions permissions)
       : permissions(permissions) {}
   constexpr PageAccessibilityConfiguration(
@@ -51,13 +51,13 @@ struct PageAccessibilityConfiguration {
 #else
   constexpr explicit PageAccessibilityConfiguration(Permissions permissions)
       : permissions(permissions) {}
-#endif  // PA_BUILDFLAG(ENABLE_THREAD_ISOLATION)
+#endif  // BUILDFLAG(ENABLE_THREAD_ISOLATION)
 
   Permissions permissions;
-#if PA_BUILDFLAG(ENABLE_THREAD_ISOLATION)
+#if BUILDFLAG(ENABLE_THREAD_ISOLATION)
   // Tag the page with a Memory Protection Key. Use 0 for none.
   ThreadIsolationOption thread_isolation;
-#endif  // PA_BUILDFLAG(ENABLE_THREAD_ISOLATION)
+#endif  // BUILDFLAG(ENABLE_THREAD_ISOLATION)
 };
 
 // Use for De/RecommitSystemPages API.

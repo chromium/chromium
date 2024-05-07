@@ -11,7 +11,7 @@
 
 #include "partition_alloc/partition_alloc_buildflags.h"
 
-#if PA_BUILDFLAG(USE_ALLOCATOR_SHIM)
+#if BUILDFLAG(USE_ALLOCATOR_SHIM)
 #include "partition_alloc/shim/malloc_zone_functions_apple.h"
 #include "partition_alloc/third_party/apple_apsl/malloc.h"
 
@@ -72,6 +72,6 @@ MallocZoneFunctions MallocZoneFunctionsToReplaceDefault() {
 
 }  // namespace allocator_shim
 
-#endif  // PA_BUILDFLAG(USE_ALLOCATOR_SHIM)
+#endif  // BUILDFLAG(USE_ALLOCATOR_SHIM)
 
 #endif  // PARTITION_ALLOC_SHIM_ALLOCATOR_SHIM_OVERRIDE_APPLE_SYMBOLS_H_
