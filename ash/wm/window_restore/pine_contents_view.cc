@@ -79,173 +79,19 @@ constexpr int kScreenshotMinHeight = 88;
 }  // namespace
 
 PineContentsView::PineContentsView() : creation_time_(base::TimeTicks::Now()) {
-  // The layout of this view changes based on the screen orientation. The Pine
-  // widget will always appear on the primary display, so we only need to check
-  // the primary root window.
-  bool landscape_mode =
-      display::Screen::GetScreen()
-          ->GetDisplayNearestWindow(Shell::GetPrimaryRootWindow())
-          .is_landscape();
-
   SetBackground(views::CreateThemedRoundedRectBackground(
       cros_tokens::kCrosSysSystemBaseElevated, kContentsRounding));
   SetBetweenChildSpacing(kContentsChildSpacing);
   SetInsideBorderInsets(kContentsInsets);
-  SetOrientation(landscape_mode ? views::BoxLayout::Orientation::kHorizontal
-                                : views::BoxLayout::Orientation::kVertical);
 
+  // Update the value of `showing_list_view_` and record it.
   const PineContentsData* pine_contents_data =
       Shell::Get()->pine_controller()->pine_contents_data();
   CHECK(pine_contents_data);
-  const int title_message_id = pine_contents_data->last_session_crashed
-                                   ? IDS_ASH_PINE_DIALOG_CRASH_TITLE
-                                   : IDS_ASH_PINE_DIALOG_TITLE;
-  const int description_message_id = pine_contents_data->last_session_crashed
-                                         ? IDS_ASH_PINE_DIALOG_CRASH_DESCRIPTION
-                                         : IDS_ASH_PINE_DIALOG_DESCRIPTION;
-
-  auto* primary_container_view = AddChildView(
-      // In landscape mode, this box layout view is the container for the left
-      // hand side (in LTR) of the contents view. It contains the title,
-      // description, buttons container, and settings button. In portrait mode,
-      // this box layout view is the container for the header of the contents
-      // view. It contains just the title and description.
-      views::Builder<views::BoxLayoutView>()
-          .SetBetweenChildSpacing(kLeftContentsChildSpacing)
-          .SetCrossAxisAlignment(views::BoxLayout::CrossAxisAlignment::kStart)
-          .SetOrientation(views::BoxLayout::Orientation::kVertical)
-          .AddChildren(
-              // Title.
-              views::Builder<views::Label>()
-                  .SetEnabledColorId(cros_tokens::kCrosSysOnSurface)
-                  .SetHorizontalAlignment(gfx::ALIGN_LEFT)
-                  .SetMultiLine(true)
-                  .SetText(l10n_util::GetStringUTF16(title_message_id))
-                  .CustomConfigure(base::BindOnce([](views::Label* label) {
-                    TypographyProvider::Get()->StyleLabel(
-                        TypographyToken::kCrosDisplay7, *label);
-                  })),
-              // Description.
-              views::Builder<views::Label>()
-                  .SetEnabledColorId(cros_tokens::kCrosSysOnSurface)
-                  .SetHorizontalAlignment(gfx::ALIGN_LEFT)
-                  .SetMultiLine(true)
-                  .SetText(l10n_util::GetStringUTF16(description_message_id))
-                  .CustomConfigure(base::BindOnce([](views::Label* label) {
-                    TypographyProvider::Get()->StyleLabel(
-                        TypographyToken::kCrosBody1, *label);
-                  })))
-          .Build());
-
-  gfx::Size screenshot_size;
   showing_list_view_ = pine_contents_data->image.isNull();
-  views::BoxLayoutView* preview_container_view;
-  if (showing_list_view_) {
-    preview_container_view =
-        AddChildView(std::make_unique<PineItemsContainerView>(
-            pine_contents_data->apps_infos));
-    preview_container_view->SetID(pine::kPreviewContainerViewID);
-    preview_container_view->SetPreferredSize(
-        gfx::Size(pine::kPreviewContainerWidth, kItemsViewContainerHeight));
-  } else {
-    const gfx::ImageSkia& pine_image = pine_contents_data->image;
-    screenshot_size = pine_image.size();
-    screenshot_size.set_height(
-        std::max(kScreenshotMinHeight, screenshot_size.height()));
-
-    views::View* image_view;
-    views::BoxLayoutView* icon_row_container;
-    views::View* icon_row_spacer;
-    // This box layout is used to set the vertical space when the screenshot's
-    // height is smaller than `kScreenshotContainerMinHeight`. Thus the
-    // screenshot and the icon row can be centered inside the container.
-    AddChildView(
-        views::Builder<views::BoxLayoutView>()
-            .CopyAddressTo(&preview_container_view)
-            .SetID(pine::kPreviewContainerViewID)
-            .AddChildren(
-                views::Builder<views::View>()
-                    .SetLayoutManager(std::make_unique<views::FillLayout>())
-                    .SetPreferredSize(screenshot_size)
-                    .AddChildren(
-                        views::Builder<views::ImageView>()
-                            .CopyAddressTo(&image_view)
-                            .SetPaintToLayer()
-                            .SetImage(pine_image)
-                            .SetImageSize(screenshot_size),
-                        views::Builder<views::BoxLayoutView>()
-                            .CopyAddressTo(&icon_row_container)
-                            .SetPaintToLayer()
-                            .SetOrientation(
-                                views::BoxLayout::Orientation::kVertical)
-                            .AddChildren(views::Builder<views::View>()
-                                             .CopyAddressTo(&icon_row_spacer))))
-            .Build());
-
-    image_view->layer()->SetFillsBoundsOpaquely(false);
-    image_view->layer()->SetRoundedCornerRadius(
-        gfx::RoundedCornersF(pine::kPreviewContainerRadius));
-    icon_row_container->layer()->SetFillsBoundsOpaquely(false);
-
-    icon_row_container->AddChildView(
-        std::make_unique<PineScreenshotIconRowView>(
-            pine_contents_data->apps_infos));
-    icon_row_container->SetFlexForView(icon_row_spacer, 1);
-  }
   RecordDialogScreenshotVisibility(!showing_list_view_);
 
-  // The display orientation determines where we place the settings,
-  // "No thanks", and "Restore" buttons.
-  views::View* spacer;
-  if (landscape_mode) {
-    // Add the buttons to the left hand side container view.
-    primary_container_view->AddChildView(
-        CreateButtonContainerBuilder()
-            .SetProperty(views::kMarginsKey, kButtonContainerChildMargins)
-            .Build());
-    spacer =
-        primary_container_view->AddChildView(std::make_unique<views::View>());
-    primary_container_view->AddChildView(CreateSettingsButtonBuilder().Build());
-  } else {
-    // Add a footer view that contains the buttons.
-    AddChildView(
-        views::Builder<views::BoxLayoutView>()
-            .SetOrientation(views::BoxLayout::Orientation::kHorizontal)
-            .SetCrossAxisAlignment(
-                views::BoxLayout::CrossAxisAlignment::kCenter)
-            .AddChildren(CreateSettingsButtonBuilder(),
-                         views::Builder<views::View>().CopyAddressTo(&spacer),
-                         CreateButtonContainerBuilder())
-            .Build());
-  }
-
-  views::AsViewClass<views::BoxLayoutView>(spacer->parent())
-      ->SetFlexForView(spacer, 1);
-
-  // The height of the pine dialog is dynamic, depending on the height of the
-  // screenshot. For the screenshot, its width is fixed as
-  // `kPreviewContainerWidth` while its height is calculated based on the
-  // display's aspect ratio.
-  const int screenshot_height = screenshot_size.height();
-  const int pine_contents_height =
-      showing_list_view_
-          ? kItemsViewContainerHeight
-          : std::max(kScreenshotContainerMinHeight, screenshot_height);
-  primary_container_view->SetPreferredSize(
-      gfx::Size(kActionsContainerWidth, pine_contents_height));
-
-  // Set the screenshot preview container vertical margin based on the height of
-  // the screenshot.
-  if (!showing_list_view_ &&
-      screenshot_height < kScreenshotContainerMinHeight) {
-    const int vertical_gap = kScreenshotContainerMinHeight - screenshot_height;
-    const int bottom_inset = vertical_gap / 2;
-    const int top_inset =
-        vertical_gap % 2 == 1 ? bottom_inset + 1 : bottom_inset;
-    preview_container_view->SetInsideBorderInsets(
-        gfx::Insets::TLBR(top_inset, 0, bottom_inset, 0));
-  }
-
+  CreateChildViews();
   views::InstallCircleHighlightPathGenerator(settings_button_);
 
   // Add a highlight border to match the Quick Settings menu, i.e.,
@@ -300,6 +146,12 @@ std::unique_ptr<views::Widget> PineContentsView::Create(
   }
 
   return widget;
+}
+
+void PineContentsView::UpdateOrientation() {
+  settings_button_ = nullptr;
+  RemoveAllChildViews();
+  CreateChildViews();
 }
 
 void PineContentsView::OnRestoreButtonPressed() {
@@ -407,6 +259,169 @@ PineContentsView::CreateButtonContainerBuilder() {
               .SetID(pine::kRestoreButtonID)
               .SetPillButtonType(PillButton::Type::kPrimaryLargeWithoutIcon)
               .SetTextWithStringId(IDS_ASH_PINE_DIALOG_RESTORE_BUTTON));
+}
+
+void PineContentsView::CreateChildViews() {
+  const bool landscape_mode =
+      display::Screen::GetScreen()
+          ->GetDisplayNearestWindow(Shell::GetPrimaryRootWindow())
+          .is_landscape();
+
+  SetOrientation(landscape_mode ? views::BoxLayout::Orientation::kHorizontal
+                                : views::BoxLayout::Orientation::kVertical);
+
+  const PineContentsData* pine_contents_data =
+      Shell::Get()->pine_controller()->pine_contents_data();
+  CHECK(pine_contents_data);
+  const int title_message_id = pine_contents_data->last_session_crashed
+                                   ? IDS_ASH_PINE_DIALOG_CRASH_TITLE
+                                   : IDS_ASH_PINE_DIALOG_TITLE;
+  const int description_message_id = pine_contents_data->last_session_crashed
+                                         ? IDS_ASH_PINE_DIALOG_CRASH_DESCRIPTION
+                                         : IDS_ASH_PINE_DIALOG_DESCRIPTION;
+
+  auto* primary_container_view = AddChildView(
+      // In landscape mode, this box layout view is the container for the left
+      // hand side (in LTR) of the contents view. It contains the title,
+      // description, buttons container, and settings button. In portrait mode,
+      // this box layout view is the container for the header of the contents
+      // view. It contains just the title and description.
+      views::Builder<views::BoxLayoutView>()
+          .SetBetweenChildSpacing(kLeftContentsChildSpacing)
+          .SetCrossAxisAlignment(views::BoxLayout::CrossAxisAlignment::kStart)
+          .SetOrientation(views::BoxLayout::Orientation::kVertical)
+          .AddChildren(
+              // Title.
+              views::Builder<views::Label>()
+                  .SetEnabledColorId(cros_tokens::kCrosSysOnSurface)
+                  .SetHorizontalAlignment(gfx::ALIGN_LEFT)
+                  .SetMultiLine(true)
+                  .SetText(l10n_util::GetStringUTF16(title_message_id))
+                  .CustomConfigure(base::BindOnce([](views::Label* label) {
+                    TypographyProvider::Get()->StyleLabel(
+                        TypographyToken::kCrosDisplay7, *label);
+                  })),
+              // Description.
+              views::Builder<views::Label>()
+                  .SetEnabledColorId(cros_tokens::kCrosSysOnSurface)
+                  .SetHorizontalAlignment(gfx::ALIGN_LEFT)
+                  .SetMultiLine(true)
+                  .SetText(l10n_util::GetStringUTF16(description_message_id))
+                  .CustomConfigure(base::BindOnce([](views::Label* label) {
+                    TypographyProvider::Get()->StyleLabel(
+                        TypographyToken::kCrosBody1, *label);
+                  })))
+          .Build());
+
+  gfx::Size screenshot_size;
+  views::BoxLayoutView* preview_container_view;
+  if (showing_list_view_) {
+    preview_container_view =
+        AddChildView(std::make_unique<PineItemsContainerView>(
+            pine_contents_data->apps_infos));
+    preview_container_view->SetID(pine::kPreviewContainerViewID);
+    preview_container_view->SetPreferredSize(
+        gfx::Size(pine::kPreviewContainerWidth, kItemsViewContainerHeight));
+  } else {
+    // TODO(http://b/338666906): Fix the screenshot view when in portrait mode,
+    // and after transitioning to landscape mode.
+
+    const gfx::ImageSkia& pine_image = pine_contents_data->image;
+    screenshot_size = pine_image.size();
+    screenshot_size.set_height(
+        std::max(kScreenshotMinHeight, screenshot_size.height()));
+
+    views::View* image_view;
+    views::BoxLayoutView* icon_row_container;
+    views::View* icon_row_spacer;
+    // This box layout is used to set the vertical space when the screenshot's
+    // height is smaller than `kScreenshotContainerMinHeight`. Thus the
+    // screenshot and the icon row can be centered inside the container.
+    AddChildView(
+        views::Builder<views::BoxLayoutView>()
+            .CopyAddressTo(&preview_container_view)
+            .SetID(pine::kPreviewContainerViewID)
+            .AddChildren(
+                views::Builder<views::View>()
+                    .SetLayoutManager(std::make_unique<views::FillLayout>())
+                    .SetPreferredSize(screenshot_size)
+                    .AddChildren(
+                        views::Builder<views::ImageView>()
+                            .CopyAddressTo(&image_view)
+                            .SetPaintToLayer()
+                            .SetImage(pine_image)
+                            .SetImageSize(screenshot_size),
+                        views::Builder<views::BoxLayoutView>()
+                            .CopyAddressTo(&icon_row_container)
+                            .SetPaintToLayer()
+                            .SetOrientation(
+                                views::BoxLayout::Orientation::kVertical)
+                            .AddChildren(views::Builder<views::View>()
+                                             .CopyAddressTo(&icon_row_spacer))))
+            .Build());
+
+    image_view->layer()->SetFillsBoundsOpaquely(false);
+    image_view->layer()->SetRoundedCornerRadius(
+        gfx::RoundedCornersF(pine::kPreviewContainerRadius));
+    icon_row_container->layer()->SetFillsBoundsOpaquely(false);
+
+    icon_row_container->AddChildView(
+        std::make_unique<PineScreenshotIconRowView>(
+            pine_contents_data->apps_infos));
+    icon_row_container->SetFlexForView(icon_row_spacer, 1);
+  }
+
+  // The display orientation determines where we place the settings,
+  // "No thanks", and "Restore" buttons.
+  views::View* spacer;
+  if (landscape_mode) {
+    // Add the buttons to the left hand side container view.
+    primary_container_view->AddChildView(
+        CreateButtonContainerBuilder()
+            .SetProperty(views::kMarginsKey, kButtonContainerChildMargins)
+            .Build());
+    spacer =
+        primary_container_view->AddChildView(std::make_unique<views::View>());
+    primary_container_view->AddChildView(CreateSettingsButtonBuilder().Build());
+  } else {
+    // Add a footer view that contains the buttons.
+    AddChildView(
+        views::Builder<views::BoxLayoutView>()
+            .SetOrientation(views::BoxLayout::Orientation::kHorizontal)
+            .SetCrossAxisAlignment(
+                views::BoxLayout::CrossAxisAlignment::kCenter)
+            .AddChildren(CreateSettingsButtonBuilder(),
+                         views::Builder<views::View>().CopyAddressTo(&spacer),
+                         CreateButtonContainerBuilder())
+            .Build());
+  }
+
+  views::AsViewClass<views::BoxLayoutView>(spacer->parent())
+      ->SetFlexForView(spacer, 1);
+
+  // The height of the pine dialog is dynamic, depending on the height of the
+  // screenshot. For the screenshot, its width is fixed as
+  // `kPreviewContainerWidth` while its height is calculated based on the
+  // display's aspect ratio.
+  const int screenshot_height = screenshot_size.height();
+  const int pine_contents_height =
+      showing_list_view_
+          ? kItemsViewContainerHeight
+          : std::max(kScreenshotContainerMinHeight, screenshot_height);
+  primary_container_view->SetPreferredSize(
+      gfx::Size(kActionsContainerWidth, pine_contents_height));
+
+  // Set the screenshot preview container vertical margin based on the height of
+  // the screenshot.
+  if (!showing_list_view_ &&
+      screenshot_height < kScreenshotContainerMinHeight) {
+    const int vertical_gap = kScreenshotContainerMinHeight - screenshot_height;
+    const int bottom_inset = vertical_gap / 2;
+    const int top_inset =
+        vertical_gap % 2 == 1 ? bottom_inset + 1 : bottom_inset;
+    preview_container_view->SetInsideBorderInsets(
+        gfx::Insets::TLBR(top_inset, 0, bottom_inset, 0));
+  }
 }
 
 void PineContentsView::OnMenuClosed() {

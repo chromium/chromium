@@ -1278,11 +1278,20 @@ void OverviewGrid::SetVisibleDuringWindowDragging(bool visible, bool animate) {
   }
 }
 
-void OverviewGrid::OnDisplayMetricsChanged() {
+void OverviewGrid::OnDisplayMetricsChanged(uint32_t changed_metrics) {
   if (split_view_drag_indicators_)
     split_view_drag_indicators_->OnDisplayBoundsChanged();
 
   UpdateCannotSnapWarningVisibility(/*animate=*/true);
+
+  // The `PineContentsView` may need to be updated to match the primary display
+  // orientation. If the pine widget exists, then this overview grid is on the
+  // primary display, so we can tell the contents view to update on rotation.
+  if (pine_widget_ &&
+      (changed_metrics & display::DisplayObserver::DISPLAY_METRIC_ROTATION)) {
+    views::AsViewClass<PineContentsView>(pine_widget_->GetContentsView())
+        ->UpdateOrientation();
+  }
 
   // In case of split view mode, the grid bounds and item positions will be
   // updated in |OnSplitViewDividerPositionChanged|.

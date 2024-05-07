@@ -38,6 +38,9 @@ class ASH_EXPORT PineContentsView : public views::BoxLayoutView {
   static std::unique_ptr<views::Widget> Create(
       const gfx::Rect& grid_bounds_in_screen);
 
+  // Removes all child views and remakes them in the correct orientation.
+  void UpdateOrientation();
+
  private:
   FRIEND_TEST_ALL_PREFIXES(PineContextMenuModelTest,
                            ShowContextMenuOnSettingsButtonClicked);
@@ -56,6 +59,8 @@ class ASH_EXPORT PineContentsView : public views::BoxLayoutView {
   // Creates a builder for the container of the "No thanks" and "Restore" pill
   // buttons.
   views::Builder<views::BoxLayoutView> CreateButtonContainerBuilder();
+  // Creates the child views based on the primary display orientation.
+  void CreateChildViews();
 
   // The context menu model and its adapter for `settings_button_view_`.
   std::unique_ptr<PineContextMenuModel> context_menu_model_;

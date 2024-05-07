@@ -245,7 +245,7 @@ class ASH_EXPORT OverviewGrid : public SplitViewObserver,
 
   // Called by |OverviewSession::OnDisplayMetricsChanged|, only for the display
   // with this grid.
-  void OnDisplayMetricsChanged();
+  void OnDisplayMetricsChanged(uint32_t changed_metrics);
 
   // Called by |OverviewSession::OnUserWorkAreaInsetsChanged|.
   void OnUserWorkAreaInsetsChanged(aura::Window* root_window);

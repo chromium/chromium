@@ -758,8 +758,8 @@ TEST_F(PineTest, ShowSavedDeskLibrary) {
 }
 
 // Tests that the Pine contents are laid out correctly when the display is in
-// landscape mode.
-TEST_F(PineTest, LayoutLandscape) {
+// landscape mode and transitions to portrait mode.
+TEST_F(PineTest, LayoutLandscapeToPortrait) {
   StartPineOverviewSession(MakeTestAppIds(1));
 
   OverviewGrid* overview_grid =
@@ -770,15 +770,32 @@ TEST_F(PineTest, LayoutLandscape) {
 
   // In landscape mode, the `PineContentsView` should have two children: a left
   // hand side contents view, and a right hand side contents view.
-  const PineContentsView* contents_view =
+  PineContentsView* contents_view =
       views::AsViewClass<PineContentsView>(pine_widget->GetContentsView());
   ASSERT_TRUE(contents_view);
   EXPECT_EQ(contents_view->children().size(), 2u);
+
+  // Rotate the display to put it in portrait mode.
+  ScreenOrientationControllerTestApi orientation_test_api(
+      Shell::Get()->screen_orientation_controller());
+  orientation_test_api.SetDisplayRotation(
+      display::Display::ROTATE_90, display::Display::RotationSource::ACTIVE);
+  ASSERT_TRUE(chromeos::IsPortraitOrientation(
+      orientation_test_api.GetCurrentOrientation()));
+  ASSERT_TRUE(pine_widget);
+
+  // In portrait mode, the `PineContentsView` should have three children: the
+  // title and description container (header), the `PineItemsContainerView`, and
+  // the buttons container (footer).
+  contents_view =
+      views::AsViewClass<PineContentsView>(pine_widget->GetContentsView());
+  ASSERT_TRUE(contents_view);
+  EXPECT_EQ(contents_view->children().size(), 3u);
 }
 
 // Tests that the Pine contents are laid out correctly when the display is in
-// portrait mode.
-TEST_F(PineTest, LayoutPortrait) {
+// portrait mode and transitions to landscape mode.
+TEST_F(PineTest, LayoutPortraitToLandscape) {
   // Rotate the display to put it in portrait mode.
   ScreenOrientationControllerTestApi orientation_test_api(
       Shell::Get()->screen_orientation_controller());
@@ -798,10 +815,24 @@ TEST_F(PineTest, LayoutPortrait) {
   // In portrait mode, the `PineContentsView` should have three children: the
   // title and description container (header), the `PineItemsContainerView`, and
   // the buttons container (footer).
-  const PineContentsView* contents_view =
+  PineContentsView* contents_view =
       views::AsViewClass<PineContentsView>(pine_widget->GetContentsView());
   ASSERT_TRUE(contents_view);
   EXPECT_EQ(contents_view->children().size(), 3u);
+
+  // Rotate the display again to put it in landscape mode.
+  orientation_test_api.SetDisplayRotation(
+      display::Display::ROTATE_180, display::Display::RotationSource::ACTIVE);
+  ASSERT_FALSE(chromeos::IsPortraitOrientation(
+      orientation_test_api.GetCurrentOrientation()));
+  ASSERT_TRUE(pine_widget);
+
+  // In landscape mode, the `PineContentsView` should have two children: a left
+  // hand side contents view, and a right hand side contents view.
+  contents_view =
+      views::AsViewClass<PineContentsView>(pine_widget->GetContentsView());
+  ASSERT_TRUE(contents_view);
+  EXPECT_EQ(contents_view->children().size(), 2u);
 }
 
 class PineAppIconTest : public PineTest {

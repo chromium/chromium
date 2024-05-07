@@ -1336,7 +1336,7 @@ void OverviewSession::OnDisplayMetricsChanged(const display::Display& display,
     ResetDraggedWindowGesture();
   auto* overview_grid =
       GetGridWithRootWindow(Shell::GetRootWindowForDisplayId(display.id()));
-  overview_grid->OnDisplayMetricsChanged();
+  overview_grid->OnDisplayMetricsChanged(metrics);
 
   // In case of split view mode, the no windows widget bounds will be updated in
   // |OnSplitViewDividerPositionChanged|.
