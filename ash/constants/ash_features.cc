@@ -573,7 +573,7 @@ BASE_FEATURE(kCryptAuthV2Enrollment,
 // - if disabled, user have to explicitly opt-in to use recovery
 BASE_FEATURE(kCryptohomeRecoveryByDefaultForConsumers,
              "CryptohomeRecoveryByDefaultForConsumers",
-             base::FEATURE_DISABLED_BY_DEFAULT);
+             base::FEATURE_ENABLED_BY_DEFAULT);
 
 // Controls the behavior during onboarding when the RecoveryFactorBehavior
 // policy is unset.
