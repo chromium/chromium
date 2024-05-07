@@ -7,7 +7,7 @@ function waitForRender() {
 async function navigateFocusForward() {
   await waitForRender();
   const kTab = '\uE004';
-  await new test_driver.send_keys(document.documentElement,kTab);
+  await new test_driver.send_keys(document.body, kTab);
   await waitForRender();
 }
 
