@@ -48,6 +48,7 @@
 #include "chrome/common/chrome_switches.h"
 #include "chrome/test/base/mixin_based_in_process_browser_test.h"
 #include "chrome/test/interaction/interactive_browser_test.h"
+#include "chromeos/components/libsegmentation/buildflags.h"
 #include "chromeos/constants/chromeos_features.h"
 #include "chromeos/constants/chromeos_switches.h"
 #include "components/app_constants/constants.h"
@@ -855,9 +856,12 @@ IN_PROC_BROWSER_TEST_P(ContainerAppInteractiveUiTest, UninstallFromShelf) {
 enum class IneligibilityReason {
   kMinValue = 0,
   kFeatureFlagDisabled = kMinValue,
+#if !BUILDFLAG(ENABLE_MERGE_REQUEST)
+  // NOTE: Key is bypassed when `ENABLE_MERGE_REQUEST` is enabled.
   kFeatureKeyEmpty,
   kFeatureKeyParamIncorrect,
   kFeatureKeySwitchIncorrect,
+#endif  // !BUILDFLAG(ENABLE_MERGE_REQUEST)
   kFeatureManagementFlagDisabled,
   kUserManaged,
   kUserTypeChild,
@@ -872,9 +876,12 @@ enum class IneligibilityReason {
 inline std::ostream& operator<<(std::ostream& os, IneligibilityReason reason) {
   switch (reason) {
     INELIGIBILITY_REASON_CASE(kFeatureFlagDisabled);
+#if !BUILDFLAG(ENABLE_MERGE_REQUEST)
+    // NOTE: Key is bypassed when `ENABLE_MERGE_REQUEST` is enabled.
     INELIGIBILITY_REASON_CASE(kFeatureKeyEmpty);
     INELIGIBILITY_REASON_CASE(kFeatureKeyParamIncorrect);
     INELIGIBILITY_REASON_CASE(kFeatureKeySwitchIncorrect);
+#endif  // !BUILDFLAG(ENABLE_MERGE_REQUEST)
     INELIGIBILITY_REASON_CASE(kFeatureManagementFlagDisabled);
     INELIGIBILITY_REASON_CASE(kUserManaged);
     INELIGIBILITY_REASON_CASE(kUserTypeChild);
@@ -973,13 +980,23 @@ class ContainerAppInteractiveUiIneligibilityTest
   // Returns whether the feature key param is incorrect given test
   // parameterization.
   bool IsFeatureKeyParamIncorrect() const {
+#if !BUILDFLAG(ENABLE_MERGE_REQUEST)
     return GetParam() == IneligibilityReason::kFeatureKeyParamIncorrect;
+#else   // !BUILDFLAG(ENABLE_MERGE_REQUEST)
+    // NOTE: Key is bypassed when `ENABLE_MERGE_REQUEST` is enabled.
+    return true;
+#endif  // BUILDFLAG(ENABLE_MERGE_REQUEST)
   }
 
   // Returns whether the feature key switch is incorrect given test
   // parameterization.
   bool IsFeatureKeySwitchIncorrect() const {
+#if !BUILDFLAG(ENABLE_MERGE_REQUEST)
     return GetParam() == IneligibilityReason::kFeatureKeySwitchIncorrect;
+#else   // !BUILDFLAG(ENABLE_MERGE_REQUEST)
+    // NOTE: Key is bypassed when `ENABLE_MERGE_REQUEST` is enabled.
+    return true;
+#endif  // BUILDFLAG(ENABLE_MERGE_REQUEST)
   }
 
   // Returns whether the feature management flag is disabled given test
@@ -991,11 +1008,16 @@ class ContainerAppInteractiveUiIneligibilityTest
   // Returns whether the feature key should be ignored given test
   // parameterization.
   bool ShouldIgnoreFeatureKey() const {
+#if !BUILDFLAG(ENABLE_MERGE_REQUEST)
     return !std::set<IneligibilityReason>(
                 {IneligibilityReason::kFeatureKeyEmpty,
                  IneligibilityReason::kFeatureKeyParamIncorrect,
                  IneligibilityReason::kFeatureKeySwitchIncorrect})
                 .contains(GetParam());
+#else   // !BUILDFLAG(ENABLE_MERGE_REQUEST)
+    // NOTE: Key is bypassed when `ENABLE_MERGE_REQUEST` is enabled.
+    return false;
+#endif  // BUILDFLAG(ENABLE_MERGE_REQUEST)
   }
 
   // Used to enable/disable the container app preinstallation based on test
