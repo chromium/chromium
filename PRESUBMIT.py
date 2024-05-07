@@ -1375,7 +1375,8 @@ _BANNED_CPP_FUNCTIONS : Sequence[BanRule] = (
       r'/\bstd::to_address\b',
       (
         'std::to_address is banned because it is not guaranteed to be',
-        'SFINAE-compatible. Use base::to_address instead.',
+        'SFINAE-compatible. Use base::to_address from base/types/to_address.h',
+        'instead.',
       ),
       True,
       [
