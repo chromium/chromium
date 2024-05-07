@@ -49,6 +49,11 @@ self.addEventListener('install', e => {
       not: {not: {urlPattern: "/service_worker/not_not_match"}}
     },
     source: "network"
+  }, {
+    condition: {
+        urlPattern: "/service_worker/fetch_event_rule"
+    },
+    source: "fetch-event"
   }]);
   caches.open("test").then((c) => {
     const headers = new Headers();

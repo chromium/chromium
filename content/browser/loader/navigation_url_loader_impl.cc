@@ -88,6 +88,7 @@
 #include "net/traffic_annotation/network_traffic_annotation.h"
 #include "net/url_request/redirect_util.h"
 #include "ppapi/buildflags/buildflags.h"
+#include "services/metrics/public/cpp/metrics_utils.h"
 #include "services/metrics/public/cpp/ukm_builders.h"
 #include "services/metrics/public/cpp/ukm_recorder.h"
 #include "services/metrics/public/cpp/ukm_source_id.h"
@@ -1078,6 +1079,12 @@ void NavigationURLLoaderImpl::CallOnReceivedResponse(
   }
 
   network::mojom::URLResponseHead* head_ptr = head.get();
+  // Record ServiceWorker Static Routing API metrics. This is only recorded
+  // when the API is used.
+  if (head_ptr->service_worker_router_info) {
+    RecordServiceWorkerRouterEvaluationResults(
+        head_ptr->service_worker_router_info.get());
+  }
   auto on_receive_response = base::BindOnce(
       &NavigationURLLoaderImpl::NotifyResponseStarted,
       weak_factory_.GetWeakPtr(), std::move(head),
@@ -1805,6 +1812,38 @@ void NavigationURLLoaderImpl::RecordReceivedResponseUkmForOutermostMainFrame() {
 
   // Reset whether the ACCEPT_CH frame was received for the navigation.
   received_accept_ch_frame_ = false;
+}
+
+void NavigationURLLoaderImpl::RecordServiceWorkerRouterEvaluationResults(
+    network::mojom::ServiceWorkerRouterInfo* router_info) {
+  // Check if `matched_source_type` and `actual_source_type` exists. If
+  // `matched_source_type` exists, `actual_source_type` should also exist.
+  // Likewise, if `matched_source_type` does not exist, `actual_source_type`
+  // should also not exist.
+  CHECK_EQ(router_info->matched_source_type.has_value(),
+           router_info->actual_source_type.has_value());
+  ukm::builders::ServiceWorker_MainResourceLoadCompleted builder(
+      ukm_source_id_);
+
+  if (router_info->evaluation_worker_status) {
+    builder.SetWorkerStatusOnEvaluation(
+        static_cast<int64_t>(*router_info->evaluation_worker_status));
+  }
+
+  if (router_info->matched_source_type) {
+    builder.SetMatchedFirstRouterSourceType(
+        static_cast<int64_t>(*router_info->matched_source_type));
+  }
+
+  if (router_info->actual_source_type) {
+    builder.SetActualRouterSourceType(
+        static_cast<int64_t>(*router_info->actual_source_type));
+  }
+
+  builder
+      .SetRouterRuleCount(ukm::GetExponentialBucketMinForCounts1000(
+          router_info->route_rule_num))
+      .Record(ukm::UkmRecorder::Get());
 }
 
 }  // namespace content

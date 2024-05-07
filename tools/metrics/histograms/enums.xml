@@ -32226,6 +32226,26 @@ Called by update_net_error_codes.py.-->
              loaded."/>
 </enum>
 
+<enum name="ServiceWorkerRouterSourceType">
+  <int value="0" label="kNetwork"/>
+  <int value="1" label="kRace"/>
+  <int value="2" label="kFetchEvent"/>
+  <int value="3" label="kCache"/>
+</enum>
+
+<!-- LINT.IfChange(ServiceWorkerStatus) -->
+
+<enum name="ServiceWorkerStatus">
+  <int value="0" label="Running"/>
+  <int value="1" label="Starting"/>
+  <int value="2" label="Stopping"/>
+  <int value="3" label="Stopped"/>
+  <int value="4" label="Warming up"/>
+  <int value="5" label="Warmed up"/>
+</enum>
+
+<!-- LINT.ThenChange(//services/network/public/mojom/service_worker_router_info.mojom:ServiceWorkerStatus) -->
+
 <enum name="ServiceWorkerStatusCode">
   <int value="0" label="SERVICE_WORKER_OK"/>
   <int value="1" label="SERVICE_WORKER_ERROR_FAILED"/>

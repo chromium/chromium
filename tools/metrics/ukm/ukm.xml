@@ -24526,6 +24526,44 @@ be describing additional metrics about the same event.
   </metric>
 </event>
 
+<event name="ServiceWorker.MainResourceLoadCompleted">
+  <owner>suzukikeita@chromium.org</owner>
+  <owner>chrome-worker@google.com</owner>
+  <summary>
+    Events taken when the main resource is loaded. This only occurs when the
+    static routing API is used.
+  </summary>
+  <metric name="ActualRouterSourceType" enum="ServiceWorkerRouterSourceType">
+    <summary>
+      The actual router source type for Static Routing API. This indicates which
+      source type was actually used to get the resource. This will be recorded
+      only when the router has matched the incoming resource.
+    </summary>
+  </metric>
+  <metric name="MatchedFirstRouterSourceType"
+      enum="ServiceWorkerRouterSourceType">
+    <summary>
+      The result of the router evaluation of the Static Routing API. This
+      indicates which source type is specified to get the resource. This will be
+      recorded only when the router has matched the incoming resource.
+    </summary>
+  </metric>
+  <metric name="RouterRuleCount">
+    <summary>
+      The sum of registered router rules with the Static Routing API in main
+      resource. Recorded per navigation when the service worker, which has
+      associated routing info, is activated. This is rounded down to the nearest
+      exponential bucket (with a bucket ratio on 1.15).
+    </summary>
+  </metric>
+  <metric name="WorkerStatusOnEvaluation" enum="ServiceWorkerStatus">
+    <summary>
+      ServiceWorker running status at the time when router evaluation is
+      conducted.
+    </summary>
+  </metric>
+</event>
+
 <event name="ServiceWorker.OnLoad">
   <owner>yyanagisawa@chromium.org</owner>
   <owner>chrome-worker@google.com</owner>

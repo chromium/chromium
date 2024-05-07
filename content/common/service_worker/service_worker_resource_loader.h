@@ -76,7 +76,7 @@ class CONTENT_EXPORT ServiceWorkerResourceLoader {
   void RecordFetchResponseFrom();
 
   FetchResponseFrom commit_responsibility() { return commit_responsibility_; }
-  void SetCommitResponsibility(FetchResponseFrom fetch_response_from);
+  virtual void SetCommitResponsibility(FetchResponseFrom fetch_response_from);
 
   DispatchedPreloadType dispatched_preload_type() {
     return dispatched_preload_type_;

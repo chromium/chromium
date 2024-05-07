@@ -250,13 +250,6 @@ chromium-metrics-reviews@google.com.
   <int value="9" label="kExceedMaxRouterSize"/>
 </enum>
 
-<enum name="ServiceWorkerRouterSourceType">
-  <int value="0" label="kNetwork"/>
-  <int value="1" label="kRace"/>
-  <int value="2" label="kFetchEvent"/>
-  <int value="3" label="kCache"/>
-</enum>
-
 <enum name="ServiceWorkerWriteResponseResult">
   <int value="0" label="OK"/>
   <int value="1" label="Write headers error"/>

@@ -43,6 +43,7 @@
 #include "services/network/public/cpp/features.h"
 #include "services/network/public/cpp/timing_allow_origin_parser.h"
 #include "services/network/public/mojom/fetch_api.mojom.h"
+#include "services/network/public/mojom/service_worker_router_info.mojom-shared.h"
 #include "services/network/public/mojom/service_worker_router_info.mojom.h"
 #include "third_party/blink/public/common/service_worker/service_worker_loader_helpers.h"
 #include "third_party/blink/public/mojom/service_worker/service_worker_fetch_handler_bypass_option.mojom-shared.h"
@@ -151,31 +152,17 @@ ServiceWorkerMainResourceLoader::ServiceWorkerMainResourceLoader(
   scoped_refptr<ServiceWorkerVersion> active_worker =
       container_host_->controller();
   if (active_worker) {
-    switch (active_worker->running_status()) {
-      case blink::EmbeddedWorkerStatus::kRunning:
-        initial_service_worker_status_ = InitialServiceWorkerStatus::kRunning;
-        break;
-      case blink::EmbeddedWorkerStatus::kStarting:
-        initial_service_worker_status_ = InitialServiceWorkerStatus::kStarting;
-        break;
-      case blink::EmbeddedWorkerStatus::kStopping:
-        initial_service_worker_status_ = InitialServiceWorkerStatus::kStopping;
-        break;
-      case blink::EmbeddedWorkerStatus::kStopped:
-        initial_service_worker_status_ = InitialServiceWorkerStatus::kStopped;
-        if (base::WeakPtr<ServiceWorkerContextCore> core =
-                active_worker->context()) {
-          base::UmaHistogramBoolean(
-              "ServiceWorker.LoadTiming.MainFrame.MainResource."
-              "ServiceWorkerIsStopped.WaitingForWarmUp",
-              core->IsWaitingForWarmUp(active_worker->key()));
-        }
-        break;
-    }
-    if (active_worker->IsWarmingUp()) {
-      initial_service_worker_status_ = InitialServiceWorkerStatus::kWarmingUp;
-    } else if (active_worker->IsWarmedUp()) {
-      initial_service_worker_status_ = InitialServiceWorkerStatus::kWarmedUp;
+    auto running_status = active_worker->running_status();
+    initial_service_worker_status_ = ConvertToServiceWorkerStatus(
+        running_status, active_worker->IsWarmingUp(),
+        active_worker->IsWarmedUp());
+
+    base::WeakPtr<ServiceWorkerContextCore> core = active_worker->context();
+    if (running_status == blink::EmbeddedWorkerStatus::kStopping && core) {
+      base::UmaHistogramBoolean(
+          "ServiceWorker.LoadTiming.MainFrame.MainResource."
+          "ServiceWorkerIsStopped.WaitingForWarmUp",
+          core->IsWaitingForWarmUp(active_worker->key()));
     }
   }
 
@@ -269,14 +256,21 @@ void ServiceWorkerMainResourceLoader::StartRequest(
   // Check if registered static router rules match the request.
   if (active_worker->router_evaluator()) {
     CHECK(active_worker->router_evaluator()->IsValid());
+    auto running_status = active_worker->running_status();
+    auto worker_status = ConvertToServiceWorkerStatus(
+        running_status, active_worker->IsWarmingUp(),
+        active_worker->IsWarmedUp());
 
     // Set router information of matched rule for DevTools.
     response_head_->service_worker_router_info =
         network::mojom::ServiceWorkerRouterInfo::New();
     auto* router_info = response_head_->service_worker_router_info.get();
+    router_info->route_rule_num =
+        active_worker->router_evaluator()->rules().rules.size();
+    router_info->evaluation_worker_status = worker_status;
 
     auto eval_result = active_worker->router_evaluator()->Evaluate(
-        resource_request_, active_worker->running_status());
+        resource_request_, running_status);
     // ServiceWorkerStaticRouter_Evaluate is counted only here.
     // That is because when the static routing API is used, this code will
     // always be executed even for no fetch handler case and an empty fetch
@@ -306,6 +300,8 @@ void ServiceWorkerMainResourceLoader::StartRequest(
           // enabled, it starts the ServiceWorker manually since we don't
           // instantiate ServiceWorkerFetchDispatcher, which involves the
           // ServiceWorker startup.
+          response_head_->service_worker_router_info->actual_source_type =
+              network::mojom::ServiceWorkerRouterSourceType::kNetwork;
           base::SequencedTaskRunner::GetCurrentDefault()->PostTask(
               FROM_HERE,
               base::BindOnce(
@@ -614,6 +610,18 @@ void ServiceWorkerMainResourceLoader::CommitResponseBody(
     mojo::ScopedDataPipeConsumerHandle response_body,
     std::optional<mojo_base::BigBuffer> cached_metadata) {
   TransitionToStatus(Status::kSentBody);
+
+  // When a `response_head` is not `response_head_`, set the
+  // `service_worker_router_info` manually to pass the correct routing
+  // information. Currently, this is only applicable to when
+  // `race-network-and-fetch` is specified, and when this method is called
+  // from `ServiceWorkerRaceNetworkRequestURLLoaderClient`.
+  if (response_head_.get() != response_head.get() &&
+      response_head_->service_worker_router_info) {
+    response_head->service_worker_router_info =
+        std::move(response_head_->service_worker_router_info);
+  }
+
   url_loader_client_->OnReceiveResponse(response_head.Clone(),
                                         std::move(response_body),
                                         std::move(cached_metadata));
@@ -703,6 +711,17 @@ void ServiceWorkerMainResourceLoader::DidDispatchFetchEvent(
     race_network_request_url_loader_client_
         ->MaybeRecordResponseReceivedToFetchHandlerEndTiming(
             base::TimeTicks::Now(), /*is_fallback=*/is_fallback);
+  }
+
+  // To determine the actual source type  when static routing API is used,
+  // we first set the `actual_source_type` to `kNetwork`, since it is where
+  // we fallback, or when we face an error. We will switch back the
+  // `actual_source_type` when we are confident that the source will be on that
+  // route.
+  if (response_head_->service_worker_router_info &&
+      response_head_->service_worker_router_info->matched_source_type) {
+    response_head_->service_worker_router_info->actual_source_type =
+        network::mojom::ServiceWorkerRouterSourceType::kNetwork;
   }
 
   bool is_race_network_request_aborted = false;
@@ -852,6 +871,8 @@ void ServiceWorkerMainResourceLoader::DidDispatchFetchEvent(
     if (fallback_callback_) {
       ResponseHeadUpdateParams head_update_params;
       head_update_params.load_timing_info = response_head_->load_timing;
+      head_update_params.router_info =
+          std::move(response_head_->service_worker_router_info);
       std::move(fallback_callback_).Run(std::move(head_update_params));
     }
     return;
@@ -866,6 +887,22 @@ void ServiceWorkerMainResourceLoader::DidDispatchFetchEvent(
     // TODO(falken): Use more specific errors. Or just add ERR_SERVICE_WORKER?
     CommitCompleted(net::ERR_FAILED, "Zero response status");
     return;
+  }
+
+  // Determine the actual route type of static routing API when it is used.
+  // If `race-network-and-fetch` was specified, we are setting `kFetchEvent`
+  // since executing this code means that the fetch event won. For other
+  // cases (`kCache`, `kFetchEvent`), the `matched_source_type` will be the
+  // `actual_source_type`.
+  if (auto* route_info = response_head_->service_worker_router_info.get()) {
+    if (route_info->matched_source_type &&
+        *route_info->matched_source_type ==
+            network::mojom::ServiceWorkerRouterSourceType::kRace) {
+      route_info->actual_source_type =
+          network::mojom::ServiceWorkerRouterSourceType::kFetchEvent;
+    } else {
+      route_info->actual_source_type = route_info->matched_source_type;
+    }
   }
 
   StartResponse(std::move(response), std::move(version),
@@ -1014,6 +1051,26 @@ void ServiceWorkerMainResourceLoader::OnBlobReadingComplete(int net_error) {
   body_as_blob_.reset();
 }
 
+void ServiceWorkerMainResourceLoader::SetCommitResponsibility(
+    FetchResponseFrom fetch_response_from) {
+  // Set the actual source type used in Static Routing API when
+  // `race-network-and-fetch` is used. Determine this by checking the
+  // commit responsibility. If it's not the service worker, the network
+  // has won.
+  // This check is conducted here since in the case of `knetwork`, it does
+  // not call `DidDispatchFetchEvent`, where we set the `actual_source_type`
+  // for the other sources, and the `response_head_` is already passed on.
+  if (response_head_ && response_head_->service_worker_router_info &&
+      response_head_->service_worker_router_info->matched_source_type &&
+      *response_head_->service_worker_router_info->matched_source_type ==
+          network::mojom::ServiceWorkerRouterSourceType::kRace &&
+      fetch_response_from == FetchResponseFrom::kWithoutServiceWorker) {
+    response_head_->service_worker_router_info->actual_source_type =
+        network::mojom::ServiceWorkerRouterSourceType::kNetwork;
+  }
+  ServiceWorkerResourceLoader::SetCommitResponsibility(fetch_response_from);
+}
+
 void ServiceWorkerMainResourceLoader::OnConnectionClosed() {
   TRACE_EVENT_WITH_FLOW0(
       "ServiceWorker", "ServiceWorkerMainResourceLoader::OnConnectionClosed",
@@ -1041,21 +1098,51 @@ void ServiceWorkerMainResourceLoader::DeleteIfNeeded() {
     delete this;
 }
 
+network::mojom::ServiceWorkerStatus
+ServiceWorkerMainResourceLoader::ConvertToServiceWorkerStatus(
+    blink::EmbeddedWorkerStatus embedded_status,
+    bool is_warming_up,
+    bool is_warmed_up) {
+  network::mojom::ServiceWorkerStatus status;
+  switch (embedded_status) {
+    case blink::EmbeddedWorkerStatus::kRunning:
+      if (is_warming_up) {
+        status = network::mojom::ServiceWorkerStatus::kWarmingUp;
+      } else if (is_warmed_up) {
+        status = network::mojom::ServiceWorkerStatus::kWarmedUp;
+      } else {
+        status = network::mojom::ServiceWorkerStatus::kRunning;
+      }
+      break;
+    case blink::EmbeddedWorkerStatus::kStarting:
+      status = network::mojom::ServiceWorkerStatus::kStarting;
+      break;
+    case blink::EmbeddedWorkerStatus::kStopping:
+      status = network::mojom::ServiceWorkerStatus::kStopping;
+      break;
+    case blink::EmbeddedWorkerStatus::kStopped:
+      status = network::mojom::ServiceWorkerStatus::kStopped;
+      break;
+  }
+
+  return status;
+}
+
 std::string
 ServiceWorkerMainResourceLoader::GetInitialServiceWorkerStatusString() {
   CHECK(initial_service_worker_status_);
   switch (*initial_service_worker_status_) {
-    case InitialServiceWorkerStatus::kRunning:
+    case network::mojom::ServiceWorkerStatus::kRunning:
       return "RUNNING";
-    case InitialServiceWorkerStatus::kStarting:
+    case network::mojom::ServiceWorkerStatus::kStarting:
       return "STARTING";
-    case InitialServiceWorkerStatus::kStopping:
+    case network::mojom::ServiceWorkerStatus::kStopping:
       return "STOPPING";
-    case InitialServiceWorkerStatus::kStopped:
+    case network::mojom::ServiceWorkerStatus::kStopped:
       return "STOPPED";
-    case InitialServiceWorkerStatus::kWarmingUp:
+    case network::mojom::ServiceWorkerStatus::kWarmingUp:
       return "WARMING_UP";
-    case InitialServiceWorkerStatus::kWarmedUp:
+    case network::mojom::ServiceWorkerStatus::kWarmedUp:
       return "WARMED_UP";
   }
 }
