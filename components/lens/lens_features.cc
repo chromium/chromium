@@ -71,6 +71,8 @@ const base::FeatureParam<bool> kLensOverlaySearchBubble{&kLensOverlay,
                                                         "search-bubble", false};
 const base::FeatureParam<bool> kLensOverlayEnableShimmer{
     &kLensOverlay, "enable-shimmer", true};
+const base::FeatureParam<bool> kLensOverlaySelectionDraggingEnabled{
+    &kLensOverlay, "enable-selection-dragging", false};
 
 constexpr base::FeatureParam<std::string> kLensOverlayEndpointUrl{
     &kLensOverlay, "endpoint-url",
@@ -271,6 +273,10 @@ bool IsLensOverlaySearchBubbleEnabled() {
 
 bool IsLensOverlayShimmerEnabled() {
   return kLensOverlayEnableShimmer.Get();
+}
+
+bool IsLensOverlaySelectionDraggingEnabled() {
+  return kLensOverlaySelectionDraggingEnabled.Get();
 }
 
 }  // namespace lens::features

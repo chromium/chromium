@@ -42,7 +42,6 @@
 
   #selectionCorners {
     background-image: paint(post-selection);
-    cursor: all-scroll;
     height: calc(var(--selection-height) +
                     (2 * var(--post-selection-corner-width)));
     left: calc(var(--selection-left) - var(--post-selection-corner-width));
@@ -50,6 +49,10 @@
     top: calc(var(--selection-top) - var(--post-selection-corner-width));
     width: calc(var(--selection-width) +
                    (2 * var(--post-selection-corner-width)));
+  }
+
+  :host([enable-selection-dragging]) #selectionCorners {
+    cursor: all-scroll;
   }
 
   .draggable {

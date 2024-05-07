@@ -4,6 +4,7 @@
 
 import {assert, assertNotReached} from '//resources/js/assert.js';
 import {EventTracker} from '//resources/js/event_tracker.js';
+import {loadTimeData} from '//resources/js/load_time_data.js';
 import {PolymerElement} from '//resources/polymer/v3_0/polymer/polymer_bundled.min.js';
 
 import {BrowserProxyImpl} from './browser_proxy.js';
@@ -74,6 +75,10 @@ export class PostSelectionRendererElement extends PolymerElement {
       screenshotDataUri: String,
       currentDragTarget: Number,
       cornerIds: Array,
+      enableSelectionDragging: {
+        type: Boolean,
+        reflectToAttribute: true,
+      },
     };
   }
 
@@ -95,6 +100,8 @@ export class PostSelectionRendererElement extends PolymerElement {
   // The original bounds from the start of a drag.
   private originalBounds:
       PostSelectionBoundingBox = {left: 0, top: 0, width: 0, height: 0};
+  private enableSelectionDragging: boolean =
+      loadTimeData.getBoolean('enableSelectionDragging');
 
   override connectedCallback() {
     super.connectedCallback();
@@ -133,8 +140,8 @@ export class PostSelectionRendererElement extends PolymerElement {
     this.currentDragTarget =
         this.dragTargetFromPoint(event.clientX, event.clientY);
 
-    if (this.currentDragTarget !== DragTarget.NONE) {
-      // User is dragging the post selection or resizing.
+    if (this.shouldHandleDownGesture()) {
+      // User is dragging the post selection (if enabled) or resizing.
       this.originalBounds = {
         left: this.left,
         top: this.top,
@@ -296,6 +303,10 @@ export class PostSelectionRendererElement extends PolymerElement {
     this.currentDragTarget = DragTarget.NONE;
   }
 
+  enableSelectionDraggingForTesting() {
+    this.enableSelectionDragging = true;
+  }
+
   private setSelection(region: CenterRotatedBox) {
     const normalizedTop = region.box.y - (region.box.height / 2);
     const normalizedLeft = region.box.x - (region.box.width / 2);
@@ -391,6 +402,14 @@ export class PostSelectionRendererElement extends PolymerElement {
         break;
     }
     return DragTarget.NONE;
+  }
+
+  private shouldHandleDownGesture(): boolean {
+    if (this.enableSelectionDragging) {
+      return this.currentDragTarget !== DragTarget.NONE;
+    }
+    return this.currentDragTarget !== DragTarget.NONE &&
+        this.currentDragTarget !== DragTarget.WHOLE_BOX;
   }
 
   // Converts the current region to a CenterRotatedBox

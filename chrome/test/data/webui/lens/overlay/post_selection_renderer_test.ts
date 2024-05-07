@@ -479,7 +479,29 @@ suite('PostSelectionRenderer', () => {
         expectedLeft, expectedTop, expectedWidth, expectedHeight);
   });
 
+  test('PostSelectionDraggingDisabled', async () => {
+    await triggerPostSelectionRender({
+      top: normalizeY(10),
+      left: normalizeX(10),
+      width: normalizeX(100),
+      height: normalizeY(70),
+    });
+    assertTrue(isVisible(postSelectionRenderer.$.postSelection));
+
+    const dragGesture: GestureEvent = {
+      state: GestureState.DRAGGING,
+      startX: 60,
+      startY: 45,
+      clientX: 60,
+      clientY: 45,
+    };
+
+    assertFalse(postSelectionRenderer.handleDownGesture(dragGesture));
+  });
+
   test('PostSelectionWholeBox', async () => {
+    postSelectionRenderer.enableSelectionDraggingForTesting();
+
     await triggerPostSelectionRender({
       top: normalizeY(10),
       left: normalizeX(10),
@@ -502,6 +524,8 @@ suite('PostSelectionRenderer', () => {
   });
 
   test('PostSelectionOutOfBounds', async () => {
+    postSelectionRenderer.enableSelectionDraggingForTesting();
+
     await triggerPostSelectionRender({
       top: normalizeY(10),
       left: normalizeX(10),
@@ -562,6 +586,8 @@ suite('PostSelectionRenderer', () => {
   });
 
   test('PostSelectionNoMeaningfulDrag', async () => {
+    postSelectionRenderer.enableSelectionDraggingForTesting();
+
     await triggerPostSelectionRender({
       top: normalizeY(10),
       left: normalizeX(10),
