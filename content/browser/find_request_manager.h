@@ -371,13 +371,6 @@ class FindRequestManager {
   // WebContentses.
   std::vector<std::unique_ptr<FrameObserver>> frame_observers_;
 
-  // last_time_typed_ and last_searched_text_ are used to measure how long the
-  // user takes between keystrokes.
-  // TODO(crbug.com/40197893): Remove these when we decide how long the
-  // find-in-page delay should be.
-  base::TimeTicks last_time_typed_;
-  std::u16string last_searched_text_;
-
   base::CancelableOnceClosure delayed_find_task_;
 
   CreateFindInPageClientFunction create_find_in_page_client_for_testing_ =

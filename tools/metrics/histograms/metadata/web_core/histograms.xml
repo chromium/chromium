@@ -65,19 +65,6 @@ chromium-metrics-reviews@google.com.
   </summary>
 </histogram>
 
-<histogram name="WebCore.FindInPage.DurationBetweenKeystrokes" units="ms"
-    expires_after="2024-05-19">
-  <owner>jarhar@chromium.org</owner>
-  <owner>vmpstr@chromium.org</owner>
-  <summary>
-    Records the amount of time between keystrokes the user made while typing a
-    search query into the find-in-page browser dialog. Reported on each Find
-    request that extends the text of the previous request. This will be used in
-    order to determine how long we should make the find-in-page scroll delay:
-    http://crbug.com/1250158
-  </summary>
-</histogram>
-
 <histogram name="WebCore.FindInPage.TaskDuration" units="ms"
     expires_after="2023-05-07">
   <owner>rakina@chromium.org</owner>
