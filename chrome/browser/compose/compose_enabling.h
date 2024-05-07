@@ -31,6 +31,7 @@ enum class ComposeNudgeDenyReason {
   kOptimizationGuideChecks = 3,
   kDOMLevelChecks = 4,
   kPageLevelChecks = 5,
+  kProactiveNudgeDisabledByGlobalPreference = 6,
 };
 
 }  // namespace compose
@@ -69,6 +70,7 @@ class ComposeEnabling {
   base::expected<void, compose::ComposeNudgeDenyReason> ShouldTriggerPopup(
       std::string_view autocomplete_attribute,
       Profile* profile,
+      PrefService* prefs,
       translate::TranslateManager* translate_manager,
       bool ongoing_session,
       const url::Origin& top_level_frame_origin,
@@ -94,6 +96,7 @@ class ComposeEnabling {
   base::expected<void, compose::ComposeNudgeDenyReason>
   ShouldTriggerNoStatePopup(std::string_view autocomplete_attribute,
                             Profile* profile,
+                            PrefService* prefs,
                             translate::TranslateManager* translate_manager,
                             const url::Origin& top_level_frame_origin,
                             const url::Origin& element_frame_origin,

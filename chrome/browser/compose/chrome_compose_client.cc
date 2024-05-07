@@ -84,6 +84,8 @@ ChromeComposeClient::ChromeComposeClient(content::WebContents* web_contents)
   profile_ = Profile::FromBrowserContext(GetWebContents().GetBrowserContext());
   opt_guide_ = OptimizationGuideKeyedServiceFactory::GetForProfile(profile_);
   pref_service_ = profile_->GetPrefs();
+  proactive_nudge_enabled_.Init(prefs::kEnableProactiveNudge, pref_service_);
+
   compose_enabling_ = std::make_unique<ComposeEnabling>(
       translate_language_provider_.get(), profile_,
       IdentityManagerFactory::GetForProfileIfExists(profile_),
@@ -226,7 +228,7 @@ void ChromeComposeClient::CompleteFirstRun() {
 }
 
 void ChromeComposeClient::OpenComposeSettings() {
-  auto* browser = chrome::FindBrowserWithTab(&GetWebContents());
+  Browser* browser = chrome::FindBrowserWithTab(&GetWebContents());
   // `browser` should never be null here. This can only be triggered when there
   // is an active ComposeSession, which  is indirectly owned by the same
   // WebContents that holds the field that the Compose dialog is triggered from.
@@ -497,9 +499,10 @@ bool ChromeComposeClient::ShouldTriggerPopup(
   bool ongoing_session = HasSession(form_field_data.global_id());
 
   auto should_show_nudge = compose_enabling_->ShouldTriggerPopup(
-      form_field_data.autocomplete_attribute, profile_, translate_manager,
-      ongoing_session, top_level_frame->GetLastCommittedOrigin(),
-      form_field_data.origin, url, trigger_source);
+      form_field_data.autocomplete_attribute, profile_, pref_service_,
+      translate_manager, ongoing_session,
+      top_level_frame->GetLastCommittedOrigin(), form_field_data.origin, url,
+      trigger_source);
 
   // Record ukm only if the proactive nudge shows or is disabled by the flag.
   if (!ongoing_session &&
@@ -510,6 +513,10 @@ bool ChromeComposeClient::ShouldTriggerPopup(
   }
 
   return should_show_nudge.has_value();
+}
+
+void ChromeComposeClient::DisableProactiveNudge() {
+  proactive_nudge_enabled_.SetValue(false);
 }
 
 bool ChromeComposeClient::ShouldTriggerContextMenu(

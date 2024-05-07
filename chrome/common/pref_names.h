@@ -1884,6 +1884,11 @@ inline constexpr char kManagedPrivateNetworkAccessRestrictionsEnabled[] =
 // Boolean indicating whether or not the Compose FRE has been completed.
 inline constexpr char kPrefHasCompletedComposeFRE[] =
     "compose_has_completed_fre";
+
+// Boolean that is true when the writing help proactive nudge UI is globally
+// enabled. When false, the UI will never be shown.
+inline constexpr char kEnableProactiveNudge[] =
+    "compose.proactive_nudge_enabled";
 #endif
 
 #if !BUILDFLAG(IS_ANDROID) && !BUILDFLAG(IS_FUCHSIA)

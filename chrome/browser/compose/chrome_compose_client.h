@@ -26,6 +26,7 @@
 #include "components/compose/core/browser/compose_manager_impl.h"
 #include "components/optimization_guide/core/optimization_guide_decision.h"
 #include "components/optimization_guide/core/optimization_guide_model_executor.h"
+#include "components/prefs/pref_member.h"
 #include "content/public/browser/context_menu_params.h"
 #include "content/public/browser/render_frame_host.h"
 #include "content/public/browser/web_contents_observer.h"
@@ -67,6 +68,7 @@ class ChromeComposeClient
       const autofill::FormFieldData& trigger_field,
       autofill::AutofillSuggestionTriggerSource trigger_source) override;
   compose::PageUkmTracker* getPageUkmTracker() override;
+  void DisableProactiveNudge() override;
 
   // autofill::AutofillManager::Observer:
   // Used to observe field focus changes so that the saved state notification
@@ -259,6 +261,8 @@ class ChromeComposeClient
   // suggestion will be shown in a newly focused field.
   autofill::ScopedAutofillManagersObservation autofill_managers_observation_{
       this};
+
+  BooleanPrefMember proactive_nudge_enabled_;
 
   base::WeakPtrFactory<ChromeComposeClient> weak_ptr_factory_{this};
 

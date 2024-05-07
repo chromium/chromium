@@ -56,6 +56,7 @@ class MockComposeClient : public compose::ComposeClient {
                autofill::AutofillSuggestionTriggerSource trigger_source),
               (override));
   MOCK_METHOD(compose::PageUkmTracker*, getPageUkmTracker, (), (override));
+  MOCK_METHOD(void, DisableProactiveNudge, (), (override));
 };
 
 class MockAutofillDriver : public autofill::TestAutofillDriver {
