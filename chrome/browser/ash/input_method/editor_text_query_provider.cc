@@ -11,6 +11,7 @@
 #include "base/notreached.h"
 #include "base/strings/strcat.h"
 #include "base/values.h"
+#include "chrome/browser/ash/input_method/editor_helpers.h"
 #include "chrome/browser/ash/input_method/editor_metrics_recorder.h"
 #include "chrome/browser/manta/manta_service_factory.h"
 #include "chromeos/ash/services/orca/public/mojom/orca_service.mojom.h"
@@ -89,8 +90,12 @@ orca::mojom::TextQueryErrorCode ConvertErrorCode(
 }
 
 orca::mojom::TextQueryErrorPtr ConvertErrorResponse(manta::MantaStatus status) {
-  return orca::mojom::TextQueryError::New(ConvertErrorCode(status.status_code),
-                                          status.message);
+  // In case the system locale mismatches the locale returned in the response,
+  // returns a generic error.
+
+  return orca::mojom::TextQueryError::New(
+      ConvertErrorCode(status.status_code),
+      /*message=*/GetSystemLocale() == status.locale ? status.message : "");
 }
 
 std::vector<orca::mojom::TextQueryResultPtr> ParseSuccessResponse(

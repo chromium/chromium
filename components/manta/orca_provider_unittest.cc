@@ -143,6 +143,8 @@ TEST_F(OrcaProviderTest, ParseMalformedSerializedProto) {
                      base::Value::Dict response, MantaStatus manta_status) {
                    EXPECT_EQ(manta_status.status_code,
                              MantaStatusCode::kMalformedResponse);
+                   EXPECT_EQ(manta_status.message, "");
+                   EXPECT_EQ(manta_status.locale, "");
                    quit_closure.Run();
                  }));
 
@@ -158,6 +160,8 @@ TEST_F(OrcaProviderTest, ParseRpcStatusFromFailedResponse) {
 
   proto::RpcLocalizedMessage localize_message;
   localize_message.set_message("bar");
+  localize_message.set_locale("en");
+
   auto* detail = rpc_status.add_details();
   detail->set_type_url("type.googleapis.com/google.rpc.LocalizedMessage");
   detail->set_value(localize_message.SerializeAsString());
@@ -177,6 +181,7 @@ TEST_F(OrcaProviderTest, ParseRpcStatusFromFailedResponse) {
                    EXPECT_EQ(manta_status.status_code,
                              MantaStatusCode::kInvalidInput);
                    EXPECT_EQ(manta_status.message, "bar");
+                   EXPECT_EQ(manta_status.locale, "en");
                    quit_closure.Run();
                  }));
 
@@ -202,6 +207,7 @@ TEST_F(OrcaProviderTest, ParseRpcStatusFromFailedResponse) {
                    EXPECT_EQ(manta_status.status_code,
                              MantaStatusCode::kRestrictedCountry);
                    EXPECT_EQ(manta_status.message, "bar");
+                   EXPECT_EQ(manta_status.locale, "en");
                    quit_closure.Run();
                  }));
 

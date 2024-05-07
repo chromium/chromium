@@ -5,6 +5,7 @@
 #include <string>
 
 #include "base/containers/fixed_flat_set.h"
+#include "chrome/browser/browser_process.h"
 #include "ui/gfx/range/range.h"
 
 namespace ash::input_method {
@@ -30,6 +31,12 @@ size_t NonWhitespaceAndSymbolsLength(const std::u16string& text,
   }
 
   return end - start;
+}
+
+std::string GetSystemLocale() {
+  return g_browser_process != nullptr
+             ? g_browser_process->GetApplicationLocale()
+             : "";
 }
 
 }  // namespace ash::input_method

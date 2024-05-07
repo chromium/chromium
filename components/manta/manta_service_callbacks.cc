@@ -96,7 +96,7 @@ void OnEndpointFetcherComplete(MantaProtoResponseCallback callback,
 
   base::TimeDelta time_cost = base::Time::Now() - start_time;
 
-  std::string message = std::string();
+  std::string message, locale;
 
   if (!responses) {
     std::move(callback).Run(nullptr,
@@ -148,10 +148,11 @@ void OnEndpointFetcherComplete(MantaProtoResponseCallback callback,
         proto::RpcLocalizedMessage localize_message;
         localize_message.ParseFromString(detail.value());
         message = localize_message.message();
+        locale = localize_message.locale();
       }
     }
 
-    std::move(callback).Run(nullptr, {manta_status_code, message});
+    std::move(callback).Run(nullptr, {manta_status_code, message, locale});
 
     return;
   }

@@ -37,6 +37,8 @@ struct MantaStatus {
   // An optional field for more details. Usually a specific `status_code` makes
   // it unnecessary.
   std::string message;
+  // An optional field for storing the language of `message`.
+  std::string locale;
 };
 
 }  // namespace manta
