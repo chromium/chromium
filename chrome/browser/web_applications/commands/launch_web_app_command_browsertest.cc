@@ -8,7 +8,6 @@
 #include <tuple>
 
 #include "base/command_line.h"
-#include "base/feature_list.h"
 #include "base/files/file_path.h"
 #include "base/run_loop.h"
 #include "base/test/bind.h"
@@ -328,14 +327,6 @@ class LaunchWebAppCommandTest : public WebAppBrowserTestBase {
 };
 
 IN_PROC_BROWSER_TEST_F(LaunchWebAppCommandTest, TabbedLaunchCurrentBrowser) {
-#if BUILDFLAG(IS_CHROMEOS)
-  // When shortstand enabled, we no longer allow web app to be launched in
-  // browser tab. This test is no longer valid. The shortstand behaviour is
-  // tested in LaunchWebAppCommandTest_Shortstand.* below.
-  if (chromeos::features::IsCrosShortstandEnabled()) {
-    GTEST_SKIP();
-  }
-#endif
   apps::AppLaunchParams launch_params = CreateLaunchParams(
       app_id_, apps::LaunchContainer::kLaunchContainerTab,
       WindowOpenDisposition::NEW_FOREGROUND_TAB,
@@ -450,141 +441,6 @@ IN_PROC_BROWSER_TEST_F(LaunchWebAppCommandTest, AppLaunchNoIntegration) {
                   .GetAppCurrentOsIntegrationState(app_id)
                   ->has_shortcut());
 }
-
-#if BUILDFLAG(IS_CHROMEOS)
-class LaunchWebAppCommandTest_Shortstand : public LaunchWebAppCommandTest {
- public:
-  LaunchWebAppCommandTest_Shortstand() {
-#if BUILDFLAG(IS_CHROMEOS_ASH)
-    scoped_feature_list_.InitAndEnableFeature(
-        chromeos::features::kCrosShortstand);
-#elif BUILDFLAG(IS_CHROMEOS_LACROS)
-    crosapi::mojom::BrowserInitParamsPtr init_params =
-        chromeos::BrowserInitParams::GetForTests()->Clone();
-    init_params->is_cros_shortstand_enabled = true;
-    chromeos::BrowserInitParams::SetInitParamsForTests(std::move(init_params));
-#endif  // BUILDFLAG(IS_CHROMEOS_ASH)
-  }
-
-  std::tuple<base::WeakPtr<Browser>,
-             base::WeakPtr<content::WebContents>,
-             apps::LaunchContainer>
-  DoNonCustomLaunch(const webapps::AppId& app_id, const GURL& url) {
-    base::test::TestFuture<base::WeakPtr<Browser>,
-                           base::WeakPtr<content::WebContents>,
-                           apps::LaunchContainer>
-        future;
-    provider().scheduler().LaunchApp(app_id, url, future.GetCallback());
-    return future.Get();
-  }
-
- private:
-  base::test::ScopedFeatureList scoped_feature_list_;
-};
-
-IN_PROC_BROWSER_TEST_F(LaunchWebAppCommandTest_Shortstand,
-                       ShortcutLaunchInTab) {
-  const GURL kShortcutUrl("https://www.shortcut-example.com");
-  webapps::AppId web_shortcut_id =
-      test::InstallShortcut(profile(), "TestShortcut", kShortcutUrl);
-
-  {
-    apps::AppLaunchParams launch_params = CreateLaunchParams(
-        web_shortcut_id, apps::LaunchContainer::kLaunchContainerTab,
-        WindowOpenDisposition::NEW_FOREGROUND_TAB,
-        apps::LaunchSource::kFromCommandLine, {}, std::nullopt, std::nullopt);
-
-    auto [launch_browser, web_contents, launch_container] =
-        DoLaunch(std::move(launch_params));
-
-    EXPECT_FALSE(AppBrowserController::IsWebApp(launch_browser.get()));
-    EXPECT_EQ(launch_browser.get(), browser());
-    EXPECT_EQ(launch_browser->tab_strip_model()->count(), 2);
-    EXPECT_EQ(web_contents->GetVisibleURL(), kShortcutUrl);
-    EXPECT_EQ(launch_container, apps::LaunchContainer::kLaunchContainerTab);
-  }
-
-  // Verify that setting launch params to window still launch in tab.
-  {
-    apps::AppLaunchParams launch_params = CreateLaunchParams(
-        web_shortcut_id, apps::LaunchContainer::kLaunchContainerWindow,
-        WindowOpenDisposition::NEW_FOREGROUND_TAB,
-        apps::LaunchSource::kFromCommandLine, {}, std::nullopt, std::nullopt);
-
-    auto [launch_browser, web_contents, launch_container] =
-        DoLaunch(std::move(launch_params));
-
-    EXPECT_FALSE(AppBrowserController::IsWebApp(launch_browser.get()));
-    EXPECT_EQ(launch_browser.get(), browser());
-    EXPECT_EQ(launch_browser->tab_strip_model()->count(), 3);
-    EXPECT_EQ(web_contents->GetVisibleURL(), kShortcutUrl);
-    EXPECT_EQ(launch_container, apps::LaunchContainer::kLaunchContainerTab);
-  }
-
-  // Verify that launch with non custom params will launch in tab.
-  {
-    auto [launch_browser, web_contents, launch_container] =
-        DoNonCustomLaunch(web_shortcut_id, kShortcutUrl);
-
-    EXPECT_FALSE(AppBrowserController::IsWebApp(launch_browser.get()));
-    EXPECT_EQ(launch_browser.get(), browser());
-    EXPECT_EQ(launch_browser->tab_strip_model()->count(), 4);
-    EXPECT_EQ(web_contents->GetVisibleURL(), kShortcutUrl);
-    EXPECT_EQ(launch_container, apps::LaunchContainer::kLaunchContainerTab);
-  }
-}
-
-IN_PROC_BROWSER_TEST_F(LaunchWebAppCommandTest_Shortstand,
-                       WebAppLaunchInStandaloneWindow) {
-  {
-    apps::AppLaunchParams launch_params = CreateLaunchParams(
-        app_id_, apps::LaunchContainer::kLaunchContainerWindow,
-        WindowOpenDisposition::CURRENT_TAB,
-        apps::LaunchSource::kFromCommandLine, {}, std::nullopt, std::nullopt);
-
-    auto [launch_browser, web_contents, launch_container] =
-        DoLaunch(std::move(launch_params));
-
-    EXPECT_TRUE(AppBrowserController::IsWebApp(launch_browser.get()));
-    EXPECT_NE(launch_browser.get(), browser());
-    EXPECT_EQ(BrowserList::GetInstance()->size(), 2ul);
-    EXPECT_EQ(launch_browser->tab_strip_model()->count(), 1);
-    EXPECT_EQ(web_contents->GetVisibleURL(), kAppStartUrl);
-    EXPECT_EQ(launch_container, apps::LaunchContainer::kLaunchContainerWindow);
-  }
-
-  // Verify that setting launch container to tab will still launch in window.
-  {
-    apps::AppLaunchParams launch_params = CreateLaunchParams(
-        app_id_, apps::LaunchContainer::kLaunchContainerTab,
-        WindowOpenDisposition::NEW_FOREGROUND_TAB,
-        apps::LaunchSource::kFromCommandLine, {}, std::nullopt, std::nullopt);
-
-    auto [launch_browser, web_contents, launch_container] =
-        DoLaunch(std::move(launch_params));
-
-    EXPECT_TRUE(AppBrowserController::IsWebApp(launch_browser.get()));
-    EXPECT_NE(launch_browser.get(), browser());
-    EXPECT_EQ(BrowserList::GetInstance()->size(), 3ul);
-    EXPECT_EQ(launch_browser->tab_strip_model()->count(), 1);
-    EXPECT_EQ(web_contents->GetVisibleURL(), kAppStartUrl);
-    EXPECT_EQ(launch_container, apps::LaunchContainer::kLaunchContainerWindow);
-  }
-
-  // Verify that launch with non custom params will launch in window.
-  {
-    auto [launch_browser, web_contents, launch_container] =
-        DoNonCustomLaunch(app_id_, kAppStartUrl);
-
-    EXPECT_TRUE(AppBrowserController::IsWebApp(launch_browser.get()));
-    EXPECT_NE(launch_browser.get(), browser());
-    EXPECT_EQ(BrowserList::GetInstance()->size(), 4ul);
-    EXPECT_EQ(launch_browser->tab_strip_model()->count(), 1);
-    EXPECT_EQ(web_contents->GetVisibleURL(), kAppStartUrl);
-    EXPECT_EQ(launch_container, apps::LaunchContainer::kLaunchContainerWindow);
-  }
-}
-#endif  // BUILDFLAG(IS_CHROMEOS)
 
 }  // namespace
 

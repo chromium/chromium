@@ -2553,13 +2553,6 @@ IN_PROC_BROWSER_TEST_F(WebAppBrowserTest_PageInfoManagementLink,
 }
 
 IN_PROC_BROWSER_TEST_F(WebAppBrowserTest_PageInfoManagementLink, LaunchAsTab) {
-#if BUILDFLAG(IS_CHROMEOS)
-  if (chromeos::features::IsCrosShortstandEnabled()) {
-    GTEST_SKIP()
-        << "Cannot launch web apps in a tab when Shortstand is enabled.";
-  }
-#endif
-
   const GURL app_url = GetSecureAppURL();
   const webapps::AppId app_id = InstallPWA(app_url);
 
