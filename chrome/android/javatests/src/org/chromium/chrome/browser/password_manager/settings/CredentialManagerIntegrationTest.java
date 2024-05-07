@@ -43,6 +43,7 @@ import org.chromium.chrome.browser.settings.SettingsActivityTestRule;
 import org.chromium.chrome.browser.sync.SyncTestRule;
 import org.chromium.chrome.test.ChromeJUnit4ClassRunner;
 import org.chromium.chrome.test.R;
+import org.chromium.components.signin.identitymanager.ConsentLevel;
 import org.chromium.ui.test.util.DeviceRestriction;
 import org.chromium.ui.test.util.GmsCoreVersionRestriction;
 
@@ -107,11 +108,34 @@ public class CredentialManagerIntegrationTest {
         DeviceRestriction.RESTRICTION_TYPE_NON_AUTO,
         GmsCoreVersionRestriction.RESTRICTION_TYPE_VERSION_GE_22W30
     })
-    public void testUseCredentialManagerFromSafetyCheck() {
+    public void testUseCredentialManagerFromSafetyCheckForLocal() {
         mSettingsActivityTestRule.startSettingsActivity();
         scrollToSetting(withText(R.string.prefs_safety_check));
         onView(withText(R.string.prefs_safety_check)).perform(click());
         onViewWaiting(withText(R.string.safety_check_passwords_local_title)).perform(click());
+
+        // Verify that success callback was called.
+        assertNotNull(mSuccessCallbackHelper.getOnlyPayloadBlocking());
+        // Verify that failure callback was not called.
+        assertEquals(0, mFailureCallbackHelper.getCallCount());
+    }
+
+    @Test
+    @LargeTest
+    @Restriction({
+        DeviceRestriction.RESTRICTION_TYPE_NON_AUTO,
+        GmsCoreVersionRestriction.RESTRICTION_TYPE_VERSION_GE_22W30
+    })
+    public void testUseCredentialManagerFromSafetyCheckForAccount() {
+        mSettingsActivityTestRule.startSettingsActivity();
+        scrollToSetting(withText(R.string.prefs_safety_check));
+        onView(withText(R.string.prefs_safety_check)).perform(click());
+        String testAccount = mSyncTestRule.getPrimaryAccount(ConsentLevel.SYNC).getEmail();
+        String checkForAccountText =
+                ApplicationProvider.getApplicationContext()
+                        .getString(R.string.safety_check_passwords_account_title)
+                        .replace("%1$s", testAccount);
+        onViewWaiting(withText(checkForAccountText)).perform(click());
 
         // Verify that success callback was called.
         assertNotNull(mSuccessCallbackHelper.getOnlyPayloadBlocking());
