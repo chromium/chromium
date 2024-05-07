@@ -36,6 +36,9 @@ void LayoutRubyAsBlock::AddChild(LayoutObject* child,
             StyleRef(), EDisplay::kRuby);
     inline_ruby->SetStyle(new_style_builder.TakeStyle());
     LayoutNGBlockFlow::AddChild(inline_ruby);
+  } else if (before_child == inline_ruby) {
+    inline_ruby->AddChild(child, inline_ruby->SlowFirstChild());
+    return;
   }
   inline_ruby->AddChild(child, before_child);
 }
