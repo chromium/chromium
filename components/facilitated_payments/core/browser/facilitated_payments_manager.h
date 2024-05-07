@@ -16,7 +16,7 @@
 #include "base/timer/timer.h"
 #include "base/types/expected.h"
 #include "components/facilitated_payments/core/browser/facilitated_payments_driver.h"
-#include "components/facilitated_payments/core/browser/payments/facilitated_payments_initiate_payment_request_details.h"
+#include "components/facilitated_payments/core/browser/network_api/facilitated_payments_initiate_payment_request_details.h"
 #include "components/facilitated_payments/core/mojom/facilitated_payments_agent.mojom.h"
 #include "components/optimization_guide/core/optimization_guide_decider.h"
 #include "services/data_decoder/public/cpp/data_decoder.h"

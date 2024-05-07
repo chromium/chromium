@@ -2,7 +2,7 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#include "components/facilitated_payments/core/browser/payments/facilitated_payments_initiate_payment_request_details.h"
+#include "components/facilitated_payments/core/browser/network_api/facilitated_payments_initiate_payment_request_details.h"
 
 namespace payments::facilitated {
 

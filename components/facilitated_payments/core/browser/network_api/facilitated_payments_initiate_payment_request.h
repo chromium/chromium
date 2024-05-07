@@ -2,15 +2,15 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#ifndef COMPONENTS_FACILITATED_PAYMENTS_CORE_BROWSER_PAYMENTS_FACILITATED_PAYMENTS_INITIATE_PAYMENT_REQUEST_H_
-#define COMPONENTS_FACILITATED_PAYMENTS_CORE_BROWSER_PAYMENTS_FACILITATED_PAYMENTS_INITIATE_PAYMENT_REQUEST_H_
+#ifndef COMPONENTS_FACILITATED_PAYMENTS_CORE_BROWSER_NETWORK_API_FACILITATED_PAYMENTS_INITIATE_PAYMENT_REQUEST_H_
+#define COMPONENTS_FACILITATED_PAYMENTS_CORE_BROWSER_NETWORK_API_FACILITATED_PAYMENTS_INITIATE_PAYMENT_REQUEST_H_
 
 #include <memory>
 
 #include "components/autofill/core/browser/payments/payments_requests/payments_request.h"
-#include "components/facilitated_payments/core/browser/payments/facilitated_payments_initiate_payment_request_details.h"
-#include "components/facilitated_payments/core/browser/payments/facilitated_payments_initiate_payment_response_details.h"
-#include "components/facilitated_payments/core/browser/payments/facilitated_payments_network_interface.h"
+#include "components/facilitated_payments/core/browser/network_api/facilitated_payments_initiate_payment_request_details.h"
+#include "components/facilitated_payments/core/browser/network_api/facilitated_payments_initiate_payment_response_details.h"
+#include "components/facilitated_payments/core/browser/network_api/facilitated_payments_network_interface.h"
 
 namespace payments::facilitated {
 
@@ -52,4 +52,4 @@ class FacilitatedPaymentsInitiatePaymentRequest
 
 }  // namespace payments::facilitated
 
-#endif  // COMPONENTS_FACILITATED_PAYMENTS_CORE_BROWSER_PAYMENTS_FACILITATED_PAYMENTS_INITIATE_PAYMENT_REQUEST_H_
+#endif  // COMPONENTS_FACILITATED_PAYMENTS_CORE_BROWSER_NETWORK_API_FACILITATED_PAYMENTS_INITIATE_PAYMENT_REQUEST_H_
