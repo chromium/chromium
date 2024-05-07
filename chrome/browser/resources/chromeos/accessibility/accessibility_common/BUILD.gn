@@ -96,6 +96,7 @@ ts_definitions = [
   "../definitions/windows.d.ts",
   "//tools/typescript/definitions/chrome_event.d.ts",
   "//tools/typescript/definitions/i18n.d.ts",
+  "//tools/typescript/definitions/pending.d.ts",
 ]
 
 ts_library("ts_build") {

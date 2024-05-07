@@ -16,6 +16,7 @@ export class WebCamFaceLandmarker {
   private faceLandmarker_: FaceLandmarker|null = null;
   declare private intervalID_: number|null;
   private drawingUtils_: DrawingUtils|undefined;
+  private weights_: Map<string, number> = new Map();
   constructor() {
     this.intervalID_ = null;
   }
@@ -25,9 +26,64 @@ export class WebCamFaceLandmarker {
    * detecting face landmarks.
    */
   async init(): Promise<void> {
+    this.addListenersToWeights_();
     await this.createFaceLandmarker_();
     await this.connectToWebCam_();
     this.startDetectingFaceLandmarks_();
+  }
+
+  /**
+   * This is a placeholder UI that allows devs and dogfooders to adjust what
+   * type of facial tracking works best for them.
+   */
+  private addListenersToWeights_(): void {
+    const listener = (): void => {
+      let forehead =
+          (document.getElementById('foreheadWeight') as HTMLInputElement)
+              .valueAsNumber;
+      let foreheadTop =
+          (document.getElementById('foreheadTopWeight') as HTMLInputElement)
+              .valueAsNumber;
+      let noseTip =
+          (document.getElementById('noseTipWeight') as HTMLInputElement)
+              .valueAsNumber;
+      let leftTemple =
+          (document.getElementById('leftTempleWeight') as HTMLInputElement)
+              .valueAsNumber;
+      let rightTemple =
+          (document.getElementById('rightTempleWeight') as HTMLInputElement)
+              .valueAsNumber;
+      let rotation =
+          (document.getElementById('rotationWeight') as HTMLInputElement)
+              .valueAsNumber;
+      const sum = forehead + foreheadTop + noseTip + leftTemple + rightTemple +
+          rotation;
+      forehead /= sum;
+      foreheadTop /= sum;
+      noseTip /= sum;
+      leftTemple /= sum;
+      rightTemple /= sum;
+      rotation /= sum;
+      const weights =
+          {forehead, foreheadTop, noseTip, leftTemple, rightTemple, rotation};
+      this.weights_ = new Map(Object.entries(weights));
+      chrome.runtime.sendMessage(
+          undefined, {type: 'updateLandmarkWeights', weights});
+    };
+    document.getElementById('foreheadWeight')!.addEventListener(
+        'input', listener);
+    document.getElementById('foreheadTopWeight')!.addEventListener(
+        'input', listener);
+    document.getElementById('noseTipWeight')!.addEventListener(
+        'input', listener);
+    document.getElementById('leftTempleWeight')!.addEventListener(
+        'input', listener);
+    document.getElementById('rightTempleWeight')!.addEventListener(
+        'input', listener);
+    document.getElementById('rotationWeight')!.addEventListener(
+        'input', listener);
+    // Execute the listener once.
+    listener();
   }
 
   private async createFaceLandmarker_(): Promise<void> {
@@ -98,8 +154,11 @@ export class WebCamFaceLandmarker {
   }
 
   private displayFaceLandmarkerResult_(result: FaceLandmarkerResult): void {
-    if (!result || !result.faceLandmarks || !result.faceLandmarks[0] ||
-        !result.faceLandmarks[0][MouseController.FOREHEAD_LANDMARK_INDEX]) {
+    if (!result || !result.faceLandmarks || !result.faceLandmarks[0]) {
+      return;
+    }
+    if (!result.facialTransformationMatrixes ||
+        result.facialTransformationMatrixes.length === 0) {
       return;
     }
     const overlay = document.getElementById('overlay') as HTMLCanvasElement;
@@ -119,20 +178,41 @@ export class WebCamFaceLandmarker {
           {color: '#F5005760', lineWidth: 2});
     }
 
-    // Center point.
-    ctx.beginPath();
-    ctx.arc(overlay.width / 2, overlay.height / 2, 2, 0, 2 * Math.PI);
-    ctx.strokeStyle = '#3D5AFE';
-    ctx.stroke();
+    // Draw landmarks.
+    let avgX = 0;
+    let avgY = 0;
+    const landmarks = MouseController.LANDMARK_INDICES;
+    for (const landmark of landmarks) {
+      let landmarkLocation;
+      if (landmark.name === 'rotation') {
+        landmarkLocation =
+            MouseController.calculateRotationFromFacialTransformationMatrix(
+                result.facialTransformationMatrixes[0]);
+        ctx.strokeStyle = '#FF9500';
+      } else {
+        landmarkLocation = result.faceLandmarks[0][landmark.index];
+        ctx.strokeStyle = '#FFEA00';
+      }
+      if (!landmarkLocation) {
+        return;
+      }
+      const x = landmarkLocation.x;
+      const y = landmarkLocation.y;
+      let weight = this.weights_.get(landmark.name);
+      if (!weight) {
+        weight = 0;
+      }
+      avgX += (x * weight);
+      avgY += (y * weight);
+      ctx.beginPath();
+      ctx.arc(x * overlay.width, y * overlay.height, 2, 0, 2 * Math.PI);
+      ctx.stroke();
+    }
 
-    // Forehead point.
-    const foreheadLocation =
-        result.faceLandmarks[0][MouseController.FOREHEAD_LANDMARK_INDEX];
-    const x = foreheadLocation.x;
-    const y = foreheadLocation.y;
+    // Draw averaged position.
     ctx.beginPath();
-    ctx.arc(x * overlay.width, y * overlay.height, 2, 0, 2 * Math.PI);
-    ctx.strokeStyle = '#FFEA00';
+    ctx.arc(avgX * overlay.width, avgY * overlay.height, 2, 0, 2 * Math.PI);
+    ctx.strokeStyle = '#00FF95';
     ctx.stroke();
   }
 }

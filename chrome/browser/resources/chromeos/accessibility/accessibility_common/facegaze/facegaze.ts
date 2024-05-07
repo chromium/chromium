@@ -57,6 +57,9 @@ export class FaceGaze {
           this.processFaceLandmarkerResult_(message.result);
         } else if (message.type === 'cameraStreamReadyForTesting') {
           this.cameraStreamReadyResolver_!();
+        } else if (message.type === 'updateLandmarkWeights') {
+          this.mouseController_.updateLandmarkWeights(
+              new Map(Object.entries(message.weights)));
         }
 
         return false;

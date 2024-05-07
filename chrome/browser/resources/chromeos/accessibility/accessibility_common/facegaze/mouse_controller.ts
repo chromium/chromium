@@ -54,6 +54,7 @@ export class MouseController {
 
   private mouseInterval_: number = -1;
   private lastMouseMovedTime_: number = 0;
+  private landmarkWeights_: Map<string, number>;
 
   constructor() {
     this.onMouseMovedHandler_ = new EventHandler(
@@ -65,6 +66,10 @@ export class MouseController {
         event => this.onMouseMovedOrDragged_(event));
 
     this.calcSmoothKernel_();
+    this.landmarkWeights_ = new Map();
+    // TODO(b:309121742): This should be a fixed list of weights depending on
+    // what works best from experimentation.
+    this.landmarkWeights_.set('forehead', 1);
 
     this.prefsListener_ = prefs => this.updateFromPrefs_(prefs);
   }
@@ -105,6 +110,10 @@ export class MouseController {
         () => this.updateMouseLocation_(), MouseController.MOUSE_INTERVAL_MS);
   }
 
+  updateLandmarkWeights(weights: Map<string, number>): void {
+    this.landmarkWeights_ = weights;
+  }
+
   /**
    * Update the current location of the tracked face landmark.
    */
@@ -112,25 +121,52 @@ export class MouseController {
     if (!this.screenBounds_) {
       return;
     }
-    if (!result.faceLandmarks || !result.faceLandmarks[0] ||
-        !result.faceLandmarks[0][MouseController.FOREHEAD_LANDMARK_INDEX]) {
+    if (!result.faceLandmarks || !result.faceLandmarks[0]) {
       return;
     }
 
     // These scale from 0 to 1.
-    const foreheadLocation =
-        result.faceLandmarks[0][MouseController.FOREHEAD_LANDMARK_INDEX];
+    const avgLandmarkLocation = {x: 0, y: 0};
+    let hasLandmarks = false;
+    for (const landmark of MouseController.LANDMARK_INDICES) {
+      let landmarkLocation;
+      if (landmark.name === 'rotation' && result.facialTransformationMatrixes &&
+          result.facialTransformationMatrixes.length) {
+        landmarkLocation =
+            MouseController.calculateRotationFromFacialTransformationMatrix(
+                result.facialTransformationMatrixes[0]);
+      } else if (result.faceLandmarks[0][landmark.index] !== undefined) {
+        landmarkLocation = result.faceLandmarks[0][landmark.index];
+      }
+      if (!landmarkLocation) {
+        continue;
+      }
+      const x = landmarkLocation.x;
+      const y = landmarkLocation.y;
+      let weight = this.landmarkWeights_.get(landmark.name);
+      if (!weight) {
+        weight = 0;
+      }
+      avgLandmarkLocation.x += (x * weight);
+      avgLandmarkLocation.y += (y * weight);
+      hasLandmarks = true;
+    }
+
+    if (!hasLandmarks) {
+      return;
+    }
 
     // Calculate the absolute position on the screen, where the top left
     // corner represents (0,0) and the bottom right corner represents
     // (this.screenBounds_.width, this.screenBounds_.height).
     // TODO(b/309121742): Handle multiple displays.
     const absoluteY = Math.round(
-        foreheadLocation.y * this.screenBounds_.height +
+        avgLandmarkLocation.y * this.screenBounds_.height +
         this.screenBounds_.top);
     // Reflect the x coordinate since the webcam doesn't mirror in the
     // horizontal direction.
-    const scaledX = Math.round(foreheadLocation.x * this.screenBounds_.width);
+    const scaledX =
+        Math.round(avgLandmarkLocation.x * this.screenBounds_.width);
     const absoluteX =
         this.screenBounds_.width - scaledX + this.screenBounds_.left;
 
@@ -367,8 +403,21 @@ export class MouseController {
 }
 
 export namespace MouseController {
-  /** The index of the forehead landmark in a FaceLandmarkerResult. */
-  export const FOREHEAD_LANDMARK_INDEX = 8;
+  /**
+   * The indices of the tracked landmarks in a FaceLandmarkerResult.
+   * See all landmarks at
+   * https://storage.googleapis.com/mediapipe-assets/documentation/mediapipe_face_landmark_fullsize.png.
+   */
+  export const LANDMARK_INDICES = [
+    {name: 'forehead', index: 8},
+    {name: 'foreheadTop', index: 10},
+    {name: 'noseTip', index: 4},
+    {name: 'rightTemple', index: 127},
+    {name: 'leftTemple', index: 356},
+    // Rotation does not have a landmark index, but is included in this list
+    // because it can be used as a landmark.
+    {name: 'rotation', index: -1},
+  ];
 
   /** How frequently to run the mouse movement logic. */
   export const MOUSE_INTERVAL_MS = 16;
@@ -393,6 +442,64 @@ export namespace MouseController {
   export const DEFAULT_MOUSE_SPEED = 20;
   export const DEFAULT_USE_MOUSE_ACCELERATION = true;
   export const DEFAULT_BUFFER_SIZE = 6;
+
+  export function calculateRotationFromFacialTransformationMatrix(
+      facialTransformationMatrix: Matrix): {x: number, y: number}|undefined {
+    const mat = facialTransformationMatrix.data;
+    const m11 = mat[0];
+    const m12 = mat[1];
+    const m13 = mat[2];
+    const m21 = mat[4];
+    const m22 = mat[5];
+    const m23 = mat[6];
+    const m31 = mat[8];
+    const m32 = mat[9];
+    const m33 = mat[10];
+
+    if (m31 === 1) {
+      // cos(theta) is 0, so theta is pi/2 or -pi/2.
+      // This seems like the head would have to be pretty rotated so we can
+      // probably safely ignore it for now.
+      console.log('cannot process matrix with m[3][1] == 1 yet.');
+      return;
+    }
+
+    // First compute scaling and rotation from the facial transformation matrix.
+    // Taken from glmatrix, https://glmatrix.net/docs/mat4.js.html.
+    const scaling = [
+      Math.hypot(m11, m12, m13),
+      Math.hypot(m21, m22, m23),
+      Math.hypot(m31, m32, m33),
+    ];
+    // Translation is unused but could be used in the future. Leaving it here
+    // so we don't have to re-compute the math later.
+    // const translation = [mat[12], mat[13], mat[14]];
+
+    // Scale the m values to create sm values; used for x and y axis rotation
+    // computation. On Brya, scaling is basically all 1s, so we could ignore it.
+    // TODO(b:309121742): Determine if we can remove scaling from computation,
+    // and use the matrix values directly.
+    const sm31 = m31 / scaling[0];
+    const sm32 = m32 / scaling[1];
+    const sm33 = m33 / scaling[2];
+
+    // Convert rotation matrix to Euler angles. Refer to math in
+    // https://eecs.qmul.ac.uk/~gslabaugh/publications/euler.pdf.
+    // This has units in radians.
+    const xRotation = -1 * Math.asin(sm31);
+    const yRotation =
+        Math.atan2(sm32 / Math.cos(xRotation), sm33 / Math.cos(xRotation));
+
+    // z-axis rotation is head tilt, and not used at the moment. Later, it could
+    // be used during calibration. Leaving it here so we don't need to
+    // re-compute the math later. const sm11 = m11 * is1; const sm21 = m21 *
+    // is1; const zRotation =
+    // Math.atan2(sm21 / Math.cos(xRotation), sm11 / Math.cos(xRotation));
+
+    const x = 0.5 - xRotation / (Math.PI * 2);
+    const y = 0.5 - yRotation / (Math.PI * 2);
+    return {x, y};
+  }
 }
 
 TestImportManager.exportForTesting(MouseController);
