@@ -106,6 +106,7 @@ constexpr char kOpCastTypeName[] = "cast";
 constexpr char kOpClipTypeName[] = "clip";
 constexpr char kOpConcatTypeName[] = "concat";
 constexpr char kOpConv2dTypeName[] = "conv";
+constexpr char kOpConvTranspose2dTypeName[] = "conv_transpose";
 constexpr char kOpEluTypeName[] = "elu";
 constexpr char kOpGatherTypeName[] = "gather_along_axis";
 constexpr char kOpHardSigmoidTypeName[] = "sigmoid_hard";
@@ -1201,11 +1202,6 @@ base::expected<void, mojom::ErrorPtr> GraphBuilder::AddOperationForConv2d(
 
   CHECK(kFloatDataTypes.contains(input_operand.mil_data_type));
 
-  if (operation.kind != mojom::Conv2d::Kind::kDirect) {
-    // TODO: support transposed conv2d.
-    return NewNotSupportedError("Unsupported conv2d kind.");
-  }
-
   if (operation.input_layout != mojom::InputOperandLayout::kChannelsFirst) {
     // TODO: support channels last by adding transposes.
     return NewNotSupportedError("Unsupported input layout.");
@@ -1219,12 +1215,18 @@ base::expected<void, mojom::ErrorPtr> GraphBuilder::AddOperationForConv2d(
   static constexpr char kParamDilations[] = "dilations";
   static constexpr char kParamGroups[] = "groups";
   static constexpr char kParamBias[] = "bias";
+  static constexpr char kParamOutputShape[] = "output_shape";
 
   CoreML::Specification::MILSpec::Operation* op = block.add_operations();
-  op->set_type(kOpConv2dTypeName);
-  google::protobuf::Map<std::string,
-                        ::CoreML::Specification::MILSpec::Argument>& inputs =
-      (*op->mutable_inputs());
+  switch (operation.kind) {
+    case mojom::Conv2d::Kind::kDirect:
+      op->set_type(kOpConv2dTypeName);
+      break;
+    case mojom::Conv2d::Kind::kTransposed:
+      op->set_type(kOpConvTranspose2dTypeName);
+      break;
+  }
+
   SetInputWithName(*op->mutable_inputs(), kOpParamX, input_operand.coreml_name);
   SetInputWithName(*op->mutable_inputs(), kParamWeight,
                    GetOperandInfo(operation.filter_operand_id).coreml_name);
@@ -1252,8 +1254,19 @@ base::expected<void, mojom::ErrorPtr> GraphBuilder::AddOperationForConv2d(
   if (operation.bias_operand_id) {
     // TODO(crbug.com/338529226): This param must be a constant tensor.
     SetInputWithName(
-        inputs, kParamBias,
+        *op->mutable_inputs(), kParamBias,
         GetOperandInfo(operation.bias_operand_id.value()).coreml_name);
+  }
+
+  if (operation.kind == mojom::Conv2d::Kind::kTransposed) {
+    // Get the output shape from the output operand.
+    std::vector<int32_t> output_shape;
+    base::ranges::transform(
+        GetOperandInfo(operation.output_operand_id).dimensions,
+        std::back_inserter(output_shape),
+        [](uint32_t val) { return base::checked_cast<int32_t>(val); });
+    SetInputWithValue(*op->mutable_inputs(), kParamOutputShape,
+                      Create1DTensorImmediateValue<int32_t>(output_shape));
   }
 
   if (!operation.activation.is_null()) {
