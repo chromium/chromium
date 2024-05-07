@@ -326,6 +326,40 @@ public class ReadAloudControllerUnitTest {
     }
 
     @Test
+    public void testOnLoadStarted_differentDocument() {
+        // start a successful playback
+        mController.playTab(mTab, ReadAloudController.Entrypoint.MAGIC_TOOLBAR);
+        resolvePromises();
+        verify(mPlaybackHooks).createPlayback(Mockito.any(), mPlaybackCallbackCaptor.capture());
+        onPlaybackSuccess(mPlayback);
+        resolvePromises();
+
+        // Load new url
+        when(mTab.getUrl()).thenReturn(new GURL("https://en.wikipedia.org/wiki/Alphabet_Inc."));
+        mController.getTabModelTabObserverforTests().onLoadStarted(mTab, true);
+
+        verify(mHighlighter).handleTabReloaded(eq(mTab));
+        verify(mPlayerCoordinator).dismissPlayers();
+    }
+
+    @Test
+    public void testOnLoadStarted_sameDocument() {
+        // start a successful playback
+        mController.playTab(mTab, ReadAloudController.Entrypoint.MAGIC_TOOLBAR);
+        resolvePromises();
+        verify(mPlaybackHooks).createPlayback(Mockito.any(), mPlaybackCallbackCaptor.capture());
+        onPlaybackSuccess(mPlayback);
+        resolvePromises();
+
+        // Load the same document
+        mController.getTabModelTabObserverforTests().onLoadStarted(mTab, false);
+
+        // nothing should happen
+        verify(mHighlighter, never()).handleTabReloaded(eq(mTab));
+        verify(mPlayerCoordinator, never()).dismissPlayers();
+    }
+
+    @Test
     public void testReloadingPage() {
         // Reload tab before any playback starts - tests null checks
         mController.getTabModelTabObserverforTests().onPageLoadStarted(mTab, mTab.getUrl());
@@ -344,11 +378,11 @@ public class ReadAloudControllerUnitTest {
         verify(mPlayerCoordinator, never()).dismissPlayers();
         verify(mPlayback, never()).release();
 
-        // now reload the playing tab
+        // now reload the playing tab, playback should still keep going
         mController.getTabModelTabObserverforTests().onUrlUpdated(mTab);
 
-        verify(mPlayerCoordinator).dismissPlayers();
-        verify(mPlayback).release();
+        verify(mPlayerCoordinator, never()).dismissPlayers();
+        verify(mPlayback, never()).release();
     }
 
     @Test
@@ -459,23 +493,6 @@ public class ReadAloudControllerUnitTest {
         // Mini player finishes showing, done restoring player
         mController.onMiniPlayerShown();
         assertFalse(mController.isRestoringPlayer());
-    }
-
-    @Test
-    public void testReloadPage_errorUiDismissed() {
-        // start a playback with an error
-        mController.playTab(mTab, ReadAloudController.Entrypoint.MAGIC_TOOLBAR);
-        resolvePromises();
-        verify(mPlaybackHooks, times(1))
-                .createPlayback(Mockito.any(), mPlaybackCallbackCaptor.capture());
-        mPlaybackCallbackCaptor.getValue().onFailure(new Exception("Very bad error"));
-        resolvePromises();
-
-        // Reload this url
-        mController.getTabModelTabObserverforTests().onUrlUpdated(mTab);
-
-        // No playback but error UI should get dismissed
-        verify(mPlayerCoordinator).dismissPlayers();
     }
 
     @Test
@@ -1058,23 +1075,6 @@ public class ReadAloudControllerUnitTest {
         mController.onPhraseChanged(mPhraseTiming);
         verify(mHighlighter, times(1))
                 .highlightText(eq(mGlobalRenderFrameHostId), eq(mTab), eq(mPhraseTiming));
-    }
-
-    @Test
-    public void testReloadingTab_highlightsCleared() {
-        // set up the highlighter
-        mController.setTimepointsSupportedForTest(mTab.getUrl().getSpec(), true);
-        mController.playTab(mTab, ReadAloudController.Entrypoint.MAGIC_TOOLBAR);
-        resolvePromises();
-        verify(mPlaybackHooks, times(1))
-                .createPlayback(Mockito.any(), mPlaybackCallbackCaptor.capture());
-        onPlaybackSuccess(mPlayback);
-        verify(mHighlighter).initializeJs(eq(mTab), eq(mMetadata), any(Highlighter.Config.class));
-
-        // Reload this url
-        mController.getTabModelTabObserverforTests().onUrlUpdated(mTab);
-
-        verify(mHighlighter).handleTabReloaded(eq(mTab));
     }
 
     @Test
