@@ -8,7 +8,6 @@
 #include "chrome/browser/ui/find_bar/find_bar.h"
 #include "chrome/browser/ui/find_bar/find_bar_controller.h"
 #include "chrome/grit/generated_resources.h"
-#include "components/omnibox/browser/omnibox_field_trial.h"
 #include "components/omnibox/browser/vector_icons.h"
 #include "ui/base/l10n/l10n_util.h"
 #include "ui/base/metadata/metadata_impl_macros.h"
@@ -56,9 +55,7 @@ views::BubbleDialogDelegate* FindBarIcon::GetBubble() const {
 }
 
 const gfx::VectorIcon& FindBarIcon::GetVectorIcon() const {
-  return OmniboxFieldTrial::IsChromeRefreshIconsEnabled()
-             ? omnibox::kFindInPageChromeRefreshIcon
-             : omnibox::kFindInPageIcon;
+  return omnibox::kFindInPageChromeRefreshIcon;
 }
 
 void FindBarIcon::UpdateImpl() {

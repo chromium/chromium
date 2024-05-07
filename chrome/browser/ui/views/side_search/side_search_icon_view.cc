@@ -21,7 +21,6 @@
 #include "components/feature_engagement/public/event_constants.h"
 #include "components/feature_engagement/public/feature_constants.h"
 #include "components/feature_engagement/public/tracker.h"
-#include "components/omnibox/browser/omnibox_field_trial.h"
 #include "components/vector_icons/vector_icons.h"
 #include "ui/base/l10n/l10n_util.h"
 #include "ui/base/metadata/metadata_impl_macros.h"
@@ -149,9 +148,7 @@ views::BubbleDialogDelegate* SideSearchIconView::GetBubble() const {
 
 const gfx::VectorIcon& SideSearchIconView::GetVectorIcon() const {
   // Default to the kSearchIcon if the DSE icon image is not available.
-  return OmniboxFieldTrial::IsChromeRefreshIconsEnabled()
-             ? vector_icons::kSearchChromeRefreshIcon
-             : vector_icons::kSearchIcon;
+  return vector_icons::kSearchChromeRefreshIcon;
 }
 
 ui::ImageModel SideSearchIconView::GetSizedIconImage(int size) const {

@@ -248,10 +248,7 @@ OmniboxMatchCellView::~OmniboxMatchCellView() = default;
 
 // static
 int OmniboxMatchCellView::GetTextIndent() {
-  return ui::TouchUiController::Get()->touch_ui() ||
-                 OmniboxFieldTrial::IsCr23LayoutEnabled()
-             ? 52
-             : 47;
+  return 52;
 }
 
 // static
@@ -458,18 +455,7 @@ void OmniboxMatchCellView::SetImage(const gfx::ImageSkia& image,
 }
 
 gfx::Insets OmniboxMatchCellView::GetInsets() const {
-  int vertical_margin = 0;
-  if (OmniboxFieldTrial::IsChromeRefreshSuggestHoverFillShapeEnabled()) {
-    vertical_margin = 0;
-  } else if (OmniboxFieldTrial::IsUniformRowHeightEnabled()) {
-    vertical_margin = OmniboxFieldTrial::kRichSuggestionVerticalMargin.Get();
-  } else if (layout_style_ == LayoutStyle::ONE_LINE_SUGGESTION) {
-    vertical_margin = ChromeLayoutProvider::Get()->GetDistanceMetric(
-        DISTANCE_OMNIBOX_CELL_VERTICAL_PADDING);
-  } else {
-    vertical_margin = ChromeLayoutProvider::Get()->GetDistanceMetric(
-        DISTANCE_OMNIBOX_TWO_LINE_CELL_VERTICAL_PADDING);
-  }
+  const int vertical_margin = 0;
   const int right_margin = 7;
   return gfx::Insets::TLBR(vertical_margin, OmniboxMatchCellView::kMarginLeft,
                            vertical_margin, right_margin);
@@ -496,10 +482,7 @@ void OmniboxMatchCellView::Layout(PassKey) {
   // This applies to both touch-UI and non-touch-UI.
   // TODO(manukh): Once we have a clearer picture of what will launch, this can
   //   be simplified.
-  const int image_x =
-      OmniboxFieldTrial::IsCr23LayoutEnabled()
-          ? 16 + GetEntityImageSize() / 2 - kImageBoundsWidth / 2
-          : x;
+  const int image_x = 16 + GetEntityImageSize() / 2 - kImageBoundsWidth / 2;
   views::ImageView* const image_view =
       has_image_ ? answer_image_view_.get() : icon_view_.get();
   image_view->SetBounds(image_x, y, kImageBoundsWidth, row_height);

@@ -110,17 +110,11 @@ class OmniboxResultSelectionIndicator : public views::View {
   METADATA_HEADER(OmniboxResultSelectionIndicator, views::View)
 
  public:
-  const bool cr2023_expanded_state_colors_enabled =
-      omnibox::IsOmniboxCr23CustomizeGuardedFeatureEnabled(
-          omnibox::kExpandedStateColors);
-  const int kStrokeThickness = cr2023_expanded_state_colors_enabled ? 4 : 3;
+  const int kStrokeThickness = 4;
 
   explicit OmniboxResultSelectionIndicator(OmniboxResultView* result_view)
       : result_view_(result_view) {
-    const int height =
-        OmniboxFieldTrial::IsChromeRefreshSuggestHoverFillShapeEnabled() ? 40
-                                                                         : 0;
-    SetPreferredSize(gfx::Size(kStrokeThickness, height));
+    SetPreferredSize(gfx::Size(kStrokeThickness, 40));
   }
 
   // views::View:
@@ -173,7 +167,6 @@ OmniboxResultView::OmniboxResultView(OmniboxPopupViewViews* popup_view,
                               base::Unretained(this))) {
   CHECK_GE(model_index, 0u);
 
-  if (OmniboxFieldTrial::IsChromeRefreshSuggestHoverFillShapeEnabled()) {
     SetLayoutManager(std::make_unique<views::FillLayout>());
 
     auto* selection_indicator_container_ =
@@ -241,69 +234,6 @@ OmniboxResultView::OmniboxResultView(OmniboxPopupViewViews* popup_view,
             views::MaximumFlexSizeRule::kPreferred));
 
     mouse_enter_exit_handler_.ObserveMouseEnterExitOn(this);
-
-  } else {
-    SetLayoutManager(std::make_unique<views::FlexLayout>())
-        ->SetOrientation(views::LayoutOrientation::kVertical);
-
-    views::View* suggestion_container_ =
-        AddChildView(std::make_unique<views::View>());
-    suggestion_container_->SetLayoutManager(
-        std::make_unique<views::FillLayout>());
-    mouse_enter_exit_handler_.ObserveMouseEnterExitOn(suggestion_container_);
-
-    // TODO(olesiamarukhno): Consider making it a decoration instead of separate
-    // view (painting it in a layer).
-    selection_indicator_ = suggestion_container_->AddChildView(
-        std::make_unique<OmniboxResultSelectionIndicator>(this));
-
-    views::View* suggestion_button_container =
-        suggestion_container_->AddChildView(std::make_unique<views::View>());
-    suggestion_button_container
-        ->SetLayoutManager(std::make_unique<views::FlexLayout>())
-        ->SetCrossAxisAlignment(views::LayoutAlignment::kCenter);
-    suggestion_button_container->SetProperty(
-        views::kFlexBehaviorKey,
-        views::FlexSpecification(views::MinimumFlexSizeRule::kScaleToZero,
-                                 views::MaximumFlexSizeRule::kUnbounded));
-
-    suggestion_view_ = suggestion_button_container->AddChildView(
-        std::make_unique<OmniboxMatchCellView>(this));
-    suggestion_view_->SetProperty(
-        views::kFlexBehaviorKey,
-        views::FlexSpecification(views::MinimumFlexSizeRule::kScaleToZero,
-                                 views::MaximumFlexSizeRule::kUnbounded)
-            .WithWeight(4));
-
-    const auto child_insets =
-        gfx::Insets::TLBR(0, 0, 0, OmniboxMatchCellView::kMarginRight);
-
-    remove_suggestion_button_ = suggestion_button_container->AddChildView(
-        std::make_unique<OmniboxRemoveSuggestionButton>(base::BindRepeating(
-            &OmniboxResultView::ButtonPressed, base::Unretained(this),
-            OmniboxPopupSelection::FOCUSED_BUTTON_REMOVE_SUGGESTION)));
-    remove_suggestion_button_->SetProperty(views::kMarginsKey, child_insets);
-    views::InstallCircleHighlightPathGenerator(remove_suggestion_button_);
-    remove_suggestion_button_->SetTooltipText(
-        l10n_util::GetStringUTF16(IDS_OMNIBOX_REMOVE_SUGGESTION));
-    auto* const focus_ring = views::FocusRing::Get(remove_suggestion_button_);
-    focus_ring->SetHasFocusPredicate(base::BindRepeating(
-        [](const OmniboxResultView* results, const View* view) {
-          return view->GetVisible() && results->GetMatchSelected() &&
-                 (results->popup_view_->GetSelection().state ==
-                  OmniboxPopupSelection::FOCUSED_BUTTON_REMOVE_SUGGESTION);
-        },
-        base::Unretained(this)));
-    focus_ring->SetColorId(kColorOmniboxResultsFocusIndicator);
-
-    button_row_ = AddChildView(std::make_unique<OmniboxSuggestionButtonRowView>(
-        popup_view_, model_index));
-
-    // Quickly mouse-exiting through the suggestion button row sometimes leaves
-    // the whole row highlighted. This fixes that. It doesn't seem necessary to
-    // further observe the child controls of |button_row_|.
-    mouse_enter_exit_handler_.ObserveMouseEnterExitOn(button_row_);
-  }
 }
 
 OmniboxResultView::~OmniboxResultView() {}
@@ -329,15 +259,10 @@ std::unique_ptr<views::Background> OmniboxResultView::GetPopupCellBackground(
         /*for_border_thickness=*/0);
   }
 
-  if (OmniboxFieldTrial::IsChromeRefreshSuggestHoverFillShapeEnabled()) {
     gfx::RoundedCornersF radii = {0, static_cast<float>(view->height()),
                                   static_cast<float>(view->height()), 0};
     return views::CreateThemedRoundedRectBackground(
         GetOmniboxBackgroundColorId(part_state), radii);
-  }
-
-  return views::CreateThemedSolidBackground(
-      GetOmniboxBackgroundColorId(part_state));
 }
 
 void OmniboxResultView::SetMatch(const AutocompleteMatch& match) {

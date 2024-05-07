@@ -31,7 +31,6 @@
 #include "chrome/grit/generated_resources.h"
 #include "components/feature_engagement/public/event_constants.h"
 #include "components/feature_engagement/public/feature_constants.h"
-#include "components/omnibox/browser/omnibox_field_trial.h"
 #include "components/performance_manager/public/features.h"
 #include "components/performance_manager/public/user_tuning/prefs.h"
 #include "components/prefs/pref_service.h"
@@ -174,9 +173,7 @@ void MemorySaverChipView::OnExecuting(
 }
 
 const gfx::VectorIcon& MemorySaverChipView::GetVectorIcon() const {
-  return OmniboxFieldTrial::IsChromeRefreshIconsEnabled()
-             ? kMemorySaverChromeRefreshIcon
-             : kMemorySaverIcon;
+  return kMemorySaverChromeRefreshIcon;
 }
 
 views::BubbleDialogDelegate* MemorySaverChipView::GetBubble() const {

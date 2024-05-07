@@ -18,7 +18,6 @@
 #include "components/omnibox/browser/autocomplete_provider_client.h"
 #include "components/omnibox/browser/buildflags.h"
 #include "components/omnibox/browser/omnibox_client.h"
-#include "components/omnibox/browser/omnibox_field_trial.h"
 #include "components/omnibox/browser/vector_icons.h"
 #include "components/omnibox/common/omnibox_features.h"
 #include "components/omnibox/resources/grit/omnibox_pedal_synonyms.h"
@@ -1294,9 +1293,7 @@ class OmniboxPedalCloseIncognitoWindows : public OmniboxPedal {
             GURL()) {}
 
   const gfx::VectorIcon& GetVectorIcon() const override {
-    return OmniboxFieldTrial::IsChromeRefreshActionChipIconsEnabled()
-               ? omnibox::kIncognitoCr2023Icon
-               : omnibox::kIncognitoIcon;
+    return omnibox::kIncognitoCr2023Icon;
   }
 
   std::vector<SynonymGroupSpec> SpecifySynonymGroups(
@@ -1350,9 +1347,7 @@ class OmniboxPedalPlayChromeDinoGame : public OmniboxPedal {
 
 #if defined(SUPPORT_PEDALS_VECTOR_ICONS)
   const gfx::VectorIcon& GetVectorIcon() const override {
-    return OmniboxFieldTrial::IsChromeRefreshActionChipIconsEnabled()
-               ? omnibox::kDinoCr2023Icon
-               : omnibox::kDinoIcon;
+    return omnibox::kDinoCr2023Icon;
   }
 #endif
 
@@ -1980,25 +1975,13 @@ class OmniboxPedalSetChromeAsDefaultBrowser : public OmniboxPedal {
 
 const gfx::VectorIcon& GetSharingHubVectorIcon() {
 #if BUILDFLAG(IS_MAC)
-  return OmniboxFieldTrial::IsChromeRefreshIconsEnabled() ||
-                 OmniboxFieldTrial::IsChromeRefreshActionChipIconsEnabled()
-             ? omnibox::kShareMacChromeRefreshIcon
-             : omnibox::kShareMacIcon;
+  return omnibox::kShareMacChromeRefreshIcon;
 #elif BUILDFLAG(IS_WIN)
-  return OmniboxFieldTrial::IsChromeRefreshIconsEnabled() ||
-                 OmniboxFieldTrial::IsChromeRefreshActionChipIconsEnabled()
-             ? omnibox::kShareWinChromeRefreshIcon
-             : omnibox::kShareWinIcon;
+  return omnibox::kShareWinChromeRefreshIcon;
 #elif BUILDFLAG(IS_LINUX)
-  return OmniboxFieldTrial::IsChromeRefreshIconsEnabled() ||
-                 OmniboxFieldTrial::IsChromeRefreshActionChipIconsEnabled()
-             ? omnibox::kShareLinuxChromeRefreshIcon
-             : omnibox::kShareIcon;
+  return omnibox::kShareLinuxChromeRefreshIcon;
 #else
-  return OmniboxFieldTrial::IsChromeRefreshIconsEnabled() ||
-                 OmniboxFieldTrial::IsChromeRefreshActionChipIconsEnabled()
-             ? omnibox::kShareChromeRefreshIcon
-             : omnibox::kShareIcon;
+  return omnibox::kShareChromeRefreshIcon;
 #endif
 }
 

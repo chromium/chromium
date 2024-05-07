@@ -513,14 +513,7 @@ TEST_P(NewTabPageHandlerThemeTest, SetTheme) {
   EXPECT_FALSE(theme->background_image_attribution_url.has_value());
   EXPECT_FALSE(theme->background_image_collection_id.has_value());
   ASSERT_TRUE(theme->most_visited);
-  // TODO (crbug/1519999): The following needs to be reviewed. See the
-  //                       referenced bug for details.
-  if (features::IsChromeRefresh2023()) {
-    EXPECT_EQ(SkColorSetRGB(0, 0, CustomizeChromeSidePanel() ? 6 : 8),
-              theme->most_visited->background_color);
-  } else {
-    EXPECT_EQ(SkColorSetRGB(0, 0, 8), theme->most_visited->background_color);
-  }
+  EXPECT_EQ(SkColorSetRGB(0, 0, 6), theme->most_visited->background_color);
   EXPECT_TRUE(theme->most_visited->use_white_tile_icon);
   EXPECT_EQ(false, theme->most_visited->is_dark);
 }

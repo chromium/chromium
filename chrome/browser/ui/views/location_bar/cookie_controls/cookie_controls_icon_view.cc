@@ -20,7 +20,6 @@
 #include "components/content_settings/browser/ui/cookie_controls_controller.h"
 #include "components/content_settings/core/common/cookie_blocking_3pcd_status.h"
 #include "components/feature_engagement/public/event_constants.h"
-#include "components/omnibox/browser/omnibox_field_trial.h"
 #include "components/omnibox/browser/vector_icons.h"
 #include "components/privacy_sandbox/tracking_protection_settings.h"
 #include "content/public/browser/web_contents.h"
@@ -282,12 +281,8 @@ views::BubbleDialogDelegate* CookieControlsIconView::GetBubble() const {
 }
 
 const gfx::VectorIcon& CookieControlsIconView::GetVectorIcon() const {
-  if (OmniboxFieldTrial::IsChromeRefreshIconsEnabled()) {
     return protections_on_ ? views::kEyeCrossedRefreshIcon
                            : views::kEyeRefreshIcon;
-  }
-
-  return protections_on_ ? views::kEyeCrossedIcon : views::kEyeIcon;
 }
 
 void CookieControlsIconView::UpdateTooltipForFocus() {}

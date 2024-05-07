@@ -14,7 +14,6 @@
 #include "chrome/browser/ui/views/location_bar/location_bar_util.h"
 #include "chrome/browser/ui/views/page_action/page_action_icon_loading_indicator_view.h"
 #include "chrome/browser/ui/views/page_action/page_action_icon_view_observer.h"
-#include "components/omnibox/browser/omnibox_field_trial.h"
 #include "ui/accessibility/ax_enums.mojom.h"
 #include "ui/base/l10n/l10n_util.h"
 #include "ui/base/metadata/metadata_impl_macros.h"
@@ -46,9 +45,7 @@ int PageActionIconView::Delegate::GetPageActionIconSize() const {
 
 gfx::Insets PageActionIconView::Delegate::GetPageActionIconInsets(
     const PageActionIconView* icon_view) const {
-  return OmniboxFieldTrial::IsChromeRefreshIconsEnabled()
-             ? GetLayoutInsets(LOCATION_BAR_PAGE_ACTION_ICON_PADDING)
-             : GetLayoutInsets(LOCATION_BAR_ICON_INTERIOR_PADDING);
+  return GetLayoutInsets(LOCATION_BAR_PAGE_ACTION_ICON_PADDING);
 }
 
 bool PageActionIconView::Delegate::ShouldHidePageActionIcons() const {
@@ -299,7 +296,7 @@ content::WebContents* PageActionIconView::GetWebContents() const {
 
 void PageActionIconView::UpdateBorder() {
   gfx::Insets new_insets = delegate_->GetPageActionIconInsets(this);
-  if (ShouldShowLabel() && OmniboxFieldTrial::IsChromeRefreshIconsEnabled()) {
+  if (ShouldShowLabel()) {
     // TODO(crbug.com/40913366): Figure out what these values should be. For
     // bonus point also try to move parts of this into the parent class. This is
     // too bespoke.

@@ -476,10 +476,6 @@ BASE_FEATURE(kCategoricalSuggestions,
 // effects beyond the categorical suggestions.
 BASE_FEATURE(kMergeSubtypes, "MergeSubtypes", base::FEATURE_ENABLED_BY_DEFAULT);
 
-bool IsOmniboxCr23CustomizeGuardedFeatureEnabled(const base::Feature& feature) {
-  return features::CustomizeChromeSupportsChromeRefresh2023();
-}
-
 // If enabled, sends a signal when a user touches down on a search suggestion to
 // |SearchPrefetchService|. |SearchPrefetchService| will then prefetch
 // suggestion iff the SearchNavigationPrefetch feature and "touch_down" param

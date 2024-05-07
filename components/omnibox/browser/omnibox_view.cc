@@ -211,7 +211,6 @@ ui::ImageModel OmniboxView::GetIcon(int dip_size,
     // For search queries, display default search engine's favicon. If the
     // default search engine is google return the icon instead of favicon for
     // search queries with the chrome refresh feature.
-    if (OmniboxFieldTrial::IsChromeRefreshIconsEnabled()) {
       if (search::DefaultSearchProviderIsGoogle(
               controller_->client()->GetTemplateURLService())) {
         // For non chrome builds this would return an empty image model. In
@@ -221,7 +220,6 @@ ui::ImageModel OmniboxView::GetIcon(int dip_size,
           return icon;
         }
       }
-    }
 
     favicon = controller_->client()->GetFaviconForDefaultSearchProvider(
         std::move(on_icon_fetched));

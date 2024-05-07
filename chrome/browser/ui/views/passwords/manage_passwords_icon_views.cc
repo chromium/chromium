@@ -10,7 +10,6 @@
 #include "chrome/browser/ui/passwords/manage_passwords_ui_controller.h"
 #include "chrome/browser/ui/views/passwords/password_bubble_view_base.h"
 #include "chrome/grit/generated_resources.h"
-#include "components/omnibox/browser/omnibox_field_trial.h"
 #include "components/password_manager/core/common/password_manager_ui.h"
 #include "components/vector_icons/vector_icons.h"
 #include "content/public/browser/web_contents.h"
@@ -83,9 +82,7 @@ bool ManagePasswordsIconViews::OnMousePressed(const ui::MouseEvent& event) {
 }
 
 const gfx::VectorIcon& ManagePasswordsIconViews::GetVectorIcon() const {
-  return OmniboxFieldTrial::IsChromeRefreshIconsEnabled()
-             ? vector_icons::kPasswordManagerIcon
-             : kKeyIcon;
+  return vector_icons::kPasswordManagerIcon;
 }
 
 std::u16string ManagePasswordsIconViews::GetTextForTooltipAndAccessibleName()

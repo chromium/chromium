@@ -17,7 +17,6 @@
 #include "components/commerce/core/shopping_service.h"
 #include "components/feature_engagement/public/feature_constants.h"
 #include "components/feature_engagement/public/tracker.h"
-#include "components/omnibox/browser/omnibox_field_trial.h"
 #include "components/strings/grit/components_strings.h"
 #include "components/vector_icons/vector_icons.h"
 #include "ui/base/l10n/l10n_util.h"
@@ -54,9 +53,7 @@ views::BubbleDialogDelegate* PriceInsightsIconView::GetBubble() const {
 }
 
 const gfx::VectorIcon& PriceInsightsIconView::GetVectorIcon() const {
-  return OmniboxFieldTrial::IsChromeRefreshIconsEnabled()
-             ? vector_icons::kShoppingBagRefreshIcon
-             : vector_icons::kShoppingBagIcon;
+  return vector_icons::kShoppingBagRefreshIcon;
 }
 
 void PriceInsightsIconView::UpdateImpl() {

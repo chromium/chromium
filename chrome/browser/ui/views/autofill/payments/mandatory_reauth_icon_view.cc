@@ -14,7 +14,6 @@
 #include "chrome/browser/ui/views/autofill/payments/mandatory_reauth_confirmation_bubble_view.h"
 #include "chrome/browser/ui/views/autofill/payments/mandatory_reauth_opt_in_bubble_view.h"
 #include "chrome/grit/generated_resources.h"
-#include "components/omnibox/browser/omnibox_field_trial.h"
 #include "components/strings/grit/components_strings.h"
 #include "components/vector_icons/vector_icons.h"
 #include "ui/base/l10n/l10n_util.h"
@@ -69,9 +68,7 @@ void MandatoryReauthIconView::OnExecuting(
     PageActionIconView::ExecuteSource execute_source) {}
 
 const gfx::VectorIcon& MandatoryReauthIconView::GetVectorIcon() const {
-  return OmniboxFieldTrial::IsChromeRefreshIconsEnabled()
-             ? kCreditCardChromeRefreshIcon
-             : kCreditCardIcon;
+  return kCreditCardChromeRefreshIcon;
 }
 
 MandatoryReauthBubbleController* MandatoryReauthIconView::GetController()

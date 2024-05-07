@@ -29,7 +29,6 @@
 #include "components/feature_engagement/public/event_constants.h"
 #include "components/feature_engagement/public/feature_constants.h"
 #include "components/feature_engagement/public/tracker.h"
-#include "components/omnibox/browser/omnibox_field_trial.h"
 #include "components/omnibox/browser/vector_icons.h"
 #include "components/strings/grit/components_strings.h"
 #include "components/user_education/common/user_education_class_properties.h"
@@ -114,12 +113,8 @@ views::BubbleDialogDelegate* StarView::GetBubble() const {
 }
 
 const gfx::VectorIcon& StarView::GetVectorIcon() const {
-  if (OmniboxFieldTrial::IsChromeRefreshIconsEnabled()) {
     return GetActive() ? omnibox::kStarActiveChromeRefreshIcon
                        : omnibox::kStarChromeRefreshIcon;
-  }
-
-  return GetActive() ? omnibox::kStarActiveIcon : omnibox::kStarIcon;
 }
 
 std::u16string StarView::GetTextForTooltipAndAccessibleName() const {

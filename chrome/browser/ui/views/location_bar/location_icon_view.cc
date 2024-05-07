@@ -20,7 +20,6 @@
 #include "chrome/grit/generated_resources.h"
 #include "components/dom_distiller/core/url_constants.h"
 #include "components/omnibox/browser/omnibox_edit_model.h"
-#include "components/omnibox/browser/omnibox_field_trial.h"
 #include "components/security_state/core/security_state.h"
 #include "components/strings/grit/components_strings.h"
 #include "content/public/browser/web_contents.h"
@@ -76,10 +75,8 @@ LocationIconView::LocationIconView(
 
   SetAccessibleProperties(/*is_initialization*/ true);
 
-  if (OmniboxFieldTrial::IsChromeRefreshIconsEnabled()) {
     ConfigureInkDropForRefresh2023(this, kColorPageInfoIconHover,
                                    kColorPageInfoIconPressed);
-  }
 
   UpdateBorder();
 }
@@ -100,7 +97,7 @@ SkColor LocationIconView::GetForegroundColor() const {
   const bool is_text_dangerous =
       display_text == l10n_util::GetStringUTF16(IDS_DANGEROUS_VERBOSE_STATE);
 
-  if (OmniboxFieldTrial::IsChromeRefreshIconsEnabled() && is_text_dangerous) {
+  if (is_text_dangerous) {
     return GetColorProvider()->GetColor(kColorOmniboxSecurityChipText);
   }
 
@@ -112,7 +109,7 @@ SkColor LocationIconView::GetForegroundColor() const {
 }
 
 bool LocationIconView::ShouldShowSeparator() const {
-  return !OmniboxFieldTrial::IsChromeRefreshIconsEnabled() && ShouldShowLabel();
+  return false;
 }
 
 bool LocationIconView::ShouldShowLabelAfterAnimation() const {
@@ -294,15 +291,12 @@ void LocationIconView::UpdateIcon() {
       views::InkDrop::Get(this)->SetMode(views::InkDropHost::InkDropMode::ON);
     }
 
-    if (OmniboxFieldTrial::IsChromeRefreshIconsEnabled()) {
-      bool has_custom_theme =
-          this->GetWidget() && this->GetWidget()->GetCustomTheme();
+    bool has_custom_theme =
+        this->GetWidget() && this->GetWidget()->GetCustomTheme();
 
-      if (has_custom_theme &&
-          icon_name == vector_icons::kGoogleSuperGIcon.name) {
-        SetBackground(
-            views::CreateRoundedRectBackground(SK_ColorWHITE, height() / 2));
-      }
+    if (has_custom_theme && icon_name == vector_icons::kGoogleSuperGIcon.name) {
+      SetBackground(
+          views::CreateRoundedRectBackground(SK_ColorWHITE, height() / 2));
     }
   }
 #endif
@@ -312,7 +306,6 @@ void LocationIconView::UpdateIcon() {
 }
 
 void LocationIconView::UpdateBackground() {
-  if (OmniboxFieldTrial::IsChromeRefreshIconsEnabled()) {
     CHECK(GetColorProvider());
     const std::u16string& display_text = GetText();
     const bool is_text_dangerous =
@@ -334,9 +327,6 @@ void LocationIconView::UpdateBackground() {
       ConfigureInkDropForRefresh2023(this, kColorPageInfoIconHover,
                                      kColorPageInfoIconPressed);
     }
-  } else {
-    IconLabelBubbleView::UpdateBackground();
-  }
 }
 
 void LocationIconView::OnIconFetched(const gfx::Image& image) {
@@ -357,8 +347,7 @@ void LocationIconView::Update(bool suppress_animations,
   // level.
   UpdateLabelColors();
 
-  if (force_hide_background &&
-      OmniboxFieldTrial::IsChromeRefreshIconsEnabled()) {
+  if (force_hide_background) {
     SetBackground(
         views::CreateRoundedRectBackground(SK_ColorTRANSPARENT, height() / 2));
   }
@@ -415,7 +404,6 @@ void LocationIconView::UpdateBorder() {
   // child views in the location bar have the same height. The visible height of
   // the bubble should be smaller, so use an empty border to shrink down the
   // content bounds so the background gets painted correctly.
-  if (OmniboxFieldTrial::IsChromeRefreshIconsEnabled()) {
     gfx::Insets insets = GetLayoutInsets(LOCATION_BAR_PAGE_INFO_ICON_PADDING);
     if (ShouldShowLabel()) {
       SecurityLevel level =
@@ -434,9 +422,6 @@ void LocationIconView::UpdateBorder() {
       }
     }
     SetBorder(views::CreateEmptyBorder(insets));
-  } else {
-    IconLabelBubbleView::UpdateBorder();
-  }
 }
 
 gfx::Size LocationIconView::GetMinimumSizeForPreferredSize(

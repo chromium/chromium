@@ -8,7 +8,6 @@
 #include "base/notreached.h"
 #include "build/build_config.h"
 #include "chrome/browser/ui/ui_features.h"
-#include "components/omnibox/browser/omnibox_field_trial.h"
 #include "components/omnibox/common/omnibox_features.h"
 #include "ui/base/pointer/touch_ui_controller.h"
 #include "ui/base/ui_base_features.h"
@@ -77,9 +76,7 @@ int GetLayoutConstant(LayoutConstant constant) {
     case LOCATION_BAR_LEADING_ICON_SIZE:
       return GetLayoutConstant(LOCATION_BAR_ICON_SIZE);
     case LOCATION_BAR_TRAILING_ICON_SIZE:
-      return OmniboxFieldTrial::IsChromeRefreshIconsEnabled()
-                 ? 20
-                 : GetLayoutConstant(LOCATION_BAR_ICON_SIZE);
+      return 20;
     case TAB_AFTER_TITLE_PADDING:
       return touch_ui ? 8 : 4;
     case TAB_ALERT_INDICATOR_CAPTURE_ICON_WIDTH:

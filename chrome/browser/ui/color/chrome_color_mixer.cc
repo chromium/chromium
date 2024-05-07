@@ -13,7 +13,6 @@
 #include "chrome/browser/ui/color/chrome_color_id.h"
 #include "chrome/browser/ui/color/chrome_color_provider_utils.h"
 #include "chrome_color_id.h"
-#include "components/omnibox/common/omnibox_features.h"
 #include "third_party/skia/include/core/SkColor.h"
 #include "ui/base/ui_base_features.h"
 #include "ui/color/color_id.h"
@@ -86,12 +85,8 @@ ui::ColorTransform GetToolbarTopSeparatorColorTransform(
 // Apply updates to the Omnibox background color tokens per GM3 spec.
 void ApplyGM3OmniboxBackgroundColor(ui::ColorMixer& mixer,
                                     const ui::ColorProviderKey& key) {
-  const bool gm3_background_color_enabled =
-      omnibox::IsOmniboxCr23CustomizeGuardedFeatureEnabled(
-          omnibox::kOmniboxSteadyStateBackgroundColor);
-
   // Apply omnibox background color updates only to non-themed clients.
-  if (gm3_background_color_enabled && !key.custom_theme) {
+  if (!key.custom_theme) {
     mixer[kColorLocationBarBackground] = {ui::kColorSysOmniboxContainer};
     mixer[kColorLocationBarBackgroundHovered] =
         ui::GetResultingPaintColor(ui::kColorSysStateHoverBrightBlendProtection,

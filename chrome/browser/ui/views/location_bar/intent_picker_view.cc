@@ -13,7 +13,6 @@
 #include "chrome/browser/ui/views/intent_picker_bubble_view.h"
 #include "chrome/common/chrome_features.h"
 #include "chrome/grit/generated_resources.h"
-#include "components/omnibox/browser/omnibox_field_trial.h"
 #include "ui/base/l10n/l10n_util.h"
 #include "ui/base/metadata/metadata_impl_macros.h"
 
@@ -77,9 +76,7 @@ bool IntentPickerView::GetShowIcon() const {
 }
 
 const gfx::VectorIcon& IntentPickerView::GetVectorIcon() const {
-  return OmniboxFieldTrial::IsChromeRefreshIconsEnabled()
-             ? kOpenInNewChromeRefreshIcon
-             : kOpenInNewIcon;
+  return kOpenInNewChromeRefreshIcon;
 }
 
 BEGIN_METADATA(IntentPickerView)

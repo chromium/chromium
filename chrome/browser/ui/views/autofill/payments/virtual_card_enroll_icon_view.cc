@@ -14,7 +14,6 @@
 #include "chrome/browser/ui/views/autofill/payments/virtual_card_enroll_bubble_views.h"
 #include "chrome/grit/generated_resources.h"
 #include "components/autofill/core/browser/ui/payments/virtual_card_enroll_bubble_controller.h"
-#include "components/omnibox/browser/omnibox_field_trial.h"
 #include "components/strings/grit/components_strings.h"
 #include "components/vector_icons/vector_icons.h"
 #include "ui/base/l10n/l10n_util.h"
@@ -76,9 +75,7 @@ void VirtualCardEnrollIconView::OnExecuting(
     PageActionIconView::ExecuteSource execute_source) {}
 
 const gfx::VectorIcon& VirtualCardEnrollIconView::GetVectorIcon() const {
-  return OmniboxFieldTrial::IsChromeRefreshIconsEnabled()
-             ? kCreditCardChromeRefreshIcon
-             : kCreditCardIcon;
+  return kCreditCardChromeRefreshIcon;
 }
 
 VirtualCardEnrollBubbleController* VirtualCardEnrollIconView::GetController()

@@ -483,30 +483,19 @@ AutocompleteMatch& AutocompleteMatch::operator=(
 // static
 const gfx::VectorIcon& AutocompleteMatch::AnswerTypeToAnswerIconDeprecated(
     int type) {
-  const bool use_chrome_refresh_icons =
-      OmniboxFieldTrial::IsChromeRefreshSuggestIconsEnabled();
   switch (static_cast<SuggestionAnswer::AnswerType>(type)) {
     case SuggestionAnswer::ANSWER_TYPE_CURRENCY:
-      return use_chrome_refresh_icons
-                 ? omnibox::kAnswerCurrencyChromeRefreshIcon
-                 : omnibox::kAnswerCurrencyIcon;
+      return omnibox::kAnswerCurrencyChromeRefreshIcon;
     case SuggestionAnswer::ANSWER_TYPE_DICTIONARY:
-      return use_chrome_refresh_icons
-                 ? omnibox::kAnswerDictionaryChromeRefreshIcon
-                 : omnibox::kAnswerDictionaryIcon;
+      return omnibox::kAnswerDictionaryChromeRefreshIcon;
     case SuggestionAnswer::ANSWER_TYPE_FINANCE:
-      return use_chrome_refresh_icons ? omnibox::kAnswerFinanceChromeRefreshIcon
-                                      : omnibox::kAnswerFinanceIcon;
+      return omnibox::kAnswerFinanceChromeRefreshIcon;
     case SuggestionAnswer::ANSWER_TYPE_SUNRISE:
-      return use_chrome_refresh_icons ? omnibox::kAnswerSunriseChromeRefreshIcon
-                                      : omnibox::kAnswerSunriseIcon;
+      return omnibox::kAnswerSunriseChromeRefreshIcon;
     case SuggestionAnswer::ANSWER_TYPE_TRANSLATION:
-      return use_chrome_refresh_icons
-                 ? omnibox::kAnswerTranslationChromeRefreshIcon
-                 : omnibox::kAnswerTranslationIcon;
+      return omnibox::kAnswerTranslationChromeRefreshIcon;
     case SuggestionAnswer::ANSWER_TYPE_WHEN_IS:
-      return use_chrome_refresh_icons ? omnibox::kAnswerWhenIsChromeRefreshIcon
-                                      : omnibox::kAnswerWhenIsIcon;
+      return omnibox::kAnswerWhenIsChromeRefreshIcon;
     default:
       return omnibox::kAnswerDefaultIcon;
   }
@@ -515,30 +504,19 @@ const gfx::VectorIcon& AutocompleteMatch::AnswerTypeToAnswerIconDeprecated(
 // static
 const gfx::VectorIcon& AutocompleteMatch::AnswerTypeToAnswerIcon(
     omnibox::RichAnswerTemplate::AnswerType type) {
-  const bool use_chrome_refresh_icons =
-      OmniboxFieldTrial::IsChromeRefreshSuggestIconsEnabled();
   switch (type) {
     case omnibox::RichAnswerTemplate::DICTIONARY:
-      return use_chrome_refresh_icons
-                 ? omnibox::kAnswerDictionaryChromeRefreshIcon
-                 : omnibox::kAnswerDictionaryIcon;
+      return omnibox::kAnswerDictionaryChromeRefreshIcon;
     case omnibox::RichAnswerTemplate::FINANCE:
-      return use_chrome_refresh_icons ? omnibox::kAnswerFinanceChromeRefreshIcon
-                                      : omnibox::kAnswerFinanceIcon;
+      return omnibox::kAnswerFinanceChromeRefreshIcon;
     case omnibox::RichAnswerTemplate::SUNRISE_SUNSET:
-      return use_chrome_refresh_icons ? omnibox::kAnswerSunriseChromeRefreshIcon
-                                      : omnibox::kAnswerSunriseIcon;
+      return omnibox::kAnswerSunriseChromeRefreshIcon;
     case omnibox::RichAnswerTemplate::TRANSLATION:
-      return use_chrome_refresh_icons
-                 ? omnibox::kAnswerTranslationChromeRefreshIcon
-                 : omnibox::kAnswerTranslationIcon;
+      return omnibox::kAnswerTranslationChromeRefreshIcon;
     case omnibox::RichAnswerTemplate::WHEN_IS:
-      return use_chrome_refresh_icons ? omnibox::kAnswerWhenIsChromeRefreshIcon
-                                      : omnibox::kAnswerWhenIsIcon;
+      return omnibox::kAnswerWhenIsChromeRefreshIcon;
     case omnibox::RichAnswerTemplate::CURRENCY:
-      return use_chrome_refresh_icons
-                 ? omnibox::kAnswerCurrencyChromeRefreshIcon
-                 : omnibox::kAnswerCurrencyIcon;
+      return omnibox::kAnswerCurrencyChromeRefreshIcon;
     default:
       return omnibox::kAnswerDefaultIcon;
   }
@@ -547,11 +525,8 @@ const gfx::VectorIcon& AutocompleteMatch::AnswerTypeToAnswerIcon(
 const gfx::VectorIcon& AutocompleteMatch::GetVectorIcon(
     bool is_bookmark,
     const TemplateURL* turl) const {
-  const bool use_chrome_refresh_icons =
-      OmniboxFieldTrial::IsChromeRefreshSuggestIconsEnabled();
   if (is_bookmark)
-    return use_chrome_refresh_icons ? omnibox::kBookmarkChromeRefreshIcon
-                                    : omnibox::kBookmarkIcon;
+    return omnibox::kBookmarkChromeRefreshIcon;
   if (omnibox_feature_configs::SuggestionAnswerMigration::Get().enabled &&
       answer_template.has_value()) {
     return AnswerTypeToAnswerIcon(answer_template->answer_type());
@@ -577,16 +552,13 @@ const gfx::VectorIcon& AutocompleteMatch::GetVectorIcon(
     case Type::OPEN_TAB:
     case Type::HISTORY_EMBEDDINGS:
     case Type::FEATURED_ENTERPRISE_SEARCH:
-      return use_chrome_refresh_icons ? omnibox::kPageChromeRefreshIcon
-                                      : omnibox::kPageIcon;
+      return omnibox::kPageChromeRefreshIcon;
 
     case Type::SEARCH_SUGGEST: {
       if (IsTrendSuggestion()) {
-        return use_chrome_refresh_icons ? omnibox::kTrendingUpChromeRefreshIcon
-                                        : omnibox::kTrendingUpIcon;
+        return omnibox::kTrendingUpChromeRefreshIcon;
       }
-      return use_chrome_refresh_icons ? vector_icons::kSearchChromeRefreshIcon
-                                      : vector_icons::kSearchIcon;
+      return vector_icons::kSearchChromeRefreshIcon;
     }
 
     case Type::PEDAL: {
@@ -605,22 +577,19 @@ const gfx::VectorIcon& AutocompleteMatch::GetVectorIcon(
     case Type::CLIPBOARD_IMAGE:
     case Type::TILE_SUGGESTION:
     case Type::TILE_REPEATABLE_QUERY:
-      return use_chrome_refresh_icons ? vector_icons::kSearchChromeRefreshIcon
-                                      : vector_icons::kSearchIcon;
+      return vector_icons::kSearchChromeRefreshIcon;
 
     case Type::SEARCH_HISTORY:
     case Type::SEARCH_SUGGEST_PERSONALIZED: {
       DCHECK(IsSearchHistoryType(type));
-      return use_chrome_refresh_icons ? vector_icons::kHistoryChromeRefreshIcon
-                                      : vector_icons::kHistoryIcon;
+      return vector_icons::kHistoryChromeRefreshIcon;
     }
 
     case Type::EXTENSION_APP_DEPRECATED:
       return omnibox::kExtensionAppIcon;
 
     case Type::CALCULATOR:
-      return use_chrome_refresh_icons ? omnibox::kCalculatorChromeRefreshIcon
-                                      : omnibox::kCalculatorIcon;
+      return omnibox::kCalculatorChromeRefreshIcon;
 
     case Type::NULL_RESULT_MESSAGE: {
       // The IPH suggestion uses the spark icon. Otherwise (for No Results
@@ -656,37 +625,28 @@ const gfx::VectorIcon& AutocompleteMatch::GetVectorIcon(
         case DocumentType::DRIVE_OTHER:
           return omnibox::kDriveLogoIcon;
         default:
-          return use_chrome_refresh_icons ? omnibox::kPageChromeRefreshIcon
-                                          : omnibox::kPageIcon;
+          return omnibox::kPageChromeRefreshIcon;
       }
 
     case Type::HISTORY_CLUSTER:
-      return use_chrome_refresh_icons ? omnibox::kJourneysChromeRefreshIcon
-                                      : omnibox::kJourneysIcon;
+      return omnibox::kJourneysChromeRefreshIcon;
 
     case Type::STARTER_PACK:
       if (turl) {
         switch (turl->GetBuiltinEngineType()) {
           case KEYWORD_MODE_STARTER_PACK_BOOKMARKS:
-            return use_chrome_refresh_icons
-                       ? omnibox::kStarActiveChromeRefreshIcon
-                       : omnibox::kStarActiveIcon;
+            return omnibox::kStarActiveChromeRefreshIcon;
           case KEYWORD_MODE_STARTER_PACK_HISTORY:
-            return use_chrome_refresh_icons
-                       ? vector_icons::kHistoryChromeRefreshIcon
-                       : vector_icons::kHistoryIcon;
+            return vector_icons::kHistoryChromeRefreshIcon;
           case KEYWORD_MODE_STARTER_PACK_TABS:
-            return use_chrome_refresh_icons ? omnibox::kProductChromeRefreshIcon
-                                            : omnibox::kProductIcon;
-
+            return omnibox::kProductChromeRefreshIcon;
           case KEYWORD_MODE_STARTER_PACK_ASK_GOOGLE:
             return omnibox::kSparkIcon;
           default:
             break;
         }
       }
-      return use_chrome_refresh_icons ? omnibox::kProductChromeRefreshIcon
-                                      : omnibox::kProductIcon;
+      return omnibox::kProductChromeRefreshIcon;
 
     case Type::NUM_TYPES:
       NOTREACHED_NORETURN();

@@ -13,7 +13,6 @@
 #include "chrome/browser/ui/layout_constants.h"
 #include "chrome/browser/ui/omnibox/omnibox_theme.h"
 #include "chrome/browser/ui/views/location_bar/location_bar_util.h"
-#include "components/omnibox/browser/omnibox_field_trial.h"
 #include "ui/base/l10n/l10n_util.h"
 #include "ui/base/metadata/metadata_impl_macros.h"
 #include "ui/compositor/layer_animator.h"
@@ -304,13 +303,11 @@ void IconLabelBubbleView::UpdateBackground() {
   // TODO(pbos): Consider renaming kPageInfo/kPageAction color IDs to share the
   // same prefix. Here PageInfo assumes to have a background and PageAction
   // assumes to not have one.
-  if (OmniboxFieldTrial::IsChromeRefreshIconsEnabled()) {
     ConfigureInkDropForRefresh2023(this,
                                    painted_on_solid_background
                                        ? kColorPageInfoIconHover
                                        : kColorPageActionIconHover,
                                    kColorPageInfoIconPressed);
-  }
 }
 
 void IconLabelBubbleView::SetUseTonalColorsWhenExpanded(bool use_tonal_colors) {
@@ -570,15 +567,12 @@ int IconLabelBubbleView::GetInternalSpacing() const {
     return 0;
   }
 
-  constexpr int kDefaultInternalSpacing = 8;
   constexpr int kDefaultInternalSpacingTouchUI = 10;
   constexpr int kDefaultInternalSpacingChromeRefresh = 4;
 
   return (ui::TouchUiController::Get()->touch_ui()
               ? kDefaultInternalSpacingTouchUI
-              : (OmniboxFieldTrial::IsChromeRefreshIconsEnabled()
-                     ? kDefaultInternalSpacingChromeRefresh
-                     : kDefaultInternalSpacing)) +
+              : kDefaultInternalSpacingChromeRefresh) +
          GetExtraInternalSpacing();
 }
 

@@ -22,7 +22,6 @@
 #include "components/omnibox/browser/omnibox_edit_model.h"
 #include "components/omnibox/browser/omnibox_field_trial.h"
 #include "components/omnibox/browser/vector_icons.h"
-#include "components/omnibox/common/omnibox_features.h"
 #include "components/strings/grit/components_strings.h"
 #include "components/vector_icons/vector_icons.h"
 #include "third_party/metrics_proto/omnibox_event.pb.h"
@@ -48,13 +47,6 @@
 #include "ui/views/painter.h"
 #include "ui/views/view_class_properties.h"
 #include "ui/views/view_utils.h"
-
-namespace {
-bool Cr2023ExpandedStateColorsEnabled() {
-  return omnibox::IsOmniboxCr23CustomizeGuardedFeatureEnabled(
-      omnibox::kExpandedStateColors);
-}
-}  // namespace
 
 class OmniboxSuggestionRowButton : public views::MdTextButton {
   METADATA_HEADER(OmniboxSuggestionRowButton, views::MdTextButton)
@@ -82,8 +74,6 @@ class OmniboxSuggestionRowButton : public views::MdTextButton {
     SetCornerRadius(GetLayoutConstant(TOOLBAR_CORNER_RADIUS));
 
     auto* const ink_drop = views::InkDrop::Get(this);
-    if (!Cr2023ExpandedStateColorsEnabled())
-      ink_drop->SetHighlightOpacity(kOmniboxOpacityHovered);
     SetAnimationDuration(base::TimeDelta());
     ink_drop->GetInkDrop()->SetHoverHighlightFadeDuration(base::TimeDelta());
 
@@ -125,7 +115,6 @@ class OmniboxSuggestionRowButton : public views::MdTextButton {
                       GetLayoutConstant(LOCATION_BAR_ICON_SIZE)));
     SetEnabledTextColors(color_provider->GetColor(
         selected ? kColorOmniboxResultsTextSelected : kColorOmniboxText));
-    if (Cr2023ExpandedStateColorsEnabled()) {
       ConfigureInkDropForRefresh2023(
           this,
           /*hover_color_id=*/
@@ -134,11 +123,6 @@ class OmniboxSuggestionRowButton : public views::MdTextButton {
           /*ripple_color_id=*/
           selected ? kColorOmniboxResultsButtonInkDropSelectedRowSelected
                    : kColorOmniboxResultsButtonInkDropSelectedRowHovered);
-    } else {
-      views::InkDrop::Get(this)->SetBaseColorId(
-          selected ? kColorOmniboxResultsButtonInkDropSelected
-                   : kColorOmniboxResultsButtonInkDrop);
-    }
 
     views::FocusRing::Get(this)->SchedulePaint();
   }
@@ -153,8 +137,7 @@ class OmniboxSuggestionRowButton : public views::MdTextButton {
         views::Painter::CreateRoundRectWith1PxBorderPainter(
             fill_color, stroke_color, GetCornerRadiusValue(),
             SkBlendMode::kSrcOver, /*antialias=*/true,
-            /*should_border_scale=*/
-            OmniboxFieldTrial::IsChromeRefreshActionChipShapeEnabled())));
+            /*should_border_scale=*/true)));
   }
 
   void GetAccessibleNodeData(ui::AXNodeData* node_data) override {
@@ -186,22 +169,7 @@ OmniboxSuggestionButtonRowView::OmniboxSuggestionButtonRowView(
     OmniboxPopupViewViews* popup_view,
     int model_index)
     : popup_view_(popup_view), model_index_(model_index) {
-  int left_margin = OmniboxMatchCellView::GetTextIndent();
-  // +4 for the focus bar width, which shifts the suggest text but isn't
-  // included in `GetTextIndent()`.
-  if (OmniboxFieldTrial::IsCr23LayoutEnabled()) {
-    // Do not apply left margin when action chips are inlined.
-    left_margin = 0;
-  }
-  int top_margin =
-      OmniboxFieldTrial::IsChromeRefreshSuggestHoverFillShapeEnabled() ? 6 : 0;
-  int bottom_margin =
-      OmniboxFieldTrial::IsChromeRefreshSuggestHoverFillShapeEnabled()
-          ? 6
-          : ChromeLayoutProvider::Get()->GetDistanceMetric(
-                DISTANCE_OMNIBOX_CELL_VERTICAL_PADDING);
-  const auto insets =
-      gfx::Insets::TLBR(top_margin, left_margin, bottom_margin, 0);
+  const auto insets = gfx::Insets::TLBR(6, 0, 6, 0);
   SetLayoutManager(std::make_unique<views::FlexLayout>())
       ->SetCrossAxisAlignment(views::LayoutAlignment::kStart)
       .SetCollapseMargins(true)
@@ -212,8 +180,7 @@ OmniboxSuggestionButtonRowView::OmniboxSuggestionButtonRowView(
                                  views::DISTANCE_RELATED_BUTTON_HORIZONTAL)));
   BuildViews();
 
-  if (OmniboxFieldTrial::IsChromeRefreshSuggestHoverFillShapeEnabled())
-    SetPaintToLayer(ui::LAYER_NOT_DRAWN);
+  SetPaintToLayer(ui::LAYER_NOT_DRAWN);
 }
 
 void OmniboxSuggestionButtonRowView::BuildViews() {
@@ -238,11 +205,8 @@ void OmniboxSuggestionButtonRowView::BuildViews() {
     keyword_button_ = AddChildView(std::make_unique<OmniboxSuggestionRowButton>(
         base::BindRepeating(&OmniboxSuggestionButtonRowView::ButtonPressed,
                             base::Unretained(this), selection),
-        std::u16string(),
-        OmniboxFieldTrial::IsChromeRefreshActionChipIconsEnabled()
-            ? vector_icons::kSearchChromeRefreshIcon
-            : vector_icons::kSearchIcon,
-        popup_view_, selection));
+        std::u16string(), vector_icons::kSearchChromeRefreshIcon, popup_view_,
+        selection));
   }
 
   if (!HasMatch()) {
@@ -269,9 +233,6 @@ OmniboxSuggestionButtonRowView::~OmniboxSuggestionButtonRowView() = default;
 
 void OmniboxSuggestionButtonRowView::Layout(PassKey) {
   LayoutSuperclass<View>(this);
-
-  if (!OmniboxFieldTrial::IsChromeRefreshSuggestHoverFillShapeEnabled())
-    return;
 
   auto bounds = GetLocalBounds();
   SkPath path;

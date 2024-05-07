@@ -8,7 +8,6 @@
 #include "base/strings/string_number_conversions.h"
 #include "chrome/browser/ui/color/chrome_color_id.h"
 #include "chrome/browser/ui/color/chrome_color_provider_utils.h"
-#include "components/omnibox/common/omnibox_features.h"
 #include "third_party/skia/include/core/SkColor.h"
 #include "ui/base/ui_base_features.h"
 #include "ui/color/color_id.h"
@@ -28,11 +27,6 @@ constexpr float kOmniboxHighContrastRatio = 6.0f;
 // Apply updates to the Omnibox text color tokens per GM3 spec.
 void ApplyGM3OmniboxTextColor(ui::ColorMixer& mixer,
                               const ui::ColorProviderKey& key) {
-  if (!omnibox::IsOmniboxCr23CustomizeGuardedFeatureEnabled(
-          omnibox::kOmniboxSteadyStateTextColor)) {
-    return;
-  }
-
   mixer[kColorOmniboxText] = {ui::kColorSysOnSurface};
   mixer[kColorOmniboxTextDimmed] = {ui::kColorSysOnSurfaceSubtle};
   mixer[kColorOmniboxSelectionBackground] = {ui::kColorSysStateTextHighlight};
@@ -64,11 +58,6 @@ void ApplyGM3OmniboxTextColor(ui::ColorMixer& mixer,
 
 void ApplyCR2023OmniboxIconColors(ui::ColorMixer& mixer,
                                   const ui::ColorProviderKey& key) {
-  if (!omnibox::IsOmniboxCr23CustomizeGuardedFeatureEnabled(
-          omnibox::kOmniboxCR23SteadyStateIcons)) {
-    return;
-  }
-
   mixer[kColorPageActionIconHover] = {ui::kColorSysStateHoverOnSubtle};
   mixer[kColorPageInfoBackground] = {ui::kColorSysBaseContainerElevated};
   mixer[kColorPageInfoIconHover] = {ui::kColorSysStateHoverDimBlendProtection};
@@ -87,11 +76,6 @@ void ApplyCR2023OmniboxIconColors(ui::ColorMixer& mixer,
 // Apply updates to the Omnibox "expanded state" color tokens per CR2023 spec.
 void ApplyCR2023OmniboxExpandedStateColors(ui::ColorMixer& mixer,
                                            const ui::ColorProviderKey& key) {
-  if (!omnibox::IsOmniboxCr23CustomizeGuardedFeatureEnabled(
-          omnibox::kExpandedStateColors)) {
-    return;
-  }
-
   // Update focus bar color.
   mixer[kColorOmniboxResultsFocusIndicator] = {ui::kColorSysStateFocusRing};
 
@@ -149,11 +133,6 @@ void ApplyCR2023OmniboxExpandedStateColors(ui::ColorMixer& mixer,
 // custom theme).
 void ApplyOmniboxCR2023FallbackColors(ui::ColorMixer& mixer,
                                       const ui::ColorProviderKey& key) {
-  if (!omnibox::IsOmniboxCr23CustomizeGuardedFeatureEnabled(
-          omnibox::kExpandedStateColors)) {
-    return;
-  }
-
   // Action chip hover & select colors for hovered suggestion rows (e.g. via
   // mouse cursor).
   mixer[kColorOmniboxResultsButtonInkDropRowHovered] = {ui::SetAlpha(

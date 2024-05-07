@@ -31,7 +31,6 @@
 #include "components/commerce/core/shopping_service.h"
 #include "components/feature_engagement/public/feature_constants.h"
 #include "components/feature_engagement/public/tracker.h"
-#include "components/omnibox/browser/omnibox_field_trial.h"
 #include "components/omnibox/browser/vector_icons.h"
 #include "components/power_bookmarks/core/power_bookmark_utils.h"
 #include "components/power_bookmarks/core/proto/power_bookmark_meta.pb.h"
@@ -79,9 +78,7 @@ PriceTrackingIconView::PriceTrackingIconView(
       browser_(browser),
       profile_(browser->profile()),
       bubble_coordinator_(this),
-      icon_(OmniboxFieldTrial::IsChromeRefreshIconsEnabled()
-                ? &omnibox::kPriceTrackingDisabledRefreshIcon
-                : &omnibox::kPriceTrackingDisabledIcon) {
+      icon_(&omnibox::kPriceTrackingDisabledRefreshIcon) {
   SetUpForInOutAnimation();
   SetProperty(views::kElementIdentifierKey, kPriceTrackingChipElementId);
   SetAccessibilityProperties(
@@ -271,13 +268,8 @@ void PriceTrackingIconView::EnablePriceTracking(bool enable) {
 }
 
 void PriceTrackingIconView::SetVisualState(bool enable) {
-  if (OmniboxFieldTrial::IsChromeRefreshIconsEnabled()) {
     icon_ = enable ? &omnibox::kPriceTrackingEnabledRefreshIcon
                    : &omnibox::kPriceTrackingDisabledRefreshIcon;
-  } else {
-    icon_ = enable ? &omnibox::kPriceTrackingEnabledFilledIcon
-                   : &omnibox::kPriceTrackingDisabledIcon;
-  }
   // TODO(meiliang@): Confirm with UXW on the tooltip string. If this expected,
   // we can return label()->GetText() instead.
   SetAccessibleName(l10n_util::GetStringUTF16(

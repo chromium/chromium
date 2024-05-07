@@ -7,7 +7,6 @@
 #include "build/chromeos_buildflags.h"
 #include "chrome/browser/ui/color/chrome_color_id.h"
 #include "chrome/grit/generated_resources.h"
-#include "components/omnibox/browser/omnibox_field_trial.h"
 #include "components/vector_icons/vector_icons.h"
 #include "ui/base/l10n/l10n_util.h"
 #include "ui/base/metadata/metadata_impl_macros.h"
@@ -27,10 +26,7 @@ CloseImageButton::CloseImageButton(PressedCallback callback)
     : OverlayWindowImageButton(std::move(callback)) {
   SetSize(gfx::Size(kCloseButtonSize, kCloseButtonSize));
 
-  auto* icon = &views::kIcCloseIcon;
-  if (OmniboxFieldTrial::IsChromeRefreshIconsEnabled()) {
-    icon = &vector_icons::kCloseChromeRefreshIcon;
-  }
+  auto* icon = &vector_icons::kCloseChromeRefreshIcon;
   SetImageModel(views::Button::STATE_NORMAL,
                 ui::ImageModel::FromVectorIcon(*icon, kColorPipWindowForeground,
                                                kCloseButtonIconSize));

@@ -8,7 +8,6 @@
 #include "chrome/browser/ui/color/chrome_color_id.h"
 #include "chrome/browser/ui/layout_constants.h"
 #include "chrome/grit/generated_resources.h"
-#include "components/omnibox/browser/omnibox_field_trial.h"
 #include "components/omnibox/browser/vector_icons.h"
 #include "components/search_engines/template_url_service.h"
 #include "components/search_engines/template_url_starter_pack_data.h"
@@ -149,7 +148,7 @@ const std::u16string& SelectedKeywordView::GetKeyword() const {
 
 int SelectedKeywordView::GetExtraInternalSpacing() const {
   // Align the label text with the suggestion text.
-  return OmniboxFieldTrial::IsCr23LayoutEnabled() ? 14 : 11;
+  return 14;
 }
 
 void SelectedKeywordView::SetLabelForCurrentWidth() {

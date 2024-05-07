@@ -112,20 +112,12 @@ views::View* OmniboxRowView::GetActiveAuxiliaryButtonForAccessibility() const {
 }
 
 gfx::Insets OmniboxRowView::GetInsets() const {
-  const int right_inset =
-      OmniboxFieldTrial::IsChromeRefreshSuggestHoverFillShapeEnabled() ? 16 : 0;
-  // A visible header means this is the start of a new section. Give the section
-  // that just ended an extra 4dp of padding. https://crbug.com/1076646
-  if (line_ != 0 && header_view_ && header_view_->GetVisible() &&
-      !OmniboxFieldTrial::IsChromeRefreshSuggestIconsEnabled()) {
-    return gfx::Insets::TLBR(4, 0, 0, right_inset);
-  }
   if (OmniboxFieldTrial::IsStarterPackIPHEnabled() &&
       result_view_->GetThemeState() == OmniboxPartState::IPH) {
     return gfx::Insets::TLBR(8, 8, 8, 16);
   }
 
-  return gfx::Insets::TLBR(0, 0, 0, right_inset);
+  return gfx::Insets::TLBR(0, 0, 0, 16);
 }
 
 BEGIN_METADATA(OmniboxRowView)

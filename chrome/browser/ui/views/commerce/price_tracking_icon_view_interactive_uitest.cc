@@ -34,7 +34,6 @@
 #include "components/feature_engagement/public/feature_constants.h"
 #include "components/feature_engagement/test/scoped_iph_feature_list.h"
 #include "components/image_fetcher/core/mock_image_fetcher.h"
-#include "components/omnibox/browser/omnibox_field_trial.h"
 #include "components/omnibox/browser/vector_icons.h"
 #include "components/prefs/pref_service.h"
 #include "components/strings/grit/components_strings.h"
@@ -245,8 +244,7 @@ IN_PROC_BROWSER_TEST_F(
       FlushEvents(), WaitForShow(kPriceTrackingChipElementId),
       CheckView(kPriceTrackingChipElementId,
                 base::BindOnce([](PriceTrackingIconView* view) {
-                  if (OmniboxFieldTrial::IsChromeRefreshIconsEnabled() ||
-                      features::IsChromeRefresh2023()) {
+                  if (features::IsChromeRefresh2023()) {
                     return view->GetVectorIcon().name ==
                            omnibox::kPriceTrackingEnabledRefreshIcon.name;
                   } else {
@@ -349,8 +347,7 @@ IN_PROC_BROWSER_TEST_F(PriceTrackingIconViewInteractiveTest,
                 })),
       CheckView(kPriceTrackingChipElementId,
                 base::BindOnce([](PriceTrackingIconView* view) {
-                  if (OmniboxFieldTrial::IsChromeRefreshIconsEnabled() ||
-                      features::IsChromeRefresh2023()) {
+                  if (features::IsChromeRefresh2023()) {
                     return view->GetVectorIcon().name ==
                            omnibox::kPriceTrackingDisabledRefreshIcon.name;
                   } else {
@@ -376,8 +373,7 @@ IN_PROC_BROWSER_TEST_F(PriceTrackingIconViewInteractiveTest,
           l10n_util::GetStringUTF16(IDS_OMNIBOX_TRACKING_PRICE)),
       CheckView(kPriceTrackingChipElementId,
                 base::BindOnce([](PriceTrackingIconView* view) {
-                  if (OmniboxFieldTrial::IsChromeRefreshIconsEnabled() ||
-                      features::IsChromeRefresh2023()) {
+                  if (features::IsChromeRefresh2023()) {
                     return view->GetVectorIcon().name ==
                            omnibox::kPriceTrackingEnabledRefreshIcon.name;
                   } else {
@@ -580,8 +576,7 @@ IN_PROC_BROWSER_TEST_F(PriceTrackingIconViewErrorHandelingTest,
                 })),
       CheckView(kPriceTrackingChipElementId,
                 base::BindOnce([](PriceTrackingIconView* view) {
-                  if (OmniboxFieldTrial::IsChromeRefreshIconsEnabled() ||
-                      features::IsChromeRefresh2023()) {
+                  if (features::IsChromeRefresh2023()) {
                     return view->GetVectorIcon().name ==
                            omnibox::kPriceTrackingDisabledRefreshIcon.name;
                   } else {
@@ -600,8 +595,7 @@ IN_PROC_BROWSER_TEST_F(PriceTrackingIconViewErrorHandelingTest,
                 })),
       CheckView(kPriceTrackingChipElementId,
                 base::BindOnce([](PriceTrackingIconView* view) {
-                  if (OmniboxFieldTrial::IsChromeRefreshIconsEnabled() ||
-                      features::IsChromeRefresh2023()) {
+                  if (features::IsChromeRefresh2023()) {
                     return view->GetVectorIcon().name ==
                            omnibox::kPriceTrackingDisabledRefreshIcon.name;
                   } else {

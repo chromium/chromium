@@ -51,7 +51,6 @@
 #include "components/omnibox/browser/omnibox_client.h"
 #include "components/omnibox/browser/omnibox_controller.h"
 #include "components/omnibox/browser/omnibox_edit_model.h"
-#include "components/omnibox/browser/omnibox_field_trial.h"
 #include "components/omnibox/browser/omnibox_popup_selection.h"
 #include "components/omnibox/browser/omnibox_prefs.h"
 #include "components/omnibox/common/omnibox_features.h"
@@ -615,12 +614,7 @@ void OmniboxViewViews::UpdateSchemeStyle(const gfx::Range& range) {
 void OmniboxViewViews::OnThemeChanged() {
   views::Textfield::OnThemeChanged();
 
-  bool gm3_text_color_enabled =
-      omnibox::IsOmniboxCr23CustomizeGuardedFeatureEnabled(
-          omnibox::kOmniboxSteadyStateTextColor);
-
-  set_placeholder_text_color(GetColorProvider()->GetColor(
-      gm3_text_color_enabled ? kColorOmniboxText : kColorOmniboxTextDimmed));
+  set_placeholder_text_color(GetColorProvider()->GetColor(kColorOmniboxText));
   SetSelectionBackgroundColor(
       GetColorProvider()->GetColor(kColorOmniboxSelectionBackground));
   SetSelectionTextColor(

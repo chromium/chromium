@@ -11,7 +11,6 @@
 #include "chrome/browser/ui/tabs/tab_strip_model.h"
 #include "chrome/browser/ui/views/autofill/payments/virtual_card_manual_fallback_bubble_views.h"
 #include "chrome/grit/generated_resources.h"
-#include "components/omnibox/browser/omnibox_field_trial.h"
 #include "components/strings/grit/components_strings.h"
 #include "ui/base/l10n/l10n_util.h"
 #include "ui/base/metadata/metadata_impl_macros.h"
@@ -64,9 +63,7 @@ void VirtualCardManualFallbackIconView::OnExecuting(
 
 const gfx::VectorIcon& VirtualCardManualFallbackIconView::GetVectorIcon()
     const {
-  return OmniboxFieldTrial::IsChromeRefreshIconsEnabled()
-             ? kCreditCardChromeRefreshIcon
-             : kCreditCardIcon;
+  return kCreditCardChromeRefreshIcon;
 }
 
 VirtualCardManualFallbackBubbleController*

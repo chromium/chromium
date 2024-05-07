@@ -20,7 +20,6 @@
 #include "components/google/core/common/google_util.h"
 #include "components/offline_pages/buildflags/buildflags.h"
 #include "components/omnibox/browser/autocomplete_input.h"
-#include "components/omnibox/browser/omnibox_field_trial.h"
 #include "components/omnibox/browser/omnibox_prefs.h"
 #include "components/omnibox/common/omnibox_features.h"
 #include "components/pref_registry/pref_registry_syncable.h"
@@ -180,15 +179,11 @@ const gfx::VectorIcon* ChromeLocationBarModelDelegate::GetVectorIconOverride()
   GetURL(&url);
 
   if (url.SchemeIs(content::kChromeUIScheme)) {
-    return (OmniboxFieldTrial::IsChromeRefreshIconsEnabled())
-               ? &omnibox::kProductChromeRefreshIcon
-               : &omnibox::kProductIcon;
+    return &omnibox::kProductChromeRefreshIcon;
   }
 
   if (url.SchemeIs(extensions::kExtensionScheme)) {
-    return (OmniboxFieldTrial::IsChromeRefreshIconsEnabled())
-               ? &vector_icons::kExtensionChromeRefreshIcon
-               : &omnibox::kExtensionAppIcon;
+    return &vector_icons::kExtensionChromeRefreshIcon;
   }
 #endif
 

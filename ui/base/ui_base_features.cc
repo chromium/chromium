@@ -506,16 +506,6 @@ BASE_FEATURE(kCustomizeChromeSidePanel,
              "CustomizeChromeSidePanel",
              base::FEATURE_ENABLED_BY_DEFAULT);
 
-BASE_FEATURE(kCustomizeChromeSidePanelNoChromeRefresh2023,
-             "CustomizeChromeSidePanelNoChromeRefresh2023",
-             base::FEATURE_DISABLED_BY_DEFAULT);
-
-bool CustomizeChromeSupportsChromeRefresh2023() {
-  return base::FeatureList::IsEnabled(kCustomizeChromeSidePanel) &&
-         !base::FeatureList::IsEnabled(
-             kCustomizeChromeSidePanelNoChromeRefresh2023);
-}
-
 BASE_FEATURE(kChromeRefresh2023,
              "ChromeRefresh2023",
              base::FEATURE_ENABLED_BY_DEFAULT);
@@ -525,11 +515,6 @@ BASE_FEATURE(kChromeRefreshSecondary2023,
              base::FEATURE_ENABLED_BY_DEFAULT);
 
 bool IsChromeRefresh2023() {
-  if (!CustomizeChromeSupportsChromeRefresh2023()) {
-    // Bail before checking any other feature flags so that associated studies
-    // don't get activated.
-    return false;
-  }
   return base::FeatureList::IsEnabled(kChromeRefresh2023) ||
          base::FeatureList::IsEnabled(kChromeRefreshSecondary2023);
 }
@@ -539,11 +524,6 @@ BASE_FEATURE(kChromeWebuiRefresh2023,
              base::FEATURE_ENABLED_BY_DEFAULT);
 
 bool IsChromeWebuiRefresh2023() {
-  if (!CustomizeChromeSupportsChromeRefresh2023()) {
-    // Bail before checking any other feature flags so that associated studies
-    // don't get activated.
-    return false;
-  }
   return IsChromeRefresh2023() &&
          (base::FeatureList::IsEnabled(kChromeWebuiRefresh2023) ||
           base::FeatureList::IsEnabled(kChromeRefreshSecondary2023));

@@ -327,24 +327,6 @@ extern const base::FeatureParam<int> kSuggestionRowHeight;
 // suggestions.
 extern const base::FeatureParam<int> kRichSuggestionVerticalMargin;
 
-// Omnibox CR23 - icons.
-// Returns true if the feature to enable CR23 icons is enabled.
-bool IsChromeRefreshIconsEnabled();
-// Omnibox CR23 - suggestion icons.
-// Returns true if the feature to enable CR23 suggestion icons is enabled.
-bool IsChromeRefreshSuggestIconsEnabled();
-// Omnibox CR23 - action chip icons.
-// Returns true if the feature to enable CR23 action chip icons is enabled.
-bool IsChromeRefreshActionChipIconsEnabled();
-
-// Omnibox CR23 - action chip shape.
-// Returns true if the feature to enable CR23 action chip shape is enabled.
-bool IsChromeRefreshActionChipShapeEnabled();
-// Omnibox CR23 - suggestion hover fill shape.
-// Returns true if the feature to enable CR23 suggestion hover fill shape is
-// enabled.
-bool IsChromeRefreshSuggestHoverFillShapeEnabled();
-
 // Omnibox GM3 - text style.
 // Returns true if the feature to enable GM3 text styling is enabled.
 bool IsGM3TextStyleEnabled();
@@ -352,15 +334,6 @@ bool IsGM3TextStyleEnabled();
 extern const base::FeatureParam<int> kFontSizeTouchUI;
 // Specifies the omnibox font size (non-Touch UI).
 extern const base::FeatureParam<int> kFontSizeNonTouchUI;
-
-// Omnibox CR23 - layout.
-// Returns true if `kExpandedLayout` is enabled.
-bool IsCr23LayoutEnabled();
-
-// Omnibox CR23 - steady state background color.
-// Returns true if the feature to enable CR23 omnibox steady state background
-// color is enabled.
-bool IsChromeRefreshSteadyStateBackgroundColorEnabled();
 
 // ---------------------------------------------------------
 // Clipboard URL suggestions:
