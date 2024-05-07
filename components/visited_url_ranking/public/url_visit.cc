@@ -6,6 +6,7 @@
 
 #include <set>
 #include <utility>
+#include <variant>
 
 namespace visited_url_ranking {
 
@@ -36,12 +37,12 @@ URLVisitAggregate& URLVisitAggregate::operator=(URLVisitAggregate&& other) =
 std::set<const GURL*> URLVisitAggregate::GetAssociatedURLs() const {
   std::set<const GURL*> urls = {};
   for (const auto& fetcher_entry : fetcher_data_map) {
-    if (std::holds_alternative<URLVisitAggregate::TabData>(
-            fetcher_entry.second)) {
-      const auto& tab_data =
-          std::get<URLVisitAggregate::TabData>(fetcher_entry.second);
-      urls.insert(&tab_data.last_active_tab.visit.url);
-    }
+    std::visit(
+        URLVisitVariantHelper{
+            [&urls](const URLVisitAggregate::TabData& tab_data) {
+              urls.insert(&tab_data.last_active_tab.visit.url);
+            }},
+        fetcher_entry.second);
     // TODO(crbug.com/330580109): Add support for additional fetcher data types
     // (e.g., TabModel, History).
   }

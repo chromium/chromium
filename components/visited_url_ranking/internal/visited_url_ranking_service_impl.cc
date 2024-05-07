@@ -7,6 +7,7 @@
 #include <map>
 #include <memory>
 #include <queue>
+#include <variant>
 #include <vector>
 
 #include "base/barrier_callback.h"
@@ -38,16 +39,16 @@ std::vector<URLVisitAggregate> ComputeURLVisitAggregates(
     for (std::pair<const URLMergeKey, URLVisitAggregate::URLVisitVariant>&
              url_data : result.data) {
       URLVisitAggregate& aggregate = url_visit_map[url_data.first];
-      if (std::holds_alternative<URLVisitAggregate::TabData>(url_data.second)) {
-        auto& tab_data = std::get<URLVisitAggregate::TabData>(url_data.second);
-        aggregate.fetcher_data_map.emplace(
-            tab_data.last_active_tab.session_name.has_value()
-                ? Fetcher::kSession
-                : Fetcher::kTabModel,
-            std::move(tab_data));
-      }
-      // TODO(crbug.com/330580109): Add support for history fetcher and
-      // associated aggregate data type.
+      std::visit(
+          URLVisitVariantHelper{
+              [&aggregate](URLVisitAggregate::TabData& tab_data) {
+                aggregate.fetcher_data_map.emplace(
+                    tab_data.last_active_tab.session_name.has_value()
+                        ? Fetcher::kSession
+                        : Fetcher::kTabModel,
+                    std::move(tab_data));
+              }},
+          url_data.second);
     }
   }
 
