@@ -132,6 +132,48 @@ chromium-metrics-reviews@google.com.
   </summary>
 </histogram>
 
+<histogram name="Printing.CUPS.DPI.AllValues" units="DPI"
+    expires_after="2025-05-01">
+  <owner>gavinwill@google.com</owner>
+  <owner>cros-peripherals@google.com</owner>
+  <summary>
+    Records one of the available DPI values from a printer's capabilities
+    whenever the printer is selected in Print Preview. A separate record is
+    emitted for every DPI value that the printer supports. The recorded value is
+    a 32 bit combination of two DPI values which can be decoded as the higher
+    order 16 bits representing the DPI width and the lower order 16 bits
+    representing the DPI height.
+  </summary>
+</histogram>
+
+<histogram name="Printing.CUPS.DPI.Count" units="resolutions"
+    expires_after="2025-05-01">
+  <owner>gavinwill@google.com</owner>
+  <owner>cros-peripherals@google.com</owner>
+  <summary>
+    Records the count of all DPI values from a printer's capabilities whenever
+    the printer is selected in Print Preview.
+  </summary>
+</histogram>
+
+<histogram name="Printing.CUPS.DPI.{Type}" units="DPI"
+    expires_after="2025-05-01">
+  <owner>gavinwill@google.com</owner>
+  <owner>cros-peripherals@google.com</owner>
+  <summary>
+    Records the {Type} DPI value from a printer's capabilities whenever the
+    printer is selected in Print Preview. The recorded value is a 32 bit
+    combination of two DPI values which can be decoded as the higher order 16
+    bits representing the DPI width and the lower order 16 bits representing the
+    DPI height.
+  </summary>
+  <token key="Type">
+    <variant name="Default"/>
+    <variant name="Max"/>
+    <variant name="Min"/>
+  </token>
+</histogram>
+
 <histogram name="Printing.CUPS.IppAttributesSuccess" enum="BooleanSuccess"
     expires_after="2024-10-13">
   <owner>bmgordon@chromium.org</owner>

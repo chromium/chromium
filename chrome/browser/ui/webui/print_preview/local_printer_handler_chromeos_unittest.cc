@@ -16,11 +16,13 @@
 #include "base/memory/ref_counted.h"
 #include "base/strings/string_piece.h"
 #include "base/test/bind.h"
+#include "base/test/metrics/histogram_tester.h"
 #include "base/test/values_test_util.h"
 #include "base/values.h"
 #include "chrome/test/chromeos/printing/fake_local_printer_chromeos.h"
 #include "chromeos/crosapi/mojom/local_printer.mojom.h"
 #include "content/public/test/browser_task_environment.h"
+#include "printing/backend/print_backend.h"
 #include "printing/print_job_constants.h"
 #include "printing/print_settings_conversion_chromeos.h"
 #include "testing/gmock/include/gmock/gmock.h"
@@ -463,6 +465,47 @@ TEST(LocalPrinterHandlerChromeos, StatusToValue) {
    "timestamp": 1e+12
 })");
   EXPECT_EQ(kExpectedValue, LocalPrinterHandlerChromeos::StatusToValue(status));
+}
+
+TEST(LocalPrinterHandlerChromeos, RecordDpi) {
+  base::HistogramTester histogram_tester;
+  printing::PrinterSemanticCapsAndDefaults printer_caps;
+
+  // Represent DPI values in hex to simplify cross checking the values with the
+  // metric output.
+  printer_caps.default_dpi = {0x00C8, 0x0190};
+  printer_caps.dpis = {
+      {0x0064, 0x0064}, {0x00C8, 0x0190}, {0x00C8, 0x01F4}, {0x03E8, 0x03E8}};
+
+  auto caps = crosapi::mojom::CapabilitiesResponse::New();
+  caps->basic_info = crosapi::mojom::LocalDestinationInfo::New(
+      "device_name", "printer_name", "printer_description", false);
+  caps->capabilities = printer_caps;
+  LocalPrinterHandlerChromeos::CapabilityToValue(std::move(caps));
+
+  histogram_tester.ExpectUniqueSample("Printing.CUPS.DPI.Count", /*sample=*/4,
+                                      /*expected_bucket_count=*/1);
+  histogram_tester.ExpectUniqueSample("Printing.CUPS.DPI.Default",
+                                      /*sample=*/0x00C80190,
+                                      /*expected_bucket_count=*/1);
+  histogram_tester.ExpectUniqueSample("Printing.CUPS.DPI.Min",
+                                      /*sample=*/0x00640064,
+                                      /*expected_bucket_count=*/1);
+  histogram_tester.ExpectUniqueSample("Printing.CUPS.DPI.Max",
+                                      /*sample=*/0x03E803E8,
+                                      /*expected_bucket_count=*/1);
+  histogram_tester.ExpectBucketCount("Printing.CUPS.DPI.AllValues",
+                                     /*sample=*/0x00640064,
+                                     /*expected_count=*/1);
+  histogram_tester.ExpectBucketCount("Printing.CUPS.DPI.AllValues",
+                                     /*sample=*/0x00C80190,
+                                     /*expected_count=*/1);
+  histogram_tester.ExpectBucketCount("Printing.CUPS.DPI.AllValues",
+                                     /*sample=*/0x00C801F4,
+                                     /*expected_count=*/1);
+  histogram_tester.ExpectBucketCount("Printing.CUPS.DPI.AllValues",
+                                     /*sample=*/0x03E803E8,
+                                     /*expected_count=*/1);
 }
 
 }  // namespace printing
