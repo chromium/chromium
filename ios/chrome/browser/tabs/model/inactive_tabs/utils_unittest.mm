@@ -434,6 +434,7 @@ TEST_F(InactiveTabsUtilsTest, DoNotMoveNTPInInactive) {
   fake_web_state->SetVisibleURL(url);
   fake_web_state->SetNavigationManager(std::move(fake_navigation_manager));
   fake_web_state->SetLastActiveTime(base::Time::Now() - base::Days(30));
+  fake_web_state->SetBrowserState(browser_state_.get());
 
   // Ensure this is an ntp web state.
   id delegate = OCMProtocolMock(@protocol(NewTabPageTabHelperDelegate));

@@ -16,6 +16,7 @@
 @protocol FeedControlDelegate;
 @protocol NewTabPageFollowDelegate;
 @protocol NewTabPageMetricsDelegate;
+@class NewTabPageState;
 class PrefService;
 
 namespace base {
@@ -25,8 +26,8 @@ class Time;
 // Records different metrics for the NTP feeds.
 @interface FeedMetricsRecorder : NSObject <FeedRefreshStateTracker>
 
-// Delegate to get the currently selected feed.
-@property(nonatomic, weak) id<FeedControlDelegate> feedControlDelegate;
+// The last active new tab page state.
+@property(nonatomic, weak) NewTabPageState* NTPState;
 
 // Delegate for getting information relating to Following.
 @property(nonatomic, weak) id<NewTabPageFollowDelegate> followDelegate;

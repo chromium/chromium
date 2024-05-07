@@ -6,12 +6,16 @@
 
 #import <Foundation/Foundation.h>
 
+#import "base/build_time.h"
 #import "base/json/values_util.h"
+#import "base/test/ios/wait_util.h"
 #import "base/test/metrics/histogram_tester.h"
 #import "base/test/metrics/user_action_tester.h"
+#import "base/test/scoped_mock_clock_override.h"
 #import "components/feed/core/v2/public/common_enums.h"
 #import "components/sync_preferences/testing_pref_service_syncable.h"
 #import "ios/chrome/browser/metrics/model/constants.h"
+#import "ios/chrome/browser/ntp/model/new_tab_page_state.h"
 #import "ios/chrome/browser/shared/model/prefs/browser_prefs.h"
 #import "ios/chrome/browser/ui/ntp/feed_control_delegate.h"
 #import "ios/chrome/browser/ui/ntp/metrics/feed_metrics_constants.h"
@@ -21,10 +25,6 @@
 #import "testing/gtest_mac.h"
 #import "testing/platform_test.h"
 #import "third_party/ocmock/OCMock/OCMock.h"
-
-#import "base/build_time.h"
-#import "base/test/ios/wait_util.h"
-#import "base/test/scoped_mock_clock_override.h"
 
 #define EXPECT_ACTION(action, method_call)                 \
   {                                                        \
@@ -41,11 +41,10 @@ class FeedMetricsRecorderTest : public PlatformTest {
     RegisterBrowserStatePrefs(test_pref_service_.registry());
     recorder_ =
         [[FeedMetricsRecorder alloc] initWithPrefService:&test_pref_service_];
-    // Mock Delegate to change currently used feed.
-    mocked_delegate_ = OCMProtocolMock(@protocol(FeedControlDelegate));
-    recorder_.feedControlDelegate = mocked_delegate_;
     histogram_tester_ = std::make_unique<base::HistogramTester>();
     actions_tester_ = std::make_unique<base::UserActionTester>();
+    NTP_state_ = [[NewTabPageState alloc] init];
+    recorder_.NTPState = NTP_state_;
   }
 
  protected:
@@ -61,7 +60,7 @@ class FeedMetricsRecorderTest : public PlatformTest {
   }
   sync_preferences::TestingPrefServiceSyncable test_pref_service_;
   FeedMetricsRecorder* recorder_;
-  id<FeedControlDelegate> mocked_delegate_;
+  NewTabPageState* NTP_state_;
   std::unique_ptr<base::HistogramTester> histogram_tester_;
   std::unique_ptr<base::UserActionTester> actions_tester_;
 };
@@ -157,7 +156,7 @@ TEST_F(FeedMetricsRecorderTest,
   histogram_tester_->ExpectBucketCount(kDiscoverFeedEngagementTypeHistogram,
                                        FeedEngagementType::kGoodVisit, 1);
   // Change feed to Following.
-  OCMStub([mocked_delegate_ selectedFeed]).andReturn(FeedTypeFollowing);
+  NTP_state_.selectedFeed = FeedTypeFollowing;
 
   // Add URL to Read Later constitutes a Good Visit for AllFeeds (not counted as
   // one has been triggered already this session) and Following. The Discover
@@ -341,7 +340,7 @@ TEST_F(FeedMetricsRecorderTest, GoodVisit_ShortClickVisitDiscover) {
 // Tests that a Good Visit is recorded when a url is added to Read Later.
 TEST_F(FeedMetricsRecorderTest, GoodExplicitInteraction_Following) {
   // Change feed to Following.
-  OCMStub([mocked_delegate_ selectedFeed]).andReturn(FeedTypeFollowing);
+  NTP_state_.selectedFeed = FeedTypeFollowing;
   // There should not be a Good Visit recorded.
   histogram_tester_->ExpectBucketCount(kFollowingFeedEngagementTypeHistogram,
                                        FeedEngagementType::kGoodVisit, 0);
@@ -356,7 +355,7 @@ TEST_F(FeedMetricsRecorderTest, GoodExplicitInteraction_Following) {
 // tab.
 TEST_F(FeedMetricsRecorderTest, GoodVisit_OpenInNewIncognitoTab_Following) {
   // Change feed to Following.
-  OCMStub([mocked_delegate_ selectedFeed]).andReturn(FeedTypeFollowing);
+  NTP_state_.selectedFeed = FeedTypeFollowing;
   // There should not be a Good Visit recorded.
   histogram_tester_->ExpectBucketCount(kFollowingFeedEngagementTypeHistogram,
                                        FeedEngagementType::kGoodVisit, 0);
@@ -369,7 +368,7 @@ TEST_F(FeedMetricsRecorderTest, GoodVisit_OpenInNewIncognitoTab_Following) {
 // Tests that a Good Visit is recorded when we do a long press on a card.
 TEST_F(FeedMetricsRecorderTest, GoodVisit_LongPress_Following) {
   // Change feed to Following.
-  OCMStub([mocked_delegate_ selectedFeed]).andReturn(FeedTypeFollowing);
+  NTP_state_.selectedFeed = FeedTypeFollowing;
   // There should not be a Good Visit recorded.
   histogram_tester_->ExpectBucketCount(kFollowingFeedEngagementTypeHistogram,
                                        FeedEngagementType::kGoodVisit, 0);
@@ -382,7 +381,7 @@ TEST_F(FeedMetricsRecorderTest, GoodVisit_LongPress_Following) {
 // Tests that a Good Visit is only logged once for each Good Visit session.
 TEST_F(FeedMetricsRecorderTest, GoodVisit_OnlyLoggedOncePerVisit_Following) {
   // Change feed to Following.
-  OCMStub([mocked_delegate_ selectedFeed]).andReturn(FeedTypeFollowing);
+  NTP_state_.selectedFeed = FeedTypeFollowing;
   // There should not be a Good Visit recorded.
   histogram_tester_->ExpectBucketCount(kFollowingFeedEngagementTypeHistogram,
                                        FeedEngagementType::kGoodVisit, 0);
@@ -402,7 +401,7 @@ TEST_F(FeedMetricsRecorderTest, GoodVisit_OnlyLoggedOncePerVisit_Following) {
 TEST_F(FeedMetricsRecorderTest,
        GoodVisit_NonGoodVisitActionTriggered_Following) {
   // Change feed to Following.
-  OCMStub([mocked_delegate_ selectedFeed]).andReturn(FeedTypeFollowing);
+  NTP_state_.selectedFeed = FeedTypeFollowing;
   // There should not be a Good Visit recorded.
   histogram_tester_->ExpectBucketCount(kFollowingFeedEngagementTypeHistogram,
                                        FeedEngagementType::kGoodVisit, 0);
@@ -419,7 +418,7 @@ TEST_F(FeedMetricsRecorderTest,
 TEST_F(FeedMetricsRecorderTest, GoodVisit_GoodTimeInFeedFollowing) {
   base::ScopedMockClockOverride mock_clock;
   // Change feed to Following.
-  OCMStub([mocked_delegate_ selectedFeed]).andReturn(FeedTypeFollowing);
+  NTP_state_.selectedFeed = FeedTypeFollowing;
 
   [recorder_ recordNTPDidChangeVisibility:YES];
   [recorder_ recordFeedScrolled:kMinScrollForGoodVisitTests];
@@ -436,7 +435,7 @@ TEST_F(FeedMetricsRecorderTest, GoodVisit_GoodTimeInFeedFollowing) {
 TEST_F(FeedMetricsRecorderTest, GoodVisit_ShortClickVisitFollowing) {
   base::ScopedMockClockOverride mock_clock;
   // Change feed to Following.
-  OCMStub([mocked_delegate_ selectedFeed]).andReturn(FeedTypeFollowing);
+  NTP_state_.selectedFeed = FeedTypeFollowing;
   // Trigger article click
   [recorder_ recordOpenURLInSameTab];
   histogram_tester_->ExpectBucketCount(kFollowingFeedEngagementTypeHistogram,

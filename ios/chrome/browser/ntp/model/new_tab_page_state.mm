@@ -16,11 +16,14 @@
 }
 
 - (instancetype)initWithScrollPosition:(CGFloat)scrollPosition
-                          selectedFeed:(FeedType)selectedFeed {
+                          selectedFeed:(FeedType)selectedFeed
+                 followingFeedSortType:
+                     (FollowingFeedSortType)followingFeedSortType {
   self = [super init];
   if (self) {
     _scrollPosition = scrollPosition;
     _selectedFeed = selectedFeed;
+    _followingFeedSortType = followingFeedSortType;
   }
   return self;
 }

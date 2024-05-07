@@ -50,7 +50,7 @@
     MagicStackCollectionViewController* magicStackCollectionView;
 
 // Feed metrics recorder.
-@property(nonatomic, strong) FeedMetricsRecorder* feedMetricsRecorder;
+@property(nonatomic, weak) FeedMetricsRecorder* feedMetricsRecorder;
 
 // Whether or not the feed is visible.
 @property(nonatomic, assign, getter=isFeedVisible) BOOL feedVisible;

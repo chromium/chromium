@@ -187,11 +187,11 @@ class NewTabPageCoordinatorTest : public PlatformTest {
 
   std::unique_ptr<web::FakeWebState> CreateWebState(const char* url) {
     auto test_web_state = std::make_unique<web::FakeWebState>();
+    test_web_state->SetBrowserState(browser_state_.get());
     NewTabPageTabHelper::CreateForWebState(test_web_state.get());
     test_web_state->SetCurrentURL(GURL(url));
     test_web_state->SetNavigationManager(
         std::make_unique<web::FakeNavigationManager>());
-    test_web_state->SetBrowserState(browser_state_.get());
     return test_web_state;
   }
 
@@ -264,6 +264,7 @@ class NewTabPageCoordinatorTest : public PlatformTest {
   std::unique_ptr<web::WebState> CreateWebStateWithURL(const GURL& url) {
     std::unique_ptr<web::FakeWebState> web_state =
         std::make_unique<web::FakeWebState>();
+    web_state->SetBrowserState(browser_state_.get());
     NewTabPageTabHelper::CreateForWebState(web_state.get());
     web_state->SetVisibleURL(url);
     auto navigation_manager = std::make_unique<web::FakeNavigationManager>();

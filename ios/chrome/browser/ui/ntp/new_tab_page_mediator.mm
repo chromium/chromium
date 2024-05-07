@@ -178,26 +178,29 @@ const char kFeedLearnMoreURL[] = "https://support.google.com/chrome/"
 }
 
 - (void)saveNTPStateForWebState:(web::WebState*)webState {
-  NewTabPageTabHelper::FromWebState(webState)->SetNTPState(
-      [[NewTabPageState alloc]
-          initWithScrollPosition:self.scrollPositionToSave
-                    selectedFeed:[self.feedControlDelegate selectedFeed]]);
+  NewTabPageState* NTPState = [[NewTabPageState alloc]
+      initWithScrollPosition:self.scrollPositionToSave
+                selectedFeed:[self.feedControlDelegate selectedFeed]
+       followingFeedSortType:[self.feedControlDelegate followingFeedSortType]];
+  self.feedMetricsRecorder.NTPState = NTPState;
+  NewTabPageTabHelper::FromWebState(webState)->SetNTPState(NTPState);
 }
 
 - (void)restoreNTPStateForWebState:(web::WebState*)webState {
-  NewTabPageState* ntpState =
+  NewTabPageState* NTPState =
       NewTabPageTabHelper::FromWebState(webState)->GetNTPState();
+  self.feedMetricsRecorder.NTPState = NTPState;
   if ([self.feedControlDelegate isFollowingFeedAvailable]) {
-    [self.NTPContentDelegate updateForSelectedFeed:ntpState.selectedFeed];
+    [self.NTPContentDelegate updateForSelectedFeed:NTPState.selectedFeed];
   }
 
-  if (ntpState.shouldScrollToTopOfFeed) {
+  if (NTPState.shouldScrollToTopOfFeed) {
     [self.consumer restoreScrollPositionToTopOfFeed];
     // Prevent next NTP from being scrolled to the top of feed.
-    ntpState.shouldScrollToTopOfFeed = NO;
-    NewTabPageTabHelper::FromWebState(webState)->SetNTPState(ntpState);
+    NTPState.shouldScrollToTopOfFeed = NO;
+    NewTabPageTabHelper::FromWebState(webState)->SetNTPState(NTPState);
   } else {
-    [self.consumer restoreScrollPosition:ntpState.scrollPosition];
+    [self.consumer restoreScrollPosition:NTPState.scrollPosition];
   }
 }
 

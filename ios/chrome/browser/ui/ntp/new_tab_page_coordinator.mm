@@ -205,7 +205,7 @@
 @property(nonatomic, assign) DiscoverFeedService* discoverFeedService;
 
 // Metrics recorder for actions relating to the feed.
-@property(nonatomic, strong) FeedMetricsRecorder* feedMetricsRecorder;
+@property(nonatomic, weak) FeedMetricsRecorder* feedMetricsRecorder;
 
 // The header view controller containing the fake omnibox and logo.
 @property(nonatomic, strong)
@@ -382,6 +382,8 @@
   }
   self.feedWrapperViewController = nil;
   self.feedViewController = nil;
+  self.feedMetricsRecorder.followDelegate = nil;
+  self.feedMetricsRecorder.NTPMetricsDelegate = nil;
   self.feedMetricsRecorder = nil;
 
   [self.feedExpandedPref setObserver:nil];
@@ -523,6 +525,9 @@
   if (_selectedFeed == selectedFeed) {
     return;
   }
+  // Updates the NTP state with the newly selected feed.
+  [self saveNTPState];
+
   // Tell Metrics Recorder the feed has changed.
   [self.feedMetricsRecorder recordFeedTypeChangedFromFeed:_selectedFeed];
   _selectedFeed = selectedFeed;
@@ -696,7 +701,9 @@
 
 // Configures `self.feedMetricsRecorder`.
 - (void)configureFeedMetricsRecorder {
-  self.feedMetricsRecorder.feedControlDelegate = self;
+  CHECK(self.webState);
+  self.feedMetricsRecorder.NTPState =
+      NewTabPageTabHelper::FromWebState(self.webState)->GetNTPState();
   self.feedMetricsRecorder.followDelegate = self;
   self.feedMetricsRecorder.NTPMetricsDelegate = self;
 }
@@ -929,6 +936,9 @@
   // Scroll position resets when changing the feed, so we set it back to what it
   // was.
   [self.NTPViewController setContentOffsetToTopOfFeedOrLess:scrollPosition];
+
+  // Updates the NTP state for the newly selected sort type.
+  [self saveNTPState];
 }
 
 - (BOOL)shouldFeedBeVisible {
@@ -1099,7 +1109,6 @@
   // feed, which could have been changed when a new web state was
   // inserted.
   [self.feedHeaderViewController updateForSelectedFeed];
-  self.feedMetricsRecorder.feedControlDelegate = self;
   self.feedMetricsRecorder.followDelegate = self;
 }
 

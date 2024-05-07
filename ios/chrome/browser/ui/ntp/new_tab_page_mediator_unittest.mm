@@ -128,6 +128,7 @@ class NewTabPageMediatorTest : public PlatformTest {
       const GURL& url,
       CGFloat scroll_position = 0.0) {
     auto web_state = std::make_unique<web::FakeWebState>();
+    web_state->SetBrowserState(chrome_browser_state_.get());
     NewTabPageTabHelper::CreateForWebState(web_state.get());
     web_state->SetVisibleURL(url);
     // Force the DidStopLoading callback.
