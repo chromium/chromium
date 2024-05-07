@@ -31,8 +31,8 @@ public class TabResumptionModuleBuilder implements ModuleProviderBuilder, Module
 
     // Foreign Session data source that listens to login / sync status changes. Shared among data
     // providers to reduce resource use, and ref-counted to ensure proper resource management.
-    private ForeignSessionTabResumptionDataSource mForeignSessionTabResumptionDataSource;
-    private int mForeignSessionTabResumptionDataSourceRefCount;
+    private SyncDerivedSuggestionEntrySource mSyncDerivedSuggestionEntrySource;
+    private int mSyncDerivedSuggestionEntrySourceRefCount;
 
     public TabResumptionModuleBuilder(
             @NonNull Context context,
@@ -117,22 +117,22 @@ public class TabResumptionModuleBuilder implements ModuleProviderBuilder, Module
         return profile.isOffTheRecord() ? profile.getOriginalProfile() : profile;
     }
 
-    private void addRefToDataSource() {
-        if (mForeignSessionTabResumptionDataSourceRefCount == 0) {
-            assert mForeignSessionTabResumptionDataSource == null;
+    private void addRefToSuggestionSource() {
+        if (mSyncDerivedSuggestionEntrySourceRefCount == 0) {
+            assert mSyncDerivedSuggestionEntrySource == null;
             Profile profile = getRegularProfile();
-            mForeignSessionTabResumptionDataSource =
-                    ForeignSessionTabResumptionDataSource.createFromProfile(profile);
+            mSyncDerivedSuggestionEntrySource =
+                    SyncDerivedSuggestionEntrySource.createFromProfile(profile);
         }
-        ++mForeignSessionTabResumptionDataSourceRefCount;
+        ++mSyncDerivedSuggestionEntrySourceRefCount;
     }
 
-    private void removeRefToDataSource() {
-        assert mForeignSessionTabResumptionDataSource != null;
-        --mForeignSessionTabResumptionDataSourceRefCount;
-        if (mForeignSessionTabResumptionDataSourceRefCount == 0) {
-            mForeignSessionTabResumptionDataSource.destroy();
-            mForeignSessionTabResumptionDataSource = null;
+    private void removeRefToSuggestionSource() {
+        assert mSyncDerivedSuggestionEntrySource != null;
+        --mSyncDerivedSuggestionEntrySourceRefCount;
+        if (mSyncDerivedSuggestionEntrySourceRefCount == 0) {
+            mSyncDerivedSuggestionEntrySource.destroy();
+            mSyncDerivedSuggestionEntrySource = null;
         }
     }
 
@@ -152,10 +152,10 @@ public class TabResumptionModuleBuilder implements ModuleProviderBuilder, Module
         ForeignSessionTabResumptionDataProvider foreignSessionProvider = null;
 
         if (TabResumptionModuleEnablement.ForeignSession.shouldMakeProvider(profile)) {
-            addRefToDataSource();
+            addRefToSuggestionSource();
             foreignSessionProvider =
                     new ForeignSessionTabResumptionDataProvider(
-                            mForeignSessionTabResumptionDataSource, this::removeRefToDataSource);
+                            mSyncDerivedSuggestionEntrySource, this::removeRefToSuggestionSource);
         }
         return new MixedTabResumptionDataProvider(localTabProvider, foreignSessionProvider);
     }

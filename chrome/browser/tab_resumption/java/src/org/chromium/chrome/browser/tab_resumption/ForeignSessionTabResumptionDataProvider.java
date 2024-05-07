@@ -7,7 +7,7 @@ package org.chromium.chrome.browser.tab_resumption;
 import androidx.annotation.VisibleForTesting;
 
 import org.chromium.base.Callback;
-import org.chromium.chrome.browser.tab_resumption.ForeignSessionTabResumptionDataSource.DataChangedObserver;
+import org.chromium.chrome.browser.tab_resumption.SyncDerivedSuggestionEntrySource.SourceDataChangedObserver;
 import org.chromium.chrome.browser.tab_resumption.TabResumptionDataProvider.ResultStrength;
 import org.chromium.chrome.browser.tab_resumption.TabResumptionDataProvider.SuggestionsResult;
 
@@ -15,8 +15,8 @@ import java.util.List;
 import java.util.concurrent.TimeUnit;
 
 /**
- * TabResumptionDataProvider that uses ForeignSessionTabResumptionDataSource data, while fulfilling
- * the following update requirements:
+ * TabResumptionDataProvider that uses SyncDerivedSuggestionEntrySource data, while fulfilling the
+ * following update requirements:
  *
  * <pre>
  * 1. Fast path: Read cached suggestions so Magic Stack can show module quickly.
@@ -31,17 +31,17 @@ import java.util.concurrent.TimeUnit;
  * </pre>
  *
  * This class not only provides suggestions, but can also coordinate with the caller to trigger
- * refresh via onForeignSessionDataChanged() -> (caller) -> fetchSuggestions(). Therefore some
- * suggestions filtering decisions are made in onForeignSessionDataChanged().
+ * refresh via onDataChanged() -> (caller) -> fetchSuggestions(). Therefore some suggestions
+ * filtering decisions are made in onDataChanged().
  */
 public class ForeignSessionTabResumptionDataProvider extends TabResumptionDataProvider
-        implements DataChangedObserver {
+        implements SourceDataChangedObserver {
 
     // Duration after initial suggestion for which non-permission data changes will be ignored, to
     // prevent (3b).
     private static final long TIMELY_THRESHOLD_MS = TimeUnit.SECONDS.toMillis(5);
 
-    private final ForeignSessionTabResumptionDataSource mDataSource;
+    private final SyncDerivedSuggestionEntrySource mEntrySource;
     private final Runnable mCleanupCallback;
 
     // Monotonically increasing result strength.
@@ -51,23 +51,23 @@ public class ForeignSessionTabResumptionDataProvider extends TabResumptionDataPr
     private long mTentativeSuggestionTime;
 
     /**
-     * @param dataSource Non-owned data source instance that may be shared.
+     * @param entrySource Non-owned data source instance that may be shared.
      * @param cleanupCallback To be invoked in destroy() for potential cleanup of external data.
      */
     @VisibleForTesting
     public ForeignSessionTabResumptionDataProvider(
-            ForeignSessionTabResumptionDataSource dataSource, Runnable cleanupCallback) {
+            SyncDerivedSuggestionEntrySource entrySource, Runnable cleanupCallback) {
         super();
-        mDataSource = dataSource;
+        mEntrySource = entrySource;
         mCleanupCallback = cleanupCallback;
-        mDataSource.addObserver(this);
+        mEntrySource.addObserver(this);
         mStrength = ResultStrength.TENTATIVE;
     }
 
     /** Implements {@link TabResumptionDataProvider} */
     @Override
     public void destroy() {
-        mDataSource.removeObserver(this);
+        mEntrySource.removeObserver(this);
         mCleanupCallback.run();
     }
 
@@ -75,7 +75,7 @@ public class ForeignSessionTabResumptionDataProvider extends TabResumptionDataPr
     @Override
     public void fetchSuggestions(Callback<SuggestionsResult> suggestionsCallback) {
         // Function is synchronous; no need to worry about contention with destroy().
-        if (!mDataSource.canUseData()) {
+        if (!mEntrySource.canUseData()) {
             mStrength = ResultStrength.FORCED_NULL;
         }
         if (mStrength == ResultStrength.FORCED_NULL) {
@@ -84,16 +84,16 @@ public class ForeignSessionTabResumptionDataProvider extends TabResumptionDataPr
         }
 
         if (mStrength == ResultStrength.TENTATIVE && mTentativeSuggestionTime == 0) {
-            mTentativeSuggestionTime = mDataSource.getCurrentTimeMs();
+            mTentativeSuggestionTime = mEntrySource.getCurrentTimeMs();
         }
-        List<SuggestionEntry> suggestions = mDataSource.getSuggestions();
+        List<SuggestionEntry> suggestions = mEntrySource.getSuggestions();
         assert suggestions != null; // Not null, but may be empty.
         suggestionsCallback.onResult(new SuggestionsResult(mStrength, suggestions));
     }
 
-    /** Implements {@link ForeignSessionTabResumptionDataSource.DataChangedObserver} */
+    /** Implements {@link SyncDerivedSuggestionEntrySource.SourceDataChangedObserver} */
     @Override
-    public void onForeignSessionDataChanged(boolean isPermissionUpdate) {
+    public void onDataChanged(boolean isPermissionUpdate) {
         // Assume permission updates are permission removals: If permission were granted, then it
         // was previously absent, and the module would have been gone to start with.
         if (isPermissionUpdate) {
@@ -102,7 +102,7 @@ public class ForeignSessionTabResumptionDataProvider extends TabResumptionDataPr
 
             // Require this to be the first update (for (3a)), and that it's timely (for (3b)).
         } else if (mStrength == ResultStrength.TENTATIVE
-                && mDataSource.getCurrentTimeMs() - mTentativeSuggestionTime
+                && mEntrySource.getCurrentTimeMs() - mTentativeSuggestionTime
                         < TIMELY_THRESHOLD_MS) {
             mStrength = ResultStrength.STABLE;
             dispatchStatusChangedCallback();

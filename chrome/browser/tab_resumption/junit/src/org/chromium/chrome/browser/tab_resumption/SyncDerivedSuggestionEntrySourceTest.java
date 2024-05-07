@@ -29,7 +29,7 @@ import org.chromium.chrome.browser.recent_tabs.ForeignSessionHelper.ForeignSessi
 import org.chromium.chrome.browser.recent_tabs.ForeignSessionHelper.ForeignSessionCallback;
 import org.chromium.chrome.browser.signin.services.SigninManager;
 import org.chromium.chrome.browser.signin.services.SigninManager.SignInStateObserver;
-import org.chromium.chrome.browser.tab_resumption.ForeignSessionTabResumptionDataSource.DataChangedObserver;
+import org.chromium.chrome.browser.tab_resumption.SyncDerivedSuggestionEntrySource.SourceDataChangedObserver;
 import org.chromium.components.signin.identitymanager.IdentityManager;
 import org.chromium.components.sync.SyncService;
 import org.chromium.components.sync.SyncService.SyncStateChangedListener;
@@ -40,7 +40,7 @@ import java.util.concurrent.TimeUnit;
 
 @RunWith(BaseRobolectricTestRunner.class)
 @Config(manifest = Config.NONE)
-public class ForeignSessionTabResumptionDataSourceTest extends TestSupport {
+public class SyncDerivedSuggestionEntrySourceTest extends TestSupport {
     @Mock private SigninManager mSigninManager;
     @Mock private IdentityManager mIdentityManager;
     @Mock private SyncService mSyncService;
@@ -53,19 +53,19 @@ public class ForeignSessionTabResumptionDataSourceTest extends TestSupport {
     private long mFakeTime;
     private List<ForeignSession> mFakeSuggestions;
 
-    private ForeignSessionTabResumptionDataSource mDataSource;
+    private SyncDerivedSuggestionEntrySource mSource;
     ForeignSessionCallback mForeignSessionCallback;
 
     private int mDataChangedCounter;
     private boolean mLastIsPermissionUpdate;
-    private DataChangedObserver mDataChangedObserver;
+    private SourceDataChangedObserver mSourceDataChangedObserver;
 
     @Before
     public void setUp() {
         MockitoAnnotations.initMocks(this);
 
         mFakeTime = CURRENT_TIME_MS;
-        mDataChangedObserver =
+        mSourceDataChangedObserver =
                 (boolean isPermissionUpdate) -> {
                     ++mDataChangedCounter;
                     mLastIsPermissionUpdate = isPermissionUpdate;
@@ -74,9 +74,9 @@ public class ForeignSessionTabResumptionDataSourceTest extends TestSupport {
 
     @After
     public void tearDown() {
-        if (mDataSource != null) {
-            mDataSource.removeObserver(mDataChangedObserver);
-            mDataSource.destroy();
+        if (mSource != null) {
+            mSource.removeObserver(mSourceDataChangedObserver);
+            mSource.destroy();
         }
     }
 
@@ -85,17 +85,17 @@ public class ForeignSessionTabResumptionDataSourceTest extends TestSupport {
     public void testMainFlow() {
         when(mForeignSessionHelper.getForeignSessions()).thenReturn(makeForeignSessionsA());
 
-        createDataSource(/* isSignedIn= */ true, /* isSynced= */ true);
-        Assert.assertTrue(mDataSource.canUseData());
+        createEntrySource(/* isSignedIn= */ true, /* isSynced= */ true);
+        Assert.assertTrue(mSource.canUseData());
 
         // Load initial suggestions.
-        List<SuggestionEntry> suggestions1 = mDataSource.getSuggestions();
+        List<SuggestionEntry> suggestions1 = mSource.getSuggestions();
         verify(mForeignSessionHelper, times(1)).triggerSessionSync();
         expectFilteredSortedSuggestionsA(suggestions1);
         Assert.assertEquals(0, mDataChangedCounter);
 
         // Load suggestions again: There should be no change.
-        List<SuggestionEntry> suggestions2 = mDataSource.getSuggestions();
+        List<SuggestionEntry> suggestions2 = mSource.getSuggestions();
         verify(mForeignSessionHelper, times(2)).triggerSessionSync();
         expectFilteredSortedSuggestionsA(suggestions2);
         Assert.assertEquals(0, mDataChangedCounter);
@@ -110,7 +110,7 @@ public class ForeignSessionTabResumptionDataSourceTest extends TestSupport {
         Assert.assertFalse(mLastIsPermissionUpdate);
 
         // Load suggestions, which should have changed.
-        List<SuggestionEntry> suggestions3 = mDataSource.getSuggestions();
+        List<SuggestionEntry> suggestions3 = mSource.getSuggestions();
         verify(mForeignSessionHelper, times(3)).triggerSessionSync();
         expectFilteredSortedSuggestionsB(suggestions3);
     }
@@ -120,11 +120,11 @@ public class ForeignSessionTabResumptionDataSourceTest extends TestSupport {
     public void testPermissionChange() {
         when(mForeignSessionHelper.getForeignSessions()).thenReturn(makeForeignSessionsA());
 
-        createDataSource(/* isSignedIn= */ true, /* isSynced= */ true);
-        Assert.assertTrue(mDataSource.canUseData());
+        createEntrySource(/* isSignedIn= */ true, /* isSynced= */ true);
+        Assert.assertTrue(mSource.canUseData());
 
         // Load initial suggestions.
-        List<SuggestionEntry> suggestions1 = mDataSource.getSuggestions();
+        List<SuggestionEntry> suggestions1 = mSource.getSuggestions();
         verify(mForeignSessionHelper, times(1)).triggerSessionSync();
         expectFilteredSortedSuggestionsA(suggestions1);
         Assert.assertEquals(0, mDataChangedCounter);
@@ -133,10 +133,10 @@ public class ForeignSessionTabResumptionDataSourceTest extends TestSupport {
         toggleIsSyncedThenNotify(false);
         Assert.assertEquals(1, mDataChangedCounter);
         Assert.assertTrue(mLastIsPermissionUpdate);
-        Assert.assertFalse(mDataSource.canUseData());
+        Assert.assertFalse(mSource.canUseData());
 
         // Load suggestions: There is none.
-        List<SuggestionEntry> suggestions2 = mDataSource.getSuggestions();
+        List<SuggestionEntry> suggestions2 = mSource.getSuggestions();
         verify(mForeignSessionHelper, times(1)).triggerSessionSync();
         expectEmptySuggestions(suggestions2);
 
@@ -144,10 +144,10 @@ public class ForeignSessionTabResumptionDataSourceTest extends TestSupport {
         toggleIsSyncedThenNotify(true);
         Assert.assertEquals(2, mDataChangedCounter);
         Assert.assertTrue(mLastIsPermissionUpdate);
-        Assert.assertTrue(mDataSource.canUseData());
+        Assert.assertTrue(mSource.canUseData());
 
         // Suggestions are available again.
-        List<SuggestionEntry> suggestions3 = mDataSource.getSuggestions();
+        List<SuggestionEntry> suggestions3 = mSource.getSuggestions();
         verify(mForeignSessionHelper, times(2)).triggerSessionSync();
         expectFilteredSortedSuggestionsA(suggestions3);
         Assert.assertEquals(2, mDataChangedCounter);
@@ -156,10 +156,10 @@ public class ForeignSessionTabResumptionDataSourceTest extends TestSupport {
         toggleIsSignedInThenNotify(false);
         Assert.assertEquals(3, mDataChangedCounter);
         Assert.assertTrue(mLastIsPermissionUpdate);
-        Assert.assertFalse(mDataSource.canUseData());
+        Assert.assertFalse(mSource.canUseData());
 
         // Load suggestions: There is none.
-        List<SuggestionEntry> suggestions4 = mDataSource.getSuggestions();
+        List<SuggestionEntry> suggestions4 = mSource.getSuggestions();
         verify(mForeignSessionHelper, times(2)).triggerSessionSync();
         expectEmptySuggestions(suggestions4);
 
@@ -167,10 +167,10 @@ public class ForeignSessionTabResumptionDataSourceTest extends TestSupport {
         toggleIsSignedInThenNotify(true);
         Assert.assertEquals(4, mDataChangedCounter);
         Assert.assertTrue(mLastIsPermissionUpdate);
-        Assert.assertTrue(mDataSource.canUseData());
+        Assert.assertTrue(mSource.canUseData());
 
         // Suggestions are available again.
-        List<SuggestionEntry> suggestions5 = mDataSource.getSuggestions();
+        List<SuggestionEntry> suggestions5 = mSource.getSuggestions();
         verify(mForeignSessionHelper, times(3)).triggerSessionSync();
         expectFilteredSortedSuggestionsA(suggestions5);
         Assert.assertEquals(4, mDataChangedCounter);
@@ -182,11 +182,11 @@ public class ForeignSessionTabResumptionDataSourceTest extends TestSupport {
         when(mForeignSessionHelper.getForeignSessions()).thenReturn(makeForeignSessionsA());
 
         // Initially not signed in, and sync is off.
-        createDataSource(/* isSignedIn= */ false, /* isSynced= */ false);
-        Assert.assertFalse(mDataSource.canUseData());
+        createEntrySource(/* isSignedIn= */ false, /* isSynced= */ false);
+        Assert.assertFalse(mSource.canUseData());
 
         // Load suggestions: There is none.
-        List<SuggestionEntry> suggestions1 = mDataSource.getSuggestions();
+        List<SuggestionEntry> suggestions1 = mSource.getSuggestions();
         verify(mForeignSessionHelper, times(0)).triggerSessionSync();
         expectEmptySuggestions(suggestions1);
         Assert.assertEquals(0, mDataChangedCounter);
@@ -195,10 +195,10 @@ public class ForeignSessionTabResumptionDataSourceTest extends TestSupport {
         toggleIsSignedInThenNotify(true);
         Assert.assertEquals(1, mDataChangedCounter);
         Assert.assertTrue(mLastIsPermissionUpdate);
-        Assert.assertFalse(mDataSource.canUseData());
+        Assert.assertFalse(mSource.canUseData());
 
         // Load suggestions: Still none, since sync is off.
-        List<SuggestionEntry> suggestions2 = mDataSource.getSuggestions();
+        List<SuggestionEntry> suggestions2 = mSource.getSuggestions();
         verify(mForeignSessionHelper, times(0)).triggerSessionSync();
         expectEmptySuggestions(suggestions2);
         Assert.assertEquals(1, mDataChangedCounter);
@@ -207,20 +207,20 @@ public class ForeignSessionTabResumptionDataSourceTest extends TestSupport {
         toggleIsSyncedThenNotify(true);
         Assert.assertEquals(2, mDataChangedCounter);
         Assert.assertTrue(mLastIsPermissionUpdate);
-        Assert.assertTrue(mDataSource.canUseData());
+        Assert.assertTrue(mSource.canUseData());
 
         // Load suggestions: Now things should work.
-        List<SuggestionEntry> suggestions3 = mDataSource.getSuggestions();
+        List<SuggestionEntry> suggestions3 = mSource.getSuggestions();
         verify(mForeignSessionHelper, times(1)).triggerSessionSync();
         expectFilteredSortedSuggestionsA(suggestions3);
         Assert.assertEquals(2, mDataChangedCounter);
     }
 
-    private void createDataSource(boolean isSignedIn, boolean isSynced) {
+    private void createEntrySource(boolean isSignedIn, boolean isSynced) {
         when(mIdentityManager.hasPrimaryAccount(anyInt())).thenReturn(isSignedIn);
         when(mSyncService.hasKeepEverythingSynced()).thenReturn(isSynced);
-        mDataSource =
-                new ForeignSessionTabResumptionDataSource(
+        mSource =
+                new SyncDerivedSuggestionEntrySource(
                         /* signinManager= */ mSigninManager,
                         /* identityManager= */ mIdentityManager,
                         /* syncService= */ mSyncService,
@@ -230,14 +230,14 @@ public class ForeignSessionTabResumptionDataSourceTest extends TestSupport {
                         return mFakeTime;
                     }
                 };
-        mDataSource.addObserver(mDataChangedObserver);
+        mSource.addObserver(mSourceDataChangedObserver);
 
         verify(mSigninManager).addSignInStateObserver(mSignInStateObserverCaptor.capture());
         verify(mSyncService).addSyncStateChangedListener(mSyncStateChangedListenerCaptor.capture());
         verify(mForeignSessionHelper)
                 .setOnForeignSessionCallback(mForeignSessionCallbackCaptor.capture());
-        Assert.assertEquals(mDataSource, mSignInStateObserverCaptor.getValue());
-        Assert.assertEquals(mDataSource, mSyncStateChangedListenerCaptor.getValue());
+        Assert.assertEquals(mSource, mSignInStateObserverCaptor.getValue());
+        Assert.assertEquals(mSource, mSyncStateChangedListenerCaptor.getValue());
         mForeignSessionCallback = mForeignSessionCallbackCaptor.getValue();
         Assert.assertNotNull(mForeignSessionCallback);
     }

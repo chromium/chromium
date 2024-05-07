@@ -39,22 +39,22 @@ import java.util.concurrent.TimeUnit;
  *   up-to-date results (although this requires another getSuggestions() call).
  * </pre>
  */
-public class ForeignSessionTabResumptionDataSource
+public class SyncDerivedSuggestionEntrySource
         implements SignInStateObserver, SyncStateChangedListener {
 
     // Suggestions older than 24h are considered stale, and rejected.
     private static final long STALENESS_THRESHOLD_MS = TimeUnit.HOURS.toMillis(24);
 
-    /** Interface to observe "data change events". */
-    public interface DataChangedObserver {
-        public void onForeignSessionDataChanged(boolean isPermissionUpdate);
+    /** Interface to observe "data change events" in the Source. */
+    public interface SourceDataChangedObserver {
+        public void onDataChanged(boolean isPermissionUpdate);
     }
 
     private final SigninManager mSigninManager;
     private final SyncService mSyncService;
     private final ForeignSessionHelper mForeignSessionHelper;
 
-    private final ObserverList<DataChangedObserver> mDataChangedObservers;
+    private final ObserverList<SourceDataChangedObserver> mSourceDataChangedObservers;
 
     private boolean mIsSignedIn;
     private boolean mIsSynced;
@@ -71,7 +71,7 @@ public class ForeignSessionTabResumptionDataSource
      * @param foreignSessionHelper To fetch ForenSession data.
      */
     @VisibleForTesting
-    protected ForeignSessionTabResumptionDataSource(
+    protected SyncDerivedSuggestionEntrySource(
             SigninManager signinManager,
             IdentityManager identityManager,
             SyncService syncService,
@@ -80,7 +80,7 @@ public class ForeignSessionTabResumptionDataSource
         mSigninManager = signinManager;
         mSyncService = syncService;
         mForeignSessionHelper = foreignSessionHelper;
-        mDataChangedObservers = new ObserverList<DataChangedObserver>();
+        mSourceDataChangedObservers = new ObserverList<SourceDataChangedObserver>();
 
         mSigninManager.addSignInStateObserver(this);
         mSyncService.addSyncStateChangedListener(this);
@@ -92,12 +92,12 @@ public class ForeignSessionTabResumptionDataSource
 
         mForeignSessionHelper.setOnForeignSessionCallback(
                 () -> {
-                    dispatchDataChangedObservers(false);
+                    dispatchSourceDataChangedObservers(false);
                 });
     }
 
-    public static ForeignSessionTabResumptionDataSource createFromProfile(Profile profile) {
-        return new ForeignSessionTabResumptionDataSource(
+    public static SyncDerivedSuggestionEntrySource createFromProfile(Profile profile) {
+        return new SyncDerivedSuggestionEntrySource(
                 /* signinManager= */ IdentityServicesProvider.get().getSigninManager(profile),
                 /* identityManager= */ IdentityServicesProvider.get().getIdentityManager(profile),
                 /* syncService= */ SyncServiceFactory.getForProfile(profile),
@@ -108,7 +108,7 @@ public class ForeignSessionTabResumptionDataSource
     public void destroy() {
         mSyncService.removeSyncStateChangedListener(this);
         mSigninManager.removeSignInStateObserver(this);
-        mDataChangedObservers.clear();
+        mSourceDataChangedObservers.clear();
         mForeignSessionHelper.destroy();
     }
 
@@ -120,27 +120,27 @@ public class ForeignSessionTabResumptionDataSource
     }
 
     /** Adds observer for data change events. */
-    public void addObserver(DataChangedObserver observer) {
-        mDataChangedObservers.addObserver(observer);
+    public void addObserver(SourceDataChangedObserver observer) {
+        mSourceDataChangedObservers.addObserver(observer);
     }
 
     /** Removes observer added by addObserver(). */
-    public void removeObserver(DataChangedObserver observer) {
-        mDataChangedObservers.removeObserver(observer);
+    public void removeObserver(SourceDataChangedObserver observer) {
+        mSourceDataChangedObservers.removeObserver(observer);
     }
 
     /** Implements {@link SignInStateObserver} */
     @Override
     public void onSignedIn() {
         mIsSignedIn = true;
-        dispatchDataChangedObservers(true);
+        dispatchSourceDataChangedObservers(true);
     }
 
     /** Implements {@link SignInStateObserver} */
     @Override
     public void onSignedOut() {
         mIsSignedIn = false;
-        dispatchDataChangedObservers(true);
+        dispatchSourceDataChangedObservers(true);
     }
 
     /** Implements {@link SyncStateChangedListener} */
@@ -149,7 +149,7 @@ public class ForeignSessionTabResumptionDataSource
         boolean oldIsSynced = mIsSynced;
         mIsSynced = mSyncService.hasKeepEverythingSynced();
         if (oldIsSynced != mIsSynced) {
-            dispatchDataChangedObservers(true);
+            dispatchSourceDataChangedObservers(true);
         }
     }
 
@@ -209,10 +209,10 @@ public class ForeignSessionTabResumptionDataSource
         return scheme.equals(UrlConstants.HTTP_SCHEME) || scheme.equals(UrlConstants.HTTPS_SCHEME);
     }
 
-    private void dispatchDataChangedObservers(boolean isPermissionUpdate) {
+    private void dispatchSourceDataChangedObservers(boolean isPermissionUpdate) {
         mRequireSuggestionsCompute = true;
-        for (DataChangedObserver observer : mDataChangedObservers) {
-            observer.onForeignSessionDataChanged(isPermissionUpdate);
+        for (SourceDataChangedObserver observer : mSourceDataChangedObservers) {
+            observer.onDataChanged(isPermissionUpdate);
         }
     }
 }

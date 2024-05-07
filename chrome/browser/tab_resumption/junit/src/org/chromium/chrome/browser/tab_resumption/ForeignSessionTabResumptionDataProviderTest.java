@@ -21,7 +21,7 @@ import org.mockito.MockitoAnnotations;
 import org.robolectric.annotation.Config;
 
 import org.chromium.base.test.BaseRobolectricTestRunner;
-import org.chromium.chrome.browser.tab_resumption.ForeignSessionTabResumptionDataSource.DataChangedObserver;
+import org.chromium.chrome.browser.tab_resumption.SyncDerivedSuggestionEntrySource.SourceDataChangedObserver;
 import org.chromium.chrome.browser.tab_resumption.TabResumptionDataProvider.ResultStrength;
 import org.chromium.chrome.browser.tab_resumption.TabResumptionDataProvider.SuggestionsResult;
 
@@ -40,12 +40,12 @@ public class ForeignSessionTabResumptionDataProviderTest extends TestSupport {
     static final SuggestionEntry ENTRY3 =
             new SuggestionEntry("My Desktop", TAB1.url, TAB1.title, TAB1.lastActiveTime, TAB1.id);
 
-    @Mock private ForeignSessionTabResumptionDataSource mSource;
+    @Mock private SyncDerivedSuggestionEntrySource mSource;
 
-    @Captor private ArgumentCaptor<DataChangedObserver> mDataChangedObserverCaptor;
+    @Captor private ArgumentCaptor<SourceDataChangedObserver> mSourceDataChangedObserverCaptor;
 
     private ForeignSessionTabResumptionDataProvider mDataProvider;
-    private DataChangedObserver mDataChangedObserver;
+    private SourceDataChangedObserver mSourceDataChangedObserver;
 
     private int mStatusChangedCallbackCounter;
 
@@ -59,16 +59,16 @@ public class ForeignSessionTabResumptionDataProviderTest extends TestSupport {
                     ++mStatusChangedCallbackCounter;
                 });
 
-        verify(mSource).addObserver(mDataChangedObserverCaptor.capture());
-        mDataChangedObserver = mDataChangedObserverCaptor.getValue();
-        Assert.assertNotNull(mDataChangedObserver);
+        verify(mSource).addObserver(mSourceDataChangedObserverCaptor.capture());
+        mSourceDataChangedObserver = mSourceDataChangedObserverCaptor.getValue();
+        Assert.assertNotNull(mSourceDataChangedObserver);
     }
 
     @After
     public void tearDown() {
         if (mDataProvider != null) {
             mDataProvider.destroy();
-            verify(mSource).removeObserver(mDataChangedObserver);
+            verify(mSource).removeObserver(mSourceDataChangedObserver);
         }
     }
 
@@ -92,7 +92,7 @@ public class ForeignSessionTabResumptionDataProviderTest extends TestSupport {
         Assert.assertEquals(0, mStatusChangedCallbackCounter);
 
         // Non-permission data change event triggers dispatch (causing module refresh).
-        mDataProvider.onForeignSessionDataChanged(/* isPermissionUpdate= */ false);
+        mDataProvider.onDataChanged(/* isPermissionUpdate= */ false);
         Assert.assertEquals(1, mStatusChangedCallbackCounter);
         // Fetch now yields STABLE results.
         when(mSource.getSuggestions()).thenReturn(new ArrayList<>(Arrays.asList(ENTRY2, ENTRY3)));
@@ -106,9 +106,9 @@ public class ForeignSessionTabResumptionDataProviderTest extends TestSupport {
                 });
 
         // Results are stable: Subsequent non-permission events do not trigger dispatch.
-        mDataProvider.onForeignSessionDataChanged(/* isPermissionUpdate= */ false);
+        mDataProvider.onDataChanged(/* isPermissionUpdate= */ false);
         Assert.assertEquals(1, mStatusChangedCallbackCounter);
-        mDataProvider.onForeignSessionDataChanged(/* isPermissionUpdate= */ false);
+        mDataProvider.onDataChanged(/* isPermissionUpdate= */ false);
         Assert.assertEquals(1, mStatusChangedCallbackCounter);
 
         // However, fetching would still yield updated data. This is useful for forced refresh.
@@ -122,7 +122,7 @@ public class ForeignSessionTabResumptionDataProviderTest extends TestSupport {
                 });
 
         // Permission events still triggered dispatches.
-        mDataProvider.onForeignSessionDataChanged(/* isPermissionUpdate= */ true);
+        mDataProvider.onDataChanged(/* isPermissionUpdate= */ true);
         Assert.assertEquals(2, mStatusChangedCallbackCounter);
         // Fetch now yields FORCED_NULL results with null suggestions, not actual suggestions.
         when(mSource.getSuggestions()).thenReturn(new ArrayList<>(Arrays.asList(ENTRY2, ENTRY3)));
@@ -133,7 +133,7 @@ public class ForeignSessionTabResumptionDataProviderTest extends TestSupport {
                     Assert.assertNull(suggestions);
                 });
 
-        mDataProvider.onForeignSessionDataChanged(/* isPermissionUpdate= */ true);
+        mDataProvider.onDataChanged(/* isPermissionUpdate= */ true);
         Assert.assertEquals(3, mStatusChangedCallbackCounter);
     }
 
@@ -160,17 +160,17 @@ public class ForeignSessionTabResumptionDataProviderTest extends TestSupport {
         when(mSource.getCurrentTimeMs()).thenReturn(CURRENT_TIME_MS + TimeUnit.MINUTES.toMillis(1));
 
         // Non-permission data change event no longer triggers dispatch.
-        mDataProvider.onForeignSessionDataChanged(/* isPermissionUpdate= */ false);
+        mDataProvider.onDataChanged(/* isPermissionUpdate= */ false);
         Assert.assertEquals(0, mStatusChangedCallbackCounter);
 
         // Results are stable: Subsequent non-permission events do not trigger dispatch.
-        mDataProvider.onForeignSessionDataChanged(/* isPermissionUpdate= */ false);
+        mDataProvider.onDataChanged(/* isPermissionUpdate= */ false);
         Assert.assertEquals(0, mStatusChangedCallbackCounter);
-        mDataProvider.onForeignSessionDataChanged(/* isPermissionUpdate= */ false);
+        mDataProvider.onDataChanged(/* isPermissionUpdate= */ false);
         Assert.assertEquals(0, mStatusChangedCallbackCounter);
 
         // Permission events still triggered dispatches.
-        mDataProvider.onForeignSessionDataChanged(/* isPermissionUpdate= */ true);
+        mDataProvider.onDataChanged(/* isPermissionUpdate= */ true);
         Assert.assertEquals(1, mStatusChangedCallbackCounter);
         // Fetch now yields FORCED_NULL results with null suggestions, ignoring existing data.
         when(mSource.getSuggestions()).thenReturn(new ArrayList<>(Arrays.asList(ENTRY2, ENTRY3)));
@@ -181,7 +181,7 @@ public class ForeignSessionTabResumptionDataProviderTest extends TestSupport {
                     Assert.assertNull(suggestions);
                 });
 
-        mDataProvider.onForeignSessionDataChanged(/* isPermissionUpdate= */ true);
+        mDataProvider.onDataChanged(/* isPermissionUpdate= */ true);
         Assert.assertEquals(2, mStatusChangedCallbackCounter);
     }
 
