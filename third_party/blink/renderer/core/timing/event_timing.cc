@@ -16,6 +16,7 @@
 #include "third_party/blink/renderer/core/loader/interactive_detector.h"
 #include "third_party/blink/renderer/core/timing/dom_window_performance.h"
 #include "third_party/blink/renderer/core/timing/performance_event_timing.h"
+#include "third_party/blink/renderer/platform/runtime_enabled_features.h"
 
 namespace blink {
 namespace {
@@ -117,18 +118,33 @@ std::unique_ptr<EventTiming> EventTiming::Create(
   if (performance->GetCurrentEventTimingEvent() == &event)
     return nullptr;
 
-  bool should_report_for_event_timing = ShouldReportForEventTiming(performance);
-  bool should_log_event = ShouldLogEvent(event);
+  if (!RuntimeEnabledFeatures::
+          ContinueEventTimingRecordingWhenBufferIsFullEnabled()) {
+    bool should_report_for_event_timing =
+        ShouldReportForEventTiming(performance);
 
-  if (!should_report_for_event_timing && !should_log_event)
-    return nullptr;
+    bool should_log_event = ShouldLogEvent(event);
 
-  base::TimeTicks processing_start = Now();
-  HandleInputDelay(window, event, processing_start);
-  return should_report_for_event_timing
-             ? std::make_unique<EventTiming>(processing_start, performance,
-                                             event, original_event_target)
-             : nullptr;
+    if (!should_report_for_event_timing && !should_log_event) {
+      return nullptr;
+    }
+
+    base::TimeTicks processing_start = Now();
+
+    HandleInputDelay(window, event, processing_start);
+
+    return should_report_for_event_timing
+               ? std::make_unique<EventTiming>(processing_start, performance,
+                                               event, original_event_target)
+               : nullptr;
+  } else {
+    base::TimeTicks processing_start = Now();
+
+    HandleInputDelay(window, event, processing_start);
+
+    return std::make_unique<EventTiming>(processing_start, performance, event,
+                                         original_event_target);
+  }
 }
 
 // static

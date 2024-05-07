@@ -626,6 +626,8 @@ class Internals final : public ScriptWrappable {
 
   void setAllowPerChunkTransferring(ReadableStream* stream);
   void setBackForwardCacheRestorationBufferSize(unsigned int maxSize);
+  void setEventTimingBufferSize(unsigned int maxSize);
+  void stopResponsivenessMetricsUkmSampling();
 
   InternalsUkmRecorder* initializeUKMRecorder();
 

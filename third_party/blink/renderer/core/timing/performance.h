@@ -172,6 +172,7 @@ class CORE_EXPORT Performance : public EventTarget {
   void clearResourceTimings();
   void setResourceTimingBufferSize(unsigned);
   void setBackForwardCacheRestorationBufferSizeForTest(unsigned);
+  void setEventTimingBufferSizeForTest(unsigned);
 
   DEFINE_ATTRIBUTE_EVENT_LISTENER(resourcetimingbufferfull,
                                   kResourcetimingbufferfull)

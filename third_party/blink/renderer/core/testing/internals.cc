@@ -4009,6 +4009,18 @@ void Internals::setBackForwardCacheRestorationBufferSize(unsigned int maxSize) {
   perf.setBackForwardCacheRestorationBufferSizeForTest(maxSize);
 }
 
+void Internals::setEventTimingBufferSize(unsigned int maxSize) {
+  WindowPerformance& perf =
+      *DOMWindowPerformance::performance(*document_->domWindow());
+  perf.setEventTimingBufferSizeForTest(maxSize);
+}
+
+void Internals::stopResponsivenessMetricsUkmSampling() {
+  WindowPerformance& perf =
+      *DOMWindowPerformance::performance(*document_->domWindow());
+  perf.GetResponsivenessMetrics().StopUkmSamplingForTesting();
+}
+
 Vector<String> Internals::getCreatorScripts(HTMLImageElement* img) {
   DCHECK(img);
   return Vector<String>(img->creator_scripts());

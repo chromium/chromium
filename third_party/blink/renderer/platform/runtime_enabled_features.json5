@@ -705,6 +705,10 @@
       status: "experimental",
     },
     {
+      name: "ContinueEventTimingRecordingWhenBufferIsFull",
+      status: "experimental",
+    },
+    {
       name: "CookieDeprecationFacilitatedTesting",
       base_feature: "none",
     },

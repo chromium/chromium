@@ -704,6 +704,10 @@ void Performance::setBackForwardCacheRestorationBufferSizeForTest(
   back_forward_cache_restoration_buffer_size_limit_ = size;
 }
 
+void Performance::setEventTimingBufferSizeForTest(unsigned size) {
+  event_timing_buffer_max_size_ = size;
+}
+
 void Performance::AddResourceTiming(mojom::blink::ResourceTimingInfoPtr info,
                                     const AtomicString& initiator_type) {
   ExecutionContext* context = GetExecutionContext();
