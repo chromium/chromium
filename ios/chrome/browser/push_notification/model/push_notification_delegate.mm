@@ -13,6 +13,10 @@
 #import "base/values.h"
 #import "components/prefs/pref_service.h"
 #import "ios/chrome/app/startup/app_launch_metrics.h"
+#import "ios/chrome/browser/content_notification/model/content_notification_nau_configuration.h"
+#import "ios/chrome/browser/content_notification/model/content_notification_service.h"
+#import "ios/chrome/browser/content_notification/model/content_notification_service_factory.h"
+#import "ios/chrome/browser/content_notification/model/content_notification_settings_action.h"
 #import "ios/chrome/browser/push_notification/model/push_notification_client_manager.h"
 #import "ios/chrome/browser/push_notification/model/push_notification_configuration.h"
 #import "ios/chrome/browser/push_notification/model/push_notification_delegate.h"
@@ -232,6 +236,32 @@ GaiaIdToPushNotificationPreferenceMapFromCache(
           ->GetPushNotificationClientManager();
   DCHECK(clientManager);
   clientManager->OnSceneActiveForegroundBrowserReady();
+  if (IsContentPushNotificationsEnabled()) {
+    // Send an NAU every time the OS authorization status changes.
+    [PushNotificationUtil
+        getPermissionSettings:^(UNNotificationSettings* settings) {
+          UNAuthorizationStatus previousAuthStatus =
+              [PushNotificationUtil getSavedPermissionSettings];
+          if (previousAuthStatus != settings.authorizationStatus) {
+            ContentNotificationNAUConfiguration* config =
+                [[ContentNotificationNAUConfiguration alloc] init];
+            ContentNotificationSettingsAction* settingsAction =
+                [[ContentNotificationSettingsAction alloc] init];
+            settingsAction.previousAuthorizationStatus = previousAuthStatus;
+            settingsAction.currentAuthorizationStatus =
+                settings.authorizationStatus;
+            config.settingsAction =
+                [[ContentNotificationSettingsAction alloc] init];
+            // TODO(crbug.com/339102426): Cleanup browserStates.
+            ContentNotificationService* contentNotificationService =
+                ContentNotificationServiceFactory::GetForBrowserState(
+                    GetApplicationContext()
+                        ->GetChromeBrowserStateManager()
+                        ->GetLastUsedBrowserStateDeprecatedDoNotUse());
+            contentNotificationService->SendNAUForConfiguration(config);
+          }
+        }];
+  }
   [PushNotificationUtil
       getPermissionSettings:^(UNNotificationSettings* settings) {
         [PushNotificationUtil

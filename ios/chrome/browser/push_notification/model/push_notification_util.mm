@@ -149,6 +149,29 @@ const char kNotificationAutorizationStatusChangedToDenied[] =
   [center getNotificationSettingsWithCompletionHandler:permissionHandler];
 }
 
+// This function returns the value stored in the prefService that represents the
+// user's iOS settings permission status for push notifications.
++ (UNAuthorizationStatus)getSavedPermissionSettings {
+  ApplicationContext* context = GetApplicationContext();
+  PrefService* prefService = context->GetLocalState();
+  int previousStatus =
+      prefService->GetInteger(prefs::kPushNotificationAuthorizationStatus);
+  switch (previousStatus) {
+    case (int)SettingsAuthorizationStatus::NOTDETERMINED:
+      return UNAuthorizationStatusNotDetermined;
+    case (int)SettingsAuthorizationStatus::DENIED:
+      return UNAuthorizationStatusDenied;
+    case (int)SettingsAuthorizationStatus::AUTHORIZED:
+      return UNAuthorizationStatusAuthorized;
+    case (int)SettingsAuthorizationStatus::PROVISIONAL:
+      return UNAuthorizationStatusProvisional;
+    case (int)SettingsAuthorizationStatus::EPHEMERAL:
+      return UNAuthorizationStatusEphemeral;
+    default:
+      return UNAuthorizationStatusNotDetermined;
+  }
+}
+
 // This function updates the value stored in the prefService that represents the
 // user's iOS settings permission status for push notifications. If there is a
 // difference between the prefService's previous value and the new value, the

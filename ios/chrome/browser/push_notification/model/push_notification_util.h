@@ -76,6 +76,11 @@ enum class SettingsAuthorizationStatus {
 + (void)getPermissionSettings:
     (void (^)(UNNotificationSettings* settings))completionHandler;
 
+// This functions retrieves the currently saved authorization settings for
+// push notifications. This is used for features that require knowledge of
+// status changes on notification permissions.
++ (UNAuthorizationStatus)getSavedPermissionSettings;
+
 // This function updates the value stored in the prefService that represents the
 // user's iOS settings permission status for push notifications. If there is a
 // difference between the prefService's previous value and the new value, the
