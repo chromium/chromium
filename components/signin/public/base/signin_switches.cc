@@ -113,18 +113,6 @@ BASE_FEATURE(kRestoreSignedInAccountAndSettingsFromBackup,
              base::FEATURE_DISABLED_BY_DEFAULT);
 #endif
 
-#if BUILDFLAG(IS_ANDROID)
-// Enables the search engine choice feature for existing users.
-// TODO(b/316859558): Not used for shipping purposes, remove this feature.
-BASE_FEATURE(kSearchEngineChoice,
-             "SearchEngineChoice",
-             base::FEATURE_DISABLED_BY_DEFAULT);
-// Rewrites DefaultSearchEnginePromoDialog into MVC pattern.
-BASE_FEATURE(kSearchEnginePromoDialogRewrite,
-             "SearchEnginePromoDialogRewrite",
-             base::FEATURE_DISABLED_BY_DEFAULT);
-#endif
-
 BASE_FEATURE(kExplicitBrowserSigninUIOnDesktop,
              "ExplicitBrowserSigninUIOnDesktop",
              base::FEATURE_DISABLED_BY_DEFAULT);

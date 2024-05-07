@@ -82,6 +82,16 @@ COMPONENT_EXPORT(SEARCH_ENGINES_SWITCHES)
 extern const base::FeatureParam<int> kSearchEngineChoiceMaximumSkipCount;
 #endif
 
+#if BUILDFLAG(IS_ANDROID)
+// Enables the search engine choice feature for existing users.
+// TODO(b/316859558): Not used for shipping purposes, remove this feature.
+COMPONENT_EXPORT(SEARCH_ENGINES_SWITCHES)
+BASE_DECLARE_FEATURE(kSearchEngineChoice);
+
+// Rewrites DefaultSearchEnginePromoDialog into MVC pattern.
+COMPONENT_EXPORT(SEARCH_ENGINES_SWITCHES)
+BASE_DECLARE_FEATURE(kSearchEnginePromoDialogRewrite);
+#endif
 }  // namespace switches
 
 #endif  // COMPONENTS_SEARCH_ENGINES_SEARCH_ENGINES_SWITCHES_H_
