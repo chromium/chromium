@@ -273,8 +273,6 @@ class AttributionInteropParser {
           /*allow_empty=*/false);
     }
 
-    // TODO(linnan): Parse null reports rate if it's supported in interop tests.
-
     if (has_error_) {
       return base::unexpected(error_stream_.str());
     }

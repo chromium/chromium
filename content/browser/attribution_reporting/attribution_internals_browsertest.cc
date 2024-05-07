@@ -359,8 +359,6 @@ IN_PROC_BROWSER_TEST_F(AttributionInternalsWebUiBrowserTest,
           .Build(),
       StorableSource::Result::kExcessiveReportingOrigins);
 
-  // TODO(crbug.com/40285244): Bypass locale dependency to validate event report
-  // windows column value.
   static constexpr char kScript[] = R"(
     // TODO(apaseltiner): This is necessary because innerText returns different
     // results based on whether the text is visible. Switch to textContent to

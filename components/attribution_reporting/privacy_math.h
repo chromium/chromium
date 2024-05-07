@@ -22,9 +22,6 @@ namespace attribution_reporting {
 class MaxEventLevelReports;
 class TriggerSpecs;
 
-// TODO(apaseltiner): Use `uint8_t` as the type of both fields here, as the
-// trigger data *index* is guaranteed to be < 32 and the window index is
-// guaranteed to be < 5.
 struct FakeEventLevelReport {
   uint32_t trigger_data;
   int window_index;

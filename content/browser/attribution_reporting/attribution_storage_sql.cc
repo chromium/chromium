@@ -1429,8 +1429,6 @@ EventLevelResult AttributionStorageSql::MaybeCreateEventLevelReport(
       trigger_spec.event_report_windows(), source.source_time(),
       attribution_info.time);
 
-  // TODO(apaseltiner): Consider informing the manager if the trigger
-  // data was out of range for DevTools issue reporting.
   report = AttributionReport(
       attribution_info, AttributionReport::Id(kUnsetRecordId), report_time,
       /*initial_report_time=*/report_time, delegate_->NewReportID(),
@@ -1928,8 +1926,6 @@ void AttributionStorageSql::ClearData(
   // crrev.com/c/2150071/4/content/browser/conversions/conversion_storage_sql.cc#342
   //
   // TODO(crbug.com/40212333): Look into optimizing origin filter callback.
-  // TODO(apaseltiner): Consider wrapping `filter` such that it deletes
-  // opaque/untrustworthy origins.
 
   std::vector<StoredSource::Id> source_ids_to_delete;
 

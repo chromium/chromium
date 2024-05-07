@@ -133,9 +133,6 @@ const base::TimeDelta kPrivacySandboxAttestationsTimeout = base::Minutes(5);
 // While the class does not make large changes to the underlying database, it
 // is responsible for notifying the `AttributionStorage` when the browser comes
 // back online, which mutates report times for some scheduled reports.
-//
-// TODO(apaseltiner): Consider making this class an observer to allow it to
-// manage when to schedule things.
 class AttributionReportScheduler : public ReportSchedulerTimer::Delegate {
  public:
   AttributionReportScheduler(
