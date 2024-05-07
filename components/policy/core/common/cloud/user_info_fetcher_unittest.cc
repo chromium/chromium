@@ -4,6 +4,7 @@
 
 #include "components/policy/core/common/cloud/user_info_fetcher.h"
 
+#include "base/test/metrics/histogram_tester.h"
 #include "base/test/task_environment.h"
 #include "base/values.h"
 #include "google_apis/gaia/google_service_auth_error.h"
@@ -54,6 +55,8 @@ class UserInfoFetcherTest : public testing::Test {
 };
 
 TEST_F(UserInfoFetcherTest, FailedFetch) {
+  base::HistogramTester histogram_tester;
+
   MockUserInfoFetcherDelegate delegate;
   UserInfoFetcher fetcher(
       &delegate,
@@ -66,6 +69,12 @@ TEST_F(UserInfoFetcherTest, FailedFetch) {
   EXPECT_TRUE(loader_factory_.SimulateResponseForPendingRequest(
       kUserInfoUrl, std::string(), net::HTTP_INTERNAL_SERVER_ERROR));
   task_env_.RunUntilIdle();
+
+  histogram_tester.ExpectUniqueSample(
+      "Enterprise.UserInfoFetch.Status",
+      EnterpriseUserInfoFetchStatus::kFailedWithNetworkError, 1);
+  histogram_tester.ExpectUniqueSample("Enterprise.UserInfoFetch.HttpErrorCode",
+                                      500, 1);
 }
 
 TEST_F(UserInfoFetcherTest, SuccessfulFetch) {
@@ -88,6 +97,48 @@ TEST_F(UserInfoFetcherTest, SuccessfulFetch) {
   EXPECT_CALL(delegate, OnGetUserInfoSuccess(MatchDict(&dict)));
   EXPECT_TRUE(loader_factory_.SimulateResponseForPendingRequest(
       kUserInfoUrl, kUserInfoResponse));
+}
+
+TEST_F(UserInfoFetcherTest, FetchResponseNotParsableToJSON) {
+  base::HistogramTester histogram_tester;
+
+  MockUserInfoFetcherDelegate delegate;
+  UserInfoFetcher fetcher(
+      &delegate,
+      base::MakeRefCounted<network::WeakWrapperSharedURLLoaderFactory>(
+          &loader_factory_));
+  fetcher.Start("access_token");
+
+  // Fake a successful fetch - should result in the data being parsed and
+  // the values passed off to the success callback.
+  EXPECT_CALL(delegate, OnGetUserInfoFailure(GoogleServiceAuthError(
+                            GoogleServiceAuthError::CONNECTION_FAILED)));
+  EXPECT_TRUE(loader_factory_.SimulateResponseForPendingRequest(
+      kUserInfoUrl, "<content>not json</content>"));
+  histogram_tester.ExpectUniqueSample(
+      "Enterprise.UserInfoFetch.Status",
+      EnterpriseUserInfoFetchStatus::kCantParseJsonInResponse, 1);
+}
+
+TEST_F(UserInfoFetcherTest, FetchResponseNotDict) {
+  base::HistogramTester histogram_tester;
+
+  MockUserInfoFetcherDelegate delegate;
+  UserInfoFetcher fetcher(
+      &delegate,
+      base::MakeRefCounted<network::WeakWrapperSharedURLLoaderFactory>(
+          &loader_factory_));
+  fetcher.Start("access_token");
+
+  // Fake a successful fetch - should result in the data being parsed and
+  // the values passed off to the success callback.
+  EXPECT_CALL(delegate, OnGetUserInfoFailure(GoogleServiceAuthError(
+                            GoogleServiceAuthError::CONNECTION_FAILED)));
+  EXPECT_TRUE(loader_factory_.SimulateResponseForPendingRequest(kUserInfoUrl,
+                                                                "[1, 2, 3]"));
+  histogram_tester.ExpectUniqueSample(
+      "Enterprise.UserInfoFetch.Status",
+      EnterpriseUserInfoFetchStatus::kResponseIsNotDict, 1);
 }
 
 }  // namespace
