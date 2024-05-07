@@ -9,6 +9,7 @@
 #include <optional>
 
 #include "components/autofill/core/browser/filling_product.h"
+#include "components/autofill/core/browser/ui/popup_item_ids.h"
 #include "components/autofill/core/browser/ui/suggestion.h"
 #include "ui/gfx/vector_icon_types.h"
 #include "ui/views/style/typography.h"
@@ -26,6 +27,7 @@ class PopupRowContentView;
 
 namespace gfx {
 class Insets;
+struct VectorIcon;
 }
 
 namespace autofill::popup_cell_utils {
@@ -139,6 +141,9 @@ std::unique_ptr<views::ImageView> ImageViewFromVectorIcon(
 // Appplies a grayed-out disabled style to views conveying that it is
 // deactivated and non-acceptable.
 void ApplyDeactivatedStyle(views::View& view);
+
+// Returns the expandable menu icon depending on `popup_item_id`.
+const gfx::VectorIcon& GetExpandableMenuIcon(PopupItemId popup_item_id);
 
 }  // namespace autofill::popup_cell_utils
 

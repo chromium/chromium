@@ -243,7 +243,7 @@ PopupRowView::PopupRowView(
             gfx::Insets(kExpandChildSuggestionsViewHorizontalPadding)));
     expand_child_suggestions_view_->AddChildView(
         popup_cell_utils::ImageViewFromVectorIcon(
-            vector_icons::kSubmenuArrowChromeRefreshIcon,
+            popup_cell_utils::GetExpandableMenuIcon(suggestion.popup_item_id),
             kExpandChildSuggestionsIconWidth));
     expand_child_suggestions_view_->AddObserver(this);
     control_event_handler_ = set_exit_enter_callbacks(
