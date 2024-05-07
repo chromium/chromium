@@ -726,6 +726,17 @@ void DownloadsDOMHandler::IsEligibleForEsbPromo(
   std::move(callback).Run(should_show_esb_promo);
 }
 
+void DownloadsDOMHandler::LogEsbPromotionRowViewed() {
+  content::DownloadManager* manager = GetMainNotifierManager();
+  if (!manager) {
+    return;
+  }
+  feature_engagement::Tracker* tracker =
+      feature_engagement::TrackerFactory::GetForBrowserContext(
+          manager->GetBrowserContext());
+  tracker->NotifyEvent("esb_download_promo_row_viewed");
+}
+
 // DownloadsDOMHandler, private: --------------------------------------------
 
 content::DownloadManager* DownloadsDOMHandler::GetMainNotifierManager() const {
