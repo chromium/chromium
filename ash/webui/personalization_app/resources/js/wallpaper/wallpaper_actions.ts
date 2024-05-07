@@ -10,6 +10,7 @@ import {Url} from 'chrome://resources/mojo/url/mojom/url.mojom-webui.js';
 import {CurrentAttribution, CurrentWallpaper, GooglePhotosAlbum, GooglePhotosEnablementState, GooglePhotosPhoto, WallpaperCollection, WallpaperImage} from '../../personalization_app.mojom-webui.js';
 
 import {DisplayableImage} from './constants.js';
+import {FullscreenPreviewState} from './wallpaper_state.js';
 
 /**
  * @fileoverview Defines the actions to change wallpaper state.
@@ -47,7 +48,7 @@ export enum WallpaperActionName {
   SET_LOCAL_IMAGE_DATA = 'set_local_image_data',
   SET_SELECTED_IMAGE = 'set_selected_image',
   SET_UPDATED_DAILY_REFRESH_IMAGE = 'set_updated_daily_refreshed_image',
-  SET_FULLSCREEN_ENABLED = 'set_fullscreen_enabled',
+  SET_FULLSCREEN_STATE = 'set_fullscreen_state',
   SET_SHOULD_SHOW_TIME_OF_DAY_WALLPAPER_DIALOG =
       'set_shoud_show_time_of_day_wallpaper_dialog',
 }
@@ -66,7 +67,7 @@ export type WallpaperActions =
     SetGooglePhotosEnabledAction|SetImagesForCollectionAction|
     SetDefaultImageThumbnailAction|SetLocalImageDataAction|SetLocalImagesAction|
     SetUpdatedDailyRefreshImageAction|SetSelectedImageAction|
-    SetFullscreenEnabledAction|SetShouldShowTimeOfDayWallpaperDialog;
+    SetFullscreenStateAction|SetShouldShowTimeOfDayWallpaperDialog;
 
 export interface AppendGooglePhotosAlbumAction extends Action {
   name: WallpaperActionName.APPEND_GOOGLE_PHOTOS_ALBUM;
@@ -560,16 +561,15 @@ export function setShouldShowTimeOfDayWallpaperDialog(
   };
 }
 
-export interface SetFullscreenEnabledAction extends Action {
-  name: WallpaperActionName.SET_FULLSCREEN_ENABLED;
-  enabled: boolean;
+export interface SetFullscreenStateAction extends Action {
+  name: WallpaperActionName.SET_FULLSCREEN_STATE;
+  state: FullscreenPreviewState;
 }
 
 /**
  * Enables/disables the fullscreen preview mode for wallpaper.
  */
-export function setFullscreenEnabledAction(enabled: boolean):
-    SetFullscreenEnabledAction {
-  assert(typeof enabled === 'boolean');
-  return {name: WallpaperActionName.SET_FULLSCREEN_ENABLED, enabled};
+export function setFullscreenStateAction(state: FullscreenPreviewState):
+    SetFullscreenStateAction {
+  return {name: WallpaperActionName.SET_FULLSCREEN_STATE, state};
 }

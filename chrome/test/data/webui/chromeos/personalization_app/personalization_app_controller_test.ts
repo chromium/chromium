@@ -4,7 +4,7 @@
 
 import 'chrome://personalization/strings.m.js';
 
-import {cancelPreviewWallpaper, DailyRefreshType, DefaultImageSymbol, DisplayableImage, fetchCollections, fetchGooglePhotosAlbum, fetchGooglePhotosAlbums, fetchGooglePhotosEnabled, fetchGooglePhotosPhotos, fetchLocalData, getDefaultImageThumbnail, GooglePhotosEnablementState, GooglePhotosPhoto, initializeBackdropData, isDefaultImage, isGooglePhotosPhoto, isWallpaperImage, kDefaultImageSymbol, selectGooglePhotosAlbum, selectWallpaper, setDailyRefreshCollectionId, updateDailyRefreshWallpaper, WallpaperLayout, WallpaperObserver, WallpaperType} from 'chrome://personalization/js/personalization_app.js';
+import {beginLoadSelectedImageAction, beginSelectImageAction, cancelPreviewWallpaper, DailyRefreshType, DefaultImageSymbol, DisplayableImage, endSelectImageAction, fetchCollections, fetchGooglePhotosAlbum, fetchGooglePhotosAlbums, fetchGooglePhotosEnabled, fetchGooglePhotosPhotos, fetchLocalData, FullscreenPreviewState, getDefaultImageThumbnail, GooglePhotosEnablementState, GooglePhotosPhoto, initializeBackdropData, isDefaultImage, isGooglePhotosPhoto, isWallpaperImage, kDefaultImageSymbol, selectGooglePhotosAlbum, selectWallpaper, setAttributionAction, setDailyRefreshCollectionId, setFullscreenStateAction, setSelectedImageAction, updateDailyRefreshWallpaper, WallpaperLayout, WallpaperObserver, WallpaperType} from 'chrome://personalization/js/personalization_app.js';
 import {isNonEmptyFilePath} from 'chrome://resources/ash/common/sea_pen/sea_pen_utils.js';
 import {assertNotReached} from 'chrome://resources/js/assert.js';
 import {loadTimeData} from 'chrome://resources/js/load_time_data.js';
@@ -644,7 +644,9 @@ suite('full screen mode', () => {
   test('enters full screen mode when in tablet', async () => {
     await initializeBackdropData(wallpaperProvider, personalizationStore);
 
-    assertFalse(personalizationStore.data.wallpaper.fullscreen);
+    assertEquals(
+        FullscreenPreviewState.OFF,
+        personalizationStore.data.wallpaper.fullscreen);
 
     wallpaperProvider.isInTabletModeResponse = true;
 
@@ -664,7 +666,14 @@ suite('full screen mode', () => {
         1, wallpaperProvider.getCallCount('makeTransparent'),
         'makeTransparent is called while calling selectWallpaper');
 
-    assertTrue(personalizationStore.data.wallpaper.fullscreen);
+    assertEquals(
+        FullscreenPreviewState.LOADING,
+        personalizationStore.data.wallpaper.fullscreen);
+
+    // Simulate `wallpaper_observer.ts` signaling that the preview wallpaper has
+    // been set.
+    personalizationStore.dispatch(
+        setFullscreenStateAction(FullscreenPreviewState.VISIBLE));
 
     await cancelPreviewWallpaper(wallpaperProvider);
     assertEquals(
@@ -692,25 +701,12 @@ suite('observes pendingState during wallpaper selection', () => {
 
         assertDeepEquals(
             [
-              {
-                name: 'begin_select_image',
-                image: wallpaperProvider.images![0],
-              },
-              {
-                name: 'begin_load_selected_image',
-              },
-              {
-                name: 'end_select_image',
-                image: wallpaperProvider.images![0],
-                success: true,
-              },
-              {
-                name: 'set_fullscreen_enabled',
-                enabled: true,
-              },
+              beginSelectImageAction(wallpaperProvider.images![0]!),
+              beginLoadSelectedImageAction(),
+              setFullscreenStateAction(FullscreenPreviewState.LOADING),
+              endSelectImageAction(wallpaperProvider.images![0]!, true),
             ],
-            personalizationStore.actions,
-        );
+            personalizationStore.actions, 'expected actions are sent');
 
         assertDeepEquals(
             [
@@ -732,7 +728,8 @@ suite('observes pendingState during wallpaper selection', () => {
               },
             ],
             personalizationStore.states.map(
-                filterAndFlattenState(['wallpaper.pendingSelected'])));
+                filterAndFlattenState(['wallpaper.pendingSelected'])),
+            'expected states are observed');
       });
 
   test(
@@ -755,41 +752,37 @@ suite('observes pendingState during wallpaper selection', () => {
 
         assertDeepEquals(
             [
-              {
-                name: 'begin_select_image',
-                image: wallpaperProvider.localImages[0],
-              },
-              {
-                name: 'begin_load_selected_image',
-              },
-              {
-                name: 'end_select_image',
-                image: wallpaperProvider.localImages[0],
-                success: false,
-              },
-              {
-                name: 'set_attribution',
-                attribution: personalizationStore.data.wallpaper.attribution,
-              },
-              {
-                name: 'set_selected_image',
-                image: personalizationStore.data.wallpaper.currentSelected,
-              },
+              beginSelectImageAction(wallpaperProvider.localImages[0]!),
+              beginLoadSelectedImageAction(),
+              setFullscreenStateAction(FullscreenPreviewState.LOADING),
+              endSelectImageAction(wallpaperProvider.localImages[0]!, false),
+              setFullscreenStateAction(FullscreenPreviewState.OFF),
+              setAttributionAction(
+                  personalizationStore.data.wallpaper.attribution),
+              setSelectedImageAction(
+                  personalizationStore.data.wallpaper.currentSelected),
             ],
-            personalizationStore.actions,
-        );
+            personalizationStore.actions, 'sends expected actions');
 
         assertDeepEquals(
             [
-              // Begin selecting image.
+              // Begin selecting image
               {
                 'wallpaper.pendingSelected': wallpaperProvider.localImages[0],
               },
-              // Begin loading image.
+              // Begin loading image
               {
                 'wallpaper.pendingSelected': wallpaperProvider.localImages[0],
               },
-              // End selecting image, pendingState is cleared.
+              // Start full screen
+              {
+                'wallpaper.pendingSelected': wallpaperProvider.localImages[0],
+              },
+              // End selecting image, pendingState is cleared
+              {
+                'wallpaper.pendingSelected': null,
+              },
+              // Clear full screen
               {
                 'wallpaper.pendingSelected': null,
               },
@@ -803,7 +796,8 @@ suite('observes pendingState during wallpaper selection', () => {
               },
             ],
             personalizationStore.states.map(
-                filterAndFlattenState(['wallpaper.pendingSelected'])));
+                filterAndFlattenState(['wallpaper.pendingSelected'])),
+            'sets expected states');
       });
 });
 

@@ -130,6 +130,7 @@ PersonalizationAppWallpaperProviderImpl::
             ->MaybeStartHatsTimer(
                 ::ash::personalization_app::HatsSurveyType::kWallpaper);
   }
+  CancelPreviewWallpaper();
 }
 
 void PersonalizationAppWallpaperProviderImpl::BindInterface(

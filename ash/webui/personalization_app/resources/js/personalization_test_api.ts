@@ -11,21 +11,16 @@ import {Paths, PersonalizationRouterElement} from './personalization_router_elem
 import {PersonalizationStore} from './personalization_store.js';
 import {getThemeProvider} from './theme/theme_interface_provider.js';
 import {DEFAULT_COLOR_SCHEME} from './theme/utils.js';
-import {setFullscreenEnabledAction} from './wallpaper/wallpaper_actions.js';
 import {selectGooglePhotosAlbum, selectWallpaper, setDailyRefreshCollectionId} from './wallpaper/wallpaper_controller.js';
+import {setShouldWaitForFullscreenOpacityTransitionsForTesting} from './wallpaper/wallpaper_fullscreen_element.js';
 import {getWallpaperProvider} from './wallpaper/wallpaper_interface_provider.js';
 
 /**
  * @fileoverview provides useful functions for e2e browsertests.
  */
 
-function enterFullscreen() {
-  const store = PersonalizationStore.getInstance();
-  assert(!!store);
-  store.dispatch(setFullscreenEnabledAction(true));
-}
-
 function makeTransparent() {
+  setShouldWaitForFullscreenOpacityTransitionsForTesting(false);
   const wallpaperProvider = getWallpaperProvider();
   wallpaperProvider.makeTransparent();
 }
@@ -81,7 +76,6 @@ async function enableDailyGooglePhotosRefresh(albumId: string) {
 declare global {
   interface Window {
     personalizationTestApi: {
-      enterFullscreen: () => void,
       isGooglePhotosIntegrationEnabled: () => boolean,
       makeTransparent: () => void,
       reset: () => Promise<void>,
@@ -94,7 +88,6 @@ declare global {
 }
 
 window.personalizationTestApi = {
-  enterFullscreen,
   isGooglePhotosIntegrationEnabled,
   makeTransparent,
   reset,

@@ -15,7 +15,7 @@ import {PersonalizationStore} from '../personalization_store.js';
 import {DisplayableImage} from './constants.js';
 import {isDefaultImage, isGooglePhotosPhoto, isImageAMatchForKey, isImageEqualToSelected, isWallpaperImage} from './utils.js';
 import * as action from './wallpaper_actions.js';
-import {DailyRefreshType} from './wallpaper_state.js';
+import {DailyRefreshType, FullscreenPreviewState} from './wallpaper_state.js';
 
 /**
  * @fileoverview contains all of the functions to interact with C++ side through
@@ -353,6 +353,8 @@ export async function selectWallpaper(
   const shouldPreview = tabletMode && !isDefaultImage(image);
   if (shouldPreview) {
     provider.makeTransparent();
+    store.dispatch(
+        action.setFullscreenStateAction(FullscreenPreviewState.LOADING));
   }
   store.endBatchUpdate();
   const {success} = await (() => {
@@ -374,14 +376,9 @@ export async function selectWallpaper(
   })();
   store.beginBatchUpdate();
   store.dispatch(action.endSelectImageAction(image, success));
-  // Delay opening full screen preview until done loading. This looks better if
-  // the image load takes a long time, otherwise the user will see the old
-  // wallpaper image for a while.
-  if (success && shouldPreview) {
-    store.dispatch(action.setFullscreenEnabledAction(/*enabled=*/ true));
-  }
   if (!success) {
     console.warn('Error setting wallpaper');
+    store.dispatch(action.setFullscreenStateAction(FullscreenPreviewState.OFF));
     store.dispatch(
         action.setAttributionAction(store.data.wallpaper.attribution));
     store.dispatch(
@@ -527,15 +524,15 @@ export async function updateDailyRefreshWallpaper(
 /** Confirm and set preview wallpaper as actual wallpaper. */
 export async function confirmPreviewWallpaper(
     provider: WallpaperProviderInterface): Promise<void> {
-  await provider.confirmPreviewWallpaper();
   provider.makeOpaque();
+  provider.confirmPreviewWallpaper();
 }
 
 /** Cancel preview wallpaper and show the previous wallpaper. */
 export async function cancelPreviewWallpaper(
     provider: WallpaperProviderInterface): Promise<void> {
-  await provider.cancelPreviewWallpaper();
   provider.makeOpaque();
+  provider.cancelPreviewWallpaper();
 }
 
 export async function getShouldShowTimeOfDayWallpaperDialog(

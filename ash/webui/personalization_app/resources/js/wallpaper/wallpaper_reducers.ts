@@ -17,7 +17,7 @@ import {PersonalizationState} from '../personalization_state.js';
 import {DefaultImageSymbol, kDefaultImageSymbol} from './constants.js';
 import {findAlbumById, isDefaultImage, isImageEqualToSelected} from './utils.js';
 import {WallpaperActionName} from './wallpaper_actions.js';
-import {DailyRefreshType, WallpaperState} from './wallpaper_state.js';
+import {DailyRefreshType, FullscreenPreviewState, WallpaperState} from './wallpaper_state.js';
 
 function backdropReducer(
     state: WallpaperState['backdrop'], action: Actions,
@@ -387,8 +387,8 @@ function pendingSelectedReducer(
         return null;
       }
       return state;
-    case WallpaperActionName.SET_FULLSCREEN_ENABLED:
-      if (!action.enabled) {
+    case WallpaperActionName.SET_FULLSCREEN_STATE:
+      if (action.state === FullscreenPreviewState.OFF) {
         // Clear the pending selected state after full screen is dismissed.
         return null;
       }
@@ -432,8 +432,8 @@ function fullscreenReducer(
     state: WallpaperState['fullscreen'], action: Actions,
     _: PersonalizationState): WallpaperState['fullscreen'] {
   switch (action.name) {
-    case WallpaperActionName.SET_FULLSCREEN_ENABLED:
-      return action.enabled;
+    case WallpaperActionName.SET_FULLSCREEN_STATE:
+      return action.state;
     default:
       return state;
   }

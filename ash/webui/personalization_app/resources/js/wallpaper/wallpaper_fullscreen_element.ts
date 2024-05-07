@@ -19,12 +19,42 @@ import {WithPersonalizationStore} from '../personalization_store.js';
 
 import {DisplayableImage} from './constants.js';
 import {getWallpaperLayoutEnum, isGooglePhotosPhoto} from './utils.js';
-import {setFullscreenEnabledAction} from './wallpaper_actions.js';
+import {setFullscreenStateAction} from './wallpaper_actions.js';
 import {cancelPreviewWallpaper, confirmPreviewWallpaper, selectWallpaper} from './wallpaper_controller.js';
 import {getTemplate} from './wallpaper_fullscreen_element.html.js';
 import {getWallpaperProvider} from './wallpaper_interface_provider.js';
+import {FullscreenPreviewState} from './wallpaper_state.js';
 
 const fullscreenClass = 'fullscreen-preview';
+const fullscreenTransitionClass = 'fullscreen-preview-transition';
+
+let shouldWaitForOpacityTransitions = true;
+
+export function setShouldWaitForFullscreenOpacityTransitionsForTesting(
+    value: boolean) {
+  shouldWaitForOpacityTransitions = value;
+}
+
+// Wait for document.body opacity transition to end. Set a timeout for safety in
+// case the opacity transition has been canceled.
+async function waitForOpacityTransition(): Promise<void> {
+  if (!shouldWaitForOpacityTransitions) {
+    return;
+  }
+  const handler =
+      await new Promise<(event: TransitionEvent) => void>(resolve => {
+        const handler = (event: TransitionEvent) => {
+          if (event.propertyName === 'opacity') {
+            window.clearTimeout(timeoutId);
+            resolve(handler);
+          }
+        };
+        const timeoutId = window.setTimeout(() => resolve(handler), 250);
+        document.body.addEventListener('transitionend', handler);
+      });
+
+  document.body.removeEventListener('transitionend', handler);
+}
 
 export interface WallpaperFullscreenElement {
   $: {container: HTMLDivElement, exit: HTMLElement};
@@ -41,55 +71,75 @@ export class WallpaperFullscreenElement extends WithPersonalizationStore {
 
   static get properties() {
     return {
-      visible_: {
-        type: Boolean,
-        observer: 'onVisibleChanged_',
+      fullscreenState_: {
+        type: Object,
+        observer: 'onFullscreenStateChanged_',
       },
+
       showLayoutOptions_: Boolean,
+
       /**
        * Note that this contains information about the non-preview wallpaper
        * that was set before entering fullscreen mode.
        */
       currentSelected_: Object,
+
       /** This will be set during the duration of preview mode. */
       pendingSelected_: Object,
+
       /**
        * When preview mode starts, this is set to the default layout. If the
        * user changes layout option, this will be updated locally to track which
        * option the user has selected (currentSelected.layout does not change
        * until confirmPreviewWallpaper is called).
        */
-      selectedLayout_: Number,
+      selectedLayout_: {
+        type: Number,
+        value: null,
+      },
+
+      /**
+       * Whether the full screen container and the corresponding controls (exit,
+       * confirm, layout buttons) are shown.
+       */
+      showContainer_: {
+        type: Boolean,
+        value: false,
+      },
     };
   }
 
-  private visible_: boolean = false;
-  private showLayoutOptions_: boolean = false;
-  private currentSelected_: CurrentWallpaper|null = null;
-  private pendingSelected_: DisplayableImage|null = null;
-  private selectedLayout_: WallpaperLayout|null = null;
+  private fullscreenState_: FullscreenPreviewState;
+  private showLayoutOptions_: boolean;
+  private currentSelected_: CurrentWallpaper|null;
+  private pendingSelected_: DisplayableImage|null;
+  private selectedLayout_: WallpaperLayout|null;
+  private showContainer_: boolean;
 
   private onVisibilityChange_ = () => {
-    if (document.visibilityState === 'hidden' && this.visible_) {
-      // Cancel preview immediately instead of waiting for fullscreenchange
-      // event.
-      cancelPreviewWallpaper(getWallpaperProvider());
+    if (document.visibilityState === 'hidden' &&
+        this.fullscreenState_ !== FullscreenPreviewState.OFF) {
+      // The user has probably switched to a different application. Cancel
+      // preview immediately instead of waiting for fullscreenchange event.
+      this.dispatch(setFullscreenStateAction(FullscreenPreviewState.OFF));
     }
   };
 
   private onPopState_ = () => {
-    if (this.visible_) {
-      cancelPreviewWallpaper(getWallpaperProvider());
+    if (this.fullscreenState_ !== FullscreenPreviewState.OFF) {
+      // The user has probably pressed the back button on an external mouse, or
+      // swiped left to go back.
+      this.dispatch(setFullscreenStateAction(FullscreenPreviewState.OFF));
     }
   };
 
   override connectedCallback() {
     super.connectedCallback();
     this.$.container.addEventListener(
-        'fullscreenchange', this.onFullscreenChange_.bind(this));
+        'fullscreenchange', this.fullscreenChangeEventHander_.bind(this));
 
-    this.watch<WallpaperFullscreenElement['visible_']>(
-        'visible_', state => state.wallpaper.fullscreen);
+    this.watch<WallpaperFullscreenElement['fullscreenState_']>(
+        'fullscreenState_', state => state.wallpaper.fullscreen);
     this.watch<WallpaperFullscreenElement['showLayoutOptions_']>(
         'showLayoutOptions_',
         state => !!state.wallpaper.pendingSelected &&
@@ -122,37 +172,52 @@ export class WallpaperFullscreenElement extends WithPersonalizationStore {
     return document.exitFullscreen();
   }
 
-  private onVisibleChanged_(value: boolean) {
-    if (value && !this.getFullscreenElement()) {
-      // Reset to default wallpaper layout each time.
-      this.selectedLayout_ = WallpaperLayout.kCenterCropped;
-      this.$.container.requestFullscreen().then(
-          () => document.body.classList.add(fullscreenClass));
-    } else if (!value && this.getFullscreenElement()) {
-      this.selectedLayout_ = null;
-      this.exitFullscreen();
+  private async onFullscreenStateChanged_(value: FullscreenPreviewState) {
+    switch (value) {
+      case FullscreenPreviewState.OFF:
+        this.showContainer_ = false;
+        document.body.classList.remove(fullscreenClass);
+        await waitForOpacityTransition();
+        document.body.classList.remove(fullscreenTransitionClass);
+        this.selectedLayout_ = null;
+        if (this.getFullscreenElement()) {
+          await this.exitFullscreen();
+        }
+        cancelPreviewWallpaper(getWallpaperProvider());
+        return;
+      case FullscreenPreviewState.LOADING:
+        // Do not assign this.showContainer_ here. If last state was
+        // FullScreenPreviewState.OFF, showContainer_ should stay false. If last
+        // state was FullScreenPreviewState.VISIBLE, showContainer_ should stay
+        // true. This accounts for both entering full screen preview for the
+        // first time, and for users clicking on the layout buttons.
+        if (!this.getFullscreenElement()) {
+          this.$.container.requestFullscreen();
+        }
+        return;
+      case FullscreenPreviewState.VISIBLE:
+        document.body.classList.add(fullscreenTransitionClass);
+        document.body.classList.add(fullscreenClass);
+        if (typeof this.selectedLayout_ !== 'number') {
+          this.selectedLayout_ = WallpaperLayout.kCenterCropped;
+        }
+        await waitForOpacityTransition();
+        this.showContainer_ = true;
+        return;
     }
   }
 
-  private onFullscreenChange_() {
+  private fullscreenChangeEventHander_() {
     const hidden = !this.getFullscreenElement();
-    this.$.container.hidden = hidden;
     if (hidden) {
-      // SWA also supports exiting fullscreen when users press ESC. In this
-      // case, the preview mode may be still on so we have to call cancel
-      // preview. This call is no-op when the user clicks on set as wallpaper
-      // button.
-      cancelPreviewWallpaper(getWallpaperProvider());
-      this.dispatch(setFullscreenEnabledAction(/*enabled=*/ false));
-      document.body.classList.remove(fullscreenClass);
+      this.dispatch(setFullscreenStateAction(FullscreenPreviewState.OFF));
     } else {
       this.$.exit.focus();
     }
   }
 
   private async onClickExit_() {
-    await cancelPreviewWallpaper(getWallpaperProvider());
-    await this.exitFullscreen();
+    this.dispatch(setFullscreenStateAction(FullscreenPreviewState.OFF));
   }
 
   private async onClickConfirm_() {
@@ -160,8 +225,8 @@ export class WallpaperFullscreenElement extends WithPersonalizationStore {
     // splitscreen, this prevents `WallpaperController::OnOverviewModeWillStart`
     // from triggering first, which leads to preview wallpaper getting canceled
     // before it gets confirmed (b/289133203).
-    await confirmPreviewWallpaper(getWallpaperProvider());
-    await this.exitFullscreen();
+    confirmPreviewWallpaper(getWallpaperProvider());
+    this.dispatch(setFullscreenStateAction(FullscreenPreviewState.OFF));
   }
 
   private async onClickLayout_(event: MouseEvent) {

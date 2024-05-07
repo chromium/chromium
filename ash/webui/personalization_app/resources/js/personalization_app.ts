@@ -140,14 +140,14 @@ export * from './wallpaper/wallpaper_actions.js';
 export {WallpaperCollectionsElement} from './wallpaper/wallpaper_collections_element.js';
 export {selectGooglePhotosAlbum, cancelPreviewWallpaper, confirmPreviewWallpaper, fetchCollections, fetchGooglePhotosAlbum, fetchGooglePhotosAlbums, fetchGooglePhotosPhotos, fetchGooglePhotosSharedAlbums, fetchLocalData, getDefaultImageThumbnail, getLocalImages, initializeBackdropData, fetchGooglePhotosEnabled, selectWallpaper, setCurrentWallpaperLayout, setDailyRefreshCollectionId, updateDailyRefreshWallpaper} from './wallpaper/wallpaper_controller.js';
 export {WallpaperErrorElement} from './wallpaper/wallpaper_error_element.js';
-export {WallpaperFullscreenElement} from './wallpaper/wallpaper_fullscreen_element.js';
+export {WallpaperFullscreenElement, setShouldWaitForFullscreenOpacityTransitionsForTesting} from './wallpaper/wallpaper_fullscreen_element.js';
 export {getImageTiles, WallpaperImagesElement} from './wallpaper/wallpaper_images_element.js';
 export {setWallpaperProviderForTesting} from './wallpaper/wallpaper_interface_provider.js';
 export {WallpaperObserver} from './wallpaper/wallpaper_observer.js';
 export {WallpaperPreviewElement} from './wallpaper/wallpaper_preview_element.js';
 export {WallpaperSelectedElement} from './wallpaper/wallpaper_selected_element.js';
 export {WallpaperSubpageElement} from './wallpaper/wallpaper_subpage_element.js';
-export {DailyRefreshType} from './wallpaper/wallpaper_state.js';
+export {DailyRefreshType, FullscreenPreviewState} from './wallpaper/wallpaper_state.js';
 export {TimeOfDayAcceptEvent, TimeOfDayWallpaperDialogElement} from './wallpaper/time_of_day_wallpaper_dialog_element.js';
 export {setTransitionsEnabled, maybeDoPageTransition} from 'chrome://resources/ash/common/sea_pen/transition.js';
 

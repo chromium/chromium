@@ -16,6 +16,13 @@ body.jelly-enabled {
     background-color: var(--cros-sys-app_base_shaded);
 }
 
+body.fullscreen-preview-transition {
+    opacity: 1;
+    transition-duration: 200ms;
+    transition-property: background-color, opacity;
+    transition-timing-function: ease-in;
+}
+
 body.fullscreen-preview {
     background-color: transparent;
     opacity: 0;

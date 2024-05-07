@@ -111,6 +111,12 @@ export interface DailyRefreshState {
   type: DailyRefreshType;
 }
 
+export enum FullscreenPreviewState {
+  OFF = 'fullscreen_preview_off',
+  LOADING = 'fullscreen_preview_loading',
+  VISIBLE = 'fullscreen_preview_visible',
+}
+
 export interface WallpaperState {
   backdrop: BackdropState;
   loading: LoadingState;
@@ -119,7 +125,7 @@ export interface WallpaperState {
   currentSelected: CurrentWallpaper|null;
   pendingSelected: DisplayableImage|null;
   dailyRefresh: DailyRefreshState|null;
-  fullscreen: boolean;
+  fullscreen: FullscreenPreviewState;
   shouldShowTimeOfDayWallpaperDialog: boolean;
   googlePhotos: GooglePhotosState;
   seaPen: SeaPenState;
@@ -151,7 +157,7 @@ export function emptyState(): WallpaperState {
     currentSelected: null,
     pendingSelected: null,
     dailyRefresh: null,
-    fullscreen: false,
+    fullscreen: FullscreenPreviewState.OFF,
     shouldShowTimeOfDayWallpaperDialog: false,
     googlePhotos: {
       enabled: undefined,
