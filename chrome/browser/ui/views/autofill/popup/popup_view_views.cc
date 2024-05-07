@@ -286,25 +286,6 @@ bool PopupViewViews::HandleKeyPressEvent(
       (event.GetModifiers() & blink::WebInputEvent::kKeyModifiers &
        ~blink::WebInputEvent::kShiftKey);
 
-  // Selects the content cell of the row with currently open sup-popup if any,
-  // which closes the sub-popup and looks like going one menu level back.
-  auto select_sub_popup_content_cell = [&]() {
-    if (!row_with_open_sub_popup_) {
-      return false;
-    }
-
-    size_t row_index = *row_with_open_sub_popup_;
-    // Closing the sub-popup by setting `std::nullopt` is required as
-    // `suppress_popup=true` is not enough: the sub-popup closing will be
-    // prevented by the "same value" check.
-    SetRowWithOpenSubPopup(std::nullopt);
-    SetSelectedCell(CellIndex{row_index, PopupRowView::CellType::kContent},
-                    PopupCellSelectionSource::kKeyboard,
-                    AutoselectFirstSuggestion(false),
-                    /*suppress_popup=*/true);
-    return true;
-  };
-
   switch (event.windows_key_code) {
     case ui::VKEY_UP:
       SelectPreviousRow();
@@ -320,14 +301,14 @@ bool PopupViewViews::HandleKeyPressEvent(
       if (base::i18n::IsRTL()) {
         return SelectNextHorizontalCell();
       } else {
-        if (select_sub_popup_content_cell()) {
+        if (SelectParentPopupContentCell()) {
           return true;
         }
         return SelectPreviousHorizontalCell();
       }
     case ui::VKEY_RIGHT:
       if (base::i18n::IsRTL()) {
-        if (select_sub_popup_content_cell()) {
+        if (SelectParentPopupContentCell()) {
           return true;
         }
         return SelectPreviousHorizontalCell();
@@ -347,7 +328,7 @@ bool PopupViewViews::HandleKeyPressEvent(
     case ui::VKEY_DELETE:
       return kHasShiftModifier && RemoveSelectedCell();
     case ui::VKEY_ESCAPE:
-      if (select_sub_popup_content_cell()) {
+      if (SelectParentPopupContentCell()) {
         return true;
       }
       // If this is the root popup view and there was no sub-popup open (find
@@ -381,28 +362,99 @@ bool PopupViewViews::HandleKeyPressEventForCompose(
     case ui::VKEY_ESCAPE:
       controller_->Hide(PopupHidingReason::kUserAborted);
       return true;
-    case ui::VKEY_TAB:
+    case ui::VKEY_UP:
       if (GetSelectedCell()) {
-        if (kHasShiftModifier) {
-          // Shift+TAB should remove the selection, but keep the popup open.
-          SetSelectedCell(std::nullopt, PopupCellSelectionSource::kKeyboard);
+        SelectPreviousRow();
+        return true;
+      }
+      return false;
+    case ui::VKEY_DOWN:
+      if (GetSelectedCell()) {
+        SelectNextRow();
+        return true;
+      }
+      return false;
+    case ui::VKEY_LEFT:
+      // `base::i18n::IsRTL` is used here instead of the controller's method
+      // because the controller's `IsRTL` depends on the language of the focused
+      // field and not the overall UI language. However, the layout of the popup
+      // is determined by the overall UI language.
+      if (base::i18n::IsRTL()) {
+        return SelectNextHorizontalCell();
+      } else {
+        if (SelectParentPopupContentCell()) {
           return true;
         }
+        return SelectPreviousHorizontalCell();
+      }
+    case ui::VKEY_RIGHT:
+      if (base::i18n::IsRTL()) {
+        if (SelectParentPopupContentCell()) {
+          return true;
+        }
+        return SelectPreviousHorizontalCell();
+      } else {
+        return SelectNextHorizontalCell();
+      }
+    case ui::VKEY_TAB: {
+      const bool is_root_popup = !parent_;
+      // TAB should only be handled by the root popup. The subpopup only deals
+      // with selection (ENTER) and arrow navigation.
+      if (!is_root_popup) {
+        return false;
+      }
+      std::optional<CellIndex> selected_cell = GetSelectedCell();
+      // The `!row_with_open_sub_popup_` check is to make sure that we only
+      // select the content cell if there is no subpopup open. This is because
+      // if one presses TAB from the subpopup, we also want to close the root
+      // popup (and navigate to the next HTML element).
+      const bool tab_pressed_popup_unselected =
+          !selected_cell && !kHasShiftModifier && !row_with_open_sub_popup_;
+      if (tab_pressed_popup_unselected) {
+        // If there is no selected cell in the compose popup, TAB should select
+        // the single compose nudge entry.
+        SetSelectedCell(CellIndex(0, PopupRowView::CellType::kContent),
+                        PopupCellSelectionSource::kKeyboard);
+        return true;
+      }
+
+      const bool tab_pressed_popup_selected =
+          selected_cell && !kHasShiftModifier;
+      if (tab_pressed_popup_selected) {
         // TAB should close the popup and focus the next HTML element if the
         // Compose entry is selected.
         controller_->Hide(PopupHidingReason::kUserAborted);
         return false;
       }
 
-      // If the Compose suggestion is not selected, Shift+TAB should not be
-      // handled, but TAB should select the suggestion.
-      if (kHasShiftModifier) {
+      const bool shift_tab_pressed_popup_unselected_no_subpopup =
+          !selected_cell && kHasShiftModifier && !row_with_open_sub_popup_;
+      if (shift_tab_pressed_popup_unselected_no_subpopup) {
+        // If the Compose suggestion is not selected, Shift+TAB should not be
+        // handled.
         return false;
       }
-      // Compose nudges have a single entry - select it.
-      SetSelectedCell(CellIndex(0, PopupRowView::CellType::kContent),
-                      PopupCellSelectionSource::kKeyboard);
-      return true;
+
+      const bool shift_tab_pressed_has_subpopup =
+          kHasShiftModifier && row_with_open_sub_popup_;
+      if (shift_tab_pressed_has_subpopup) {
+        // In this case, focus on the root/parent popup content area. This
+        // closes the sub-popup.
+        SetSelectedCell(CellIndex(0, PopupRowView::CellType::kContent),
+                        PopupCellSelectionSource::kKeyboard);
+        return true;
+      }
+
+      const bool shift_tab_pressed_root_popup_selected =
+          selected_cell && kHasShiftModifier && is_root_popup;
+      if (shift_tab_pressed_root_popup_selected) {
+        // Shift+TAB should remove the selection when the root popup is
+        // selected, but keep the popup open.
+        SetSelectedCell(std::nullopt, PopupCellSelectionSource::kKeyboard);
+        return true;
+      }
+      return false;
+    }
     default:
       return false;
   }
@@ -462,13 +514,13 @@ bool PopupViewViews::SelectNextHorizontalCell() {
 
 bool PopupViewViews::SelectPreviousHorizontalCell() {
   std::optional<CellIndex> selected_cell = GetSelectedCell();
-  if (selected_cell && HasPopupRowViewAt(selected_cell->first)) {
-    if (selected_cell->second == PopupRowView::CellType::kControl) {
-      SetSelectedCell(
-          CellIndex{selected_cell->first, PopupRowView::CellType::kContent},
-          PopupCellSelectionSource::kKeyboard);
-      return true;
-    }
+  if (selected_cell &&
+      selected_cell->second == PopupRowView::CellType::kControl &&
+      HasPopupRowViewAt(selected_cell->first)) {
+    SetSelectedCell(
+        CellIndex{selected_cell->first, PopupRowView::CellType::kContent},
+        PopupCellSelectionSource::kKeyboard);
+    return true;
   }
   return false;
 }
@@ -1072,6 +1124,22 @@ bool PopupViewViews::CanOpenSubPopupSuggestion(const Suggestion& suggestion) {
   // Checking both `is_acceptable` and `apply_deactivated_style` because the
   // latter is used for disabling virtual cards which cannot open a sub popup.
   return !suggestion.is_acceptable && !suggestion.apply_deactivated_style;
+}
+
+bool PopupViewViews::SelectParentPopupContentCell() {
+  if (!row_with_open_sub_popup_) {
+    return false;
+  }
+  size_t row_index = *row_with_open_sub_popup_;
+  // Closing the sub-popup by setting `std::nullopt` is required as
+  // `suppress_popup=true` is not enough: the sub-popup closing will be
+  // prevented by the "same value" check.
+  SetRowWithOpenSubPopup(std::nullopt);
+  SetSelectedCell(CellIndex{row_index, PopupRowView::CellType::kContent},
+                  PopupCellSelectionSource::kKeyboard,
+                  AutoselectFirstSuggestion(false),
+                  /*suppress_popup=*/true);
+  return true;
 }
 
 base::WeakPtr<AutofillPopupView> PopupViewViews::GetWeakPtr() {
