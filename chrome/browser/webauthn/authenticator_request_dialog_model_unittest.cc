@@ -57,6 +57,10 @@
 #include "device/fido/win/webauthn_api.h"
 #endif
 
+#if BUILDFLAG(IS_MAC)
+#include "device/fido/mac/util.h"
+#endif
+
 namespace {
 
 using testing::ElementsAre;
@@ -347,8 +351,7 @@ TEST_F(AuthenticatorRequestDialogControllerTest, Mechanisms) {
   const auto v2 = TransportAvailabilityParam::kHasCableV2Extension;
   const auto has_winapi =
       TransportAvailabilityParam::kHasWinNativeAuthenticator;
-  const auto win_hybrid =
-      TransportAvailabilityParam::kWindowsHandlesHybrid;
+  const auto win_hybrid = TransportAvailabilityParam::kWindowsHandlesHybrid;
   const auto has_plat = TransportAvailabilityParam::kHasPlatformCredential;
   const auto maybe_plat =
       TransportAvailabilityParam::kMaybeHasPlatformCredential;
@@ -1090,9 +1093,8 @@ TEST_F(AuthenticatorRequestDialogControllerTest, Mechanisms) {
       transports_info.recognized_credentials.emplace_back(
           kCred1FromICloudKeychain);
     } else {
-      transports_info.has_icloud_keychain_credential =
-          device::FidoRequestHandlerBase::RecognizedCredential::
-              kNoRecognizedCredential;
+      transports_info.has_icloud_keychain_credential = device::
+          FidoRequestHandlerBase::RecognizedCredential::kNoRecognizedCredential;
     }
 
     if (base::Contains(test.params,
@@ -1191,11 +1193,8 @@ TEST_F(AuthenticatorRequestDialogControllerTest, Mechanisms) {
       controller.set_should_create_in_icloud_keychain(true);
     }
 #if BUILDFLAG(IS_MAC)
-    if (base::Contains(test.params, TransportAvailabilityParam::kNoTouchId)) {
-      controller.set_local_biometrics_override_for_testing(false);
-    } else {
-      controller.set_local_biometrics_override_for_testing(true);
-    }
+    device::fido::mac::ScopedBiometricsOverride scoped_biometrics_override(
+        !base::Contains(test.params, TransportAvailabilityParam::kNoTouchId));
 #endif
 
     std::optional<device::FidoTransportProtocol> hint_transport;
@@ -2136,7 +2135,8 @@ TEST_F(AuthenticatorRequestDialogControllerTest, PreSelect) {
     // The TouchID authenticator will be immediately dispatched to if the device
     // has biometrics configured. Simulate a lack of biometrics to align with
     // other platforms.
-    controller.set_local_biometrics_override_for_testing(false);
+    device::fido::mac::ScopedBiometricsOverride scoped_biometrics_override(
+        false);
 #endif  // BUILDFLAG(IS_MAC)
     transports_info.user_verification_requirement =
         device::UserVerificationRequirement::kPreferred;

@@ -53,6 +53,7 @@
 #include "device/fido/fido_transport_protocol.h"
 #include "device/fido/fido_types.h"
 #include "device/fido/pin.h"
+#include "device/fido/platform_user_verification_policy.h"
 #include "device/fido/public_key_credential_descriptor.h"
 #include "third_party/abseil-cpp/absl/types/variant.h"
 #include "third_party/icu/source/common/unicode/locid.h"
@@ -669,6 +670,9 @@ void AuthenticatorRequestDialogController::TransitionToModalWebAuthnRequest() {
 
 void AuthenticatorRequestDialogController::
     StartGuidedFlowForMostLikelyTransportOrShowMechanismSelection() {
+  const bool will_do_uv = device::fido::PlatformWillDoUserVerification(
+      transport_availability_.user_verification_requirement);
+
   if (pending_step_) {
     SetCurrentStep(*pending_step_);
     pending_step_.reset();
@@ -693,19 +697,12 @@ void AuthenticatorRequestDialogController::
          (transport_availability_.has_empty_allow_list &&
           // iCloud Keychain has its own confirmation UI and we don't want to
           // duplicate it.
-          cred->value().source != device::AuthenticatorType::kICloudKeychain)
-#if BUILDFLAG(IS_MAC)
-         ||
+          cred->value().source != device::AuthenticatorType::kICloudKeychain) ||
          // Never auto-trigger macOS profile credentials without either a local
          // biometric or a UV requirement because, otherwise, there'll not be
          // *any* UI.
          (cred->value().source == device::AuthenticatorType::kTouchID &&
-          transport_availability_.user_verification_requirement !=
-              device::UserVerificationRequirement::kRequired &&
-          !local_biometrics_override_for_testing_.value_or(
-              device::fido::mac::DeviceHasBiometricsAvailable()))
-#endif
-             )) {
+          !will_do_uv))) {
       SetCurrentStep(Step::kSelectPriorityMechanism);
     } else if (cred != nullptr || !hints_.transport.has_value() ||
                transport_availability_.request_type !=
@@ -1050,10 +1047,8 @@ void AuthenticatorRequestDialogController::StartPlatformAuthenticatorFlow() {
         // For requests with an allow list, pre-select a random credential.
         model_->creds = {platform_credentials.front()};
 #if BUILDFLAG(IS_MAC)
-        if (transport_availability_.user_verification_requirement ==
-                device::UserVerificationRequirement::kRequired ||
-            local_biometrics_override_for_testing_.value_or(
-                device::fido::mac::DeviceHasBiometricsAvailable())) {
+        if (device::fido::PlatformWillDoUserVerification(
+                transport_availability_.user_verification_requirement)) {
           // If it's not preferable to complete the request by clicking
           // "Continue" then don't show the account selection sheet.
           HideDialogAndDispatchToPlatformAuthenticator();
@@ -1710,11 +1705,6 @@ void AuthenticatorRequestDialogController::
 void AuthenticatorRequestDialogController::set_has_icloud_drive_enabled(
     bool is_enabled) {
   has_icloud_drive_enabled_ = is_enabled;
-}
-
-void AuthenticatorRequestDialogController::
-    set_local_biometrics_override_for_testing(bool is_enabled) {
-  local_biometrics_override_for_testing_ = is_enabled;
 }
 
 #endif

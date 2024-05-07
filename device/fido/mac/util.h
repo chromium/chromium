@@ -72,6 +72,15 @@ CodeSigningState ProcessIsSigned();
 COMPONENT_EXPORT(DEVICE_FIDO)
 bool DeviceHasBiometricsAvailable();
 
+// Overrides the result of `DeviceHasBiometricsAvailable` for testing.
+class COMPONENT_EXPORT(DEVICE_FIDO) ScopedBiometricsOverride {
+ public:
+  explicit ScopedBiometricsOverride(bool has_biometrics);
+  ScopedBiometricsOverride(const ScopedBiometricsOverride&) = delete;
+  ScopedBiometricsOverride& operator=(const ScopedBiometricsOverride&) = delete;
+  ~ScopedBiometricsOverride();
+};
+
 }  // namespace device::fido::mac
 
 #endif  // DEVICE_FIDO_MAC_UTIL_H_

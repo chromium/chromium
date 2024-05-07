@@ -854,7 +854,6 @@ class AuthenticatorRequestDialogController
                                    device::AuthenticatorType);
   void set_is_active_profile_authenticator_user(bool);
   void set_has_icloud_drive_enabled(bool);
-  void set_local_biometrics_override_for_testing(bool);
 #endif
 
   base::WeakPtr<AuthenticatorRequestDialogController> GetWeakPtr();
@@ -1078,12 +1077,6 @@ class AuthenticatorRequestDialogController
   // enabled. This is used as an approximation for whether iCloud Keychain
   // syncing is enabled.
   bool has_icloud_drive_enabled_ = false;
-
-  // local_biometrics_override_for_testing_ can be set in tests to override
-  // whether or not the this model should consider local biometrics to be
-  // available. Biometrics can be unavailable on Macs because they're not
-  // present (e.g. a Mac Mini) or because it's a laptop in clamshell mode.
-  std::optional<bool> local_biometrics_override_for_testing_;
 #endif
 
   base::ScopedObservation<webauthn::PasskeyModel,
