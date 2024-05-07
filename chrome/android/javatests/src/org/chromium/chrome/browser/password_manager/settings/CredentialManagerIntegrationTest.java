@@ -33,6 +33,7 @@ import org.mockito.MockitoAnnotations;
 
 import org.chromium.base.test.util.Batch;
 import org.chromium.base.test.util.CommandLineFlags;
+import org.chromium.base.test.util.DisableIf;
 import org.chromium.base.test.util.PayloadCallbackHelper;
 import org.chromium.base.test.util.Restriction;
 import org.chromium.chrome.browser.flags.ChromeSwitches;
@@ -46,6 +47,7 @@ import org.chromium.chrome.test.R;
 import org.chromium.components.signin.identitymanager.ConsentLevel;
 import org.chromium.ui.test.util.DeviceRestriction;
 import org.chromium.ui.test.util.GmsCoreVersionRestriction;
+import org.chromium.ui.test.util.UiDisableIf;
 
 /** Integration test for accessing credential manager. */
 @RunWith(ChromeJUnit4ClassRunner.class)
@@ -108,6 +110,7 @@ public class CredentialManagerIntegrationTest {
         DeviceRestriction.RESTRICTION_TYPE_NON_AUTO,
         GmsCoreVersionRestriction.RESTRICTION_TYPE_VERSION_GE_22W30
     })
+    @DisableIf.Device(type = {UiDisableIf.TABLET}) // https://crbug.com/339278945
     public void testUseCredentialManagerFromSafetyCheckForLocal() {
         mSettingsActivityTestRule.startSettingsActivity();
         scrollToSetting(withText(R.string.prefs_safety_check));
@@ -126,6 +129,7 @@ public class CredentialManagerIntegrationTest {
         DeviceRestriction.RESTRICTION_TYPE_NON_AUTO,
         GmsCoreVersionRestriction.RESTRICTION_TYPE_VERSION_GE_22W30
     })
+    @DisableIf.Device(type = {UiDisableIf.TABLET}) // https://crbug.com/339278945
     public void testUseCredentialManagerFromSafetyCheckForAccount() {
         mSettingsActivityTestRule.startSettingsActivity();
         scrollToSetting(withText(R.string.prefs_safety_check));
