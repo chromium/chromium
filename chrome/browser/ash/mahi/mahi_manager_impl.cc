@@ -42,6 +42,29 @@ namespace {
 using chromeos::MahiResponseStatus;
 using crosapi::mojom::MahiContextMenuActionType;
 
+MahiResponseStatus GetMahiResponseStatusFromMantaStatus(
+    manta::MantaStatusCode code) {
+  switch (code) {
+    case manta::MantaStatusCode::kOk:
+      return MahiResponseStatus::kSuccess;
+    case manta::MantaStatusCode::kGenericError:
+    case manta::MantaStatusCode::kBackendFailure:
+    case manta::MantaStatusCode::kNoInternetConnection:
+    case manta::MantaStatusCode::kUnsupportedLanguage:
+    case manta::MantaStatusCode::kNoIdentityManager:
+    case manta::MantaStatusCode::kRestrictedCountry:
+      return MahiResponseStatus::kUnknownError;
+    case manta::MantaStatusCode::kBlockedOutputs:
+      return MahiResponseStatus::kInappropriate;
+    case manta::MantaStatusCode::kResourceExhausted:
+      return MahiResponseStatus::kResourceExhausted;
+    case manta::MantaStatusCode::kPerUserQuotaExceeded:
+      return MahiResponseStatus::kQuotaLimitHit;
+    default:
+      return MahiResponseStatus::kUnknownError;
+  }
+}
+
 std::unique_ptr<manta::MahiProvider> CreateProvider() {
   if (!manta::features::IsMantaServiceEnabled()) {
     return nullptr;
@@ -330,7 +353,8 @@ void MahiManagerImpl::OnMahiProviderSummaryResponse(
     manta::MantaStatus status) {
   latest_summary_ = u"...";
   if (status.status_code != manta::MantaStatusCode::kOk) {
-    latest_response_status_ = MahiResponseStatus::kUnknownError;
+    latest_response_status_ =
+        GetMahiResponseStatusFromMantaStatus(status.status_code);
     std::move(summary_callback)
         .Run(u"Couldn't get summary", latest_response_status_);
     return;
@@ -343,7 +367,7 @@ void MahiManagerImpl::OnMahiProviderSummaryResponse(
   } else {
     latest_response_status_ = MahiResponseStatus::kCantFindOutputData;
     std::move(summary_callback)
-        .Run(u"Cannot find outputdata", latest_response_status_);
+        .Run(u"Cannot find output data", latest_response_status_);
   }
 }
 
@@ -353,7 +377,8 @@ void MahiManagerImpl::OnMahiProviderQAResponse(
     base::Value::Dict dict,
     manta::MantaStatus status) {
   if (status.status_code != manta::MantaStatusCode::kOk) {
-    latest_response_status_ = MahiResponseStatus::kUnknownError;
+    latest_response_status_ =
+        GetMahiResponseStatusFromMantaStatus(status.status_code);
     current_panel_qa_.emplace_back(base::UTF16ToUTF8(question), "");
     std::move(callback).Run(std::nullopt, latest_response_status_);
     return;
