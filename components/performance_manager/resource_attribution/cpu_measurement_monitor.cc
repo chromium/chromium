@@ -23,6 +23,7 @@
 #include "base/time/time.h"
 #include "base/types/expected.h"
 #include "base/types/optional_util.h"
+#include "components/performance_manager/public/features.h"
 #include "components/performance_manager/public/graph/frame_node.h"
 #include "components/performance_manager/public/graph/graph.h"
 #include "components/performance_manager/public/graph/graph_operations.h"
@@ -44,6 +45,8 @@
 namespace resource_attribution {
 
 namespace {
+
+using performance_manager::features::kResourceAttributionIncludeOrigins;
 
 // Returns true if `resource_context` refers to a node that's been removed from
 // the PM graph.
@@ -87,6 +90,9 @@ std::optional<OriginInPageContext> OriginInPageContextForNode(
     const FrameOrWorkerNode* node,
     const PageNode* page_node,
     GraphChange graph_change = NoGraphChange{}) {
+  if (!base::FeatureList::IsEnabled(kResourceAttributionIncludeOrigins)) {
+    return std::nullopt;
+  }
   // If this node was just assigned a new URL, assign CPU usage before the
   // change to the previous URL.
   GraphChangeUpdateURL* url_change =
@@ -358,6 +364,13 @@ void CPUMeasurementMonitor::UpdateCPUMeasurements(
   // Must call StartMonitoring() before getting measurements.
   CHECK(graph_);
   CHECK(process_node);
+
+  if (!base::FeatureList::IsEnabled(kResourceAttributionIncludeOrigins) &&
+      absl::holds_alternative<GraphChangeUpdateURL>(graph_change)) {
+    // No need to update measurements on origin changes when origins aren't
+    // being measured.
+    return;
+  }
 
   // Don't distribute measurements to nodes that are being added to the graph.
   // The current measurement covers the time before the node was added.

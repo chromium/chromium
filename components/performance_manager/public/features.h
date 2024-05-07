@@ -156,6 +156,10 @@ extern const base::FeatureParam<int> kThresholdChromeCPUPercent;
 // Attribution and once using legacy measurements, to compare the results.
 BASE_DECLARE_FEATURE(kResourceAttributionValidation);
 
+// When enabled, Resource Attribution measurements will include contexts for
+// individual origins.
+BASE_DECLARE_FEATURE(kResourceAttributionIncludeOrigins);
+
 }  // namespace performance_manager::features
 
 #endif  // COMPONENTS_PERFORMANCE_MANAGER_PUBLIC_FEATURES_H_

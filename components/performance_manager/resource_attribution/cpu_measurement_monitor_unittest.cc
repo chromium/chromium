@@ -19,6 +19,7 @@
 #include "base/process/process.h"
 #include "base/process/process_handle.h"
 #include "base/run_loop.h"
+#include "base/test/scoped_feature_list.h"
 #include "base/test/task_environment.h"
 #include "base/test/test_timeouts.h"
 #include "base/test/test_waitable_event.h"
@@ -28,6 +29,7 @@
 #include "components/performance_manager/graph/page_node_impl.h"
 #include "components/performance_manager/graph/process_node_impl.h"
 #include "components/performance_manager/graph/worker_node_impl.h"
+#include "components/performance_manager/public/features.h"
 #include "components/performance_manager/public/performance_manager.h"
 #include "components/performance_manager/public/resource_attribution/cpu_measurement_delegate.h"
 #include "components/performance_manager/public/resource_attribution/cpu_proportion_tracker.h"
@@ -62,6 +64,7 @@ using ::testing::Not;
 using ::testing::Pair;
 
 using performance_manager::TestNodeWrapper;
+using performance_manager::features::kResourceAttributionIncludeOrigins;
 using ProcessCPUUsageError = CPUMeasurementDelegate::ProcessCPUUsageError;
 
 constexpr base::TimeDelta kTimeBetweenMeasurements = base::Minutes(5);
@@ -73,6 +76,11 @@ class ResourceAttrCPUMonitorTest
     : public performance_manager::GraphTestHarness {
  protected:
   using Super = performance_manager::GraphTestHarness;
+
+  ResourceAttrCPUMonitorTest() {
+    scoped_feature_list_.InitAndEnableFeature(
+        kResourceAttributionIncludeOrigins);
+  }
 
   void SetUp() override {
     GetGraphFeatures().EnableResourceAttributionScheduler();
@@ -205,6 +213,8 @@ class ResourceAttrCPUMonitorTest
     return QueryResultsMatch<CPUTimeResult>(
         Field("start_time", &CPUTimeResult::start_time, expected_start_time));
   }
+
+  base::test::ScopedFeatureList scoped_feature_list_;
 
   // Factory to return CPUMeasurementDelegates for `cpu_monitor_`. This must be
   // created before `cpu_monitor_` and deleted afterward to ensure that it
