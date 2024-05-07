@@ -9,6 +9,7 @@
 #import "components/signin/public/base/signin_pref_names.h"
 #import "components/signin/public/base/signin_switches.h"
 #import "components/supervised_user/core/common/features.h"
+#import "components/variations/pref_names.h"
 #import "ios/chrome/browser/bookmarks/model/bookmark_model_type.h"
 #import "ios/chrome/browser/policy/model/policy_earl_grey_utils.h"
 #import "ios/chrome/browser/policy/model/policy_util.h"
@@ -283,6 +284,11 @@ void SetSigninEnterprisePolicyValue(BrowserSigninMode signinMode) {
 
 // Tests the parcel tracking settings row is properly shown.
 - (void)testParcelTrackingSetting {
+  // Parcel tracking is only enabled in the US.
+  [ChromeEarlGrey setStringValue:"us"
+               forLocalStatePref:variations::prefs::
+                                     kVariationsPermanentOverriddenCountry];
+
   [self openGoogleServicesSettings];
 
   [[EarlGrey
@@ -293,6 +299,25 @@ void SetSigninEnterprisePolicyValue(BrowserSigninMode signinMode) {
               grey_kindOfClassName(@"UITableViewCell"),
               grey_sufficientlyVisible(), nil)]
       assertWithMatcher:grey_sufficientlyVisible()];
+}
+
+// Tests the parcel tracking settings row is not shown for non-US countries.
+- (void)testParcelTrackingSetting_notShownOutsideUS {
+  // Set permanent country to somthing other than the US.
+  [ChromeEarlGrey setStringValue:"fr"
+               forLocalStatePref:variations::prefs::
+                                     kVariationsPermanentOverriddenCountry];
+
+  [self openGoogleServicesSettings];
+
+  [[EarlGrey
+      selectElementWithMatcher:
+          grey_allOf(
+              grey_accessibilityLabel(GetNSString(
+                  IDS_IOS_CONTENT_SUGGESTIONS_PARCEL_TRACKING_MODULE_TITLE)),
+              grey_kindOfClassName(@"UITableViewCell"),
+              grey_sufficientlyVisible(), nil)]
+      assertWithMatcher:grey_notVisible()];
 }
 
 #pragma mark - Helpers
