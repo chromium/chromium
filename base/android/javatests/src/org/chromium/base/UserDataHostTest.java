@@ -7,10 +7,12 @@ package org.chromium.base;
 import androidx.test.filters.SmallTest;
 
 import org.junit.Assert;
+import org.junit.Assume;
 import org.junit.Test;
 import org.junit.runner.RunWith;
 
 import org.chromium.base.test.BaseJUnit4ClassRunner;
+import org.chromium.build.BuildConfig;
 
 /** Test class for {@link UserDataHost}. */
 @RunWith(BaseJUnit4ClassRunner.class)
@@ -43,29 +45,29 @@ public class UserDataHostTest {
         }
     }
 
-    private <T extends UserData, E extends RuntimeException> void getUserDataException(
+    private <T extends UserData, E extends Throwable> void getUserDataException(
             Class<T> key, Class<E> exceptionType) {
         try {
             mHost.getUserData(key);
-        } catch (Exception e) {
+        } catch (Throwable e) {
             if (!exceptionType.isInstance(e)) throw e;
         }
     }
 
-    private <T extends UserData, E extends RuntimeException> void setUserDataException(
+    private <T extends UserData, E extends Throwable> void setUserDataException(
             Class<T> key, T obj, Class<E> exceptionType) {
         try {
             mHost.setUserData(key, obj);
-        } catch (Exception e) {
+        } catch (Throwable e) {
             if (!exceptionType.isInstance(e)) throw e;
         }
     }
 
-    private <T extends UserData, E extends RuntimeException> void removeUserDataException(
+    private <T extends UserData, E extends Throwable> void removeUserDataException(
             Class<T> key, Class<E> exceptionType) {
         try {
             mHost.removeUserData(key);
-        } catch (Exception e) {
+        } catch (Throwable e) {
             if (!exceptionType.isInstance(e)) throw e;
         }
     }
@@ -111,10 +113,11 @@ public class UserDataHostTest {
     @Test
     @SmallTest
     public void testSingleThreadPolicy() {
+        Assume.assumeTrue(BuildConfig.ENABLE_ASSERTS);
         TestObjectA obj = new TestObjectA();
         mHost.setUserData(TestObjectA.class, obj);
         ThreadUtils.runOnUiThreadBlocking(
-                () -> getUserDataException(TestObjectA.class, IllegalStateException.class));
+                () -> getUserDataException(TestObjectA.class, AssertionError.class));
     }
 
     /** Verifies {@link UserHostData#destroy()} detroyes each {@link UserData} object. */

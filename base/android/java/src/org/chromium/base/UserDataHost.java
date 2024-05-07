@@ -4,7 +4,7 @@
 
 package org.chromium.base;
 
-import android.os.Process;
+import org.chromium.base.ThreadUtils.ThreadChecker;
 
 import java.util.HashMap;
 
@@ -49,7 +49,7 @@ import java.util.HashMap;
  * </code>
  */
 public final class UserDataHost {
-    private final long mThreadId = Process.myTid();
+    private final ThreadChecker mThreadChecker = new ThreadChecker();
 
     private HashMap<Class<? extends UserData>, UserData> mUserDataMap = new HashMap<>();
 
@@ -61,9 +61,7 @@ public final class UserDataHost {
     }
 
     private void checkThreadAndState() {
-        if (mThreadId != Process.myTid()) {
-            throw new IllegalStateException("UserData must only be used on a single thread.");
-        }
+        mThreadChecker.assertOnValidThread();
         if (mUserDataMap == null) {
             throw new IllegalStateException("Operation is not allowed after destroy().");
         }
