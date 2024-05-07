@@ -224,17 +224,19 @@ void ToJavaMediaSources(
     const content::MediaStreamRequest& request,
     base::android::ScopedJavaLocalRef<jobjectArray>* video,
     base::android::ScopedJavaLocalRef<jobjectArray>* audio) {
-  auto video_source = CreateJavaMediaSource(
-      env, request.requested_video_device_id, "",
-      ToWolvicMediaSourceType(request.video_type), MediaType::kVideo);
-  auto audio_source = CreateJavaMediaSource(
-      env, request.requested_audio_device_id, "",
-      ToWolvicMediaSourceType(request.audio_type), MediaType::kAudio);
+  std::vector<base::android::ScopedJavaLocalRef<jobject>> video_sources;
+  for (const auto& device_id : request.requested_video_device_ids) {
+    video_sources.push_back(CreateJavaMediaSource(
+        env, device_id, "", ToWolvicMediaSourceType(request.video_type),
+        MediaType::kVideo));
+  }
 
-  std::vector<base::android::ScopedJavaLocalRef<jobject>> video_sources{
-      video_source};
-  std::vector<base::android::ScopedJavaLocalRef<jobject>> audio_sources{
-      audio_source};
+  std::vector<base::android::ScopedJavaLocalRef<jobject>> audio_sources;
+  for (const auto& device_id : request.requested_audio_device_ids) {
+    audio_sources.push_back(CreateJavaMediaSource(
+        env, device_id, "", ToWolvicMediaSourceType(request.audio_type),
+        MediaType::kAudio));
+  }
 
   auto media_source_class = base::android::GetClass(env, kMediaSourceClass);
   *video = base::android::ToTypedJavaArrayOfObjects(env, video_sources,
@@ -416,7 +418,7 @@ WolvicPermissionManager::GetPermissionStatusForEmbeddedRequester(
 }
 
 WolvicPermissionManager::SubscriptionId
-WolvicPermissionManager::SubscribePermissionStatusChange(
+WolvicPermissionManager::SubscribeToPermissionStatusChange(
     blink::PermissionType permission,
     content::RenderProcessHost* render_process_host,
     content::RenderFrameHost* render_frame_host,
@@ -425,7 +427,7 @@ WolvicPermissionManager::SubscribePermissionStatusChange(
   return SubscriptionId();
 }
 
-void WolvicPermissionManager::UnsubscribePermissionStatusChange(
+void WolvicPermissionManager::UnsubscribeFromPermissionStatusChange(
     SubscriptionId subscription_id) {}
 
 void WolvicPermissionManager::RequestMediaAccessPermission(
