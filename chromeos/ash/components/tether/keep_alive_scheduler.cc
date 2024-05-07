@@ -6,9 +6,9 @@
 
 #include "base/functional/bind.h"
 #include "base/metrics/histogram_functions.h"
-#include "chromeos/ash/components/multidevice/logging/logging.h"
 #include "chromeos/ash/components/tether/device_id_tether_network_guid_map.h"
 #include "chromeos/ash/components/tether/host_scan_cache.h"
+#include "chromeos/ash/services/secure_channel/public/cpp/client/secure_channel_client.h"
 
 namespace ash::tether {
 
@@ -16,23 +16,27 @@ namespace ash::tether {
 const uint32_t KeepAliveScheduler::kKeepAliveIntervalMinutes = 3;
 
 KeepAliveScheduler::KeepAliveScheduler(
-    raw_ptr<HostConnection::Factory> host_connection_factory,
+    device_sync::DeviceSyncClient* device_sync_client,
+    secure_channel::SecureChannelClient* secure_channel_client,
     ActiveHost* active_host,
     HostScanCache* host_scan_cache,
     DeviceIdTetherNetworkGuidMap* device_id_tether_network_guid_map)
-    : KeepAliveScheduler(host_connection_factory,
+    : KeepAliveScheduler(device_sync_client,
+                         secure_channel_client,
                          active_host,
                          host_scan_cache,
                          device_id_tether_network_guid_map,
                          std::make_unique<base::RepeatingTimer>()) {}
 
 KeepAliveScheduler::KeepAliveScheduler(
-    raw_ptr<HostConnection::Factory> host_connection_factory,
+    device_sync::DeviceSyncClient* device_sync_client,
+    secure_channel::SecureChannelClient* secure_channel_client,
     ActiveHost* active_host,
     HostScanCache* host_scan_cache,
     DeviceIdTetherNetworkGuidMap* device_id_tether_network_guid_map,
     std::unique_ptr<base::RepeatingTimer> timer)
-    : host_connection_factory_(host_connection_factory),
+    : device_sync_client_(device_sync_client),
+      secure_channel_client_(secure_channel_client),
       active_host_(active_host),
       host_scan_cache_(host_scan_cache),
       device_id_tether_network_guid_map_(device_id_tether_network_guid_map),
@@ -108,7 +112,8 @@ void KeepAliveScheduler::SendKeepAliveTickle() {
   DCHECK(active_host_device_);
 
   keep_alive_operation_ = KeepAliveOperation::Factory::Create(
-      TetherHost(*active_host_device_), host_connection_factory_);
+      TetherHost(*active_host_device_), device_sync_client_,
+      secure_channel_client_);
   keep_alive_operation_->AddObserver(this);
   keep_alive_operation_->Initialize();
 }

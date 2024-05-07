@@ -7,12 +7,13 @@
 #include "base/memory/ptr_util.h"
 #include "chromeos/ash/components/tether/disconnect_tethering_request_sender_impl.h"
 #include "chromeos/ash/components/tether/network_configuration_remover.h"
-#include "chromeos/ash/components/tether/secure_channel_host_connection.h"
 #include "chromeos/ash/components/tether/wifi_hotspot_disconnector_impl.h"
 #include "chromeos/ash/services/device_sync/public/cpp/device_sync_client.h"
 #include "chromeos/ash/services/secure_channel/public/cpp/client/secure_channel_client.h"
 
-namespace ash::tether {
+namespace ash {
+
+namespace tether {
 
 // static
 AsynchronousShutdownObjectContainerImpl::Factory*
@@ -61,13 +62,10 @@ AsynchronousShutdownObjectContainerImpl::
         NetworkConnectionHandler* network_connection_handler,
         PrefService* pref_service)
     : tether_host_fetcher_(tether_host_fetcher),
-      host_connection_factory_(base::WrapUnique<HostConnection::Factory>(
-          new SecureChannelHostConnection::Factory(device_sync_client,
-                                                   secure_channel_client,
-                                                   tether_host_fetcher))),
       disconnect_tethering_request_sender_(
           DisconnectTetheringRequestSenderImpl::Factory::Create(
-              host_connection_factory_.get(),
+              device_sync_client,
+              secure_channel_client,
               tether_host_fetcher_)),
       network_configuration_remover_(
           std::make_unique<NetworkConfigurationRemover>(
@@ -99,11 +97,6 @@ AsynchronousShutdownObjectContainerImpl::tether_host_fetcher() {
   return tether_host_fetcher_;
 }
 
-HostConnection::Factory*
-AsynchronousShutdownObjectContainerImpl::host_connection_factory() {
-  return host_connection_factory_.get();
-}
-
 DisconnectTetheringRequestSender*
 AsynchronousShutdownObjectContainerImpl::disconnect_tethering_request_sender() {
   return disconnect_tethering_request_sender_.get();
@@ -127,9 +120,8 @@ void AsynchronousShutdownObjectContainerImpl::
 void AsynchronousShutdownObjectContainerImpl::ShutdownIfPossible() {
   DCHECK(!shutdown_complete_callback_.is_null());
 
-  if (AreAsynchronousOperationsActive()) {
+  if (AreAsynchronousOperationsActive())
     return;
-  }
 
   disconnect_tethering_request_sender_->RemoveObserver(this);
 
@@ -154,4 +146,6 @@ void AsynchronousShutdownObjectContainerImpl::SetTestDoubles(
       std::move(disconnect_tethering_request_sender);
 }
 
-}  // namespace ash::tether
+}  // namespace tether
+
+}  // namespace ash

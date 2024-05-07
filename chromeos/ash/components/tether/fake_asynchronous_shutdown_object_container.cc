@@ -4,7 +4,9 @@
 
 #include "chromeos/ash/components/tether/fake_asynchronous_shutdown_object_container.h"
 
-namespace ash::tether {
+namespace ash {
+
+namespace tether {
 
 FakeAsynchronousShutdownObjectContainer::
     FakeAsynchronousShutdownObjectContainer(base::OnceClosure deletion_callback)
@@ -40,9 +42,6 @@ FakeAsynchronousShutdownObjectContainer::wifi_hotspot_disconnector() {
   return wifi_hotspot_disconnector_;
 }
 
-HostConnection::Factory*
-FakeAsynchronousShutdownObjectContainer::host_connection_factory() {
-  return host_connection_factory_;
-}
+}  // namespace tether
 
-}  // namespace ash::tether
+}  // namespace ash

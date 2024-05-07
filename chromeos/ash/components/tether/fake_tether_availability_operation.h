@@ -5,7 +5,6 @@
 #ifndef CHROMEOS_ASH_COMPONENTS_TETHER_FAKE_TETHER_AVAILABILITY_OPERATION_H_
 #define CHROMEOS_ASH_COMPONENTS_TETHER_FAKE_TETHER_AVAILABILITY_OPERATION_H_
 
-#include "base/containers/flat_map.h"
 #include "chromeos/ash/components/tether/tether_availability_operation.h"
 
 namespace ash::tether {

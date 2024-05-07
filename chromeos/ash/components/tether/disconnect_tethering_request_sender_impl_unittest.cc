@@ -13,8 +13,10 @@
 #include "chromeos/ash/components/multidevice/remote_device_test_util.h"
 #include "chromeos/ash/components/tether/disconnect_tethering_operation.h"
 #include "chromeos/ash/components/tether/disconnect_tethering_request_sender.h"
-#include "chromeos/ash/components/tether/fake_host_connection.h"
 #include "chromeos/ash/components/tether/fake_tether_host_fetcher.h"
+#include "chromeos/ash/services/device_sync/public/cpp/fake_device_sync_client.h"
+#include "chromeos/ash/services/secure_channel/public/cpp/client/fake_secure_channel_client.h"
+#include "chromeos/ash/services/secure_channel/public/cpp/client/secure_channel_client.h"
 #include "testing/gtest/include/gtest/gtest.h"
 
 namespace ash {
@@ -27,8 +29,11 @@ class FakeDisconnectTetheringOperation : public DisconnectTetheringOperation {
  public:
   FakeDisconnectTetheringOperation(
       const TetherHost& tether_host,
-      raw_ptr<HostConnection::Factory> host_connection_factory)
-      : DisconnectTetheringOperation(tether_host, host_connection_factory),
+      device_sync::DeviceSyncClient* device_sync_client,
+      secure_channel::SecureChannelClient* secure_channel_client)
+      : DisconnectTetheringOperation(tether_host,
+                                     device_sync_client,
+                                     secure_channel_client),
         tether_host_(tether_host) {}
 
   ~FakeDisconnectTetheringOperation() override = default;
@@ -58,10 +63,11 @@ class FakeDisconnectTetheringOperationFactory
   // DisconnectTetheringOperation::Factory:
   std::unique_ptr<DisconnectTetheringOperation> CreateInstance(
       const TetherHost& tether_host,
-      raw_ptr<HostConnection::Factory> host_connection_factory) override {
+      device_sync::DeviceSyncClient* device_sync_client,
+      secure_channel::SecureChannelClient* secure_channel_client) override {
     FakeDisconnectTetheringOperation* operation =
-        new FakeDisconnectTetheringOperation(tether_host,
-                                             host_connection_factory);
+        new FakeDisconnectTetheringOperation(tether_host, device_sync_client,
+                                             secure_channel_client);
     created_operations_.push_back(operation);
     return base::WrapUnique(operation);
   }
@@ -106,10 +112,12 @@ class DisconnectTetheringRequestSenderTest : public testing::Test {
   ~DisconnectTetheringRequestSenderTest() override = default;
 
   void SetUp() override {
+    fake_device_sync_client_ =
+        std::make_unique<device_sync::FakeDeviceSyncClient>();
+    fake_secure_channel_client_ =
+        std::make_unique<secure_channel::FakeSecureChannelClient>();
     fake_tether_host_fetcher_ =
         std::make_unique<FakeTetherHostFetcher>(test_devices_[0]);
-    fake_host_connection_factory_ =
-        std::make_unique<FakeHostConnection::Factory>();
 
     fake_operation_factory_ =
         std::make_unique<FakeDisconnectTetheringOperationFactory>();
@@ -118,7 +126,7 @@ class DisconnectTetheringRequestSenderTest : public testing::Test {
 
     disconnect_tethering_request_sender_ =
         DisconnectTetheringRequestSenderImpl::Factory::Create(
-            fake_host_connection_factory_.get(),
+            fake_device_sync_client_.get(), fake_secure_channel_client_.get(),
             fake_tether_host_fetcher_.get());
 
     fake_disconnect_tethering_request_sender_observer_ =
@@ -170,8 +178,8 @@ class DisconnectTetheringRequestSenderTest : public testing::Test {
     EXPECT_EQ(0u, fake_disconnect_tethering_request_sender_observer_
                       ->num_no_more_pending_requests_events());
 
-    // When multiple concurrent attempts are made to send a request to the
-    // same device, only one DisconnectTetheringOperation is created.
+    // When multiple concurrent attempts are made to send a request to the same
+    // device, only one DisconnectTetheringOperation is created.
     ASSERT_EQ(1u, fake_operation_factory_->created_operations().size());
     EXPECT_EQ(test_devices_[0].GetDeviceId(),
               fake_operation_factory_->created_operations()[0]->GetDeviceId());
@@ -184,8 +192,10 @@ class DisconnectTetheringRequestSenderTest : public testing::Test {
 
   const multidevice::RemoteDeviceRefList test_devices_;
 
+  std::unique_ptr<device_sync::FakeDeviceSyncClient> fake_device_sync_client_;
+  std::unique_ptr<secure_channel::SecureChannelClient>
+      fake_secure_channel_client_;
   std::unique_ptr<FakeTetherHostFetcher> fake_tether_host_fetcher_;
-  std::unique_ptr<FakeHostConnection::Factory> fake_host_connection_factory_;
 
   std::unique_ptr<FakeDisconnectTetheringOperationFactory>
       fake_operation_factory_;
@@ -213,8 +223,8 @@ TEST_F(DisconnectTetheringRequestSenderTest, DISABLED_SendRequest_Success) {
 
 TEST_F(DisconnectTetheringRequestSenderTest,
        DISABLED_SendRequest_CannotFetchHost) {
-  // Remove hosts from |fake_tether_host_fetcher_|; this will cause the
-  // fetcher to return a null RemoteDevice.
+  // Remove hosts from |fake_tether_host_fetcher_|; this will cause the fetcher
+  // to return a null RemoteDevice.
   fake_tether_host_fetcher_->SetTetherHost(std::nullopt);
 
   disconnect_tethering_request_sender_->SendDisconnectRequestToDevice(
@@ -267,9 +277,9 @@ TEST_F(
 
 TEST_F(DisconnectTetheringRequestSenderTest,
        DISABLED_SendMultipleRequests_NotifyFinished) {
-  // When multiple requests are sent, a new DisconnectTetheringOperation will
-  // be created if the previous one has finished. This is true regardless of
-  // the success of the previous operation.
+  // When multiple requests are sent, a new DisconnectTetheringOperation will be
+  // created if the previous one has finished. This is true regardless of the
+  // success of the previous operation.
   disconnect_tethering_request_sender_->SendDisconnectRequestToDevice(
       test_devices_[0].GetDeviceId());
   EXPECT_TRUE(disconnect_tethering_request_sender_->HasPendingRequests());

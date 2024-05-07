@@ -22,7 +22,7 @@ namespace {
 class FakeHostConnectionPayloadListener
     : public HostConnection::PayloadListener {
  public:
-  ~FakeHostConnectionPayloadListener() override = default;
+  virtual ~FakeHostConnectionPayloadListener() = default;
 
   // HostConnection::PayloadListener:
   void OnMessageReceived(std::unique_ptr<MessageWrapper> message) override {

@@ -17,6 +17,14 @@
 #include "chromeos/ash/components/tether/scanned_device_info.h"
 #include "chromeos/ash/components/tether/tether_host.h"
 
+namespace ash::device_sync {
+class DeviceSyncClient;
+}
+
+namespace ash::secure_channel {
+class SecureChannelClient;
+}
+
 namespace ash::tether {
 
 class ConnectionPreserver;
@@ -36,7 +44,8 @@ class TetherAvailabilityOperation : public MessageTransferOperation {
   class Initializer {
    public:
     Initializer(
-        raw_ptr<HostConnection::Factory> host_connection_factory,
+        raw_ptr<device_sync::DeviceSyncClient> device_sync_client,
+        raw_ptr<secure_channel::SecureChannelClient> secure_channel_client,
         raw_ptr<TetherHostResponseRecorder> tether_host_response_recorder,
         raw_ptr<ConnectionPreserver> connection_preserver);
 
@@ -47,7 +56,8 @@ class TetherAvailabilityOperation : public MessageTransferOperation {
     virtual ~Initializer();
 
    private:
-    raw_ptr<HostConnection::Factory> host_connection_factory_;
+    raw_ptr<device_sync::DeviceSyncClient> device_sync_client_;
+    raw_ptr<secure_channel::SecureChannelClient> secure_channel_client_;
     raw_ptr<TetherHostResponseRecorder> tether_host_response_recorder_;
     raw_ptr<ConnectionPreserver> connection_preserver_;
   };
@@ -59,7 +69,8 @@ class TetherAvailabilityOperation : public MessageTransferOperation {
   TetherAvailabilityOperation(
       const TetherHost& tether_host,
       OnTetherAvailabilityOperationFinishedCallback on_operation_finished,
-      raw_ptr<HostConnection::Factory> host_connection_factory,
+      device_sync::DeviceSyncClient* device_sync_client,
+      secure_channel::SecureChannelClient* secure_channel_client,
       TetherHostResponseRecorder* tether_host_response_recorder,
       ConnectionPreserver* connection_preserver);
 
@@ -92,6 +103,8 @@ class TetherAvailabilityOperation : public MessageTransferOperation {
   FRIEND_TEST_ALL_PREFIXES(TetherAvailabilityOperationTest, SetupRequired);
   FRIEND_TEST_ALL_PREFIXES(TetherAvailabilityOperationTest,
                            TestMultipleDevices);
+
+  using MessageTransferOperation::StopOperation;
 
   void SetTestDoubles(base::Clock* clock_for_test,
                       scoped_refptr<base::TaskRunner> test_task_runner);

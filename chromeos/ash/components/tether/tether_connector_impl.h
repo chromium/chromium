@@ -13,12 +13,19 @@
 #include "base/types/expected.h"
 #include "chromeos/ash/components/network/network_connection_handler.h"
 #include "chromeos/ash/components/tether/connect_tethering_operation.h"
-#include "chromeos/ash/components/tether/host_connection.h"
 #include "chromeos/ash/components/tether/host_connection_metrics_logger.h"
 #include "chromeos/ash/components/tether/tether_connector.h"
 #include "chromeos/ash/components/tether/wifi_hotspot_connector.h"
 
 namespace ash {
+
+namespace device_sync {
+class DeviceSyncClient;
+}
+
+namespace secure_channel {
+class SecureChannelClient;
+}
 
 class NetworkStateHandler;
 
@@ -43,7 +50,8 @@ class TetherConnectorImpl : public TetherConnector,
                             public ConnectTetheringOperation::Observer {
  public:
   TetherConnectorImpl(
-      raw_ptr<HostConnection::Factory> host_connection_factory,
+      device_sync::DeviceSyncClient* device_sync_client,
+      secure_channel::SecureChannelClient* secure_channel_client,
       NetworkStateHandler* network_state_handler,
       WifiHotspotConnector* wifi_hotspot_connector,
       ActiveHost* active_host,
@@ -91,7 +99,8 @@ class TetherConnectorImpl : public TetherConnector,
       const std::string& device_id,
       ConnectTetheringOperation::HostResponseErrorCode error_code);
 
-  raw_ptr<HostConnection::Factory> host_connection_factory_;
+  raw_ptr<device_sync::DeviceSyncClient> device_sync_client_;
+  raw_ptr<secure_channel::SecureChannelClient> secure_channel_client_;
   raw_ptr<NetworkConnectionHandler> network_connection_handler_;
   raw_ptr<NetworkStateHandler> network_state_handler_;
   raw_ptr<WifiHotspotConnector> wifi_hotspot_connector_;

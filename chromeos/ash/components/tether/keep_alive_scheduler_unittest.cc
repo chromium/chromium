@@ -13,12 +13,16 @@
 #include "chromeos/ash/components/multidevice/remote_device_test_util.h"
 #include "chromeos/ash/components/tether/device_id_tether_network_guid_map.h"
 #include "chromeos/ash/components/tether/fake_active_host.h"
-#include "chromeos/ash/components/tether/fake_host_connection.h"
 #include "chromeos/ash/components/tether/fake_host_scan_cache.h"
 #include "chromeos/ash/components/tether/proto_test_util.h"
+#include "chromeos/ash/services/device_sync/public/cpp/fake_device_sync_client.h"
+#include "chromeos/ash/services/secure_channel/public/cpp/client/fake_secure_channel_client.h"
+#include "chromeos/ash/services/secure_channel/public/cpp/client/secure_channel_client.h"
 #include "testing/gtest/include/gtest/gtest.h"
 
-namespace ash::tether {
+namespace ash {
+
+namespace tether {
 
 namespace {
 
@@ -34,9 +38,12 @@ class FakeKeepAliveOperation : public KeepAliveOperation {
  public:
   FakeKeepAliveOperation(
       const TetherHost& tether_host,
-      raw_ptr<HostConnection::Factory> host_connection_factory,
+      device_sync::DeviceSyncClient* device_sync_client,
+      secure_channel::SecureChannelClient* secure_channel_client,
       OperationDeletedHandler* handler)
-      : KeepAliveOperation(tether_host, host_connection_factory),
+      : KeepAliveOperation(tether_host,
+                           device_sync_client,
+                           secure_channel_client),
         tether_host_(tether_host),
         handler_(handler) {}
 
@@ -72,10 +79,11 @@ class FakeKeepAliveOperationFactory final : public KeepAliveOperation::Factory,
  protected:
   std::unique_ptr<KeepAliveOperation> CreateInstance(
       const TetherHost& tether_host,
-      raw_ptr<HostConnection::Factory> host_connection_factory) override {
+      device_sync::DeviceSyncClient* device_sync_client,
+      secure_channel::SecureChannelClient* secure_channel_client) override {
     num_created_++;
-    last_created_ =
-        new FakeKeepAliveOperation(tether_host, host_connection_factory, this);
+    last_created_ = new FakeKeepAliveOperation(tether_host, device_sync_client,
+                                               secure_channel_client, this);
     return base::WrapUnique(last_created_.get());
   }
 
@@ -97,8 +105,10 @@ class KeepAliveSchedulerTest : public testing::Test {
       : test_devices_(multidevice::CreateRemoteDeviceRefListForTest(2)) {}
 
   void SetUp() override {
-    fake_host_connection_factory_ =
-        std::make_unique<FakeHostConnection::Factory>();
+    fake_device_sync_client_ =
+        std::make_unique<device_sync::FakeDeviceSyncClient>();
+    fake_secure_channel_client_ =
+        std::make_unique<secure_channel::FakeSecureChannelClient>();
     fake_active_host_ = std::make_unique<FakeActiveHost>();
     fake_host_scan_cache_ = std::make_unique<FakeHostScanCache>();
     device_id_tether_network_guid_map_ =
@@ -111,8 +121,9 @@ class KeepAliveSchedulerTest : public testing::Test {
         fake_operation_factory_.get());
 
     scheduler_ = base::WrapUnique(new KeepAliveScheduler(
-        fake_host_connection_factory_.get(), fake_active_host_.get(),
-        fake_host_scan_cache_.get(), device_id_tether_network_guid_map_.get(),
+        fake_device_sync_client_.get(), fake_secure_channel_client_.get(),
+        fake_active_host_.get(), fake_host_scan_cache_.get(),
+        device_id_tether_network_guid_map_.get(),
         base::WrapUnique(mock_timer_.get())));
   }
 
@@ -149,7 +160,9 @@ class KeepAliveSchedulerTest : public testing::Test {
 
   const multidevice::RemoteDeviceRefList test_devices_;
 
-  std::unique_ptr<FakeHostConnection::Factory> fake_host_connection_factory_;
+  std::unique_ptr<device_sync::FakeDeviceSyncClient> fake_device_sync_client_;
+  std::unique_ptr<secure_channel::SecureChannelClient>
+      fake_secure_channel_client_;
   std::unique_ptr<FakeActiveHost> fake_active_host_;
   std::unique_ptr<FakeHostScanCache> fake_host_scan_cache_;
   // TODO(hansberry): Use a fake for this when a real mapping scheme is created.
@@ -302,4 +315,6 @@ TEST_F(KeepAliveSchedulerTest, DISABLED_TestSendTickle_MultipleActiveHosts) {
   VerifyTimerRunning(false /* is_running */);
 }
 
-}  // namespace ash::tether
+}  // namespace tether
+
+}  // namespace ash

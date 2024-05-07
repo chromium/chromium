@@ -6,13 +6,13 @@
 #include "chromeos/ash/components/tether/fake_tether_availability_operation.h"
 
 #include "base/containers/contains.h"
-#include "base/memory/ptr_util.h"
 
 namespace ash::tether {
 FakeTetherAvailabilityOperation::Initializer::Initializer()
     : TetherAvailabilityOperation::Initializer::Initializer(
-          /*host_connection_factory=*/nullptr,
-          /*tether_host()response_recorder=*/nullptr,
+          /*device_sync_client=*/nullptr,
+          /*secure_channel_client=*/nullptr,
+          /*tether_host_response_recorder=*/nullptr,
           /*connection_preserver=*/nullptr) {}
 
 FakeTetherAvailabilityOperation::Initializer::~Initializer() = default;
@@ -53,8 +53,9 @@ FakeTetherAvailabilityOperation::FakeTetherAvailabilityOperation(
     base::OnceClosure on_destroyed_callback)
     : TetherAvailabilityOperation(tether_host,
                                   base::DoNothing(),
-                                  /*host_connection_factory=*/nullptr,
-                                  /*tether_host()response_recorder=*/nullptr,
+                                  /*device_sync_client=*/nullptr,
+                                  /*secure_channel_client=*/nullptr,
+                                  /*tether_host_response_recorder=*/nullptr,
                                   /*connection_preserver=*/nullptr),
       on_destroyed_callback_(std::move(on_destroyed_callback)) {}
 

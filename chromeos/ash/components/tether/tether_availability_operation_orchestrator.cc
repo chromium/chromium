@@ -5,7 +5,6 @@
 #include "chromeos/ash/components/tether/tether_availability_operation_orchestrator.h"
 
 #include "base/containers/contains.h"
-#include "chromeos/ash/components/multidevice/logging/logging.h"
 
 namespace ash::tether {
 
