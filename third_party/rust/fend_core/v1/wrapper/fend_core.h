@@ -11,9 +11,10 @@
 namespace fend_core {
 
 // Try evaluating the query string with fend library, within `timeout_in_ms` ms.
-// Returns the result string if the evaluation succeeded, or std::nullopt if failed.
-// If `timeout_in_ms` = 0, there is no timeout.
-std::optional<std::string> evaluate(std::string_view query, unsigned int timeout_in_ms = 100);
+// Returns the result string if the evaluation succeeded, or std::nullopt if
+// failed. If `timeout_in_ms` = 0, there is no timeout.
+std::optional<std::string> evaluate(std::string_view query,
+                                    unsigned int timeout_in_ms = 100);
 
 }  // namespace fend_core
 
