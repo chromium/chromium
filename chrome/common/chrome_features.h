@@ -177,6 +177,9 @@ BASE_DECLARE_FEATURE(kDesktopPWAsLinkCapturing);
 COMPONENT_EXPORT(CHROME_FEATURES)
 extern const base::FeatureParam<bool> kLinksCapturedByDefault;
 
+COMPONENT_EXPORT(CHROME_FEATURES)
+BASE_DECLARE_FEATURE(kDesktopPWAsLinkCapturingWithScopeExtensions);
+
 // Default amount of days after which the global link capturing IPH guardrails
 // are cleared from storage.
 inline constexpr int kTotalDaysToStoreLinkCapturingIPHGuardrails = 30;

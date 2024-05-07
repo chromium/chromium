@@ -7983,6 +7983,13 @@ const char kExplicitBrowserSigninUIOnDesktopDescription[] =
 const char kDesktopPWAsUserLinkCapturingName[] = "Desktop PWA Link Capturing";
 const char kDesktopPWAsUserLinkCapturingDescription[] =
     "Enables opening links from Chrome in an installed PWA";
+
+const char kDesktopPWAsUserLinkCapturingScopeExtensionsName[] =
+    "Desktop PWA Link Capturing with Scope Extensions";
+const char kDesktopPWAsUserLinkCapturingScopeExtensionsDescription[] =
+    "Allows the 'Desktop PWA Scope Extensions' feature to be used with the "
+    "'Desktop PWA Link Capturing' feature. Both of those features are required "
+    "to be turned on for this flag to have an effect.";
 #endif  // BUILDFLAG(IS_LINUX) || BUILDFLAG(IS_MAC) || BUILDFLAG(IS_WIN)
 
 #if BUILDFLAG(ENABLE_HLS_DEMUXER)

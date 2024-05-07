@@ -3958,6 +3958,11 @@
     "expiry_milestone": 129
   },
   {
+    "name": "enable-user-link-capturing-scope-extensions-pwa",
+    "owners": [ "dmurph@chromium.org", "pwa-team@google.com" ],
+    "expiry_milestone": 131
+  },
+  {
     "name": "enable-variable-refresh-rate",
     "owners": [ "aswolfers@chromium.org", "chromeos-gfx-compositor@google.com" ],
     "expiry_milestone": 130

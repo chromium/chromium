@@ -4674,6 +4674,9 @@ extern const char kExplicitBrowserSigninUIOnDesktopDescription[];
 
 extern const char kDesktopPWAsUserLinkCapturingName[];
 extern const char kDesktopPWAsUserLinkCapturingDescription[];
+
+extern const char kDesktopPWAsUserLinkCapturingScopeExtensionsName[];
+extern const char kDesktopPWAsUserLinkCapturingScopeExtensionsDescription[];
 #endif  // BUILDFLAG(IS_LINUX) || BUILDFLAG(IS_MAC) || BUILDFLAG(IS_WIN)
 
 #if BUILDFLAG(ENABLE_HLS_DEMUXER)

@@ -315,6 +315,10 @@ const base::FeatureParam<int> kLinkCapturingIPHGuardrailStorageDuration{
     &kDesktopPWAsLinkCapturing, "link_capturing_guardrail_storage_duration",
     kTotalDaysToStoreLinkCapturingIPHGuardrails};
 
+BASE_FEATURE(kDesktopPWAsLinkCapturingWithScopeExtensions,
+             "DesktopPWAsLinkCapturingWithScopeExtensions",
+             base::FEATURE_DISABLED_BY_DEFAULT);
+
 // Adds a user settings that allows PWAs to be opened with a tab strip.
 BASE_FEATURE(kDesktopPWAsTabStripSettings,
              "DesktopPWAsTabStripSettings",

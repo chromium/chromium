@@ -8,6 +8,7 @@
 #include <string>
 
 #include "base/containers/flat_map.h"
+#include "base/feature_list.h"
 #include "base/metrics/histogram_functions.h"
 #include "base/metrics/user_metrics.h"
 #include "base/metrics/user_metrics_action.h"
@@ -22,6 +23,7 @@
 #include "chrome/browser/web_applications/web_app_registrar.h"
 #include "chrome/browser/web_applications/web_app_ui_manager.h"
 #include "chrome/browser/web_applications/web_app_utils.h"
+#include "chrome/common/chrome_features.h"
 #include "components/webapps/common/web_app_id.h"
 #include "third_party/skia/include/core/SkBitmap.h"
 #include "ui/base/models/image_model.h"
@@ -150,9 +152,12 @@ bool WebAppsIntentPickerDelegate::ShouldLaunchAppDirectly(
   }
   if (entry_type == PickerEntryType::kWeb) {
     // Launch app directly only if |url| is in the scope of |app_id|.
-    // TODO(b/294079334): Use `IsUrlInAppExtendedScope` to support scope
-    // extensions for user link capturing on desktop platforms.
-    return provider_->registrar_unsafe().IsUrlInAppScope(url, app_id);
+    if (base::FeatureList::IsEnabled(
+            ::features::kDesktopPWAsLinkCapturingWithScopeExtensions)) {
+      return provider_->registrar_unsafe().IsUrlInAppExtendedScope(url, app_id);
+    } else {
+      return provider_->registrar_unsafe().IsUrlInAppScope(url, app_id);
+    }
   }
 
   // This is only reached on MacOS if there is one app available and the picker

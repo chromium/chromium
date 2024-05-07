@@ -17676,6 +17676,8 @@ from previous Chrome versions.
   <int value="-1590882897" label="LacrosResourcesFileSharing:enabled"/>
   <int value="-1589720671"
       label="DebugHistoryInterventionNoUserActivation:disabled"/>
+  <int value="-1589087211"
+      label="DesktopPWAsLinkCapturingWithScopeExtensions:enabled"/>
   <int value="-1588702520" label="WebOTPCrossDevice:disabled"/>
   <int value="-1588221814" label="NtpReducedLogoSpace:disabled"/>
   <int value="-1588015999" label="ParcelTrackingTestData:disabled"/>
@@ -20560,6 +20562,8 @@ from previous Chrome versions.
   <int value="-314566497"
       label="BrokerFileOperationsOnDiskCacheInNetworkService:enabled"/>
   <int value="-314102877" label="PdfInk2:enabled"/>
+  <int value="-313893599"
+      label="DesktopPWAsLinkCapturingWithScopeExtensions:disabled"/>
   <int value="-313812707" label="VideoTutorials:disabled"/>
   <int value="-312144677" label="TFLiteLanguageDetectionEnabled:disabled"/>
   <int value="-311509777"

@@ -1093,9 +1093,13 @@ std::optional<webapps::AppId> WebAppRegistrar::FindAppThatCapturesLinksInScope(
     if (!CanCaptureLinksInScope(app_id)) {
       continue;
     }
-    // TODO(dmurph): Switch to GetAppExtendedScopeScore if the
-    // kWebAppEnableScopeExtensions feature is enabled. b/294079334
-    size_t score = GetUrlInAppScopeScore(url.spec(), app_id);
+    size_t score;
+    if (base::FeatureList::IsEnabled(
+            features::kDesktopPWAsLinkCapturingWithScopeExtensions)) {
+      score = GetAppExtendedScopeScore(url, app_id);
+    } else {
+      score = GetUrlInAppScopeScore(url.spec(), app_id);
+    }
     // A score of 0 means it doesn't apply at all.
     if (score == 0 || score < top_score) {
       continue;
@@ -1121,17 +1125,27 @@ std::optional<webapps::AppId> WebAppRegistrar::FindAppThatCapturesLinksInScope(
 bool WebAppRegistrar::IsLinkCapturableByApp(const webapps::AppId& app,
                                             const GURL& url) const {
   CHECK(url.is_valid());
-  // TODO(dmurph): Switch to GetAppExtendedScopeScore if the
-  // kWebAppEnableScopeExtensions feature is enabled. b/294079334
-  size_t app_score = GetUrlInAppScopeScore(url.spec(), app);
+  size_t app_score;
+  if (base::FeatureList::IsEnabled(
+          features::kDesktopPWAsLinkCapturingWithScopeExtensions)) {
+    app_score = GetAppExtendedScopeScore(url, app);
+  } else {
+    app_score = GetUrlInAppScopeScore(url.spec(), app);
+  }
   if (app_score == 0) {
     return false;
   }
   return base::ranges::none_of(GetAppIds(), [&](const webapps::AppId& app_id) {
-    // TODO(b/294079334): Switch to GetAppExtendedScopeScore if the
-    // kWebAppEnableScopeExtensions feature is enabled.
+    size_t other_score;
+    if (base::FeatureList::IsEnabled(
+            features::kDesktopPWAsLinkCapturingWithScopeExtensions)) {
+      other_score = GetAppExtendedScopeScore(url, app_id);
+
+    } else {
+      other_score = GetUrlInAppScopeScore(url.spec(), app_id);
+    }
     return IsLocallyInstalled(app_id) && !IsShortcutApp(app_id) &&
-           GetUrlInAppScopeScore(url.spec(), app_id) > app_score;
+           other_score > app_score;
   });
 }
 

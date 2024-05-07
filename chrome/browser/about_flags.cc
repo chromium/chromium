@@ -10404,6 +10404,12 @@ const FeatureEntry kFeatureEntries[] = {
      FEATURE_WITH_PARAMS_VALUE_TYPE(features::kDesktopPWAsLinkCapturing,
                                     kDesktopPWAsLinkCapturingVariations,
                                     "DesktopPWAsLinkCapturing")},
+    {"enable-user-link-capturing-scope-extensions-pwa",
+     flag_descriptions::kDesktopPWAsUserLinkCapturingScopeExtensionsName,
+     flag_descriptions::kDesktopPWAsUserLinkCapturingScopeExtensionsDescription,
+     kOsLinux | kOsMac | kOsWin,
+     FEATURE_VALUE_TYPE(
+         features::kDesktopPWAsLinkCapturingWithScopeExtensions)},
 #endif  // BUILDFLAG(IS_LINUX) || BUILDFLAG(IS_MAC) || BUILDFLAG(IS_WIN)
 
     {"forgot-password-form-support",
