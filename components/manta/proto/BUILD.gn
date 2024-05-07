@@ -7,7 +7,9 @@ import("//third_party/protobuf/proto_library.gni")
 proto_library("proto") {
   proto_in_dir = "//"
   sources = [
+    "common.proto",
     "manta.proto",
     "rpc_status.proto",
+    "sparky.proto",
   ]
 }

@@ -5,14 +5,9 @@
 syntax = "proto3";
 option optimize_for = LITE_RUNTIME;
 
-package manta.proto;
+import "components/manta/proto/common.proto";
 
-// This should be google.protobuf.Any, but Chromium now cannot import well known
-// protos.
-message Proto3Any {
-  string type_url = 1;
-  bytes value = 2;
-}
+package manta.proto;
 
 // This forks google.rpc.Status.
 message RpcStatus {

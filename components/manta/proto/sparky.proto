@@ -1,0 +1,127 @@
+// Copyright 2024 The Chromium Authors
+// Use of this source code is governed by a BSD-style license that can be
+// found in the LICENSE file.
+
+syntax = "proto3";
+option optimize_for = LITE_RUNTIME;
+
+package manta.proto;
+
+enum Task {
+  reserved 3, 4;
+
+  TASK_UNSPECIFIED = 0;
+  TASK_SETTINGS = 1;
+  TASK_DIAGNOSTICS = 2;
+  TASK_GENERIC = 5;
+  TASK_PLANNER = 6;
+}
+
+enum Diagnostics {
+  DIAGNOSTICS_UNSPECIFIED = 0;
+  DIAGNOSTICS_MEMORY = 1;
+  DIAGNOSTICS_CPU = 2;
+  DIAGNOSTICS_BATTERY = 3;
+  DIAGNOSTICS_STORAGE = 4;
+}
+
+enum SettingType {
+  SETTING_TYPE_UNSPECIFIED = 0;
+  SETTING_TYPE_BOOL = 1;
+  SETTING_TYPE_STRING = 2;
+  SETTING_TYPE_DOUBLE = 3;
+  SETTING_TYPE_INTEGER = 4;
+}
+
+message BatteryData {
+  optional string battery_health = 1;
+  optional string cycleCount = 2;
+  optional string battery_time = 3;
+  optional string battery_charge_percentage = 4;
+}
+
+message StorageData {
+  optional string free_storage = 1;
+  optional string total_storage = 2;
+}
+
+message CPUData {
+  optional string cpu_usage_snapshot = 1;
+  optional string temperature = 2;
+  optional string clock_speed = 3;
+}
+
+message MemoryData {
+  optional string free_ram = 1;
+  optional string total_ram = 2;
+}
+
+message DiagnosticsData {
+  optional BatteryData battery = 1;
+  optional StorageData storage = 2;
+  optional CPUData cpu = 3;
+  optional MemoryData memory = 4;
+}
+
+message SettingsValue {
+  oneof settings_value {
+    bool bool_val = 1;
+    string text_val = 2;
+    double double_val = 3;
+    int32 int_val = 4;
+  }
+}
+
+message Setting {
+  string settings_id = 1;
+  SettingsValue value = 2;
+  SettingType type = 3;
+}
+
+message SettingsData {
+  repeated Setting setting = 1;
+}
+
+message Action {
+  optional SettingsData settings = 1;
+}
+
+message FinalResponse {
+  string answer = 1;
+  optional Action action = 2;
+}
+
+message DiagnosticsRequest {
+  repeated Diagnostics diagnostics = 1;
+}
+
+message SettingsDataRequest {}
+
+message ContextRequest {
+  reserved 2;
+
+  optional DiagnosticsRequest diagnostics = 1;
+  optional SettingsDataRequest settings = 3;
+}
+
+message SparkyResponse {
+  oneof sparky_response {
+    ContextRequest context_request = 1;
+    FinalResponse final_response = 2;
+  }
+}
+
+message InputText {
+  optional string text = 1;
+  optional string tag = 2;
+}
+
+message SparkyContextData {
+  reserved 5, 6, 7;
+
+  optional Task task = 1;
+  optional string page_contents = 2;
+  optional DiagnosticsData diagnostics_data = 3;
+  optional SettingsData settings_data = 4;
+  repeated InputText q_and_a = 8;
+}

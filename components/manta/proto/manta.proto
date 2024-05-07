@@ -5,6 +5,8 @@
 syntax = "proto2";
 option optimize_for = LITE_RUNTIME;
 
+import "components/manta/proto/common.proto";
+
 package manta.proto;
 
 enum FeatureName {
@@ -16,6 +18,7 @@ enum FeatureName {
   CHROMEOS_READER_SUMMARY = 303;
   CHROMEOS_READER_TOC = 312;
   CHROMEOS_READER_Q_AND_A = 313;
+  CHROMEOS_SPARKY = 314;
   reserved 304 to 311;
 }
 
@@ -83,9 +86,12 @@ message RequestConfig {
 }
 
 message InputData {
-  reserved 2, 3;
+  reserved 2;
 
-  optional string text = 1;
+  oneof input_data {
+    string text = 1;
+    Proto3Any custom = 3;
+  }
   optional string tag = 4;
 }
 
@@ -101,10 +107,11 @@ message Image {
 }
 
 message OutputData {
-  reserved 3, 4, 5;
+  reserved 4, 5;
   oneof output_data {
     string text = 1;
     Image image = 2;
+    Proto3Any custom = 3;
   }
 
   optional uint32 generation_seed = 6;
