@@ -16,7 +16,8 @@
           "dotDotSlash": "https://base.example/path1/foo",
           "slash": "https://base.example/foo"
         },
-        "scopes": {}
+        "scopes": {},
+        "integrity": {}
       }
     },
     "should not accept strings prefixed with ./, ../, or / for data: base URLs": {
@@ -34,7 +35,8 @@
           "dotDotSlash": null,
           "slash": null
         },
-        "scopes": {}
+        "scopes": {},
+        "integrity": {}
       }
     },
     "should accept the literal strings ./, ../, or / with no suffix": {
@@ -52,7 +54,8 @@
           "dotDotSlash": "https://base.example/path1/",
           "slash": "https://base.example/"
         },
-        "scopes": {}
+        "scopes": {},
+        "integrity": {}
       }
     },
     "should ignore percent-encoded variants of ./, ../, or /": {
@@ -78,7 +81,8 @@
           "dotSlash3": null,
           "dotDotSlash3": null
         },
-        "scopes": {}
+        "scopes": {},
+        "integrity": {}
       }
     }
   }

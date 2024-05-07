@@ -26,7 +26,8 @@
           "array2": null,
           "string": "https://example.com/"
         },
-        "scopes": {}
+        "scopes": {},
+        "integrity": {}
       }
     },
     "should ignore entries where the specifier key is an empty string": {
@@ -37,7 +38,8 @@
       },
       "expectedParsedImportMap": {
         "imports": {},
-        "scopes": {}
+        "scopes": {},
+        "integrity": {}
       }
     }
   }

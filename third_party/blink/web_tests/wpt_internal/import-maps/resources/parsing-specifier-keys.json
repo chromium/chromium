@@ -15,7 +15,8 @@
           "https://base.example/path1/foo": "https://base.example/dotdotslash",
           "https://base.example/foo": "https://base.example/slash"
         },
-        "scopes": {}
+        "scopes": {},
+        "integrity": {}
       }
     },
     "Relative URL specifier keys should not absolutize strings prefixed with ./, ../, or / with a data: URL base": {
@@ -33,7 +34,8 @@
           "../foo": "https://example.com/dotdotslash",
           "/foo": "https://example.com/slash"
         },
-        "scopes": {}
+        "scopes": {},
+        "integrity": {}
       }
     },
     "Relative URL specifier keys should absolutize the literal strings ./, ../, or / with no suffix": {
@@ -50,7 +52,8 @@
           "https://base.example/path1/": "https://base.example/dotdotslash/",
           "https://base.example/": "https://base.example/slash/"
         },
-        "scopes": {}
+        "scopes": {},
+        "integrity": {}
       }
     },
     "Relative URL specifier keys should work with /s, ?s, and #s": {
@@ -63,7 +66,8 @@
         "imports": {
           "https://base.example/path1/path2/foo/bar?baz#qux": "https://base.example/foo"
         },
-        "scopes": {}
+        "scopes": {},
+        "integrity": {}
       }
     },
     "Relative URL specifier keys should ignore an empty string key": {
@@ -74,7 +78,8 @@
       },
       "expectedParsedImportMap": {
         "imports": {},
-        "scopes": {}
+        "scopes": {},
+        "integrity": {}
       }
     },
     "Relative URL specifier keys should treat percent-encoded variants of ./, ../, or / as bare specifiers": {
@@ -99,7 +104,8 @@
           "%2E%2F": "https://base.example/dotSlash3",
           "%2E%2E%2F": "https://base.example/dotDotSlash3"
         },
-        "scopes": {}
+        "scopes": {},
+        "integrity": {}
       }
     },
     "Relative URL specifier keys should deduplicate based on URL parsing rules": {
@@ -114,7 +120,8 @@
         "imports": {
           "https://base.example/path1/path2/foo//": "https://base.example/foo3"
         },
-        "scopes": {}
+        "scopes": {},
+        "integrity": {}
       }
     },
     "Absolute URL specifier keys should accept all absolute URL specifier keys, with or without fetch schemes": {
@@ -149,7 +156,8 @@
           "javascript:bad": "https://base.example/javascript",
           "wss://bad/": "https://base.example/wss"
         },
-        "scopes": {}
+        "scopes": {},
+        "integrity": {}
       }
     },
     "Absolute URL specifier keys should parse absolute URLs, treating unparseable ones as bare specifiers": {
@@ -172,7 +180,8 @@
           "https://example.net/": "https://base.example/prettyNormal/",
           "https://example.com/": "https://base.example/percentDecoding/"
         },
-        "scopes": {}
+        "scopes": {},
+        "integrity": {}
       }
     },
     "Specifier keys should be sort correctly (issue #181) - Test #1": {
@@ -187,7 +196,8 @@
           "https://example.com/aaa": "https://example.com/aaa",
           "https://example.com/a": "https://example.com/a"
         },
-        "scopes": {}
+        "scopes": {},
+        "integrity": {}
       }
     },
     "Specifier keys should be sort correctly (issue #181) - Test #2": {
@@ -202,7 +212,8 @@
           "https://example.com/aaa": "https://example.com/aaa",
           "https://example.com/a": "https://example.com/a"
         },
-        "scopes": {}
+        "scopes": {},
+        "integrity": {}
       }
     }
   }

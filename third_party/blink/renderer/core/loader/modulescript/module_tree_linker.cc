@@ -423,33 +423,32 @@ void ModuleTreeLinker::FetchDescendants(const ModuleScript* module_script) {
     return;
   }
 
-  // <spec step="6">Let options be the descendant script fetch options for
-  // module script's fetch options.</spec>
-  //
-  // <spec
-  // href="https://html.spec.whatwg.org/C/#descendant-script-fetch-options"> For
-  // any given script fetch options options, the descendant script fetch options
-  // are a new script fetch options whose items all have the same values, except
-  // for the integrity metadata, which is instead the empty string.</spec>
-  //
-  // <spec
-  // href="https://wicg.github.io/priority-hints/#script">
-  // descendant scripts get "auto" fetchpriority (only the main script resource
-  // is affected by Priority Hints).
-  ScriptFetchOptions options(module_script->FetchOptions().Nonce(),
-                             IntegrityMetadataSet(), String(),
-                             module_script->FetchOptions().ParserState(),
-                             module_script->FetchOptions().CredentialsMode(),
-                             module_script->FetchOptions().GetReferrerPolicy(),
-                             mojom::blink::FetchPriorityHint::kAuto,
-                             RenderBlockingBehavior::kNonBlocking);
-
   // <spec step="8">For each moduleRequest in moduleRequests, ...</spec>
   //
   // <spec step="8">... These invocations of the internal module script graph
   // fetching procedure should be performed in parallel to each other.
   // ...</spec>
   for (const auto& module_request : module_requests) {
+    // <spec
+    // href="https://html.spec.whatwg.org/C/#descendant-script-fetch-options">
+    // For any given script fetch options options, the descendant script fetch
+    // options are a new script fetch options whose items all have the same
+    // values, except for the integrity metadata, which is instead the empty
+    // string.</spec>
+    //
+    // <spec
+    // href="https://wicg.github.io/priority-hints/#script">
+    // descendant scripts get "auto" fetchpriority (only the main script
+    // resource is affected by Priority Hints).
+    ScriptFetchOptions options(
+        module_script->FetchOptions().Nonce(),
+        modulator_->GetIntegrityMetadata(module_request.url),
+        modulator_->GetIntegrityMetadataString(module_request.url),
+        module_script->FetchOptions().ParserState(),
+        module_script->FetchOptions().CredentialsMode(),
+        module_script->FetchOptions().GetReferrerPolicy(),
+        mojom::blink::FetchPriorityHint::kAuto,
+        RenderBlockingBehavior::kNonBlocking);
     // <spec step="8">... perform the internal module script graph fetching
     // procedure given moduleRequest, fetch client settings object, destination,
     // options, module script's settings object, visited set, and module

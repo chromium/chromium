@@ -6,6 +6,7 @@
 
 #include <memory>
 #include <utility>
+
 #include "base/metrics/histogram_macros.h"
 #include "third_party/blink/public/mojom/devtools/console_message.mojom-blink.h"
 #include "third_party/blink/renderer/bindings/core/v8/script_value.h"
@@ -15,6 +16,7 @@
 #include "third_party/blink/renderer/platform/json/json_parser.h"
 #include "third_party/blink/renderer/platform/json/json_values.h"
 #include "third_party/blink/renderer/platform/loader/fetch/console_logger.h"
+#include "third_party/blink/renderer/platform/loader/subresource_integrity.h"
 #include "third_party/blink/renderer/platform/weborigin/scheme_registry.h"
 #include "third_party/blink/renderer/platform/wtf/text/string_builder.h"
 
@@ -42,7 +44,7 @@ void AddIgnoredValueMessage(ConsoleLogger& logger,
 }
 
 // <specdef
-// href="https://wicg.github.io/import-maps/#normalize-a-specifier-key">
+// href="https://html.spec.whatwg.org/C#normalizing-a-specifier-key">
 String NormalizeSpecifierKey(const String& key_string,
                              const KURL& base_url,
                              ConsoleLogger& logger) {
@@ -76,7 +78,7 @@ String NormalizeSpecifierKey(const String& key_string,
 
 // Step 2.4-2.7 of
 // <specdef
-// href="https://wicg.github.io/import-maps/#sort-and-normalize-a-specifier-map">
+// href="https://html.spec.whatwg.org/C#sorting-and-normalizing-a-module-specifier-map">
 KURL NormalizeValue(const String& key,
                     const String& value_string,
                     const KURL& base_url,
@@ -125,12 +127,33 @@ KURL NormalizeValue(const String& key,
   }
 }
 
+void SpecifierMapToStringForTesting(
+    StringBuilder& builder,
+    const ImportMap::SpecifierMap& specifier_map) {
+  builder.Append("{");
+  bool is_first_key = true;
+  for (const auto& it : specifier_map) {
+    if (!is_first_key) {
+      builder.Append(",");
+    }
+    is_first_key = false;
+    builder.Append(it.key.EncodeForDebugging());
+    builder.Append(":");
+    if (it.value.IsValid()) {
+      builder.Append(it.value.GetString().GetString().EncodeForDebugging());
+    } else {
+      builder.Append("null");
+    }
+  }
+  builder.Append("}");
+}
+
 }  // namespace
 
 // <specdef
-// href="https://wicg.github.io/import-maps/#parse-an-import-map-string">
+// href="https://html.spec.whatwg.org/C#parse-an-import-map-string">
 //
-// Parse |text| as an import map. Errors (e.g. json parsing error, invalid
+// Parse |input| as an import map. Errors (e.g. json parsing error, invalid
 // keys/values, etc.) are basically ignored, except that they are reported to
 // the console |logger|.
 ImportMap* ImportMap::Parse(const String& input,
@@ -204,7 +227,7 @@ ImportMap* ImportMap::Parse(const String& input,
     // and normalizing scopes given parsed["scopes"] and baseURL.</spec>
 
     // <specdef label="sort-and-normalize-scopes"
-    // href="https://wicg.github.io/import-maps/#sort-and-normalize-scopes">
+    // href="https://html.spec.whatwg.org/C#sorting-and-normalizing-scopes">
 
     // <spec label="sort-and-normalize-scopes" step="1">Let normalized be an
     // empty map.</spec>
@@ -268,19 +291,94 @@ ImportMap* ImportMap::Parse(const String& input,
                 return CodeUnitCompareLessThan(b.first, a.first);
               });
   }
+  // <spec step="7">Let normalizedIntegrity be an empty map.</spec>
+  IntegrityMap normalized_integrity_map;
 
-  // TODO(hiroshige): Implement Step 7.
+  // <spec step="8">If parsed["integrity"] exists, then:</spec>
+  if (RuntimeEnabledFeatures::ImportMapIntegrityEnabled() &&
+      parsed_map->Get("integrity")) {
+    // <spec step="8.1">If parsed["integrity"] is not a map, then throw a
+    // TypeError indicating that the "scopes" top-level key must be a JSON
+    // object.</spec>
+    JSONObject* integrity = parsed_map->GetJSONObject("integrity");
+    if (!integrity) {
+      *error_to_rethrow =
+          ImportMapError(ImportMapError::Type::kTypeError,
+                         "Failed to parse import map: \"integrity\" "
+                         "top-level key must be a JSON object.");
+      return MakeGarbageCollected<ImportMap>();
+    }
 
-  // <spec step="8">Return the import map whose imports are
+    // <spec step="8.2">Set normalizedIntegrity to the result of sorting and
+    // normalizing integrity given parsed["integrity"] and baseURL.</spec>
+
+    // <specdef label="normalize-a-module-integrity-map"
+    // href="https://html.spec.whatwg.org/C#normalizing-a-module-integrity-map">
+
+    // <spec label="normalize-a-module-integrity-map" step="1">Let
+    // normalized be an empty map.</spec>
+    // Skipping as we can set `normalized_integrity_map` directly.
+
+    // <spec label="normalize-a-module-integrity-map" step="2">For each
+    // integrity → hash,</spec>
+    for (wtf_size_t i = 0; i < integrity->size(); ++i) {
+      const JSONObject::Entry& entry = integrity->at(i);
+
+      // <spec label="normalize-a-module-integrity-map" step="2.1">
+      // Let normalizedSpecifierKey be the result of resolving a URL-like module
+      // specifier given specifierKey and baseURL. integrity → hash,</spec>
+      ParsedSpecifier parsed_specifier =
+          ParsedSpecifier::Create(entry.first, base_url);
+      KURL resolved_url = parsed_specifier.GetUrl();
+
+      // <spec label="normalize-a-module-integrity-map" step="2.2">
+      // If normalizedSpecifierKey is null, then continue.
+      if (resolved_url.IsNull()) {
+        AddIgnoredValueMessage(
+            logger, entry.first,
+            "Integrity key is not a valid absolute URL or relative URL "
+            "starting with '/', './', or '../'");
+        continue;
+      }
+
+      // <spec label="normalize-a-module-integrity-map" step="2.3">
+      // If value is not a string, then continue.</spec>
+      if (entry.second->GetType() != JSONValue::ValueType::kTypeString) {
+        AddIgnoredValueMessage(logger, entry.first,
+                               "Integrity value is not a string.");
+        continue;
+      }
+
+      // <spec label="normalize-a-module-integrity-map" step="2.4">
+      // Set normalized[resolvedURL] to value.</spec>
+      // Here we also turn the string into IntegrityMetadataSet.
+      String value_string;
+      if (integrity->GetString(entry.first, &value_string)) {
+        normalized_integrity_map.Set(resolved_url, value_string);
+      } else {
+        AddIgnoredValueMessage(logger, entry.first,
+                               "Internal error in GetString().");
+      }
+    }
+  }
+
+  // TODO(hiroshige): Implement Step 9.
+  // <spec step="9"> If parsed's keys contains any items besides "imports",
+  // "scopes" and "integrity", then the user agent should report a warning to
+  // the console indicating that an invalid top-level key was present in the
+  // import map.</spec>
+
+  // <spec step="10">Return the import map whose imports are
   // sortedAndNormalizedImports and whose scopes scopes are
   // sortedAndNormalizedScopes.</spec>
   return MakeGarbageCollected<ImportMap>(
       std::move(sorted_and_normalized_imports),
-      std::move(sorted_and_normalized_scopes));
+      std::move(sorted_and_normalized_scopes),
+      std::move(normalized_integrity_map));
 }
 
 // <specdef
-// href="https://wicg.github.io/import-maps/#sort-and-normalize-a-specifier-map">
+// href="https://html.spec.whatwg.org/C#sorting-and-normalizing-a-module-specifier-map">
 ImportMap::SpecifierMap ImportMap::SortAndNormalizeSpecifierMap(
     const JSONObject* imports,
     const KURL& base_url,
@@ -342,7 +440,7 @@ ImportMap::SpecifierMap ImportMap::SortAndNormalizeSpecifierMap(
   return normalized;
 }
 
-// <specdef href="https://wicg.github.io/import-maps/#resolve-an-imports-match">
+// <specdef href="https://html.spec.whatwg.org/C#resolving-an-imports-match">
 std::optional<ImportMap::MatchResult> ImportMap::MatchPrefix(
     const ParsedSpecifier& parsed_specifier,
     const SpecifierMap& specifier_map) const {
@@ -384,11 +482,15 @@ std::optional<ImportMap::MatchResult> ImportMap::MatchPrefix(
 
 ImportMap::ImportMap() = default;
 
-ImportMap::ImportMap(SpecifierMap&& imports, ScopeType&& scopes)
-    : imports_(std::move(imports)), scopes_(std::move(scopes)) {}
+ImportMap::ImportMap(SpecifierMap&& imports,
+                     ScopeType&& scopes,
+                     IntegrityMap&& integrity)
+    : imports_(std::move(imports)),
+      scopes_(std::move(scopes)),
+      integrity_(std::move(integrity)) {}
 
 // <specdef
-// href="https://wicg.github.io/import-maps/#resolve-a-module-specifier">
+// href="https://https://html.spec.whatwg.org/C#resolve-a-module-specifier">
 std::optional<KURL> ImportMap::Resolve(const ParsedSpecifier& parsed_specifier,
                                        const KURL& base_url,
                                        String* debug_message) const {
@@ -422,7 +524,7 @@ std::optional<KURL> ImportMap::Resolve(const ParsedSpecifier& parsed_specifier,
   return ResolveImportsMatch(parsed_specifier, imports_, debug_message);
 }
 
-// <specdef href="https://wicg.github.io/import-maps/#resolve-an-imports-match">
+// <specdef href="https://html.spec.whatwg.org/C#resolving-an-imports-match">
 std::optional<KURL> ImportMap::ResolveImportsMatch(
     const ParsedSpecifier& parsed_specifier,
     const SpecifierMap& specifier_map,
@@ -456,7 +558,7 @@ std::optional<KURL> ImportMap::ResolveImportsMatch(
   return std::nullopt;
 }
 
-// <specdef href="https://wicg.github.io/import-maps/#resolve-an-imports-match">
+// <specdef href="https://html.spec.whatwg.org/C#resolving-an-imports-match">
 KURL ImportMap::ResolveImportsMatchInternal(const String& key,
                                             const MatchResult& matched,
                                             String* debug_message) const {
@@ -513,46 +615,49 @@ KURL ImportMap::ResolveImportsMatchInternal(const String& key,
   return url;
 }
 
-static void SpecifierMapToString(StringBuilder& builder,
-                                 const ImportMap::SpecifierMap& specifier_map) {
-  builder.Append("{");
-  bool is_first_key = true;
-  for (const auto& it : specifier_map) {
-    if (!is_first_key)
-      builder.Append(",");
-    is_first_key = false;
-    builder.Append(it.key.EncodeForDebugging());
-    builder.Append(":");
-    if (it.value.IsValid())
-      builder.Append(it.value.GetString().GetString().EncodeForDebugging());
-    else
-      builder.Append("null");
-  }
-  builder.Append("}");
-}
-
-String ImportMap::ToString() const {
+String ImportMap::ToStringForTesting() const {
   StringBuilder builder;
   builder.Append("{\"imports\":");
-  SpecifierMapToString(builder, imports_);
+  SpecifierMapToStringForTesting(builder, imports_);
 
   builder.Append(",\"scopes\":{");
 
-  bool is_first_scope = true;
+  bool is_first = true;
   for (const auto& entry : scopes_) {
-    if (!is_first_scope)
+    if (!is_first) {
       builder.Append(",");
-    is_first_scope = false;
+    }
+    is_first = false;
     builder.Append(entry.first.EncodeForDebugging());
     builder.Append(":");
-    SpecifierMapToString(builder, entry.second);
+    SpecifierMapToStringForTesting(builder, entry.second);
   }
 
-  builder.Append("}");
+  builder.Append("},\"integrity\": {");
 
-  builder.Append("}");
+  is_first = true;
+  for (const auto& it : integrity_) {
+    if (!is_first) {
+      builder.Append(",");
+    }
+    is_first = false;
+    builder.Append("\"");
+    builder.Append(it.key.GetString());
+    builder.Append("\"");
+    builder.Append(":");
+    builder.Append("\"");
+    builder.Append(it.value);
+    builder.Append("\"");
+  }
+
+  builder.Append("}}");
 
   return builder.ToString();
+}
+
+String ImportMap::GetIntegrity(const KURL& module_url) const {
+  IntegrityMap::const_iterator it = integrity_.find(module_url);
+  return it != integrity_.end() ? it->value : String();
 }
 
 }  // namespace blink

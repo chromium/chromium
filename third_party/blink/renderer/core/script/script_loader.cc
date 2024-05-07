@@ -975,6 +975,14 @@ PendingScript* ScriptLoader::PrepareScript(
         // Fetch an external module script graph given url, settings object, and
         // options.</spec>
         Modulator* modulator = Modulator::From(script_state);
+        if (integrity_attr.IsNull()) {
+          // <spec step="31.11.B">If el does not have an integrity attribute,
+          // then set options's integrity metadata to the result of resolving a
+          // module integrity metadata with url and settings object </spec>
+          options.SetIntegrityMetadata(modulator->GetIntegrityMetadata(url));
+          options.SetIntegrityAttributeValue(
+              modulator->GetIntegrityMetadataString(url));
+        }
         FetchModuleScriptTree(url, fetch_client_settings_object_fetcher,
                               modulator, options);
       } break;

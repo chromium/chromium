@@ -22,6 +22,7 @@
 #include "third_party/blink/renderer/platform/bindings/script_wrappable.h"
 #include "third_party/blink/renderer/platform/bindings/v8_per_context_data.h"
 #include "third_party/blink/renderer/platform/heap/garbage_collected.h"
+#include "third_party/blink/renderer/platform/loader/fetch/integrity_metadata.h"
 #include "third_party/blink/renderer/platform/weborigin/kurl.h"
 #include "third_party/blink/renderer/platform/weborigin/referrer.h"
 #include "third_party/blink/renderer/platform/wtf/text/text_position.h"
@@ -211,6 +212,10 @@ class CORE_EXPORT Modulator : public GarbageCollected<Modulator>,
   // https://html.spec.whatwg.org/C/#hostgetimportmetaproperties
   virtual ModuleImportMeta HostGetImportMetaProperties(
       v8::Local<v8::Module>) const = 0;
+
+  // https://html.spec.whatwg.org/C/#resolving-a-module-integrity-metadata
+  virtual String GetIntegrityMetadataString(const KURL&) const = 0;
+  virtual IntegrityMetadataSet GetIntegrityMetadata(const KURL&) const = 0;
 
   virtual bool HasValidContext() = 0;
 

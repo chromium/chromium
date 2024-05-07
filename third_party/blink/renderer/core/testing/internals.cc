@@ -3832,7 +3832,7 @@ String Internals::getParsedImportMap(Document* document,
   if (!import_map)
     return "{}";
 
-  return import_map->ToString();
+  return import_map->ToStringForTesting();
 }
 
 void Internals::setDeviceEmulationScale(float scale,

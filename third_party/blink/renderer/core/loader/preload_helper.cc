@@ -626,10 +626,11 @@ void PreloadHelper::ModulePreloadIfNeeded(
   // is specified, or the empty string otherwise." [spec text]
   // |nonce| parameter is the value of the nonce attribute.
 
-  // Step 8. "Let integrity metadata be the value of the integrity attribute, if
+  // Step 9. "Let integrity metadata be the value of the integrity attribute, if
   // it is specified, or the empty string otherwise." [spec text]
   IntegrityMetadataSet integrity_metadata;
-  if (!params.integrity.empty()) {
+  String integrity_value = params.integrity;
+  if (!integrity_value.empty()) {
     SubresourceIntegrity::IntegrityFeatures integrity_features =
         SubresourceIntegrityHelper::GetFeatures(document.GetExecutionContext());
     SubresourceIntegrity::ReportInfo report_info;
@@ -637,26 +638,32 @@ void PreloadHelper::ModulePreloadIfNeeded(
         params.integrity, integrity_features, integrity_metadata, &report_info);
     SubresourceIntegrityHelper::DoReport(*document.GetExecutionContext(),
                                          report_info);
+  } else if (integrity_value.IsNull()) {
+    // Step 10. "If el does not have an integrity attribute, then set integrity
+    // metadata to the result of resolving a module integrity metadata with url
+    // and settings object." [spec text]
+    integrity_value = modulator->GetIntegrityMetadataString(params.href);
+    integrity_metadata = modulator->GetIntegrityMetadata(params.href);
   }
 
-  // Step 9. "Let referrer policy be the current state of the element's
+  // Step 11. "Let referrer policy be the current state of the element's
   // referrerpolicy attribute." [spec text]
   // |referrer_policy| parameter is the value of the referrerpolicy attribute.
 
-  // Step 10. "Let options be a script fetch options whose cryptographic nonce
+  // Step 12. "Let options be a script fetch options whose cryptographic nonce
   // is cryptographic nonce, integrity metadata is integrity metadata, parser
   // metadata is "not-parser-inserted", credentials mode is credentials mode,
   // and referrer policy is referrer policy." [spec text]
   ModuleScriptFetchRequest request(
       params.href, ModuleType::kJavaScript, context_type, destination,
-      ScriptFetchOptions(params.nonce, integrity_metadata, params.integrity,
+      ScriptFetchOptions(params.nonce, integrity_metadata, integrity_value,
                          kNotParserInserted, credentials_mode,
                          params.referrer_policy,
                          mojom::blink::FetchPriorityHint::kAuto,
                          RenderBlockingBehavior::kNonBlocking),
       Referrer::NoReferrer(), TextPosition::MinimumPosition());
 
-  // Step 11. "Fetch a modulepreload module script graph given url, destination,
+  // Step 13. "Fetch a modulepreload module script graph given url, destination,
   // settings object, and options. Wait until the algorithm asynchronously
   // completes with result." [spec text]
   //

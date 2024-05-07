@@ -1,0 +1,22 @@
+{
+  "name": "integrity",
+  "importMap": {
+    "imports": {
+      "foo/": "/bar/"
+    },
+    "integrity": {
+      "./resources/log.js?pipe=sub&name=B": "sha384-Li9vy3DqF8tnTXuiaAJuML3ky+er10rcgNR/VqsVpcw+ThHmYcwiB1pbOxEbzJr7"
+    }
+  },
+  "importMapBaseURL": "https://base.example/path1/path2/path3",
+  "expectedParsedImportMap": {
+    "imports": {
+      "foo/": "https://base.example/bar/"
+    },
+    "scopes": {},
+    "integrity": {
+      "https://base.example/path1/path2/resources/log.js?pipe=sub&name=B": "sha384-Li9vy3DqF8tnTXuiaAJuML3ky+er10rcgNR/VqsVpcw+ThHmYcwiB1pbOxEbzJr7"
+    }
+  }
+}
+

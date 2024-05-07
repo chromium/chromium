@@ -281,10 +281,12 @@ void DynamicModuleResolver::ResolveDynamically(
   // <spec href="https://wicg.github.io/priority-hints/#script">
   // dynamic imports get kAuto. Only the main script resource is impacted by
   // Priority Hints.
+  //
   ScriptFetchOptions options(
-      referrer_info.Nonce(), IntegrityMetadataSet(), String(),
-      referrer_info.ParserState(), referrer_info.CredentialsMode(),
-      referrer_info.GetReferrerPolicy(), mojom::blink::FetchPriorityHint::kAuto,
+      referrer_info.Nonce(), modulator_->GetIntegrityMetadata(url),
+      modulator_->GetIntegrityMetadataString(url), referrer_info.ParserState(),
+      referrer_info.CredentialsMode(), referrer_info.GetReferrerPolicy(),
+      mojom::blink::FetchPriorityHint::kAuto,
       RenderBlockingBehavior::kNonBlocking);
 
   // <spec label="fetch-an-import()-module-script-graph" step="3">Fetch a single

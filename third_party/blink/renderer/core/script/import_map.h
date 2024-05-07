@@ -10,6 +10,7 @@
 #include "third_party/blink/renderer/core/core_export.h"
 #include "third_party/blink/renderer/core/script/import_map_error.h"
 #include "third_party/blink/renderer/platform/heap/garbage_collected.h"
+#include "third_party/blink/renderer/platform/loader/fetch/integrity_metadata.h"
 #include "third_party/blink/renderer/platform/weborigin/kurl.h"
 #include "third_party/blink/renderer/platform/weborigin/kurl_hash.h"
 #include "third_party/blink/renderer/platform/wtf/hash_map.h"
@@ -22,8 +23,7 @@ class JSONObject;
 class ParsedSpecifier;
 
 // Import maps.
-// https://wicg.github.io/import-maps/
-// https://github.com/WICG/import-maps/blob/master/spec.md
+// https://html.spec.whatwg.org/C#import-maps
 class CORE_EXPORT ImportMap final : public GarbageCollected<ImportMap> {
  public:
   static ImportMap* Parse(const String& text,
@@ -31,8 +31,8 @@ class CORE_EXPORT ImportMap final : public GarbageCollected<ImportMap> {
                           ConsoleLogger& logger,
                           std::optional<ImportMapError>* error_to_rethrow);
 
-  // <spec href="https://wicg.github.io/import-maps/#specifier-map">A specifier
-  // map is an ordered map from strings to resolution results.</spec>
+  // <spec href="https://html.spec.whatwg.org/C#module-specifier-map">A
+  // specifier map is an ordered map from strings to resolution results.</spec>
   //
   // An invalid KURL corresponds to a null resolution result in the spec.
   //
@@ -40,15 +40,19 @@ class CORE_EXPORT ImportMap final : public GarbageCollected<ImportMap> {
   // are implemented differently from the spec.
   using SpecifierMap = HashMap<String, KURL>;
 
-  // <spec href="https://wicg.github.io/import-maps/#import-map-scopes">an
+  // <spec href="https://html.spec.whatwg.org/C#concept-import-map-scopes">an
   // ordered map of URLs to specifier maps.</spec>
   using ScopeEntryType = std::pair<String, SpecifierMap>;
   using ScopeType = Vector<ScopeEntryType>;
 
+  using IntegrityMap = HashMap<KURL, String>;
+
   // Empty import map.
   ImportMap();
 
-  ImportMap(SpecifierMap&& imports, ScopeType&& scopes);
+  ImportMap(SpecifierMap&& imports,
+            ScopeType&& scopes,
+            IntegrityMap&& integrity);
 
   // Return values of Resolve(), ResolveImportsMatch() and
   // ResolveImportsMatchInternal():
@@ -59,15 +63,16 @@ class CORE_EXPORT ImportMap final : public GarbageCollected<ImportMap> {
   std::optional<KURL> Resolve(const ParsedSpecifier&,
                               const KURL& base_url,
                               String* debug_message) const;
+  String GetIntegrity(const KURL& module_url) const;
 
-  String ToString() const;
+  String ToStringForTesting() const;
 
   void Trace(Visitor*) const {}
 
  private:
   using MatchResult = SpecifierMap::const_iterator;
 
-  // https://wicg.github.io/import-maps/#resolve-an-imports-match
+  // https://html.spec.whatwg.org/C#resolving-an-imports-match
   std::optional<KURL> ResolveImportsMatch(const ParsedSpecifier&,
                                           const SpecifierMap&,
                                           String* debug_message) const;
@@ -81,11 +86,14 @@ class CORE_EXPORT ImportMap final : public GarbageCollected<ImportMap> {
                                    const MatchResult&,
                                    String* debug_message) const;
 
-  // https://wicg.github.io/import-maps/#import-map-imports
+  // https://html.spec.whatwg.org/C#concept-import-map-imports
   SpecifierMap imports_;
 
-  // https://wicg.github.io/import-maps/#import-map-scopes.
+  // https://html.spec.whatwg.org/C#concept-import-map-scopes
   ScopeType scopes_;
+
+  // https://html.spec.whatwg.org/C#concept-import-map-integrity
+  IntegrityMap integrity_;
 };
 
 }  // namespace blink

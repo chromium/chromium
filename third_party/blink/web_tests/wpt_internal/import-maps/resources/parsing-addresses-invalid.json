@@ -20,7 +20,8 @@
           "foo4": null,
           "foo5": null
         },
-        "scopes": {}
+        "scopes": {},
+        "integrity": {}
       }
     }
   }
