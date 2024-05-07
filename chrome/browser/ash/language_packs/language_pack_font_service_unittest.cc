@@ -253,7 +253,7 @@ TEST_P(LanguagePackFontServiceLaddlTest,
   {
     dlcservice::DlcState state;
     state.set_state(dlcservice::DlcState::State::DlcState_State_NOT_INSTALLED);
-    dlcservice_client()->set_dlc_state(std::move(state));
+    dlcservice_client()->set_dlc_state("extrafonts-ja", std::move(state));
   }
   prefs()->SetString(language::prefs::kPreferredLanguages, "zz,xx");
 
@@ -273,7 +273,7 @@ TEST_P(LanguagePackFontServiceLaddlValidFontLanguageTest,
   {
     dlcservice::DlcState state;
     state.set_state(dlcservice::DlcState::State::DlcState_State_NOT_INSTALLED);
-    dlcservice_client()->set_dlc_state(std::move(state));
+    dlcservice_client()->set_dlc_state(test_case.dlc_prefix, std::move(state));
   }
   prefs()->SetString(language::prefs::kPreferredLanguages,
                      test_case.preferred_languages_one_locale);
@@ -296,7 +296,7 @@ TEST_P(LanguagePackFontServiceLaddlValidFontLanguageTest,
   {
     dlcservice::DlcState state;
     state.set_state(dlcservice::DlcState::State::DlcState_State_NOT_INSTALLED);
-    dlcservice_client()->set_dlc_state(std::move(state));
+    dlcservice_client()->set_dlc_state(test_case.dlc_prefix, std::move(state));
   }
   prefs()->SetString(language::prefs::kPreferredLanguages,
                      test_case.preferred_languages_two_locales);
@@ -321,7 +321,7 @@ TEST_P(LanguagePackFontServiceLaddlTest, AddNothingOnUnrelatedLocaleChange) {
     dlcservice::DlcState state;
     state.set_state(dlcservice::DlcState::State::DlcState_State_INSTALLED);
     state.set_root_path(kUnusedDlcPath);
-    dlcservice_client()->set_dlc_state(std::move(state));
+    dlcservice_client()->set_dlc_state("extrafonts-ja", std::move(state));
   }
   prefs()->SetString(language::prefs::kPreferredLanguages, "zz");
   InitProfileWithServices();
@@ -339,7 +339,7 @@ TEST_P(LanguagePackFontServiceLaddlValidFontLanguageTest,
     dlcservice::DlcState state;
     state.set_state(dlcservice::DlcState::State::DlcState_State_INSTALLED);
     state.set_root_path(test_case.dlc_path);
-    dlcservice_client()->set_dlc_state(std::move(state));
+    dlcservice_client()->set_dlc_state(test_case.dlc_prefix, std::move(state));
   }
   prefs()->SetString(language::prefs::kPreferredLanguages, "zz");
   InitProfileWithServices();
@@ -355,7 +355,7 @@ TEST_P(LanguagePackFontServiceLaddlTest, AddNothingOnInitWithUnrelatedLocale) {
     dlcservice::DlcState state;
     state.set_state(dlcservice::DlcState::State::DlcState_State_INSTALLED);
     state.set_root_path(kUnusedDlcPath);
-    dlcservice_client()->set_dlc_state(std::move(state));
+    dlcservice_client()->set_dlc_state("extrafonts-ja", std::move(state));
   }
   prefs()->SetString(language::prefs::kPreferredLanguages, "zz,xx");
 
@@ -376,7 +376,7 @@ TEST_P(
   state.set_state(dlcservice::DlcState::State::DlcState_State_NOT_INSTALLED);
   state.set_is_verified(false);
   dlcservice_client()->set_install_root_path(test_case.dlc_path);
-  dlcservice_client()->set_dlc_state(state);
+  dlcservice_client()->set_dlc_state(test_case.dlc_prefix, state);
   prefs()->SetString(language::prefs::kPreferredLanguages,
                      test_case.preferred_languages_one_locale);
 
@@ -400,7 +400,7 @@ TEST_P(
     state.set_state(dlcservice::DlcState::State::DlcState_State_NOT_INSTALLED);
     state.set_is_verified(false);
     dlcservice_client()->set_install_root_path(test_case.dlc_path);
-    dlcservice_client()->set_dlc_state(std::move(state));
+    dlcservice_client()->set_dlc_state(test_case.dlc_prefix, std::move(state));
   }
   prefs()->SetString(language::prefs::kPreferredLanguages,
                      test_case.preferred_languages_one_locale);
@@ -422,7 +422,7 @@ TEST_P(LanguagePackFontServiceLaddlValidFontLanguageTest,
     state.set_state(dlcservice::DlcState::State::DlcState_State_INSTALLED);
     state.set_root_path(test_case.dlc_path);
     dlcservice_client()->set_install_root_path(test_case.dlc_path);
-    dlcservice_client()->set_dlc_state(std::move(state));
+    dlcservice_client()->set_dlc_state(test_case.dlc_prefix, std::move(state));
   }
   prefs()->SetString(language::prefs::kPreferredLanguages,
                      test_case.preferred_languages_one_locale);
@@ -446,7 +446,7 @@ TEST_P(
     state.set_state(dlcservice::DlcState::State::DlcState_State_NOT_INSTALLED);
     state.set_is_verified(true);
     dlcservice_client()->set_install_root_path(test_case.dlc_path);
-    dlcservice_client()->set_dlc_state(std::move(state));
+    dlcservice_client()->set_dlc_state(test_case.dlc_prefix, std::move(state));
   }
   prefs()->SetString(language::prefs::kPreferredLanguages,
                      test_case.preferred_languages_one_locale);
@@ -468,7 +468,7 @@ TEST_P(LanguagePackFontServiceLaddlValidFontLanguageTest,
     state.set_state(dlcservice::DlcState::State::DlcState_State_INSTALLED);
     state.set_root_path(test_case.dlc_path);
     dlcservice_client()->set_install_root_path(test_case.dlc_path);
-    dlcservice_client()->set_dlc_state(std::move(state));
+    dlcservice_client()->set_dlc_state(test_case.dlc_prefix, std::move(state));
   }
   prefs()->SetString(language::prefs::kPreferredLanguages,
                      test_case.preferred_languages_two_locales);

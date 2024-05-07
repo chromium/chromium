@@ -103,6 +103,13 @@ class ASH_EXPORT VideoConferenceTrayEffectsManager {
   virtual video_conference::VcTileUiController* GetUiControllerForEffectId(
       VcEffectId effect_id);
 
+  // Returns the DLC ids associated with `effect_id`. A VC effect may be
+  // associated with zero, one, or multiple DLCs; the length of the returned
+  // vector corresponds to how many DLCs are associated with the effect.
+  // Note: This should only be overridden for testing purposes, and only by
+  // `FakeVideoConferenceTrayEffectsManager`.
+  virtual std::vector<std::string> GetDlcIdsForEffectId(VcEffectId effect_id);
+
  private:
   // Returns a vector of `VcHostedEffect` objects of type
   // `VcEffectType::kToggle`, in no special order.

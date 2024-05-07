@@ -4577,6 +4577,7 @@ test("ash_pixeltests") {
     "//chromeos/ash/components/dbus/audio",
     "//chromeos/ash/components/dbus/cryptohome:cryptohome",
     "//chromeos/ash/components/dbus/cryptohome:cryptohome_proto",
+    "//chromeos/ash/components/dbus/dlcservice",
     "//chromeos/ash/components/dbus/userdataauth",
     "//chromeos/ash/components/settings",
     "//chromeos/ash/services/assistant/public/cpp",

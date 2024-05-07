@@ -33,6 +33,7 @@
 #include "ui/views/animation/ink_drop.h"
 #include "ui/views/animation/ink_drop_highlight.h"
 #include "ui/views/background.h"
+#include "ui/views/controls/button/button.h"
 #include "ui/views/controls/button/image_button.h"
 #include "ui/views/controls/focus_ring.h"
 #include "ui/views/controls/highlight_path_generator.h"
@@ -199,23 +200,12 @@ FeatureTile::~FeatureTile() {
   title_container_->RemoveObserver(this);
 }
 
-void FeatureTile::OnSetTooltipText(const std::u16string& tooltip_text) {
-  if (!features::IsVcDlcUiEnabled() || updating_download_state_labels_) {
-    return;
-  }
+void FeatureTile::AddObserver(Observer* observer) {
+  observers_.AddObserver(observer);
+}
 
-  // Keep track of the client set tooltip, so it can be restored if a
-  // `DownloadState` tooltip has been temporarily set.
-  client_specified_tooltip_text_ = tooltip_text;
-
-  // If the tooltip was set while a temporary downloading tooltip text was set,
-  // restore it. This will be reset to the `client_specified_tooltip_text_` once
-  // the download state changes back to the final state (if it's not
-  // `DownloadState::kError`).
-  if (download_state_ != DownloadState::kDownloaded &&
-      download_state_ != DownloadState::kNone) {
-    UpdateLabelForDownloadState();
-  }
+void FeatureTile::RemoveObserver(Observer* observer) {
+  observers_.RemoveObserver(observer);
 }
 
 void FeatureTile::CreateChildViews() {
@@ -657,6 +647,10 @@ void FeatureTile::SetDownloadState(DownloadState state, int progress) {
 
   UpdateColors();
   UpdateLabelForDownloadState();
+
+  // Once the tile's UI has been updated, notify any observers of the download
+  // state change.
+  NotifyDownloadStateChanged();
 }
 
 void FeatureTile::GetAccessibleNodeData(ui::AXNodeData* node_data) {
@@ -689,6 +683,25 @@ void FeatureTile::RemoveLayerFromRegions(ui::Layer* layer) {
 void FeatureTile::OnViewBoundsChanged(views::View* observed_view) {
   if (observed_view == title_container_ && on_title_container_bounds_changed_) {
     on_title_container_bounds_changed_.Run();
+  }
+}
+
+void FeatureTile::OnSetTooltipText(const std::u16string& tooltip_text) {
+  if (!features::IsVcDlcUiEnabled() || updating_download_state_labels_) {
+    return;
+  }
+
+  // Keep track of the client set tooltip, so it can be restored if a
+  // `DownloadState` tooltip has been temporarily set.
+  client_specified_tooltip_text_ = tooltip_text;
+
+  // If the tooltip was set while a temporary downloading tooltip text was set,
+  // restore it. This will be reset to the `client_specified_tooltip_text_` once
+  // the download state changes back to the final state (if it's not
+  // `DownloadState::kError`).
+  if (download_state_ != DownloadState::kDownloaded &&
+      download_state_ != DownloadState::kNone) {
+    UpdateLabelForDownloadState();
   }
 }
 
@@ -793,6 +806,13 @@ void FeatureTile::UpdateLabelForDownloadState() {
           IDS_ASH_FEATURE_TILE_DOWNLOAD_IN_PROGRESS_TITLE,
           base::NumberToString16(download_progress_percent_)));
       break;
+  }
+}
+
+void FeatureTile::NotifyDownloadStateChanged() {
+  for (Observer& observer : observers_) {
+    observer.OnDownloadStateChanged(download_state_,
+                                    download_progress_percent_);
   }
 }
 
