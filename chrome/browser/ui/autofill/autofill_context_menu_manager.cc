@@ -482,11 +482,13 @@ void AutofillContextMenuManager::MaybeAddAutofillManualFallbackItems() {
     menu_model_->AddItemWithStringId(
         IDC_CONTENT_CONTEXT_AUTOFILL_FALLBACK_ADDRESS,
         IDS_CONTENT_CONTEXT_AUTOFILL_FALLBACK_ADDRESS);
+    menu_model_->SetIsNewFeatureAt(menu_model_->GetItemCount() - 1, true);
   }
   if (add_payments_fallback) {
     menu_model_->AddItemWithStringId(
         IDC_CONTENT_CONTEXT_AUTOFILL_FALLBACK_PAYMENTS,
         IDS_CONTENT_CONTEXT_AUTOFILL_FALLBACK_PAYMENTS);
+    menu_model_->SetIsNewFeatureAt(menu_model_->GetItemCount() - 1, true);
   }
   if (add_passwords_fallback) {
     // TODO(b/321678141): If the user has passwords saved, assign "Select
