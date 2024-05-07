@@ -97,8 +97,7 @@ class CONTENT_EXPORT RendererWebAudioDeviceImpl
 
   RendererWebAudioDeviceImpl(
       const blink::WebAudioSinkDescriptor& sink_descriptor,
-      media::ChannelLayout layout,
-      int number_of_output_channels,
+      media::ChannelLayoutConfig layout_config,
       const blink::WebAudioLatencyHint& latency_hint,
       media::AudioRendererSink::RenderCallback* webaudio_callback,
       OutputDeviceParamsCallback device_params_cb,

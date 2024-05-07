@@ -78,15 +78,13 @@ class RendererWebAudioDeviceImplUnderTest : public RendererWebAudioDeviceImpl {
  public:
   RendererWebAudioDeviceImplUnderTest(
       const blink::WebAudioSinkDescriptor& sink_descriptor,
-      media::ChannelLayout layout,
-      int number_of_output_channels,
+      media::ChannelLayoutConfig layout_config,
       const blink::WebAudioLatencyHint& latency_hint,
       media::AudioRendererSink::RenderCallback* callback,
       CreateSilentSinkCallback silent_sink_callback)
       : RendererWebAudioDeviceImpl(
             sink_descriptor,
-            layout,
-            number_of_output_channels,
+            layout_config,
             latency_hint,
             callback,
             base::BindOnce(&MockGetOutputDeviceParameters),
@@ -124,7 +122,7 @@ class RendererWebAudioDeviceImplTest
     blink::WebAudioSinkDescriptor sink_descriptor(
         blink::WebString::FromUTF8(std::string()), kFrameToken);
     webaudio_device_ = std::make_unique<RendererWebAudioDeviceImplUnderTest>(
-        sink_descriptor, media::CHANNEL_LAYOUT_MONO, 1, latencyHint, this,
+        sink_descriptor, media::ChannelLayoutConfig::Mono(), latencyHint, this,
         base::BindRepeating(
             &RendererWebAudioDeviceImplTest::CreateMockSilentSink,
             // Guaranteed to be valid because |this| owns |webaudio_device_| and
@@ -134,11 +132,11 @@ class RendererWebAudioDeviceImplTest
         blink::scheduler::GetSingleThreadTaskRunnerForTesting());
   }
 
-  void SetupDevice(media::ChannelLayout layout, int channels) {
+  void SetupDevice(media::ChannelLayoutConfig layout_config) {
     blink::WebAudioSinkDescriptor sink_descriptor(
         blink::WebString::FromUTF8(std::string()), kFrameToken);
     webaudio_device_ = std::make_unique<RendererWebAudioDeviceImplUnderTest>(
-        sink_descriptor, layout, channels,
+        sink_descriptor, layout_config,
         blink::WebAudioLatencyHint(
             blink::WebAudioLatencyHint::kCategoryInteractive),
         this,
@@ -153,7 +151,7 @@ class RendererWebAudioDeviceImplTest
 
   void SetupDevice(blink::WebAudioSinkDescriptor sink_descriptor) {
     webaudio_device_ = std::make_unique<RendererWebAudioDeviceImplUnderTest>(
-        sink_descriptor, media::CHANNEL_LAYOUT_MONO, 1,
+        sink_descriptor, media::ChannelLayoutConfig::Mono(),
         blink::WebAudioLatencyHint(
             blink::WebAudioLatencyHint::kCategoryInteractive),
         this,
@@ -188,7 +186,7 @@ TEST_F(RendererWebAudioDeviceImplTest, ChannelLayout) {
     if (layout == media::CHANNEL_LAYOUT_UNSUPPORTED)
       layout = media::CHANNEL_LAYOUT_DISCRETE;
 
-    SetupDevice(layout, ch);
+    SetupDevice({layout, ch});
     media::AudioParameters sink_params =
         webaudio_device_->get_sink_params_for_testing();
     EXPECT_TRUE(sink_params.IsValid());
@@ -434,8 +432,7 @@ TEST_F(RendererWebAudioDeviceImplTest,
     EXPECT_CALL(*mock_audio_renderer_sink_, Stop).Times(1);
   }
 
-  media::ChannelLayout layout = media::GuessChannelLayout(2);
-  SetupDevice(layout, 2);
+  SetupDevice(media::ChannelLayoutConfig::Stereo());
 
   // `sink_` should be created after OUTPUT_DEVICE_STATUS_OK status return from
   // `CreateAndGetSinkStatus` call.
@@ -464,8 +461,7 @@ TEST_F(RendererWebAudioDeviceImplTest,
     EXPECT_CALL(*mock_audio_renderer_sink_, Stop).Times(1);
   }
 
-  media::ChannelLayout layout = media::GuessChannelLayout(2);
-  SetupDevice(layout, 2);
+  SetupDevice(media::ChannelLayoutConfig::Stereo());
 
   // `sink_` should be remain as nullptr after
   // OUTPUT_DEVICE_STATUS_ERROR_INTERNAL status return from
