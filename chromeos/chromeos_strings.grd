@@ -5546,7 +5546,7 @@
         <message name="IDS_FIRMWARE_RESTARTING_FOOTER_TEXT" desc="Label shown when a device is being restarted.">
           Restarting...
         </message>
-        <message name="IDS_FIRMWARE_WAITING_FOOTER_TEXT" desc="Label that displays what percentage of the update has been installed, shown while waiting for user action." translateable="false">
+        <message name="IDS_FIRMWARE_WAITING_FOOTER_TEXT" desc="Label that displays what percentage of the update has been installed, shown while waiting for user action.">
           Paused (<ph name="PERCENTAGE_VALUE">$1<ex>94</ex></ph>% complete)
         </message>
         <message name="IDS_FIRMWARE_UPDATE_FAILED_TITLE_TEXT" desc="Label shown when an update fails.">
@@ -5564,33 +5564,32 @@
         <message name="IDS_FIRMWARE_PROCEED_UPDATE_CONFIRMATION" desc="Information text to users that to proceed with the firmware update that they need to click on the Next button.">
           To proceed with the update, click Next.
         </message>
-        <message name="IDS_FIRMWARE_CONFIRMATION_DISCLAIMER_TEXT" desc="Information text to users that the chosen update comes from the device manufacturer and hasn't been verified by Google." translateable="false">
+        <message name="IDS_FIRMWARE_CONFIRMATION_DISCLAIMER_TEXT" desc="Information text to users that the chosen update comes from the device manufacturer and hasn't been verified by Google.">
           This update is provided by the external device manufacturer and hasn't been verified by Google.
         </message>
-        <message name="IDS_FIRMWARE_CONFIRMATION_DISCLAIMER_ICON_ARIA_LABEL" desc="The alt-text read by the screen reader when the warning disclaimer is selected." translateable="false">
+        <message name="IDS_FIRMWARE_CONFIRMATION_DISCLAIMER_ICON_ARIA_LABEL" desc="The alt-text read by the screen reader when the warning disclaimer is selected.">
           Warning
         </message>
         <!-- TODO(cambickel): Make these strings translatable. -->
-        <message name="IDS_FIRMWARE_REQUEST_ID_REMOVE_REPLUG" desc="Request shown to the user during an update, requesting that the device USB cable be unplugged and reinserted." translateable="false">
+        <message name="IDS_FIRMWARE_REQUEST_ID_REMOVE_REPLUG" desc="Request shown to the user during an update, requesting that the device USB cable be unplugged and reinserted.">
           Unplug the <ph name="DEVICE_NAME">$1<ex>Logitech keyboard</ex></ph> power cable and then reinsert it to continue the update process
         </message>
-        <message name="IDS_FIRMWARE_REQUEST_ID_REMOVE_USB_CABLE" desc="Request shown to the user during an update, requesting that the device USB cable be unplugged." translateable="false">
+        <message name="IDS_FIRMWARE_REQUEST_ID_REMOVE_USB_CABLE" desc="Request shown to the user during an update, requesting that the device USB cable be unplugged.">
           Unplug the <ph name="DEVICE_NAME">$1<ex>Logitech keyboard</ex></ph> USB cable to continue the update process
         </message>
-        <message name="IDS_FIRMWARE_REQUEST_ID_INSERT_USB_CABLE" desc="Request shown to the user during an update, requesting that the device USB cable be reinserted." translateable="false">
+        <message name="IDS_FIRMWARE_REQUEST_ID_INSERT_USB_CABLE" desc="Request shown to the user during an update, requesting that the device USB cable be reinserted.">
           Reinsert the <ph name="DEVICE_NAME">$1<ex>Logitech keyboard</ex></ph> USB cable to continue the update process
         </message>
-        <message name="IDS_FIRMWARE_REQUEST_ID_PRESS_UNLOCK" desc="Request shown to the user during an update, requesting that the user press unlock on the device being updated." translateable="false">
+        <message name="IDS_FIRMWARE_REQUEST_ID_PRESS_UNLOCK" desc="Request shown to the user during an update, requesting that the user press unlock on the device being updated.">
           Unlock the <ph name="DEVICE_NAME">$1<ex>Logitech keyboard</ex></ph> to continue the update process
         </message>
-        <message name="IDS_FIRMWARE_REQUEST_ID_DO_NOT_POWER_OFF" desc="Request shown to the user during an update, requesting that the user not turn off their computer during the update." translateable="false">
+        <message name="IDS_FIRMWARE_REQUEST_ID_DO_NOT_POWER_OFF" desc="Request shown to the user during an update, requesting that the user not turn off their computer during the update.">
           Do not turn off your <ph name="DEVICE_TYPE">$1<ex>Chromebook</ex></ph> or unplug the <ph name="DEVICE_TYPE">$1<ex>Chromebook</ex></ph> power cable while the update is in progress
         </message>
-        <message name="IDS_FIRMWARE_REQUEST_ID_REPLUG_INSTALL" desc="Request shown to the user during an update, requesting that the user unplug and replug the device and then install again." translateable="false">
+        <message name="IDS_FIRMWARE_REQUEST_ID_REPLUG_INSTALL" desc="Request shown to the user during an update, requesting that the user unplug and replug the device and then install again.">
           Unplug and replug the <ph name="DEVICE_NAME">$1<ex>Logitech keyboard</ex></ph> to continue the update process
         </message>
-        <!-- TODO(cambickel): Upload screenshot for IDS_FIRMWARE_REQUEST_ID_REPLUG_POWER once it's approved by UX. -->
-        <message name="IDS_FIRMWARE_REQUEST_ID_REPLUG_POWER" desc="Request shown to the user during an update, requesting that the device power cable be unplugged and reinserted." translateable="false">
+        <message name="IDS_FIRMWARE_REQUEST_ID_REPLUG_POWER" desc="Request shown to the user during an update, requesting that the device power cable be unplugged and reinserted.">
           Unplug and replug the <ph name="DEVICE_NAME">$1<ex>Logitech keyboard</ex></ph> power cable to continue the update process
         </message>
         <!-- Search Page -->
