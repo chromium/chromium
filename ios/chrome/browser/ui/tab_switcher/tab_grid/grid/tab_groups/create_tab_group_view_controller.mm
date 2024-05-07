@@ -51,6 +51,7 @@ const CGFloat kSnapshotViewCornerRadius = 18;
 const CGFloat kSnapshotViewVerticalMargin = 25;
 const CGFloat kSingleSnapshotRatio = 0.7;
 const CGFloat kMultipleSnapshotsRatio = 0.90;
+const CGFloat kSnapshotViewAnimationTime = 0.3;
 
 // Group title constants
 const CGFloat kTitleHorizontalMargin = 16;
@@ -530,14 +531,16 @@ const CGFloat kButtonBackgroundCornerRadius = 15;
   BOOL tooSmall = _snapshotsContainer.frame.size.height < 60;
   BOOL isVerticallyCompacted =
       self.traitCollection.verticalSizeClass == UIUserInterfaceSizeClassCompact;
-  BOOL isIpadConfiguration =
-      (ui::GetDeviceFormFactor() == ui::DEVICE_FORM_FACTOR_TABLET) &&
-      _keyboardDisplayed;
-  if (tooSmall || isVerticallyCompacted || isIpadConfiguration) {
-    [_snapshotsContainer setHidden:YES];
-  } else {
-    [_snapshotsContainer setHidden:NO];
+  CGFloat updatedAlpha = (tooSmall || isVerticallyCompacted) ? 0 : 1;
+  if (_snapshotsContainer.alpha == updatedAlpha) {
+    return;
   }
+
+  __weak UIView* weakSnapshotsContainer = _snapshotsContainer;
+  [UIView animateWithDuration:kSnapshotViewAnimationTime
+                   animations:^{
+                     [weakSnapshotsContainer setAlpha:updatedAlpha];
+                   }];
 }
 
 // Called when the virtual keyboard is shown.
