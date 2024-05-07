@@ -4,8 +4,13 @@
 
 #include "chrome/browser/ash/app_mode/kiosk_app_launch_error.h"
 
+#include <optional>
+#include <string>
+
 #include "base/metrics/histogram_functions.h"
 #include "base/metrics/histogram_macros.h"
+#include "base/notreached.h"
+#include "base/values.h"
 #include "chrome/browser/ash/app_mode/kiosk_chrome_app_manager.h"
 #include "chrome/browser/browser_process.h"
 #include "chrome/grit/generated_resources.h"
@@ -40,6 +45,8 @@ std::string KioskAppLaunchError::GetErrorMessage(Error error) {
     case Error::kPolicyLoadFailed:
     case Error::kArcAuthFailed:
     case Error::kUserNotAllowlisted:
+    case Error::kLacrosDataMigrationStarted:
+    case Error::kLacrosBackwardDataMigrationStarted:
       return l10n_util::GetStringUTF8(IDS_KIOSK_APP_FAILED_TO_LAUNCH);
 
     case Error::kCryptohomedNotRunning:

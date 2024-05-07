@@ -14526,6 +14526,8 @@ Called by update_permissions_policy_enum.py.-->
   <int value="14" label="Timeout loading force-installed extensions"/>
   <int value="15" label="Invalid ExtensionInstallForcelist policy"/>
   <int value="16" label="Failed to login because the user is not allowlisted"/>
+  <int value="17" label="Lacros migration is in progress"/>
+  <int value="18" label="Lacros backward migration is in progress"/>
 </enum>
 
 <enum name="KioskLaunchType">

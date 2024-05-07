@@ -36,8 +36,10 @@ class KioskAppLaunchError {
                                   // force-installed extensions.
     kExtensionsPolicyInvalid =
         15,  // The policy value of ExtensionInstallForcelist is invalid.
-    kUserNotAllowlisted = 16,         // LoginPerformer disallowed this user.
-    kMaxValue = kUserNotAllowlisted,  // Max value of errors.
+    kUserNotAllowlisted = 16,  // LoginPerformer disallowed this user.
+    kLacrosDataMigrationStarted = 17,
+    kLacrosBackwardDataMigrationStarted = 18,
+    kMaxValue = kLacrosBackwardDataMigrationStarted,  // Max value of errors.
   };
 
   // Returns a message for given `error`.

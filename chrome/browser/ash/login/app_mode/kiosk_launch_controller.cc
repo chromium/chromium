@@ -301,6 +301,8 @@ std::string ToString(KioskAppLaunchError::Error error) {
     CASE(kExtensionsLoadTimeout);
     CASE(kExtensionsPolicyInvalid);
     CASE(kUserNotAllowlisted);
+    CASE(kLacrosDataMigrationStarted);
+    CASE(kLacrosBackwardDataMigrationStarted);
   }
   NOTREACHED_NORETURN();
 #undef CASE
@@ -486,6 +488,7 @@ void KioskLaunchController::StartAppLaunch(Profile& profile) {
           user.GetAccountId(), user.username_hash(),
           crosapi::browser_util::PolicyInitState::kAfterInit)) {
     LOG(WARNING) << "Restarting chrome to run profile migration.";
+    OnLaunchFailed(KioskAppLaunchError::Error::kLacrosDataMigrationStarted);
     return;
   }
 
@@ -493,6 +496,8 @@ void KioskLaunchController::StartAppLaunch(Profile& profile) {
           user.GetAccountId(), user.username_hash(),
           crosapi::browser_util::PolicyInitState::kAfterInit)) {
     LOG(WARNING) << "Restarting chrome to run backward profile migration.";
+    OnLaunchFailed(
+        KioskAppLaunchError::Error::kLacrosBackwardDataMigrationStarted);
     return;
   }
 
@@ -607,8 +612,7 @@ void KioskLaunchController::CleanUp() {
 
 void KioskLaunchController::OnTimerFire() {
   if (app_state_ == AppState::kLaunched) {
-    CloseSplashScreen();
-    ReportSuccess();
+    FinishLaunchWithSuccess();
   } else if (app_state_ == AppState::kInstalled) {
     LaunchApp();
   }
@@ -673,7 +677,15 @@ void KioskLaunchController::OnLaunchFailed(KioskAppLaunchError::Error error) {
     // Do not save the error because saved errors would stop app from launching
     // on the next run.
     std::move(attempt_relaunch_).Run();
-    ReportError(error);
+    FinishLaunchWithError(error);
+    return;
+  }
+
+  if (error == KioskAppLaunchError::Error::kLacrosDataMigrationStarted ||
+      error ==
+          KioskAppLaunchError::Error::kLacrosBackwardDataMigrationStarted) {
+    // The Lacros migration code handles the chrome restart, so nothing to do.
+    FinishLaunchWithError(error);
     return;
   }
 
@@ -686,9 +698,8 @@ void KioskLaunchController::OnLaunchFailed(KioskAppLaunchError::Error error) {
 
   // Saves the error and ends the session to go back to login screen.
   KioskAppLaunchError::Save(error);
-  CleanUp();
-  ReportError(error);
   std::move(attempt_logout_).Run();
+  FinishLaunchWithError(error);
 }
 
 void KioskLaunchController::FinishForcedExtensionsInstall(
@@ -749,8 +760,7 @@ void KioskLaunchController::OnAppWindowCreated(
   if (splash_wait_timer_.IsRunning()) {
     return;
   }
-  CloseSplashScreen();
-  ReportSuccess();
+  FinishLaunchWithSuccess();
 }
 
 void KioskLaunchController::OnAppDataUpdated() {
@@ -848,11 +858,14 @@ void KioskLaunchController::LaunchApp() {
   app_launcher_->LaunchApp();
 }
 
-void KioskLaunchController::ReportSuccess() {
+void KioskLaunchController::FinishLaunchWithSuccess() {
+  CloseSplashScreen();
   std::move(done_callback_).Run(std::nullopt);
 }
 
-void KioskLaunchController::ReportError(KioskAppLaunchError::Error error) {
+void KioskLaunchController::FinishLaunchWithError(
+    KioskAppLaunchError::Error error) {
+  CloseSplashScreen();
   std::move(done_callback_).Run(error);
 }
 

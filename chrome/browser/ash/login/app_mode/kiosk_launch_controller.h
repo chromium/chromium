@@ -7,13 +7,21 @@
 
 #include <memory>
 #include <optional>
+#include <string>
 
 #include "ash/public/cpp/login_accelerators.h"
+#include "base/auto_reset.h"
+#include "base/functional/callback.h"
 #include "base/functional/callback_forward.h"
+#include "base/memory/raw_ptr.h"
+#include "base/memory/weak_ptr.h"
 #include "base/observer_list.h"
 #include "base/observer_list_types.h"
 #include "base/scoped_observation.h"
 #include "base/time/time.h"
+#include "base/timer/timer.h"
+#include "chrome/browser/ash/app_mode/cancellable_job.h"
+#include "chrome/browser/ash/app_mode/kiosk_app_launch_error.h"
 #include "chrome/browser/ash/app_mode/kiosk_app_launcher.h"
 #include "chrome/browser/ash/app_mode/kiosk_app_types.h"
 #include "chrome/browser/ash/app_mode/kiosk_profile_loader.h"
@@ -208,8 +216,8 @@ class KioskLaunchController : public KioskAppLauncher::Observer,
   void CleanUp();
   void LaunchApp();
 
-  void ReportSuccess();
-  void ReportError(KioskAppLaunchError::Error error);
+  void FinishLaunchWithSuccess();
+  void FinishLaunchWithError(KioskAppLaunchError::Error error);
 
   bool auto_launch_ = false;  // Whether current app is being auto-launched.
 
