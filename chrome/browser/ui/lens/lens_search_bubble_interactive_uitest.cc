@@ -3,7 +3,7 @@
 // found in the LICENSE file.
 
 #include "chrome/browser/ui/browser_element_identifiers.h"
-#include "chrome/browser/ui/views/lens/lens_search_bubble_controller.h"
+#include "chrome/browser/ui/lens/lens_search_bubble_controller.h"
 #include "chrome/test/interaction/interactive_browser_test.h"
 #include "components/lens/lens_features.h"
 #include "content/public/test/browser_test.h"

@@ -2,7 +2,7 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#include "chrome/browser/ui/views/lens/lens_search_bubble_controller.h"
+#include "chrome/browser/ui/lens/lens_search_bubble_controller.h"
 
 #include "chrome/browser/profiles/profile.h"
 #include "chrome/browser/ui/browser.h"

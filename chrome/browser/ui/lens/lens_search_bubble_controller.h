@@ -2,8 +2,8 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#ifndef CHROME_BROWSER_UI_VIEWS_LENS_LENS_SEARCH_BUBBLE_CONTROLLER_H_
-#define CHROME_BROWSER_UI_VIEWS_LENS_LENS_SEARCH_BUBBLE_CONTROLLER_H_
+#ifndef CHROME_BROWSER_UI_LENS_LENS_SEARCH_BUBBLE_CONTROLLER_H_
+#define CHROME_BROWSER_UI_LENS_LENS_SEARCH_BUBBLE_CONTROLLER_H_
 
 #include "chrome/browser/ui/browser_user_data.h"
 #include "chrome/browser/ui/views/bubble/webui_bubble_manager.h"
@@ -42,4 +42,4 @@ class LensSearchBubbleController
 
 }  // namespace lens
 
-#endif  // CHROME_BROWSER_UI_VIEWS_LENS_LENS_SEARCH_BUBBLE_CONTROLLER_H_
+#endif  // CHROME_BROWSER_UI_LENS_LENS_SEARCH_BUBBLE_CONTROLLER_H_
