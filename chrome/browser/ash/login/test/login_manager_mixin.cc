@@ -243,19 +243,6 @@ void LoginManagerMixin::AttemptLoginUsingFakeDataAuthClient(
   }
 }
 
-void LoginManagerMixin::AttemptNewUserLoginUsingFakeDataAuthClient(
-    const UserContext& user_context) {
-  if (skip_post_login_screens_ && ash::WizardController::default_controller()) {
-    ash::WizardController::default_controller()
-        ->SkipPostLoginScreensForTesting();
-  }
-  ExistingUserController::current_controller()->CompleteLogin(user_context);
-  if (skip_post_login_screens_ && ash::WizardController::default_controller()) {
-    ash::WizardController::default_controller()
-        ->SkipPostLoginScreensForTesting();
-  }
-}
-
 void LoginManagerMixin::AttemptLoginUsingAuthenticator(
     const UserContext& user_context,
     std::unique_ptr<StubAuthenticatorBuilder> authenticator_builder) {
@@ -305,24 +292,8 @@ void LoginManagerMixin::LoginAsNewRegularUser(
   }
 
   test::ProfilePreparedWaiter profile_prepared(user_context->GetAccountId());
-  AttemptNewUserLoginUsingFakeDataAuthClient(*user_context);
-  if (wait_for_profile_) {
-    profile_prepared.Wait();
-  }
-}
-
-void LoginManagerMixin::LoginAsNewEnterpriseUser() {
-  LoginDisplayHost::default_host()->StartWizard(GaiaView::kScreenId);
-  test::WaitForOobeJSReady();
-
-  ASSERT_FALSE(session_manager::SessionManager::Get()->IsSessionStarted());
-  UserContext user_context = CreateDefaultUserContext(TestUserInfo(
-      AccountId::FromUserEmailGaiaId(FakeGaiaMixin::kEnterpriseUser1,
-                                     FakeGaiaMixin::kEnterpriseUser1GaiaId)));
-  user_context.SetRefreshToken(FakeGaiaMixin::kFakeRefreshToken);
-
-  test::ProfilePreparedWaiter profile_prepared(user_context.GetAccountId());
-  AttemptNewUserLoginUsingFakeDataAuthClient(user_context);
+  AttemptLoginUsingAuthenticator(
+      *user_context, std::make_unique<StubAuthenticatorBuilder>(*user_context));
   if (wait_for_profile_) {
     profile_prepared.Wait();
   }
@@ -346,7 +317,8 @@ void LoginManagerMixin::LoginAsNewChildUser() {
       test_child_user_.account_id.GetGaiaId(), FakeGaiaMixin::kFakeRefreshToken,
       false /*issue_any_scope_token*/);
   test::ProfilePreparedWaiter profile_prepared(user_context.GetAccountId());
-  AttemptNewUserLoginUsingFakeDataAuthClient(user_context);
+  AttemptLoginUsingAuthenticator(
+      user_context, std::make_unique<StubAuthenticatorBuilder>(user_context));
   if (wait_for_profile_) {
     profile_prepared.Wait();
   }
