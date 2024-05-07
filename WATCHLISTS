@@ -1276,6 +1276,10 @@
                   'extensions/renderer/resources/guest_view|'\
                   'extensions/test/data/(app|web)_view',
     },
+    'gwp_asan': {
+      'filepath': 'components/gwp_asan|'\
+                  'components/memory_system',
+    },
     'hashprefix_realtime': {
       'filepath': 'components/safe_browsing/core/browser/hashprefix_realtime/'
     },
@@ -2946,6 +2950,8 @@
     'gpu_passthrough_cmd_decoder': ['geofflang+watch@chromium.org'],
     'guest_view': ['mcnee@chromium.org',
                    'wjmaclean@chromium.org'],
+    'gwp_asan': ['mpdenton+watch@chromium.org',
+                 'glazunov+watch@chromium.org'],
     'hashprefix_realtime': ['thefrog+watch@chromium.org'],
     'headless': ['headless-reviews@chromium.org'],
     'heap_mojo': ['chikamune+watch@chromium.org'],
