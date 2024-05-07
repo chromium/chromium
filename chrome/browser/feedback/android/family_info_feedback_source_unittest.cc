@@ -28,6 +28,7 @@
 #include "components/supervised_user/core/browser/supervised_user_service.h"
 #include "components/supervised_user/core/browser/supervised_user_url_filter.h"
 #include "components/supervised_user/core/browser/supervised_user_utils.h"
+#include "components/supervised_user/core/common/supervised_user_constants.h"
 #include "content/public/test/browser_task_environment.h"
 #include "google_apis/gaia/google_service_auth_error.h"
 #include "testing/gtest/include/gtest/gtest.h"
@@ -39,7 +40,6 @@ namespace chrome::android {
 namespace {
 
 const char kTestEmail[] = "test@gmail.com";
-const char kFeedbackTagFamilyMemberRole[] = "Family_Member_Role";
 const char kFeedbackTagParentalControlSitesChild[] =
     "Parental_Control_Sites_Child";
 
@@ -217,7 +217,7 @@ class FamilyInfoFeedbackSourceTest
             base::android::JavaParamRef<jobject>(env_,
                                                  j_feedback_source_.obj()),
             base::android::ConvertUTF8ToJavaString(
-                env_, kFeedbackTagFamilyMemberRole));
+                env_, supervised_user::kFamilyMemberRoleFeedbackTag));
     return base::android::ConvertJavaStringToUTF8(env_, j_value);
   }
 

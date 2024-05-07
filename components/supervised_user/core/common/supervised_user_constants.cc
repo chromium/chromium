@@ -119,6 +119,7 @@ const char kSupervisedUserTopLevelURLFilteringResultHistogramName[] =
 const char kManagedByParentUiMoreInfoUrl[] =
     "https://familylink.google.com/setting/resource/94";
 
+// LINT.IfChange
 const char kFamilyMemberRoleFeedbackTag[] = "Family_Member_Role";
-
+// LINT.ThenChange(//chrome/browser/feedback/android/java/src/org/chromium/chrome/browser/feedback/FamilyInfoFeedbackSource.java)
 }  // namespace supervised_user
