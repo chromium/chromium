@@ -5616,6 +5616,7 @@ data/attribution_reporting/interop/aggregatable_storage_limit.json
 data/attribution_reporting/interop/aggregatable_values_filtering.json
 data/attribution_reporting/interop/aggregatable_with_event_disabled.json
 data/attribution_reporting/interop/aggregation_coordinator_origin.json
+data/attribution_reporting/interop/attribution_destination_sorting.json
 data/attribution_reporting/interop/basic.json
 data/attribution_reporting/interop/basic_aggregatable.json
 data/attribution_reporting/interop/channel_capacity.json
@@ -6290,8 +6291,8 @@ data/gpu/llvmpipe_reference/Canvas2DRedBoxHD.png
 data/gpu/llvmpipe_reference/Canvas2DRedBoxSD.png
 data/gpu/llvmpipe_reference/WebGLGreenTriangle.png
 data/gpu/lots-of-lines.svg
-data/gpu/media_foundation_d3d11_video_capture.html
 data/gpu/media_foundation_clear_dcomp.js
+data/gpu/media_foundation_d3d11_video_capture.html
 data/gpu/media_recorder_from_video_element.js
 data/gpu/mem_webgl.html
 data/gpu/offscreencanvas_imagebitmap_from_worker_uses_overlay.html
