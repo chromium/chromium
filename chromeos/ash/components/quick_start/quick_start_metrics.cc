@@ -502,8 +502,8 @@ void QuickStartMetrics::RecordFastPairAdvertisementEnded(
 
   if (succeeded) {
     CHECK(!error_code.has_value());
-    base::UmaHistogramTimes(kFastPairAdvertisementEndedDurationHistogramName,
-                            duration);
+    base::UmaHistogramMediumTimes(
+        kFastPairAdvertisementEndedDurationHistogramName, duration);
   } else {
     CHECK(error_code.has_value());
     base::UmaHistogramEnumeration(
@@ -548,7 +548,7 @@ void QuickStartMetrics::RecordNearbyConnectionsAdvertisementEnded(
 
   if (succeeded) {
     CHECK(!error_code.has_value());
-    base::UmaHistogramTimes(
+    base::UmaHistogramMediumTimes(
         kNearbyConnectionsAdvertisementEndedDurationHistogramName, duration);
   } else {
     CHECK(error_code.has_value());

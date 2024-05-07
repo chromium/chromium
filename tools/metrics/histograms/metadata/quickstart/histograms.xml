@@ -150,6 +150,8 @@ chromium-metrics-reviews@google.com.
     Time elapsed from attempting to start Fast Pair Advertising to it ending.
     Recorded after unregistering the advertisement. It is not recorded when an
     error occurs attempting to register/unregister the advertisement.
+
+    Note: buckets were resized during m126 to increase max duration.
   </summary>
 </histogram>
 
@@ -406,6 +408,8 @@ chromium-metrics-reviews@google.com.
     Time elapsed during Nearby Connections advertisement. Recorded after
     successfully stopping the advertisement. It is not recorded when an error
     occurs attempting to start/stop the advertisement.
+
+    Note: buckets were resized during m126 to increase max duration.
   </summary>
 </histogram>
 
