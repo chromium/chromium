@@ -5,11 +5,17 @@
 #ifndef MOJO_PUBLIC_CPP_TEST_SUPPORT_TEST_UTILS_H_
 #define MOJO_PUBLIC_CPP_TEST_SUPPORT_TEST_UTILS_H_
 
+#include <memory>
 #include <string>
+#include <type_traits>
 #include <utility>
 
+#include "base/functional/bind.h"
+#include "base/functional/callback.h"
+#include "base/memory/raw_ptr.h"
 #include "base/memory/raw_ref.h"
 #include "base/run_loop.h"
+#include "base/types/to_address.h"
 #include "mojo/public/cpp/bindings/message.h"
 #include "mojo/public/cpp/bindings/struct_ptr.h"
 
@@ -131,31 +137,81 @@ class BadMessageObserver {
   base::RunLoop run_loop_;
 };
 
-// Creates a scoped swapped implementation of a mojo Receiver. Callers should
-// ensure that `new_impl` lives for longer than the lifetime of the `receiver`.
-// See also `SwapImplForTesting` implementations for each receiver type.
+// Test helper for swapping out a Mojo implementation pointer for testing in a
+// given scope. It is possible to nest interceptions on a given receiver;
+// however, the scopers must be destroyed in reverse order of creation.
+//
+// Usage example:
+//
+// // Basic portal implementation.
+// class PortalImpl : public mojom::Portal {
+//  public:
+//   auto& receiver_for_testing() { return receiver_; }
+//
+//   private:
+//    mojo::Receiver<mojom::Portal> receiver_;
+// };
+//
+// // In unit test:
+// class PortalTester : public mojom::PortalInterceptorForTesting {
+//  public:
+//   explicit PortalTester(PortalImpl* impl)
+//       : swapped_impl_(impl->receiver_for_testing(), impl) {}
+//
+//   // PortalInterceptorForTesting overrides:
+//   mojom::Portal* GetForwardingInterface() override {
+//     // Important: do not just return the `impl` passed in the constructor; if
+//     // the receiver is already intercepted, this will result in the
+//     // previously-installed interceptor being skipped!
+//     return swapped_impl_.old_impl();
+//   }
+//
+//  private:
+//   mojo::test::ScopedSwapImplForTesting<mojom::Portal> swapped_impl_;
+// };
+// TEST_F(PortalTest, Basic) {
+//   PortalTester tester{GetPortal()};
+//
+//   // <test code here>
+// }
+//
+// Postconditions: the caller must destroy `ScopedSwapImplForTesting` before the
+// targeted receiver goes out of scope.
+//
+// TODO(dcheng): Consider adding a way to cancel the reset at destruction for
+// test cases that need this.
 template <typename T>
 class ScopedSwapImplForTesting {
  public:
-  using ImplPointerType = typename T::ImplPointerType;
-
-  ScopedSwapImplForTesting(T& receiver, ImplPointerType new_impl)
-      : receiver_(receiver) {
-    old_impl_ = receiver_->SwapImplForTesting(new_impl);
+  template <typename Receiver>
+  ScopedSwapImplForTesting(Receiver& receiver,
+                           typename Receiver::ImplPointerType new_impl) {
+    using ImplPtr = typename Receiver::ImplPointerType;
+    T* new_impl_ptr = base::to_address(new_impl);
+    ImplPtr old_impl = receiver.SwapImplForTesting(std::move(new_impl));
+    old_impl_ptr_ = base::to_address(old_impl);
+    closure_ = base::BindOnce(
+        [](Receiver& receiver, ImplPtr old_impl, T* new_impl_ptr) {
+          CHECK_EQ(new_impl_ptr, base::to_address(receiver.SwapImplForTesting(
+                                     std::move(old_impl))))
+              << "Mismatched impl pointers when restoring implementation; this "
+              << "indicates a bug where a receiver was multiply-intercepted "
+              << "in tests, but the ScopedSwapImplForTesting instances were "
+              << "not destroyed in reverse order of creation.";
+        },
+        std::ref(receiver), std::move(old_impl), new_impl_ptr);
   }
 
-  ~ScopedSwapImplForTesting() {
-    std::ignore = receiver_->SwapImplForTesting(old_impl_);
-  }
+  ~ScopedSwapImplForTesting() { std::move(closure_).Run(); }
 
-  ImplPointerType old_impl() const { return old_impl_; }
+  T* old_impl() const { return old_impl_ptr_; }
 
   ScopedSwapImplForTesting(const ScopedSwapImplForTesting&) = delete;
   ScopedSwapImplForTesting& operator=(const ScopedSwapImplForTesting&) = delete;
 
  private:
-  const raw_ref<T> receiver_;
-  ImplPointerType old_impl_;
+  raw_ptr<T> old_impl_ptr_;
+  base::OnceClosure closure_;
 };
 
 }  // namespace test

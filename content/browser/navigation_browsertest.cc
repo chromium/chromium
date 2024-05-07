@@ -4222,11 +4222,10 @@ class InitiatorClosingOpenURLInterceptor
       : proxy_host_(proxy_host),
         shell_to_close_(std::move(shell_to_close)),
         renderer_to_exit_(renderer_to_exit),
-        swapped_impl_(
-            std::make_unique<mojo::test::ScopedSwapImplForTesting<
-                mojo::AssociatedReceiver<blink::mojom::RemoteFrameHost>>>(
-                proxy_host_->frame_host_receiver_for_testing(),
-                this)) {}
+        swapped_impl_(std::make_unique<mojo::test::ScopedSwapImplForTesting<
+                          blink::mojom::RemoteFrameHost>>(
+            proxy_host_->frame_host_receiver_for_testing(),
+            this)) {}
   ~InitiatorClosingOpenURLInterceptor() override = default;
 
   blink::mojom::RemoteFrameHost* GetForwardingInterface() override {
@@ -4269,8 +4268,8 @@ class InitiatorClosingOpenURLInterceptor
   // this, we delete the `swapped_impl_` and swap `proxy_host_` back in place as
   // soon as we've processed the OpenURL IPC, where we can ensure that
   // `proxy_host_` is still alive.
-  std::unique_ptr<mojo::test::ScopedSwapImplForTesting<
-      mojo::AssociatedReceiver<blink::mojom::RemoteFrameHost>>>
+  std::unique_ptr<
+      mojo::test::ScopedSwapImplForTesting<blink::mojom::RemoteFrameHost>>
       swapped_impl_;
 };
 

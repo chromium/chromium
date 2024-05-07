@@ -754,8 +754,7 @@ class SetMouseCaptureInterceptor
   bool capturing_;
   raw_ptr<RenderWidgetHostImpl> host_;
   raw_ptr<blink::mojom::WidgetInputHandlerHost> impl_;
-  mojo::test::ScopedSwapImplForTesting<
-      mojo::Receiver<blink::mojom::WidgetInputHandlerHost>>
+  mojo::test::ScopedSwapImplForTesting<blink::mojom::WidgetInputHandlerHost>
       swapped_impl_;
 };
 
@@ -4291,9 +4290,7 @@ class SetCursorInterceptor
   base::RunLoop run_loop_;
   raw_ptr<RenderWidgetHostImpl> render_widget_host_;
   std::optional<ui::Cursor> cursor_;
-  mojo::test::ScopedSwapImplForTesting<
-      mojo::AssociatedReceiver<blink::mojom::WidgetHost>>
-      swapped_impl_;
+  mojo::test::ScopedSwapImplForTesting<blink::mojom::WidgetHost> swapped_impl_;
 };
 
 // Verify that we receive a mouse cursor update message when we mouse over

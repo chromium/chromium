@@ -71,8 +71,7 @@ class SynchronizeVisualPropertiesInterceptor
   bool last_pinch_gesture_active_ = false;
   base::RunLoop pinch_end_run_loop_;
 
-  mojo::test::ScopedSwapImplForTesting<
-      mojo::AssociatedReceiver<blink::mojom::RemoteFrameHost>>
+  mojo::test::ScopedSwapImplForTesting<blink::mojom::RemoteFrameHost>
       swapped_impl_;
 
   base::WeakPtrFactory<SynchronizeVisualPropertiesInterceptor> weak_factory_{

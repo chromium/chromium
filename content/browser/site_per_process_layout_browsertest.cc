@@ -156,8 +156,7 @@ class UpdateViewportIntersectionMessageFilter
   bool msg_received_;
   blink::mojom::ViewportIntersectionStatePtr intersection_state_;
   raw_ptr<content::RenderFrameProxyHost> render_frame_proxy_host_;
-  mojo::test::ScopedSwapImplForTesting<
-      mojo::AssociatedReceiver<blink::mojom::RemoteFrameHost>>
+  mojo::test::ScopedSwapImplForTesting<blink::mojom::RemoteFrameHost>
       swapped_impl_;
 };
 
@@ -285,8 +284,7 @@ class TextAutosizerPageInfoInterceptor
   std::unique_ptr<base::RunLoop> run_loop_;
   std::optional<int> target_main_frame_width_;
   std::optional<float> target_device_scale_adjustment_;
-  mojo::test::ScopedSwapImplForTesting<
-      mojo::AssociatedReceiver<blink::mojom::LocalMainFrameHost>>
+  mojo::test::ScopedSwapImplForTesting<blink::mojom::LocalMainFrameHost>
       swapped_impl_;
 };
 

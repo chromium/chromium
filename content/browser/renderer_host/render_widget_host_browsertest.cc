@@ -775,8 +775,7 @@ class ShowPopupMenuInterceptor
   bool is_cancelled_{false};
   gfx::Rect overriden_bounds_;
   base::WeakPtr<RenderFrameHostImpl> render_frame_host_;
-  mojo::test::ScopedSwapImplForTesting<
-      mojo::AssociatedReceiver<blink::mojom::LocalFrameHost>>
+  mojo::test::ScopedSwapImplForTesting<blink::mojom::LocalFrameHost>
       swapped_impl_;
   mojo::Receiver<blink::mojom::PopupMenuClient> receiver_{this};
 };
