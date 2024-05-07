@@ -63,16 +63,6 @@ apps::AppServiceProxy* GetAppServiceProxy(Profile* profile) {
   return apps::AppServiceProxyFactory::GetForProfile(profile);
 }
 
-// Returns the account id for logging in.
-std::optional<AccountId> GetPrimaryAccountId(bool is_managed) {
-  if (is_managed) {
-    return AccountId::FromUserEmailGaiaId(
-        FakeGaiaMixin::kEnterpriseUser1, FakeGaiaMixin::kEnterpriseUser1GaiaId);
-  }
-  // Use the default FakeGaiaMixin::kFakeUserEmail consumer test account id.
-  return std::nullopt;
-}
-
 }  // namespace
 
 // A class helps to verify enable/disable Drive could invoke
@@ -342,8 +332,6 @@ class ProjectorClientManagedTest
 
   bool is_child() const { return GetParam(); }
 
-  bool is_managed() const { return !is_child(); }
-
   ProjectorClient* client() { return ProjectorClient::Get(); }
 
   std::string GetPolicy() {
@@ -382,11 +370,8 @@ class ProjectorClientManagedTest
   LoggedInUserMixin logged_in_user_mixin_{
       &mixin_host_,
       is_child() ? LoggedInUserMixin::LogInType::kChild
-                 : LoggedInUserMixin::LogInType::kRegular,
-      embedded_test_server(),
-      this,
-      /*should_launch_browser=*/true,
-      GetPrimaryAccountId(is_managed())};
+                 : LoggedInUserMixin::LogInType::kManaged,
+      embedded_test_server(), this};
 };
 
 IN_PROC_BROWSER_TEST_P(ProjectorClientManagedTest,

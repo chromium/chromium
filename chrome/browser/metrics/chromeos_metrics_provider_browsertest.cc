@@ -32,7 +32,7 @@ ash::LoggedInUserMixin::LogInType GetLogInType(
   if (user_type == user_manager::UserType::kChild) {
     return ash::LoggedInUserMixin::LogInType::kChild;
   }
-  return ash::LoggedInUserMixin::LogInType::kRegular;
+  return ash::LoggedInUserMixin::LogInType::kConsumer;
 }
 
 void ProvideHistograms() {

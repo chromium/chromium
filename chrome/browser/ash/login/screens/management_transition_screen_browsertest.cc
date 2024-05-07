@@ -226,11 +226,11 @@ INSTANTIATE_TEST_SUITE_P(
     ManagementTransitionScreenTest,
     testing::Values(
         TransitionScreenTestParams(LoggedInUserMixin::LogInType::kChild,
-                                   LoggedInUserMixin::LogInType::kRegular),
-        TransitionScreenTestParams(LoggedInUserMixin::LogInType::kRegular,
+                                   LoggedInUserMixin::LogInType::kConsumer),
+        TransitionScreenTestParams(LoggedInUserMixin::LogInType::kConsumer,
                                    LoggedInUserMixin::LogInType::kChild),
-        TransitionScreenTestParams(LoggedInUserMixin::LogInType::kRegular,
-                                   LoggedInUserMixin::LogInType::kRegular,
+        TransitionScreenTestParams(LoggedInUserMixin::LogInType::kConsumer,
+                                   LoggedInUserMixin::LogInType::kConsumer,
                                    true /* use_managed_account */)));
 
 }  // namespace

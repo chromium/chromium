@@ -28,10 +28,9 @@ class UserAuthConfig;
 
 namespace ash {
 
-// Compound mixin class for easily logging in as regular or child accounts for
-// browser tests. Initiates other mixins required to log in users, sets up their
-// user policies and gaia auth.
-// To use:
+// Compound mixin class for easily logging in as regular, managed or child
+// accounts for browser tests. Initiates other mixins required to log in users,
+// sets up their user policies and gaia auth. To use:
 // * Make your browser test class inherit from MixinBasedInProcessBrowserTest.
 // * Instantiate this class while passing in the inherited mixin_host_ member to
 // the constructor.
@@ -57,13 +56,21 @@ class MyBrowserTestClass : public MixinBasedInProcessBrowserTest {
 */
 class LoggedInUserMixin : public InProcessBrowserTestMixin {
  public:
-  enum class LogInType { kRegular, kChild };
+  enum class LogInType {
+    // Regular consumer user, default account id at gmail.com.
+    kConsumer,
+    // Regular consumer user, default account id at custom domain, not managed.
+    kConsumerCustomDomain,
+    // Child consumer user, default account id at gmail.com, managed.
+    kChild,
+    // Enterprise managed user, default account id at custom domain, managed.
+    kManaged,
+  };
 
   // `mixin_host` coordinates the other mixins. Since your browser test class
   // inherits from MixinBasedInProcessBrowserTest, there is an inherited
   // mixin_host_ member that can be passed into this constructor.
-  // `type` specifies the desired user log in type, currently either regular or
-  // child.
+  // `type` specifies the desired user log in type, see `LogInType` above.
   // `embedded_test_server`: your browser test class should already inherit from
   // BrowserTestBase. That means there is an inherited embedded_test_server()
   // that can be passed into this constructor.
@@ -73,14 +80,12 @@ class LoggedInUserMixin : public InProcessBrowserTestMixin {
   // `account_id` is the desired test account id for logging in. The default
   // test account already works for the majority of test cases, unless an
   // enterprise account is needed for setting up policy.
-  // `auth_config` defines the factors set up for the user. The default user will
-  // have the (gaia) password set to `ash::test:kGaiaPassword`. This parameter
-  // allows tests to define more complex configurations if needed.
+  // `auth_config` defines the factors set up for the user. The default user
+  // will have the (gaia) password set to `ash::test:kGaiaPassword`. This
+  // parameter allows tests to define more complex configurations if needed.
   // `include_initial_user` if true, then the user already exists on the login
   // screen. Otherwise, the user is newly added to the device and the OOBE Gaia
   // screen will show on start-up.
-  // `use_embedded_policy_server` determines if the
-  // EmbeddedPolicyTestServerMixin should be passed into the UserPolicyMixin.
   LoggedInUserMixin(
       InProcessBrowserTestMixinHost* mixin_host,
       LogInType type,
@@ -89,9 +94,7 @@ class LoggedInUserMixin : public InProcessBrowserTestMixin {
       bool should_launch_browser = true,
       std::optional<AccountId> account_id = std::nullopt,
       std::optional<test::UserAuthConfig> auth_config = std::nullopt,
-      bool include_initial_user = true,
-      // TODO(crbug/1112885): Remove this parameter.
-      bool use_embedded_policy_server = true);
+      bool include_initial_user = true);
   LoggedInUserMixin(const LoggedInUserMixin&) = delete;
   LoggedInUserMixin& operator=(const LoggedInUserMixin&) = delete;
   ~LoggedInUserMixin() override;
@@ -134,6 +137,7 @@ class LoggedInUserMixin : public InProcessBrowserTestMixin {
   FakeGaiaMixin* GetFakeGaiaMixin() { return &fake_gaia_; }
 
  private:
+  LogInType login_type_;
   LoginManagerMixin::TestUserInfo user_;
   bool include_initial_user_;
   FakeGaiaMixin fake_gaia_;

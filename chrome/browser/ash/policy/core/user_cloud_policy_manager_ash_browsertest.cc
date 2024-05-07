@@ -279,7 +279,8 @@ INSTANTIATE_TEST_SUITE_P(
     UserCloudPolicyManagerTest,
     testing::Combine(
         testing::ValuesIn(feature_lists),
-        testing::Values(ash::LoggedInUserMixin::LogInType::kRegular)));
+        // TODO(b/325279785): rewrite this test to use new LogInType's.
+        testing::Values(ash::LoggedInUserMixin::LogInType::kConsumer)));
 
 INSTANTIATE_TEST_SUITE_P(
     /* no prefix */,

@@ -193,13 +193,8 @@ class PolicyDataCollectorBrowserTestAsh
       &mixin_host_,
       ash::DeviceStateMixin::State::OOBE_COMPLETED_CLOUD_ENROLLED};
   ash::LoggedInUserMixin logged_in_user_mixin_{
-      &mixin_host_,
-      ash::LoggedInUserMixin::LogInType::kRegular,
-      embedded_test_server(),
-      this,
-      /*should_launch_browser=*/true,
-      AccountId::FromUserEmailGaiaId(policy::PolicyBuilder::kFakeUsername,
-                                     policy::PolicyBuilder::kFakeGaiaId)};
+      &mixin_host_, ash::LoggedInUserMixin::LogInType::kManaged,
+      embedded_test_server(), this};
   // Use a temporary directory to store data collector output.
   base::ScopedTempDir temp_dir_;
 };

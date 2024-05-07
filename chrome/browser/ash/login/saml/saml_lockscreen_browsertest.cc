@@ -213,15 +213,8 @@ class LockscreenWebUiTest : public MixinBasedInProcessBrowserTest {
  private:
   CryptohomeMixin cryptohome_mixin_{&mixin_host_};
   LoggedInUserMixin logged_in_user_mixin_{
-      &mixin_host_,
-      LoggedInUserMixin::LogInType::kRegular,
-      embedded_test_server(),
-      /*test_base=*/this,
-      true /*should_launch_browser*/,
-      AccountId::FromUserEmailGaiaId(FakeGaiaMixin::kEnterpriseUser1,
-                                     FakeGaiaMixin::kEnterpriseUser1GaiaId),
-      /*auth_config=*/std::nullopt,
-      true /*include_initial_user*/};
+      &mixin_host_, LoggedInUserMixin::LogInType::kManaged,
+      embedded_test_server(), /*test_base=*/this};
 
   FakeSamlIdpMixin fake_saml_idp_{&mixin_host_, fake_gaia_mixin()};
 };

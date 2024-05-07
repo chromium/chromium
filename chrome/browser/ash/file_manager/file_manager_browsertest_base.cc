@@ -1008,12 +1008,12 @@ ash::LoggedInUserMixin::LogInType LogInTypeFor(
       base::ImmediateCrash();
     case kEnterprise:
     case kGoogler:
-      return ash::LoggedInUserMixin::LogInType::kRegular;
+      return ash::LoggedInUserMixin::LogInType::kManaged;
     case kChild:
       return ash::LoggedInUserMixin::LogInType::kChild;
     case kNonManaged:
     case kNonManagedNonOwner:
-      return ash::LoggedInUserMixin::LogInType::kRegular;
+      return ash::LoggedInUserMixin::LogInType::kConsumer;
   }
 }
 
@@ -1024,14 +1024,11 @@ std::optional<AccountId> AccountIdFor(TestAccountType test_account_type) {
                       "LoggedInUserFilesAppBrowserTest";
       // `base::ImmediateCrash` is necessary for https://crbug.com/1061742.
       base::ImmediateCrash();
-    case kEnterprise:
-      return AccountId::FromUserEmailGaiaId(
-          FakeGaiaMixin::kEnterpriseUser1,
-          FakeGaiaMixin::kEnterpriseUser1GaiaId);
     case kGoogler:
       return AccountId::FromUserEmailGaiaId(
           "user@google.com", FakeGaiaMixin::kEnterpriseUser1GaiaId);
     case kChild:
+    case kEnterprise:
     case kNonManaged:
     case kNonManagedNonOwner:
       // Use the default account provided by `LoggedInUserMixin`.

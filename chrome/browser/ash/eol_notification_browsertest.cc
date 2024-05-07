@@ -332,7 +332,7 @@ class EolNotificationTest : public MixinBasedInProcessBrowserTest,
   NotificationDisplayServiceMixin notifications_mixin_{&mixin_host_};
 
   ash::LoggedInUserMixin logged_in_user_mixin_{
-      &mixin_host_, LoggedInUserMixin::LogInType::kRegular,
+      &mixin_host_, LoggedInUserMixin::LogInType::kConsumer,
       embedded_test_server(), this};
 
  private:
@@ -366,13 +366,8 @@ class ManagedDeviceEolNotificationTest
       ash::DeviceStateMixin::State::OOBE_COMPLETED_CLOUD_ENROLLED};
 
   ash::LoggedInUserMixin logged_in_user_mixin_{
-      &mixin_host_,
-      LoggedInUserMixin::LogInType::kRegular,
-      embedded_test_server(),
-      this,
-      /*should_launch_browser=*/true,
-      AccountId::FromUserEmailGaiaId(policy::PolicyBuilder::kFakeUsername,
-                                     policy::PolicyBuilder::kFakeGaiaId)};
+      &mixin_host_, LoggedInUserMixin::LogInType::kManaged,
+      embedded_test_server(), this};
 
  private:
   base::test::ScopedFeatureList scoped_feature_list_;
@@ -402,15 +397,8 @@ class ChildUserEolNotificationTest
   NotificationDisplayServiceMixin notifications_mixin_{&mixin_host_};
 
   ash::LoggedInUserMixin logged_in_user_mixin_{
-      &mixin_host_,
-      LoggedInUserMixin::LogInType::kChild,
-      embedded_test_server(),
-      this,
-      /*should_launch_browser=*/true,
-      /*account_id=*/std::nullopt,
-      /*auth_config=*/std::nullopt,
-      /*include_initial_user=*/true,
-      /*use_embedded_policy_server=*/false};
+      &mixin_host_, LoggedInUserMixin::LogInType::kChild,
+      embedded_test_server(), this};
 
  private:
   base::test::ScopedFeatureList scoped_feature_list_;
@@ -438,7 +426,7 @@ class SuppressedNotificationTest : public MixinBasedInProcessBrowserTest,
   EolStatusMixin eol_status_mixin_{&mixin_host_};
   NotificationDisplayServiceMixin notifications_mixin_{&mixin_host_};
   ash::LoggedInUserMixin logged_in_user_mixin_{
-      &mixin_host_, LoggedInUserMixin::LogInType::kRegular,
+      &mixin_host_, LoggedInUserMixin::LogInType::kConsumer,
       embedded_test_server(), this};
 
  private:

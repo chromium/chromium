@@ -26,7 +26,7 @@ ash::LoggedInUserMixin::LogInType GetLogInType(
     ChromeOSFamilyLinkUserMetricsProvider::LogSegment log_segment) {
   switch (log_segment) {
     case ChromeOSFamilyLinkUserMetricsProvider::LogSegment::kOther:
-      return ash::LoggedInUserMixin::LogInType::kRegular;
+      return ash::LoggedInUserMixin::LogInType::kConsumer;
     case ChromeOSFamilyLinkUserMetricsProvider::LogSegment::kUnderConsentAge:
     case ChromeOSFamilyLinkUserMetricsProvider::LogSegment::kOverConsentAge:
       return ash::LoggedInUserMixin::LogInType::kChild;

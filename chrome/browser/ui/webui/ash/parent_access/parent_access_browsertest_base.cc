@@ -67,7 +67,7 @@ ParentAccessRegularUserBrowserTestBase::
 // ParentAccessBrowserTestBase methods
 LoggedInUserMixin::LogInType
 ParentAccessRegularUserBrowserTestBase::GetLogInType() {
-  return LoggedInUserMixin::LogInType::kRegular;
+  return LoggedInUserMixin::LogInType::kConsumer;
 }
 
 //  ParentAccessChildUserBrowserTestBase

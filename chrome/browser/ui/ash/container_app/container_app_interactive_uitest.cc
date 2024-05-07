@@ -95,23 +95,6 @@ inline char kFilesAppElementName[] = "FilesApp";
 inline char kGmailAppElementName[] = "GmailApp";
 inline char kShowAppInfoMenuItemElementName[] = "ShowAppInfoMenuItem";
 
-// Users -----------------------------------------------------------------------
-
-inline char kManagedUserEmail[] = "managed@example.com";
-inline char kManagedUserGaiaId[] = "<MANAGED_USER_GAIA_ID>";
-inline char kUnmanagedUserEmail[] = "unmanaged@gmail.com";
-inline char kUnmanagedUserGaiaId[] = "<UNMANAGED_USER_GAIA_ID>";
-
-// Helpers ---------------------------------------------------------------------
-
-// Returns an `AccountId` for either a `managed` or an unmanaged user.
-AccountId GetAccountId(bool managed) {
-  return managed ? AccountId::FromUserEmailGaiaId(kManagedUserEmail,
-                                                  kManagedUserGaiaId)
-                 : AccountId::FromUserEmailGaiaId(kUnmanagedUserEmail,
-                                                  kUnmanagedUserGaiaId);
-}
-
 // Returns all `descendants` of the specified `parent` matching the given class.
 template <typename ViewClass>
 void FindDescendantsOfClass(views::View* parent,
@@ -225,10 +208,10 @@ class OnBrowserSetLastActiveWaiter : public BrowserListObserver {
 class ContainerAppInteractiveUiTestBase
     : public InteractiveBrowserTestT<MixinBasedInProcessBrowserTest> {
  public:
-  ContainerAppInteractiveUiTestBase(const AccountId& account_id,
-                                    user_manager::UserType user_type,
-                                    bool should_ignore_feature_key)
-      : user_session_mixin_(CreateUserSessionMixin(account_id, user_type)) {
+  ContainerAppInteractiveUiTestBase(
+      std::optional<ash::LoggedInUserMixin::LogInType> login_type,
+      bool should_ignore_feature_key)
+      : user_session_mixin_(CreateUserSessionMixin(login_type)) {
     // Conditionally ignore the container app preinstallation key.
     if (should_ignore_feature_key) {
       ignore_container_app_preinstall_key_ = std::make_unique<
@@ -353,25 +336,18 @@ class ContainerAppInteractiveUiTestBase
 
  private:
   // Creates the appropriate guest or logged-in user session mixin based on
-  // the specified `account_id` and `user_type`.
+  // the presence of `login_type`.
   absl::variant<ash::GuestSessionMixin, ash::LoggedInUserMixin>
-  CreateUserSessionMixin(const AccountId& account_id,
-                         user_manager::UserType user_type) {
-    if (user_type == user_manager::UserType::kGuest) {
+  CreateUserSessionMixin(
+      std::optional<ash::LoggedInUserMixin::LogInType> login_type) {
+    if (!login_type) {
       return absl::variant<ash::GuestSessionMixin, ash::LoggedInUserMixin>(
           absl::in_place_type_t<ash::GuestSessionMixin>(), &mixin_host_);
     }
 
-    CHECK(user_type == user_manager::UserType::kChild ||
-          user_type == user_manager::UserType::kRegular);
-
     return absl::variant<ash::GuestSessionMixin, ash::LoggedInUserMixin>(
         absl::in_place_type_t<ash::LoggedInUserMixin>(), &mixin_host_,
-        user_type == user_manager::UserType::kChild
-            ? ash::LoggedInUserMixin::LogInType::kChild
-            : ash::LoggedInUserMixin::LogInType::kRegular,
-        embedded_test_server(), this, /*should_launch_browser=*/true,
-        account_id);
+        login_type.value(), embedded_test_server(), this);
   }
 
   // Returns whether the user should be logged in as part of test setup.
@@ -398,14 +374,15 @@ class ContainerAppInteractiveUiTestBase
 // whether the logged-in user is new or existing. Tests include a PRE_ session,
 // where user state is initialized, followed by a subsequent session containing
 // test logic. Chrome is restarted between sessions.
+
 class ContainerAppInteractiveUiTest
     : public ContainerAppInteractiveUiTestBase,
       public WithParamInterface</*existing_user=*/bool> {
  public:
   ContainerAppInteractiveUiTest()
-      : ContainerAppInteractiveUiTestBase(GetAccountId(/*managed=*/false),
-                                          user_manager::UserType::kRegular,
-                                          /*should_ignore_feature_key=*/true) {
+      : ContainerAppInteractiveUiTestBase(
+            ash::LoggedInUserMixin::LogInType::kConsumer,
+            /*should_ignore_feature_key=*/true) {
     // Disable the container app during the PRE_ session so that the subsequent
     // session containing test logic is when the app preinstallation occurs.
     if (IsPreSession()) {
@@ -899,8 +876,7 @@ class ContainerAppInteractiveUiIneligibilityTest
   static constexpr char kIncorrectKey[] = "<INCORRECT_KEY>";
 
   ContainerAppInteractiveUiIneligibilityTest()
-      : ContainerAppInteractiveUiTestBase(GetAccountId(),
-                                          GetUserType(),
+      : ContainerAppInteractiveUiTestBase(GetLoginType(),
                                           ShouldIgnoreFeatureKey()) {
     std::vector<base::test::FeatureRefAndParams> enabled;
     std::vector<base::test::FeatureRef> disabled;
@@ -947,7 +923,7 @@ class ContainerAppInteractiveUiIneligibilityTest
     // preinstallation of the container app, circumvent timeouts by disabling
     // other default web apps.
     std::unique_ptr<web_app::ScopedTestingPreinstalledAppData> app_data;
-    if (GetUserType() == user_manager::UserType::kChild) {
+    if (GetLoginType() == ash::LoggedInUserMixin::LogInType::kChild) {
       app_data = std::make_unique<web_app::ScopedTestingPreinstalledAppData>();
       app_data->apps.emplace_back(
           web_app::GetConfigForContainer(/*device_info=*/std::nullopt));
@@ -956,21 +932,17 @@ class ContainerAppInteractiveUiIneligibilityTest
     ContainerAppInteractiveUiTestBase::SetUpOnMainThread();
   }
 
-  // Returns the `AccountId` for the user given test parameterization.
-  AccountId GetAccountId() const {
-    return ::GetAccountId(/*managed=*/GetParam() ==
-                          IneligibilityReason::kUserManaged);
-  }
-
-  // Returns the type for the user given test parameterization.
-  user_manager::UserType GetUserType() const {
+  // Returns the login type for the user given test parameterization.
+  std::optional<ash::LoggedInUserMixin::LogInType> GetLoginType() const {
     switch (GetParam()) {
       case IneligibilityReason::kUserTypeChild:
-        return user_manager::UserType::kChild;
+        return ash::LoggedInUserMixin::LogInType::kChild;
       case IneligibilityReason::kUserTypeGuest:
-        return user_manager::UserType::kGuest;
+        return std::nullopt;
+      case IneligibilityReason::kUserManaged:
+        return ash::LoggedInUserMixin::LogInType::kManaged;
       default:
-        return user_manager::UserType::kRegular;
+        return ash::LoggedInUserMixin::LogInType::kConsumer;
     }
   }
 

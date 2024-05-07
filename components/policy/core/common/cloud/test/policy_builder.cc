@@ -267,15 +267,18 @@ void SignData(const std::string& data,
 }  // namespace
 
 // Constants used as dummy data for filling the PolicyData protobuf.
+// LINT.IfChange
+const char PolicyBuilder::kFakeGaiaId[] = "0000111111";
+const char PolicyBuilder::kFakeUsername[] = "username@example.com";
+// LINT.ThenChange(/chrome/test/base/fake_gaia_mixin.cc)
+
 const char PolicyBuilder::kFakeDeviceId[] = "device-id";
 const char PolicyBuilder::kFakeDomain[] = "example.com";
-const char PolicyBuilder::kFakeGaiaId[] = "gaia-id";
 const char PolicyBuilder::kFakeMachineName[] = "machine-name";
 const char PolicyBuilder::kFakePolicyType[] = "policy type";
 const int PolicyBuilder::kFakePublicKeyVersion = 17;
 const int64_t PolicyBuilder::kFakeTimestamp = 365LL * 24 * 60 * 60 * 1000;
 const char PolicyBuilder::kFakeToken[] = "token";
-const char PolicyBuilder::kFakeUsername[] = "username@example.com";
 const char PolicyBuilder::kFakeServiceAccountIdentity[] = "robot4test@g.com";
 
 PolicyBuilder::PolicyBuilder() {

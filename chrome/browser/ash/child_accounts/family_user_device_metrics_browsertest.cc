@@ -246,7 +246,7 @@ INSTANTIATE_TEST_SUITE_P(
     ,
     FamilyUserDeviceMetricsTest,
     testing::Combine(testing::Values(LoggedInUserMixin::LogInType::kChild,
-                                     LoggedInUserMixin::LogInType::kRegular),
+                                     LoggedInUserMixin::LogInType::kConsumer),
                      /*IsUserExisting=*/testing::Bool()));
 
 class FamilyUserDeviceMetricsManagedDeviceTest
@@ -341,7 +341,7 @@ INSTANTIATE_TEST_SUITE_P(
     ,
     FamilyUserDeviceMetricsManagedDeviceTest,
     testing::Combine(testing::Values(LoggedInUserMixin::LogInType::kChild,
-                                     LoggedInUserMixin::LogInType::kRegular),
+                                     LoggedInUserMixin::LogInType::kConsumer),
                      /*IsUserExisting=*/testing::Bool()));
 
 class FamilyUserDeviceMetricsEphemeralUserTest
@@ -375,7 +375,7 @@ INSTANTIATE_TEST_SUITE_P(
     ,
     FamilyUserDeviceMetricsEphemeralUserTest,
     testing::Combine(testing::Values(LoggedInUserMixin::LogInType::kChild,
-                                     LoggedInUserMixin::LogInType::kRegular),
+                                     LoggedInUserMixin::LogInType::kConsumer),
                      /*IsUserExisting=*/testing::Values(false)));
 
 }  // namespace ash

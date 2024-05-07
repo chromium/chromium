@@ -46,7 +46,7 @@ class AuthFactorConfigTestBase : public MixinBasedInProcessBrowserTest {
     }
 
     logged_in_user_mixin_ = std::make_unique<LoggedInUserMixin>(
-        &mixin_host_, LoggedInUserMixin::LogInType::kRegular,
+        &mixin_host_, LoggedInUserMixin::LogInType::kConsumer,
         embedded_test_server(), this, /*should_launch_browser=*/true,
         /*account_id=*/std::nullopt, config);
     cryptohome_ = &logged_in_user_mixin_->GetCryptohomeMixin();

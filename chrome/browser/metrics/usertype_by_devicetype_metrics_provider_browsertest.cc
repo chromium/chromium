@@ -86,11 +86,6 @@ std::optional<em::PolicyData::MetricsLogSegment> GetMetricsLogSegment(
   return std::nullopt;
 }
 
-std::optional<AccountId> GetPrimaryAccountId() {
-  return AccountId::FromUserEmailGaiaId(FakeGaiaMixin::kEnterpriseUser1,
-                                        FakeGaiaMixin::kEnterpriseUser1GaiaId);
-}
-
 void ProvideHistograms() {
   // The purpose of the below call is to avoid a DCHECK failure in an unrelated
   // metrics provider, in |FieldTrialsProvider::ProvideCurrentSessionData()|.
@@ -261,9 +256,10 @@ class UserTypeByDeviceTypeMetricsProviderTest
 
   void UploadDeviceLocalAccountPolicy() {
     BuildDeviceLocalAccountPolicy();
-    policy_test_server_mixin_.UpdateExternalPolicy(
-        policy::dm_protocol::kChromePublicAccountPolicyType, kAccountId1,
-        device_local_account_policy_.payload().SerializeAsString());
+    logged_in_user_mixin_.GetEmbeddedPolicyTestServerMixin()
+        ->UpdateExternalPolicy(
+            policy::dm_protocol::kChromePublicAccountPolicyType, kAccountId1,
+            device_local_account_policy_.payload().SerializeAsString());
   }
 
   void UploadAndInstallDeviceLocalAccountPolicy() {
@@ -290,7 +286,8 @@ class UserTypeByDeviceTypeMetricsProviderTest
     em::ChromeDeviceSettingsProto& proto(device_policy()->payload());
     policy::DeviceLocalAccountTestHelper::AddPublicSession(&proto, username);
     RefreshDevicePolicy();
-    policy_test_server_mixin_.UpdateDevicePolicy(proto);
+    logged_in_user_mixin_.GetEmbeddedPolicyTestServerMixin()
+        ->UpdateDevicePolicy(proto);
   }
 
   void WaitForDisplayName(const std::string& user_id,
@@ -311,10 +308,8 @@ class UserTypeByDeviceTypeMetricsProviderTest
     std::optional<em::PolicyData::MetricsLogSegment> log_segment =
         GetParam().GetMetricsLogSegment();
     if (log_segment) {
-      logged_in_user_mixin_.GetUserPolicyMixin()
-          ->RequestPolicyUpdate()
-          ->policy_data()
-          ->set_metrics_log_segment(log_segment.value());
+      logged_in_user_mixin_.GetEmbeddedPolicyTestServerMixin()
+          ->SetMetricsLogSegment(log_segment.value());
     }
     logged_in_user_mixin_.LogInUser();
   }
@@ -394,16 +389,9 @@ class UserTypeByDeviceTypeMetricsProviderTest
 
  private:
   ash::LoggedInUserMixin logged_in_user_mixin_{
-      &mixin_host_, ash::LoggedInUserMixin::LogInType::kRegular,
-      embedded_test_server(), this,
-      /*should_launch_browser=*/true, GetPrimaryAccountId(),
-      /*auth_config=*/std::nullopt, /*include_initial_user=*/true,
-      // Don't use EmbeddedPolicyTestServer because it does not support
-      // customizing PolicyData.
-      // TODO(crbug/1112885): Use EmbeddedPolicyTestServer when this is fixed.
-      /*use_embedded_policy_server=*/false};
+      &mixin_host_, ash::LoggedInUserMixin::LogInType::kManaged,
+      embedded_test_server(), this};
   policy::UserPolicyBuilder device_local_account_policy_;
-  ash::EmbeddedPolicyTestServerMixin policy_test_server_mixin_{&mixin_host_};
 
   const AccountId account_id_1_ =
       AccountId::FromUserEmail(GenerateDeviceLocalAccountUserId(

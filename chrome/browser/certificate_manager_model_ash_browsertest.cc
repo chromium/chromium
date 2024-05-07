@@ -68,7 +68,7 @@ class CertificateManagerModelBrowserTestBase
 
  protected:
   ash::LoggedInUserMixin logged_in_user_mixin_{
-      &mixin_host_, ash::LoggedInUserMixin::LogInType::kRegular,
+      &mixin_host_, ash::LoggedInUserMixin::LogInType::kConsumer,
       embedded_test_server(), this};
 
   FakeObserver fake_observer_;

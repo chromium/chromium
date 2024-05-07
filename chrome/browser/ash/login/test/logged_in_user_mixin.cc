@@ -28,8 +28,24 @@ user_manager::UserType ConvertUserType(LoggedInUserMixin::LogInType type) {
   switch (type) {
     case LoggedInUserMixin::LogInType::kChild:
       return user_manager::UserType::kChild;
-    case LoggedInUserMixin::LogInType::kRegular:
+    case LoggedInUserMixin::LogInType::kConsumer:
+    case LoggedInUserMixin::LogInType::kConsumerCustomDomain:
+    case LoggedInUserMixin::LogInType::kManaged:
       return user_manager::UserType::kRegular;
+  }
+}
+
+const AccountId AccountIdForType(LoggedInUserMixin::LogInType type) {
+  switch (type) {
+    case LoggedInUserMixin::LogInType::kChild:
+    case LoggedInUserMixin::LogInType::kConsumer:
+      return AccountId::FromUserEmailGaiaId(FakeGaiaMixin::kFakeUserEmail,
+                                            FakeGaiaMixin::kFakeUserGaiaId);
+    case LoggedInUserMixin::LogInType::kConsumerCustomDomain:
+    case LoggedInUserMixin::LogInType::kManaged:
+      return AccountId::FromUserEmailGaiaId(
+          FakeGaiaMixin::kEnterpriseUser1,
+          FakeGaiaMixin::kEnterpriseUser1GaiaId);
   }
 }
 
@@ -51,12 +67,10 @@ LoggedInUserMixin::LoggedInUserMixin(
     bool should_launch_browser,
     std::optional<AccountId> account_id,
     std::optional<test::UserAuthConfig> auth_config,
-    bool include_initial_user,
-    bool use_embedded_policy_server)
+    bool include_initial_user)
     : InProcessBrowserTestMixin(mixin_host),
-      user_(account_id.value_or(
-                AccountId::FromUserEmailGaiaId(FakeGaiaMixin::kFakeUserEmail,
-                                               FakeGaiaMixin::kFakeUserGaiaId)),
+      login_type_(type),
+      user_(account_id.value_or(AccountIdForType(type)),
             auth_config.value_or(
                 test::UserAuthConfig::Create(test::kDefaultAuthSetup)),
             ConvertUserType(type)),
@@ -67,11 +81,10 @@ LoggedInUserMixin::LoggedInUserMixin(
                      GetInitialUsers(user_, include_initial_user),
                      &fake_gaia_,
                      &cryptohome_),
-      embedded_policy_server_(mixin_host),
-      user_policy_(
-          mixin_host,
-          user_.account_id,
-          use_embedded_policy_server ? &embedded_policy_server_ : nullptr),
+      embedded_policy_server_(mixin_host,
+                              {EmbeddedPolicyTestServerMixin::Capabilities::
+                                   PER_USER_MANAGEMENT_STATUS}),
+      user_policy_(mixin_host, user_.account_id, &embedded_policy_server_),
       user_policy_helper_(user_.account_id.GetUserEmail(),
                           &embedded_policy_server_),
       embedded_test_server_setup_(mixin_host, embedded_test_server),
@@ -118,9 +131,14 @@ void LoggedInUserMixin::LogInUser(bool issue_any_scope_token,
                                      user_.account_id.GetGaiaId(),
                                      FakeGaiaMixin::kFakeRefreshToken);
   }
+
   if (request_policy_update) {
-    // Child users require user policy, set up an empty one so the user can get
-    // through login.
+    if (login_type_ == LogInType::kChild ||
+        login_type_ == LogInType::kManaged) {
+      embedded_policy_server_.MarkUserAsManaged(user_.account_id);
+    }
+    // Managed users require user policy, set up an empty one so the user can
+    // get through login.
     GetUserPolicyMixin()->RequestPolicyUpdate();
   }
   if (!include_initial_user_) {

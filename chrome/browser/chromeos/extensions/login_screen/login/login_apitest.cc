@@ -471,13 +471,8 @@ class LoginApitestWithEnterpriseUser : public LoginApitest {
   // |embedded_test_server()|.
   net::EmbeddedTestServer test_server_;
   ash::LoggedInUserMixin logged_in_user_mixin_{
-      &mixin_host_,
-      ash::LoggedInUserMixin::LogInType::kRegular,
-      &test_server_,
-      this,
-      /*should_launch_browser=*/true,
-      AccountId::FromUserEmailGaiaId(FakeGaiaMixin::kEnterpriseUser1,
-                                     FakeGaiaMixin::kEnterpriseUser1GaiaId)};
+      &mixin_host_, ash::LoggedInUserMixin::LogInType::kManaged, &test_server_,
+      this};
 };
 
 IN_PROC_BROWSER_TEST_F(LoginApitestWithEnterpriseUser,

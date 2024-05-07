@@ -112,11 +112,8 @@ void CustomizableTestEnvBrowserTestBase::SetUp() {
       break;
     case UserSessionType::kManaged:
       logged_in_user_mixin_ = std::make_unique<ash::LoggedInUserMixin>(
-          &mixin_host_, ash::LoggedInUserMixin::LogInType::kRegular,
-          embedded_test_server(), this, /*should_launch_browser=*/false,
-          AccountId::FromUserEmailGaiaId(
-              FakeGaiaMixin::kEnterpriseUser1,
-              FakeGaiaMixin::kEnterpriseUser1GaiaId));
+          &mixin_host_, ash::LoggedInUserMixin::LogInType::kManaged,
+          embedded_test_server(), this, /*should_launch_browser=*/false);
 
       // If a device is not enrolled, simulate a case where a device is owned by
       // the managed account. This is a managed account on not-enrolled device
@@ -130,13 +127,13 @@ void CustomizableTestEnvBrowserTestBase::SetUp() {
       break;
     case UserSessionType::kRegular:
       logged_in_user_mixin_ = std::make_unique<ash::LoggedInUserMixin>(
-          &mixin_host_, ash::LoggedInUserMixin::LogInType::kRegular,
+          &mixin_host_, ash::LoggedInUserMixin::LogInType::kConsumer,
           embedded_test_server(), this);
       owner_user_email_ = logged_in_user_mixin_->GetAccountId().GetUserEmail();
       break;
     case UserSessionType::kRegularNonOwner:
       logged_in_user_mixin_ = std::make_unique<ash::LoggedInUserMixin>(
-          &mixin_host_, ash::LoggedInUserMixin::LogInType::kRegular,
+          &mixin_host_, ash::LoggedInUserMixin::LogInType::kConsumer,
           embedded_test_server(), this);
 
       CHECK(kOwnerEmail !=
@@ -145,7 +142,7 @@ void CustomizableTestEnvBrowserTestBase::SetUp() {
       break;
     case UserSessionType::kRegularWithOobe:
       logged_in_user_mixin_ = std::make_unique<ash::LoggedInUserMixin>(
-          &mixin_host_, ash::LoggedInUserMixin::LogInType::kRegular,
+          &mixin_host_, ash::LoggedInUserMixin::LogInType::kConsumer,
           embedded_test_server(), this, /*should_launch_browser=*/false,
           /*account_id=*/std::nullopt, /*auth_config=*/std::nullopt,
           /*include_initial_user=*/false);
