@@ -1061,12 +1061,18 @@ export class BrowsingContextImpl {
             (
               cssSelector: string,
               maxNodeCount: number,
-              ...startNodes: HTMLElement[]
+              ...startNodes: Node[]
             ) => {
-              const locateNodesUsingCss = (element: HTMLElement) => {
-                if (!(element instanceof HTMLElement)) {
+              const locateNodesUsingCss = (element: Node) => {
+                if (
+                  !(
+                    element instanceof HTMLElement ||
+                    element instanceof Document ||
+                    element instanceof DocumentFragment
+                  )
+                ) {
                   throw new Error(
-                    'startNodes in css selector should be HTMLElement'
+                    'startNodes in css selector should be HTMLElement, Document or DocumentFragment'
                   );
                 }
                 return [...element.querySelectorAll(cssSelector)];
@@ -1407,10 +1413,10 @@ export class BrowsingContextImpl {
       // Heuristic to detect if the `startNode` is not an `HTMLElement` in css selector.
       if (
         locatorResult.exceptionDetails.text ===
-        'Error: startNodes in css selector should be HTMLElement'
+        'Error: startNodes in css selector should be HTMLElement, Document or DocumentFragment'
       ) {
         throw new InvalidArgumentException(
-          `startNodes in css selector should be HTMLElement`
+          'startNodes in css selector should be HTMLElement, Document or DocumentFragment'
         );
       }
       throw new UnknownErrorException(
