@@ -6966,6 +6966,11 @@ const char kEnableNearbyBleV2ExtendedAdvertisingDescription[] =
     "Enables extended advertising functionality over BLE when using Nearby BLE "
     "v2.";
 
+const char kEnableNearbyBleV2GattServerName[] = "Nearby BLE v2 GATT Server";
+const char kEnableNearbyBleV2GattServerDescription[] =
+    "Enables GATT server functionality over BLE when using Nearby BLE "
+    "v2.";
+
 const char kEnableNearbyBluetoothClassicAdvertisingName[] =
     "Nearby Bluetooth Classic Advertising";
 const char kEnableNearbyBluetoothClassicAdvertisingDescription[] =

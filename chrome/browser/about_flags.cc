@@ -7707,6 +7707,11 @@ const FeatureEntry kFeatureEntries[] = {
      kOsCrOS,
      FEATURE_VALUE_TYPE(features::kEnableNearbyBleV2ExtendedAdvertising)},
 
+    {"nearby-ble-v2-gatt-server",
+     flag_descriptions::kEnableNearbyBleV2GattServerName,
+     flag_descriptions::kEnableNearbyBleV2GattServerDescription, kOsCrOS,
+     FEATURE_VALUE_TYPE(features::kEnableNearbyBleV2GattServer)},
+
     {"nearby-bluetooth-classic-adv",
      flag_descriptions::kEnableNearbyBluetoothClassicAdvertisingName,
      flag_descriptions::kEnableNearbyBluetoothClassicAdvertisingDescription,

@@ -5732,6 +5732,11 @@
     "expiry_milestone": 130
   },
   {
+    "name": "nearby-ble-v2-gatt-server",
+    "owners": ["chromeos-cross-device-eng@google.com", "julietlevesque@google.com"],
+    "expiry_milestone": 130
+  },
+  {
     "name": "nearby-bluetooth-classic-adv",
     "owners": ["chromeos-cross-device-eng@google.com", "dclasson@google.com"],
     "expiry_milestone": 130

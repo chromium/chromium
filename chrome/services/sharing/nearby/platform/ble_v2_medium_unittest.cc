@@ -490,7 +490,23 @@ TEST_F(BleV2MediumTest, IsExtendedAdvertisementsAvailable_FlagEnabled) {
   EXPECT_FALSE(ble_v2_medium_->IsExtendedAdvertisementsAvailable());
 }
 
-TEST_F(BleV2MediumTest, StartGattServer_DualRoleSupported) {
+TEST_F(BleV2MediumTest, StartGattServer_DualRoleSupported_FlagDisabled) {
+  base::test::ScopedFeatureList feature_list;
+  feature_list.InitWithFeatures(
+      /*enabled_features=*/{},
+      /*disabled_features=*/{::features::kEnableNearbyBleV2GattServer});
+
+  fake_adapter_->is_dual_role_supported_ = true;
+  auto gatt_server = ble_v2_medium_->StartGattServer({});
+  EXPECT_FALSE(gatt_server);
+}
+
+TEST_F(BleV2MediumTest, StartGattServer_DualRoleSupported_FlagEnabled) {
+  base::test::ScopedFeatureList feature_list;
+  feature_list.InitWithFeatures(
+      /*enabled_features=*/{::features::kEnableNearbyBleV2GattServer},
+      /*disabled_features=*/{});
+
   fake_adapter_->is_dual_role_supported_ = true;
   auto gatt_server = ble_v2_medium_->StartGattServer({});
   EXPECT_TRUE(gatt_server);

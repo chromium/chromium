@@ -19802,6 +19802,7 @@ from previous Chrome versions.
   <int value="-650176557" label="OfflinePagesSvelteConcurrentLoading:enabled"/>
   <int value="-649956990" label="enable-harfbuzz-rendertext"/>
   <int value="-649718994" label="cast-mirroring-target-playout-delay:enabled"/>
+  <int value="-649347013" label="kEnableNearbyBleV2GattServer:enabled"/>
   <int value="-648925189" label="ExploreSites:enabled"/>
   <int value="-648593261" label="Memories:enabled"/>
   <int value="-648383814" label="WebViewXRequestedWithHeaderControl:disabled"/>
@@ -19873,6 +19874,7 @@ from previous Chrome versions.
   <int value="-619665653" label="DisableKeepaliveFetch:disabled"/>
   <int value="-619582383" label="LacrosLaunchAtLoginScreen:disabled"/>
   <int value="-619178844" label="NewOverviewLayout:disabled"/>
+  <int value="-617598270" label="kEnableNearbyBleV2GattServer:disabled"/>
   <int value="-617452890" label="media-router"/>
   <int value="-616818899" label="SameSiteByDefaultCookies:enabled"/>
   <int value="-616508634" label="DisableCryptAuthV1DeviceSync:enabled"/>

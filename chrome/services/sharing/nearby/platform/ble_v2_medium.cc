@@ -312,6 +312,10 @@ std::unique_ptr<BleV2Medium::ScanningSession> BleV2Medium::StartScanning(
 
 std::unique_ptr<api::ble_v2::GattServer> BleV2Medium::StartGattServer(
     api::ble_v2::ServerGattConnectionCallback callback) {
+  if (!features::IsNearbyBleV2GattServerEnabled()) {
+    return nullptr;
+  }
+
   bool is_dual_role_supported;
   adapter_->IsLeScatternetDualRoleSupported(&is_dual_role_supported);
   if (!is_dual_role_supported) {
