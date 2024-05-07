@@ -108,6 +108,10 @@ struct Suggestion {
     kCardVisa,
   };
 
+  // TODO(b/335194240): Consolidate expected param types for these constructors.
+  // Some expect UTF16 strings and others UTF8, while internally we only use
+  // UTF16. The ones expecting UTF8 are only used by tests and could be easily
+  // refactored.
   Suggestion();
   explicit Suggestion(std::u16string main_text);
   explicit Suggestion(PopupItemId popup_item_id);

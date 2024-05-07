@@ -6959,7 +6959,7 @@ TEST_F(BrowserAutofillManagerTest, NoComposeSuggestionsByDefault) {
   // The third field is meant to correspond to address line 1. For that (unlike
   // for first and last name), parsing also derives that type if it is a
   // textarea.
-  EXPECT_CALL(compose_delegate, ShouldOfferComposePopup).Times(0);
+  EXPECT_CALL(compose_delegate, GetSuggestion).Times(0);
   GetAutofillSuggestions(form, form.fields[3]);
   external_delegate()->CheckSuggestions(
       form.fields[3].global_id(),
@@ -6986,12 +6986,12 @@ TEST_F(BrowserAutofillManagerTest, ComposeSuggestionsOnFocusWithoutClick) {
 
   EXPECT_CALL(single_field_form_fill_router(), OnGetSingleFieldSuggestions)
       .Times(0);
-  EXPECT_CALL(compose_delegate, ShouldOfferComposePopup(
-                                    Property(&FormFieldData::global_id,
-                                             Eq(form.fields[3].global_id())),
-                                    autofill::AutofillSuggestionTriggerSource::
-                                        kTextareaFocusedWithoutClick))
-      .WillOnce(Return(true));
+  EXPECT_CALL(compose_delegate,
+              GetSuggestion(Property(&FormFieldData::global_id,
+                                     Eq(form.fields[3].global_id())),
+                            autofill::AutofillSuggestionTriggerSource::
+                                kTextareaFocusedWithoutClick))
+      .WillOnce(Return(Suggestion(u"Help me write", PopupItemId::kCompose)));
   GetAutofillSuggestions(
       form, form.fields[3],
       AutofillSuggestionTriggerSource::kTextareaFocusedWithoutClick);
@@ -7017,12 +7017,10 @@ TEST_F(BrowserAutofillManagerTest, ComposeSuggestionsAreQueriedForTextareas) {
       .Times(0);
   EXPECT_CALL(
       compose_delegate,
-      ShouldOfferComposePopup(
+      GetSuggestion(
           Property(&FormFieldData::global_id, Eq(form.fields[0].global_id())),
           autofill::AutofillSuggestionTriggerSource::kTextFieldDidChange))
-      .WillOnce(Return(true));
-  EXPECT_CALL(compose_delegate, HasSavedState(form.fields[0].global_id()))
-      .WillOnce(Return(true));
+      .WillOnce(Return(Suggestion(u"Help me write", PopupItemId::kCompose)));
   GetAutofillSuggestions(form, form.fields[0]);
   external_delegate()->CheckSuggestionCount(form.fields[0].global_id(), 1);
 }

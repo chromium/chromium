@@ -14,13 +14,26 @@
 #include "components/autofill/core/browser/autofill_client.h"
 #include "components/autofill/core/browser/autofill_manager.h"
 #include "components/autofill/core/browser/browser_autofill_manager.h"
+#include "components/autofill/core/browser/ui/popup_item_ids.h"
+#include "components/autofill/core/browser/ui/suggestion.h"
 #include "components/compose/core/browser/compose_client.h"
 #include "components/compose/core/browser/compose_features.h"
 #include "components/compose/core/browser/compose_metrics.h"
 #include "components/compose/core/browser/compose_utils.h"
 #include "components/compose/core/browser/config.h"
+#include "components/strings/grit/components_strings.h"
+#include "ui/base/l10n/l10n_util.h"
+
+namespace compose {
 
 namespace {
+
+using autofill::AutofillDriver;
+using autofill::AutofillSuggestionTriggerSource;
+using autofill::FieldGlobalId;
+using autofill::FormGlobalId;
+using autofill::PopupItemId;
+using autofill::Suggestion;
 
 // Passes the autofill `text` back into the `field` the dialog was opened on.
 // Called upon insertion.
@@ -36,36 +49,19 @@ void FillTextWithAutofill(base::WeakPtr<autofill::AutofillManager> manager,
   static_cast<autofill::BrowserAutofillManager*>(manager.get())
       ->FillOrPreviewField(autofill::mojom::ActionPersistence::kFill,
                            autofill::mojom::FieldActionType::kReplaceSelection,
-                           form, field, trimmed_text,
-                           autofill::PopupItemId::kCompose);
+                           form, field, trimmed_text, PopupItemId::kCompose);
 }
 
 }  // namespace
-
-namespace compose {
 
 ComposeManagerImpl::ComposeManagerImpl(ComposeClient* client)
     : client_(*client) {}
 
 ComposeManagerImpl::~ComposeManagerImpl() = default;
 
-bool ComposeManagerImpl::ShouldOfferComposePopup(
-    const autofill::FormFieldData& trigger_field,
-    autofill::AutofillSuggestionTriggerSource trigger_source) {
-  return client_->ShouldTriggerPopup(trigger_field, trigger_source);
-}
-
-bool ComposeManagerImpl::HasSavedState(
-    const autofill::FieldGlobalId& trigger_field_id) {
-  // State is saved as a ComposeSession in the ComposeClient. A user can resume
-  // where they left off in a field if the ComposeClient has a ComposeSession
-  // for that field.
-  return client_->HasSession(trigger_field_id);
-}
-
-void ComposeManagerImpl::OpenCompose(autofill::AutofillDriver& driver,
-                                     autofill::FormGlobalId form_id,
-                                     autofill::FieldGlobalId field_id,
+void ComposeManagerImpl::OpenCompose(AutofillDriver& driver,
+                                     FormGlobalId form_id,
+                                     FieldGlobalId field_id,
                                      UiEntryPoint entry_point) {
   if (entry_point == UiEntryPoint::kContextMenu) {
     client_->getPageUkmTracker()->MenuItemClicked();
@@ -79,9 +75,9 @@ void ComposeManagerImpl::OpenCompose(autofill::AutofillDriver& driver,
 }
 
 void ComposeManagerImpl::OpenComposeWithUpdatedSelection(
-    autofill::FieldGlobalId field_id,
+    FieldGlobalId field_id,
     compose::ComposeManagerImpl::UiEntryPoint ui_entry_point,
-    autofill::AutofillDriver* driver,
+    AutofillDriver* driver,
     const std::optional<autofill::FormData>& form_data) {
   if (!form_data) {
     compose::LogOpenComposeDialogResult(
@@ -126,9 +122,9 @@ void ComposeManagerImpl::OpenComposeWithUpdatedSelection(
 }
 
 void ComposeManagerImpl::OpenComposeWithFormData(
-    autofill::FieldGlobalId field_id,
+    FieldGlobalId field_id,
     compose::ComposeManagerImpl::UiEntryPoint ui_entry_point,
-    autofill::AutofillDriver* driver,
+    AutofillDriver* driver,
     const std::optional<autofill::FormData>& form_data) {
   if (!form_data) {
     compose::LogOpenComposeDialogResult(
@@ -164,6 +160,41 @@ void ComposeManagerImpl::OpenComposeWithFormFieldData(
     ComposeCallback callback) {
   client_->ShowComposeDialog(ui_entry_point, trigger_field,
                              popup_screen_location, std::move(callback));
+}
+
+std::optional<Suggestion> ComposeManagerImpl::GetSuggestion(
+    const autofill::FormFieldData& field,
+    AutofillSuggestionTriggerSource trigger_source) {
+  if (!client_->ShouldTriggerPopup(field, trigger_source)) {
+    return std::nullopt;
+  }
+  std::u16string suggestion_text;
+  std::u16string label_text;
+  PopupItemId popup_item_id = PopupItemId::kCompose;
+  // State is saved as a `ComposeSession` in the `ComposeClient`. A user can
+  // resume where they left off in a field if the `ComposeClient` has a
+  // `ComposeSession` for that field.
+  if (client_->HasSession(field.global_id())) {
+    // The nudge text indicates that the user can resume where they left off in
+    // the Compose dialog.
+    suggestion_text =
+        l10n_util::GetStringUTF16(IDS_COMPOSE_SUGGESTION_SAVED_TEXT);
+    label_text = l10n_util::GetStringUTF16(IDS_COMPOSE_SUGGESTION_SAVED_LABEL);
+    if (trigger_source ==
+        AutofillSuggestionTriggerSource::kComposeDialogLostFocus) {
+      popup_item_id = PopupItemId::kComposeSavedStateNotification;
+    }
+  } else {
+    // Text for a new Compose session.
+    suggestion_text =
+        l10n_util::GetStringUTF16(IDS_COMPOSE_SUGGESTION_MAIN_TEXT);
+    label_text = l10n_util::GetStringUTF16(IDS_COMPOSE_SUGGESTION_LABEL);
+  }
+  Suggestion suggestion(std::move(suggestion_text));
+  suggestion.labels = {{Suggestion::Text(std::move(label_text))}};
+  suggestion.popup_item_id = popup_item_id;
+  suggestion.icon = Suggestion::Icon::kPenSpark;
+  return suggestion;
 }
 
 }  // namespace compose

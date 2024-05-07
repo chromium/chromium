@@ -13,15 +13,19 @@
 #include "components/autofill/core/browser/mock_autofill_manager.h"
 #include "components/autofill/core/browser/test_autofill_client.h"
 #include "components/autofill/core/browser/test_autofill_driver.h"
+#include "components/autofill/core/browser/ui/popup_item_ids.h"
+#include "components/autofill/core/browser/ui/suggestion.h"
 #include "components/autofill/core/common/autofill_test_utils.h"
 #include "components/autofill/core/common/form_data.h"
 #include "components/compose/core/browser/compose_client.h"
 #include "components/compose/core/browser/compose_metrics.h"
+#include "components/strings/grit/components_strings.h"
 #include "components/ukm/test_ukm_recorder.h"
 #include "services/metrics/public/cpp/ukm_builders.h"
 #include "services/metrics/public/cpp/ukm_source_id.h"
 #include "testing/gmock/include/gmock/gmock.h"
 #include "testing/gtest/include/gtest/gtest.h"
+#include "ui/base/l10n/l10n_util.h"
 #include "url/gurl.h"
 
 using testing::_;
@@ -89,9 +93,24 @@ class ComposeManagerImplTest : public testing::Test {
             testing::Invoke([&](const autofill::FormFieldData& trigger_field) {
               last_form_field_to_client_ = trigger_field;
             })));
-
+    ON_CALL(mock_compose_client(), ShouldTriggerPopup)
+        .WillByDefault(testing::Return(true));
     compose_manager_impl_ =
         std::make_unique<compose::ComposeManagerImpl>(&mock_compose_client());
+  }
+
+  // Helper method to retrieve compose suggestions, if it exists.
+  // `has_session` defines whether a previous session exists for the triggering
+  // field.
+  std::optional<autofill::Suggestion> GetSuggestion(
+      autofill::AutofillSuggestionTriggerSource trigger_source,
+      bool has_session) {
+    ON_CALL(mock_compose_client(), HasSession)
+        .WillByDefault(testing::Return(has_session));
+    return compose_manager_impl().GetSuggestion(
+        autofill::test::CreateTestFormField(
+            "label0", "name0", "value0", autofill::FormControlType::kTextArea),
+        trigger_source);
   }
 
   void SimulateComposeSessionEnd() { page_ukm_tracker_.reset(); }
@@ -142,6 +161,63 @@ class ComposeManagerImplTest : public testing::Test {
   base::HistogramTester histogram_tester_;
   std::unique_ptr<compose::ComposeManagerImpl> compose_manager_impl_;
 };
+
+TEST_F(
+    ComposeManagerImplTest,
+    SuggestionGeneration_HasSession_ComposeLostFocus_ApplyExpectedTextAndLabel) {
+  std::optional<autofill::Suggestion> suggestion = GetSuggestion(
+      autofill::AutofillSuggestionTriggerSource::kComposeDialogLostFocus,
+      /*has_session=*/true);
+  ASSERT_TRUE(suggestion.has_value());
+  EXPECT_EQ(*suggestion,
+            autofill::Suggestion(
+                l10n_util::GetStringUTF8(IDS_COMPOSE_SUGGESTION_SAVED_TEXT),
+                {{autofill::Suggestion::Text(l10n_util::GetStringUTF16(
+                    IDS_COMPOSE_SUGGESTION_SAVED_LABEL))}},
+                autofill::Suggestion::Icon::kPenSpark,
+                autofill::PopupItemId::kComposeSavedStateNotification));
+}
+
+TEST_F(
+    ComposeManagerImplTest,
+    SuggestionGeneration_HasSession_ControlElementClicked_ApplyExpectedTextAndLabel) {
+  std::optional<autofill::Suggestion> suggestion = GetSuggestion(
+      autofill::AutofillSuggestionTriggerSource::kFormControlElementClicked,
+      /*has_session=*/true);
+  ASSERT_TRUE(suggestion.has_value());
+  EXPECT_EQ(*suggestion,
+            autofill::Suggestion(
+                l10n_util::GetStringUTF8(IDS_COMPOSE_SUGGESTION_SAVED_TEXT),
+                {{autofill::Suggestion::Text(l10n_util::GetStringUTF16(
+                    IDS_COMPOSE_SUGGESTION_SAVED_LABEL))}},
+                autofill::Suggestion::Icon::kPenSpark,
+                autofill::PopupItemId::kCompose));
+}
+
+TEST_F(ComposeManagerImplTest,
+       SuggestionGeneration_DoesNotHaveSession_ApplyExpectedTextAndLabel) {
+  std::optional<autofill::Suggestion> suggestion = GetSuggestion(
+      autofill::AutofillSuggestionTriggerSource::kFormControlElementClicked,
+      /*has_session=*/false);
+  ASSERT_TRUE(suggestion.has_value());
+  EXPECT_EQ(*suggestion,
+            autofill::Suggestion(
+                l10n_util::GetStringUTF8(IDS_COMPOSE_SUGGESTION_MAIN_TEXT),
+                {{autofill::Suggestion::Text(
+                    l10n_util::GetStringUTF16(IDS_COMPOSE_SUGGESTION_LABEL))}},
+                autofill::Suggestion::Icon::kPenSpark,
+                autofill::PopupItemId::kCompose));
+}
+
+TEST_F(ComposeManagerImplTest,
+       SuggestionGeneration_ShouldNotTriggerPopup_NoSuggestionReturned) {
+  ON_CALL(mock_compose_client(), ShouldTriggerPopup)
+      .WillByDefault(testing::Return(false));
+  std::optional<autofill::Suggestion> suggestion = GetSuggestion(
+      autofill::AutofillSuggestionTriggerSource::kFormControlElementClicked,
+      /*has_session=*/false);
+  EXPECT_FALSE(suggestion.has_value());
+}
 
 TEST_F(ComposeManagerImplTest, TestOpenCompose_Success) {
   // Creates a test form and use the 2nd field as the selected one.
