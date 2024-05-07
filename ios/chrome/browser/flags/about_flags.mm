@@ -252,6 +252,15 @@ const FeatureEntry::FeatureParam kContentPushNotificationsEnabledProvisional[] =
 const FeatureEntry::FeatureParam
     kContentPushNotificationsEnabledProvisionalBypass[] = {
         {kContentPushNotificationsExperimentType, "4"}};
+const FeatureEntry::FeatureParam
+    kContentPushNotificationsPromoRegistrationOnly[] = {
+        {kContentPushNotificationsExperimentType, "5"}};
+const FeatureEntry::FeatureParam
+    kContentPushNotificationsProvisionalRegistrationOnly[] = {
+        {kContentPushNotificationsExperimentType, "6"}};
+const FeatureEntry::FeatureParam
+    kContentPushNotificationsSetUpListRegistrationOnly[] = {
+        {kContentPushNotificationsExperimentType, "7"}};
 
 const FeatureEntry::FeatureVariation kContentPushNotificationsVariations[] = {
     {"Promo", kContentPushNotificationsEnabledPromo,
@@ -262,7 +271,15 @@ const FeatureEntry::FeatureVariation kContentPushNotificationsVariations[] = {
      std::size(kContentPushNotificationsEnabledProvisional), nullptr},
     {"Provisional Ignore Conditions",
      kContentPushNotificationsEnabledProvisionalBypass,
-     std::size(kContentPushNotificationsEnabledProvisionalBypass), nullptr}};
+     std::size(kContentPushNotificationsEnabledProvisionalBypass), nullptr},
+    {"Promo Registeration Only", kContentPushNotificationsPromoRegistrationOnly,
+     std::size(kContentPushNotificationsPromoRegistrationOnly), nullptr},
+    {"Provisional Notification Registeration Only",
+     kContentPushNotificationsProvisionalRegistrationOnly,
+     std::size(kContentPushNotificationsProvisionalRegistrationOnly), nullptr},
+    {"Set up list Registeration Only",
+     kContentPushNotificationsSetUpListRegistrationOnly,
+     std::size(kContentPushNotificationsSetUpListRegistrationOnly), nullptr}};
 
 const FeatureEntry::FeatureParam kFeedHeaderSettingDisabledStickyHeader[] = {
     {kDisableStickyHeaderForFollowingFeed, "true"}};

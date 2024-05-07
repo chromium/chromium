@@ -504,6 +504,18 @@ bool IsContentPushNotificationsProvisionalEnabled();
 // and the time based conditions should be ignored.
 bool IsContentPushNotificationsProvisionalBypass();
 
+// YES when the Content Push Notifications Promo is registered with no UI
+// change.
+bool IsContentPushNotificationsPromoRegistrationOnly();
+
+// YES when the Content Push Notifications Provisional is registered with no UI
+// change.
+bool IsContentPushNotificationsProvisionalRegistrationOnly();
+
+// YES when the Content Push Notifications Set Up List is registered with no UI
+// change.
+bool IsContentPushNotificationsSetUpListRegistrationOnly();
+
 // Returns true when the IOSLargeFakebox feature is enabled.
 bool IsIOSLargeFakeboxEnabled();
 

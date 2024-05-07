@@ -647,6 +647,21 @@ bool IsContentPushNotificationsProvisionalBypass() {
           NotificationsExperimentTypeProvisionalBypass);
 }
 
+bool IsContentPushNotificationsPromoRegistrationOnly() {
+  return (ContentNotificationsExperimentTypeEnabled() ==
+          NotificationsExperimentTypePromoRegistrationOnly);
+}
+
+bool IsContentPushNotificationsProvisionalRegistrationOnly() {
+  return (ContentNotificationsExperimentTypeEnabled() ==
+          NotificationsExperimentTypeProvisionalRegistrationOnly);
+}
+
+bool IsContentPushNotificationsSetUpListRegistrationOnly() {
+  return (ContentNotificationsExperimentTypeEnabled() ==
+          NotificationsExperimentTypeSetUpListsRegistrationOnly);
+}
+
 bool IsIOSLargeFakeboxEnabled() {
   return base::FeatureList::IsEnabled(kIOSLargeFakebox);
 }
