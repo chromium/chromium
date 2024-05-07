@@ -1,7 +1,9 @@
 include_rules = [
   "+ash/strings/grit/ash_strings.h",
   "+chromeos/dbus/power_manager/power_supply_properties.pb.h",
+  "+chromeos/dbus/power",
   "+chromeos/ash/services/cros_healthd/public/mojom/cros_healthd_probe.mojom.h",
+  "+chromeos/ash/services/cros_healthd/public/cpp",
   "+ui/base/l10n/time_format.h",
   "+ui/base/l10n/l10n_util.h",
 ]
