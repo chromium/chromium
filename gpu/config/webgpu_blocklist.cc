@@ -34,7 +34,10 @@ const base::FeatureParam<std::string> kAdapterBlockList{
 
 bool IsWebGPUAdapterBlocklisted(const wgpu::Adapter& adapter) {
 #if BUILDFLAG(USE_DAWN)
-  return IsWebGPUAdapterBlocklisted(adapter, kAdapterBlockList.Get());
+  return IsWebGPUAdapterBlocklisted(
+      adapter, {
+                   .blocklist_string = kAdapterBlockList.Get(),
+               });
 #else
   return true;
 #endif

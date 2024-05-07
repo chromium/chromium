@@ -25,14 +25,14 @@ namespace gpu {
 namespace detail {
 
 bool IsWebGPUAdapterBlocklisted(const wgpu::AdapterProperties& properties,
-                                const std::string& blocklist_string) {
+                                const WebGPUBlocklistOptions& options) {
+  WebGPUBlocklistReason reason = WebGPUBlocklistReason::None;
 #if BUILDFLAG(IS_MAC)
   constexpr uint32_t kAMDVendorID = 0x1002;
-  // Blocklisted due to https://crbug.com/tint/1094
   if (base::mac::MacOSMajorVersion() < 13 &&
       properties.vendorID == kAMDVendorID &&
       properties.backendType == wgpu::BackendType::Metal) {
-    return true;
+    reason = reason | WebGPUBlocklistReason::DynamicArrayIndexInStruct;
   }
 #endif
 
@@ -40,53 +40,46 @@ bool IsWebGPUAdapterBlocklisted(const wgpu::AdapterProperties& properties,
 #if defined(ARCH_CPU_X86)
     constexpr uint32_t kNVIDIAVendorID = 0x10de;
     if (properties.vendorID == kNVIDIAVendorID) {
-      // Blocklisted due to https://crbug.com/dawn/1196
-      return true;
+      reason = reason | WebGPUBlocklistReason::IndirectComputeRootConstants;
     }
 #endif  // defined(ARCH_CPU_X86)
 #if defined(ARCH_CPU_ARM_FAMILY)
-    // Blocklisted due to https://crbug.com/dawn/884
-    return true;
+    reason = reason | WebGPUBlocklistReason::WindowsARM;
 #endif  // defined(ARCH_CPU_ARM_FAMILY)
   }
 
 #if BUILDFLAG(IS_ANDROID)
-  // Blocklist the OpenGLES backend on Android for now.
   if (properties.backendType == wgpu::BackendType::OpenGLES) {
-    return true;
+    reason = reason | WebGPUBlocklistReason::AndroidGLES;
   }
 
   constexpr uint32_t kARMVendorID = 0x13B5;
   constexpr uint32_t kQualcommVendorID = 0x5143;
-
   const auto* build_info = base::android::BuildInfo::GetInstance();
   // Only Android 12 with an ARM or Qualcomm GPU is enabled for initially.
-  // Other OS versions and GPU vendors may be fine, but have not had sufficient
-  // testing yet.
+  // Other OS versions and GPU vendors may be fine, but have not had
+  // sufficient testing yet.
   if (build_info->sdk_int() < base::android::SDK_VERSION_S ||
       (properties.vendorID != kARMVendorID &&
        properties.vendorID != kQualcommVendorID)) {
-    return true;
+    reason = reason | WebGPUBlocklistReason::AndroidLimitedSupport;
   }
+
 #endif  // BUILDFLAG(IS_ANDROID)
 
 #if BUILDFLAG(IS_CHROMEOS)
-  // Blocklist WebGPU on this GPU. See b/331922614.
   constexpr uint32_t kAMDVendorID = 0x1002;
   if (properties.vendorID == kAMDVendorID && properties.deviceID == 0x98e4) {
-    return true;
+    reason = reason | WebGPUBlocklistReason::AMDMissingDrmFormatModifier;
   }
 #endif
 
-  // TODO(crbug.com/40057808): SwiftShader and CPU adapters are blocked until
-  // fully tested.
   if (properties.adapterType == wgpu::AdapterType::CPU) {
-    return true;
+    reason = reason | WebGPUBlocklistReason::CPUAdapter;
   }
 
-  // TODO(dawn:1705): d3d11 is not full implemented yet.
   if (properties.backendType == wgpu::BackendType::D3D11) {
-    return true;
+    reason = reason | WebGPUBlocklistReason::D3D11;
   }
 
   for (auto* chain = properties.nextInChain; chain != nullptr;
@@ -96,8 +89,7 @@ bool IsWebGPUAdapterBlocklisted(const wgpu::AdapterProperties& properties,
 #if defined(ARCH_CPU_X86)
         if (static_cast<const wgpu::AdapterPropertiesD3D*>(chain)
                 ->shaderModel >= 60) {
-          // Blocklisted due to https://crbug.com/tint/1753
-          return true;
+          reason = reason | WebGPUBlocklistReason::Consteval22ndBit;
         }
 #endif  // defined(ARCH_CPU_X86)
         break;
@@ -112,8 +104,9 @@ bool IsWebGPUAdapterBlocklisted(const wgpu::AdapterProperties& properties,
     return o.str();
   };
 
-  auto blocked_patterns = base::SplitString(
-      blocklist_string, "|", base::TRIM_WHITESPACE, base::SPLIT_WANT_ALL);
+  auto blocked_patterns =
+      base::SplitString(options.blocklist_string, "|", base::TRIM_WHITESPACE,
+                        base::SPLIT_WANT_ALL);
 
   for (const auto& blocked_pattern : blocked_patterns) {
     std::vector<std::string> segments = base::SplitString(
@@ -144,15 +137,15 @@ bool IsWebGPUAdapterBlocklisted(const wgpu::AdapterProperties& properties,
     }
 
     // Adapter is blocked.
-    return true;
+    reason = reason | WebGPUBlocklistReason::StringPattern;
   }
-  return false;
+  return (~options.ignores & reason) != WebGPUBlocklistReason::None;
 }
 
 }  // namespace detail
 
 bool IsWebGPUAdapterBlocklisted(const wgpu::Adapter& adapter,
-                                const std::string& blocklist_string) {
+                                WebGPUBlocklistOptions options) {
   wgpu::AdapterProperties properties;
   wgpu::AdapterPropertiesD3D d3dProperties;
   if (adapter.HasFeature(wgpu::FeatureName::AdapterPropertiesD3D)) {
@@ -160,7 +153,7 @@ bool IsWebGPUAdapterBlocklisted(const wgpu::Adapter& adapter,
   }
   adapter.GetProperties(&properties);
 
-  return detail::IsWebGPUAdapterBlocklisted(properties, blocklist_string);
+  return detail::IsWebGPUAdapterBlocklisted(properties, options);
 }
 
 }  // namespace gpu
