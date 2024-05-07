@@ -8,7 +8,7 @@
 #include "components/favicon/core/large_icon_service.h"
 #include "components/favicon_base/favicon_callback.h"
 #include "testing/gmock/include/gmock/gmock.h"
-#include "ui/gfx/image/image_skia.h"
+#include "third_party/skia/include/core/SkBitmap.h"
 #include "url/gurl.h"
 
 class MockLargeIconService : public favicon::LargeIconService {
@@ -21,7 +21,7 @@ class MockLargeIconService : public favicon::LargeIconService {
 
   void StoreIconInCache();
 
-  gfx::ImageSkia favicon() const { return favicon_; }
+  SkBitmap favicon() const { return favicon_; }
 
   // LargeIconService overrides.
   MOCK_METHOD(void,
@@ -79,7 +79,7 @@ class MockLargeIconService : public favicon::LargeIconService {
   const GURL kIconUrl = GURL("https://www.example.com/icon");
 
  private:
-  gfx::ImageSkia favicon_;
+  SkBitmap favicon_;
 };
 
 #endif  // CHROME_BROWSER_SUPERVISED_USER_CHROMEOS_MOCK_LARGE_ICON_SERVICE_H_

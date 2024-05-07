@@ -134,7 +134,10 @@ void SupervisedUserWebContentHandlerImpl::RequestLocalApproval(
   // across platforms.
   parent_access->GetWebsiteParentApproval(
       target_url.GetWithEmptyPath(), child_display_name,
-      favicon_handler_->GetFaviconOrFallback(),
+      // Receiver does not need multi-resolution image. Pass single-resolution
+      // ImageSkia for compatibility with mojo interface.
+      gfx::ImageSkia::CreateFrom1xBitmap(
+          favicon_handler_->GetFaviconOrFallback()),
       base::BindOnce(
           &SupervisedUserWebContentHandlerImpl::OnLocalApprovalRequestCompleted,
           weak_ptr_factory_.GetWeakPtr(), std::ref(*settings_service),
