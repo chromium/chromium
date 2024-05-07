@@ -1727,7 +1727,7 @@ chromium-metrics-reviews@google.com.
 
 <histogram name="NewTabPage.SearchResumptionModule.NotShown"
     enum="SearchResumptionModule.ModuleNotShownReason"
-    expires_after="2024-05-07">
+    expires_after="2025-01-31">
   <owner>hanxi@chromium.org</owner>
   <owner>xinyiji@chromium.org</owner>
   <summary>
@@ -1738,7 +1738,7 @@ chromium-metrics-reviews@google.com.
 </histogram>
 
 <histogram name="NewTabPage.SearchResumptionModule.Show"
-    enum="SearchResumptionModule.ModuleShowStatus" expires_after="2024-05-07">
+    enum="SearchResumptionModule.ModuleShowStatus" expires_after="2025-01-31">
   <owner>hanxi@chromium.org</owner>
   <owner>xinyiji@chromium.org</owner>
   <summary>
@@ -1749,7 +1749,7 @@ chromium-metrics-reviews@google.com.
 </histogram>
 
 <histogram name="NewTabPage.SearchResumptionModule.Show.Cached"
-    enum="SearchResumptionModule.ModuleShowStatus" expires_after="2024-05-07">
+    enum="SearchResumptionModule.ModuleShowStatus" expires_after="2025-01-31">
   <owner>hanxi@chromium.org</owner>
   <owner>xinyiji@chromium.org</owner>
   <summary>

@@ -321,7 +321,7 @@ chromium-metrics-reviews@google.com.
 
 <histogram
     name="MagicStack.Clank.{ModuleDelegateHost}.Module.ProfileReadyDelayMs"
-    units="ms" expires_after="2024-06-20">
+    units="ms" expires_after="2024-10-28">
   <owner>hanxi@chromium.org</owner>
   <owner>xinyiji@chromium.org</owner>
   <summary>
