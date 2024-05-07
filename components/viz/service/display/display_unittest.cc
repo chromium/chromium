@@ -2092,7 +2092,7 @@ TEST_F(SkiaDelegatedInkRendererTest, DrawTrailWhenMetadataIsCloseEnough) {
       gfx::PointF(80.f, 70.f), timestamp2 + base::Milliseconds(8), kPointerId);
 
   gfx::DelegatedInkMetadata metadata(
-      gfx::PointF(point.x() - 0.03f, point.y() + 0.03f), 45.f, SK_ColorBLACK,
+      gfx::PointF(point.x() - 1.0f, point.y() - 1.0f), 45.f, SK_ColorBLACK,
       timestamp, gfx::RectF(0, 0, 100, 100), base::TimeTicks::Now(),
       /*hovering*/ false);
   SendMetadata(metadata);
@@ -2107,7 +2107,7 @@ TEST_F(SkiaDelegatedInkRendererTest, DrawTrailWhenMetadataIsCloseEnough) {
   // kEpsilon value to confirm that if it gets too far away we won't use it for
   // drawing.
   metadata = gfx::DelegatedInkMetadata(
-      gfx::PointF(point2.x() - 0.03f, point2.y() + 0.04f), 45.f, SK_ColorBLACK,
+      gfx::PointF(point2.x() - 1.01f, point2.y() - 1.0f), 45.f, SK_ColorBLACK,
       timestamp2, gfx::RectF(0, 0, 100, 100), base::TimeTicks::Now(),
       /*hovering*/ false);
   SendMetadata(metadata);
