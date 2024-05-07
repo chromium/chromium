@@ -31,7 +31,8 @@ ChangePinControllerImpl::ChangePinControllerImpl(
   }
   Profile* profile =
       Profile::FromBrowserContext(web_contents->GetBrowserContext());
-  enclave_manager_ = EnclaveManagerFactory::GetForProfile(profile);
+  enclave_manager_ =
+      EnclaveManagerFactory::GetAsEnclaveManagerForProfile(profile);
   sync_service_ = SyncServiceFactory::IsSyncAllowed(profile)
                       ? SyncServiceFactory::GetForProfile(profile)
                       : nullptr;

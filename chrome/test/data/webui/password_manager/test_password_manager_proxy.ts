@@ -26,6 +26,7 @@ export class TestPasswordManagerProxy extends TestBrowserProxy implements
     passwords: chrome.passwordsPrivate.PasswordUiEntry[],
     isPasswordManagerPinAvailable: boolean,
     changePasswordManagerPinSuccesful: boolean|null,
+    disconnectCloudAuthenticatorSuccessful: boolean|null,
   };
 
   listeners: {
@@ -57,6 +58,7 @@ export class TestPasswordManagerProxy extends TestBrowserProxy implements
       'changeCredential',
       'changePasswordManagerPin',
       'continueImport',
+      'disconnectCloudAuthenticator',
       'dismissSafetyHubPasswordMenuNotification',
       'exportPasswords',
       'extendAuthValidity',
@@ -105,6 +107,7 @@ export class TestPasswordManagerProxy extends TestBrowserProxy implements
       passwords: [],
       isPasswordManagerPinAvailable: false,
       changePasswordManagerPinSuccesful: null,
+      disconnectCloudAuthenticatorSuccessful: null,
     };
 
     // Holds listeners so they can be called when needed.
@@ -394,5 +397,13 @@ export class TestPasswordManagerProxy extends TestBrowserProxy implements
   isPasswordManagerPinAvailable(): Promise<boolean> {
     this.methodCalled('isPasswordManagerPinAvailable');
     return Promise.resolve(this.data.isPasswordManagerPinAvailable);
+  }
+
+  disconnectCloudAuthenticator(): Promise<boolean> {
+    this.methodCalled('disconnectCloudAuthenticator');
+    if (this.data.disconnectCloudAuthenticatorSuccessful !== null) {
+      return Promise.resolve(this.data.disconnectCloudAuthenticatorSuccessful);
+    }
+    return Promise.reject(new Error());
   }
 }

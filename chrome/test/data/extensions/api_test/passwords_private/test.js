@@ -745,6 +745,7 @@ var availableTests = [
       chrome.test.succeed();
     });
   },
+
   function isPasswordManagerPinAvailable() {
     var callback = function(available) {
       chrome.test.assertFalse(available);
@@ -752,6 +753,14 @@ var availableTests = [
     };
 
     chrome.passwordsPrivate.isPasswordManagerPinAvailable(callback);
+  },
+
+  function disconnectCloudAuthenticator() {
+    chrome.passwordsPrivate.disconnectCloudAuthenticator(success => {
+      chrome.test.assertFalse(success);
+      chrome.test.assertNoLastError();
+      chrome.test.succeed();
+    });
   }
 ];
 

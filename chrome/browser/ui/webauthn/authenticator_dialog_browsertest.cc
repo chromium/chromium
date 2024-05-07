@@ -983,14 +983,14 @@ document.addEventListener('DOMContentLoaded', function() {
 class QuitBrowserWhenKeysStored : public EnclaveManager::Observer {
  public:
   explicit QuitBrowserWhenKeysStored(Browser* browser) : browser_(browser) {
-    EnclaveManagerFactory::GetForProfile(browser_->profile())
+    EnclaveManagerFactory::GetAsEnclaveManagerForProfile(browser_->profile())
         ->AddObserver(this);
   }
 
   // EnclaveManager::Observer
   void OnKeysStored() override {
     LOG(INFO) << "QuitBrowserWhenKeysStored::OnKeysStored";
-    EnclaveManagerFactory::GetForProfile(browser_->profile())
+    EnclaveManagerFactory::GetAsEnclaveManagerForProfile(browser_->profile())
         ->RemoveObserver(this);
     browser_ = nullptr;
 

@@ -445,6 +445,13 @@ bool TestPasswordsPrivateDelegate::IsPasswordManagerPinAvailable(
   return false;
 }
 
+void TestPasswordsPrivateDelegate::DisconnectCloudAuthenticator(
+    content::WebContents* web_contents,
+    base::OnceCallback<void(bool)> success_callback) {
+  disconnect_cloud_authenticator_called_ = true;
+  std::move(success_callback).Run(false);
+}
+
 base::WeakPtr<PasswordsPrivateDelegate>
 TestPasswordsPrivateDelegate::AsWeakPtr() {
   return weak_ptr_factory_.GetWeakPtr();

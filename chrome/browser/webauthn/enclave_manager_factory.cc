@@ -8,14 +8,20 @@
 #include "chrome/browser/profiles/profile.h"
 #include "chrome/browser/signin/identity_manager_factory.h"
 #include "chrome/browser/webauthn/enclave_manager.h"
+#include "chrome/browser/webauthn/enclave_manager_interface.h"
 #include "content/public/browser/storage_partition.h"
 
 network::SharedURLLoaderFactory* g_url_loader_factory_test_override;
 
-// static
-EnclaveManager* EnclaveManagerFactory::GetForProfile(Profile* profile) {
-  return static_cast<EnclaveManager*>(
+EnclaveManagerInterface* EnclaveManagerFactory::GetForProfile(
+    Profile* profile) {
+  return static_cast<EnclaveManagerInterface*>(
       GetInstance()->GetServiceForBrowserContext(profile, /*create=*/true));
+}
+
+EnclaveManager* EnclaveManagerFactory::GetAsEnclaveManagerForProfile(
+    Profile* profile) {
+  return static_cast<EnclaveManager*>(GetForProfile(profile));
 }
 
 // static

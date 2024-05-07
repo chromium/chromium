@@ -100,8 +100,12 @@ class TestPasswordsPrivateDelegate : public PasswordsPrivateDelegate {
   void ChangePasswordManagerPin(
       content::WebContents* web_contents,
       base::OnceCallback<void(bool)> success_callback) override;
+  void DisconnectCloudAuthenticator(
+      content::WebContents* web_contents,
+      base::OnceCallback<void(bool)> success_callback) override;
   bool IsPasswordManagerPinAvailable(
       content::WebContents* web_contents) override;
+
   base::WeakPtr<PasswordsPrivateDelegate> AsWeakPtr() override;
 
   void SetProfile(Profile* profile);
@@ -145,6 +149,10 @@ class TestPasswordsPrivateDelegate : public PasswordsPrivateDelegate {
 
   bool get_change_password_manager_pin_called() const {
     return change_password_manager_pin_called_;
+  }
+
+  bool get_disconnect_cloud_authenticator_called() const {
+    return disconnect_cloud_authenticator_called_;
   }
 
  protected:
@@ -204,11 +212,14 @@ class TestPasswordsPrivateDelegate : public PasswordsPrivateDelegate {
   // Used to track whether shortcut creation dialog was shown.
   bool add_shortcut_dialog_shown_ = false;
 
-  // used to track whether the exported file was shown in shell.
+  // Used to track whether the exported file was shown in shell.
   bool exported_file_shown_in_shell_ = false;
 
-  // used for checking whether `ChangePasswordManagerPin` is called.
+  // Used for checking whether `ChangePasswordManagerPin` is called.
   bool change_password_manager_pin_called_ = false;
+
+  // Used to track whether `DisconnectCloudAuthenticator` was called.
+  bool disconnect_cloud_authenticator_called_ = false;
 
   base::WeakPtrFactory<TestPasswordsPrivateDelegate> weak_ptr_factory_{this};
 };

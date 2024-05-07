@@ -218,7 +218,8 @@ void TrustedVaultEncryptionKeysTabHelper::CreateForWebContents(
   EnclaveManager* enclave_manager = nullptr;
 #if !BUILDFLAG(IS_ANDROID)
   if (base::FeatureList::IsEnabled(device::kWebAuthnEnclaveAuthenticator)) {
-    enclave_manager = EnclaveManagerFactory::GetForProfile(profile);
+    enclave_manager =
+        EnclaveManagerFactory::GetAsEnclaveManagerForProfile(profile);
   }
 #endif
 

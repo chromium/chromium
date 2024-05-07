@@ -168,6 +168,10 @@ class PasswordsPrivateApiTest : public ExtensionApiTest {
     return test_delegate_->get_change_password_manager_pin_called();
   }
 
+  bool get_disconnect_cloud_authenticator_called() const {
+    return test_delegate_->get_disconnect_cloud_authenticator_called();
+  }
+
  private:
   scoped_refptr<TestPasswordsPrivateDelegate> test_delegate_;
 };
@@ -442,6 +446,11 @@ IN_PROC_BROWSER_TEST_F(PasswordsPrivateApiTest, ChangePasswordManagerPin) {
 
 IN_PROC_BROWSER_TEST_F(PasswordsPrivateApiTest, IsPasswordManagerPinAvailable) {
   EXPECT_TRUE(RunPasswordsSubtest("isPasswordManagerPinAvailable"));
+}
+
+IN_PROC_BROWSER_TEST_F(PasswordsPrivateApiTest, DisconnectCloudAuthenticator) {
+  EXPECT_TRUE(RunPasswordsSubtest("disconnectCloudAuthenticator"));
+  EXPECT_TRUE(get_disconnect_cloud_authenticator_called());
 }
 
 }  // namespace extensions

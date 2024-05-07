@@ -349,7 +349,7 @@ GPMEnclaveController::GPMEnclaveController(
       rp_id_(rp_id),
       request_type_(request_type),
       user_verification_requirement_(user_verification_requirement),
-      enclave_manager_(EnclaveManagerFactory::GetForProfile(
+      enclave_manager_(EnclaveManagerFactory::GetAsEnclaveManagerForProfile(
           Profile::FromBrowserContext(render_frame_host->GetBrowserContext()))),
       model_(model),
       vault_connection_override_(std::move(optional_connection)),

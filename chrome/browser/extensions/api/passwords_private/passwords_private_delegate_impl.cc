@@ -45,6 +45,8 @@
 #include "chrome/browser/web_applications/web_app_install_params.h"
 #include "chrome/browser/web_applications/web_app_provider.h"
 #include "chrome/browser/webauthn/change_pin_controller.h"
+#include "chrome/browser/webauthn/enclave_manager.h"
+#include "chrome/browser/webauthn/enclave_manager_factory.h"
 #include "chrome/browser/webauthn/passkey_model_factory.h"
 #include "chrome/common/channel_info.h"
 #include "chrome/common/extensions/api/passwords_private.h"
@@ -952,6 +954,17 @@ bool PasswordsPrivateDelegateImpl::IsPasswordManagerPinAvailable(
     return false;
   }
   return controller->IsChangePinFlowAvailable();
+}
+
+void PasswordsPrivateDelegateImpl::DisconnectCloudAuthenticator(
+    content::WebContents* web_contents,
+    base::OnceCallback<void(bool)> success_callback) {
+  EnclaveManagerInterface* enclave_manager =
+      EnclaveManagerFactory::GetForProfile(
+          Profile::FromBrowserContext(web_contents->GetBrowserContext()));
+  if (enclave_manager) {
+    enclave_manager->Unenroll(std::move(success_callback));
+  }
 }
 
 base::WeakPtr<PasswordsPrivateDelegate>

@@ -685,7 +685,8 @@ IN_PROC_BROWSER_TEST_F(
   base::HistogramTester histogram_tester;
 
   EnclaveManager* const enclave_manager =
-      EnclaveManagerFactory::GetForProfile(browser()->profile());
+      EnclaveManagerFactory::GetAsEnclaveManagerForProfile(
+          browser()->profile());
   const unsigned initial_count = enclave_manager->store_keys_count();
 
   const std::vector<uint8_t> kEncryptionKey = {7};

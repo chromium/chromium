@@ -926,7 +926,7 @@ IN_PROC_BROWSER_TEST_F(EnclaveAuthenticatorWithPinBrowserTest,
 
   model_observer()->SetStepToObserve(
       AuthenticatorRequestDialogController::Step::kGPMCreatePin);
-  EnclaveManagerFactory::GetForProfile(browser()->profile())
+  EnclaveManagerFactory::GetAsEnclaveManagerForProfile(browser()->profile())
       ->StoreKeys(kGaiaId,
                   {std::vector<uint8_t>(std::begin(kSecurityDomainSecret),
                                         std::end(kSecurityDomainSecret))},
@@ -1048,7 +1048,7 @@ IN_PROC_BROWSER_TEST_F(EnclaveAuthenticatorWithPinBrowserTest,
   dialog_model()->OnTrustThisComputer();
   model_observer()->WaitForStep();
 
-  EnclaveManagerFactory::GetForProfile(browser()->profile())
+  EnclaveManagerFactory::GetAsEnclaveManagerForProfile(browser()->profile())
       ->StoreKeys(kGaiaId,
                   {std::vector<uint8_t>(std::begin(kSecurityDomainSecret),
                                         std::end(kSecurityDomainSecret))},
@@ -1110,7 +1110,7 @@ IN_PROC_BROWSER_TEST_F(EnclaveAuthenticatorWithPinBrowserTest,
 
   model_observer()->SetStepToObserve(
       AuthenticatorRequestDialogController::Step::kGPMCreatePin);
-  EnclaveManagerFactory::GetForProfile(browser()->profile())
+  EnclaveManagerFactory::GetAsEnclaveManagerForProfile(browser()->profile())
       ->StoreKeys(kGaiaId,
                   {std::vector<uint8_t>(std::begin(kSecurityDomainSecret),
                                         std::end(kSecurityDomainSecret))},
@@ -1168,7 +1168,7 @@ IN_PROC_BROWSER_TEST_F(EnclaveAuthenticatorWithPinBrowserTest,
 
   model_observer()->SetStepToObserve(
       AuthenticatorRequestDialogController::Step::kGPMCreatePin);
-  EnclaveManagerFactory::GetForProfile(browser()->profile())
+  EnclaveManagerFactory::GetAsEnclaveManagerForProfile(browser()->profile())
       ->StoreKeys(kGaiaId,
                   {std::vector<uint8_t>(std::begin(kSecurityDomainSecret),
                                         std::end(kSecurityDomainSecret))},
@@ -1353,10 +1353,12 @@ IN_PROC_BROWSER_TEST_F(EnclaveAuthenticatorWithPinBrowserTest,
 
   delegate_observer()->WaitForDelegateDestruction();
 
-  EnclaveManagerFactory::GetForProfile(browser()->profile())->ResetForTesting();
+  EnclaveManagerFactory::GetAsEnclaveManagerForProfile(browser()->profile())
+      ->ResetForTesting();
 
   EXPECT_EQ(
-      EnclaveManagerFactory::GetForProfile(browser()->profile())->is_loaded(),
+      EnclaveManagerFactory::GetAsEnclaveManagerForProfile(browser()->profile())
+          ->is_loaded(),
       false);
 
   // Checks that a following request goes straight to ready state.
@@ -1523,7 +1525,7 @@ IN_PROC_BROWSER_TEST_F(EnclaveAuthenticatorWithoutPinBrowserTest,
   dialog_model()->OnTrustThisComputer();
   model_observer()->WaitForStep();
 
-  EnclaveManagerFactory::GetForProfile(browser()->profile())
+  EnclaveManagerFactory::GetAsEnclaveManagerForProfile(browser()->profile())
       ->StoreKeys(kGaiaId,
                   {std::vector<uint8_t>(std::begin(kSecurityDomainSecret),
                                         std::end(kSecurityDomainSecret))},
@@ -1562,7 +1564,7 @@ IN_PROC_BROWSER_TEST_F(EnclaveAuthenticatorWithPinBrowserTest,
   dialog_model()->OnUserConfirmedPriorityMechanism();
   model_observer()->WaitForStep();
 
-  EnclaveManagerFactory::GetForProfile(browser()->profile())
+  EnclaveManagerFactory::GetAsEnclaveManagerForProfile(browser()->profile())
       ->StoreKeys(kGaiaId,
                   {std::vector<uint8_t>(std::begin(kSecurityDomainSecret),
                                         std::end(kSecurityDomainSecret))},
@@ -1839,9 +1841,10 @@ IN_PROC_BROWSER_TEST_F(EnclaveICloudRecoveryKeyTest, Recovery) {
   }
 
   // Unenroll the current device from the enclave.
-  EnclaveManagerFactory::GetForProfile(browser()->profile())
+  EnclaveManagerFactory::GetAsEnclaveManagerForProfile(browser()->profile())
       ->ClearRegistrationForTesting();
-  EnclaveManagerFactory::GetForProfile(browser()->profile())->ResetForTesting();
+  EnclaveManagerFactory::GetAsEnclaveManagerForProfile(browser()->profile())
+      ->ResetForTesting();
   // Expire any cache.
   clock_.Advance(base::Hours(10));
 
@@ -1884,7 +1887,7 @@ IN_PROC_BROWSER_TEST_F(EnclaveICloudRecoveryKeyTest, Recovery) {
     dialog_model()->OnTrustThisComputer();
     model_observer()->WaitForStep();
 
-    EnclaveManagerFactory::GetForProfile(browser()->profile())
+    EnclaveManagerFactory::GetAsEnclaveManagerForProfile(browser()->profile())
         ->StoreKeys(kGaiaId,
                     {std::vector<uint8_t>(std::begin(kSecurityDomainSecret),
                                           std::end(kSecurityDomainSecret))},
