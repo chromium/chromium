@@ -196,4 +196,8 @@ BASE_FEATURE(kMetricsBackfillAdjustmentHoldback,
              "MetricsBackfillAdjustmentHoldback",
              base::FEATURE_DISABLED_BY_DEFAULT);
 
+BASE_FEATURE(kNonBatchedCopySharedImage,
+             "NonBatchedCopySharedImage",
+             base::FEATURE_DISABLED_BY_DEFAULT);
+
 }  // namespace features

@@ -18,6 +18,7 @@
 #include "base/trace_event/trace_event.h"
 #include "build/build_config.h"
 #include "build/chromeos_buildflags.h"
+#include "cc/base/features.h"
 #include "cc/base/histograms.h"
 #include "cc/base/math_util.h"
 #include "components/viz/common/gpu/raster_context_provider.h"
@@ -460,32 +461,40 @@ gpu::SyncToken OneCopyRasterBufferProvider::CopyOnWorkerThread(
     }
   }
 
-  int bytes_per_row = viz::ResourceSizes::UncheckedWidthInBytes<int>(
-      rect_to_copy.width(), staging_buffer->format);
-  int chunk_size_in_rows =
-      std::max(1, max_bytes_per_copy_operation_ / bytes_per_row);
-  // Align chunk size to 4. Required to support compressed texture formats.
-  chunk_size_in_rows = MathUtil::UncheckedRoundUp(chunk_size_in_rows, 4);
-  int y = 0;
-  int height = rect_to_copy.height();
-  while (y < height) {
-    // Copy at most |chunk_size_in_rows|.
-    int rows_to_copy = std::min(chunk_size_in_rows, height - y);
-    DCHECK_GT(rows_to_copy, 0);
-
+  if (base::FeatureList::IsEnabled(features::kNonBatchedCopySharedImage)) {
     ri->CopySharedImage(
         staging_buffer->client_shared_image->mailbox(), shared_image->mailbox(),
-        texture_target, 0, y, 0, y, rect_to_copy.width(), rows_to_copy,
+        texture_target, 0, 0, 0, 0, rect_to_copy.width(), rect_to_copy.height(),
         false /* unpack_flip_y */, false /* unpack_premultiply_alpha */);
-    y += rows_to_copy;
+  } else {
+    int bytes_per_row = viz::ResourceSizes::UncheckedWidthInBytes<int>(
+        rect_to_copy.width(), staging_buffer->format);
+    int chunk_size_in_rows =
+        std::max(1, max_bytes_per_copy_operation_ / bytes_per_row);
+    // Align chunk size to 4. Required to support compressed texture formats.
+    chunk_size_in_rows = MathUtil::UncheckedRoundUp(chunk_size_in_rows, 4);
+    int y = 0;
+    int height = rect_to_copy.height();
+    while (y < height) {
+      // Copy at most |chunk_size_in_rows|.
+      int rows_to_copy = std::min(chunk_size_in_rows, height - y);
+      DCHECK_GT(rows_to_copy, 0);
 
-    // Increment |bytes_scheduled_since_last_flush_| by the amount of memory
-    // used for this copy operation.
-    bytes_scheduled_since_last_flush_ += rows_to_copy * bytes_per_row;
+      ri->CopySharedImage(staging_buffer->client_shared_image->mailbox(),
+                          shared_image->mailbox(), texture_target, 0, y, 0, y,
+                          rect_to_copy.width(), rows_to_copy,
+                          false /* unpack_flip_y */,
+                          false /* unpack_premultiply_alpha */);
+      y += rows_to_copy;
 
-    if (bytes_scheduled_since_last_flush_ >= max_bytes_per_copy_operation_) {
-      ri->ShallowFlushCHROMIUM();
-      bytes_scheduled_since_last_flush_ = 0;
+      // Increment |bytes_scheduled_since_last_flush_| by the amount of memory
+      // used for this copy operation.
+      bytes_scheduled_since_last_flush_ += rows_to_copy * bytes_per_row;
+
+      if (bytes_scheduled_since_last_flush_ >= max_bytes_per_copy_operation_) {
+        ri->ShallowFlushCHROMIUM();
+        bytes_scheduled_since_last_flush_ = 0;
+      }
     }
   }
 

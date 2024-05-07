@@ -178,6 +178,11 @@ CC_BASE_EXPORT BASE_DECLARE_FEATURE(kPaintWithGlobalToneMapFilter);
 // When enabled we will restore older FrameSequenceTracker sequence order
 // enforcing that can miss backfilled frames.
 CC_BASE_EXPORT BASE_DECLARE_FEATURE(kMetricsBackfillAdjustmentHoldback);
+
+// When enabled we will submit the 'CopySharedImage' in one call and not batch
+// it up into 4MiB increments.
+CC_BASE_EXPORT BASE_DECLARE_FEATURE(kNonBatchedCopySharedImage);
+
 }  // namespace features
 
 #endif  // CC_BASE_FEATURES_H_
