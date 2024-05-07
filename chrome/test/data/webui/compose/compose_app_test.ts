@@ -786,6 +786,10 @@ suite('ComposeApp', () => {
   });
 
   test('PartialResponseIsShown', async () => {
+    loadTimeData.overrideValues({
+      enableOnDeviceDogfoodFooter: true,
+    });
+
     // Make streaming work instantly.
     app.$.resultText.enableInstantStreamingForTesting();
 
