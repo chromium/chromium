@@ -397,6 +397,9 @@ base::expected<void, std::string> GraphBuilder::SerializeOperation(
     case mojom::Operation::Tag::kSoftmax:
       operator_offset = SerializeSoftmax(*op.get_softmax());
       break;
+    case mojom::Operation::Tag::kSoftplus:
+      operator_offset = SerializeSoftplus(*op.get_softplus());
+      break;
     case mojom::Operation::Tag::kSplit: {
       ASSIGN_OR_RETURN(operator_offset, SerializeSplit(*op.get_split()));
       break;
@@ -430,8 +433,6 @@ base::expected<void, std::string> GraphBuilder::SerializeOperation(
       return base::unexpected("lstm is not implemented");
     case mojom::Operation::Tag::kLstmCell:
       return base::unexpected("lstmCell is not implemented");
-    case mojom::Operation::Tag::kSoftplus:
-      return base::unexpected("softplus is not implemented");
     case mojom::Operation::Tag::kSoftsign:
       return base::unexpected("softsign is not implemented");
     case mojom::Operation::Tag::kTriangular:
@@ -1613,11 +1614,11 @@ auto GraphBuilder::SerializeReshape(uint64_t input_operand_id,
       /*new_shape=*/builder_.CreateVector<int32_t>(
           std::move(signed_output_dimensions)));
 
-  return SerializeUnaryOperation(
-      ::tflite::BuiltinOperator_RESHAPE,
-      operand_to_index_map_.at(input_operand_id),
-      operand_to_index_map_.at(output_operand_id),
-      ::tflite::BuiltinOptions_ReshapeOptions, reshape_options.Union());
+  return SerializeUnaryOperation(::tflite::BuiltinOperator_RESHAPE,
+                                 operand_to_index_map_.at(input_operand_id),
+                                 operand_to_index_map_.at(output_operand_id),
+                                 ::tflite::BuiltinOptions_ReshapeOptions,
+                                 reshape_options.Union());
 }
 
 auto GraphBuilder::SerializeSigmoid(const mojom::Sigmoid& sigmoid)
@@ -1685,6 +1686,41 @@ auto GraphBuilder::SerializeSoftmax(const mojom::Softmax& softmax)
       operand_to_index_map_.at(softmax.input_operand_id),
       operand_to_index_map_.at(softmax.output_operand_id),
       ::tflite::BuiltinOptions_SoftmaxOptions, softmax_options.Union());
+}
+
+auto GraphBuilder::SerializeSoftplus(const mojom::Softplus& softplus)
+    -> OperatorOffset {
+  // Emulate the softplus operation whose calculation follows the expression
+  // `ln(1 + exp(x))`.
+  const mojom::Operand& input_operand = GetOperand(softplus.input_operand_id);
+  CHECK(input_operand.data_type == mojom::Operand::DataType::kFloat16 ||
+        input_operand.data_type == mojom::Operand::DataType::kFloat32);
+  // The input shape has been validated to not overflow before creating tensor.
+  const auto signed_input_dimensions =
+      ToSignedDimensions(input_operand.dimensions);
+  CHECK(signed_input_dimensions.has_value());
+  const ::tflite::TensorType input_tensor_type =
+      MojoOperandTypeToTFLite(input_operand.data_type);
+  const int32_t output_tensor_index_of_exp =
+      SerializeTemporaryTensor(*signed_input_dimensions, input_tensor_type);
+  operators_.emplace_back(SerializeUnaryOperation(
+      ::tflite::BuiltinOperator_EXP,
+      operand_to_index_map_.at(softplus.input_operand_id),
+      output_tensor_index_of_exp));
+
+  // Add constant value `1` to the output tensor of element-wise exp operation.
+  const int32_t constant_tensor_index = SerializeTensorWithBuffer<float>(
+      /*buffer=*/std::array<float, 1>{1},
+      /*dimensions=*/{});
+  const int32_t output_tensor_index_of_add =
+      SerializeTemporaryTensor(*signed_input_dimensions, input_tensor_type);
+  operators_.emplace_back(SerializeBinaryOperation(
+      ::tflite::BuiltinOperator_ADD, constant_tensor_index,
+      output_tensor_index_of_exp, output_tensor_index_of_add));
+
+  return SerializeUnaryOperation(
+      ::tflite::BuiltinOperator_LOG, output_tensor_index_of_add,
+      operand_to_index_map_.at(softplus.output_operand_id));
 }
 
 auto GraphBuilder::SerializeSplit(const mojom::Split& split)
