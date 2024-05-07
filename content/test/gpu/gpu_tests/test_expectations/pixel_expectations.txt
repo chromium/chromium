@@ -346,6 +346,18 @@ crbug.com/41488897 [ android android-pixel-6 passthrough renderer-skia-gl graphi
 # Long-running test, can flakily time out on old/slow hardware.
 [ mac amd-0x679e ] Pixel_ReflectedDiv [ Slow ]
 
+# Mac Asan timeouts
+crbug.com/338200323 [ mac angle-opengl asan graphite-disabled intel-0x3e9b passthrough ] Pixel_WebGPUDisplayP3 [ Slow ]
+crbug.com/338200323 [ mac angle-opengl asan graphite-disabled intel-0x3e9b passthrough ] Pixel_WebGPUToDataURL [ Slow ]
+crbug.com/338200323 [ mac angle-metal asan intel-0x3e9b passthrough ] Pixel_WebGLSadCanvas [ Slow ]
+crbug.com/338200323 [ mac angle-metal asan intel-0x3e9b passthrough ] Pixel_OffscreenCanvasWebGLSoftwareCompositing [ Slow ]
+crbug.com/338200323 [ mac angle-metal asan intel-0x3e9b passthrough ] Pixel_OffscreenCanvasWebGLSoftwareCompositingWorker [ Slow ]
+crbug.com/338200323 [ mac angle-metal asan intel-0x3e9b passthrough ] Pixel_OffscreenCanvasTransferToImageBitmapSoftwareCompositing [ Slow ]
+crbug.com/338200323 [ mac angle-metal asan intel-0x3e9b passthrough ] Pixel_RepeatedWebGLTo2D_SoftwareCompositing [ Slow ]
+crbug.com/338200323 [ mac angle-metal asan intel-0x3e9b passthrough ] Pixel_Video_Context_Loss_VP9 [ Slow ]
+crbug.com/338200323 [ mac angle-metal asan intel-0x3e9b passthrough ] Pixel_Video_Context_Loss_MP4 [ Slow ]
+crbug.com/338200323 [ mac angle-metal asan intel-0x3e9b passthrough ] Pixel_WebGLContextRestored [ Slow ]
+
 ###################
 # Failures/Flakes #
 ###################
@@ -473,9 +485,6 @@ crbug.com/329235191 [ graphite-enabled qualcomm-0x41333430 target-cpu-64 win11 ]
 
 # Failures on Mac Asan with Graphite
 crbug.com/338071687 [ mac angle-metal asan graphite-enabled intel-0x3e9b passthrough ] Pixel_Canvas2DBlitText [ Failure ]
-
-# Mac Asan timeouts
-crbug.com/338200323 [ mac angle-opengl asan graphite-disabled intel-0x3e9b passthrough ] Pixel_WebGPUDisplayP3 [ Slow ]
 
 # Tab change tests failing to find foreground tabs
 crbug.com/338574386 [ mac angle-metal apple-angle-metal-renderer:-apple-m1 passthrough ] Pixel_Canvas2DTabSwitch [ RetryOnFailure ]
