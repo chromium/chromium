@@ -12,6 +12,7 @@
 #include "base/memory/weak_ptr.h"
 #include "chromeos/ash/components/audio/audio_device.h"
 #include "chromeos/ash/components/audio/audio_device_id.h"
+#include "chromeos/ash/components/audio/audio_device_metrics_handler.h"
 #include "chromeos/ash/components/audio/device_activate_type.h"
 #include "ui/message_center/message_center.h"
 
@@ -96,6 +97,7 @@ class COMPONENT_EXPORT(CHROMEOS_ASH_COMPONENTS_AUDIO)
   void HandleSwitchButtonClicked(
       const AudioDeviceList& devices_to_activate,
       SwitchToDeviceCallback switch_to_device_callback,
+      NotificationType notification_type,
       std::optional<int> button_index);
 
   // Checks if one audio input device and one audio output device belong to the
@@ -110,6 +112,9 @@ class COMPONENT_EXPORT(CHROMEOS_ASH_COMPONENTS_AUDIO)
       const AudioDeviceList& hotplug_output_devices,
       const std::optional<std::string>& active_input_device_name,
       const std::optional<std::string>& active_output_device_name);
+
+  // Handles firing of audio selection related metrics.
+  AudioDeviceMetricsHandler audio_device_metrics_handler_;
 
   base::WeakPtrFactory<AudioSelectionNotificationHandler> weak_ptr_factory_{
       this};

@@ -447,4 +447,37 @@ TEST_F(AudioDeviceMetricsHandlerTest, RecordExceptionRulesMet) {
   }
 }
 
+// Tests the audio selection notification events metrics are fired.
+TEST_F(AudioDeviceMetricsHandlerTest, NotificationEvents) {
+  for (int eventInt = static_cast<int>(
+           AudioDeviceMetricsHandler::AudioSelectionNotificationEvents::
+               kNotificationWithBothInputAndOutputDevicesShowsUp);
+       eventInt !=
+       static_cast<int>(AudioDeviceMetricsHandler::
+                            AudioSelectionNotificationEvents::kMaxValue);
+       eventInt++) {
+    AudioDeviceMetricsHandler::AudioSelectionNotificationEvents event =
+        static_cast<
+            AudioDeviceMetricsHandler::AudioSelectionNotificationEvents>(
+            eventInt);
+
+    // No histogram is recorded before firing.
+    histogram_tester().ExpectBucketCount(
+        AudioDeviceMetricsHandler::kAudioSelectionNotification,
+        /*sample=*/event,
+        /*expected_count=*/0);
+
+    audio_device_metrics_handler().RecordNotificationEvents(event);
+
+    // Histogram is recorded after firing.
+    histogram_tester().ExpectBucketCount(
+        AudioDeviceMetricsHandler::kAudioSelectionNotification,
+        /*sample=*/event,
+        /*expected_count=*/1);
+    histogram_tester().ExpectTotalCount(
+        AudioDeviceMetricsHandler::kAudioSelectionNotification,
+        /*expected_count=*/eventInt + 1);
+  }
+}
+
 }  // namespace ash

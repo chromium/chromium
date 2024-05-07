@@ -112,6 +112,17 @@ chromium-metrics-reviews@google.com.
              devices"/>
 </enum>
 
+<enum name="AudioSelectionNotificationEvents">
+  <int value="0" label="Both input+output notification shows up"/>
+  <int value="1" label="Input only notification shows up"/>
+  <int value="2" label="Output only notification shows up"/>
+  <int value="3" label="Multiple sources notification shows up"/>
+  <int value="4" label="Both input+output notification clicked"/>
+  <int value="5" label="Input only notification clicked"/>
+  <int value="6" label="Output only notification clicked"/>
+  <int value="7" label="Multiple sources notification clicked"/>
+</enum>
+
 </enums>
 
 </histogram-configuration>

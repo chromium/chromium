@@ -505,4 +505,10 @@ void AudioDeviceMetricsHandler::RecordExceptionRulesMet(
   base::UmaHistogramEnumeration(kAudioSelectionExceptionRuleMetrics, rule);
 }
 
+void AudioDeviceMetricsHandler::RecordNotificationEvents(
+    AudioSelectionNotificationEvents notification_event) {
+  base::UmaHistogramEnumeration(kAudioSelectionNotification,
+                                notification_event);
+}
+
 }  // namespace ash

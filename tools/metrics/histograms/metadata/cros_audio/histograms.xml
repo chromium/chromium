@@ -46,6 +46,18 @@ incoming reviews. Googlers can read more about this at go/gwsq-gerrit.
   </summary>
 </histogram>
 
+<histogram name="ChromeOS.AudioSelection.Notification"
+    enum="AudioSelectionNotificationEvents" expires_after="2025-03-31">
+  <owner>zhangwenyu@google.com</owner>
+  <owner>cros-peripherals@google.com</owner>
+  <summary>
+    Recorded when audio selection notification events described in
+    AudioSelectionNotificationEvents happen. For example, when a new input
+    device is connected for the first time, a notification with a switch button
+    shows up and allows users to quickly activate this input device.
+  </summary>
+</histogram>
+
 <histogram
     name="ChromeOS.AudioSelection.{AudioType}.ConsecutiveDevicesChangeTimeElapsed.{ChangeType}"
     units="seconds" expires_after="2025-02-25">

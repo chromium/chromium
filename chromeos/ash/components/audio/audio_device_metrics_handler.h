@@ -280,6 +280,12 @@ class COMPONENT_EXPORT(CHROMEOS_ASH_COMPONENTS_AUDIO)
   static constexpr char kAudioSelectionExceptionRuleMetrics[] =
       "ChromeOS.AudioSelection.ExceptionRulesMet";
 
+  // A histogram metric to record when audio selection notification events
+  // happen. Audio selection notification events are detailed in
+  // AudioSelectionNotificationEvents.
+  static constexpr char kAudioSelectionNotification[] =
+      "ChromeOS.AudioSelection.Notification";
+
   // A series of audio selection events used to record the audio selection
   // performance. Note that these values are persisted to histograms so existing
   // values should remain unchanged and new values should be added to the end.
@@ -366,6 +372,30 @@ class COMPONENT_EXPORT(CHROMEOS_ASH_COMPONENTS_AUDIO)
     kMaxValue = kOutputRule4UnplugDeviceCausesUnseenSet,
   };
 
+  // A series of audio selection notification events used to record the audio
+  // selection notification metrics. Note that these values are persisted to
+  // histograms so existing values should remain unchanged and new values should
+  // be added to the end.
+  enum class AudioSelectionNotificationEvents {
+    // Notification with single source both input and output devices shows up.
+    kNotificationWithBothInputAndOutputDevicesShowsUp = 0,
+    // Notification with single source only input device shows up.
+    kNotificationWithInputOnlyDeviceShowsUp = 1,
+    // Notification with single source only output device shows up.
+    kNotificationWithOutputOnlyDeviceShowsUp = 2,
+    // Notification with multiple sources shows up.
+    kNotificationWithMultipleSourcesDevicesShowsUp = 3,
+    // Notification with single source both input and output devices is clicked.
+    kNotificationWithBothInputAndOutputDevicesClicked = 4,
+    // Notification with single source only input device is clicked.
+    kNotificationWithInputOnlyDeviceClicked = 5,
+    // Notification with single source only output device is clicked.
+    kNotificationWithOutputOnlyDeviceClicked = 6,
+    // Notification with multiple sources is clicked.
+    kNotificationWithMultipleSourcesDevicesClicked = 7,
+    kMaxValue = kNotificationWithMultipleSourcesDevicesClicked,
+  };
+
   // Record the histogram of system decision of switching or not switching after
   // audio device is added or removed. Only record if there are more than one
   // available devices.
@@ -405,6 +435,10 @@ class COMPONENT_EXPORT(CHROMEOS_ASH_COMPONENTS_AUDIO)
 
   // Records when audio selection exception rules are met.
   void RecordExceptionRulesMet(AudioSelectionExceptionRules rule);
+
+  // Records when audio selection notification events happen.
+  void RecordNotificationEvents(
+      AudioSelectionNotificationEvents notification_event);
 
   void set_is_chrome_restarts(bool is_chrome_restarts) {
     is_chrome_restarts_ = is_chrome_restarts;
