@@ -665,6 +665,18 @@ chromium-metrics-reviews@google.com.
 </histogram>
 
 <histogram
+    name="OptimizationGuide.ModelExecution.OnDeviceModelAdaptationLoadResult"
+    enum="OnDeviceModelLoadResult" expires_after="2024-09-29">
+  <owner>rajendrant@chromium.org</owner>
+  <owner>cduvall@chromium.org</owner>
+  <owner>sophiechang@chromium.org</owner>
+  <summary>
+    Records the result of loading a model adaptation from OnDeviceModelService.
+    This is recorded for every model adaptation loaded from a base model.
+  </summary>
+</histogram>
+
+<histogram
     name="OptimizationGuide.ModelExecution.OnDeviceModelEligibilityReason.{ModelExecutionFeature}"
     enum="OptimizationGuideOnDeviceModelEligibilityReason"
     expires_after="2024-09-29">

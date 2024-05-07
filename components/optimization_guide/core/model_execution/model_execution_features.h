@@ -35,6 +35,12 @@ BASE_DECLARE_FEATURE(kExperimentalAIIPHPromoRampUp);
 // Feature for disabling the model execution user account capability check.
 BASE_DECLARE_FEATURE(kModelExecutionCapabilityDisable);
 
+// Features that control model adaptation.
+BASE_DECLARE_FEATURE(kModelAdaptationCompose);
+
+// Allow on-device model support for Test feature, to be used in tests.
+BASE_DECLARE_FEATURE(kOnDeviceModelTestFeature);
+
 // Checks if the provided `feature` is graduated from experimental AI settings.
 bool IsGraduatedFeature(UserVisibleFeatureKey feature);
 
@@ -44,6 +50,12 @@ const base::Feature* GetFeatureToUseToCheckSettingsVisibility(
 // Returns the features allowed to be shown in the settings UI, and can be
 // enabled, even for unsigned users.
 base::flat_set<UserVisibleFeatureKey> GetAllowedFeaturesForUnsignedUser();
+
+// Returns whether on-device model execution is enabled for the given feature.
+bool IsOnDeviceModelEnabled(ModelBasedCapabilityKey feature);
+
+// Returns whether on-device model adaptation is enabled for the given feature.
+bool IsOnDeviceModelAdaptationEnabled(ModelBasedCapabilityKey feature);
 
 }  // namespace internal
 }  // namespace features

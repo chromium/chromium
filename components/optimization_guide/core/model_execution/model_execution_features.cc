@@ -9,6 +9,7 @@
 #include "base/metrics/field_trial_params.h"
 #include "base/notreached.h"
 #include "components/optimization_guide/core/model_execution/feature_keys.h"
+#include "components/optimization_guide/core/optimization_guide_features.h"
 
 namespace optimization_guide {
 namespace features {
@@ -42,6 +43,14 @@ BASE_FEATURE(kExperimentalAIIPHPromoRampUp,
 
 BASE_FEATURE(kModelExecutionCapabilityDisable,
              "ModelExecutionCapabilityDisable",
+             base::FEATURE_DISABLED_BY_DEFAULT);
+
+BASE_FEATURE(kModelAdaptationCompose,
+             "ModelAdaptationCompose",
+             base::FEATURE_DISABLED_BY_DEFAULT);
+
+BASE_FEATURE(kOnDeviceModelTestFeature,
+             "OnDeviceModelTestFeature",
              base::FEATURE_DISABLED_BY_DEFAULT);
 
 bool IsGraduatedFeature(UserVisibleFeatureKey feature) {
@@ -88,6 +97,34 @@ base::flat_set<UserVisibleFeatureKey> GetAllowedFeaturesForUnsignedUser() {
     }
   }
   return allowed_features;
+}
+
+bool IsOnDeviceModelEnabled(ModelBasedCapabilityKey feature) {
+  switch (feature) {
+    case ModelBasedCapabilityKey::kCompose:
+      return base::FeatureList::IsEnabled(
+          optimization_guide::features::kOptimizationGuideComposeOnDeviceEval);
+    case ModelBasedCapabilityKey::kTest:
+      return base::FeatureList::IsEnabled(kOnDeviceModelTestFeature);
+    case ModelBasedCapabilityKey::kTabOrganization:
+    case ModelBasedCapabilityKey::kWallpaperSearch:
+    case ModelBasedCapabilityKey::kTextSafety:
+      return false;
+  }
+}
+
+bool IsOnDeviceModelAdaptationEnabled(ModelBasedCapabilityKey feature) {
+  switch (feature) {
+    case ModelBasedCapabilityKey::kCompose:
+      return base::FeatureList::IsEnabled(kModelAdaptationCompose);
+    case ModelBasedCapabilityKey::kTest:
+      return base::GetFieldTrialParamByFeatureAsBool(
+          kOnDeviceModelTestFeature, "enable_adaptation", false);
+    case ModelBasedCapabilityKey::kTabOrganization:
+    case ModelBasedCapabilityKey::kWallpaperSearch:
+    case ModelBasedCapabilityKey::kTextSafety:
+      return false;
+  }
 }
 
 }  // namespace internal

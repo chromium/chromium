@@ -260,12 +260,14 @@ enum class OnDeviceModelEligibilityReason {
   kLanguageDetectionModelNotAvailable = 10,
   // On-device model execution for this feature was not enabled.
   kFeatureExecutionNotEnabled = 11,
+  // On-device model adaptation was required but not available.
+  kModelAdaptationNotAvailable = 12,
 
   // This must be kept in sync with
   // OptimizationGuideOnDeviceModelEligibilityReason in optimization/enums.xml.
 
   // Insert new values before this line.
-  kMaxValue = kFeatureExecutionNotEnabled,
+  kMaxValue = kModelAdaptationNotAvailable,
 };
 
 // Status of the on-device model.
@@ -398,6 +400,15 @@ enum class TextSafetyModelMetadataValidity {
   // optimization/enums.xml.
 
   kMaxValue = kValid,
+};
+
+// Enumerates the different reasons for model remote disconnection.
+enum class ModelRemoteDisconnectReason {
+  kDisconncted,
+  kRemoteIdle,
+
+  kGpuBlocked,
+  kModelLoadFailed,
 };
 
 }  // namespace optimization_guide

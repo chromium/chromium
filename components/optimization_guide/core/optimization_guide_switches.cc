@@ -89,6 +89,11 @@ const char kModelOverride[] = "optimization-guide-model-override";
 const char kOnDeviceModelExecutionOverride[] =
     "optimization-guide-ondevice-model-execution-override";
 
+// Overrides the on-device model adaptation file paths for on-device model
+// execution.
+const char kOnDeviceModelAdaptationsOverride[] =
+    "optimization-guide-ondevice-model-adaptations-override";
+
 // Enables the on-device model to run validation at startup after a delay. A
 // text file can be provided used as input for the validation job and an output
 // file path can be provided to write the response to.
@@ -239,6 +244,14 @@ std::optional<std::string> GetOnDeviceModelExecutionOverride() {
     return std::nullopt;
   }
   return command_line->GetSwitchValueASCII(kOnDeviceModelExecutionOverride);
+}
+
+std::optional<std::string> GetOnDeviceModelAdaptationsOverride() {
+  base::CommandLine* command_line = base::CommandLine::ForCurrentProcess();
+  if (!command_line->HasSwitch(kOnDeviceModelAdaptationsOverride)) {
+    return std::nullopt;
+  }
+  return command_line->GetSwitchValueASCII(kOnDeviceModelAdaptationsOverride);
 }
 
 std::optional<base::FilePath> GetOnDeviceValidationRequestOverride() {

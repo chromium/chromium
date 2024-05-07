@@ -44,6 +44,7 @@ class OnDeviceModelAccessController;
 class OnDeviceModelComponentStateManager;
 class OnDeviceModelMetadata;
 class ModelQualityLogsUploaderService;
+class OnDeviceModelAdaptationController;
 
 // Controls the lifetime of the on-device model service, loading and unloading
 // of the models, and executing them via the service.
@@ -98,7 +99,7 @@ class OnDeviceModelServiceController
   void ShutdownServiceIfNoModelLoaded();
 
   bool IsConnectedForTesting() {
-    return model_remote_.is_bound() || service_remote_.is_bound();
+    return base_model_remote_.is_bound() || service_remote_.is_bound();
   }
 
   // Sets the language detection model to be used by the ODM service when text
@@ -114,6 +115,10 @@ class OnDeviceModelServiceController
   // Updates the main execution model.
   void UpdateModel(std::unique_ptr<OnDeviceModelMetadata> model_metadata);
 
+  // Called when the model adaptation remote is disconnected.
+  void OnModelAdaptationRemoteDisconnected(ModelBasedCapabilityKey feature,
+                                           ModelRemoteDisconnectReason reason);
+
  protected:
   virtual ~OnDeviceModelServiceController();
 
@@ -121,12 +126,19 @@ class OnDeviceModelServiceController
     return language_detection_model_path_;
   }
 
+  mojo::Remote<on_device_model::mojom::OnDeviceModel>& base_model_remote() {
+    return base_model_remote_;
+  }
+
  private:
   class OnDeviceModelClient : public SessionImpl::OnDeviceModelClient {
    public:
     OnDeviceModelClient(
+        ModelBasedCapabilityKey feature,
         base::WeakPtr<OnDeviceModelServiceController> controller,
-        on_device_model::ModelAssetPaths model_paths);
+        const on_device_model::ModelAssetPaths& model_paths,
+        base::optional_ref<const on_device_model::AdaptationAssetPaths>
+            adaptation_assets);
     ~OnDeviceModelClient() override;
     bool ShouldUse() override;
     mojo::Remote<on_device_model::mojom::OnDeviceModel>& GetModelRemote()
@@ -135,18 +147,31 @@ class OnDeviceModelServiceController
     void OnSessionTimedOut() override;
 
    private:
+    ModelBasedCapabilityKey feature_;
     base::WeakPtr<OnDeviceModelServiceController> controller_;
     on_device_model::ModelAssetPaths model_paths_;
+
+    // Model adaptation assets are populated when it was required.
+    std::optional<on_device_model::AdaptationAssetPaths> adaptation_assets_;
   };
-  friend class OnDeviceModelClient;
-  friend class base::RefCounted<OnDeviceModelServiceController>;
   friend class ChromeOnDeviceModelServiceController;
-  friend class OnDeviceModelServiceControllerTest;
   friend class FakeOnDeviceModelServiceController;
+  friend class OnDeviceModelAdaptationController;
+  friend class OnDeviceModelClient;
+  friend class OnDeviceModelServiceAdaptationControllerTest;
+  friend class OnDeviceModelServiceControllerTest;
+  friend class base::RefCounted<OnDeviceModelServiceController>;
 
   // Ensures the service is running and provides a remote for the model.
   mojo::Remote<on_device_model::mojom::OnDeviceModel>& GetOrCreateModelRemote(
-      on_device_model::ModelAssetPaths model_paths);
+      ModelBasedCapabilityKey feature,
+      const on_device_model::ModelAssetPaths& model_paths,
+      base::optional_ref<const on_device_model::AdaptationAssetPaths>
+          adaptation_assets);
+
+  // Ensures the service is running and base model remote is created.
+  void MaybeCreateBaseModelRemote(
+      const on_device_model::ModelAssetPaths& model_paths);
 
   // Invoked at the end of model load, to continue with model execution.
   void OnLoadModelResult(on_device_model::mojom::LoadModelResult result);
@@ -160,7 +185,7 @@ class OnDeviceModelServiceController
   // Called when disconnected from the model.
   void OnDisconnected();
 
-  // Called when the remote (either `service_remote_` or `_model_remote_` is
+  // Called when the remote (either `service_remote_` or `base_model_remote_` is
   // idle.
   void OnRemoteIdle();
 
@@ -177,7 +202,21 @@ class OnDeviceModelServiceController
   std::unique_ptr<SafetyModelInfo> safety_model_info_;
   std::unique_ptr<OnDeviceModelMetadata> model_metadata_;
   mojo::Remote<on_device_model::mojom::OnDeviceModelService> service_remote_;
-  mojo::Remote<on_device_model::mojom::OnDeviceModel> model_remote_;
+
+  mojo::Remote<on_device_model::mojom::OnDeviceModel> base_model_remote_;
+
+  // Maintains the live model adaptation controllers per feature. Created when
+  // model adaptation is needed for a feature, and removed when adaptation
+  // remote gets disconnected.
+  std::map<ModelBasedCapabilityKey, OnDeviceModelAdaptationController>
+      model_adaptation_controllers_;
+
+  // Map from feature to its adaptation assets. Present only for features that
+  // have valid model adaptation. It could be missing for features that require
+  // model adaptation, but they have not been loaded yet.
+  base::flat_map<proto::ModelExecutionFeature,
+                 on_device_model::AdaptationAssetPaths>
+      model_adaptation_assets_;
 
   SEQUENCE_CHECKER(sequence_checker_);
 

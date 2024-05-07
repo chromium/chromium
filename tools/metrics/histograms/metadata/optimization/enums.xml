@@ -357,6 +357,10 @@ chromium-metrics-reviews@google.com.
     The feature is enabled, and on-device execution is available, but it is not
     enabled for this feature.
   </int>
+  <int value="12" label="On-device model adaptation not available">
+    The feature is enabled with model adaptation, and on-device foundation model
+    is available, but model adaptation is not available for this feature.
+  </int>
 </enum>
 
 <enum name="OptimizationGuideOnDeviceModelStatus">

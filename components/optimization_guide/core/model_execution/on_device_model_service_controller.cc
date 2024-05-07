@@ -15,7 +15,10 @@
 #include "base/strings/strcat.h"
 #include "base/task/thread_pool.h"
 #include "components/optimization_guide/core/model_execution/feature_keys.h"
+#include "components/optimization_guide/core/model_execution/model_execution_features.h"
+#include "components/optimization_guide/core/model_execution/model_execution_util.h"
 #include "components/optimization_guide/core/model_execution/on_device_model_access_controller.h"
+#include "components/optimization_guide/core/model_execution/on_device_model_adaptation_controller.h"
 #include "components/optimization_guide/core/model_execution/on_device_model_component.h"
 #include "components/optimization_guide/core/model_execution/on_device_model_metadata.h"
 #include "components/optimization_guide/core/model_execution/safety_model_info.h"
@@ -35,18 +38,6 @@
 namespace optimization_guide {
 
 namespace {
-
-OnDeviceModelLoadResult ConvertToOnDeviceModelLoadResult(
-    on_device_model::mojom::LoadModelResult result) {
-  switch (result) {
-    case on_device_model::mojom::LoadModelResult::kSuccess:
-      return OnDeviceModelLoadResult::kSuccess;
-    case on_device_model::mojom::LoadModelResult::kGpuBlocked:
-      return OnDeviceModelLoadResult::kGpuBlocked;
-    case on_device_model::mojom::LoadModelResult::kFailedToLoadLibrary:
-      return OnDeviceModelLoadResult::kFailedToLoadLibrary;
-  }
-}
 
 proto::OnDeviceModelVersions GetModelVersions(
     const OnDeviceModelMetadata& model_metadata,
@@ -118,10 +109,14 @@ OnDeviceModelEligibilityReason OnDeviceModelServiceController::CanCreateSession(
     return OnDeviceModelEligibilityReason::kConfigNotAvailableForFeature;
   }
 
-  if (feature == ModelBasedCapabilityKey::kCompose &&
-      !base::FeatureList::IsEnabled(
-          features::kOptimizationGuideComposeOnDeviceEval)) {
+  if (!features::internal::IsOnDeviceModelEnabled(feature)) {
     return OnDeviceModelEligibilityReason::kFeatureExecutionNotEnabled;
+  }
+
+  if (features::internal::IsOnDeviceModelAdaptationEnabled(feature) &&
+      !base::Contains(model_adaptation_assets_,
+                      ToModelExecutionFeatureProto(feature))) {
+    return OnDeviceModelEligibilityReason::kModelAdaptationNotAvailable;
   }
 
   return access_controller_->ShouldStartNewSession();
@@ -156,6 +151,8 @@ OnDeviceModelServiceController::CreateSession(
   model_paths.model = model_metadata_->model_path().Append(kModelFile);
   model_paths.weights = model_metadata_->model_path().Append(kWeightsFile);
 
+  // TODO(b:336356889): Move the text safety and language detection model config
+  // to the model adaptation controller.
   std::optional<proto::FeatureTextSafetyConfiguration> safety_config;
   if (safety_model_info_) {
     safety_config =
@@ -183,9 +180,17 @@ OnDeviceModelServiceController::CreateSession(
       model_metadata_->GetAdapter(ToModelExecutionFeatureProto(feature));
   CHECK(adapter);
 
+  std::optional<on_device_model::AdaptationAssetPaths> adaptation_assets;
+  if (features::internal::IsOnDeviceModelAdaptationEnabled(feature)) {
+    auto it =
+        model_adaptation_assets_.find(ToModelExecutionFeatureProto(feature));
+    CHECK(it != model_adaptation_assets_.end());
+    adaptation_assets = it->second;
+  }
+
   SessionImpl::OnDeviceOptions opts;
   opts.model_client = std::make_unique<OnDeviceModelClient>(
-      weak_ptr_factory_.GetWeakPtr(), model_paths);
+      feature, weak_ptr_factory_.GetWeakPtr(), model_paths, adaptation_assets);
   opts.model_versions =
       GetModelVersions(*model_metadata_, safety_model_info_.get());
   opts.adapter = std::move(adapter);
@@ -207,27 +212,46 @@ void OnDeviceModelServiceController::GetEstimatedPerformanceClass(
       mojo::WrapCallbackWithDefaultInvokeIfNotRun(std::move(callback),
                                                   std::nullopt)));
 }
-
 mojo::Remote<on_device_model::mojom::OnDeviceModel>&
 OnDeviceModelServiceController::GetOrCreateModelRemote(
-    on_device_model::ModelAssetPaths model_paths) {
-  if (!model_remote_) {
-    LaunchService();
-    base::ThreadPool::PostTaskAndReplyWithResult(
-        FROM_HERE, {base::MayBlock()},
-        base::BindOnce(&on_device_model::LoadModelAssets, model_paths),
-        base::BindOnce(&OnDeviceModelServiceController::OnModelAssetsLoaded,
-                       weak_ptr_factory_.GetWeakPtr(),
-                       model_remote_.BindNewPipeAndPassReceiver()));
-    model_remote_.set_disconnect_handler(
-        base::BindOnce(&OnDeviceModelServiceController::OnDisconnected,
-                       base::Unretained(this)));
-    model_remote_.set_idle_handler(
-        features::GetOnDeviceModelIdleTimeout(),
-        base::BindRepeating(&OnDeviceModelServiceController::OnRemoteIdle,
-                            base::Unretained(this)));
+    ModelBasedCapabilityKey feature,
+    const on_device_model::ModelAssetPaths& model_paths,
+    base::optional_ref<const on_device_model::AdaptationAssetPaths>
+        adaptation_assets) {
+  MaybeCreateBaseModelRemote(model_paths);
+  if (!adaptation_assets.has_value()) {
+    CHECK(!features::internal::IsOnDeviceModelAdaptationEnabled(feature));
+    return base_model_remote_;
   }
-  return model_remote_;
+  auto it = model_adaptation_controllers_.find(feature);
+  if (it == model_adaptation_controllers_.end()) {
+    it = model_adaptation_controllers_
+             .emplace(
+                 std::piecewise_construct, std::forward_as_tuple(feature),
+                 std::forward_as_tuple(feature, weak_ptr_factory_.GetWeakPtr()))
+             .first;
+  }
+  return it->second.GetOrCreateModelRemote(*adaptation_assets);
+}
+
+void OnDeviceModelServiceController::MaybeCreateBaseModelRemote(
+    const on_device_model::ModelAssetPaths& model_paths) {
+  if (base_model_remote_) {
+    return;
+  }
+  LaunchService();
+  base::ThreadPool::PostTaskAndReplyWithResult(
+      FROM_HERE, {base::MayBlock()},
+      base::BindOnce(&on_device_model::LoadModelAssets, model_paths),
+      base::BindOnce(&OnDeviceModelServiceController::OnModelAssetsLoaded,
+                     weak_ptr_factory_.GetWeakPtr(),
+                     base_model_remote_.BindNewPipeAndPassReceiver()));
+  base_model_remote_.set_disconnect_handler(base::BindOnce(
+      &OnDeviceModelServiceController::OnDisconnected, base::Unretained(this)));
+  base_model_remote_.set_idle_handler(
+      features::GetOnDeviceModelIdleTimeout(),
+      base::BindRepeating(&OnDeviceModelServiceController::OnRemoteIdle,
+                          base::Unretained(this)));
 }
 
 void OnDeviceModelServiceController::OnModelAssetsLoaded(
@@ -272,7 +296,8 @@ void OnDeviceModelServiceController::MaybeUpdateSafetyModel(
 
 void OnDeviceModelServiceController::UpdateModel(
     std::unique_ptr<OnDeviceModelMetadata> model_metadata) {
-  model_remote_.reset();
+  model_adaptation_controllers_.clear();
+  base_model_remote_.reset();
   model_metadata_ = std::move(model_metadata);
 }
 
@@ -284,7 +309,8 @@ void OnDeviceModelServiceController::OnLoadModelResult(
   switch (result) {
     case on_device_model::mojom::LoadModelResult::kGpuBlocked:
       access_controller_->OnGpuBlocked();
-      model_remote_.reset();
+      model_adaptation_controllers_.clear();
+      base_model_remote_.reset();
       break;
     case on_device_model::mojom::LoadModelResult::kSuccess:
       break;
@@ -294,25 +320,50 @@ void OnDeviceModelServiceController::OnLoadModelResult(
 }
 
 void OnDeviceModelServiceController::OnDisconnected() {
-  model_remote_.reset();
+  model_adaptation_controllers_.clear();
+  base_model_remote_.reset();
   access_controller_->OnDisconnectedFromRemote();
 }
 
 void OnDeviceModelServiceController::ShutdownServiceIfNoModelLoaded() {
-  if (!model_remote_) {
+  if (!base_model_remote_) {
     service_remote_.reset();
   }
 }
 
 void OnDeviceModelServiceController::OnRemoteIdle() {
+  model_adaptation_controllers_.clear();
   service_remote_.reset();
-  model_remote_.reset();
+  base_model_remote_.reset();
+}
+
+void OnDeviceModelServiceController::OnModelAdaptationRemoteDisconnected(
+    ModelBasedCapabilityKey feature,
+    ModelRemoteDisconnectReason reason) {
+  switch (reason) {
+    case ModelRemoteDisconnectReason::kGpuBlocked:
+      access_controller_->OnGpuBlocked();
+      break;
+    case ModelRemoteDisconnectReason::kDisconncted:
+      access_controller_->OnDisconnectedFromRemote();
+      break;
+    case ModelRemoteDisconnectReason::kModelLoadFailed:
+    case ModelRemoteDisconnectReason::kRemoteIdle:
+      break;
+  }
+  model_adaptation_controllers_.erase(feature);
 }
 
 OnDeviceModelServiceController::OnDeviceModelClient::OnDeviceModelClient(
+    ModelBasedCapabilityKey feature,
     base::WeakPtr<OnDeviceModelServiceController> controller,
-    on_device_model::ModelAssetPaths model_paths)
-    : controller_(controller), model_paths_(model_paths) {}
+    const on_device_model::ModelAssetPaths& model_paths,
+    base::optional_ref<const on_device_model::AdaptationAssetPaths>
+        adaptation_assets)
+    : feature_(feature),
+      controller_(controller),
+      model_paths_(model_paths),
+      adaptation_assets_(adaptation_assets.CopyAsOptional()) {}
 
 OnDeviceModelServiceController::OnDeviceModelClient::~OnDeviceModelClient() =
     default;
@@ -325,7 +376,8 @@ bool OnDeviceModelServiceController::OnDeviceModelClient::ShouldUse() {
 
 mojo::Remote<on_device_model::mojom::OnDeviceModel>&
 OnDeviceModelServiceController::OnDeviceModelClient::GetModelRemote() {
-  return controller_->GetOrCreateModelRemote(model_paths_);
+  return controller_->GetOrCreateModelRemote(feature_, model_paths_,
+                                             adaptation_assets_);
 }
 
 void OnDeviceModelServiceController::OnDeviceModelClient::
