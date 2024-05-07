@@ -41,6 +41,7 @@
 #include "components/performance_manager/test_support/resource_attribution/gtest_util.h"
 #include "components/performance_manager/test_support/resource_attribution/measurement_delegates.h"
 #include "components/performance_manager/test_support/run_in_graph.h"
+#include "content/public/browser/browsing_instance_id.h"
 #include "testing/gmock/include/gmock/gmock.h"
 #include "testing/gtest/include/gtest/gtest.h"
 #include "url/gurl.h"
@@ -229,25 +230,32 @@ TEST_F(ResourceAttrQuerySchedulerTest, AddRemoveNodes) {
   const auto process_context2 = process2->GetResourceContext();
   const auto process_context3 = process3->GetResourceContext();
 
-  // Create a page with several origins, to validate that OriginInPageContext
-  // results are cleared along with the PageContext.
+  // Create a page with several origins, to validate that
+  // OriginInBrowsingInstanceContext results are cleared along with the
+  // PageContext.
+  constexpr content::BrowsingInstanceId kBrowsingInstance =
+      content::BrowsingInstanceId::FromUnsafeValue(1);
   auto page1 = CreateNode<PageNodeImpl>();
   const GURL kUrl1("https://a.com");
   const url::Origin kOrigin1 = url::Origin::Create(kUrl1);
-  auto frame1 = CreateFrameNodeAutoId(process3.get(), page1.get());
+  auto frame1 =
+      CreateFrameNodeAutoId(process3.get(), page1.get(),
+                            /*parent_frame_node=*/nullptr, kBrowsingInstance);
   frame1->OnNavigationCommitted(kUrl1, kOrigin1, /*same_document=*/false);
   const GURL kUrl2("https://b.com");
   const url::Origin kOrigin2 = url::Origin::Create(kUrl2);
-  auto frame2 = CreateFrameNodeAutoId(process3.get(), page1.get());
+  auto frame2 =
+      CreateFrameNodeAutoId(process3.get(), page1.get(),
+                            /*parent_frame_node=*/nullptr, kBrowsingInstance);
   frame2->OnNavigationCommitted(kUrl2, kOrigin2, /*same_document=*/false);
 
   const auto page_context1 = page1->GetResourceContext();
   const auto frame_context1 = frame1->GetResourceContext();
   const auto frame_context2 = frame2->GetResourceContext();
   const auto origin_in_page_context1 =
-      OriginInPageContext(kOrigin1, page1->GetResourceContext());
+      OriginInBrowsingInstanceContext(kOrigin1, kBrowsingInstance);
   const auto origin_in_page_context2 =
-      OriginInPageContext(kOrigin2, page1->GetResourceContext());
+      OriginInBrowsingInstanceContext(kOrigin2, kBrowsingInstance);
 
   // Also test that WorkerContexts are tracked correctly.
   auto worker1 = CreateNode<WorkerNodeImpl>(WorkerNode::WorkerType::kDedicated,
@@ -378,7 +386,7 @@ TEST_F(ResourceAttrQuerySchedulerTest, AddRemoveNodes) {
           ResourceContextTypeId::ForType<PageContext>(),
           ResourceContextTypeId::ForType<ProcessContext>(),
           ResourceContextTypeId::ForType<WorkerContext>(),
-          ResourceContextTypeId::ForType<OriginInPageContext>(),
+          ResourceContextTypeId::ForType<OriginInBrowsingInstanceContext>(),
       });
   scheduler->AddScopedQuery(all_context_query.get());
   scheduler->StartRepeatingQuery(all_context_query.get());
@@ -460,9 +468,8 @@ TEST_F(ResourceAttrQuerySchedulerTest, AddRemoveNodes) {
 
   task_env().FastForwardBy(base::Minutes(1));
   // All queries have now seen the results for all dead contexts. Only
-  // `process3` is live.
-  EXPECT_EQ(
-      scheduler->GetCPUMonitorForTesting().GetDeadContextCountForTesting(), 0u);
+  // `process3` is live. Note: Results for dead
+  // `OriginInBrowsingInstanceContext`s are retained in case they are revived.
   i = 0;
   for (QueryParams* query :
        {non_repeating_query.get(), repeating_all_process_query.get(),
@@ -474,6 +481,10 @@ TEST_F(ResourceAttrQuerySchedulerTest, AddRemoveNodes) {
         UnorderedElementsAre(
             ResultForContextMatches<CPUTimeResult>(process_context3, _)));
   }
+  // Now that each query got a measurement without the dead
+  // `OriginInBrowsingInstanceContext`s, no results should be retained.
+  EXPECT_EQ(
+      scheduler->GetCPUMonitorForTesting().GetDeadContextCountForTesting(), 0u);
 
   process3.reset();
   EXPECT_EQ(

@@ -32,10 +32,7 @@ each histogram.
 <variants name="ResourceContextType">
   <variant name="AllContexts" summary="all context types"/>
   <variant name="FrameContexts"/>
-  <variant name="OpaqueOriginContexts"
-      summary="OriginInPageContexts for opaque origins"/>
-  <variant name="OriginInPageContexts"
-      summary="OriginInPageContexts for all origins"/>
+  <variant name="OriginInBrowsingInstanceContext"/>
   <variant name="PageContexts"/>
   <variant name="ProcessContexts"/>
   <variant name="WorkerContexts"/>

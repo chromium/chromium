@@ -23,6 +23,11 @@
 
 namespace performance_manager {
 
+const content::BrowsingInstanceId kBrowsingInstanceForPage =
+    content::BrowsingInstanceId::FromUnsafeValue(1);
+const content::BrowsingInstanceId kBrowsingInstanceForOtherPage =
+    content::BrowsingInstanceId::FromUnsafeValue(2);
+
 TestProcessNodeImpl::TestProcessNodeImpl()
     : ProcessNodeImpl(RenderProcessHostProxy::CreateForTesting(
                           NextTestRenderProcessHostId()),
@@ -47,7 +52,10 @@ MockSinglePageInSingleProcessGraph::MockSinglePageInSingleProcessGraph(
           BrowserProcessNodeTag{})),
       process(TestNodeWrapper<TestProcessNodeImpl>::Create(graph)),
       page(TestNodeWrapper<PageNodeImpl>::Create(graph)),
-      frame(graph->CreateFrameNodeAutoId(process.get(), page.get())) {
+      frame(graph->CreateFrameNodeAutoId(process.get(),
+                                         page.get(),
+                                         /*parent_frame_node=*/nullptr,
+                                         kBrowsingInstanceForPage)) {
   browser_process->SetProcessWithPid(1);
   process->SetProcessWithPid(2);
 }
@@ -64,7 +72,9 @@ MockMultiplePagesInSingleProcessGraph::MockMultiplePagesInSingleProcessGraph(
       other_page(TestNodeWrapper<PageNodeImpl>::Create(graph)),
       other_frame(graph->CreateFrameNodeAutoId(process.get(),
                                                other_page.get(),
-                                               nullptr)) {}
+                                               /*parent_frame_node=*/nullptr,
+                                               kBrowsingInstanceForOtherPage)) {
+}
 
 MockMultiplePagesInSingleProcessGraph::
     ~MockMultiplePagesInSingleProcessGraph() {
@@ -81,7 +91,7 @@ MockManyPagesInSingleProcessGraph::MockManyPagesInSingleProcessGraph(
   for (size_t i = 0; i < num_other_pages; ++i) {
     other_pages.push_back(TestNodeWrapper<PageNodeImpl>::Create(graph));
     other_frames.push_back(graph->CreateFrameNodeAutoId(
-        process.get(), other_pages[i].get(), nullptr));
+        process.get(), other_pages[i].get(), /*parent_frame_node=*/nullptr));
   }
 }
 
@@ -101,7 +111,8 @@ MockSinglePageWithMultipleProcessesGraph::
       other_process(TestNodeWrapper<TestProcessNodeImpl>::Create(graph)),
       child_frame(graph->CreateFrameNodeAutoId(other_process.get(),
                                                page.get(),
-                                               frame.get())) {
+                                               frame.get(),
+                                               kBrowsingInstanceForPage)) {
   other_process->SetProcessWithPid(3);
 }
 
@@ -114,7 +125,8 @@ MockMultiplePagesWithMultipleProcessesGraph::
       other_process(TestNodeWrapper<TestProcessNodeImpl>::Create(graph)),
       child_frame(graph->CreateFrameNodeAutoId(other_process.get(),
                                                other_page.get(),
-                                               other_frame.get())) {
+                                               other_frame.get(),
+                                               kBrowsingInstanceForOtherPage)) {
   other_process->SetProcessWithPid(3);
 }
 

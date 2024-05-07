@@ -34,6 +34,7 @@
 #include "components/performance_manager/public/performance_manager.h"
 #include "components/performance_manager/public/resource_attribution/cpu_measurement_delegate.h"
 #include "components/performance_manager/public/resource_attribution/cpu_proportion_tracker.h"
+#include "components/performance_manager/public/resource_attribution/origin_in_browsing_instance_context.h"
 #include "components/performance_manager/public/resource_attribution/query_results.h"
 #include "components/performance_manager/public/resource_attribution/resource_contexts.h"
 #include "components/performance_manager/resource_attribution/performance_manager_aliases.h"
@@ -66,6 +67,8 @@ using ::testing::IsEmpty;
 using ::testing::Not;
 using ::testing::Pair;
 
+using performance_manager::kBrowsingInstanceForOtherPage;
+using performance_manager::kBrowsingInstanceForPage;
 using performance_manager::TestNodeWrapper;
 using performance_manager::features::kResourceAttributionIncludeOrigins;
 using ProcessCPUUsageError = CPUMeasurementDelegate::ProcessCPUUsageError;
@@ -112,6 +115,10 @@ struct MockMultiplePagesAndWorkersWithKnownOriginsGraph
   TestNodeWrapper<WorkerNodeImpl> worker;
   TestNodeWrapper<WorkerNodeImpl> other_worker;
 };
+
+constexpr internal::QueryId kQueryId = internal::QueryId::FromUnsafeValue(1);
+constexpr internal::QueryId kOtherQueryId =
+    internal::QueryId::FromUnsafeValue(2);
 
 }  // namespace
 
@@ -629,7 +636,7 @@ TEST_F(ResourceAttrCPUMonitorTest, CPUDistribution) {
                                                               kOrigin2);
 
   // Assign URL's to frames in the graph so that they'll be mapped to
-  // OriginInPageContexts.
+  // OriginInBrowsingInstanceContexts.
   mock_graph.frame->OnNavigationCommitted(kUrl1, kOrigin1,
                                           /*same_document=*/false);
   mock_graph.other_frame->OnNavigationCommitted(kUrl2, kOrigin2,
@@ -681,14 +688,14 @@ TEST_F(ResourceAttrCPUMonitorTest, CPUDistribution) {
   const ProcessContext& other_process_context =
       mock_graph.other_process->GetResourceContext();
 
-  const auto origin1_in_page_context =
-      OriginInPageContext(kOrigin1, page_context);
-  const auto origin2_in_page_context =
-      OriginInPageContext(kOrigin2, page_context);
-  const auto origin1_in_other_page_context =
-      OriginInPageContext(kOrigin1, other_page_context);
-  const auto origin2_in_other_page_context =
-      OriginInPageContext(kOrigin2, other_page_context);
+  const auto origin1_in_bi_context =
+      OriginInBrowsingInstanceContext(kOrigin1, kBrowsingInstanceForPage);
+  const auto origin2_in_bi_context =
+      OriginInBrowsingInstanceContext(kOrigin2, kBrowsingInstanceForPage);
+  const auto origin1_in_other_bi_context =
+      OriginInBrowsingInstanceContext(kOrigin1, kBrowsingInstanceForOtherPage);
+  const auto origin2_in_other_bi_context =
+      OriginInBrowsingInstanceContext(kOrigin2, kBrowsingInstanceForOtherPage);
 
   EXPECT_THAT(current_measurements_[browser_process_context],
               AllOf(CPUDeltaMatches(browser_process_context,
@@ -759,42 +766,44 @@ TEST_F(ResourceAttrCPUMonitorTest, CPUDistribution) {
 
   // See the chart in MockMultiplePagesAndWorkersWithMultipleProcessesGraph
   // that maps each frame and worker to `process` or `other_process`.
-  auto expect_origin_in_page_measurements =
+  auto expect_origin_in_bi_measurements =
       [&](base::TimeDelta split_process_cpu_delta,
           base::TimeDelta split_other_process_cpu_delta) {
-        // `origin1_in_page_context` gets the sum of `frame` and `worker`, both
-        // in `page` with http://a.com. Both are hosted in `process`.
-        EXPECT_THAT(current_measurements_[origin1_in_page_context],
-                    AllOf(CPUDeltaMatches(origin1_in_page_context,
+        // `origin1_in_bi_context` gets the sum of `frame` and
+        // `worker`, both in `page` with http://a.com. Both are hosted in
+        // `process`.
+        EXPECT_THAT(current_measurements_[origin1_in_bi_context],
+                    AllOf(CPUDeltaMatches(origin1_in_bi_context,
                                           2 * split_process_cpu_delta,
                                           MeasurementAlgorithm::kSum),
                           StartTimeMatches(monitoring_start_time)));
 
-        // `origin2_in_page_context` has nothing, since nothing in `page` is
-        // from http://b.com.
+        // `origin2_in_bi_context` has nothing, since nothing in
+        // `page` is from http://b.com.
         EXPECT_FALSE(
-            base::Contains(current_measurements_, origin2_in_page_context));
+            base::Contains(current_measurements_, origin2_in_bi_context));
 
-        // `origin1_in_other_page_context` equals `child_frame`, the only thing
-        // in `other_page` from http://a.com. It's hosted in `other_process`.
-        EXPECT_THAT(current_measurements_[origin1_in_other_page_context],
-                    AllOf(CPUDeltaMatches(origin1_in_other_page_context,
+        // `origin1_in_other_bi_context` equals `child_frame`,
+        // the only thing in `other_page` from http://a.com. It's hosted in
+        // `other_process`.
+        EXPECT_THAT(current_measurements_[origin1_in_other_bi_context],
+                    AllOf(CPUDeltaMatches(origin1_in_other_bi_context,
                                           split_other_process_cpu_delta,
                                           MeasurementAlgorithm::kSum),
                           StartTimeMatches(monitoring_start_time)));
 
-        // `origin2_in_other_page_context` gets the sum of `other_frame` (hosted
-        // in `process`) and `other_worker` (hosted in `other_process`), both in
-        // `other_page` with http://b.com.
-        EXPECT_THAT(current_measurements_[origin2_in_other_page_context],
-                    AllOf(CPUDeltaMatches(origin2_in_other_page_context,
+        // `origin2_in_other_bi_context` gets the sum of
+        // `other_frame` (hosted in `process`) and `other_worker` (hosted in
+        // `other_process`), both in `other_page` with http://b.com.
+        EXPECT_THAT(current_measurements_[origin2_in_other_bi_context],
+                    AllOf(CPUDeltaMatches(origin2_in_other_bi_context,
                                           split_process_cpu_delta +
                                               split_other_process_cpu_delta,
                                           MeasurementAlgorithm::kSum),
                           StartTimeMatches(monitoring_start_time)));
       };
-  expect_origin_in_page_measurements(split_process_cpu_delta,
-                                     other_process_split_cpu_delta);
+  expect_origin_in_bi_measurements(split_process_cpu_delta,
+                                   other_process_split_cpu_delta);
 
   // Modify the CPU usage of each renderer process, ensure all frames and
   // workers are updated.
@@ -847,8 +856,8 @@ TEST_F(ResourceAttrCPUMonitorTest, CPUDistribution) {
       CPUDeltaMatches(other_page_context, kTimeBetweenMeasurements * 0.9,
                       MeasurementAlgorithm::kSum));
 
-  expect_origin_in_page_measurements(split_process_cpu_delta,
-                                     other_process_split_cpu_delta);
+  expect_origin_in_bi_measurements(split_process_cpu_delta,
+                                   other_process_split_cpu_delta);
 
   // Drop CPU usage of `other_process` to 0%. Only advance part of the normal
   // measurement interval, to be sure that the percentage usage doesn't depend
@@ -900,8 +909,8 @@ TEST_F(ResourceAttrCPUMonitorTest, CPUDistribution) {
               CPUDeltaMatches(other_page_context, kShortInterval * 0.1,
                               MeasurementAlgorithm::kSum));
 
-  expect_origin_in_page_measurements(split_process_cpu_delta,
-                                     other_process_split_cpu_delta);
+  expect_origin_in_bi_measurements(split_process_cpu_delta,
+                                   other_process_split_cpu_delta);
 }
 
 // Tests that CPU usage of processes is correctly distributed between FrameNodes
@@ -911,7 +920,7 @@ TEST_F(ResourceAttrCPUMonitorTest, AddRemoveNodes) {
                                                               kOrigin2);
 
   // Assign URL's to frames in the graph so that they'll be mapped to
-  // OriginInPageContexts.
+  // OriginInBrowsingInstanceContexts.
   mock_graph.frame->OnNavigationCommitted(kUrl1, kOrigin1,
                                           /*same_document=*/false);
   mock_graph.other_frame->OnNavigationCommitted(kUrl2, kOrigin2,
@@ -944,14 +953,14 @@ TEST_F(ResourceAttrCPUMonitorTest, AddRemoveNodes) {
   const ProcessContext& other_process_context =
       mock_graph.other_process->GetResourceContext();
 
-  const auto origin1_in_page_context =
-      OriginInPageContext(kOrigin1, page_context);
-  const auto origin2_in_page_context =
-      OriginInPageContext(kOrigin2, page_context);
-  const auto origin1_in_other_page_context =
-      OriginInPageContext(kOrigin1, other_page_context);
-  const auto origin2_in_other_page_context =
-      OriginInPageContext(kOrigin2, other_page_context);
+  const auto origin1_in_bi_context =
+      OriginInBrowsingInstanceContext(kOrigin1, kBrowsingInstanceForPage);
+  const auto origin2_in_bi_context =
+      OriginInBrowsingInstanceContext(kOrigin2, kBrowsingInstanceForPage);
+  const auto origin1_in_other_bi_context =
+      OriginInBrowsingInstanceContext(kOrigin1, kBrowsingInstanceForOtherPage);
+  const auto origin2_in_other_bi_context =
+      OriginInBrowsingInstanceContext(kOrigin2, kBrowsingInstanceForOtherPage);
 
   // `new_frame1` and `new_worker1` are added just after a measurement.
   // `new_frame2` and `new_worker2` are added between measurements.
@@ -962,8 +971,9 @@ TEST_F(ResourceAttrCPUMonitorTest, AddRemoveNodes) {
   //
   // New frames are part of `page`. New workers don't have clients, so aren't
   // part of any page.
-  auto new_frame1 =
-      CreateFrameNodeAutoId(mock_graph.process.get(), mock_graph.page.get());
+  auto new_frame1 = CreateFrameNodeAutoId(
+      mock_graph.process.get(), mock_graph.page.get(),
+      /*parent_frame_node=*/nullptr, kBrowsingInstanceForPage);
   new_frame1->OnNavigationCommitted(kUrl1, kOrigin1, /*same_document=*/false);
   auto new_worker1 = CreateWorkerNodeWithOrigin(
       graph(), mock_graph.other_process.get(), kOrigin1);
@@ -972,8 +982,9 @@ TEST_F(ResourceAttrCPUMonitorTest, AddRemoveNodes) {
   const auto node_added_time1 = base::TimeTicks::Now();
 
   task_env().FastForwardBy(kTimeBetweenMeasurements / 2);
-  auto new_frame2 =
-      CreateFrameNodeAutoId(mock_graph.process.get(), mock_graph.page.get());
+  auto new_frame2 = CreateFrameNodeAutoId(
+      mock_graph.process.get(), mock_graph.page.get(),
+      /*parent_frame_node=*/nullptr, kBrowsingInstanceForPage);
   new_frame2->OnNavigationCommitted(kUrl2, kOrigin2, /*same_document=*/false);
   auto new_worker2 = CreateWorkerNodeWithOrigin(
       graph(), mock_graph.other_process.get(), kOrigin2);
@@ -982,8 +993,9 @@ TEST_F(ResourceAttrCPUMonitorTest, AddRemoveNodes) {
   const auto node_added_time2 = base::TimeTicks::Now();
 
   task_env().FastForwardBy(kTimeBetweenMeasurements / 2);
-  auto new_frame3 =
-      CreateFrameNodeAutoId(mock_graph.process.get(), mock_graph.page.get());
+  auto new_frame3 = CreateFrameNodeAutoId(
+      mock_graph.process.get(), mock_graph.page.get(),
+      /*parent_frame_node=*/nullptr, kBrowsingInstanceForPage);
   new_frame3->OnNavigationCommitted(kUrl2, kOrigin2, /*same_document=*/false);
   auto new_worker3 = CreateWorkerNodeWithOrigin(
       graph(), mock_graph.other_process.get(), kOrigin2);
@@ -1000,15 +1012,15 @@ TEST_F(ResourceAttrCPUMonitorTest, AddRemoveNodes) {
   //
   //   * `frame`, `worker` and `new_frame1` are part of `page`.
   //   * `other_frame` is part of `other_page`.
-  //   * `frame`, `worker` and `new_frame1` are part of `origin1_in_page`.
-  //   * `other_frame` is part of `origin2_in_other_page`.
+  //   * `frame`, `worker` and `new_frame1` are part of `origin1_in_bi`.
+  //   * `other_frame` is part of `origin2_in_other_bi`.
   //
   // * `other_process` splits its 50% CPU usage between 3 nodes:
   //   * `child_frame`, `other_worker`, `new_worker1`
   //
   //   * `child_frame` and `other_worker` are part of `other_page`.
-  //   * `child_frame` is part of `origin1_in_other_page`.
-  //   * `other_worker` is part of `origin2_in_other_page`.
+  //   * `child_frame` is part of `origin1_in_other_bi`.
+  //   * `other_worker` is part of `origin2_in_other_bi`.
   //
   // For the last half the split is:
   //
@@ -1017,16 +1029,16 @@ TEST_F(ResourceAttrCPUMonitorTest, AddRemoveNodes) {
   //
   //   * `frame`, `worker`, `new_frame1` and `new_frame2` are part of `page`.
   //   * `other_frame` is part of `other_page`.
-  //   * `frame`, `worker` and `new_frame1` are part of `origin1_in_page`.
-  //   * `new_frame2` is part of `origin2_in_page`.
-  //   * `other_frame` is part of `origin2_in_other_page`.
+  //   * `frame`, `worker` and `new_frame1` are part of `origin1_in_bi`.
+  //   * `new_frame2` is part of `origin2_in_bi`.
+  //   * `other_frame` is part of `origin2_in_other_bi`.
   //
   // * `other_process` splits between 4 nodes:
   //   * `child_frame`, `other_worker`, `new_worker1`, `new_worker2`
   //
   //   * `child_frame` and `other_worker` are part of `other_page`.
-  //   * `child_frame` is part of `origin1_in_other_page`.
-  //   * `other_worker` is part of `origin2_in_other_page`.
+  //   * `child_frame` is part of `origin1_in_other_bi`.
+  //   * `other_worker` is part of `origin2_in_other_bi`.
   //
   // `new_frame3` and `new_worker3` were added on the same tick as the
   // measurement so don't contribute to CPU usage.
@@ -1043,16 +1055,16 @@ TEST_F(ResourceAttrCPUMonitorTest, AddRemoveNodes) {
       /*first half, 3 nodes*/ 3 * process_4way_split +
       /*second half, 4 nodes*/ 4 * process_5way_split;
 
-  constexpr base::TimeDelta expected_origin1_in_page_delta =
+  constexpr base::TimeDelta expected_origin1_in_bi_delta =
       /*first half, 3 nodes*/ 3 * process_4way_split +
       /*second half, 3 nodes*/ 3 * process_5way_split;
-  constexpr base::TimeDelta expected_origin1_in_other_page_delta =
+  constexpr base::TimeDelta expected_origin1_in_other_bi_delta =
       /*first half, 1 node*/ other_process_3way_split +
       /*second half, 1 node*/ other_process_4way_split;
-  constexpr base::TimeDelta expected_origin2_in_page_delta =
+  constexpr base::TimeDelta expected_origin2_in_bi_delta =
       /*first half, 0 nodes*/ base::TimeDelta() +
       /*second half, 1 node*/ process_5way_split;
-  constexpr base::TimeDelta expected_origin2_in_other_page_delta =
+  constexpr base::TimeDelta expected_origin2_in_other_bi_delta =
       /*first half, 2 nodes*/ process_4way_split + other_process_3way_split +
       /*second half, 2 nodes*/ process_5way_split + other_process_4way_split;
 
@@ -1099,20 +1111,20 @@ TEST_F(ResourceAttrCPUMonitorTest, AddRemoveNodes) {
                               MeasurementAlgorithm::kSum));
 
   EXPECT_THAT(
-      current_measurements_[origin1_in_page_context],
-      CPUDeltaMatches(origin1_in_page_context, expected_origin1_in_page_delta,
+      current_measurements_[origin1_in_bi_context],
+      CPUDeltaMatches(origin1_in_bi_context, expected_origin1_in_bi_delta,
                       MeasurementAlgorithm::kSum));
   EXPECT_THAT(
-      current_measurements_[origin2_in_page_context],
-      CPUDeltaMatches(origin2_in_page_context, expected_origin2_in_page_delta,
+      current_measurements_[origin2_in_bi_context],
+      CPUDeltaMatches(origin2_in_bi_context, expected_origin2_in_bi_delta,
                       MeasurementAlgorithm::kSum));
-  EXPECT_THAT(current_measurements_[origin1_in_other_page_context],
-              CPUDeltaMatches(origin1_in_other_page_context,
-                              expected_origin1_in_other_page_delta,
+  EXPECT_THAT(current_measurements_[origin1_in_other_bi_context],
+              CPUDeltaMatches(origin1_in_other_bi_context,
+                              expected_origin1_in_other_bi_delta,
                               MeasurementAlgorithm::kSum));
-  EXPECT_THAT(current_measurements_[origin2_in_other_page_context],
-              CPUDeltaMatches(origin2_in_other_page_context,
-                              expected_origin2_in_other_page_delta,
+  EXPECT_THAT(current_measurements_[origin2_in_other_bi_context],
+              CPUDeltaMatches(origin2_in_other_bi_context,
+                              expected_origin2_in_other_bi_delta,
                               MeasurementAlgorithm::kSum));
 
   new_frame1.reset();
@@ -1137,16 +1149,16 @@ TEST_F(ResourceAttrCPUMonitorTest, AddRemoveNodes) {
   //
   //   * `frame`, `worker`, `new_frame2` and `new_frame3` are part of `page`
   //   * `other_frame` is part of `other_page`.
-  //   * `frame` and `worker` are part of `origin1_in_page`.
-  //   * `new_frame2` and `new_frame3` are part of `origin2_in_page`.
-  //   * `other_frame` is part of `origin2_in_other_page`.
+  //   * `frame` and `worker` are part of `origin1_in_bi`.
+  //   * `new_frame2` and `new_frame3` are part of `origin2_in_bi`.
+  //   * `other_frame` is part of `origin2_in_other_bi`.
   //
   // * `other_process` splits its 50% CPU usage between 4 nodes:
   //   * `child_frame`, `other_worker`, `new_worker2`, `new_worker3`
   //
   //   * `child_frame` and `other_worker` are part of `other_page`.
-  //   * `child_frame` is part of `origin1_in_other_page`.
-  //   * `other_worker` is part of `origin2_in_other_page`.
+  //   * `child_frame` is part of `origin1_in_other_bi`.
+  //   * `other_worker` is part of `origin2_in_other_bi`.
   //
   // For the last half the split is:
   //
@@ -1155,31 +1167,30 @@ TEST_F(ResourceAttrCPUMonitorTest, AddRemoveNodes) {
   //
   //   * `frame`, `worker` and `new_frame3` are part of `page`
   //   * `other_frame` is part of `other_page`.
-  //   * `frame` and `worker` are part of `origin1_in_page`.
-  //   * `new_frame3` is part of `origin2_in_page`.
-  //   * `other_frame` is part of `origin2_in_other_page`.
+  //   * `frame` and `worker` are part of `origin1_in_bi`.
+  //   * `new_frame3` is part of `origin2_in_bi`.
+  //   * `other_frame` is part of `origin2_in_other_bi`.
   //
   // * `other_process` splits between 3 nodes:
   //   * `child_frame`, `other_worker`, `new_worker3`
   //
   //   * `child_frame` and `other_worker` are part of `other_page`.
-  //   * `child_frame` is part of `origin1_in_other_page`.
-  //   * `other_worker` is part of `origin2_in_other_page`.
+  //   * `child_frame` is part of `origin1_in_other_bi`.
+  //   * `other_worker` is part of `origin2_in_other_bi`.
 
   constexpr base::TimeDelta expected_page_delta2 =
       /*first half, 4 nodes*/ 4 * process_5way_split +
       /*second half, 3 nodes*/ 3 * process_4way_split;
-
-  constexpr base::TimeDelta expected_origin1_in_page_delta2 =
+  constexpr base::TimeDelta expected_origin1_in_bi_delta2 =
       /*first half, 2 nodes*/ 2 * process_5way_split +
       /*second half, 2 nodes*/ 2 * process_4way_split;
-  constexpr base::TimeDelta expected_origin1_in_other_page_delta2 =
+  constexpr base::TimeDelta expected_origin1_in_other_bi_delta2 =
       /*first half, 1 node*/ other_process_4way_split +
       /*second half, 1 node*/ other_process_3way_split;
-  constexpr base::TimeDelta expected_origin2_in_page_delta2 =
+  constexpr base::TimeDelta expected_origin2_in_bi_delta2 =
       /*first half, 2 nodes*/ 2 * process_5way_split +
       /*second half, 1 nodes*/ 1 * process_4way_split;
-  constexpr base::TimeDelta expected_origin2_in_other_page_delta2 =
+  constexpr base::TimeDelta expected_origin2_in_other_bi_delta2 =
       /*first half, 2 nodes*/ process_5way_split + other_process_4way_split +
       /*second half, 2 nodes*/ process_4way_split + other_process_3way_split;
 
@@ -1236,20 +1247,20 @@ TEST_F(ResourceAttrCPUMonitorTest, AddRemoveNodes) {
                               MeasurementAlgorithm::kSum));
 
   EXPECT_THAT(
-      current_measurements_[origin1_in_page_context],
-      CPUDeltaMatches(origin1_in_page_context, expected_origin1_in_page_delta2,
+      current_measurements_[origin1_in_bi_context],
+      CPUDeltaMatches(origin1_in_bi_context, expected_origin1_in_bi_delta2,
                       MeasurementAlgorithm::kSum));
   EXPECT_THAT(
-      current_measurements_[origin2_in_page_context],
-      CPUDeltaMatches(origin2_in_page_context, expected_origin2_in_page_delta2,
+      current_measurements_[origin2_in_bi_context],
+      CPUDeltaMatches(origin2_in_bi_context, expected_origin2_in_bi_delta2,
                       MeasurementAlgorithm::kSum));
-  EXPECT_THAT(current_measurements_[origin1_in_other_page_context],
-              CPUDeltaMatches(origin1_in_other_page_context,
-                              expected_origin1_in_other_page_delta2,
+  EXPECT_THAT(current_measurements_[origin1_in_other_bi_context],
+              CPUDeltaMatches(origin1_in_other_bi_context,
+                              expected_origin1_in_other_bi_delta2,
                               MeasurementAlgorithm::kSum));
-  EXPECT_THAT(current_measurements_[origin2_in_other_page_context],
-              CPUDeltaMatches(origin2_in_other_page_context,
-                              expected_origin2_in_other_page_delta2,
+  EXPECT_THAT(current_measurements_[origin2_in_other_bi_context],
+              CPUDeltaMatches(origin2_in_other_bi_context,
+                              expected_origin2_in_other_bi_delta2,
                               MeasurementAlgorithm::kSum));
 
   cpu_monitor_.RepeatingQueryStopped(kDummyQuery);
@@ -1262,7 +1273,7 @@ TEST_F(ResourceAttrCPUMonitorTest, AddRemoveWorkerClients) {
                                                               kOrigin2);
 
   // Assign URL's to frames in the graph so that they'll be mapped to
-  // OriginInPageContexts.
+  // OriginInBrowsingInstanceContexts.
   mock_graph.frame->OnNavigationCommitted(kUrl1, kOrigin1,
                                           /*same_document=*/false);
   mock_graph.other_frame->OnNavigationCommitted(kUrl2, kOrigin2,
@@ -1275,6 +1286,11 @@ TEST_F(ResourceAttrCPUMonitorTest, AddRemoveWorkerClients) {
 
   StartMonitoring();
 
+  // Use a repeating query to get results for a dead `origin2_in_bi_context`
+  // below (non-repeating queries don't get results for dead
+  // `OriginInBrowsingInstanceContext`s).
+  cpu_monitor_.RepeatingQueryStarted(kQueryId);
+
   const FrameContext& frame_context = mock_graph.frame->GetResourceContext();
   const FrameContext& child_frame_context =
       mock_graph.child_frame->GetResourceContext();
@@ -1282,14 +1298,14 @@ TEST_F(ResourceAttrCPUMonitorTest, AddRemoveWorkerClients) {
   const PageContext& other_page_context =
       mock_graph.other_page->GetResourceContext();
 
-  const auto origin1_in_page_context =
-      OriginInPageContext(kOrigin1, page_context);
-  const auto origin2_in_page_context =
-      OriginInPageContext(kOrigin2, page_context);
-  const auto origin1_in_other_page_context =
-      OriginInPageContext(kOrigin1, other_page_context);
-  const auto origin2_in_other_page_context =
-      OriginInPageContext(kOrigin2, other_page_context);
+  const auto origin1_in_bi_context =
+      OriginInBrowsingInstanceContext(kOrigin1, kBrowsingInstanceForPage);
+  const auto origin2_in_bi_context =
+      OriginInBrowsingInstanceContext(kOrigin2, kBrowsingInstanceForPage);
+  const auto origin1_in_other_bi_context =
+      OriginInBrowsingInstanceContext(kOrigin1, kBrowsingInstanceForOtherPage);
+  const auto origin2_in_other_bi_context =
+      OriginInBrowsingInstanceContext(kOrigin2, kBrowsingInstanceForOtherPage);
 
   auto new_worker1 =
       CreateWorkerNodeWithOrigin(graph(), mock_graph.process.get(), kOrigin1);
@@ -1299,7 +1315,7 @@ TEST_F(ResourceAttrCPUMonitorTest, AddRemoveWorkerClients) {
   const auto new_worker2_context = new_worker2->GetResourceContext();
 
   task_env().FastForwardBy(kTimeBetweenMeasurements);
-  UpdateAndGetCPUMeasurements();
+  UpdateAndGetCPUMeasurements(kQueryId);
 
   // During this interval:
   //
@@ -1308,15 +1324,15 @@ TEST_F(ResourceAttrCPUMonitorTest, AddRemoveWorkerClients) {
   //
   //   * `frame` and `worker` are part of `page`
   //   * `other_frame` is part of `other_page`
-  //   * `frame` and `worker` are part of `origin1_in_page`.
-  //   * `other_frame` is part of `origin2_in_other_page`.
+  //   * `frame` and `worker` are part of `origin1_in_bi`.
+  //   * `other_frame` is part of `origin2_in_other_bi`.
   //
   // * `other_process` splits its 50% CPU usage between 3 nodes:
   //   * `child_frame`, `other_worker`, `new_worker2`
   //
   //   * `child_frame` and `other_worker` are part of `other_page`
-  //   * `child_frame` is part of `origin1_in_other_page`.
-  //   * `other_worker` is part of `origin2_in_other_page`.
+  //   * `child_frame` is part of `origin1_in_other_bi`.
+  //   * `other_worker` is part of `origin2_in_other_bi`.
   constexpr base::TimeDelta process_split = kTimeBetweenMeasurements * 0.6 / 4;
   constexpr base::TimeDelta other_process_split =
       kTimeBetweenMeasurements * 0.5 / 3;
@@ -1343,15 +1359,15 @@ TEST_F(ResourceAttrCPUMonitorTest, AddRemoveWorkerClients) {
                               process_split + 2 * other_process_split,
                               MeasurementAlgorithm::kSum));
 
-  EXPECT_THAT(current_measurements_[origin1_in_page_context],
-              CPUDeltaMatches(origin1_in_page_context, 2 * process_split,
+  EXPECT_THAT(current_measurements_[origin1_in_bi_context],
+              CPUDeltaMatches(origin1_in_bi_context, 2 * process_split,
                               MeasurementAlgorithm::kSum));
-  EXPECT_FALSE(base::Contains(current_measurements_, origin2_in_page_context));
-  EXPECT_THAT(current_measurements_[origin1_in_other_page_context],
-              CPUDeltaMatches(origin1_in_other_page_context,
-                              other_process_split, MeasurementAlgorithm::kSum));
-  EXPECT_THAT(current_measurements_[origin2_in_other_page_context],
-              CPUDeltaMatches(origin2_in_other_page_context,
+  EXPECT_FALSE(base::Contains(current_measurements_, origin2_in_bi_context));
+  EXPECT_THAT(current_measurements_[origin1_in_other_bi_context],
+              CPUDeltaMatches(origin1_in_other_bi_context, other_process_split,
+                              MeasurementAlgorithm::kSum));
+  EXPECT_THAT(current_measurements_[origin2_in_other_bi_context],
+              CPUDeltaMatches(origin2_in_other_bi_context,
                               process_split + other_process_split,
                               MeasurementAlgorithm::kSum));
 
@@ -1362,22 +1378,22 @@ TEST_F(ResourceAttrCPUMonitorTest, AddRemoveWorkerClients) {
   new_worker2->AddClientWorker(mock_graph.worker.get());
 
   task_env().FastForwardBy(kTimeBetweenMeasurements / 2);
-  UpdateAndGetCPUMeasurements();
+  UpdateAndGetCPUMeasurements(kQueryId);
 
   // The split of CPU between frames and workers should not change. But during
   // the second half of the interval:
   //
   // * `page` contains 4 contexts: `frame`, `worker`, `new_worker1`,
   //       `new_worker2`
-  // * `origin1_in_page` contains 3 contexts: `frame`, `worker`, `new_worker1`
-  // * `origin2_in_page` contains 1 context: `new_worker2`
+  // * `origin1_in_bi` contains 3 contexts: `frame`, `worker`, `new_worker1`
+  // * `origin2_in_bi` contains 1 context: `new_worker2`
   constexpr base::TimeDelta expected_page_delta =
       /*first half, 2 nodes*/ (2 * process_split) / 2 +
       /*second half, 4 nodes*/ (3 * process_split + other_process_split) / 2;
-  constexpr base::TimeDelta expected_origin1_in_page_delta =
+  constexpr base::TimeDelta expected_origin1_in_bi_delta =
       /*first half, 2 nodes*/ (2 * process_split) / 2 +
       /*second half, 3 nodes*/ (3 * process_split) / 2;
-  constexpr base::TimeDelta expected_origin2_in_page_delta =
+  constexpr base::TimeDelta expected_origin2_in_bi_delta =
       /*first half, 0 nodes*/ base::TimeDelta() +
       /*second half, 1 node*/ other_process_split / 2;
 
@@ -1404,18 +1420,18 @@ TEST_F(ResourceAttrCPUMonitorTest, AddRemoveWorkerClients) {
                               MeasurementAlgorithm::kSum));
 
   EXPECT_THAT(
-      current_measurements_[origin1_in_page_context],
-      CPUDeltaMatches(origin1_in_page_context, expected_origin1_in_page_delta,
+      current_measurements_[origin1_in_bi_context],
+      CPUDeltaMatches(origin1_in_bi_context, expected_origin1_in_bi_delta,
                       MeasurementAlgorithm::kSum));
   EXPECT_THAT(
-      current_measurements_[origin2_in_page_context],
-      CPUDeltaMatches(origin2_in_page_context, expected_origin2_in_page_delta,
+      current_measurements_[origin2_in_bi_context],
+      CPUDeltaMatches(origin2_in_bi_context, expected_origin2_in_bi_delta,
                       MeasurementAlgorithm::kSum));
-  EXPECT_THAT(current_measurements_[origin1_in_other_page_context],
-              CPUDeltaMatches(origin1_in_other_page_context,
-                              other_process_split, MeasurementAlgorithm::kSum));
-  EXPECT_THAT(current_measurements_[origin2_in_other_page_context],
-              CPUDeltaMatches(origin2_in_other_page_context,
+  EXPECT_THAT(current_measurements_[origin1_in_other_bi_context],
+              CPUDeltaMatches(origin1_in_other_bi_context, other_process_split,
+                              MeasurementAlgorithm::kSum));
+  EXPECT_THAT(current_measurements_[origin2_in_other_bi_context],
+              CPUDeltaMatches(origin2_in_other_bi_context,
                               process_split + other_process_split,
                               MeasurementAlgorithm::kSum));
 
@@ -1426,7 +1442,7 @@ TEST_F(ResourceAttrCPUMonitorTest, AddRemoveWorkerClients) {
   new_worker2->AddClientWorker(mock_graph.other_worker.get());
   const base::TimeTicks client_changed_time = base::TimeTicks::Now();
   task_env().FastForwardBy(kTimeBetweenMeasurements / 2);
-  UpdateAndGetCPUMeasurements();
+  UpdateAndGetCPUMeasurements(kQueryId);
 
   // The first half of the interval is unchanged (`page` contains 4 contexts,
   // `other_page` contains 3).
@@ -1437,25 +1453,25 @@ TEST_F(ResourceAttrCPUMonitorTest, AddRemoveWorkerClients) {
   //       `process`)
   // * `other_page` contains 4 contexts: `other_frame` (in `process),
   //       `child_frame`, `other_worker`, `new_worker2` (in `other_process`)
-  // * `origin1_in_page` is unchanged with 3 contexts: `frame`, `worker`,
+  // * `origin1_in_bi` is unchanged with 3 contexts: `frame`, `worker`,
   //       `new_worker1`
-  // * `origin2_in_page` contains no contexts.
-  // * `origin1_in_other_page` is unchanged with 1 context: `child_frame`
-  // * `origin2_in_other_page` contains 3 contexts: `other_frame`,
+  // * `origin2_in_bi` contains no contexts.
+  // * `origin1_in_other_bi` is unchanged with 1 context: `child_frame`
+  // * `origin2_in_other_bi` contains 3 contexts: `other_frame`,
   //       `other_worker`, `new_worker2`
   constexpr base::TimeDelta expected_page_delta2 =
       /*first half, 4 nodes*/ (3 * process_split + other_process_split) / 2 +
       /*second half, 3 nodes*/ (3 * process_split) / 2;
-  constexpr base::TimeDelta expected_origin1_in_page_delta2 = 3 * process_split;
-  constexpr base::TimeDelta expected_origin2_in_page_delta2 =
+  constexpr base::TimeDelta expected_origin1_in_bi_delta2 = 3 * process_split;
+  constexpr base::TimeDelta expected_origin2_in_bi_delta2 =
       /*first half, 1 node*/ other_process_split / 2 +
       /*second half, 0 nodes*/ base::TimeDelta();
   constexpr base::TimeDelta expected_other_page_delta =
       /*first half, 3 nodes*/ (process_split + 2 * other_process_split) / 2 +
       /*second half, 4 nodes*/ (process_split + 3 * other_process_split) / 2;
-  constexpr base::TimeDelta expected_origin1_in_other_page_delta =
+  constexpr base::TimeDelta expected_origin1_in_other_bi_delta =
       other_process_split;
-  constexpr base::TimeDelta expected_origin2_in_other_page_delta =
+  constexpr base::TimeDelta expected_origin2_in_other_bi_delta =
       /*first half, 2 nodes*/ (process_split + other_process_split) / 2 +
       /*second half, 3 nodes*/ (process_split + 2 * other_process_split) / 2;
 
@@ -1467,24 +1483,24 @@ TEST_F(ResourceAttrCPUMonitorTest, AddRemoveWorkerClients) {
                               MeasurementAlgorithm::kSum));
 
   EXPECT_THAT(
-      current_measurements_[origin1_in_page_context],
-      CPUDeltaMatches(origin1_in_page_context, expected_origin1_in_page_delta2,
+      current_measurements_[origin1_in_bi_context],
+      CPUDeltaMatches(origin1_in_bi_context, expected_origin1_in_bi_delta2,
                       MeasurementAlgorithm::kSum));
-  // The measurement of `origin2_in_page_context` doesn't update after the
-  // client list of `new_worker2` changes.
-  EXPECT_THAT(current_measurements_[origin2_in_page_context],
+  // The measurement of `origin2_in_bi_context` doesn't update
+  // after the client list of `new_worker2` changes.
+  EXPECT_THAT(current_measurements_[origin2_in_bi_context],
               CPUDeltaMatchesWithMeasurementTime(
-                  origin2_in_page_context,
-                  /*expected_delta=*/expected_origin2_in_page_delta2,
+                  origin2_in_bi_context,
+                  /*expected_delta=*/expected_origin2_in_bi_delta2,
                   /*expected_background_delta=*/base::TimeDelta(),
                   client_changed_time, MeasurementAlgorithm::kSum));
-  EXPECT_THAT(current_measurements_[origin1_in_other_page_context],
-              CPUDeltaMatches(origin1_in_other_page_context,
-                              expected_origin1_in_other_page_delta,
+  EXPECT_THAT(current_measurements_[origin1_in_other_bi_context],
+              CPUDeltaMatches(origin1_in_other_bi_context,
+                              expected_origin1_in_other_bi_delta,
                               MeasurementAlgorithm::kSum));
-  EXPECT_THAT(current_measurements_[origin2_in_other_page_context],
-              CPUDeltaMatches(origin2_in_other_page_context,
-                              expected_origin2_in_other_page_delta,
+  EXPECT_THAT(current_measurements_[origin2_in_other_bi_context],
+              CPUDeltaMatches(origin2_in_other_bi_context,
+                              expected_origin2_in_other_bi_delta,
                               MeasurementAlgorithm::kSum));
 
   // Test workers with multiple clients, and multiple paths to the same
@@ -1511,25 +1527,25 @@ TEST_F(ResourceAttrCPUMonitorTest, AddRemoveWorkerClients) {
   //   * `other_frame` (in `process), `child_frame`, `other_worker`,
   //   `new_worker2`
   //     (in `other_process`)
-  // * `origin1_in_page` contains 3 contexts: `frame`, `new_worker1`, `worker`
-  // * `origin2_in_page` contains 2 contexts: `other_worker`, `new_worker2`
-  // * `origin1_in_other_page` contains 1 context: `child_frame`
-  // * `origin2_in_other_page` contains 3 contexts: `other_frame`,
+  // * `origin1_in_bi` contains 3 contexts: `frame`, `new_worker1`, `worker`
+  // * `origin2_in_bi` contains 2 contexts: `other_worker`, `new_worker2`
+  // * `origin1_in_other_bi` contains 1 context: `child_frame`
+  // * `origin2_in_other_bi` contains 3 contexts: `other_frame`,
   //   `other_worker`, `new_worker2`
   constexpr base::TimeDelta expected_page_delta3 =
       3 * process_split + 2 * other_process_split;
-  constexpr base::TimeDelta expected_origin1_in_page_delta3 = 3 * process_split;
-  constexpr base::TimeDelta expected_origin2_in_page_delta3 =
+  constexpr base::TimeDelta expected_origin1_in_bi_delta3 = 3 * process_split;
+  constexpr base::TimeDelta expected_origin2_in_bi_delta3 =
       2 * other_process_split;
   constexpr base::TimeDelta expected_other_page_delta2 =
       process_split + 3 * other_process_split;
-  constexpr base::TimeDelta expected_origin1_in_other_page_delta2 =
+  constexpr base::TimeDelta expected_origin1_in_other_bi_delta2 =
       other_process_split;
-  constexpr base::TimeDelta expected_origin2_in_other_page_delta2 =
+  constexpr base::TimeDelta expected_origin2_in_other_bi_delta2 =
       process_split + 2 * other_process_split;
 
   task_env().FastForwardBy(kTimeBetweenMeasurements);
-  UpdateAndGetCPUMeasurements();
+  UpdateAndGetCPUMeasurements(kQueryId);
 
   EXPECT_THAT(current_measurements_[page_context],
               CPUDeltaMatches(page_context, expected_page_delta3,
@@ -1539,20 +1555,20 @@ TEST_F(ResourceAttrCPUMonitorTest, AddRemoveWorkerClients) {
                               MeasurementAlgorithm::kSum));
 
   EXPECT_THAT(
-      current_measurements_[origin1_in_page_context],
-      CPUDeltaMatches(origin1_in_page_context, expected_origin1_in_page_delta3,
+      current_measurements_[origin1_in_bi_context],
+      CPUDeltaMatches(origin1_in_bi_context, expected_origin1_in_bi_delta3,
                       MeasurementAlgorithm::kSum));
   EXPECT_THAT(
-      current_measurements_[origin2_in_page_context],
-      CPUDeltaMatches(origin2_in_page_context, expected_origin2_in_page_delta3,
+      current_measurements_[origin2_in_bi_context],
+      CPUDeltaMatches(origin2_in_bi_context, expected_origin2_in_bi_delta3,
                       MeasurementAlgorithm::kSum));
-  EXPECT_THAT(current_measurements_[origin1_in_other_page_context],
-              CPUDeltaMatches(origin1_in_other_page_context,
-                              expected_origin1_in_other_page_delta2,
+  EXPECT_THAT(current_measurements_[origin1_in_other_bi_context],
+              CPUDeltaMatches(origin1_in_other_bi_context,
+                              expected_origin1_in_other_bi_delta2,
                               MeasurementAlgorithm::kSum));
-  EXPECT_THAT(current_measurements_[origin2_in_other_page_context],
-              CPUDeltaMatches(origin2_in_other_page_context,
-                              expected_origin2_in_other_page_delta2,
+  EXPECT_THAT(current_measurements_[origin2_in_other_bi_context],
+              CPUDeltaMatches(origin2_in_other_bi_context,
+                              expected_origin2_in_other_bi_delta2,
                               MeasurementAlgorithm::kSum));
 
   // Break the link between `new_worker2` and `new_worker1`. `new_worker2`
@@ -1562,7 +1578,7 @@ TEST_F(ResourceAttrCPUMonitorTest, AddRemoveWorkerClients) {
   new_worker2->RemoveClientWorker(new_worker1.get());
 
   task_env().FastForwardBy(kTimeBetweenMeasurements);
-  UpdateAndGetCPUMeasurements();
+  UpdateAndGetCPUMeasurements(kQueryId);
 
   EXPECT_THAT(current_measurements_[page_context],
               CPUDeltaMatches(page_context, expected_page_delta3,
@@ -1572,20 +1588,20 @@ TEST_F(ResourceAttrCPUMonitorTest, AddRemoveWorkerClients) {
                               MeasurementAlgorithm::kSum));
 
   EXPECT_THAT(
-      current_measurements_[origin1_in_page_context],
-      CPUDeltaMatches(origin1_in_page_context, expected_origin1_in_page_delta3,
+      current_measurements_[origin1_in_bi_context],
+      CPUDeltaMatches(origin1_in_bi_context, expected_origin1_in_bi_delta3,
                       MeasurementAlgorithm::kSum));
   EXPECT_THAT(
-      current_measurements_[origin2_in_page_context],
-      CPUDeltaMatches(origin2_in_page_context, expected_origin2_in_page_delta3,
+      current_measurements_[origin2_in_bi_context],
+      CPUDeltaMatches(origin2_in_bi_context, expected_origin2_in_bi_delta3,
                       MeasurementAlgorithm::kSum));
-  EXPECT_THAT(current_measurements_[origin1_in_other_page_context],
-              CPUDeltaMatches(origin1_in_other_page_context,
-                              expected_origin1_in_other_page_delta2,
+  EXPECT_THAT(current_measurements_[origin1_in_other_bi_context],
+              CPUDeltaMatches(origin1_in_other_bi_context,
+                              expected_origin1_in_other_bi_delta2,
                               MeasurementAlgorithm::kSum));
-  EXPECT_THAT(current_measurements_[origin2_in_other_page_context],
-              CPUDeltaMatches(origin2_in_other_page_context,
-                              expected_origin2_in_other_page_delta2,
+  EXPECT_THAT(current_measurements_[origin2_in_other_bi_context],
+              CPUDeltaMatches(origin2_in_other_bi_context,
+                              expected_origin2_in_other_bi_delta2,
                               MeasurementAlgorithm::kSum));
 
   // Need to remove all clients before deleting WorkerNodes
@@ -1604,16 +1620,19 @@ TEST_F(ResourceAttrCPUMonitorTest, AddRemoveWorkerClients) {
   // `other_worker`. The `mock_graph` destructor will remove the others, and
   // CHECK if they aren't there.
   mock_graph.other_worker->RemoveClientWorker(new_worker1.get());
+
+  cpu_monitor_.RepeatingQueryStopped(kQueryId);
 }
 
 // Tests that CPU usage of processes is correctly distributed between
-// OriginInPageContexts when a frame origin changes between measurements.
+// OriginInBrowsingInstanceContexts when a frame origin changes between
+// measurements.
 TEST_F(ResourceAttrCPUMonitorTest, NavigateChangesOrigin) {
   MockMultiplePagesAndWorkersWithKnownOriginsGraph mock_graph(graph(), kOrigin1,
                                                               kOrigin2);
 
   // Assign URL's to some frames in the graph so that they'll be mapped to
-  // OriginInPageContexts.
+  // OriginInBrowsingInstanceContexts.
   mock_graph.other_frame->OnNavigationCommitted(kUrl2, kOrigin2,
                                                 /*same_document=*/false);
   mock_graph.child_frame->OnNavigationCommitted(kUrl1, kOrigin1,
@@ -1624,6 +1643,11 @@ TEST_F(ResourceAttrCPUMonitorTest, NavigateChangesOrigin) {
 
   StartMonitoring();
 
+  // Use a repeating query to get results for a dead
+  // `origin2_in_other_bi_context` below (non-repeating queries don't get
+  // results for dead `OriginInBrowsingInstanceContext`s).
+  cpu_monitor_.RepeatingQueryStarted(kQueryId);
+
   const ProcessContext& process_context =
       mock_graph.process->GetResourceContext();
   const ProcessContext& other_process_context =
@@ -1632,14 +1656,14 @@ TEST_F(ResourceAttrCPUMonitorTest, NavigateChangesOrigin) {
   const PageContext& other_page_context =
       mock_graph.other_page->GetResourceContext();
 
-  const auto origin1_in_page_context =
-      OriginInPageContext(kOrigin1, page_context);
-  const auto origin2_in_page_context =
-      OriginInPageContext(kOrigin2, page_context);
-  const auto origin1_in_other_page_context =
-      OriginInPageContext(kOrigin1, other_page_context);
-  const auto origin2_in_other_page_context =
-      OriginInPageContext(kOrigin2, other_page_context);
+  const auto origin1_in_bi_context =
+      OriginInBrowsingInstanceContext(kOrigin1, kBrowsingInstanceForPage);
+  const auto origin2_in_bi_context =
+      OriginInBrowsingInstanceContext(kOrigin2, kBrowsingInstanceForPage);
+  const auto origin1_in_other_bi_context =
+      OriginInBrowsingInstanceContext(kOrigin1, kBrowsingInstanceForOtherPage);
+  const auto origin2_in_other_bi_context =
+      OriginInBrowsingInstanceContext(kOrigin2, kBrowsingInstanceForOtherPage);
 
   // Navigate frames partway through the measurement.
   task_env().FastForwardBy(kTimeBetweenMeasurements / 3);
@@ -1658,7 +1682,7 @@ TEST_F(ResourceAttrCPUMonitorTest, NavigateChangesOrigin) {
                                                 /*same_document=*/true);
 
   task_env().FastForwardBy(kTimeBetweenMeasurements * 2 / 3);
-  UpdateAndGetCPUMeasurements();
+  UpdateAndGetCPUMeasurements(kQueryId);
 
   // * `process` split its 60% CPU usage between 3 nodes:
   //   * `frame`, `other_frame`, `worker`
@@ -1669,18 +1693,18 @@ TEST_F(ResourceAttrCPUMonitorTest, NavigateChangesOrigin) {
   //
   // For the first 1/3 of the period:
   //
-  //   * `origin1_in_page` contains 1 node: `worker`.
-  //   * `origin2_in_page` contains 0 nodes.
-  //   * `origin1_in_other_page` contains 1 node: `child_frame`.
-  //   * `origin2_in_other_page` contains 2 nodes: `other_frame`,
+  //   * `origin1_in_bi` contains 1 node: `worker`.
+  //   * `origin2_in_bi` contains 0 nodes.
+  //   * `origin1_in_other_bi` contains 1 node: `child_frame`.
+  //   * `origin2_in_other_bi` contains 2 nodes: `other_frame`,
   //     `other_worker`.
   //
   // For the last 2/3:
   //
-  //   * `origin1_in_page` contains 1 node: `worker`.
-  //   * `origin2_in_page` contains 1 node: `frame`.
-  //   * `origin1_in_other_page` contains 2 nodes: `child_frame`, `other_frame`.
-  //   * `origin2_in_other_page` contains 1 node: `other_worker`.
+  //   * `origin1_in_bi` contains 1 node: `worker`.
+  //   * `origin2_in_bi` contains 1 node: `frame`.
+  //   * `origin1_in_other_bi` contains 2 nodes: `child_frame`, `other_frame`.
+  //   * `origin2_in_other_bi` contains 1 node: `other_worker`.
   constexpr base::TimeDelta process_split = kTimeBetweenMeasurements * 0.6 / 3;
   constexpr base::TimeDelta other_process_split =
       kTimeBetweenMeasurements * 0.5 / 2;
@@ -1689,14 +1713,14 @@ TEST_F(ResourceAttrCPUMonitorTest, NavigateChangesOrigin) {
   constexpr base::TimeDelta expected_other_page_delta =
       process_split + 2 * other_process_split;
 
-  constexpr base::TimeDelta expected_origin1_in_page_delta = process_split;
-  constexpr base::TimeDelta expected_origin2_in_page_delta =
+  constexpr base::TimeDelta expected_origin1_in_bi_delta = process_split;
+  constexpr base::TimeDelta expected_origin2_in_bi_delta =
       /*first 1/3, 0 nodes*/ base::TimeDelta() +
       /*last 2/3, 1 node*/ process_split * 2 / 3;
-  constexpr base::TimeDelta expected_origin1_in_other_page_delta =
+  constexpr base::TimeDelta expected_origin1_in_other_bi_delta =
       /*first 1/3, 1 node*/ other_process_split / 3 +
       /*last 2/3, 2 nodes*/ (process_split + other_process_split) * 2 / 3;
-  constexpr base::TimeDelta expected_origin2_in_other_page_delta =
+  constexpr base::TimeDelta expected_origin2_in_other_bi_delta =
       /*first 1/3, 2 nodes*/ (process_split + other_process_split) / 3 +
       /*last 2/3, 1 node*/ other_process_split * 2 / 3;
 
@@ -1714,21 +1738,23 @@ TEST_F(ResourceAttrCPUMonitorTest, NavigateChangesOrigin) {
                               MeasurementAlgorithm::kSum));
 
   EXPECT_THAT(
-      current_measurements_[origin1_in_page_context],
-      CPUDeltaMatches(origin1_in_page_context, expected_origin1_in_page_delta,
+      current_measurements_[origin1_in_bi_context],
+      CPUDeltaMatches(origin1_in_bi_context, expected_origin1_in_bi_delta,
                       MeasurementAlgorithm::kSum));
   EXPECT_THAT(
-      current_measurements_[origin2_in_page_context],
-      CPUDeltaMatches(origin2_in_page_context, expected_origin2_in_page_delta,
+      current_measurements_[origin2_in_bi_context],
+      CPUDeltaMatches(origin2_in_bi_context, expected_origin2_in_bi_delta,
                       MeasurementAlgorithm::kSum));
-  EXPECT_THAT(current_measurements_[origin1_in_other_page_context],
-              CPUDeltaMatches(origin1_in_other_page_context,
-                              expected_origin1_in_other_page_delta,
+  EXPECT_THAT(current_measurements_[origin1_in_other_bi_context],
+              CPUDeltaMatches(origin1_in_other_bi_context,
+                              expected_origin1_in_other_bi_delta,
                               MeasurementAlgorithm::kSum));
-  EXPECT_THAT(current_measurements_[origin2_in_other_page_context],
-              CPUDeltaMatches(origin2_in_other_page_context,
-                              expected_origin2_in_other_page_delta,
+  EXPECT_THAT(current_measurements_[origin2_in_other_bi_context],
+              CPUDeltaMatches(origin2_in_other_bi_context,
+                              expected_origin2_in_other_bi_delta,
                               MeasurementAlgorithm::kSum));
+
+  cpu_monitor_.RepeatingQueryStopped(kQueryId);
 }
 
 // Tests that `cumulative_background_cpu` is correctly maintained, including
@@ -1834,6 +1860,134 @@ TEST_F(ResourceAttrCPUMonitorTest, BackgroundCPU) {
     // Don't verify that process background CPU time is correctly split, as that
     // would be redundant.
   }
+}
+
+// Test that CPU time is accumulated correctly when an
+// `OriginInBrowsingInstanceContext` dies and is revived, even when there are
+// concurrent queries.
+TEST_F(ResourceAttrCPUMonitorTest, OriginInBrowsingInstanceContextLifetime) {
+  performance_manager::MockSinglePageInSingleProcessGraph mock_graph(graph());
+
+  constexpr double kCPUProportion = 0.5;
+  SetProcessCPUUsage(mock_graph.process.get(), kCPUProportion);
+
+  StartMonitoring();
+
+  cpu_monitor_.RepeatingQueryStarted(kQueryId);
+  cpu_monitor_.RepeatingQueryStarted(kOtherQueryId);
+
+  const OriginInBrowsingInstanceContext kOrigin1Context(
+      kOrigin1, kBrowsingInstanceForPage);
+  const OriginInBrowsingInstanceContext kOrigin2Context(
+      kOrigin2, kBrowsingInstanceForPage);
+
+  mock_graph.frame->OnNavigationCommitted(kUrl1, kOrigin1,
+                                          /*same_document=*/false);
+  task_env().FastForwardBy(kTimeBetweenMeasurements / 2);
+  mock_graph.frame->OnNavigationCommitted(kUrl2, kOrigin2,
+                                          /*same_document=*/false);
+  task_env().FastForwardBy(kTimeBetweenMeasurements / 2);
+
+  {
+    // Query observes:
+    // - Origin 1: 1/2 interval (dead at time of measurement)
+    // - Origin 2: 1/2 interval
+    // Because the origin changed midway through the measurement.
+    auto measurement = cpu_monitor_.UpdateAndGetCPUMeasurements(kQueryId);
+    EXPECT_EQ(measurement[kOrigin1Context].cpu_time_result->cumulative_cpu,
+              kCPUProportion * kTimeBetweenMeasurements * 0.5);
+    EXPECT_EQ(measurement[kOrigin2Context].cpu_time_result->cumulative_cpu,
+              kCPUProportion * kTimeBetweenMeasurements * 0.5);
+  }
+
+  task_env().FastForwardBy(kTimeBetweenMeasurements);
+
+  {
+    // Other query observes:
+    // - Origin 1: 1/2 interval (dead at time of measurement)
+    // - Origin 2: 3/2 interval
+    // The fact that antother query already observed the CPU usage for origin 1
+    // and that the context is dead since then does not affect the results.
+    auto measurement = cpu_monitor_.UpdateAndGetCPUMeasurements(kOtherQueryId);
+    EXPECT_EQ(measurement[kOrigin1Context].cpu_time_result->cumulative_cpu,
+              kCPUProportion * kTimeBetweenMeasurements * 0.5);
+    EXPECT_EQ(measurement[kOrigin2Context].cpu_time_result->cumulative_cpu,
+              kCPUProportion * kTimeBetweenMeasurements * 1.5);
+  }
+
+  mock_graph.frame->OnNavigationCommitted(kUrl1, kOrigin1,
+                                          /*same_document=*/false);
+  task_env().FastForwardBy(kTimeBetweenMeasurements);
+
+  {
+    // Query observes:
+    // - Origin 1: 3/2 interval
+    // - Origin 2: 3/2 interval (dead at time of measurement)
+    // The cumulative CPU usage for origin 1 is not reset because there was a
+    // result for that context at the last measurement. The fact that the
+    // context was transiently dead does not affect the results.
+    auto measurement = cpu_monitor_.UpdateAndGetCPUMeasurements(kQueryId);
+    EXPECT_EQ(measurement[kOrigin1Context].cpu_time_result->cumulative_cpu,
+              kCPUProportion * kTimeBetweenMeasurements * 1.5);
+    EXPECT_EQ(measurement[kOrigin2Context].cpu_time_result->cumulative_cpu,
+              kCPUProportion * kTimeBetweenMeasurements * 1.5);
+  }
+
+  {
+    // Other query observes:
+    // - Origin 1: 3/2 interval
+    // - Origin 2: 3/2 interval (dead at time of measurement)
+    auto measurement = cpu_monitor_.UpdateAndGetCPUMeasurements(kOtherQueryId);
+    EXPECT_EQ(measurement[kOrigin1Context].cpu_time_result->cumulative_cpu,
+              kCPUProportion * kTimeBetweenMeasurements * 1.5);
+    EXPECT_EQ(measurement[kOrigin2Context].cpu_time_result->cumulative_cpu,
+              kCPUProportion * kTimeBetweenMeasurements * 1.5);
+  }
+
+  task_env().FastForwardBy(kTimeBetweenMeasurements);
+
+  {
+    // Query observes:
+    // - Origin 1: 5/2 interval
+    // - Origin 2: no result (dead at time of measurement)
+    // A context that was dead at the last measurement and not revived since
+    // then is not included in results.
+    auto measurement = cpu_monitor_.UpdateAndGetCPUMeasurements(kQueryId);
+    EXPECT_EQ(measurement[kOrigin1Context].cpu_time_result->cumulative_cpu,
+              kCPUProportion * kTimeBetweenMeasurements * 2.5);
+    EXPECT_FALSE(base::Contains(measurement, kOrigin2Context));
+  }
+
+  {
+    // Other query observes:
+    // - Origin 1: 5/2 interval
+    // - Origin 2: no result
+    auto measurement = cpu_monitor_.UpdateAndGetCPUMeasurements(kOtherQueryId);
+    EXPECT_EQ(measurement[kOrigin1Context].cpu_time_result->cumulative_cpu,
+              kCPUProportion * kTimeBetweenMeasurements * 2.5);
+    EXPECT_FALSE(base::Contains(measurement, kOrigin2Context));
+  }
+
+  // Revive the context for origin 2.
+  mock_graph.frame->OnNavigationCommitted(kUrl2, kOrigin2,
+                                          /*same_document=*/false);
+  task_env().FastForwardBy(kTimeBetweenMeasurements);
+
+  {
+    // Query observes:
+    // - Origin 1: 5/2 interval
+    // - Origin 2: 1/2 interval
+    // The cumultative CPU usage for origin 2 is reset because the context
+    // wasn't in the last returned result.
+    auto measurement = cpu_monitor_.UpdateAndGetCPUMeasurements(kQueryId);
+    EXPECT_EQ(measurement[kOrigin1Context].cpu_time_result->cumulative_cpu,
+              kCPUProportion * kTimeBetweenMeasurements * 2.5);
+    EXPECT_EQ(measurement[kOrigin2Context].cpu_time_result->cumulative_cpu,
+              kCPUProportion * kTimeBetweenMeasurements * 1.0);
+  }
+
+  cpu_monitor_.RepeatingQueryStopped(kQueryId);
+  cpu_monitor_.RepeatingQueryStopped(kOtherQueryId);
 }
 
 // Tests that errors returned from ProcessMetrics are correctly ignored.

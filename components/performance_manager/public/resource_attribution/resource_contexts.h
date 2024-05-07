@@ -8,7 +8,7 @@
 #include "base/types/strong_alias.h"
 #include "base/types/variant_util.h"
 #include "components/performance_manager/public/resource_attribution/frame_context.h"
-#include "components/performance_manager/public/resource_attribution/origin_in_page_context.h"
+#include "components/performance_manager/public/resource_attribution/origin_in_browsing_instance_context.h"
 #include "components/performance_manager/public/resource_attribution/page_context.h"
 #include "components/performance_manager/public/resource_attribution/process_context.h"
 #include "components/performance_manager/public/resource_attribution/type_helpers.h"
@@ -52,17 +52,19 @@ namespace resource_attribution {
 // * ProcessContext -> ProcessNode
 // * WorkerContext -> WorkerNode
 
-// Variations of another context:
+// And more advanced context aggregations:
 //
-// * OriginInPageContext: a subset of PageContext covering only frames and
-//                        workers with a specific url::Origin.
+// * OriginInBrowsingInstanceContext: aggregates FrameContexts and
+//   WorkerContexts that belong to a given browsing instance and origin (a
+//   FrameContext's origin can change, so it can belong to different
+//   OriginInBrowsingInstanceContexts at different points in time).
 
 // A variant holding any type of resource context.
 using ResourceContext = absl::variant<FrameContext,
                                       PageContext,
                                       ProcessContext,
                                       WorkerContext,
-                                      OriginInPageContext>;
+                                      OriginInBrowsingInstanceContext>;
 
 // Returns true iff `context` currently holds a resource context of type T.
 template <typename T,

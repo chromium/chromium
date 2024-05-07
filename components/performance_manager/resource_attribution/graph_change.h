@@ -50,8 +50,8 @@ struct GraphChangeRemoveWorker {
 };
 
 // Not technically a graph change, but modifies the distribution of FrameNode
-// and WorkerNode measurements to OriginInPageContexts the same way graph
-// changes modify the distribution of measurements to PageContexts.
+// and WorkerNode measurements to OriginInBrowsingInstanceContexts the same way
+// graph changes modify the distribution of measurements to PageContexts.
 struct GraphChangeUpdateOrigin {
   GraphChangeUpdateOrigin(const performance_manager::Node* node,
                           std::optional<url::Origin> previous_origin);

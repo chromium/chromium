@@ -173,7 +173,9 @@ inline void PrintTo(const ResultMetadata& metadata, std::ostream* os) {
 }
 
 inline void PrintTo(const CPUTimeResult& result, std::ostream* os) {
-  *os << "cpu:" << result.cumulative_cpu << ",start_time:" << result.start_time
+  *os << "cumulative_cpu:" << result.cumulative_cpu
+      << ",cumulative_background_cpu:" << result.cumulative_background_cpu
+      << ",start_time:" << result.start_time
       << ",metadata:" << ::testing::PrintToString(result.metadata) << " ("
       << (result.metadata.measurement_time - result.start_time) << ")";
 }
@@ -203,7 +205,8 @@ inline void PrintTo(const WorkerContext& context, std::ostream* os) {
   *os << context.ToString();
 }
 
-inline void PrintTo(const OriginInPageContext& context, std::ostream* os) {
+inline void PrintTo(const OriginInBrowsingInstanceContext& context,
+                    std::ostream* os) {
   *os << context.ToString();
 }
 

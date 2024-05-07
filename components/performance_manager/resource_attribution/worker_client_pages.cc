@@ -13,36 +13,41 @@ namespace resource_attribution {
 
 namespace {
 
-// Recursively visits all client workers of `worker_node`, and all client
-// frames of each worker, and adds each frame's PageNode to `client_pages`.
-// `visited_workers` is used to check for loops in the graph of client
-// workers.
-void RecursivelyFindClientPages(const WorkerNode* worker_node,
-                                std::set<const PageNode*>& client_pages,
-                                std::set<const WorkerNode*>& visited_workers) {
+// Recursively visits all client workers of `worker_node`, and all client frames
+// of each worker, and adds each frame's PageNode and browsing instance to
+// `client_pages` and `client_browsing_instances`. `visited_workers` is used to
+// check for loops in the graph of client workers.
+void RecursivelyFindClientPagesAndBrowsingInstances(
+    const WorkerNode* worker_node,
+    std::set<const PageNode*>& client_pages,
+    std::set<content::BrowsingInstanceId>& client_browsing_instances,
+    std::set<const WorkerNode*>& visited_workers) {
   const auto [_, inserted] = visited_workers.insert(worker_node);
   if (!inserted) {
     // Already visited, halt recursion.
     return;
   }
-  worker_node->VisitClientFrames([&client_pages](const FrameNode* f) {
+  worker_node->VisitClientFrames([&](const FrameNode* f) {
     client_pages.insert(f->GetPageNode());
+    client_browsing_instances.insert(f->GetBrowsingInstanceId());
     return true;
   });
-  worker_node->VisitClientWorkers(
-      [&client_pages, &visited_workers](const WorkerNode* w) {
-        RecursivelyFindClientPages(w, client_pages, visited_workers);
-        return true;
-      });
+  worker_node->VisitClientWorkers([&](const WorkerNode* w) {
+    RecursivelyFindClientPagesAndBrowsingInstances(
+        w, client_pages, client_browsing_instances, visited_workers);
+    return true;
+  });
 }
 
 }  // namespace
 
-std::set<const PageNode*> GetWorkerClientPages(const WorkerNode* worker_node) {
+std::pair<std::set<const PageNode*>, std::set<content::BrowsingInstanceId>>
+GetWorkerClientPagesAndBrowsingInstances(const WorkerNode* worker_node) {
   std::set<const PageNode*> client_pages;
+  std::set<content::BrowsingInstanceId> client_browsing_instances;
   std::set<const WorkerNode*> visited_workers;
-  RecursivelyFindClientPages(worker_node, client_pages, visited_workers);
-  return client_pages;
+  RecursivelyFindClientPagesAndBrowsingInstances(
+      worker_node, client_pages, client_browsing_instances, visited_workers);
+  return {std::move(client_pages), std::move(client_browsing_instances)};
 }
-
 }  // namespace resource_attribution
