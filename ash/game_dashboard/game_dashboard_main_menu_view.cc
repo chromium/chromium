@@ -62,6 +62,7 @@
 #include "ui/views/controls/button/image_button.h"
 #include "ui/views/controls/focus_ring.h"
 #include "ui/views/controls/highlight_path_generator.h"
+#include "ui/views/controls/image_view.h"
 #include "ui/views/controls/label.h"
 #include "ui/views/layout/box_layout.h"
 #include "ui/views/layout/box_layout_view.h"
@@ -273,26 +274,19 @@ class FeatureHeader : public views::View {
  public:
   FeatureHeader(bool is_enabled,
                 const gfx::VectorIcon& icon,
-                const std::u16string& title) {
+                const std::u16string& title)
+      : vector_icon_(&icon) {
     auto* layout = SetLayoutManager(std::make_unique<views::BoxLayout>());
     layout->set_cross_axis_alignment(
         views::BoxLayout::CrossAxisAlignment::kCenter);
 
     // Add icon.
-    auto* icon_container = AddChildView(std::make_unique<views::View>());
-    icon_container->SetLayoutManager(std::make_unique<views::FillLayout>());
-    icon_container->SetBackground(views::CreateThemedRoundedRectBackground(
+    icon_view_ = AddChildView(std::make_unique<views::ImageView>());
+    icon_view_->SetBackground(views::CreateThemedRoundedRectBackground(
         cros_tokens::kCrosSysSystemOnBase,
         /*radius=*/12.0f));
-    icon_container->SetBorder(views::CreateEmptyBorder(gfx::Insets::VH(6, 6)));
-    icon_container->SetProperty(views::kMarginsKey,
-                                gfx::Insets::TLBR(0, 0, 0, 16));
-    icon_container->AddChildView(
-        std::make_unique<views::ImageView>(ui::ImageModel::FromVectorIcon(
-            icon,
-            is_enabled ? cros_tokens::kCrosSysOnSurface
-                       : cros_tokens::kCrosSysDisabled,
-            /*icon_size=*/20)));
+    icon_view_->SetBorder(views::CreateEmptyBorder(gfx::Insets::VH(6, 6)));
+    icon_view_->SetProperty(views::kMarginsKey, gfx::Insets::TLBR(0, 0, 0, 16));
 
     // Add title and sub-title.
     auto* tag_container =
@@ -304,29 +298,37 @@ class FeatureHeader : public views::View {
     layout->SetFlexForView(tag_container, /*flex=*/1);
 
     // Add title.
-    auto* feature_title =
-        tag_container->AddChildView(std::make_unique<views::Label>(title));
-    feature_title->SetAutoColorReadabilityEnabled(false);
-    feature_title->SetEnabledColorId(is_enabled
-                                         ? cros_tokens::kCrosSysOnSurface
-                                         : cros_tokens::kCrosSysDisabled);
-    feature_title->SetFontList(
-        TypographyProvider::Get()->ResolveTypographyToken(
-            TypographyToken::kCrosTitle2));
-    feature_title->SetHorizontalAlignment(gfx::ALIGN_LEFT);
-    feature_title->SetMultiLine(true);
+    title_ = tag_container->AddChildView(std::make_unique<views::Label>(title));
+    title_->SetAutoColorReadabilityEnabled(false);
+    title_->SetFontList(TypographyProvider::Get()->ResolveTypographyToken(
+        TypographyToken::kCrosTitle2));
+    title_->SetHorizontalAlignment(gfx::ALIGN_LEFT);
+    title_->SetMultiLine(true);
     // Add sub-title.
-    sub_title_ = tag_container->AddChildView(bubble_utils::CreateLabel(
-        TypographyToken::kCrosAnnotation2, u"",
-        is_enabled ? cros_tokens::kCrosSysOnSurfaceVariant
-                   : cros_tokens::kCrosSysDisabled));
+    sub_title_ = tag_container->AddChildView(std::make_unique<views::Label>());
+    sub_title_->SetAutoColorReadabilityEnabled(false);
+    sub_title_->SetFontList(TypographyProvider::Get()->ResolveTypographyToken(
+        TypographyToken::kCrosAnnotation2));
     sub_title_->SetHorizontalAlignment(gfx::ALIGN_LEFT);
     sub_title_->SetMultiLine(true);
+
+    UpdateColors(is_enabled);
   }
 
   FeatureHeader(const FeatureHeader&) = delete;
   FeatureHeader& operator=(const FeatureHeader) = delete;
   ~FeatureHeader() override = default;
+
+  void UpdateColors(bool is_enabled) {
+    const auto color_id = is_enabled ? cros_tokens::kCrosSysOnSurface
+                                     : cros_tokens::kCrosSysDisabled;
+    icon_view_->SetImage(ui::ImageModel::FromVectorIcon(*vector_icon_, color_id,
+                                                        /*icon_size=*/20));
+    title_->SetEnabledColorId(color_id);
+    sub_title_->SetEnabledColorId(is_enabled
+                                      ? cros_tokens::kCrosSysOnSurfaceVariant
+                                      : cros_tokens::kCrosSysDisabled);
+  }
 
   void UpdateSubtitle(const std::u16string& text) {
     // For multiline label, if the fixed width is not set, the preferred size is
@@ -342,6 +344,10 @@ class FeatureHeader : public views::View {
   }
 
  private:
+  const raw_ptr<const gfx::VectorIcon> vector_icon_;
+
+  raw_ptr<views::ImageView> icon_view_ = nullptr;
+  raw_ptr<views::Label> title_ = nullptr;
   raw_ptr<views::Label> sub_title_ = nullptr;
 };
 
@@ -480,8 +486,6 @@ class GameDashboardMainMenuView::GameControlsDetailsRow : public views::Button {
             IDS_ASH_GAME_DASHBOARD_FEATURE_NOT_AVAILABLE_TOOLTIP));
       }
     } else {
-      const bool is_feature_enabled = IsGameControlsFeatureEnabled(*flags);
-      UpdateSubtitle(/*is_game_controls_enabled=*/is_feature_enabled);
       // Add switch_button to enable or disable game controls.
       feature_switch_ =
           AddChildView(std::make_unique<Switch>(base::BindRepeating(
@@ -489,15 +493,20 @@ class GameDashboardMainMenuView::GameControlsDetailsRow : public views::Button {
               base::Unretained(this))));
       feature_switch_->SetProperty(views::kMarginsKey,
                                    gfx::Insets::TLBR(0, 8, 0, 18));
+      const bool is_feature_enabled = IsGameControlsFeatureEnabled(*flags);
       feature_switch_->SetIsOn(is_feature_enabled);
       feature_switch_->SetTooltipText(l10n_util::GetStringUTF16(
           feature_switch_->GetIsOn()
               ? IDS_ASH_GAME_DASHBOARD_GC_FEATURE_SWITCH_TOOLTIPS_OFF
               : IDS_ASH_GAME_DASHBOARD_GC_FEATURE_SWITCH_TOOLTIPS_ON));
       // Add arrow icon.
-      AddChildView(
-          std::make_unique<views::ImageView>(ui::ImageModel::FromVectorIcon(
-              kQuickSettingsRightArrowIcon, cros_tokens::kCrosSysOnSurface)));
+      arrow_icon_ = AddChildView(std::make_unique<views::ImageView>());
+
+      UpdateColors(is_feature_enabled);
+      SetFocusBehavior(is_feature_enabled ? FocusBehavior::ALWAYS
+                                          : FocusBehavior::ACCESSIBLE_ONLY);
+
+      UpdateSubtitle(/*is_game_controls_enabled=*/is_feature_enabled);
     }
   }
 
@@ -535,8 +544,12 @@ class GameDashboardMainMenuView::GameControlsDetailsRow : public views::Button {
   void OnSetUpButtonPressed() { EnableEditMode(); }
 
   void OnFeatureSwitchButtonPressed() {
-    const bool is_toggled = feature_switch_->GetIsOn();
-    UpdateSubtitle(/*is_game_controls_enabled=*/is_toggled);
+    const bool is_switch_on = feature_switch_->GetIsOn();
+    // When `feature_switch_` toggles on or off, it updates the colors but does
+    // not enable or disable this button.
+    UpdateColors(is_switch_on);
+    SetFocusBehavior(is_switch_on ? FocusBehavior::ALWAYS
+                                  : FocusBehavior::ACCESSIBLE_ONLY);
 
     auto* game_window = GetGameWindow();
     game_window->SetProperty(
@@ -546,14 +559,27 @@ class GameDashboardMainMenuView::GameControlsDetailsRow : public views::Button {
             static_cast<ArcGameControlsFlag>(
                 /*enable_flag=*/ArcGameControlsFlag::kEnabled |
                 ArcGameControlsFlag::kHint),
-            is_toggled));
+            is_switch_on));
     feature_switch_->SetTooltipText(l10n_util::GetStringUTF16(
-        feature_switch_->GetIsOn()
-            ? IDS_ASH_GAME_DASHBOARD_GC_FEATURE_SWITCH_TOOLTIPS_OFF
-            : IDS_ASH_GAME_DASHBOARD_GC_FEATURE_SWITCH_TOOLTIPS_ON));
+        is_switch_on ? IDS_ASH_GAME_DASHBOARD_GC_FEATURE_SWITCH_TOOLTIPS_OFF
+                     : IDS_ASH_GAME_DASHBOARD_GC_FEATURE_SWITCH_TOOLTIPS_ON));
 
     main_menu_->UpdateGameControlsTile();
-    RecordGameDashboardControlsFeatureToggleState(is_toggled);
+    UpdateSubtitle(/*is_game_controls_enabled=*/is_switch_on);
+
+    RecordGameDashboardControlsFeatureToggleState(is_switch_on);
+  }
+
+  void UpdateColors(bool enabled) {
+    SetBackground(views::CreateThemedRoundedRectBackground(
+        enabled ? cros_tokens::kCrosSysSystemOnBase
+                : cros_tokens::kCrosSysSystemOnBaseOpaque,
+        kGCDetailRowCorners));
+    header_->UpdateColors(enabled);
+    CHECK(arrow_icon_);
+    arrow_icon_->SetImage(ui::ImageModel::FromVectorIcon(
+        kQuickSettingsRightArrowIcon, enabled ? cros_tokens::kCrosSysOnSurface
+                                              : cros_tokens::kCrosSysDisabled));
   }
 
   void UpdateSubtitle(bool is_feature_enabled) {
@@ -706,6 +732,7 @@ class GameDashboardMainMenuView::GameControlsDetailsRow : public views::Button {
   raw_ptr<FeatureHeader> header_ = nullptr;
   raw_ptr<PillButton> setup_button_ = nullptr;
   raw_ptr<Switch> feature_switch_ = nullptr;
+  raw_ptr<views::ImageView> arrow_icon_ = nullptr;
 
   // App name from the app where this view is anchored.
   std::string app_name_;
