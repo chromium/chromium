@@ -10,7 +10,7 @@
 #include "base/metrics/histogram_functions.h"
 #include "base/task/sequenced_task_runner.h"
 #include "base/time/time.h"
-#include "chrome/browser/enterprise/data_controls/rules_service.h"
+#include "chrome/browser/enterprise/data_controls/chrome_rules_service.h"
 #include "chrome/browser/interstitials/enterprise_util.h"
 #include "chrome/browser/profiles/profile.h"
 #include "chrome/browser/safe_browsing/chrome_enterprise_url_lookup_service.h"
@@ -178,7 +178,7 @@ void LogVerdictSource(
 bool IsScreenshotAllowedByDataControls(content::BrowserContext* context,
                                        const GURL& url) {
   auto* rules =
-      data_controls::RulesServiceFactory::GetForBrowserContext(context);
+      data_controls::ChromeRulesServiceFactory::GetForBrowserContext(context);
   return rules ? !rules->BlockScreenshots(url) : true;
 }
 

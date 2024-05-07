@@ -35,11 +35,14 @@ source_set("data_controls") {
     "prefs.h",
     "rule.cc",
     "rule.h",
+    "rules_service.cc",
+    "rules_service.h",
     "verdict.cc",
     "verdict.h",
   ]
 
   deps = [
+    ":features",
     "//base",
     "//components/keyed_service/core",
     "//components/policy/core/browser",

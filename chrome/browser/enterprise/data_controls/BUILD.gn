@@ -10,14 +10,14 @@ source_set("data_controls") {
   sources = [
     "chrome_dlp_rules_manager.cc",
     "chrome_dlp_rules_manager.h",
+    "chrome_rules_service.cc",
+    "chrome_rules_service.h",
     "data_controls_dialog.cc",
     "data_controls_dialog.h",
     "dlp_reporting_manager.cc",
     "dlp_reporting_manager.h",
     "reporting_service.cc",
     "reporting_service.h",
-    "rules_service.cc",
-    "rules_service.h",
   ]
 
   public_deps = [
@@ -93,8 +93,8 @@ source_set("unit_tests") {
   testonly = true
 
   sources = [
+    "chrome_rules_service_unittest.cc",
     "reporting_service_unittest.cc",
-    "rules_service_unittest.cc",
   ]
   deps = [
     ":data_controls",

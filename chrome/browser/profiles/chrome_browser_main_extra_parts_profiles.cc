@@ -514,8 +514,8 @@
 #endif  // BUILDFLAG(ENABLE_BOUND_SESSION_CREDENTIALS)
 
 #if BUILDFLAG(ENTERPRISE_DATA_CONTROLS)
+#include "chrome/browser/enterprise/data_controls/chrome_rules_service.h"
 #include "chrome/browser/enterprise/data_controls/reporting_service.h"
-#include "chrome/browser/enterprise/data_controls/rules_service.h"
 #endif
 
 namespace chrome {
@@ -752,7 +752,7 @@ void ChromeBrowserMainExtraPartsProfiles::
 #endif
 #if BUILDFLAG(ENTERPRISE_DATA_CONTROLS)
   data_controls::ReportingServiceFactory::GetInstance();
-  data_controls::RulesServiceFactory::GetInstance();
+  data_controls::ChromeRulesServiceFactory::GetInstance();
 #endif
   data_sharing::DataSharingServiceFactory::GetInstance();
 #if !BUILDFLAG(IS_ANDROID)

@@ -2,10 +2,11 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#ifndef CHROME_BROWSER_ENTERPRISE_DATA_CONTROLS_RULES_SERVICE_H_
-#define CHROME_BROWSER_ENTERPRISE_DATA_CONTROLS_RULES_SERVICE_H_
+#ifndef CHROME_BROWSER_ENTERPRISE_DATA_CONTROLS_CHROME_RULES_SERVICE_H_
+#define CHROME_BROWSER_ENTERPRISE_DATA_CONTROLS_CHROME_RULES_SERVICE_H_
 
 #include "chrome/browser/profiles/profile_keyed_service_factory.h"
+#include "components/enterprise/data_controls/rules_service.h"
 #include "components/enterprise/data_controls/verdict.h"
 #include "components/keyed_service/core/keyed_service.h"
 #include "components/prefs/pref_change_registrar.h"
@@ -19,11 +20,10 @@ class NoDestructor;
 
 namespace data_controls {
 
-// Keyed service that provides an interface to check what restrictions should
-// be applied from the DataControlsRules policy.
-class RulesService : public KeyedService {
+// Desktop-specific implementation of `data_controls::RulesService`.
+class ChromeRulesService : public RulesService {
  public:
-  ~RulesService() override;
+  ~ChromeRulesService() override;
 
   Verdict GetPrintVerdict(const GURL& printed_page_url) const;
   Verdict GetPasteVerdict(const content::ClipboardEndpoint& source,
@@ -49,16 +49,11 @@ class RulesService : public KeyedService {
   bool BlockScreenshots(const GURL& url) const;
 
  protected:
-  friend class RulesServiceFactory;
+  friend class ChromeRulesServiceFactory;
 
-  explicit RulesService(content::BrowserContext* browser_context);
+  explicit ChromeRulesService(content::BrowserContext* browser_context);
 
  private:
-  // Returns a `Verdict` corresponding to all triggered Data Control rules given
-  // the provided context.
-  Verdict GetVerdict(Rule::Restriction restriction,
-                     const ActionContext& context) const;
-
   // Helpers to convert action-specific types to rule-specific types.
   ActionSource GetAsActionSource(
       const content::ClipboardEndpoint& endpoint) const;
@@ -67,10 +62,6 @@ class RulesService : public KeyedService {
   template <typename ActionSourceOrDestination>
   ActionSourceOrDestination ExtractPasteActionContext(
       const content::ClipboardEndpoint& endpoint) const;
-
-  // Parse the "DataControlsRules" policy if the corresponding experiment is
-  // enabled, and populate `rules_`.
-  void OnDataControlsRulesUpdate();
 
   // `profile_` and `rules_manager_` are initialized with the browser_context
   // passed in the constructor.
@@ -85,20 +76,22 @@ class RulesService : public KeyedService {
   std::vector<Rule> rules_;
 };
 
-class RulesServiceFactory : public ProfileKeyedServiceFactory {
+class ChromeRulesServiceFactory : public ProfileKeyedServiceFactory {
  public:
-  static RulesService* GetForBrowserContext(content::BrowserContext* context);
+  static ChromeRulesService* GetForBrowserContext(
+      content::BrowserContext* context);
 
-  static RulesServiceFactory* GetInstance();
+  static ChromeRulesServiceFactory* GetInstance();
 
-  RulesServiceFactory(const RulesServiceFactory&) = delete;
-  RulesServiceFactory& operator=(const RulesServiceFactory&) = delete;
+  ChromeRulesServiceFactory(const ChromeRulesServiceFactory&) = delete;
+  ChromeRulesServiceFactory& operator=(const ChromeRulesServiceFactory&) =
+      delete;
 
  private:
-  friend base::NoDestructor<RulesServiceFactory>;
+  friend base::NoDestructor<ChromeRulesServiceFactory>;
 
-  RulesServiceFactory();
-  ~RulesServiceFactory() override;
+  ChromeRulesServiceFactory();
+  ~ChromeRulesServiceFactory() override;
 
   // BrowserContextKeyedServiceFactory:
   std::unique_ptr<KeyedService> BuildServiceInstanceForBrowserContext(
@@ -107,4 +100,4 @@ class RulesServiceFactory : public ProfileKeyedServiceFactory {
 
 }  // namespace data_controls
 
-#endif  // CHROME_BROWSER_ENTERPRISE_DATA_CONTROLS_RULES_SERVICE_H_
+#endif  // CHROME_BROWSER_ENTERPRISE_DATA_CONTROLS_CHROME_RULES_SERVICE_H_

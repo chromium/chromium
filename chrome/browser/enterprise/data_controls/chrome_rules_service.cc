@@ -2,7 +2,7 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#include "chrome/browser/enterprise/data_controls/rules_service.h"
+#include "chrome/browser/enterprise/data_controls/chrome_rules_service.h"
 
 #include "base/memory/ptr_util.h"
 #include "base/no_destructor.h"
@@ -14,30 +14,23 @@
 namespace data_controls {
 
 // ---------------------------
-// RulesService implementation
+// ChromeRulesService implementation
 // ---------------------------
 
-RulesService::RulesService(content::BrowserContext* browser_context)
-    : profile_(Profile::FromBrowserContext(browser_context)) {
-  if (base::FeatureList::IsEnabled(kEnableDesktopDataControls)) {
-    pref_registrar_.Init(profile_->GetPrefs());
-    pref_registrar_.Add(
-        kDataControlsRulesPref,
-        base::BindRepeating(&RulesService::OnDataControlsRulesUpdate,
-                            base::Unretained(this)));
-    OnDataControlsRulesUpdate();
-  }
-}
+ChromeRulesService::ChromeRulesService(content::BrowserContext* browser_context)
+    : RulesService(Profile::FromBrowserContext(browser_context)->GetPrefs()),
+      profile_(Profile::FromBrowserContext(browser_context)) {}
 
-RulesService::~RulesService() = default;
+ChromeRulesService::~ChromeRulesService() = default;
 
-Verdict RulesService::GetPrintVerdict(const GURL& printed_page_url) const {
+Verdict ChromeRulesService::GetPrintVerdict(
+    const GURL& printed_page_url) const {
   return GetVerdict(Rule::Restriction::kPrinting, {.source = {
                                                        .url = printed_page_url,
                                                    }});
 }
 
-Verdict RulesService::GetPasteVerdict(
+Verdict ChromeRulesService::GetPasteVerdict(
     const content::ClipboardEndpoint& source,
     const content::ClipboardEndpoint& destination,
     const content::ClipboardMetadata& metadata) const {
@@ -48,60 +41,29 @@ Verdict RulesService::GetPasteVerdict(
                     });
 }
 
-Verdict RulesService::GetCopyRestrictedBySourceVerdict(
+Verdict ChromeRulesService::GetCopyRestrictedBySourceVerdict(
     const GURL& source) const {
   return GetVerdict(
       Rule::Restriction::kClipboard,
       {.source = {.url = source, .incognito = profile_->IsIncognitoProfile()}});
 }
 
-Verdict RulesService::GetCopyToOSClipboardVerdict(const GURL& source) const {
+Verdict ChromeRulesService::GetCopyToOSClipboardVerdict(
+    const GURL& source) const {
   return GetVerdict(
       Rule::Restriction::kClipboard,
       {.source = {.url = source, .incognito = profile_->IsIncognitoProfile()},
        .destination = {.os_clipboard = true}});
 }
 
-bool RulesService::BlockScreenshots(const GURL& url) const {
+bool ChromeRulesService::BlockScreenshots(const GURL& url) const {
   return GetVerdict(Rule::Restriction::kScreenshot,
                     {.source = {.url = url,
                                 .incognito = profile_->IsIncognitoProfile()}})
              .level() == Rule::Level::kBlock;
 }
 
-Verdict RulesService::GetVerdict(Rule::Restriction restriction,
-                                 const ActionContext& context) const {
-  if (!base::FeatureList::IsEnabled(kEnableDesktopDataControls)) {
-    return Verdict::NotSet();
-  }
-
-  Rule::Level max_level = Rule::Level::kNotSet;
-  Verdict::TriggeredRules triggered_rules;
-  for (const auto& rule : rules_) {
-    Rule::Level level = rule.GetLevel(restriction, context);
-    if (level > max_level) {
-      max_level = level;
-    }
-    if (level != Rule::Level::kNotSet && !rule.rule_id().empty()) {
-      triggered_rules[rule.rule_id()] = rule.name();
-    }
-  }
-
-  switch (max_level) {
-    case Rule::Level::kNotSet:
-      return Verdict::NotSet();
-    case Rule::Level::kReport:
-      return Verdict::Report(std::move(triggered_rules));
-    case Rule::Level::kWarn:
-      return Verdict::Warn(std::move(triggered_rules));
-    case Rule::Level::kBlock:
-      return Verdict::Block(std::move(triggered_rules));
-    case Rule::Level::kAllow:
-      return Verdict::Allow();
-  }
-}
-
-ActionSource RulesService::GetAsActionSource(
+ActionSource ChromeRulesService::GetAsActionSource(
     const content::ClipboardEndpoint& endpoint) const {
   if (!endpoint.browser_context()) {
     return {.os_clipboard = true};
@@ -110,13 +72,13 @@ ActionSource RulesService::GetAsActionSource(
   return ExtractPasteActionContext<ActionSource>(endpoint);
 }
 
-ActionDestination RulesService::GetAsActionDestination(
+ActionDestination ChromeRulesService::GetAsActionDestination(
     const content::ClipboardEndpoint& endpoint) const {
   return ExtractPasteActionContext<ActionDestination>(endpoint);
 }
 
 template <typename ActionSourceOrDestination>
-ActionSourceOrDestination RulesService::ExtractPasteActionContext(
+ActionSourceOrDestination ChromeRulesService::ExtractPasteActionContext(
     const content::ClipboardEndpoint& endpoint) const {
   ActionSourceOrDestination action;
   if (endpoint.data_transfer_endpoint() &&
@@ -131,46 +93,24 @@ ActionSourceOrDestination RulesService::ExtractPasteActionContext(
   return action;
 }
 
-void RulesService::OnDataControlsRulesUpdate() {
-  DCHECK(profile_);
-  if (!base::FeatureList::IsEnabled(kEnableDesktopDataControls)) {
-    return;
-  }
-
-  rules_.clear();
-
-  const base::Value::List& rules_list =
-      profile_->GetPrefs()->GetList(kDataControlsRulesPref);
-
-  for (const base::Value& rule_value : rules_list) {
-    auto rule = Rule::Create(rule_value);
-
-    if (!rule) {
-      continue;
-    }
-
-    rules_.push_back(std::move(*rule));
-  }
-}
-
 // ----------------------------------
-// RulesServiceFactory implementation
+// ChromeRulesServiceFactory implementation
 // ----------------------------------
 
 // static
-RulesService* RulesServiceFactory::GetForBrowserContext(
+ChromeRulesService* ChromeRulesServiceFactory::GetForBrowserContext(
     content::BrowserContext* context) {
-  return static_cast<RulesService*>(
+  return static_cast<ChromeRulesService*>(
       GetInstance()->GetServiceForBrowserContext(context, /*create=*/true));
 }
 
 // static
-RulesServiceFactory* RulesServiceFactory::GetInstance() {
-  static base::NoDestructor<RulesServiceFactory> instance;
+ChromeRulesServiceFactory* ChromeRulesServiceFactory::GetInstance() {
+  static base::NoDestructor<ChromeRulesServiceFactory> instance;
   return instance.get();
 }
 
-RulesServiceFactory::RulesServiceFactory()
+ChromeRulesServiceFactory::ChromeRulesServiceFactory()
     : ProfileKeyedServiceFactory(
           "DataControlsRulesService",
           ProfileSelections::Builder()
@@ -182,12 +122,12 @@ RulesServiceFactory::RulesServiceFactory()
   // TODO: Add DependsOn statements.
 }
 
-RulesServiceFactory::~RulesServiceFactory() = default;
+ChromeRulesServiceFactory::~ChromeRulesServiceFactory() = default;
 
 std::unique_ptr<KeyedService>
-RulesServiceFactory::BuildServiceInstanceForBrowserContext(
+ChromeRulesServiceFactory::BuildServiceInstanceForBrowserContext(
     content::BrowserContext* context) const {
-  return base::WrapUnique(new RulesService(context));
+  return base::WrapUnique(new ChromeRulesService(context));
 }
 
 }  // namespace data_controls
