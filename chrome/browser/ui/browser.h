@@ -534,6 +534,9 @@ class Browser : public TabStripModelObserver,
   SigninViewController* signin_view_controller() {
     return &signin_view_controller_;
   }
+  BrowserWindowFeatures* browser_window_features() const {
+    return features_.get();
+  }
 
   base::WeakPtr<Browser> AsWeakPtr();
   base::WeakPtr<const Browser> AsWeakPtr() const;

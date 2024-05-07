@@ -35,6 +35,10 @@ class BrowserWindowFeatures {
 
   // Public accessors for features, e.g.
   // FooFeature* foo_feature() { return foo_feature_.get(); }
+  commerce::ProductSpecificationsEntryPointController*
+  product_specifications_entry_point_controller() {
+    return product_specifications_entry_point_controller_.get();
+  }
 
  protected:
   BrowserWindowFeatures();

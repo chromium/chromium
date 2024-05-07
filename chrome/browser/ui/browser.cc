@@ -598,6 +598,12 @@ Browser::Browser(const CreateParams& params)
   if (params.skip_window_init_for_testing)
     return;
 
+  // BrowserWindowFeatures need to be initialized before browser window
+  // creation, so that the features can be used in creating components
+  // in browser window.
+  features_ = BrowserWindowFeatures::CreateBrowserWindowFeatures();
+  features_->Init(this);
+
   window_ = params.window ? params.window.get()
                           : CreateBrowserWindow(std::unique_ptr<Browser>(this),
                                                 params.user_gesture,
@@ -626,8 +632,6 @@ Browser::Browser(const CreateParams& params)
   }
 
   BrowserList::AddBrowser(this);
-  features_ = BrowserWindowFeatures::CreateBrowserWindowFeatures();
-  features_->Init(this);
 }
 
 Browser::~Browser() {
