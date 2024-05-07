@@ -42,7 +42,8 @@ std::optional<base::Value::Dict> ParseCampaignsFile(
     const std::string& campaigns_data) {
   std::optional<base::Value> value(base::JSONReader::Read(campaigns_data));
   if (!value || !value->is_dict()) {
-    LOG(ERROR) << "Failed to parse campaigns file: " << campaigns_data;
+    LOG(ERROR) << "Failed to parse campaigns file.";
+    VLOG(2) << "Malformed campaigns file: " << campaigns_data;
     RecordCampaignsManagerError(CampaignsManagerError::kCampaignsParsingFail);
     return std::nullopt;
   }
