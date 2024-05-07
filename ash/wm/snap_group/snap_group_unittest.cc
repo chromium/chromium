@@ -1523,6 +1523,36 @@ TEST_F(FasterSplitScreenTest, BasicTabKeyNavigation) {
   EXPECT_EQ(overview_windows[0]->GetWindow(), GetOverviewFocusedWindow());
 }
 
+// Tests no crash when the faster splitview toast is destroyed. Regression test
+// for http://b/336289329.
+TEST_F(FasterSplitScreenTest, NoCrashOnToastDestroying) {
+  auto w1 = CreateAppWindow(gfx::Rect(100, 100));
+  auto w2 = CreateAppWindow(gfx::Rect(100, 100));
+
+  // Snap `w1` to start faster splitview.
+  SnapOneTestWindow(w1.get(), WindowStateType::kPrimarySnapped,
+                    chromeos::kDefaultSnapRatio,
+                    WindowSnapActionSource::kDragWindowToEdgeToSnap);
+  ASSERT_TRUE(IsInOverviewSession());
+  OverviewGrid* grid = GetOverviewSession()->grid_list()[0].get();
+  auto* faster_splitview_widget = grid->faster_splitview_widget();
+  ASSERT_TRUE(faster_splitview_widget);
+
+  // Tab to the dismiss button.
+  SendKeyUntilOverviewItemIsFocused(ui::VKEY_TAB);
+  PressAndReleaseKey(ui::VKEY_TAB);
+  OverviewFocusCycler* focus_cycler = GetOverviewSession()->focus_cycler();
+  EXPECT_EQ(grid->GetFasterSplitView()->GetDismissButton(),
+            focus_cycler->focused_view()->GetView());
+
+  // Enter tablet mode to destroy the toast.
+  SwitchToTabletMode();
+
+  // Exit tablet mode, then tab.
+  ExitTabletMode();
+  PressAndReleaseKey(ui::VKEY_TAB);
+}
+
 // Tests that the chromevox keys work as expected.
 TEST_F(FasterSplitScreenTest, TabbingChromevox) {
   Shell::Get()->accessibility_controller()->spoken_feedback().SetEnabled(true);
