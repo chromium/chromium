@@ -8,45 +8,6 @@ found in the LICENSE file. -->
   <iron-icon slot="icon" icon="oobe-32:googleg"></iron-icon>
 </oobe-loading-dialog>
 
-<oobe-adaptive-dialog id="successDialog" role="dialog" for-step="done"
-    aria-label$="[[i18nDynamic(locale, 'cryptohomeRecoverySuccessTitle')]]">
-  <iron-icon slot="icon" icon="oobe-32:lock"></iron-icon>
-  <h1 slot="title">
-    [[i18nDynamic(locale, 'cryptohomeRecoverySuccessTitle')]]
-  </h1>
-  <div slot="content" class="flex layout vertical center center-justified">
-    <iron-icon icon="oobe-illos:pin-illustration-illo"
-        class="illustration-jelly">
-    </iron-icon>
-  </div>
-  <div slot="bottom-buttons">
-    <oobe-text-button id="doneButton" inverse on-click="onDone"
-        class="focus-on-show" text-key="cryptohomeRecoveryDoneButton">
-    </oobe-text-button>
-  </div>
-</oobe-adaptive-dialog>
-
-<oobe-adaptive-dialog id="errorDialog" role="dialog" for-step="error"
-    aria-label$="[[i18nDynamic(locale, 'cryptohomeRecoveryErrorTitle')]]">
-  <iron-icon slot="icon" icon="oobe-32:googleg"></iron-icon>
-  <h1 slot="title">
-    [[i18nDynamic(locale, 'cryptohomeRecoveryErrorTitle')]]
-  </h1>
-  <div slot="content" class="flex layout vertical center center-justified">
-    <iron-icon icon="oobe-illos:error-illo" class="illustration-jelly">
-    </iron-icon>
-  </div>
-  <div slot="bottom-buttons">
-    <oobe-text-button id="manualRecoveryButton"
-        on-click="onGoToManualRecovery"
-        text-key="cryptohomeRecoveryManualRecoveryButton">
-    </oobe-text-button>
-    <oobe-text-button id="retryButton" on-click="onRetry"
-        text-key="cryptohomeRecoveryRetryButton">
-    </oobe-text-button>
-  </div>
-</oobe-adaptive-dialog>
-
 <oobe-adaptive-dialog id="reauthNotificationDialog"
     role="dialog" for-step="reauth-notification"
     aria-label$="[[i18nDynamic(locale,

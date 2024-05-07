@@ -21,8 +21,6 @@ import {getTemplate} from './cryptohome_recovery.html.js';
 // eslint-disable-next-line @typescript-eslint/naming-convention
 enum CryptohomeRecoveryUIState {
   LOADING = 'loading',
-  DONE = 'done',
-  ERROR = 'error',
   REAUTH_NOTIFICATION = 'reauth-notification',
 }
 
@@ -78,8 +76,6 @@ class CryptohomeRecovery extends CryptohomeRecoveryBase {
 
   override get EXTERNAL_API(): string[] {
     return [
-      'onRecoverySucceeded',
-      'onRecoveryFailed',
       'showReauthNotification',
     ];
   }
@@ -102,60 +98,11 @@ class CryptohomeRecovery extends CryptohomeRecoveryBase {
   }
 
   /**
-   * Called when Cryptohome recovery succeeded.
-   */
-  onRecoverySucceeded(): void {
-    this.setUIStep(CryptohomeRecoveryUIState.DONE);
-    this.disabled = false;
-  }
-
-  /**
-   * Called when Cryptohome recovery failed.
-   */
-  onRecoveryFailed(): void {
-    this.setUIStep(CryptohomeRecoveryUIState.ERROR);
-    this.disabled = false;
-  }
-
-  /**
    * Shows a reauth required message when there's no reauth proof token.
    */
   showReauthNotification(): void {
     this.setUIStep(CryptohomeRecoveryUIState.REAUTH_NOTIFICATION);
     this.disabled = false;
-  }
-
-  /**
-   * Enter old password button click handler.
-   */
-  private onGoToManualRecovery(): void {
-    if (this.disabled) {
-      return;
-    }
-    this.disabled = true;
-    this.userActed('enter-old-password');
-  }
-
-  /**
-   * Retry button click handler.
-   */
-  private onRetry(): void {
-    if (this.disabled) {
-      return;
-    }
-    this.disabled = true;
-    this.userActed('retry');
-  }
-
-  /**
-   * Done button click handler.
-   */
-  private onDone(): void {
-    if (this.disabled) {
-      return;
-    }
-    this.disabled = true;
-    this.userActed('done');
   }
 
   /**

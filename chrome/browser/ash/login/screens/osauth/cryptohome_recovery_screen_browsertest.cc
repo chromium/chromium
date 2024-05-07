@@ -5,10 +5,8 @@
 #include <optional>
 #include <utility>
 
-#include "ash/constants/ash_features.h"
 #include "ash/public/cpp/login_screen_test_api.h"
 #include "base/check.h"
-#include "base/feature_list.h"
 #include "base/functional/bind.h"
 #include "base/run_loop.h"
 #include "base/test/test_future.h"
@@ -44,18 +42,7 @@
 namespace ash {
 
 namespace {
-
-const test::UIPath kReauthNotificationStep = {"cryptohome-recovery",
-                                              "reauthNotificationDialog"};
-const test::UIPath kRetryButton = {"cryptohome-recovery", "retryButton"};
-const test::UIPath kReauthButton = {"cryptohome-recovery", "reauthButton"};
-
 const char kNewPassword[] = "new user password";
-
-bool IsOldFlow() {
-  return base::FeatureList::IsEnabled(
-      ash::features::kCryptohomeRecoveryBeforeFlowSplit);
-}
 }  // namespace
 
 class CryptohomeRecoveryScreenTestBase : public OobeBaseTest {
@@ -215,20 +202,11 @@ IN_PROC_BROWSER_TEST_F(CryptohomeRecoveryScreenTest, SuccessfulRecovery) {
   SetUpExitCallback();
   SetGaiaScreenCredentials(test_user_.account_id, kNewPassword);
 
-  if (!IsOldFlow()) {
-    WaitForScreenExit();
-    EXPECT_EQ(result_.value(),
-              CryptohomeRecoveryScreen::Result::kAuthenticated);
-  }
+  WaitForScreenExit();
+  EXPECT_EQ(result_.value(), CryptohomeRecoveryScreen::Result::kAuthenticated);
 
   test::RecoveryPasswordUpdatedPageWaiter()->Wait();
   test::RecoveryPasswordUpdatedProceedAction();
-
-  if (IsOldFlow()) {
-    WaitForScreenExit();
-    EXPECT_EQ(result_.value(),
-              CryptohomeRecoveryScreen::Result::kObsoleteSucceeded);
-  }
 
   OobeWindowVisibilityWaiter(false).Wait();
   login_manager_mixin_.WaitForActiveSession();
@@ -253,24 +231,14 @@ IN_PROC_BROWSER_TEST_F(CryptohomeRecoveryScreenNoRecoveryTest,
   OobeScreenWaiter(CryptohomeRecoveryScreenView::kScreenId).Wait();
 
   WaitForScreenExit();
-  if (IsOldFlow()) {
-    EXPECT_EQ(result_.value(),
-              CryptohomeRecoveryScreen::Result::kObsoleteNoRecoveryFactor);
-    OobeScreenWaiter(GaiaPasswordChangedView::kScreenId).Wait();
-  } else {
-    EXPECT_EQ(result_.value(),
-              CryptohomeRecoveryScreen::Result::kFallbackOnline);
-    OobeScreenWaiter(EnterOldPasswordScreenView::kScreenId).Wait();
-  }
+  EXPECT_EQ(result_.value(), CryptohomeRecoveryScreen::Result::kFallbackOnline);
+  OobeScreenWaiter(EnterOldPasswordScreenView::kScreenId).Wait();
   EXPECT_FALSE(IsMounted());
 }
 
 // Verifies that right reset password screen is shows and we goto Useronboarding
 // flow.
 IN_PROC_BROWSER_TEST_F(CryptohomeRecoveryScreenNoRecoveryTest, ResetSuccess) {
-  if (IsOldFlow()) {
-    GTEST_SKIP();
-  }
   SetupFakeGaia(test_user_);
 
   OpenGaiaDialog(test_user_.account_id);
@@ -321,128 +289,10 @@ IN_PROC_BROWSER_TEST_F(CryptohomeRecoveryScreenTest, ManualRecoveryAfterError) {
   SetUpExitCallback();
   SetGaiaScreenCredentials(test_user_.account_id, kNewPassword);
 
-  if (IsOldFlow()) {
-    test::RecoveryErrorPageWaiter()->Wait();
-    test::RecoveryErrorExpectFallback();
-    test::RecoveryErrorFallbackAction();
+  WaitForScreenExit();
+  EXPECT_EQ(result_.value(), CryptohomeRecoveryScreen::Result::kError);
 
-    WaitForScreenExit();
-    EXPECT_EQ(result_.value(),
-              CryptohomeRecoveryScreen::Result::kObsoleteManualRecovery);
-  } else {
-    WaitForScreenExit();
-    EXPECT_EQ(result_.value(), CryptohomeRecoveryScreen::Result::kError);
-  }
   test::CreateOldPasswordEnterPageWaiter()->Wait();
-  EXPECT_FALSE(IsMounted());
-}
-
-// Verifies that we could retry when there is error during recovery.
-IN_PROC_BROWSER_TEST_F(CryptohomeRecoveryScreenTest, RetryAfterError) {
-  // Ignore this test after Recovery screen split, it became responsibility
-  // of another screen.
-  if (!IsOldFlow()) {
-    return;
-  }
-
-  SetupFakeGaia(test_user_);
-  fake_recovery_service_.SetErrorResponse("/v1/cryptorecovery",
-                                          net::HTTP_BAD_REQUEST);
-
-  OpenGaiaDialog(test_user_.account_id);
-  SetUpExitCallback();
-  SetGaiaScreenCredentials(test_user_.account_id, kNewPassword);
-
-  test::RecoveryErrorPageWaiter()->Wait();
-  test::OobeJS().ClickOnPath(kRetryButton);
-
-  WaitForScreenExit();
-  EXPECT_EQ(result_.value(), CryptohomeRecoveryScreen::Result::kObsoleteRetry);
-
-  fake_recovery_service_.SetErrorResponse("/v1/cryptorecovery", net::HTTP_OK);
-
-  OobeScreenWaiter(GaiaView::kScreenId).Wait();
-  SetGaiaScreenCredentials(test_user_.account_id, kNewPassword);
-
-  test::RecoveryPasswordUpdatedPageWaiter()->Wait();
-  test::RecoveryPasswordUpdatedProceedAction();
-
-  WaitForScreenExit();
-  EXPECT_EQ(result_.value(),
-            CryptohomeRecoveryScreen::Result::kObsoleteSucceeded);
-
-  OobeWindowVisibilityWaiter(false).Wait();
-  login_manager_mixin_.WaitForActiveSession();
-  EXPECT_TRUE(IsMounted());
-}
-
-// Verifies that user is asked to sign in again when reauth token is not present
-// when password change is detected.
-IN_PROC_BROWSER_TEST_F(CryptohomeRecoveryScreenTest,
-                       MissingReauthTokenDuringRecovery) {
-  // Ignore this test after Recovery screen split, logic responsibility
-  // of another test.
-  if (!IsOldFlow()) {
-    return;
-  }
-  SetupFakeGaia(test_user_);
-
-  // Entering the add person flow with an existing account. Reauth token was not
-  // fetched in this case.
-  EXPECT_FALSE(LoginScreenTestApi::IsOobeDialogVisible());
-  ASSERT_TRUE(LoginScreenTestApi::ClickAddUserButton());
-  OobeScreenWaiter(UserCreationView::kScreenId).Wait();
-  EXPECT_TRUE(LoginScreenTestApi::IsOobeDialogVisible());
-
-  SetUpExitCallback();
-  SetGaiaScreenCredentials(test_user_.account_id, kNewPassword);
-
-  OobeScreenWaiter(CryptohomeRecoveryScreenView::kScreenId).Wait();
-  test::OobeJS().CreateVisibilityWaiter(true, kReauthNotificationStep)->Wait();
-  test::OobeJS().ClickOnPath(kReauthButton);
-
-  WaitForScreenExit();
-  EXPECT_EQ(result_.value(), CryptohomeRecoveryScreen::Result::kGaiaLogin);
-
-  OobeScreenWaiter(GaiaView::kScreenId).Wait();
-  SetGaiaScreenCredentials(test_user_.account_id, kNewPassword);
-
-  test::RecoveryPasswordUpdatedPageWaiter()->Wait();
-  test::RecoveryPasswordUpdatedProceedAction();
-
-  WaitForScreenExit();
-  EXPECT_EQ(result_.value(),
-            CryptohomeRecoveryScreen::Result::kObsoleteSucceeded);
-
-  OobeWindowVisibilityWaiter(false).Wait();
-  login_manager_mixin_.WaitForActiveSession();
-  EXPECT_TRUE(IsMounted());
-}
-
-// Recovery is cancelled after timeout.
-IN_PROC_BROWSER_TEST_F(CryptohomeRecoveryScreenTest, CancelledOnTimeout) {
-  // Ignore this test after Recovery screen split, it became responsibility
-  // of another screen.
-  if (!IsOldFlow()) {
-    return;
-  }
-  SetupFakeGaia(test_user_);
-
-  OpenGaiaDialog(test_user_.account_id);
-  EXPECT_EQ(LoginDisplayHost::default_host()
-                ->GetWizardContext()
-                ->gaia_config.gaia_path,
-            WizardContext::GaiaPath::kReauth);
-  SetUpExitCallback();
-  SetGaiaScreenCredentials(test_user_.account_id, kNewPassword);
-
-  test::RecoveryPasswordUpdatedPageWaiter()->Wait();
-  ASSERT_TRUE(FireExpirationTimer());
-
-  WaitForScreenExit();
-  EXPECT_EQ(result_.value(),
-            CryptohomeRecoveryScreen::Result::kObsoleteTimeout);
-  EXPECT_FALSE(LoginScreenTestApi::IsOobeDialogVisible());
   EXPECT_FALSE(IsMounted());
 }
 
@@ -496,20 +346,11 @@ IN_PROC_BROWSER_TEST_F(CryptohomeRecoveryScreenChildTest, SuccessfulRecovery) {
   SetUpExitCallback();
   SetGaiaScreenCredentials(test_user_.account_id, kNewPassword);
 
-  if (!IsOldFlow()) {
-    WaitForScreenExit();
-    EXPECT_EQ(result_.value(),
-              CryptohomeRecoveryScreen::Result::kAuthenticated);
-  }
+  WaitForScreenExit();
+  EXPECT_EQ(result_.value(), CryptohomeRecoveryScreen::Result::kAuthenticated);
 
   test::RecoveryPasswordUpdatedPageWaiter()->Wait();
   test::RecoveryPasswordUpdatedProceedAction();
-
-  if (IsOldFlow()) {
-    WaitForScreenExit();
-    EXPECT_EQ(result_.value(),
-              CryptohomeRecoveryScreen::Result::kObsoleteSucceeded);
-  }
 
   OobeWindowVisibilityWaiter(false).Wait();
   login_manager_mixin_.WaitForActiveSession();
@@ -533,15 +374,9 @@ IN_PROC_BROWSER_TEST_F(CryptohomeRecoveryScreenChildNoRecoveryTest,
   OobeScreenWaiter(CryptohomeRecoveryScreenView::kScreenId).Wait();
 
   WaitForScreenExit();
-  if (IsOldFlow()) {
-    EXPECT_EQ(result_.value(),
-              CryptohomeRecoveryScreen::Result::kObsoleteNoRecoveryFactor);
-    OobeScreenWaiter(GaiaPasswordChangedView::kScreenId).Wait();
-  } else {
-    EXPECT_EQ(result_.value(),
-              CryptohomeRecoveryScreen::Result::kFallbackOnline);
-    OobeScreenWaiter(EnterOldPasswordScreenView::kScreenId).Wait();
-  }
+
+  EXPECT_EQ(result_.value(), CryptohomeRecoveryScreen::Result::kFallbackOnline);
+  OobeScreenWaiter(EnterOldPasswordScreenView::kScreenId).Wait();
 }
 
 }  // namespace ash

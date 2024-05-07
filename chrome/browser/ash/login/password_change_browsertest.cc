@@ -7,7 +7,6 @@
 #include <string>
 #include <utility>
 
-#include "ash/constants/ash_features.h"
 #include "ash/public/cpp/login_screen_test_api.h"
 #include "base/auto_reset.h"
 #include "base/files/file_path.h"
@@ -72,11 +71,6 @@ constexpr char kTokenHandle[] = "test_token_handle";
 constexpr char kTestingFileName[] = "testing-file.txt";
 
 using AuthOp = FakeUserDataAuthClient::Operation;
-
-bool HasPasswordConfirmationPage() {
-  return !base::FeatureList::IsEnabled(
-      ash::features::kCryptohomeRecoveryBeforeFlowSplit);
-}
 
 }  // namespace
 
@@ -182,11 +176,9 @@ IN_PROC_BROWSER_TEST_F(PasswordChangeTest, UpdateGaiaPassword) {
       test_user_info_.auth_config.online_password);
   test::PasswordChangedSubmitOldPassword();
 
-  if (HasPasswordConfirmationPage()) {
-    test::CreatePasswordUpdateNoticePageWaiter()->Wait();
-    test::PasswordUpdateNoticeExpectDone();
-    test::PasswordUpdateNoticeDoneAction();
-  }
+  test::CreatePasswordUpdateNoticePageWaiter()->Wait();
+  test::PasswordUpdateNoticeExpectDone();
+  test::PasswordUpdateNoticeDoneAction();
 
   // User session should start, and whole OOBE screen is expected to be hidden.
   OobeWindowVisibilityWaiter(false).Wait();
@@ -213,11 +205,9 @@ IN_PROC_BROWSER_TEST_F(PasswordChangeTest, SubmitOnEnterKeyPressed) {
       nullptr, ui::VKEY_RETURN, false /* control */, false /* shift */,
       false /* alt */, false /* command */));
 
-  if (HasPasswordConfirmationPage()) {
-    test::CreatePasswordUpdateNoticePageWaiter()->Wait();
-    test::PasswordUpdateNoticeExpectDone();
-    test::PasswordUpdateNoticeDoneAction();
-  }
+  test::CreatePasswordUpdateNoticePageWaiter()->Wait();
+  test::PasswordUpdateNoticeExpectDone();
+  test::PasswordUpdateNoticeDoneAction();
 
   // User session should start, and whole OOBE screen is expected to be hidden,
   OobeWindowVisibilityWaiter(false).Wait();
@@ -249,11 +239,9 @@ IN_PROC_BROWSER_TEST_F(PasswordChangeTest, RetryOnWrongPassword) {
       test_user_info_.auth_config.online_password);
   test::PasswordChangedSubmitOldPassword();
 
-  if (HasPasswordConfirmationPage()) {
-    test::CreatePasswordUpdateNoticePageWaiter()->Wait();
-    test::PasswordUpdateNoticeExpectDone();
-    test::PasswordUpdateNoticeDoneAction();
-  }
+  test::CreatePasswordUpdateNoticePageWaiter()->Wait();
+  test::PasswordUpdateNoticeExpectDone();
+  test::PasswordUpdateNoticeDoneAction();
 
   // User session should start, and whole OOBE screen is expected to be hidden.
   OobeWindowVisibilityWaiter(false).Wait();
@@ -313,11 +301,9 @@ IN_PROC_BROWSER_TEST_F(PasswordChangeTest, TryAgainAfterForgetLinkClick) {
       test_user_info_.auth_config.online_password);
   test::PasswordChangedSubmitOldPassword();
 
-  if (HasPasswordConfirmationPage()) {
-    test::CreatePasswordUpdateNoticePageWaiter()->Wait();
-    test::PasswordUpdateNoticeExpectDone();
-    test::PasswordUpdateNoticeDoneAction();
-  }
+  test::CreatePasswordUpdateNoticePageWaiter()->Wait();
+  test::PasswordUpdateNoticeExpectDone();
+  test::PasswordUpdateNoticeDoneAction();
 
   // User session should start, and whole OOBE screen is expected to be hidden,
   OobeWindowVisibilityWaiter(false).Wait();

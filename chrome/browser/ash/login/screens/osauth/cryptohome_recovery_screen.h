@@ -28,12 +28,6 @@ class CryptohomeRecoveryScreen : public BaseScreen {
  public:
   using TView = CryptohomeRecoveryScreenView;
   enum class Result {
-    kObsoleteSucceeded,
-    kObsoleteManualRecovery,
-    kObsoleteRetry,
-    kObsoleteNoRecoveryFactor,
-    kObsoleteTimeout,
-
     kGaiaLogin,
     kAuthenticated,
     kError,

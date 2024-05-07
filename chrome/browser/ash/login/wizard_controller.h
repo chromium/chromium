@@ -339,6 +339,7 @@ class WizardController : public OobeUI::Observer {
   void ShowChoobeScreen();
   void ShowTouchpadScrollScreen();
   void ShowDisplaySizeScreen();
+  // TODO(b/315829727): remove now unused codepath.
   void ShowGaiaPasswordChangedScreen(std::unique_ptr<UserContext> user_context);
   void ShowDrivePinningScreen();
   void ShowGaiaInfoScreen();

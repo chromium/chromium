@@ -19,32 +19,14 @@ CryptohomeRecoveryScreenHandler::~CryptohomeRecoveryScreenHandler() = default;
 
 void CryptohomeRecoveryScreenHandler::DeclareLocalizedValues(
     ::login::LocalizedValuesBuilder* builder) {
-  builder->Add("cryptohomeRecoverySuccessTitle",
-               IDS_LOGIN_CRYPTOHOME_RECOVERY_SUCCESS_TITLE);
-  builder->Add("cryptohomeRecoveryErrorTitle",
-               IDS_LOGIN_CRYPTOHOME_RECOVERY_ERROR_TITLE);
   builder->Add("cryptohomeRecoveryReauthNotificationTitle",
                IDS_LOGIN_CRYPTOHOME_RECOVERY_REAUTH_NOTIFICATION_TITLE);
   builder->Add("cryptohomeRecoveryReauthNotificationSubtitle",
                IDS_LOGIN_CRYPTOHOME_RECOVERY_REAUTH_NOTIFICATION_SUBTITLE);
-  builder->Add("cryptohomeRecoveryManualRecoveryButton",
-               IDS_LOGIN_CRYPTOHOME_RECOVERY_MANUAL_RECOVERY_BUTTON);
-  builder->Add("cryptohomeRecoveryRetryButton",
-               IDS_LOGIN_CRYPTOHOME_RECOVERY_RETRY_BUTTON);
-  builder->Add("cryptohomeRecoveryDoneButton",
-               IDS_LOGIN_CRYPTOHOME_RECOVERY_DONE_BUTTON);
 }
 
 void CryptohomeRecoveryScreenHandler::Show() {
   ShowInWebUI();
-}
-
-void CryptohomeRecoveryScreenHandler::OnRecoverySucceeded() {
-  CallExternalAPI("onRecoverySucceeded");
-}
-
-void CryptohomeRecoveryScreenHandler::OnRecoveryFailed() {
-  CallExternalAPI("onRecoveryFailed");
 }
 
 void CryptohomeRecoveryScreenHandler::ShowReauthNotification() {

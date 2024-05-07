@@ -567,16 +567,6 @@ BASE_FEATURE(kCryptAuthV2Enrollment,
              "CryptAuthV2Enrollment",
              base::FEATURE_ENABLED_BY_DEFAULT);
 
-// Temporary flag, needed to interlace code and tast test changes,
-// will be removed before M-121 branch.
-// - if enabled, keeps the old flow where recovery screen performs
-// authentication, updates password, and shows confirmation screen.
-// - if disabled, recovery screen only performs authentication, and
-// remaining steps are done by separate screens.
-BASE_FEATURE(kCryptohomeRecoveryBeforeFlowSplit,
-             "CryptohomeRecoveryBeforeFlowSplit",
-             base::FEATURE_DISABLED_BY_DEFAULT);
-
 // Controls the default value for the option to set up
 // cryptohome recovery presented for consumer users.
 // - if enabled, recovery would set up by default (opt-out mode)
