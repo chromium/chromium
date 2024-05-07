@@ -19,6 +19,11 @@ interface ScreensFactory {
   CreateDrivePinningScreenHandler(
       pending_remote<ash.screens_common.mojom.DrivePinningPage> page,
       pending_receiver<ash.screens_common.mojom.DrivePinningPageHandler> handler);
+  // Creates a GestureNavigationPageHandler and
+  // connects it up to the GestureNavigationPage.
+  CreateGestureNavigationPageHandler(
+      pending_receiver<ash.screens_common.mojom.GestureNavigationPageHandler>
+          handler);
 
   // Creates a GaiaInfoPageHandler and connects it up to the GaiaInfoPage.
   CreateGaiaInfoScreenHandler(

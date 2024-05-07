@@ -12,14 +12,21 @@
 #include "base/memory/weak_ptr.h"
 #include "base/time/time.h"
 #include "chrome/browser/ash/login/screens/base_screen.h"
+#include "chrome/browser/ash/login/screens/oobe_mojo_binder.h"
+#include "chrome/browser/ui/webui/ash/login/mojom/screens_common.mojom.h"
 
 namespace ash {
 
 class GestureNavigationScreenView;
 
 // The OOBE screen dedicated to gesture navigation education.
-class GestureNavigationScreen : public BaseScreen {
+class GestureNavigationScreen
+    : public BaseScreen,
+      public screens_common::mojom::GestureNavigationPageHandler,
+      public OobeMojoBinder<
+          screens_common::mojom::GestureNavigationPageHandler> {
  public:
+  using TView = GestureNavigationScreenView;
   enum class Result { NEXT, SKIP, NOT_APPLICABLE };
 
   static std::string GetResultString(Result result);
@@ -40,9 +47,6 @@ class GestureNavigationScreen : public BaseScreen {
     return exit_callback_;
   }
 
-  // Called when the currently shown page is changed.
-  void GesturePageChange(const std::string& new_page);
-
   // BaseScreen:
   bool MaybeSkip(WizardContext& context) override;
 
@@ -50,21 +54,25 @@ class GestureNavigationScreen : public BaseScreen {
   // BaseScreen:
   void ShowImpl() override;
   void HideImpl() override;
-  void OnUserAction(const base::Value::List& args) override;
 
  private:
   // Record metrics for the elapsed time that each page was shown for.
   void RecordPageShownTimeMetrics();
+
+  // screens_common::mojom::GestureNavigationPageHandler:
+  void OnPageChange(GesturePages page) override;
+  void OnSkipClicked() override;
+  void OnExitClicked() override;
 
   base::WeakPtr<GestureNavigationScreenView> view_;
   ScreenExitCallback exit_callback_;
 
   // Used to keep track of the current elapsed time that each page has been
   // shown for.
-  std::map<std::string, base::TimeDelta> page_times_;
+  std::map<GesturePages, base::TimeDelta> page_times_;
 
   // The current page that is shown on the gesture navigation screen.
-  std::string current_page_;
+  GesturePages current_page_;
 
   // The starting time for the most recently shown page.
   base::TimeTicks start_time_;

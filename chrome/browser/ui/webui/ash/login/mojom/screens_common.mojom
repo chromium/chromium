@@ -26,6 +26,28 @@ interface DrivePinningPage {
   SetRequiredSpaceInfo(mojo_base.mojom.String16  required_space ,mojo_base.mojom.String16  free_space);
 };
 
+// Interface for the gesture navigation screen. Lives in the browser process.
+// A renderer uses this to invoke methods that are implemented in
+// the browser process.
+interface GestureNavigationPageHandler {
+  // Describes the steps of gesture navigation pages.
+  enum GesturePages {
+    kIntro = 0,
+    kHome = 1,
+    kOverview = 2,
+    kBack = 3,
+  };
+
+  // Emits a Page change event with the gesture page.
+  OnPageChange(GesturePages page);
+
+  // Emits a Next button clicked.
+  OnSkipClicked();
+
+  // Emits a Exit Button clicked.
+  OnExitClicked();
+};
+
 // Interface for the gaia info screen. Lives in the browser process.
 // A renderer uses this to invoke methods that are implemented in
 // the browser process.

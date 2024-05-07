@@ -14,6 +14,7 @@
 #include "chrome/browser/ui/webui/ash/login/consumer_update_screen_handler.h"
 #include "chrome/browser/ui/webui/ash/login/drive_pinning_screen_handler.h"
 #include "chrome/browser/ui/webui/ash/login/gaia_info_screen_handler.h"
+#include "chrome/browser/ui/webui/ash/login/gesture_navigation_screen_handler.h"
 #include "chrome/browser/ui/webui/ash/login/lacros_data_backward_migration_screen_handler.h"
 #include "chrome/browser/ui/webui/ash/login/mojom/screens_common.mojom.h"
 #include "chrome/browser/ui/webui/ash/login/mojom/screens_factory.mojom.h"
@@ -59,6 +60,16 @@ void OobeScreensHandlerFactory::CreateDrivePinningScreenHandler(
   DrivePinningScreen* drive_pinning =
       WizardController::default_controller()->GetScreen<DrivePinningScreen>();
   drive_pinning->BindRemoteAndReceiver(std::move(page), std::move(receiver));
+}
+
+void OobeScreensHandlerFactory::CreateGestureNavigationPageHandler(
+    mojo::PendingReceiver<screens_common::mojom::GestureNavigationPageHandler>
+        receiver) {
+  CHECK(WizardController::default_controller());
+  GestureNavigationScreen* gesture_navigation =
+      WizardController::default_controller()
+          ->GetScreen<GestureNavigationScreen>();
+  gesture_navigation->BindReceiver(std::move(receiver));
 }
 
 void OobeScreensHandlerFactory::CreateGaiaInfoScreenHandler(

@@ -39,6 +39,9 @@ class OobeScreensHandlerFactory
       mojo::PendingRemote<screens_common::mojom::DrivePinningPage> page,
       mojo::PendingReceiver<screens_common::mojom::DrivePinningPageHandler>
           receiver) override;
+  void CreateGestureNavigationPageHandler(
+      mojo::PendingReceiver<screens_common::mojom::GestureNavigationPageHandler>
+          receiver) override;
 
   void CreateGaiaInfoScreenHandler(
       mojo::PendingRemote<screens_common::mojom::GaiaInfoPage> page,
