@@ -235,6 +235,8 @@ constexpr std::array<autofill::FieldType, 5> kStaticFieldsTypes = {
   autofill::FieldType serverFieldType =
       [self typeNameToFieldType:autofillFieldType];
   return (serverFieldType == autofill::ADDRESS_HOME_LINE1 && _line1Required) ||
+         (serverFieldType == autofill::ADDRESS_HOME_STREET_ADDRESS &&
+          _line1Required) ||
          (serverFieldType == autofill::ADDRESS_HOME_CITY && _cityRequired) ||
          (serverFieldType == autofill::ADDRESS_HOME_STATE && _stateRequired) ||
          (serverFieldType == autofill::ADDRESS_HOME_ZIP && _zipRequired);
