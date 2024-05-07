@@ -1436,10 +1436,11 @@ TEST_P(ServiceWorkerJobTest, AddRegistrationToMatchingerHosts) {
                      GetTestStorageKey(in_scope));
 
   // Make an in-scope reserved client.
-  std::unique_ptr<ServiceWorkerContainerHostAndInfo> host_and_info =
+  std::unique_ptr<ServiceWorkerClientAndInfo> client_and_info =
       CreateContainerHostAndInfoForWindow(helper_->context()->AsWeakPtr(),
                                           /*are_ancestors_secure=*/true);
-  base::WeakPtr<ServiceWorkerClient> reserved_client = host_and_info->host;
+  base::WeakPtr<ServiceWorkerClient> reserved_client =
+      client_and_info->service_worker_client;
   reserved_client->UpdateUrls(in_scope, url::Origin::Create(in_scope),
                               GetTestStorageKey(in_scope));
 

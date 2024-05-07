@@ -104,19 +104,18 @@ class ServiceWorkerRemoteContainerEndpoint {
       client_receiver_;
 };
 
-struct ServiceWorkerContainerHostAndInfo {
-  ServiceWorkerContainerHostAndInfo(
-      base::WeakPtr<ServiceWorkerClient> host,
+struct ServiceWorkerClientAndInfo {
+  ServiceWorkerClientAndInfo(
+      base::WeakPtr<ServiceWorkerClient> service_worker_client,
       blink::mojom::ServiceWorkerContainerInfoForClientPtr);
 
-  ServiceWorkerContainerHostAndInfo(const ServiceWorkerContainerHostAndInfo&) =
+  ServiceWorkerClientAndInfo(const ServiceWorkerClientAndInfo&) = delete;
+  ServiceWorkerClientAndInfo& operator=(const ServiceWorkerClientAndInfo&) =
       delete;
-  ServiceWorkerContainerHostAndInfo& operator=(
-      const ServiceWorkerContainerHostAndInfo&) = delete;
 
-  ~ServiceWorkerContainerHostAndInfo();
+  ~ServiceWorkerClientAndInfo();
 
-  base::WeakPtr<ServiceWorkerClient> host;
+  base::WeakPtr<ServiceWorkerClient> service_worker_client;
   blink::mojom::ServiceWorkerContainerInfoForClientPtr info;
 };
 
@@ -130,8 +129,7 @@ base::WeakPtr<ServiceWorkerClient> CreateContainerHostForWindow(
     ServiceWorkerRemoteContainerEndpoint* output_endpoint);
 
 // Creates a container host that can be used for a navigation.
-std::unique_ptr<ServiceWorkerContainerHostAndInfo>
-CreateContainerHostAndInfoForWindow(
+std::unique_ptr<ServiceWorkerClientAndInfo> CreateContainerHostAndInfoForWindow(
     base::WeakPtr<ServiceWorkerContextCore> context,
     bool are_ancestors_secure);
 

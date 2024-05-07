@@ -638,13 +638,13 @@ class MockServiceWorkerContainer : public blink::mojom::ServiceWorkerContainer {
 
 TEST_F(ServiceWorkerContainerHostTest, Controller) {
   // Create a host.
-  std::unique_ptr<ServiceWorkerContainerHostAndInfo> host_and_info =
+  std::unique_ptr<ServiceWorkerClientAndInfo> client_and_info =
       CreateContainerHostAndInfoForWindow(helper_->context()->AsWeakPtr(),
                                           /*are_ancestors_secure=*/true);
   base::WeakPtr<ServiceWorkerClient> container_host =
-      std::move(host_and_info->host);
+      std::move(client_and_info->service_worker_client);
   remote_endpoints_.emplace_back();
-  remote_endpoints_.back().BindForWindow(std::move(host_and_info->info));
+  remote_endpoints_.back().BindForWindow(std::move(client_and_info->info));
   auto container = std::make_unique<MockServiceWorkerContainer>(
       std::move(*remote_endpoints_.back().client_receiver()));
 
@@ -675,13 +675,13 @@ TEST_F(ServiceWorkerContainerHostTest, Controller) {
 
 TEST_F(ServiceWorkerContainerHostTest, UncontrolledWithMatchingRegistration) {
   // Create a host.
-  std::unique_ptr<ServiceWorkerContainerHostAndInfo> host_and_info =
+  std::unique_ptr<ServiceWorkerClientAndInfo> client_and_info =
       CreateContainerHostAndInfoForWindow(helper_->context()->AsWeakPtr(),
                                           /*are_ancestors_secure=*/true);
   base::WeakPtr<ServiceWorkerClient> container_host =
-      std::move(host_and_info->host);
+      std::move(client_and_info->service_worker_client);
   remote_endpoints_.emplace_back();
-  remote_endpoints_.back().BindForWindow(std::move(host_and_info->info));
+  remote_endpoints_.back().BindForWindow(std::move(client_and_info->info));
   auto container = std::make_unique<MockServiceWorkerContainer>(
       std::move(*remote_endpoints_.back().client_receiver()));
 
@@ -1192,13 +1192,13 @@ void ServiceWorkerContainerHostTest::TestReservedClientsAreNotExposed(
   }
 
   {
-    std::unique_ptr<ServiceWorkerContainerHostAndInfo> host_and_info =
+    std::unique_ptr<ServiceWorkerClientAndInfo> client_and_info =
         CreateContainerHostAndInfoForWindow(helper_->context()->AsWeakPtr(),
                                             /*are_ancestors_secure=*/true);
     base::WeakPtr<ServiceWorkerClient> container_host =
-        std::move(host_and_info->host);
+        std::move(client_and_info->service_worker_client);
     ServiceWorkerRemoteContainerEndpoint remote_endpoint;
-    remote_endpoint.BindForWindow(std::move(host_and_info->info));
+    remote_endpoint.BindForWindow(std::move(client_and_info->info));
 
     FinishNavigation(container_host.get());
     EXPECT_FALSE(CanFindClientContainerHost(container_host.get()));
@@ -1229,13 +1229,13 @@ TEST_F(ServiceWorkerContainerHostTest,
 
 // Tests the client phase transitions for a navigation.
 TEST_F(ServiceWorkerContainerHostTest, ClientPhaseForWindow) {
-  std::unique_ptr<ServiceWorkerContainerHostAndInfo> host_and_info =
+  std::unique_ptr<ServiceWorkerClientAndInfo> client_and_info =
       CreateContainerHostAndInfoForWindow(helper_->context()->AsWeakPtr(),
                                           /*are_ancestors_secure=*/true);
   base::WeakPtr<ServiceWorkerClient> container_host =
-      std::move(host_and_info->host);
+      std::move(client_and_info->service_worker_client);
   ServiceWorkerRemoteContainerEndpoint remote_endpoint;
-  remote_endpoint.BindForWindow(std::move(host_and_info->info));
+  remote_endpoint.BindForWindow(std::move(client_and_info->info));
   EXPECT_FALSE(container_host->is_response_committed());
   EXPECT_FALSE(container_host->is_execution_ready());
 
@@ -1335,13 +1335,13 @@ void ServiceWorkerContainerHostTest::TestBackForwardCachedClientsAreNotExposed(
     ASSERT_TRUE(worker_host);
   }
   {
-    std::unique_ptr<ServiceWorkerContainerHostAndInfo> host_and_info =
+    std::unique_ptr<ServiceWorkerClientAndInfo> client_and_info =
         CreateContainerHostAndInfoForWindow(helper_->context()->AsWeakPtr(),
                                             /*are_ancestors_secure=*/true);
     base::WeakPtr<ServiceWorkerClient> container_host =
-        std::move(host_and_info->host);
+        std::move(client_and_info->service_worker_client);
     ServiceWorkerRemoteContainerEndpoint remote_endpoint;
-    remote_endpoint.BindForWindow(std::move(host_and_info->info));
+    remote_endpoint.BindForWindow(std::move(client_and_info->info));
 
     FinishNavigation(container_host.get());
     EXPECT_FALSE(CanFindClientContainerHost(container_host.get()));
@@ -1412,13 +1412,13 @@ TEST_F(ServiceWorkerContainerHostTestWithBackForwardCache, ControlleeEvents) {
   TestServiceWorkerContextCoreObserver observer(helper_->context_wrapper());
 
   // Create a host.
-  std::unique_ptr<ServiceWorkerContainerHostAndInfo> host_and_info =
+  std::unique_ptr<ServiceWorkerClientAndInfo> client_and_info =
       CreateContainerHostAndInfoForWindow(helper_->context()->AsWeakPtr(),
                                           /*are_ancestors_secure=*/true);
   base::WeakPtr<ServiceWorkerClient> container_host =
-      std::move(host_and_info->host);
+      std::move(client_and_info->service_worker_client);
   remote_endpoints_.emplace_back();
-  remote_endpoints_.back().BindForWindow(std::move(host_and_info->info));
+  remote_endpoints_.back().BindForWindow(std::move(client_and_info->info));
   auto container = std::make_unique<MockServiceWorkerContainer>(
       std::move(*remote_endpoints_.back().client_receiver()));
 

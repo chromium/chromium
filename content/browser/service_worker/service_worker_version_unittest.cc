@@ -1445,12 +1445,12 @@ TEST_P(ServiceWorkerVersionTest,
   // cause the client to have an invalid process id like we see in real
   // navigations.
   ServiceWorkerRemoteContainerEndpoint remote_endpoint;
-  std::unique_ptr<ServiceWorkerContainerHostAndInfo> host_and_info =
+  std::unique_ptr<ServiceWorkerClientAndInfo> client_and_info =
       CreateContainerHostAndInfoForWindow(helper_->context()->AsWeakPtr(),
                                           /*are_ancestors_secure=*/true);
   base::WeakPtr<ServiceWorkerClient> service_worker_client =
-      std::move(host_and_info->host);
-  remote_endpoint.BindForWindow(std::move(host_and_info->info));
+      std::move(client_and_info->service_worker_client);
+  remote_endpoint.BindForWindow(std::move(client_and_info->info));
   service_worker_client->UpdateUrls(registration_->scope(),
                                     registration_->key().origin(),
                                     registration_->key());
