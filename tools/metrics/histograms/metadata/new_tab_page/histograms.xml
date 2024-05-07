@@ -132,7 +132,7 @@ chromium-metrics-reviews@google.com.
 </histogram>
 
 <histogram name="NewTabPage.BackgroundService.Images.RequestLatency" units="ms"
-    expires_after="2024-09-01">
+    expires_after="2024-11-03">
   <owner>tiborg@chromium.org</owner>
   <owner>pauladedeji@google.com</owner>
   <owner>chrome-desktop-ntp@google.com</owner>
@@ -761,7 +761,7 @@ chromium-metrics-reviews@google.com.
 
 <histogram
     name="NewTabPage.HistoryClusters.Layout{LayoutNum}.ImageDisplayState"
-    enum="NTPHistoryClustersImageDisplayState" expires_after="2024-09-01">
+    enum="NTPHistoryClustersImageDisplayState" expires_after="2024-11-03">
   <owner>romanarora@chromium.org</owner>
   <owner>tiborg@chromium.org</owner>
   <owner>chrome-desktop-ntp@google.com</owner>
@@ -829,7 +829,7 @@ chromium-metrics-reviews@google.com.
 </histogram>
 
 <histogram name="NewTabPage.HistoryClusters.NumVisits" units="counts"
-    expires_after="2024-09-01">
+    expires_after="2024-11-03">
   <owner>romanarora@chromium.org</owner>
   <owner>tiborg@chromium.org</owner>
   <owner>chrome-desktop-ntp@google.com</owner>

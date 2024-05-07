@@ -261,7 +261,7 @@ chromium-metrics-reviews@google.com.
 </histogram>
 
 <histogram name="Crostini.FilesystemCorruption" enum="CorruptionStates"
-    expires_after="2024-09-01">
+    expires_after="2024-11-03">
   <owner>sidereal@google.com</owner>
   <owner>davidmunro@google.com</owner>
   <owner>clumptini@google.com</owner>
