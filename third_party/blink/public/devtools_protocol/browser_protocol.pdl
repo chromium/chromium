@@ -7878,7 +7878,6 @@ domain Page
       clipboard-write
       compute-pressure
       cross-origin-isolated
-      deferred-fetch
       direct-sockets
       display-capture
       document-domain

@@ -58,7 +58,6 @@ parallelPromiseTest(async t => {
   // Loads a same-origin iframe that fires a fetchLater request.
   await loadFetchLaterIframe(HTTPS_NOTSAMESITE_ORIGIN, url);
 
-  // See also
-  // /fetch/fetch-later/permissions-policy/deferred-fetch-default-permissions-policy.tentative.https.window.js
-  await expectBeacon(uuid, {count: 0});
-}, 'A cross-origin iframe cannot trigger fetchLater.');
+  // The iframe should have sent the request.
+  await expectBeacon(uuid, {count: 1});
+}, 'A cross-origin iframe can trigger fetchLater.');
