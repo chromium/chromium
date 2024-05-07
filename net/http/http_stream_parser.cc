@@ -355,12 +355,6 @@ int HttpStreamParser::ReadResponseBody(IOBuffer* buf,
   user_read_buf_len_ = buf_len;
   io_state_ = STATE_READ_BODY;
 
-  // Invalidate HttpRequestInfo pointer. This is to allow the stream to be
-  // shared across multiple consumers.
-  // It is safe to reset it at this point since request_->upload_data_stream
-  // is also not needed anymore.
-  request_ = nullptr;
-
   int result = DoLoop(OK);
   if (result == ERR_IO_PENDING)
     callback_ = std::move(callback);
@@ -600,48 +594,65 @@ int HttpStreamParser::DoReadHeadersComplete(int result) {
 
   result = HandleReadHeaderResult(result);
 
+  // If still reading the headers, just return the result.
+  if (io_state_ == STATE_READ_HEADERS) {
+    return result;
+  }
+
+  // If the result is ERR_IO_PENDING, |io_state_| should be STATE_READ_HEADERS.
+  DCHECK_NE(ERR_IO_PENDING, result);
+
   // TODO(mmenke):  The code below is ugly and hacky.  A much better and more
   // flexible long term solution would be to separate out the read and write
   // loops, though this would involve significant changes, both here and
   // elsewhere (WebSockets, for instance).
 
-  // If still reading the headers, or there was no error uploading the request
-  // body, just return the result.
-  if (io_state_ == STATE_READ_HEADERS || upload_error_ == OK)
-    return result;
-
-  // If the result is ERR_IO_PENDING, |io_state_| should be STATE_READ_HEADERS.
-  DCHECK_NE(ERR_IO_PENDING, result);
-
-  // On errors, use the original error received when sending the request.
-  // The main cases where these are different is when there's a header-related
-  // error code, or when there's an ERR_CONNECTION_CLOSED, which can result in
-  // special handling of partial responses and HTTP/0.9 responses.
-  if (result < 0) {
-    // Nothing else to do.  In the HTTP/0.9 or only partial headers received
-    // cases, can normally go to other states after an error reading headers.
-    io_state_ = STATE_DONE;
-    // Don't let caller see the headers.
-    response_->headers = nullptr;
-    return upload_error_;
+  // If there was an error uploading the request body, may need to adjust the
+  // result.
+  if (upload_error_ != OK) {
+    // On errors, use the original error received when sending the request.
+    // The main cases where these are different is when there's a header-related
+    // error code, or when there's an ERR_CONNECTION_CLOSED, which can result in
+    // special handling of partial responses and HTTP/0.9 responses.
+    if (result < 0) {
+      // Nothing else to do.  In the HTTP/0.9 or only partial headers received
+      // cases, can normally go to other states after an error reading headers.
+      io_state_ = STATE_DONE;
+      // Don't let caller see the headers.
+      response_->headers = nullptr;
+      result = upload_error_;
+    } else {
+      // Skip over 1xx responses as usual, and allow 4xx/5xx error responses to
+      // override the error received while uploading the body. For other status
+      // codes, return the original error received when trying to upload the
+      // request body, to make sure the consumer has some indication there was
+      // an error.
+      int response_code_class = response_->headers->response_code() / 100;
+      if (response_code_class != 1 && response_code_class != 4 &&
+          response_code_class != 5) {
+        // Nothing else to do.
+        io_state_ = STATE_DONE;
+        // Don't let caller see the headers.
+        response_->headers = nullptr;
+        result = upload_error_;
+      }
+    }
   }
 
-  // Skip over 1xx responses as usual, and allow 4xx/5xx error responses to
-  // override the error received while uploading the body.
-  int response_code_class = response_->headers->response_code() / 100;
-  if (response_code_class == 1 || response_code_class == 4 ||
-      response_code_class == 5) {
-    return result;
+  // If there will be no more header reads, clear the request and response
+  // pointers, as they're no longer needed, and in some cases the body may
+  // be read after the parent class destroyed the underlying objects (See
+  // HttpResponseBodyDrainer).
+  //
+  // This is the last header read if HttpStreamParser is done, no response
+  // headers were received, or if the response code is not in the 1xx range.
+  if (io_state_ == STATE_DONE || !response_->headers ||
+      response_->headers->response_code() / 100 != 1) {
+    request_ = nullptr;
+    response_ = nullptr;
   }
 
-  // All other status codes are not allowed after an error during upload, to
-  // make sure the consumer has some indication there was an error.
-
-  // Nothing else to do.
-  io_state_ = STATE_DONE;
-  // Don't let caller see the headers.
-  response_->headers = nullptr;
-  return upload_error_;
+  return result;
 }
 
 int HttpStreamParser::DoReadBody() {

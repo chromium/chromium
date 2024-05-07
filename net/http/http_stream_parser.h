@@ -211,7 +211,7 @@ class NET_EXPORT_PRIVATE HttpStreamParser {
   State io_state_ = STATE_NONE;
 
   // Null when read state machine is invoked.
-  raw_ptr<const HttpRequestInfo, AcrossTasksDanglingUntriaged> request_;
+  raw_ptr<const HttpRequestInfo> request_;
 
   // The request header data.  May include a merged request body.
   scoped_refptr<DrainableIOBuffer> request_headers_;
@@ -243,7 +243,7 @@ class NET_EXPORT_PRIVATE HttpStreamParser {
   // cannot be safely accessed after reading the final set of headers, as the
   // caller of SendRequest may have been destroyed - this happens in the case an
   // HttpResponseBodyDrainer is used.
-  raw_ptr<HttpResponseInfo, AcrossTasksDanglingUntriaged> response_ = nullptr;
+  raw_ptr<HttpResponseInfo> response_ = nullptr;
 
   // Time at which the first bytes of the first header response including
   // informational responses (1xx) are about to be parsed. This corresponds to
