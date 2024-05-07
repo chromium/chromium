@@ -1398,6 +1398,9 @@
             "experiments": [
                 {
                     "name": "Enabled",
+                    "params": {
+                        "cache_size": "1000"
+                    },
                     "enable_features": [
                         "AutofillEnableCacheForRegexMatching"
                     ]

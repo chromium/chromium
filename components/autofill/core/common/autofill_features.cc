@@ -686,7 +686,7 @@ BASE_FEATURE(kAutofillEnableCacheForRegexMatching,
              base::FEATURE_DISABLED_BY_DEFAULT);
 const base::FeatureParam<int>
     kAutofillEnableCacheForRegexMatchingCacheSizeParam{
-        &kAutofillEnableCacheForRegexMatching, "cache_size", 300};
+        &kAutofillEnableCacheForRegexMatching, "cache_size", 1000};
 
 // When enabled, various deduplication related metrics are logged on startup
 // and on import.
