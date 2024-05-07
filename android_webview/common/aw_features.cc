@@ -215,6 +215,13 @@ BASE_FEATURE(kWebViewInjectPlatformJsApis,
              "WebViewInjectPlatformJsApis",
              base::FEATURE_ENABLED_BY_DEFAULT);
 
+// If enabled zoom picker is invoked on every kGestureScrollUpdate consumed ack,
+// otherwise the zoom picker is persistently shown from scroll start to scroll
+// end plus the usual delay in hiding.
+BASE_FEATURE(kWebViewInvokeZoomPickerOnGSU,
+             "WebViewInvokeZoomPickerOnGSU",
+             base::FEATURE_DISABLED_BY_DEFAULT);
+
 // Whether to use initial network state during initialization to speed up
 // startup.
 BASE_FEATURE(kWebViewUseInitialNetworkStateAtStartup,

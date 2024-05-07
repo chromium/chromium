@@ -48,6 +48,13 @@ public class AwZoomControls {
         }
     }
 
+    public void setAutoDismissed(boolean autoDismiss) {
+        android.widget.ZoomButtonsController zoomController = getZoomController();
+        if (zoomController != null) {
+            zoomController.setAutoDismissed(autoDismiss);
+        }
+    }
+
     @SuppressWarnings("deprecation")
     public void dismissZoomPicker() {
         android.widget.ZoomButtonsController zoomController = getZoomController();

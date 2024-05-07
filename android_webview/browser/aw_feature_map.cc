@@ -23,6 +23,7 @@ namespace {
 const base::Feature* const kFeaturesExposedToJava[] = {
     &features::kWebViewDisplayCutout,
     &features::kWebViewExitReasonMetric,
+    &features::kWebViewInvokeZoomPickerOnGSU,
     &features::kWebViewMixedContentAutoupgrades,
     &features::kWebViewTestFeature,
     &features::kWebViewJavaJsBridgeMojo,

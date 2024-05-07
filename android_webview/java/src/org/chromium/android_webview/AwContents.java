@@ -895,11 +895,19 @@ public class AwContents implements SmartClipProvider {
         @Override
         public void onScrollUpdateGestureConsumed() {
             mScrollAccessibilityHelper.postViewScrolledAccessibilityEventCallback();
-            mZoomControls.invokeZoomPicker();
+            if (AwFeatureMap.isEnabled(AwFeatures.WEBVIEW_INVOKE_ZOOM_PICKER_ON_GSU)) {
+                mZoomControls.invokeZoomPicker();
+            }
         }
 
         @Override
         public void onScrollStarted(int scrollOffsetY, int scrollExtentY, boolean isDirectionUp) {
+            if (!AwFeatureMap.isEnabled(AwFeatures.WEBVIEW_INVOKE_ZOOM_PICKER_ON_GSU)) {
+                // This needs to be paired with call to setAutoDismissed(true) and a call to invoke
+                // zoom picker, so that a delayed hide task is posted by android. This is happening
+                // on scroll end below.
+                mZoomControls.setAutoDismissed(false);
+            }
             mZoomControls.invokeZoomPicker();
             if (mAwFrameMetricsListener != null) {
                 mAwFrameMetricsListener.onWebContentsScrollStateUpdate(
@@ -909,6 +917,12 @@ public class AwContents implements SmartClipProvider {
 
         @Override
         public void onScrollEnded(int scrollOffsetY, int scrollExtentY) {
+            if (!AwFeatureMap.isEnabled(AwFeatures.WEBVIEW_INVOKE_ZOOM_PICKER_ON_GSU)) {
+                mZoomControls.setAutoDismissed(true);
+                // A call to invoke is required so that a delayed hide task can be posted by
+                // android.
+                mZoomControls.invokeZoomPicker();
+            }
             if (mAwFrameMetricsListener != null) {
                 mAwFrameMetricsListener.onWebContentsScrollStateUpdate(
                         /* isScrolling= */ false, mId);
