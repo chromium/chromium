@@ -166,8 +166,8 @@ export function updateBackendRepo() {
 
 export function updateChromiumRepo() {
   const chromium = process.cwd();
-  const branch = process.env["BUILDKITE_BRANCH"];
-  updateRepo(chromium, `origin/${branch}`);
+  const rev = process.env["BUILDKITE_COMMIT"];
+  updateRepo(chromium, rev);
 
   const deps = getChromiumDeps();
 
