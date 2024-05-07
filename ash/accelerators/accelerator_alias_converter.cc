@@ -384,7 +384,19 @@ AcceleratorAliasConverter::CreateFunctionKeyAliases(
   }
 
   const bool top_row_are_fkeys = AreTopRowFKeys(keyboard);
-  if (IsChromeOSKeyboard(keyboard)) {
+  if (IsSplitModifierKeyboard(keyboard.id)) {
+    // If its a split modifier Keyboard, the UI should show the Action Key
+    // glyph. If `top_row_are_fkeys` is false, function key must be added so
+    // convert the "F-Key" into the action key.
+    if (top_row_are_fkeys) {
+      return {ui::Accelerator(*action_vkey, accelerator.modifiers(),
+                              accelerator.key_state())};
+    } else {
+      return {ui::Accelerator(*action_vkey,
+                              accelerator.modifiers() | ui::EF_FUNCTION_DOWN,
+                              accelerator.key_state())};
+    }
+  } else if (IsChromeOSKeyboard(keyboard)) {
     // If `priority_keyboard` is a ChromeOS keyboard, the UI should show the
     // corresponding action key, the the F-Key glyph.
     if (top_row_are_fkeys) {
