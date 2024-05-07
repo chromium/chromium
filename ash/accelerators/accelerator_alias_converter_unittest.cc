@@ -222,6 +222,43 @@ TEST_F(AcceleratorAliasConverterTest, UpdateSixPackKeyAliasWithFkey) {
   CheckFKeyAddToSixPackKeyAlias();
 }
 
+TEST_F(AcceleratorAliasConverterTest, UpdateTopRowKeysAliasWithFkey) {
+  base::test::ScopedFeatureList feature_list;
+  feature_list.InitAndEnableFeature(features::kModifierSplit);
+  auto ignore_modifier_split_secret_key =
+      ash::switches::SetIgnoreModifierSplitSecretKeyForTest();
+  mojom::Keyboard split_modifier_keyboard;
+
+  std::unique_ptr<FakeDeviceManager> fake_keyboard_manager_ =
+      std::make_unique<FakeDeviceManager>();
+  ui::KeyboardDevice fake_keyboard(
+      /*id=*/1, /*type=*/ui::InputDeviceType::INPUT_DEVICE_INTERNAL,
+      /*name=*/kKbdTopRowLayout1Tag, /*has_assistant_key=*/true,
+      /*has_function_key=*/true);
+  fake_keyboard.sys_path = base::FilePath("path");
+  fake_keyboard_manager_->AddFakeKeyboard(fake_keyboard, kKbdTopRowLayout1Tag);
+
+  AcceleratorAliasConverter accelerator_alias_converter_;
+  const ui::Accelerator accelerator{ui::VKEY_ZOOM, ui::EF_NONE};
+  SetTopRowAsFKeysForKeyboard(fake_keyboard, /*enabled=*/true);
+  std::vector<ui::Accelerator> accelerator_aliases =
+      accelerator_alias_converter_.CreateAcceleratorAlias(accelerator);
+
+  EXPECT_EQ(1u, accelerator_aliases.size());
+  const ui::Accelerator expected_accelerator{
+      ui::VKEY_ZOOM, ui::EF_FUNCTION_DOWN, accelerator.key_state()};
+  EXPECT_EQ(expected_accelerator, accelerator_aliases[0]);
+
+  SetTopRowAsFKeysForKeyboard(fake_keyboard, /*enabled=*/false);
+  std::vector<ui::Accelerator> updated_accelerator_aliases =
+      accelerator_alias_converter_.CreateAcceleratorAlias(accelerator);
+
+  EXPECT_EQ(1u, updated_accelerator_aliases.size());
+  const ui::Accelerator updated_expected_accelerator{ui::VKEY_ZOOM, ui::EF_NONE,
+                                                     accelerator.key_state()};
+  EXPECT_EQ(updated_expected_accelerator, updated_accelerator_aliases[0]);
+}
+
 TEST_F(AcceleratorAliasConverterTest, CheckTopRowAliasNoAlias) {
   std::unique_ptr<FakeDeviceManager> fake_keyboard_manager_ =
       std::make_unique<FakeDeviceManager>();

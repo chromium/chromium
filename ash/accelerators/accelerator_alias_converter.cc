@@ -12,6 +12,7 @@
 #include "ash/display/privacy_screen_controller.h"
 #include "ash/shell.h"
 #include "ash/system/input_device_settings/input_device_settings_controller_impl.h"
+#include "ash/system/input_device_settings/input_device_settings_utils.h"
 #include "base/containers/fixed_flat_map.h"
 #include "base/containers/fixed_flat_set.h"
 #include "base/functional/bind.h"
@@ -485,7 +486,20 @@ std::optional<ui::Accelerator> AcceleratorAliasConverter::CreateTopRowAliases(
   }
 
   const bool top_row_are_fkeys = AreTopRowFKeys(keyboard);
-  if (IsChromeOSKeyboard(keyboard)) {
+  if (IsSplitModifierKeyboard(keyboard.id)) {
+    // If its a split modifier Keyboard, the UI should show the Action Key
+    // glyph. If `top_row_are_fkeys` is true, function key must be added so
+    // convert the "F-Key" into the action key.
+    if (top_row_are_fkeys) {
+      return {ui::Accelerator(accelerator.key_code(),
+                              accelerator.modifiers() | ui::EF_FUNCTION_DOWN,
+                              accelerator.key_state())};
+    } else {
+      // Otherwise if `top_row_are_fkeys` is false, the identity accelerator
+      // should be returned.
+      return {accelerator};
+    }
+  } else if (IsChromeOSKeyboard(keyboard)) {
     // If its a ChromeOS Keyboard, the UI should show the Action Key glyph. If
     // `top_row_are_fkeys` is true, Search must be added so convert the "F-Key"
     // into the action key.
