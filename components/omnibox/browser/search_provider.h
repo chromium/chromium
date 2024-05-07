@@ -83,8 +83,8 @@ class SearchProvider : public BaseSearchProvider,
   // This method is virtual to mock for testing.
   virtual bool CanSendCurrentPageURLInRequest(
       const GURL& current_page_url,
-      const TemplateURL* template_url,
       metrics::OmniboxEventProto::PageClassification page_classification,
+      const TemplateURL* template_url,
       const SearchTermsData& search_terms_data,
       const AutocompleteProviderClient* client);
 

@@ -93,49 +93,6 @@ void LogOmniboxZeroSuggestRequest(const RemoteRequestEvent request_event,
 // Relevance value to use if it was not set explicitly by the server.
 const int kDefaultZeroSuggestRelevance = 100;
 
-// Return whether a suggest request can be made with sending the current URL.
-// This function only applies to kRemoteSendURL variant.
-bool AllowRemoteSendURL(const AutocompleteProviderClient* client,
-                        const AutocompleteInput& input) {
-  const TemplateURLService* template_url_service =
-      client->GetTemplateURLService();
-  if (!template_url_service) {
-    return false;
-  }
-  const TemplateURL* default_provider =
-      template_url_service->GetDefaultSearchProvider();
-  if (!default_provider) {
-    return false;
-  }
-
-  // Explicitly test the conditions for sending a suggest request without
-  // sending the current URL are also met in case these two tests diverge.
-  return BaseSearchProvider::CanSendSuggestRequestWithoutPageURL(
-             default_provider, template_url_service->search_terms_data(),
-             client) &&
-         BaseSearchProvider::CanSendSuggestRequestWithPageURL(
-             input.current_url(), default_provider,
-             template_url_service->search_terms_data(), client);
-}
-
-// Return whether a suggest request can be made without sending the current URL.
-// This function only applies to kRemoteNoURL variant.
-bool AllowRemoteNoURL(const AutocompleteProviderClient* client) {
-  const TemplateURLService* template_url_service =
-      client->GetTemplateURLService();
-  if (!template_url_service) {
-    return false;
-  }
-  const TemplateURL* default_provider =
-      template_url_service->GetDefaultSearchProvider();
-  if (!default_provider) {
-    return false;
-  }
-
-  return BaseSearchProvider::CanSendSuggestRequestWithoutPageURL(
-      default_provider, template_url_service->search_terms_data(), client);
-}
-
 // Called in StoreRemoteResponse() and ReadStoredResponse() to determine if the
 // zero suggest cache is being used to store ZPS responses received from the
 // remote Suggest service for the given |result_type|.
@@ -338,15 +295,27 @@ bool ZeroSuggestProvider::AllowZeroPrefixSuggestions(
     const AutocompleteInput& input) {
   auto eligibility = Eligibility::kEligible;
 
+  const TemplateURLService* template_url_service =
+      client->GetTemplateURLService();
+
   switch (ResultTypeToRun(input)) {
     case ResultType::kRemoteNoURL: {
-      if (!AllowRemoteNoURL(client)) {
+      if (!template_url_service ||
+          !template_url_service->GetDefaultSearchProvider() ||
+          !CanSendSuggestRequestWithoutPageURL(
+              template_url_service->GetDefaultSearchProvider(),
+              template_url_service->search_terms_data(), client)) {
         eligibility = Eligibility::kRequestNoURLIneligible;
       }
       break;
     }
     case ResultType::kRemoteSendURL: {
-      if (!AllowRemoteSendURL(client, input)) {
+      if (!client->GetTemplateURLService() ||
+          !template_url_service->GetDefaultSearchProvider() ||
+          !CanSendSuggestRequestWithPageURL(
+              input.current_url(),
+              template_url_service->GetDefaultSearchProvider(),
+              template_url_service->search_terms_data(), client)) {
         eligibility = Eligibility::kRequestSendURLIneligible;
       }
       break;

@@ -182,8 +182,8 @@ int SearchProvider::CalculateRelevanceForKeywordVerbatim(
 
 bool SearchProvider::CanSendCurrentPageURLInRequest(
     const GURL& current_page_url,
-    const TemplateURL* template_url,
     metrics::OmniboxEventProto::PageClassification page_classification,
+    const TemplateURL* template_url,
     const SearchTermsData& search_terms_data,
     const AutocompleteProviderClient* client) {
   // Send the current page URL if the request eligiblility and the user settings
@@ -925,9 +925,9 @@ std::unique_ptr<network::SimpleURLLoader> SearchProvider::CreateSuggestLoader(
       client()->GetTemplateURLService()->search_terms_data();
 
   // Make sure the current page URL is sent in the request, if it is allowed.
-  if (CanSendCurrentPageURLInRequest(input.current_url(), template_url,
-                                     input.current_page_classification(),
-                                     search_terms_data, client())) {
+  if (CanSendCurrentPageURLInRequest(
+          input.current_url(), input.current_page_classification(),
+          template_url, search_terms_data, client())) {
     search_term_args.current_page_url = input.current_url().spec();
   }
 
