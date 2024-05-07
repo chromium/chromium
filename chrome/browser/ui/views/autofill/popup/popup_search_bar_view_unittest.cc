@@ -154,4 +154,30 @@ TEST_F(PopupSearchBarViewTest, KeyPressedFromTextfieldPassedToDelegateFirst) {
       PopupSearchBarView::kInputChangeCallbackDelay);
 }
 #endif  // !BUILDFLAG(IS_WIN)
+
+TEST_F(PopupSearchBarViewTest, ClearButton) {
+  PopupSearchBarView* view = widget().SetContentsView(
+      std::make_unique<PopupSearchBarView>(u"placeholder", delegate()));
+  widget().Show();
+  view->Focus();
+
+  MockFunction<void()> check;
+  {
+    InSequence s;
+    EXPECT_CALL(delegate(), SearchBarOnInputChanged(Eq(u"abc")));
+    EXPECT_CALL(check, Call);
+    EXPECT_CALL(delegate(), SearchBarOnInputChanged(Eq(u"")));
+  }
+
+  view->SetInputTextForTesting(u"abc");
+  task_environment()->FastForwardBy(
+      PopupSearchBarView::kInputChangeCallbackDelay);
+
+  check.Call();
+
+  generator().MoveMouseTo(view->GetClearButtonScreenCenterPointForTesting());
+  generator().ClickLeftButton();
+  task_environment()->FastForwardBy(
+      PopupSearchBarView::kInputChangeCallbackDelay);
+}
 }  // namespace autofill

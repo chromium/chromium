@@ -11,6 +11,7 @@
 #include "base/memory/raw_ref.h"
 #include "base/timer/timer.h"
 #include "ui/base/interaction/element_identifier.h"
+#include "ui/gfx/geometry/point.h"
 #include "ui/views/controls/textfield/textfield_controller.h"
 #include "ui/views/focus/focus_manager.h"
 #include "ui/views/view.h"
@@ -82,12 +83,14 @@ class PopupSearchBarView : public views::View,
   void Focus();
 
   void SetInputTextForTesting(const std::u16string& text);
+  gfx::Point GetClearButtonScreenCenterPointForTesting() const;
 
   // TODO(b/325246516): Add methods to support communication with its hosting
   // poopup view.
 
  private:
   void OnInputChanged();
+  void OnClearPressed();
 
   const raw_ref<Delegate> delegate_;
 

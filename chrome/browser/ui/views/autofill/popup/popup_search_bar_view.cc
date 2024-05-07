@@ -14,6 +14,7 @@
 #include "ui/base/interaction/element_identifier.h"
 #include "ui/base/metadata/metadata_impl_macros.h"
 #include "ui/events/types/event_type.h"
+#include "ui/gfx/geometry/point.h"
 #include "ui/views/controls/button/image_button.h"
 #include "ui/views/controls/image_view.h"
 #include "ui/views/controls/textfield/textfield.h"
@@ -65,6 +66,8 @@ PopupSearchBarView::PopupSearchBarView(const std::u16string& placeholder,
   // LayoutManager).
   clear_ = AddChildView(
       views::Builder<views::ImageButton>()
+          .SetCallback(base::BindRepeating(&PopupSearchBarView::OnClearPressed,
+                                           base::Unretained(this)))
           .SetImageModel(views::Button::STATE_NORMAL,
                          ui::ImageModel::FromVectorIcon(
                              vector_icons::kCloseChromeRefreshIcon))
@@ -104,6 +107,11 @@ void PopupSearchBarView::SetInputTextForTesting(const std::u16string& text) {
   input_->SetText(text);
 }
 
+gfx::Point PopupSearchBarView::GetClearButtonScreenCenterPointForTesting()
+    const {
+  return clear_->GetBoundsInScreen().CenterPoint();
+}
+
 PopupSearchBarView::~PopupSearchBarView() = default;
 
 void PopupSearchBarView::OnInputChanged() {
@@ -113,6 +121,10 @@ void PopupSearchBarView::OnInputChanged() {
       // triggered when it is alive or canceled.
       base::BindOnce(&Delegate::SearchBarOnInputChanged,
                      base::Unretained(delegate_), input_->GetText()));
+}
+
+void PopupSearchBarView::OnClearPressed() {
+  input_->SetText(u"");
 }
 
 BEGIN_METADATA(PopupSearchBarView)
