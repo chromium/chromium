@@ -125,11 +125,9 @@ following arguments:
 ```gn
 target_os = "android"
 target_cpu = "arm64"  # See "Figuring out target_cpu" below
+use_remoteexec = true  # Enables distributed builds. See "Faster Builds".
 ```
 
-* There are several settings that will speed up compile/deploy time at the cost
-  of some unusual edge cases that will not affect most developers. See
-  `incremental_install` and other options below.
 * You only have to run this once for each new build directory, Ninja will
   update the build files as needed.
 * You can replace `Default` with another name, but
@@ -163,28 +161,6 @@ ro.product.cpu.abi`:
 non-WebView targets. This is also allowed for Monochrome, but only when not set
 as the WebView provider.
 ***
-
-### Faster builds
-
-This section contains some things you can change to speed up your builds,
-sorted so that the things that make the biggest difference are first.
-
-#### Use Reclient
-
-*** note
-**Warning:** If you are a Google employee, do not follow the instructions below.
-See
-[go/building-android-chrome#initialize-remote-execution-distributed-builds](https://goto.google.com/building-android-chrome#initialize-remote-execution-distributed-builds)
-instead.
-***
-
-Chromium's build can be sped up significantly by using a remote execution system
-compatible with [REAPI](https://github.com/bazelbuild/remote-apis). This allows
-you to benefit from remote caching and executing many build actions in parallel
-on a shared cluster of workers.
-
-To use Reclient, follow the corresponding
-[Linux build instructions](linux/build_instructions.md#use-reclient).
 
 ## Build Chromium
 
@@ -379,14 +355,38 @@ for more on debugging, including how to debug Java code.
 For information on running tests, see
 [Android Test Instructions](/docs/testing/android_test_instructions.md)
 
-### Faster Edit/Deploy
+## Faster Builds
 
-#### GN Args
+### Use Reclient
+
+*** note
+**Warning:** If you are a Google employee, do not follow the instructions below.
+See
+[go/building-android-chrome#initialize-remote-execution-distributed-builds](https://goto.google.com/building-android-chrome#initialize-remote-execution-distributed-builds)
+instead.
+***
+
+Chromium's build can be sped up significantly by using a remote execution system
+compatible with [REAPI](https://github.com/bazelbuild/remote-apis). This allows
+you to benefit from remote caching and executing many build actions in parallel
+on a shared cluster of workers.
+
+To use Reclient, follow the corresponding
+[Linux build instructions](linux/build_instructions.md#use-reclient).
+
+### GN Args
+
 Args that affect build speed:
+ * `use_remoteexec = true` *(default=false)*
+   * What it does: Enables distributed builds via Reclient
+ * `symbol_level = 0` *(default=1)*
+   * What it does: Disables debug information in native code.
+   * Use this when doing primarily Java development.
+   * To disable symbols only in Blink / V8: `blink_symbol_level = 0`, `v8_symbol_level = 0`
  * `is_component_build = true` *(default=`is_debug`)*
    * What it does: Uses multiple `.so` files instead of just one (faster links)
  * `is_java_debug = true` *(default=`is_debug`)*
-   * What it does: Disables ProGuard (slow build step)
+   * What it does: Disables R8 (whole-program Java optimizer)
  * `treat_warnings_as_errors = false` *(default=`true`)*
    * Causes any compiler warnings or lint checks to not fail the build.
    * Allows you to iterate without needing to satisfy static analysis checks.
@@ -395,19 +395,22 @@ Args that affect build speed:
    * Set this to `"off"` if you want to turn off static analysis altogether.
  * `incremental_install = true` *(default=`false`)*
    * Makes build and install quite a bit faster. Explained in a later section.
+ * `enable_chrome_android_internal = false` *(Googlers only)*
+   * Disables non-public code, which exists even when building public targets.
+   * Use this is you do not need to test internal-only things.
 
-#### Running static analysis with the build server
-Normally analysis build steps like lint and errorprone will run in parallel with
-the rest of the build. The build will then wait for all analysis steps to
-complete successfully. By offloading analysis build steps to a separate build
-server to be run lazily at a low priority when the machine is idle, the actual
-build can complete up to 50-80% faster.
+### Running Static Analysis Asynchronously
+
+Normally analysis build steps like Lint and Error Prone will run as normal build
+steps. The build will then wait for all analysis steps to complete successfully.
+By offloading analysis build steps to a separate build server to be run lazily at
+a low priority when the machine is idle, the actual build can complete much faster.
 
 **Note**: Since the build completes before the analysis checks finish, the build
 will not fail if an analysis check fails. Make sure to check the server's output
 at regular intervals to fix outstanding issues caught by these analysis checks.
 
-##### First way (by running it manually)
+#### First way (by running it manually)
 
 There are **two** steps to using the build server.
 1. Add the gn arg `android_static_analysis = "build_server"`
@@ -419,7 +422,7 @@ android lint, errorprone, bytecode processor.
 
 If you run (2) in a terminal, the output of the checks will be displayed there.
 
-##### Second way (using systemd)
+#### Second way (using systemd)
 
 Alternatively, you can set up the server as a Linux service, so it runs on the
 background and starts on boot. If you're using systemd:
