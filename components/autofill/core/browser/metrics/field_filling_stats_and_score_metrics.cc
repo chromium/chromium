@@ -97,31 +97,49 @@ void LogFieldFillingStatsWithHistogramPrefix(
       filling_stats.Total());
 }
 
-void LogAutocompleteUnrecognizedFieldFillingStats(
-    const FormGroupFillingStats& filling_stats) {
-  // Do not acquire metrics if autofill was not used on ac=unrecognized fields
+void LogCompactFieldFillingStats(const std::string& histogram_name,
+                                 const FormGroupFillingStats& filling_stats) {
+  // Do not acquire metrics if autofill was not used.
   if (filling_stats.TotalFilled() == 0) {
     return;
   }
   for (size_t i = 0; i < filling_stats.num_accepted; ++i) {
-    base::UmaHistogramEnumeration(
-        "Autofill.AutocompleteUnrecognized.FieldFillingStats",
-        FieldFillingStat::kAccepted);
+    base::UmaHistogramEnumeration(histogram_name,
+                                  FieldFillingStatus::kAccepted);
   }
-  for (size_t i = 0; i < filling_stats.TotalCorrected(); ++i) {
-    base::UmaHistogramEnumeration(
-        "Autofill.AutocompleteUnrecognized.FieldFillingStats",
-        FieldFillingStat::kCorrected);
+  for (size_t i = 0; i < filling_stats.num_corrected_to_same_type; ++i) {
+    base::UmaHistogramEnumeration(histogram_name,
+                                  FieldFillingStatus::kCorrectedToSameType);
   }
-  for (size_t i = 0; i < filling_stats.TotalManuallyFilled(); ++i) {
+  for (size_t i = 0; i < filling_stats.num_corrected_to_different_type; ++i) {
     base::UmaHistogramEnumeration(
-        "Autofill.AutocompleteUnrecognized.FieldFillingStats",
-        FieldFillingStat::kManuallyFilled);
+        histogram_name, FieldFillingStatus::kCorrectedToDifferentType);
+  }
+  for (size_t i = 0; i < filling_stats.num_corrected_to_unknown_type; ++i) {
+    base::UmaHistogramEnumeration(histogram_name,
+                                  FieldFillingStatus::kCorrectedToUnknownType);
+  }
+  for (size_t i = 0; i < filling_stats.num_corrected_to_empty; ++i) {
+    base::UmaHistogramEnumeration(histogram_name,
+                                  FieldFillingStatus::kCorrectedToEmpty);
+  }
+  for (size_t i = 0; i < filling_stats.num_manually_filled_to_same_type; ++i) {
+    base::UmaHistogramEnumeration(
+        histogram_name, FieldFillingStatus::kManuallyFilledToSameType);
+  }
+  for (size_t i = 0; i < filling_stats.num_manually_filled_to_different_type;
+       ++i) {
+    base::UmaHistogramEnumeration(
+        histogram_name, FieldFillingStatus::kManuallyFilledToDifferentType);
+  }
+  for (size_t i = 0; i < filling_stats.num_manually_filled_to_unknown_type;
+       ++i) {
+    base::UmaHistogramEnumeration(
+        histogram_name, FieldFillingStatus::kManuallyFilledToUnknownType);
   }
   for (size_t i = 0; i < filling_stats.num_left_empty; ++i) {
-    base::UmaHistogramEnumeration(
-        "Autofill.AutocompleteUnrecognized.FieldFillingStats",
-        FieldFillingStat::kLeftEmpty);
+    base::UmaHistogramEnumeration(histogram_name,
+                                  FieldFillingStatus::kLeftEmpty);
   }
 }
 
@@ -360,7 +378,12 @@ void LogFieldFillingStatsAndScore(const FormStructure& form) {
   }
   LogFieldFillingStats(FormType::kAddressForm, address_field_stats);
   LogFieldFillingStats(FormType::kCreditCardForm, cc_field_stats);
-  LogAutocompleteUnrecognizedFieldFillingStats(
+  LogCompactFieldFillingStats("Autofill.FieldFillingStats.Address",
+                              address_field_stats);
+  LogCompactFieldFillingStats("Autofill.FieldFillingStats.CreditCard",
+                              cc_field_stats);
+  LogCompactFieldFillingStats(
+      "Autofill.AutocompleteUnrecognized.FieldFillingStats2",
       ac_unrecognized_address_field_stats);
 
   LogFormFillingScore(FormType::kAddressForm, address_field_stats);

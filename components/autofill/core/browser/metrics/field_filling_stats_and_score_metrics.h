@@ -91,14 +91,6 @@ autofill_metrics::FormGroupFillingStats GetFormFillingStatsForFormType(
     FormType form_type,
     const FormStructure& form_structure);
 
-enum class FieldFillingStat {
-  kAccepted = 0,
-  kCorrected = 1,
-  kManuallyFilled = 2,
-  kLeftEmpty = 3,
-  kMaxValue = kLeftEmpty
-};
-
 // Logs the `filling_stats` of the fields within a `form_type`, and the
 // `filling_stats` of ac=unrecognized fields. The filling status
 // consistent of the number of accepted, corrected or and unfilled fields. See

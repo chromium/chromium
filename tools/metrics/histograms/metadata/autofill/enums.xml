@@ -3846,11 +3846,16 @@ Called by update_autofill_enums.py.-->
   <int value="2" label="Unclassified."/>
 </enum>
 
-<enum name="FieldFillingStat">
+<enum name="FieldFillingStatus">
   <int value="0" label="Accepted"/>
-  <int value="1" label="Corrected"/>
-  <int value="2" label="Manually Filled"/>
-  <int value="3" label="LeftEmpty"/>
+  <int value="1" label="CorrectedToSameType"/>
+  <int value="2" label="CorrectedToDifferentType"/>
+  <int value="3" label="CorrectedToUnkownType"/>
+  <int value="4" label="CorrectedToEmpty"/>
+  <int value="5" label="ManuallyFilledToSameType"/>
+  <int value="6" label="ManuallyFilledToDifferentType"/>
+  <int value="7" label="ManuallyFilledToUnknownType"/>
+  <int value="8" label="LeftEmpty"/>
 </enum>
 
 <enum name="IbanSuggestionBlockListStatus">

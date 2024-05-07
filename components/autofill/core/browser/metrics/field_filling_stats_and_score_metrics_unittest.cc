@@ -345,11 +345,12 @@ TEST_F(AutocompleteUnrecognizedFieldFillingStatsTest, FieldFillingStats) {
   SubmitForm(form);
   EXPECT_THAT(
       histogram_tester.GetAllSamples(
-          "Autofill.AutocompleteUnrecognized.FieldFillingStats"),
-      base::BucketsAre(base::Bucket(FieldFillingStat::kAccepted, 4),
-                       base::Bucket(FieldFillingStat::kCorrected, 3),
-                       base::Bucket(FieldFillingStat::kManuallyFilled, 2),
-                       base::Bucket(FieldFillingStat::kLeftEmpty, 1)));
+          "Autofill.AutocompleteUnrecognized.FieldFillingStats2"),
+      base::BucketsAre(
+          base::Bucket(FieldFillingStatus::kAccepted, 4),
+          base::Bucket(FieldFillingStatus::kCorrectedToUnknownType, 3),
+          base::Bucket(FieldFillingStatus::kManuallyFilledToUnknownType, 2),
+          base::Bucket(FieldFillingStatus::kLeftEmpty, 1)));
 }
 
 }  // namespace autofill::autofill_metrics

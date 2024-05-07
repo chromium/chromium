@@ -880,8 +880,8 @@ chromium-metrics-reviews@google.com.
   </summary>
 </histogram>
 
-<histogram name="Autofill.AutocompleteUnrecognized.FieldFillingStats"
-    enum="FieldFillingStat" expires_after="2024-12-12">
+<histogram name="Autofill.AutocompleteUnrecognized.FieldFillingStats2"
+    enum="FieldFillingStatus" expires_after="2024-12-12">
   <owner>jihadghanna@google.com</owner>
   <owner>chrome-autofill-alerts@google.com</owner>
   <summary>
@@ -2070,6 +2070,20 @@ chromium-metrics-reviews@google.com.
   <owner>battre@chromium.org</owner>
   <owner>chrome-autofill-alerts@google.com</owner>
   <summary>Number of fields in a form that Autofill encounters.</summary>
+</histogram>
+
+<histogram name="Autofill.FieldFillingStats.{FillingProduct}"
+    enum="FieldFillingStatus" expires_after="2024-12-12">
+  <owner>jihadghanna@google.com</owner>
+  <owner>chrome-autofill-alerts@google.com</owner>
+  <summary>
+    Logs the status (see FieldFillingStatus) of a submitted field. Emitted once
+    per field at submission time.
+  </summary>
+  <token key="FillingProduct">
+    <variant name="Address"/>
+    <variant name="CreditCard"/>
+  </token>
 </histogram>
 
 <histogram
