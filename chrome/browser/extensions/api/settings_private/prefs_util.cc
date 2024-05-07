@@ -103,18 +103,9 @@ namespace {
 
 #if BUILDFLAG(IS_CHROMEOS_ASH)
 bool IsPrivilegedCrosSetting(const std::string& pref_name) {
-  if (!ash::CrosSettings::IsCrosSettings(pref_name)) {
-    return false;
-  }
-  if (!ash::system::PerUserTimezoneEnabled()) {
-    // kSystemTimezone should be changeable by all users.
-    if (pref_name == ash::kSystemTimezone) {
-      return false;
-    }
-  }
   // Cros settings are considered privileged and are either policy
   // controlled or owner controlled.
-  return true;
+  return ash::CrosSettings::IsCrosSettings(pref_name);
 }
 
 bool IsRestrictedCrosSettingForChildUser(Profile* profile,
@@ -1485,13 +1476,15 @@ bool PrefsUtil::IsPrefEnterpriseManaged(const std::string& pref_name) {
   if (!connector->IsDeviceEnterpriseManaged()) {
     return false;
   }
-  if (IsPrivilegedCrosSetting(pref_name)) {
-    return true;
-  }
+
+  // The enterprise management of ash::kSystemTimezone and prefs::kUserTimezone
+  // is determined by the system timezone policies (kSystemTimezonePolicy and
+  // kSystemTimezoneAutomaticDetectionPolicy).
   if (pref_name == ash::kSystemTimezone || pref_name == prefs::kUserTimezone) {
     return ash::system::IsTimezonePrefsManaged(pref_name);
   }
-  return false;
+
+  return IsPrivilegedCrosSetting(pref_name);
 }
 
 bool PrefsUtil::IsPrefOwnerControlled(const std::string& pref_name) {

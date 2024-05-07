@@ -250,7 +250,7 @@ bool IsTimezonePrefsManaged(const std::string& pref_name) {
     return true;
   }
 
-  // System time zone preference is managed only if kSystemTimezonePolicy
+  // System timezone preference is managed only if kSystemTimezonePolicy
   // present, which we checked above.
   //
   // kSystemTimezoneAutomaticDetectionPolicy (see below) controls only user
