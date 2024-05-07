@@ -662,7 +662,7 @@ void RecordNearbyShareStartAdvertisingResultMetric(
     bool is_high_visibility,
     nearby::connections::mojom::Status status) {
   const std::string mode_suffix =
-      is_high_visibility ? ".HighVisibility" : ".BLE";
+      is_high_visibility ? ".HighVisibility" : ".ContactsVisibility";
   const bool success = status == nearby::connections::mojom::Status::kSuccess;
 
   const std::string result_prefix = "Nearby.Share.StartAdvertising.Result";

@@ -1606,8 +1606,8 @@ chromium-metrics-reviews@google.com.
     Records the reason Nearby Share advertising failed to start in {Mode} mode.
   </summary>
   <token key="Mode">
-    <variant name="" summary="BLE and high-visibility"/>
-    <variant name=".BLE" summary="BLE"/>
+    <variant name="" summary="All visibility modes"/>
+    <variant name=".ContactsVisibility" summary="contacts mode visibility"/>
     <variant name=".HighVisibility" summary="high-visibility"/>
   </token>
 </histogram>
@@ -1620,8 +1620,8 @@ chromium-metrics-reviews@google.com.
     Records the result of starting Nearby Share advertising in {Mode} mode.
   </summary>
   <token key="Mode">
-    <variant name="" summary="BLE and high-visibility"/>
-    <variant name=".BLE" summary="BLE"/>
+    <variant name="" summary="All visibility modes"/>
+    <variant name=".ContactsVisibility" summary="contacts mode visibility"/>
     <variant name=".HighVisibility" summary="high-visibility"/>
   </token>
 </histogram>
