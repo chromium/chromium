@@ -54,7 +54,6 @@ if (is_harness_page) {
     addEventListener('message', e => {
         if (e.data.startsWith('FAIL:')) {
           const message = e.data.substring(5);
-          console.error(message);
           t.step(() => assert_unreached(`Failure in test code: ${message}`));
         }
     });

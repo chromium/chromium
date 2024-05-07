@@ -2742,3 +2742,10 @@ crbug.com/40778657 virtual/raster-inducing-scroll/scrollbars/auto-scrollbar-fade
 crbug.com/40778657 virtual/raster-inducing-scroll/scrollbars/hidden-scrollbars-invisible.html [ Skip ]
 
 ######## End Unload Deprecation
+
+# View transitions sub-directory tests under different configs
+# These run as virtual/view-transition-on-navigation/
+crbug.com/40241779 virtual/view-transition-mpa-serialization/external/wpt/css/css-view-transitions/navigation/* [ Skip ]
+crbug.com/40241779 virtual/view-transition-wide-gamut/external/wpt/css/css-view-transitions/navigation/* [ Skip ]
+crbug.com/40241779 virtual/view-transition/external/wpt/css/css-view-transitions/navigation/* [ Skip ]
+

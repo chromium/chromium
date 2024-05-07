@@ -5,7 +5,7 @@
 <link rel="author" href="mailto:vmpstr@chromium.org">
 <script src="/common/reftest-wait.js"></script>
 <script>
-setTimeout(() => {
+onload = () => requestAnimationFrame(() => requestAnimationFrame(() => requestAnimationFrame(() => {
   let run = (new URLSearchParams(window.location.search)).get('run') || 0;
   if (run > 5) {
     takeScreenshot();
@@ -13,6 +13,6 @@ setTimeout(() => {
     const url = window.location.href.split('?')[0];
     window.location.href = url + `?run=${run + 1}`;
   }
-}, 100);
+})));
 </script>
 </html>

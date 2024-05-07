@@ -47,7 +47,7 @@ if (is_test_page) {
 } else if (is_popup_page) {
   onload = () => {
     requestAnimationFrame(() => requestAnimationFrame(() => {
-      location.href = "/common/redirect.py?location=/wpt_internal/view-transition-on-navigation/pageswap-push-with-redirect.html?new";
+      location.href = "/common/redirect.py?location=/css/css-view-transitions/navigation/pageswap-push-with-redirect.html?new";
     }));
 
     onpageswap = (e) => {

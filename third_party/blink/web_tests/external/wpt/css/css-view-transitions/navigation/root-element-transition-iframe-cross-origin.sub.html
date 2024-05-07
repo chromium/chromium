@@ -14,12 +14,12 @@ async function runTest() {
   let frame = document.getElementById("inner");
 
   let frameLoaded = waitForMessage("loaded");
-  frame.src = get_host_info().HTTP_REMOTE_ORIGIN + "/wpt_internal/view-transition-on-navigation/resources/root-element-transition-iframe.html?blue";
+  frame.src = get_host_info().HTTP_REMOTE_ORIGIN + "/css/css-view-transitions/navigation/resources/root-element-transition-iframe.html?blue";
   await frameLoaded;
   frame.contentWindow.postMessage("checkrendering", '*');
   await waitForMessage("rendered");
 
-  frame.src = get_host_info().HTTP_REMOTE_ORIGIN + "/wpt_internal/view-transition-on-navigation/resources/root-element-transition-iframe.html?grey";
+  frame.src = get_host_info().HTTP_REMOTE_ORIGIN + "/css/css-view-transitions/navigation/resources/root-element-transition-iframe.html?grey";
   await waitForMessage("transition");
 
   takeScreenshot();

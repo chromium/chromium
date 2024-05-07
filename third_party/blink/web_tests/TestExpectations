@@ -304,7 +304,7 @@ crbug.com/1412910 [ Mac ] virtual/view-transition-wide-gamut/external/wpt/css/cs
 crbug.com/1412910 [ Mac ] virtual/view-transition/external/wpt/css/css-view-transitions/fractional-translation-from-transform.html [ Failure ]
 crbug.com/1430357 [ Mac ] virtual/view-transition/external/wpt/css/css-view-transitions/massive-element-* [ Failure Pass ]
 crbug.com/1430357 [ Mac ] virtual/view-transition-wide-gamut/external/wpt/css/css-view-transitions/massive-element-* [ Failure Pass ]
-crbug.com/40283765 [ Mac ] virtual/view-transition-on-navigation/wpt_internal/view-transition-on-navigation/transition-to-prerender.html [ Failure ]
+crbug.com/40283765 [ Mac ] virtual/view-transition-on-navigation/external/wpt/css/css-view-transitions/navigation/transition-to-prerender.html [ Failure ]
 crbug.com/330917526 [ Mac ] virtual/view-transition-mpa-serialization/external/wpt/css/css-view-transitions/iframe-and-main-frame-transition-new-main-new-iframe.html [ Failure Pass ]
 crbug.com/330917526 [ Mac ] virtual/view-transition/external/wpt/css/css-view-transitions/iframe-and-main-frame-transition-new-main-new-iframe.html [ Failure Pass ]
 crbug.com/330917526 [ Mac ] virtual/view-transition-wide-gamut/external/wpt/css/css-view-transitions/iframe-and-main-frame-transition-new-main-new-iframe.html [ Failure Pass ]
@@ -2639,8 +2639,8 @@ crbug.com/331851044 [ Mac13 ] virtual/webnn-service-with-gpu/external/wpt/webnn/
 crbug.com/331851044 [ Mac14 ] virtual/webnn-service-with-gpu/external/wpt/webnn/conformance_tests/elementwise_binary.https.any.worker.html?gpu [ Skip Timeout ]
 crbug.com/331851044 [ Mac13 ] virtual/webnn-service-with-gpu/external/wpt/webnn/conformance_tests/elementwise_binary.https.any.worker.html?gpu [ Skip Timeout ]
 crbug.com/331711029 [ Win11-arm64 ] virtual/fenced-frame-mparch/external/wpt/fenced-frame/notify-event-success.https.html [ Failure Timeout ]
-crbug.com/626703 [ Mac11 ] virtual/view-transition-on-navigation/wpt_internal/view-transition-on-navigation/chromium-paint-holding-timeout.html [ Timeout ]
-crbug.com/626703 [ Win11-arm64 ] virtual/view-transition-on-navigation/wpt_internal/view-transition-on-navigation/chromium-paint-holding-timeout.html [ Timeout ]
+crbug.com/626703 [ Mac11 ] virtual/view-transition-on-navigation/external/wpt/css/css-view-transitions/navigation/chromium-paint-holding-timeout.html [ Timeout ]
+crbug.com/626703 [ Win11-arm64 ] virtual/view-transition-on-navigation/external/wpt/css/css-view-transitions/navigation/chromium-paint-holding-timeout.html [ Timeout ]
 crbug.com/626703 external/wpt/IndexedDB/ready-state-destroyed-execution-context.html [ Timeout ]
 crbug.com/626703 external/wpt/css/css-text/white-space/text-wrap-balance-004.html [ Failure ]
 crbug.com/626703 external/wpt/editing/crashtests/designMode-caret-change.html [ Timeout ]
@@ -6850,7 +6850,7 @@ crbug.com/40280906 virtual/fenced-frame-mparch/external/wpt/fenced-frame/can-loa
 crbug.com/332933527 external/wpt/css/css-anchor-position/position-visibility-anchors-valid.tentative.html [ Failure ]
 
 # Test infra bug
-crbug.com/326459000 virtual/view-transition-on-navigation/wpt_internal/view-transition-on-navigation/pageswap-push-from-click.html [ Timeout ]
+crbug.com/326459000 virtual/view-transition-on-navigation/external/wpt/css/css-view-transitions/navigation/pageswap-push-from-click.html [ Timeout ]
 crbug.com/326459000 virtual/pageswap/external/wpt/html/browsers/browsing-the-web/history-traversal/pageswap/pageswap-push-from-click.html [ Timeout ]
 
 # Flaky test
