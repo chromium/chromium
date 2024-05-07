@@ -8,6 +8,8 @@
 #import "base/check.h"
 #import "base/check_op.h"
 #import "base/strings/sys_string_conversions.h"
+#import "ios/chrome/browser/content_notification/model/content_notification_service.h"
+#import "ios/chrome/browser/content_notification/model/content_notification_service_factory.h"
 #import "ios/chrome/browser/push_notification/model/push_notification_client_id.h"
 #import "ios/chrome/browser/shared/model/browser/browser.h"
 #import "ios/chrome/browser/shared/model/browser_state/chrome_browser_state.h"
@@ -66,6 +68,10 @@
   self.mediator =
       [[ContentNotificationsMediator alloc] initWithPrefService:prefService
                                                          gaiaID:gaiaID];
+  ContentNotificationService* contentNotificationService =
+      ContentNotificationServiceFactory::GetForBrowserState(
+          self.browser->GetBrowserState());
+  self.mediator.contentNotificationService = contentNotificationService;
   self.mediator.consumer = self.viewController;
   self.mediator.presenter = self;
   self.viewController.modelDelegate = self.mediator;

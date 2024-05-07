@@ -13,6 +13,7 @@
 class PrefService;
 enum class PushNotificationClientId;
 @class TableViewSwitchItem;
+class ContentNotificationService;
 @protocol NotificationsAlertPresenter;
 @protocol ContentNotificationsConsumer;
 
@@ -33,6 +34,9 @@ enum class PushNotificationClientId;
 
 // Handler for displaying notification related alerts.
 @property(nonatomic, weak) id<NotificationsAlertPresenter> presenter;
+
+// The content notifications service object.
+@property(nonatomic, assign) ContentNotificationService* contentNotificationService;
 
 // Called after a user disallows notification permissions.
 - (void)deniedPermissionsForClientIds:
