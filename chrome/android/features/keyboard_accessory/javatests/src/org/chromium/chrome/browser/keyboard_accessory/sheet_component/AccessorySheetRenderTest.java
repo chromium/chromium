@@ -262,6 +262,38 @@ public class AccessorySheetRenderTest {
         mRenderTestRule.render(mContentView, "credit_cards_and_promo_codes");
     }
 
+    // Tests rendering of Payments tab with IBANs.
+    // IBANs should appear in Payment Methods section.
+    @Test
+    @MediumTest
+    @Feature({"RenderTest"})
+    public void testAddingIbansToModelRendersTabsView() throws Exception {
+        final KeyboardAccessoryData.AccessorySheetData sheet =
+                new KeyboardAccessoryData.AccessorySheetData(
+                        AccessoryTabType.CREDIT_CARDS, "Payments", "");
+        sheet.getIbanInfoList().add(new KeyboardAccessoryData.IbanInfo());
+        sheet.getIbanInfoList()
+                .get(0)
+                .setValue(
+                        new UserInfoField(
+                                /* displayText= */ "CH56 •••• •••• •••• •800 9",
+                                /* a11yDescription= */ "",
+                                /* id= */ "123456",
+                                /* isObfuscated= */ false,
+                                result -> {}));
+        sheet.getFooterCommands()
+                .add(new KeyboardAccessoryData.FooterCommand("Manage payment methods", cb -> {}));
+
+        CreditCardAccessorySheetCoordinator coordinator =
+                TestThreadUtils.runOnUiThreadBlocking(
+                        () ->
+                                new CreditCardAccessorySheetCoordinator(
+                                        mActivityTestRule.getActivity(), mProfile, null));
+        showSheetTab(coordinator, sheet);
+
+        mRenderTestRule.render(mContentView, "ibans");
+    }
+
     @Test
     @MediumTest
     @Feature({"RenderTest"})

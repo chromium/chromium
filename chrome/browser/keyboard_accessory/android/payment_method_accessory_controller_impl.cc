@@ -25,6 +25,7 @@
 #include "components/autofill/core/browser/autofill_browser_util.h"
 #include "components/autofill/core/browser/browser_autofill_manager.h"
 #include "components/autofill/core/browser/data_model/credit_card.h"
+#include "components/autofill/core/browser/data_model/iban.h"
 #include "components/autofill/core/browser/payments/constants.h"
 #include "components/autofill/core/browser/payments_data_manager.h"
 #include "components/autofill/core/common/autofill_features.h"
@@ -138,6 +139,15 @@ PromoCodeInfo TranslateOffer(const AutofillOfferData* data) {
   return promo_code_info;
 }
 
+IbanInfo TranslateIban(const Iban& data) {
+  bool is_local = data.record_type() == Iban::kLocalIban;
+  IbanInfo iban_info(data.GetIdentifierStringForAutofillDisplay(),
+                     is_local ? data.value() : std::u16string(),
+                     is_local ? /*id=*/"" : data.guid());
+
+  return iban_info;
+}
+
 }  // namespace
 
 PaymentMethodAccessoryControllerImpl::~PaymentMethodAccessoryControllerImpl() {
@@ -196,6 +206,10 @@ PaymentMethodAccessoryControllerImpl::GetSheetData() const {
 
   for (auto* offer : GetPromoCodeOffers()) {
     data.add_promo_code_info(TranslateOffer(offer));
+  }
+
+  for (const Iban& iban : GetIbans()) {
+    data.add_iban_info(TranslateIban(iban));
   }
 
   if (has_suggestions && !allow_filling && autofill_manager) {
@@ -288,7 +302,8 @@ void PaymentMethodAccessoryControllerImpl::RefreshSuggestions() {
   if (source_observer_) {
     source_observer_.Run(
         this, IsFillingSourceAvailable(!GetAllCreditCards().empty() ||
-                                       !GetPromoCodeOffers().empty()));
+                                       !GetPromoCodeOffers().empty() ||
+                                       !GetIbans().empty()));
   } else {
     // TODO(crbug.com/40165275): Remove once filling controller pulls this
     // information instead of waiting to get it pushed.
@@ -421,6 +436,17 @@ PaymentMethodAccessoryControllerImpl::GetPromoCodeOffers() const {
           autofill_manager->client()
               .GetLastCommittedPrimaryMainFrameURL()
               .DeprecatedGetOriginAsURL());
+}
+
+std::vector<Iban> PaymentMethodAccessoryControllerImpl::GetIbans() const {
+  const AutofillManager* autofill_manager =
+      GetWebContents().GetFocusedFrame() ? GetAutofillManager() : nullptr;
+  if (!personal_data_manager_ || !autofill_manager) {
+    return std::vector<Iban>();
+  }
+
+  return personal_data_manager_->payments_data_manager()
+      .GetOrderedIbansToSuggest();
 }
 
 base::WeakPtr<ManualFillingController>

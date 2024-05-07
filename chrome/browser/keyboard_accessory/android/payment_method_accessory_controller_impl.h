@@ -88,6 +88,9 @@ class PaymentMethodAccessoryControllerImpl
   // Gets promo code offers from personal data manager.
   std::vector<const AutofillOfferData*> GetPromoCodeOffers() const;
 
+  // Gets IBANs from the personal data manager.
+  std::vector<Iban> GetIbans() const;
+
   base::WeakPtr<ManualFillingController> GetManualFillingController();
   AutofillDriver* GetDriver();
   const BrowserAutofillManager* GetAutofillManager() const;

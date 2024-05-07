@@ -126,6 +126,14 @@ ScopedJavaGlobalRef<jobject> ConvertAccessorySheetDataToJavaObject(
         promo_code.id(), promo_code.is_obfuscated(), detailsText);
   }
 
+  for (const autofill::IbanInfo& iban_info : tab_data.iban_info_list()) {
+    const AccessorySheetField& value = iban_info.value();
+    Java_ManualFillingComponentBridge_addIbanInfoToAccessorySheetData(
+        env, java_object, j_tab_data,
+        static_cast<int>(tab_data.get_sheet_type()), value.id(),
+        value.display_text(), value.text_to_fill());
+  }
+
   for (const FooterCommand& footer_command : tab_data.footer_commands()) {
     Java_ManualFillingComponentBridge_addFooterCommandToAccessorySheetData(
         env, java_object, j_tab_data, footer_command.display_text(),

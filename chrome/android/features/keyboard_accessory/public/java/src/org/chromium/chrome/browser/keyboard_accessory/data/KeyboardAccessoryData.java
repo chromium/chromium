@@ -340,6 +340,21 @@ public class KeyboardAccessoryData {
         }
     }
 
+    /** Represents an IBAN to be shown on the manual fallback UI. */
+    public static final class IbanInfo {
+        private UserInfoField mIbanInfo;
+
+        public IbanInfo() {}
+
+        public void setValue(UserInfoField ibanInfo) {
+            mIbanInfo = ibanInfo;
+        }
+
+        public UserInfoField getValue() {
+            return mIbanInfo;
+        }
+    }
+
     /** Represents a command below the suggestions, such as "Manage password...". */
     public static final class FooterCommand {
         private final String mDisplayText;
@@ -372,7 +387,7 @@ public class KeyboardAccessoryData {
 
     /**
      * Represents the contents of a accessory sheet tab below the keyboard accessory, which can
-     * correspond to passwords, credit cards, or profiles data. Created natively.
+     * correspond to passwords, credit cards, IBANs, or profiles data. Created natively.
      */
     public static final class AccessorySheetData {
         private final String mTitle;
@@ -382,6 +397,7 @@ public class KeyboardAccessoryData {
         private final List<UserInfo> mUserInfoList = new ArrayList<>();
         private final List<PasskeySection> mPasskeySectionList = new ArrayList<>();
         private final List<PromoCodeInfo> mPromoCodeInfoList = new ArrayList<>();
+        private final List<IbanInfo> mIbanInfoList = new ArrayList<>();
         private final List<FooterCommand> mFooterCommands = new ArrayList<>();
 
         /**
@@ -434,6 +450,11 @@ public class KeyboardAccessoryData {
         /** Returns the list of {@link PromoCodeInfo} to be shown on the accessory sheet. */
         public List<PromoCodeInfo> getPromoCodeInfoList() {
             return mPromoCodeInfoList;
+        }
+
+        /** Returns the list of {@link IbanInfo} to be shown on the accessory sheet. */
+        public List<IbanInfo> getIbanInfoList() {
+            return mIbanInfoList;
         }
 
         /** Returns the list of {@link FooterCommand} to be shown on the accessory sheet. */

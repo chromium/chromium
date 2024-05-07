@@ -47,6 +47,8 @@ class CreditCardAccessorySheetViewBinder {
                 return new CreditCardInfoViewHolder(parent, uiConfiguration.cardDrawableFunction);
             case AccessorySheetDataPiece.Type.PROMO_CODE_INFO:
                 return new PromoCodeInfoViewHolder(parent);
+            case AccessorySheetDataPiece.Type.IBAN_INFO:
+                return new IbanInfoViewHolder(parent);
             case AccessorySheetDataPiece.Type.FOOTER_COMMAND:
                 return AccessorySheetTabViewBinder.create(parent, viewType);
         }
@@ -119,6 +121,21 @@ class CreditCardAccessorySheetViewBinder {
         }
     }
 
+    /** View which represents a single IBAN and its fields. */
+    static class IbanInfoViewHolder
+            extends ElementViewHolder<KeyboardAccessoryData.IbanInfo, IbanAccessoryInfoView> {
+        IbanInfoViewHolder(ViewGroup parent) {
+            super(parent, R.layout.keyboard_accessory_sheet_tab_iban_info);
+        }
+
+        @Override
+        protected void bind(KeyboardAccessoryData.IbanInfo info, IbanAccessoryInfoView view) {
+            bindChipView(view.getValue(), info.getValue());
+
+            view.setIcon(AppCompatResources.getDrawable(view.getContext(), R.drawable.iban_icon));
+        }
+    }
+
     static void initializeView(
             RecyclerView view, UiConfiguration uiConfiguration, AccessorySheetTabItemsModel model) {
         view.setAdapter(
@@ -130,6 +147,7 @@ class CreditCardAccessorySheetViewBinder {
                         (parent, viewType) -> create(uiConfiguration, parent, viewType)));
         view.addItemDecoration(new DynamicInfoViewBottomSpacer(CreditCardAccessoryInfoView.class));
         view.addItemDecoration(new DynamicInfoViewBottomSpacer(PromoCodeAccessoryInfoView.class));
+        view.addItemDecoration(new DynamicInfoViewBottomSpacer(IbanAccessoryInfoView.class));
     }
 
     static @DrawableRes int getDrawableForOrigin(String origin) {

@@ -196,6 +196,43 @@ std::ostream& operator<<(std::ostream& os,
   return os;
 }
 
+IbanInfo::IbanInfo(std::u16string value,
+                   std::u16string text_to_fill,
+                   std::string id)
+    : value_(AccessorySheetField(/*display_text=*/value,
+                                 /*text_to_fill=*/text_to_fill,
+                                 /*a11y_description=*/value,
+                                 /*id=*/id,
+                                 /*is_obfuscated=*/false,
+                                 /*selectable=*/true)),
+      estimated_dynamic_memory_use_(
+          base::trace_event::EstimateMemoryUsage(value) +
+          base::trace_event::EstimateMemoryUsage(text_to_fill) +
+          base::trace_event::EstimateMemoryUsage(id)) {}
+
+IbanInfo::IbanInfo(const IbanInfo& iban_info) = default;
+
+IbanInfo::IbanInfo(IbanInfo&& iban_info) = default;
+
+IbanInfo::~IbanInfo() = default;
+
+IbanInfo& IbanInfo::operator=(const IbanInfo& iban_info) = default;
+
+IbanInfo& IbanInfo::operator=(IbanInfo&& iban_info) = default;
+
+bool IbanInfo::operator==(const IbanInfo& iban_info) const {
+  return value_ == iban_info.value_;
+}
+
+size_t IbanInfo::EstimateMemoryUsage() const {
+  return sizeof(IbanInfo) + estimated_dynamic_memory_use_;
+}
+
+std::ostream& operator<<(std::ostream& os, const IbanInfo& iban_info) {
+  os << "iban_info: \"" << iban_info.value() << "\"";
+  return os;
+}
+
 FooterCommand::FooterCommand(std::u16string display_text,
                              AccessoryAction action)
     : display_text_(std::move(display_text)),
@@ -323,7 +360,8 @@ size_t AccessorySheetData::EstimateMemoryUsage() const {
               : 0) +
          base::trace_event::EstimateIterableMemoryUsage(user_info_list_) +
          base::trace_event::EstimateIterableMemoryUsage(promo_code_info_list_) +
-         base::trace_event::EstimateIterableMemoryUsage(footer_commands_);
+         base::trace_event::EstimateIterableMemoryUsage(footer_commands_) +
+         base::trace_event::EstimateIterableMemoryUsage(iban_info_list_);
 }
 
 std::ostream& operator<<(std::ostream& os, const AccessorySheetData& data) {
@@ -502,6 +540,24 @@ AccessorySheetData::Builder& AccessorySheetData::Builder::AddPromoCodeInfo(
     std::u16string details_text) & {
   accessory_sheet_data_.add_promo_code_info(
       (PromoCodeInfo(std::move(promo_code), std::move(details_text))));
+  return *this;
+}
+
+AccessorySheetData::Builder&& AccessorySheetData::Builder::AddIbanInfo(
+    std::u16string value,
+    std::u16string text_to_fill,
+    std::string id) && {
+  // Calls IbanInfo(...)& since `this` is an lvalue.
+  return std::move(
+      AddIbanInfo(std::move(value), std::move(text_to_fill), std::move(id)));
+}
+
+AccessorySheetData::Builder& AccessorySheetData::Builder::AddIbanInfo(
+    std::u16string value,
+    std::u16string text_to_fill,
+    std::string id) & {
+  accessory_sheet_data_.add_iban_info(
+      (IbanInfo(std::move(value), std::move(text_to_fill), std::move(id))));
   return *this;
 }
 

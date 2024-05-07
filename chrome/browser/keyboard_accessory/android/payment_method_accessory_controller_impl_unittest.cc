@@ -157,11 +157,6 @@ class PaymentMethodAccessoryControllerTest
   TestAutofillManagerInjector<TestBrowserAutofillManager>
       autofill_manager_injector_;
 };
-class PaymentMethodAccessoryControllerTestSupportingPromoCodeOffers
-    : public PaymentMethodAccessoryControllerTest {
- public:
-  PaymentMethodAccessoryControllerTestSupportingPromoCodeOffers() = default;
-};
 
 TEST_F(PaymentMethodAccessoryControllerTest, RefreshSuggestions) {
   CreditCard card = test::GetCreditCard();
@@ -507,7 +502,7 @@ TEST_F(
 }
 
 // Tests that promo codes are shown.
-TEST_F(PaymentMethodAccessoryControllerTestSupportingPromoCodeOffers,
+TEST_F(PaymentMethodAccessoryControllerTest,
        RefreshSuggestionsWithPromoCodeOffers) {
   CreditCard card = test::GetCreditCard();
   data_manager_.payments_data_manager().AddCreditCard(card);
@@ -555,6 +550,45 @@ TEST_F(PaymentMethodAccessoryControllerTestSupportingPromoCodeOffers,
                     base::ASCIIToUTF16(promo_code_valid.GetPromoCode()),
                     base::ASCIIToUTF16(
                         promo_code_valid.GetDisplayStrings().value_prop_text))
+                .Build());
+}
+
+// Tests that both credit cards and IBANs are shown.
+TEST_F(PaymentMethodAccessoryControllerTest,
+       RefreshSuggestionsWithCreditCardAndIbans) {
+  CreditCard card = test::GetCreditCard();
+  data_manager_.payments_data_manager().AddCreditCard(card);
+
+  Iban iban;
+  iban.set_value(std::u16string(test::kIbanValue16));
+  std::string guid =
+      data_manager_.test_payments_data_manager().AddAsLocalIban(iban);
+
+  AccessorySheetData result(autofill::AccessoryTabType::CREDIT_CARDS,
+                            std::u16string());
+
+  EXPECT_CALL(mock_mf_controller_, RefreshSuggestions(_))
+      .WillOnce(SaveArg<0>(&result));
+  ASSERT_TRUE(controller());
+  controller()->RefreshSuggestions();
+
+  EXPECT_EQ(result, controller()->GetSheetData());
+  // IBANs should appear in the AccessorySheet.
+  EXPECT_EQ(result,
+            PaymentMethodAccessorySheetDataBuilder()
+                .AddUserInfo(kVisaCard)
+                .AppendField(card.ObfuscatedNumberWithVisibleLastFourDigits(),
+                             /*text_to_fill=*/std::u16string(),
+                             card.ObfuscatedNumberWithVisibleLastFourDigits(),
+                             card.guid(),
+                             /*is_obfuscated=*/false,
+                             /*selectable=*/true)
+                .AppendSimpleField(card.Expiration2DigitMonthAsString())
+                .AppendSimpleField(card.Expiration4DigitYearAsString())
+                .AppendSimpleField(card.GetRawInfo(CREDIT_CARD_NAME_FULL))
+                .AppendSimpleField(std::u16string())
+                .AddIbanInfo(iban.GetIdentifierStringForAutofillDisplay(),
+                             iban.value(), guid)
                 .Build());
 }
 

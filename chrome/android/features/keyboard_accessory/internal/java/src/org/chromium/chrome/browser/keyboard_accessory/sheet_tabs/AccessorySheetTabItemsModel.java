@@ -35,6 +35,7 @@ class AccessorySheetTabItemsModel
             Type.WARNING,
             Type.OPTION_TOGGLE,
             Type.PROMO_CODE_INFO,
+            Type.IBAN_INFO,
             Type.PASSKEY_SECTION
         })
         @Retention(RetentionPolicy.SOURCE)
@@ -70,8 +71,11 @@ class AccessorySheetTabItemsModel
             /** A section containing a promo code info. */
             int PROMO_CODE_INFO = 9;
 
+            /** A section containing an IBAN info. */
+            int IBAN_INFO = 10;
+
             /** A section containing a passkey. */
-            int PASSKEY_SECTION = 10;
+            int PASSKEY_SECTION = 11;
         }
 
         private Object mDataPiece;

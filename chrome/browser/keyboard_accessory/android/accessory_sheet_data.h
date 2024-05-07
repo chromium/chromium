@@ -183,6 +183,34 @@ class PromoCodeInfo {
 std::ostream& operator<<(std::ostream& out,
                          const PromoCodeInfo& promo_code_info);
 
+// Represents data pertaining to IBANs to be shown on the Payments methods
+// tab of manual fallback UI.
+class IbanInfo {
+ public:
+  IbanInfo(std::u16string value, std::u16string text_to_fill, std::string id);
+  IbanInfo(const IbanInfo& iban_info);
+  IbanInfo(IbanInfo&& iban_info);
+
+  ~IbanInfo();
+
+  IbanInfo& operator=(const IbanInfo& iban_info);
+  IbanInfo& operator=(IbanInfo&& iban_info);
+
+  const AccessorySheetField value() const { return value_; }
+
+  bool operator==(const IbanInfo& iban_info) const;
+
+  // Estimates dynamic memory usage.
+  // See base/trace_event/memory_usage_estimator.h for more info.
+  size_t EstimateMemoryUsage() const;
+
+ private:
+  AccessorySheetField value_;
+  size_t estimated_dynamic_memory_use_ = 0;
+};
+
+std::ostream& operator<<(std::ostream& out, const IbanInfo& iban);
+
 // Represents a command below the suggestions, such as "Manage password...".
 class FooterCommand {
  public:
@@ -310,6 +338,14 @@ class AccessorySheetData {
     return promo_code_info_list_;
   }
 
+  void add_iban_info(IbanInfo iban_info) {
+    iban_info_list_.emplace_back(std::move(iban_info));
+  }
+
+  const std::vector<IbanInfo>& iban_info_list() const {
+    return iban_info_list_;
+  }
+
   void add_footer_command(FooterCommand footer_command) {
     footer_commands_.emplace_back(std::move(footer_command));
   }
@@ -332,6 +368,7 @@ class AccessorySheetData {
   std::vector<PasskeySection> passkey_section_list_;
   std::vector<UserInfo> user_info_list_;
   std::vector<PromoCodeInfo> promo_code_info_list_;
+  std::vector<IbanInfo> iban_info_list_;
   std::vector<FooterCommand> footer_commands_;
 };
 
@@ -416,6 +453,13 @@ class AccessorySheetData::Builder {
                              std::u16string details_text) &&;
   Builder& AddPromoCodeInfo(std::u16string promo_code,
                             std::u16string details_text) &;
+
+  Builder&& AddIbanInfo(std::u16string value,
+                        std::u16string text_to_fill,
+                        std::string id) &&;
+  Builder& AddIbanInfo(std::u16string value,
+                       std::u16string text_to_fill,
+                       std::string id) &;
 
   // Appends a new footer command to |accessory_sheet_data_|.
   Builder&& AppendFooterCommand(std::u16string display_text,

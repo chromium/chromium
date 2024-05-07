@@ -19,6 +19,7 @@ import org.chromium.base.supplier.Supplier;
 import org.chromium.chrome.browser.keyboard_accessory.data.KeyboardAccessoryData.AccessorySheetData;
 import org.chromium.chrome.browser.keyboard_accessory.data.KeyboardAccessoryData.Action;
 import org.chromium.chrome.browser.keyboard_accessory.data.KeyboardAccessoryData.FooterCommand;
+import org.chromium.chrome.browser.keyboard_accessory.data.KeyboardAccessoryData.IbanInfo;
 import org.chromium.chrome.browser.keyboard_accessory.data.KeyboardAccessoryData.OptionToggle;
 import org.chromium.chrome.browser.keyboard_accessory.data.KeyboardAccessoryData.PasskeySection;
 import org.chromium.chrome.browser.keyboard_accessory.data.KeyboardAccessoryData.PromoCodeInfo;
@@ -270,6 +271,34 @@ class ManualFillingComponentBridge {
                                 .setCallback(callback)
                                 .build());
         ((PromoCodeInfo) promoCodeInfo).setDetailsText(detailsText);
+    }
+
+    @CalledByNative
+    private void addIbanInfoToAccessorySheetData(
+            Object objAccessorySheetData,
+            @AccessoryTabType int sheetType,
+            @JniType("std::string") String guid,
+            @JniType("std::u16string") String value,
+            @JniType("std::u16string") String textToFill) {
+        IbanInfo ibanInfo = new IbanInfo();
+        ((AccessorySheetData) objAccessorySheetData).getIbanInfoList().add(ibanInfo);
+
+        Callback<UserInfoField> callback =
+                (field) -> {
+                    assert mNativeView != 0 : "Controller was destroyed but the bridge wasn't!";
+                    ManualFillingComponentBridgeJni.get()
+                            .onFillingTriggered(mNativeView, this, sheetType, field);
+                };
+        ((IbanInfo) ibanInfo)
+                .setValue(
+                        new UserInfoField.Builder()
+                                .setDisplayText(value)
+                                .setTextToFill(textToFill)
+                                .setA11yDescription(value)
+                                .setIsObfuscated(true)
+                                .setId(guid)
+                                .setCallback(callback)
+                                .build());
     }
 
     @CalledByNative
