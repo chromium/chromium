@@ -53,10 +53,10 @@ const char kUnusedSitePermissionsRevocationEnabled[] =
 void RegisterProfilePrefs(user_prefs::PrefRegistrySyncable* registry) {
   PermissionActionsHistory::RegisterProfilePrefs(registry);
 
-#if !BUILDFLAG(IS_ANDROID) && !BUILDFLAG(IS_IOS)
+#if !BUILDFLAG(IS_IOS)
   registry->RegisterBooleanPref(prefs::kUnusedSitePermissionsRevocationEnabled,
                                 true);
-#endif  // !BUILDFLAG(IS_ANDROID) && !BUILDFLAG(IS_IOS)
+#endif  // !BUILDFLAG(IS_IOS)
 }
 
 }  // namespace permissions
