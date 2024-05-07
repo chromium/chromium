@@ -142,6 +142,8 @@ inline constexpr char kDeleteRemappingNudgeShownCount[] =
     "settings.keyboard.delete_key_remapping_nudge_shown_count";
 inline constexpr char kInsertRemappingNudgeShownCount[] =
     "settings.keyboard.insert_key_remapping_nudge_shown_count";
+inline constexpr char kCapsLockRemappingNudgeShownCount[] =
+    "settings.keyboard.caps_lock_remapping_nudge_shown_count";
 inline constexpr char kPageUpRemappingNudgeLastShown[] =
     "settings.keyboard.page_up_key_remapping_nudge_last_shown";
 inline constexpr char kPageDownRemappingNudgeLastShown[] =
@@ -154,6 +156,8 @@ inline constexpr char kDeleteRemappingNudgeLastShown[] =
     "settings.keyboard.delete_key_remapping_nudge_last_shown";
 inline constexpr char kInsertRemappingNudgeLastShown[] =
     "settings.keyboard.insert_key_remapping_nudge_last_shown";
+inline constexpr char kCapsLockRemappingNudgeLastShown[] =
+    "settings.keyboard.caps_lock_remapping_nudge_last_shown";
 
 // Mouse settings dictionary keys.
 inline constexpr char kMouseSettingSwapRight[] = "swap_right";

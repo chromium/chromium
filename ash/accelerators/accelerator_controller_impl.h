@@ -26,6 +26,7 @@
 #include "ash/accessibility/ui/accessibility_confirmation_dialog.h"
 #include "ash/ash_export.h"
 #include "ash/public/cpp/accelerators.h"
+#include "ash/system/input_device_settings/input_device_settings_notification_controller.h"
 #include "base/files/file_path.h"
 #include "base/gtest_prod_util.h"
 #include "base/memory/raw_ptr.h"
@@ -293,6 +294,9 @@ class ASH_EXPORT AcceleratorControllerImpl
   // Please refer to the comment on |DebugInterfaceAsh| for the lifetime of this
   // pointer.
   raw_ptr<DebugDelegate> debug_delegate_ = nullptr;
+
+  std::unique_ptr<InputDeviceSettingsNotificationController>
+      notification_controller_;
 };
 
 }  // namespace ash

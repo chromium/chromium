@@ -500,6 +500,10 @@ void InputDeviceSettingsNotificationController::RegisterProfilePrefs(
   pref_registry->RegisterIntegerPref(
       prefs::kSixPackKeyInsertNotificationsRemaining, 3,
       user_prefs::PrefRegistrySyncable::SYNCABLE_OS_PREF);
+  pref_registry->RegisterIntegerPref(prefs::kCapsLockRemappingNudgeShownCount,
+                                     0);
+  pref_registry->RegisterTimePref(prefs::kCapsLockRemappingNudgeLastShown,
+                                  base::Time());
   pref_registry->RegisterListPref(prefs::kMiceWelcomeNotificationSeen);
   pref_registry->RegisterListPref(
       prefs::kGraphicsTabletsWelcomeNotificationSeen);
@@ -1082,6 +1086,29 @@ void InputDeviceSettingsNotificationController::ShowSixPackKeyRewritingNudge(
 }
 
 void InputDeviceSettingsNotificationController::ShowCapsLockRewritingNudge() {
+  if (!IsActiveUserSession()) {
+    return;
+  }
+
+  CHECK(ash::Shell::HasInstance() && Shell::Get()->session_controller());
+  PrefService* prefs =
+      Shell::Get()->session_controller()->GetActivePrefService();
+
+  const int shown_count =
+      prefs->GetInteger(prefs::kCapsLockRemappingNudgeShownCount);
+  const base::Time last_shown_time =
+      prefs->GetTime(prefs::kCapsLockRemappingNudgeLastShown);
+  // Do not show the nudge more than three times, or if it has already been
+  // shown in the past 24 hours.
+  const base::Time now = base::Time::Now();
+  if ((shown_count >= kNudgeMaxShownCount) ||
+      ((now - last_shown_time) < kNudgeTimeBetweenShown)) {
+    return;
+  }
+
+  prefs->SetInteger(prefs::kCapsLockRemappingNudgeShownCount, shown_count + 1);
+  prefs->SetTime(prefs::kCapsLockRemappingNudgeLastShown, now);
+
   AnchoredNudgeData nudge_data(
       kCapsLockNoMatchNudgeId, NudgeCatalogName::kCapsLockShortcutPressed,
       l10n_util::GetStringUTF16(

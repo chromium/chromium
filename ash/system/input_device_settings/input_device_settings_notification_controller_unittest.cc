@@ -708,6 +708,28 @@ TEST_F(InputDeviceSettingsNotificationControllerTest,
 
   controller()->ShowCapsLockRewritingNudge();
   EXPECT_TRUE(nudge_manager->GetNudgeIfShown(kCapsLockNoMatchNudgeId));
+  CancelNudge(kCapsLockNoMatchNudgeId);
+
+  // Call caps lock nudge again before 24 hours, the nudge should not show.
+  controller()->ShowCapsLockRewritingNudge();
+  EXPECT_FALSE(nudge_manager->GetNudgeIfShown(kCapsLockNoMatchNudgeId));
+
+  // Pretend caps lock was called before 24 hours, should show nudge again.
+  Shell::Get()->session_controller()->GetActivePrefService()->SetTime(
+      prefs::kCapsLockRemappingNudgeLastShown,
+      base::Time::Now() - base::Hours(24));
+  controller()->ShowCapsLockRewritingNudge();
+  EXPECT_TRUE(nudge_manager->GetNudgeIfShown(kCapsLockNoMatchNudgeId));
+  CancelNudge(kCapsLockNoMatchNudgeId);
+
+  // Pretend caps lock nudge was called 3 times, should not show nudge again.
+  Shell::Get()->session_controller()->GetActivePrefService()->SetTime(
+      prefs::kCapsLockRemappingNudgeLastShown,
+      base::Time::Now() - base::Hours(24));
+  Shell::Get()->session_controller()->GetActivePrefService()->SetInteger(
+      prefs::kCapsLockRemappingNudgeShownCount, 3u);
+  controller()->ShowCapsLockRewritingNudge();
+  EXPECT_FALSE(nudge_manager->GetNudgeIfShown(kCapsLockNoMatchNudgeId));
 }
 
 TEST_F(InputDeviceSettingsNotificationControllerTest,

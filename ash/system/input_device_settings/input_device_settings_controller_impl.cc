@@ -990,12 +990,14 @@ void InputDeviceSettingsControllerImpl::OnActiveUserPrefServiceChanged(
     pref_service->ClearPref(prefs::kEndRemappingNudgeShownCount);
     pref_service->ClearPref(prefs::kDeleteRemappingNudgeShownCount);
     pref_service->ClearPref(prefs::kInsertRemappingNudgeShownCount);
+    pref_service->ClearPref(prefs::kCapsLockRemappingNudgeShownCount);
     pref_service->ClearPref(prefs::kPageUpRemappingNudgeLastShown);
     pref_service->ClearPref(prefs::kPageDownRemappingNudgeLastShown);
     pref_service->ClearPref(prefs::kHomeRemappingNudgeLastShown);
     pref_service->ClearPref(prefs::kEndRemappingNudgeLastShown);
     pref_service->ClearPref(prefs::kDeleteRemappingNudgeLastShown);
     pref_service->ClearPref(prefs::kInsertRemappingNudgeLastShown);
+    pref_service->ClearPref(prefs::kCapsLockRemappingNudgeLastShown);
   }
   active_pref_service_ = pref_service;
   active_account_id_ = Shell::Get()->session_controller()->GetActiveAccountId();

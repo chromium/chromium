@@ -25,6 +25,7 @@
 #include "ash/public/cpp/accelerators.h"
 #include "ash/public/cpp/debug_delegate.h"
 #include "ash/shell.h"
+#include "ash/system/input_device_settings/input_device_settings_notification_controller.h"
 #include "ash/system/power/power_button_controller.h"
 #include "ash/wm/mru_window_tracker.h"
 #include "ash/wm/screen_pinning_controller.h"
@@ -44,6 +45,7 @@
 #include "ui/base/accelerators/accelerator_manager.h"
 #include "ui/base/ui_base_features.h"
 #include "ui/display/screen.h"
+#include "ui/events/ash/keyboard_capability.h"
 #include "ui/events/ash/keyboard_layout_util.h"
 #include "ui/events/event.h"
 #include "ui/events/event_constants.h"
@@ -258,9 +260,20 @@ bool CanHandleToggleCapsLock(
     const ui::Accelerator& accelerator,
     const ui::Accelerator& previous_accelerator,
     const std::set<ui::KeyboardCode>& currently_pressed_keys,
-    const AcceleratorCapslockStateMachine& capslock_state_machine) {
+    const AcceleratorCapslockStateMachine& capslock_state_machine,
+    InputDeviceSettingsNotificationController* notification_controller) {
   if (base::FeatureList::IsEnabled(features::kShortcutStateMachines)) {
-    return capslock_state_machine.CanHandleCapsLock();
+    if (capslock_state_machine.CanHandleCapsLock()) {
+      // Check if from modifier split keyboard. if not, show notification.
+      if (Shell::Get()->keyboard_capability()->HasFunctionKey(
+              accelerator.source_device_id())) {
+        CHECK(features::IsModifierSplitEnabled());
+        notification_controller->ShowCapsLockRewritingNudge();
+        return false;
+      }
+      return true;
+    }
+    return false;
   }
 
   // Iterate the set of pressed keys. If any redundant key is pressed, CapsLock
@@ -694,6 +707,12 @@ void AcceleratorControllerImpl::Init() {
     for (size_t i = 0; i < kDeveloperAcceleratorDataLength; ++i)
       reserved_actions_.insert(kDeveloperAcceleratorData[i].action);
   }
+
+  if (features::IsModifierSplitEnabled()) {
+    notification_controller_ =
+        std::make_unique<InputDeviceSettingsNotificationController>(
+            message_center::MessageCenter::Get());
+  }
 }
 
 void AcceleratorControllerImpl::RegisterAccelerators(
@@ -845,7 +864,7 @@ bool AcceleratorControllerImpl::CanPerformAction(
       return CanHandleToggleCapsLock(
           accelerator, previous_accelerator,
           accelerator_history_->currently_pressed_keys(),
-          *capslock_state_machine_);
+          *capslock_state_machine_, notification_controller_.get());
     case AcceleratorAction::kToggleClipboardHistory:
       return true;
     case AcceleratorAction::kEnableOrToggleDictation:

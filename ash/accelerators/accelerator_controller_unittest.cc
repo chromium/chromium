@@ -43,6 +43,8 @@
 #include "ash/system/keyboard_brightness_control_delegate.h"
 #include "ash/system/power/power_button_controller_test_api.h"
 #include "ash/system/status_area_widget_test_helper.h"
+#include "ash/system/toast/anchored_nudge.h"
+#include "ash/system/toast/anchored_nudge_manager_impl.h"
 #include "ash/system/unified/unified_system_tray.h"
 #include "ash/test/ash_test_base.h"
 #include "ash/test_media_client.h"
@@ -94,6 +96,7 @@
 #include "ui/display/screen.h"
 #include "ui/display/test/display_manager_test_api.h"
 #include "ui/events/devices/device_data_manager_test_api.h"
+#include "ui/events/devices/keyboard_device.h"
 #include "ui/events/event.h"
 #include "ui/events/event_constants.h"
 #include "ui/events/event_sink.h"
@@ -119,6 +122,8 @@ struct PrefToAcceleratorEntry {
   const char* notification_id;
   const ui::Accelerator accelerator;
 };
+
+constexpr char kCapsLockNoMatchNudgeId[] = "caps-lock-no-match-nudge-id";
 
 const PrefToAcceleratorEntry kAccessibilityAcceleratorMap[] = {
     {
@@ -1912,6 +1917,62 @@ INSTANTIATE_TEST_SUITE_P(
                                                   kVolumeButtonSideTop),
          std::make_pair<std::string, std::string>(kVolumeButtonRegionScreen,
                                                   kVolumeButtonSideBottom)}));
+
+TEST_F(AcceleratorControllerTest, ToggleCpasLockAcceleratorsWithFunctionKey) {
+  base::test::ScopedFeatureList feature_list;
+  feature_list.InitWithFeatures(
+      {features::kModifierSplit, features::kShortcutStateMachines,
+       features::kPeripheralNotification, features::kPeripheralCustomization,
+       features::kInputDeviceSettingsSplit},
+      {});
+
+  auto reset = switches::SetIgnoreModifierSplitSecretKeyForTest();
+  AnchoredNudgeManagerImpl* nudge_manager =
+      Shell::Get()->anchored_nudge_manager();
+  ASSERT_TRUE(nudge_manager);
+
+  const int kKeyboardDeviceId = 123;
+  const ui::KeyboardDevice keyboard(
+      kKeyboardDeviceId, ui::InputDeviceType::INPUT_DEVICE_INTERNAL,
+      /*name=*/"test keyboard with function key",
+      /*phys=*/"",
+      base::FilePath("/devices/platform/i8042/serio2/input/input1"),
+      /*vendor=*/-1,
+      /*product=*/-1, /*version=*/-1,
+      /*has_assistant_key=*/true,
+      /*has_function_key=*/true);
+
+  // // Reset the state of the device manager.
+  ui::DeviceDataManagerTestApi().SetKeyboardDevices({keyboard});
+  test_api_->SetCanHandleCapsLock(true);
+
+  ImeControllerImpl* controller = Shell::Get()->ime_controller();
+  TestImeControllerClient client;
+  controller->SetClient(&client);
+  EXPECT_EQ(0, client.set_caps_lock_count_);
+
+  // Create an event with a keyboard that has function key. The controller
+  // shouldn't process the capsLock key event.
+  ui::KeyEvent press_event(ui::ET_KEY_PRESSED, ui::VKEY_LWIN,
+                           /*flags=*/ui::EF_ALT_DOWN);
+  press_event.set_source_device_id(kKeyboardDeviceId);
+  const ui::Accelerator press_search_after_alt(press_event);
+  EXPECT_FALSE(ProcessInController(press_search_after_alt));
+
+  ui::KeyEvent release_event(ui::ET_KEY_RELEASED, ui::VKEY_LWIN,
+                             /*flags=*/ui::EF_ALT_DOWN);
+  release_event.set_source_device_id(kKeyboardDeviceId);
+  const ui::Accelerator release_search_after_alt(release_event);
+  EXPECT_FALSE(ProcessInController(release_search_after_alt));
+
+  EXPECT_EQ(0, client.set_caps_lock_count_);
+  EXPECT_FALSE(controller->IsCapsLockEnabled());
+
+  // Notification showing caps lock blocked by function key should show up.
+  EXPECT_TRUE(nudge_manager->GetNudgeIfShown(kCapsLockNoMatchNudgeId));
+  nudge_manager->Cancel(kCapsLockNoMatchNudgeId);
+  feature_list.Reset();
+}
 
 // Tests the AcceleratorAction::kToggleCapsLock accelerator.
 TEST_F(AcceleratorControllerTest, ToggleCapsLockAccelerators) {
