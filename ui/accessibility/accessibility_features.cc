@@ -360,6 +360,15 @@ bool IsReadAnythingReadAloudAutomaticWordHighlightingEnabled() {
              ::features::kReadAnythingReadAloudAutomaticWordHighlighting);
 }
 
+BASE_FEATURE(kReadAnythingReadAloudPhraseHighlighting,
+             "ReadAnythingReadAloudPhraseHighlighting",
+             base::FEATURE_DISABLED_BY_DEFAULT);
+bool IsReadAnythingReadAloudPhraseHighlightingEnabled() {
+  return base::FeatureList::IsEnabled(::features::kReadAnythingReadAloud) &&
+         base::FeatureList::IsEnabled(
+             ::features::kReadAnythingReadAloudPhraseHighlighting);
+}
+
 BASE_FEATURE(kReadAnythingWebUIToolbar,
              "ReadAnythingWebUIToolbar",
              base::FEATURE_DISABLED_BY_DEFAULT);

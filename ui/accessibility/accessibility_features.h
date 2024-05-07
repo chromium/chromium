@@ -264,6 +264,10 @@ AX_BASE_EXPORT BASE_DECLARE_FEATURE(
     kReadAnythingReadAloudAutomaticWordHighlighting);
 AX_BASE_EXPORT bool IsReadAnythingReadAloudAutomaticWordHighlightingEnabled();
 
+// Enable phrase highlighting in Read Anything Read Aloud.
+AX_BASE_EXPORT BASE_DECLARE_FEATURE(kReadAnythingReadAloudPhraseHighlighting);
+AX_BASE_EXPORT bool IsReadAnythingReadAloudPhraseHighlightingEnabled();
+
 // Use the WebUI toolbar in Read Anything.
 AX_BASE_EXPORT BASE_DECLARE_FEATURE(kReadAnythingWebUIToolbar);
 AX_BASE_EXPORT bool IsReadAnythingWebUIToolbarEnabled();
