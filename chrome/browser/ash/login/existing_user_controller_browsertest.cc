@@ -959,7 +959,8 @@ class ExistingUserControllerProfileTest : public LoginManagerTest {
     login_manager_mixin_.SkipPostLoginScreens();
 
     auto context = LoginManagerMixin::CreateDefaultUserContext(test_user);
-    login_manager_mixin_.LoginAndWaitForActiveSession(context);
+    login_manager_mixin_.LoginAsNewRegularUser(context);
+    login_manager_mixin_.WaitForActiveSession();
   }
 
   std::u16string ConstructManagedSessionUserWarning(std::string manager) {

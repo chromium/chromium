@@ -269,8 +269,9 @@ class DarkLightEnabledTest : public LoginManagerTest {
     LoginDisplayHost::default_host()
         ->GetWizardContext()
         ->defer_oobe_flow_finished_for_tests = true;
-    login_manager_mixin_.LoginWithDefaultContext(
+    UserContext user_context = LoginManagerMixin::CreateDefaultUserContext(
         LoginManagerMixin::TestUserInfo(account_id));
+    login_manager_mixin_.LoginAsNewRegularUser(user_context);
   }
   void FinishLogin() {
     LoginDisplayHost::default_host()

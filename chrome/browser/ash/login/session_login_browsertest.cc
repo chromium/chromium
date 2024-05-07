@@ -197,7 +197,9 @@ IN_PROC_BROWSER_TEST_F(OnboardingTest, PRE_OnboardingCompletedVersionBackfill) {
   OobeScreenWaiter(UserCreationView::kScreenId).Wait();
   LoginManagerMixin::TestUserInfo test_user(regular_user_);
   OobeScreenExitWaiter user_creation_exit_waiter(UserCreationView::kScreenId);
-  login_mixin_.LoginWithDefaultContext(test_user);
+  UserContext user_context =
+      LoginManagerMixin::CreateDefaultUserContext(test_user);
+  login_mixin_.LoginAsNewRegularUser(user_context);
   user_creation_exit_waiter.Wait();
   login_mixin_.SkipPostLoginScreens();
   login_mixin_.WaitForActiveSession();
