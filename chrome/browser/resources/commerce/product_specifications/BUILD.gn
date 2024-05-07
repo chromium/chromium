@@ -16,6 +16,7 @@ build_webui("build") {
   web_component_files = [
     "app.ts",
     "header.ts",
+    "new_column_selector.ts",
     "product_selection_menu.ts",
     "product_selector.ts",
     "table.ts",

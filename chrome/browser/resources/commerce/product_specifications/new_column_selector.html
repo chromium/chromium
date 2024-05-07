@@ -1,0 +1,47 @@
+<style include="cr-shared-style">
+  :host {
+    --iron-icon-width: 20px;
+    --new-column-selector-border-radius: 10px;
+    --new-column-selector-size: 42px;
+    text-align: start;
+  }
+
+  #button {
+    align-items: center;
+    background: var(--color-product-specifications-tonal-button-background);
+    display: flex;
+    justify-content: center;
+  }
+
+  #button,
+  #hoverLayer {
+    border-radius: var(--new-column-selector-border-radius);
+    height: var(--new-column-selector-size);
+    width: var(--new-column-selector-size);
+  }
+
+  #hoverLayer {
+    background-color: var(--cr-hover-background-color);
+    display: none;
+    position: absolute;
+  }
+
+  #button:active > #hoverLayer,
+  #button:focus-within > #hoverLayer,
+  #button:hover > #hoverLayer,
+  #button.showing-menu > #hoverLayer {
+    display: block;
+  }
+</style>
+
+<div id="button"
+    on-click="showMenu_"
+    on-keydown="onButtonKeyDown_"
+    tabindex="0">
+  <cr-icon icon="cr:add"></cr-icon>
+  <div id="hoverLayer"></div>
+</div>
+
+<product-selection-menu id="productSelectionMenu"
+    on-close-menu="onCloseMenu_">
+</product-selection-menu>

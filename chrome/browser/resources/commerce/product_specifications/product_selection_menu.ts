@@ -93,7 +93,7 @@ export class ProductSelectionMenuElement extends PolymerElement {
 
     const rect = element.getBoundingClientRect();
     this.$.menu.get().showAt(element, {
-      anchorAlignmentX: AnchorAlignment.CENTER,
+      anchorAlignmentX: AnchorAlignment.AFTER_START,
       top: rect.bottom,
       left: rect.left,
     });

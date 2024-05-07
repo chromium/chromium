@@ -55,15 +55,18 @@
     width: 360px;
   }
 
+  new-column-selector {
+    margin-top: 3px;
+  }
+
   product-selector {
-    --product-selector-width: 220px;
-    --product-selector-height: 38px;
     border-radius: 8px;
     margin-bottom: 90px;
     margin-top: 32px;
   }
 
   #specs {
+    display: flex;
     padding: 16px;
   }
 </style>
@@ -84,5 +87,7 @@
         rows="[[specsTable_.rows]]"
         on-url-change="onUrlChange_">
     </product-specifications-table>
+    <new-column-selector on-selected-url-change="onUrlAdd_">
+    </new-column-selector>
   </div>
 </div>
