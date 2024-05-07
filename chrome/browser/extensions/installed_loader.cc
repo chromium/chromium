@@ -1010,8 +1010,6 @@ void InstalledLoader::RecordExtensionsMetrics(Profile* profile,
   base::UmaHistogramCounts100("Extensions.LoadPlatformApp", platform_app_count);
   base::UmaHistogramCounts100("Extensions.LoadExtension",
                               extension_user_count + extension_external_count);
-  base::UmaHistogramCounts100("Extensions.LoadExtensionUser",
-                              extension_user_count);
   base::UmaHistogramCounts100("Extensions.LoadExtensionExternal",
                               extension_external_count);
   base::UmaHistogramCounts100("Extensions.LoadUserScript", user_script_count);
