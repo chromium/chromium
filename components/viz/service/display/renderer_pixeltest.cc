@@ -2179,6 +2179,9 @@ TEST_P(IntersectingQuadPixelTest, RenderPassQuads) {
 }
 
 TEST_P(IntersectingMultiplanarVideoQuadPixelTest, YUVVideoQuads) {
+  if (!media::IsWritePixelsYUVEnabled()) {
+    GTEST_SKIP() << "Skip this test if UseWritePixelsYUV is disabled";
+  }
   this->SetupQuadStateTransformsAndRenderPass();
   gfx::Rect inner_rect(
       ((this->quad_rect_.x() + (this->quad_rect_.width() / 4)) & ~0xF),
