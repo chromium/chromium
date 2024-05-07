@@ -123,7 +123,6 @@ crbug.com/1469270 [ bigsur nvidia-0xfe9 angle-opengl ] ExpectedColor_MediaRecord
 
 # Gardener 2024-03-18
 crbug.com/330132405 [ fuchsia fuchsia-board-qemu-x64 ] ExpectedColor_MediaRecorderFrom2DCanvas [ Failure ]
-crbug.com/40935289 [ clang-coverage fuchsia web-engine-shell ] ExpectedColor_MediaRecorderFromVideoElementWithOoprCanvasDisabled [ Failure ]
 
 # Gardener 2024-04-29 - page reported failure
 crbug.com/40877266 [ win angle-d3d11 graphite-enabled passthrough release ] ExpectedColor_MediaRecorderFromVideoElementWithOoprCanvasDisabled [ Failure ]
