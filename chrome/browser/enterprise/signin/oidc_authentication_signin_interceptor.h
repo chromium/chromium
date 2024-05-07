@@ -32,7 +32,7 @@ enum class OidcInterceptionStatus {
   kConsentCollection = 2,
   kProfileCreation = 3,
   kPolicyFetch = 4,
-  kAddAccount = 5,
+  kSetPrimaryAccountWithInvalidToken = 5,
   kCompleted = 6,
   // TODO(b/319479021): Add more error reporting and retry logics to make the
   // interceptor class more resilient
@@ -103,16 +103,13 @@ class OidcAuthenticationSigninInterceptor : public WebSigninInterceptor,
   // importantly, if the 3P user identity is sync-ed to Google or not.
   void OnClientRegistered(std::unique_ptr<CloudPolicyClient> client);
 
-  // Pulls gaia id from fetched policies and user email from DM server response,
-  // and sets this AccountId as primary user of the new profile. Dasher-based
-  // identity only.
-  void AddAsPrimaryAccount(Profile* new_profile);
-
   // Called when user makes a decision on the profile creation dialog.
   void OnProfileCreationChoice(SigninInterceptionResult create);
   // Called when the new profile has been created.
   void OnNewSignedInProfileCreated(base::WeakPtr<Profile> new_profile);
-  // Called when policy fetch response has been received.
+  // Called when policy fetch response has been received, For Dasher-based
+  // profiles, pulls gaia id from fetched policies and user email from DM server
+  // response, and sets this AccountId as primary user of the new profile.
   void OnPolicyFetchCompleteInNewProfile(Profile* new_profile, bool success);
 
   const raw_ptr<Profile, DanglingUntriaged> profile_;

@@ -16,6 +16,7 @@
 #include "build/chromeos_buildflags.h"
 #include "components/policy/core/browser/signin/profile_separation_policies.h"
 #include "components/signin/public/base/signin_metrics.h"
+#include "components/signin/public/identity_manager/primary_account_mutator.h"
 #include "components/signin/public/identity_manager/tribool.h"
 #include "net/cookies/canonical_cookie.h"
 
@@ -35,6 +36,8 @@ using ProfileSeparationPolicyStateSet =
     base::EnumSet<ProfileSeparationPolicyState,
                   ProfileSeparationPolicyState::kEnforcedByExistingProfile,
                   ProfileSeparationPolicyState::kMaxValue>;
+
+using PrimaryAccountError = signin::PrimaryAccountMutator::PrimaryAccountError;
 
 // This class calls ResetForceSigninForTesting when destroyed, so that
 // ForcedSigning doesn't leak across tests.
@@ -129,6 +132,17 @@ bool IsAccountExemptedFromEnterpriseProfileSeparation(Profile* profile,
 void RecordEnterpriseProfileCreationUserChoice(bool enforced_by_policy,
                                                bool created);
 #endif  // !BUILDFLAG(IS_ANDROID)
+
+// TODO(b/339214136): Add a standalone unit for this function.
+// Add an account with `user_email` and `gaia_id` to `profile`, and then set it
+// as the primary account. A invalid refresh token will be set to mimic the
+// behavior of a signed-out user. It is expected that
+PrimaryAccountError SetPrimaryAccountWithInvalidToken(
+    Profile* profile,
+    const std::string& user_email,
+    const std::string& gaia_id,
+    bool is_under_advanced_protection,
+    signin_metrics::AccessPoint access_point);
 
 }  // namespace signin_util
 

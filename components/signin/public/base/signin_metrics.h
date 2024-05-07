@@ -218,6 +218,9 @@ enum class AccessPoint : int {
   // signed-in avatars - interactions with the signed-out avatar are instead
   // counted under ACCESS_POINT_NTP_SIGNED_OUT_ICON.
   ACCESS_POINT_NTP_IDENTITY_DISC = 63,
+  // The identity is received through an interception of a 3rd party OIDC auth
+  // redirection.
+  ACCESS_POINT_OIDC_REDIRECTION_INTERCEPTION = 64,
 
   // Add values above this line with a corresponding label to the
   // "SigninAccessPoint" enum in

@@ -469,6 +469,10 @@ void RecordSigninUserActionForAccessPoint(AccessPoint access_point) {
       base::RecordAction(
           base::UserMetricsAction("Signin_Signin_FromNtpIdentityDisc"));
       break;
+    case AccessPoint::ACCESS_POINT_OIDC_REDIRECTION_INTERCEPTION:
+      base::RecordAction(base::UserMetricsAction(
+          "Signin_Signin_FromOidcRedirectionInterception"));
+      break;
     case AccessPoint::ACCESS_POINT_MAX:
       NOTREACHED();
       break;
@@ -630,6 +634,7 @@ void RecordSigninImpressionUserActionForAccessPoint(AccessPoint access_point) {
     case AccessPoint::ACCESS_POINT_PROFILE_MENU_SIGNOUT_CONFIRMATION_PROMPT:
     case AccessPoint::ACCESS_POINT_SETTINGS_SIGNOUT_CONFIRMATION_PROMPT:
     case AccessPoint::ACCESS_POINT_NTP_IDENTITY_DISC:
+    case AccessPoint::ACCESS_POINT_OIDC_REDIRECTION_INTERCEPTION:
     case AccessPoint::ACCESS_POINT_MAX:
       NOTREACHED() << "Signin_Impression_From* user actions"
                    << " are not recorded for access point "

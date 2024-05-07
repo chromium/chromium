@@ -422,6 +422,7 @@ chromium-metrics-reviews@google.com.
   <int value="61" label="Signout confirmation prompt in profile menu"/>
   <int value="62" label="Signout confirmation prompt in settings"/>
   <int value="63" label="NTP Identity Disc"/>
+  <int value="64" label="OIDC auth redirect URI interception"/>
 </enum>
 
 <enum name="SigninAccountReconcilorState">

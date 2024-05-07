@@ -25,6 +25,7 @@
 #include "chrome/browser/profiles/profile_manager.h"
 #include "chrome/browser/profiles/profiles_state.h"
 #include "chrome/browser/signin/identity_manager_factory.h"
+#include "chrome/browser/signin/signin_util.h"
 #include "chrome/browser/themes/theme_service.h"
 #include "chrome/browser/themes/theme_service_factory.h"
 #include "chrome/browser/ui/browser.h"
@@ -42,8 +43,6 @@
 #include "components/policy/core/common/cloud/user_cloud_policy_manager.h"
 #include "components/policy/core/common/policy_logger.h"
 #include "components/prefs/pref_service.h"
-#include "components/signin/public/identity_manager/accounts_mutator.h"
-#include "components/signin/public/identity_manager/primary_account_mutator.h"
 #include "content/public/browser/storage_partition.h"
 #include "content/public/browser/web_contents.h"
 #include "third_party/skia/include/core/SkColor.h"
@@ -57,8 +56,6 @@ using profile_management::features::kOidcAuthStubUserEmail;
 using profile_management::features::kOidcAuthStubUserName;
 
 namespace {
-
-const char kDummyRefreshToken[] = "dummy_refresh_token";
 
 bool IsValidOidcToken(ProfileManagementOicdTokens oidc_tokens) {
   return !oidc_tokens.auth_token.empty() && !oidc_tokens.id_token.empty();
@@ -289,48 +286,6 @@ void OidcAuthenticationSigninInterceptor::OnClientRegistered(
           base::Unretained(this)));
 }
 
-void OidcAuthenticationSigninInterceptor::AddAsPrimaryAccount(
-    Profile* new_profile) {
-  interception_status_ = OidcInterceptionStatus::kAddAccount;
-
-  // User account management would be included in unified consent dialog.
-  chrome::enterprise_util::SetUserAcceptedAccountManagement(new_profile, true);
-
-  auto* identity_manager = IdentityManagerFactory::GetForProfile(new_profile);
-  policy::CloudPolicyManager* user_policy_manager =
-      new_profile->GetUserCloudPolicyManager();
-
-  std::string gaia_id =
-      user_policy_manager->core()->store()->policy()->gaia_id();
-
-  VLOG_POLICY(2, OIDC_ENROLLMENT)
-      << "Adding user with gaia id <" << gaia_id << "> and email <"
-      << user_email_ << "> to the newly created OIDC profile.";
-
-  CoreAccountId account_id =
-      identity_manager->GetAccountsMutator()->AddOrUpdateAccount(
-          gaia_id, user_email_, kDummyRefreshToken,
-          /*is_under_advanced_protection=*/false,
-          signin_metrics::AccessPoint::ACCESS_POINT_UNKNOWN,
-          signin_metrics::SourceForRefreshTokenOperation::
-              kMachineLogon_CredentialProvider);
-  VLOG_POLICY(2, OIDC_ENROLLMENT)
-      << "Account id <" << account_id.ToString()
-      << "> has been added to the newly created OIDC profile.";
-
-  auto set_primary_account_result =
-      identity_manager->GetPrimaryAccountMutator()->SetPrimaryAccount(
-          account_id, signin::ConsentLevel::kSignin);
-  VLOG_POLICY(2, OIDC_ENROLLMENT)
-      << "Operation of setting account id <" << account_id.ToString()
-      << "> received the following result: "
-      << static_cast<int>(set_primary_account_result);
-
-  interception_status_ = OidcInterceptionStatus::kCompleted;
-
-  Reset();
-}
-
 void OidcAuthenticationSigninInterceptor::OnProfileCreationChoice(
     SigninInterceptionResult create) {
   if (create != SigninInterceptionResult::kAccepted) {
@@ -438,7 +393,37 @@ void OidcAuthenticationSigninInterceptor::OnPolicyFetchCompleteInNewProfile(
     VLOG_POLICY(2, OIDC_ENROLLMENT)
         << "Policy fetched for Dasher-based OIDC profile, adding the user as "
            "the primary account.";
-    return AddAsPrimaryAccount(new_profile);
+
+    interception_status_ =
+        OidcInterceptionStatus::kSetPrimaryAccountWithInvalidToken;
+
+    // User account management would be included in unified consent dialog.
+    chrome::enterprise_util::SetUserAcceptedAccountManagement(new_profile,
+                                                              true);
+
+    policy::CloudPolicyManager* user_policy_manager =
+        new_profile->GetUserCloudPolicyManager();
+
+    std::string gaia_id =
+        user_policy_manager->core()->store()->policy()->gaia_id();
+
+    VLOG_POLICY(2, OIDC_ENROLLMENT) << "GAIA ID retrieved from user policy for "
+                                    << user_email_ << ": " << gaia_id << ".";
+    auto set_primary_account_result =
+        signin_util::SetPrimaryAccountWithInvalidToken(
+            new_profile, user_email_, gaia_id,
+            /*is_under_advanced_protection=*/false,
+            signin_metrics::AccessPoint::
+                ACCESS_POINT_OIDC_REDIRECTION_INTERCEPTION);
+
+    VLOG_POLICY(2, OIDC_ENROLLMENT)
+        << "Operation of setting account id " << gaia_id
+        << " received the following result: "
+        << static_cast<int>(set_primary_account_result);
+
+    interception_status_ = OidcInterceptionStatus::kCompleted;
+
+    Reset();
   }
 
   interception_status_ = success ? OidcInterceptionStatus::kCompleted
