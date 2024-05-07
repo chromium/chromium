@@ -3,31 +3,7 @@ Tests that dom modification event listener produces a violation.
     method : Log.entryAdded
     params : {
         entry : {
-            level : verbose
-            lineNumber : 0
-            source : violation
-            stackTrace : {
-                callFrames : [
-                    [0] : {
-                        columnNumber : 14
-                        functionName : 
-                        lineNumber : 0
-                        scriptId : <string>
-                        url : 
-                    }
-                ]
-            }
-            text : Listener added for a synchronous 'DOMSubtreeModified' DOM Mutation Event. This event type is deprecated (https://w3c.github.io/uievents/#legacy-event-types) and work is underway to remove it from this browser. Usage of this event listener will cause performance issues today, and represents a risk of future incompatibility. Consider using MutationObserver instead.
-            timestamp : <number>
-        }
-    }
-    sessionId : <string>
-}
-{
-    method : Log.entryAdded
-    params : {
-        entry : {
-            level : warning
+            level : error
             lineNumber : 0
             source : deprecation
             stackTrace : {
@@ -41,7 +17,7 @@ Tests that dom modification event listener produces a violation.
                     }
                 ]
             }
-            text : Listener added for a synchronous 'DOMSubtreeModified' DOM Mutation Event. This event type is deprecated (https://w3c.github.io/uievents/#legacy-event-types) and work is underway to remove it from this browser. Usage of this event listener will cause performance issues today, and represents a risk of future incompatibility. Consider using MutationObserver instead.
+            text : Usage of mutation events (DOMSubtreeModified) was detected. This event type has been deprecated, and an early trial-run of complete removal is underway. In this browser, mutation events are currently not being fired. If you are a *user* experiencing a problem, please report the issue to the operator of the website. If you are a site owner, and you think this trial is causing an unexpected issue, please report a bug at https://issues.chromium.org/issues/new?component=1456718&template=1948649. Note that these events will stop being fired for ALL USERS starting in version 127, which is the next release.
             timestamp : <number>
         }
     }

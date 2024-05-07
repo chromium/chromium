@@ -722,9 +722,9 @@ void EventTarget::AddedEventListener(
           (!document || document->SupportsLegacyDOMMutations())) {
         String message_text = String::Format(
             "Listener added for a '%s' mutation event. This event type is "
-            "deprecated, and will be removed from this browser very soon. "
+            "deprecated, and will be removed from this browser VERY soon. "
             "Usage of this event listener will cause performance issues today, "
-            "and represents a large risk of future site breakage. Consider "
+            "and represents a large risk of imminent site breakage. Consider "
             "using MutationObserver instead. See "
             "https://chromestatus.com/feature/5083947249172480 for more "
             "information.",
@@ -746,26 +746,28 @@ void EventTarget::AddedEventListener(
                 context)) {
           message_text = String::Format(
               "Usage of mutation events (%s) was detected. This event type has "
-              "been deprecated, and a special early trial-run of complete "
-              "removal is underway. In this browser, mutation events are "
-              "currently not being fired. If you are a *user* experiencing a "
-              "problem, please report the issue to the operator of the "
-              "website. If you are a site owner, and you think this trial is "
-              "causing an unexpected issue, please report a bug at "
+              "been deprecated, and an early trial-run of complete removal is "
+              "underway. In this browser, mutation events are currently not "
+              "being fired. If you are a *user* experiencing a problem, please "
+              "report the issue to the operator of the website. If you are a "
+              "site owner, and you think this trial is causing an unexpected "
+              "issue, please report a bug at "
               "https://issues.chromium.org/issues/"
-              "new?component=1456718&template=1948649.",
+              "new?component=1456718&template=1948649. Note that these events "
+              "will stop being fired for ALL USERS starting in version 127, "
+              "which is the next release.",
               event_type.GetString().Utf8().c_str());
         } else {
           message_text = String::Format(
-              "Listener added for a '%s' mutation event. This event type has "
-              "been deprecated and removed, and will no longer be fired. See "
-              "https://chromestatus.com/feature/5083947249172480 for more "
-              "information.",
+              "Listener added for a '%s' mutation event. Support for this "
+              "event type has been removed, and this event will no longer be "
+              "fired. See https://chromestatus.com/feature/5083947249172480 "
+              "for more information.",
               event_type.GetString().Utf8().c_str());
         }
         context->AddConsoleMessage(MakeGarbageCollected<ConsoleMessage>(
             mojom::blink::ConsoleMessageSource::kDeprecation,
-            mojom::blink::ConsoleMessageLevel::kWarning, message_text));
+            mojom::blink::ConsoleMessageLevel::kError, message_text));
       }
     }
   }
