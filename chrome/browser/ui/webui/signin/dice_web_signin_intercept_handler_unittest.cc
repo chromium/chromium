@@ -199,7 +199,10 @@ class DiceWebSigninInterceptHandlerTest
       public testing::WithParamInterface<TestParam> {
  public:
   DiceWebSigninInterceptHandlerTest()
-      : profile_manager_(TestingBrowserProcess::GetGlobal()) {}
+      : profile_manager_(TestingBrowserProcess::GetGlobal()) {
+    feature_list_.InitWithFeatures(
+        {}, {switches::kExplicitBrowserSigninUIOnDesktop});
+  }
 
   base::Value::Dict GetInterceptionParameters() {
     Profile* profile = profile_manager_.CreateTestingProfile("Primary Profile");
@@ -241,6 +244,7 @@ class DiceWebSigninInterceptHandlerTest
 
  private:
   content::BrowserTaskEnvironment task_environment_;
+  base::test::ScopedFeatureList feature_list_;
   TestingProfileManager profile_manager_;
   content::TestWebContentsFactory web_contents_factory_;
   content::TestWebUI web_ui_;
