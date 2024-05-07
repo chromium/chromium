@@ -967,6 +967,17 @@ bool CalendarView::EventsFetchComplete() {
   return true;
 }
 
+void CalendarView::MaybeCreateUpNextView() {
+  if (up_next_view_) {
+    return;
+  }
+  up_next_view_ = calendar_sliding_surface_->AddChildView(
+      std::make_unique<CalendarUpNextView>(
+          calendar_view_controller_.get(),
+          base::BindRepeating(&CalendarView::OpenEventListForTodaysDate,
+                              base::Unretained(this))));
+}
+
 void CalendarView::MaybeUpdateLoadingBarVisibility() {
   bool visible;
   if (calendar_utils::IsMultiCalendarEnabled()) {
@@ -2214,11 +2225,7 @@ void CalendarView::MaybeShowUpNextView() {
     return;
   }
 
-  up_next_view_ = calendar_sliding_surface_->AddChildView(
-      std::make_unique<CalendarUpNextView>(
-          calendar_view_controller_.get(),
-          base::BindRepeating(&CalendarView::OpenEventListForTodaysDate,
-                              base::Unretained(this))));
+  MaybeCreateUpNextView();
 
   // Sets the visibility to manually trigger the fade in animation.
   up_next_view_->SetVisible(false);
@@ -2281,6 +2288,8 @@ void CalendarView::FadeInUpNextView() {
   if (IsUpNextViewVisible()) {
     return;
   }
+
+  MaybeCreateUpNextView();
 
   // Disables scrolling when `up_next_view_` is animating.
   SetShouldMonthsAnimateAndScrollEnabled(/*enabled=*/false);
