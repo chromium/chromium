@@ -90,19 +90,11 @@ TEST_F(SqlStorageTest, GetAugmentedTermId) {
   // Must initialize before use.
   ASSERT_TRUE(storage_->Init());
 
-  int64_t pinned_term_id = storage_->GetOrCreateTermId(pinned_.text_bytes());
-  EXPECT_EQ(storage_->GetAugmentedTermId(pinned_.field(), pinned_term_id), -1);
-  EXPECT_EQ(
-      storage_->GetOrCreateAugmentedTermId(pinned_.field(), pinned_term_id), 1);
-  EXPECT_EQ(storage_->GetAugmentedTermId(pinned_.field(), pinned_term_id), 1);
-  int64_t downloaded_term_id =
-      storage_->GetOrCreateTermId(downloaded_.text_bytes());
-  EXPECT_EQ(
-      storage_->GetAugmentedTermId(downloaded_.field(), downloaded_term_id),
-      -1);
-  EXPECT_EQ(storage_->GetOrCreateAugmentedTermId(downloaded_.field(),
-                                                 downloaded_term_id),
-            2);
+  EXPECT_EQ(storage_->GetAugmentedTermId(pinned_), -1);
+  EXPECT_EQ(storage_->GetOrCreateAugmentedTermId(pinned_), 1);
+  EXPECT_EQ(storage_->GetAugmentedTermId(pinned_), 1);
+  EXPECT_EQ(storage_->GetAugmentedTermId(downloaded_), -1);
+  EXPECT_EQ(storage_->GetOrCreateAugmentedTermId(downloaded_), 2);
 }
 
 TEST_F(SqlStorageTest, DeleteAugmentedTerm) {
@@ -110,8 +102,7 @@ TEST_F(SqlStorageTest, DeleteAugmentedTerm) {
   ASSERT_TRUE(storage_->Init());
 
   EXPECT_EQ(storage_->DeleteAugmentedTerm(1), -1);
-  int64_t term_id = storage_->GetOrCreateTermId(pinned_.text_bytes());
-  EXPECT_EQ(storage_->GetOrCreateAugmentedTermId(pinned_.field(), term_id), 1);
+  EXPECT_EQ(storage_->GetOrCreateAugmentedTermId(pinned_), 1);
   EXPECT_EQ(storage_->DeleteAugmentedTerm(1), 1);
 }
 
@@ -203,9 +194,7 @@ TEST_F(SqlStorageTest, AddToPostingList) {
   // Must initialize before use.
   ASSERT_TRUE(storage_->Init());
 
-  int64_t pinned_term_id = storage_->GetOrCreateTermId(pinned_.text_bytes());
-  int64_t pinned_id =
-      storage_->GetOrCreateAugmentedTermId(pinned_.field(), pinned_term_id);
+  int64_t pinned_id = storage_->GetOrCreateAugmentedTermId(pinned_);
   int64_t foo_url_id = storage_->GetOrCreateUrlId(foo_url_);
 
   EXPECT_EQ(1, storage_->AddToPostingList(pinned_id, foo_url_id));
@@ -217,9 +206,7 @@ TEST_F(SqlStorageTest, DeleteFromPostingList) {
   // Must initialize before use.
   ASSERT_TRUE(storage_->Init());
 
-  int64_t pinned_term_id = storage_->GetOrCreateTermId(pinned_.text_bytes());
-  int64_t pinned_id =
-      storage_->GetOrCreateAugmentedTermId(pinned_.field(), pinned_term_id);
+  int64_t pinned_id = storage_->GetOrCreateAugmentedTermId(pinned_);
   int64_t foo_url_id = storage_->GetOrCreateUrlId(foo_url_);
 
   // Can delete something that was not added. Results in 0 changes.
@@ -239,26 +226,22 @@ TEST_F(SqlStorageTest, GetUrlIdsForTerm) {
   // Setup: prefetch URL IDs.
   int64_t foo_url_id = storage_->GetOrCreateUrlId(foo_url_);
   int64_t bar_url_id = storage_->GetOrCreateUrlId(bar_url_);
-  int64_t pinned_term_id = storage_->GetOrCreateTermId(pinned_.text_bytes());
-  int64_t pinned_id =
-      storage_->GetOrCreateAugmentedTermId(pinned_.field(), pinned_term_id);
+  int64_t pinned_id = storage_->GetOrCreateAugmentedTermId(pinned_);
 
   // No terms were associated with any files, so the results must be empty.
-  EXPECT_TRUE(storage_->GetUrlIdsForAugmentedTermId(pinned_term_id).empty());
+  EXPECT_TRUE(storage_->GetUrlIdsForAugmentedTermId(pinned_id).empty());
 
   // Associate pinned with foo.
   EXPECT_EQ(1, storage_->AddToPostingList(pinned_id, foo_url_id));
-  EXPECT_THAT(storage_->GetUrlIdsForAugmentedTermId(pinned_term_id),
+  EXPECT_THAT(storage_->GetUrlIdsForAugmentedTermId(pinned_id),
               testing::UnorderedElementsAre(foo_url_id));
 
   // Associate downloaded_ with foo.
-  int64_t downloaded_term_id =
-      storage_->GetOrCreateTermId(downloaded_.text_bytes());
-  int64_t downloaded_augmented_term_id = storage_->GetOrCreateAugmentedTermId(
-      downloaded_.field(), downloaded_term_id);
+  int64_t downloaded_augmented_term_id =
+      storage_->GetOrCreateAugmentedTermId(downloaded_);
   EXPECT_EQ(
       1, storage_->AddToPostingList(downloaded_augmented_term_id, foo_url_id));
-  EXPECT_THAT(storage_->GetUrlIdsForAugmentedTermId(pinned_term_id),
+  EXPECT_THAT(storage_->GetUrlIdsForAugmentedTermId(pinned_id),
               testing::UnorderedElementsAre(foo_url_id));
   EXPECT_THAT(
       storage_->GetUrlIdsForAugmentedTermId(downloaded_augmented_term_id),
@@ -267,11 +250,38 @@ TEST_F(SqlStorageTest, GetUrlIdsForTerm) {
   // Associate downloaded with bar.
   EXPECT_EQ(
       1, storage_->AddToPostingList(downloaded_augmented_term_id, bar_url_id));
-  EXPECT_THAT(storage_->GetUrlIdsForAugmentedTermId(pinned_term_id),
+  EXPECT_THAT(storage_->GetUrlIdsForAugmentedTermId(pinned_id),
               testing::UnorderedElementsAre(foo_url_id));
   EXPECT_THAT(
       storage_->GetUrlIdsForAugmentedTermId(downloaded_augmented_term_id),
       testing::UnorderedElementsAre(foo_url_id, bar_url_id));
+}
+
+TEST_F(SqlStorageTest, GetAugmentedTermIdsForUrl) {
+  // Must initialize before use.
+  ASSERT_TRUE(storage_->Init());
+
+  // Setup: prefetch URL IDs.
+  int64_t foo_url_id = storage_->GetOrCreateUrlId(foo_url_);
+  int64_t pinned_id = storage_->GetOrCreateAugmentedTermId(pinned_);
+  int64_t downloaded_id = storage_->GetOrCreateAugmentedTermId(downloaded_);
+
+  // Before anything is associated with a given URL expect empty set.
+  EXPECT_TRUE(storage_->GetAugmentedTermIdsForUrl(foo_url_id).empty());
+
+  EXPECT_EQ(1, storage_->AddToPostingList(pinned_id, foo_url_id));
+  EXPECT_THAT(storage_->GetAugmentedTermIdsForUrl(foo_url_id),
+              testing::UnorderedElementsAre(pinned_id));
+
+  EXPECT_EQ(1, storage_->AddToPostingList(downloaded_id, foo_url_id));
+  std::set<int64_t> augmented_ids_of_foo =
+      storage_->GetAugmentedTermIdsForUrl(foo_url_id);
+  EXPECT_THAT(augmented_ids_of_foo,
+              testing::UnorderedElementsAre(pinned_id, downloaded_id));
+
+  // Expect that no terms are left once we delete them for the given URL ID.
+  storage_->DeleteAugmentedTermIdsForUrl(augmented_ids_of_foo, foo_url_id);
+  EXPECT_TRUE(storage_->GetAugmentedTermIdsForUrl(foo_url_id).empty());
 }
 
 }  // namespace

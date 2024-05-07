@@ -43,17 +43,15 @@ class RamStorage : public IndexStorage {
                                 int64_t url_id) override;
 
   // Augmented term ID management.
-  int64_t GetAugmentedTermId(const std::string& field_name,
-                             int64_t term_id) const override;
-  int64_t GetOrCreateAugmentedTermId(const std::string& field_name,
-                                     int64_t term_id) override;
+  int64_t GetAugmentedTermId(const Term& term) const override;
+  int64_t GetOrCreateAugmentedTermId(const Term& term) override;
 
   // Term ID management.
   int64_t GetTermId(const std::string& term_bytes) const override;
   int64_t GetOrCreateTermId(const std::string& term_bytes) override;
 
   // URL ID management.
-  int64_t GetUrlId(const GURL& url) override;
+  int64_t GetUrlId(const GURL& url) const override;
   int64_t GetOrCreateUrlId(const GURL& url) override;
   int64_t DeleteUrl(const GURL& url) override;
 

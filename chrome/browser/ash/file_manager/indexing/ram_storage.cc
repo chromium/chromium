@@ -74,9 +74,12 @@ int64_t RamStorage::GetOrCreateTermId(const std::string& term_bytes) {
   return this_term_id;
 }
 
-int64_t RamStorage::GetAugmentedTermId(const std::string& field_name,
-                                       int64_t term_id) const {
-  std::tuple<std::string, int64_t> augmented_term{field_name, term_id};
+int64_t RamStorage::GetAugmentedTermId(const Term& term) const {
+  int64_t term_id = GetTermId(term.text_bytes());
+  if (term_id == -1) {
+    return -1;
+  }
+  std::tuple<std::string, int64_t> augmented_term{term.field(), term_id};
   auto augmented_term_it = augmented_term_map_.find(augmented_term);
   if (augmented_term_it == augmented_term_map_.end()) {
     return -1;
@@ -84,19 +87,19 @@ int64_t RamStorage::GetAugmentedTermId(const std::string& field_name,
   return augmented_term_it->second;
 }
 
-int64_t RamStorage::GetOrCreateAugmentedTermId(const std::string& field_name,
-                                               int64_t term_id) {
-  int64_t augmented_term_id = GetAugmentedTermId(field_name, term_id);
+int64_t RamStorage::GetOrCreateAugmentedTermId(const Term& term) {
+  int64_t augmented_term_id = GetAugmentedTermId(term);
   if (augmented_term_id >= 0) {
     return augmented_term_id;
   }
   int64_t this_augmented_term_id = augmented_term_id_++;
+  int64_t term_id = GetOrCreateTermId(term.text_bytes());
   augmented_term_map_.emplace(std::make_pair(
-      std::make_tuple(field_name, term_id), this_augmented_term_id));
+      std::make_tuple(term.field(), term_id), this_augmented_term_id));
   return this_augmented_term_id;
 }
 
-int64_t RamStorage::GetUrlId(const GURL& url) {
+int64_t RamStorage::GetUrlId(const GURL& url) const {
   auto it = url_to_id_.find(url);
   return (it != url_to_id_.end()) ? it->second : -1;
 }

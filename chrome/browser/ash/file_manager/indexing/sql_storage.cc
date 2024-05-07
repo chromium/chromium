@@ -168,17 +168,24 @@ int64_t SqlStorage::DeleteTerm(const std::string& term_bytes) {
   return term_table_.DeleteTerm(term_bytes);
 }
 
-int64_t SqlStorage::GetAugmentedTermId(const std::string& field_name,
-                                       int64_t term_id) const {
+int64_t SqlStorage::GetAugmentedTermId(const Term& term) const {
   DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
-  DCHECK(term_id != -1);
-  return augmented_term_table_.GetAugmentedTermId(field_name, term_id);
+  int64_t term_id = GetTermId(term.text_bytes());
+  if (term_id == -1) {
+    return -1;
+  }
+  return augmented_term_table_.GetAugmentedTermId(term.field(), term_id);
 }
 
-int64_t SqlStorage::GetOrCreateAugmentedTermId(const std::string& field_name,
-                                               int64_t term_id) {
+int64_t SqlStorage::GetOrCreateAugmentedTermId(const Term& term) {
   DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
-  return augmented_term_table_.GetOrCreateAugmentedTermId(field_name, term_id);
+  int64_t augmented_term_id = GetAugmentedTermId(term);
+  if (augmented_term_id != -1) {
+    return augmented_term_id;
+  }
+  int64_t term_id = GetOrCreateTermId(term.text_bytes());
+  return augmented_term_table_.GetOrCreateAugmentedTermId(term.field(),
+                                                          term_id);
 }
 
 int64_t SqlStorage::DeleteAugmentedTerm(int64_t augmented_term_id) {
@@ -194,7 +201,7 @@ int64_t SqlStorage::GetOrCreateUrlId(const GURL& url) {
   return url_table_.GetOrCreateUrlId(url);
 }
 
-int64_t SqlStorage::GetUrlId(const GURL& url) {
+int64_t SqlStorage::GetUrlId(const GURL& url) const {
   DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
   if (!url.is_valid()) {
     return -1;

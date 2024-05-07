@@ -91,13 +91,11 @@ class SqlStorage : public IndexStorage {
 
   // Returns the ID corresponding to the given augmented term. If the augmented
   // term cannot be located, the method returns -1.
-  int64_t GetAugmentedTermId(const std::string& field_name,
-                             int64_t term_id) const override;
+  int64_t GetAugmentedTermId(const Term& term) const override;
 
   // Returns the ID corresponding to the augmented term. If the augmented term
   // cannot be located, a new ID is allocated and returned.
-  int64_t GetOrCreateAugmentedTermId(const std::string& field_name,
-                                     int64_t term_id) override;
+  int64_t GetOrCreateAugmentedTermId(const Term& term) override;
 
   // Deletes augmented term ID by it ID. If successful, this method returns the
   // `augmented_term_id`. Otherwise, it returns -1.
@@ -109,7 +107,7 @@ class SqlStorage : public IndexStorage {
   int64_t GetOrCreateUrlId(const GURL& url) override;
 
   // Returns the ID of the given URL or -1 if it does not exists.
-  int64_t GetUrlId(const GURL& url) override;
+  int64_t GetUrlId(const GURL& url) const override;
 
   // Deletes the given URL and returns its ID. If the URL was not
   // seen before, this method returns -1.

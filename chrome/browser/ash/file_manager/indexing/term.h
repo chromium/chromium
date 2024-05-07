@@ -24,11 +24,13 @@ class Term {
   Term& operator=(const Term&) = default;
 
   const std::string& field() const { return field_; }
-  const std::string& text_bytes() const { return text_; }
+  const std::u16string text() const { return text_; }
+  const std::string& text_bytes() const { return text_bytes_; }
 
  private:
   std::string field_;
-  std::string text_;
+  std::u16string text_;
+  std::string text_bytes_;
 };
 
 }  // namespace file_manager

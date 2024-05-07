@@ -79,13 +79,11 @@ class IndexStorage {
 
   // Returns the ID corresponding to the given augmented term. If the augmented
   // term cannot be located, the method returns -1.
-  virtual int64_t GetAugmentedTermId(const std::string& field_name,
-                                     int64_t term_id) const = 0;
+  virtual int64_t GetAugmentedTermId(const Term& term) const = 0;
 
   // Returns the ID corresponding to the augmented term. If the augmented term
   // cannot be located, a new ID is allocated and returned.
-  virtual int64_t GetOrCreateAugmentedTermId(const std::string& field_name,
-                                             int64_t term_id) = 0;
+  virtual int64_t GetOrCreateAugmentedTermId(const Term& term) = 0;
 
   // Returns the ID corresponding to the given term bytes. If the term bytes
   // cannot be located, the method returns -1.
@@ -97,7 +95,7 @@ class IndexStorage {
 
   // Returns the ID corresponding to the given file URL. If this is the first
   // time we see this file URL, we return -1.
-  virtual int64_t GetUrlId(const GURL& url) = 0;
+  virtual int64_t GetUrlId(const GURL& url) const = 0;
 
   // Returns the ID corresponding to the given GURL. If this is the first
   // time we see this URL, a new ID is created and returned.

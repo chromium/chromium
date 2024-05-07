@@ -65,19 +65,9 @@ SearchResults FileIndexImpl::Search(const Query& query) {
   std::set<int64_t> matched_url_ids;
   bool first = true;
   for (const Term& term : terms) {
-    int64_t term_id = storage_->GetTermId(term.text_bytes());
-    if (term_id < 0) {
+    int64_t augmented_term_id = storage_->GetAugmentedTermId(term);
+    if (augmented_term_id == -1) {
       return results;
-    }
-    int64_t augmented_term_id;
-    if (term.field().empty()) {
-      // Global search: this is the case of the user entering a query such as
-      // "tax starred". We cannot tell if they mean "label:tax AND
-      // label:starred" or "label:starred AND content:tax", etc. Unqualified
-      // terms (those with empty field names) are searched in the global index.
-      augmented_term_id = storage_->GetAugmentedTermId("", term_id);
-    } else {
-      augmented_term_id = storage_->GetAugmentedTermId(term.field(), term_id);
     }
     const std::set<int64_t> url_ids =
         storage_->GetUrlIdsForAugmentedTermId(augmented_term_id);
@@ -118,10 +108,9 @@ std::set<int64_t> FileIndexImpl::ConvertToAugmentedTermIds(
   std::set<int64_t> term_ids;
   for (const Term& term : terms) {
     DCHECK(!term.field().empty());
-    int64_t term_id = storage_->GetOrCreateTermId(term.text_bytes());
+    term_ids.emplace(storage_->GetOrCreateAugmentedTermId(term));
     term_ids.emplace(
-        storage_->GetOrCreateAugmentedTermId(term.field(), term_id));
-    term_ids.emplace(storage_->GetOrCreateAugmentedTermId("", term_id));
+        storage_->GetOrCreateAugmentedTermId(Term("", term.text())));
   }
   return term_ids;
 }
