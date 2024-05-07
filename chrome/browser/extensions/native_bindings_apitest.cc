@@ -122,10 +122,8 @@ class NativeBindingsRestrictedToDeveloperModeApiTest
     : public NativeBindingsApiTest {
  public:
   NativeBindingsRestrictedToDeveloperModeApiTest() {
-    scoped_feature_list_.InitWithFeatures(
-        {extensions_features::kRestrictDeveloperModeAPIs,
-         extensions_features::kApiUserScripts},
-        /*disabled_features=*/{});
+    scoped_feature_list_.InitAndEnableFeature(
+        extensions_features::kRestrictDeveloperModeAPIs);
   }
 
   NativeBindingsRestrictedToDeveloperModeApiTest(

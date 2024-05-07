@@ -26,7 +26,6 @@
 #include "extensions/browser/background_script_executor.h"
 #include "extensions/browser/disable_reason.h"
 #include "extensions/browser/script_executor.h"
-#include "extensions/common/extension_features.h"
 #include "extensions/common/features/feature_channel.h"
 #include "extensions/common/utils/content_script_utils.h"
 #include "extensions/test/extension_test_message_listener.h"
@@ -774,10 +773,7 @@ IN_PROC_BROWSER_TEST_F(ScriptingAPIPrerenderingTest, DISABLED_Basic) {
 
 class ScriptingAndUserScriptsAPITest : public ScriptingAPITest {
  public:
-  ScriptingAndUserScriptsAPITest() {
-    scoped_feature_list_.InitAndEnableFeature(
-        extensions_features::kApiUserScripts);
-  }
+  ScriptingAndUserScriptsAPITest() = default;
   ScriptingAndUserScriptsAPITest(const ScriptingAndUserScriptsAPITest&) =
       delete;
   ScriptingAndUserScriptsAPITest& operator=(
@@ -789,11 +785,6 @@ class ScriptingAndUserScriptsAPITest : public ScriptingAPITest {
     // The userScripts API is only available to users in developer mode.
     util::SetDeveloperModeForProfile(profile(), true);
   }
-
- private:
-  // The userScripts API is currently behind a feature restriction.
-  // TODO(crbug.com/40926805): Remove once the feature is stable for awhile.
-  base::test::ScopedFeatureList scoped_feature_list_;
 };
 
 IN_PROC_BROWSER_TEST_F(ScriptingAndUserScriptsAPITest,

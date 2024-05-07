@@ -12,7 +12,6 @@
 #include "base/run_loop.h"
 #include "base/strings/stringprintf.h"
 #include "base/test/bind.h"
-#include "base/test/scoped_feature_list.h"
 #include "build/buildflag.h"
 #include "chrome/browser/apps/platform_apps/app_browsertest_util.h"
 #include "chrome/browser/extensions/extension_browsertest.h"
@@ -39,7 +38,6 @@
 #include "extensions/browser/process_manager.h"
 #include "extensions/browser/script_executor.h"
 #include "extensions/browser/user_script_manager.h"
-#include "extensions/common/extension_features.h"
 #include "extensions/common/features/feature_channel.h"
 #include "extensions/common/manifest_handlers/permissions_parser.h"
 #include "extensions/test/extension_test_message_listener.h"
@@ -1755,21 +1753,12 @@ IN_PROC_BROWSER_TEST_F(DynamicScriptsTrackerBrowserTest, ActiveTabGranted) {
 
 class UserScriptTrackerBrowserTest : public ScriptInjectionTrackerBrowserTest {
  public:
-  UserScriptTrackerBrowserTest() {
-    scoped_feature_list_.InitAndEnableFeature(
-        extensions_features::kApiUserScripts);
-  }
-
+  UserScriptTrackerBrowserTest() = default;
   void SetUpOnMainThread() override {
     ScriptInjectionTrackerBrowserTest::SetUpOnMainThread();
     // The userScripts API is only available to users in developer mode.
     util::SetDeveloperModeForProfile(profile(), true);
   }
-
- private:
-  // The userScripts API is currently behind a feature restriction.
-  // TODO(crbug.com/40926805): Remove once the feature is stable for awhile.
-  base::test::ScopedFeatureList scoped_feature_list_;
 };
 
 // Tests tracking of user scripts dynamically injected/declared via
