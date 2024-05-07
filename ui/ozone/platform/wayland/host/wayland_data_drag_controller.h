@@ -254,12 +254,12 @@ class WaylandDataDragController : public WaylandDataDevice::DragDelegate,
   // holds the provider for the data to be sent through Wayland protocol.
   std::unique_ptr<OSExchangeDataProvider> offered_exchange_data_provider_;
 
-  // Offer to receive data from another process via drag-and-drop, or null if
-  // no drag-and-drop from another process is in progress.
+  // The data offer through wl_data_device for the current drag and drop
+  // session, or null if there is no session running.
   //
-  // The data offer from another Wayland client through wl_data_device, that
-  // triggered the current drag and drop session. If null, either there is no
-  // dnd session running or Chromium is the data source.
+  // Note that this is non-null even for a drag initiated by ourselves, we just
+  // don't do anything with the offer as we handle all the data transfer
+  // internally.
   std::unique_ptr<WaylandDataOffer> data_offer_;
 
   // The window that initiated the drag session. Can be null when the session
