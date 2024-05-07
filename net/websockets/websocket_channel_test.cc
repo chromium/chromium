@@ -809,6 +809,12 @@ class WebSocketChannelTest : public TestWithTaskEnvironment {
  protected:
   WebSocketChannelTest() : stream_(std::make_unique<FakeWebSocketStream>()) {}
 
+  ~WebSocketChannelTest() override {
+    // This has to be destroyed before `channel_`, which has to be destroyed
+    // before the URLRequestContext (which is also owned by `argument_saver`).
+    connect_data_.argument_saver.connect_delegate.reset();
+  }
+
   // Creates a new WebSocketChannel and connects it, using the settings stored
   // in |connect_data_|.
   void CreateChannelAndConnect() {
