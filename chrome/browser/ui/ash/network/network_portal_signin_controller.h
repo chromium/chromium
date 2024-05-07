@@ -83,6 +83,8 @@ class NetworkPortalSigninController : public views::WidgetObserver,
 
  protected:
   friend class base::NoDestructor<NetworkPortalSigninController>;
+  friend class NetworkPortalSigninControllerTest;
+
   NetworkPortalSigninController();
 
   // Shows the signin UI in a dialog window using the 'signin' (login) profile.
