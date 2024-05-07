@@ -1055,6 +1055,10 @@ inline constexpr char kDIPSTimerLastUpdate[] = "dips_timer_last_update";
 constexpr char kMetricsUserInheritOwnerConsent[] =
     "metrics.user_inherit_owner_consent";
 constexpr char kGlanceablesEnabled[] = "ash.glanceables_enabled";
+
+// Deprecated 05/2024.
+// A preference to keep track of the device registered time.
+constexpr char kDeviceRegisteredTime[] = "DeviceRegisteredTime";
 #endif  // BUILDFLAG(IS_CHROMEOS_ASH)
 
 #if !BUILDFLAG(IS_ANDROID)
@@ -1181,6 +1185,9 @@ void RegisterLocalStatePrefsForMigration(PrefRegistrySimple* registry) {
 #if BUILDFLAG(IS_CHROMEOS_ASH)
   // Deprecated 03/2024.
   registry->RegisterBooleanPref(kOobeGuestAcceptedTos, false);
+
+  // Deprecated 05/2024.
+  registry->RegisterTimePref(kDeviceRegisteredTime, base::Time());
 #endif  // BUILDFLAG(IS_CHROMEOS_ASH)
 
 // Deprecated 04/2024.
@@ -1516,8 +1523,8 @@ void RegisterProfilePrefsForMigration(
   // Deprecated 04/2024.
   registry->RegisterTimePref(kDIPSTimerLastUpdate, base::Time());
 
-  // Deprecated 04/2024.
 #if BUILDFLAG(IS_CHROMEOS_ASH)
+  // Deprecated 04/2024.
   registry->RegisterBooleanPref(kMetricsUserInheritOwnerConsent, true);
   registry->RegisterBooleanPref(kGlanceablesEnabled, true);
 #endif  // BUILDFLAG(IS_CHROMEOS_ASH)
@@ -2430,6 +2437,9 @@ void MigrateObsoleteLocalStatePrefs(PrefService* local_state) {
 #if BUILDFLAG(IS_CHROMEOS_ASH)
   // Added 03/2024.
   local_state->ClearPref(kOobeGuestAcceptedTos);
+
+  // Added 05/2024.
+  local_state->ClearPref(kDeviceRegisteredTime);
 #endif  // BUILDFLAG(IS_CHROMEOS_ASH)
 
 // Added 04/2024 .
@@ -2866,8 +2876,8 @@ void MigrateObsoleteProfilePrefs(PrefService* profile_prefs,
   // Added 04/2024.
   profile_prefs->ClearPref(kDIPSTimerLastUpdate);
 
-  // Added 04/2024.
 #if BUILDFLAG(IS_CHROMEOS_ASH)
+  // Added 04/2024.
   profile_prefs->ClearPref(kMetricsUserInheritOwnerConsent);
   profile_prefs->ClearPref(kGlanceablesEnabled);
 #endif  // BUILDFLAG(IS_CHROMEOS_ASH)

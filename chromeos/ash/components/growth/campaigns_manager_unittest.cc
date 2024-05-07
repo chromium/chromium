@@ -408,8 +408,6 @@ class CampaignsManagerTest : public testing::Test {
         ash::prefs::kDemoModeRetailerId, std::string());
     local_state_->registry()->RegisterStringPref(ash::prefs::kDemoModeStoreId,
                                                  std::string());
-    local_state_->registry()->RegisterTimePref(
-        ash::prefs::kDeviceRegisteredTime, base::Time());
   }
 };
 
