@@ -13,6 +13,7 @@
 #include "ash/style/system_shadow.h"
 #include "ash/wm/overview/event_handler_delegate.h"
 #include "ash/wm/overview/overview_types.h"
+#include "base/cancelable_callback.h"
 #include "base/memory/raw_ptr.h"
 #include "ui/aura/window.h"
 #include "ui/events/event.h"
@@ -60,23 +61,6 @@ class ASH_EXPORT OverviewItemBase : public EventHandlerDelegate {
       aura::Window* window,
       OverviewSession* overview_session,
       OverviewGrid* overview_grid);
-
-  // Returns true if `this` is currently being dragged.
-  bool IsDragItem() const;
-
-  // Refreshes visuals of the `shadow_` by setting the visibility and updating
-  // the bounds.
-  void RefreshShadowVisuals(bool shadow_visible);
-
-  // Updates the type for the `shadow_` while being dragged and dropped.
-  void UpdateShadowTypeForDrag(bool is_dragging);
-
-  // If in tablet mode, maybe forward events to `OverviewGridEventHandler` as we
-  // might want to process scroll events on `this`. `event_source_item`
-  // specifies the sender of the event.
-  void HandleGestureEventForTabletModeLayout(
-      ui::GestureEvent* event,
-      OverviewItemBase* event_source_item);
 
   void set_should_animate_when_entering(bool should_animate) {
     should_animate_when_entering_ = should_animate;
@@ -127,6 +111,35 @@ class ASH_EXPORT OverviewItemBase : public EventHandlerDelegate {
   bool should_use_spawn_animation() const {
     return should_use_spawn_animation_;
   }
+
+  // Returns true if `this` is currently being dragged.
+  bool IsDragItem() const;
+
+  // Refreshes visuals of the `shadow_` by setting the visibility and updating
+  // the bounds.
+  void RefreshShadowVisuals(bool shadow_visible);
+
+  // Updates the type for the `shadow_` while being dragged and dropped.
+  void UpdateShadowTypeForDrag(bool is_dragging);
+
+  // If in tablet mode, maybe forward events to `OverviewGridEventHandler` as we
+  // might want to process scroll events on `this`. `event_source_item`
+  // specifies the sender of the event.
+  void HandleGestureEventForTabletModeLayout(
+      ui::GestureEvent* event,
+      OverviewItemBase* event_source_item);
+
+  // Hides the overview item. This is used to hide any overview items that may
+  // be present when entering the saved desk library. Animates `item_widget_`
+  // and the windows in the transient tree to 0 opacity if `animate` is true,
+  // otherwise just sets them to 0 opacity.
+  virtual void HideForSavedDeskLibrary(bool animate);
+
+  // Re-shows overview items that were hidden by the saved desk library. Called
+  // when exiting the saved desk library and going back to the overview grid.
+  // Fades the overview items in if `animate` is true, otherwise shows them
+  // immediately.
+  virtual void RevertHideForSavedDeskLibrary(bool animate);
 
   // Returns the window associated with this, which can be a single window or
   // a list of windows.
@@ -218,18 +231,6 @@ class ASH_EXPORT OverviewItemBase : public EventHandlerDelegate {
   // Called when the starting animation is completed, or called immediately
   // if there was no starting animation to do any necessary visual changes.
   virtual void OnStartingAnimationComplete() = 0;
-
-  // Hides the overview item. This is used to hide any overview items that may
-  // be present when entering the saved desk library. Animates `item_widget_`
-  // and the windows in the transient tree to 0 opacity if `animate` is true,
-  // otherwise just sets them to 0 opacity.
-  virtual void HideForSavedDeskLibrary(bool animate) = 0;
-
-  // Re-shows overview items that were hidden by the saved desk library. Called
-  // when exiting the saved desk library and going back to the overview grid.
-  // Fades the overview items in if `animate` is true, otherwise shows them
-  // immediately.
-  virtual void RevertHideForSavedDeskLibrary(bool animate) = 0;
 
   // Closes window(s) hosted by `this`.
   virtual void CloseWindows() = 0;
@@ -409,6 +410,9 @@ class ASH_EXPORT OverviewItemBase : public EventHandlerDelegate {
  private:
   friend class OverviewTestBase;
 
+  void HideItemWidgetWindow();
+  void ShowItemWidgetWindow();
+
   // TODO(sammiequon): Current events go from `OverviewItemView` to
   // `EventHandlerDelegate` to `OverviewSession` to
   // `OverviewWindowDragController`. We may be able to shorten this pipeline.
@@ -423,6 +427,17 @@ class ASH_EXPORT OverviewItemBase : public EventHandlerDelegate {
   void HandleTapEvent(const gfx::PointF& location_in_screen,
                       OverviewItemBase* event_source_item);
   void HandleGestureEndEvent();
+
+  // Cancellable callback to ensure that we are not going to hide the window
+  // after reverting the hide.
+  base::CancelableOnceClosure hide_window_in_overview_callback_;
+
+  // Used to block events from reaching the item widget when the overview item
+  // has been hidden.
+  std::unique_ptr<aura::ScopedWindowEventTargetingBlocker>
+      item_widget_event_blocker_;
+
+  base::WeakPtrFactory<OverviewItemBase> weak_ptr_factory_{this};
 };
 
 }  // namespace ash

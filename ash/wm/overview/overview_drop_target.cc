@@ -79,6 +79,10 @@ void OverviewDropTarget::UpdateBackgroundVisibility(
       item_widget_->GetWindowBoundsInScreen().Contains(location_in_screen));
 }
 
+void OverviewDropTarget::HideForSavedDeskLibrary(bool animate) {}
+
+void OverviewDropTarget::RevertHideForSavedDeskLibrary(bool animate) {}
+
 aura::Window* OverviewDropTarget::GetWindow() {
   return nullptr;
 }
@@ -160,10 +164,6 @@ void OverviewDropTarget::PrepareForOverview() {}
 void OverviewDropTarget::SetShouldUseSpawnAnimation(bool value) {}
 
 void OverviewDropTarget::OnStartingAnimationComplete() {}
-
-void OverviewDropTarget::HideForSavedDeskLibrary(bool animate) {}
-
-void OverviewDropTarget::RevertHideForSavedDeskLibrary(bool animate) {}
 
 void OverviewDropTarget::CloseWindows() {}
 

@@ -74,6 +74,18 @@ class ASH_EXPORT OverviewController : public OverviewDelegate,
   // created and owned by Shell.
   static OverviewController* Get();
 
+  OverviewSession* overview_session() { return overview_session_.get(); }
+
+  bool disable_app_id_check_for_saved_desks() const {
+    return disable_app_id_check_for_saved_desks_;
+  }
+
+  bool is_continuous_scroll_in_progress() const {
+    return is_continuous_scroll_in_progress_;
+  }
+
+  bool windows_have_snapshot() const { return windows_have_snapshot_; }
+
   // Starts/Ends overview with `type`. Returns true if enter or exit overview
   // successful. Depending on `type` the enter/exit animation will look
   // different. `start_action`/`end_action` is used by UMA to record the reasons
@@ -136,14 +148,10 @@ class ASH_EXPORT OverviewController : public OverviewDelegate,
                          aura::Window* gained_active,
                          aura::Window* lost_active) override {}
 
-  OverviewSession* overview_session() { return overview_session_.get(); }
-
-  bool disable_app_id_check_for_saved_desks() const {
-    return disable_app_id_check_for_saved_desks_;
-  }
-
-  bool is_continuous_scroll_in_progress() const {
-    return is_continuous_scroll_in_progress_;
+  void set_disable_app_id_check_for_saved_desks_for_test(
+      bool disable_app_id_check_for_saved_desks) {
+    disable_app_id_check_for_saved_desks_ =
+        disable_app_id_check_for_saved_desks;
   }
 
   void set_occlusion_pause_duration_for_start_for_test(
@@ -157,14 +165,11 @@ class ASH_EXPORT OverviewController : public OverviewDelegate,
     delayed_animation_task_delay_ = delta;
   }
 
-  bool windows_have_snapshot() const { return windows_have_snapshot_; }
-
   void set_windows_have_snapshot_for_test(bool windows_have_snapshot) {
     windows_have_snapshot_ = windows_have_snapshot;
   }
 
  private:
-  friend class SavedDeskTest;
 
   // Toggle overview mode. Depending on |type| the enter/exit animation will
   // look different.

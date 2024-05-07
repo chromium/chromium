@@ -263,6 +263,38 @@ OverviewAnimationType OverviewItem::GetExitTransformAnimationType() const {
                                       : OVERVIEW_ANIMATION_RESTORE_WINDOW_ZERO;
 }
 
+void OverviewItem::HideForSavedDeskLibrary(bool animate) {
+  OverviewItemBase::HideForSavedDeskLibrary(animate);
+
+  auto* window = GetWindow();
+
+  // To hide the window, we will set its layer opacity to 0. This would
+  // normally also hide the window from the mini view, which we don't want. By
+  // setting a property on the window, we can force it to stay visible.
+  window->SetProperty(kForceVisibleInMiniViewKey, true);
+
+  for (aura::Window* transient_child : GetTransientTreeIterator(window)) {
+    // This is needed for the split view divider, which can be a transient child
+    // of the window. The visibility of the divider is explicitly controlled by
+    // the owning snap group, and we should not fade it out here. See the bug in
+    // http://b/335301800 for more details.
+    if (!transient_child->TargetVisibility()) {
+      continue;
+    }
+
+    transient_child->SetProperty(kForceVisibleInMiniViewKey, true);
+    PerformFadeOutLayer(transient_child->layer(), animate, base::DoNothing());
+  }
+}
+
+void OverviewItem::RevertHideForSavedDeskLibrary(bool animate) {
+  OverviewItemBase::RevertHideForSavedDeskLibrary(animate);
+
+  for (aura::Window* transient_child : GetTransientTreeIterator(GetWindow())) {
+    PerformFadeInLayer(transient_child->layer(), animate);
+  }
+}
+
 aura::Window* OverviewItem::GetWindow() {
   return transform_window_.window();
 }
@@ -654,62 +686,6 @@ void OverviewItem::OnStartingAnimationComplete() {
       GetWindowDimensionsType() != OverviewGridWindowFillMode::kNormal;
   overview_item_view_->SetBackdropVisibility(show_backdrop);
   UpdateCannotSnapWarningVisibility(/*animate=*/true);
-}
-
-void OverviewItem::HideForSavedDeskLibrary(bool animate) {
-  // To hide the window, we will set its layer opacity to 0. This would normally
-  // also hide the window from the mini view, which we don't want. By setting a
-  // property on the window, we can force it to stay visible.
-  GetWindow()->SetProperty(kForceVisibleInMiniViewKey, true);
-
-  // Temporarily hide this window in overview, so that dark/light theme change
-  // does not reset the layer visible. If `animate` is false, the callback will
-  // not run in `PerformFadeOutLayer`. Thus, here we make sure the window is
-  // also hidden in that case.
-  DCHECK(item_widget_);
-  hide_window_in_overview_callback_.Reset(base::BindOnce(
-      &OverviewItem::HideWindowInOverview, weak_ptr_factory_.GetWeakPtr()));
-  PerformFadeOutLayer(item_widget_->GetLayer(), animate,
-                      hide_window_in_overview_callback_.callback());
-  if (!animate) {
-    // Cancel the callback if we are going to run it directly.
-    hide_window_in_overview_callback_.Cancel();
-    HideWindowInOverview();
-  }
-
-  for (aura::Window* transient_child : GetTransientTreeIterator(GetWindow())) {
-    transient_child->SetProperty(kForceVisibleInMiniViewKey, true);
-    PerformFadeOutLayer(transient_child->layer(), animate, base::DoNothing());
-  }
-
-  item_widget_event_blocker_ =
-      std::make_unique<aura::ScopedWindowEventTargetingBlocker>(
-          item_widget_->GetNativeWindow());
-
-  HideCannotSnapWarning(animate);
-}
-
-void OverviewItem::RevertHideForSavedDeskLibrary(bool animate) {
-  // This might run before `HideForSavedDeskLibrary()`, thus cancel the
-  // callback to prevent such case.
-  hide_window_in_overview_callback_.Cancel();
-
-  // Restore and show the window back to overview.
-  ShowWindowInOverview();
-
-  // `item_widget_` may be null during shutdown if the window is minimized.
-  if (item_widget_) {
-    PerformFadeInLayer(item_widget_->GetLayer(), animate);
-  }
-
-  for (aura::Window* transient_child :
-       GetTransientTreeIterator(transform_window_.window())) {
-    PerformFadeInLayer(transient_child->layer(), animate);
-  }
-
-  item_widget_event_blocker_.reset();
-
-  UpdateCannotSnapWarningVisibility(animate);
 }
 
 void OverviewItem::CloseWindows() {
@@ -1447,29 +1423,6 @@ aura::Window::Windows OverviewItem::GetWindowsForHomeGesture() {
   if (cannot_snap_widget_)
     windows.push_back(cannot_snap_widget_->GetNativeWindow());
   return windows;
-}
-
-void OverviewItem::HideWindowInOverview() {
-  ScopedOverviewHideWindows* hide_windows =
-      overview_session_->hide_windows_for_saved_desks_grid();
-  DCHECK(hide_windows);
-
-  // Hide the overview item window.
-  if (item_widget_ && !hide_windows->HasWindow(item_widget_->GetNativeWindow()))
-    hide_windows->AddWindow(item_widget_->GetNativeWindow());
-}
-
-void OverviewItem::ShowWindowInOverview() {
-  ScopedOverviewHideWindows* hide_windows =
-      overview_session_->hide_windows_for_saved_desks_grid();
-  DCHECK(hide_windows);
-
-  // Show the overview item window.
-  if (item_widget_ &&
-      hide_windows->HasWindow(item_widget_->GetNativeWindow())) {
-    hide_windows->RemoveWindow(item_widget_->GetNativeWindow(),
-                               /*show_window=*/true);
-  }
 }
 
 }  // namespace ash

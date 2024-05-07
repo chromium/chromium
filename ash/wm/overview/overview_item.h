@@ -93,6 +93,8 @@ class ASH_EXPORT OverviewItem : public OverviewItemBase,
   OverviewAnimationType GetExitTransformAnimationType() const;
 
   // OverviewItemBase:
+  void HideForSavedDeskLibrary(bool animate) override;
+  void RevertHideForSavedDeskLibrary(bool animate) override;
   aura::Window* GetWindow() override;
   std::vector<raw_ptr<aura::Window, VectorExperimental>> GetWindows() override;
   bool HasVisibleOnAllDesksWindow() override;
@@ -118,8 +120,6 @@ class ASH_EXPORT OverviewItem : public OverviewItemBase,
   void PrepareForOverview() override;
   void SetShouldUseSpawnAnimation(bool value) override;
   void OnStartingAnimationComplete() override;
-  void HideForSavedDeskLibrary(bool animate) override;
-  void RevertHideForSavedDeskLibrary(bool animate) override;
   void CloseWindows() override;
   void Restack() override;
   void StartDrag() override;
@@ -209,9 +209,6 @@ class ASH_EXPORT OverviewItem : public OverviewItemBase,
 
   void CloseButtonPressed();
 
-  void HideWindowInOverview();
-  void ShowWindowInOverview();
-
   // Returns the list of windows that we want to slide up or down when swiping
   // on the shelf in tablet mode.
   aura::Window::Windows GetWindowsForHomeGesture();
@@ -225,11 +222,6 @@ class ASH_EXPORT OverviewItem : public OverviewItemBase,
   // The delegate to handle window destruction which is `OverviewGrid` for
   // single item or `OverviewGroupItem` for group item.
   const raw_ptr<WindowDestructionDelegate> window_destruction_delegate_;
-
-  // Used to block events from reaching the item widget when the overview item
-  // has been hidden.
-  std::unique_ptr<aura::ScopedWindowEventTargetingBlocker>
-      item_widget_event_blocker_;
 
   // True if running SetItemBounds. This prevents recursive calls resulting from
   // the bounds update when calling ::wm::RecreateWindowLayers to copy
@@ -266,10 +258,6 @@ class ASH_EXPORT OverviewItem : public OverviewItemBase,
   // if those item's windows won't have snapshots.
   std::optional<aura::WindowOcclusionTracker::ScopedForceVisible>
       scoped_force_visible_;
-
-  // Cancellable callback to ensure that we are not going to hide the window
-  // after reverting the hide.
-  base::CancelableOnceClosure hide_window_in_overview_callback_;
 
   base::WeakPtrFactory<OverviewItem> weak_ptr_factory_{this};
 };

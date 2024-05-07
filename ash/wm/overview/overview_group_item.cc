@@ -73,6 +73,22 @@ OverviewGroupItem::OverviewGroupItem(const Windows& windows,
 
 OverviewGroupItem::~OverviewGroupItem() = default;
 
+void OverviewGroupItem::HideForSavedDeskLibrary(bool animate) {
+  for (const auto& item : overview_items_) {
+    item->HideForSavedDeskLibrary(animate);
+  }
+
+  OverviewItemBase::HideForSavedDeskLibrary(animate);
+}
+
+void OverviewGroupItem::RevertHideForSavedDeskLibrary(bool animate) {
+  for (const auto& item : overview_items_) {
+    item->RevertHideForSavedDeskLibrary(animate);
+  }
+
+  OverviewItemBase::RevertHideForSavedDeskLibrary(animate);
+}
+
 aura::Window* OverviewGroupItem::GetWindow() {
   // TODO(michelefan): `GetWindow()` will be replaced by `GetWindows()` in a
   // follow-up cl.
@@ -330,10 +346,6 @@ void OverviewGroupItem::OnStartingAnimationComplete() {
     item->OnStartingAnimationComplete();
   }
 }
-
-void OverviewGroupItem::HideForSavedDeskLibrary(bool animate) {}
-
-void OverviewGroupItem::RevertHideForSavedDeskLibrary(bool animate) {}
 
 void OverviewGroupItem::CloseWindows() {
   for (const auto& overview_item : overview_items_) {

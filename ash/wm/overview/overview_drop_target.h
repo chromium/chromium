@@ -30,6 +30,8 @@ class OverviewDropTarget : public OverviewItemBase {
   void UpdateBackgroundVisibility(const gfx::Point& location_in_screen);
 
   // OverviewItemBase:
+  void HideForSavedDeskLibrary(bool animate) override;
+  void RevertHideForSavedDeskLibrary(bool animate) override;
   aura::Window* GetWindow() override;
   std::vector<raw_ptr<aura::Window, VectorExperimental>> GetWindows() override;
   bool HasVisibleOnAllDesksWindow() override;
@@ -55,8 +57,6 @@ class OverviewDropTarget : public OverviewItemBase {
   void PrepareForOverview() override;
   void SetShouldUseSpawnAnimation(bool value) override;
   void OnStartingAnimationComplete() override;
-  void HideForSavedDeskLibrary(bool animate) override;
-  void RevertHideForSavedDeskLibrary(bool animate) override;
   void CloseWindows() override;
   void Restack() override;
   void StartDrag() override;

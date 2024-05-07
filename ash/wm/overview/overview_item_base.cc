@@ -10,6 +10,7 @@
 #include "ash/shell.h"
 #include "ash/style/rounded_label_widget.h"
 #include "ash/wm/desks/desks_util.h"
+#include "ash/wm/desks/templates/saved_desk_animations.h"
 #include "ash/wm/overview/overview_constants.h"
 #include "ash/wm/overview/overview_controller.h"
 #include "ash/wm/overview/overview_grid.h"
@@ -237,6 +238,51 @@ void OverviewItemBase::HandleGestureEvent(ui::GestureEvent* event,
   }
 }
 
+void OverviewItemBase::HideForSavedDeskLibrary(bool animate) {
+  // Temporarily hide this window in overview, so that dark/light theme change
+  // does not reset the layer visible. If `animate` is false, the callback will
+  // not run in `PerformFadeOutLayer`. Thus, here we make sure the window is
+  // also hidden in that case.
+  DCHECK(item_widget_);
+  hide_window_in_overview_callback_.Reset(base::BindOnce(
+      &OverviewItemBase::HideItemWidgetWindow, weak_ptr_factory_.GetWeakPtr()));
+  PerformFadeOutLayer(item_widget_->GetLayer(), animate,
+                      hide_window_in_overview_callback_.callback());
+  if (!animate) {
+    // Cancel the callback if we are going to run it directly.
+    hide_window_in_overview_callback_.Cancel();
+    HideItemWidgetWindow();
+  }
+
+  item_widget_event_blocker_ =
+      std::make_unique<aura::ScopedWindowEventTargetingBlocker>(
+          item_widget_->GetNativeWindow());
+
+  // TODO(http://b/339108996): Determine how to inform users when a group item
+  // cannot be snapped.
+  HideCannotSnapWarning(animate);
+}
+
+void OverviewItemBase::RevertHideForSavedDeskLibrary(bool animate) {
+  // This might run before `HideForSavedDeskLibrary()`, thus cancel the
+  // callback to prevent such case.
+  hide_window_in_overview_callback_.Cancel();
+
+  // Restore and show the window back to overview.
+  ShowItemWidgetWindow();
+
+  // `item_widget_` may be null during shutdown if the window is minimized.
+  if (item_widget_) {
+    PerformFadeInLayer(item_widget_->GetLayer(), animate);
+  }
+
+  item_widget_event_blocker_.reset();
+
+  // TODO(http://b/339108996): Determine how to inform users when a group item
+  // cannot be snapped.
+  UpdateCannotSnapWarningVisibility(animate);
+}
+
 views::Widget::InitParams OverviewItemBase::CreateOverviewItemWidgetParams(
     aura::Window* parent_window,
     const std::string& widget_name,
@@ -266,6 +312,31 @@ void OverviewItemBase::CreateShadow() {
 void OverviewItemBase::HandleDragEvent(const gfx::PointF& location_in_screen) {
   if (IsDragItem()) {
     overview_session_->Drag(this, location_in_screen);
+  }
+}
+
+void OverviewItemBase::HideItemWidgetWindow() {
+  ScopedOverviewHideWindows* hide_windows =
+      overview_session_->hide_windows_for_saved_desks_grid();
+  DCHECK(hide_windows);
+
+  // Hide the overview item window.
+  if (item_widget_ &&
+      !hide_windows->HasWindow(item_widget_->GetNativeWindow())) {
+    hide_windows->AddWindow(item_widget_->GetNativeWindow());
+  }
+}
+
+void OverviewItemBase::ShowItemWidgetWindow() {
+  ScopedOverviewHideWindows* hide_windows =
+      overview_session_->hide_windows_for_saved_desks_grid();
+  DCHECK(hide_windows);
+
+  // Show the overview item window.
+  if (item_widget_ &&
+      hide_windows->HasWindow(item_widget_->GetNativeWindow())) {
+    hide_windows->RemoveWindow(item_widget_->GetNativeWindow(),
+                               /*show_window=*/true);
   }
 }
 

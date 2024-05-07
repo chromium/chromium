@@ -4991,6 +4991,81 @@ TEST_F(SnapGroupDesksTest, OnlyHideSnapGroupOnActiveDesk) {
   EXPECT_TRUE(w1->TargetVisibility());
 }
 
+// Tests that accessing the saved desks library after creating a Snap Group does
+// not result in a crash, and the Snap Group is successfully restored upon
+// exiting overview mode. See regression at http://b/335301800.
+TEST_F(SnapGroupDesksTest, SaveDeskForSnapGroupWithAnotherSavedDesk) {
+  OverviewController* overview_controller = OverviewController::Get();
+
+  // Explicitly disable `disable_app_id_check_for_saved_desks_` otherwise "Save
+  // desk for later" button will be disabled.
+  overview_controller->set_disable_app_id_check_for_saved_desks_for_test(true);
+
+  // Create `w0` and save `w0` in a saved desk by activing "Save desk for later"
+  // button in Overview.
+  std::unique_ptr<aura::Window> w0(
+      CreateAppWindow(gfx::Rect(10, 10, 500, 300)));
+
+  overview_controller->StartOverview(OverviewStartAction::kOverviewButton);
+  OverviewSession* overview_session = overview_controller->overview_session();
+  ASSERT_TRUE(overview_session);
+
+  auto* root_window = Shell::GetPrimaryRootWindow();
+  OverviewGrid* overview_grid = GetOverviewGridForRoot(root_window);
+  ASSERT_TRUE(overview_grid);
+  ASSERT_EQ(1u, overview_grid->window_list().size());
+
+  auto* save_for_later_button = overview_grid->GetSaveDeskForLaterButton();
+  ASSERT_TRUE(save_for_later_button);
+  base::RunLoop().RunUntilIdle();
+  LeftClickOn(save_for_later_button);
+
+  auto* desks_bar_view = overview_grid->desks_bar_view();
+  ASSERT_TRUE(desks_bar_view);
+
+  auto* library_button = desks_bar_view->library_button();
+  ASSERT_TRUE(library_button);
+
+  overview_controller->EndOverview(OverviewEndAction::kOverviewButton);
+
+  // Create a Snap Group and enter Overview again, click on the library button
+  // on the virtual desks bar and verify that there is no crash.
+  std::unique_ptr<aura::Window> w1(CreateAppWindow());
+  std::unique_ptr<aura::Window> w2(CreateAppWindow());
+  SnapTwoTestWindows(w1.get(), w2.get());
+
+  overview_controller->StartOverview(OverviewStartAction::kOverviewButton);
+  ASSERT_TRUE(overview_session);
+
+  overview_grid = GetOverviewGridForRoot(root_window);
+  desks_bar_view = overview_grid->desks_bar_view();
+  ASSERT_TRUE(desks_bar_view);
+
+  library_button = desks_bar_view->library_button();
+  ASSERT_TRUE(library_button);
+
+  auto* overview_group_item = GetOverviewItemForWindow(w1.get());
+  ASSERT_TRUE(overview_group_item);
+  ASSERT_FALSE(snap_group_divider()->divider_widget()->IsVisible());
+
+  const auto cached_group_item_bounds = overview_group_item->target_bounds();
+
+  LeftClickOn(library_button);
+
+  // Click the point outside of `cached_group_item_bounds` will exit Overview
+  // and bring back the Snap Group.
+  auto* event_generator = GetEventGenerator();
+  const gfx::Point click_point = gfx::ToRoundedPoint(
+      cached_group_item_bounds.bottom_right() + gfx::Vector2d(20, 0));
+  event_generator->MoveMouseTo(click_point);
+
+  event_generator->ClickLeftButton();
+  EXPECT_FALSE(IsInOverviewSession());
+  UnionBoundsEqualToWorkAreaBounds(w1.get(), w2.get(), snap_group_divider());
+
+  overview_controller->set_disable_app_id_check_for_saved_desks_for_test(false);
+}
+
 // -----------------------------------------------------------------------------
 // SnapGroupWindowCycleTest:
 
