@@ -82,16 +82,19 @@ source_set("app_service") {
       "media_requests.cc",
       "media_requests.h",
       "menu_item_constants.h",
+      "webapk/webapk_utils.cc",
+      "webapk/webapk_utils.h",
     ]
 
     deps += [
       "//ash/webui/projector_app/public/cpp",
       "//chrome/browser/apps/app_service/app_install",
-      "//chrome/browser/apps/app_service/webapk",
       "//chrome/browser/apps/browser_instance",
       "//chromeos/constants",
       "//chromeos/crosapi/mojom",
       "//chromeos/startup",
+      "//components/webapk:proto",
+      "//third_party/smhasher:murmurhash2",
       "//ui/wm/public",
     ]
   }
@@ -186,13 +189,23 @@ source_set("app_service") {
       "subscriber_crosapi_factory.h",
       "uninstall_dialog.cc",
       "uninstall_dialog.h",
-      "webapk_manager.cc",
-      "webapk_manager.h",
+      "webapk/webapk_install_queue.cc",
+      "webapk/webapk_install_queue.h",
+      "webapk/webapk_install_task.cc",
+      "webapk/webapk_install_task.h",
+      "webapk/webapk_manager.cc",
+      "webapk/webapk_manager.h",
+      "webapk/webapk_metrics.cc",
+      "webapk/webapk_metrics.h",
+      "webapk/webapk_prefs.cc",
+      "webapk/webapk_prefs.h",
     ]
 
     deps += [
       "//ash",
       "//ash/components/arc",
+      "//ash/components/arc:arc_base",
+      "//ash/components/arc:arc_base_utils",
       "//ash/components/arc:arc_metrics_constants",
       "//ash/components/arc/mojom",
       "//ash/components/arc/session",
@@ -202,7 +215,6 @@ source_set("app_service") {
       "//chrome/browser:browser_process",
       "//chrome/browser/apps/almanac_api_client",
       "//chrome/browser/apps/app_service/promise_apps/proto",
-      "//chrome/browser/apps/app_service/webapk:prefs",
       "//chrome/browser/ash/crosapi",
       "//chrome/browser/ash/mall",
       "//chrome/browser/ash/system_web_apps",
@@ -373,7 +385,8 @@ source_set("unit_tests") {
       "publishers/guest_os_apps_unittest.cc",
       "publishers/plugin_vm_apps_unittest.cc",
       "publishers/shortcut_publisher_unittest.cc",
-      "webapk_manager_unittest.cc",
+      "webapk/webapk_install_task_unittest.cc",
+      "webapk/webapk_manager_unittest.cc",
     ]
 
     deps += [
@@ -381,9 +394,6 @@ source_set("unit_tests") {
       "//ash/constants",
       "//chrome/browser/apps/app_service/app_install:unit_tests",
       "//chrome/browser/apps/app_service/promise_apps/proto",
-      "//chrome/browser/apps/app_service/webapk",
-      "//chrome/browser/apps/app_service/webapk:prefs",
-      "//chrome/browser/apps/app_service/webapk:unit_tests",
       "//chrome/browser/ash",
       "//chrome/browser/ash:test_support",
       "//chrome/browser/ash/crosapi:browser_util",
@@ -404,6 +414,7 @@ source_set("unit_tests") {
       "//components/metrics/structured:structured_metrics_features",
       "//components/metrics/structured:test_support",
       "//components/services/app_service/public/cpp/shortcut",
+      "//components/webapk:proto",
     ]
   }
 
@@ -438,11 +449,13 @@ source_set("test_support") {
     sources += [
       "metrics/app_platform_metrics_service_test_base.cc",
       "metrics/app_platform_metrics_service_test_base.h",
+      "webapk/webapk_test_server.cc",
+      "webapk/webapk_test_server.h",
     ]
 
     deps += [
-      "//chrome/browser/apps/app_service/webapk:test_support",
       "//chrome/browser/ash:test_support",
+      "//components/webapk:proto",
     ]
   }
 
