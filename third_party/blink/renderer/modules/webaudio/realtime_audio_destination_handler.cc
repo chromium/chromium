@@ -379,6 +379,12 @@ void RealtimeAudioDestinationHandler::StartPlatformDestination() {
                   GetCallbackBufferSize()));
   DCHECK(IsMainThread());
 
+  // Since we access `Context()` in this function and this object is not
+  // garbage-collected, check that we are still initialized.
+  if (!IsInitialized()) {
+    return;
+  }
+
   if (platform_destination_->IsPlaying()) {
     return;
   }
