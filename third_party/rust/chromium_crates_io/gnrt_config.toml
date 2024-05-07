@@ -120,6 +120,9 @@ group = 'test'
 group = 'test'
 extra_input_roots = ['../README.md']
 
+[crate.itertools]
+group = 'test'
+
 [crate.libc]
 ban_features = [
     # `extra_traits` feature is banned because of

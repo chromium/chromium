@@ -45,7 +45,7 @@ source = "registry+https://github.com/rust-lang/crates.io-index"
 dependencies = [
  "proc-macro2",
  "quote",
- "syn 2.0.59",
+ "syn 2.0.60",
 ]
 
 [[package]]
@@ -78,6 +78,7 @@ dependencies = [
  "font-types",
  "hex",
  "hex-literal",
+ "itertools",
  "lazy_static",
  "libc",
  "log",
