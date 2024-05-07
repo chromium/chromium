@@ -11,6 +11,7 @@
 #include <cstring>
 #include <vector>
 
+#include "base/check_op.h"
 #include "base/logging.h"
 #include "chromecast/starboard/chromecast/starboard_adapter/public/cast_starboard_api_adapter.h"
 #include "chromecast/starboard/media/media/starboard_api_wrapper.h"

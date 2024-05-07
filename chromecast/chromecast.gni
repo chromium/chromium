@@ -152,9 +152,6 @@ declare_args() {
 
   # Use Starboard media backend.
   enable_starboard_media = false
-
-  # Build Starboard media backend as shared library.
-  starboard_media_is_shared = false
 }
 
 declare_args() {

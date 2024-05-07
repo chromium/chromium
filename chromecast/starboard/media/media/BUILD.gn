@@ -92,6 +92,7 @@ test("media_pipeline_backend_starboard_test") {
   deps = [
     ":mock_starboard_api_wrapper",
     ":starboard",
+    ":starboard_api_wrapper",
     "//base/test:run_all_unittests",
     "//base/test:test_support",
     "//chromecast/public",
@@ -105,6 +106,7 @@ test("starboard_audio_decoder_test") {
   deps = [
     ":mock_starboard_api_wrapper",
     ":starboard",
+    ":starboard_api_wrapper",
     "//base/test:run_all_unittests",
     "//base/test:test_support",
     "//chromecast/media/base",
@@ -121,6 +123,7 @@ test("starboard_video_decoder_test") {
   deps = [
     ":mock_starboard_api_wrapper",
     ":starboard",
+    ":starboard_api_wrapper",
     "//base/test:run_all_unittests",
     "//base/test:test_support",
     "//chromecast/media/base",
@@ -137,11 +140,13 @@ test("starboard_resampler_test") {
   deps = [
     ":mock_starboard_api_wrapper",
     ":starboard",
+    ":starboard_api_wrapper",
     "//base/test:run_all_unittests",
     "//base/test:test_support",
     "//chromecast/media/base",
     "//chromecast/media/cma/base",
     "//chromecast/public",
+    "//chromecast/starboard/chromecast/starboard_cast_api:cast_starboard_api_types",
     "//media",
     "//testing/gmock",
     "//testing/gtest",

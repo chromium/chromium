@@ -7,9 +7,12 @@ import("//media/media_options.gni")
 import("//testing/test.gni")
 
 declare_args() {
-  if (is_cast_desktop_build) {
-    # Desktop builds should set cast_static_media_lib_target explicitly if
-    # desired.
+  if (enable_starboard_media) {
+    cast_static_media_lib_target =
+        "//chromecast/starboard/media/media:starboard"
+  } else if (is_cast_desktop_build) {
+    # Non-starboard desktop builds should set cast_static_media_lib_target
+    # explicitly if desired.
     cast_static_media_lib_target = ""
   } else if (is_cast_audio_only) {
     cast_static_media_lib_target =

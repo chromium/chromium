@@ -64,7 +64,6 @@ cast_source_set("graphics") {
     ]
 
     deps += [
-      ":libcast_graphics_1.0",
       "//chromecast/base",
       "//chromecast/public",
       "//skia",
@@ -74,6 +73,12 @@ cast_source_set("graphics") {
       "//ui/gfx/geometry",
       "//ui/platform_window",
     ]
+
+    if (enable_starboard_graphics) {
+      deps += [ "//chromecast/starboard/graphics" ]
+    } else {
+      deps += [ ":libcast_graphics_1.0" ]
+    }
   }
 
   if (use_ozone) {

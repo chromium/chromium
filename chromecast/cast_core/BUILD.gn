@@ -21,6 +21,19 @@ cast_source_set("core_runtime_lib_simple") {
   ]
 }
 
+cast_source_set("core_runtime_lib_starboard") {
+  data_deps = [ "//chromecast:cast_shell_pak" ]
+
+  deps = [
+    "//chromecast:cast_shell_lib_base",
+    "//chromecast/base:default_create_sys_info",
+    "//chromecast/browser:prefs_simple",
+    "//chromecast/browser:simple_main_parts",
+    "//chromecast/cast_core/runtime/browser:browser_starboard",
+    "//chromecast/cast_core/runtime/renderer:renderer_simple",
+  ]
+}
+
 cast_source_set("cast_runtime_main") {
   sources = [ "cast_runtime_main.cc" ]
 
@@ -34,6 +47,14 @@ cast_executable("core_runtime_simple") {
   deps = [
     ":cast_runtime_main",
     ":core_runtime_lib_simple",
+    "//chromecast:chromecast_locales_pak",
+  ]
+}
+
+cast_executable("core_runtime_starboard") {
+  deps = [
+    ":cast_runtime_main",
+    ":core_runtime_lib_starboard",
     "//chromecast:chromecast_locales_pak",
   ]
 }

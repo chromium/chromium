@@ -41,7 +41,7 @@ source_set("starboard_adapter_static") {
   defines = [ "SB_IS_EVERGREEN" ]
 }
 
-if (starboard_graphics_is_shared || starboard_media_is_shared) {
+if (starboard_graphics_is_shared) {
   shared_library("starboard_adapter") {
     public_deps = [ ":starboard_adapter_static" ]
   }

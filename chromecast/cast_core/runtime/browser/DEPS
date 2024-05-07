@@ -9,6 +9,7 @@ include_rules = [
   "+chromecast/metrics",
   "+chromecast/service",
   "+chromecast/shared",
+  "+chromecast/starboard",
   "+components/cast",
   "+components/cast_receiver/browser",
   "+components/cast_streaming/browser",
