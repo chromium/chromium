@@ -57,6 +57,7 @@ enum PresenceDeviceType {
 // and this enum should be kept consistent with the action types defined there
 // and in //chromeos/ash/components/nearby/presence/nearby_presence_service.h.
 enum ActionType {
+  kCallTransferAction = 4,
   kActiveUnlockAction = 8,
   kNearbyShareAction = 9,
   kInstantTetheringAction = 10,

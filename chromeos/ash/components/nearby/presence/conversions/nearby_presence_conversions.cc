@@ -140,6 +140,8 @@ mojom::CredentialType ConvertCredentialTypeToMojom(
 
 mojom::ActionType ConvertActionTypeToMojom(uint32_t action) {
   switch (::nearby::presence::ActionBit(action)) {
+    case ::nearby::presence::ActionBit::kCallTransferAction:
+      return mojom::ActionType::kCallTransferAction;
     case ::nearby::presence::ActionBit::kActiveUnlockAction:
       return mojom::ActionType::kActiveUnlockAction;
     case ::nearby::presence::ActionBit::kNearbyShareAction:
