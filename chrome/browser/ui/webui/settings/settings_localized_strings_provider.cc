@@ -1429,10 +1429,7 @@ void AddSyncAccountControlStrings(content::WebUIDataSource* html_source) {
 #if !BUILDFLAG(IS_CHROMEOS_LACROS)
       {"syncAdvancedPageTitle", IDS_SETTINGS_NEW_SYNC_ADVANCED_PAGE_TITLE},
 #endif
-      // TODO(crbug.com/330680561): Use a settings specific string or combine
-      // all the string usages of "Verify it's you" in a single translatable
-      // string.
-      {"signinPaused", IDS_AVATAR_BUTTON_SIGNIN_PAUSED},
+      {"verifyAccount", IDS_PROFILES_VERIFY_ACCOUNT_BUTTON},
   };
 
   html_source->AddLocalizedStrings(kLocalizedStrings);

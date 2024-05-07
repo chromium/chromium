@@ -218,11 +218,12 @@
         <div id="signin-paused-buttons"
             hidden="[[!shouldShowSigninPausedButtons_(
                 syncStatus.signinPaused)]]">
-          <cr-button class="cr-button-gap" on-click="onSigninClick_">
-            $i18n{signinPaused}
-          </cr-button>
           <cr-button class="cr-button-gap" on-click="onSignoutClick_">
             $i18n{peopleSignOut}
+          </cr-button>
+          <cr-button class="action-button cr-button-gap"
+              on-click="onSigninClick_">
+            $i18n{verifyAccount}
           </cr-button>
         </div>
 
