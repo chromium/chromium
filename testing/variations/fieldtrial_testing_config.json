@@ -13052,10 +13052,10 @@
                     ]
                 },
                 {
-                    "name": "EnabledWithAllowAlwaysFirst",
+                    "name": "EnabledWithAllowOnEveryVisitAsFirstButton",
                     "params": {
                         "show_allow_always_as_first_button": "true",
-                        "use_stronger_prompt_language": "false"
+                        "use_stronger_prompt_language": "true"
                     },
                     "enable_features": [
                         "ActiveContentSettingExpiry",
@@ -13063,9 +13063,21 @@
                     ]
                 },
                 {
-                    "name": "EnabledWithAllowWhileVisitingFirst",
+                    "name": "EnabledWithAllowWhileVisitingAsFirstButton",
                     "params": {
                         "show_allow_always_as_first_button": "true",
+                        "use_stronger_prompt_language": "true",
+                        "use_while_visiting_language": "true"
+                    },
+                    "enable_features": [
+                        "ActiveContentSettingExpiry",
+                        "OneTimePermission"
+                    ]
+                },
+                {
+                    "name": "EnabledWithAllowWhileVisitingAsSecondButton",
+                    "params": {
+                        "show_allow_always_as_first_button": "false",
                         "use_stronger_prompt_language": "true",
                         "use_while_visiting_language": "true"
                     },
@@ -13086,13 +13098,13 @@
                 {
                     "name": "EnabledWithNormalLanguage",
                     "params": {
-                        "experimental_custom_invitation_arm_trigger_id": "tZMcjst2x0tK1KeaPYj0VbPmvceJ,bpnHbhSrK0tK1KeaPYj0RBC9zv7H,ZDjpUDFx20tK1KeaPYj0WbM2hHXy",
+                        "experimental_custom_invitation_arm_trigger_id": "eaHr88umj0tK1KeaPYj0YkhJEi1Y,8U6CRfLYU0tK1KeaPYj0RbTHRpNZ,qrWTeaJaK0tK1KeaPYj0XjFWabba",
                         "probability": "1",
                         "probability_vector": "0.5,1.0,1.0",
                         "prompt_disposition_reason_filter": "DefaultFallback",
                         "request_type_filter": "Geolocation,VideoCapture,AudioCapture",
                         "survey_display_time": "OnPromptResolved",
-                        "trigger_id": "xTNFzsgeH0tK1KeaPYj0VueEfPNg,rMwYPzTTj0tK1KeaPYj0XB5xXsRF,5XkVTH91f0tK1KeaPYj0SJhtw5pX",
+                        "trigger_id": "hCatPbt6B0tK1KeaPYj0WXqMjcvX,89BwvKxbJ0tK1KeaPYj0NtK7Ybn8,3fTPt7XMF0tK1KeaPYj0TXd8QN47",
                         "use_stronger_prompt_language": "false"
                     },
                     "enable_features": [
@@ -13147,31 +13159,41 @@
                     ]
                 },
                 {
-                    "name": "EnabledWithAllowAlwaysFirst",
+                    "name": "EnabledWithAllowOnEveryVisitAsFirstButton",
                     "params": {
+                        "experimental_custom_invitation_arm_trigger_id": "nDDiJNFrQ0tK1KeaPYj0R9NRSBEm,NBn5wUuPR0tK1KeaPYj0XpG6yifA,LvQ3ywBFy0tK1KeaPYj0X474g3gp",
+                        "probability": "1",
+                        "probability_vector": "0.5,1.0,1.0",
+                        "prompt_disposition_reason_filter": "DefaultFallback",
+                        "request_type_filter": "Geolocation,VideoCapture,AudioCapture",
                         "show_allow_always_as_first_button": "true",
-                        "use_stronger_prompt_language": "false"
+                        "survey_display_time": "OnPromptResolved",
+                        "trigger_id": "987xHCa770tK1KeaPYj0UE9kej8g,iTZrdKPCv0tK1KeaPYj0YTA7ooTP,Z5Gbxz1BA0tK1KeaPYj0ToLe1txW",
+                        "use_stronger_prompt_language": "true"
                     },
                     "enable_features": [
                         "ActiveContentSettingExpiry",
-                        "OneTimePermission"
-                    ],
-                    "disable_features": [
+                        "OneTimePermission",
                         "PermissionsPromptSurvey"
                     ]
                 },
                 {
-                    "name": "EnabledWithAllowWhileVisitingFirst",
+                    "name": "EnabledWithAllowWhileVisitingAsFirstButton",
                     "params": {
+                        "experimental_custom_invitation_arm_trigger_id": "7maHuvQzn0tK1KeaPYj0Q9rdJDda,KzHiqHzxP0tK1KeaPYj0XSzYX5y2,DXfHq8LEH0tK1KeaPYj0PMxrXHu1",
+                        "probability": "1",
+                        "probability_vector": "0.5,1.0,1.0",
+                        "prompt_disposition_reason_filter": "DefaultFallback",
+                        "request_type_filter": "Geolocation,VideoCapture,AudioCapture",
                         "show_allow_always_as_first_button": "true",
+                        "survey_display_time": "OnPromptResolved",
+                        "trigger_id": "bCKnj4pzu0tK1KeaPYj0UG86EvNX,anf8vbQh20tK1KeaPYj0QSBJzzY9,p9ppMFjWE0tK1KeaPYj0RB2a6d8D",
                         "use_stronger_prompt_language": "true",
                         "use_while_visiting_language": "true"
                     },
                     "enable_features": [
                         "ActiveContentSettingExpiry",
-                        "OneTimePermission"
-                    ],
-                    "disable_features": [
+                        "OneTimePermission",
                         "PermissionsPromptSurvey"
                     ]
                 }
