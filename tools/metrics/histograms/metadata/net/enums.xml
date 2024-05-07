@@ -2262,14 +2262,6 @@ Called by update_net_trust_anchors.py.-->
   <int value="4" label="NETWORK_IP_ADDRESS_CHANGED"/>
 </enum>
 
-<enum name="QuicProtocolErrorRetryStatus">
-  <int value="0" label="NoRetryExceededMaxRetries"/>
-  <int value="1" label="NoRetryHeaderReceived"/>
-  <int value="2" label="NoRetryNoAlternativeService"/>
-  <int value="3" label="RetryAltServiceBroken"/>
-  <int value="4" label="RetryAltServiceNotBroken"/>
-</enum>
-
 <enum name="QuicRstStreamErrorCodes">
   <int value="0" label="NO_ERROR"/>
   <int value="1" label="ERROR_PROCESSING_STREAM"/>

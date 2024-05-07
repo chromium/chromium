@@ -355,12 +355,6 @@ class NET_EXPORT_PRIVATE HttpNetworkTransaction
     kMaxValue = kRetryAltServiceNotBroken,
   };
 
-  void RecordQuicProtocolErrorMetrics(
-      QuicProtocolErrorRetryStatus retry_status);
-
-  void RecordMetricsIfError(int rv);
-  void RecordMetrics(int rv);
-
   static void SetProxyInfoInResponse(const ProxyInfo& proxy_info,
                                      HttpResponseInfo* response_info);
 
@@ -423,8 +417,8 @@ class NET_EXPORT_PRIVATE HttpNetworkTransaction
   std::string request_referrer_;
   std::string request_user_agent_;
   int request_reporting_upload_depth_ = 0;
-#endif
   base::TimeTicks start_timeticks_;
+#endif
 
   // The size in bytes of the buffer we use to drain the response body that
   // we want to throw away.  The response body is typically a small error
@@ -504,8 +498,6 @@ class NET_EXPORT_PRIVATE HttpNetworkTransaction
 
   // Set to true when the server required HTTP/1.1 fallback.
   bool http_1_1_was_required_ = false;
-
-  std::optional<base::TimeDelta> quic_protocol_error_retry_delay_;
 };
 
 }  // namespace net

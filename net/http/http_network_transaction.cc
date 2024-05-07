@@ -177,14 +177,6 @@ HttpNetworkTransaction::~HttpNetworkTransaction() {
   GenerateNetworkErrorLoggingReport(ERR_ABORTED);
 #endif  // BUILDFLAG(ENABLE_REPORTING)
 
-  if (quic_protocol_error_retry_delay_) {
-    base::UmaHistogramTimes(
-        IsGoogleHostWithAlpnH3(url_.host())
-            ? "Net.QuicProtocolErrorRetryDelayH3SupportedGoogleHost.Failure"
-            : "Net.QuicProtocolErrorRetryDelay.Failure",
-        *quic_protocol_error_retry_delay_);
-  }
-
   if (stream_.get()) {
     // TODO(mbelshe): The stream_ should be able to compute whether or not the
     //                stream should be kept alive.  No reason to compute here
@@ -225,8 +217,8 @@ int HttpNetworkTransaction::Start(const HttpRequestInfo* request_info,
   request_->extra_headers.GetHeader(HttpRequestHeaders::kUserAgent,
                                     &request_user_agent_);
   request_reporting_upload_depth_ = request_->reporting_upload_depth;
-#endif  // BUILDFLAG(ENABLE_REPORTING)
   start_timeticks_ = base::TimeTicks::Now();
+#endif  // BUILDFLAG(ENABLE_REPORTING)
 
   if (request_->idempotency == IDEMPOTENT ||
       (request_->idempotency == DEFAULT_IDEMPOTENCY &&
@@ -1452,15 +1444,6 @@ int HttpNetworkTransaction::DoReadBodyComplete(int result) {
 #if BUILDFLAG(ENABLE_REPORTING)
     GenerateNetworkErrorLoggingReport(result);
 #endif  // BUILDFLAG(ENABLE_REPORTING)
-
-    if (result == OK && quic_protocol_error_retry_delay_) {
-      base::UmaHistogramTimes(
-          IsGoogleHostWithAlpnH3(url_.host())
-              ? "Net.QuicProtocolErrorRetryDelayH3SupportedGoogleHost.Success"
-              : "Net.QuicProtocolErrorRetryDelay.Success",
-          *quic_protocol_error_retry_delay_);
-      quic_protocol_error_retry_delay_.reset();
-    }
   }
 
   // Clear these to avoid leaving around old state.
@@ -1813,24 +1796,12 @@ int HttpNetworkTransaction::HandleIOError(int error) {
       error = OK;
       break;
     case RetryReason::kQuicProtocolError:
-      if (GetResponseHeaders() != nullptr) {
+      if (HasExceededMaxRetries() || GetResponseHeaders() != nullptr ||
+          !stream_->GetAlternativeService(&retried_alternative_service_)) {
         // If the response headers have already been received and passed up
-        // then the request can not be retried.
-        RecordQuicProtocolErrorMetrics(
-            QuicProtocolErrorRetryStatus::kNoRetryHeaderReceived);
-        break;
-      }
-      if (!stream_->GetAlternativeService(&retried_alternative_service_)) {
-        // If there was no alternative service used for this request, then there
-        // is no alternative service to be disabled.  Note: We expect this
-        // doesn't happen. But records the UMA just in case.
-        RecordQuicProtocolErrorMetrics(
-            QuicProtocolErrorRetryStatus::kNoRetryNoAlternativeService);
-        break;
-      }
-      if (HasExceededMaxRetries()) {
-        RecordQuicProtocolErrorMetrics(
-            QuicProtocolErrorRetryStatus::kNoRetryExceededMaxRetries);
+        // then the request can not be retried. Also, if there was no
+        // alternative service used for this request, then there is no
+        // alternative service to be disabled.
         break;
       }
 
@@ -1839,8 +1810,6 @@ int HttpNetworkTransaction::HandleIOError(int error) {
         // If the alternative service was marked as broken while the request
         // was in flight, retry the request which will not use the broken
         // alternative service.
-        RecordQuicProtocolErrorMetrics(
-            QuicProtocolErrorRetryStatus::kRetryAltServiceBroken);
         net_log_.AddEventWithNetErrorCode(
             NetLogEventType::HTTP_TRANSACTION_RESTART_AFTER_ERROR, error);
         retry_attempts_++;
@@ -1852,8 +1821,6 @@ int HttpNetworkTransaction::HandleIOError(int error) {
         // Disable alternative services for this request and retry it. If the
         // retry succeeds, then the alternative service will be marked as
         // broken then.
-        RecordQuicProtocolErrorMetrics(
-            QuicProtocolErrorRetryStatus::kRetryAltServiceNotBroken);
         enable_alternative_services_ = false;
         net_log_.AddEventWithNetErrorCode(
             NetLogEventType::HTTP_TRANSACTION_RESTART_AFTER_ERROR, error);
@@ -1900,8 +1867,8 @@ void HttpNetworkTransaction::ResetStateForAuthRestart() {
   net_error_details_.quic_connection_error = quic::QUIC_NO_ERROR;
 #if BUILDFLAG(ENABLE_REPORTING)
   network_error_logging_report_generated_ = false;
-#endif  // BUILDFLAG(ENABLE_REPORTING)
   start_timeticks_ = base::TimeTicks::Now();
+#endif  // BUILDFLAG(ENABLE_REPORTING)
 }
 
 void HttpNetworkTransaction::CacheNetErrorDetailsAndResetStream() {
@@ -1942,10 +1909,6 @@ void HttpNetworkTransaction::ResetConnectionAndRequestForResend(
           ? "Net.NetworkTransactionH3SupportedGoogleHost.RetryReason"
           : "Net.NetworkTransaction.RetryReason",
       retry_reason);
-  if (retry_reason == RetryReason::kQuicProtocolError) {
-    quic_protocol_error_retry_delay_ =
-        base::TimeTicks::Now() - start_timeticks_;
-  }
 
   if (stream_.get()) {
     stream_->Close(true);
@@ -1961,8 +1924,8 @@ void HttpNetworkTransaction::ResetConnectionAndRequestForResend(
 #if BUILDFLAG(ENABLE_REPORTING)
   // Reset for new request.
   network_error_logging_report_generated_ = false;
-#endif  // BUILDFLAG(ENABLE_REPORTING)
   start_timeticks_ = base::TimeTicks::Now();
+#endif  // BUILDFLAG(ENABLE_REPORTING)
 
   ResetStateForRestart();
 }
@@ -2096,45 +2059,6 @@ bool HttpNetworkTransaction::ContentEncodingsValid() const {
   }
 
   return result;
-}
-
-void HttpNetworkTransaction::RecordQuicProtocolErrorMetrics(
-    QuicProtocolErrorRetryStatus retry_status) {
-  std::string histogram = "Net.QuicProtocolError";
-  if (IsGoogleHostWithAlpnH3(url_.host())) {
-    histogram += "H3SupportedGoogleHost";
-  }
-  base::UmaHistogramEnumeration(histogram + ".RetryStatus", retry_status);
-
-  if (!stream_) {
-    return;
-  }
-  std::optional<HttpStream::QuicErrorDetails> error_details =
-      stream_->GetQuicErrorDetails();
-  if (!error_details) {
-    return;
-  }
-  switch (retry_status) {
-    case QuicProtocolErrorRetryStatus::kNoRetryExceededMaxRetries:
-      histogram += ".NoRetryExceededMaxRetries";
-      break;
-    case QuicProtocolErrorRetryStatus::kNoRetryHeaderReceived:
-      histogram += ".NoRetryHeaderReceived";
-      break;
-    case QuicProtocolErrorRetryStatus::kNoRetryNoAlternativeService:
-      histogram += ".NoRetryNoAlternativeService";
-      break;
-    case QuicProtocolErrorRetryStatus::kRetryAltServiceBroken:
-      histogram += ".RetryAltServiceBroken";
-      break;
-    case QuicProtocolErrorRetryStatus::kRetryAltServiceNotBroken:
-      histogram += ".RetryAltServiceNotBroken";
-      break;
-  }
-  base::UmaHistogramSparse(histogram + ".QuicErrorCode",
-                           error_details->connection_error);
-  base::UmaHistogramSparse(histogram + ".QuicStreamErrorCode",
-                           error_details->stream_error);
 }
 
 // static
