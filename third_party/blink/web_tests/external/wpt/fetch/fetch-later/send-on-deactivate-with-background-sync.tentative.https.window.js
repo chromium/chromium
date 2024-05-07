@@ -1,3 +1,5 @@
+// META: script=/resources/testdriver.js
+// META: script=/resources/testdriver-vendor.js
 // META: script=/common/dispatcher/dispatcher.js
 // META: script=/common/get-host-info.sub.js
 // META: script=/common/utils.js
@@ -8,19 +10,9 @@
 
 'use strict';
 
-/**
- * This file cannot be upstreamed to external/wpt/ until:
- * `internals.setPermission()` usage is replaced with a WebDriver API.
- */
-
-// BackgroundSync needs to be explicitly enabled in Web Tests, as the test
-// runner uses a different permission manager. See
-// https://source.chromium.org/chromium/chromium/src/+/main:content/web_test/browser/web_test_permission_manager.h;l=138-140;drc=f616c54d73c8eea9db5f7e567611711897651b66
 async function setBackgroundSyncEnabled(enabled) {
   const status = enabled ? 'granted' : 'denied';
-  const origin = location.origin;
-  await internals.setPermission(
-      {name: 'background-sync'}, status, origin, origin);
+  await test_driver.set_permission({name: 'background-sync'}, status);
 }
 
 parallelPromiseTest(async t => {
