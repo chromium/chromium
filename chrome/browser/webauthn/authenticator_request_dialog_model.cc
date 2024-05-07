@@ -691,13 +691,22 @@ void AuthenticatorRequestDialogController::
         model_->mechanisms[*model_->priority_mechanism_index];
     const Mechanism::Credential* cred =
         absl::get_if<Mechanism::Credential>(&mechanism.type);
+
+    // If the authenticator will show its own confirmation then we don't want to
+    // duplicate it.
+    const bool authenticator_shows_own_confirmation =
+        cred &&
+        cred->value().source == device::AuthenticatorType::kICloudKeychain;
+
     if (cred != nullptr &&
         // Credentials on phones should never be triggered automatically.
         (cred->value().source == device::AuthenticatorType::kPhone ||
+         // In the case of an empty allow list, the user should be able to see
+         // the account that they're signing in with. So either
+         // `kSelectPriorityMechanism` is used or else the authenticator shows
+         // their own UI.
          (transport_availability_.has_empty_allow_list &&
-          // iCloud Keychain has its own confirmation UI and we don't want to
-          // duplicate it.
-          cred->value().source != device::AuthenticatorType::kICloudKeychain) ||
+          !authenticator_shows_own_confirmation) ||
          // Never auto-trigger macOS profile credentials without either a local
          // biometric or a UV requirement because, otherwise, there'll not be
          // *any* UI.
