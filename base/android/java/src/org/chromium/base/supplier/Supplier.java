@@ -4,19 +4,13 @@
 
 package org.chromium.base.supplier;
 
-import androidx.annotation.Nullable;
-
 /**
  * Based on Java 8's java.util.function.Supplier.
  * Similar to Callable<T>, but without a checked Exception and with #hasValue().
  *
  * @param <T> Return type.
  */
-public interface Supplier<T> {
-    /** Returns the value currently held or <code>null</code> when none is held. */
-    @Nullable
-    T get();
-
+public interface Supplier<T> extends java.util.function.Supplier<T> {
     /**
      * Returns whether the supplier holds a value currently.
      *
