@@ -18,6 +18,7 @@
 #include "components/bookmarks/browser/core_bookmark_model.h"
 #include "components/keyed_service/core/keyed_service.h"
 #include "components/visited_url_ranking/internal/session_url_visit_data_fetcher.h"
+#include "components/visited_url_ranking/internal/transformer/bookmarks_url_visit_aggregates_transformer.h"
 #include "components/visited_url_ranking/internal/visited_url_ranking_service_impl.h"
 #include "components/visited_url_ranking/public/url_visit_aggregates_transformer.h"
 #include "components/visited_url_ranking/public/url_visit_data_fetcher.h"
@@ -48,6 +49,7 @@ VisitedURLRankingServiceFactory::VisitedURLRankingServiceFactory()
               .WithAshInternals(ProfileSelection::kNone)
               .Build()) {
   DependsOn(SessionSyncServiceFactory::GetInstance());
+  DependsOn(BookmarkModelFactory::GetInstance());
 }
 
 VisitedURLRankingServiceFactory::~VisitedURLRankingServiceFactory() = default;
@@ -65,11 +67,19 @@ VisitedURLRankingServiceFactory::BuildServiceInstanceForBrowserContext(
                           std::make_unique<SessionURLVisitDataFetcher>(sss));
   }
 
+  // TODO(crbug.com/329242209): Add various aggregate transformers (e.g,
+  // shopping) to the service's map of supported transformers.
   std::map<URLVisitAggregatesTransformType,
            std::unique_ptr<URLVisitAggregatesTransformer>>
       transformers = {};
-  // TODO(crbug.com/329242209): Add various aggregate transformers (e.g,
-  // bookmarks, shopping) to the service's map of supported transformers.
+  auto* bookmark_model = BookmarkModelFactory::GetForBrowserContext(profile);
+  if (bookmark_model) {
+    auto bookmarks_transformer =
+        std::make_unique<BookmarksURLVisitAggregatesTransformer>(
+            bookmark_model);
+    transformers.emplace(URLVisitAggregatesTransformType::kBookmarkData,
+                         std::move(bookmarks_transformer));
+  }
 
   return std::make_unique<VisitedURLRankingServiceImpl>(
       std::move(data_fetchers), std::move(transformers));

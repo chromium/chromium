@@ -7,6 +7,7 @@
 
 #include <memory>
 #include <optional>
+#include <set>
 #include <vector>
 
 #include "base/functional/callback.h"
@@ -101,6 +102,10 @@ struct URLVisitAggregate {
   URLVisitAggregate(URLVisitAggregate&& other);
   URLVisitAggregate& operator=(URLVisitAggregate&& other);
   ~URLVisitAggregate();
+
+  // Returns a set of associated visit URLs present in the data provided by the
+  // various fetchers that participated in constructing the aggregate object.
+  std::set<const GURL*> GetAssociatedURLs() const;
 
   // A map of aggregate tab related characteristics associated with the visit as
   // provided by a given source.

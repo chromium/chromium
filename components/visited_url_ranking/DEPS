@@ -1,6 +1,7 @@
 include_rules = [
+  "+components/bookmarks/browser",
   "+components/keyed_service/core",
   "+components/sessions/core",
   "+components/sync_device_info",
-  "+components/sync_sessions"
+  "+components/sync_sessions",
 ]

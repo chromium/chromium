@@ -4,6 +4,7 @@
 
 #include "components/visited_url_ranking/public/url_visit.h"
 
+#include <set>
 #include <utility>
 
 namespace visited_url_ranking {
@@ -31,6 +32,21 @@ URLVisitAggregate::URLVisitAggregate(URLVisitAggregate&& other) = default;
 
 URLVisitAggregate& URLVisitAggregate::operator=(URLVisitAggregate&& other) =
     default;
+
+std::set<const GURL*> URLVisitAggregate::GetAssociatedURLs() const {
+  std::set<const GURL*> urls = {};
+  for (const auto& fetcher_entry : fetcher_data_map) {
+    if (std::holds_alternative<URLVisitAggregate::TabData>(
+            fetcher_entry.second)) {
+      const auto& tab_data =
+          std::get<URLVisitAggregate::TabData>(fetcher_entry.second);
+      urls.insert(&tab_data.last_active_tab.visit.url);
+    }
+    // TODO(crbug.com/330580109): Add support for additional fetcher data types
+    // (e.g., TabModel, History).
+  }
+  return urls;
+}
 
 URLVisitAggregate::Tab::Tab(const int32_t id_arg,
                             URLVisit visit_arg,
