@@ -91,20 +91,6 @@ std::string BootTypeToString(mojom::BootType boot_type) {
   return "";
 }
 
-const char* LowLatencyStylusLibraryTypeToString(
-    mojom::LowLatencyStylusLibraryType library_type) {
-  switch (library_type) {
-    case mojom::LowLatencyStylusLibraryType::kUnsupported:
-      break;
-    case mojom::LowLatencyStylusLibraryType::kCPU:
-      return ".CPU";
-    case mojom::LowLatencyStylusLibraryType::kGPU:
-      return ".GPU";
-  }
-  NOTREACHED();
-  return "";
-}
-
 const char* DnsQueryToString(mojom::ArcDnsQuery query) {
   switch (query) {
     case mojom::ArcDnsQuery::OTHER_HOST_NAME:
@@ -686,8 +672,7 @@ void ArcMetricsService::ReportAnr(mojom::AnrPtr anr) {
 
 void ArcMetricsService::ReportLowLatencyStylusLibApiUsage(
     mojom::LowLatencyStylusLibApiId api_id) {
-  DCHECK_CALLED_ON_VALID_THREAD(thread_checker_);
-  UMA_HISTOGRAM_ENUMERATION("Arc.LowLatencyStylusLibraryApisCounter", api_id);
+  // Deprecated: This will be removed once all callers are removed.
 }
 
 void ArcMetricsService::ReportVpnServiceBuilderCompatApiUsage(
@@ -699,12 +684,7 @@ void ArcMetricsService::ReportVpnServiceBuilderCompatApiUsage(
 
 void ArcMetricsService::ReportLowLatencyStylusLibPredictionTarget(
     mojom::LowLatencyStylusLibPredictionTargetPtr prediction_target) {
-  DCHECK_CALLED_ON_VALID_THREAD(thread_checker_);
-  base::UmaHistogramCounts100(
-      base::StrCat(
-          {"Arc.LowLatencyStylusLibrary.PredictionTarget",
-           LowLatencyStylusLibraryTypeToString(prediction_target->type)}),
-      prediction_target->target);
+  // Deprecated: This will be removed once all callers are removed.
 }
 
 void ArcMetricsService::ReportEntireFixupMetrics(base::TimeDelta duration,
