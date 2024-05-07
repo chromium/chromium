@@ -33,13 +33,18 @@ const int kScreenAICleanUpDelayInDays = 30;
 const char kMinExpectedVersion[] = "123.1";
 
 bool IsDeviceCompatible() {
+#if BUILDFLAG(IS_LINUX)
+#if defined(ARCH_CPU_X86_FAMILY)
   // Check if the CPU has the required instruction set to run the Screen AI
   // library.
-#if BUILDFLAG(IS_LINUX)
-  if (!base::CPU().has_sse41()) {
+  static const bool has_sse41 = base::CPU().has_sse41();
+#else
+  static constexpr bool has_sse41 = false;
+#endif  // defined(ARCH_CPU_X86_FAMILY)
+  if (!has_sse41) {
     return false;
   }
-#endif
+#endif  // BUILDFLAG(IS_LINUX)
   return true;
 }
 
