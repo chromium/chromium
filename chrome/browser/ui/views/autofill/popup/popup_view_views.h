@@ -127,6 +127,8 @@ class PopupViewViews : public PopupBaseView,
   void OnWidgetVisibilityChanged(views::Widget* widget, bool visible) override;
 
   // PopupSearchBarView::Delegate:
+  void SearchBarOnInputChanged(const std::u16string& text) override;
+  void SearchBarOnFocusLost() override;
   bool SearchBarHandleKeyPressed(const ui::KeyEvent& event) override;
 
  private:
@@ -236,13 +238,6 @@ class PopupViewViews : public PopupBaseView,
   // false for the suggestion as it indicates that the suggestion is a manual
   // fallback suggestion.
   bool CanOpenSubPopupSuggestion(const Suggestion& suggestion);
-
-  // Callback passed to the search bar (if enabled). Hides the popup.
-  void OnSearchBarFocusLost();
-
-  // Callback passed to the search bar (if enabled). Updates the controller
-  // filter with the `query` argument.
-  void OnSearchBarInputChanged(const std::u16string& query);
 
   // Attempts to select the content cell of the row with the currently open
   // sub-popup. This closes the sub-popup and has the effect of going one menu

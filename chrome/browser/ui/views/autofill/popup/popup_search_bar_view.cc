@@ -21,14 +21,9 @@
 
 namespace autofill {
 
-PopupSearchBarView::PopupSearchBarView(
-    const std::u16string& placeholder,
-    OnInputChangedCallback on_input_changed_callback,
-    base::RepeatingClosure on_focus_lost_callback,
-    Delegate& delegate)
-    : on_input_changed_callback_(std::move(on_input_changed_callback)),
-      on_focus_lost_callback_(std::move(on_focus_lost_callback)),
-      delegate_(delegate) {
+PopupSearchBarView::PopupSearchBarView(const std::u16string& placeholder,
+                                       Delegate& delegate)
+    : delegate_(delegate) {
   ChromeLayoutProvider* layout_provider = ChromeLayoutProvider::Get();
 
   SetLayoutManager(std::make_unique<views::FlexLayout>())
@@ -89,7 +84,7 @@ void PopupSearchBarView::RemovedFromWidget() {
 void PopupSearchBarView::OnDidChangeFocus(views::View* focused_before,
                                           views::View* focused_now) {
   if (focused_now != input_ && focused_now != clear_) {
-    on_focus_lost_callback_.Run();
+    delegate_->SearchBarOnFocusLost();
   }
 }
 
@@ -114,7 +109,10 @@ PopupSearchBarView::~PopupSearchBarView() = default;
 void PopupSearchBarView::OnInputChanged() {
   input_change_notification_timer_.Start(
       FROM_HERE, kInputChangeCallbackDelay,
-      base::BindOnce(on_input_changed_callback_, input_->GetText()));
+      // `delegate_` is expected to outlive `this`, the timer will either be
+      // triggered when it is alive or canceled.
+      base::BindOnce(&Delegate::SearchBarOnInputChanged,
+                     base::Unretained(delegate_), input_->GetText()));
 }
 
 BEGIN_METADATA(PopupSearchBarView)

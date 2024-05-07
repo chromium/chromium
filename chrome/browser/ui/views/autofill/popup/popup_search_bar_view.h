@@ -37,6 +37,13 @@ class PopupSearchBarView : public views::View,
 
   class Delegate {
    public:
+    // Called when text in the textfield changes. Calls are throttled with
+    // a delay of kInputChangeCallbackDelay to avoid excessive triggering.
+    virtual void SearchBarOnInputChanged(const std::u16string& text) = 0;
+
+    // Called when the controls (textfield and clear button) lose focus.
+    virtual void SearchBarOnFocusLost() = 0;
+
     // Keyboard events from the textfield are passed to this method first.
     // The delegate returns `true` if the event was handled, this suppresses
     // the default behaviour in the textfield. As an example, the LEFT/RIGHT
@@ -54,10 +61,7 @@ class PopupSearchBarView : public views::View,
   static constexpr base::TimeDelta kInputChangeCallbackDelay =
       base::Milliseconds(250);
 
-  PopupSearchBarView(const std::u16string& placeholder,
-                     OnInputChangedCallback on_input_changed_callback,
-                     base::RepeatingClosure on_focus_lost_callback,
-                     Delegate& delegate);
+  PopupSearchBarView(const std::u16string& placeholder, Delegate& delegate);
   PopupSearchBarView(const PopupSearchBarView&) = delete;
   PopupSearchBarView& operator=(const PopupSearchBarView&) = delete;
   ~PopupSearchBarView() override;
@@ -84,10 +88,6 @@ class PopupSearchBarView : public views::View,
 
  private:
   void OnInputChanged();
-
-  // TODO(b/325246516): Move these callbacks to Delegate.
-  OnInputChangedCallback on_input_changed_callback_;
-  base::RepeatingClosure on_focus_lost_callback_;
 
   const raw_ref<Delegate> delegate_;
 

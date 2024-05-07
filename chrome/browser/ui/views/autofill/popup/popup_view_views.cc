@@ -696,6 +696,25 @@ void PopupViewViews::OnWidgetVisibilityChanged(views::Widget* widget,
       feature_engagement::kIPHAutofillCreditCardBenefitFeature);
 }
 
+void PopupViewViews::SearchBarOnInputChanged(const std::u16string& query) {
+  if (controller_) {
+    controller_->SetFilter(
+        query.empty()
+            ? std::nullopt
+            : std::optional(AutofillPopupController::SuggestionFilter(query)));
+  }
+}
+
+void PopupViewViews::SearchBarOnFocusLost() {
+  // Deactivate to ensure `HasFocus()` won't return `true`.
+  if (GetWidget()) {
+    GetWidget()->Deactivate();
+  }
+  if (controller_) {
+    controller_->Hide(SuggestionHidingReason::kFocusChanged);
+  }
+}
+
 bool PopupViewViews::SearchBarHandleKeyPressed(const ui::KeyEvent& event) {
   if (!controller_) {
     return false;
@@ -782,12 +801,7 @@ void PopupViewViews::InitViews(PopupViewSearchBarConfig search_bar_config) {
 
   if (search_bar_config.enabled) {
     search_bar_ = AddChildView(std::make_unique<PopupSearchBarView>(
-        search_bar_config.placeholder,
-        base::BindRepeating(&PopupViewViews::OnSearchBarInputChanged,
-                            base::Unretained(this)),
-        base::BindRepeating(&PopupViewViews::OnSearchBarFocusLost,
-                            base::Unretained(this)),
-        *this));
+        search_bar_config.placeholder, *this));
     search_bar_->SetProperty(views::kMarginsKey,
                              gfx::Insets::VH(GetContentsVerticalPadding(), 0));
     AddChildView(std::make_unique<PopupSeparatorView>(/*vertical_padding=*/0));
@@ -1188,15 +1202,6 @@ bool PopupViewViews::CanOpenSubPopupSuggestion(const Suggestion& suggestion) {
   return !suggestion.is_acceptable && !suggestion.apply_deactivated_style;
 }
 
-void PopupViewViews::OnSearchBarInputChanged(const std::u16string& query) {
-  if (controller_) {
-    controller_->SetFilter(
-        query.empty()
-            ? std::nullopt
-            : std::optional(AutofillPopupController::SuggestionFilter(query)));
-  }
-}
-
 bool PopupViewViews::SelectParentPopupContentCell() {
   if (!row_with_open_sub_popup_) {
     return false;
@@ -1211,16 +1216,6 @@ bool PopupViewViews::SelectParentPopupContentCell() {
                   AutoselectFirstSuggestion(false),
                   /*suppress_popup=*/true);
   return true;
-}
-
-void PopupViewViews::OnSearchBarFocusLost() {
-  // Deactivate to ensure `HasFocus()` won't return `true`.
-  if (GetWidget()) {
-    GetWidget()->Deactivate();
-  }
-  if (controller_) {
-    controller_->Hide(SuggestionHidingReason::kFocusChanged);
-  }
 }
 
 base::WeakPtr<AutofillPopupView> PopupViewViews::GetWeakPtr() {

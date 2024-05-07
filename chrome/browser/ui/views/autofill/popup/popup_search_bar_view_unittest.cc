@@ -30,6 +30,11 @@ class MockDelegate : public PopupSearchBarView::Delegate {
  public:
   MockDelegate() = default;
   ~MockDelegate() override = default;
+  MOCK_METHOD(void,
+              SearchBarOnInputChanged,
+              (const std::u16string& text),
+              (override));
+  MOCK_METHOD(void, SearchBarOnFocusLost, (), (override));
   MOCK_METHOD(bool,
               SearchBarHandleKeyPressed,
               (const ui::KeyEvent& event),
@@ -66,10 +71,8 @@ class PopupSearchBarViewTest : public ChromeViewsTestBase {
 };
 
 TEST_F(PopupSearchBarViewTest, SetsFocusOnTextfield) {
-  PopupSearchBarView* view =
-      widget().SetContentsView(std::make_unique<PopupSearchBarView>(
-          u"placeholder", /*on_input_changed_callback=*/base::DoNothing(),
-          /*on_focus_lost_callback=*/base::DoNothing(), delegate()));
+  PopupSearchBarView* view = widget().SetContentsView(
+      std::make_unique<PopupSearchBarView>(u"placeholder", delegate()));
   widget().Show();
   view->Focus();
 
@@ -80,30 +83,24 @@ TEST_F(PopupSearchBarViewTest, SetsFocusOnTextfield) {
 }
 
 TEST_F(PopupSearchBarViewTest, OnFocusLostCalled) {
-  base::MockRepeatingClosure mock_on_focus_lost_callback;
-  PopupSearchBarView* view =
-      widget().SetContentsView(std::make_unique<PopupSearchBarView>(
-          u"placeholder", /*on_input_changed_callback=*/base::DoNothing(),
-          mock_on_focus_lost_callback.Get(), delegate()));
+  PopupSearchBarView* view = widget().SetContentsView(
+      std::make_unique<PopupSearchBarView>(u"placeholder", delegate()));
   widget().Show();
   view->Focus();
   ASSERT_NE(widget().GetFocusManager()->GetFocusedView(), nullptr);
 
-  EXPECT_CALL(mock_on_focus_lost_callback, Run);
+  EXPECT_CALL(delegate(), SearchBarOnFocusLost);
   widget().GetFocusManager()->SetFocusedView(nullptr);
 }
 
 TEST_F(PopupSearchBarViewTest, OnInputChangedIsCalledAfterDelay) {
-  base::MockRepeatingCallback<void(const std::u16string&)> input_callback;
-  auto view = std::make_unique<PopupSearchBarView>(
-      u"placeholder", input_callback.Get(),
-      /*on_focus_lost_callback=*/base::DoNothing(), delegate());
+  auto view = std::make_unique<PopupSearchBarView>(u"placeholder", delegate());
 
   MockFunction<void()> check;
   {
     InSequence s;
     EXPECT_CALL(check, Call);
-    EXPECT_CALL(input_callback, Run(Eq(u"input text")));
+    EXPECT_CALL(delegate(), SearchBarOnInputChanged(Eq(u"input text")));
   }
 
   view->SetInputTextForTesting(u"input text");
@@ -115,16 +112,13 @@ TEST_F(PopupSearchBarViewTest, OnInputChangedIsCalledAfterDelay) {
 }
 
 TEST_F(PopupSearchBarViewTest, OnInputChangedCallbackIsThrottled) {
-  base::MockRepeatingCallback<void(const std::u16string&)> input_callback;
-  auto view = std::make_unique<PopupSearchBarView>(
-      u"placeholder", input_callback.Get(),
-      /*on_focus_lost_callback=*/base::DoNothing(), delegate());
+  auto view = std::make_unique<PopupSearchBarView>(u"placeholder", delegate());
 
   MockFunction<void()> check;
   {
     InSequence s;
     EXPECT_CALL(check, Call);
-    EXPECT_CALL(input_callback, Run(std::u16string(u"input text 2")));
+    EXPECT_CALL(delegate(), SearchBarOnInputChanged(Eq(u"input text 2")));
   }
 
   view->SetInputTextForTesting(u"input text");
@@ -139,11 +133,8 @@ TEST_F(PopupSearchBarViewTest, OnInputChangedCallbackIsThrottled) {
 // TODO(b/338934966): Enable when key events suppressing in tests is fixed.
 #if !BUILDFLAG(IS_WIN)
 TEST_F(PopupSearchBarViewTest, KeyPressedFromTextfieldPassedToDelegateFirst) {
-  base::MockRepeatingCallback<void(const std::u16string&)> input_callback;
-  PopupSearchBarView* view =
-      widget().SetContentsView(std::make_unique<PopupSearchBarView>(
-          u"placeholder", input_callback.Get(),
-          /*on_focus_lost_callback=*/base::DoNothing(), delegate()));
+  PopupSearchBarView* view = widget().SetContentsView(
+      std::make_unique<PopupSearchBarView>(u"placeholder", delegate()));
   widget().Show();
   view->Focus();
 
@@ -153,7 +144,7 @@ TEST_F(PopupSearchBarViewTest, KeyPressedFromTextfieldPassedToDelegateFirst) {
         return event.key_code() == ui::VKEY_A ? true : false;
       });
   // As "a" is suppressed, only "bc" is expected.
-  EXPECT_CALL(input_callback, Run(std::u16string(u"bc")));
+  EXPECT_CALL(delegate(), SearchBarOnInputChanged(Eq(u"bc")));
 
   generator().PressAndReleaseKey(ui::VKEY_A);
   generator().PressAndReleaseKey(ui::VKEY_B);
