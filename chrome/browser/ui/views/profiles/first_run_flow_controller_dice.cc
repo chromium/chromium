@@ -7,6 +7,7 @@
 #include <memory>
 #include <utility>
 
+#include "base/command_line.h"
 #include "base/functional/bind.h"
 #include "base/functional/callback.h"
 #include "base/functional/callback_forward.h"
@@ -20,6 +21,7 @@
 #include "chrome/browser/enterprise/util/managed_browser_utils.h"
 #include "chrome/browser/policy/cloud/user_policy_signin_service.h"
 #include "chrome/browser/policy/cloud/user_policy_signin_service_factory.h"
+#include "chrome/browser/prefs/incognito_mode_prefs.h"
 #include "chrome/browser/profiles/profile.h"
 #include "chrome/browser/search_engine_choice/search_engine_choice_dialog_service.h"
 #include "chrome/browser/search_engine_choice/search_engine_choice_dialog_service_factory.h"
@@ -48,6 +50,16 @@ constexpr base::TimeDelta kDefaultBrowserCheckTimeout = base::Seconds(2);
 
 const signin_metrics::AccessPoint kAccessPoint =
     signin_metrics::AccessPoint::ACCESS_POINT_FOR_YOU_FRE;
+
+enum class ShowDefaultBrowserStep {
+  // The default browser step should be shown as appropriate.
+  kYes,
+  // The default browser step should be skipped.
+  kNo,
+  // The default browser step should be shown even if we normally should skip
+  // it, example because of policies or the current default state.
+  kForce
+};
 
 bool IsDefaultBrowserDisabledByPolicy() {
   const PrefService::Preference* pref =
@@ -172,9 +184,9 @@ class DefaultBrowserStepController : public ProfileManagementStepController {
   void Show(base::OnceCallback<void(bool success)> step_shown_callback,
             bool reset_state) override {
     CHECK(reset_state);
-    WithDefaultBrowserStep show_screen = ShouldShowScreen();
+    const ShowDefaultBrowserStep show_screen = ShouldShowScreen();
 
-    if (show_screen == WithDefaultBrowserStep::kNo) {
+    if (show_screen == ShowDefaultBrowserStep::kNo) {
       // Forward the callback since the step is skipped.
       std::move(step_completed_callback_).Run(std::move(step_shown_callback));
       return;
@@ -191,7 +203,7 @@ class DefaultBrowserStepController : public ProfileManagementStepController {
 
     // If the feature is set to forced, show the step even if it's already
     // the default browser.
-    if (show_screen == WithDefaultBrowserStep::kForced) {
+    if (show_screen == ShowDefaultBrowserStep::kForce) {
       std::move(show_default_browser_screen_callback_).Run();
       return;
     }
@@ -297,7 +309,7 @@ class DefaultBrowserStepController : public ProfileManagementStepController {
     }
   }
 
-  WithDefaultBrowserStep ShouldShowScreen() {
+  ShowDefaultBrowserStep ShouldShowScreen() const {
     bool should_show_default_browser_step =
         // Check for policies.
         !IsDefaultBrowserDisabledByPolicy() &&
@@ -305,21 +317,22 @@ class DefaultBrowserStepController : public ProfileManagementStepController {
         shell_integration::CanSetAsDefaultBrowser();
 
     if (!should_show_default_browser_step) {
-      return WithDefaultBrowserStep::kNo;
+      return ShowDefaultBrowserStep::kNo;
     }
 
-    // If the feature is enabled, the default browser step should be shown only
-    // on Windows. If it's forced, it should be shown on the other platforms for
-    // testing.
+    // The default browser step should be shown only on Windows. We only show it
+    // on Windows because we display a dialog before the FRE on MacOS and Linux
+    // to ask the user about the default browser. If it's forced, it should be
+    // shown on the other platforms for testing.
 #if BUILDFLAG(IS_WIN)
-    return kForYouFreWithDefaultBrowserStep.Get();
+    return ShowDefaultBrowserStep::kYes;
 #else
     // Non-Windows platforms should not show this unless forced (e.g.
     // command line)
-    bool force_default_browser_step = kForYouFreWithDefaultBrowserStep.Get() ==
-                                      WithDefaultBrowserStep::kForced;
-    return force_default_browser_step ? WithDefaultBrowserStep::kForced
-                                      : WithDefaultBrowserStep::kNo;
+    base::CommandLine* command_line = base::CommandLine::ForCurrentProcess();
+    return command_line->HasSwitch(switches::kForceFreDefaultBrowserStep)
+               ? ShowDefaultBrowserStep::kForce
+               : ShowDefaultBrowserStep::kNo;
 #endif  // BUILDFLAG(IS_WIN)
   }
 

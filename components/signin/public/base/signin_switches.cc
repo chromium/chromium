@@ -33,6 +33,11 @@ BASE_FEATURE(kUseConsentLevelSigninForLegacyAccountEmailPref,
              base::FEATURE_ENABLED_BY_DEFAULT);
 #endif
 
+#if BUILDFLAG(ENABLE_DICE_SUPPORT)
+// Force enable the default browser step in the first run experience on Desktop.
+const char kForceFreDefaultBrowserStep[] = "force-fre-default-browser-step";
+#endif
+
 // Clears the token service before using it. This allows simulating the
 // expiration of credentials during testing.
 const char kClearTokenService[] = "clear-token-service";
@@ -196,30 +201,6 @@ BASE_FEATURE(kUpdateMetricsServicesStateInRestore,
 BASE_FEATURE(kForYouFre, "ForYouFre", base::FEATURE_ENABLED_BY_DEFAULT);
 
 #if BUILDFLAG(ENABLE_DICE_SUPPORT)
-constexpr base::FeatureParam<WithDefaultBrowserStep>::Option
-    kWithDefaultBrowserStepOptions[] = {
-        {WithDefaultBrowserStep::kYes, "yes"},
-        {WithDefaultBrowserStep::kNo, "no"},
-        {WithDefaultBrowserStep::kForced, "forced"},
-};
-
-const base::FeatureParam<WithDefaultBrowserStep>
-    kForYouFreWithDefaultBrowserStep{
-        &kForYouFre, /*name=*/"with_default_browser_step",
-        /*default_value=*/WithDefaultBrowserStep::kYes,
-        /*options=*/&kWithDefaultBrowserStepOptions};
-
-constexpr base::FeatureParam<DefaultBrowserVariant>::Option
-    kDefaultBrowserVariantOptions[] = {
-        {DefaultBrowserVariant::kCurrent, "current"},
-        {DefaultBrowserVariant::kNew, "new"},
-};
-
-const base::FeatureParam<DefaultBrowserVariant> kForYouFreDefaultBrowserVariant{
-    &kForYouFre, /*name=*/"default_browser_variant",
-    /*default_value=*/DefaultBrowserVariant::kNew,
-    /*options=*/&kDefaultBrowserVariantOptions};
-
 // Feature that indicates that we should put the client in a study group
 // (provided through `kForYouFreStudyGroup`) to be able to look at metrics in
 // the long term. Does not affect the client's behavior by itself, instead this

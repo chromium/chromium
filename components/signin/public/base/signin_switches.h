@@ -83,6 +83,11 @@ BASE_DECLARE_FEATURE(kEnableFetchingAccountCapabilities);
 COMPONENT_EXPORT(SIGNIN_SWITCHES)
 BASE_DECLARE_FEATURE(kForceDisableExtendedSyncPromos);
 
+#if BUILDFLAG(ENABLE_DICE_SUPPORT)
+COMPONENT_EXPORT(SIGNIN_SWITCHES)
+extern const char kForceFreDefaultBrowserStep[];
+#endif
+
 #if BUILDFLAG(IS_ANDROID) || BUILDFLAG(IS_IOS)
 COMPONENT_EXPORT(SIGNIN_SWITCHES)
 BASE_DECLARE_FEATURE(kForceStartupSigninPromo);
@@ -157,29 +162,6 @@ COMPONENT_EXPORT(SIGNIN_SWITCHES)
 BASE_DECLARE_FEATURE(kForYouFre);
 
 #if BUILDFLAG(ENABLE_DICE_SUPPORT)
-enum class WithDefaultBrowserStep {
-  // The default browser step should be shown as appropriate.
-  kYes,
-  // The default browser step should be skipped.
-  kNo,
-  // The default browser step should be shown even if we normally should skip
-  // it, example because of policies or the current default state.
-  kForced,
-};
-COMPONENT_EXPORT(SIGNIN_SWITCHES)
-extern const base::FeatureParam<WithDefaultBrowserStep>
-    kForYouFreWithDefaultBrowserStep;
-
-enum class DefaultBrowserVariant {
-  // Use the current strings for the default browser prompt.
-  kCurrent,
-  // Use the new strings for the default browser prompt.
-  kNew,
-};
-COMPONENT_EXPORT(SIGNIN_SWITCHES)
-extern const base::FeatureParam<DefaultBrowserVariant>
-    kForYouFreDefaultBrowserVariant;
-
 COMPONENT_EXPORT(SIGNIN_SWITCHES)
 BASE_DECLARE_FEATURE(kForYouFreSyntheticTrialRegistration);
 
