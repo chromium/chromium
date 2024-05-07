@@ -372,10 +372,6 @@ const gpu::Mailbox& CanvasResourceSharedBitmap::GetOrCreateGpuMailbox(
   return shared_bitmap_id_;
 }
 
-bool CanvasResourceSharedBitmap::HasGpuMailbox() const {
-  return !shared_bitmap_id_.IsZero();
-}
-
 void CanvasResourceSharedBitmap::TakeSkImage(sk_sp<SkImage> image) {
   SkImageInfo image_info = SkImageInfo::Make(
       SkISize::Make(Size().width(), Size().height()), GetSkColorInfo());
@@ -773,10 +769,6 @@ const gpu::Mailbox& CanvasResourceRasterSharedImage::GetOrCreateGpuMailbox(
   // GetOrCreateGpuMailbox() is converted to return ClientSharedImage.
   return client_shared_image() ? client_shared_image()->mailbox()
                                : empty_mailbox_;
-}
-
-bool CanvasResourceRasterSharedImage::HasGpuMailbox() const {
-  return client_shared_image() != nullptr;
 }
 
 const gpu::SyncToken CanvasResourceRasterSharedImage::GetSyncToken() {

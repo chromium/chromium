@@ -227,10 +227,6 @@ class PLATFORM_EXPORT CanvasResource
   // for direct scanout by the display.
   virtual bool IsOverlayCandidate() const { return false; }
 
-  // Returns true if the resource is backed by memory that can be referenced
-  // using a mailbox.
-  virtual bool HasGpuMailbox() const = 0;
-
   // Destroys the backing memory and any other references to it kept alive by
   // this object. This must be called from the same thread where the resource
   // was created.
@@ -309,7 +305,6 @@ class PLATFORM_EXPORT CanvasResourceSharedBitmap final : public CanvasResource {
 
  private:
   void TearDown() override;
-  bool HasGpuMailbox() const override;
 
   CanvasResourceSharedBitmap(const SkImageInfo&,
                              base::WeakPtr<CanvasResourceProvider>,
@@ -437,7 +432,6 @@ class PLATFORM_EXPORT CanvasResourceRasterSharedImage final
   void Abandon() override;
   base::WeakPtr<WebGraphicsContext3DProviderWrapper> ContextProviderWrapper()
       const override;
-  bool HasGpuMailbox() const override;
   const gpu::SyncToken GetSyncToken() override;
   bool IsOverlayCandidate() const final { return is_overlay_candidate_; }
 
@@ -551,7 +545,7 @@ class PLATFORM_EXPORT ExternalCanvasResource final : public CanvasResource {
   bool IsOverlayCandidate() const final {
     return transferable_resource_.is_overlay_candidate;
   }
-  bool HasGpuMailbox() const override;
+  bool HasGpuMailbox() const;
   const gpu::SyncToken GetSyncToken() override;
   base::WeakPtr<WebGraphicsContext3DProviderWrapper> ContextProviderWrapper()
       const override;
@@ -615,7 +609,7 @@ class PLATFORM_EXPORT CanvasResourceSwapChain final : public CanvasResource {
  private:
   void TearDown() override;
   bool IsOverlayCandidate() const final { return true; }
-  bool HasGpuMailbox() const override;
+  bool HasGpuMailbox() const;
   const gpu::SyncToken GetSyncToken() override;
   base::WeakPtr<WebGraphicsContext3DProviderWrapper> ContextProviderWrapper()
       const override;
