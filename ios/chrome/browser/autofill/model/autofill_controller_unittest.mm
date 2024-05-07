@@ -14,6 +14,7 @@
 #import "base/task/thread_pool/thread_pool_instance.h"
 #import "base/test/ios/wait_util.h"
 #import "base/test/metrics/histogram_tester.h"
+#import "base/test/scoped_feature_list.h"
 #import "base/uuid.h"
 #import "components/autofill/core/browser/address_data_manager.h"
 #import "components/autofill/core/browser/address_data_manager_test_api.h"
@@ -28,12 +29,14 @@
 #import "components/autofill/core/browser/webdata/autocomplete/autocomplete_entry.h"
 #import "components/autofill/core/common/autofill_clock.h"
 #import "components/autofill/core/common/autofill_features.h"
+#import "components/autofill/core/common/field_data_manager.h"
 #import "components/autofill/ios/browser/autofill_agent.h"
 #import "components/autofill/ios/browser/autofill_driver_ios.h"
 #import "components/autofill/ios/browser/autofill_driver_ios_factory.h"
 #import "components/autofill/ios/browser/autofill_java_script_feature.h"
 #import "components/autofill/ios/browser/form_suggestion.h"
 #import "components/autofill/ios/browser/test_autofill_manager_injector.h"
+#import "components/autofill/ios/common/field_data_manager_factory_ios.h"
 #import "components/infobars/core/confirm_infobar_delegate.h"
 #import "components/infobars/core/infobar.h"
 #import "components/infobars/core/infobar_manager.h"
@@ -62,6 +65,8 @@
 #import "ios/web/public/web_state.h"
 #import "testing/gtest_mac.h"
 #import "testing/platform_test.h"
+
+using base::test::ScopedFeatureList;
 
 // Real FormSuggestionController is wrapped to register the addition of
 // suggestions.
@@ -126,18 +131,19 @@ NSString* const kMinimalFormWithNameHtml = @"<form id='form1'>"
 // The key/value-type form used by tests.
 NSString* const kKeyValueFormHtml =
     @"<form action='/submit' method='post'>"
-     "Greeting <input type='text' name='greeting'>"
-     "Dummy field <input type='text' name='dummy'>"
+     "Greeting <input id='greeting' type='text' name='greeting'>"
+     "Dummy field <input id='dummy' type='text' name='dummy'>"
      "<input type='submit' id='submit' value='Submit'>"
      "</form>";
 
 // The credit card-type form used by tests.
 NSString* const kCreditCardFormHtml =
-    @"<form action='/submit' method='post'>"
-     "Name on card: <input type='text' name='name'>"
-     "Credit card number: <input type='text' name='CCNo'>"
-     "Expiry Month: <input type='text' name='CCExpiresMonth'>"
-     "Expiry Year: <input type='text' name='CCExpiresYear'>"
+    @"<form id='form' action='/submit' method='post'>"
+     "Name on card: <input id='name' type='text' name='name'>"
+     "Credit card number: <input id='CCNo' type='text' name='CCNo'>"
+     "Expiry Month: <input id='CCExpiresMonth' type='text' "
+     "name='CCExpiresMonth'>"
+     "Expiry Year: <input id='CCExpiresYear' type='text' name='CCExpiresYear'>"
      "<input type='submit' id='submit' value='Submit'>"
      "</form>";
 
@@ -149,6 +155,17 @@ static NSString* kNoCreditCardFormHtml =
 // page load).
 NSString* const kCreditCardAutofocusFormHtml =
     @"<form><input type=\"text\" autofocus autocomplete=\"cc-number\"></form>";
+
+// A profile-type formless form. The fields are not inside a form element.
+NSString* const kProfileFormlessHtml =
+    @"<div id='div'>"
+     "Name <input id='name' type='text' name='name'>"
+     "Address <input id='address' type='text' name='address'>"
+     "City <input id='city' type='text' name='city'>"
+     "State <input id='state' type='text' name='state'>"
+     "Zip <input id='zip' type='text' name='zip'>"
+     "<input type='submit' id='submit' value='Submit'>"
+     "</div>";
 
 using ::testing::AssertionFailure;
 using ::testing::AssertionResult;
@@ -285,6 +302,10 @@ class AutofillControllerTest : public PlatformTest {
 
   void WaitForCondition(ConditionBlock condition);
 
+  // Simulates a text input event by focusing the field with 'field_id' and
+  // dispatching a TextEvent with value 'field_value'.
+  void SimulateTextInputEvent(NSString* field_id, NSString* field_value);
+
  protected:
   web::WebState* web_state() { return web_state_.get(); }
 
@@ -411,6 +432,22 @@ void AutofillControllerTest::ExpectMetric(const std::string& histogram_name,
 void AutofillControllerTest::WaitForCondition(ConditionBlock condition) {
   ASSERT_TRUE(base::test::ios::WaitUntilConditionOrTimeout(base::Seconds(1000),
                                                            true, condition));
+}
+
+void AutofillControllerTest::SimulateTextInputEvent(NSString* field_id,
+                                                    NSString* field_value) {
+  // First focus the field, otherwise the input event does not get delivered to
+  // the browser process.
+  // Then create and dispatch a TextEvent from the field with the given id.
+  web::test::ExecuteJavaScript(
+      [NSString
+          stringWithFormat:
+              @"document.getElementById('%@').focus();"
+              @"var event = document.createEvent('TextEvent');"
+              @"event.initTextEvent('textInput', true, true, window, '%@');"
+              @"document.getElementById('%@').dispatchEvent(event);",
+              field_id, field_value, field_id],
+      web_state());
 }
 
 // Checks that viewing an HTML page containing a form results in the form being
@@ -707,13 +744,8 @@ TEST_F(AutofillControllerTest, KeyValueTypedSuggestions) {
                                web_state());
   WaitForSuggestionRetrieval(/*wait_for_trigger=*/YES);
   ResetWaitForSuggestionRetrieval();
-  web::test::ExecuteJavaScript(@"event = document.createEvent('TextEvent');",
-                               web_state());
-  web::test::ExecuteJavaScript(
-      @"event.initTextEvent('textInput', true, true, window, 'B');",
-      web_state());
-  web::test::ExecuteJavaScript(
-      @"document.forms[0].greeting.dispatchEvent(event);", web_state());
+  SimulateTextInputEvent(/*field_id=*/@"greeting", /*field_value=*/@"B");
+
   WaitForSuggestionRetrieval(/*wait_for_trigger=*/YES);
   EXPECT_EQ(1U, [suggestion_controller() suggestions].count);
   FormSuggestion* suggestion = [suggestion_controller() suggestions][0];
@@ -733,14 +765,8 @@ TEST_F(AutofillControllerTest, KeyValueFocusChange) {
   ResetWaitForSuggestionRetrieval();
 
   // Enter 'B' in the dummy field and confirm no suggestions are presented.
-  web::test::ExecuteJavaScript(@"event = document.createEvent('TextEvent');",
-                               web_state());
-  web::test::ExecuteJavaScript(
-      @"event.initTextEvent('textInput', true, true, window, 'B');",
-      web_state());
+  SimulateTextInputEvent(/*field_id=*/@"dummy", /*field_value=*/@"B");
 
-  web::test::ExecuteJavaScript(@"document.forms[0].dummy.dispatchEvent(event);",
-                               web_state());
   WaitForSuggestionRetrieval(/*wait_for_trigger=*/YES);
   ASSERT_EQ(0U, [suggestion_controller() suggestions].count);
   ResetWaitForSuggestionRetrieval();
@@ -751,8 +777,8 @@ TEST_F(AutofillControllerTest, KeyValueFocusChange) {
                                web_state());
   WaitForSuggestionRetrieval(/*wait_for_trigger=*/YES);
   ResetWaitForSuggestionRetrieval();
-  web::test::ExecuteJavaScript(@"event = document.createEvent('TextEvent');",
-                               web_state());
+  web::test::ExecuteJavaScript(
+      @"var event = document.createEvent('TextEvent');", web_state());
   web::test::ExecuteJavaScript(
       @"event.initTextEvent('textInput', true, true, window, 'B');",
       web_state());
@@ -832,6 +858,218 @@ TEST_F(AutofillControllerTest, CreditCardImport) {
             credit_card.GetInfo(AutofillType(CREDIT_CARD_EXP_MONTH), "en-US"));
   EXPECT_EQ(u"2999", credit_card.GetInfo(
                          AutofillType(CREDIT_CARD_EXP_4_DIGIT_YEAR), "en-US"));
+}
+
+// Checks that an HTML page containing a credit card-type form which is
+// submitted with scripts (simulating form removal) results in a credit
+// card being successfully imported into the PersonalDataManager.
+TEST_F(AutofillControllerTest, CreditCardImportAfterFormRemoval) {
+  ScopedFeatureList feature_list(
+      features::kAutofillEnableXHRSubmissionDetectionIOS);
+  InfoBarManagerImpl::CreateForWebState(web_state());
+  PersonalDataManager* personal_data_manager =
+      PersonalDataManagerFactory::GetForBrowserState(
+          ChromeBrowserState::FromBrowserState(browser_state_.get()));
+  personal_data_manager->SetSyncServiceForTest(nullptr);
+
+  // Check there are no registered profiles already.
+  EXPECT_EQ(
+      0U,
+      personal_data_manager->payments_data_manager().GetCreditCards().size());
+
+  ASSERT_TRUE(LoadHtmlAndWaitForFormFetched(kCreditCardFormHtml, 1));
+
+  // Simulate entering a credit card in the form.
+  SimulateTextInputEvent(/*field_id=*/@"name", /*field_value=*/@"Superman");
+  SimulateTextInputEvent(/*field_id=*/@"CCNo",
+                         /*field_value=*/@"4000-4444-4444-4444");
+  SimulateTextInputEvent(/*field_id=*/@"CCExpiresMonth", /*field_value=*/@"11");
+  SimulateTextInputEvent(/*field_id=*/@"CCExpiresYear",
+                         /*field_value=*/@"2999");
+
+  // Deleting the form should be detected as a submission because it had user
+  // input. Adding a delay is necessary or the event above might not be
+  // dispatched.
+  web::test::ExecuteJavaScript(@"setTimeout(function(){"
+                               @"   document.forms[0].remove();"
+                               @"}, 30);",
+                               web_state());
+  infobars::InfoBarManager* infobar_manager =
+      InfoBarManagerImpl::FromWebState(web_state());
+  WaitForCondition(^bool() {
+    return infobar_manager->infobars().size();
+  });
+  ExpectMetric("Autofill.CreditCardInfoBar.Local",
+               AutofillMetrics::INFOBAR_SHOWN);
+  ASSERT_EQ(1U, infobar_manager->infobars().size());
+  infobars::InfoBarDelegate* infobar =
+      infobar_manager->infobars()[0]->delegate();
+  ConfirmInfoBarDelegate* confirm_infobar = infobar->AsConfirmInfoBarDelegate();
+
+  // This call cause a modification of the PersonalDataManager, so wait until
+  // the asynchronous task complete in addition to waiting for the UI update.
+  PersonalDataChangedWaiter waiter(*personal_data_manager);
+  confirm_infobar->Accept();
+  std::move(waiter).Wait();
+
+  const std::vector<CreditCard*>& credit_cards =
+      personal_data_manager->payments_data_manager().GetCreditCards();
+  ASSERT_EQ(1U, credit_cards.size());
+  const CreditCard& credit_card = *credit_cards[0];
+  EXPECT_EQ(u"Superman",
+            credit_card.GetInfo(AutofillType(CREDIT_CARD_NAME_FULL), "en-US"));
+  EXPECT_EQ(u"4000444444444444",
+            credit_card.GetInfo(AutofillType(CREDIT_CARD_NUMBER), "en-US"));
+  EXPECT_EQ(u"11",
+            credit_card.GetInfo(AutofillType(CREDIT_CARD_EXP_MONTH), "en-US"));
+  EXPECT_EQ(u"2999", credit_card.GetInfo(
+                         AutofillType(CREDIT_CARD_EXP_4_DIGIT_YEAR), "en-US"));
+}
+
+// Checks that an HTML page containing a credit card-type form which is
+// submitted with scripts (simulating form removal) results in a credit
+// card being successfully imported into the PersonalDataManager. The test
+// verifies that the imported card includes the lastest known field values for
+// the submitted form.
+TEST_F(AutofillControllerTest,
+       CreditCardImportWithFieldDataManagerValuesAfterFormRemoval) {
+  ScopedFeatureList feature_list(
+      features::kAutofillEnableXHRSubmissionDetectionIOS);
+  InfoBarManagerImpl::CreateForWebState(web_state());
+  PersonalDataManager* personal_data_manager =
+      PersonalDataManagerFactory::GetForBrowserState(
+          ChromeBrowserState::FromBrowserState(browser_state_.get()));
+  personal_data_manager->SetSyncServiceForTest(nullptr);
+
+  // Check there are no registered profiles already.
+  EXPECT_EQ(
+      0U,
+      personal_data_manager->payments_data_manager().GetCreditCards().size());
+
+  ASSERT_TRUE(LoadHtmlAndWaitForFormFetched(kCreditCardFormHtml, 1));
+
+  // Simulate entering a credit card in the form.
+  SimulateTextInputEvent(/*field_id=*/@"name", /*field_value=*/@"Superman");
+  SimulateTextInputEvent(/*field_id=*/@"CCNo",
+                         /*field_value=*/@"4000-4444-4444-4444");
+  SimulateTextInputEvent(/*field_id=*/@"CCExpiresMonth", /*field_value=*/@"11");
+  SimulateTextInputEvent(/*field_id=*/@"CCExpiresYear",
+                         /*field_value=*/@"2999");
+
+  // Update the form fields in `FieldDataManager`.
+  // When detecting a submission, the imported credit card should include the
+  // latest values in `FieldDataManager`.
+  auto* frames_manager =
+      AutofillJavaScriptFeature::GetInstance()->GetWebFramesManager(
+          web_state());
+  auto* main_frame = frames_manager->GetMainWebFrame();
+  auto* fieldDataManager =
+      autofill::FieldDataManagerFactoryIOS::FromWebFrame(main_frame);
+  // Name.
+  fieldDataManager->UpdateFieldDataMap(FieldRendererId(2), u"Chuck",
+                                       FieldPropertiesFlags::kAutofilled);
+  // CCNo.
+  fieldDataManager->UpdateFieldDataMap(FieldRendererId(3),
+                                       u"5425-2334-3010-9903",
+                                       FieldPropertiesFlags::kAutofilled);
+  // CCExpiresMonth.
+  fieldDataManager->UpdateFieldDataMap(FieldRendererId(4), u"12",
+                                       FieldPropertiesFlags::kAutofilled);
+  // CCExpiresYear.
+  fieldDataManager->UpdateFieldDataMap(FieldRendererId(5), u"2998",
+                                       FieldPropertiesFlags::kAutofilled);
+
+  // Deleting the form should be detected as a submission because it had user
+  // input. Adding a delay is necessary or the event above might not be
+  // dispatched.
+  web::test::ExecuteJavaScript(@"setTimeout(function(){"
+                               @"   document.forms[0].remove();"
+                               @"}, 30);",
+                               web_state());
+
+  infobars::InfoBarManager* infobar_manager =
+      InfoBarManagerImpl::FromWebState(web_state());
+  WaitForCondition(^bool() {
+    return infobar_manager->infobars().size();
+  });
+  ExpectMetric("Autofill.CreditCardInfoBar.Local",
+               AutofillMetrics::INFOBAR_SHOWN);
+  ASSERT_EQ(1U, infobar_manager->infobars().size());
+  infobars::InfoBarDelegate* infobar =
+      infobar_manager->infobars()[0]->delegate();
+  ConfirmInfoBarDelegate* confirm_infobar = infobar->AsConfirmInfoBarDelegate();
+
+  // This call cause a modification of the PersonalDataManager, so wait until
+  // the asynchronous task complete in addition to waiting for the UI update.
+  PersonalDataChangedWaiter waiter(*personal_data_manager);
+  confirm_infobar->Accept();
+  std::move(waiter).Wait();
+
+  const std::vector<CreditCard*>& credit_cards =
+      personal_data_manager->payments_data_manager().GetCreditCards();
+  ASSERT_EQ(1U, credit_cards.size());
+  const CreditCard& credit_card = *credit_cards[0];
+
+  EXPECT_EQ(u"Chuck",
+            credit_card.GetInfo(AutofillType(CREDIT_CARD_NAME_FULL), "en-US"));
+  EXPECT_EQ(u"5425233430109903",
+            credit_card.GetInfo(AutofillType(CREDIT_CARD_NUMBER), "en-US"));
+  EXPECT_EQ(u"12",
+            credit_card.GetInfo(AutofillType(CREDIT_CARD_EXP_MONTH), "en-US"));
+  EXPECT_EQ(u"2998", credit_card.GetInfo(
+                         AutofillType(CREDIT_CARD_EXP_4_DIGIT_YEAR), "en-US"));
+}
+
+// Checks that an HTML page containing a profile-type formless form which is
+// submitted with scripts (simulating form removal) results in a profile being
+// successfully imported into the PersonalDataManager.
+TEST_F(AutofillControllerTest, ProfileImportAfterFormlessFormRemoval) {
+  ScopedFeatureList feature_list(
+      features::kAutofillEnableXHRSubmissionDetectionIOS);
+  PersonalDataManager* personal_data_manager =
+      PersonalDataManagerFactory::GetForBrowserState(
+          ChromeBrowserState::FromBrowserState(browser_state_.get()));
+  test_api(personal_data_manager->address_data_manager())
+      .set_auto_accept_address_imports(true);
+  // Check there are no registered profiles already.
+  EXPECT_EQ(0U,
+            personal_data_manager->address_data_manager().GetProfiles().size());
+  ASSERT_TRUE(LoadHtmlAndWaitForFormFetched(kProfileFormlessHtml, 1));
+
+  // Simulate entering a profile in the fields.
+  SimulateTextInputEvent(/*field_id=*/@"name",
+                         /*field_value=*/@"Homer Simpson");
+  SimulateTextInputEvent(/*field_id=*/@"address",
+                         /*field_value=*/@"123 Main Street");
+  SimulateTextInputEvent(/*field_id=*/@"city", /*field_value=*/@"Springfield");
+  SimulateTextInputEvent(/*field_id=*/@"state", /*field_value=*/@"IL");
+  SimulateTextInputEvent(/*field_id=*/@"zip", /*field_value=*/@"55123");
+
+  // Deleting the form should be detected as a submission because it had user
+  // input. Adding a delay is necessary or the event above might not be
+  // dispatched.
+  web::test::ExecuteJavaScript(@"setTimeout(function(){"
+                               @"   document.getElementById('div').remove();"
+                               @"}, 30);",
+                               web_state());
+
+  WaitForCondition(^bool {
+    return personal_data_manager->address_data_manager().GetProfiles().size();
+  });
+  const std::vector<AutofillProfile*>& profiles =
+      personal_data_manager->address_data_manager().GetProfiles();
+  if (profiles.size() != 1) {
+    FAIL() << "Not exactly one profile found after attempted import";
+  }
+  const AutofillProfile& profile = *profiles[0];
+  EXPECT_EQ(u"Homer Simpson",
+            profile.GetInfo(AutofillType(NAME_FULL), "en-US"));
+  EXPECT_EQ(u"123 Main Street",
+            profile.GetInfo(AutofillType(ADDRESS_HOME_LINE1), "en-US"));
+  EXPECT_EQ(u"Springfield",
+            profile.GetInfo(AutofillType(ADDRESS_HOME_CITY), "en-US"));
+  EXPECT_EQ(u"IL", profile.GetInfo(AutofillType(ADDRESS_HOME_STATE), "en-US"));
+  EXPECT_EQ(u"55123", profile.GetInfo(AutofillType(ADDRESS_HOME_ZIP), "en-US"));
 }
 
 }  // namespace

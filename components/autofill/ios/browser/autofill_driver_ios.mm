@@ -338,12 +338,6 @@ void AutofillDriverIOS::UpdateLastInteractedForm(
     return;
   }
 
-  // Only update the interacted form if different from the previous one.
-  if (last_interacted_form_ &&
-      last_interacted_form_->formless_field == formless_field &&
-      FormData::DeepEqual(last_interacted_form_->form_data, form_data)) {
-    return;
-  }
   last_interacted_form_.emplace(form_data, formless_field);
 }
 
@@ -434,7 +428,7 @@ void AutofillDriverIOS::UpdateLastInteractedFormFromFieldDataManager() {
     if (!field_data_manager->HasFieldData(field_id)) {
       continue;
     }
-    field.set_user_input(field_data_manager->GetUserInput(field_id));
+    field.set_value(field_data_manager->GetUserInput(field_id));
     field.set_properties_mask(
         field_data_manager->GetFieldPropertiesMask(field_id));
   }
