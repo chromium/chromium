@@ -239,7 +239,14 @@ IN_PROC_BROWSER_TEST_F(PasswordSelectionScreenTest, SmartCard) {
   EXPECT_EQ(result_.value(), PasswordSelectionScreen::Result::NOT_APPLICABLE);
 }
 
-IN_PROC_BROWSER_TEST_F(PasswordSelectionScreenTest, RecoveryLocalPassword) {
+// TODO(crbug.com/337379954): Flaky on linux-chromeos-chrome.
+#if BUILDFLAG(IS_CHROMEOS_ASH)
+#define MAYBE_RecoveryLocalPassword DISABLED_RecoveryLocalPassword
+#else
+#define MAYBE_RecoveryLocalPassword RecoveryLocalPassword
+#endif
+IN_PROC_BROWSER_TEST_F(PasswordSelectionScreenTest,
+                       MAYBE_RecoveryLocalPassword) {
   StartLogin();
   auto user_context = BorrowUserContext();
   LoginDisplayHost::default_host()
