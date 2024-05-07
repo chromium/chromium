@@ -215,8 +215,7 @@ class AutocompleteMediator
                 .setDialerAvailable(!pm.queryIntentActivities(dialIntent, 0).isEmpty());
         mListPropertyModel.set(
                 SuggestionListProperties.DRAW_OVER_ANCHOR,
-                OmniboxFeatures.shouldShowModernizeVisualUpdate(mContext)
-                        && DeviceFormFactor.isNonMultiDisplayContextOnTablet(mContext));
+                DeviceFormFactor.isNonMultiDisplayContextOnTablet(mContext));
         int addedVerticalOffset =
                 context.getResources()
                         .getDimensionPixelOffset(
