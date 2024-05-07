@@ -640,4 +640,9 @@ void CameraAppHelperImpl::RenderPdfAsJpeg(const std::vector<uint8_t>& pdf_data,
   camera_app_ui_->delegate()->RenderPdfAsJpeg(pdf_data, std::move(callback));
 }
 
+void CameraAppHelperImpl::PerformOcr(const std::vector<uint8_t>& jpeg_data,
+                                     PerformOcrCallback callback) {
+  camera_app_ui_->delegate()->PerformOcr(jpeg_data, std::move(callback));
+}
+
 }  // namespace ash

@@ -118,6 +118,8 @@ class CameraAppHelperImpl : public ScreenBacklightObserver,
                               SetScreenLockedMonitorCallback callback) override;
   void RenderPdfAsJpeg(const std::vector<uint8_t>& pdf_data,
                        RenderPdfAsJpegCallback callback) override;
+  void PerformOcr(const std::vector<uint8_t>& jpeg_data,
+                  PerformOcrCallback callback) override;
 
  private:
   void CheckExternalScreenState();

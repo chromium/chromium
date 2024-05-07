@@ -45,6 +45,7 @@ mojo_files = [
   "ash/components/arc/mojom/camera_intent.mojom-webui.ts",
   "ash/webui/camera_app_ui/camera_app_helper.mojom-webui.ts",
   "ash/webui/camera_app_ui/events_sender.mojom-webui.ts",
+  "ash/webui/camera_app_ui/ocr.mojom-webui.ts",
   "ash/webui/camera_app_ui/types.mojom-webui.ts",
   "chromeos/services/machine_learning/public/mojom/document_scanner_param_types.mojom-webui.ts",
   "media/capture/mojom/image_capture.mojom-webui.ts",
@@ -60,6 +61,7 @@ mojo_files = [
 mojo_files_deps = [
   "//ash/components/arc/mojom:camera_intent_ts__generator",
   "//ash/webui/camera_app_ui:mojo_bindings_ts__generator",
+  "//ash/webui/camera_app_ui:ocr_ts__generator",
   "//chromeos/services/machine_learning/public/mojom:document_scanner_param_types_ts__generator",
   "//media/capture/mojom:image_capture_ts__generator",
   "//media/capture/video/chromeos/mojom:cros_camera_common_ts__generator",

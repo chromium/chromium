@@ -23,6 +23,7 @@ import {
   FileMonitorResult,
   LidState,
   LidStateMonitorCallbackRouter,
+  OcrResult,
   Rotation,
   ScreenLockedMonitorCallbackRouter,
   ScreenState,
@@ -241,6 +242,8 @@ export abstract class ChromeHelper {
       Promise<boolean>;
 
   abstract renderPdfAsImage(pdf: Blob): Promise<Blob>;
+
+  abstract performOcr(jpeg: Blob): Promise<OcrResult>;
 
   /**
    * Creates a new instance of ChromeHelper if it is not set. Returns the
@@ -515,5 +518,12 @@ class ChromeHelperImpl extends ChromeHelper {
     const numArray = castToNumberArray(buffer);
     const {jpegData} = await this.remote.renderPdfAsJpeg(numArray);
     return new Blob([new Uint8Array(jpegData)], {type: MimeType.JPEG});
+  }
+
+  override async performOcr(jpeg: Blob): Promise<OcrResult> {
+    const buffer = new Uint8Array(await jpeg.arrayBuffer());
+    const numArray = castToNumberArray(buffer);
+    const {ocrResult} = await this.remote.performOcr(numArray);
+    return ocrResult;
   }
 }

@@ -183,6 +183,7 @@ class RequestHandler:
         mojo_files = [
             "camera_app_helper.mojom",
             "events_sender.mojom",
+            "ocr.mojom",
             "types.mojom",
         ]
         # TODO(pihsun): This doesn't handle possible enum name collision

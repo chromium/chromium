@@ -57,6 +57,9 @@ export type {
   CaptureEventParams,
   EventsSenderRemote,
 } from '../../mojom/ash/webui/camera_app_ui/events_sender.mojom-webui.js';
+export type {
+  OcrResult,
+} from '../../mojom/ash/webui/camera_app_ui/ocr.mojom-webui.js';
 export {
   WifiEapMethod,
   WifiEapPhase2Method,

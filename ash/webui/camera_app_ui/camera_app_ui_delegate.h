@@ -8,6 +8,7 @@
 #include <optional>
 #include <string>
 
+#include "ash/webui/camera_app_ui/ocr.mojom-forward.h"
 #include "base/files/file_path.h"
 #include "base/functional/callback.h"
 
@@ -144,6 +145,11 @@ class CameraAppUIDelegate {
   virtual void Searchify(
       const std::vector<uint8_t>& pdf,
       base::OnceCallback<void(const std::vector<uint8_t>&)> callback) = 0;
+
+  // Performs OCR on the image and returns the OCR result.
+  virtual void PerformOcr(
+      const std::vector<uint8_t>& jpeg_data,
+      base::OnceCallback<void(camera_app::mojom::OcrResultPtr)> callback) = 0;
 };
 
 }  // namespace ash

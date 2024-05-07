@@ -209,6 +209,9 @@ class ChromeCameraAppUIDelegate : public ash::CameraAppUIDelegate {
   void Searchify(
       const std::vector<uint8_t>& pdf,
       base::OnceCallback<void(const std::vector<uint8_t>&)> callback) override;
+  void PerformOcr(const std::vector<uint8_t>& jpeg_data,
+                  base::OnceCallback<void(ash::camera_app::mojom::OcrResultPtr)>
+                      callback) override;
 
  private:
   base::FilePath GetMyFilesFolder();

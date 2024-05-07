@@ -17,6 +17,7 @@ import {ChromeHelper, getInstanceImpl} from './mojo/chrome_helper.js';
 import {
   EventsSenderRemote,
   LidState,
+  OcrResult,
   ScreenState,
   StorageMonitorStatus,
   ToteMetricFormat,
@@ -180,6 +181,10 @@ export class ChromeHelperFake extends ChromeHelper {
 
   override async renderPdfAsImage(_pdf: Blob): Promise<Blob> {
     return new Blob();
+  }
+
+  override async performOcr(_jpeg: Blob): Promise<OcrResult> {
+    return {lines: []};
   }
 
   /* eslint-enable @typescript-eslint/require-await */

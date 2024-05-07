@@ -8,6 +8,7 @@
 #include <vector>
 
 #include "ash/constants/ash_features.h"
+#include "ash/webui/camera_app_ui/ocr.mojom.h"
 #include "ash/webui/camera_app_ui/url_constants.h"
 #include "ash/webui/settings/public/constants/routes.mojom.h"
 #include "base/feature_list.h"
@@ -63,11 +64,8 @@
 #include "mojo/public/cpp/bindings/remote.h"
 #include "mojo/public/cpp/bindings/remote_set.h"
 #include "third_party/blink/public/mojom/mediastream/media_stream.mojom.h"
-#include "third_party/skia/include/core/SkBitmap.h"
-#include "third_party/skia/include/core/SkData.h"
-#include "third_party/skia/include/core/SkStream.h"
-#include "third_party/skia/include/encode/SkJpegEncoder.h"
 #include "ui/chromeos/styles/cros_styles.h"
+#include "ui/gfx/codec/jpeg_codec.h"
 #include "ui/gfx/geometry/size.h"
 #include "ui/gfx/native_widget_types.h"
 #include "url/gurl.h"
@@ -319,14 +317,9 @@ void ChromeCameraAppUIDelegate::PdfServiceManager::GotThumbnail(
     mojo::RemoteSetElementId pdf_service_id,
     mojo::RemoteSetElementId pdf_thumbnailer_id,
     const SkBitmap& bitmap) {
-  SkDynamicMemoryWStream stream;
-  if (SkJpegEncoder::Encode(&stream, bitmap.pixmap(), {}) &&
-      stream.bytesWritten()) {
-    sk_sp<SkData> jpeg_data = stream.detachAsData();
-    ConsumeGotThumbnailCallback(
-        std::vector<uint8_t>(jpeg_data->bytes(),
-                             jpeg_data->bytes() + jpeg_data->size()),
-        pdf_thumbnailer_id);
+  std::vector<uint8_t> jpeg_data;
+  if (gfx::JPEGCodec::Encode(bitmap, /*quality=*/100, &jpeg_data)) {
+    ConsumeGotThumbnailCallback(std::move(jpeg_data), pdf_thumbnailer_id);
   } else {
     LOG(ERROR) << "Failed to encode bitmap to JPEG";
     ConsumeGotThumbnailCallback({}, pdf_thumbnailer_id);
@@ -743,6 +736,45 @@ void ChromeCameraAppUIDelegate::Searchify(
     const std::vector<uint8_t>& pdf,
     base::OnceCallback<void(const std::vector<uint8_t>&)> callback) {
   pdf_service_manager_->Searchify(pdf, std::move(callback));
+}
+
+void ChromeCameraAppUIDelegate::PerformOcr(
+    const std::vector<uint8_t>& jpeg_data,
+    base::OnceCallback<void(ash::camera_app::mojom::OcrResultPtr)> callback) {
+  std::unique_ptr<SkBitmap> bitmap =
+      gfx::JPEGCodec::Decode(jpeg_data.data(), jpeg_data.size());
+  optical_character_recognizer_->PerformOCR(
+      std::move(*bitmap),
+      base::BindOnce(
+          [](base::OnceCallback<void(ash::camera_app::mojom::OcrResultPtr)>
+                 callback,
+             screen_ai::mojom::VisualAnnotationPtr annotation) {
+            auto result = ash::camera_app::mojom::OcrResult::New();
+            for (const auto& line_box : annotation->lines) {
+              auto line = ash::camera_app::mojom::Line::New();
+              line->text = line_box->text_line;
+              line->bounding_box = std::move(line_box->bounding_box);
+              line->bounding_box_angle = line_box->bounding_box_angle;
+              for (const auto& word_box : line_box->words) {
+                auto word = ash::camera_app::mojom::Word::New();
+                word->bounding_box = std::move(word_box->bounding_box);
+                word->bounding_box_angle = word_box->bounding_box_angle;
+                word->text = word_box->word;
+                if (word_box->direction ==
+                    screen_ai::mojom::Direction::DIRECTION_RIGHT_TO_LEFT) {
+                  word->direction =
+                      ash::camera_app::mojom::WordDirection::kRightToLeft;
+                } else {
+                  word->direction =
+                      ash::camera_app::mojom::WordDirection::kLeftToRight;
+                }
+                line->words.push_back(std::move(word));
+              }
+              result->lines.push_back(std::move(line));
+            }
+            std::move(callback).Run(std::move(result));
+          },
+          std::move(callback)));
 }
 
 ash::CameraAppUIDelegate::WifiConfig::WifiConfig() = default;

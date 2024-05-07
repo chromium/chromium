@@ -6,6 +6,7 @@ module ash.camera_app.mojom;
 
 import "ash/components/arc/mojom/camera_intent.mojom";
 import "ash/webui/camera_app_ui/events_sender.mojom";
+import "ash/webui/camera_app_ui/ocr.mojom";
 import "ash/webui/camera_app_ui/types.mojom";
 import "chromeos/services/machine_learning/public/mojom/document_scanner_param_types.mojom";
 import "media/capture/video/chromeos/mojom/system_event_monitor.mojom";
@@ -314,4 +315,7 @@ interface CameraAppHelper {
 
   // Returns the first page of a PDF as a JPEG.
   RenderPdfAsJpeg(array<uint8> pdf_data) => (array<uint8> jpeg_data);
+
+  // Performs OCR on the image and returns the OCR result.
+  PerformOcr(array<uint8> jpeg_data) => (OcrResult ocr_result);
 };
