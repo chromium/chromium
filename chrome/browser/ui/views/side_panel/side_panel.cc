@@ -458,25 +458,31 @@ void SidePanel::RecordMetricsIfResized() {
 
 void SidePanel::UpdateVisibility() {
   bool should_be_open = false;
+  bool animate_transition = true;
   std::vector<views::View*> views_to_hide;
   // TODO(pbos): Iterate content instead. Requires moving the owned pointer out
   // of owned contents before resetting it.
   for (views::View* view : children()) {
-    if (view == border_view_ || view == resize_area_ || view == header_view_) {
+    if (view == border_view_ || view == resize_area_ || view == header_view_ ||
+        !view->GetVisible()) {
       continue;
     }
 
-    if (view->GetVisible() &&
-        static_cast<SidePanelContentState>(
-            view->GetProperty(kSidePanelContentStateKey)) ==
-            SidePanelContentState::kReadyToHide) {
-      views_to_hide.push_back(view);
-    }
-    if (view->GetVisible() &&
-        static_cast<SidePanelContentState>(
-            view->GetProperty(kSidePanelContentStateKey)) ==
-            SidePanelContentState::kReadyToShow) {
-      should_be_open = true;
+    SidePanelContentState current_state = static_cast<SidePanelContentState>(
+        view->GetProperty(kSidePanelContentStateKey));
+    switch (current_state) {
+      case SidePanelContentState::kHideImmediately:
+        animate_transition = false;
+        [[fallthrough]];
+      case SidePanelContentState::kReadyToHide:
+        views_to_hide.push_back(view);
+        break;
+      case SidePanelContentState::kShowImmediately:
+        animate_transition = false;
+        [[fallthrough]];
+      case SidePanelContentState::kReadyToShow:
+        should_be_open = true;
+        break;
     }
   }
   // Make sure the border visibility matches the side panel. Also dynamically
@@ -504,7 +510,7 @@ void SidePanel::UpdateVisibility() {
       border_view_->DestroyLayer();
     }
   }
-  if (ShouldShowAnimation()) {
+  if (ShouldShowAnimation() && animate_transition) {
     if (should_be_open) {
       // If the side panel should remain open but there are views to hide, hide
       // them immediately.

@@ -40,6 +40,11 @@ enum class SidePanelContentState {
   // is causing the side panel to remain open or after the side panel has been
   // closed.
   kReadyToHide = 1,
+  // Content is ready to show, will influence side panel visibility, and show
+  // immediately without any animations.
+  kShowImmediately = 2,
+  // Side panel content should be hidden immediately with no animations.
+  kHideImmediately = 3,
 };
 
 #endif  // CHROME_BROWSER_UI_SIDE_PANEL_SIDE_PANEL_ENUMS_H_

@@ -395,21 +395,7 @@ void SidePanelCoordinator::SetSidePanelButtonTooltipText(
 }
 
 void SidePanelCoordinator::Close() {
-  if (!IsSidePanelShowing() ||
-      browser_view_->unified_side_panel()->IsClosing()) {
-    return;
-  }
-
-  if (current_entry_ &&
-      browser_view_->toolbar()->pinned_toolbar_actions_container()) {
-    NotifyPinnedContainerOfActiveStateChange(current_entry_->key(), false);
-  }
-  if (views::View* content_container = GetContentContainerView()) {
-    content_container->SetProperty(
-        kSidePanelContentStateKey,
-        static_cast<std::underlying_type_t<SidePanelContentState>>(
-            SidePanelContentState::kReadyToHide));
-  }
+  Close(/*supress_animations=*/false);
 }
 
 void SidePanelCoordinator::Toggle() {
@@ -591,7 +577,8 @@ bool SidePanelCoordinator::IsSidePanelEntryShowing(
 
 void SidePanelCoordinator::Show(
     SidePanelEntry* entry,
-    std::optional<SidePanelUtil::SidePanelOpenTrigger> open_trigger) {
+    std::optional<SidePanelUtil::SidePanelOpenTrigger> open_trigger,
+    bool supress_animations) {
   // Side panel is not supported for non-normal browsers.
   if (!browser_view_->browser()->is_type_normal()) {
     return;
@@ -667,7 +654,26 @@ void SidePanelCoordinator::Show(
 
   content_wrapper->RequestEntry(
       entry, base::BindOnce(&SidePanelCoordinator::PopulateSidePanel,
-                            base::Unretained(this)));
+                            base::Unretained(this), supress_animations));
+}
+
+void SidePanelCoordinator::Close(bool supress_animations) {
+  if (!IsSidePanelShowing() ||
+      browser_view_->unified_side_panel()->IsClosing()) {
+    return;
+  }
+
+  if (current_entry_ &&
+      browser_view_->toolbar()->pinned_toolbar_actions_container()) {
+    NotifyPinnedContainerOfActiveStateChange(current_entry_->key(), false);
+  }
+  if (views::View* content_container = GetContentContainerView()) {
+    content_container->SetProperty(
+        kSidePanelContentStateKey,
+        static_cast<std::underlying_type_t<SidePanelContentState>>(
+            supress_animations ? SidePanelContentState::kHideImmediately
+                               : SidePanelContentState::kReadyToHide));
+  }
 }
 
 views::View* SidePanelCoordinator::GetContentContainerView() const {
@@ -746,6 +752,7 @@ void SidePanelCoordinator::InitializeSidePanel() {
 }
 
 void SidePanelCoordinator::PopulateSidePanel(
+    bool supress_animations,
     SidePanelEntry* entry,
     std::optional<std::unique_ptr<views::View>> content_view) {
   if (!header_combobox_) {
@@ -775,7 +782,8 @@ void SidePanelCoordinator::PopulateSidePanel(
   content_container->SetProperty(
       kSidePanelContentStateKey,
       static_cast<std::underlying_type_t<SidePanelContentState>>(
-          SidePanelContentState::kReadyToShow));
+          supress_animations ? SidePanelContentState::kShowImmediately
+                             : SidePanelContentState::kReadyToShow));
 
   if (current_entry_ && content_wrapper->children().size()) {
     auto current_entry_view =
@@ -939,7 +947,7 @@ std::unique_ptr<views::View> SidePanelCoordinator::CreateHeader() {
 
   auto* header_close_button = header->AddChildView(CreateControlButton(
       header.get(),
-      base::BindRepeating(&SidePanelCoordinator::Close, base::Unretained(this)),
+      base::BindRepeating(&SidePanelUI::Close, base::Unretained(this)),
       views::kIcCloseIcon, l10n_util::GetStringUTF16(IDS_ACCNAME_CLOSE),
       kSidePanelCloseButtonElementId,
       ChromeLayoutProvider::Get()->GetDistanceMetric(
@@ -1219,7 +1227,8 @@ void SidePanelCoordinator::OnTabStripModelChanged(
     // Attempt to find a suitable entry to be shown after the tab switch and if
     // one is found, show it.
     if (auto* new_active_entry = GetNewActiveEntryOnTabChanged()) {
-      Show(new_active_entry, SidePanelUtil::SidePanelOpenTrigger::kTabChanged);
+      Show(new_active_entry, SidePanelUtil::SidePanelOpenTrigger::kTabChanged,
+           /*supress_animations=*/true);
       if (combobox_model_) {
         SetSelectedEntryInCombobox(new_active_entry->key());
       }
@@ -1238,12 +1247,13 @@ void SidePanelCoordinator::OnTabStripModelChanged(
         auto* active_entry = old_contextual_registry->active_entry().value();
         active_entry->CacheView(std::move(current_entry_view));
       }
-      Close();
+      Close(/*supress_animations=*/true);
     }
   } else if (new_contextual_registry &&
              new_contextual_registry->active_entry().has_value()) {
     Show(new_contextual_registry->active_entry().value(),
-         SidePanelUtil::SidePanelOpenTrigger::kTabChanged);
+         SidePanelUtil::SidePanelOpenTrigger::kTabChanged,
+         /*supress_animations=*/true);
   }
 }
 

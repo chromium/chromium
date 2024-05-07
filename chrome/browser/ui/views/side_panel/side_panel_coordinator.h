@@ -140,7 +140,9 @@ class SidePanelCoordinator final : public SidePanelRegistryObserver,
   // entry instead of letting GetEntryForKey() decide for us.
   void Show(SidePanelEntry* entry,
             std::optional<SidePanelUtil::SidePanelOpenTrigger> open_trigger =
-                std::nullopt);
+                std::nullopt,
+            bool supress_animations = false);
+  void Close(bool supress_animations);
   void OnClosed();
 
   views::View* GetContentContainerView() const;
@@ -170,6 +172,7 @@ class SidePanelCoordinator final : public SidePanelRegistryObserver,
   // `content_view` if provided, otherwise get the content_view from the
   // provided SidePanelEntry.
   void PopulateSidePanel(
+      bool supress_animations,
       SidePanelEntry* entry,
       std::optional<std::unique_ptr<views::View>> content_view);
 
