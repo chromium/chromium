@@ -20,6 +20,7 @@
 #include "base/functional/callback_helpers.h"
 #include "base/memory/ptr_util.h"
 #include "base/memory/raw_ptr.h"
+#include "base/strings/string_number_conversions.h"
 #include "base/task/single_thread_task_runner.h"
 #include "base/test/gmock_move_support.h"
 #include "base/test/metrics/histogram_tester.h"
@@ -246,7 +247,7 @@ class DownloadItemTest : public testing::Test {
   scoped_refptr<const net::HttpResponseHeaders> CreateResponseHeaders(
       int response_code) {
     return base::MakeRefCounted<net::HttpResponseHeaders>(
-        "HTTP/1.1 " + std::to_string(response_code));
+        "HTTP/1.1 " + base::NumberToString(response_code));
   }
 
   // This class keeps ownership of the created download item; it will

@@ -3,9 +3,11 @@
 // found in the LICENSE file.
 
 #include "components/history_clusters/core/clustering_test_utils.h"
+
 #include <vector>
 
 #include "base/ranges/algorithm.h"
+#include "base/strings/string_number_conversions.h"
 #include "base/strings/string_util.h"
 #include "base/strings/stringprintf.h"
 #include "base/strings/utf_string_conversions.h"
@@ -42,11 +44,11 @@ VisitResult::~VisitResult() = default;
 
 std::string VisitResult::ToString() const {
   std::vector<std::string> duplicate_visits_strings;
-  base::ranges::transform(duplicate_visits_,
-                          std::back_inserter(duplicate_visits_strings),
-                          [&](const auto& duplicate_visit) {
-                            return std::to_string(duplicate_visit.visit_id);
-                          });
+  base::ranges::transform(
+      duplicate_visits_, std::back_inserter(duplicate_visits_strings),
+      [&](const auto& duplicate_visit) {
+        return base::NumberToString(duplicate_visit.visit_id);
+      });
   return base::StringPrintf(
       "VisitResult(visit_id=%d, score=%f, duplicate_visits=[%s], "
       "search_terms=%s)",

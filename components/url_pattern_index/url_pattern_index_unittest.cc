@@ -17,6 +17,7 @@
 #include "base/functional/callback.h"
 #include "base/rand_util.h"
 #include "base/ranges/algorithm.h"
+#include "base/strings/string_number_conversions.h"
 #include "components/url_pattern_index/url_pattern.h"
 #include "components/url_pattern_index/url_rule_test_support.h"
 #include "testing/gmock/include/gmock/gmock.h"
@@ -620,7 +621,7 @@ TEST_F(UrlPatternIndexTest, OneRuleWithLongDomainList) {
 
   std::vector<std::string> domains;
   for (size_t i = 0; i < kDomains; ++i) {
-    const std::string domain = "domain" + std::to_string(i) + ".com";
+    const std::string domain = "domain" + base::NumberToString(i) + ".com";
     domains.push_back(domain);
     domains.push_back("~sub." + domain);
     domains.push_back("a.sub." + domain);
@@ -640,7 +641,7 @@ TEST_F(UrlPatternIndexTest, OneRuleWithLongDomainList) {
 
   for (size_t i = 0; i < kDomains; ++i) {
     SCOPED_TRACE(::testing::Message() << "Iteration: " << i);
-    const std::string domain = "domain" + std::to_string(i) + ".com";
+    const std::string domain = "domain" + base::NumberToString(i) + ".com";
 
     EXPECT_TRUE(FindMatch(kUrl, "http://" + domain));
     EXPECT_FALSE(FindMatch(kUrl, "http://sub." + domain));
@@ -974,7 +975,7 @@ TEST_F(UrlPatternIndexTest, FindMatchReturnsCorrectRules) {
 
   std::vector<std::string> url_patterns(kNumOfPatterns);
   for (size_t i = 0; i < kNumOfPatterns; ++i) {
-    url_patterns[i] = "http://example." + std::to_string(i) + ".com";
+    url_patterns[i] = "http://example." + base::NumberToString(i) + ".com";
     ASSERT_TRUE(
         AddUrlRule(MakeUrlRule(UrlPattern(url_patterns[i], kSubstring))))
         << "Rule #" << i;
@@ -995,8 +996,8 @@ TEST_F(UrlPatternIndexTest, FindMatchReturnsCorrectRules) {
               std::string_view(rule_pattern->data(), rule_pattern->size()));
   }
 
-  EXPECT_FALSE(
-      FindMatch("http://example." + std::to_string(kNumOfPatterns) + ".com"));
+  EXPECT_FALSE(FindMatch("http://example." +
+                         base::NumberToString(kNumOfPatterns) + ".com"));
 }
 
 // Tests UrlPatternIndexMatcher::FindMatch works with the kHighestPriority match
@@ -1006,7 +1007,7 @@ TEST_F(UrlPatternIndexTest, FindMatchHighestPriority) {
 
   int id = 1;
   auto pattern_for_number = [](size_t num) {
-    return "http://" + std::to_string(num) + ".com";
+    return "http://" + base::NumberToString(num) + ".com";
   };
 
   for (size_t i = 1; i <= kNumPatternTypes; i++) {

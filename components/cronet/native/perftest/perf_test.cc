@@ -12,6 +12,7 @@
 #include "base/memory/raw_ptr.h"
 #include "base/memory/scoped_refptr.h"
 #include "base/run_loop.h"
+#include "base/strings/string_number_conversions.h"
 #include "base/strings/stringprintf.h"
 #include "base/task/single_thread_task_runner.h"
 #include "base/test/task_environment.h"
@@ -84,7 +85,8 @@ std::string BuildBenchmarkName(ExecutorType executor,
       name += "Q_";
       break;
   }
-  name += std::to_string(iterations) + "_" + std::to_string(concurrency) + "_";
+  name += base::NumberToString(iterations) + "_" +
+          base::NumberToString(concurrency) + "_";
   switch (executor) {
     case EXECUTOR_DIRECT:
       name += "ExDir";
@@ -303,8 +305,8 @@ class Benchmark {
         port = GetConfigInt("QUIC_PORT");
         break;
     }
-    std::string url =
-        scheme + "://" + host + ":" + std::to_string(port) + "/" + resource;
+    std::string url = scheme + "://" + host + ":" + base::NumberToString(port) +
+                      "/" + resource;
     size_t buffer_size = length > (size_t)GetConfigInt("MAX_BUFFER_SIZE")
                              ? GetConfigInt("MAX_BUFFER_SIZE")
                              : length;

@@ -20,6 +20,7 @@
 #include "base/memory/raw_ptr.h"
 #include "base/path_service.h"
 #include "base/ranges/algorithm.h"
+#include "base/strings/string_number_conversions.h"
 #include "base/strings/string_split.h"
 #include "base/strings/string_util.h"
 #include "base/strings/stringprintf.h"
@@ -726,7 +727,7 @@ TEST_F(InMemoryURLIndexTest, TrimHistoryIds) {
     group.min_id = row_id;
     for (size_t i = 0; i < kAlmostLimit; ++i) {
       history::URLRow new_row(
-          GURL("http://www.fake_url" + std::to_string(row_id) + ".com"),
+          GURL("http://www.fake_url" + base::NumberToString(row_id) + ".com"),
           row_id);
       new_row.set_typed_count(group.typed_count);
       new_row.set_visit_count(group.visit_count);

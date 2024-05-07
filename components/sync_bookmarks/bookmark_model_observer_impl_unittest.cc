@@ -12,6 +12,7 @@
 #include <vector>
 
 #include "base/functional/callback_helpers.h"
+#include "base/strings/string_number_conversions.h"
 #include "base/strings/utf_string_conversions.h"
 #include "base/test/mock_callback.h"
 #include "base/test/scoped_feature_list.h"
@@ -953,7 +954,7 @@ TEST_P(BookmarkModelObserverImplTest, ShouldAddChildrenInArbitraryOrder) {
   for (size_t i = 0; i < 5; i++) {
     nodes[i] = bookmark_model()->AddFolder(
         /*parent=*/bookmark_bar_node, /*index=*/i,
-        base::UTF8ToUTF16("folder" + std::to_string(i)));
+        base::UTF8ToUTF16("folder" + base::NumberToString(i)));
   }
 
   // Now simulate calling the observer as if the nodes are added in that order.

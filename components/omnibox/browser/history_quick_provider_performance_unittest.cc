@@ -9,6 +9,7 @@
 #include <string_view>
 
 #include "base/run_loop.h"
+#include "base/strings/string_number_conversions.h"
 #include "base/strings/string_util.h"
 #include "base/strings/utf_string_conversions.h"
 #include "base/task/thread_pool/thread_pool_instance.h"
@@ -167,7 +168,8 @@ void HQPPerfTestOnePopularURL::PrintMeasurements(
 
   std::string durations;
   for (const auto& measurement : measurements)
-    durations += std::to_string(measurement.InMillisecondsRoundedUp()) + ',';
+    durations +=
+        base::NumberToString(measurement.InMillisecondsRoundedUp()) + ',';
   // Strip off trailing comma.
   durations.pop_back();
 
@@ -208,8 +210,8 @@ void HQPPerfTestOnePopularURL::RunAllTests(PieceIt first, PieceIt last) {
                      return RunTest(base::UTF8ToUTF16(prefix));
                    });
 
-    PrintMeasurements(std::to_string(group_start->size()) + '-' +
-                          std::to_string((group_end - 1)->size()),
+    PrintMeasurements(base::NumberToString(group_start->size()) + '-' +
+                          base::NumberToString((group_end - 1)->size()),
                       measurements);
 
     measurements.clear();

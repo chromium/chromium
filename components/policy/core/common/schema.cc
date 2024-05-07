@@ -25,6 +25,7 @@
 #include "base/memory/ptr_util.h"
 #include "base/notreached.h"
 #include "base/strings/strcat.h"
+#include "base/strings/string_number_conversions.h"
 #include "base/strings/stringprintf.h"
 #include "base/values.h"
 #include "components/policy/core/common/json_schema_constants.h"
@@ -857,7 +858,7 @@ bool Schema::InternalStorage::Parse(const base::Value::Dict& schema,
 
   if (schema_nodes_.size() > std::numeric_limits<short>::max()) {
     *error = "Can't have more than " +
-             std::to_string(std::numeric_limits<short>::max()) +
+             base::NumberToString(std::numeric_limits<short>::max()) +
              " schema nodes.";
     return false;
   }

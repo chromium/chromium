@@ -7,6 +7,7 @@
 #include <memory>
 #include <utility>
 
+#include "base/strings/string_number_conversions.h"
 #include "base/strings/utf_string_conversions.h"
 #include "build/build_config.h"
 #include "components/ui_devtools/ui_element.h"
@@ -69,7 +70,7 @@ void DrawRulers(const gfx::Rect& screen_bounds,
       canvas->Draw1pxLine(gfx::PointF(x, 0.0f), gfx::PointF(x, long_stroke),
                           SK_ColorMAGENTA);
       // Draw ruler marks.
-      std::u16string utf16_text = base::UTF8ToUTF16(std::to_string(x));
+      std::u16string utf16_text = base::UTF8ToUTF16(base::NumberToString(x));
       DrawRulerText(utf16_text, gfx::Point(x + 2, long_stroke), canvas,
                     render_text_);
 
@@ -88,7 +89,7 @@ void DrawRulers(const gfx::Rect& screen_bounds,
       canvas->Draw1pxLine(gfx::PointF(0.0f, y), gfx::PointF(long_stroke, y),
                           SK_ColorMAGENTA);
       // Draw ruler marks.
-      std::u16string utf16_text = base::UTF8ToUTF16(std::to_string(y));
+      std::u16string utf16_text = base::UTF8ToUTF16(base::NumberToString(y));
       DrawRulerText(utf16_text, gfx::Point(short_stroke + 1, y + 2), canvas,
                     render_text_);
     } else {
@@ -112,10 +113,11 @@ void DrawSizeOfRectangle(const gfx::Rect& hovered_rect,
   } else if (hovered_rect.height()) {
     // Draw only height() if height() is not empty.
     utf16_text =
-        base::UTF8ToUTF16(std::to_string(hovered_rect.height()) + unit);
+        base::UTF8ToUTF16(base::NumberToString(hovered_rect.height()) + unit);
   } else if (hovered_rect.width()) {
     // Draw only width() if width() is not empty.
-    utf16_text = base::UTF8ToUTF16(std::to_string(hovered_rect.width()) + unit);
+    utf16_text =
+        base::UTF8ToUTF16(base::NumberToString(hovered_rect.width()) + unit);
   } else {
     // If both width() and height() are empty, canvas won't draw size.
     return;

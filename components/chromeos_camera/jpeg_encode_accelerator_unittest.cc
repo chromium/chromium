@@ -237,8 +237,9 @@ JpegEncodeAcceleratorTestEnvironment::CreateTestYuvImage(
   // Fill in U and V values.
   std::fill(image_data.begin() + num_pixels, image_data.end(), 128);
 
-  base::FilePath output_filename(std::to_string(image_size.width()) + "x" +
-                                 std::to_string(image_size.height()) +
+  base::FilePath output_filename(base::NumberToString(image_size.width()) +
+                                 "x" +
+                                 base::NumberToString(image_size.height()) +
                                  (is_black ? "_black.jpg" : "_white.jpg"));
   return std::make_unique<TestImage>(std::move(image_data), image_size,
                                      output_filename);

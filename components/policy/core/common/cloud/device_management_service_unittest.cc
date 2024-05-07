@@ -16,6 +16,7 @@
 #include "base/run_loop.h"
 #include "base/strings/escape.h"
 #include "base/strings/strcat.h"
+#include "base/strings/string_number_conversions.h"
 #include "base/strings/string_split.h"
 #include "base/strings/stringprintf.h"
 #include "base/test/metrics/histogram_tester.h"
@@ -988,8 +989,9 @@ TEST_F(DeviceManagementServiceTest, RetryOnProxyError) {
   EXPECT_TRUE(request->request.load_flags & net::LOAD_BYPASS_PROXY);
   EXPECT_EQ(upload_data, network::GetUploadData(request->request));
   // Retry with last error net::ERR_PROXY_CONNECTION_FAILED.
-  CheckURLAndQueryParams(request, dm_protocol::kValueRequestRegister, kClientID,
-                         std::to_string(net::ERR_PROXY_CONNECTION_FAILED));
+  CheckURLAndQueryParams(
+      request, dm_protocol::kValueRequestRegister, kClientID,
+      base::NumberToString(net::ERR_PROXY_CONNECTION_FAILED));
 }
 
 TEST_F(DeviceManagementServiceTest, RetryOnBadResponseFromProxy) {
@@ -1063,7 +1065,7 @@ TEST_F(DeviceManagementServiceTest, RetryOnNetworkChanges) {
   EXPECT_EQ(original_upload_data, network::GetUploadData(request->request));
   // Retry with last error net::ERR_NETWORK_CHANGED.
   CheckURLAndQueryParams(request, dm_protocol::kValueRequestRegister, kClientID,
-                         std::to_string(net::ERR_NETWORK_CHANGED));
+                         base::NumberToString(net::ERR_NETWORK_CHANGED));
 }
 
 TEST_F(DeviceManagementServiceTest, PolicyFetchRetryImmediately) {
@@ -1095,7 +1097,7 @@ TEST_F(DeviceManagementServiceTest, PolicyFetchRetryImmediately) {
   EXPECT_EQ(original_upload_data, network::GetUploadData(request->request));
   // Retry with last error net::ERR_NETWORK_CHANGED.
   CheckURLAndQueryParams(request, dm_protocol::kValueRequestPolicy, kClientID,
-                         std::to_string(net::ERR_NETWORK_CHANGED));
+                         base::NumberToString(net::ERR_NETWORK_CHANGED));
 
   // Request is succeeded with retry.
   EXPECT_CALL(*this, OnJobDone(_, DM_STATUS_SUCCESS, _, _));
@@ -1126,7 +1128,7 @@ TEST_F(DeviceManagementServiceTest, RetryLimit) {
       // Retry with last error net::ERR_NETWORK_CHANGED.
       CheckURLAndQueryParams(request, dm_protocol::kValueRequestRegister,
                              kClientID,
-                             std::to_string(net::ERR_NETWORK_CHANGED));
+                             base::NumberToString(net::ERR_NETWORK_CHANGED));
     }
     SendResponse(net::ERR_NETWORK_CHANGED, 0, std::string());
     Mock::VerifyAndClearExpectations(this);
