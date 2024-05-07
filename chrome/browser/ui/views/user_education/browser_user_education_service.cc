@@ -76,6 +76,7 @@
 
 namespace {
 
+const char kTestTutorialMetricPrefix[] = "Test";
 const char kTabGroupTutorialMetricPrefix[] = "TabGroup";
 const char kSavedTabGroupTutorialMetricPrefix[] = "SavedTabGroup";
 const char kCustomizeChromeTutorialMetricPrefix[] = "CustomizeChromeSidePanel";
@@ -945,6 +946,9 @@ void MaybeRegisterChromeTutorials(
             .SetBubbleArrow(HelpBubbleArrow::kRightCenter),
         HiddenStep::WaitForHidden(AppMenuModel::kDownloadsMenuItem),
         BubbleStep(kTopContainerElementId).SetBubbleBodyText(IDS_OK)};
+    test_description.histograms =
+        user_education::MakeTutorialHistograms<kTestTutorialMetricPrefix>(
+            test_description.steps.size());
     tutorial_registry.AddTutorial("Menu item bubble test tutorial",
                                   std::move(test_description));
   }

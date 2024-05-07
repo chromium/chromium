@@ -42,6 +42,7 @@ chromium-metrics-reviews@google.com.
   <variant name=".SidePanelReadingList"
       summary="the tutorial for the side panel reading list"/>
   <variant name=".TabGroup" summary="the tutorial for tab groups"/>
+  <variant name=".Test" summary="the tutorial used for testing only"/>
 </variants>
 
 <histogram name="Tutorial.TabGroup.EditedTitle" enum="BooleanSuccess"
