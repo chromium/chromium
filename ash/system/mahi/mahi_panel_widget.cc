@@ -83,8 +83,8 @@ views::UniqueWidgetPtr MahiPanelWidget::CreatePanelWidget(int64_t display_id) {
   views::Widget::InitParams params(
       views::Widget::InitParams::TYPE_WINDOW_FRAMELESS);
   params.name = GetName();
-  // TODO(b/319467834): Decide what container this widget should be on.
-  params.parent = Shell::GetContainer(root_window, kShellWindowId_PipContainer);
+  params.parent =
+      Shell::GetContainer(root_window, kShellWindowId_MenuContainer);
 
   // The widget's view handles round corners and blur via layers.
   params.opacity = views::Widget::InitParams::WindowOpacity::kTranslucent;
