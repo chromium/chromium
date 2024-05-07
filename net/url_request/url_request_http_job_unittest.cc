@@ -30,6 +30,7 @@
 #include "net/base/proxy_server.h"
 #include "net/base/proxy_string_util.h"
 #include "net/base/request_priority.h"
+#include "net/base/test_proxy_delegate.h"
 #include "net/cert/ct_policy_status.h"
 #include "net/cookies/canonical_cookie_test_helpers.h"
 #include "net/cookies/cookie_monster.h"
@@ -345,6 +346,57 @@ TEST_F(URLRequestHttpJobWithProxyTest,
   EXPECT_EQ(12, request->received_response_content_length());
   EXPECT_EQ(CountWriteBytes(writes), request->GetTotalSentBytes());
   EXPECT_EQ(CountReadBytes(reads), request->GetTotalReceivedBytes());
+}
+
+// Test that for direct requests that are marked as being for IP Protection, the
+// IP Protection-specific metrics get recorded as expected.
+TEST_F(URLRequestHttpJobWithProxyTest, IpProtectionDirectProxyMetricsRecorded) {
+  const auto kIpProtectionDirectChain =
+      ProxyChain::ForIpProtection(std::vector<ProxyServer>());
+
+  std::unique_ptr<ProxyResolutionService> proxy_resolution_service =
+      ConfiguredProxyResolutionService::CreateFixedForTest(
+          "https://not-used:70", TRAFFIC_ANNOTATION_FOR_TESTS);
+  auto proxy_delegate = std::make_unique<TestProxyDelegate>();
+  proxy_delegate->set_proxy_chain(kIpProtectionDirectChain);
+  proxy_resolution_service->SetProxyDelegate(proxy_delegate.get());
+
+  MockWrite writes[] = {MockWrite(kSimpleGetMockWrite)};
+
+  MockRead reads[] = {MockRead("HTTP/1.1 200 OK\r\n"
+                               "Content-Length: 12\r\n\r\n"),
+                      MockRead("Test Content")};
+
+  StaticSocketDataProvider socket_data(reads, writes);
+
+  URLRequestHttpJobWithProxy http_job_with_proxy(
+      std::move(proxy_resolution_service));
+  http_job_with_proxy.socket_factory_.AddSocketDataProvider(&socket_data);
+
+  TestDelegate delegate;
+  base::HistogramTester histogram_tester;
+  std::unique_ptr<URLRequest> request =
+      http_job_with_proxy.context_->CreateRequest(
+          GURL("http://www.example.com"), DEFAULT_PRIORITY, &delegate,
+          TRAFFIC_ANNOTATION_FOR_TESTS);
+
+  request->Start();
+  ASSERT_TRUE(request->is_pending());
+  delegate.RunUntilComplete();
+
+  EXPECT_THAT(delegate.request_status(), IsOk());
+  EXPECT_EQ(kIpProtectionDirectChain, request->proxy_chain());
+  EXPECT_EQ(12, request->received_response_content_length());
+  EXPECT_EQ(CountWriteBytes(writes), request->GetTotalSentBytes());
+  EXPECT_EQ(CountReadBytes(reads), request->GetTotalReceivedBytes());
+
+  histogram_tester.ExpectUniqueSample("Net.HttpJob.IpProtection.BytesSent",
+                                      std::size(kSimpleGetMockWrite),
+                                      /*expected_bucket_count=*/1);
+
+  histogram_tester.ExpectUniqueSample(
+      "Net.HttpJob.IpProtection.PrefilterBytesRead.Net",
+      /*sample=*/12, /*expected_bucket_count=*/1);
 }
 
 class URLRequestHttpJobTest : public TestWithTaskEnvironment {

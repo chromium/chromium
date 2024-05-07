@@ -27413,14 +27413,14 @@ TEST_P(HttpNetworkTransactionTest, SetProxyInfoInResponse_Empty) {
   HttpResponseInfo response_info;
   HttpNetworkTransaction::SetProxyInfoInResponse(empty_proxy_info,
                                                  &response_info);
-  EXPECT_EQ(response_info.was_fetched_via_proxy, true);
+  EXPECT_EQ(response_info.was_fetched_via_proxy, false);
   EXPECT_EQ(response_info.proxy_chain.is_for_ip_protection(), false);
   EXPECT_FALSE(response_info.proxy_chain.IsValid());
 }
 
 // Test behavior of SetProxyInfoInResponse with a proxied connection for IP
 // protection.
-TEST_P(HttpNetworkTransactionTest, SetProxyInfoInResponse_IpProtection) {
+TEST_P(HttpNetworkTransactionTest, SetProxyInfoInResponse_IpProtectionProxied) {
   ProxyInfo proxy_info;
   ProxyChain ip_protection_proxy_chain =
       ProxyChain::ForIpProtection({ProxyServer::FromSchemeHostAndPort(
@@ -27431,6 +27431,19 @@ TEST_P(HttpNetworkTransactionTest, SetProxyInfoInResponse_IpProtection) {
   EXPECT_EQ(response_info.was_fetched_via_proxy, true);
   EXPECT_EQ(response_info.proxy_chain.is_for_ip_protection(), true);
   EXPECT_EQ(response_info.proxy_chain, ip_protection_proxy_chain);
+}
+
+// Test behavior of SetProxyInfoInResponse with a direct connection for IP
+// protection.
+TEST_P(HttpNetworkTransactionTest, SetProxyInfoInResponse_IpProtectionDirect) {
+  ProxyInfo proxy_info;
+  const ProxyChain kIpProtectionDirectChain = ProxyChain::ForIpProtection({});
+  proxy_info.UseProxyChain(kIpProtectionDirectChain);
+  HttpResponseInfo response_info;
+  HttpNetworkTransaction::SetProxyInfoInResponse(proxy_info, &response_info);
+  EXPECT_EQ(response_info.was_fetched_via_proxy, false);
+  EXPECT_EQ(response_info.proxy_chain.is_for_ip_protection(), true);
+  EXPECT_EQ(response_info.proxy_chain, kIpProtectionDirectChain);
 }
 
 class IpProtectionProxyDelegate : public TestProxyDelegate {

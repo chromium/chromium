@@ -2065,14 +2065,14 @@ bool HttpNetworkTransaction::ContentEncodingsValid() const {
 void HttpNetworkTransaction::SetProxyInfoInResponse(
     const ProxyInfo& proxy_info,
     HttpResponseInfo* response_info) {
-  response_info->was_fetched_via_proxy = !proxy_info.is_direct();
   response_info->was_mdl_match = proxy_info.is_mdl_match();
-  if (response_info->was_fetched_via_proxy && !proxy_info.is_empty()) {
-    response_info->proxy_chain = proxy_info.proxy_chain();
-  } else if (!response_info->was_fetched_via_proxy && proxy_info.is_direct()) {
-    response_info->proxy_chain = ProxyChain::Direct();
-  } else {
+  if (proxy_info.is_empty()) {
     response_info->proxy_chain = ProxyChain();
+    response_info->was_fetched_via_proxy = false;
+  } else {
+    response_info->proxy_chain = proxy_info.proxy_chain();
+    response_info->was_fetched_via_proxy =
+        !response_info->proxy_chain.is_direct();
   }
 }
 
