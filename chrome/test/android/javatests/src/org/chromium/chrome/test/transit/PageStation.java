@@ -192,8 +192,7 @@ public class PageStation extends Station {
                             "Receive tab selected callback"));
         }
 
-        mPageLoadedEnterCondition =
-                new PageLoadedCondition(mChromeTabbedActivityTestRule, mIncognito);
+        mPageLoadedEnterCondition = new PageLoadedCondition(mActivityElement, mIncognito);
         elements.declareEnterCondition(mPageLoadedEnterCondition);
         elements.declareEnterCondition(
                 new PageInteractableOrHiddenCondition(mPageLoadedEnterCondition));

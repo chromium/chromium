@@ -4,21 +4,21 @@
 
 package org.chromium.chrome.test.transit;
 
+import org.chromium.base.supplier.Supplier;
 import org.chromium.base.test.transit.ConditionStatus;
 import org.chromium.base.test.transit.UiThreadCondition;
+import org.chromium.chrome.browser.ChromeTabbedActivity;
 import org.chromium.chrome.browser.tab.Tab;
-import org.chromium.chrome.test.ChromeTabbedActivityTestRule;
 import org.chromium.content_public.browser.WebContents;
 
 /** Fulfilled when a page is loaded. */
-class PageLoadedCondition extends UiThreadCondition {
-    private final ChromeTabbedActivityTestRule mChromeTabbedActivityTestRule;
+class PageLoadedCondition extends UiThreadCondition implements Supplier<Tab> {
+    private final Supplier<ChromeTabbedActivity> mActivitySupplier;
     private final boolean mIncognito;
     private Tab mMatchedTab;
 
-    PageLoadedCondition(
-            ChromeTabbedActivityTestRule chromeTabbedActivityTestRule, boolean incognito) {
-        mChromeTabbedActivityTestRule = chromeTabbedActivityTestRule;
+    PageLoadedCondition(Supplier<ChromeTabbedActivity> activitySupplier, boolean incognito) {
+        mActivitySupplier = activitySupplier;
         mIncognito = incognito;
     }
 
@@ -29,7 +29,11 @@ class PageLoadedCondition extends UiThreadCondition {
 
     @Override
     public ConditionStatus check() {
-        Tab tab = mChromeTabbedActivityTestRule.getActivity().getActivityTab();
+        ChromeTabbedActivity activity = mActivitySupplier.get();
+        if (activity == null) {
+            return notFulfilled("no ChromeTabbedActivity");
+        }
+        Tab tab = activity.getActivityTab();
         if (tab == null) {
             return notFulfilled("null ActivityTab");
         }
@@ -53,7 +57,13 @@ class PageLoadedCondition extends UiThreadCondition {
         }
     }
 
-    public Tab getMatchedTab() {
+    @Override
+    public Tab get() {
         return mMatchedTab;
+    }
+
+    @Override
+    public boolean hasValue() {
+        return mMatchedTab != null;
     }
 }

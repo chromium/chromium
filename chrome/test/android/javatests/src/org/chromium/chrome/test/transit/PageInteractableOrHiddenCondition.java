@@ -4,16 +4,17 @@
 
 package org.chromium.chrome.test.transit;
 
+import org.chromium.base.supplier.Supplier;
 import org.chromium.base.test.transit.ConditionStatus;
 import org.chromium.base.test.transit.UiThreadCondition;
 import org.chromium.chrome.browser.tab.Tab;
 
 /** Fulfilled when a page is interactable (or hidden). */
 class PageInteractableOrHiddenCondition extends UiThreadCondition {
-    private final PageLoadedCondition mPageLoadedCondition;
+    private final Supplier<Tab> mLoadedTabSupplier;
 
-    PageInteractableOrHiddenCondition(PageLoadedCondition pageLoadedCondition) {
-        mPageLoadedCondition = pageLoadedCondition;
+    PageInteractableOrHiddenCondition(Supplier<Tab> loadedTabSupplier) {
+        mLoadedTabSupplier = loadedTabSupplier;
     }
 
     @Override
@@ -23,9 +24,9 @@ class PageInteractableOrHiddenCondition extends UiThreadCondition {
 
     @Override
     public ConditionStatus check() {
-        Tab tab = mPageLoadedCondition.getMatchedTab();
+        Tab tab = mLoadedTabSupplier.get();
         if (tab == null) {
-            return notFulfilled("null tab");
+            return notFulfilled("no loaded tab");
         }
 
         boolean isUserInteractable = tab.isUserInteractable();
