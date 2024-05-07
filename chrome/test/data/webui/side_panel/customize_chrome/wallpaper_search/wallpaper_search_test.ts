@@ -10,7 +10,6 @@ import type {CustomizeChromePageRemote} from 'chrome://customize-chrome-side-pan
 import {CustomizeChromeApiProxy} from 'chrome://customize-chrome-side-panel.top-chrome/customize_chrome_api_proxy.js';
 import type {Descriptors, InspirationGroup, ResultDescriptors, WallpaperSearchClientRemote, WallpaperSearchHandlerInterface} from 'chrome://customize-chrome-side-panel.top-chrome/wallpaper_search.mojom-webui.js';
 import {DescriptorDName, UserFeedback, WallpaperSearchClientCallbackRouter, WallpaperSearchHandlerRemote, WallpaperSearchStatus} from 'chrome://customize-chrome-side-panel.top-chrome/wallpaper_search.mojom-webui.js';
-import type {CustomizeChromeCombobox} from 'chrome://customize-chrome-side-panel.top-chrome/wallpaper_search/combobox/customize_chrome_combobox.js';
 import type {WallpaperSearchElement, WallpaperSearchResponse} from 'chrome://customize-chrome-side-panel.top-chrome/wallpaper_search/wallpaper_search.js';
 import {DESCRIPTOR_D_VALUE} from 'chrome://customize-chrome-side-panel.top-chrome/wallpaper_search/wallpaper_search.js';
 import {WallpaperSearchProxy} from 'chrome://customize-chrome-side-panel.top-chrome/wallpaper_search/wallpaper_search_proxy.js';
@@ -140,20 +139,11 @@ suite('WallpaperSearchTest', () => {
       await microtasksFinished();
 
       assertEquals(
-          1,
-          wallpaperSearchElement.shadowRoot!
-              .querySelector<CustomizeChromeCombobox>(
-                  '#descriptorComboboxA')!.items.length);
+          1, wallpaperSearchElement.$.descriptorComboboxA.items.length);
       assertEquals(
-          1,
-          wallpaperSearchElement.shadowRoot!
-              .querySelector<CustomizeChromeCombobox>(
-                  '#descriptorComboboxB')!.items.length);
+          1, wallpaperSearchElement.$.descriptorComboboxB.items.length);
       assertEquals(
-          3,
-          wallpaperSearchElement.shadowRoot!
-              .querySelector<CustomizeChromeCombobox>(
-                  '#descriptorComboboxC')!.items.length);
+          3, wallpaperSearchElement.$.descriptorComboboxC.items.length);
       assertEquals(
           6,
           wallpaperSearchElement.shadowRoot!
@@ -290,14 +280,12 @@ suite('WallpaperSearchTest', () => {
       });
       await microtasksFinished();
 
-      $$<CustomizeChromeCombobox>(
-          wallpaperSearchElement, '#descriptorComboboxA')!.value = 'bar';
-      $$<CustomizeChromeCombobox>(
-          wallpaperSearchElement, '#descriptorComboboxB')!.value = 'foo';
-      $$<CustomizeChromeCombobox>(
-          wallpaperSearchElement, '#descriptorComboboxC')!.value = 'baz';
+      wallpaperSearchElement.$.descriptorComboboxA.value = 'bar';
+      wallpaperSearchElement.$.descriptorComboboxB.value = 'foo';
+      wallpaperSearchElement.$.descriptorComboboxC.value = 'baz';
       $$<HTMLElement>(
           wallpaperSearchElement, '#descriptorMenuD button')!.click();
+      await microtasksFinished();
       wallpaperSearchElement.$.submitButton.click();
 
       assertEquals(1, handler.getCallCount('getWallpaperSearchResults'));
@@ -365,8 +353,7 @@ suite('WallpaperSearchTest', () => {
       });
       await microtasksFinished();
 
-      $$<CustomizeChromeCombobox>(
-          wallpaperSearchElement, '#descriptorComboboxA')!.value = 'bar';
+      wallpaperSearchElement.$.descriptorComboboxA.value = 'bar';
       await microtasksFinished();
       wallpaperSearchElement.$.submitButton.click();
 
@@ -618,8 +605,7 @@ suite('WallpaperSearchTest', () => {
       await microtasksFinished();
 
       // Select only descriptor A.
-      $$<CustomizeChromeCombobox>(
-          wallpaperSearchElement, '#descriptorComboboxA')!.value = 'Label A1';
+      wallpaperSearchElement.$.descriptorComboboxA.value = 'Label A1';
       await microtasksFinished();
       wallpaperSearchElement.$.submitButton.click();
       await microtasksFinished();
@@ -633,8 +619,7 @@ suite('WallpaperSearchTest', () => {
       assertEquals('Image 2 of Label A1', getAriaLabelOfTile(1));
 
       // Select descriptor B.
-      $$<CustomizeChromeCombobox>(
-          wallpaperSearchElement, '#descriptorComboboxB')!.value = 'Label B';
+      wallpaperSearchElement.$.descriptorComboboxB.value = 'Label B';
       await microtasksFinished();
       wallpaperSearchElement.$.submitButton.click();
       await microtasksFinished();
@@ -642,8 +627,7 @@ suite('WallpaperSearchTest', () => {
       assertEquals('Image 2 of Label A1, Label B', getAriaLabelOfTile(1));
 
       // Select descriptor C.
-      $$<CustomizeChromeCombobox>(
-          wallpaperSearchElement, '#descriptorComboboxC')!.value = 'Label C';
+      wallpaperSearchElement.$.descriptorComboboxC.value = 'Label C';
       await microtasksFinished();
       wallpaperSearchElement.$.submitButton.click();
       await microtasksFinished();
@@ -660,10 +644,8 @@ suite('WallpaperSearchTest', () => {
         descriptorC: ['Label C'],
       });
       await microtasksFinished();
-      $$<CustomizeChromeCombobox>(
-          wallpaperSearchElement, '#descriptorComboboxA')!.value = 'Label A1';
-      $$<CustomizeChromeCombobox>(
-          wallpaperSearchElement, '#descriptorComboboxC')!.value = 'Label C';
+      wallpaperSearchElement.$.descriptorComboboxA.value = 'Label A1';
+      wallpaperSearchElement.$.descriptorComboboxC.value = 'Label C';
       await microtasksFinished();
       wallpaperSearchElement.$.submitButton.click();
       await microtasksFinished();
@@ -1015,7 +997,7 @@ suite('WallpaperSearchTest', () => {
         assertNotStyle(
             $$(wallpaperSearchElement, '#error')!, 'display', 'none');
         assertStyle(
-            $$(wallpaperSearchElement, '#wallpaperSearch')!, 'display', 'none');
+            wallpaperSearchElement.$.wallpaperSearch, 'display', 'none');
       });
 
       test(
@@ -1034,8 +1016,7 @@ suite('WallpaperSearchTest', () => {
                     wallpaperSearchElement, '#errorDescription')!.textContent,
                 'generic error');
             assertStyle(
-                $$(wallpaperSearchElement, '#wallpaperSearch')!, 'display',
-                'none');
+                wallpaperSearchElement.$.wallpaperSearch, 'display', 'none');
 
 
             handler.setResultFor('getDescriptors', Promise.resolve({
@@ -1081,7 +1062,7 @@ suite('WallpaperSearchTest', () => {
                 wallpaperSearchElement, '#errorDescription')!.textContent,
             'generic error with history');
         assertStyle(
-            $$(wallpaperSearchElement, '#wallpaperSearch')!, 'display', 'none');
+            wallpaperSearchElement.$.wallpaperSearch, 'display', 'none');
       });
 
       test('shows inspiration description for generic error', async () => {
@@ -1118,7 +1099,7 @@ suite('WallpaperSearchTest', () => {
                 wallpaperSearchElement, '#errorDescription')!.textContent,
             'generic error with inspiration');
         assertStyle(
-            $$(wallpaperSearchElement, '#wallpaperSearch')!, 'display', 'none');
+            wallpaperSearchElement.$.wallpaperSearch, 'display', 'none');
       });
 
       test(
@@ -1170,8 +1151,7 @@ suite('WallpaperSearchTest', () => {
                     wallpaperSearchElement, '#errorDescription')!.textContent,
                 'generic error with history and inspiration');
             assertStyle(
-                $$(wallpaperSearchElement, '#wallpaperSearch')!, 'display',
-                'none');
+                wallpaperSearchElement.$.wallpaperSearch, 'display', 'none');
           });
 
       test(
@@ -1190,8 +1170,7 @@ suite('WallpaperSearchTest', () => {
                     wallpaperSearchElement, '#errorDescription')!.textContent,
                 'offline error');
             assertStyle(
-                $$(wallpaperSearchElement, '#wallpaperSearch')!, 'display',
-                'none');
+                wallpaperSearchElement.$.wallpaperSearch, 'display', 'none');
 
             const eventPromise =
                 eventToPromise('back-click', wallpaperSearchElement);
@@ -1241,14 +1220,14 @@ suite('WallpaperSearchTest', () => {
 
         assertEquals(null, $$(wallpaperSearchElement, '#error'));
         assertNotStyle(
-            $$(wallpaperSearchElement, '#wallpaperSearch')!, 'display', 'none');
+            wallpaperSearchElement.$.wallpaperSearch, 'display', 'none');
 
         wallpaperSearchElement.$.submitButton.click();
         await microtasksFinished();
 
         assertEquals(null, $$(wallpaperSearchElement, '#error'));
         assertNotStyle(
-            $$(wallpaperSearchElement, '#wallpaperSearch')!, 'display', 'none');
+            wallpaperSearchElement.$.wallpaperSearch, 'display', 'none');
       });
 
       test('shows error ui if browser offline', async () => {
@@ -1268,7 +1247,7 @@ suite('WallpaperSearchTest', () => {
                 wallpaperSearchElement, '#errorDescription')!.textContent,
             'offline error');
         assertStyle(
-            $$(wallpaperSearchElement, '#wallpaperSearch')!, 'display', 'none');
+            wallpaperSearchElement.$.wallpaperSearch, 'display', 'none');
       });
 
       test('checks if browser is back online', async () => {
@@ -1288,7 +1267,7 @@ suite('WallpaperSearchTest', () => {
         assertEquals(1, windowProxy.getCallCount('onLine'));
         assertEquals(null, $$(wallpaperSearchElement, '#error'));
         assertNotStyle(
-            $$(wallpaperSearchElement, '#wallpaperSearch')!, 'display', 'none');
+            wallpaperSearchElement.$.wallpaperSearch, 'display', 'none');
       });
 
       [[WallpaperSearchStatus.kError, 'generic error'],
@@ -1317,8 +1296,7 @@ suite('WallpaperSearchTest', () => {
                   wallpaperSearchElement, '#errorDescription')!.textContent,
               description);
           assertStyle(
-              $$(wallpaperSearchElement, '#wallpaperSearch')!, 'display',
-              'none');
+              wallpaperSearchElement.$.wallpaperSearch, 'display', 'none');
         });
       });
 
@@ -1355,7 +1333,7 @@ suite('WallpaperSearchTest', () => {
                 wallpaperSearchElement, '#errorDescription')!.textContent,
             'generic error with history');
         assertStyle(
-            $$(wallpaperSearchElement, '#wallpaperSearch')!, 'display', 'none');
+            wallpaperSearchElement.$.wallpaperSearch, 'display', 'none');
       });
 
       test(`shows generic error if there is inspiration`, async () => {
@@ -1396,7 +1374,7 @@ suite('WallpaperSearchTest', () => {
                 wallpaperSearchElement, '#errorDescription')!.textContent,
             'generic error with inspiration');
         assertStyle(
-            $$(wallpaperSearchElement, '#wallpaperSearch')!, 'display', 'none');
+            wallpaperSearchElement.$.wallpaperSearch, 'display', 'none');
       });
 
       test(
@@ -1452,8 +1430,7 @@ suite('WallpaperSearchTest', () => {
                     wallpaperSearchElement, '#errorDescription')!.textContent,
                 'generic error with history and inspiration');
             assertStyle(
-                $$(wallpaperSearchElement, '#wallpaperSearch')!, 'display',
-                'none');
+                wallpaperSearchElement.$.wallpaperSearch, 'display', 'none');
           });
     });
 
@@ -1664,8 +1641,7 @@ suite('WallpaperSearchTest', () => {
       createWallpaperSearchElementWithDescriptors();
       await microtasksFinished();
 
-      $$<CustomizeChromeCombobox>(
-          wallpaperSearchElement, '#descriptorComboboxA')!.value = 'bar';
+      wallpaperSearchElement.$.descriptorComboboxA.value = 'bar';
       await microtasksFinished();
 
       assertEquals(
@@ -1682,8 +1658,7 @@ suite('WallpaperSearchTest', () => {
       createWallpaperSearchElementWithDescriptors();
       await microtasksFinished();
 
-      $$<CustomizeChromeCombobox>(
-          wallpaperSearchElement, '#descriptorComboboxB')!.value = 'foo';
+      wallpaperSearchElement.$.descriptorComboboxB.value = 'foo';
       await microtasksFinished();
 
       assertEquals(
@@ -1699,8 +1674,7 @@ suite('WallpaperSearchTest', () => {
       createWallpaperSearchElementWithDescriptors();
       await microtasksFinished();
 
-      $$<CustomizeChromeCombobox>(
-          wallpaperSearchElement, '#descriptorComboboxC')!.value = 'foo';
+      wallpaperSearchElement.$.descriptorComboboxC.value = 'foo';
       await microtasksFinished();
 
       assertEquals(
@@ -2076,18 +2050,9 @@ suite('WallpaperSearchTest', () => {
       (firstGroupTitle as HTMLElement).click();
       await microtasksFinished();
 
-      assertEquals(
-          'baz',
-          $$<CustomizeChromeCombobox>(
-              wallpaperSearchElement, '#descriptorComboboxA')!.value);
-      assertEquals(
-          'foo',
-          $$<CustomizeChromeCombobox>(
-              wallpaperSearchElement, '#descriptorComboboxB')!.value);
-      assertEquals(
-          'bar',
-          $$<CustomizeChromeCombobox>(
-              wallpaperSearchElement, '#descriptorComboboxC')!.value);
+      assertEquals('baz', wallpaperSearchElement.$.descriptorComboboxA.value);
+      assertEquals('foo', wallpaperSearchElement.$.descriptorComboboxB.value);
+      assertEquals('bar', wallpaperSearchElement.$.descriptorComboboxC.value);
       const checkedColor =
           $$(wallpaperSearchElement, '#descriptorMenuD button [checked]');
       assertTrue(!!checkedColor);
@@ -2103,18 +2068,9 @@ suite('WallpaperSearchTest', () => {
           .dispatchEvent(new KeyboardEvent('keydown', {key: ' '}));
       await microtasksFinished();
 
-      assertEquals(
-          'bar',
-          $$<CustomizeChromeCombobox>(
-              wallpaperSearchElement, '#descriptorComboboxA')!.value);
-      assertEquals(
-          null,
-          $$<CustomizeChromeCombobox>(
-              wallpaperSearchElement, '#descriptorComboboxB')!.value);
-      assertEquals(
-          'baz',
-          $$<CustomizeChromeCombobox>(
-              wallpaperSearchElement, '#descriptorComboboxC')!.value);
+      assertEquals('bar', wallpaperSearchElement.$.descriptorComboboxA.value);
+      assertEquals(null, wallpaperSearchElement.$.descriptorComboboxB.value);
+      assertEquals('baz', wallpaperSearchElement.$.descriptorComboboxC.value);
       assertFalse(
           !!$$(wallpaperSearchElement, '#descriptorMenuD button [checked]'));
       assertEquals(firstGroupTitle.getAttribute('aria-current'), 'false');
@@ -2169,17 +2125,11 @@ suite('WallpaperSearchTest', () => {
           ]);
       await microtasksFinished();
       assertEquals(
-          undefined,
-          $$<CustomizeChromeCombobox>(
-              wallpaperSearchElement, '#descriptorComboboxA')!.value);
+          undefined, wallpaperSearchElement.$.descriptorComboboxA.value);
       assertEquals(
-          undefined,
-          $$<CustomizeChromeCombobox>(
-              wallpaperSearchElement, '#descriptorComboboxB')!.value);
+          undefined, wallpaperSearchElement.$.descriptorComboboxB.value);
       assertEquals(
-          undefined,
-          $$<CustomizeChromeCombobox>(
-              wallpaperSearchElement, '#descriptorComboboxC')!.value);
+          undefined, wallpaperSearchElement.$.descriptorComboboxC.value);
       assertFalse(
           !!$$(wallpaperSearchElement, '#descriptorMenuD button [checked]'));
 
@@ -2194,18 +2144,9 @@ suite('WallpaperSearchTest', () => {
       (inspirationTile as HTMLElement).click();
       await microtasksFinished();
 
-      assertEquals(
-          'baz',
-          $$<CustomizeChromeCombobox>(
-              wallpaperSearchElement, '#descriptorComboboxA')!.value);
-      assertEquals(
-          'foo',
-          $$<CustomizeChromeCombobox>(
-              wallpaperSearchElement, '#descriptorComboboxB')!.value);
-      assertEquals(
-          'bar',
-          $$<CustomizeChromeCombobox>(
-              wallpaperSearchElement, '#descriptorComboboxC')!.value);
+      assertEquals('baz', wallpaperSearchElement.$.descriptorComboboxA.value);
+      assertEquals('foo', wallpaperSearchElement.$.descriptorComboboxB.value);
+      assertEquals('bar', wallpaperSearchElement.$.descriptorComboboxC.value);
       const checkedColor =
           $$(wallpaperSearchElement, '#descriptorMenuD button [checked]');
       assertTrue(!!checkedColor);
@@ -2220,18 +2161,9 @@ suite('WallpaperSearchTest', () => {
       (inspirationTile as HTMLElement).click();
       await microtasksFinished();
 
-      assertEquals(
-          'bar',
-          $$<CustomizeChromeCombobox>(
-              wallpaperSearchElement, '#descriptorComboboxA')!.value);
-      assertEquals(
-          null,
-          $$<CustomizeChromeCombobox>(
-              wallpaperSearchElement, '#descriptorComboboxB')!.value);
-      assertEquals(
-          null,
-          $$<CustomizeChromeCombobox>(
-              wallpaperSearchElement, '#descriptorComboboxC')!.value);
+      assertEquals('bar', wallpaperSearchElement.$.descriptorComboboxA.value);
+      assertEquals(null, wallpaperSearchElement.$.descriptorComboboxB.value);
+      assertEquals(null, wallpaperSearchElement.$.descriptorComboboxC.value);
       assertFalse(
           !!$$(wallpaperSearchElement, '#descriptorMenuD button [checked]'));
       loadingEvent = await loadingEventPromise;

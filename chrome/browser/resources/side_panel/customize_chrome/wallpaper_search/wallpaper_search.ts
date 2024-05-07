@@ -37,7 +37,7 @@ import type {DescriptorA, DescriptorB, DescriptorDValue, Descriptors, Inspiratio
 import {DescriptorDName, UserFeedback, WallpaperSearchStatus} from '../wallpaper_search.mojom-webui.js';
 import {WindowProxy} from '../window_proxy.js';
 
-import type {ComboboxGroup, ComboboxItem, CustomizeChromeCombobox} from './combobox/customize_chrome_combobox.js';
+import type {ComboboxGroup, ComboboxItem, CustomizeChromeComboboxElement} from './combobox/customize_chrome_combobox.js';
 import {getCss} from './wallpaper_search.css.js';
 import {getHtml} from './wallpaper_search.html.js';
 import {WallpaperSearchProxy} from './wallpaper_search_proxy.js';
@@ -98,9 +98,9 @@ export interface WallpaperSearchElement {
   $: {
     customColorContainer: HTMLElement,
     deleteSelectedHueButton: HTMLElement,
-    descriptorComboboxA: CustomizeChromeCombobox,
-    descriptorComboboxB: CustomizeChromeCombobox,
-    descriptorComboboxC: CustomizeChromeCombobox,
+    descriptorComboboxA: CustomizeChromeComboboxElement,
+    descriptorComboboxB: CustomizeChromeComboboxElement,
+    descriptorComboboxC: CustomizeChromeComboboxElement,
     feedbackButtons: CrFeedbackButtonsElement,
     heading: SpHeadingElement,
     historyCard: HTMLElement,

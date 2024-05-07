@@ -2,16 +2,16 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
+import '../../check_mark_wrapper.js';
 import 'chrome://resources/cr_elements/cr_auto_img/cr_auto_img.js';
-import 'chrome://resources/cr_elements/cr_shared_vars.css.js';
-import 'chrome://resources/cr_elements/icons.html.js';
-import 'chrome://resources/cr_elements/md_select.css.js';
+import 'chrome://resources/cr_elements/icons_lit.html.js';
 import 'chrome://resources/polymer/v3_0/iron-icon/iron-icon.js';
 
-import type {DomRepeatEvent} from 'chrome://resources/polymer/v3_0/polymer/polymer_bundled.min.js';
-import {afterNextRender, PolymerElement} from 'chrome://resources/polymer/v3_0/polymer/polymer_bundled.min.js';
+import {CrLitElement} from 'chrome://resources/lit/v3_0/lit.rollup.js';
+import type {PropertyValues} from 'chrome://resources/lit/v3_0/lit.rollup.js';
 
-import {getTemplate} from './customize_chrome_combobox.html.js';
+import {getCss} from './customize_chrome_combobox.css.js';
+import {getHtml} from './customize_chrome_combobox.html.js';
 
 /* Selector for keyboard focusable items in the dropdown. */
 const HIGHLIGHTABLE_ITEMS_SELECTOR = '[role=group] > label, [role=option]';
@@ -34,68 +34,62 @@ export interface ComboboxGroup {
 /* Running count of total items. Incremented to provide unique IDs. */
 let itemCount = 0;
 
-export interface CustomizeChromeCombobox {
+export interface CustomizeChromeComboboxElement {
   $: {
     input: HTMLDivElement,
     dropdown: HTMLDivElement,
   };
 }
 
-export class CustomizeChromeCombobox extends PolymerElement {
+export class CustomizeChromeComboboxElement extends CrLitElement {
   static get is() {
     return 'customize-chrome-combobox';
   }
 
-  static get template() {
-    return getTemplate();
+  static override get styles() {
+    return getCss();
   }
 
-  static get properties() {
+  override render() {
+    return getHtml.bind(this)();
+  }
+
+  static override get properties() {
     return {
-      defaultOptionLabel: String,
+      defaultOptionLabel: {type: String},
       expanded_: {
         type: Boolean,
-        value: false,
-        reflectToAttribute: true,
-        observer: 'onExpandedChange_',
+        reflect: true,
       },
-      expandedGroups_: Object,
-      highlightedElement_: Object,
+      expandedGroups_: {type: Object},
+      highlightedElement_: {type: Object},
       indentDefaultOption_: {
         type: Boolean,
-        computed: 'computeIndentDefaultOption_(items)',
-        reflectToAttribute: true,
+        reflect: true,
       },
-      items: {
-        type: Array,
-        value: () => [],
-      },
-      label: String,
+      items: {type: Array},
+      label: {type: String},
       rightAlignDropbox: {
         type: Boolean,
-        value: false,
-        reflectToAttribute: true,
+        reflect: true,
       },
-      selectedElement_: {
-        type: Object,
-        observer: 'onSelectedElementChanged_',
-      },
+      selectedElement_: {type: Object},
       value: {
         type: String,
         notify: true,
-        observer: 'selectItemFromValue_',
       },
     };
   }
 
   defaultOptionLabel: string;
-  private expanded_: boolean;
+  protected expanded_: boolean = false;
   private expandedGroups_: {[groupIndex: number]: boolean} = {};
   private highlightableElements_: HTMLElement[] = [];
   private highlightedElement_: HTMLElement|null = null;
   private indentDefaultOption_: boolean;
-  items: ComboboxGroup[]|ComboboxItem[];
+  items: ComboboxGroup[]|ComboboxItem[] = [];
   label: string;
+  rightAlignDropbox: boolean = false;
   private lastHighlightWasByKeyboard_: boolean = false;
   private domObserver_: MutationObserver|null = null;
   private selectedElement_: OptionElement|null = null;
@@ -122,6 +116,36 @@ export class CustomizeChromeCombobox extends PolymerElement {
     this.domObserver_ = null;
   }
 
+  override willUpdate(changedProperties: PropertyValues<this>) {
+    super.willUpdate(changedProperties);
+
+    if (changedProperties.has('items')) {
+      this.indentDefaultOption_ = this.computeIndentDefaultOption_();
+    }
+
+    const changedPrivateProperties =
+        changedProperties as Map<PropertyKey, unknown>;
+
+    if (changedPrivateProperties.has('selectedElement_')) {
+      this.onSelectedElementChanged_();
+    }
+  }
+
+  override updated(changedProperties: PropertyValues<this>) {
+    super.updated(changedProperties);
+
+    if (changedProperties.has('value')) {
+      this.selectItemFromValue_();
+    }
+
+    const changedPrivateProperties =
+        changedProperties as Map<PropertyKey, unknown>;
+
+    if (changedPrivateProperties.has('expanded_')) {
+      this.onExpandedChange_();
+    }
+  }
+
   // The default option needs to be indented with extra padding if it sits
   // right above an option that is not a group and does not have an image as
   // these items have extra space for a checkmark icon.
@@ -140,24 +164,24 @@ export class CustomizeChromeCombobox extends PolymerElement {
     return !('imagePath' in firstItem);
   }
 
-  private getAriaActiveDescendant_(): string|undefined {
+  protected getAriaActiveDescendant_(): string|undefined {
     return this.highlightedElement_?.id;
   }
 
-  private getDefaultItemAriaSelected_(): string {
+  protected getDefaultItemAriaSelected_(): string {
     return this.value === undefined ? 'true' : 'false';
   }
 
-  private getGroupAriaExpanded_(groupIndex: number): string {
+  protected getGroupAriaExpanded_(groupIndex: number): string {
     return this.expandedGroups_[groupIndex] ? 'true' : 'false';
   }
 
-  private getGroupIcon_(groupIndex: number): string {
+  protected getGroupIcon_(groupIndex: number): string {
     return this.expandedGroups_[groupIndex] ? 'cr:expand-less' :
                                               'cr:expand-more';
   }
 
-  private getInputLabel_(): string {
+  protected getInputLabel_(): string {
     if (this.selectedElement_ && this.selectedElement_.value &&
         this.selectedElement_.value === this.value) {
       return this.selectedElement_.textContent!;
@@ -187,15 +211,15 @@ export class CustomizeChromeCombobox extends PolymerElement {
     this.lastHighlightWasByKeyboard_ = byKeyboard;
   }
 
-  private isGroup_(item: ComboboxGroup|ComboboxItem): boolean {
+  protected isGroup_(item: ComboboxGroup|ComboboxItem): boolean {
     return item.hasOwnProperty('items');
   }
 
-  private isGroupExpanded_(groupIndex: number): boolean {
+  protected isGroupExpanded_(groupIndex: number): boolean {
     return this.expandedGroups_[groupIndex];
   }
 
-  private isItemSelected_(item: ComboboxItem): boolean {
+  protected isItemSelected_(item: ComboboxItem): boolean {
     return this.value === item.label;
   }
 
@@ -215,7 +239,7 @@ export class CustomizeChromeCombobox extends PolymerElement {
     }
   }
 
-  private onDropdownClick_(event: MouseEvent) {
+  protected onDropdownClick_(event: MouseEvent) {
     event.preventDefault();
     event.stopPropagation();
 
@@ -235,13 +259,13 @@ export class CustomizeChromeCombobox extends PolymerElement {
     }
   }
 
-  private onDropdownPointerdown_(e: PointerEvent) {
+  protected onDropdownPointerdown_(e: PointerEvent) {
     /* Prevent the dropdown from gaining focus on pointerdown. The input should
      * always be the focused element. */
     e.preventDefault();
   }
 
-  private onDropdownPointerevent_(event: PointerEvent) {
+  protected onDropdownPointerevent_(event: PointerEvent) {
     const highlightableTarget =
         event.composedPath().find(
             target => target instanceof HTMLElement &&
@@ -254,7 +278,7 @@ export class CustomizeChromeCombobox extends PolymerElement {
     this.highlightElement_(highlightableTarget, false);
   }
 
-  private onDropdownPointermove_(event: PointerEvent) {
+  protected onDropdownPointermove_(event: PointerEvent) {
     if (!this.lastHighlightWasByKeyboard_) {
       // Ignore any pointermove events if the last highlight was done by
       // pointer. This is to avoid re-calculating a potentially highlighted item
@@ -265,7 +289,7 @@ export class CustomizeChromeCombobox extends PolymerElement {
     this.onDropdownPointerevent_(event);
   }
 
-  private onDropdownPointerover_(event: PointerEvent) {
+  protected onDropdownPointerover_(event: PointerEvent) {
     if (this.lastHighlightWasByKeyboard_) {
       // Ignore pointerover events if the last highlight was done by keyboard,
       // as pointermove events should catch any pointer-related events. This
@@ -282,16 +306,17 @@ export class CustomizeChromeCombobox extends PolymerElement {
     this.highlightElement_(this.selectedElement_, false);
   }
 
-  private onGroupClick_(e: DomRepeatEvent<ComboboxGroup>) {
-    const index = e.model.index;
-    this.set(`expandedGroups_.${index}`, !this.expandedGroups_[index]);
+  protected onGroupClick_(e: Event) {
+    const index = Number((e.currentTarget as HTMLElement).dataset['index']);
+    this.expandedGroups_[index] = !this.expandedGroups_[index];
+    this.requestUpdate();
   }
 
-  private onInputClick_() {
+  protected onInputClick_() {
     this.expanded_ = !this.expanded_;
   }
 
-  private onInputFocusout_() {
+  protected onInputFocusout_() {
     this.expanded_ = false;
   }
 
@@ -303,7 +328,7 @@ export class CustomizeChromeCombobox extends PolymerElement {
     }
   }
 
-  private onKeydownCollapsedState_(e: KeyboardEvent) {
+  private async onKeydownCollapsedState_(e: KeyboardEvent) {
     if (!['ArrowDown', 'ArrowUp', 'Home', 'End', 'Enter', 'Space'].includes(
             e.key)) {
       return;
@@ -313,6 +338,8 @@ export class CustomizeChromeCombobox extends PolymerElement {
     e.stopPropagation();
 
     this.expanded_ = true;
+    await this.updateComplete;
+
     if (this.highlightedElement_) {
       // If an item is already highlighted, nothing to do.
       return;
@@ -392,7 +419,7 @@ export class CustomizeChromeCombobox extends PolymerElement {
     this.value = this.selectedElement_.value;
   }
 
-  private selectItemFromValue_() {
+  private async selectItemFromValue_() {
     if (!this.value) {
       return;
     }
@@ -404,21 +431,22 @@ export class CustomizeChromeCombobox extends PolymerElement {
     }
 
     const selectedGroupIndex =
-        this.items.filter(item => this.isGroup_(item)).findIndex((group) => {
+        this.items.filter(item => this.isGroup_(item)).findIndex(group => {
           return (group as ComboboxGroup)
-              .items.find((item) => item.label === this.value);
+              .items.find(item => item.label === this.value);
         });
     if (selectedGroupIndex > -1) {
-      this.set(`expandedGroups_.${selectedGroupIndex}`, true);
+      this.expandedGroups_[selectedGroupIndex] = true;
+      this.requestUpdate();
     }
 
-    afterNextRender(this, () => {
-      this.selectItem_(
-          (Array.from(this.shadowRoot!.querySelectorAll(
-               SELECTABLE_ITEMS_SELECTOR)) as OptionElement[])
-              .find(option => option.value === this.value) ||
-          null);
-    });
+    await this.updateComplete;
+    this.selectItem_(
+        Array
+            .from(this.shadowRoot!.querySelectorAll<OptionElement>(
+                SELECTABLE_ITEMS_SELECTOR))
+            .find(option => option.value === this.value) ||
+        null);
   }
 
   private selectItem_(item: HTMLElement|null): boolean {
@@ -452,8 +480,9 @@ export class CustomizeChromeCombobox extends PolymerElement {
 
 declare global {
   interface HTMLElementTagNameMap {
-    'customize-chrome-combobox': CustomizeChromeCombobox;
+    'customize-chrome-combobox': CustomizeChromeComboboxElement;
   }
 }
 
-customElements.define(CustomizeChromeCombobox.is, CustomizeChromeCombobox);
+customElements.define(
+    CustomizeChromeComboboxElement.is, CustomizeChromeComboboxElement);
