@@ -636,6 +636,7 @@ ci.builder(
 
 ci.builder(
     name = "linux-gcc-rel",
+    description_html = "This builder builds only empty_main target to ensure GN config works with is_clang=false.",
     builder_spec = builder_config.builder_spec(
         gclient_config = builder_config.gclient_config(
             config = "chromium",
@@ -658,6 +659,7 @@ ci.builder(
             "release_builder",
             "minimal_symbols",
             "no_clang",
+            "siso",
         ],
     ),
     # Focal is needed for better C++20 support. See crbug.com/1284275.
