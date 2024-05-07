@@ -701,6 +701,11 @@ const char kForestFeatureKey[] = "forest-feature-key";
 // "CHROMEBIT", "CHROMEBOOK", "REFERENCE", "CHROMEBOX"
 const char kFormFactor[] = "form-factor";
 
+// Ignores `ENABLE_MERGE_REQUEST` build flag. Used only in tests where
+// `GlanceablesTimeManagementTasksView` feature flag is manually configured.
+const char kGlanceablesIgnoreEnableMergeRequestBuildFlag[] =
+    "glanceables-ignore-enable-merge-request-build-flag";
+
 // Switch name for "glanceables-v2-key" flag and its expected hashed value.
 const char kGlanceablesKeyExpectedHash[] =
     "\x52\xde\x04\xda\xef\x3a\xde\xe2\x90\x68\xa1\x5c\x36\xd5\x6b\x1d\xb8\x11"

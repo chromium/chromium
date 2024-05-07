@@ -40,5 +40,8 @@ component("constants") {
     "//third_party/abseil-cpp:absl",
     "//url",
   ]
-  deps = [ "//build:branding_buildflags" ]
+  deps = [
+    "//build:branding_buildflags",
+    "//chromeos/components/libsegmentation:buildflags",
+  ]
 }

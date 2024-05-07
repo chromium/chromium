@@ -3,6 +3,7 @@
 // found in the LICENSE file.
 
 #include "ash/calendar/calendar_controller.h"
+#include "ash/constants/ash_switches.h"
 #include "ash/shelf/shelf.h"
 #include "ash/shell.h"
 #include "ash/system/status_area_widget.h"
@@ -14,6 +15,7 @@
 #include "ash/test/ash_test_base.h"
 #include "ash/test/pixel/ash_pixel_differ.h"
 #include "ash/test/pixel/ash_pixel_test_init_params.h"
+#include "base/command_line.h"
 #include "base/memory/raw_ptr.h"
 #include "base/test/scoped_feature_list.h"
 #include "base/time/time.h"
@@ -46,6 +48,8 @@ class CalendarViewPixelTest
     scoped_feature_list_.InitWithFeatureStates(
         {{features::kGlanceablesV2, AreGlanceablesV2Enabled()},
          {features::kGlanceablesV2CalendarView, AreGlanceablesV2Enabled()}});
+    base::CommandLine::ForCurrentProcess()->AppendSwitch(
+        switches::kGlanceablesIgnoreEnableMergeRequestBuildFlag);
   }
 
   void SetUp() override {

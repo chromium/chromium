@@ -8,6 +8,7 @@
 #include "ash/api/tasks/fake_tasks_client.h"
 #include "ash/api/tasks/tasks_types.h"
 #include "ash/constants/ash_features.h"
+#include "ash/constants/ash_switches.h"
 #include "ash/glanceables/classroom/fake_glanceables_classroom_client.h"
 #include "ash/glanceables/classroom/glanceables_classroom_item_view.h"
 #include "ash/glanceables/classroom/glanceables_classroom_student_view.h"
@@ -23,6 +24,7 @@
 #include "ash/system/unified/date_tray.h"
 #include "ash/system/unified/glanceable_tray_bubble.h"
 #include "ash/test/ash_test_util.h"
+#include "base/command_line.h"
 #include "base/test/gtest_tags.h"
 #include "base/test/scoped_feature_list.h"
 #include "base/types/cxx23_to_underlying.h"
@@ -241,6 +243,8 @@ class GlanceablesMvpBrowserTest : public GlanceablesBrowserTest {
     features_.InitWithFeatures(
         /*enabled_features=*/{features::kGlanceablesV2},
         /*disabled_features=*/{features::kGlanceablesTimeManagementTasksView});
+    base::CommandLine::ForCurrentProcess()->AppendSwitch(
+        switches::kGlanceablesIgnoreEnableMergeRequestBuildFlag);
   }
 
   void SetUpOnMainThread() override {

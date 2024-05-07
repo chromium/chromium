@@ -9,6 +9,7 @@
 
 #include "ash/calendar/calendar_client.h"
 #include "ash/calendar/calendar_controller.h"
+#include "ash/constants/ash_switches.h"
 #include "ash/glanceables/common/glanceables_view_id.h"
 #include "ash/public/cpp/ash_view_ids.h"
 #include "ash/session/session_controller_impl.h"
@@ -28,6 +29,7 @@
 #include "ash/system/unified/unified_system_tray_bubble.h"
 #include "ash/test/ash_test_base.h"
 #include "ash/test/ash_test_util.h"
+#include "base/command_line.h"
 #include "base/functional/bind.h"
 #include "base/functional/callback_forward.h"
 #include "base/memory/raw_ptr.h"
@@ -94,7 +96,10 @@ class CalendarViewControllerTestObserver
 
 class CalendarViewTest : public AshTestBase {
  public:
-  CalendarViewTest() = default;
+  CalendarViewTest() {
+    base::CommandLine::ForCurrentProcess()->AppendSwitch(
+        switches::kGlanceablesIgnoreEnableMergeRequestBuildFlag);
+  }
   CalendarViewTest(const CalendarViewTest&) = delete;
   CalendarViewTest& operator=(const CalendarViewTest&) = delete;
   ~CalendarViewTest() override = default;
@@ -1415,6 +1420,8 @@ class CalendarViewAnimationTest
       : AshTestBase(base::test::TaskEnvironment::TimeSource::MOCK_TIME) {
     scoped_feature_list_.InitWithFeatureState(
         ash::features::kMultiCalendarSupport, IsMultiCalendarEnabled());
+    base::CommandLine::ForCurrentProcess()->AppendSwitch(
+        switches::kGlanceablesIgnoreEnableMergeRequestBuildFlag);
   }
   CalendarViewAnimationTest(const CalendarViewAnimationTest&) = delete;
   CalendarViewAnimationTest& operator=(const CalendarViewAnimationTest&) =
