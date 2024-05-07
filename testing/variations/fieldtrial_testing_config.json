@@ -14115,6 +14115,7 @@
                 {
                     "name": "Enabled",
                     "enable_features": [
+                        "IPH_PasswordSharingFeature",
                         "SendPasswords"
                     ]
                 }
