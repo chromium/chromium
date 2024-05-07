@@ -9,6 +9,7 @@
 #include "base/strings/strcat.h"
 #include "components/autofill/core/browser/autofill_granular_filling_utils.h"
 #include "components/autofill/core/browser/field_type_utils.h"
+#include "components/autofill/core/browser/filling_product.h"
 #include "components/autofill/core/browser/form_structure.h"
 #include "components/autofill/core/browser/form_types.h"
 #include "components/autofill/core/browser/metrics/autofill_metrics_utils.h"
@@ -97,7 +98,6 @@ void LogFieldFillingStatsWithHistogramPrefix(
 }
 
 void LogAutocompleteUnrecognizedFieldFillingStats(
-    FormType form_type,
     const FormGroupFillingStats& filling_stats) {
   // Do not acquire metrics if autofill was not used on ac=unrecognized fields
   if (filling_stats.TotalFilled() == 0) {
@@ -325,19 +325,24 @@ void LogFieldFillingStatsAndScore(const FormStructure& form) {
         FieldTypeGroupToFormType(field->Type().group());
     const bool is_address_form_field =
         form_type_of_field == FormType::kAddressForm;
-    const bool credit_card_form_field =
+    const bool is_credit_card_form_field =
         form_type_of_field == FormType::kCreditCardForm;
-    if (!is_address_form_field && !credit_card_form_field) {
+    if (!is_address_form_field && !is_credit_card_form_field) {
       continue;
     }
-    // Address and credit cards fields are mutually exclusive.
-    autofill_metrics::FormGroupFillingStats& group_stats =
-        is_address_form_field ? address_field_stats : cc_field_stats;
-    // Get the filling status of this field and add it to the form group
-    // counter.
-    group_stats.AddFieldFillingStatus(
-        autofill_metrics::GetFieldFillingStatus(*field));
     if (is_address_form_field &&
+        (field->filling_product() == FillingProduct::kAddress ||
+         field->filling_product() == FillingProduct::kNone)) {
+      address_field_stats.AddFieldFillingStatus(GetFieldFillingStatus(*field));
+    }
+    if (is_credit_card_form_field &&
+        (field->filling_product() == FillingProduct::kCreditCard ||
+         field->filling_product() == FillingProduct::kNone)) {
+      cc_field_stats.AddFieldFillingStatus(GetFieldFillingStatus(*field));
+    }
+    if (is_address_form_field &&
+        (field->filling_product() == FillingProduct::kAddress ||
+         field->filling_product() == FillingProduct::kNone) &&
         field->ShouldSuppressSuggestionsAndFillingByDefault()) {
       ac_unrecognized_address_field_stats.AddFieldFillingStatus(
           autofill_metrics::GetFieldFillingStatus(*field));
@@ -356,7 +361,7 @@ void LogFieldFillingStatsAndScore(const FormStructure& form) {
   LogFieldFillingStats(FormType::kAddressForm, address_field_stats);
   LogFieldFillingStats(FormType::kCreditCardForm, cc_field_stats);
   LogAutocompleteUnrecognizedFieldFillingStats(
-      FormType::kCreditCardForm, ac_unrecognized_address_field_stats);
+      ac_unrecognized_address_field_stats);
 
   LogFormFillingScore(FormType::kAddressForm, address_field_stats);
   LogFormFillingScore(FormType::kCreditCardForm, cc_field_stats);
