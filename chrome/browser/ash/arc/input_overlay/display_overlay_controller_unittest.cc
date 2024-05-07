@@ -225,11 +225,15 @@ TEST_F(EditModeDisplayOverlayControllerTest, TestFocusCycler) {
   // These UIs are never destroyed or re-created before finishing the test.
   auto* editing_list = GetEditingList();
   auto* editing_list_widget = editing_list->GetWidget();
+  auto* input_mapping_widget = input_mapping_view_->GetWidget();
 
   // Editing list should be activated after the Game Dashboard (GD) main menu
   // closed. This is to simulate the reality since there is no GD main menu in
   // the test.
   editing_list_widget->Activate();
+
+  CheckAccessibilityTree(
+      std::vector<views::Widget*>{editing_list_widget, input_mapping_widget});
 
   // Case 1: in edit mode default view. The tab focus will cycle between the
   // editing list and input mapping. Press key tab to the last element of the
@@ -271,6 +275,9 @@ TEST_F(EditModeDisplayOverlayControllerTest, TestFocusCycler) {
       /*button_options_visible=*/true, /*delete_edit_menu_visible=*/false);
 
   auto* button_options_menu = GetButtonOptionsMenu();
+  auto* button_options_widget = button_options_menu->GetWidget();
+  CheckAccessibilityTree(
+      std::vector<views::Widget*>{button_options_widget, input_mapping_widget});
 
   auto* options_focus_manager = button_options_menu->GetFocusManager();
   EXPECT_FALSE(mapping_focus_manager->GetFocusedView());
@@ -293,6 +300,9 @@ TEST_F(EditModeDisplayOverlayControllerTest, TestFocusCycler) {
       /*input_mapping_visible=*/true, /*editing_list_visible=*/true,
       /*button_options_visible=*/false, /*delete_edit_menu_visible=*/false);
 
+  CheckAccessibilityTree(
+      std::vector<views::Widget*>{editing_list_widget, input_mapping_widget});
+
   // Case 3: show delete-edit menu. The tab focus cycles among the delete-edit
   // menu, editing list and input mapping.
   HoverAtActionViewListItem(/*index=*/1u);
@@ -301,6 +311,9 @@ TEST_F(EditModeDisplayOverlayControllerTest, TestFocusCycler) {
       /*button_options_visible=*/false, /*delete_edit_menu_visible=*/true);
 
   auto* delete_edit_shortcut = GetDeleteEditShortcut();
+  auto* delete_edit_widget = delete_edit_shortcut->GetWidget();
+  CheckAccessibilityTree(std::vector<views::Widget*>{
+      editing_list_widget, delete_edit_widget, input_mapping_widget});
 
   auto* delete_edit_focus_manager = delete_edit_shortcut->GetFocusManager();
   EXPECT_FALSE(mapping_focus_manager->GetFocusedView());
