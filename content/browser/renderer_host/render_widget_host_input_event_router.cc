@@ -2051,53 +2051,21 @@ void RenderWidgetHostInputEventRouter::ForwardDelegatedInkPoint(
 
   if (IsMoveEvent(input_event.GetTypeAsUiEventType()) && metadata &&
       hovering == metadata.value().delegated_ink_is_hovering) {
-    if (!delegated_ink_point_renderer_.is_bound()) {
-      ui::Compositor* compositor =
-          static_cast<RenderWidgetHostViewBase*>(target_view)->GetCompositor();
-
-      // The remote can't be bound if the compositor is null, so bail if that
-      // is the case so we don't crash by trying to use an unbound remote.
-      if (!compositor)
-        return;
-
-      TRACE_EVENT_INSTANT0("delegated_ink_trails",
-                           "Binding mojo interface for delegated ink points.",
-                           TRACE_EVENT_SCOPE_THREAD);
-      compositor->SetDelegatedInkPointRenderer(
-          delegated_ink_point_renderer_.BindNewPipeAndPassReceiver());
-      delegated_ink_point_renderer_.reset_on_disconnect();
-    }
-
     gfx::PointF position = pointer_properties.PositionInWidget();
     root_view->TransformPointToRootSurface(&position);
     position.Scale(target_view->GetDeviceScaleFactor());
 
     gfx::DelegatedInkPoint delegated_ink_point(
         position, input_event.TimeStamp(), pointer_properties.id);
-    TRACE_EVENT_WITH_FLOW1("delegated_ink_trails",
-                           "Forwarding delegated ink point from browser.",
-                           TRACE_ID_GLOBAL(delegated_ink_point.trace_id()),
-                           TRACE_EVENT_FLAG_FLOW_OUT, "delegated point",
-                           delegated_ink_point.ToString());
 
-    // Calling this will result in IPC calls to get |delegated_ink_point| to
-    // viz. The decision to do this here was made with the understanding that
-    // the IPC overhead will result in a minor increase in latency for getting
-    // this event to the renderer. However, by sending it here, the event is
-    // given the greatest possible chance to make it to viz before
-    // DrawAndSwap() is called, allowing more points to be drawn as part of
-    // the delegated ink trail, and thus reducing user perceived latency.
-    delegated_ink_point_renderer_->StoreDelegatedInkPoint(delegated_ink_point);
-    ended_delegated_ink_trail_ = false;
-  } else if (delegated_ink_point_renderer_.is_bound() &&
-             !ended_delegated_ink_trail_) {
-    // Let viz know that the most recent point it received from us is probably
-    // the last point the user is inking, so it shouldn't predict anything
-    // beyond it.
-    TRACE_EVENT_INSTANT0("delegated_ink_trails", "Delegated ink trail ended",
-                         TRACE_EVENT_SCOPE_THREAD);
-    delegated_ink_point_renderer_->ResetPrediction();
-    ended_delegated_ink_trail_ = true;
+    target_view->GetViewRenderInputRouter()
+        ->delegate()
+        ->ForwardDelegatedInkPoint(delegated_ink_point,
+                                   ended_delegated_ink_trail_);
+  } else {
+    target_view->GetViewRenderInputRouter()
+        ->delegate()
+        ->ResetDelegatedInkPointPrediction(ended_delegated_ink_trail_);
   }
 }
 

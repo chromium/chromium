@@ -10,6 +10,7 @@
 #include "content/browser/renderer_host/render_widget_host_impl.h"
 #include "content/browser/renderer_host/render_widget_host_view_base.h"
 #include "content/public/common/input/native_web_keyboard_event.h"
+#include "ui/compositor/compositor.h"
 #include "ui/display/screen.h"
 
 namespace content {
@@ -82,6 +83,21 @@ RenderViewHostDelegateView* MockRenderWidgetHostDelegate::GetDelegateView() {
 VisibleTimeRequestTrigger&
 MockRenderWidgetHostDelegate::GetVisibleTimeRequestTrigger() {
   return visible_time_request_trigger_;
+}
+
+gfx::mojom::DelegatedInkPointRenderer*
+MockRenderWidgetHostDelegate::GetDelegatedInkRenderer(
+    ui::Compositor* compositor) {
+  if (!delegated_ink_point_renderer_.is_bound()) {
+    if (!compositor) {
+      return nullptr;
+    }
+
+    compositor->SetDelegatedInkPointRenderer(
+        delegated_ink_point_renderer_.BindNewPipeAndPassReceiver());
+    delegated_ink_point_renderer_.reset_on_disconnect();
+  }
+  return delegated_ink_point_renderer_.get();
 }
 
 }  // namespace content

@@ -359,6 +359,10 @@ class CONTENT_EXPORT RenderWidgetHostImpl
   const cc::RenderFrameMetadata& GetLastRenderFrameMetadata() override;
   std::unique_ptr<RenderInputRouterIterator> GetEmbeddedRenderInputRouters()
       override;
+  void ForwardDelegatedInkPoint(gfx::DelegatedInkPoint& delegated_ink_point,
+                                bool& ended_delegated_ink_trail) override;
+  void ResetDelegatedInkPointPrediction(
+      bool& ended_delegated_ink_trail) override;
 
   // Update the stored set of visual properties for the renderer. If 'propagate'
   // is true, the new properties will be sent to the renderer process.

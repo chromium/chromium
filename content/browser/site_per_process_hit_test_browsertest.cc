@@ -7466,7 +7466,7 @@ IN_PROC_BROWSER_TEST_F(SitePerProcessDelegatedInkBrowserTest,
   RenderWidgetHostInputEventRouter* router =
       web_contents()->GetInputEventRouter();
 
-  EXPECT_FALSE(router->IsDelegatedInkRendererBoundForTest());
+  EXPECT_FALSE(web_contents()->IsDelegatedInkRendererBoundForTest());
 
   // Target MouseMove to child frame.
   blink::WebMouseEvent mouse_event(
@@ -7509,7 +7509,7 @@ IN_PROC_BROWSER_TEST_F(SitePerProcessDelegatedInkBrowserTest,
 
   EXPECT_FALSE(main_frame_monitor.EventWasReceived());
   EXPECT_TRUE(child_frame_monitor.EventWasReceived());
-  EXPECT_TRUE(router->IsDelegatedInkRendererBoundForTest());
+  EXPECT_TRUE(web_contents()->IsDelegatedInkRendererBoundForTest());
 }
 #endif  // USE_AURA
 

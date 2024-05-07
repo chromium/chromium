@@ -291,6 +291,10 @@ class CONTENT_EXPORT WebContentsImpl : public WebContents,
   // Return RenderWidgetHostView from RWHIER.
   std::vector<RenderWidgetHostView*> GetRenderWidgetHostViewsForTests();
 
+  bool IsDelegatedInkRendererBoundForTest() {
+    return delegated_ink_point_renderer_.is_bound();
+  }
+
   // Adds the given accessibility mode to the current accessibility mode
   // bitmap.
   void AddAccessibilityModeForTesting(ui::AXMode mode);
@@ -1073,6 +1077,8 @@ class CONTENT_EXPORT WebContentsImpl : public WebContents,
   void DidChangeScreenOrientation() override;
   gfx::Rect GetWindowsControlsOverlayRect() const override;
   VisibleTimeRequestTrigger& GetVisibleTimeRequestTrigger() final;
+  gfx::mojom::DelegatedInkPointRenderer* GetDelegatedInkRenderer(
+      ui::Compositor* compositor) override;
 
   // RenderFrameHostManager::Delegate ------------------------------------------
 
@@ -2117,6 +2123,11 @@ class CONTENT_EXPORT WebContentsImpl : public WebContents,
   // WakeLock held to ensure screen capture keeps the display on. E.g., for
   // presenting through tab capture APIs.
   mojo::Remote<device::mojom::WakeLock> capture_wake_lock_;
+
+  // Remote end of the connection for sending delegated ink points to viz to
+  // support the delegated ink trails feature.
+  mojo::Remote<gfx::mojom::DelegatedInkPointRenderer>
+      delegated_ink_point_renderer_;
 
   // The visibility of the WebContents. Initialized from
   // |CreateParams::initially_hidden|. Updated from

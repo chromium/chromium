@@ -355,11 +355,6 @@ class CONTENT_EXPORT RenderWidgetHostInputEventRouter final
       const blink::WebPointerProperties& pointer_properties,
       bool hovering);
 
-  void FlushForTest() { delegated_ink_point_renderer_.FlushForTesting(); }
-  bool IsDelegatedInkRendererBoundForTest() {
-    return delegated_ink_point_renderer_.is_bound();
-  }
-
   FrameSinkIdOwnerMap owner_map_;
   TargetMap touchscreen_gesture_target_map_;
   // This field is not a raw_ptr<> because of a reference to raw_ptr in
@@ -472,10 +467,6 @@ class CONTENT_EXPORT RenderWidgetHostInputEventRouter final
   mutable gfx::PointF mouse_down_post_transformed_coordinate_;
   raw_ptr<RenderWidgetHostViewInput> last_mouse_down_target_ = nullptr;
 
-  // Remote end of the connection for sending delegated ink points to viz to
-  // support the delegated ink trails feature.
-  mojo::Remote<gfx::mojom::DelegatedInkPointRenderer>
-      delegated_ink_point_renderer_;
   // Used to know if we have already told viz to reset prediction because the
   // final point of the delegated ink trail has been sent. True when prediction
   // has already been reset for the most recent trail, false otherwise. This

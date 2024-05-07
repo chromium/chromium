@@ -41,6 +41,8 @@ class MockRenderWidgetHostDelegate : public RenderWidgetHostDelegate {
   }
   void CreateInputEventRouter();
 
+  void FlushInkRenderer() { delegated_ink_point_renderer_.FlushForTesting(); }
+
   // RenderWidgetHostDelegate:
   void ResizeDueToAutoResize(RenderWidgetHostImpl* render_widget_host,
                              const gfx::Size& new_size) override;
@@ -63,11 +65,15 @@ class MockRenderWidgetHostDelegate : public RenderWidgetHostDelegate {
   bool IsFullscreen() override;
   RenderViewHostDelegateView* GetDelegateView() override;
   VisibleTimeRequestTrigger& GetVisibleTimeRequestTrigger() override;
+  gfx::mojom::DelegatedInkPointRenderer* GetDelegatedInkRenderer(
+      ui::Compositor* compositor) override;
 
  private:
   std::unique_ptr<NativeWebKeyboardEvent> last_event_;
   raw_ptr<RenderWidgetHostImpl, DanglingUntriaged> rwh_ = nullptr;
   std::unique_ptr<RenderWidgetHostInputEventRouter> rwh_input_event_router_;
+  mojo::Remote<gfx::mojom::DelegatedInkPointRenderer>
+      delegated_ink_point_renderer_;
   bool is_fullscreen_ = false;
   TextInputManager text_input_manager_;
   raw_ptr<RenderWidgetHostImpl, DanglingUntriaged> focused_widget_ = nullptr;

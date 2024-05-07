@@ -332,7 +332,7 @@ class RenderWidgetHostInputEventRouterTest : public testing::Test {
       RenderWidgetHostViewBase* gesture_target,
       bool should_cancel);
 
-  void FlushInkRenderer() { rwhier()->FlushForTest(); }
+  void FlushInkRenderer() { delegate_->FlushInkRenderer(); }
 
   BrowserTaskEnvironment task_environment_;
 

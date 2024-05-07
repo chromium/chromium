@@ -149,6 +149,11 @@ bool RenderWidgetHostDelegate::IsWidgetForPrimaryMainFrame(
   return false;
 }
 
+gfx::mojom::DelegatedInkPointRenderer*
+RenderWidgetHostDelegate::GetDelegatedInkRenderer(ui::Compositor* compositor) {
+  return nullptr;
+}
+
 ukm::SourceId RenderWidgetHostDelegate::GetCurrentPageUkmSourceId() {
   return ukm::kInvalidSourceId;
 }

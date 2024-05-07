@@ -24,6 +24,7 @@
 #include "third_party/blink/public/mojom/input/input_handler.mojom-shared.h"
 #include "third_party/blink/public/mojom/manifest/display_mode.mojom.h"
 #include "ui/base/ui_base_types.h"
+#include "ui/gfx/mojom/delegated_ink_point_renderer.mojom.h"
 #include "ui/gfx/native_widget_types.h"
 
 namespace blink {
@@ -37,6 +38,10 @@ class Point;
 class Rect;
 class Size;
 }  // namespace gfx
+
+namespace ui {
+class Compositor;
+}  // namespace ui
 
 namespace content {
 
@@ -284,6 +289,13 @@ class CONTENT_EXPORT RenderWidgetHostDelegate {
   // Returns the object that tracks the start of content to visible events for
   // the WebContents.
   virtual VisibleTimeRequestTrigger& GetVisibleTimeRequestTrigger() = 0;
+
+  // Returns the delegated ink point renderer associated with this WebContents
+  // for dispatching delegated ink points to viz. This also attempts to setup
+  // mojo connection using |compositor|, if the DelegatedInkPointRenderer
+  // interface is not bound.
+  virtual gfx::mojom::DelegatedInkPointRenderer* GetDelegatedInkRenderer(
+      ui::Compositor* compositor);
 
   // Inner WebContents Helpers -------------------------------------------------
   //
