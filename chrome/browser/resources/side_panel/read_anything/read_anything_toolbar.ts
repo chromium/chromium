@@ -908,6 +908,11 @@ export class ReadAnythingToolbarElement extends ReadAnythingToolbarElementBase {
     elementToFocus.focus();
   }
 
+  private getMoreOptionsButtons_(): HTMLElement[] {
+    return Array.from(
+        this.$.toolbarContainer.querySelectorAll(moreOptionsClass));
+  }
+
   private onKeyDown_(e: KeyboardEvent, focusableElements: HTMLElement[]) {
     if (!['ArrowRight', 'ArrowLeft'].includes(e.key)) {
       return;
@@ -923,9 +928,26 @@ export class ReadAnythingToolbarElement extends ReadAnythingToolbarElementBase {
     // focused by tabbing while the menu is open and we want the arrow key
     // behavior to continue smoothly.
     if (focusableElements[newIndex].id === 'more') {
+      const moreOptionsRendered = this.$.moreOptionsMenu.getIfExists();
+      // If the more options menu has not been rendered yet, render it and wait
+      // for it to be drawn so we can get the number of elements in the menu.
+      if (!moreOptionsRendered) {
+        openMenu(this.$.moreOptionsMenu.get(), this.$.more);
+        requestAnimationFrame(() => {
+          const moreOptions = this.getMoreOptionsButtons_();
+          focusableElements = focusableElements.concat(moreOptions);
+          newIndex = (direction === 1) ? (newIndex + 1) :
+                                         (focusableElements.length - 1);
+          this.updateFocus_(focusableElements, newIndex);
+        });
+        return;
+      }
       newIndex += direction;
     }
+    this.updateFocus_(focusableElements, newIndex);
+  }
 
+  private updateFocus_(focusableElements: HTMLElement[], newIndex: number) {
     // Open the overflow menu if the next button is in that menu. Close it
     // otherwise.
     const elementToFocus = focusableElements[newIndex];
