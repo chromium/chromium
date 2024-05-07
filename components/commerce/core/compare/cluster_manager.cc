@@ -242,6 +242,9 @@ void ClusterManager::OnProductInfoRetrieved(
   }
 
   AddCandidateProduct(url, product_info);
+  for (auto& observer : observers_) {
+    observer.OnClusterFinishedForNavigation(url);
+  }
 }
 
 void ClusterManager::OnAllCategoryDataRetrieved(
@@ -306,6 +309,14 @@ std::vector<GURL> ClusterManager::FindSimilarCandidateProductsForProductGroup(
     }
   }
   return candidate_products;
+}
+
+void ClusterManager::AddObserver(Observer* observer) {
+  observers_.AddObserver(observer);
+}
+
+void ClusterManager::RemoveObserver(Observer* observer) {
+  observers_.RemoveObserver(observer);
 }
 
 std::set<GURL> ClusterManager::FindSimilarCandidateProducts(

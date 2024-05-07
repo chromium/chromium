@@ -50,6 +50,14 @@ class MockProductSpecificationsService : public ProductSpecificationsService {
               (override));
 };
 
+class MockObserver : public ClusterManager::Observer {
+ public:
+  MOCK_METHOD(void,
+              OnClusterFinishedForNavigation,
+              (const GURL& url),
+              (override));
+};
+
 class ClusterManagerTest : public testing::Test {
  public:
   ClusterManagerTest() = default;
@@ -663,5 +671,23 @@ TEST_F(ClusterManagerTest,
   ASSERT_EQ(info->similar_candidate_products_urls.count(foo3), 1u);
 
   ASSERT_FALSE(cluster_manager_->GetEntryPointInfoForSelection(foo2, foo3));
+}
+
+TEST_F(ClusterManagerTest, ClusterManagerObserver) {
+  GURL foo1(kTestUrl1);
+  GURL foo2(kTestUrl2);
+  MockObserver observer;
+  EXPECT_CALL(observer, OnClusterFinishedForNavigation(foo1)).Times(1);
+  EXPECT_CALL(observer, OnClusterFinishedForNavigation(foo2)).Times(0);
+
+  cluster_manager_->AddObserver(&observer);
+  UpdateUrlInfos(std::vector<GURL>{foo1});
+  cluster_manager_->DidNavigatePrimaryMainFrame(foo1);
+  base::RunLoop().RunUntilIdle();
+
+  cluster_manager_->RemoveObserver(&observer);
+  UpdateUrlInfos(std::vector<GURL>{foo1, foo2});
+  cluster_manager_->DidNavigatePrimaryMainFrame(foo2);
+  base::RunLoop().RunUntilIdle();
 }
 }  // namespace commerce

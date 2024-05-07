@@ -11,6 +11,8 @@
 #include <vector>
 
 #include "base/memory/weak_ptr.h"
+#include "base/observer_list.h"
+#include "base/observer_list_types.h"
 #include "base/scoped_observation.h"
 #include "base/uuid.h"
 #include "components/commerce/core/commerce_types.h"
@@ -29,6 +31,13 @@ class ClusterManager : public ProductSpecificationsSet::Observer {
       base::RepeatingCallback<void(const GURL&, ProductInfoCallback)>;
   using GetOpenUrlInfosCallback =
       base::RepeatingCallback<const std::vector<UrlInfo>()>;
+
+  class Observer : public base::CheckedObserver {
+   public:
+    // Notifies that ClusterManager has finished clustering for a recent
+    // navigation with `url`.
+    virtual void OnClusterFinishedForNavigation(const GURL& url) {}
+  };
 
   ClusterManager(ProductSpecificationsService* product_specification_service,
                  const GetProductInfoCallback& get_product_info_cb,
@@ -67,7 +76,7 @@ class ClusterManager : public ProductSpecificationsSet::Observer {
   // if it can be clustered into a group.
   std::optional<EntryPointInfo> GetEntryPointInfoForNavigation(GURL url);
 
-  // Get information to decide if entry point should show on selection and
+  // Gets information to decide if entry point should show on selection and
   // return it. `old_url` is the URL of the tab before selection.
   // `new_url` is the URL of the tab after selection.
   std::optional<EntryPointInfo> GetEntryPointInfoForSelection(GURL old_url,
@@ -76,6 +85,12 @@ class ClusterManager : public ProductSpecificationsSet::Observer {
   // Finds similar candidate products for a product group.
   std::vector<GURL> FindSimilarCandidateProductsForProductGroup(
       const base::Uuid& uuid);
+
+  // Registers an observer for cluster manager.
+  void AddObserver(Observer* observer);
+
+  // Removes an observer for cluster manager.
+  void RemoveObserver(Observer* observer);
 
  private:
   friend class ClusterManagerTest;
@@ -118,6 +133,8 @@ class ClusterManager : public ProductSpecificationsSet::Observer {
   base::ScopedObservation<ProductSpecificationsService,
                           ProductSpecificationsSet::Observer>
       obs_{this};
+
+  base::ObserverList<Observer> observers_;
 
   base::WeakPtrFactory<ClusterManager> weak_ptr_factory_{this};
 };
