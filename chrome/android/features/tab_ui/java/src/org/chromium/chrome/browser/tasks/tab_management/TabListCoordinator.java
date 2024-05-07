@@ -193,8 +193,7 @@ public class TabListCoordinator
                 false,
                 0,
                 0,
-                0,
-                /* refreshTabListRunnable= */ null);
+                0);
     }
 
     TabListCoordinator(
@@ -221,8 +220,7 @@ public class TabListCoordinator
             boolean hasEmptyView,
             int emptyImageResId,
             int emptyHeadingStringResId,
-            int emptySubheadingStringResId,
-            @Nullable Runnable refreshTabListRunnable) {
+            int emptySubheadingStringResId) {
         mMode = mode;
         mItemType = itemType;
         mContext = context;
@@ -381,7 +379,6 @@ public class TabListCoordinator
                         priceWelcomeMessageControllerSupplier,
                         componentName,
                         itemType,
-                        refreshTabListRunnable,
                         actionConfirmationManager);
 
         try (TraceEvent e = TraceEvent.scoped("TabListCoordinator.setupRecyclerView")) {

@@ -262,9 +262,6 @@ public interface TabSwitcher {
      */
     void showQuickDeleteAnimation(Runnable onAnimationEnd, List<Tab> tabs);
 
-    /** Refresh the tab switcher's tab list to display any out-of-band updates properly. */
-    void refreshTabList();
-
     /**
      * Open the invitation modal on top of the tab switcher view when an invitation intent is
      * intercepted.

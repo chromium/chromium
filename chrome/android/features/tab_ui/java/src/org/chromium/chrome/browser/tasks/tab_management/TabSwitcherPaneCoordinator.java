@@ -228,10 +228,7 @@ public class TabSwitcherPaneCoordinator implements BackPressHandler {
                                     : Resources.ID_NULL,
                             supportsEmptyState
                                     ? R.string.tabswitcher_no_tabs_open_to_visit_different_pages
-                                    : Resources.ID_NULL,
-                            () ->
-                                    resetHandler.resetWithTabList(
-                                            tabModelFilterSupplier.get(), false));
+                                    : Resources.ID_NULL);
             mTabListCoordinator = tabListCoordinator;
 
             TabListRecyclerView recyclerView = tabListCoordinator.getContainerView();

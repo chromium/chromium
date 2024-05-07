@@ -254,8 +254,7 @@ public class TabSwitcherCoordinator
                             true,
                             emptyImageResId,
                             emptyHeadingStringResId,
-                            emptySubheadingStringResId,
-                            () -> refreshTabList());
+                            emptySubheadingStringResId);
 
             mTabListCoordinator.setOnLongPressTabItemEventListener(this);
 
@@ -453,11 +452,6 @@ public class TabSwitcherCoordinator
     @Override
     public void setTabSwitcherRecyclerViewPosition(RecyclerViewPosition recyclerViewPosition) {
         mTabListCoordinator.setRecyclerViewPosition(recyclerViewPosition);
-    }
-
-    @Override
-    public void refreshTabList() {
-        mMediator.refreshTabList();
     }
 
     @Override

@@ -399,7 +399,6 @@ class TabListMediator {
     private @Nullable RecyclerView mRecyclerView;
     private @Nullable OnScrollListener mOnScrollListener;
     private TabGroupVisualDataDialogManager mTabGroupVisualDataDialogManager;
-    private @Nullable Runnable mRefreshTabListRunnable;
 
     private final TabActionListener mTabSelectedListener =
             new TabActionListener() {
@@ -585,6 +584,34 @@ class TabListMediator {
 
     private final TabGroupModelFilterObserver mTabGroupObserver =
             new TabGroupModelFilterObserver() {
+                @Override
+                public void didChangeTabGroupTitle(int rootId, String newTitle) {
+                    if (!mActionsOnAllRelatedTabs) return;
+
+                    @Nullable Pair<Integer, Tab> indexAndTab = getIndexAndTabForRootId(rootId);
+                    if (indexAndTab == null) return;
+
+                    mModel.get(indexAndTab.first).model.set(TabProperties.TITLE, newTitle);
+                }
+
+                @Override
+                public void didChangeTabGroupColor(int rootId, @TabGroupColorId int newColor) {
+                    if (!ChromeFeatureList.sTabGroupParityAndroid.isEnabled()) return;
+
+                    if (!mActionsOnAllRelatedTabs) return;
+
+                    @Nullable Pair<Integer, Tab> indexAndTab = getIndexAndTabForRootId(rootId);
+                    if (indexAndTab == null) return;
+
+                    if (mMode == TabListMode.LIST) {
+                        mModel.get(indexAndTab.first)
+                                .model
+                                .set(TabProperties.TAB_GROUP_COLOR_ID, newColor);
+                    } else if (mMode == TabListMode.GRID) {
+                        updateFaviconForTab(PseudoTab.fromTab(indexAndTab.second), null, null);
+                    }
+                }
+
                 @Override
                 public void didMoveWithinGroup(
                         Tab movedTab, int tabModelOldIndex, int tabModelNewIndex) {
@@ -868,7 +895,6 @@ class TabListMediator {
      *     PriceWelcomeMessage.
      * @param componentName This is a unique string to identify different components.
      * @param uiType The type of UI this mediator should be building.
-     * @param refreshTabListRunnable The runnable to perform when refreshing the GTS tab list.
      */
     public TabListMediator(
             Context context,
@@ -888,7 +914,6 @@ class TabListMediator {
             @NonNull Supplier<PriceWelcomeMessageController> priceWelcomeMessageControllerSupplier,
             String componentName,
             @UiType int uiType,
-            @Nullable Runnable refreshTabListRunnable,
             @NonNull ActionConfirmationManager actionConfirmationManager) {
         mContext = context;
         mModalDialogManager = modalDialogManager;
@@ -909,7 +934,6 @@ class TabListMediator {
         mPriceWelcomeMessageControllerSupplier = priceWelcomeMessageControllerSupplier;
         mProfile = regularTabModelSupplier.get().getProfile();
         mTabGroupVisualDataDialogManager = null;
-        mRefreshTabListRunnable = refreshTabListRunnable;
         mActionConfirmationManager = actionConfirmationManager;
 
         mTabModelObserver =
@@ -2424,7 +2448,15 @@ class TabListMediator {
      * @return the index for the tab group within {@link mModel}
      */
     int getIndexForTabWithRelatedTabs(Tab tab) {
-        List<Integer> relatedTabIds = getRelatedTabsIds(tab.getId());
+        return getIndexForTabIdWithRelatedTabs(tab.getId());
+    }
+
+    /**
+     * @param tab the {@link Tab} to find the group index of.
+     * @return the index for the tab group within {@link mModel}
+     */
+    int getIndexForTabIdWithRelatedTabs(int tabId) {
+        List<Integer> relatedTabIds = getRelatedTabsIds(tabId);
         if (!relatedTabIds.isEmpty()) {
             for (int i = 0; i < mModel.size(); i++) {
                 int modelTabId = mModel.get(i).model.get(TAB_ID);
@@ -2434,6 +2466,28 @@ class TabListMediator {
             }
         }
         return TabModel.INVALID_TAB_INDEX;
+    }
+
+    /**
+     * Returns the index in {@link mModel} of the group with {@code rootId} and the {@link Tab}
+     * representing the group. Will be null if the entry is not present, the tab cannot be found, or
+     * the tab is not part of a tab group.
+     */
+    private @Nullable Pair<Integer, Tab> getIndexAndTabForRootId(int rootId) {
+        int index = getIndexForTabIdWithRelatedTabs(rootId);
+        if (index == TabModel.INVALID_TAB_INDEX) return null;
+
+        Tab tab = getTabForIndex(index);
+        if (tab == null || !mCurrentTabModelFilterSupplier.get().isTabInTabGroup(tab)) {
+            return null;
+        }
+        return Pair.create(index, tab);
+    }
+
+    private @Nullable Tab getTabForIndex(int index) {
+        return TabModelUtils.getTabById(
+                mCurrentTabModelFilterSupplier.get().getTabModel(),
+                mModel.get(index).model.get(TabProperties.TAB_ID));
     }
 
     Tab getTabToAddDelayedForTesting() {
@@ -2699,12 +2753,8 @@ class TabListMediator {
                     public void onDismiss(PropertyModel model, int dismissalCause) {
                         if (dismissalCause == DialogDismissalCause.POSITIVE_BUTTON_CLICKED) {
                             @TabGroupColorId
-                            int defaultColorId =
-                                    mTabGroupVisualDataDialogManager.getDefaultColorId();
-                            @TabGroupColorId
                             int currentColorId =
                                     mTabGroupVisualDataDialogManager.getCurrentColorId();
-                            boolean didChangeColor = currentColorId != defaultColorId;
                             filter.setTabGroupColor(rootId, currentColorId);
 
                             String defaultGroupTitle =
@@ -2717,13 +2767,6 @@ class TabListMediator {
                             // which is displayed as a tab count and chooses not to change it.
                             if (didChangeTitle) {
                                 filter.setTabGroupTitle(rootId, inputGroupTitle);
-                            }
-
-                            if (didChangeColor || didChangeTitle) {
-                                // Refresh the GTS tab list with the newly set color and title.
-                                if (mRefreshTabListRunnable != null) {
-                                    mRefreshTabListRunnable.run();
-                                }
                             }
                         }
 
