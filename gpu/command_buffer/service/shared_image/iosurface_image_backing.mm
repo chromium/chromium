@@ -1010,6 +1010,7 @@ IOSurfaceImageBacking::IOSurfaceImageBacking(
       gl_target_(gl_target),
       framebuffer_attachment_angle_(framebuffer_attachment_angle),
       cleared_rect_(is_cleared ? gfx::Rect(size) : gfx::Rect()),
+      gr_context_type_(gr_context_type),
       weak_factory_(this) {
   CHECK(io_surface_);
 
@@ -1836,7 +1837,15 @@ void IOSurfaceImageBacking::IOSurfaceBackingEGLStateEndAccess(
   CHECK(display);
   CHECK_EQ(display->GetDisplay(), egl_state->egl_display_);
 
-  if (gl::GetANGLEImplementation() == gl::ANGLEImplementation::kMetal) {
+  // Only enqueue shared events if we might ever use this backing on another
+  // Metal device e.g. with WebGPU or Graphite.
+  const bool has_webgpu_usage =
+      usage() &
+      (SHARED_IMAGE_USAGE_WEBGPU_READ | SHARED_IMAGE_USAGE_WEBGPU_WRITE |
+       SHARED_IMAGE_USAGE_WEBGPU_SWAP_CHAIN_TEXTURE |
+       SHARED_IMAGE_USAGE_WEBGPU_STORAGE_TEXTURE);
+  if (gl::GetANGLEImplementation() == gl::ANGLEImplementation::kMetal &&
+      (has_webgpu_usage || gr_context_type_ != GrContextType::kGL)) {
     id<MTLSharedEvent> shared_event = nil;
     uint64_t signal_value = 0;
     if (display->CreateMetalSharedEvent(&shared_event, &signal_value)) {

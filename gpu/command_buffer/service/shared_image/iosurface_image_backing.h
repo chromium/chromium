@@ -302,6 +302,10 @@ class GPU_GLES2_EXPORT IOSurfaceImageBacking
   // This map tracks all IOSurfaceBackingEGLState instances that exist.
   std::map<EGLDisplay, IOSurfaceBackingEGLState*> egl_state_map_;
 
+  // GrContextType for SharedContextState used to distinguish between Ganesh
+  // and Graphite.
+  GrContextType gr_context_type_;
+
   // If Skia is using GL, this object creates a GL texture at construction time
   // for the Skia GL context and reuses it (for that context) for its lifetime.
   scoped_refptr<IOSurfaceBackingEGLState> egl_state_for_skia_gl_context_;
