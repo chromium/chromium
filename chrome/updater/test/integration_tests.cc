@@ -779,6 +779,21 @@ TEST_F(IntegrationTest, MAYBE_OverinstallWorking) {
   ASSERT_NO_FATAL_FAILURE(ExpectVersionNotActive(kUpdaterVersion));
   ASSERT_NO_FATAL_FAILURE(ExpectRegistered("test"));
 
+  // After two wakes, the new updater is active.
+  ScopedServer test_server(test_commands_);
+  ASSERT_NO_FATAL_FAILURE(
+      ExpectUpdateSequence(&test_server, kQualificationAppId, "",
+                           UpdateService::Priority::kBackground,
+                           base::Version("0.1"), base::Version("0.2")));
+  ASSERT_NO_FATAL_FAILURE(RunWake(0));
+  ASSERT_TRUE(WaitForUpdaterExit());
+  ASSERT_NO_FATAL_FAILURE(ExpectNoUpdateSequence(&test_server, kUpdaterAppId));
+  ASSERT_NO_FATAL_FAILURE(RunWake(0));
+  ASSERT_TRUE(WaitForUpdaterExit());
+  ASSERT_NO_FATAL_FAILURE(ExpectVersionActive(kUpdaterVersion));
+  ASSERT_NO_FATAL_FAILURE(ExpectRegistered("test"));
+
+  ASSERT_NO_FATAL_FAILURE(ExpectUninstallPing(&test_server));
   ASSERT_NO_FATAL_FAILURE(Uninstall());
 }
 
