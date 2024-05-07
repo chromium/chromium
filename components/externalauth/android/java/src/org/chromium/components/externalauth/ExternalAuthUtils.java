@@ -259,7 +259,10 @@ public class ExternalAuthUtils {
         // TODO(crbug.com/577190): Temporarily allowing disk access until more permanent fix is in.
         try (StrictModeContext ignored = StrictModeContext.allowDiskWrites();
                 TraceEvent e = TraceEvent.scoped("checkGooglePlayServicesAvailable")) {
-            return ChromiumPlayServicesAvailability.getGooglePlayServicesConnectionResult(context);
+            // TODO(wolvic): Use ChromiumPlayServicesAvailability once wolvic
+            // can properly depend on GMS services.
+            // return ChromiumPlayServicesAvailability.getGooglePlayServicesConnectionResult(context);
+            return 0;
         }
     }
 
