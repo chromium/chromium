@@ -46,6 +46,9 @@ enum class PopupItemId : int {
 
   // Compose suggestions.
   kCompose,
+  kComposeDisable,
+  kComposeGoToSettings,
+  kComposeNeverShowOnThisSiteAgain,
   kComposeSavedStateNotification,
 
   // Datalist suggestions.

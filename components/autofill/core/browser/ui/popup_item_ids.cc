@@ -44,6 +44,15 @@ std::ostream& operator<<(std::ostream& os, PopupItemId popup_item_id) {
     case PopupItemId::kCompose:
       os << "kCompose";
       break;
+    case PopupItemId::kComposeDisable:
+      os << "kComposeDisable";
+      break;
+    case PopupItemId::kComposeGoToSettings:
+      os << "kComposeGoToSettings";
+      break;
+    case PopupItemId::kComposeNeverShowOnThisSiteAgain:
+      os << "kComposeNeverShowOnThisSiteAgain";
+      break;
     case PopupItemId::kComposeSavedStateNotification:
       os << "kComposeSavedStateNotification";
       break;

@@ -15,9 +15,11 @@
 #include "components/autofill/core/browser/test_autofill_driver.h"
 #include "components/autofill/core/browser/ui/popup_item_ids.h"
 #include "components/autofill/core/browser/ui/suggestion.h"
+#include "components/autofill/core/browser/ui/suggestion_test_helpers.h"
 #include "components/autofill/core/common/autofill_test_utils.h"
 #include "components/autofill/core/common/form_data.h"
 #include "components/compose/core/browser/compose_client.h"
+#include "components/compose/core/browser/compose_features.h"
 #include "components/compose/core/browser/compose_metrics.h"
 #include "components/strings/grit/components_strings.h"
 #include "components/ukm/test_ukm_recorder.h"
@@ -176,6 +178,39 @@ TEST_F(
                     IDS_COMPOSE_SUGGESTION_SAVED_LABEL))}},
                 autofill::Suggestion::Icon::kPenSpark,
                 autofill::PopupItemId::kComposeSavedStateNotification));
+}
+
+TEST_F(
+    ComposeManagerImplTest,
+    SuggestionGeneration_ProactiveNudgeFeatureOn_DoesNotHaveSession_HasChildSuggestions) {
+  base::test::ScopedFeatureList compose_proactive_nudge_feature{
+      compose::features::kEnableComposeProactiveNudge};
+
+  std::optional<autofill::Suggestion> suggestion = GetSuggestion(
+      autofill::AutofillSuggestionTriggerSource::kComposeDialogLostFocus,
+      /*has_session=*/false);
+  ASSERT_TRUE(suggestion.has_value());
+  // Checks that the 3 expected child suggestions exist.
+  EXPECT_THAT(
+      suggestion->children,
+      ElementsAre(
+          EqualsSuggestion(
+              autofill::PopupItemId::kComposeNeverShowOnThisSiteAgain),
+          EqualsSuggestion(autofill::PopupItemId::kComposeDisable),
+          EqualsSuggestion(autofill::PopupItemId::kComposeGoToSettings)));
+}
+
+TEST_F(
+    ComposeManagerImplTest,
+    SuggestionGeneration_ProactiveNudgeFeatureOn_HasSession_NoChildSuggestions) {
+  base::test::ScopedFeatureList compose_proactive_nudge_feature{
+      compose::features::kEnableComposeProactiveNudge};
+
+  std::optional<autofill::Suggestion> suggestion = GetSuggestion(
+      autofill::AutofillSuggestionTriggerSource::kComposeDialogLostFocus,
+      /*has_session=*/true);
+  ASSERT_TRUE(suggestion.has_value());
+  EXPECT_TRUE(suggestion->children.empty());
 }
 
 TEST_F(

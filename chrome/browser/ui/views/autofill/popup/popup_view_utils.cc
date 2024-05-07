@@ -537,19 +537,19 @@ BubbleBorder::Arrow GetOptimalPopupPlacement(
 
 bool IsFooterPopupItemId(PopupItemId popup_item_id) {
   switch (popup_item_id) {
-    case PopupItemId::kScanCreditCard:
+    case PopupItemId::kAllSavedPasswordsEntry:
+    case PopupItemId::kAutofillOptions:
+    case PopupItemId::kClearForm:
+    case PopupItemId::kDeleteAddressProfile:
+    case PopupItemId::kEditAddressProfile:
+    case PopupItemId::kFillEverythingFromAddressProfile:
     case PopupItemId::kPasswordAccountStorageEmpty:
     case PopupItemId::kPasswordAccountStorageOptIn:
-    case PopupItemId::kPasswordAccountStorageReSignin:
     case PopupItemId::kPasswordAccountStorageOptInAndGenerate:
-    case PopupItemId::kShowAccountCards:
-    case PopupItemId::kAllSavedPasswordsEntry:
-    case PopupItemId::kFillEverythingFromAddressProfile:
-    case PopupItemId::kClearForm:
-    case PopupItemId::kAutofillOptions:
+    case PopupItemId::kPasswordAccountStorageReSignin:
+    case PopupItemId::kScanCreditCard:
     case PopupItemId::kSeePromoCodeDetails:
-    case PopupItemId::kEditAddressProfile:
-    case PopupItemId::kDeleteAddressProfile:
+    case PopupItemId::kShowAccountCards:
     case PopupItemId::kViewPasswordDetails:
       return true;
     case PopupItemId::kAccountStoragePasswordEntry:
@@ -557,6 +557,9 @@ bool IsFooterPopupItemId(PopupItemId popup_item_id) {
     case PopupItemId::kAddressFieldByFieldFilling:
     case PopupItemId::kAutocompleteEntry:
     case PopupItemId::kCompose:
+    case PopupItemId::kComposeDisable:
+    case PopupItemId::kComposeGoToSettings:
+    case PopupItemId::kComposeNeverShowOnThisSiteAgain:
     case PopupItemId::kComposeSavedStateNotification:
     case PopupItemId::kCreateNewPlusAddress:
     case PopupItemId::kCreditCardEntry:
@@ -566,22 +569,22 @@ bool IsFooterPopupItemId(PopupItemId popup_item_id) {
     case PopupItemId::kDevtoolsTestAddresses:
     case PopupItemId::kFillExistingPlusAddress:
     case PopupItemId::kFillFullAddress:
-    case PopupItemId::kFillFullName:
     case PopupItemId::kFillFullEmail:
+    case PopupItemId::kFillFullName:
     case PopupItemId::kFillFullPhoneNumber:
+    case PopupItemId::kFillPassword:
     case PopupItemId::kGeneratePasswordEntry:
     case PopupItemId::kIbanEntry:
     case PopupItemId::kInsecureContextPaymentDisabledMessage:
     case PopupItemId::kMerchantPromoCodeEntry:
     case PopupItemId::kMixedFormMessage:
     case PopupItemId::kPasswordEntry:
-    case PopupItemId::kTitle:
+    case PopupItemId::kPasswordFieldByFieldFilling:
     case PopupItemId::kSeparator:
+    case PopupItemId::kTitle:
     case PopupItemId::kVirtualCreditCardEntry:
     case PopupItemId::kWebauthnCredential:
     case PopupItemId::kWebauthnSignInWithAnotherDevice:
-    case PopupItemId::kPasswordFieldByFieldFilling:
-    case PopupItemId::kFillPassword:
       return false;
   }
 }
@@ -590,13 +593,15 @@ bool IsExpandablePopupItemId(PopupItemId popup_item_id) {
   switch (popup_item_id) {
     case PopupItemId::kAddressEntry:
     case PopupItemId::kAddressFieldByFieldFilling:
+    case PopupItemId::kCreditCardEntry:
     case PopupItemId::kCreditCardFieldByFieldFilling:
+    case PopupItemId::kCompose:
+    case PopupItemId::kComposeSavedStateNotification:
     case PopupItemId::kDevtoolsTestAddresses:
     case PopupItemId::kFillFullAddress:
-    case PopupItemId::kFillFullName:
     case PopupItemId::kFillFullEmail:
+    case PopupItemId::kFillFullName:
     case PopupItemId::kFillFullPhoneNumber:
-    case PopupItemId::kCreditCardEntry:
     case PopupItemId::kPasswordEntry:
       return true;
     case PopupItemId::kAccountStoragePasswordEntry:
@@ -604,15 +609,17 @@ bool IsExpandablePopupItemId(PopupItemId popup_item_id) {
     case PopupItemId::kAutocompleteEntry:
     case PopupItemId::kAutofillOptions:
     case PopupItemId::kClearForm:
-    case PopupItemId::kCompose:
-    case PopupItemId::kComposeSavedStateNotification:
+    case PopupItemId::kComposeDisable:
+    case PopupItemId::kComposeGoToSettings:
+    case PopupItemId::kComposeNeverShowOnThisSiteAgain:
     case PopupItemId::kCreateNewPlusAddress:
     case PopupItemId::kDatalistEntry:
-    case PopupItemId::kDevtoolsTestAddressEntry:
     case PopupItemId::kDeleteAddressProfile:
+    case PopupItemId::kDevtoolsTestAddressEntry:
     case PopupItemId::kEditAddressProfile:
     case PopupItemId::kFillEverythingFromAddressProfile:
     case PopupItemId::kFillExistingPlusAddress:
+    case PopupItemId::kFillPassword:
     case PopupItemId::kGeneratePasswordEntry:
     case PopupItemId::kIbanEntry:
     case PopupItemId::kInsecureContextPaymentDisabledMessage:
@@ -623,13 +630,12 @@ bool IsExpandablePopupItemId(PopupItemId popup_item_id) {
     case PopupItemId::kPasswordAccountStorageOptInAndGenerate:
     case PopupItemId::kPasswordAccountStorageReSignin:
     case PopupItemId::kPasswordFieldByFieldFilling:
-    case PopupItemId::kFillPassword:
-    case PopupItemId::kViewPasswordDetails:
     case PopupItemId::kScanCreditCard:
     case PopupItemId::kSeePromoCodeDetails:
-    case PopupItemId::kTitle:
     case PopupItemId::kSeparator:
     case PopupItemId::kShowAccountCards:
+    case PopupItemId::kTitle:
+    case PopupItemId::kViewPasswordDetails:
     case PopupItemId::kVirtualCreditCardEntry:
     case PopupItemId::kWebauthnCredential:
     case PopupItemId::kWebauthnSignInWithAnotherDevice:

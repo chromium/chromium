@@ -178,6 +178,9 @@ bool AutofillExternalDelegate::IsAutofillAndFirstLayerSuggestionId(
     case PopupItemId::kAutofillOptions:
     case PopupItemId::kClearForm:
     case PopupItemId::kCompose:
+    case PopupItemId::kComposeDisable:
+    case PopupItemId::kComposeGoToSettings:
+    case PopupItemId::kComposeNeverShowOnThisSiteAgain:
     case PopupItemId::kComposeSavedStateNotification:
     case PopupItemId::kCreateNewPlusAddress:
     case PopupItemId::kDatalistEntry:
@@ -474,6 +477,9 @@ void AutofillExternalDelegate::DidSelectSuggestion(
     case PopupItemId::kDeleteAddressProfile:
     case PopupItemId::kAutofillOptions:
     case PopupItemId::kCompose:
+    case PopupItemId::kComposeDisable:
+    case PopupItemId::kComposeGoToSettings:
+    case PopupItemId::kComposeNeverShowOnThisSiteAgain:
     case PopupItemId::kComposeSavedStateNotification:
     case PopupItemId::kDatalistEntry:
     case PopupItemId::kShowAccountCards:
@@ -623,6 +629,12 @@ void AutofillExternalDelegate::DidAcceptSuggestion(
             autofill::AutofillComposeDelegate::UiEntryPoint::kAutofillPopup);
       }
       break;
+    // TODO(b/333929225): Implement the following 3 new compose child
+    // suggestions.
+    case PopupItemId::kComposeDisable:
+    case PopupItemId::kComposeGoToSettings:
+    case PopupItemId::kComposeNeverShowOnThisSiteAgain:
+      break;
     case PopupItemId::kInsecureContextPaymentDisabledMessage:
     case PopupItemId::kMixedFormMessage:
       // If the selected element is a warning we don't want to do anything.
@@ -702,6 +714,9 @@ bool AutofillExternalDelegate::RemoveSuggestion(const Suggestion& suggestion) {
     case PopupItemId::kPasswordAccountStorageReSignin:
     case PopupItemId::kPasswordAccountStorageEmpty:
     case PopupItemId::kCompose:
+    case PopupItemId::kComposeDisable:
+    case PopupItemId::kComposeGoToSettings:
+    case PopupItemId::kComposeNeverShowOnThisSiteAgain:
     case PopupItemId::kComposeSavedStateNotification:
     case PopupItemId::kDatalistEntry:
     case PopupItemId::kMerchantPromoCodeEntry:
