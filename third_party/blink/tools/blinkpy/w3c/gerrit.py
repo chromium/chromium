@@ -130,7 +130,7 @@ class GerritAPI:
             raise GerritError('Timed out querying CL using Change-Id')
 
         if not cl_data:
-            raise GerritError('Cannot find Change-Id')
+            raise GerritNotFoundError('Cannot find Change-Id')
         cl = GerritCL(data=cl_data, api=self)
         return cl
 
@@ -242,8 +242,8 @@ class GerritCL(object):
     def updated(self):
         # Timestamps are given in UTC and have the format "'yyyy-mm-dd hh:mm:ss.fffffffff'"
         # where "'ffffffffff'" represents nanoseconds.
-        return datetime.strptime(self._data['updated'][:-10],
-                                 '%Y-%m-%d %H:%M:%S')
+        return datetime.strptime(self._data["updated"][:-3] + " +0000",
+                                 "%Y-%m-%d %H:%M:%S.%f %z")
 
     @property
     def messages(self):
@@ -326,4 +326,9 @@ class GerritCL(object):
 
 class GerritError(Exception):
     """Raised when Gerrit returns a non-OK response or times out."""
+    pass
+
+
+class GerritNotFoundError(GerritError):
+    """Raised when Gerrit returns a resource not found response."""
     pass
