@@ -116,6 +116,12 @@ UILabel* TextLabel(NSString* text, UIColor* textColor, BOOL bold) {
         }
       }
       UIImageView* iconView = [[UIImageView alloc] initWithImage:icon];
+      // If we have an icon, we want to see the icon and let the text be
+      // truncated rather than expanding the text area and hiding the icon.
+      [iconView
+          setContentCompressionResistancePriority:UILayoutPriorityRequired
+                                          forAxis:
+                                              UILayoutConstraintAxisHorizontal];
       [stackView addArrangedSubview:iconView];
     }
 
