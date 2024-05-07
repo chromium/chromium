@@ -62,8 +62,9 @@ class MockCompositorFrameSink : public viz::mojom::blink::CompositorFrameSink {
   MOCK_METHOD1(SubmitCompositorFrameSync_, void(viz::CompositorFrame*));
   MOCK_METHOD1(DidNotProduceFrame, void(const viz::BeginFrameAck&));
   MOCK_METHOD2(DidAllocateSharedBitmap,
-               void(base::ReadOnlySharedMemoryRegion, const gpu::Mailbox&));
-  MOCK_METHOD1(DidDeleteSharedBitmap, void(const gpu::Mailbox&));
+               void(base::ReadOnlySharedMemoryRegion,
+                    const viz::SharedBitmapId&));
+  MOCK_METHOD1(DidDeleteSharedBitmap, void(const viz::SharedBitmapId&));
   MOCK_METHOD1(SetPreferredFrameInterval, void(base::TimeDelta));
   MOCK_METHOD1(InitializeCompositorFrameSinkType,
                void(viz::mojom::CompositorFrameSinkType));

@@ -108,8 +108,8 @@ class PLATFORM_EXPORT CanvasResourceDispatcher
   void OnSurfaceEvicted(const viz::LocalSurfaceId& local_surface_id) final {}
 
   void DidAllocateSharedBitmap(base::ReadOnlySharedMemoryRegion region,
-                               const gpu::Mailbox& id);
-  void DidDeleteSharedBitmap(const gpu::Mailbox& id);
+                               const viz::SharedBitmapId& id);
+  void DidDeleteSharedBitmap(const viz::SharedBitmapId& id);
 
   void SetFilterQuality(cc::PaintFlags::FilterQuality filter_quality);
   void SetPlaceholderCanvasDispatcher(int placeholder_canvas_id);

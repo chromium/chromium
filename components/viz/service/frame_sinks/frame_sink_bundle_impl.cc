@@ -339,7 +339,7 @@ void FrameSinkBundleImpl::Submit(
 void FrameSinkBundleImpl::DidAllocateSharedBitmap(
     uint32_t sink_id,
     base::ReadOnlySharedMemoryRegion region,
-    const gpu::Mailbox& id) {
+    const SharedBitmapId& id) {
   if (auto* sink = GetFrameSink(sink_id)) {
     sink->DidAllocateSharedBitmap(std::move(region), id);
   }

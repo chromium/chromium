@@ -455,12 +455,13 @@ void CanvasResourceDispatcher::Reshape(const gfx::Size& size) {
 
 void CanvasResourceDispatcher::DidAllocateSharedBitmap(
     base::ReadOnlySharedMemoryRegion region,
-    const gpu::Mailbox& id) {
+    const viz::SharedBitmapId& id) {
   if (sink_)
     sink_->DidAllocateSharedBitmap(std::move(region), id);
 }
 
-void CanvasResourceDispatcher::DidDeleteSharedBitmap(const gpu::Mailbox& id) {
+void CanvasResourceDispatcher::DidDeleteSharedBitmap(
+    const viz::SharedBitmapId& id) {
   if (sink_)
     sink_->DidDeleteSharedBitmap(id);
 }

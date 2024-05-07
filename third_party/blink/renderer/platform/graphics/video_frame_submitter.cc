@@ -139,7 +139,7 @@ class VideoFrameSubmitter::FrameSinkBundleProxy
   }
 
   void DidAllocateSharedBitmap(base::ReadOnlySharedMemoryRegion region,
-                               const gpu::Mailbox& id) override {
+                               const viz::SharedBitmapId& id) override {
     if (!bundle_) {
       return;
     }
@@ -147,7 +147,7 @@ class VideoFrameSubmitter::FrameSinkBundleProxy
                                      std::move(region), id);
   }
 
-  void DidDeleteSharedBitmap(const gpu::Mailbox& id) override {
+  void DidDeleteSharedBitmap(const viz::SharedBitmapId& id) override {
     if (!bundle_) {
       return;
     }
