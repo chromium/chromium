@@ -6962,9 +6962,12 @@ IN_PROC_BROWSER_TEST_F(ServiceWorkerStaticRouterBrowserTest,
 }
 
 IN_PROC_BROWSER_TEST_F(ServiceWorkerStaticRouterBrowserTest,
-                       MainResourceNetworkFetchHandler) {
+                       MainResourceNoRuleMatchedResponseFromFetchHandler) {
   SetupAndRegisterServiceWorker(TestType::kNetwork);
   ReloadBlockUntilNavigationsComplete(shell(), 1);
+  // UKM records reloads conducted in `ReloadBlockUntilNavigationComplete`.
+  // Remove them to make sue UKM only has record for main test.
+  test_ukm_recorder().Purge();
 
   const std::string relative_url = "/service_worker/fetch_handler";
   ASSERT_TRUE(
@@ -6974,10 +6977,24 @@ IN_PROC_BROWSER_TEST_F(ServiceWorkerStaticRouterBrowserTest,
   // The result should be got from the fetch handler, and no network access is
   // expected.
   EXPECT_EQ(0, GetRequestCount(relative_url));
+
+  // Check if the ukm shows the expected matched / actual source
+  auto entries = test_ukm_recorder().GetEntriesByName(
+      MainResourceLoadCompletedUkmEntry::kEntryName);
+  ASSERT_EQ(entries.size(), 1u);
+
+  auto* entry = entries[0].get();
+
+  EXPECT_FALSE(ukm::TestAutoSetUkmRecorder::EntryHasMetric(
+      entry,
+      MainResourceLoadCompletedUkmEntry::kMatchedFirstRouterSourceTypeName));
+
+  EXPECT_FALSE(ukm::TestAutoSetUkmRecorder::EntryHasMetric(
+      entry, MainResourceLoadCompletedUkmEntry::kActualRouterSourceTypeName));
 }
 
 IN_PROC_BROWSER_TEST_F(ServiceWorkerStaticRouterBrowserTest,
-                       MainResourceNetworkFallback) {
+                       MainResourceFromNetworkRule) {
   SetupAndRegisterServiceWorker(TestType::kNetwork);
   WorkerRunningStatusObserver observer(public_context());
   const std::string relative_url = "/service_worker/direct";
@@ -7015,7 +7032,7 @@ IN_PROC_BROWSER_TEST_F(ServiceWorkerStaticRouterBrowserTest,
 }
 
 IN_PROC_BROWSER_TEST_F(ServiceWorkerStaticRouterBrowserTest,
-                       SubresourceNetworkFetchHandler) {
+                       SubresourceNoRuleMatchedResponseFromFetchHandler) {
   SetupAndRegisterServiceWorker(TestType::kNetwork);
   ReloadBlockUntilNavigationsComplete(shell(), 1);
   StopServiceWorker(version().get());
@@ -7031,7 +7048,7 @@ IN_PROC_BROWSER_TEST_F(ServiceWorkerStaticRouterBrowserTest,
 }
 
 IN_PROC_BROWSER_TEST_F(ServiceWorkerStaticRouterBrowserTest,
-                       SubresourceNetworkFallback) {
+                       SubresourceFromNetworkRule) {
   SetupAndRegisterServiceWorker(TestType::kNetwork);
   ReloadBlockUntilNavigationsComplete(shell(), 1);
   StopServiceWorker(version().get());
