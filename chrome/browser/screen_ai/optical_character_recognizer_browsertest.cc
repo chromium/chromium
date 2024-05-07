@@ -162,14 +162,12 @@ class OpticalCharacterRecognizerTest
   base::test::ScopedFeatureList feature_list_;
 };
 
-// TODO(crbug.com/327181467): This test was flaky as it takes more time on
-// slower machines to initialize OCR. Enable it with a higher time-out
-// threshold.
-IN_PROC_BROWSER_TEST_P(OpticalCharacterRecognizerTest, DISABLED_Create) {
+IN_PROC_BROWSER_TEST_P(OpticalCharacterRecognizerTest, Create) {
   scoped_refptr<screen_ai::OpticalCharacterRecognizer> ocr =
       screen_ai::OpticalCharacterRecognizer::Create(browser()->profile());
   base::RunLoop run_loop;
-  WaitForStatus(ocr, &run_loop, /*remaining_tries=*/10);
+  // This step can be slow.
+  WaitForStatus(ocr, &run_loop, /*remaining_tries=*/25);
   run_loop.Run();
 
   EXPECT_TRUE(ocr->StatusAvailableForTesting());
