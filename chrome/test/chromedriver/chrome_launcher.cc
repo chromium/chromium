@@ -253,7 +253,7 @@ Status PrepareDesktopCommandLine(const Capabilities& capabilities,
   // disable throttling all together.
   // TODO(crbug.com/chromedriver/4762): Remove after the Mapper is moved away
   // from the tab.
-  if (capabilities.webSocketUrl) {
+  if (capabilities.web_socket_url) {
     switches.SetSwitch("disable-background-timer-throttling");
   }
 
@@ -447,7 +447,8 @@ Status LaunchRemoteChromeSession(
   chrome = std::make_unique<ChromeRemoteImpl>(
       browser_info, capabilities.window_types,
       std::move(devtools_websocket_client), std::move(devtools_event_listeners),
-      capabilities.mobile_device, capabilities.page_load_strategy);
+      capabilities.mobile_device, capabilities.page_load_strategy,
+      !capabilities.web_socket_url);
   return Status(kOk);
 }
 
@@ -759,20 +760,18 @@ Status LaunchDesktopChrome(network::mojom::URLLoaderFactory* factory,
           std::move(devtools_event_listeners), capabilities.mobile_device,
           capabilities.page_load_strategy, std::move(process), command,
           &user_data_dir_temp_dir, &extension_dir,
-          capabilities.network_emulation_enabled);
+          capabilities.network_emulation_enabled, !capabilities.web_socket_url);
   if (!capabilities.extension_load_timeout.is_zero()) {
-    for (size_t i = 0; i < extension_bg_pages.size(); ++i) {
-      VLOG(0) << "Waiting for extension bg page load: "
-              << extension_bg_pages[i];
+    for (const std::string& url : extension_bg_pages) {
+      VLOG(0) << "Waiting for extension bg page load: " << url;
       std::unique_ptr<WebView> web_view;
       status = chrome_desktop->WaitForPageToLoad(
-          extension_bg_pages[i], capabilities.extension_load_timeout, &web_view,
-          w3c_compliant);
+          url, capabilities.extension_load_timeout, &web_view, w3c_compliant);
       if (status.IsError()) {
-        return Status(kSessionNotCreated,
-                      "failed to wait for extension background page to load: " +
-                          extension_bg_pages[i],
-                      status);
+        return Status(
+            kSessionNotCreated,
+            "failed to wait for extension background page to load: " + url,
+            status);
       }
     }
   }
@@ -847,7 +846,7 @@ Status LaunchAndroidChrome(network::mojom::URLLoaderFactory* factory,
       browser_info, capabilities.window_types,
       std::move(devtools_websocket_client), std::move(devtools_event_listeners),
       capabilities.mobile_device, capabilities.page_load_strategy,
-      std::move(device));
+      std::move(device), !capabilities.web_socket_url);
   return Status(kOk);
 }
 
@@ -907,21 +906,19 @@ Status LaunchReplayChrome(network::mojom::URLLoaderFactory* factory,
           std::move(devtools_event_listeners), capabilities.mobile_device,
           capabilities.page_load_strategy, std::move(dummy_process), command,
           &user_data_dir_temp_dir, &extension_dir,
-          capabilities.network_emulation_enabled);
+          capabilities.network_emulation_enabled, !capabilities.web_socket_url);
 
   if (!capabilities.extension_load_timeout.is_zero()) {
-    for (size_t i = 0; i < extension_bg_pages.size(); ++i) {
-      VLOG(0) << "Waiting for extension bg page load: "
-              << extension_bg_pages[i];
+    for (const std::string& url : extension_bg_pages) {
+      VLOG(0) << "Waiting for extension bg page load: " << url;
       std::unique_ptr<WebView> web_view;
       status = chrome_impl->WaitForPageToLoad(
-          extension_bg_pages[i], capabilities.extension_load_timeout, &web_view,
-          w3c_compliant);
+          url, capabilities.extension_load_timeout, &web_view, w3c_compliant);
       if (status.IsError()) {
-        return Status(kSessionNotCreated,
-                      "failed to wait for extension background page to load: " +
-                          extension_bg_pages[i],
-                      status);
+        return Status(
+            kSessionNotCreated,
+            "failed to wait for extension background page to load: " + url,
+            status);
       }
     }
   }

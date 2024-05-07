@@ -259,7 +259,7 @@ base::Value::Dict CreateCapabilities(Session* session,
     caps.Set("hasTouchScreen", session->chrome->HasTouchScreen());
   }
 
-  if (session->webSocketUrl) {
+  if (session->web_socket_url) {
     caps.Set("webSocketUrl",
              "ws://" + session->host + "/session/" + session->id);
   }
@@ -300,7 +300,7 @@ Status InitSessionHelper(const InitSessionParams& bound_params,
   // |session| will own the |CommandListener|s.
   session->command_listeners.swap(command_listeners);
 
-  if (session->webSocketUrl) {
+  if (session->web_socket_url) {
     // Suffixes used with the client channels.
     std::string client_suffixes[] = {Session::kChannelSuffix,
                                      Session::kNoChannelSuffix,
@@ -350,7 +350,7 @@ Status InitSessionHelper(const InitSessionParams& bound_params,
     *value = std::make_unique<base::Value>(session->capabilities->Clone());
   }
 
-  if (session->webSocketUrl) {
+  if (session->web_socket_url) {
     WebView* web_view = nullptr;
     status = session->GetTargetWindow(&web_view);
     if (status.IsError())
@@ -457,7 +457,7 @@ Status ConfigureSession(Session* session,
   session->script_timeout = capabilities->script_timeout;
   session->strict_file_interactability =
       capabilities->strict_file_interactability;
-  session->webSocketUrl = capabilities->webSocketUrl;
+  session->web_socket_url = capabilities->web_socket_url;
   Log::Level driver_level = Log::kWarning;
   if (capabilities->logging_prefs.count(WebDriverLog::kDriverType))
     driver_level = capabilities->logging_prefs[WebDriverLog::kDriverType];
@@ -776,7 +776,7 @@ Status ExecuteClose(Session* session,
   if (status.IsError())
     return status;
   bool is_last_web_view = web_view_ids.size() == 1u;
-  if (session->webSocketUrl) {
+  if (session->web_socket_url) {
     is_last_web_view = web_view_ids.size() <= 2u;
   }
   web_view_ids.clear();
@@ -850,7 +850,7 @@ Status ExecuteGetWindowHandles(Session* session,
   if (status.IsError())
     return status;
 
-  if (session->webSocketUrl) {
+  if (session->web_socket_url) {
     auto it =
         base::ranges::find(web_view_ids, session->bidi_mapper_web_view_id);
     if (it != web_view_ids.end()) {

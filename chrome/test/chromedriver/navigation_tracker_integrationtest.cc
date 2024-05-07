@@ -173,7 +173,7 @@ TEST_F(NavigationTrackerTest, SimpleNavigation) {
   ASSERT_TRUE(StatusOk(status));
   WebViewImpl web_view(view_info->id, true, nullptr, &browser_info_,
                        std::move(client), std::nullopt,
-                       PageLoadStrategy::kNormal);
+                       PageLoadStrategy::kNormal, true);
   web_view.AttachTo(browser_client_.get());
 
   http_server_.SetDataForPath("test.html", "<span>DONE!</span>");

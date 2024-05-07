@@ -816,9 +816,15 @@ Status ExecuteExecuteScript(Session* session,
   Status status =
       web_view->CallUserSyncScript(session->GetCurrentFrameId(), script, *args,
                                    session->script_timeout, value);
-  if (status.code() == kTimeout)
-    return Status(kScriptTimeout);
-  return status;
+  switch (status.code()) {
+    case kTimeout:
+    // Navigation has happened during script execution. Further wait would lead
+    // to timeout.
+    case kNavigationDetectedByRemoteEnd:
+      return Status(kScriptTimeout);
+    default:
+      return status;
+  }
 }
 
 Status ExecuteExecuteAsyncScript(Session* session,
@@ -842,9 +848,15 @@ Status ExecuteExecuteAsyncScript(Session* session,
   Status status = web_view->CallUserAsyncFunction(
       session->GetCurrentFrameId(), "async function(){" + script + "}", *args,
       session->script_timeout, value);
-  if (status.code() == kTimeout)
-    return Status(kScriptTimeout);
-  return status;
+  switch (status.code()) {
+    case kTimeout:
+    // Navigation has happened during script execution. Further wait would lead
+    // to timeout.
+    case kNavigationDetectedByRemoteEnd:
+      return Status(kScriptTimeout);
+    default:
+      return status;
+  }
 }
 
 Status ExecuteNewWindow(Session* session,

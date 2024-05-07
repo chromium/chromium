@@ -114,7 +114,7 @@ struct Session {
 
   const std::string id;
   bool w3c_compliant;
-  bool webSocketUrl = false;
+  bool web_socket_url = false;
   bool quit;
   bool detach;
   bool awaiting_bidi_response = false;

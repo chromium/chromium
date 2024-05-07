@@ -85,13 +85,15 @@ ChromeDesktopImpl::ChromeDesktopImpl(
     const base::CommandLine& command,
     base::ScopedTempDir* user_data_dir,
     base::ScopedTempDir* extension_dir,
-    bool network_emulation_enabled)
+    bool network_emulation_enabled,
+    bool autoaccept_beforeunload)
     : ChromeImpl(std::move(browser_info),
                  std::move(window_types),
                  std::move(websocket_client),
                  std::move(devtools_event_listeners),
                  std::move(mobile_device),
-                 page_load_strategy),
+                 page_load_strategy,
+                 autoaccept_beforeunload),
       process_(std::move(process)),
       command_(command),
       network_connection_enabled_(network_emulation_enabled),
@@ -165,9 +167,9 @@ Status ChromeDesktopImpl::WaitForPageToLoad(
   if (status.IsError())
     return status;
   std::unique_ptr<WebViewImpl> web_view_tmp =
-      WebViewImpl::CreateTopLevelWebView(id, w3c_compliant, &browser_info_,
-                                         std::move(client), mobile_device,
-                                         page_load_strategy());
+      WebViewImpl::CreateTopLevelWebView(
+          id, w3c_compliant, &browser_info_, std::move(client), mobile_device,
+          page_load_strategy(), autoaccept_beforeunload_);
   status = web_view_tmp->AttachTo(devtools_websocket_client_.get());
   if (status.IsError()) {
     return status;

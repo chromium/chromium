@@ -1118,7 +1118,7 @@ Status Capabilities::Parse(const base::Value::Dict& desired_caps,
   parser_map["strictFileInteractability"] =
       base::BindRepeating(&ParseBoolean, &strict_file_interactability);
   parser_map["webSocketUrl"] =
-      base::BindRepeating(&ParseBoolean, &webSocketUrl);
+      base::BindRepeating(&ParseBoolean, &web_socket_url);
   if (!w3c_compliant) {
     // TODO(https://crbug.com/chromedriver/2596): "unexpectedAlertBehaviour" is
     // legacy name of "unhandledPromptBehavior", remove when we stop supporting
