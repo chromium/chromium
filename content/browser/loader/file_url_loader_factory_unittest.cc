@@ -8,6 +8,7 @@
 #include <string>
 
 #include "base/files/file_util.h"
+#include "base/files/scoped_temp_dir.h"
 #include "base/path_service.h"
 #include "base/test/bind.h"
 #include "base/test/gmock_callback_support.h"
@@ -234,6 +235,22 @@ TEST_F(FileURLLoaderFactoryTest, Allowlist) {
   auto request = CreateCorsRequestWithInitiator(not_permitted_origin);
   request->isolated_world_origin = GetPermittedSourceOrigin();
   EXPECT_EQ(net::ERR_FAILED, CreateLoaderAndRun(std::move(request)));
+}
+
+// Test that response type is set correctly for directory listings. Regression
+// test for https://crbug.com/41492103.
+TEST_F(FileURLLoaderFactoryTest, ResponseTypeForDirectoryListings) {
+  base::ScopedTempDir dir;
+  ASSERT_TRUE(dir.CreateUniqueTempDir());
+  auto request = std::make_unique<network::ResourceRequest>();
+  request->url =
+      net::FilePathToFileURL(dir.GetPath().StripTrailingSeparators());
+  request->mode = network::mojom::RequestMode::kNoCors;
+  ASSERT_EQ(net::OK, CreateLoaderAndRun(std::move(request)));
+
+  ASSERT_NE(ResponseInfo(), nullptr);
+  EXPECT_EQ(network::mojom::FetchResponseType::kOpaque,
+            ResponseInfo()->response_type);
 }
 
 }  // namespace

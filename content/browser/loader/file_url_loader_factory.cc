@@ -312,13 +312,14 @@ class FileURLDirectoryLoader
     // The producer above will have already copied any parts of |pending_data_|
     // that couldn't be written immediately, so we can wipe it out here to begin
     // accumulating more data.
+    total_bytes_written_ += pending_data_.size();
     pending_data_.clear();
   }
 
   void OnDataWritten(MojoResult result) {
     transfer_in_progress_ = false;
 
-    int completion_status;
+    int status;
     if (result == MOJO_RESULT_OK) {
       if (!pending_data_.empty()) {
         // Keep flushing the data buffer as long as it's non-empty and pipe
@@ -334,16 +335,21 @@ class FileURLDirectoryLoader
 
       // At this point we know the listing is complete and all available data
       // has been transferred. We inherit the status of the listing operation.
-      completion_status = listing_result_;
+      status = listing_result_;
     } else {
-      completion_status = net::ERR_FAILED;
+      status = net::ERR_FAILED;
     }
 
     // All the data has been written now. Close the data pipe. The consumer will
     // be notified that there will be no more data to read from now.
     data_producer_.reset();
 
-    client_->OnComplete(network::URLLoaderCompletionStatus(completion_status));
+    network::URLLoaderCompletionStatus completion_status(status);
+    completion_status.encoded_data_length = total_bytes_written_;
+    completion_status.encoded_body_length = total_bytes_written_;
+    completion_status.decoded_body_length = total_bytes_written_;
+
+    client_->OnComplete(completion_status);
     client_.reset();
 
     MaybeDeleteSelf();
@@ -359,6 +365,11 @@ class FileURLDirectoryLoader
   std::unique_ptr<mojo::DataPipeProducer> data_producer_;
   std::string pending_data_;
   bool transfer_in_progress_ = false;
+
+  // In case of successful loads, this holds the total number of bytes written
+  // to the response. It is used to set some of the URLLoaderCompletionStatus
+  // data passed back to the URLLoaderClients (eg SimpleURLLoader).
+  uint64_t total_bytes_written_ = 0;
 };
 
 class FileURLLoader : public network::mojom::URLLoader {
@@ -514,6 +525,7 @@ class FileURLLoader : public network::mojom::URLLoader {
       redirect_data_->link_following_policy = link_following_policy;
       redirect_data_->request.url = redirect_info.new_url;
       redirect_data_->observer = std::move(observer);
+      redirect_data_->response_type = response_type;
       redirect_data_->extra_response_headers =
           std::move(extra_response_headers);
       redirect_data_->file_access =
