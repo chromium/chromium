@@ -226,6 +226,9 @@ class ASH_PUBLIC_EXPORT SystemTrayClient {
   // Shows settings related to keyboards.
   virtual void ShowKeyboardSettings() = 0;
 
+  // Shows settings related to pointing sticks.
+  virtual void ShowPointingStickSettings() = 0;
+
  protected:
   SystemTrayClient() {}
 };

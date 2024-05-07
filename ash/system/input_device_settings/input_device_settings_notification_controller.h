@@ -81,6 +81,11 @@ class ASH_EXPORT InputDeviceSettingsNotificationController {
   // Use to display a notification when a mouse is first connected.
   void NotifyMouseFirstTimeConnected(const mojom::Mouse& mouse);
 
+  // Used to display a notification when a customizable pointing stick is
+  // connected to the chromebook for the first time.
+  void ShowPointingStickSettingsNotification(
+      const mojom::PointingStick& pointing_stick);
+
   // Use to display a notification when a graphics table is first connected.
   void NotifyGraphicsTabletFirstTimeConnected(
       const mojom::GraphicsTablet& graphics_tablet);

@@ -844,6 +844,13 @@ void SystemTrayClientImpl::ShowTouchpadSettings() {
       chromeos::settings::mojom::kPerDeviceTouchpadSubpagePath);
 }
 
+void SystemTrayClientImpl::ShowPointingStickSettings() {
+  DCHECK(ash::features::IsWelcomeExperienceEnabled());
+  base::RecordAction(base::UserMetricsAction("ShowPointingStickSettingsPage"));
+  ShowSettingsSubPageForActiveUser(
+      chromeos::settings::mojom::kPerDevicePointingStickSubpagePath);
+}
+
 void SystemTrayClientImpl::ShowRemapKeysSubpage(int device_id) {
   DCHECK(ash::features::IsInputDeviceSettingsSplitEnabled());
   base::RecordAction(base::UserMetricsAction("ShowRemapKeysSettingsSubpage"));

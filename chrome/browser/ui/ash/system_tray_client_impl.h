@@ -122,6 +122,7 @@ class SystemTrayClientImpl : public ash::SystemTrayClient,
   void ShowRemapKeysSubpage(int device_id) override;
   void ShowYouTubeMusicPremiumPage() override;
   void ShowKeyboardSettings() override;
+  void ShowPointingStickSettings() override;
 
  protected:
   // Used by mocks in tests.

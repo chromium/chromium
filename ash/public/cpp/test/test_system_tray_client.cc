@@ -214,4 +214,8 @@ void TestSystemTrayClient::ShowKeyboardSettings() {
   ++show_keyboard_settings_count_;
 }
 
+void TestSystemTrayClient::ShowPointingStickSettings() {
+  ++show_pointing_stick_settings_count_;
+}
+
 }  // namespace ash

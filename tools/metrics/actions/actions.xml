@@ -34488,6 +34488,16 @@ should be able to be added at any place in this file.
   <description>Triggered when the palette options are opened.</description>
 </action>
 
+<action name="ShowPointingStickSettingsPage">
+  <owner>michaelcheco@google.com</owner>
+  <owner>cros-peripherals@google.com</owner>
+  <description>
+    Recorded when a user navigates to the pointing stick settings subpage by
+    clicking on the notification shown when a mouse with customizable buttons is
+    connected to a chromebook for the first time.
+  </description>
+</action>
+
 <action name="ShowRecentlyViewed">
   <owner>Please list the metric's owners. Add more owner tags as needed.</owner>
   <description>Please enter the description of this user action.</description>

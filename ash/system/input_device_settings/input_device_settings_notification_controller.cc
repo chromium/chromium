@@ -167,6 +167,8 @@ const char kInputDeviceSettingsGraphicsTabletPrefix[] =
     "peripheral_customization_graphics_tablet_";
 const char kKeyboardNotificationPrefix[] = "welcome_experience_keyboards";
 const char kTouchpadNotificationPrefix[] = "welcome_experience_touchpad";
+const char kPointingStickNotificationPrefix[] =
+    "welcome_experience_pointing_stick";
 const char kDelimiter[] = "_";
 
 bool IsRightClickRewriteDisabled(SimulateRightClickModifier active_modifier) {
@@ -428,6 +430,10 @@ void ShowKeyboardSettings() {
 
 void ShowGraphicsTabletSettings() {
   Shell::Get()->system_tray_model()->client()->ShowGraphicsTabletSettings();
+}
+
+void ShowPointingStickSettings() {
+  Shell::Get()->system_tray_model()->client()->ShowPointingStickSettings();
 }
 
 void OnLearnMoreClicked() {
@@ -708,6 +714,14 @@ void HandleTouchpadCustomizationNotificationClicked(
   return;
 }
 
+void HandlePointingStickCustomizationNotificationClicked(
+    const std::string& notification_id,
+    std::optional<int> button_index) {
+  ShowPointingStickSettings();
+  RemoveNotification(notification_id);
+  return;
+}
+
 void HandleGraphicsTabletCustomizationNotificationClicked(
     const std::string& notification_id,
     std::optional<int> button_index) {
@@ -821,10 +835,60 @@ void InputDeviceSettingsNotificationController::
 }
 
 void InputDeviceSettingsNotificationController::
+    ShowPointingStickSettingsNotification(
+        const mojom::PointingStick& pointing_stick) {
+  const auto peripheral_name = base::UTF8ToUTF16(pointing_stick.name);
+  const auto notification_id = GetWelcomeExperienceNotificationId(
+      kPointingStickNotificationPrefix, pointing_stick.id);
+  message_center::RichNotificationData rich_notification_data;
+  rich_notification_data.buttons.emplace_back(l10n_util::GetStringUTF16(
+      IDS_ASH_DEVICE_SETTINGS_NOTIFICATIONS_OPEN_SETTINGS_BUTTON));
+  auto notification = CreateSystemNotificationPtr(
+      message_center::NOTIFICATION_TYPE_SIMPLE, notification_id,
+      l10n_util::GetStringUTF16(
+          IDS_ASH_DEVICE_SETTINGS_NOTIFICATIONS_WELCOME_EXPERIENCE_POINTING_STICK_TITLE),
+      l10n_util::GetStringFUTF16(
+          IDS_ASH_DEVICE_SETTINGS_NOTIFICATIONS_WELCOME_EXPERIENCE_POINTING_STICK,
+          peripheral_name),
+      std::u16string(), GURL(),
+      message_center::NotifierId(message_center::NotifierType::SYSTEM_COMPONENT,
+                                 kNotifierId,
+                                 NotificationCatalogName::kInputDeviceSettings),
+      rich_notification_data,
+      base::MakeRefCounted<message_center::HandleNotificationClickDelegate>(
+          base::BindRepeating(
+              &HandlePointingStickCustomizationNotificationClicked,
+              notification_id)),
+      kSettingsIcon, message_center::SystemNotificationWarningLevel::NORMAL);
+  message_center_->AddNotification(std::move(notification));
+}
+
+void InputDeviceSettingsNotificationController::
     NotifyPointingStickFirstTimeConnected(
         const mojom::PointingStick& pointing_stick) {
-  // TODO(b/329686601): Implement this function.
-  NOTIMPLEMENTED();
+  if (!IsActiveUserSession()) {
+    return;
+  }
+
+  PrefService* prefs =
+      Shell::Get()->session_controller()->GetActivePrefService();
+  CHECK(prefs);
+
+  if (base::Contains(
+          prefs->GetList(prefs::kPointingSticksWelcomeNotificationSeen),
+          pointing_stick.device_key)) {
+    return;
+  }
+
+  auto seen_touchpad_list =
+      prefs->GetList(prefs::kPointingSticksWelcomeNotificationSeen).Clone();
+
+  seen_touchpad_list.Append(pointing_stick.device_key);
+  prefs->SetList(prefs::kPointingSticksWelcomeNotificationSeen,
+                 std::move(seen_touchpad_list));
+
+  CHECK(pointing_stick.settings);
+  ShowPointingStickSettingsNotification(pointing_stick);
 }
 
 void InputDeviceSettingsNotificationController::NotifyMouseIsCustomizable(

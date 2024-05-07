@@ -790,4 +790,45 @@ TEST_F(InputDeviceSettingsNotificationControllerTest,
       "welcome_experience_touchpad_2"));
 }
 
+TEST_F(InputDeviceSettingsNotificationControllerTest,
+       NotifyPointingStickFirstTimeConnected) {
+  size_t expected_notification_count = 1;
+  mojom::PointingStickPtr mojom_pointing_stick = mojom::PointingStick::New();
+  mojom_pointing_stick->device_key = "0001:0001";
+  mojom_pointing_stick->id = 1;
+  mojom_pointing_stick->settings = mojom::PointingStickSettings::New();
+
+  PrefService* prefs =
+      Shell::Get()->session_controller()->GetActivePrefService();
+
+  EXPECT_TRUE(
+      prefs->GetList(prefs::kPointingSticksWelcomeNotificationSeen).empty());
+  controller()->NotifyPointingStickFirstTimeConnected(*mojom_pointing_stick);
+  EXPECT_EQ(
+      prefs->GetList(prefs::kPointingSticksWelcomeNotificationSeen).size(), 1u);
+  EXPECT_TRUE(base::Contains(
+      prefs->GetList(prefs::kPointingSticksWelcomeNotificationSeen),
+      base::Value("0001:0001")));
+  controller()->NotifyPointingStickFirstTimeConnected(*mojom_pointing_stick);
+  EXPECT_EQ(
+      prefs->GetList(prefs::kPointingSticksWelcomeNotificationSeen).size(), 1u);
+  EXPECT_EQ(expected_notification_count++,
+            message_center()->NotificationCount());
+  EXPECT_TRUE(message_center()->FindVisibleNotificationById(
+      "welcome_experience_pointing_stick_1"));
+
+  mojom_pointing_stick->id = 2;
+  mojom_pointing_stick->device_key = "0001:0002";
+
+  controller()->NotifyPointingStickFirstTimeConnected(*mojom_pointing_stick);
+  EXPECT_EQ(
+      prefs->GetList(prefs::kPointingSticksWelcomeNotificationSeen).size(), 2u);
+  EXPECT_TRUE(base::Contains(
+      prefs->GetList(prefs::kPointingSticksWelcomeNotificationSeen),
+      base::Value("0001:0002")));
+  EXPECT_EQ(expected_notification_count, message_center()->NotificationCount());
+  EXPECT_TRUE(message_center()->FindVisibleNotificationById(
+      "welcome_experience_pointing_stick_2"));
+}
+
 }  // namespace ash

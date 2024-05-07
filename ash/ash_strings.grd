@@ -7877,6 +7877,12 @@ To shut down the device, press and hold the power button on the device again.
       <message name="IDS_ASH_DEVICE_SETTINGS_NOTIFICATIONS_WELCOME_EXPERIENCE_TOUCHPAD" translateable="false" desc="The message shown to notify a user that the touchpad is customizable in settings.">
         You can personalize settings for your <ph name="PERIPHERAL_NAME">$1<ex>Awesome Touchpad</ex></ph>
       </message>
+      <message name="IDS_ASH_DEVICE_SETTINGS_NOTIFICATIONS_WELCOME_EXPERIENCE_POINTING_STICK_TITLE" translateable="false" desc="Notification title to tell users that the TrackPoint is customizable.">
+        Customize your TrackPoint
+      </message>
+      <message name="IDS_ASH_DEVICE_SETTINGS_NOTIFICATIONS_WELCOME_EXPERIENCE_POINTING_STICK" translateable="false" desc="The message shown to notify a user that the TrackPoint is customizable in settings.">
+        You can personalize settings for your <ph name="PERIPHERAL_NAME">$1<ex>Lexmark-Unicomp FSR</ex></ph>
+      </message>
       <message name="IDS_ASH_DEVICE_SETTINGS_NOTIFICATIONS_LAUNCHER_RIGHT_CLICK" desc="The message shown to notify a user that the shortcut used to simulate a right-click using touchpad and keyboard has changed.">
         The right-click shortcut is updated to alt + click from <ph name="LAUNCHER_KEY_NAME">$1<ex>launcher</ex></ph> key + click
       </message>
