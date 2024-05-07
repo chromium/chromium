@@ -110,8 +110,8 @@ exec tools/autotest.py --out-dir out/Release <Test Here>
 You can run this script like so:
 ```
 cd $R8_REPO
-git bisect start <known_good_rev> <known_bad_rev>
-git bisect run <path_to_script.sh>
+git bisect start <known_bad_rev> <known_good_rev>
+git bisect run bash <path_to_script.sh>
 ```
 Tip: When you are done, you can delete the r8 jar and gclient sync to get back
      to ToT R8.
