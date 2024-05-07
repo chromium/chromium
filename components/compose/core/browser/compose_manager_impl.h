@@ -14,6 +14,10 @@
 #include "components/compose/core/browser/compose_client.h"
 #include "components/compose/core/browser/compose_manager.h"
 
+namespace url {
+class Origin;
+}  // namespace url
+
 namespace compose {
 
 class ComposeManagerImpl : public ComposeManager {
@@ -40,6 +44,9 @@ class ComposeManagerImpl : public ComposeManager {
   std::optional<autofill::Suggestion> GetSuggestion(
       const autofill::FormFieldData& field,
       autofill::AutofillSuggestionTriggerSource trigger_source) override;
+  void NeverShowComposeForOrigin(const url::Origin& origin) override;
+  void DisableCompose() override;
+  void GoToSettings() override;
 
  private:
   bool IsEnabled() const;

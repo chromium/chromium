@@ -11,6 +11,10 @@
 #include "components/autofill/core/browser/ui/suggestion.h"
 #include "testing/gmock/include/gmock/gmock.h"
 
+namespace url {
+class Origin;
+}  // namespace url
+
 namespace autofill {
 
 class MockAutofillComposeDelegate : public AutofillComposeDelegate {
@@ -27,6 +31,12 @@ class MockAutofillComposeDelegate : public AutofillComposeDelegate {
               GetSuggestion,
               (const FormFieldData&, AutofillSuggestionTriggerSource),
               (override));
+  MOCK_METHOD(void,
+              NeverShowComposeForOrigin,
+              (const url::Origin& origin),
+              (override));
+  MOCK_METHOD(void, DisableCompose, (), (override));
+  MOCK_METHOD(void, GoToSettings, (), (override));
 };
 
 }  // namespace autofill

@@ -2122,8 +2122,7 @@ TEST_F(AutofillExternalDelegateUnitTest, ExternalDelegateOpensComposeAndFills) {
       client(),
       ShowAutofillPopup(
           PopupOpenArgsAre(SuggestionVectorIdsAre(PopupItemId::kCompose)), _));
-  std::vector<Suggestion> suggestions = {
-      Suggestion(/*main_text=*/u"", PopupItemId::kCompose)};
+  std::vector<Suggestion> suggestions = {Suggestion(PopupItemId::kCompose)};
   external_delegate().OnSuggestionsReturned(queried_field().global_id(),
                                             suggestions);
 
@@ -2137,6 +2136,52 @@ TEST_F(AutofillExternalDelegateUnitTest, ExternalDelegateOpensComposeAndFills) {
               HideAutofillPopup(PopupHidingReason::kAcceptSuggestion));
   external_delegate().DidAcceptSuggestion(suggestions[0],
                                           SuggestionPosition{.row = 0});
+}
+
+TEST_F(AutofillExternalDelegateUnitTest,
+       Compose_AcceptDisable_CallsComposeDelegate) {
+  MockAutofillComposeDelegate compose_delegate;
+  ON_CALL(client(), GetComposeDelegate)
+      .WillByDefault(Return(&compose_delegate));
+
+  IssueOnQuery();
+
+  // Simulate accepting a Compose `PopupItemId::kComposeDisable` suggestion.
+  EXPECT_CALL(compose_delegate, DisableCompose);
+  external_delegate().DidAcceptSuggestion(
+      Suggestion(PopupItemId::kComposeDisable), SuggestionPosition{.row = 0});
+}
+
+TEST_F(AutofillExternalDelegateUnitTest,
+       Compose_AcceptGoToSettings_CallsComposeDelegate) {
+  MockAutofillComposeDelegate compose_delegate;
+  ON_CALL(client(), GetComposeDelegate)
+      .WillByDefault(Return(&compose_delegate));
+
+  IssueOnQuery();
+
+  // Simulate accepting a Compose `PopupItemId::kComposeGoToSettings`
+  // suggestion.
+  EXPECT_CALL(compose_delegate, GoToSettings);
+  external_delegate().DidAcceptSuggestion(
+      Suggestion(PopupItemId::kComposeGoToSettings),
+      SuggestionPosition{.row = 0});
+}
+
+TEST_F(AutofillExternalDelegateUnitTest,
+       Compose_AcceptNeverShowOnThisWebsiteAgain_CallsComposeDelegate) {
+  MockAutofillComposeDelegate compose_delegate;
+  ON_CALL(client(), GetComposeDelegate)
+      .WillByDefault(Return(&compose_delegate));
+
+  IssueOnQuery();
+
+  // Simulate accepting a Compose
+  // `PopupItemId::kComposeNeverShowOnThisSiteAgain` suggestion.
+  EXPECT_CALL(compose_delegate, NeverShowComposeForOrigin);
+  external_delegate().DidAcceptSuggestion(
+      Suggestion(PopupItemId::kComposeNeverShowOnThisSiteAgain),
+      SuggestionPosition{.row = 0});
 }
 
 class AutofillExternalDelegateUnitTest_UndoAutofill
