@@ -83,14 +83,12 @@ mojom::IdentityType ConvertIdentityTypeToMojom(
   switch (identity_type) {
     case ::nearby::internal::IdentityType::IDENTITY_TYPE_UNSPECIFIED:
       return mojom::IdentityType::kIdentityTypeUnspecified;
-    case ::nearby::internal::IdentityType::IDENTITY_TYPE_PRIVATE:
-      return mojom::IdentityType::kIdentityTypePrivate;
-    case ::nearby::internal::IdentityType::IDENTITY_TYPE_TRUSTED:
-      return mojom::IdentityType::kIdentityTypeTrusted;
+    case ::nearby::internal::IdentityType::IDENTITY_TYPE_PRIVATE_GROUP:
+      return mojom::IdentityType::kIdentityTypePrivateGroup;
+    case ::nearby::internal::IdentityType::IDENTITY_TYPE_CONTACTS_GROUP:
+      return mojom::IdentityType::kIdentityTypeContactsGroup;
     case ::nearby::internal::IdentityType::IDENTITY_TYPE_PUBLIC:
       return mojom::IdentityType::kIdentityTypePublic;
-    case ::nearby::internal::IdentityType::IDENTITY_TYPE_PROVISIONED:
-      return mojom::IdentityType::kIdentityTypeProvisioned;
     default:
       return mojom::IdentityType::kIdentityTypeUnspecified;
   }
@@ -101,14 +99,12 @@ mojom::IdentityType ConvertIdentityTypeToMojom(
   switch (identity_type) {
     case mojom::IdentityType::kIdentityTypeUnspecified:
       return ::nearby::internal::IdentityType::IDENTITY_TYPE_UNSPECIFIED;
-    case mojom::IdentityType::kIdentityTypePrivate:
-      return ::nearby::internal::IdentityType::IDENTITY_TYPE_PRIVATE;
-    case mojom::IdentityType::kIdentityTypeTrusted:
-      return ::nearby::internal::IdentityType::IDENTITY_TYPE_TRUSTED;
+    case mojom::IdentityType::kIdentityTypePrivateGroup:
+      return ::nearby::internal::IdentityType::IDENTITY_TYPE_PRIVATE_GROUP;
+    case mojom::IdentityType::kIdentityTypeContactsGroup:
+      return ::nearby::internal::IdentityType::IDENTITY_TYPE_CONTACTS_GROUP;
     case mojom::IdentityType::kIdentityTypePublic:
       return ::nearby::internal::IdentityType::IDENTITY_TYPE_PUBLIC;
-    case mojom::IdentityType::kIdentityTypeProvisioned:
-      return ::nearby::internal::IdentityType::IDENTITY_TYPE_PROVISIONED;
     default:
       return ::nearby::internal::IdentityType::IDENTITY_TYPE_UNSPECIFIED;
   }

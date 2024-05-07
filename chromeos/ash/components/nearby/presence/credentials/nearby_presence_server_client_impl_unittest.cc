@@ -260,7 +260,7 @@ TEST_F(NearbyPresenceServerClientImplTest, ListSharedCredentialsSuccess) {
   ash::nearby::proto::ListSharedCredentialsRequest request_proto;
   request_proto.set_dusi(kLocalDeviceDusi);
   request_proto.set_identity_type(
-      ash::nearby::proto::IdentityType::IDENTITY_TYPE_PRIVATE);
+      ash::nearby::proto::IdentityType::IDENTITY_TYPE_PRIVATE_GROUP);
 
   client_->ListSharedCredentials(request_proto, future.GetCallback(),
                                  base::BindOnce(&NotCalled<NearbyHttpError>));

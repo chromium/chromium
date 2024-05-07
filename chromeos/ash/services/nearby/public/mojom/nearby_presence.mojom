@@ -19,10 +19,9 @@ struct ScanRequest {
 // //third_party/nearby/src/internal/proto/credential.proto
 enum IdentityType {
   kIdentityTypeUnspecified = 0,
-  kIdentityTypePrivate = 1,
-  kIdentityTypeTrusted = 2,
+  kIdentityTypePrivateGroup = 1,
+  kIdentityTypeContactsGroup = 2,
   kIdentityTypePublic = 3,
-  kIdentityTypeProvisioned = 4,
 };
 
 // Private Credential encryption key descriptor, representing PrivateKey from

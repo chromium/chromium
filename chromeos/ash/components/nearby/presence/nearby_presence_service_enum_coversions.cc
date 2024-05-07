@@ -36,15 +36,14 @@ NearbyPresenceService::PresenceIdentityType ConvertToMojomIdentityType(
     case ::nearby::internal::IdentityType::IDENTITY_TYPE_UNSPECIFIED:
       return NearbyPresenceService::PresenceIdentityType::
           kIdentityTypeUnspecified;
-    case ::nearby::internal::IdentityType::IDENTITY_TYPE_PRIVATE:
-      return NearbyPresenceService::PresenceIdentityType::kIdentityTypePrivate;
-    case ::nearby::internal::IdentityType::IDENTITY_TYPE_TRUSTED:
-      return NearbyPresenceService::PresenceIdentityType::kIdentityTypeTrusted;
+    case ::nearby::internal::IdentityType::IDENTITY_TYPE_PRIVATE_GROUP:
+      return NearbyPresenceService::PresenceIdentityType::
+          kIdentityTypePrivateGroup;
+    case ::nearby::internal::IdentityType::IDENTITY_TYPE_CONTACTS_GROUP:
+      return NearbyPresenceService::PresenceIdentityType::
+          kIdentityTypeContactsGroup;
     case ::nearby::internal::IdentityType::IDENTITY_TYPE_PUBLIC:
       return NearbyPresenceService::PresenceIdentityType::kIdentityTypePublic;
-    case ::nearby::internal::IdentityType::IDENTITY_TYPE_PROVISIONED:
-      return NearbyPresenceService::PresenceIdentityType::
-          kIdentityTypeProvisioned;
     default:
       return NearbyPresenceService::PresenceIdentityType::
           kIdentityTypeUnspecified;

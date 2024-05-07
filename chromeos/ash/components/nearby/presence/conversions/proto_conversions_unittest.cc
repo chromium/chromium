@@ -123,8 +123,9 @@ TEST_F(ProtoConversionsTest, MetadataToMojom) {
 }
 
 TEST_F(ProtoConversionsTest, IdentityTypeFromMojom) {
-  EXPECT_EQ(::nearby::internal::IdentityType::IDENTITY_TYPE_PRIVATE,
-            IdentityTypeFromMojom(mojom::IdentityType::kIdentityTypePrivate));
+  EXPECT_EQ(
+      ::nearby::internal::IdentityType::IDENTITY_TYPE_PRIVATE_GROUP,
+      IdentityTypeFromMojom(mojom::IdentityType::kIdentityTypePrivateGroup));
 }
 
 TEST_F(ProtoConversionsTest, SharedCredentialFromMojom) {
@@ -132,7 +133,7 @@ TEST_F(ProtoConversionsTest, SharedCredentialFromMojom) {
       kKeySeed, kStartTimeMillis, kEndTimeMillis, kEncryptedMetadataBytesV0,
       kMetadataEncryptionTag, kConnectionSignatureVerificationKey,
       kAdvertisementSignatureVerificationKey,
-      mojom::IdentityType::kIdentityTypePrivate, kVersion,
+      mojom::IdentityType::kIdentityTypePrivateGroup, kVersion,
       mojom::CredentialType::kCredentialTypeDevice, kEncryptedMetadataBytesV1,
       kIdentityTokenShortSaltAdvHmacKeyV1, kSharedCredentialId, kDusi,
       kSignatureVersion, kIdentityTokenExtendedSaltAdvHmacKeyV1,
@@ -155,7 +156,7 @@ TEST_F(ProtoConversionsTest, SharedCredentialFromMojom) {
   EXPECT_EQ(std::string(kAdvertisementSignatureVerificationKey.begin(),
                         kAdvertisementSignatureVerificationKey.end()),
             proto_cred.advertisement_signature_verification_key());
-  EXPECT_EQ(::nearby::internal::IdentityType::IDENTITY_TYPE_PRIVATE,
+  EXPECT_EQ(::nearby::internal::IdentityType::IDENTITY_TYPE_PRIVATE_GROUP,
             proto_cred.identity_type());
   EXPECT_EQ(std::string(kVersion.begin(), kVersion.end()),
             proto_cred.version());
@@ -195,7 +196,7 @@ TEST_F(ProtoConversionsTest, SharedCredentialToMojom) {
       std::string(kAdvertisementSignatureVerificationKey.begin(),
                   kAdvertisementSignatureVerificationKey.end()));
   proto_cred.set_identity_type(
-      ::nearby::internal::IdentityType::IDENTITY_TYPE_PRIVATE);
+      ::nearby::internal::IdentityType::IDENTITY_TYPE_PRIVATE_GROUP);
   proto_cred.set_version(std::string(kVersion.begin(), kVersion.end()));
   proto_cred.set_credential_type(
       ::nearby::internal::CredentialType::CREDENTIAL_TYPE_GAIA);
@@ -224,7 +225,7 @@ TEST_F(ProtoConversionsTest, SharedCredentialToMojom) {
             mojo_cred->connection_signature_verification_key);
   EXPECT_EQ(kAdvertisementSignatureVerificationKey,
             mojo_cred->advertisement_signature_verification_key);
-  EXPECT_EQ(mojom::IdentityType::kIdentityTypePrivate,
+  EXPECT_EQ(mojom::IdentityType::kIdentityTypePrivateGroup,
             mojo_cred->identity_type);
   EXPECT_EQ(kVersion, mojo_cred->version);
   EXPECT_EQ(mojom::CredentialType::kCredentialTypeGaia,
@@ -260,7 +261,7 @@ TEST_F(ProtoConversionsTest,
       std::string(kAdvertisementSignatureVerificationKey.begin(),
                   kAdvertisementSignatureVerificationKey.end()));
   remote_shared_credential.set_identity_type(
-      ash::nearby::proto::IdentityType::IDENTITY_TYPE_PRIVATE);
+      ash::nearby::proto::IdentityType::IDENTITY_TYPE_PRIVATE_GROUP);
   remote_shared_credential.set_version(
       std::string(kVersion.begin(), kVersion.end()));
   remote_shared_credential.set_credential_type(
@@ -299,7 +300,7 @@ TEST_F(ProtoConversionsTest,
   EXPECT_EQ(std::string(kAdvertisementSignatureVerificationKey.begin(),
                         kAdvertisementSignatureVerificationKey.end()),
             proto_cred.advertisement_signature_verification_key());
-  EXPECT_EQ(::nearby::internal::IdentityType::IDENTITY_TYPE_PRIVATE,
+  EXPECT_EQ(::nearby::internal::IdentityType::IDENTITY_TYPE_PRIVATE_GROUP,
             proto_cred.identity_type());
   EXPECT_EQ(std::string(kVersion.begin(), kVersion.end()),
             proto_cred.version());
@@ -365,7 +366,7 @@ TEST_F(ProtoConversionsTest, LocalCredentialToMojomTest) {
   local_credential.set_allocated_connection_signing_key(
       CreatePrivateKeyProto(ConnectionSigningKeyCertificateAlias, kPrivateKey));
   local_credential.set_identity_type(
-      ::nearby::internal::IdentityType::IDENTITY_TYPE_PRIVATE);
+      ::nearby::internal::IdentityType::IDENTITY_TYPE_PRIVATE_GROUP);
   SetProtoMap(local_credential.mutable_consumed_salts(), kConsumedSalts);
   local_credential.set_identity_token_v1(
       std::string(kIdentityTokenV1.begin(), kIdentityTokenV1.end()));
@@ -381,7 +382,7 @@ TEST_F(ProtoConversionsTest, LocalCredentialToMojomTest) {
   EXPECT_EQ(kEndTimeMillis, mojo_local_credential->end_time_millis);
   EXPECT_EQ(kAdvertisementMetadataEncrpytionKeyV0,
             mojo_local_credential->metadata_encryption_key_v0);
-  EXPECT_EQ(mojom::IdentityType::kIdentityTypePrivate,
+  EXPECT_EQ(mojom::IdentityType::kIdentityTypePrivateGroup,
             mojo_local_credential->identity_type);
   EXPECT_EQ(kConsumedSalts.size(),
             mojo_local_credential->consumed_salts.size());
@@ -408,7 +409,7 @@ TEST_F(ProtoConversionsTest, LocalCredentialFromMojomTest) {
       mojom::PrivateKey::New(AdvertisementSigningKeyCertificateAlias,
                              kPrivateKey),
       mojom::PrivateKey::New(ConnectionSigningKeyCertificateAlias, kPrivateKey),
-      mojom::IdentityType::kIdentityTypePrivate, kConsumedSalts_flat,
+      mojom::IdentityType::kIdentityTypePrivateGroup, kConsumedSalts_flat,
       kIdentityTokenV1, kLocalCredentialId, kSignatureVersion);
 
   ::nearby::internal::LocalCredential local_credential_proto =
@@ -423,7 +424,7 @@ TEST_F(ProtoConversionsTest, LocalCredentialFromMojomTest) {
   EXPECT_EQ(std::string(kAdvertisementMetadataEncrpytionKeyV0.begin(),
                         kAdvertisementMetadataEncrpytionKeyV0.end()),
             local_credential_proto.metadata_encryption_key_v0());
-  EXPECT_EQ(::nearby::internal::IdentityType::IDENTITY_TYPE_PRIVATE,
+  EXPECT_EQ(::nearby::internal::IdentityType::IDENTITY_TYPE_PRIVATE_GROUP,
             local_credential_proto.identity_type());
   EXPECT_EQ(kConsumedSalts.size(),
             local_credential_proto.consumed_salts().size());

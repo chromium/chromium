@@ -103,7 +103,7 @@ constexpr int64_t kLocalCredentialId = 10111100;
 
   // All local credentials have IdentityType of kIdentityTypePrivate.
   proto.set_identity_type(
-      ::nearby::internal::IdentityType::IDENTITY_TYPE_PRIVATE);
+      ::nearby::internal::IdentityType::IDENTITY_TYPE_PRIVATE_GROUP);
 
   for (const auto& pair : consumed_salts) {
     auto map_pair =
@@ -153,7 +153,7 @@ constexpr int64_t kLocalCredentialId = 10111100;
       std::string(advertisement_signature_verification_key.begin(),
                   advertisement_signature_verification_key.end()));
   proto.set_identity_type(
-      ::nearby::internal::IdentityType::IDENTITY_TYPE_PRIVATE);
+      ::nearby::internal::IdentityType::IDENTITY_TYPE_PRIVATE_GROUP);
   proto.set_version(std::string(version.begin(), version.end()));
   proto.set_credential_type(
       ::nearby::internal::CredentialType::CREDENTIAL_TYPE_DEVICE);
@@ -266,7 +266,7 @@ const nearby::presence::CredentialSelector& CreateCredentialSelector() {
   static nearby::presence::CredentialSelector credential_selector = {
       kManagerAppName,
       kAccountName,
-      nearby::internal::IDENTITY_TYPE_PRIVATE,
+      nearby::internal::IDENTITY_TYPE_PRIVATE_GROUP,
   };
   return credential_selector;
 }
@@ -309,7 +309,7 @@ class FakeNearbyPresenceCredentialStorage
         kKeySeed, kStartTimeMillis, kEndtimeMillis, kEncryptedMetadataBytesV0,
         kMetadataEncryptionTag, kConnectionSignatureVerificationKey,
         kAdvertisementSignatureVerificationKey,
-        ash::nearby::presence::mojom::IdentityType::kIdentityTypePrivate,
+        ash::nearby::presence::mojom::IdentityType::kIdentityTypePrivateGroup,
         kVersion,
         ash::nearby::presence::mojom::CredentialType::kCredentialTypeDevice,
         kEncryptedMetadataBytesV1, kIdentityTokenShortSaltAdvHmacKeyV1,
@@ -337,7 +337,7 @@ class FakeNearbyPresenceCredentialStorage
         kSecretId_Local, kKeySeed, kStartTimeMillis, kMetadataEncryptionKeyV0,
         AdvertisementSigningKeyCertificateAlias, kAdvertisementPrivateKey,
         ConnectionSigningKeyCertificateAlias, kConnectionPrivateKey,
-        ash::nearby::presence::mojom::IdentityType::kIdentityTypePrivate,
+        ash::nearby::presence::mojom::IdentityType::kIdentityTypePrivateGroup,
         kConsumedSalts, kIdentityTokenV1, kLocalCredentialId,
         kSignatureVersion));
     // The constant must be changed if more local credentials are added to

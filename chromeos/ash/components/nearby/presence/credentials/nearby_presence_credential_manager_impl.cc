@@ -863,7 +863,7 @@ void NearbyPresenceCredentialManagerImpl::DownloadCredentials(
   // TODO(hansberry): Populate with actual DUSI.
   request.set_dusi("test_dusi");
   request.set_identity_type(
-      ash::nearby::proto::IdentityType::IDENTITY_TYPE_PRIVATE);
+      ash::nearby::proto::IdentityType::IDENTITY_TYPE_PRIVATE_GROUP);
 
   server_response_timer_.Start(
       FROM_HERE, kServerResponseTimeout,

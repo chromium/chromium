@@ -31,10 +31,10 @@ RemoteCredentialTypeToThirdPartyCredentialType(
   switch (remote_identity_type) {
     case ash::nearby::proto::IdentityType::IDENTITY_TYPE_UNSPECIFIED:
       return ::nearby::internal::IdentityType::IDENTITY_TYPE_UNSPECIFIED;
-    case ash::nearby::proto::IdentityType::IDENTITY_TYPE_PRIVATE:
-      return ::nearby::internal::IdentityType::IDENTITY_TYPE_PRIVATE;
-    case ash::nearby::proto::IdentityType::IDENTITY_TYPE_TRUSTED:
-      return ::nearby::internal::IdentityType::IDENTITY_TYPE_TRUSTED;
+    case ash::nearby::proto::IdentityType::IDENTITY_TYPE_PRIVATE_GROUP:
+      return ::nearby::internal::IdentityType::IDENTITY_TYPE_PRIVATE_GROUP;
+    case ash::nearby::proto::IdentityType::IDENTITY_TYPE_CONTACTS_GROUP:
+      return ::nearby::internal::IdentityType::IDENTITY_TYPE_CONTACTS_GROUP;
     default:
       NOTREACHED();
   }
@@ -105,14 +105,12 @@ mojom::PrivateKeyPtr PrivateKeyToMojom(
   switch (identity_type) {
     case mojom::IdentityType::kIdentityTypeUnspecified:
       return ::nearby::internal::IdentityType::IDENTITY_TYPE_UNSPECIFIED;
-    case mojom::IdentityType::kIdentityTypePrivate:
-      return ::nearby::internal::IdentityType::IDENTITY_TYPE_PRIVATE;
-    case mojom::IdentityType::kIdentityTypeTrusted:
-      return ::nearby::internal::IdentityType::IDENTITY_TYPE_TRUSTED;
+    case mojom::IdentityType::kIdentityTypePrivateGroup:
+      return ::nearby::internal::IdentityType::IDENTITY_TYPE_PRIVATE_GROUP;
+    case mojom::IdentityType::kIdentityTypeContactsGroup:
+      return ::nearby::internal::IdentityType::IDENTITY_TYPE_CONTACTS_GROUP;
     case mojom::IdentityType::kIdentityTypePublic:
       return ::nearby::internal::IdentityType::IDENTITY_TYPE_PUBLIC;
-    case mojom::IdentityType::kIdentityTypeProvisioned:
-      return ::nearby::internal::IdentityType::IDENTITY_TYPE_PROVISIONED;
     default:
       return ::nearby::internal::IdentityType::IDENTITY_TYPE_UNSPECIFIED;
   }
@@ -241,14 +239,12 @@ mojom::IdentityType IdentityTypeToMojom(
   switch (identity_type) {
     case ::nearby::internal::IdentityType::IDENTITY_TYPE_UNSPECIFIED:
       return mojom::IdentityType::kIdentityTypeUnspecified;
-    case ::nearby::internal::IdentityType::IDENTITY_TYPE_PRIVATE:
-      return mojom::IdentityType::kIdentityTypePrivate;
-    case ::nearby::internal::IdentityType::IDENTITY_TYPE_TRUSTED:
-      return mojom::IdentityType::kIdentityTypeTrusted;
+    case ::nearby::internal::IdentityType::IDENTITY_TYPE_PRIVATE_GROUP:
+      return mojom::IdentityType::kIdentityTypePrivateGroup;
+    case ::nearby::internal::IdentityType::IDENTITY_TYPE_CONTACTS_GROUP:
+      return mojom::IdentityType::kIdentityTypeContactsGroup;
     case ::nearby::internal::IdentityType::IDENTITY_TYPE_PUBLIC:
       return mojom::IdentityType::kIdentityTypePublic;
-    case ::nearby::internal::IdentityType::IDENTITY_TYPE_PROVISIONED:
-      return mojom::IdentityType::kIdentityTypeProvisioned;
     default:
       return mojom::IdentityType::kIdentityTypeUnspecified;
   }
@@ -357,9 +353,9 @@ ash::nearby::proto::TrustType TrustTypeFromIdentityType(
   switch (identity_type) {
     case ::nearby::internal::IdentityType::IDENTITY_TYPE_UNSPECIFIED:
       return ash::nearby::proto::TrustType::TRUST_TYPE_UNSPECIFIED;
-    case ::nearby::internal::IdentityType::IDENTITY_TYPE_PRIVATE:
+    case ::nearby::internal::IdentityType::IDENTITY_TYPE_PRIVATE_GROUP:
       return ash::nearby::proto::TrustType::TRUST_TYPE_PRIVATE;
-    case ::nearby::internal::IdentityType::IDENTITY_TYPE_TRUSTED:
+    case ::nearby::internal::IdentityType::IDENTITY_TYPE_CONTACTS_GROUP:
       return ash::nearby::proto::TrustType::TRUST_TYPE_TRUSTED;
     default:
       return ash::nearby::proto::TrustType::TRUST_TYPE_UNSPECIFIED;
@@ -376,9 +372,9 @@ int64_t MillisecondsToSeconds(int64_t milliseconds) {
     case ash::nearby::proto::TrustType::TRUST_TYPE_UNSPECIFIED:
       return ::nearby::internal::IdentityType::IDENTITY_TYPE_UNSPECIFIED;
     case ash::nearby::proto::TrustType::TRUST_TYPE_PRIVATE:
-      return ::nearby::internal::IdentityType::IDENTITY_TYPE_PRIVATE;
+      return ::nearby::internal::IdentityType::IDENTITY_TYPE_PRIVATE_GROUP;
     case ash::nearby::proto::TrustType::TRUST_TYPE_TRUSTED:
-      return ::nearby::internal::IdentityType::IDENTITY_TYPE_TRUSTED;
+      return ::nearby::internal::IdentityType::IDENTITY_TYPE_CONTACTS_GROUP;
     default:
       return ::nearby::internal::IdentityType::IDENTITY_TYPE_UNSPECIFIED;
   }

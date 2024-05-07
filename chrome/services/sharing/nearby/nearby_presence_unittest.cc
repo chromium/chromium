@@ -109,7 +109,7 @@ class NearbyPresenceTest : public testing::Test,
   void CallStartScan(base::OnceClosure on_complete) {
     std::vector<ash::nearby::presence::mojom::IdentityType> type_vector;
     type_vector.push_back(
-        ash::nearby::presence::mojom::IdentityType::kIdentityTypePrivate);
+        ash::nearby::presence::mojom::IdentityType::kIdentityTypePrivateGroup);
     std::vector<mojom::PresenceScanFilterPtr> filters_vector;
     mojom::PresenceScanFilterPtr filter =
         ash::nearby::presence::mojom::PresenceScanFilter::New(

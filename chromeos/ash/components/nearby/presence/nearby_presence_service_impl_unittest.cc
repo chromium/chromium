@@ -227,7 +227,7 @@ class NearbyPresenceServiceImplTest : public testing::Test {
 };
 
 TEST_F(NearbyPresenceServiceImplTest, StartPrivateScan) {
-  TestStartScan(::nearby::internal::IdentityType::IDENTITY_TYPE_PRIVATE);
+  TestStartScan(::nearby::internal::IdentityType::IDENTITY_TYPE_PRIVATE_GROUP);
 }
 
 TEST_F(NearbyPresenceServiceImplTest, StartPublicScan) {
@@ -235,12 +235,12 @@ TEST_F(NearbyPresenceServiceImplTest, StartPublicScan) {
 }
 
 TEST_F(NearbyPresenceServiceImplTest, StartTrustedScan) {
-  TestStartScan(::nearby::internal::IdentityType::IDENTITY_TYPE_TRUSTED);
+  TestStartScan(::nearby::internal::IdentityType::IDENTITY_TYPE_CONTACTS_GROUP);
 }
 
 TEST_F(NearbyPresenceServiceImplTest, StartScan_DeviceChanged) {
   NearbyPresenceService::ScanFilter filter(
-      ::nearby::internal::IdentityType::IDENTITY_TYPE_PRIVATE,
+      ::nearby::internal::IdentityType::IDENTITY_TYPE_PRIVATE_GROUP,
       /*actions=*/{});
   FakeScanDelegate scan_delegate;
   {
@@ -279,7 +279,7 @@ TEST_F(NearbyPresenceServiceImplTest, StartScan_DeviceChanged) {
 
 TEST_F(NearbyPresenceServiceImplTest, StartScan_DeviceLost) {
   NearbyPresenceService::ScanFilter filter(
-      ::nearby::internal::IdentityType::IDENTITY_TYPE_PRIVATE,
+      ::nearby::internal::IdentityType::IDENTITY_TYPE_PRIVATE_GROUP,
       /*actions=*/{});
   FakeScanDelegate scan_delegate;
   {
@@ -315,7 +315,7 @@ TEST_F(NearbyPresenceServiceImplTest, StartScan_DeviceLost) {
 
 TEST_F(NearbyPresenceServiceImplTest, EndScan) {
   NearbyPresenceService::ScanFilter filter(
-      ::nearby::internal::IdentityType::IDENTITY_TYPE_PRIVATE,
+      ::nearby::internal::IdentityType::IDENTITY_TYPE_PRIVATE_GROUP,
       /*actions=*/{});
   FakeScanDelegate scan_delegate;
 
@@ -364,7 +364,7 @@ TEST_F(NearbyPresenceServiceImplTest, EndScan) {
 
 TEST_F(NearbyPresenceServiceImplTest, EndScanBeforeStart) {
   NearbyPresenceService::ScanFilter filter(
-      ::nearby::internal::IdentityType::IDENTITY_TYPE_PRIVATE,
+      ::nearby::internal::IdentityType::IDENTITY_TYPE_PRIVATE_GROUP,
       /*actions=*/{});
   FakeScanDelegate scan_delegate;
 
@@ -433,7 +433,7 @@ TEST_F(NearbyPresenceServiceImplTest, InvalidPushNotificationClientId) {
 
 TEST_F(NearbyPresenceServiceImplTest, NullProcessReference) {
   NearbyPresenceService::ScanFilter filter(
-      ::nearby::internal::IdentityType::IDENTITY_TYPE_PRIVATE,
+      ::nearby::internal::IdentityType::IDENTITY_TYPE_PRIVATE_GROUP,
       /*actions=*/{});
   FakeScanDelegate scan_delegate;
 
