@@ -8,6 +8,7 @@
 #include <memory>
 #include <vector>
 
+#include "ash/constants/ash_features.h"
 #include "base/command_line.h"
 #include "base/compiler_specific.h"
 #include "base/functional/bind.h"
@@ -21,6 +22,7 @@
 #include "base/run_loop.h"
 #include "base/strings/stringprintf.h"
 #include "base/test/metrics/histogram_tester.h"
+#include "base/test/scoped_feature_list.h"
 #include "chrome/browser/ash/login/users/fake_chrome_user_manager.h"
 #include "chrome/browser/ash/net/network_portal_detector_test_utils.h"
 #include "chrome/test/base/testing_browser_process.h"
@@ -77,6 +79,11 @@ class NetworkPortalDetectorImplTest
       : test_profile_manager_(TestingBrowserProcess::GetGlobal()) {}
 
   void SetUp() override {
+    // This test is only necessary when kRemoveDetectPortalFromChrome is
+    // disabled.
+    scoped_feature_list_.InitAndDisableFeature(
+        features::kRemoveDetectPortalFromChrome);
+
     FakeChromeUserManager* user_manager = new FakeChromeUserManager();
     user_manager_enabler_ = std::make_unique<user_manager::ScopedUserManager>(
         base::WrapUnique(user_manager));
@@ -257,6 +264,7 @@ class NetworkPortalDetectorImplTest
   }
 
   content::BrowserTaskEnvironment task_environment_;
+  base::test::ScopedFeatureList scoped_feature_list_;
   std::unique_ptr<NetworkHandlerTestHelper> network_handler_test_helper_;
   raw_ptr<Profile> profile_ = nullptr;
   std::unique_ptr<NetworkPortalDetectorImpl> network_portal_detector_;

@@ -10,6 +10,7 @@
 #include <type_traits>
 #include <utility>
 
+#include "ash/constants/ash_features.h"
 #include "base/metrics/histogram_functions.h"
 #include "base/strings/strcat.h"
 #include "base/strings/string_number_conversions.h"
@@ -524,6 +525,12 @@ bool NetworkState::IsNonShillCellularNetwork() const {
 NetworkState::PortalState NetworkState::GetPortalState() const {
   return chrome_portal_state_ != PortalState::kUnknown ? chrome_portal_state_
                                                        : shill_portal_state_;
+}
+
+void NetworkState::SetChromePortalState(PortalState portal_state) {
+  CHECK(!features::IsRemoveDetectPortalFromChromeEnabled());
+
+  chrome_portal_state_ = portal_state;
 }
 
 bool NetworkState::IsSecure() const {

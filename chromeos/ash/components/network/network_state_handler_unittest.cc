@@ -22,6 +22,7 @@
 #include "base/run_loop.h"
 #include "base/strings/string_number_conversions.h"
 #include "base/test/metrics/histogram_tester.h"
+#include "base/test/scoped_feature_list.h"
 #include "base/test/task_environment.h"
 #include "base/values.h"
 #include "chromeos/ash/components/dbus/shill/shill_clients.h"
@@ -1959,6 +1960,11 @@ TEST_F(NetworkStateHandlerTest, DefaultServiceChanged) {
 }
 
 TEST_F(NetworkStateHandlerTest, SetNetworkChromePortalState) {
+  // This test is only necessary when kRemoveDetectPortalFromChrome is disabled.
+  base::test::ScopedFeatureList scoped_feature_list;
+  scoped_feature_list.InitAndDisableFeature(
+      features::kRemoveDetectPortalFromChrome);
+
   RemoveEthernet();
 
   base::HistogramTester histogram_tester;

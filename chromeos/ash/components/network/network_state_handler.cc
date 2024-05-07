@@ -641,6 +641,8 @@ void NetworkStateHandler::SetShillConnectError(
 void NetworkStateHandler::SetNetworkChromePortalState(
     const std::string& service_path,
     NetworkState::PortalState portal_state) {
+  CHECK(!features::IsRemoveDetectPortalFromChromeEnabled());
+
   NetworkState* network = GetModifiableNetworkState(service_path);
   if (!network) {
     return;
@@ -648,7 +650,7 @@ void NetworkStateHandler::SetNetworkChromePortalState(
   NET_LOG(USER) << "Setting Chrome PortalState for "
                 << NetworkPathId(service_path) << " = " << portal_state;
   auto prev_portal_state = network->GetPortalState();
-  network->set_chrome_portal_state(portal_state);
+  network->SetChromePortalState(portal_state);
   if (prev_portal_state == network->GetPortalState() ||
       service_path != default_network_path_) {
     return;

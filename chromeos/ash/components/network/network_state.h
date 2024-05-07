@@ -322,9 +322,7 @@ class COMPONENT_EXPORT(CHROMEOS_NETWORK) NetworkState : public ManagedState {
 
   void SetVpnProvider(const std::string& id, const std::string& type);
 
-  void set_chrome_portal_state(PortalState portal_state) {
-    chrome_portal_state_ = portal_state;
-  }
+  void SetChromePortalState(PortalState portal_state);
 
   // Set to true if the network is a member of Manager.Services.
   bool visible_ = false;
