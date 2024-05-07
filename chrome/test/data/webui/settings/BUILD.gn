@@ -41,6 +41,7 @@ build_webui_tests("build") {
     "fingerprint_progress_arc_test.ts",
     "help_page_test.ts",
     "idle_load_test.ts",
+    "offer_writing_help_page_test.ts",
     "on_startup_page_test.ts",
     "autofill_fake_data.ts",
     "payments_section_card_rows_test.ts",

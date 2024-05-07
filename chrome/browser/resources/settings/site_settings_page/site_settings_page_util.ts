@@ -99,6 +99,7 @@ export function getLocalizationStringForContentType(
     case ContentSettingsTypes.PRIVATE_NETWORK_DEVICES:
     case ContentSettingsTypes.SITE_DATA:
     case ContentSettingsTypes.TRACKING_PROTECTION:
+    case ContentSettingsTypes.OFFER_WRITING_HELP:
       return null;
     default:
       assertNotReached();

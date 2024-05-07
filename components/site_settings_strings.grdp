@@ -277,5 +277,8 @@
   <message name="IDS_SITE_SETTINGS_TYPE_PERFORMANCE_SUBLABEL" desc="The sublabel used for the performance site settings controls to manage the exclusion list.">
     Manage sites that will always stay active and won't have memory freed up from them
   </message>
+  <message name="IDS_SITE_SETTINGS_TYPE_OFFER_WRITING_HELP" desc="Name of the settings page that manages writing help UI preferences.">
+    Offer writing help
+  </message>
   </if>
 </grit-part>
