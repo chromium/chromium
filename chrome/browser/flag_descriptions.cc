@@ -1550,6 +1550,12 @@ const char kEnableAutomaticSharedImageManagementDescription[] =
     "When enabled, allows the shared image lifetime to be automatically "
     "managed via ClientSharedImage.";
 
+const char kEnableBubbleCornerRadiusUpdateName[] =
+    "Enable corner radius update for system bubbles.";
+const char kEnableBubbleCornerRadiusUpdateDescription[] =
+    "When enabled, the launcher bubble and tray bubble corner radius is "
+    "updated.";
+
 const char kEnableCssSelectorFragmentAnchorName[] =
     "Enables CSS selector fragment anchors";
 const char kEnableCssSelectorFragmentAnchorDescription[] =

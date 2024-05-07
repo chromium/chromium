@@ -891,6 +891,9 @@ extern const char kBoundaryEventDispatchTracksNodeRemovalDescription[];
 extern const char kEnableAutomaticSharedImageManagementName[];
 extern const char kEnableAutomaticSharedImageManagementDescription[];
 
+extern const char kEnableBubbleCornerRadiusUpdateName[];
+extern const char kEnableBubbleCornerRadiusUpdateDescription[];
+
 extern const char kEnableCssSelectorFragmentAnchorName[];
 extern const char kEnableCssSelectorFragmentAnchorDescription[];
 

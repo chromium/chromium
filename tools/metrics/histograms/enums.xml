@@ -19129,6 +19129,7 @@ from previous Chrome versions.
   <int value="-962004315" label="EnterpriseProfileBadging:disabled"/>
   <int value="-961427615" label="WebviewTagMPArchBehavior:enabled"/>
   <int value="-960851702" label="EcheSWADisableStunServer:disabled"/>
+  <int value="-960745328" label="EnableBubbleCornerRadiusUpdate:enabled"/>
   <int value="-960077963" label="EnableAuraTooltipsOnWindows:enabled"/>
   <int value="-959244784" label="ContextualSearchSuppressShortView:enabled"/>
   <int value="-959173180" label="AccessibilityPageZoom:disabled"/>
@@ -24262,6 +24263,7 @@ from previous Chrome versions.
   <int value="1311658248" label="SyncEnableHistoryDataType:disabled"/>
   <int value="1311860720" label="ChromeHomeNtpRedesign:disabled"/>
   <int value="1312025202" label="NTPOfflinePageSuggestions:disabled"/>
+  <int value="1312920918" label="EnableBubbleCornerRadiusUpdate:disabled"/>
   <int value="1313476409" label="ReportFeedUserActions:disabled"/>
   <int value="1313570156"
       label="HappinessTrackingSurveysForDesktopMigration:enabled"/>
