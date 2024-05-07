@@ -69,6 +69,10 @@ BASE_FEATURE(kContextualPageActions,
              "ContextualPageActions",
              base::FEATURE_ENABLED_BY_DEFAULT);
 
+BASE_FEATURE(kContextualPageActionPriceTracking,
+             "ContextualPageActionPriceTracking",
+             base::FEATURE_ENABLED_BY_DEFAULT);
+
 BASE_FEATURE(kContextualPageActionReaderMode,
              "ContextualPageActionReaderMode",
              base::FEATURE_ENABLED_BY_DEFAULT);

@@ -11,7 +11,6 @@ import org.chromium.chrome.browser.profiles.Profile;
 import org.chromium.chrome.browser.tab.Tab;
 import org.chromium.components.bookmarks.BookmarkId;
 import org.chromium.components.commerce.core.ShoppingService;
-import org.chromium.components.embedder_support.util.UrlUtilities;
 
 /** Provides price tracking signal for showing contextual page action for a given tab. */
 public class PriceTrackingActionProvider implements ContextualPageActionController.ActionProvider {
@@ -31,13 +30,6 @@ public class PriceTrackingActionProvider implements ContextualPageActionControll
 
     @Override
     public void getAction(Tab tab, SignalAccumulator signalAccumulator) {
-
-        if (tab == null || tab.getUrl() == null || !UrlUtilities.isHttpOrHttps(tab.getUrl())) {
-            signalAccumulator.setHasPriceTracking(false);
-            signalAccumulator.notifySignalAvailable();
-            return;
-        }
-
         final BookmarkModel bookmarkModel = mBookmarkModelSupplier.get();
         bookmarkModel.finishLoadingBookmarkModel(
                 () -> {

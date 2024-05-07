@@ -97,7 +97,16 @@ std::unique_ptr<Config> GetConfigForAdaptiveToolbar() {
 
 #if BUILDFLAG(IS_ANDROID)
 bool IsEnabledContextualPageActions() {
-  return base::FeatureList::IsEnabled(features::kContextualPageActions);
+  if (!base::FeatureList::IsEnabled(features::kContextualPageActions))
+    return false;
+
+  bool is_price_tracking_enabled = base::FeatureList::IsEnabled(
+      features::kContextualPageActionPriceTracking);
+
+  bool is_reader_mode_enabled =
+      base::FeatureList::IsEnabled(features::kContextualPageActionReaderMode);
+
+  return is_price_tracking_enabled || is_reader_mode_enabled;
 }
 
 std::unique_ptr<Config> GetConfigForContextualPageActions(

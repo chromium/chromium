@@ -59,10 +59,6 @@ public class AdaptiveToolbarFeatures {
     /** Default action chip delay for reader mode. */
     public static final int DEFAULT_READER_MODE_ACTION_CHIP_DELAY_MS = 3000;
 
-    @VisibleForTesting(otherwise = VisibleForTesting.PRIVATE)
-    public static final String CONTEXTUAL_PAGE_ACTION_TEST_FEATURE_NAME =
-            "CONTEXTUAL_PAGE_ACTION_TEST_FEATURE_NAME";
-
     @AdaptiveToolbarButtonVariant private static Integer sButtonVariant;
 
     /** For testing only. */
@@ -73,17 +69,11 @@ public class AdaptiveToolbarFeatures {
     private static Boolean sShowUiOnlyAfterReadyForTesting;
     private static HashMap<Integer, Boolean> sActionChipOverridesForTesting;
     private static HashMap<Integer, Boolean> sAlternativeColorOverridesForTesting;
-    private static HashMap<Integer, Boolean> sIsDynamicActionOverridesForTesting;
 
     /**
      * @return Whether the button variant is a dynamic action.
      */
     public static boolean isDynamicAction(@AdaptiveToolbarButtonVariant int variant) {
-        if (sIsDynamicActionOverridesForTesting != null
-                && sIsDynamicActionOverridesForTesting.containsKey(variant)) {
-            return Boolean.TRUE.equals(sIsDynamicActionOverridesForTesting.get(variant));
-        }
-
         switch (variant) {
             case AdaptiveToolbarButtonVariant.UNKNOWN:
             case AdaptiveToolbarButtonVariant.NONE:
@@ -102,10 +92,10 @@ public class AdaptiveToolbarFeatures {
     private static String getFeatureNameForButtonVariant(
             @AdaptiveToolbarButtonVariant int variant) {
         switch (variant) {
+            case AdaptiveToolbarButtonVariant.PRICE_TRACKING:
+                return ChromeFeatureList.CONTEXTUAL_PAGE_ACTION_PRICE_TRACKING;
             case AdaptiveToolbarButtonVariant.READER_MODE:
                 return ChromeFeatureList.CONTEXTUAL_PAGE_ACTION_READER_MODE;
-            case AdaptiveToolbarButtonVariant.TEST_BUTTON:
-                return CONTEXTUAL_PAGE_ACTION_TEST_FEATURE_NAME;
             default:
                 throw new IllegalArgumentException(
                         "Provided button variant not assigned to feature");
@@ -214,8 +204,9 @@ public class AdaptiveToolbarFeatures {
     }
 
     public static boolean isPriceTrackingPageActionEnabled() {
-        // Price tracking is now default enabled, only depending on the global CPA flag.
-        return ChromeFeatureList.isEnabled(ChromeFeatureList.CONTEXTUAL_PAGE_ACTIONS);
+        return ChromeFeatureList.isEnabled(ChromeFeatureList.CONTEXTUAL_PAGE_ACTIONS)
+                && ChromeFeatureList.isEnabled(
+                        ChromeFeatureList.CONTEXTUAL_PAGE_ACTION_PRICE_TRACKING);
     }
 
     public static boolean isReaderModePageActionEnabled() {
@@ -356,15 +347,6 @@ public class AdaptiveToolbarFeatures {
         }
         sAlternativeColorOverridesForTesting.put(buttonVariant, useAlternativeColor);
         ResettersForTesting.register(() -> sAlternativeColorOverridesForTesting = null);
-    }
-
-    public static void setIsDynamicActionForTesting(
-            @AdaptiveToolbarButtonVariant int buttonVariant, Boolean isDynamicAction) {
-        if (sIsDynamicActionOverridesForTesting == null) {
-            sIsDynamicActionOverridesForTesting = new HashMap<>();
-        }
-        sIsDynamicActionOverridesForTesting.put(buttonVariant, isDynamicAction);
-        ResettersForTesting.register(() -> sIsDynamicActionOverridesForTesting = null);
     }
 
     public static void clearParsedParamsForTesting() {
