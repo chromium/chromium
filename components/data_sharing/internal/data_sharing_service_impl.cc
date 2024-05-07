@@ -468,4 +468,16 @@ DataSharingServiceImpl::GetCollaborationGroupSyncBridgeForTesting() {
   return collaboration_group_sync_bridge_.get();
 }
 
+bool DataSharingServiceImpl::ShouldInterceptNavigationForShareURL(
+    const GURL& url) {
+  // TODO(b/336873603): Implement logic to filter URL.
+  NOTIMPLEMENTED();
+  return false;
+}
+
+void DataSharingServiceImpl::HandleShareURLNavigationIntercepted(
+    const GURL& url) {
+  NOTIMPLEMENTED();
+}
+
 }  // namespace data_sharing

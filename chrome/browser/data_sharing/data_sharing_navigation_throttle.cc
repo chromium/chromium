@@ -43,8 +43,21 @@ const char* DataSharingNavigationThrottle::GetNameForLogging() {
 
 DataSharingNavigationThrottle::ThrottleCheckResult
 DataSharingNavigationThrottle::CheckIfShouldIntercept() {
-  // TODO(haileywang): Call data sharing service to know if the url should be
-  // intercepted.
+  content::WebContents* web_contents = navigation_handle()->GetWebContents();
+  if (!web_contents) {
+    return PROCEED;
+  }
+
+  DataSharingService* data_sharing_service =
+      DataSharingServiceFactory::GetForProfile(Profile::FromBrowserContext(
+          navigation_handle()->GetWebContents()->GetBrowserContext()));
+
+  const GURL& url = navigation_handle()->GetURL();
+  if (data_sharing_service &&
+      data_sharing_service->ShouldInterceptNavigationForShareURL(url)) {
+    data_sharing_service->HandleShareURLNavigationIntercepted(url);
+    return CANCEL;
+  }
   return PROCEED;
 }
 

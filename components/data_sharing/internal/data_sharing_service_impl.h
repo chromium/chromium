@@ -79,6 +79,8 @@ class DataSharingServiceImpl : public DataSharingService,
       const std::string& group_id,
       const std::string& member_email,
       base::OnceCallback<void(PeopleGroupActionOutcome)> callback) override;
+  bool ShouldInterceptNavigationForShareURL(const GURL& url) override;
+  void HandleShareURLNavigationIntercepted(const GURL& url) override;
 
   // CollaborationGroupSyncBridge::Observer implementation.
   void OnGroupsUpdated(

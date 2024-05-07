@@ -113,6 +113,12 @@ class DataSharingService : public KeyedService, public base::SupportsUserData {
       const std::string& group_id,
       const std::string& member_email,
       base::OnceCallback<void(PeopleGroupActionOutcome)> callback) = 0;
+
+  // Check if the given URL should be intercepted.
+  virtual bool ShouldInterceptNavigationForShareURL(const GURL& url) = 0;
+
+  // Called when a data sharing type URL has been intercepted.
+  virtual void HandleShareURLNavigationIntercepted(const GURL& url) = 0;
 };
 
 }  // namespace data_sharing

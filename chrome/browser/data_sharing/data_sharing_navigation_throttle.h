@@ -5,6 +5,7 @@
 #ifndef CHROME_BROWSER_DATA_SHARING_DATA_SHARING_NAVIGATION_THROTTLE_H_
 #define CHROME_BROWSER_DATA_SHARING_DATA_SHARING_NAVIGATION_THROTTLE_H_
 
+#include "components/data_sharing/public/data_sharing_service.h"
 #include "content/public/browser/navigation_throttle.h"
 
 namespace content {

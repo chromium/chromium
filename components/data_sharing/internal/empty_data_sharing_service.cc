@@ -55,4 +55,12 @@ void EmptyDataSharingService::RemoveMember(
     const std::string& member_email,
     base::OnceCallback<void(PeopleGroupActionOutcome)> callback) {}
 
+bool EmptyDataSharingService::ShouldInterceptNavigationForShareURL(
+    const GURL& url) {
+  return false;
+}
+
+void EmptyDataSharingService::HandleShareURLNavigationIntercepted(
+    const GURL& url) {}
+
 }  // namespace data_sharing
