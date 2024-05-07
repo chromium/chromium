@@ -7,6 +7,7 @@
 
 #include "base/callback_list.h"
 #include "base/functional/callback_forward.h"
+#include "base/gtest_prod_util.h"
 #include "chrome/browser/user_education/recent_session_tracker.h"
 
 class RecentSessionObserver {
@@ -28,6 +29,9 @@ class RecentSessionObserver {
   void NotifyLowUsageSession();
 
  private:
+  FRIEND_TEST_ALL_PREFIXES(LowUsageHelpControllerBrowsertest,
+                           PromoOnNewSession);
+
   // Since sometimes a new session will happen right at startup, before other
   // services can try to listen, cache whether there has been a new low-usage
   // session since startup so that notifications can be sent immediately on

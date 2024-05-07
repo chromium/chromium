@@ -1680,6 +1680,8 @@ static_library("ui") {
       "uma_browsing_activity_observer.h",
       "unload_controller.cc",
       "unload_controller.h",
+      "user_education/low_usage_help_controller.cc",
+      "user_education/low_usage_help_controller.h",
       "user_education/polling_idle_observer.cc",
       "user_education/polling_idle_observer.h",
       "user_education/recent_session_observer_impl.cc",

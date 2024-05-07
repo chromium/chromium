@@ -23,6 +23,7 @@
 #include "chrome/browser/ui/toolbar/bookmark_sub_menu_model.h"
 #include "chrome/browser/ui/toolbar/reading_list_sub_menu_model.h"
 #include "chrome/browser/ui/ui_features.h"
+#include "chrome/browser/ui/user_education/low_usage_help_controller.h"
 #include "chrome/browser/ui/user_education/show_promo_in_page.h"
 #include "chrome/browser/ui/views/bookmarks/bookmark_bar_view.h"
 #include "chrome/browser/ui/views/frame/browser_view.h"
@@ -1232,6 +1233,8 @@ std::unique_ptr<BrowserFeaturePromoController> CreateUserEducationResources(
 
   MaybeRegisterChromeNewBadges(*user_education_service->new_badge_registry());
   user_education_service->new_badge_controller()->InitData();
+
+  LowUsageHelpController::MaybeCreateForBrowser(browser_view->browser());
 
   return std::make_unique<BrowserFeaturePromoController>(
       browser_view,

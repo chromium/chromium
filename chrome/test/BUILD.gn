@@ -2828,6 +2828,7 @@ if (!is_android) {
       "../browser/ui/toolbar/toolbar_actions_model_browsertest.cc",
       "../browser/ui/unload_controller_browsertest.cc",
       "../browser/ui/update_chrome_dialog_browsertest.cc",
+      "../browser/ui/user_education/low_usage_help_controller_browsertest.cc",
       "../browser/ui/user_education/show_promo_in_page_browsertest.cc",
       "../browser/ui/user_education/start_tutorial_in_page_browsertest.cc",
       "../browser/ui/views/apps/app_info_dialog/app_info_dialog_views_browsertest.cc",

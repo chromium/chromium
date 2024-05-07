@@ -289,6 +289,11 @@ class FeaturePromoControllerCommon : public FeaturePromoController {
   // `InteractiveFeaturePromoTest`.
   [[nodiscard]] static TestLock BlockActiveWindowCheckForTesting();
 
+  // Returns true if `BlockActiveWindowCheckForTesting()` is active.
+  static bool active_window_check_blocked() {
+    return active_window_check_blocked_;
+  }
+
  protected:
   friend BrowserFeaturePromoControllerTest;
   friend FeaturePromoLifecycleUiTest;
@@ -361,10 +366,6 @@ class FeaturePromoControllerCommon : public FeaturePromoController {
 
   const FeaturePromoRegistry* registry() const { return registry_; }
   FeaturePromoRegistry* registry() { return registry_; }
-
-  static bool active_window_check_blocked() {
-    return active_window_check_blocked_;
-  }
 
  private:
   struct ShowPromoBubbleParams;
