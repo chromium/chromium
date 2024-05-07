@@ -32,6 +32,7 @@ enum class ComposeNudgeDenyReason {
   kDOMLevelChecks = 4,
   kPageLevelChecks = 5,
   kProactiveNudgeDisabledByGlobalPreference = 6,
+  kRandomlyBlocked = 7,
 };
 
 }  // namespace compose

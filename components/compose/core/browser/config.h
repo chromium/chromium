@@ -56,6 +56,15 @@ struct Config {
   // Whether to enable the proactive nudge with no saved state.
   bool proactive_nudge_enabled = false;
 
+  // Used to randomly hide the nudge in order to reduce exposure, experimental
+  // flag for triggering research experiments only. If param is greater than
+  // `1`, always shows. If param is negative, never shows.
+  double proactive_nudge_show_probability = 1e-3;
+
+  // Ignores OptGuide decision to disable the nudge. Does not bypass other
+  // hint decisions.
+  bool proactive_nudge_bypass_optimization_guide = false;
+
   // The duration that the saved state notification is shown before
   // auto-dismissal.
   unsigned int saved_state_timeout_milliseconds = 2000;
