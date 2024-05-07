@@ -12626,7 +12626,7 @@
                     "name": "EnabledCarouselAboveTrends",
                     "params": {
                         "QueryTilesShowAboveTrends": "true",
-                        "QueryTilesShowAsCarousel": "true",
+                        "QueryTilesShowAsCarousel": "false",
                         "experiment_tag": "{maxLevels: 1, rankTiles: true}"
                     },
                     "enable_features": [
