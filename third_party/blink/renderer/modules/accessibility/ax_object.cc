@@ -6060,10 +6060,13 @@ void AXObject::UpdateChildrenIfNecessary() {
     return;
   }
 
-  CHECK(!AXObjectCache().IsFrozen())
-      << "Object should have already had its children updated in "
-         "AXObjectCacheImpl::UpdateTreeIfNeeded(): "
-      << this;
+  if (AXObjectCache().IsFrozen()) {
+    DUMP_WILL_BE_CHECK(!AXObjectCache().IsFrozen())
+        << "Object should have already had its children updated in "
+           "AXObjectCacheImpl::UpdateTreeIfNeeded(): "
+        << this;
+    return;
+  }
 
   if (!CanHaveChildren()) {
     // Clear any children in case the node previously allowed children.
