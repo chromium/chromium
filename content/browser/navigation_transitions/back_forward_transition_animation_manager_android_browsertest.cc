@@ -527,6 +527,13 @@ class BackForwardTransitionAnimationManagerBrowserTest
   ~BackForwardTransitionAnimationManagerBrowserTest() override = default;
 
   void SetUp() override {
+    if (base::SysInfo::GetAndroidHardwareEGL() == "emulation") {
+      // crbug.com/337886037 and crrev.com/c/5504854/comment/b81b8fb6_95fb1381/:
+      // The CopyOutputRequests crash the GPU process. ANGLE is exporting the
+      // native fence support on Android emulators but it doesn't work properly.
+      GTEST_SKIP();
+    }
+
     EnablePixelOutput();
 
     std::vector<base::test::FeatureRefAndParams> enabled_features = {
