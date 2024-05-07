@@ -322,6 +322,16 @@ size_t RenderWidgetHostInputEventRouter::RegisteredViewCountForTesting() const {
   return owner_map_.size();
 }
 
+RenderWidgetHostViewInput*
+RenderWidgetHostInputEventRouter::GetLastMouseMoveTargetForTest() {
+  return last_mouse_move_target_.get();
+}
+
+RenderWidgetHostViewInput*
+RenderWidgetHostInputEventRouter::GetLastMouseMoveRootViewForTest() {
+  return last_mouse_move_root_view_.get();
+}
+
 void RenderWidgetHostInputEventRouter::OnRenderWidgetHostViewInputDestroyed(
     RenderWidgetHostViewInput* view) {
   // RenderWidgetHostViewInput::RemoveObserver() should only ever be called
@@ -986,33 +996,30 @@ void RenderWidgetHostInputEventRouter::SendMouseEnterOrLeaveEvents(
   // as long as they are the only embeddable RWHVs.
   while (cur_view->GetParentViewInput()) {
     cur_view = cur_view->GetParentViewInput();
-    // cur_view can possibly be nullptr for guestviews that are not currently
-    // connected to the webcontents tree.
-    if (!cur_view) {
-      last_mouse_move_target_ = target;
-      last_mouse_move_root_view_ = root_view;
-      return;
-    }
     entered_views.push_back(cur_view);
   }
-
-  // On Windows, it appears to be possible that render widget targeting could
-  // produce a target that is outside of the specified root. For now, we'll
-  // just give up in such a case. See https://crbug.com/851958.
-  if (cur_view != root_view)
+  // There are two cases where cur_view != root_view :
+  // 1. On Windows, render widget targeting could produce a target that is
+  // outside of the specified root. See https://crbug.com/851958. In this case,
+  // we'll just give up.
+  // 2. cur_view's GetParentViewInput() can possibly be nullptr for
+  // guestviews (Chrome App or WebUI) that are not currently connected to
+  // the webcontents tree. It is fine to return early since this would be
+  // attempted again on next mouse event and once guestview is connected, the
+  // ancestors will be notified and state would be updated.
+  if (cur_view != root_view) {
     return;
+  }
 
   cur_view = last_mouse_move_target_;
   if (cur_view) {
     exited_views.push_back(cur_view);
     while (cur_view->GetParentViewInput()) {
       cur_view = cur_view->GetParentViewInput();
-      if (!cur_view) {
-        last_mouse_move_target_ = target;
-        last_mouse_move_root_view_ = root_view;
-        return;
-      }
       exited_views.push_back(cur_view);
+    }
+    if (cur_view != root_view) {
+      return;
     }
     DCHECK_EQ(cur_view, root_view);
   }

@@ -971,6 +971,64 @@ TEST_F(RenderWidgetHostInputEventRouterTest,
   EXPECT_NE(view_root_.get(), bubbling_gesture_scroll_target());
 }
 
+// Ensure that when the RenderWidgetHostChildFrameView handling mouse events is
+// rooted by GuestView which is not connected to WebContents, we return early
+// and when it's connected, we do update mouse move related states in RWHIER.
+TEST_F(RenderWidgetHostInputEventRouterTest,
+       DoNotSendMouseLeaveEventsForDisconnectedGuestView) {
+  ChildViewState child = MakeChildView(view_root_.get());
+
+  // We start the touch in the area for |child.view|.
+  view_root_->SetHittestResult(child.view.get(), false);
+
+  blink::WebTouchEvent touch_event(
+      blink::WebInputEvent::Type::kTouchStart,
+      blink::WebInputEvent::kNoModifiers,
+      blink::WebInputEvent::GetStaticTimeStampForTests());
+  touch_event.touches_length = 1;
+  touch_event.touches[0].state = blink::WebTouchPoint::State::kStatePressed;
+  touch_event.unique_touch_event_id = 1;
+
+  rwhier()->RouteTouchEvent(view_root_.get(), &touch_event,
+                            ui::LatencyInfo(ui::SourceEventType::TOUCH));
+  EXPECT_EQ(child.view.get(), touch_target());
+
+  // Need to send a new mouse event after ending the previous touch.
+  blink::WebMouseEvent mouse_event(
+      blink::WebInputEvent::Type::kMouseLeave,
+      blink::WebInputEvent::kNoModifiers,
+      blink::WebInputEvent::GetStaticTimeStampForTests());
+  mouse_event.SetPositionInWidget(gfx::PointF(20, 21));
+
+  {  // Simulates GuestView not yet attached to WebContents.
+    ChildViewState guest_view = MakeChildView(nullptr);
+    ChildViewState child1 = MakeChildView(guest_view.view.get());
+    ChildViewState child2 = MakeChildView(child1.view.get());
+
+    // We start the input event in the area for |child1.view|.
+    view_root_->SetHittestResult(child1.view.get(), false);
+
+    rwhier()->RouteMouseEvent(view_root_.get(), &mouse_event,
+                              ui::LatencyInfo(ui::SourceEventType::MOUSE));
+
+    DCHECK_EQ(rwhier()->GetLastMouseMoveTargetForTest(), nullptr);
+    DCHECK_EQ(rwhier()->GetLastMouseMoveRootViewForTest(), nullptr);
+  }
+  {  // Simulates GuestView attached to WebContents.
+    ChildViewState guest_view = MakeChildView(view_root_.get());
+    ChildViewState child1 = MakeChildView(guest_view.view.get());
+    ChildViewState child2 = MakeChildView(child1.view.get());
+
+    // We start the input event in the area for |child2.view|.
+    view_root_->SetHittestResult(child1.view.get(), false);
+    rwhier()->RouteMouseEvent(view_root_.get(), &mouse_event,
+                              ui::LatencyInfo(ui::SourceEventType::MOUSE));
+
+    DCHECK_EQ(rwhier()->GetLastMouseMoveTargetForTest(), child1.view.get());
+    DCHECK_EQ(rwhier()->GetLastMouseMoveRootViewForTest(), view_root_.get());
+  }
+}
+
 // Calling ShowContextMenuAtPoint without other events will happen when desktop
 // devtools connect to a browser instance running on a mobile.  It should not
 // crash.

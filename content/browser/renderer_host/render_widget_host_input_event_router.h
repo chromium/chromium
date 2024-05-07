@@ -197,6 +197,9 @@ class CONTENT_EXPORT RenderWidgetHostInputEventRouter final
 
   void SetAutoScrollInProgress(bool is_autoscroll_in_progress);
 
+  RenderWidgetHostViewInput* GetLastMouseMoveTargetForTest();
+  RenderWidgetHostViewInput* GetLastMouseMoveRootViewForTest();
+
  private:
   FRIEND_TEST_ALL_PREFIXES(
       BrowserSideFlingBrowserTest,
