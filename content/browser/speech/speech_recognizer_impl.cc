@@ -667,7 +667,6 @@ SpeechRecognizerImpl::WaitEnvironmentEstimationCompletion(const FSMEventArgs&) {
   DCHECK(endpointer_.IsEstimatingEnvironment());
   if (GetElapsedTimeMs() >= kEndpointerEstimationTimeMs) {
     endpointer_.SetUserInputMode();
-    listener()->OnEnvironmentEstimationComplete(session_id());
     return STATE_WAITING_FOR_SPEECH;
   } else {
     return STATE_ESTIMATING_ENVIRONMENT;
@@ -776,7 +775,6 @@ SpeechRecognizerImpl::FSMState SpeechRecognizerImpl::ProcessIntermediateResult(
   if (state_ == STATE_ESTIMATING_ENVIRONMENT) {
     DCHECK(endpointer_.IsEstimatingEnvironment());
     endpointer_.SetUserInputMode();
-    listener()->OnEnvironmentEstimationComplete(session_id());
   } else if (state_ == STATE_WAITING_FOR_SPEECH) {
     listener()->OnSoundStart(session_id());
   } else {

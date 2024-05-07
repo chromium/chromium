@@ -39,10 +39,6 @@ void ShellSpeechRecognitionManagerDelegate::OnRecognitionStart(int session_id) {
 void ShellSpeechRecognitionManagerDelegate::OnAudioStart(int session_id) {
 }
 
-void ShellSpeechRecognitionManagerDelegate::OnEnvironmentEstimationComplete(
-    int session_id) {
-}
-
 void ShellSpeechRecognitionManagerDelegate::OnSoundStart(int session_id) {
 }
 

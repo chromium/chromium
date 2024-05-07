@@ -32,9 +32,6 @@ void AwSpeechRecognitionManagerDelegate::OnRecognitionStart(int session_id) {}
 
 void AwSpeechRecognitionManagerDelegate::OnAudioStart(int session_id) {}
 
-void AwSpeechRecognitionManagerDelegate::OnEnvironmentEstimationComplete(
-    int session_id) {}
-
 void AwSpeechRecognitionManagerDelegate::OnSoundStart(int session_id) {}
 
 void AwSpeechRecognitionManagerDelegate::OnSoundEnd(int session_id) {}

@@ -93,9 +93,6 @@ void SpeechRecognitionSession::OnAudioLevelsChange(int session_id,
                                                    float volume,
                                                    float noise_volume) {}
 
-void SpeechRecognitionSession::OnEnvironmentEstimationComplete(int session_id) {
-}
-
 void SpeechRecognitionSession::ConnectionErrorHandler() {
   if (!stopped_) {
     Abort();

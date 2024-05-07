@@ -71,10 +71,6 @@ void ChromeSpeechRecognitionManagerDelegate::OnRecognitionStart(
 void ChromeSpeechRecognitionManagerDelegate::OnAudioStart(int session_id) {
 }
 
-void ChromeSpeechRecognitionManagerDelegate::OnEnvironmentEstimationComplete(
-    int session_id) {
-}
-
 void ChromeSpeechRecognitionManagerDelegate::OnSoundStart(int session_id) {
 }
 

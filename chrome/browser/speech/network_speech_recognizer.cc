@@ -78,7 +78,6 @@ class NetworkSpeechRecognizer::EventListener
   void OnAudioLevelsChange(int session_id,
                            float volume,
                            float noise_volume) override;
-  void OnEnvironmentEstimationComplete(int session_id) override;
   void OnAudioStart(int session_id) override;
   void OnAudioEnd(int session_id) override;
 
@@ -258,9 +257,6 @@ void NetworkSpeechRecognizer::EventListener::OnAudioLevelsChange(
       base::BindOnce(&SpeechRecognizerDelegate::OnSpeechSoundLevelChanged,
                      delegate_, sound_level));
 }
-
-void NetworkSpeechRecognizer::EventListener::OnEnvironmentEstimationComplete(
-    int session_id) {}
 
 void NetworkSpeechRecognizer::EventListener::OnAudioStart(int session_id) {}
 

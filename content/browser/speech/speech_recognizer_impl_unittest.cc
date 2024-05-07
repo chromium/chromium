@@ -226,8 +226,6 @@ class SpeechRecognizerImplTest : public SpeechRecognitionEventListener,
     CheckEventsConsistency();
   }
 
-  void OnEnvironmentEstimationComplete(int session_id) override {}
-
   void OnSoundStart(int session_id) override {
     sound_started_ = true;
     CheckEventsConsistency();

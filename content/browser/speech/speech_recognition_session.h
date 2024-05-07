@@ -39,7 +39,6 @@ class SpeechRecognitionSession : public blink::mojom::SpeechRecognitionSession,
   // SpeechRecognitionEventListener methods.
   void OnRecognitionStart(int session_id) override;
   void OnAudioStart(int session_id) override;
-  void OnEnvironmentEstimationComplete(int session_id) override;
   void OnSoundStart(int session_id) override;
   void OnSoundEnd(int session_id) override;
   void OnAudioEnd(int session_id) override;

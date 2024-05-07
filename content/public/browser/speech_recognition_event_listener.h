@@ -27,12 +27,6 @@ class CONTENT_EXPORT SpeechRecognitionEventListener {
   // Invoked when the first audio capture is initiated.
   virtual void OnAudioStart(int session_id) = 0;
 
-  // At the start of recognition, a short amount of audio is recorded to
-  // estimate the environment/background noise and this callback is issued
-  // after that is complete. Typically the delegate brings up any speech
-  // recognition UI once this callback is received.
-  virtual void OnEnvironmentEstimationComplete(int session_id) = 0;
-
   // Informs that the endpointer has started detecting sound (possibly speech).
   virtual void OnSoundStart(int session_id) = 0;
 
