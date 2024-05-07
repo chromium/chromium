@@ -1864,7 +1864,13 @@ base::expected<void, mojom::ErrorPtr> GraphBuilder::AddOperationForPool2d(
       GetOperandInfo(operation.input_operand_id);
 
   if (!kFloatDataTypes.contains(input_operand_info.mil_data_type)) {
-    return NewNotSupportedError("Unsupported input datatype.");
+    switch (operation.kind) {
+      case mojom::Pool2d::Kind::kAveragePool2d:
+      case mojom::Pool2d::Kind::kL2Pool2d:
+        NOTREACHED_NORETURN() << "Invalid input datatype.";
+      case mojom::Pool2d::Kind::kMaxPool2d:
+        return NewNotSupportedError("Unsupported input datatype.");
+    }
   }
 
   if (operation.layout != mojom::InputOperandLayout::kChannelsFirst) {

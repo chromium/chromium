@@ -1872,9 +1872,9 @@ base::expected<void, mojom::ErrorPtr> CreateOperatorNodeForPool2d(
   std::array<const NodeOutput*, 1> inputs = {input};
   const OperatorNode* pool2d_node = nullptr;
   switch (pool2d->kind) {
-      // TODO(crbug.com/40206287): Add L2Pool2d operator.
-
     case mojom::Pool2d::Kind::kAveragePool2d: {
+      CHECK(kDmlFloatDataTypes.contains(input_tensor_desc.GetDataType()));
+
       // TODO(crbug.com/40206287): Work around dilation support for L2 and
       // average pooling. According to WebNN spec:
       // https://www.w3.org/TR/webnn/#api-mlgraphbuilder-pool2d, dilations are
@@ -1906,6 +1906,8 @@ base::expected<void, mojom::ErrorPtr> CreateOperatorNodeForPool2d(
       break;
     }
     case mojom::Pool2d::Kind::kL2Pool2d: {
+      CHECK(kDmlFloatDataTypes.contains(input_tensor_desc.GetDataType()));
+
       DML_LP_POOLING_OPERATOR_DESC l2_pooling_desc = {
           .InputTensor = &input_tensor_desc.GetDMLTensorDesc(),
           .OutputTensor = &output_tensor_desc.GetDMLTensorDesc(),

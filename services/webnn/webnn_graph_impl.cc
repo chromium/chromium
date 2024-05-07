@@ -1595,6 +1595,14 @@ bool ValidatePool2d(const IdToOperandMap& id_to_operand_map,
     return false;
   }
 
+  if (pool2d->kind == mojom::Pool2d::Kind::kAveragePool2d ||
+      pool2d->kind == mojom::Pool2d::Kind::kL2Pool2d) {
+    if (!(input->data_type == mojom::Operand::DataType::kFloat32 ||
+          input->data_type == mojom::Operand::DataType::kFloat16)) {
+      return false;
+    }
+  }
+
   if (output->dimensions.size() != 4) {
     // The element of output dimensions should be 4.
     return false;

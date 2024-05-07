@@ -5161,34 +5161,34 @@ TEST_F(WebNNGraphImplTest, Pool2dTest) {
   }
   {
     // Test pool2d with window dimensions.
-    Pool2dTester{.input = {.type = mojom::Operand::DataType::kInt8,
+    Pool2dTester{.input = {.type = mojom::Operand::DataType::kFloat32,
                            .dimensions = {1, 3, 5, 5}},
                  .attributes = {.window_dimensions = {2, 2}, .strides = {2, 2}},
-                 .output = {.type = mojom::Operand::DataType::kInt8,
+                 .output = {.type = mojom::Operand::DataType::kFloat32,
                             .dimensions = {1, 3, 3, 3}},
                  .expected = true}
         .Test();
   }
   {
     // Test pool2d with strides=2, padding=1 and floor rounding.
-    Pool2dTester{.input = {.type = mojom::Operand::DataType::kInt8,
+    Pool2dTester{.input = {.type = mojom::Operand::DataType::kFloat16,
                            .dimensions = {1, 3, 7, 7}},
                  .attributes = {.window_dimensions = {4, 4},
                                 .padding = {1, 1, 1, 1},
                                 .strides = {2, 2}},
-                 .output = {.type = mojom::Operand::DataType::kInt8,
+                 .output = {.type = mojom::Operand::DataType::kFloat16,
                             .dimensions = {1, 3, 3, 3}},
                  .expected = true}
         .Test();
   }
   {
     // Test pool2d with strides=2, padding=1 and ceil rounding.
-    Pool2dTester{.input = {.type = mojom::Operand::DataType::kInt8,
+    Pool2dTester{.input = {.type = mojom::Operand::DataType::kFloat32,
                            .dimensions = {1, 3, 7, 7}},
                  .attributes = {.window_dimensions = {4, 4},
                                 .padding = {1, 1, 1, 1},
                                 .strides = {2, 2}},
-                 .output = {.type = mojom::Operand::DataType::kInt8,
+                 .output = {.type = mojom::Operand::DataType::kFloat32,
                             .dimensions = {1, 3, 4, 4}},
                  .expected = true}
         .Test();
@@ -5196,12 +5196,12 @@ TEST_F(WebNNGraphImplTest, Pool2dTest) {
   {
     // Test pool2d with layout="nhwc".
     Pool2dTester{
-        .input = {.type = mojom::Operand::DataType::kInt8,
+        .input = {.type = mojom::Operand::DataType::kFloat16,
                   .dimensions = {1, 5, 5, 2}},
         .attributes = {.window_dimensions = {3, 3},
                        .strides = {1, 1},
                        .layout = mojom::InputOperandLayout::kChannelsLast},
-        .output = {.type = mojom::Operand::DataType::kInt8,
+        .output = {.type = mojom::Operand::DataType::kFloat16,
                    .dimensions = {1, 3, 3, 2}},
         .expected = true}
         .Test();
@@ -5265,10 +5265,32 @@ TEST_F(WebNNGraphImplTest, Pool2dTest) {
     Pool2dTester{.input = {.type = mojom::Operand::DataType::kFloat32,
                            .dimensions = {1, 3, 4, 4}},
                  .attributes = {.window_dimensions = {4, 4}, .strides = {1, 1}},
-                 .output = {.type = mojom::Operand::DataType::kInt32,
+                 .output = {.type = mojom::Operand::DataType::kFloat16,
                             .dimensions = {1, 3, 1, 1}},
                  .expected = false}
         .Test();
+  }
+  {
+    // Test the invalid graph if the input data type is not floating point for
+    // averagePool2d.
+    Pool2dTester{.input = {.type = mojom::Operand::DataType::kInt32,
+                           .dimensions = {1, 3, 4, 4}},
+                 .attributes = {.window_dimensions = {4, 4}, .strides = {1, 1}},
+                 .output = {.type = mojom::Operand::DataType::kInt32,
+                            .dimensions = {1, 3, 1, 1}},
+                 .expected = false}
+        .Test(mojom::Pool2d::Kind::kAveragePool2d);
+  }
+  {
+    // Test the invalid graph if the input data type is not floating point for
+    // l2Pool2d.
+    Pool2dTester{.input = {.type = mojom::Operand::DataType::kInt8,
+                           .dimensions = {1, 3, 4, 4}},
+                 .attributes = {.window_dimensions = {4, 4}, .strides = {1, 1}},
+                 .output = {.type = mojom::Operand::DataType::kInt8,
+                            .dimensions = {1, 3, 1, 1}},
+                 .expected = false}
+        .Test(mojom::Pool2d::Kind::kL2Pool2d);
   }
 }
 

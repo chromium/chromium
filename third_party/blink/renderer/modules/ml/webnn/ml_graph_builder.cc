@@ -1771,6 +1771,13 @@ MLOperand* MLGraphBuilder::averagePool2d(const MLOperand* input,
                                          ExceptionState& exception_state) {
   THROW_AND_RETURN_TYPE_IF_ERROR(ValidateInput(input), nullptr);
 
+  if (!(input->DataType() == V8MLOperandDataType::Enum::kFloat32 ||
+        input->DataType() == V8MLOperandDataType::Enum::kFloat16)) {
+    exception_state.ThrowTypeError(
+        "The input data type must be a floating point type.");
+    return nullptr;
+  }
+
   return BuildPool2d(this, webnn::mojom::blink::Pool2d::Kind::kAveragePool2d,
                      input, options, exception_state);
 }
@@ -1779,6 +1786,13 @@ MLOperand* MLGraphBuilder::l2Pool2d(const MLOperand* input,
                                     const MLPool2dOptions* options,
                                     ExceptionState& exception_state) {
   THROW_AND_RETURN_TYPE_IF_ERROR(ValidateInput(input), nullptr);
+
+  if (!(input->DataType() == V8MLOperandDataType::Enum::kFloat32 ||
+        input->DataType() == V8MLOperandDataType::Enum::kFloat16)) {
+    exception_state.ThrowTypeError(
+        "The input data type must be a floating point type.");
+    return nullptr;
+  }
 
   return BuildPool2d(this, webnn::mojom::blink::Pool2d::Kind::kL2Pool2d, input,
                      options, exception_state);

@@ -1109,8 +1109,7 @@ auto GraphBuilder::SerializeGemm(const mojom::Gemm& gemm)
   // Check for unsupported inputs.
   const mojom::Operand& output_operand = GetOperand(gemm.output_operand_id);
   CHECK_EQ(output_operand.dimensions.size(), 2u);
-  CHECK(output_operand.data_type == mojom::Operand::DataType::kFloat32 ||
-        output_operand.data_type == mojom::Operand::DataType::kFloat16);
+  CHECK(kFloatDataTypes.contains(output_operand.data_type));
   const uint32_t output_channels = output_operand.dimensions[1];
   if (gemm.c_operand_id.has_value()) {
     // The TFLite fully connected operator only supports a 1-D bias tensor with
@@ -1268,8 +1267,7 @@ auto GraphBuilder::SerializeMatmul(const mojom::Matmul& matmul)
     -> OperatorOffset {
   const mojom::Operand::DataType a_operand_data_type =
       GetOperand(matmul.a_operand_id).data_type;
-  CHECK(a_operand_data_type == mojom::Operand::DataType::kFloat32 ||
-        a_operand_data_type == mojom::Operand::DataType::kFloat16);
+  CHECK(kFloatDataTypes.contains(a_operand_data_type));
 
   const auto matmul_options =
       ::tflite::CreateBatchMatMulOptions(builder_, /*adj_x=*/false,
@@ -1410,12 +1408,14 @@ auto GraphBuilder::SerializePool2d(const mojom::Pool2d& pool2d)
   ::tflite::BuiltinOperator operator_code;
   switch (pool2d.kind) {
     case mojom::Pool2d::Kind::kAveragePool2d:
+      CHECK(kFloatDataTypes.contains(input_operand.data_type));
       operator_code = ::tflite::BuiltinOperator_AVERAGE_POOL_2D;
       break;
     case mojom::Pool2d::Kind::kMaxPool2d:
       operator_code = ::tflite::BuiltinOperator_MAX_POOL_2D;
       break;
     case mojom::Pool2d::Kind::kL2Pool2d:
+      CHECK(kFloatDataTypes.contains(input_operand.data_type));
       return base::unexpected("L2Pool2d is not supported in tflite.");
   }
 
@@ -1523,8 +1523,7 @@ auto GraphBuilder::SerializeReduce(const mojom::Reduce& reduce)
 auto GraphBuilder::SerializeRelu(const mojom::Relu& relu) -> OperatorOffset {
   const mojom::Operand::DataType input_data_type =
       GetOperand(relu.input_operand_id).data_type;
-  CHECK(input_data_type == mojom::Operand::DataType::kFloat32 ||
-        input_data_type == mojom::Operand::DataType::kFloat16 ||
+  CHECK(kFloatDataTypes.contains(input_data_type) ||
         input_data_type == mojom::Operand::DataType::kInt32 ||
         input_data_type == mojom::Operand::DataType::kInt8);
 
