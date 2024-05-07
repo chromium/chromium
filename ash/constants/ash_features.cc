@@ -968,11 +968,9 @@ BASE_FEATURE(kExperimentalRgbKeyboardPatterns,
              base::FEATURE_DISABLED_BY_DEFAULT);
 
 // Enables extended updates opt-in functionality.
-// TODO(b/322418004): Change to enabled by default once functionality is
-// fully implemented.
 BASE_FEATURE(kExtendedUpdatesOptInFeature,
              "ExtendedUpdatesOptInFeature",
-             base::FEATURE_DISABLED_BY_DEFAULT);
+             base::FEATURE_ENABLED_BY_DEFAULT);
 
 // Enables policy that controls feature to allow Family Link accounts on school
 // owned devices.
