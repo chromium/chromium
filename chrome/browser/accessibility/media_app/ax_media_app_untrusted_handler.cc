@@ -19,6 +19,7 @@
 #include "base/memory/ptr_util.h"
 #include "base/notimplemented.h"
 #include "base/notreached.h"
+#include "base/numerics/checked_math.h"
 #include "base/strings/stringprintf.h"
 #include "base/types/to_address.h"
 #include "chrome/browser/accessibility/accessibility_state_utils.h"
@@ -32,6 +33,7 @@
 #include "mojo/public/cpp/bindings/message.h"
 #include "third_party/skia/include/core/SkBitmap.h"
 #include "ui/accessibility/ax_action_data.h"
+#include "ui/accessibility/ax_action_handler_registry.h"
 #include "ui/accessibility/ax_node.h"
 #include "ui/accessibility/ax_node_data.h"
 #include "ui/accessibility/ax_tree.h"
@@ -77,7 +79,12 @@ AXMediaAppUntrustedHandler::AXMediaAppUntrustedHandler(
   ax_mode_observation_.Observe(&ui::AXPlatform::GetInstance());
 }
 
-AXMediaAppUntrustedHandler::~AXMediaAppUntrustedHandler() = default;
+AXMediaAppUntrustedHandler::~AXMediaAppUntrustedHandler() {
+  for (auto& page : pages_) {
+    ui::AXActionHandlerRegistry::GetInstance()->RemoveAXTreeID(
+        page.second->GetTreeID());
+  }
+}
 
 bool AXMediaAppUntrustedHandler::IsOcrServiceEnabled() const {
   return ocr_->is_ready();
@@ -189,10 +196,9 @@ void AXMediaAppUntrustedHandler::PerformAction(
       }
       CHECK_NE(action_data.target_node_id, ui::kInvalidAXNodeID);
       CHECK_EQ(pages_.size(), document_.GetRoot()->GetUnignoredChildCount());
-      for (int32_t page_index = 0; const auto& page : pages_) {
+      for (const auto& page : pages_) {
         const std::unique_ptr<ui::AXTreeManager>& page_manager = page.second;
         if (page_manager->GetTreeID() != action_data.target_tree_id) {
-          ++page_index;
           continue;
         }
         ui::AXNode* target_node =
@@ -206,10 +212,6 @@ void AXMediaAppUntrustedHandler::PerformAction(
         gfx::RectF global_bounds =
             page_manager->ax_tree()->RelativeToTreeBounds(
                 target_node, /*node_bounds=*/gfx::RectF());
-        global_bounds.Offset(document_.GetRoot()
-                                 ->GetUnignoredChildAtIndex(page_index)
-                                 ->data()
-                                 .relative_bounds.bounds.OffsetFromOrigin());
         if (global_bounds.x() < viewport_box_.x()) {
           viewport_box_.set_x(global_bounds.x());
         } else if (global_bounds.right() > viewport_box_.right()) {
@@ -714,6 +716,8 @@ void AXMediaAppUntrustedHandler::OnPageOcred(
         page_sources_[dirty_page_id].get(), /* crash_on_error */ true);
     pages_[dirty_page_id] =
         std::make_unique<ui::AXTreeManager>(std::move(page_tree));
+    ui::AXActionHandlerRegistry::GetInstance()->SetAXTreeID(
+        complete_tree_update.tree_data.tree_id, this);
   } else {
     complete_tree_update.tree_data.tree_id =
         pages_.at(dirty_page_id)->GetTreeID();

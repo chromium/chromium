@@ -64,6 +64,10 @@ class AX_BASE_EXPORT AXActionHandlerRegistry final {
   // Retrieve an |AXActionHandlerBase| based on an ax tree id.
   AXActionHandlerBase* GetActionHandler(AXTreeID ax_tree_id);
 
+  // Set a mapping between an AXTreeID and AXActionHandlerBase explicitly.
+  void SetAXTreeID(const AXTreeID& ax_tree_id,
+                   AXActionHandlerBase* action_handler);
+
   // Removes an ax tree id, and its associated delegate and frame id (if it
   // exists).
   void RemoveAXTreeID(AXTreeID ax_tree_id);
@@ -90,10 +94,6 @@ class AX_BASE_EXPORT AXActionHandlerRegistry final {
 
   // Get or create a ax tree id keyed on |handler|.
   AXTreeID GetOrCreateAXTreeID(AXActionHandlerBase* handler);
-
-  // Set a mapping between an AXTreeID and AXActionHandlerBase explicitly.
-  void SetAXTreeID(const AXTreeID& ax_tree_id,
-                   AXActionHandlerBase* action_handler);
 
   // Maps an accessibility tree to its frame via ids.
   std::map<AXTreeID, FrameID> ax_tree_to_frame_id_map_;

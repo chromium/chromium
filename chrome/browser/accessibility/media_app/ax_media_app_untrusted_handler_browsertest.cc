@@ -427,7 +427,7 @@ IN_PROC_BROWSER_TEST_F(AXMediaAppUntrustedHandlerTest,
 
   const std::map<const std::string, std::unique_ptr<ui::AXTreeManager>>& pages =
       handler_->GetPagesForTesting();
-  ASSERT_EQ(3u, pages.size());
+  ASSERT_EQ(kTestNumPages, pages.size());
   for (const auto& [_, page] : pages) {
     ASSERT_NE(nullptr, page.get());
     ASSERT_NE(nullptr, page->ax_tree());
@@ -473,11 +473,11 @@ IN_PROC_BROWSER_TEST_F(AXMediaAppUntrustedHandlerTest,
 
   // Subsequent calls to PageMetadataUpdated() should not cause any page to be
   // marked as dirty.
-  ASSERT_EQ(3u, fake_media_app_.PageIdsWithBitmap().size());
+  ASSERT_EQ(kTestNumPages, fake_media_app_.PageIdsWithBitmap().size());
 
   const std::map<const std::string, std::unique_ptr<ui::AXTreeManager>>&
       pages2 = handler_->GetPagesForTesting();
-  ASSERT_EQ(3u, pages2.size());
+  ASSERT_EQ(kTestNumPages, pages2.size());
   for (const auto& [_, page] : pages2) {
     ASSERT_NE(nullptr, page.get());
     ASSERT_NE(nullptr, page->ax_tree());
@@ -536,7 +536,7 @@ IN_PROC_BROWSER_TEST_F(AXMediaAppUntrustedHandlerTest,
 }
 
 IN_PROC_BROWSER_TEST_F(AXMediaAppUntrustedHandlerTest,
-                       PageMetadataUpdated_PageRotated) {
+                       PageMetadataUpdatedPageRotated) {
   constexpr size_t kTestNumPages = 4u;
   std::vector<PageMetadataPtr> fake_metadata =
       CreateFakePageMetadata(kTestNumPages);
@@ -587,7 +587,7 @@ IN_PROC_BROWSER_TEST_F(AXMediaAppUntrustedHandlerTest,
 }
 
 IN_PROC_BROWSER_TEST_F(AXMediaAppUntrustedHandlerTest,
-                       PageMetadataUpdated_PagesReordered) {
+                       PageMetadataUpdatedPagesReordered) {
   constexpr size_t kTestNumPages = 3u;
   std::vector<PageMetadataPtr> fake_metadata =
       CreateFakePageMetadata(kTestNumPages);
@@ -602,20 +602,23 @@ IN_PROC_BROWSER_TEST_F(AXMediaAppUntrustedHandlerTest,
 
   const std::map<const std::string, AXMediaAppPageMetadata>& page_metadata =
       handler_->GetPageMetadataForTesting();
-  EXPECT_EQ(3u, page_metadata.size());
+  ASSERT_EQ(kTestNumPages, page_metadata.size());
   EXPECT_EQ(1u, page_metadata.at("PageA").page_num);
   EXPECT_EQ(2u, page_metadata.at("PageB").page_num);
   EXPECT_EQ(3u, page_metadata.at("PageC").page_num);
 
   const std::map<const std::string, std::unique_ptr<ui::AXTreeManager>>& pages =
       handler_->GetPagesForTesting();
-  EXPECT_EQ(3u, pages.size());
+  EXPECT_EQ(kTestNumPages, pages.size());
   const ui::AXTreeID& child_tree_id_page_a =
       pages.at("PageA")->GetParentTreeID();
   const ui::AXTreeID& child_tree_id_page_c =
       pages.at("PageC")->GetParentTreeID();
 
-  // 'Reorder' the pages by swapping the first with the third page.
+  // 'Reorder' the pages by swapping the first with the third page. In a
+  // non-test scenario only the page IDs would have been reordered, but here we
+  // use the page location as a proxy to determine if the code works properly,
+  // since the fake content is always the same.
   std::swap(fake_metadata.at(0u), fake_metadata.at(2u));
   handler_->PageMetadataUpdated(ClonePageMetadataPtrs(fake_metadata));
 
@@ -626,12 +629,12 @@ IN_PROC_BROWSER_TEST_F(AXMediaAppUntrustedHandlerTest,
   EXPECT_EQ("PageB", fake_media_app_.PageIdsWithBitmap()[1]);
   EXPECT_EQ("PageC", fake_media_app_.PageIdsWithBitmap()[2]);
 
-  EXPECT_EQ(3u, page_metadata.size());
+  ASSERT_EQ(kTestNumPages, page_metadata.size());
   EXPECT_EQ(3u, page_metadata.at("PageA").page_num);
   EXPECT_EQ(2u, page_metadata.at("PageB").page_num);
   EXPECT_EQ(1u, page_metadata.at("PageC").page_num);
 
-  EXPECT_EQ(3u, pages.size());
+  ASSERT_EQ(kTestNumPages, pages.size());
   const ui::AXTreeID& new_child_tree_id_page_a =
       pages.at("PageA")->GetParentTreeID();
   const ui::AXTreeID& new_child_tree_id_page_c =
@@ -984,7 +987,7 @@ IN_PROC_BROWSER_TEST_F(AXMediaAppUntrustedHandlerTest, ScrollToMakeVisible) {
   scroll_action_data.target_node_id =
       handler_->GetPagesForTesting().at(fake_metadata[0]->id)->GetRoot()->id();
 
-  // "Scroll to make visible", which should scroll forward.
+  // "Scroll to make visible" the target node, which should scroll forward.
   handler_->ViewportUpdated(
       gfx::RectF(/*x=*/0.0f, /*y=*/0.0f, kViewportWidth, kViewportHeight),
       /*scale_factor=*/1.0f);
@@ -1002,7 +1005,7 @@ IN_PROC_BROWSER_TEST_F(AXMediaAppUntrustedHandlerTest, ScrollToMakeVisible) {
                        kViewportWidth, kViewportHeight),
             fake_media_app_.ViewportBox());
 
-  // "Scroll to make visible", which should scroll backward.
+  // "Scroll to make visible" the target node, which should scroll backward.
   handler_->ViewportUpdated(gfx::RectF(/*x=*/kPageX + kTestPageWidth - 1.0f,
                                        /*y=*/kPageY + kTestPageHeight - 1.0f,
                                        kViewportWidth, kViewportHeight),
@@ -1036,6 +1039,59 @@ IN_PROC_BROWSER_TEST_F(AXMediaAppUntrustedHandlerTest, ScrollToMakeVisible) {
   handler_->PerformAction(scroll_action_data);
   EXPECT_EQ(gfx::RectF(kPageX, kPageY, kViewportWidth, kViewportHeight),
             fake_media_app_.ViewportBox());
+}
+
+IN_PROC_BROWSER_TEST_F(AXMediaAppUntrustedHandlerTest,
+                       ScrollToMakeVisiblePagesReordered) {
+  constexpr size_t kTestNumPages = 2u;
+  constexpr float kViewportWidth = 2.0f;
+  constexpr float kViewportHeight = 4.0f;
+  std::vector<PageMetadataPtr> fake_metadata =
+      CreateFakePageMetadata(kTestNumPages);
+  handler_->PageMetadataUpdated(ClonePageMetadataPtrs(fake_metadata));
+  WaitForOcringPages(kTestNumPages);
+
+  // All pages must have gone through OCR.
+  ASSERT_EQ(kTestNumPages, fake_media_app_.PageIdsWithBitmap().size());
+  EXPECT_EQ("PageA", fake_media_app_.PageIdsWithBitmap()[0]);
+  EXPECT_EQ("PageB", fake_media_app_.PageIdsWithBitmap()[1]);
+
+  ui::AXActionData scroll_action_data;
+  scroll_action_data.action = ax::mojom::Action::kScrollToMakeVisible;
+  ASSERT_EQ(kTestNumPages, handler_->GetPagesForTesting().size());
+  scroll_action_data.target_tree_id =
+      handler_->GetPagesForTesting().at(fake_metadata[0]->id)->GetTreeID();
+  ASSERT_NE(nullptr,
+            handler_->GetPagesForTesting().at(fake_metadata[0]->id)->GetRoot());
+  scroll_action_data.target_node_id =
+      handler_->GetPagesForTesting().at(fake_metadata[0]->id)->GetRoot()->id();
+
+  // "Scroll to make visible" the target node, which should scroll forward.
+  handler_->ViewportUpdated(
+      gfx::RectF(/*x=*/0.0f, /*y=*/0.0f, kViewportWidth, kViewportHeight),
+      /*scale_factor=*/1.0f);
+  handler_->PerformAction(scroll_action_data);
+  EXPECT_EQ(gfx::RectF(/*x=*/kTestPageWidth - kViewportWidth,
+                       /*y=*/kTestPageHeight - kViewportHeight, kViewportWidth,
+                       kViewportHeight),
+            fake_media_app_.ViewportBox());
+
+  // Reorder the pages by swapping their IDs.
+  std::swap(fake_metadata.at(0u)->id, fake_metadata.at(1u)->id);
+  handler_->PageMetadataUpdated(ClonePageMetadataPtrs(fake_metadata));
+
+  // The result should change since "PageA" has moved."
+  handler_->ViewportUpdated(
+      gfx::RectF(/*x=*/0.0f, /*y=*/0.0f, kViewportWidth, kViewportHeight),
+      /*scale_factor=*/1.0f);
+  handler_->PerformAction(scroll_action_data);
+  // The viewport should move all the way to the bottom-right corner of page
+  // two.
+  EXPECT_EQ(
+      gfx::RectF(/*x=*/kTestPageWidth - kViewportWidth,
+                 /*y=*/kTestPageHeight * 2 + kTestPageGap - kViewportHeight,
+                 kViewportWidth, kViewportHeight),
+      fake_media_app_.ViewportBox());
 }
 
 IN_PROC_BROWSER_TEST_F(AXMediaAppUntrustedHandlerTest, PageBatching) {
