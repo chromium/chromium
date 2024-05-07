@@ -2445,38 +2445,43 @@ base::expected<void, mojom::ErrorPtr> CreateOperatorNodeForReduce(
 }
 
 // DirectML API does not have a real Reshape operator. The WebNN Reshape is
-// implemented by creating a new NodeOutput for the input Node. The new
-// NodeOutput has the reshaped dimensions and is used as the output of the WebNN
-// Reshape operator. And if the input and output of the Reshape are exactly the
-// input and output of the DirectML graph, we need to add another DirectML
-// Identity operator to ensure that the DirectML graph can be compiled and
-// calculated correctly.
-void CreateNodeOutputForReshape(const IdToOperandMap& id_to_operand_map,
-                                const mojom::ReshapePtr& reshape,
-                                GraphBuilder& graph_builder,
-                                IdToNodeOutputMap& id_to_node_output_map) {
+// implemented by a DirectML Identity operator. DirectML runtime is able to
+// optimize the unnecessary IDENTITY operators when compiling the graph.
+base::expected<void, mojom::ErrorPtr> CreateOperatorNodeForReshape(
+    const IdToOperandMap& id_to_operand_map,
+    const mojom::ReshapePtr& reshape,
+    GraphBuilder& graph_builder,
+    IdToNodeOutputMap& id_to_node_output_map) {
   const NodeOutput* input =
       GetNodeOutputForOperand(id_to_node_output_map, reshape->input_operand_id);
-
-  // Ensure the output tensor description having the
-  // `DML_TENSOR_FLAG_OWNED_BY_DML` flag if its corresponding node is a constant
-  // graph input.
-  uint64_t output_id = reshape->output_operand_id;
-  const OperandPtr& output_operand = id_to_operand_map.at(output_id);
   const auto& input_tensor_desc = input->GetTensorDesc();
-  auto output_tensor_desc =
-      TensorDesc(input_tensor_desc.GetDataType(), input_tensor_desc.GetFlags(),
-                 output_operand->dimensions);
+  // Ensure the the output tensor description of identity node having
+  // `DML_TENSOR_FLAG_NONE` flag.
+  auto input_tensor_desc_without_flags = TensorDesc(
+      input_tensor_desc.GetDataType(), input_tensor_desc.GetDimensions());
 
-  const Node& input_node = input->GetNode();
+  // Insert an identity node.
+  const OperatorNode* identity_node =
+      CreateUnaryOperator<DML_ELEMENT_WISE_IDENTITY_OPERATOR_DESC,
+                          DML_OPERATOR_ELEMENT_WISE_IDENTITY>(
+          input_tensor_desc, input_tensor_desc_without_flags, input,
+          graph_builder);
+  if (!identity_node) {
+    return base::unexpected(CreateError(mojom::Error::Code::kUnknownError,
+                                        "Failed to create identity operator."));
+  }
 
-  // The output_index of this NodeOutput should be the same as the input
-  // NodeOutput for creating correct intermediate edges of the graph.
+  uint64_t output_id = reshape->output_operand_id;
+  const auto output_tensor_desc =
+      CreateOutputTensorDesc(id_to_operand_map, output_id);
+
   const NodeOutput* output = graph_builder.CreateNodeOutput(
-      &input_node, std::move(output_tensor_desc), input->GetOutputIndex());
+      identity_node, std::move(output_tensor_desc));
 
   // The output id must be unique in the map.
   CHECK(id_to_node_output_map.try_emplace(output_id, output).second);
+
+  return base::ok();
 }
 
 base::expected<void, mojom::ErrorPtr> CreateOperatorNodeForElu(
@@ -5298,8 +5303,9 @@ void GraphImpl::CreateAndBuild(
         break;
       }
       case Operation::Tag::kReshape: {
-        CreateNodeOutputForReshape(id_to_operand_map, operation->get_reshape(),
-                                   graph_builder, id_to_node_output_map);
+        create_operator_result = CreateOperatorNodeForReshape(
+            id_to_operand_map, operation->get_reshape(), graph_builder,
+            id_to_node_output_map);
         break;
       }
       case Operation::Tag::kSigmoid: {
