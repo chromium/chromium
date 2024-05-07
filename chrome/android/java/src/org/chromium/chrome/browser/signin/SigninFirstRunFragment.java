@@ -232,6 +232,12 @@ public class SigninFirstRunFragment extends Fragment
 
     /** Implements {@link FullscreenSigninCoordinator.Delegate}. */
     @Override
+    public boolean shouldDisplayManagementNoticeOnManagedDevices() {
+        return true;
+    }
+
+    /** Implements {@link FullscreenSigninCoordinator.Delegate}. */
+    @Override
     public boolean shouldDisplayFooterText() {
         return true;
     }

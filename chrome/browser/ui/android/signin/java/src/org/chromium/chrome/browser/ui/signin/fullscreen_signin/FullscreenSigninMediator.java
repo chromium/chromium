@@ -228,7 +228,9 @@ public class FullscreenSigninMediator
                             + isSigninDisabledByPolicy);
             isMetricsReportingDisabledByPolicy =
                     !mPrivacyPreferencesManager.isUsageAndCrashReportingPermittedByPolicy();
-            mModel.set(FullscreenSigninProperties.SHOW_ENTERPRISE_MANAGEMENT_NOTICE, true);
+            mModel.set(
+                    FullscreenSigninProperties.SHOW_ENTERPRISE_MANAGEMENT_NOTICE,
+                    mDelegate.shouldDisplayManagementNoticeOnManagedDevices());
         }
 
         boolean isSigninSupported =

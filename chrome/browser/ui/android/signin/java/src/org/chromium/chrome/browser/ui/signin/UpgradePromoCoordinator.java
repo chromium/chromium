@@ -217,6 +217,13 @@ public final class UpgradePromoCoordinator
         return mDelegate.getNativeInitializationPromise();
     }
 
+    /** Implements {@link FullscreenSigninCoordinator.Delegate}. */
+    @Override
+    public boolean shouldDisplayManagementNoticeOnManagedDevices() {
+        // Management notice shouldn't be shown in the Upgrade promo flow, even on managed devices.
+        return false;
+    }
+
     /** Implements {@link FullscreenSigninCoordinator.Delegate} */
     @Override
     public boolean shouldDisplayFooterText() {

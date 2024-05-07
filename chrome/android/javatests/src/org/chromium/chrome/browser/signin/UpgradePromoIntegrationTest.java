@@ -30,6 +30,7 @@ import android.widget.ProgressBar;
 
 import androidx.test.core.app.ApplicationProvider;
 import androidx.test.espresso.Espresso;
+import androidx.test.filters.LargeTest;
 import androidx.test.filters.MediumTest;
 import androidx.test.runner.lifecycle.Stage;
 
@@ -62,6 +63,7 @@ import org.chromium.chrome.test.util.browser.signin.AccountManagerTestRule;
 import org.chromium.chrome.test.util.browser.signin.SigninTestRule;
 import org.chromium.chrome.test.util.browser.sync.SyncTestUtil;
 import org.chromium.components.browser_ui.styles.SemanticColorUtils;
+import org.chromium.components.policy.test.annotations.Policies;
 import org.chromium.components.signin.identitymanager.ConsentLevel;
 import org.chromium.components.signin.metrics.SigninAccessPoint;
 import org.chromium.content_public.browser.test.NativeLibraryTestUtils;
@@ -324,6 +326,18 @@ public class UpgradePromoIntegrationTest {
         ApplicationTestUtils.waitForActivityState(mActivity, Stage.DESTROYED);
         assertFalse(SyncTestUtil.isHistorySyncEnabled());
         Assert.assertNotNull(mSigninTestRule.getPrimaryAccount(ConsentLevel.SIGNIN));
+    }
+
+    @Test
+    @LargeTest
+    @Policies.Add({@Policies.Item(key = "RandomPolicy", string = "true")})
+    public void testFragmentWhenSigninIsDisabledByPolicy() {
+        launchActivity();
+
+        // Verify that the fullscreen sign-in promo is shown.
+        onView(withId(R.id.fullscreen_signin)).check(matches(isDisplayed()));
+        // Management notice shouldn't be shown in the upgrade promo.
+        onView(withId(R.id.fre_browser_managed_by)).check(matches(not(isDisplayed())));
     }
 
     private void launchActivity() {

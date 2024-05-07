@@ -88,6 +88,9 @@ public class FullscreenSigninCoordinator {
          */
         Promise<Void> getNativeInitializationPromise();
 
+        /** Returns {@code true} if the management notice should be shown on managed devices. */
+        boolean shouldDisplayManagementNoticeOnManagedDevices();
+
         /** Returns {@code true} when the footer text should be displayed */
         boolean shouldDisplayFooterText();
     }
