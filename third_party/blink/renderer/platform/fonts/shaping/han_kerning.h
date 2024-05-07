@@ -57,9 +57,6 @@ class PLATFORM_EXPORT HanKerning {
              const FontDescription& font_description,
              Options options,
              FontFeatures* features) {
-    if (!RuntimeEnabledFeatures::CSSTextSpacingTrimEnabled()) {
-      return;
-    }
     if (text.Is8Bit()) {
       return;
     }

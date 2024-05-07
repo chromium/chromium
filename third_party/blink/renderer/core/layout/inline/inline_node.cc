@@ -1368,7 +1368,6 @@ void InlineNode::ShapeText(InlineItemsData* data,
         .is_line_start = is_next_start_of_paragraph,
         .han_kerning_start =
             is_next_start_of_paragraph &&
-            RuntimeEnabledFeatures::CSSTextSpacingTrimEnabled() &&
             ShouldTrimStartOfParagraph(
                 font.GetFontDescription().GetTextSpacingTrim()) &&
             Character::MaybeHanKerningOpen(

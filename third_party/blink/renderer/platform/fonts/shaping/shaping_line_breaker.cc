@@ -97,8 +97,7 @@ inline ShapingLineBreaker::EdgeOffset ShapingLineBreaker::FirstSafeOffset(
     // When it's not at the start of a wrapped line, disable reshaping.
     return {start};
   }
-  if (UNLIKELY(RuntimeEnabledFeatures::CSSTextSpacingTrimEnabled()) &&
-      UNLIKELY(ShouldTrimStartOfWrappedLine(text_spacing_trim_)) &&
+  if (UNLIKELY(ShouldTrimStartOfWrappedLine(text_spacing_trim_)) &&
       UNLIKELY(Character::MaybeHanKerningOpen(GetText()[start]))) {
     // `HanKerning` wants to apply kerning to `kOpen` characters at the start of
     // the line. Reshape it to resolve the `SimpleFontData` and apply
@@ -321,7 +320,6 @@ const ShapeResultView* ShapingLineBreaker::ShapeLine(
   unsigned last_safe;
   const ShapeResult* line_end_result = nullptr;
   if (candidate_break < range_end &&
-      UNLIKELY(RuntimeEnabledFeatures::CSSTextSpacingTrimEnabled()) &&
       ShouldTrimEnd(text_spacing_trim_) &&
       UNLIKELY(Character::MaybeHanKerningClose(text[candidate_break]))) {
     const unsigned adjusted_candidate_break = candidate_break + 1;

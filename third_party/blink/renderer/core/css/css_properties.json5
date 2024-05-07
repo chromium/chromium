@@ -5415,7 +5415,6 @@
       keywords: ["normal", "space-all", "space-first", "trim-start"],
       default_value: "TextSpacingTrim::kInitial",
       typedom_types: ["Keyword"],
-      runtime_flag: "CSSTextSpacingTrim",
       valid_for_permission_element: true,
     },
     {

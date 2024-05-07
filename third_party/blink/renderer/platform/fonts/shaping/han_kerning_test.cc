@@ -23,10 +23,7 @@ Font CreateNotoCjk() {
       16.0);
 }
 
-class HanKerningTest : public testing::Test, ScopedCSSTextSpacingTrimForTest {
- public:
-  explicit HanKerningTest() : ScopedCSSTextSpacingTrimForTest(true) {}
-};
+class HanKerningTest : public testing::Test {};
 
 TEST_F(HanKerningTest, MayApply) {
   Font noto_cjk = CreateNotoCjk();
