@@ -102,6 +102,13 @@ struct DeviceLocalAccount {
     kMaxValue = kEnable,
   };
 
+  DeviceLocalAccount(DeviceLocalAccountType type,
+                     EphemeralMode ephemeral_mode,
+                     const std::string& account_id,
+                     const std::string& kiosk_app_id,
+                     const std::string& kiosk_app_update_url);
+  // DEPRECATED, use above one instead in the new code.
+  // TODO(b/267685577): Remove this.
   DeviceLocalAccount(Type type,
                      EphemeralMode ephemeral_mode,
                      const std::string& account_id,
@@ -116,7 +123,7 @@ struct DeviceLocalAccount {
   DeviceLocalAccount(const DeviceLocalAccount& other);
   ~DeviceLocalAccount();
 
-  Type type;
+  DeviceLocalAccountType type;
   EphemeralMode ephemeral_mode;
   // A device-local account has two identifiers:
   // * The |account_id| is chosen by the entity that defines the device-local

@@ -508,7 +508,7 @@ void KioskChromeAppManager::AddApp(const std::string& app_id,
   // Don't insert the app if it's already in the list.
   for (const auto& device_local_account : device_local_accounts) {
     if (device_local_account.type ==
-            policy::DeviceLocalAccount::TYPE_KIOSK_APP &&
+            policy::DeviceLocalAccountType::kKioskApp &&
         device_local_account.kiosk_app_id == app_id) {
       return;
     }
@@ -516,7 +516,7 @@ void KioskChromeAppManager::AddApp(const std::string& app_id,
 
   // Add the new account.
   device_local_accounts.emplace_back(
-      policy::DeviceLocalAccount::TYPE_KIOSK_APP,
+      policy::DeviceLocalAccountType::kKioskApp,
       policy::DeviceLocalAccount::EphemeralMode::kUnset,
       GenerateKioskAppAccountId(app_id), app_id, std::string());
 
@@ -540,7 +540,7 @@ void KioskChromeAppManager::RemoveApp(const std::string& app_id,
   for (std::vector<policy::DeviceLocalAccount>::iterator it =
            device_local_accounts.begin();
        it != device_local_accounts.end(); ++it) {
-    if (it->type == policy::DeviceLocalAccount::TYPE_KIOSK_APP &&
+    if (it->type == policy::DeviceLocalAccountType::kKioskApp &&
         it->kiosk_app_id == app_id) {
       device_local_accounts.erase(it);
       break;
@@ -799,7 +799,7 @@ void KioskChromeAppManager::UpdateAppsFromPolicy() {
       policy::GetDeviceLocalAccounts(CrosSettings::Get());
   for (const auto& device_local_account : device_local_accounts) {
     if (device_local_account.type !=
-        policy::DeviceLocalAccount::TYPE_KIOSK_APP) {
+        policy::DeviceLocalAccountType::kKioskApp) {
       continue;
     }
 

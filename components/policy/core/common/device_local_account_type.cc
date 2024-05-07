@@ -29,6 +29,18 @@ constexpr char kDeviceLocalAccountDomainSuffix[] = ".device-local.localhost";
 
 }  // namespace
 
+bool IsValidDeviceLocalAccountType(int value) {
+  switch (static_cast<DeviceLocalAccountType>(value)) {
+    case DeviceLocalAccountType::kPublicSession:
+    case DeviceLocalAccountType::kKioskApp:
+    case DeviceLocalAccountType::kArcKioskApp:
+    case DeviceLocalAccountType::kSamlPublicSession:
+    case DeviceLocalAccountType::kWebKioskApp:
+      return true;
+  }
+  return false;
+}
+
 std::string GenerateDeviceLocalAccountUserId(std::string_view account_id,
                                              DeviceLocalAccountType type) {
   const auto it = kDomainPrefixMap.find(type);

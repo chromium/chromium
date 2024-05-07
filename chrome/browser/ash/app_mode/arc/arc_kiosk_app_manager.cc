@@ -148,7 +148,7 @@ void ArcKioskAppManager::UpdateAppsFromPolicy() {
   const std::vector<policy::DeviceLocalAccount> device_local_accounts =
       policy::GetDeviceLocalAccounts(CrosSettings::Get());
   for (auto account : device_local_accounts) {
-    if (account.type != policy::DeviceLocalAccount::TYPE_ARC_KIOSK_APP) {
+    if (account.type != policy::DeviceLocalAccountType::kArcKioskApp) {
       continue;
     }
 

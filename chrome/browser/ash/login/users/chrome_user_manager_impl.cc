@@ -88,6 +88,7 @@
 #include "components/account_id/account_id.h"
 #include "components/crash/core/common/crash_key.h"
 #include "components/policy/core/common/cloud/affiliation.h"
+#include "components/policy/core/common/device_local_account_type.h"
 #include "components/policy/core/common/policy_details.h"
 #include "components/policy/policy_constants.h"
 #include "components/prefs/pref_registry_simple.h"
@@ -435,13 +436,14 @@ void ChromeUserManagerImpl::LoadDeviceLocalAccounts(
   ParseUserList(prefs_device_local_accounts, std::set<AccountId>(),
                 &device_local_accounts, device_local_accounts_set);
   for (const AccountId& account_id : device_local_accounts) {
-    policy::DeviceLocalAccount::Type type;
-    if (!policy::IsDeviceLocalAccountUser(account_id.GetUserEmail(), &type)) {
+    auto type = policy::GetDeviceLocalAccountType(account_id.GetUserEmail());
+    if (!type.has_value()) {
       NOTREACHED();
       continue;
     }
 
-    user_storage_.push_back(CreateUserFromDeviceLocalAccount(account_id, type));
+    user_storage_.push_back(
+        CreateUserFromDeviceLocalAccount(account_id, *type));
     users_.push_back(user_storage_.back().get());
   }
 }
@@ -678,8 +680,8 @@ bool ChromeUserManagerImpl::UpdateAndCleanUpDeviceLocalAccounts(
           AccountId::FromUserEmail(account.user_id), account.type));
       users_.insert(users_.begin(), user_storage_.back().get());
     }
-    if (account.type == policy::DeviceLocalAccount::TYPE_PUBLIC_SESSION ||
-        account.type == policy::DeviceLocalAccount::TYPE_SAML_PUBLIC_SESSION) {
+    if (account.type == policy::DeviceLocalAccountType::kPublicSession ||
+        account.type == policy::DeviceLocalAccountType::kSamlPublicSession) {
       UpdatePublicAccountDisplayName(account.user_id);
     }
   }
@@ -824,27 +826,24 @@ bool ChromeUserManagerImpl::IsValidDefaultUserImageId(int image_index) const {
 std::unique_ptr<user_manager::User>
 ChromeUserManagerImpl::CreateUserFromDeviceLocalAccount(
     const AccountId& account_id,
-    const policy::DeviceLocalAccount::Type type) const {
+    const policy::DeviceLocalAccountType type) const {
   std::unique_ptr<user_manager::User> user;
   switch (type) {
-    case policy::DeviceLocalAccount::TYPE_PUBLIC_SESSION:
+    case policy::DeviceLocalAccountType::kPublicSession:
       user.reset(user_manager::User::CreatePublicAccountUser(account_id));
       break;
-    case policy::DeviceLocalAccount::TYPE_SAML_PUBLIC_SESSION:
+    case policy::DeviceLocalAccountType::kSamlPublicSession:
       user.reset(user_manager::User::CreatePublicAccountUser(
           account_id, /*is_using_saml=*/true));
       break;
-    case policy::DeviceLocalAccount::TYPE_KIOSK_APP:
+    case policy::DeviceLocalAccountType::kKioskApp:
       user.reset(user_manager::User::CreateKioskAppUser(account_id));
       break;
-    case policy::DeviceLocalAccount::TYPE_ARC_KIOSK_APP:
+    case policy::DeviceLocalAccountType::kArcKioskApp:
       user.reset(user_manager::User::CreateArcKioskAppUser(account_id));
       break;
-    case policy::DeviceLocalAccount::TYPE_WEB_KIOSK_APP:
+    case policy::DeviceLocalAccountType::kWebKioskApp:
       user.reset(user_manager::User::CreateWebKioskAppUser(account_id));
-      break;
-    default:
-      NOTREACHED();
       break;
   }
 

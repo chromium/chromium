@@ -2686,30 +2686,36 @@ bool DeviceStatusCollector::GetRunningKioskApp(
   }
 
   em::AppStatus* running_kiosk_app = status->mutable_running_kiosk_app();
-  if (account->type == DeviceLocalAccount::TYPE_KIOSK_APP) {
-    running_kiosk_app->set_app_id(account->kiosk_app_id);
+  switch (account->type) {
+    case DeviceLocalAccountType::kKioskApp: {
+      running_kiosk_app->set_app_id(account->kiosk_app_id);
 
-    const std::string app_version = GetAppVersion(account->kiosk_app_id);
-    if (app_version.empty()) {
-      DLOG(ERROR) << "Unable to get version for extension: "
-                  << account->kiosk_app_id;
-    } else {
-      running_kiosk_app->set_extension_version(app_version);
-    }
+      const std::string app_version = GetAppVersion(account->kiosk_app_id);
+      if (app_version.empty()) {
+        DLOG(ERROR) << "Unable to get version for extension: "
+                    << account->kiosk_app_id;
+      } else {
+        running_kiosk_app->set_extension_version(app_version);
+      }
 
-    ash::KioskChromeAppManager::App app_info;
-    if (ash::KioskChromeAppManager::Get()->GetApp(account->kiosk_app_id,
-                                                  &app_info)) {
-      running_kiosk_app->set_required_platform_version(
-          app_info.required_platform_version);
+      ash::KioskChromeAppManager::App app_info;
+      if (ash::KioskChromeAppManager::Get()->GetApp(account->kiosk_app_id,
+                                                    &app_info)) {
+        running_kiosk_app->set_required_platform_version(
+            app_info.required_platform_version);
+      }
+      break;
     }
-  } else if (account->type == DeviceLocalAccount::TYPE_ARC_KIOSK_APP) {
-    // Use package name as app ID for ARC Kiosks.
-    running_kiosk_app->set_app_id(account->arc_kiosk_app_info.package_name());
-  } else if (account->type == DeviceLocalAccount::TYPE_WEB_KIOSK_APP) {
-    running_kiosk_app->set_app_id(account->web_kiosk_app_info.url());
-  } else {
-    NOTREACHED();
+    case DeviceLocalAccountType::kArcKioskApp:
+      // Use package name as app ID for ARC Kiosks.
+      running_kiosk_app->set_app_id(account->arc_kiosk_app_info.package_name());
+      break;
+    case DeviceLocalAccountType::kWebKioskApp:
+      running_kiosk_app->set_app_id(account->web_kiosk_app_info.url());
+      break;
+    case DeviceLocalAccountType::kPublicSession:
+    case DeviceLocalAccountType::kSamlPublicSession:
+      NOTREACHED();
   }
   return true;
 }
@@ -2979,24 +2985,30 @@ bool DeviceStatusCollector::GetKioskSessionStatus(
   // Get the account ID associated with this user.
   status->set_device_local_account_id(account->account_id);
   em::AppStatus* app_status = status->add_installed_apps();
-  if (account->type == DeviceLocalAccount::TYPE_KIOSK_APP) {
-    app_status->set_app_id(account->kiosk_app_id);
+  switch (account->type) {
+    case DeviceLocalAccountType::kKioskApp: {
+      app_status->set_app_id(account->kiosk_app_id);
 
-    // Look up the app and get the version.
-    const std::string app_version = GetAppVersion(account->kiosk_app_id);
-    if (app_version.empty()) {
-      DLOG(ERROR) << "Unable to get version for extension: "
-                  << account->kiosk_app_id;
-    } else {
-      app_status->set_extension_version(app_version);
+      // Look up the app and get the version.
+      const std::string app_version = GetAppVersion(account->kiosk_app_id);
+      if (app_version.empty()) {
+        DLOG(ERROR) << "Unable to get version for extension: "
+                    << account->kiosk_app_id;
+      } else {
+        app_status->set_extension_version(app_version);
+      }
+      break;
     }
-  } else if (account->type == DeviceLocalAccount::TYPE_ARC_KIOSK_APP) {
-    // Use package name as app ID for ARC Kiosks.
-    app_status->set_app_id(account->arc_kiosk_app_info.package_name());
-  } else if (account->type == DeviceLocalAccount::TYPE_WEB_KIOSK_APP) {
-    app_status->set_app_id(account->web_kiosk_app_info.url());
-  } else {
-    NOTREACHED();
+    case DeviceLocalAccountType::kArcKioskApp:
+      // Use package name as app ID for ARC Kiosks.
+      app_status->set_app_id(account->arc_kiosk_app_info.package_name());
+      break;
+    case DeviceLocalAccountType::kWebKioskApp:
+      app_status->set_app_id(account->web_kiosk_app_info.url());
+      break;
+    case DeviceLocalAccountType::kPublicSession:
+    case DeviceLocalAccountType::kSamlPublicSession:
+      NOTREACHED();
   }
 
   return true;

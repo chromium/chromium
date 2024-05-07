@@ -37,10 +37,10 @@ bool GetString(const base::Value::Dict& dict,
   return true;
 }
 
-bool IsKioskType(DeviceLocalAccount::Type type) {
-  return type == DeviceLocalAccount::TYPE_KIOSK_APP ||
-         type == DeviceLocalAccount::TYPE_ARC_KIOSK_APP ||
-         type == DeviceLocalAccount::TYPE_WEB_KIOSK_APP;
+bool IsKioskType(DeviceLocalAccountType type) {
+  return type == DeviceLocalAccountType::kKioskApp ||
+         type == DeviceLocalAccountType::kArcKioskApp ||
+         type == DeviceLocalAccountType::kWebKioskApp;
 }
 
 }  // namespace
@@ -77,7 +77,7 @@ WebKioskAppBasicInfo::WebKioskAppBasicInfo() {}
 
 WebKioskAppBasicInfo::~WebKioskAppBasicInfo() {}
 
-DeviceLocalAccount::DeviceLocalAccount(Type type,
+DeviceLocalAccount::DeviceLocalAccount(DeviceLocalAccountType type,
                                        EphemeralMode ephemeral_mode,
                                        const std::string& account_id,
                                        const std::string& kiosk_app_id,
@@ -89,11 +89,22 @@ DeviceLocalAccount::DeviceLocalAccount(Type type,
       kiosk_app_id(kiosk_app_id),
       kiosk_app_update_url(kiosk_app_update_url) {}
 
+DeviceLocalAccount::DeviceLocalAccount(Type type,
+                                       EphemeralMode ephemeral_mode,
+                                       const std::string& account_id,
+                                       const std::string& kiosk_app_id,
+                                       const std::string& kiosk_app_update_url)
+    : DeviceLocalAccount(static_cast<DeviceLocalAccountType>(type),
+                         ephemeral_mode,
+                         account_id,
+                         kiosk_app_id,
+                         kiosk_app_update_url) {}
+
 DeviceLocalAccount::DeviceLocalAccount(
     EphemeralMode ephemeral_mode,
     const ArcKioskAppBasicInfo& arc_kiosk_app_info,
     const std::string& account_id)
-    : type(DeviceLocalAccount::TYPE_ARC_KIOSK_APP),
+    : type(DeviceLocalAccountType::kArcKioskApp),
       ephemeral_mode(ephemeral_mode),
       account_id(account_id),
       user_id(GenerateDeviceLocalAccountUserId(account_id, type)),
@@ -103,7 +114,7 @@ DeviceLocalAccount::DeviceLocalAccount(
     EphemeralMode ephemeral_mode,
     const WebKioskAppBasicInfo& web_kiosk_app_info,
     const std::string& account_id)
-    : type(DeviceLocalAccount::TYPE_WEB_KIOSK_APP),
+    : type(DeviceLocalAccountType::kWebKioskApp),
       ephemeral_mode(ephemeral_mode),
       account_id(account_id),
       user_id(GenerateDeviceLocalAccountUserId(account_id, type)),
@@ -112,7 +123,7 @@ DeviceLocalAccount::DeviceLocalAccount(
 DeviceLocalAccount::DeviceLocalAccount(const DeviceLocalAccount& other) =
     default;
 
-DeviceLocalAccount::~DeviceLocalAccount() {}
+DeviceLocalAccount::~DeviceLocalAccount() = default;
 
 std::string GenerateDeviceLocalAccountUserId(const std::string& account_id,
                                              DeviceLocalAccount::Type type) {
@@ -144,42 +155,51 @@ void SetDeviceLocalAccounts(ash::OwnerSettingsServiceAsh* service,
     auto entry =
         base::Value::Dict()
             .Set(ash::kAccountsPrefDeviceLocalAccountsKeyId, it->account_id)
-            .Set(ash::kAccountsPrefDeviceLocalAccountsKeyType, it->type)
+            .Set(ash::kAccountsPrefDeviceLocalAccountsKeyType,
+                 static_cast<int>(it->type))
             .Set(ash::kAccountsPrefDeviceLocalAccountsKeyEphemeralMode,
                  static_cast<int>(it->ephemeral_mode));
-    if (it->type == DeviceLocalAccount::TYPE_KIOSK_APP) {
-      entry.Set(ash::kAccountsPrefDeviceLocalAccountsKeyKioskAppId,
-                it->kiosk_app_id);
-      if (!it->kiosk_app_update_url.empty()) {
-        entry.Set(ash::kAccountsPrefDeviceLocalAccountsKeyKioskAppUpdateURL,
-                  it->kiosk_app_update_url);
-      }
-    } else if (it->type == DeviceLocalAccount::TYPE_ARC_KIOSK_APP) {
-      entry.Set(ash::kAccountsPrefDeviceLocalAccountsKeyArcKioskPackage,
-                it->arc_kiosk_app_info.package_name());
-      if (!it->arc_kiosk_app_info.class_name().empty()) {
-        entry.Set(ash::kAccountsPrefDeviceLocalAccountsKeyArcKioskClass,
-                  it->arc_kiosk_app_info.class_name());
-      }
-      if (!it->arc_kiosk_app_info.action().empty()) {
-        entry.Set(ash::kAccountsPrefDeviceLocalAccountsKeyArcKioskAction,
-                  it->arc_kiosk_app_info.action());
-      }
-      if (!it->arc_kiosk_app_info.display_name().empty()) {
-        entry.Set(ash::kAccountsPrefDeviceLocalAccountsKeyArcKioskDisplayName,
-                  it->arc_kiosk_app_info.display_name());
-      }
-    } else if (it->type == DeviceLocalAccount::TYPE_WEB_KIOSK_APP) {
-      entry.Set(ash::kAccountsPrefDeviceLocalAccountsKeyWebKioskUrl,
-                it->web_kiosk_app_info.url());
-      if (!it->web_kiosk_app_info.title().empty()) {
-        entry.Set(ash::kAccountsPrefDeviceLocalAccountsKeyWebKioskTitle,
-                  it->web_kiosk_app_info.title());
-      }
-      if (!it->web_kiosk_app_info.icon_url().empty()) {
-        entry.Set(ash::kAccountsPrefDeviceLocalAccountsKeyWebKioskIconUrl,
-                  it->web_kiosk_app_info.icon_url());
-      }
+    switch (it->type) {
+      case DeviceLocalAccountType::kPublicSession:
+      case DeviceLocalAccountType::kSamlPublicSession:
+        // Do nothing.
+        break;
+      case DeviceLocalAccountType::kKioskApp:
+        entry.Set(ash::kAccountsPrefDeviceLocalAccountsKeyKioskAppId,
+                  it->kiosk_app_id);
+        if (!it->kiosk_app_update_url.empty()) {
+          entry.Set(ash::kAccountsPrefDeviceLocalAccountsKeyKioskAppUpdateURL,
+                    it->kiosk_app_update_url);
+        }
+        break;
+      case DeviceLocalAccountType::kArcKioskApp:
+        entry.Set(ash::kAccountsPrefDeviceLocalAccountsKeyArcKioskPackage,
+                  it->arc_kiosk_app_info.package_name());
+        if (!it->arc_kiosk_app_info.class_name().empty()) {
+          entry.Set(ash::kAccountsPrefDeviceLocalAccountsKeyArcKioskClass,
+                    it->arc_kiosk_app_info.class_name());
+        }
+        if (!it->arc_kiosk_app_info.action().empty()) {
+          entry.Set(ash::kAccountsPrefDeviceLocalAccountsKeyArcKioskAction,
+                    it->arc_kiosk_app_info.action());
+        }
+        if (!it->arc_kiosk_app_info.display_name().empty()) {
+          entry.Set(ash::kAccountsPrefDeviceLocalAccountsKeyArcKioskDisplayName,
+                    it->arc_kiosk_app_info.display_name());
+        }
+        break;
+      case DeviceLocalAccountType::kWebKioskApp:
+        entry.Set(ash::kAccountsPrefDeviceLocalAccountsKeyWebKioskUrl,
+                  it->web_kiosk_app_info.url());
+        if (!it->web_kiosk_app_info.title().empty()) {
+          entry.Set(ash::kAccountsPrefDeviceLocalAccountsKeyWebKioskTitle,
+                    it->web_kiosk_app_info.title());
+        }
+        if (!it->web_kiosk_app_info.icon_url().empty()) {
+          entry.Set(ash::kAccountsPrefDeviceLocalAccountsKeyWebKioskIconUrl,
+                    it->web_kiosk_app_info.icon_url());
+        }
+        break;
     }
     list.Append(std::move(entry));
   }
@@ -217,18 +237,18 @@ std::vector<DeviceLocalAccount> GetDeviceLocalAccounts(
       continue;
     }
 
-    std::optional<int> type =
+    std::optional<int> raw_type =
         entry_dict.FindInt(ash::kAccountsPrefDeviceLocalAccountsKeyType);
-    if (!type || type.value() < 0 ||
-        type.value() >= DeviceLocalAccount::TYPE_COUNT) {
+    if (!raw_type || !IsValidDeviceLocalAccountType(*raw_type)) {
       LOG(ERROR) << "Missing or invalid account type in device-local account "
                  << "list at index " << i << ".";
       continue;
     }
+    auto type = static_cast<DeviceLocalAccountType>(*raw_type);
 
     DeviceLocalAccount::EphemeralMode ephemeral_mode_value =
         DeviceLocalAccount::EphemeralMode::kUnset;
-    if (IsKioskType(static_cast<DeviceLocalAccount::Type>(type.value()))) {
+    if (IsKioskType(type)) {
       std::optional<int> ephemeral_mode = entry_dict.FindInt(
           ash::kAccountsPrefDeviceLocalAccountsKeyEphemeralMode);
       if (!ephemeral_mode || ephemeral_mode.value() < 0 ||
@@ -250,16 +270,16 @@ std::vector<DeviceLocalAccount> GetDeviceLocalAccounts(
       continue;
     }
 
-    switch (type.value()) {
-      case DeviceLocalAccount::TYPE_PUBLIC_SESSION:
-        accounts.emplace_back(DeviceLocalAccount::TYPE_PUBLIC_SESSION,
+    switch (type) {
+      case DeviceLocalAccountType::kPublicSession:
+        accounts.emplace_back(DeviceLocalAccountType::kPublicSession,
                               ephemeral_mode_value, account_id, "", "");
         break;
-      case DeviceLocalAccount::TYPE_SAML_PUBLIC_SESSION:
-        accounts.emplace_back(DeviceLocalAccount::TYPE_SAML_PUBLIC_SESSION,
+      case DeviceLocalAccountType::kSamlPublicSession:
+        accounts.emplace_back(DeviceLocalAccountType::kSamlPublicSession,
                               ephemeral_mode_value, account_id, "", "");
         break;
-      case DeviceLocalAccount::TYPE_KIOSK_APP: {
+      case DeviceLocalAccountType::kKioskApp: {
         std::string kiosk_app_id;
         std::string kiosk_app_update_url;
         if (!GetString(entry_dict,
@@ -273,12 +293,12 @@ std::vector<DeviceLocalAccount> GetDeviceLocalAccounts(
                   ash::kAccountsPrefDeviceLocalAccountsKeyKioskAppUpdateURL,
                   &kiosk_app_update_url);
 
-        accounts.emplace_back(DeviceLocalAccount::TYPE_KIOSK_APP,
+        accounts.emplace_back(DeviceLocalAccountType::kKioskApp,
                               ephemeral_mode_value, account_id, kiosk_app_id,
                               kiosk_app_update_url);
         break;
       }
-      case DeviceLocalAccount::TYPE_ARC_KIOSK_APP: {
+      case DeviceLocalAccountType::kArcKioskApp: {
         std::string package_name;
         std::string class_name;
         std::string action;
@@ -306,7 +326,7 @@ std::vector<DeviceLocalAccount> GetDeviceLocalAccounts(
         accounts.emplace_back(ephemeral_mode_value, arc_kiosk_app, account_id);
         break;
       }
-      case DeviceLocalAccount::TYPE_WEB_KIOSK_APP: {
+      case DeviceLocalAccountType::kWebKioskApp: {
         std::string url;
         std::string title;
         std::string icon_url;
@@ -330,8 +350,6 @@ std::vector<DeviceLocalAccount> GetDeviceLocalAccounts(
                               account_id);
         break;
       }
-      default:
-        NOTREACHED();
     }
   }
   return accounts;

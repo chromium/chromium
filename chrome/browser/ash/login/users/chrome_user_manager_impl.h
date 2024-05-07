@@ -142,7 +142,7 @@ class ChromeUserManagerImpl
   // Creates a user for the given device local account.
   std::unique_ptr<user_manager::User> CreateUserFromDeviceLocalAccount(
       const AccountId& account_id,
-      const policy::DeviceLocalAccount::Type type) const;
+      const policy::DeviceLocalAccountType type) const;
 
   void UpdateOwnerId();
 

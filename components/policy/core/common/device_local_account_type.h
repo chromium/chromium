@@ -33,6 +33,9 @@ enum class DeviceLocalAccountType {
   kWebKioskApp,
 };
 
+// Returns whether the given value is valid DeviceLocalAccountType.
+POLICY_EXPORT bool IsValidDeviceLocalAccountType(int value);
+
 POLICY_EXPORT std::string GenerateDeviceLocalAccountUserId(
     std::string_view account_id,
     DeviceLocalAccountType type);

@@ -23,18 +23,23 @@ DeviceLocalAccountExtensionTracker::DeviceLocalAccountExtensionTracker(
     CloudPolicyStore* store,
     SchemaRegistry* schema_registry)
     : store_(store), schema_registry_(schema_registry) {
-  if (account.type == DeviceLocalAccount::TYPE_KIOSK_APP) {
-    // This is easy: Just add a component for the app id.
-    PolicyNamespace ns(POLICY_DOMAIN_EXTENSIONS, account.kiosk_app_id);
-    schema_registry_->RegisterComponent(ns, Schema());
-  } else if (account.type == DeviceLocalAccount::TYPE_PUBLIC_SESSION ||
-             account.type == DeviceLocalAccount::TYPE_SAML_PUBLIC_SESSION) {
-    // For public sessions, track the value of the ExtensionInstallForcelist
-    // policy.
-    store_->AddObserver(this);
-    UpdateFromStore();
-  } else {
-    NOTREACHED();
+  switch (account.type) {
+    case DeviceLocalAccountType::kKioskApp: {
+      // This is easy: Just add a component for the app id.
+      PolicyNamespace ns(POLICY_DOMAIN_EXTENSIONS, account.kiosk_app_id);
+      schema_registry_->RegisterComponent(ns, Schema());
+      break;
+    }
+    case DeviceLocalAccountType::kPublicSession:
+    case DeviceLocalAccountType::kSamlPublicSession:
+      // For public sessions, track the value of the ExtensionInstallForcelist
+      // policy.
+      store_->AddObserver(this);
+      UpdateFromStore();
+      break;
+    case DeviceLocalAccountType::kArcKioskApp:
+    case DeviceLocalAccountType::kWebKioskApp:
+      NOTREACHED();
   }
 }
 
