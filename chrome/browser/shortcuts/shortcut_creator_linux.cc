@@ -92,6 +92,7 @@ ShortcutCreatorResult CreateShortcutOnLinuxDesktop(
   if (!base::CreateDirectory(icon_directory)) {
     return ShortcutCreatorResult::kError;
   }
+  EmitIconStorageCountMetric(icon_directory);
 
   std::optional<base::SafeBaseName> desktop_file_basename =
       shell_integration_linux::GetUniqueWebShortcutFilename(shortcut_name);
@@ -109,9 +110,6 @@ ShortcutCreatorResult CreateShortcutOnLinuxDesktop(
       desktop_path.Append(desktop_file_basename->path());
 
   // Second, write the icon to disk.
-  // TODO(crbug.com/338093295): Determine if we need to worry about cleaning
-  // these up and figure out how to do that. Recording an UMA metric here on the
-  // number of files in this directory is a good start.
   base::SafeBaseName icon_base_name = GenerateIconFilename(shortcut_url);
   base::FilePath icon_path = icon_directory.Append(icon_base_name);
   scoped_refptr<base::RefCountedMemory> png_data = icon.As1xPNGBytes();

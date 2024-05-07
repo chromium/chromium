@@ -1,6 +1,7 @@
 // Copyright 2024 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
+
 #include "chrome/browser/shortcuts/shortcut_creator.h"
 
 #include <windows.h>
@@ -29,6 +30,8 @@ base::FilePath CreateIconFileFromBitmap(const base::FilePath& icon_path,
   if (!base::CreateDirectory(icon_path)) {
     return base::FilePath();
   }
+  EmitIconStorageCountMetric(icon_path);
+
   const base::FilePath icon_file = icon_path.Append(L"shortcut.ico");
 
   // Write the .ico file containing this new bitmap.

@@ -18,6 +18,7 @@ source_set("shortcuts") {
     "fetch_icons_from_document_task.h",
     "icon_badging.cc",
     "icon_badging.h",
+    "shortcut_creator.cc",
     "shortcut_creator.h",
   ]
 

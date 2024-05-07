@@ -45,6 +45,10 @@ void CreateShortcutOnUserDesktop(const std::string& shortcut_name,
                                  const base::FilePath& profile_path,
                                  ShortcutCreatorCallback complete);
 
+// Emits the "Shortcuts.Icons.StorageCount" metric to record the number of icon
+// in the given directory.
+void EmitIconStorageCountMetric(const base::FilePath& icon_directory);
+
 }  // namespace shortcuts
 
 #endif  // CHROME_BROWSER_SHORTCUTS_SHORTCUT_CREATOR_H_
