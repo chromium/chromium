@@ -32,7 +32,6 @@ std::optional<uint32_t> FindMemoryTypeIndex(
     }
     return i;
   }
-  NOTREACHED();
   return std::nullopt;
 }
 
