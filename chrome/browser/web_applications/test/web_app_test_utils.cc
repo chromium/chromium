@@ -674,18 +674,13 @@ std::unique_ptr<WebApp> CreateRandomWebApp(CreateRandomWebAppParams params) {
   {
     // Copy proto, retaining existing fields (including unknown fields).
     sync_pb::WebAppSpecifics sync_proto = app->sync_proto();
-    if (base::FeatureList::IsEnabled(kSeparateUserDisplayModeForCrOS)) {
-      if (random.next_bool()) {
-        sync_proto.set_user_display_mode_default(
-            user_display_modes[random.next_uint(3)]);
-      }
-      // Must have at least one platform's UserDisplayMode set.
-      if (!sync_proto.has_user_display_mode_default() || random.next_bool()) {
-        sync_proto.set_user_display_mode_cros(
-            user_display_modes[random.next_uint(3)]);
-      }
-    } else {
+    if (random.next_bool()) {
       sync_proto.set_user_display_mode_default(
+          user_display_modes[random.next_uint(3)]);
+    }
+    // Must have at least one platform's UserDisplayMode set.
+    if (!sync_proto.has_user_display_mode_default() || random.next_bool()) {
+      sync_proto.set_user_display_mode_cros(
           user_display_modes[random.next_uint(3)]);
     }
 

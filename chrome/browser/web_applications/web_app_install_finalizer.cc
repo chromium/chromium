@@ -123,8 +123,7 @@ bool ShouldInstallOverwriteUserDisplayMode(
 #if BUILDFLAG(IS_CHROMEOS)
 // When web apps are added to sync on ChromeOS the value of
 // user_display_mode_default should be set in certain cases to avoid poor sync
-// install states on devices with kSeparateUserDisplayModeForCrOS disabled
-// (including all pre-M122 devices) and non-CrOS devices with particular web
+// install states on pre-M122 devices and non-CrOS devices with particular web
 // apps.
 // See switch for specific cases being mitigated against.
 // See go/udm-desync#bookmark=id.cg753kjyrruo for design doc.
@@ -132,10 +131,6 @@ bool ShouldInstallOverwriteUserDisplayMode(
 void ApplyUserDisplayModeSyncMitigations(
     const WebAppInstallFinalizer::FinalizeOptions& options,
     WebApp& web_app) {
-  if (!base::FeatureList::IsEnabled(kSeparateUserDisplayModeForCrOS)) {
-    return;
-  }
-
   // Guaranteed by EnsureAppsHaveUserDisplayModeForCurrentPlatform().
   CHECK(web_app.sync_proto().has_user_display_mode_cros(),
         base::NotFatalUntil::M125);
@@ -165,13 +160,12 @@ void ApplyUserDisplayModeSyncMitigations(
         return;
       }
 
-      // CrOS devices with kSeparateUserDisplayModeForCrOS disabled (including
-      // pre-M122 devices) use the user_display_mode_default sync field instead
-      // of user_display_mode_cros. If user_display_mode_default is ever unset
-      // they will fallback to using kStandalone even if user_display_mode_cros
-      // is set to kBrowser. This mitigation ensures user_display_mode_default
-      // is set to kBrowser for these devices.
-      // Example user journey:
+      // Pre-M122 CrOS devices use the user_display_mode_default sync field
+      // instead of user_display_mode_cros. If user_display_mode_default is ever
+      // unset they will fallback to using kStandalone even if
+      // user_display_mode_cros is set to kBrowser. This mitigation ensures
+      // user_display_mode_default is set to kBrowser for these devices. Example
+      // user journey:
       // - Install web app as browser shortcut on post-M122 CrOS device.
       // - Sync installation to pre-M122 CrOS device.
       // - Check that it is synced as a browser shortcut.

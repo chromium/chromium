@@ -167,31 +167,22 @@ void ApplySyncDataToApp(const sync_pb::WebAppSpecifics& sync_proto,
   // sync proto should also be added here (if we don't want them to be cleared
   // by old clients) until this block can be removed. This can be removed when
   // there are few <M125 clients remaining.
-  if (base::FeatureList::IsEnabled(kSyncOnlySeparateUserDisplayModeForCrOS)) {
-    if (app->sync_proto().has_user_display_mode_cros() &&
-        !modified_sync_proto.has_user_display_mode_cros()) {
-      modified_sync_proto.set_user_display_mode_cros(
-          app->sync_proto().user_display_mode_cros());
-    }
-    if (base::FeatureList::IsEnabled(kSeparateUserDisplayModeForCrOS)) {
-      if (app->sync_proto().has_user_display_mode_default() &&
-          !modified_sync_proto.has_user_display_mode_default()) {
-        modified_sync_proto.set_user_display_mode_default(
-            app->sync_proto().user_display_mode_default());
-      }
+  if (app->sync_proto().has_user_display_mode_cros() &&
+      !modified_sync_proto.has_user_display_mode_cros()) {
+    modified_sync_proto.set_user_display_mode_cros(
+        app->sync_proto().user_display_mode_cros());
+  }
+  if (app->sync_proto().has_user_display_mode_default() &&
+      !modified_sync_proto.has_user_display_mode_default()) {
+    modified_sync_proto.set_user_display_mode_default(
+        app->sync_proto().user_display_mode_default());
+  }
 
-      // Ensure the current platform's UserDisplayMode is set.
-      // Conditional to avoid clobbering a valid UDM with an absent one, for the
-      // case of old clients clearing the CrOS UDM value or non-sync-installed
-      // apps.
-      if (!HasCurrentPlatformUserDisplayMode(modified_sync_proto)) {
-        auto udm = ResolvePlatformSpecificUserDisplayMode(modified_sync_proto);
-        SetPlatformSpecificUserDisplayMode(udm, &modified_sync_proto);
-      }
-    }
-    // If `kSeparateUserDisplayModeForCrOS` is disabled, maintain original
-    // behaviour of clobbering UDM-default with the synced value, even if
-    // absent.
+  // Ensure the current platform's UserDisplayMode is set.
+  // Conditional to avoid clobbering an unknown new UDM with a fallback one.
+  if (!HasCurrentPlatformUserDisplayMode(modified_sync_proto)) {
+    auto udm = ResolvePlatformSpecificUserDisplayMode(modified_sync_proto);
+    SetPlatformSpecificUserDisplayMode(udm, &modified_sync_proto);
   }
 
   app->SetSyncProto(std::move(modified_sync_proto));
@@ -585,9 +576,7 @@ void WebAppSyncBridge::OnDatabaseOpened(
 
   // Do database migrations to ensure apps are valid before notifying anything
   // else that the sync bridge is ready.
-  if (base::FeatureList::IsEnabled(kSeparateUserDisplayModeForCrOS)) {
-    EnsureAppsHaveUserDisplayModeForCurrentPlatform();
-  }
+  EnsureAppsHaveUserDisplayModeForCurrentPlatform();
 
   std::move(initialized_callback).Run();
 

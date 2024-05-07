@@ -40,10 +40,6 @@ mojom::UserDisplayMode ToMojomUserDisplayMode(
 sync_pb::WebAppSpecifics::UserDisplayMode
 ResolvePlatformSpecificUserDisplayMode(
     const sync_pb::WebAppSpecifics& sync_proto) {
-  if (!base::FeatureList::IsEnabled(kSeparateUserDisplayModeForCrOS)) {
-    return sync_proto.user_display_mode_default();
-  }
-
   sync_pb::WebAppSpecifics_UserDisplayMode resolved_default_udm =
       sync_proto.has_user_display_mode_default()
           ? sync_proto.user_display_mode_default()
@@ -60,11 +56,6 @@ ResolvePlatformSpecificUserDisplayMode(
 void SetPlatformSpecificUserDisplayMode(
     sync_pb::WebAppSpecifics::UserDisplayMode user_display_mode,
     sync_pb::WebAppSpecifics* sync_proto) {
-  if (!base::FeatureList::IsEnabled(kSeparateUserDisplayModeForCrOS)) {
-    sync_proto->set_user_display_mode_default(user_display_mode);
-    return;
-  }
-
 #if BUILDFLAG(IS_CHROMEOS)
   sync_proto->set_user_display_mode_cros(user_display_mode);
 #else
