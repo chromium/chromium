@@ -6,6 +6,8 @@ import("//testing/test.gni")
 
 source_set("browser") {
   sources = [
+    "features.cc",
+    "features.h",
     "layout_shift_normalization.cc",
     "layout_shift_normalization.h",
     "metrics_lifecycle_observer.cc",
@@ -79,6 +81,7 @@ source_set("browser") {
     "responsiveness_metrics_normalization.h",
   ]
   deps = [
+    "//base",
     "//build:chromeos_buildflags",
     "//components/keyed_service/content:content",
     "//components/keyed_service/core:core",

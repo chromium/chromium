@@ -11,12 +11,14 @@
 #include <utility>
 
 #include "base/check_op.h"
+#include "base/feature_list.h"
 #include "base/metrics/histogram_functions.h"
 #include "base/metrics/histogram_macros.h"
 #include "base/notreached.h"
 #include "base/strings/stringprintf.h"
 #include "base/time/default_tick_clock.h"
 #include "base/trace_event/trace_event.h"
+#include "components/page_load_metrics/browser/features.h"
 #include "components/page_load_metrics/browser/page_load_metrics_embedder_interface.h"
 #include "components/page_load_metrics/browser/page_load_metrics_forward_observer.h"
 #include "components/page_load_metrics/browser/page_load_metrics_memory_tracker.h"
@@ -33,6 +35,7 @@
 #include "page_load_metrics_observer_delegate.h"
 #include "services/metrics/public/cpp/ukm_recorder.h"
 #include "services/metrics/public/cpp/ukm_source_id.h"
+#include "third_party/blink/public/mojom/input/input_event.mojom-shared.h"
 
 namespace page_load_metrics {
 
@@ -752,6 +755,20 @@ void PageLoadTracker::Redirect(content::NavigationHandle* navigation_handle) {
 }
 
 void PageLoadTracker::OnInputEvent(const blink::WebInputEvent& event) {
+  static const bool do_not_send_continuous_events =
+      !base::FeatureList::IsEnabled(
+          features::kSendContinuousInputEventsToObservers);
+  using Type = blink::mojom::EventType;
+  const bool is_continuous_event =
+      (event.GetType() == Type::kTouchMove ||
+       event.GetType() == Type::kGestureScrollUpdate ||
+       event.GetType() == Type::kGesturePinchUpdate);
+  if (do_not_send_continuous_events && is_continuous_event) {
+    return;
+  }
+
+  // TODO(b/328601354): Confirm continuous input events are not required for
+  // page load tracker observers and rename the API to reflect the same.
   for (const auto& observer : observers_) {
     observer->OnUserInput(event, metrics_update_dispatcher_.timing());
   }
