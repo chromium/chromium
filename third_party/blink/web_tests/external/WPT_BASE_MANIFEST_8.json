@@ -295737,7 +295737,7 @@
       []
      ],
      "cookie-test.js": [
-      "a909e4d72facf95760ef35c96efbb426bbc9c8e0",
+      "8299c4731786dcf6ada011820e008d670a4df78d",
       []
      ],
      "cookie.py": [
@@ -389622,7 +389622,7 @@
     "focus-navigation": {
      "resources": {
       "focus-utils.js": [
-       "ef517c588e5764e171b24859a5bf3ab2859cfe51",
+       "f4056dc1688442c2c41ce9421161bea448da7c2f",
        []
       ],
       "shadow-dom.js": [
@@ -516240,10 +516240,17 @@
       ]
      ],
      "resources-with-0x00-in-header.window.js": [
-      "37a61c12b561b260725f8da61b8478c5d9b713af",
+      "b617911105acb45f5881f1988b52162702f31841",
       [
        "fetch/h1-parsing/resources-with-0x00-in-header.window.html",
-       {}
+       {
+        "script_metadata": [
+         [
+          "script",
+          "/common/get-host-info.sub.js"
+         ]
+        ]
+       }
       ]
      ],
      "status-code.window.js": [
