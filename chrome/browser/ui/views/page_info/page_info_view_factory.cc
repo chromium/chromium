@@ -268,6 +268,9 @@ const ui::ImageModel PageInfoViewFactory::GetPermissionIcon(
           ? setting == CONTENT_SETTING_BLOCK || setting == CONTENT_SETTING_ASK
           : setting == CONTENT_SETTING_BLOCK;
 
+  // TODO(crbug.com/335848275): Migrate the icons in 2 steps.
+  // 1 - Copy contents of refresh icons into current non-refresh icons.
+  // 2 - In a separate change, remove the refresh icons.
   if (features::IsChromeRefresh2023()) {
     // Cr2023 does not add an additional blocked badge for block states,
     // instead it uses a completely different icon. This icon usually has the
@@ -399,7 +402,7 @@ const ui::ImageModel PageInfoViewFactory::GetPermissionIcon(
         break;
       case ContentSettingsType::IDLE_DETECTION:
         icon = show_blocked_badge ? &vector_icons::kDevicesOffChromeRefreshIcon
-                                  : &vector_icons::kDevicesChromeRefreshIcon;
+                                  : &vector_icons::kDevicesIcon;
         break;
       case ContentSettingsType::STORAGE_ACCESS:
         icon = show_blocked_badge ? &vector_icons::kStorageAccessOffIcon

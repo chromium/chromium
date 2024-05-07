@@ -30,8 +30,7 @@ namespace send_tab_to_self {
 SendTabToSelfToolbarIconView::SendTabToSelfToolbarIconView(
     BrowserView* browser_view)
     : ImageView(ui::ImageModel::FromVectorIcon(
-          features::IsChromeRefresh2023() ? kDevicesChromeRefreshIcon
-                                          : kDevicesIcon,
+          kDevicesChromeRefreshIcon,
           ui::kColorIcon,
           GetLayoutConstant(TOOLBAR_BUTTON_HEIGHT) -
               GetLayoutInsets(TOOLBAR_BUTTON).height())),

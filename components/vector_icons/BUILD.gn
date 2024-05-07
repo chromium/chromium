@@ -71,7 +71,6 @@ aggregate_vector_icons("components_vector_icons") {
     "database_off.icon",
     "description.icon",
     "devices.icon",
-    "devices_chrome_refresh.icon",
     "devices_off.icon",
     "devices_off_chrome_refresh.icon",
     "document_scanner.icon",

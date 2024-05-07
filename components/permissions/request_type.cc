@@ -71,50 +71,41 @@ int GetIconIdAndroid(RequestType type) {
 #endif  // BUILDFLAG(IS_ANDROID)
 
 #if !BUILDFLAG(IS_ANDROID)
+// TODO(crbug.com/335848275): Migrate the icons in 2 steps.
+// 1 - Copy contents of refresh icons into current non-refresh icons.
+// 2 - In a separate change, remove the refresh icons.
 const gfx::VectorIcon& GetIconIdDesktop(RequestType type) {
-  const bool cr23 = ::features::IsChromeRefresh2023();
   switch (type) {
     case RequestType::kAccessibilityEvents:
       return kAccessibilityIcon;
     case RequestType::kArSession:
     case RequestType::kVrSession:
-      return cr23 ? vector_icons::kVrHeadsetChromeRefreshIcon
-                  : vector_icons::kVrHeadsetIcon;
+      return vector_icons::kVrHeadsetChromeRefreshIcon;
     case RequestType::kCameraPanTiltZoom:
     case RequestType::kCameraStream:
-      return cr23 ? vector_icons::kVideocamChromeRefreshIcon
-                  : vector_icons::kVideocamIcon;
+      return vector_icons::kVideocamChromeRefreshIcon;
     case RequestType::kCapturedSurfaceControl:
       return vector_icons::kTouchpadMouseIcon;
     case RequestType::kClipboard:
-      return cr23 ? vector_icons::kContentPasteChromeRefreshIcon
-                  : vector_icons::kContentPasteIcon;
+      return vector_icons::kContentPasteChromeRefreshIcon;
     case RequestType::kDiskQuota:
-      return cr23 ? vector_icons::kFolderChromeRefreshIcon
-                  : vector_icons::kFolderIcon;
+      return vector_icons::kFolderChromeRefreshIcon;
     case RequestType::kGeolocation:
-      return cr23 ? vector_icons::kLocationOnChromeRefreshIcon
-                  : vector_icons::kLocationOnIcon;
+      return vector_icons::kLocationOnChromeRefreshIcon;
     case RequestType::kIdleDetection:
-      return cr23 ? vector_icons::kDevicesChromeRefreshIcon
-                  : vector_icons::kDevicesIcon;
+      return vector_icons::kDevicesIcon;
     case RequestType::kKeyboardLock:
       return vector_icons::kKeyboardLockIcon;
     case RequestType::kLocalFonts:
-      return cr23 ? vector_icons::kFontDownloadChromeRefreshIcon
-                  : vector_icons::kFontDownloadIcon;
+      return vector_icons::kFontDownloadChromeRefreshIcon;
     case RequestType::kMicStream:
-      return cr23 ? vector_icons::kMicChromeRefreshIcon
-                  : vector_icons::kMicIcon;
+      return vector_icons::kMicChromeRefreshIcon;
     case RequestType::kMidiSysex:
-      return cr23 ? vector_icons::kMidiChromeRefreshIcon
-                  : vector_icons::kMidiIcon;
+      return vector_icons::kMidiChromeRefreshIcon;
     case RequestType::kMultipleDownloads:
-      return cr23 ? vector_icons::kFileDownloadChromeRefreshIcon
-                  : vector_icons::kFileDownloadIcon;
+      return vector_icons::kFileDownloadChromeRefreshIcon;
     case RequestType::kNotifications:
-      return cr23 ? vector_icons::kNotificationsChromeRefreshIcon
-                  : vector_icons::kNotificationsIcon;
+      return vector_icons::kNotificationsChromeRefreshIcon;
     case RequestType::kPointerLock:
       return vector_icons::kPointerLockIcon;
 #if BUILDFLAG(IS_CHROMEOS) || BUILDFLAG(IS_WIN)
@@ -128,8 +119,7 @@ const gfx::VectorIcon& GetIconIdDesktop(RequestType type) {
 #if BUILDFLAG(IS_CHROMEOS)
     case RequestType::kSmartCard:
       // TODO(crbug.com/40944087): Use a proper smart card icon.
-      return cr23 ? vector_icons::kDevicesChromeRefreshIcon
-                  : vector_icons::kDevicesIcon;
+      return vector_icons::kDevicesIcon;
 #endif
 #if BUILDFLAG(IS_CHROMEOS) && BUILDFLAG(USE_CUPS)
     case RequestType::kWebPrinting:
@@ -139,8 +129,7 @@ const gfx::VectorIcon& GetIconIdDesktop(RequestType type) {
     case RequestType::kTopLevelStorageAccess:
       return vector_icons::kStorageAccessIcon;
     case RequestType::kWindowManagement:
-      return cr23 ? vector_icons::kSelectWindowChromeRefreshIcon
-                  : vector_icons::kSelectWindowIcon;
+      return vector_icons::kSelectWindowChromeRefreshIcon;
     case RequestType::kFileSystemAccess:
       return vector_icons::kFolderIcon;
     case RequestType::kIdentityProvider:
