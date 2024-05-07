@@ -812,7 +812,7 @@ TEST_F(PowerNotificationControllerTest, IgnoreMissingBatteryEstimates) {
 }
 
 TEST_F(PowerNotificationControllerTest,
-       HistogramTest_RemainingMinutesForCriticalState) {
+       HistogramTest_TimeToEmptyForCriticalState) {
   // Verify no initial histogram data is recorded.
   histogram_tester_->ExpectTotalCount(
       "Ash.PowerNotification.TimeToEmptyForCritialState", 0);
@@ -839,6 +839,8 @@ TEST_F(PowerNotificationControllerTest,
       proto, PowerNotificationController::NOTIFICATION_CRITICAL, true, true);
   histogram_tester_->ExpectTotalCount(
       "Ash.PowerNotification.TimeToEmptyForCritialState", 1);
+  histogram_tester_->ExpectBucketCount(
+      "Ash.PowerNotification.TimeToEmptyForCritialState", 300, 1);
 
   // Trigger another update; the state remains critical, so no additional
   // metrics should be emitted.
@@ -846,6 +848,56 @@ TEST_F(PowerNotificationControllerTest,
       proto, PowerNotificationController::NOTIFICATION_CRITICAL, false, false);
   histogram_tester_->ExpectTotalCount(
       "Ash.PowerNotification.TimeToEmptyForCritialState", 1);
+}
+
+TEST_F(PowerNotificationControllerTest, HistogramTest_TimeToEmptyPluggedIn) {
+  // Verify no initial histogram data is recorded.
+  histogram_tester_->ExpectTotalCount(
+      "Ash.PowerNotification.TimeToEmptyPluggedIn", 0);
+
+  // Set the default power state.
+  PowerSupplyProperties proto = DefaultPowerSupplyProperties();
+  EXPECT_EQ(PowerNotificationController::NOTIFICATION_NONE,
+            notification_state());
+
+  // Simulate plugging in the charger without any critical state.
+  proto.set_external_power(
+      power_manager::PowerSupplyProperties_ExternalPower_AC);
+  UpdateNotificationState(proto, PowerNotificationController::NOTIFICATION_NONE,
+                          false, false);
+  histogram_tester_->ExpectTotalCount(
+      "Ash.PowerNotification.TimeToEmptyPluggedIn", 0);
+
+  // Simulate unplugging the charger.
+  proto.set_external_power(
+      power_manager::PowerSupplyProperties_ExternalPower_DISCONNECTED);
+  UpdateNotificationState(proto, PowerNotificationController::NOTIFICATION_NONE,
+                          false, false);
+  histogram_tester_->ExpectTotalCount(
+      "Ash.PowerNotification.TimeToEmptyPluggedIn", 0);
+
+  // Transition to critical state.
+  proto.set_battery_time_to_empty_sec(
+      PowerNotificationController::kCriticalMinutes * 60);
+  UpdateNotificationState(
+      proto, PowerNotificationController::NOTIFICATION_CRITICAL, true, false);
+
+  // Simulate plugging in the charger while in a critical state.
+  proto.set_external_power(
+      power_manager::PowerSupplyProperties_ExternalPower_AC);
+  UpdateNotificationState(proto, PowerNotificationController::NOTIFICATION_NONE,
+                          false, true);
+  histogram_tester_->ExpectTotalCount(
+      "Ash.PowerNotification.TimeToEmptyPluggedIn", 1);
+  histogram_tester_->ExpectBucketCount(
+      "Ash.PowerNotification.TimeToEmptyPluggedIn", 300, 1);
+
+  // Trigger another update, the state remain normal, no additional metric
+  // should be emitted.
+  UpdateNotificationState(proto, PowerNotificationController::NOTIFICATION_NONE,
+                          false, false);
+  histogram_tester_->ExpectTotalCount(
+      "Ash.PowerNotification.TimeToEmptyPluggedIn", 1);
 }
 
 INSTANTIATE_TEST_SUITE_P(

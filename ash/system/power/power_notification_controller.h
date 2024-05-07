@@ -115,6 +115,15 @@ class ASH_EXPORT PowerNotificationController : public PowerStatus::Observer {
   // Was line power connected the last time onPowerStatusChanged() was called?
   bool line_power_was_connected_ = false;
 
+  // Was the battery in critical state the last time onPowerStatusChanged() was
+  // called?
+  bool was_in_critical_state_ = false;
+
+  // The remaining battery time the last time OnPowerStatusChanged() was called.
+  // This value is utilized to determine the remaining battery time at the
+  // moment the charger is connected.
+  std::optional<base::TimeDelta> remaining_time_to_empty_from_critical_state_;
+
   // Has the user already dismissed a low-power notification? Should be set
   // back to false when all power sources are disconnected.
   bool usb_notification_dismissed_ = false;

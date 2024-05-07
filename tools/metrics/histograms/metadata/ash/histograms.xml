@@ -6387,6 +6387,18 @@ chromium-metrics-reviews@google.com.
   </summary>
 </histogram>
 
+<histogram name="Ash.PowerNotification.TimeToEmptyPluggedIn" units="seconds"
+    expires_after="2025-05-01">
+  <owner>dpad@google.com</owner>
+  <owner>longbowei@google.com</owner>
+  <owner>cros-peripherals@google.com</owner>
+  <summary>
+    Record the remaining battery time when the device transitions from a
+    critical state to charging state upon connecting the charger. Fires at the
+    moment charger is connected.
+  </summary>
+</histogram>
+
 <histogram name="Ash.PowerSoundsController.PluggedInBatteryLevel" units="%"
     expires_after="2024-11-03">
   <owner>hongyulong@chromium.org</owner>

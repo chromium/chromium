@@ -106,6 +106,28 @@ void RecordTimeToEmptyForCriticalState(base::TimeDelta remaining_time) {
       /*buckets=*/100);
 }
 
+// Record remaining battery time in second when the device transitions from a
+// critical state to charging state upon connecting the charger.
+void MaybeRecordTimeToEmptyPluggedIn(
+    bool was_in_critical_state,
+    bool line_power_was_connected,
+    const std::optional<base::TimeDelta> remaining_time) {
+  if (!remaining_time.has_value()) {
+    return;
+  }
+
+  bool line_power_is_connected = PowerStatus::Get()->IsLinePowerConnected();
+  if (!line_power_was_connected && line_power_is_connected &&
+      was_in_critical_state) {
+    base::UmaHistogramCustomCounts(
+        "Ash.PowerNotification.TimeToEmptyPluggedIn",
+        remaining_time->InSeconds(),
+        /*min=*/0,
+        /*exclusive_max=*/base::Minutes(10).InSeconds(),
+        /*buckets=*/100);
+  }
+}
+
 }  // namespace
 
 const char PowerNotificationController::kUsbNotificationId[] = "usb-charger";
@@ -151,6 +173,11 @@ void PowerNotificationController::OnPowerStatusChanged() {
         std::make_unique<BatteryNotification>(message_center_, this);
   } else if (notification_state_ == NOTIFICATION_NONE) {
     battery_notification_.reset();
+    // Maybe record remaining battery time when the device transitions from a
+    // critical state to charging state upon connecting the charger.
+    MaybeRecordTimeToEmptyPluggedIn(
+        was_in_critical_state_, line_power_was_connected_,
+        remaining_time_to_empty_from_critical_state_);
   } else if (battery_notification_.get()) {
     battery_notification_->Update();
   }
@@ -158,6 +185,9 @@ void PowerNotificationController::OnPowerStatusChanged() {
   battery_was_full_ = PowerStatus::Get()->IsBatteryFull();
   usb_charger_was_connected_ = PowerStatus::Get()->IsUsbChargerConnected();
   line_power_was_connected_ = PowerStatus::Get()->IsLinePowerConnected();
+  remaining_time_to_empty_from_critical_state_ =
+      PowerStatus::Get()->GetBatteryTimeToEmpty();
+  was_in_critical_state_ = GetNotificationState() == NOTIFICATION_CRITICAL;
 }
 
 bool PowerNotificationController::MaybeShowUsbChargerNotification() {
