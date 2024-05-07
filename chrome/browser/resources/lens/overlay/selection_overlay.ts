@@ -522,6 +522,7 @@ export class SelectionOverlayElement extends SelectionOverlayElementBase {
   // Make the cursor disappear over the context menu, as if leaving the overlay.
   private handlePointerEnterContextMenu() {
     this.isPointerInside = false;
+    unfocusShimmer(this, ShimmerControlRequester.CURSOR);
   }
 
   private handlePointerLeaveContextMenu() {

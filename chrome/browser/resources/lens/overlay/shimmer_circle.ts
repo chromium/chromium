@@ -4,6 +4,7 @@
 
 import {PolymerElement} from '//resources/polymer/v3_0/polymer/polymer_bundled.min.js';
 
+import {CURSOR_STATE_INITIAL_FOCUS_DURATION} from './overlay_shimmer.js';
 import {getTemplate} from './shimmer_circle.html.js';
 import {Wiggle} from './wiggle.js';
 
@@ -138,9 +139,20 @@ export class ShimmerCircleElement extends PolymerElement {
     this.centerYWiggle.setFrequency(INTERACTION_STATE_FREQ_VAL);
 
     // Unset the center point so the region to focus is controlled by
-    // OverlayShimmerElement.
-    this.style.setProperty('--shimmer-circle-center-x', 'inherit');
-    this.style.setProperty('--shimmer-circle-center-y', 'inherit');
+    // OverlayShimmerElement. We need to animate this if not there will be an
+    // unsightly jump.
+    this.animate(
+        [
+          {
+            [`--shimmer-circle-center-x`]: `inherit`,
+            [`--shimmer-circle-center-y`]: `inherit`,
+          },
+        ],
+        {
+          duration: CURSOR_STATE_INITIAL_FOCUS_DURATION,
+          easing: 'cubic-bezier(0.2, 0.0, 0, 1.0)',
+          fill: 'forwards',
+        });
   }
 
   private startWiggles() {

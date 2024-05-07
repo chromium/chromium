@@ -126,7 +126,7 @@ const CURSOR_STATE_CENTER_X_AMPLITUDE_PERCENT = '1.5%';
 const CURSOR_STATE_CENTER_Y_AMPLITUDE_PERCENT = '1.5%';
 // The time it takes in MS to transition from the steady state to the cursor
 // state.
-const CURSOR_STATE_INITIAL_FOCUS_DURATION = 1000;
+export const CURSOR_STATE_INITIAL_FOCUS_DURATION = 1000;
 // The time it takes in MS to transition from any non steady state to the cursor
 // state.
 const CURSOR_STATE_FOCUS_DURATION = 750;
@@ -265,16 +265,19 @@ export class OverlayShimmerElement extends PolymerElement {
   }
 
   async startAnimation() {
-    const centerXOffsetInt = parseInt(STEADY_STATE_CENTER_X_PERCENT_OFFSET);
-    const centerYOffsetInt = parseInt(STEADY_STATE_CENTER_Y_PERCENT_OFFSET);
-    // Create a circle for each colorHex defined.
-    this.circles = COLOR_HEXES.map((colorHex: string) => {
-      return {
-        colorHex,
-        steadyStateCenterX: 50 - centerXOffsetInt * (Math.random() * 2 - 1),
-        steadyStateCenterY: 50 - centerYOffsetInt * (Math.random() * 2 - 1),
-      };
-    });
+    // Set the invocation values.
+    this.style.setProperty(
+        '--shimmer-circle-radius', INVOCATION_RADIUS_PERCENT);
+    this.style.setProperty(
+        '--shimmer-circle-radius-amplitude',
+        INVOCATION_RADIUS_AMPLITUDE_PERCENT);
+    this.style.setProperty(
+        '--shimmer-circle-center-x-amplitude',
+        INVOCATION_CENTER_X_AMPLITUDE_PERCENT);
+    this.style.setProperty(
+        '--shimmer-circle-center-y-amplitude',
+        INVOCATION_CENTER_Y_AMPLITUDE_PERCENT);
+    this.style.opacity = INVOCATION_OPACITY_PERCENT;
 
     // Since each circles initial position is different, the
     // ShimmerCircleElement is responsible for animating to the steady state
@@ -288,37 +291,19 @@ export class OverlayShimmerElement extends PolymerElement {
     // Circle blur does not animate on invocation.
     this.style.setProperty('--shimmer-circle-blur', STEADY_STATE_CIRCLE_BLUR);
 
-    // Animate in the opacity
-    this.animate(
-        [
-          {
-            opacity: INVOCATION_OPACITY_PERCENT,
-          },
-          {
-            opacity: STEADY_STATE_OPACITY_PERCENT,
-          },
-        ],
-        {
-          duration: 150,
-          easing: 'linear',
-          fill: 'forwards',
-        });
-
-    // Set the invocation values.
-    this.style.setProperty(
-        '--shimmer-circle-radius', INVOCATION_RADIUS_PERCENT);
-    this.style.setProperty(
-        '--shimmer-circle-radius-amplitude',
-        INVOCATION_RADIUS_AMPLITUDE_PERCENT);
-    this.style.setProperty(
-        '--shimmer-circle-center-x-amplitude',
-        INVOCATION_CENTER_X_AMPLITUDE_PERCENT);
-    this.style.setProperty(
-        '--shimmer-circle-center-y-amplitude',
-        INVOCATION_CENTER_Y_AMPLITUDE_PERCENT);
-
-    // Allow the above changes to take effect more transitioning.
+    // Allow the above styles to take effect.
     requestAnimationFrame(() => {
+      const centerXOffsetInt = parseInt(STEADY_STATE_CENTER_X_PERCENT_OFFSET);
+      const centerYOffsetInt = parseInt(STEADY_STATE_CENTER_Y_PERCENT_OFFSET);
+      // Create a circle for each colorHex defined.
+      this.circles = COLOR_HEXES.map((colorHex: string) => {
+        return {
+          colorHex,
+          steadyStateCenterX: 50 - centerXOffsetInt * (Math.random() * 2 - 1),
+          steadyStateCenterY: 50 - centerYOffsetInt * (Math.random() * 2 - 1),
+        };
+      });
+
       // Animate to the steady state.
       this.transitionToSteadyState();
     });
@@ -393,11 +378,21 @@ export class OverlayShimmerElement extends PolymerElement {
   private async transitionToSteadyState() {
     this.isSteadyState = true;
     this.lastShimmerAnimator = ShimmerControlRequester.NONE;
-    this.lastAnimation = this.animate(
+    // Animate in the opacity
+    this.animate(
         [
           {
             opacity: STEADY_STATE_OPACITY_PERCENT,
-            [`--shimmer-circle-blur`]: STEADY_STATE_CIRCLE_BLUR,
+          },
+        ],
+        {
+          duration: 150,
+          easing: 'linear',
+          fill: 'forwards',
+        });
+    this.lastAnimation = this.animate(
+        [
+          {
             [`--shimmer-circle-radius`]: STEADY_STATE_RADIUS_PERCENT,
             [`--shimmer-circle-radius-amplitude`]:
                 STEADY_STATE_RADIUS_AMPLITUDE_PERCENT,
@@ -509,8 +504,17 @@ export class OverlayShimmerElement extends PolymerElement {
       this.isWiggling = true;
     }
 
-    this.isSteadyState = false;
+    if (this.isSteadyState) {
+      // On the initial transition from steady state to interaction state,
+      // each shimmer circle sets their center coordinates to 'inherit'. We
+      // need to specify a value to inherit from, if not the transition will be
+      // instant and look bad.
+      this.style.setProperty(`--shimmer-circle-center-x`, circleCenterX);
+      this.style.setProperty(`--shimmer-circle-center-y`, circleCenterY);
+    }
+
     this.lastShimmerAnimator = requester;
+    this.isSteadyState = false;
 
     // We only need to specify the final values we want. The browser is smart
     // enough to interpret the initial values as the values already set.
