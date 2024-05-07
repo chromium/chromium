@@ -1006,8 +1006,7 @@ BrowserView::BrowserView(std::unique_ptr<Browser> browser)
                           base::Unretained(this), CanFullscreen()));
   UpdateFullscreenAllowedFromPolicy(CanFullscreen());
 
-  WebUIContentsPreloadManager::GetInstance()->WarmupForBrowserContext(
-      GetProfile());
+  WebUIContentsPreloadManager::GetInstance()->WarmupForBrowser(browser_.get());
 }
 
 BrowserView::~BrowserView() {

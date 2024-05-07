@@ -143,6 +143,11 @@ export class TabOrganizationPageElement extends PolymerElement {
   // app.ts and reusing across both tab search and tab organization.
   private updateAvailableHeight_() {
     this.apiProxy_.getProfileData().then(({profileData}) => {
+      // In rare cases there is no browser window. I suspect this happens during
+      // browser shutdown.
+      if (!profileData.windows) {
+        return;
+      }
       // TODO(crbug.com/c/1349350): Determine why no active window is reported
       // in some cases on ChromeOS and Linux.
       const activeWindow = profileData.windows.find((t) => t.active);
