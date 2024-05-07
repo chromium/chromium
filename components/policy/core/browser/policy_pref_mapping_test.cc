@@ -27,6 +27,7 @@
 #include "base/values.h"
 #include "build/branding_buildflags.h"
 #include "build/build_config.h"
+#include "build/buildflag.h"
 #include "build/chromeos_buildflags.h"
 #include "components/policy/core/common/mock_configuration_policy_provider.h"
 #include "components/policy/core/common/schema.h"
@@ -718,6 +719,11 @@ void VerifyPolicyToPrefMappings(const base::FilePath& test_case_dir,
           continue;
         }
 
+#if BUILDFLAG(IS_WIN)
+        // TODO(b/333460350) Remove logs here added temporarily for debugging.
+        LOG(INFO) << policy_name << " # " << idx << " # " << i;
+#endif
+
         for (const auto& pref_case : pref_mapping->prefs()) {
           SCOPED_TRACE(::testing::Message() << "Pref: " << pref_case->pref());
           PrefService* prefs =
@@ -783,6 +789,11 @@ void VerifyPolicyToPrefMappings(const base::FilePath& test_case_dir,
       }
     }
   }
+
+#if BUILDFLAG(IS_WIN)
+  // TODO(b/333460350) Remove logs here added temporarily for debugging.
+  LOG(INFO) << "Done";
+#endif
 }
 
 }  // namespace policy
