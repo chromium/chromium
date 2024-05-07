@@ -1,4 +1,8 @@
 <style include="cr-shared-style">
+  .get-most-chrome {
+    display: flex;
+  }
+
   .get-most-chrome-item {
     display: flex;
     flex: 1;
@@ -10,20 +14,24 @@
 </style>
 
 <settings-section page-title="$i18n{getTheMostOutOfChrome}">
-  <cr-link-row class="hr" id="getTheMostOutOfChrome"
+  <cr-link-row id="getTheMostOutOfChrome"
       on-click="onGetTheMostOutOfChromeClick_"
-      role-description="$i18n{getTheMostOutOfChromePageButton}">
-    <template is="dom-repeat" items="[[entries_]]">
-      <div class="get-most-chrome-item">
-        <picture>
-          <source
-              srcset="chrome://settings/images/[[item.iconDark]]"
-              media="(prefers-color-scheme: dark)">
-          <img id="banner" alt=""
-              src="chrome://settings/images/[[item.iconLight]]">
-        </picture>
-        <div>[[item.label]]</div>
-      </div>
-    </template>
+      using-slotted-label
+      button-aria-description="$i18n{getTheMostOutOfChrome}"
+      role-description="$i18n{subpageArrowRoleDescription}">
+    <div slot="label" class="get-most-chrome">
+      <template is="dom-repeat" items="[[entries_]]">
+        <div class="get-most-chrome-item">
+          <picture>
+            <source
+                srcset="chrome://settings/images/[[item.iconDark]]"
+                media="(prefers-color-scheme: dark)">
+            <img id="banner" alt=""
+                src="chrome://settings/images/[[item.iconLight]]">
+          </picture>
+          <div>[[item.label]]</div>
+        </div>
+      </template>
+    </div>
   </cr-link-row>
 </settings-section>
