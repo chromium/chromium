@@ -269,6 +269,9 @@ void WifiP2PController::GetP2PGroupMetadata(
     std::optional<int> entry_network_id =
         entry_dict.FindInt(is_owner ? shill::kP2PGroupInfoNetworkIDProperty
                                     : shill::kP2PClientInfoNetworkIDProperty);
+    const std::string* entry_ipv4_address = entry_dict.FindString(
+        is_owner ? shill::kP2PGroupInfoIPv4AddressProperty
+                 : shill::kP2PClientInfoIPv4AddressProperty);
     if (!entry_shill_id) {
       NET_LOG(ERROR) << "Missing shill id in Wifi Direct group";
       continue;
@@ -290,12 +293,16 @@ void WifiP2PController::GetP2PGroupMetadata(
                               /*metadata=*/std::nullopt);
       return;
     }
+    if (!entry_ipv4_address) {
+      NET_LOG(ERROR) << "Missing ipv4 address property in Wifi Direct group";
+    }
 
     std::move(callback).Run(
         OperationResult::kSuccess,
-        WifiDirectConnectionMetadata{shill_id,
-                                     static_cast<uint32_t>(*entry_frequency),
-                                     *entry_network_id});
+        WifiDirectConnectionMetadata{
+            shill_id, static_cast<uint32_t>(*entry_frequency),
+            *entry_network_id,
+            entry_ipv4_address ? *entry_ipv4_address : std::string()});
     return;
   }
 

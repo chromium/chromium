@@ -79,13 +79,18 @@ interface WifiDirectManager {
   GetWifiP2PCapabilities() => (WifiP2PCapabilities capabilities);
 };
 
+struct WifiDirectConnectionProperties {
+  uint32 frequency;
+  string ipv4_address;
+};
+
 // WifiDirectConnection represents an active Wifi Direct group that was created
 // or connected to from WifiDirectManager. This interface should only be
 // accessed by Nearby share process and Lacros browser (for WiFi Direct
 // streaming).
 interface WifiDirectConnection {
-  // Returns the frequency of the Wifi Direct network group.
-  GetFrequency() => (uint32 frequency);
+  // Returns the properties of the Wifi Direct network group.
+  GetProperties() => (WifiDirectConnectionProperties properties);
 
   // Associate the TCP/UDP socket to the WiFi Direct group network so that
   // traffic can consistently be sent and received on the WiFi Direct

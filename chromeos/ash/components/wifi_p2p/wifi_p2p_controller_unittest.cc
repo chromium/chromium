@@ -177,6 +177,7 @@ TEST_F(WifiP2PControllerTest, CreateP2PGroupSuccess) {
   EXPECT_EQ(result_arguments.metadata->shill_id, 0);
   EXPECT_EQ(result_arguments.metadata->frequency, 1000u);
   EXPECT_EQ(result_arguments.metadata->network_id, 1);
+  EXPECT_EQ(result_arguments.metadata->ipv4_address, "100.0.0.1");
 }
 
 TEST_F(WifiP2PControllerTest, CreateP2PGroupFailure_InvalidArguments) {
@@ -248,6 +249,7 @@ TEST_F(WifiP2PControllerTest, ConnectToP2PGroupSuccess) {
   EXPECT_EQ(result_arguments.metadata->shill_id, 0);
   EXPECT_EQ(result_arguments.metadata->frequency, 5200u);
   EXPECT_EQ(result_arguments.metadata->network_id, 1);
+  EXPECT_EQ(result_arguments.metadata->ipv4_address, "100.0.0.1");
 }
 
 TEST_F(WifiP2PControllerTest, DisconnectFromP2PGroupSuccess) {
@@ -263,7 +265,7 @@ TEST_F(WifiP2PControllerTest, DisconnectFromP2PGroupSuccess) {
   EXPECT_EQ(result, WifiP2PController::OperationResult::kSuccess);
 }
 
-TEST_F(WifiP2PControllerTest, DisconnectFromP2PGroupSuccess_NotConnected) {
+TEST_F(WifiP2PControllerTest, DisconnectFromP2PGroupFailure_NotConnected) {
   Init();
 
   ShillManagerClient::Get()

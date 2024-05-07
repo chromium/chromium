@@ -47,6 +47,8 @@ class COMPONENT_EXPORT(CHROMEOS_ASH_COMPONENTS_WIFI_P2P) WifiP2PController
     uint32_t frequency;
     // Unique ID to identify the network in Patchpanel.
     int network_id;
+    // Ipv4 address for the Wifi direct network.
+    std::string ipv4_address;
   };
 
   struct WifiP2PCapabilities {

@@ -590,7 +590,8 @@ void FakeShillManagerClient::CreateP2PGroup(
                        ? *create_group_argument.passphrase
                        : "direct-passphrase")
               .Set(shill::kP2PGroupInfoFrequencyProperty, 1000)
-              .Set(shill::kP2PGroupInfoNetworkIDProperty, 1));
+              .Set(shill::kP2PGroupInfoNetworkIDProperty, 1)
+              .Set(shill::kP2PGroupInfoIPv4AddressProperty, "100.0.0.1"));
       SetManagerProperty(shill::kP2PGroupInfosProperty,
                          base::Value(std::move(group_owner_info)));
       base::SingleThreadTaskRunner::GetCurrentDefault()->PostTask(
@@ -640,7 +641,8 @@ void FakeShillManagerClient::ConnectToP2PGroup(
                    connect_group_argument.frequency
                        ? static_cast<int>(*connect_group_argument.frequency)
                        : 1000)
-              .Set(shill::kP2PClientInfoNetworkIDProperty, 1));
+              .Set(shill::kP2PClientInfoNetworkIDProperty, 1)
+              .Set(shill::kP2PClientInfoIPv4AddressProperty, "100.0.0.1"));
       SetManagerProperty(shill::kP2PClientInfosProperty,
                          base::Value(std::move(group_owner_info)));
       base::SingleThreadTaskRunner::GetCurrentDefault()->PostTask(

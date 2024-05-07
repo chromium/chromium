@@ -24,6 +24,12 @@ namespace ash::wifi_direct {
 using mojom::WifiDirectOperationResult;
 using mojom::WifiP2PCapabilitiesPtr;
 
+namespace {
+
+constexpr char kIpv4Address[] = "100.0.0.1";
+
+}  // namespace
+
 class WifiDirectManagerTest : public testing::Test {
  public:
   struct WifiP2POperationTestResult {
@@ -84,13 +90,12 @@ class WifiDirectManagerTest : public testing::Test {
     return result;
   }
 
-  uint32_t GetFrequency(
+  mojom::WifiDirectConnectionPropertiesPtr GetProperties(
       const mojo::Remote<mojom::WifiDirectConnection>& wifi_direct_connection) {
-    uint32_t frequency;
+    mojom::WifiDirectConnectionProperties properties;
     auto wifi_direct_connection_async_waiter =
         mojom::WifiDirectConnectionAsyncWaiter(wifi_direct_connection.get());
-    wifi_direct_connection_async_waiter.GetFrequency(&frequency);
-    return frequency;
+    return wifi_direct_connection_async_waiter.GetProperties();
   }
 
   bool AssociateSocket(
@@ -131,7 +136,9 @@ TEST_F(WifiDirectManagerTest, CreateWifiDirectGroupSuccess) {
   mojo::Remote<mojom::WifiDirectConnection> wifi_direct_connection(
       std::move(result_arguments.wifi_direct_connection));
   ExpectConnectionsCount(1);
-  EXPECT_EQ(1000u, GetFrequency(wifi_direct_connection));
+  auto properties = GetProperties(wifi_direct_connection);
+  EXPECT_EQ(1000u, properties->frequency);
+  EXPECT_EQ(kIpv4Address, properties->ipv4_address);
   EXPECT_TRUE(AssociateSocket(wifi_direct_connection));
 
   FakePatchPanelClient::Get()->set_tag_socket_success_for_testing(
@@ -169,7 +176,9 @@ TEST_F(WifiDirectManagerTest, ConnectToWifiDirectGroupSuccess) {
   mojo::Remote<mojom::WifiDirectConnection> wifi_direct_connection(
       std::move(result_arguments.wifi_direct_connection));
   ExpectConnectionsCount(1);
-  EXPECT_EQ(5200u, GetFrequency(wifi_direct_connection));
+  auto properties = GetProperties(wifi_direct_connection);
+  EXPECT_EQ(5200u, properties->frequency);
+  EXPECT_EQ(kIpv4Address, properties->ipv4_address);
   EXPECT_TRUE(AssociateSocket(wifi_direct_connection));
 
   FakePatchPanelClient::Get()->set_tag_socket_success_for_testing(
