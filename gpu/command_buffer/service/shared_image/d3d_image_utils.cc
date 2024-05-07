@@ -85,12 +85,11 @@ wgpu::SharedTextureMemory CreateDawnSharedTextureMemory(
 
   shared_texture_memory = device.ImportSharedTextureMemory(&desc);
 
-  if (!shared_texture_memory) {
+  if (!shared_texture_memory || shared_texture_memory.IsDeviceLost()) {
     LOG(ERROR) << "Failed to create shared texture memory";
     return nullptr;
   }
 
-  DCHECK(!shared_texture_memory.IsDeviceLost());
   return shared_texture_memory;
 }
 
@@ -106,12 +105,11 @@ wgpu::SharedTextureMemory CreateDawnSharedTextureMemory(
   desc.label = "SharedImageD3D_SharedTextureMemory_Texture2D";
   shared_texture_memory = device.ImportSharedTextureMemory(&desc);
 
-  if (!shared_texture_memory) {
+  if (!shared_texture_memory || shared_texture_memory.IsDeviceLost()) {
     LOG(ERROR) << "Failed to create shared texture memory";
     return nullptr;
   }
 
-  DCHECK(!shared_texture_memory.IsDeviceLost());
   return shared_texture_memory;
 }
 #endif  // BUILDFLAG(USE_DAWN)
