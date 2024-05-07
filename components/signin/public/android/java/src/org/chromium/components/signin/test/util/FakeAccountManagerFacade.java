@@ -35,14 +35,25 @@ import java.util.Set;
 import java.util.UUID;
 import java.util.stream.Collectors;
 
-/**
- * FakeAccountManagerFacade is an {@link AccountManagerFacade} stub intended
- * for testing.
- */
+/** FakeAccountManagerFacade is an {@link AccountManagerFacade} stub intended for testing. */
 public class FakeAccountManagerFacade implements AccountManagerFacade {
     /**
-     * All the account names starting with this prefix will be considered as
-     * a child account in {@link FakeAccountManagerFacade}.
+     * Can be closed to unblock updates to the list of accounts. See {@link
+     * FakeAccountManagerFacade#blockGetCoreAccountInfos}.
+     */
+    public class UpdateBlocker implements AutoCloseable {
+        /** Use {@link FakeAccountManagerFacade#blockGetCoreAccountInfos} to instantiate. */
+        private UpdateBlocker() {}
+
+        @Override
+        public void close() {
+            unblockGetCoreAccountInfos();
+        }
+    }
+
+    /**
+     * All the account names starting with this prefix will be considered as a child account in
+     * {@link FakeAccountManagerFacade}.
      */
     private static final String CHILD_ACCOUNT_NAME_PREFIX = "child.";
 
@@ -267,17 +278,17 @@ public class FakeAccountManagerFacade implements AccountManagerFacade {
     }
 
     /**
-     * Blocks callers from getting accounts through {@link #getCoreAccountInfos()}. After this
-     * method is called, subsequent calls to {@link #getCoreAccountInfos()} will return a
-     * non-fulfilled promise.
+     * Blocks updates to the account lists returned by {@link #getCoreAccountInfos}. After this
+     * method is called, subsequent calls to {@link #getCoreAccountInfos} will return the same
+     * promise that won't be updated until the returned {@link AutoCloseable} is closed.
      *
-     * <p>If populateCache is true then the blocking promise will be fulfilled with the current list
-     * of available accounts. Any account addition/removal later on will not be reflected in {@link
-     * #getCoreAccountInfos()}.
-     *
-     * <p>Use {@link #unblockGetCoreAccountInfos()} to unblock this promise.
+     * @param populateCache whether {@link #getCoreAccountInfos} should return a fulfilled promise.
+     *     If true, then the promise will be fulfilled with the current list of available accounts.
+     *     Any account addition/removal later on will not be reflected in {@link
+     *     #getCoreAccountInfos()}.
+     * @return {@link AutoCloseable} that should be closed to unblock account updates.
      */
-    public void blockGetCoreAccountInfos(boolean populateCache) {
+    public UpdateBlocker blockGetCoreAccountInfos(boolean populateCache) {
         ThreadUtils.runOnUiThreadBlocking(
                 () -> {
                     assert mBlockedGetCoreAccountInfosPromise == null;
@@ -286,6 +297,7 @@ public class FakeAccountManagerFacade implements AccountManagerFacade {
                         mBlockedGetCoreAccountInfosPromise.fulfill(getCoreAccountInfosInternal());
                     }
                 });
+        return new UpdateBlocker();
     }
 
     /**
@@ -293,7 +305,7 @@ public class FakeAccountManagerFacade implements AccountManagerFacade {
      * #blockGetCoreAccountInfos(boolean)} to unblock callers waiting for promises obtained from
      * {@link #getCoreAccountInfos()}.
      */
-    public void unblockGetCoreAccountInfos() {
+    private void unblockGetCoreAccountInfos() {
         ThreadUtils.runOnUiThreadBlocking(
                 () -> {
                     assert mBlockedGetCoreAccountInfosPromise != null;

@@ -223,13 +223,9 @@ public class AccountManagerTestRule implements TestRule {
     }
 
     /** See {@link FakeAccountManagerFacade#blockGetCoreAccountInfos(boolean)}. */
-    public void blockGetCoreAccountInfosUpdate(boolean populateCache) {
-        mFakeAccountManagerFacade.blockGetCoreAccountInfos(populateCache);
-    }
-
-    /** See {@link FakeAccountManagerFacade#unblockGetCoreAccountInfos()}. */
-    public void unblockGetCoreAccountInfos() {
-        mFakeAccountManagerFacade.unblockGetCoreAccountInfos();
+    public FakeAccountManagerFacade.UpdateBlocker blockGetCoreAccountInfosUpdate(
+            boolean populateCache) {
+        return mFakeAccountManagerFacade.blockGetCoreAccountInfos(populateCache);
     }
 
     /** Converts an account email to its corresponding CoreAccountInfo object. */

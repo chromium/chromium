@@ -373,12 +373,12 @@ public class SigninManagerIntegrationTest {
                             mTestAccount1.getEmail());
                 });
 
-        mSigninTestRule.blockGetCoreAccountInfosUpdate(true);
-        mSigninTestRule.removeAccount(mTestAccount1.getId());
         AccountInfo renamedAccount =
                 new AccountInfo.Builder("renamed@gmail.com", mTestAccount1.getGaiaId()).build();
-        mSigninTestRule.addAccount(renamedAccount);
-        mSigninTestRule.unblockGetCoreAccountInfos();
+        try (var ignored = mSigninTestRule.blockGetCoreAccountInfosUpdate(true)) {
+            mSigninTestRule.removeAccount(mTestAccount1.getId());
+            mSigninTestRule.addAccount(renamedAccount);
+        }
 
         TestThreadUtils.runOnUiThreadBlocking(
                 () -> {
@@ -432,14 +432,15 @@ public class SigninManagerIntegrationTest {
                             SigninTestRule.TEST_ACCOUNT_1.getEmail());
                 });
 
-        mSigninTestRule.blockGetCoreAccountInfosUpdate(true);
-        mSigninTestRule.removeAccount(SigninTestRule.TEST_ACCOUNT_1.getId());
         AccountInfo renamedAccount =
                 new AccountInfo.Builder(
                                 "renamed@gmail.com", SigninTestRule.TEST_ACCOUNT_1.getGaiaId())
                         .build();
-        mSigninTestRule.addAccount(renamedAccount);
-        mSigninTestRule.unblockGetCoreAccountInfos();
+
+        try (var ignored = mSigninTestRule.blockGetCoreAccountInfosUpdate(true)) {
+            mSigninTestRule.removeAccount(SigninTestRule.TEST_ACCOUNT_1.getId());
+            mSigninTestRule.addAccount(renamedAccount);
+        }
 
         TestThreadUtils.runOnUiThreadBlocking(
                 () -> {
