@@ -59,6 +59,8 @@ void RecordSavedTabGroupMetrics(SavedTabGroupModel* model) {
 
   base::UmaHistogramCounts10000("TabGroups.SavedTabGroupPinnedCount",
                                 pinned_group_count);
+  base::UmaHistogramCounts10000("TabGroups.SavedTabGroupUnpinnedCount",
+                                model->Count() - pinned_group_count);
 }
 
 void RecordTabCountMismatchOnConnect(size_t tabs_in_saved_group,
