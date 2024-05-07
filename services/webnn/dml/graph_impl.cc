@@ -2324,6 +2324,7 @@ base::expected<void, mojom::ErrorPtr> CreateOperatorNodeForResample2d(
   const NodeOutput* input = GetNodeOutputForOperand(
       id_to_node_output_map, resample2d->input_operand_id);
   const auto& input_tensor_desc = input->GetTensorDesc();
+  CHECK(kDmlFloatDataTypes.contains(input_tensor_desc.GetDataType()));
 
   uint64_t output_id = resample2d->output_operand_id;
   const auto& output_tensor_desc =

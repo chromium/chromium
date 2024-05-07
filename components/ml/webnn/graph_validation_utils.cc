@@ -1011,6 +1011,11 @@ base::expected<Operand, std::string> ValidateResample2dAndInferOutput(
         scales_or_sizes,
     base::span<const uint32_t> axes) {
   // Validate the input.
+  if (!IsFloatingPointType(input.data_type)) {
+    return base::unexpected(
+        "The data type of the input must be one of the floating point types.");
+  }
+
   const auto& input_shape = input.dimensions;
   if (input_shape.size() != 4) {
     return base::unexpected("The input must be a 4-D tensor.");

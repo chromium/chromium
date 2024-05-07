@@ -2012,9 +2012,7 @@ base::expected<void, mojom::ErrorPtr> GraphBuilder::AddOperationForResample2d(
   // WebNN's "resample2d" maps to variants of the "upsample" operator in CoreML:
   // https://apple.github.io/coremltools/source/coremltools.converters.mil.mil.ops.defs.html#coremltools.converters.mil.mil.ops.defs.iOS15.image_resizing.upsample_bilinear
   // https://apple.github.io/coremltools/source/coremltools.converters.mil.mil.ops.defs.html#coremltools.converters.mil.mil.ops.defs.iOS15.image_resizing.upsample_nearest_neighbor
-  if (!kFloatDataTypes.contains(input_operand_info.mil_data_type)) {
-    return NewNotSupportedError("Unsupported input datatype.");
-  }
+  CHECK(kFloatDataTypes.contains(input_operand_info.mil_data_type));
 
   const std::array<size_t, 2> supported_axes = {2, 3};
   if (!base::ranges::equal(operation.axes, supported_axes)) {

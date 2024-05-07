@@ -1533,6 +1533,8 @@ auto GraphBuilder::SerializeResample2d(const mojom::Resample2d& resample2d)
     -> base::expected<OperatorOffset, std::string> {
   // TODO: crbug.com/329543543 - `resample2d.scales` is dropped on the floor.
 
+  const mojom::Operand& input_operand = GetOperand(resample2d.input_operand_id);
+  CHECK(kFloatDataTypes.contains(input_operand.data_type));
   const std::array<uint32_t, 2> supported_axes = {1, 2};
   if (!base::ranges::equal(resample2d.axes, supported_axes)) {
     // TODO: crbug.com/329658123: Support axes of {0, 1} and {2, 3}.

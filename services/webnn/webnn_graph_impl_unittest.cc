@@ -5701,7 +5701,7 @@ TEST_F(WebNNGraphImplTest, Resample2dTest) {
   }
   {
     // Test resample2d with "Linear" mode, axes = [1, 2] and explicit scales
-    // = [2, 2].
+    // = [2, 2], input_data_type = float32.
     Resample2dTester{
         .input = {.type = mojom::Operand::DataType::kFloat32,
                   .dimensions = {1, 2, 4, 1}},
@@ -5709,6 +5709,20 @@ TEST_F(WebNNGraphImplTest, Resample2dTest) {
                        .scales = std::vector<float>{2, 2},
                        .axes = {1, 2}},
         .output = {.type = mojom::Operand::DataType::kFloat32,
+                   .dimensions = {1, 4, 8, 1}},
+        .expected = true}
+        .Test();
+  }
+  {
+    // Test resample2d with "Linear" mode, axes = [1, 2] and explicit scales
+    // = [2, 2], input_data_type = float16.
+    Resample2dTester{
+        .input = {.type = mojom::Operand::DataType::kFloat16,
+                  .dimensions = {1, 2, 4, 1}},
+        .attributes = {.mode = mojom::Resample2d::InterpolationMode::kLinear,
+                       .scales = std::vector<float>{2, 2},
+                       .axes = {1, 2}},
+        .output = {.type = mojom::Operand::DataType::kFloat16,
                    .dimensions = {1, 4, 8, 1}},
         .expected = true}
         .Test();
@@ -5732,6 +5746,15 @@ TEST_F(WebNNGraphImplTest, Resample2dTest) {
     Resample2dTester{.input = {.type = mojom::Operand::DataType::kFloat32,
                                .dimensions = {1, 1, 2, 4}},
                      .output = {.type = mojom::Operand::DataType::kFloat16,
+                                .dimensions = {1, 1, 4, 8}},
+                     .expected = false}
+        .Test();
+  }
+  {
+    // Test the invalid graph if the input is not floating point.
+    Resample2dTester{.input = {.type = mojom::Operand::DataType::kInt32,
+                               .dimensions = {1, 1, 2, 4}},
+                     .output = {.type = mojom::Operand::DataType::kInt32,
                                 .dimensions = {1, 1, 4, 8}},
                      .expected = false}
         .Test();
