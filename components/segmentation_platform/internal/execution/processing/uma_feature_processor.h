@@ -11,6 +11,8 @@
 #include "base/memory/raw_ptr.h"
 #include "base/memory/weak_ptr.h"
 #include "components/segmentation_platform/internal/database/signal_database.h"
+#include "components/segmentation_platform/internal/database/storage_service.h"
+#include "components/segmentation_platform/internal/database/ukm_database.h"
 #include "components/segmentation_platform/internal/execution/processing/feature_aggregator.h"
 #include "components/segmentation_platform/internal/execution/processing/query_processor.h"
 #include "components/segmentation_platform/public/proto/model_metadata.pb.h"
@@ -20,13 +22,13 @@ namespace segmentation_platform::processing {
 class FeatureProcessorState;
 struct Data;
 
-// A query processor that takes a list of UMAFeatures, fetches samples from the
-// SignalDatabase and computes an input tensor to be used for ML model
-// execution.
+// A query processor that takes a list of UMAFeatures, fetches UMA histogram and
+// user action samples from database and computes a result tensor.
 class UmaFeatureProcessor : public QueryProcessor {
  public:
   UmaFeatureProcessor(base::flat_map<FeatureIndex, Data>&& uma_features,
-                      SignalDatabase* signal_database,
+                      StorageService* storage_service,
+                      const std::string& profile_id,
                       FeatureAggregator* feature_aggregator,
                       const base::Time prediction_time,
                       const base::Time observation_time,
@@ -47,6 +49,9 @@ class UmaFeatureProcessor : public QueryProcessor {
                                  const base::Time end_time,
                                  std::vector<SignalDatabase::DbEntry> samples);
 
+  void ProcessUsingSqlDatabase(FeatureProcessorState& feature_processor_state);
+  void OnSqlQueriesRun(bool success, processing::IndexedTensors tensor);
+
   // Function for processing the next UMAFeature type of input for ML model.
   void ProcessOnGotAllSamples(
       FeatureProcessorState& feature_processor_state,
@@ -62,15 +67,18 @@ class UmaFeatureProcessor : public QueryProcessor {
       FeatureIndex index,
       const proto::UMAFeature& feature);
 
+  SignalDatabase* GetSignalDatabase();
+
+  UkmDatabase* GetUkmDatabase();
+
   // List of custom inputs to process into input tensors.
   base::flat_map<FeatureIndex, Data> uma_features_;
 
-  // Main signal database for user actions and histograms.
-  // This dangling raw_ptr occurred in:
-  // browser_tests: SegmentationPlatformTest.RunDefaultModel (flaky)
-  // https://ci.chromium.org/ui/p/chromium/builders/try/win-rel/175245/test-results?q=ExactID%3Aninja%3A%2F%2Fchrome%2Ftest%3Abrowser_tests%2FSegmentationPlatformTest.RunDefaultModel+VHash%3Abdbee181b3e0309b
-  // This also occurs while checking for dangling ptrs at exit.
-  const raw_ptr<SignalDatabase, LeakedDanglingUntriaged> signal_database_;
+  // Storage service to get user actions and histograms.
+  base::WeakPtr<StorageService> weak_storage_service_;
+
+  // The profile ID of current profile, required to query the `ukm_database_`.
+  const std::string profile_id_;
 
   // The FeatureAggregator aggregates all the data based on metadata and input.
   const raw_ptr<FeatureAggregator, FlakyDanglingUntriaged> feature_aggregator_;
@@ -82,6 +90,7 @@ class UmaFeatureProcessor : public QueryProcessor {
   const proto::SegmentId segment_id_;
   const bool is_output_;
   const bool is_batch_processing_enabled_;
+  const bool use_sql_database_;
 
   // Callback for sending the resulting indexed tensors to the feature list
   // processor.

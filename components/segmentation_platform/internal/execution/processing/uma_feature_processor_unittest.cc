@@ -20,19 +20,27 @@
 #include "components/leveldb_proto/public/proto_database_provider.h"
 #include "components/segmentation_platform/internal/database/signal_database.h"
 #include "components/segmentation_platform/internal/database/signal_database_impl.h"
+#include "components/segmentation_platform/internal/database/signal_storage_config.h"
+#include "components/segmentation_platform/internal/database/storage_service.h"
+#include "components/segmentation_platform/internal/database/ukm_database.h"
+#include "components/segmentation_platform/internal/database/ukm_database_backend.h"
+#include "components/segmentation_platform/internal/database/ukm_types.h"
 #include "components/segmentation_platform/internal/execution/processing/feature_aggregator_impl.h"
 #include "components/segmentation_platform/internal/execution/processing/feature_list_query_processor.h"
 #include "components/segmentation_platform/internal/execution/processing/feature_processor_state.h"
 #include "components/segmentation_platform/internal/execution/processing/query_processor.h"
 #include "components/segmentation_platform/internal/metadata/metadata_writer.h"
+#include "components/segmentation_platform/internal/mock_ukm_data_manager.h"
 #include "components/segmentation_platform/internal/proto/signal.pb.h"
 #include "components/segmentation_platform/public/features.h"
 #include "components/segmentation_platform/public/proto/model_metadata.pb.h"
 #include "feature_aggregator.h"
+#include "sql/database.h"
 #include "testing/gtest/include/gtest/gtest.h"
 
 namespace segmentation_platform::processing {
 
+constexpr char kProfileId[] = "1";
 constexpr std::array<int32_t, 2> kEnumHistorgram0And1{0, 1};
 
 constexpr MetadataWriter::UMAFeature kEnumRecorded4Times =
@@ -71,7 +79,8 @@ constexpr std::array<MetadataWriter::UMAFeature, 7> kUMAFeatures = {
     kValueHistogram,       kEnumHistogramNotRecorded,
     kUserActionNotRecorded};
 
-class UmaFeatureProcessorTest : public testing::Test {
+class UmaFeatureProcessorTest : public testing::Test,
+                                public ::testing::WithParamInterface<bool> {
  public:
   UmaFeatureProcessorTest() = default;
   ~UmaFeatureProcessorTest() override = default;
@@ -83,16 +92,30 @@ class UmaFeatureProcessorTest : public testing::Test {
     clock_.SetNow(base::Time::Now());
     ASSERT_TRUE(
         temp_dir_.CreateUniqueTempDirUnderPath(base::GetTempDirForTesting()));
+
     db_provider_ = std::make_unique<leveldb_proto::ProtoDatabaseProvider>(
         temp_dir_.GetPath(), true);
 
+    ukm_db_ = std::make_unique<UkmDatabaseBackend>(
+        base::FilePath(), /*in_memory=*/true,
+        task_env_.GetMainThreadTaskRunner());
+    base::RunLoop wait_for_sql_init;
+    ukm_db_->InitDatabase(base::BindOnce(
+        [](base::OnceClosure quit_closure, bool success) {
+          ASSERT_TRUE(success);
+          std::move(quit_closure).Run();
+        },
+        wait_for_sql_init.QuitClosure()));
+    wait_for_sql_init.Run();
+
     clock_.Advance(base::Days(1));
-    signal_database_ = std::make_unique<SignalDatabaseImpl>(
+    auto signal_database = std::make_unique<SignalDatabaseImpl>(
         db_provider_->GetDB<proto::SignalData>(
             leveldb_proto::ProtoDbType::SIGNAL_DATABASE,
             temp_dir_.GetPath().Append(FILE_PATH_LITERAL("signaldb")),
             task_env_.GetMainThreadTaskRunner()),
         &clock_, task_env_.GetMainThreadTaskRunner());
+    signal_database_ = signal_database.get();
 
     base::RunLoop wait_for_init;
     signal_database_->Initialize(base::BindOnce(
@@ -102,10 +125,22 @@ class UmaFeatureProcessorTest : public testing::Test {
         },
         wait_for_init.QuitClosure()));
     wait_for_init.Run();
+
+    mock_ukm_data_manager_ = std::make_unique<MockUkmDataManager>();
+    EXPECT_CALL(*mock_ukm_data_manager_, HasUkmDatabase())
+        .WillRepeatedly(testing::Return(true));
+    EXPECT_CALL(*mock_ukm_data_manager_, GetUkmDatabase())
+        .WillRepeatedly(testing::Return(ukm_db_.get()));
+
+    storage_service_ = std::make_unique<StorageService>(
+        nullptr, std::move(signal_database), nullptr, nullptr, nullptr,
+        mock_ukm_data_manager_.get());
   }
 
   void TearDown() override {
-    signal_database_.reset();
+    signal_database_ = nullptr;
+    storage_service_.reset();
+    mock_ukm_data_manager_.reset();
     signal_db_.reset();
     db_provider_.reset();
     task_env_.RunUntilIdle();
@@ -113,54 +148,44 @@ class UmaFeatureProcessorTest : public testing::Test {
     Test::TearDown();
   }
 
-  void AddSignalsToDb() {
-    signal_database_->WriteSample(proto::SignalType::HISTOGRAM_ENUM,
-                                  base::HashMetricName("EnumRecorded4Times"), 0,
+  void WriteSample(proto::SignalType type, const char* name, int value) {
+    signal_database_->WriteSample(type, base::HashMetricName(name), value,
                                   base::DoNothing());
-    signal_database_->WriteSample(proto::SignalType::HISTOGRAM_VALUE,
-                                  base::HashMetricName("EnumRecorded4Times"), 0,
-                                  base::DoNothing());
-    signal_database_->WriteSample(proto::SignalType::HISTOGRAM_ENUM,
-                                  base::HashMetricName("EnumRecorded4Times"), 0,
-                                  base::DoNothing());
-    signal_database_->WriteSample(proto::SignalType::HISTOGRAM_VALUE,
-                                  base::HashMetricName("EnumRecorded4Times"), 0,
-                                  base::DoNothing());
-    signal_database_->WriteSample(proto::SignalType::HISTOGRAM_ENUM,
-                                  base::HashMetricName("EnumRecorded4Times"), 1,
-                                  base::DoNothing());
-    signal_database_->WriteSample(proto::SignalType::HISTOGRAM_VALUE,
-                                  base::HashMetricName("EnumRecorded4Times"), 1,
-                                  base::DoNothing());
-    signal_database_->WriteSample(proto::SignalType::HISTOGRAM_ENUM,
-                                  base::HashMetricName("EnumRecorded4Times"), 2,
-                                  base::DoNothing());
-    signal_database_->WriteSample(proto::SignalType::HISTOGRAM_VALUE,
-                                  base::HashMetricName("EnumRecorded4Times"), 2,
-                                  base::DoNothing());
-    signal_database_->WriteSample(proto::SignalType::USER_ACTION,
-                                  base::HashMetricName("UserActionTwice"),
-                                  std::nullopt, base::DoNothing());
-    signal_database_->WriteSample(proto::SignalType::USER_ACTION,
-                                  base::HashMetricName("UserActionTwice"),
-                                  std::nullopt, base::DoNothing());
-    signal_database_->WriteSample(proto::SignalType::USER_ACTION,
-                                  base::HashMetricName("UserActionOnce"),
-                                  std::nullopt, base::DoNothing());
-    signal_database_->WriteSample(proto::SignalType::HISTOGRAM_VALUE,
-                                  base::HashMetricName("ValueHistogram"), 34,
-                                  base::DoNothing());
-    signal_database_->WriteSample(proto::SignalType::HISTOGRAM_VALUE,
-                                  base::HashMetricName("ValueHistogram"), 85,
-                                  base::DoNothing());
-    signal_database_->WriteSample(
-        proto::SignalType::HISTOGRAM_VALUE,
-        base::HashMetricName("ValueHistogram"), 1800,
-        base::BindOnce([](bool success) { EXPECT_TRUE(success); }));
+    ukm_db_->AddUmaMetric(
+        kProfileId, UmaMetricEntry{.type = type,
+                                   .name_hash = base::HashMetricName(name),
+                                   .time = clock_.Now(),
+                                   .value = value});
   }
 
-  void CreateProcessor(const proto::SegmentationModelMetadata& metadata,
-                       const std::vector<float> expected) {
+  void AddSignalsToDb() {
+    WriteSample(proto::SignalType::HISTOGRAM_ENUM, ("EnumRecorded4Times"), 0);
+    WriteSample(proto::SignalType::HISTOGRAM_VALUE, ("EnumRecorded4Times"), 0);
+    WriteSample(proto::SignalType::HISTOGRAM_ENUM, ("EnumRecorded4Times"), 0);
+    WriteSample(proto::SignalType::HISTOGRAM_VALUE, ("EnumRecorded4Times"), 0);
+    WriteSample(proto::SignalType::HISTOGRAM_ENUM, ("EnumRecorded4Times"), 1);
+    WriteSample(proto::SignalType::HISTOGRAM_VALUE, ("EnumRecorded4Times"), 1);
+    WriteSample(proto::SignalType::HISTOGRAM_ENUM, ("EnumRecorded4Times"), 2);
+    WriteSample(proto::SignalType::HISTOGRAM_VALUE, ("EnumRecorded4Times"), 2);
+    WriteSample(proto::SignalType::USER_ACTION, ("UserActionTwice"), 0);
+    WriteSample(proto::SignalType::USER_ACTION, ("UserActionTwice"), 0);
+    WriteSample(proto::SignalType::USER_ACTION, ("UserActionOnce"), 0);
+    WriteSample(proto::SignalType::HISTOGRAM_VALUE, ("ValueHistogram"), 34);
+    WriteSample(proto::SignalType::HISTOGRAM_VALUE, ("ValueHistogram"), 85);
+    WriteSample(proto::SignalType::HISTOGRAM_VALUE, ("ValueHistogram"), 1800);
+  }
+
+  void ExpectProcessResult(bool use_sql_database,
+                           const proto::SegmentationModelMetadata& metadata,
+                           const std::vector<float> expected) {
+    base::test::ScopedFeatureList feature_list;
+    if (use_sql_database) {
+      feature_list.InitAndEnableFeature(
+          features::kSegmentationPlatformUmaFromSqlDb);
+    } else {
+      feature_list.InitAndDisableFeature(
+          features::kSegmentationPlatformUmaFromSqlDb);
+    }
     base::flat_map<QueryProcessor::FeatureIndex, Data> uma_features;
     for (int i = 0; i < metadata.input_features_size(); ++i) {
       ASSERT_TRUE(metadata.input_features(i).has_uma_feature());
@@ -168,7 +193,7 @@ class UmaFeatureProcessorTest : public testing::Test {
     }
     auto feature_aggregator = std::make_unique<FeatureAggregatorImpl>();
     auto uma_processor = std::make_unique<UmaFeatureProcessor>(
-        std::move(uma_features), signal_database_.get(),
+        std::move(uma_features), storage_service_.get(), kProfileId,
         feature_aggregator.get(), clock_.Now(), base::Time(), base::Days(1),
         proto::SegmentId::CROSS_DEVICE_USER_SEGMENT, false);
 
@@ -202,15 +227,22 @@ class UmaFeatureProcessorTest : public testing::Test {
   base::SimpleTestClock clock_;
   std::unique_ptr<leveldb_proto::ProtoDatabaseProvider> db_provider_;
   std::unique_ptr<leveldb_proto::ProtoDatabase<proto::SignalData>> signal_db_;
-  std::unique_ptr<SignalDatabase> signal_database_;
+  std::unique_ptr<StorageService> storage_service_;
+  std::unique_ptr<MockUkmDataManager> mock_ukm_data_manager_;
+  raw_ptr<SignalDatabase> signal_database_;
+  std::unique_ptr<UkmDatabase> ukm_db_;
 };
 
-TEST_F(UmaFeatureProcessorTest, ProcessEnumFeature) {
+INSTANTIATE_TEST_SUITE_P(UseSqlDatabase,
+                         UmaFeatureProcessorTest,
+                         ::testing::Bool());
+
+TEST_P(UmaFeatureProcessorTest, ProcessEnumFeature) {
   AddSignalsToDb();
   proto::SegmentationModelMetadata metadata;
   MetadataWriter writer(&metadata);
   writer.AddUmaFeatures(&kEnumRecorded4Times, 1);
-  CreateProcessor(metadata, {3});
+  ExpectProcessResult(GetParam(), metadata, {3});
 }
 
 constexpr std::array<int32_t, 1> kEnumHistorgram4{4};
@@ -220,43 +252,43 @@ constexpr MetadataWriter::UMAFeature kEnumValueNotRecorded =
                                                   kEnumHistorgram4.data(),
                                                   kEnumHistorgram4.size());
 
-TEST_F(UmaFeatureProcessorTest, ProcessEnumWithUnrecordedValues) {
+TEST_P(UmaFeatureProcessorTest, ProcessEnumWithUnrecordedValues) {
   AddSignalsToDb();
   proto::SegmentationModelMetadata metadata;
   MetadataWriter writer(&metadata);
   writer.AddUmaFeatures(&kEnumValueNotRecorded, 1);
-  CreateProcessor(metadata, {0});
+  ExpectProcessResult(GetParam(), metadata, {0});
 }
 
-TEST_F(UmaFeatureProcessorTest, ProcessUserAction) {
+TEST_P(UmaFeatureProcessorTest, ProcessUserAction) {
   AddSignalsToDb();
   proto::SegmentationModelMetadata metadata;
   MetadataWriter writer(&metadata);
   writer.AddUmaFeatures(&kUserActionTwice, 1);
-  CreateProcessor(metadata, {2});
+  ExpectProcessResult(GetParam(), metadata, {2});
 }
 
-TEST_F(UmaFeatureProcessorTest, ProcessValue) {
+TEST_P(UmaFeatureProcessorTest, ProcessValue) {
   AddSignalsToDb();
   proto::SegmentationModelMetadata metadata;
   MetadataWriter writer(&metadata);
   writer.AddUmaFeatures(&kValueHistogram, 1);
-  CreateProcessor(metadata, {1919});
+  ExpectProcessResult(GetParam(), metadata, {1919});
 }
 
-TEST_F(UmaFeatureProcessorTest, ProcessWithNoData) {
+TEST_P(UmaFeatureProcessorTest, ProcessWithNoData) {
   proto::SegmentationModelMetadata metadata;
   MetadataWriter writer(&metadata);
   writer.AddUmaFeatures(kUMAFeatures.data(), kUMAFeatures.size());
-  CreateProcessor(metadata, {0, 0, 0, 0, 0, 0, 0});
+  ExpectProcessResult(GetParam(), metadata, {0, 0, 0, 0, 0, 0, 0});
 }
 
-TEST_F(UmaFeatureProcessorTest, ProcessWithDatabase) {
+TEST_P(UmaFeatureProcessorTest, ProcessWithDatabase) {
   AddSignalsToDb();
   proto::SegmentationModelMetadata metadata;
   MetadataWriter writer(&metadata);
   writer.AddUmaFeatures(kUMAFeatures.data(), kUMAFeatures.size());
-  CreateProcessor(metadata, {3, 4, 2, 1, 1919, 0, 0});
+  ExpectProcessResult(GetParam(), metadata, {3, 4, 2, 1, 1919, 0, 0});
 }
 
 }  // namespace segmentation_platform::processing

@@ -12,6 +12,7 @@
 #include "base/containers/flat_set.h"
 #include "base/functional/callback.h"
 #include "base/memory/raw_ptr.h"
+#include "base/memory/weak_ptr.h"
 #include "components/leveldb_proto/public/proto_database.h"
 #include "components/segmentation_platform/internal/database/cached_result_provider.h"
 #include "components/segmentation_platform/internal/database/cached_result_writer.h"
@@ -77,6 +78,7 @@ class StorageService {
       std::vector<std::unique_ptr<Config>> configs,
       ModelProviderFactory* model_provider_factory,
       PrefService* profile_prefs,
+      const std::string& profile_id,
       ModelManager::SegmentationModelUpdatedCallback model_updated_callback);
 
   // For tests:
@@ -93,6 +95,7 @@ class StorageService {
       std::vector<std::unique_ptr<Config>> configs,
       ModelProviderFactory* model_provider_factory,
       PrefService* profile_prefs,
+      const std::string& profile_id,
       ModelManager::SegmentationModelUpdatedCallback model_updated_callback);
 
   // For tests:
@@ -147,6 +150,8 @@ class StorageService {
 
   UkmDataManager* ukm_data_manager() { return ukm_data_manager_; }
 
+  const std::string& profile_id() const { return profile_id_; }
+
   ClientResultPrefs* client_result_prefs() {
     return client_result_prefs_.get();
   }
@@ -159,6 +164,11 @@ class StorageService {
       std::unique_ptr<CachedResultProvider> provider) {
     cached_result_provider_ = std::move(provider);
   }
+
+  // Get a WeakPtr to the service. Feature processors are destroyed after
+  // service sometimes due to posted tasks. WeakPtr is useful to refer to the
+  // service.
+  base::WeakPtr<StorageService> GetWeakPtr();
 
  private:
   void OnSegmentInfoDatabaseInitialized(bool success);
@@ -191,6 +201,9 @@ class StorageService {
   // description of UkmDataManager to know the lifetime of the objects usable
   // from the manager.
   raw_ptr<UkmDataManager> ukm_data_manager_;
+
+  // The profile ID of the current profile, used to query the UKM database.
+  const std::string profile_id_;
 
   // Database maintenance.
   std::unique_ptr<DatabaseMaintenanceImpl> database_maintenance_;

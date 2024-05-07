@@ -128,7 +128,7 @@ void SegmentationPlatformServiceTestBase::InitPlatform(
       std::move(segment_db), std::move(signal_db),
       std::move(segment_storage_config_db), task_runner_, &test_clock_,
       ukm_data_manager, std::move(configs), model_provider_factory.get(),
-      &pref_service_, base::DoNothing());
+      &pref_service_, "profile_id", base::DoNothing());
 
   auto params = std::make_unique<SegmentationPlatformServiceImpl::InitParams>();
   params->profile_id = kTestProfileId;

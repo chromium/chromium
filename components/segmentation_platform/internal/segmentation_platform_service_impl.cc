@@ -82,7 +82,7 @@ SegmentationPlatformServiceImpl::SegmentationPlatformServiceImpl(
         init_params->storage_dir, init_params->db_provider,
         init_params->task_runner, init_params->clock,
         init_params->ukm_data_manager, std::move(init_params->configs),
-        model_provider_factory_.get(), profile_prefs_,
+        model_provider_factory_.get(), profile_prefs_, init_params->profile_id,
         base::BindRepeating(
             &SegmentationPlatformServiceImpl::OnSegmentationModelUpdated,
             weak_ptr_factory_.GetWeakPtr()));

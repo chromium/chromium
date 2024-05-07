@@ -144,7 +144,7 @@ void FeatureListQueryProcessor::CreateProcessors(
     switch (type.first) {
       case Data::DataType::INPUT_UMA:
         feature_processor_state.AppendProcessor(
-            GetUmaFeatureProcessor(std::move(type.second),
+            GetUmaFeatureProcessor(ukm_manager, std::move(type.second),
                                    feature_processor_state, false),
             true);
         break;
@@ -173,7 +173,7 @@ void FeatureListQueryProcessor::CreateProcessors(
         break;
       case Data::DataType::OUTPUT_UMA:
         feature_processor_state.AppendProcessor(
-            GetUmaFeatureProcessor(std::move(type.second),
+            GetUmaFeatureProcessor(ukm_manager, std::move(type.second),
                                    feature_processor_state, true),
             false);
         break;
@@ -222,11 +222,12 @@ void FeatureListQueryProcessor::OnFeatureBatchProcessed(
 
 std::unique_ptr<UmaFeatureProcessor>
 FeatureListQueryProcessor::GetUmaFeatureProcessor(
+    UkmDataManager* ukm_data_manager,
     base::flat_map<FeatureIndex, Data>&& uma_features,
     FeatureProcessorState& feature_processor_state,
     bool is_output) {
   return std::make_unique<UmaFeatureProcessor>(
-      std::move(uma_features), storage_service_->signal_database(),
+      std::move(uma_features), storage_service_, storage_service_->profile_id(),
       feature_aggregator_.get(), feature_processor_state.prediction_time(),
       feature_processor_state.observation_time(),
       feature_processor_state.bucket_duration(),

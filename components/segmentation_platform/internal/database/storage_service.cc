@@ -36,6 +36,7 @@ StorageService::StorageService(
     std::vector<std::unique_ptr<Config>> configs,
     ModelProviderFactory* model_provider_factory,
     PrefService* profile_prefs,
+    const std::string& profile_id,
     ModelManager::SegmentationModelUpdatedCallback model_updated_callback)
     : StorageService(
           db_provider->GetDB<proto::SegmentInfo>(
@@ -56,6 +57,7 @@ StorageService::StorageService(
           std::move(configs),
           model_provider_factory,
           profile_prefs,
+          profile_id,
           model_updated_callback) {}
 
 StorageService::StorageService(
@@ -70,6 +72,7 @@ StorageService::StorageService(
     std::vector<std::unique_ptr<Config>> configs,
     ModelProviderFactory* model_provider_factory,
     PrefService* profile_prefs,
+    const std::string& profile_id,
     ModelManager::SegmentationModelUpdatedCallback model_updated_callback)
     : config_holder_(std::make_unique<ConfigHolder>(std::move(configs))),
       client_result_prefs_(std::make_unique<ClientResultPrefs>(profile_prefs)),
@@ -96,6 +99,7 @@ StorageService::StorageService(
                                              segment_info_database_.get(),
                                              model_updated_callback)),
       ukm_data_manager_(ukm_data_manager),
+      profile_id_(profile_id),
       database_maintenance_(std::make_unique<DatabaseMaintenanceImpl>(
           config_holder_->all_segment_ids(),
           clock,
@@ -197,6 +201,10 @@ void StorageService::ExecuteDatabaseMaintenanceTasks(bool is_startup) {
   // This should be invoked at least after a short amount of time has passed
   // since initialization happened.
   database_maintenance_->ExecuteMaintenanceTasks();
+}
+
+base::WeakPtr<StorageService> StorageService::GetWeakPtr() {
+  return weak_ptr_factory_.GetWeakPtr();
 }
 
 }  // namespace segmentation_platform

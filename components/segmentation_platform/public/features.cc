@@ -150,4 +150,8 @@ BASE_FEATURE(kSegmentationPlatformComposePromotion,
              "SegmentationPlatformComposePromotion",
              base::FEATURE_DISABLED_BY_DEFAULT);
 
+BASE_FEATURE(kSegmentationPlatformUmaFromSqlDb,
+             "SegmentationPlatformUmaFromSqlDb",
+             base::FEATURE_DISABLED_BY_DEFAULT);
+
 }  // namespace segmentation_platform::features
