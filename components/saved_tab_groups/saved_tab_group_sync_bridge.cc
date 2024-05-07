@@ -23,6 +23,7 @@
 #include "components/saved_tab_groups/saved_tab_group.h"
 #include "components/saved_tab_groups/saved_tab_group_model.h"
 #include "components/saved_tab_groups/saved_tab_group_tab.h"
+#include "components/sync/base/deletion_origin.h"
 #include "components/sync/base/model_type.h"
 #include "components/sync/model/entity_change.h"
 #include "components/sync/model/metadata_batch.h"
@@ -340,6 +341,7 @@ void SavedTabGroupSyncBridge::RemoveEntitySpecific(
     return;
 
   change_processor()->Delete(guid.AsLowercaseString(),
+                             syncer::DeletionOrigin::Unspecified(),
                              write_batch->GetMetadataChangeList());
 }
 
