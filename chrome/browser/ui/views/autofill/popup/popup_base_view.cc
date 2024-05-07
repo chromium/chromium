@@ -301,7 +301,10 @@ void PopupBaseView::DoHide() {
     // the form control itself.
     NotifyAccessibilityEvent(ax::mojom::Event::kMenuPopupEnd, true);
     NotifyAccessibilityEvent(ax::mojom::Event::kMenuEnd, true);
-    GetViewAccessibility().EndPopupFocusOverride();
+
+    if (!CanActivate()) {
+      GetViewAccessibility().EndPopupFocusOverride();
+    }
 
     // Also fire an accessible focus event on what currently has focus,
     // typically the widget associated with this popup.
@@ -343,13 +346,18 @@ void PopupBaseView::NotifyAXSelection(views::View& selected_view) {
 
     is_ax_menu_start_event_fired_ = true;
   }
-  selected_view.GetViewAccessibility().SetPopupFocusOverride();
+  // Activatable popup's controls (e.g. the search bar input) get real focus, so
+  // that there is no need to use `Set/EndPopupFocusOverride()`.
+  if (!CanActivate()) {
+    selected_view.GetViewAccessibility().SetPopupFocusOverride();
+  }
 #if DCHECK_IS_ON()
   constexpr auto kDerivedClasses = base::MakeFixedFlatSet<std::string_view>(
       {"PopupSuggestionView", "PopupPasswordSuggestionView", "PopupFooterView",
        "PopupSeparatorView", "PopupWarningView", "PopupBaseView",
        "PasswordGenerationPopupViewViews::GeneratedPasswordBox", "PopupRowView",
-       "PopupRowContentView", "EditPasswordRow", "MdTextButton"});
+       "PopupRowContentView", "EditPasswordRow", "MdTextButton",
+       "ViewForTesting"});
   DCHECK(kDerivedClasses.contains(selected_view.GetClassName()))
       << "If you add a new derived class from AutofillPopupRowView, add it "
          "here and to onSelection(evt) in "

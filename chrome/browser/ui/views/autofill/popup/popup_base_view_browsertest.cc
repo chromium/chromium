@@ -21,6 +21,8 @@
 #include "content/public/test/browser_test.h"
 #include "testing/gmock/include/gmock/gmock.h"
 #include "testing/gtest/include/gtest/gtest.h"
+#include "ui/accessibility/platform/ax_platform_node.h"
+#include "ui/base/metadata/metadata_impl_macros.h"
 #include "ui/events/event_utils.h"
 #include "ui/gfx/geometry/point.h"
 #include "ui/gfx/geometry/point_conversions.h"
@@ -28,6 +30,7 @@
 #include "ui/gfx/geometry/rect_f.h"
 #include "ui/gfx/geometry/vector2d.h"
 #include "ui/views/test/views_test_base.h"
+#include "ui/views/view.h"
 #include "ui/views/widget/widget.h"
 
 namespace autofill {
@@ -39,7 +42,9 @@ using testing::ReturnRef;
 
 class MockAutofillPopupViewDelegate : public AutofillPopupViewDelegate {
  public:
-  MockAutofillPopupViewDelegate() = default;
+  MockAutofillPopupViewDelegate() {
+    EXPECT_CALL(*this, element_bounds()).WillRepeatedly(ReturnRef(bounds_));
+  }
   ~MockAutofillPopupViewDelegate() override = default;
 
   MOCK_METHOD(void, Hide, (SuggestionHidingReason), (override));
@@ -58,6 +63,7 @@ class MockAutofillPopupViewDelegate : public AutofillPopupViewDelegate {
   }
 
  private:
+  gfx::RectF bounds_;
   base::WeakPtrFactory<MockAutofillPopupViewDelegate> weak_ptr_factory_{this};
 };
 
@@ -83,19 +89,24 @@ class PopupBaseViewBrowsertest : public InProcessBrowserTest {
     EXPECT_CALL(mock_delegate_, GetWebContents())
         .WillRepeatedly(Return(web_contents));
     EXPECT_CALL(mock_delegate_, ViewDestroyed());
-
-    view_ = new PopupBaseView(mock_delegate_.GetWeakPtr(),
-                              views::Widget::GetWidgetForNativeWindow(
-                                  browser()->window()->GetNativeWindow()));
   }
 
   void TearDownOnMainThread() override { view_ = nullptr; }
 
-  void ShowView() { view_->DoShow(); }
+  void ShowView(views::Widget::InitParams::Activatable activatable =
+                    views::Widget::InitParams::Activatable::kDefault) {
+    view_ = new PopupBaseView(mock_delegate_.GetWeakPtr(),
+                              views::Widget::GetWidgetForNativeWindow(
+                                  browser()->window()->GetNativeWindow()),
+                              activatable);
+    view_->DoShow();
+  }
 
  protected:
   testing::NiceMock<MockAutofillPopupViewDelegate> mock_delegate_;
   raw_ptr<PopupBaseView> view_ = nullptr;
+
+  PopupBaseView* view() { return view_; }
 
  private:
   test::AutofillBrowserTestEnvironment autofill_test_environment_;
@@ -120,6 +131,39 @@ IN_PROC_BROWSER_TEST_F(PopupBaseViewBrowsertest, CorrectBoundsTest) {
   expected_point.Offset(6, -13);
   EXPECT_EQ(expected_point, display_point);
 }
+
+// In this test on Linux and ChromeOS, `GetPopupFocusOverride()` always returns
+// `nullptr` as `gfx::NativeViewAccessible` is not created for every view there.
+// Disabling this test doesn't reduce coverage because the functionality is not
+// platform specific, but rathen the test check method is.
+#if !BUILDFLAG(IS_LINUX) && !BUILDFLAG(IS_CHROMEOS_LACROS) && \
+    !BUILDFLAG(IS_CHROMEOS)
+class ViewForTesting : public views::View {
+  METADATA_HEADER(ViewForTesting, views::View)
+};
+BEGIN_METADATA(ViewForTesting)
+END_METADATA
+
+IN_PROC_BROWSER_TEST_F(PopupBaseViewBrowsertest,
+                       FocusOverrideIsSetForNonActivatableWidget) {
+  ShowView(views::Widget::InitParams::Activatable::kNo);
+
+  ViewForTesting item;
+  view()->NotifyAXSelection(item);
+
+  EXPECT_NE(ui::AXPlatformNode::GetPopupFocusOverride(), nullptr);
+}
+IN_PROC_BROWSER_TEST_F(PopupBaseViewBrowsertest,
+                       FocusOverrideIsNotSetForActivatableWidget) {
+  ShowView(views::Widget::InitParams::Activatable::kYes);
+
+  ViewForTesting item;
+  view()->NotifyAXSelection(item);
+
+  EXPECT_EQ(ui::AXPlatformNode::GetPopupFocusOverride(), nullptr);
+}
+#endif  // BUILDFLAG(IS_LINUX) && !BUILDFLAG(IS_CHROMEOS_LACROS) &&
+        // !BUILDFLAG(IS_CHROMEOS)
 
 struct ProminentPopupTestParams {
   bool is_feature_enabled;
