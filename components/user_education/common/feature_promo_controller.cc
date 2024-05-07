@@ -843,6 +843,16 @@ std::unique_ptr<HelpBubble> FeaturePromoControllerCommon::ShowPromoBubbleImpl(
   }
 
   switch (spec.promo_type()) {
+    case FeaturePromoSpecification::PromoType::kToast: {
+      // Rotating toast promos require a "got it" button.
+      if (current_promo_ &&
+          current_promo_->promo_type() ==
+              FeaturePromoSpecification::PromoType::kRotating) {
+        bubble_params.buttons = CreateRotatingToastButtons(*spec.feature());
+        bubble_params.focus_on_show_hint = false;
+      }
+      break;
+    }
     case FeaturePromoSpecification::PromoType::kSnooze:
       CHECK(spec.feature());
       bubble_params.buttons =
@@ -865,7 +875,6 @@ std::unique_ptr<HelpBubble> FeaturePromoControllerCommon::ShowPromoBubbleImpl(
           spec.custom_action_dismiss_string_id());
       break;
     case FeaturePromoSpecification::PromoType::kUnspecified:
-    case FeaturePromoSpecification::PromoType::kToast:
     case FeaturePromoSpecification::PromoType::kLegacy:
       break;
     case FeaturePromoSpecification::PromoType::kRotating:
@@ -1022,6 +1031,14 @@ void FeaturePromoControllerCommon::OnTutorialAborted(
     current_promo_->OnContinuedPromoEnded(/*completed_successfully=*/false);
     current_promo_.reset();
   }
+}
+
+std::vector<HelpBubbleButtonParams>
+FeaturePromoControllerCommon::CreateRotatingToastButtons(
+    const base::Feature& feature) {
+  // For now, use the same "got it" button as a snooze IPH that has run out of
+  // snoozes.
+  return CreateSnoozeButtons(feature, /*can_snooze=*/false);
 }
 
 std::vector<HelpBubbleButtonParams>

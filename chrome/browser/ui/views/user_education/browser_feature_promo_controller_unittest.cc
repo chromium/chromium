@@ -1645,6 +1645,29 @@ TEST_F(BrowserFeaturePromoControllerRotatingPromoTest, OnePromo) {
                   VerifyPromoData(2, 0, FeaturePromoClosedReason::kDismiss));
 }
 
+TEST_F(BrowserFeaturePromoControllerRotatingPromoTest, ToastHasDismissButton) {
+  RegisterRotatingPromo(
+      FeaturePromoSpecification::CreateForToastPromo(
+          kRotatingPromoIPHFeature, kToolbarAppMenuButtonElementId,
+          IDS_CHROME_TIP, IDS_CANCEL,
+          FeaturePromoSpecification::AcceleratorInfo()),
+      FeaturePromoSpecification::CreateForSnoozePromo(
+          kRotatingPromoIPHFeature, kToolbarAppMenuButtonElementId, IDS_OK));
+
+  // Show the rotating promo three times, verifying that it wraps around to the,
+  // first promo after the second.
+  RunTestSequence(
+      // Show the promo and press the default button to close it.
+      MaybeShowPromo({kRotatingPromoIPHFeature}),
+      PressButton(HelpBubbleView::kDefaultButtonIdForTesting),
+      WaitForHide(HelpBubbleView::kHelpBubbleElementIdForTesting),
+      // Ensure the next promo shows.
+      MaybeShowPromo({kRotatingPromoIPHFeature}),
+      CheckViewProperty(HelpBubbleView::kBodyTextIdForTesting,
+                        &views::Label::GetText,
+                        l10n_util::GetStringUTF16(IDS_OK)));
+}
+
 TEST_F(BrowserFeaturePromoControllerRotatingPromoTest, TwoPromosRotating) {
   int call_count = 0;
   RegisterRotatingPromo(

@@ -494,6 +494,11 @@ class FeaturePromoControllerCommon : public FeaturePromoController {
   void OnCustomAction(const base::Feature* iph_feature,
                       FeaturePromoSpecification::CustomActionCallback callback);
 
+  // Create appropriate buttons for a toast promo that's part of a rotating
+  // promo.
+  std::vector<HelpBubbleButtonParams> CreateRotatingToastButtons(
+      const base::Feature& feature);
+
   // Create appropriate buttons for a snoozeable promo on the current platform.
   std::vector<HelpBubbleButtonParams> CreateSnoozeButtons(
       const base::Feature& feature,
