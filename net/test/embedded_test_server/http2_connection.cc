@@ -139,7 +139,8 @@ class Http2Connection::ResponseDelegate : public HttpResponseDelegate {
         std::make_unique<DataFrameSource>(connection_, stream_id_);
     data_frame_ = data_frame.get();
     connection_->adapter()->SubmitResponse(
-        stream_id_, GenerateHeaders(status, headers), std::move(data_frame));
+        stream_id_, GenerateHeaders(status, headers), std::move(data_frame),
+        /*end_stream=*/false);
     connection_->SendIfNotProcessing();
   }
 
@@ -189,7 +190,8 @@ class Http2Connection::ResponseDelegate : public HttpResponseDelegate {
     data_frame->AddChunk(contents);
     data_frame->set_last_frame(true);
     connection_->adapter()->SubmitResponse(
-        stream_id_, GenerateHeaders(status, headers), std::move(data_frame));
+        stream_id_, GenerateHeaders(status, headers), std::move(data_frame),
+        /*end_stream=*/false);
     connection_->SendIfNotProcessing();
   }
   base::WeakPtr<ResponseDelegate> GetWeakPtr() {
