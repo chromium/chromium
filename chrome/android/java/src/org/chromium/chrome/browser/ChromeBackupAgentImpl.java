@@ -30,6 +30,7 @@ import org.chromium.chrome.browser.firstrun.FirstRunStatus;
 import org.chromium.chrome.browser.flags.ChromeFeatureList;
 import org.chromium.chrome.browser.init.AsyncInitTaskRunner;
 import org.chromium.chrome.browser.init.ChromeBrowserInitializer;
+import org.chromium.chrome.browser.metrics.UmaSessionStats;
 import org.chromium.chrome.browser.preferences.ChromePreferenceKeys;
 import org.chromium.chrome.browser.profiles.Profile;
 import org.chromium.chrome.browser.profiles.ProfileManager;
@@ -546,6 +547,14 @@ public class ChromeBackupAgentImpl extends ChromeBackupAgent.Impl {
                 editor.putBoolean(
                         name.substring(prefixLength), bytesToBoolean(backupValues.get(i)));
             }
+        }
+
+        // TODO(crbug.com/40075135): Restore the metrics related preferences and update the upload
+        // states as early as possible, i.e. before the native prefs restoration/getting accounts.
+        // Refresh the metrics service state after related preferences are restored, to allow the
+        // experiment metrics to be sent if there's any.
+        if (SigninFeatureMap.isEnabled(SigninFeatures.UPDATE_METRICS_SERVICES_STATE_IN_RESTORE)) {
+            UmaSessionStats.updateMetricsServiceState();
         }
 
         if (syncAccountInfo != null) {
