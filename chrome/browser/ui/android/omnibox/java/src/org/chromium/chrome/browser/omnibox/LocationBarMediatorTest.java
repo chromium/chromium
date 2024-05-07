@@ -91,6 +91,8 @@ import org.chromium.chrome.test.util.browser.signin.AccountManagerTestRule;
 import org.chromium.components.browser_ui.styles.ChromeColors;
 import org.chromium.components.embedder_support.util.UrlUtilities;
 import org.chromium.components.embedder_support.util.UrlUtilitiesJni;
+import org.chromium.components.omnibox.AutocompleteMatchBuilder;
+import org.chromium.components.omnibox.OmniboxSuggestionType;
 import org.chromium.components.search_engines.TemplateUrlService;
 import org.chromium.components.signin.identitymanager.IdentityManager;
 import org.chromium.content_public.browser.LoadUrlParams;
@@ -347,10 +349,16 @@ public class LocationBarMediatorTest {
         doReturn(PreloadPagesState.NO_PRELOADING)
                 .when(mPreloadPagesSettingsJni)
                 .getState(eq(profile));
-        mMediator.onSuggestionsChanged("text", true);
+        mMediator.onSuggestionsChanged(
+                AutocompleteMatchBuilder.searchWithType(OmniboxSuggestionType.SEARCH_SUGGEST)
+                        .setDisplayText("text")
+                        .setIsSearch(true)
+                        .setAllowedToBeDefaultMatch(true)
+                        .build());
         verify(mPrerenderJni, never())
                 .prerenderMaybe(
                         anyLong(), any(), anyString(), anyString(), anyLong(), any(), any());
+        verify(mStatusCoordinator).onDefaultMatchClassified(true);
 
         doReturn(PreloadPagesState.STANDARD_PRELOADING)
                 .when(mPreloadPagesSettingsJni)
@@ -365,7 +373,13 @@ public class LocationBarMediatorTest {
         mMediator.setIsUrlBarFocusedWithoutAnimationsForTesting(true);
         mMediator.onUrlFocusChange(true);
 
-        mMediator.onSuggestionsChanged("textWithAutocomplete", true);
+        mMediator.onSuggestionsChanged(
+                AutocompleteMatchBuilder.searchWithType(OmniboxSuggestionType.SEARCH_SUGGEST)
+                        .setDisplayText("text")
+                        .setInlineAutocompletion("textWithAutocomplete")
+                        .setIsSearch(false)
+                        .setAllowedToBeDefaultMatch(true)
+                        .build());
         verify(mPrerenderJni)
                 .prerenderMaybe(
                         123L,
@@ -375,7 +389,18 @@ public class LocationBarMediatorTest {
                         456L,
                         profile,
                         mTab);
+        verify(mStatusCoordinator).onDefaultMatchClassified(false);
         verify(mUrlCoordinator).setAutocompleteText("text", "textWithAutocomplete");
+    }
+
+    @Test
+    public void testOnSuggestionsChanged_nullMatch() {
+        doReturn("text").when(mUrlCoordinator).getTextWithoutAutocomplete();
+        doReturn(true).when(mUrlCoordinator).shouldAutocomplete();
+
+        mMediator.onSuggestionsChanged(null);
+        verify(mStatusCoordinator).onDefaultMatchClassified(true);
+        verify(mUrlCoordinator).setAutocompleteText("text", "");
     }
 
     @Test

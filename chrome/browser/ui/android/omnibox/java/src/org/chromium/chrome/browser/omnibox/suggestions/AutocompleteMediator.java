@@ -838,7 +838,6 @@ class AutocompleteMediator
         String inlineAutocompleteText =
                 defaultMatch != null ? defaultMatch.getInlineAutocompletion() : "";
 
-        final List<AutocompleteMatch> newSuggestions = autocompleteResult.getSuggestionsList();
         String userText = mUrlBarEditingTextProvider.getTextWithoutAutocomplete();
         mUrlTextAfterSuggestionsReceived = userText + inlineAutocompleteText;
 
@@ -847,13 +846,8 @@ class AutocompleteMediator
             var viewInfoList =
                     mDropdownViewInfoListBuilder.buildDropdownViewInfoList(autocompleteResult);
             mDropdownViewInfoListManager.setSourceViewInfoList(viewInfoList);
-            boolean defaultMatchIsSearch = true;
-            if (!TextUtils.isEmpty(mUrlBarEditingTextProvider.getTextWithoutAutocomplete())
-                    && !newSuggestions.isEmpty()) {
-                defaultMatchIsSearch = newSuggestions.get(0).isSearchSuggestion();
-            }
             if (mIsActive) {
-                mDelegate.onSuggestionsChanged(inlineAutocompleteText, defaultMatchIsSearch);
+                mDelegate.onSuggestionsChanged(defaultMatch);
             }
         }
 

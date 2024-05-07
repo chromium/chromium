@@ -50,6 +50,7 @@ import org.chromium.chrome.browser.tabmodel.TabModelSelector;
 import org.chromium.chrome.browser.tabmodel.TabWindowManager;
 import org.chromium.components.browser_ui.styles.ChromeColors;
 import org.chromium.components.browser_ui.widget.gesture.BackPressHandler;
+import org.chromium.components.omnibox.AutocompleteMatch;
 import org.chromium.components.omnibox.action.OmniboxActionDelegate;
 import org.chromium.components.search_engines.TemplateUrlService;
 import org.chromium.ui.KeyboardVisibilityDelegate;
@@ -494,8 +495,9 @@ public class LocationBarCoordinator
     }
 
     @Override
-    public void onSuggestionsChanged(String autocompleteText, boolean defaultMatchIsSearch) {
-        mLocationBarMediator.onSuggestionsChanged(autocompleteText, defaultMatchIsSearch);
+    public void onSuggestionsChanged(@Nullable AutocompleteMatch defaultMatch) {
+        assert defaultMatch == null || defaultMatch.allowedToBeDefaultMatch();
+        mLocationBarMediator.onSuggestionsChanged(defaultMatch);
     }
 
     @Override

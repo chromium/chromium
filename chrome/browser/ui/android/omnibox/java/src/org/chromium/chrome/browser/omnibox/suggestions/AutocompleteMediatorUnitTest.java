@@ -638,20 +638,20 @@ public class AutocompleteMediatorUnitTest {
         mMediator.onNativeInitialized();
         mMediator.onOmniboxSessionStateChange(true);
         mMediator.onSuggestionsReceived(AutocompleteResult.fromCache(mSuggestionsList, null), true);
-        verify(mAutocompleteDelegate).onSuggestionsChanged("inline_autocomplete", true);
+        verify(mAutocompleteDelegate).onSuggestionsChanged(any());
 
         // Ensure duplicate requests are not suppressed, to preserve the
         // relationship between Native and Java AutocompleteResult objects.
-        mSuggestionsList.remove(0);
-        mSuggestionsList.add(
-                0,
+        AutocompleteMatch defaultMatch =
                 AutocompleteMatchBuilder.searchWithType(OmniboxSuggestionType.SEARCH_SUGGEST)
                         .setDisplayText("Suggestion1")
                         .setInlineAutocompletion("inline_autocomplete2")
                         .setAllowedToBeDefaultMatch(true)
-                        .build());
+                        .build();
+        mSuggestionsList.remove(0);
+        mSuggestionsList.add(0, defaultMatch);
         mMediator.onSuggestionsReceived(AutocompleteResult.fromCache(mSuggestionsList, null), true);
-        verify(mAutocompleteDelegate).onSuggestionsChanged("inline_autocomplete", true);
+        verify(mAutocompleteDelegate).onSuggestionsChanged(defaultMatch);
     }
 
     @Test
