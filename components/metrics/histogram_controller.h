@@ -9,6 +9,7 @@
 #include <string>
 #include <vector>
 
+#include "base/component_export.h"
 #include "base/memory/raw_ptr.h"
 #include "base/memory/singleton.h"
 #include "base/memory/unsafe_shared_memory_region.h"
@@ -25,7 +26,7 @@ class HistogramSubscriber;
 // HistogramController is used on the browser process to collect histogram data.
 // Only one thread (typically the UI thread) is allowed to interact with the
 // HistogramController object.
-class HistogramController {
+class COMPONENT_EXPORT(METRICS) HistogramController {
  public:
   // Returns the HistogramController object for the current process, or null if
   // none.
