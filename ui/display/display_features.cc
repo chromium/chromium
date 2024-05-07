@@ -44,7 +44,7 @@ BASE_FEATURE(kEnableExternalDisplayHDR10Mode,
 // from plane color space to output color space.
 BASE_FEATURE(kCtmColorManagement,
              "CtmColorManagement",
-             base::FEATURE_DISABLED_BY_DEFAULT);
+             base::FEATURE_ENABLED_BY_DEFAULT);
 #endif
 
 // This features allows listing all display modes of external displays in the
