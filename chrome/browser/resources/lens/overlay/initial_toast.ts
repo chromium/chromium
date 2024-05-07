@@ -8,10 +8,6 @@ import {PolymerElement} from '//resources/polymer/v3_0/polymer/polymer_bundled.m
 
 import {getTemplate} from './initial_toast.html.js';
 
-const MESSAGE_FADE_IN_TIME_MS = 300;
-const SCRIM_FADE_IN_TIME_MS = 200;
-const FADE_OUT_TIME_MS = 10000;
-
 export interface InitialToastElement {
   $: {
     initialToast: HTMLElement,
@@ -33,19 +29,25 @@ export class InitialToastElement extends PolymerElement {
 
   static get properties() {
     return {
-      scrimVisible: {
-        type: Boolean,
-        value: false,
-        reflectToAttribute: true,
-      },
-
       messageVisible: {
         type: Boolean,
         value: false,
         reflectToAttribute: true,
       },
 
-      shouldHideElements: {
+      scrimVisible: {
+        type: Boolean,
+        value: false,
+        reflectToAttribute: true,
+      },
+
+      shouldHideMessage: {
+        type: Boolean,
+        value: false,
+        reflectToAttribute: true,
+      },
+
+      shouldHideScrim: {
         type: Boolean,
         value: false,
         reflectToAttribute: true,
@@ -59,26 +61,32 @@ export class InitialToastElement extends PolymerElement {
   // Whether or not the toast scrim is visible.
   private scrimVisible: boolean;
 
-  // Whether or not to prevent rendering the scrim and message. This is
-  // required because transitioning the opacity to 0 does not always
-  // completely fade out the toast.
-  private shouldHideElements: boolean;
+  // Whether or not to prevent rendering the message. This uses CSS to
+  // set the visibility to 0 which is required because transitioning the
+  // opacity to 0 does not always completely fade out the toast.
+  private shouldHideMessage: boolean;
+
+  // Whether or not to prevent rendering the scrim. This uses CSS to
+  // set the visibility to 0 which is required because transitioning the
+  // opacity to 0 does not always completely fade out the toast.
+  private shouldHideScrim: boolean;
 
   override connectedCallback() {
     super.connectedCallback();
-    setTimeout(() => {
+    requestAnimationFrame(() => {
       this.messageVisible = true;
-    }, MESSAGE_FADE_IN_TIME_MS);
-    setTimeout(() => {
       this.scrimVisible = true;
-    }, SCRIM_FADE_IN_TIME_MS);
-    setTimeout(this.triggerHideAnimation.bind(this), FADE_OUT_TIME_MS);
+    });
   }
 
-  triggerHideAnimation() {
+  triggerHideMessageAnimation() {
     this.messageVisible = false;
+    this.shouldHideMessage = true;
+  }
+
+  triggerHideScrimAnimation() {
     this.scrimVisible = false;
-    this.shouldHideElements = true;
+    this.shouldHideScrim = true;
   }
 }
 

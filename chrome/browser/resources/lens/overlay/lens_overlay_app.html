@@ -42,6 +42,7 @@
   }
 </style>
 <div class="app-container" on-selection-overlay-clicked="closeInitialToast"
+    on-pointer-released="hideInitialToastGradient"
     on-screenshot-rendered="onScreenshotRendered">
   <div id="backgroundScrim" on-click="onBackgroundScrimClicked"
       hidden$="[[!isImageRendered]]"></div>

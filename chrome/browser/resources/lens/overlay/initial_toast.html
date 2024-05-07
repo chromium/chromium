@@ -18,6 +18,12 @@
     transform: translateX(-50%) scaleX(100%);
   }
 
+  :host([should-hide-message]) #initialToastContainer {
+    transition: visibility 0s;
+    transition-delay: 200ms;
+    visibility: hidden;
+  }
+
   #initialToastScrim {
     background: linear-gradient(180deg, rgba(37, 25, 14, 0.64) 0px,
         rgba(37, 25, 14, 0.448) 104px, rgba(37, 25, 14, 0) 100%);
@@ -34,20 +40,24 @@
     opacity: 100%;
   }
 
+  :host([should-hide-scrim]) #scrimContainer {
+    transition: visibility 0s;
+    transition-delay: 300ms;
+    visibility: hidden;
+  }
+
   .toast-text {
     color: white;
     font-size: 14px;
     line-height: 20px;
     vertical-align: middle;
   }
-
-  :host([should-hide-elements]) {
-    transition: visibility 0s;
-    transition-delay: 300ms;
-    visibility: hidden;
-  }
 </style>
-<div id="initialToastScrim"></div>
-<div id="initialToast">
-  <span class="toast-text">$i18n{initialToastMessage}</span>
+<div id="scrimContainer">
+  <div id="initialToastScrim"></div>
+</div>
+<div id="initialToastContainer">
+  <div id="initialToast">
+    <span class="toast-text">$i18n{initialToastMessage}</span>
+  </div>
 </div>

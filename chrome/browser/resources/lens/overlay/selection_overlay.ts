@@ -384,6 +384,10 @@ export class SelectionOverlayElement extends SelectionOverlayElementBase {
     this.draggingRespondent = DragFeature.NONE;
     this.removeDragListeners();
     this.resetCursor();
+    this.dispatchEvent(new CustomEvent('pointer-released', {
+      bubbles: true,
+      composed: true,
+    }));
   }
 
   private onPointerMove(event: PointerEvent) {

@@ -117,7 +117,11 @@ export class LensOverlayAppElement extends PolymerElement {
   }
 
   private closeInitialToast() {
-    this.$.initialToast.triggerHideAnimation();
+    this.$.initialToast.triggerHideMessageAnimation();
+  }
+
+  private hideInitialToastGradient() {
+    this.$.initialToast.triggerHideScrimAnimation();
   }
 
   private onScreenshotRendered() {
