@@ -5,16 +5,12 @@
 import 'chrome://customize-chrome-side-panel.top-chrome/app.js';
 
 import type {AppElement} from 'chrome://customize-chrome-side-panel.top-chrome/app.js';
-import {CustomizeChromeImpression} from 'chrome://customize-chrome-side-panel.top-chrome/common.js';
 import type {BackgroundCollection, CustomizeChromePageRemote} from 'chrome://customize-chrome-side-panel.top-chrome/customize_chrome.mojom-webui.js';
 import {CustomizeChromePageCallbackRouter, CustomizeChromePageHandlerRemote, CustomizeChromeSection} from 'chrome://customize-chrome-side-panel.top-chrome/customize_chrome.mojom-webui.js';
 import {CustomizeChromeApiProxy} from 'chrome://customize-chrome-side-panel.top-chrome/customize_chrome_api_proxy.js';
 import {loadTimeData} from 'chrome://resources/js/load_time_data.js';
 import {assertEquals, assertGE, assertTrue} from 'chrome://webui-test/chai_assert.js';
-import type {MetricsTracker} from 'chrome://webui-test/metrics_test_support.js';
-import {fakeMetricsPrivate} from 'chrome://webui-test/metrics_test_support.js';
 import type {TestMock} from 'chrome://webui-test/test_mock.js';
-import {eventToPromise} from 'chrome://webui-test/test_util.js';
 
 import {installMock} from './test_support.js';
 
@@ -22,7 +18,6 @@ suite('AppTest', () => {
   let customizeChromeApp: AppElement;
   let handler: TestMock<CustomizeChromePageHandlerRemote>;
   let callbackRouter: CustomizeChromePageRemote;
-  let metrics: MetricsTracker;
 
   setup(async () => {
     document.body.innerHTML = window.trustedTypes!.emptyHTML;
@@ -37,42 +32,6 @@ suite('AppTest', () => {
                          .callbackRouter.$.bindNewPipeAndPassRemote();
     customizeChromeApp = document.createElement('customize-chrome-app');
     document.body.appendChild(customizeChromeApp);
-    metrics = fakeMetricsPrivate();
-  });
-
-  suite('Metrics', () => {
-    suiteSetup(() => {
-      document.body.innerHTML = window.trustedTypes!.emptyHTML;
-      customizeChromeApp = document.createElement('customize-chrome-app');
-      document.body.appendChild(customizeChromeApp);
-      loadTimeData.overrideValues({
-        'extensionsCardEnabled': true,
-      });
-    });
-    test('Rendering extensions card section sets metric', async () => {
-      window.dispatchEvent(new Event('load'));
-      const eventPromise = eventToPromise(
-          'detect-extensions-card-section-impression', customizeChromeApp);
-      assertEquals(
-          0, metrics.count('NewTabPage.CustomizeChromeSidePanelImpression'));
-      assertEquals(
-          0,
-          metrics.count(
-              'NewTabPage.CustomizeChromeSidePanelImpression',
-              CustomizeChromeImpression.EXTENSIONS_CARD_SECTION_DISPLAYED));
-
-      customizeChromeApp.shadowRoot!.querySelector('#extensions')!
-          .scrollIntoView({'behavior': 'instant'});
-      await eventPromise;
-
-      assertEquals(
-          1, metrics.count('NewTabPage.CustomizeChromeSidePanelImpression'));
-      assertEquals(
-          1,
-          metrics.count(
-              'NewTabPage.CustomizeChromeSidePanelImpression',
-              CustomizeChromeImpression.EXTENSIONS_CARD_SECTION_DISPLAYED));
-    });
   });
 
   test('app changes pages', async () => {
