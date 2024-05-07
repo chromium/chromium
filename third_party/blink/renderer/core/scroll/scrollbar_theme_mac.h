@@ -70,7 +70,6 @@ class CORE_EXPORT ScrollbarThemeMac : public ScrollbarTheme {
   int ScrollbarThickness(float scale_from_dip,
                          EScrollbarWidth scrollbar_width) const override;
   bool UsesOverlayScrollbars() const override;
-  void UpdateScrollbarOverlayColorTheme(const Scrollbar&) override;
 
   void SetNewPainterForScrollbar(Scrollbar&);
 

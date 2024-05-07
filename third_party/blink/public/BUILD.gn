@@ -236,7 +236,6 @@ source_set("blink_headers") {
     "platform/web_runtime_features.h",
     "platform/web_scoped_page_pauser.h",
     "platform/web_scroll_anchor_data.h",
-    "platform/web_scrollbar_overlay_color_theme.h",
     "platform/web_security_origin.h",
     "platform/web_set_sink_id_callbacks.h",
     "platform/web_source_buffer.h",

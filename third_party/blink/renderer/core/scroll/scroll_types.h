@@ -169,11 +169,6 @@ enum ScrollbarPart {
   kAllParts = 0xffffffff
 };
 
-enum ScrollbarOverlayColorTheme {
-  kScrollbarOverlayColorThemeDark,
-  kScrollbarOverlayColorThemeLight
-};
-
 // The result of an attempt to scroll. If didScroll is true, then
 // unusedScrollDelta gives the amount of the scroll delta that was not consumed
 // by scrolling.

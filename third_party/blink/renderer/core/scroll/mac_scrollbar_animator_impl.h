@@ -38,7 +38,6 @@ class CORE_EXPORT MacScrollbarImplV2
 
   // MacScrollbar:
   void SetEnabled(bool) final {}
-  void SetOverlayColorTheme(ScrollbarOverlayColorTheme) final {}
   float GetKnobAlpha() final;
   float GetTrackAlpha() final;
   int GetTrackBoxWidth() final;

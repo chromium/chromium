@@ -2788,14 +2788,14 @@ TEST_F(VisualViewportSimTest, PreferredOverlayScrollbarColorTheme) {
 
   const VisualViewport& visual_viewport =
       WebView().GetPage()->GetVisualViewport();
-  EXPECT_EQ(ScrollbarOverlayColorTheme::kScrollbarOverlayColorThemeLight,
-            visual_viewport.GetScrollbarOverlayColorTheme());
+  EXPECT_EQ(mojom::blink::ColorScheme::kDark,
+            visual_viewport.GetOverlayScrollbarColorScheme());
 
   color_scheme_helper.SetPreferredColorScheme(
       mojom::blink::PreferredColorScheme::kLight);
   Compositor().BeginFrame();
-  EXPECT_EQ(ScrollbarOverlayColorTheme::kScrollbarOverlayColorThemeDark,
-            visual_viewport.GetScrollbarOverlayColorTheme());
+  EXPECT_EQ(mojom::blink::ColorScheme::kLight,
+            visual_viewport.GetOverlayScrollbarColorScheme());
 }
 
 }  // namespace

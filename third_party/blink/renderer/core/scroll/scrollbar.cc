@@ -33,7 +33,6 @@
 #include "third_party/blink/public/common/input/web_mouse_event.h"
 #include "third_party/blink/public/common/input/web_pointer_event.h"
 #include "third_party/blink/public/common/input/web_pointer_properties.h"
-#include "third_party/blink/public/platform/web_scrollbar_overlay_color_theme.h"
 #include "third_party/blink/renderer/core/dom/element.h"
 #include "third_party/blink/renderer/core/frame/local_frame.h"
 #include "third_party/blink/renderer/core/layout/layout_box.h"
@@ -117,11 +116,6 @@ void Scrollbar::SetFrameRect(const gfx::Rect& frame_rect) {
   SetNeedsPaintInvalidation(kAllParts);
   if (scrollable_area_)
     scrollable_area_->ScrollbarFrameRectChanged();
-}
-
-ScrollbarOverlayColorTheme Scrollbar::GetScrollbarOverlayColorTheme() const {
-  return scrollable_area_ ? scrollable_area_->GetScrollbarOverlayColorTheme()
-                          : kScrollbarOverlayColorThemeDark;
 }
 
 bool Scrollbar::HasTickmarks() const {
@@ -918,22 +912,9 @@ bool Scrollbar::IsOpaque() const {
 }
 
 mojom::blink::ColorScheme Scrollbar::UsedColorScheme() const {
-  if (IsOverlayScrollbar()) {
-    // TODO(crbug.com/337859209): Remove the overlay scrollbar color theme
-    // conversion and directly return a mojom ColorScheme.
-    // Dark overlay color theme means to use a dark colored thumb which is
-    // achieved by  using a light mojo color scheme (light background with dark
-    // foreground objects), and vice-versa for the light colored overlay theme.
-    return GetScrollbarOverlayColorTheme() == kScrollbarOverlayColorThemeDark
-               ? mojom::blink::ColorScheme::kLight
-               : mojom::blink::ColorScheme::kDark;
-  }
-  return scrollable_area_->UsedColorSchemeScrollbars();
+  return IsOverlayScrollbar()
+             ? scrollable_area_->GetOverlayScrollbarColorScheme()
+             : scrollable_area_->UsedColorSchemeScrollbars();
 }
-
-STATIC_ASSERT_ENUM(kWebScrollbarOverlayColorThemeDark,
-                   kScrollbarOverlayColorThemeDark);
-STATIC_ASSERT_ENUM(kWebScrollbarOverlayColorThemeLight,
-                   kScrollbarOverlayColorThemeLight);
 
 }  // namespace blink

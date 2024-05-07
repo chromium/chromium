@@ -485,7 +485,7 @@ TEST_P(ScrollbarsTest, CustomScrollbarsCauseLayoutOnExistenceChange) {
   ASSERT_FALSE(layout_viewport->HorizontalScrollbar());
 }
 
-TEST_P(ScrollbarsTest, TransparentBackgroundUsesDarkOverlayColorTheme) {
+TEST_P(ScrollbarsTest, TransparentBackgroundUsesLightOverlayColorScheme) {
   // This test is specifically checking the behavior when overlay scrollbars
   // are enabled.
   ENABLE_OVERLAY_SCROLLBARS(true);
@@ -506,8 +506,8 @@ TEST_P(ScrollbarsTest, TransparentBackgroundUsesDarkOverlayColorTheme) {
 
   ScrollableArea* layout_viewport = GetDocument().View()->LayoutViewport();
 
-  EXPECT_EQ(kScrollbarOverlayColorThemeDark,
-            layout_viewport->GetScrollbarOverlayColorTheme());
+  EXPECT_EQ(mojom::blink::ColorScheme::kLight,
+            layout_viewport->GetOverlayScrollbarColorScheme());
 }
 
 TEST_P(ScrollbarsTest, BodyBackgroundChangesOverlayColorTheme) {
@@ -528,15 +528,15 @@ TEST_P(ScrollbarsTest, BodyBackgroundChangesOverlayColorTheme) {
 
   ScrollableArea* layout_viewport = GetDocument().View()->LayoutViewport();
 
-  EXPECT_EQ(kScrollbarOverlayColorThemeDark,
-            layout_viewport->GetScrollbarOverlayColorTheme());
+  EXPECT_EQ(mojom::blink::ColorScheme::kLight,
+            layout_viewport->GetOverlayScrollbarColorScheme());
 
   MainFrame().ExecuteScriptAndReturnValue(
       WebScriptSource("document.body.style.backgroundColor = 'black';"));
 
   Compositor().BeginFrame();
-  EXPECT_EQ(kScrollbarOverlayColorThemeLight,
-            layout_viewport->GetScrollbarOverlayColorTheme());
+  EXPECT_EQ(mojom::blink::ColorScheme::kDark,
+            layout_viewport->GetOverlayScrollbarColorScheme());
 }
 
 // Ensure overlay scrollbar change to display:none correctly.
@@ -4061,8 +4061,8 @@ TEST_P(ScrollbarsTest, ScrollbarsUsedColorSchemeFollowsOverlayTheme) {
   EXPECT_TRUE(layout_viewport->VerticalScrollbar()->IsOverlayScrollbar());
   // With a white background, the overlay scrollbar theme should compute to
   // light despite the dark preferred color scheme.
-  EXPECT_EQ(kScrollbarOverlayColorThemeDark,
-            layout_viewport->GetScrollbarOverlayColorTheme());
+  EXPECT_EQ(mojom::blink::ColorScheme::kLight,
+            layout_viewport->GetOverlayScrollbarColorScheme());
   EXPECT_EQ(mojom::blink::ColorScheme::kLight,
             layout_viewport->VerticalScrollbar()->UsedColorScheme());
 
@@ -4071,8 +4071,8 @@ TEST_P(ScrollbarsTest, ScrollbarsUsedColorSchemeFollowsOverlayTheme) {
   EXPECT_FALSE(layout_viewport->VerticalScrollbar()->IsOverlayScrollbar());
   // Non overlay scrollbars used color scheme should follow the preferred
   // scrollable area's color scheme.
-  EXPECT_EQ(kScrollbarOverlayColorThemeDark,
-            layout_viewport->GetScrollbarOverlayColorTheme());
+  EXPECT_EQ(mojom::blink::ColorScheme::kLight,
+            layout_viewport->GetOverlayScrollbarColorScheme());
   EXPECT_EQ(mojom::blink::ColorScheme::kDark,
             layout_viewport->VerticalScrollbar()->UsedColorScheme());
 }

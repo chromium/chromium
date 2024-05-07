@@ -1203,7 +1203,7 @@ void VisualViewport::Paint(GraphicsContext& context) const {
 void VisualViewport::UsedColorSchemeChanged() {
   DCHECK(IsActiveViewport());
   // The scrollbar overlay color theme depends on the used color scheme.
-  RecalculateScrollbarOverlayColorTheme();
+  RecalculateOverlayScrollbarColorScheme();
 }
 
 void VisualViewport::ScrollbarColorChanged() {

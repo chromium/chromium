@@ -21,7 +21,6 @@ class CORE_EXPORT MacScrollbar {
   virtual ~MacScrollbar() = default;
 
   virtual void SetEnabled(bool) = 0;
-  virtual void SetOverlayColorTheme(ScrollbarOverlayColorTheme) = 0;
   virtual float GetKnobAlpha() = 0;
   virtual float GetTrackAlpha() = 0;
   virtual int GetTrackBoxWidth() = 0;

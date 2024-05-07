@@ -287,12 +287,6 @@ class NATIVE_THEME_EXPORT NativeTheme {
     std::optional<SkColor> track_color;
   };
 
-  enum class ScrollbarOverlayColorTheme {
-    kDefault = 0,
-    kLight = 1,
-    kDark = 2,
-  };
-
   struct ScrollbarThumbExtraParams {
     bool is_hovering = false;
     // This allows clients to directly override the color values to support

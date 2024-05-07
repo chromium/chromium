@@ -116,7 +116,8 @@ mojom::blink::ScrollBehavior ScrollableArea::DetermineScrollBehavior(
 
 ScrollableArea::ScrollableArea(
     scoped_refptr<base::SingleThreadTaskRunner> compositor_task_runner)
-    : scrollbar_overlay_color_theme_(kScrollbarOverlayColorThemeDark),
+    : overlay_scrollbar_color_scheme__(
+          static_cast<unsigned>(mojom::blink::ColorScheme::kLight)),
       horizontal_scrollbar_needs_paint_invalidation_(false),
       vertical_scrollbar_needs_paint_invalidation_(false),
       scroll_corner_needs_paint_invalidation_(false),
@@ -831,7 +832,7 @@ void ScrollableArea::DidAddScrollbar(Scrollbar& scrollbar,
 
   // <rdar://problem/9797253> AppKit resets the scrollbar's style when you
   // attach a scrollbar
-  SetScrollbarOverlayColorTheme(GetScrollbarOverlayColorTheme());
+  SetOverlayScrollbarColorScheme(GetOverlayScrollbarColorScheme());
 }
 
 void ScrollableArea::WillRemoveScrollbar(Scrollbar& scrollbar,
@@ -857,32 +858,25 @@ bool ScrollableArea::HasOverlayScrollbars() const {
   return h_scrollbar && h_scrollbar->IsOverlayScrollbar();
 }
 
-void ScrollableArea::SetScrollbarOverlayColorTheme(
-    ScrollbarOverlayColorTheme overlay_theme) {
-  scrollbar_overlay_color_theme_ = overlay_theme;
+void ScrollableArea::SetOverlayScrollbarColorScheme(
+    mojom::blink::ColorScheme overlay_theme) {
+  overlay_scrollbar_color_scheme__ = static_cast<unsigned>(overlay_theme);
 
   if (Scrollbar* scrollbar = HorizontalScrollbar()) {
-    GetPageScrollbarTheme().UpdateScrollbarOverlayColorTheme(*scrollbar);
     scrollbar->SetNeedsPaintInvalidation(kAllParts);
   }
 
   if (Scrollbar* scrollbar = VerticalScrollbar()) {
-    GetPageScrollbarTheme().UpdateScrollbarOverlayColorTheme(*scrollbar);
     scrollbar->SetNeedsPaintInvalidation(kAllParts);
   }
 }
 
-void ScrollableArea::RecalculateScrollbarOverlayColorTheme() {
-  ScrollbarOverlayColorTheme old_overlay_theme =
-      GetScrollbarOverlayColorTheme();
+void ScrollableArea::RecalculateOverlayScrollbarColorScheme() {
+  mojom::blink::ColorScheme old_overlay_theme =
+      GetOverlayScrollbarColorScheme();
 
   // Start with a scrollbar overlay theme based on the used color scheme.
-  // TODO(crbug.com/337859209): Remove the overlay scrollbar color theme
-  // conversion and directly return a mojom ColorScheme.
-  ScrollbarOverlayColorTheme overlay_theme =
-      UsedColorSchemeScrollbars() == mojom::blink::ColorScheme::kDark
-          ? kScrollbarOverlayColorThemeLight
-          : kScrollbarOverlayColorThemeDark;
+  mojom::blink::ColorScheme overlay_theme = UsedColorSchemeScrollbars();
 
   // If there is a background color set on the scroller, use the lightness of
   // the background color for the scrollbar overlay color theme.
@@ -892,13 +886,14 @@ void ScrollableArea::RecalculateScrollbarOverlayColorTheme() {
     if (!background_color.IsFullyTransparent()) {
       double hue, saturation, lightness;
       background_color.GetHSL(hue, saturation, lightness);
-      overlay_theme = lightness <= 0.5 ? kScrollbarOverlayColorThemeLight
-                                       : kScrollbarOverlayColorThemeDark;
+      overlay_theme = lightness <= 0.5 ? mojom::blink::ColorScheme::kDark
+                                       : mojom::blink::ColorScheme::kLight;
     }
   }
 
-  if (old_overlay_theme != overlay_theme)
-    SetScrollbarOverlayColorTheme(overlay_theme);
+  if (old_overlay_theme != overlay_theme) {
+    SetOverlayScrollbarColorScheme(overlay_theme);
+  }
 }
 
 void ScrollableArea::SetScrollbarNeedsPaintInvalidation(

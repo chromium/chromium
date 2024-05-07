@@ -153,7 +153,6 @@ bool ScrollbarThemeMac::IsScrollbarRegistered(Scrollbar& scrollbar) const {
 
 void ScrollbarThemeMac::SetNewPainterForScrollbar(Scrollbar& scrollbar) {
   UpdateEnabledState(scrollbar);
-  UpdateScrollbarOverlayColorTheme(scrollbar);
 }
 
 WebThemeEngine::ExtraParams GetPaintParams(const Scrollbar& scrollbar,
@@ -335,14 +334,6 @@ int ScrollbarThemeMac::ScrollbarThickness(
 
 bool ScrollbarThemeMac::UsesOverlayScrollbars() const {
   return PreferOverlayScrollerStyle();
-}
-
-void ScrollbarThemeMac::UpdateScrollbarOverlayColorTheme(
-    const Scrollbar& scrollbar) {
-  if (auto* mac_scrollbar = MacScrollbar::GetForScrollbar(scrollbar)) {
-    mac_scrollbar->SetOverlayColorTheme(
-        scrollbar.GetScrollbarOverlayColorTheme());
-  }
 }
 
 bool ScrollbarThemeMac::HasThumb(const Scrollbar& scrollbar) {
