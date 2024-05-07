@@ -337,7 +337,8 @@ suite('<os-settings-menu>', () => {
   });
 
   suite('Apps menu item', () => {
-    test('Description text', async () => {
+    test('Description text when ARC is enabled', async () => {
+      loadTimeData.overrideValues({androidAppsVisible: true});
       await createMenu();
 
       const appsMenuItem =
@@ -345,6 +346,17 @@ suite('<os-settings-menu>', () => {
       assertTrue(!!appsMenuItem);
 
       assertEquals('Notifications, Google Play', appsMenuItem.sublabel);
+    });
+
+    test('Description test when ARC is not enabled', async () => {
+      loadTimeData.overrideValues({androidAppsVisible: false});
+      await createMenu();
+
+      const appsMenuItem =
+          queryMenuItemByPath(`/${routesMojom.APPS_SECTION_PATH}`);
+      assertTrue(!!appsMenuItem);
+
+      assertEquals('Notifications', appsMenuItem.sublabel);
     });
   });
 

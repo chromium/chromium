@@ -439,7 +439,8 @@ AppsSection::AppsSection(Profile* profile,
               : std::nullopt),
       pref_service_(pref_service),
       arc_app_list_prefs_(arc_app_list_prefs),
-      app_service_proxy_(app_service_proxy) {
+      app_service_proxy_(app_service_proxy),
+      is_arc_allowed_(arc::IsArcAllowedForProfile(profile)) {
   if (!ash::features::IsOsSettingsRevampWayfindingEnabled()) {
     CHECK(startup_subsection_);
   }
@@ -454,7 +455,7 @@ AppsSection::AppsSection(Profile* profile,
     OnQuietModeChanged(MessageCenterAsh::Get()->IsQuietMode());
   }
 
-  if (arc::IsArcAllowedForProfile(profile)) {
+  if (is_arc_allowed_) {
     pref_change_registrar_.Init(pref_service_);
     pref_change_registrar_.Add(
         arc::prefs::kArcEnabled,
@@ -496,6 +497,8 @@ void AppsSection::AddLoadTimeData(content::WebUIDataSource* html_source) {
   webui::LocalizedString kLocalizedStrings[] = {
       {"appsPageTitle", IDS_SETTINGS_APPS_TITLE},
       {"appsMenuItemDescription", IDS_OS_SETTINGS_APPS_MENU_ITEM_DESCRIPTION},
+      {"appsmenuItemDescriptionArcUnavailable",
+       IDS_OS_SETTINGS_APPS_MENU_ITEM_DESCRIPTION_ARC_UNAVAILABLE},
       {"appManagementTitle", IDS_SETTINGS_APPS_LINK_TEXT},
       {"appNotificationsTitle", IDS_SETTINGS_APP_NOTIFICATIONS_LINK_TEXT},
       {"doNotDisturbToggleTitle",
@@ -557,8 +560,7 @@ void AppsSection::AddLoadTimeData(content::WebUIDataSource* html_source) {
   // For AOSP images we don't have the Play Store app. In last case we Android
   // apps settings consists only from root link to Android settings and only
   // visible once settings app is registered.
-  html_source->AddBoolean("androidAppsVisible",
-                          arc::IsArcAllowedForProfile(profile()));
+  html_source->AddBoolean("androidAppsVisible", is_arc_allowed_);
   html_source->AddBoolean("isPlayStoreAvailable", arc::IsPlayStoreAvailable());
 
   html_source->AddBoolean(

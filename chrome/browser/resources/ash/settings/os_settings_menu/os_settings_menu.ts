@@ -29,7 +29,7 @@ import {IronSelectorElement} from 'chrome://resources/polymer/v3_0/iron-selector
 import {DomRepeat, mixinBehaviors, PolymerElement} from 'chrome://resources/polymer/v3_0/polymer/polymer_bundled.min.js';
 
 import {assertExists, castExists} from '../assert_extras.js';
-import {isInputDeviceSettingsSplitEnabled, isRevampWayfindingEnabled} from '../common/load_time_booleans.js';
+import {androidAppsVisible, isInputDeviceSettingsSplitEnabled, isRevampWayfindingEnabled} from '../common/load_time_booleans.js';
 import {RouteObserverMixin, RouteObserverMixinInterface} from '../common/route_observer_mixin.js';
 import {Constructor} from '../common/types.js';
 import {DevicePageBrowserProxy, DevicePageBrowserProxyImpl} from '../device_page/device_page_browser_proxy.js';
@@ -459,7 +459,9 @@ export class OsSettingsMenuElement extends OsSettingsMenuElementBase {
           path: `/${routesMojom.APPS_SECTION_PATH}`,
           icon: 'os-settings:apps',
           label: this.i18n('appsPageTitle'),
-          sublabel: this.i18n('appsMenuItemDescription'),
+          sublabel: androidAppsVisible() ?
+              this.i18n('appsMenuItemDescription') :
+              this.i18n('appsmenuItemDescriptionArcUnavailable'),
         },
         {
           section: Section.kAccessibility,
