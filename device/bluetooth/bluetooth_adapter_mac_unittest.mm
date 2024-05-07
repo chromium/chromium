@@ -63,12 +63,14 @@ class BluetoothAdapterMacTest : public testing::Test {
   TestBluetoothAdapterObserver observer_;
 };
 
-TEST_F(BluetoothAdapterMacTest, Poll) {
+// TODO(https://crbug.com/331653043): Re-enable when passing on macOS 14 bots.
+TEST_F(BluetoothAdapterMacTest, DISABLED_Poll) {
   PollAdapter();
   EXPECT_TRUE(ui_task_runner_->HasPendingTask());
 }
 
-TEST_F(BluetoothAdapterMacTest, PollAndChangePower) {
+// TODO(https://crbug.com/331653043): Re-enable when passing on macOS 14 bots.
+TEST_F(BluetoothAdapterMacTest, DISABLED_PollAndChangePower) {
   // By default the adapter is powered off, check that this expectation matches
   // reality.
   EXPECT_FALSE(adapter_mac_->IsPowered());
