@@ -355,9 +355,9 @@ void PersistedData::SetThrottleUpdatesUntil(const base::Time& time) {
 }
 
 void PersistedData::RegisterApp(const RegistrationRequest& rq) {
-  VLOG(2) << __func__ << ": Registering " << rq.app_id << " at version "
-          << rq.version;
+  VLOG(2) << __func__ << ": Registering " << rq.app_id;
   if (rq.version.IsValid()) {
+    VLOG(2) << __func__ << ": app version " << rq.version;
     SetProductVersion(rq.app_id, rq.version);
   }
   if (!rq.version_path.empty()) {
