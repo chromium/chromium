@@ -7,7 +7,6 @@
 #include <utility>
 #include <vector>
 
-#include "ash/components/arc/arc_features.h"
 #include "ash/components/arc/arc_prefs.h"
 #include "base/containers/flat_set.h"
 #include "base/test/scoped_feature_list.h"
@@ -20,9 +19,8 @@
 #include "chrome/browser/ui/browser.h"
 #include "chrome/browser/ui/browser_list.h"
 #include "chrome/browser/ui/tabs/tab_strip_model.h"
-#include "chrome/common/chrome_features.h"
 #include "chrome/test/base/mixin_based_in_process_browser_test.h"
-#include "components/policy/policy_constants.h"
+#include "components/policy/proto/policy_common_definitions.pb.h"
 #include "components/prefs/pref_service.h"
 #include "components/session_manager/core/session_manager.h"
 #include "components/signin/public/identity_manager/account_managed_status_finder.h"
@@ -33,36 +31,28 @@
 
 namespace policy {
 
-class UserCloudPolicyManagerTest
-    : public MixinBasedInProcessBrowserTest,
-      public testing::WithParamInterface<
-          std::tuple<std::vector<base::test::FeatureRef>,
-                     ash::LoggedInUserMixin::LogInType>> {
+class UserCloudPolicyManagerTestBase : public MixinBasedInProcessBrowserTest {
  public:
-  UserCloudPolicyManagerTest(const UserCloudPolicyManagerTest&) = delete;
-  UserCloudPolicyManagerTest& operator=(const UserCloudPolicyManagerTest&) =
+  UserCloudPolicyManagerTestBase(const UserCloudPolicyManagerTestBase&) =
       delete;
+  UserCloudPolicyManagerTestBase& operator=(
+      const UserCloudPolicyManagerTestBase&) = delete;
 
  protected:
-  UserCloudPolicyManagerTest() {
+  UserCloudPolicyManagerTestBase(ash::LoggedInUserMixin::LogInType login_type,
+                                 bool user_existed_before) {
+    logged_in_user_mixin_ = std::make_unique<ash::LoggedInUserMixin>(
+        &mixin_host_, /*test_base=*/this, embedded_test_server(), login_type,
+        user_existed_before);
+
     // Override default tests configuration that prevents effective testing of
     // whether start-up URL policy is properly applied:
     // *   InProcessBrowserTest force about://blank start-up URL via command
     //     line (which trumps policy values).
     set_open_about_blank_on_browser_launch(false);
-
-    scoped_feature_list_.InitWithFeatures(
-        std::get<0>(GetParam()) /* enabled_features */,
-        std::vector<base::test::FeatureRef>() /* disabled_features */);
   }
 
-  ~UserCloudPolicyManagerTest() override = default;
-
-  void TearDown() override {
-    signin::AccountManagedStatusFinder::SetNonEnterpriseDomainForTesting(
-        nullptr);
-    MixinBasedInProcessBrowserTest::TearDown();
-  }
+  ~UserCloudPolicyManagerTestBase() override = default;
 
   // Sets up fake GAIA for specified user login, and requests login for the user
   // (using LoggedInUserMixin).
@@ -74,50 +64,111 @@ class UserCloudPolicyManagerTest
     if (!wait_for_active_session) {
       details.insert(ash::LoggedInUserMixin::LoginDetails::kDontWaitForSession);
     }
-    logged_in_user_mixin_.LogInUser(details);
+    logged_in_user_mixin_->LogInUser(details);
   }
 
- protected:
-  static const AccountId GetTestAccountId() {
-    if (std::get<1>(GetParam()) == ash::LoggedInUserMixin::LogInType::kChild) {
-      return AccountId::FromUserEmailGaiaId(FakeGaiaMixin::kFakeUserEmail,
-                                            FakeGaiaMixin::kFakeUserGaiaId);
-    } else {
-      return AccountId::FromUserEmailGaiaId(
-          FakeGaiaMixin::kEnterpriseUser1,
-          FakeGaiaMixin::kEnterpriseUser1GaiaId);
-    }
+  user_manager::ProfileRequiresPolicy GetProfileRequiresPolicy() {
+    user_manager::KnownUser known_user(g_browser_process->local_state());
+    return known_user.GetProfileRequiresPolicy(
+        logged_in_user_mixin_->GetAccountId());
   }
 
-  ash::LoggedInUserMixin logged_in_user_mixin_{&mixin_host_,
-                                               /*test_base=*/this,
-                                               embedded_test_server(),
-                                               std::get<1>(GetParam()) /*type*/,
-                                               /*include_initial_user=*/false,
-                                               GetTestAccountId()};
+  void SetProfileRequiresPolicy(user_manager::ProfileRequiresPolicy value) {
+    user_manager::KnownUser known_user(g_browser_process->local_state());
+    known_user.SetProfileRequiresPolicy(logged_in_user_mixin_->GetAccountId(),
+                                        value);
+  }
 
- private:
-  base::test::ScopedFeatureList scoped_feature_list_;
+  std::unique_ptr<ash::LoggedInUserMixin> logged_in_user_mixin_;
 };
 
-IN_PROC_BROWSER_TEST_P(UserCloudPolicyManagerTest, StartSession) {
-  user_manager::KnownUser known_user(g_browser_process->local_state());
+// Test scenarios for enterprise-managed user signing in for the first time.
+class UserCloudPolicyManagerNewManagedUserTest
+    : public UserCloudPolicyManagerTestBase {
+ protected:
+  UserCloudPolicyManagerNewManagedUserTest()
+      : UserCloudPolicyManagerTestBase(
+            ash::LoggedInUserMixin::LogInType::kManaged,
+            /*user_existed_before=*/false) {}
+};
+
+// Test scenarios for consumer user with custom domain signing in for the first
+// time.
+class UserCloudPolicyManagerNewConsumerUserTest
+    : public UserCloudPolicyManagerTestBase {
+ protected:
+  UserCloudPolicyManagerNewConsumerUserTest()
+      : UserCloudPolicyManagerTestBase(
+            ash::LoggedInUserMixin::LogInType::kConsumerCustomDomain,
+            /*user_existed_before=*/false) {}
+
+  void SetUp() override {
+    UserCloudPolicyManagerTestBase::SetUp();
+    // Recognize example.com as non-enterprise account. We don't use any
+    // available public domain such as gmail.com in order to prevent possible
+    // leak of verification keys/signatures.
+    signin::AccountManagedStatusFinder::SetNonEnterpriseDomainForTesting(
+        "example.com");
+  }
+
+  void TearDown() override {
+    signin::AccountManagedStatusFinder::SetNonEnterpriseDomainForTesting(
+        nullptr);
+    UserCloudPolicyManagerTestBase::TearDown();
+  }
+};
+
+// Test scenarios for consumer user with custom domain who already signed in.
+class UserCloudPolicyManagerExistingConsumerUserTest
+    : public UserCloudPolicyManagerTestBase {
+ protected:
+  UserCloudPolicyManagerExistingConsumerUserTest()
+      : UserCloudPolicyManagerTestBase(
+            ash::LoggedInUserMixin::LogInType::kConsumerCustomDomain,
+            /*user_existed_before=*/true) {}
+
+  void SetUp() override {
+    UserCloudPolicyManagerTestBase::SetUp();
+    // Recognize example.com as non-enterprise account. We don't use any
+    // available public domain such as gmail.com in order to prevent possible
+    // leak of verification keys/signatures.
+    signin::AccountManagedStatusFinder::SetNonEnterpriseDomainForTesting(
+        "example.com");
+  }
+
+  void TearDown() override {
+    signin::AccountManagedStatusFinder::SetNonEnterpriseDomainForTesting(
+        nullptr);
+    UserCloudPolicyManagerTestBase::TearDown();
+  }
+};
+
+// Test scenarios for child user signing in for the first time.
+class UserCloudPolicyManagerNewChildUserTest
+    : public UserCloudPolicyManagerTestBase {
+ protected:
+  UserCloudPolicyManagerNewChildUserTest()
+      : UserCloudPolicyManagerTestBase(
+            ash::LoggedInUserMixin::LogInType::kChild,
+            /*user_existed_before=*/false) {}
+};
+
+IN_PROC_BROWSER_TEST_F(UserCloudPolicyManagerNewManagedUserTest, StartSession) {
   // User hasn't signed in yet, so shouldn't know if the user requires policy.
   EXPECT_EQ(user_manager::ProfileRequiresPolicy::kUnknown,
-            known_user.GetProfileRequiresPolicy(
-                logged_in_user_mixin_.GetAccountId()));
+            GetProfileRequiresPolicy());
 
   // Set up start-up URLs through a mandatory user policy.
   const char* const kStartupURLs[] = {"chrome://policy", "chrome://about"};
   enterprise_management::StringList* startup_urls_proto =
-      logged_in_user_mixin_.GetUserPolicyMixin()
+      logged_in_user_mixin_->GetUserPolicyMixin()
           ->RequestPolicyUpdate()
           ->policy_payload()
           ->mutable_restoreonstartupurls()
           ->mutable_value();
   for (auto* const url : kStartupURLs)
     startup_urls_proto->add_entries(url);
-  logged_in_user_mixin_.GetUserPolicyMixin()
+  logged_in_user_mixin_->GetUserPolicyMixin()
       ->RequestPolicyUpdate()
       ->policy_payload()
       ->mutable_restoreonstartup()
@@ -142,8 +193,7 @@ IN_PROC_BROWSER_TEST_P(UserCloudPolicyManagerTest, StartSession) {
 
   // User should be marked as requiring policy.
   EXPECT_EQ(user_manager::ProfileRequiresPolicy::kPolicyRequired,
-            known_user.GetProfileRequiresPolicy(
-                logged_in_user_mixin_.GetAccountId()));
+            GetProfileRequiresPolicy());
 
   // It is expected that if ArcEnabled policy is not set then it is managed
   // by default and user is not able manually set it.
@@ -152,82 +202,67 @@ IN_PROC_BROWSER_TEST_P(UserCloudPolicyManagerTest, StartSession) {
           arc::prefs::kArcEnabled));
 }
 
-IN_PROC_BROWSER_TEST_P(UserCloudPolicyManagerTest, ErrorLoadingPolicy) {
+IN_PROC_BROWSER_TEST_F(UserCloudPolicyManagerNewManagedUserTest,
+                       ErrorLoadingPolicy) {
   StartUserLogIn(false /*wait_for_active_session*/);
   RunUntilBrowserProcessQuits();
 
   // Session should not have been started.
   EXPECT_FALSE(session_manager::SessionManager::Get()->IsSessionStarted());
 
-  user_manager::KnownUser known_user(g_browser_process->local_state());
   // User should be marked as not knowing if policy is required yet.
   EXPECT_EQ(user_manager::ProfileRequiresPolicy::kUnknown,
-            known_user.GetProfileRequiresPolicy(
-                logged_in_user_mixin_.GetAccountId()));
+            GetProfileRequiresPolicy());
 }
 
-IN_PROC_BROWSER_TEST_P(UserCloudPolicyManagerTest,
+IN_PROC_BROWSER_TEST_F(UserCloudPolicyManagerExistingConsumerUserTest,
                        ErrorLoadingPolicyForUnmanagedUser) {
-  user_manager::KnownUser known_user(g_browser_process->local_state());
   // User should be marked as not knowing if policy is required yet.
   // Mark user as not needing policy - errors loading policy should be
   // ignored (unlike previous ErrorLoadingPolicy test).
-  known_user.SetProfileRequiresPolicy(
-      logged_in_user_mixin_.GetAccountId(),
+  SetProfileRequiresPolicy(
       user_manager::ProfileRequiresPolicy::kNoPolicyRequired);
 
   StartUserLogIn(true /*wait_for_active_session*/);
 
   // User should still be marked as not needing policy
   EXPECT_EQ(user_manager::ProfileRequiresPolicy::kNoPolicyRequired,
-            known_user.GetProfileRequiresPolicy(
-                logged_in_user_mixin_.GetAccountId()));
+            GetProfileRequiresPolicy());
 }
 
-IN_PROC_BROWSER_TEST_P(UserCloudPolicyManagerTest,
+IN_PROC_BROWSER_TEST_F(UserCloudPolicyManagerExistingConsumerUserTest,
                        NoPolicyForNonEnterpriseUser) {
   // Recognize example.com as non-enterprise account. We don't use any
   // available public domain such as gmail.com in order to prevent possible
   // leak of verification keys/signatures.
   signin::AccountManagedStatusFinder::SetNonEnterpriseDomainForTesting(
       "example.com");
-  EXPECT_EQ(signin::AccountManagedStatusFinder::IsEnterpriseUserBasedOnEmail(
-                logged_in_user_mixin_.GetAccountId().GetUserEmail()),
+  ASSERT_EQ(signin::AccountManagedStatusFinder::IsEnterpriseUserBasedOnEmail(
+                logged_in_user_mixin_->GetAccountId().GetUserEmail()),
             signin::AccountManagedStatusFinder::EmailEnterpriseStatus::
                 kKnownNonEnterprise);
+
   user_manager::KnownUser known_user(g_browser_process->local_state());
   // If a user signs in with a known non-enterprise account there should be no
   // policy.
   EXPECT_EQ(user_manager::ProfileRequiresPolicy::kUnknown,
-            known_user.GetProfileRequiresPolicy(
-                logged_in_user_mixin_.GetAccountId()));
+            GetProfileRequiresPolicy());
 
   StartUserLogIn(true /*wait_for_active_session*/);
 
   // User should be marked as not requiring policy.
   EXPECT_EQ(user_manager::ProfileRequiresPolicy::kNoPolicyRequired,
-            known_user.GetProfileRequiresPolicy(
-                logged_in_user_mixin_.GetAccountId()));
+            GetProfileRequiresPolicy());
 }
 
-using UserCloudPolicyManagerChildTest = UserCloudPolicyManagerTest;
-
-IN_PROC_BROWSER_TEST_P(UserCloudPolicyManagerChildTest, PolicyForChildUser) {
-  signin::AccountManagedStatusFinder::SetNonEnterpriseDomainForTesting(
-      "example.com");
-  EXPECT_EQ(signin::AccountManagedStatusFinder::IsEnterpriseUserBasedOnEmail(
-                logged_in_user_mixin_.GetAccountId().GetUserEmail()),
-            signin::AccountManagedStatusFinder::EmailEnterpriseStatus::
-                kKnownNonEnterprise);
-
-  user_manager::KnownUser known_user(g_browser_process->local_state());
+IN_PROC_BROWSER_TEST_F(UserCloudPolicyManagerNewChildUserTest,
+                       PolicyForChildUser) {
   // If a user signs in with a known non-enterprise account there should be no
   // policy in case user type is child.
   EXPECT_EQ(user_manager::ProfileRequiresPolicy::kUnknown,
-            known_user.GetProfileRequiresPolicy(
-                logged_in_user_mixin_.GetAccountId()));
+            GetProfileRequiresPolicy());
 
-  logged_in_user_mixin_.GetUserPolicyMixin()
+  logged_in_user_mixin_->GetUserPolicyMixin()
       ->RequestPolicyUpdate()
       ->policy_payload()
       ->Clear();
@@ -235,8 +270,7 @@ IN_PROC_BROWSER_TEST_P(UserCloudPolicyManagerChildTest, PolicyForChildUser) {
 
   // User of CHILD type should be marked as requiring policy.
   EXPECT_EQ(user_manager::ProfileRequiresPolicy::kPolicyRequired,
-            known_user.GetProfileRequiresPolicy(
-                logged_in_user_mixin_.GetAccountId()));
+            GetProfileRequiresPolicy());
 
   // It is expected that if ArcEnabled policy is not set then it is not managed
   // by default and user is able manually set it.
@@ -245,21 +279,12 @@ IN_PROC_BROWSER_TEST_P(UserCloudPolicyManagerChildTest, PolicyForChildUser) {
           arc::prefs::kArcEnabled));
 }
 
-IN_PROC_BROWSER_TEST_P(UserCloudPolicyManagerChildTest,
+IN_PROC_BROWSER_TEST_F(UserCloudPolicyManagerNewChildUserTest,
                        PolicyForChildUserMissing) {
-  user_manager::KnownUser known_user(g_browser_process->local_state());
-  signin::AccountManagedStatusFinder::SetNonEnterpriseDomainForTesting(
-      "example.com");
-  EXPECT_EQ(signin::AccountManagedStatusFinder::IsEnterpriseUserBasedOnEmail(
-                logged_in_user_mixin_.GetAccountId().GetUserEmail()),
-            signin::AccountManagedStatusFinder::EmailEnterpriseStatus::
-                kKnownNonEnterprise);
-
   // If a user signs in with a known non-enterprise account there should be no
   // policy in case user type is child.
   EXPECT_EQ(user_manager::ProfileRequiresPolicy::kUnknown,
-            known_user.GetProfileRequiresPolicy(
-                logged_in_user_mixin_.GetAccountId()));
+            GetProfileRequiresPolicy());
 
   StartUserLogIn(false /*wait_for_active_session*/);
   RunUntilBrowserProcessQuits();
@@ -269,29 +294,6 @@ IN_PROC_BROWSER_TEST_P(UserCloudPolicyManagerChildTest,
 
   // User should be marked as not knowing if policy is required yet.
   EXPECT_EQ(user_manager::ProfileRequiresPolicy::kUnknown,
-            known_user.GetProfileRequiresPolicy(
-                logged_in_user_mixin_.GetAccountId()));
+            GetProfileRequiresPolicy());
 }
-
-const std::vector<base::test::FeatureRef> feature_lists[] = {
-    {},
-    {features::kDMServerOAuthForChildUser}};
-
-// TODO(agawronska): Remove test instantiation with kDMServerOAuthForChildUser
-// once it is enabled by default.
-INSTANTIATE_TEST_SUITE_P(
-    /* no prefix */,
-    UserCloudPolicyManagerTest,
-    testing::Combine(
-        testing::ValuesIn(feature_lists),
-        // TODO(b/325279785): rewrite this test to use new LogInType's.
-        testing::Values(ash::LoggedInUserMixin::LogInType::kConsumer)));
-
-INSTANTIATE_TEST_SUITE_P(
-    /* no prefix */,
-    UserCloudPolicyManagerChildTest,
-    testing::Combine(
-        testing::ValuesIn(feature_lists),
-        testing::Values(ash::LoggedInUserMixin::LogInType::kChild)));
-
 }  // namespace policy
