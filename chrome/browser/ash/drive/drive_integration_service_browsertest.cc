@@ -2,9 +2,14 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
+#include "chrome/browser/ash/drive/drive_integration_service.h"
+
+#include <vector>
+
 #include "ash/constants/ash_features.h"
 #include "ash/constants/ash_switches.h"
 #include "base/command_line.h"
+#include "base/files/file_path.h"
 #include "base/files/file_util.h"
 #include "base/files/scoped_temp_dir.h"
 #include "base/run_loop.h"
@@ -12,9 +17,10 @@
 #include "base/test/gmock_callback_support.h"
 #include "base/test/mock_callback.h"
 #include "base/test/scoped_feature_list.h"
+#include "base/test/test_future.h"
 #include "base/threading/thread_restrictions.h"
-#include "chrome/browser/ash/drive/drive_integration_service.h"
 #include "chrome/browser/ash/drive/drive_integration_service_browser_test_base.h"
+#include "chrome/browser/ash/file_manager/path_util.h"
 #include "chrome/browser/profiles/profile.h"
 #include "chrome/browser/profiles/profile_manager.h"
 #include "chrome/browser/ui/browser.h"
@@ -32,11 +38,13 @@
 #include "mojo/public/cpp/bindings/pending_remote.h"
 #include "mojo/public/cpp/bindings/receiver.h"
 #include "mojo/public/cpp/bindings/remote.h"
+#include "storage/browser/file_system/external_mount_points.h"
 
 namespace drive {
 
 using ::base::test::RunClosure;
 using ::base::test::RunOnceCallback;
+using ::base::test::TestFuture;
 using testing::_;
 
 using DriveIntegrationServiceBrowserTest =
@@ -341,23 +349,25 @@ class DriveIntegrationBrowserTestWithMirrorSyncEnabled
 
   ~DriveIntegrationBrowserTestWithMirrorSyncEnabled() override {}
 
-  void ToggleMirrorSync(bool status) {
-    DriveMirrorSyncStatusObserver observer(status);
+  void SetUpOnMainThread() override { MockGetSyncingPaths(); }
+
+  void ToggleMirrorSync(bool status, bool expect_fail = false) {
+    DriveMirrorSyncStatusObserver observer(expect_fail ? !status : status);
     Profile* const profile = browser()->profile();
     observer.Observe(DriveIntegrationServiceFactory::FindForProfile(profile));
     PrefService* const prefs = profile->GetPrefs();
     prefs->SetBoolean(prefs::kDriveFsEnableMirrorSync, status);
     observer.WaitForStatusChange();
-    EXPECT_EQ(prefs->GetBoolean(prefs::kDriveFsEnableMirrorSync), status);
+    EXPECT_EQ(prefs->GetBoolean(prefs::kDriveFsEnableMirrorSync),
+              expect_fail ? !status : status);
   }
 
-  void AddSyncingPath(const base::FilePath& path) {
+  void MockGetSyncingPaths() {
     drivefs::FakeDriveFs* fake_drivefs =
         GetFakeDriveFsForProfile(browser()->profile());
-    std::vector<base::FilePath> return_paths{path};
-    EXPECT_CALL(*fake_drivefs, GetSyncingPaths(_))
-        .WillOnce(RunOnceCallback<0>(drive::FileError::FILE_ERROR_OK,
-                                     std::move(return_paths)));
+    ON_CALL(*fake_drivefs, GetSyncingPaths(_))
+        .WillByDefault(testing::Invoke(
+            fake_drivefs, &drivefs::FakeDriveFs::GetSyncingPathsForTesting));
   }
 
  private:
@@ -391,6 +401,44 @@ IN_PROC_BROWSER_TEST_F(DriveIntegrationBrowserTestWithMirrorSyncEnabled,
   // Enable mirroring and ensure the integration service has it enabled.
   ToggleMirrorSync(true);
   EXPECT_TRUE(drive_service->IsMirroringEnabled());
+
+  // Check MyFiles is being added as sync path.
+  TestFuture<drive::FileError, const std::vector<base::FilePath>&> future;
+  const base::FilePath my_files_path =
+      file_manager::util::GetMyFilesFolderForProfile(browser()->profile());
+
+  drive_service->GetSyncingPaths(future.GetCallback());
+
+  EXPECT_EQ(future.Get<0>(), drive::FILE_ERROR_OK);
+  EXPECT_THAT(future.Get<1>(), testing::ElementsAre(my_files_path));
+}
+
+IN_PROC_BROWSER_TEST_F(DriveIntegrationBrowserTestWithMirrorSyncEnabled,
+                       EnableMirrorSyncWithNonExistMyFiles) {
+  Profile* profile = browser()->profile();
+  auto* drive_service = DriveIntegrationServiceFactory::FindForProfile(profile);
+
+  // Replace MyFiles mount point to something not exist.
+  base::ScopedAllowBlockingForTesting allow_blocking;
+  base::ScopedTempDir temp_dir;
+  EXPECT_TRUE(temp_dir.CreateUniqueTempDir());
+  const base::FilePath my_files_dir = temp_dir.GetPath().Append("NotExist");
+  storage::ExternalMountPoints::GetSystemInstance()->RevokeAllFileSystems();
+  storage::ExternalMountPoints::GetSystemInstance()->RegisterFileSystem(
+      file_manager::util::GetDownloadsMountPointName(profile),
+      storage::kFileSystemTypeLocal, storage::FileSystemMountOption(),
+      my_files_dir);
+
+  // Enable mirroring with non existed MyFiles won't turn the sync on.
+  ToggleMirrorSync(true, true);
+  EXPECT_FALSE(drive_service->IsMirroringEnabled());
+
+  // Check nothing is added as sync path.
+  drivefs::FakeDriveFs* fake_drivefs = GetFakeDriveFsForProfile(profile);
+  TestFuture<drive::FileError, const std::vector<base::FilePath>&> future;
+  fake_drivefs->GetSyncingPathsForTesting(future.GetCallback());
+
+  EXPECT_THAT(future.Get<1>(), testing::IsEmpty());
 }
 
 IN_PROC_BROWSER_TEST_F(DriveIntegrationBrowserTestWithMirrorSyncEnabled,
@@ -404,12 +452,20 @@ IN_PROC_BROWSER_TEST_F(DriveIntegrationBrowserTestWithMirrorSyncEnabled,
   EXPECT_FALSE(drive_service->IsMirroringEnabled());
 
   // Enable mirror syncing.
+  TestFuture<drive::FileError, const std::vector<base::FilePath>&> future1;
   ToggleMirrorSync(true);
   EXPECT_TRUE(drive_service->IsMirroringEnabled());
+  drive_service->GetSyncingPaths(future1.GetCallback());
+  const base::FilePath my_files_path =
+      file_manager::util::GetMyFilesFolderForProfile(browser()->profile());
+  EXPECT_THAT(future1.Get<1>(), testing::ElementsAre(my_files_path));
 
   // Disable mirroring and ensure the integration service has it disabled.
+  TestFuture<drive::FileError, const std::vector<base::FilePath>&> future2;
   ToggleMirrorSync(false);
   EXPECT_FALSE(drive_service->IsMirroringEnabled());
+  drive_service->GetSyncingPaths(future2.GetCallback());
+  EXPECT_THAT(future2.Get<1>(), testing::IsEmpty());
 }
 
 IN_PROC_BROWSER_TEST_F(DriveIntegrationBrowserTestWithMirrorSyncEnabled,
@@ -519,20 +575,21 @@ IN_PROC_BROWSER_TEST_F(DriveIntegrationBrowserTestWithMirrorSyncEnabled,
   }
 
   {
+    TestFuture<drive::FileError> toggle_sync_future;
     base::FilePath sync_path = temp_dir.GetPath();
-    AddSyncingPath(sync_path);
+    drive_service->ToggleSyncForPath(sync_path,
+                                     drivefs::mojom::MirrorPathStatus::kStart,
+                                     toggle_sync_future.GetCallback());
+    EXPECT_EQ(toggle_sync_future.Get(), drive::FILE_ERROR_OK);
 
-    base::RunLoop run_loop;
-    auto quit_closure = run_loop.QuitClosure();
-    drive_service->GetSyncingPaths(base::BindLambdaForTesting(
-        [quit_closure, sync_path](drive::FileError status,
-                                  const std::vector<base::FilePath>& paths) {
-          EXPECT_EQ(drive::FILE_ERROR_OK, status);
-          EXPECT_EQ(1u, paths.size());
-          EXPECT_EQ(sync_path, paths[0]);
-          quit_closure.Run();
-        }));
-    run_loop.Run();
+    TestFuture<drive::FileError, const std::vector<base::FilePath>&>
+        get_syncing_path_future;
+    drive_service->GetSyncingPaths(get_syncing_path_future.GetCallback());
+    const base::FilePath my_files_path =
+        file_manager::util::GetMyFilesFolderForProfile(browser()->profile());
+    EXPECT_EQ(get_syncing_path_future.Get<0>(), drive::FILE_ERROR_OK);
+    EXPECT_THAT(get_syncing_path_future.Get<1>(),
+                testing::ElementsAre(my_files_path, sync_path));
   }
 
   {

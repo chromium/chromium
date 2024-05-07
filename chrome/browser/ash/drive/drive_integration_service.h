@@ -468,7 +468,12 @@ class DriveIntegrationService : public KeyedService,
       std::optional<std::vector<drivefs::mojom::QueryItemPtr>> items);
 
   void OnEnableMirroringStatusUpdate(drivefs::mojom::MirrorSyncStatus status);
+  void OnMyFilesSyncRootAdded(drive::FileError status);
 
+  void OnGetSyncPathsForRemovingAllRoots(
+      drive::FileError status,
+      const std::vector<::base::FilePath>& paths);
+  void OnSyncRootRemoved(const base::FilePath& path, drive::FileError status);
   void OnDisableMirroringStatusUpdate(drivefs::mojom::MirrorSyncStatus status);
 
   // Toggle syncing for |path| if the the directory exists.
@@ -509,6 +514,9 @@ class DriveIntegrationService : public KeyedService,
   bool mirroring_enabled_ = false;
   bool is_online_ = true;
   bool remount_when_online_ = false;
+
+  // -1 means no sync roots to remove.
+  int number_of_sync_roots_to_remove_ = -1;
 
   // Custom mount point name that can be injected for testing in constructor.
   std::string mount_point_name_;

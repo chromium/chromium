@@ -184,6 +184,12 @@ class ManageMirrorSyncDialogTest : public InProcessBrowserTest {
         storage::kFileSystemTypeLocal, storage::FileSystemMountOption(),
         my_files_dir_);
 
+    // Turning on MirrorSync requires MyFiles to exist first.
+    {
+      base::ScopedAllowBlockingForTesting allow_blocking;
+      base::CreateDirectory(my_files_dir_);
+    }
+
     // Toggle the MirrorSync preference to enable / disable the feature.
     {
       DriveMirrorSyncStatusObserver observer(enabled);
