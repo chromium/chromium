@@ -102,6 +102,25 @@ class TransientWindowManagerTest : public aura::test::AuraTestBase {
   }
 };
 
+// Tests that creating a transient tree with a cycle in it will crash on a
+// CHECK. See a crash that can happen if we allow cycles http://b/286947509.
+TEST_F(TransientWindowManagerTest, TransientCycle) {
+  std::unique_ptr<Window> w1(CreateTestWindowWithId(0, root_window()));
+  std::unique_ptr<Window> w2(CreateTestWindowWithId(1, root_window()));
+  std::unique_ptr<Window> w3(CreateTestWindowWithId(2, root_window()));
+
+  // Creating a cylce in the hierarchy will cause a crash.
+  //
+  // w1 <-- w2 <-- w3
+  //  |             ^
+  //  |             |
+  //  +-------------+
+  //
+  wm::AddTransientChild(w1.get(), w2.get());
+  wm::AddTransientChild(w2.get(), w3.get());
+  EXPECT_DEATH(wm::AddTransientChild(w3.get(), w1.get()), "");
+}
+
 // Various assertions for transient children.
 TEST_F(TransientWindowManagerTest, TransientChildren) {
   std::unique_ptr<Window> parent(CreateTestWindowWithId(0, root_window()));

@@ -26,11 +26,36 @@ using aura::Window;
 DEFINE_UI_CLASS_PROPERTY_TYPE(::wm::TransientWindowManager*)
 
 namespace wm {
+
 namespace {
 
 DEFINE_OWNED_UI_CLASS_PROPERTY_KEY(TransientWindowManager,
                                    kPropertyKey,
                                    nullptr)
+
+// Returns true if the given `window` has a cycle in its transient window
+// hierarchy.
+bool HasTransientCycles(aura::Window* window) {
+  std::set<aura::Window*> visited;
+  std::stack<aura::Window*> dfs_stack;
+  dfs_stack.push(window);
+  while (!dfs_stack.empty()) {
+    aura::Window* top = dfs_stack.top();
+    dfs_stack.pop();
+    if (!visited.emplace(top).second) {
+      // We found a cycle.
+      return true;
+    }
+
+    if (auto* transient_window_manager =
+            TransientWindowManager::GetIfExists(top)) {
+      for (const auto& child : transient_window_manager->transient_children()) {
+        dfs_stack.push(child);
+      }
+    }
+  }
+  return false;
+}
 
 }  // namespace
 
@@ -73,6 +98,10 @@ void TransientWindowManager::AddTransientChild(Window* child) {
   DCHECK(!base::Contains(transient_children_, child));
   transient_children_.push_back(child);
   child_manager->transient_parent_ = window_;
+
+  // Allowing cycles in the transient hierarchy should never happen and can
+  // cause infinite loops/recursion.
+  CHECK(!HasTransientCycles(window_));
 
   for (aura::client::TransientWindowClientObserver& observer :
        TransientWindowController::Get()->observers_) {
