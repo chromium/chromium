@@ -95,8 +95,8 @@ uint64_t CALayerTreeCoordinator::CreateBackpressureFence() {
 }
 
 void CALayerTreeCoordinator::ApplyBackpressure() {
-  // Nothing was just committed.
-  if (presented_frames_.empty() || presented_frames_.front()->has_committed) {
+  // No frame has been committed yet - this is the first frame being presented.
+  if (presented_frames_.empty() || !presented_frames_.front()->has_committed) {
     return;
   }
 
