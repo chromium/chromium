@@ -2,7 +2,7 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#include "chrome/browser/ash/child_accounts/time_limits/app_time_test_utils.h"
+#include "chrome/browser/ash/child_accounts/apps/app_test_utils.h"
 
 #include "base/containers/flat_map.h"
 #include "base/memory/scoped_refptr.h"
@@ -12,7 +12,6 @@
 #include "extensions/common/manifest_constants.h"
 
 namespace ash {
-namespace app_time {
 
 arc::mojom::ArcPackageInfoPtr CreateArcAppPackage(
     const std::string& package_name) {
@@ -55,5 +54,4 @@ scoped_refptr<extensions::Extension> CreateExtension(
   return extension;
 }
 
-}  // namespace app_time
 }  // namespace ash

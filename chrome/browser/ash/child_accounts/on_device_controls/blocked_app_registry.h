@@ -10,7 +10,12 @@
 #include <set>
 #include <string>
 
+#include "base/memory/raw_ptr.h"
+#include "base/scoped_observation.h"
 #include "base/time/time.h"
+#include "components/services/app_service/public/cpp/app_registry_cache.h"
+
+class Profile;
 
 namespace ash::on_device_controls {
 
@@ -28,12 +33,12 @@ enum class LocalAppState {
 // Keeps track of blocked apps and persists blocked apps on the disk.
 // TODO(b/338246850): Handle app uninstall/reinstall.
 // TODO(b/338247185): Persist blocked apps in a pref.
-class BlockedAppRegistry {
+class BlockedAppRegistry : public apps::AppRegistryCache::Observer {
  public:
-  BlockedAppRegistry();
+  explicit BlockedAppRegistry(Profile* profile);
   BlockedAppRegistry(const BlockedAppRegistry&) = delete;
   BlockedAppRegistry& operator=(const BlockedAppRegistry&) = delete;
-  ~BlockedAppRegistry();
+  ~BlockedAppRegistry() override;
 
   // Adds an app identified with `app_id` to the registry.
   // Mark app as blocked. It will have no effect if the app is already blocked.
@@ -63,9 +68,29 @@ class BlockedAppRegistry {
     base::TimeTicks block_timestamp;
   };
 
+  // apps::AppRegistryCache::Observer:
+  void OnAppUpdate(const apps::AppUpdate& update) override;
+  void OnAppRegistryCacheWillBeDestroyed(
+      apps::AppRegistryCache* cache) override;
+
+  apps::AppRegistryCache& GetAppCache();
+
+  // Called when app is installed and at the beginning of each
+  // user session. Restores the blocked state of the apps that are loaded or
+  // reinstalled.
+  void OnAppReady(const std::string& app_id);
+  // Called when app is uninstalled.
+  void OnAppUninstalled(const std::string& app_id);
+
+  const raw_ptr<Profile> profile_;
+
   // The in-memory registry of the locked apps.
   // Maps blocked app id to blocked ap metadata.
   std::map<std::string, AppDetails> registry_;
+
+  base::ScopedObservation<apps::AppRegistryCache,
+                          apps::AppRegistryCache::Observer>
+      app_registry_cache_observer_{this};
 };
 
 }  // namespace ash::on_device_controls

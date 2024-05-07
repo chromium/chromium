@@ -2,8 +2,8 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#ifndef CHROME_BROWSER_ASH_CHILD_ACCOUNTS_TIME_LIMITS_APP_TIME_TEST_UTILS_H_
-#define CHROME_BROWSER_ASH_CHILD_ACCOUNTS_TIME_LIMITS_APP_TIME_TEST_UTILS_H_
+#ifndef CHROME_BROWSER_ASH_CHILD_ACCOUNTS_APPS_APP_TEST_UTILS_H_
+#define CHROME_BROWSER_ASH_CHILD_ACCOUNTS_APPS_APP_TEST_UTILS_H_
 
 #include <memory>
 
@@ -15,7 +15,6 @@ class Extension;
 }  // namespace extensions
 
 namespace ash {
-namespace app_time {
 
 arc::mojom::ArcPackageInfoPtr CreateArcAppPackage(
     const std::string& package_name);
@@ -28,7 +27,6 @@ scoped_refptr<extensions::Extension> CreateExtension(
     const std::string& name,
     const std::string& url);
 
-}  // namespace app_time
 }  // namespace ash
 
-#endif  // CHROME_BROWSER_ASH_CHILD_ACCOUNTS_TIME_LIMITS_APP_TIME_TEST_UTILS_H_
+#endif  // CHROME_BROWSER_ASH_CHILD_ACCOUNTS_APPS_APP_TEST_UTILS_H_

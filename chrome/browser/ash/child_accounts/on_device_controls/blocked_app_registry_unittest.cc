@@ -8,7 +8,18 @@
 #include <string>
 #include <vector>
 
+#include "ash/components/arc/mojom/app.mojom.h"
+#include "ash/components/arc/test/fake_app_instance.h"
+#include "base/command_line.h"
 #include "base/containers/contains.h"
+#include "base/test/scoped_command_line.h"
+#include "chrome/browser/apps/app_service/app_service_test.h"
+#include "chrome/browser/ash/app_list/arc/arc_app_test.h"
+#include "chrome/browser/ash/app_list/arc/arc_app_utils.h"
+#include "chrome/browser/ash/child_accounts/apps/app_test_utils.h"
+#include "chrome/common/chrome_switches.h"
+#include "chrome/test/base/testing_profile.h"
+#include "content/public/test/browser_task_environment.h"
 #include "testing/gtest/include/gtest/gtest.h"
 
 namespace ash::on_device_controls {
@@ -22,11 +33,65 @@ class BlockedAppRegistryTest : public testing::Test {
   ~BlockedAppRegistryTest() override = default;
 
   BlockedAppRegistry& registry() { return registry_; }
+  ArcAppTest& arc_test() { return arc_test_; }
 
- private:
-  BlockedAppRegistry registry_;
+ protected:
+  // testing::Test:
+  void SetUp() override;
+  void TearDown() override;
+
+  // Installs ARC++ app with the given `package_name` and returns its AppService
+  // id.
+  std::string InstallArcApp(const std::string& package_name,
+                            const std::string& app_name);
+  void UninstallArcApp(const std::string& package_name);
+
+  //  private:
+  base::test::ScopedCommandLine scoped_command_line_;
+  content::BrowserTaskEnvironment task_environment_;
+
+  TestingProfile profile_;
+  apps::AppServiceTest app_service_test_;
+  ArcAppTest arc_test_;
+
+  BlockedAppRegistry registry_{&profile_};
 };
 
+void BlockedAppRegistryTest::SetUp() {
+  testing::Test::SetUp();
+
+  base::CommandLine::ForCurrentProcess()->AppendSwitch(
+      switches::kDisableDefaultApps);
+
+  app_service_test_.SetUp(&profile_);
+  arc_test_.SetUp(&profile_);
+  task_environment_.RunUntilIdle();
+}
+
+void BlockedAppRegistryTest::TearDown() {
+  arc_test_.TearDown();
+
+  testing::Test::TearDown();
+}
+
+std::string BlockedAppRegistryTest::InstallArcApp(
+    const std::string& package_name,
+    const std::string& app_name) {
+  arc_test_.AddPackage(CreateArcAppPackage(package_name)->Clone());
+  std::vector<arc::mojom::AppInfoPtr> apps;
+  apps.emplace_back(CreateArcAppInfo(package_name, app_name));
+  arc_test_.app_instance()->SendPackageAppListRefreshed(package_name, apps);
+  task_environment_.RunUntilIdle();
+
+  return arc::ArcPackageNameToAppId(package_name, &profile_);
+}
+
+void BlockedAppRegistryTest::UninstallArcApp(const std::string& package_name) {
+  arc_test_.app_instance()->UninstallPackage(package_name);
+  task_environment_.RunUntilIdle();
+}
+
+// Tests registry state when adding an app.
 TEST_F(BlockedAppRegistryTest, AddApp) {
   const std::vector<std::string> app_ids = {"abc", "def"};
 
@@ -50,6 +115,7 @@ TEST_F(BlockedAppRegistryTest, AddApp) {
   }
 }
 
+// Tests registry state when removing an app.
 TEST_F(BlockedAppRegistryTest, RemoveApp) {
   const std::vector<std::string> app_ids = {"abc", "def"};
 
@@ -68,6 +134,71 @@ TEST_F(BlockedAppRegistryTest, RemoveApp) {
   EXPECT_EQ(0UL, registry().GetBlockedApps().size());
   EXPECT_EQ(LocalAppState::kAvailable, registry().GetAppState(app_ids[0]));
   EXPECT_EQ(LocalAppState::kAvailable, registry().GetAppState(app_ids[1]));
+}
+
+// Tests that available app is not blocked upon installation and reinstallation.
+TEST_F(BlockedAppRegistryTest, ReinstallAvailableApp) {
+  const std::string package_name = "com.example.app1", app_name = "app1";
+  const std::string app_id = InstallArcApp(package_name, app_name);
+  ASSERT_FALSE(app_id.empty());
+  EXPECT_EQ(0UL, registry().GetBlockedApps().size());
+  EXPECT_EQ(LocalAppState::kAvailable, registry().GetAppState(app_id));
+
+  UninstallArcApp(package_name);
+  EXPECT_EQ(0UL, registry().GetBlockedApps().size());
+  EXPECT_EQ(LocalAppState::kAvailable, registry().GetAppState(app_id));
+
+  // Assuming the same AppService id will be generated upon reinstallation.
+  InstallArcApp(package_name, app_name);
+  EXPECT_EQ(0UL, registry().GetBlockedApps().size());
+  EXPECT_EQ(LocalAppState::kAvailable, registry().GetAppState(app_id));
+}
+
+// Tests that blocked app gets blocked upon reinstallation.
+TEST_F(BlockedAppRegistryTest, ReinstallBlockedApp) {
+  const std::string package_name = "com.example.app1", app_name = "app1";
+  const std::string app_id = InstallArcApp(package_name, app_name);
+  ASSERT_FALSE(app_id.empty());
+  EXPECT_EQ(0UL, registry().GetBlockedApps().size());
+  EXPECT_EQ(LocalAppState::kAvailable, registry().GetAppState(app_id));
+
+  // Simulate app being blocked.
+  registry().AddApp(app_id);
+  EXPECT_EQ(1UL, registry().GetBlockedApps().size());
+  EXPECT_EQ(LocalAppState::kBlocked, registry().GetAppState(app_id));
+
+  UninstallArcApp(package_name);
+  EXPECT_EQ(1UL, registry().GetBlockedApps().size());
+  EXPECT_EQ(LocalAppState::kBlockedUninstalled, registry().GetAppState(app_id));
+
+  // Assuming the same AppService id will be generated upon reinstallation.
+  InstallArcApp(package_name, app_name);
+  EXPECT_EQ(1UL, registry().GetBlockedApps().size());
+  EXPECT_EQ(LocalAppState::kBlocked, registry().GetAppState(app_id));
+}
+
+// Tests that blocked app gets blocked upon state restoration.
+TEST_F(BlockedAppRegistryTest, RestoreBlockedApp) {
+  // Install and uninstall app to get app id.
+  const std::string package_name = "com.example.app1", app_name = "app1";
+  const std::string app_id = InstallArcApp(package_name, app_name);
+  ASSERT_FALSE(app_id.empty());
+  EXPECT_EQ(0UL, registry().GetBlockedApps().size());
+  EXPECT_EQ(LocalAppState::kAvailable, registry().GetAppState(app_id));
+
+  UninstallArcApp(package_name);
+  EXPECT_EQ(0UL, registry().GetBlockedApps().size());
+  EXPECT_EQ(LocalAppState::kAvailable, registry().GetAppState(app_id));
+
+  // Simulate app being blocked.
+  registry().AddApp(app_id);
+  EXPECT_EQ(1UL, registry().GetBlockedApps().size());
+  EXPECT_EQ(LocalAppState::kBlocked, registry().GetAppState(app_id));
+
+  // Simulate app being restored - same path as installed.
+  InstallArcApp(package_name, app_name);
+  EXPECT_EQ(1UL, registry().GetBlockedApps().size());
+  EXPECT_EQ(LocalAppState::kBlocked, registry().GetAppState(app_id));
 }
 
 }  // namespace ash::on_device_controls
