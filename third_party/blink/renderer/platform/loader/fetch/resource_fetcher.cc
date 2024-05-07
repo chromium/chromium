@@ -2510,7 +2510,8 @@ void ResourceFetcher::ScheduleLoadingPotentiallyUnusedPreload(
     Resource* resource) {
   // Check the resource is already scheduled to start load or not.
   PreloadKey key(resource->Url(), resource->GetType());
-  if (base::Contains(deferred_preloads_, key)) {
+  auto it = deferred_preloads_.find(key);
+  if (it != deferred_preloads_.end() && it->value == resource) {
     return;
   }
   deferred_preloads_.insert(key, resource);
