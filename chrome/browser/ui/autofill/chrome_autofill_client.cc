@@ -76,7 +76,6 @@
 #include "components/autofill/core/browser/data_model/autofill_profile.h"
 #include "components/autofill/core/browser/filling_product.h"
 #include "components/autofill/core/browser/form_data_importer.h"
-#include "components/autofill/core/browser/payments/card_unmask_challenge_option.h"
 #include "components/autofill/core/browser/payments/credit_card_risk_based_authenticator.h"
 #include "components/autofill/core/browser/payments/iban_access_manager.h"
 #include "components/autofill/core/browser/payments/mandatory_reauth_manager.h"
@@ -85,7 +84,6 @@
 #include "components/autofill/core/browser/payments_data_manager.h"
 #include "components/autofill/core/browser/personal_data_manager.h"
 #include "components/autofill/core/browser/ui/payments/bubble_show_options.h"
-#include "components/autofill/core/browser/ui/payments/card_unmask_authentication_selection_dialog_controller_impl.h"
 #include "components/autofill/core/browser/ui/payments/card_unmask_otp_input_dialog_controller_impl.h"
 #include "components/autofill/core/browser/ui/suggestion_hiding_reason.h"
 #include "components/autofill/core/browser/ui/suggestion_type.h"
@@ -527,32 +525,6 @@ void ChromeAutofillClient::ShowAutofillSettings(
     }
   }
 #endif  // BUILDFLAG(IS_ANDROID)
-}
-
-void ChromeAutofillClient::ShowUnmaskAuthenticatorSelectionDialog(
-    const std::vector<CardUnmaskChallengeOption>& challenge_options,
-    base::OnceCallback<void(const std::string&)>
-        confirm_unmask_challenge_option_callback,
-    base::OnceClosure cancel_unmasking_closure) {
-  CHECK(!card_unmask_authentication_selection_controller_);
-  card_unmask_authentication_selection_controller_ =
-      std::make_unique<CardUnmaskAuthenticationSelectionDialogControllerImpl>(
-          challenge_options,
-          std::move(confirm_unmask_challenge_option_callback),
-          std::move(cancel_unmasking_closure));
-  card_unmask_authentication_selection_controller_->ShowDialog(
-      base::BindOnce(&CreateAndShowCardUnmaskAuthenticationSelectionDialog,
-                     &GetWebContents()));
-}
-
-void ChromeAutofillClient::DismissUnmaskAuthenticatorSelectionDialog(
-    bool server_success) {
-  if (card_unmask_authentication_selection_controller_) {
-    card_unmask_authentication_selection_controller_
-        ->DismissDialogUponServerProcessedAuthenticationMethodRequest(
-            server_success);
-    card_unmask_authentication_selection_controller_.reset();
-  }
 }
 
 void ChromeAutofillClient::ShowVirtualCardEnrollDialog(

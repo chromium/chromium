@@ -26,7 +26,6 @@
 #import "components/autofill/core/browser/payments/credit_card_risk_based_authenticator.h"
 #import "components/autofill/core/browser/payments/payments_network_interface.h"
 #import "components/autofill/core/browser/payments/virtual_card_enroll_metrics_logger.h"
-#import "components/autofill/core/browser/ui/payments/card_unmask_authentication_selection_dialog_controller_impl.h"
 #import "components/autofill/core/browser/ui/payments/virtual_card_enroll_ui_model.h"
 #import "components/autofill/core/browser/ui/suggestion_type.h"
 #import "components/autofill/core/common/autofill_features.h"
@@ -194,7 +193,7 @@ ChromeAutofillClientIOS::GetPaymentsAutofillClient() {
   if (!payments_autofill_client_) {
     payments_autofill_client_ =
         std::make_unique<payments::IOSChromePaymentsAutofillClient>(
-            this, browser_state_);
+            this, browser_state_, web_state_);
   }
 
   return payments_autofill_client_.get();
@@ -267,31 +266,6 @@ GeoIpCountryCode ChromeAutofillClientIOS::GetVariationConfigCountryCode()
 void ChromeAutofillClientIOS::ShowAutofillSettings(
     FillingProduct main_filling_product) {
   NOTREACHED();
-}
-
-void ChromeAutofillClientIOS::ShowUnmaskAuthenticatorSelectionDialog(
-    const std::vector<CardUnmaskChallengeOption>& challenge_options,
-    base::OnceCallback<void(const std::string&)>
-        confirm_unmask_challenge_option_callback,
-    base::OnceClosure cancel_unmasking_closure) {
-  AutofillBottomSheetTabHelper* bottomSheetTabHelper =
-      AutofillBottomSheetTabHelper::FromWebState(web_state_);
-  auto controller = std::make_unique<
-      autofill::CardUnmaskAuthenticationSelectionDialogControllerImpl>(
-      challenge_options, std::move(confirm_unmask_challenge_option_callback),
-      std::move(cancel_unmasking_closure));
-  card_unmask_authentication_selection_controller_ = controller->GetWeakPtr();
-  bottomSheetTabHelper->ShowCardUnmaskAuthenticationSelection(
-      std::move(controller));
-}
-
-void ChromeAutofillClientIOS::DismissUnmaskAuthenticatorSelectionDialog(
-    bool server_success) {
-  if (card_unmask_authentication_selection_controller_) {
-    card_unmask_authentication_selection_controller_
-        ->DismissDialogUponServerProcessedAuthenticationMethodRequest(
-            server_success);
-  }
 }
 
 payments::MandatoryReauthManager*

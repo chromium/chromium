@@ -18,10 +18,15 @@
 
 class ChromeBrowserState;
 
+namespace web {
+class WebState;
+}  // namespace web
+
 namespace autofill {
 
 struct AutofillErrorDialogContext;
 struct CardUnmaskChallengeOption;
+class CardUnmaskAuthenticationSelectionDialogControllerImpl;
 class ChromeAutofillClientIOS;
 class CreditCardCvcAuthenticator;
 class CreditCardOtpAuthenticator;
@@ -36,9 +41,12 @@ namespace payments {
 // it is needed.
 class IOSChromePaymentsAutofillClient : public PaymentsAutofillClient {
  public:
+  // TODO(crbug.com/40937065):Remove the browser_state param/member variable,
+  // reuse WebState's GetBrowserState method.
   explicit IOSChromePaymentsAutofillClient(
       autofill::ChromeAutofillClientIOS* client,
-      ChromeBrowserState* browser_state);
+      ChromeBrowserState* browser_state,
+      web::WebState* web_state);
   IOSChromePaymentsAutofillClient(const IOSChromePaymentsAutofillClient&) =
       delete;
   IOSChromePaymentsAutofillClient& operator=(
@@ -68,6 +76,13 @@ class IOSChromePaymentsAutofillClient : public PaymentsAutofillClient {
       const CreditCard& card,
       const CardUnmaskPromptOptions& card_unmask_prompt_options,
       base::WeakPtr<CardUnmaskDelegate> delegate) override;
+
+  void ShowUnmaskAuthenticatorSelectionDialog(
+      const std::vector<CardUnmaskChallengeOption>& challenge_options,
+      base::OnceCallback<void(const std::string&)>
+          confirm_unmask_challenge_option_callback,
+      base::OnceClosure cancel_unmasking_closure) override;
+  void DismissUnmaskAuthenticatorSelectionDialog(bool server_success) override;
   void OnUnmaskVerificationResult(
       AutofillClient::PaymentsRpcResult result) override;
   VirtualCardEnrollmentManager* GetVirtualCardEnrollmentManager() override;
@@ -92,8 +107,8 @@ class IOSChromePaymentsAutofillClient : public PaymentsAutofillClient {
 
   std::unique_ptr<PaymentsNetworkInterface> payments_network_interface_;
 
-  raw_ptr<ChromeBrowserState> browser_state_;
-
+  const raw_ptr<ChromeBrowserState> browser_state_;
+  const raw_ptr<web::WebState> web_state_;
   std::unique_ptr<CardUnmaskPromptControllerImpl> unmask_controller_;
 
   // The unique_ptr reference is only temporarily valid until the corresponding
@@ -116,6 +131,9 @@ class IOSChromePaymentsAutofillClient : public PaymentsAutofillClient {
   std::unique_ptr<CreditCardCvcAuthenticator> cvc_authenticator_;
 
   std::unique_ptr<CreditCardOtpAuthenticator> otp_authenticator_;
+
+  base::WeakPtr<CardUnmaskAuthenticationSelectionDialogControllerImpl>
+      card_unmask_authentication_selection_controller_;
 };
 
 }  // namespace payments

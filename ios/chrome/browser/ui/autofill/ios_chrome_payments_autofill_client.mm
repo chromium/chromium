@@ -19,19 +19,23 @@
 #import "components/autofill/core/browser/payments/payments_network_interface.h"
 #import "components/autofill/core/browser/payments/virtual_card_enrollment_manager.h"
 #import "components/autofill/core/browser/ui/payments/autofill_progress_dialog_controller_impl.h"
+#import "components/autofill/core/browser/ui/payments/card_unmask_authentication_selection_dialog_controller_impl.h"
 #import "components/autofill/core/browser/ui/payments/card_unmask_prompt_view.h"
+#import "ios/chrome/browser/autofill/model/bottom_sheet/autofill_bottom_sheet_tab_helper.h"
 #import "ios/chrome/browser/shared/model/browser_state/chrome_browser_state.h"
 #import "ios/chrome/browser/shared/public/commands/autofill_commands.h"
 #import "ios/chrome/browser/ui/autofill/card_unmask_prompt_view_bridge.h"
 #import "ios/chrome/browser/ui/autofill/chrome_autofill_client_ios.h"
 #import "ios/public/provider/chrome/browser/risk_data/risk_data_api.h"
+#import "ios/web/public/web_state.h"
 #import "services/network/public/cpp/weak_wrapper_shared_url_loader_factory.h"
 
 namespace autofill::payments {
 
 IOSChromePaymentsAutofillClient::IOSChromePaymentsAutofillClient(
     autofill::ChromeAutofillClientIOS* client,
-    ChromeBrowserState* browser_state)
+    ChromeBrowserState* browser_state,
+    web::WebState* web_state)
     : client_(CHECK_DEREF(client)),
       payments_network_interface_(
           std::make_unique<payments::PaymentsNetworkInterface>(
@@ -40,7 +44,8 @@ IOSChromePaymentsAutofillClient::IOSChromePaymentsAutofillClient(
               client->GetIdentityManager(),
               &client->GetPersonalDataManager()->payments_data_manager(),
               browser_state->IsOffTheRecord())),
-      browser_state_(browser_state) {}
+      browser_state_(browser_state),
+      web_state_(web_state) {}
 
 IOSChromePaymentsAutofillClient::~IOSChromePaymentsAutofillClient() = default;
 
@@ -112,6 +117,31 @@ void IOSChromePaymentsAutofillClient::ShowUnmaskPrompt(
   unmask_controller_ = std::make_unique<CardUnmaskPromptControllerImpl>(
       browser_state_->GetPrefs(), card, card_unmask_prompt_options, delegate);
   [client_->commands_handler() continueCardUnmaskWithCvcAuth];
+}
+
+void IOSChromePaymentsAutofillClient::ShowUnmaskAuthenticatorSelectionDialog(
+    const std::vector<CardUnmaskChallengeOption>& challenge_options,
+    base::OnceCallback<void(const std::string&)>
+        confirm_unmask_challenge_option_callback,
+    base::OnceClosure cancel_unmasking_closure) {
+  AutofillBottomSheetTabHelper* bottom_sheet_tab_helper =
+      AutofillBottomSheetTabHelper::FromWebState(web_state_);
+  auto controller = std::make_unique<
+      autofill::CardUnmaskAuthenticationSelectionDialogControllerImpl>(
+      challenge_options, std::move(confirm_unmask_challenge_option_callback),
+      std::move(cancel_unmasking_closure));
+  card_unmask_authentication_selection_controller_ = controller->GetWeakPtr();
+  bottom_sheet_tab_helper->ShowCardUnmaskAuthenticationSelection(
+      std::move(controller));
+}
+
+void IOSChromePaymentsAutofillClient::DismissUnmaskAuthenticatorSelectionDialog(
+    bool server_success) {
+  if (card_unmask_authentication_selection_controller_) {
+    card_unmask_authentication_selection_controller_
+        ->DismissDialogUponServerProcessedAuthenticationMethodRequest(
+            server_success);
+  }
 }
 
 void IOSChromePaymentsAutofillClient::OnUnmaskVerificationResult(

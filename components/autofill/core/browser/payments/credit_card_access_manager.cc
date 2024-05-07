@@ -1624,7 +1624,7 @@ void CreditCardAccessManager::HandleFidoOptInStatusChange() {
 }
 
 void CreditCardAccessManager::ShowUnmaskAuthenticatorSelectionDialog() {
-  client_->ShowUnmaskAuthenticatorSelectionDialog(
+  client_->GetPaymentsAutofillClient()->ShowUnmaskAuthenticatorSelectionDialog(
       virtual_card_unmask_response_details_.card_unmask_challenge_options,
       base::BindOnce(
           &CreditCardAccessManager::OnUserAcceptedAuthenticationSelectionDialog,

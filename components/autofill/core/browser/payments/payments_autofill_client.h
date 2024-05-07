@@ -120,6 +120,25 @@ class PaymentsAutofillClient : public RiskDataLoader {
   virtual void ShowCardUnmaskOtpInputDialog(
       const CardUnmaskChallengeOption& challenge_option,
       base::WeakPtr<OtpUnmaskDelegate> delegate);
+
+  // Shows a dialog for the user to choose/confirm the authentication
+  // to use in card unmasking.
+  virtual void ShowUnmaskAuthenticatorSelectionDialog(
+      const std::vector<CardUnmaskChallengeOption>& challenge_options,
+      base::OnceCallback<void(const std::string&)>
+          confirm_unmask_challenge_option_callback,
+      base::OnceClosure cancel_unmasking_closure);
+
+  // Dismisses the selection dialog to open the authentication dialog.
+  // `server_success` dictates whether we received a success response
+  // from the server, with true representing success and false representing
+  // failure. A successful server response means that the issuer has sent an OTP
+  // and we can move on to the next portion of this flow.
+  // This should be invoked upon server accepting the authentication method, in
+  // which case, we dismiss the selection dialog to open the authentication
+  // dialog.
+  virtual void DismissUnmaskAuthenticatorSelectionDialog(bool server_success);
+
   // Invoked when we receive the server response of the OTP unmask request.
   virtual void OnUnmaskOtpVerificationResult(OtpUnmaskResult unmask_result);
 

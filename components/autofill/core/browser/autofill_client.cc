@@ -116,18 +116,6 @@ profile_metrics::BrowserProfileType AutofillClient::GetProfileType() const {
 FastCheckoutClient* AutofillClient::GetFastCheckoutClient() {
   return nullptr;
 }
-
-void AutofillClient::ShowUnmaskAuthenticatorSelectionDialog(
-    const std::vector<CardUnmaskChallengeOption>& challenge_options,
-    base::OnceCallback<void(const std::string&)>
-        confirm_unmask_challenge_option_callback,
-    base::OnceClosure cancel_unmasking_closure) {
-}
-
-void AutofillClient::DismissUnmaskAuthenticatorSelectionDialog(
-    bool server_success) {
-}
-
 void AutofillClient::ShowVirtualCardEnrollDialog(
     const VirtualCardEnrollmentFields& virtual_card_enrollment_fields,
     base::OnceClosure accept_virtual_card_callback,

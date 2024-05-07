@@ -22,6 +22,7 @@
 #include "components/autofill/core/browser/personal_data_manager.h"
 #include "components/autofill/core/browser/ui/payments/autofill_error_dialog_controller_impl.h"
 #include "components/autofill/core/browser/ui/payments/autofill_progress_dialog_controller_impl.h"
+#include "components/autofill/core/browser/ui/payments/card_unmask_authentication_selection_dialog_controller_impl.h"
 #include "components/autofill/core/browser/ui/payments/card_unmask_otp_input_dialog_controller_impl.h"
 #include "components/autofill/core/browser/ui/payments/card_unmask_prompt_controller_impl.h"
 #include "components/autofill/core/browser/ui/payments/card_unmask_prompt_view.h"
@@ -248,6 +249,32 @@ void ChromePaymentsAutofillClient::ShowUnmaskPrompt(
   unmask_controller_->ShowPrompt(base::BindOnce(
       &CreateCardUnmaskPromptView, base::Unretained(unmask_controller_.get()),
       base::Unretained(web_contents())));
+}
+
+void ChromePaymentsAutofillClient::ShowUnmaskAuthenticatorSelectionDialog(
+    const std::vector<CardUnmaskChallengeOption>& challenge_options,
+    base::OnceCallback<void(const std::string&)>
+        confirm_unmask_challenge_option_callback,
+    base::OnceClosure cancel_unmasking_closure) {
+  CHECK(!card_unmask_authentication_selection_controller_);
+  card_unmask_authentication_selection_controller_ =
+      std::make_unique<CardUnmaskAuthenticationSelectionDialogControllerImpl>(
+          challenge_options,
+          std::move(confirm_unmask_challenge_option_callback),
+          std::move(cancel_unmasking_closure));
+  card_unmask_authentication_selection_controller_->ShowDialog(
+      base::BindOnce(&CreateAndShowCardUnmaskAuthenticationSelectionDialog,
+                     base::Unretained(web_contents())));
+}
+
+void ChromePaymentsAutofillClient::DismissUnmaskAuthenticatorSelectionDialog(
+    bool server_success) {
+  if (card_unmask_authentication_selection_controller_) {
+    card_unmask_authentication_selection_controller_
+        ->DismissDialogUponServerProcessedAuthenticationMethodRequest(
+            server_success);
+    card_unmask_authentication_selection_controller_.reset();
+  }
 }
 
 // TODO(crbug.com/40186650): Refactor this for both CVC and Biometrics flows.

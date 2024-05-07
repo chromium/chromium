@@ -29,7 +29,6 @@
 #include "components/autofill/core/browser/logging/log_manager.h"
 #include "components/autofill/core/browser/payments/iban_access_manager.h"
 #include "components/autofill/core/browser/payments/legal_message_line.h"
-#include "components/autofill/core/browser/ui/payments/card_unmask_authentication_selection_dialog_controller_impl.h"
 #include "components/autofill/core/browser/ui/payments/card_unmask_prompt_options.h"
 #include "components/autofill/core/browser/ui/suggestion_type.h"
 #include "components/signin/public/identity_manager/account_info.h"
@@ -137,12 +136,6 @@ class ChromeAutofillClient : public ContentAutofillClient,
   std::unique_ptr<webauthn::InternalAuthenticator>
   CreateCreditCardInternalAuthenticator(AutofillDriver* driver) override;
   void ShowAutofillSettings(FillingProduct main_filling_product) override;
-  void ShowUnmaskAuthenticatorSelectionDialog(
-      const std::vector<CardUnmaskChallengeOption>& challenge_options,
-      base::OnceCallback<void(const std::string&)>
-          confirm_unmask_challenge_option_callback,
-      base::OnceClosure cancel_unmasking_closure) override;
-  void DismissUnmaskAuthenticatorSelectionDialog(bool server_success) override;
   void ShowVirtualCardEnrollDialog(
       const VirtualCardEnrollmentFields& virtual_card_enrollment_fields,
       base::OnceClosure accept_virtual_card_callback,
@@ -295,8 +288,6 @@ class ChromeAutofillClient : public ContentAutofillClient,
   std::unique_ptr<payments::ChromePaymentsAutofillClient>
       payments_autofill_client_;
   std::unique_ptr<CreditCardRiskBasedAuthenticator> risk_based_authenticator_;
-  std::unique_ptr<CardUnmaskAuthenticationSelectionDialogControllerImpl>
-      card_unmask_authentication_selection_controller_;
   std::unique_ptr<FormDataImporter> form_data_importer_;
   std::unique_ptr<payments::MandatoryReauthManager>
       payments_mandatory_reauth_manager_;

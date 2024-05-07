@@ -82,7 +82,6 @@ class AutofillOfferManager;
 class AutofillOptimizationGuide;
 class AutofillPopupDelegate;
 class AutofillProfile;
-struct CardUnmaskChallengeOption;
 class CreditCard;
 enum class CreditCardFetchResult;
 class CreditCardRiskBasedAuthenticator;
@@ -508,21 +507,6 @@ class AutofillClient {
 
   // Causes the Autofill settings UI to be shown.
   virtual void ShowAutofillSettings(FillingProduct main_filling_product) = 0;
-
-  // Shows a dialog for the user to choose/confirm the authentication
-  // to use in card unmasking.
-  virtual void ShowUnmaskAuthenticatorSelectionDialog(
-      const std::vector<CardUnmaskChallengeOption>& challenge_options,
-      base::OnceCallback<void(const std::string&)>
-          confirm_unmask_challenge_option_callback,
-      base::OnceClosure cancel_unmasking_closure);
-  // This should be invoked upon server accepting the authentication method, in
-  // which case, we dismiss the selection dialog to open the authentication
-  // dialog. |server_success| dictates whether we received a success response
-  // from the server, with true representing success and false representing
-  // failure. A successful server response means that the issuer has sent an OTP
-  // and we can move on to the next portion of this flow.
-  virtual void DismissUnmaskAuthenticatorSelectionDialog(bool server_success);
 
   // Shows a dialog for the user to enroll in a virtual card.
   virtual void ShowVirtualCardEnrollDialog(

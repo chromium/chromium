@@ -8,6 +8,7 @@
 #include "components/autofill/core/browser/autofill_progress_dialog_type.h"
 #include "components/autofill/core/browser/data_model/credit_card.h"
 #include "components/autofill/core/browser/payments/autofill_error_dialog_context.h"
+#include "components/autofill/core/browser/payments/card_unmask_challenge_option.h"
 #include "components/autofill/core/browser/payments/card_unmask_delegate.h"
 #include "components/autofill/core/browser/payments/virtual_card_enrollment_manager.h"
 #include "components/autofill/core/browser/ui/payments/card_unmask_prompt_options.h"
@@ -59,6 +60,15 @@ void PaymentsAutofillClient::CloseAutofillProgressDialog(
 void PaymentsAutofillClient::ShowCardUnmaskOtpInputDialog(
     const CardUnmaskChallengeOption& challenge_option,
     base::WeakPtr<OtpUnmaskDelegate> delegate) {}
+
+void PaymentsAutofillClient::ShowUnmaskAuthenticatorSelectionDialog(
+    const std::vector<CardUnmaskChallengeOption>& challenge_options,
+    base::OnceCallback<void(const std::string&)>
+        confirm_unmask_challenge_option_callback,
+    base::OnceClosure cancel_unmasking_closure) {}
+
+void PaymentsAutofillClient::DismissUnmaskAuthenticatorSelectionDialog(
+    bool server_success) {}
 
 void PaymentsAutofillClient::OnUnmaskOtpVerificationResult(
     OtpUnmaskResult unmask_result) {}
