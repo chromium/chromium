@@ -2046,7 +2046,7 @@
             ]
         }
     ],
-    "AutofillUseI18nAddressModel": [
+    "AutofillUseI18nAddressModelV2": [
         {
             "platforms": [
                 "android",
