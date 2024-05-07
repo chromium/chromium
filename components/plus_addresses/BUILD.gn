@@ -96,6 +96,7 @@ buildflag_header("plus_addresses_buildflags") {
 source_set("unit_tests") {
   testonly = true
   sources = [
+    "affiliations/plus_address_affiliation_match_helper_unittest.cc",
     "affiliations/plus_address_affiliation_source_adapter_unittest.cc",
     "plus_address_http_client_impl_unittest.cc",
     "plus_address_jit_allocator_unittest.cc",
