@@ -14,6 +14,7 @@
 
 namespace tab_groups {
 namespace stats {
+constexpr base::TimeDelta kModifiedThreshold = base::Days(30);
 
 void RecordSavedTabGroupMetrics(SavedTabGroupModel* model) {
   base::UmaHistogramCounts10000("TabGroups.SavedTabGroupCount", model->Count());
@@ -21,6 +22,7 @@ void RecordSavedTabGroupMetrics(SavedTabGroupModel* model) {
   const base::Time current_time = base::Time::Now();
 
   int pinned_group_count = 0;
+  int active_group_count = 0;
 
   for (const SavedTabGroup& group : model->saved_tab_groups()) {
     base::UmaHistogramCounts10000("TabGroups.SavedTabGroupTabCount",
@@ -38,6 +40,10 @@ void RecordSavedTabGroupMetrics(SavedTabGroupModel* model) {
     if (!duration_since_group_modification.is_negative()) {
       base::UmaHistogramCounts1M("TabGroups.SavedTabGroupTimeSinceModification",
                                  duration_since_group_modification.InMinutes());
+
+      if (duration_since_group_modification <= kModifiedThreshold) {
+        ++active_group_count;
+      }
     }
 
     for (const SavedTabGroupTab& tab : group.saved_tabs()) {
@@ -61,6 +67,8 @@ void RecordSavedTabGroupMetrics(SavedTabGroupModel* model) {
                                 pinned_group_count);
   base::UmaHistogramCounts10000("TabGroups.SavedTabGroupUnpinnedCount",
                                 model->Count() - pinned_group_count);
+  base::UmaHistogramCounts10000("TabGroups.SavedTabGroupActiveCount",
+                                active_group_count);
 }
 
 void RecordTabCountMismatchOnConnect(size_t tabs_in_saved_group,
