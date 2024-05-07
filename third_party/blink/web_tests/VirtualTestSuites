@@ -1429,7 +1429,7 @@
   },
   {
     "prefix": "domparser-includeshadowroots-enabled",
-    "platforms": ["Linux","Mac"],
+    "platforms": ["Linux"],
     "owners": ["masonf@chromium.org"],
     "bases": [
       "shadow-dom/declarative-domparser-usecounter.html",
