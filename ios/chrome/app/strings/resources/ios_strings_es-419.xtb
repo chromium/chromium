@@ -1031,7 +1031,7 @@ Handoff también debe estar habilitado en la sección General de la configuraci�
 <translation id="6236952928980352967">Restablecer advertencia</translation>
 <translation id="6247557882553405851">Administrador de contraseñas de Google</translation>
 <translation id="6254066287920239840">Abre vínculos en la app en lugar de hacerlo en el navegador.</translation>
-<translation id="6255097610484507482">Modificar información de la tarjeta de crédito</translation>
+<translation id="6255097610484507482">Editar tarjeta de crédito</translation>
 <translation id="6266039999629596120">Requiere atención</translation>
 <translation id="6277426346321820595">Sin protección</translation>
 <translation id="628251768213143684">Puedes administrar la información que se guarda en tu Cuenta de Google en cualquier momento</translation>
@@ -1236,7 +1236,7 @@ Cuando está activado el modo Incógnito, los sitios no pueden usar cookies para
 <translation id="7233006041370588369">Selecciona una contraseña para completarla.</translation>
 <translation id="7265758999917665941">Nunca para este sitio</translation>
 <translation id="7272437679830969316">No se puede verificar tu identidad. La contraseña no se copió.</translation>
-<translation id="7284359491594949826">{COUNT,plural, =1{Nuevo seguimiento de paquete}other{Nuevos seguimientos de paquete}}</translation>
+<translation id="7284359491594949826">{COUNT,plural, =1{Seguimiento de nuevo paquete}other{Seguimiento de nuevos paquetes}}</translation>
 <translation id="7291368939935408496">Preparando las contraseñas…</translation>
 <translation id="7302503784943202842">Usa contraseñas en todos tus dispositivos</translation>
 <translation id="7313347584264171202">Aquí encontrarás tus pestañas de incógnito</translation>
