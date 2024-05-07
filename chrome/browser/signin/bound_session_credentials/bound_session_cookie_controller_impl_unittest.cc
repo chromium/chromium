@@ -38,6 +38,7 @@
 #include "net/cookies/canonical_cookie.h"
 #include "services/network/public/mojom/cookie_manager.mojom.h"
 #include "services/network/test/test_network_connection_tracker.h"
+#include "testing/gmock/include/gmock/gmock.h"
 #include "testing/gtest/include/gtest/gtest.h"
 
 using bound_session_credentials::RotationDebugInfo;
@@ -48,6 +49,7 @@ using unexportable_keys::UnexportableKeyId;
 namespace {
 constexpr char k1PSIDTSCookieName[] = "__Secure-1PSIDTS";
 constexpr char k3PSIDTSCookieName[] = "__Secure-3PSIDTS";
+constexpr char kSessionId[] = "test_session_id";
 
 const base::TimeDelta kCookieExpirationThreshold = base::Seconds(15);
 const base::TimeDelta kCookieRefreshInterval = base::Minutes(2);
@@ -107,7 +109,7 @@ class BoundSessionCookieControllerImplTest
                            network::mojom::ConnectionType::CONNECTION_WIFI);
 
     if (build_controller) {
-      BuildBoundSessionCookieController();
+      BuildBoundSessionCookieController(CreateDefaultBoundSessionParams());
     }
   }
 
@@ -262,18 +264,9 @@ class BoundSessionCookieControllerImplTest
 
   // This shouldn't be called more than once per test. The second controller
   // won't be able to register itself properly with `cookie_manager_`.
-  void BuildBoundSessionCookieController() {
-    std::vector<uint8_t> wrapped_key = GetWrappedKey(key_id_);
-    bound_session_credentials::BoundSessionParams bound_session_params;
-    bound_session_params.set_site("https://google.com");
-    bound_session_params.set_session_id("test_session_id");
-    bound_session_params.set_wrapped_key(
-        std::string(wrapped_key.begin(), wrapped_key.end()));
-    *bound_session_params.add_credentials() =
-        CreateCookieCredential(k1PSIDTSCookieName);
-    *bound_session_params.add_credentials() =
-        CreateCookieCredential(k3PSIDTSCookieName);
-
+  void BuildBoundSessionCookieController(
+      const bound_session_credentials::BoundSessionParams&
+          bound_session_params) {
     bound_session_cookie_controller_ =
         std::make_unique<BoundSessionCookieControllerImpl>(
             unexportable_key_service_, &storage_partition_,
@@ -305,6 +298,21 @@ class BoundSessionCookieControllerImplTest
     // Ensure that the network connection observers have been notified before
     // this call returns.
     task_environment_.RunUntilIdle();
+  }
+
+  bound_session_credentials::BoundSessionParams
+  CreateDefaultBoundSessionParams() {
+    std::vector<uint8_t> wrapped_key = GetWrappedKey(key_id_);
+    bound_session_credentials::BoundSessionParams bound_session_params;
+    bound_session_params.set_site("https://google.com");
+    bound_session_params.set_session_id(kSessionId);
+    bound_session_params.set_wrapped_key(
+        std::string(wrapped_key.begin(), wrapped_key.end()));
+    *bound_session_params.add_credentials() =
+        CreateCookieCredential(k1PSIDTSCookieName);
+    *bound_session_params.add_credentials() =
+        CreateCookieCredential(k3PSIDTSCookieName);
+    return bound_session_params;
   }
 
   base::HistogramTester* histogram_tester() { return &histogram_tester_; }
@@ -867,7 +875,7 @@ class BoundSessionCookieControllerImplNoDefaultControllerTest
 TEST_F(BoundSessionCookieControllerImplNoDefaultControllerTest,
        ScheduleCookieRefreshIfComingOnlineStartingOffline) {
   SetUpNetworkConnection(true, network::mojom::ConnectionType::CONNECTION_NONE);
-  BuildBoundSessionCookieController();
+  BuildBoundSessionCookieController(CreateDefaultBoundSessionParams());
 
   // Set up a situation where cookies are stale and there is no ongoing refresh.
   // `kServerTransientError` is used to complete the refresh request without
@@ -882,6 +890,32 @@ TEST_F(BoundSessionCookieControllerImplNoDefaultControllerTest,
   SetConnectionType(network::mojom::ConnectionType::CONNECTION_WIFI);
   EXPECT_TRUE(cookie_fetcher());
   EXPECT_FALSE(preemptive_cookie_refresh_timer()->IsRunning());
+}
+
+TEST_F(BoundSessionCookieControllerImplNoDefaultControllerTest,
+       SessionParameters) {
+  constexpr char kRefreshUrl[] = "https://accounts.google.com/refresh";
+  constexpr base::Time kInitTime =
+      base::Time::FromMillisecondsSinceUnixEpoch(12345);
+
+  bound_session_credentials::BoundSessionParams params =
+      CreateDefaultBoundSessionParams();
+  params.set_refresh_url(kRefreshUrl);
+  *params.mutable_creation_time() =
+      bound_session_credentials::TimeToTimestamp(kInitTime);
+  BuildBoundSessionCookieController(params);
+  const BoundSessionCookieControllerImpl* const controller =
+      bound_session_cookie_controller();
+  EXPECT_EQ(controller->url(), GURL("https://google.com"));
+  EXPECT_EQ(controller->session_id(), kSessionId);
+  EXPECT_EQ(controller->session_creation_time(), kInitTime);
+  EXPECT_EQ(controller->refresh_url(), GURL(kRefreshUrl));
+  EXPECT_THAT(
+      controller->bound_cookie_names(),
+      testing::UnorderedElementsAre(k1PSIDTSCookieName, k3PSIDTSCookieName));
+  auto throttler_params = controller->bound_session_throttler_params();
+  EXPECT_EQ(throttler_params->domain, "google.com");
+  EXPECT_EQ(throttler_params->path, "/");
 }
 
 TEST_F(BoundSessionCookieControllerImplTest,

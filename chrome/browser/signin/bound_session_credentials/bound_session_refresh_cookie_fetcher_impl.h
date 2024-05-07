@@ -33,6 +33,7 @@ class BoundSessionRefreshCookieFetcherImpl
   BoundSessionRefreshCookieFetcherImpl(
       scoped_refptr<network::SharedURLLoaderFactory> url_loader_factory,
       SessionBindingHelper& session_binding_helper,
+      const GURL& refresh_url,
       const GURL& cookie_url,
       base::flat_set<std::string> cookie_names,
       bool is_off_the_record_profile,
@@ -86,6 +87,11 @@ class BoundSessionRefreshCookieFetcherImpl
 
   const scoped_refptr<network::SharedURLLoaderFactory> url_loader_factory_;
   const raw_ref<SessionBindingHelper> session_binding_helper_;
+
+  // Temporarily, this URL might be empty, meaning that the hardcoded URL must
+  // be used instead.
+  // TODO(b/325441004): require URL to be valid after migrating the storage.
+  const GURL refresh_url_;
 
   // Used to check whether the refresh request has set the required cookie.
   // Otherwise, the request is considered a failure.

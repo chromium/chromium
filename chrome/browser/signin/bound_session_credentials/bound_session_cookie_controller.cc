@@ -17,6 +17,7 @@ BoundSessionCookieController::BoundSessionCookieController(
       session_id_(bound_session_params.session_id()),
       session_creation_time_(bound_session_credentials::TimestampToTime(
           bound_session_params.creation_time())),
+      refresh_url_(bound_session_params.refresh_url()),
       delegate_(delegate) {
   CHECK(!url_.is_empty());
   CHECK(!bound_session_params.credentials().empty());
@@ -39,7 +40,7 @@ BoundSessionCookieController::~BoundSessionCookieController() = default;
 
 void BoundSessionCookieController::Initialize() {}
 
-base::Time BoundSessionCookieController::min_cookie_expiration_time() {
+base::Time BoundSessionCookieController::min_cookie_expiration_time() const {
   CHECK(!bound_cookies_info_.empty());
   return base::ranges::min_element(bound_cookies_info_, {},
                                    [](const auto& bound_cookie_info) {
@@ -49,7 +50,7 @@ base::Time BoundSessionCookieController::min_cookie_expiration_time() {
 }
 
 chrome::mojom::BoundSessionThrottlerParamsPtr
-BoundSessionCookieController::bound_session_throttler_params() {
+BoundSessionCookieController::bound_session_throttler_params() const {
   return chrome::mojom::BoundSessionThrottlerParams::New(
       url().host(), url().path(), min_cookie_expiration_time());
 }

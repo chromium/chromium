@@ -233,19 +233,15 @@ void BoundSessionCookieControllerImpl::CreateBoundCookiesObservers() {
 
 std::unique_ptr<BoundSessionRefreshCookieFetcher>
 BoundSessionCookieControllerImpl::CreateRefreshCookieFetcher() const {
-  base::flat_set<std::string> cookie_names;
-  for (const auto& [cookie_name, _] : bound_cookies_info_) {
-    cookie_names.insert(cookie_name);
-  }
-
   return refresh_cookie_fetcher_factory_for_testing_.is_null()
              ? std::make_unique<BoundSessionRefreshCookieFetcherImpl>(
                    storage_partition_->GetURLLoaderFactoryForBrowserProcess(),
-                   *session_binding_helper_, url_, std::move(cookie_names),
-                   is_off_the_record_profile_, debug_info_)
+                   *session_binding_helper_, refresh_url_, url_,
+                   bound_cookie_names(), is_off_the_record_profile_,
+                   debug_info_)
              : refresh_cookie_fetcher_factory_for_testing_.Run(
                    storage_partition_->GetCookieManagerForBrowserProcess(),
-                   url_, std::move(cookie_names));
+                   url_, bound_cookie_names());
 }
 
 bool BoundSessionCookieControllerImpl::AreAllCookiesFresh() {

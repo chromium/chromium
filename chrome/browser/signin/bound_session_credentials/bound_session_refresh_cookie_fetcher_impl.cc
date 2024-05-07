@@ -65,16 +65,20 @@ std::string UpdateDebugInfoAndSerializeToHeader(
 BoundSessionRefreshCookieFetcherImpl::BoundSessionRefreshCookieFetcherImpl(
     scoped_refptr<network::SharedURLLoaderFactory> url_loader_factory,
     SessionBindingHelper& session_binding_helper,
+    const GURL& refresh_url,
     const GURL& cookie_url,
     base::flat_set<std::string> cookie_names,
     bool is_off_the_record_profile,
     bound_session_credentials::RotationDebugInfo debug_info)
     : url_loader_factory_(std::move(url_loader_factory)),
       session_binding_helper_(session_binding_helper),
+      refresh_url_(refresh_url),
       expected_cookie_domain_(cookie_url),
       expected_cookie_names_(std::move(cookie_names)),
       is_off_the_record_profile_(is_off_the_record_profile),
-      debug_info_(std::move(debug_info)) {}
+      debug_info_(std::move(debug_info)) {
+  CHECK(refresh_url.is_empty() || refresh_url.is_valid());
+}
 
 BoundSessionRefreshCookieFetcherImpl::~BoundSessionRefreshCookieFetcherImpl() =
     default;
@@ -147,7 +151,9 @@ void BoundSessionRefreshCookieFetcherImpl::StartRefreshRequest(
         })");
 
   auto request = std::make_unique<network::ResourceRequest>();
-  request->url = GaiaUrls::GetInstance()->rotate_bound_cookies_url();
+  request->url = !refresh_url_.is_empty()
+                     ? refresh_url_
+                     : GaiaUrls::GetInstance()->rotate_bound_cookies_url();
   request->method = "GET";
 
   if (sec_session_challenge_response) {
