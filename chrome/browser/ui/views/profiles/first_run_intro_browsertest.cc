@@ -43,19 +43,15 @@ std::string ParamToTestSuffix(
 // Permutations of supported parameters.
 const FirstRunTestParam kTestParams[] = {
     {.pixel_test_param = {.test_suffix = "DarkThemeFixedSize",
-                          .use_dark_theme = true,
-                          .use_fre_style = true},
+                          .use_dark_theme = true},
      .use_fixed_size = true},
-    {.pixel_test_param = {.test_suffix = "LightTheme", .use_fre_style = true}},
-    {.pixel_test_param = {.test_suffix = "LongerStringsFixedSize",
-                          .use_fre_style = true},
+    {.pixel_test_param = {.test_suffix = "LightTheme"}},
+    {.pixel_test_param = {.test_suffix = "LongerStringsFixedSize"},
      .use_fixed_size = true,
      .use_longer_strings = true},
     {.pixel_test_param = {.test_suffix = "RightToLeftLanguage",
-                          .use_right_to_left_language = true,
-                          .use_fre_style = true}},
+                          .use_right_to_left_language = true}},
     {.pixel_test_param = {.test_suffix = "CR2023",
-                          .use_fre_style = true,
                           .use_chrome_refresh_2023_style = true}},
 };
 

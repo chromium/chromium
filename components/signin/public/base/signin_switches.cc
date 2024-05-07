@@ -183,12 +183,6 @@ BASE_FEATURE(kUpdateMetricsServicesStateInRestore,
 
 }  // namespace switches
 
-#if !BUILDFLAG(IS_CHROMEOS_ASH) && !BUILDFLAG(IS_ANDROID) && !BUILDFLAG(IS_IOS)
-// Enables the new style, "For You" First Run Experience
-BASE_FEATURE(kForYouFre, "ForYouFre", base::FEATURE_ENABLED_BY_DEFAULT);
-#endif  // !BUILDFLAG(IS_CHROMEOS_ASH) && !BUILDFLAG(IS_ANDROID) &&
-        // !BUILDFLAG(IS_IOS)
-
 #if BUILDFLAG(IS_CHROMEOS_ASH)
 // Enables the generation of pseudo-stable per-user per-device device
 // identifiers. This identifier can be reset by the user by powerwashing the

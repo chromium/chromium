@@ -204,8 +204,6 @@ class ChromeURLDataManagerWebUITrustedTypesTest
     enabled_features.push_back(ash::features::kDriveFsMirroring);
     enabled_features.push_back(ash::features::kShimlessRMAOsUpdate);
     enabled_features.push_back(chromeos::features::kUploadOfficeToCloud);
-#else
-    enabled_features.push_back(kForYouFre);
 #endif
     feature_list_.InitWithFeatures(enabled_features, {});
   }

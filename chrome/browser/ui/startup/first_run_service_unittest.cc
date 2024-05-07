@@ -7,7 +7,6 @@
 #include "base/files/file_path.h"
 #include "base/run_loop.h"
 #include "base/scoped_observation.h"
-#include "base/test/scoped_feature_list.h"
 #include "base/test/task_environment.h"
 #include "base/test/test_future.h"
 #include "chrome/browser/first_run/first_run.h"
@@ -18,7 +17,6 @@
 #include "chrome/test/base/testing_browser_process.h"
 #include "chrome/test/base/testing_profile_manager.h"
 #include "components/signin/public/base/consent_level.h"
-#include "components/signin/public/base/signin_switches.h"
 #include "components/signin/public/identity_manager/identity_test_environment.h"
 #include "content/public/test/browser_task_environment.h"
 #include "testing/gtest/include/gtest/gtest.h"
@@ -93,8 +91,6 @@ TEST_F(FirstRunServiceTest, ShouldOpenFirstRun) {
 
 // Regression test for crbug.com/1450709.
 TEST_F(FirstRunServiceTest, ShouldPopulateProfileNameFromPrimaryAccount) {
-  base::test::ScopedFeatureList feature_list{kForYouFre};
-
   signin::IdentityTestEnvironment identity_test_env;
   TestingProfileManager testing_profile_manager{
       TestingBrowserProcess::GetGlobal()};

@@ -117,17 +117,11 @@ class PromotionalTabsEnabledPolicyWelcomeTest
       const PromotionalTabsEnabledPolicyWelcomeTest&) = delete;
 
  protected:
-  PromotionalTabsEnabledPolicyWelcomeTest() {
-    scoped_feature_list_.InitAndEnableFeature(kForYouFre);
-  }
-  ~PromotionalTabsEnabledPolicyWelcomeTest() override = default;
+  PromotionalTabsEnabledPolicyWelcomeTest() = default;
 
   void SetUpCommandLine(base::CommandLine* command_line) override {
     command_line->AppendSwitch(switches::kForceFirstRun);
   }
-
- private:
-  base::test::ScopedFeatureList scoped_feature_list_;
 };
 
 IN_PROC_BROWSER_TEST_P(PromotionalTabsEnabledPolicyWelcomeTest, RunTest) {
