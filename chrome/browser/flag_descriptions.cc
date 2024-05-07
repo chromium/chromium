@@ -7388,11 +7388,6 @@ const char kMacAddressRandomizationDescription[] =
     "Feature to allow MAC address randomization to be enabled for WiFi "
     "networks.";
 
-const char kSmdsSupportName[] = "SM-DS Support";
-const char kSmdsSupportDescription[] =
-    "Feature to enable the consumer and enterprise support for provisioning "
-    "eSIM profiles using Subscription Manager Discovery Service (SM-DS).";
-
 const char kSysUiDownloadIntegrationV2Name[] =
     "Lacros Browser Downloads on ChromeOS";
 const char kSysUiDownloadIntegrationV2Description[] =

@@ -8499,10 +8499,6 @@ const FeatureEntry kFeatureEntries[] = {
      flag_descriptions::kMacAddressRandomizationDescription, kOsCrOS,
      FEATURE_VALUE_TYPE(ash::features::kMacAddressRandomization)},
 
-    {"smds-support", flag_descriptions::kSmdsSupportName,
-     flag_descriptions::kSmdsSupportDescription, kOsCrOS,
-     FEATURE_VALUE_TYPE(ash::features::kSmdsSupport)},
-
     {"tethering-experimental-functionality",
      flag_descriptions::kTetheringExperimentalFunctionalityName,
      flag_descriptions::kTetheringExperimentalFunctionalityDescription, kOsCrOS,

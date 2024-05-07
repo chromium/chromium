@@ -2760,11 +2760,6 @@ BASE_FEATURE(kSmartLockSignInRemoved,
              "SmartLockSignInRemoved",
              base::FEATURE_ENABLED_BY_DEFAULT);
 
-// Enables the consumer and enterprise support for provisioning eSIM profiles
-// using Subscription Manager Discovery Service (SM-DS). This flag is a no-op
-// unless the SmdsDbusMigration flag is enabled.
-BASE_FEATURE(kSmdsSupport, "SmdsSupport", base::FEATURE_ENABLED_BY_DEFAULT);
-
 // Controls whether the snap group feature is enabled or not.
 BASE_FEATURE(kSnapGroup, "SnapGroup", base::FEATURE_DISABLED_BY_DEFAULT);
 
@@ -4442,10 +4437,6 @@ bool IsShowSharingUserInLauncherContinueSectionEnabled() {
   return IsLauncherContinueSectionWithRecentsEnabled() &&
          base::FeatureList::IsEnabled(
              kShowSharingUserInLauncherContinueSection);
-}
-
-bool IsSmdsSupportEnabled() {
-  return base::FeatureList::IsEnabled(kSmdsSupport);
 }
 
 bool IsSmartReaderEnabled() {
