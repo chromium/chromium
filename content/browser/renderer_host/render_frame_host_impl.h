@@ -637,6 +637,7 @@ class CONTENT_EXPORT RenderFrameHostImpl
       const std::vector<ui::AXEvent>& events);
 
   void SendAccessibilityEventsToManager(const ui::AXUpdatesAndEvents& details);
+  void ExerciseAccessibilityForTest();
 
   // Evict the RenderFrameHostImpl with |reason| that causes the eviction. This
   // constructs a flattened list of NotRestoredReasons and calls

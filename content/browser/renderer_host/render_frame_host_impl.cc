@@ -320,6 +320,12 @@
 #include "content/browser/renderer_host/render_view_host_delegate_view.h"
 #endif
 
+#if defined(AX_FAIL_FAST_BUILD)
+#include "base/command_line.h"
+#include "content/public/browser/ax_inspect_factory.h"
+#include "ui/accessibility/accessibility_switches.h"
+#endif
+
 namespace features {
 BASE_FEATURE(kDisableFrameNameUpdateOnNonCurrentRenderFrameHost,
              "DisableFrameNameUpdateOnNonCurrentRenderFrameHost",
@@ -7381,10 +7387,48 @@ void RenderFrameHostImpl::SendAccessibilityEventsToManager(
   }
 
   DCHECK(delegate_->GetAccessibilityMode().has_mode(ui::AXMode::kNativeAPIs));
-  if (!browser_accessibility_manager_->OnAccessibilityEvents(details)) {
+  bool accessibility_error =
+      !browser_accessibility_manager_->OnAccessibilityEvents(details);
+  if (accessibility_error) {
     // OnAccessibilityEvents returns false in IPC error conditions.
     UnrecoverableAccessibilityError();
   }
+
+#if defined(AX_FAIL_FAST_BUILD)
+  // Don't exercise the accessibility tree when we either had an
+  // accessibility failure or if we are not allowed to fire events
+  if (accessibility_error && browser_accessibility_manager_->CanFireEvents()) {
+    ExerciseAccessibilityForTest();
+  }
+#endif
+}
+
+void RenderFrameHostImpl::ExerciseAccessibilityForTest() {
+#if defined(AX_FAIL_FAST_BUILD)
+  // When running a debugging/sanitizer build with
+  // --force-renderer-accessibility, exercise the properties for every node, to
+  // ensure no crashes or assertions are triggered. This helpfully runs for all
+  // web tests on builder linux-blink-web-tests-force-accessibility-rel, as well
+  // as for some clusterfuzz runs.
+  static int g_max_ax_tree_exercise_iterations = 3;  // Avoid timeouts.
+  static int count = 0;
+  if (browser_accessibility_manager_->GetBrowserAccessibilityRoot()
+              ->GetChildCount() > 0 &&
+      !browser_accessibility_manager_->GetBrowserAccessibilityRoot()
+           ->GetBoolAttribute(ax::mojom::BoolAttribute::kBusy) &&
+      ++count <= g_max_ax_tree_exercise_iterations) {
+    base::CommandLine* command_line = base::CommandLine::ForCurrentProcess();
+    if (command_line->HasSwitch(::switches::kForceRendererAccessibility)) {
+      std::unique_ptr<ui::AXTreeFormatter> formatter(
+          AXInspectFactory::CreatePlatformFormatter());
+      formatter->SetPropertyFilters({{"*", ui::AXPropertyFilter::ALLOW}});
+      std::string formatted_tree = formatter->Format(
+          browser_accessibility_manager_->GetBrowserAccessibilityRoot());
+      VLOG(1) << "\n\n******** Formatted tree ********\n\n"
+              << formatted_tree << "\n*********************************\n\n";
+    }
+  }
+#endif
 }
 
 bool RenderFrameHostImpl::IsInactiveAndDisallowActivation(uint64_t reason) {
