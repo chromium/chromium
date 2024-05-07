@@ -2,7 +2,7 @@ android.webkit.WebView focusable focused
 ++android.view.View
 ++++android.view.View role_description='menu pop up button' clickable collapsed focusable name='Placeholder option'
 ++++android.view.View role_description='menu pop up button' clickable collapsed focusable name='Option 2'
-++++android.view.View role_description='menu pop up button' clickable collapsed focusable name='Option 1'
+++++android.view.View role_description='menu pop up button' clickable collapsed focusable name='Option 1' state_description='Required'
 ++++android.view.View role_description='menu pop up button' clickable collapsed focusable multiselectable name='0 selected'
 ++++++android.view.View invisible
 ++++++++android.view.View clickable collection_item focusable invisible name='Option 1' row_span=1 column_span=1

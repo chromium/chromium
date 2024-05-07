@@ -65,6 +65,7 @@ class CONTENT_EXPORT BrowserAccessibilityAndroid : public BrowserAccessibility {
   bool IsMultiselectable() const;
   bool IsRangeControlWithoutAriaValueText() const;
   bool IsReportingCheckable() const;
+  bool IsRequired() const;
   bool IsScrollable() const;
   bool IsSeekControl() const;
   bool IsSelected() const;

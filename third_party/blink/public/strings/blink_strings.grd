@@ -432,6 +432,9 @@ below:
         <message name="IDS_AX_RADIO_BUTTON_STATE_DESCRIPTION_CHECKED" desc="Accessibility state description for a radio button inside a group that is checked.">
           Checked. In group, option <ph name="INDEX">$1<ex>1</ex></ph> of <ph name="COUNT">$2<ex>3</ex></ph>
         </message>
+        <message name="IDS_AX_ARIA_REQUIRED_STATE_DESCRIPTION" desc="Accessibility state description for an element that is labeled as required.">
+          Required
+        </message>
       </if>
 
       <message name="IDS_AX_AM_PM_FIELD_TEXT" desc="Accessibility label of the AM/PM field in a date/time control">
