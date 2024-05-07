@@ -20,8 +20,8 @@ Work is ongoing to implement each platform directly, without using `libusb`.
 
 *   `UsbServiceAndroid` done.
 *   `UsbServiceLinux` done.
-*   macOS not started.
-*   `UsbServiceWin` in progress. Enable via `chrome://flags/#new-usb-backend`
+*   `UsbServiceMac` in progress.
+*   `UsbServiceWin` done.
 
 
 ## Testing
