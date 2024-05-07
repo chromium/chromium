@@ -9,7 +9,6 @@
 
 #include "base/functional/callback_forward.h"
 #include "base/gtest_prod_util.h"
-#include "base/metrics/field_trial.h"
 #include "base/no_destructor.h"
 #include "build/build_config.h"
 #include "build/chromeos_buildflags.h"
@@ -22,10 +21,6 @@ class PrefRegistrySimple;
 class Profile;
 class SilentSyncEnabler;
 class ProfileNameResolver;
-
-namespace base {
-class FeatureList;
-}
 
 namespace version_info {
 enum class Channel;
@@ -79,25 +74,6 @@ class FirstRunService : public KeyedService {
 
   static void RegisterLocalStatePrefs(PrefRegistrySimple* registry);
 
-#if BUILDFLAG(ENABLE_DICE_SUPPORT)
-  // Creates a field trial to control the ForYouFre and
-  // ForYouFreSyntheticTrialRegistration features. The trial is client
-  // controlled because ForYouFre controls the First Run Experience (FRE), which
-  // shows up before a variations seed is available.
-  //
-  // No persistence happens here, instead it happens if/when the attempt to show
-  // the FRE happens, and the client joins an experiment cohort through
-  // `JoinFirstRunCohort()`.
-  static void SetUpClientSideFieldTrialIfNeeded(
-      const base::FieldTrial::EntropyProvider& entropy_provider,
-      base::FeatureList* feature_list);
-
-  // Ensures that the user's experiment group is appropriately reported
-  // to track the effect of the first run experience over time. Should be called
-  // once per browser process startup.
-  static void EnsureStickToFirstRunCohort();
-#endif
-
   FirstRunService(Profile& profile, signin::IdentityManager& identity_manager);
   ~FirstRunService() override;
 
@@ -130,35 +106,8 @@ class FirstRunService : public KeyedService {
 
  private:
   friend class FirstRunServiceFactory;
-  FRIEND_TEST_ALL_PREFIXES(FirstRunFieldTrialCreatorTest, SetUpFromClientSide);
-  FRIEND_TEST_ALL_PREFIXES(FirstRunCohortSetupTest, JoinFirstRunCohort);
   FRIEND_TEST_ALL_PREFIXES(FirstRunServiceTest,
                            ShouldPopulateProfileNameFromPrimaryAccount);
-
-#if BUILDFLAG(ENABLE_DICE_SUPPORT)
-  // Internal interface for `SetUpClientSideFieldTrialIfNeeded()`, exposed to
-  // allow for channel-independent testing.
-  static void SetUpClientSideFieldTrial(
-      const base::FieldTrial::EntropyProvider& entropy_provider,
-      base::FeatureList* feature_list,
-      version_info::Channel channel);
-
-  // Enrolls this client with a synthetic field trial based on the Finch params.
-  // Should be called when the FRE is launched, then the client needs to
-  // register again on each process startup by calling
-  // `RegisterSyntheticFieldTrial()`.
-  static void JoinFirstRunCohort();
-
-  // Reports to the launch study for the First Run rollout.
-  // Notes:
-  // - This is declared here so it can have access to some private functions
-  // that need to be friended to be used.
-  // - The function is Dice-only as on Lacros (where this build flag is not set)
-  // the ForYouFre feature rollout will not go through this study process. The
-  // feature only guards an internal refactoring that does not have a
-  // user-visible effect. If will only have a killswitch.
-  static void RegisterSyntheticFieldTrial(const std::string& group_name);
-#endif
 
   // Asynchronously attempts to complete the first run silently.
   // By the time `callback` is run (if non-null), either:

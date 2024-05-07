@@ -470,19 +470,6 @@ FirstRunServiceFactory::BuildServiceInstanceForBrowserContext(
     return nullptr;
   }
 
-#if BUILDFLAG(ENABLE_DICE_SUPPORT)
-  if (base::FeatureList::IsEnabled(kForYouFreSyntheticTrialRegistration)) {
-    // We use this point to register for the study as it can give us a good
-    // counterfactual, before checking the state of the feature itself. The
-    // service is created on demand so we are in a code path that will require
-    // the FRE to be shown.
-    // Besides being suppressed by enterprise policy, if the FRE doesn't run, it
-    // would be related to handling some corner cases, and should not impact our
-    // metrics too much.
-    FirstRunService::JoinFirstRunCohort();
-  }
-#endif
-
   std::unique_ptr<FirstRunService> instance = std::make_unique<FirstRunService>(
       *profile, *IdentityManagerFactory::GetForProfile(profile));
   base::UmaHistogramBoolean("ProfilePicker.FirstRun.ServiceCreated", true);
