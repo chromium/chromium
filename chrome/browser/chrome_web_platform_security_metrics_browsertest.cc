@@ -442,8 +442,17 @@ IN_PROC_BROWSER_TEST_F(ChromeWebPlatformSecurityMetricsBrowserTest,
 
 // When WebSocket is connected to a more-private ip address space, log a use
 // counter.
-IN_PROC_BROWSER_TEST_F(PrivateNetworkAccessWebSocketMetricBrowserTest,
-                       PrivateNetworkAccessWebSocketConnectedPublicToLocal) {
+// TODO(crbug.com/336429017): Flaky on Win.
+#if BUILDFLAG(IS_WIN)
+#define MAYBE_PrivateNetworkAccessWebSocketConnectedPublicToLocal \
+  DISABLED_PrivateNetworkAccessWebSocketConnectedPublicToLocal
+#else
+#define MAYBE_PrivateNetworkAccessWebSocketConnectedPublicToLocal \
+  PrivateNetworkAccessWebSocketConnectedPublicToLocal
+#endif
+IN_PROC_BROWSER_TEST_F(
+    PrivateNetworkAccessWebSocketMetricBrowserTest,
+    MAYBE_PrivateNetworkAccessWebSocketConnectedPublicToLocal) {
   // Launch a WebSocket server.
   ASSERT_TRUE(ws_server().Start());
 
