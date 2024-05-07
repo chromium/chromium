@@ -3002,12 +3002,12 @@ void Browser::InProgressDownloadResponse(bool cancel_downloads) {
     cancel_download_confirmation_state_ = RESPONSE_RECEIVED;
 
     if (ShouldShowCookieMigrationNoticeForBrowser(*this)) {
-      std::move(warn_before_closing_callback_)
-          .Run(WarnBeforeClosingResult::kOkToClose);
-    } else {
       ShowCookieClearOnExitMigrationNotice(
           *this, base::BindOnce(&Browser::CookieMigrationNoticeResponse,
                                 weak_factory_.GetWeakPtr()));
+    } else {
+      std::move(warn_before_closing_callback_)
+          .Run(WarnBeforeClosingResult::kOkToClose);
     }
     return;
   }
