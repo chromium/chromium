@@ -112,6 +112,19 @@ void UninstallOtherVersions(UpdaterScope scope) {
   }
 }
 
+void UninstallInThreadPool(UpdaterScope scope,
+                           base::OnceCallback<void(int)> shutdown) {
+  base::ThreadPool::PostTaskAndReplyWithResult(
+      FROM_HERE, {base::MayBlock()},
+      base::BindOnce(
+          [](UpdaterScope scope) {
+            UninstallOtherVersions(scope);
+            return Uninstall(scope);
+          },
+          scope),
+      std::move(shutdown));
+}
+
 }  // namespace
 
 // AppUninstall uninstalls the updater.
@@ -160,6 +173,15 @@ void AppUninstall::UninstallAll(int reason) {
     // currently-running version of the updater.
     uninstall_data.version = base::Version(kUpdaterVersion);
   }
+
+  // If the terms of service have not been accepted, don't ping.
+  if (config_->GetUpdaterPersistedData()->GetEulaRequired()) {
+    UninstallInThreadPool(updater_scope(),
+                          base::BindOnce(&AppUninstall::Shutdown, this));
+    return;
+  }
+
+  // Otherwise, send an uninstall ping then uninstall.
   update_client::UpdateClientFactory(config_)->SendPing(
       uninstall_data,
       {.event_type = update_client::protocol_request::kEventUninstall,
@@ -171,15 +193,7 @@ void AppUninstall::UninstallAll(int reason) {
              update_client::Error uninstall_ping_error) {
             VLOG_IF(1, uninstall_ping_error != update_client::Error::NONE)
                 << "Uninstall ping failed: " << uninstall_ping_error;
-            base::ThreadPool::PostTaskAndReplyWithResult(
-                FROM_HERE, {base::MayBlock()},
-                base::BindOnce(
-                    [](UpdaterScope scope) {
-                      UninstallOtherVersions(scope);
-                      return Uninstall(scope);
-                    },
-                    scope),
-                std::move(shutdown));
+            UninstallInThreadPool(scope, std::move(shutdown));
           },
           base::BindOnce(&AppUninstall::Shutdown, this), updater_scope()));
 }
