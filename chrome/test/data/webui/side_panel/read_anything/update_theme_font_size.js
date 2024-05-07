@@ -11,9 +11,8 @@
 (() => {
   chrome.readingMode.onConnected = () => {};
 
-  const readAnythingApp =
-      document.querySelector('read-anything-app').shadowRoot;
-  const container = readAnythingApp.getElementById('container');
+  const readAnythingApp = document.querySelector('read-anything-app');
+  const container = document.getElementById('container');
 
   chrome.readingMode.setThemeForTesting('Poppins', 1.0, true, 0, 0, 1, 0);
   const expected = '16px';  // 1em = 16px

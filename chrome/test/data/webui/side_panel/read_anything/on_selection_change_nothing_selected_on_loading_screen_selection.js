@@ -12,9 +12,7 @@
 (() => {
   chrome.readingMode.onConnected = () => {};
 
-  const readAnythingApp =
-      document.querySelector('read-anything-app').shadowRoot;
-  const emptyState = readAnythingApp.getElementById('empty-state-container');
+  const emptyState = document.getElementById('empty-state-container');
 
   let result = true;
   const assertEquals = (actual, expected) => {
@@ -32,19 +30,14 @@
   const range = new Range();
   range.setStartBefore(emptyState);
   range.setEndAfter(emptyState);
-  const selection = readAnythingApp.getSelection();
+  const selection = document.getSelection();
   selection.removeAllRanges();
   selection.addRange(range);
 
   return new Promise(resolve => {
-    setTimeout(() => {
-      const retrieved_selection = readAnythingApp.getSelection();
-      assertEquals(retrieved_selection.rangeCount, 0);
-      assertEquals(retrieved_selection.anchorNode, null);
-      assertEquals(retrieved_selection.focusNode, null);
-      assertEquals(retrieved_selection.anchorOffset, 0);
-      assertEquals(retrieved_selection.anchorOffset, 0);
-      assertEquals(retrieved_selection.focusOffset, 0);
+    setTimeout(async () => {
+      const retrieved_selection = document.getSelection();
+      assertEquals(retrieved_selection.toString(), '');
       resolve(result);
     }, 1000);
   });

@@ -35,8 +35,7 @@ suite('WebUiToolbarFlag', () => {
     chrome.readingMode.isWebUIToolbarVisible = true;
     createApp();
 
-    const container =
-        app.shadowRoot!.querySelector<HTMLElement>('#toolbar-container');
+    const container = app.querySelector<HTMLElement>('#toolbar-container');
 
     assertTrue(!!container);
     assertFalse(container.hidden);
@@ -46,8 +45,7 @@ suite('WebUiToolbarFlag', () => {
     chrome.readingMode.isWebUIToolbarVisible = false;
     createApp();
 
-    const container =
-        app.shadowRoot!.querySelector<HTMLElement>('#toolbar-container');
+    const container = app.querySelector<HTMLElement>('#toolbar-container');
 
     assertTrue(!!container);
     assertTrue(container.hidden);

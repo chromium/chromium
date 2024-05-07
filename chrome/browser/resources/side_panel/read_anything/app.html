@@ -18,7 +18,7 @@
     width: 100%;
   }
 
-  #flexParent {
+  #appFlexParent {
     height: 100%;
     width: 100%;
     display: flex;
@@ -26,11 +26,12 @@
     overflow-x: var(--app-overflow-x);
   }
 
-  #container-parent {
+  #appFlexParent #container-parent {
     background: var(--background-color);
     height: 100%;
     margin-bottom: var(--sp-card-block-padding);
     min-width: var(--container-min-width);
+    overflow: auto;
   }
 
   .sp-scroller::-webkit-scrollbar-track {
@@ -48,7 +49,7 @@
     user-select: auto;
   }
 
-  #container {
+  #appFlexParent #container {
     background: var(--background-color);
     color: var(--foreground-color);
     font-family: var(--font-family);
@@ -61,34 +62,31 @@
     margin: 0 auto;
     overflow-wrap: break-word;
   }
-
-  a:link {
+  #appFlexParent a:link {
     color: var(--link-color);
   }
-
-  a:visited {
+  #appFlexParent a:visited {
     color: var(--visited-link-color);
   }
 
-  sp-empty-state {
+  #appFlexParent sp-empty-state {
+    display: flex;
     margin: 0 auto 16px auto;
   }
 
-  ::selection {
+  #appFlexParent ::selection {
     background: var(--selection-color);
     color: var(--selection-text-color);
   }
-
-  .current-read-highlight {
+  #appFlexParent .current-read-highlight {
     background-color: var(--current-highlight-bg-color);
   }
-
-  .previous-read-highlight {
+  #appFlexParent .previous-read-highlight {
     color: var(--previous-highlight-color);
     background-color: transparent;
   }
 
-  img {
+  #appFlexParent img {
     max-width: 100%;
   }
 
@@ -108,7 +106,7 @@
   }
 
 </style>
-<div id="flexParent" on-keydown="onKeyDown_">
+<div id="appFlexParent" on-keydown="onKeyDown_">
   <div id="toolbar-container" hidden="[[!isWebUIToolbarVisible_]]">
     <read-anything-toolbar
       paused="[[speechPlayingState.paused]]"
