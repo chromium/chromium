@@ -30,7 +30,7 @@
     Never show on this site
   </message>
   <message name="IDS_COMPOSE_DISABLE_HELP_ME_WRITE_CHILD_SUGGESTION_TEXT" desc="Text a user sees in one of the Autofill popup child suggestions for the Help me write feature. When selected, the Help me write feature is disabled for all websites." translateable="false">
-    Disable Help me write
+    Disable
   </message>
   <message name="IDS_COMPOSE_GO_TO_SETTINGS_CHILD_SUGGESTION_TEXT" desc="Text a user sees in one of the Autofill popup child suggestions for the Help me write feature. When selected, the user is navigate to a decicated Help me write feature settings page." translateable="false">
     Go to Settings

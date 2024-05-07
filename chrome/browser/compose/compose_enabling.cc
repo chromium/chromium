@@ -159,7 +159,8 @@ base::expected<void, compose::ComposeShowStatus> ComposeEnabling::CheckEnabling(
   // Check that the feature flag is enabled.
   if (!base::FeatureList::IsEnabled(compose::features::kEnableCompose)) {
     DVLOG(2) << "feature not enabled ";
-    return base::unexpected(compose::ComposeShowStatus::kFeatureFlagDisabled);
+    return base::unexpected(
+        compose::ComposeShowStatus::kComposeFeatureFlagDisabled);
   }
 
   // Check signin status.
@@ -207,12 +208,38 @@ ComposeEnabling::ShouldTriggerPopup(
   if (ongoing_session) {
     return ShouldTriggerSavedStatePopup(trigger_source);
   }
-  return ShouldTriggerNoStatePopup(autocomplete_attribute, profile, prefs,
-                                   translate_manager, top_level_frame_origin,
-                                   element_frame_origin, url);
+
+  base::expected<void, compose::ComposeShowStatus> show_status =
+      ShouldTriggerNoStatePopup(autocomplete_attribute, profile, prefs,
+                                translate_manager, top_level_frame_origin,
+                                element_frame_origin, url);
+  if (show_status.has_value()) {
+    compose::LogComposeProactiveNudgeShowStatus(
+        compose::ComposeShowStatus::kShouldShow);
+    return base::ok();
+  }
+
+  compose::LogComposeProactiveNudgeShowStatus(show_status.error());
+  switch (show_status.error()) {
+    case compose::ComposeShowStatus::
+        kPractiveNudgeDisabledGloballyByUserPreference:
+    case compose::ComposeShowStatus::
+        kPractiveNudgeDisabledForSiteByUserPreference:
+    case compose::ComposeShowStatus::kProactiveNudgeFeatureDisabled:
+    case compose::ComposeShowStatus::kRandomlyBlocked:
+      // The disabled deny reason means the nudge would show if preference or
+      // configuration changed.
+      return base::unexpected(
+          compose::ComposeNudgeDenyReason::kProactiveNudgeDisabled);
+    default:
+      // The blocked deny reason means the nudge would never display even if
+      // preferences or configuration changed.
+      return base::unexpected(
+          compose::ComposeNudgeDenyReason::kProactiveNudgeBlocked);
+  }
 }
 
-base::expected<void, compose::ComposeNudgeDenyReason>
+base::expected<void, compose::ComposeShowStatus>
 ComposeEnabling::ShouldTriggerNoStatePopup(
     std::string_view autocomplete_attribute,
     Profile* profile,
@@ -224,29 +251,29 @@ ComposeEnabling::ShouldTriggerNoStatePopup(
   // TODO(b/319661274): Support fenced frame checks from the Autofill popup
   // entry point.
   bool is_in_fenced_frame = false;
-  if (!PageLevelChecks(translate_manager, url, top_level_frame_origin,
-                       element_frame_origin, is_in_fenced_frame)
-           .has_value()) {
-    return base::unexpected(compose::ComposeNudgeDenyReason::kPageLevelChecks);
+  if (auto page_checks =
+          PageLevelChecks(translate_manager, url, top_level_frame_origin,
+                          element_frame_origin, is_in_fenced_frame);
+      !page_checks.has_value()) {
+    return base::unexpected(page_checks.error());
   }
 
   // Check URL with Optimization guide.
   switch (GetOptimizationGuidanceForUrl(url, profile)) {
     case compose::ComposeHintDecision::COMPOSE_HINT_DECISION_COMPOSE_DISABLED:
-      return base::unexpected(
-          compose::ComposeNudgeDenyReason::kOptimizationGuideChecks);
+      return base::unexpected(compose::ComposeShowStatus::kPerUrlChecksFailed);
     case compose::ComposeHintDecision::COMPOSE_HINT_DECISION_DISABLE_NUDGE:
-      if (compose::GetComposeConfig()
-              .proactive_nudge_bypass_optimization_guide) {
-        break;
+      if (!compose::GetComposeConfig()
+               .proactive_nudge_bypass_optimization_guide) {
+        return base::unexpected(
+            compose::ComposeShowStatus::kPractiveNudgeDisabledByServerConfig);
       }
-      return base::unexpected(
-          compose::ComposeNudgeDenyReason::kOptimizationGuideChecks);
+      break;
     case compose::ComposeHintDecision::COMPOSE_HINT_DECISION_UNSPECIFIED:
       if (!base::FeatureList::IsEnabled(
               compose::features::kEnableNudgeForUnspecifiedHint)) {
         return base::unexpected(
-            compose::ComposeNudgeDenyReason::kOptimizationGuideChecks);
+            compose::ComposeShowStatus::kPractiveNudgeUnknownServerConfig);
       }
       break;
     case compose::ComposeHintDecision::COMPOSE_HINT_DECISION_ENABLED:
@@ -257,17 +284,17 @@ ComposeEnabling::ShouldTriggerNoStatePopup(
   // TODO(b/303288183): Decide if we should keep this check or not.
   if (!AutocompleteAllowed(autocomplete_attribute)) {
     DVLOG(2) << "autocomplete=off";
-    return base::unexpected(compose::ComposeNudgeDenyReason::kDOMLevelChecks);
+    return base::unexpected(compose::ComposeShowStatus::kAutocompleteOff);
   }
 
   if (!prefs->GetBoolean(prefs::kEnableProactiveNudge)) {
-    return base::unexpected(compose::ComposeNudgeDenyReason::
-                                kProactiveNudgeDisabledByGlobalPreference);
+    return base::unexpected(compose::ComposeShowStatus::
+                                kPractiveNudgeDisabledGloballyByUserPreference);
   }
 
   if (!compose::GetComposeConfig().proactive_nudge_enabled) {
     return base::unexpected(
-        compose::ComposeNudgeDenyReason::kProactiveNudgeDisabled);
+        compose::ComposeShowStatus::kProactiveNudgeFeatureDisabled);
   }
 
   if (base::RandDouble() <
@@ -275,7 +302,7 @@ ComposeEnabling::ShouldTriggerNoStatePopup(
     return base::ok();
   }
 
-  return base::unexpected(compose::ComposeNudgeDenyReason::kRandomlyBlocked);
+  return base::unexpected(compose::ComposeShowStatus::kRandomlyBlocked);
 }
 
 base::expected<void, compose::ComposeNudgeDenyReason>

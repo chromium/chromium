@@ -811,6 +811,11 @@ TEST_F(ChromeComposeClientTest, TestShouldTriggerProactiveNudgeEnabledUKM) {
           testing::Pair(
               ukm::builders::Compose_PageEvents::kProactiveNudgeShouldShowName,
               1)));
+
+  // Check Compose.ProactiveNudge.CTR metrics.
+  histograms().ExpectBucketCount(
+      compose::kComposeProactiveNudgeCtr,
+      compose::ComposeProactiveNudgeCtrEvent::kNudgeDisplayed, 1);
 }
 
 TEST_F(ChromeComposeClientTest,
@@ -1520,6 +1525,11 @@ TEST_F(ChromeComposeClientTest,
   histograms().ExpectBucketCount(
       compose::kComposeSessionEventCounts,
       compose::ComposeSessionEventTypes::kInsertClicked, 1);
+
+  // Check Compose.ProactiveNudge.CTR metrics.
+  histograms().ExpectBucketCount(
+      compose::kComposeProactiveNudgeCtr,
+      compose::ComposeProactiveNudgeCtrEvent::kDialogOpened, 1);
 }
 
 // Test that opening the saved state dialog with selected text does not start

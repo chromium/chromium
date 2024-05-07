@@ -130,6 +130,28 @@ chromium-metrics-reviews@google.com.
   </summary>
 </histogram>
 
+<histogram name="Compose.ProactiveNudge.CTR"
+    enum="ComposeProactiveNudgeCtrEvent" expires_after="2024-11-01">
+  <owner>perrier@chromium.org</owner>
+  <owner>chrome-compose-frontend@google.com</owner>
+  <summary>
+    Histogram for calculating the click-through rate (CTR) of the Compose
+    proactive nudge. Logged each time the nudge is displayed and when it's
+    clicked by the user. CTR is calculated through `clicked/displayed`.
+  </summary>
+</histogram>
+
+<histogram name="Compose.ProactiveNudge.ShowStatus" enum="ComposeShowStatus"
+    expires_after="2024-11-01">
+  <owner>perrier@chromium.org</owner>
+  <owner>chrome-compose-frontend@google.com</owner>
+  <summary>
+    Histogram that records the show status of the Compose proactive nudge.
+    Logged each time the nudge is displayed or blocked from displaying (with a
+    reason why).
+  </summary>
+</histogram>
+
 <histogram name="Compose.Session.Duration.OverOneDay" enum="BooleanYesNo"
     expires_after="2024-11-01">
   <owner>perrier@chromium.org</owner>
