@@ -17,6 +17,7 @@
 #include "ash/system/diagnostics/diagnostics_log_controller.h"
 #include "ash/system/diagnostics/keyboard_input_log.h"
 #include "ash/system/diagnostics/mojom/input.mojom.h"
+#include "ash/system/input_device_settings/input_device_settings_utils.h"
 #include "ash/webui/diagnostics_ui/backend/common/histogram_util.h"
 #include "ash/webui/diagnostics_ui/backend/input/event_watcher_factory.h"
 #include "ash/webui/diagnostics_ui/backend/input/input_data_event_watcher.h"
@@ -59,11 +60,6 @@ bool IsTouchInputDevice(InputDeviceInformation* device_info) {
 
 bool IsLoggingEnabled() {
   return diagnostics::DiagnosticsLogController::IsInitialized();
-}
-
-bool IsSplitModifierKeyboard(int device_id) {
-  return Shell::Get()->keyboard_capability()->HasFunctionKey(device_id) &&
-         Shell::Get()->keyboard_capability()->HasRightAltKey(device_id);
 }
 
 }  // namespace

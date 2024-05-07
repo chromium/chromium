@@ -526,6 +526,20 @@ std::vector<ui::Accelerator> AcceleratorAliasConverter::CreateSixPackAliases(
     return std::vector<ui::Accelerator>();
   }
 
+  if (features::IsModifierSplitEnabled() &&
+      IsSplitModifierKeyboard(device_id.value())) {
+    const auto iter = ui::kSixPackKeyToFnKeyMap.find(accelerator.key_code());
+    // [Insert] is technically a six pack key but has no Fn based rewrite. Need
+    // to make sure we return no aliased accelerator for this case.
+    if (iter == ui::kSixPackKeyToFnKeyMap.end()) {
+      return std::vector<ui::Accelerator>();
+    }
+
+    return {ui::Accelerator(iter->second,
+                            accelerator.modifiers() | ui::EF_FUNCTION_DOWN,
+                            accelerator.key_state())};
+  }
+
   // Edge cases:
   // 1. [Shift] + [Delete] should not be remapped to [Shift] + [Search] +
   // [Back] (aka, Insert).

@@ -139,6 +139,7 @@ ASH_EXPORT bool IsChromeOSKeyboard(const mojom::Keyboard& keyboard);
 
 // Returns whether the given keyboard is a split modifier keyboard.
 ASH_EXPORT bool IsSplitModifierKeyboard(const mojom::Keyboard& keyboard);
+ASH_EXPORT bool IsSplitModifierKeyboard(int keyboard_id);
 
 }  // namespace ash
 

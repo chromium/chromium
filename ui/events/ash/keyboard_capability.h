@@ -152,6 +152,16 @@ inline constexpr auto kSixPackKeyToSearchSystemKeyMap =
         {KeyboardCode::VKEY_INSERT, KeyboardCode::VKEY_BACK},
     });
 
+// A map between six pack keys to function keys.
+inline constexpr auto kSixPackKeyToFnKeyMap =
+    base::MakeFixedFlatMap<KeyboardCode, KeyboardCode>({
+        {KeyboardCode::VKEY_DELETE, KeyboardCode::VKEY_BACK},
+        {KeyboardCode::VKEY_HOME, KeyboardCode::VKEY_LEFT},
+        {KeyboardCode::VKEY_PRIOR, KeyboardCode::VKEY_UP},
+        {KeyboardCode::VKEY_END, KeyboardCode::VKEY_RIGHT},
+        {KeyboardCode::VKEY_NEXT, KeyboardCode::VKEY_DOWN},
+    });
+
 // A map between six pack keys to alt system keys.
 inline constexpr auto kSixPackKeyToAltSystemKeyMap =
     base::MakeFixedFlatMap<KeyboardCode, KeyboardCode>({
