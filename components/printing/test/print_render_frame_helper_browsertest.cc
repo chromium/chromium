@@ -11,9 +11,11 @@
 #include <string_view>
 #include <utility>
 
+#include "base/base_paths.h"
 #include "base/command_line.h"
 #include "base/files/file_util.h"
 #include "base/memory/raw_ptr.h"
+#include "base/path_service.h"
 #include "base/run_loop.h"
 #include "base/strings/utf_string_conversions.h"
 #include "build/build_config.h"
@@ -41,6 +43,7 @@
 #include "third_party/blink/public/web/web_local_frame.h"
 #include "third_party/blink/public/web/web_range.h"
 #include "third_party/blink/public/web/web_view.h"
+#include "ui/base/resource/resource_bundle.h"
 
 #if BUILDFLAG(ENABLE_PRINT_PREVIEW)
 #include "components/printing/browser/print_manager_utils.h"
@@ -507,6 +510,13 @@ class PrintRenderFrameHelperTestBase : public content::RenderViewTest {
     printer_ = std::make_unique<MockPrinter>();
 
     content::RenderViewTest::SetUp();
+
+    // For `IDR_PRINT_HEADER_FOOTER_TEMPLATE_PAGE`.
+    ui::ResourceBundle::GetSharedInstance().AddDataPackFromPath(
+        base::PathService::CheckedGet(base::DIR_ASSETS)
+            .AppendASCII("components_tests_resources.pak"),
+        ui::kScaleFactorNone);
+
 #if BUILDFLAG(ENABLE_PRINT_PREVIEW)
     preview_ui_ = std::make_unique<FakePrintPreviewUI>();
 #endif
