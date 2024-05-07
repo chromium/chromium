@@ -153,8 +153,12 @@ void WaylandDataDevice::OnDrop(void* data, wl_data_device* data_device) {
   // potential leaks and/or UAFs, forcibly call corresponding delegate callback
   // here, in Lacros. TODO(crbug.com/40819972): Remove once Exo bug is fixed.
 #if BUILDFLAG(IS_CHROMEOS_LACROS)
-  self->drag_delegate_->OnDragLeave(timestamp);
-  self->ResetDragDelegateIfNotDragSource();
+  // Delegate might have been reset already if the drag was cancelled in
+  // response to the drop event.
+  if (self->drag_delegate_) {
+    self->drag_delegate_->OnDragLeave(timestamp);
+    self->ResetDragDelegateIfNotDragSource();
+  }
 #endif
 }
 
