@@ -158,7 +158,7 @@ const char kBlockLoadCommandline[] = "command_line";
 // ExtensionUnpublishedAvailability policy default value.
 constexpr int kAllowUnpublishedExtensions = 0;
 
-// When uninstalling an extension determine if the extension's directory
+// When uninstalling an extension, determine if the extension's directory
 // should be deleted when uninstalling. Returns `true` iff extension is
 // unpacked and installed outside the unpacked extensions installations dir.
 // Example: packed extensions are always deleted. But unpacked extensions are
@@ -887,19 +887,20 @@ bool ExtensionService::UninstallExtension(
     // Extensions installed from webstore or .crx are versioned in subdirs so we
     // delete the parent dir. Unpacked (installed from .zip rather than folder)
     // are not versioned so we just delete the single installation directory.
-    base::FilePath deletion_dir =
+    base::FilePath extension_dir_to_delete =
         is_unpacked_location ? extension->path() : extension->path().DirName();
 
-    // Tell the backend to start deleting installed extension on the file
+    base::FilePath extensions_install_dir =
+        is_unpacked_location ? unpacked_install_directory_ : install_directory_;
+
+    // Tell the backend to start deleting the installed extension on the file
     // thread.
     if (!GetExtensionFileTaskRunner()->PostTaskAndReply(
             FROM_HERE,
             base::BindOnce(&ExtensionService::UninstallExtensionOnFileThread,
                            extension->id(), profile_->GetProfileUserName(),
-                           /*extensions_install_dir=*/
-                           is_unpacked_location ? unpacked_install_directory_
-                                                : install_directory_,
-                           /*extension_dir_to_delete=*/std::move(deletion_dir),
+                           std::move(extensions_install_dir),
+                           std::move(extension_dir_to_delete),
                            profile_->GetPath()),
             subtask_done_callback)) {
       NOTREACHED();

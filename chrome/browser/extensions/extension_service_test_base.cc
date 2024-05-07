@@ -73,6 +73,15 @@ std::unique_ptr<TestingProfile> BuildTestingProfile(
     return nullptr;
   }
 
+#if BUILDFLAG(IS_MAC)
+  // For tests, make sure we're working with the absolute profile path, so that
+  // path comparisons don't fail. See https://issues.chromium.org/40916874 for
+  // details.
+  if (!temp_dir.Set(base::MakeAbsoluteFilePath(temp_dir.Take()))) {
+    return nullptr;
+  }
+#endif
+
   base::FilePath profile_dir =
       temp_dir.GetPath().Append(FILE_PATH_LITERAL("TestingExtensionsPath"));
   if (base::File::Error error = base::File::FILE_OK;

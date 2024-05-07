@@ -285,14 +285,6 @@ TEST_P(ZipFileInstallerLocationTest, GoodZip) {
             absolute_expected_extension_install_directory);
 }
 
-/*
- base::FilePath absolute_extension_path =
-    base::MakeAbsoluteFilePath(extension->path());
-base::FilePath absolute_expected_extension_install_directory =
-    base::MakeAbsoluteFilePath(expected_extension_install_directory_.Append(
-        extension->path().BaseName()));
-*/
-
 TEST_P(ZipFileInstallerLocationTest, BadZip) {
   // Manifestless archive.
   RunInstaller(/*zip_name=*/"bad.zip",
