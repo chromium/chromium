@@ -143,9 +143,13 @@
       int index = GetWebStateIndex(_webStateList, WebStateSearchCriteria{
                                                       .identifier = identifier,
                                                   });
-      tabIndexes.insert(index);
+      if (index != WebStateList::kInvalidIndex) {
+        tabIndexes.insert(index);
+      }
     }
-    _webStateList->CreateGroup(tabIndexes, visualData);
+    if (!tabIndexes.empty()) {
+      _webStateList->CreateGroup(tabIndexes, visualData);
+    }
   }
   completion();
 }
