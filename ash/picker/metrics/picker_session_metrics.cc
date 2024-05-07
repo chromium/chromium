@@ -266,7 +266,7 @@ void PickerSessionMetrics::SetAction(PickerCategory action) {
 void PickerSessionMetrics::SetInsertedResult(PickerSearchResult inserted_result,
                                              int index) {
   if (!inserted_result_.has_value()) {
-    inserted_result_ = inserted_result;
+    inserted_result_ = std::move(inserted_result);
     result_index_ = index;
   }
 }

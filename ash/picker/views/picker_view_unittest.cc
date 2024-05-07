@@ -258,40 +258,52 @@ TEST_F(PickerViewTest, EmptySearchFieldContentsSwitchesToZeroStateView) {
 }
 
 TEST_F(PickerViewTest, LeftClickSearchResultSelectsResult) {
-  base::test::TestFuture<void> future;
-  FakePickerViewDelegate delegate({
-      .search_function = base::BindLambdaForTesting(
-          [&](FakePickerViewDelegate::SearchResultsCallback callback) {
-            future.SetValue();
-            callback.Run({
-                PickerSearchResultsSection(
-                    PickerSectionType::kExpressions,
-                    {{PickerSearchResult::Text(u"result")}},
-                    /*has_more_results=*/false),
-            });
-          }),
-  });
-  auto widget = PickerWidget::Create(&delegate, kDefaultAnchorBounds);
-  widget->Show();
-  PickerView* view = GetPickerViewFromWidget(*widget);
-  PressAndReleaseKey(ui::KeyboardCode::VKEY_A, ui::EF_NONE);
-  ASSERT_TRUE(future.Wait());
-  ASSERT_THAT(
-      view->search_results_view_for_testing().section_views_for_testing(),
-      Not(IsEmpty()));
-  ASSERT_THAT(view->search_results_view_for_testing()
-                  .section_views_for_testing()[0]
-                  ->item_views_for_testing(),
-              Not(IsEmpty()));
+  {
+    base::test::TestFuture<void> future;
+    FakePickerViewDelegate delegate({
+        .search_function = base::BindLambdaForTesting(
+            [&](FakePickerViewDelegate::SearchResultsCallback callback) {
+              future.SetValue();
+              callback.Run({
+                  PickerSearchResultsSection(
+                      PickerSectionType::kExpressions,
+                      {{PickerSearchResult::Text(u"result")}},
+                      /*has_more_results=*/false),
+              });
+            }),
+    });
+    auto widget = PickerWidget::Create(&delegate, kDefaultAnchorBounds);
+    widget->Show();
+    PickerView* view = GetPickerViewFromWidget(*widget);
+    PressAndReleaseKey(ui::KeyboardCode::VKEY_A, ui::EF_NONE);
+    ASSERT_TRUE(future.Wait());
+    ASSERT_THAT(
+        view->search_results_view_for_testing().section_views_for_testing(),
+        Not(IsEmpty()));
+    ASSERT_THAT(view->search_results_view_for_testing()
+                    .section_views_for_testing()[0]
+                    ->item_views_for_testing(),
+                Not(IsEmpty()));
 
-  PickerItemView* result_view = view->search_results_view_for_testing()
-                                    .section_views_for_testing()[0]
-                                    ->item_views_for_testing()[0];
-  ViewDrawnWaiter().Wait(result_view);
-  LeftClickOn(result_view);
+    PickerItemView* result_view = view->search_results_view_for_testing()
+                                      .section_views_for_testing()[0]
+                                      ->item_views_for_testing()[0];
+    ViewDrawnWaiter().Wait(result_view);
+    LeftClickOn(result_view);
 
-  EXPECT_THAT(delegate.last_inserted_result(),
-              Optional(PickerSearchResult::Text(u"result")));
+    EXPECT_THAT(delegate.last_inserted_result(),
+                Optional(PickerSearchResult::Text(u"result")));
+  }
+
+  cros_events::Picker_FinishSession expected_event;
+  expected_event.SetOutcome(cros_events::PickerSessionOutcome::UNKNOWN)
+      .SetAction(cros_events::PickerAction::UNKNOWN)
+      .SetResultSource(cros_events::PickerResultSource::UNKNOWN)
+      .SetResultType(cros_events::PickerResultType::TEXT)
+      .SetTotalEdits(1)
+      .SetFinalQuerySize(1)
+      .SetResultIndex(0);
+  EXPECT_THAT(metrics_recorder_.GetEvents(), ContainsEvent(expected_event));
 }
 
 TEST_F(PickerViewTest, SwitchesToCategoryView) {

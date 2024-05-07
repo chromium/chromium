@@ -55,6 +55,9 @@ class ASH_EXPORT PickerSearchResultsView : public PickerPageView {
 
   void ShowNoResultsFound();
 
+  // Returns the index of `inserted_result` in the search result list.
+  int GetIndex(const PickerSearchResult& inserted_result);
+
   PickerSectionListView* section_list_view_for_testing() {
     return section_list_view_;
   }
@@ -93,6 +96,9 @@ class ASH_EXPORT PickerSearchResultsView : public PickerPageView {
 
   // Used to track the views for each section of results.
   std::vector<raw_ptr<PickerSectionView>> section_views_;
+
+  // Used to calculate the index of the inserted result.
+  std::vector<PickerSearchResult> top_results_;
 
   // The currently pseudo focused view, which responds to user actions that
   // trigger `DoPseudoFocusedAction`.

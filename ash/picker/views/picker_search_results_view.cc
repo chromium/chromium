@@ -56,6 +56,8 @@ constexpr int kIconSize = 20;
 
 constexpr auto kNoResultsViewLabelMargin = gfx::Insets::VH(32, 16);
 
+constexpr int kMaxIndexForMetrics = 10;
+
 PickerCategory GetCategoryForEditorData(
     const PickerSearchResult::EditorData& data) {
   switch (data.mode) {
@@ -212,6 +214,7 @@ void PickerSearchResultsView::ClearSearchResults() {
   section_list_view_->ClearSectionList();
   section_list_view_->SetVisible(true);
   no_results_view_->SetVisible(false);
+  top_results_.clear();
 }
 
 void PickerSearchResultsView::AppendSearchResults(
@@ -227,6 +230,9 @@ void PickerSearchResultsView::AppendSearchResults(
   }
   for (const auto& result : section.results()) {
     AddResultToSection(result, section_view);
+    if (top_results_.size() < kMaxIndexForMetrics) {
+      top_results_.push_back(result);
+    }
   }
   section_views_.push_back(section_view);
 
@@ -420,6 +426,16 @@ void PickerSearchResultsView::ScrollPseudoFocusedViewToVisible() {
     // Otherwise, just ensure the item is visible.
     pseudo_focused_item->ScrollViewToVisible();
   }
+}
+
+int PickerSearchResultsView::GetIndex(
+    const PickerSearchResult& inserted_result) {
+  auto it = base::ranges::find(top_results_, inserted_result);
+  if (it == top_results_.end()) {
+    return kMaxIndexForMetrics;
+  }
+  return std::min(kMaxIndexForMetrics,
+                  static_cast<int>(it - top_results_.begin()));
 }
 
 BEGIN_METADATA(PickerSearchResultsView)
