@@ -279,7 +279,7 @@ void ChromeBrowserMainExtraPartsPerformanceManager::PostCreateThreads() {
           g_browser_process->local_state()));
 
   if (base::FeatureList::IsEnabled(
-          performance_manager::features::kPerformanceCPUIntervention)) {
+          performance_manager::features::kPerformanceIntervention)) {
     performance_detection_manager_ = base::WrapUnique(
         new performance_manager::user_tuning::PerformanceDetectionManager());
   }

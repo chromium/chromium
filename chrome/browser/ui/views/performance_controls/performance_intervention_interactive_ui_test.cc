@@ -19,7 +19,7 @@ class PerformanceInterventionInteractiveTest : public InteractiveBrowserTest {
  public:
   void SetUp() override {
     feature_list_.InitAndEnableFeature(
-        performance_manager::features::kPerformanceCPUIntervention);
+        performance_manager::features::kPerformanceIntervention);
     InteractiveBrowserTest::SetUp();
   }
 

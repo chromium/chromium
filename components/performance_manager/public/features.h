@@ -89,8 +89,8 @@ BASE_DECLARE_FEATURE(kDiscardRingImprovements);
 // configuring performance settings.
 BASE_DECLARE_FEATURE(kPerformanceControlsSidePanel);
 
-// This enables the CPU performance interventions within the side panel.
-BASE_DECLARE_FEATURE(kPerformanceCPUIntervention);
+// This enables the performance detection backend and interventions UI.
+BASE_DECLARE_FEATURE(kPerformanceIntervention);
 
 #if BUILDFLAG(IS_WIN)
 // Prefetch the main browser DLL when a new node is added to the PM graph
@@ -116,9 +116,6 @@ extern const base::FeatureParam<int> kCPUMaxActionableTabs;
 
 // Minimum percentage to improve CPU health for a tab to be actionable
 extern const base::FeatureParam<int> kMinimumActionableTabCPUPercentage;
-
-// This enables the Memory performance interventions within the side panel.
-BASE_DECLARE_FEATURE(kPerformanceMemoryIntervention);
 
 // This represents the duration that Memory must be over the threshold before
 // a notification is triggered.
