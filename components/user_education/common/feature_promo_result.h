@@ -83,6 +83,8 @@ class FeaturePromoResult {
   constexpr bool operator!=(const FeaturePromoResult& other) const {
     return failure_ != other.failure_;
   }
+  constexpr bool operator==(Failure other) const { return failure_ == other; }
+  constexpr bool operator!=(Failure other) const { return failure_ != other; }
   constexpr auto failure() const { return failure_; }
 
  private:

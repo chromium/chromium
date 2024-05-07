@@ -9,6 +9,7 @@
 #include <map>
 #include <memory>
 #include <optional>
+#include <ostream>
 #include <string>
 
 #include "base/auto_reset.h"
@@ -292,9 +293,15 @@ class FeaturePromoControllerCommon : public FeaturePromoController {
   friend BrowserFeaturePromoControllerTest;
   friend FeaturePromoLifecycleUiTest;
 
+  enum class ShowSource { kNormal, kQueue, kDemo };
+
+  // Internal entry point for showing a promo.
+  FeaturePromoResult MaybeShowPromoImpl(FeaturePromoParams params,
+                                        ShowSource source);
+
   // Common logic for showing feature promos.
   FeaturePromoResult MaybeShowPromoCommon(FeaturePromoParams params,
-                                          bool for_demo);
+                                          ShowSource source);
 
   const FeaturePromoStorageService* storage_service() const {
     return storage_service_;
@@ -366,8 +373,7 @@ class FeaturePromoControllerCommon : public FeaturePromoController {
   // Note: this data structure is inefficient for lookups, but given that only a
   // small number of promos should be queued at any given point, it's probably
   // still faster than some kind of linked map implementation would be.
-  using QueuedPromos =
-      std::list<std::pair<const base::Feature*, QueuedPromoData>>;
+  using QueuedPromos = std::list<QueuedPromoData>;
 
   bool EndPromo(const base::Feature& iph_feature,
                 FeaturePromoClosedReason close_reason);
@@ -404,6 +410,10 @@ class FeaturePromoControllerCommon : public FeaturePromoController {
   // if one is not present.
   QueuedPromos::iterator GetNextQueuedPromo();
 
+  // Const version returns a pointer to the queued data, or null if no promos
+  // are queued.
+  const QueuedPromoData* GetNextQueuedPromo() const;
+
   // Possibly fires a queued promo based on certain conditions.
   void MaybeShowQueuedPromo();
 
@@ -433,7 +443,7 @@ class FeaturePromoControllerCommon : public FeaturePromoController {
   //  - `anchor_element` - the UI element the promo should attach to.
   FeaturePromoResult CanShowPromoCommon(
       const FeaturePromoParams& params,
-      bool for_demo,
+      ShowSource source,
       const FeaturePromoSpecification** primary_spec = nullptr,
       const FeaturePromoSpecification** display_spec = nullptr,
       std::unique_ptr<FeaturePromoLifecycle>* lifecycle = nullptr,
@@ -594,6 +604,8 @@ struct FeaturePromoParams {
   FeaturePromoSpecification::FormatParameters title_params =
       FeaturePromoSpecification::NoSubstitution();
 };
+
+std::ostream& operator<<(std::ostream& os, FeaturePromoStatus status);
 
 }  // namespace user_education
 

@@ -6,6 +6,7 @@
 
 #include <optional>
 #include <string>
+#include <vector>
 
 #include "base/callback_list.h"
 #include "base/feature_list.h"
@@ -34,6 +35,7 @@
 #include "chrome/browser/user_education/user_education_service_factory.h"
 #include "chrome/grit/generated_resources.h"
 #include "chrome/test/base/testing_profile.h"
+#include "components/feature_engagement/public/feature_list.h"
 #include "components/feature_engagement/public/tracker.h"
 #include "components/feature_engagement/test/mock_tracker.h"
 #include "components/strings/grit/components_strings.h"
@@ -127,13 +129,25 @@ using user_education::TutorialDescription;
 class BrowserFeaturePromoControllerTest : public TestWithBrowserView {
  public:
   void SetUp() override {
+    std::vector<base::test::FeatureRef> enabled_features;
+    std::vector<base::test::FeatureRef> disabled_features;
+
+    // Disable all registered IPH. These tests use only test features.
+    for (const auto& feature : feature_engagement::GetAllFeatures()) {
+      disabled_features.emplace_back(*feature);
+    }
+
+    // Enable or disable V2.
     if (UseV2()) {
-      scoped_feature_list_.InitAndEnableFeature(
+      enabled_features.emplace_back(
           user_education::features::kUserEducationExperienceVersion2);
     } else {
-      scoped_feature_list_.InitAndDisableFeature(
+      disabled_features.emplace_back(
           user_education::features::kUserEducationExperienceVersion2);
     }
+
+    // Do the enabling or disabling.
+    scoped_feature_list_.InitWithFeatures(enabled_features, disabled_features);
 
     TestWithBrowserView::SetUp();
     controller_ = browser_view()->GetFeaturePromoController();
@@ -269,8 +283,8 @@ class BrowserFeaturePromoControllerTest : public TestWithBrowserView {
   auto CheckNotShownMetrics(const base::Feature& feature,
                             FeaturePromoResult result,
                             int not_shown_count) {
-    EXPECT_EQ(not_shown_count, user_action_tester_.GetActionCount(
-                                   "UserEducation.MessageNotShown"));
+    // Can't check the general "not shown" count since some other startup promos
+    // might have been blocked (this is a live browser window).
 
     auto action_with_iph_name =
         base::StringPrintf("UserEducation.MessageNotShown.%s", feature.name);
@@ -2022,6 +2036,17 @@ class BrowserFeaturePromoControllerPriorityTest
     });
   }
 
+  auto CheckPromoStatus(const base::Feature& iph_feature,
+                        FeaturePromoStatus status) {
+    std::ostringstream oss;
+    oss << "CheckPromoStatus(" << iph_feature.name << ", " << status << ")";
+    return CheckResult(
+        [this, &iph_feature]() {
+          return controller()->GetPromoStatus(iph_feature);
+        },
+        status, oss.str());
+  }
+
   const base::TimeDelta kLessThanGracePeriod =
       user_education::features::GetSessionStartGracePeriod() / 4;
   const base::TimeDelta kMoreThanGracePeriod =
@@ -2211,6 +2236,42 @@ TEST_F(BrowserFeaturePromoControllerPriorityTest,
       WaitForState(kStartupCallbackState, true),
       WaitForShow(HelpBubbleView::kHelpBubbleElementIdForTesting),
       ExpectShowingPromo(&kTestIPHFeature), FlushEvents(), ClosePromo());
+}
+
+TEST_F(BrowserFeaturePromoControllerPriorityTest,
+       RegularPromoBlockedWhenPromoIsQueued) {
+  SetTrackerInitBehavior(true, TrackerCallbackBehavior::kPost);
+  RunTestSequence(
+      ResetSessionData(kMoreThanGracePeriod),
+      MaybeShowStartupPromo(kLegalNoticeFeature),
+      MaybeShowPromo(kTutorialIPHFeature, FeaturePromoResult::kBlockedByPromo));
+}
+
+TEST_F(BrowserFeaturePromoControllerPriorityTest,
+       LegalNoticeNotBlockedWhenPromoIsQueued) {
+  SetTrackerInitBehavior(true, TrackerCallbackBehavior::kPost);
+  RunTestSequence(ResetSessionData(kMoreThanGracePeriod),
+                  MaybeShowStartupPromo(kSnoozeIPHFeature),
+                  MaybeShowPromo(kLegalNoticeFeature));
+}
+
+TEST_F(BrowserFeaturePromoControllerPriorityTest,
+       SecondPromoNotCanceledWhenFirstQueuedPromoIsOverridden) {
+  SetTrackerInitBehavior(true, TrackerCallbackBehavior::kPost);
+  RunTestSequence(
+      ResetSessionData(kMoreThanGracePeriod),
+      MaybeShowStartupPromo(kSnoozeIPHFeature),
+      MaybeShowStartupPromo(kTutorialIPHFeature),
+      WaitForShow(HelpBubbleView::kHelpBubbleElementIdForTesting),
+      FlushEvents(),
+      CheckPromoStatus(kSnoozeIPHFeature, FeaturePromoStatus::kBubbleShowing),
+      MaybeShowPromo(kLegalNoticeFeature),
+      WaitForShow(HelpBubbleView::kHelpBubbleElementIdForTesting, true),
+      FlushEvents(),
+      CheckPromoStatus(kLegalNoticeFeature, FeaturePromoStatus::kBubbleShowing),
+      CheckPromoStatus(kSnoozeIPHFeature, FeaturePromoStatus::kNotRunning),
+      CheckPromoStatus(kTutorialIPHFeature,
+                       FeaturePromoStatus::kQueuedForStartup));
 }
 
 class BrowserFeaturePromoControllerPolicyTest
