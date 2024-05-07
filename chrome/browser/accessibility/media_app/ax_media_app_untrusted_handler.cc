@@ -610,7 +610,7 @@ void AXMediaAppUntrustedHandler::StitchDocumentTree() {
   action_data.action = ax::mojom::Action::kStitchChildTree;
   CHECK(document_.ax_tree());
   action_data.target_tree_id = document_.GetParentTreeID();
-  action_data.target_role = ax::mojom::Role::kCanvas;
+  action_data.target_role = ax::mojom::Role::kGraphicsDocument;
   action_data.child_tree_id = document_.GetTreeID();
   render_frame_host->AccessibilityPerformAction(action_data);
 }

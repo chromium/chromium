@@ -665,8 +665,12 @@ IN_PROC_BROWSER_TEST_F(AXMediaAppUntrustedHandlerTest, StitchDocumentTree) {
       <html>
       <body>
         <canvas width="200" height="200">
-          <p>Text that is replaced by child tree.</p>
+          <p>Text that is not replaced by child tree.</p>
         </canvas>
+        <div role="graphics-document" aria-label="graphics-document"
+            width="200" height="200">
+          <p>Text that is replaced by child tree.</p>
+        </div>
       </body>
       </html>
       )HTML";
@@ -684,8 +688,12 @@ IN_PROC_BROWSER_TEST_F(AXMediaAppUntrustedHandlerTest, StitchDocumentTree) {
       "++++genericContainer htmlTag='body'\n"
       "++++++canvas htmlTag='canvas'\n"
       "++++++++staticText name='<newline>          '\n"
-      "++++++++staticText name='Text that is replaced by child tree.'\n"
-      "++++++++staticText name='<newline>        '\n",
+      "++++++++staticText name='Text that is not replaced by child tree.'\n"
+      "++++++++staticText name='<newline>        '\n"
+      "++++++graphicsDocument htmlTag='div' name='graphics-document'\n"
+      "++++++++paragraph htmlTag='p'\n"
+      "++++++++++staticText name='Text that is replaced by child tree.'\n"
+      "++++++++++++inlineTextBox name='Text that is replaced by child tree.'\n",
       browser()
           ->tab_strip_model()
           ->GetActiveWebContents()
@@ -708,7 +716,11 @@ IN_PROC_BROWSER_TEST_F(AXMediaAppUntrustedHandlerTest, StitchDocumentTree) {
       "rootWebArea htmlTag='#document'\n"
       "++genericContainer htmlTag='html'\n"
       "++++genericContainer htmlTag='body'\n"
-      "++++++canvas htmlTag='canvas'\n",
+      "++++++canvas htmlTag='canvas'\n"
+      "++++++++staticText name='<newline>          '\n"
+      "++++++++staticText name='Text that is not replaced by child tree.'\n"
+      "++++++++staticText name='<newline>        '\n"
+      "++++++graphicsDocument htmlTag='div' name='graphics-document'\n",
       browser()
           ->tab_strip_model()
           ->GetActiveWebContents()
@@ -718,18 +730,18 @@ IN_PROC_BROWSER_TEST_F(AXMediaAppUntrustedHandlerTest, StitchDocumentTree) {
                   ui::AXPropertyFilter("htmlTag", ui::AXPropertyFilter::ALLOW),
                   ui::AXPropertyFilter("name", ui::AXPropertyFilter::ALLOW)}));
 
-  const ui::AXNode* canvas = browser()
-                                 ->tab_strip_model()
-                                 ->GetActiveWebContents()
-                                 ->GetAccessibilityRootNode()
-                                 ->GetFirstChild()
-                                 ->GetFirstChild()
-                                 ->GetFirstChild();
-  ASSERT_NE(nullptr, canvas);
-  EXPECT_NE(
-      "", canvas->GetStringAttribute(ax::mojom::StringAttribute::kChildTreeId));
+  const ui::AXNode* graphics_doc = browser()
+                                       ->tab_strip_model()
+                                       ->GetActiveWebContents()
+                                       ->GetAccessibilityRootNode()
+                                       ->GetFirstChild()
+                                       ->GetFirstChild()
+                                       ->GetLastChild();
+  ASSERT_NE(nullptr, graphics_doc);
+  EXPECT_NE("", graphics_doc->GetStringAttribute(
+                    ax::mojom::StringAttribute::kChildTreeId));
   const ui::AXNode* pdf_root =
-      canvas->GetFirstUnignoredChildCrossingTreeBoundary();
+      graphics_doc->GetFirstUnignoredChildCrossingTreeBoundary();
   ASSERT_NE(nullptr, pdf_root);
   EXPECT_EQ(ax::mojom::Role::kPdfRoot, pdf_root->GetRole());
 }
