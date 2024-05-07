@@ -65,9 +65,7 @@ void PageInfoSecurityContentView::SetIdentityInfo(
   } else {
     security_view_->SetIcon(PageInfoViewFactory::GetConnectionSecureIcon());
     security_view_->SetSummary(security_description->summary,
-                               features::IsChromeRefresh2023()
-                                   ? views::style::STYLE_BODY_3_MEDIUM
-                                   : views::style::STYLE_PRIMARY);
+                               views::style::STYLE_BODY_3_MEDIUM);
   }
   security_view_->SetDetails(
       security_description->details,

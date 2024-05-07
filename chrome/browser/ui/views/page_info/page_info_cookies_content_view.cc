@@ -50,14 +50,9 @@ PageInfoCookiesContentView::PageInfoCookiesContentView(PageInfo* presenter)
   cookies_description_label_->SetProperty(views::kMarginsKey, button_insets);
   cookies_description_label_->SetID(
       PageInfoViewFactory::VIEW_ID_PAGE_INFO_COOKIES_DESCRIPTION_LABEL);
-  if (features::IsChromeRefresh2023()) {
-    cookies_description_label_->SetDefaultTextStyle(views::style::STYLE_BODY_5);
-    cookies_description_label_->SetDefaultEnabledColorId(
-        ui::kColorLabelForegroundSecondary);
-  } else {
-    cookies_description_label_->SetDefaultTextStyle(
-        views::style::STYLE_SECONDARY);
-  }
+  cookies_description_label_->SetDefaultTextStyle(views::style::STYLE_BODY_5);
+  cookies_description_label_->SetDefaultEnabledColorId(
+      ui::kColorLabelForegroundSecondary);
   cookies_description_label_->SizeToFit(PageInfoViewFactory::kMinBubbleWidth -
                                         button_insets.width());
 
@@ -197,12 +192,10 @@ void PageInfoCookiesContentView::SetThirdPartyCookiesToggle(
       PageInfoViewFactory::VIEW_ID_PAGE_INFO_THIRD_PARTY_COOKIES_TOGGLE);
   third_party_cookies_toggle_->SetAccessibleName(subtitle);
   third_party_cookies_toggle_subtitle_->SetText(subtitle);
-  if (features::IsChromeRefresh2023()) {
-    third_party_cookies_toggle_subtitle_->SetTextStyle(
-        views::style::STYLE_BODY_5);
-    third_party_cookies_toggle_subtitle_->SetEnabledColorId(
-        ui::kColorLabelForegroundSecondary);
-  }
+  third_party_cookies_toggle_subtitle_->SetTextStyle(
+      views::style::STYLE_BODY_5);
+  third_party_cookies_toggle_subtitle_->SetEnabledColorId(
+      ui::kColorLabelForegroundSecondary);
 }
 
 void PageInfoCookiesContentView::SetDescriptionLabel(
@@ -239,6 +232,7 @@ void PageInfoCookiesContentView::SetDescriptionLabel(
       views::StyledLabel::RangeStyleInfo::CreateForLink(base::BindRepeating(
           &PageInfoCookiesContentView::CookiesSettingsLinkClicked,
           base::Unretained(this)));
+  link_style.text_style = views::style::STYLE_LINK_5;
   cookies_description_label_->AddStyleRange(link_range, link_style);
 }
 
@@ -381,25 +375,17 @@ void PageInfoCookiesContentView::AddThirdPartyCookiesContainer() {
       std::make_unique<views::Label>());
   third_party_cookies_title_->SetTextContext(
       views::style::CONTEXT_DIALOG_BODY_TEXT);
-  third_party_cookies_title_->SetTextStyle(views::style::STYLE_PRIMARY);
+  third_party_cookies_title_->SetTextStyle(views::style::STYLE_BODY_3_MEDIUM);
   third_party_cookies_title_->SetHorizontalAlignment(
       gfx::HorizontalAlignment::ALIGN_LEFT);
-  if (features::IsChromeRefresh2023()) {
-    third_party_cookies_title_->SetTextStyle(views::style::STYLE_BODY_3_MEDIUM);
-  }
 
   third_party_cookies_description_ =
       third_party_cookies_label_wrapper_->AddChildView(
           std::make_unique<views::Label>());
   third_party_cookies_description_->SetTextContext(views::style::CONTEXT_LABEL);
-  if (features::IsChromeRefresh2023()) {
-    third_party_cookies_description_->SetTextStyle(views::style::STYLE_BODY_5);
-    third_party_cookies_description_->SetEnabledColorId(
-        ui::kColorLabelForegroundSecondary);
-  } else {
-    third_party_cookies_description_->SetTextStyle(
-        views::style::STYLE_SECONDARY);
-  }
+  third_party_cookies_description_->SetTextStyle(views::style::STYLE_BODY_5);
+  third_party_cookies_description_->SetEnabledColorId(
+      ui::kColorLabelForegroundSecondary);
   third_party_cookies_description_->SetHorizontalAlignment(
       gfx::HorizontalAlignment::ALIGN_LEFT);
   third_party_cookies_description_->SetMultiLine(true);

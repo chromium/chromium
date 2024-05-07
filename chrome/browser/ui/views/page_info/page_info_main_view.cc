@@ -563,11 +563,10 @@ void PageInfoMainView::ChildPreferredSizeChanged(views::View* child) {
 std::unique_ptr<views::View> PageInfoMainView::CreateBubbleHeaderView() {
   auto header = std::make_unique<views::View>();
   header->SetLayoutManager(std::make_unique<views::FlexLayout>())
-      ->SetInteriorMargin(
-          gfx::Insets::VH(0, features::IsChromeRefresh2023() ? 20 : 16));
+      ->SetInteriorMargin(gfx::Insets::VH(0, 20));
   title_ = header->AddChildView(std::make_unique<views::Label>(
       std::u16string(), views::style::CONTEXT_DIALOG_TITLE,
-      views::style::STYLE_PRIMARY,
+      views::style::STYLE_HEADLINE_4,
       gfx::DirectionalityMode::DIRECTIONALITY_AS_URL));
   title_->SetMultiLine(true);
   title_->SetAllowCharacterBreak(true);
@@ -578,9 +577,6 @@ std::unique_ptr<views::View> PageInfoMainView::CreateBubbleHeaderView() {
                                /*adjust_height_for_width =*/true)
           .WithWeight(1));
   title_->SetHorizontalAlignment(gfx::ALIGN_LEFT);
-  if (features::IsChromeRefresh2023()) {
-    title_->SetTextStyle(views::style::STYLE_HEADLINE_4);
-  }
   auto close_button = views::BubbleFrameView::CreateCloseButton(
       base::BindRepeating(&PageInfoNavigationHandler::CloseBubble,
                           base::Unretained(navigation_handler_)));

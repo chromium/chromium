@@ -254,11 +254,8 @@ void PermissionToggleRowView::InitForManagedSource(
       views::DISTANCE_RELATED_LABEL_HORIZONTAL);
   auto state_label = std::make_unique<views::Label>(
       PageInfoUI::PermissionStateToUIString(delegate, permission_),
-      views::style::CONTEXT_LABEL, views::style::STYLE_SECONDARY);
-  if (features::IsChromeRefresh2023()) {
-    state_label->SetTextStyle(views::style::STYLE_BODY_5);
-    state_label->SetEnabledColorId(ui::kColorLabelForegroundSecondary);
-  }
+      views::style::CONTEXT_LABEL, views::style::STYLE_BODY_5);
+  state_label->SetEnabledColorId(ui::kColorLabelForegroundSecondary);
   state_label->SetProperty(views::kMarginsKey,
                            gfx::Insets::VH(0, icon_label_spacing));
   row_view_->AddControl(std::move(state_label));
