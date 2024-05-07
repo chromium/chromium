@@ -160,6 +160,7 @@ constexpr CGFloat kSpace = 8;
 
 - (void)viewDidLoad {
   [super viewDidLoad];
+  self.view.accessibilityIdentifier = kTabGroupViewIdentifier;
   self.view.backgroundColor = UIColor.clearColor;
   if (!UIAccessibilityIsReduceTransparencyEnabled()) {
     _blurView = [[UIVisualEffectView alloc] initWithEffect:nil];
@@ -282,6 +283,7 @@ constexpr CGFloat kSpace = 8;
   titleLabel.textColor = UIColor.whiteColor;
   titleLabel.numberOfLines = 1;
   titleLabel.adjustsFontForContentSizeCategory = YES;
+  titleLabel.accessibilityIdentifier = kTabGroupViewTitleIdentifier;
   titleLabel.translatesAutoresizingMaskIntoConstraints = NO;
   UIFontDescriptor* boldDescriptor = [[UIFontDescriptor
       preferredFontDescriptorWithTextStyle:UIFontTextStyleHeadline]

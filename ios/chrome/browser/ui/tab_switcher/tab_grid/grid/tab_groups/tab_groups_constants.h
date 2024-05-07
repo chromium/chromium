@@ -14,6 +14,8 @@ extern NSString* const kCreateTabGroupCreateButtonIdentifier;
 extern NSString* const kCreateTabGroupCancelButtonIdentifier;
 
 // Accessibility identifier for the tab group view.
+extern NSString* const kTabGroupViewIdentifier;
+extern NSString* const kTabGroupViewTitleIdentifier;
 extern NSString* const kTabGroupNewTabButtonIdentifier;
 extern NSString* const kTabGroupOverflowMenuButtonIdentifier;
 

@@ -13,6 +13,8 @@ NSString* const kCreateTabGroupCreateButtonIdentifier =
 NSString* const kCreateTabGroupCancelButtonIdentifier =
     @"kCreateTabGroupCancelButtonIdentifier";
 
+NSString* const kTabGroupViewIdentifier = @"kTabGroupViewIdentifier";
+NSString* const kTabGroupViewTitleIdentifier = @"kTabGroupViewTitleIdentifier";
 NSString* const kTabGroupNewTabButtonIdentifier =
     @"kTabGroupNewTabButtonIdentifier";
 NSString* const kTabGroupOverflowMenuButtonIdentifier =

@@ -31,8 +31,11 @@ using chrome_test_util::TabGridEditButton;
 using chrome_test_util::TabGridEditMenuCloseAllButton;
 using chrome_test_util::TabGridGroupCellAtIndex;
 using chrome_test_util::TabGridNewTabButton;
+using chrome_test_util::TabGridSearchBar;
+using chrome_test_util::TabGridSearchTabsButton;
 using chrome_test_util::TabGridSelectTabsMenuButton;
 using chrome_test_util::TabGridUndoCloseAllButton;
+using chrome_test_util::WindowWithNumber;
 using testing::NavigationBarBackButton;
 
 namespace {
@@ -69,6 +72,18 @@ id<GREYMatcher> CreateGroupButtonInGroupCreation() {
                     grey_sufficientlyVisible(), nil);
 }
 
+// Returns the matcher for the tab group view.
+id<GREYMatcher> GroupViewMatcher() {
+  return grey_allOf(grey_accessibilityID(kTabGroupViewIdentifier),
+                    grey_sufficientlyVisible(), nil);
+}
+
+// Returns the matcher for the title on the Tab Group view.
+id<GREYMatcher> GroupViewTitle(NSString* title) {
+  return grey_allOf(grey_accessibilityID(kTabGroupViewTitleIdentifier),
+                    grey_accessibilityLabel(title), nil);
+}
+
 // Returns the matcher for the sub menu button `Add Tab to New Group`.
 id<GREYMatcher> NewTabGroupButton() {
   return ContextMenuItemWithAccessibilityLabelId(
@@ -93,7 +108,7 @@ id<GREYMatcher> DeleteGroupButton() {
       IDS_IOS_CONTENT_CONTEXT_DELETEGROUP);
 }
 
-// Identifer for cell at given `index` in the tab grid.
+// Identifier for cell at given `index` in the tab grid.
 NSString* IdentifierForTabCellAtIndex(unsigned int index) {
   return [NSString stringWithFormat:@"%@%u", kGridCellIdentifierPrefix, index];
 }
@@ -591,7 +606,7 @@ void DeleteGroupAtIndex(int group_cell_index) {
 }
 
 // Tests closing all tabs and groups in grid, and that the closing is reversible
-// when presing the undo button.
+// when pressing the undo button.
 - (void)testCloseAllAndUndo {
   // Create a tab cell with `Tab 1` as its title.
   [ChromeEarlGrey loadURL:GetQueryTitleURL(self.testServer, kTab1Title)];
@@ -643,6 +658,90 @@ void DeleteGroupAtIndex(int group_cell_index) {
       selectElementWithMatcher:TabGroupGridCellMatcher(
                                    l10n_util::GetPluralNSStringF(
                                        IDS_IOS_TAB_GROUP_TABS_NUMBER, 1))]
+      assertWithMatcher:grey_notNil()];
+}
+
+// Tests re-opening a group from Search in another window.
+- (void)testReopenGroupFromAnotherWindow {
+  if (![ChromeEarlGrey areMultipleWindowsSupported]) {
+    EARL_GREY_TEST_SKIPPED(@"Multiple windows can't be opened.");
+  }
+
+  // Create a first group.
+  [ChromeEarlGreyUI openTabGrid];
+  OpenTabGroupCreationViewUsingLongPressForCellAtIndex(0);
+  SetTabGroupCreationName(@"First group");
+  [[EarlGrey selectElementWithMatcher:CreateTabGroupCreateButtonMatcher()]
+      performAction:grey_tap()];
+  [ChromeEarlGrey
+      waitForUIElementToDisappearWithMatcher:GroupCreationViewMatcher()];
+
+  // Create a second group.
+  [ChromeEarlGrey openNewTab];
+  [ChromeEarlGreyUI openTabGrid];
+  [[EarlGrey selectElementWithMatcher:chrome_test_util::TabGridCellAtIndex(1)]
+      performAction:grey_longPress()];
+  [[EarlGrey
+      selectElementWithMatcher:grey_text(l10n_util::GetPluralNSStringF(
+                                   IDS_IOS_CONTENT_CONTEXT_ADDTABTOTABGROUP,
+                                   1))] performAction:grey_tap()];
+  [[EarlGrey selectElementWithMatcher:NewTabGroupButton()]
+      performAction:grey_tap()];
+  [ChromeEarlGrey
+      waitForUIElementToAppearWithMatcher:GroupCreationViewMatcher()];
+  SetTabGroupCreationName(@"Second group");
+  [[EarlGrey selectElementWithMatcher:CreateTabGroupCreateButtonMatcher()]
+      performAction:grey_tap()];
+  [ChromeEarlGrey
+      waitForUIElementToDisappearWithMatcher:GroupCreationViewMatcher()];
+
+  // Open a second window.
+  [ChromeEarlGrey openNewWindow];
+  [ChromeEarlGrey waitUntilReadyWindowWithNumber:1];
+  [ChromeEarlGrey waitForForegroundWindowCount:2];
+
+  // Search in the second window for the first group of the first window.
+  [EarlGrey setRootMatcherForSubsequentInteractions:WindowWithNumber(1)];
+  [ChromeEarlGreyUI openTabGrid];
+  [[EarlGrey selectElementWithMatcher:TabGridSearchTabsButton()]
+      performAction:grey_tap()];
+  [[EarlGrey selectElementWithMatcher:TabGridSearchBar()]
+      performAction:grey_replaceText(@"first")];
+
+  // Tap on it in the second window.
+  [[EarlGrey selectElementWithMatcher:TabGroupGridCellMatcher(@"First group")]
+      performAction:grey_tap()];
+
+  // Verify that it opens in the first window.
+  [EarlGrey setRootMatcherForSubsequentInteractions:WindowWithNumber(0)];
+  [ChromeEarlGrey waitForUIElementToAppearWithMatcher:GroupViewMatcher()];
+  [[EarlGrey selectElementWithMatcher:GroupViewTitle(@"First group")]
+      assertWithMatcher:grey_notNil()];
+
+  // Tap on it again in the second window.
+  [EarlGrey setRootMatcherForSubsequentInteractions:WindowWithNumber(1)];
+  [[EarlGrey selectElementWithMatcher:TabGroupGridCellMatcher(@"First group")]
+      performAction:grey_tap()];
+
+  // Verify that it's still open in the first window.
+  [EarlGrey setRootMatcherForSubsequentInteractions:WindowWithNumber(0)];
+  [ChromeEarlGrey waitForUIElementToAppearWithMatcher:GroupViewMatcher()];
+  [[EarlGrey selectElementWithMatcher:GroupViewTitle(@"First group")]
+      assertWithMatcher:grey_notNil()];
+
+  // Search in the second window for the second group of the first window.
+  [EarlGrey setRootMatcherForSubsequentInteractions:WindowWithNumber(1)];
+  [[EarlGrey selectElementWithMatcher:TabGridSearchBar()]
+      performAction:grey_replaceText(@"second")];
+
+  // Tap on it in the second window.
+  [[EarlGrey selectElementWithMatcher:TabGroupGridCellMatcher(@"Second group")]
+      performAction:grey_tap()];
+
+  // Verify that it opens in the first window.
+  [EarlGrey setRootMatcherForSubsequentInteractions:WindowWithNumber(0)];
+  [ChromeEarlGrey waitForUIElementToAppearWithMatcher:GroupViewMatcher()];
+  [[EarlGrey selectElementWithMatcher:GroupViewTitle(@"Second group")]
       assertWithMatcher:grey_notNil()];
 }
 

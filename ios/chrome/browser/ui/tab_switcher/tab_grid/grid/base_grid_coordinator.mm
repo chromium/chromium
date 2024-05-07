@@ -167,6 +167,9 @@
 #pragma mark - TabGroupsCommands
 
 - (void)showTabGroup:(const TabGroup*)tabGroup {
+  if (_tabGroupCoordinator) {
+    [self hideTabGroup];
+  }
   [self showTabGroup:tabGroup forTabGridOpening:NO];
 }
 
@@ -202,7 +205,7 @@
   CHECK(IsTabGroupInGridEnabled())
       << "You should not be able to edit a tab group outside the Tab Groups "
          "experiment.";
-  CHECK(!_tabGroupCreator) << "There is an atemps to edit a tab group when a "
+  CHECK(!_tabGroupCreator) << "There is an attempt to edit a tab group when a "
                               "creation process is still running.";
   CHECK(tabGroup) << "To edit a tab group you should pass a group.";
 
@@ -238,7 +241,7 @@
   CHECK(IsTabGroupInGridEnabled())
       << "You should not be able to show a tab group UI outside the "
          "Tab Groups experiment.";
-  CHECK(!_tabGroupCoordinator) << "There is an atemps to display a tab group "
+  CHECK(!_tabGroupCoordinator) << "There is an attempt to display a tab group "
                                   "when one is already presented.";
   // TODO(crbug.com/40942154): Replace base view controller by view controller
   // when the base grid coordinator will have access to the grid view
