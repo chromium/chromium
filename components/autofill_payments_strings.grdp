@@ -742,22 +742,6 @@
     <message name="IDS_AUTOFILL_VIRTUAL_CARD_ENROLLMENT_FALLBACK_ICON_TOOLTIP" desc="The tooltip message for the omnibox icon for the virtual card enroll bubble on Desktop. This bubble prompts users if they would like to enroll in a virtual card.">
       Add virtual card
     </message>
-    <message name="IDS_AUTOFILL_VIRTUAL_CARD_SELECTION_DIALOG_CONTENT_TITLE" desc="The title shown in the Autofill virtual card selection dialog. This dialog offers available virtual credit cards for users to choose to fill the form with. [ICU Syntax]">
-      {NUM_CARDS, plural,
-      =1 {Use a virtual number for this card}
-      other {Select a card}}
-    </message>
-    <message name="IDS_AUTOFILL_VIRTUAL_CARD_SELECTION_DIALOG_CONTENT_EXPLANATION" desc="The detailed explanations shown in the Autofill virtual card selection dialog. This dialog offers available virtual credit cards for users to choose to fill the form with. [ICU Syntax]">
-      {NUM_CARDS, plural,
-      =1 {This card will be charged when you pay, but its real number won't be shared with this site. For extra security, a temporary CVC will be generated.}
-      other {The card you select will be charged when you pay, but its real number won't be shared with this site. For extra security, a temporary CVC will be generated.}}
-    </message>
-    <message name="IDS_AUTOFILL_VIRTUAL_CARD_SELECTION_DIALOG_OK_BUTTON_LABEL" desc="Text shown in the OK button in the Autofill virtual card selection dialog. This dialog offers all available virtual credit cards for users to choose.">
-      Continue
-    </message>
-    <message name="IDS_AUTOFILL_VIRTUAL_CARD_SELECTION_DIALOG_CANCEL_BUTTON_LABEL" desc="Text shown in the Cancel button in the Autofill virtual card selection dialog. This dialog offers all available virtual credit cards for users to choose.">
-      Cancel
-    </message>
     <message name="IDS_AUTOFILL_VIRTUAL_CARD_MANUAL_FALLBACK_BUBBLE_TITLE" desc="The title shown in the Autofill virtual card manual fallback bubble on Desktop. This bubble shows the complete information for the virtual card selected to fill the form.">
       Virtual card details
     </message>

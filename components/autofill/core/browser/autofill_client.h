@@ -577,13 +577,6 @@ class AutofillClient {
   // visible and has been closed.
   virtual bool CloseWebauthnDialog();
 
-  // Shows the dialog including all credit cards that are available to be used
-  // as a virtual card. |candidates| must not be empty and has at least one
-  // card. Runs |callback| when a card is selected.
-  virtual void OfferVirtualCardOptions(
-      const std::vector<raw_ptr<CreditCard, VectorExperimental>>& candidates,
-      base::OnceCallback<void(const std::string&)> callback);
-
 #else  // BUILDFLAG(IS_ANDROID) || BUILDFLAG(IS_IOS)
   // Display the cardholder name fix flow prompt and run the |callback| if
   // the card should be uploaded to payments with updated name from the user.

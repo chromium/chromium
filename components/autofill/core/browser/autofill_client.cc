@@ -165,9 +165,6 @@ bool AutofillClient::CloseWebauthnDialog() {
   return false;
 }
 
-void AutofillClient::OfferVirtualCardOptions(
-    const std::vector<raw_ptr<CreditCard, VectorExperimental>>& candidates,
-    base::OnceCallback<void(const std::string&)> callback) {}
 #else
 void AutofillClient::ConfirmAccountNameFixFlow(
     base::OnceCallback<void(const std::u16string&)> callback) {

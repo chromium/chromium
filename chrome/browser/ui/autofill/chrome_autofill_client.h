@@ -162,9 +162,6 @@ class ChromeAutofillClient : public ContentAutofillClient,
       WebauthnDialogCallback verify_pending_dialog_callback) override;
   void UpdateWebauthnOfferDialogWithError() override;
   bool CloseWebauthnDialog() override;
-  void OfferVirtualCardOptions(
-      const std::vector<raw_ptr<CreditCard, VectorExperimental>>& candidates,
-      base::OnceCallback<void(const std::string&)> callback) override;
 #else  // !BUILDFLAG(IS_ANDROID)
   void ConfirmAccountNameFixFlow(
       base::OnceCallback<void(const std::u16string&)> callback) override;
