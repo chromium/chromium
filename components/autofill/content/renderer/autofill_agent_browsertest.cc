@@ -731,29 +731,34 @@ TEST_F(AutofillAgentTest, JavaScriptChangedValue_AutofillState) {
 }
 
 class AutofillAgentSubmissionTest : public AutofillAgentTest,
-                                    public testing::WithParamInterface<bool> {
+                                    public testing::WithParamInterface<int> {
  public:
   AutofillAgentSubmissionTest() {
-    if (improved_submission_detection()) {
-      scoped_feature_list.InitWithFeatures(
-          {features::kAutofillReplaceCachedWebElementsByRendererIds,
-           features::kAutofillReplaceFormElementObserver},
-          /*disabled_features=*/{});
-    } else {
-      scoped_feature_list.InitAndDisableFeature(
-          features::kAutofillReplaceFormElementObserver);
-    }
+    EXPECT_LE(GetParam(), 3);
+    std::vector<base::test::FeatureRef> features = {
+        features::kAutofillUnifyAndFixFormTracking,
+        features::kAutofillReplaceCachedWebElementsByRendererIds,
+        features::kAutofillReplaceFormElementObserver};
+
+    std::vector<base::test::FeatureRef> enabled_features(
+        features.begin(), features.begin() + GetParam());
+    std::vector<base::test::FeatureRef> disabled_features(
+        features.begin() + GetParam(), features.end());
+    scoped_feature_list_.InitWithFeatures(enabled_features, disabled_features);
   }
 
-  bool improved_submission_detection() { return GetParam(); }
+  bool improved_submission_detection() {
+    return base::FeatureList::IsEnabled(
+        features::kAutofillReplaceFormElementObserver);
+  }
 
  private:
-  base::test::ScopedFeatureList scoped_feature_list;
+  base::test::ScopedFeatureList scoped_feature_list_;
 };
 
 INSTANTIATE_TEST_SUITE_P(AutofillSubmissionTest,
                          AutofillAgentSubmissionTest,
-                         ::testing::Bool());
+                         ::testing::Values(0, 1, 2, 3));
 
 // Test that AutofillAgent::JavaScriptChangedValue updates the
 // last interacted saved state.

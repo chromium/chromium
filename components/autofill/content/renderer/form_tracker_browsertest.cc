@@ -30,19 +30,20 @@ class MockFormTrackerObserver : public FormTracker::Observer {
 };
 
 class FormTrackerTest : public test::AutofillRendererTest,
-                        public testing::WithParamInterface<bool> {
+                        public testing::WithParamInterface<int> {
  public:
   FormTrackerTest() {
-    if (GetParam()) {
-      scoped_feature_list_.InitWithFeatures(
-          /*enabled_features=*/
-          {features::kAutofillReplaceCachedWebElementsByRendererIds,
-           features::kAutofillReplaceFormElementObserver},
-          /*disabled_features=*/{});
-    } else {
-      scoped_feature_list_.InitAndDisableFeature(
-          features::kAutofillReplaceFormElementObserver);
-    }
+    EXPECT_LE(GetParam(), 3);
+    std::vector<base::test::FeatureRef> features = {
+        features::kAutofillUnifyAndFixFormTracking,
+        features::kAutofillReplaceCachedWebElementsByRendererIds,
+        features::kAutofillReplaceFormElementObserver};
+
+    std::vector<base::test::FeatureRef> enabled_features(
+        features.begin(), features.begin() + GetParam());
+    std::vector<base::test::FeatureRef> disabled_features(
+        features.begin() + GetParam(), features.end());
+    scoped_feature_list_.InitWithFeatures(enabled_features, disabled_features);
   }
   blink::WebFormControlElement GetFormControlById(const std::string& id) {
     return GetMainFrame()
@@ -57,7 +58,7 @@ class FormTrackerTest : public test::AutofillRendererTest,
 
 INSTANTIATE_TEST_SUITE_P(AutofillSubmissionTest,
                          FormTrackerTest,
-                         ::testing::Bool());
+                         ::testing::Values(0, 1, 2, 3));
 
 // Check that submission is detected on a page with no <form> when in sequence:
 // 1) User types into a field.

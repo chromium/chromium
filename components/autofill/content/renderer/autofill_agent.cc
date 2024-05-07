@@ -1789,7 +1789,9 @@ void AutofillAgent::OnInferredFormSubmission(mojom::SubmissionSource source) {
       // submission from it (and the relevant use cases will most probably be
       // handled by other sources), therefore we only consider detached
       // subframes.
-      if (!unsafe_render_frame()->GetWebFrame()->IsOutermostMainFrame() &&
+      if ((!unsafe_render_frame()->GetWebFrame()->IsOutermostMainFrame() ||
+           base::FeatureList::IsEnabled(
+               features::kAutofillUnifyAndFixFormTracking)) &&
           provisionally_saved_form()) {
         // Should not access the frame because it is now detached. Instead, use
         // `provisionally_saved_form()`.
