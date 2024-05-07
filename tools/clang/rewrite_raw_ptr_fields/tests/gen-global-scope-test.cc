@@ -27,6 +27,7 @@
 //
 // To account for the constraints described above, the rewriter tool should
 // avoid rewriting some of the fields below.
+#include "base/containers/span.h"
 
 namespace global_variables_test {
 
@@ -36,11 +37,13 @@ struct MyStruct {
   // of |g_struct| below.
   int* ptr;
   int& ref;
+  base::span<int> span_member;
 
   // Verification that *all* fields of a struct are covered (e.g. that the
   // |forEach| matcher is used instead of the |has| matcher).
   int* ptr2;
   int& ref2;
+  base::span<int> span_member2;
 };
 int num = 11;
 MyStruct g_struct(num);
@@ -55,6 +58,7 @@ struct MyStruct {
   // of |s_struct| below.
   int* ptr;
   int& ref;
+  base::span<int> span_member;
 };
 
 void foo() {
@@ -72,6 +76,7 @@ struct MyStruct {
   // of |g_outer_struct| below.
   int* ptr;
   int& ref;
+  base::span<int> span_member;
 };
 
 struct MyOuterStruct {
@@ -90,8 +95,8 @@ struct MyStruct {
   // Expected to be emitted in automated-fields-to-ignore.txt, because
   // of |g_outer_array| below.
   int* ptr;
-
   int& ref;
+  base::span<int> span_member;
 };
 static int num = 42;
 static MyStruct g_outer_struct[] = {num, num, num};
@@ -112,6 +117,8 @@ struct MyStruct {
   T& ref;
 
   T& ref2;
+
+  base::span<int> span_member;
 };
 
 struct MyOuterStruct {
@@ -131,12 +138,14 @@ struct MyStruct {
   // |inner_struct| field below is a pointer.  (i.e. this is a test that
   // |hasNestedFieldDecl| matcher doesn't recurse/traverse over pointers)
   int* ptr;
+  base::span<int> span_member;
 };
 
 struct MyOuterStruct {
   // Expected to be emitted in automated-fields-to-ignore.txt, because
   // of |g_outer_struct| below.
   MyStruct* inner_struct;
+  base::span<int> span_member;
 };
 
 static MyOuterStruct g_outer_struct;

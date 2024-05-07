@@ -2,8 +2,10 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
+#include "base/containers/span.h"
 #include "base/memory/raw_ptr.h"
 #include "base/memory/raw_ref.h"
+#include "base/memory/raw_span.h"
 
 class MyClass {
   // Lambdas are backed by a class that may have (depending on what the lambda
@@ -26,6 +28,8 @@ class MyClass {
         raw_ptr<int> ptr_field;
         // Expected rewrite: const raw_ref<int> ref_field;
         const raw_ref<int> ref_field;
+        // Expected rewrite: base::raw_span<int> span_field;
+        base::raw_span<int> span_field;
       } var(x);
       var.ptr_field = &x;
 

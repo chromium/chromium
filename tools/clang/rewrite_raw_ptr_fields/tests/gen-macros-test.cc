@@ -17,6 +17,7 @@
 //
 // We expect that |ptr_field| will be emitted as a candidate for
 // --field-filter-file.
+#include "base/containers/span.h"
 
 struct Elf64_Dyn;
 
@@ -48,6 +49,7 @@ struct event_base;
   struct {                                                         \
     struct type* tqe_next;  /* next element */                     \
     struct type** tqe_prev; /* address of previous next element */ \
+    base::span<struct type> span_field;                            \
   }
 
 struct MacroTest2 {

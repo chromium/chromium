@@ -1,37 +1,53 @@
 ==== BEGIN EDITS ====
 include-user-header:::gen-global-scope-actual.cc:::-1:::-1:::base/memory/raw_ptr.h
 include-user-header:::gen-global-scope-actual.cc:::-1:::-1:::base/memory/raw_ref.h
-r:::gen-global-scope-actual.cc:::1716:::5:::raw_ptr<int> 
-r:::gen-global-scope-actual.cc:::1728:::5:::const raw_ref<int> 
-r:::gen-global-scope-actual.cc:::1878:::5:::raw_ptr<int> 
-r:::gen-global-scope-actual.cc:::1891:::5:::const raw_ref<int> 
-r:::gen-global-scope-actual.cc:::2166:::5:::raw_ptr<int> 
-r:::gen-global-scope-actual.cc:::2178:::5:::const raw_ref<int> 
-r:::gen-global-scope-actual.cc:::2485:::5:::raw_ptr<int> 
-r:::gen-global-scope-actual.cc:::2497:::5:::const raw_ref<int> 
-r:::gen-global-scope-actual.cc:::2890:::5:::raw_ptr<int> 
-r:::gen-global-scope-actual.cc:::2903:::5:::const raw_ref<int> 
-r:::gen-global-scope-actual.cc:::3245:::3:::raw_ptr<T> 
-r:::gen-global-scope-actual.cc:::3256:::3:::raw_ptr<T> 
-r:::gen-global-scope-actual.cc:::3268:::3:::const raw_ref<T> 
-r:::gen-global-scope-actual.cc:::3279:::3:::const raw_ref<T> 
-r:::gen-global-scope-actual.cc:::3767:::5:::raw_ptr<int> 
-r:::gen-global-scope-actual.cc:::3909:::10:::raw_ptr<MyStruct> 
+include-user-header:::gen-global-scope-actual.cc:::-1:::-1:::base/memory/raw_span.h
+r:::gen-global-scope-actual.cc:::1750:::5:::raw_ptr<int> 
+r:::gen-global-scope-actual.cc:::1762:::5:::const raw_ref<int> 
+r:::gen-global-scope-actual.cc:::1774:::16:::base::raw_span<int> 
+r:::gen-global-scope-actual.cc:::1943:::5:::raw_ptr<int> 
+r:::gen-global-scope-actual.cc:::1956:::5:::const raw_ref<int> 
+r:::gen-global-scope-actual.cc:::1969:::16:::base::raw_span<int> 
+r:::gen-global-scope-actual.cc:::2263:::5:::raw_ptr<int> 
+r:::gen-global-scope-actual.cc:::2275:::5:::const raw_ref<int> 
+r:::gen-global-scope-actual.cc:::2287:::16:::base::raw_span<int> 
+r:::gen-global-scope-actual.cc:::2613:::5:::raw_ptr<int> 
+r:::gen-global-scope-actual.cc:::2625:::5:::const raw_ref<int> 
+r:::gen-global-scope-actual.cc:::2637:::16:::base::raw_span<int> 
+r:::gen-global-scope-actual.cc:::3049:::5:::raw_ptr<int> 
+r:::gen-global-scope-actual.cc:::3061:::5:::const raw_ref<int> 
+r:::gen-global-scope-actual.cc:::3073:::16:::base::raw_span<int> 
+r:::gen-global-scope-actual.cc:::3434:::3:::raw_ptr<T> 
+r:::gen-global-scope-actual.cc:::3445:::3:::raw_ptr<T> 
+r:::gen-global-scope-actual.cc:::3457:::3:::const raw_ref<T> 
+r:::gen-global-scope-actual.cc:::3468:::3:::const raw_ref<T> 
+r:::gen-global-scope-actual.cc:::3480:::16:::base::raw_span<int> 
+r:::gen-global-scope-actual.cc:::3988:::5:::raw_ptr<int> 
+r:::gen-global-scope-actual.cc:::4000:::16:::base::raw_span<int> 
+r:::gen-global-scope-actual.cc:::4161:::10:::raw_ptr<MyStruct> 
+r:::gen-global-scope-actual.cc:::4187:::16:::base::raw_span<int> 
 ==== END EDITS ====
 ==== BEGIN FIELD FILTERS ====
 global_variables_test::MyStruct::ptr  # global-scope
 global_variables_test::MyStruct::ptr2  # global-scope
 global_variables_test::MyStruct::ref  # global-scope
 global_variables_test::MyStruct::ref2  # global-scope
+global_variables_test::MyStruct::span_member  # global-scope
+global_variables_test::MyStruct::span_member2  # global-scope
 nested_in_array_test::MyStruct::ptr  # global-scope
 nested_in_array_test::MyStruct::ref  # global-scope
+nested_in_array_test::MyStruct::span_member  # global-scope
 nested_struct_test::MyStruct::ptr  # global-scope
 nested_struct_test::MyStruct::ref  # global-scope
+nested_struct_test::MyStruct::span_member  # global-scope
 nested_template_test::MyStruct::ptr  # global-scope
 nested_template_test::MyStruct::ptr2  # global-scope
 nested_template_test::MyStruct::ref  # global-scope
 nested_template_test::MyStruct::ref2  # global-scope
+nested_template_test::MyStruct::span_member  # global-scope
 pointer_nesting_test::MyOuterStruct::inner_struct  # global-scope
+pointer_nesting_test::MyOuterStruct::span_member  # global-scope
 static_variables_test::MyStruct::ptr  # global-scope
 static_variables_test::MyStruct::ref  # global-scope
+static_variables_test::MyStruct::span_member  # global-scope
 ==== END FIELD FILTERS ====
