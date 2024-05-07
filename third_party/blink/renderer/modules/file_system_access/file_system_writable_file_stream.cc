@@ -63,63 +63,63 @@ FileSystemWritableFileStream::FileSystemWritableFileStream(
     V8FileSystemWritableFileStreamMode lock_mode)
     : lock_mode_(lock_mode) {}
 
-ScriptPromiseUntyped FileSystemWritableFileStream::write(
+ScriptPromise<IDLUndefined> FileSystemWritableFileStream::write(
     ScriptState* script_state,
     const V8UnionBlobOrBufferSourceOrUSVStringOrWriteParams* data,
     ExceptionState& exception_state) {
   WritableStreamDefaultWriter* writer =
       WritableStream::AcquireDefaultWriter(script_state, this, exception_state);
   if (exception_state.HadException()) {
-    return ScriptPromiseUntyped();
+    return ScriptPromise<IDLUndefined>();
   }
 
   v8::Local<v8::Value> v8_data =
       ToV8Traits<V8UnionBlobOrBufferSourceOrUSVStringOrWriteParams>::ToV8(
           script_state, data);
-  ScriptPromiseUntyped promise = writer->write(
-      script_state, ScriptValue(script_state->GetIsolate(), v8_data),
-      exception_state);
+  auto promise = writer->write(script_state,
+                               ScriptValue(script_state->GetIsolate(), v8_data),
+                               exception_state);
 
   WritableStreamDefaultWriter::Release(script_state, writer);
   return promise;
 }
 
-ScriptPromiseUntyped FileSystemWritableFileStream::truncate(
+ScriptPromise<IDLUndefined> FileSystemWritableFileStream::truncate(
     ScriptState* script_state,
     uint64_t size,
     ExceptionState& exception_state) {
   WritableStreamDefaultWriter* writer =
       WritableStream::AcquireDefaultWriter(script_state, this, exception_state);
   if (exception_state.HadException()) {
-    return ScriptPromiseUntyped();
+    return ScriptPromise<IDLUndefined>();
   }
 
   auto* options = WriteParams::Create();
   options->setType(V8WriteCommandType::Enum::kTruncate);
   options->setSize(size);
 
-  ScriptPromiseUntyped promise = writer->write(
+  auto promise = writer->write(
       script_state, ScriptValue::From(script_state, options), exception_state);
 
   WritableStreamDefaultWriter::Release(script_state, writer);
   return promise;
 }
 
-ScriptPromiseUntyped FileSystemWritableFileStream::seek(
+ScriptPromise<IDLUndefined> FileSystemWritableFileStream::seek(
     ScriptState* script_state,
     uint64_t offset,
     ExceptionState& exception_state) {
   WritableStreamDefaultWriter* writer =
       WritableStream::AcquireDefaultWriter(script_state, this, exception_state);
   if (exception_state.HadException()) {
-    return ScriptPromiseUntyped();
+    return ScriptPromise<IDLUndefined>();
   }
 
   auto* options = WriteParams::Create();
   options->setType(V8WriteCommandType::Enum::kSeek);
   options->setPosition(offset);
 
-  ScriptPromiseUntyped promise = writer->write(
+  auto promise = writer->write(
       script_state, ScriptValue::From(script_state, options), exception_state);
 
   WritableStreamDefaultWriter::Release(script_state, writer);

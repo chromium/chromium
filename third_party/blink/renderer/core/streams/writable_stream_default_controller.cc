@@ -535,7 +535,7 @@ void WritableStreamDefaultController::AdvanceQueueIfNeeded(
   }
 
   //  3. If stream.[[inFlightWriteRequest]] is not undefined, return.
-  if (stream->InFlightWriteRequest()) {
+  if (stream->HasInFlightWriteRequest()) {
     return;
   }
 

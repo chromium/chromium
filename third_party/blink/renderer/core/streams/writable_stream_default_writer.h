@@ -7,6 +7,8 @@
 
 #include <optional>
 
+#include "third_party/blink/renderer/bindings/core/v8/script_promise.h"
+#include "third_party/blink/renderer/bindings/core/v8/script_promise_resolver.h"
 #include "third_party/blink/renderer/core/core_export.h"
 #include "third_party/blink/renderer/platform/bindings/script_wrappable.h"
 #include "third_party/blink/renderer/platform/heap/member.h"
@@ -16,10 +18,8 @@
 namespace blink {
 
 class ExceptionState;
-class ScriptPromiseUntyped;
 class ScriptState;
 class ScriptValue;
-class StreamPromiseResolver;
 class WritableStream;
 class WritableStream;
 
@@ -42,29 +42,33 @@ class CORE_EXPORT WritableStreamDefaultWriter final : public ScriptWrappable {
   // Getters
 
   // https://streams.spec.whatwg.org/#default-writer-closed
-  ScriptPromiseUntyped closed(ScriptState*) const;
+  ScriptPromise<IDLUndefined> closed(ScriptState*) const;
 
   // https://streams.spec.whatwg.org/#default-writer-desired-size
   ScriptValue desiredSize(ScriptState*, ExceptionState&) const;
 
   // https://streams.spec.whatwg.org/#default-writer-ready
-  ScriptPromiseUntyped ready(ScriptState*) const;
+  ScriptPromise<IDLUndefined> ready(ScriptState*) const;
 
   // Methods
 
   // https://streams.spec.whatwg.org/#default-writer-abort
-  ScriptPromiseUntyped abort(ScriptState*, ExceptionState&);
-  ScriptPromiseUntyped abort(ScriptState*, ScriptValue reason, ExceptionState&);
+  ScriptPromise<IDLUndefined> abort(ScriptState*, ExceptionState&);
+  ScriptPromise<IDLUndefined> abort(ScriptState*,
+                                    ScriptValue reason,
+                                    ExceptionState&);
 
   // https://streams.spec.whatwg.org/#default-writer-close
-  ScriptPromiseUntyped close(ScriptState*, ExceptionState&);
+  ScriptPromise<IDLUndefined> close(ScriptState*, ExceptionState&);
 
   // https://streams.spec.whatwg.org/#default-writer-release-lock
   void releaseLock(ScriptState*);
 
   // https://streams.spec.whatwg.org/#default-writer-write
-  ScriptPromiseUntyped write(ScriptState*, ExceptionState&);
-  ScriptPromiseUntyped write(ScriptState*, ScriptValue chunk, ExceptionState&);
+  ScriptPromise<IDLUndefined> write(ScriptState*, ExceptionState&);
+  ScriptPromise<IDLUndefined> write(ScriptState*,
+                                    ScriptValue chunk,
+                                    ExceptionState&);
 
   //
   // Methods used by WritableStream
@@ -80,7 +84,7 @@ class CORE_EXPORT WritableStreamDefaultWriter final : public ScriptWrappable {
   //
 
   // https://streams.spec.whatwg.org/#writable-stream-default-writer-close-with-error-propagation
-  static v8::Local<v8::Promise> CloseWithErrorPropagation(
+  static ScriptPromise<IDLUndefined> CloseWithErrorPropagation(
       ScriptState*,
       WritableStreamDefaultWriter*);
 
@@ -88,18 +92,22 @@ class CORE_EXPORT WritableStreamDefaultWriter final : public ScriptWrappable {
   static void Release(ScriptState*, WritableStreamDefaultWriter*);
 
   // https://streams.spec.whatwg.org/#writable-stream-default-writer-write
-  static v8::Local<v8::Promise> Write(ScriptState*,
-                                      WritableStreamDefaultWriter*,
-                                      v8::Local<v8::Value> chunk,
-                                      ExceptionState&);
+  static ScriptPromiseResolver<IDLUndefined>* Write(
+      ScriptState*,
+      WritableStreamDefaultWriter*,
+      v8::Local<v8::Value> chunk,
+      ExceptionState&);
 
   //
   // Accessors used by ReadableStream and WritableStream. These do
   // not appear in the standard.
   //
-
-  StreamPromiseResolver* ClosedPromise() { return closed_promise_.Get(); }
-  StreamPromiseResolver* ReadyPromise() { return ready_promise_.Get(); }
+  ScriptPromiseResolver<IDLUndefined>* ClosedResolver() {
+    return closed_resolver_.Get();
+  }
+  ScriptPromiseResolver<IDLUndefined>* ReadyResolver() {
+    return ready_resolver_.Get();
+  }
   WritableStream* OwnerWritableStream() { return owner_writable_stream_.Get(); }
 
   // This is a variant of GetDesiredSize() that doesn't create an intermediate
@@ -107,19 +115,19 @@ class CORE_EXPORT WritableStreamDefaultWriter final : public ScriptWrappable {
   // version would return null.
   std::optional<double> GetDesiredSizeInternal() const;
 
-  void SetReadyPromise(StreamPromiseResolver*);
+  void ResetReadyPromise(ScriptState*);
 
   void Trace(Visitor*) const override;
 
  private:
   // https://streams.spec.whatwg.org/#writable-stream-default-writer-abort
-  static v8::Local<v8::Promise> Abort(ScriptState*,
-                                      WritableStreamDefaultWriter*,
-                                      v8::Local<v8::Value> reason);
+  static ScriptPromise<IDLUndefined> Abort(ScriptState*,
+                                           WritableStreamDefaultWriter*,
+                                           v8::Local<v8::Value> reason);
 
   // https://streams.spec.whatwg.org/#writable-stream-default-writer-close
-  static v8::Local<v8::Promise> Close(ScriptState*,
-                                      WritableStreamDefaultWriter*);
+  static ScriptPromise<IDLUndefined> Close(ScriptState*,
+                                           WritableStreamDefaultWriter*);
 
   // https://streams.spec.whatwg.org/#writable-stream-default-writer-ensure-closed-promise-rejected
   static void EnsureClosedPromiseRejected(ScriptState*,
@@ -131,12 +139,13 @@ class CORE_EXPORT WritableStreamDefaultWriter final : public ScriptWrappable {
       v8::Isolate* isolate,
       const WritableStreamDefaultWriter*);
 
+  Member<WritableStream> owner_writable_stream_;
+
   // |closed_promise_| and |ready_promise_| are implemented as resolvers. The
   // names come from the slots [[closedPromise]] and [[readyPromise]] in the
   // standard.
-  Member<StreamPromiseResolver> closed_promise_;
-  Member<WritableStream> owner_writable_stream_;
-  Member<StreamPromiseResolver> ready_promise_;
+  Member<ScriptPromiseResolver<IDLUndefined>> closed_resolver_;
+  Member<ScriptPromiseResolver<IDLUndefined>> ready_resolver_;
 };
 
 }  // namespace blink
