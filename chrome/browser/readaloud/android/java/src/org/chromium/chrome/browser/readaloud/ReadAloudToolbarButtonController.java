@@ -83,7 +83,6 @@ public class ReadAloudToolbarButtonController extends BaseButtonDataProvider {
 
     @Override
     protected boolean shouldShowButton(Tab tab) {
-
         if (!super.shouldShowButton(tab) || tab == null || mControllerSupplier.get() == null) {
             return false;
         }
