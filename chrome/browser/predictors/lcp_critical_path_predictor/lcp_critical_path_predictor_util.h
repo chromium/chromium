@@ -140,6 +140,8 @@ bool LearnLcpp(const LoadingPredictorConfig& config,
 std::optional<LcppStat> GetLcppStat(LcppDataMap& lcpp_data_map,
                                     const GURL& url);
 
+void DeleteUrls(LcppDataMap& lcpp_data_map, const std::vector<GURL>& urls);
+
 }  // namespace predictors
 
 #endif  // CHROME_BROWSER_PREDICTORS_LCP_CRITICAL_PATH_PREDICTOR_LCP_CRITICAL_PATH_PREDICTOR_UTIL_H_

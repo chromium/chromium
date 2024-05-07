@@ -977,4 +977,17 @@ std::optional<LcppStat> GetLcppStat(LcppDataMap& lcpp_data_map,
   return data.lcpp_stat();
 }
 
+void DeleteUrls(LcppDataMap& lcpp_data_map, const std::vector<GURL>& urls) {
+  std::vector<std::string> keys_to_delete;
+  for (const GURL& url : urls) {
+    if (!IsURLValidForLcpp(url)) {
+      continue;
+    }
+
+    const std::string key = GetLCPPDatabaseKey(url);
+    keys_to_delete.emplace_back(key);
+  }
+  lcpp_data_map.DeleteData(keys_to_delete);
+}
+
 }  // namespace predictors

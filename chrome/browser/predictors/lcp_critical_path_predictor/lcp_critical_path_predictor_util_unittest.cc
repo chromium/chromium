@@ -1284,6 +1284,29 @@ TEST_F(LcppDataMapTest, LcppLearnURL) {
   TestLearnLcppURL(url_keys);
 }
 
+TEST_F(LcppDataMapTest, DeleteUrls) {
+  LoadingPredictorConfig config;
+  PopulateTestConfig(&config);
+  config.max_hosts_to_track_for_lcpp = 10u;
+  InitializeDB(config);
+
+  const GURL url_a("http://a.test");
+  const GURL url_b("http://b.test");
+  const GURL url_c("http://c.test");
+
+  LearnElementLocator(url_a, "/#a");
+  LearnElementLocator(url_b, "/#a");
+  LearnElementLocator(url_c, "/#a");
+  EXPECT_TRUE(GetLcppStat(url_a));
+  EXPECT_TRUE(GetLcppStat(url_b));
+  EXPECT_TRUE(GetLcppStat(url_c));
+
+  DeleteUrls(*lcpp_data_map_, {url_a, url_b});
+  EXPECT_FALSE(GetLcppStat(url_a));
+  EXPECT_FALSE(GetLcppStat(url_b));
+  EXPECT_TRUE(GetLcppStat(url_c));
+}
+
 class LcppMultipleKeyTest : public LcppDataMapTest,
                             public testing::WithParamInterface<
                                 blink::features::LcppMultipleKeyTypes> {
@@ -1359,6 +1382,33 @@ TEST_P(LcppMultipleKeyTest, ShouldNotLearnTooLongLocators) {
       url, "/#" + std::string(ResourcePrefetchPredictorTables::kMaxStringLength,
                               'a'));
   EXPECT_EQ(*GetLcppStat(url), expected);
+}
+
+TEST_P(LcppMultipleKeyTest, DeleteUrls) {
+  const bool kIsDefault =
+      GetParam() == blink::features::LcppMultipleKeyTypes::kDefault;
+  const GURL url_a_1("http://a.test");
+  const GURL url_a_2("http://a.test/foo");
+  const GURL url_a_3("http://a.test/bar");
+  const GURL url_b("http://b.test/baz");
+  const GURL url_c("http://c.test");
+
+  const std::vector<GURL> urls = {url_a_1, url_a_2, url_a_3, url_b, url_c};
+  for (const GURL& url : urls) {
+    LearnElementLocator(url, "/#a");
+  }
+  for (const GURL& url : urls) {
+    EXPECT_TRUE(GetLcppStat(url));
+  }
+
+  DeleteUrls(*lcpp_data_map_, {url_a_2, url_b});
+  // In kDefault, only exact match entry is removed.
+  // In kLcppKeyStat, all entries having same host are removed.
+  EXPECT_EQ(!!GetLcppStat(url_a_1), kIsDefault);
+  EXPECT_FALSE(GetLcppStat(url_a_2));
+  EXPECT_EQ(!!GetLcppStat(url_a_3), kIsDefault);
+  EXPECT_FALSE(GetLcppStat(url_b));
+  EXPECT_TRUE(GetLcppStat(url_c));
 }
 
 class LcppMultipleKeyTestDefault : public LcppDataMapTest {

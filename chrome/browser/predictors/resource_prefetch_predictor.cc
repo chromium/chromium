@@ -441,13 +441,16 @@ void ResourcePrefetchPredictor::DeleteAllUrls() {
 
 void ResourcePrefetchPredictor::DeleteUrls(const history::URLRows& urls) {
   std::vector<std::string> hosts_to_delete;
-
-  for (const auto& it : urls)
+  std::vector<GURL> urls_to_delete;
+  for (const auto& it : urls) {
     hosts_to_delete.emplace_back(it.url().host());
+    urls_to_delete.emplace_back(it.url());
+  }
 
   host_redirect_data_->DeleteData(hosts_to_delete);
   origin_data_->DeleteData(hosts_to_delete);
-  lcpp_data_->DeleteData(hosts_to_delete);
+  CHECK(lcpp_data_);
+  predictors::DeleteUrls(*lcpp_data_, urls_to_delete);
 }
 
 void ResourcePrefetchPredictor::LearnRedirect(const std::string& key,
