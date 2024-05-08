@@ -494,6 +494,8 @@ class LensOverlayController : public LensSearchboxClient,
 
   // Pointer to the overlay widget.
   views::UniqueWidgetPtr overlay_widget_;
+  // Pointer to the web view within the overlay widget if it exists.
+  raw_ptr<views::WebView> overlay_web_view_;
 
   // Pointer to the WebViews that are being glued by this class. Only used to
   // clean up stale pointers. Only valid while `overlay_widget_` is showing.

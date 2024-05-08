@@ -315,6 +315,7 @@ void LensOverlayController::CloseUI() {
 
   // Widget destruction can be asynchronous. We want to synchronously release
   // resources, so we clear the contents view immediately.
+  overlay_web_view_ = nullptr;
   if (overlay_widget_) {
     overlay_widget_->SetContentsView(std::make_unique<views::View>());
   }
@@ -684,8 +685,12 @@ void LensOverlayController::DidCaptureScreenshot(int attempt_id,
 
 void LensOverlayController::ShowOverlayWidget() {
   if (overlay_widget_) {
+    CHECK(overlay_web_view_);
     CHECK(!overlay_widget_->IsVisible());
     overlay_widget_->Show();
+    // The overlay needs to be focused on show to immediately begin
+    // receiving key events.
+    overlay_web_view_->RequestFocus();
     return;
   }
 
@@ -705,6 +710,10 @@ void LensOverlayController::ShowOverlayWidget() {
   overlay_widget_->StackAboveWidget(top_level_widget);
 
   overlay_widget_->Show();
+  // The overlay needs to be focused on show to immediately begin
+  // receiving key events.
+  CHECK(overlay_web_view_);
+  overlay_web_view_->RequestFocus();
 }
 
 void LensOverlayController::BackgroundUI() {
@@ -765,12 +774,14 @@ std::unique_ptr<views::View> LensOverlayController::CreateViewForOverlay() {
   // Create glue so that WebUIControllers created by this instance can
   // communicate with this instance.
   CreateGlueForWebView(web_view.get());
+  // Allow accelerators (e.g. hotkeys) to work on this web view.
+  web_view->set_allow_accelerators(true);
 
   // Load the untrusted WebUI into the web view.
   GURL url(chrome::kChromeUILensUntrustedURL);
   web_view->LoadInitialURL(url);
 
-  host_view->AddChildView(std::move(web_view));
+  overlay_web_view_ = host_view->AddChildView(std::move(web_view));
   return host_view;
 }
 
