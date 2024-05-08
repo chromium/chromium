@@ -62,7 +62,7 @@ public class SearchActivityLocationBarLayout extends LocationBarLayout {
                 ToolbarPhone.createModernLocationBarBackground(getContext());
         backgroundDrawable.setTint(
                 ChromeColors.getSurfaceColor(
-                        getContext(), R.dimen.omnibox_suggestion_bg_elevation));
+                        getContext(), R.dimen.omnibox_suggestion_bg_elevation_modern));
         backgroundDrawable.setCornerRadius(
                 getResources()
                         .getDimensionPixelSize(R.dimen.omnibox_suggestion_bg_round_corner_radius));

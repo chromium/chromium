@@ -381,10 +381,8 @@ public class OmniboxResourceProvider {
      * the given context.
      */
     public static @ColorInt int getStandardSuggestionBackgroundColor(Context context) {
-        return OmniboxFeatures.shouldShowModernizeVisualUpdate(context)
-                ? ChromeColors.getSurfaceColor(
-                        context, R.dimen.omnibox_suggestion_bg_elevation_modern)
-                : ChromeColors.getSurfaceColor(context, R.dimen.omnibox_suggestion_bg_elevation);
+        return ChromeColors.getSurfaceColor(
+                context, R.dimen.omnibox_suggestion_bg_elevation_modern);
     }
 
     /**
