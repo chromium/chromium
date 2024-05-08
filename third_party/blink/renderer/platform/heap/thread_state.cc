@@ -136,10 +136,7 @@ void ThreadState::DetachFromIsolate() {
 ThreadState::ThreadState(v8::Platform* platform)
     : cpp_heap_(v8::CppHeap::Create(
           platform,
-          {CustomSpaces::CreateCustomSpaces(),
-           v8::WrapperDescriptor(gin::kWrapperInfoIndex,
-                                 gin::kEncodedValueIndex,
-                                 gin::GinEmbedder::kEmbedderBlink)})),
+          v8::CppHeapCreateParams(CustomSpaces::CreateCustomSpaces()))),
       heap_handle_(cpp_heap_->GetHeapHandle()),
       thread_id_(CurrentThread()) {}
 
