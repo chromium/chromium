@@ -4,8 +4,7 @@
 
 #include "chrome/updater/device_management/dm_client.h"
 
-#include <stdint.h>
-
+#include <cstdint>
 #include <memory>
 #include <optional>
 #include <ostream>
@@ -69,7 +68,11 @@ class DefaultConfigurator : public DMClient::Configurator {
  public:
   DefaultConfigurator(const GURL& server_url,
                       std::optional<PolicyServiceProxyConfiguration>
-                          policy_service_proxy_configuration);
+                          policy_service_proxy_configuration)
+      : server_url_(server_url),
+        policy_service_proxy_configuration_(
+            std::move(policy_service_proxy_configuration)) {}
+
   ~DefaultConfigurator() override = default;
 
   GURL GetDMServerUrl() const override { return server_url_; }
@@ -78,7 +81,16 @@ class DefaultConfigurator : public DMClient::Configurator {
     return GetUpdaterUserAgent();
   }
 
-  std::string GetPlatformParameter() const override;
+  std::string GetPlatformParameter() const override {
+    int32_t major = 0;
+    int32_t minor = 0;
+    int32_t bugfix = 0;
+    base::SysInfo::OperatingSystemVersionNumbers(&major, &minor, &bugfix);
+    return base::StringPrintf(
+        "%s|%s|%d.%d.%d", base::SysInfo::OperatingSystemName().c_str(),
+        base::SysInfo::OperatingSystemArchitecture().c_str(), major, minor,
+        bugfix);
+  }
 
   std::unique_ptr<update_client::NetworkFetcher> CreateNetworkFetcher()
       const override {
@@ -93,33 +105,11 @@ class DefaultConfigurator : public DMClient::Configurator {
  private:
   SEQUENCE_CHECKER(sequence_checker_);
   const GURL server_url_;
-  std::optional<PolicyServiceProxyConfiguration>
+  const std::optional<PolicyServiceProxyConfiguration>
       policy_service_proxy_configuration_;
   mutable scoped_refptr<update_client::NetworkFetcherFactory>
       network_fetcher_factory_;
 };
-
-DefaultConfigurator::DefaultConfigurator(
-    const GURL& server_url,
-    std::optional<PolicyServiceProxyConfiguration>
-        policy_service_proxy_configuration)
-    : server_url_(server_url),
-      policy_service_proxy_configuration_(policy_service_proxy_configuration) {}
-
-std::string DefaultConfigurator::GetPlatformParameter() const {
-  std::string os_name = base::SysInfo::OperatingSystemName();
-  std::string os_hardware = base::SysInfo::OperatingSystemArchitecture();
-  int32_t os_major_version = 0;
-  int32_t os_minor_version = 0;
-  int32_t os_bugfix_version = 0;
-  base::SysInfo::OperatingSystemVersionNumbers(
-      &os_major_version, &os_minor_version, &os_bugfix_version);
-  std::string os_version = base::StringPrintf(
-      "%d.%d.%d", os_major_version, os_minor_version, os_bugfix_version);
-
-  return base::StringPrintf("%s|%s|%s", os_name.c_str(), os_hardware.c_str(),
-                            os_version.c_str());
-}
 
 // Builds a DM request and sends it via the wrapped network fetcher. Raw fetch
 // result will be translated into DM request result for external callback.
@@ -208,7 +198,6 @@ std::string DMFetch::BuildTokenString(TokenType type) const {
     case TokenType::kEnrollmentToken:
       return base::StringPrintf("%s token=%s", kRegistrationTokenType,
                                 storage_->GetEnrollmentToken().c_str());
-
     case TokenType::kDMToken:
       return base::StringPrintf("%s token=%s", kDMTokenType,
                                 storage_->GetDmToken().c_str());
@@ -243,9 +232,8 @@ void DMFetch::PostRequest(const std::string& request_type,
   } else if (storage_->GetDmToken().empty()) {
     result = DMClient::RequestResult::kNoDMToken;
   }
-  VLOG(1) << "Post [" << result << "] to server.";
-
   if (result != DMClient::RequestResult::kSuccess) {
+    VLOG(1) << "DM request not sent: " << result;
     base::SequencedTaskRunner::GetCurrentDefault()->PostTask(
         FROM_HERE, base::BindOnce(std::move(callback_), result,
                                   std::make_unique<std::string>()));
@@ -255,7 +243,6 @@ void DMFetch::PostRequest(const std::string& request_type,
   const base::flat_map<std::string, std::string> additional_headers = {
       {kAuthorizationHeader, BuildTokenString(token_type)},
   };
-
   network_fetcher_->PostRequest(
       BuildURL(request_type), request_data, kDMContentType, additional_headers,
       base::BindOnce(&DMFetch::OnRequestStarted, base::Unretained(this)),
