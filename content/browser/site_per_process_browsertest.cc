@@ -6200,16 +6200,11 @@ class NewPopupWidgetCreatedObserver {
   NewPopupWidgetCreatedObserver(
       RenderFrameHostImpl* frame_host,
       base::OnceCallback<void(int32_t pending_widget_routing_id)> test_callback)
-      : frame_host_(frame_host), test_callback_(std::move(test_callback)) {
-    frame_host_->SetCreateNewPopupCallbackForTesting(base::BindRepeating(
-        &NewPopupWidgetCreatedObserver::DidCreatePopupWidget,
-        base::Unretained(this)));
-  }
-
-  ~NewPopupWidgetCreatedObserver() {
-    if (frame_host_)
-      frame_host_->SetCreateNewPopupCallbackForTesting(base::NullCallback());
-  }
+      : create_new_popup_widget_interceptor_(
+            frame_host,
+            base::BindOnce(&NewPopupWidgetCreatedObserver::DidCreatePopupWidget,
+                           base::Unretained(this))),
+        test_callback_(std::move(test_callback)) {}
 
   void ResumeShowPopupWidget() { show_interceptor_->ResumeShowPopupWidget(); }
 
@@ -6217,13 +6212,9 @@ class NewPopupWidgetCreatedObserver {
   void DidCreatePopupWidget(RenderWidgetHostImpl* widget) {
     show_interceptor_ = std::make_unique<ShowCreatedPopupWidgetInterceptor>(
         widget, std::move(test_callback_));
-
-    // Stop observing now.
-    frame_host_->SetCreateNewPopupCallbackForTesting(base::NullCallback());
-    frame_host_ = nullptr;
   }
 
-  raw_ptr<RenderFrameHostImpl> frame_host_;
+  CreateNewPopupWidgetInterceptor create_new_popup_widget_interceptor_;
   std::unique_ptr<ShowCreatedPopupWidgetInterceptor> show_interceptor_;
   base::OnceCallback<void(int32_t pending_widget_routing_id)> test_callback_;
 };

@@ -31,9 +31,11 @@
 #include "content/public/test/test_navigation_observer.h"
 #include "content/public/test/test_utils.h"
 #include "mojo/public/cpp/bindings/pending_remote.h"
+#include "mojo/public/cpp/test_support/test_utils.h"
 #include "net/test/embedded_test_server/embedded_test_server.h"
 #include "third_party/blink/public/mojom/choosers/file_chooser.mojom-forward.h"
 #include "third_party/blink/public/mojom/choosers/popup_menu.mojom.h"
+#include "third_party/blink/public/mojom/frame/frame.mojom-test-utils.h"
 #include "third_party/blink/public/mojom/page/widget.mojom-test-utils.h"
 #include "url/gurl.h"
 
@@ -286,6 +288,34 @@ class RenderProcessHostBadIpcMessageWaiter {
   RenderProcessHostKillWaiter internal_waiter_;
 };
 
+// One-shot helper that listens for creation of a new popup widget.
+class CreateNewPopupWidgetInterceptor
+    : public blink::mojom::LocalFrameHostInterceptorForTesting {
+ public:
+  explicit CreateNewPopupWidgetInterceptor(
+      RenderFrameHostImpl* rfh,
+      base::OnceCallback<void(RenderWidgetHostImpl*)> did_create_callback);
+
+  ~CreateNewPopupWidgetInterceptor() override;
+
+  // LocalFrameHost overrides:
+  void CreateNewPopupWidget(
+      mojo::PendingAssociatedReceiver<blink::mojom::PopupWidgetHost>
+          blink_popup_widget_host,
+      mojo::PendingAssociatedReceiver<blink::mojom::WidgetHost>
+          blink_widget_host,
+      mojo::PendingAssociatedRemote<blink::mojom::Widget> blink_widget)
+      override;
+
+  // LocalFrameHostInterceptorForTesting overrides:
+  blink::mojom::LocalFrameHost* GetForwardingInterface() override;
+
+ private:
+  mojo::test::ScopedSwapImplForTesting<blink::mojom::LocalFrameHost>
+      swapped_impl_;
+  base::OnceCallback<void(RenderWidgetHostImpl*)> did_create_callback_;
+};
+
 class ShowPopupWidgetWaiter
     : public blink::mojom::PopupWidgetHostInterceptorForTesting {
  public:
@@ -304,9 +334,6 @@ class ShowPopupWidgetWaiter
   // Waits until a popup request is received.
   void Wait();
 
-  // Stops observing new messages.
-  void Stop();
-
  private:
 #if BUILDFLAG(IS_MAC) || BUILDFLAG(IS_ANDROID)
   void ShowPopupMenu(const gfx::Rect& bounds);
@@ -321,11 +348,12 @@ class ShowPopupWidgetWaiter
                  const gfx::Rect& initial_anchor_rect,
                  ShowPopupCallback callback) override;
 
+  CreateNewPopupWidgetInterceptor create_new_popup_widget_interceptor_;
   base::RunLoop run_loop_;
   gfx::Rect initial_rect_;
   int32_t routing_id_ = MSG_ROUTING_NONE;
   int32_t process_id_ = 0;
-  raw_ptr<RenderFrameHostImpl> frame_host_;
+  const raw_ptr<RenderFrameHostImpl> frame_host_;
 };
 
 // This observer waits until WebContentsObserver::OnRendererUnresponsive

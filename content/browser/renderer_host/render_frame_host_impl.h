@@ -1842,13 +1842,6 @@ class CONTENT_EXPORT RenderFrameHostImpl
   void SetCommitCallbackInterceptorForTesting(
       CommitCallbackInterceptor* interceptor);
 
-  using CreateNewPopupWidgetCallbackForTesting =
-      base::RepeatingCallback<void(RenderWidgetHostImpl*)>;
-
-  // Set a callback to listen to the |CreateNewPopupWidget| for testing.
-  void SetCreateNewPopupCallbackForTesting(
-      const CreateNewPopupWidgetCallbackForTesting& callback);
-
   using UnloadACKCallbackForTesting = base::RepeatingCallback<bool()>;
 
   // Set a callback to listen to the |OnUnloadACK| for testing.
@@ -4823,9 +4816,6 @@ class CONTENT_EXPORT RenderFrameHostImpl
 
   // Whether the last interception to DidCommit* causes us to ignore the commit.
   bool did_ignore_last_commit_callback_ = false;
-
-  // Used to hear about CreateNewPopupWidget calls in tests.
-  CreateNewPopupWidgetCallbackForTesting create_new_popup_widget_callback_;
 
   // Used to hear about UnloadACK calls in tests.
   UnloadACKCallbackForTesting unload_ack_callback_;

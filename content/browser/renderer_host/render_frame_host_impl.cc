@@ -7136,13 +7136,6 @@ void RenderFrameHostImpl::SetCommitCallbackInterceptorForTesting(
   commit_callback_interceptor_ = interceptor;
 }
 
-void RenderFrameHostImpl::SetCreateNewPopupCallbackForTesting(
-    const CreateNewPopupWidgetCallbackForTesting& callback) {
-  // This DCHECK aims to avoid unexpected replacement of a callback.
-  DCHECK(!create_new_popup_widget_callback_ || !callback);
-  create_new_popup_widget_callback_ = callback;
-}
-
 void RenderFrameHostImpl::SetUnloadACKCallbackForTesting(
     const UnloadACKCallbackForTesting& callback) {
   // This DCHECK aims to avoid unexpected replacement of a callback.
@@ -9630,9 +9623,6 @@ void RenderFrameHostImpl::CreateNewPopupWidget(
     return;
   // The renderer-owned widget was created before sending the IPC received here.
   widget->RendererWidgetCreated(/*for_frame_widget=*/false);
-
-  if (create_new_popup_widget_callback_)
-    create_new_popup_widget_callback_.Run(widget);
 }
 
 void RenderFrameHostImpl::GetKeepAliveHandleFactory(

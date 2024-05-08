@@ -29,6 +29,7 @@
 #include "content/browser/renderer_host/navigator.h"
 #include "content/browser/renderer_host/render_frame_host_delegate.h"
 #include "content/browser/renderer_host/render_frame_proxy_host.h"
+#include "content/browser/renderer_host/render_widget_host_factory.h"
 #include "content/browser/site_instance_impl.h"
 #include "content/browser/web_contents/web_contents_impl.h"
 #include "content/common/frame_messages.mojom.h"
@@ -578,36 +579,93 @@ RenderProcessHostBadIpcMessageWaiter::Wait() {
   return static_cast<bad_message::BadMessageReason>(internal_result.value());
 }
 
+CreateNewPopupWidgetInterceptor::CreateNewPopupWidgetInterceptor(
+    RenderFrameHostImpl* rfh,
+    base::OnceCallback<void(RenderWidgetHostImpl*)> did_create_callback)
+    : swapped_impl_(rfh->local_frame_host_receiver_for_testing(), this),
+      did_create_callback_(std::move(did_create_callback)) {}
+
+CreateNewPopupWidgetInterceptor::~CreateNewPopupWidgetInterceptor() = default;
+
+void CreateNewPopupWidgetInterceptor::CreateNewPopupWidget(
+    mojo::PendingAssociatedReceiver<blink::mojom::PopupWidgetHost>
+        blink_popup_widget_host,
+    mojo::PendingAssociatedReceiver<blink::mojom::WidgetHost> blink_widget_host,
+    mojo::PendingAssociatedRemote<blink::mojom::Widget> blink_widget) {
+  class PopupWidgetCreationObserver : public RenderWidgetHostFactory {
+   public:
+    PopupWidgetCreationObserver() { RegisterFactory(this); }
+
+    ~PopupWidgetCreationObserver() override { UnregisterFactory(); }
+
+    // RenderWidgetHostFactory overrides:
+    RenderWidgetHostImpl* CreateSelfOwnedRenderWidgetHost(
+        FrameTree* frame_tree,
+        RenderWidgetHostDelegate* delegate,
+        base::SafeRef<SiteInstanceGroup> site_instance_group,
+        int32_t routing_id,
+        bool hidden) override {
+      CHECK(!last_created_widget_);
+      last_created_widget_ =
+          RenderWidgetHostFactory::CreateSelfOwnedRenderWidgetHost(
+              frame_tree, delegate, std::move(site_instance_group), routing_id,
+              hidden);
+      return last_created_widget_;
+    }
+
+    RenderWidgetHostImpl* TakeLastCreatedWidget() {
+      return std::exchange(last_created_widget_, nullptr);
+    }
+
+   private:
+    raw_ptr<RenderWidgetHostImpl> last_created_widget_;
+  };
+
+  PopupWidgetCreationObserver creation_observer;
+
+  GetForwardingInterface()->CreateNewPopupWidget(
+      std::move(blink_popup_widget_host), std::move(blink_widget_host),
+      std::move(blink_widget));
+
+  if (!did_create_callback_) {
+    return;
+  }
+
+  if (auto* widget = creation_observer.TakeLastCreatedWidget(); widget) {
+    std::move(did_create_callback_).Run(widget);
+  }
+}
+
+blink::mojom::LocalFrameHost*
+CreateNewPopupWidgetInterceptor::GetForwardingInterface() {
+  return swapped_impl_.old_impl();
+}
+
 ShowPopupWidgetWaiter::ShowPopupWidgetWaiter(WebContentsImpl* web_contents,
                                              RenderFrameHostImpl* frame_host)
-    : frame_host_(frame_host) {
+    : create_new_popup_widget_interceptor_(
+          frame_host,
+          base::BindOnce(&ShowPopupWidgetWaiter::DidCreatePopupWidget,
+                         base::Unretained(this))),
+      frame_host_(frame_host) {
 #if BUILDFLAG(IS_MAC) || BUILDFLAG(IS_ANDROID)
   frame_host->set_show_popup_menu_callback_for_testing(base::BindOnce(
       &ShowPopupWidgetWaiter::ShowPopupMenu, base::Unretained(this)));
 #endif
-  frame_host_->SetCreateNewPopupCallbackForTesting(base::BindRepeating(
-      &ShowPopupWidgetWaiter::DidCreatePopupWidget, base::Unretained(this)));
 }
 
 ShowPopupWidgetWaiter::~ShowPopupWidgetWaiter() {
+#if BUILDFLAG(IS_MAC) || BUILDFLAG(IS_ANDROID)
+  frame_host_->set_show_popup_menu_callback_for_testing(base::NullCallback());
+#endif
   if (auto* rwhi = RenderWidgetHostImpl::FromID(process_id_, routing_id_)) {
     std::ignore =
         rwhi->popup_widget_host_receiver_for_testing().SwapImplForTesting(rwhi);
   }
-  if (frame_host_)
-    frame_host_->SetCreateNewPopupCallbackForTesting(base::NullCallback());
 }
 
 void ShowPopupWidgetWaiter::Wait() {
   run_loop_.Run();
-}
-
-void ShowPopupWidgetWaiter::Stop() {
-#if BUILDFLAG(IS_MAC) || BUILDFLAG(IS_ANDROID)
-  frame_host_->set_show_popup_menu_callback_for_testing(base::NullCallback());
-#endif
-  frame_host_->SetCreateNewPopupCallbackForTesting(base::NullCallback());
-  frame_host_ = nullptr;
 }
 
 blink::mojom::PopupWidgetHost* ShowPopupWidgetWaiter::GetForwardingInterface() {

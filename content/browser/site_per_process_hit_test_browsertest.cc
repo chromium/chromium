@@ -3,7 +3,9 @@
 // found in the LICENSE file.
 
 #include <memory>
+#include <optional>
 #include <tuple>
+#include <utility>
 
 #include "base/command_line.h"
 #include "base/containers/contains.h"
@@ -5910,8 +5912,8 @@ IN_PROC_BROWSER_TEST_F(SitePerProcessHitTestBrowserTest, MAYBE_PopupMenuTest) {
   EXPECT_NE(shell()->web_contents()->GetSiteInstance(),
             child_node->current_frame_host()->GetSiteInstance());
 
-  auto popup_waiter = std::make_unique<ShowPopupWidgetWaiter>(
-      web_contents(), child_node->current_frame_host());
+  std::optional<ShowPopupWidgetWaiter> popup_waiter(
+      std::in_place, web_contents(), child_node->current_frame_host());
 
   // Target left-click event to child frame.
   blink::WebMouseEvent click_event(
@@ -5959,9 +5961,7 @@ IN_PROC_BROWSER_TEST_F(SitePerProcessHitTestBrowserTest, MAYBE_PopupMenuTest) {
   // convention (it requires separate clicks to open the menu and select an
   // option). See https://crbug.com/703191.
   int process_id = child_node->current_frame_host()->GetProcess()->GetID();
-  popup_waiter->Stop();
-  popup_waiter = std::make_unique<ShowPopupWidgetWaiter>(
-      web_contents(), child_node->current_frame_host());
+  popup_waiter.emplace(web_contents(), child_node->current_frame_host());
   RenderWidgetHostInputEventRouter* router =
       static_cast<WebContentsImpl*>(shell()->web_contents())
           ->GetInputEventRouter();
@@ -6039,8 +6039,8 @@ IN_PROC_BROWSER_TEST_F(SitePerProcessHitTestBrowserTest,
   EXPECT_NE(shell()->web_contents()->GetSiteInstance(),
             c_node->current_frame_host()->GetSiteInstance());
 
-  auto popup_waiter = std::make_unique<ShowPopupWidgetWaiter>(
-      web_contents(), c_node->current_frame_host());
+  std::optional<ShowPopupWidgetWaiter> popup_waiter(
+      std::in_place, web_contents(), c_node->current_frame_host());
 
   WaitForHitTestData(c_node->current_frame_host());
 
@@ -6087,9 +6087,7 @@ IN_PROC_BROWSER_TEST_F(SitePerProcessHitTestBrowserTest,
       "iframe.style.top = 150;";
   EXPECT_TRUE(ExecJs(root, script));
 
-  popup_waiter->Stop();
-  popup_waiter = std::make_unique<ShowPopupWidgetWaiter>(
-      web_contents(), c_node->current_frame_host());
+  popup_waiter.emplace(web_contents(), c_node->current_frame_host());
 
   // Wait for b_node's screen rect to get updated. There doesn't seem to be any
   // better way to find out when this happens.
@@ -6181,8 +6179,8 @@ IN_PROC_BROWSER_TEST_F(SitePerProcessHitTestBrowserTest,
               ->GetRenderWidgetHost()
               ->GetView());
 
-  auto popup_waiter = std::make_unique<ShowPopupWidgetWaiter>(
-      web_contents(), grandchild_node->current_frame_host());
+  std::optional<ShowPopupWidgetWaiter> popup_waiter(
+      std::in_place, web_contents(), grandchild_node->current_frame_host());
 
   // Target left-click event to the select element in the innermost frame.
   DispatchMouseDownEventAndWaitUntilDispatch(
@@ -6216,9 +6214,7 @@ IN_PROC_BROWSER_TEST_F(SitePerProcessHitTestBrowserTest,
       break;
   }
 
-  popup_waiter->Stop();
-  popup_waiter = std::make_unique<ShowPopupWidgetWaiter>(
-      web_contents(), grandchild_node->current_frame_host());
+  popup_waiter.emplace(web_contents(), grandchild_node->current_frame_host());
   // This sends the message directly to the rwhv_grandchild, avoiding using
   // the helper methods, to avert a race condition with the surfaces or
   // HitTestRegions needing to update post-scroll. The event won't hit test
@@ -6305,8 +6301,8 @@ IN_PROC_BROWSER_TEST_F(SitePerProcessHitTestBrowserTest,
 
   hit_test_data_change_observer.WaitForHitTestDataChange();
 
-  auto popup_waiter = std::make_unique<ShowPopupWidgetWaiter>(
-      web_contents(), child_node->current_frame_host());
+  ShowPopupWidgetWaiter popup_waiter(web_contents(),
+                                     child_node->current_frame_host());
 
   // Left click the <select> element inside the iframe.
   DispatchMouseDownEventAndWaitUntilDispatch(web_contents(), rwhv_child,
@@ -6314,7 +6310,7 @@ IN_PROC_BROWSER_TEST_F(SitePerProcessHitTestBrowserTest,
                                              gfx::PointF(15, 710));
 
   // Ensure the popup is requested. This test fails if this timesouts.
-  popup_waiter->Wait();
+  popup_waiter.Wait();
 }
 #endif  // !BUILDFLAG(IS_ANDROID) && !BUILDFLAG(IS_MAC) && !BUILDFLAG(IS_CASTOS)
 

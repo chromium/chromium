@@ -1065,6 +1065,7 @@ static_library("browsertest_support") {
     "//content/shell:content_shell_lib",
     "//gin",
     "//media",
+    "//mojo/public/cpp/test_support:test_utils",
     "//net",
     "//net:test_support",
     "//ui/accessibility:ax_enums_mojo",

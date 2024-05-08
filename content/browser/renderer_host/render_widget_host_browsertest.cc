@@ -666,11 +666,11 @@ class ShowPopupInterceptor
   ShowPopupInterceptor(WebContentsImpl* web_contents,
                        RenderFrameHostImpl* frame_host,
                        const gfx::Rect& overriden_bounds)
-      : overriden_bounds_(overriden_bounds),
-        frame_host_(frame_host->GetWeakPtr()) {
-    frame_host_->SetCreateNewPopupCallbackForTesting(base::BindRepeating(
-        &ShowPopupInterceptor::DidCreatePopupWidget, base::Unretained(this)));
-  }
+      : create_new_popup_widget_interceptor_(
+            frame_host,
+            base::BindOnce(&ShowPopupInterceptor::DidCreatePopupWidget,
+                           base::Unretained(this))),
+        overriden_bounds_(overriden_bounds) {}
 
   ShowPopupInterceptor(const ShowPopupInterceptor&) = delete;
   ShowPopupInterceptor& operator=(const ShowPopupInterceptor&) = delete;
@@ -681,8 +681,6 @@ class ShowPopupInterceptor
           rwhi->popup_widget_host_receiver_for_testing().SwapImplForTesting(
               rwhi);
     }
-
-    frame_host_->SetCreateNewPopupCallbackForTesting(base::NullCallback());
   }
 
   void Wait() { run_loop_.Run(); }
@@ -711,11 +709,11 @@ class ShowPopupInterceptor
   int last_routing_id() const { return routing_id_; }
 
  private:
+  CreateNewPopupWidgetInterceptor create_new_popup_widget_interceptor_;
   base::RunLoop run_loop_;
   gfx::Rect overriden_bounds_;
   int32_t routing_id_ = MSG_ROUTING_NONE;
   int32_t process_id_ = 0;
-  base::WeakPtr<RenderFrameHostImpl> frame_host_;
 };
 
 #if BUILDFLAG(IS_MAC)
