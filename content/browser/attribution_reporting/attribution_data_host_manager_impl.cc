@@ -18,7 +18,6 @@
 #include "base/check.h"
 #include "base/check_op.h"
 #include "base/containers/circular_deque.h"
-#include "base/containers/contains.h"
 #include "base/containers/flat_map.h"
 #include "base/containers/flat_set.h"
 #include "base/feature_list.h"
@@ -177,8 +176,8 @@ enum class BackgroundNavigationOutcome {
   kTiedImmediately = 0,
   kTiedWithDelay = 1,
   kNeverTiedTimeout = 2,
-  kNeverTiedIneligle = 3,
-  kMaxValue = kNeverTiedIneligle,
+  kNeverTiedIneligible = 3,
+  kMaxValue = kNeverTiedIneligible,
 };
 
 void RecordBackgroundNavigationOutcome(BackgroundNavigationOutcome outcome) {
@@ -367,11 +366,21 @@ class AttributionDataHostManagerImpl::NavigationForPendingRegistration {
   explicit NavigationForPendingRegistration(size_t pending_registrations_count)
       : pending_registrations_count_(pending_registrations_count) {}
 
+  NavigationForPendingRegistration(const NavigationForPendingRegistration&) =
+      delete;
+  NavigationForPendingRegistration& operator=(
+      const NavigationForPendingRegistration&) = delete;
+
+  NavigationForPendingRegistration(NavigationForPendingRegistration&&) =
+      default;
+  NavigationForPendingRegistration& operator=(
+      NavigationForPendingRegistration&&) = default;
+
   // Instances of the class are eagerly initialized in
   // `RegisterNavigationDataHost` as this is when we learn of the expected
   // `pending_registrations_count_`. However, until the context is set
   // (`SetContext`) or we learn that the navigation isn't eligible
-  // (`DeclareUneligible`), a background registration cannot obtain any
+  // (`DeclareIneligible`), a background registration cannot obtain any
   // information.
   bool CanBeUsed() const { return eligible_.has_value(); }
 
@@ -383,7 +392,7 @@ class AttributionDataHostManagerImpl::NavigationForPendingRegistration {
     return eligible_.value();
   }
 
-  void DeclareUneligible() {
+  void DeclareIneligible() {
     CHECK(!eligible_.has_value());
 
     eligible_ = false;
@@ -566,6 +575,12 @@ struct AttributionDataHostManagerImpl::HeaderPendingDecode {
              url::Origin::Create(this->reporting_url),
              base::NotFatalUntil::M128);
   }
+
+  HeaderPendingDecode(const HeaderPendingDecode&) = delete;
+  HeaderPendingDecode& operator=(const HeaderPendingDecode&) = delete;
+
+  HeaderPendingDecode(HeaderPendingDecode&&) = default;
+  HeaderPendingDecode& operator=(HeaderPendingDecode&&) = default;
 
   RegistrationType GetType() const {
     return verifications.has_value() ? RegistrationType::kTrigger
@@ -845,7 +860,7 @@ struct AttributionDataHostManagerImpl::RegistrationDataHeaders {
         }
         break;
     }
-    // No eligibile header available.
+    // No eligible header available.
     if (!registration_type.has_value()) {
       return std::nullopt;
     }
@@ -878,6 +893,12 @@ struct AttributionDataHostManagerImpl::RegistrationDataHeaders {
         os_header(std::move(os_header)),
         type(type),
         cross_app_web_enabled(cross_app_web_enabled) {}
+
+  RegistrationDataHeaders(const RegistrationDataHeaders&) = delete;
+  RegistrationDataHeaders& operator=(const RegistrationDataHeaders&) = delete;
+
+  RegistrationDataHeaders(RegistrationDataHeaders&&) = default;
+  RegistrationDataHeaders& operator=(RegistrationDataHeaders&&) = default;
 
   void LogIssues(const Registrations& registrations,
                  const GURL& reporting_url,
@@ -955,6 +976,12 @@ struct AttributionDataHostManagerImpl::PendingRegistrationData {
     CHECK_EQ(this->headers.type == RegistrationType::kTrigger,
              this->verifications.has_value(), base::NotFatalUntil::M128);
   }
+
+  PendingRegistrationData(const PendingRegistrationData&) = delete;
+  PendingRegistrationData& operator=(const PendingRegistrationData&) = delete;
+
+  PendingRegistrationData(PendingRegistrationData&&) = default;
+  PendingRegistrationData& operator=(PendingRegistrationData&&) = default;
 };
 
 // These values are persisted to logs. Entries should not be renumbered and
@@ -970,6 +997,12 @@ class AttributionDataHostManagerImpl::OsRegistrationsBuffer {
  public:
   explicit OsRegistrationsBuffer(int64_t navigation_id)
       : navigation_id_(navigation_id) {}
+
+  OsRegistrationsBuffer(const OsRegistrationsBuffer&) = delete;
+  OsRegistrationsBuffer& operator=(const OsRegistrationsBuffer&) = delete;
+
+  OsRegistrationsBuffer(OsRegistrationsBuffer&&) = default;
+  OsRegistrationsBuffer& operator=(OsRegistrationsBuffer&&) = default;
 
   bool operator<(const OsRegistrationsBuffer& other) const {
     return navigation_id_ < other.navigation_id_;
@@ -1030,9 +1063,7 @@ class AttributionDataHostManagerImpl::OsRegistrationsBuffer {
 
   std::vector<attribution_reporting::OsRegistrationItem>
   TakeRegistrationItems() {
-    std::vector<attribution_reporting::OsRegistrationItem> items =
-        std::exchange(registrations_, {});
-    return items;
+    return std::exchange(registrations_, {});
   }
 
  private:
@@ -1402,7 +1433,8 @@ void AttributionDataHostManagerImpl::NotifyNavigationRegistrationStarted(
 
     receivers_.Add(
         this, std::move(it->second),
-        RegistrationContext(suitable_context, RegistrationEligibility::kSource,
+        RegistrationContext(std::move(suitable_context),
+                            RegistrationEligibility::kSource,
                             /*devtools_request_id=*/std::nullopt, navigation_id,
                             RegistrationMethod::kNavBackgroundBlink));
 
@@ -1450,8 +1482,7 @@ bool AttributionDataHostManagerImpl::NotifyNavigationRegistrationData(
     const net::HttpResponseHeaders* headers,
     GURL reporting_url,
     network::AttributionReportingRuntimeFeatures runtime_features) {
-  auto reporting_origin =
-      SuitableOrigin::Create(url::Origin::Create(reporting_url));
+  auto reporting_origin = SuitableOrigin::Create(reporting_url);
   CHECK(reporting_origin);
 
   auto it = registrations_.find(attribution_src_token);
@@ -1493,7 +1524,7 @@ void AttributionDataHostManagerImpl::
   }
 
   for (BackgroundRegistrationsId id : it->second) {
-    // The background registration will not longer be present if it completed
+    // The background registration will no longer be present if it completed
     // without attempting to register any data.
     if (auto background_it = registrations_.find(id);
         background_it != registrations_.end()) {
@@ -1502,10 +1533,10 @@ void AttributionDataHostManagerImpl::
     }
     RecordBackgroundNavigationOutcome(
         due_to_timeout ? BackgroundNavigationOutcome::kNeverTiedTimeout
-                       : BackgroundNavigationOutcome::kNeverTiedIneligle);
+                       : BackgroundNavigationOutcome::kNeverTiedIneligible);
   }
   BackgroundRegistrationsTied(attribution_src_token,
-                              /*count*/ it->second.size(),
+                              /*count=*/it->second.size(),
                               // We set `due_to_timeout` false here even when
                               // the call to this method is due to a timeout as
                               // this value refers to the navigation context
@@ -1537,7 +1568,7 @@ void AttributionDataHostManagerImpl::NotifyNavigationRegistrationCompleted(
 
   // It is possible to have no registration stored if
   // `NotifyNavigationRegistrationStarted` wasn't previously called for this
-  // token. This indicates that the navigation was ineligble for registrations.
+  // token. This indicates that the navigation was ineligible for registrations.
   auto registrations_it = registrations_.find(attribution_src_token);
   auto waiting_it = navigations_waiting_on_background_registrations_.find(
       attribution_src_token);
@@ -1546,7 +1577,7 @@ void AttributionDataHostManagerImpl::NotifyNavigationRegistrationCompleted(
     MaybeOnRegistrationsFinished(registrations_it);
   } else if (waiting_it !=
              navigations_waiting_on_background_registrations_.end()) {
-    waiting_it->second.DeclareUneligible();
+    waiting_it->second.DeclareIneligible();
   }
 
   if (waiting_it != navigations_waiting_on_background_registrations_.end()) {
@@ -1579,18 +1610,19 @@ void AttributionDataHostManagerImpl::NotifyBackgroundRegistrationStarted(
   if (attribution_src_token.has_value()) {
     const blink::AttributionSrcToken& token = attribution_src_token.value();
 
-    auto nav_waiting_it =
-        navigations_waiting_on_background_registrations_.find(token);
-    if (nav_waiting_it !=
+    if (auto nav_waiting_it =
+            navigations_waiting_on_background_registrations_.find(token);
+        nav_waiting_it !=
             navigations_waiting_on_background_registrations_.end() &&
         nav_waiting_it->second.CanBeUsed()) {
       if (!nav_waiting_it->second.IsEligible()) {
         RecordBackgroundNavigationOutcome(
-            BackgroundNavigationOutcome::kNeverTiedIneligle);
+            BackgroundNavigationOutcome::kNeverTiedIneligible);
         // Since the navigation is ineligible, we return early and avoid
         // creating a registration, all further requests related to this
         // background id will simply be dropped.
-        BackgroundRegistrationsTied(token, 1, /*due_to_timeout=*/false);
+        BackgroundRegistrationsTied(token, /*count=*/1,
+                                    /*due_to_timeout=*/false);
         return;
       }
       navigation_id = nav_waiting_it->second.navigation_id();
@@ -1601,14 +1633,11 @@ void AttributionDataHostManagerImpl::NotifyBackgroundRegistrationStarted(
       // `RegisterNavigationDataHost` yet because for a given navigation, we
       // have have no guarantee that `RegisterNavigationDataHost` gets be called
       // before `NotifyBackgroundRegistrationStarted`.
-      auto waiting_it =
-          background_registrations_waiting_on_navigation_.find(token);
-      if (waiting_it != background_registrations_waiting_on_navigation_.end()) {
-        waiting_it->second.emplace(id);
-      } else {
-        background_registrations_waiting_on_navigation_.emplace(
-            token, base::flat_set<BackgroundRegistrationsId>{id});
-
+      auto [waiting_it, inserted] =
+          background_registrations_waiting_on_navigation_.try_emplace(
+              token, base::flat_set<BackgroundRegistrationsId>());
+      waiting_it->second.emplace(id);
+      if (inserted) {
         // Ensures that we don't wait indefinitely. This could happen if:
         // - The tied navigation never starts nor ends.
         // - The navigation starts, ends, its cached context timeout and we then
@@ -1646,12 +1675,12 @@ void AttributionDataHostManagerImpl::NotifyBackgroundRegistrationStarted(
 
   // We must indicate that the background registration was tied to the
   // navigation only after the registration is inserted to avoid an inaccurate
-  // state where all expected registrations are tied and they are no ongoing
+  // state where all expected registrations are tied and there are no ongoing
   // registrations tied to the navigation.
   if (navigation_tied) {
     RecordBackgroundNavigationOutcome(
         BackgroundNavigationOutcome::kTiedImmediately);
-    BackgroundRegistrationsTied(attribution_src_token.value(), 1,
+    BackgroundRegistrationsTied(attribution_src_token.value(), /*count=*/1,
                                 /*due_to_timeout=*/false);
   }
 }
@@ -1661,12 +1690,12 @@ bool AttributionDataHostManagerImpl::NotifyBackgroundRegistrationData(
     const net::HttpResponseHeaders* headers,
     GURL reporting_url,
     network::AttributionReportingRuntimeFeatures runtime_features,
-    std::vector<network::TriggerVerification> trigger_verifications) {
+    const std::vector<network::TriggerVerification>& trigger_verifications) {
   CHECK(BackgroundRegistrationsEnabled());
 
   auto it = registrations_.find(id);
   // If the registrations cannot be found, it means that it was dropped early
-  // due to being tied to an ineligle navigation.
+  // due to being tied to an ineligible navigation.
   if (it == registrations_.end()) {
     return false;
   }
@@ -1696,7 +1725,7 @@ bool AttributionDataHostManagerImpl::NotifyBackgroundRegistrationData(
 
   std::optional<std::vector<network::TriggerVerification>> verifications;
   if (header->type == RegistrationType::kTrigger) {
-    verifications = std::move(trigger_verifications);
+    verifications = trigger_verifications;
   }
 
   HandleRegistrationData(
@@ -1713,7 +1742,7 @@ void AttributionDataHostManagerImpl::NotifyBackgroundRegistrationCompleted(
 
   auto it = registrations_.find(id);
   // If the registrations cannot be found, it means that it was dropped early
-  // due to being tied to an ineligle navigation.
+  // due to being tied to an ineligible navigation.
   if (it == registrations_.end()) {
     return;
   }
@@ -1802,6 +1831,7 @@ void AttributionDataHostManagerImpl::TriggerDataAvailable(
                              *context, reporting_origin)) {
     return;
   }
+
   RecordRegistrationMethod(
       context->GetRegistrationMethod(was_fetched_via_service_worker));
   attribution_manager_->HandleTrigger(
@@ -2218,8 +2248,7 @@ void AttributionDataHostManagerImpl::MaybeDoneWithNavigation(
   } else {
     // There still is a connected datahost tied to the navigation that can
     // receive sources.
-    if (base::Contains(ongoing_background_datahost_registrations_,
-                       navigation_id)) {
+    if (ongoing_background_datahost_registrations_.contains(navigation_id)) {
       return;
     }
 

@@ -94,7 +94,7 @@ class MockAttributionDataHostManager final : public AttributionDataHostManager {
                const net::HttpResponseHeaders* headers,
                GURL reporting_url,
                network::AttributionReportingRuntimeFeatures,
-               std::vector<network::TriggerVerification>),
+               const std::vector<network::TriggerVerification>&),
               (override));
 
   MOCK_METHOD(void,

@@ -116,7 +116,7 @@ class CONTENT_EXPORT AttributionDataHostManagerImpl final
       const net::HttpResponseHeaders* headers,
       GURL reporting_url,
       network::AttributionReportingRuntimeFeatures,
-      std::vector<network::TriggerVerification>) override;
+      const std::vector<network::TriggerVerification>&) override;
   void NotifyBackgroundRegistrationCompleted(
       BackgroundRegistrationsId id) override;
 

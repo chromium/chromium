@@ -129,7 +129,7 @@ class AttributionDataHostManager {
       const net::HttpResponseHeaders* headers,
       GURL reporting_url,
       network::AttributionReportingRuntimeFeatures,
-      std::vector<network::TriggerVerification>) = 0;
+      const std::vector<network::TriggerVerification>&) = 0;
 
   // Notifies the manager that a background attribution request has completed.
   virtual void NotifyBackgroundRegistrationCompleted(
