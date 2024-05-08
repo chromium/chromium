@@ -34,6 +34,7 @@ source_set("autofill") {
     "//components/autofill/core/browser",
     "//components/autofill/core/common",
     "//components/autofill/ios/browser",
+    "//components/autofill/ios/common",
     "//components/password_manager/core/common:features",
     "//components/prefs",
     "//components/strings",

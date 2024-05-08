@@ -320,7 +320,8 @@ const CGFloat kLineSpacingBetweenErrorAndFooter = 12.0f;
   CHECK(_settingsView);
   TableViewModel* model = _controller.tableViewModel;
 
-  if (self.accountProfile && _userEmail != nil) {
+  if (self.accountProfile) {
+    CHECK(_userEmail);
     [model
         addSectionWithIdentifier:AutofillProfileDetailsSectionIdentifierFooter];
     [model setFooter:[self footerItem]

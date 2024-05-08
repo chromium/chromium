@@ -19,6 +19,7 @@ typedef NS_ENUM(NSInteger, AutofillProfileDetailsSectionIdentifier) {
   AutofillProfileDetailsSectionIdentifierAddress,
   AutofillProfileDetailsSectionIdentifierPhoneEmail,
   AutofillProfileDetailsSectionIdentifierButton,
+  AutofillProfileDetailsSectionIdentifierMigrationButton,
   AutofillProfileDetailsSectionIdentifierErrorFooter,
   AutofillProfileDetailsSectionIdentifierFooter,
 };
