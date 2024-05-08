@@ -662,7 +662,7 @@ void AddCreditCardExpiryDateChildSuggestion(const CreditCard& credit_card,
 // `last_targeted_fields` specified the last set of fields target by the user.
 // When not present, we default to full form.
 // This function is called only for first-level popup.
-SuggestionType GetProfileSuggestionSuggestionType(
+SuggestionType GetProfileSuggestionType(
     std::optional<FieldTypeSet> last_targeted_fields,
     FieldType trigger_field_type) {
   if (!base::FeatureList::IsEnabled(
@@ -1165,8 +1165,8 @@ AutofillSuggestionGenerator::CreateSuggestionsFromProfiles(
     const AutofillProfile* const profile = profiles[i];
     // Name fields should have `NAME_FULL` as main text, unless in field by
     // field filling mode.
-    const SuggestionType type = GetProfileSuggestionSuggestionType(
-        last_targeted_fields, trigger_field_type);
+    const SuggestionType type =
+        GetProfileSuggestionType(last_targeted_fields, trigger_field_type);
     FieldType main_text_field_type =
         GroupTypeOfFieldType(trigger_field_type) == FieldTypeGroup::kName &&
                 type != SuggestionType::kAddressFieldByFieldFilling &&

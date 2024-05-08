@@ -334,8 +334,7 @@ void LogTimeDelayForSingleFieldFormFill(
       delay);
 }
 
-FillDataType GetEventTypeFromSingleFieldSuggestionSuggestionType(
-    SuggestionType type) {
+FillDataType GetEventTypeFromSingleFieldSuggestionType(SuggestionType type) {
   switch (type) {
     case SuggestionType::kAutocompleteEntry:
       return FillDataType::kSingleFieldFormFillerAutocomplete;
@@ -1669,8 +1668,7 @@ void BrowserAutofillManager::OnSingleFieldSuggestionSelected(
           GetFillingProductFromSuggestionType(type))) {
     autofill_trigger_field->AppendLogEventIfNotRepeated(
         TriggerFillFieldLogEvent{
-            .data_type =
-                GetEventTypeFromSingleFieldSuggestionSuggestionType(type),
+            .data_type = GetEventTypeFromSingleFieldSuggestionType(type),
             .associated_country_code = "",
             .timestamp = AutofillClock::Now()});
   }
