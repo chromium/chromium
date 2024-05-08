@@ -16,15 +16,16 @@ sys.path.append(os.path.join(os.path.dirname(__file__), '..', 'common'))
 import path_util
 
 
-_XML_FILE_NAMES = ['histograms.xml', 'enums.xml', 'histogram_suffixes_list.xml']
+_HISTOGRAM_XML_FILE_NAMES = ['histograms.xml', 'histogram_suffixes_list.xml']
+_ENUMS_XML_FILE_NAMES = ['enums.xml']
 
 
-def _FindXmlFiles():
+def _FindXmlFiles(filenames):
   """Gets a list relative path to all metrics XML files under metadata/."""
   files = []
   for dir_name, _, file_list in os.walk(PATH_TO_METADATA_DIR):
     for filename in file_list:
-      if filename in _XML_FILE_NAMES:
+      if filename in filenames:
         # Compute the relative path of the histograms xml file.
         file_path = os.path.relpath(os.path.join(dir_name, filename),
                                     PATH_TO_METADATA_DIR)
@@ -34,26 +35,28 @@ def _FindXmlFiles():
   return sorted(files)
 
 
-ENUMS_XML_RELATIVE = 'tools/metrics/histograms/enums.xml'
 # The absolute path to the metadata folder.
 PATH_TO_METADATA_DIR = path_util.GetInputFile(
     'tools/metrics/histograms/metadata')
+_ENUMS_XML_RELATIVE = ([
+    'tools/metrics/histograms/enums.xml',
+] + _FindXmlFiles(_ENUMS_XML_FILE_NAMES))
 # In the middle state, histogram paths include both the large histograms.xml
 # file as well as the split up files.
 # TODO: Improve on the current design to avoid calling `os.walk()` at the time
 # of module import.
-HISTOGRAMS_XMLS_RELATIVE = ([
+_HISTOGRAMS_XMLS_RELATIVE = ([
     'tools/metrics/histograms/histograms.xml',
-] + _FindXmlFiles())
-ALL_XMLS_RELATIVE = [ENUMS_XML_RELATIVE] + HISTOGRAMS_XMLS_RELATIVE
+] + _FindXmlFiles(_HISTOGRAM_XML_FILE_NAMES))
+ALL_XMLS_RELATIVE = _ENUMS_XML_RELATIVE + _HISTOGRAMS_XMLS_RELATIVE
 
 HISTOGRAMS_PREFIX_LIST = [
-    os.path.basename(os.path.dirname(f)) for f in HISTOGRAMS_XMLS_RELATIVE
+    os.path.basename(os.path.dirname(f)) for f in _HISTOGRAMS_XMLS_RELATIVE
 ]
 
-ENUMS_XML = path_util.GetInputFile(ENUMS_XML_RELATIVE)
+ENUMS_XMLS = [path_util.GetInputFile(f) for f in _ENUMS_XML_RELATIVE]
 UKM_XML = path_util.GetInputFile('tools/metrics/ukm/ukm.xml')
-HISTOGRAMS_XMLS = [path_util.GetInputFile(f) for f in HISTOGRAMS_XMLS_RELATIVE]
+HISTOGRAMS_XMLS = [path_util.GetInputFile(f) for f in _HISTOGRAMS_XMLS_RELATIVE]
 ALL_XMLS = [path_util.GetInputFile(f) for f in ALL_XMLS_RELATIVE]
 
 ALL_TEST_XMLS_RELATIVE = [
@@ -83,7 +86,7 @@ _GNI_LINE_SUFFIX = '",\n'
 def _GenerateHistogramsXmlGniContent():
   """Generates the contents for the _HISTOGRAMS_XML_FILES_GNI file."""
   content = 'histograms_xml_files = [\n'
-  for path in ALL_XMLS_RELATIVE:
+  for path in sorted(ALL_XMLS_RELATIVE):
     content += _GNI_LINE_PREFIX
     content += path.replace(os.sep, '/')
     content += _GNI_LINE_SUFFIX
