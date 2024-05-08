@@ -9430,24 +9430,6 @@
             ]
         }
     ],
-    "IOSDefaultBrowserEligibilitySlidingWindow": [
-        {
-            "platforms": [
-                "ios"
-            ],
-            "experiments": [
-                {
-                    "name": "Enabled",
-                    "params": {
-                        "sliding-window-days": "180"
-                    },
-                    "enable_features": [
-                        "DefaultBrowserEligibilitySlidingWindow"
-                    ]
-                }
-            ]
-        }
-    ],
     "IOSDiscoverFeedSportCard": [
         {
             "platforms": [
