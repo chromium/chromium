@@ -4389,10 +4389,6 @@ class MockPasswordSaveManager : public PasswordSaveManager {
                     bool));
   MOCK_METHOD0(ResetPendingCredentials, void());
   MOCK_METHOD2(Save, void(const autofill::FormData*, const PasswordForm&));
-  MOCK_METHOD3(Update,
-               void(const PasswordForm&,
-                    const autofill::FormData*,
-                    const PasswordForm&));
   MOCK_METHOD1(Blocklist, void(const PasswordFormDigest&));
   MOCK_METHOD1(Unblocklist, void(const PasswordFormDigest&));
   MOCK_METHOD1(PresaveGeneratedPassword, void(PasswordForm));

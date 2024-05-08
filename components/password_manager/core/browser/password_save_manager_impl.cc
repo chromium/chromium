@@ -384,12 +384,14 @@ void PasswordSaveManagerImpl::ResetPendingCredentials() {
 
 void PasswordSaveManagerImpl::Save(const FormData* observed_form,
                                    const PasswordForm& parsed_submitted_form) {
-  if (IsPasswordUpdate() &&
-      pending_credentials_.type == PasswordForm::Type::kGenerated &&
-      !HasGeneratedPassword()) {
-    metrics_util::LogPasswordGenerationSubmissionEvent(
-        metrics_util::PASSWORD_OVERRIDDEN);
-    pending_credentials_.type = PasswordForm::Type::kFormSubmission;
+  if (IsPasswordUpdate()) {
+    pending_credentials_.date_last_used = base::Time::Now();
+    if (pending_credentials_.type == PasswordForm::Type::kGenerated &&
+        !HasGeneratedPassword()) {
+      metrics_util::LogPasswordGenerationSubmissionEvent(
+          metrics_util::PASSWORD_OVERRIDDEN);
+      pending_credentials_.type = PasswordForm::Type::kFormSubmission;
+    }
   }
 
   if (IsNewLogin()) {
@@ -405,22 +407,6 @@ void PasswordSaveManagerImpl::Save(const FormData* observed_form,
     metrics_util::LogPasswordGenerationSubmissionEvent(
         metrics_util::PASSWORD_USED);
   }
-}
-
-void PasswordSaveManagerImpl::Update(
-    const PasswordForm& credentials_to_update,
-    const FormData* observed_form,
-    const PasswordForm& parsed_submitted_form) {
-  std::u16string password_to_save = pending_credentials_.password_value;
-  bool skip_zero_click = pending_credentials_.skip_zero_click;
-  pending_credentials_ = credentials_to_update;
-  pending_credentials_.password_value = password_to_save;
-  pending_credentials_.skip_zero_click = skip_zero_click;
-  pending_credentials_.date_last_used = base::Time::Now();
-
-  pending_credentials_state_ = PendingCredentialsState::UPDATE;
-
-  SavePendingToStore(observed_form, parsed_submitted_form);
 }
 
 void PasswordSaveManagerImpl::Blocklist(const PasswordFormDigest& form_digest) {

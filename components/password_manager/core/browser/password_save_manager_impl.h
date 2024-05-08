@@ -73,10 +73,6 @@ class PasswordSaveManagerImpl : public PasswordSaveManager {
   void Save(const autofill::FormData* observed_form,
             const PasswordForm& parsed_submitted_form) override;
 
-  void Update(const PasswordForm& credentials_to_update,
-              const autofill::FormData* observed_form,
-              const PasswordForm& parsed_submitted_form) override;
-
   void Blocklist(const PasswordFormDigest& form_digest) override;
   void Unblocklist(const PasswordFormDigest& form_digest) override;
 

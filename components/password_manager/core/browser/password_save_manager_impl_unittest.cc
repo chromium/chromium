@@ -68,6 +68,11 @@ MATCHER_P2(MatchesUsernameAndPassword, username, password, "") {
   return arg.username_value == username && arg.password_value == password;
 }
 
+MATCHER_P(MatchesUpdatedForm, form, "") {
+  return ArePasswordFormUniqueKeysEqual(arg, form) &&
+         arg.date_last_used >= form.date_last_used;
+}
+
 // Creates a matcher for an `autofill::AutofillUploadContents::Field` that
 // checks that the field's signature matches that of `field` and its predicted
 // type is `type`.
@@ -1211,8 +1216,7 @@ TEST_P(PasswordSaveManagerImplTest, Update) {
 
   const base::Time kNow = base::Time::Now();
 
-  password_save_manager_impl()->Update(saved_match_, &observed_form_,
-                                       parsed_submitted_form);
+  password_save_manager_impl()->Save(&observed_form_, parsed_submitted_form);
 
   EXPECT_TRUE(ArePasswordFormUniqueKeysEqual(saved_match_, updated_form));
   EXPECT_EQ(new_password, updated_form.password_value);
@@ -1573,9 +1577,9 @@ TEST_F(MultiStorePasswordSaveManagerTest, UpdateInBothStores) {
       password_save_manager_impl()->GetPendingCredentials().in_store;
 
   EXPECT_CALL(*mock_profile_form_saver(),
-              Update(expected_profile_updated_form, _, _));
+              Update(MatchesUpdatedForm(expected_profile_updated_form), _, _));
   EXPECT_CALL(*mock_account_form_saver(),
-              Update(expected_account_updated_form, _, _));
+              Update(MatchesUpdatedForm(expected_account_updated_form), _, _));
 
   password_save_manager_impl()->Save(&observed_form_, parsed_submitted_form_);
 }

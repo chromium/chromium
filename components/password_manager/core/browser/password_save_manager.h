@@ -72,13 +72,6 @@ class PasswordSaveManager {
   virtual void Save(const autofill::FormData* observed_form,
                     const PasswordForm& parsed_submitted_form) = 0;
 
-  // Replaces `credentials_to_update` with `parsed_submitted_form` in the store.
-  // An optional `observed_form` is passed along to be able to send votes. This
-  // is null for HTTP or proxy auth.
-  virtual void Update(const PasswordForm& credentials_to_update,
-                      const autofill::FormData* observed_form,
-                      const PasswordForm& parsed_submitted_form) = 0;
-
   virtual void Blocklist(const PasswordFormDigest& form_digest) = 0;
   virtual void Unblocklist(const PasswordFormDigest& form_digest) = 0;
 
