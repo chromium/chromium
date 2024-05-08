@@ -2221,6 +2221,20 @@ message ExtensionTelemetryReportRequest {
 
   // Information about the various telemetry signals.
   message SignalInfo {
+    // Data for one stack frame in a JS stack trace.
+    message JSCallStackFrame {
+      optional string function_name = 1;
+      optional string script_name = 2;
+      optional uint32 line = 3;
+      optional uint32 column = 4;
+    }
+    // Data for a complete JS stack trace consisting of
+    // multiple stack frames.
+    // Used to send JS call stack contents for extensions API signals.
+    message JSCallStack {
+      repeated JSCallStackFrame frames = 1;
+    }
+
     message TabsExecuteScriptInfo {
       message ScriptInfo {
         optional bytes hash = 1;
@@ -2290,12 +2304,12 @@ message ExtensionTelemetryReportRequest {
         // Restricts the retrieved cookies to those that would match the given
         // URL.
         optional string url = 7;
-
         // Number of times this set of arguments has been used.
         optional uint32 count = 8;
-
         // Filters out session vs. persistent cookies.
         optional bool is_session = 9;
+        // Up to 3 distinct JS callstacks when the API was invoked.
+        repeated JSCallStack js_callstacks = 10;
       }
 
       repeated GetAllArgsInfo get_all_args_info = 1;
@@ -2321,6 +2335,8 @@ message ExtensionTelemetryReportRequest {
         // The ID of the cookie store in which to look for the cookie. By
         // default, the current execution context's cookie store will be used.
         optional string store_id = 3;
+        // Up to 3 distinct JS callstacks when the API was invoked.
+        repeated JSCallStack js_callstacks = 4;
 
         // Number of times this set of arguments has been used.
         optional uint32 count = 8;
@@ -2439,6 +2455,8 @@ message ExtensionTelemetryReportRequest {
         optional string current_url = 3;
         // Number of times this call was made.
         optional uint32 count = 4;
+        // Up to 3 distinct JS callstacks when the API was invoked.
+        repeated JSCallStack js_callstacks = 5;
       }
       repeated CallDetails call_details = 1;
     }
