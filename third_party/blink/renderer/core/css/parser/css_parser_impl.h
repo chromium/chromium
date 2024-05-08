@@ -293,7 +293,7 @@ class CORE_EXPORT CSSParserImpl {
   bool ConsumeDeclaration(CSSParserTokenStream&, StyleRule::RuleType);
   void ConsumeDeclarationValue(const CSSTokenizedValue&,
                                CSSPropertyID,
-                               bool important,
+                               bool is_in_declaration_list,
                                StyleRule::RuleType);
   void ConsumeVariableValue(const CSSTokenizedValue&,
                             const AtomicString& property_name,

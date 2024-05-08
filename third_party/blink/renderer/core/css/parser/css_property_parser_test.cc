@@ -50,7 +50,7 @@ static bool IsValidPropertyValueForStyleRule(CSSPropertyID property_id,
   const CSSParserTokenRange range(tokens);
   HeapVector<CSSPropertyValue, 64> parsed_properties;
   return CSSPropertyParser::ParseValue(
-      property_id, false, {range, value},
+      property_id, /*allow_important_annotation=*/false, {range, value},
       StrictCSSParserContext(SecureContextMode::kSecureContext),
       parsed_properties, StyleRule::RuleType::kStyle);
 }
@@ -1008,9 +1008,9 @@ bool ParseCSSValue(CSSPropertyID property_id,
   const auto tokens = tokenizer.TokenizeToEOF();
   const CSSParserTokenRange range(tokens);
   HeapVector<CSSPropertyValue, 64> parsed_properties;
-  return CSSPropertyParser::ParseValue(property_id, false, {range, value},
-                                       context, parsed_properties,
-                                       StyleRule::RuleType::kStyle);
+  return CSSPropertyParser::ParseValue(
+      property_id, /*allow_important_annotation=*/false, {range, value},
+      context, parsed_properties, StyleRule::RuleType::kStyle);
 }
 
 }  // namespace

@@ -26,9 +26,8 @@ class Shorthand : public CSSProperty {
   // NOTE: This function must accept arbitrary tokens after the value,
   // without returning error. In particular, it must not check for
   // end-of-stream, since there may be “!important” after the value that
-  // the caller is responsible for consuming. (Currently, this is stripped
-  // away before ParseShorthand() is called, but this will change
-  // in the future.) End-of-stream is checked by the caller.
+  // the caller is responsible for consuming. End-of-stream is checked
+  // by the caller (after potentially consuming “!important”).
   //
   // (In practice, there are a few of these implementations that are not
   // robust against _any_ arbitrary tokens, especially those that may be

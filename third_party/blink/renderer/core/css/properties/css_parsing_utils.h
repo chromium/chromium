@@ -864,6 +864,25 @@ CORE_EXPORT CSSValue* ConsumeSinglePositionTryOption(CSSParserTokenRange&,
 CSSValue* ConsumePositionTryOptions(CSSParserTokenRange&,
                                     const CSSParserContext&);
 
+// If the stream starts with “!important”, consumes it and returns true.
+// If the stream is at EOF, returns false.
+// If parse error, also returns false, but the stream position is unchanged
+// and thus guaranteed to not be at EOF.
+//
+// The typical usage pattern for this is: Call the function,
+// then immediately check stream.AtEnd(). If stream.AtEnd(), then
+// the parse succeeded and you can use the return value for whether
+// the property is important or not. However, if !stream.AtEnd(),
+// there has been a parse error (e.g. random junk that was not
+// !important, or !important but with more tokens afterwards).
+//
+// If allow_important_annotation is false, just consumes whitespace
+// and returns false. The same pattern as above holds.
+template <typename T>
+  requires std::is_same_v<T, CSSParserTokenStream> ||
+           std::is_same_v<T, CSSParserTokenRange>
+bool MaybeConsumeImportant(T& stream, bool allow_important_annotation);
+
 }  // namespace css_parsing_utils
 }  // namespace blink
 

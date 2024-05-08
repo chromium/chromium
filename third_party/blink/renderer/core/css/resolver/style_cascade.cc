@@ -1149,15 +1149,14 @@ const CSSValue* StyleCascade::ResolvePendingSubstitution(
     sequence.StripCommentTokens();
 
     HeapVector<CSSPropertyValue, 64> parsed_properties;
-    const bool important = false;
 
     // NOTE: We don't actually need any original text here, since we're
     // not storing it in a custom property anywhere.
-    if (!CSSPropertyParser::ParseValue(shorthand_property_id, important,
-                                       {sequence.TokenRange(), StringView()},
-                                       shorthand_value->ParserContext(),
-                                       parsed_properties,
-                                       StyleRule::RuleType::kStyle)) {
+    if (!CSSPropertyParser::ParseValue(
+            shorthand_property_id, /*allow_important_annotation=*/false,
+            {sequence.TokenRange(), StringView()},
+            shorthand_value->ParserContext(), parsed_properties,
+            StyleRule::RuleType::kStyle)) {
       return cssvalue::CSSUnsetValue::Create();
     }
 

@@ -13,6 +13,7 @@
 #include "third_party/blink/renderer/core/css/parser/css_parser_observer.h"
 #include "third_party/blink/renderer/core/css/parser/css_parser_token_stream.h"
 #include "third_party/blink/renderer/core/css/parser/css_tokenizer.h"
+#include "third_party/blink/renderer/core/css/resolver/style_resolver.h"
 #include "third_party/blink/renderer/core/css/style_rule_font_feature_values.h"
 #include "third_party/blink/renderer/core/css/style_rule_font_palette_values.h"
 #include "third_party/blink/renderer/core/css/style_rule_import.h"
@@ -1369,6 +1370,62 @@ TEST(CSSParserImplTest, CSSFunction) {
   EXPECT_TRUE(rule);
 
   EXPECT_EQ("red", rule->GetFunctionBody().OriginalText());
+}
+
+static String RoundTripProperty(Document& document, String property_text) {
+  String rule_text = "p { " + property_text + " }";
+  StyleRule* style_rule =
+      To<StyleRule>(css_test_helpers::ParseRule(document, rule_text));
+  if (!style_rule) {
+    return "";
+  }
+  return style_rule->Properties().AsText();
+}
+
+TEST(CSSParserImplTest, AllPropertiesCanParseImportant) {
+  test::TaskEnvironment task_environment;
+  ScopedNullExecutionContext execution_context;
+  Document* document =
+      Document::CreateForTest(execution_context.GetExecutionContext());
+  const ComputedStyle& initial_style =
+      document->GetStyleResolver().InitialStyle();
+
+  int broken_properties = 0;
+
+  for (CSSPropertyID property_id : CSSPropertyIDList()) {
+    const CSSProperty& property = CSSProperty::Get(property_id);
+    if (!property.IsWebExposed() || property.IsSurrogate()) {
+      continue;
+    }
+
+    // Get some reasonable value that we can use for testing parsing.
+    const CSSValue* computed_value = property.CSSValueFromComputedStyle(
+        initial_style,
+        /*layout_object=*/nullptr,
+        /*allow_visited_style=*/true, CSSValuePhase::kComputedValue);
+    if (!computed_value) {
+      continue;
+    }
+
+    // TODO(b/338535751): We have some properties that don't properly
+    // round-trip even without !important, so we cannot easily
+    // test them using this test. Remove this test when everything
+    // is fixed.
+    String property_text = property.GetPropertyNameString() + ": " +
+                           computed_value->CssText() + ";";
+    if (RoundTripProperty(*document, property_text) != property_text) {
+      ++broken_properties;
+      continue;
+    }
+
+    // Now for the actual test.
+    property_text = property.GetPropertyNameString() + ": " +
+                    computed_value->CssText() + " !important;";
+    EXPECT_EQ(RoundTripProperty(*document, property_text), property_text);
+  }
+
+  // So that we don't introduce more, or break the entire test inadvertently.
+  EXPECT_EQ(broken_properties, 20);
 }
 
 }  // namespace blink

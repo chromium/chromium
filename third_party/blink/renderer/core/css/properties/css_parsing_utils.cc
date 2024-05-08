@@ -8607,5 +8607,39 @@ bool IsRepeatedInsetAreaValue(CSSValueID value_id) {
   }
 }
 
+template <typename T>
+  requires std::is_same_v<T, CSSParserTokenStream> ||
+           std::is_same_v<T, CSSParserTokenRange>
+bool MaybeConsumeImportant(T& stream, bool allow_important_annotation) {
+  stream.ConsumeWhitespace();
+  if (stream.AtEnd() || !allow_important_annotation) {
+    return false;
+  }
+
+  CSSParserSavePoint savepoint(stream);
+
+  // !
+  if (stream.Peek().GetType() != kDelimiterToken ||
+      stream.Peek().Delimiter() != '!') {
+    return false;
+  }
+  stream.ConsumeIncludingWhitespace();
+
+  // important
+  if (stream.Peek().GetType() != kIdentToken ||
+      !EqualIgnoringASCIICase(stream.Peek().Value(), "important")) {
+    return false;
+  }
+  stream.ConsumeIncludingWhitespace();
+
+  savepoint.Release();
+  return true;
+}
+
+template bool MaybeConsumeImportant(CSSParserTokenStream& stream,
+                                    bool allow_important_annotation);
+template bool MaybeConsumeImportant(CSSParserTokenRange& stream,
+                                    bool allow_important_annotation);
+
 }  // namespace css_parsing_utils
 }  // namespace blink

@@ -55,7 +55,7 @@ class CORE_EXPORT CSSPropertyParser {
   // tokenizing (but trailing comments is so rare that we can just as well
   // do that in a slow path).
   static bool ParseValue(CSSPropertyID,
-                         bool important,
+                         bool allow_important_annotation,
                          const CSSTokenizedValue&,
                          const CSSParserContext*,
                          HeapVector<CSSPropertyValue, 64>&,
@@ -73,11 +73,10 @@ class CORE_EXPORT CSSPropertyParser {
 
   // TODO(timloh): Rename once the CSSParserValue-based parseValue is removed
   bool ParseValueStart(CSSPropertyID unresolved_property,
-                       StyleRule::RuleType rule_type,
-                       bool important);
+                       bool allow_important_annotation,
+                       StyleRule::RuleType rule_type);
   bool ConsumeCSSWideKeyword(CSSPropertyID unresolved_property,
-                             bool important,
-                             StyleRule::RuleType rule_type);
+                             bool allow_important_annotation);
 
   bool ParseFontFaceDescriptor(CSSPropertyID);
 
