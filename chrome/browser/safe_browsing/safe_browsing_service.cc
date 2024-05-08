@@ -466,6 +466,20 @@ void SafeBrowsingService::OnProfileAdded(Profile* profile) {
   // Extended Reporting metrics are handled together elsewhere.
   RecordExtendedReportingMetrics(*pref_service);
 
+  // TODO(crbug.com/339468572): Set the new pref value in iOS and WebView
+  // For users in the extended reporting deprecation experiment group, save the
+  // extended reporting preference value.
+  if (base::FeatureList::IsEnabled(kExtendedReportingRemovePrefDependency)) {
+    pref_service->SetBoolean(
+        prefs::kSafeBrowsingScoutReportingEnabledWhenDeprecated,
+        pref_service->GetBoolean(prefs::kSafeBrowsingScoutReportingEnabled));
+  } else {
+    // Set the pref value to false as this feature is not deprecated when the
+    // feature flag is off.
+    pref_service->SetBoolean(
+        prefs::kSafeBrowsingScoutReportingEnabledWhenDeprecated, false);
+  }
+
   SafeBrowsingMetricsCollectorFactory::GetForProfile(profile)->StartLogging();
 
   CreateServicesForProfile(profile);

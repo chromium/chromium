@@ -88,6 +88,14 @@ extern const base::FeatureParam<int> kDownloadWarningSurveyType;
 // passwords for local decryption on encrypted archives.
 BASE_DECLARE_FEATURE(kEncryptedArchivesMetadata);
 
+// Controls whether Safe Browsing Extended Reporting (SBER) is deprecated.
+// When this feature flag is enabled:
+// - the Extended Reporting toggle will not be displayed on
+//   chrome://settings/security
+// - features will not depend on the SBER preference value,
+//   safebrowsing.scout_reporting_enabled
+BASE_DECLARE_FEATURE(kExtendedReportingRemovePrefDependency);
+
 // Allows the Extension Telemetry Service to accept and use configurations
 // sent by the server.
 BASE_DECLARE_FEATURE(kExtensionTelemetryConfiguration);

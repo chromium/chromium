@@ -87,6 +87,11 @@ inline constexpr char kSafeBrowsingSawInterstitialScoutReporting[] =
 inline constexpr char kSafeBrowsingScoutReportingEnabled[] =
     "safebrowsing.scout_reporting_enabled";
 
+// Boolean indicating whether Safe Browsing Scout reporting was enabled at the
+// time that extended reporting was deprecated.
+inline constexpr char kSafeBrowsingScoutReportingEnabledWhenDeprecated[] =
+    "safebrowsing.scout_reporting_enabled_when_deprecated";
+
 // Dictionary containing safe browsing triggers and the list of times they have
 // fired recently. The keys are TriggerTypes (4-byte ints) and the values are
 // lists of doubles.

@@ -47,8 +47,10 @@ const char kTestDownloadUrl[] = "https://example.com";
 class SafeBrowsingServiceTest : public testing::Test {
  public:
   SafeBrowsingServiceTest() {
-    feature_list_.InitAndEnableFeature(
-        safe_browsing::kDownloadReportWithoutUserDecision);
+    feature_list_.InitWithFeatures(
+        {safe_browsing::kDownloadReportWithoutUserDecision,
+         safe_browsing::kExtendedReportingRemovePrefDependency},
+        {});
   }
 
   void SetUp() override {
@@ -88,6 +90,13 @@ class SafeBrowsingServiceTest : public testing::Test {
   }
 
   Profile* profile() { return profile_.get(); }
+
+  void ResetAndReinitFeatures(
+      const std::vector<base::test::FeatureRef>& enabled_features,
+      const std::vector<base::test::FeatureRef>& disabled_features) {
+    feature_list_.Reset();
+    feature_list_.InitWithFeatures(enabled_features, disabled_features);
+  }
 
  protected:
   void SetUpDownload() {
@@ -339,6 +348,44 @@ TEST_F(SafeBrowsingServiceTest, WhenUserIsInNoProtectionNormallyoReturnsFalse) {
       profile()->GetPrefs(),
       safe_browsing::SafeBrowsingState::NO_SAFE_BROWSING);
   EXPECT_FALSE(SafeBrowsingService::IsUserEligibleForESBPromo(profile()));
+}
+
+TEST_F(SafeBrowsingServiceTest,
+       SaveExtendedReportingPrefValueOnProfileAddedFeatureFlagEnabled) {
+  SetExtendedReportingPrefForTests(profile_->GetPrefs(), true);
+  sb_service_->OnProfileAdded(profile());
+  // Since the user enabled Extended Reporting, the preference value used to
+  // record the state of Extended Reporting before its deprecation should be set
+  // to true.
+  EXPECT_TRUE(profile_->GetPrefs()->GetBoolean(
+      prefs::kSafeBrowsingScoutReportingEnabledWhenDeprecated));
+}
+
+TEST_F(SafeBrowsingServiceTest,
+       SaveExtendedReportingPrefValueOnProfileAddedFeatureFlagDisabled) {
+  // SetUp:
+  //   * disable kExtendedReportingRemovePrefDependency
+  //   * Setup SBER enabled and
+  //   kSafeBrowsingScoutReportingEnabledWhenDeprecated true
+  ResetAndReinitFeatures(
+      {safe_browsing::kDownloadReportWithoutUserDecision},
+      {safe_browsing::kExtendedReportingRemovePrefDependency});
+  SetExtendedReportingPrefForTests(profile_->GetPrefs(), true);
+
+  // Simulate that kSafeBrowsingScoutReportingEnabledWhenDeprecated was set to
+  // true previously.
+  profile_->GetPrefs()->SetBoolean(
+      prefs::kSafeBrowsingScoutReportingEnabledWhenDeprecated, true);
+  EXPECT_TRUE(profile_->GetPrefs()->GetBoolean(
+      prefs::kSafeBrowsingScoutReportingEnabledWhenDeprecated));
+
+  // Add the profile to trigger the function.
+  sb_service_->OnProfileAdded(profile());
+
+  // The value of the pref should be reverted to false because the feature is
+  // disabled now.
+  EXPECT_FALSE(profile_->GetPrefs()->GetBoolean(
+      prefs::kSafeBrowsingScoutReportingEnabledWhenDeprecated));
 }
 
 class SafeBrowsingServiceAntiPhishingTelemetryTest
