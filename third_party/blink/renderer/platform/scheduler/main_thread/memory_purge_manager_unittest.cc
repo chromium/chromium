@@ -192,7 +192,7 @@ TEST_F(MemoryPurgeManagerTest, PurgeRendererMemoryWhenBackgroundedEnabled) {
   memory_purge_manager_.SetPurgeDisabledForTesting(true);
 
   memory_purge_manager_.SetRendererBackgrounded(true);
-  FastForwardBy(MemoryPurgeManager::kMaxTimeToPurgeAfterBackgrounded);
+  FastForwardBy(MemoryPurgeManager::kDefaultMaxTimeToPurgeAfterBackgrounded);
   // No page, no memory pressure.
   EXPECT_EQ(0U, MemoryPressureCount());
 }

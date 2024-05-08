@@ -4,14 +4,38 @@
 
 #include "third_party/blink/renderer/platform/scheduler/main_thread/memory_purge_manager.h"
 
+#include "base/feature_list.h"
 #include "base/memory/memory_pressure_listener.h"
+#include "base/metrics/field_trial_params.h"
 #include "base/rand_util.h"
 #include "base/task/single_thread_task_runner.h"
+#include "base/time/time.h"
 #include "base/trace_event/trace_event.h"
 #include "build/build_config.h"
 #include "third_party/blink/public/platform/platform.h"
 
 namespace blink {
+
+namespace {
+
+BASE_FEATURE(kMemoryPurgeInBackground,
+             "MemoryPurgeInBackground",
+             base::FEATURE_ENABLED_BY_DEFAULT);
+
+// The time of first purging after a renderer is backgrounded. The value was
+// initially set to 30 minutes, but it was reduced to 1 minute because this
+// reduced the memory usage of a renderer 15 minutes after it was backgrounded.
+//
+// Experiment results:
+// https://docs.google.com/document/d/1E88EYNlZE1DhmlgmjUnGnCAASm8-tWCAWXy8p53vmwc/edit?usp=sharing
+const base::FeatureParam<base::TimeDelta> kMemoryPurgeInBackgroundMinDelay{
+    &kMemoryPurgeInBackground, "memory_purge_background_min_delay",
+    base::Minutes(1)};
+const base::FeatureParam<base::TimeDelta> kMemoryPurgeInBackgroundMaxDelay{
+    &kMemoryPurgeInBackground, "memory_purge_background_max_delay",
+    MemoryPurgeManager::kDefaultMaxTimeToPurgeAfterBackgrounded};
+
+}  // namespace
 
 MemoryPurgeManager::MemoryPurgeManager(
     scoped_refptr<base::SingleThreadTaskRunner> task_runner) {
@@ -84,8 +108,10 @@ void MemoryPurgeManager::OnRendererBackgrounded() {
     return;
   }
 
-  backgrounded_purge_pending_ = true;
-  RequestMemoryPurgeWithDelay(GetTimeToPurgeAfterBackgrounded());
+  if (base::FeatureList::IsEnabled(kMemoryPurgeInBackground)) {
+    backgrounded_purge_pending_ = true;
+    RequestMemoryPurgeWithDelay(GetTimeToPurgeAfterBackgrounded());
+  }
 }
 
 void MemoryPurgeManager::OnRendererForegrounded() {
@@ -134,9 +160,9 @@ bool MemoryPurgeManager::AreAllPagesFrozen() const {
 }
 
 base::TimeDelta MemoryPurgeManager::GetTimeToPurgeAfterBackgrounded() const {
-  return base::Seconds(
-      base::RandInt(kMinTimeToPurgeAfterBackgrounded.InSeconds(),
-                    kMaxTimeToPurgeAfterBackgrounded.InSeconds()));
+  return base::Seconds(base::RandInt(
+      static_cast<int>(kMemoryPurgeInBackgroundMinDelay.Get().InSeconds()),
+      static_cast<int>(kMemoryPurgeInBackgroundMaxDelay.Get().InSeconds())));
 }
 
 }  // namespace blink

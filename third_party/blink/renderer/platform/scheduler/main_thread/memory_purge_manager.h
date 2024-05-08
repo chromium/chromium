@@ -68,16 +68,9 @@ class PLATFORM_EXPORT MemoryPurgeManager {
 #endif
       ;
 
-  // The time of first purging after a renderer is backgrounded. The value was
-  // initially set to 30 minutes, but it was reduced to 1 minute because this
-  // reduced the memory usage of a renderer 15 minutes after it was
-  // backgrounded.
-  //
-  // Experiment results:
-  // https://docs.google.com/document/d/1E88EYNlZE1DhmlgmjUnGnCAASm8-tWCAWXy8p53vmwc/edit?usp=sharing
-  static constexpr base::TimeDelta kMinTimeToPurgeAfterBackgrounded =
-      base::Minutes(1);
-  static constexpr base::TimeDelta kMaxTimeToPurgeAfterBackgrounded =
+  // Default maximum time to purge after the renderer is backgrounded. Can be
+  // modified by field trials. Exposed for testing.
+  static constexpr base::TimeDelta kDefaultMaxTimeToPurgeAfterBackgrounded =
       base::Minutes(4);
 
   // Only one second, not to delay, but to make sure that it runs after the
