@@ -48,6 +48,14 @@ public class TabProperties {
         int CUSTOM_MESSAGE = 7;
     }
 
+    /** IDs for possible tab action states. */
+    @IntDef({TabActionState.SELECTABLE, TabActionState.CLOSABLE})
+    @Retention(RetentionPolicy.SOURCE)
+    public @interface TabActionState {
+        int SELECTABLE = 0;
+        int CLOSABLE = 1;
+    }
+
     public static final PropertyModel.WritableIntPropertyKey TAB_ID =
             new PropertyModel.WritableIntPropertyKey();
 

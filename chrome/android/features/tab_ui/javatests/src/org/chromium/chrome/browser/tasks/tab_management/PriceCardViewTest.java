@@ -26,6 +26,7 @@ import org.chromium.base.test.util.DisabledTest;
 import org.chromium.base.test.util.Feature;
 import org.chromium.base.test.util.Restriction;
 import org.chromium.chrome.browser.flags.ChromeSwitches;
+import org.chromium.chrome.browser.tasks.tab_management.TabProperties.TabActionState;
 import org.chromium.chrome.tab_ui.R;
 import org.chromium.chrome.test.ChromeJUnit4RunnerDelegate;
 import org.chromium.chrome.test.util.ChromeRenderTestRule;
@@ -78,12 +79,9 @@ public class PriceCardViewTest extends BlankUiTestActivityTestCase {
                             (ViewGroup)
                                     getActivity()
                                             .getLayoutInflater()
-                                            .inflate(
-                                                    R.layout.closable_tab_grid_card_item,
-                                                    view,
-                                                    false);
+                                            .inflate(R.layout.tab_grid_card_item, view, false);
+                    ((TabGridView) tabView).setTabActionState(TabActionState.CLOSABLE);
                     tabView.setVisibility(View.VISIBLE);
-
                     view.addView(tabView);
 
                     mPriceCardView = tabView.findViewById(R.id.price_info_box_outer);

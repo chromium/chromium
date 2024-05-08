@@ -8,9 +8,6 @@ import static org.chromium.chrome.browser.tasks.tab_management.TabListModel.Card
 
 import android.app.Activity;
 import android.content.Context;
-import android.content.res.Resources;
-import android.graphics.Bitmap;
-import android.graphics.BitmapFactory;
 import android.graphics.Rect;
 import android.util.Size;
 import android.view.LayoutInflater;
@@ -49,6 +46,7 @@ import org.chromium.chrome.browser.tasks.ReturnToChromeUtil;
 import org.chromium.chrome.browser.tasks.pseudotab.PseudoTab;
 import org.chromium.chrome.browser.tasks.tab_groups.TabGroupModelFilter;
 import org.chromium.chrome.browser.tasks.tab_management.TabListModel.CardProperties.ModelType;
+import org.chromium.chrome.browser.tasks.tab_management.TabProperties.TabActionState;
 import org.chromium.chrome.browser.tasks.tab_management.TabProperties.UiType;
 import org.chromium.chrome.tab_ui.R;
 import org.chromium.ui.base.ViewUtils;
@@ -239,10 +237,11 @@ public class TabListCoordinator
                                 (ViewGroup)
                                         LayoutInflater.from(context)
                                                 .inflate(
-                                                        R.layout.selectable_tab_grid_card_item,
+                                                        R.layout.tab_grid_card_item,
                                                         parentView,
                                                         false);
                         group.setClickable(true);
+                        ((TabGridView) group).setTabActionState(TabActionState.SELECTABLE);
 
                         return group;
                     },
@@ -255,10 +254,11 @@ public class TabListCoordinator
                                 (ViewGroup)
                                         LayoutInflater.from(context)
                                                 .inflate(
-                                                        R.layout.closable_tab_grid_card_item,
+                                                        R.layout.tab_grid_card_item,
                                                         parentView,
                                                         false);
                         group.setClickable(true);
+                        ((TabGridView) group).setTabActionState(TabActionState.CLOSABLE);
                         return group;
                     },
                     TabGridViewBinder::bindClosableTab);
@@ -304,22 +304,11 @@ public class TabListCoordinator
                                 (ViewLookupCachingFrameLayout)
                                         LayoutInflater.from(context)
                                                 .inflate(
-                                                        R.layout.closable_tab_list_card_item,
+                                                        R.layout.tab_list_card_item,
                                                         parentView,
                                                         false);
                         group.setClickable(true);
-
-                        ImageView actionButton =
-                                (ImageView) group.fastFindViewById(R.id.end_button);
-                        actionButton.setVisibility(View.VISIBLE);
-                        Resources resources = group.getResources();
-                        int closeButtonSize =
-                                (int) resources.getDimension(R.dimen.tab_grid_close_button_size);
-                        Bitmap bitmap =
-                                BitmapFactory.decodeResource(resources, R.drawable.btn_close);
-                        Bitmap.createScaledBitmap(bitmap, closeButtonSize, closeButtonSize, true);
-                        actionButton.setImageBitmap(bitmap);
-
+                        ((TabGridView) group).setTabActionState(TabActionState.CLOSABLE);
                         return group;
                     },
                     TabListViewBinder::bindClosableListTab);
@@ -331,11 +320,11 @@ public class TabListCoordinator
                                 (ViewGroup)
                                         LayoutInflater.from(context)
                                                 .inflate(
-                                                        R.layout.selectable_tab_list_card_item,
+                                                        R.layout.tab_list_card_item,
                                                         parentView,
                                                         false);
                         group.setClickable(true);
-
+                        ((TabGridView) group).setTabActionState(TabActionState.SELECTABLE);
                         return group;
                     },
                     TabListViewBinder::bindSelectableListTab);

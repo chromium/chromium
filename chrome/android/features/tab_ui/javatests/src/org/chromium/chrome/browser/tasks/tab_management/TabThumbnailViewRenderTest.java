@@ -38,6 +38,7 @@ import org.chromium.chrome.browser.browser_controls.BrowserControlsStateProvider
 import org.chromium.chrome.browser.tab.TabUtils;
 import org.chromium.chrome.browser.tab_ui.TabThumbnailView;
 import org.chromium.chrome.browser.tab_ui.TabUiThemeUtils;
+import org.chromium.chrome.browser.tasks.tab_management.TabProperties.TabActionState;
 import org.chromium.chrome.test.ChromeJUnit4RunnerDelegate;
 import org.chromium.chrome.test.R;
 import org.chromium.chrome.test.util.ChromeRenderTestRule;
@@ -99,9 +100,10 @@ public class TabThumbnailViewRenderTest {
                                             .getActivity()
                                             .getLayoutInflater()
                                             .inflate(
-                                                    R.layout.closable_tab_grid_card_item,
+                                                    R.layout.tab_grid_card_item,
                                                     mContentView,
                                                     false);
+                    ((TabGridView) mTabCard).setTabActionState(TabActionState.CLOSABLE);
                     mTabCard.setVisibility(View.VISIBLE);
                     mContentView.addView(mTabCard);
 

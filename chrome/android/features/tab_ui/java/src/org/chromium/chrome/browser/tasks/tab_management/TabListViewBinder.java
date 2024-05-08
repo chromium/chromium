@@ -177,32 +177,31 @@ class TabListViewBinder {
         final int defaultLevel = view.getResources().getInteger(R.integer.list_item_level_default);
         final int selectedLevel =
                 view.getResources().getInteger(R.integer.list_item_level_selected);
-        SelectableTabListView selectableTabListView = (SelectableTabListView) view;
+        TabListView tabListView = (TabListView) view;
 
         if (TabProperties.SELECTABLE_TAB_CLICKED_LISTENER == propertyKey) {
             View.OnClickListener onClickListener =
                     v -> {
                         model.get(TabProperties.SELECTABLE_TAB_CLICKED_LISTENER).run(tabId);
-                        selectableTabListView.onClick();
+                        tabListView.onClick();
                     };
             View.OnLongClickListener onLongClickListener =
                     v -> {
                         model.get(TabProperties.SELECTABLE_TAB_CLICKED_LISTENER).run(tabId);
-                        return selectableTabListView.onLongClick(selectableTabListView);
+                        return tabListView.onLongClick(tabListView);
                     };
-            selectableTabListView.setOnClickListener(onClickListener);
-            selectableTabListView.setOnLongClickListener(onLongClickListener);
+            tabListView.setOnClickListener(onClickListener);
+            tabListView.setOnLongClickListener(onLongClickListener);
 
             // The row should act as one large button.
-            ImageView endButton = selectableTabListView.findViewById(R.id.end_button);
+            ImageView endButton = tabListView.findViewById(R.id.end_button);
             endButton.setOnClickListener(onClickListener);
             endButton.setOnLongClickListener(onLongClickListener);
             endButton.setImportantForAccessibility(View.IMPORTANT_FOR_ACCESSIBILITY_NO);
         } else if (TabProperties.TAB_SELECTION_DELEGATE == propertyKey) {
             assert model.get(TabProperties.TAB_SELECTION_DELEGATE) != null;
-            selectableTabListView.setSelectionDelegate(
-                    model.get(TabProperties.TAB_SELECTION_DELEGATE));
-            selectableTabListView.setItem(tabId);
+            tabListView.setSelectionDelegate(model.get(TabProperties.TAB_SELECTION_DELEGATE));
+            tabListView.setItem(tabId);
         } else if (TabProperties.IS_SELECTED == propertyKey) {
             boolean isSelected = model.get(TabProperties.IS_SELECTED);
             ImageView actionButton = (ImageView) view.findViewById(R.id.end_button);

@@ -5,29 +5,56 @@
 package org.chromium.chrome.browser.tasks.tab_management;
 
 import android.content.Context;
+import android.graphics.Bitmap;
+import android.graphics.BitmapFactory;
+import android.view.View;
+import android.widget.ImageView;
 import android.graphics.drawable.Drawable;
 import android.graphics.drawable.InsetDrawable;
 import android.util.AttributeSet;
-import android.view.View;
 import android.view.accessibility.AccessibilityNodeInfo;
-import android.widget.ImageView;
 
 import androidx.appcompat.content.res.AppCompatResources;
 import androidx.vectordrawable.graphics.drawable.AnimatedVectorDrawableCompat;
 
+import org.chromium.chrome.browser.tasks.tab_management.TabProperties.TabActionState;
 import org.chromium.chrome.tab_ui.R;
 import org.chromium.components.browser_ui.widget.selectable_list.SelectableItemViewBase;
 
-/** Holds the view for a selectable tab grid. */
-public class SelectableTabListView extends SelectableItemViewBase<Integer> {
-    public SelectableTabListView(Context context, AttributeSet attrs) {
+// TODO(crbug.com/339038505): De-dupe logic in TabGridView.
+/** Holds the view for a tab list. */
+public class TabListView extends SelectableItemViewBase<Integer> {
+    private @TabActionState int mTabActionState;
+
+    public TabListView(Context context, AttributeSet attrs) {
         super(context, attrs);
         setSelectionOnLongClick(false);
     }
 
-    @Override
-    protected void onFinishInflate() {
-        super.onFinishInflate();
+    void setTabActionState(@TabActionState int tabActionState) {
+        mTabActionState = tabActionState;
+        if (mTabActionState == TabActionState.CLOSABLE) {
+            setTabActionButtonCloseDrawable();
+        } else if (mTabActionState == TabActionState.SELECTABLE) {
+            setTabActionButtonSelectionDrawable();
+        }
+    }
+
+    private void setTabActionButtonCloseDrawable() {
+        var resources = getResources();
+
+        ImageView actionButton =
+                (ImageView) findViewById(R.id.end_button);
+        actionButton.setVisibility(View.VISIBLE);
+        int closeButtonSize =
+                (int) resources.getDimension(R.dimen.tab_grid_close_button_size);
+        Bitmap bitmap =
+                BitmapFactory.decodeResource(resources, R.drawable.btn_close);
+        Bitmap.createScaledBitmap(bitmap, closeButtonSize, closeButtonSize, true);
+        actionButton.setImageBitmap(bitmap);
+    }
+
+    private void setTabActionButtonSelectionDrawable() {
         var resources = getResources();
 
         Drawable selectionListIcon =
@@ -68,13 +95,18 @@ public class SelectableTabListView extends SelectableItemViewBase<Integer> {
     @Override
     protected void updateView(boolean animate) {}
 
+    // TODO(crbug.com/339038201): Consider capturing click events and discarding them while not in
+    // selection mode.
+
     // View implementation.
 
     @Override
     public void onInitializeAccessibilityNodeInfo(AccessibilityNodeInfo info) {
         super.onInitializeAccessibilityNodeInfo(info);
 
-        info.setCheckable(true);
-        info.setChecked(isChecked());
+        if (mTabActionState == TabActionState.SELECTABLE) {
+            info.setCheckable(true);
+            info.setChecked(isChecked());
+        }
     }
 }

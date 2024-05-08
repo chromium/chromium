@@ -84,6 +84,7 @@ import org.chromium.chrome.browser.tab_ui.TabListFaviconProvider.TabFavicon;
 import org.chromium.chrome.browser.tab_ui.TabListFaviconProvider.TabFaviconFetcher;
 import org.chromium.chrome.browser.tab_ui.TabThumbnailView;
 import org.chromium.chrome.browser.tab_ui.ThumbnailProvider;
+import org.chromium.chrome.browser.tasks.tab_management.TabProperties.TabActionState;
 import org.chromium.chrome.tab_ui.R;
 import org.chromium.chrome.test.ChromeJUnit4ClassRunner;
 import org.chromium.components.browser_ui.widget.selectable_list.SelectionDelegate;
@@ -267,7 +268,8 @@ public class TabListViewHolderTest extends BlankUiTestActivityTestCase {
                             (ViewGroup)
                                     getActivity()
                                             .getLayoutInflater()
-                                            .inflate(R.layout.closable_tab_grid_card_item, null);
+                                            .inflate(R.layout.tab_grid_card_item, null);
+                    ((TabGridView) mTabGridView).setTabActionState(TabActionState.CLOSABLE);
                     mTabStripView =
                             (ViewGroup)
                                     getActivity()
@@ -277,17 +279,22 @@ public class TabListViewHolderTest extends BlankUiTestActivityTestCase {
                             (ViewGroup)
                                     getActivity()
                                             .getLayoutInflater()
-                                            .inflate(R.layout.selectable_tab_grid_card_item, null);
+                                            .inflate(R.layout.tab_grid_card_item, null);
+                    ((TabGridView) mSelectableTabGridView)
+                            .setTabActionState(TabActionState.SELECTABLE);
                     mSelectableTabListView =
                             (ViewGroup)
                                     getActivity()
                                             .getLayoutInflater()
-                                            .inflate(R.layout.selectable_tab_list_card_item, null);
+                                            .inflate(R.layout.tab_list_card_item, null);
+                    ((TabListView) mSelectableTabListView)
+                            .setTabActionState(TabActionState.SELECTABLE);
                     mTabListView =
                             (ViewGroup)
                                     getActivity()
                                             .getLayoutInflater()
-                                            .inflate(R.layout.closable_tab_list_card_item, null);
+                                            .inflate(R.layout.tab_list_card_item, null);
+                    ((TabListView) mTabListView).setTabActionState(TabActionState.CLOSABLE);
 
                     view.addView(mTabGridView);
                     view.addView(mTabStripView);
@@ -462,10 +469,9 @@ public class TabListViewHolderTest extends BlankUiTestActivityTestCase {
                     mGridModel.set(TabProperties.IS_SELECTED, true);
                     mGridModel.set(
                             TabProperties.CARD_ANIMATION_STATUS,
-                            ClosableTabGridView.AnimationStatus.CARD_RESTORE);
+                            TabGridView.AnimationStatus.CARD_RESTORE);
                 });
-        CriteriaHelper.pollUiThread(
-                () -> !((ClosableTabGridView) mTabGridView).getIsAnimatingForTesting());
+        CriteriaHelper.pollUiThread(() -> !((TabGridView) mTabGridView).getIsAnimatingForTesting());
 
         Assert.assertEquals(View.GONE, backgroundView.getVisibility());
         Assert.assertTrue(TabUiTestHelper.isTabViewSelected(mTabGridView));
@@ -475,10 +481,9 @@ public class TabListViewHolderTest extends BlankUiTestActivityTestCase {
                     mGridModel.set(TabProperties.IS_SELECTED, false);
                     mGridModel.set(
                             TabProperties.CARD_ANIMATION_STATUS,
-                            ClosableTabGridView.AnimationStatus.CARD_RESTORE);
+                            TabGridView.AnimationStatus.CARD_RESTORE);
                 });
-        CriteriaHelper.pollUiThread(
-                () -> !((ClosableTabGridView) mTabGridView).getIsAnimatingForTesting());
+        CriteriaHelper.pollUiThread(() -> !((TabGridView) mTabGridView).getIsAnimatingForTesting());
         Assert.assertEquals(View.GONE, backgroundView.getVisibility());
         Assert.assertFalse(TabUiTestHelper.isTabViewSelected(mTabGridView));
     }

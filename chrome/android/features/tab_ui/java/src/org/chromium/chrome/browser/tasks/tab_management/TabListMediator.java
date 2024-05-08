@@ -84,6 +84,7 @@ import org.chromium.chrome.browser.tasks.tab_groups.TabGroupModelFilterObserver;
 import org.chromium.chrome.browser.tasks.tab_groups.TabGroupUtils;
 import org.chromium.chrome.browser.tasks.tab_management.ActionConfirmationManager.ConfirmationResult;
 import org.chromium.chrome.browser.tasks.tab_management.PriceMessageService.PriceTabData;
+import org.chromium.chrome.browser.tasks.tab_management.TabGridView.QuickDeleteAnimationStatus;
 import org.chromium.chrome.browser.tasks.tab_management.TabListCoordinator.TabListMode;
 import org.chromium.chrome.browser.tasks.tab_management.TabProperties.UiType;
 import org.chromium.chrome.browser.tasks.tab_management.TabUiMetricsHelper.TabListEditorActionMetricGroups;
@@ -1926,7 +1927,7 @@ class TabListMediator {
                         .with(CARD_ALPHA, 1f)
                         .with(
                                 TabProperties.CARD_ANIMATION_STATUS,
-                                ClosableTabGridView.AnimationStatus.CARD_RESTORE)
+                                TabGridView.AnimationStatus.CARD_RESTORE)
                         .with(
                                 TabProperties.TAB_SELECTION_DELEGATE,
                                 isRealTab ? getTabSelectionDelegate() : null)
@@ -1942,7 +1943,7 @@ class TabListMediator {
                         .with(CARD_TYPE, TAB)
                         .with(
                                 TabProperties.QUICK_DELETE_ANIMATION_STATUS,
-                                ClosableTabGridView.QuickDeleteAnimationStatus.TAB_RESTORE)
+                                QuickDeleteAnimationStatus.TAB_RESTORE)
                         .with(TabProperties.TAB_GROUP_COLOR_ID, colorId)
                         .build();
 
@@ -2528,7 +2529,7 @@ class TabListMediator {
                 bottomValuesToTabIndexes.values().stream()
                         .flatMap(Collection::stream)
                         .collect(Collectors.toList()),
-                ClosableTabGridView.QuickDeleteAnimationStatus.TAB_PREPARE);
+                QuickDeleteAnimationStatus.TAB_PREPARE);
 
         // Create the gradient drawable and prepare the animator.
         int tabGridHeight = recyclerView.getHeight();
@@ -2549,7 +2550,7 @@ class TabListMediator {
                     if (bottomVal >= Math.round(value) + intersectionHeight) {
                         setQuickDeleteAnimationStatusForTabIndexes(
                                 bottomValuesToTabIndexes.get(bottomVal),
-                                ClosableTabGridView.QuickDeleteAnimationStatus.TAB_HIDE);
+                                QuickDeleteAnimationStatus.TAB_HIDE);
                         bottomValuesToTabIndexes.remove(bottomVal);
                     }
                 });
@@ -2636,8 +2637,7 @@ class TabListMediator {
     }
 
     private void setQuickDeleteAnimationStatusForTabIndexes(
-            List<Integer> indexes,
-            @ClosableTabGridView.QuickDeleteAnimationStatus int animationStatus) {
+            List<Integer> indexes, @QuickDeleteAnimationStatus int animationStatus) {
         for (int index : indexes) {
             mModel.get(index)
                     .model

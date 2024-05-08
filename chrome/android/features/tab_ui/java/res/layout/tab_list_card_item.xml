@@ -4,7 +4,12 @@ Copyright 2019 The Chromium Authors
 Use of this source code is governed by a BSD-style license that can be
 found in the LICENSE file.
 -->
-<merge xmlns:android="http://schemas.android.com/apk/res/android">
+<org.chromium.chrome.browser.tasks.tab_management.TabListView
+    xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
+    xmlns:tools="http://schemas.android.com/tools"
+    android:layout_width="match_parent"
+    android:layout_height="wrap_content">
 
     <LinearLayout
         android:id="@+id/content_view"
@@ -17,4 +22,4 @@ found in the LICENSE file.
 
     </LinearLayout>
 
-</merge>
+</org.chromium.chrome.browser.tasks.tab_management.TabListView>

@@ -19,6 +19,7 @@ import androidx.annotation.IntDef;
 
 import org.chromium.chrome.browser.tab.Tab;
 import org.chromium.chrome.browser.tabmodel.TabModel;
+import org.chromium.chrome.browser.tasks.tab_management.TabGridView.AnimationStatus;
 import org.chromium.ui.modelutil.MVCListAdapter;
 import org.chromium.ui.modelutil.MVCListAdapter.ModelList;
 import org.chromium.ui.modelutil.PropertyListModel;
@@ -239,8 +240,8 @@ class TabListModel extends ModelList {
 
         int status =
                 isSelected
-                        ? ClosableTabGridView.AnimationStatus.SELECTED_CARD_ZOOM_IN
-                        : ClosableTabGridView.AnimationStatus.SELECTED_CARD_ZOOM_OUT;
+                        ? AnimationStatus.SELECTED_CARD_ZOOM_IN
+                        : AnimationStatus.SELECTED_CARD_ZOOM_OUT;
         if (get(index).model.get(TabProperties.CARD_ANIMATION_STATUS) == status) return;
 
         get(index).model.set(TabProperties.CARD_ANIMATION_STATUS, status);
@@ -262,8 +263,8 @@ class TabListModel extends ModelList {
 
         int status =
                 isHovered
-                        ? ClosableTabGridView.AnimationStatus.HOVERED_CARD_ZOOM_IN
-                        : ClosableTabGridView.AnimationStatus.HOVERED_CARD_ZOOM_OUT;
+                        ? AnimationStatus.HOVERED_CARD_ZOOM_IN
+                        : AnimationStatus.HOVERED_CARD_ZOOM_OUT;
         if (get(index).model.get(TabProperties.CARD_ANIMATION_STATUS) == status) return;
 
         get(index).model.set(TabProperties.CARD_ANIMATION_STATUS, status);

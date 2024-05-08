@@ -149,6 +149,7 @@ class TabGridViewBinder {
                                 });
             }
         } else if (TabProperties.TAB_SELECTED_LISTENER == propertyKey) {
+            view.setOnLongClickListener(v -> true);
             if (model.get(TabProperties.TAB_SELECTED_LISTENER) == null) {
                 view.setOnClickListener(null);
             } else {
@@ -164,7 +165,7 @@ class TabGridViewBinder {
             TabListMediator.IphProvider provider = model.get(TabProperties.IPH_PROVIDER);
             if (provider != null) provider.showIPH(view.fastFindViewById(R.id.tab_thumbnail));
         } else if (TabProperties.CARD_ANIMATION_STATUS == propertyKey) {
-            ((ClosableTabGridView) view)
+            ((TabGridView) view)
                     .scaleTabGridCardView(model.get(TabProperties.CARD_ANIMATION_STATUS));
         } else if (TabProperties.IS_INCOGNITO == propertyKey) {
             updateColor(
@@ -216,7 +217,7 @@ class TabGridViewBinder {
                     .setContentDescription(
                             model.get(TabProperties.ACTION_BUTTON_DESCRIPTION_STRING));
         } else if (TabProperties.QUICK_DELETE_ANIMATION_STATUS == propertyKey) {
-            ((ClosableTabGridView) view)
+            ((TabGridView) view)
                     .hideTabGridCardViewForQuickDelete(
                             model.get(TabProperties.QUICK_DELETE_ANIMATION_STATUS));
         } else if (TabProperties.TAB_GROUP_INFO == propertyKey
@@ -225,8 +226,7 @@ class TabGridViewBinder {
 
             // Only change the drawable if the property key in question is for tab groups.
             if (TabProperties.TAB_GROUP_INFO == propertyKey) {
-                ((ClosableTabGridView) view)
-                        .setTabActionButtonDrawable(tabGroupInfo.getIsTabGroup());
+                ((TabGridView) view).setTabActionButtonDrawable(tabGroupInfo.getIsTabGroup());
             }
 
             // Note: TAB_ID changes are NOT flag guarded, so this code will still be used.
@@ -270,19 +270,19 @@ class TabGridViewBinder {
             view.setOnClickListener(
                     v -> {
                         model.get(TabProperties.SELECTABLE_TAB_CLICKED_LISTENER).run(tabId);
-                        ((SelectableTabGridView) view).onClick();
+                        ((TabGridView) view).onClick();
                     });
             view.setOnLongClickListener(
                     v -> {
                         model.get(TabProperties.SELECTABLE_TAB_CLICKED_LISTENER).run(tabId);
-                        return ((SelectableTabGridView) view).onLongClick(view);
+                        return ((TabGridView) view).onLongClick(view);
                     });
         } else if (TabProperties.TAB_SELECTION_DELEGATE == propertyKey) {
             assert model.get(TabProperties.TAB_SELECTION_DELEGATE) != null;
 
-            ((SelectableTabGridView) view)
+            ((TabGridView) view)
                     .setSelectionDelegate(model.get(TabProperties.TAB_SELECTION_DELEGATE));
-            ((SelectableTabGridView) view).setItem(tabId);
+            ((TabGridView) view).setItem(tabId);
         } else if (TabProperties.IS_INCOGNITO == propertyKey) {
             updateColor(
                     view,

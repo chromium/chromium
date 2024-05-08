@@ -37,7 +37,7 @@ import org.chromium.chrome.browser.hub.HubFieldTrial;
 import org.chromium.chrome.browser.layouts.LayoutManager;
 import org.chromium.chrome.browser.layouts.LayoutType;
 import org.chromium.chrome.browser.tabmodel.TabModelSelector;
-import org.chromium.chrome.browser.tasks.tab_management.ClosableTabGridView;
+import org.chromium.chrome.browser.tasks.tab_management.TabGridView;
 import org.chromium.chrome.test.ChromeTabbedActivityTestRule;
 import org.chromium.chrome.test.R;
 import org.chromium.chrome.test.util.ToolbarTestUtils;
@@ -84,7 +84,7 @@ public abstract class TabSwitcherStation extends Station {
                     isDescendantOfA(
                             allOf(
                                     withId(R.id.content_view),
-                                    withParent(instanceOf(ClosableTabGridView.class)))),
+                                    withParent(instanceOf(TabGridView.class)))),
                     isDisplayed());
     public static final Matcher<View> TAB_THUMBNAIL =
             allOf(
@@ -92,7 +92,7 @@ public abstract class TabSwitcherStation extends Station {
                     isDescendantOfA(
                             allOf(
                                     withId(R.id.content_view),
-                                    withParent(instanceOf(ClosableTabGridView.class)))),
+                                    withParent(instanceOf(TabGridView.class)))),
                     isDisplayed());
 
     protected final ChromeTabbedActivityTestRule mChromeTabbedActivityTestRule;
