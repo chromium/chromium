@@ -50,6 +50,7 @@
 #endif
 
 #if BUILDFLAG(IS_WIN)
+#include "base/debug/alias.h"
 #include "base/win/process_startup_helper.h"
 #include "base/win/scoped_com_initializer.h"
 #include "base/win/windows_version.h"
@@ -329,10 +330,31 @@ int UpdaterMain(int argc, const char* const* argv) {
           << ", System uptime (seconds): "
           << base::SysInfo::Uptime().InSeconds() << ", parent pid: "
           << base::GetParentProcessId(base::GetCurrentProcessHandle());
-  const int retval = HandleUpdaterCommands(updater_scope, command_line);
+  const int exit_code = HandleUpdaterCommands(updater_scope, command_line);
   VLOG(1) << __func__ << " (--" << GetUpdaterCommand(command_line) << ")"
-          << " returned " << retval << ".";
-  return retval;
+          << " returned " << exit_code << ".";
+
+#if BUILDFLAG(IS_WIN)
+  base::AtExitManager::ProcessCallbacksNow();
+
+  ::SetLastError(ERROR_SUCCESS);
+  const bool terminate_result =
+      ::TerminateProcess(::GetCurrentProcess(), static_cast<UINT>(exit_code));
+
+  // Capture error information in case TerminateProcess fails so that it may be
+  // found in a post-return crash dump if the process crashes on exit.
+  const DWORD terminate_error_code = ::GetLastError();
+  DWORD exit_codes[] = {
+      0xDEADBECF,
+      static_cast<DWORD>(exit_code),
+      static_cast<DWORD>(terminate_result),
+      terminate_error_code,
+      0xDEADBEDF,
+  };
+  base::debug::Alias(exit_codes);
+#endif  // BUILDFLAG(IS_WIN)
+
+  return exit_code;
 }
 
 }  // namespace updater
