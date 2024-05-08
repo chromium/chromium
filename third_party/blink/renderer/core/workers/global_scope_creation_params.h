@@ -224,6 +224,10 @@ struct CORE_EXPORT GlobalScopeCreationParams final {
   // origin.
   scoped_refptr<const SecurityOrigin> top_level_frame_security_origin;
 
+  // Timestamp of the dedicated worker start.
+  // i.e. when DedicatedWorkerStart() was called.
+  std::optional<base::TimeTicks> dedicated_worker_start_time;
+
   // Whether the parent ExecutionContext has storage access (via the Storage
   // Access API).
   const bool parent_has_storage_access;

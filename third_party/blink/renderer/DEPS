@@ -8,6 +8,7 @@ include_rules = [
     "+base/bits.h",
     "+base/check.h",
     "+base/check_deref.h",
+    "+base/check_is_test.h",
     "+base/check_op.h",
     "+base/compiler_specific.h",
     "+base/containers/adapters.h",

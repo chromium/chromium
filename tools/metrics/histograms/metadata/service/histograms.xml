@@ -2007,6 +2007,18 @@ chromium-metrics-reviews@google.com.
   </summary>
 </histogram>
 
+<histogram name="Worker.TopLevelScript.StartToWorkerScriptFetchFinishedTime"
+    units="ms" expires_after="2024-10-01">
+  <owner>yyanagisawa@chromium.org</owner>
+  <owner>chrome-worker@google.com</owner>
+  <summary>
+    The time in ms from when a dedicated worker starts until the worker script
+    fetch finished. This includes PlzDedicatedWorker to offload starting to
+    fetch a script in the browser process. It does not include the initial
+    evaluation of the script.
+  </summary>
+</histogram>
+
 </histograms>
 
 </histogram-configuration>

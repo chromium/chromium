@@ -527,7 +527,7 @@ DedicatedWorker::CreateGlobalScopeCreationParams(
           ? mojom::blink::ScriptType::kClassic
           : mojom::blink::ScriptType::kModule;
 
-  return std::make_unique<GlobalScopeCreationParams>(
+  auto params = std::make_unique<GlobalScopeCreationParams>(
       script_url, script_type, options_->name(), execution_context->UserAgent(),
       execution_context->GetUserAgentMetadata(), CreateWebWorkerFetchContext(),
       mojo::Clone(
@@ -552,6 +552,8 @@ DedicatedWorker::CreateGlobalScopeCreationParams(
       /*interface_registry=*/nullptr,
       std::move(agent_group_scheduler_compositor_task_runner),
       top_level_frame_security_origin, execution_context->HasStorageAccess());
+  params->dedicated_worker_start_time = start_time_;
+  return params;
 }
 
 scoped_refptr<WebWorkerFetchContext>

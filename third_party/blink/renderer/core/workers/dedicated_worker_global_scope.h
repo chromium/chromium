@@ -85,7 +85,8 @@ class CORE_EXPORT DedicatedWorkerGlobalScope final : public WorkerGlobalScope {
       mojo::PendingRemote<mojom::blink::DedicatedWorkerHost>
           dedicated_worker_host,
       mojo::PendingRemote<mojom::blink::BackForwardCacheControllerHost>
-          back_forward_cache_controller_host);
+          back_forward_cache_controller_host,
+      base::TimeTicks dedicated_worker_start_time);
 
   ~DedicatedWorkerGlobalScope() override;
 
@@ -130,6 +131,9 @@ class CORE_EXPORT DedicatedWorkerGlobalScope final : public WorkerGlobalScope {
       network::mojom::CredentialsMode,
       RejectCoepUnsafeNone reject_coep_unsafe_none) override;
   bool IsOffMainThreadScriptFetchDisabled() override;
+  void WorkerScriptFetchFinished(
+      Script& worker_script,
+      std::optional<v8_inspector::V8StackTraceId> stack_id) override;
 
   // Implements scheduler::WorkerScheduler::Delegate.
   void UpdateBackForwardCacheDisablingFeatures(
@@ -207,7 +211,8 @@ class CORE_EXPORT DedicatedWorkerGlobalScope final : public WorkerGlobalScope {
       mojo::PendingRemote<mojom::blink::DedicatedWorkerHost>
           dedicated_worker_host,
       mojo::PendingRemote<mojom::blink::BackForwardCacheControllerHost>
-          back_forward_cache_controller_host);
+          back_forward_cache_controller_host,
+      base::TimeTicks dedicated_worker_start_time);
 
   void DidReceiveResponseForClassicScript(
       WorkerClassicScriptLoader* classic_script_loader);
@@ -241,6 +246,9 @@ class CORE_EXPORT DedicatedWorkerGlobalScope final : public WorkerGlobalScope {
 
   // The timestamp taken when FetchAndRunClassicScript() is called.
   base::TimeTicks fetch_classic_script_start_;
+
+  // The timestamp taken when DedicatedWorker::Start() was called.
+  base::TimeTicks dedicated_worker_start_time_;
 };
 
 template <>
