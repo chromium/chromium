@@ -521,8 +521,7 @@ void DownloadOfflineContentProvider::AddCompletedDownloadDone(
       if (profile_ &&
           DownloadPrefs::FromBrowserContext(profile_)->IsAutoOpenPdfEnabled()) {
         item->OpenDownload();
-      } else if (base::FeatureList::IsEnabled(
-                     chrome::android::kOpenDownloadDialog)) {
+      } else {
         open_download_dialog_delegate_.CreateDialog(item);
       }
     }

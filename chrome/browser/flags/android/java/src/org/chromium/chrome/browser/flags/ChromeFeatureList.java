@@ -346,7 +346,6 @@ public abstract class ChromeFeatureList {
     public static final String OMNIBOX_UPDATED_CONNECTION_SECURITY_INDICATORS =
             "OmniboxUpdatedConnectionSecurityIndicators";
     public static final String OMNIBOX_WARM_RECYCLED_VIEW_POOL = "OmniboxWarmRecycledViewPool";
-    public static final String OPEN_DOWNLOAD_DIALOG = "OpenDownloadDialog";
     public static final String OPTIMIZATION_GUIDE_PUSH_NOTIFICATIONS =
             "OptimizationGuidePushNotifications";
     public static final String PAGE_INFO_ABOUT_THIS_SITE_MORE_LANGS =

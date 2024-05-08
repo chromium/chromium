@@ -230,7 +230,6 @@ const base::Feature* const kFeaturesExposedToJava[] = {
     &kNewTabSearchEngineUrlAndroid,
     &kNotificationPermissionVariant,
     &kNotificationPermissionBottomSheet,
-    &kOpenDownloadDialog,
     &kPageAnnotationsService,
     &kPreconnectOnTabCreation,
     &kPriceChangeModule,
@@ -731,10 +730,6 @@ BASE_FEATURE(kOmahaMinSdkVersionAndroid,
 BASE_FEATURE(kShortCircuitUnfocusAnimation,
              "ShortCircuitUnfocusAnimation",
              base::FEATURE_DISABLED_BY_DEFAULT);
-
-BASE_FEATURE(kOpenDownloadDialog,
-             "OpenDownloadDialog",
-             base::FEATURE_ENABLED_BY_DEFAULT);
 
 BASE_FEATURE(kPartnerCustomizationsUma,
              "PartnerCustomizationsUma",

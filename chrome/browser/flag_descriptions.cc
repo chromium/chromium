@@ -4575,12 +4575,6 @@ const char kOmahaMinSdkVersionAndroidMinSdk1Description[] = "Minimum SDK = 1";
 const char kOmahaMinSdkVersionAndroidMinSdk1000Description[] =
     "Minimum SDK = 1000";
 
-const char kOpenDownloadDialog[] =
-    "Enables pdf open dialog after download completion";
-const char kOpenDownloadDialogDescription[] =
-    "Enables open dialog after a pdf download that is triggered by an external "
-    "app.";
-
 const char kVerticalAutomotiveBackButtonToolbarName[] =
     "Enable vertical automotive back button toolbar.";
 const char kVerticalAutomotiveBackButtonToolbarDescription[] =

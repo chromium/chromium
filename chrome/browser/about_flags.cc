@@ -6918,12 +6918,6 @@ const FeatureEntry kFeatureEntries[] = {
      FEATURE_VALUE_TYPE(
          download::features::kDownloadNotificationServiceUnifiedAPI)},
 
-#if BUILDFLAG(IS_ANDROID)
-    {"open-download-dialog", flag_descriptions::kOpenDownloadDialog,
-     flag_descriptions::kOpenDownloadDialogDescription, kOsAndroid,
-     FEATURE_VALUE_TYPE(chrome::android::kOpenDownloadDialog)},
-#endif  // BUILDFLAG(IS_ANDROID)
-
     {"tab-hover-card-images", flag_descriptions::kTabHoverCardImagesName,
      flag_descriptions::kTabHoverCardImagesDescription, kOsDesktop,
      FEATURE_VALUE_TYPE(features::kTabHoverCardImages)},

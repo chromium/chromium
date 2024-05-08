@@ -6473,11 +6473,6 @@
     "expiry_milestone": 127
   },
   {
-    "name": "open-download-dialog",
-    "owners": [ "qinmin@chromium.org", "dtrainor@chromium.org" ],
-    "expiry_milestone": 125
-  },
-  {
     "name": "optimization-guide-debug-logs",
     "owners": [ "rajendrant@chromium.org", "sophiechang@chromium.org", "chrome-intelligence-core@google.com" ],
     "expiry_milestone": 125

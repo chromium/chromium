@@ -13,7 +13,6 @@ import org.chromium.chrome.browser.download.DownloadDialogBridge;
 import org.chromium.chrome.browser.download.DownloadPromptStatus;
 import org.chromium.chrome.browser.download.MimeUtils;
 import org.chromium.chrome.browser.download.R;
-import org.chromium.chrome.browser.flags.ChromeFeatureList;
 import org.chromium.chrome.browser.preferences.Pref;
 import org.chromium.chrome.browser.settings.ChromeBaseSettingsFragment;
 import org.chromium.chrome.browser.settings.ChromeManagedPreferenceDelegate;
@@ -64,9 +63,6 @@ public class DownloadSettings extends ChromeBaseSettingsFragment
                                         MimeUtils.getDefaultPdfViewerName())
                         : getActivity().getString(R.string.auto_open_pdf_enabled_description);
         mAutoOpenPdfEnabledPref.setSummaryOn(summary);
-        if (!ChromeFeatureList.isEnabled(ChromeFeatureList.OPEN_DOWNLOAD_DIALOG)) {
-            getPreferenceScreen().removePreference(findPreference(PREF_AUTO_OPEN_PDF_ENABLED));
-        }
     }
 
     @Override
@@ -103,11 +99,9 @@ public class DownloadSettings extends ChromeBaseSettingsFragment
             mLocationPromptEnabledPref.setChecked(isLocationPromptEnabled);
             mLocationPromptEnabledPref.setEnabled(true);
         }
-        if (ChromeFeatureList.isEnabled(ChromeFeatureList.OPEN_DOWNLOAD_DIALOG)) {
-            mAutoOpenPdfEnabledPref.setChecked(
-                    UserPrefs.get(getProfile()).getBoolean(Pref.AUTO_OPEN_PDF_ENABLED));
-            mAutoOpenPdfEnabledPref.setEnabled(true);
-        }
+        mAutoOpenPdfEnabledPref.setChecked(
+                UserPrefs.get(getProfile()).getBoolean(Pref.AUTO_OPEN_PDF_ENABLED));
+        mAutoOpenPdfEnabledPref.setEnabled(true);
     }
 
     // Preference.OnPreferenceChangeListener implementation.
