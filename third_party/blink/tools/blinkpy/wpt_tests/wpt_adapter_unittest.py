@@ -189,10 +189,10 @@ class WPTAdapterTest(unittest.TestCase):
         self.assertEqual(
             self.output_stream.getvalue(),
             textwrap.dedent("""\
-                00:00:01 INFO: Running tests for content_shell
-                00:00:02 INFO: Using port "test-linux-trusty"
-                00:00:03 INFO: View the test results at file:///tmp/layout-test-results/results.html
-                00:00:04 INFO: Using Debug build
+                00:00:01.000 INFO: Running tests for content_shell
+                00:00:02.000 INFO: Using port "test-linux-trusty"
+                00:00:03.000 INFO: View the test results at file:///tmp/layout-test-results/results.html
+                00:00:04.000 INFO: Using Debug build
                 """))
 
     @mock.patch('blinkpy.web_tests.port.test.TestPort.default_child_processes',

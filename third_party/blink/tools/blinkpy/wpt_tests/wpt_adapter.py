@@ -62,9 +62,10 @@ class GroupingFormatter(mozlog.formatters.GroupingFormatter):
         offset = datetime.now() - self._start
         minutes, seconds = divmod(max(0, offset.total_seconds()), 60)
         hours, minutes = divmod(minutes, 60)
+        milliseconds, _ = divmod(offset.microseconds, 1000)
         # A relative timestamp is more useful for comparing event timings than
         # an absolute one.
-        timestamp = f'{int(hours):02}:{int(minutes):02}:{int(seconds):02}'
+        timestamp = f'{int(hours):02}:{int(minutes):02}:{int(seconds):02}.{int(milliseconds):03}'
         # Place mandatory fields first so that logs are vertically aligned as
         # much as possible.
         message = f'{timestamp} {data["level"]}: {data["message"]}'
