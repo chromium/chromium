@@ -72,7 +72,8 @@ GURL AppendCommonSearchParametersToURL(const GURL& url_to_modify) {
 GURL AppendSearchContextParamToURL(const GURL& url_to_modify,
                                    std::optional<GURL> page_url,
                                    std::optional<std::string> page_title) {
-  if (!page_url.has_value() && !page_title.has_value()) {
+  if (!lens::features::UseSearchContextForTextOnlyLensOverlayRequests() ||
+      (!page_url.has_value() && !page_title.has_value())) {
     return url_to_modify;
   }
 

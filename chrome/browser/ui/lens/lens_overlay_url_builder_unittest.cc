@@ -30,6 +30,7 @@ class LensOverlayUrlBuilderTest : public testing::Test {
         lens::features::kLensOverlay,
         {
             {"results-search-url", kResultsSearchBaseUrl},
+            {"use-search-context-for-text-only-requests", "true"},
         });
   }
 
@@ -76,6 +77,32 @@ TEST_F(LensOverlayUrlBuilderTest, BuildTextOnlySearchURL) {
                                          /*page_url=*/std::nullopt,
                                          /*page_title=*/std::nullopt,
                                          additional_params),
+            expected_url);
+}
+
+TEST_F(LensOverlayUrlBuilderTest,
+       BuildTextOnlySearchURLWithSearchContextFlagOff) {
+  feature_list_.Reset();
+  feature_list_.InitAndEnableFeatureWithParameters(
+      lens::features::kLensOverlay,
+      {
+          {"results-search-url", kResultsSearchBaseUrl},
+          {"use-search-context-for-text-only-requests", "false"},
+      });
+
+  std::string text_query = "Apples";
+  std::map<std::string, std::string> additional_params;
+  std::string expected_search_context =
+      EncodeSearchContext(std::make_optional<GURL>(kPageUrl),
+                          std::make_optional<std::string>(kPageTitle));
+
+  std::string expected_url =
+      base::StringPrintf("%s?q=%s&gsc=1&masfc=c&hl=%s", kResultsSearchBaseUrl,
+                         text_query.c_str(), kLanguage);
+
+  EXPECT_EQ(lens::BuildTextOnlySearchURL(
+                text_query, std::make_optional<GURL>(kPageUrl),
+                std::make_optional<std::string>(kPageTitle), additional_params),
             expected_url);
 }
 

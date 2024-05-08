@@ -4,6 +4,7 @@
 
 #include "lens_overlay_query_controller.h"
 
+#include "base/test/scoped_feature_list.h"
 #include "base/test/task_environment.h"
 #include "base/test/test_future.h"
 #include "chrome/browser/browser_process.h"
@@ -12,6 +13,7 @@
 #include "chrome/browser/signin/identity_manager_factory.h"
 #include "chrome/test/base/testing_profile.h"
 #include "components/endpoint_fetcher/endpoint_fetcher.h"
+#include "components/lens/lens_features.h"
 #include "content/public/test/browser_task_environment.h"
 #include "google_apis/common/api_error_codes.h"
 #include "net/base/url_util.h"
@@ -147,6 +149,7 @@ class LensOverlayQueryControllerTest : public testing::Test {
   }
 
  protected:
+  base::test::ScopedFeatureList feature_list_;
   content::BrowserTaskEnvironment task_environment_;
   std::unique_ptr<TestingProfile> profile_;
 
@@ -475,6 +478,9 @@ TEST_F(LensOverlayQueryControllerTest,
 
 TEST_F(LensOverlayQueryControllerTest,
        FetchTextOnlyInteraction_ReturnsResponse) {
+  feature_list_.InitAndEnableFeatureWithParameters(
+      lens::features::kLensOverlay,
+      {{"use-search-context-for-text-only-requests", "true"}});
   task_environment_.RunUntilIdle();
   base::test::TestFuture<std::vector<lens::mojom::OverlayObjectPtr>,
                          lens::mojom::TextPtr>
