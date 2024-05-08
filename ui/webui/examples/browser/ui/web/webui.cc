@@ -9,7 +9,6 @@
 #include "content/public/browser/web_contents.h"
 #include "content/public/browser/web_ui.h"
 #include "content/public/browser/web_ui_data_source.h"
-#include "ui/base/ui_base_features.h"
 #include "ui/webui/examples/grit/webui_examples_resources.h"
 
 namespace webui_examples {
@@ -45,9 +44,6 @@ void SetupWebUIDataSource(content::WebUIDataSource* source,
                           int default_resource) {
   SetJSModuleDefaults(source);
   EnableTrustedTypesCSP(source);
-  source->AddString(
-      "chromeRefresh2023Attribute",
-      features::IsChromeWebuiRefresh2023() ? "chrome-refresh-2023" : "");
   source->AddResourcePaths(resources);
   source->AddResourcePath("", default_resource);
 }

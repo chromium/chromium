@@ -29,7 +29,6 @@
 #include "services/screen_ai/buildflags/buildflags.h"
 #include "ui/base/l10n/l10n_util.h"
 #include "ui/base/resource/resource_bundle.h"
-#include "ui/base/ui_base_features.h"
 #include "ui/base/webui/web_ui_util.h"
 #include "url/gurl.h"
 
@@ -66,8 +65,6 @@ void AddCommonStrings(base::Value::Dict* dict) {
   for (const auto& resource : kPdfResources)
     dict->Set(resource.name, l10n_util::GetStringUTF16(resource.id));
 
-  dict->Set("chromeRefresh2023Attribute",
-            features::IsChromeWebuiRefresh2023() ? "chrome-refresh-2023" : "");
   dict->Set("presetZoomFactors", zoom::GetPresetZoomFactorsAsJSON());
   dict->Set("pdfOopifEnabled",
             chrome_pdf::features::IsOopifPdfEnabled() ? "pdfOopifEnabled" : "");
