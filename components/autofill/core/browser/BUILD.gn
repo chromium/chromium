@@ -1370,6 +1370,13 @@ source_set("unit_tests") {
     deps += [ "//build:branding_buildflags" ]
   }
 
+  if (!is_ios && !is_android) {
+    deps += [
+      "//ui/native_theme",
+      "//ui/native_theme:native_theme_browser",
+    ]
+  }
+
   if (use_blink) {
     deps += [
       "//content/test:test_support",
