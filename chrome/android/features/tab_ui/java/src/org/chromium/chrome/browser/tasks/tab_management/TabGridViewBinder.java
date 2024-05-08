@@ -28,6 +28,7 @@ import org.chromium.chrome.browser.tab.state.ShoppingPersistedTabData;
 import org.chromium.chrome.browser.tab_ui.TabListFaviconProvider;
 import org.chromium.chrome.browser.tab_ui.TabThumbnailView;
 import org.chromium.chrome.browser.tab_ui.TabUiThemeUtils;
+import org.chromium.chrome.browser.tasks.tab_management.TabListMediator.TabGroupInfo;
 import org.chromium.chrome.tab_ui.R;
 import org.chromium.ui.modelutil.PropertyKey;
 import org.chromium.ui.modelutil.PropertyModel;
@@ -220,25 +221,26 @@ class TabGridViewBinder {
                             model.get(TabProperties.QUICK_DELETE_ANIMATION_STATUS));
         } else if (TabProperties.TAB_GROUP_INFO == propertyKey
                 || TabProperties.TAB_ID == propertyKey) {
+            @Nullable TabGroupInfo tabGroupInfo = model.get(TabProperties.TAB_GROUP_INFO);
+
             // Only change the drawable if the property key in question is for tab groups.
             if (TabProperties.TAB_GROUP_INFO == propertyKey) {
                 ((ClosableTabGridView) view)
-                        .setTabActionButtonDrawable(
-                                model.get(TabProperties.TAB_GROUP_INFO).getIsTabGroup());
+                        .setTabActionButtonDrawable(tabGroupInfo.getIsTabGroup());
             }
 
             // Note: TAB_ID changes are NOT flag guarded, so this code will still be used.
             // However, TAB_GROUP_INFO will never be set since it is flag guarded and will be
-            // defaulted to null so in theory this should never cause problems.
-            if (model.get(TabProperties.TAB_GROUP_INFO) != null) {
+            // defaulted to null so in theory this should never cause problems. If the flag is
+            // set ensure that this specific click listener is only set for tab groups.
+            if (tabGroupInfo != null && tabGroupInfo.getIsTabGroup()) {
                 ImageView actionButton = (ImageView) view.fastFindViewById(R.id.action_button);
                 actionButton.setOnClickListener(
                         TabListGroupMenuCoordinator.getTabListGroupMenuOnClickListener(
                                 model.get(TabProperties.ON_MENU_ITEM_CLICKED_CALLBACK),
                                 model.get(TabProperties.TAB_ID),
                                 model.get(TabProperties.IS_INCOGNITO),
-                                model.get(TabProperties.TAB_GROUP_INFO)
-                                        .getShouldShowDeleteTabGroup()));
+                                tabGroupInfo.getShouldShowDeleteTabGroup()));
             } else {
                 if (model.get(TabProperties.TAB_ACTION_BUTTON_LISTENER) == null) {
                     view.fastFindViewById(R.id.action_button).setOnClickListener(null);
