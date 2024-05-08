@@ -1079,7 +1079,7 @@ deps = {
       'packages': [
           {
               'package': 'chromium/third_party/android_toolchain_canary/android_toolchain_canary',
-              'version': '9d1N8W-zutfTWhUhcBTSMnO0afAxvmkzfFEWKmnJcFIC',
+              'version': 'JtKBKwZ4O-6avfvuQNOAMYqUwQAMGX10y-GrIlJPo_wC',
           },
       ],
       'condition': 'checkout_android_native_support',
