@@ -2,12 +2,12 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#ifndef CHROME_SERVICES_BUNDZ_TRANSLATION_MOCK_TRANSLATOR_H_
-#define CHROME_SERVICES_BUNDZ_TRANSLATION_MOCK_TRANSLATOR_H_
+#ifndef CHROME_SERVICES_ON_DEVICE_TRANSLATION_MOCK_TRANSLATOR_H_
+#define CHROME_SERVICES_ON_DEVICE_TRANSLATION_MOCK_TRANSLATOR_H_
 
-#include "chrome/services/bundz_translation/public/mojom/translator.mojom.h"
+#include "chrome/services/on_device_translation/public/mojom/translator.mojom.h"
 
-namespace bundz_translation {
+namespace on_device_translation {
 
 class MockTranslator : public mojom::Translator {
  public:
@@ -25,6 +25,6 @@ class MockTranslator : public mojom::Translator {
   void Translate(const std::string& input, TranslateCallback callback) override;
 };
 
-}  // namespace bundz_translation
+}  // namespace on_device_translation
 
-#endif  // CHROME_SERVICES_BUNDZ_TRANSLATION_MOCK_TRANSLATOR_H_
+#endif  // CHROME_SERVICES_ON_DEVICE_TRANSLATION_MOCK_TRANSLATOR_H_

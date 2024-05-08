@@ -2,16 +2,16 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#include "chrome/browser/bundz_translation/translator.h"
+#include "chrome/browser/on_device_translation/translator.h"
 
 #include "base/functional/bind.h"
-#include "chrome/browser/bundz_translation/service_controller.h"
+#include "chrome/browser/on_device_translation/service_controller.h"
 #include "third_party/blink/public/mojom/on_device_translation/translator.mojom.h"
 
 Translator::Translator(const std::string& source_lang,
                        const std::string& target_lang,
                        base::OnceCallback<void(bool)> callback) {
-  BundzTranslationServiceController::GetInstance()->CreateTranslator(
+  OnDeviceTranslationServiceController::GetInstance()->CreateTranslator(
       source_lang, target_lang, translator_remote_.BindNewPipeAndPassReceiver(),
       std::move(callback));
 }

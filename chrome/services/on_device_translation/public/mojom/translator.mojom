@@ -2,7 +2,7 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-module bundz_translation.mojom;
+module on_device_translation.mojom;
 
 // The abstraction that does the real translation work.
 interface Translator {

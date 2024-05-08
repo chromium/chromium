@@ -6,7 +6,7 @@ module blink.mojom;
 
 import "third_party/blink/public/mojom/on_device_translation/translator.mojom";
 
-// The manager for bundz translation.
+// The manager for on-device translation.
 interface TranslationManager {
   // Returns if it is supported to create a translator that could translate
   // texts from `source_lang` to `target_lang`.

@@ -2,16 +2,16 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-module bundz_translation.mojom;
+module on_device_translation.mojom;
 
-import "chrome/services/bundz_translation/public/mojom/translator.mojom";
+import "chrome/services/on_device_translation/public/mojom/translator.mojom";
 import "sandbox/policy/mojom/sandbox.mojom";
 
 // The service that provides translation capabilities through
 // various implementation.
 // TODO(https://crbug.com/331733060): fix the sandbox type.
 [ServiceSandbox=sandbox.mojom.Sandbox.kService]
-interface BundzTranslationService {
+interface OnDeviceTranslationService {
   // Binds the receiver to a `Translator` implementation that could
   // do translation from `source_lang` to `target_lang`.
   CreateTranslator(

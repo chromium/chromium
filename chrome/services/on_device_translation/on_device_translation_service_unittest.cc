@@ -2,25 +2,25 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#include "chrome/services/bundz_translation/bundz_translation_service.h"
+#include "chrome/services/on_device_translation/on_device_translation_service.h"
 
 #include "base/functional/bind.h"
 #include "base/functional/callback_forward.h"
 #include "base/memory/weak_ptr.h"
 #include "base/test/task_environment.h"
-#include "chrome/services/bundz_translation/public/mojom/bundz_translation_service.mojom.h"
-#include "chrome/services/bundz_translation/public/mojom/translator.mojom.h"
+#include "chrome/services/on_device_translation/public/mojom/on_device_translation_service.mojom.h"
+#include "chrome/services/on_device_translation/public/mojom/translator.mojom.h"
 #include "mojo/public/cpp/bindings/remote.h"
 #include "testing/gtest/include/gtest/gtest.h"
 
-namespace bundz_translation {
+namespace on_device_translation {
 namespace {
 
 const char kTestString[] = "test";
 
-class MockBundzTranslationServiceTest : public testing::Test {
+class MockOnDeviceTranslationServiceTest : public testing::Test {
  public:
-  MockBundzTranslationServiceTest()
+  MockOnDeviceTranslationServiceTest()
       : service_impl_(service_remote_.BindNewPipeAndPassReceiver()),
         weak_factory_(this) {}
 
@@ -54,7 +54,7 @@ class MockBundzTranslationServiceTest : public testing::Test {
     base::RunLoop run_loop;
     service_remote_->CreateTranslator(
         source_lang, target_lang, BindNewPipeAndPassTranslatorReceiver(),
-        base::BindOnce(&MockBundzTranslationServiceTest::OnTranslatorCreated,
+        base::BindOnce(&MockOnDeviceTranslationServiceTest::OnTranslatorCreated,
                        weak_factory_.GetWeakPtr(), run_loop.QuitClosure(),
                        should_succeed));
     run_loop.Run();
@@ -83,28 +83,28 @@ class MockBundzTranslationServiceTest : public testing::Test {
   base::test::TaskEnvironment task_environment_;
 
  private:
-  mojo::Remote<mojom::BundzTranslationService> service_remote_;
+  mojo::Remote<mojom::OnDeviceTranslationService> service_remote_;
   mojo::Remote<mojom::Translator> translator_remote_;
-  BundzTranslationService service_impl_;
+  OnDeviceTranslationService service_impl_;
 
-  base::WeakPtrFactory<MockBundzTranslationServiceTest> weak_factory_;
+  base::WeakPtrFactory<MockOnDeviceTranslationServiceTest> weak_factory_;
 };
 
-TEST_F(MockBundzTranslationServiceTest, CanTranslate_SameLanguage) {
+TEST_F(MockOnDeviceTranslationServiceTest, CanTranslate_SameLanguage) {
   TestCanTranslate("en", "en", true);
 }
 
-TEST_F(MockBundzTranslationServiceTest, CanTranslate_DifferentLanguage) {
+TEST_F(MockOnDeviceTranslationServiceTest, CanTranslate_DifferentLanguage) {
   TestCanTranslate("en", "ja", false);
 }
 
-TEST_F(MockBundzTranslationServiceTest, CreateTranslator_SameLanguage) {
+TEST_F(MockOnDeviceTranslationServiceTest, CreateTranslator_SameLanguage) {
   TestCreateTranslator("en", "en", true);
 }
 
-TEST_F(MockBundzTranslationServiceTest, CreateTranslator_DifferentLanguage) {
+TEST_F(MockOnDeviceTranslationServiceTest, CreateTranslator_DifferentLanguage) {
   TestCreateTranslator("en", "ja", false);
 }
 
 }  // namespace
-}  // namespace bundz_translation
+}  // namespace on_device_translation

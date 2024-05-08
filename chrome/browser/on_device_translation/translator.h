@@ -2,10 +2,10 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#ifndef CHROME_BROWSER_BUNDZ_TRANSLATION_TRANSLATOR_H_
-#define CHROME_BROWSER_BUNDZ_TRANSLATION_TRANSLATOR_H_
+#ifndef CHROME_BROWSER_ON_DEVICE_TRANSLATION_TRANSLATOR_H_
+#define CHROME_BROWSER_ON_DEVICE_TRANSLATION_TRANSLATOR_H_
 
-#include "chrome/services/bundz_translation/public/mojom/translator.mojom.h"
+#include "chrome/services/on_device_translation/public/mojom/translator.mojom.h"
 #include "mojo/public/cpp/bindings/remote.h"
 #include "third_party/blink/public/mojom/on_device_translation/translator.mojom.h"
 
@@ -26,7 +26,7 @@ class Translator : public blink::mojom::Translator {
   void Translate(const std::string& input, TranslateCallback callback) override;
 
  private:
-  mojo::Remote<bundz_translation::mojom::Translator> translator_remote_;
+  mojo::Remote<on_device_translation::mojom::Translator> translator_remote_;
 };
 
-#endif  // CHROME_BROWSER_BUNDZ_TRANSLATION_TRANSLATOR_H_
+#endif  // CHROME_BROWSER_ON_DEVICE_TRANSLATION_TRANSLATOR_H_
