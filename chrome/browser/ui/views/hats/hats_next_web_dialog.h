@@ -108,10 +108,6 @@ class HatsNextWebDialog : public views::BubbleDialogDelegateView,
   // destroyed. Virtual to allow mocking in tests.
   virtual void CloseWidget();
 
-  // Updates dialog size to desired contents size. Virtual to allow mocking in
-  // tests.
-  virtual void UpdateWidgetSize();
-
   // Returns whether the dialog is still waiting for the survey to load.
   bool IsWaitingForSurveyForTesting();
 

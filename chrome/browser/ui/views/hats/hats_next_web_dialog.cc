@@ -65,12 +65,6 @@ class HatsNextWebDialog::HatsWebView : public views::WebView {
 
   ~HatsWebView() override = default;
 
-  // views::WebView:
-  void PreferredSizeChanged() override {
-    WebView::PreferredSizeChanged();
-    dialog_->UpdateWidgetSize();
-  }
-
   // content::WebContentsDelegate:
   bool HandleContextMenu(content::RenderFrameHost& render_frame_host,
                          const content::ContextMenuParams& params) override {
@@ -248,7 +242,9 @@ HatsNextWebDialog::HatsNextWebDialog(
               : BrowserView::GetBrowserViewForBrowser(browser)
                     ->toolbar_button_provider()
                     ->GetAppMenuButton(),
-          views::BubbleBorder::TOP_RIGHT),
+          views::BubbleBorder::TOP_RIGHT,
+          views::BubbleBorder::DIALOG_SHADOW,
+          /*autosize=*/true),
       otr_profile_(browser->profile()->GetOffTheRecordProfile(
           Profile::OTRProfileID::CreateUnique("HaTSNext:WebDialog"),
           /*create_if_needed=*/true)),
@@ -390,10 +386,6 @@ void HatsNextWebDialog::ShowWidget() {
 
 void HatsNextWebDialog::CloseWidget() {
   widget_->Close();
-}
-
-void HatsNextWebDialog::UpdateWidgetSize() {
-  SizeToContents();
 }
 
 bool HatsNextWebDialog::IsWaitingForSurveyForTesting() {

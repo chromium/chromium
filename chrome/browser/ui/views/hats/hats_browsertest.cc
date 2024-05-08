@@ -74,7 +74,6 @@ class MockHatsNextWebDialog : public HatsNextWebDialog {
 
   MOCK_METHOD(void, ShowWidget, (), (override));
   MOCK_METHOD(void, CloseWidget, (), (override));
-  MOCK_METHOD(void, UpdateWidgetSize, (), (override));
 
   void WaitForClose() {
     base::RunLoop run_loop;
@@ -82,14 +81,6 @@ class MockHatsNextWebDialog : public HatsNextWebDialog {
       widget_->Close();
       run_loop.Quit();
     });
-    run_loop.Run();
-  }
-
-  void WaitForUpdateWidgetSize() {
-    base::RunLoop run_loop;
-    EXPECT_CALL(*this, UpdateWidgetSize).WillOnce(testing::Invoke([&run_loop] {
-      run_loop.Quit();
-    }));
     run_loop.Run();
   }
 };
@@ -323,12 +314,6 @@ IN_PROC_BROWSER_TEST_F(HatsNextWebDialogBrowserTest,
 }
 
 IN_PROC_BROWSER_TEST_F(HatsNextWebDialogBrowserTest, DialogResize) {
-  // TODO(https://crbug.com/329235190): render_frame_metadata is skipped,
-  // causing no UpdateWidgetSize() call.
-  if (views::test::IsOzoneBubblesUsingPlatformWidgets()) {
-    GTEST_SKIP();
-  }
-
   ASSERT_TRUE(embedded_test_server()->Start());
 
   auto* dialog = new MockHatsNextWebDialog(
@@ -342,22 +327,11 @@ IN_PROC_BROWSER_TEST_F(HatsNextWebDialogBrowserTest, DialogResize) {
 
   // Depending on renderer warm-up, an initial empty size may additionally be
   // reported before hats_next_mock.html has had a chance to resize.
-  dialog->WaitForUpdateWidgetSize();
   auto size = dialog->CalculatePreferredSize({});
   EXPECT_TRUE(size == kTargetSize || size == dialog->kMinSize);
-  if (size != kTargetSize) {
-    dialog->WaitForUpdateWidgetSize();
-    EXPECT_EQ(kTargetSize, dialog->CalculatePreferredSize({}));
-  }
 }
 
 IN_PROC_BROWSER_TEST_F(HatsNextWebDialogBrowserTest, MaximumSize) {
-  // TODO(https://crbug.com/329235190): render_frame_metadata is skipped,
-  // causing no UpdateWidgetSize() call.
-  if (views::test::IsOzoneBubblesUsingPlatformWidgets()) {
-    GTEST_SKIP();
-  }
-
   ASSERT_TRUE(embedded_test_server()->Start());
 
   EXPECT_CALL(*hats_service(), HatsNextDialogClosed);
@@ -370,13 +344,8 @@ IN_PROC_BROWSER_TEST_F(HatsNextWebDialogBrowserTest, MaximumSize) {
   // dialogs maximum size. Depending on renderer warm-up, an initial empty size
   // may additionally be reported before hats_next_mock.html has had a chance
   // to resize.
-  dialog->WaitForUpdateWidgetSize();
   auto size = dialog->CalculatePreferredSize({});
   EXPECT_TRUE(size == HatsNextWebDialog::kMaxSize || size == dialog->kMinSize);
-  if (size != HatsNextWebDialog::kMaxSize) {
-    dialog->WaitForUpdateWidgetSize();
-    EXPECT_EQ(HatsNextWebDialog::kMaxSize, dialog->CalculatePreferredSize({}));
-  }
 }
 
 IN_PROC_BROWSER_TEST_F(HatsNextWebDialogBrowserTest, ZoomLevel) {
