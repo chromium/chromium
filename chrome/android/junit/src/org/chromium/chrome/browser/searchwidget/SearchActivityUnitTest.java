@@ -239,7 +239,7 @@ public class SearchActivityUnitTest {
     @Test
     public void loadUrl_dispatchResultToCallingActivity() {
         doReturn(IntentOrigin.CUSTOM_TAB).when(mUtils).getIntentOrigin(any());
-        mActivity.handleNewIntent(new Intent());
+        mActivity.handleNewIntent(new Intent(), false);
 
         mActivity.loadUrl(LOAD_URL_PARAMS_SIMPLE, false);
         ArgumentCaptor<OmniboxLoadUrlParams> captor =
@@ -253,7 +253,7 @@ public class SearchActivityUnitTest {
     @Test
     public void loadUrl_openInChromeBrowser() {
         doReturn(IntentOrigin.QUICK_ACTION_SEARCH_WIDGET).when(mUtils).getIntentOrigin(any());
-        mActivity.handleNewIntent(new Intent());
+        mActivity.handleNewIntent(new Intent(), false);
 
         mActivity.loadUrl(LOAD_URL_PARAMS_SIMPLE, false);
         verify(mUtils, never()).resolveOmniboxRequestForResult(any(), any());
@@ -264,7 +264,7 @@ public class SearchActivityUnitTest {
     public void loadUrl_noActionWhenActivityIsNotReady() {
         doReturn(IntentOrigin.QUICK_ACTION_SEARCH_WIDGET).when(mUtils).getIntentOrigin(any());
         mActivity.setActivityUsableForTesting(false);
-        mActivity.handleNewIntent(new Intent());
+        mActivity.handleNewIntent(new Intent(), false);
 
         mActivity.loadUrl(LOAD_URL_PARAMS_SIMPLE, false);
         verify(mUtils, never()).resolveOmniboxRequestForResult(any(), any());
@@ -274,7 +274,7 @@ public class SearchActivityUnitTest {
     @Test
     public void cancelSearch_dispatchResultToCallingActivity() {
         doReturn(IntentOrigin.CUSTOM_TAB).when(mUtils).getIntentOrigin(any());
-        mActivity.handleNewIntent(new Intent());
+        mActivity.handleNewIntent(new Intent(), false);
 
         mActivity.cancelSearch();
         verify(mUtils).resolveOmniboxRequestForResult(mActivity, null);
@@ -283,7 +283,7 @@ public class SearchActivityUnitTest {
     @Test
     public void cancelSearch_terminateSearch() {
         doReturn(IntentOrigin.SEARCH_WIDGET).when(mUtils).getIntentOrigin(any());
-        mActivity.handleNewIntent(new Intent());
+        mActivity.handleNewIntent(new Intent(), false);
 
         mActivity.cancelSearch();
         verify(mUtils, never()).resolveOmniboxRequestForResult(any(), any());
@@ -292,7 +292,7 @@ public class SearchActivityUnitTest {
     @Test
     public void handleNewIntent_forSearchWidget() {
         doReturn(IntentOrigin.SEARCH_WIDGET).when(mUtils).getIntentOrigin(any());
-        mActivity.handleNewIntent(new Intent());
+        mActivity.handleNewIntent(new Intent(), false);
 
         assertEquals(
                 PageClassification.ANDROID_SEARCH_WIDGET_VALUE,
@@ -307,7 +307,7 @@ public class SearchActivityUnitTest {
     @Test
     public void handleNewIntent_forQuickActionSearchWidget() {
         doReturn(IntentOrigin.QUICK_ACTION_SEARCH_WIDGET).when(mUtils).getIntentOrigin(any());
-        mActivity.handleNewIntent(new Intent());
+        mActivity.handleNewIntent(new Intent(), false);
 
         assertEquals(
                 PageClassification.ANDROID_SHORTCUTS_WIDGET_VALUE,
@@ -323,7 +323,7 @@ public class SearchActivityUnitTest {
     public void handleNewIntent_forCustomTabNoProfile() {
         doReturn(IntentOrigin.CUSTOM_TAB).when(mUtils).getIntentOrigin(any());
         doReturn(new GURL("https://abc.xyz")).when(mUtils).getIntentUrl(any());
-        mActivity.handleNewIntent(new Intent());
+        mActivity.handleNewIntent(new Intent(), false);
 
         assertEquals(
                 PageClassification.OTHER_ON_CCT_VALUE,
@@ -346,7 +346,7 @@ public class SearchActivityUnitTest {
         doReturn(true).when(mTemplateUrlSvc).isSearchResultsPageFromDefaultSearchProvider(any());
         ShadowProfileManager.setProfile(mProfile);
 
-        mActivity.handleNewIntent(new Intent());
+        mActivity.handleNewIntent(new Intent(), false);
 
         assertEquals(
                 PageClassification.SEARCH_RESULT_PAGE_ON_CCT_VALUE,
@@ -361,7 +361,7 @@ public class SearchActivityUnitTest {
     @Test
     public void handleNewIntent_passIntentUrlToLocationBarData() {
         doReturn(new GURL("https://abc.xyz")).when(mUtils).getIntentUrl(any());
-        mActivity.handleNewIntent(new Intent());
+        mActivity.handleNewIntent(new Intent(), false);
 
         assertEquals("https://abc.xyz/", mDataProvider.getCurrentGurl().getSpec());
     }
@@ -645,7 +645,7 @@ public class SearchActivityUnitTest {
 
     @Test
     public void cancelSearch_onBackKeyPressed() {
-        mActivity.handleNewIntent(new Intent());
+        mActivity.handleNewIntent(new Intent(), false);
 
         assertFalse(mActivity.isFinishing());
         assertFalse(mActivity.isActivityFinishingOrDestroyed());
@@ -657,7 +657,7 @@ public class SearchActivityUnitTest {
     @Test
     public void cancelSearch_onBackGesture() {
         // Same as above, but with predictive back gesture enabled.
-        mActivity.handleNewIntent(new Intent());
+        mActivity.handleNewIntent(new Intent(), false);
 
         assertFalse(mActivity.isFinishing());
         assertFalse(mActivity.isActivityFinishingOrDestroyed());
@@ -668,7 +668,7 @@ public class SearchActivityUnitTest {
 
     @Test
     public void cancelSearch_onTapOutside() {
-        mActivity.handleNewIntent(new Intent());
+        mActivity.handleNewIntent(new Intent(), false);
 
         assertFalse(mActivity.isFinishing());
         assertFalse(mActivity.isActivityFinishingOrDestroyed());

@@ -2688,12 +2688,43 @@ chromium-metrics-reviews@google.com.
   </summary>
 </histogram>
 
+<histogram name="Android.Omnibox.SearchActivity.ActivityPresent"
+    enum="BooleanPresent" expires_after="2024-09-01">
+  <owner>ender@chromium.org</owner>
+  <summary>
+    Records whether intent is updating an already present activity. For the most
+    part the expected value here is 'false', indicating that the intent was
+    starting a new session. A value of 'true' indicates that the SearchActivity
+    was already focused and running when a new intent was received. Such intent
+    would need to be emitted while SearchActivity is in foreground.
+
+    Recorded once per intent.
+  </summary>
+</histogram>
+
+<histogram name="Android.Omnibox.SearchActivity.IntentOrigin"
+    enum="SearchActivityIntentOrigin" expires_after="2024-09-01">
+  <owner>ender@chromium.org</owner>
+  <summary>
+    Record the origin of an intent (i.e. from where the SearchActivity was
+    called). Recorded once per intent.
+  </summary>
+</histogram>
+
 <histogram name="Android.Omnibox.SearchActivity.LaunchedWithQuery"
     enum="Boolean" expires_after="2024-09-01">
   <owner>ender@chromium.org</owner>
   <summary>
     Records whether intent used to launch / update SearchActivity carried an
     (optional) User Query. Recorded once per intent.
+  </summary>
+</histogram>
+
+<histogram name="Android.Omnibox.SearchActivity.SearchType"
+    enum="SearchActivitySearchType" expires_after="2024-09-01">
+  <owner>ender@chromium.org</owner>
+  <summary>
+    Record the Search type requested from an Intent. Recorded once per intent.
   </summary>
 </histogram>
 

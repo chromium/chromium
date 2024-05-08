@@ -29,7 +29,8 @@ public interface SearchActivityClient {
         IntentOrigin.UNKNOWN,
         IntentOrigin.SEARCH_WIDGET,
         IntentOrigin.QUICK_ACTION_SEARCH_WIDGET,
-        IntentOrigin.CUSTOM_TAB
+        IntentOrigin.CUSTOM_TAB,
+        IntentOrigin.COUNT
     })
     @Retention(RetentionPolicy.SOURCE)
     public @interface IntentOrigin {
@@ -44,10 +45,13 @@ public interface SearchActivityClient {
 
         /** Calling component is Chrome Custom Tab. */
         int CUSTOM_TAB = 3;
+
+        /** Total count of items, used for histogram recording. */
+        int COUNT = 4;
     }
 
     /** The requested typ of service. */
-    @IntDef({SearchType.TEXT, SearchType.VOICE, SearchType.LENS})
+    @IntDef({SearchType.TEXT, SearchType.VOICE, SearchType.LENS, SearchType.COUNT})
     @Retention(RetentionPolicy.SOURCE)
     public @interface SearchType {
         /** Regular text search / Omnibox aided Search. */
@@ -58,6 +62,9 @@ public interface SearchActivityClient {
 
         /** Search with Lens. */
         int LENS = 2;
+
+        /** Total count of items, used for histogram recording. */
+        int COUNT = 3;
     }
 
     /**

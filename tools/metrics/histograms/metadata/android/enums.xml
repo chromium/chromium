@@ -1225,6 +1225,19 @@ chromium-metrics-reviews@google.com.
   <int value="3" label="Promo was dismissed via swipe down"/>
 </enum>
 
+<enum name="SearchActivityIntentOrigin">
+  <int value="0" label="Unknown / External"/>
+  <int value="1" label="Search Widget"/>
+  <int value="2" label="Shortcuts Widget"/>
+  <int value="3" label="Custom Tab"/>
+</enum>
+
+<enum name="SearchActivitySearchType">
+  <int value="0" label="Text"/>
+  <int value="1" label="Voice"/>
+  <int value="2" label="Lens"/>
+</enum>
+
 <enum name="SearchPrefetchTouchDownPrefetchResult">
   <int value="0" label="Hit, last prefetch matches navigation"/>
   <int value="1" label="Miss, last prefetch does not match navigation"/>

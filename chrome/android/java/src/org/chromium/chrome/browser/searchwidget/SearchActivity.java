@@ -112,6 +112,13 @@ public class SearchActivity extends AsyncInitializationActivity
     /* package */ static final String HISTOGRAM_LAUNCHED_WITH_QUERY =
             "Android.Omnibox.SearchActivity.LaunchedWithQuery";
 
+    private static final String HISTOGRAM_INTENT_ORIGIN =
+            "Android.Omnibox.SearchActivity.IntentOrigin";
+    private static final String HISTOGRAM_SEARCH_TYPE = //
+            "Android.Omnibox.SearchActivity.SearchType";
+    private static final String HISTOGRAM_INTENT_ACTIVITY_PRESENT =
+            "Android.Omnibox.SearchActivity.ActivityPresent";
+
     @VisibleForTesting /* package */ static final String CCT_CLIENT_PACKAGE_PREFIX = "app-cct-";
 
     /** Notified about events happening inside a SearchActivity. */
@@ -315,7 +322,7 @@ public class SearchActivity extends AsyncInitializationActivity
         mLocationBarCoordinator.getOmniboxStub().addUrlFocusChangeListener(this);
 
         // Kick off everything needed for the user to type into the box.
-        handleNewIntent(getIntent());
+        handleNewIntent(getIntent(), false);
 
         // Kick off loading of the native library.
         if (!getActivityDelegate().shouldDelayNativeInitialization()) {
@@ -325,10 +332,22 @@ public class SearchActivity extends AsyncInitializationActivity
         onInitialLayoutInflationComplete();
     }
 
+    /**
+     * Process newly received intent.
+     *
+     * @param intent the intent to be processed
+     * @param activityPresent whether activity was already showing when the intent was received
+     */
     @VisibleForTesting
-    /* package */ void handleNewIntent(Intent intent) {
+    /* package */ void handleNewIntent(Intent intent, boolean activityPresent) {
         mIntentOrigin = SearchActivityUtils.getIntentOrigin(intent);
         mSearchType = SearchActivityUtils.getIntentSearchType(intent);
+
+        RecordHistogram.recordEnumeratedHistogram(
+                HISTOGRAM_INTENT_ORIGIN, mIntentOrigin, IntentOrigin.COUNT);
+        RecordHistogram.recordEnumeratedHistogram(
+                HISTOGRAM_SEARCH_TYPE, mSearchType, SearchType.COUNT);
+        RecordHistogram.recordBooleanHistogram(HISTOGRAM_INTENT_ACTIVITY_PRESENT, activityPresent);
 
         recordUsage(mIntentOrigin, mSearchType);
 
@@ -489,7 +508,7 @@ public class SearchActivity extends AsyncInitializationActivity
     public void onNewIntent(Intent intent) {
         super.onNewIntent(intent);
         setIntent(intent);
-        handleNewIntent(intent);
+        handleNewIntent(intent, true);
     }
 
     @Override
