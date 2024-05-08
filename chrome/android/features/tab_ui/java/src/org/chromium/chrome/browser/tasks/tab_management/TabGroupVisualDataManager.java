@@ -6,6 +6,7 @@ package org.chromium.chrome.browser.tasks.tab_management;
 
 import androidx.annotation.NonNull;
 
+import org.chromium.base.supplier.LazyOneshotSupplier;
 import org.chromium.chrome.browser.flags.ChromeFeatureList;
 import org.chromium.chrome.browser.tab.Tab;
 import org.chromium.chrome.browser.tabmodel.TabModelFilterProvider;
@@ -15,6 +16,10 @@ import org.chromium.chrome.browser.tasks.tab_groups.TabGroupColorUtils;
 import org.chromium.chrome.browser.tasks.tab_groups.TabGroupModelFilter;
 import org.chromium.chrome.browser.tasks.tab_groups.TabGroupModelFilterObserver;
 import org.chromium.chrome.browser.tasks.tab_groups.TabGroupTitleUtils;
+
+import java.util.HashSet;
+import java.util.List;
+import java.util.Set;
 
 /**
  * Manages observers that monitor for updates to tab group visual aspects such as colors and titles.
@@ -36,11 +41,29 @@ public class TabGroupVisualDataManager {
         mTabModelObserver =
                 new TabModelObserver() {
                     @Override
-                    public void tabClosureCommitted(Tab tab) {
-                        TabGroupModelFilter filter = filterFromTab(tab);
-                        int rootId = tab.getRootId();
-                        Tab groupTab = filter.getGroupLastShownTab(rootId);
-                        if (groupTab == null || !filter.isTabInTabGroup(groupTab)) {
+                    public void onFinishingMultipleTabClosure(List<Tab> tabs) {
+                        if (tabs.isEmpty()) return;
+
+                        TabGroupModelFilter filter = filterFromTab(tabs.get(0));
+                        LazyOneshotSupplier<Set<Integer>> remainingRootIds =
+                                filter.getLazyAllRootIdsInComprehensiveModel(tabs);
+                        Set<Integer> processedRootIds = new HashSet<>();
+                        for (Tab tab : tabs) {
+                            int rootId = tab.getRootId();
+                            boolean wasAdded = processedRootIds.add(rootId);
+                            if (!wasAdded) continue;
+
+                            if (remainingRootIds.get().contains(rootId)) {
+                                // If any related tab still exist keep the data as size 1 groups are
+                                // valid.
+                                if (ChromeFeatureList.sAndroidTabGroupStableIds.isEnabled()) {
+                                    continue;
+                                }
+
+                                // Groups of size 1 are not supported so delete the data.
+                                if (filter.getRelatedTabCountForRootId(rootId) > 1) continue;
+                            }
+
                             TabGroupTitleUtils.deleteTabGroupTitle(rootId);
                             if (ChromeFeatureList.sTabGroupParityAndroid.isEnabled()) {
                                 TabGroupColorUtils.deleteTabGroupColor(rootId);

@@ -1624,26 +1624,57 @@ public class TabGroupModelFilter extends TabModelFilter {
      * closure except those requested to be excluded.
      *
      * @param tabsToExclude The list of tabs to exclude.
-     * @return A lazy oneshot supplier containing all the tab group IDS pending closure.
+     * @return A lazy oneshot supplier containing all the tab group IDs including those pending
+     *     closure.
      */
     public LazyOneshotSupplier<Set<Token>> getLazyAllTabGroupIdsInComprehensiveModel(
             List<Tab> tabsToExclude) {
         return LazyOneshotSupplier.fromSupplier(
                 () -> {
-                    Set<Tab> tabsToExcludeSet = new HashSet<>(tabsToExclude);
                     Set<Token> tabGroupIds = new HashSet<>();
-                    TabList tabList = getTabModel().getComprehensiveModel();
-                    for (int i = 0; i < tabList.getCount(); i++) {
-                        Tab tab = tabList.getTabAt(i);
-                        if (tabsToExcludeSet.contains(tab)) continue;
-
-                        @Nullable Token tabGroupId = tabList.getTabAt(i).getTabGroupId();
-                        if (tabGroupId != null) {
-                            tabGroupIds.add(tabGroupId);
-                        }
-                    }
+                    forEachTabInComprehensiveModelExcept(
+                            tabsToExclude,
+                            tab -> {
+                                @Nullable Token tabGroupId = tab.getTabGroupId();
+                                if (tabGroupId != null) {
+                                    tabGroupIds.add(tabGroupId);
+                                }
+                            });
                     return tabGroupIds;
                 });
+    }
+
+    /**
+     * Returns a lazy oneshot supplier that generates all the root IDs including those pending
+     * closure except those requested to be excluded.
+     *
+     * @param tabsToExclude The list of tabs to exclude.
+     * @return A lazy oneshot supplier containing all the root IDs including those pending closure.
+     */
+    public LazyOneshotSupplier<Set<Integer>> getLazyAllRootIdsInComprehensiveModel(
+            List<Tab> tabsToExclude) {
+        return LazyOneshotSupplier.fromSupplier(
+                () -> {
+                    Set<Integer> rootIds = new HashSet<>();
+                    forEachTabInComprehensiveModelExcept(
+                            tabsToExclude,
+                            tab -> {
+                                rootIds.add(tab.getRootId());
+                            });
+                    return rootIds;
+                });
+    }
+
+    private void forEachTabInComprehensiveModelExcept(
+            List<Tab> tabsToExclude, Callback<Tab> callback) {
+        Set<Tab> tabsToExcludeSet = new HashSet<>(tabsToExclude);
+        TabList tabList = getTabModel().getComprehensiveModel();
+        for (int i = 0; i < tabList.getCount(); i++) {
+            Tab tab = tabList.getTabAt(i);
+            if (tabsToExcludeSet.contains(tab)) continue;
+
+            callback.onResult(tab);
+        }
     }
 
     private static Token getOrCreateTabGroupId(@NonNull Tab tab) {
