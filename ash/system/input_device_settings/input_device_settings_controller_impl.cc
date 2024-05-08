@@ -984,6 +984,7 @@ void InputDeviceSettingsControllerImpl::OnActiveUserPrefServiceChanged(
   }
 
   if (!features::IsModifierSplitEnabled()) {
+    pref_service->ClearPref(prefs::kTopRowRemappingNudgeShownCount);
     pref_service->ClearPref(prefs::kPageUpRemappingNudgeShownCount);
     pref_service->ClearPref(prefs::kPageDownRemappingNudgeShownCount);
     pref_service->ClearPref(prefs::kHomeRemappingNudgeShownCount);
@@ -991,6 +992,7 @@ void InputDeviceSettingsControllerImpl::OnActiveUserPrefServiceChanged(
     pref_service->ClearPref(prefs::kDeleteRemappingNudgeShownCount);
     pref_service->ClearPref(prefs::kInsertRemappingNudgeShownCount);
     pref_service->ClearPref(prefs::kCapsLockRemappingNudgeShownCount);
+    pref_service->ClearPref(prefs::kTopRowRemappingNudgeLastShown);
     pref_service->ClearPref(prefs::kPageUpRemappingNudgeLastShown);
     pref_service->ClearPref(prefs::kPageDownRemappingNudgeLastShown);
     pref_service->ClearPref(prefs::kHomeRemappingNudgeLastShown);

@@ -130,6 +130,8 @@ inline constexpr char kTouchpadUpdateSettingsMetricInfo[] =
     "settings.touchpad.update_settings_info";
 inline constexpr char kPointingStickUpdateSettingsMetricInfo[] =
     "settings.pointing_stick.update_settings_info";
+inline constexpr char kTopRowRemappingNudgeShownCount[] =
+    "settings.keyboard.top_row_key_remapping_nudge_shown_count";
 inline constexpr char kPageUpRemappingNudgeShownCount[] =
     "settings.keyboard.page_up_key_remapping_nudge_shown_count";
 inline constexpr char kPageDownRemappingNudgeShownCount[] =
@@ -144,6 +146,8 @@ inline constexpr char kInsertRemappingNudgeShownCount[] =
     "settings.keyboard.insert_key_remapping_nudge_shown_count";
 inline constexpr char kCapsLockRemappingNudgeShownCount[] =
     "settings.keyboard.caps_lock_remapping_nudge_shown_count";
+inline constexpr char kTopRowRemappingNudgeLastShown[] =
+    "settings.keyboard.top_row_key_remapping_nudge_last_shown";
 inline constexpr char kPageUpRemappingNudgeLastShown[] =
     "settings.keyboard.page_up_key_remapping_nudge_last_shown";
 inline constexpr char kPageDownRemappingNudgeLastShown[] =

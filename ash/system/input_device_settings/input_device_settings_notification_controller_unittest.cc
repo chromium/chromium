@@ -579,6 +579,31 @@ TEST_F(InputDeviceSettingsNotificationControllerTest,
 
   controller()->ShowTopRowRewritingNudge();
   EXPECT_TRUE(nudge_manager->GetNudgeIfShown(kTopRowKeyNoMatchNudgeId));
+  CancelNudge(kTopRowKeyNoMatchNudgeId);
+
+  // Call top row remapping nudge again before 24 hours, the nudge should not
+  // show.
+  controller()->ShowTopRowRewritingNudge();
+  EXPECT_FALSE(nudge_manager->GetNudgeIfShown(kTopRowKeyNoMatchNudgeId));
+
+  // Pretend top row remapping was called before 24 hours, should show nudge
+  // again.
+  Shell::Get()->session_controller()->GetActivePrefService()->SetTime(
+      prefs::kTopRowRemappingNudgeLastShown,
+      base::Time::Now() - base::Hours(24));
+  controller()->ShowTopRowRewritingNudge();
+  EXPECT_TRUE(nudge_manager->GetNudgeIfShown(kTopRowKeyNoMatchNudgeId));
+  CancelNudge(kTopRowKeyNoMatchNudgeId);
+
+  // Pretend top row remapping nudge was called 3 times, should not show
+  // nudge again.
+  Shell::Get()->session_controller()->GetActivePrefService()->SetTime(
+      prefs::kTopRowRemappingNudgeLastShown,
+      base::Time::Now() - base::Hours(24));
+  Shell::Get()->session_controller()->GetActivePrefService()->SetInteger(
+      prefs::kTopRowRemappingNudgeShownCount, 3u);
+  controller()->ShowTopRowRewritingNudge();
+  EXPECT_FALSE(nudge_manager->GetNudgeIfShown(kTopRowKeyNoMatchNudgeId));
 }
 
 TEST_F(InputDeviceSettingsNotificationControllerTest,
