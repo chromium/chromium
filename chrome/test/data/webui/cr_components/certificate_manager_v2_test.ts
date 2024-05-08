@@ -10,7 +10,7 @@ import type {CertificateManagerV2Element} from 'chrome://resources/cr_components
 import type {CertificateManagerPageHandlerInterface, CertificateManagerPageRemote, SummaryCertInfo} from 'chrome://resources/cr_components/certificate_manager/certificate_manager_v2.mojom-webui.js';
 import {CertificateManagerPageCallbackRouter} from 'chrome://resources/cr_components/certificate_manager/certificate_manager_v2.mojom-webui.js';
 import {CertificatesV2BrowserProxy} from 'chrome://resources/cr_components/certificate_manager/certificates_v2_browser_proxy.js';
-import {assertDeepEquals, assertEquals, assertTrue} from 'chrome://webui-test/chai_assert.js';
+import {assertEquals, assertTrue} from 'chrome://webui-test/chai_assert.js';
 // <if expr="not (is_win or is_macosx)">
 import {assertFalse} from 'chrome://webui-test/chai_assert.js';
 // </if>
@@ -104,10 +104,11 @@ suite('CertificateManagerV2Test', () => {
 
     await microtasksFinished();
 
-    // TODO(crbug.com/40928765): Change test to actually look at the DOM as
-    // opposed to the data stored in the element.
-    assertDeepEquals(
-        certs, certManager.crsCertificates, 'expected cert not present.');
+    const matchEls = certManager.$.crsCerts.querySelectorAll('.cert-row');
+    assertEquals(1, matchEls.length, 'no certs displayed');
+    const inputs = certManager.shadowRoot!.querySelectorAll('cr-input');
+    assertEquals(1, inputs.length, 'no inputs found');
+    assertEquals('deadbeef', inputs[0]!.value);
   });
 
   test('platform client certs populated', async () => {
@@ -122,7 +123,8 @@ suite('CertificateManagerV2Test', () => {
 
     await microtasksFinished();
 
-    const parent_element = certManager.$['platform-client-certs'];
+    const parent_element =
+        certManager.shadowRoot!.querySelector('#platform-client-certs');
     assertTrue(!!parent_element, 'parent element not found');
     const matchEls = parent_element.querySelectorAll('.cert-row');
     assertEquals(1, matchEls.length, 'no certs displayed');
@@ -143,7 +145,8 @@ suite('CertificateManagerV2Test', () => {
     initializeElement();
     await microtasksFinished();
 
-    const parent_element = certManager.$['provisioned-client-certs'];
+    const parent_element =
+        certManager.shadowRoot!.querySelector('#provisioned-client-certs');
 
     // <if expr="is_win or is_macosx">
     assertTrue(!!parent_element, 'parent element not found');

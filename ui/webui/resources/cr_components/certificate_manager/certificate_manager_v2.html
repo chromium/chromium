@@ -1,13 +1,26 @@
-<style include="cr-shared-style">
+<style include="cr-shared-style cr-icons">
   cr-tabs {
     --cr-tabs-font-size: inherit;
     --cr-tabs-height: 40px;
     margin-bottom: 24px;
   }
 
-  #expandedContent {
+  #crsCerts {
     padding-inline-end: var(--cr-section-padding);
     padding-inline-start: var(--cr-section-indent-padding);
+  }
+
+  .cert-row {
+    display: flex;
+  }
+
+  .cert-hash {
+    --cr-input-error-display: none;
+    margin-left: auto;
+  }
+
+  .certs-export-button {
+    margin-left: auto;
   }
 </style>
 
@@ -42,15 +55,26 @@
   <div>
     <cr-expand-button class="cr-row first"
         expanded="{{crsTrustedCertsOpened_}}">
-      Trusted Certificates
-      <!-- TODO(crbug.com/40928765): wire up export button to export all
-        certs -->
-      <cr-button class="action-button">Export</cr-button>
+      <div class="cert-row">
+        Trusted Certificates
+        <!-- TODO(crbug.com/40928765): wire up export button to export all
+          certs -->
+        <cr-button class="action-button certs-export-button">Export</cr-button>
+      </div>
     </cr-expand-button>
-    <cr-collapse id="expandedContent" opened="[[crsTrustedCertsOpened_]]">
-      <template is="dom-repeat" items="[[crsCertificates]]">
-        <div class="cr-row cr-padded-text">
-            [[item.displayName]] - [[item.sha256hashHex]]
+    <cr-collapse id="crsCerts" opened="[[crsTrustedCertsOpened_]]">
+      <template is="dom-repeat" items="[[crsCertificates_]]">
+        <div class="cr-row cert-row">
+          [[item.displayName]]
+          <cr-input class="input-field cert-hash"
+              value="[[item.sha256hashHex]]" readonly>
+            <!-- TODO(crbug.com/40928765): wire up copy button (with toast?)-->
+            <cr-icon-button class="icon-copy-content" slot="inline-suffix">
+            </cr-icon-button>
+          </cr-input>
+          <!-- TODO(crbug.com/40928765): wire up view button -->
+          <cr-icon-button class="icon-visibility" slot="inline-suffix">
+          </cr-icon-button>
         </div>
       </template>
     </cr-collapse>

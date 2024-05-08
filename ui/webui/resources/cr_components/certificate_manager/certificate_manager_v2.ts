@@ -13,14 +13,25 @@ import '//resources/polymer/v3_0/iron-pages/iron-pages.js';
 import '//resources/cr_elements/cr_expand_button/cr_expand_button.js';
 import '//resources/cr_elements/cr_button/cr_button.js';
 import '//resources/cr_elements/cr_collapse/cr_collapse.js';
+import '//resources/cr_elements/cr_icon_button/cr_icon_button.js';
+import '//resources/cr_elements/cr_icons.css.js';
+import '//resources/cr_elements/cr_input/cr_input.js';
 import '//resources/cr_elements/cr_shared_style.css.js';
 import '//resources/cr_elements/cr_shared_vars.css.js';
 
+import type {CrCollapseElement} from '//resources/cr_elements/cr_collapse/cr_collapse.js';
 import {PolymerElement} from '//resources/polymer/v3_0/polymer/polymer_bundled.min.js';
 
 import {getTemplate} from './certificate_manager_v2.html.js';
 import type {SummaryCertInfo} from './certificate_manager_v2.mojom-webui.js';
 import {CertificatesV2BrowserProxy} from './certificates_v2_browser_proxy.js';
+
+export interface CertificateManagerV2Element {
+  $: {
+    crsCerts: CrCollapseElement,
+  };
+}
+
 
 export class CertificateManagerV2Element extends PolymerElement {
   static get is() {
@@ -37,8 +48,8 @@ export class CertificateManagerV2Element extends PolymerElement {
       tabNames_: Array,
 
       // TODO(crbug.com/40928765): Split CRS tab out into its own HTML/TS file
-      // pair.
-      crsCertificates: Array,
+      // pair. Or create some cert-list element and reuse that.
+      crsCertificates_: Array,
       crsTrustedCertsOpened_: Boolean,
       platformClientCerts_: Array,
       // <if expr="is_win or is_macosx">
@@ -52,7 +63,7 @@ export class CertificateManagerV2Element extends PolymerElement {
     const proxy = CertificatesV2BrowserProxy.getInstance();
     proxy.handler.getChromeRootStoreCerts().then(
         (results: {crsCertInfos: SummaryCertInfo[]}) => {
-          this.crsCertificates = results.crsCertInfos;
+          this.crsCertificates_ = results.crsCertInfos;
         });
 
     proxy.handler.getPlatformClientCerts().then(
@@ -72,12 +83,7 @@ export class CertificateManagerV2Element extends PolymerElement {
   // TODO(crbug.com/40928765): Support localization.
   private tabNames_: string[] =
       ['Client Certificates', 'Local Certificates', 'Chrome Root Store'];
-  // TODO(crbug.com/40928765): This variable should be private, but is not right
-  // now because the test at
-  // chrome/test/data/webui/cr_components/certificate_manager_v2_test.ts
-  // looks at this variable and not the DOM for testing. Test should be looking
-  // at the DOM, and then this variable should be private.
-  crsCertificates: SummaryCertInfo[] = [];
+  private crsCertificates_: SummaryCertInfo[] = [];
   private crsTrustedCertsOpened_: boolean = true;
   private platformClientCerts_: SummaryCertInfo[] = [];
   // <if expr="is_win or is_macosx">
