@@ -50,6 +50,7 @@ steps:
     commands:
       - "be_cmd git-fetch-all -- git fetch --all"
       - "be_cmd git-reset-branch -- git reset --hard origin/$BUILDKITE_BRANCH"
+      - "be_cmd clean-artifacts-dir -- node replay_build_scripts/clean_artifacts.mjs"
       - "be_cmd update-all-repos -- node replay_build_scripts/update-all-repos.mjs"
       - "pushd ../backend"
       - "be_cmd buck2-kill -- buck2 kill"
@@ -89,6 +90,7 @@ steps:
     commands:
       - "be_cmd git-fetch-all -- git fetch --all"
       - "be_cmd git-reset-branch -- git reset --hard origin/$BUILDKITE_BRANCH"
+      - "be_cmd clean-artifacts-dir -- node replay_build_scripts/clean_artifacts.mjs"
       - "be_cmd update-all-repos -- node replay_build_scripts/update-all-repos.mjs"
       - "pushd ../backend"
       - "be_cmd buck2-kill -- buckle kill"
@@ -128,6 +130,7 @@ steps:
     commands:
       - "be_cmd git-fetch-all -- git fetch --all"
       - "be_cmd git-reset-branch -- git reset --hard origin/$BUILDKITE_BRANCH"
+      - "be_cmd clean-artifacts-dir -- node replay_build_scripts/clean_artifacts.mjs"
       - "be_cmd update-all-repos -- node replay_build_scripts/update-all-repos.mjs"
       - "pushd ../backend"
       - "be_cmd buck2-kill -- buckle kill"
@@ -154,7 +157,14 @@ steps:
     timeout_in_minutes: 60
     plugins:
       - https://github.com/jazzdan/skip-checkout-buildkite-plugin.git#jazzdan/windows-support: ~
-    command: "cd C:\\Users\\Administrator\\chromium\\src && git fetch --all && git reset --hard origin/$BUILDKITE_BRANCH && node replay_build_scripts/update-all-repos.mjs && node buildWindows.mjs &&  node replay_build_scripts/upload_build_artifacts.mjs"
+    commands:
+      - "cd C:\\Users\\Administrator\\chromium\\src"
+      - "git fetch --all"
+      - "git reset --hard origin/$BUILDKITE_BRANCH"
+      - "node replay_build_scripts/clean_artifacts.mjs"
+      - "node replay_build_scripts/update-all-repos.mjs"
+      - "node buildWindows.mjs"
+      - "node replay_build_scripts/upload_build_artifacts.mjs"
     env:
       RBE_service: simpsonite.cluster.engflow.com:443
       RBE_service_no_auth: true

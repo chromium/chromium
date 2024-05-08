@@ -6,8 +6,8 @@ import {
   log,
   spawnChecked,
   Platform,
-  outputArchitecture,
   getBackendDir,
+  getArtifactDir,
 } from "./common.mjs";
 import { readSymbols } from "./symbolication.mjs";
 
@@ -17,12 +17,7 @@ const S3DevBucket = "recordreplay-us-east-2-dev";
 const S3Website = "recordreplay-website";
 
 const BUILDKITE_BUILD_ID_ARTIFACT = "build_id";
-const BUILDKITE_ARTIFACT_DIRECTORY = path.join(
-  process.env.BUILDKITE_BUILD_CHECKOUT_PATH || "./",
-  "build_id",
-  currentPlatform(),
-  outputArchitecture()
-);
+const BUILDKITE_ARTIFACT_DIRECTORY = getArtifactDir();
 
 // If this env var is set, we then we (also) use this as our cue that
 // we're building on a developer's machine, and will run some different
@@ -101,11 +96,9 @@ function copyBuildFiles(dstDir) {
 
   for (const file of fs.readdirSync(outDir)) {
     if (shouldCopyFile(file)) {
-      fs.cpSync(
-        path.join(outDir, file),
-        path.join(dstDir, file),
-        { recursive: true }
-      );
+      fs.cpSync(path.join(outDir, file), path.join(dstDir, file), {
+        recursive: true,
+      });
     }
   }
   fs.cpSync(path.join(outDir, "locales"), path.join(dstDir, "locales"), {
@@ -334,10 +327,7 @@ function prepareMacOSBinaries(buildId) {
   }
 
   // Clean up.
-  fs.renameSync(
-    appPath,
-    path.join(outdir, "Chromium.app")
-  );
+  fs.renameSync(appPath, path.join(outdir, "Chromium.app"));
 
   // Move things into place.
   fs.cpSync(buildIdDmgArchive, dmgArchive);
@@ -445,7 +435,6 @@ function buildkiteStuff(
 
   // Write the build_id artifact.  This is how buildkite agents will know which build
   // to download from S3: by first downloading this file.
-  fs.rmSync(BUILDKITE_ARTIFACT_DIRECTORY, { force: true, recursive: true });
   fs.mkdirSync(BUILDKITE_ARTIFACT_DIRECTORY, { recursive: true });
   fs.writeFileSync(
     path.join(BUILDKITE_ARTIFACT_DIRECTORY, BUILDKITE_BUILD_ID_ARTIFACT),
@@ -753,7 +742,7 @@ async function buildSymbolsArchive(
 
 const buildIdExtension =
   process.env["BUILDKITE_BRANCH"] !==
-    process.env["BUILDKITE_PIPELINE_DEFAULT_BRANCH"]
+  process.env["BUILDKITE_PIPELINE_DEFAULT_BRANCH"]
     ? "-dev"
     : process.env["LOCAL_DEVELOPER_BUILD_EXTENSION"] || "";
 const useARM = !!process.env.REPLAY_BUILD_ARM;

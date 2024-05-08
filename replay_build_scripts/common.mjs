@@ -223,3 +223,12 @@ export function getBackendDir() {
     process.env.RECORD_REPLAY_BACKEND_DIR || path.join(__dirname, "..", "..")
   );
 }
+
+export function getArtifactDir() {
+  return path.join(
+    process.env.BUILDKITE_BUILD_CHECKOUT_PATH || "./",
+    "build_id",
+    currentPlatform(),
+    outputArchitecture()
+  );
+}
