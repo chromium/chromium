@@ -764,10 +764,6 @@ const base::flat_map<VendorProductId, MouseMetadata>& GetMouseMetadataList() {
           {{0x25a7, 0xfa68},
            {mojom::CustomizationRestriction::kDisableKeyEventRewrites,
             mojom::MouseButtonConfig::kNoConfig}},
-          // Xiaoxin Mouse 5.0
-          {{0x25a7, 0xfaa2},
-           {mojom::CustomizationRestriction::kDisableKeyEventRewrites,
-            mojom::MouseButtonConfig::kNoConfig}},
           // PERIMICE-520
           {{0x260d, 0x1019},
            {mojom::CustomizationRestriction::kDisableKeyEventRewrites,
