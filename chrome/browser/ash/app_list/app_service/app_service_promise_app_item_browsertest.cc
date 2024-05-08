@@ -149,6 +149,7 @@ class AppServicePromiseAppItemBrowserTest
   }
 
   void TearDownOnMainThread() override {
+    app_list_syncable_service()->StopSyncing(syncer::APP_LIST);
     arc_app_list_pref_->app_connection_holder()->CloseInstance(
         app_instance_.get());
     app_instance_.reset();
@@ -1281,6 +1282,42 @@ IN_PROC_BROWSER_TEST_F(AppServicePromiseAppItemBrowserTest,
             arc_app_list_pref()
                 ->GetInstallPriorityHandler()
                 ->GetInstallPriorityForTesting(package_name));
+}
+
+IN_PROC_BROWSER_TEST_F(AppServicePromiseAppItemBrowserTest,
+                       CheckArcPromiseAppIconWhenArcConnectionClosed) {
+  // Test package details.
+  std::string package_name = "com.test.app";
+  const std::string app_name = "TestApp";
+  const std::string activity_name = "TestActivity";
+  const apps::PackageId package_id =
+      apps::PackageId(apps::PackageType::kArc, package_name);
+  const std::string app_id =
+      ArcAppListPrefs::GetAppId(package_name, activity_name);
+
+  // Skip check for official API key.
+  app_service_proxy()->PromiseAppService()->SetSkipApiKeyCheckForTesting(true);
+
+  // Test:
+  // 1) Start the installation.
+  // Expect 2 updates: Promise app registration, then Almanac response update.
+  // Note: As the Almanac response is not mocked, the promise icon will fallback
+  // to using a placeholder image.
+  ExpectNumUpdates(/*num_updates=*/2);
+  app_instance()->SendInstallationStarted(package_name);
+  WaitForPromiseAppUpdates();
+
+  // Confirm that the promise icon gets generated with the correct label.
+  ash::AppListItem* launcher_item = GetAppListItem(package_id.ToString());
+  ASSERT_TRUE(launcher_item);
+  EXPECT_EQ(launcher_item->name(), "Waiting…");
+  EXPECT_EQ(launcher_item->progress(), 0);
+  // Close ARC connection.
+  arc_app_list_pref()->app_connection_holder()->CloseInstance(app_instance());
+
+  // Confirm that the promise icon is deleted when ARC connection is closed.
+  launcher_item = GetAppListItem(package_id.ToString());
+  ASSERT_FALSE(launcher_item);
 }
 
 }  // namespace apps

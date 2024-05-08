@@ -165,6 +165,7 @@ class ArcApps : public KeyedService,
   void OnInstallationFinished(const std::string& package_name,
                               bool success,
                               bool is_launchable_app) override;
+  void OnAppConnectionClosed() override;
 
   // arc::ArcIntentHelperObserver overrides.
   void OnIntentFiltersUpdated(

@@ -1651,6 +1651,19 @@ void ArcApps::OnInstallationFinished(const std::string& package_name,
   }
 }
 
+void ArcApps::OnAppConnectionClosed() {
+  std::vector<PromiseAppPtr> promise_apps =
+      proxy()->PromiseAppRegistryCache()->GetAllPromiseApps();
+
+  for (auto& promise_app : promise_apps) {
+    if (promise_app->package_id.package_type() != PackageType::kArc) {
+      continue;
+    }
+    promise_app->status = PromiseStatus::kCancelled;
+    AppPublisher::PublishPromiseApp(std::move(promise_app));
+  }
+}
+
 void ArcApps::ObserveDisabledSystemFeaturesPolicy() {
   PrefService* const local_state = g_browser_process->local_state();
   if (!local_state) {  // Sometimes it's not available in tests.
