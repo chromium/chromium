@@ -34,11 +34,16 @@ if (is_android) {
     sources = [
       "android/java/src/org/chromium/components/data_sharing/DataSharingNetworkLoader.java",
       "android/java/src/org/chromium/components/data_sharing/DataSharingService.java",
+      "android/java/src/org/chromium/components/data_sharing/DataSharingUIDelegate.java",
+      "android/java/src/org/chromium/components/data_sharing/configs/AvatarConfig.java",
+      "android/java/src/org/chromium/components/data_sharing/configs/GroupMemberConfig.java",
+      "android/java/src/org/chromium/components/data_sharing/configs/MemberPickerConfig.java",
     ]
 
     deps = [
       "//base:base_java",
       "//net/android:net_java",
+      "//third_party/androidx:androidx_annotation_annotation_java",
       "//third_party/jni_zero:jni_zero_java",
       "//url:gurl_java",
     ]

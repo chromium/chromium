@@ -2,7 +2,7 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-package org.chromium.chrome.browser.data_sharing;
+package org.chromium.components.data_sharing;
 
 import android.app.Activity;
 import android.content.Context;
@@ -12,9 +12,9 @@ import androidx.annotation.NonNull;
 
 import org.chromium.base.Callback;
 import org.chromium.base.UserData;
-import org.chromium.chrome.browser.data_sharing.configs.AvatarConfig;
-import org.chromium.chrome.browser.data_sharing.configs.GroupMemberConfig;
-import org.chromium.chrome.browser.data_sharing.configs.MemberPickerConfig;
+import org.chromium.components.data_sharing.configs.AvatarConfig;
+import org.chromium.components.data_sharing.configs.GroupMemberConfig;
+import org.chromium.components.data_sharing.configs.MemberPickerConfig;
 
 import java.util.List;
 

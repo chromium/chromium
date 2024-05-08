@@ -555,6 +555,7 @@ if (current_toolchain == default_toolchain) {
       "//components/content_settings/android:java",
       "//components/crash/android:anr_collector_java",
       "//components/crash/android:java",
+      "//components/data_sharing/public:public_java",
       "//components/device_reauth:device_reauth_java_enums",
       "//components/digital_goods/mojom:mojom_java",
       "//components/dom_distiller/content/browser/android:dom_distiller_content_java",

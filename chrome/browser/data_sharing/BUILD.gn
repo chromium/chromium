@@ -68,12 +68,8 @@ if (is_android) {
 
   android_library("ui_delegate_java") {
     sources = [
-      "android/java/src/org/chromium/chrome/browser/data_sharing/DataSharingUIDelegate.java",
       "android/java/src/org/chromium/chrome/browser/data_sharing/DataSharingUIDelegateImpl.java",
       "android/java/src/org/chromium/chrome/browser/data_sharing/MemberPickerListenerImpl.java",
-      "android/java/src/org/chromium/chrome/browser/data_sharing/configs/AvatarConfig.java",
-      "android/java/src/org/chromium/chrome/browser/data_sharing/configs/GroupMemberConfig.java",
-      "android/java/src/org/chromium/chrome/browser/data_sharing/configs/MemberPickerConfig.java",
     ]
 
     deps = [
@@ -81,6 +77,7 @@ if (is_android) {
       "//build/android:build_java",
       "//chrome/browser/profiles/android:java",
       "//chrome/browser/tab:java",
+      "//components/data_sharing/public:public_java",
       "//third_party/androidx:androidx_annotation_annotation_java",
     ]
     if (defined(enable_data_sharing_internal) && enable_data_sharing_internal) {

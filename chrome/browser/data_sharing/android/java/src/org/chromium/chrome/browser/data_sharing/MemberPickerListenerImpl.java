@@ -8,6 +8,7 @@ import android.util.Log;
 
 import org.chromium.base.Callback;
 import org.chromium.build.BuildConfig;
+import org.chromium.components.data_sharing.DataSharingUIDelegate;
 
 import java.util.List;
 

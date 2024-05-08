@@ -13,6 +13,7 @@ import org.chromium.base.ResettersForTesting;
 import org.chromium.base.UserDataHost;
 import org.chromium.chrome.browser.profiles.Profile;
 import org.chromium.components.data_sharing.DataSharingService;
+import org.chromium.components.data_sharing.DataSharingUIDelegate;
 
 /** This factory creates DataSharingService for the given {@link Profile}. */
 public final class DataSharingServiceFactory {
