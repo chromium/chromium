@@ -347,6 +347,12 @@ class CORE_EXPORT StyleEngine final : public GarbageCollected<StyleEngine>,
 
   void ResetCSSFeatureFlags(const RuleFeatureSet&);
 
+  bool CountersChanged() const { return counters_changed_; }
+  void MarkCountersDirty() { counters_changed_ = true; }
+  void MarkCountersClean() { counters_changed_ = false; }
+  // Traverse all elements and recalculate counters values.
+  void UpdateCounters();
+
   void ShadowRootInsertedToDocument(ShadowRoot&);
   void ShadowRootRemovedFromDocument(ShadowRoot*);
   void ResetAuthorStyle(TreeScope&);
@@ -714,6 +720,11 @@ class CORE_EXPORT StyleEngine final : public GarbageCollected<StyleEngine>,
   }
 
  private:
+  void UpdateCounters(const Element& element,
+                      CountersAttachmentContext& context);
+  void UpdateLayoutCounters(const Element& element,
+                            const LayoutObject& layout_object,
+                            CountersAttachmentContext& context);
   // FontSelectorClient implementation.
   void FontsNeedUpdate(FontSelector*, FontInvalidationReason) override;
 
@@ -923,6 +934,10 @@ class CORE_EXPORT StyleEngine final : public GarbageCollected<StyleEngine>,
   UnorderedTreeScopeSet active_tree_scopes_;
 
   String preferred_stylesheet_set_name_;
+
+  // Flag to track counter changes in the document, indicating
+  // the need to call UpdateCounters.
+  bool counters_changed_{false};
 
   bool uses_root_font_relative_units_{false};
   bool uses_glyph_relative_units_{false};

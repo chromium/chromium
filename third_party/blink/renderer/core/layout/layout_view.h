@@ -263,10 +263,9 @@ class CORE_EXPORT LayoutView : public LayoutNGBlockFlow {
   // node within the same lifecycle update will return false.
   bool AffectedByResizedInitialContainingBlock(const LayoutResult&);
 
-  // Update generated markers and counters after style and layout tree update.
+  // Update generated counters after style and layout tree update.
   // container - The container for container queries, otherwise nullptr.
-  void UpdateMarkersAndCountersAfterStyleChange(
-      LayoutObject* container = nullptr);
+  void UpdateCountersAfterStyleChange(LayoutObject* container = nullptr);
 
   bool BackgroundIsKnownToBeOpaqueInRect(
       const PhysicalRect& local_rect) const override;

@@ -16,7 +16,6 @@
 #include "third_party/blink/renderer/core/css/css_value_list.h"
 #include "third_party/blink/renderer/core/css/css_value_pair.h"
 #include "third_party/blink/renderer/core/css/zoom_adjusted_pixel_value.h"
-#include "third_party/blink/renderer/core/layout/counter_node.h"
 #include "third_party/blink/renderer/core/style/computed_style.h"
 #include "third_party/blink/renderer/core/style/computed_style_constants.h"
 #include "third_party/blink/renderer/platform/wtf/allocator/allocator.h"
@@ -244,8 +243,9 @@ class CORE_EXPORT ComputedStyleUtils {
                                        bool allow_visited_style,
                                        CSSValuePhase value_phase);
 
-  static CSSValue* ValueForCounterDirectives(const ComputedStyle&,
-                                             CounterNode::Type type);
+  static CSSValue* ValueForCounterDirectives(
+      const ComputedStyle&,
+      CountersAttachmentContext::Type type);
   static CSSValue* ValueForShape(const ComputedStyle&,
                                  bool allow_visited_style,
                                  ShapeValue*,

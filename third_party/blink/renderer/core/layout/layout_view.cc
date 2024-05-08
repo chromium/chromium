@@ -1009,8 +1009,7 @@ bool LayoutView::AffectedByResizedInitialContainingBlock(
   return add_result.is_new_entry;
 }
 
-void LayoutView::UpdateMarkersAndCountersAfterStyleChange(
-    LayoutObject* container) {
+void LayoutView::UpdateCountersAfterStyleChange(LayoutObject* container) {
   NOT_DESTROYED();
   if (!needs_marker_counter_update_)
     return;
@@ -1030,9 +1029,9 @@ void LayoutView::UpdateMarkersAndCountersAfterStyleChange(
   // change outside the container. Hence, we can start the update traversal from
   // the container.
   LayoutObject* start = container ? container : this;
-  // Additionally, if the container contains style, we know counters inside the
-  // container cannot affect counters outside the container, which means we can
-  // limit the traversal to the container subtree.
+  // Additionally, if the container contains style, we know list-item counters
+  // inside the container cannot affect list-item counters outside the
+  // container, which means we can limit the traversal to the container subtree.
   LayoutObject* stay_within =
       container && container->ShouldApplyStyleContainment() ? container
                                                             : nullptr;
@@ -1044,8 +1043,6 @@ void LayoutView::UpdateMarkersAndCountersAfterStyleChange(
     } else if (auto* inline_list_item =
                    DynamicTo<LayoutInlineListItem>(layout_object)) {
       inline_list_item->UpdateCounterStyle();
-    } else if (auto* counter = DynamicTo<LayoutCounter>(layout_object)) {
-      counter->UpdateCounter();
     }
   }
 }

@@ -56,7 +56,6 @@
 #include "third_party/blink/renderer/core/frame/settings.h"
 #include "third_party/blink/renderer/core/frame/web_feature.h"
 #include "third_party/blink/renderer/core/keywords.h"
-#include "third_party/blink/renderer/core/layout/counter_node.h"
 #include "third_party/blink/renderer/core/layout/layout_box.h"
 #include "third_party/blink/renderer/core/layout/layout_object.h"
 #include "third_party/blink/renderer/core/style/computed_style.h"
@@ -2776,7 +2775,7 @@ const CSSValue* CounterIncrement::CSSValueFromComputedStyleInternal(
     bool allow_visited_style,
     CSSValuePhase value_phase) const {
   return ComputedStyleUtils::ValueForCounterDirectives(
-      style, CounterNode::kIncrementType);
+      style, CountersAttachmentContext::Type::kIncrementType);
 }
 
 const int kCounterResetDefaultValue = 0;
@@ -2794,8 +2793,8 @@ const CSSValue* CounterReset::CSSValueFromComputedStyleInternal(
     const LayoutObject*,
     bool allow_visited_style,
     CSSValuePhase value_phase) const {
-  return ComputedStyleUtils::ValueForCounterDirectives(style,
-                                                       CounterNode::kResetType);
+  return ComputedStyleUtils::ValueForCounterDirectives(
+      style, CountersAttachmentContext::Type::kResetType);
 }
 
 const int kCounterSetDefaultValue = 0;
@@ -2813,8 +2812,8 @@ const CSSValue* CounterSet::CSSValueFromComputedStyleInternal(
     const LayoutObject*,
     bool allow_visited_style,
     CSSValuePhase value_phase) const {
-  return ComputedStyleUtils::ValueForCounterDirectives(style,
-                                                       CounterNode::kSetType);
+  return ComputedStyleUtils::ValueForCounterDirectives(
+      style, CountersAttachmentContext::Type::kSetType);
 }
 
 const CSSValue* Cursor::ParseSingleValueFromRange(

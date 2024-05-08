@@ -63,8 +63,6 @@ blink_core_sources_layout = [
   "constraint_space_builder.cc",
   "constraint_space_builder.h",
   "content_change_type.h",
-  "counter_node.cc",
-  "counter_node.h",
   "custom/css_layout_definition.cc",
   "custom/css_layout_definition.h",
   "custom/css_layout_worklet.cc",

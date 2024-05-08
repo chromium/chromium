@@ -37,6 +37,7 @@
 #include "third_party/blink/renderer/core/html/forms/html_input_element.h"
 #include "third_party/blink/renderer/core/input_type_names.h"
 #include "third_party/blink/renderer/core/layout/generated_children.h"
+#include "third_party/blink/renderer/core/layout/layout_counter.h"
 #include "third_party/blink/renderer/core/layout/layout_object.h"
 #include "third_party/blink/renderer/core/layout/layout_quote.h"
 #include "third_party/blink/renderer/core/layout/list/list_marker.h"
@@ -263,7 +264,9 @@ void PseudoElement::AttachLayoutTree(AttachContext& context) {
   if (pseudo_id_ == kPseudoIdMarker) {
     LayoutObject* originating_layout = parentNode()->GetLayoutObject();
     if (!originating_layout || !originating_layout->IsListItemIncludingNG()) {
+      context.counters_context.EnterElement(*this);
       Node::AttachLayoutTree(context);
+      context.counters_context.LeaveElement(*this);
       return;
     }
   }
@@ -275,6 +278,8 @@ void PseudoElement::AttachLayoutTree(AttachContext& context) {
   LayoutObject* layout_object = GetLayoutObject();
   if (!layout_object)
     return;
+
+  context.counters_context.EnterElement(*this);
 
   // This is to ensure that bypassing the CanHaveGeneratedChildren() check in
   // LayoutTreeBuilderForElement::ShouldCreateLayoutObject() does not result in
@@ -288,15 +293,19 @@ void PseudoElement::AttachLayoutTree(AttachContext& context) {
     case kPseudoIdMarker: {
       if (ListMarker* marker = ListMarker::Get(layout_object))
         marker->UpdateMarkerContentIfNeeded(*layout_object);
-      if (style.ContentBehavesAsNormal())
+      if (style.ContentBehavesAsNormal()) {
+        context.counters_context.LeaveElement(*this);
         return;
+      }
       break;
     }
     case kPseudoIdBefore:
     case kPseudoIdAfter:
       break;
-    default:
+    default: {
+      context.counters_context.LeaveElement(*this);
       return;
+    }
   }
 
   DCHECK(!style.ContentBehavesAsNormal());
@@ -315,11 +324,23 @@ void PseudoElement::AttachLayoutTree(AttachContext& context) {
           scope->AttachQuote(*To<LayoutQuote>(child));
           tree.UpdateOutermostQuotesDirtyScope(scope);
         }
+        if (auto* layout_counter = DynamicTo<LayoutCounter>(child)) {
+          if (context.counters_context.AttachmentRootIsDocumentElement()) {
+            Vector<int> counter_values =
+                context.counters_context.GetCounterValues(
+                    layout_counter->Identifier(), *this,
+                    layout_counter->Separator().IsNull());
+            layout_counter->UpdateCounter(std::move(counter_values));
+          } else {
+            GetDocument().GetStyleEngine().MarkCountersDirty();
+          }
+        }
       } else {
         child->Destroy();
       }
     }
   }
+  context.counters_context.LeaveElement(*this);
 }
 
 bool PseudoElement::LayoutObjectIsNeeded(const DisplayStyle& style) const {

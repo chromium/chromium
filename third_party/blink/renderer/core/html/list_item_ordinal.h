@@ -38,6 +38,7 @@ class CORE_EXPORT ListItemOrdinal {
   std::optional<int> ExplicitValue() const;
   void SetExplicitValue(int, const Node&);
   void ClearExplicitValue(const Node&);
+  void MarkDirty() { SetType(kNeedsUpdate); }
 
   static bool IsListItem(const Node&);
   static bool IsListItem(const LayoutObject*);

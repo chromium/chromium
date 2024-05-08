@@ -2736,8 +2736,6 @@ void LayoutObject::SetStyle(const ComputedStyle* style,
     UpdateImageObservers(old_style, style_.Get());
   }
 
-  CheckCounterChanges(old_style, style_.Get());
-
   bool does_not_need_layout_or_paint_invalidation = !parent_;
 
   StyleDidChange(diff, old_style);
@@ -3346,23 +3344,6 @@ void LayoutObject::UpdateShapeImage(const ShapeValue* old_shape_value,
   }
 }
 
-void LayoutObject::CheckCounterChanges(const ComputedStyle* old_style,
-                                       const ComputedStyle* new_style) {
-  NOT_DESTROYED();
-  DCHECK(new_style);
-  if (old_style) {
-    if (old_style->CounterDirectivesEqual(*new_style)) {
-      return;
-    }
-  } else {
-    if (!new_style->GetCounterDirectives()) {
-      return;
-    }
-  }
-  LayoutCounter::LayoutObjectStyleChanged(*this, old_style, *new_style);
-  View()->SetNeedsMarkerOrCounterUpdate();
-}
-
 PhysicalRect LayoutObject::ViewRect() const {
   NOT_DESTROYED();
   return View()->ViewRect();
@@ -3760,15 +3741,6 @@ void LayoutObject::WillBeDestroyed() {
   }
 
   Remove();
-
-  // If this layoutObject had a parent, remove should have destroyed any
-  // counters attached to this layoutObject and marked the affected other
-  // counters for reevaluation. This apparently redundant check is here for the
-  // case when this layoutObject had no parent at the time remove() was called.
-
-  if (HasCounterNodeMap()) {
-    LayoutCounter::DestroyCounterNodes(*this);
-  }
 
   // Remove the handler if node had touch-action set. Handlers are not added
   // for text nodes so don't try removing for one too. Need to check if

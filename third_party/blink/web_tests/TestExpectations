@@ -345,7 +345,7 @@ crbug.com/845267 [ Mac ] http/tests/inspector-protocol/page/page-lifecycleEvents
 crbug.com/333842054 http/tests/inspector-protocol/page/page-events-associated-isolation.js [ Failure Pass ]
 
 # Counters failures to be fixed with new implementation
-crbug.com/990657 external/wpt/css/css-contain/contain-style-counters-004.html [ Failure ]
+crbug.com/990657 external/wpt/css/css-counter-styles/hebrew/counter-hebrew-nested.html [ Failure ]
 
 # Service Worker registration.update() Network Requests require more instrumentation
 crbug.com/1334900 http/tests/inspector-protocol/fetch/service-worker-classic-update-network-id-disallowed-content-type.js [ Failure ]
@@ -1149,7 +1149,6 @@ crbug.com/1270480 external/wpt/css/css-lists/marker-webkit-text-fill-color.html 
 crbug.com/1270483 external/wpt/css/css-lists/li-value-counter-reset-001.html [ Failure ]
 crbug.com/947844 external/wpt/css/css-lists/list-item-definition.html [ Failure ]
 
-crbug.com/1330383 external/wpt/css/css-lists/counter-list-item-slot-order.html [ Failure ]
 crbug.com/1330383 external/wpt/css/css-lists/counter-order-display-contents.html [ Failure ]
 crbug.com/1330383 external/wpt/css/css-lists/counter-slot-order-scoping.html [ Failure ]
 crbug.com/1330383 external/wpt/css/css-lists/counter-slot-order.html [ Failure ]
@@ -1258,21 +1257,8 @@ crbug.com/990657 fast/css/containment/style-contain-dialogue-element.html [ Fail
 crbug.com/591099 [ Win ] virtual/text-antialias/ellipsis-with-self-painting-layer.html [ Failure ]
 crbug.com/1098801 virtual/text-antialias/whitespace/whitespace-in-pre.html [ Failure ]
 
-# CSS counters tests to be fixed with new implementation.
-crbug.com/990657 external/wpt/css/css-lists/counter-001.html [ Failure ]
-crbug.com/990657 external/wpt/css/css-lists/counter-002.html [ Failure ]
-crbug.com/990657 external/wpt/css/css-lists/counter-003.html [ Failure ]
-crbug.com/990657 external/wpt/css/css-lists/counters-001.html [ Failure ]
-crbug.com/990657 external/wpt/css/css-lists/counters-002.html [ Failure ]
-crbug.com/990657 external/wpt/css/css-lists/counters-003.html [ Failure ]
-crbug.com/990657 external/wpt/css/css-lists/counters-004.html [ Failure ]
-
 # CSS counters scope tests to be fixed with new implementation.
-crbug.com/990657 external/wpt/css/css-lists/counters-scope-001.html [ Failure ]
-crbug.com/990657 external/wpt/css/css-lists/counters-scope-002.html [ Failure ]
-crbug.com/990657 external/wpt/css/css-lists/counters-scope-003.html [ Failure ]
 crbug.com/990657 external/wpt/css/css-lists/counters-scope-004.html [ Failure ]
-crbug.com/990657 external/wpt/css/css-contain/counter-scoping-004.html [ Failure ]
 
 # LayoutNG failures that needs to be triaged
 crbug.com/591099 virtual/text-antialias/selection/selection-rect-line-height-too-small.html [ Failure ]

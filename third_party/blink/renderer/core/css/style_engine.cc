@@ -94,9 +94,12 @@
 #include "third_party/blink/renderer/core/layout/adjust_for_absolute_zoom.h"
 #include "third_party/blink/renderer/core/layout/geometry/logical_size.h"
 #include "third_party/blink/renderer/core/layout/geometry/physical_size.h"
+#include "third_party/blink/renderer/core/layout/layout_counter.h"
 #include "third_party/blink/renderer/core/layout/layout_object.h"
 #include "third_party/blink/renderer/core/layout/layout_theme.h"
 #include "third_party/blink/renderer/core/layout/layout_view.h"
+#include "third_party/blink/renderer/core/layout/list/layout_inline_list_item.h"
+#include "third_party/blink/renderer/core/layout/list/layout_list_item.h"
 #include "third_party/blink/renderer/core/loader/render_blocking_resource_manager.h"
 #include "third_party/blink/renderer/core/page/page.h"
 #include "third_party/blink/renderer/core/page/page_popup_controller.h"
@@ -756,6 +759,61 @@ const ActiveStyleSheetVector StyleEngine::ActiveStyleSheetsForInspector() {
   // However, creating such a large vector might cause performance regression.
   // Need to implement some smarter solution.
   return active_style_sheets;
+}
+
+void StyleEngine::UpdateCounters() {
+  if (!CountersChanged() || !GetDocument().documentElement()) {
+    return;
+  }
+  counters_changed_ = false;
+  CountersAttachmentContext context;
+  context.SetAttachmentRootIsDocumentElement();
+  UpdateCounters(*GetDocument().documentElement(), context);
+  GetDocument().ScheduleLayoutTreeUpdateIfNeeded();
+}
+
+// Recursively look for potential LayoutCounters to update,
+// since in case of ::marker they can be deep child of original
+// pseudo element's layout object.
+void StyleEngine::UpdateLayoutCounters(const Element& element,
+                                       const LayoutObject& layout_object,
+                                       CountersAttachmentContext& context) {
+  for (LayoutObject* child = layout_object.NextInPreOrder(&layout_object);
+       child; child = child->NextInPreOrder(&layout_object)) {
+    if (auto* layout_counter = DynamicTo<LayoutCounter>(child)) {
+      Vector<int> counter_values =
+          context.GetCounterValues(layout_counter->Identifier(), element,
+                                   layout_counter->Separator().IsNull());
+      layout_counter->UpdateCounter(std::move(counter_values));
+    }
+  }
+}
+
+void StyleEngine::UpdateCounters(const Element& element,
+                                 CountersAttachmentContext& context) {
+  context.EnterElement(element);
+  // Manually update list item ordinals here.
+  if (LayoutObject* layout_object = element.GetLayoutObject()) {
+    if (auto* ng_list_item = DynamicTo<LayoutListItem>(layout_object)) {
+      ng_list_item->Ordinal().MarkDirty();
+      ng_list_item->OrdinalValueChanged();
+    } else if (auto* inline_list_item =
+                   DynamicTo<LayoutInlineListItem>(layout_object)) {
+      ng_list_item->Ordinal().MarkDirty();
+      inline_list_item->OrdinalValueChanged();
+    }
+  }
+  if (element.GetLayoutObject() && element.GetComputedStyle() &&
+      !element.GetComputedStyle()->ContentBehavesAsNormal()) {
+    UpdateLayoutCounters(element, *element.GetLayoutObject(), context);
+  }
+  for (Node* child = LayoutTreeBuilderTraversal::FirstChild(element); child;
+       child = LayoutTreeBuilderTraversal::NextSibling(*child)) {
+    if (Element* child_element = DynamicTo<Element>(child)) {
+      UpdateCounters(*child_element, context);
+    }
+  }
+  context.LeaveElement(element);
 }
 
 void StyleEngine::ShadowRootInsertedToDocument(ShadowRoot& shadow_root) {
@@ -2943,6 +3001,14 @@ void StyleEngine::EnvironmentVariableChanged() {
 
 void StyleEngine::NodeWillBeRemoved(Node& node) {
   if (auto* element = DynamicTo<Element>(node)) {
+    if (const ComputedStyle* style = node.GetComputedStyle();
+        style && style->GetCounterDirectives()) {
+      MarkCountersDirty();
+    }
+    if (element->GetComputedStyle() &&
+        element->ComputedStyleRef().ContainsStyle()) {
+      MarkCountersDirty();
+    }
     if (StyleContainmentScopeTree* tree = GetStyleContainmentScopeTree()) {
       if (element->GetComputedStyle() &&
           element->ComputedStyleRef().ContainsStyle()) {
@@ -3455,6 +3521,7 @@ void StyleEngine::UpdateStyleAndLayoutTreeForContainer(
   if (StyleContainmentScopeTree* tree = GetStyleContainmentScopeTree()) {
     tree->UpdateQuotes();
   }
+  UpdateCounters();
   if (container == GetDocument().documentElement()) {
     // If the container is the root element, there may be body styles which have
     // changed as a result of the new container query evaluation, and if
@@ -3462,7 +3529,7 @@ void StyleEngine::UpdateStyleAndLayoutTreeForContainer(
     // styles.
     GetStyleResolver().PropagateStyleToViewport();
   }
-  GetDocument().GetLayoutView()->UpdateMarkersAndCountersAfterStyleChange(
+  GetDocument().GetLayoutView()->UpdateCountersAfterStyleChange(
       container.GetLayoutObject());
 }
 
@@ -3667,7 +3734,7 @@ void StyleEngine::ReattachContainerSubtree(Element& container) {
   // be sufficient.
 
   DCHECK(container.NeedsReattachLayoutTree());
-  DCHECK(DynamicTo<HTMLFieldSetElement>(container));
+  DCHECK(CountersChanged() || DynamicTo<HTMLFieldSetElement>(container));
 
   base::AutoReset<bool> rebuild_scope(&in_layout_tree_rebuild_, true);
   container.ReattachLayoutTreeChildren(base::PassKey<StyleEngine>());
@@ -3709,6 +3776,7 @@ void StyleEngine::UpdateStyleAndLayoutTree() {
     if (StyleContainmentScopeTree* tree = GetStyleContainmentScopeTree()) {
       tree->UpdateQuotes();
     }
+    UpdateCounters();
   } else {
     style_recalc_root_.Clear();
   }
