@@ -273,25 +273,30 @@ TEST_F(AudioDeviceSelectionGeneratedTest, BandDocScenario4Input) {
   // List: internal1 < usb2 < usb3
   EXPECT_EQ(ActiveInputNodeId(), usb3.id);
 
+  Select(usb2);
+  // Devices: [internal1 usb2* usb3]
+  // List: internal1 < usb3 < usb2
+  EXPECT_EQ(ActiveInputNodeId(), usb2.id);
+
   Unplug(usb2);
   // Devices: [internal1 usb3*] usb2
-  // List: internal1 < usb2 < usb3
+  // List: internal1 < usb3 < usb2
   EXPECT_EQ(ActiveInputNodeId(), usb3.id);
 
   Unplug(usb3);
   // Devices: [internal1*] usb2 usb3
-  // List: internal1 < usb2 < usb3
+  // List: internal1 < usb3 < usb2
   EXPECT_EQ(ActiveInputNodeId(), internal1.id);
 
   Plug(usb3);
   // Devices: [internal1 usb3*] usb2
-  // List: internal1 < usb2 < usb3
+  // List: internal1 < usb3 < usb2
   EXPECT_EQ(ActiveInputNodeId(), usb3.id);
 
   Plug(usb2);
-  // Devices: [internal1 usb2 usb3*]
-  // List: internal1 < usb2 < usb3
-  EXPECT_EQ(ActiveInputNodeId(), usb3.id);
+  // Devices: [internal1 usb2* usb3]
+  // List: internal1 < usb3 < usb2
+  EXPECT_EQ(ActiveInputNodeId(), usb2.id);
 }
 
 TEST_F(AudioDeviceSelectionGeneratedTest, BandDocScenario4Output) {
@@ -314,25 +319,30 @@ TEST_F(AudioDeviceSelectionGeneratedTest, BandDocScenario4Output) {
   // List: internal1 < usb2 < usb3
   EXPECT_EQ(ActiveOutputNodeId(), usb3.id);
 
+  Select(usb2);
+  // Devices: [internal1 usb2* usb3]
+  // List: internal1 < usb3 < usb2
+  EXPECT_EQ(ActiveOutputNodeId(), usb2.id);
+
   Unplug(usb2);
   // Devices: [internal1 usb3*] usb2
-  // List: internal1 < usb2 < usb3
+  // List: internal1 < usb3 < usb2
   EXPECT_EQ(ActiveOutputNodeId(), usb3.id);
 
   Unplug(usb3);
   // Devices: [internal1*] usb2 usb3
-  // List: internal1 < usb2 < usb3
+  // List: internal1 < usb3 < usb2
   EXPECT_EQ(ActiveOutputNodeId(), internal1.id);
 
   Plug(usb3);
   // Devices: [internal1 usb3*] usb2
-  // List: internal1 < usb2 < usb3
+  // List: internal1 < usb3 < usb2
   EXPECT_EQ(ActiveOutputNodeId(), usb3.id);
 
   Plug(usb2);
-  // Devices: [internal1 usb2 usb3*]
-  // List: internal1 < usb2 < usb3
-  EXPECT_EQ(ActiveOutputNodeId(), usb3.id);
+  // Devices: [internal1 usb2* usb3]
+  // List: internal1 < usb3 < usb2
+  EXPECT_EQ(ActiveOutputNodeId(), usb2.id);
 }
 
 TEST_F(AudioDeviceSelectionGeneratedTest, BandDocScenario5Input) {
@@ -355,25 +365,30 @@ TEST_F(AudioDeviceSelectionGeneratedTest, BandDocScenario5Input) {
   // List: internal1 < usb2 < usb3
   EXPECT_EQ(ActiveInputNodeId(), usb3.id);
 
+  Select(usb2);
+  // Devices: [internal1 usb2* usb3]
+  // List: internal1 < usb3 < usb2
+  EXPECT_EQ(ActiveInputNodeId(), usb2.id);
+
   Unplug(usb2);
   // Devices: [internal1 usb3*] usb2
-  // List: internal1 < usb2 < usb3
+  // List: internal1 < usb3 < usb2
   EXPECT_EQ(ActiveInputNodeId(), usb3.id);
 
   Unplug(usb3);
   // Devices: [internal1*] usb2 usb3
-  // List: internal1 < usb2 < usb3
+  // List: internal1 < usb3 < usb2
   EXPECT_EQ(ActiveInputNodeId(), internal1.id);
 
   Plug(usb2);
   // Devices: [internal1 usb2*] usb3
-  // List: internal1 < usb2 < usb3
+  // List: internal1 < usb3 < usb2
   EXPECT_EQ(ActiveInputNodeId(), usb2.id);
 
   Plug(usb3);
-  // Devices: [internal1 usb2 usb3*]
-  // List: internal1 < usb2 < usb3
-  EXPECT_EQ(ActiveInputNodeId(), usb3.id);
+  // Devices: [internal1 usb2* usb3]
+  // List: internal1 < usb3 < usb2
+  EXPECT_EQ(ActiveInputNodeId(), usb2.id);
 }
 
 TEST_F(AudioDeviceSelectionGeneratedTest, BandDocScenario5Output) {
@@ -396,25 +411,30 @@ TEST_F(AudioDeviceSelectionGeneratedTest, BandDocScenario5Output) {
   // List: internal1 < usb2 < usb3
   EXPECT_EQ(ActiveOutputNodeId(), usb3.id);
 
+  Select(usb2);
+  // Devices: [internal1 usb2* usb3]
+  // List: internal1 < usb3 < usb2
+  EXPECT_EQ(ActiveOutputNodeId(), usb2.id);
+
   Unplug(usb2);
   // Devices: [internal1 usb3*] usb2
-  // List: internal1 < usb2 < usb3
+  // List: internal1 < usb3 < usb2
   EXPECT_EQ(ActiveOutputNodeId(), usb3.id);
 
   Unplug(usb3);
   // Devices: [internal1*] usb2 usb3
-  // List: internal1 < usb2 < usb3
+  // List: internal1 < usb3 < usb2
   EXPECT_EQ(ActiveOutputNodeId(), internal1.id);
 
   Plug(usb2);
   // Devices: [internal1 usb2*] usb3
-  // List: internal1 < usb2 < usb3
+  // List: internal1 < usb3 < usb2
   EXPECT_EQ(ActiveOutputNodeId(), usb2.id);
 
   Plug(usb3);
-  // Devices: [internal1 usb2 usb3*]
-  // List: internal1 < usb2 < usb3
-  EXPECT_EQ(ActiveOutputNodeId(), usb3.id);
+  // Devices: [internal1 usb2* usb3]
+  // List: internal1 < usb3 < usb2
+  EXPECT_EQ(ActiveOutputNodeId(), usb2.id);
 }
 
 TEST_F(AudioDeviceSelectionGeneratedTest, BandDocScenario6Input) {
