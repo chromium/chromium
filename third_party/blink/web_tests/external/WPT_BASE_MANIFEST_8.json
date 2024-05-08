@@ -215185,6 +215185,19 @@
        }
       ]
      ],
+     "transform3d-preserve3d-014.html": [
+      "e8d7a4805b001dda187ab1f45b30e2ddd7df2e43",
+      [
+       null,
+       [
+        [
+         "/css/css-transforms/transform-lime-square-ref.html",
+         "=="
+        ]
+       ],
+       {}
+      ]
+     ],
      "transform3d-rotate3d-001.html": [
       "93a46f1c6ab038b92e9bbbe3356d219cd2f1bdf4",
       [
@@ -369586,6 +369599,10 @@
        []
       ],
       "bfcache": {
+       "DIR_METADATA": [
+        "3e810e1bf3a437452d190b440fe61944237e0132",
+        []
+       ],
        "resources": {
         "common.js": [
          "5bb9642a83abe07612b43f35fd87f7ca00f6932c",
