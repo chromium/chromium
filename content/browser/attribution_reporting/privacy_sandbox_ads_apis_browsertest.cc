@@ -150,7 +150,8 @@ class PrivacySandboxAdsAPIsAllEnabledBrowserTest
          blink::features::kInterestGroupStorage, blink::features::kFencedFrames,
          blink::features::kSharedStorageAPI},
         /*disabled_features=*/{
-            network::features::kAttributionReportingCrossAppWeb});
+            network::features::kAttributionReportingCrossAppWeb,
+            features::kPrivacySandboxAdsAPIsM1Override});
   }
 
  private:
@@ -515,7 +516,8 @@ class PrivacySandboxAdsAPIsDisabledBrowserTest
         {},
         /*disabled_features=*/{
             blink::features::kPrivacySandboxAdsAPIs,
-            network::features::kAttributionReportingCrossAppWeb});
+            network::features::kAttributionReportingCrossAppWeb,
+            features::kPrivacySandboxAdsAPIsM1Override});
   }
 
  private:

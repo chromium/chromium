@@ -270,6 +270,8 @@ interface DocumentPictureInPictureEvent : Event
     method showSaveFilePicker                # File System Access API, crbug.com/1011535
     method showDirectoryPicker               # File System Access API, crbug.com/1011535
     method queryLocalFonts                   # Local Font Access API, crbug.com/1326898
+    getter sharedStorage                     # Shared storage API
+    getter fence                             # Fenced frames API
 
 # TODO(timvolodine): check screen orientation lock api
 # TODO(timvolodine): check notifications in service workers
@@ -284,3 +286,10 @@ interface HTMLImageElement : HTMLElement
 interface Image
     getter sharedStorageWritable
     setter sharedStorageWritable
+interface SharedStorageWorklet
+interface SharedStorage
+
+# Fenced frames API is not implemented in WebView
+interface FencedFrameConfig
+interface HTMLFencedFrameElement : HTMLElement
+interface Fence

@@ -78,7 +78,8 @@ class CrossAppWebAttributionEnabledOriginTrialBrowserTest
         /*enabled_features=*/{network::features::
                                   kAttributionReportingCrossAppWeb},
         /*disabled_features=*/{
-            features::kAttributionReportingCrossAppWebOverride});
+            features::kAttributionReportingCrossAppWebOverride,
+            features::kPrivacySandboxAdsAPIsM1Override});
   }
 
  private:
@@ -223,8 +224,11 @@ class CrossAppWebAttributionDisabledBrowserTest
     : public CrossAppWebAttributionBrowserTestBase {
  public:
   CrossAppWebAttributionDisabledBrowserTest() {
-    feature_list_.InitAndDisableFeature(
-        network::features::kAttributionReportingCrossAppWeb);
+    feature_list_.InitWithFeatures(
+        /*enabled_features=*/{},
+        /*disabled_features=*/{
+            network::features::kAttributionReportingCrossAppWeb,
+            features::kPrivacySandboxAdsAPIsM1Override});
   }
 
  private:
@@ -253,7 +257,8 @@ class CrossAppWebAttributionOverrideBrowserTest
  public:
   CrossAppWebAttributionOverrideBrowserTest() {
     std::vector<base::test::FeatureRef> enabled_features;
-    std::vector<base::test::FeatureRef> disabled_features;
+    std::vector<base::test::FeatureRef> disabled_features(
+        {features::kPrivacySandboxAdsAPIsM1Override});
 
     enabled_features.emplace_back(
         features::kAttributionReportingCrossAppWebOverride);

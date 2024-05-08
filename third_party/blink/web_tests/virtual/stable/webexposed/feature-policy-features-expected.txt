@@ -4,6 +4,7 @@ All changes to this list should go through Blink's feature review process: http:
 accelerometer
 attribution-reporting
 autoplay
+browsing-topics
 camera
 ch-device-memory
 ch-downlink
@@ -41,6 +42,7 @@ gyroscope
 hid
 identity-credentials-get
 idle-detection
+interest-cohort
 keyboard-map
 local-fonts
 magnetometer
@@ -49,12 +51,15 @@ midi
 otp-credentials
 payment
 picture-in-picture
+private-aggregation
 private-state-token-issuance
 private-state-token-redemption
 publickey-credentials-create
 publickey-credentials-get
 screen-wake-lock
 serial
+shared-storage
+shared-storage-select-url
 storage-access
 sync-xhr
 unload
