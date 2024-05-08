@@ -145,6 +145,11 @@ IN_PROC_BROWSER_TEST_P(CrosComponentsBrowserTest, NoRuntimeErrors) {
 
 static constexpr const ComponentTestData kComponentsTestData[] = {
     {
+        .script_src = "chrome://resources/cros_components/badge/badge.js",
+        .component_name = "cros-badge",
+        .gtest_name = "CrosBadge",
+    },
+    {
         .script_src = "chrome://resources/cros_components/button/button.js",
         .component_name = "cros-button",
         .gtest_name = "CrosButton",

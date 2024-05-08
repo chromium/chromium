@@ -10,6 +10,7 @@ import("//ui/webui/resources/tools/generate_grd.gni")
 
 _cros_components_ts_files = [
   "async_helpers/async_helpers.ts",
+  "badge/badge.ts",
   "button/button.ts",
   "card/card.ts",
   "checkbox/checkbox.ts",
