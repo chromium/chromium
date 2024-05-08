@@ -37,6 +37,7 @@ class FakeNotificationsInstance : public mojom::NotificationsInstance {
   void CreateNotificationWindow(const std::string& key) override;
   void CloseNotificationWindow(const std::string& key) override;
   void OpenNotificationSettings(const std::string& key) override;
+  void PopUpAppNotificationSettings(const std::string& key) override;
   void OpenNotificationSnoozeSettings(const std::string& key) override;
   void SetDoNotDisturbStatusOnAndroid(
       mojom::ArcDoNotDisturbStatusPtr status) override;

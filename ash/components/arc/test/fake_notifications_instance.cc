@@ -32,6 +32,9 @@ void FakeNotificationsInstance::CloseNotificationWindow(
 void FakeNotificationsInstance::OpenNotificationSettings(
     const std::string& key) {}
 
+void FakeNotificationsInstance::PopUpAppNotificationSettings(
+    const std::string& key) {}
+
 void FakeNotificationsInstance::OpenNotificationSnoozeSettings(
     const std::string& key) {}
 

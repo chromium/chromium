@@ -568,6 +568,24 @@ void ArcNotificationManager::OpenNotificationSettings(const std::string& key) {
   notifications_instance->OpenNotificationSettings(key);
 }
 
+void ArcNotificationManager::DisableNotification(const std::string& key) {
+  if (!base::Contains(items_, key)) {
+    DVLOG(3) << "Chrome requests to fire a DisableNotification event on the "
+             << "notification  (key: " << key << "), but it is gone.";
+    return;
+  }
+
+  auto* notifications_instance = ARC_GET_INSTANCE_FOR_METHOD(
+      instance_owner_->holder(), PopUpAppNotificationSettings);
+
+  // On shutdown, the ARC channel may quit earlier than notifications.
+  if (!notifications_instance) {
+    return;
+  }
+
+  notifications_instance->PopUpAppNotificationSettings(key);
+}
+
 void ArcNotificationManager::OpenNotificationSnoozeSettings(
     const std::string& key) {
   if (!base::Contains(items_, key)) {

@@ -42,6 +42,7 @@ class ArcNotificationItemImpl : public ArcNotificationItem {
   void Click() override;
   void ClickButton(const int button_index, const std::string& input) override;
   void OpenSettings() override;
+  void DisableNotification() override;
   void OpenSnooze() override;
   void ToggleExpansion() override;
   void SetExpandState(bool expanded) override;

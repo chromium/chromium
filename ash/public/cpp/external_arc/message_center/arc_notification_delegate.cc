@@ -53,6 +53,11 @@ void ArcNotificationDelegate::SettingsClick() {
   item_->OpenSettings();
 }
 
+void ArcNotificationDelegate::DisableNotification() {
+  DCHECK(item_);
+  item_->DisableNotification();
+}
+
 void ArcNotificationDelegate::ExpandStateChanged(bool expanded) {
   DCHECK(item_);
   item_->SetExpandState(expanded);

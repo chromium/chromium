@@ -47,6 +47,7 @@ class MockArcNotificationItem : public ArcNotificationItem {
   void SetExpandState(bool expanded) override {}
   void OnWindowActivated(bool activated) override {}
   void OpenSettings() override {}
+  void DisableNotification() override {}
   void OpenSnooze() override {}
   void IncrementWindowRefCount() override {}
   void DecrementWindowRefCount() override {}

@@ -221,6 +221,10 @@ void ArcNotificationItemImpl::OpenSettings() {
   manager_->OpenNotificationSettings(notification_key_);
 }
 
+void ArcNotificationItemImpl::DisableNotification() {
+  manager_->DisableNotification(notification_key_);
+}
+
 void ArcNotificationItemImpl::OpenSnooze() {
   manager_->OpenNotificationSnoozeSettings(notification_key_);
 }

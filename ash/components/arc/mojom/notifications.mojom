@@ -2,7 +2,7 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 //
-// Next MinVersion: 36
+// Next MinVersion: 37
 
 module arc.mojom;
 
@@ -381,4 +381,12 @@ interface NotificationsInstance {
     string key,
     uint32 action_button_index,
     string input);
+
+  // Pops up the notification settings page for a specific application. This is
+  // called when the user clicks 'turn off notifications' button in inline
+  // settings view from the Chrome side in Chrome rendered ARC notifications.
+  // |key| is the identifier of the notification which is generated  by Android
+  // side.
+  [MinVersion=36]
+  PopUpAppNotificationSettings@15(string key);
 };
