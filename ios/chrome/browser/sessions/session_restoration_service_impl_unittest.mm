@@ -14,6 +14,7 @@
 #import "base/files/scoped_temp_dir.h"
 #import "base/functional/bind.h"
 #import "base/memory/raw_ptr.h"
+#import "base/memory/weak_ptr.h"
 #import "base/run_loop.h"
 #import "base/scoped_multi_source_observation.h"
 #import "base/test/metrics/histogram_tester.h"
@@ -72,7 +73,7 @@ struct Wrapper {
  private:
   using Callback = base::OnceCallback<Ret(Args...)>;
 
-  struct Flag : base::SupportsWeakPtr<Flag> {
+  struct Flag final {
     explicit Flag(Wrapper* owner, Callback callback)
         : owner_(owner), callback_(std::move(callback)) {}
 
@@ -87,12 +88,13 @@ struct Wrapper {
 
     raw_ptr<Wrapper<Ret, Args...>> owner_;
     Callback callback_;
+    base::WeakPtrFactory<Flag> weak_ptr_factory_{this};
   };
 
  public:
   Wrapper(Callback callback) {
     auto flag = std::make_unique<Flag>(this, std::move(callback));
-    flag_ = flag->AsWeakPtr();
+    flag_ = flag->weak_ptr_factory_.GetWeakPtr();
 
     callback_ = base::BindOnce(&Flag::Run, std::move(flag));
   }
