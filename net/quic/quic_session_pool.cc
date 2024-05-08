@@ -6,9 +6,9 @@
 
 #include <memory>
 #include <set>
+#include <string_view>
 #include <tuple>
 #include <utility>
-#include <string_view>
 
 #include "base/containers/contains.h"
 #include "base/feature_list.h"
@@ -52,6 +52,7 @@
 #include "net/quic/crypto/proof_verifier_chromium.h"
 #include "net/quic/properties_based_quic_server_info.h"
 #include "net/quic/quic_chromium_alarm_factory.h"
+#include "net/quic/quic_chromium_client_session.h"
 #include "net/quic/quic_chromium_connection_helper.h"
 #include "net/quic/quic_chromium_packet_reader.h"
 #include "net/quic/quic_chromium_packet_writer.h"
@@ -178,13 +179,11 @@ std::set<std::string> HostsFromOrigins(std::set<HostPortPair> origins) {
 
 void LogUsingExistingSession(const NetLogWithSource& request_net_log,
                              QuicChromiumClientSession* session,
-                             const url::SchemeHostPort& destination,
-                             std::string_view reason) {
+                             const url::SchemeHostPort& destination) {
   request_net_log.AddEvent(
       NetLogEventType::QUIC_SESSION_POOL_USE_EXISTING_SESSION, [&] {
         base::Value::Dict dict;
         dict.Set("destination", destination.Serialize());
-        dict.Set("reason", reason);
         session->net_log().source().AddToEventParameters(dict);
         return dict;
       });
@@ -510,21 +509,7 @@ QuicSessionPool::~QuicSessionPool() {
 bool QuicSessionPool::CanUseExistingSession(
     const QuicSessionKey& session_key,
     const url::SchemeHostPort& destination) const {
-  if (base::Contains(active_sessions_, session_key)) {
-    return true;
-  }
-
-  for (const auto& key_value : active_sessions_) {
-    QuicChromiumClientSession* session = key_value.second;
-    const auto& it = all_sessions_.find(session);
-    if ((it != all_sessions_.end()) &&
-        (destination == it->second.destination()) &&
-        session->CanPool(session_key.host(), session_key)) {
-      return true;
-    }
-  }
-
-  return false;
+  return FindExistingSession(session_key, destination) != nullptr;
 }
 
 int QuicSessionPool::RequestSession(
@@ -547,13 +532,13 @@ int QuicSessionPool::RequestSession(
                       session_key.server_id().port())
              .Equals(HostPortPair::FromURL(url)));
 
-  // Use active session for |session_key| if such exists.
-  auto active_session = active_sessions_.find(session_key);
-  if (active_session != active_sessions_.end()) {
-    LogUsingExistingSession(net_log, active_session->second, destination,
-                            "session key match");
-    QuicChromiumClientSession* session = active_session->second;
-    request->SetSession(session->CreateHandle(std::move(destination)));
+  // Use active session for `session_key` if such exists, or pool to active
+  // session to `destination` if possible.
+  QuicChromiumClientSession* existing_session =
+      FindExistingSession(session_key, destination);
+  if (existing_session) {
+    LogUsingExistingSession(net_log, existing_session, destination);
+    request->SetSession(existing_session->CreateHandle(std::move(destination)));
     return OK;
   }
 
@@ -563,21 +548,6 @@ int QuicSessionPool::RequestSession(
     active_job->second->AssociateWithNetLogSource(net_log);
     active_job->second->AddRequest(request);
     return ERR_IO_PENDING;
-  }
-
-  // Pool to active session to |destination| if possible.
-  if (!active_sessions_.empty()) {
-    for (const auto& key_value : active_sessions_) {
-      QuicChromiumClientSession* session = key_value.second;
-      if (destination == all_sessions_[session].destination() &&
-          session->CanPool(session_key.server_id().host(), session_key)) {
-        LogUsingExistingSession(
-            net_log, session, destination,
-            "session key doesn't match but an existing session can pool");
-        request->SetSession(session->CreateHandle(std::move(destination)));
-        return OK;
-      }
-    }
   }
 
   // TODO(rtenneti): |task_runner_| is used by the Job. Initialize task_runner_
@@ -1186,6 +1156,27 @@ quic::ParsedQuicVersion QuicSessionPool::SelectQuicVersion(
 // static
 void QuicSessionPool::LogConnectionIpPooling(bool pooled) {
   base::UmaHistogramBoolean("Net.QuicSession.ConnectionIpPooled", pooled);
+}
+
+QuicChromiumClientSession* QuicSessionPool::FindExistingSession(
+    const QuicSessionKey& session_key,
+    const url::SchemeHostPort& destination) const {
+  auto active_session_it = active_sessions_.find(session_key);
+  if (active_session_it != active_sessions_.end()) {
+    return active_session_it->second;
+  }
+
+  for (const auto& key_value : active_sessions_) {
+    QuicChromiumClientSession* session = key_value.second;
+    const auto& it = all_sessions_.find(session);
+    CHECK(it != all_sessions_.end());
+    if (destination == it->second.destination() &&
+        session->CanPool(session_key.host(), session_key)) {
+      return session;
+    }
+  }
+
+  return nullptr;
 }
 
 bool QuicSessionPool::HasMatchingIpSession(

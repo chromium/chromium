@@ -516,6 +516,10 @@ class NET_EXPORT_PRIVATE QuicSessionPool
   // during connection.
   static void LogConnectionIpPooling(bool pooled);
 
+  QuicChromiumClientSession* FindExistingSession(
+      const QuicSessionKey& session_key,
+      const url::SchemeHostPort& destination) const;
+
   bool HasMatchingIpSession(const QuicSessionAliasKey& key,
                             const std::vector<IPEndPoint>& ip_endpoints,
                             const std::set<std::string>& aliases,
