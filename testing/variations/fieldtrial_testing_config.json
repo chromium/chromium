@@ -16150,6 +16150,28 @@
             ]
         }
     ],
+    "ReduceCpuUtilization2": [
+        {
+            "platforms": [
+                "android_webview",
+                "android",
+                "chromeos",
+                "chromeos_lacros",
+                "ios",
+                "linux",
+                "mac",
+                "windows"
+            ],
+            "experiments": [
+                {
+                    "name": "Enabled",
+                    "enable_features": [
+                        "ReduceCpuUtilization2"
+                    ]
+                }
+            ]
+        }
+    ],
     "ReduceIPAddressChangeNotification": [
         {
             "platforms": [
