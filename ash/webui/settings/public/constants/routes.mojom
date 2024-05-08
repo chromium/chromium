@@ -188,6 +188,7 @@ enum Subpage {
   // About Chrome OS section.
   // 1700 was used for kAboutChromeOsDetails. Do not reuse.
   kDetailedBuildInfo = 1701,
+  kInternalStorybook = 1702,
 
   // Kerberos section.
   kKerberosAccountsV2 = 1800,
@@ -361,3 +362,6 @@ const string kKerberosAccountsV2SubpagePath = "kerberos/kerberosAccounts";
 
 // System Preferences section.
 const string kSystemPreferencesSectionPath = "systemPreferences";
+
+// Internal pages (under About section).
+const string kInternalStorybookSubpagePath = "_internal/_storybook";

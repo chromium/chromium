@@ -187,6 +187,9 @@
   <message name="IDS_SETTINGS_ABOUT_PAGE_DETAILED_BUILD_INFO" desc="Label describing the section that shows detailed information about the current Chrome build.">
     Additional details
   </message>
+  <message name="IDS_OS_SETTINGS_INTERNAL_STORYBOOK_TITLE" desc="Internal Storybook subpage title." translateable="false">
+    Storybook
+  </message>
   <message name="IDS_SETTINGS_ABOUT_PAGE_RELEASE_NOTES" desc="Warning that internet connection is required to display ChromeOS release notes.">
       Internet connection required
   </message>

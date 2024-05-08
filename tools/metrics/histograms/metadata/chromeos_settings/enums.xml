@@ -541,6 +541,7 @@ chromium-metrics-reviews@google.com.
   <int value="1513" label="FaceGaze Facial Expressions Subpage"/>
   <int value="1700" label="About Chrome OS Details"/>
   <int value="1701" label="Detailed Build Info"/>
+  <int value="1702" label="Internal Storybook"/>
   <int value="1800" label="Kerberos Accounts V2"/>
 </enum>
 

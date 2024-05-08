@@ -248,6 +248,9 @@ export interface OsSettingsRoutes extends MinimumRoutes {
   SYNC: Route;
   SYNC_ADVANCED: Route;
   SYSTEM_PREFERENCES: Route;
+
+  // Internal routes
+  INTERNAL_STORYBOOK: Route;
 }
 
 function createSection(
@@ -550,6 +553,11 @@ export function createRoutes(): OsSettingsRoutes {
   r.ABOUT_DETAILED_BUILD_INFO = createSubpage(
       r.ABOUT, routesMojom.DETAILED_BUILD_INFO_SUBPAGE_PATH,
       Subpage.kDetailedBuildInfo);
+
+  // Internal pages (under About section).
+  r.INTERNAL_STORYBOOK = createSubpage(
+      r.ABOUT, routesMojom.INTERNAL_STORYBOOK_SUBPAGE_PATH,
+      Subpage.kInternalStorybook);
 
   if (isRevampWayfindingEnabled()) {
     // Device section, Input subpages.

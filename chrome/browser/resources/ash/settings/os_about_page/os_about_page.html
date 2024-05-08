@@ -442,6 +442,14 @@
         </os-settings-subpage>
       </template>
     </template>
+
+    <!-- Internal subpages -->
+    <template is="dom-if" route-path="/_internal/_storybook">
+      <os-settings-subpage page-title="Storybook"
+          hide-back-button>
+        <settings-storybook-subpage></settings-storybook-subpage>
+      </os-settings-subpage>
+    </template>
   </os-settings-animated-pages>
 
 <template is="dom-if" if="[[showUpdateWarningDialog_]]" restamp>
