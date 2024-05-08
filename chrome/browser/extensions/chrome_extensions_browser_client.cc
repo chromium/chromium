@@ -108,6 +108,7 @@
 #include "extensions/common/permissions/permission_set.h"
 #include "ipc/ipc_message.h"
 #include "url/gurl.h"
+#include "url/origin.h"
 
 #if BUILDFLAG(IS_CHROMEOS_ASH)
 #include "ash/constants/ash_switches.h"
@@ -419,10 +420,11 @@ ChromeExtensionsBrowserClient::GetProcessManagerDelegate() const {
 
 mojo::PendingRemote<network::mojom::URLLoaderFactory>
 ChromeExtensionsBrowserClient::GetControlledFrameEmbedderURLLoader(
+    const url::Origin& app_origin,
     int frame_tree_node_id,
     content::BrowserContext* browser_context) {
-  return web_app::IsolatedWebAppURLLoaderFactory::Create(frame_tree_node_id,
-                                                         browser_context);
+  return web_app::IsolatedWebAppURLLoaderFactory::CreateForFrame(
+      browser_context, app_origin, frame_tree_node_id);
 }
 
 std::unique_ptr<ExtensionHostDelegate>

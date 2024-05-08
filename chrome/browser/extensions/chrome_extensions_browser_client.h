@@ -34,6 +34,10 @@ namespace content {
 class BrowserContext;
 }
 
+namespace url {
+class Origin;
+}  // namespace url
+
 namespace extensions {
 
 class ChromeComponentExtensionResourceManager;
@@ -132,6 +136,7 @@ class ChromeExtensionsBrowserClient : public ExtensionsBrowserClient {
   ProcessManagerDelegate* GetProcessManagerDelegate() const override;
   mojo::PendingRemote<network::mojom::URLLoaderFactory>
   GetControlledFrameEmbedderURLLoader(
+      const url::Origin& app_origin,
       int frame_tree_node_id,
       content::BrowserContext* browser_context) override;
   std::unique_ptr<ExtensionHostDelegate> CreateExtensionHostDelegate() override;

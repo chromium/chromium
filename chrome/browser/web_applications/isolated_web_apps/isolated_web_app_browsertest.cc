@@ -65,6 +65,7 @@
 #include "content/public/test/browser_test_utils.h"
 #include "content/public/test/test_navigation_observer.h"
 #include "extensions/test/result_catcher.h"
+#include "net/base/net_errors.h"
 #include "net/test/embedded_test_server/embedded_test_server.h"
 #include "testing/gmock/include/gmock/gmock.h"
 #include "third_party/blink/public/common/features.h"
@@ -78,6 +79,7 @@ namespace web_app {
 namespace {
 
 using ::testing::Eq;
+using ::testing::HasSubstr;
 using ::testing::Ne;
 using ::testing::StartsWith;
 
@@ -437,6 +439,70 @@ IN_PROC_BROWSER_TEST_F(IsolatedWebAppBrowserTest, CanNavigateToBlobUrl) {
   EXPECT_THAT(navigation_observer.last_net_error_code(), Eq(net::OK));
   EXPECT_THAT(navigation_observer.last_navigation_url().spec(),
               StartsWith("blob:" + url_info.origin().GetURL().spec()));
+}
+
+IN_PROC_BROWSER_TEST_F(IsolatedWebAppBrowserTest, WebCannotLoadIwaResources) {
+  std::unique_ptr<ScopedBundledIsolatedWebApp> app =
+      IsolatedWebAppBuilder(ManifestBuilder()).BuildBundle();
+  app->TrustSigningKey();
+  ASSERT_OK_AND_ASSIGN(IsolatedWebAppUrlInfo url_info, app->Install(profile()));
+
+  content::WebContents* web_contents =
+      browser()->tab_strip_model()->GetActiveWebContents();
+  ASSERT_TRUE(content::NavigateToURL(
+      web_contents, isolated_web_app_dev_server().GetURL("/index.html")));
+
+  EXPECT_THAT(
+      EvalJs(web_contents, content::JsReplace(R"(
+    (async () => {
+      const response = await fetch($1);
+      return response.ok;
+    })();
+  )",
+                                              url_info.origin().Serialize()))
+          .error,
+      HasSubstr("Failed to fetch"));
+}
+
+IN_PROC_BROWSER_TEST_F(IsolatedWebAppBrowserTest,
+                       IwaCannotLoadOtherIwaResources) {
+  std::unique_ptr<ScopedBundledIsolatedWebApp> app1 =
+      IsolatedWebAppBuilder(ManifestBuilder()).BuildBundle();
+  app1->TrustSigningKey();
+  ASSERT_OK_AND_ASSIGN(IsolatedWebAppUrlInfo url_info1,
+                       app1->Install(profile()));
+
+  std::unique_ptr<ScopedBundledIsolatedWebApp> app2 =
+      IsolatedWebAppBuilder(ManifestBuilder()).BuildBundle();
+  app2->TrustSigningKey();
+  ASSERT_OK_AND_ASSIGN(IsolatedWebAppUrlInfo url_info2,
+                       app2->Install(profile()));
+
+  content::RenderFrameHost* app1_frame = OpenApp(url_info1.app_id());
+  content::TestNavigationObserver navigation_observer(
+      content::WebContents::FromRenderFrameHost(app1_frame));
+  EXPECT_TRUE(
+      ExecJs(app1_frame, content::JsReplace(R"(
+    const iframe = document.createElement('iframe');
+    iframe.src = $1;
+    document.body.appendChild(iframe);
+  )",
+                                            url_info2.origin().Serialize())));
+  navigation_observer.Wait();
+  EXPECT_FALSE(navigation_observer.last_navigation_succeeded());
+  EXPECT_THAT(navigation_observer.last_net_error_code(),
+              Eq(net::ERR_BLOCKED_BY_CSP));
+
+  EXPECT_THAT(
+      EvalJs(app1_frame, content::JsReplace(R"(
+    (async () => {
+      const response = await fetch($1 + '/icon.png');
+      return response.ok;
+    })();
+  )",
+                                            url_info2.origin().Serialize()))
+          .error,
+      HasSubstr("Failed to fetch"));
 }
 
 class IsolatedWebAppApiAccessBrowserTest : public IsolatedWebAppBrowserTest {

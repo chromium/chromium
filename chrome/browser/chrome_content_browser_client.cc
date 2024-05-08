@@ -5914,8 +5914,8 @@ ChromeContentBrowserClient::CreateNonNetworkNavigationURLLoaderFactory(
     if (content::IsolatedWebAppsPolicy::AreIsolatedWebAppsEnabled(
             browser_context) &&
         !browser_context->ShutdownStarted()) {
-      return web_app::IsolatedWebAppURLLoaderFactory::Create(frame_tree_node_id,
-                                                             browser_context);
+      return web_app::IsolatedWebAppURLLoaderFactory::CreateForFrame(
+          browser_context, /*app_origin=*/std::nullopt, frame_tree_node_id);
     }
 
     return {};
@@ -5938,10 +5938,9 @@ void ChromeContentBrowserClient::
   if (content::IsolatedWebAppsPolicy::AreIsolatedWebAppsEnabled(
           browser_context) &&
       !browser_context->ShutdownStarted()) {
-    factories->emplace(
-        chrome::kIsolatedAppScheme,
-        web_app::IsolatedWebAppURLLoaderFactory::CreateForServiceWorker(
-            browser_context));
+    factories->emplace(chrome::kIsolatedAppScheme,
+                       web_app::IsolatedWebAppURLLoaderFactory::Create(
+                           browser_context, /*app_origin=*/std::nullopt));
   }
 #endif  // !BUILDFLAG(IS_ANDROID)
 
@@ -5967,10 +5966,9 @@ void ChromeContentBrowserClient::
   if (content::IsolatedWebAppsPolicy::AreIsolatedWebAppsEnabled(
           browser_context) &&
       !browser_context->ShutdownStarted()) {
-    factories->emplace(
-        chrome::kIsolatedAppScheme,
-        web_app::IsolatedWebAppURLLoaderFactory::CreateForServiceWorker(
-            browser_context));
+    factories->emplace(chrome::kIsolatedAppScheme,
+                       web_app::IsolatedWebAppURLLoaderFactory::Create(
+                           browser_context, /*app_origin=*/std::nullopt));
   }
 #endif  // !BUILDFLAG(IS_ANDROID)
 
@@ -6215,23 +6213,25 @@ void ChromeContentBrowserClient::
 
 #if !BUILDFLAG(IS_ANDROID)
   {
-    content::BrowserContext* browser_context =
-        content::RenderProcessHost::FromID(render_process_id)
-            ->GetBrowserContext();
+    auto* rph = content::RenderProcessHost::FromID(render_process_id);
+    content::BrowserContext* browser_context = rph->GetBrowserContext();
     DCHECK(browser_context);
+    bool is_initiator_iwa =
+        request_initiator_origin.has_value() &&
+        request_initiator_origin->scheme() == chrome::kIsolatedAppScheme;
     if (content::IsolatedWebAppsPolicy::AreIsolatedWebAppsEnabled(
             browser_context) &&
-        !browser_context->ShutdownStarted()) {
+        !browser_context->ShutdownStarted() && is_initiator_iwa) {
       if (frame_host != nullptr) {
         factories->emplace(
             chrome::kIsolatedAppScheme,
-            web_app::IsolatedWebAppURLLoaderFactory::Create(
-                frame_host->GetFrameTreeNodeId(), browser_context));
+            web_app::IsolatedWebAppURLLoaderFactory::CreateForFrame(
+                browser_context, request_initiator_origin,
+                frame_host->GetFrameTreeNodeId()));
       } else {
-        factories->emplace(
-            chrome::kIsolatedAppScheme,
-            web_app::IsolatedWebAppURLLoaderFactory::CreateForServiceWorker(
-                browser_context));
+        factories->emplace(chrome::kIsolatedAppScheme,
+                           web_app::IsolatedWebAppURLLoaderFactory::Create(
+                               browser_context, request_initiator_origin));
       }
     }
   }

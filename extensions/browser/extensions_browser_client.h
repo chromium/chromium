@@ -264,6 +264,7 @@ class ExtensionsBrowserClient {
 
   virtual mojo::PendingRemote<network::mojom::URLLoaderFactory>
   GetControlledFrameEmbedderURLLoader(
+      const url::Origin& app_origin,
       int frame_tree_node_id,
       content::BrowserContext* browser_context) = 0;
 

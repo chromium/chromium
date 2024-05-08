@@ -5,6 +5,7 @@
 #ifndef CHROME_BROWSER_WEB_APPLICATIONS_ISOLATED_WEB_APPS_ISOLATED_WEB_APP_URL_LOADER_FACTORY_H_
 #define CHROME_BROWSER_WEB_APPLICATIONS_ISOLATED_WEB_APPS_ISOLATED_WEB_APP_URL_LOADER_FACTORY_H_
 
+#include <optional>
 #include <string>
 
 #include "base/files/file_path.h"
@@ -18,6 +19,7 @@
 #include "services/network/public/cpp/self_deleting_url_loader_factory.h"
 #include "services/network/public/mojom/url_loader.mojom-forward.h"
 #include "services/network/public/mojom/url_loader_factory.mojom-forward.h"
+#include "url/origin.h"
 
 namespace content {
 class BrowserContext;
@@ -51,13 +53,19 @@ class IsolatedWebAppURLLoaderFactory
   // itself once there are no more receivers (including the receiver associated
   // with the returned mojo::PendingRemote and the receivers bound by the Clone
   // method).
-  static mojo::PendingRemote<network::mojom::URLLoaderFactory> Create(
-      int frame_tree_node_id,
-      content::BrowserContext* browser_context);
+  //
+  // If `app_origin` is present, the factory will only handle requests that are
+  // same-origin to it.
+  static mojo::PendingRemote<network::mojom::URLLoaderFactory> CreateForFrame(
+      content::BrowserContext* browser_context,
+      std::optional<url::Origin> app_origin,
+      int frame_tree_node_id);
 
-  // The same as `Create`, but doesn't have access to the frame tree.
-  static mojo::PendingRemote<network::mojom::URLLoaderFactory>
-  CreateForServiceWorker(content::BrowserContext* browser_context);
+  // The same as `CreateForFrame`, but doesn't have access to a FrameTreeNode
+  // to log errors to.
+  static mojo::PendingRemote<network::mojom::URLLoaderFactory> Create(
+      content::BrowserContext* browser_context,
+      std::optional<url::Origin> app_origin);
 
   IsolatedWebAppURLLoaderFactory(const IsolatedWebAppURLLoaderFactory&) =
       delete;
@@ -66,12 +74,14 @@ class IsolatedWebAppURLLoaderFactory
 
  private:
   static mojo::PendingRemote<network::mojom::URLLoaderFactory> CreateInternal(
-      std::optional<int> frame_tree_node_id,
-      content::BrowserContext* browser_context);
+      content::BrowserContext* browser_context,
+      std::optional<url::Origin> app_origin,
+      std::optional<int> frame_tree_node_id);
 
   IsolatedWebAppURLLoaderFactory(
-      std::optional<int> frame_tree_node_id,
       Profile* profile,
+      std::optional<url::Origin> app_origin,
+      std::optional<int> frame_tree_node_id,
       mojo::PendingReceiver<network::mojom::URLLoaderFactory> factory_receiver);
 
   void HandleSignedBundle(
@@ -117,10 +127,13 @@ class IsolatedWebAppURLLoaderFactory
   // ProfileObserver:
   void OnProfileWillBeDestroyed(Profile* profile) override;
 
-  const std::optional<int> frame_tree_node_id_;
+  bool CanRequestUrl(const GURL& url) const;
+
   // It is safe to store a pointer to a `Profile` here, since `this` is freed
   // via `profile_observation_` when the `Profile` is destroyed.
   const raw_ptr<Profile> profile_;
+  const std::optional<url::Origin> app_origin_;
+  const std::optional<int> frame_tree_node_id_;
   base::ScopedObservation<Profile, ProfileObserver> profile_observation_{this};
   base::WeakPtrFactory<IsolatedWebAppURLLoaderFactory> weak_factory_{this};
 };
