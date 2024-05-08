@@ -57,6 +57,14 @@ GSUTILS_PATH = None
 PERF_BASE_URL = 'gs://chrome-test-builds/official-by-commit'
 # GS bucket name.
 RELEASE_BASE_URL = 'gs://chrome-unsigned/desktop-5c0tCh'
+
+# Android bucket starting at M45.
+ANDROID_RELEASE_BASE_URL = 'gs://chrome-unsigned/android-B0urB0N'
+ANDROID_RELEASE_BASE_URL_SIGNED = 'gs://chrome-signed/android-B0urB0N'
+
+# A special bucket that need to be skipped.
+ANDROID_INVALID_BUCKET = 'gs://chrome-signed/android-B0urB0N/Test'
+
 # Base URL for downloading release builds.
 GOOGLE_APIS_URL = 'commondatastorage.googleapis.com'
 
@@ -120,6 +128,25 @@ CREDENTIAL_ERROR_MESSAGE = ('You are attempting to access protected data with '
                             'no configured credentials')
 PATH_CONTEXT = {
     'release': {
+        'android-arm': {
+            # Binary name is the Chrome binary filename. On Android, we don't
+            # use it to launch Chrome.
+            'binary_name': None,
+            'listing_platform_dir': 'arm/',
+            # Archive name is the zip file on gcs. For Android, we don't have
+            # such zip file. Instead we have a lot of apk files directly stored
+            # on gcs. The archive_name is used to find zip file for other
+            # platforms, but it will be apk filename defined by --apk for
+            # Android platform.
+            'archive_name': None,
+            'archive_extract_dir': 'android-arm'
+        },
+        'android-arm64': {
+            'binary_name': None,
+            'listing_platform_dir': 'arm_64/',
+            'archive_name': None,
+            'archive_extract_dir': 'android-arm64'
+        },
         'linux64': {
             'binary_name': 'chrome',
             'listing_platform_dir': 'linux64/',
@@ -411,6 +438,7 @@ class PathContext(object):
     self.is_release = options.release_builds
     self.is_official = options.official_builds
     self.is_asan = options.asan
+    self.signed = options.signed
     self.build_type = 'release'
     # Whether to cache and use the list of known revisions in a local file to
     # speed up the initialization of the script at the next run.
@@ -486,7 +514,10 @@ class PathContext(object):
                              '|'.join(PATH_CONTEXT[test_type].keys())))
     self._binary_name = path_members['binary_name']
     self._listing_platform_dir = path_members['listing_platform_dir']
-    self.archive_name = path_members['archive_name']
+    if self.is_release and 'android' in self.platform:
+      self.archive_name = GetAndroidApkFilename(self)
+    else:
+      self.archive_name = path_members['archive_name']
     self._archive_extract_dir = path_members['archive_extract_dir']
 
   def GetASANPlatformDir(self):
@@ -532,14 +563,12 @@ class PathContext(object):
           ASAN_BASE_URL, self.GetASANPlatformDir(), self.build_type,
           self.GetASANBaseName(), revision)
     if self.is_release:
-      return '%s/%s/%s%s' % (
-          RELEASE_BASE_URL, revision, self._listing_platform_dir,
-          archive_name)
-    if self.is_official:
-      return '%s/%s%s_%s.zip' % (
-          PERF_BASE_URL, self._listing_platform_dir, self._archive_extract_dir,
-          revision)
+      return '%s/%s/%s%s' % (self.GetReleaseBucket(), revision,
+                             self._listing_platform_dir, archive_name)
 
+    if self.is_official:
+      return '%s/%s%s_%s.zip' % (PERF_BASE_URL, self._listing_platform_dir,
+                                 self._archive_extract_dir, revision)
     else:
       if str(revision) in self.githash_svn_dict:
         revision = self.githash_svn_dict[str(revision)]
@@ -740,6 +769,14 @@ class PathContext(object):
     else:
       return self._GetSVNRevisionFromGitHashFromGitCheckout(git_sha1, depot)
 
+  def GetReleaseBucket(self):
+    if 'android' in self.platform:
+      if self.signed:
+        return ANDROID_RELEASE_BASE_URL_SIGNED
+      else:
+        return ANDROID_RELEASE_BASE_URL
+    return RELEASE_BASE_URL
+
   def GetRevList(self, archive):
     """Gets the list of revision numbers between self.good_revision and
     self.bad_revision."""
@@ -869,6 +906,8 @@ class PathContext(object):
       # Check whether there is a size field. For release builds the listing
       # will be directories so there will be no size field.
       if len(parts) > 1:
+        if ANDROID_INVALID_BUCKET in line:
+          continue
         size = int(parts[0])
         # Empty .zip files are 22 bytes. Ignore anything less than 1,000 bytes,
         # but keep the LAST_CHANGE file since the code seems to expect that.
@@ -929,7 +968,7 @@ class PathContext(object):
       raise BisectException('Max version of %s is too high. Be sure to use a '
                             'version number, not revision number with release '
                             'builds.' % maxrev)
-    build_numbers = self.GsutilList(RELEASE_BASE_URL)
+    build_numbers = self.GsutilList(self.GetReleaseBucket())
     revision_re = re.compile(r'(\d+\.\d\.\d{4}\.\d+)')
     build_numbers = [b for b in build_numbers if revision_re.search(b)]
     final_list = []
@@ -943,7 +982,7 @@ class PathContext(object):
     print('Checking the existence of %d builds. This will take about %.1f '
           'minutes' % (build_count, build_count / 60.0))
     for build_number in parsed_build_numbers[start:end]:
-      path = (RELEASE_BASE_URL + '/' + str(build_number) + '/' +
+      path = (self.GetReleaseBucket() + '/' + str(build_number) + '/' +
               self._listing_platform_dir + self.archive_name)
       if self.GsutilExists(path):
         final_list.append(str(build_number))
@@ -1036,26 +1075,37 @@ def FetchRevision(context, rev, filename, quit_event=None, progress_event=None):
     pass
 
 
+def GetAndroidApkFilename(context):
+  sdk = context.device.build_version_sdk
+  if 'webview' in context.apk:
+    return WEBVIEW_APK_FILENAMES[context.apk]
+  # Need these logic to bisect very old build. Release binaries are stored
+  # forever and occasionally there are requests to bisect issues introduced
+  # in very old versions.
+  elif sdk < version_codes.LOLLIPOP:
+    return CHROME_APK_FILENAMES[context.apk]
+  elif sdk < version_codes.NOUGAT:
+    return CHROME_MODERN_APK_FILENAMES[context.apk]
+  return MONOCHROME_APK_FILENAMES[context.apk]
+
+
 def RunRevisionForAndroid(context, revision, zip_file):
   """Installs apk and launches chrome for android bisect."""
+
+  # For release, we directly download the apk file from gcs.
+  # For non-release, we download a zip file first, then un-zip the file
+  # to a temporary folder and locate the apk file.
+  if context.is_release:
+    InstallonAndroid(context.device, zip_file)
+    LaunchOnAndroid(context.device, context.apk)
+    return (0, sys.stdout, sys.stderr)
+
   try:
     tempdir = tempfile.mkdtemp(prefix='bisect_tmp')
     UnzipFilenameToDir(zip_file, tempdir)
-    sdk = context.device.build_version_sdk
-    if 'webview' in context.apk:
-      apk_filename = WEBVIEW_APK_FILENAMES[context.apk]
-    # Need these logic to bisect very old build. Release binaries are stored
-    # forever and occasionally there are requests to bisect issues introduced
-    # in very old versions.
-    elif sdk < version_codes.LOLLIPOP:
-      apk_filename = CHROME_APK_FILENAMES[context.apk]
-    elif sdk < version_codes.NOUGAT:
-      apk_filename = CHROME_MODERN_APK_FILENAMES[context.apk]
-    else:
-      apk_filename = MONOCHROME_APK_FILENAMES[context.apk]
 
     apk_dir = os.path.join(tempdir, context._archive_extract_dir, 'apks')
-    apk_path = os.path.join(apk_dir, apk_filename)
+    apk_path = os.path.join(apk_dir, GetAndroidApkFilename(context))
     if not os.path.exists(apk_path):
       print('%s does not exist.' % apk_path)
       if os.path.exists(apk_dir):
@@ -1884,6 +1934,12 @@ Tip: add "-- --no-first-run" to bypass the first run prompts.
                     dest='apk',
                     default='chromium',
                     help='Apk you want to bisect.')
+  parser.add_option('--signed',
+                    dest='signed',
+                    action='store_true',
+                    default=False,
+                    help='Using signed binary for release build. Only support '
+                    'android platform.')
   parser.add_option('-d',
                     '--device-id',
                     dest='device_id',
@@ -1910,11 +1966,13 @@ def ParseCommandLine(args=None):
     parser.print_help()
     sys.exit(1)
 
-  if not opts.official_builds and opts.archive in [
-      'android-arm', 'android-arm64'
-  ]:
-    raise NotImplementedError(
-        'Android bisect is currently supported only on Official builds.')
+  if opts.signed and opts.archive not in ['android-arm', 'android-arm64']:
+    print('Signed bisection is only supported for Android platform.')
+    exit(1)
+
+  if opts.signed and not opts.release_builds:
+    print('Signed bisection is only supported for release bisection.')
+    exit(1)
 
   if opts.official_builds and opts.archive not in official_choices:
     raise BisectException(('Error: Bisecting on official builds are only '
