@@ -2282,6 +2282,16 @@ chromium-metrics-reviews@google.com.
   <token key="TabletOrClamshell" variants="DisplayModes"/>
 </histogram>
 
+<histogram name="Ash.ContainerApp.Page.Visit" enum="ContainerAppPage"
+    expires_after="2024-12-31">
+  <owner>dmblack@google.com</owner>
+  <owner>xiaohuic@chromium.org</owner>
+  <summary>
+    Records visits to container app related pages. Emitted when the browser tab
+    performing the visit has started navigation to the recorded page.
+  </summary>
+</histogram>
+
 <histogram name="Ash.ContextualGoogleIntegrations.{IntegrationName}.Status"
     enum="ContextualGoogleIntegrationStatus" expires_after="2024-12-31">
   <owner>amitrokhin@google.com</owner>

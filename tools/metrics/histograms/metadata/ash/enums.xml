@@ -528,6 +528,12 @@ ash/ambient/util/time_of_day_utils.h -->
              screenshot"/>
 </enum>
 
+<enum name="ContainerAppPage">
+  <int value="0" label="Congratulations"/>
+  <int value="1" label="Offer"/>
+  <int value="2" label="Terms &amp; Conditions"/>
+</enum>
+
 <enum name="ContextualGoogleIntegrationStatus">
   <int value="0" label="Enabled"/>
   <int value="1" label="Disabled by policy"/>
