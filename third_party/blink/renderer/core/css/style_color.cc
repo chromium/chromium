@@ -14,6 +14,35 @@
 
 namespace blink {
 
+namespace {
+
+using UnderlyingColorType = StyleColor::UnresolvedColorMix::UnderlyingColorType;
+
+UnderlyingColorType ResolveColorOperandType(const StyleColor& c) {
+  if (c.IsUnresolvedColorMixFunction()) {
+    return UnderlyingColorType::kColorMix;
+  }
+  if (c.IsCurrentColor()) {
+    return UnderlyingColorType::kCurrentColor;
+  }
+  return UnderlyingColorType::kColor;
+}
+
+Color ResolveColorOperand(const StyleColor::ColorOrUnresolvedColorMix& color,
+                          UnderlyingColorType type,
+                          const Color& current_color) {
+  switch (type) {
+    case UnderlyingColorType::kColorMix:
+      return color.unresolved_color_mix->Resolve(current_color);
+    case UnderlyingColorType::kCurrentColor:
+      return current_color;
+    case UnderlyingColorType::kColor:
+      return color.color;
+  }
+}
+
+}  // namespace
+
 StyleColor::UnresolvedColorMix::UnresolvedColorMix(
     const cssvalue::CSSColorMixValue* in,
     const StyleColor& c1,
@@ -21,23 +50,9 @@ StyleColor::UnresolvedColorMix::UnresolvedColorMix(
     : color_interpolation_space_(in->ColorInterpolationSpace()),
       hue_interpolation_method_(in->HueInterpolationMethod()),
       color1_(c1.color_or_unresolved_color_mix_),
-      color2_(c2.color_or_unresolved_color_mix_) {
-  if (c1.IsUnresolvedColorMixFunction()) {
-    color1_type_ = UnderlyingColorType::kColorMix;
-  } else if (c1.IsCurrentColor()) {
-    color1_type_ = UnderlyingColorType::kCurrentColor;
-  } else {
-    color1_type_ = UnderlyingColorType::kColor;
-  }
-
-  if (c2.IsUnresolvedColorMixFunction()) {
-    color2_type_ = UnderlyingColorType::kColorMix;
-  } else if (c2.IsCurrentColor()) {
-    color2_type_ = UnderlyingColorType::kCurrentColor;
-  } else {
-    color2_type_ = UnderlyingColorType::kColor;
-  }
-
+      color2_(c2.color_or_unresolved_color_mix_),
+      color1_type_(ResolveColorOperandType(c1)),
+      color2_type_(ResolveColorOperandType(c2)) {
   // TODO(crbug.com/1333988): If both percentages are zero, the color should
   // be rejected at parse time.
   cssvalue::CSSColorMixValue::NormalizePercentages(
@@ -46,24 +61,8 @@ StyleColor::UnresolvedColorMix::UnresolvedColorMix(
 
 Color StyleColor::UnresolvedColorMix::Resolve(
     const Color& current_color) const {
-  Color c1 = current_color;
-  if (color1_type_ ==
-      StyleColor::UnresolvedColorMix::UnderlyingColorType::kColor) {
-    c1 = color1_.color;
-  } else if (color1_type_ ==
-             StyleColor::UnresolvedColorMix::UnderlyingColorType::kColorMix) {
-    c1 = color1_.unresolved_color_mix->Resolve(current_color);
-  }
-
-  Color c2 = current_color;
-  if (color2_type_ ==
-      StyleColor::UnresolvedColorMix::UnderlyingColorType::kColor) {
-    c2 = color2_.color;
-  } else if (color2_type_ ==
-             StyleColor::UnresolvedColorMix::UnderlyingColorType::kColorMix) {
-    c2 = color2_.unresolved_color_mix->Resolve(current_color);
-  }
-
+  const Color c1 = ResolveColorOperand(color1_, color1_type_, current_color);
+  const Color c2 = ResolveColorOperand(color2_, color2_type_, current_color);
   return Color::FromColorMix(color_interpolation_space_,
                              hue_interpolation_method_, c1, c2, percentage_,
                              alpha_multiplier_);
