@@ -31,12 +31,14 @@ class IOSContentBrowserClient : public content::ContentBrowserClient {
       content::RenderFrameHost* rfh,
       const url::Origin& top_frame_origin,
       const url::Origin& accessing_origin,
-      std::string* out_debug_message = nullptr) override;
+      std::string* out_debug_message = nullptr,
+      bool* out_block_is_site_setting_specific = nullptr) override;
   bool IsSharedStorageSelectURLAllowed(
       content::BrowserContext* browser_context,
       const url::Origin& top_frame_origin,
       const url::Origin& accessing_origin,
-      std::string* out_debug_message = nullptr) override;
+      std::string* out_debug_message = nullptr,
+      bool* out_block_is_site_setting_specific = nullptr) override;
   content::GeneratedCodeCacheSettings GetGeneratedCodeCacheSettings(
       content::BrowserContext* context) override;
   std::unique_ptr<content::DevToolsManagerDelegate>
