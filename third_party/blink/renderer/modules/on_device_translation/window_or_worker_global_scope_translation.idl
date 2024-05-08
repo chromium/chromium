@@ -7,5 +7,5 @@
     RuntimeEnabled=TranslationAPI,
     Exposed=(Window,Worker)
 ] partial interface mixin WindowOrWorkerGlobalScope {
-    readonly attribute Translation translation;
+    [Replaceable] readonly attribute Translation translation;
 };

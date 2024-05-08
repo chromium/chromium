@@ -13123,6 +13123,7 @@ namespace console
     setter location
     setter locationbar
     setter menubar
+    setter model
     setter name
     setter navigation
     setter offscreenBuffering
@@ -13277,6 +13278,7 @@ namespace console
     setter status
     setter statusbar
     setter toolbar
+    setter translation
     setter visualViewport
 PASS successfullyParsed is true
 

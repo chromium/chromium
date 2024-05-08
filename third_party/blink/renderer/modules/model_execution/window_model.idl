@@ -7,5 +7,5 @@
     ImplementedAs=WindowModel,
     RuntimeEnabled=ModelExecutionAPI
 ] partial interface Window {
-    readonly attribute ModelManager model;
+    [Replaceable] readonly attribute ModelManager model;
 };
