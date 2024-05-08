@@ -2022,12 +2022,6 @@ const char kCrasProcessorWavDumpDescription[] =
     "Make CrasProcessor produce WAVE file dumps for the audio processing "
     "pipeline";
 
-const char kCrasSplitAlsaUsbInternalName[] =
-    "CRAS Split USB/Internal refactor control";
-const char kCrasSplitAlsaUsbInternalDescription[] =
-    "When enable, CRAS will create different iodev with USB and internal "
-    "device.";
-
 const char kPwaRestoreUiName[] = "Enable the PWA Restore UI";
 const char kPwaRestoreUiDescription[] =
     "When enabled, the PWA Restore UI can be shown";

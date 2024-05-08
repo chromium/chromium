@@ -1553,11 +1553,6 @@
     "expiry_milestone": 130
   },
   {
-    "name": "cras-split-alsa-usb-internal",
-    "owners": [ "whalechang@google.com", "chromeos-audio-sw@google.com" ],
-    "expiry_milestone": 125
-  },
-  {
     "name": "create-shortcut-ignores-manifest",
     "owners": [ "glenrob@chromium.org", "pwa-team@google.com" ],
     "expiry_milestone": 130
