@@ -19,7 +19,7 @@ import org.chromium.device.DeviceFeatureMap;
 
 public class CredManSupportProvider {
     private static final int GMSCORE_MIN_VERSION_CANARY_DEV = 240400000;
-    private static final int GMSCORE_MIN_VERSION_BETA_STABLE = 241000000;
+    private static final int GMSCORE_MIN_VERSION_BETA_STABLE = 241900000;
 
     private static @CredManSupport int sCredManSupport;
 
