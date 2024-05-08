@@ -161,7 +161,6 @@ void SkiaGLImageRepresentationDXGISwapChain::EndWriteAccess() {
   SkiaGLImageRepresentation::ClearCachedSurfaces();
 }
 
-#if BUILDFLAG(USE_DAWN)
 DawnRepresentationDXGISwapChain::DawnRepresentationDXGISwapChain(
     SharedImageManager* manager,
     SharedImageBacking* backing,
@@ -197,6 +196,5 @@ void DawnRepresentationDXGISwapChain::EndAccess() {
   auto* swapchain_backing = static_cast<DXGISwapChainImageBacking*>(backing());
   swapchain_backing->EndAccessDawn(device_, std::move(texture_));
 }
-#endif  // BUILDFLAG(USE_DAWN)
 
 }  // namespace gpu

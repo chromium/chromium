@@ -176,7 +176,6 @@ void DXGISharedHandleState::ReleaseKeyedMutex(
   }
 }
 
-#if BUILDFLAG(USE_DAWN)
 wgpu::SharedTextureMemory& DXGISharedHandleState::GetDawnSharedTextureMemory(
     WGPUDevice device) {
   return dawn_shared_texture_memory_cache_[device];
@@ -186,7 +185,6 @@ void DXGISharedHandleState::EraseDawnSharedTextureMemory(WGPUDevice device) {
   DCHECK(dawn_shared_texture_memory_cache_.at(device).IsDeviceLost());
   dawn_shared_texture_memory_cache_.erase(device);
 }
-#endif  // BUILDFLAG(USE_DAWN)
 
 DXGISharedHandleManager::DXGISharedHandleManager() = default;
 

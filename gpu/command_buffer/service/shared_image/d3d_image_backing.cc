@@ -8,6 +8,11 @@
 
 #include <functional>
 
+// clang-format off
+#include <dawn/native/D3D11Backend.h>
+#include <dawn/native/D3DBackend.h>
+// clang-format on
+
 #include "base/functional/bind.h"
 #include "base/functional/callback_helpers.h"
 #include "base/memory/ptr_util.h"
@@ -32,14 +37,9 @@
 #include "gpu/command_buffer/service/dawn_context_provider.h"
 #endif
 
-#if BUILDFLAG(USE_DAWN) && BUILDFLAG(DAWN_ENABLE_BACKEND_OPENGLES)
+#if BUILDFLAG(DAWN_ENABLE_BACKEND_OPENGLES)
 #include "gpu/command_buffer/service/shared_image/dawn_egl_image_representation.h"
 #endif
-
-#if BUILDFLAG(USE_DAWN)
-#include <dawn/native/D3D11Backend.h>
-#include <dawn/native/D3DBackend.h>
-#endif  // BUILDFLAG(USE_DAWN)
 
 #ifndef EGL_ANGLE_image_d3d11_texture
 #define EGL_D3D11_TEXTURE_ANGLE 0x3484
@@ -574,7 +574,6 @@ void D3DImageBacking::OnCopyToStagingTextureDone(
   std::move(readback_cb).Run(ReadbackFromStagingTexture(pixmaps));
 }
 
-#if BUILDFLAG(USE_DAWN)
 std::unique_ptr<DawnImageRepresentation> D3DImageBacking::ProduceDawn(
     SharedImageManager* manager,
     MemoryTypeTracker* tracker,
@@ -636,7 +635,6 @@ std::unique_ptr<DawnImageRepresentation> D3DImageBacking::ProduceDawn(
   return std::make_unique<DawnD3DImageRepresentation>(
       manager, this, tracker, device, backend_type, view_formats);
 }
-#endif  // BUILDFLAG(USE_DAWN)
 
 void D3DImageBacking::UpdateExternalFence(
     scoped_refptr<gfx::D3DSharedFence> external_fence) {
@@ -689,13 +687,9 @@ D3DImageBacking::GetPendingWaitFences(
     write_fences_.insert(texture_device_fence);
   }
 
-#if BUILDFLAG(USE_DAWN)
   const auto& dawn_signaled_fences =
       wait_dawn_device ? dawn_signaled_fences_map_[wait_dawn_device.Get()]
                        : D3DSharedFenceSet();
-#else
-  const auto& dawn_signaled_fences = D3DSharedFenceSet();
-#endif  // BUILDFLAG(USE_DAWN)
 
   // TODO(crbug.com/335003893): Investigate how to avoid passing any fences back
   // to Dawn that were previously signaled by Dawn. Currently there's no way to
@@ -718,7 +712,6 @@ D3DImageBacking::GetPendingWaitFences(
   return wait_fences;
 }
 
-#if BUILDFLAG(USE_DAWN)
 wgpu::Texture D3DImageBacking::BeginAccessDawn(
     const wgpu::Device& device,
     wgpu::BackendType backend_type,
@@ -856,7 +849,6 @@ wgpu::SharedTextureMemory& D3DImageBacking::GetDawnSharedTextureMemory(
                    device.Get())
              : dawn_shared_texture_memory_;
 }
-#endif
 
 bool D3DImageBacking::BeginAccessD3D11(
     Microsoft::WRL::ComPtr<ID3D11Device> d3d11_device,

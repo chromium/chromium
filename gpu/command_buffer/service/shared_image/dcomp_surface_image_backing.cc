@@ -428,7 +428,6 @@ void DCompSurfaceImageBacking::EndDrawGanesh() {
   EndDraw();
 }
 
-#if BUILDFLAG(USE_DAWN)
 wgpu::Texture DCompSurfaceImageBacking::BeginDrawDawn(
     const wgpu::Device& device,
     const wgpu::TextureUsage usage,
@@ -527,6 +526,5 @@ void DCompSurfaceImageBacking::EndDrawDawn(const wgpu::Device& device,
 
   EndDraw();
 }
-#endif  // BUILDFLAG(USE_DAWN)
 
 }  // namespace gpu

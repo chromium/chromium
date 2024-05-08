@@ -106,7 +106,6 @@ void DCompSurfaceSkiaGaneshImageRepresentation::EndReadAccess() {
   NOTREACHED();
 }
 
-#if BUILDFLAG(USE_DAWN)
 DCompSurfaceDawnImageRepresentation::DCompSurfaceDawnImageRepresentation(
     SharedImageManager* manager,
     SharedImageBacking* backing,
@@ -144,6 +143,5 @@ void DCompSurfaceDawnImageRepresentation::EndAccess() {
       static_cast<DCompSurfaceImageBacking*>(backing());
   dcomp_backing->EndDrawDawn(device_, std::move(texture_));
 }
-#endif  // BUILDFLAG(USE_DAWN)
 
 }  // namespace gpu

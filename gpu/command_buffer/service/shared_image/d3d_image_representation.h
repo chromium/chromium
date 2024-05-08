@@ -48,7 +48,6 @@ class GLTexturePassthroughD3DImageRepresentation
 };
 
 // Representation of a D3DImageBacking as a Dawn Texture
-#if BUILDFLAG(USE_DAWN)
 class DawnD3DImageRepresentation : public DawnImageRepresentation {
  public:
   DawnD3DImageRepresentation(SharedImageManager* manager,
@@ -68,7 +67,6 @@ class DawnD3DImageRepresentation : public DawnImageRepresentation {
   wgpu::Texture texture_;
   std::vector<wgpu::TextureFormat> view_formats_;
 };
-#endif  // BUILDFLAG(USE_DAWN)
 
 // Representation of a D3DImageBacking as an overlay.
 class OverlayD3DImageRepresentation : public OverlayImageRepresentation {

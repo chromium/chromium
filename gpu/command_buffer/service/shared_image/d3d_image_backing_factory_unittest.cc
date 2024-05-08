@@ -4,6 +4,10 @@
 
 #include "gpu/command_buffer/service/shared_image/d3d_image_backing_factory.h"
 
+#include <dawn/dawn_proc.h>
+#include <dawn/native/DawnNative.h>
+#include <dawn/webgpu_cpp.h>
+
 #include <memory>
 #include <utility>
 
@@ -48,12 +52,6 @@
 #include "ui/gl/gl_surface.h"
 #include "ui/gl/gl_utils.h"
 #include "ui/gl/init/gl_factory.h"
-
-#if BUILDFLAG(USE_DAWN)
-#include <dawn/dawn_proc.h>
-#include <dawn/native/DawnNative.h>
-#include <dawn/webgpu_cpp.h>
-#endif  // BUILDFLAG(USE_DAWN)
 
 #define SCOPED_GL_CLEANUP_VAR(api, func, var)            \
   base::ScopedClosureRunner delete_##var(base::BindOnce( \
@@ -564,7 +562,6 @@ class D3DImageBackingFactoryTest : public D3DImageBackingFactoryTestBase {
   void RunCreateSharedImageFromHandleTest(DXGI_FORMAT dxgi_format);
   void RunCreateFromSharedMemoryMultiplanarTest(bool use_async_copy);
 
-#if BUILDFLAG(USE_DAWN)
   static constexpr wgpu::FeatureName kRequiredFeatures[] = {
       // We need to request internal usage to be able to do operations with
       // internal methods that would need specific usages.
@@ -574,7 +571,6 @@ class D3DImageBackingFactoryTest : public D3DImageBackingFactoryTestBase {
       wgpu::FeatureName::SharedTextureMemoryDXGISharedHandle,
       wgpu::FeatureName::SharedFenceDXGISharedHandle,
   };
-#endif
 
   scoped_refptr<SharedContextState> context_state_;
 };
@@ -640,7 +636,6 @@ TEST_F(D3DImageBackingFactoryTest, GL_SkiaGL) {
   factory_ref.reset();
 }
 
-#if BUILDFLAG(USE_DAWN)
 // Test to check interaction between Dawn and skia GL representations.
 TEST_F(D3DImageBackingFactoryTest, Dawn_SkiaGL) {
   // Find a Dawn D3D12 adapter
@@ -1114,7 +1109,6 @@ TEST_F(D3DImageBackingFactoryTest, UnclearDawn_SkiaFails) {
           skia_representation->BeginScopedReadAccess(nullptr, nullptr);
   EXPECT_EQ(scoped_read_access, nullptr);
 }
-#endif  // BUILDFLAG(USE_DAWN)
 
 // Test that Skia trying to access uninitialized SharedImage will fail
 TEST_F(D3DImageBackingFactoryTest, SkiaAccessFirstFails) {
@@ -1306,7 +1300,6 @@ TEST_F(D3DImageBackingFactoryTest, CreateSharedImageFromHandleFormatTYPELESS) {
   RunCreateSharedImageFromHandleTest(DXGI_FORMAT_R8G8B8A8_TYPELESS);
 }
 
-#if BUILDFLAG(USE_DAWN)
 // Test to check external image stored in the backing can be reused
 TEST_F(D3DImageBackingFactoryTest, Dawn_ReuseExternalImage) {
   // Create a backing using mailbox.
@@ -1479,7 +1472,6 @@ TEST_F(D3DImageBackingFactoryTest, Dawn_HasLastRef) {
   // Make context current so that it can be destroyed.
   context_->MakeCurrent(surface_.get());
 }
-#endif  // BUILDFLAG(USE_DAWN)
 
 std::vector<std::unique_ptr<SharedImageRepresentationFactoryRef>>
 D3DImageBackingFactoryTest::CreateVideoImages(const gfx::Size& size,

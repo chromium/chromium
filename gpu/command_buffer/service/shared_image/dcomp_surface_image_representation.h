@@ -63,7 +63,6 @@ class DCompSurfaceSkiaGaneshImageRepresentation
   scoped_refptr<SharedContextState> context_state_;
 };
 
-#if BUILDFLAG(USE_DAWN)
 // See DCompSurfaceImageBacking::ProduceSkiaGraphite for more information.
 class DCompSurfaceDawnImageRepresentation : public DawnImageRepresentation {
  public:
@@ -83,7 +82,6 @@ class DCompSurfaceDawnImageRepresentation : public DawnImageRepresentation {
   const wgpu::Device device_;
   wgpu::Texture texture_;
 };
-#endif  // BUILDFLAG(USE_DAWN)
 
 }  // namespace gpu
 

@@ -10,14 +10,14 @@
 #include <d3d11.h>
 #include <wrl/client.h>
 
+// clang-format off
+#include <webgpu/webgpu_cpp.h>
+// clang-format on
+
 #include "base/containers/span.h"
 #include "third_party/abseil-cpp/absl/types/variant.h"
 #include "third_party/skia/include/core/SkColor.h"
 #include "ui/gl/buildflags.h"
-
-#if BUILDFLAG(USE_DAWN)
-#include <webgpu/webgpu_cpp.h>
-#endif
 
 namespace gpu {
 
@@ -25,7 +25,6 @@ bool ClearD3D11TextureToColor(
     const Microsoft::WRL::ComPtr<ID3D11Texture2D>& d3d11_texture,
     const SkColor4f& color);
 
-#if BUILDFLAG(USE_DAWN)
 wgpu::Texture CreateDawnSharedTexture(
     const wgpu::SharedTextureMemory& shared_texture_memory,
     wgpu::TextureUsage usage,
@@ -39,7 +38,6 @@ wgpu::SharedTextureMemory CreateDawnSharedTextureMemory(
 wgpu::SharedTextureMemory CreateDawnSharedTextureMemory(
     const wgpu::Device& device,
     Microsoft::WRL::ComPtr<ID3D11Texture2D> texture);
-#endif
 
 }  // namespace gpu
 

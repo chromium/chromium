@@ -4,6 +4,9 @@
 
 #include "gpu/command_buffer/service/shared_image/iosurface_image_backing_factory.h"
 
+#include <dawn/native/DawnNative.h>
+#include <dawn/webgpu_cpp.h>
+
 #include <memory>
 #include <utility>
 
@@ -40,11 +43,6 @@
 #if BUILDFLAG(SKIA_USE_DAWN)
 #include "gpu/command_buffer/service/dawn_context_provider.h"
 #endif
-
-#if BUILDFLAG(USE_DAWN)
-#include <dawn/native/DawnNative.h>
-#include <dawn/webgpu_cpp.h>
-#endif  // BUILDFLAG(USE_DAWN)
 
 using testing::AtLeast;
 
@@ -183,7 +181,6 @@ TEST_F(IOSurfaceImageBackingFactoryTest, GL_SkiaGL) {
   factory_ref.reset();
 }
 
-#if BUILDFLAG(USE_DAWN)
 class IOSurfaceImageBackingFactoryDawnTest
     : public IOSurfaceImageBackingFactoryTest,
       public testing::WithParamInterface<wgpu::BackendType> {
@@ -669,8 +666,6 @@ TEST_P(IOSurfaceImageBackingFactoryDawnTest, Dawn_SamplingVideoTexture) {
   RunDawnVideoSamplingTest(device, dawn_image, kYFillValue, kUFillValue,
                            kVFillValue);
 }
-
-#endif  // BUILDFLAG(USE_DAWN)
 
 // Test that Skia trying to access uninitialized SharedImage will fail
 TEST_F(IOSurfaceImageBackingFactoryTest, SkiaAccessFirstFails) {

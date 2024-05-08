@@ -8,6 +8,10 @@
 #include <d3d11.h>
 #include <wrl/client.h>
 
+// clang-format off
+#include <webgpu/webgpu_cpp.h>
+// clang-format on
+
 #include "base/containers/flat_map.h"
 #include "base/memory/ref_counted.h"
 #include "base/synchronization/lock.h"
@@ -17,12 +21,6 @@
 #include "gpu/gpu_gles2_export.h"
 #include "ui/gfx/gpu_memory_buffer.h"
 #include "ui/gl/buildflags.h"
-
-// Usage of BUILDFLAG(USE_DAWN) needs to be after the include for
-// ui/gl/buildflags.h
-#if BUILDFLAG(USE_DAWN)
-#include <webgpu/webgpu_cpp.h>
-#endif  // BUILDFLAG(USE_DAWN)
 
 namespace gpu {
 
@@ -111,7 +109,6 @@ class GPU_GLES2_EXPORT DXGISharedHandleState
       base::flat_map<Microsoft::WRL::ComPtr<ID3D11Device>, D3D11TextureState>;
   D3D11TextureStateMap d3d11_texture_state_map_;
 
-#if BUILDFLAG(USE_DAWN)
   // When Dawn uses keyed mutex for synchronization with the D3D11 backend, we
   // want a single instance of SharedTextureMemory (per device) for each unique
   // texture even if we have multiple duplicated handles (and shared images)
@@ -122,7 +119,6 @@ class GPU_GLES2_EXPORT DXGISharedHandleState
   using DawnSharedTextureMemoryCache =
       base::flat_map<WGPUDevice, wgpu::SharedTextureMemory>;
   DawnSharedTextureMemoryCache dawn_shared_texture_memory_cache_;
-#endif  // BUILDFLAG(USE_DAWN)
 
   // True if the texture has an underlying keyed mutex.
   bool has_keyed_mutex_ = false;

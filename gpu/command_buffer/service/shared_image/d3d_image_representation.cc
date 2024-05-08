@@ -64,7 +64,6 @@ void GLTexturePassthroughD3DImageRepresentation::EndAccess() {
   d3d_image_backing->EndAccessD3D11(d3d11_device_);
 }
 
-#if BUILDFLAG(USE_DAWN)
 DawnD3DImageRepresentation::DawnD3DImageRepresentation(
     SharedImageManager* manager,
     SharedImageBacking* backing,
@@ -105,7 +104,6 @@ void DawnD3DImageRepresentation::EndAccess() {
   texture_.Destroy();
   texture_ = nullptr;
 }
-#endif  // BUILDFLAG(USE_DAWN)
 
 OverlayD3DImageRepresentation::OverlayD3DImageRepresentation(
     SharedImageManager* manager,

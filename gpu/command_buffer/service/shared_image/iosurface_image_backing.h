@@ -129,7 +129,6 @@ class GPU_GLES2_EXPORT IOSurfaceImageBacking
 
   bool InitializePixels(base::span<const uint8_t> pixel_data);
 
-#if BUILDFLAG(USE_DAWN)
   wgpu::Texture GetCachedWGPUTexture(wgpu::Device device,
                                      wgpu::TextureUsage texture_usage);
   void MaybeCacheWGPUTexture(wgpu::Device device, wgpu::Texture texture);
@@ -139,7 +138,6 @@ class GPU_GLES2_EXPORT IOSurfaceImageBacking
 
   void AddWGPUDeviceWithPendingCommands(wgpu::Device device);
   void WaitForDawnCommandsToBeScheduled(const wgpu::Device& device_to_exclude);
-#endif
 
   void AddEGLDisplayWithPendingCommands(gl::GLDisplayEGL* display);
   void WaitForANGLECommandsToBeScheduled();
@@ -229,7 +227,6 @@ class GPU_GLES2_EXPORT IOSurfaceImageBacking
   const size_t io_surface_num_planes_;
   const gfx::GenericSharedMemoryId io_surface_id_;
 
-#if BUILDFLAG(USE_DAWN)
   using WGPUTextureCache = base::flat_map<wgpu::TextureUsage, wgpu::Texture>;
 
   struct SharedTextureData {
@@ -277,7 +274,6 @@ class GPU_GLES2_EXPORT IOSurfaceImageBacking
   // Returns a pointer to the WGPUTextureCache instance for this device, or
   // nullptr if there is no instance.
   WGPUTextureCache* GetWGPUTextureCache(wgpu::Device device);
-#endif
 
   const GLenum gl_target_;
   const bool framebuffer_attachment_angle_;

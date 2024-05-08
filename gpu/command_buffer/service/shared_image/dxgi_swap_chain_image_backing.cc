@@ -39,6 +39,7 @@
 #endif
 
 namespace gpu {
+
 namespace {
 const char* kDXGISwapChainImageBackingLabel = "DXGISwapChainImageBacking";
 }  // namespace
@@ -396,7 +397,6 @@ DXGISwapChainImageBacking::ProduceSkiaGraphite(
 #endif  // BUILDFLAG(SKIA_USE_DAWN)
 }
 
-#if BUILDFLAG(USE_DAWN)
 wgpu::Texture DXGISwapChainImageBacking::BeginAccessDawn(
     const wgpu::Device& device,
     wgpu::TextureUsage usage,
@@ -426,6 +426,5 @@ void DXGISwapChainImageBacking::EndAccessDawn(const wgpu::Device& device,
   shared_texture_memory_.EndAccess(texture.Get(), &end_state);
   texture.Destroy();
 }
-#endif  // BUILDFLAG(USE_DAWN)
 
 }  // namespace gpu
