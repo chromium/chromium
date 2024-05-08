@@ -28,6 +28,7 @@
 #include <assert.h>
 
 #include <algorithm>
+#include <filesystem>
 #include <limits>
 #include <memory>
 #include <optional>
@@ -121,14 +122,23 @@ class OutputSectionHelper {
   OutputSectionHelper(const OutputSectionHelper&) = delete;
   OutputSectionHelper& operator=(const OutputSectionHelper&) = delete;
 
-  void Add(llvm::StringRef output_line, llvm::StringRef tag = "") {
+  void Add(llvm::StringRef output_line,
+           llvm::StringRef tag = "",
+           llvm::StringRef loc = "") {
     // Look up |tags| associated with |output_line|.  As a side effect of the
     // lookup, |output_line| will be inserted if it wasn't already present in
     // the map.
     llvm::StringSet<>& tags = output_line_to_tags_[output_line];
 
-    if (!tag.empty())
+    if (!tag.empty()) {
       tags.insert(tag);
+    }
+
+    // Do the same for source locations.
+    llvm::StringSet<>& locs = output_line_to_locs_[output_line];
+    if (!loc.empty()) {
+      locs.insert(loc);
+    }
   }
 
   void Emit() {
@@ -139,6 +149,14 @@ class OutputSectionHelper {
     for (const llvm::StringRef& output_line :
          GetSortedKeys(output_line_to_tags_)) {
       llvm::outs() << output_line;
+
+      const llvm::StringSet<>& locs = output_line_to_locs_[output_line];
+      if (!locs.empty()) {
+        std::vector<llvm::StringRef> sorted_locs = GetSortedKeys(locs);
+        std::string locs_comment =
+            llvm::join(sorted_locs.begin(), sorted_locs.end(), ", ");
+        llvm::outs() << " @ " << locs_comment;
+      }
 
       const llvm::StringSet<>& tags = output_line_to_tags_[output_line];
       if (!tags.empty()) {
@@ -155,7 +173,7 @@ class OutputSectionHelper {
 
  private:
   template <typename TValue>
-  std::vector<llvm::StringRef> GetSortedKeys(
+  static std::vector<llvm::StringRef> GetSortedKeys(
       const llvm::StringMap<TValue>& map) {
     std::vector<llvm::StringRef> sorted(map.keys().begin(), map.keys().end());
     std::sort(sorted.begin(), sorted.end());
@@ -164,6 +182,7 @@ class OutputSectionHelper {
 
   std::string output_delimiter_;
   llvm::StringMap<llvm::StringSet<>> output_line_to_tags_;
+  llvm::StringMap<llvm::StringSet<>> output_line_to_locs_;
 };
 
 // Output format is documented in //docs/clang_tool_refactoring.md
@@ -183,7 +202,8 @@ class OutputHelper : public clang::tooling::SourceFileCallbacks {
     clang::tooling::Replacement replacement(
         source_manager, clang::CharSourceRange::getCharRange(replacement_range),
         replacement_text);
-    llvm::StringRef file_path = replacement.getFilePath();
+    std::string file_path =
+        std::filesystem::proximate(replacement.getFilePath().str());
     if (file_path.empty())
       return;
 
@@ -200,10 +220,23 @@ class OutputHelper : public clang::tooling::SourceFileCallbacks {
     }
   }
 
-  void AddFilteredField(const clang::FieldDecl& field_decl,
+  void AddFilteredField(const clang::SourceManager& source_manager,
+                        const clang::FieldDecl& field_decl,
                         llvm::StringRef filter_tag) {
     std::string qualified_name = field_decl.getQualifiedNameAsString();
-    field_decl_filter_helper_.Add(qualified_name, filter_tag);
+
+    clang::SourceLocation loc = field_decl.getBeginLoc();
+    // Calculate a relative path to the file not to make the output
+    // environment-specific.
+    std::string loc_str =
+        std::filesystem::proximate(source_manager.getFilename(loc).str());
+    if (!loc_str.empty()) {
+      loc_str +=
+          ":" + std::to_string(source_manager.getSpellingLineNumber(loc));
+      loc_str +=
+          ":" + std::to_string(source_manager.getSpellingColumnNumber(loc));
+    }
+    field_decl_filter_helper_.Add(qualified_name, filter_tag, loc_str);
   }
 
  private:
@@ -525,7 +558,8 @@ class FilteredExprWriter : public MatchFinder::MatchCallback {
         result.Nodes.getNodeAs<clang::FieldDecl>("affectedFieldDecl");
     assert(field_decl && "matcher should bind 'affectedFieldDecl'");
 
-    output_helper_->AddFilteredField(*field_decl, filter_tag_);
+    output_helper_->AddFilteredField(*result.SourceManager, *field_decl,
+                                     filter_tag_);
   }
 
  private:
