@@ -55,7 +55,6 @@ void AndroidAutofillManager::OnFormSubmittedImpl(
 void AndroidAutofillManager::OnTextFieldDidChangeImpl(
     const FormData& form,
     const FormFieldData& field,
-    const gfx::RectF& bounding_box,
     const TimeTicks timestamp) {
   auto* provider = GetAutofillProvider();
   if (!provider) {
@@ -66,7 +65,7 @@ void AndroidAutofillManager::OnTextFieldDidChangeImpl(
   // cleared by blink. Check `provider` cache.
   bool cached_is_autofilled = provider->GetCachedIsAutofilled(field);
 
-  provider->OnTextFieldDidChange(this, form, field, bounding_box, timestamp);
+  provider->OnTextFieldDidChange(this, form, field, timestamp);
 
   if (auto* logger = GetEventFormLogger(form, field)) {
     if (cached_is_autofilled) {
@@ -79,10 +78,9 @@ void AndroidAutofillManager::OnTextFieldDidChangeImpl(
 
 void AndroidAutofillManager::OnTextFieldDidScrollImpl(
     const FormData& form,
-    const FormFieldData& field,
-    const gfx::RectF& bounding_box) {
+    const FormFieldData& field) {
   if (auto* provider = GetAutofillProvider())
-    provider->OnTextFieldDidScroll(this, form, field, bounding_box);
+    provider->OnTextFieldDidScroll(this, form, field);
 }
 
 void AndroidAutofillManager::OnAskForValuesToFillImpl(
@@ -103,18 +101,16 @@ void AndroidAutofillManager::OnAskForValuesToFillImpl(
 
 void AndroidAutofillManager::OnFocusOnFormFieldImpl(
     const FormData& form,
-    const FormFieldData& field,
-    const gfx::RectF& bounding_box) {
+    const FormFieldData& field) {
   if (auto* provider = GetAutofillProvider())
-    provider->OnFocusOnFormField(this, form, field, bounding_box);
+    provider->OnFocusOnFormField(this, form, field);
 }
 
 void AndroidAutofillManager::OnSelectControlDidChangeImpl(
     const FormData& form,
-    const FormFieldData& field,
-    const gfx::RectF& bounding_box) {
+    const FormFieldData& field) {
   if (auto* provider = GetAutofillProvider())
-    provider->OnSelectControlDidChange(this, form, field, bounding_box);
+    provider->OnSelectControlDidChange(this, form, field);
 }
 
 bool AndroidAutofillManager::ShouldParseForms() {

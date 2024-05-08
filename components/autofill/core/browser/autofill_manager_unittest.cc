@@ -334,14 +334,14 @@ TEST_F(AutofillManagerTest, ObserverReceiveCalls) {
   // The form was just changed, which causes a reparse. The reparse is
   // asynchronous, so OnAfterTextFieldDidChange() is asynchronous, too.
   EXPECT_CALL(observer, OnBeforeTextFieldDidChange(m, f, ff));
-  manager().OnTextFieldDidChange(form, field, {}, {});
+  manager().OnTextFieldDidChange(form, field, {});
   EXPECT_CALL(observer, OnAfterTextFieldDidChange(m, f, ff, std::u16string()));
   EXPECT_CALL(observer, OnFieldTypesDetermined(m, f, heuristics));
   task_environment_.RunUntilIdle();
 
   EXPECT_CALL(observer, OnBeforeTextFieldDidScroll(m, f, ff));
   EXPECT_CALL(observer, OnAfterTextFieldDidScroll(m, f, ff));
-  manager().OnTextFieldDidScroll(form, field, {});
+  manager().OnTextFieldDidScroll(form, field);
 
   EXPECT_CALL(observer, OnBeforeDidFillAutofillFormData(m, f));
   EXPECT_CALL(observer, OnAfterDidFillAutofillFormData(m, f));
@@ -353,7 +353,7 @@ TEST_F(AutofillManagerTest, ObserverReceiveCalls) {
 
   EXPECT_CALL(observer, OnBeforeFocusOnFormField(m, f, ff, Ref(form)));
   EXPECT_CALL(observer, OnAfterFocusOnFormField(m, f, ff));
-  manager().OnFocusOnFormField(form, field, {});
+  manager().OnFocusOnFormField(form, field);
 
   EXPECT_CALL(observer, OnBeforeJavaScriptChangedAutofilledValue(m, f, ff));
   EXPECT_CALL(observer, OnAfterJavaScriptChangedAutofilledValue(m, f, ff));

@@ -189,12 +189,10 @@ void AutofillDriverRouter::TextFieldDidChange(
     AutofillDriver* source,
     FormData form,
     const FormFieldData& field,
-    const gfx::RectF& bounding_box,
     base::TimeTicks timestamp,
     void (*callback)(AutofillDriver* target,
                      const FormData& form,
                      const FormFieldData& field,
-                     const gfx::RectF& bounding_box,
                      base::TimeTicks timestamp)) {
   FormGlobalId form_id = form.global_id();
   form_forest_.UpdateTreeOfRendererForm(std::move(form), source);
@@ -204,18 +202,16 @@ void AutofillDriverRouter::TextFieldDidChange(
   const FormData& browser_form = form_forest_.GetBrowserForm(form_id);
   auto* target = DriverOfFrame(browser_form.host_frame);
   CHECK(target);
-  callback(target, browser_form, field, bounding_box, timestamp);
+  callback(target, browser_form, field, timestamp);
 }
 
 void AutofillDriverRouter::TextFieldDidScroll(
     AutofillDriver* source,
     FormData form,
     const FormFieldData& field,
-    const gfx::RectF& bounding_box,
     void (*callback)(AutofillDriver* target,
                      const FormData& form,
-                     const FormFieldData& field,
-                     const gfx::RectF& bounding_box)) {
+                     const FormFieldData& field)) {
   FormGlobalId form_id = form.global_id();
   form_forest_.UpdateTreeOfRendererForm(std::move(form), source);
 
@@ -224,18 +220,16 @@ void AutofillDriverRouter::TextFieldDidScroll(
   const FormData& browser_form = form_forest_.GetBrowserForm(form_id);
   auto* target = DriverOfFrame(browser_form.host_frame);
   CHECK(target);
-  callback(target, browser_form, field, bounding_box);
+  callback(target, browser_form, field);
 }
 
 void AutofillDriverRouter::SelectControlDidChange(
     AutofillDriver* source,
     FormData form,
     const FormFieldData& field,
-    const gfx::RectF& bounding_box,
     void (*callback)(AutofillDriver* target,
                      const FormData& form,
-                     const FormFieldData& field,
-                     const gfx::RectF& bounding_box)) {
+                     const FormFieldData& field)) {
   FormGlobalId form_id = form.global_id();
   form_forest_.UpdateTreeOfRendererForm(std::move(form), source);
 
@@ -244,7 +238,7 @@ void AutofillDriverRouter::SelectControlDidChange(
   const FormData& browser_form = form_forest_.GetBrowserForm(form_id);
   auto* target = DriverOfFrame(browser_form.host_frame);
   CHECK(target);
-  callback(target, browser_form, field, bounding_box);
+  callback(target, browser_form, field);
 }
 
 void AutofillDriverRouter::AskForValuesToFill(
@@ -307,11 +301,9 @@ void AutofillDriverRouter::FocusOnFormField(
     AutofillDriver* source,
     FormData form,
     const FormFieldData& field,
-    const gfx::RectF& bounding_box,
     void (*callback)(AutofillDriver* target,
                      const FormData& form,
-                     const FormFieldData& field,
-                     const gfx::RectF& bounding_box),
+                     const FormFieldData& field),
     void (*focus_no_longer_on_form)(AutofillDriver* target)) {
   FormGlobalId form_id = form.global_id();
   form_forest_.UpdateTreeOfRendererForm(std::move(form), source);
@@ -332,7 +324,7 @@ void AutofillDriverRouter::FocusOnFormField(
   const FormData& browser_form = form_forest_.GetBrowserForm(form_id);
   auto* target = DriverOfFrame(browser_form.host_frame);
   CHECK(target);
-  callback(target, browser_form, field, bounding_box);
+  callback(target, browser_form, field);
 }
 
 void AutofillDriverRouter::DidFillAutofillFormData(

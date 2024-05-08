@@ -52,11 +52,10 @@ void TestBrowserAutofillManager::OnFormsSeen(
 void TestBrowserAutofillManager::OnTextFieldDidChange(
     const FormData& form,
     const FormFieldData& field,
-    const gfx::RectF& bounding_box,
     const base::TimeTicks timestamp) {
   TestAutofillManagerWaiter waiter(*this,
                                    {AutofillManagerEvent::kTextFieldDidChange});
-  AutofillManager::OnTextFieldDidChange(form, field, bounding_box, timestamp);
+  AutofillManager::OnTextFieldDidChange(form, field, timestamp);
   ASSERT_TRUE(waiter.Wait());
 }
 

@@ -813,8 +813,8 @@ class AutofillTestPrerendering : public InProcessBrowserTest {
       // calls while prerendering.
       if (driver->render_frame_host()->GetLifecycleState() ==
           content::RenderFrameHost::LifecycleState::kPrerendering) {
-        EXPECT_CALL(*this, OnFormsSeen(_, _)).Times(0);
-        EXPECT_CALL(*this, OnFocusOnFormFieldImpl(_, _, _)).Times(0);
+        EXPECT_CALL(*this, OnFormsSeen).Times(0);
+        EXPECT_CALL(*this, OnFocusOnFormFieldImpl).Times(0);
       }
     }
     MOCK_METHOD(void,
@@ -824,9 +824,7 @@ class AutofillTestPrerendering : public InProcessBrowserTest {
                 (override));
     MOCK_METHOD(void,
                 OnFocusOnFormFieldImpl,
-                (const FormData&,
-                 const FormFieldData&,
-                 const gfx::RectF& bounding_box),
+                (const FormData&, const FormFieldData&),
                 (override));
   };
 

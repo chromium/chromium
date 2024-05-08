@@ -87,16 +87,13 @@ class FakeContentAutofillDriver : public mojom::AutofillDriver {
 
   void TextFieldDidChange(const FormData& form,
                           const FormFieldData& field,
-                          const gfx::RectF& bounding_box,
                           base::TimeTicks timestamp) override {}
 
   void TextFieldDidScroll(const FormData& form,
-                          const FormFieldData& field,
-                          const gfx::RectF& bounding_box) override {}
+                          const FormFieldData& field) override {}
 
   void SelectControlDidChange(const FormData& form,
-                              const FormFieldData& field,
-                              const gfx::RectF& bounding_box) override {
+                              const FormFieldData& field) override {
     select_control_changed_ = std::make_unique<FormFieldData>(field);
   }
 
@@ -118,8 +115,7 @@ class FakeContentAutofillDriver : public mojom::AutofillDriver {
   }
 
   void FocusOnFormField(const FormData& form,
-                        const FormFieldData& field,
-                        const gfx::RectF& bounding_box) override {}
+                        const FormFieldData& field) override {}
 
   void DidFillAutofillFormData(const FormData& form,
                                base::TimeTicks timestamp) override {}

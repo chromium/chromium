@@ -442,7 +442,6 @@ void ContentAutofillDriver::FormSubmitted(
 
 void ContentAutofillDriver::TextFieldDidChange(const FormData& raw_form,
                                                const FormFieldData& raw_field,
-                                               const gfx::RectF& bounding_box,
                                                base::TimeTicks timestamp) {
   if (!bad_message::CheckFrameNotPrerendering(render_frame_host())) {
     return;
@@ -451,19 +450,16 @@ void ContentAutofillDriver::TextFieldDidChange(const FormData& raw_form,
   FormFieldData field = raw_field;
   SetFrameAndFormMetaData(form, field);
   router().TextFieldDidChange(
-      this, std::move(form), field,
-      TransformBoundingBoxToViewportCoordinates(bounding_box), timestamp,
+      this, std::move(form), field, timestamp,
       [](autofill::AutofillDriver* target, const FormData& form,
-         const FormFieldData& field, const gfx::RectF& bounding_box,
-         base::TimeTicks timestamp) {
-        target->GetAutofillManager().OnTextFieldDidChange(
-            WithNewVersion(form), field, bounding_box, timestamp);
+         const FormFieldData& field, base::TimeTicks timestamp) {
+        target->GetAutofillManager().OnTextFieldDidChange(WithNewVersion(form),
+                                                          field, timestamp);
       });
 }
 
 void ContentAutofillDriver::TextFieldDidScroll(const FormData& raw_form,
-                                               const FormFieldData& raw_field,
-                                               const gfx::RectF& bounding_box) {
+                                               const FormFieldData& raw_field) {
   if (!bad_message::CheckFrameNotPrerendering(render_frame_host())) {
     return;
   }
@@ -472,18 +468,16 @@ void ContentAutofillDriver::TextFieldDidScroll(const FormData& raw_form,
   SetFrameAndFormMetaData(form, field);
   router().TextFieldDidScroll(
       this, std::move(form), field,
-      TransformBoundingBoxToViewportCoordinates(bounding_box),
       [](autofill::AutofillDriver* target, const FormData& form,
-         const FormFieldData& field, const gfx::RectF& bounding_box) {
+         const FormFieldData& field) {
         target->GetAutofillManager().OnTextFieldDidScroll(WithNewVersion(form),
-                                                          field, bounding_box);
+                                                          field);
       });
 }
 
 void ContentAutofillDriver::SelectControlDidChange(
     const FormData& raw_form,
-    const FormFieldData& raw_field,
-    const gfx::RectF& bounding_box) {
+    const FormFieldData& raw_field) {
   if (!bad_message::CheckFrameNotPrerendering(render_frame_host())) {
     return;
   }
@@ -492,11 +486,10 @@ void ContentAutofillDriver::SelectControlDidChange(
   SetFrameAndFormMetaData(form, field);
   router().SelectControlDidChange(
       this, std::move(form), field,
-      TransformBoundingBoxToViewportCoordinates(bounding_box),
       [](autofill::AutofillDriver* target, const FormData& form,
-         const FormFieldData& field, const gfx::RectF& bounding_box) {
+         const FormFieldData& field) {
         target->GetAutofillManager().OnSelectControlDidChange(
-            WithNewVersion(form), field, bounding_box);
+            WithNewVersion(form), field);
       });
 }
 
@@ -543,8 +536,7 @@ void ContentAutofillDriver::FocusNoLongerOnForm(bool had_interacted_form) {
 }
 
 void ContentAutofillDriver::FocusOnFormField(const FormData& raw_form,
-                                             const FormFieldData& raw_field,
-                                             const gfx::RectF& bounding_box) {
+                                             const FormFieldData& raw_field) {
   if (!bad_message::CheckFrameNotPrerendering(render_frame_host())) {
     return;
   }
@@ -553,11 +545,10 @@ void ContentAutofillDriver::FocusOnFormField(const FormData& raw_form,
   SetFrameAndFormMetaData(form, field);
   router().FocusOnFormField(
       this, std::move(form), field,
-      TransformBoundingBoxToViewportCoordinates(bounding_box),
       [](autofill::AutofillDriver* target, const FormData& form,
-         const FormFieldData& field, const gfx::RectF& bounding_box) {
+         const FormFieldData& field) {
         target->GetAutofillManager().OnFocusOnFormField(WithNewVersion(form),
-                                                        field, bounding_box);
+                                                        field);
       },
       [](autofill::AutofillDriver* target) {
         target->GetAutofillManager().OnFocusNoLongerOnForm(true);

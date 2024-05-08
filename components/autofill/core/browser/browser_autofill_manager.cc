@@ -1030,7 +1030,6 @@ void BrowserAutofillManager::ProcessPendingFormForUpload() {
 void BrowserAutofillManager::OnTextFieldDidChangeImpl(
     const FormData& form,
     const FormFieldData& field,
-    const gfx::RectF& bounding_box,
     const TimeTicks timestamp) {
   FormStructure* form_structure = nullptr;
   AutofillField* autofill_field = nullptr;
@@ -1484,8 +1483,7 @@ void BrowserAutofillManager::OnFocusNoLongerOnFormImpl(
 
 void BrowserAutofillManager::OnFocusOnFormFieldImpl(
     const FormData& form,
-    const FormFieldData& field,
-    const gfx::RectF& bounding_box) {
+    const FormFieldData& field) {
   if (pending_form_data_ &&
       pending_form_data_->global_id() != form.global_id()) {
     // A new form has received the focus, so we may have votes to upload for the
@@ -1526,8 +1524,7 @@ void BrowserAutofillManager::OnFocusOnFormFieldImpl(
 
 void BrowserAutofillManager::OnSelectControlDidChangeImpl(
     const FormData& form,
-    const FormFieldData& field,
-    const gfx::RectF& bounding_box) {
+    const FormFieldData& field) {
   // TODO(crbug.com/40564270): Handle select control change.
 }
 

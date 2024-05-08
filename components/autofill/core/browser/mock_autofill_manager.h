@@ -14,10 +14,6 @@
 #include "components/autofill/core/common/unique_ids.h"
 #include "testing/gmock/include/gmock/gmock.h"
 
-namespace gfx {
-class RectF;
-}  // namespace gfx
-
 namespace autofill {
 
 struct FormData;
@@ -66,14 +62,11 @@ class MockAutofillManager : public AutofillManager {
               OnTextFieldDidChangeImpl,
               (const FormData& form,
                const FormFieldData& field,
-               const gfx::RectF& bounding_box,
                const base::TimeTicks timestamp),
               (override));
   MOCK_METHOD(void,
               OnTextFieldDidScrollImpl,
-              (const FormData& form,
-               const FormFieldData& field,
-               const gfx::RectF& bounding_box),
+              (const FormData& form, const FormFieldData& field),
               (override));
   MOCK_METHOD(void,
               OnAskForValuesToFillImpl,
@@ -83,15 +76,11 @@ class MockAutofillManager : public AutofillManager {
               (override));
   MOCK_METHOD(void,
               OnFocusOnFormFieldImpl,
-              (const FormData& form,
-               const FormFieldData& field,
-               const gfx::RectF& bounding_box),
+              (const FormData& form, const FormFieldData& field),
               (override));
   MOCK_METHOD(void,
               OnSelectControlDidChangeImpl,
-              (const FormData& form,
-               const FormFieldData& field,
-               const gfx::RectF& bounding_box),
+              (const FormData& form, const FormFieldData& field),
               (override));
   MOCK_METHOD(bool, ShouldParseForms, (), (override));
   MOCK_METHOD(void, OnBeforeProcessParsedForms, (), (override));

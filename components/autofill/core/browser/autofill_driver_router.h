@@ -171,29 +171,23 @@ class AutofillDriverRouter {
   void TextFieldDidChange(AutofillDriver* source,
                           FormData form,
                           const FormFieldData& field,
-                          const gfx::RectF& bounding_box,
                           base::TimeTicks timestamp,
                           void (*callback)(AutofillDriver* target,
                                            const FormData& form,
                                            const FormFieldData& field,
-                                           const gfx::RectF& bounding_box,
                                            base::TimeTicks timestamp));
   void TextFieldDidScroll(AutofillDriver* source,
                           FormData form,
                           const FormFieldData& field,
-                          const gfx::RectF& bounding_box,
                           void (*callback)(AutofillDriver* target,
                                            const FormData& form,
-                                           const FormFieldData& field,
-                                           const gfx::RectF& bounding_box));
+                                           const FormFieldData& field));
   void SelectControlDidChange(AutofillDriver* source,
                               FormData form,
                               const FormFieldData& field,
-                              const gfx::RectF& bounding_box,
                               void (*callback)(AutofillDriver* target,
                                                const FormData& form,
-                                               const FormFieldData& field,
-                                               const gfx::RectF& bounding_box));
+                                               const FormFieldData& field));
   void AskForValuesToFill(
       AutofillDriver* source,
       FormData form,
@@ -216,11 +210,9 @@ class AutofillDriverRouter {
       AutofillDriver* source,
       FormData form,
       const FormFieldData& field,
-      const gfx::RectF& bounding_box,
       void (*callback)(AutofillDriver* target,
                        const FormData& form,
-                       const FormFieldData& field,
-                       const gfx::RectF& bounding_box),
+                       const FormFieldData& field),
       void (*focus_no_longer_on_form)(AutofillDriver* target));
   // This event is broadcast to all drivers.
   void FocusNoLongerOnForm(AutofillDriver* source,

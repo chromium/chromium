@@ -37,10 +37,6 @@
 #include "components/autofill/core/common/unique_ids.h"
 #include "components/translate/core/browser/translate_driver.h"
 
-namespace gfx {
-class RectF;
-}  // namespace gfx
-
 namespace autofill {
 
 class AutofillField;
@@ -219,20 +215,16 @@ class AutofillManager
   // Virtual for testing.
   virtual void OnTextFieldDidChange(const FormData& form,
                                     const FormFieldData& field,
-                                    const gfx::RectF& bounding_box,
                                     const base::TimeTicks timestamp);
 
   // Invoked when the textfield is scrolled.
   // |bounding_box| are viewport coordinates.
-  void OnTextFieldDidScroll(const FormData& form,
-                            const FormFieldData& field,
-                            const gfx::RectF& bounding_box);
+  void OnTextFieldDidScroll(const FormData& form, const FormFieldData& field);
 
   // Invoked when the value of select is changed.
   // |bounding_box| are viewport coordinates.
   void OnSelectControlDidChange(const FormData& form,
-                                const FormFieldData& field,
-                                const gfx::RectF& bounding_box);
+                                const FormFieldData& field);
 
   // Invoked when the |form| needs to be autofilled, the |bounding_box| is
   // a window relative value of |field|.
@@ -245,9 +237,7 @@ class AutofillManager
 
   // Invoked when |form|'s |field| has focus.
   // |bounding_box| are viewport coordinates.
-  void OnFocusOnFormField(const FormData& form,
-                          const FormFieldData& field,
-                          const gfx::RectF& bounding_box);
+  void OnFocusOnFormField(const FormData& form, const FormFieldData& field);
 
   // Invoked when |form| has been submitted.
   // Processes the submitted |form|, saving any new Autofill data to the user's
@@ -384,12 +374,10 @@ class AutofillManager
 
   virtual void OnTextFieldDidChangeImpl(const FormData& form,
                                         const FormFieldData& field,
-                                        const gfx::RectF& bounding_box,
                                         const base::TimeTicks timestamp) = 0;
 
   virtual void OnTextFieldDidScrollImpl(const FormData& form,
-                                        const FormFieldData& field,
-                                        const gfx::RectF& bounding_box) = 0;
+                                        const FormFieldData& field) = 0;
 
   virtual void OnAskForValuesToFillImpl(
       const FormData& form,
@@ -397,12 +385,10 @@ class AutofillManager
       AutofillSuggestionTriggerSource trigger_source) = 0;
 
   virtual void OnFocusOnFormFieldImpl(const FormData& form,
-                                      const FormFieldData& field,
-                                      const gfx::RectF& bounding_box) = 0;
+                                      const FormFieldData& field) = 0;
 
   virtual void OnSelectControlDidChangeImpl(const FormData& form,
-                                            const FormFieldData& field,
-                                            const gfx::RectF& bounding_box) = 0;
+                                            const FormFieldData& field) = 0;
 
   virtual void OnDidFillAutofillFormDataImpl(
       const FormData& form,

@@ -312,7 +312,6 @@ void AutofillDriverIOS::TextFieldDidChange(const FormData& form,
   // TODO(crbug.com/40266699): Route this using AutofillDriverRouter.
   GetAutofillManager().OnTextFieldDidChange(
       form, field,
-      gfx::RectF(),  // Bounds aren't needed on iOS since we don't use popups.
       timestamp);
 }
 

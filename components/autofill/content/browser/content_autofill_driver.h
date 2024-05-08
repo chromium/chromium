@@ -251,8 +251,7 @@ class ContentAutofillDriver : public AutofillDriver,
   void DidFillAutofillFormData(const FormData& form,
                                base::TimeTicks timestamp) override;
   void FocusOnFormField(const FormData& form,
-                        const FormFieldData& field,
-                        const gfx::RectF& bounding_box) override;
+                        const FormFieldData& field) override;
   void FormsSeen(const std::vector<FormData>& updated_forms,
                  const std::vector<FormRendererId>& removed_forms) override;
   void FormSubmitted(const FormData& form,
@@ -263,16 +262,13 @@ class ContentAutofillDriver : public AutofillDriver,
                                         const std::u16string& old_value,
                                         bool formatting_only) override;
   void SelectControlDidChange(const FormData& form,
-                              const FormFieldData& field,
-                              const gfx::RectF& bounding_box) override;
+                              const FormFieldData& field) override;
   void SelectOrSelectListFieldOptionsDidChange(const FormData& form) override;
   void TextFieldDidChange(const FormData& form,
                           const FormFieldData& field,
-                          const gfx::RectF& bounding_box,
                           base::TimeTicks timestamp) override;
   void TextFieldDidScroll(const FormData& form,
-                          const FormFieldData& field,
-                          const gfx::RectF& bounding_box) override;
+                          const FormFieldData& field) override;
 
   // Sets parameters of |form| and |field| that can be extracted from
   // |render_frame_host_|. |field| is treated as if it is a field of |form|.

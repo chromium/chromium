@@ -18,10 +18,6 @@ namespace content {
 class WebContents;
 }  // namespace content
 
-namespace gfx {
-class RectF;
-}  // namespace gfx
-
 namespace autofill {
 
 class AndroidAutofillManager;
@@ -45,18 +41,15 @@ class AutofillProvider : public content::WebContentsUserData<AutofillProvider> {
   virtual void OnTextFieldDidChange(AndroidAutofillManager* manager,
                                     const FormData& form,
                                     const FormFieldData& field,
-                                    const gfx::RectF& bounding_box,
                                     const base::TimeTicks timestamp) = 0;
 
   virtual void OnTextFieldDidScroll(AndroidAutofillManager* manager,
                                     const FormData& form,
-                                    const FormFieldData& field,
-                                    const gfx::RectF& bounding_box) = 0;
+                                    const FormFieldData& field) = 0;
 
   virtual void OnSelectControlDidChange(AndroidAutofillManager* manager,
                                         const FormData& form,
-                                        const FormFieldData& field,
-                                        const gfx::RectF& bounding_box) = 0;
+                                        const FormFieldData& field) = 0;
 
   virtual void OnFormSubmitted(AndroidAutofillManager* manager,
                                const FormData& form,
@@ -68,8 +61,7 @@ class AutofillProvider : public content::WebContentsUserData<AutofillProvider> {
 
   virtual void OnFocusOnFormField(AndroidAutofillManager* manager,
                                   const FormData& form,
-                                  const FormFieldData& field,
-                                  const gfx::RectF& bounding_box) = 0;
+                                  const FormFieldData& field) = 0;
 
   virtual void OnDidFillAutofillFormData(AndroidAutofillManager* manager,
                                          const FormData& form,

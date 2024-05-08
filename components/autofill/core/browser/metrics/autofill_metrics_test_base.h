@@ -127,8 +127,7 @@ class AutofillMetricsBaseTest {
     ASSERT_NE(field.value(), new_value);
     field.set_is_autofilled(false);
     field.set_value(new_value);
-    autofill_manager().OnTextFieldDidChange(form, field, gfx::RectF(),
-                                            timestamp);
+    autofill_manager().OnTextFieldDidChange(form, field, timestamp);
   }
 
   // TODO(crbug.com/40240189): Remove this method once the metrics are fixed.
@@ -137,8 +136,7 @@ class AutofillMetricsBaseTest {
       FormFieldData& field,
       base::TimeTicks timestamp = {}) {
     field.set_is_autofilled(false);
-    autofill_manager().OnTextFieldDidChange(form, field, gfx::RectF(),
-                                            timestamp);
+    autofill_manager().OnTextFieldDidChange(form, field, timestamp);
   }
 
   void FillAutofillFormData(const FormData& form,

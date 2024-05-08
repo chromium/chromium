@@ -1215,9 +1215,8 @@ TEST_F(AutofillAgentTestFocus, FireFocusEventsWhenCyclingThroughFields) {
     for (std::string_view id : kPermutationOfFields) {
       EXPECT_CALL(checkpoint, Call(id));
       EXPECT_CALL(autofill_driver(), FocusNoLongerOnForm).Times(0);
-      EXPECT_CALL(
-          autofill_driver(),
-          FocusOnFormField(_, HasFieldId(GetFieldRendererIdById(id)), _));
+      EXPECT_CALL(autofill_driver(),
+                  FocusOnFormField(_, HasFieldId(GetFieldRendererIdById(id))));
     }
   }
   for (std::string_view id : kPermutationOfFields) {
@@ -1240,9 +1239,8 @@ TEST_F(AutofillAgentTestFocus,
       EXPECT_CALL(autofill_driver(), FocusOnFormField).Times(0);
       EXPECT_CALL(checkpoint, Call(id));
       EXPECT_CALL(autofill_driver(), FocusNoLongerOnForm).Times(0);
-      EXPECT_CALL(
-          autofill_driver(),
-          FocusOnFormField(_, HasFieldId(GetFieldRendererIdById(id)), _));
+      EXPECT_CALL(autofill_driver(),
+                  FocusOnFormField(_, HasFieldId(GetFieldRendererIdById(id))));
     }
   }
   for (std::string_view id : kPermutationOfFields) {

@@ -163,7 +163,7 @@ class TestAndroidAutofillManager : public AndroidAutofillManager {
 
   void SimulateOnFocusOnFormField(const FormData& form,
                                   const FormFieldData& field) {
-    OnFocusOnFormFieldImpl(form, field, gfx::RectF());
+    OnFocusOnFormFieldImpl(form, field);
   }
 
   void SimulateOnFormSubmitted(const FormData& form,
@@ -174,12 +174,12 @@ class TestAndroidAutofillManager : public AndroidAutofillManager {
 
   void SimulateOnTextFieldDidChange(const FormData& form,
                                     const FormFieldData& field) {
-    OnTextFieldDidChangeImpl(form, field, gfx::RectF(), base::TimeTicks::Now());
+    OnTextFieldDidChangeImpl(form, field, base::TimeTicks::Now());
   }
 
   void SimulateOnTextFieldDidScroll(const FormData& form,
                                     const FormFieldData& field) {
-    OnTextFieldDidScrollImpl(form, field, gfx::RectF());
+    OnTextFieldDidScrollImpl(form, field);
   }
 };
 

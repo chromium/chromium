@@ -100,16 +100,13 @@ class AndroidAutofillProvider : public AutofillProvider,
   void OnTextFieldDidChange(AndroidAutofillManager* manager,
                             const FormData& form,
                             const FormFieldData& field,
-                            const gfx::RectF& bounding_box,
                             const base::TimeTicks timestamp) override;
   void OnTextFieldDidScroll(AndroidAutofillManager* manager,
                             const FormData& form,
-                            const FormFieldData& field,
-                            const gfx::RectF& bounding_box) override;
+                            const FormFieldData& field) override;
   void OnSelectControlDidChange(AndroidAutofillManager* manager,
                                 const FormData& form,
-                                const FormFieldData& field,
-                                const gfx::RectF& bounding_box) override;
+                                const FormFieldData& field) override;
   void OnFormSubmitted(AndroidAutofillManager* manager,
                        const FormData& form,
                        bool known_success,
@@ -118,8 +115,7 @@ class AndroidAutofillProvider : public AutofillProvider,
                              bool had_interacted_form) override;
   void OnFocusOnFormField(AndroidAutofillManager* manager,
                           const FormData& form,
-                          const FormFieldData& field,
-                          const gfx::RectF& bounding_box) override;
+                          const FormFieldData& field) override;
   void OnDidFillAutofillFormData(AndroidAutofillManager* manager,
                                  const FormData& form,
                                  base::TimeTicks timestamp) override;
@@ -172,8 +168,7 @@ class AndroidAutofillProvider : public AutofillProvider,
   // session for this `form`.
   void MaybeFireFormFieldDidChange(AndroidAutofillManager* manager,
                                    const FormData& form,
-                                   const FormFieldData& field,
-                                   const gfx::RectF& bounding_box);
+                                   const FormFieldData& field);
 
   // Propagates visibility changes for fields in `form` and notifies the bridge
   // in case any of the fields had a visibility change.
@@ -197,8 +192,7 @@ class AndroidAutofillProvider : public AutofillProvider,
 
   void StartNewSession(AndroidAutofillManager* manager,
                        const FormData& form,
-                       const FormFieldData& field,
-                       const gfx::RectF& bounding_box);
+                       const FormFieldData& field);
 
   void Reset();
 

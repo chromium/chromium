@@ -191,7 +191,7 @@ void AndroidAutofillProvider::OnAskForValuesToFill(
   // ignored if the form is same.
   if (!IsLinkedForm(
           form, /*similarity_metric=*/kSimilarityCheckAskForValuesToFillUma)) {
-    StartNewSession(manager, form, field, field.bounds());
+    StartNewSession(manager, form, field);
   } else {
     last_focused_field_id_ = field.global_id();
   }
@@ -229,8 +229,7 @@ bool AndroidAutofillProvider::IsFormSimilarToCachedForm(
 
 void AndroidAutofillProvider::StartNewSession(AndroidAutofillManager* manager,
                                               const FormData& form,
-                                              const FormFieldData& field,
-                                              const gfx::RectF& bounding_box) {
+                                              const FormFieldData& field) {
   FormStructure* form_structure = manager->FindCachedFormById(form.global_id());
   FormDataAndroid* cached_form =
       cached_data_ ? cached_data_->cached_form.get() : nullptr;
@@ -270,7 +269,7 @@ void AndroidAutofillProvider::StartNewSession(AndroidAutofillManager* manager,
           cached_data_->password_parser_overrides.ToFieldTypeMap());
     }
   }
-  field_info.bounds = ToClientAreaBound(bounding_box);
+  field_info.bounds = ToClientAreaBound(field.bounds());
 
   [&] {
     // Metrics for prefill requests are only emitted if this is the first time
@@ -391,16 +390,14 @@ void AndroidAutofillProvider::OnTextFieldDidChange(
     AndroidAutofillManager* manager,
     const FormData& form,
     const FormFieldData& field,
-    const gfx::RectF& bounding_box,
     const base::TimeTicks timestamp) {
-  MaybeFireFormFieldDidChange(manager, form, field, bounding_box);
+  MaybeFireFormFieldDidChange(manager, form, field);
 }
 
 void AndroidAutofillProvider::OnTextFieldDidScroll(
     AndroidAutofillManager* manager,
     const FormData& form,
-    const FormFieldData& field,
-    const gfx::RectF& bounding_box) {
+    const FormFieldData& field) {
   DCHECK_CURRENTLY_ON(BrowserThread::UI);
   FieldInfo field_info;
   if (!IsLinkedForm(form) ||
@@ -412,20 +409,19 @@ void AndroidAutofillProvider::OnTextFieldDidScroll(
   // is needed - why would it have changed?
   form_->OnFormFieldDidChange(field_info.index, field.value());
 
-  field_info.bounds = ToClientAreaBound(bounding_box);
+  field_info.bounds = ToClientAreaBound(field.bounds());
   bridge_->OnTextFieldDidScroll(field_info);
 }
 
 void AndroidAutofillProvider::OnSelectControlDidChange(
     AndroidAutofillManager* manager,
     const FormData& form,
-    const FormFieldData& field,
-    const gfx::RectF& bounding_box) {
+    const FormFieldData& field) {
   if (!IsLinkedForm(form)) {
-    StartNewSession(manager, form, field, bounding_box);
+    StartNewSession(manager, form, field);
     // TODO(crbug.com/40929724): Return early at this point?
   }
-  MaybeFireFormFieldDidChange(manager, form, field, bounding_box);
+  MaybeFireFormFieldDidChange(manager, form, field);
 }
 
 void AndroidAutofillProvider::FireSuccessfulSubmission(
@@ -477,8 +473,7 @@ void AndroidAutofillProvider::OnFocusNoLongerOnForm(
 void AndroidAutofillProvider::OnFocusOnFormField(
     AndroidAutofillManager* manager,
     const FormData& form,
-    const FormFieldData& field,
-    const gfx::RectF& bounding_box) {
+    const FormFieldData& field) {
   DCHECK_CURRENTLY_ON(BrowserThread::UI);
 
   FieldInfo field_info;
@@ -488,7 +483,7 @@ void AndroidAutofillProvider::OnFocusOnFormField(
     return;
   }
 
-  field_info.bounds = ToClientAreaBound(bounding_box);
+  field_info.bounds = ToClientAreaBound(field.bounds());
   MaybeFireFormFieldVisibilitiesDidChange(manager, form);
   bridge_->OnFocusChanged(field_info);
 }
@@ -496,8 +491,7 @@ void AndroidAutofillProvider::OnFocusOnFormField(
 void AndroidAutofillProvider::MaybeFireFormFieldDidChange(
     AndroidAutofillManager* manager,
     const FormData& form,
-    const FormFieldData& field,
-    const gfx::RectF& bounding_box) {
+    const FormFieldData& field) {
   DCHECK_CURRENTLY_ON(BrowserThread::UI);
   FieldInfo field_info;
   if (!IsLinkedForm(form) ||
@@ -506,7 +500,7 @@ void AndroidAutofillProvider::MaybeFireFormFieldDidChange(
   }
   // Propagate the changed values to Java.
   form_->OnFormFieldDidChange(field_info.index, field.value());
-  field_info.bounds = ToClientAreaBound(bounding_box);
+  field_info.bounds = ToClientAreaBound(field.bounds());
   bridge_->OnFormFieldDidChange(field_info);
 }
 

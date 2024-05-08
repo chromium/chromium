@@ -28,18 +28,15 @@ interface AutofillDriver {
   // Notification that a form field's value has changed.
   TextFieldDidChange(FormData form,
                      FormFieldData field,
-                     gfx.mojom.RectF bounding_box,
                      mojo_base.mojom.TimeTicks timestamp);
 
   // Notification that a form field has scrolled.
   TextFieldDidScroll(FormData form,
-                     FormFieldData field,
-                     gfx.mojom.RectF bounding_box);
+                     FormFieldData field);
 
   // Notification that a form select control has changed.
   SelectControlDidChange(FormData form,
-                         FormFieldData field,
-                         gfx.mojom.RectF bounding_box);
+                         FormFieldData field);
 
   // Notification that a select or selectlist element's options were modified.
   SelectOrSelectListFieldOptionsDidChange(FormData form);
@@ -62,8 +59,7 @@ interface AutofillDriver {
 
   // Notification that a form field is focused.
   FocusOnFormField(FormData form,
-                   FormFieldData field,
-                   gfx.mojom.RectF bounding_box);
+                   FormFieldData field);
 
   // Sent when a form is filled with Autofill suggestions.
   DidFillAutofillFormData(FormData form, mojo_base.mojom.TimeTicks timestamp);

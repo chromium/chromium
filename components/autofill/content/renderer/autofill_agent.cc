@@ -164,22 +164,17 @@ class AutofillAgent::DeferringAutofillDriver : public mojom::AutofillDriver {
   }
   void TextFieldDidChange(const FormData& form,
                           const FormFieldData& field,
-                          const gfx::RectF& bounding_box,
                           base::TimeTicks timestamp) override {
     DeferMsg(&mojom::AutofillDriver::TextFieldDidChange, form, field,
-             bounding_box, timestamp);
+             timestamp);
   }
   void TextFieldDidScroll(const FormData& form,
-                          const FormFieldData& field,
-                          const gfx::RectF& bounding_box) override {
-    DeferMsg(&mojom::AutofillDriver::TextFieldDidScroll, form, field,
-             bounding_box);
+                          const FormFieldData& field) override {
+    DeferMsg(&mojom::AutofillDriver::TextFieldDidScroll, form, field);
   }
   void SelectControlDidChange(const FormData& form,
-                              const FormFieldData& field,
-                              const gfx::RectF& bounding_box) override {
-    DeferMsg(&mojom::AutofillDriver::SelectControlDidChange, form, field,
-             bounding_box);
+                              const FormFieldData& field) override {
+    DeferMsg(&mojom::AutofillDriver::SelectControlDidChange, form, field);
   }
   void SelectOrSelectListFieldOptionsDidChange(const FormData& form) override {
     DeferMsg(&mojom::AutofillDriver::SelectOrSelectListFieldOptionsDidChange,
@@ -197,10 +192,8 @@ class AutofillAgent::DeferringAutofillDriver : public mojom::AutofillDriver {
     DeferMsg(&mojom::AutofillDriver::FocusNoLongerOnForm, had_interacted_form);
   }
   void FocusOnFormField(const FormData& form,
-                        const FormFieldData& field,
-                        const gfx::RectF& bounding_box) override {
-    DeferMsg(&mojom::AutofillDriver::FocusOnFormField, form, field,
-             bounding_box);
+                        const FormFieldData& field) override {
+    DeferMsg(&mojom::AutofillDriver::FocusOnFormField, form, field);
   }
   void DidFillAutofillFormData(const FormData& form,
                                base::TimeTicks timestamp) override {
@@ -398,7 +391,7 @@ void AutofillAgent::DidChangeScrollOffsetImpl(FieldRendererId element_id) {
               MaybeExtractDatalist({form_util::ExtractOption::kBounds}))) {
     auto& [form, field] = *form_and_field;
     if (auto* autofill_driver = unsafe_autofill_driver()) {
-      autofill_driver->TextFieldDidScroll(form, field, field.bounds());
+      autofill_driver->TextFieldDidScroll(form, field);
     }
   }
 
@@ -476,7 +469,7 @@ void AutofillAgent::FocusedElementChangedDeprecated(const WebElement& element) {
               MaybeExtractDatalist({form_util::ExtractOption::kBounds}))) {
     auto& [form, field] = *form_and_field;
     if (auto* autofill_driver = unsafe_autofill_driver()) {
-      autofill_driver->FocusOnFormField(form, field, field.bounds());
+      autofill_driver->FocusOnFormField(form, field);
     }
   }
 }
@@ -521,7 +514,7 @@ void AutofillAgent::FocusedElementChanged(
       auto& [form, field] = *form_and_field;
       if (auto* autofill_driver = unsafe_autofill_driver()) {
         last_queried_element_ = FieldRef(control);
-        autofill_driver->FocusOnFormField(form, field, field.bounds());
+        autofill_driver->FocusOnFormField(form, field);
         handle_focus_change();
         return;
       }
@@ -535,8 +528,7 @@ void AutofillAgent::FocusedElementChanged(
       CHECK_EQ(form->fields.size(), 1u);
       if (auto* autofill_driver = unsafe_autofill_driver()) {
         last_queried_element_ = FieldRef(new_focused_element);
-        autofill_driver->FocusOnFormField(*form, form->fields.front(),
-                                          form->fields.front().bounds());
+        autofill_driver->FocusOnFormField(*form, form->fields.front());
         handle_focus_change();
         return;
       }
@@ -616,7 +608,6 @@ void AutofillAgent::ContentEditableDidChange(const WebElement& element) {
     CHECK_EQ(form->fields.size(), 1u);
     if (auto* autofill_driver = unsafe_autofill_driver()) {
       autofill_driver->TextFieldDidChange(*form, form->fields.front(),
-                                          form->fields.front().bounds(),
                                           base::TimeTicks::Now());
     }
   }
@@ -659,8 +650,7 @@ void AutofillAgent::OnTextFieldDidChange(const WebFormControlElement& element) {
               MaybeExtractDatalist({form_util::ExtractOption::kBounds}))) {
     auto& [form, field] = *form_and_field;
     if (auto* autofill_driver = unsafe_autofill_driver()) {
-      autofill_driver->TextFieldDidChange(form, field, field.bounds(),
-                                          base::TimeTicks::Now());
+      autofill_driver->TextFieldDidChange(form, field, base::TimeTicks::Now());
     }
   }
 }
@@ -1726,7 +1716,7 @@ void AutofillAgent::OnProvisionallySaveForm(
                   MaybeExtractDatalist({form_util::ExtractOption::kBounds}))) {
         auto& [form, field] = *form_and_field;
         if (auto* autofill_driver = unsafe_autofill_driver()) {
-          autofill_driver->SelectControlDidChange(form, field, field.bounds());
+          autofill_driver->SelectControlDidChange(form, field);
         }
       }
       break;

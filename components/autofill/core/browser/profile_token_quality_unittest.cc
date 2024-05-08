@@ -56,8 +56,7 @@ class ProfileTokenQualityTest : public testing::Test {
                       std::u16string new_value) {
     FormFieldData& field = form.fields[field_index];
     field.set_value(std::move(new_value));
-    bam_.OnTextFieldDidChange(form, field, gfx::RectF(),
-                              base::TimeTicks::Now());
+    bam_.OnTextFieldDidChange(form, field, base::TimeTicks::Now());
   }
 
   // Fills the `form` with the `profile`, as-if autofilling was triggered from
