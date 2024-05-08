@@ -25,6 +25,9 @@ found in the LICENSE file.
     <!-- Same as ?attr/colorOnPrimary. -->
     <color name="default_icon_color_on_accent1_light">@color/baseline_primary_100</color>
     <color name="default_icon_color_on_accent1_dark">@color/baseline_primary_20</color>
+    <!-- Same as ?attr/colorOnPrimaryContainer. -->
+    <color name="default_icon_color_on_accent1_container_light">@color/baseline_primary_10</color>
+    <color name="default_icon_color_on_accent1_container_dark">@color/baseline_primary_90</color>
 
     <!-- Common text colors -->
     <!-- Same as ?attr/colorOnSurface. -->

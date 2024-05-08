@@ -43,9 +43,16 @@ public class SemanticColorUtils {
         return resolve(R.attr.colorPrimary, context);
     }
 
-    /** Returns the semantic color value that corresponds to default_icon_color_on_accent_1. */
+    /** Returns the semantic color value that corresponds to default_icon_color_on_accent1. */
     public static @ColorInt int getDefaultIconColorOnAccent1(Context context) {
         return resolve(R.attr.colorOnPrimary, context);
+    }
+
+    /**
+     * Returns the semantic color value that corresponds to default_icon_color_on_accent1_container.
+     */
+    public static @ColorInt int getDefaultIconColorOnAccent1Container(Context context) {
+        return resolve(R.attr.colorOnPrimaryContainer, context);
     }
 
     /** Returns the semantic color value that corresponds to default_text_color_on_accent1. */

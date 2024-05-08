@@ -83,7 +83,7 @@ public class ImprovedBookmarkFolderViewRenderTest {
     public ChromeRenderTestRule mRenderTestRule =
             ChromeRenderTestRule.Builder.withPublicCorpus()
                     .setBugComponent(ChromeRenderTestRule.Component.UI_BROWSER_BOOKMARKS)
-                    .setRevision(1)
+                    .setRevision(2)
                     .build();
 
     @Rule public TestRule mProcessor = new Features.JUnitProcessor();

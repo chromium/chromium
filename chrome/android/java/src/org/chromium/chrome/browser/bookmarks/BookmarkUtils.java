@@ -876,7 +876,8 @@ public class BookmarkUtils {
     public static ColorStateList getIconTint(
             Context context, BookmarkModel bookmarkModel, BookmarkItem item) {
         if (isSpecialFolder(bookmarkModel, item)) {
-            return ColorStateList.valueOf(SemanticColorUtils.getDefaultIconColorAccent1(context));
+            return ColorStateList.valueOf(
+                    SemanticColorUtils.getDefaultIconColorOnAccent1Container(context));
         } else {
             return AppCompatResources.getColorStateList(
                     context, R.color.default_icon_color_secondary_tint_list);

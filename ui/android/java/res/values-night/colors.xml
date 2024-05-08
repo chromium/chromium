@@ -22,6 +22,7 @@ found in the LICENSE file.
     <color name="default_icon_color_inverse_baseline">@color/default_icon_color_inverse_dark</color>
     <color name="default_icon_color_accent1_baseline">@color/default_icon_color_blue_light</color>
     <color name="default_icon_color_on_accent1_baseline">@color/default_icon_color_on_accent1_dark</color>
+    <color name="default_icon_color_on_accent1_container_baseline">@color/default_icon_color_on_accent1_container_dark</color>
     <color name="default_icon_color_secondary_baseline">@color/default_icon_color_secondary_light</color>
     <color name="hairline_stroke_color_baseline">@color/hairline_stroke_color_light</color>
     <color name="default_icon_color_disabled_baseline">@color/default_icon_color_disabled_light</color>
