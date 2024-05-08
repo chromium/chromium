@@ -21,7 +21,10 @@
 namespace {
 
 // Vertical insets of the "Autofill Form" button.
-constexpr CGFloat kAutofillFormButtonVerticalInsets = 9;
+constexpr CGFloat kAutofillFormButtonVerticalInsets = 11;
+
+// Minimum height of the "Autofill Form" button.
+constexpr CGFloat kAutofillFormButtonMinHeight = 44;
 
 // Bottom margin for the cell content. Used when the Keyboard Accessory Upgrade
 // feature is disabled.
@@ -478,6 +481,10 @@ UIButton* CreateAutofillFormButton() {
       NSDirectionalEdgeInsetsMake(kAutofillFormButtonVerticalInsets, 0,
                                   kAutofillFormButtonVerticalInsets, 0);
   button.configuration = buttonConfiguration;
+
+  [button.heightAnchor
+      constraintGreaterThanOrEqualToConstant:kAutofillFormButtonMinHeight]
+      .active = YES;
 
   SetConfigurationTitle(
       button, l10n_util::GetNSString(
