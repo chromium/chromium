@@ -7,7 +7,11 @@ katie@chromium.org
 kschmi@microsoft.com
 nektar@chromium.org
 
-# For tests
+# For tests and code refactoring changes:
+# If platform a11y API support is affected, please add another
+# owner from the main list above, so that a11y specialist knowledge is
+# represented.
+grt@chromium.org
 chrishtr@chromium.org
 
 # For Android / Java related changes:
