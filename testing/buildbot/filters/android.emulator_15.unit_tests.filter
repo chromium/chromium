@@ -1,0 +1,6 @@
+SigninManagerAndroidTest.*
+SigninManagerAndroidWithLocalUpmTest.*
+ChromeBrowsingDataRemoverDelegateOriginTrialsTest.*
+
+ChromeBrowsingDataRemoverDelegateTest.AllTypesAreGettingDeleted
+ChromeBrowsingDataRemoverDelegateTest.RemovePersistentIsolatedOrigins
