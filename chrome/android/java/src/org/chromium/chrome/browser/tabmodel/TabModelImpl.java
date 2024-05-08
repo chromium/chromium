@@ -7,6 +7,7 @@ package org.chromium.chrome.browser.tabmodel;
 import androidx.annotation.IntDef;
 import androidx.annotation.NonNull;
 import androidx.annotation.Nullable;
+import androidx.annotation.VisibleForTesting;
 
 import org.chromium.base.MathUtils;
 import org.chromium.base.ObserverList;
@@ -929,6 +930,32 @@ public class TabModelImpl extends TabModelJniBridge {
     @Override
     public void setActive(boolean active) {
         mActive = active;
+    }
+
+    @Override
+    public int getTabCountNavigatedInTimeWindow(long beginTimeMs, long endTimeMs) {
+        return getTabsNavigatedInTimeWindow(beginTimeMs, endTimeMs).size();
+    }
+
+    @Override
+    public void closeTabsNavigatedInTimeWindow(long beginTimeMs, long endTimeMs) {
+        closeMultipleTabs(getTabsNavigatedInTimeWindow(beginTimeMs, endTimeMs), false);
+    }
+
+    @VisibleForTesting
+    List<Tab> getTabsNavigatedInTimeWindow(long beginTimeMs, long endTimeMs) {
+        List<Tab> tabList = new ArrayList<>();
+        for (Tab tab : mTabs) {
+            if (tab.isCustomTab()) continue;
+
+            final long recentNavigationTime = tab.getLastNavigationCommittedTimestampMillis();
+
+            if (recentNavigationTime >= beginTimeMs && recentNavigationTime < endTimeMs) {
+                tabList.add(tab);
+            }
+        }
+
+        return tabList;
     }
 
     private void notifyOnFinishingMultipleTabClosure(List<Tab> tabs) {

@@ -81,3 +81,12 @@ void TestTabModel::SetWebContentsList(
     const std::vector<raw_ptr<content::WebContents>>& web_contents_list) {
   web_contents_list_ = web_contents_list;
 }
+
+int TestTabModel::GetTabCountNavigatedInTimeWindow(
+    const base::Time& begin_time,
+    const base::Time& end_time) const {
+  return 0;
+}
+
+void TestTabModel::CloseTabsNavigatedInTimeWindow(const base::Time& begin_time,
+                                                  const base::Time& end_time) {}

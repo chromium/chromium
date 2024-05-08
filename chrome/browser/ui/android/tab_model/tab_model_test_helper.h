@@ -37,6 +37,11 @@ class TestTabModel : public TabModel {
   void SetTabCount(int tab_count);
   void SetWebContentsList(
       const std::vector<raw_ptr<content::WebContents>>& web_contents_list);
+  int GetTabCountNavigatedInTimeWindow(
+      const base::Time& begin_time,
+      const base::Time& end_time) const override;
+  void CloseTabsNavigatedInTimeWindow(const base::Time& begin_time,
+                                      const base::Time& end_time) override;
 
  private:
   // A fake value for the current number of tabs.

@@ -217,6 +217,14 @@ public abstract class TabModelJniBridge implements TabModel {
     @Override
     public abstract void setActive(boolean active);
 
+    @Override
+    @CalledByNative
+    public abstract int getTabCountNavigatedInTimeWindow(long beginTimeMs, long endTimeMs);
+
+    @Override
+    @CalledByNative
+    public abstract void closeTabsNavigatedInTimeWindow(long beginTimeMs, long endTimeMs);
+
     @NativeMethods
     @VisibleForTesting(otherwise = VisibleForTesting.PACKAGE_PRIVATE)
     public interface Natives {

@@ -242,4 +242,17 @@ public interface TabModel extends TabList {
      *     TabModelSelectorBase#mTabModels to hold the impls.
      */
     void setActive(boolean active);
+
+    /**
+     * Returns the count of non-custom tabs that have a {@link
+     * Tab#getLastNavigationCommittedTimestampMillis()} within the time range [beginTimeMs,
+     * endTimeMs).
+     */
+    int getTabCountNavigatedInTimeWindow(long beginTimeMs, long endTimeMs);
+
+    /**
+     * Closes non-custom tabs that have a {@link Tab#getLastNavigationCommittedTimestampMillis()}
+     * within the time range [beginTimeMs, endTimeMs).
+     */
+    void closeTabsNavigatedInTimeWindow(long beginTimeMs, long endTimeMs);
 }

@@ -380,4 +380,27 @@ public class TabModelImplUnitTest {
         tabModel.destroy();
         assertEquals(null, tabModel.getTabById(tab1.getId()));
     }
+
+    @Test
+    @SmallTest
+    public void testGetTabsNavigatedInTimeWindow() {
+        TabModelImpl tabModel = (TabModelImpl) createTabModel(true, false);
+        MockTab tab1 = (MockTab) createTab(tabModel, 0, Tab.INVALID_TAB_ID);
+        tab1.setLastNavigationCommittedTimestampMillis(200);
+
+        MockTab tab2 = (MockTab) createTab(tabModel, 0, Tab.INVALID_TAB_ID);
+        tab2.setLastNavigationCommittedTimestampMillis(50);
+
+        MockTab tab3 = (MockTab) createTab(tabModel, 0, Tab.INVALID_TAB_ID);
+        tab3.setLastNavigationCommittedTimestampMillis(100);
+
+        MockTab tab4 = (MockTab) createTab(tabModel, 0, Tab.INVALID_TAB_ID);
+        tab4.setLastNavigationCommittedTimestampMillis(30);
+        tab4.setIsCustomTab(true);
+
+        MockTab tab5 = (MockTab) createTab(tabModel, 0, Tab.INVALID_TAB_ID);
+        tab5.setLastNavigationCommittedTimestampMillis(10);
+
+        assertEquals(Arrays.asList(tab2, tab5), tabModel.getTabsNavigatedInTimeWindow(10, 100));
+    }
 }

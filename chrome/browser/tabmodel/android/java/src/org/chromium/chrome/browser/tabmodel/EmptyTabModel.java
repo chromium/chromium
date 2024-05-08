@@ -182,6 +182,14 @@ public class EmptyTabModel implements IncognitoTabModel {
     public void setActive(boolean active) {}
 
     @Override
+    public int getTabCountNavigatedInTimeWindow(long beginTimeMs, long endTimeMs) {
+        return 0;
+    }
+
+    @Override
+    public void closeTabsNavigatedInTimeWindow(long beginTimeMs, long endTimeMs) {}
+
+    @Override
     public void removeTab(Tab tab) {}
 
     @Override

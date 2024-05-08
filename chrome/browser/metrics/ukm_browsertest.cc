@@ -196,6 +196,13 @@ class TestTabModel : public TabModel {
   bool IsActiveModel() const override { return false; }
   void AddObserver(TabModelObserver* observer) override {}
   void RemoveObserver(TabModelObserver* observer) override {}
+  int GetTabCountNavigatedInTimeWindow(
+      const base::Time& begin_time,
+      const base::Time& end_time) const override {
+    return 0;
+  }
+  void CloseTabsNavigatedInTimeWindow(const base::Time& begin_time,
+                                      const base::Time& end_time) override {}
 
  private:
   // The WebContents associated with this tab's profile.
