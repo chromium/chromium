@@ -212,6 +212,7 @@ class MockNewWindowDelegate : public testing::NiceMock<TestNewWindowDelegate> {
 
 class CupsPrintersHandlerTest : public testing::Test {
  public:
+  constexpr static const std::string kPpdPrinterName = "printer_name";
   CupsPrintersHandlerTest()
       : task_environment_(content::BrowserTaskEnvironment::REAL_IO_THREAD),
         profile_(std::make_unique<TestingProfile>()),
@@ -254,10 +255,11 @@ class CupsPrintersHandlerTest : public testing::Test {
   }
 
   void CallRetrieveCupsPpd(const std::string& printer_id,
-                           const std::string& license_url = "") {
+                           const std::string& license_url = "",
+                           const std::string& printer_name = kPpdPrinterName) {
     base::Value::List args;
     args.Append(printer_id);
-    args.Append(kPpdPrinterName);
+    args.Append(printer_name);
     args.Append(license_url);
 
     web_ui_.HandleReceivedMessage("retrieveCupsPrinterPpd", args);
@@ -272,12 +274,14 @@ class CupsPrintersHandlerTest : public testing::Test {
 
   // Get the contents of the file that was downloaded.  Return true on success,
   // false on error.
-  bool GetDownloadedPpdContents(std::string& contents) const {
+  bool GetDownloadedPpdContents(
+      std::string& contents,
+      const std::string& printer_name = kPpdPrinterName) const {
     const base::FilePath downloads_path =
         DownloadPrefs::FromDownloadManager(profile_->GetDownloadManager())
             ->DownloadPath();
     const base::FilePath filepath =
-        downloads_path.Append(kPpdPrinterName).AddExtension("ppd");
+        downloads_path.Append(printer_name).AddExtension("ppd");
     return base::ReadFileToString(filepath, &contents);
   }
 
@@ -298,7 +302,6 @@ class CupsPrintersHandlerTest : public testing::Test {
   base::ScopedTempDir download_dir_;
   base::HistogramTester histogram_tester_;
 
-  const std::string kPpdPrinterName = "printer_name";
   const std::string kDefaultPpdData = "PPD data used for testing";
   const std::string kPpdDataStrWithHeader = R"(*PPD-Adobe: "4.3")";
   const std::string kPpdErrorString =
@@ -398,6 +401,35 @@ TEST_F(CupsPrintersHandlerTest, ViewPPDWithLicense) {
   EXPECT_TRUE(GetDownloadedPpdContents(contents));
   EXPECT_THAT(contents, testing::HasSubstr(license_url));
   EXPECT_THAT(contents, testing::HasSubstr(kPpdDataStrWithHeader));
+}
+
+TEST_F(CupsPrintersHandlerTest, ViewPPDUnsanitizedFilename) {
+  // Test the nominal case where the printer has a name that needs sanitized.
+  const std::string printer_name("bad/name");
+  const std::string sanitized_name("bad_name");
+
+  AddPrinterToPrintScanManager("id", kDefaultPpdData);
+
+  Printer printer("id");
+  printers_manager_.SavePrinter(printer);
+
+  print_backend_->AddValidPrinter(
+      printer.id(),
+      std::make_unique<printing::PrinterSemanticCapsAndDefaults>(), nullptr);
+
+  EXPECT_CALL(*new_window_delegate_primary_,
+              OpenUrl(testing::Property(&GURL::ExtractFileName,
+                                        testing::StartsWith(sanitized_name)),
+                      ash::NewWindowDelegate::OpenUrlFrom::kUserInteraction,
+                      ash::NewWindowDelegate::Disposition::kSwitchToTab))
+      .WillOnce(testing::InvokeWithoutArgs(&run_loop_, &base::RunLoop::Quit));
+
+  CallRetrieveCupsPpd(printer.id(), /*license_url=*/"", printer_name);
+
+  // Check for the downloaded PPD file.
+  std::string contents;
+  EXPECT_TRUE(GetDownloadedPpdContents(contents, sanitized_name));
+  EXPECT_EQ(contents, kDefaultPpdData);
 }
 
 TEST_F(CupsPrintersHandlerTest, ViewPPDWithLicenseBadPpd) {

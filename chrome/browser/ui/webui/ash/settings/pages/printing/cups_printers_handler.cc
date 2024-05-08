@@ -576,8 +576,11 @@ void CupsPrintersHandler::WriteAndDisplayPpdFile(
   const base::FilePath downloads_path =
       DownloadPrefs::FromDownloadManager(profile_->GetDownloadManager())
           ->DownloadPath();
+  // To make sure an appropriate filename is created, remove any dir separators.
+  std::string sanitized_name = printer_name;
+  base::ReplaceChars(sanitized_name, "/", "_", &sanitized_name);
   const base::FilePath ppd_file_path_base =
-      downloads_path.Append(printer_name).AddExtension("ppd");
+      downloads_path.Append(sanitized_name).AddExtension("ppd");
 
   // Use USER_BLOCKING here since the user is expecting a new web page to load
   // after clicking the View PPD link.
