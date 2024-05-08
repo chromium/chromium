@@ -7,6 +7,7 @@
 #include "base/process/kill.h"
 #include "build/build_config.h"
 #include "build/chromeos_buildflags.h"
+#include "chrome/browser/browser_process.h"
 #include "chrome/browser/favicon/favicon_utils.h"
 #include "chrome/browser/profiles/profile.h"
 #include "chrome/browser/resource_coordinator/lifecycle_unit_state.mojom-shared.h"
@@ -21,6 +22,7 @@
 #include "chrome/browser/ui/web_applications/web_app_browser_controller.h"
 #include "chrome/browser/ui/web_applications/web_app_tabbed_utils.h"
 #include "components/performance_manager/public/features.h"
+#include "components/performance_manager/public/user_tuning/prefs.h"
 #include "components/security_interstitials/content/security_interstitial_tab_helper.h"
 #include "content/public/browser/navigation_entry.h"
 #include "content/public/browser/web_contents.h"
@@ -110,7 +112,10 @@ TabRendererData TabRendererData::FromTabInModel(const TabStripModel* model,
       memory_saver::IsURLSupported(contents->GetURL()) &&
       contents->WasDiscarded() && discard_reason.has_value() &&
       (discard_reason.value() == mojom::LifecycleUnitDiscardReason::PROACTIVE ||
-       discard_reason.value() == mojom::LifecycleUnitDiscardReason::SUGGESTED);
+       discard_reason.value() ==
+           mojom::LifecycleUnitDiscardReason::SUGGESTED) &&
+      performance_manager::user_tuning::prefs::ShouldShowDiscardRingTreatment(
+          g_browser_process->local_state());
 
   if (contents->WasDiscarded()) {
     data.discarded_memory_savings_in_bytes =

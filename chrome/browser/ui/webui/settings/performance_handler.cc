@@ -3,6 +3,7 @@
 // found in the LICENSE file.
 
 #include "chrome/browser/ui/webui/settings/performance_handler.h"
+
 #include "base/feature_list.h"
 #include "base/functional/bind.h"
 #include "base/values.h"
@@ -11,6 +12,8 @@
 #include "chrome/browser/ui/browser_finder.h"
 #include "chrome/browser/ui/browser_list.h"
 #include "chrome/browser/ui/chrome_pages.h"
+#include "chrome/browser/ui/views/frame/browser_view.h"
+#include "chrome/browser/ui/views/tabs/tab_strip.h"
 #include "components/performance_manager/public/features.h"
 #include "components/url_matcher/url_util.h"
 #include "content/public/browser/web_contents.h"
@@ -43,6 +46,11 @@ void PerformanceHandler::RegisterMessages() {
       "openSpeedFeedbackDialog",
       base::BindRepeating(&PerformanceHandler::HandleOpenSpeedFeedbackDialog,
                           base::Unretained(this)));
+  web_ui()->RegisterMessageCallback(
+      "onDiscardRingTreatmentEnabledChanged",
+      base::BindRepeating(
+          &PerformanceHandler::HandleSetDiscardRingTreatmentEnabled,
+          base::Unretained(this)));
   web_ui()->RegisterMessageCallback(
       "validateTabDiscardExceptionRule",
       base::BindRepeating(
@@ -145,6 +153,21 @@ void PerformanceHandler::HandleOpenFeedbackDialog(
   chrome::ShowFeedbackPage(browser,
                            feedback::kFeedbackSourceSettingsPerformancePage,
                            unused, unused, category_tag, unused);
+}
+
+void PerformanceHandler::HandleSetDiscardRingTreatmentEnabled(
+    const base::Value::List& args) {
+  for (Browser* browser : *BrowserList::GetInstance()) {
+    TabStripModel* tab_strip_model = browser->tab_strip_model();
+    TabStrip* tab_strip =
+        BrowserView::GetBrowserViewForBrowser(browser)->tabstrip();
+
+    for (int tab_index = 0; tab_index < tab_strip_model->count(); ++tab_index) {
+      TabRendererData tab_data =
+          TabRendererData::FromTabInModel(tab_strip_model, tab_index);
+      tab_strip->SetTabData(tab_index, tab_data);
+    }
+  }
 }
 
 void PerformanceHandler::HandleValidateTabDiscardExceptionRule(

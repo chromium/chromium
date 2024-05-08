@@ -54,6 +54,7 @@ class PerformanceHandler : public SettingsPageUIHandler,
   void HandleOpenMemorySaverFeedbackDialog(const base::Value::List& args);
   void HandleOpenSpeedFeedbackDialog(const base::Value::List& args);
   void HandleOpenFeedbackDialog(const std::string category_tag);
+  void HandleSetDiscardRingTreatmentEnabled(const base::Value::List& args);
   void HandleValidateTabDiscardExceptionRule(const base::Value::List& args);
 };
 

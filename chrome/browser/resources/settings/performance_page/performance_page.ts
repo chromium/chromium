@@ -18,6 +18,8 @@ import {afterNextRender, PolymerElement} from 'chrome://resources/polymer/v3_0/p
 import type {SettingsToggleButtonElement} from '../controls/settings_toggle_button.js';
 import {loadTimeData} from '../i18n_setup.js';
 
+import type {PerformanceBrowserProxy} from './performance_browser_proxy.js';
+import {PerformanceBrowserProxyImpl} from './performance_browser_proxy.js';
 import type {PerformanceMetricsProxy} from './performance_metrics_proxy.js';
 import {MemorySaverModeState, PerformanceMetricsProxyImpl} from './performance_metrics_proxy.js';
 import {getTemplate} from './performance_page.html.js';
@@ -90,6 +92,8 @@ export class SettingsPerformancePageElement extends
 
   private numericUncheckedValues_: MemorySaverModeState[];
   private numericCheckedValue_: MemorySaverModeState[];
+  private browserProxy_: PerformanceBrowserProxy =
+      PerformanceBrowserProxyImpl.getInstance();
   private metricsProxy_: PerformanceMetricsProxy =
       PerformanceMetricsProxyImpl.getInstance();
 
@@ -118,6 +122,7 @@ export class SettingsPerformancePageElement extends
   }
 
   private onDiscardRingChange_() {
+    this.browserProxy_.onDiscardRingTreatmentEnabledChanged();
     this.metricsProxy_.recordDiscardRingTreatmentEnabledChanged(
         this.getPref<boolean>(DISCARD_RING_PREF).value);
   }

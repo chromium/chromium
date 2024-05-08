@@ -7,6 +7,7 @@
 #include "base/test/bind.h"
 #include "base/test/simple_test_tick_clock.h"
 #include "build/build_config.h"
+#include "chrome/browser/browser_process.h"
 #include "chrome/browser/content_settings/host_content_settings_map_factory.h"
 #include "chrome/browser/performance_manager/public/user_tuning/user_performance_tuning_manager.h"
 #include "chrome/browser/profiles/profile.h"
@@ -25,6 +26,7 @@
 #include "chrome/browser/ui/views/performance_controls/memory_saver_resource_view.h"
 #include "chrome/browser/ui/views/tabs/tab_icon.h"
 #include "chrome/browser/ui/views/tabs/tab_strip.h"
+#include "chrome/browser/ui/webui/test_support/webui_interactive_test_mixin.h"
 #include "chrome/common/webui_url_constants.h"
 #include "chrome/grit/generated_resources.h"
 #include "chrome/test/base/interactive_test_utils.h"
@@ -556,12 +558,9 @@ IN_PROC_BROWSER_TEST_F(MemorySaverChipInteractiveTest,
 }
 
 class MemorySaverFaviconTreatmentTest
-    : public MemorySaverInteractiveTestMixin<InteractiveFeaturePromoTest> {
+    : public MemorySaverInteractiveTestMixin<InteractiveBrowserTest> {
  public:
-  MemorySaverFaviconTreatmentTest()
-      : MemorySaverInteractiveTestMixin(
-            InteractiveFeaturePromoTestApi::UseDefaultTrackerAllowingPromos(
-                {feature_engagement::kIPHDiscardRingFeature})) {}
+  MemorySaverFaviconTreatmentTest() = default;
   ~MemorySaverFaviconTreatmentTest() override = default;
 
   void SetUpOnMainThread() override {
@@ -599,7 +598,22 @@ IN_PROC_BROWSER_TEST_F(MemorySaverFaviconTreatmentTest,
                  /*baseline_cl=*/"4786929"));
 }
 
-IN_PROC_BROWSER_TEST_F(MemorySaverFaviconTreatmentTest,
+class MemorySaverDiscardIndicatorIPHTest
+    : public MemorySaverInteractiveTestMixin<InteractiveFeaturePromoTest> {
+ public:
+  MemorySaverDiscardIndicatorIPHTest()
+      : MemorySaverInteractiveTestMixin(
+            InteractiveFeaturePromoTestApi::UseDefaultTrackerAllowingPromos(
+                {feature_engagement::kIPHDiscardRingFeature})) {}
+  ~MemorySaverDiscardIndicatorIPHTest() override = default;
+
+  void SetUpOnMainThread() override {
+    MemorySaverInteractiveTestMixin::SetUpOnMainThread();
+    SetMemorySaverModeEnabled(true);
+  }
+};
+
+IN_PROC_BROWSER_TEST_F(MemorySaverDiscardIndicatorIPHTest,
                        IPHAppearsWhenTabIsDiscarded) {
   RunTestSequence(
       InstrumentTab(kFirstTabContents, 0),
@@ -614,12 +628,18 @@ IN_PROC_BROWSER_TEST_F(MemorySaverFaviconTreatmentTest,
 }
 
 class MemorySaverImprovedFaviconTreatmentTest
-    : public MemorySaverFaviconTreatmentTest {
+    : public WebUiInteractiveTestMixin<MemorySaverFaviconTreatmentTest> {
  public:
   void SetUp() override {
     scoped_feature_list_.InitAndEnableFeature(
         performance_manager::features::kDiscardRingImprovements);
     MemorySaverFaviconTreatmentTest::SetUp();
+  }
+
+  static auto IsShowingDiscardIndicator(bool showing) {
+    return [showing](TabIcon* tab_icon) {
+      return showing == tab_icon->GetShowingDiscardIndicator();
+    };
   }
 
  private:
@@ -646,4 +666,41 @@ IN_PROC_BROWSER_TEST_F(MemorySaverImprovedFaviconTreatmentTest,
       Screenshot(kFirstTabFavicon,
                  /*screenshot_name=*/"NoFadeSlightlySmallerFaviconOnDiscard",
                  /*baseline_cl=*/"5493847"));
+}
+
+IN_PROC_BROWSER_TEST_F(MemorySaverImprovedFaviconTreatmentTest,
+                       DiscardRingTreatmentSetting) {
+  constexpr char kFirstTabFavicon[] = "first_tab_favicon";
+  const WebContentsInteractionTestUtil::DeepQuery
+      discard_ring_treatment_setting = {
+          "settings-ui",
+          "settings-main",
+          "settings-basic-page",
+          "settings-performance-page",
+          "settings-toggle-button#discardRingTreatmentToggleButton",
+          "cr-toggle#control"};
+  g_browser_process->local_state()->SetBoolean(
+      performance_manager::user_tuning::prefs::kDiscardRingTreatmentEnabled,
+      true);
+  RunTestSequence(
+      InstrumentTab(kFirstTabContents, 0),
+      NavigateWebContents(kFirstTabContents, GetURL()),
+      AddInstrumentedTab(
+          kPerformanceSettingsTab,
+          GURL(chrome::GetSettingsUrl(chrome::kPerformanceSubPage))),
+      Do(base::BindLambdaForTesting(
+          [=]() { GetTabStrip()->StopAnimating(true); })),
+      TryDiscardTab(0), CheckTabIsDiscarded(0, true),
+      NameView(kFirstTabFavicon, base::BindLambdaForTesting([&]() {
+                 return views::AsViewClass<views::View>(GetTabIcon(0));
+               })),
+      CheckView(kFirstTabFavicon, IsShowingDiscardIndicator(true)),
+      ClickElement(kPerformanceSettingsTab, discard_ring_treatment_setting),
+      WaitForButtonStateChange(kPerformanceSettingsTab,
+                               discard_ring_treatment_setting, false),
+      CheckView(kFirstTabFavicon, IsShowingDiscardIndicator(false)),
+      ClickElement(kPerformanceSettingsTab, discard_ring_treatment_setting),
+      WaitForButtonStateChange(kPerformanceSettingsTab,
+                               discard_ring_treatment_setting, true),
+      CheckView(kFirstTabFavicon, IsShowingDiscardIndicator(true)));
 }
