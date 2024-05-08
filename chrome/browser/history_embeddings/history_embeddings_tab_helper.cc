@@ -23,6 +23,7 @@
 #include "components/keyed_service/core/service_access_type.h"
 #include "content/public/browser/navigation_handle.h"
 #include "content/public/browser/render_frame_host.h"
+#include "content/public/browser/weak_document_ptr.h"
 #include "content/public/browser/web_contents.h"
 #include "content/public/browser/web_contents_observer.h"
 #include "content/public/browser/web_contents_user_data.h"
@@ -72,12 +73,13 @@ void HistoryEmbeddingsTabHelper::DidFinishLoad(
   base::SingleThreadTaskRunner::GetCurrentDefault()->PostDelayedTask(
       FROM_HERE,
       base::BindOnce(&HistoryEmbeddingsTabHelper::ExtractPassages,
-                     weak_ptr_factory_.GetWeakPtr(), render_frame_host),
+                     weak_ptr_factory_.GetWeakPtr(),
+                     render_frame_host->GetWeakDocumentPtr()),
       base::Milliseconds(history_embeddings::kPassageExtractionDelay.Get()));
 }
 
 void HistoryEmbeddingsTabHelper::ExtractPassages(
-    content::RenderFrameHost* render_frame_host) {
+    content::WeakDocumentPtr weak_render_frame_host) {
   if (!history_visit_time_.has_value() || !history_url_.has_value()) {
     return;
   }
@@ -97,8 +99,8 @@ void HistoryEmbeddingsTabHelper::ExtractPassages(
       base::BindOnce(
           [](base::WeakPtr<history_embeddings::HistoryEmbeddingsService>
                  history_embeddings_service,
-             content::RenderFrameHost* render_frame_host, base::Time visit_time,
-             history::QueryURLResult result) {
+             content::WeakDocumentPtr weak_render_frame_host,
+             base::Time visit_time, history::QueryURLResult result) {
             // `visits` can be empty for navigations that don't result in a
             // visit being added to the DB, e.g. navigations to
             // "chrome://" URLs.
@@ -126,10 +128,10 @@ void HistoryEmbeddingsTabHelper::ExtractPassages(
             if (!latest_visit.originator_cache_guid.empty()) {
               return;
             }
-            history_embeddings_service->RetrievePassages(latest_visit,
-                                                         *render_frame_host);
+            history_embeddings_service->RetrievePassages(
+                latest_visit, weak_render_frame_host);
           },
-          embeddings_service->AsWeakPtr(), render_frame_host,
+          embeddings_service->AsWeakPtr(), weak_render_frame_host,
           history_visit_time_.value()),
       &task_tracker_);
 

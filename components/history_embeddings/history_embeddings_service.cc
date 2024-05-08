@@ -25,6 +25,8 @@
 #include "components/history_embeddings/sql_database.h"
 #include "components/history_embeddings/vector_database.h"
 #include "components/page_content_annotations/core/page_content_annotations_service.h"
+#include "content/public/browser/render_frame_host.h"
+#include "content/public/browser/weak_document_ptr.h"
 #include "mojo/public/cpp/bindings/callback_helpers.h"
 #include "mojo/public/cpp/bindings/remote.h"
 #include "services/service_manager/public/cpp/interface_provider.h"
@@ -143,14 +145,21 @@ HistoryEmbeddingsService::~HistoryEmbeddingsService() = default;
 
 void HistoryEmbeddingsService::RetrievePassages(
     const history::VisitRow& visit_row,
-    content::RenderFrameHost& host) {
-  if (!host.IsRenderFrameLive()) {
+    content::WeakDocumentPtr weak_render_frame_host) {
+  content::RenderFrameHost* render_frame_host =
+      weak_render_frame_host.AsRenderFrameHostIfValid();
+  if (!render_frame_host) {
+    return;
+  }
+
+  if (!render_frame_host->IsRenderFrameLive()) {
     return;
   }
 
   const base::TimeTicks start_time = base::TimeTicks::Now();
   mojo::Remote<blink::mojom::InnerTextAgent> agent;
-  host.GetRemoteInterfaces()->GetInterface(agent.BindNewPipeAndPassReceiver());
+  render_frame_host->GetRemoteInterfaces()->GetInterface(
+      agent.BindNewPipeAndPassReceiver());
   auto params = blink::mojom::InnerTextParams::New();
   params->max_words_per_aggregate_passage =
       std::max(0, kPassageExtractionMaxWordsPerAggregatePassage.Get());

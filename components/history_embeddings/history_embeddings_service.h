@@ -26,7 +26,7 @@
 #include "components/history_embeddings/sql_database.h"
 #include "components/history_embeddings/vector_database.h"
 #include "components/keyed_service/core/keyed_service.h"
-#include "content/public/browser/render_frame_host.h"
+#include "content/public/browser/weak_document_ptr.h"
 
 namespace optimization_guide {
 class OptimizationGuideModelProvider;
@@ -71,8 +71,9 @@ class HistoryEmbeddingsService : public KeyedService,
   // Initiate async passage extraction from given host's main frame.
   // When extraction completes, the passages will be stored in the database
   // and then given to the callback.
+  // Note: A `WeakDocumentPtr` is essentially a `WeakPtr<RenderFrameHost>`.
   void RetrievePassages(const history::VisitRow& visit_row,
-                        content::RenderFrameHost& host);
+                        content::WeakDocumentPtr weak_render_frame_host);
 
   // Find top `count` URL visit info entries nearest given `query`. Pass
   // results to given `callback` when search completes. Search will be narrowed

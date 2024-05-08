@@ -88,7 +88,8 @@ IN_PROC_BROWSER_TEST_F(HistoryEmbeddingsBrowserTest, BrowserRetrievesPassages) {
 
   base::test::TestFuture<UrlPassages> future;
   callback_for_tests() = future.GetRepeatingCallback();
-  service()->RetrievePassages({}, *web_contents->GetPrimaryMainFrame());
+  service()->RetrievePassages(
+      {}, web_contents->GetPrimaryMainFrame()->GetWeakDocumentPtr());
 
   UrlPassages url_passages = future.Take();
 

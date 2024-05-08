@@ -50,7 +50,7 @@ class HistoryEmbeddingsTabHelper
 
   // This is called some time after `DidFinishLoad` to do passage extraction.
   // Calls may be canceled by weak pointer invalidation.
-  void ExtractPassages(content::RenderFrameHost* render_frame_host);
+  void ExtractPassages(content::WeakDocumentPtr weak_render_frame_host);
 
   // Invalidates weak pointers and cancels any pending extraction callbacks.
   void CancelExtraction();
