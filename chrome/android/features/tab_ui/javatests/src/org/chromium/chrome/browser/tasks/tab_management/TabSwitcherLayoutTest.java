@@ -2014,8 +2014,7 @@ public class TabSwitcherLayoutTest {
     })
     public void testTabGroupOverflowMenuInTabSwitcher_deleteGroupDoNotShowAgain() {
         final ChromeTabbedActivity cta = mActivityTestRule.getActivity();
-        // TODO(b/338529212): Update the expected string once the content description is correct.
-        String expectedDescription = "Close tab group with 2 tabs, color Grey.";
+        String expectedDescription = "Open the tab group action menu for tab group Test";
         SnackbarManager snackbarManager = cta.getSnackbarManager();
         createTabs(cta, false, 4);
         enterTabSwitcher(cta);
@@ -2027,7 +2026,16 @@ public class TabSwitcherLayoutTest {
                 new ArrayList<>(
                         Arrays.asList(normalTabModel.getTabAt(2), normalTabModel.getTabAt(3)));
         createTabGroup(cta, false, tabGroup);
-        verifyGroupVisualDataDialogOpenedAndDismiss(cta);
+        // Verify the visual data dialog exists.
+        verifyModalDialogShowingAnimationCompleteInTabSwitcher();
+        onViewWaiting(withId(R.id.visual_data_dialog_layout), /* checkRootDialog= */ true)
+                .check(matches(isDisplayed()));
+
+        // Change the title.
+        editGroupVisualDataDialogTitle(cta, "Test");
+        // Accept the change.
+        onView(withId(R.id.positive_button)).perform(click());
+        verifyModalDialogHidingAnimationCompleteInTabSwitcher();
         verifyTabSwitcherCardCount(cta, 3);
 
         // Merge first two tabs into a group.
@@ -2038,7 +2046,7 @@ public class TabSwitcherLayoutTest {
         verifyGroupVisualDataDialogOpenedAndDismiss(cta);
         verifyTabSwitcherCardCount(cta, 2);
 
-        // Click the delete action button to close the group
+        // Click the delete action button to close the group "Test"
         String deleteButtonText = cta.getString(R.string.delete_tab_group_menu_item);
         onView(allOf(withContentDescription(expectedDescription), withId(R.id.action_button)))
                 .perform(click());

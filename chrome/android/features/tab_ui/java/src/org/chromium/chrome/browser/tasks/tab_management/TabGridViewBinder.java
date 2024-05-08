@@ -210,10 +210,10 @@ class TabGridViewBinder {
                     view,
                     model.get(TabProperties.IS_INCOGNITO),
                     model.get(TabProperties.IS_SELECTED));
-        } else if (TabProperties.CLOSE_BUTTON_DESCRIPTION_STRING == propertyKey) {
+        } else if (TabProperties.ACTION_BUTTON_DESCRIPTION_STRING == propertyKey) {
             view.fastFindViewById(R.id.action_button)
                     .setContentDescription(
-                            model.get(TabProperties.CLOSE_BUTTON_DESCRIPTION_STRING));
+                            model.get(TabProperties.ACTION_BUTTON_DESCRIPTION_STRING));
         } else if (TabProperties.QUICK_DELETE_ANIMATION_STATUS == propertyKey) {
             ((ClosableTabGridView) view)
                     .hideTabGridCardViewForQuickDelete(

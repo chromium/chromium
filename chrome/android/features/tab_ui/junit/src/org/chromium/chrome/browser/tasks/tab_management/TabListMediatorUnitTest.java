@@ -3135,6 +3135,10 @@ public class TabListMediatorUnitTest {
     }
 
     @Test
+    @DisableFeatures({
+        ChromeFeatureList.TAB_GROUP_PARITY_ANDROID,
+        ChromeFeatureList.TAB_GROUP_PANE_ANDROID
+    })
     public void testCloseButtonDescriptionStringSetup_TabSwitcher() {
         setUpCloseButtonDescriptionString(false);
         String targetString = "Close Tab1 tab";
@@ -3146,7 +3150,7 @@ public class TabListMediatorUnitTest {
 
         mMediator.resetWithListOfTabs(PseudoTab.getListOfPseudoTab(tabs), false);
         assertThat(
-                mModel.get(POSITION1).model.get(TabProperties.CLOSE_BUTTON_DESCRIPTION_STRING),
+                mModel.get(POSITION1).model.get(TabProperties.ACTION_BUTTON_DESCRIPTION_STRING),
                 equalTo(targetString));
 
         // Create tab group.
@@ -3158,7 +3162,7 @@ public class TabListMediatorUnitTest {
 
         mMediator.resetWithListOfTabs(PseudoTab.getListOfPseudoTab(tabs), false);
         assertThat(
-                mModel.get(POSITION1).model.get(TabProperties.CLOSE_BUTTON_DESCRIPTION_STRING),
+                mModel.get(POSITION1).model.get(TabProperties.ACTION_BUTTON_DESCRIPTION_STRING),
                 equalTo(targetString));
 
         // Set group name.
@@ -3166,11 +3170,15 @@ public class TabListMediatorUnitTest {
         mMediator.getTabGroupTitleEditor().storeTabGroupTitle(TAB1_ID, CUSTOMIZED_DIALOG_TITLE1);
         mMediator.getTabGroupTitleEditor().updateTabGroupTitle(mTab1, CUSTOMIZED_DIALOG_TITLE1);
         assertThat(
-                mModel.get(POSITION1).model.get(TabProperties.CLOSE_BUTTON_DESCRIPTION_STRING),
+                mModel.get(POSITION1).model.get(TabProperties.ACTION_BUTTON_DESCRIPTION_STRING),
                 equalTo(targetString));
     }
 
     @Test
+    @DisableFeatures({
+        ChromeFeatureList.TAB_GROUP_PARITY_ANDROID,
+        ChromeFeatureList.TAB_GROUP_PANE_ANDROID
+    })
     public void testCloseButtonDescriptionStringSetup_SingleTabGroup_TabSwitcher() {
         // Create tab group.
         List<Tab> tabs = Arrays.asList(mTab1);
@@ -3180,7 +3188,7 @@ public class TabListMediatorUnitTest {
 
         mMediator.resetWithListOfTabs(PseudoTab.getListOfPseudoTab(tabs), false);
         assertThat(
-                mModel.get(POSITION1).model.get(TabProperties.CLOSE_BUTTON_DESCRIPTION_STRING),
+                mModel.get(POSITION1).model.get(TabProperties.ACTION_BUTTON_DESCRIPTION_STRING),
                 equalTo(targetString));
 
         // Set group name.
@@ -3188,7 +3196,61 @@ public class TabListMediatorUnitTest {
         mMediator.getTabGroupTitleEditor().storeTabGroupTitle(TAB1_ID, CUSTOMIZED_DIALOG_TITLE1);
         mMediator.getTabGroupTitleEditor().updateTabGroupTitle(mTab1, CUSTOMIZED_DIALOG_TITLE1);
         assertThat(
-                mModel.get(POSITION1).model.get(TabProperties.CLOSE_BUTTON_DESCRIPTION_STRING),
+                mModel.get(POSITION1).model.get(TabProperties.ACTION_BUTTON_DESCRIPTION_STRING),
+                equalTo(targetString));
+    }
+
+    @Test
+    @DisableFeatures({ChromeFeatureList.TAB_GROUP_PANE_ANDROID})
+    @EnableFeatures({ChromeFeatureList.TAB_GROUP_PARITY_ANDROID})
+    public void testCloseButtonDescriptionStringWithColorSetup_TabSwitcher() {
+        // Create tab group.
+        Tab tab3 = prepareTab(TAB3_ID, TAB3_TITLE, TAB3_URL);
+        List<Tab> group1 = new ArrayList<>(Arrays.asList(mTab1, tab3));
+        createTabGroup(group1, TAB1_ID, TAB_GROUP_ID);
+        String targetString = "Close tab group with 2 tabs, color Grey.";
+
+        mMediator.resetWithListOfTabs(PseudoTab.getListOfPseudoTab(group1), false);
+        assertThat(
+                mModel.get(POSITION1).model.get(TabProperties.ACTION_BUTTON_DESCRIPTION_STRING),
+                equalTo(targetString));
+
+        // Set group name.
+        targetString =
+                String.format("Close %s group with 2 tabs, color Grey.", CUSTOMIZED_DIALOG_TITLE1);
+        mMediator.getTabGroupTitleEditor().storeTabGroupTitle(TAB1_ID, CUSTOMIZED_DIALOG_TITLE1);
+        mMediator.getTabGroupTitleEditor().updateTabGroupTitle(mTab1, CUSTOMIZED_DIALOG_TITLE1);
+        assertThat(
+                mModel.get(POSITION1).model.get(TabProperties.ACTION_BUTTON_DESCRIPTION_STRING),
+                equalTo(targetString));
+    }
+
+    @Test
+    @EnableFeatures({
+        ChromeFeatureList.TAB_GROUP_PANE_ANDROID,
+        ChromeFeatureList.TAB_GROUP_PARITY_ANDROID
+    })
+    public void testActionButtonDescriptionStringGroupOverflowMenu_TabSwitcher() {
+        // Create tab group.
+        Tab tab3 = prepareTab(TAB3_ID, TAB3_TITLE, TAB3_URL);
+        List<Tab> group1 = new ArrayList<>(Arrays.asList(mTab1, tab3));
+        createTabGroup(group1, TAB1_ID, TAB_GROUP_ID);
+        String targetString = "Open the tab group action menu for tab group 2 tabs";
+
+        mMediator.resetWithListOfTabs(PseudoTab.getListOfPseudoTab(group1), false);
+        assertThat(
+                mModel.get(POSITION1).model.get(TabProperties.ACTION_BUTTON_DESCRIPTION_STRING),
+                equalTo(targetString));
+
+        // Set group name.
+        targetString =
+                String.format(
+                        "Open the tab group action menu for tab group %s",
+                        CUSTOMIZED_DIALOG_TITLE1);
+        mMediator.getTabGroupTitleEditor().storeTabGroupTitle(TAB1_ID, CUSTOMIZED_DIALOG_TITLE1);
+        mMediator.getTabGroupTitleEditor().updateTabGroupTitle(mTab1, CUSTOMIZED_DIALOG_TITLE1);
+        assertThat(
+                mModel.get(POSITION1).model.get(TabProperties.ACTION_BUTTON_DESCRIPTION_STRING),
                 equalTo(targetString));
     }
 

@@ -8,7 +8,7 @@ import static org.chromium.chrome.browser.tasks.tab_management.MessageCardViewPr
 import static org.chromium.chrome.browser.tasks.tab_management.TabListModel.CardProperties.CARD_ALPHA;
 import static org.chromium.chrome.browser.tasks.tab_management.TabListModel.CardProperties.CARD_TYPE;
 import static org.chromium.chrome.browser.tasks.tab_management.TabListModel.CardProperties.ModelType.TAB;
-import static org.chromium.chrome.browser.tasks.tab_management.TabProperties.CLOSE_BUTTON_DESCRIPTION_STRING;
+import static org.chromium.chrome.browser.tasks.tab_management.TabProperties.ACTION_BUTTON_DESCRIPTION_STRING;
 import static org.chromium.chrome.browser.tasks.tab_management.TabProperties.TAB_ID;
 
 import android.animation.Animator;
@@ -590,8 +590,12 @@ class TabListMediator {
 
                     @Nullable Pair<Integer, Tab> indexAndTab = getIndexAndTabForRootId(rootId);
                     if (indexAndTab == null) return;
+                    PseudoTab pseudoTab = PseudoTab.fromTab(indexAndTab.second);
+                    PropertyModel model = mModel.get(indexAndTab.first).model;
 
-                    mModel.get(indexAndTab.first).model.set(TabProperties.TITLE, newTitle);
+                    model.set(TabProperties.TITLE, newTitle);
+                    updateDescriptionString(pseudoTab, model);
+                    updateActionButtonDescriptionString(pseudoTab, model);
                 }
 
                 @Override
@@ -602,14 +606,16 @@ class TabListMediator {
 
                     @Nullable Pair<Integer, Tab> indexAndTab = getIndexAndTabForRootId(rootId);
                     if (indexAndTab == null) return;
+                    PseudoTab pseudoTab = PseudoTab.fromTab(indexAndTab.second);
+                    PropertyModel model = mModel.get(indexAndTab.first).model;
 
                     if (mMode == TabListMode.LIST) {
-                        mModel.get(indexAndTab.first)
-                                .model
-                                .set(TabProperties.TAB_GROUP_COLOR_ID, newColor);
+                        model.set(TabProperties.TAB_GROUP_COLOR_ID, newColor);
                     } else if (mMode == TabListMode.GRID) {
-                        updateFaviconForTab(PseudoTab.fromTab(indexAndTab.second), null, null);
+                        updateFaviconForTab(pseudoTab, null, null);
                     }
+                    updateDescriptionString(pseudoTab, model);
+                    updateActionButtonDescriptionString(pseudoTab, model);
                 }
 
                 @Override
@@ -1272,7 +1278,7 @@ class TabListMediator {
                         if (index == TabModel.INVALID_TAB_INDEX) return;
                         mModel.get(index).model.set(TabProperties.TITLE, title);
                         updateDescriptionString(PseudoTab.fromTab(tab), mModel.get(index).model);
-                        updateCloseButtonDescriptionString(
+                        updateActionButtonDescriptionString(
                                 PseudoTab.fromTab(tab), mModel.get(index).model);
                     }
 
@@ -1623,7 +1629,7 @@ class TabListMediator {
         }
 
         updateDescriptionString(pseudoTab, mModel.get(index).model);
-        updateCloseButtonDescriptionString(pseudoTab, mModel.get(index).model);
+        updateActionButtonDescriptionString(pseudoTab, mModel.get(index).model);
         if (isRealTab) {
             mModel.get(index)
                     .model
@@ -2003,7 +2009,7 @@ class TabListMediator {
             }
 
             updateDescriptionString(pseudoTab, tabInfo);
-            updateCloseButtonDescriptionString(pseudoTab, tabInfo);
+            updateActionButtonDescriptionString(pseudoTab, tabInfo);
         }
 
         if (index >= mModel.size()) {
@@ -2108,7 +2114,7 @@ class TabListMediator {
         }
     }
 
-    private void updateCloseButtonDescriptionString(PseudoTab pseudoTab, PropertyModel model) {
+    private void updateActionButtonDescriptionString(PseudoTab pseudoTab, PropertyModel model) {
         if (mActionsOnAllRelatedTabs) {
             boolean isInTabGroup = isPseudoTabInTabGroup(pseudoTab);
             int numOfRelatedTabs = getRelatedTabsForId(pseudoTab.getId()).size();
@@ -2116,62 +2122,16 @@ class TabListMediator {
                 String title = getLatestTitleForTab(pseudoTab);
                 title = title.equals(pseudoTab.getTitle(mContext, mTitleProvider)) ? "" : title;
 
-                Resources res = mContext.getResources();
-                if (!ChromeFeatureList.sTabGroupParityAndroid.isEnabled()) {
-                    if (title.isEmpty()) {
-                        model.set(
-                                TabProperties.CLOSE_BUTTON_DESCRIPTION_STRING,
-                                res.getQuantityString(
-                                        R.plurals.accessibility_close_tab_group_button,
-                                        numOfRelatedTabs,
-                                        numOfRelatedTabs));
-                    } else {
-                        model.set(
-                                TabProperties.CLOSE_BUTTON_DESCRIPTION_STRING,
-                                res.getQuantityString(
-                                        R.plurals
-                                                .accessibility_close_tab_group_button_with_group_name,
-                                        numOfRelatedTabs,
-                                        title,
-                                        numOfRelatedTabs));
-                    }
-                } else {
-                    int colorId = TabGroupColorUtils.getTabGroupColor(pseudoTab.getRootId());
-                    // This should never be the case in practice, but if the color is invalid then
-                    // set it to the first color in the list.
-                    if (colorId == INVALID_COLOR_ID) {
-                        colorId = TabGroupColorId.GREY;
-                    }
-                    final @StringRes int colorDescRes =
-                            ColorPickerUtils.getTabGroupColorPickerItemColorAccessibilityString(
-                                    colorId);
-                    String colorDesc = res.getString(colorDescRes);
-                    if (title.isEmpty()) {
-                        model.set(
-                                TabProperties.CLOSE_BUTTON_DESCRIPTION_STRING,
-                                res.getQuantityString(
-                                        R.plurals.accessibility_close_tab_group_button_with_color,
-                                        numOfRelatedTabs,
-                                        numOfRelatedTabs,
-                                        colorDesc));
-                    } else {
-                        model.set(
-                                TabProperties.CLOSE_BUTTON_DESCRIPTION_STRING,
-                                res.getQuantityString(
-                                        R.plurals
-                                                .accessibility_close_tab_group_button_with_group_name_with_color,
-                                        numOfRelatedTabs,
-                                        title,
-                                        numOfRelatedTabs,
-                                        colorDesc));
-                    }
-                }
+                String descriptionString =
+                        getActionButtonDescriptionString(
+                                numOfRelatedTabs, title, pseudoTab.getRootId());
+                model.set(TabProperties.ACTION_BUTTON_DESCRIPTION_STRING, descriptionString);
                 return;
             }
         }
 
         model.set(
-                CLOSE_BUTTON_DESCRIPTION_STRING,
+                ACTION_BUTTON_DESCRIPTION_STRING,
                 mContext.getString(
                         R.string.accessibility_tabstrip_btn_close_tab, pseudoTab.getTitle()));
     }
@@ -2796,6 +2756,62 @@ class TabListMediator {
                 };
 
         mActionConfirmationManager.processUngroupAttempt(onResult);
+    }
+
+    private String getActionButtonDescriptionString(
+            int numOfRelatedTabs, String title, int rootId) {
+        Resources res = mContext.getResources();
+        if (!ChromeFeatureList.sTabGroupParityAndroid.isEnabled()) {
+            if (title.isEmpty()) {
+                return res.getQuantityString(
+                        R.plurals.accessibility_close_tab_group_button,
+                        numOfRelatedTabs,
+                        numOfRelatedTabs);
+            } else {
+                return res.getQuantityString(
+                        R.plurals.accessibility_close_tab_group_button_with_group_name,
+                        numOfRelatedTabs,
+                        title,
+                        numOfRelatedTabs);
+            }
+        } else {
+            if (ChromeFeatureList.sTabGroupPaneAndroid.isEnabled()) {
+                String descriptionTitle = title;
+                if (descriptionTitle.isEmpty()) {
+                    descriptionTitle =
+                            TabGroupTitleEditor.getDefaultTitle(mContext, numOfRelatedTabs);
+                }
+                return res.getString(
+                        R.string.accessibility_open_tab_group_overflow_menu_with_group_name,
+                        descriptionTitle);
+            } else {
+                int colorId = TabGroupColorUtils.getTabGroupColor(rootId);
+                // This should never be the case in practice, but if the color is invalid
+                // then set it to the first color in the list.
+                if (colorId == INVALID_COLOR_ID) {
+                    colorId = TabGroupColorId.GREY;
+                }
+                final @StringRes int colorDescRes =
+                        ColorPickerUtils.getTabGroupColorPickerItemColorAccessibilityString(
+                                colorId);
+                String colorDesc = res.getString(colorDescRes);
+                if (title.isEmpty()) {
+                    return res.getQuantityString(
+                            R.plurals.accessibility_close_tab_group_button_with_color,
+                            numOfRelatedTabs,
+                            numOfRelatedTabs,
+                            colorDesc);
+                } else {
+                    return res.getQuantityString(
+                            R.plurals
+                                    .accessibility_close_tab_group_button_with_group_name_with_color,
+                            numOfRelatedTabs,
+                            title,
+                            numOfRelatedTabs,
+                            colorDesc);
+                }
+            }
+        }
     }
 
     private PropertyModel getModelFromId(int tabId) {

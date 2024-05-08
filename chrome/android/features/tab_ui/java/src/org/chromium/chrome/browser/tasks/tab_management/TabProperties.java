@@ -122,7 +122,7 @@ public class TabProperties {
     public static final WritableObjectPropertyKey<String> CONTENT_DESCRIPTION_STRING =
             new WritableObjectPropertyKey<>();
 
-    public static final WritableObjectPropertyKey<String> CLOSE_BUTTON_DESCRIPTION_STRING =
+    public static final WritableObjectPropertyKey<String> ACTION_BUTTON_DESCRIPTION_STRING =
             new WritableObjectPropertyKey<>();
     public static final WritableBooleanPropertyKey SHOULD_SHOW_PRICE_DROP_TOOLTIP =
             new WritableBooleanPropertyKey();
@@ -165,7 +165,7 @@ public class TabProperties {
                 ACCESSIBILITY_DELEGATE,
                 CARD_TYPE,
                 CONTENT_DESCRIPTION_STRING,
-                CLOSE_BUTTON_DESCRIPTION_STRING,
+                ACTION_BUTTON_DESCRIPTION_STRING,
                 SHOPPING_PERSISTED_TAB_DATA_FETCHER,
                 SHOULD_SHOW_PRICE_DROP_TOOLTIP,
                 QUICK_DELETE_ANIMATION_STATUS,
