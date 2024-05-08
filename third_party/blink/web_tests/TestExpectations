@@ -2369,7 +2369,6 @@ crbug.com/27659 external/wpt/css/css-ruby/ruby-box-generation-003.html [ Failure
 crbug.com/27659 external/wpt/css/css-ruby/ruby-box-generation-004.html [ Failure ]
 crbug.com/27659 external/wpt/css/css-ruby/ruby-box-generation-005.html [ Failure ]
 crbug.com/27659 external/wpt/css/css-ruby/ruby-box-model-001.html [ Failure ]
-crbug.com/27659 external/wpt/css/css-ruby/ruby-float-handling-001.html [ Failure ]
 crbug.com/27659 external/wpt/css/css-ruby/ruby-intra-level-whitespace-003.html [ Failure ]
 crbug.com/27659 external/wpt/css/css-ruby/ruby-intrinsic-isize-001.html [ Failure ]
 crbug.com/27659 external/wpt/css/css-ruby/ruby-intrinsic-isize-002.html [ Failure ]
@@ -7246,7 +7245,6 @@ crbug.com/332068449 [ Mac ] external/wpt/focus/cross-origin-ancestor-activeeleme
 crbug.com/330761492 external/wpt/html/editing/the-hidden-attribute/beforematch-scroll-to-text-fragment.html [ Failure Pass ]
 
 # RubyLineBreakable
-crbug.com/324111880 fast/ruby/float-overhang-from-ruby-text.html [ Failure ]
 crbug.com/324111880 fast/writing-mode/Kusa-Makura-background-canvas.html [ Crash Pass ]
 
 # secure-payment-confirmation tests failed due to set_spc_transaction_mode not implemented

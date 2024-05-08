@@ -1219,13 +1219,29 @@ void InlineItemsBuilderTemplate<MappingBuilder>::AppendBlockInInline(
 template <typename MappingBuilder>
 void InlineItemsBuilderTemplate<MappingBuilder>::AppendFloating(
     LayoutObject* layout_object) {
-  AppendOpaque(InlineItem::kFloating, kObjectReplacementCharacter,
-               layout_object);
+  if (ruby_text_nesting_level_ == 0) {
+    AppendOpaque(InlineItem::kFloating, kObjectReplacementCharacter,
+                 layout_object);
+  } else {
+    // It's hard for LineBreaker to handle floats in <ruby> correctly. So we
+    // append kFloating items after closing a ruby column.
+    pending_floats_in_ruby_.push_back(layout_object);
+  }
   has_floats_ = true;
   // Floats/exclusions require computing line heights, which is currently
   // skipped during the bisect. See `ParagraphLineBreaker`.
   is_bisect_line_break_disabled_ = true;
   // `ScoreLineBreaker` supports "simple" floats. See`LineWidths`.
+}
+
+template <typename MappingBuilder>
+void InlineItemsBuilderTemplate<MappingBuilder>::FlushPendingFloatsInRuby() {
+  DCHECK_EQ(ruby_text_nesting_level_, 0u);
+  for (auto& layout_object : pending_floats_in_ruby_) {
+    AppendOpaque(InlineItem::kFloating, kObjectReplacementCharacter,
+                 layout_object);
+  }
+  pending_floats_in_ruby_.clear();
 }
 
 template <typename MappingBuilder>
@@ -1517,6 +1533,9 @@ void InlineItemsBuilderTemplate<MappingBuilder>::ExitInline(
     }
     AppendOpaque(InlineItem::kCloseRubyColumn, kPopDirectionalIsolateCharacter,
                  node);
+    if (ruby_text_nesting_level_ == 0) {
+      FlushPendingFloatsInRuby();
+    }
   } else if (node->IsInlineRubyText()) {
     AppendOpaque(InlineItem::kRubyLinePlaceholder, node);
   }
@@ -1579,6 +1598,9 @@ void InlineItemsBuilderTemplate<MappingBuilder>::ExitInline(
     } else {
       AppendOpaque(InlineItem::kCloseRubyColumn,
                    kPopDirectionalIsolateCharacter, nullptr);
+      if (ruby_text_nesting_level_ == 0) {
+        FlushPendingFloatsInRuby();
+      }
     }
   }
 
