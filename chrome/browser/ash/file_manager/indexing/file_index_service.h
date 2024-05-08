@@ -52,6 +52,11 @@ class FileIndexService : public KeyedService, FileIndex {
   // Initializes this service; must be called before the service is used.
   bool Init() override;
 
+  // Registers the given file info with this index. This operation must be
+  // completed before terms can be added to or removed from the file with
+  // the matching URL.
+  OpResults PutFileInfo(const FileInfo& info) override;
+
   // Updates terms associated with the file. If the term vector is empty
   // this removes the file info from the index. Otherwise, the given `file_info`
   // is associated with the specified terms. Please note that only the passed
@@ -61,14 +66,14 @@ class FileIndexService : public KeyedService, FileIndex {
   // the given `file_info`. If you want both terms to be associated you must
   // pass both terms in a single call.
   OpResults UpdateFile(const std::vector<Term>& terms,
-                       const FileInfo& info) override;
+                       const GURL& url) override;
 
   // Augments terms associated with the file with the `terms` given as the first
   // argument. Once this operation is finished, the file can be retrieved by any
   // existing terms that were associated with it, or any new terms this call
   // added.
   OpResults AugmentFile(const std::vector<Term>& terms,
-                        const FileInfo& info) override;
+                        const GURL& url) override;
 
   // Removes the file uniquely identified by the URL from this index. This is
   // preferred way of removing files over calling the UpdateFile method with an

@@ -16,12 +16,17 @@ bool FileIndexImpl::Init() {
   return storage_->Init();
 }
 
+OpResults FileIndexImpl::PutFileInfo(const FileInfo& file_info) {
+  return storage_->PutFileInfo(file_info) == -1 ? OpResults::kGenericError
+                                                : OpResults::kSuccess;
+}
+
 OpResults FileIndexImpl::UpdateFile(const std::vector<Term>& terms,
-                                    const FileInfo& info) {
+                                    const GURL& url) {
   if (terms.empty()) {
     return OpResults::kArgumentError;
   }
-  return SetFileTerms(terms, info);
+  return SetFileTerms(terms, url);
 }
 
 OpResults FileIndexImpl::RemoveFile(const GURL& url) {
@@ -63,13 +68,15 @@ OpResults FileIndexImpl::RemoveTerms(const std::vector<Term>& terms,
 }
 
 OpResults FileIndexImpl::AugmentFile(const std::vector<Term>& terms,
-                                     const FileInfo& info) {
+                                     const GURL& url) {
   if (terms.empty()) {
     return OpResults::kSuccess;
   }
 
-  int64_t url_id = storage_->PutFileInfo(info);
-  DCHECK(url_id >= 0);
+  int64_t url_id = storage_->GetUrlId(url);
+  if (url_id == -1) {
+    return OpResults::kFileMissing;
+  }
 
   std::set<int64_t> term_id_set = ConvertToAugmentedTermIds(terms);
   storage_->AddAugmentedTermIdsForUrl(term_id_set, url_id);
@@ -139,13 +146,15 @@ std::set<int64_t> FileIndexImpl::ConvertToAugmentedTermIds(
 }
 
 OpResults FileIndexImpl::SetFileTerms(const std::vector<Term>& terms,
-                                      const FileInfo& info) {
+                                      const GURL& url) {
   DCHECK(!terms.empty());
 
   // Arrange terms by field and remove duplicates and convert to internal IDs.
   std::set<int64_t> term_id_set = ConvertToAugmentedTermIds(terms);
-  int64_t url_id = storage_->PutFileInfo(info);
-  DCHECK(url_id >= 0);
+  int64_t url_id = storage_->GetUrlId(url);
+  if (url_id == -1) {
+    return OpResults::kFileMissing;
+  }
 
   // If the given url_id already had some terms associated with it, remove terms
   // not specified in terms vector. Say, if url_id had terms {t1, t3, t8}

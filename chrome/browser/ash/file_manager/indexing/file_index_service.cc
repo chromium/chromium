@@ -63,20 +63,27 @@ bool FileIndexService::Init() {
 
 FileIndexService::~FileIndexService() = default;
 
-OpResults FileIndexService::UpdateFile(const std::vector<Term>& terms,
-                                       const FileInfo& info) {
+OpResults FileIndexService::PutFileInfo(const FileInfo& file_info) {
   if (!inited_) {
     return kUninitialized;
   }
-  return file_index_impl_->UpdateFile(terms, info);
+  return file_index_impl_->PutFileInfo(file_info);
+}
+
+OpResults FileIndexService::UpdateFile(const std::vector<Term>& terms,
+                                       const GURL& url) {
+  if (!inited_) {
+    return kUninitialized;
+  }
+  return file_index_impl_->UpdateFile(terms, url);
 }
 
 OpResults FileIndexService::AugmentFile(const std::vector<Term>& terms,
-                                        const FileInfo& info) {
+                                        const GURL& url) {
   if (!inited_) {
     return kUninitialized;
   }
-  return file_index_impl_->AugmentFile(terms, info);
+  return file_index_impl_->AugmentFile(terms, url);
 }
 
 OpResults FileIndexService::RemoveFile(const GURL& url) {

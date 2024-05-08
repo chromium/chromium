@@ -29,15 +29,20 @@ class FileIndexImpl : public FileIndex {
   // Initializes this index.
   bool Init() override;
 
+  // Overrides base implementation to store file info in the index. This
+  // operation must be called before you can update terms associated with
+  // the given file.
+  OpResults PutFileInfo(const FileInfo& file_info) override;
+
   // Overrides base implementation to store association between terms
   // and info in in-memory maps.
   OpResults UpdateFile(const std::vector<Term>& terms,
-                       const FileInfo& info) override;
+                       const GURL& url) override;
 
   // Overrides base implementation to associate additional terms with
   // the given file.
   OpResults AugmentFile(const std::vector<Term>& terms,
-                        const FileInfo& info) override;
+                        const GURL& url) override;
 
   // Overrides base implementation to remove information associated with the
   // file with the given `url`. This means removing association between URL ID
@@ -54,7 +59,7 @@ class FileIndexImpl : public FileIndex {
   SearchResults Search(const Query& query) override;
 
  private:
-  OpResults SetFileTerms(const std::vector<Term>& terms, const FileInfo& info);
+  OpResults SetFileTerms(const std::vector<Term>& terms, const GURL& url);
 
   // Does a bulk conversion of given terms to augmented term IDs.
   std::set<int64_t> ConvertToAugmentedTermIds(const std::vector<Term>& terms);
