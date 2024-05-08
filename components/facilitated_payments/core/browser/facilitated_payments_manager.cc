@@ -162,7 +162,16 @@ void FacilitatedPaymentsManager::ProcessPixCodeDetectionResult(
 void FacilitatedPaymentsManager::OnPixCodeValidated(
     std::string pix_code,
     base::expected<bool, std::string> is_pix_code_valid) {
-  if (!is_pix_code_valid.has_value() || !is_pix_code_valid.value()) {
+  if (!is_pix_code_valid.has_value()) {
+    // Pix code validator encountered an error.
+    LogPaymentNotOfferedReason(PaymentNotOfferedReason::kCodeValidatorFailed);
+    Reset();
+    return;
+  }
+
+  if (!is_pix_code_valid.value()) {
+    // Pix code is not valid.
+    LogPaymentNotOfferedReason(PaymentNotOfferedReason::kInvalidCode);
     Reset();
     return;
   }
@@ -189,6 +198,7 @@ void FacilitatedPaymentsManager::OnApiAvailabilityReceived(
   LogIsApiAvailableResult(is_api_available, (base::TimeTicks::Now() -
                                              api_availability_check_latency_));
   if (!is_api_available) {
+    LogPaymentNotOfferedReason(PaymentNotOfferedReason::kApiNotAvailable);
     Reset();
     return;
   }
@@ -219,6 +229,7 @@ void FacilitatedPaymentsManager::OnApiAvailabilityReceived(
 void FacilitatedPaymentsManager::OnRiskDataLoaded(
     const std::string& risk_data) {
   if (risk_data.empty()) {
+    LogPaymentNotOfferedReason(PaymentNotOfferedReason::kRiskDataEmpty);
     Reset();
     return;
   }

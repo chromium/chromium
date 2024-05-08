@@ -28,4 +28,11 @@ void LogGetClientTokenResult(bool result, base::TimeDelta duration) {
                               duration);
 }
 
+void LogPaymentNotOfferedReason(PaymentNotOfferedReason reason) {
+  // TODO(b/337929926): Remove hardcoding for Pix and use
+  // FacilitatedPaymentsType enum.
+  base::UmaHistogramEnumeration(
+      "FacilitatedPayments.Pix.PaymentNotOfferedReason", reason);
+}
+
 }  // namespace payments::facilitated

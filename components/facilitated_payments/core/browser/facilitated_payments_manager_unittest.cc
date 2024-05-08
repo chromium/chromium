@@ -19,6 +19,7 @@
 #include "components/facilitated_payments/core/browser/facilitated_payments_client.h"
 #include "components/facilitated_payments/core/browser/facilitated_payments_driver.h"
 #include "components/facilitated_payments/core/features/features.h"
+#include "components/facilitated_payments/core/metrics/facilitated_payments_metrics.h"
 #include "components/optimization_guide/core/optimization_guide_decider.h"
 #include "components/signin/public/identity_manager/account_info.h"
 #include "components/sync/test/test_sync_service.h"
@@ -852,6 +853,18 @@ TEST_F(FacilitatedPaymentsManagerTest,
   manager_->OnApiAvailabilityReceived(true);
 }
 
+// If the risk data is empty, then the PaymentNotOfferedReason histogram should
+// be logged.
+TEST_F(FacilitatedPaymentsManagerTest, PaymentNotOfferedReason_RiskDataEmpty) {
+  base::HistogramTester histogram_tester;
+  manager_->OnRiskDataLoaded("");
+
+  histogram_tester.ExpectUniqueSample(
+      "FacilitatedPayments.Pix.PaymentNotOfferedReason",
+      /*sample=*/PaymentNotOfferedReason::kRiskDataEmpty,
+      /*expected_bucket_count=*/1);
+}
+
 // If a user has rejected the PIX payment prompt, then the manager does not
 // retrieve a client token from the facilitated payments API client.
 TEST_F(FacilitatedPaymentsManagerTest,
@@ -1081,6 +1094,20 @@ TEST_F(FacilitatedPaymentsManagerWithPixPaymentsEnabledTest,
                                /*is_pix_code_valid=*/false);
 }
 
+// If the PIX code validation in the utility process has returned `false`, then
+// the PaymentNotOfferedReason histogram should be logged.
+TEST_F(FacilitatedPaymentsManagerWithPixPaymentsEnabledTest,
+       PaymentNotOfferedReason_CodeValidatorReturnsFalse) {
+  base::HistogramTester histogram_tester;
+  manager_->OnPixCodeValidated(/*pix_code=*/std::string(),
+                               /*is_pix_code_valid=*/false);
+
+  histogram_tester.ExpectUniqueSample(
+      "FacilitatedPayments.Pix.PaymentNotOfferedReason",
+      /*sample=*/PaymentNotOfferedReason::kInvalidCode,
+      /*expected_bucket_count=*/1);
+}
+
 // If the validation utility process has disconnected (e.g., due to a crash in
 // the validation code), then the manager does not check the API for
 // availability.
@@ -1092,6 +1119,23 @@ TEST_F(FacilitatedPaymentsManagerWithPixPaymentsEnabledTest,
       /*pix_code=*/std::string(),
       /*is_pix_code_valid=*/base::unexpected(
           "Data Decoder terminated unexpectedly"));
+}
+
+// If the validation utility process has disconnected (e.g., due to a crash in
+// the validation code), then the PaymentNotOfferedReason histogram should be
+// logged.
+TEST_F(FacilitatedPaymentsManagerWithPixPaymentsEnabledTest,
+       PaymentNotOfferedReason_CodeValidatorFailed) {
+  base::HistogramTester histogram_tester;
+  manager_->OnPixCodeValidated(
+      /*pix_code=*/std::string(),
+      /*is_pix_code_valid=*/base::unexpected(
+          "Data Decoder terminated unexpectedly"));
+
+  histogram_tester.ExpectUniqueSample(
+      "FacilitatedPayments.Pix.PaymentNotOfferedReason",
+      /*sample=*/PaymentNotOfferedReason::kCodeValidatorFailed,
+      /*expected_bucket_count=*/1);
 }
 
 // If the user doesn't have any linked PIX accounts, the manager does not check
@@ -1172,6 +1216,21 @@ TEST_F(FacilitatedPaymentsManagerWithPixPaymentsEnabledTest,
   histogram_tester.ExpectUniqueSample(
       "FacilitatedPayments.Pix.IsApiAvailable.Latency",
       /*sample=*/2000,
+      /*expected_bucket_count=*/1);
+}
+
+// The `IsAvailable` async call is made after a valid Pix code has been
+// detected. This test verifies that if the api available result is false, the
+// PaymentNotOfferedReason histogram is logged.
+TEST_F(FacilitatedPaymentsManagerWithPixPaymentsEnabledTest,
+       PaymentNotOfferedReason_ApiNotAvailable) {
+  base::HistogramTester histogram_tester;
+
+  manager_->OnApiAvailabilityReceived(false);
+
+  histogram_tester.ExpectUniqueSample(
+      "FacilitatedPayments.Pix.PaymentNotOfferedReason",
+      /*sample=*/PaymentNotOfferedReason::kApiNotAvailable,
       /*expected_bucket_count=*/1);
 }
 

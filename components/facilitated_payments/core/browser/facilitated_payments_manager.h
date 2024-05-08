@@ -112,6 +112,9 @@ class FacilitatedPaymentsManager {
   FRIEND_TEST_ALL_PREFIXES(
       FacilitatedPaymentsManagerTest,
       ApiClientAvailable_RiskDataNotLoaded_TriggersLoadRiskData);
+  FRIEND_TEST_ALL_PREFIXES(FacilitatedPaymentsManagerTest,
+                           PaymentNotOfferedReason_RiskDataEmpty);
+
   FRIEND_TEST_ALL_PREFIXES(
       FacilitatedPaymentsManagerTest,
       ApiClientAvailable_RiskDataLoaded_DoesNotTriggerLoadRiskData);
@@ -152,12 +155,18 @@ class FacilitatedPaymentsManager {
   FRIEND_TEST_ALL_PREFIXES(FacilitatedPaymentsManagerWithPixPaymentsEnabledTest,
                            PixCodeValidated_ApiClientTriggered);
   FRIEND_TEST_ALL_PREFIXES(FacilitatedPaymentsManagerWithPixPaymentsEnabledTest,
+                           PaymentNotOfferedReason_CodeValidatorReturnsFalse);
+  FRIEND_TEST_ALL_PREFIXES(FacilitatedPaymentsManagerWithPixPaymentsEnabledTest,
                            PixCodeValidationFailed_NoApiClientTriggered);
+  FRIEND_TEST_ALL_PREFIXES(FacilitatedPaymentsManagerWithPixPaymentsEnabledTest,
+                           PaymentNotOfferedReason_CodeValidatorFailed);
   FRIEND_TEST_ALL_PREFIXES(FacilitatedPaymentsManagerWithPixPaymentsEnabledTest,
                            ApiAvailabilityHistogram);
   FRIEND_TEST_ALL_PREFIXES(
       FacilitatedPaymentsManagerWithPixPaymentsEnabledTest,
       PixCodeValidatorTerminatedUnexpectedly_NoApiClientTriggered);
+  FRIEND_TEST_ALL_PREFIXES(FacilitatedPaymentsManagerWithPixPaymentsEnabledTest,
+                           PaymentNotOfferedReason_ApiNotAvailable);
 
   // Register optimization guide deciders for PIX. It is an allowlist of URLs
   // where we attempt PIX code detection.

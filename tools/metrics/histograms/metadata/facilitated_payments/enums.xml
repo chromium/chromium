@@ -21,6 +21,15 @@ reviewer.
 
 <!-- Enum types -->
 
-<enums/>
+<enums>
+
+<enum name="FacilitatedPayments.PaymentNotOfferedReason">
+  <int value="0" label="Api not available"/>
+  <int value="1" label="Risk data empty"/>
+  <int value="2" label="Code validtor failed"/>
+  <int value="3" label="Invalid code"/>
+</enum>
+
+</enums>
 
 </histogram-configuration>

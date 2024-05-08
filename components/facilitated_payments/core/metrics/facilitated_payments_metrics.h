@@ -11,11 +11,27 @@ class TimeDelta;
 
 namespace payments::facilitated {
 
+// Reasons for why the payment was not offered. These only include the reasons
+// after the renderer has detected a valid code and sent the signal to the
+// browser process.
+enum class PaymentNotOfferedReason {
+  kApiNotAvailable = 0,
+  kRiskDataEmpty = 1,
+  kCodeValidatorFailed = 2,
+  kInvalidCode = 3,
+  kMaxValue = kInvalidCode
+};
+
 // Log the result of whether the facilitated payments is available or not.
 void LogIsApiAvailableResult(bool result, base::TimeDelta duration);
 
 // Log the result of the GetClientToken call made to api client.
 void LogGetClientTokenResult(bool result, base::TimeDelta duration);
+
+// Log the reason for the payment option not offered to the user. This includes
+// all the reasons after receiving a signal from the renderer process that a
+// valid code has been found.
+void LogPaymentNotOfferedReason(PaymentNotOfferedReason reason);
 
 }  // namespace payments::facilitated
 

@@ -39,4 +39,15 @@ TEST(FacilitatedPaymentsMetricsTest, LogGetClientTokenResult) {
       /*expected_bucket_count=*/1);
 }
 
+TEST(FacilitatedPaymentsMetricsTest, LogPaymentNotOfferedReason) {
+  base::HistogramTester histogram_tester;
+
+  LogPaymentNotOfferedReason(PaymentNotOfferedReason::kApiNotAvailable);
+
+  histogram_tester.ExpectUniqueSample(
+      "FacilitatedPayments.Pix.PaymentNotOfferedReason",
+      /*sample=*/PaymentNotOfferedReason::kApiNotAvailable,
+      /*expected_bucket_count=*/1);
+}
+
 }  // namespace payments::facilitated

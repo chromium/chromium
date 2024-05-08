@@ -94,6 +94,23 @@ reviewer.
   <token key="FacilitatedPaymentsType" variants="FacilitatedPaymentsTypes"/>
 </histogram>
 
+<histogram
+    name="FacilitatedPayments.{FacilitatedPaymentsType}.PaymentNotOfferedReason"
+    enum="FacilitatedPayments.PaymentNotOfferedReason"
+    expires_after="2024-09-01">
+  <owner>siashah@google.com</owner>
+  <owner>vishwasuppoor@google.com</owner>
+  <owner>rouslan@google.com</owner>
+  <owner>payments-autofill-team@google.com</owner>
+  <summary>
+    On a webpage that is eligible for facilitated payments, this histogram logs
+    the reasons for the payment option not being offered to the user.
+    [Frequency] Logged at most once per page load. [Trigger] Page is loaded and
+    accoridng to the renderer the main frame contains a valid payment code for
+    {FacilitatedPaymentsType}.
+  </summary>
+</histogram>
+
 </histograms>
 
 </histogram-configuration>
