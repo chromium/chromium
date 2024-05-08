@@ -9,6 +9,7 @@
 #include "third_party/blink/renderer/core/dom/shadow_root.h"
 #include "third_party/blink/renderer/core/frame/local_frame.h"
 #include "third_party/blink/renderer/core/frame/visual_viewport.h"
+#include "third_party/blink/renderer/core/fullscreen/fullscreen.h"
 #include "third_party/blink/renderer/core/html/media/html_video_element.h"
 #include "third_party/blink/renderer/core/input/event_handler.h"
 #include "third_party/blink/renderer/core/layout/hit_test_result.h"
@@ -215,6 +216,31 @@ void RecordTotalCounts(const MediaVideoVisibilityTracker::Metrics& counts) {
       total_hit_tested_nodes_contributing_to_occlusion_percentage);
 }
 
+const Vector<AtomicString>& FullscreenEventTypes() {
+  DEFINE_STATIC_LOCAL(const Vector<AtomicString>, fullscreen_change_event_types,
+                      ({event_type_names::kWebkitfullscreenchange,
+                        event_type_names::kFullscreenchange}));
+  return fullscreen_change_event_types;
+}
+
+// Returns true if `target` has `listener` event listener registered.
+bool HasEventListenerRegistered(EventTarget& target,
+                                const AtomicString& event_type,
+                                const EventListener* listener) {
+  EventListenerVector* listeners = target.GetEventListeners(event_type);
+  if (!listeners) {
+    return false;
+  }
+
+  for (const auto& registered_listener : *listeners) {
+    if (registered_listener->Callback() == listener) {
+      return true;
+    }
+  }
+
+  return false;
+}
+
 }  // anonymous namespace
 
 MediaVideoVisibilityTracker::MediaVideoVisibilityTracker(
@@ -251,6 +277,7 @@ void MediaVideoVisibilityTracker::Attach() {
   }
 
   document_view->RegisterForLifecycleNotifications(this);
+  MaybeAddFullscreenEventListeners();
 
   tracker_attached_to_document_ = document;
 }
@@ -264,13 +291,23 @@ void MediaVideoVisibilityTracker::Detach() {
     view->UnregisterFromLifecycleNotifications(this);
   }
 
+  MaybeRemoveFullscreenEventListeners();
+
   tracker_attached_to_document_ = nullptr;
 }
 
 void MediaVideoVisibilityTracker::UpdateVisibilityTrackerState() {
   const auto& video_element = VideoElement();
+
+  // `fullscreen_element` is used to determine if any element within the
+  // document is in fullscreen. This could be the video element itself, or any
+  // other element.
+  Element* fullscreen_element =
+      Fullscreen::FullscreenElementFrom(video_element.GetDocument());
+
   if (video_element.GetWebMediaPlayer() &&
-      video_element.GetExecutionContext() && !video_element.paused()) {
+      video_element.GetExecutionContext() && !video_element.paused() &&
+      !fullscreen_element) {
     Attach();
   } else {
     Detach();
@@ -279,6 +316,62 @@ void MediaVideoVisibilityTracker::UpdateVisibilityTrackerState() {
 
 void MediaVideoVisibilityTracker::ElementDidMoveToNewDocument() {
   Detach();
+}
+
+void MediaVideoVisibilityTracker::Invoke(ExecutionContext* context,
+                                         Event* event) {
+  DCHECK(base::Contains(FullscreenEventTypes(), event->type()));
+
+  // Video is not loaded yet.
+  if (VideoElement().getReadyState() < HTMLMediaElement::kHaveMetadata) {
+    return;
+  }
+
+  UpdateVisibilityTrackerState();
+}
+
+void MediaVideoVisibilityTracker::MaybeAddFullscreenEventListeners() {
+  auto& document = VideoElement().GetDocument();
+  for (const auto& event_type : FullscreenEventTypes()) {
+    // Ignore event listeners that have already been registered.
+    if (HasEventListenerRegistered(document, event_type, this)) {
+      continue;
+    }
+    document.addEventListener(event_type, this, true);
+  }
+}
+
+void MediaVideoVisibilityTracker::MaybeRemoveFullscreenEventListeners() {
+  DCHECK(tracker_attached_to_document_);
+  auto& video_element = VideoElement();
+  auto& document = VideoElement().GetDocument();
+
+  if (video_element.isConnected() &&
+      document == tracker_attached_to_document_) {
+    return;
+  }
+
+  if (!video_element.isConnected()) {
+    // Ignore event listeners that have already been removed.
+    for (const auto& event_type : FullscreenEventTypes()) {
+      if (!HasEventListenerRegistered(document, event_type, this)) {
+        continue;
+      }
+      document.removeEventListener(event_type, this, true);
+    }
+  }
+
+  if (document != tracker_attached_to_document_) {
+    // Ignore event listeners that have already been removed.
+    for (const auto& event_type : FullscreenEventTypes()) {
+      if (!HasEventListenerRegistered(*tracker_attached_to_document_.Get(),
+                                      event_type, this)) {
+        continue;
+      }
+      tracker_attached_to_document_->removeEventListener(event_type, this,
+                                                         true);
+    }
+  }
 }
 
 ListBasedHitTestBehavior MediaVideoVisibilityTracker::ComputeOcclusion(
@@ -421,6 +514,7 @@ void MediaVideoVisibilityTracker::DidFinishLifecycleUpdate(
 }
 
 void MediaVideoVisibilityTracker::Trace(Visitor* visitor) const {
+  NativeEventListener::Trace(visitor);
   visitor->Trace(video_element_);
   visitor->Trace(tracker_attached_to_document_);
 }

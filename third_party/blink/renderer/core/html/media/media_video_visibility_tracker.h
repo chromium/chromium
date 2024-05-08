@@ -7,6 +7,7 @@
 
 #include "base/functional/callback.h"
 #include "third_party/blink/renderer/core/core_export.h"
+#include "third_party/blink/renderer/core/dom/events/native_event_listener.h"
 #include "third_party/blink/renderer/core/frame/local_frame_view.h"
 #include "third_party/blink/renderer/core/layout/geometry/physical_rect.h"
 #include "third_party/blink/renderer/core/layout/hit_test_request.h"
@@ -26,7 +27,7 @@ class HTMLVideoElement;
 // not occluded by other html elements within the page, with the exception of
 // MediaControls.
 class CORE_EXPORT MediaVideoVisibilityTracker final
-    : public GarbageCollected<MediaVideoVisibilityTracker>,
+    : public NativeEventListener,
       public LocalFrameView::LifecycleNotificationObserver {
  public:
   // Struct to hold various counts, only used for metrics collection.
@@ -59,7 +60,7 @@ class CORE_EXPORT MediaVideoVisibilityTracker final
       float visibility_threshold,
       ReportVisibilityCb report_visibility_cb,
       base::TimeDelta hit_test_interval = kMinimumAllowedHitTestInterval);
-  ~MediaVideoVisibilityTracker();
+  ~MediaVideoVisibilityTracker() override;
 
   // Updates the visibility tracker state by attaching/detaching the tracker as
   // needed. It is safe to call this method regardless of whether the tracker is
@@ -69,6 +70,13 @@ class CORE_EXPORT MediaVideoVisibilityTracker final
   // Called by the |HTMLVideoElement| |DidMoveToNewDocument| method to detach
   // the visibility tracker.
   void ElementDidMoveToNewDocument();
+
+  // EventListener implementation.
+  void Invoke(ExecutionContext*, Event*) override;
+
+  void MaybeAddFullscreenEventListeners();
+  void MaybeRemoveFullscreenEventListeners();
+
   void Trace(Visitor*) const override;
 
  private:

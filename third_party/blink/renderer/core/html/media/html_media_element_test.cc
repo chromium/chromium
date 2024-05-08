@@ -16,9 +16,11 @@
 #include "third_party/blink/public/platform/web_media_player.h"
 #include "third_party/blink/public/platform/web_media_player_source.h"
 #include "third_party/blink/renderer/core/dom/dom_implementation.h"
+#include "third_party/blink/renderer/core/dom/element.h"
 #include "third_party/blink/renderer/core/frame/local_dom_window.h"
 #include "third_party/blink/renderer/core/frame/local_frame.h"
 #include "third_party/blink/renderer/core/frame/settings.h"
+#include "third_party/blink/renderer/core/fullscreen/fullscreen.h"
 #include "third_party/blink/renderer/core/html/html_document.h"
 #include "third_party/blink/renderer/core/html/media/html_audio_element.h"
 #include "third_party/blink/renderer/core/html/media/html_video_element.h"
@@ -121,6 +123,20 @@ class WebMediaStubLocalFrameClient : public EmptyLocalFrameClient {
 
  private:
   std::unique_ptr<WebMediaPlayer> player_;
+};
+
+class FullscreenMockChromeClient : public EmptyChromeClient {
+ public:
+  // ChromeClient overrides:
+  void EnterFullscreen(LocalFrame& frame,
+                       const FullscreenOptions*,
+                       FullscreenRequestType) override {
+    Fullscreen::DidResolveEnterFullscreenRequest(*frame.GetDocument(),
+                                                 true /* granted */);
+  }
+  void ExitFullscreen(LocalFrame& frame) override {
+    Fullscreen::DidExitFullscreen(*frame.GetDocument());
+  }
 };
 
 // Helper class that provides an implementation of the MediaPlayerObserver mojo
@@ -294,8 +310,9 @@ class HTMLMediaElementTest : public testing::TestWithParam<MediaTestParam> {
         .WillRepeatedly(Return(WebMediaPlayer::kNetworkStateIdle));
     EXPECT_CALL(*mock_media_player, SetLatencyHint(_)).Times(AnyNumber());
 
+    chrome_client_ = MakeGarbageCollected<FullscreenMockChromeClient>();
     dummy_page_holder_ = std::make_unique<DummyPageHolder>(
-        gfx::Size(), nullptr,
+        gfx::Size(), chrome_client_,
         MakeGarbageCollected<WebMediaStubLocalFrameClient>(
             std::move(mock_media_player)));
 
@@ -380,6 +397,11 @@ class HTMLMediaElementTest : public testing::TestWithParam<MediaTestParam> {
   void TimeChanged() { Media()->TimeChanged(); }
 
   void ContextDestroyed() { Media()->ContextDestroyed(); }
+
+  MediaVideoVisibilityTracker* VideoVisibilityTracker() {
+    auto* video = DynamicTo<HTMLVideoElement>(Media());
+    return video ? video->visibility_tracker_for_tests() : nullptr;
+  }
 
   MediaVideoVisibilityTracker::TrackerAttachedToDocument
   VideoVisibilityTrackerAttachedToDocument(HTMLVideoElement* video) const {
@@ -556,6 +578,57 @@ class HTMLMediaElementTest : public testing::TestWithParam<MediaTestParam> {
     EXPECT_FALSE(WasPlayerDestroyed());
   }
 
+  bool HasEventListenerRegistered(EventTarget& target,
+                                  const AtomicString& event_type,
+                                  const EventListener* listener) const {
+    EventListenerVector* listeners = target.GetEventListeners(event_type);
+    if (!listeners) {
+      return false;
+    }
+
+    for (const auto& registered_listener : *listeners) {
+      if (registered_listener->Callback() == listener) {
+        return true;
+      }
+    }
+
+    return false;
+  }
+
+  void SimulateEnterFullscreen(Element* element) {
+    {
+      LocalFrame::NotifyUserActivation(
+          element->GetDocument().GetFrame(),
+          mojom::UserActivationNotificationType::kTest);
+      Fullscreen::RequestFullscreen(*element);
+    }
+    test::RunPendingTasks();
+
+    if (auto* video = DynamicTo<HTMLVideoElement>(element); video) {
+      video->DidEnterFullscreen();
+      EXPECT_TRUE(video->IsFullscreen());
+    }
+
+    element->GetDocument().DispatchEvent(
+        *Event::Create(event_type_names::kFullscreenchange));
+    EXPECT_EQ(element,
+              Fullscreen::FullscreenElementFrom(element->GetDocument()));
+  }
+
+  void SimulateExitFullscreen(Element* element) {
+    Fullscreen::FullyExitFullscreen(element->GetDocument());
+
+    if (auto* video = DynamicTo<HTMLVideoElement>(element); video) {
+      video->DidExitFullscreen();
+      EXPECT_FALSE(video->IsFullscreen());
+    }
+
+    element->GetDocument().DispatchEvent(
+        *Event::Create(event_type_names::kFullscreenchange));
+    EXPECT_EQ(nullptr,
+              Fullscreen::FullscreenElementFrom(element->GetDocument()));
+  }
+
   test::TaskEnvironment task_environment_;
   std::unique_ptr<DummyPageHolder> dummy_page_holder_;
 
@@ -565,6 +638,7 @@ class HTMLMediaElementTest : public testing::TestWithParam<MediaTestParam> {
   }
 
   Persistent<HTMLMediaElement> media_;
+  Persistent<FullscreenMockChromeClient> chrome_client_;
 
   // Owned by WebMediaStubLocalFrameClient.
   MockWebMediaPlayer* media_player_;
@@ -1653,12 +1727,12 @@ TEST_P(HTMLMediaElementTest, VideoVisibilityTrackerDetachedOnPause) {
   video->SetSrc(SrcSchemeToURL(TestURLScheme::kHttp));
   video->GetDocument().body()->AppendChild(video);
   test::RunPendingTasks();
-  ASSERT_EQ(video->visibility_tracker_for_tests(), nullptr);
+  ASSERT_EQ(VideoVisibilityTracker(), nullptr);
 
   SetReadyState(HTMLMediaElement::kHaveEnoughData);
   test::RunPendingTasks();
   video->Play();
-  ASSERT_NE(video->visibility_tracker_for_tests(), nullptr);
+  ASSERT_NE(VideoVisibilityTracker(), nullptr);
   EXPECT_NE(VideoVisibilityTrackerAttachedToDocument(video), nullptr);
 
   // Pause the video, and verify that the visibility tracker has been detached.
@@ -1675,12 +1749,12 @@ TEST_P(HTMLMediaElementTest, VideoVisibilityTrackerDetachedOnEnded) {
   video->SetSrc(SrcSchemeToURL(TestURLScheme::kHttp));
   video->GetDocument().body()->AppendChild(video);
   test::RunPendingTasks();
-  ASSERT_EQ(video->visibility_tracker_for_tests(), nullptr);
+  ASSERT_EQ(VideoVisibilityTracker(), nullptr);
 
   SetReadyState(HTMLMediaElement::kHaveEnoughData);
   test::RunPendingTasks();
   video->Play();
-  ASSERT_NE(video->visibility_tracker_for_tests(), nullptr);
+  ASSERT_NE(VideoVisibilityTracker(), nullptr);
   EXPECT_NE(VideoVisibilityTrackerAttachedToDocument(video), nullptr);
 
   MockWebMediaPlayer* mock_wmpi =
@@ -1707,12 +1781,12 @@ TEST_P(HTMLMediaElementTest, VideoVisibilityTrackerDetachedOnContextDestroyed) {
   video->SetSrc(SrcSchemeToURL(TestURLScheme::kHttp));
   video->GetDocument().body()->AppendChild(video);
   test::RunPendingTasks();
-  ASSERT_EQ(video->visibility_tracker_for_tests(), nullptr);
+  ASSERT_EQ(VideoVisibilityTracker(), nullptr);
 
   SetReadyState(HTMLMediaElement::kHaveEnoughData);
   test::RunPendingTasks();
   video->Play();
-  ASSERT_NE(video->visibility_tracker_for_tests(), nullptr);
+  ASSERT_NE(VideoVisibilityTracker(), nullptr);
   EXPECT_NE(VideoVisibilityTrackerAttachedToDocument(video), nullptr);
 
   // Destroy context, and verify that the visibility tracker has been detached.
@@ -1729,12 +1803,12 @@ TEST_P(HTMLMediaElementTest, VideoVisibilityTrackerDetachedOnRemovedFrom) {
   video->GetDocument().body()->AppendChild(video);
   video->SetSrc(SrcSchemeToURL(TestURLScheme::kHttp));
   test::RunPendingTasks();
-  ASSERT_EQ(video->visibility_tracker_for_tests(), nullptr);
+  ASSERT_EQ(VideoVisibilityTracker(), nullptr);
 
   SetReadyState(HTMLMediaElement::kHaveEnoughData);
   test::RunPendingTasks();
   video->Play();
-  ASSERT_NE(video->visibility_tracker_for_tests(), nullptr);
+  ASSERT_NE(VideoVisibilityTracker(), nullptr);
   EXPECT_NE(VideoVisibilityTrackerAttachedToDocument(video), nullptr);
 
   // Remove video, and verify that the visibility tracker has been detached.
@@ -1755,13 +1829,13 @@ TEST_P(HTMLMediaElementTest,
   video->GetDocument().body()->AppendChild(video);
   video->SetSrc(SrcSchemeToURL(TestURLScheme::kHttp));
   test::RunPendingTasks();
-  ASSERT_EQ(video->visibility_tracker_for_tests(), nullptr);
+  ASSERT_EQ(VideoVisibilityTracker(), nullptr);
 
   SetReadyState(HTMLMediaElement::kHaveEnoughData);
   test::RunPendingTasks();
   video->Play();
   EXPECT_TRUE(video->GetWebMediaPlayer());
-  ASSERT_NE(video->visibility_tracker_for_tests(), nullptr);
+  ASSERT_NE(VideoVisibilityTracker(), nullptr);
   EXPECT_NE(VideoVisibilityTrackerAttachedToDocument(video), nullptr);
 
   // Clear media player, and verify that the visibility tracker has been
@@ -1787,7 +1861,7 @@ TEST_P(HTMLMediaElementTest,
       reinterpret_cast<MockWebMediaPlayer*>(video->GetWebMediaPlayer());
   ASSERT_NE(mock_wmpi, nullptr);
   EXPECT_CALL(*mock_wmpi, CurrentTime())
-      .WillRepeatedly(Return(video->duration() - video->duration() / 2));
+      .WillRepeatedly(Return(video->duration() / 2));
   EXPECT_CALL(*mock_wmpi, IsEnded()).WillRepeatedly(Return(false));
 
   SetReadyState(HTMLMediaElement::kHaveEnoughData);
@@ -1811,6 +1885,314 @@ TEST_P(HTMLMediaElementTest,
 
   // Ensure that tracker is re-used.
   EXPECT_EQ(tracker_before_append, tracker_after_append);
+}
+
+TEST_P(HTMLMediaElementTest,
+       VideoVisibilityTrackerStatusUpdatedOnVideoEnterAndExitFullscreen) {
+  if (GetParam() != MediaTestParam::kVideo) {
+    return;
+  }
+
+  auto* video = To<HTMLVideoElement>(Media());
+  video->GetDocument().body()->AppendChild(video);
+  video->SetSrc(SrcSchemeToURL(TestURLScheme::kHttp));
+  test::RunPendingTasks();
+  ASSERT_EQ(VideoVisibilityTracker(), nullptr);
+
+  SetReadyState(HTMLMediaElement::kHaveEnoughData);
+  test::RunPendingTasks();
+
+  video->Play();
+  EXPECT_TRUE(video->GetWebMediaPlayer());
+  ASSERT_NE(VideoVisibilityTracker(), nullptr);
+  EXPECT_NE(VideoVisibilityTrackerAttachedToDocument(video), nullptr);
+  EXPECT_FALSE(video->IsFullscreen());
+  EXPECT_TRUE(HasEventListenerRegistered(video->GetDocument(),
+                                         event_type_names::kFullscreenchange,
+                                         VideoVisibilityTracker()));
+
+  // Simulate enter fullscreen, and verify that: the visibility tracker has been
+  // detached and, the fullscreen change event listener is not removed.
+  SimulateEnterFullscreen(video);
+  EXPECT_EQ(VideoVisibilityTrackerAttachedToDocument(video), nullptr);
+  EXPECT_TRUE(HasEventListenerRegistered(video->GetDocument(),
+                                         event_type_names::kFullscreenchange,
+                                         VideoVisibilityTracker()));
+
+  // Simulate exit fullscreen, and verify that: the visibility tracker has been
+  // attached and, the fullscreen change event listener is not removed.
+  SimulateExitFullscreen(video);
+  EXPECT_NE(VideoVisibilityTrackerAttachedToDocument(video), nullptr);
+  EXPECT_TRUE(HasEventListenerRegistered(video->GetDocument(),
+                                         event_type_names::kFullscreenchange,
+                                         VideoVisibilityTracker()));
+}
+
+TEST_P(HTMLMediaElementTest,
+       VideoVisibilityTrackerStatusUpdatedOnAnyElementEnterAndExitFullscreen) {
+  if (GetParam() != MediaTestParam::kVideo) {
+    return;
+  }
+
+  auto* video = To<HTMLVideoElement>(Media());
+
+  video->GetDocument().body()->setInnerHTML(
+      "<div id='fullscreen-div' style='width:200px; height:200px;'></div>");
+  Element* fullscreen_div = video->GetDocument().body()->getElementById(
+      AtomicString("fullscreen-div"));
+  video->GetDocument().body()->AppendChild(video);
+  video->SetSrc(SrcSchemeToURL(TestURLScheme::kHttp));
+  test::RunPendingTasks();
+  ASSERT_EQ(VideoVisibilityTracker(), nullptr);
+  EXPECT_EQ(nullptr, Fullscreen::FullscreenElementFrom(video->GetDocument()));
+
+  SetReadyState(HTMLMediaElement::kHaveEnoughData);
+  test::RunPendingTasks();
+
+  video->Play();
+  EXPECT_TRUE(video->GetWebMediaPlayer());
+  ASSERT_NE(VideoVisibilityTracker(), nullptr);
+  EXPECT_NE(VideoVisibilityTrackerAttachedToDocument(video), nullptr);
+  EXPECT_TRUE(HasEventListenerRegistered(video->GetDocument(),
+                                         event_type_names::kFullscreenchange,
+                                         VideoVisibilityTracker()));
+
+  // Simulate enter fullscreen on fullscreen_div, and verify that: the
+  // visibility tracker has been detached and, the fullscreen change event
+  // listener is not removed.
+  SimulateEnterFullscreen(fullscreen_div);
+  EXPECT_EQ(VideoVisibilityTrackerAttachedToDocument(video), nullptr);
+  EXPECT_TRUE(HasEventListenerRegistered(video->GetDocument(),
+                                         event_type_names::kFullscreenchange,
+                                         VideoVisibilityTracker()));
+
+  // Simulate exit fullscreen on fullscreen_div, and verify that: the visibility
+  // tracker has been attached and, the fullscreen change event listener is not
+  // removed.
+  SimulateExitFullscreen(fullscreen_div);
+  EXPECT_NE(VideoVisibilityTrackerAttachedToDocument(video), nullptr);
+  EXPECT_TRUE(HasEventListenerRegistered(video->GetDocument(),
+                                         event_type_names::kFullscreenchange,
+                                         VideoVisibilityTracker()));
+}
+
+TEST_P(HTMLMediaElementTest,
+       VideoVisibilityTrackerDetachedOnEnterFullscreenAfterVideoPauseThenPlay) {
+  if (GetParam() != MediaTestParam::kVideo) {
+    return;
+  }
+
+  auto* video = To<HTMLVideoElement>(Media());
+  video->GetDocument().body()->AppendChild(video);
+  video->SetSrc(SrcSchemeToURL(TestURLScheme::kHttp));
+  test::RunPendingTasks();
+  ASSERT_EQ(VideoVisibilityTracker(), nullptr);
+
+  SetReadyState(HTMLMediaElement::kHaveEnoughData);
+  test::RunPendingTasks();
+
+  // Play video, and verify that: the visibility tracker has been
+  // attached and, the fullscreen change event listener has been registered.
+  video->Play();
+  ASSERT_NE(VideoVisibilityTracker(), nullptr);
+  EXPECT_NE(VideoVisibilityTrackerAttachedToDocument(video), nullptr);
+  EXPECT_TRUE(HasEventListenerRegistered(video->GetDocument(),
+                                         event_type_names::kFullscreenchange,
+                                         VideoVisibilityTracker()));
+
+  // Pause video, and verify that: the visibility tracker has been
+  // detached and, the fullscreen change event listener is not removed.
+  video->pause();
+  ASSERT_NE(VideoVisibilityTracker(), nullptr);
+  EXPECT_EQ(VideoVisibilityTrackerAttachedToDocument(video), nullptr);
+  EXPECT_TRUE(HasEventListenerRegistered(video->GetDocument(),
+                                         event_type_names::kFullscreenchange,
+                                         VideoVisibilityTracker()));
+
+  // Play video once again, and verify that: the visibility tracker has been
+  // attached and, the fullscreen change event listener is not removed.
+  video->Play();
+  ASSERT_NE(VideoVisibilityTracker(), nullptr);
+  EXPECT_NE(VideoVisibilityTrackerAttachedToDocument(video), nullptr);
+  EXPECT_TRUE(HasEventListenerRegistered(video->GetDocument(),
+                                         event_type_names::kFullscreenchange,
+                                         VideoVisibilityTracker()));
+
+  // Simulate enter fullscreen, and verify that: the visibility tracker has been
+  // detached and, the fullscreen change event listener is not removed.
+  SimulateEnterFullscreen(video);
+  EXPECT_EQ(VideoVisibilityTrackerAttachedToDocument(video), nullptr);
+  EXPECT_TRUE(HasEventListenerRegistered(video->GetDocument(),
+                                         event_type_names::kFullscreenchange,
+                                         VideoVisibilityTracker()));
+
+  // Simulate exit fullscreen, and verify that: the visibility tracker has been
+  // attached and, the fullscreen change event listener is not removed.
+  SimulateExitFullscreen(video);
+  EXPECT_NE(VideoVisibilityTrackerAttachedToDocument(video), nullptr);
+  EXPECT_TRUE(HasEventListenerRegistered(video->GetDocument(),
+                                         event_type_names::kFullscreenchange,
+                                         VideoVisibilityTracker()));
+}
+
+TEST_P(
+    HTMLMediaElementTest,
+    VideoVisibilityTrackerDetachedOnEntereFullscreenAfterInsertingPlayingVideo) {
+  if (GetParam() != MediaTestParam::kVideo) {
+    return;
+  }
+
+  auto* video = To<HTMLVideoElement>(Media());
+  video->GetDocument().body()->AppendChild(video);
+  video->SetSrc(AtomicString("http://example.com/foo.mp4"));
+  test::RunPendingTasks();
+
+  MockWebMediaPlayer* mock_wmpi =
+      reinterpret_cast<MockWebMediaPlayer*>(video->GetWebMediaPlayer());
+  ASSERT_NE(mock_wmpi, nullptr);
+  EXPECT_CALL(*mock_wmpi, CurrentTime())
+      .WillRepeatedly(Return(video->duration() / 2));
+  EXPECT_CALL(*mock_wmpi, IsEnded()).WillRepeatedly(Return(false));
+
+  SetReadyState(HTMLMediaElement::kHaveEnoughData);
+  test::RunPendingTasks();
+
+  // Play video, and verify that: the visibility tracker has been
+  // attached and, the fullscreen change event listener has been registered.
+  video->Play();
+  ASSERT_NE(video->visibility_tracker_for_tests(), nullptr);
+  ASSERT_NE(VideoVisibilityTrackerAttachedToDocument(video), nullptr);
+  const auto* tracker_before_append = video->visibility_tracker_for_tests();
+  EXPECT_TRUE(HasEventListenerRegistered(video->GetDocument(),
+                                         event_type_names::kFullscreenchange,
+                                         tracker_before_append));
+
+  // Create a div and append the video element to it.
+  video->GetDocument().body()->setInnerHTML(
+      "<div id='container' style='width:200px; height:200px;'></div>");
+  video->GetDocument()
+      .body()
+      ->getElementById(AtomicString("container"))
+      ->AppendChild(video);
+
+  // Verify that: the visibility tracker has been detached and, the fullscreen
+  // change event listener is not removed.
+  ASSERT_NE(video->visibility_tracker_for_tests(), nullptr);
+  ASSERT_NE(VideoVisibilityTrackerAttachedToDocument(video), nullptr);
+  const auto* tracker_after_append = video->visibility_tracker_for_tests();
+  EXPECT_TRUE(HasEventListenerRegistered(video->GetDocument(),
+                                         event_type_names::kFullscreenchange,
+                                         tracker_after_append));
+
+  // Verify that tracker is re-used.
+  EXPECT_EQ(tracker_before_append, tracker_after_append);
+
+  // Simulate enter fullscreen, and verify that: the visibility tracker has been
+  // detached and, the fullscreen change event listener is not removed.
+  SimulateEnterFullscreen(video);
+  EXPECT_EQ(VideoVisibilityTrackerAttachedToDocument(video), nullptr);
+  EXPECT_TRUE(HasEventListenerRegistered(video->GetDocument(),
+                                         event_type_names::kFullscreenchange,
+                                         tracker_after_append));
+
+  // Simulate exit fullscreen, and verify that: the visibility tracker has been
+  // attached and, the fullscreen change event listener is not removed.
+  SimulateExitFullscreen(video);
+  EXPECT_NE(VideoVisibilityTrackerAttachedToDocument(video), nullptr);
+  EXPECT_TRUE(HasEventListenerRegistered(video->GetDocument(),
+                                         event_type_names::kFullscreenchange,
+                                         tracker_after_append));
+}
+
+TEST_P(
+    HTMLMediaElementTest,
+    VideoVisibilityTrackerFullScreenEventListenerRemovedOnDidMoveToNewDocument) {
+  if (GetParam() != MediaTestParam::kVideo) {
+    return;
+  }
+
+  auto* video = To<HTMLVideoElement>(Media());
+  video->GetDocument().body()->AppendChild(video);
+  video->SetSrc(AtomicString("http://example.com/foo.mp4"));
+  test::RunPendingTasks();
+
+  MockWebMediaPlayer* mock_wmpi =
+      reinterpret_cast<MockWebMediaPlayer*>(video->GetWebMediaPlayer());
+  ASSERT_NE(mock_wmpi, nullptr);
+  EXPECT_CALL(*mock_wmpi, CurrentTime())
+      .WillRepeatedly(Return(video->duration() / 2));
+  EXPECT_CALL(*mock_wmpi, IsEnded()).WillRepeatedly(Return(false));
+
+  SetReadyState(HTMLMediaElement::kHaveEnoughData);
+  test::RunPendingTasks();
+
+  // Play video, and verify that: the visibility tracker has been
+  // attached and, the fullscreen change event listener has been registered.
+  video->Play();
+  ASSERT_NE(VideoVisibilityTracker(), nullptr);
+  ASSERT_NE(VideoVisibilityTrackerAttachedToDocument(video), nullptr);
+  EXPECT_TRUE(HasEventListenerRegistered(video->GetDocument(),
+                                         event_type_names::kFullscreenchange,
+                                         VideoVisibilityTracker()));
+
+  // Remember the old document.
+  auto& old_document = video->GetDocument();
+
+  // Create another document and move the video element to it.
+  auto* another_document = Document::Create(video->GetDocument());
+  another_document->AppendChild(video);
+
+  // Verify that the old and new document are different.
+  EXPECT_NE(old_document, *another_document);
+
+  // Verify that for the new document: the visibility tracker has been detached
+  // and, the fullscreen change event listener has been removed.
+  ASSERT_NE(VideoVisibilityTracker(), nullptr);
+  ASSERT_EQ(VideoVisibilityTrackerAttachedToDocument(video), nullptr);
+  EXPECT_FALSE(HasEventListenerRegistered(video->GetDocument(),
+                                          event_type_names::kFullscreenchange,
+                                          VideoVisibilityTracker()));
+
+  // Verify that, for the old document, the fullscreen change event listener has
+  // been removed.
+  EXPECT_FALSE(HasEventListenerRegistered(old_document,
+                                          event_type_names::kFullscreenchange,
+                                          VideoVisibilityTracker()));
+}
+
+TEST_P(HTMLMediaElementTest,
+       VideoVisibilityTrackerFullScreenEventListenerRemovedOnRemovedFrom) {
+  if (GetParam() != MediaTestParam::kVideo) {
+    return;
+  }
+
+  auto* video = To<HTMLVideoElement>(Media());
+  video->GetDocument().body()->AppendChild(video);
+  video->SetSrc(SrcSchemeToURL(TestURLScheme::kHttp));
+  test::RunPendingTasks();
+  ASSERT_EQ(VideoVisibilityTracker(), nullptr);
+
+  SetReadyState(HTMLMediaElement::kHaveEnoughData);
+  test::RunPendingTasks();
+
+  // Play video, and verify that: the visibility tracker has been
+  // attached and, the fullscreen change event listener has been registered.
+  video->Play();
+  ASSERT_NE(VideoVisibilityTracker(), nullptr);
+  EXPECT_NE(VideoVisibilityTrackerAttachedToDocument(video), nullptr);
+  EXPECT_TRUE(HasEventListenerRegistered(video->GetDocument(),
+                                         event_type_names::kFullscreenchange,
+                                         VideoVisibilityTracker()));
+
+  // Remove video, and verify that: the visibility tracker has been
+  // detached and, the fullscreen change event listener has been removed.
+  NonThrowableExceptionState should_not_throw;
+  video->remove(should_not_throw);
+  test::RunPendingTasks();
+  EXPECT_EQ(VideoVisibilityTrackerAttachedToDocument(video), nullptr);
+  EXPECT_FALSE(HasEventListenerRegistered(
+      video->GetDocument(), event_type_names::kFullscreenchange,
+      video->visibility_tracker_for_tests()));
 }
 
 }  // namespace blink
