@@ -92,7 +92,7 @@ button{
     "isKeyboardFocusable": true,
     "accessibleName": "click",
     "accessibleRole": "button",
-    "layoutObjectName": "LayoutButton",
+    "layoutObjectName": "LayoutNGBlockFlow",
     "showAccessibilityInfo": true
   }
 }
