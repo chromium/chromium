@@ -17,7 +17,7 @@
 #include "base/memory/weak_ptr.h"
 #include "base/scoped_observation.h"
 #include "components/autofill/core/browser/payments/offer_notification_handler.h"
-#include "components/autofill/core/browser/personal_data_manager_observer.h"
+#include "components/autofill/core/browser/payments_data_manager.h"
 #include "components/commerce/core/commerce_types.h"
 #include "components/keyed_service/core/keyed_service.h"
 #include "url/gurl.h"
@@ -62,7 +62,7 @@ class CouponServiceDelegate {
 // Manages all Autofill related offers. One per browser context. Owned and
 // created by the AutofillOfferManagerFactory.
 class AutofillOfferManager : public KeyedService,
-                             public PersonalDataManagerObserver {
+                             public PaymentsDataManager::Observer {
  public:
   // Mapping from credit card guid id to offer data.
   using CardLinkedOffersMap = std::map<std::string, AutofillOfferData*>;
@@ -79,8 +79,8 @@ class AutofillOfferManager : public KeyedService,
   AutofillOfferManager(const AutofillOfferManager&) = delete;
   AutofillOfferManager& operator=(const AutofillOfferManager&) = delete;
 
-  // PersonalDataManagerObserver:
-  void OnPersonalDataChanged() override;
+  // PaymentsDataManager::Observer:
+  void OnPaymentsDataChanged() override;
 
   // Invoked when the navigation happens.
   void OnDidNavigateFrame(AutofillClient& client);
@@ -127,10 +127,10 @@ class AutofillOfferManager : public KeyedService,
   // This set includes all the eligible domains where offers are applicable.
   // This is used as a local cache and will be updated whenever the data in the
   // database changes.
-  std::set<GURL> eligible_merchant_domains_ = {};
+  std::set<GURL> eligible_merchant_domains_;
 
-  base::ScopedObservation<PersonalDataManager, PersonalDataManagerObserver>
-      personal_data_manager_observation{this};
+  base::ScopedObservation<PaymentsDataManager, PaymentsDataManager::Observer>
+      payments_data_manager_observation{this};
 
   // The handler for offer notification UI. It is a sub-level component of
   // AutofillOfferManager to decide whether to show the offer notification.

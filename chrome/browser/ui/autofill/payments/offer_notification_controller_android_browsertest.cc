@@ -89,7 +89,8 @@ class OfferNotificationControllerAndroidBrowserTest
   Profile* GetProfile() { return chrome_test_utils::GetProfile(this); }
 
   AutofillOfferData* SetUpOfferDataWithDomains(const GURL& url) {
-    personal_data_->payments_data_manager().ClearAllServerDataForTesting();
+    PaymentsDataManager& paydm = personal_data_->payments_data_manager();
+    paydm.ClearAllServerDataForTesting();
     std::vector<GURL> merchant_origins;
     merchant_origins.emplace_back(url.DeprecatedGetOriginAsURL());
     std::vector<int64_t> eligible_instrument_ids = {0x4444};
@@ -97,13 +98,11 @@ class OfferNotificationControllerAndroidBrowserTest
     auto offer = std::make_unique<AutofillOfferData>(CreateTestCardLinkedOffer(
         merchant_origins, eligible_instrument_ids, offer_reward_amount));
     auto* offer_ptr = offer.get();
-    test_api(personal_data_->payments_data_manager())
-        .AddOfferData(std::move(offer));
+    test_api(paydm).AddOfferData(std::move(offer));
     auto card = std::make_unique<CreditCard>();
     card->set_instrument_id(0x4444);
-    personal_data_->payments_data_manager().AddServerCreditCardForTest(
-        std::move(card));
-    personal_data_->NotifyPersonalDataObserver();
+    paydm.AddServerCreditCardForTest(std::move(card));
+    test_api(paydm).NotifyObservers();
     return offer_ptr;
   }
 
