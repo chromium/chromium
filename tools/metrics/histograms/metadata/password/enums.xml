@@ -1157,6 +1157,10 @@ chromium-metrics-reviews@google.com.
   <int value="11012" label="UNMAPPED_ERROR_CODE"/>
   <int value="11013" label="UNEXPECTED_ERROR"/>
   <int value="11014" label="KEY_RETRIEVAL_REQUIRED"/>
+  <int value="11015" label="DATA_HOLDER_CREATION_ERROR"/>
+  <int value="11016" label="EXTERNAL_API_EXCEPTION"/>
+  <int value="11017" label="EXTERNAL_INVALID_LOCAL_KEYS"/>
+  <int value="11018" label="DATABASE_ERROR"/>
   <int value="43502" label="CHROME_SYNC_API_CALL_ERROR"/>
   <int value="43504" label="ERROR_WHILE_DOING_LEAK_CHECK_SERVICE_GRPC"/>
   <int value="43507" label="REQUIRED_SYNCED_ACCOUNT_MISSING"/>
