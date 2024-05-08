@@ -38,7 +38,6 @@ class EmbeddedPermissionPromptInteractiveTest : public InteractiveBrowserTest {
         net::EmbeddedTestServer::TYPE_HTTPS);
     feature_list_.InitWithFeatures(
         {features::kPermissionElement,
-         permissions::features::kOneTimePermission,
          blink::features::kDisablePepcSecurityForTesting},
         {});
   }

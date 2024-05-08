@@ -635,8 +635,7 @@ void PermissionContextBase::UpdateContentSetting(const GURL& requesting_origin,
   }
 #endif  // !BUILDFLAG(IS_ANDROID)
 
-  if (base::FeatureList::IsEnabled(permissions::features::kOneTimePermission) &&
-      is_one_time) {
+  if (is_one_time) {
     if (base::FeatureList::IsEnabled(
             content_settings::features::kActiveContentSettingExpiry)) {
       constraints.set_lifetime(kOneTimePermissionMaximumLifetime);

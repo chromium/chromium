@@ -976,9 +976,7 @@ void ChromeBrowserMainExtraPartsProfiles::
 #endif
 #if !BUILDFLAG(IS_ANDROID)
   OneGoogleBarServiceFactory::GetInstance();
-  if (base::FeatureList::IsEnabled(permissions::features::kOneTimePermission)) {
-    OneTimePermissionsTrackerFactory::GetInstance();
-  }
+  OneTimePermissionsTrackerFactory::GetInstance();
 #endif
   OpenerHeuristicServiceFactory::GetInstance();
   if (optimization_guide::ShouldStartModelValidator()) {

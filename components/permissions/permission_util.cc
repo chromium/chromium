@@ -20,6 +20,7 @@
 #include "content/public/browser/render_frame_host.h"
 #include "content/public/browser/render_process_host.h"
 #include "content/public/browser/web_contents.h"
+#include "content/public/common/content_features.h"
 #include "third_party/blink/public/common/permissions/permission_utils.h"
 #include "third_party/blink/public/common/web_preferences/web_preferences.h"
 #include "third_party/blink/public/mojom/permissions_policy/permissions_policy_feature.mojom.h"
@@ -242,8 +243,7 @@ bool PermissionUtil::CanPermissionBeAllowedOnce(ContentSettingsType type) {
     case ContentSettingsType::MEDIASTREAM_MIC:
     case ContentSettingsType::MEDIASTREAM_CAMERA:
     case ContentSettingsType::SMART_CARD_DATA:
-      return base::FeatureList::IsEnabled(
-          permissions::features::kOneTimePermission);
+      return true;
     default:
       return false;
   }

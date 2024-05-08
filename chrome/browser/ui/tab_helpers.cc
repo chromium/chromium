@@ -546,11 +546,7 @@ void TabHelpers::AttachTabHelpers(WebContents* web_contents) {
   v8_compile_hints::V8CompileHintsTabHelper::MaybeCreateForWebContents(
       web_contents);
   vr::VrTabHelper::CreateForWebContents(web_contents);
-  if (base::FeatureList::IsEnabled(permissions::features::kOneTimePermission) ||
-      base::FeatureList::IsEnabled(
-          features::kFileSystemAccessPersistentPermissions)) {
-    OneTimePermissionsTrackerHelper::CreateForWebContents(web_contents);
-  }
+  OneTimePermissionsTrackerHelper::CreateForWebContents(web_contents);
 
   // NO! Do not just add your tab helper here. This is a large alphabetized
   // block; please insert your tab helper above in alphabetical order.

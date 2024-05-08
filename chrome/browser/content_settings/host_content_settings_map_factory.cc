@@ -157,14 +157,12 @@ scoped_refptr<RefcountedKeyedService>
                                    std::move(webapp_provider));
   }
 #endif  // defined (OS_ANDROID)
-  if (base::FeatureList::IsEnabled(permissions::features::kOneTimePermission)) {
-    auto one_time_permission_provider =
-        std::make_unique<OneTimePermissionProvider>(
-            OneTimePermissionsTrackerFactory::GetForBrowserContext(context));
+  auto one_time_permission_provider =
+      std::make_unique<OneTimePermissionProvider>(
+          OneTimePermissionsTrackerFactory::GetForBrowserContext(context));
 
-    settings_map->RegisterUserModifiableProvider(
-        ProviderType::kOneTimePermissionProvider,
-        std::move(one_time_permission_provider));
-  }
+  settings_map->RegisterUserModifiableProvider(
+      ProviderType::kOneTimePermissionProvider,
+      std::move(one_time_permission_provider));
   return settings_map;
 }
