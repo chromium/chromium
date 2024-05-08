@@ -1613,6 +1613,65 @@ TEST_F(ChromeComposeClientTest, TestClearStateWhenOpenWithSelectedText) {
       compose::ComposeSessionCloseReason::kNewSessionWithSelectedText, 1);
 }
 
+TEST_F(ChromeComposeClientTest,
+       TestContextMenuNotRecordedAsProactiveInQualityLogs) {
+  field_data().set_value(u"user selected text");
+  ShowDialogAndBindMojoWithFieldData(
+      field_data(), base::NullCallback(),
+      autofill::AutofillComposeDelegate::UiEntryPoint::kContextMenu);
+
+  base::test::TestFuture<
+      std::unique_ptr<optimization_guide::ModelQualityLogEntry>>
+      quality_test_future;
+
+  EXPECT_CALL(model_quality_logs_uploader(), UploadModelQualityLogs(_))
+      .WillRepeatedly(testing::Invoke(
+          [&](std::unique_ptr<optimization_guide::ModelQualityLogEntry>
+                  response) {
+            quality_test_future.SetValue(std::move(response));
+          }));
+  base::test::TestFuture<compose::mojom::ComposeResponsePtr> test_future;
+  BindComposeFutureToOnResponseReceived(test_future);
+  page_handler()->Compose("a user typed this", false);
+  compose::mojom::ComposeResponsePtr result = test_future.Take();
+  client().CloseUI(compose::mojom::CloseReason::kInsertButton);
+
+  std::unique_ptr<optimization_guide::ModelQualityLogEntry> quality_result =
+      quality_test_future.Take();
+  EXPECT_FALSE(
+      quality_result->quality_data<optimization_guide::ComposeFeatureTypeMap>()
+          ->started_with_proactive_nudge());
+}
+
+TEST_F(ChromeComposeClientTest, TestProactiveNudgeRecordedInQualityLogs) {
+  field_data().set_value(u"user selected text");
+  ShowDialogAndBindMojoWithFieldData(
+      field_data(), base::NullCallback(),
+      autofill::AutofillComposeDelegate::UiEntryPoint::kAutofillPopup);
+
+  base::test::TestFuture<
+      std::unique_ptr<optimization_guide::ModelQualityLogEntry>>
+      quality_test_future;
+
+  EXPECT_CALL(model_quality_logs_uploader(), UploadModelQualityLogs(_))
+      .WillRepeatedly(testing::Invoke(
+          [&](std::unique_ptr<optimization_guide::ModelQualityLogEntry>
+                  response) {
+            quality_test_future.SetValue(std::move(response));
+          }));
+  base::test::TestFuture<compose::mojom::ComposeResponsePtr> test_future;
+  BindComposeFutureToOnResponseReceived(test_future);
+  page_handler()->Compose("a user typed this", false);
+  compose::mojom::ComposeResponsePtr result = test_future.Take();
+  client().CloseUI(compose::mojom::CloseReason::kInsertButton);
+
+  std::unique_ptr<optimization_guide::ModelQualityLogEntry> quality_result =
+      quality_test_future.Take();
+  EXPECT_TRUE(
+      quality_result->quality_data<optimization_guide::ComposeFeatureTypeMap>()
+          ->started_with_proactive_nudge());
+}
+
 // Checks proper propagation of Compose config params.
 TEST_F(ChromeComposeClientTest, TestInputParams) {
   compose::Config& config = compose::GetMutableConfigForTesting();

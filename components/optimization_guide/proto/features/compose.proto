@@ -162,7 +162,7 @@ enum ClientRequestStatus {
 
 // Any data collected on the client outside of the model request and response.
 // This includes user feedback, and metrics about feature usage.
-// Next Id: 9
+// Next Id: 10
 message ComposeQuality {
   reserved 3;
   FinalStatus final_status = 1;
@@ -178,4 +178,6 @@ message ComposeQuality {
   bool was_generated_via_edit = 7;
   // The Status of this request.
   ClientRequestStatus client_request_status = 8;
+  // Was this session started with a proactive nudge UI.
+  bool started_with_proactive_nudge = 9;
 }
