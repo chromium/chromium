@@ -953,8 +953,13 @@ public class TabGridDialogView extends FrameLayout {
                 isHovered ? mUngroupBarHoveredTextColor : mUngroupBarTextColor);
     }
 
+    void updateUngroupBarText(String ungroupBarText) {
+        mUngroupBarTextView.setText(ungroupBarText);
+    }
+
     /**
      * Update the dialog container background color.
+     *
      * @param backgroundColor The new background color to use.
      */
     void updateDialogContainerBackgroundColor(int backgroundColor) {

@@ -38,7 +38,6 @@ found in the LICENSE file.
                 android:layout_width="match_parent"
                 android:layout_height="@dimen/bottom_sheet_peek_height"
                 android:id="@+id/dialog_ungroup_bar_text"
-                android:text="@string/tab_grid_dialog_remove_from_group"
                 android:textAppearance="@style/TextAppearance.TextMediumThick.Primary"
                 android:background="@drawable/ungroup_bar_background"
                 android:gravity="center" />

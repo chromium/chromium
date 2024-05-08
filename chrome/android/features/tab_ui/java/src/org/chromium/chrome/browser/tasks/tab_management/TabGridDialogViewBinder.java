@@ -16,6 +16,7 @@ import static org.chromium.chrome.browser.tasks.tab_management.TabGridDialogProp
 import static org.chromium.chrome.browser.tasks.tab_management.TabGridDialogProperties.DIALOG_UNGROUP_BAR_BACKGROUND_COLOR;
 import static org.chromium.chrome.browser.tasks.tab_management.TabGridDialogProperties.DIALOG_UNGROUP_BAR_HOVERED_BACKGROUND_COLOR;
 import static org.chromium.chrome.browser.tasks.tab_management.TabGridDialogProperties.DIALOG_UNGROUP_BAR_HOVERED_TEXT_COLOR;
+import static org.chromium.chrome.browser.tasks.tab_management.TabGridDialogProperties.DIALOG_UNGROUP_BAR_TEXT;
 import static org.chromium.chrome.browser.tasks.tab_management.TabGridDialogProperties.DIALOG_UNGROUP_BAR_TEXT_COLOR;
 import static org.chromium.chrome.browser.tasks.tab_management.TabGridDialogProperties.HEADER_TITLE;
 import static org.chromium.chrome.browser.tasks.tab_management.TabGridDialogProperties.INITIAL_SCROLL_INDEX;
@@ -180,6 +181,10 @@ class TabGridDialogViewBinder {
             if (viewHolder.dialogView != null) {
                 viewHolder.dialogView.updateUngroupBarHoveredTextColor(
                         model.get(DIALOG_UNGROUP_BAR_HOVERED_TEXT_COLOR));
+            }
+        } else if (DIALOG_UNGROUP_BAR_TEXT == propertyKey) {
+            if (viewHolder.dialogView != null) {
+                viewHolder.dialogView.updateUngroupBarText(model.get(DIALOG_UNGROUP_BAR_TEXT));
             }
         } else if (INITIAL_SCROLL_INDEX == propertyKey) {
             if (model.get(INITIAL_SCROLL_INDEX) != null) {

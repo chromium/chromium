@@ -67,6 +67,8 @@ class TabGridDialogProperties {
             new PropertyModel.WritableIntPropertyKey();
     public static final PropertyModel.WritableIntPropertyKey DIALOG_UNGROUP_BAR_HOVERED_TEXT_COLOR =
             new PropertyModel.WritableIntPropertyKey();
+    public static final PropertyModel.WritableObjectPropertyKey<String> DIALOG_UNGROUP_BAR_TEXT =
+            new PropertyModel.WritableObjectPropertyKey<>();
 
     /**
      * Integer, but not {@link PropertyModel.WritableIntPropertyKey} so that we can force update on
@@ -118,6 +120,7 @@ class TabGridDialogProperties {
                 DIALOG_UNGROUP_BAR_HOVERED_BACKGROUND_COLOR,
                 DIALOG_UNGROUP_BAR_TEXT_COLOR,
                 DIALOG_UNGROUP_BAR_HOVERED_TEXT_COLOR,
+                DIALOG_UNGROUP_BAR_TEXT,
                 MENU_CLICK_LISTENER,
                 TITLE_TEXT_WATCHER,
                 TITLE_TEXT_ON_FOCUS_LISTENER,
