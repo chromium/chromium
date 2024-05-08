@@ -1296,7 +1296,7 @@ BASE_FEATURE(kPreferSoftwareMT21,
 // Expiry: When Vulkan detiling is thoroughly tested and verified to work.
 BASE_FEATURE(kEnableProtectedVulkanDetiling,
              "EnableProtectedVulkanDetiling",
-             base::FEATURE_DISABLED_BY_DEFAULT);
+             base::FEATURE_ENABLED_BY_DEFAULT);
 #endif  // defined(ARCH_CPU_ARM_FAMILY)
 #if BUILDFLAG(IS_CHROMEOS) && !BUILDFLAG(USE_VAAPI)
 // ChromeOS has one of two VideoDecoder implementations active based on
