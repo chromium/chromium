@@ -11,7 +11,7 @@
 #include "base/android/jni_weak_ref.h"
 #include "base/memory/weak_ptr.h"
 #include "components/webapps/browser/android/shortcut_info.h"
-#include "components/webapps/browser/android/webapk/webapk_icon_hasher.h"
+#include "components/webapps/browser/android/webapk/webapk_icons_hasher.h"
 #include "content/public/browser/web_contents_observer.h"
 #include "third_party/skia/include/core/SkBitmap.h"
 
@@ -69,8 +69,7 @@ class WebApkUpdateDataFetcher : public content::WebContentsObserver {
 
   // Called with the computed Murmur2 hashes for the icons.
   void OnGotIconMurmur2Hashes(
-      std::optional<std::map<std::string, webapps::WebApkIconHasher::Icon>>
-          hashes);
+      std::map<GURL, std::unique_ptr<webapps::WebappIcon>> icons);
 
   // Called when a page has no Web Manifest or the Web Manifest is not WebAPK
   // compatible.
@@ -100,6 +99,10 @@ class WebApkUpdateDataFetcher : public content::WebContentsObserver {
   bool is_primary_icon_maskable_;
 
   SkBitmap splash_icon_;
+
+  // Helper for downloading WebAPK icons and compute Murmur2 hash of the
+  // downloaded images.
+  std::unique_ptr<webapps::WebApkIconsHasher> icon_hasher_;
 
   base::WeakPtrFactory<WebApkUpdateDataFetcher> weak_ptr_factory_{this};
 };

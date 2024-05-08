@@ -2,7 +2,7 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#include "components/webapps/browser/android/webapk/webapk_icon_hasher.h"
+#include "components/webapps/browser/android/webapk/webapk_icons_hasher.h"
 
 #include <limits>
 #include <set>
@@ -18,6 +18,7 @@
 #include "content/public/test/browser_test.h"
 #include "content/public/test/browser_test_utils.h"
 #include "net/base/features.h"
+#include "components/webapps/browser/android/webapp_icon.h"
 #include "net/test/embedded_test_server/embedded_test_server.h"
 #include "net/test/embedded_test_server/http_request.h"
 #include "net/test/embedded_test_server/http_response.h"
@@ -80,8 +81,7 @@ void OnDownloadedManifestIcon(base::OnceClosure callback,
 
 void OnGotMurmur2Hash(
     base::OnceClosure callback,
-    std::optional<std::map<std::string, webapps::WebApkIconHasher::Icon>>
-        hashes) {
+    std::map<GURL, std::unique_ptr<webapps::WebappIcon>> icon) {
   std::move(callback).Run();
 }
 
@@ -92,7 +92,7 @@ void OnGotMurmur2Hash(
 //
 // Disabled due to flakiness. https://crbug.com/1111439
 IN_PROC_BROWSER_TEST_F(WebApkIconHasherBrowserTest,
-                       DISABLED_HasherUsesIconFromCache) {
+                       DISABLE_HasherUsesIconFromCache) {
   const GURL kIconUrl = http_server_.GetURL("/launcher-icon-max-age.png");
 
   content::WebContents* web_contents = GetActiveWebContents();
@@ -115,10 +115,14 @@ IN_PROC_BROWSER_TEST_F(WebApkIconHasherBrowserTest,
             ->GetDefaultStoragePartition()
             ->GetURLLoaderFactoryForBrowserProcess();
 
+    std::map<GURL, std::unique_ptr<webapps::WebappIcon>> icons;
+    icons.emplace(kIconUrl, std::make_unique<webapps::WebappIcon>(kIconUrl));
+
     base::RunLoop run_loop;
-    webapps::WebApkIconHasher::DownloadAndComputeMurmur2Hash(
+    webapps::WebApkIconsHasher hasher;
+    hasher.DownloadAndComputeMurmur2Hash(
         url_loader_factory.get(), web_contents->GetWeakPtr(),
-        url::Origin::Create(kIconUrl), {webapps::WebappIcon(kIconUrl)},
+        url::Origin::Create(kIconUrl), std::move(icons),
         base::BindOnce(&OnGotMurmur2Hash, run_loop.QuitClosure()));
     run_loop.Run();
   }

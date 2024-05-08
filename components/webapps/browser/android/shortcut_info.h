@@ -146,7 +146,7 @@ struct ShortcutInfo {
 
   // Returns a vector of icons including |best_primary_icon_url|,
   // |splash_image_url| and |best_shortcut_icon_urls| if they are not empty
-  std::vector<WebappIcon> GetWebApkIcons();
+  std::map<GURL, std::unique_ptr<WebappIcon>> GetWebApkIcons() const;
 
   GURL manifest_url;
   GURL url;

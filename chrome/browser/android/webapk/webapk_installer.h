@@ -19,7 +19,7 @@
 #include "base/timer/timer.h"
 #include "chrome/browser/android/webapk/webapk_install_service.h"
 #include "components/webapps/browser/android/shortcut_info.h"
-#include "components/webapps/browser/android/webapk/webapk_icon_hasher.h"
+#include "components/webapps/browser/android/webapk/webapk_icons_hasher.h"
 #include "components/webapps/browser/installable/installable_metrics.h"
 #include "third_party/skia/include/core/SkBitmap.h"
 #include "url/gurl.h"
@@ -124,8 +124,7 @@ class WebApkInstaller {
       const std::string& splash_icon_data,
       const std::string& package_name,
       const std::string& version,
-      std::map<std::string, webapps::WebApkIconHasher::Icon>
-          icon_url_to_murmur2_hash,
+      std::map<GURL, std::unique_ptr<webapps::WebappIcon>> icons,
       bool is_manifest_stale,
       bool is_app_identity_update_supported,
       std::vector<webapps::WebApkUpdateReason> update_reasons,
@@ -183,8 +182,7 @@ class WebApkInstaller {
 
   // Called with the computed Murmur2 hash for the icons.
   void OnGotIconMurmur2Hashes(
-      std::optional<std::map<std::string, webapps::WebApkIconHasher::Icon>>
-          hashes);
+      std::map<GURL, std::unique_ptr<webapps::WebappIcon>> icons);
 
   // Called with the serialized proto for the WebAPK install.
   void OnInstallProtoBuilt(std::unique_ptr<std::string> serialized_proto);
@@ -214,6 +212,10 @@ class WebApkInstaller {
 
   // Callback to call once WebApkInstaller succeeds or fails.
   FinishCallback finish_callback_;
+
+  // Helper for downloading WebAPK icons and compute Murmur2 hash of the
+  // downloaded images.
+  std::unique_ptr<webapps::WebApkIconsHasher> icon_hasher_;
 
   // Data for installs.
 

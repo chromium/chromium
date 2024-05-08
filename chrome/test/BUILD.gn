@@ -1350,7 +1350,7 @@ if (is_android) {
       "../browser/android/persisted_tab_data/test/bar_persisted_tab_data.h",
       "../browser/android/persisted_tab_data/test/foo_persisted_tab_data.cc",
       "../browser/android/persisted_tab_data/test/foo_persisted_tab_data.h",
-      "../browser/android/webapk/webapk_icon_hasher_browsertest.cc",
+      "../browser/android/webapk/webapk_icons_hasher_browsertest.cc",
       "../browser/android/webapk/webapk_installer_browsertest.cc",
       "../browser/android/webapk/webapk_restore_task_browsertest.cc",
       "../browser/android/webview_renderer_extension_browsertest.cc",
