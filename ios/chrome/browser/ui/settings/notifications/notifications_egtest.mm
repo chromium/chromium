@@ -77,7 +77,13 @@ id<GREYMatcher> NotificationsSettingsMatcher() {
 // Tests that the settings page is dismissed by swiping down from the top.
 // TODO(crbug.com/326070899): remove this test when Tips Notifications is
 // enabled by default.
-- (void)testPriceNotificationsSwipeDown {
+// TODO(crbug.com/339474680): Test is failing consistently on device.
+#if TARGET_OS_SIMULATOR
+#define MAYBE_testPriceNotificationsSwipeDown testPriceNotificationsSwipeDown
+#else
+#define MAYBE_testPriceNotificationsSwipeDown DISABLED_testPriceNotificationsSwipeDown
+#endif
+- (void)MAYBE_testPriceNotificationsSwipeDown {
   // Opens price notifications setting.
   [ChromeEarlGreyUI openSettingsMenu];
   [ChromeEarlGreyUI tapSettingsMenuButton:SettingsMenuNotificationsButton()];
