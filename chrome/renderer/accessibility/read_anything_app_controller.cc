@@ -719,6 +719,8 @@ gin::ObjectTemplateBuilder ReadAnythingAppController::GetObjectTemplateBuilder(
           &ReadAnythingAppController::IsAutomaticWordHighlightingEnabled)
       .SetProperty("baseLanguageForSpeech",
                    &ReadAnythingAppController::GetLanguageCodeForSpeech)
+      .SetProperty("requiresDistillation",
+                   &ReadAnythingAppController::RequiresDistillation)
       .SetProperty("defaultLanguageForSpeech",
                    &ReadAnythingAppController::GetDefaultLanguageCodeForSpeech)
       .SetMethod("getChildren", &ReadAnythingAppController::GetChildren)
@@ -1236,6 +1238,10 @@ const std::string ReadAnythingAppController::GetDisplayNameForLocale(
 
 const std::string& ReadAnythingAppController::GetLanguageCodeForSpeech() const {
   return model_.base_language_code();
+}
+
+bool ReadAnythingAppController::RequiresDistillation() {
+  return model_.requires_distillation();
 }
 
 const std::string& ReadAnythingAppController::GetDefaultLanguageCodeForSpeech()

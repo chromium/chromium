@@ -111,7 +111,8 @@
     <read-anything-toolbar
       paused="[[speechPlayingState.paused]]"
       is-read-aloud-playable=
-      "[[isReadAloudPlayable(hasContent_, speechEngineLoaded)]]"
+      "[[isReadAloudPlayable(
+        hasContent_, speechEngineLoaded, willDrawAgainSoon_)]]"
       selected-voice="[[selectedVoice]]"
       enabled-languages-in-pref="[[enabledLanguagesInPref]]"
       voice-pack-install-status="[[voicePackInstallStatus]]"

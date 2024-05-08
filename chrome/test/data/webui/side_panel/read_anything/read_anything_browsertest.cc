@@ -86,6 +86,11 @@ IN_PROC_BROWSER_TEST_F(ReadAnythingMochaTest, LineSpacing) {
                    "mocha.run()");
 }
 
+IN_PROC_BROWSER_TEST_F(ReadAnythingMochaTest, UpdateContent) {
+  RunSidePanelTest("side_panel/read_anything/update_content_test.js",
+                   "mocha.run()");
+}
+
 // TODO(crbug.com/337936370): Flaky on Windows.
 #if BUILDFLAG(IS_WIN)
 #define MAYBE_AppReceivesToolbarChanges DISABLED_AppReceivesToolbarChanges

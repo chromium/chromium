@@ -287,6 +287,12 @@ export class ReadAnythingElement extends ReadAnythingElementBase {
   // visual feedback that a voice is about to be spoken.
   private speechEngineLoaded: boolean = true;
 
+  // Sometimes distillations are queued up while distillation is happening so
+  // when the current distillation finishes, we re-distill immediately. In that
+  // case we shouldn't allow playing speech until the next distillation to avoid
+  // resetting speech right after starting it.
+  private willDrawAgainSoon_: boolean = false;
+
   // After the first utterance has been spoken, we should assume that the
   // speech engine has loaded, and we shouldn't adjust the play / pause
   // disabled state based on the message.onStart callback to avoid flickering.
@@ -634,6 +640,7 @@ export class ReadAnythingElement extends ReadAnythingElementBase {
       return;
     }
 
+    this.willDrawAgainSoon_ = chrome.readingMode.requiresDistillation;
     const node = this.buildSubtree_(rootId);
     if (!node.textContent) {
       return;
@@ -2042,8 +2049,9 @@ export class ReadAnythingElement extends ReadAnythingElementBase {
   // change.
   isReadAloudPlayable(
       hasContent: boolean = this.hasContent_,
-      speechEngineLoaded: boolean = this.speechEngineLoaded) {
-    return hasContent && speechEngineLoaded;
+      speechEngineLoaded: boolean = this.speechEngineLoaded,
+      willDrawAgainSoon: boolean = this.willDrawAgainSoon_) {
+    return hasContent && speechEngineLoaded && !willDrawAgainSoon;
   }
 
   // Kicks off a workflow to install a voice pack.

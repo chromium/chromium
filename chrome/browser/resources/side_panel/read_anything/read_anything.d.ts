@@ -88,6 +88,9 @@ declare namespace chrome {
     // If the current platform is ChromeOS Ash.
     let isChromeOsAsh: boolean;
 
+    // If distillations have been queued up.
+    let requiresDistillation: boolean;
+
     // Returns the stored user voice preference for the current language
     function getStoredVoice(): string;
 
