@@ -40,9 +40,6 @@ per-file VERSION=govind@chromium.org
 # For Chrome release DEPS auto rolling
 per-file chrome_branch_deps.json=chrome-official-brancher@chops-service-accounts.iam.gserviceaccount.com
 
-# For Fuchsia-specific changes:
-per-file ...fuchsia*=file://build/fuchsia/OWNERS
-
 # For git submodules - since noparent is set, we can't use root level OWNERS.
 per-file app/theme/default_100_percent/google_chrome=*
 per-file app/theme/default_200_percent/google_chrome=*

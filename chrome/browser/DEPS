@@ -157,7 +157,6 @@ include_rules = [
   "+components/file_access",
   "+components/find_in_page",
   "+components/flags_ui",
-  "+components/fuchsia_component_support",
   "+components/gcm_driver",
   "+components/global_media_controls",
   "+components/google/core/browser",

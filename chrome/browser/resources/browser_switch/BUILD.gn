@@ -5,7 +5,7 @@
 import("//chrome/common/features.gni")
 import("//ui/webui/resources/tools/build_webui.gni")
 
-assert(is_win || is_mac || is_linux || is_chromeos_lacros || is_fuchsia)
+assert(is_win || is_mac || is_linux || is_chromeos_lacros)
 
 build_webui("build") {
   grd_prefix = "browser_switch"

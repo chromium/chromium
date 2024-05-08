@@ -285,8 +285,6 @@ bool ChromeRuntimeAPIDelegate::GetPlatformInfo(PlatformInfo* info) {
     info->os = extensions::api::runtime::PlatformOs::kLinux;
   } else if (strcmp(os, "openbsd") == 0) {
     info->os = extensions::api::runtime::PlatformOs::kOpenbsd;
-  } else if (strcmp(os, "fuchsia") == 0) {
-    info->os = extensions::api::runtime::PlatformOs::kFuchsia;
   } else {
     NOTREACHED() << "Platform not supported: " << os;
     return false;

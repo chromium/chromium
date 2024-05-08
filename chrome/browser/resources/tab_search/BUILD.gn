@@ -7,7 +7,7 @@ import("//ui/webui/resources/tools/build_webui.gni")
 import("//ui/webui/resources/tools/generate_grd.gni")
 import("//ui/webui/webui_features.gni")
 
-assert(is_linux || is_chromeos || is_win || is_mac || is_fuchsia)
+assert(is_linux || is_chromeos || is_win || is_mac)
 
 preprocess_folder = "preprocessed"
 

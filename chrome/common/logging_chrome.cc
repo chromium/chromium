@@ -176,7 +176,7 @@ LoggingDestination LoggingDestFromCommandLine(
 #else
   // In Debug builds log to all destinations, for ease of discovery.
   const LoggingDestination kDefaultLoggingMode = LOG_TO_ALL;
-#endif  // BUILDFLAG(IS_FUCHSIA)
+#endif
 
 #if BUILDFLAG(CHROME_ENABLE_LOGGING_BY_DEFAULT)
   bool enable_logging = true;
