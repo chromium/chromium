@@ -206,6 +206,9 @@ void Dav1dVideoDecoder::Initialize(const VideoDecoderConfig& config,
   if (low_delay || config.is_rtc())
     s.max_frame_delay = 1;
 
+  // Only output the highest spatial layer.
+  s.all_layers = 0;
+
   // Route dav1d internal logs through Chrome's DLOG system.
   s.logger = {nullptr, &LogDav1dMessage};
 
