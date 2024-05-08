@@ -951,14 +951,14 @@ class TabListMediator {
 
                         int oldIndex = mModel.indexFromId(lastId);
                         int newIndex = mModel.indexFromId(tab.getId());
-                        if (newIndex == TabModel.INVALID_TAB_INDEX
-                                && mActionsOnAllRelatedTabs
-                                && type == TabSelectionType.FROM_UNDO) {
+                        if (newIndex == TabModel.INVALID_TAB_INDEX && mActionsOnAllRelatedTabs) {
                             // If a tab in tab group does not exist in model and needs to be
-                            // selected from undo, identify the related TabIds and determine
-                            // newIndex based on if any of the related ids are present in model.
+                            // selected, identify the related tab ids and determine newIndex
+                            // based on if any of the related ids are present in model.
                             newIndex = getIndexForTabWithRelatedTabs(tab);
-                            if (newIndex != Tab.INVALID_TAB_ID) {
+                            // For UNDO ensure we update the representative tab in the model.
+                            if (type == TabSelectionType.FROM_UNDO
+                                    && newIndex != Tab.INVALID_TAB_ID) {
                                 model.updateTabListModelIdForGroup(tab, newIndex);
                             }
                         }
