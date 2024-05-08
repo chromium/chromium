@@ -10897,6 +10897,10 @@ const FeatureEntry kFeatureEntries[] = {
      flag_descriptions::kMahiDebuggingDescription, kOsCrOS,
      FEATURE_VALUE_TYPE(chromeos::features::kMahiDebugging)},
 
+    {"sparky", flag_descriptions::kSparkyName,
+     flag_descriptions::kSparkyDescription, kOsCrOS,
+     FEATURE_VALUE_TYPE(chromeos::features::kSparky)},
+
     {"mahi-feature-key", flag_descriptions::kMahiFeatureKeyName,
      flag_descriptions::kMahiFeatureKeyDescription, kOsCrOS,
      STRING_VALUE_TYPE(ash::switches::kMahiFeatureKey, "")},

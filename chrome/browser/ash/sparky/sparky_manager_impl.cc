@@ -7,6 +7,7 @@
 #include <stdint.h>
 
 #include <algorithm>
+#include <memory>
 #include <string>
 #include <vector>
 
@@ -21,10 +22,12 @@
 #include "chrome/browser/ash/crosapi/crosapi_ash.h"
 #include "chrome/browser/ash/crosapi/crosapi_manager.h"
 #include "chrome/browser/ash/mahi/mahi_browser_delegate_ash.h"
+#include "chrome/browser/ash/sparky/sparky_delegate_impl.h"
 #include "chromeos/components/mahi/public/cpp/mahi_manager.h"
 #include "chromeos/strings/grit/chromeos_strings.h"
 #include "components/manta/features.h"
 #include "components/manta/manta_service.h"
+#include "components/manta/proto/sparky.pb.h"
 #include "components/prefs/pref_service.h"
 #include "ui/base/l10n/l10n_util.h"
 #include "ui/gfx/image/image_skia.h"
@@ -48,7 +51,9 @@ namespace ash {
 
 SparkyManagerImpl::SparkyManagerImpl(Profile* profile,
                                      manta::MantaService* manta_service)
-    : profile_(profile), mahi_provider_(manta_service->CreateMahiProvider()) {
+    : profile_(profile),
+      sparky_provider_(manta_service->CreateSparkyProvider(
+          std::make_unique<SparkyDelegateImpl>(profile))) {
   CHECK(manta::features::IsMantaServiceEnabled());
 }
 
@@ -93,9 +98,10 @@ void SparkyManagerImpl::AnswerQuestion(const std::u16string& question,
                                        bool current_panel_content,
                                        MahiAnswerQuestionCallback callback) {
   if (current_panel_content) {
-    mahi_provider_->QuestionAndAnswer(
+    sparky_provider_->QuestionAndAnswer(
         base::UTF16ToUTF8(current_panel_content_->page_content),
         current_panel_qa_, base::UTF16ToUTF8(question),
+        manta::proto::Task::TASK_PLANNER,
         base::BindOnce(&SparkyManagerImpl::OnSparkyProviderQAResponse,
                        weak_ptr_factory_.GetWeakPtr(), question,
                        std::move(callback)));
@@ -193,7 +199,7 @@ void SparkyManagerImpl::OnGetPageContentForSummary(
 void SparkyManagerImpl::OnSparkyProviderQAResponse(
     const std::u16string& question,
     MahiAnswerQuestionCallback callback,
-    base::Value::Dict dict,
+    const std::string& response,
     manta::MantaStatus status) {
   if (status.status_code != manta::MantaStatusCode::kOk) {
     latest_response_status_ = MahiResponseStatus::kUnknownError;
@@ -202,7 +208,15 @@ void SparkyManagerImpl::OnSparkyProviderQAResponse(
     return;
   }
 
-  // TODO (b/333479467): Handle response returned once new provider is built.
+  if (!response.empty()) {
+    latest_response_status_ = MahiResponseStatus::kSuccess;
+    current_panel_qa_.emplace_back(base::UTF16ToUTF8(question), response);
+    std::move(callback).Run(base::UTF8ToUTF16(response),
+                            latest_response_status_);
+  } else {
+    latest_response_status_ = MahiResponseStatus::kCantFindOutputData;
+    std::move(callback).Run(std::nullopt, latest_response_status_);
+  }
 }
 
 void SparkyManagerImpl::OnGetPageContentForQA(
@@ -219,9 +233,10 @@ void SparkyManagerImpl::OnGetPageContentForQA(
   current_panel_content_ = std::move(mahi_content_ptr);
   current_panel_qa_.clear();
 
-  mahi_provider_->QuestionAndAnswer(
+  sparky_provider_->QuestionAndAnswer(
       base::UTF16ToUTF8(current_panel_content_->page_content),
       current_panel_qa_, base::UTF16ToUTF8(question),
+      manta::proto::Task::TASK_PLANNER,
       base::BindOnce(&SparkyManagerImpl::OnSparkyProviderQAResponse,
                      weak_ptr_factory_.GetWeakPtr(), question,
                      std::move(callback)));

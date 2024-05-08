@@ -22,6 +22,7 @@
 #include "base/check_op.h"
 #include "base/command_line.h"
 #include "base/functional/callback.h"
+#include "base/memory/ptr_util.h"
 #include "base/scoped_observation.h"
 #include "base/trace_event/trace_event.h"
 #include "chrome/browser/ash/app_list/app_list_client_impl.h"
@@ -401,7 +402,8 @@ void ChromeBrowserMainExtraPartsAsh::PostProfileInit(Profile* profile,
 void ChromeBrowserMainExtraPartsAsh::PostBrowserStart() {
   mobile_data_notifications_ = std::make_unique<MobileDataNotifications>();
 
-  if (chromeos::features::IsMahiEnabled()) {
+  if (chromeos::features::IsMahiEnabled() &&
+      !chromeos::features::IsSparkyEnabled()) {
     if (base::CommandLine::ForCurrentProcess()->HasSwitch(
             chromeos::switches::kUseFakeMahiManager)) {
       mahi_manager_ = std::make_unique<ash::FakeMahiManager>();

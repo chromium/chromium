@@ -10,6 +10,7 @@
 #include "chromeos/components/mahi/public/cpp/mahi_manager.h"
 #include "components/manta/mahi_provider.h"
 #include "components/manta/manta_service.h"
+#include "components/manta/sparky/sparky_provider.h"
 #include "ui/gfx/image/image_skia.h"
 #include "ui/views/widget/unique_widget_ptr.h"
 namespace ash {
@@ -66,7 +67,7 @@ class SparkyManagerImpl : public chromeos::MahiManager, public KeyedService {
 
   void OnSparkyProviderQAResponse(const std::u16string& question,
                                   MahiAnswerQuestionCallback callback,
-                                  base::Value::Dict dict,
+                                  const std::string& response,
                                   manta::MantaStatus status);
 
   crosapi::mojom::MahiPageInfoPtr current_page_info_ =
@@ -81,8 +82,7 @@ class SparkyManagerImpl : public chromeos::MahiManager, public KeyedService {
   // content.
   std::vector<std::pair<std::string, std::string>> current_panel_qa_;
 
-  // TODO (b/333479467): replace this with the Sparky provider once created.
-  std::unique_ptr<manta::MahiProvider> mahi_provider_;
+  std::unique_ptr<manta::SparkyProvider> sparky_provider_;
 
   // Keeps track of the latest result and code, used for feedback.
   std::u16string latest_summary_;

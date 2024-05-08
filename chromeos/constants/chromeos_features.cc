@@ -210,6 +210,9 @@ BASE_FEATURE(kKioskHeartbeatsViaERP,
 BASE_FEATURE(kMahi, "Mahi", base::FEATURE_DISABLED_BY_DEFAULT);
 #endif  // BUILDFLAG(IS_CHROMEOS_ASH)
 
+// Controls enabling / disabling the sparky feature.
+BASE_FEATURE(kSparky, "Sparky", base::FEATURE_DISABLED_BY_DEFAULT);
+
 // Controls enabling / disabling the mahi debugging.
 BASE_FEATURE(kMahiDebugging,
              "MahiDebugging",
@@ -471,6 +474,10 @@ bool IsMahiEnabled() {
 #else
   return base::FeatureList::IsEnabled(kMahi);
 #endif
+}
+
+bool IsSparkyEnabled() {
+  return base::FeatureList::IsEnabled(kSparky);
 }
 
 bool IsMahiDebuggingEnabled() {

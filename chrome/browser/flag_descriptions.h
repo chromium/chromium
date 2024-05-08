@@ -4171,6 +4171,9 @@ extern const char kSnoopingProtectionDescription[];
 extern const char kContinuousOverviewScrollAnimationName[];
 extern const char kContinuousOverviewScrollAnimationDescription[];
 
+extern const char kSparkyName[];
+extern const char kSparkyDescription[];
+
 extern const char kSpectreVariant2MitigationName[];
 extern const char kSpectreVariant2MitigationDescription[];
 
