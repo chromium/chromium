@@ -227,15 +227,14 @@ class CONTENT_EXPORT AttributionStorageSql : public AttributionStorage {
                                                     AttributionReport::Type)
       VALID_CONTEXT_REQUIRED(sequence_checker_);
 
-  enum class MaybeReplaceLowerPriorityEventLevelReportResult {
+  enum class ReplaceReportResult {
     kError,
     kAddNewReport,
     kDropNewReport,
     kDropNewReportSourceDeactivated,
     kReplaceOldReport,
   };
-  [[nodiscard]] MaybeReplaceLowerPriorityEventLevelReportResult
-  MaybeReplaceLowerPriorityEventLevelReport(
+  [[nodiscard]] ReplaceReportResult MaybeReplaceLowerPriorityEventLevelReport(
       const AttributionReport& report,
       int num_conversions,
       int64_t conversion_priority,
