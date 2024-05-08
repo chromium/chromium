@@ -497,7 +497,7 @@ bool HasExternalKeyboardConnected() {
 KeyboardCapability::KeyboardCapability()
     : scan_code_to_evdev_key_converter_(
           base::BindRepeating(&ConvertScanCodeToEvdevKey)),
-      board_name_(base::SysInfo::HardwareModelName()) {
+      board_name_(base::ToLowerASCII(base::SysInfo::HardwareModelName())) {
   DeviceDataManager::GetInstance()->AddObserver(this);
 }
 
