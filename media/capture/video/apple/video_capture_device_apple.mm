@@ -300,6 +300,12 @@ void VideoCaptureDeviceApple::ReceiveCaptureConfigurationChanged() {
                      weak_factory_.GetWeakPtr()));
 }
 
+void VideoCaptureDeviceApple::OnLog(const std::string& message) {
+  task_runner_->PostTask(FROM_HERE,
+                         base::BindOnce(&VideoCaptureDeviceApple::LogMessage,
+                                        weak_factory_.GetWeakPtr(), message));
+}
+
 void VideoCaptureDeviceApple::OnCaptureConfigurationChanged() {
   DCHECK(task_runner_->BelongsToCurrentThread());
   if (client_) {

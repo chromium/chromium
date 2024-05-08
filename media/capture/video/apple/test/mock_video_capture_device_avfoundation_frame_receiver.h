@@ -53,6 +53,8 @@ class MockVideoCaptureDeviceAVFoundationFrameReceiver
               (override));
 
   MOCK_METHOD(void, ReceiveCaptureConfigurationChanged, (), (override));
+
+  MOCK_METHOD(void, OnLog, (const std::string& message), (override));
 };
 
 }  // namespace media

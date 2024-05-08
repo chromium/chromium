@@ -89,6 +89,7 @@ class CAPTURE_EXPORT VideoCaptureDeviceApple
                     const base::Location& from_here,
                     const std::string& reason) override;
   void ReceiveCaptureConfigurationChanged() override;
+  void OnLog(const std::string& message) override;
 
   // Forwarder to VideoCaptureDevice::Client::OnLog().
   void LogMessage(const std::string& message);

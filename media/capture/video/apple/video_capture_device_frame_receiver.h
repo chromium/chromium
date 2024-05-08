@@ -51,6 +51,9 @@ class CAPTURE_EXPORT VideoCaptureDeviceAVFoundationFrameReceiver {
 
   // Forwarder to VideoCaptureDevice::Client::OnCaptureConfigurationChanged().
   virtual void ReceiveCaptureConfigurationChanged() = 0;
+
+  // Forwarder to VideoCaptureDevice::Client::OnLog().
+  virtual void OnLog(const std::string& message) = 0;
 };
 
 }  // namespace media
