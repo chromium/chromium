@@ -2079,7 +2079,7 @@
   {
     "name": "draw-immediately-when-interactive",
     "owners": [ "vollick@chromium.org" ],
-    "expiry_milestone": 125
+    "expiry_milestone": 129
   },
   {
     "name": "draw-native-edge-to-edge",
