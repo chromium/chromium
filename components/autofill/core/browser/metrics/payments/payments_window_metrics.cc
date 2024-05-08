@@ -25,4 +25,9 @@ void LogPaymentsWindowUserConsentDialogResult(
       "Autofill.Vcn3ds.PaymentsWindowUserConsentDialogResult", result);
 }
 
+void LogPaymentsWindowUserConsentDialogShown() {
+  base::UmaHistogramBoolean(
+      "Autofill.Vcn3ds.PaymentsWindowUserConsentDialogShown", /*sample=*/true);
+}
+
 }  // namespace autofill::autofill_metrics

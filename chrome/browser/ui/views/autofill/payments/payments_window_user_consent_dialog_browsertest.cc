@@ -23,6 +23,9 @@ constexpr char kSuppressedScreenshotError[] =
 constexpr std::string_view
     kPaymentsWindowUserConsentDialogResultVcn3dsHistogramName =
         "Autofill.Vcn3ds.PaymentsWindowUserConsentDialogResult";
+constexpr std::string_view
+    kPaymentsWindowUserConsentDialogShownVcn3dsHistogramName =
+        "Autofill.Vcn3ds.PaymentsWindowUserConsentDialogShown";
 
 class PaymentsWindowUserConsentDialogBrowserTest
     : public InteractiveBrowserTest {
@@ -88,6 +91,22 @@ IN_PROC_BROWSER_TEST_F(PaymentsWindowUserConsentDialogBrowserTest,
           Screenshot(payments_user_consent_dialog_root_view,
                      /*screenshot_name=*/"consent_popup",
                      /*baseline_cl=*/"5338589"))));
+}
+
+// Ensures the UI can be shown, and verifies that the dialog shown histogram
+// bucket is logged to.
+IN_PROC_BROWSER_TEST_F(PaymentsWindowUserConsentDialogBrowserTest,
+                       InvokeUi_DialogShownHistogramBucketLogs) {
+  RunTestSequence(
+      TriggerDialogAndWaitForShow(
+          PaymentsWindowUserConsentDialogView::kTopViewId),
+      // TriggerDialogAndWaitForShow() changes the context, so the same context
+      // must be used.
+      InSameContext(Check([this]() {
+        return histogram_tester_.GetBucketCount(
+                   kPaymentsWindowUserConsentDialogShownVcn3dsHistogramName,
+                   /*sample=*/true) == 1;
+      })));
 }
 
 // Ensures the UI can be shown, and verifies that accepting the dialog runs the

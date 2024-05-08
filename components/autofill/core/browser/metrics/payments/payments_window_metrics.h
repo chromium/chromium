@@ -76,6 +76,9 @@ void LogVcn3dsFlowEvent(Vcn3dsFlowEvent flow_event,
 void LogPaymentsWindowUserConsentDialogResult(
     PaymentsWindowUserConsentDialogResult result);
 
+// Logs when a PaymentsWindowUserConsentDialog is shown.
+void LogPaymentsWindowUserConsentDialogShown();
+
 }  // namespace autofill::autofill_metrics
 
 #endif  // COMPONENTS_AUTOFILL_CORE_BROWSER_METRICS_PAYMENTS_PAYMENTS_WINDOW_METRICS_H_

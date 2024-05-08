@@ -11,6 +11,7 @@
 #include "chrome/browser/ui/views/autofill/payments/payments_view_util.h"
 #include "chrome/browser/ui/views/chrome_layout_provider.h"
 #include "chrome/browser/ui/views/chrome_typography.h"
+#include "components/autofill/core/browser/metrics/payments/payments_window_metrics.h"
 #include "components/autofill/core/browser/ui/payments/payments_window_user_consent_dialog_controller.h"
 #include "components/constrained_window/constrained_window_views.h"
 #include "content/public/browser/web_contents.h"
@@ -35,6 +36,7 @@ CreateAndShowPaymentsWindowUserConsentDialog(
   dialog_view->SetAcceptCallback(std::move(accept_callback));
   dialog_view->SetCancelCallback(std::move(cancel_callback));
   constrained_window::ShowWebModalDialogViews(dialog_view, web_contents);
+  autofill_metrics::LogPaymentsWindowUserConsentDialogShown();
   return dialog_view->GetWeakPtr();
 }
 
