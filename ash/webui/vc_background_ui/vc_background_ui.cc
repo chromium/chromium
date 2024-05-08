@@ -130,6 +130,11 @@ void VcBackgroundUI::AddBooleans(content::WebUIDataSource* source) {
                          ::ash::features::IsSeaPenUINextEnabled() &&
                          manta::features::IsMantaServiceEnabled() &&
                          common_sea_pen_requirements);
+  source->AddBoolean("isSeaPenEnterpriseEnabled",
+                     ::ash::features::IsVcBackgroundReplaceEnabled() &&
+                         ::ash::features::IsSeaPenEnterpriseEnabled() &&
+                         manta::features::IsMantaServiceEnabled() &&
+                         common_sea_pen_requirements);
   source->AddBoolean("isLacrosEnabled",
                      ::crosapi::lacros_startup_state::IsLacrosEnabled());
 }

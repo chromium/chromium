@@ -2576,6 +2576,11 @@ BASE_FEATURE(kSeaPenDemoMode,
 // Enables sea pen feature with new UI enhancement.
 BASE_FEATURE(kSeaPenUINext, "SeaPenUINext", base::FEATURE_DISABLED_BY_DEFAULT);
 
+// Enables sea pen features for enterprise users controlled by the policy.
+BASE_FEATURE(kSeaPenEnterprise,
+             "SeaPenEnterprise",
+             base::FEATURE_DISABLED_BY_DEFAULT);
+
 // Enables automated control of the refresh rate for the internal display.
 BASE_FEATURE(kSeamlessRefreshRateSwitching,
              "SeamlessRefreshRateSwitching",
@@ -4353,6 +4358,10 @@ bool IsSeaPenTextInputEnabled() {
 
 bool IsSeaPenUINextEnabled() {
   return IsSeaPenEnabled() && base::FeatureList::IsEnabled(kSeaPenUINext);
+}
+
+bool IsSeaPenEnterpriseEnabled() {
+  return IsSeaPenEnabled() && base::FeatureList::IsEnabled(kSeaPenEnterprise);
 }
 
 bool IsSeparateNetworkIconsEnabled() {
