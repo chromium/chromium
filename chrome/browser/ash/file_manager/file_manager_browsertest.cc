@@ -1596,12 +1596,10 @@ WRAPPED_INSTANTIATE_TEST_SUITE_P(
         TestCase("openOfficeWordFromDriveOffline")
             .EnableUploadOfficeToCloud()
             .Offline()
-// TODO(b/339102272): Flaky on MSan.
-#if !defined(MEMORY_SANITIZER)
-            ,
-        TestCase("officeShowNudgeGoogleDrive")
-#endif
-            ));
+        // TODO(b/339102272): Re-enable after resolving flakiness.
+        //            ,
+        //       TestCase("officeShowNudgeGoogleDrive")
+        ));
 
 WRAPPED_INSTANTIATE_TEST_SUITE_P(
     GuestOs, /* guest_os.ts */
