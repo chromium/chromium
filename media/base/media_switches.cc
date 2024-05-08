@@ -1297,6 +1297,14 @@ BASE_FEATURE(kPreferSoftwareMT21,
 BASE_FEATURE(kEnableProtectedVulkanDetiling,
              "EnableProtectedVulkanDetiling",
              base::FEATURE_ENABLED_BY_DEFAULT);
+#if BUILDFLAG(USE_CHROMEOS_PROTECTED_MEDIA)
+// Enable use of HW based L1 Widevine DRM via the cdm-oemcrypto daemon on
+// ChromeOS. This flag is temporary while we finish development.
+// Expiry: M128
+BASE_FEATURE(kEnableArmHwdrm,
+             "EnableArmHwdrm",
+             base::FEATURE_DISABLED_BY_DEFAULT);
+#endif  // BUILDFLAG(USE_CHROMEOS_PROTECTED_MEDIA)
 #endif  // defined(ARCH_CPU_ARM_FAMILY)
 #if BUILDFLAG(IS_CHROMEOS) && !BUILDFLAG(USE_VAAPI)
 // ChromeOS has one of two VideoDecoder implementations active based on

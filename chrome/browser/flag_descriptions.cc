@@ -7689,6 +7689,10 @@ const char kEnableProtectedVulkanDetilingName[] =
     "Enable Protected Vulkan Detiling";
 const char kEnableProtectedVulkanDetilingDescription[] =
     "Use a Vulkan shader for protected Vulkan detiling.";
+#if BUILDFLAG(USE_CHROMEOS_PROTECTED_MEDIA)
+const char kEnableArmHwdrmName[] = "Enable ARM HW DRM";
+const char kEnableArmHwdrmDescription[] = "Enable HW backed Widevine L1 DRM";
+#endif  // BUILDFLAG(USE_CHROMEOS_PROTECTED_MEDIA)
 #endif  // defined(ARCH_CPU_ARM_FAMILY)
 #endif  // BUILDFLAG(IS_CHROMEOS) && BUILDFLAG(USE_CHROMEOS_MEDIA_ACCELERATION)
 

@@ -4468,6 +4468,10 @@ extern const char kPreferSoftwareMT21Name[];
 extern const char kPreferSoftwareMT21Description[];
 extern const char kEnableProtectedVulkanDetilingName[];
 extern const char kEnableProtectedVulkanDetilingDescription[];
+#if BUILDFLAG(USE_CHROMEOS_PROTECTED_MEDIA)
+extern const char kEnableArmHwdrmName[];
+extern const char kEnableArmHwdrmDescription[];
+#endif  // BUILDFLAG(USE_CHROMEOS_PROTECTED_MEDIA)
 #endif  // defined(ARCH_CPU_ARM_FAMILY
 #endif  // BUILDFLAG(IS_CHROMEOS) && BUILDFLAG(USE_CHROMEOS_MEDIA_ACCELERATION)
 
