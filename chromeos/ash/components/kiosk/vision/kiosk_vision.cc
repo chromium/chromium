@@ -19,6 +19,7 @@
 #include "chromeos/ash/components/kiosk/vision/internal/detection_processor.h"
 #include "chromeos/ash/components/kiosk/vision/internal/pref_observer.h"
 #include "chromeos/ash/components/kiosk/vision/pref_names.h"
+#include "chromeos/ash/components/kiosk/vision/telemetry_processor.h"
 #include "components/prefs/pref_registry_simple.h"
 #include "components/prefs/pref_service.h"
 #include "third_party/cros_system_api/dbus/dlcservice/dbus-constants.h"
@@ -72,12 +73,6 @@ KioskVision::KioskVision(PrefService* pref_service)
   pref_observer_.Start();
 }
 
-KioskVision::KioskVision(PrefService* pref_service,
-                         DetectionProcessor* test_processor)
-    : KioskVision(pref_service) {
-  test_processor_ = test_processor;
-}
-
 KioskVision::~KioskVision() = default;
 
 void KioskVision::Enable() {
@@ -88,13 +83,18 @@ void KioskVision::Enable() {
 void KioskVision::Disable() {
   camera_connector_.reset();
   detection_observer_.reset();
+  telemetry_processor_.reset();
 }
 
 void KioskVision::InitializeProcessors(std::string dlc_path) {
-  detection_observer_.emplace(test_processor_
-                                  ? DetectionProcessors({test_processor_})
-                                  : DetectionProcessors());
+  telemetry_processor_.emplace();
+  detection_observer_.emplace(
+      DetectionProcessors({&telemetry_processor_.value()}));
   camera_connector_.emplace(std::move(dlc_path), &detection_observer_.value());
+}
+
+TelemetryProcessor* KioskVision::GetTelemetryProcessor() {
+  return telemetry_processor_.has_value() ? &*telemetry_processor_ : nullptr;
 }
 
 void RegisterLocalStatePrefs(PrefRegistrySimple* registry) {

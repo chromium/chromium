@@ -4,31 +4,39 @@
 
 #include "chromeos/ash/components/kiosk/vision/kiosk_vision.h"
 
+#include <iterator>
 #include <string>
 #include <string_view>
 #include <utility>
 #include <vector>
 
+#include "base/check_deref.h"
 #include "base/functional/bind.h"
 #include "base/functional/callback.h"
 #include "base/functional/callback_helpers.h"
 #include "base/ranges/algorithm.h"
+#include "base/run_loop.h"
 #include "base/test/task_environment.h"
 #include "base/test/test_future.h"
 #include "chromeos/ash/components/dbus/dlcservice/dlcservice.pb.h"
 #include "chromeos/ash/components/dbus/dlcservice/dlcservice_client.h"
 #include "chromeos/ash/components/dbus/dlcservice/fake_dlcservice_client.h"
-#include "chromeos/ash/components/kiosk/vision/internal/detection_processor.h"
 #include "chromeos/ash/components/kiosk/vision/internal/fake_cros_camera_service.h"
+#include "chromeos/ash/components/kiosk/vision/internal/pref_observer.h"
 #include "chromeos/ash/components/kiosk/vision/pref_names.h"
 #include "components/prefs/pref_service.h"
 #include "components/prefs/testing_pref_service.h"
 #include "media/capture/video/chromeos/mojom/cros_camera_service.mojom-forward.h"
 #include "media/capture/video/chromeos/mojom/cros_camera_service.mojom.h"
+#include "testing/gmock/include/gmock/gmock.h"
 #include "testing/gtest/include/gtest/gtest.h"
 #include "third_party/cros_system_api/dbus/dlcservice/dbus-constants.h"
 
 namespace ash::kiosk_vision {
+
+using testing::ElementsAre;
+using testing::ElementsAreArray;
+using testing::IsEmpty;
 
 namespace {
 
@@ -38,6 +46,10 @@ void RegisterKioskVisionPrefs(TestingPrefServiceSimple& local_state) {
 
 void EnableKioskVisionTelemetryPref(PrefService& pref_service) {
   pref_service.SetBoolean(prefs::kKioskVisionTelemetryEnabled, true);
+}
+
+void DisableKioskVisionTelemetryPref(PrefService& pref_service) {
+  pref_service.SetBoolean(prefs::kKioskVisionTelemetryEnabled, false);
 }
 
 DlcserviceClient::InstallResult InstallKioskVisionDlc(
@@ -66,43 +78,14 @@ bool IsKioskVisionDlcInstalled(FakeDlcserviceClient& service) {
   });
 }
 
-cros::mojom::KioskVisionDetectionPtr NewFakeDetection() {
+cros::mojom::KioskVisionDetectionPtr NewFakeDetectionOfPersons(
+    std::vector<int> person_ids) {
   std::vector<cros::mojom::KioskVisionAppearancePtr> appearances;
-  appearances.push_back(cros::mojom::KioskVisionAppearance::New(42));
-  appearances.push_back(cros::mojom::KioskVisionAppearance::New(13));
+  for (int person_id : person_ids) {
+    appearances.push_back(cros::mojom::KioskVisionAppearance::New(person_id));
+  }
   return cros::mojom::KioskVisionDetection::New(std::move(appearances));
 }
-
-// Simple observer implementation that exposes events via `NextDetection` and
-// `NextError`.
-class FakeObserver : public DetectionProcessor {
- public:
-  FakeObserver() = default;
-  FakeObserver(const FakeObserver&) = delete;
-  FakeObserver& operator=(const FakeObserver&) = delete;
-  ~FakeObserver() override = default;
-
-  cros::mojom::KioskVisionDetectionPtr NextDetection() {
-    return detection_future_.Take();
-  }
-
-  cros::mojom::KioskVisionError NextError() { return error_future_.Take(); }
-
-  // `DetectionProcessor` implementation.
-  void OnDetection(
-      const cros::mojom::KioskVisionDetection& detection) override {
-    detection_future_.SetValue(detection.Clone());
-  }
-
-  void OnError(cros::mojom::KioskVisionError error) override {
-    error_future_.SetValue(error);
-  }
-
- private:
-  base::test::TestFuture<cros::mojom::KioskVisionDetectionPtr>
-      detection_future_;
-  base::test::TestFuture<cros::mojom::KioskVisionError> error_future_;
-};
 
 }  // namespace
 
@@ -117,6 +100,10 @@ class KioskVisionTest : public testing::Test {
   FakeDlcserviceClient fake_dlcservice_;
 };
 
+TEST_F(KioskVisionTest, TelemetryPrefIsDisabledByDefault) {
+  ASSERT_FALSE(IsTelemetryPrefEnabled(local_state_));
+}
+
 TEST_F(KioskVisionTest, InstallsDlcWhenEnabled) {
   ASSERT_FALSE(IsKioskVisionDlcInstalled(fake_dlcservice_));
   EnableKioskVisionTelemetryPref(local_state_);
@@ -127,6 +114,8 @@ TEST_F(KioskVisionTest, InstallsDlcWhenEnabled) {
 }
 
 TEST_F(KioskVisionTest, UninstallsDlcWhenDisabled) {
+  DisableKioskVisionTelemetryPref(local_state_);
+
   const auto& result = InstallKioskVisionDlc(fake_dlcservice_);
   ASSERT_EQ(result.error, dlcservice::kErrorNone);
   EXPECT_TRUE(IsKioskVisionDlcInstalled(fake_dlcservice_));
@@ -146,32 +135,85 @@ TEST_F(KioskVisionTest, BindsDetectionObserver) {
   ASSERT_TRUE(fake_cros_camera_service_.HasObserver());
 }
 
-TEST_F(KioskVisionTest, ProcessorReceivesDetections) {
-  EnableKioskVisionTelemetryPref(local_state_);
+TEST_F(KioskVisionTest, TelemetryProcessorIsNullWhenDisabled) {
+  DisableKioskVisionTelemetryPref(local_state_);
 
-  FakeObserver observer;
-  KioskVision vision(&local_state_, &observer);
+  KioskVision vision(&local_state_);
 
-  ASSERT_TRUE(fake_cros_camera_service_.WaitForObserver());
-
-  auto detection = NewFakeDetection();
-  fake_cros_camera_service_.EmitFakeDetection(detection->Clone());
-
-  ASSERT_EQ(detection, observer.NextDetection());
+  base::RunLoop().RunUntilIdle();
+  ASSERT_EQ(vision.GetTelemetryProcessor(), nullptr);
 }
 
-TEST_F(KioskVisionTest, ProcessorReceivesErrors) {
+TEST_F(KioskVisionTest, TelemetryProcessorIsNotNullWhenEnabled) {
   EnableKioskVisionTelemetryPref(local_state_);
 
-  FakeObserver observer;
-  KioskVision vision(&local_state_, &observer);
+  KioskVision vision(&local_state_);
+
+  base::RunLoop().RunUntilIdle();
+  ASSERT_NE(vision.GetTelemetryProcessor(), nullptr);
+}
+
+TEST_F(KioskVisionTest, TelemetryProcessorBecomesNullOnceDisabled) {
+  EnableKioskVisionTelemetryPref(local_state_);
+
+  KioskVision vision(&local_state_);
+
+  base::RunLoop().RunUntilIdle();
+  EXPECT_NE(vision.GetTelemetryProcessor(), nullptr);
+
+  DisableKioskVisionTelemetryPref(local_state_);
+
+  base::RunLoop().RunUntilIdle();
+  ASSERT_EQ(vision.GetTelemetryProcessor(), nullptr);
+}
+
+TEST_F(KioskVisionTest, TelemetryProcessorStartsWithoutDetections) {
+  EnableKioskVisionTelemetryPref(local_state_);
+
+  KioskVision vision(&local_state_);
 
   ASSERT_TRUE(fake_cros_camera_service_.WaitForObserver());
+
+  auto& processor = CHECK_DEREF(vision.GetTelemetryProcessor());
+
+  base::RunLoop().RunUntilIdle();
+
+  ASSERT_THAT(processor.TakeIdsProcessed(), IsEmpty());
+  ASSERT_THAT(processor.TakeErrors(), IsEmpty());
+}
+
+TEST_F(KioskVisionTest, TelemetryProcessorReceivesDetections) {
+  EnableKioskVisionTelemetryPref(local_state_);
+
+  KioskVision vision(&local_state_);
+
+  ASSERT_TRUE(fake_cros_camera_service_.WaitForObserver());
+
+  auto& processor = CHECK_DEREF(vision.GetTelemetryProcessor());
+
+  fake_cros_camera_service_.EmitFakeDetection(
+      NewFakeDetectionOfPersons({123, 45}));
+
+  base::RunLoop().RunUntilIdle();
+  EXPECT_THAT(processor.TakeIdsProcessed(), ElementsAreArray({123, 45}));
+  EXPECT_THAT(processor.TakeErrors(), IsEmpty());
+}
+
+TEST_F(KioskVisionTest, TelemetryProcessorReceivesErrors) {
+  EnableKioskVisionTelemetryPref(local_state_);
+
+  KioskVision vision(&local_state_);
+
+  ASSERT_TRUE(fake_cros_camera_service_.WaitForObserver());
+
+  auto& processor = CHECK_DEREF(vision.GetTelemetryProcessor());
 
   auto error = cros::mojom::KioskVisionError::MODEL_ERROR;
   fake_cros_camera_service_.EmitFakeError(error);
 
-  ASSERT_EQ(error, observer.NextError());
+  base::RunLoop().RunUntilIdle();
+  EXPECT_THAT(processor.TakeIdsProcessed(), IsEmpty());
+  EXPECT_THAT(processor.TakeErrors(), ElementsAre(error));
 }
 
 }  // namespace ash::kiosk_vision

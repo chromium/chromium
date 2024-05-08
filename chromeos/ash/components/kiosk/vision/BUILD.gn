@@ -11,6 +11,8 @@ component("vision") {
   sources = [
     "kiosk_vision.cc",
     "kiosk_vision.h",
+    "telemetry_processor.cc",
+    "telemetry_processor.h",
   ]
   public_deps = [ ":vision_prefs" ]
   deps = [
@@ -19,6 +21,7 @@ component("vision") {
     "//chromeos/ash/components/dbus/dlcservice",
     "//chromeos/ash/components/dbus/dlcservice:dlcservice_proto",
     "//components/prefs:prefs",
+    "//media/capture/video/chromeos/mojom:cros_camera",
   ]
 }
 

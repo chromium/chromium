@@ -6,6 +6,7 @@
 
 #include <utility>
 
+#include "base/check_op.h"
 #include "chromeos/ash/components/kiosk/vision/internal/detection_processor.h"
 #include "media/capture/video/chromeos/mojom/cros_camera_service.mojom-forward.h"
 
@@ -13,7 +14,7 @@ namespace ash::kiosk_vision {
 
 DetectionObserver::DetectionObserver(DetectionProcessors processors)
     : processors_(std::move(processors)) {
-  // TODO(b/333698067) CHECK processors_ is not empty.
+  CHECK_GT(processors_.size(), 0ul) << "No processors given";
 }
 
 DetectionObserver::~DetectionObserver() = default;
