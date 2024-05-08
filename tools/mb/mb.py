@@ -925,35 +925,12 @@ class MetaBuildWrapper:
 
   def Lookup(self):
     self.ReadConfigFile(self.args.config_file)
-    try:
-      config = self.ConfigFromArgs()
-    except MBErr as e:
-      # TODO(crbug.com/40605452) While iOS bots are migrated to use the
-      # Chromium recipe, we want to ensure that we're checking MB's
-      # configurations first before going to iOS.
-      # This is to be removed once the migration is complete.
-      vals = self.ReadIOSBotConfig()
-      if not vals:
-        raise e
-      return vals
+    config = self.ConfigFromArgs()
 
     # "config" would be a dict if the GN args are loaded from a
     # starlark-generated file.
     if isinstance(config, dict):
       return config
-
-    # TODO(crbug.com/40605452) Some iOS bots have a definition, with ios_error
-    # as an indicator that it's incorrect. We utilize this to check the
-    # iOS JSON instead, and error out if there exists no definition at all.
-    # This is to be removed once the migration is complete.
-    if config == 'ios_error':
-      vals = self.ReadIOSBotConfig()
-      if not vals:
-        raise MBErr('No iOS definition was found. Please ensure there is a '
-                    'definition for the given iOS bot under '
-                    'mb_config.pyl or a JSON file definition under '
-                    '//ios/build/bots.')
-      return vals
 
     if config.startswith('//'):
       if not self.Exists(self.ToAbsPath(config)):
@@ -965,21 +942,6 @@ class MetaBuildWrapper:
         raise MBErr(
             'Config "%s" not found in %s' % (config, self.args.config_file))
       vals = FlattenConfig(self.configs, self.mixins, config)
-    return vals
-
-  def ReadIOSBotConfig(self):
-    if not self.args.builder_group or not self.args.builder:
-      return {}
-    path = self.PathJoin(self.chromium_src_dir, 'ios', 'build', 'bots',
-                         self.args.builder_group, self.args.builder + '.json')
-    if not self.Exists(path):
-      return {}
-
-    contents = json.loads(self.ReadFile(path))
-    gn_args = ' '.join(contents.get('gn_args', []))
-
-    vals = DefaultVals()
-    vals['gn_args'] = gn_args
     return vals
 
   def ReadConfigFile(self, config_file):

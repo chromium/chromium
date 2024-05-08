@@ -162,7 +162,6 @@ TEST_CONFIG = """\
       'fake_args_file': 'args_file_goma',
       'fake_builder': 'rel_bot',
       'fake_debug_builder': 'debug_goma',
-      'fake_ios_error': 'ios_error',
       'fake_multi_phase': { 'phase_1': 'phase_1', 'phase_2': 'phase_2'},
     },
   },
@@ -170,7 +169,6 @@ TEST_CONFIG = """\
     'args_file_goma': ['fake_args_bot', 'goma'],
     'debug_goma': ['debug', 'goma'],
     'fake_args_bot': ['fake_args_bot'],
-    'ios_error': ['error'],
     'phase_1': ['rel', 'phase_1'],
     'phase_2': ['rel', 'phase_2'],
     'rel_bot': ['rel', 'goma', 'fake_feature1'],
@@ -178,9 +176,6 @@ TEST_CONFIG = """\
   'mixins': {
     'debug': {
       'gn_args': 'is_debug=true',
-    },
-    'error': {
-      'gn_args': 'error',
     },
     'fake_args_bot': {
       'args_file': '//build/args/bots/fake_builder_group/fake_args_bot.gn',
@@ -1220,54 +1215,6 @@ class UnitTest(unittest.TestCase):
     self.check(['run', '//out/Default', 'base_unittests'], mbw=mbw, ret=0)
     self.assertIn(['autoninja.bat', '-C', 'out\\Default', 'base_unittests'],
                   mbw.calls)
-
-  def test_ios_error_config_with_ios_json(self):
-    """Ensures that ios_error config finds the correct iOS JSON file for args"""
-    files = {
-        '/fake_src/ios/build/bots/fake_builder_group/fake_ios_error.json':
-        ('{"gn_args": ["is_debug=true"]}\n')
-    }
-    mbw = self.fake_mbw(files)
-    self.check(['lookup', '-m', 'fake_builder_group', '-b', 'fake_ios_error'],
-               mbw=mbw,
-               ret=0,
-               out=('\n'
-                    'Writing """\\\n'
-                    'is_debug = true\n'
-                    '""" to _path_/args.gn.\n\n'
-                    '/fake_src/buildtools/linux64/gn gen _path_\n'))
-
-  def test_bot_definition_in_ios_json_only(self):
-    """Ensures that logic checks iOS JSON file for args
-
-    When builder definition is not present, ensure that ios/build/bots/ is
-    checked.
-    """
-    files = {
-        '/fake_src/ios/build/bots/fake_builder_group/fake_ios_bot.json':
-        ('{"gn_args": ["is_debug=true"]}\n')
-    }
-    mbw = self.fake_mbw(files)
-    self.check(['lookup', '-m', 'fake_builder_group', '-b', 'fake_ios_bot'],
-               mbw=mbw,
-               ret=0,
-               out=('\n'
-                    'Writing """\\\n'
-                    'is_debug = true\n'
-                    '""" to _path_/args.gn.\n\n'
-                    '/fake_src/buildtools/linux64/gn gen _path_\n'))
-
-  def test_ios_error_config_missing_json_definition(self):
-    """Ensures MBErr is thrown
-
-    Expect MBErr with 'No iOS definition ...' for iOS bots when the bot config
-    is ios_error, but there is no iOS JSON definition for it.
-    """
-    mbw = self.fake_mbw()
-    self.check(['lookup', '-m', 'fake_builder_group', '-b', 'fake_ios_error'],
-               mbw=mbw,
-               ret=1)
-    self.assertIn('MBErr: No iOS definition was found.', mbw.out)
 
   def test_bot_missing_definition(self):
     """Ensures builder missing MBErr is thrown
