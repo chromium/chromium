@@ -46,6 +46,7 @@ import org.chromium.base.Callback;
 import org.chromium.base.supplier.ObservableSupplier;
 import org.chromium.base.supplier.OneshotSupplier;
 import org.chromium.base.test.BaseRobolectricTestRunner;
+import org.chromium.base.test.util.HistogramWatcher;
 import org.chromium.base.test.util.JniMocker;
 import org.chromium.base.test.util.UserActionTester;
 import org.chromium.chrome.R;
@@ -246,6 +247,7 @@ public class SearchActivityUnitTest {
     @Test
     public void loadUrl_dispatchResultToCallingActivity() {
         doReturn(IntentOrigin.CUSTOM_TAB).when(mUtils).getIntentOrigin(any());
+
         mActivity.handleNewIntent(new Intent(), false);
 
         mActivity.loadUrl(LOAD_URL_PARAMS_SIMPLE, false);
@@ -260,6 +262,7 @@ public class SearchActivityUnitTest {
     @Test
     public void loadUrl_openInChromeBrowser() {
         doReturn(IntentOrigin.QUICK_ACTION_SEARCH_WIDGET).when(mUtils).getIntentOrigin(any());
+
         mActivity.handleNewIntent(new Intent(), false);
 
         mActivity.loadUrl(LOAD_URL_PARAMS_SIMPLE, false);
@@ -299,7 +302,11 @@ public class SearchActivityUnitTest {
     @Test
     public void handleNewIntent_forSearchWidget() {
         doReturn(IntentOrigin.SEARCH_WIDGET).when(mUtils).getIntentOrigin(any());
-        mActivity.handleNewIntent(new Intent(), false);
+        try (var watcher =
+                HistogramWatcher.newSingleRecordWatcher(
+                        SearchActivity.HISTOGRAM_INTENT_ORIGIN, IntentOrigin.SEARCH_WIDGET)) {
+            mActivity.handleNewIntent(new Intent(), false);
+        }
 
         assertEquals(
                 PageClassification.ANDROID_SEARCH_WIDGET_VALUE,
@@ -314,7 +321,12 @@ public class SearchActivityUnitTest {
     @Test
     public void handleNewIntent_forQuickActionSearchWidget() {
         doReturn(IntentOrigin.QUICK_ACTION_SEARCH_WIDGET).when(mUtils).getIntentOrigin(any());
-        mActivity.handleNewIntent(new Intent(), false);
+        try (var watcher =
+                HistogramWatcher.newSingleRecordWatcher(
+                        SearchActivity.HISTOGRAM_INTENT_ORIGIN,
+                        IntentOrigin.QUICK_ACTION_SEARCH_WIDGET)) {
+            mActivity.handleNewIntent(new Intent(), false);
+        }
 
         assertEquals(
                 PageClassification.ANDROID_SHORTCUTS_WIDGET_VALUE,
@@ -330,7 +342,11 @@ public class SearchActivityUnitTest {
     public void handleNewIntent_forCustomTabNoProfile() {
         doReturn(IntentOrigin.CUSTOM_TAB).when(mUtils).getIntentOrigin(any());
         doReturn(new GURL("https://abc.xyz")).when(mUtils).getIntentUrl(any());
-        mActivity.handleNewIntent(new Intent(), false);
+        try (var watcher =
+                HistogramWatcher.newSingleRecordWatcher(
+                        SearchActivity.HISTOGRAM_INTENT_ORIGIN, IntentOrigin.CUSTOM_TAB)) {
+            mActivity.handleNewIntent(new Intent(), false);
+        }
 
         assertEquals(
                 PageClassification.OTHER_ON_CCT_VALUE,
@@ -765,9 +781,15 @@ public class SearchActivityUnitTest {
         doReturn(IntentOrigin.CUSTOM_TAB).when(mUtils).getIntentOrigin(any());
         doReturn(null).when(mUtils).getReferrer(any());
         mActivity.onNewIntent(new Intent());
-        mActivity.onResumeWithNative();
+
+        try (var watcher =
+                HistogramWatcher.newSingleRecordWatcher(
+                        SearchActivity.HISTOGRAM_INTENT_REFERRER_VALID, false)) {
+            mActivity.onResumeWithNative();
+        }
 
         verify(mUmaObserver).startUmaSession(eq(ActivityType.CUSTOM_TAB), eq(null), any());
+        verify(mSetCustomTabSearchClient).onResult(null);
         verifyNoMoreInteractions(mUmaObserver, mSetCustomTabSearchClient);
     }
 
@@ -776,7 +798,12 @@ public class SearchActivityUnitTest {
         doReturn(IntentOrigin.CUSTOM_TAB).when(mUtils).getIntentOrigin(any());
         doReturn("com.package.name").when(mUtils).getReferrer(any());
         mActivity.onNewIntent(new Intent());
-        mActivity.onResumeWithNative();
+
+        try (var watcher =
+                HistogramWatcher.newSingleRecordWatcher(
+                        SearchActivity.HISTOGRAM_INTENT_REFERRER_VALID, true)) {
+            mActivity.onResumeWithNative();
+        }
 
         verify(mUmaObserver).startUmaSession(eq(ActivityType.CUSTOM_TAB), eq(null), any());
         verify(mSetCustomTabSearchClient).onResult("app-cct-com.package.name");

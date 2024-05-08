@@ -112,12 +112,18 @@ public class SearchActivity extends AsyncInitializationActivity
     /* package */ static final String HISTOGRAM_LAUNCHED_WITH_QUERY =
             "Android.Omnibox.SearchActivity.LaunchedWithQuery";
 
-    private static final String HISTOGRAM_INTENT_ORIGIN =
+    @VisibleForTesting
+    /* package */ static final String HISTOGRAM_INTENT_ORIGIN =
             "Android.Omnibox.SearchActivity.IntentOrigin";
+
     private static final String HISTOGRAM_SEARCH_TYPE = //
             "Android.Omnibox.SearchActivity.SearchType";
     private static final String HISTOGRAM_INTENT_ACTIVITY_PRESENT =
             "Android.Omnibox.SearchActivity.ActivityPresent";
+
+    @VisibleForTesting
+    /* package */ static final String HISTOGRAM_INTENT_REFERRER_VALID =
+            "Android.Omnibox.SearchActivity.ReferrerValid";
 
     @VisibleForTesting /* package */ static final String CCT_CLIENT_PACKAGE_PREFIX = "app-cct-";
 
@@ -524,9 +530,10 @@ public class SearchActivity extends AsyncInitializationActivity
         umaSessionResume();
         if (mIntentOrigin == IntentOrigin.CUSTOM_TAB) {
             var referrer = SearchActivityUtils.getReferrer(getIntent());
-            if (!TextUtils.isEmpty(referrer)) {
-                RevenueStats.setCustomTabSearchClient(CCT_CLIENT_PACKAGE_PREFIX + referrer);
-            }
+            var referrerValid = !TextUtils.isEmpty(referrer);
+            RecordHistogram.recordBooleanHistogram(HISTOGRAM_INTENT_REFERRER_VALID, referrerValid);
+            RevenueStats.setCustomTabSearchClient(
+                    referrerValid ? CCT_CLIENT_PACKAGE_PREFIX + referrer : null);
         }
 
         // Inform the actity lifecycle observers. Among other things, the observers record

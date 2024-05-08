@@ -2720,6 +2720,16 @@ chromium-metrics-reviews@google.com.
   </summary>
 </histogram>
 
+<histogram name="Android.Omnibox.SearchActivity.ReferrerValid"
+    enum="BooleanValid" expires_after="2024-09-01">
+  <owner>ender@chromium.org</owner>
+  <summary>
+    Records whether Intent Referrer field was valid for Searches initiated from
+    SearchActivity. Recorded only when IntentOrigin is &quot;Custom Tab&quot;.
+    Recorded once per SearchActivity session.
+  </summary>
+</histogram>
+
 <histogram name="Android.Omnibox.SearchActivity.SearchType"
     enum="SearchActivitySearchType" expires_after="2024-09-01">
   <owner>ender@chromium.org</owner>
