@@ -159,7 +159,11 @@ class SharesheetBubbleView::SharesheetParentWidgetObserver
 SharesheetBubbleView::SharesheetBubbleView(
     gfx::NativeWindow native_window,
     ::sharesheet::SharesheetServiceDelegator* delegator)
-    : delegator_(delegator) {
+    : BubbleDialogDelegateView(nullptr,
+                               views::BubbleBorder::TOP_LEFT,
+                               views::BubbleBorder::DIALOG_SHADOW,
+                               true),
+      delegator_(delegator) {
   CHECK(native_window);
   CHECK(delegator_);
 
@@ -737,6 +741,7 @@ void SharesheetBubbleView::UpdateAnchorPosition() {
 void SharesheetBubbleView::SetToDefaultBubbleSizing() {
   width_ = kDefaultBubbleWidth;
   height_ = main_view_->GetPreferredSize().height();
+  PreferredSizeChanged();
 }
 
 void SharesheetBubbleView::ShowWidgetWithAnimateFadeIn() {
