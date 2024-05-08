@@ -38,6 +38,7 @@ void PlusAddressAffiliationMatchHelper::GetAffiliatedPlusProfiles(
   }
 
   const FacetURI& facet = absl::get<FacetURI>(plus_profile.facet);
+  DCHECK(facet.IsValidWebFacetURI());
   // The barrier is used to collect affiliated plus addresses from multiple
   // sources (i.e. grouped affiliations, PSL matches), combine and return them.
   const int kCallsNumber = 2;

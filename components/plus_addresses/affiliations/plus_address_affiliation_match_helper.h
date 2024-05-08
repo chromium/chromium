@@ -49,7 +49,7 @@ class PlusAddressAffiliationMatchHelper {
 
   // Returns the complete list of plus profiles, including the specified
   // `plus_profile`, that belong to the same affiliation group based on their
-  // facet value.
+  // facet value. Only profiles with valid web facets must be passed-in.
   // TODO(b/324553908): Update to query by facet.
   void GetAffiliatedPlusProfiles(
       const PlusProfile& plus_profile,
