@@ -86,7 +86,8 @@ BuildInfo::BuildInfo(const std::vector<std::string>& params)
       targets_at_least_u_(GetIntParam(params, 28)),
       codename_(StrDupParam(params, 29)),
       vulkan_deqp_level_(GetIntParam(params, 30)),
-      is_foldable_(GetIntParam(params, 31)) {}
+      is_foldable_(GetIntParam(params, 31)),
+      soc_manufacturer_(StrDupParam(params, 32)) {}
 
 // static
 BuildInfo* BuildInfo::GetInstance() {
