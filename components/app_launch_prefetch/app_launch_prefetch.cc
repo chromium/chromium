@@ -9,8 +9,6 @@
 #include "base/notreached.h"
 #include "base/win/windows_version.h"
 
-#include "base/debug/stack_trace.h"
-
 namespace {
 
 BASE_FEATURE(kExpandedPrefetchRange,
