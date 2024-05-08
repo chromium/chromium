@@ -1138,7 +1138,7 @@
   {
     "name": "camera-app-digital-zoom",
     "owners": [ "kamchonlathorn@chromium.org", "chromeos-camera-app-eng@google.com" ],
-    "expiry_milestone": 128
+    "expiry_milestone": 130
   },
   {
     "name": "camera-app-pdf-ocr",
@@ -1172,7 +1172,7 @@
       "julianachang@chromium.org",
       "chromeos-camera-eng@google.com"
     ],
-    "expiry_milestone": 128
+    "expiry_milestone": 130
   },
   {
     "name": "campaigns-test-tag",

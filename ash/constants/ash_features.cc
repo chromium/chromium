@@ -301,7 +301,7 @@ BASE_FEATURE(kCameraAppCrosEvents,
 // Enables or disables digital zoom control inside Camera app.
 BASE_FEATURE(kCameraAppDigitalZoom,
              "CameraAppDigitalZoom",
-             base::FEATURE_DISABLED_BY_DEFAULT);
+             base::FEATURE_ENABLED_BY_DEFAULT);
 
 // Make the text on PDFs saved from Camera app accessible.
 BASE_FEATURE(kCameraAppPdfOcr,
