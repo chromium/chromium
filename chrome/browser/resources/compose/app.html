@@ -227,12 +227,8 @@
   }
 
   /* #resultTextContainer is only styled if UI refinements are applied */
-  :host([enable-ui-refinements]) #resultTextContainer:not(.can-scroll) {
-    margin-bottom: 16px;
-  }
-
   :host([enable-ui-refinements]) #resultTextContainer {
-    max-height: 113px;
+    max-height: 112px;
     overflow: auto;
     /* Incorporates width of righthand scrollbar */
     padding-inline-start: 16px;
