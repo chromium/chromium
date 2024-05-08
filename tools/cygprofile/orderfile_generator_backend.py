@@ -15,6 +15,7 @@ Example usage:
 
 
 import argparse
+import ast
 import csv
 import hashlib
 import json
@@ -160,7 +161,7 @@ class StepRecorder:
                  cmd: List[str],
                  cwd: pathlib.Path = _SRC_PATH,
                  raise_on_error: bool = True,
-                 stdout=None):
+                 capture_output: bool = False) -> subprocess.CompletedProcess:
     """Execute a shell command.
 
     Args:
@@ -169,21 +170,30 @@ class StepRecorder:
            root of script's location if not specified.
       raise_on_error: If true will raise a CommandError if the call doesn't
           succeed and mark the step as failed.
-      stdout: A file to redirect stdout for the command to.
 
     Returns:
-      The process's return code.
+      A CompletedProcess instance.
 
     Raises:
       CommandError: An error executing the specified command.
     """
     print('Executing %s in %s' % (' '.join(cmd), cwd))
-    process = subprocess.Popen(cmd, stdout=stdout, cwd=cwd, env=os.environ)
-    process.wait()
+    process = subprocess.run(
+        cmd,
+        capture_output=capture_output,
+        check=False,  # This allows for raise_on_error.
+        text=True,
+        cwd=cwd,
+        env=os.environ)
     if raise_on_error and process.returncode != 0:
-      self.FailStep()
+      if capture_output:
+        self.FailStep(str(process.stdout) + str(process.stderr))
+      else:
+        self.FailStep()
       raise CommandError('Exception executing command %s' % ' '.join(cmd))
-    return process.returncode
+    if capture_output:
+      print(f'Output:\n{process.stdout}')
+    return process
 
 
 class NativeLibraryBuildVariant:
@@ -360,9 +370,11 @@ class OrderfileUpdater:
 
   _CLOUD_STORAGE_BUCKET_FOR_DEBUG = None
   _CLOUD_STORAGE_BUCKET = None
+  _GCLIENT_SETDEP_DIR = _SRC_PATH
   _UPLOAD_TO_CLOUD_COMMAND = 'upload_to_google_storage.py'
+  _UPLOAD_TO_NEW_CLOUD_COMMAND = 'upload_to_google_storage_first_class.py'
 
-  def __init__(self, repository_root, step_recorder):
+  def __init__(self, repository_root, step_recorder: StepRecorder):
     """Constructor.
 
     Args:
@@ -372,21 +384,77 @@ class OrderfileUpdater:
     self._repository_root = repository_root
     self._step_recorder = step_recorder
 
-  def UploadToCloudStorage(self, filename, use_debug_location):
+  def UploadToCloudStorage(self,
+                           filename,
+                           use_debug_location,
+                           use_new_cloud=False):
     """Uploads a file to cloud storage.
+
+    Here's an example of what the JSON object looks like for the new cloud: # pylint: disable=line-too-long
+    {
+      "path": {
+        "dep_type": "gcs",
+        "bucket": "orderfile-test",
+        "objects": [
+          {
+            "object_name": "e8e5ffb467e8cd784a7a7fbe8c4e840118306959c4b01c810eb6af9169b4c624",
+            "sha256sum": "e8e5ffb467e8cd784a7a7fbe8c4e840118306959c4b01c810eb6af9169b4c624",
+            "size_bytes": 32374172,
+            "generation": 1715099523335361
+          }
+        ]
+      }
+    }
+    See https://chromium.googlesource.com/chromium/src.git/+/refs/heads/main/docs/gcs_dependencies.md
 
     Args:
       filename: (str) File to upload.
       use_debug_location: (bool) Whether to use the debug location.
+      use_new_cloud: (bool) Whether to use the new workflow and modify DEPS.
     """
     bucket = (self._CLOUD_STORAGE_BUCKET_FOR_DEBUG if use_debug_location
               else self._CLOUD_STORAGE_BUCKET)
     extension = _GetFileExtension(filename)
-    cmd = [self._UPLOAD_TO_CLOUD_COMMAND, '--bucket', bucket]
+    if use_new_cloud:
+      cmd = [self._UPLOAD_TO_NEW_CLOUD_COMMAND]
+    else:
+      cmd = [self._UPLOAD_TO_CLOUD_COMMAND]
+    cmd += ['--bucket', bucket]
     if extension:
       cmd.extend(['-z', extension])
     cmd.append(filename)
-    self._step_recorder.RunCommand(cmd)
+    stdout: str = self._step_recorder.RunCommand(cmd,
+                                                 capture_output=True).stdout
+    if use_new_cloud:
+      logging.info('Uploading using the new cloud:')
+      # The first line is "Uploading ... ", the rest of the lines is valid json.
+      json_string = stdout.split('\n', 1)[1]
+      logging.info(json_string)
+      json_object = json.loads(json_string)['path']['objects'][0]
+      logging.info(json_object)
+      output_file = os.path.basename(filename)
+      logging.info(output_file)
+      # Load existing objects to avoid overwriting other arch's objects.
+      getdep_cmd = ['gclient', 'getdep', '-r', 'orderfiles']
+      dep_str: str = self._step_recorder.RunCommand(
+          getdep_cmd, cwd=self._GCLIENT_SETDEP_DIR, capture_output=True).stdout
+      # dep_str is a python representation of the object, not valid JSON.
+      dep_objects = ast.literal_eval(dep_str)
+      values = []
+      for dep_object in dep_objects:
+        if dep_object['output_file'] == output_file:
+          # Replace the values in this matching object with the new object.
+          values.append(",".join([
+              json_object['object_name'],
+              json_object['sha256sum'],
+              str(json_object['size_bytes']),
+              str(json_object['generation']),
+              output_file,
+          ]))
+        else:
+          values.append(",".join(map(str, dep_object.values())))
+      setdep_cmd = ['gclient', 'setdep', '-r', f'orderfiles@{"?".join(values)}']
+      self._step_recorder.RunCommand(setdep_cmd, cwd=self._GCLIENT_SETDEP_DIR)
     print('Download: https://sandbox.google.com/storage/%s/%s' %
           (bucket, _GenerateHash(filename)))
 
@@ -653,7 +721,8 @@ class OrderfileGenerator:
         str(self._CHECK_ORDERFILE_SCRIPT), self._compiler.lib_chrome_so,
         self._GetPathToOrderfile()
     ]
-    return_code = self._step_recorder.RunCommand(cmd, raise_on_error=False)
+    return_code = self._step_recorder.RunCommand(
+        cmd, raise_on_error=False).returncode
     if return_code:
       self._step_recorder.FailStep('Orderfile check returned %d.' % return_code)
     return return_code == 0
@@ -702,20 +771,22 @@ class OrderfileGenerator:
       print('Uploaded to: https://sandbox.google.com/storage/' +
             upload_location)
 
-  def _MaybeArchiveOrderfile(self, filename):
+  def _MaybeArchiveOrderfile(self, filename, use_new_cloud: bool = False):
     """In buildbot configuration, uploads the generated orderfile to
     Google Cloud Storage.
 
     Args:
       filename: (str) Orderfile to upload.
+      use_new_cloud: (bool) Whether to upload using the new flow.
     """
     # First compute hashes so that we can download them later if we need to.
     self._step_recorder.BeginStep('Compute hash for ' + filename)
     self._RecordHash(filename)
     if self._options.buildbot:
       self._step_recorder.BeginStep('Archive ' + filename)
-      self._orderfile_updater.UploadToCloudStorage(
-          filename, use_debug_location=False)
+      self._orderfile_updater.UploadToCloudStorage(filename,
+                                                   use_debug_location=False,
+                                                   use_new_cloud=use_new_cloud)
 
   def UploadReadyOrderfiles(self):
     self._step_recorder.BeginStep('Upload Ready Orderfiles')
@@ -993,7 +1064,9 @@ class OrderfileGenerator:
       self._compiler.CompileLibchrome(instrumented=False,
                                       force_relink=True)
       if self._VerifySymbolOrder():
-        self._MaybeArchiveOrderfile(self._GetPathToOrderfile())
+        self._MaybeArchiveOrderfile(
+            self._GetPathToOrderfile(),
+            use_new_cloud=bool(self._options.arch == 'arm64'))
       else:
         self._SaveForDebugging(self._GetPathToOrderfile())
 
