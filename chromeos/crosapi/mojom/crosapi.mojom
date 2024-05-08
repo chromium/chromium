@@ -63,6 +63,7 @@ import "chromeos/crosapi/mojom/holding_space_service.mojom";
 import "chromeos/crosapi/mojom/identity_manager.mojom";
 import "chromeos/crosapi/mojom/idle_service.mojom";
 import "chromeos/crosapi/mojom/image_writer.mojom";
+import "chromeos/crosapi/mojom/input_methods.mojom";
 import "chromeos/crosapi/mojom/kerberos_in_browser.mojom";
 import "chromeos/crosapi/mojom/keystore_service.mojom";
 import "chromeos/crosapi/mojom/lacros_shelf_item_tracker.mojom";
@@ -163,8 +164,8 @@ struct BrowserInfo {
 // please note the milestone when you added it, to help us reason about
 // compatibility between the client applications and older ash-chrome binaries.
 //
-// Next version: 137
-// Next method id: 139
+// Next version: 138
+// Next method id: 140
 [Stable, Uuid="8b79c34f-2bf8-4499-979a-b17cac522c1e",
  RenamedFrom="crosapi.mojom.AshChromeService"]
 interface Crosapi {
@@ -883,6 +884,11 @@ interface Crosapi {
   // |browser_info| during startup.
   // Added in M87.
   [MinVersion=3] OnBrowserStartup@6(BrowserInfo browser_info);
+
+  // Binds the service containing input method related functionality such
+  // as changing the keyboard input language.
+  [MinVersion=137]
+    BindInputMethods@139(pending_receiver<InputMethods> receiver);
 };
 
 [Stable, Extensible]

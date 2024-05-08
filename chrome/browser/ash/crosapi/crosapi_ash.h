@@ -94,6 +94,7 @@ class GeolocationServiceAsh;
 class IdentityManagerAsh;
 class IdleServiceAsh;
 class ImageWriterAsh;
+class InputMethodsAsh;
 class KerberosInBrowserAsh;
 class KeystoreServiceAsh;
 class KioskSessionServiceAsh;
@@ -287,6 +288,8 @@ class CrosapiAsh : public mojom::Crosapi {
       mojo::PendingReceiver<mojom::IdleService> receiver) override;
   void BindImageWriter(
       mojo::PendingReceiver<mojom::ImageWriter> receiver) override;
+  void BindInputMethods(
+      mojo::PendingReceiver<mojom::InputMethods> receiver) override;
   void BindInSessionAuth(
       mojo::PendingReceiver<chromeos::auth::mojom::InSessionAuth> receiver)
       override;
@@ -537,6 +540,8 @@ class CrosapiAsh : public mojom::Crosapi {
 
   ImageWriterAsh* image_writer_ash() { return image_writer_ash_.get(); }
 
+  InputMethodsAsh* input_methods_ash() { return input_methods_ash_.get(); }
+
   KeystoreServiceAsh* keystore_service_ash() {
     return keystore_service_ash_.get();
   }
@@ -708,6 +713,7 @@ class CrosapiAsh : public mojom::Crosapi {
   std::unique_ptr<GeolocationServiceAsh> geolocation_service_ash_;
   std::unique_ptr<IdentityManagerAsh> identity_manager_ash_;
   std::unique_ptr<IdleServiceAsh> idle_service_ash_;
+  std::unique_ptr<InputMethodsAsh> input_methods_ash_;
   std::unique_ptr<ImageWriterAsh> image_writer_ash_;
   std::unique_ptr<KerberosInBrowserAsh> kerberos_in_browser_ash_;
   std::unique_ptr<KeystoreServiceAsh> keystore_service_ash_;

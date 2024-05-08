@@ -74,6 +74,7 @@
 #include "chromeos/crosapi/mojom/holding_space_service.mojom.h"
 #include "chromeos/crosapi/mojom/identity_manager.mojom.h"
 #include "chromeos/crosapi/mojom/image_writer.mojom.h"
+#include "chromeos/crosapi/mojom/input_methods.mojom.h"
 #include "chromeos/crosapi/mojom/kerberos_in_browser.mojom.h"
 #include "chromeos/crosapi/mojom/keystore_service.mojom.h"
 #include "chromeos/crosapi/mojom/kiosk_session_service.mojom.h"
@@ -657,6 +658,8 @@ LacrosService::LacrosService()
       &crosapi::mojom::Crosapi::BindFileSystemAccessCloudIdentifierProvider,
       Crosapi::MethodMinVersions::
           kBindFileSystemAccessCloudIdentifierProviderMinVersion>();
+  ConstructRemote<crosapi::mojom::InputMethods, &Crosapi::BindInputMethods,
+                  Crosapi::MethodMinVersions::kBindInputMethodsMinVersion>();
 
 #if !BUILDFLAG(IS_CHROMEOS_DEVICE)
   // The test controller is not available on production devices as tests only

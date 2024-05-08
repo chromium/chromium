@@ -70,6 +70,7 @@
 #include "chrome/browser/ash/crosapi/identity_manager_ash.h"
 #include "chrome/browser/ash/crosapi/idle_service_ash.h"
 #include "chrome/browser/ash/crosapi/image_writer_ash.h"
+#include "chrome/browser/ash/crosapi/input_methods_ash.h"
 #include "chrome/browser/ash/crosapi/kerberos_in_browser_ash.h"
 #include "chrome/browser/ash/crosapi/keystore_service_ash.h"
 #include "chrome/browser/ash/crosapi/kiosk_session_service_ash.h"
@@ -276,6 +277,7 @@ CrosapiAsh::CrosapiAsh(CrosapiDependencyRegistry* registry)
       geolocation_service_ash_(std::make_unique<GeolocationServiceAsh>()),
       identity_manager_ash_(std::make_unique<IdentityManagerAsh>()),
       idle_service_ash_(std::make_unique<IdleServiceAsh>()),
+      input_methods_ash_(std::make_unique<InputMethodsAsh>()),
       image_writer_ash_(std::make_unique<ImageWriterAsh>()),
       kerberos_in_browser_ash_(std::make_unique<KerberosInBrowserAsh>()),
       keystore_service_ash_(std::make_unique<KeystoreServiceAsh>()),
@@ -718,6 +720,11 @@ void CrosapiAsh::BindIdleService(
 void CrosapiAsh::BindImageWriter(
     mojo::PendingReceiver<mojom::ImageWriter> receiver) {
   image_writer_ash_->BindReceiver(std::move(receiver));
+}
+
+void CrosapiAsh::BindInputMethods(
+    mojo::PendingReceiver<mojom::InputMethods> receiver) {
+  input_methods_ash_->BindReceiver(std::move(receiver));
 }
 
 void CrosapiAsh::BindInSessionAuth(

@@ -66,6 +66,7 @@ mojom("mojom") {
     "identity_manager.mojom",
     "idle_service.mojom",
     "image_writer.mojom",
+    "input_methods.mojom",
     "kerberos_in_browser.mojom",
     "keystore_error.mojom",
     "keystore_service.mojom",

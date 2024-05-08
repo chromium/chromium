@@ -294,8 +294,7 @@
     "channel": "stable",
     "extension_types": ["extension"],
     "location": "policy",
-    // TODO(b/303379531): Add support for Lacros
-    "platforms": ["chromeos"],
+    "platforms": ["chromeos", "lacros"],
     "session_types": ["kiosk"],
     "allowlist": [
       "E62CAB6E5341E96208DA8E0E6896770907FFA00C",  // http://b/303379761

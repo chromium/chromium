@@ -80,6 +80,7 @@ if (is_chromeos) {
     "document_scan.idl",
     "echo_private.json",
     "enterprise_device_attributes.idl",
+    "enterprise_kiosk_input.idl",
     "enterprise_networking_attributes.idl",
     "enterprise_platform_keys.idl",
     "enterprise_platform_keys_internal.idl",
@@ -89,8 +90,8 @@ if (is_chromeos) {
     "login_screen_storage.idl",
     "login_state.idl",
     "odfs_config_private.idl",
-    "platform_keys_internal.idl",
     "platform_keys.idl",
+    "platform_keys_internal.idl",
     "quick_unlock_private.idl",
     "shared_storage_private.idl",
     "smart_card_provider_private.idl",
@@ -111,7 +112,6 @@ if (is_chromeos) {
 if (is_chromeos_ash) {
   schema_sources_ += [
     "accessibility_private.json",
-    "enterprise_kiosk_input.idl",
     "enterprise_platform_keys_private.json",
     "file_manager_private.idl",
     "file_manager_private_internal.idl",

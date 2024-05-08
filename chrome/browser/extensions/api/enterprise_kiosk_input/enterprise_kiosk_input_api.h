@@ -5,6 +5,7 @@
 #ifndef CHROME_BROWSER_EXTENSIONS_API_ENTERPRISE_KIOSK_INPUT_ENTERPRISE_KIOSK_INPUT_API_H_
 #define CHROME_BROWSER_EXTENSIONS_API_ENTERPRISE_KIOSK_INPUT_ENTERPRISE_KIOSK_INPUT_API_H_
 
+#include "chromeos/crosapi/mojom/input_methods.mojom-forward.h"
 #include "extensions/browser/extension_function.h"
 
 namespace extensions {
@@ -25,6 +26,9 @@ class EnterpriseKioskInputSetCurrentInputMethodFunction
   ResponseAction Run() override;
 
  private:
+  // Called asynchronously when crosapi returns the result.
+  void OnChangeInputMethodDone(std::string input_method_id, bool succeeded);
+
   DECLARE_EXTENSION_FUNCTION("enterprise.kioskInput.setCurrentInputMethod",
                              ENTERPRISE_KIOSKINPUT_SETCURRENTINPUTMETHOD)
 };

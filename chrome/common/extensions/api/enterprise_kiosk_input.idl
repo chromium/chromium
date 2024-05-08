@@ -6,7 +6,7 @@
 // settings for Kiosk sessions.
 // Note: This API is only available to extensions installed by enterprise
 // policy in ChromeOS Kiosk sessions.
-[platforms = ("chromeos"),
+[platforms = ("chromeos", "lacros"),
  implemented_in = "chrome/browser/extensions/api/enterprise_kiosk_input/enterprise_kiosk_input_api.h"]
 namespace enterprise.kioskInput {
   dictionary SetCurrentInputMethodOptions {
