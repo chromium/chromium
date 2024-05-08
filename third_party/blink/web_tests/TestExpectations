@@ -2548,10 +2548,10 @@ crbug.com/626703 [ Mac ] external/wpt/mediacapture-insertable-streams/legacy/Med
 crbug.com/626703 external/wpt/uievents/mouse/mouse_boundary_events_after_removing_last_over_element.html [ Failure ]
 
 # ====== New tests from wpt-importer added here ======
-[ Win11-arm64 ] external/wpt/focus/focus-restoration-in-different-site-iframes.html [ Timeout ]
-[ Win11-arm64 ] external/wpt/storage-access-api/requestStorageAccess-dedicated-worker.tentative.sub.https.window.html [ Failure Timeout ]
-[ Mac14 ] virtual/webnn-service-with-gpu/external/wpt/webnn/conformance_tests/elementwise_unary.https.any.html?gpu [ Failure Timeout ]
-[ Mac14 ] virtual/webnn-service-with-gpu/external/wpt/webnn/conformance_tests/elementwise_unary.https.any.worker.html?gpu [ Failure Timeout ]
+crbug.com/339310103 [ Win11-arm64 ] external/wpt/focus/focus-restoration-in-different-site-iframes.html [ Timeout ]
+crbug.com/339310102 [ Win11-arm64 ] external/wpt/storage-access-api/requestStorageAccess-dedicated-worker.tentative.sub.https.window.html [ Failure Timeout ]
+crbug.com/339310103 [ Mac14 ] virtual/webnn-service-with-gpu/external/wpt/webnn/conformance_tests/elementwise_unary.https.any.html?gpu [ Failure Timeout ]
+crbug.com/339310103 [ Mac14 ] virtual/webnn-service-with-gpu/external/wpt/webnn/conformance_tests/elementwise_unary.https.any.worker.html?gpu [ Failure Timeout ]
 crbug.com/339115424 [ Win11-arm64 ] external/wpt/css/css-color/parsing/color-computed-relative-color.html [ Failure Timeout ]
 crbug.com/339057198 [ Win11-arm64 ] external/wpt/service-workers/service-worker/ServiceWorkerGlobalScope/error-message-event.https.html [ Failure Timeout ]
 crbug.com/338457111 [ Mac12 ] external/wpt/fs/FileSystemFileHandle-move.https.any.worker.html [ Timeout ]
