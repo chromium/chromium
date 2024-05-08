@@ -2489,7 +2489,7 @@ public class StripLayoutHelper implements StripLayoutTabDelegate, StripLayoutGro
         for (int i = 0; i < mStripTabs.length; ++i) {
             final StripLayoutTab stripTab = mStripTabs[i];
             final Tab tab = getTabById(stripTab.getId());
-            if (tab.getRootId() == rootId) groupedTabs.add(stripTab);
+            if (tab != null && tab.getRootId() == rootId) groupedTabs.add(stripTab);
         }
         return groupedTabs;
     }
