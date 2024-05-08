@@ -58,23 +58,6 @@ ServiceWorkerMetrics::EventType PurposeToEventType(
   return ServiceWorkerMetrics::EventType::UNKNOWN;
 }
 
-storage::mojom::CacheStorageControl* GetCacheStorageControl(
-    scoped_refptr<ServiceWorkerVersion> version) {
-  DCHECK(version);
-  if (!version->context()) {
-    return nullptr;
-  }
-  auto* storage_partition = version->context()->wrapper()->storage_partition();
-  if (!storage_partition) {
-    return nullptr;
-  }
-  auto* control = storage_partition->GetCacheStorageControl();
-  if (!control) {
-    return nullptr;
-  }
-  return control;
-}
-
 // These values are persisted to logs. Entries should not be renumbered and
 // numeric values should never be reused.
 // TODO(crbug.com/40918057): remove this metrics if we confirm that
@@ -835,7 +818,7 @@ ServiceWorkerClient::CreateControllerServiceWorkerInfo() {
 
   auto controller_info = blink::mojom::ControllerServiceWorkerInfo::New();
   controller_info->client_id = client_uuid();
-  controller_info->mode = GetControllerMode();
+  controller_info->mode = controller()->GetControllerMode();
   controller_info->fetch_handler_type = controller()->fetch_handler_type();
   controller_info->fetch_handler_bypass_option =
       controller()->fetch_handler_bypass_option();
@@ -849,7 +832,7 @@ ServiceWorkerClient::CreateControllerServiceWorkerInfo() {
         controller()->router_evaluator()->rules();
     // Pass an endpoint for the cache storage.
     mojo::PendingRemote<blink::mojom::CacheStorage> remote_cache_storage =
-        GetRemoteCacheStorage();
+        controller()->GetRemoteCacheStorage();
     if (remote_cache_storage) {
       controller_info->router_data->remote_cache_storage =
           std::move(remote_cache_storage);
@@ -1448,24 +1431,6 @@ const std::string& ServiceWorkerClient::client_uuid() const {
   return client_uuid_;
 }
 
-blink::mojom::ControllerServiceWorkerMode
-ServiceWorkerClient::GetControllerMode() const {
-  DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
-  if (!controller_)
-    return blink::mojom::ControllerServiceWorkerMode::kNoController;
-  switch (controller_->fetch_handler_existence()) {
-    case ServiceWorkerVersion::FetchHandlerExistence::DOES_NOT_EXIST:
-      return blink::mojom::ControllerServiceWorkerMode::kNoFetchEventHandler;
-    case ServiceWorkerVersion::FetchHandlerExistence::EXISTS:
-      return blink::mojom::ControllerServiceWorkerMode::kControlled;
-    case ServiceWorkerVersion::FetchHandlerExistence::UNKNOWN:
-      // UNKNOWN means the controller is still installing. It's not possible to
-      // have a controller that hasn't finished installing.
-      NOTREACHED();
-  }
-  NOTREACHED();
-  return blink::mojom::ControllerServiceWorkerMode::kNoController;
-}
 
 ServiceWorkerVersion* ServiceWorkerClient::controller() const {
 #if DCHECK_IS_ON()
@@ -2082,35 +2047,6 @@ void ServiceWorkerClient::InheritControllerFrom(
                               false /* notify_controllerchange */);
   }
   creator_host.SetInherited();
-}
-
-mojo::PendingRemote<blink::mojom::CacheStorage>
-ServiceWorkerClient::GetRemoteCacheStorage() {
-  DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
-  DCHECK(controller_);
-
-  auto* control = GetCacheStorageControl(controller_);
-  if (!control) {
-    return mojo::NullRemote();
-  }
-
-  // Since this is offloading the cache storage API access in ServiceWorker,
-  // we need to follow COEP used there.
-  // The reason why COEP is enforced to the cache storage API can be seen in:
-  // crbug.com/991428.
-  const network::CrossOriginEmbedderPolicy* coep =
-      controller_->cross_origin_embedder_policy();
-  if (!coep) {
-    return mojo::NullRemote();
-  }
-
-  mojo::PendingRemote<blink::mojom::CacheStorage> remote;
-  control->AddReceiver(
-      *coep, controller_->embedded_worker()->GetCoepReporter(),
-      storage::BucketLocator::ForDefaultBucket(controller_->key()),
-      storage::mojom::CacheStorageOwner::kCacheAPI,
-      remote.InitWithNewPipeAndPassReceiver());
-  return remote;
 }
 
 mojo::PendingReceiver<blink::mojom::ServiceWorkerRunningStatusCallback>

@@ -721,6 +721,13 @@ class CONTENT_EXPORT ServiceWorkerVersion
   // Check if the static router should be evaluated.
   bool NeedRouterEvaluate() const;
 
+  // Get an associated cache storage interface.
+  mojo::PendingRemote<blink::mojom::CacheStorage> GetRemoteCacheStorage();
+
+  // Describes whether the client has a controller and if it has a fetch event
+  // handler.
+  blink::mojom::ControllerServiceWorkerMode GetControllerMode() const;
+
   // Timeout for a request to be handled.
   static constexpr base::TimeDelta kRequestTimeout = base::Minutes(5);
 

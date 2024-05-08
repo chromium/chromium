@@ -337,9 +337,6 @@ class CONTENT_EXPORT ServiceWorkerClient final
   mojo::Remote<blink::mojom::ControllerServiceWorker>
   GetRemoteControllerServiceWorker();
 
-  // Get an associated cache storage interface.
-  mojo::PendingRemote<blink::mojom::CacheStorage> GetRemoteCacheStorage();
-
   // Create a receiver to notice on ServiceWorker running status change.
   mojo::PendingReceiver<blink::mojom::ServiceWorkerRunningStatusCallback>
   GetRunningStatusCallbackReceiver();
@@ -432,10 +429,6 @@ class CONTENT_EXPORT ServiceWorkerClient final
 
   // For service worker clients.
   const std::string& client_uuid() const;
-
-  // For service worker clients. Describes whether the client has a controller
-  // and if it has a fetch event handler.
-  blink::mojom::ControllerServiceWorkerMode GetControllerMode() const;
 
   // For service worker clients. Returns this client's controller.
   ServiceWorkerVersion* controller() const;

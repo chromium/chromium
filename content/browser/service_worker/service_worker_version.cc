@@ -249,6 +249,22 @@ std::optional<std::string> MergeResourceRecordSHA256ScriptChecksum(
   return encoded;
 }
 
+storage::mojom::CacheStorageControl* GetCacheStorageControl(
+    ServiceWorkerVersion& version) {
+  if (!version.context()) {
+    return nullptr;
+  }
+  auto* storage_partition = version.context()->wrapper()->storage_partition();
+  if (!storage_partition) {
+    return nullptr;
+  }
+  auto* control = storage_partition->GetCacheStorageControl();
+  if (!control) {
+    return nullptr;
+  }
+  return control;
+}
+
 }  // namespace
 
 constexpr base::TimeDelta ServiceWorkerVersion::kTimeoutTimerDelay;
@@ -3107,4 +3123,45 @@ bool ServiceWorkerVersion::BFCacheContainsControllee(
 base::WeakPtr<ServiceWorkerVersion> ServiceWorkerVersion::GetWeakPtr() {
   return weak_factory_.GetWeakPtr();
 }
+
+mojo::PendingRemote<blink::mojom::CacheStorage>
+ServiceWorkerVersion::GetRemoteCacheStorage() {
+  auto* control = GetCacheStorageControl(*this);
+  if (!control) {
+    return mojo::NullRemote();
+  }
+
+  // Since this is offloading the cache storage API access in ServiceWorker,
+  // we need to follow COEP used there.
+  // The reason why COEP is enforced to the cache storage API can be seen in:
+  // crbug.com/991428.
+  const network::CrossOriginEmbedderPolicy* coep =
+      cross_origin_embedder_policy();
+  if (!coep) {
+    return mojo::NullRemote();
+  }
+
+  mojo::PendingRemote<blink::mojom::CacheStorage> remote;
+  control->AddReceiver(*coep, embedded_worker()->GetCoepReporter(),
+                       storage::BucketLocator::ForDefaultBucket(key()),
+                       storage::mojom::CacheStorageOwner::kCacheAPI,
+                       remote.InitWithNewPipeAndPassReceiver());
+  return remote;
+}
+
+blink::mojom::ControllerServiceWorkerMode
+ServiceWorkerVersion::GetControllerMode() const {
+  switch (fetch_handler_existence()) {
+    case ServiceWorkerVersion::FetchHandlerExistence::DOES_NOT_EXIST:
+      return blink::mojom::ControllerServiceWorkerMode::kNoFetchEventHandler;
+    case ServiceWorkerVersion::FetchHandlerExistence::EXISTS:
+      return blink::mojom::ControllerServiceWorkerMode::kControlled;
+    case ServiceWorkerVersion::FetchHandlerExistence::UNKNOWN:
+      // UNKNOWN means the controller is still installing. It's not possible to
+      // have a controller that hasn't finished installing.
+      NOTREACHED();
+      return blink::mojom::ControllerServiceWorkerMode::kNoController;
+  }
+}
+
 }  // namespace content
