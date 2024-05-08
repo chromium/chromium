@@ -12,10 +12,12 @@
 #include "base/json/json_reader.h"
 #include "base/path_service.h"
 #include "base/strings/stringprintf.h"
+#include "base/test/scoped_feature_list.h"
 #include "base/test/test_proto_loader.h"
 #include "build/build_config.h"
 #include "services/screen_ai/proto/view_hierarchy.pb.h"
 #include "testing/gtest/include/gtest/gtest.h"
+#include "ui/accessibility/accessibility_features.h"
 #include "ui/accessibility/ax_node_data.h"
 #include "ui/accessibility/ax_tree_update.h"
 #include "ui/accessibility/test_ax_tree_update_json_reader.h"
@@ -24,17 +26,21 @@
 
 namespace {
 
-// Set to 'true' to get debug protos.
+// To update the test expectations:
+//  1- Set the following to 'true' to get debug protos.
+//  2- Use the the following command to convert generated protos to text:
+//     gqui from rawproto:[source.pb] --noprotoprint_annotations \
+//     --noselect_stats --outfile=textproto:[destination.pbtxt]
+//  3- Remove the extra first and last brackets of each example.
 #define WRITE_DEBUG_PROTO false
 
-// TODO(crbug.com/40851192): Name test files with more context. E.g. what is it
-// testing? Which site is it? etc.
-// Test definitions for ProtoConvertorViewHierarchyTest.
+// Large test files generated from real world web pages for
+// ProtoConvertorViewHierarchyTest.
 constexpr int kProtoConversionTestCasesCount = 5;
 constexpr char kProtoConversionSampleInputFileNameFormat[] =
     "sample%i_ax_tree.json";
 constexpr char kProtoConversionSampleExpectedFileNameFormat[] =
-    "sample%i_expected_proto.pbtxt";
+    "sample%i_expected_proto%s.pbtxt";
 
 // A dummy tree node definition for PreOrderTreeGeneration.
 constexpr int kMaxChildInTemplate = 3;
@@ -303,26 +309,41 @@ TEST_F(MainContentExtractorProtoConvertorTest, PreOrderTreeGeneration) {
   }
 }
 
-class ProtoConvertorViewHierarchyTest : public ::testing::TestWithParam<int> {
+class ProtoConvertorViewHierarchyTest
+    : public ::testing::TestWithParam<std::tuple<int, bool>> {
  public:
-  ProtoConvertorViewHierarchyTest() = default;
+  ProtoConvertorViewHierarchyTest() {
+    if (std::get<1>(GetParam())) {
+      feature_list_.InitAndEnableFeature(::features::kUseScreen2xV2);
+    } else {
+      feature_list_.InitAndDisableFeature(::features::kUseScreen2xV2);
+    }
+  }
   ~ProtoConvertorViewHierarchyTest() override = default;
 
  protected:
+  int test_case() { return std::get<0>(GetParam()); }
+
   const base::FilePath GetInputFilePath() {
     return GetTestFilePath(base::StringPrintf(
-        kProtoConversionSampleInputFileNameFormat, GetParam()));
+        kProtoConversionSampleInputFileNameFormat, test_case()));
   }
 
   const base::FilePath GetExpectedFilePath() {
     return GetTestFilePath(base::StringPrintf(
-        kProtoConversionSampleExpectedFileNameFormat, GetParam()));
+        kProtoConversionSampleExpectedFileNameFormat, test_case(),
+        features::UseScreen2xV2() ? "_v2" : ""));
   }
+
+ private:
+  base::test::ScopedFeatureList feature_list_;
 };
 
-INSTANTIATE_TEST_SUITE_P(MainContentExtractorProtoConvertorTest,
-                         ProtoConvertorViewHierarchyTest,
-                         testing::Range(0, kProtoConversionTestCasesCount));
+INSTANTIATE_TEST_SUITE_P(
+    MainContentExtractorProtoConvertorTest,
+    ProtoConvertorViewHierarchyTest,
+    testing::Combine(testing::Range(0, kProtoConversionTestCasesCount),
+                     testing::Bool()));
 
 #if BUILDFLAG(IS_MAC) && defined(ADDRESS_SANITIZER)
 #define MAYBE_AxTreeJsonToProtoTest DISABLED_AxTreeJsonToProtoTest
@@ -357,7 +378,7 @@ TEST_P(ProtoConvertorViewHierarchyTest, MAYBE_AxTreeJsonToProtoTest) {
 
   WriteDebugProto(
       serialized_proto,
-      base::StringPrintf("proto_convertor_sample%i_output.pb", GetParam()));
+      base::StringPrintf("proto_convertor_sample%i_output.pb", test_case()));
 
   // Load expected Proto.
   screenai::ViewHierarchy expected_view_hierarchy;
