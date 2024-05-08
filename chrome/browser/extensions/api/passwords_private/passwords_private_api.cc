@@ -697,4 +697,14 @@ void PasswordsPrivateDisconnectCloudAuthenticatorFunction::
   Respond(WithArguments(success));
 }
 
+// PasswordsPrivateIsConnectedToCloudAuthenticatorFunction
+ResponseAction PasswordsPrivateIsConnectedToCloudAuthenticatorFunction::Run() {
+  if (auto delegate = GetDelegate(browser_context())) {
+    return RespondNow(WithArguments(
+        delegate->IsConnectedToCloudAuthenticator(GetSenderWebContents())));
+  }
+
+  return RespondNow(Error(kNoDelegateError));
+}
+
 }  // namespace extensions

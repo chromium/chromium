@@ -100,10 +100,12 @@ class TestPasswordsPrivateDelegate : public PasswordsPrivateDelegate {
   void ChangePasswordManagerPin(
       content::WebContents* web_contents,
       base::OnceCallback<void(bool)> success_callback) override;
+  bool IsPasswordManagerPinAvailable(
+      content::WebContents* web_contents) override;
   void DisconnectCloudAuthenticator(
       content::WebContents* web_contents,
       base::OnceCallback<void(bool)> success_callback) override;
-  bool IsPasswordManagerPinAvailable(
+  bool IsConnectedToCloudAuthenticator(
       content::WebContents* web_contents) override;
 
   base::WeakPtr<PasswordsPrivateDelegate> AsWeakPtr() override;

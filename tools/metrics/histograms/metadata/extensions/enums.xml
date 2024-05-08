@@ -2742,6 +2742,7 @@ Called by update_extension_histograms.py.-->
   <int value="1886"
       label="ODFSCONFIGPRIVATE_ISFILESYSTEMPROVIDERCONTENTCACHEENABLED"/>
   <int value="1887" label="PASSWORDSPRIVATE_DISCONNECTCLOUDAUTHENTICATOR"/>
+  <int value="1888" label="PASSWORDSPRIVATE_ISCONNECTEDTOCLOUDAUTHENTICATOR"/>
 </enum>
 
 <enum name="ExtensionInstallationCrxInstallError">

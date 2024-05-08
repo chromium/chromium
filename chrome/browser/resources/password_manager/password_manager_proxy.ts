@@ -384,14 +384,20 @@ export interface PasswordManagerProxy {
   /** Starts the flow for changing Password Manager PIN. */
   changePasswordManagerPin(): Promise<boolean>;
 
+  /** Checks whether changing the Password Manager PIN is possible. */
+  isPasswordManagerPinAvailable(): Promise<boolean>;
+
   /**
    * Starts the flow for disconnecting the Cloud Authenticator
    * (Passkeys Enclave).
    */
   disconnectCloudAuthenticator(): Promise<boolean>;
 
-  /** Checks whether changing the Password Manager PIN is possible. */
-  isPasswordManagerPinAvailable(): Promise<boolean>;
+  /**
+   * Checks whether the Chrome client is connected to the Cloud Authenticator
+   * (Passkeys Enclave).
+   */
+  isConnectedToCloudAuthenticator(): Promise<boolean>;
 }
 
 /**
@@ -625,12 +631,16 @@ export class PasswordManagerImpl implements PasswordManagerProxy {
     return chrome.passwordsPrivate.changePasswordManagerPin();
   }
 
+  isPasswordManagerPinAvailable() {
+    return chrome.passwordsPrivate.isPasswordManagerPinAvailable();
+  }
+
   disconnectCloudAuthenticator() {
     return chrome.passwordsPrivate.disconnectCloudAuthenticator();
   }
 
-  isPasswordManagerPinAvailable() {
-    return chrome.passwordsPrivate.isPasswordManagerPinAvailable();
+  isConnectedToCloudAuthenticator() {
+    return chrome.passwordsPrivate.isConnectedToCloudAuthenticator();
   }
 
   static getInstance(): PasswordManagerProxy {
