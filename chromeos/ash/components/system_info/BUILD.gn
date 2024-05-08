@@ -13,8 +13,6 @@ component("system_info") {
     "cpu_usage_data.cc",
     "cpu_usage_data.h",
     "memory_data.h",
-    "system_info_test_util.cc",
-    "system_info_test_util.h",
     "system_info_util.cc",
     "system_info_util.h",
   ]
@@ -24,9 +22,7 @@ component("system_info") {
   deps = [
     "//ash/strings:strings",
     "//base",
-    "//chromeos/ash/services/cros_healthd/public/cpp:fakes",
     "//chromeos/ash/services/cros_healthd/public/mojom:mojom",
-    "//chromeos/dbus/power",
     "//chromeos/dbus/power:power_manager_proto",
     "//ui/base",
   ]
