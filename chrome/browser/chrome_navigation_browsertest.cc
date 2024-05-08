@@ -1801,7 +1801,7 @@ using ChromeNavigationBrowserTestWithMobileEmulation = DevToolsProtocolTestBase;
 
 // Tests the behavior of navigating to a PDF when mobile emulation is enabled.
 IN_PROC_BROWSER_TEST_F(ChromeNavigationBrowserTestWithMobileEmulation,
-                       DISABLED_NavigateToPDFWithMobileEmulation) {
+                       NavigateToPDFWithMobileEmulation) {
   ASSERT_TRUE(embedded_test_server()->Start());
 
   GURL initial_url = embedded_test_server()->GetURL("/title1.html");
