@@ -567,6 +567,8 @@ class CORE_EXPORT LocalFrameView final
   gfx::Rect FrameToDocument(const gfx::Rect&) const;
   PhysicalRect FrameToDocument(const PhysicalRect&) const;
 
+  void PrintPage(GraphicsContext&, wtf_size_t page_number, const CullRect&);
+
   // Normally a LocalFrameView synchronously paints during full lifecycle
   // updates, into the local frame root's PaintController. However, in some
   // cases (e.g. when printing) we need to paint the frame view into a

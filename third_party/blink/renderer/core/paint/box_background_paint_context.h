@@ -88,6 +88,8 @@ class BoxBackgroundPaintContext {
   const ImageResourceObserver& ImageClient() const;
   const ComputedStyle& ImageStyle(const ComputedStyle& fragment_style) const;
 
+  bool ShouldSkipBackgroundIfWhite() const;
+
   static bool HasBackgroundFixedToViewport(const LayoutBoxModelObject&);
 
  private:
@@ -104,12 +106,14 @@ class BoxBackgroundPaintContext {
   // - ImageClient() uses box_ if painting view, otherwise positioning_box_;
   // - ImageStyle() uses positioning_box_;
   // - FillLayers come from box_ if painting view, otherwise positioning_box_.
-  const LayoutBoxModelObject* const box_;
+  const LayoutBoxModelObject* box_;
 
   // The positioning box is the source of geometric information for positioning
   // and sizing the background. It also provides the information listed in the
   // comment for box_.
-  const LayoutBoxModelObject* const positioning_box_;
+  const LayoutBoxModelObject* positioning_box_;
+
+  const PhysicalBoxFragment* box_fragment_ = nullptr;
 
   // When painting table cells or the view, the positioning area
   // differs from the requested paint rect.

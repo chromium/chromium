@@ -415,6 +415,12 @@ class CORE_EXPORT PhysicalBoxFragment final : public PhysicalFragment {
     return bit_field_.get<IsFragmentationContextRootFlag>();
   }
 
+  // Return true if this is the layout root fragment for pagination
+  // (aka. printing).
+  bool IsPaginatedRoot() const {
+    return IsFragmentationContextRoot() && layout_object_->IsLayoutView();
+  }
+
   bool IsMonolithic() const { return bit_field_.get<IsMonolithicFlag>(); }
 
   bool IsMonolithicOverflowPropagationDisabled() const {

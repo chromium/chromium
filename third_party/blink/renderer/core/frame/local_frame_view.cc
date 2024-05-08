@@ -3917,6 +3917,18 @@ void LocalFrameView::PaintFrame(GraphicsContext& context,
   FramePainter(*this).Paint(context, paint_flags);
 }
 
+void LocalFrameView::PrintPage(GraphicsContext& context,
+                               wtf_size_t page_number,
+                               const CullRect& cull_rect) {
+  DCHECK(GetFrame().GetDocument()->Printing());
+  if (pagination_state_) {
+    pagination_state_->SetCurrentPageNumber(page_number);
+  }
+  const PaintFlags flags =
+      PaintFlag::kOmitCompositingInfo | PaintFlag::kAddUrlMetadata;
+  PaintOutsideOfLifecycle(context, flags, cull_rect);
+}
+
 static bool PaintOutsideOfLifecycleIsAllowed(GraphicsContext& context,
                                              const LocalFrameView& frame_view) {
   // A paint outside of lifecycle should not conflict about paint controller

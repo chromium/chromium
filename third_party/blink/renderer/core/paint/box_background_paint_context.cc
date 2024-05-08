@@ -97,6 +97,16 @@ BoxBackgroundPaintContext::BoxBackgroundPaintContext(
           To<LayoutBoxModelObject>(fragment.GetLayoutObject()),
           To<LayoutBoxModelObject>(fragment.GetLayoutObject())) {
   DCHECK(box_->IsBox());
+  box_fragment_ = &fragment;
+
+  if (fragment.GetBoxType() == PhysicalFragment::kPageBorderBox) {
+    // The page border box paints the document canvas, in which case it's the
+    // LayoutView that has been used as image client.
+    painting_view_ = true;
+    const LayoutView* view = fragment.GetDocument().GetLayoutView();
+    box_ = view;
+    positioning_size_override_ = view->RootBox().Size();
+  }
 
   if (fragment.IsTable()) {
     auto stitched_background_rect = ComputeStitchedTableGridRect(fragment);
@@ -304,6 +314,14 @@ const ComputedStyle& BoxBackgroundPaintContext::ImageStyle(
     return positioning_box_->StyleRef();
   }
   return fragment_style;
+}
+
+bool BoxBackgroundPaintContext::ShouldSkipBackgroundIfWhite() const {
+  // Leave a transparent background if white, assuming the paper or the PDF
+  // viewer background is white by default. This allows further customization of
+  // the background, e.g. in the case of https://crbug.com/498892.
+  return box_fragment_ &&
+         box_fragment_->GetBoxType() == PhysicalFragment::kPageBorderBox;
 }
 
 PhysicalOffset BoxBackgroundPaintContext::OffsetInBackground(

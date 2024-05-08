@@ -466,10 +466,8 @@ class ChromePrintContext : public PrintContext {
         layout_view->FirstFragment().LocalBorderBoxProperties();
 
     PaintRecordBuilder builder(context);
-    frame_view->PaintOutsideOfLifecycle(
-        builder.Context(),
-        PaintFlag::kOmitCompositingInfo | PaintFlag::kAddUrlMetadata,
-        CullRect(page_rect));
+
+    frame_view->PrintPage(builder.Context(), page_number, CullRect(page_rect));
 
     OutputLinkedDestinations(builder.Context(), property_tree_state, page_rect);
 

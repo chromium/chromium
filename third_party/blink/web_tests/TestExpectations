@@ -3394,7 +3394,13 @@ crbug.com/1494863 external/wpt/css/css-page/page-name-zero-height-001-print.html
 
 # Tests only passing with virtual/page-margin-boxes/
 crbug.com/40341678 external/wpt/css/css-page/page-box-000-print.html [ Failure ]
+crbug.com/40341678 external/wpt/css/css-page/page-box-001-print.html [ Failure ]
+crbug.com/40341678 external/wpt/css/css-page/page-box-002-print.html [ Failure ]
+crbug.com/40341678 external/wpt/css/css-page/page-box-003-print.html [ Failure ]
 crbug.com/40341678 virtual/page-margin-boxes/external/wpt/css/css-page/page-box-000-print.html [ Pass ]
+crbug.com/40341678 virtual/page-margin-boxes/external/wpt/css/css-page/page-box-001-print.html [ Pass ]
+crbug.com/40341678 virtual/page-margin-boxes/external/wpt/css/css-page/page-box-002-print.html [ Pass ]
+crbug.com/40341678 virtual/page-margin-boxes/external/wpt/css/css-page/page-box-003-print.html [ Pass ]
 
 crbug.com/1031667 external/wpt/css/css-pseudo/marker-content-007.tentative.html [ Failure ]
 crbug.com/1031667 external/wpt/css/css-pseudo/marker-content-009.tentative.html [ Failure ]

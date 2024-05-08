@@ -10,6 +10,7 @@
 #include "third_party/blink/renderer/core/editing/drag_caret.h"
 #include "third_party/blink/renderer/core/editing/frame_selection.h"
 #include "third_party/blink/renderer/core/frame/local_frame.h"
+#include "third_party/blink/renderer/core/frame/pagination_state.h"
 #include "third_party/blink/renderer/core/layout/background_bleed_avoidance.h"
 #include "third_party/blink/renderer/core/layout/block_break_token.h"
 #include "third_party/blink/renderer/core/layout/fragmentation_utils.h"
@@ -817,6 +818,25 @@ void BoxFragmentPainter::PaintBlockChildren(const PaintInfo& paint_info,
                                             PhysicalOffset paint_offset) {
   DCHECK(!box_fragment_.IsInlineFormattingContext());
   PaintInfo paint_info_for_descendants = paint_info.ForDescendants();
+  if (box_fragment_.IsPaginatedRoot()) {
+    const PaginationState* pagination_state =
+        box_fragment_.GetDocument().View()->GetPaginationState();
+    wtf_size_t page_number = pagination_state->CurrentPageNumber();
+    const auto& page_box = box_fragment_.Children()[page_number];
+
+    // The correct page box fragment for the given page has been selected, and
+    // that's all that's going to be painted now. The cull rect used during
+    // printing is for the paginated content only, in the stitched coordinate
+    // system with all the page areas stacked after oneanother. However, no
+    // paginated content will be painted here (that's in separate paint layers),
+    // only page box decorations and margin fragments.
+    paint_info_for_descendants.SetCullRect(CullRect::Infinite());
+
+    PaintBlockChild(page_box, paint_info, paint_info_for_descendants,
+                    paint_offset);
+    return;
+  }
+
   for (const PhysicalFragmentLink& child : box_fragment_.Children()) {
     const PhysicalFragment& child_fragment = *child;
     DCHECK(child_fragment.IsBox());
@@ -1019,8 +1039,12 @@ void BoxFragmentPainter::PaintBoxDecorationBackground(
   // TODO(mstensho): Break dependency on LayoutObject functionality.
   const LayoutObject& layout_object = *box_fragment_.GetLayoutObject();
 
-  if (const auto* view = DynamicTo<LayoutView>(&layout_object)) {
-    ViewPainter(*view).PaintBoxDecorationBackground(paint_info);
+  if (IsA<LayoutView>(layout_object) ||
+      box_fragment_.GetBoxType() == PhysicalFragment::kPageContainer) {
+    // The root background has a designated painter. For regular layout, this is
+    // the LayoutView. For paginated layout, it's the background of the page box
+    // that covers the entire area of a given page.
+    ViewPainter(box_fragment_).PaintBoxDecorationBackground(paint_info);
     return;
   }
 
@@ -1482,9 +1506,26 @@ void BoxFragmentPainter::PaintBackground(
   if (layout_box.BackgroundIsKnownToBeObscured())
     return;
 
+  const ComputedStyle* style_to_use = &box_fragment_.Style();
+  Color background_color_to_use = background_color;
+  if (box_fragment_.GetBoxType() == PhysicalFragment::kPageBorderBox) {
+    // The page border box fragment paints the document background.
+    // See https://drafts.csswg.org/css-page-3/#painting
+    const Document& document = box_fragment_.GetDocument();
+    const Element* root = document.documentElement();
+    if (!root || !root->GetLayoutObject()) {
+      // We're going to need a document element, and it needs to have a box.
+      // If there's no such thing, we have nothing to paint.
+      return;
+    }
+    style_to_use = document.GetLayoutView()->Style();
+    background_color_to_use =
+        style_to_use->VisitedDependentColor(GetCSSPropertyBackgroundColor());
+  }
+
   BoxBackgroundPaintContext bg_paint_context(box_fragment_);
-  PaintFillLayers(paint_info, background_color,
-                  box_fragment_.Style().BackgroundLayers(), paint_rect,
+  PaintFillLayers(paint_info, background_color_to_use,
+                  style_to_use->BackgroundLayers(), paint_rect,
                   bg_paint_context, bleed_avoidance);
 }
 

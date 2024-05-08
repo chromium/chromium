@@ -142,9 +142,7 @@ class PrintContextTest : public PaintTestConfigurations, public RenderingTest {
     PaintRecordBuilder builder;
     GraphicsContext& context = builder.Context();
     context.SetPrinting(true);
-    GetDocument().View()->PaintOutsideOfLifecycle(
-        context, PaintFlag::kOmitCompositingInfo | PaintFlag::kAddUrlMetadata,
-        CullRect(page_rect));
+    GetDocument().View()->PrintPage(context, page_number, CullRect(page_rect));
     GetPrintContext().OutputLinkedDestinations(
         context,
         GetDocument().GetLayoutView()->FirstFragment().ContentsProperties(),

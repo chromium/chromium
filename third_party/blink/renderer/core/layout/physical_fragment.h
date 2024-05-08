@@ -279,13 +279,6 @@ class CORE_EXPORT PhysicalFragment : public GarbageCollected<PhysicalFragment> {
   // inside the fieldset except the rendered legend).
   bool IsFieldsetContainer() const { return is_fieldset_container_; }
 
-  // Return true if this is the layout root fragment for pagination
-  // (aka. printing).
-  bool IsPaginatedRoot() const {
-    return layout_object_->IsLayoutView() && IsCSSBox() &&
-           GetDocument().Printing();
-  }
-
   // Returns whether the fragment should be atomically painted.
   bool IsPaintedAtomically() const { return is_painted_atomically_; }
 

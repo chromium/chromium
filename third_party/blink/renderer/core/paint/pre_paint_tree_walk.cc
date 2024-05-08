@@ -875,6 +875,14 @@ void PrePaintTreeWalk::WalkPageContainer(
             PhysicalFragment::kPageContainer);
   const auto& page_container =
       To<PhysicalBoxFragment>(*page_container_link.get());
+
+  PrePaintTreeWalkContext page_container_context(
+      parent_context, parent_context.NeedsTreeBuilderContext());
+  PrePaintInfo container_pre_paint_info =
+      CreatePrePaintInfo(page_container_link, page_container_context);
+  WalkInternal(*page_container_link->GetLayoutObject(), page_container_context,
+               &container_pre_paint_info);
+
   PhysicalOffset adjustment = page_container_link.offset;
   for (const PhysicalFragmentLink& grandchild : page_container.Children()) {
     DCHECK_EQ(grandchild->GetBoxType(), PhysicalFragment::kPageBorderBox);
@@ -882,6 +890,13 @@ void PrePaintTreeWalk::WalkPageContainer(
     // This is a page border box, which contains the page contents area fragment
     // (the fragmentainer that contains a portion of the document's fragmented
     // contents).
+    PrePaintTreeWalkContext page_border_box_context(
+        page_container_context,
+        page_container_context.NeedsTreeBuilderContext());
+    PrePaintInfo border_pre_paint_info =
+        CreatePrePaintInfo(grandchild, page_border_box_context);
+    WalkInternal(*grandchild->GetLayoutObject(), page_border_box_context,
+                 &border_pre_paint_info);
 
     const PhysicalFragmentLink& page_area = grandchild->Children()[0];
     DCHECK_EQ(page_area->GetBoxType(), PhysicalFragment::kPageArea);

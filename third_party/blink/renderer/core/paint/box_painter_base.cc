@@ -490,6 +490,7 @@ BoxPainterBase::FillLayerInfo::FillLayerInfo(
     if (image || should_paint_background_color) {
       color = Color::kWhite;
       image = nullptr;
+      background_forced_to_white = true;
     }
   }
 
@@ -1162,6 +1163,11 @@ void BoxPainterBase::PaintFillLayer(
   if (!fill_layer_info.should_paint_image &&
       !fill_layer_info.should_paint_color)
     return;
+
+  if (fill_layer_info.background_forced_to_white &&
+      bg_paint_context.ShouldSkipBackgroundIfWhite()) {
+    return;
+  }
 
   GraphicsContext& context = paint_info.context;
   GraphicsContextStateSaver clip_with_scrolling_state_saver(

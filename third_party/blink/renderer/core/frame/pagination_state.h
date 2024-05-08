@@ -24,6 +24,8 @@ class LayoutObject;
 // For each page box that is being laid out, layout objects will be created for
 // each part of a page box that may need to paint something (page container,
 // page border box, and any @page margins).
+//
+// PaginationState also keeps track of the current page to print.
 class PaginationState : public GarbageCollected<PaginationState> {
  public:
   PaginationState();
@@ -43,8 +45,12 @@ class PaginationState : public GarbageCollected<PaginationState> {
   // CreateAnonymousPageLayoutObject().
   void DestroyAnonymousPageLayoutObjects();
 
+  void SetCurrentPageNumber(wtf_size_t n) { current_page_number_ = n; }
+  wtf_size_t CurrentPageNumber() const { return current_page_number_; }
+
  private:
   HeapVector<Member<LayoutObject>> anonymous_page_objects_;
+  wtf_size_t current_page_number_ = 0;
 };
 
 }  // namespace blink
