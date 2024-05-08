@@ -221,7 +221,9 @@ export class SiteListElement extends SiteListElementBase {
    * @param category The category of the site that changed.
    */
   private siteWithinCategoryChanged_(category: ContentSettingsTypes) {
-    if (category === this.category) {
+    if (category === this.category ||
+        (this.category === ContentSettingsTypes.TRACKING_PROTECTION &&
+         category === ContentSettingsTypes.COOKIES)) {
       this.configureWidget_();
     }
   }

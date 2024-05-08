@@ -153,7 +153,7 @@ export const SiteSettingsMixin = dedupingMixin(
           }
 
           return {
-            category: this.category,
+            category: exception.type as ContentSettingsTypes || this.category,
             embeddingOrigin: embeddingOrigin,
             incognito: exception.incognito,
             isEmbargoed: exception.isEmbargoed,

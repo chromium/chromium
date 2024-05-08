@@ -730,11 +730,19 @@ TEST_F(SiteSettingsHelperTest,
   ASSERT_EQ(2U, tp_exceptions.size());
 
   // Verify the TP exception
+  ASSERT_TRUE(tp_exceptions[0].GetDict().contains(kType));
+  EXPECT_EQ(ContentSettingsTypeFromGroupName(
+                *tp_exceptions[0].GetDict().FindString(kType)),
+            kContentTypeTrackingProtection);
   ASSERT_TRUE(tp_exceptions[0].GetDict().contains(kEmbeddingOrigin));
   EXPECT_EQ(*tp_exceptions[0].GetDict().FindString(kEmbeddingOrigin),
             "some-site.com");
   EXPECT_FALSE(tp_exceptions[0].GetDict().contains(kDescription));
   // Verify the 3PC exception
+  ASSERT_TRUE(tp_exceptions[1].GetDict().contains(kType));
+  EXPECT_EQ(ContentSettingsTypeFromGroupName(
+                *tp_exceptions[1].GetDict().FindString(kType)),
+            kContentTypeCookies);
   ASSERT_TRUE(tp_exceptions[1].GetDict().contains(kEmbeddingOrigin));
   EXPECT_EQ(*tp_exceptions[1].GetDict().FindString(kEmbeddingOrigin),
             "third-party-cookies.com");
@@ -776,11 +784,19 @@ TEST_F(
   ASSERT_EQ(2U, tp_exceptions.size());
 
   // Verify the TP exception
+  ASSERT_TRUE(tp_exceptions[0].GetDict().contains(kType));
+  EXPECT_EQ(ContentSettingsTypeFromGroupName(
+                *tp_exceptions[0].GetDict().FindString(kType)),
+            kContentTypeTrackingProtection);
   ASSERT_TRUE(tp_exceptions[0].GetDict().contains(kEmbeddingOrigin));
   EXPECT_EQ(*tp_exceptions[0].GetDict().FindString(kEmbeddingOrigin),
             "some-site.com");
   EXPECT_FALSE(tp_exceptions[0].GetDict().contains(kDescription));
   // Verify the 3PC exception, which will have the same embedding origin
+  ASSERT_TRUE(tp_exceptions[1].GetDict().contains(kType));
+  EXPECT_EQ(ContentSettingsTypeFromGroupName(
+                *tp_exceptions[1].GetDict().FindString(kType)),
+            kContentTypeCookies);
   ASSERT_TRUE(tp_exceptions[1].GetDict().contains(kEmbeddingOrigin));
   EXPECT_EQ(*tp_exceptions[1].GetDict().FindString(kEmbeddingOrigin),
             "some-site.com");

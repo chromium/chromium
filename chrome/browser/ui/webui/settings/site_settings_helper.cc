@@ -757,6 +757,7 @@ base::Value::Dict GetExceptionForPage(
     bool incognito,
     bool is_embargoed) {
   base::Value::Dict exception;
+  exception.Set(kType, ContentSettingsTypeToGroupName(content_type));
   exception.Set(kOrigin, pattern.ToString());
   exception.Set(kDisplayName, display_name);
   exception.Set(kEmbeddingOrigin,
