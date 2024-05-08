@@ -289,14 +289,8 @@ IN_PROC_BROWSER_TEST_F(SitePerProcessInteractiveBrowserTest,
 //
 // The test then presses <tab> six times to cycle through focused elements 1-6.
 // The test then repeats this with <shift-tab> to cycle in reverse order.
-#if BUILDFLAG(IS_MAC)
-// TODO(crbug.com/40821065): Fails on Mac 10.11.
-#define MAYBE_SequentialFocusNavigation DISABLED_SequentialFocusNavigation
-#else
-#define MAYBE_SequentialFocusNavigation SequentialFocusNavigation
-#endif
 IN_PROC_BROWSER_TEST_P(SitePerProcessInteractiveFencedFrameBrowserTest,
-                       MAYBE_SequentialFocusNavigation) {
+                       SequentialFocusNavigation) {
   GURL main_url(https_server()->GetURL(
       "a.test", GetParam() == std::string("iframe")
                     ? "/cross_site_iframe_factory.html?a.test(b.test,c.test)"
@@ -323,6 +317,9 @@ IN_PROC_BROWSER_TEST_P(SitePerProcessInteractiveFencedFrameBrowserTest,
     child1 = child_frames[0];
     child2 = child_frames[1];
   }
+
+  content::WaitForHitTestData(child1);
+  content::WaitForHitTestData(child2);
 
   // Assign a name to each frame.  This will be sent along in test messages
   // from focus events.
@@ -508,6 +505,8 @@ IN_PROC_BROWSER_TEST_P(SitePerProcessInteractiveFencedFrameBrowserTest,
         fenced_frame_test_helper().GetMostRecentlyAddedFencedFrame(main_frame);
     ASSERT_NE(nullptr, child);
   }
+
+  content::WaitForHitTestData(child);
 
   // Assign a name to each frame.  This will be sent along in test messages
   // from focus events.
