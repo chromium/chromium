@@ -3911,7 +3911,7 @@ que pot incloure dades del programari instal·lat, de fitxers, del navegador i d
 <translation id="3917644013202553949">No hi ha prou emmagatzematge per sincronitzar els fitxers. Prova d'alliberar espai.</translation>
 <translation id="3919145445993746351">Per accedir a les extensions des de tots els ordinadors, activa la sincronització</translation>
 <translation id="3919229493046408863">Desactiva la notificació quan hi hagi dispositius a prop</translation>
-<translation id="3919262972282962508">Passat desembre de 2022, les versions anteriors d'Aplicacions de Chrome no s'obriran en dispositius Mac. Contacta amb l'administrador perquè actualitzi l'aplicació a una versió nova o perquè la suprimeixi.</translation>
+<translation id="3919262972282962508">Passat desembre de 2022, les versions anteriors de les Aplicacions de Chrome no s'obriran en dispositius Mac. Contacta amb l'administrador perquè actualitzi l'aplicació a una versió nova o perquè la suprimeixi.</translation>
 <translation id="3919376399641777316">Utilitza l'emmagatzematge de Google Drive</translation>
 <translation id="3919798653937160644">Les pàgines que visualitzis en aquesta finestra no es mostraran a l'historial del navegador i no deixaran cap rastre a l'ordinador, com ara galetes, després de tancar totes les finestres obertes de la sessió de convidat. Tanmateix, es conservaran tots els fitxers que baixis.</translation>
 <translation id="3920504717067627103">Normes de certificats</translation>
@@ -7059,7 +7059,7 @@ Assegureu-vos que no es pugui accedir a informació sensible.</translation>
 <translation id="6374077068638737855">Iceweasel</translation>
 <translation id="6374469231428023295">Torna-ho a provar</translation>
 <translation id="6374635887697228982">Vols obtenir descomptes?</translation>
-<translation id="637642201764944055">Passat desembre de 2022, les versions anteriors d'Aplicacions de Chrome no s'obriran en dispositius Linux. Contacta amb l'administrador perquè actualitzi l'aplicació a una versió nova o perquè la suprimeixi.</translation>
+<translation id="637642201764944055">Passat desembre de 2022, les versions anteriors de les aplicacions de Chrome no s'obriran en dispositius Linux. Contacta amb l'administrador perquè actualitzi l'aplicació a una versió nova o perquè la suprimeixi.</translation>
 <translation id="6377268785556383139">1 resultat per a "<ph name="SEARCH_TEXT" />"</translation>
 <translation id="6378392501584240055">Obre en xarxes Wi-Fi</translation>
 <translation id="6379533146645857098">Selecciona un interval de temps</translation>
@@ -7644,7 +7644,7 @@ Tens # contrasenyes més en perill. El gestor de contrasenyes de Google recomana
 <translation id="6827121912381363404">Permet que totes les extensions llegeixin i canviïn <ph name="PERMITTED_SITE" /></translation>
 <translation id="6827422464708099620">Selecciona per veure més opcions</translation>
 <translation id="6827517233063803343">Les teves aplicacions i opcions de configuració se sincronitzaran en tots els dispositius amb Chrome OS en què tinguis la sessió iniciada amb el teu Compte de Google. Per accedir a les opcions de sincronització del navegador, ves a la <ph name="LINK_BEGIN" />configuració de Chrome<ph name="LINK_END" />.</translation>
-<translation id="6827767090350758381">Passat desembre de 2022, les versions anteriors d'Aplicacions de Chrome no s'obriran en dispositius Windows. Contacta amb l'administrador perquè actualitzi l'aplicació a una versió nova o perquè la suprimeixi.</translation>
+<translation id="6827767090350758381">Passat desembre de 2022, les versions anteriors de le aplicacions de Chrome no s'obriran en dispositius Windows. Contacta amb l'administrador perquè actualitzi l'aplicació a una versió nova o perquè la suprimeixi.</translation>
 <translation id="6828153365543658583">Restringeix l'inici de sessió als usuaris següents:</translation>
 <translation id="6828182567531805778">Introdueix la teva frase de contrasenya per sincronitzar les dades</translation>
 <translation id="682871081149631693">QuickFix</translation>
@@ -10007,7 +10007,7 @@ Deseu el fitxer de clau en una ubicació segura. El necessitareu per crear versi
 <translation id="8631032106121706562">Flor</translation>
 <translation id="8632104508818855045">Havies triat l'opció de no permetre cap extensió a <ph name="ORIGIN" /></translation>
 <translation id="8633025649649592204">Activitat recent</translation>
-<translation id="8633979878370972178">Passat desembre de 2022, les versions anteriors d'Aplicacions de Chrome no s'obriran en dispositius Linux. Pots comprovar si hi ha una nova versió disponible.</translation>
+<translation id="8633979878370972178">Passat desembre de 2022, les versions anteriors de les aplicacions de Chrome no s'obriran en dispositius Linux. Pots comprovar si hi ha una nova versió disponible.</translation>
 <translation id="8634348081024879304">Ja no podràs utilitzar la teva targeta virtual amb Google Pay. <ph name="BEGIN_LINK" />Informació sobre les targetes virtuals<ph name="END_LINK" /></translation>
 <translation id="8634703204743010992">Teclat virtual de ChromeOS</translation>
 <translation id="8635628933471165173">S'està tornant a carregar...</translation>
