@@ -324,11 +324,13 @@ bool HttpStreamFactory::Job::HasAvailableQuicSession() const {
   bool require_dns_https_alpn =
       (job_type_ == DNS_ALPN_H3) || (job_type_ == PRECONNECT_DNS_ALPN_H3);
 
-  return quic_request_.CanUseExistingSession(
-      origin_url_, proxy_info_.proxy_chain(), request_info_.privacy_mode,
-      SessionUsage::kDestination, request_info_.socket_tag,
-      request_info_.network_anonymization_key, request_info_.secure_dns_policy,
-      require_dns_https_alpn, destination_);
+  QuicSessionKey quic_session_key(
+      HostPortPair::FromURL(origin_url_), request_info_.privacy_mode,
+      proxy_info_.proxy_chain(), SessionUsage::kDestination,
+      request_info_.socket_tag, request_info_.network_anonymization_key,
+      request_info_.secure_dns_policy, require_dns_https_alpn);
+  return session_->quic_session_pool()->CanUseExistingSession(quic_session_key,
+                                                              destination_);
 }
 
 bool HttpStreamFactory::Job::TargettedSocketGroupHasActiveSocket() const {

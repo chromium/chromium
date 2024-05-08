@@ -337,23 +337,6 @@ void QuicSessionRequest::SetSession(
   session_ = std::move(session);
 }
 
-bool QuicSessionRequest::CanUseExistingSession(
-    const GURL& url,
-    const ProxyChain& proxy_chain,
-    PrivacyMode privacy_mode,
-    SessionUsage session_usage,
-    const SocketTag& socket_tag,
-    const NetworkAnonymizationKey& network_anonymization_key,
-    SecureDnsPolicy secure_dns_policy,
-    bool require_dns_https_alpn,
-    const url::SchemeHostPort& destination) const {
-  return pool_->CanUseExistingSession(
-      QuicSessionKey(HostPortPair::FromURL(url), privacy_mode, proxy_chain,
-                     session_usage, socket_tag, network_anonymization_key,
-                     secure_dns_policy, require_dns_https_alpn),
-      destination);
-}
-
 QuicSessionPool::QuicSessionAliasKey::QuicSessionAliasKey(
     url::SchemeHostPort destination,
     QuicSessionKey session_key)

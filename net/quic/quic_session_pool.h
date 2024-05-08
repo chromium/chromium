@@ -242,17 +242,6 @@ class NET_EXPORT_PRIVATE QuicSessionRequest {
 
   const NetLogWithSource& net_log() const { return net_log_; }
 
-  bool CanUseExistingSession(
-      const GURL& url,
-      const ProxyChain& proxy_chain,
-      PrivacyMode privacy_mode,
-      SessionUsage session_usage,
-      const SocketTag& socket_tag,
-      const NetworkAnonymizationKey& network_anonymization_key,
-      SecureDnsPolicy secure_dns_policy,
-      bool require_dns_https_alpn,
-      const url::SchemeHostPort& destination) const;
-
  private:
   raw_ptr<QuicSessionPool> pool_;
   QuicSessionKey session_key_;
