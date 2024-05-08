@@ -5,6 +5,9 @@
 #ifndef COMPONENTS_EXO_WAYLAND_TEST_SHELL_CLIENT_DATA_H_
 #define COMPONENTS_EXO_WAYLAND_TEST_SHELL_CLIENT_DATA_H_
 
+#include <wayland-client.h>
+#include <xdg-shell-client-protocol.h>
+
 #include <memory>
 
 #include "base/memory/raw_ptr.h"
@@ -89,25 +92,32 @@ class ShellClientData : public test::TestClient::CustomData {
 
   bool close_called() const { return close_called_; }
 
-  void set_data_offer(std::unique_ptr<wl_data_offer> data_offer) {
+  void set_data_offer(
+      std::unique_ptr<wl_data_offer, decltype(&wl_data_offer_destroy)>
+          data_offer) {
     data_offer_ = std::move(data_offer);
   }
 
  private:
   bool close_called_ = false;
   const raw_ptr<TestClient> client_;
-  std::unique_ptr<wl_pointer> pointer_;
-  std::unique_ptr<wl_touch> touch_;
-  std::unique_ptr<wl_surface> surface_;
-  std::unique_ptr<xdg_surface> xdg_surface_;
-  std::unique_ptr<xdg_toplevel> xdg_toplevel_;
-  std::unique_ptr<zaura_toplevel> aura_toplevel_;
-  std::unique_ptr<zcr_remote_surface_v2> remote_surface_;
+  std::unique_ptr<wl_pointer, decltype(&wl_pointer_destroy)> pointer_;
+  std::unique_ptr<wl_touch, decltype(&wl_touch_destroy)> touch_;
+  std::unique_ptr<wl_surface, decltype(&wl_surface_destroy)> surface_;
+  std::unique_ptr<xdg_surface, decltype(&xdg_surface_destroy)> xdg_surface_;
+  std::unique_ptr<xdg_toplevel, decltype(&xdg_toplevel_destroy)> xdg_toplevel_;
+  std::unique_ptr<zaura_toplevel, decltype(&zaura_toplevel_destroy)>
+      aura_toplevel_;
+  std::unique_ptr<zcr_remote_surface_v2,
+                  decltype(&zcr_remote_surface_v2_destroy)>
+      remote_surface_;
   std::unique_ptr<TestBuffer> buffer_;
 
-  std::unique_ptr<wl_data_device> data_device_;
-  std::unique_ptr<wl_data_source> data_source_;
-  std::unique_ptr<wl_data_offer> data_offer_;
+  std::unique_ptr<wl_data_device, decltype(&wl_data_device_destroy)>
+      data_device_;
+  std::unique_ptr<wl_data_source, decltype(&wl_data_source_destroy)>
+      data_source_;
+  std::unique_ptr<wl_data_offer, decltype(&wl_data_offer_destroy)> data_offer_;
 
   std::unique_ptr<InputListener> input_listener_;
 };

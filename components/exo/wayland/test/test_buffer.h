@@ -20,7 +20,8 @@ class BufferListener {
 
 class TestBuffer {
  public:
-  explicit TestBuffer(std::unique_ptr<wl_buffer> resource);
+  explicit TestBuffer(
+      std::unique_ptr<wl_buffer, decltype(&wl_buffer_destroy)> resource);
 
   TestBuffer(const TestBuffer&) = delete;
   TestBuffer& operator=(const TestBuffer&) = delete;
@@ -37,7 +38,7 @@ class TestBuffer {
   static void OnRelease(void* data, wl_buffer* resource);
 
  private:
-  std::unique_ptr<wl_buffer> resource_;
+  std::unique_ptr<wl_buffer, decltype(&wl_buffer_destroy)> resource_;
   raw_ptr<BufferListener> listener_ = nullptr;
 };
 

@@ -13,7 +13,8 @@ wl_buffer_listener buffer_listener = {TestBuffer::OnRelease};
 
 }  // namespace
 
-TestBuffer::TestBuffer(std::unique_ptr<wl_buffer> resource)
+TestBuffer::TestBuffer(
+    std::unique_ptr<wl_buffer, decltype(&wl_buffer_destroy)> resource)
     : resource_(std::move(resource)) {}
 
 TestBuffer::~TestBuffer() = default;
