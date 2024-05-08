@@ -971,9 +971,25 @@ TEST_F(IntegrationTest, NoSelfUpdateIfNoEula) {
   ASSERT_TRUE(WaitForUpdaterExit());
   ASSERT_NO_FATAL_FAILURE(
       ExpectAppVersion(kUpdaterAppId, base::Version(kUpdaterVersion)));
-  ASSERT_NO_FATAL_FAILURE(ExpectUninstallPing(&test_server));
   ASSERT_NO_FATAL_FAILURE(Uninstall());
 }
+
+#if BUILDFLAG(IS_WIN) && !defined(COMPONENT_BUILD)
+TEST_F(IntegrationTest, UninstallWithoutPingIfNoEula) {
+  ScopedServer test_server(test_commands_);
+  ASSERT_NO_FATAL_FAILURE(
+      Install(base::Value::List().Append(kEulaRequiredSwitch)));
+  ASSERT_NO_FATAL_FAILURE(RunOfflineInstall(/*is_legacy_install=*/false,
+                                            /*is_silent_install=*/false));
+  ASSERT_TRUE(WaitForUpdaterExit());
+  ASSERT_NO_FATAL_FAILURE(SetServerStarts(24));
+  ASSERT_NO_FATAL_FAILURE(
+      UninstallApp("{CDABE316-39CD-43BA-8440-6D1E0547AEE6}"));
+  ASSERT_NO_FATAL_FAILURE(RunWake(0));
+  ASSERT_TRUE(WaitForUpdaterExit());
+  ASSERT_NO_FATAL_FAILURE(ExpectClean());
+}
+#endif  // BUILDFLAG(IS_WIN) && !defined(COMPONENT_BUILD)
 
 #if !BUILDFLAG(IS_LINUX)
 // InstallAppViaService does not work on Linux.
@@ -1152,7 +1168,6 @@ TEST_F(IntegrationTest,
   ASSERT_TRUE(WaitForUpdaterExit());
   ASSERT_NO_FATAL_FAILURE(
       ExpectAppVersion(kUpdaterAppId, base::Version(kUpdaterVersion)));
-  ASSERT_NO_FATAL_FAILURE(ExpectUninstallPing(&test_server));
   ASSERT_NO_FATAL_FAILURE(Uninstall());
 }
 

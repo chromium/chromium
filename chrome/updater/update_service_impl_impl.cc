@@ -1092,22 +1092,24 @@ void UpdateServiceImplImpl::RunInstaller(const std::string& app_id,
             VLOG(1) << app_id
                     << " installation completed: " << state.error_code;
 
-            // Send an install ping. In some environments the ping cannot be
-            // sent, so do not wait for it to be sent before calling back the
-            // client.
-            update_client::CrxComponent install_data;
-            install_data.ap = ap;
-            install_data.app_id = app_id;
-            install_data.brand = brand;
-            install_data.requires_network_encryption = false;
-            install_data.version = installer_version;
-            update_client->SendPing(
-                install_data,
-                {.event_type = update_client::protocol_request::kEventInstall,
-                 .result = result.error == 0,
-                 .error_code = result.error,
-                 .extra_code1 = result.extended_error},
-                base::DoNothing());
+            if (!persisted_data->GetEulaRequired()) {
+              // Send an install ping. In some environments the ping cannot be
+              // sent, so do not wait for it to be sent before calling back the
+              // client.
+              update_client::CrxComponent install_data;
+              install_data.ap = ap;
+              install_data.app_id = app_id;
+              install_data.brand = brand;
+              install_data.requires_network_encryption = false;
+              install_data.version = installer_version;
+              update_client->SendPing(
+                  install_data,
+                  {.event_type = update_client::protocol_request::kEventInstall,
+                   .result = result.error == 0,
+                   .error_code = result.error,
+                   .extra_code1 = result.extended_error},
+                  base::DoNothing());
+            }
 
             std::move(callback).Run(result.error == 0 ? Result::kSuccess
                                                       : Result::kInstallFailed);

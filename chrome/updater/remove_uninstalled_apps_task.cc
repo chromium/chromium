@@ -99,6 +99,18 @@ void RemoveAppIDsAndSendUninstallPings(
     return;
   }
 
+  // If the terms of service have not been accepted, don't ping.
+  if (persisted_data->GetEulaRequired()) {
+    for (const PingInfo& app_id_to_remove : app_ids_to_remove) {
+      const std::string& app_id = app_id_to_remove.app_id_;
+      if (!persisted_data->RemoveApp(app_id)) {
+        VLOG(0) << "Could not remove registration of app " << app_id;
+      }
+    }
+    std::move(callback).Run();
+    return;
+  }
+
   const auto barrier_closure =
       base::BarrierClosure(app_ids_to_remove.size(), std::move(callback));
 
