@@ -42,13 +42,18 @@ build_webui("build") {
     "pdf_viewer_print.ts",
   ]
 
-  if (enable_ink) {
+  if (enable_ink || enable_pdf_ink2) {
     web_component_files += [
       "elements/viewer-annotations-bar.ts",
-      "elements/viewer-annotations-mode-dialog.ts",
-      "elements/viewer-ink-host.ts",
       "elements/viewer-pen-options.ts",
       "elements/viewer-toolbar-dropdown.ts",
+    ]
+  }
+
+  if (enable_ink) {
+    web_component_files += [
+      "elements/viewer-annotations-mode-dialog.ts",
+      "elements/viewer-ink-host.ts",
     ]
   }
 
@@ -80,9 +85,12 @@ build_webui("build") {
     "toolbar_manager.ts",
   ]
 
+  if (enable_ink || enable_pdf_ink2) {
+    non_web_component_files += [ "annotation_tool.ts" ]
+  }
+
   if (enable_ink) {
     non_web_component_files += [
-      "annotation_tool.ts",
       "ink/ink_api.ts",
       "ink_controller.ts",
     ]

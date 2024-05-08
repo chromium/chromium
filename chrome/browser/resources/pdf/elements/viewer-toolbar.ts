@@ -12,10 +12,11 @@ import './viewer-download-controls.js';
 import './viewer-page-selector.js';
 import './pdf-shared.css.js';
 import './shared-vars.css.js';
-// <if expr="enable_ink">
+// <if expr="enable_ink or enable_pdf_ink2">
 import './viewer-annotations-bar.js';
+// </if>
+// <if expr="enable_ink">
 import './viewer-annotations-mode-dialog.js';
-
 // </if>
 
 import type {CrActionMenuElement} from 'chrome://resources/cr_elements/cr_action_menu/cr_action_menu.js';
@@ -144,7 +145,9 @@ export class ViewerToolbarElement extends PolymerElement {
         type: Boolean,
         value: false,
       },
+      // </if>
 
+      // <if expr="enable_ink or enable_pdf_ink2">
       showAnnotationsBar_: {
         type: Boolean,
         computed: 'computeShowAnnotationsBar_(' +
@@ -180,11 +183,12 @@ export class ViewerToolbarElement extends PolymerElement {
   // <if expr="enable_ink or enable_pdf_ink2">
   annotationAvailable: boolean;
   annotationMode: boolean;
+
+  private showAnnotationsBar_: boolean;
   // </if>
 
   // <if expr="enable_ink">
   private showAnnotationsModeDialog_: boolean;
-  private showAnnotationsBar_: boolean;
   // </if>
 
   // <if expr="enable_pdf_ink2">
@@ -242,7 +246,7 @@ export class ViewerToolbarElement extends PolymerElement {
     this.getZoomInput_().value = `${this.viewportZoomPercent_}%`;
   }
 
-  // <if expr="enable_ink">
+  // <if expr="enable_ink or enable_pdf_ink2">
   private computeShowAnnotationsBar_(): boolean {
     return this.pdfAnnotationsEnabled && !this.loading_ && this.annotationMode;
   }

@@ -11,11 +11,16 @@ import './viewer-toolbar-dropdown.js';
 
 import type {CrIconButtonElement} from 'chrome://resources/cr_elements/cr_icon_button/cr_icon_button.js';
 import {assert} from 'chrome://resources/js/assert.js';
+// <if expr="enable_ink">
 import {EventTracker} from 'chrome://resources/js/event_tracker.js';
+// </if>
 import {PolymerElement} from 'chrome://resources/polymer/v3_0/polymer/polymer_bundled.min.js';
 
 import type {AnnotationTool} from '../annotation_tool.js';
+
+// <if expr="enable_ink">
 import {InkController, InkControllerEventType} from '../ink_controller.js';
+// </if>
 
 import {getTemplate} from './viewer-annotations-bar.html.js';
 import type {ViewerPenOptionsElement} from './viewer-pen-options.js';
@@ -65,12 +70,15 @@ export class ViewerAnnotationsBarElement extends PolymerElement {
   private annotationTool_: AnnotationTool|null;
   private canUndoAnnotation_: boolean;
   private canRedoAnnotation_: boolean;
+  // <if expr="enable_ink">
   private inkController_: InkController = InkController.getInstance();
   private tracker_: EventTracker = new EventTracker();
+  // </if>
 
   constructor() {
     super();
 
+    // <if expr="enable_ink">
     this.tracker_.add(
         this.inkController_.getEventTarget(),
         InkControllerEventType.SET_ANNOTATION_UNDO_STATE,
@@ -84,6 +92,7 @@ export class ViewerAnnotationsBarElement extends PolymerElement {
             this.inkController_.setAnnotationTool(this.annotationTool_);
           }
         });
+    // </if>
   }
 
   private setAnnotationUndoState_(
@@ -93,11 +102,15 @@ export class ViewerAnnotationsBarElement extends PolymerElement {
   }
 
   private onUndoClick_() {
+    // <if expr="enable_ink">
     this.inkController_.undo();
+    // </if>
   }
 
   private onRedoClick_() {
+    // <if expr="enable_ink">
     this.inkController_.redo();
+    // </if>
   }
 
   private onAnnotationModeChanged_() {
@@ -138,7 +151,9 @@ export class ViewerAnnotationsBarElement extends PolymerElement {
       size: options.selectedSize,
       color: options.selectedColor ? options.selectedColor : undefined,
     };
+    // <if expr="enable_ink">
     this.inkController_.setAnnotationTool(this.annotationTool_);
+    // </if>
   }
 
   /** @return Whether the annotation tool is using tool `toolName`. */
