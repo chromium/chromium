@@ -11,10 +11,11 @@
 #include "base/ranges/algorithm.h"
 #include "base/strings/string_number_conversions.h"
 #include "components/autofill/core/browser/webdata/autofill_change.h"
-#include "components/autofill/core/browser/webdata/payments/payments_sync_bridge_util.h"
 #include "components/autofill/core/browser/webdata/autofill_sync_metadata_table.h"
 #include "components/autofill/core/browser/webdata/autofill_webdata_backend.h"
 #include "components/autofill/core/browser/webdata/autofill_webdata_service.h"
+#include "components/autofill/core/browser/webdata/payments/payments_sync_bridge_util.h"
+#include "components/sync/base/deletion_origin.h"
 #include "components/sync/base/model_type.h"
 #include "components/sync/model/client_tag_based_model_type_processor.h"
 #include "components/sync/model/metadata_change_list.h"
@@ -262,6 +263,7 @@ void AutofillWalletCredentialSyncBridge::ActOnLocalChange(
       break;
     case ServerCvcChange::REMOVE:
       change_processor()->Delete(std::move(key_str),
+                                 syncer::DeletionOrigin::Unspecified(),
                                  metadata_change_list.get());
       break;
   }

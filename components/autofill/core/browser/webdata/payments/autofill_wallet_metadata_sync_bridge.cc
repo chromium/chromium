@@ -25,6 +25,7 @@
 #include "components/autofill/core/browser/webdata/payments/payments_sync_bridge_util.h"
 #include "components/autofill/core/common/autofill_clock.h"
 #include "components/autofill/core/common/autofill_util.h"
+#include "components/sync/base/deletion_origin.h"
 #include "components/sync/base/model_type.h"
 #include "components/sync/model/client_tag_based_model_type_processor.h"
 #include "components/sync/model/mutable_data_batch.h"
@@ -546,7 +547,9 @@ void AutofillWalletMetadataSyncBridge::DeleteOldOrphanMetadata() {
     if (RemoveServerMetadata(GetAutofillTable(), parsed_storage_key.type,
                              parsed_storage_key.metadata_id)) {
       cache_.erase(storage_key);
-      change_processor()->Delete(storage_key, metadata_change_list.get());
+      change_processor()->Delete(storage_key,
+                                 syncer::DeletionOrigin::Unspecified(),
+                                 metadata_change_list.get());
     }
   }
 
@@ -710,7 +713,9 @@ void AutofillWalletMetadataSyncBridge::LocalMetadataChanged(
         cache_.erase(storage_key);
         // Send up deletion only if we had this entry in the DB. It is not there
         // if it was previously deleted by a remote deletion.
-        change_processor()->Delete(storage_key, metadata_change_list.get());
+        change_processor()->Delete(storage_key,
+                                   syncer::DeletionOrigin::Unspecified(),
+                                   metadata_change_list.get());
       }
       return;
     case AutofillDataModelChange<DataType, KeyType>::ADD:
