@@ -82,12 +82,21 @@ class DefaultConfigurator : public DMClient::Configurator {
 
   std::unique_ptr<update_client::NetworkFetcher> CreateNetworkFetcher()
       const override {
+    DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
+    if (!network_fetcher_factory_) {
+      network_fetcher_factory_ = base::MakeRefCounted<NetworkFetcherFactory>(
+          policy_service_proxy_configuration_);
+    }
     return network_fetcher_factory_->Create();
   }
 
  private:
+  SEQUENCE_CHECKER(sequence_checker_);
   const GURL server_url_;
-  scoped_refptr<update_client::NetworkFetcherFactory> network_fetcher_factory_;
+  std::optional<PolicyServiceProxyConfiguration>
+      policy_service_proxy_configuration_;
+  mutable scoped_refptr<update_client::NetworkFetcherFactory>
+      network_fetcher_factory_;
 };
 
 DefaultConfigurator::DefaultConfigurator(
@@ -95,8 +104,7 @@ DefaultConfigurator::DefaultConfigurator(
     std::optional<PolicyServiceProxyConfiguration>
         policy_service_proxy_configuration)
     : server_url_(server_url),
-      network_fetcher_factory_(base::MakeRefCounted<NetworkFetcherFactory>(
-          policy_service_proxy_configuration)) {}
+      policy_service_proxy_configuration_(policy_service_proxy_configuration) {}
 
 std::string DefaultConfigurator::GetPlatformParameter() const {
   std::string os_name = base::SysInfo::OperatingSystemName();
