@@ -2224,7 +2224,7 @@ LoginDatabase::PrimaryKeyAndPassword LoginDatabase::GetPrimaryKeyAndPassword(
   sql::Statement s(db_.GetCachedStatement(SQL_FROM_HERE,
                                           id_and_password_statement_.c_str()));
 
-  s.BindString(0, form.url.spec());
+  s.BindString(0, form.url.is_valid() ? form.url.spec() : std::string_view());
   s.BindString16(1, form.username_element);
   s.BindString16(2, form.username_value);
   s.BindString16(3, form.password_element);
