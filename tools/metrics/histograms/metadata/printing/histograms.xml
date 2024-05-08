@@ -581,6 +581,36 @@ chromium-metrics-reviews@google.com.
   </summary>
 </histogram>
 
+<histogram name="PrintPreview.EnumeratePrintersTime" units="ms"
+    expires_after="2024-09-15">
+  <owner>awscreen@chromium.org</owner>
+  <owner>thestig@chromium.org</owner>
+  <summary>
+    Time to acquire the list of local printers from the print backend, as needed
+    by Print Preview.
+  </summary>
+</histogram>
+
+<histogram name="PrintPreview.FetchCapabilitiesTime" units="ms"
+    expires_after="2024-09-15">
+  <owner>awscreen@chromium.org</owner>
+  <owner>thestig@chromium.org</owner>
+  <summary>
+    Time to acquire the set of capabilities for a local printer from the print
+    backend, as needed by Print Preview.
+  </summary>
+</histogram>
+
+<histogram name="PrintPreview.GetDefaultPrinterNameTime" units="ms"
+    expires_after="2024-09-15">
+  <owner>awscreen@chromium.org</owner>
+  <owner>thestig@chromium.org</owner>
+  <summary>
+    Time to acquire the name of the default printer from the print backend, as
+    needed by Print Preview.
+  </summary>
+</histogram>
+
 <histogram name="PrintPreview.GetPrintersTime.{PrinterType}" units="ms"
     expires_after="2024-10-16">
   <owner>gavinwill@chromium.org</owner>

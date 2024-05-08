@@ -11,8 +11,10 @@
 #include "base/logging.h"
 #include "base/memory/ref_counted.h"
 #include "base/memory/ref_counted_memory.h"
+#include "base/metrics/histogram_functions.h"
 #include "base/task/task_traits.h"
 #include "base/task/thread_pool.h"
+#include "base/time/time.h"
 #include "build/build_config.h"
 #include "chrome/browser/browser_process.h"
 #include "chrome/browser/ui/webui/print_preview/print_preview_utils.h"
@@ -73,11 +75,15 @@ PrinterList LocalPrinterHandlerDefault::EnumeratePrintersOnBlockingTaskRunner(
   base::ScopedAllowBlocking allow_blocking;
 #endif
 
+  auto query_start_time = base::TimeTicks::Now();
+
   scoped_refptr<PrintBackend> print_backend(
       PrintBackend::CreateInstance(locale));
 
   PrinterList printer_list;
   mojom::ResultCode result = print_backend->EnumeratePrinters(printer_list);
+  base::UmaHistogramTimes("PrintPreview.EnumeratePrintersTime",
+                          base::TimeTicks::Now() - query_start_time);
   if (result == mojom::ResultCode::kSuccess) {
     PRINTER_LOG(EVENT) << "Enumerated " << printer_list.size() << " printer(s)";
   } else {
@@ -103,12 +109,16 @@ LocalPrinterHandlerDefault::FetchCapabilitiesOnBlockingTaskRunner(
   base::ScopedAllowBlocking allow_blocking;
 #endif
 
+  auto query_start_time = base::TimeTicks::Now();
+
   scoped_refptr<PrintBackend> print_backend(
       PrintBackend::CreateInstance(locale));
 
   PrinterBasicInfo basic_info;
   mojom::ResultCode result =
       print_backend->GetPrinterBasicInfo(device_name, &basic_info);
+  base::UmaHistogramTimes("PrintPreview.FetchCapabilitiesTime",
+                          base::TimeTicks::Now() - query_start_time);
   if (result == mojom::ResultCode::kSuccess) {
     PRINTER_LOG(EVENT) << "Got basic info for " << device_name;
   } else {
@@ -130,12 +140,16 @@ std::string LocalPrinterHandlerDefault::GetDefaultPrinterOnBlockingTaskRunner(
   base::ScopedAllowBlocking allow_blocking;
 #endif
 
+  auto query_start_time = base::TimeTicks::Now();
+
   scoped_refptr<PrintBackend> print_backend(
       PrintBackend::CreateInstance(locale));
 
   std::string default_printer;
   mojom::ResultCode result =
       print_backend->GetDefaultPrinterName(default_printer);
+  base::UmaHistogramTimes("PrintPreview.GetDefaultPrinterNameTime",
+                          base::TimeTicks::Now() - query_start_time);
   if (result != mojom::ResultCode::kSuccess) {
     PRINTER_LOG(ERROR) << "Failure getting default printer name, result: "
                        << result;
@@ -160,12 +174,13 @@ void LocalPrinterHandlerDefault::GetDefaultPrinter(DefaultPrinterCallback cb) {
 #if BUILDFLAG(ENABLE_OOP_PRINTING)
   if (IsOopPrintingEnabled()) {
     PRINTER_LOG(EVENT) << "Getting default printer via service";
+    auto query_start_time = base::TimeTicks::Now();
     PrintBackendServiceManager& service_mgr =
         PrintBackendServiceManager::GetInstance();
-    service_mgr.GetDefaultPrinterName(
-        base::BindOnce(&LocalPrinterHandlerDefault::
-                           OnDidGetDefaultPrinterNameFromPrintBackendService,
-                       weak_ptr_factory_.GetWeakPtr(), std::move(cb)));
+    service_mgr.GetDefaultPrinterName(base::BindOnce(
+        &LocalPrinterHandlerDefault::
+            OnDidGetDefaultPrinterNameFromPrintBackendService,
+        weak_ptr_factory_.GetWeakPtr(), query_start_time, std::move(cb)));
     return;
   }
 #endif  // BUILDFLAG(ENABLE_OOP_PRINTING)
@@ -186,13 +201,14 @@ void LocalPrinterHandlerDefault::StartGetPrinters(
 #if BUILDFLAG(ENABLE_OOP_PRINTING)
   if (IsOopPrintingEnabled()) {
     PRINTER_LOG(EVENT) << "Enumerate printers start via service";
+    auto query_start_time = base::TimeTicks::Now();
     PrintBackendServiceManager& service_mgr =
         PrintBackendServiceManager::GetInstance();
     service_mgr.EnumeratePrinters(
         base::BindOnce(&LocalPrinterHandlerDefault::
                            OnDidEnumeratePrintersFromPrintBackendService,
-                       weak_ptr_factory_.GetWeakPtr(), std::move(callback),
-                       std::move(done_callback)));
+                       weak_ptr_factory_.GetWeakPtr(), query_start_time,
+                       std::move(callback), std::move(done_callback)));
     return;
   }
 #endif  // BUILDFLAG(ENABLE_OOP_PRINTING)
@@ -215,6 +231,7 @@ void LocalPrinterHandlerDefault::StartGetCapability(
   if (IsOopPrintingEnabled()) {
     PRINTER_LOG(EVENT) << "Getting printer capabilities via service for "
                        << device_name;
+    auto query_start_time = base::TimeTicks::Now();
     PrintBackendServiceManager& service_mgr =
         PrintBackendServiceManager::GetInstance();
     service_mgr.FetchCapabilities(
@@ -224,7 +241,7 @@ void LocalPrinterHandlerDefault::StartGetCapability(
                        weak_ptr_factory_.GetWeakPtr(), device_name,
                        service_mgr.PrinterDriverFoundToRequireElevatedPrivilege(
                            device_name),
-                       std::move(cb)));
+                       query_start_time, std::move(cb)));
     return;
   }
 #endif  // BUILDFLAG(ENABLE_OOP_PRINTING)
@@ -251,8 +268,12 @@ void LocalPrinterHandlerDefault::StartPrint(
 
 void LocalPrinterHandlerDefault::
     OnDidGetDefaultPrinterNameFromPrintBackendService(
+        base::TimeTicks query_start_time,
         DefaultPrinterCallback callback,
         mojom::DefaultPrinterNameResultPtr result) {
+  base::UmaHistogramTimes("PrintPreview.GetDefaultPrinterNameTime",
+                          base::TimeTicks::Now() - query_start_time);
+
   if (result->is_result_code()) {
     PRINTER_LOG(ERROR)
         << "Failure getting default printer via service, result: "
@@ -267,9 +288,13 @@ void LocalPrinterHandlerDefault::
 }
 
 void LocalPrinterHandlerDefault::OnDidEnumeratePrintersFromPrintBackendService(
+    base::TimeTicks query_start_time,
     AddedPrintersCallback added_printers_callback,
     GetPrintersDoneCallback done_callback,
     mojom::PrinterListResultPtr result) {
+  base::UmaHistogramTimes("PrintPreview.EnumeratePrintersTime",
+                          base::TimeTicks::Now() - query_start_time);
+
   PrinterList printer_list;
   if (result->is_printer_list()) {
     printer_list = std::move(result->get_printer_list());
@@ -287,8 +312,12 @@ void LocalPrinterHandlerDefault::OnDidEnumeratePrintersFromPrintBackendService(
 void LocalPrinterHandlerDefault::OnDidFetchCapabilitiesFromPrintBackendService(
     const std::string& device_name,
     bool elevated_privileges,
+    base::TimeTicks query_start_time,
     GetCapabilityCallback callback,
     mojom::PrinterCapsAndInfoResultPtr result) {
+  base::UmaHistogramTimes("PrintPreview.FetchCapabilitiesTime",
+                          base::TimeTicks::Now() - query_start_time);
+
   if (result->is_result_code()) {
     PRINTER_LOG(ERROR)
         << "Failure fetching printer capabilities via service for "
@@ -305,12 +334,14 @@ void LocalPrinterHandlerDefault::OnDidFetchCapabilitiesFromPrintBackendService(
 
       // Retry the operation which should now happen at a higher privilege
       // level.
+      auto query_restart_time = base::TimeTicks::Now();
       service_mgr.FetchCapabilities(
           device_name,
           base::BindOnce(&LocalPrinterHandlerDefault::
                              OnDidFetchCapabilitiesFromPrintBackendService,
                          weak_ptr_factory_.GetWeakPtr(), device_name,
-                         /*elevated_privileges=*/true, std::move(callback)));
+                         /*elevated_privileges=*/true, query_restart_time,
+                         std::move(callback)));
       return;
     }
 
