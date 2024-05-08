@@ -15,6 +15,7 @@
 #include <memory>
 #include <optional>
 #include <string>
+#include <string_view>
 #include <utility>
 #include <vector>
 
@@ -56,7 +57,7 @@ namespace base {
 // Construction:
 //
 // `Value` is directly constructible from `bool`, `int`, `double`, binary blobs
-// (`std::vector<uint8_t>`), `base::StringPiece`, `base::StringPiece16`,
+// (`std::vector<uint8_t>`), `std::string_view`, `std::u16string_view`,
 // `Value::Dict`, and `Value::List`.
 //
 // Copying:
@@ -104,14 +105,14 @@ namespace base {
 //
 // - `Clone()`: Create a deep copy.
 // - `Merge()`: Merge another dictionary into this dictionary.
-// - `Find()`: Find a value by `StringPiece` key, returning nullptr if the key
-//       is not present.
+// - `Find()`: Find a value by `std::string_view` key, returning nullptr if the
+//       key is not present.
 // - `FindBool()`, `FindInt()`, ...: Similar to `Find()`, but ensures that the
 //       `Value` also has the correct subtype. Same return semantics as
 //       `GetIfBool()`, `GetIfInt()`, et cetera, returning `std::nullopt` or
 //       `nullptr` if the key is not present or the value has the wrong subtype.
-// - `Set()`: Associate a value with a `StringPiece` key. Accepts `Value` or any
-//       of the subtypes that `Value` can hold.
+// - `Set()`: Associate a value with a `std::string_view` key. Accepts `Value`
+//       or any of the subtypes that `Value` can hold.
 // - `Remove()`: Remove the key from this dictionary, if present.
 // - `Extract()`: If the key is present in the dictionary, removes the key from
 //       the dictionary and transfers ownership of `Value` to the caller.
@@ -207,8 +208,8 @@ class BASE_EXPORT GSL_OWNER Value {
   explicit Value(double value);
 
   // Constructors for `Value::Type::STRING`.
-  explicit Value(StringPiece value);
-  explicit Value(StringPiece16 value);
+  explicit Value(std::string_view value);
+  explicit Value(std::u16string_view value);
   // `char*` and `char16_t*` are needed to provide a more specific overload than
   // the deleted `const T*` overload above.
   explicit Value(const char* value);
@@ -345,7 +346,7 @@ class BASE_EXPORT GSL_OWNER Value {
     const_iterator cend() const;
 
     // Returns true if `key` is an entry in this dictionary.
-    bool contains(base::StringPiece key) const;
+    bool contains(std::string_view key) const;
 
     // Removes all entries from this dictionary.
     REINITIALIZES_AFTER_MOVE void clear();
@@ -367,49 +368,49 @@ class BASE_EXPORT GSL_OWNER Value {
 
     // Finds the entry corresponding to `key` in this dictionary. Returns
     // nullptr if there is no such entry.
-    const Value* Find(StringPiece key) const;
-    Value* Find(StringPiece key);
+    const Value* Find(std::string_view key) const;
+    Value* Find(std::string_view key);
 
     // Similar to `Find()` above, but returns `std::nullopt`/`nullptr` if the
     // type of the entry does not match. `bool`, `int`, and `double` are
     // returned in a wrapped `std::optional`; blobs, `Value::Dict`, and
     // `Value::List` are returned by pointer.
-    std::optional<bool> FindBool(StringPiece key) const;
-    std::optional<int> FindInt(StringPiece key) const;
+    std::optional<bool> FindBool(std::string_view key) const;
+    std::optional<int> FindInt(std::string_view key) const;
     // Returns a non-null value for both `Value::Type::DOUBLE` and
     // `Value::Type::INT`, converting the latter to a double.
-    std::optional<double> FindDouble(StringPiece key) const;
-    const std::string* FindString(StringPiece key) const;
-    std::string* FindString(StringPiece key);
-    const BlobStorage* FindBlob(StringPiece key) const;
-    const Dict* FindDict(StringPiece key) const;
-    Dict* FindDict(StringPiece key);
-    const List* FindList(StringPiece key) const;
-    List* FindList(StringPiece key);
+    std::optional<double> FindDouble(std::string_view key) const;
+    const std::string* FindString(std::string_view key) const;
+    std::string* FindString(std::string_view key);
+    const BlobStorage* FindBlob(std::string_view key) const;
+    const Dict* FindDict(std::string_view key) const;
+    Dict* FindDict(std::string_view key);
+    const List* FindList(std::string_view key) const;
+    List* FindList(std::string_view key);
 
     // If there's a value of the specified type at `key` in this dictionary,
     // returns it. Otherwise, creates an empty container of the specified type,
     // inserts it at `key`, and returns it. If there's a value of some other
     // type at `key`, will overwrite that entry.
-    Dict* EnsureDict(StringPiece key);
-    List* EnsureList(StringPiece key);
+    Dict* EnsureDict(std::string_view key);
+    List* EnsureList(std::string_view key);
 
     // Sets an entry with `key` and `value` in this dictionary, overwriting any
     // existing entry with the same `key`. Returns a pointer to the set `value`.
-    Value* Set(StringPiece key, Value&& value) &;
-    Value* Set(StringPiece key, bool value) &;
+    Value* Set(std::string_view key, Value&& value) &;
+    Value* Set(std::string_view key, bool value) &;
     template <typename T>
-    Value* Set(StringPiece, const T*) & = delete;
-    Value* Set(StringPiece key, int value) &;
-    Value* Set(StringPiece key, double value) &;
-    Value* Set(StringPiece key, StringPiece value) &;
-    Value* Set(StringPiece key, StringPiece16 value) &;
-    Value* Set(StringPiece key, const char* value) &;
-    Value* Set(StringPiece key, const char16_t* value) &;
-    Value* Set(StringPiece key, std::string&& value) &;
-    Value* Set(StringPiece key, BlobStorage&& value) &;
-    Value* Set(StringPiece key, Dict&& value) &;
-    Value* Set(StringPiece key, List&& value) &;
+    Value* Set(std::string_view, const T*) & = delete;
+    Value* Set(std::string_view key, int value) &;
+    Value* Set(std::string_view key, double value) &;
+    Value* Set(std::string_view key, std::string_view value) &;
+    Value* Set(std::string_view key, std::u16string_view value) &;
+    Value* Set(std::string_view key, const char* value) &;
+    Value* Set(std::string_view key, const char16_t* value) &;
+    Value* Set(std::string_view key, std::string&& value) &;
+    Value* Set(std::string_view key, BlobStorage&& value) &;
+    Value* Set(std::string_view key, Dict&& value) &;
+    Value* Set(std::string_view key, List&& value) &;
 
     // Rvalue overrides of the `Set` methods, which allow you to construct
     // a `Value::Dict` builder-style:
@@ -461,28 +462,28 @@ class BASE_EXPORT GSL_OWNER Value {
     //                                           .Set("key", "value")
     //                                           .Set("other key", "value"));
     //
-    Dict&& Set(StringPiece key, Value&& value) &&;
-    Dict&& Set(StringPiece key, bool value) &&;
+    Dict&& Set(std::string_view key, Value&& value) &&;
+    Dict&& Set(std::string_view key, bool value) &&;
     template <typename T>
-    Dict&& Set(StringPiece, const T*) && = delete;
-    Dict&& Set(StringPiece key, int value) &&;
-    Dict&& Set(StringPiece key, double value) &&;
-    Dict&& Set(StringPiece key, StringPiece value) &&;
-    Dict&& Set(StringPiece key, StringPiece16 value) &&;
-    Dict&& Set(StringPiece key, const char* value) &&;
-    Dict&& Set(StringPiece key, const char16_t* value) &&;
-    Dict&& Set(StringPiece key, std::string&& value) &&;
-    Dict&& Set(StringPiece key, BlobStorage&& value) &&;
-    Dict&& Set(StringPiece key, Dict&& value) &&;
-    Dict&& Set(StringPiece key, List&& value) &&;
+    Dict&& Set(std::string_view, const T*) && = delete;
+    Dict&& Set(std::string_view key, int value) &&;
+    Dict&& Set(std::string_view key, double value) &&;
+    Dict&& Set(std::string_view key, std::string_view value) &&;
+    Dict&& Set(std::string_view key, std::u16string_view value) &&;
+    Dict&& Set(std::string_view key, const char* value) &&;
+    Dict&& Set(std::string_view key, const char16_t* value) &&;
+    Dict&& Set(std::string_view key, std::string&& value) &&;
+    Dict&& Set(std::string_view key, BlobStorage&& value) &&;
+    Dict&& Set(std::string_view key, Dict&& value) &&;
+    Dict&& Set(std::string_view key, List&& value) &&;
 
     // Removes the entry corresponding to `key` from this dictionary. Returns
     // true if an entry was removed or false otherwise.
-    bool Remove(StringPiece key);
+    bool Remove(std::string_view key);
 
     // Similar to `Remove()`, but returns the value corresponding to the removed
     // entry or `std::nullopt` otherwise.
-    std::optional<Value> Extract(StringPiece key);
+    std::optional<Value> Extract(std::string_view key);
 
     // Equivalent to the above methods but operating on paths instead of keys.
     // A path is shorthand syntax for referring to a key nested inside
@@ -496,21 +497,21 @@ class BASE_EXPORT GSL_OWNER Value {
     // Originally, the path-based APIs were the only way of specifying a key, so
     // there are likely to be many legacy (and unnecessary) uses of the path
     // APIs that do not actually require traversing nested dictionaries.
-    const Value* FindByDottedPath(StringPiece path) const;
-    Value* FindByDottedPath(StringPiece path);
+    const Value* FindByDottedPath(std::string_view path) const;
+    Value* FindByDottedPath(std::string_view path);
 
-    std::optional<bool> FindBoolByDottedPath(StringPiece path) const;
-    std::optional<int> FindIntByDottedPath(StringPiece path) const;
+    std::optional<bool> FindBoolByDottedPath(std::string_view path) const;
+    std::optional<int> FindIntByDottedPath(std::string_view path) const;
     // Returns a non-null value for both `Value::Type::DOUBLE` and
     // `Value::Type::INT`, converting the latter to a double.
-    std::optional<double> FindDoubleByDottedPath(StringPiece path) const;
-    const std::string* FindStringByDottedPath(StringPiece path) const;
-    std::string* FindStringByDottedPath(StringPiece path);
-    const BlobStorage* FindBlobByDottedPath(StringPiece path) const;
-    const Dict* FindDictByDottedPath(StringPiece path) const;
-    Dict* FindDictByDottedPath(StringPiece path);
-    const List* FindListByDottedPath(StringPiece path) const;
-    List* FindListByDottedPath(StringPiece path);
+    std::optional<double> FindDoubleByDottedPath(std::string_view path) const;
+    const std::string* FindStringByDottedPath(std::string_view path) const;
+    std::string* FindStringByDottedPath(std::string_view path);
+    const BlobStorage* FindBlobByDottedPath(std::string_view path) const;
+    const Dict* FindDictByDottedPath(std::string_view path) const;
+    Dict* FindDictByDottedPath(std::string_view path);
+    const List* FindListByDottedPath(std::string_view path) const;
+    List* FindListByDottedPath(std::string_view path);
 
     // Creates a new entry with a dictionary for any non-last component that is
     // missing an entry while performing the path traversal. Will fail if any
@@ -524,20 +525,20 @@ class BASE_EXPORT GSL_OWNER Value {
     // bad_example.SetByDottedPath("a.nested.dictionary.field_2", "value");
     // bad_example.SetByDottedPath("a.nested.dictionary.field_3", 1);
     //
-    Value* SetByDottedPath(StringPiece path, Value&& value) &;
-    Value* SetByDottedPath(StringPiece path, bool value) &;
+    Value* SetByDottedPath(std::string_view path, Value&& value) &;
+    Value* SetByDottedPath(std::string_view path, bool value) &;
     template <typename T>
-    Value* SetByDottedPath(StringPiece, const T*) & = delete;
-    Value* SetByDottedPath(StringPiece path, int value) &;
-    Value* SetByDottedPath(StringPiece path, double value) &;
-    Value* SetByDottedPath(StringPiece path, StringPiece value) &;
-    Value* SetByDottedPath(StringPiece path, StringPiece16 value) &;
-    Value* SetByDottedPath(StringPiece path, const char* value) &;
-    Value* SetByDottedPath(StringPiece path, const char16_t* value) &;
-    Value* SetByDottedPath(StringPiece path, std::string&& value) &;
-    Value* SetByDottedPath(StringPiece path, BlobStorage&& value) &;
-    Value* SetByDottedPath(StringPiece path, Dict&& value) &;
-    Value* SetByDottedPath(StringPiece path, List&& value) &;
+    Value* SetByDottedPath(std::string_view, const T*) & = delete;
+    Value* SetByDottedPath(std::string_view path, int value) &;
+    Value* SetByDottedPath(std::string_view path, double value) &;
+    Value* SetByDottedPath(std::string_view path, std::string_view value) &;
+    Value* SetByDottedPath(std::string_view path, std::u16string_view value) &;
+    Value* SetByDottedPath(std::string_view path, const char* value) &;
+    Value* SetByDottedPath(std::string_view path, const char16_t* value) &;
+    Value* SetByDottedPath(std::string_view path, std::string&& value) &;
+    Value* SetByDottedPath(std::string_view path, BlobStorage&& value) &;
+    Value* SetByDottedPath(std::string_view path, Dict&& value) &;
+    Value* SetByDottedPath(std::string_view path, List&& value) &;
 
     // Rvalue overrides of the `SetByDottedPath` methods, which allow you to
     // construct a `Value::Dict` builder-style:
@@ -572,24 +573,24 @@ class BASE_EXPORT GSL_OWNER Value {
     //                   .Set(key-3", "third value")));
     //
     //
-    Dict&& SetByDottedPath(StringPiece path, Value&& value) &&;
-    Dict&& SetByDottedPath(StringPiece path, bool value) &&;
+    Dict&& SetByDottedPath(std::string_view path, Value&& value) &&;
+    Dict&& SetByDottedPath(std::string_view path, bool value) &&;
     template <typename T>
-    Dict&& SetByDottedPath(StringPiece, const T*) && = delete;
-    Dict&& SetByDottedPath(StringPiece path, int value) &&;
-    Dict&& SetByDottedPath(StringPiece path, double value) &&;
-    Dict&& SetByDottedPath(StringPiece path, StringPiece value) &&;
-    Dict&& SetByDottedPath(StringPiece path, StringPiece16 value) &&;
-    Dict&& SetByDottedPath(StringPiece path, const char* value) &&;
-    Dict&& SetByDottedPath(StringPiece path, const char16_t* value) &&;
-    Dict&& SetByDottedPath(StringPiece path, std::string&& value) &&;
-    Dict&& SetByDottedPath(StringPiece path, BlobStorage&& value) &&;
-    Dict&& SetByDottedPath(StringPiece path, Dict&& value) &&;
-    Dict&& SetByDottedPath(StringPiece path, List&& value) &&;
+    Dict&& SetByDottedPath(std::string_view, const T*) && = delete;
+    Dict&& SetByDottedPath(std::string_view path, int value) &&;
+    Dict&& SetByDottedPath(std::string_view path, double value) &&;
+    Dict&& SetByDottedPath(std::string_view path, std::string_view value) &&;
+    Dict&& SetByDottedPath(std::string_view path, std::u16string_view value) &&;
+    Dict&& SetByDottedPath(std::string_view path, const char* value) &&;
+    Dict&& SetByDottedPath(std::string_view path, const char16_t* value) &&;
+    Dict&& SetByDottedPath(std::string_view path, std::string&& value) &&;
+    Dict&& SetByDottedPath(std::string_view path, BlobStorage&& value) &&;
+    Dict&& SetByDottedPath(std::string_view path, Dict&& value) &&;
+    Dict&& SetByDottedPath(std::string_view path, List&& value) &&;
 
-    bool RemoveByDottedPath(StringPiece path);
+    bool RemoveByDottedPath(std::string_view path);
 
-    std::optional<Value> ExtractByDottedPath(StringPiece path);
+    std::optional<Value> ExtractByDottedPath(std::string_view path);
 
     // Estimates dynamic memory usage. Requires tracing support
     // (enable_base_tracing gn flag), otherwise always returns 0. See
@@ -721,8 +722,8 @@ class BASE_EXPORT GSL_OWNER Value {
     void Append(const T*) & = delete;
     void Append(int value) &;
     void Append(double value) &;
-    void Append(StringPiece value) &;
-    void Append(StringPiece16 value) &;
+    void Append(std::string_view value) &;
+    void Append(std::u16string_view value) &;
     void Append(const char* value) &;
     void Append(const char16_t* value) &;
     void Append(std::string&& value) &;
@@ -753,8 +754,8 @@ class BASE_EXPORT GSL_OWNER Value {
     List&& Append(const T*) && = delete;
     List&& Append(int value) &&;
     List&& Append(double value) &&;
-    List&& Append(StringPiece value) &&;
-    List&& Append(StringPiece16 value) &&;
+    List&& Append(std::string_view value) &&;
+    List&& Append(std::u16string_view value) &&;
     List&& Append(const char* value) &&;
     List&& Append(const char16_t* value) &&;
     List&& Append(std::string&& value) &&;
@@ -841,18 +842,18 @@ class BASE_EXPORT GSL_OWNER Value {
   // that would not require first creating a new UTF-8 string from the UTF-16
   // string argument, it is simpler to just not implement it at all for a rare
   // use case.
-  BASE_EXPORT friend bool operator==(const Value& lhs, StringPiece rhs);
-  friend bool operator==(StringPiece lhs, const Value& rhs) {
+  BASE_EXPORT friend bool operator==(const Value& lhs, std::string_view rhs);
+  friend bool operator==(std::string_view lhs, const Value& rhs) {
     return rhs == lhs;
   }
-  friend bool operator!=(const Value& lhs, StringPiece rhs) {
+  friend bool operator!=(const Value& lhs, std::string_view rhs) {
     return !(lhs == rhs);
   }
-  friend bool operator!=(StringPiece lhs, const Value& rhs) {
+  friend bool operator!=(std::string_view lhs, const Value& rhs) {
     return !(lhs == rhs);
   }
   friend bool operator==(const Value& lhs, const char* rhs) {
-    return lhs == StringPiece(rhs);
+    return lhs == std::string_view(rhs);
   }
   friend bool operator==(const char* lhs, const Value& rhs) {
     return rhs == lhs;
@@ -864,7 +865,7 @@ class BASE_EXPORT GSL_OWNER Value {
     return !(lhs == rhs);
   }
   friend bool operator==(const Value& lhs, const std::string& rhs) {
-    return lhs == StringPiece(rhs);
+    return lhs == std::string_view(rhs);
   }
   friend bool operator==(const std::string& lhs, const Value& rhs) {
     return rhs == lhs;
@@ -1019,9 +1020,9 @@ class BASE_EXPORT GSL_POINTER ValueView {
   ValueView(int value) : data_view_(value) {}
   ValueView(double value)
       : data_view_(absl::in_place_type_t<Value::DoubleStorage>(), value) {}
-  ValueView(StringPiece value) : data_view_(value) {}
-  ValueView(const char* value) : ValueView(StringPiece(value)) {}
-  ValueView(const std::string& value) : ValueView(StringPiece(value)) {}
+  ValueView(std::string_view value) : data_view_(value) {}
+  ValueView(const char* value) : ValueView(std::string_view(value)) {}
+  ValueView(const std::string& value) : ValueView(std::string_view(value)) {}
   // Note: UTF-16 is intentionally not supported. ValueView is intended to be a
   // low-cost view abstraction, but Value internally represents strings as
   // UTF-8, so it would not be possible to implement this without allocating an
@@ -1047,7 +1048,7 @@ class BASE_EXPORT GSL_POINTER ValueView {
                     bool,
                     int,
                     Value::DoubleStorage,
-                    StringPiece,
+                    std::string_view,
                     std::reference_wrapper<const Value::BlobStorage>,
                     std::reference_wrapper<const Value::Dict>,
                     std::reference_wrapper<const Value::List>>;

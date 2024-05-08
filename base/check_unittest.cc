@@ -2,6 +2,7 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
+#include <string_view>
 #include <tuple>
 
 #include "base/check_deref.h"
@@ -16,7 +17,6 @@
 #include "base/notimplemented.h"
 #include "base/notreached.h"
 #include "base/strings/string_number_conversions.h"
-#include "base/strings/string_piece.h"
 #include "base/strings/stringprintf.h"
 #include "base/test/gtest_util.h"
 #include "base/test/scoped_feature_list.h"
@@ -121,7 +121,7 @@ MATCHER_P2(LogErrorMatches, line, expected_msg, "") {
       got_log_message = true;                                                  \
       EXPECT_EQ(severity, logging::LOGGING_ERROR);                             \
       EXPECT_EQ(str.substr(message_start), (msg));                             \
-      if (base::StringPiece(expected_file) != "") {                            \
+      if (std::string_view(expected_file) != "") {                             \
         EXPECT_STREQ(expected_file, file);                                     \
       }                                                                        \
       if (expected_line != -1) {                                               \

@@ -6,11 +6,11 @@
 #define BASE_VLOG_H_
 
 #include <string>
+#include <string_view>
 #include <vector>
 
 #include "base/base_export.h"
 #include "base/memory/raw_ptr.h"
-#include "base/strings/string_piece.h"
 
 namespace logging {
 
@@ -46,7 +46,7 @@ class BASE_EXPORT VlogInfo {
 
   // Returns the vlog level for a given file (usually taken from
   // __FILE__).
-  int GetVlogLevel(base::StringPiece file) const;
+  int GetVlogLevel(std::string_view file) const;
 
   // Returns a new VlogInfo based on |this| but with extra modules/levels added
   // according to |vmodule_switch|.
@@ -91,8 +91,8 @@ class BASE_EXPORT VlogInfo {
 //   "kh*n" matches "khn", "khan", or even "khaaaaan"
 //   "/foo\bar" matches "/foo/bar", "\foo\bar", or "/foo\bar"
 //     (disregarding C escaping rules)
-BASE_EXPORT bool MatchVlogPattern(base::StringPiece string,
-                                  base::StringPiece vlog_pattern);
+BASE_EXPORT bool MatchVlogPattern(std::string_view string,
+                                  std::string_view vlog_pattern);
 
 }  // namespace logging
 

@@ -89,8 +89,8 @@ FilePath GetDebugBasenameForModule(const void* base_address,
   // everything that looks like an argument. This is safe on ChromeOS, where we
   // control the directory and file names and know that no chrome binary or
   // system library will have a " --" in the path.
-  base::StringPiece::size_type pos = file.find(" --");
-  if (pos != base::StringPiece::npos) {
+  size_t pos = file.find(" --");
+  if (pos != std::string_view::npos) {
     file = file.substr(0, pos);
   }
 #endif  // BUILDFLAG(IS_CHROMEOS)

@@ -17,6 +17,7 @@
 #include <limits>
 #include <memory>
 #include <string>
+#include <string_view>
 #include <type_traits>
 #include <utility>
 #include <vector>
@@ -24,7 +25,6 @@
 #include "base/bits.h"
 #include "base/containers/adapters.h"
 #include "base/containers/contains.h"
-#include "base/strings/string_piece.h"
 #include "base/strings/utf_string_conversions.h"
 #include "base/test/gtest_util.h"
 #include "build/build_config.h"
@@ -501,7 +501,7 @@ TEST(ValuesTest, Append) {
   list.Append(str16.c_str());
   EXPECT_TRUE(list.back().is_string());
 
-  list.Append(base::StringPiece16(str16));
+  list.Append(std::u16string_view(str16));
   EXPECT_TRUE(list.back().is_string());
 
   list.Append(Value());

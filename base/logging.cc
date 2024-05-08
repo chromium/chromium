@@ -24,6 +24,7 @@
 #include <memory>
 #include <ostream>
 #include <string>
+#include <string_view>
 #include <tuple>
 #include <utility>
 #include <vector>
@@ -46,7 +47,6 @@
 #include "base/posix/eintr_wrapper.h"
 #include "base/process/process_handle.h"
 #include "base/scoped_clear_last_error.h"
-#include "base/strings/string_piece.h"
 #include "base/strings/string_split.h"
 #include "base/strings/string_util.h"
 #include "base/strings/stringprintf.h"
@@ -622,9 +622,8 @@ int GetVlogLevelHelper(const char* file, size_t N) {
   // Note: |g_vlog_info| may change on a different thread during startup
   // (but will always be valid or nullptr).
   VlogInfo* vlog_info = GetVlogInfo();
-  return vlog_info ?
-      vlog_info->GetVlogLevel(base::StringPiece(file, N - 1)) :
-      GetVlogVerbosity();
+  return vlog_info ? vlog_info->GetVlogLevel(std::string_view(file, N - 1))
+                   : GetVlogVerbosity();
 }
 
 void SetLogItems(bool enable_process_id, bool enable_thread_id,
@@ -881,7 +880,7 @@ void LogMessage::Flush() {
     // LogMessage() will silently drop the message if the logger is not valid.
     // Skip the final character of |str_newline|, since LogMessage() will add
     // a newline.
-    const auto message = base::StringPiece(str_newline).substr(message_start_);
+    const auto message = std::string_view(str_newline).substr(message_start_);
     GetScopedFxLogger().LogMessage(file_, static_cast<uint32_t>(line_),
                                    message.substr(0, message.size() - 1),
                                    LogSeverityToFuchsiaLogSeverity(severity_));
@@ -941,10 +940,11 @@ void LogMessage::Init(const char* file, int line) {
   // Don't let actions from this method affect the system error after returning.
   base::ScopedClearLastError scoped_clear_last_error;
 
-  base::StringPiece filename(file);
+  std::string_view filename(file);
   size_t last_slash_pos = filename.find_last_of("\\/");
-  if (last_slash_pos != base::StringPiece::npos)
+  if (last_slash_pos != std::string_view::npos) {
     filename.remove_prefix(last_slash_pos + 1);
+  }
 
 #if BUILDFLAG(IS_CHROMEOS)
   if (g_log_format == LogFormat::LOG_FORMAT_SYSLOG) {
@@ -1022,9 +1022,9 @@ void LogMessage::HandleFatal(size_t stack_start,
     if (log_assert_handler) {
       log_assert_handler.Run(
           file_, line_,
-          base::StringPiece(str_newline.c_str() + message_start_,
-                            stack_start - message_start_),
-          base::StringPiece(str_newline.c_str() + stack_start));
+          std::string_view(str_newline.c_str() + message_start_,
+                           stack_start - message_start_),
+          std::string_view(str_newline.c_str() + stack_start));
     }
   } else {
     // Don't use the string with the newline, get a fresh version to send to

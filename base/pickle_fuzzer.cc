@@ -9,6 +9,7 @@
 
 #include <fuzzer/FuzzedDataProvider.h>
 
+#include <string_view>
 #include <tuple>
 
 #include "base/containers/span.h"
@@ -89,7 +90,7 @@ extern "C" int LLVMFuzzerTestOneInput(const uint8_t* data, size_t size) {
         break;
       }
       case 10: {
-        base::StringPiece result;
+        std::string_view result;
         std::ignore = iter.ReadStringPiece(&result);
         break;
       }
@@ -99,7 +100,7 @@ extern "C" int LLVMFuzzerTestOneInput(const uint8_t* data, size_t size) {
         break;
       }
       case 12: {
-        base::StringPiece16 result;
+        std::u16string_view result;
         std::ignore = iter.ReadStringPiece16(&result);
         break;
       }

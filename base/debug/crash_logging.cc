@@ -30,7 +30,7 @@ CrashKeyString* AllocateCrashKeyString(const char name[],
 
   // Some `CrashKeyImplementation`s reserve certain characters and disallow
   // using them in crash key names.  See also https://crbug.com/1341077.
-  DCHECK_EQ(base::StringPiece::npos, name_piece.find(':'))
+  DCHECK_EQ(std::string_view::npos, name_piece.find(':'))
       << "; name_piece = " << name_piece;
 
   // Some `CrashKeyImplementation`s support only short crash key names (e.g. see

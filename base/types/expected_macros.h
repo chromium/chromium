@@ -274,7 +274,7 @@ UnexpectedDeducer(Lambda) -> UnexpectedDeducer<Lambda>;
   {                                                                         \
     static_assert(#lhs[0] != '(' || #lhs[sizeof #lhs - 2] != ')' ||         \
                       std::string_view(#lhs).rfind('?', sizeof #lhs - 2) == \
-                          base::StringPiece::npos,                          \
+                          std::string_view::npos,                           \
                   "Identified possible ternary in `lhs`; avoid passing "    \
                   "parenthesized expressions containing '?' to the first "  \
                   "argument of ASSIGN_OR_RETURN()");                        \

@@ -6,9 +6,9 @@
 
 #include <memory>
 #include <optional>
+#include <string_view>
 
 #include "base/memory/raw_ptr.h"
-#include "base/strings/string_piece.h"
 #include "base/test/gtest_util.h"
 #include "base/threading/simple_thread.h"
 #include "build/build_config.h"
@@ -906,7 +906,7 @@ class MockLogAssertHandler {
  public:
   MOCK_METHOD4(
       HandleLogAssert,
-      void(const char*, int, const base::StringPiece, const base::StringPiece));
+      void(const char*, int, const std::string_view, const std::string_view));
 };
 
 #if DCHECK_IS_ON()

@@ -13,6 +13,7 @@
 #include <memory>
 #include <optional>
 #include <ostream>
+#include <string_view>
 #include <tuple>
 #include <utility>
 
@@ -386,7 +387,7 @@ Value::Dict::const_iterator Value::Dict::cend() const {
   return const_iterator(storage_.cend());
 }
 
-bool Value::Dict::contains(base::StringPiece key) const {
+bool Value::Dict::contains(std::string_view key) const {
   DCHECK(IsStringUTF8AllowingNoncharacters(key));
 
   return storage_.contains(key);

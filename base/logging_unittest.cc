@@ -11,6 +11,7 @@
 
 #include <sstream>
 #include <string>
+#include <string_view>
 
 #include "base/command_line.h"
 #include "base/files/file_util.h"
@@ -23,7 +24,6 @@
 #include "base/sanitizer_buildflags.h"
 #include "base/strings/strcat.h"
 #include "base/strings/string_number_conversions.h"
-#include "base/strings/string_piece.h"
 #include "base/strings/utf_string_conversions.h"
 #include "base/test/bind.h"
 #include "base/test/scoped_logging_settings.h"
@@ -91,7 +91,7 @@ class MockLogAssertHandler {
  public:
   MOCK_METHOD4(
       HandleLogAssert,
-      void(const char*, int, const base::StringPiece, const base::StringPiece));
+      void(const char*, int, const std::string_view, const std::string_view));
 };
 
 TEST_F(LoggingTest, BasicLogging) {
@@ -689,18 +689,18 @@ TEST_F(LoggingTest, NestedLogAssertHandlers) {
   EXPECT_CALL(
       handler_a,
       HandleLogAssert(
-          _, _, base::StringPiece("First assert must be caught by handler_a"),
+          _, _, std::string_view("First assert must be caught by handler_a"),
           _));
   EXPECT_CALL(
       handler_b,
       HandleLogAssert(
-          _, _, base::StringPiece("Second assert must be caught by handler_b"),
+          _, _, std::string_view("Second assert must be caught by handler_b"),
           _));
   EXPECT_CALL(
       handler_a,
       HandleLogAssert(
           _, _,
-          base::StringPiece("Last assert must be caught by handler_a again"),
+          std::string_view("Last assert must be caught by handler_a again"),
           _));
 
   logging::ScopedLogAssertHandler scoped_handler_a(base::BindRepeating(

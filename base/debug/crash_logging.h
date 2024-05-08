@@ -132,7 +132,7 @@ class BASE_EXPORT [[nodiscard]] ScopedCrashKeyString {
   static_assert(::std::size(category "-" name) < 40,                    \
                 "Crash key names must be shorter than 40 characters."); \
   static_assert(::std::string_view(category "-" name).find(':') ==      \
-                    ::base::StringPiece::npos,                          \
+                    ::std::string_view::npos,                           \
                 "Crash key names must not contain the ':' character."); \
   ::base::debug::ScopedCrashKeyString scoped_crash_key_helper##nonce(   \
       [] {                                                              \

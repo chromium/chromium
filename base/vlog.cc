@@ -7,6 +7,7 @@
 #include <stddef.h>
 
 #include <ostream>
+#include <string_view>
 #include <utility>
 
 #include "base/check_op.h"
@@ -78,12 +79,13 @@ namespace {
 // Given a path, returns the basename with the extension chopped off
 // (and any -inl suffix).  We avoid using FilePath to minimize the
 // number of dependencies the logging system has.
-base::StringPiece GetModule(base::StringPiece file) {
-  base::StringPiece module(file);
-  base::StringPiece::size_type last_slash_pos = module.find_last_of("\\/");
-  if (last_slash_pos != base::StringPiece::npos)
+std::string_view GetModule(std::string_view file) {
+  std::string_view module(file);
+  size_t last_slash_pos = module.find_last_of("\\/");
+  if (last_slash_pos != std::string_view::npos) {
     module.remove_prefix(last_slash_pos + 1);
-  base::StringPiece::size_type extension_start = module.rfind('.');
+  }
+  size_t extension_start = module.rfind('.');
   module = module.substr(0, extension_start);
   static const char kInlSuffix[] = "-inl";
   static const int kInlSuffixLen = std::size(kInlSuffix) - 1;
@@ -94,11 +96,11 @@ base::StringPiece GetModule(base::StringPiece file) {
 
 }  // namespace
 
-int VlogInfo::GetVlogLevel(base::StringPiece file) const {
+int VlogInfo::GetVlogLevel(std::string_view file) const {
   if (!vmodule_levels_.empty()) {
-    base::StringPiece module(GetModule(file));
+    std::string_view module(GetModule(file));
     for (const auto& it : vmodule_levels_) {
-      base::StringPiece target(
+      std::string_view target(
           (it.match_target == VmodulePattern::MATCH_FILE) ? file : module);
       if (MatchVlogPattern(target, it.pattern))
         return it.vlog_level;
@@ -130,8 +132,7 @@ VlogInfo* VlogInfo::WithSwitches(const std::string& vmodule_switch) const {
   return new VlogInfo(std::move(vmodule_levels), min_log_level_);
 }
 
-bool MatchVlogPattern(base::StringPiece string,
-                      base::StringPiece vlog_pattern) {
+bool MatchVlogPattern(std::string_view string, std::string_view vlog_pattern) {
   // The code implements the glob matching using a greedy approach described in
   // https://research.swtch.com/glob.
   size_t s = 0, nexts = 0;
