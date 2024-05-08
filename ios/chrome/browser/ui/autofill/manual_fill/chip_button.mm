@@ -11,9 +11,6 @@
 
 namespace {
 
-// Corner radius for the button.
-constexpr CGFloat kChipCornerRadius = 20;
-
 // Padding for the button. Used when the kIOSKeyboardAccessoryUpgrade feature is
 // disabled.
 constexpr CGFloat kChipPadding = 14;
@@ -31,7 +28,7 @@ constexpr CGFloat kChipVerticalPadding = 11.5;
 constexpr CGFloat kChipVerticalMargin = 4;
 
 // Minimal height and width for the button.
-constexpr CGFloat kChipMinSize = 40;
+constexpr CGFloat kChipMinSize = 44;
 
 // Font size for the button's title.
 constexpr CGFloat kFontSize = 14;
@@ -98,12 +95,10 @@ CGFloat GetChipVerticalPadding() {
 
 - (void)layoutSubviews {
   [super layoutSubviews];
-  if (IsKeyboardAccessoryUpgradeEnabled()) {
-    self.backgroundView.layer.cornerRadius = kChipCornerRadius;
-  } else {
-    self.backgroundView.layer.cornerRadius =
-        self.backgroundView.bounds.size.height / 2.0;
-  }
+  CGFloat height = IsKeyboardAccessoryUpgradeEnabled()
+                       ? kChipMinSize
+                       : self.backgroundView.bounds.size.height;
+  self.backgroundView.layer.cornerRadius = height / 2.0;
 }
 
 - (void)setHighlighted:(BOOL)highlighted {
