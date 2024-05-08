@@ -1,0 +1,17 @@
+# Copyright 2024 The Chromium Authors
+# Use of this source code is governed by a BSD-style license that can be
+# found in the LICENSE file.
+
+source_set("top_chrome") {
+  sources = [
+    "top_chrome_web_ui_controller.cc",
+    "top_chrome_web_ui_controller.h",
+    "untrusted_top_chrome_web_ui_controller.cc",
+    "untrusted_top_chrome_web_ui_controller.h",
+  ]
+  deps = [
+    "//base",
+    "//content/public/browser",
+    "//ui/webui",
+  ]
+}
