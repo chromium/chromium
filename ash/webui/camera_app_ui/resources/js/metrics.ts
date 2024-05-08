@@ -333,6 +333,12 @@ export interface CaptureEventParam {
   aspectRatioSet: AspectRatioSet;
 
   timeLapseSpeed?: number;
+
+  /**
+   * Zoom ratio when capturing. The value is 1 if zoomed-out, or the camera does
+   * not support digital zoom.
+   */
+  zoomRatio?: number;
 }
 
 /**
@@ -351,6 +357,7 @@ export function sendCaptureEvent({
   resolutionLevel,
   aspectRatioSet,
   timeLapseSpeed = 0,
+  zoomRatio = 1.0,
 }: CaptureEventParam): void {
   function condState(
       states: state.StateUnion[],
@@ -403,6 +410,7 @@ export function sendCaptureEvent({
         [GaMetricDimension.RESOLUTION_LEVEL, resolutionLevel],
         [GaMetricDimension.ASPECT_RATIO_SET, String(aspectRatioSet)],
         [GaMetricDimension.TIME_LAPSE_SPEED, String(timeLapseSpeed)],
+        [GaMetricDimension.ZOOM_RATIO, zoomRatio.toFixed(1)],
       ]));
 
   void (async () => {
@@ -423,6 +431,7 @@ export function sendCaptureEvent({
           mojoTypeUtils.convertResolutionLevelToMojo(resolutionLevel),
       aspectRatioSet: mojoTypeUtils.convertAspectRatioSetToMojo(aspectRatioSet),
       captureDetails: null,
+      zoomRatio,
     };
     if (mode === Mode.PHOTO || isVideoSnapshot) {
       captureEvent.captureDetails = {

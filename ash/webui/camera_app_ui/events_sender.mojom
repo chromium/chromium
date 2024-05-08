@@ -145,6 +145,7 @@ struct CaptureEventParams {
   ResolutionLevel resolution_level;
   AspectRatioSet aspect_ratio_set;
   CaptureDetails? capture_details;
+  double zoom_ratio;
 };
 
 struct AndroidIntentEventParams {

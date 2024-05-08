@@ -90,6 +90,7 @@ export enum GaMetricDimension {
   DEVICE_PIXEL_RATIO = 39,
   CAMERA_MODULE_ID = 40,
   WIFI_SECURITY_TYPE = 41,
+  ZOOM_RATIO = 42,
 }
 
 export enum Ga4MetricDimension {
@@ -140,6 +141,7 @@ export enum Ga4MetricDimension {
   TIME_LAPSE_SPEED = 'time_lapse_speed',
   TIMER = 'timer',
   WIFI_SECURITY_TYPE = 'wifi_security_type',
+  ZOOM_RATIO = 'zoom_ratio',
 }
 
 export type Ga4EventParams =

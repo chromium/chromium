@@ -94,6 +94,7 @@ TEST_F(CameraAppEventsSenderTest, Capture) {
   params->resolution_height = 1920;
   params->resolution_level = ash::camera_app::mojom::ResolutionLevel::kFullHD;
   params->aspect_ratio_set = ash::camera_app::mojom::AspectRatioSet::k16To9;
+  params->zoom_ratio = 1;
 
   auto video_details = ash::camera_app::mojom::VideoDetails::New();
   video_details->is_muted = true;
@@ -146,7 +147,8 @@ TEST_F(CameraAppEventsSenderTest, Capture) {
       .SetGifResultType(static_cast<cros_events::CameraAppGifResultType>(
           ash::camera_app::mojom::GifResultType::kNotGif))
       .SetTimelapseSpeed(
-          static_cast<int64_t>(timelapse_video_details->timelapse_speed));
+          static_cast<int64_t>(timelapse_video_details->timelapse_speed))
+      .SetZoomRatio(static_cast<double>(params->zoom_ratio));
 
   events_sender_->SendCaptureEvent(std::move(params));
 

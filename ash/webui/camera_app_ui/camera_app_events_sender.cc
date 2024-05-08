@@ -211,7 +211,8 @@ void CameraAppEventsSender::SendCaptureEvent(
               GetRecordType(params)))
           .SetGifResultType(static_cast<cros_events::CameraAppGifResultType>(
               GetGifResultType(params)))
-          .SetTimelapseSpeed(static_cast<int64_t>(GetTimelapseSpeed(params)))));
+          .SetTimelapseSpeed(static_cast<int64_t>(GetTimelapseSpeed(params)))
+          .SetZoomRatio(static_cast<double>(params->zoom_ratio))));
 }
 
 void CameraAppEventsSender::SendAndroidIntentEvent(

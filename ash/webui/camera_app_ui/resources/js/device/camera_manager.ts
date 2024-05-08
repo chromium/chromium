@@ -460,6 +460,10 @@ export class CameraManager implements EventListener {
     return util.toAspectRatioSet(resolution);
   }
 
+  getZoomRatio(): number {
+    return this.preview.getZoomRatio();
+  }
+
   /**
    * Applies point of interest to the stream.
    *

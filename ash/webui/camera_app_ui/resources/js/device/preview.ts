@@ -330,6 +330,13 @@ export class Preview {
     await this.ptzController.resetPTZ();
   }
 
+  getZoomRatio(): number {
+    if (this.ptzController instanceof DigitalZoomPTZController) {
+      return assertExists(this.ptzController.getSettings().zoom);
+    }
+    return 1;
+  }
+
   /**
    * Preview resolution.
    */

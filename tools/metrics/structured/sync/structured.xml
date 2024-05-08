@@ -1486,6 +1486,12 @@
         not time-lapse.
       </summary>
     </metric>
+    <metric name="ZoomRatio" type="double">
+      <summary>
+        The zoom ratio set when users use digital zoom to take a photo or record
+        a video.
+      </summary>
+    </metric>
   </event>
 
   <event name="CameraApp.AndroidIntent">
