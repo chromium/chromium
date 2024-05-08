@@ -78,7 +78,6 @@ class EncryptedReportingUploadProvider::UploadHelper
   // Helpers to send the configuration file gotten from the response
   // to the `ConfigurationFileController`.
   ConfigFileAttachedCallback GetConfigFileAttachedCallback();
-  void OnConfigFileResult(ConfigFile file);
   void UpdateConfigFile(ConfigFile file);
 
   // Uploads encrypted records on sequenced task runner (and thus capable of
@@ -188,8 +187,7 @@ void EncryptedReportingUploadProvider::UploadHelper::
   sequenced_task_runner_->PostDelayedTask(
       FROM_HERE,
       base::BindOnce(
-          [](base::WeakPtr<EncryptedReportingUploadProvider::UploadHelper>
-                 self) {
+          [](base::WeakPtr<UploadHelper> self) {
             if (!self) {
               return;  // Provider expired
             }
@@ -261,23 +259,8 @@ ConfigFileAttachedCallback EncryptedReportingUploadProvider::UploadHelper::
   DCHECK_CALLED_ON_VALID_SEQUENCE(sequenced_task_checker_);
   return base::BindPostTask(
       sequenced_task_runner_,
-      base::BindRepeating(
-          [](base::WeakPtr<UploadHelper> upload_helper,
-             ConfigFile file) -> void {
-            if (upload_helper) {
-              upload_helper->OnConfigFileResult(std::move(file));
-            }
-          },
-          weak_ptr_factory_.GetWeakPtr()));
-}
-
-void EncryptedReportingUploadProvider::UploadHelper::OnConfigFileResult(
-    ConfigFile file) {
-  DCHECK_CALLED_ON_VALID_SEQUENCE(sequenced_task_checker_);
-  sequenced_task_runner_->PostTask(
-      FROM_HERE,
       base::BindRepeating(&UploadHelper::UpdateConfigFile,
-                          weak_ptr_factory_.GetWeakPtr(), std::move(file)));
+                          weak_ptr_factory_.GetWeakPtr()));
 }
 
 void EncryptedReportingUploadProvider::UploadHelper::UpdateConfigFile(
