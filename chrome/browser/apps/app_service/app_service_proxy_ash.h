@@ -7,6 +7,7 @@
 
 #include <map>
 #include <memory>
+#include <set>
 #include <string>
 #include <vector>
 
@@ -140,6 +141,12 @@ class AppServiceProxyAsh : public AppServiceProxyBase,
   // Unpauses the apps from the paused status. AppService sets the paused status
   // as false directly and removes the paused app icon effect.
   void UnpauseApps(const std::set<std::string>& app_ids);
+
+  // Mark apps as blocked by local settings.
+  void BlockApps(const std::set<std::string>& app_ids);
+
+  // Remove the local settings block adedd by `BlockApps`.
+  void UnblockApps(const std::set<std::string>& app_ids);
 
   // Set whether resize lock is enabled for the app identified by |app_id|.
   void SetResizeLocked(const std::string& app_id, bool locked);

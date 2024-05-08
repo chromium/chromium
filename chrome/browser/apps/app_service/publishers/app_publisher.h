@@ -181,6 +181,12 @@ class AppPublisher
   // icon effect. Nothing should happen if an unpaused app is unpaused again.
   virtual void UnpauseApp(const std::string& app_id);
 
+  // Blocks the given app.
+  virtual void BlockApp(const std::string& app_id);
+
+  // Unblocks the given app.
+  virtual void UnblockApp(const std::string& app_id);
+
   // Stops all running instances of `app_id`.
   virtual void StopApp(const std::string& app_id);
 

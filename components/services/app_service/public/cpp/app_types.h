@@ -64,7 +64,9 @@ ENUM(Readiness,
      // removing it.
      kRemoved,
      // This is used for all non-user initiated uninstallation.
-     kUninstalledByNonUser)
+     kUninstalledByNonUser,
+     kDisabledByLocalSettings  // Disabled by local settings.
+)
 
 // How the app was installed.
 // This should be kept in sync with histograms.xml, InstallReason in

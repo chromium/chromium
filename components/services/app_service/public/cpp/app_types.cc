@@ -38,7 +38,8 @@ APP_ENUM_TO_STRING(Readiness,
                    kTerminated,
                    kUninstalledByUser,
                    kRemoved,
-                   kUninstalledByNonUser)
+                   kUninstalledByNonUser,
+                   kDisabledByLocalSettings)
 APP_ENUM_TO_STRING(InstallReason,
                    kUnknown,
                    kSystem,

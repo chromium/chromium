@@ -23,6 +23,7 @@ bool ShouldShowInLauncher(const apps::AppUpdate& update) {
     case apps::Readiness::kDisabledByBlocklist:
     case apps::Readiness::kDisabledByPolicy:
     case apps::Readiness::kTerminated:
+    case apps::Readiness::kDisabledByLocalSettings:
       return update.ShowInLauncher().value_or(false);
     default:
       return false;

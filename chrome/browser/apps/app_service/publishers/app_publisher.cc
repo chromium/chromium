@@ -111,6 +111,14 @@ void AppPublisher::UnpauseApp(const std::string& app_id) {
   NOTIMPLEMENTED();
 }
 
+void AppPublisher::BlockApp(const std::string& app_id) {
+  NOTIMPLEMENTED();
+}
+
+void AppPublisher::UnblockApp(const std::string& app_id) {
+  NOTIMPLEMENTED();
+}
+
 void AppPublisher::StopApp(const std::string& app_id) {
   NOTIMPLEMENTED();
 }

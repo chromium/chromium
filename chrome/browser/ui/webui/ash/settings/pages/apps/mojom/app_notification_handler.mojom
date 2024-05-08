@@ -17,6 +17,7 @@ enum Readiness {
   kUninstalledByUser,
   kRemoved,
   kUninstalledByNonUser,
+  kDisabledByLocalSettings,     // Disabled by local settings.
 };
 
 // Implementation of App

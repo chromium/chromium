@@ -14,6 +14,7 @@
 namespace apps_util {
 
 bool COMPONENT_EXPORT(APP_TYPES) IsInstalled(apps::Readiness readiness);
+bool COMPONENT_EXPORT(APP_TYPES) IsDisabled(apps::Readiness readiness);
 bool COMPONENT_EXPORT(APP_TYPES)
     IsHumanLaunch(apps::LaunchSource launch_source);
 

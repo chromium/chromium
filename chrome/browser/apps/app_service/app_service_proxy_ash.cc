@@ -378,6 +378,35 @@ void AppServiceProxyAsh::UnpauseApps(const std::set<std::string>& app_ids) {
   }
 }
 
+void AppServiceProxyAsh::BlockApps(const std::set<std::string>& app_ids) {
+  for (auto& app_id : app_ids) {
+    auto app_type = app_registry_cache_.GetAppType(app_id);
+    if (app_type == AppType::kUnknown) {
+      continue;
+    }
+
+    auto* publisher = GetPublisher(app_type);
+    if (publisher) {
+      publisher->BlockApp(app_id);
+    }
+  }
+}
+
+void AppServiceProxyAsh::UnblockApps(const std::set<std::string>& app_ids) {
+  for (auto& app_id : app_ids) {
+    auto app_type = app_registry_cache_.GetAppType(app_id);
+    if (app_type == AppType::kUnknown) {
+      continue;
+    }
+
+    pending_pause_requests_.MaybeRemoveApp(app_id);
+    auto* publisher = GetPublisher(app_type);
+    if (publisher) {
+      publisher->UnblockApp(app_id);
+    }
+  }
+}
+
 void AppServiceProxyAsh::SetResizeLocked(const std::string& app_id,
                                          bool locked) {
   auto* publisher = GetPublisher(app_registry_cache_.GetAppType(app_id));
@@ -864,8 +893,8 @@ bool AppServiceProxyAsh::MaybeShowLaunchPreventionDialog(
   }
 
   // Return true, and load the icon for the app block dialog when the app
-  // is blocked by policy.
-  if (update.Readiness() == apps::Readiness::kDisabledByPolicy) {
+  // is blocked by policy, or by local settings.
+  if (apps_util::IsDisabled(update.Readiness())) {
     LoadIconForDialog(
         update, base::BindOnce(&AppServiceProxyAsh::OnLoadIconForBlockDialog,
                                weak_ptr_factory_.GetWeakPtr(), update.Name()));

@@ -9,6 +9,7 @@
 #include "chrome/browser/profiles/profile.h"
 #include "components/services/app_service/public/cpp/app_types.h"
 #include "components/services/app_service/public/cpp/app_update.h"
+#include "components/services/app_service/public/cpp/types_util.h"
 
 ShelfAppServiceAppUpdater::ShelfAppServiceAppUpdater(
     Delegate* delegate,
@@ -56,6 +57,7 @@ void ShelfAppServiceAppUpdater::OnAppUpdate(const apps::AppUpdate& update) {
         }
         return;
       case apps::Readiness::kDisabledByPolicy:
+      case apps::Readiness::kDisabledByLocalSettings:
         if (update.ShowInShelfChanged()) {
           OnShowInShelfChangedForAppDisabledByPolicy(
               app_id, update.ShowInShelf().value_or(false));
@@ -75,7 +77,7 @@ void ShelfAppServiceAppUpdater::OnAppUpdate(const apps::AppUpdate& update) {
     delegate()->OnAppInstalled(browser_context(), app_id);
 
   if (update.ShowInShelfChanged()) {
-    if (update.Readiness() == apps::Readiness::kDisabledByPolicy) {
+    if (apps_util::IsDisabled(update.Readiness())) {
       OnShowInShelfChangedForAppDisabledByPolicy(
           app_id, update.ShowInShelf().value_or(false));
     } else {

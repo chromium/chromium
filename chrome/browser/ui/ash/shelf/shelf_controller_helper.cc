@@ -254,10 +254,11 @@ ash::AppStatus ShelfControllerHelper::GetAppStatus(Profile* profile,
   apps::AppServiceProxyFactory::GetForProfile(profile)
       ->AppRegistryCache()
       .ForOneApp(app_id, [&status](const apps::AppUpdate& update) {
-        if (update.Readiness() == apps::Readiness::kDisabledByPolicy)
+        if (apps_util::IsDisabled(update.Readiness())) {
           status = ash::AppStatus::kBlocked;
-        else if (update.Paused().value_or(false))
+        } else if (update.Paused().value_or(false)) {
           status = ash::AppStatus::kPaused;
+        }
       });
 
   return status;

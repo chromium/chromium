@@ -109,6 +109,7 @@
 #include "components/services/app_service/public/cpp/package_id.h"
 #include "components/services/app_service/public/cpp/shortcut/shortcut.h"
 #include "components/services/app_service/public/cpp/shortcut/shortcut_update.h"
+#include "components/services/app_service/public/cpp/types_util.h"
 #include "components/strings/grit/components_strings.h"
 #include "components/sync_preferences/pref_service_syncable.h"
 #include "components/user_manager/user_manager.h"
@@ -1071,8 +1072,7 @@ void ChromeShelfController::OnAppUninstalledPrepared(
         app_id, [&show_in_shelf_changed,
                  &is_app_disabled](const apps::AppUpdate& update) {
           show_in_shelf_changed = update.ShowInShelfChanged();
-          is_app_disabled =
-              update.Readiness() == apps::Readiness::kDisabledByPolicy;
+          is_app_disabled = apps_util::IsDisabled(update.Readiness());
         });
     // If the app is hidden and disabled, we need to update the app pin state.
     // We don't remove the pin position from the preferences, in case we want to

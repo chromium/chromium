@@ -156,6 +156,7 @@ enum Readiness {
   kRemoved,
   // This is used for all non-user initiated uninstallation.
   [MinVersion=1] kUninstalledByNonUser,
+  [MinVersion=2] kDisabledByLocalSettings,  // Disabled by local settings.
 };
 
 // The reason why the app was installed.

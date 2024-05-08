@@ -398,6 +398,14 @@ class AppUpdateTest : public testing::Test {
       CheckExpects(u);
     }
 
+    if (delta) {
+      delta->readiness = Readiness::kDisabledByLocalSettings;
+      expect_readiness_ = Readiness::kDisabledByLocalSettings;
+      expect_readiness_changed_ = true;
+      expect_changed_ = true;
+      CheckExpects(u);
+    }
+
     // ShortName tests.
 
     if (state) {

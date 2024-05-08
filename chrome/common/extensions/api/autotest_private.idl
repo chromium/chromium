@@ -67,7 +67,8 @@ namespace autotestPrivate {
     Terminated,
     UninstalledByUser,
     Removed,
-    UninstalledByMigration
+    UninstalledByMigration,
+    DisabledByLocalSettings
   };
 
   // A mapping of arc::mojom::WakefulnessMode

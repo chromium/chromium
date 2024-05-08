@@ -441,6 +441,59 @@ TEST_F(ArcAppsPublisherTest, DisableOSSettingArcSettings) {
   ASSERT_TRUE(found);
 }
 
+// Verifies that disabling OS settings by SystemFeaturesDisableList policy and
+// re-enabling does not remove the local settings block.
+TEST_F(ArcAppsPublisherTest, DisableAndBlockOSSettingArcSettings) {
+  arc_test()->app_instance()->SendRefreshAppList(GetArcSettingsAppInfo());
+
+  // Change SystemFeaturesDisableList policy to disable OS Setting.
+  {
+    ScopedListPrefUpdate update(
+        local_state_->Get(), policy::policy_prefs::kSystemFeaturesDisableList);
+    update->Append(static_cast<int>(policy::SystemFeature::kOsSettings));
+  }
+
+  // Verify that ARC settings readiness is set to disabled by policy.
+  bool found = app_service_proxy()->AppRegistryCache().ForOneApp(
+      arc::kSettingsAppId, [](const apps::AppUpdate& update) {
+        EXPECT_EQ(update.Readiness(), apps::Readiness::kDisabledByPolicy);
+      });
+  ASSERT_TRUE(found);
+
+  // Blocks the ARC settings app. It stays in kDisabledByPolicy.
+  app_service_proxy()->BlockApps({arc::kSettingsAppId});
+  found = app_service_proxy()->AppRegistryCache().ForOneApp(
+      arc::kSettingsAppId, [](const apps::AppUpdate& update) {
+        EXPECT_EQ(update.Readiness(), apps::Readiness::kDisabledByPolicy);
+      });
+  ASSERT_TRUE(found);
+
+  // Clear SystemFeaturesDisableList policy.
+  {
+    ScopedListPrefUpdate update(
+        local_state_->Get(), policy::policy_prefs::kSystemFeaturesDisableList);
+    update->clear();
+  }
+
+  // ARC settings should be in kDisabledByLocalSettings.
+  found = app_service_proxy()->AppRegistryCache().ForOneApp(
+      arc::kSettingsAppId, [](const apps::AppUpdate& update) {
+        EXPECT_EQ(update.Readiness(),
+                  apps::Readiness::kDisabledByLocalSettings);
+      });
+  ASSERT_TRUE(found);
+
+  // Unblocks the app.
+  app_service_proxy()->UnblockApps({arc::kSettingsAppId});
+
+  // Verify that ARC settings readiness is set to ready.
+  found = app_service_proxy()->AppRegistryCache().ForOneApp(
+      arc::kSettingsAppId, [](const apps::AppUpdate& update) {
+        EXPECT_EQ(update.Readiness(), apps::Readiness::kReady);
+      });
+  ASSERT_TRUE(found);
+}
+
 class ArcAppsPublisherManagedProfileTest : public ArcAppsPublisherTest {
  public:
   std::unique_ptr<TestingProfile> MakeProfile() override {

@@ -426,7 +426,7 @@ void AppSearchDataSource::Refresh() {
         apps_.back()->set_recommendable(
             update.Recommendable().value_or(false) &&
             !update.Paused().value_or(false) &&
-            update.Readiness() != apps::Readiness::kDisabledByPolicy &&
+            !apps_util::IsDisabled(update.Readiness()) &&
             update.ShowInLauncher());
         apps_.back()->set_searchable(update.Searchable().value_or(false));
 

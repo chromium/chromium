@@ -56,6 +56,7 @@ export function isAppInstalled(app: AppWithNotifications): boolean {
     case Readiness.kDisabledByPolicy:
     case Readiness.kDisabledByUser:
     case Readiness.kTerminated:
+    case Readiness.kDisabledByLocalSettings:
       return true;
     case Readiness.kUninstalledByUser:
     case Readiness.kUninstalledByNonUser:
