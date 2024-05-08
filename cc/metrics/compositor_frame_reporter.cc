@@ -13,6 +13,7 @@
 #include <type_traits>
 #include <utility>
 
+#include "base/cpu_reduction_experiment.h"
 #include "base/debug/alias.h"
 #include "base/metrics/histogram_macros.h"
 #include "base/notreached.h"
@@ -969,7 +970,7 @@ void CompositorFrameReporter::EndCurrentStage(base::TimeTicks end_time) {
 
 void CompositorFrameReporter::ReportCompositorLatencyMetrics() const {
   // Subsampling these metrics reduced CPU utilization (crbug.com/1295441).
-  if (!metrics_subsampler_.ShouldSample(0.001)) {
+  if (!base::ShouldLogHistogramForCpuReductionExperiment()) {
     return;
   }
 
