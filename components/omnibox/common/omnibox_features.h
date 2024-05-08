@@ -161,6 +161,7 @@ BASE_DECLARE_FEATURE(kReportApplicationLanguageInSearchRequest);
 
 BASE_DECLARE_FEATURE(kOmniboxShortcutsAndroid);
 BASE_DECLARE_FEATURE(kOmniboxAsyncViewInflation);
+BASE_DECLARE_FEATURE(kUseFusedLocationProvider);
 
 }  // namespace omnibox
 

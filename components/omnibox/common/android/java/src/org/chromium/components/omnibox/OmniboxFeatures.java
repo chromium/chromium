@@ -58,6 +58,14 @@ public class OmniboxFeatures {
     public static final CachedFlag sQueryTilesInZPSOnNTP =
             newFlag(OmniboxFeatureList.QUERY_TILES_IN_ZPS_ON_NTP, false);
 
+    /**
+     * Whether GeolocationHeader should use {@link
+     * com.google.android.gms.location.FusedLocationProviderClient} to determine the location sent
+     * in omnibox requests.
+     */
+    public static final CachedFlag sUseFusedLocationProvider =
+            newFlag(OmniboxFeatureList.USE_FUSED_LOCATION_PROVIDER, false);
+
     public static final CachedFlag sAsyncViewInflation =
             newFlag(OmniboxFeatureList.OMNIBOX_ASYNC_VIEW_INFLATION, false);
 

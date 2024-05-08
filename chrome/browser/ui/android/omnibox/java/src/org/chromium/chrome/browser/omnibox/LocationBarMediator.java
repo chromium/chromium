@@ -71,6 +71,7 @@ import org.chromium.components.browser_ui.styles.ChromeColors;
 import org.chromium.components.browser_ui.widget.animation.CancelAwareAnimatorListener;
 import org.chromium.components.browser_ui.widget.gesture.BackPressHandler;
 import org.chromium.components.embedder_support.util.UrlUtilities;
+import org.chromium.components.omnibox.OmniboxFeatures;
 import org.chromium.components.omnibox.AutocompleteMatch;
 import org.chromium.components.search_engines.TemplateUrl;
 import org.chromium.components.search_engines.TemplateUrlService;
@@ -342,6 +343,11 @@ class LocationBarMediator
         mTemplateUrlServiceSupplier.onAvailable(
                 (templateUrlService) -> {
                     templateUrlService.addObserver(this);
+                    if (OmniboxFeatures.sUseFusedLocationProvider.isEnabled()
+                            && templateUrlService.isDefaultSearchEngineGoogle()) {
+                        GeolocationHeader.primeLocationForGeoHeaderIfEnabled(
+                                mProfileSupplier.get(), mTemplateUrlServiceSupplier.get());
+                    }
                 });
 
         mLocationBarLayout.onFinishNativeInitialization();

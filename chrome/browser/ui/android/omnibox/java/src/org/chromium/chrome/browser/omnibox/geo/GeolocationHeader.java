@@ -18,6 +18,13 @@ import androidx.annotation.Nullable;
 import androidx.annotation.VisibleForTesting;
 import androidx.core.util.ObjectsCompat;
 
+import com.google.android.gms.location.FusedLocationProviderClient;
+import com.google.android.gms.location.Granularity;
+import com.google.android.gms.location.LocationListener;
+import com.google.android.gms.location.LocationRequest;
+import com.google.android.gms.location.LocationServices;
+import com.google.android.gms.location.Priority;
+
 import org.jni_zero.CalledByNative;
 
 import org.chromium.base.ApiCompatibilityUtils;
@@ -35,10 +42,12 @@ import org.chromium.components.content_settings.ContentSettingValues;
 import org.chromium.components.content_settings.ContentSettingsType;
 import org.chromium.components.embedder_support.util.UrlConstants;
 import org.chromium.components.embedder_support.util.UrlUtilitiesJni;
+import org.chromium.components.omnibox.OmniboxFeatures;
 import org.chromium.components.search_engines.TemplateUrlService;
 
 import java.lang.annotation.Retention;
 import java.lang.annotation.RetentionPolicy;
+import java.time.Duration;
 import java.util.Locale;
 import java.util.Set;
 
@@ -196,7 +205,15 @@ public class GeolocationHeader {
     private static final int MAX_LOCATION_AGE = 24 * 60 * 60 * 1000; // 24 hours
 
     /** The maximum age in milliseconds of a location before we'll request a refresh. */
-    private static final int REFRESH_LOCATION_AGE = 5 * 60 * 1000; // 5 minutes
+    @VisibleForTesting static final int REFRESH_LOCATION_AGE = 5 * 60 * 1000; // 5 minutes
+
+    // 9 minutes is just below the 10 minute threshold to be considered fresh by the search backend.
+    @VisibleForTesting
+    static final long LOCATION_REQUEST_UPDATE_INTERVAL = Duration.ofMinutes(9).toMillis();
+
+    // Timeout requests after 30 minutes if we somehow fail to remove our listener.
+    @VisibleForTesting
+    static final long LOCATION_REQUEST_UPDATE_MAX_DURATION = Duration.ofMinutes(30).toMillis();
 
     /** The X-Geo header prefix, preceding any location descriptors */
     private static final String XGEO_HEADER_PREFIX = "X-Geo:";
@@ -225,12 +242,19 @@ public class GeolocationHeader {
     private static boolean sAppPermissionGrantedForTesting;
     private static boolean sUseAppPermissionGrantedForTesting;
 
+    private static Location sFusedLocation;
+    private static final LocationListener sLocationListener = GeolocationHeader::onLocationUpate;
+
+    private static boolean sCurrentLocationRequested;
+
     private static final String DUMMY_URL_QUERY = "some_query";
 
     /**
      * Requests a location refresh so that a valid location will be available for constructing an
      * X-Geo header in the near future (i.e. within 5 minutes). Checks whether the header can
-     * actually be sent before requesting the location refresh.
+     * actually be sent before requesting the location refresh. If UseFusedLocationProvider is true,
+     * this starts listening for location updates on a regular interval rather than triggering a
+     * single refresh.
      */
     public static void primeLocationForGeoHeaderIfEnabled(
             Profile profile, TemplateUrlService templateService) {
@@ -243,9 +267,58 @@ public class GeolocationHeader {
         if (sFirstLocationTime == Long.MAX_VALUE) {
             sFirstLocationTime = SystemClock.elapsedRealtime();
         }
-        GeolocationTracker.refreshLastKnownLocation(
-                ContextUtils.getApplicationContext(), REFRESH_LOCATION_AGE);
+
         VisibleNetworksTracker.refreshVisibleNetworks(ContextUtils.getApplicationContext());
+        boolean listeningForFusedLocationProviderUpdates =
+                OmniboxFeatures.sUseFusedLocationProvider.isEnabled()
+                        && startListeningForLocationUpdates();
+        if (!listeningForFusedLocationProviderUpdates) {
+            GeolocationTracker.refreshLastKnownLocation(
+                    ContextUtils.getApplicationContext(), REFRESH_LOCATION_AGE);
+        }
+    }
+
+    /**
+     * Attempts to start listening for location updates on a LOCATION_REQUEST_UPDATE_INTERVAL (9
+     * minute) interval, returning true if the request to listen succeeded. Locations are requested
+     * to be less than five minutes old and have a granularity matching the app's permission level.
+     */
+    private static boolean startListeningForLocationUpdates() {
+        if (sCurrentLocationRequested) return true;
+        try (TraceEvent e =
+                TraceEvent.scoped("GeolocationHeader.startListeningForLocationUpdates")) {
+            FusedLocationProviderClient fusedLocationClient =
+                    LocationServices.getFusedLocationProviderClient(
+                            ContextUtils.getApplicationContext());
+            var locationRequest =
+                    new LocationRequest.Builder(LOCATION_REQUEST_UPDATE_INTERVAL)
+                            .setDurationMillis(LOCATION_REQUEST_UPDATE_MAX_DURATION)
+                            .setMaxUpdateAgeMillis(REFRESH_LOCATION_AGE)
+                            .setPriority(Priority.PRIORITY_BALANCED_POWER_ACCURACY)
+                            .setGranularity(Granularity.GRANULARITY_PERMISSION_LEVEL)
+                            .build();
+            fusedLocationClient.requestLocationUpdates(locationRequest, sLocationListener, null);
+            sCurrentLocationRequested = true;
+        } catch (RuntimeException e) {
+            // GMSCore may not exist on the device or be very old. Return false and trigger fallback
+            // behavior.
+            sCurrentLocationRequested = false;
+        }
+        return sCurrentLocationRequested;
+    }
+
+    /** Stop requesting and listening for location updates from FusedLocationProvider. */
+    public static void stopListeningForLocationUpdates() {
+        if (!sCurrentLocationRequested) return;
+        FusedLocationProviderClient fusedLocationClient =
+                LocationServices.getFusedLocationProviderClient(
+                        ContextUtils.getApplicationContext());
+        fusedLocationClient.removeLocationUpdates(sLocationListener);
+        sCurrentLocationRequested = false;
+    }
+
+    private static void onLocationUpate(Location location) {
+        sFusedLocation = location;
     }
 
     private static boolean isGeoHeaderEnabledForDSE(
@@ -348,9 +421,7 @@ public class GeolocationHeader {
             long locationAge = Long.MAX_VALUE;
             @HeaderState int headerState = geoHeaderStateForUrl(profile, url);
             if (headerState == HeaderState.HEADER_ENABLED) {
-                locationToAttach =
-                        GeolocationTracker.getLastKnownLocation(
-                                ContextUtils.getApplicationContext());
+                locationToAttach = getLastKnownLocation();
                 if (locationToAttach != null) {
                     locationAge = GeolocationTracker.getLocationAge(locationToAttach);
                     if (locationAge > MAX_LOCATION_AGE) {
@@ -467,6 +538,14 @@ public class GeolocationHeader {
 
     static long getFirstLocationTimeForTesting() {
         return sFirstLocationTime;
+    }
+
+    @VisibleForTesting
+    static Location getLastKnownLocation() {
+        if (OmniboxFeatures.sUseFusedLocationProvider.isEnabled() && sFusedLocation != null) {
+            return sFusedLocation;
+        }
+        return GeolocationTracker.getLastKnownLocation(ContextUtils.getApplicationContext());
     }
 
     /** Returns the location source. */

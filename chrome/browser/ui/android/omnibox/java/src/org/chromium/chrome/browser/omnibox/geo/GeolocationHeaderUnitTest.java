@@ -10,17 +10,27 @@ import static org.junit.Assert.assertNull;
 import static org.mockito.ArgumentMatchers.any;
 import static org.mockito.ArgumentMatchers.anyString;
 import static org.mockito.ArgumentMatchers.eq;
+import static org.mockito.Mockito.doThrow;
+import static org.mockito.Mockito.verify;
 import static org.mockito.Mockito.when;
 
 import android.content.Context;
 import android.location.Location;
 import android.os.SystemClock;
 
+import com.google.android.gms.location.FusedLocationProviderClient;
+import com.google.android.gms.location.Granularity;
+import com.google.android.gms.location.LocationListener;
+import com.google.android.gms.location.LocationRequest;
+import com.google.android.gms.location.LocationServices;
+
 import org.junit.Before;
 import org.junit.Rule;
 import org.junit.Test;
 import org.junit.rules.TestRule;
 import org.junit.runner.RunWith;
+import org.mockito.ArgumentCaptor;
+import org.mockito.Captor;
 import org.mockito.Mock;
 import org.mockito.MockitoAnnotations;
 import org.robolectric.annotation.Config;
@@ -30,6 +40,7 @@ import org.robolectric.annotation.LooperMode;
 
 import org.chromium.base.test.BaseRobolectricTestRunner;
 import org.chromium.base.test.util.Features;
+import org.chromium.base.test.util.Features.EnableFeatures;
 import org.chromium.base.test.util.JniMocker;
 import org.chromium.chrome.browser.omnibox.geo.VisibleNetworks.VisibleCell;
 import org.chromium.chrome.browser.omnibox.geo.VisibleNetworks.VisibleWifi;
@@ -41,6 +52,7 @@ import org.chromium.components.content_settings.ContentSettingValues;
 import org.chromium.components.content_settings.ContentSettingsType;
 import org.chromium.components.embedder_support.util.UrlUtilities;
 import org.chromium.components.embedder_support.util.UrlUtilitiesJni;
+import org.chromium.components.omnibox.OmniboxFeatureList;
 import org.chromium.components.search_engines.TemplateUrlService;
 import org.chromium.content_public.browser.BrowserContextHandle;
 import org.chromium.content_public.browser.WebContents;
@@ -114,6 +126,9 @@ public class GeolocationHeaderUnitTest {
     @Mock WebContents mWebContentsMock;
 
     @Mock TemplateUrlService mTemplateUrlServiceMock;
+    @Mock FusedLocationProviderClient mLocationProviderClient;
+    @Captor private ArgumentCaptor<LocationListener> mLocationListenerCaptor;
+    @Captor private ArgumentCaptor<LocationRequest> mLocationRequestCaptor;
 
     @Before
     public void setUp() {
@@ -140,6 +155,7 @@ public class GeolocationHeaderUnitTest {
                 .thenReturn("https://example.com/");
         sRefreshVisibleNetworksRequests = 0;
         sRefreshLastKnownLocation = 0;
+        ShadowLocationServices.sFusedLocationProviderClient = mLocationProviderClient;
     }
 
     @Test
@@ -323,6 +339,48 @@ public class GeolocationHeaderUnitTest {
         assertEquals(0, sRefreshVisibleNetworksRequests);
     }
 
+    @Test
+    @EnableFeatures(OmniboxFeatureList.USE_FUSED_LOCATION_PROVIDER)
+    @Config(
+            shadows = {
+                ShadowVisibleNetworksTracker.class,
+                ShadowGeolocationTracker.class,
+                ShadowLocationServices.class
+            })
+    public void testFusedLocationProvider() {
+        GeolocationHeader.primeLocationForGeoHeaderIfEnabled(mProfileMock, mTemplateUrlServiceMock);
+        verify(mLocationProviderClient)
+                .requestLocationUpdates(
+                        mLocationRequestCaptor.capture(),
+                        mLocationListenerCaptor.capture(),
+                        eq(null));
+
+        LocationRequest actualRequest = mLocationRequestCaptor.getValue();
+        assertEquals(GeolocationHeader.REFRESH_LOCATION_AGE, actualRequest.getMaxUpdateAgeMillis());
+        assertEquals(
+                GeolocationHeader.LOCATION_REQUEST_UPDATE_INTERVAL,
+                actualRequest.getMinUpdateIntervalMillis());
+        assertEquals(Granularity.GRANULARITY_PERMISSION_LEVEL, actualRequest.getGranularity());
+
+        Location mockLocation = generateMockLocation("network", LOCATION_TIME);
+        mLocationListenerCaptor.getValue().onLocationChanged(mockLocation);
+        assertEquals(mockLocation, GeolocationHeader.getLastKnownLocation());
+        assertEquals(0, sRefreshLastKnownLocation);
+        assertEquals(1, sRefreshVisibleNetworksRequests);
+
+        GeolocationHeader.stopListeningForLocationUpdates();
+        verify(mLocationProviderClient).removeLocationUpdates(mLocationListenerCaptor.getValue());
+
+        doThrow(new RuntimeException())
+                .when(mLocationProviderClient)
+                .requestLocationUpdates(
+                        any(LocationRequest.class), any(LocationListener.class), eq(null));
+        GeolocationHeader.primeLocationForGeoHeaderIfEnabled(mProfileMock, mTemplateUrlServiceMock);
+
+        assertEquals(1, sRefreshLastKnownLocation);
+        assertEquals(2, sRefreshVisibleNetworksRequests);
+    }
+
     private void checkOldLocation(String expectedHeader) {
         VisibleNetworks visibleNetworks =
                 VisibleNetworks.create(
@@ -365,6 +423,17 @@ public class GeolocationHeaderUnitTest {
         @Implementation
         public static void refreshLastKnownLocation(Context context, long maxAge) {
             sRefreshLastKnownLocation++;
+        }
+    }
+
+    /** Shadow for LocationServices */
+    @Implements(LocationServices.class)
+    public static class ShadowLocationServices {
+        static FusedLocationProviderClient sFusedLocationProviderClient;
+
+        @Implementation
+        public static FusedLocationProviderClient getFusedLocationProviderClient(Context context) {
+            return sFusedLocationProviderClient;
         }
     }
 }

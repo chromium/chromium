@@ -20388,6 +20388,21 @@
             ]
         }
     ],
+    "UseFusedLocationProvider": [
+        {
+            "platforms": [
+                "android"
+            ],
+            "experiments": [
+                {
+                    "name": "Enabled",
+                    "enable_features": [
+                        "UseFusedLocationProvider"
+                    ]
+                }
+            ]
+        }
+    ],
     "UseGMSCoreForBrandingInfo": [
         {
             "platforms": [

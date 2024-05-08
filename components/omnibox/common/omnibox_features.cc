@@ -534,6 +534,11 @@ BASE_FEATURE(kOmniboxAsyncViewInflation,
              "OmniboxAsyncViewInflation",
              base::FEATURE_DISABLED_BY_DEFAULT);
 
+// Use FusedLocationProvider on Android to fetch device location.
+BASE_FEATURE(kUseFusedLocationProvider,
+             "UseFusedLocationProvider",
+             base::FEATURE_DISABLED_BY_DEFAULT);
+
 #if BUILDFLAG(IS_ANDROID)
 namespace android {
 static jlong JNI_OmniboxFeatureMap_GetNativeMap(JNIEnv* env) {
@@ -547,6 +552,7 @@ static jlong JNI_OmniboxFeatureMap_GetNativeMap(JNIEnv* env) {
           &kOmniboxMatchToolbarAndStatusBarColor,
           &kOmniboxTouchDownTriggerForPrefetch,
           &kOmniboxAsyncViewInflation,
+          &kUseFusedLocationProvider,
       }});
 
   return reinterpret_cast<jlong>(kFeatureMap.get());
