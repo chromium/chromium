@@ -4,6 +4,7 @@
 
 #include "chrome/browser/shortcuts/icon_badging.h"
 
+#include <iterator>
 #include <string>
 
 #include "base/base_paths.h"
@@ -107,6 +108,17 @@ void WriteTestIconsToDiskOrDie(const gfx::ImageFamily& family) {
   }
 }
 
+// This is hardcoded based on the sizes of kSizesNeededForShortcutCreation.
+int GetOsSpecificSizes() {
+#if BUILDFLAG(IS_MAC)
+  return 5;
+#elif BUILDFLAG(IS_LINUX)
+  return 2;
+#elif BUILDFLAG(IS_WIN)
+  return 4;
+#endif
+}
+
 }  // namespace
 
 // Verifies that badging logic works as intended by comparing with icons stored
@@ -133,6 +145,8 @@ TEST(IconBadgingTest, VerifyFromDisk) {
   if (ShouldRebaselineTestImages()) {
     WriteTestIconsToDiskOrDie(family);
   }
+
+  EXPECT_EQ(std::distance(family.begin(), family.end()), GetOsSpecificSizes());
 
   for (const gfx::Image& image_icon : family) {
     std::string width = base::ToString(image_icon.Width());

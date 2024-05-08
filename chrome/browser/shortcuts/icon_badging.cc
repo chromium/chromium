@@ -36,11 +36,8 @@ namespace {
 
 enum class ShortcutSize {
   k16,
-  k24,
   k32,
   k48,
-  k64,
-  k96,
   k128,
   k256,
   k512,
@@ -49,30 +46,36 @@ enum class ShortcutSize {
 
 enum class BadgeSize {
   k8,
-  k12,
   k16,
   k24,
-  k32,
-  k48,
   k64,
   k128,
   kMaxValue = k128
 };
 
+// Returns the icon sizes needed for shortcut creation on the desktop. k32 is
+// needed for the icon in the Create Shortcut dialog.
+#if BUILDFLAG(IS_MAC)
+constexpr ShortcutSize kSizesNeededForShortcutCreation[] = {
+    ShortcutSize::k16, ShortcutSize::k32, ShortcutSize::k128,
+    ShortcutSize::k256, ShortcutSize::k512};
+#elif BUILDFLAG(IS_LINUX)
+constexpr ShortcutSize kSizesNeededForShortcutCreation[] = {ShortcutSize::k32,
+                                                            ShortcutSize::k128};
+#elif BUILDFLAG(IS_WIN)
+constexpr ShortcutSize kSizesNeededForShortcutCreation[] = {
+    ShortcutSize::k16, ShortcutSize::k32, ShortcutSize::k48,
+    ShortcutSize::k256};
+#endif
+
 int ToInt(ShortcutSize size) {
   switch (size) {
     case ShortcutSize::k16:
       return 16;
-    case ShortcutSize::k24:
-      return 24;
     case ShortcutSize::k32:
       return 32;
     case ShortcutSize::k48:
       return 48;
-    case ShortcutSize::k64:
-      return 64;
-    case ShortcutSize::k96:
-      return 96;
     case ShortcutSize::k128:
       return 128;
     case ShortcutSize::k256:
@@ -86,16 +89,10 @@ int ToInt(BadgeSize size) {
   switch (size) {
     case BadgeSize::k8:
       return 8;
-    case BadgeSize::k12:
-      return 12;
     case BadgeSize::k16:
       return 16;
     case BadgeSize::k24:
       return 24;
-    case BadgeSize::k32:
-      return 32;
-    case BadgeSize::k48:
-      return 48;
     case BadgeSize::k64:
       return 64;
     case BadgeSize::k128:
@@ -109,16 +106,10 @@ BadgeSize GetBadgeSizeFromShortcutSize(ShortcutSize icon_size) {
   switch (icon_size) {
     case ShortcutSize::k16:
       return BadgeSize::k8;
-    case ShortcutSize::k24:
-      return BadgeSize::k12;
     case ShortcutSize::k32:
       return BadgeSize::k16;
     case ShortcutSize::k48:
       return BadgeSize::k24;
-    case ShortcutSize::k64:
-      return BadgeSize::k32;
-    case ShortcutSize::k96:
-      return BadgeSize::k48;
     case ShortcutSize::k128:
       return BadgeSize::k64;
     case ShortcutSize::k256:
@@ -130,7 +121,7 @@ BadgeSize GetBadgeSizeFromShortcutSize(ShortcutSize icon_size) {
 
 constexpr int resource_map_size = static_cast<int>(BadgeSize::kMaxValue) + 1;
 
-using SizeToResourceMap = base::fixed_flat_map<BadgeSize, int, 8>;
+using SizeToResourceMap = base::fixed_flat_map<BadgeSize, int, 5>;
 
 // At very low pixels < 16, there is probably no need to recreate the
 // resource files necessary for these icons. Resizing them instead would
@@ -140,41 +131,29 @@ using SizeToResourceMap = base::fixed_flat_map<BadgeSize, int, 8>;
 constexpr SizeToResourceMap kStableResourceMap =
     base::MakeFixedFlatMap<BadgeSize, int>(
         {{BadgeSize::k8, IDR_PRODUCT_LOGO_16_STABLE_SHORTCUTS},
-         {BadgeSize::k12, IDR_PRODUCT_LOGO_16_STABLE_SHORTCUTS},
          {BadgeSize::k16, IDR_PRODUCT_LOGO_16_STABLE_SHORTCUTS},
          {BadgeSize::k24, IDR_PRODUCT_LOGO_24_STABLE_SHORTCUTS},
-         {BadgeSize::k32, IDR_PRODUCT_LOGO_32_STABLE_SHORTCUTS},
-         {BadgeSize::k48, IDR_PRODUCT_LOGO_48_STABLE_SHORTCUTS},
          {BadgeSize::k64, IDR_PRODUCT_LOGO_64_STABLE_SHORTCUTS},
          {BadgeSize::k128, IDR_PRODUCT_LOGO_128_STABLE_SHORTCUTS}});
 constexpr SizeToResourceMap kCanaryResourceMap =
     base::MakeFixedFlatMap<BadgeSize, int>(
         {{BadgeSize::k8, IDR_PRODUCT_LOGO_CANARY_16_SHORTCUTS},
-         {BadgeSize::k12, IDR_PRODUCT_LOGO_CANARY_16_SHORTCUTS},
          {BadgeSize::k16, IDR_PRODUCT_LOGO_CANARY_16_SHORTCUTS},
          {BadgeSize::k24, IDR_PRODUCT_LOGO_CANARY_24_SHORTCUTS},
-         {BadgeSize::k32, IDR_PRODUCT_LOGO_CANARY_32_SHORTCUTS},
-         {BadgeSize::k48, IDR_PRODUCT_LOGO_CANARY_48_SHORTCUTS},
          {BadgeSize::k64, IDR_PRODUCT_LOGO_CANARY_64_SHORTCUTS},
          {BadgeSize::k128, IDR_PRODUCT_LOGO_CANARY_128_SHORTCUTS}});
 constexpr SizeToResourceMap kBetaResourceMap =
     base::MakeFixedFlatMap<BadgeSize, int>(
         {{BadgeSize::k8, IDR_PRODUCT_LOGO_BETA_16_SHORTCUTS},
-         {BadgeSize::k12, IDR_PRODUCT_LOGO_BETA_16_SHORTCUTS},
          {BadgeSize::k16, IDR_PRODUCT_LOGO_BETA_16_SHORTCUTS},
          {BadgeSize::k24, IDR_PRODUCT_LOGO_BETA_24_SHORTCUTS},
-         {BadgeSize::k32, IDR_PRODUCT_LOGO_BETA_32_SHORTCUTS},
-         {BadgeSize::k48, IDR_PRODUCT_LOGO_BETA_48_SHORTCUTS},
          {BadgeSize::k64, IDR_PRODUCT_LOGO_BETA_64_SHORTCUTS},
          {BadgeSize::k128, IDR_PRODUCT_LOGO_BETA_128_SHORTCUTS}});
 constexpr SizeToResourceMap kDevResourceMap =
     base::MakeFixedFlatMap<BadgeSize, int>(
         {{BadgeSize::k8, IDR_PRODUCT_LOGO_DEV_16_SHORTCUTS},
-         {BadgeSize::k12, IDR_PRODUCT_LOGO_DEV_16_SHORTCUTS},
          {BadgeSize::k16, IDR_PRODUCT_LOGO_DEV_16_SHORTCUTS},
          {BadgeSize::k24, IDR_PRODUCT_LOGO_DEV_24_SHORTCUTS},
-         {BadgeSize::k32, IDR_PRODUCT_LOGO_DEV_32_SHORTCUTS},
-         {BadgeSize::k48, IDR_PRODUCT_LOGO_DEV_48_SHORTCUTS},
          {BadgeSize::k64, IDR_PRODUCT_LOGO_DEV_64_SHORTCUTS},
          {BadgeSize::k128, IDR_PRODUCT_LOGO_DEV_128_SHORTCUTS}});
 
@@ -195,11 +174,8 @@ static_assert(static_cast<int>(kDevResourceMap.size()) == resource_map_size,
 constexpr SizeToResourceMap kChromeForTestingBrandedResourceMap =
     base::MakeFixedFlatMap<BadgeSize, int>(
         {{BadgeSize::k8, IDR_PRODUCT_LOGO_16_CFT_SHORTCUTS},
-         {BadgeSize::k12, IDR_PRODUCT_LOGO_16_CFT_SHORTCUTS},
          {BadgeSize::k16, IDR_PRODUCT_LOGO_16_CFT_SHORTCUTS},
          {BadgeSize::k24, IDR_PRODUCT_LOGO_24_CFT_SHORTCUTS},
-         {BadgeSize::k32, IDR_PRODUCT_LOGO_32_CFT_SHORTCUTS},
-         {BadgeSize::k48, IDR_PRODUCT_LOGO_48_CFT_SHORTCUTS},
          {BadgeSize::k64, IDR_PRODUCT_LOGO_64_CFT_SHORTCUTS},
          {BadgeSize::k128, IDR_PRODUCT_LOGO_128_CFT_SHORTCUTS}});
 
@@ -211,11 +187,8 @@ static_assert(static_cast<int>(kChromeForTestingBrandedResourceMap.size()) ==
 constexpr SizeToResourceMap kChromiumResourceMap =
     base::MakeFixedFlatMap<BadgeSize, int>(
         {{BadgeSize::k8, IDR_PRODUCT_LOGO_16_SHORTCUTS},
-         {BadgeSize::k12, IDR_PRODUCT_LOGO_16_SHORTCUTS},
          {BadgeSize::k16, IDR_PRODUCT_LOGO_16_SHORTCUTS},
          {BadgeSize::k24, IDR_PRODUCT_LOGO_24_SHORTCUTS},
-         {BadgeSize::k32, IDR_PRODUCT_LOGO_32_SHORTCUTS},
-         {BadgeSize::k48, IDR_PRODUCT_LOGO_48_SHORTCUTS},
          {BadgeSize::k64, IDR_PRODUCT_LOGO_64_SHORTCUTS},
          {BadgeSize::k128, IDR_PRODUCT_LOGO_128_SHORTCUTS}});
 
@@ -317,7 +290,7 @@ gfx::ImageFamily ApplyProductLogoBadgeToIcons(std::vector<SkBitmap> icons) {
 
   std::sort(icon_sizes.begin(), icon_sizes.end());
 
-  for (const ShortcutSize needed_size : ShortcutSizes::All()) {
+  for (const ShortcutSize needed_size : kSizesNeededForShortcutCreation) {
     int icon_size = ToInt(needed_size);
     int size_to_use = FindClosestIconSizeToUse(icon_sizes, icon_size);
     SkBitmap bitmap_to_use = sorted_icons.at(size_to_use);
