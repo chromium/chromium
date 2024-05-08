@@ -555,9 +555,7 @@ TEST_P(FeatureTileTest, DownloadLabelAndTooltip) {
   // Set the tile to have an error with its download and verify that the label
   // is set to the client-specified label with additional info.
   tile.SetDownloadState(FeatureTile::DownloadState::kError, /*progress=*/0);
-  EXPECT_EQ(l10n_util::GetStringFUTF16(IDS_ASH_FEATURE_TILE_DOWNLOAD_ERROR,
-                                       client_specified_label),
-            tile.label()->GetText());
+  EXPECT_EQ(client_specified_label, tile.label()->GetText());
   EXPECT_EQ(l10n_util::GetStringFUTF16(IDS_ASH_FEATURE_TILE_DOWNLOAD_ERROR,
                                        client_specified_label),
             tile.GetTooltipText());
@@ -624,11 +622,9 @@ TEST_P(FeatureTileTest, LabelAndTooltipUpdatesDelayedDuringDownload) {
 
   // Set the tile's download to be finished (with an error this time, for
   // for variety) and verify that the tile now has the new client-specified
-  // label with the error message.
+  // label, but the tooltip shows the error message.
   tile.SetDownloadState(FeatureTile::DownloadState::kError, /*progress=*/0);
-  EXPECT_EQ(
-      l10n_util::GetStringFUTF16(IDS_ASH_FEATURE_TILE_DOWNLOAD_ERROR, label_3),
-      tile.label()->GetText());
+  EXPECT_EQ(label_3, tile.label()->GetText());
   EXPECT_EQ(
       l10n_util::GetStringFUTF16(IDS_ASH_FEATURE_TILE_DOWNLOAD_ERROR, label_3),
       tile.GetTooltipText());

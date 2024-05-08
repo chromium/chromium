@@ -768,12 +768,13 @@ void FeatureTile::SetCompactTileLabelPreferences(bool has_sub_label) {
   label_->SetMaxLines(has_sub_label ? 1 : 2);
 }
 
-void FeatureTile::SetDownloadLabel(const std::u16string& download_label) {
+void FeatureTile::SetDownloadLabel(const std::u16string& download_label,
+                                   std::optional<std::u16string> tooltip) {
   // Download state is only supported when `VcDlcUi` is enabled.
   CHECK(features::IsVcDlcUiEnabled())
       << "Download states are not supported when `VcDlcUi` is disabled";
   label_->SetText(download_label);
-  SetTooltipText(download_label);
+  SetTooltipText(tooltip.value_or(download_label));
 }
 
 void FeatureTile::UpdateLabelForDownloadState() {
@@ -785,8 +786,10 @@ void FeatureTile::UpdateLabelForDownloadState() {
 
   switch (download_state_) {
     case DownloadState::kError:
-      SetDownloadLabel(l10n_util::GetStringFUTF16(
-          IDS_ASH_FEATURE_TILE_DOWNLOAD_ERROR, client_specified_label_text_));
+      SetDownloadLabel(client_specified_label_text_,
+                       /*tooltip=*/l10n_util::GetStringFUTF16(
+                           IDS_ASH_FEATURE_TILE_DOWNLOAD_ERROR,
+                           client_specified_label_text_));
       break;
     case DownloadState::kNone:
     case DownloadState::kDownloaded:

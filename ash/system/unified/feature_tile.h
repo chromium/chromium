@@ -286,8 +286,10 @@ class ASH_EXPORT FeatureTile : public views::Button {
   // `SetLabel()` is intended to be used externally for setting the tile's
   // non-download-related label (i.e. the "client-specified" label), whereas
   // this method is only used internally by this class to temporarily switch to
-  // a different label during download.
-  void SetDownloadLabel(const std::u16string& download_label);
+  // a different label during download. An optional tooltip can be included if
+  // the tooltip should differ from the `download_label`.
+  void SetDownloadLabel(const std::u16string& download_label,
+                        std::optional<std::u16string> tooltip = std::nullopt);
 
   // Updates the tile's label according to the current download state. Note that
   // this method assumes the download-related state (e.g. `download_state_` and
