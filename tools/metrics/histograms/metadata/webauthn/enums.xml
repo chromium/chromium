@@ -264,6 +264,12 @@ chromium-metrics-reviews@google.com.
   <int value="12" label="Successful get() from iCloud Keychain"/>
 </enum>
 
+<enum name="WindowsForegroundedHelloDialog">
+  <int value="0" label="Succeeded"/>
+  <int value="1" label="SetForegroundWindow failed"/>
+  <int value="2" label="Window not found"/>
+</enum>
+
 <enum name="WindowsKeyCredentialManagerSupportResults">
   <int value="0" label="KeyCredentialManager Available"/>
   <int value="1" label="KeyCredentialManager Not Available"/>

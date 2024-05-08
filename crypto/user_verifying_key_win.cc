@@ -2,20 +2,25 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#include <atomic>
-#include <functional>
-#include <utility>
+#include "crypto/user_verifying_key.h"
+
+#include <windows.h>
 
 #include <windows.foundation.h>
 #include <windows.security.credentials.h>
 #include <windows.security.cryptography.core.h>
 #include <windows.storage.streams.h>
 
+#include <atomic>
+#include <functional>
+#include <utility>
+
 #include "base/base64.h"
 #include "base/functional/callback_helpers.h"
 #include "base/logging.h"
 #include "base/memory/scoped_refptr.h"
 #include "base/memory/weak_ptr.h"
+#include "base/metrics/histogram_functions.h"
 #include "base/strings/strcat.h"
 #include "base/task/bind_post_task.h"
 #include "base/task/single_thread_task_runner.h"
@@ -26,7 +31,6 @@
 #include "base/win/scoped_hstring.h"
 #include "base/win/winrt_storage_util.h"
 #include "crypto/random.h"
-#include "crypto/user_verifying_key.h"
 
 using ABI::Windows::Foundation::IAsyncAction;
 using ABI::Windows::Foundation::IAsyncOperation;
@@ -47,6 +51,54 @@ using Microsoft::WRL::ComPtr;
 namespace crypto {
 
 namespace {
+
+// Values to report the results of attempts to bring the Windows Hello
+// user verification dialog to the foreground.
+// Do not delete or reorder entries, this must be kept in sync with the
+// corresponding metrics enum.
+enum class ForegroundHelloDialogResult {
+  kSucceeded = 0,
+  kForegroundingFailed = 1,
+  kWindowNotFound = 2,
+
+  kMaxValue = 2,
+};
+
+void RecordForegroundingOutcome(ForegroundHelloDialogResult result) {
+  base::UmaHistogramEnumeration(
+      "WebAuthentication.Windows.ForegroundedWindowsHelloDialog", result);
+}
+
+// Due to a Windows bug (http://task.ms/49689617), the system UI for
+// KeyCredentialManager appears under all other windows, at least when invoked
+// from a Win32 app. Therefore this code polls the visible windows and
+// foregrounds the correct window when it appears.
+void BringHelloDialogToFront(int iteration = 0) {
+  constexpr int kMaxIterations = 40;
+  if (iteration > kMaxIterations) {
+    RecordForegroundingOutcome(ForegroundHelloDialogResult::kWindowNotFound);
+    return;
+  }
+
+  constexpr wchar_t kTargetWindowName[] = L"Windows Security";
+  constexpr wchar_t kTargetClassName[] = L"Credential Dialog Xaml Host";
+  if (HWND hwnd = FindWindowW(kTargetClassName, kTargetWindowName)) {
+    base::UmaHistogramExactLinear(
+        "WebAuthentication.Windows.FindHelloDialogIterationCount", iteration,
+        /*exclusive_max=*/kMaxIterations + 1);
+    if (SetForegroundWindow(hwnd)) {
+      RecordForegroundingOutcome(ForegroundHelloDialogResult::kSucceeded);
+    } else {
+      RecordForegroundingOutcome(
+          ForegroundHelloDialogResult::kForegroundingFailed);
+    }
+    return;
+  }
+  base::ThreadPool::PostDelayedTask(
+      FROM_HERE, {base::TaskPriority::USER_BLOCKING, base::MayBlock()},
+      base::BindOnce(BringHelloDialogToFront, iteration + 1),
+      base::Milliseconds(100));
+}
 
 enum KeyCredentialManagerAvailability {
   kUnknown = 0,
@@ -149,6 +201,8 @@ void SignInternal(
     std::move(std::get<2>(callback_splits)).Run(std::nullopt);
     return;
   }
+
+  BringHelloDialogToFront();
 }
 
 class UserVerifyingSigningKeyWin : public UserVerifyingSigningKey {
@@ -286,6 +340,8 @@ void GenerateUserVerifyingSigningKeyInternal(
     std::move(std::get<2>(callback_splits)).Run(nullptr);
     return;
   }
+
+  BringHelloDialogToFront();
 }
 
 void GetUserVerifyingSigningKeyInternal(

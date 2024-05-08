@@ -277,6 +277,28 @@ chromium-metrics-reviews@google.com.
   </summary>
 </histogram>
 
+<histogram name="WebAuthentication.Windows.FindHelloDialogIterationCount"
+    units="iterations" expires_after="2024-12-31">
+  <owner>kenrb@chromium.org</owner>
+  <owner>chrome-webauthn@google.com</owner>
+  <summary>
+    Records the number of iterations that it took to find the Windows Hello
+    dialog for the purpose of bringing it to the foreground. This dialog is the
+    user verification for using or creating a KeyCredential signing key.
+  </summary>
+</histogram>
+
+<histogram name="WebAuthentication.Windows.ForegroundedWindowsHelloDialog"
+    enum="WindowsForegroundedHelloDialog" expires_after="2024-12-31">
+  <owner>kenrb@chromium.org</owner>
+  <owner>chrome-webauthn@google.com</owner>
+  <summary>
+    Records the success or failure of attempts to bring the Windows Hello user
+    verification dialog to the foreground during a GPM passkey UV operation,
+    using or creating a KeyCredential signing key.
+  </summary>
+</histogram>
+
 <histogram name="WebAuthentication.Windows.KeyCredentialManagerSupported"
     enum="WindowsKeyCredentialManagerSupportResults" expires_after="2024-12-31">
   <owner>kenrb@chromium.org</owner>
