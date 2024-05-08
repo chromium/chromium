@@ -5,6 +5,7 @@
 #include <optional>
 #include <string>
 
+#include "ash/constants/ash_features.h"
 #include "ash/constants/ash_switches.h"
 #include "ash/public/cpp/login_screen_test_api.h"
 #include "base/check.h"
@@ -163,10 +164,14 @@ class EnrollmentEmbeddedPolicyServerBase : public OobeBaseTest {
     test::OobeJS().ClickOnPath(kEnterprisePrimaryButton);
     SigninFrameJS().TypeIntoPath(FakeGaiaMixin::kFakeUserPassword,
                                  FakeGaiaMixin::kPasswordPath);
-    if (enroll_kiosk) {
-      test::OobeJS().ClickOnPath(kKioskEnrollmentButton);
+    if (features::IsKioskEnrollmentInOobeEnabled()) {
+      if (enroll_kiosk) {
+        test::OobeJS().ClickOnPath(kKioskEnrollmentButton);
+      } else {
+        test::OobeJS().ClickOnPath(kEnterpriseEnrollmentButton);
+      }
     } else {
-      test::OobeJS().ClickOnPath(kEnterpriseEnrollmentButton);
+      test::OobeJS().ClickOnPath(kEnterprisePrimaryButton);
     }
   }
 
@@ -1267,6 +1272,11 @@ IN_PROC_BROWSER_TEST_F(EnrollmentEmbeddedPolicyServerBase,
 class KioskEnrollmentPolicyServerTest
     : public EnrollmentEmbeddedPolicyServerBase {
  public:
+  KioskEnrollmentPolicyServerTest() {
+    scoped_feature_list_.InitAndEnableFeature(
+        features::kEnableKioskEnrollmentInOobe);
+  }
+
   void TriggerKioskEnrollmentAndSignInSuccessfully(bool enroll_kiosk = false) {
     host()->HandleAccelerator(LoginAcceleratorAction::kStartKioskEnrollment);
     OobeScreenWaiter(EnrollmentScreenView::kScreenId).Wait();
@@ -1286,6 +1296,9 @@ class KioskEnrollmentPolicyServerTest
       test::OobeJS().ClickOnPath(kKioskModeEnterpriseEnrollmentButton);
     }
   }
+
+ private:
+  base::test::ScopedFeatureList scoped_feature_list_;
 };
 
 IN_PROC_BROWSER_TEST_F(KioskEnrollmentPolicyServerTest, KioskEnrollment) {

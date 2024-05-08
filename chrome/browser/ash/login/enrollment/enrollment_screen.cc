@@ -289,13 +289,15 @@ void EnrollmentScreen::UpdateFlowType() {
   if (!view_) {
     return;
   }
-  if (config_.license_type == policy::LicenseType::kEnterprise &&
+  if (features::IsLicensePackagedOobeFlowEnabled() &&
+      config_.license_type == policy::LicenseType::kEnterprise &&
       config_.is_license_packaged_with_device) {
     view_->SetFlowType(EnrollmentScreenView::FlowType::kEnterpriseLicense);
     view_->SetGaiaButtonsType(EnrollmentScreenView::GaiaButtonsType::kDefault);
     return;
   }
-  if (config_.license_type == policy::LicenseType::kEducation &&
+  if (features::IsEducationEnrollmentOobeFlowEnabled() &&
+      config_.license_type == policy::LicenseType::kEducation &&
       config_.is_license_packaged_with_device) {
     view_->SetFlowType(EnrollmentScreenView::FlowType::kEducationLicense);
     view_->SetGaiaButtonsType(EnrollmentScreenView::GaiaButtonsType::kDefault);
@@ -311,6 +313,11 @@ void EnrollmentScreen::UpdateFlowType() {
       view_->SetFlowType(EnrollmentScreenView::FlowType::kDeviceEnrollment);
     } else {
       view_->SetFlowType(EnrollmentScreenView::FlowType::kEnterprise);
+    }
+    if (!features::IsKioskEnrollmentInOobeEnabled()) {
+      view_->SetGaiaButtonsType(
+          EnrollmentScreenView::GaiaButtonsType::kDefault);
+      return;
     }
     if (context()->enrollment_preference_ ==
         WizardContext::EnrollmentPreference::kKiosk) {
@@ -479,7 +486,10 @@ void EnrollmentScreen::AuthenticateUsingAttestation() {
   // in the logs.
   LOG(WARNING) << "Authenticating using attestation.";
   elapsed_timer_ = std::make_unique<base::ElapsedTimer>();
-  license_type_to_use_ = config_.license_type;
+  // TODO(b/333594657): Remove this flag check.
+  if (features::IsAutoEnrollmentKioskInOobeEnabled()) {
+    license_type_to_use_ = config_.license_type;
+  }
 
   if (view_) {
     view_->Show();
@@ -491,10 +501,13 @@ void EnrollmentScreen::AuthenticateUsingAttestation() {
 void EnrollmentScreen::AuthenticateUsingEnrollmentToken() {
   LOG(WARNING) << "Authenticating using enrollment token.";
   elapsed_timer_ = std::make_unique<base::ElapsedTimer>();
+  // TODO(b/333594657): Remove this flag check.
   // Although license type is copied over blindly here, later in
   // enrollment_handler it's only propagated if the type is terminal (i.e.
   // kiosk), as unset license type is treated as enterprise.
-  license_type_to_use_ = config_.license_type;
+  if (features::IsAutoEnrollmentKioskInOobeEnabled()) {
+    license_type_to_use_ = config_.license_type;
+  }
 
   if (view_) {
     view_->Show();
