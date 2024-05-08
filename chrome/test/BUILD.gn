@@ -1415,6 +1415,7 @@ if (is_android) {
 
     deps += [
       ":persisted_tab_data_test_proto",
+      "//chrome/browser/password_manager/android:test_support",
       "//components/autofill/content/browser:test_support",
       "//components/back_forward_cache:back_forward_cache",
       "//components/browsing_data/core:core",

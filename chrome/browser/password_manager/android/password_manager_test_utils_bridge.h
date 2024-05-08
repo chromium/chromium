@@ -1,0 +1,10 @@
+// Copyright 2024 The Chromium Authors
+// Use of this source code is governed by a BSD-style license that can be
+// found in the LICENSE file.
+
+#ifndef CHROME_BROWSER_PASSWORD_MANAGER_ANDROID_PASSWORD_MANAGER_TEST_UTILS_BRIDGE_H_
+#define CHROME_BROWSER_PASSWORD_MANAGER_ANDROID_PASSWORD_MANAGER_TEST_UTILS_BRIDGE_H_
+
+void SetUpGmsCoreFakeBackends();
+
+#endif  // CHROME_BROWSER_PASSWORD_MANAGER_ANDROID_PASSWORD_MANAGER_TEST_UTILS_BRIDGE_H_

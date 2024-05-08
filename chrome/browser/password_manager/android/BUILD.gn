@@ -373,7 +373,10 @@ generate_jni("test_support_jni_headers") {
 
 static_library("test_support") {
   testonly = true
-  sources = [ "password_manager_test_utils_bridge.cc" ]
+  sources = [
+    "password_manager_test_utils_bridge.cc",
+    "password_manager_test_utils_bridge.h",
+  ]
 
   deps = [
     ":test_support_jni_headers",
