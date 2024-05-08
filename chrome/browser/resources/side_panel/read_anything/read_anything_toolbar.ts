@@ -151,7 +151,10 @@ export class ReadAnythingToolbarElement extends ReadAnythingToolbarElementBase {
         Array.from(toolbar.querySelectorAll<HTMLElement>('.text-style-button'));
     assert(buttons, 'no toolbar buttons');
     buttons.forEach(btn => ReadAnythingToolbarElement.showElement(btn));
-    toolbar.dispatchEvent(new CustomEvent('reset-toolbar'));
+    toolbar.dispatchEvent(new CustomEvent('reset-toolbar', {
+      bubbles: true,
+      composed: true,
+    }));
 
     if (!toolbar.offsetParent) {
       return;
