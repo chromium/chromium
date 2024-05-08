@@ -7510,6 +7510,9 @@ chromium-metrics-reviews@google.com.
   <summary>
     Measures the time taken to fully write a channel message to the underlying
     channel.
+
+    On some clients this metric is logged only one time out of one thousand to
+    reduce measurment overhead.
   </summary>
 </histogram>
 

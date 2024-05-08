@@ -12,6 +12,7 @@
 #include <memory>
 #include <tuple>
 
+#include "base/cpu_reduction_experiment.h"
 #include "base/functional/bind.h"
 #include "base/location.h"
 #include "base/logging.h"
@@ -67,8 +68,10 @@ class MessageView {
 
   ~MessageView() {
     if (message_) {
-      UMA_HISTOGRAM_TIMES("Mojo.Channel.WriteMessageLatency",
-                          base::TimeTicks::Now() - start_time_);
+      if (base::ShouldLogHistogramForCpuReductionExperiment()) {
+        UMA_HISTOGRAM_TIMES("Mojo.Channel.WriteMessageLatency",
+                            base::TimeTicks::Now() - start_time_);
+      }
     }
   }
 
