@@ -329,8 +329,13 @@ class WPTAdapter:
             *self.port.additional_driver_flags(),
         ])
         if self.options.product == 'headless_shell':
-            runner_options.binary_args.append('--headless=old')
-            runner_options.binary_args.append('--enable-bfcache')
+            runner_options.binary_args.extend([
+                '--headless=old',
+                '--enable-bfcache',
+                # `headless_shell` doesn't send the `Accept-Language` header by
+                # default, so set an arbitrary one that some tests expect.
+                '--accept-lang=en-US,en',
+            ])
 
         # Implicitly pass `--enable-blink-features=MojoJS,MojoJSTest` to Chrome.
         runner_options.mojojs_path = self.port.generated_sources_directory()
