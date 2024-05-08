@@ -22,6 +22,7 @@
 #include "testing/gtest/include/gtest/gtest.h"
 
 #if BUILDFLAG(IS_ANDROID)
+#include "chrome/browser/browsing_data/counters/tabs_counter.h"
 #include "chrome/browser/flags/android/chrome_feature_list.h"
 #endif
 
@@ -275,5 +276,42 @@ TEST_F(BrowsingDataCounterUtilsTest, DeletePasswordsAndSigninData) {
 
   password_store->ShutdownOnUIThread();
 }
+
+#if BUILDFLAG(IS_ANDROID)
+TEST_F(BrowsingDataCounterUtilsTest, TabsCounterResult) {
+  // This test assumes that the strings are served exactly as defined,
+  // i.e. that the locale is set to the default "en".
+  ASSERT_EQ("en", TestingBrowserProcess::GetGlobal()->GetApplicationLocale());
+  browsing_data::ClearBrowsingDataTab tab =
+      browsing_data::ClearBrowsingDataTab::ADVANCED;
+
+  // Test the output for various forms of CacheResults.
+  const struct TestCase {
+    int tab_count;
+    int window_count;
+    std::string expected_output;
+  } kTestCases[] = {
+      {0, 0, "None"},
+      {1, 0, "1 tab on this device"},
+      {5, 1, "5 tabs on this device"},
+      {5, 2, "5 tabs from 2 windows on this device"},
+  };
+
+  for (const TestCase& test_case : kTestCases) {
+    TabsCounter counter(GetProfile());
+    counter.Init(GetProfile()->GetPrefs(), tab,
+                 browsing_data::BrowsingDataCounter::ResultCallback());
+    TabsCounter::TabsResult result(&counter, test_case.tab_count,
+                                   test_case.window_count);
+    SCOPED_TRACE(
+        base::StringPrintf("Test params: %d tab_count, %d window_count.",
+                           test_case.tab_count, test_case.window_count));
+
+    std::u16string output =
+        GetChromeCounterTextFromResult(&result, GetProfile());
+    EXPECT_EQ(output, base::ASCIIToUTF16(test_case.expected_output));
+  }
+}
+#endif
 
 }  // namespace browsing_data_counter_utils

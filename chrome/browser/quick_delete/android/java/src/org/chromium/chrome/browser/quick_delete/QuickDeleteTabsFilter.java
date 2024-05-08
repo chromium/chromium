@@ -103,6 +103,8 @@ class QuickDeleteTabsFilter {
      * Prepares a list of tabs which were either created or had a navigation committed within the
      * time period.
      */
+    // TODO(crbug.com/40255099): Re-use CBD implementation of tab filtering & closure instead of
+    // doing it here.
     void prepareListOfTabsToBeClosed(@TimePeriod int timePeriod) {
         if (TimePeriod.ALL_TIME == timePeriod) {
             mTabs = getListOfAllTabsToBeClosed();

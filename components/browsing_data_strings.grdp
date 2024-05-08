@@ -182,4 +182,23 @@
      =1 {and 1 more}
      other {and # more}}
   </message>
+  <message name="IDS_DEL_TABS_COUNTER" desc="A counter showing how many tabs the user opened or modified when they only have one window open.">
+    {COUNT, plural,
+     =0 {None}
+     =1 {1 tab on this device}
+     other {# tabs on this device}}
+  </message>
+  <message name="IDS_TABS_COUNT" desc="A counter showing how many tabs the user opened or modified. This should form a sentence when combined with IDS_WINDOWS_COUNT and IDS_DEL_TABS_MULTIWINDOW_COUNTER. For example, '5 tabs from 2 windows on this device'">
+    {COUNT, plural,
+     =1 {1 tab}
+     other {# tabs}}
+  </message>
+  <message name="IDS_WINDOWS_COUNT" desc="A counter showing how many windows the user has opened or modified tabs in. This should form a sentence when combined with IDS_TABS_COUNT and IDS_DEL_TABS_MULTIWINDOW_COUNTER. For example, '5 tabs from 2 windows on this device'">
+    {COUNT, plural,
+     =1 {1 window}
+     other {# windows}}
+  </message>
+  <message name="IDS_DEL_TABS_MULTIWINDOW_COUNTER" desc="A counter showing how many tabs the user opened or modified across multiple windows.">
+    <ph name="TAB_COUNT">$1<ex>5 tabs</ex></ph> from <ph name="WINDOW_COUNT">$2<ex>2 windows</ex></ph> on this device
+  </message>
 </grit-part>

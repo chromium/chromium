@@ -7,6 +7,7 @@
 #include <string>
 #include <vector>
 
+#include "base/i18n/number_formatting.h"
 #include "base/strings/utf_string_conversions.h"
 #include "build/build_config.h"
 #include "chrome/browser/browsing_data/counters/cache_counter.h"
@@ -26,6 +27,7 @@
 #include "ui/base/text/bytes_formatting.h"
 
 #if BUILDFLAG(IS_ANDROID)
+#include "chrome/browser/browsing_data/counters/tabs_counter.h"
 #include "chrome/browser/flags/android/chrome_feature_list.h"
 #endif
 
@@ -237,6 +239,27 @@ std::u16string GetChromeCounterTextFromResult(
     }
     NOTREACHED();
   }
+
+#if BUILDFLAG(IS_ANDROID)
+  if (pref_name == browsing_data::prefs::kCloseTabs) {
+    const TabsCounter::TabsResult* tabs_result =
+        static_cast<const TabsCounter::TabsResult*>(result);
+    BrowsingDataCounter::ResultInt tab_count = tabs_result->Value();
+    BrowsingDataCounter::ResultInt window_count = tabs_result->window_count();
+
+    if (window_count > 1) {
+      std::u16string tabs_counter_string =
+          l10n_util::GetPluralStringFUTF16(IDS_TABS_COUNT, tab_count);
+      std::u16string windows_counter_string =
+          l10n_util::GetPluralStringFUTF16(IDS_WINDOWS_COUNT, window_count);
+      return l10n_util::GetStringFUTF16(IDS_DEL_TABS_MULTIWINDOW_COUNTER,
+                                        tabs_counter_string,
+                                        windows_counter_string);
+    } else {
+      return l10n_util::GetPluralStringFUTF16(IDS_DEL_TABS_COUNTER, tab_count);
+    }
+  }
+#endif
 
   return browsing_data::GetCounterTextFromResult(result);
 }

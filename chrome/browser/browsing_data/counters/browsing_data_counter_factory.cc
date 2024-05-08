@@ -40,6 +40,8 @@
 
 #if !BUILDFLAG(IS_ANDROID)
 #include "content/public/browser/host_zoom_map.h"
+#else
+#include "chrome/browser/browsing_data/counters/tabs_counter.h"
 #endif
 
 #if BUILDFLAG(IS_MAC)
@@ -138,10 +140,11 @@ BrowsingDataCounterFactory::GetForProfileAndPref(Profile* profile,
   }
 #endif
 
+#if BUILDFLAG(IS_ANDROID)
   if (pref_name == browsing_data::prefs::kCloseTabs) {
-    // Tab counter is not implemented yet.
-    return nullptr;
+    return std::make_unique<TabsCounter>(profile);
   }
+#endif
 
   return nullptr;
 }
