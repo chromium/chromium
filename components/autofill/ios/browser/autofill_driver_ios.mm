@@ -254,8 +254,7 @@ void AutofillDriverIOS::AskForValuesToFill(const FormData& form,
   // TODO(crbug.com/40266699): Route this using AutofillDriverRouter.
   // TODO(crbug.com/40269303): Distinguish between different trigger sources.
   GetAutofillManager().OnAskForValuesToFill(
-      form, field, /*bounding_box=*/gfx::RectF(),
-      autofill::AutofillSuggestionTriggerSource::kiOS);
+      form, field, autofill::AutofillSuggestionTriggerSource::kiOS);
 }
 
 void AutofillDriverIOS::DidFillAutofillFormData(const FormData& form,

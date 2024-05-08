@@ -70,16 +70,15 @@ class AutofillExternalDelegate : public AutofillSuggestionDelegate,
   // suggestion that has a filling product that is not none.
   FillingProduct GetMainFillingProduct() const override;
 
-  // Called when the renderer posts an Autofill query to the browser. |bounds|
-  // is window relative. We might not want to display the warning if a website
-  // has disabled Autocomplete because they have their own popup, and showing
-  // our popup on to of theirs would be a poor user experience.
+  // Called when the renderer posts an Autofill query to the browser. We might
+  // not want to display the warning if a website has disabled Autocomplete
+  // because they have their own popup, and showing our popup on to of theirs
+  // would be a poor user experience.
   //
   // TODO(crbug.com/40144964): Storing `form` and `field` in member variables
   // breaks the cache.
   virtual void OnQuery(const FormData& form,
                        const FormFieldData& field,
-                       const gfx::RectF& element_bounds,
                        AutofillSuggestionTriggerSource trigger_source);
 
   // Records query results and correctly formats them before sending them off

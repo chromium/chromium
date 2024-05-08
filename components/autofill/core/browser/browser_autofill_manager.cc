@@ -690,11 +690,9 @@ void BrowserAutofillManager::OnUserAcceptedCardsFromAccountOption() {
 
 void BrowserAutofillManager::RefetchCardsAndUpdatePopup(
     const FormData& form,
-    const FormFieldData& field_data,
-    const gfx::RectF& element_bounds) {
+    const FormFieldData& field_data) {
   external_delegate_->OnQuery(
-      form, field_data, element_bounds,
-      AutofillSuggestionTriggerSource::kShowCardsFromAccount);
+      form, field_data, AutofillSuggestionTriggerSource::kShowCardsFromAccount);
   AutofillField* autofill_field = GetAutofillField(form, field_data);
   FieldType field_type = autofill_field
                              ? autofill_field->Type().GetStorableType()
@@ -1089,7 +1087,6 @@ bool BrowserAutofillManager::IsFormNonSecure(const FormData& form) const {
 void BrowserAutofillManager::OnAskForValuesToFillImpl(
     const FormData& form,
     const FormFieldData& field,
-    const gfx::RectF& transformed_box,
     AutofillSuggestionTriggerSource trigger_source) {
   if (base::FeatureList::IsEnabled(features::kAutofillDisableFilling)) {
     return;
@@ -1103,7 +1100,7 @@ void BrowserAutofillManager::OnAskForValuesToFillImpl(
   }
 
   external_delegate_->SetCurrentDataListValues(field.datalist_options());
-  external_delegate_->OnQuery(form, field, transformed_box, trigger_source);
+  external_delegate_->OnQuery(form, field, trigger_source);
 
   std::vector<Suggestion> suggestions;
   SuggestionsContext context;

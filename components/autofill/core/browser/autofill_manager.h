@@ -241,7 +241,6 @@ class AutofillManager
   virtual void OnAskForValuesToFill(
       const FormData& form,
       const FormFieldData& field,
-      const gfx::RectF& bounding_box,
       AutofillSuggestionTriggerSource trigger_source);
 
   // Invoked when |form|'s |field| has focus.
@@ -395,7 +394,6 @@ class AutofillManager
   virtual void OnAskForValuesToFillImpl(
       const FormData& form,
       const FormFieldData& field,
-      const gfx::RectF& bounding_box,
       AutofillSuggestionTriggerSource trigger_source) = 0;
 
   virtual void OnFocusOnFormFieldImpl(const FormData& form,

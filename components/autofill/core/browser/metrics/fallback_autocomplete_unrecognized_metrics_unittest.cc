@@ -30,7 +30,7 @@ class AutocompleteUnrecognizedFallbackEventLoggerTest
     // the metric only cares about the autocomplete attribute, not the trigger
     // source.
     autofill_manager().OnAskForValuesToFillTest(
-        form, form.fields[0], /*bounding_box=*/{},
+        form, form.fields[0],
         AutofillSuggestionTriggerSource::kFormControlElementClicked);
     DidShowAutofillSuggestions(form);
   }

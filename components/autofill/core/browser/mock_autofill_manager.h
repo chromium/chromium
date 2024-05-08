@@ -79,7 +79,6 @@ class MockAutofillManager : public AutofillManager {
               OnAskForValuesToFillImpl,
               (const FormData& form,
                const FormFieldData& field,
-               const gfx::RectF& bounding_box,
                AutofillSuggestionTriggerSource trigger_source),
               (override));
   MOCK_METHOD(void,

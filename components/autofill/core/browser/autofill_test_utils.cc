@@ -858,9 +858,9 @@ void GenerateTestAutofillPopup(
   field.set_renderer_id(MakeFieldRendererId());
   field.set_is_focusable(true);
   field.set_should_autocomplete(true);
+  field.set_bounds(gfx::RectF(100.f, 100.f));
   autofill_external_delegate->OnQuery(
-      form, field, gfx::RectF(100.f, 100.f),
-      AutofillSuggestionTriggerSource::kFormControlElementClicked);
+      form, field, AutofillSuggestionTriggerSource::kFormControlElementClicked);
 
   std::vector<Suggestion> suggestions;
   suggestions.push_back(Suggestion(u"Test suggestion"));

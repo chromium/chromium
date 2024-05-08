@@ -158,8 +158,7 @@ class TestAndroidAutofillManager : public AndroidAutofillManager {
   void SimulateOnAskForValuesToFill(const FormData& form,
                                     const FormFieldData& field) {
     OnAskForValuesToFillImpl(
-        form, field, gfx::RectF(),
-        AutofillSuggestionTriggerSource::kTextFieldDidChange);
+        form, field, AutofillSuggestionTriggerSource::kTextFieldDidChange);
   }
 
   void SimulateOnFocusOnFormField(const FormData& form,

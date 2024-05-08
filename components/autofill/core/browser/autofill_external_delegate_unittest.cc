@@ -346,7 +346,7 @@ class AutofillExternalDelegateUnitTest : public testing::Test {
         .renderer_id = form_id.renderer_id,
     });
     manager().OnFormsSeen({queried_form()}, {});
-    external_delegate().OnQuery(queried_form(), queried_field(), gfx::RectF(),
+    external_delegate().OnQuery(queried_form(), queried_field(),
                                 trigger_source);
   }
 
@@ -1788,7 +1788,7 @@ TEST_F(AutofillExternalDelegateUnitTest,
       CreateTestCreditCardFormData(/*is_https=*/true, /*use_month_type=*/false);
   manager().OnFormsSeen({form}, {});
   external_delegate().OnQuery(
-      form, form.fields[0], gfx::RectF(),
+      form, form.fields[0],
       AutofillSuggestionTriggerSource::kManualFallbackPayments);
 
   EXPECT_CALL(cc_access_manager(), FetchCreditCard).Times(0);
@@ -1865,7 +1865,7 @@ TEST_F(AutofillExternalDelegateUnitTest,
       CreateTestCreditCardFormData(/*is_https=*/true, /*use_month_type=*/false);
   manager().OnFormsSeen({form}, {});
   external_delegate().OnQuery(
-      form, form.fields[0], gfx::RectF(),
+      form, form.fields[0],
       AutofillSuggestionTriggerSource::kManualFallbackPayments);
 
   const CreditCard unlocked_card = test::GetFullServerCard();
@@ -2338,7 +2338,7 @@ TEST_F(AutofillExternalDelegateUnitTest, IgnoreAutocompleteOffForAutofill) {
   field.set_is_focusable(true);
   field.set_should_autocomplete(false);
 
-  external_delegate().OnQuery(form, field, gfx::RectF(), kDefaultTriggerSource);
+  external_delegate().OnQuery(form, field, kDefaultTriggerSource);
 
   std::vector<Suggestion> autofill_items;
   autofill_items.emplace_back();

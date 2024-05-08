@@ -198,12 +198,10 @@ class AutofillDriverRouter {
       AutofillDriver* source,
       FormData form,
       const FormFieldData& field,
-      const gfx::RectF& bounding_box,
       AutofillSuggestionTriggerSource trigger_source,
       void (*callback)(AutofillDriver* target,
                        const FormData& form,
                        const FormFieldData& field,
-                       const gfx::RectF& bounding_box,
                        AutofillSuggestionTriggerSource trigger_source));
   // This event is broadcast to all drivers.
   void DidEndTextFieldEditing(AutofillDriver* source,

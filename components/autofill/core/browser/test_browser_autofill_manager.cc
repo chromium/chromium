@@ -72,12 +72,10 @@ void TestBrowserAutofillManager::OnDidFillAutofillFormData(
 void TestBrowserAutofillManager::OnAskForValuesToFill(
     const FormData& form,
     const FormFieldData& field,
-    const gfx::RectF& bounding_box,
     AutofillSuggestionTriggerSource trigger_source) {
   TestAutofillManagerWaiter waiter(*this,
                                    {AutofillManagerEvent::kAskForValuesToFill});
-  AutofillManager::OnAskForValuesToFill(form, field, bounding_box,
-                                        trigger_source);
+  AutofillManager::OnAskForValuesToFill(form, field, trigger_source);
   ASSERT_TRUE(waiter.Wait());
 }
 
@@ -226,12 +224,10 @@ const std::string TestBrowserAutofillManager::GetSubmittedFormSignature() {
 void TestBrowserAutofillManager::OnAskForValuesToFillTest(
     const FormData& form,
     const FormFieldData& field,
-    const gfx::RectF& bounding_box,
     AutofillSuggestionTriggerSource trigger_source) {
   TestAutofillManagerWaiter waiter(*this,
                                    {AutofillManagerEvent::kAskForValuesToFill});
-  BrowserAutofillManager::OnAskForValuesToFill(form, field, bounding_box,
-                                               trigger_source);
+  BrowserAutofillManager::OnAskForValuesToFill(form, field, trigger_source);
   ASSERT_TRUE(waiter.Wait());
 }
 

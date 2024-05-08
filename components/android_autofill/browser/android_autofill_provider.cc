@@ -172,7 +172,6 @@ void AndroidAutofillProvider::OnAskForValuesToFill(
     AndroidAutofillManager* manager,
     const FormData& form,
     const FormFieldData& field,
-    const gfx::RectF& bounding_box,
     AutofillSuggestionTriggerSource /*unused_trigger_source*/) {
   // The id isn't passed to Java side because Android API guarantees the
   // response is always for current session, so we just use the current id
@@ -192,7 +191,7 @@ void AndroidAutofillProvider::OnAskForValuesToFill(
   // ignored if the form is same.
   if (!IsLinkedForm(
           form, /*similarity_metric=*/kSimilarityCheckAskForValuesToFillUma)) {
-    StartNewSession(manager, form, field, bounding_box);
+    StartNewSession(manager, form, field, field.bounds());
   } else {
     last_focused_field_id_ = field.global_id();
   }

@@ -22,7 +22,6 @@ class TestAutofillProvider : public AutofillProvider {
       AndroidAutofillManager* manager,
       const FormData& form,
       const FormFieldData& field,
-      const gfx::RectF& bounding_box,
       AutofillSuggestionTriggerSource trigger_source) override {}
   void OnTextFieldDidChange(AndroidAutofillManager* manager,
                             const FormData& form,

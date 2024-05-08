@@ -96,7 +96,6 @@ class AndroidAutofillProvider : public AutofillProvider,
       AndroidAutofillManager* manager,
       const FormData& form,
       const FormFieldData& field,
-      const gfx::RectF& bounding_box,
       AutofillSuggestionTriggerSource /*unused_trigger_source*/) override;
   void OnTextFieldDidChange(AndroidAutofillManager* manager,
                             const FormData& form,

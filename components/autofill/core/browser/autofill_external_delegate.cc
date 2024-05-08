@@ -219,11 +219,9 @@ bool AutofillExternalDelegate::IsAutofillAndFirstLayerSuggestionId(
 void AutofillExternalDelegate::OnQuery(
     const FormData& form,
     const FormFieldData& field,
-    const gfx::RectF& element_bounds,
     AutofillSuggestionTriggerSource trigger_source) {
   query_form_ = form;
   query_field_ = field;
-  element_bounds_ = element_bounds;
   trigger_source_ = trigger_source;
 }
 
@@ -293,7 +291,7 @@ void AutofillExternalDelegate::OnSuggestionsReturned(
       return;
     }
     AutofillClient::PopupOpenArgs open_args(
-        element_bounds_, query_field_.text_direction(), suggestions,
+        query_field_.bounds(), query_field_.text_direction(), suggestions,
         trigger_source_, query_field_.form_control_ax_id());
     manager_->client().ShowAutofillSuggestions(open_args, GetWeakPtr());
   }
@@ -665,8 +663,7 @@ void AutofillExternalDelegate::DidAcceptSuggestion(
       NOTREACHED_NORETURN();  // Should be handled elsewhere.
   }
   if (suggestion.type == SuggestionType::kShowAccountCards) {
-    manager_->RefetchCardsAndUpdatePopup(query_form_, query_field_,
-                                         element_bounds_);
+    manager_->RefetchCardsAndUpdatePopup(query_form_, query_field_);
   } else {
     manager_->client().HideAutofillSuggestions(
         SuggestionHidingReason::kAcceptSuggestion);

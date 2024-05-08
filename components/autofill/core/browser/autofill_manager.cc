@@ -408,7 +408,6 @@ void AutofillManager::OnSelectControlDidChange(const FormData& form,
 void AutofillManager::OnAskForValuesToFill(
     const FormData& form,
     const FormFieldData& field,
-    const gfx::RectF& bounding_box,
     AutofillSuggestionTriggerSource trigger_source) {
   if (!IsValidFormData(form) || !IsValidFormFieldData(field))
     return;
@@ -417,7 +416,7 @@ void AutofillManager::OnAskForValuesToFill(
   ParseFormAsync(
       form,
       ParsingCallback(&AutofillManager::OnAskForValuesToFillImpl, field,
-                      bounding_box, trigger_source)
+                      trigger_source)
           .Then(NotifyObserversCallback(&Observer::OnAfterAskForValuesToFill,
                                         form.global_id(), field.global_id())));
 }

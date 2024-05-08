@@ -124,11 +124,10 @@ class AutofillPolicyTest : public PolicyTest {
     void OnAskForValuesToFill(
         const autofill::FormData& form,
         const autofill::FormFieldData& field,
-        const gfx::RectF& bounding_box,
         autofill::AutofillSuggestionTriggerSource trigger_source) override {
       autofill::TestAutofillManagerWaiter waiter(
           *this, {autofill::AutofillManagerEvent::kAskForValuesToFill});
-      autofill::AutofillManager::OnAskForValuesToFill(form, field, bounding_box,
+      autofill::AutofillManager::OnAskForValuesToFill(form, field,
                                                       trigger_source);
       ASSERT_TRUE(waiter.Wait());
       if (run_loop_) {

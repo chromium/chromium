@@ -95,6 +95,7 @@ void WaitForPersonalDataManagerToBeLoaded(Profile* base_profile) {
       "Full name", "name", "", FormControlType::kInputText, "name")};
   form.fields.front().set_is_focusable(true);
   form.fields.front().set_should_autocomplete(true);
+  form.fields.front().set_bounds(element_bounds);
 
   // Not adding a profile would result in `AskForValuesToFill()` not finding any
   // suggestions and hiding the Autofill Popup.
@@ -111,7 +112,7 @@ void WaitForPersonalDataManagerToBeLoaded(Profile* base_profile) {
   TestAutofillManagerWaiter waiter(driver.GetAutofillManager(),
                                    {AutofillManagerEvent::kAskForValuesToFill});
   driver.renderer_events().AskForValuesToFill(
-      form, form.fields.front(), element_bounds,
+      form, form.fields.front(),
       AutofillSuggestionTriggerSource::kFormControlElementClicked);
   testing::AssertionResult waiter_assertion_result = waiter.Wait();
   if (!waiter_assertion_result) {

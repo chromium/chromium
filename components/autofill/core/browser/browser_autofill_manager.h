@@ -154,8 +154,7 @@ class BrowserAutofillManager : public AutofillManager {
       AutofillSuggestionTriggerSource trigger_source) const;
   virtual void OnUserAcceptedCardsFromAccountOption();
   virtual void RefetchCardsAndUpdatePopup(const FormData& form,
-                                          const FormFieldData& field_data,
-                                          const gfx::RectF& element_bounds);
+                                          const FormFieldData& field_data);
 
   virtual void FillOrPreviewCreditCardForm(
       mojom::ActionPersistence action_persistence,
@@ -427,7 +426,6 @@ class BrowserAutofillManager : public AutofillManager {
   void OnAskForValuesToFillImpl(
       const FormData& form,
       const FormFieldData& field,
-      const gfx::RectF& transformed_box,
       AutofillSuggestionTriggerSource trigger_source) override;
   void OnSelectControlDidChangeImpl(const FormData& form,
                                     const FormFieldData& field,

@@ -503,7 +503,6 @@ void ContentAutofillDriver::SelectControlDidChange(
 void ContentAutofillDriver::AskForValuesToFill(
     const FormData& raw_form,
     const FormFieldData& raw_field,
-    const gfx::RectF& bounding_box,
     AutofillSuggestionTriggerSource trigger_source) {
   if (!bad_message::CheckFrameNotPrerendering(render_frame_host())) {
     return;
@@ -512,13 +511,12 @@ void ContentAutofillDriver::AskForValuesToFill(
   FormFieldData field = raw_field;
   SetFrameAndFormMetaData(form, field);
   router().AskForValuesToFill(
-      this, std::move(form), field,
-      TransformBoundingBoxToViewportCoordinates(bounding_box), trigger_source,
+      this, std::move(form), field, trigger_source,
       [](autofill::AutofillDriver* target, const FormData& form,
-         const FormFieldData& field, const gfx::RectF& bounding_box,
+         const FormFieldData& field,
          AutofillSuggestionTriggerSource trigger_source) {
         target->GetAutofillManager().OnAskForValuesToFill(
-            WithNewVersion(form), field, bounding_box, trigger_source);
+            WithNewVersion(form), field, trigger_source);
       });
 }
 

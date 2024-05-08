@@ -247,7 +247,6 @@ class ContentAutofillDriver : public AutofillDriver,
   void AskForValuesToFill(
       const FormData& form,
       const FormFieldData& field,
-      const gfx::RectF& bounding_box,
       AutofillSuggestionTriggerSource trigger_source) override;
   void DidFillAutofillFormData(const FormData& form,
                                base::TimeTicks timestamp) override;

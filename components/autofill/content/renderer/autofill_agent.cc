@@ -188,10 +188,9 @@ class AutofillAgent::DeferringAutofillDriver : public mojom::AutofillDriver {
   void AskForValuesToFill(
       const FormData& form,
       const FormFieldData& field,
-      const gfx::RectF& bounding_box,
       AutofillSuggestionTriggerSource trigger_source) override {
     DeferMsg(&mojom::AutofillDriver::AskForValuesToFill, form, field,
-             bounding_box, trigger_source);
+             trigger_source);
   }
   void HidePopup() override { DeferMsg(&mojom::AutofillDriver::HidePopup); }
   void FocusNoLongerOnForm(bool had_interacted_form) override {
@@ -1174,8 +1173,7 @@ void AutofillAgent::ShowSuggestionsForContentEditable(
   CHECK_EQ(form->fields.size(), 1u);
   if (auto* autofill_driver = unsafe_autofill_driver()) {
     is_popup_possibly_visible_ = true;
-    autofill_driver->AskForValuesToFill(
-        *form, form->fields[0], form->fields[0].bounds(), trigger_source);
+    autofill_driver->AskForValuesToFill(*form, form->fields[0], trigger_source);
   }
 }
 
@@ -1233,8 +1231,7 @@ void AutofillAgent::QueryAutofillSuggestions(
 
   is_popup_possibly_visible_ = true;
   if (auto* autofill_driver = unsafe_autofill_driver()) {
-    autofill_driver->AskForValuesToFill(form, field, field.bounds(),
-                                        trigger_source);
+    autofill_driver->AskForValuesToFill(form, field, trigger_source);
   }
 }
 

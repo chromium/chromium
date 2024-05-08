@@ -40,7 +40,6 @@ class AutofillProvider : public content::WebContentsUserData<AutofillProvider> {
       AndroidAutofillManager* manager,
       const FormData& form,
       const FormFieldData& field,
-      const gfx::RectF& bounding_box,
       AutofillSuggestionTriggerSource trigger_source) = 0;
 
   virtual void OnTextFieldDidChange(AndroidAutofillManager* manager,
