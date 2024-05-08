@@ -73,21 +73,33 @@ std::optional<Fourcc> PickRenderableFourcc(
 // Estimates the number of buffers needed in the output frame pool to fill the
 // Renderer pipeline (this pool may provide buffers to the VideoDecoder
 // directly or to the ImageProcessor, when this is instantiated).
-size_t EstimateRequiredRendererPipelineBuffers(bool low_delay) {
+size_t EstimateRequiredRendererPipelineBuffers(bool low_delay,
+                                               bool use_protected) {
   // kMaxVideoFrames is meant to be the number of VideoFrames needed to populate
   // the whole Renderer playback pipeline when there's no smoothing playback
   // queue, i.e. in low latency scenarios such as WebRTC etc. For non-low
   // latency scenarios, a large smoothing playback is used in the Renderer
   // process. Heuristically, the extra depth needed is in the range of 15 or
   // so, so we need to add a few extra buffers.
+  // For V4L2 secure playback, we need to limit the pipeline depth or we will
+  // run out of memory. We are going further than we are with the test because
+  // the memory consequences of using more are too great and so far have yielded
+  // no problems in testing.
   constexpr size_t kExpectedNonLatencyPipelineDepth = 16;
+#if BUILDFLAG(USE_V4L2_CODEC)
+  constexpr size_t kExpectedNonLatencyPipelineDepthSecure = 6;
+#endif
   static_assert(kExpectedNonLatencyPipelineDepth > limits::kMaxVideoFrames,
                 "kMaxVideoFrames is expected to be relatively small");
   constexpr size_t kReducedNonLatencyPipelineDepth = 8;
 
-  if (low_delay)
+  if (low_delay) {
     return limits::kMaxVideoFrames + 1;
-  else if (base::FeatureList::IsEnabled(kReduceHardwareVideoDecoderBuffers)) {
+#if BUILDFLAG(USE_V4L2_CODEC)
+  } else if (use_protected) {
+    return kExpectedNonLatencyPipelineDepthSecure;
+#endif
+  } else if (base::FeatureList::IsEnabled(kReduceHardwareVideoDecoderBuffers)) {
     return kReducedNonLatencyPipelineDepth;
   } else {
     return kExpectedNonLatencyPipelineDepth;
@@ -633,7 +645,7 @@ void VideoDecoderPipeline::InitializeTask(const VideoDecoderConfig& config,
   }
 
   estimated_num_buffers_for_renderer_ =
-      EstimateRequiredRendererPipelineBuffers(low_delay);
+      EstimateRequiredRendererPipelineBuffers(low_delay, config.is_encrypted());
 
 #if BUILDFLAG(USE_V4L2_CODEC)
   decryption_needs_vp9_superframe_splitting_ =
@@ -1146,6 +1158,35 @@ VideoDecoderPipeline::PickDecoderOutputFormat(
         num_codec_reference_frames + 1 + estimated_num_buffers_for_renderer_);
     VLOGF(1) << "Initializing frame pool with up to " << num_pictures
              << " VideoFrames. No ImageProcessor needed.";
+
+#if BUILDFLAG(USE_V4L2_CODEC)
+    if (use_protected) {
+      // Check to make sure we aren't going to blow our memory budget for V4L2
+      // secure playback. We have 210MB reserved for the frame pool we allocate
+      // here.
+      constexpr size_t kMaxV4L2ProtectedMemory = 210 * 1024 * 1024;
+      // Resolution
+      size_t mem_required =
+          viable_candidate->size.width() * viable_candidate->size.height();
+      // YUV 4:2:0
+      mem_required = mem_required * 3 / 2;
+      if (viable_candidate->fourcc == Fourcc(Fourcc::MT2T)) {
+        // 10-bit
+        mem_required = mem_required * 5 / 4;
+      }
+      // For each picture
+      mem_required *= num_pictures;
+      VLOGF(1) << "V4L2 secure memory requirement is "
+               << (mem_required / (1024 * 1024)) << "MB";
+      if (mem_required > kMaxV4L2ProtectedMemory) {
+        LOG(ERROR) << "Exceeded max memory for secure V4L2: "
+                   << (mem_required / (1024 * 1024)) << "MB of "
+                   << (kMaxV4L2ProtectedMemory / (1024 * 1024)) << "MB";
+        return CroStatus::Codes::kUnableToAllocateSecureBuffer;
+      }
+    }
+#endif  // BUILDFLAG(USE_V4L2_CODEC)
+
     CroStatus::Or<GpuBufferLayout> status_or_layout =
         main_frame_pool_->Initialize(viable_candidate->fourcc,
                                      viable_candidate->size,
