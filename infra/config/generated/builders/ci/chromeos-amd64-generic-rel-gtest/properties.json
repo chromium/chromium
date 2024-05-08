@@ -32,6 +32,7 @@
               "legacy_gclient_config": {
                 "apply_configs": [
                   "chromeos",
+                  "chromium_with_telemetry_dependencies",
                   "checkout_lacros_sdk"
                 ],
                 "config": "chromium"

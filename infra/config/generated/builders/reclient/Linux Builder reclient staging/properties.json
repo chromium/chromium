@@ -28,6 +28,7 @@
               "legacy_gclient_config": {
                 "apply_configs": [
                   "use_clang_coverage",
+                  "chromium_with_telemetry_dependencies",
                   "reclient_staging"
                 ],
                 "config": "chromium"

@@ -30,6 +30,9 @@
                 "target_platform": "mac"
               },
               "legacy_gclient_config": {
+                "apply_configs": [
+                  "chromium_with_telemetry_dependencies"
+                ],
                 "config": "chromium"
               }
             }

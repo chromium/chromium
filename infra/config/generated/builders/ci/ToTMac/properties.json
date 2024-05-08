@@ -27,7 +27,8 @@
               },
               "legacy_gclient_config": {
                 "apply_configs": [
-                  "clang_tot"
+                  "clang_tot",
+                  "chromium_with_telemetry_dependencies"
                 ],
                 "config": "chromium"
               }
