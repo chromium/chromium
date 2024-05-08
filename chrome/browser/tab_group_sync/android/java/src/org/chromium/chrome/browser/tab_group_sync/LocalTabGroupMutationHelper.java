@@ -75,9 +75,14 @@ public class LocalTabGroupMutationHelper {
 
         // Create a new tab group and add the tabs just created. Group ID is the ID of the first new
         // tab.
-        int rootId = tabs.get(0).getId();
+        Tab rootTab = tabs.get(0);
+        int rootId = rootTab.getId();
         updateTabGroupVisuals(tabGroup, rootId);
-        mTabGroupModelFilter.mergeListOfTabsToGroup(tabs, tabs.get(0), /* notify= */ false);
+        if (tabs.size() == 1) {
+            mTabGroupModelFilter.createSingleTabGroup(rootTab, /* notify= */ false);
+        } else {
+            mTabGroupModelFilter.mergeListOfTabsToGroup(tabs, rootTab, /* notify= */ false);
+        }
 
         // Notify sync backend about IDs of the newly created group and tabs.
         LocalTabGroupId localTabGroupId =

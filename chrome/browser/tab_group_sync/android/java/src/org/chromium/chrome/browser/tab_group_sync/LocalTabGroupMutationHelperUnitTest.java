@@ -104,6 +104,20 @@ public class LocalTabGroupMutationHelperUnitTest {
     }
 
     @Test
+    public void testCreateNewTabGroup_SingleTab() {
+        SavedTabGroup savedTabGroup = TabGroupSyncTestUtils.createSavedTabGroup();
+        savedTabGroup.savedTabs = savedTabGroup.savedTabs.subList(0, 1);
+        mLocalMutationHelper.createNewTabGroup(savedTabGroup);
+
+        // Verify calls to create local tab group, and update ID mappings for group and tabs.
+        verify(mTabGroupModelFilter).createSingleTabGroup(any(), eq(false));
+        verify(mTabGroupModelFilter).setTabGroupColor(anyInt(), anyInt());
+        verify(mTabGroupModelFilter).setTabGroupTitle(anyInt(), any());
+        verify(mTabGroupSyncService).updateLocalTabGroupMapping(any(), any());
+        verify(mTabGroupSyncService, times(1)).updateLocalTabId(any(), any(), anyInt());
+    }
+
+    @Test
     public void testUpdateTabGroupUpdatesVisuals() {
         addOneTab();
         SavedTabGroup savedTabGroup = TabGroupSyncTestUtils.createSavedTabGroup();
