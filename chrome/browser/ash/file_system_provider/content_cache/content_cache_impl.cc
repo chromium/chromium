@@ -141,10 +141,10 @@ void ContentCacheImpl::RemoveEvictedItems(ContentLRUCache::reverse_iterator it,
   // all the items that are evicted and remove them from the disk.
   while (it != lru_cache_.rend()) {
     const CacheFileContext& ctx = it->second;
-    if (ctx.evicted) {
+    if (ctx.pending_removal()) {
       io_task_runner_->PostTaskAndReplyWithResult(
           FROM_HERE,
-          base::BindOnce(&base::DeleteFile, GetPathOnDiskFromId(ctx.id)),
+          base::BindOnce(&base::DeleteFile, GetPathOnDiskFromId(ctx.id())),
           base::BindOnce(&ContentCacheImpl::OnItemRemovedFromDisk,
                          weak_ptr_factory_.GetWeakPtr(), it,
                          base::OwnedRef(item_ids),
@@ -183,8 +183,8 @@ void ContentCacheImpl::OnItemRemovedFromDisk(
   DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
 
   if (success) {
-    item_ids.emplace_back(it->second.id);
-    removed_items.bytes_removed += it->second.bytes_on_disk;
+    item_ids.emplace_back(it->second.id());
+    removed_items.bytes_removed += it->second.bytes_on_disk();
     // Automatically increments `it`.
     lru_cache_.Erase(it);
     removed_items.num_items++;
@@ -192,7 +192,7 @@ void ContentCacheImpl::OnItemRemovedFromDisk(
     evicted_cache_items_--;
   } else {
     it++;
-    LOG(ERROR) << "Failed to remove " << it->second.id << " from disk";
+    LOG(ERROR) << "Failed to remove " << it->second.id() << " from disk";
   }
 
   // Continue identifying evicted files to be removed. In the event no more
@@ -205,9 +205,9 @@ void ContentCacheImpl::EvictContext(const base::FilePath& path,
                                     CacheFileContext& ctx) {
   DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
 
-  if (!ctx.evicted) {
+  if (!ctx.pending_removal()) {
     VLOG(2) << "Evicting '" << path << "'";
-    ctx.evicted = true;
+    ctx.set_pending_removal(true);
     evicted_cache_items_++;
   } else {
     VLOG(2) << "Item '" << path << "'is already evicted";
@@ -263,17 +263,17 @@ bool ContentCacheImpl::StartReadBytes(
   }
 
   const CacheFileContext& ctx = it->second;
-  if (ctx.evicted) {
+  if (ctx.pending_removal()) {
     VLOG(1) << "Cache miss: file evicted";
     return false;
   }
 
-  if (ctx.version_tag != file.version_tag) {
+  if (ctx.version_tag() != file.version_tag) {
     VLOG(1) << "Cache miss: file is not up to date";
     return false;
   }
 
-  if (offset == ctx.bytes_on_disk && offset == file.bytes_in_cloud) {
+  if (offset == ctx.bytes_on_disk() && offset == file.bytes_in_cloud) {
     VLOG(1) << "Ignored request: offset is at EOF";
     callback.Run(0, false, base::File::FILE_OK);
     return true;
@@ -281,10 +281,10 @@ bool ContentCacheImpl::StartReadBytes(
 
   // In the event the offset exceeds the known `bytes_on_disk` then we can't
   // reliably serve this data from the content cache.
-  if (offset >= ctx.bytes_on_disk) {
+  if (offset >= ctx.bytes_on_disk()) {
     VLOG(1) << "Cache miss: requested byte range {offset = '" << offset
             << "', length = '" << length
-            << "'} not available {bytes_on_disk = '" << ctx.bytes_on_disk
+            << "'} not available {bytes_on_disk = '" << ctx.bytes_on_disk()
             << "'}";
     return false;
   }
@@ -295,11 +295,11 @@ bool ContentCacheImpl::StartReadBytes(
   // make a follow up call for the remainder (which will then be served from the
   // underlying FSP).
   VLOG(1) << "Cache hit: Range {offset = '" << offset << "', length = '"
-          << length << "', bytes_on_disk = '" << ctx.bytes_on_disk
+          << length << "', bytes_on_disk = '" << ctx.bytes_on_disk()
           << "'} is available";
 
   LocalFile& local_file =
-      GetOrCreateLocalFile(file.request_id, GetPathOnDiskFromId(ctx.id));
+      GetOrCreateLocalFile(file.request_id, GetPathOnDiskFromId(ctx.id()));
   local_file.ReadBytes(base::WrapRefCounted(buffer), offset, length,
                        base::BindOnce(&ContentCacheImpl::OnBytesRead,
                                       weak_ptr_factory_.GetWeakPtr(),
@@ -327,9 +327,9 @@ void ContentCacheImpl::OnBytesRead(
   // Update the accessed time to now, but don't wait for the database to return,
   // just fire and forget.
   CacheFileContext& ctx = it->second;
-  ctx.accessed_time = base::Time::Now();
+  ctx.set_accessed_time(base::Time::Now());
   context_db_.AsyncCall(&ContextDatabase::UpdateAccessedTime)
-      .WithArgs(ctx.id, ctx.accessed_time)
+      .WithArgs(ctx.id(), ctx.accessed_time())
       .Then(base::BindOnce([](bool success) {
         LOG_IF(ERROR, !success) << "Couldn't update access time on read";
       }));
@@ -361,42 +361,45 @@ bool ContentCacheImpl::StartWriteBytes(const OpenedCloudFile& file,
   }
 
   CacheFileContext& ctx = it->second;
-  if (ctx.evicted) {
+  if (ctx.pending_removal()) {
     VLOG(1) << "Cache miss: file evicted";
     return false;
   }
 
-  if (ctx.bytes_on_disk != offset) {
+  if (ctx.bytes_on_disk() != offset) {
     VLOG(1) << "Unsupported write offset supplied {bytes_on_disk = '"
-            << ctx.bytes_on_disk << "', offset = '" << offset << "'}";
+            << ctx.bytes_on_disk() << "', offset = '" << offset << "'}";
     return false;
   }
 
-  if (ctx.in_progress_writer) {
+  if (ctx.has_writer()) {
     VLOG(1)
         << "Writer is in progress already, multi offset writers not supported";
     return false;
   }
-  ctx.in_progress_writer = true;
+  ctx.set_has_writer(true);
 
   auto on_bytes_written_callback = base::BindOnce(
       &ContentCacheImpl::OnBytesWritten, weak_ptr_factory_.GetWeakPtr(),
       file.file_path, offset, length, std::move(callback));
 
-  if (ctx.id == kUnknownId) {
+  if (ctx.id() == kUnknownId) {
     // An unknown ID means this is the first write to the filesystem. Let's
     // retrieve an ID first that will be used as the actual file name on disk.
+    std::unique_ptr<int64_t> inserted_id = std::make_unique<int64_t>(-1);
     context_db_.AsyncCall(&ContextDatabase::AddItem)
-        .WithArgs(file.file_path, file.version_tag, ctx.accessed_time, &ctx.id)
+        .WithArgs(file.file_path, file.version_tag, ctx.accessed_time(),
+                  inserted_id.get())
         .Then(base::BindOnce(&ContentCacheImpl::OnFileIdGenerated,
                              weak_ptr_factory_.GetWeakPtr(), file,
                              base::WrapRefCounted(buffer), offset, length,
-                             std::move(on_bytes_written_callback), &ctx.id));
+                             std::move(on_bytes_written_callback),
+                             std::move(inserted_id)));
   } else {
     // The ID has already been created and is known on disk, bypass generating
     // the ID and simply start writing to the file.
     LocalFile& local_file =
-        GetOrCreateLocalFile(file.request_id, GetPathOnDiskFromId(ctx.id));
+        GetOrCreateLocalFile(file.request_id, GetPathOnDiskFromId(ctx.id()));
     local_file.WriteBytes(base::WrapRefCounted(buffer), offset, length,
                           std::move(on_bytes_written_callback));
   }
@@ -418,7 +421,7 @@ void ContentCacheImpl::OnFileIdGenerated(
     int64_t offset,
     int length,
     FileErrorCallback on_bytes_written_callback,
-    int64_t* inserted_id,
+    std::unique_ptr<int64_t> inserted_id,
     bool item_add_success) {
   DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
 
@@ -428,8 +431,11 @@ void ContentCacheImpl::OnFileIdGenerated(
     return;
   }
 
+  ContentLRUCache::iterator it = lru_cache_.Peek(file.file_path);
+  DCHECK(it != lru_cache_.end());
   DCHECK(inserted_id);
   DCHECK_GT(*inserted_id, 0);
+  it->second.set_id(*inserted_id);
   LocalFile& local_file =
       GetOrCreateLocalFile(file.request_id, GetPathOnDiskFromId(*inserted_id));
   local_file.WriteBytes(buffer, offset, length,
@@ -448,17 +454,17 @@ void ContentCacheImpl::OnBytesWritten(const base::FilePath& file_path,
 
   CacheFileContext& ctx = it->second;
   if (result == base::File::FILE_OK) {
-    ctx.bytes_on_disk = offset + length;
-    ctx.accessed_time = base::Time::Now();
+    ctx.set_bytes_on_disk(offset + length);
+    ctx.set_accessed_time(base::Time::Now());
 
     // Keep the accessed time up to date.
     context_db_.AsyncCall(&ContextDatabase::UpdateAccessedTime)
-        .WithArgs(ctx.id, ctx.accessed_time)
+        .WithArgs(ctx.id(), ctx.accessed_time())
         .Then(base::BindOnce([](bool success) {
           LOG_IF(ERROR, !success) << "Couldn't update access time on write";
         }));
   }
-  ctx.in_progress_writer = false;
+  ctx.set_has_writer(false);
 
   VLOG(2) << "OnBytesWritten: {offset = '" << offset << "', length = '"
           << length << "', result = '" << base::File::ErrorToString(result)
@@ -501,10 +507,10 @@ void ContentCacheImpl::GotItemsFromContextDatabase(
     ContextDatabase::IdToItemMap::const_iterator item_it = items_in_db.find(id);
     if (item_it == items_in_db.end()) {
       paths_on_disk_to_remove.emplace(
-          root_dir_.Append(base::NumberToString(ctx.id)));
+          root_dir_.Append(base::NumberToString(ctx.id())));
     } else {
-      ctx.accessed_time = item_it->second.accessed_time;
-      ctx.version_tag = item_it->second.version_tag;
+      ctx.set_accessed_time(item_it->second.accessed_time);
+      ctx.set_version_tag(item_it->second.version_tag);
       cached_files.emplace_back(item_it->second.fsp_path, std::move(ctx));
     }
   }
@@ -522,7 +528,7 @@ void ContentCacheImpl::GotItemsFromContextDatabase(
     // structure maintains them in order on access but not on initialization so
     // we have to ensure order now. This means the most-recently used is the
     // 0-th item, where eviction will take place on the last element.
-    return lhs.second.accessed_time > rhs.second.accessed_time;
+    return lhs.second.accessed_time() > rhs.second.accessed_time();
   });
 
   VLOG(1) << "Initializing content cache with " << cached_files.size()
@@ -567,7 +573,7 @@ std::vector<base::FilePath> ContentCacheImpl::GetCachedFilePaths() {
   DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
   std::vector<base::FilePath> cached_file_paths;
   for (const auto& [file_path, cache_file_context] : lru_cache_) {
-    if (!cache_file_context.evicted) {
+    if (!cache_file_context.pending_removal()) {
       cached_file_paths.push_back(file_path);
     }
   }

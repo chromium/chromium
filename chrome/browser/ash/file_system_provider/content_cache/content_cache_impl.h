@@ -75,7 +75,7 @@ class ContentCacheImpl : public ContentCache {
                          int64_t offset,
                          int length,
                          FileErrorCallback on_bytes_written_callback,
-                         int64_t* inserted_id,
+                         std::unique_ptr<int64_t> inserted_id,
                          bool item_add_success);
 
   void OnBytesWritten(const base::FilePath& file_path,
