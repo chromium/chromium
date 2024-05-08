@@ -200,16 +200,19 @@ void ExtendedUpdatesController::OnOwnershipDetermined(
 // TODO(b/333767804): Show notification again if extended updates date changed.
 bool ExtendedUpdatesController::ShouldShowNotification(
     content::BrowserContext* context) {
-  if (!IsOptInEligible(context)) {
+  if (!IsOptInEligible(context) || !HasNoAndroidApps(context)) {
     return false;
   }
-  return HasNoAndroidApps(context);
+  Profile* profile = Profile::FromBrowserContext(context);
+  if (ExtendedUpdatesNotification::IsNotificationDismissed(profile)) {
+    return false;
+  }
+  return true;
 }
 
 void ExtendedUpdatesController::ShowNotification(
     content::BrowserContext* context) {
-  Profile* profile = Profile::FromBrowserContext(context);
-  ExtendedUpdatesNotification::Create(profile)->Show();
+  ExtendedUpdatesNotification::Show(Profile::FromBrowserContext(context));
 }
 
 void ExtendedUpdatesController::SubscribeToDeviceSettingsChanges() {

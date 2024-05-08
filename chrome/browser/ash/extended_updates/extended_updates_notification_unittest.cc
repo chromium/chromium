@@ -7,13 +7,14 @@
 #include <algorithm>
 #include <optional>
 
+#include "ash/constants/ash_pref_names.h"
 #include "ash/system/extended_updates/extended_updates_metrics.h"
-#include "base/memory/weak_ptr.h"
 #include "base/test/metrics/histogram_tester.h"
 #include "chrome/browser/notifications/notification_display_service.h"
 #include "chrome/browser/notifications/notification_display_service_tester.h"
 #include "chrome/browser/notifications/notification_handler.h"
 #include "chrome/test/base/testing_profile.h"
+#include "components/prefs/pref_service.h"
 #include "content/public/test/browser_task_environment.h"
 #include "testing/gmock/include/gmock/gmock.h"
 #include "testing/gtest/include/gtest/gtest.h"
@@ -36,17 +37,12 @@ class TestExtendedUpdatesNotification final
       delete;
   TestExtendedUpdatesNotification& operator=(
       const TestExtendedUpdatesNotification&) = delete;
-  ~TestExtendedUpdatesNotification() override = default;
 
   MOCK_METHOD(void, ShowExtendedUpdatesDialog, (), (override));
   MOCK_METHOD(void, OpenLearnMoreUrl, (), (override));
 
-  base::WeakPtr<TestExtendedUpdatesNotification> AsWeakPtr() {
-    return weak_ptr_factory_.GetWeakPtr();
-  }
-
  private:
-  base::WeakPtrFactory<TestExtendedUpdatesNotification> weak_ptr_factory_{this};
+  ~TestExtendedUpdatesNotification() override = default;
 };
 
 class ExtendedUpdatesNotificationTest : public testing::Test {
@@ -59,9 +55,9 @@ class ExtendedUpdatesNotificationTest : public testing::Test {
   ~ExtendedUpdatesNotificationTest() override = default;
 
  protected:
-  base::WeakPtr<TestExtendedUpdatesNotification> CreateTestNotification(
+  scoped_refptr<TestExtendedUpdatesNotification> CreateTestNotification(
       Profile* profile) {
-    return (new TestExtendedUpdatesNotification(profile))->AsWeakPtr();
+    return base::MakeRefCounted<TestExtendedUpdatesNotification>(profile);
   }
 
   // Gets the number of notifications that are currently showing.
@@ -100,54 +96,46 @@ class ExtendedUpdatesNotificationTest : public testing::Test {
 TEST_F(ExtendedUpdatesNotificationTest, ProfileDestroyedBeforeShow) {
   auto profile = std::make_unique<TestingProfile>();
   auto note = CreateTestNotification(profile.get());
-  EXPECT_TRUE(note);
 
   profile.reset();
-  EXPECT_FALSE(note);
+  ExtendedUpdatesNotification::Show(std::move(note));
 }
 
 TEST_F(ExtendedUpdatesNotificationTest, ProfileDestroyedAfterShow) {
   auto profile = std::make_unique<TestingProfile>();
   auto note = CreateTestNotification(profile.get());
 
-  note->Show();
-  EXPECT_TRUE(note);
+  ExtendedUpdatesNotification::Show(note);
 
   profile.reset();
-  EXPECT_FALSE(note);
+  note->Close(/*by_user=*/true);
 }
 
 TEST_F(ExtendedUpdatesNotificationTest, ClickNoButton) {
-  auto note = CreateTestNotification(&profile_);
-
-  note->Show();
-  EXPECT_TRUE(note);
+  ExtendedUpdatesNotification::Show(CreateTestNotification(&profile_));
   EXPECT_THAT(ShowingNotificationCount(), Eq(1));
 
   ClickNotification(std::nullopt);
-  EXPECT_TRUE(note);
   EXPECT_THAT(ShowingNotificationCount(), Eq(1));
 
   CloseNotification(/*by_user=*/false);
-  EXPECT_FALSE(note);
   EXPECT_THAT(ShowingNotificationCount(), Eq(0));
 }
 
 TEST_F(ExtendedUpdatesNotificationTest, ShowExtendedUpdatesDialog) {
   base::HistogramTester histogram_tester;
   auto note = CreateTestNotification(&profile_);
+  EXPECT_CALL(*note, ShowExtendedUpdatesDialog()).Times(1);
 
-  note->Show();
-  ASSERT_TRUE(note);
+  ExtendedUpdatesNotification::Show(std::move(note));
   EXPECT_THAT(ShowingNotificationCount(), Eq(1));
   histogram_tester.ExpectBucketCount(
       kExtendedUpdatesEntryPointEventMetric,
       ExtendedUpdatesEntryPointEvent::kNoArcNotificationShown, 1);
 
-  EXPECT_CALL(*note, ShowExtendedUpdatesDialog()).Times(1);
   ClickNotification(IndexedButton::kSetUp);
-  EXPECT_FALSE(note);
   EXPECT_THAT(ShowingNotificationCount(), Eq(0));
+  EXPECT_FALSE(ExtendedUpdatesNotification::IsNotificationDismissed(&profile_));
   histogram_tester.ExpectBucketCount(
       kExtendedUpdatesEntryPointEventMetric,
       ExtendedUpdatesEntryPointEvent::kNoArcNotificationClicked, 1);
@@ -155,49 +143,32 @@ TEST_F(ExtendedUpdatesNotificationTest, ShowExtendedUpdatesDialog) {
 
 TEST_F(ExtendedUpdatesNotificationTest, OpenLearnMoreUrl) {
   auto note = CreateTestNotification(&profile_);
+  EXPECT_CALL(*note, OpenLearnMoreUrl()).Times(1);
 
-  note->Show();
-  ASSERT_TRUE(note);
+  ExtendedUpdatesNotification::Show(std::move(note));
   EXPECT_THAT(ShowingNotificationCount(), Eq(1));
 
-  EXPECT_CALL(*note, OpenLearnMoreUrl()).Times(1);
   ClickNotification(IndexedButton::kLearnMore);
-  EXPECT_FALSE(note);
   EXPECT_THAT(ShowingNotificationCount(), Eq(0));
+  EXPECT_FALSE(ExtendedUpdatesNotification::IsNotificationDismissed(&profile_));
 }
 
-TEST_F(ExtendedUpdatesNotificationTest, NoShowAfterUserDismiss) {
-  auto note = CreateTestNotification(&profile_);
-
-  note->Show();
-  EXPECT_TRUE(note);
+TEST_F(ExtendedUpdatesNotificationTest, UserDismiss) {
+  ExtendedUpdatesNotification::Show(CreateTestNotification(&profile_));
   EXPECT_THAT(ShowingNotificationCount(), Eq(1));
 
   CloseNotification(/*by_user=*/true);
-  EXPECT_FALSE(note);
   EXPECT_THAT(ShowingNotificationCount(), Eq(0));
-
-  note = CreateTestNotification(&profile_);
-  note->Show();
-  EXPECT_FALSE(note);
-  EXPECT_THAT(ShowingNotificationCount(), Eq(0));
+  EXPECT_TRUE(ExtendedUpdatesNotification::IsNotificationDismissed(&profile_));
 }
 
-TEST_F(ExtendedUpdatesNotificationTest, ReShowAfterNonUserDismiss) {
-  auto note = CreateTestNotification(&profile_);
-
-  note->Show();
-  EXPECT_TRUE(note);
+TEST_F(ExtendedUpdatesNotificationTest, NonUserDismiss) {
+  ExtendedUpdatesNotification::Show(CreateTestNotification(&profile_));
   EXPECT_THAT(ShowingNotificationCount(), Eq(1));
 
   CloseNotification(/*by_user=*/false);
-  EXPECT_FALSE(note);
   EXPECT_THAT(ShowingNotificationCount(), Eq(0));
-
-  note = CreateTestNotification(&profile_);
-  note->Show();
-  EXPECT_TRUE(note);
-  EXPECT_THAT(ShowingNotificationCount(), Eq(1));
+  EXPECT_FALSE(ExtendedUpdatesNotification::IsNotificationDismissed(&profile_));
 }
 
 }  // namespace ash

@@ -42,25 +42,21 @@ void AddButton(message_center::RichNotificationData& data,
 
 }  // namespace
 
-ExtendedUpdatesNotification::ExtendedUpdatesNotification(Profile* profile) {
-  CHECK(profile);
-  profile_observation_.Observe(profile);
-}
+ExtendedUpdatesNotification::ExtendedUpdatesNotification(Profile* profile)
+    : profile_(profile->GetWeakPtr()) {}
 
 ExtendedUpdatesNotification::~ExtendedUpdatesNotification() = default;
 
-base::WeakPtr<ExtendedUpdatesNotification> ExtendedUpdatesNotification::Create(
-    Profile* profile) {
-  return (new ExtendedUpdatesNotification(profile))->GetWeakPtr();
+void ExtendedUpdatesNotification::Show(Profile* profile) {
+  Show(base::MakeRefCounted<ExtendedUpdatesNotification>(profile));
 }
 
-void ExtendedUpdatesNotification::Show() {
-  Profile* profile = profile_observation_.GetSource();
-  if (!profile || profile->GetPrefs()->GetBoolean(
-                      prefs::kExtendedUpdatesNotificationDismissed)) {
-    SelfDestruct();
+void ExtendedUpdatesNotification::Show(
+    scoped_refptr<ExtendedUpdatesNotification> delegate) {
+  if (!delegate || !delegate->profile()) {
     return;
   }
+  Profile* profile = delegate->profile();
 
   message_center::RichNotificationData data;
   // Keep same order as |IndexedButton| enum.
@@ -75,9 +71,7 @@ void ExtendedUpdatesNotification::Show() {
       .SetTitleId(IDS_EXTENDED_UPDATES_NOTIFICATION_TITLE)
       .SetMessageId(IDS_EXTENDED_UPDATES_NOTIFICATION_MESSAGE)
       .SetOptionalFields(data)
-      .SetDelegate(
-          base::MakeRefCounted<message_center::ThunkNotificationDelegate>(
-              weak_factory_.GetWeakPtr()));
+      .SetDelegate(std::move(delegate));
   NotificationDisplayService::GetForProfile(profile)->Display(
       kNotificationType, builder.Build(/*keep_timestamp=*/false),
       /*metadata=*/nullptr);
@@ -85,14 +79,16 @@ void ExtendedUpdatesNotification::Show() {
       ExtendedUpdatesEntryPointEvent::kNoArcNotificationShown);
 }
 
+bool ExtendedUpdatesNotification::IsNotificationDismissed(Profile* profile) {
+  return profile->GetPrefs()->GetBoolean(
+      prefs::kExtendedUpdatesNotificationDismissed);
+}
+
 void ExtendedUpdatesNotification::Close(bool by_user) {
-  if (by_user) {
-    if (Profile* profile = profile_observation_.GetSource()) {
-      profile->GetPrefs()->SetBoolean(
-          prefs::kExtendedUpdatesNotificationDismissed, true);
-    }
+  if (by_user && profile_) {
+    profile_->GetPrefs()->SetBoolean(
+        prefs::kExtendedUpdatesNotificationDismissed, true);
   }
-  SelfDestruct();
 }
 
 void ExtendedUpdatesNotification::Click(
@@ -113,19 +109,10 @@ void ExtendedUpdatesNotification::Click(
       break;
   }
 
-  if (Profile* profile = profile_observation_.GetSource()) {
-    NotificationDisplayService::GetForProfile(profile)->Close(
-        kNotificationType, std::string(kNotificationId));
+  if (profile_) {
+    NotificationDisplayService::GetForProfile(profile_.get())
+        ->Close(kNotificationType, std::string(kNotificationId));
   }
-}
-
-void ExtendedUpdatesNotification::OnProfileWillBeDestroyed(Profile* profile) {
-  SelfDestruct();
-}
-
-base::WeakPtr<ExtendedUpdatesNotification>
-ExtendedUpdatesNotification::GetWeakPtr() {
-  return weak_factory_.GetWeakPtr();
 }
 
 void ExtendedUpdatesNotification::ShowExtendedUpdatesDialog() {
@@ -137,10 +124,6 @@ void ExtendedUpdatesNotification::OpenLearnMoreUrl() {
       GURL(chrome::kDeviceExtendedUpdatesLearnMoreURL),
       NewWindowDelegate::OpenUrlFrom::kUserInteraction,
       NewWindowDelegate::Disposition::kNewForegroundTab);
-}
-
-void ExtendedUpdatesNotification::SelfDestruct() {
-  delete this;
 }
 
 }  // namespace ash
