@@ -816,7 +816,6 @@ chromium-metrics-reviews@google.com.
   <owner>ender@chromium.org</owner>
   <owner>jdonnelly@chromium.org</owner>
   <owner>mpearson@chromium.org</owner>
-  <owner>tommycli@chromium.org</owner>
   <summary>
     This records whether user initiated navigation after focusing the Omnibox
     versus switches focus elsewhere without navigating. This metric includes
@@ -1122,7 +1121,6 @@ chromium-metrics-reviews@google.com.
 <histogram
     name="Omnibox.MatchStability2.MatchChangeInAnyPosition{OmniboxAutocompleteUpdateSlice}"
     enum="BooleanChanged" expires_after="2024-11-03">
-  <owner>tommycli@chromium.org</owner>
   <owner>manukh@chromium.org</owner>
   <owner>jdonnelly@chromium.org</owner>
   <summary>
@@ -1170,7 +1168,6 @@ chromium-metrics-reviews@google.com.
 <histogram
     name="Omnibox.MatchStability2.MatchChangeIndex{OmniboxAutocompleteUpdateSlice}"
     units="position" expires_after="2024-11-03">
-  <owner>tommycli@chromium.org</owner>
   <owner>manukh@chromium.org</owner>
   <owner>jdonnelly@chromium.org</owner>
   <summary>
@@ -1362,7 +1359,7 @@ chromium-metrics-reviews@google.com.
 
 <histogram name="Omnibox.ResumeJourneyShown" units="position"
     expires_after="2024-09-22">
-  <owner>tommycli@chromium.org</owner>
+  <owner>manukh@chromium.org</owner>
   <owner>chrome-omnibox-team@google.com</owner>
   <summary>
     Emits the position of any &quot;Resume Journey&quot; omnibox actions shown
@@ -1646,7 +1643,6 @@ chromium-metrics-reviews@google.com.
 
 <histogram name="Omnibox.Start.WantAsyncMatches" enum="Boolean"
     expires_after="2024-11-03">
-  <owner>tommycli@chromium.org</owner>
   <owner>jdonnelly@chromium.org</owner>
   <summary>
     Whether asynchronous matches are requested. Recorded every time
@@ -1678,7 +1674,6 @@ chromium-metrics-reviews@google.com.
     enum="ClientSummarizedResultType" expires_after="2024-09-22">
   <owner>nyquist@chromium.org</owner>
   <owner>ssid@chromium.org</owner>
-  <owner>tommycli@chromium.org</owner>
   <owner>chrome-segmentation-platform@google.com</owner>
   <summary>
     For each user navigation using the omnibox, logs the selected omnibox result
@@ -1738,7 +1733,7 @@ chromium-metrics-reviews@google.com.
 
 <histogram name="Omnibox.SuggestionUsed.ResumeJourney" units="position"
     expires_after="2024-09-22">
-  <owner>tommycli@chromium.org</owner>
+  <owner>manukh@chromium.org</owner>
   <owner>chrome-omnibox-team@google.com</owner>
   <owner>chrome-journeys@google.com</owner>
   <summary>
@@ -1814,7 +1809,7 @@ chromium-metrics-reviews@google.com.
 
 <histogram name="Omnibox.SuggestionUsed.ResumeJourneyCTR"
     enum="BooleanSelected" expires_after="2024-11-03">
-  <owner>tommycli@chromium.org</owner>
+  <owner>manukh@chromium.org</owner>
   <owner>chrome-journeys@google.com</owner>
   <summary>
     Emitted when the user uses the omnibox to go somewhere AND the &quot;Resume
