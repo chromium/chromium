@@ -318,7 +318,7 @@ public class BaseCustomTabRootUiCoordinator extends RootUiCoordinator {
 
         if (CustomTabsConnection.getInstance()
                 .shouldEnableOmniboxForIntent(mIntentDataProvider.get())) {
-            toolbar.setOmniboxEnabled();
+            toolbar.setOmniboxEnabled(mIntentDataProvider.get().getClientPackageName());
         }
     }
 

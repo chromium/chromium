@@ -383,8 +383,8 @@ public class CustomTabToolbar extends ToolbarLayout implements View.OnLongClickL
     }
 
     /** Enables the interactive Omnibox in CCT. */
-    public void setOmniboxEnabled() {
-        mLocationBar.setOmniboxEnabled();
+    public void setOmniboxEnabled(String clientPackageName) {
+        mLocationBar.setOmniboxEnabled(clientPackageName);
     }
 
     private void setButtonsVisibility() {
@@ -1830,7 +1830,7 @@ public class CustomTabToolbar extends ToolbarLayout implements View.OnLongClickL
             mPageInfoIPHController = pageInfoIPHController;
         }
 
-        void setOmniboxEnabled() {
+        void setOmniboxEnabled(String clientPackageName) {
             mOmniboxEnabled = true;
             mOmniboxBackground =
                     AppCompatResources.getDrawable(
@@ -1846,7 +1846,9 @@ public class CustomTabToolbar extends ToolbarLayout implements View.OnLongClickL
                         RecordUserAction.record("CustomTabs.OmniboxClicked");
                         var tab = getCurrentTab();
                         SearchActivityUtils.requestOmniboxForResult(
-                                tab.getWindowAndroid().getActivity().get(), tab.getUrl());
+                                tab.getWindowAndroid().getActivity().get(),
+                                tab.getUrl(),
+                                clientPackageName);
                     });
         }
     }
