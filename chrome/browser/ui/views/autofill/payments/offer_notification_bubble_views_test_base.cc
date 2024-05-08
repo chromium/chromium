@@ -62,7 +62,7 @@ void OfferNotificationBubbleViewsTestBase::SetUpOnMainThread() {
   coupon_service_ = CouponServiceFactory::GetForProfile(browser()->profile());
 
   // Mimic the user is signed in so payments integration is considered enabled.
-  personal_data_->SetSyncingForTest(true);
+  personal_data_->payments_data_manager().SetSyncingForTest(true);
 
   // Wait for Personal Data Manager to be fully loaded to prevent that
   // spurious notifications deceive the tests.

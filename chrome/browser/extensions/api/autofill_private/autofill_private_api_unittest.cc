@@ -177,8 +177,11 @@ class AutofillPrivateApiUnitTest : public extensions::ExtensionApiTest {
 
   void SetUpOnMainThread() override {
     ExtensionApiTest::SetUpOnMainThread();
-    autofill_client()->GetPersonalDataManager()->SetSyncingForTest(
-        /*is_syncing_for_test=*/true);
+    autofill_client()
+        ->GetPersonalDataManager()
+        ->payments_data_manager()
+        .SetSyncingForTest(
+            /*is_syncing_for_test=*/true);
   }
 
   autofill::TestContentAutofillClient* autofill_client() {

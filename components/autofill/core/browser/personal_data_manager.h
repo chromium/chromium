@@ -136,10 +136,6 @@ class PersonalDataManager : public KeyedService,
   // Returns whether the personal data has been loaded from the web database.
   virtual bool IsDataLoaded() const;
 
-  // TODO(b/322170538): This function simply forwards to the payments data
-  // manager. Migrate existing callers to go through `payments_data_manager()`.
-  void SetSyncingForTest(bool is_syncing_for_test);
-
   // Re-loads profiles, credit cards, and IBANs from the WebDatabase
   // asynchronously. In the general case, this is a no-op and will re-create
   // the same in-memory model as existed prior to the call.  If any change

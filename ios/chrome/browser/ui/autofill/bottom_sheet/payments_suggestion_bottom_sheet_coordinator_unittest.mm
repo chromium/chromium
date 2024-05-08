@@ -67,7 +67,7 @@ class PaymentsSuggestionBottomSheetCoordinatorTest : public PlatformTest {
     virtual_card_ = autofill::test::GetVirtualCard();
     personal_data_manager->payments_data_manager().AddServerCreditCardForTest(
         std::make_unique<autofill::CreditCard>(credit_card_));
-    personal_data_manager->SetSyncingForTest(true);
+    personal_data_manager->payments_data_manager().SetSyncingForTest(true);
 
     coordinator_ = [[PaymentsSuggestionBottomSheetCoordinator alloc]
         initWithBaseViewController:window_.rootViewController

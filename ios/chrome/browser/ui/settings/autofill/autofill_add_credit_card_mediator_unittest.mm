@@ -227,7 +227,7 @@ TEST_F(AutofillAddCreditCardMediatorTest, TestMetricsWhenSavingCreditCard) {
   personal_data_manager_.payments_data_manager().AddCreditCard(
       autofill::test::GetCreditCard2());
   // Required for adding the server card.
-  personal_data_manager_.SetSyncingForTest(true);
+  personal_data_manager_.payments_data_manager().SetSyncingForTest(true);
   personal_data_manager_.payments_data_manager().AddServerCreditCardForTest(
       std::make_unique<autofill::CreditCard>(
           autofill::test::GetMaskedServerCard()));

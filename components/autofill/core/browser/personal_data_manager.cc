@@ -119,10 +119,6 @@ bool PersonalDataManager::IsDataLoaded() const {
          payments_data_manager_->is_payments_data_loaded();
 }
 
-void PersonalDataManager::SetSyncingForTest(bool is_syncing_for_test) {
-  payments_data_manager_->SetSyncingForTest(is_syncing_for_test);
-}
-
 void PersonalDataManager::Refresh() {
   address_data_manager_->LoadProfiles();
   payments_data_manager_->Refresh();

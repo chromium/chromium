@@ -610,7 +610,7 @@ static std::unique_ptr<ScopedAutofillPaymentReauthModuleOverride>
       chrome_test_util::GetOriginalBrowserState();
   autofill::PersonalDataManager* personalDataManager =
       autofill::PersonalDataManagerFactory::GetForBrowserState(browserState);
-  personalDataManager->SetSyncingForTest(true);
+  personalDataManager->payments_data_manager().SetSyncingForTest(true);
   return personalDataManager;
 }
 

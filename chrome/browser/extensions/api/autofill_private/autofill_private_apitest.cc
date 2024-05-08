@@ -143,7 +143,8 @@ IN_PROC_BROWSER_TEST_F(
   autofill::TestPersonalDataManager* personal_data_manager =
       autofill_client()->GetPersonalDataManager();
   // Required for adding the server card.
-  personal_data_manager->SetSyncingForTest(/*is_syncing_for_test=*/true);
+  personal_data_manager->payments_data_manager().SetSyncingForTest(
+      /*is_syncing_for_test=*/true);
 
   // Set up the personal data manager with 2 existing cards.
   personal_data_manager->payments_data_manager().AddCreditCard(

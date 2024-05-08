@@ -566,7 +566,8 @@ jboolean PersonalDataManagerAndroid::IsFidoAuthenticationAvailable(
 }
 
 void PersonalDataManagerAndroid::SetSyncServiceForTesting(JNIEnv* env) {
-  personal_data_manager_->SetSyncingForTest(true);
+  personal_data_manager_->payments_data_manager().SetSyncingForTest(
+      true);  // IN-TEST
 }
 
 base::android::ScopedJavaLocalRef<jobject>

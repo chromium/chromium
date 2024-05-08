@@ -80,7 +80,7 @@ class PaymentsSuggestionBottomSheetMediatorTest : public PlatformTest {
   void CreateMediatorWithSuggestions() {
     CreateMediator();
     CreateCreditCard(kTestGuid);
-    personal_data_manager_.SetSyncingForTest(true);
+    personal_data_manager_.payments_data_manager().SetSyncingForTest(true);
   }
 
   // Create a mediator and make sure the personal data manager contains at least
@@ -89,7 +89,7 @@ class PaymentsSuggestionBottomSheetMediatorTest : public PlatformTest {
     CreateMediator();
     CreateCreditCard(kTestGuid, kTestNumber, 0,
                      autofill::CreditCard::RecordType::kLocalCard);
-    personal_data_manager_.SetSyncingForTest(true);
+    personal_data_manager_.payments_data_manager().SetSyncingForTest(true);
   }
 
   web::WebTaskEnvironment task_environment_;
