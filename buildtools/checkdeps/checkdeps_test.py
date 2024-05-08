@@ -126,6 +126,8 @@ class CheckDepsTest(unittest.TestCase):
                 '  "!third_party/no_rule/bad.h",']
     self.assertEqual(expected, temp_rules)
 
+  @unittest.skipIf(os.getcwd().startswith('/google/cog/cloud'),
+                  "Skip if not git")
   def testBadBaseDirectoryNotCheckoutRoot(self):
     # This assumes git. It's not a valid test if buildtools is fetched via svn.
     with self.assertRaises(builddeps.DepsBuilderError):
