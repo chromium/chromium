@@ -196,19 +196,6 @@ suite('SiteSettingsPage', function() {
         '#protected-content'));
   });
 
-  // TODO(crbug.com/40244046): Remove after crbug/1378703 launched.
-  test('SiteDataLinkRow', async function() {
-    setupPage();
-    const expandButton =
-        page.shadowRoot!.querySelector<CrExpandButtonElement>('#expandContent');
-    assertTrue(!!expandButton);
-    expandButton.click();
-    await expandButton.updateComplete;
-
-    assertTrue(isChildVisible(
-        page.shadowRoot!.querySelector('#advancedContentList')!, '#site-data'));
-  });
-
   test('SiteDataLinkRowSublabel', async function() {
     setupPage();
     page.shadowRoot!.querySelector<HTMLElement>('#expandContent')!.click();
