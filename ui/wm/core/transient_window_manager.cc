@@ -35,24 +35,19 @@ DEFINE_OWNED_UI_CLASS_PROPERTY_KEY(TransientWindowManager,
 
 // Returns true if the given `window` has a cycle in its transient window
 // hierarchy.
-bool HasTransientCycles(aura::Window* window) {
-  std::set<aura::Window*> visited;
-  std::stack<aura::Window*> dfs_stack;
-  dfs_stack.push(window);
-  while (!dfs_stack.empty()) {
-    aura::Window* top = dfs_stack.top();
-    dfs_stack.pop();
-    if (!visited.emplace(top).second) {
+bool HasTransientCycles(const aura::Window* window) {
+  std::set<const aura::Window*> visited;
+  while (window) {
+    if (!visited.emplace(window).second) {
       // We found a cycle.
       return true;
     }
 
-    if (auto* transient_window_manager =
-            TransientWindowManager::GetIfExists(top)) {
-      for (const auto& child : transient_window_manager->transient_children()) {
-        dfs_stack.push(child);
-      }
-    }
+    auto* transient_window_manager =
+        TransientWindowManager::GetIfExists(window);
+    window = transient_window_manager
+                 ? transient_window_manager->transient_parent()
+                 : nullptr;
   }
   return false;
 }
