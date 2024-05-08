@@ -80,7 +80,10 @@ static_assert(GetMaxSystemWebAppType() == ash::SystemWebAppType::kMaxValue,
 constexpr auto kVirtualFileTasksMapping =
     base::MakeFixedFlatMap<std::string_view, std::string_view>(
         {{"install-isolated-web-app", fm_tasks::kActionIdInstallIsolatedWebApp},
-         {"microsoft-office", fm_tasks::kActionIdOpenInOffice}});
+         {"microsoft-office", fm_tasks::kActionIdOpenInOffice},
+         {"google-docs", fm_tasks::kActionIdWebDriveOfficeWord},
+         {"google-spreadsheets", fm_tasks::kActionIdWebDriveOfficeExcel},
+         {"google-slides", fm_tasks::kActionIdWebDriveOfficePowerPoint}});
 
 #endif  // BUILDFLAG(IS_CHROMEOS_ASH)
 
