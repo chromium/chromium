@@ -192,6 +192,8 @@ const PrefsUtil::TypedPrefMap& PrefsUtil::GetAllowlistedKeys() {
       settings_api::PrefType::kBoolean;
   (*s_allowlist)[bookmarks::prefs::kShowBookmarkBar] =
       settings_api::PrefType::kBoolean;
+  (*s_allowlist)[bookmarks::prefs::kShowTabGroupsInBookmarkBar] =
+      settings_api::PrefType::kBoolean;
   (*s_allowlist)[::prefs::kSidePanelHorizontalAlignment] =
       settings_api::PrefType::kBoolean;
 

@@ -80,6 +80,7 @@
 #include "components/safe_browsing/core/common/features.h"
 #include "components/safe_browsing/core/common/hashprefix_realtime/hash_realtime_utils.h"
 #include "components/safe_browsing/core/common/safe_browsing_prefs.h"
+#include "components/saved_tab_groups/features.h"
 #include "components/signin/public/base/signin_buildflags.h"
 #include "components/signin/public/base/signin_switches.h"
 #include "components/strings/grit/components_branded_strings.h"
@@ -386,6 +387,8 @@ void AddAppearanceStrings(content::WebUIDataSource* html_source,
       {"systemMode", IDS_NTP_CUSTOMIZE_CHROME_COLOR_SCHEME_MODE_SYSTEM_LABEL},
       {"showHomeButton", IDS_SETTINGS_SHOW_HOME_BUTTON},
       {"showBookmarksBar", IDS_SETTINGS_SHOW_BOOKMARKS_BAR},
+      {"showTabGroupsInBookmarksBar",
+       IDS_SETTINGS_SHOW_TAB_GROUPS_IN_BOOKMARKS_BAR},
       {"hoverCardTitle", IDS_SETTINGS_HOVER_CARD_TITLE},
       {"showHoverCardImages", IDS_SETTINGS_SHOW_HOVER_CARD_IMAGES},
       {"showHoverCardMemoryUsage", IDS_SETTINGS_SHOW_HOVER_CARD_MEMORY_USAGE},
@@ -437,6 +440,8 @@ void AddAppearanceStrings(content::WebUIDataSource* html_source,
   html_source->AddBoolean(
       "showHoverCardImagesOption",
       base::FeatureList::IsEnabled(features::kTabHoverCardImages));
+  html_source->AddBoolean("tabGroupsSaveUIUpdateEnabled",
+                          tab_groups::IsTabGroupsSaveUIUpdateEnabled());
 
 // TODO(crbug.com/40118868): Revisit the macro expression once build flag switch
 // of lacros-chrome is complete.

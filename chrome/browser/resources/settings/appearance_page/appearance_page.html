@@ -142,6 +142,12 @@
             label="$i18n{showBookmarksBar}">
         </settings-toggle-button>
 
+        <settings-toggle-button id="showSavedTabGroups"
+            hidden="[[!showSavedTabGroupsInBookmarksBar_]]"
+            pref="{{prefs.bookmark_bar.show_tab_groups}}"
+            label="$i18n{showTabGroupsInBookmarksBar}">
+        </settings-toggle-button>
+
         <template is="dom-if" if="[[!showHoverCardImagesOption_]]">
           <div class="hr" hidden="[[!pageVisibility.hoverCard]]"></div>
           <settings-toggle-button id="hoverCardMemoryUsageToggle"

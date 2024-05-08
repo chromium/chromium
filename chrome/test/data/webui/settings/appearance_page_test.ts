@@ -9,7 +9,7 @@ import {AppearanceBrowserProxyImpl, ColorSchemeMode, CustomizeColorSchemeModeBro
 import {assertEquals, assertFalse, assertTrue} from 'chrome://webui-test/chai_assert.js';
 import {TestBrowserProxy} from 'chrome://webui-test/test_browser_proxy.js';
 import {TestMock} from 'chrome://webui-test/test_mock.js';
-import {isVisible} from 'chrome://webui-test/test_util.js';
+import {isVisible, microtasksFinished} from 'chrome://webui-test/test_util.js';
 
 class TestAppearanceBrowserProxy extends TestBrowserProxy implements
     AppearanceBrowserProxy {
@@ -356,6 +356,24 @@ suite('AppearanceHandler', function() {
     });
     createAppearancePage();
     assertFalse(!!appearancePage.shadowRoot!.querySelector('#side-panel'));
+  });
+
+  test('ShowSavedTabGroupsToggleVisible', async function() {
+    loadTimeData.overrideValues({
+      tabGroupsSaveUIUpdateEnabled: true,
+    });
+    createAppearancePage();
+    await microtasksFinished();
+    assertTrue(isVisible(appearancePage.$.showSavedTabGroups));
+  });
+
+  test('ShowSavedTabGroupsToggleHidden', async function() {
+    loadTimeData.overrideValues({
+      tabGroupsSaveUIUpdateEnabled: false,
+    });
+    createAppearancePage();
+    await microtasksFinished();
+    assertFalse(isVisible(appearancePage.$.showSavedTabGroups));
   });
 });
 
