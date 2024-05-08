@@ -95,6 +95,8 @@ public class SearchActivityUnitTest {
         @IntentOrigin
         int getIntentOrigin(Intent intent);
 
+        String getReferrer(Intent intent);
+
         void resolveOmniboxRequestForResult(Activity activity, OmniboxLoadUrlParams params);
 
         GURL getIntentUrl(Intent intent);
@@ -119,6 +121,11 @@ public class SearchActivityUnitTest {
         public static void resolveOmniboxRequestForResult(
                 Activity activity, OmniboxLoadUrlParams params) {
             sMockUtils.resolveOmniboxRequestForResult(activity, params);
+        }
+
+        @Implementation
+        public static String getReferrer(Intent intent) {
+            return sMockUtils.getReferrer(intent);
         }
     }
 
@@ -756,6 +763,7 @@ public class SearchActivityUnitTest {
     @Test
     public void onResumeWithNative_fromCustomTabs_withoutPackage() {
         doReturn(IntentOrigin.CUSTOM_TAB).when(mUtils).getIntentOrigin(any());
+        doReturn(null).when(mUtils).getReferrer(any());
         mActivity.onNewIntent(new Intent());
         mActivity.onResumeWithNative();
 
@@ -766,8 +774,8 @@ public class SearchActivityUnitTest {
     @Test
     public void onResumeWithNative_fromCustomTabs_withPackage() {
         doReturn(IntentOrigin.CUSTOM_TAB).when(mUtils).getIntentOrigin(any());
+        doReturn("com.package.name").when(mUtils).getReferrer(any());
         mActivity.onNewIntent(new Intent());
-        doReturn("com.package.name").when(mActivity).getCallingPackage();
         mActivity.onResumeWithNative();
 
         verify(mUmaObserver).startUmaSession(eq(ActivityType.CUSTOM_TAB), eq(null), any());

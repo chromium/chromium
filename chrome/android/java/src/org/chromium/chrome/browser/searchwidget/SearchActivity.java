@@ -522,8 +522,11 @@ public class SearchActivity extends AsyncInitializationActivity
     public void onResumeWithNative() {
         // Start a new UMA session for the new activity.
         umaSessionResume();
-        if (mIntentOrigin == IntentOrigin.CUSTOM_TAB && !TextUtils.isEmpty(getCallingPackage())) {
-            RevenueStats.setCustomTabSearchClient(CCT_CLIENT_PACKAGE_PREFIX + getCallingPackage());
+        if (mIntentOrigin == IntentOrigin.CUSTOM_TAB) {
+            var referrer = SearchActivityUtils.getReferrer(getIntent());
+            if (!TextUtils.isEmpty(referrer)) {
+                RevenueStats.setCustomTabSearchClient(CCT_CLIENT_PACKAGE_PREFIX + referrer);
+            }
         }
 
         // Inform the actity lifecycle observers. Among other things, the observers record
