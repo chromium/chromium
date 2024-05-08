@@ -15,6 +15,7 @@ build_webui("build") {
     "assert.ts",
     "color_utils.ts",
     "cr.ts",
+    "cr_router.ts",
     "custom_element.ts",
     "drag_wrapper.ts",
     "event_tracker.ts",

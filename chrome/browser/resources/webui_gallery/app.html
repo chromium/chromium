@@ -48,7 +48,8 @@
 </style>
 <div id="sidebar">
   <h1>WebUI Gallery</h1>
-  <cr-menu-selector id="selector" selectable="a" selected-attribute="selected">
+  <cr-menu-selector id="selector" selectable="a" selected-attribute="selected"
+      on-iron-select="onMenuItemSelect_">
     <template is="dom-repeat" items="[[demos_]]">
       <a role="menuitem" href="[[item.path]]"
           class="cr-nav-menu-item">[[item.name]]</a>
@@ -62,7 +63,5 @@
     </cr-toggle>
   </div>
 </div>
-
-<iron-location path="{{path_}}"></iron-location>
 
 <div id="main"></div>

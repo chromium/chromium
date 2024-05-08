@@ -11,6 +11,7 @@ import '//resources/polymer/v3_0/iron-location/iron-location.js';
 import {ColorChangeUpdater, COLORS_CSS_SELECTOR} from '//resources/cr_components/color_change_listener/colors_css_updater.js';
 import type {CrMenuSelector} from '//resources/cr_elements/cr_menu_selector/cr_menu_selector.js';
 import {assert} from '//resources/js/assert.js';
+import {CrRouter} from '//resources/js/cr_router.js';
 import {PolymerElement} from '//resources/polymer/v3_0/polymer/polymer_bundled.min.js';
 
 import {getTemplate} from './app.html.js';
@@ -166,11 +167,6 @@ export class WebuiGalleryAppElement extends PolymerElement {
           ];
         },
       },
-
-      path_: {
-        type: String,
-        observer: 'onPathChanged_',
-      },
     };
   }
 
@@ -180,10 +176,20 @@ export class WebuiGalleryAppElement extends PolymerElement {
   override ready() {
     super.ready();
     ColorChangeUpdater.forDocument().start();
+    const router = CrRouter.getInstance();
+    this.onPathChanged_(router.getPath());
+    router.addEventListener(
+        'cr-router-path-changed',
+        (e: Event) => this.onPathChanged_((e as CustomEvent<string>).detail));
   }
 
-  private async onPathChanged_() {
-    const path = this.path_.substring(1);
+  private onMenuItemSelect_(e: CustomEvent<{item: HTMLAnchorElement}>): void {
+    const newUrl = new URL(e.detail.item.href);
+    CrRouter.getInstance().setPath(newUrl.pathname);
+  }
+
+  private async onPathChanged_(newPath: string) {
+    const path = newPath.substring(1);
     const demoIndex =
         path === '' ? 0 : this.demos_.findIndex(demo => demo.path === path);
     assert(demoIndex !== -1);

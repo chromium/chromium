@@ -8,6 +8,10 @@
 
 using WebUiJsTest = WebUIMochaBrowserTest;
 
+IN_PROC_BROWSER_TEST_F(WebUiJsTest, CrRouter) {
+  RunTest("js/cr_router_test.js", "runMochaSuite('CrRouterTest');");
+}
+
 IN_PROC_BROWSER_TEST_F(WebUiJsTest, SendWithPromise) {
   RunTest("js/cr_test.js", "runMochaSuite('CrSendWithPromiseTest');");
 }
