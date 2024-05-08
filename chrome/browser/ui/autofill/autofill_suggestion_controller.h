@@ -32,24 +32,22 @@ class AutofillSuggestionController : public AutofillPopupViewDelegate {
  public:
   // Acts as a factory method to create a new `AutofillSuggestionController`, or
   // reuse `previous` if the construction arguments are the same. `previous` may
-  // be invalidated by this call. The controller will listen for keyboard input
-  // routed to `web_contents` while the popup is showing, unless `web_contents`
-  // is null.
+  // be invalidated by this call.
   static base::WeakPtr<AutofillSuggestionController> GetOrCreate(
       base::WeakPtr<AutofillSuggestionController> previous,
-      base::WeakPtr<AutofillPopupDelegate> delegate,
+      base::WeakPtr<AutofillSuggestionDelegate> delegate,
       content::WebContents* web_contents,
       PopupControllerCommon controller_common,
       int32_t form_control_ax_id);
 
-  // Recalculates the height and width of the popup and triggers a redraw when
-  // suggestions change.
+  // Recalculates the height and width of the suggestion UI and triggers a
+  // redraw when suggestions change.
   virtual void OnSuggestionsChanged() = 0;
 
-  // Accepts the suggestion at `index`. The suggestion will only be accepted if
-  // the popup has been shown for at least `kIgnoreEarlyClicksOnPopupDuration`
-  // to allow ruling out accidental popup interactions (crbug.com/1279268).
-  static constexpr base::TimeDelta kIgnoreEarlyClicksOnPopupDuration =
+  // Accepts the suggestion at `index`. The suggestion is only accepted if the
+  // UI has been shown for at least `kIgnoreEarlyClicksOnSuggestionsDuration` to
+  // allow ruling out accidental UI interactions (crbug.com/1279268).
+  static constexpr base::TimeDelta kIgnoreEarlyClicksOnSuggestionsDuration =
       base::Milliseconds(500);
   virtual void AcceptSuggestion(int index) = 0;
 
@@ -75,7 +73,8 @@ class AutofillSuggestionController : public AutofillPopupViewDelegate {
   virtual std::optional<AutofillClient::PopupScreenLocation>
   GetPopupScreenLocation() const = 0;
 
-  // Shows the popup, or updates the existing popup with the given values.
+  // Shows the suggestion UI, or updates the existing suggestion UI with the
+  // given values.
   virtual void Show(std::vector<Suggestion> suggestions,
                     AutofillSuggestionTriggerSource trigger_source,
                     AutoselectFirstSuggestion autoselect_first_suggestion) = 0;
@@ -87,11 +86,11 @@ class AutofillSuggestionController : public AutofillPopupViewDelegate {
 
   virtual void SetKeepPopupOpenForTesting(bool keep_popup_open_for_testing) = 0;
 
-  // Updates the data list values currently shown with the popup.
+  // Updates the data list values currently shown.
   virtual void UpdateDataListValues(base::span<const SelectOption> options) = 0;
 
-  // Informs the controller that the popup may not be hidden by stale data or
-  // interactions with native Chrome UI. This state remains active until the
+  // Informs the controller that the suggestions may not be hidden by stale data
+  // or interactions with native Chrome UI. This state remains active until the
   // view is destroyed.
   virtual void PinView() = 0;
 

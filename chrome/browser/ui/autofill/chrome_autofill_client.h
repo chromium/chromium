@@ -196,7 +196,7 @@ class ChromeAutofillClient : public ContentAutofillClient,
   void HideTouchToFillCreditCard() override;
   void ShowAutofillSuggestions(
       const PopupOpenArgs& open_args,
-      base::WeakPtr<AutofillPopupDelegate> delegate) override;
+      base::WeakPtr<AutofillSuggestionDelegate> delegate) override;
   void UpdateAutofillDataListValues(
       base::span<const SelectOption> datalist) override;
   base::span<const Suggestion> GetAutofillSuggestions() const override;
@@ -270,7 +270,7 @@ class ChromeAutofillClient : public ContentAutofillClient,
   bool SupportsConsentlessExecution(const url::Origin& origin);
   void ShowAutofillSuggestionsImpl(
       const PopupOpenArgs& open_args,
-      base::WeakPtr<AutofillPopupDelegate> delegate);
+      base::WeakPtr<AutofillSuggestionDelegate> delegate);
   base::WeakPtr<ChromeAutofillClient> GetWeakPtr();
 
   std::unique_ptr<LogManager> log_manager_;

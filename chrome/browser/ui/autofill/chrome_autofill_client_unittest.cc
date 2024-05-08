@@ -31,7 +31,7 @@
 #include "components/autofill/core/browser/test_autofill_clock.h"
 #include "components/autofill/core/browser/test_browser_autofill_manager.h"
 #include "components/autofill/core/browser/test_personal_data_manager.h"
-#include "components/autofill/core/browser/ui/mock_autofill_popup_delegate.h"
+#include "components/autofill/core/browser/ui/mock_autofill_suggestion_delegate.h"
 #include "components/autofill/core/browser/ui/mock_fast_checkout_client.h"
 #include "components/autofill/core/common/form_field_data.h"
 #include "components/autofill/core/common/form_interactions_flow.h"
@@ -359,7 +359,7 @@ TEST_F(ChromeAutofillClientTest, AutofillManualFallbackIPH_IsShown) {
 
 TEST_F(ChromeAutofillClientTest,
        AutofillManualFallbackIPH_HideOnShowAutofillSuggestions) {
-  auto delegate = std::make_unique<MockAutofillPopupDelegate>();
+  auto delegate = std::make_unique<MockAutofillSuggestionDelegate>();
 
   EXPECT_CALL(*autofill_field_promo_controller_manual_fallback(), Hide);
   client()->ShowAutofillSuggestions(AutofillClient::PopupOpenArgs(),

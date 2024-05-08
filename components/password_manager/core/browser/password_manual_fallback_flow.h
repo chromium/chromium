@@ -8,7 +8,7 @@
 #include "base/functional/callback_forward.h"
 #include "base/memory/weak_ptr.h"
 #include "components/autofill/core/browser/filling_product.h"
-#include "components/autofill/core/browser/ui/autofill_popup_delegate.h"
+#include "components/autofill/core/browser/ui/autofill_suggestion_delegate.h"
 #include "components/autofill/core/browser/ui/suggestion.h"
 #include "components/autofill/core/browser/ui/suggestion_type.h"
 #include "components/password_manager/core/browser/form_fetcher_impl.h"
@@ -40,7 +40,7 @@ class PasswordManagerClient;
 
 // Displays all available passwords password suggestions on password and
 // non-password forms for all available passwords.
-class PasswordManualFallbackFlow : public autofill::AutofillPopupDelegate,
+class PasswordManualFallbackFlow : public autofill::AutofillSuggestionDelegate,
                                    public PasswordSuggestionFlow,
                                    public SavedPasswordsPresenter::Observer,
                                    public FormFetcher::Consumer {
@@ -65,11 +65,11 @@ class PasswordManualFallbackFlow : public autofill::AutofillPopupDelegate,
                const gfx::RectF& bounds,
                base::i18n::TextDirection text_direction) override;
 
-  // AutofillPopupDelegate:
+  // AutofillSuggestionDelegate:
   absl::variant<autofill::AutofillDriver*, PasswordManagerDriver*> GetDriver()
       override;
-  void OnPopupShown() override;
-  void OnPopupHidden() override;
+  void OnSuggestionsShown() override;
+  void OnSuggestionsHidden() override;
   void DidSelectSuggestion(const autofill::Suggestion& suggestion) override;
   void DidAcceptSuggestion(const autofill::Suggestion& suggestion,
                            const SuggestionPosition& position) override;

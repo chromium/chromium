@@ -37,7 +37,7 @@ class AXPlatformNode;
 
 namespace autofill {
 
-class AutofillPopupDelegate;
+class AutofillSuggestionDelegate;
 class AutofillPopupView;
 
 // Sub-popups and their parent popups are connected by providing children
@@ -113,7 +113,7 @@ class AutofillPopupControllerImpl
 
  protected:
   AutofillPopupControllerImpl(
-      base::WeakPtr<AutofillPopupDelegate> delegate,
+      base::WeakPtr<AutofillSuggestionDelegate> delegate,
       content::WebContents* web_contents,
       PopupControllerCommon controller_common,
       int32_t form_control_ax_id,
@@ -165,7 +165,7 @@ class AutofillPopupControllerImpl
   base::WeakPtr<content::WebContents> web_contents_;
   PopupControllerCommon controller_common_;
   base::WeakPtr<AutofillPopupView> view_;
-  base::WeakPtr<AutofillPopupDelegate> delegate_;
+  base::WeakPtr<AutofillSuggestionDelegate> delegate_;
 
   // A helper class for capturing key press events associated with a
   // `content::RenderFrameHost`.

@@ -14,7 +14,7 @@
 #include "base/task/cancelable_task_tracker.h"
 #include "base/types/strong_alias.h"
 #include "components/autofill/core/browser/autofill_client.h"
-#include "components/autofill/core/browser/ui/autofill_popup_delegate.h"
+#include "components/autofill/core/browser/ui/autofill_suggestion_delegate.h"
 #include "components/autofill/core/browser/ui/suggestion.h"
 #include "components/autofill/core/browser/ui/suggestion_type.h"
 #include "components/autofill/core/common/password_form_fill_data.h"
@@ -39,7 +39,7 @@ class PasswordManagerDriver;
 class PasswordSuggestionGenerator;
 
 // This class is responsible for filling password forms.
-class PasswordAutofillManager : public autofill::AutofillPopupDelegate {
+class PasswordAutofillManager : public autofill::AutofillSuggestionDelegate {
  public:
   PasswordAutofillManager(PasswordManagerDriver* password_manager_driver,
                           autofill::AutofillClient* autofill_client,
@@ -50,11 +50,11 @@ class PasswordAutofillManager : public autofill::AutofillPopupDelegate {
 
   ~PasswordAutofillManager() override;
 
-  // AutofillPopupDelegate implementation.
+  // AutofillSuggestionDelegate implementation.
   absl::variant<autofill::AutofillDriver*, PasswordManagerDriver*> GetDriver()
       override;
-  void OnPopupShown() override;
-  void OnPopupHidden() override;
+  void OnSuggestionsShown() override;
+  void OnSuggestionsHidden() override;
   void DidSelectSuggestion(const autofill::Suggestion& suggestion) override;
   void DidAcceptSuggestion(const autofill::Suggestion& suggestion,
                            const SuggestionPosition& position) override;

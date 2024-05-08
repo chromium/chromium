@@ -19,13 +19,13 @@ TestAutofillExternalDelegate::TestAutofillExternalDelegate(
 
 TestAutofillExternalDelegate::~TestAutofillExternalDelegate() = default;
 
-void TestAutofillExternalDelegate::OnPopupShown() {
+void TestAutofillExternalDelegate::OnSuggestionsShown() {
   popup_hidden_ = false;
 
-  AutofillExternalDelegate::OnPopupShown();
+  AutofillExternalDelegate::OnSuggestionsShown();
 }
 
-void TestAutofillExternalDelegate::OnPopupHidden() {
+void TestAutofillExternalDelegate::OnSuggestionsHidden() {
   popup_hidden_ = true;
 
   run_loop_.Quit();

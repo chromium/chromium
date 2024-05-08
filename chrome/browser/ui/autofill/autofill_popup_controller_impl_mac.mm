@@ -9,7 +9,7 @@
 #import "chrome/browser/ui/autofill/popup_controller_common.h"
 #import "chrome/browser/ui/cocoa/touchbar/web_textfield_touch_bar_controller.h"
 #include "components/autofill/core/browser/filling_product.h"
-#include "components/autofill/core/browser/ui/autofill_popup_delegate.h"
+#include "components/autofill/core/browser/ui/autofill_suggestion_delegate.h"
 #include "components/autofill/core/browser/ui/suggestion_type.h"
 
 using base::WeakPtr;
@@ -19,7 +19,7 @@ namespace autofill {
 // static
 WeakPtr<AutofillSuggestionController> AutofillSuggestionController::GetOrCreate(
     WeakPtr<AutofillSuggestionController> previous,
-    WeakPtr<AutofillPopupDelegate> delegate,
+    WeakPtr<AutofillSuggestionDelegate> delegate,
     content::WebContents* web_contents,
     PopupControllerCommon controller_common,
     int32_t form_control_ax_id) {
@@ -42,7 +42,7 @@ WeakPtr<AutofillSuggestionController> AutofillSuggestionController::GetOrCreate(
 }
 
 AutofillPopupControllerImplMac::AutofillPopupControllerImplMac(
-    base::WeakPtr<AutofillPopupDelegate> delegate,
+    base::WeakPtr<AutofillSuggestionDelegate> delegate,
     content::WebContents* web_contents,
     PopupControllerCommon controller_common,
     int32_t form_control_ax_id)

@@ -2,29 +2,29 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#ifndef COMPONENTS_AUTOFILL_CORE_BROWSER_UI_MOCK_AUTOFILL_POPUP_DELEGATE_H_
-#define COMPONENTS_AUTOFILL_CORE_BROWSER_UI_MOCK_AUTOFILL_POPUP_DELEGATE_H_
+#ifndef COMPONENTS_AUTOFILL_CORE_BROWSER_UI_MOCK_AUTOFILL_SUGGESTION_DELEGATE_H_
+#define COMPONENTS_AUTOFILL_CORE_BROWSER_UI_MOCK_AUTOFILL_SUGGESTION_DELEGATE_H_
 
 #include "base/functional/callback.h"
 #include "base/memory/weak_ptr.h"
-#include "components/autofill/core/browser/ui/autofill_popup_delegate.h"
+#include "components/autofill/core/browser/ui/autofill_suggestion_delegate.h"
 #include "testing/gmock/include/gmock/gmock.h"
 
 namespace autofill {
 
-// Mock version of AutofillPopupDelegate.
-class MockAutofillPopupDelegate : public AutofillPopupDelegate {
+// Mock version of AutofillSuggestionDelegate.
+class MockAutofillSuggestionDelegate : public AutofillSuggestionDelegate {
  public:
-  MockAutofillPopupDelegate();
-  ~MockAutofillPopupDelegate() override;
+  MockAutofillSuggestionDelegate();
+  ~MockAutofillSuggestionDelegate() override;
 
   MOCK_METHOD((absl::variant<AutofillDriver*,
                              password_manager::PasswordManagerDriver*>),
               GetDriver,
               (),
               (override));
-  MOCK_METHOD(void, OnPopupShown, (), (override));
-  MOCK_METHOD(void, OnPopupHidden, (), (override));
+  MOCK_METHOD(void, OnSuggestionsShown, (), (override));
+  MOCK_METHOD(void, OnSuggestionsHidden, (), (override));
   MOCK_METHOD(void,
               DidSelectSuggestion,
               (const Suggestion& suggestion),
@@ -32,7 +32,7 @@ class MockAutofillPopupDelegate : public AutofillPopupDelegate {
   MOCK_METHOD(void,
               DidAcceptSuggestion,
               (const Suggestion& suggestion,
-               const AutofillPopupDelegate::SuggestionPosition& position),
+               const AutofillSuggestionDelegate::SuggestionPosition& position),
               (override));
   MOCK_METHOD(void,
               DidPerformButtonActionForSuggestion,
@@ -42,12 +42,12 @@ class MockAutofillPopupDelegate : public AutofillPopupDelegate {
   MOCK_METHOD(void, ClearPreviewedForm, (), (override));
   MOCK_METHOD(FillingProduct, GetMainFillingProduct, (), (const, override));
 
-  base::WeakPtr<MockAutofillPopupDelegate> GetWeakPtr();
+  base::WeakPtr<MockAutofillSuggestionDelegate> GetWeakPtr();
 
  private:
-  base::WeakPtrFactory<MockAutofillPopupDelegate> weak_ptr_factory_{this};
+  base::WeakPtrFactory<MockAutofillSuggestionDelegate> weak_ptr_factory_{this};
 };
 
 }  // namespace autofill
 
-#endif  // COMPONENTS_AUTOFILL_CORE_BROWSER_UI_MOCK_AUTOFILL_POPUP_DELEGATE_H_
+#endif  // COMPONENTS_AUTOFILL_CORE_BROWSER_UI_MOCK_AUTOFILL_SUGGESTION_DELEGATE_H_

@@ -18,7 +18,7 @@ class WebContents;
 
 namespace autofill {
 
-class AutofillPopupDelegate;
+class AutofillSuggestionDelegate;
 struct SelectOption;
 struct Suggestion;
 
@@ -36,8 +36,10 @@ bool IsFooterSuggestionType(SuggestionType type);
 bool IsFooterItem(const std::vector<Suggestion>& suggestions,
                   size_t line_number);
 
-// Returns the RenderFrameHost` corresponding to an `AutofillPopupDelegate`.
-content::RenderFrameHost* GetRenderFrameHost(AutofillPopupDelegate& delegate);
+// Returns the RenderFrameHost` corresponding to an
+// `AutofillSuggestionDelegate`.
+content::RenderFrameHost* GetRenderFrameHost(
+    AutofillSuggestionDelegate& delegate);
 
 // Returns whether `descendendant` is a `descendant` of `ancestor`.
 bool IsAncestorOf(content::RenderFrameHost* ancestor,

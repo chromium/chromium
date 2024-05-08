@@ -66,7 +66,7 @@ void ObservingAutofillClient::WaitForAutofillPopup() {
 
 void ObservingAutofillClient::ShowAutofillSuggestions(
     const autofill::AutofillClient::PopupOpenArgs& open_args,
-    base::WeakPtr<autofill::AutofillPopupDelegate> delegate) {
+    base::WeakPtr<autofill::AutofillSuggestionDelegate> delegate) {
   if (run_loop_)
     run_loop_->Quit();
   run_loop_ = nullptr;

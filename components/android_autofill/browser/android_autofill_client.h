@@ -23,7 +23,7 @@
 
 namespace autofill {
 class AutocompleteHistoryManager;
-class AutofillPopupDelegate;
+class AutofillSuggestionDelegate;
 class CreditCard;
 class PersonalDataManager;
 class StrikeDatabase;
@@ -117,7 +117,7 @@ class AndroidAutofillClient : public autofill::ContentAutofillClient {
   void HideTouchToFillCreditCard() override;
   void ShowAutofillSuggestions(
       const autofill::AutofillClient::PopupOpenArgs& open_args,
-      base::WeakPtr<autofill::AutofillPopupDelegate> delegate) override;
+      base::WeakPtr<autofill::AutofillSuggestionDelegate> delegate) override;
   void UpdateAutofillDataListValues(
       base::span<const autofill::SelectOption> datalist) override;
   void PinAutofillSuggestions() override;

@@ -184,10 +184,10 @@ constexpr CGFloat kSuggestionIconWidth = 32;
   // The text entered by the user into the active field.
   NSString* _typedValue;
 
-  // Popup delegate for the most recent suggestions.
+  // Delegate for the most recent suggestions.
   // The reference is weak because a weak pointer is sent to our
   // BrowserAutofillManagerDelegate.
-  base::WeakPtr<autofill::AutofillPopupDelegate> _popupDelegate;
+  base::WeakPtr<autofill::AutofillSuggestionDelegate> _suggestionDelegate;
 
   // The autofill data that needs to be sent when the |webState_| is shown.
   std::optional<AutofillData> _pendingFormData;
@@ -310,10 +310,10 @@ constexpr CGFloat kSuggestionIconWidth = 32;
 }
 
 - (void)onSuggestionsReady:(NSArray<FormSuggestion*>*)suggestions
-             popupDelegate:
-                 (const base::WeakPtr<autofill::AutofillPopupDelegate>&)
-                     delegate {
-  _popupDelegate = delegate;
+        suggestionDelegate:
+            (const base::WeakPtr<autofill::AutofillSuggestionDelegate>&)
+                delegate {
+  _suggestionDelegate = delegate;
   _mostRecentSuggestions = suggestions;
   if (_suggestionsAvailableCompletion)
     _suggestionsAvailableCompletion([_mostRecentSuggestions count] > 0);
@@ -343,7 +343,7 @@ constexpr CGFloat kSuggestionIconWidth = 32;
   _typedValue = [typedValue copy];
 
   // Query the BrowserAutofillManager for suggestions. Results will arrive in
-  // -showAutofillPopup:popupDelegate:.
+  // -showAutofillPopup:suggestionDelegate:.
   _lastQueriedFieldID = field.global_id();
   autofill::AutofillDriverIOS::FromWebStateAndWebFrame(_webState, frame.get())
       ->AskForValuesToFill(form, field);
@@ -463,7 +463,7 @@ constexpr CGFloat kSuggestionIconWidth = 32;
        suggestion.popupItemId ==
            autofill::SuggestionType::kVirtualCreditCardEntry)) {
     _pendingAutocompleteFieldID = fieldRendererID;
-    if (_popupDelegate) {
+    if (_suggestionDelegate) {
       // TODO(crbug.com/41460687): Replace 0 with the index of the selected
       // suggestion.
       autofill::Suggestion autofill_suggestion;
@@ -478,7 +478,7 @@ constexpr CGFloat kSuggestionIconWidth = 32;
                 SysNSStringToUTF8(suggestion.backendIdentifier)));
       }
 
-      _popupDelegate->DidAcceptSuggestion(autofill_suggestion, {0, 0});
+      _suggestionDelegate->DidAcceptSuggestion(autofill_suggestion, {0, 0});
     }
     return;
   }
@@ -540,8 +540,8 @@ constexpr CGFloat kSuggestionIconWidth = 32;
 }
 
 - (autofill::FillingProduct)mainFillingProduct {
-  return _popupDelegate ? _popupDelegate->GetMainFillingProduct()
-                        : autofill::FillingProduct::kNone;
+  return _suggestionDelegate ? _suggestionDelegate->GetMainFillingProduct()
+                             : autofill::FillingProduct::kNone;
 }
 
 #pragma mark - AutofillDriverIOSBridge
@@ -663,9 +663,9 @@ constexpr CGFloat kSuggestionIconWidth = 32;
 
 - (void)showAutofillPopup:
             (const std::vector<autofill::Suggestion>&)popup_suggestions
-            popupDelegate:
-                (const base::WeakPtr<autofill::AutofillPopupDelegate>&)
-                    delegate {
+       suggestionDelegate:
+           (const base::WeakPtr<autofill::AutofillSuggestionDelegate>&)
+               delegate {
   // Convert the suggestions into an NSArray for the keyboard.
   NSMutableArray<FormSuggestion*>* suggestions = [[NSMutableArray alloc] init];
   for (auto popup_suggestion : popup_suggestions) {
@@ -772,15 +772,16 @@ constexpr CGFloat kSuggestionIconWidth = 32;
     }
   }
 
-  [self onSuggestionsReady:suggestions popupDelegate:delegate];
+  [self onSuggestionsReady:suggestions suggestionDelegate:delegate];
 
   if (delegate)
-    delegate->OnPopupShown();
+    delegate->OnSuggestionsShown();
 }
 
 - (void)hideAutofillPopup {
-  [self onSuggestionsReady:@[]
-             popupDelegate:base::WeakPtr<autofill::AutofillPopupDelegate>()];
+  [self
+      onSuggestionsReady:@[]
+      suggestionDelegate:base::WeakPtr<autofill::AutofillSuggestionDelegate>()];
 }
 
 - (bool)isLastQueriedField:(autofill::FieldGlobalId)fieldID {
@@ -893,7 +894,7 @@ constexpr CGFloat kSuggestionIconWidth = 32;
                  autofill::features::kAutofillEnableXHRSubmissionDetectionIOS));
 
   if (frame->IsMainFrame()) {
-    _popupDelegate.reset();
+    _suggestionDelegate.reset();
     _suggestionsAvailableCompletion = nil;
     _suggestionHandledCompletion = nil;
     _mostRecentSuggestions = nil;

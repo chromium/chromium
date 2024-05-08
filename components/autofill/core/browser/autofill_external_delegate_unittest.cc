@@ -88,7 +88,8 @@ using ::testing::Return;
 using ::testing::SizeIs;
 using ::testing::StartsWith;
 
-using SuggestionPosition = autofill::AutofillPopupDelegate::SuggestionPosition;
+using SuggestionPosition =
+    autofill::AutofillSuggestionDelegate::SuggestionPosition;
 
 constexpr auto kDefaultTriggerSource =
     AutofillSuggestionTriggerSource::kFormControlElementClicked;
@@ -197,7 +198,7 @@ class MockAutofillClient : public TestAutofillClient {
   MOCK_METHOD(void,
               ShowAutofillSuggestions,
               (const autofill::AutofillClient::PopupOpenArgs& open_args,
-               base::WeakPtr<AutofillPopupDelegate> delegate),
+               base::WeakPtr<AutofillSuggestionDelegate> delegate),
               (override));
   MOCK_METHOD(void,
               UpdateAutofillDataListValues,
@@ -953,8 +954,8 @@ TEST_F(AutofillExternalDelegateUnitTest, UpdateDataListWhileShowingPopup) {
                                             autofill_item);
 
   // This would normally get called from ShowAutofillSuggestions, but it is
-  // mocked so we need to call OnPopupShown ourselves.
-  external_delegate().OnPopupShown();
+  // mocked so we need to call OnSuggestionsShown ourselves.
+  external_delegate().OnSuggestionsShown();
 
   // Update the current data list and ensure the popup is updated.
   data_list_items.emplace_back();
@@ -1299,7 +1300,7 @@ TEST_F(AutofillExternalDelegateUnitTest,
                   queried_field().global_id(),
                   mojom::AutofillSuggestionAvailability::kNoSuggestions));
 
-  external_delegate().OnPopupShown();
+  external_delegate().OnSuggestionsShown();
 }
 
 // Test that a11y autofill availability is set to `kAutofillAvailable` when
@@ -1318,7 +1319,7 @@ TEST_F(AutofillExternalDelegateUnitTest,
                   queried_field().global_id(),
                   mojom::AutofillSuggestionAvailability::kAutofillAvailable));
 
-  external_delegate().OnPopupShown();
+  external_delegate().OnSuggestionsShown();
 }
 
 // Test that a11y autofill availability is set to `kAutocompleteAvailable` when
@@ -1338,7 +1339,7 @@ TEST_F(AutofillExternalDelegateUnitTest,
           queried_field().global_id(),
           mojom::AutofillSuggestionAvailability::kAutocompleteAvailable));
 
-  external_delegate().OnPopupShown();
+  external_delegate().OnSuggestionsShown();
 }
 
 // Test parameter data for asserting filling method metrics depending on the
@@ -1520,7 +1521,7 @@ TEST_F(AutofillExternalDelegateUnitTest,
       queried_field().global_id(),
       {test::CreateAutofillSuggestion(SuggestionType::kDevtoolsTestAddresses,
                                       u"Devtools")});
-  external_delegate().OnPopupShown();
+  external_delegate().OnSuggestionsShown();
   histogram_tester.ExpectUniqueSample(
       "Autofill.TestAddressesEvent",
       autofill_metrics::AutofillInDevtoolsTestAddressesEvents::
@@ -1571,8 +1572,8 @@ TEST_F(AutofillExternalDelegateUnitTest,
       test::CreateAutofillSuggestion(SuggestionType::kAddressEntry,
                                      u"John Legend",
                                      Suggestion::Guid(profile.guid())),
-      AutofillPopupDelegate::SuggestionPosition{.row =
-                                                    suggestion_accepted_row});
+      AutofillSuggestionDelegate::SuggestionPosition{
+          .row = suggestion_accepted_row});
 
   histogram_tester.ExpectUniqueSample("Autofill.SuggestionAcceptedIndex",
                                       suggestion_accepted_row, 1);
@@ -2244,7 +2245,7 @@ TEST_F(AutofillExternalDelegateUnitTest,
   external_delegate().OnSuggestionsReturned(
       queried_field().global_id(),
       {Suggestion(SuggestionType::kScanCreditCard)});
-  external_delegate().OnPopupShown();
+  external_delegate().OnSuggestionsShown();
 
   histogram.ExpectUniqueSample("Autofill.ScanCreditCardPrompt",
                                AutofillMetrics::SCAN_CARD_ITEM_SHOWN, 1);
@@ -2257,7 +2258,7 @@ TEST_F(AutofillExternalDelegateUnitTest,
   external_delegate().OnSuggestionsReturned(
       queried_field().global_id(),
       {Suggestion(SuggestionType::kScanCreditCard)});
-  external_delegate().OnPopupShown();
+  external_delegate().OnSuggestionsShown();
 
   external_delegate().DidAcceptSuggestion(
       Suggestion(SuggestionType::kScanCreditCard),
@@ -2279,7 +2280,7 @@ TEST_F(AutofillExternalDelegateUnitTest,
   external_delegate().OnSuggestionsReturned(
       queried_field().global_id(),
       {Suggestion(SuggestionType::kScanCreditCard)});
-  external_delegate().OnPopupShown();
+  external_delegate().OnSuggestionsShown();
 
   external_delegate().DidAcceptSuggestion(
       Suggestion(SuggestionType::kCreditCardEntry),
@@ -2299,7 +2300,7 @@ TEST_F(AutofillExternalDelegateUnitTest,
   base::HistogramTester histogram;
   IssueOnQuery();
   external_delegate().OnSuggestionsReturned(queried_field().global_id(), {});
-  external_delegate().OnPopupShown();
+  external_delegate().OnSuggestionsShown();
   histogram.ExpectTotalCount("Autofill.ScanCreditCardPrompt", 0);
 }
 
@@ -2310,7 +2311,7 @@ TEST_F(AutofillExternalDelegateUnitTest, AutocompleteShown_MetricsEmitted) {
       queried_field().global_id(),
       {test::CreateAutofillSuggestion(SuggestionType::kAutocompleteEntry,
                                       u"autocomplete")});
-  external_delegate().OnPopupShown();
+  external_delegate().OnSuggestionsShown();
   histogram.ExpectBucketCount("Autocomplete.Events2",
                               AutofillMetrics::AUTOCOMPLETE_SUGGESTIONS_SHOWN,
                               1);

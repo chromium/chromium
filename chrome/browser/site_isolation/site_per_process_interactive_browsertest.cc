@@ -66,11 +66,6 @@
 #include "third_party/abseil-cpp/absl/types/variant.h"
 #endif  // BUILDFLAG(ENABLE_PDF)
 
-namespace autofill {
-class AutofillPopupDelegate;
-struct Suggestion;
-}  // namespace autofill
-
 namespace {
 
 // Counts and returns the number of RenderWidgetHosts in the browser process.

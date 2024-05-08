@@ -36,7 +36,7 @@
 #include "components/autofill/core/browser/autofill_manager.h"
 #include "components/autofill/core/browser/autofill_test_utils.h"
 #include "components/autofill/core/browser/browser_autofill_manager_test_api.h"
-#include "components/autofill/core/browser/ui/autofill_popup_delegate.h"
+#include "components/autofill/core/browser/ui/autofill_suggestion_delegate.h"
 #include "components/autofill/core/browser/ui/suggestion.h"
 #include "components/autofill/core/browser/ui/suggestion_hiding_reason.h"
 #include "components/autofill/core/browser/ui/suggestion_type.h"
@@ -139,7 +139,7 @@ TEST_F(AutofillSuggestionControllerTest, ShowTwice) {
 
 // Tests that the AED is informed when suggestions were shown.
 TEST_F(AutofillSuggestionControllerTest, ShowInformsDelegate) {
-  EXPECT_CALL(manager().external_delegate(), OnPopupShown());
+  EXPECT_CALL(manager().external_delegate(), OnSuggestionsShown());
   ShowSuggestions(manager(), {SuggestionType::kAddressEntry});
 }
 
@@ -340,7 +340,7 @@ TEST_F(AutofillSuggestionControllerTest, ProperlyResetController) {
 
 TEST_F(AutofillSuggestionControllerTest, HidingClearsPreview) {
   EXPECT_CALL(manager().external_delegate(), ClearPreviewedForm());
-  EXPECT_CALL(manager().external_delegate(), OnPopupHidden());
+  EXPECT_CALL(manager().external_delegate(), OnSuggestionsHidden());
   client().popup_controller(manager()).DoHide();
 }
 

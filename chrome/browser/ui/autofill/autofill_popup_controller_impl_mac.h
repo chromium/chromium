@@ -13,10 +13,11 @@ namespace autofill {
 
 class AutofillPopupControllerImplMac : public AutofillPopupControllerImpl {
  public:
-  AutofillPopupControllerImplMac(base::WeakPtr<AutofillPopupDelegate> delegate,
-                                 content::WebContents* web_contents,
-                                 PopupControllerCommon controller_common,
-                                 int32_t form_control_ax_id);
+  AutofillPopupControllerImplMac(
+      base::WeakPtr<AutofillSuggestionDelegate> delegate,
+      content::WebContents* web_contents,
+      PopupControllerCommon controller_common,
+      int32_t form_control_ax_id);
 
   AutofillPopupControllerImplMac(const AutofillPopupControllerImplMac&) =
       delete;

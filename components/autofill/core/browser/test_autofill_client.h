@@ -396,7 +396,7 @@ class TestAutofillClientTemplate : public T {
 
   void ShowAutofillSuggestions(
       const AutofillClient::PopupOpenArgs& open_args,
-      base::WeakPtr<AutofillPopupDelegate> delegate) override {
+      base::WeakPtr<AutofillSuggestionDelegate> delegate) override {
     is_showing_popup_ = true;
   }
 

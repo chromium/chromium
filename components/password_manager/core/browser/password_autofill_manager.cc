@@ -158,9 +158,9 @@ PasswordAutofillManager::GetDriver() {
   return password_manager_driver_.get();
 }
 
-void PasswordAutofillManager::OnPopupShown() {}
+void PasswordAutofillManager::OnSuggestionsShown() {}
 
-void PasswordAutofillManager::OnPopupHidden() {}
+void PasswordAutofillManager::OnSuggestionsHidden() {}
 
 void PasswordAutofillManager::DidSelectSuggestion(
     const Suggestion& suggestion) {

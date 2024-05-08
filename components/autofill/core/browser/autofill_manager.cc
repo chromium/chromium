@@ -448,7 +448,7 @@ void AutofillManager::OnHidePopup() {
   OnHidePopupImpl();
 }
 
-void AutofillManager::OnPopupHidden() {
+void AutofillManager::OnSuggestionsHidden() {
   driver().PopupHidden();
   NotifyObservers(&Observer::OnSuggestionsHidden);
 }

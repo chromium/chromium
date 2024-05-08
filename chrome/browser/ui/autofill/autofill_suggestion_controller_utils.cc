@@ -99,7 +99,8 @@ bool IsFooterItem(const std::vector<Suggestion>& suggestions,
              : IsFooterSuggestionType(type);
 }
 
-content::RenderFrameHost* GetRenderFrameHost(AutofillPopupDelegate& delegate) {
+content::RenderFrameHost* GetRenderFrameHost(
+    AutofillSuggestionDelegate& delegate) {
   return absl::visit(
       base::Overloaded{
           [](AutofillDriver* driver) {

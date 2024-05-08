@@ -17,7 +17,7 @@
 #include "components/autofill/content/browser/content_autofill_client.h"
 #include "components/autofill/core/browser/crowdsourcing/autofill_crowdsourcing_manager.h"
 #include "components/autofill/core/browser/payments/legal_message_line.h"
-#include "components/autofill/core/browser/ui/autofill_popup_delegate.h"
+#include "components/autofill/core/browser/ui/autofill_suggestion_delegate.h"
 #include "components/autofill/core/browser/ui/suggestion.h"
 #include "components/autofill/core/browser/ui/suggestion_type.h"
 #include "components/autofill/core/browser/webdata/autofill_webdata_service.h"
@@ -199,7 +199,7 @@ void AndroidAutofillClient::HideTouchToFillCreditCard() {}
 
 void AndroidAutofillClient::ShowAutofillSuggestions(
     const autofill::AutofillClient::PopupOpenArgs& open_args,
-    base::WeakPtr<autofill::AutofillPopupDelegate> delegate) {
+    base::WeakPtr<autofill::AutofillSuggestionDelegate> delegate) {
   NOTIMPLEMENTED();
 }
 

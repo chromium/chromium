@@ -1286,7 +1286,7 @@ TEST_F(AutofillMetricsTest, CreditCardCheckoutFlowUserActions) {
         test::CreateAutofillSuggestion(SuggestionType::kCreditCardEntry,
                                        u"Test",
                                        Suggestion::Guid(kTestLocalCardId)),
-        AutofillPopupDelegate::SuggestionPosition{.row = 0});
+        AutofillSuggestionDelegate::SuggestionPosition{.row = 0});
 
     EXPECT_EQ(1,
               user_action_tester.GetActionCount("Autofill_SelectedSuggestion"));
@@ -1312,7 +1312,7 @@ TEST_F(AutofillMetricsTest, CreditCardCheckoutFlowUserActions) {
 
     external_delegate().DidAcceptSuggestion(
         Suggestion(SuggestionType::kClearForm),
-        AutofillPopupDelegate::SuggestionPosition{.row = 0});
+        AutofillSuggestionDelegate::SuggestionPosition{.row = 0});
 
     EXPECT_EQ(
         1, user_action_tester.GetActionCount("Autofill_UndoPaymentsAutofill"));
@@ -1340,7 +1340,7 @@ TEST_F(AutofillMetricsTest, CreditCardCheckoutFlowUserActions) {
         test::CreateAutofillSuggestion(SuggestionType::kCreditCardEntry,
                                        u"Test",
                                        Suggestion::Guid(kTestLocalCardId)),
-        AutofillPopupDelegate::SuggestionPosition{.row = 0});
+        AutofillSuggestionDelegate::SuggestionPosition{.row = 0});
 
     EXPECT_EQ(1,
               user_action_tester.GetActionCount("Autofill_SelectedSuggestion"));
@@ -1469,7 +1469,7 @@ TEST_F(AutofillMetricsTest, ProfileCheckoutFlowUserActions) {
         test::CreateAutofillSuggestion(SuggestionType::kCreditCardEntry,
                                        u"Test",
                                        Suggestion::Guid(kTestProfileId)),
-        AutofillPopupDelegate::SuggestionPosition{.row = 0});
+        AutofillSuggestionDelegate::SuggestionPosition{.row = 0});
 
     EXPECT_EQ(1,
               user_action_tester.GetActionCount("Autofill_SelectedSuggestion"));

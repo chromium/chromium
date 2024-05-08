@@ -128,9 +128,9 @@ PasswordManualFallbackFlow::GetDriver() {
   return password_manager_driver_.get();
 }
 
-void PasswordManualFallbackFlow::OnPopupShown() {}
+void PasswordManualFallbackFlow::OnSuggestionsShown() {}
 
-void PasswordManualFallbackFlow::OnPopupHidden() {}
+void PasswordManualFallbackFlow::OnSuggestionsHidden() {}
 
 void PasswordManualFallbackFlow::DidSelectSuggestion(
     const Suggestion& suggestion) {

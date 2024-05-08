@@ -337,7 +337,7 @@ AutofillExternalDelegate::GetDriver() {
   return &manager_->driver();
 }
 
-void AutofillExternalDelegate::OnPopupShown() {
+void AutofillExternalDelegate::OnSuggestionsShown() {
   // Popups are expected to be Autofill or Autocomplete.
   DCHECK_NE(GetMainFillingProduct(), FillingProduct::kPassword);
 
@@ -388,8 +388,8 @@ void AutofillExternalDelegate::OnPopupShown() {
   }
 }
 
-void AutofillExternalDelegate::OnPopupHidden() {
-  manager_->OnPopupHidden();
+void AutofillExternalDelegate::OnSuggestionsHidden() {
+  manager_->OnSuggestionsHidden();
 }
 
 void AutofillExternalDelegate::DidSelectSuggestion(

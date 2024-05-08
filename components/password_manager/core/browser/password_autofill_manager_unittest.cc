@@ -99,11 +99,12 @@ using testing::ReturnRef;
 using testing::SizeIs;
 using testing::Unused;
 
-using SuggestionPosition = autofill::AutofillPopupDelegate::SuggestionPosition;
+using SuggestionPosition =
+    autofill::AutofillSuggestionDelegate::SuggestionPosition;
 using UkmEntry = ukm::builders::PageWithPassword;
 
 namespace autofill {
-class AutofillPopupDelegate;
+class AutofillSuggestionDelegate;
 }
 
 namespace password_manager {
@@ -217,7 +218,7 @@ class MockAutofillClient : public autofill::TestAutofillClient {
   MOCK_METHOD(void,
               ShowAutofillSuggestions,
               (const autofill::AutofillClient::PopupOpenArgs& open_args,
-               base::WeakPtr<autofill::AutofillPopupDelegate> delegate),
+               base::WeakPtr<autofill::AutofillSuggestionDelegate> delegate),
               (override));
   MOCK_METHOD(void, PinAutofillSuggestions, (), (override));
   MOCK_METHOD(void,

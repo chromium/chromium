@@ -44,11 +44,12 @@ using ::testing::Return;
 using SingleEntryRemovalMethod =
     autofill::AutofillMetrics::SingleEntryRemovalMethod;
 
-Matcher<const AutofillPopupDelegate::SuggestionPosition&>
-EqualsSuggestionPosition(AutofillPopupDelegate::SuggestionPosition position) {
+Matcher<const AutofillSuggestionDelegate::SuggestionPosition&>
+EqualsSuggestionPosition(
+    AutofillSuggestionDelegate::SuggestionPosition position) {
   return AllOf(
-      Field(&AutofillPopupDelegate::SuggestionPosition::row, position.row),
-      Field(&AutofillPopupDelegate::SuggestionPosition::sub_popup_level,
+      Field(&AutofillSuggestionDelegate::SuggestionPosition::row, position.row),
+      Field(&AutofillSuggestionDelegate::SuggestionPosition::sub_popup_level,
             position.sub_popup_level));
 }
 
@@ -66,21 +67,21 @@ TEST_F(AutofillPopupControllerImplTest, SubPopupIsCreatedWithViewFromParent) {
 
 TEST_F(AutofillPopupControllerImplTest,
        DelegateMethodsAreCalledOnlyByRootPopup) {
-  EXPECT_CALL(manager().external_delegate(), OnPopupShown()).Times(0);
+  EXPECT_CALL(manager().external_delegate(), OnSuggestionsShown()).Times(0);
   base::WeakPtr<AutofillSuggestionController> sub_controller =
       client().popup_controller(manager()).OpenSubPopup(
           {0, 0, 10, 10}, {}, AutoselectFirstSuggestion(false));
 
-  EXPECT_CALL(manager().external_delegate(), OnPopupHidden()).Times(0);
+  EXPECT_CALL(manager().external_delegate(), OnSuggestionsHidden()).Times(0);
   sub_controller->Hide(SuggestionHidingReason::kUserAborted);
 
-  EXPECT_CALL(manager().external_delegate(), OnPopupHidden());
+  EXPECT_CALL(manager().external_delegate(), OnSuggestionsHidden());
   client().popup_controller(manager()).Hide(
       SuggestionHidingReason::kUserAborted);
 }
 
 TEST_F(AutofillPopupControllerImplTest, EventsAreDelegatedToChildrenAndView) {
-  EXPECT_CALL(manager().external_delegate(), OnPopupShown()).Times(0);
+  EXPECT_CALL(manager().external_delegate(), OnSuggestionsShown()).Times(0);
   base::WeakPtr<AutofillSuggestionController> sub_controller =
       client().popup_controller(manager()).OpenSubPopup(
           {0, 0, 10, 10}, {}, AutoselectFirstSuggestion(false));

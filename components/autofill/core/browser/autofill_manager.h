@@ -155,7 +155,7 @@ class AutofillManager
                                         FormGlobalId form,
                                         FieldTypeSource source) {}
 
-    // Fired when the popup is *actually* shown or hidden.
+    // Fired when the suggestions are *actually* shown or hidden.
     virtual void OnSuggestionsShown(AutofillManager& manager) {}
     virtual void OnSuggestionsHidden(AutofillManager& manager) {}
 
@@ -279,11 +279,11 @@ class AutofillManager
   // Invoked when textfield editing ended
   void OnDidEndTextFieldEditing();
 
-  // Invoked when popup window should be hidden.
+  // Invoked when the suggestions should be hidden.
   void OnHidePopup();
 
-  // Invoked when popup window is actually hidden.
-  void OnPopupHidden();
+  // Invoked when the suggestions are actually hidden.
+  void OnSuggestionsHidden();
 
   // Invoked when the options of a select element in the |form| changed.
   void OnSelectOrSelectListFieldOptionsDidChange(const FormData& form);

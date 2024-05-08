@@ -18,7 +18,7 @@
 #include "components/autofill/core/browser/address_data_manager.h"
 #include "components/autofill/core/browser/autofill_client.h"
 #include "components/autofill/core/browser/autofill_trigger_details.h"
-#include "components/autofill/core/browser/ui/autofill_popup_delegate.h"
+#include "components/autofill/core/browser/ui/autofill_suggestion_delegate.h"
 #include "components/autofill/core/browser/ui/suggestion.h"
 #include "components/autofill/core/browser/ui/suggestion_type.h"
 #include "components/autofill/core/common/aliases.h"
@@ -34,7 +34,7 @@ class CreditCard;
 enum class CreditCardFetchResult;
 
 // Delegate for in-browser Autocomplete and Autofill display and selection.
-class AutofillExternalDelegate : public AutofillPopupDelegate,
+class AutofillExternalDelegate : public AutofillSuggestionDelegate,
                                  public AddressDataManager::Observer {
  public:
   class ScopedAutofillPopupShortcutForTesting;
@@ -52,11 +52,11 @@ class AutofillExternalDelegate : public AutofillPopupDelegate,
   // first layer of the Autofill popup and can fill form fields.
   static bool IsAutofillAndFirstLayerSuggestionId(SuggestionType item_id);
 
-  // AutofillPopupDelegate implementation.
+  // AutofillSuggestionDelegate implementation.
   absl::variant<AutofillDriver*, password_manager::PasswordManagerDriver*>
   GetDriver() override;
-  void OnPopupShown() override;
-  void OnPopupHidden() override;
+  void OnSuggestionsShown() override;
+  void OnSuggestionsHidden() override;
   void DidSelectSuggestion(const Suggestion& suggestion) override;
   void DidAcceptSuggestion(const Suggestion& suggestion,
                            const SuggestionPosition& position) override;

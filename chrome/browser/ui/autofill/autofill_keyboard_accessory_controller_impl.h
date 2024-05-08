@@ -27,7 +27,7 @@ class Profile;
 
 namespace autofill {
 
-class AutofillPopupDelegate;
+class AutofillSuggestionDelegate;
 class AutofillKeyboardAccessoryView;
 struct Suggestion;
 
@@ -40,7 +40,7 @@ class AutofillKeyboardAccessoryControllerImpl
       password_manager::metrics_util::PasswordMigrationWarningTriggers)>;
 
   AutofillKeyboardAccessoryControllerImpl(
-      base::WeakPtr<AutofillPopupDelegate> delegate,
+      base::WeakPtr<AutofillSuggestionDelegate> delegate,
       content::WebContents* web_contents,
       PopupControllerCommon controller_common,
       ShowPasswordMigrationWarningCallback show_pwd_migration_warning_callback);
@@ -112,7 +112,7 @@ class AutofillKeyboardAccessoryControllerImpl
   // Hides the view and asynchronously deletes itself.
   void HideViewAndDie();
 
-  base::WeakPtr<AutofillPopupDelegate> delegate_;
+  base::WeakPtr<AutofillSuggestionDelegate> delegate_;
   base::WeakPtr<content::WebContents> web_contents_;
   PopupControllerCommon controller_common_;
 

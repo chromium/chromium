@@ -27,7 +27,7 @@
 #include "components/autofill/core/browser/metrics/granular_filling_metrics.h"
 #include "components/autofill/core/browser/payments_data_manager.h"
 #include "components/autofill/core/browser/personal_data_manager.h"
-#include "components/autofill/core/browser/ui/autofill_popup_delegate.h"
+#include "components/autofill/core/browser/ui/autofill_suggestion_delegate.h"
 #include "components/autofill/core/browser/ui/suggestion_hiding_reason.h"
 #include "components/autofill/core/browser/ui/suggestion_type.h"
 #include "components/autofill/core/common/autofill_features.h"
@@ -76,7 +76,7 @@ Suggestion::Text CreateLabel(const Suggestion& suggestion) {
 base::WeakPtr<AutofillSuggestionController>
 AutofillSuggestionController::GetOrCreate(
     base::WeakPtr<AutofillSuggestionController> previous,
-    base::WeakPtr<AutofillPopupDelegate> delegate,
+    base::WeakPtr<AutofillSuggestionDelegate> delegate,
     content::WebContents* web_contents,
     PopupControllerCommon controller_common,
     int32_t form_control_ax_id) {
@@ -105,7 +105,7 @@ AutofillSuggestionController::GetOrCreate(
 
 AutofillKeyboardAccessoryControllerImpl::
     AutofillKeyboardAccessoryControllerImpl(
-        base::WeakPtr<AutofillPopupDelegate> delegate,
+        base::WeakPtr<AutofillSuggestionDelegate> delegate,
         content::WebContents* web_contents,
         PopupControllerCommon controller_common,
         ShowPasswordMigrationWarningCallback
@@ -141,7 +141,7 @@ void AutofillKeyboardAccessoryControllerImpl::Hide(
 
   if (delegate_) {
     delegate_->ClearPreviewedForm();
-    delegate_->OnPopupHidden();
+    delegate_->OnSuggestionsHidden();
   }
   popup_hide_helper_.reset();
   AutofillMetrics::LogAutofillSuggestionHidingReason(reason);
@@ -236,8 +236,8 @@ void AutofillKeyboardAccessoryControllerImpl::AcceptSuggestion(int index) {
       base::TimeTicks::Now() - time_view_shown_.value();
   // If `kAutofillPopupImprovedTimingChecksV2` is enabled, then
   // `time_view_shown_` will remain null for at least
-  // `kIgnoreEarlyClicksOnPopupDuration`. Therefore we do not have to check any
-  // times here.
+  // `kIgnoreEarlyClicksOnSuggestionsDuration`. Therefore we do not have to
+  // check any times here.
   // TODO(crbug.com/40279821): Once `kAutofillPopupImprovedTimingChecksV2` is
   // launched, clean up most of the timing checks. That is:
   // - Remove paint checks inside views.
@@ -245,13 +245,13 @@ void AutofillKeyboardAccessoryControllerImpl::AcceptSuggestion(int index) {
   // - Rename `NextIdleTimeTicks` to `IdleDelayBarrier` or something similar
   //   that indicates that just contains a boolean signaling whether a certain
   //   delay has (safely) passed.
-  if (time_elapsed < kIgnoreEarlyClicksOnPopupDuration &&
+  if (time_elapsed < kIgnoreEarlyClicksOnSuggestionsDuration &&
       !disable_threshold_for_testing_ &&
       !base::FeatureList::IsEnabled(
           features::kAutofillPopupImprovedTimingChecksV2)) {
     base::UmaHistogramCustomTimes(
         "Autofill.Popup.AcceptanceDelayThresholdNotMet", time_elapsed,
-        base::Milliseconds(0), kIgnoreEarlyClicksOnPopupDuration,
+        base::Milliseconds(0), kIgnoreEarlyClicksOnSuggestionsDuration,
         /*buckets=*/50);
     return;
   }
@@ -285,7 +285,7 @@ void AutofillKeyboardAccessoryControllerImpl::AcceptSuggestion(int index) {
   }
 
   delegate_->DidAcceptSuggestion(
-      suggestion, AutofillPopupDelegate::SuggestionPosition{.row = index});
+      suggestion, AutofillSuggestionDelegate::SuggestionPosition{.row = index});
 
   if (suggestion.type == SuggestionType::kPasswordEntry &&
       base::FeatureList::IsEnabled(
@@ -471,8 +471,8 @@ void AutofillKeyboardAccessoryControllerImpl::Show(
   }
 
   time_view_shown_ = NextIdleTimeTicks::CaptureNextIdleTimeTicksWithDelay(
-      kIgnoreEarlyClicksOnPopupDuration);
-  delegate_->OnPopupShown();
+      kIgnoreEarlyClicksOnSuggestionsDuration);
+  delegate_->OnSuggestionsShown();
 }
 
 void AutofillKeyboardAccessoryControllerImpl::DisableThresholdForTesting(
@@ -604,7 +604,7 @@ void AutofillKeyboardAccessoryControllerImpl::SetViewForTesting(
     std::unique_ptr<AutofillKeyboardAccessoryView> view) {
   view_ = std::move(view);
   time_view_shown_ = NextIdleTimeTicks::CaptureNextIdleTimeTicksWithDelay(
-      kIgnoreEarlyClicksOnPopupDuration);
+      kIgnoreEarlyClicksOnSuggestionsDuration);
 }
 
 }  // namespace autofill

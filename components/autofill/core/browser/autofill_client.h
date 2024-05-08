@@ -80,7 +80,7 @@ class AutofillMlPredictionModelHandler;
 class AutofillOfferData;
 class AutofillOfferManager;
 class AutofillOptimizationGuide;
-class AutofillPopupDelegate;
+class AutofillSuggestionDelegate;
 class AutofillProfile;
 class CreditCard;
 enum class CreditCardFetchResult;
@@ -649,10 +649,10 @@ class AutofillClient {
   // Shows Autofill suggestions with the given `values`, `labels`, `icons`, and
   // `identifiers` for the element at `element_bounds`. `delegate` will be
   // notified of suggestion events, e.g., the user accepting a suggestion.
-  // The popup is shown asynchronously on Desktop and Android.
+  // The suggestions are shown asynchronously on Desktop and Android.
   virtual void ShowAutofillSuggestions(
       const PopupOpenArgs& open_args,
-      base::WeakPtr<AutofillPopupDelegate> delegate) = 0;
+      base::WeakPtr<AutofillSuggestionDelegate> delegate) = 0;
 
   // Update the data list values shown by the Autofill suggestions, if visible.
   virtual void UpdateAutofillDataListValues(

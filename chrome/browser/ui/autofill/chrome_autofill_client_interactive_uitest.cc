@@ -41,7 +41,7 @@ class MockAutofillExternalDelegate : public AutofillExternalDelegate {
       : AutofillExternalDelegate(autofill_manager) {}
   ~MockAutofillExternalDelegate() override = default;
 
-  MOCK_METHOD(void, OnPopupShown, (), (override));
+  MOCK_METHOD(void, OnSuggestionsShown, (), (override));
 };
 
 // This test class is needed to make the constructor public.
@@ -103,7 +103,9 @@ IN_PROC_BROWSER_TEST_F(ChromeAutofillClientBrowserTest,
       &browser_autofill_manager());
 
   bool popup_shown = false;
-  EXPECT_CALL(*delegate, OnPopupShown).WillOnce([&] { popup_shown = true; });
+  EXPECT_CALL(*delegate, OnSuggestionsShown).WillOnce([&] {
+    popup_shown = true;
+  });
 
   base::WeakPtr<AutofillExternalDelegate> weak_delegate =
       delegate->GetWeakPtrForTest();

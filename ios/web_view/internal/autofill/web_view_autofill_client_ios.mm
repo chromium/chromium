@@ -259,8 +259,8 @@ void WebViewAutofillClientIOS::HideTouchToFillCreditCard() {
 
 void WebViewAutofillClientIOS::ShowAutofillSuggestions(
     const AutofillClient::PopupOpenArgs& open_args,
-    base::WeakPtr<AutofillPopupDelegate> delegate) {
-  [bridge_ showAutofillPopup:open_args.suggestions popupDelegate:delegate];
+    base::WeakPtr<AutofillSuggestionDelegate> delegate) {
+  [bridge_ showAutofillPopup:open_args.suggestions suggestionDelegate:delegate];
 }
 
 void WebViewAutofillClientIOS::UpdateAutofillDataListValues(

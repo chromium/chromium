@@ -60,7 +60,7 @@ class ObservingAutofillClient : public autofill::ChromeAutofillClient {
 
   void ShowAutofillSuggestions(
       const autofill::AutofillClient::PopupOpenArgs& open_args,
-      base::WeakPtr<autofill::AutofillPopupDelegate> delegate) override;
+      base::WeakPtr<autofill::AutofillSuggestionDelegate> delegate) override;
 
  private:
   raw_ptr<base::RunLoop> run_loop_ = nullptr;

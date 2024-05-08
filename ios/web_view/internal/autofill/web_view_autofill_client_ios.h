@@ -100,7 +100,7 @@ class WebViewAutofillClientIOS : public AutofillClient {
   void HideTouchToFillCreditCard() override;
   void ShowAutofillSuggestions(
       const AutofillClient::PopupOpenArgs& open_args,
-      base::WeakPtr<AutofillPopupDelegate> delegate) override;
+      base::WeakPtr<AutofillSuggestionDelegate> delegate) override;
   void UpdateAutofillDataListValues(
       base::span<const autofill::SelectOption> datalist) override;
   void PinAutofillSuggestions() override;

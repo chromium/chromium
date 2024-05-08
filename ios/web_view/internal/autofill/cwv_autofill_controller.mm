@@ -310,9 +310,9 @@ using UserDecision = autofill::AutofillClient::AddressPromptUserDecision;
 #pragma mark - CWVAutofillClientIOSBridge
 
 - (void)showAutofillPopup:(const std::vector<autofill::Suggestion>&)suggestions
-            popupDelegate:
-                (const base::WeakPtr<autofill::AutofillPopupDelegate>&)
-                    delegate {
+       suggestionDelegate:
+           (const base::WeakPtr<autofill::AutofillSuggestionDelegate>&)
+               delegate {
   // We only want Autofill suggestions.
   std::vector<autofill::Suggestion> filtered_suggestions;
   base::ranges::copy_if(
@@ -322,7 +322,7 @@ using UserDecision = autofill::AutofillClient::AddressPromptUserDecision;
                suggestion.type == autofill::SuggestionType::kCreditCardEntry;
       });
   [_autofillAgent showAutofillPopup:filtered_suggestions
-                      popupDelegate:delegate];
+                 suggestionDelegate:delegate];
 }
 
 - (void)hideAutofillPopup {

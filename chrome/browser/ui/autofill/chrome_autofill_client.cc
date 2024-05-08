@@ -858,7 +858,7 @@ void ChromeAutofillClient::HideTouchToFillCreditCard() {
 
 void ChromeAutofillClient::ShowAutofillSuggestions(
     const PopupOpenArgs& open_args,
-    base::WeakPtr<AutofillPopupDelegate> delegate) {
+    base::WeakPtr<AutofillSuggestionDelegate> delegate) {
   // The Autofill Popup cannot open if it overlaps with another popup.
   // Therefore, the IPH is hidden before showing the Autofill Popup.
   HideAutofillFieldIphForManualFallbackFeature();
@@ -1190,7 +1190,7 @@ std::u16string ChromeAutofillClient::GetAccountHolderName() {
 
 void ChromeAutofillClient::ShowAutofillSuggestionsImpl(
     const PopupOpenArgs& open_args,
-    base::WeakPtr<AutofillPopupDelegate> delegate) {
+    base::WeakPtr<AutofillSuggestionDelegate> delegate) {
   // Convert element_bounds to be in screen space.
   const gfx::Rect client_area = web_contents()->GetContainerBounds();
   const gfx::RectF element_bounds_in_screen_space =

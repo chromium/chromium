@@ -23,7 +23,7 @@
 #import "components/autofill/core/browser/data_model/credit_card.h"
 #import "components/autofill/core/browser/filling_product.h"
 #import "components/autofill/core/browser/test_autofill_client.h"
-#import "components/autofill/core/browser/ui/mock_autofill_popup_delegate.h"
+#import "components/autofill/core/browser/ui/mock_autofill_suggestion_delegate.h"
 #import "components/autofill/core/browser/ui/suggestion.h"
 #import "components/autofill/core/browser/ui/suggestion_type.h"
 #import "components/autofill/core/common/autofill_features.h"
@@ -360,8 +360,8 @@ TEST_F(AutofillAgentTests, onSuggestionsReady_ShowAccountCards) {
   __block NSArray<FormSuggestion*>* completion_handler_suggestions = nil;
   __block BOOL completion_handler_called = NO;
 
-  autofill::MockAutofillPopupDelegate mock_delegate;
-  EXPECT_CALL(mock_delegate, OnPopupShown);
+  autofill::MockAutofillSuggestionDelegate mock_delegate;
+  EXPECT_CALL(mock_delegate, OnSuggestionsShown);
 
   // Make the suggestions available to AutofillAgent.
   std::vector<autofill::Suggestion> autofillSuggestions;
@@ -369,7 +369,7 @@ TEST_F(AutofillAgentTests, onSuggestionsReady_ShowAccountCards) {
       autofill::Suggestion("", "", autofill::Suggestion::Icon::kNoIcon,
                            SuggestionType::kShowAccountCards));
   [autofill_agent_ showAutofillPopup:autofillSuggestions
-                       popupDelegate:mock_delegate.GetWeakPtr()];
+                  suggestionDelegate:mock_delegate.GetWeakPtr()];
 
   // Retrieves the suggestions.
   auto completionHandler = ^(NSArray<FormSuggestion*>* suggestions,
@@ -422,7 +422,7 @@ TEST_F(AutofillAgentTests, showAutofillPopup_ShowVirtualCards) {
   NSString* expiration_date_display_description = base::SysUTF8ToNSString(
       autofill::test::NextMonth() + "/" + autofill::test::NextYear().substr(2));
   // Mock different popup types.
-  testing::NiceMock<autofill::MockAutofillPopupDelegate> mock_delegate;
+  testing::NiceMock<autofill::MockAutofillSuggestionDelegate> mock_delegate;
   EXPECT_CALL(mock_delegate, GetMainFillingProduct)
       .WillOnce(testing::Return(FillingProduct::kCreditCard))
       .WillOnce(testing::Return(FillingProduct::kCreditCard));
@@ -469,7 +469,7 @@ TEST_F(AutofillAgentTests, showAutofillPopup_ShowVirtualCards) {
 
   // Make credit card suggestion.
   [autofill_agent_ showAutofillPopup:autofillSuggestions
-                       popupDelegate:mock_delegate.GetWeakPtr()];
+                  suggestionDelegate:mock_delegate.GetWeakPtr()];
   [autofill_agent_ retrieveSuggestionsForForm:nil
                                      webState:&fake_web_state_
                             completionHandler:completionHandler];
@@ -510,7 +510,7 @@ TEST_F(AutofillAgentTests,
   __block UIImage* completion_handler_icon = nil;
 
   // Mock different popup types.
-  testing::NiceMock<autofill::MockAutofillPopupDelegate> mock_delegate;
+  testing::NiceMock<autofill::MockAutofillSuggestionDelegate> mock_delegate;
   EXPECT_CALL(mock_delegate, GetMainFillingProduct)
       .WillOnce(testing::Return(FillingProduct::kCreditCard))
       .WillOnce(testing::Return(FillingProduct::kAddress))
@@ -535,21 +535,21 @@ TEST_F(AutofillAgentTests,
 
   // Make credit card suggestion.
   [autofill_agent_ showAutofillPopup:autofillSuggestions
-                       popupDelegate:mock_delegate.GetWeakPtr()];
+                  suggestionDelegate:mock_delegate.GetWeakPtr()];
   [autofill_agent_ retrieveSuggestionsForForm:nil
                                      webState:&fake_web_state_
                             completionHandler:completionHandler];
   EXPECT_NE(nil, completion_handler_icon);
   // Make address suggestion.
   [autofill_agent_ showAutofillPopup:autofillSuggestions
-                       popupDelegate:mock_delegate.GetWeakPtr()];
+                  suggestionDelegate:mock_delegate.GetWeakPtr()];
   [autofill_agent_ retrieveSuggestionsForForm:nil
                                      webState:&fake_web_state_
                             completionHandler:completionHandler];
   EXPECT_EQ(nil, completion_handler_icon);
   // Make unspecified suggestion.
   [autofill_agent_ showAutofillPopup:autofillSuggestions
-                       popupDelegate:mock_delegate.GetWeakPtr()];
+                  suggestionDelegate:mock_delegate.GetWeakPtr()];
   [autofill_agent_ retrieveSuggestionsForForm:nil
                                      webState:&fake_web_state_
                             completionHandler:completionHandler];
@@ -564,7 +564,7 @@ TEST_F(AutofillAgentTests, showAutofillPopup_EmptyIconInCreditCardSuggestion) {
   __block UIImage* completion_handler_icon = gfx::test::CreatePlatformImage();
   ASSERT_NE(nil, completion_handler_icon);
 
-  testing::NiceMock<autofill::MockAutofillPopupDelegate> mock_delegate;
+  testing::NiceMock<autofill::MockAutofillSuggestionDelegate> mock_delegate;
   EXPECT_CALL(mock_delegate, GetMainFillingProduct)
       .WillRepeatedly(testing::Return(FillingProduct::kCreditCard));
 
@@ -580,7 +580,7 @@ TEST_F(AutofillAgentTests, showAutofillPopup_EmptyIconInCreditCardSuggestion) {
 
   // Make credit card suggestion.
   [autofill_agent_ showAutofillPopup:autofillSuggestions
-                       popupDelegate:mock_delegate.GetWeakPtr()];
+                  suggestionDelegate:mock_delegate.GetWeakPtr()];
   [autofill_agent_ retrieveSuggestionsForForm:nil
                                      webState:&fake_web_state_
                             completionHandler:completionHandler];
@@ -592,7 +592,7 @@ TEST_F(AutofillAgentTests, showAutofillPopup_EmptyIconInCreditCardSuggestion) {
 TEST_F(AutofillAgentTests, showAutofillPopup_PlusAddresses) {
   __block NSArray<FormSuggestion*>* completion_handler_suggestions = nil;
   __block BOOL completion_handler_called = NO;
-  testing::NiceMock<autofill::MockAutofillPopupDelegate> mock_delegate;
+  testing::NiceMock<autofill::MockAutofillSuggestionDelegate> mock_delegate;
 
   const std::string createSuggestionText = "create";
   const std::string fillExistingSuggestionText = "existing";
@@ -614,7 +614,7 @@ TEST_F(AutofillAgentTests, showAutofillPopup_PlusAddresses) {
   // Make plus address suggestions and note the conversion to `FormSuggestion`
   // objects.
   [autofill_agent_ showAutofillPopup:autofillSuggestions
-                       popupDelegate:mock_delegate.GetWeakPtr()];
+                  suggestionDelegate:mock_delegate.GetWeakPtr()];
   [autofill_agent_ retrieveSuggestionsForForm:nil
                                      webState:&fake_web_state_
                             completionHandler:completionHandler];
@@ -651,7 +651,7 @@ TEST_F(AutofillAgentTests,
           .ToUIImage();
   gfx::Image custom_icon = gfx::test::CreateImage(5, 5);
 
-  testing::NiceMock<autofill::MockAutofillPopupDelegate> mock_delegate;
+  testing::NiceMock<autofill::MockAutofillSuggestionDelegate> mock_delegate;
   EXPECT_CALL(mock_delegate, GetMainFillingProduct)
       .WillRepeatedly(testing::Return(FillingProduct::kCreditCard));
 
@@ -670,7 +670,7 @@ TEST_F(AutofillAgentTests,
 
   // When the custom icon is not present, the default icon should be used.
   [autofill_agent_ showAutofillPopup:autofillSuggestions
-                       popupDelegate:mock_delegate.GetWeakPtr()];
+                  suggestionDelegate:mock_delegate.GetWeakPtr()];
   [autofill_agent_ retrieveSuggestionsForForm:nil
                                      webState:&fake_web_state_
                             completionHandler:completionHandler];
@@ -680,7 +680,7 @@ TEST_F(AutofillAgentTests,
   // Now set a custom icon, which should override the default.
   autofillSuggestions[0].custom_icon = custom_icon;
   [autofill_agent_ showAutofillPopup:autofillSuggestions
-                       popupDelegate:mock_delegate.GetWeakPtr()];
+                  suggestionDelegate:mock_delegate.GetWeakPtr()];
   [autofill_agent_ retrieveSuggestionsForForm:nil
                                      webState:&fake_web_state_
                             completionHandler:completionHandler];
@@ -706,8 +706,8 @@ TEST_F(AutofillAgentTests, onSuggestionsReady_ClearForm) {
   autofillSuggestions.push_back(autofill::Suggestion(
       "", "", autofill::Suggestion::Icon::kNoIcon, SuggestionType::kClearForm));
   [autofill_agent_
-      showAutofillPopup:autofillSuggestions
-          popupDelegate:base::WeakPtr<autofill::AutofillPopupDelegate>()];
+       showAutofillPopup:autofillSuggestions
+      suggestionDelegate:base::WeakPtr<autofill::AutofillSuggestionDelegate>()];
 
   // Retrieves the suggestions.
   auto completionHandler = ^(NSArray<FormSuggestion*>* suggestions,
@@ -763,8 +763,8 @@ TEST_F(AutofillAgentTests, onSuggestionsReady_ClearFormWithGPay) {
   autofillSuggestions.push_back(autofill::Suggestion(
       "", "", autofill::Suggestion::Icon::kNoIcon, SuggestionType::kClearForm));
   [autofill_agent_
-      showAutofillPopup:autofillSuggestions
-          popupDelegate:base::WeakPtr<autofill::AutofillPopupDelegate>()];
+       showAutofillPopup:autofillSuggestions
+      suggestionDelegate:base::WeakPtr<autofill::AutofillSuggestionDelegate>()];
 
   // Retrieves the suggestions.
   auto completionHandler = ^(NSArray<FormSuggestion*>* suggestions,
