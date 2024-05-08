@@ -129,6 +129,11 @@ class CORE_EXPORT AnimationFrameTimingMonitor final
 
   void RecordLongAnimationFrameUKMAndTrace(const AnimationFrameTimingInfo&,
                                            LocalDOMWindow& window);
+  void RecordLongAnimationFrameTrace(const AnimationFrameTimingInfo& info,
+                                     LocalDOMWindow& window);
+  void ReportPresentationTimeToTrace(
+      uint64_t trace_id,
+      const viz::FrameTimingDetails& presentation_details);
   void ApplyTaskDuration(base::TimeDelta task_duration);
 
   std::optional<PendingScriptInfo> pending_script_info_;

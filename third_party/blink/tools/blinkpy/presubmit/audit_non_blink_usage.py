@@ -1073,6 +1073,7 @@ _CONFIG = [
     {
         'paths': [
             'third_party/blink/public/web/web_frame_widget.h',
+            'third_party/blink/renderer/core/frame/animation_frame_timing_monitor',
             'third_party/blink/renderer/core/frame/local_frame_client_impl.cc',
             'third_party/blink/renderer/core/frame/web_frame_widget',
             'third_party/blink/renderer/core/page/chrome_client.h',

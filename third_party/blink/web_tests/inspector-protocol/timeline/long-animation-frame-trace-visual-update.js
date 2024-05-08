@@ -42,25 +42,31 @@
     const events = await tracingHelper.stopTracing();
     const loaf_tracing_event = events.find(
         e => e.name == 'AnimationFrame' &&
-            e.args.data?.duration > 200 &&
-            e.args.data?.numScripts == 1);
+            e.args.animation_frame_timing_info?.duration_ms > 200 &&
+            e.args.animation_frame_timing_info?.num_scripts == 1);
     if (!loaf_tracing_event)
       continue;
     testRunner.log(
         loaf_tracing_event ? 'Found matching LoAF event' :
                              'No matching LoAF event');
     if (loaf_tracing_event) {
-      const {data} = loaf_tracing_event.args;
+      const {animation_frame_timing_info} = loaf_tracing_event.args;
       testRunner.log(`duration-blockingDuration${
-          data.duration - data.blockingDuration >= 50 ? '>=50' : '<50'}`)
-      testRunner.log(`numScripts=${data.numScripts}`);
+        animation_frame_timing_info.duration_ms -
+            animation_frame_timing_info.blocking_duration_ms >= 50 ? '>=50' : '<50'}`)
+      testRunner.log(`numScripts=${animation_frame_timing_info.num_scripts}`);
     }
     const id = loaf_tracing_event.id;
     checkAsyncEventDuration('AnimationFrame::Render', events, 200, id);
     checkAsyncEventDuration('AnimationFrame::StyleAndLayout', events, 0, id);
-    checkAsyncEventDuration('AnimationFrame::Script', events, 200, id);
+    checkAsyncEventDuration('AnimationFrame::Script::Execute', events, 200, id);
+    const scriptEvent = events.find(e => e.name == 'AnimationFrame::Script::Execute');
+    testRunner.log(`AnimationFrame::Script::Execute property_like_name ${
+        scriptEvent.args.animation_frame_script_timing_info.property_like_name}`);
+    testRunner.log(`AnimationFrame::Script::Execute invoker_type ${
+        scriptEvent.args.animation_frame_script_timing_info.invoker_type}`);
     const short_animation_frame_events = events.filter(
-      e => e.name == 'AnimationFrame' && e.args.data?.numScripts == 0);
+        e => e.name == 'AnimationFrame' && e.args.animation_frame_timing_info?.num_scripts == 0);
     testRunner.log(`Found matching short LoaF events ${
         short_animation_frame_events.length >= 4 ? '>=4' : '<4'}`);
     const short_frame_ids = short_animation_frame_events.map(({ id }) => id);

@@ -1857,9 +1857,35 @@ message WebViewStartup {
   optional CallSite call_site = 2;
 }
 
+message AnimationFrameTimingInfo {
+  optional int64 blocking_duration_ms = 1;
+  optional int64 duration_ms = 2;
+  optional int64 num_scripts = 3;
+}
+
+message AnimationFrameScriptTimingInfo {
+  optional int64 style_duration_ms = 1;
+  optional int64 layout_duration_ms = 2;
+  optional int64 pause_duration_ms = 3;
+  optional string class_like_name = 4;
+  optional string property_like_name = 5;
+  optional string source_location_url = 6;
+  optional string source_location_function_name = 7;
+  optional int64 source_location_char_position = 8;
+  enum InvokerType {
+    CLASSIC_SCRIPT = 0;
+    MODULE_SCRIPT = 1;
+    USER_CALLBACK = 2;
+    EVENT_HANDLER = 3;
+    PROMISE_RESOLVE = 4;
+    PROMISE_REJECT = 5;
+  }
+  optional InvokerType invoker_type = 9;
+}
+
 message ChromeTrackEvent {
   // Extension range for Chrome: 1000-1999
-  // Next ID: 1064
+  // Next ID: 1066
   extend TrackEvent {
     optional ChromeAppState chrome_app_state = 1000;
 
@@ -1994,5 +2020,10 @@ message ChromeTrackEvent {
     optional ChromeCompositorSchedulerStateV2 cc_scheduler_state = 1062;
 
     optional WebViewStartup webview_startup = 1063;
+
+    optional AnimationFrameTimingInfo animation_frame_timing_info = 1064;
+
+    optional AnimationFrameScriptTimingInfo animation_frame_script_timing_info =
+        1065;
   }
 }

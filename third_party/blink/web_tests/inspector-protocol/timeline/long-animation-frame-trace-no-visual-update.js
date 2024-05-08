@@ -39,21 +39,23 @@
   const events = await tracingHelper.stopTracing();
   const loaf_tracing_event = events.find(
       e => e.name == 'AnimationFrame' &&
-          e.args.data?.duration > 200 &&
-          e.args.data?.numScripts == 1);
+          e.args.animation_frame_timing_info?.duration_ms > 200 &&
+          e.args.animation_frame_timing_info?.num_scripts == 1);
   testRunner.log(
       loaf_tracing_event ? 'Found matching LoAF event' :
                            'No matching LoAF event');
   if (loaf_tracing_event) {
-    const {data} = loaf_tracing_event.args;
+    const {animation_frame_timing_info} = loaf_tracing_event.args;
     testRunner.log(`duration-blockingDuration${
-        data.duration - data.blockingDuration >= 50 ? '>=50' : '<50'}`);
-    testRunner.log(`numScripts=${data.numScripts}`);
+        animation_frame_timing_info.duration_ms -
+            animation_frame_timing_info.blocking_duration_ms >= 50 ? '>=50' : '<50'}`);
+    testRunner.log(`numScripts=${animation_frame_timing_info.num_scripts}`);
   }
   checkScriptTraceEvent(
-      events, 'AnimationFrame::Script', loaf_tracing_event.id, 50);
+      events, 'AnimationFrame::Script::Execute', loaf_tracing_event.id, 50);
   const short_animation_frame_events = events.filter(
-      e => e.name == 'AnimationFrame' && e.args.data?.numScripts == 0);
+      e => e.name == 'AnimationFrame' &&
+          e.args.animation_frame_timing_info?.num_scripts == 0);
   testRunner.log(`Found matching short LoaF events ${
       short_animation_frame_events.length >= 4 ? '>=4' : '<4'}`);
   const short_frame_ids = short_animation_frame_events.map(({ id }) => id);

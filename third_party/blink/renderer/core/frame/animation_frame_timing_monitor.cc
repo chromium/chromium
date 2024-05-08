@@ -7,6 +7,7 @@
 #include "base/time/time.h"
 #include "base/trace_event/base_tracing.h"
 #include "base/trace_event/trace_id_helper.h"
+#include "components/viz/common/frame_timing_details.h"
 #include "services/metrics/public/cpp/ukm_builders.h"
 #include "services/metrics/public/cpp/ukm_recorder.h"
 #include "services/metrics/public/cpp/ukm_source_id.h"
@@ -26,6 +27,7 @@
 #include "third_party/blink/renderer/platform/heap/persistent.h"
 #include "third_party/blink/renderer/platform/runtime_enabled_features.h"
 #include "third_party/blink/renderer/platform/scheduler/public/event_loop.h"
+#include "third_party/blink/renderer/platform/wtf/cross_thread_functional.h"
 #include "v8-local-handle.h"
 #include "v8-message.h"
 
@@ -237,86 +239,112 @@ void AnimationFrameTimingMonitor::OnTaskCompleted(
 
 namespace {
 
-void RecordLongAnimationFrameTrace(const AnimationFrameTimingInfo& info,
-                                   const void* scope) {
+perfetto::protos::pbzero::AnimationFrameScriptTimingInfo::InvokerType
+ToProtoEnum(ScriptTimingInfo::InvokerType type) {
+  using ProtoType =
+      perfetto::protos::pbzero::AnimationFrameScriptTimingInfo::InvokerType;
+  switch (type) {
+    case ScriptTimingInfo::InvokerType::kClassicScript:
+      return ProtoType::CLASSIC_SCRIPT;
+    case ScriptTimingInfo::InvokerType::kModuleScript:
+      return ProtoType::MODULE_SCRIPT;
+    case ScriptTimingInfo::InvokerType::kUserCallback:
+      return ProtoType::USER_CALLBACK;
+    case ScriptTimingInfo::InvokerType::kEventHandler:
+      return ProtoType::EVENT_HANDLER;
+    case ScriptTimingInfo::InvokerType::kPromiseResolve:
+      return ProtoType::PROMISE_RESOLVE;
+    case ScriptTimingInfo::InvokerType::kPromiseReject:
+      return ProtoType::PROMISE_REJECT;
+  }
+}
+}  // namespace
+
+void AnimationFrameTimingMonitor::ReportPresentationTimeToTrace(
+    uint64_t trace_id,
+    const viz::FrameTimingDetails& presentation_details) {
+  auto track_id = perfetto::Track::ThreadScoped(this);
+  auto flow_id = perfetto::Flow::ProcessScoped(trace_id);
+  TRACE_EVENT_INSTANT(
+      "devtools.timeline", "AnimationFrame::Presentation", track_id,
+      presentation_details.presentation_feedback.timestamp, flow_id);
+}
+
+void AnimationFrameTimingMonitor::RecordLongAnimationFrameTrace(
+    const AnimationFrameTimingInfo& info,
+    LocalDOMWindow& window) {
   bool tracing_enabled;
   TRACE_EVENT_CATEGORY_GROUP_ENABLED("devtools.timeline", &tracing_enabled);
   if (!tracing_enabled) {
     return;
   }
 
-  auto traced_value = std::make_unique<TracedValue>();
   uint64_t trace_id = base::trace_event::GetNextGlobalTraceId();
-  traced_value->SetDouble("blockingDuration",
-                          (info.TotalBlockingDuration()).InMillisecondsF());
-  traced_value->SetDouble("duration", info.Duration().InMillisecondsF());
+  auto track_id = perfetto::Track::ThreadScoped(this);
+  auto flow_id = perfetto::Flow::ProcessScoped(trace_id);
   if (!info.FirstUIEventTime().is_null()) {
-    TRACE_EVENT_NESTABLE_ASYNC_INSTANT_WITH_TIMESTAMP0(
-        "devtools.timeline", "AnimationFrame::FirstUIEvent", trace_id,
-        info.FirstUIEventTime());
+    TRACE_EVENT_INSTANT("devtools.timeline", "AnimationFrame::FirstUIEvent",
+                        track_id, info.FirstUIEventTime(), flow_id);
   }
+  TRACE_EVENT_BEGIN(
+      "devtools.timeline", "AnimationFrame", track_id, info.FrameStartTime(),
+      flow_id, [&](perfetto::EventContext ctx) {
+        auto* event = ctx.event<perfetto::protos::pbzero::ChromeTrackEvent>();
+        auto* data = event->set_animation_frame_timing_info();
+        data->set_blocking_duration_ms(
+            info.TotalBlockingDuration().InMilliseconds());
+        data->set_duration_ms(info.Duration().InMilliseconds());
+        data->set_num_scripts(info.Scripts().size());
+      });
   for (ScriptTimingInfo* script : info.Scripts()) {
-    auto script_traced_value = std::make_unique<TracedValue>();
-    script_traced_value->SetDouble("styleDuration",
-                                   script->StyleDuration().InMillisecondsF());
-    script_traced_value->SetDouble("layoutDuration",
-                                   script->LayoutDuration().InMillisecondsF());
-    script_traced_value->SetDouble("pauseDuration",
-                                   script->PauseDuration().InMillisecondsF());
-    script_traced_value->SetInteger("invokerType",
-                                    static_cast<int>(script->GetInvokerType()));
-    script_traced_value->SetStringWithCopiedName("classLikeName",
-                                                 script->ClassLikeName());
-    script_traced_value->SetStringWithCopiedName("propertyLikeName",
-                                                 script->PropertyLikeName());
-    script_traced_value->SetStringWithCopiedName(
-        "sourceLocationUrl", script->GetSourceLocation().url);
-    script_traced_value->SetStringWithCopiedName(
-        "sourceLocationFunctionName",
-        script->GetSourceLocation().function_name);
-    script_traced_value->SetInteger("sourceLocationCharPosition",
-                                    script->GetSourceLocation().char_position);
-    TRACE_EVENT_NESTABLE_ASYNC_BEGIN_WITH_TIMESTAMP1(
-        "devtools.timeline", "AnimationFrame::Script", trace_id,
-        script->StartTime(), "data", std::move(script_traced_value));
-    TRACE_EVENT_NESTABLE_ASYNC_INSTANT_WITH_TIMESTAMP0(
-        "devtools.timeline", "AnimationFrame::Script::ExecutionStartTime",
-        trace_id, script->ExecutionStartTime());
-    TRACE_EVENT_NESTABLE_ASYNC_END_WITH_TIMESTAMP0("devtools.timeline",
-                                                   "AnimationFrame::Script",
-                                                   trace_id, script->EndTime());
+    if (script->StartTime() < script->ExecutionStartTime()) {
+      TRACE_EVENT_BEGIN("devtools.timeline", "AnimationFrame::Script::Compile",
+                        track_id, script->StartTime());
+      TRACE_EVENT_END("devtools.timeline", track_id,
+                      script->ExecutionStartTime());
+    }
+    TRACE_EVENT_BEGIN(
+        "devtools.timeline", "AnimationFrame::Script::Execute", track_id,
+        script->ExecutionStartTime(), [&](perfetto::EventContext ctx) {
+          auto* event = ctx.event<perfetto::protos::pbzero::ChromeTrackEvent>();
+          auto* data = event->set_animation_frame_script_timing_info();
+          data->set_style_duration_ms(script->StyleDuration().InMilliseconds());
+          data->set_layout_duration_ms(
+              script->LayoutDuration().InMilliseconds());
+          data->set_pause_duration_ms(script->PauseDuration().InMilliseconds());
+          data->set_class_like_name(script->ClassLikeName().Utf8());
+          data->set_property_like_name(script->PropertyLikeName().Utf8());
+          data->set_source_location_char_position(
+              script->GetSourceLocation().char_position);
+          data->set_invoker_type(ToProtoEnum(script->GetInvokerType()));
+        });
+    TRACE_EVENT_END("devtools.timeline", track_id, script->EndTime());
   }
   if (!info.RenderStartTime().is_null()) {
-    TRACE_EVENT_NESTABLE_ASYNC_BEGIN_WITH_TIMESTAMP0(
-        "devtools.timeline", "AnimationFrame::Render", trace_id,
-        info.RenderStartTime());
-    TRACE_EVENT_NESTABLE_ASYNC_END_WITH_TIMESTAMP0(
-        "devtools.timeline", "AnimationFrame::Render", trace_id,
-        info.RenderEndTime());
+    TRACE_EVENT_BEGIN("devtools.timeline", "AnimationFrame::Render", track_id,
+                      info.RenderStartTime());
+    TRACE_EVENT_END("devtools.timeline", track_id, info.RenderEndTime());
   }
   if (!info.StyleAndLayoutStartTime().is_null()) {
-    TRACE_EVENT_NESTABLE_ASYNC_BEGIN_WITH_TIMESTAMP0(
-        "devtools.timeline", "AnimationFrame::StyleAndLayout", trace_id,
-        info.StyleAndLayoutStartTime());
-    TRACE_EVENT_NESTABLE_ASYNC_END_WITH_TIMESTAMP0(
-        "devtools.timeline", "AnimationFrame::StyleAndLayout", trace_id,
-        info.RenderEndTime());
+    TRACE_EVENT_BEGIN("devtools.timeline", "AnimationFrame::StyleAndLayout",
+                      track_id, info.StyleAndLayoutStartTime());
+    TRACE_EVENT_END("devtools.timeline", track_id, info.RenderEndTime());
   }
-  traced_value->SetInteger("numScripts", info.Scripts().size());
 
-  TRACE_EVENT_NESTABLE_ASYNC_BEGIN_WITH_TIMESTAMP1(
-      "devtools.timeline", "AnimationFrame", trace_id, info.FrameStartTime(),
-      "data", std::move(traced_value));
-  TRACE_EVENT_NESTABLE_ASYNC_END_WITH_TIMESTAMP0(
-      "devtools.timeline", "AnimationFrame", trace_id, info.RenderEndTime());
+  TRACE_EVENT_END("devtools.timeline", track_id, info.RenderEndTime());
+
+  window.GetFrame()->GetChromeClient().NotifyPresentationTime(
+      *window.GetFrame(),
+      CrossThreadBindOnce(
+          &AnimationFrameTimingMonitor::ReportPresentationTimeToTrace,
+          WrapCrossThreadWeakPersistent(this), trace_id));
 }
-}  // namespace
 
 void AnimationFrameTimingMonitor::RecordLongAnimationFrameUKMAndTrace(
     const AnimationFrameTimingInfo& info,
     LocalDOMWindow& window) {
   // Record all animation frames to traces, but only long ones to UKM.
-  RecordLongAnimationFrameTrace(info, this);
+  RecordLongAnimationFrameTrace(info, window);
   if (info.Duration() < kLongAnimationFrameDuration) {
     return;
   }
