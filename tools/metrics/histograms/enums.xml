@@ -21881,6 +21881,7 @@ from previous Chrome versions.
       label="ash-new-touch-support-for-screen-magnification"/>
   <int value="269249648" label="StartSurfaceSpareTab:disabled"/>
   <int value="269631838" label="BorealisLinuxMode:disabled"/>
+  <int value="269855165" label="UseWritePixelsYUV:enabled"/>
   <int value="270038252" label="SignInProfileCreationEnterprise:disabled"/>
   <int value="270118291" label="SyncAutofillWalletOfferData:disabled"/>
   <int value="270267831" label="enable-scripts-require-action"/>
@@ -23599,6 +23600,7 @@ from previous Chrome versions.
   <int value="1026169964" label="MicMuteNotifications:enabled"/>
   <int value="1026981579" label="TLS13HardeningForLocalAnchors:enabled"/>
   <int value="1027252926" label="SyncSupportSecondaryAccount:enabled"/>
+  <int value="1029230610" label="UseWritePixelsYUV:disabled"/>
   <int value="1030531340"
       label="UsernameFirstFlowWithIntermediateValuesVoting:disabled"/>
   <int value="1030608602" label="AutofillAssistantProactiveHelp:enabled"/>

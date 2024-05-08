@@ -8516,6 +8516,11 @@
     "expiry_milestone": 130
   },
   {
+    "name": "use-write-pixels-yuv",
+    "owners": [ "hitawala@chromium.org", "vasilyt@chromium.org" ],
+    "expiry_milestone": 135
+  },
+  {
     "name": "use-xps-for-printing",
     "owners": [ "awscreen@chromium.org", "thestig@chromium.org" ],
     "expiry_milestone": 134

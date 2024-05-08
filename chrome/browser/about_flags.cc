@@ -9981,6 +9981,10 @@ const FeatureEntry kFeatureEntries[] = {
      flag_descriptions::kUseMultiPlaneFormatForSoftwareVideoDescription, kOsAll,
      FEATURE_VALUE_TYPE(media::kUseMultiPlaneFormatForSoftwareVideo)},
 
+    {"use-write-pixels-yuv", flag_descriptions::kUseWritePixelsYUVName,
+     flag_descriptions::kUseWritePixelsYUVDescription, kOsAll,
+     FEATURE_VALUE_TYPE(media::kUseWritePixelsYUV)},
+
     {"enable-automatic-shared-image-management",
      flag_descriptions::kEnableAutomaticSharedImageManagementName,
      flag_descriptions::kEnableAutomaticSharedImageManagementDescription,

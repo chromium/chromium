@@ -2211,6 +2211,9 @@ extern const char kUseMultiPlaneFormatForHardwareVideoDescription[];
 extern const char kUseMultiPlaneFormatForSoftwareVideoName[];
 extern const char kUseMultiPlaneFormatForSoftwareVideoDescription[];
 
+extern const char kUseWritePixelsYUVName[];
+extern const char kUseWritePixelsYUVDescription[];
+
 extern const char kReduceAcceptLanguageName[];
 extern const char kReduceAcceptLanguageDescription[];
 
