@@ -282,6 +282,10 @@ TEST_F(DemoSessionMetricsRecorderTest, ActiveAppAfterDelayedArcPackageName) {
   // no package name in the ARC window.
   histogram_tester_->ExpectTotalCount("DemoMode.ActiveApp", 0);
 
+  // Simulate that no package name in the ARC window but metric
+  // recording is triggered again. It should not cause any crash.
+  FireTimer();
+
   // Set the package name after window creation/activation.
   arc_window->SetProperty(kArcPackageNameKey,
                           new std::string("com.google.Photos"));

@@ -262,6 +262,9 @@ class DemoSessionMetricsRecorder::ActiveAppArcPackageNameObserver
   }
 
   void ObserveWindow(aura::Window* window) {
+    if (scoped_observations_.IsObservingSource(window)) {
+      return;
+    }
     scoped_observations_.AddObservation(window);
   }
 
