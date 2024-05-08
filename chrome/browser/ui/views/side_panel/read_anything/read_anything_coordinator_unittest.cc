@@ -42,7 +42,8 @@ class ReadAnythingCoordinatorTest : public TestWithBrowserView {
  public:
   void SetUp() override {
     base::test::ScopedFeatureList features;
-    scoped_feature_list_.InitWithFeatures({features::kReadAnything}, {});
+    scoped_feature_list_.InitWithFeatures(
+        {features::kReadAnything, features::kReadAnythingDocsIntegration}, {});
     TestWithBrowserView::SetUp();
 
     side_panel_coordinator_ =
@@ -152,11 +153,8 @@ TEST_F(ReadAnythingCoordinatorTest,
 }
 
 #if !BUILDFLAG(IS_CHROMEOS_LACROS)
-TEST_F(
-    ReadAnythingCoordinatorTest,
-    // TODO(crbug.com/324143642): Re-enable this test when the docs integration
-    // flag is enabled.
-    DISABLED_SidePanelShowAndHide_NonLacros_CallEmbeddedA11yExtensionLoader) {
+TEST_F(ReadAnythingCoordinatorTest,
+       SidePanelShowAndHide_NonLacros_CallEmbeddedA11yExtensionLoader) {
   SidePanelEntry* entry = side_panel_registry_->GetEntryForKey(
       SidePanelEntry::Key(SidePanelEntry::Id::kReadAnything));
   EXPECT_FALSE(EmbeddedA11yExtensionLoader::GetInstance()->IsExtensionInstalled(
@@ -176,9 +174,7 @@ TEST_F(
 #if BUILDFLAG(IS_CHROMEOS_LACROS)
 TEST_F(
     ReadAnythingCoordinatorTest,
-    // TODO(crbug.com/324143642): Re-enable this test when the docs integration
-    // flag is enabled.
-    DISABLED_SidePanelShowAndHide_Lacros_EmbeddedA11yManagerLacrosUpdateReadingModeState) {
+    SidePanelShowAndHide_Lacros_EmbeddedA11yManagerLacrosUpdateReadingModeState) {
   SidePanelEntry* entry = side_panel_registry_->GetEntryForKey(
       SidePanelEntry::Key(SidePanelEntry::Id::kReadAnything));
   EXPECT_FALSE(
