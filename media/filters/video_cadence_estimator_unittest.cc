@@ -329,6 +329,13 @@ TEST(VideoCadenceEstimatorTest, RenderIntervalChangingSkipsHystersis) {
                                               frame_interval, base::TimeDelta(),
                                               acceptable_drift));
   EXPECT_TRUE(estimator.has_cadence());
+
+  // Minor changes (+/-10%) on |render_interval| should not trigger hyseteresis
+  // skipping.
+  EXPECT_FALSE(estimator.UpdateCadenceEstimate(
+      render_interval * 2 * 0.91, frame_interval, base::TimeDelta(),
+      acceptable_drift));
+  EXPECT_TRUE(estimator.has_cadence());
 }
 
 void VerifyCadenceSequence(VideoCadenceEstimator* estimator,

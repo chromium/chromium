@@ -122,9 +122,10 @@ bool VideoCadenceEstimator::UpdateCadenceEstimate(
   DCHECK_GT(frame_duration, base::TimeDelta());
 
   bool render_interval_changed = false;
+  constexpr float kRenderIntervalChangeThreshold = 0.1;
   if (last_render_interval_ > base::TimeDelta() &&
       (last_render_interval_ - render_interval).magnitude() >
-          base::Microseconds(500)) {
+          last_render_interval_ * kRenderIntervalChangeThreshold) {
     render_interval_changed = true;
   }
   last_render_interval_ = render_interval;
