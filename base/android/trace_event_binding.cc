@@ -37,7 +37,6 @@ constexpr const char kAndroidViewHierarchyTraceCategory[] =
     TRACE_DISABLED_BY_DEFAULT("android_view_hierarchy");
 constexpr const char kAndroidViewHierarchyEventName[] = "AndroidView";
 
-#if BUILDFLAG(USE_PERFETTO_CLIENT_LIBRARY)
 class TraceEnabledObserver : public perfetto::TrackEventSessionObserver {
  public:
   static TraceEnabledObserver* GetInstance() {
@@ -90,44 +89,12 @@ class TraceEnabledObserver : public perfetto::TrackEventSessionObserver {
   std::unordered_map<uint32_t, bool> event_name_filtering_per_session_;
 };
 
-#else   // !BUILDFLAG(USE_PERFETTO_CLIENT_LIBRARY)
-
-class TraceEnabledObserver
-    : public trace_event::TraceLog::EnabledStateObserver {
- public:
-  ~TraceEnabledObserver() override = default;
-
-  // trace_event::TraceLog::EnabledStateObserver:
-  void OnTraceLogEnabled() override {
-    JNIEnv* env = jni_zero::AttachCurrentThread();
-    base::android::Java_TraceEvent_setEnabled(env, true);
-    if (base::trace_event::TraceLog::GetInstance()
-            ->GetCurrentTraceConfig()
-            .IsEventPackageNameFilterEnabled()) {
-      base::android::Java_TraceEvent_setEventNameFilteringEnabled(env, true);
-    }
-  }
-
-  void OnTraceLogDisabled() override {
-    JNIEnv* env = jni_zero::AttachCurrentThread();
-    base::android::Java_TraceEvent_setEnabled(env, false);
-    base::android::Java_TraceEvent_setEventNameFilteringEnabled(env, false);
-  }
-};
-#endif  // !BUILDFLAG(USE_PERFETTO_CLIENT_LIBRARY)
 
 }  // namespace
 
 static void JNI_TraceEvent_RegisterEnabledObserver(JNIEnv* env) {
-#if BUILDFLAG(USE_PERFETTO_CLIENT_LIBRARY)
   base::android::Java_TraceEvent_setEnabled(env, base::TrackEvent::IsEnabled());
   base::TrackEvent::AddSessionObserver(TraceEnabledObserver::GetInstance());
-#else
-  bool enabled = trace_event::TraceLog::GetInstance()->IsEnabled();
-  base::android::Java_TraceEvent_setEnabled(env, enabled);
-  trace_event::TraceLog::GetInstance()->AddOwnedEnabledStateObserver(
-      std::make_unique<TraceEnabledObserver>());
-#endif
 }
 
 static jboolean JNI_TraceEvent_ViewHierarchyDumpEnabled(JNIEnv* env) {
