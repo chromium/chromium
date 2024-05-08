@@ -6,11 +6,11 @@
 precision mediump float;
 precision mediump int;
 
-layout(location = 0) in vec2 intraTileX;
-layout(location = 1) in vec2 intraTileY;
+layout(location = 0) in mediump vec2 intraTileX;
+layout(location = 1) in mediump vec2 intraTileY;
 
-layout(location = 2) in flat vec2 yOffset;
-layout(location = 3) in flat vec2 xOffset;
+layout(location = 2) in flat highp vec2 yOffset;
+layout(location = 3) in flat highp vec2 xOffset;
 
 layout(location = 0) out vec4 outColor;
 
@@ -37,8 +37,8 @@ void main() {
                    floor(intraTileX) + xOffset;
   // Like in the corresponding vertex shader, we really wanted integer
   // division and modulo, but floating point is faster.
-  vec2 detiledY = floor(linearIdx / pushConstants.planeStrides);
-  vec2 detiledX = linearIdx - (detiledY * pushConstants.planeStrides);
+  highp vec2 detiledY = floor(linearIdx / pushConstants.planeStrides);
+  highp vec2 detiledX = linearIdx - (detiledY * pushConstants.planeStrides);
   detiledY += yOffset;
 
   vec3 yuv;

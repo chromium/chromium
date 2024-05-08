@@ -15,8 +15,8 @@ precision highp int;
 layout(location = 0) out mediump vec2 intraTileX;
 layout(location = 1) out mediump vec2 intraTileY;
 
-layout(location = 2) flat out mediump vec2 yOffset;
-layout(location = 3) flat out mediump vec2 xOffset;
+layout(location = 2) flat out highp vec2 yOffset;
+layout(location = 3) flat out highp vec2 xOffset;
 
 layout( push_constant ) uniform constants {
   // Vulkan push constants have interesting alignment rules, so we use a vec2
