@@ -31,7 +31,7 @@
 namespace blink {
 
 class PLATFORM_EXPORT UTF16TextIterator {
-  USING_FAST_MALLOC(UTF16TextIterator);
+  STACK_ALLOCATED();
 
  public:
   // The passed in UChar pointer starts at 'offset'. The iterator operates on

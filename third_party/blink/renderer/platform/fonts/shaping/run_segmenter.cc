@@ -7,6 +7,7 @@
 #include <algorithm>
 #include <memory>
 
+#include "base/ranges/algorithm.h"
 #include "third_party/blink/renderer/platform/fonts/script_run_iterator.h"
 #include "third_party/blink/renderer/platform/fonts/small_caps_iterator.h"
 #include "third_party/blink/renderer/platform/fonts/symbols_iterator.h"
@@ -19,27 +20,21 @@ RunSegmenter::RunSegmenter(const UChar* buffer,
                            unsigned buffer_size,
                            FontOrientation run_orientation)
     : buffer_size_(buffer_size),
-      script_run_iterator_(
-          std::make_unique<ScriptRunIterator>(buffer, buffer_size)),
-      orientation_iterator_(
-          run_orientation == FontOrientation::kVerticalMixed
-              ? std::make_unique<OrientationIterator>(buffer,
-                                                      buffer_size,
-                                                      run_orientation)
-              : nullptr),
-      symbols_iterator_(std::make_unique<SymbolsIterator>(buffer, buffer_size)),
-      orientation_iterator_position_(
-          run_orientation == FontOrientation::kVerticalMixed ? 0
-                                                             : buffer_size_),
-      at_end_(!buffer_size_) {}
+      script_run_iterator_(buffer, buffer_size),
+      symbols_iterator_(buffer, buffer_size),
+      at_end_(!buffer_size) {
+  if (UNLIKELY(run_orientation == FontOrientation::kVerticalMixed)) {
+    orientation_iterator_.emplace(buffer, buffer_size, run_orientation);
+  }
+}
 
 template <class Iterator, typename SegmentationCategory>
 void RunSegmenter::ConsumeIteratorPastLastSplit(
-    std::unique_ptr<Iterator>& iterator,
+    Iterator& iterator,
     unsigned* iterator_position,
     SegmentationCategory* segmentation_category) {
   if (*iterator_position <= last_split_ && *iterator_position < buffer_size_) {
-    while (iterator->Consume(iterator_position, segmentation_category)) {
+    while (iterator.Consume(iterator_position, segmentation_category)) {
       if (*iterator_position > last_split_)
         return;
     }
@@ -55,17 +50,21 @@ bool RunSegmenter::Consume(RunSegmenterRange* next_range) {
   ConsumeIteratorPastLastSplit(script_run_iterator_,
                                &script_run_iterator_position_,
                                &candidate_range_.script);
-  ConsumeIteratorPastLastSplit(orientation_iterator_,
-                               &orientation_iterator_position_,
-                               &candidate_range_.render_orientation);
   ConsumeIteratorPastLastSplit(symbols_iterator_, &symbols_iterator_position_,
                                &candidate_range_.font_fallback_priority);
 
-  unsigned positions[] = {script_run_iterator_position_,
-                          orientation_iterator_position_,
-                          symbols_iterator_position_};
-
-  last_split_ = *std::min_element(std::begin(positions), std::end(positions));
+  if (UNLIKELY(orientation_iterator_)) {
+    ConsumeIteratorPastLastSplit(*orientation_iterator_,
+                                 &orientation_iterator_position_,
+                                 &candidate_range_.render_orientation);
+    unsigned positions[] = {script_run_iterator_position_,
+                            symbols_iterator_position_,
+                            orientation_iterator_position_};
+    last_split_ = *base::ranges::min_element(positions);
+  } else {
+    last_split_ =
+        std::min(script_run_iterator_position_, symbols_iterator_position_);
+  }
 
   candidate_range_.start = candidate_range_.end;
   candidate_range_.end = last_split_;

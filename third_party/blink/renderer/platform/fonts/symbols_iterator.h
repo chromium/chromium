@@ -12,7 +12,7 @@
 namespace blink {
 
 class PLATFORM_EXPORT SymbolsIterator {
-  USING_FAST_MALLOC(SymbolsIterator);
+  STACK_ALLOCATED();
 
  public:
   SymbolsIterator(const UChar* buffer, unsigned buffer_size);

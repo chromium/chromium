@@ -44,15 +44,15 @@ class PLATFORM_EXPORT RunSegmenter {
  private:
   template <class Iterator, typename SegmentationCategory>
   void ConsumeIteratorPastLastSplit(
-      std::unique_ptr<Iterator>& iterator,
+      Iterator& iterator,
       unsigned* iterator_position,
       SegmentationCategory* segmentation_category);
 
   unsigned buffer_size_;
   RunSegmenterRange candidate_range_;
-  std::unique_ptr<ScriptRunIterator> script_run_iterator_;
-  std::unique_ptr<OrientationIterator> orientation_iterator_;
-  std::unique_ptr<SymbolsIterator> symbols_iterator_;
+  ScriptRunIterator script_run_iterator_;
+  std::optional<OrientationIterator> orientation_iterator_;
+  SymbolsIterator symbols_iterator_;
   unsigned last_split_ = 0;
   unsigned script_run_iterator_position_ = 0;
   unsigned orientation_iterator_position_ = 0;

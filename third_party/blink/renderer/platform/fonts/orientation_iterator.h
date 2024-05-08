@@ -13,7 +13,7 @@
 namespace blink {
 
 class PLATFORM_EXPORT OrientationIterator {
-  USING_FAST_MALLOC(OrientationIterator);
+  STACK_ALLOCATED();
 
  public:
   enum RenderOrientation {

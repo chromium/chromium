@@ -24,7 +24,7 @@ namespace blink {
 // third-party/emoji-segmenter. The dereferenced character category is cached
 // since Ragel dereferences multiple times without moving the iterator's cursor.
 class PLATFORM_EXPORT UTF16RagelIterator {
-  DISALLOW_NEW();
+  STACK_ALLOCATED();
 
  public:
   UTF16RagelIterator()
