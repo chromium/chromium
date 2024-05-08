@@ -83,6 +83,7 @@ class StorageHandler : public ::settings::SettingsPageUIHandler,
   void HandleOpenArcStorage(const base::Value::List& unused_args);
   void HandleUpdateExternalStorages(const base::Value::List& unused_args);
   void HandleOpenBrowsingDataSettings(const base::Value::List& unused_args);
+  void HandleGetStorageEncryption(const base::Value::List& args);
 
   // Updates storage row on the UI.
   void UpdateStorageItem(
@@ -101,6 +102,11 @@ class StorageHandler : public ::settings::SettingsPageUIHandler,
   // Returns true if the volume from |source_path| can be used as Android
   // storage.
   bool IsEligibleForAndroidStorage(std::string source_path);
+
+  // Update encryption type whenever it is fetched.
+  void OnGetVaultProperties(
+      const std::string& callback_id,
+      std::optional<user_data_auth::GetVaultPropertiesReply> reply);
 
   // Instances calculating the size of each storage items.
   TotalDiskSpaceCalculator total_disk_space_calculator_;

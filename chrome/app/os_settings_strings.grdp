@@ -6413,6 +6413,15 @@ Press &amp; hold keyboard keys to see accent marks and special characters. This 
   <message name="IDS_SETTINGS_STORAGE_ITEM_SYSTEM" desc="In Device Settings > Storage, label for the total system size, difference between the size of the filesystem and the size of all items listed on the storage page.">
     System
   </message>
+  <message name="IDS_SETTINGS_STORAGE_ITEM_ENCRYPTION_LABEL" desc="In Device Settings > Storage, label for the algorithm used for storage encryption.">
+    Encrypted using
+  </message>
+  <message name="IDS_SETTINGS_STORAGE_ITEM_ENCRYPTION_AES_128" desc="In Device Settings > Storage, string for the algorithm used for storage encryption.">
+    AES-128
+  </message>
+  <message name="IDS_SETTINGS_STORAGE_ITEM_ENCRYPTION_AES_256" desc="In Device Settings > Storage, string for the algorithm used for storage encryption.">
+    AES-256
+  </message>
 
   <!-- Privacy Page -->
   <if expr="reven">

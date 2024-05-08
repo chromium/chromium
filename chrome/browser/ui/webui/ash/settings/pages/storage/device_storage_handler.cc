@@ -7,11 +7,13 @@
 #include <algorithm>
 #include <limits>
 #include <memory>
+#include <optional>
 #include <string>
 #include <utility>
 
 #include "ash/components/arc/arc_features.h"
 #include "ash/public/cpp/new_window_delegate.h"
+#include "base/check_op.h"
 #include "base/debug/dump_without_crashing.h"
 #include "base/notreached.h"
 #include "base/values.h"
@@ -22,7 +24,11 @@
 #include "chrome/browser/ui/webui/ash/settings/pages/storage/device_storage_util.h"
 #include "chrome/common/webui_url_constants.h"
 #include "chrome/grit/generated_resources.h"
+#include "chromeos/ash/components/cryptohome/cryptohome_parameters.h"
+#include "chromeos/ash/components/dbus/cryptohome/UserDataAuth.pb.h"
+#include "chromeos/ash/components/dbus/userdataauth/userdataauth_client.h"
 #include "chromeos/ash/components/disks/disk.h"
+#include "components/user_manager/user_names.h"
 #include "content/public/browser/web_ui_data_source.h"
 #include "ui/base/l10n/l10n_util.h"
 #include "ui/base/text/bytes_formatting.h"
@@ -109,6 +115,10 @@ void StorageHandler::RegisterMessages() {
       "openBrowsingDataSettings",
       base::BindRepeating(&StorageHandler::HandleOpenBrowsingDataSettings,
                           base::Unretained(this)));
+  web_ui()->RegisterMessageCallback(
+      "getStorageEncryptionInfo",
+      base::BindRepeating(&StorageHandler::HandleGetStorageEncryption,
+                          base::Unretained(this)));
 }
 
 void StorageHandler::OnJavascriptAllowed() {
@@ -158,6 +168,46 @@ void StorageHandler::HandleUpdateStorageInfo(const base::Value::List& args) {
   apps_size_calculator_.StartCalculation();
   crostini_size_calculator_.StartCalculation();
   other_users_size_calculator_.StartCalculation();
+}
+
+void StorageHandler::HandleGetStorageEncryption(const base::Value::List& args) {
+  AllowJavascript();
+  CHECK_EQ(1U, args.size());
+  std::string callback_id = args[0].GetString();
+  ::user_data_auth::GetVaultPropertiesRequest request;
+  request.set_username(
+      user_manager::CanonicalizeUserID(profile_->GetProfileUserName()));
+  UserDataAuthClient::Get()->GetVaultProperties(
+      request,
+      base::BindOnce(&StorageHandler::OnGetVaultProperties,
+                     weak_ptr_factory_.GetWeakPtr(), std::move(callback_id)));
+}
+
+void StorageHandler::OnGetVaultProperties(
+    const std::string& callback_id,
+    std::optional<user_data_auth::GetVaultPropertiesReply> reply) {
+  // Default is Unknown.
+  std::u16string encryption_type =
+      l10n_util::GetStringUTF16(IDS_SETTINGS_STORAGE_SIZE_UNKNOWN);
+  if (reply.has_value()) {
+    switch (reply.value().encryption_type()) {
+      case user_data_auth::CRYPTOHOME_VAULT_ENCRYPTION_FSCRYPT:
+      case user_data_auth::CRYPTOHOME_VAULT_ENCRYPTION_DMCRYPT:
+        encryption_type = l10n_util::GetStringUTF16(
+            IDS_SETTINGS_STORAGE_ITEM_ENCRYPTION_AES_256);
+        break;
+      case user_data_auth::CRYPTOHOME_VAULT_ENCRYPTION_ECRYPTFS:
+        encryption_type = l10n_util::GetStringUTF16(
+            IDS_SETTINGS_STORAGE_ITEM_ENCRYPTION_AES_128);
+        break;
+      default:
+        // This is unexpected state and we should continue to default.
+        break;
+    }
+  }
+
+  ResolveJavascriptCallback(base::Value(std::move(callback_id)),
+                            base::Value(encryption_type.c_str()));
 }
 
 void StorageHandler::HandleOpenMyFiles(const base::Value::List& unused_args) {

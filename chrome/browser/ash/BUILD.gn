@@ -5084,6 +5084,7 @@ static_library("test_support") {
     "//chromeos/ash/components/dbus/lorgnette_manager:lorgnette_proto",
     "//chromeos/ash/components/dbus/session_manager",
     "//chromeos/ash/components/dbus/userdataauth",
+    "//chromeos/ash/components/dbus/userdataauth:test_support",
     "//chromeos/ash/components/disks",
     "//chromeos/ash/components/drivefs",
     "//chromeos/ash/components/drivefs:test_support",

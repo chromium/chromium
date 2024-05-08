@@ -2,6 +2,8 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
+#include "chrome/browser/ui/webui/ash/settings/pages/storage/device_storage_handler.h"
+
 #include <memory>
 #include <string>
 #include <utility>
@@ -18,7 +20,9 @@
 #include "base/path_service.h"
 #include "base/strings/utf_string_conversions.h"
 #include "base/system/sys_info.h"
+#include "base/test/gmock_callback_support.h"
 #include "base/test/scoped_running_on_chromeos.h"
+#include "base/values.h"
 #include "chrome/browser/ash/arc/session/arc_session_manager.h"
 #include "chrome/browser/ash/arc/test/test_arc_session_manager.h"
 #include "chrome/browser/ash/borealis/borealis_prefs.h"
@@ -26,7 +30,6 @@
 #include "chrome/browser/ash/file_manager/path_util.h"
 #include "chrome/browser/ash/login/users/fake_chrome_user_manager.h"
 #include "chrome/browser/ui/webui/ash/settings/calculator/size_calculator_test_api.h"
-#include "chrome/browser/ui/webui/ash/settings/pages/storage/device_storage_handler.h"
 #include "chrome/browser/ui/webui/ash/settings/pages/storage/device_storage_util.h"
 #include "chrome/common/chrome_features.h"
 #include "chrome/common/chrome_paths.h"
@@ -34,10 +37,14 @@
 #include "chrome/test/base/testing_browser_process.h"
 #include "chrome/test/base/testing_profile_manager.h"
 #include "chromeos/ash/components/dbus/concierge/concierge_client.h"
+#include "chromeos/ash/components/dbus/cryptohome/UserDataAuth.pb.h"
 #include "chromeos/ash/components/dbus/spaced/spaced_client.h"
+#include "chromeos/ash/components/dbus/userdataauth/mock_userdataauth_client.h"
 #include "chromeos/ash/components/disks/disk_mount_manager.h"
 #include "chromeos/ash/components/disks/fake_disk_mount_manager.h"
+#include "components/account_id/account_id.h"
 #include "components/user_manager/scoped_user_manager.h"
+#include "components/user_manager/user_names.h"
 #include "content/public/browser/web_ui_data_source.h"
 #include "content/public/test/browser_task_environment.h"
 #include "content/public/test/test_web_ui.h"
@@ -48,7 +55,31 @@
 
 namespace ash::settings {
 
+using testing::_;
+
 namespace {
+
+constexpr char kEmail[] = "fake-email@example.com";
+constexpr char kEncryptionInfoCallbackId[] = "storage-encryption-fetched";
+
+// Matcher for `ListAuthFactors` that checks its account_id.
+MATCHER(WithAccountId, "") {
+  return arg.username() == kEmail;
+}
+
+user_data_auth::GetVaultPropertiesReply BuildGetVaultPropertiesReply(
+    user_data_auth::VaultEncryptionType type) {
+  user_data_auth::GetVaultPropertiesReply reply;
+  reply.set_encryption_type(type);
+  return reply;
+}
+
+// GMock action that runs the callback (which is expected to be the second
+// argument in the mocked function) with the given reply.
+template <typename ReplyType>
+auto ReplyWith(const ReplyType& reply) {
+  return base::test::RunOnceCallback<1>(reply);
+}
 
 class MockNewWindowDelegate : public testing::NiceMock<TestNewWindowDelegate> {
  public:
@@ -72,6 +103,7 @@ class StorageHandlerTest : public testing::Test {
     // Initialize fake DBus clients.
     ConciergeClient::InitializeFake(/*fake_cicerone_client=*/nullptr);
     SpacedClient::InitializeFake();
+    UserDataAuthClient::OverrideGlobalInstanceForTesting(&userdataauth_);
 
     // The storage handler requires an instance of DiskMountManager,
     // ArcServiceManager and ArcSessionManager.
@@ -86,7 +118,7 @@ class StorageHandlerTest : public testing::Test {
     profile_manager_ = std::make_unique<TestingProfileManager>(
         TestingBrowserProcess::GetGlobal());
     ASSERT_TRUE(profile_manager_->SetUp());
-    profile_ = profile_manager_->CreateTestingProfile("p1");
+    profile_ = profile_manager_->CreateTestingProfile(kEmail);
 
     // Initialize storage handler.
     content::WebUIDataSource* html_source =
@@ -198,6 +230,25 @@ class StorageHandlerTest : public testing::Test {
     return nullptr;
   }
 
+  const base::Value* GetWebUIResponseMessage(const std::string& event_name) {
+    for (const std::unique_ptr<content::TestWebUI::CallData>& data :
+         base::Reversed(web_ui_->call_data())) {
+      const std::string* name = data->arg1()->GetIfString();
+      if (data->function_name() != "cr.webUIResponse" || !name ||
+          *name != event_name) {
+        continue;
+      }
+
+      // Assume that the data is stored in the last valid arg.
+      for (const auto& arg : base::Reversed(data->args())) {
+        if (&arg != data->arg1()) {
+          return &arg;
+        }
+      }
+    }
+    return nullptr;
+  }
+
   // Get the path to file manager's test data directory.
   base::FilePath GetTestDataFilePath(const std::string& file_name) {
     // Get the path to file manager's test data directory.
@@ -246,6 +297,7 @@ class StorageHandlerTest : public testing::Test {
   std::unique_ptr<OtherUsersSizeTestAPI> other_users_size_test_api_;
   raw_ptr<MockNewWindowDelegate, DanglingUntriaged>
       new_window_delegate_primary_;
+  MockUserDataAuthClient userdataauth_;
 
  private:
   std::unique_ptr<arc::ArcServiceManager> arc_service_manager_;
@@ -664,6 +716,74 @@ TEST_F(StorageHandlerTest, OpenBrowsingDataSettings) {
                       ash::NewWindowDelegate::Disposition::kSwitchToTab));
   base::Value::List empty_args;
   web_ui_->HandleReceivedMessage("openBrowsingDataSettings", empty_args);
+}
+
+TEST_F(StorageHandlerTest, StorageEncryptionInfo_Unknown) {
+  // Setup.
+  EXPECT_CALL(userdataauth_, GetVaultProperties(WithAccountId(), _))
+      .WillOnce(ReplyWith(BuildGetVaultPropertiesReply(
+          user_data_auth::CRYPTOHOME_VAULT_ENCRYPTION_ANY)));
+  base::Value::List args;
+  args.Append(kEncryptionInfoCallbackId);
+  web_ui_->HandleReceivedMessage("getStorageEncryptionInfo", args);
+  task_environment_.RunUntilIdle();
+
+  // Test.
+  const base::Value* callback =
+      GetWebUIResponseMessage(kEncryptionInfoCallbackId);
+  ASSERT_TRUE(callback) << "No 'storage-encryption-fetched' callback";
+  EXPECT_EQ("Unknown", callback->GetString());
+}
+
+TEST_F(StorageHandlerTest, StorageEncryptionInfo_Ecryptfs) {
+  // Setup.
+  EXPECT_CALL(userdataauth_, GetVaultProperties(WithAccountId(), _))
+      .WillOnce(ReplyWith(BuildGetVaultPropertiesReply(
+          user_data_auth::CRYPTOHOME_VAULT_ENCRYPTION_ECRYPTFS)));
+  base::Value::List args;
+  args.Append(kEncryptionInfoCallbackId);
+  web_ui_->HandleReceivedMessage("getStorageEncryptionInfo", args);
+  task_environment_.RunUntilIdle();
+
+  // Test.
+  const base::Value* callback =
+      GetWebUIResponseMessage(kEncryptionInfoCallbackId);
+  ASSERT_TRUE(callback) << "No 'storage-encryption-fetched' callback";
+  EXPECT_EQ("AES-128", callback->GetString());
+}
+
+TEST_F(StorageHandlerTest, StorageEncryptionInfo_Dmcrypt) {
+  // Setup.
+  EXPECT_CALL(userdataauth_, GetVaultProperties(WithAccountId(), _))
+      .WillOnce(ReplyWith(BuildGetVaultPropertiesReply(
+          user_data_auth::CRYPTOHOME_VAULT_ENCRYPTION_DMCRYPT)));
+  base::Value::List args;
+  args.Append(kEncryptionInfoCallbackId);
+  web_ui_->HandleReceivedMessage("getStorageEncryptionInfo", args);
+  task_environment_.RunUntilIdle();
+
+  // Test.
+  const base::Value* callback =
+      GetWebUIResponseMessage(kEncryptionInfoCallbackId);
+  ASSERT_TRUE(callback) << "No 'storage-encryption-fetched' callback";
+  EXPECT_EQ("AES-256", callback->GetString());
+}
+
+TEST_F(StorageHandlerTest, StorageEncryptionInfo_Fscrypt) {
+  // Setup.
+  EXPECT_CALL(userdataauth_, GetVaultProperties(WithAccountId(), _))
+      .WillOnce(ReplyWith(BuildGetVaultPropertiesReply(
+          user_data_auth::CRYPTOHOME_VAULT_ENCRYPTION_FSCRYPT)));
+  base::Value::List args;
+  args.Append(kEncryptionInfoCallbackId);
+  web_ui_->HandleReceivedMessage("getStorageEncryptionInfo", args);
+  task_environment_.RunUntilIdle();
+
+  // Test.
+  const base::Value* callback =
+      GetWebUIResponseMessage(kEncryptionInfoCallbackId);
+  ASSERT_TRUE(callback) << "No 'storage-encryption-fetched' callback";
+  EXPECT_EQ("AES-256", callback->GetString());
 }
 
 }  // namespace
