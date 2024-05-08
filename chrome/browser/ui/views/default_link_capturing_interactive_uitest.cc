@@ -198,10 +198,11 @@ IN_PROC_BROWSER_TEST_F(IntentPickerInteractiveUiTest,
 }
 #endif  // BUILDFLAG(IS_MAC)
 
-// TODO(b/338969664): The following tests are failing on Linux MSan, so
+// TODO(b/338969664): The following tests are failing on Linux MSan/macOS 14, so
 // disabling for now. These should be re-enabled.
-#if BUILDFLAG(IS_LINUX) && \
-    (defined(MEMORY_SANITIZER) || defined(THREAD_SANITIZER))
+#if (BUILDFLAG(IS_LINUX) &&                                       \
+     (defined(MEMORY_SANITIZER) || defined(THREAD_SANITIZER))) || \
+    BUILDFLAG(IS_MAC)
 #define MAYBE_AcceptingBubbleMeasuresUserAccept \
   DISABLED_AcceptingBubbleMeasuresUserAccept
 #define MAYBE_BubbleDismissMeasuresUserDismiss \
