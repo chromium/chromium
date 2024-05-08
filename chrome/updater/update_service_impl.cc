@@ -16,7 +16,6 @@
 #include "chrome/updater/configurator.h"
 #include "chrome/updater/constants.h"
 #include "chrome/updater/persisted_data.h"
-#include "chrome/updater/remove_uninstalled_apps_task.h"
 #include "chrome/updater/update_service.h"
 #include "chrome/updater/update_service_impl_impl.h"
 #include "chrome/updater/util/util.h"
@@ -62,8 +61,7 @@ void UpdateServiceImpl::RunPeriodicTasks(base::OnceClosure callback) {
   DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
   if (!IsEulaAccepted() || IsOemMode()) {
     VLOG(1) << __func__ << " rejected (EULA required or OEM mode).";
-    base::MakeRefCounted<RemoveUninstalledAppsTask>(config_, scope_)
-        ->Run(std::move(callback));
+    std::move(callback).Run();
     return;
   }
   delegate_->RunPeriodicTasks(std::move(callback));
