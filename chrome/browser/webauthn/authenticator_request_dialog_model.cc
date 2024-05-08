@@ -415,6 +415,14 @@ std::optional<content::GlobalRenderFrameHostId> FrameHostIdFromMaybeNull(
   return render_frame_host->GetGlobalId();
 }
 
+bool HaveTouchId() {
+#if BUILDFLAG(IS_MAC)
+  return device::fido::mac::DeviceHasBiometricsAvailable();
+#else
+  return false;
+#endif
+}
+
 }  // namespace
 
 #define AUTHENTICATOR_REQUEST_EVENT_0(name) \
@@ -696,7 +704,10 @@ void AuthenticatorRequestDialogController::
     // duplicate it.
     const bool authenticator_shows_own_confirmation =
         cred &&
-        cred->value().source == device::AuthenticatorType::kICloudKeychain;
+        (cred->value().source == device::AuthenticatorType::kICloudKeychain ||
+         // The enclave Touch ID prompts shows the credential details.
+         (cred->value().source == device::AuthenticatorType::kEnclave &&
+          will_do_uv && HaveTouchId()));
 
     if (cred != nullptr &&
         // Credentials on phones should never be triggered automatically.

@@ -44,6 +44,7 @@
 #include "device/fido/fido_request_handler_base.h"
 #include "device/fido/fido_transport_protocol.h"
 #include "device/fido/fido_types.h"
+#include "device/fido/platform_user_verification_policy.h"
 #include "device/fido/public_key_credential_descriptor.h"
 #include "device/fido/public_key_credential_user_entity.h"
 #include "testing/gmock/include/gmock/gmock.h"
@@ -188,6 +189,7 @@ enum class TransportAvailabilityParam {
   kHintSecurityKeys,
   kHintHybrid,
   kHintClientDevice,
+  kEnclaveCred,
 };
 
 std::string_view TransportAvailabilityParamToString(
@@ -249,6 +251,8 @@ std::string_view TransportAvailabilityParamToString(
       return "kHintHybrid";
     case TransportAvailabilityParam::kHintClientDevice:
       return "kHintClientDevice";
+    case TransportAvailabilityParam::kEnclaveCred:
+      return "kEnclaveCred";
   }
 }
 
@@ -308,6 +312,8 @@ const device::DiscoverableCredentialMetadata
     kWinCred2(device::AuthenticatorType::kWinNative, "rp.com", {1}, kUser2);
 const device::DiscoverableCredentialMetadata
     kTouchIDCred1(device::AuthenticatorType::kTouchID, "rp.com", {4}, kUser1);
+const device::DiscoverableCredentialMetadata
+    kEnclaveCred1(device::AuthenticatorType::kEnclave, "rp.com", {1}, kUser1);
 
 AuthenticatorRequestDialogModel::Mechanism::CredentialInfo CredentialInfoFrom(
     const device::DiscoverableCredentialMetadata& metadata) {
@@ -330,6 +336,63 @@ class AuthenticatorRequestDialogControllerTest
       const AuthenticatorRequestDialogControllerTest&) = delete;
   AuthenticatorRequestDialogControllerTest& operator=(
       const AuthenticatorRequestDialogControllerTest&) = delete;
+
+  base::test::ScopedFeatureList scoped_feature_list_{
+      device::kWebAuthnEnclaveAuthenticator};
+};
+
+constexpr bool kIsMac = BUILDFLAG(IS_MAC);
+
+class FakeEnclaveController : public AuthenticatorRequestDialogModel::Observer {
+ public:
+  explicit FakeEnclaveController(AuthenticatorRequestDialogModel* model)
+      : model_(model) {
+    model_observer_.Observe(model_);
+  }
+
+  void OnGPMPasskeySelected(std::vector<uint8_t> credential_id) override {
+    if (device::fido::PlatformWillDoUserVerification(
+            device::UserVerificationRequirement::kPreferred)) {
+      if (kIsMac) {
+        model_->SetStep(AuthenticatorRequestDialogModel::Step::kGPMTouchID);
+      }
+    }
+  }
+
+  void OnModelDestroyed(AuthenticatorRequestDialogModel*) override {
+    model_observer_.Reset();
+    model_ = nullptr;
+  }
+
+ private:
+  raw_ptr<AuthenticatorRequestDialogModel> model_;
+  base::ScopedObservation<AuthenticatorRequestDialogModel,
+                          AuthenticatorRequestDialogModel::Observer>
+      model_observer_{this};
+};
+
+class EnclaveDisabledController
+    : public AuthenticatorRequestDialogModel::Observer {
+ public:
+  explicit EnclaveDisabledController(AuthenticatorRequestDialogModel* model)
+      : model_(model) {
+    model_observer_.Observe(model_);
+  }
+
+  void OnGPMPasskeySelected(std::vector<uint8_t> credential_id) override {
+    model_->ContactPriorityPhone();
+  }
+
+  void OnModelDestroyed(AuthenticatorRequestDialogModel*) override {
+    model_observer_.Reset();
+    model_ = nullptr;
+  }
+
+ private:
+  raw_ptr<AuthenticatorRequestDialogModel> model_;
+  base::ScopedObservation<AuthenticatorRequestDialogModel,
+                          AuthenticatorRequestDialogModel::Observer>
+      model_observer_{this};
 };
 
 TEST_F(AuthenticatorRequestDialogControllerTest, Mechanisms) {
@@ -347,6 +410,7 @@ TEST_F(AuthenticatorRequestDialogControllerTest, Mechanisms) {
   const auto wincred1 = CredentialInfoFrom(kWinCred1);
   const auto wincred2 = CredentialInfoFrom(kWinCred2);
   [[maybe_unused]] const auto touchid_cred1 = CredentialInfoFrom(kTouchIDCred1);
+  [[maybe_unused]] const auto enclave_cred1 = CredentialInfoFrom(kEnclaveCred1);
   const auto v1 = TransportAvailabilityParam::kHasCableV1Extension;
   const auto v2 = TransportAvailabilityParam::kHasCableV2Extension;
   const auto has_winapi =
@@ -364,6 +428,8 @@ TEST_F(AuthenticatorRequestDialogControllerTest, Mechanisms) {
   const auto two_phone_cred =
       TransportAvailabilityParam::kTwoPhoneRecognizedCred;
   const auto empty_al = TransportAvailabilityParam::kEmptyAllowList;
+  [[maybe_unused]] const auto enclave_cred =
+      TransportAvailabilityParam::kEnclaveCred;
   const auto only_internal = TransportAvailabilityParam::kOnlyInternal;
   const auto only_hybrid_or_internal =
       TransportAvailabilityParam::kOnlyHybridOrInternal;
@@ -402,6 +468,7 @@ TEST_F(AuthenticatorRequestDialogControllerTest, Mechanisms) {
   const auto qr = Step::kCableV2QRCode;
   const auto pconf = Step::kPhoneConfirmationSheet;
   const auto hero = Step::kSelectPriorityMechanism;
+  [[maybe_unused]] const auto enclave_touchid = Step::kGPMTouchID;
   using psync = base::StrongAlias<class PhoneFromSyncTag, std::string>;
   using pqr = base::StrongAlias<class PhoneFromQrTag, std::string>;
   using PhoneVariant = absl::variant<psync, pqr>;
@@ -749,6 +816,25 @@ TEST_F(AuthenticatorRequestDialogControllerTest, Mechanisms) {
        {pqr("a"), pqr("b")},
        {p("a"), p("b"), add},
        mss},
+    #if BUILDFLAG(IS_MAC)
+      // If there's a single enclave passkey, we should jump directly to
+      // the enclave Touch ID sheet.
+      {L,
+       ga,
+       {cable, internal},
+       {only_hybrid_or_internal, empty_al, enclave_cred},
+       {},
+       {c(enclave_cred1), add},
+       enclave_touchid},
+      // But not if Touch ID isn't available.
+      {L,
+       ga,
+       {cable, internal},
+       {only_hybrid_or_internal, empty_al, enclave_cred, no_touchid},
+       {},
+       {c(enclave_cred1), add},
+       hero},
+    #endif
   };
 
   // Tests for the new UI that lists synced passkeys mixed with local
@@ -1097,6 +1183,10 @@ TEST_F(AuthenticatorRequestDialogControllerTest, Mechanisms) {
           FidoRequestHandlerBase::RecognizedCredential::kNoRecognizedCredential;
     }
 
+    if (base::Contains(test.params, TransportAvailabilityParam::kEnclaveCred)) {
+      transports_info.recognized_credentials.emplace_back(kEnclaveCred1);
+    }
+
     if (base::Contains(test.params,
                        TransportAvailabilityParam::kOneRecognizedCred)) {
       transports_info.recognized_credentials = {std::move(cred1)};
@@ -1174,11 +1264,15 @@ TEST_F(AuthenticatorRequestDialogControllerTest, Mechanisms) {
 
     AuthenticatorRequestDialogModel model(main_rfh());
     AuthenticatorRequestDialogController controller(&model);
+    FakeEnclaveController enclave_controller(&model);
 
     std::optional<bool> has_v2_cable_extension;
     if (base::Contains(test.params,
                        TransportAvailabilityParam::kHasCableV1Extension)) {
       has_v2_cable_extension = false;
+    }
+    if (base::Contains(test.params, TransportAvailabilityParam::kEnclaveCred)) {
+      model.EnclaveEnabled();
     }
 
     if (base::Contains(test.params,
@@ -1858,11 +1952,14 @@ TEST_F(AuthenticatorRequestDialogControllerTest, ConditionalUIPhonePasskey) {
   std::optional<std::string> phone_name;
   // Creates a new dialog model for the given list of |phones|.
   auto MakeModel = [&](bool include_old_phone)
-      -> std::pair<std::unique_ptr<AuthenticatorRequestDialogModel>,
-                   std::unique_ptr<AuthenticatorRequestDialogController>> {
+      -> std::tuple<std::unique_ptr<AuthenticatorRequestDialogModel>,
+                    std::unique_ptr<AuthenticatorRequestDialogController>,
+                    std::unique_ptr<EnclaveDisabledController>> {
     auto model = std::make_unique<AuthenticatorRequestDialogModel>(main_rfh());
     auto controller =
         std::make_unique<AuthenticatorRequestDialogController>(model.get());
+    auto gpm_controller =
+        std::make_unique<EnclaveDisabledController>(model.get());
 
     controller->SetAccountPreselectedCallback(base::DoNothing());
 
@@ -1909,34 +2006,40 @@ TEST_F(AuthenticatorRequestDialogControllerTest, ConditionalUIPhonePasskey) {
     tai.available_transports = {AuthenticatorTransport::kHybrid};
     controller->StartFlow(tai, /*is_conditional_mediation=*/true);
     CHECK_EQ(model->step(), Step::kConditionalMediation);
-    return std::make_pair(std::move(model), std::move(controller));
+    return std::make_tuple(std::move(model), std::move(controller),
+                           std::move(gpm_controller));
   };
 
   // Preselect the credential. This should select the phone that last contacted
   // sync.
   std::unique_ptr<AuthenticatorRequestDialogModel> model;
   std::unique_ptr<AuthenticatorRequestDialogController> controller;
-  std::tie(model, controller) = MakeModel(/*include_old_phone=*/true);
+  std::unique_ptr<EnclaveDisabledController> gpm_controller;
+  std::tie(model, controller, gpm_controller) =
+      MakeModel(/*include_old_phone=*/true);
   controller->OnAccountPreselected(kCred1.cred_id);
   EXPECT_EQ(model->step(), Step::kCableActivate);
   EXPECT_EQ(phone_name, kNewSyncedPhoneName);
 
   // Manually contact the "old" phone from sync. This should give it priority as
   // the most recently used.
-  std::tie(model, controller) = MakeModel(/*include_old_phone=*/true);
+  std::tie(model, controller, gpm_controller) =
+      MakeModel(/*include_old_phone=*/true);
   controller->ContactPhoneForTesting(kOldSyncedPhoneName);
   ASSERT_EQ(phone_name, kOldSyncedPhoneName);
 
   // Preselect the credential. This should contact the priority phone, which is
   // the "old" phone now.
-  std::tie(model, controller) = MakeModel(/*include_old_phone=*/true);
+  std::tie(model, controller, gpm_controller) =
+      MakeModel(/*include_old_phone=*/true);
   controller->OnAccountPreselected(kCred1.cred_id);
   EXPECT_EQ(model->step(), Step::kCableActivate);
   EXPECT_EQ(phone_name, kOldSyncedPhoneName);
 
   // Remove the "old" phone so that preselecting the credential again picks the
   // "new" one.
-  std::tie(model, controller) = MakeModel(/*include_old_phone=*/false);
+  std::tie(model, controller, gpm_controller) =
+      MakeModel(/*include_old_phone=*/false);
   controller->OnAccountPreselected(kCred1.cred_id);
   EXPECT_EQ(model->step(), Step::kCableActivate);
   EXPECT_EQ(phone_name, kNewSyncedPhoneName);
@@ -2006,6 +2109,8 @@ TEST_F(AuthenticatorRequestDialogControllerTest, InvalidPriorityPhonePref) {
   auto model = std::make_unique<AuthenticatorRequestDialogModel>(main_rfh());
   auto controller =
       std::make_unique<AuthenticatorRequestDialogController>(model.get());
+  auto gpm_controller =
+      std::make_unique<EnclaveDisabledController>(model.get());
   controller->SetAccountPreselectedCallback(base::DoNothing());
 
   // Store the contacted phone.
@@ -2393,6 +2498,7 @@ class RepeatingValueCallbackReceiver {
       run_loop_->Run();
     }
     Value ret = std::move(*value_);
+    value_.reset();
     run_loop_ = std::make_unique<base::RunLoop>();
     return ret;
   }
@@ -2779,7 +2885,11 @@ TEST_F(ListPasskeysFromSyncTest, MechanismsFromUserAccounts) {
   result = account_preselected_callback.WaitForResult();
   EXPECT_EQ(result.cred_id, kPhoneCred1.cred_id);
   EXPECT_EQ(result.source, device::AuthenticatorType::kPhone);
-  EXPECT_TRUE(contact_phone_callback.WaitForResult());
+  // In enclave mode there's no enclave controller and so the final action
+  // doesn't happen.
+  if (!base::FeatureList::IsEnabled(device::kWebAuthnEnclaveAuthenticator)) {
+    EXPECT_TRUE(contact_phone_callback.WaitForResult());
+  }
 }
 
 #if BUILDFLAG(IS_WIN)
