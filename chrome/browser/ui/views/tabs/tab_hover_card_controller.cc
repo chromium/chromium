@@ -10,7 +10,7 @@
 #include "base/command_line.h"
 #include "base/feature_list.h"
 #include "base/functional/bind.h"
-#include "base/memory/memory_pressure_listener.h"
+#include "base/memory/memory_pressure_monitor.h"
 #include "base/memory/raw_ptr.h"
 #include "base/time/time.h"
 #include "build/build_config.h"
@@ -44,34 +44,6 @@
 namespace {
 
 constexpr base::TimeDelta kMemoryPressureCaptureDelay = base::Milliseconds(500);
-
-// Provides the ability to simulate memory pressure other than the current
-// pressure on the system for testing purposes via an [undocumented]
-// command-line switch.
-std::optional<base::MemoryPressureListener::MemoryPressureLevel>
-GetMemoryPressureOverride() {
-  constexpr char kHoverCardMemoryPressureSwitch[] =
-      "hover-card-memory-pressure";
-
-  std::optional<base::MemoryPressureListener::MemoryPressureLevel> value;
-  const base::CommandLine* const command_line =
-      base::CommandLine::ForCurrentProcess();
-  if (command_line->HasSwitch(kHoverCardMemoryPressureSwitch)) {
-    auto arg =
-        command_line->GetSwitchValueASCII(kHoverCardMemoryPressureSwitch);
-    if (arg == "none") {
-      value = base::MemoryPressureListener::MEMORY_PRESSURE_LEVEL_NONE;
-    } else if (arg == "moderate") {
-      value = base::MemoryPressureListener::MEMORY_PRESSURE_LEVEL_MODERATE;
-    } else {
-      CHECK_EQ(arg, "critical")
-          << "Usage: --hover-card-memory-pressure=<value> where <value> is one "
-             "of [ none | moderate | critical ]";
-      value = base::MemoryPressureListener::MEMORY_PRESSURE_LEVEL_CRITICAL;
-    }
-  }
-  return value;
-}
 
 base::TimeDelta GetPreviewImageCaptureDelay(
     ThumbnailImage::CaptureReadiness readiness) {
@@ -241,17 +213,6 @@ TabHoverCardController::TabHoverCardController(TabStrip* tab_strip)
               &TabHoverCardController::OnHovercardMemoryUsageEnabledChanged,
               base::Unretained(this)));
     }
-  }
-
-  // Possibly apply memory pressure override for testing.
-  auto override = GetMemoryPressureOverride();
-  if (override) {
-    memory_pressure_level_ = override.value();
-  } else {
-    memory_pressure_listener_ = std::make_unique<base::MemoryPressureListener>(
-        FROM_HERE,
-        base::BindRepeating(&TabHoverCardController::OnMemoryPressureChanged,
-                            base::Unretained(this)));
   }
 }
 
@@ -621,16 +582,19 @@ void TabHoverCardController::MaybeStartThumbnailObservation(
           : GetPreviewImageCaptureDelay(thumbnail->GetCaptureReadiness());
 
   // Under memory pressure, we will additionally delay the initial capture, so
-  // that generating the image is a more deliberate choice from the user.
-  switch (memory_pressure_level_) {
-    case base::MemoryPressureListener::MEMORY_PRESSURE_LEVEL_CRITICAL:
-      capture_delay = base::TimeDelta::Max();
-      break;
-    case base::MemoryPressureListener::MEMORY_PRESSURE_LEVEL_MODERATE:
-      capture_delay += kMemoryPressureCaptureDelay;
-      break;
-    case base::MemoryPressureListener::MEMORY_PRESSURE_LEVEL_NONE:
-      break;
+  // that generating the image is a more deliberate choice from the user. The
+  // memory pressure monitor is disabled in tests.
+  if (const auto* const monitor = base::MemoryPressureMonitor::Get()) {
+    switch (monitor->GetCurrentPressureLevel()) {
+      case base::MemoryPressureListener::MEMORY_PRESSURE_LEVEL_CRITICAL:
+        capture_delay = base::TimeDelta::Max();
+        break;
+      case base::MemoryPressureListener::MEMORY_PRESSURE_LEVEL_MODERATE:
+        capture_delay += kMemoryPressureCaptureDelay;
+        break;
+      case base::MemoryPressureListener::MEMORY_PRESSURE_LEVEL_NONE:
+        break;
+    }
   }
 
   if (capture_delay.is_zero()) {
@@ -676,8 +640,10 @@ void TabHoverCardController::StartThumbnailObservation(Tab* tab) {
   DCHECK(waiting_for_preview());
 
   // Do not capture thumbnails during critical memory pressure.
-  if (memory_pressure_level_ ==
-      base::MemoryPressureListener::MEMORY_PRESSURE_LEVEL_CRITICAL) {
+  const auto* const monitor = base::MemoryPressureMonitor::Get();
+  if (monitor &&
+      monitor->GetCurrentPressureLevel() ==
+          base::MemoryPressureListener::MEMORY_PRESSURE_LEVEL_CRITICAL) {
     // Because we're blocked, we'll show a placeholder instead of nothing or
     // the wrong image.
     if (thumbnail_wait_state_ ==
@@ -806,28 +772,6 @@ void TabHoverCardController::OnPreviewImageAvailable(
   // Can still set image on a fading-out hover card (we can change this behavior
   // later if we want).
   hover_card_->SetTargetTabImage(thumbnail_image);
-}
-
-void TabHoverCardController::OnMemoryPressureChanged(
-    base::MemoryPressureListener::MemoryPressureLevel memory_pressure_level) {
-  memory_pressure_level_ = memory_pressure_level;
-
-  // The following code is about stopping or restarting thumbnail capture due
-  // to memory pressure so if there's no capture there's no reason to continue.
-  if (!thumbnail_observer_)
-    return;
-
-  if (memory_pressure_level ==
-      base::MemoryPressureListener::MEMORY_PRESSURE_LEVEL_CRITICAL) {
-    // If we're at critical memory pressure, abandon any current effort to
-    // capture thumbnails.
-    thumbnail_observer_->Observe(nullptr);
-  }
-
-  // TODO(dfried): consider restarting capture for the current hover card if
-  // memory pressure drops back to zero; however, the user is unlikely to be
-  // hovering a card through an entire CRITICAL -> NORMAL transition so as a
-  // simplification we simply don't care.
 }
 
 void TabHoverCardController::OnHovercardImagesEnabledChanged() {

@@ -9,7 +9,6 @@
 
 #include "base/callback_list.h"
 #include "base/gtest_prod_util.h"
-#include "base/memory/memory_pressure_listener.h"
 #include "base/memory/raw_ptr.h"
 #include "base/memory/weak_ptr.h"
 #include "base/scoped_observation.h"
@@ -73,6 +72,8 @@ class TabHoverCardController : public views::ViewObserver,
                            DisableMemoryUsageForTab);
   FRIEND_TEST_ALL_PREFIXES(TabHoverCardControllerTest,
                            ShowPreviewsForDiscardedTabWithThumbnail);
+  FRIEND_TEST_ALL_PREFIXES(TabHoverCardControllerTest,
+                           DontCaptureUnderCriticalMemoryPressure);
   FRIEND_TEST_ALL_PREFIXES(TabHoverCardPreviewsEnabledPrefTest, DefaultState);
   class EventSniffer;
 
@@ -133,9 +134,6 @@ class TabHoverCardController : public views::ViewObserver,
   void OnPreviewImageAvailable(TabHoverCardThumbnailObserver* observer,
                                gfx::ImageSkia thumbnail_image);
 
-  void OnMemoryPressureChanged(
-      base::MemoryPressureListener::MemoryPressureLevel memory_pressure_level);
-
   void OnHovercardImagesEnabledChanged();
   void OnHovercardMemoryUsageEnabledChanged();
 
@@ -177,12 +175,6 @@ class TabHoverCardController : public views::ViewObserver,
   base::CallbackListSubscription fade_complete_subscription_;
   base::CallbackListSubscription slide_progressed_subscription_;
   base::CallbackListSubscription slide_complete_subscription_;
-
-  // Track memory pressure on the system. We'll delay or stop requesting
-  // previews if memory pressure gets too high.
-  base::MemoryPressureListener::MemoryPressureLevel memory_pressure_level_ =
-      base::MemoryPressureListener::MEMORY_PRESSURE_LEVEL_NONE;
-  std::unique_ptr<base::MemoryPressureListener> memory_pressure_listener_;
 
   // Ensure that an instance of the TabResourceUsageCollector exists so
   // resources are up to date when we eventually show the hover card.
