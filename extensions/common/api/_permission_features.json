@@ -617,7 +617,11 @@
     {
       "channel": "stable",
       "extension_types": ["extension"],
-      "allowlist": ["DD87C93131FF8D3DE4E483DC1EB298D73C7223A6"]  // http://crbug.com/1328114
+      "allowlist": [
+        "DD87C93131FF8D3DE4E483DC1EB298D73C7223A6",  // http://crbug.com/1328114
+        "13E3107CEF097680EF38F4C405F0014ECC2428C6",  // https://crbug.com/333576806
+        "F14B6BF9F5B9205222E568B3C838D9E99C3F5032"   // https://crbug.com/333576806
+      ]
     },
     {
       "channel": "dev",
