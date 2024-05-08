@@ -74,6 +74,7 @@ Du hittar fler inställningar som använder data för att förbättra Chromium-u
 <translation id="2918709798697875261">Organisationen kräver att du inte loggar in i Chromium.</translation>
 <translation id="2942241131342758843">Använd Chromium som standard när du öppnar länkar och söker med en widget och få lösenord ifyllda i andra appar automatiskt</translation>
 <translation id="2977470724722393594">Chromium är uppdaterat</translation>
+<translation id="3044857325852340337">Data i Chromium har raderats</translation>
 <translation id="3078941082359356771">{COUNT,plural, =1{Du kan spåra paketet på sidan Ny flik i Chromium.}other{Du kan spåra paketen på sidan Ny flik i Chromium.}}</translation>
 <translation id="3102849287235003384"><ph name="BEGIN_LINK" />Logga ut från Chromium<ph name="END_LINK" /> om du vill logga ut från Google-kontot på alla webbplatser.</translation>
 <translation id="3219277919172823720">Sök med rösten i Chromium</translation>
@@ -124,6 +125,7 @@ Om du vill ändra den här inställningen <ph name="BEGIN_LINK" />raderar du Chr
 <translation id="4633738821577273991">Få Förbättrad säker webbsökning även för den här Chromium-profilen</translation>
 <translation id="4638625642619341392">Ladda ned Chromium här.</translation>
 <translation id="4654936625574199632">Chromium skickar data om användning och krascher till Google i syfte att förbättra appen. <ph name="BEGIN_LINK" />Hantera<ph name="END_LINK" /></translation>
+<translation id="4675485352217495362">Radera webbinformation i Chromium</translation>
 <translation id="4681781466797808448">Aktivera Chromium som skanner</translation>
 <translation id="4736424910885271643">Eftersom ditt konto hanteras av <ph name="HOSTED_DOMAIN" /> raderas din data i Chromium från enheten</translation>
 <translation id="4773487571745795781">Du har inaktiverat inloggning i Chromium.</translation>
@@ -191,6 +193,7 @@ Tänk på detta:
 <translation id="6324041800010509197">Öppna rutnätet med flikar i Chromium</translation>
 <translation id="6325378625795868881">Använd Chromium varje gång du trycker på länkar i meddelanden och andra appar.</translation>
 <translation id="632825460376924298">Tillåt inloggning i Chromium</translation>
+<translation id="6332129548244419716">Radera webbinformation i Chromium.</translation>
 <translation id="6337530241089703714">Välj om din data i Chromium ska raderas från den här enheten eller vara kvar</translation>
 <translation id="6348483005826990855">3. Välj Chromium</translation>
 <translation id="6383607155624074112">Kom åt Chromium snabbare från hemskärmens Dock</translation>

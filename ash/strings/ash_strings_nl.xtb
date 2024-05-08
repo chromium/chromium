@@ -166,6 +166,7 @@ Hier zijn wat voorbeelden van wat je kunt proberen om aan de slag te gaan.</tran
 <translation id="1586324912145647027">Naar bureau 1 tot en met 8 gaan</translation>
 <translation id="158838227375272121">Google Classroom-website</translation>
 <translation id="1589090746204042747">Al je activiteit in deze sessie bekijken</translation>
+<translation id="1597880963776148053">Rondleiding stap <ph name="STEP" /> van <ph name="TOTAL_STEPS" />. Je vastgezette en geopende apps staan op de plank onderaan het scherm. Druk op Alt + Shift + L en daarna op Tab om de focus op items op de plank te plaatsen.</translation>
 <translation id="1602874809115667351"><ph name="LAUNCHER_KEY_NAME" /> + pijl-omlaag</translation>
 <translation id="1604857178818051494">Media pauzeren</translation>
 <translation id="1607312127821884567">Instellen van de weergave van apps van je telefoon sluiten</translation>
@@ -303,6 +304,7 @@ Hier zijn wat voorbeelden van wat je kunt proberen om aan de slag te gaan.</tran
 <translation id="2257486738914982088">Er is iets misgegaan tijdens het downloaden van <ph name="FILENAME" /></translation>
 <translation id="2258734398699965611">Voorgestelde bestanden</translation>
 <translation id="2268130516524549846">Bluetooth staat uit</translation>
+<translation id="2268731132310444948">Rondleiding stap <ph name="STEP" /> van <ph name="TOTAL_STEPS" />. Nadat de Launcher is geactiveerd, krijg je een uitgebreidere zoekbalk. Je kunt beginnen met typen om te zoeken naar onder andere je bestanden en apps. Je kunt ook antwoord krijgen op vragen over je <ph name="PRODUCT_NAME" />.</translation>
 <translation id="2268813581635650749">Iedereen uitloggen</translation>
 <translation id="2276987123919776440">15 min</translation>
 <translation id="2277103315734023688">Vooruit zoeken</translation>
@@ -397,6 +399,7 @@ Hier zijn wat voorbeelden van wat je kunt proberen om aan de slag te gaan.</tran
 <translation id="2607678425161541573">Online inloggen vereist</translation>
 <translation id="2612072250312279703">activiteitsmonitor</translation>
 <translation id="2612614436418177118">Een app-icoon verplaatsen binnen het app-raster</translation>
+<translation id="2619326010008283367">Rondleiding stap <ph name="STEP" /> van <ph name="TOTAL_STEPS" />. Je vindt je apparaatinstellingen in de Launcher. Pas de instellingen van je <ph name="PRODUCT_NAME" /> aan. Je kunt bijvoorbeeld je achtergrond wijzigen of een screensaver instellen.</translation>
 <translation id="2620016719323068571">Doorzoek onder andere je <ph name="CATEGORY" />, bestanden en apps…</translation>
 <translation id="2620436844016719705">Systeem</translation>
 <translation id="2620900772667816510">Bluetooth Super Resolution</translation>
@@ -819,7 +822,6 @@ Sommige functies worden beperkt om de batterijduur te verlengen.</translation>
 <translation id="4209973997261364186">Wifi staat aan</translation>
 <translation id="4212472694152630271">Overschakelen naar pincode</translation>
 <translation id="4215497585250573029">VPN-instellingen</translation>
-<translation id="4215548513524864822">Rondleiding stap 5 van 5. Je vindt je apparaatinstellingen in de Launcher. Pas de instellingen van je <ph name="PRODUCT_NAME" /> aan. Je kunt bijvoorbeeld je achtergrond wijzigen of een screensaver instellen.</translation>
 <translation id="4217571870635786043">Dicteren</translation>
 <translation id="4221957499226645091"><ph name="APP_NAME" />, geïnstalleerde app, onderbroken</translation>
 <translation id="4228078597006700451">Bedieningselementen niet ingesteld</translation>
@@ -946,12 +948,12 @@ Sommige functies worden beperkt om de batterijduur te verlengen.</translation>
 <translation id="468293128311738995">Apps op je telefoon</translation>
 <translation id="4690510401873698237">Plank aan onderkant</translation>
 <translation id="4696813013609194136">Apparaat ontgrendelen met oudercode</translation>
-<translation id="469693290987463983">Rondleiding stap 1 van 5. Je vastgezette en geopende apps staan op de plank onderaan het scherm. Druk op Alt + Shift + L en daarna op Tab om de focus op items op de plank te plaatsen.</translation>
 <translation id="4702647871202761252">Privacyscherm staat uit</translation>
 <translation id="4706121060329443414">Download wordt later geprobeerd. Voorlopig wordt spraak naar Google gestuurd voor verwerking.</translation>
 <translation id="470644585772471629">Kleurinversie</translation>
 <translation id="4708065238214351979">Toetsenbord helderder maken</translation>
 <translation id="4717575069099566988">Je USB-C-kabel biedt geen ondersteuning voor USB4. De prestaties van het apparaat kunnen beperkt zijn.</translation>
+<translation id="4724328513667182700">6 tips om aan de slag te gaan met <ph name="PRODUCT_NAME" /></translation>
 <translation id="4730374152663651037">VEELGEBRUIKT</translation>
 <translation id="4731797938093519117">Toegang door ouders</translation>
 <translation id="4733161265940833579"><ph name="BATTERY_PERCENTAGE" />% (links)</translation>
@@ -1027,6 +1029,7 @@ Sommige functies worden beperkt om de batterijduur te verlengen.</translation>
 <translation id="4964188651935955085">Als je bluetooth uitzet, wordt de verbinding van dit externe apparaat met je <ph name="DEVICE_TYPE" /> verbroken:</translation>
 <translation id="4966431234408005599">Volume hoger zetten</translation>
 <translation id="4969092041573468113"><ph name="HOURS" /> u <ph name="MINUTES" /> m <ph name="SECONDS" /> s</translation>
+<translation id="496999337731226334">Rondleiding stap <ph name="STEP" /> van <ph name="TOTAL_STEPS" />. Veelgebruikte bedieningsopties, zoals wifi, bluetooth en volume, staan in Snelle instellingen. Je kunt hier ook naartoe gaan om screenshots te maken. Druk op Alt + Shift + S om Snelle instellingen te openen.</translation>
 <translation id="4975771730019223894">App-badges</translation>
 <translation id="4977493774330778463"><ph name="NUM_IMPORTANT_NOTIFICATION" />:
 <ph name="NOTIFICATION_1" />,
@@ -1144,6 +1147,7 @@ Geen apparaten verbonden.</translation>
 <translation id="540713187982329711">Hotspot aan-/uitzetten. Hotspot staat aan: geen apparaat verbonden.</translation>
 <translation id="5413656666631274079">Pagina Instellingen</translation>
 <translation id="5414198321558177633">Lijst met profielen vernieuwen. Dit kan een paar minuten duren.</translation>
+<translation id="5417965108047245734">Volg een korte rondleiding voor meer informatie over hoe je je <ph name="PRODUCT_NAME" /> gebruikt</translation>
 <translation id="5426063383988017631">Menu Instellingen gesloten</translation>
 <translation id="5428899915242071344">Selecteren starten</translation>
 <translation id="5429993543155113935">Incognitovensters worden momenteel niet ondersteund</translation>
@@ -1524,7 +1528,6 @@ Nieuwe installatie</translation>
 <translation id="6874854809828346832">Toon de hotspotdetails. Hotspot staat aan.</translation>
 <translation id="6878400149835617132">Snelkoppeling staat uit</translation>
 <translation id="6878701771800702153">{NUM_APPS,plural, =1{1 app}other{# apps}}</translation>
-<translation id="6878787305374738418">Rondleiding stap 4 van 5 Nadat de Launcher is geactiveerd, krijg je een uitgebreidere zoekbalk. Je kunt beginnen met typen om te zoeken naar onder andere je bestanden en apps. Je kunt ook antwoord krijgen op vragen over je <ph name="PRODUCT_NAME" />.</translation>
 <translation id="6883768636838842873">Sneltoetsen, tips voor het gebruik van het apparaat en meer</translation>
 <translation id="6884665277231944629">Terug naar vandaag</translation>
 <translation id="6886172995547742638">Je <ph name="DEVICE_TYPE" /> kan slechtere prestaties leveren. Gebruik een gecertificeerde USB-C-voedingsadapter van <ph name="PREFERRED_MINIMUM_POWER" /> W of hoger.</translation>
@@ -1593,6 +1596,7 @@ Nieuwe installatie</translation>
 <translation id="7143207342074048698">Verbinden</translation>
 <translation id="7144942256906679589">Batterijstatus</translation>
 <translation id="7145639536026937076">Batterij op <ph name="PERCENTAGE" />% en wordt opgeladen. Batterijbesparing staat aan.</translation>
+<translation id="7149149900052329230">Beheer je lokale bestanden en je Google Drive-bestanden, allemaal in de Bestanden-app.</translation>
 <translation id="7165278925115064263">Alt+Shift+K</translation>
 <translation id="7167913274352523149"><ph name="HOTSPOT" />,
 <ph name="NETWORK" /></translation>
@@ -1613,7 +1617,6 @@ Nieuwe installatie</translation>
 <translation id="726276584504105859">Sleep hier naartoe om het scherm te splitsen</translation>
 <translation id="7262906531272962081">Herinnering maken</translation>
 <translation id="7278787617901301220"><ph name="LAUNCHER_KEY_NAME" /> + backspace</translation>
-<translation id="7282547098317872382">Rondleiding stap 3 van 5. Gebruik apps waarmee je van alles kunt doen op je <ph name="PRODUCT_NAME" />. Je vindt je apps in de Launcher. Druk op Alt + Shift + L om de focus op de Launcher-knop te plaatsen.</translation>
 <translation id="7285232777292757180">Gebruik de tool Screenshot in Snelle instellingen om screenshots te maken</translation>
 <translation id="7301826272005790482">Venstersuggesties sluiten</translation>
 <translation id="7302889331339392448">Live ondertiteling staat uit.</translation>
@@ -1795,10 +1798,12 @@ Als je het apparaat wilt uitzetten, houd je de aan/uit-knop op het apparaat weer
 <translation id="7933084174919150729">De Google Assistent is alleen beschikbaar voor het primaire profiel.</translation>
 <translation id="79341161159229895">Account wordt beheerd door <ph name="FIRST_PARENT_EMAIL" /> en <ph name="SECOND_PARENT_EMAIL" /></translation>
 <translation id="793716872548410480">Druk op <ph name="SHORTCUT_KEY_NAME" /> + V om het klembord te bekijken. De laatste 5 items die je hebt gekopieerd, worden opgeslagen op het klembord.</translation>
+<translation id="7942330802915522974">Rondleiding stap <ph name="STEP" /> van <ph name="TOTAL_STEPS" />. Je vindt de Bestanden-app in de Launcher. Beheer je lokale bestanden en je Google Drive-bestanden, allemaal in de Bestanden-app.</translation>
 <translation id="7942349550061667556">Rood</translation>
 <translation id="7943516765291457328">Zet bluetooth aan om te scannen naar hotspots in de buurt</translation>
 <translation id="7944023924886109030">Alle afspraken voor vandaag bekijken</translation>
 <translation id="7945357288295809525">Toegankelijkheidsinstellingen tonen, '<ph name="ENABLED_FEATURES" />' aangezet.</translation>
+<translation id="7946681191253332687">Uitgebreide beveiligingsupdates beschikbaar</translation>
 <translation id="7947798320695032612"><ph name="APP_NAME" /> wil je <ph name="DEVICE_NAME" /> gebruiken</translation>
 <translation id="7951630946012935453">Toetsenbord dimmen</translation>
 <translation id="7953994493035617347">Nieuwe resolutie bevestigen?</translation>
@@ -1910,7 +1915,6 @@ Als je het apparaat wilt uitzetten, houd je de aan/uit-knop op het apparaat weer
 <translation id="8412677897383510995">Scherminstellingen bekijken</translation>
 <translation id="8413272770729657668">Opname start over 3, 2, 1</translation>
 <translation id="8416730306157376817"><ph name="BATTERY_PERCENTAGE" />% (case)</translation>
-<translation id="8417951779969083400">Rondleiding stap 2 van 5. Veelgebruikte bedieningsopties, zoals wifi, bluetooth en volume, staan in Snelle instellingen. Je kunt hier ook naartoe gaan om screenshots te maken. Druk op Alt + Shift + S om Snelle instellingen te openen.</translation>
 <translation id="8420205633584771378">Deze suggestie verwijderen?</translation>
 <translation id="8421270167862077762"><ph name="UNAVAILABLE_APPS" /> staat niet op dit apparaat.</translation>
 <translation id="8426708595819210923">Goedenavond <ph name="GIVEN_NAME" />,</translation>
@@ -2131,6 +2135,7 @@ Als je het apparaat wilt uitzetten, houd je de aan/uit-knop op het apparaat weer
 <translation id="987589956647469042">Mobiele data staan aan</translation>
 <translation id="989374776391122812">Camera- en audiobediening</translation>
 <translation id="990277280839877440">Venster <ph name="WINDOW_TITILE" /> gesloten.</translation>
+<translation id="993398562350683614">Rondleiding stap <ph name="STEP" /> van <ph name="TOTAL_STEPS" />. Gebruik apps waarmee je van alles kunt doen op je <ph name="PRODUCT_NAME" />. Je vindt je apps in de Launcher. Druk op Alt + Shift + L om de focus op de Launcher-knop te plaatsen.</translation>
 <translation id="994354411665877646"><ph name="NETWORK_NAME" />, <ph name="SUBTEXT" /></translation>
 <translation id="996204416024568215">Krijg de nieuwste functies en beveiligingsverbeteringen. Updates worden op de achtergrond uitgevoerd.</translation>
 </translationbundle>

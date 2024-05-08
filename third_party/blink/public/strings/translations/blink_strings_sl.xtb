@@ -12,6 +12,7 @@
 <translation id="1588438908519853928">Običajen</translation>
 <translation id="1591562245178063882">Ta mesec</translation>
 <translation id="1637811476055996098">Izberi datoteke</translation>
+<translation id="1680090928918677457">Uporabi kamero</translation>
 <translation id="1681022320378710418">trenutni čas</translation>
 <translation id="1727839386348365796">Kapalka</translation>
 <translation id="1729654308190250600">Vnesite e-poštni naslov (polje ne sme biti prazno).</translation>
@@ -60,6 +61,7 @@
 <translation id="3822383571486410024">Podaljšajte to besedilo na toliko znakov ali več: <ph name="MIN_CHARACTERS" /> (trenutno uporabljate toliko znakov: <ph name="CURRENT_LENGTH" />).</translation>
 <translation id="383465348367842624">Del pred »<ph name="ATSIGN" />« ne sme vsebovati znaka »<ph name="INVALIDCHARACTER" />«.</translation>
 <translation id="3846214748874656680">Zapri celozaslonski način</translation>
+<translation id="3914173277599553213">Obvezno</translation>
 <translation id="4031179711345676612">Mikrofon je dovoljen</translation>
 <translation id="4103419683916926126">Milisekunde</translation>
 <translation id="4201051445878709314">Prikaz prejšnjega meseca</translation>
@@ -75,6 +77,7 @@
 <translation id="4912200001568447310">trenutni element</translation>
 <translation id="4915360478455618802">Prikaz izbirnika ure</translation>
 <translation id="4924138096460353083">nedoločeno</translation>
+<translation id="49269513399674318">Uporabi mikrofon</translation>
 <translation id="4950364064308314478">Prikaz izbirnika lokalnega datuma in ure</translation>
 <translation id="4971739861736909480">Izbran je predmet <ph name="ACCNAME" /></translation>
 <translation id="4975562563186953947">Št. izbranih: <ph name="SELECTED_COUNT" /></translation>
@@ -142,6 +145,7 @@
 <translation id="7080893216867146095">Deljenje lokacije je dovoljeno</translation>
 <translation id="709897737746224366">Poskrbite za ujemanje z zahtevano obliko.</translation>
 <translation id="7102274145889307184">trenutna lokacija</translation>
+<translation id="7134810312945846184">Uporabi mikrofon in kamero</translation>
 <translation id="7263440858009898357">Izberite element s seznama.</translation>
 <translation id="7320576522385648310">medpomnjenje</translation>
 <translation id="7341556277900466204">Izbirnik barv</translation>

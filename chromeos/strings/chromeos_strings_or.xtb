@@ -11,6 +11,7 @@
 <translation id="1047458377670401304"><ph name="CPU_NAME" /> (<ph name="THREAD_COUNT" />ଟି ଥ୍ରେଡ୍, <ph name="CPU_MAX_CLOCK_SPEED" />GHz)</translation>
 <translation id="1047773237499189053">ନୂଆ ଫିଚର୍ ଉପଲବ୍ଧ ଅଛି, ଅଧିକ ଜାଣିବାକୁ ଅପ୍ ତୀର କୀ ବ୍ୟବହାର କରନ୍ତୁ।</translation>
 <translation id="1049663189809099096">ପେଷ୍ଟେଲ ହଳଦିଆ</translation>
+<translation id="1056898198331236512">ଚେତାବନୀ</translation>
 <translation id="1059913517121127803">ସ୍କାନିଂ ଆରମ୍ଭ କରାଯାଇପାରିଲା ନାହିଁ</translation>
 <translation id="1062823486781306604"><ph name="COUNT" />ଟିରୁ <ph name="INDEX" />, <ph name="NAME" />।</translation>
 <translation id="1070066693520972135">WEP</translation>
@@ -95,7 +96,6 @@
 <translation id="1478594628797167447">ସ୍କାନର୍</translation>
 <translation id="1483493594462132177">ପଠାନ୍ତୁ</translation>
 <translation id="1488850966314959671">ଯେ କୌଣସି ସକ୍ଷମ କରାଯାଇଥିବା କଷ୍ଟମ APN ବ୍ୟବହାର କରି ଏହି ନେଟୱାର୍କ ସହ କନେକ୍ଟ କରାଯାଇପାରିବ ନାହିଁ। ଅଧିକ ସୂଚନା ପାଇଁ ଆପଣଙ୍କ ମୋବାଇଲ କେରିଅର ସହ କଣ୍ଟାକ୍ଟ କରନ୍ତୁ।</translation>
-<translation id="1491076385728777984"><ph name="DEVICE_NAME" />ରେ ଫାର୍ମୱେର ଅପଡେଟ କରାଯାଉଛି</translation>
 <translation id="1499041187027566160">ଭଲ୍ୟୁମ୍ ବଢାନ୍ତୁ</translation>
 <translation id="1499900233129743732"><ph name="MANAGER" /> ଏହି ୟୁଜରଙ୍କୁ ପରିଚାଳନା କରେ ଏବଂ ରିମୋଟ ଭାବେ ସେଟିଂସକୁ ପରିଚାଳନା ଏବଂ ୟୁଜର କାର୍ଯ୍ୟକଳାପକୁ ନିରୀକ୍ଷଣ କରିପାରେ।</translation>
 <translation id="150962533380566081">ଅବୈଧ PUK।</translation>
@@ -291,7 +291,6 @@
 <translation id="2505327257735685095">ବର୍ତ୍ତମାନର ୱାଲପେପର୍ ଛବିକୁ ରିଫ୍ରେସ୍ କରନ୍ତୁ</translation>
 <translation id="2512979179176933762">ୱିଣ୍ଡୋଗୁଡ଼ିକ ଦେଖାନ୍ତୁ</translation>
 <translation id="2513396635448525189">ଲଗଇନ୍ ଛବି</translation>
-<translation id="2517472476991765520">ସ୍କାନ୍ କରନ୍ତୁ</translation>
 <translation id="2521835766824839541">ପୂର୍ବବର୍ତ୍ତୀ ଟ୍ରାକ୍</translation>
 <translation id="2526590354069164005">ଡେସ୍କଟପ୍</translation>
 <translation id="2529641961800709867">ବଟନ ବିକଳ୍ପ</translation>
@@ -330,6 +329,7 @@
 <translation id="2744221223678373668">ସେୟାର କରାଯାଇଛି</translation>
 <translation id="2751739896257479635">EAP ଫେଜ୍‍ 2 ପ୍ରମାଣିକରଣ</translation>
 <translation id="2754757901767760034">ଲେମ୍ପ</translation>
+<translation id="2780756493585863768">Google AI ଦ୍ୱାରା ପରିଚାଳିତ ବର୍ତ୍ତମାନର ବେକଗ୍ରାଉଣ୍ଡ</translation>
 <translation id="2783010256799387990">ପାସ୍ ହୋଇଛି</translation>
 <translation id="2786429550992142861">ଲିନେନ</translation>
 <translation id="2787435249130282949">କୀବୋର୍ଡକୁ ଆହୁରି ଉଜ୍ଜ୍ୱଳ କରନ୍ତୁ</translation>
@@ -426,6 +426,7 @@
 <translation id="3456078764689556234"><ph name="TOTAL_PAGES" />ଟି ପୃଷ୍ଠା ମଧ୍ୟରୁ <ph name="PRINTED_PAGES" /> ନମ୍ବର ପୃଷ୍ଠା ପ୍ରିଣ୍ଟ କରାଯାଇଛି।</translation>
 <translation id="345898999683440380">ପୃଷ୍ଠା <ph name="PAGE_NUM" />କୁ ସ୍କାନ୍ କରାଯାଉଛି। <ph name="PERCENTAGE_VALUE" />% ସମ୍ପୂର୍ଣ୍ଣ ହୋଇଛି।</translation>
 <translation id="3459509316159669723">ପ୍ରିଣ୍ଟିଂ</translation>
+<translation id="3462187165860821523"><ph name="DEVICE_NAME" />କୁ ଅପଡେଟ କରାଯାଉଛି</translation>
 <translation id="346423161771747987">କରେଣ୍ଟ</translation>
 <translation id="346539236881580388">ପୁଣି ଉଠାନ୍ତୁ</translation>
 <translation id="3484914941826596830">ଫାର୍ମୱେରକୁ ଅପଡେଟ କରାଯାଉଥିବା ସମୟରେ ଏହି ଏକ୍ସଟର୍ନଲ ଡିଭାଇସକୁ ଅନପ୍ଲଗ କରନ୍ତୁ ନାହିଁ କିମ୍ବା ଆପଣଙ୍କ କମ୍ପ୍ୟୁଟରକୁ ବନ୍ଦ କରନ୍ତୁ ନାହିଁ। ଆପଣ ଏହି ୱିଣ୍ଡୋକୁ ଛୋଟ କରିପାରିବେ। ଏହି ଅପଡେଟ ପାଇଁ କିଛି ସମୟ ଲାଗିପାରେ ଏବଂ ଏହି ସମୟରେ ଆପଣଙ୍କ ଏକ୍ସଟର୍ନଲ ଡିଭାଇସ କାମ କରିନପାରେ।</translation>
@@ -790,6 +791,7 @@
 <translation id="5559898619118303662">ସୂର୍ଯ୍ୟାସ୍ତ ସମୟରେ ସ୍ୱଚାଳିତ ଭାବେ ଡାର୍କ ଥିମକୁ ସ୍ୱିଚ କରନ୍ତୁ</translation>
 <translation id="556042886152191864">ବଟନ୍</translation>
 <translation id="5562551811867441927"><ph name="TERRAIN_COLOR" />ର ସେଡରେ <ph name="TERRAIN_FEATURE" /></translation>
+<translation id="5572169899491758844">ସ୍କାନ କରନ୍ତୁ</translation>
 <translation id="5578477003638479617">UMTS</translation>
 <translation id="5578519639599103840">ପୁଣି ସ୍କାନ୍ କରନ୍ତୁ</translation>
 <translation id="5583640892426849032">ପଶ୍ଚାତ୍</translation>
@@ -879,7 +881,6 @@
 <translation id="6075872808778243331">(Android) HTTP ଲାଟେନ୍ସି</translation>
 <translation id="6078323886959318429">ସର୍ଟକଟ୍ ଯୋଗ କରନ୍ତୁ</translation>
 <translation id="6091080061796993741">ହଳଦିଆ</translation>
-<translation id="610371409726072606">Google AI ଦ୍ଵାରା ପରିଚାଳିତ କେମେରା ପୃଷ୍ଠପଟ</translation>
 <translation id="6104112872696127344">ସ୍କାନିଂ ବାତିଲ୍ କରାଯାଇଛି</translation>
 <translation id="6106186594183574873">ସମ୍ପୂର୍ଣ୍ଣ କରିବା ପାଇଁ, ଆପଣଙ୍କର ପୁରୁଣା ପାସ୍‍ୱାର୍ଡ ଲେଖନ୍ତୁ</translation>
 <translation id="6108689792487843350">ଗେଟୱେ ସହିତ ସଂଯୋଗ କରାଯାଇପାରିବ ନାହିଁ</translation>
@@ -1011,7 +1012,6 @@
 <translation id="672609503628871915">କ’ଣ ନୂଆ ଅଛି ଦେଖନ୍ତୁ</translation>
 <translation id="6740695858234317715">କ୍ରିମ ଏବଂ କମଳା</translation>
 <translation id="6741823073189174383">ନୌକା</translation>
-<translation id="674276385369049081">Google AI ଦ୍ଵାରା ପରିଚାଳିତ ବର୍ତ୍ତମାନର କେମେରା ପୃଷ୍ଠପଟଗୁଡ଼ିକ</translation>
 <translation id="6744441848304920043">ଜଙ୍ଗଲ</translation>
 <translation id="6747035363363040417">ନ୍ୟୁଟ୍ରାଲ</translation>
 <translation id="6747215703636344499">ବନ୍ଦ ହୋଇଯାଇଛି - ଆଉଟପୁଟ୍ ପୂର୍ଣ୍ଣ ହୋଇଯାଇଛି</translation>
@@ -1032,6 +1032,7 @@
 <translation id="6871256179359663621">ହାଲୁକା ବାଇଗଣୀ</translation>
 <translation id="6889786074662672253">ରିଷ୍ଟାର୍ଟ କରାଯାଉଥିବା ସମୟରେ, ଏହି ଏକ୍ସଟର୍ନଲ ଡିଭାଇସକୁ ଅନପ୍ଲଗ କରନ୍ତୁ ନାହିଁ କିମ୍ବା ଆପଣଙ୍କ କମ୍ପ୍ୟୁଟରକୁ ବନ୍ଦ କରନ୍ତୁ ନାହିଁ। ଆପଣ ଏହି ୱିଣ୍ଡୋକୁ ଛୋଟ କରିପାରିବେ। ଏଥିପାଇଁ କିଛି ସମୟ ଲାଗିପାରେ ଏବଂ ଏହି ସମୟରେ ଆପଣଙ୍କ ଏକ୍ସଟର୍ନଲ ଡିଭାଇସ କାମ କରିନପାରେ।</translation>
 <translation id="6900701049656042631">ଏହି ଆଲବମରେ କୌଣସି ଫଟୋ ନାହିଁ। ଫଟୋଗୁଡ଼ିକୁ ଯୋଗ କରିବା ପାଇଁ <ph name="LINK" />କୁ ଯାଆନ୍ତୁ</translation>
+<translation id="6902359863093437070">AI ଦ୍ୱାରା ବେକଗ୍ରାଉଣ୍ଡ ତିଆରି କରନ୍ତୁ</translation>
 <translation id="6905163627763043954">ଏହାକୁ ବ୍ୟବହାର କରି ଦେଖନ୍ତୁ</translation>
 <translation id="6905724422583748843"><ph name="PAGE_NAME" />କୁ ଫେରନ୍ତୁ</translation>
 <translation id="6910312834584889076">ସ୍କାନରର କଭର୍ ଖୋଲା ଅଛି। କଭର୍ ବନ୍ଦ କରି ପୁଣି ଚେଷ୍ଟା କରନ୍ତୁ।</translation>
@@ -1269,6 +1270,7 @@
 <translation id="8152370627892825"><ph name="DESCRIPTION" />, <ph name="ACCELERATOR_INFO" />।</translation>
 <translation id="8156233298086717232">ମେଜିକାଲ</translation>
 <translation id="8162776280680283326">କୋକିଶିଆଳି</translation>
+<translation id="8167413449582155132">Google AI ଦ୍ୱାରା ପରିଚାଳିତ ବେକଗ୍ରାଉଣ୍ଡ</translation>
 <translation id="8179976553408161302">ପ୍ରବେଶ</translation>
 <translation id="8183975772394450380">ବେଳାଭୂମି</translation>
 <translation id="8206859287963243715">ସେଲ୍ୟୁଲାର୍</translation>

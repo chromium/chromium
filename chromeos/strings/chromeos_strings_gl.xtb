@@ -11,6 +11,7 @@
 <translation id="1047458377670401304"><ph name="CPU_NAME" /> (<ph name="THREAD_COUNT" /> subprocesos, <ph name="CPU_MAX_CLOCK_SPEED" /> GHz)</translation>
 <translation id="1047773237499189053">Novas funcións dispoñibles. Utilizar frecha arriba para obter máis información.</translation>
 <translation id="1049663189809099096">amarela pastel</translation>
+<translation id="1056898198331236512">Advertencia</translation>
 <translation id="1059913517121127803">Non se puido iniciar o escaneamento</translation>
 <translation id="1062823486781306604"><ph name="INDEX" /> de <ph name="COUNT" />, <ph name="NAME" />.</translation>
 <translation id="1070066693520972135">WEP</translation>
@@ -95,7 +96,6 @@
 <translation id="1478594628797167447">Escáner</translation>
 <translation id="1483493594462132177">Enviar</translation>
 <translation id="1488850966314959671">Non se puido conectar con esta rede a través de ningún APN personalizado activado. Se necesitas máis información, ponte en contacto co teu operador móbil.</translation>
-<translation id="1491076385728777984">Actualizando firmware do dispositivo (<ph name="DEVICE_NAME" />)</translation>
 <translation id="1499041187027566160">sube o volume</translation>
 <translation id="1499900233129743732"><ph name="MANAGER" /> xestiona este usuario, e pode axustar a súa configuración e supervisar a súa actividade de forma remota.</translation>
 <translation id="150962533380566081">O PUK non é válido.</translation>
@@ -291,7 +291,6 @@
 <translation id="2505327257735685095">Actualizar imaxe de fondo de pantalla actual</translation>
 <translation id="2512979179176933762">mostrar as ventás</translation>
 <translation id="2513396635448525189">Imaxe de inicio de sesión</translation>
-<translation id="2517472476991765520">Buscar</translation>
 <translation id="2521835766824839541">pista anterior</translation>
 <translation id="2526590354069164005">Ordenador</translation>
 <translation id="2529641961800709867">Opcións de botóns</translation>
@@ -330,6 +329,7 @@
 <translation id="2744221223678373668">Compartidas</translation>
 <translation id="2751739896257479635">Autenticación de fase 2 de EAP</translation>
 <translation id="2754757901767760034">lámpada</translation>
+<translation id="2780756493585863768">Fondos recentes con tecnoloxía da IA de Google</translation>
 <translation id="2783010256799387990">PROBA SUPERADA</translation>
 <translation id="2786429550992142861">liño</translation>
 <translation id="2787435249130282949">teclado máis brillante</translation>
@@ -426,6 +426,7 @@
 <translation id="3456078764689556234">Páxina <ph name="PRINTED_PAGES" /> de <ph name="TOTAL_PAGES" /> impresa.</translation>
 <translation id="345898999683440380">Escaneando páxina <ph name="PAGE_NUM" />. <ph name="PERCENTAGE_VALUE" /> % completado.</translation>
 <translation id="3459509316159669723">Impresión</translation>
+<translation id="3462187165860821523">Actualizando dispositivo (<ph name="DEVICE_NAME" />)</translation>
 <translation id="346423161771747987">Actual</translation>
 <translation id="346539236881580388">Repetir</translation>
 <translation id="3484914941826596830">Mentres se actualiza o firmware, non desenchufes este dispositivo externo nin apagues o ordenador. Podes minimizar esta ventá. Esta actualización pode tardar uns minutos en completarse e é posible que o dispositivo externo non funcione durante o proceso.</translation>
@@ -790,6 +791,7 @@
 <translation id="5559898619118303662">Cambiar automaticamente ao tema escuro á hora do solpor</translation>
 <translation id="556042886152191864">Botón</translation>
 <translation id="5562551811867441927"><ph name="TERRAIN_FEATURE" /> en tons <ph name="TERRAIN_COLOR" /></translation>
+<translation id="5572169899491758844">Escanear</translation>
 <translation id="5578477003638479617">UMTS</translation>
 <translation id="5578519639599103840">Volver buscar</translation>
 <translation id="5583640892426849032">Retroceso</translation>
@@ -879,7 +881,6 @@
 <translation id="6075872808778243331">(Android) latencia de HTTP</translation>
 <translation id="6078323886959318429">Engadir atallo</translation>
 <translation id="6091080061796993741">amarela</translation>
-<translation id="610371409726072606">Fondo de cámara con tecnoloxía da IA de Google</translation>
 <translation id="6104112872696127344">Cancelouse o escaneamento</translation>
 <translation id="6106186594183574873">Para finalizar, introduce o teu antigo contrasinal</translation>
 <translation id="6108689792487843350">Non se puido acceder á pasarela</translation>
@@ -1011,7 +1012,6 @@
 <translation id="672609503628871915">Ver as novidades</translation>
 <translation id="6740695858234317715">crema e laranxa</translation>
 <translation id="6741823073189174383">embarcación</translation>
-<translation id="674276385369049081">Fondos recentes de cámara con tecnoloxía da IA de Google</translation>
 <translation id="6744441848304920043">selva</translation>
 <translation id="6747035363363040417">neutra</translation>
 <translation id="6747215703636344499">Detívose (a saída está chea)</translation>
@@ -1032,6 +1032,7 @@
 <translation id="6871256179359663621">lila</translation>
 <translation id="6889786074662672253">Mentres se reinicia este dispositivo externo, non o desenchufes nin apagues o ordenador. Podes minimizar esta ventá. Esta acción pode tardar uns minutos en completarse e é posible que o dispositivo externo non funcione durante o proceso.</translation>
 <translation id="6900701049656042631">Este álbum non ten ningunha foto. Para engadir fotos, vai a <ph name="LINK" /></translation>
+<translation id="6902359863093437070">Crear un fondo con IA</translation>
 <translation id="6905163627763043954">Probar</translation>
 <translation id="6905724422583748843">Volver a <ph name="PAGE_NAME" /></translation>
 <translation id="6910312834584889076">A tapa do escáner está aberta. Péchaa e téntao de novo.</translation>
@@ -1269,6 +1270,7 @@
 <translation id="8152370627892825"><ph name="DESCRIPTION" />, <ph name="ACCELERATOR_INFO" />.</translation>
 <translation id="8156233298086717232">máxica</translation>
 <translation id="8162776280680283326">raposos</translation>
+<translation id="8167413449582155132">Fondo con tecnoloxía da IA de Google</translation>
 <translation id="8179976553408161302">Intro</translation>
 <translation id="8183975772394450380">praia</translation>
 <translation id="8206859287963243715">Móbil</translation>

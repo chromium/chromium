@@ -192,6 +192,9 @@ Os teus datos están encriptados coa túa frase de acceso. Introdúcea para usar
 <translation id="6648150602980899529">Estás iniciando sesión cunha conta xestionada por <ph name="DOMAIN" /> e proporcionándolle ao seu administrador o control dos teus datos de Chrome, que quedarán ligados permanentemente a esta conta. Se pechas sesión en Chrome, eliminaranse os teus datos deste dispositivo, pero seguirán almacenados na túa conta de Google.</translation>
 <translation id="6683891932310469419">Abre a páxina do teu historial de Chrome.</translation>
 <translation id="6709398533399187136">O teu contrasinal púxose en risco debido a unha violación da seguranza dos datos. O xestor de contrasinais de Google recomenda que o cambies de inmediato.</translation>
+<translation id="6820553595690137150">A encriptación mediante frase de acceso non inclúe os enderezos nin os métodos de pago.
+
+Para cambiar esta opción de configuración, <ph name="BEGIN_LINK" />elimina os datos de Chrome da túa conta<ph name="END_LINK" />.</translation>
 <translation id="6851982868877411675">Abre a configuración de Chrome en iOS, toca Default Browser App (Aplicación de navegador predeterminada) e selecciona Chrome.</translation>
 <translation id="686691656039982452">Na túa Conta de Google podes <ph name="BEGIN_LINK" />xestionar que datos de Chrome se gardan<ph name="END_LINK" />.
 
@@ -215,6 +218,7 @@ Se queres ver máis opcións de configuración que usen datos para mellorar a t�
 <translation id="7261678641327190792">Chrome non puido comprobar os teus contrasinais</translation>
 <translation id="7272930098487145294">Se queres gardar imaxes, toca Configuración para que Chrome poida engadir as túas fotos</translation>
 <translation id="7275945473750112644"><ph name="HOSTED_DOMAIN" /> xestiona a túa conta, polo que se borrarán os teus datos de Chrome deste dispositivo</translation>
+<translation id="7284245284340063465">Se esqueciches a frase de acceso ou queres cambiar esta opción de configuración, <ph name="BEGIN_LINK" />elimina os datos de Chrome da túa conta<ph name="END_LINK" />.</translation>
 <translation id="7304491752269485262">Vista ampliada da función de autocompletar de Chrome</translation>
 <translation id="7344094882820374540">Goza da máxima seguranza de Chrome contra sitios perigosos</translation>
 <translation id="7349129508108954623">Permite que Chrome use Google Maps para darche indicacións e información local sobre os enderezos detectados.</translation>
@@ -246,6 +250,9 @@ Se queres ver máis opcións de configuración que usen datos para mellorar a t�
 <translation id="8160472928944011082">Non se puido actualizar Chrome</translation>
 <translation id="8174679664544842874">Abre unha pestana nova en Chrome.</translation>
 <translation id="8213758103105806860">Abre os marcadores de Chrome</translation>
+<translation id="8317674518145175158">Os enderezos e os métodos de pago non se encriptarán. Tampouco se sincronizará o historial de navegación de Chrome.
+
+Só poderán ler os teus datos encriptados as persoas que coñezan a túa frase de acceso. Google non recibirá nin almacenará a frase de acceso. Se a esqueces ou queres cambiar esta opción de configuración, <ph name="BEGIN_LINK" />elimina os datos de Chrome da túa conta<ph name="END_LINK" />.</translation>
 <translation id="8328903609881776074">Abre unha nova pestana do modo de incógnito en Chrome.</translation>
 <translation id="8357607116237445042">Indicar se queres borrar ou conservar os teus datos de Chrome neste dispositivo</translation>
 <translation id="8370517070665726704">Copyright <ph name="YEAR" /> Google LLC. Todos os dereitos reservados.</translation>

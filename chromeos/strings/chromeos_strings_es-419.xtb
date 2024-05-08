@@ -11,6 +11,7 @@
 <translation id="1047458377670401304"><ph name="CPU_NAME" /> (<ph name="THREAD_COUNT" /> subprocesos, <ph name="CPU_MAX_CLOCK_SPEED" /> GHz)</translation>
 <translation id="1047773237499189053">Hay una nueva función disponible. Para obtener más información, usa la flecha hacia arriba.</translation>
 <translation id="1049663189809099096">amarillo pastel</translation>
+<translation id="1056898198331236512">Advertencia</translation>
 <translation id="1059913517121127803">No se pudo comenzar el escaneo</translation>
 <translation id="1062823486781306604"><ph name="INDEX" /> de <ph name="COUNT" />, <ph name="NAME" />.</translation>
 <translation id="1070066693520972135">WEP</translation>
@@ -95,7 +96,6 @@
 <translation id="1478594628797167447">Escáner</translation>
 <translation id="1483493594462132177">Enviar</translation>
 <translation id="1488850966314959671">No se puede establecer una conexión con esta red usando ningún APN personalizado habilitado. Comunícate con tu operador de telefonía celular para obtener más información.</translation>
-<translation id="1491076385728777984">Actualizando el firmware de <ph name="DEVICE_NAME" /></translation>
 <translation id="1499041187027566160">subir volumen</translation>
 <translation id="1499900233129743732"><ph name="MANAGER" /> administra a este usuario y es posible que administre la configuración y supervise la actividad del usuario de forma remota.</translation>
 <translation id="150962533380566081">PUK no válida.</translation>
@@ -291,7 +291,6 @@
 <translation id="2505327257735685095">Actualiza la imagen del fondo de pantalla actual</translation>
 <translation id="2512979179176933762">mostrar ventanas</translation>
 <translation id="2513396635448525189">Imagen de acceso</translation>
-<translation id="2517472476991765520">Buscar</translation>
 <translation id="2521835766824839541">pista anterior</translation>
 <translation id="2526590354069164005">Escritorio</translation>
 <translation id="2529641961800709867">Opciones del botón</translation>
@@ -330,6 +329,7 @@
 <translation id="2744221223678373668">Compartidas</translation>
 <translation id="2751739896257479635">Autenticación de fase 2 EAP</translation>
 <translation id="2754757901767760034">lámpara</translation>
+<translation id="2780756493585863768">Fondos recientes potenciados por la IA de Google</translation>
 <translation id="2783010256799387990">APROBADO</translation>
 <translation id="2786429550992142861">lino</translation>
 <translation id="2787435249130282949">teclado más claro</translation>
@@ -426,6 +426,7 @@
 <translation id="3456078764689556234">Se imprimió la página <ph name="PRINTED_PAGES" /> de un total de <ph name="TOTAL_PAGES" />.</translation>
 <translation id="345898999683440380">Se está escaneando la página <ph name="PAGE_NUM" />. Se completó el <ph name="PERCENTAGE_VALUE" />%.</translation>
 <translation id="3459509316159669723">Impresión</translation>
+<translation id="3462187165860821523">Actualizando <ph name="DEVICE_NAME" /></translation>
 <translation id="346423161771747987">Actual</translation>
 <translation id="346539236881580388">Repetir</translation>
 <translation id="3484914941826596830">No desconectes este dispositivo externo ni apagues la computadora mientras se actualiza el firmware. Puedes minimizar esta ventana. Es posible que esta actualización demore unos minutos y que el dispositivo externo no funcione hasta que termine.</translation>
@@ -790,6 +791,7 @@
 <translation id="5559898619118303662">Cambiar automáticamente al tema oscuro al atardecer</translation>
 <translation id="556042886152191864">Botón</translation>
 <translation id="5562551811867441927"><ph name="TERRAIN_FEATURE" /> en tonos de <ph name="TERRAIN_COLOR" /></translation>
+<translation id="5572169899491758844">Escáner</translation>
 <translation id="5578477003638479617">UMTS</translation>
 <translation id="5578519639599103840">Volver a escanear</translation>
 <translation id="5583640892426849032">Tecla de retroceso</translation>
@@ -853,7 +855,7 @@
 <translation id="5930669310554144537">Paisaje de ensueño</translation>
 <translation id="5931523347251946569">No se encontró el archivo</translation>
 <translation id="5939518447894949180">Restablecer</translation>
-<translation id="594552776027197022">Generar un par de llaves aleatorio</translation>
+<translation id="594552776027197022">Generar un par de claves aleatorio</translation>
 <translation id="5946538341867151940">Aún no tienes conexión. Si tu operador de telefonía celular recomienda un APN personalizado, selecciona "+ APN nuevo" para ingresar la información correspondiente.</translation>
 <translation id="5947266287934282605">Si el último día del mes es anterior a este día, los datos se restablecerán el último día del mes</translation>
 <translation id="5948460390109837040">perros</translation>
@@ -879,7 +881,6 @@
 <translation id="6075872808778243331">(Android) latencia de HTTP</translation>
 <translation id="6078323886959318429">Agregar acceso directo</translation>
 <translation id="6091080061796993741">amarillo</translation>
-<translation id="610371409726072606">Fondo de la cámara potenciado por la IA de Google</translation>
 <translation id="6104112872696127344">Se canceló el escaneo</translation>
 <translation id="6106186594183574873">Para finalizar, ingresa tu contraseña anterior</translation>
 <translation id="6108689792487843350">no se puede acceder a la puerta de enlace</translation>
@@ -1011,7 +1012,6 @@
 <translation id="672609503628871915">Novedades</translation>
 <translation id="6740695858234317715">crema y naranja</translation>
 <translation id="6741823073189174383">bote</translation>
-<translation id="674276385369049081">Fondos recientes de la cámara potenciados por la IA de Google</translation>
 <translation id="6744441848304920043">una jungla</translation>
 <translation id="6747035363363040417">neutra</translation>
 <translation id="6747215703636344499">Se detuvo: la bandeja de salida está llena</translation>
@@ -1032,6 +1032,7 @@
 <translation id="6871256179359663621">púrpura claro</translation>
 <translation id="6889786074662672253">No desconectes este dispositivo externo ni apagues la computadora durante el reinicio. Puedes minimizar esta ventana. Es posible que este proceso demore unos minutos y que el dispositivo externo no funcione hasta que termine.</translation>
 <translation id="6900701049656042631">Este álbum no tiene ninguna foto. Para agregar fotos, ve a <ph name="LINK" />.</translation>
+<translation id="6902359863093437070">Crea fondos con IA</translation>
 <translation id="6905163627763043954">Probar la contraseña</translation>
 <translation id="6905724422583748843">Volver a <ph name="PAGE_NAME" /></translation>
 <translation id="6910312834584889076">La tapa del escáner está abierta. Ciérrala y vuelve a intentarlo.</translation>
@@ -1269,6 +1270,7 @@
 <translation id="8152370627892825"><ph name="DESCRIPTION" />, <ph name="ACCELERATOR_INFO" />.</translation>
 <translation id="8156233298086717232">mágico</translation>
 <translation id="8162776280680283326">zorros</translation>
+<translation id="8167413449582155132">Fondo potenciado por la IA de Google</translation>
 <translation id="8179976553408161302">Intro</translation>
 <translation id="8183975772394450380">una playa</translation>
 <translation id="8206859287963243715">Celular</translation>

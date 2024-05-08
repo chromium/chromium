@@ -32,6 +32,7 @@
 <translation id="2175927920773552910">Código QR</translation>
 <translation id="2244252133441425811">Habilitar el selector de FPS de video</translation>
 <translation id="2271433936731426666">Habilitar las instantáneas de video en tamaño completo</translation>
+<translation id="2281736597583450397">Obtén detalles más nítidos con el zoom mejorado</translation>
 <translation id="2320741269052147773">Desplazarse a la izquierda</translation>
 <translation id="2360840973209616515">Tu administrador controla la app de cámara.
         Para obtener más detalles, comunícate con el administrador.</translation>
@@ -118,6 +119,7 @@
 Si tus comentarios están relacionados con la calidad de imagen o video, adjunta una foto o video de muestra y describe el problema (p. ej., la foto sale demasiado oscura o fuera de foco).</translation>
 <translation id="6519884562954018934">Unirse a <ph name="WIFINAME" /></translation>
 <translation id="6527303717912515753">Compartir</translation>
+<translation id="6586509689874700895">Primero, presiona <ph name="BUTTON_NAME" /> para acercar la imagen. Después de tomar una foto, verás detalles mejorados.</translation>
 <translation id="6617916774429601017">Mostrar todas las resoluciones</translation>
 <translation id="6631515515009660915">Desactivar el modo espejo</translation>
 <translation id="6652737148136672975">Mueve la posición de las esquinas con las teclas de flechas</translation>

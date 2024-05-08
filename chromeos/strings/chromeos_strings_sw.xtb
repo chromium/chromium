@@ -11,6 +11,7 @@
 <translation id="1047458377670401304"><ph name="CPU_NAME" /> (michakato <ph name="THREAD_COUNT" />, GHz <ph name="CPU_MAX_CLOCK_SPEED" />)</translation>
 <translation id="1047773237499189053">Kipengele kipya kinapatikana, tumia kishale cha Juu ili upate maelezo zaidi.</translation>
 <translation id="1049663189809099096">rangi ya krayoni ya manjano</translation>
+<translation id="1056898198331236512">Ilani</translation>
 <translation id="1059913517121127803">Imeshindwa kuanza kuchanganua</translation>
 <translation id="1062823486781306604"><ph name="INDEX" /> kati ya <ph name="COUNT" />, <ph name="NAME" /></translation>
 <translation id="1070066693520972135">WEP</translation>
@@ -95,7 +96,6 @@
 <translation id="1478594628797167447">Kichanganuzi</translation>
 <translation id="1483493594462132177">Tuma</translation>
 <translation id="1488850966314959671">Imeshindwa kuunganisha kwenye mtandao huu kwa kutumia APN yoyote maalum iliyowashwa. Wasiliana na mtoa huduma za simu ili upate maelezo zaidi.</translation>
-<translation id="1491076385728777984">Inasasisha programu dhibiti kwenye <ph name="DEVICE_NAME" /></translation>
 <translation id="1499041187027566160">ongeza sauti</translation>
 <translation id="1499900233129743732"><ph name="MANAGER" /> inamdhibiti mtumiaji huyu na huenda ikadhibiti mipangilio na kufuatilia shughuli za mtumiaji kwa mbali.</translation>
 <translation id="150962533380566081">PUK si sahihi.</translation>
@@ -216,7 +216,7 @@
 <translation id="2080070583977670716">Mipangilio zaidi</translation>
 <translation id="2082932131694554252">Ufunguo uliokabidhiwa wa kibodi</translation>
 <translation id="2085089206770112532">Punguza mwangaza wa skrini</translation>
-<translation id="2102231663024125441">Kubadilisha maandishi</translation>
+<translation id="2102231663024125441">Kuhariri maandishi</translation>
 <translation id="2105810540595158374">Kifaa hiki ni kidhibiti cha mchezo.</translation>
 <translation id="2119172414412204879"><ph name="BOARD_NAME" />, toleo la <ph name="MILESTONE_VERSION" /></translation>
 <translation id="2126937207024182736">Una GB <ph name="AVAILABLE_MEMORY" /> kati ya GB <ph name="TOTAL_MEMORY" /></translation>
@@ -291,7 +291,6 @@
 <translation id="2505327257735685095">Onyesha upya picha ya sasa ya mandhari</translation>
 <translation id="2512979179176933762">onyesha madirisha</translation>
 <translation id="2513396635448525189">Picha ya kuingia kwenye akaunti</translation>
-<translation id="2517472476991765520">Tafuta</translation>
 <translation id="2521835766824839541">wimbo uliotangulia</translation>
 <translation id="2526590354069164005">Eneo-kazi</translation>
 <translation id="2529641961800709867">Chaguo za kitufe</translation>
@@ -330,6 +329,7 @@
 <translation id="2744221223678373668">Inayoshirikiwa</translation>
 <translation id="2751739896257479635">Uthibitisho wa EAP wa awamu ya pili</translation>
 <translation id="2754757901767760034">taa</translation>
+<translation id="2780756493585863768">Mandharinyuma ya hivi karibuni yanayoendeshwa na Google AI</translation>
 <translation id="2783010256799387990">LIMEFAULU</translation>
 <translation id="2786429550992142861">kitani</translation>
 <translation id="2787435249130282949">kibodi angavu zaidi</translation>
@@ -426,6 +426,7 @@
 <translation id="3456078764689556234">Imechapisha ukurasa wa <ph name="PRINTED_PAGES" /> kati ya <ph name="TOTAL_PAGES" />.</translation>
 <translation id="345898999683440380">Inachanganua ukurasa wa <ph name="PAGE_NUM" />. Asilimia <ph name="PERCENTAGE_VALUE" /> imekamilika.</translation>
 <translation id="3459509316159669723">Kuchapisha</translation>
+<translation id="3462187165860821523">Inasasisha <ph name="DEVICE_NAME" /></translation>
 <translation id="346423161771747987">Ya sasa</translation>
 <translation id="346539236881580388">Piga picha tena</translation>
 <translation id="3484914941826596830">Usichomoe kifaa hiki cha nje wala usizime kompyuta yako programu dhibiti ikisasishwa. Unaweza kupunguza kidirisha hiki. Sasisho hili linaweza kuchukua dakika chache na kifaa chako cha nje huenda kisifanye kazi kwa wakati huu.</translation>
@@ -790,6 +791,7 @@
 <translation id="5559898619118303662">Badilisha kiotomatiki kuwa mandhari meusi wakati wa machweo</translation>
 <translation id="556042886152191864">Kitufe</translation>
 <translation id="5562551811867441927"><ph name="TERRAIN_FEATURE" /> katika vivuli vya <ph name="TERRAIN_COLOR" /></translation>
+<translation id="5572169899491758844">Changanua</translation>
 <translation id="5578477003638479617">UMTS</translation>
 <translation id="5578519639599103840">Changanua upya</translation>
 <translation id="5583640892426849032">Backspace</translation>
@@ -879,7 +881,6 @@
 <translation id="6075872808778243331">Muda wa Kusubiri Maombi ya HTTP (Android)</translation>
 <translation id="6078323886959318429">Ongeza njia ya mkato</translation>
 <translation id="6091080061796993741">rangi ya njano</translation>
-<translation id="610371409726072606">Mandharinyuma ya kamera yanaendeshwa na Google AI</translation>
 <translation id="6104112872696127344">Uchanganuzi umeghairiwa</translation>
 <translation id="6106186594183574873">Ili ukamilishe, weka nenosiri lako la awali</translation>
 <translation id="6108689792487843350">Imeshindwa kufikia lango</translation>
@@ -1011,7 +1012,6 @@
 <translation id="672609503628871915">Angalia yaliyo mapya</translation>
 <translation id="6740695858234317715">krimu na rangi ya chungwa</translation>
 <translation id="6741823073189174383">mashua</translation>
-<translation id="674276385369049081">Mandharinyuma ya kamera ya hivi majuzi yanayoendeshwa na Google AI</translation>
 <translation id="6744441848304920043">msitu</translation>
 <translation id="6747035363363040417">rangi zilizopoa</translation>
 <translation id="6747215703636344499">Imesimama - Sehemu ya kutoa karatasi imejaa</translation>
@@ -1032,6 +1032,7 @@
 <translation id="6871256179359663621">rangi ya zambarau isiyokolea</translation>
 <translation id="6889786074662672253">Inapozima kisha iwake, usichomoe kifaa kilichochomekwa wala kuzima kompyuta yako. Unaweza kupunguza kidirisha hiki. Hatua hii inaweza kuchukua dakika kadhaa na huenda kifaa ulichochomeka kisifanye kazi kwa wakati huu.</translation>
 <translation id="6900701049656042631">Albamu hii haina picha zozote. Ili uweke picha, nenda kwenye <ph name="LINK" /></translation>
+<translation id="6902359863093437070">Tayarisha mandharinyuma ukitumia AI</translation>
 <translation id="6905163627763043954">Ijaribu</translation>
 <translation id="6905724422583748843">Rudi kwenye <ph name="PAGE_NAME" /></translation>
 <translation id="6910312834584889076">Kifuniko cha kichanganuzi kimefunguliwa. Funga kifuniko kisha ujaribu tena.</translation>
@@ -1269,6 +1270,7 @@
 <translation id="8152370627892825"><ph name="DESCRIPTION" />, <ph name="ACCELERATOR_INFO" />.</translation>
 <translation id="8156233298086717232">ya ajabu</translation>
 <translation id="8162776280680283326">mbweha</translation>
+<translation id="8167413449582155132">Mandharinyuma ya kamera yanayoendeshwa na Google AI</translation>
 <translation id="8179976553408161302">Enter</translation>
 <translation id="8183975772394450380">ufukwe</translation>
 <translation id="8206859287963243715">Simu ya Mkononi</translation>

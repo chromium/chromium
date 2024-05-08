@@ -74,6 +74,7 @@ Am ragor o osodiadau sy'n defnyddio data i wella'ch profiad Chromium, ewch i <ph
 <translation id="2918709798697875261">Mae eich sefydliad yn gofyn i chi barhau i fod wedi'ch allgofnodi o Chromium.</translation>
 <translation id="2942241131342758843">Defnyddiwch Chromium i agor dolenni, chwilio o declynnau, ac awtolenwi cyfrineiriau mewn apiau eraill</translation>
 <translation id="2977470724722393594">Mae Chromium yn gyfoes</translation>
+<translation id="3044857325852340337">Wedi dileu data Chromium</translation>
 <translation id="3078941082359356771">{COUNT,plural, =1{Gall Chromium eich helpu i dracio'r pecyn hwn ar y Dudalen Tab Newydd.}zero{Gall Chromium eich helpu i dracio'r pecynnau hyn ar y Dudalen Tab Newydd.}two{Gall Chromium eich helpu i dracio'r pecynnau hyn ar y Dudalen Tab Newydd.}few{Gall Chromium eich helpu i dracio'r pecynnau hyn ar y Dudalen Tab Newydd.}many{Gall Chromium eich helpu i dracio'r pecynnau hyn ar y Dudalen Tab Newydd.}other{Gall Chromium eich helpu i dracio'r pecynnau hyn ar y Dudalen Tab Newydd.}}</translation>
 <translation id="3102849287235003384">I allgofnodi o'ch Cyfrif Google ar bob gwefan, <ph name="BEGIN_LINK" />allgofnodwch o Chromium<ph name="END_LINK" />.</translation>
 <translation id="3219277919172823720">Chwilio â Llais yn Chromium</translation>
@@ -124,6 +125,7 @@ I newid y gosodiad hwn, <ph name="BEGIN_LINK" />dileu'r data Chromium yn eich cy
 <translation id="4633738821577273991">Cael Gwell Pori'n Ddiogel ar gyfer y proffil Chromium hwn hefyd</translation>
 <translation id="4638625642619341392">Lawrlwythwch Chromium yma.</translation>
 <translation id="4654936625574199632">Er mwyn helpu i wella'r ap, mae Chrome yn anfon adroddiadau defnydd a thoriadau at Google. <ph name="BEGIN_LINK" />Rheoli<ph name="END_LINK" /></translation>
+<translation id="4675485352217495362">Dileu Data Pori yn Chromium</translation>
 <translation id="4681781466797808448">Troi sganydd Chromium ymlaen</translation>
 <translation id="4736424910885271643">Mae'ch cyfrif yn cael ei reoli gan <ph name="HOSTED_DOMAIN" />, felly bydd eich data Chromium yn cael eu clirio o'r ddyfais hon</translation>
 <translation id="4773487571745795781">Rydych chi wedi diffodd mewngofnodi Chromium.</translation>
@@ -191,6 +193,7 @@ Pethau i'w hystyried:
 <translation id="6324041800010509197">Mynd i'r Grid Tabiau yn Chromium</translation>
 <translation id="6325378625795868881">Defnyddiwch Chromium unrhyw bryd y byddwch yn tapio dolenni mewn negeseuon ac apiau eraill.</translation>
 <translation id="632825460376924298">Caniatáu Mewngofnodi i Chromium</translation>
+<translation id="6332129548244419716">Dileu Data Pori yn Chromium.</translation>
 <translation id="6337530241089703714">Dewiswch a ddylid clirio eich data Chromium o'r ddyfais hon neu eu cadw</translation>
 <translation id="6348483005826990855">3. Dewiswch Chromium</translation>
 <translation id="6383607155624074112">Cael Mynediad at Chromium yn gyflymach o'ch Doc Sgrîn Hafan</translation>

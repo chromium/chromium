@@ -59,6 +59,7 @@
 <translation id="2574528844022712255">Shiko faqeshënuesit e Chromium</translation>
 <translation id="2590893390871230428">Sinkronizo të dhënat e Chromium</translation>
 <translation id="2592940277904433508">Vazhdo të përdorësh Chromium</translation>
+<translation id="2607609479243848905">Nëse ke harruar frazën tënde të kalimit apo dëshiron ta ndryshosh këtë cilësim, <ph name="BEGIN_LINK" />fshi të dhënat e Chromium në llogarinë tënde<ph name="END_LINK" />.</translation>
 <translation id="2618596336309823556">Nga Settings në pajisjen tënde, hap "<ph name="TEXT_OF_THE_SETTINGS_MENU_ITEM" />" dhe zgjidh "Chromium"</translation>
 <translation id="2618757400690011108">{COUNT,plural, =1{Chromium do të të ndihmojë ta gjurmosh këtë paketë në faqen e skedës së re.}other{Chromium do të të ndihmojë t'i gjurmosh këto paketa në faqen e skedës së re.}}</translation>
 <translation id="2650312721222849884">Për të parë skedat e tua nga çdo vend ku përdor Chromium, aktivizo sinkronizimin</translation>
@@ -116,6 +117,9 @@ Të dhënat e tua janë të enkriptuara me frazën tënde të kalimit. Fute atë
 <translation id="4498832288620833153">Shton URL-të e futura te lista e leximit në Chromium.</translation>
 <translation id="452436063477828504">Sigurohu që mund t'i përdorësh gjithmonë të dhënat e Chromium në "Llogarinë tënde të Google"</translation>
 <translation id="4555020257205549924">Kur ky funksion është i aktivizuar, Chromium do të ofrojë që të përkthejë faqet e shkruara në gjuhë të tjera duke përdorur "Përkthe me Google". <ph name="BEGIN_LINK" />Mëso më shumë<ph name="END_LINK" /></translation>
+<translation id="4572441104543926904">Enkriptimi me frazën e kalimit nuk përfshin mënyrat e pagesës dhe adresat.
+
+Për ta ndryshuar këtë cilësim, <ph name="BEGIN_LINK" />fshi të dhënat e Chromium në llogarinë tënde<ph name="END_LINK" />.</translation>
 <translation id="4576283463017113841">Hap faqen e cilësimit të mënyrës së pagesës në Chromium.</translation>
 <translation id="459080529287102949">Kërko pamje në Chromium</translation>
 <translation id="4633738821577273991">Merr gjithashtu "Shfletimin e sigurt të përmirësuar" për këtë profil të Chromium</translation>
@@ -213,6 +217,9 @@ Gjëra për të pasur parasysh:
 <translation id="7163483974919055112">Kërko pamje në Chromium.</translation>
 <translation id="7165402419892018581">Zgjidh Chromium për AutoFill</translation>
 <translation id="7175400662502680481">Fjalëkalimi yt është ekspozuar në një nxjerrje të paautorizuar të të dhënave. "Menaxheri i fjalëkalimeve" rekomandon ta ndryshosh tani.</translation>
+<translation id="7185731475720473450">Mënyrat e pagesës dhe adresat nuk do të enkriptohen. Historiku i shfletimit nga Chromium nuk do të sinkronizohet.
+
+Vetëm dikush me frazën tënde të kalimit mund të lexojë të dhënat e tua të enkriptuara. Fraza e kalimit nuk dërgohet apo ruhet nga Google. Nëse e harron frazën tënde të kalimit apo dëshiron ta ndryshosh këtë cilësim, <ph name="BEGIN_LINK" />fshi të dhënat e Chromium në llogarinë tënde<ph name="END_LINK" />.</translation>
 <translation id="7192111075364461693">Njoftimet e Chromium janë çaktivizuar aktualisht te cilësimet e pajisjes sate.</translation>
 <translation id="7222001353246886083">Kërko për "${searchPhrase}" në Chromium</translation>
 <translation id="725427773388857052">Chromium mund të të ndihmojë të qëndrosh i sigurt nga nxjerrjet e paautorizuara të të dhënave, faqet e pasigurta të internetit etj.</translation>

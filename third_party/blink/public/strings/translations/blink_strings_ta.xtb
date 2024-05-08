@@ -12,6 +12,7 @@
 <translation id="1588438908519853928">இயல்பு</translation>
 <translation id="1591562245178063882">இந்த மாதம்</translation>
 <translation id="1637811476055996098">ஃபைல்களைத் தேர்வுசெய்க</translation>
+<translation id="1680090928918677457">கேமராவைப் பயன்படுத்து</translation>
 <translation id="1681022320378710418">தற்போதைய நேரம்</translation>
 <translation id="1727839386348365796">ஐ-டிராப்பர்</translation>
 <translation id="1729654308190250600">காலி அல்லாத மின்னஞ்சல் முகவரியை உள்ளிடவும்.</translation>
@@ -60,6 +61,7 @@
 <translation id="3822383571486410024">இந்த உரையை <ph name="MIN_CHARACTERS" /> எழுத்துக்குறிகள் அல்லது அதற்கும் அதிகமாக (தற்போது <ph name="CURRENT_LENGTH" /> எழுத்துக்குறிகளைப் பயன்படுத்துகிறீர்கள்) நீட்டிக்கவும்.</translation>
 <translation id="383465348367842624">'<ph name="ATSIGN" />' ஐத் தொடர்ந்து வரும் பகுதியில் '<ph name="INVALIDCHARACTER" />' சின்னம் இருக்கக்கூடாது.</translation>
 <translation id="3846214748874656680">முழுத்திரை வேண்டாம்</translation>
+<translation id="3914173277599553213">அவசியம்</translation>
 <translation id="4031179711345676612">மைக்ரோஃபோன் அனுமதிக்கப்பட்டது</translation>
 <translation id="4103419683916926126">மில்லிவினாடிகள்</translation>
 <translation id="4201051445878709314">முந்தைய மாதத்தைக் காட்டு</translation>
@@ -75,6 +77,7 @@
 <translation id="4912200001568447310">தற்போதைய மதிப்பு</translation>
 <translation id="4915360478455618802">நேரத் தேர்வுக் கருவியைக் காட்டும்</translation>
 <translation id="4924138096460353083">தீர்மானிக்க முடியாத நிலை</translation>
+<translation id="49269513399674318">மைக்ரோஃபோனைப் பயன்படுத்து</translation>
 <translation id="4950364064308314478">உள்ளூர் தேதி மற்றும் நேரத் தேர்வுக் கருவியைக் காட்டும்</translation>
 <translation id="4971739861736909480"><ph name="ACCNAME" /> தேர்ந்தெடுக்கப்பட்டது</translation>
 <translation id="4975562563186953947"><ph name="SELECTED_COUNT" /> தேர்ந்தெடுக்கப்பட்டன</translation>
@@ -142,6 +145,7 @@
 <translation id="7080893216867146095">இருப்பிடப் பகிர்வு அனுமதிக்கப்பட்டுள்ளது</translation>
 <translation id="709897737746224366">கோரிய வடிவமைப்பில் தருக.</translation>
 <translation id="7102274145889307184">தற்போதைய இருப்பிடம்</translation>
+<translation id="7134810312945846184">மைக்ரோஃபோனையும் கேமராவையும் பயன்படுத்து</translation>
 <translation id="7263440858009898357">பட்டியலிலிருந்து ஒரு உருப்படியைத் தேர்ந்தெடுங்கள்.</translation>
 <translation id="7320576522385648310">ஏற்றுகிறது</translation>
 <translation id="7341556277900466204">வண்ணத் தட்டு</translation>

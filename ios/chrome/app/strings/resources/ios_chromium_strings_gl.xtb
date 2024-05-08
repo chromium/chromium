@@ -59,6 +59,7 @@
 <translation id="2574528844022712255">Abre os marcadores de Chromium</translation>
 <translation id="2590893390871230428">Sincronizar os teus datos de Chromium</translation>
 <translation id="2592940277904433508">Seguir usando Chromium</translation>
+<translation id="2607609479243848905">Se esqueciches a frase de acceso ou queres cambiar esta opción de configuración, <ph name="BEGIN_LINK" />elimina os datos de Chromium da túa conta<ph name="END_LINK" />.</translation>
 <translation id="2618596336309823556">Na configuración do teu dispositivo, abre <ph name="TEXT_OF_THE_SETTINGS_MENU_ITEM" /> e selecciona Chromium</translation>
 <translation id="2618757400690011108">{COUNT,plural, =1{Chromium axudarache a facer un seguimento deste paquete na páxina Nova pestana.}other{Chromium axudarache a facer un seguimento destes paquetes na páxina Nova pestana.}}</translation>
 <translation id="2650312721222849884">Para ver as túas pestanas desde calquera dispositivo no que utilices Chromium, activa a sincronización</translation>
@@ -116,6 +117,9 @@ Os teus datos están encriptados coa túa frase de acceso. Introdúcea para usar
 <translation id="4498832288620833153">Engade os URL introducidos á túa lista de lectura de Chromium.</translation>
 <translation id="452436063477828504">Asegúrate de poder usar sempre os datos de Chromium na túa Conta de Google</translation>
 <translation id="4555020257205549924">Se esta función está activada, Chromium utilizará o Tradutor de Google para ofrecer a tradución de páxinas escritas noutros idiomas. <ph name="BEGIN_LINK" />Máis información<ph name="END_LINK" /></translation>
+<translation id="4572441104543926904">A encriptación mediante frase de acceso non inclúe os enderezos nin os métodos de pago.
+
+Para cambiar esta opción de configuración, <ph name="BEGIN_LINK" />elimina os datos de Chromium da túa conta<ph name="END_LINK" />.</translation>
 <translation id="4576283463017113841">Abre a páxina de configuración de métodos de pago en Chromium.</translation>
 <translation id="459080529287102949">Busca elementos visuais en Chromium</translation>
 <translation id="4633738821577273991">Activa tamén neste perfil de Chromium a función Navegación segura mellorada</translation>
@@ -214,6 +218,9 @@ Cuestións que debes ter en conta:
 <translation id="7163483974919055112">Busca elementos visuais en Chromium.</translation>
 <translation id="7165402419892018581">Escolle Chromium para autocompletar</translation>
 <translation id="7175400662502680481">O teu contrasinal púxose en risco debido a unha violación da seguranza dos datos. O xestor de contrasinais recomenda que o cambies de inmediato.</translation>
+<translation id="7185731475720473450">Os enderezos e os métodos de pago non se encriptarán. Tampouco se sincronizará o historial de navegación de Chromium.
+
+Só poderán ler os teus datos encriptados as persoas que coñezan a túa frase de acceso. Google non recibirá nin almacenará a frase de acceso. Se esqueces a frase de acceso ou queres cambiar esta opción de configuración, <ph name="BEGIN_LINK" />elimina os datos de Chromium da túa conta<ph name="END_LINK" />.</translation>
 <translation id="7192111075364461693">As notificacións de Chromium están desactivadas actualmente na configuración do dispositivo.</translation>
 <translation id="7222001353246886083">Busca ${searchPhrase} en Chromium</translation>
 <translation id="725427773388857052">Chromium pode protexerte contra violacións da seguranza dos datos, sitios web que non son seguros e moito máis.</translation>

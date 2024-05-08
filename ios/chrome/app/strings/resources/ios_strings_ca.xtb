@@ -131,6 +131,7 @@
 <translation id="1653432787084483144">{count,plural, =1{Hi ha {count} contrasenya desada disponible a sobre del teclat.}other{Hi ha {count} contrasenyes desades disponibles a sobre del teclat.}}</translation>
 <translation id="1657011748321897393">No s'ha pogut compartir perquè no esteu connectat a la xarxa.</translation>
 <translation id="165877110639533037">No hi ha pestanyes obertes</translation>
+<translation id="1668001730617725852">Obre en un grup de pestanyes nou</translation>
 <translation id="1674504678466460478"><ph name="SOURCE_LANGUAGE" /> a <ph name="TARGET_LANGUAGE" /></translation>
 <translation id="1683483432843341018">Sol·licita el lloc web per a mòbils</translation>
 <translation id="1687475363370981210">Marca-ho tot com a llegit</translation>
@@ -144,6 +145,7 @@
 <translation id="1752547299766512813">Desa les contrasenyes</translation>
 <translation id="1753905327828125965">Els més visitats</translation>
 <translation id="1757699834933698436">{count,plural, =1{{count} contrasenya poc segura}other{{count} contrasenyes poc segures}}</translation>
+<translation id="1766411844240160513">Formulari d'emplenament automàtic</translation>
 <translation id="1767766085187034454">Traductor de Google</translation>
 <translation id="1769106850515800431">Contingut personalitzat</translation>
 <translation id="1780152987505130652">Tanca el grup</translation>
@@ -285,6 +287,7 @@ Els llocs web no poden fer servir galetes per veure la teva activitat de navegac
 <translation id="2499505845365628575">Pots trobar tot l'historial de navegació a <ph name="HISTORY_BUTTON_ACCESSIBILITY_LABEL" />.</translation>
 <translation id="2500374554657206846">Opcions per desar la contrasenya</translation>
 <translation id="2511117522375201202">Tens <ph name="NUMBER_OF_PASSWORDS" /> contrasenyes en perill que podrien posar en risc la teva seguretat.</translation>
+<translation id="2513103768503127042">Trobaràs els teus grups de pestanyes aquí</translation>
 <translation id="2529021024822217800">Obre-les totes</translation>
 <translation id="2536991091671391962">Pots utilitzar les contrasenyes desades en qualsevol dispositiu. Es desen al gestor de contrasenyes de Google de <ph name="EMAIL" />.</translation>
 <translation id="2542268842667970959">Amaga Comprovació de seguretat</translation>
@@ -494,6 +497,7 @@ Consulta les instruccions del teu motor de cerca per suprimir l'historial de cer
 <translation id="3565930036634619844">Pestanya. <ph name="TAB_INDEX" /> de <ph name="NUMBER_OF_TABS" />.</translation>
 <translation id="3570693105179140209">Fes doble toc per obtenir més contrasenyes.</translation>
 <translation id="3575234738189584619">Cerca amb Lens</translation>
+<translation id="3575426792457739946">Aquesta llista conté tots els perfils carregats.</translation>
 <translation id="3581564640715911333">Proposa traduir les pàgines en altres idiomes</translation>
 <translation id="3587885837929752825">La teva organització limita el que pots desar al teu Compte de Google.</translation>
 <translation id="3588820906588687999">Obre la imatge en una pestanya nova</translation>
@@ -506,6 +510,7 @@ Consulta les instruccions del teu motor de cerca per suprimir l'historial de cer
 <translation id="3630104167004786843">No vull rebre notificacions</translation>
 <translation id="3631443864840848029">Comprova que estiguis desant la teva contrasenya actual per a aquest lloc web.</translation>
 <translation id="3638472932233958418">Precàrrega de pàgines web</translation>
+<translation id="3642060527569456384">Els grups de pestanyes es desen i s'actualitzen automàticament en tots els teus dispositius.</translation>
 <translation id="3643338347976071250">{count,plural, =1{{count} contrasenya s'ha desat només en aquest dispositiu. Per utilitzar-la en altres dispositius, desa-la al teu Compte de Google {email}.}other{{count} contrasenyes s'han desat només en aquest dispositiu. Per utilitzar-les en altres dispositius, desa-les al teu Compte de Google {email}.}}</translation>
 <translation id="3659297405161482746">No s'ha trobat cap forma de pagament</translation>
 <translation id="3661160521073045932">Perfil de configuració disponible</translation>
@@ -749,6 +754,7 @@ Consulta les instruccions del teu motor de cerca per suprimir l'historial de cer
 <translation id="4881695831933465202">Obre</translation>
 <translation id="4883824756452868502">Detecta les unitats</translation>
 <translation id="488785315393301722">Mostra els detalls</translation>
+<translation id="4889521386764567563">Perfil actual</translation>
 <translation id="4894963374040315706">Això et permet fer cerques amb la veu</translation>
 <translation id="4896467949657706481">Les pestanyes s'han tancat; se t'ha tancat la sessió</translation>
 <translation id="489903206070130262">La teva última pestanya oberta</translation>
@@ -831,6 +837,7 @@ Consulta les instruccions del teu motor de cerca per suprimir l'historial de cer
 <translation id="5318298563956633672">Ja estàs fent el seguiment d'aquest producte.</translation>
 <translation id="5327753393331509826">Rep notificacions de contingut</translation>
 <translation id="5329451663851195956">Pots arrossegar cap avall per actualitzar.</translation>
+<translation id="5333148247954006827">Canvia a un altre perfil</translation>
 <translation id="5339316356165661760">Activa la sincronització</translation>
 <translation id="5343472494710226394">Notícies, esports i contingut basat en els teus interessos.</translation>
 <translation id="5345660046352249607">{COUNT,plural, =1{Vols fer el seguiment d'aquest paquet?}other{Vols fer el seguiment de {COUNT} paquets?}}</translation>
@@ -867,6 +874,7 @@ Consulta les instruccions del teu motor de cerca per suprimir l'historial de cer
 <translation id="553151287733286479">{COUNT,plural, =1{{COUNT} contrasenya poc segura}other{{COUNT} contrasenyes poc segures}}</translation>
 <translation id="5532545557415295622">Quadre de diàleg del temps d'espera d'inactivitat</translation>
 <translation id="5533967537771071082">Gestiona l'emmagatzematge</translation>
+<translation id="5536642445914063887">Canvia de perfil</translation>
 <translation id="5542540507657872337">Se n'han trobat <ph name="COUNT" /></translation>
 <translation id="5548760955356983418">Handoff us permet començar a navegar per un lloc web en aquest dispositiu i després continuar fàcilment al dispositiu Mac. El lloc web obert actualment apareixerà al Dock de Mac.
 
@@ -894,6 +902,7 @@ Handoff també ha d'estar activat a la secció General de Configuració, i els v
 <translation id="5669335982068190158">Se t'ha tancat la sessió com a part del restabliment de l'iPhone. Per iniciar-la, toca Continua, més avall.</translation>
 <translation id="5669528293118408608">www</translation>
 <translation id="5669617676038747374">Crea un codi QR</translation>
+<translation id="5673569687475648681">Els grups de pestanyes no estan disponibles</translation>
 <translation id="567881659373499783">Versió <ph name="PRODUCT_VERSION" /></translation>
 <translation id="5683499062697987550">Per utilitzar i desar contrasenyes al teu Compte de Google, verifica la teva identitat.</translation>
 <translation id="5684761169742812828">Aquesta contrasenya ha quedat exposada en una violació de les dades a Internet. Si no tens temps per canviar-la ara, Google et recomana que conservis aquest advertiment com a recordatori.</translation>
@@ -1161,6 +1170,8 @@ En mode d'incògnit, els llocs web no poden fer servir galetes per veure la teva
 <translation id="6888009575607455378">Confirmes que vols descartar els canvis?</translation>
 <translation id="6896758677409633944">Copia</translation>
 <translation id="6897187120838603299">La contrasenya es desarà al teu dispositiu.</translation>
+<translation id="6897341961098448948">La teva organització requereix que naveguis de manera privada. Els grups de pestanyes no se sincronitzen en mode d'incògnit.
+<ph name="BEGIN_LINK" />Més informació<ph name="END_LINK" /></translation>
 <translation id="6906448540340261898">Assegura't de poder utilitzar sempre les contrasenyes al teu Compte de Google</translation>
 <translation id="6913136913033237761"><ph name="FOLDER_NAME" />. Només en aquest dispositiu.</translation>
 <translation id="6914583639806229067">Cerca la imatge que has copiat</translation>
@@ -1206,6 +1217,7 @@ En mode d'incògnit, els llocs web no poden fer servir galetes per veure la teva
 <translation id="7162168282402939716">Desbloqueja les pestanyes d'incògnit amb <ph name="BIOMETRIC_AUTHENITCATION_TYPE" /></translation>
 <translation id="7173114856073700355">Obre Configuració</translation>
 <translation id="7186568385131859684">Controla com s'utilitza l'historial de navegació amb les teves altres dades als serveis de Google</translation>
+<translation id="7187190640134722091">Crea un grup</translation>
 <translation id="7189598951263744875">Comparteix...</translation>
 <translation id="719133302483559673">Gestiona els teus interessos i les teves preferències.</translation>
 <translation id="7192050974311852563">Inicia el registre</translation>
@@ -1282,6 +1294,7 @@ En mode d'incògnit, els llocs web no poden fer servir galetes per veure la teva
 <translation id="7598439272585186139">Més seguretat</translation>
 <translation id="7600965453749440009">No tradueixis mai de: <ph name="LANGUAGE" /></translation>
 <translation id="7603852183842204213">Finestres emergents bloquejades (<ph name="NUMBER_OF_BLOCKED_POPUPS" />)</translation>
+<translation id="7606639338662398635">Grups de pestanyes</translation>
 <translation id="7607521702806708809">Suprimeix la contrasenya</translation>
 <translation id="7609559547731036746">Adreces d'interès</translation>
 <translation id="7638584964844754484">La frase de contrasenya és incorrecta</translation>
@@ -1603,6 +1616,7 @@ Els llocs web poden fer servir galetes per veure la teva activitat de navegació
 <translation id="9109699888944026290">{count,plural, =1{Contrasenya nova per a aquest lloc web}other{Contrasenyes noves per a aquest lloc web}}</translation>
 <translation id="9120217828624527905">Canvia a la traducció de pàgina completa</translation>
 <translation id="9124387962554796433">És possible que Google utilitzi el teu historial per personalitzar la Cerca i altres serveis de Google.</translation>
+<translation id="913036870884277353">Obre els enllaços fàcilment en altres aplicacions.</translation>
 <translation id="9137526406337347448">Serveis de Google</translation>
 <translation id="9144931028079269381">Amaga l'opció Llista de lectura</translation>
 <translation id="9148126808321036104">Torna a iniciar la sessió</translation>

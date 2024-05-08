@@ -11,6 +11,7 @@
 <translation id="1047458377670401304"><ph name="CPU_NAME" /> (<ph name="THREAD_COUNT" /> ຫົວຂໍ້, <ph name="CPU_MAX_CLOCK_SPEED" />GHz)</translation>
 <translation id="1047773237499189053">ມີຄຸນສົມບັດໃໝ່, ກະລຸນາໃຊ້ລູກສອນຂຶ້ນເພື່ອສຶກສາເພີ່ມເຕີມ.</translation>
 <translation id="1049663189809099096">ເຫຼືອງພາສເທວ</translation>
+<translation id="1056898198331236512">ຄໍາເຕືອນ</translation>
 <translation id="1059913517121127803">ບໍ່ສາມາດເລີ່ມສະແກນໄດ້</translation>
 <translation id="1062823486781306604"><ph name="INDEX" /> ຈາກ <ph name="COUNT" />, <ph name="NAME" />.</translation>
 <translation id="1070066693520972135">WEP</translation>
@@ -28,6 +29,7 @@
 <translation id="1145018782460575098">ເປີດໜ້າຈໍອັບເດດເຟີມແວສຳລັບອຸປະກອນພາຍນອກແລ້ວ. ມີ <ph name="NUM_UPDATES" /> ອັບເດດໃໝ່.</translation>
 <translation id="1145516343487477149">ຊອກຫາບົດຄວາມຊ່ວຍເຫຼືອ ແລະ ຄຳຕອບສຳລັບຄຳຖາມ Chromebook ທົ່ວໄປ</translation>
 <translation id="1154390310959620237">ທ່ານສາມາດປັບແຕ່ງທາງລັດໄດ້ 5 ອັນເທົ່ານັ້ນ. ລຶບທາງລັດໃດໜຶ່ງເພື່ອເພີ່ມອັນໃໝ່.</translation>
+<translation id="1155154308031262006">ລະບຸ prompt</translation>
 <translation id="115705039208660697">ໝາກນັດ</translation>
 <translation id="1164939766849482256">ພາບພັກໜ້າຈໍຮຸ່ງອະລຸນຈົນເຖິງກາງຄືນ</translation>
 <translation id="1167755866710282443">ເປີດເມນູເພື່ອປັບແຕ່ງກະແຈ. ລາກເມນູເພື່ອຍ້າຍ.</translation>
@@ -95,7 +97,6 @@
 <translation id="1478594628797167447">ເຄື່ອງສະແກນ</translation>
 <translation id="1483493594462132177">ສົ່ງ</translation>
 <translation id="1488850966314959671">ບໍ່ສາມາດເຊື່ອມຕໍ່ກັບເຄືອຂ່າຍນີ້ໂດຍໃຊ້ APN ແບບກຳນົດເອງທີ່ເປີດການນຳໃຊ້. ກະລຸນາຕິດຕໍ່ຜູ້ໃຫ້ບໍລິການມືຖືຂອງທ່ານສຳລັບຂໍ້ມູນເພີ່ມເຕີມ.</translation>
-<translation id="1491076385728777984">ກຳລັງອັບເດດເຟີມແວຢູ່ <ph name="DEVICE_NAME" /></translation>
 <translation id="1499041187027566160">ສຽງ​ຂຶ້ນ</translation>
 <translation id="1499900233129743732"><ph name="MANAGER" /> ຈັດການຜູ້ໃຊ້ນີ້ ແລະ ອາດຈະຈັດການການຕັ້ງຄ່າ ແລະ ຕິດຕາມເບິ່ງການເຄື່ອນໄຫວຂອງຜູ້ໃຊ້ຈາກທາງໄກໄດ້.</translation>
 <translation id="150962533380566081">PUK ທີ່ຖືກຕ້ອງ.</translation>
@@ -291,7 +292,6 @@
 <translation id="2505327257735685095">ໂຫຼດຂໍ້ມູນຮູບພື້ນຫຼັງປັດຈຸບັນຄືນໃໝ່</translation>
 <translation id="2512979179176933762">ສະແດງໜ້າຈໍ</translation>
 <translation id="2513396635448525189">ຮູບການເຂົ້າສູ່ລະບົບ</translation>
-<translation id="2517472476991765520">ສະແກນ</translation>
 <translation id="2521835766824839541">ເພງກ່ອນໜ້າ</translation>
 <translation id="2526590354069164005">ເດັສທັອບ</translation>
 <translation id="2529641961800709867">ຕົວເລືອກປຸ່ມ</translation>
@@ -330,6 +330,7 @@
 <translation id="2744221223678373668">ແຊຣ໌ແລ້ວ</translation>
 <translation id="2751739896257479635">ການຮັບຮອງຄວາມຖືກຕ້ອງ EAP ໄລຍະທີ 2</translation>
 <translation id="2754757901767760034">ຕະກຽງ</translation>
+<translation id="2780756493585863768">ພາບພື້ນຫຼັງຫຼ້າສຸດທີ່ຂັບເຄື່ອນໂດຍ Google AI</translation>
 <translation id="2783010256799387990">ຜ່ານແລ້ວ</translation>
 <translation id="2786429550992142861">ລິນິນ</translation>
 <translation id="2787435249130282949">ແປ້ນພິມແຈ້ງຂຶ້ນ</translation>
@@ -426,6 +427,7 @@
 <translation id="3456078764689556234">ພິມໜ້າ <ph name="PRINTED_PAGES" /> ຈາກທັງໝົດ <ph name="TOTAL_PAGES" />.</translation>
 <translation id="345898999683440380">ກຳລັງສະແກນໜ້າ <ph name="PAGE_NUM" />. ສຳເລັດແລ້ວ <ph name="PERCENTAGE_VALUE" />%.</translation>
 <translation id="3459509316159669723">ກໍາລັງພິມ</translation>
+<translation id="3462187165860821523">ກຳລັງອັບເດດ <ph name="DEVICE_NAME" /></translation>
 <translation id="346423161771747987">ກະແສໄຟຟ້າ</translation>
 <translation id="346539236881580388">ຖ່າຍໃໝ່</translation>
 <translation id="3484914941826596830">ໃນຂະນະທີ່ກຳລັງອັບເດດເຟີມແວຢູ່, ກະລຸນາຢ່າຖອດອຸປະກອນພາຍນອກນີ້ອອກ ຫຼື ຢ່າປິດເຄື່ອງຄອມພິວເຕີຂອງທ່ານ. ທ່ານສາມາດຫຍໍ້ໜ້າຈໍນີ້ລົງໄດ້. ອັບເດດນີ້ອາດໃຊ້ເວລາສອງສາມນາທີ ແລະ ອຸປະກອນພາຍນອກຂອງທ່ານອາດບໍ່ເຮັດວຽກໃນລະຫວ່າງນີ້.</translation>
@@ -790,6 +792,7 @@
 <translation id="5559898619118303662">ສະຫຼັບໄປໃຊ້ຮູບແບບສີສັນມືດໂດຍອັດຕະໂນມັດຕອນຕາເວັນຕົກ</translation>
 <translation id="556042886152191864">ປຸ່ມ</translation>
 <translation id="5562551811867441927"><ph name="TERRAIN_FEATURE" /> ເຊດສີ <ph name="TERRAIN_COLOR" /></translation>
+<translation id="5572169899491758844">ສະແກນ</translation>
 <translation id="5578477003638479617">UMTS</translation>
 <translation id="5578519639599103840">ສະແກນຄືນໃໝ່</translation>
 <translation id="5583640892426849032">ລຶບຄືນຫຼັງ</translation>
@@ -879,7 +882,6 @@
 <translation id="6075872808778243331">(Android) ການຕອບສະໜອງ HTTP</translation>
 <translation id="6078323886959318429">ເພີ່ມທາງລັດ</translation>
 <translation id="6091080061796993741">ເຫຼືອງ</translation>
-<translation id="610371409726072606">ພາບພື້ນຫຼັງກ້ອງຖ່າຍຮູບທີ່ຂັບເຄື່ອນໂດຍ Google AI</translation>
 <translation id="6104112872696127344">ຍົກເລີກການສະແກນແລ້ວ</translation>
 <translation id="6106186594183574873">ເພື່ອສຳເລັດ, ກະລຸນາປ້ອນລະຫັດຜ່ານເກົ່າຂອງທ່ານ</translation>
 <translation id="6108689792487843350">ບໍ່ສາມາດຕິດຕໍ່ເກດເວໄດ້</translation>
@@ -906,6 +908,7 @@
 <translation id="6205145102504628069">ກະແສຄລາວ</translation>
 <translation id="6213737986933151570">CDMA1XRTT</translation>
 <translation id="6223752125779001553">ບໍ່ມີເຄື່ອງສະແກນ</translation>
+<translation id="6231648282154119906">Google Safe Browsing ຈະສະແກນໄຟລ໌ທີ່ໜ້າສົງໄສໂດຍອັດຕະໂນມັດ ເຊິ່ງເປັນສ່ວນໜຶ່ງຂອງການປົກປ້ອງທີ່ປັບປຸງດີຂຶ້ນທີ່ທ່ານເລືອກໄວ້</translation>
 <translation id="6232017090690406397">ແບັດເຕີຣີ</translation>
 <translation id="6234024205316847054">ສະແດງໂຄງຮ່າງ</translation>
 <translation id="6235460611964961764">ຣີເຊັດການນຳໃຊ້ອິນເຕີເນັດດ້ວຍຕົວເອງ</translation>
@@ -1011,7 +1014,6 @@
 <translation id="672609503628871915">ເບິ່ງ​ມີອັນໃດໃຫມ່</translation>
 <translation id="6740695858234317715">ສີຄຣີມ ແລະ ສີສົ້ມ</translation>
 <translation id="6741823073189174383">ເຮືອ</translation>
-<translation id="674276385369049081">ພາບພື້ນຫຼັງກ້ອງຖ່າຍຮູບຫຼ້າສຸດທີ່ຂັບເຄື່ອນໂດຍ Google AI</translation>
 <translation id="6744441848304920043">ປ່າ</translation>
 <translation id="6747035363363040417">ສີກາງ</translation>
 <translation id="6747215703636344499">ຢຸດພິມ, ຖາດເຈ້ຍອອກເຕັມແລ້ວ</translation>
@@ -1032,6 +1034,7 @@
 <translation id="6871256179359663621">ມ່ວງອ່ອນ</translation>
 <translation id="6889786074662672253">ໃນລະຫວ່າງທີ່ກຳລັງຣີສະຕາດ, ກະລຸນາຢ່າຖອດປລັກອຸປະກອນພາຍນອກນີ້ ຫຼື ປິດເຄື່ອງຄອມພິວເຕີຂອງທ່ານ. ທ່ານສາມາດຫຍໍ້ໜ້າຈໍນີ້ລົງໄດ້. ຂັ້ນຕອນນີ້ອາດໃຊ້ເວລາສອງສາມນາທີ ແລະ ອຸປະກອນພາຍນອກຂອງທ່ານອາດບໍ່ເຮັດວຽກໃນລະຫວ່າງນີ້.</translation>
 <translation id="6900701049656042631">ອະລະບ້ຳນີ້ຍັງບໍ່ມີຮູບພາບ. ກະລຸນາເຂົ້າໄປ <ph name="LINK" /> ເພື່ອເພີ່ມຮູບພາບ</translation>
+<translation id="6902359863093437070">ສ້າງພາບພື້ນຫຼັງດ້ວຍ AI</translation>
 <translation id="6905163627763043954">ລອງມັນເບິ່ງ</translation>
 <translation id="6905724422583748843">ກັບໄປ <ph name="PAGE_NAME" /></translation>
 <translation id="6910312834584889076">ຝາເຄື່ອງສະແກນເປີດຢູ່. ກະລຸນາປິດຝາແລ້ວລອງໃໝ່.</translation>
@@ -1270,6 +1273,7 @@
 <translation id="8152370627892825"><ph name="DESCRIPTION" />, <ph name="ACCELERATOR_INFO" />.</translation>
 <translation id="8156233298086717232">ເວດມົນ</translation>
 <translation id="8162776280680283326">ຈິ້ງຈອກ</translation>
+<translation id="8167413449582155132">ພາບພື້ນຫຼັງທີ່ຂັບເຄື່ອນໂດຍ Google AI</translation>
 <translation id="8179976553408161302">ປ້ອນເຂົ້າ</translation>
 <translation id="8183975772394450380">ຫາດຊາຍ</translation>
 <translation id="8206859287963243715">ເຊວລູລາ</translation>

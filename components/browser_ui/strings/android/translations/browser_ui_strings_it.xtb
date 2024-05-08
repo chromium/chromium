@@ -133,6 +133,7 @@
 <translation id="3198916472715691905"><ph name="STORAGE_AMOUNT" /> di dati memorizzati</translation>
 <translation id="321187648315454507">Per consentire all'app <ph name="APP_NAME" /> di inviarti notifiche, devi attivare le notifiche anche nelle <ph name="BEGIN_LINK" />Impostazioni Android<ph name="END_LINK" />.</translation>
 <translation id="3227137524299004712">Microfono</translation>
+<translation id="3232293466644486101">Elimina dati di navigazione…</translation>
 <translation id="3242646949159196181">Quando l'opzione è attiva, i siti possono riprodurre suoni. Quando l'opzione è disattivata, i siti non possono riprodurre l'audio.</translation>
 <translation id="3277252321222022663">Consenti ai siti di accedere ai sensori (opzione consigliata)</translation>
 <translation id="3285500645985761267">Consenti ai siti correlati di vedere le tue attività nel gruppo</translation>
@@ -307,6 +308,7 @@
 <translation id="6064125863973209585">Download completati</translation>
 <translation id="6071501408666570960">Il tuo account potrebbe essere disconnesso da questo sito</translation>
 <translation id="6120483543004435978">Quando l'opzione è attiva, i siti possono chiederti di sapere quando stai utilizzando attivamente il tuo dispositivo. Quando l'opzione è disattivata, i siti non possono sapere quando stai utilizzando attivamente il tuo dispositivo.</translation>
+<translation id="6140839633433422817">Vuoi reimpostare le autorizzazioni ed eliminare cookie e dati dei siti?</translation>
 <translation id="6165508094623778733">Scopri di più</translation>
 <translation id="6171020522141473435">Quando l'opzione è attiva, i siti potrebbero chiedere di usare i dispositivi Bluetooth. Quando l'opzione è disattivata, i siti non possono utilizzare i dispositivi Bluetooth.</translation>
 <translation id="6177111841848151710">Bloccata per il motore di ricerca corrente</translation>
@@ -340,6 +342,7 @@
 <translation id="6545864417968258051">Scansione Bluetooth</translation>
 <translation id="6552800053856095716">{PERMISSIONS_SUMMARY_BLOCKED,plural, =1{Bloccate: <ph name="PERMISSION_1" />, <ph name="PERMISSION_2" /> e <ph name="NUM_MORE" /> altra}other{Bloccate: <ph name="PERMISSION_1" />, <ph name="PERMISSION_2" /> e altre <ph name="NUM_MORE" />}}</translation>
 <translation id="6554732001434021288">Ultima visita: <ph name="NUM_DAYS" /> giorni fa</translation>
+<translation id="656065428026159829">Mostra altri</translation>
 <translation id="6561560012278703671">Usa messaggi più discreti (impedisce alle notifiche di disturbarti)</translation>
 <translation id="6593061639179217415">Sito desktop</translation>
 <translation id="6608650720463149374"><ph name="GIGABYTES" /> GB</translation>

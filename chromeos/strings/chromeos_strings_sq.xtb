@@ -11,6 +11,7 @@
 <translation id="1047458377670401304"><ph name="CPU_NAME" /> (<ph name="THREAD_COUNT" /> nënprocese, <ph name="CPU_MAX_CLOCK_SPEED" /> GHz)</translation>
 <translation id="1047773237499189053">Ka veçori të re, përdor tastin "Shigjeta lart" për të mësuar më shumë.</translation>
 <translation id="1049663189809099096">e verdhë pastel</translation>
+<translation id="1056898198331236512">Paralajmërim</translation>
 <translation id="1059913517121127803">Skanimi nuk mund të nisej</translation>
 <translation id="1062823486781306604"><ph name="INDEX" /> nga <ph name="COUNT" />, <ph name="NAME" />.</translation>
 <translation id="1070066693520972135">WEP</translation>
@@ -95,7 +96,6 @@
 <translation id="1478594628797167447">Skaner</translation>
 <translation id="1483493594462132177">Dërgo</translation>
 <translation id="1488850966314959671">Nuk mund të lidhesh me këtë rrjet duke përdorur një nga APN-të e personalizuara të aktivizuara. Kontakto me operatorin tënd celular për më shumë informacione.</translation>
-<translation id="1491076385728777984">Po përditësohet firmueri në <ph name="DEVICE_NAME" /></translation>
 <translation id="1499041187027566160">rrit volumin</translation>
 <translation id="1499900233129743732"><ph name="MANAGER" /> menaxhon këtë përdorues dhe mund të menaxhojë në distancë cilësimet dhe të monitorojë aktivitetin e përdoruesit.</translation>
 <translation id="150962533380566081">Kodi PUK i pavlefshëm.</translation>
@@ -291,7 +291,6 @@
 <translation id="2505327257735685095">Rifresko imazhin aktual të sfondit</translation>
 <translation id="2512979179176933762">shfaq dritaret</translation>
 <translation id="2513396635448525189">Imazhi i identifikimit</translation>
-<translation id="2517472476991765520">Skano</translation>
 <translation id="2521835766824839541">pjesa muzikore e mëparshme</translation>
 <translation id="2526590354069164005">Desktopi</translation>
 <translation id="2529641961800709867">Opsionet e butonave</translation>
@@ -330,6 +329,7 @@
 <translation id="2744221223678373668">Të ndara</translation>
 <translation id="2751739896257479635">Vërtetimi EAP i fazës 2</translation>
 <translation id="2754757901767760034">llambë</translation>
+<translation id="2780756493585863768">Sfonde të fundit të mundësuara nga IA-ja e Google</translation>
 <translation id="2783010256799387990">KALOI</translation>
 <translation id="2786429550992142861">lino</translation>
 <translation id="2787435249130282949">tastiera më e ndritshme</translation>
@@ -426,6 +426,7 @@
 <translation id="3456078764689556234">U printua faqja <ph name="PRINTED_PAGES" /> nga <ph name="TOTAL_PAGES" />.</translation>
 <translation id="345898999683440380">Po skanon faqen <ph name="PAGE_NUM" />. <ph name="PERCENTAGE_VALUE" />% e përfunduar.</translation>
 <translation id="3459509316159669723">Po printon</translation>
+<translation id="3462187165860821523"><ph name="DEVICE_NAME" /> po përditësohet</translation>
 <translation id="346423161771747987">Rryma</translation>
 <translation id="346539236881580388">Nxirr përsëri</translation>
 <translation id="3484914941826596830">Mos e shkëput këtë pajisje të jashtme dhe mos e fik kompjuterin gjatë përditësimit të firmuerit. Mund ta minimizosh këtë dritare. Ky përditësim mund të zgjasë disa minuta dhe pajisja jote e jashtme mund të mos funksionojë gjatë kësaj kohe.</translation>
@@ -790,6 +791,7 @@
 <translation id="5559898619118303662">Kalo automatikisht te tema e errët në perëndim të diellit</translation>
 <translation id="556042886152191864">Buton</translation>
 <translation id="5562551811867441927"><ph name="TERRAIN_FEATURE" /> në nuanca të ngjyrës: <ph name="TERRAIN_COLOR" /></translation>
+<translation id="5572169899491758844">Skano</translation>
 <translation id="5578477003638479617">UMTS</translation>
 <translation id="5578519639599103840">Skano përsëri</translation>
 <translation id="5583640892426849032">Hapësirë prapa</translation>
@@ -879,7 +881,6 @@
 <translation id="6075872808778243331">(Android) Vonesa e HTTP-së</translation>
 <translation id="6078323886959318429">Shto një shkurtore</translation>
 <translation id="6091080061796993741">të verdhë</translation>
-<translation id="610371409726072606">Sfondi i kamerës i mundësuar nga inteligjenca artificiale e Google</translation>
 <translation id="6104112872696127344">Skanimi është anuluar</translation>
 <translation id="6106186594183574873">Për të përfunduar, fut fjalëkalimin tënd të vjetër</translation>
 <translation id="6108689792487843350">Porta e kalimit është e paarritshme</translation>
@@ -1011,7 +1012,6 @@
 <translation id="672609503628871915">Shiko ç'të reja ka</translation>
 <translation id="6740695858234317715">krem dhe portokalli</translation>
 <translation id="6741823073189174383">varkë</translation>
-<translation id="674276385369049081">Sfonde të fundit të kamerës të mundësuara nga inteligjenca artificiale e Google</translation>
 <translation id="6744441848304920043">xhungël</translation>
 <translation id="6747035363363040417">neutrale</translation>
 <translation id="6747215703636344499">Ndaloi - Dalja është plot</translation>
@@ -1032,6 +1032,7 @@
 <translation id="6871256179359663621">vjollcë e çelur</translation>
 <translation id="6889786074662672253">Gjatë rinisjes, mos e hiq nga priza pajisjen e jashtme dhe mos e fik kompjuterin. Mund ta minimizosh këtë dritare. Kjo mund të zgjasë disa minuta dhe pajisja jote e jashtme mund të mos funksionojë gjatë kësaj kohe.</translation>
 <translation id="6900701049656042631">Ky album nuk ka asnjë fotografi. Për të shtuar fotografi, shko te <ph name="LINK" /></translation>
+<translation id="6902359863093437070">Krijo sfondin me IA-në</translation>
 <translation id="6905163627763043954">Provoje</translation>
 <translation id="6905724422583748843">Prapa te <ph name="PAGE_NAME" /></translation>
 <translation id="6910312834584889076">Kapaku i skanerit është i hapur. Mbylle kapakun dhe provo përsëri.</translation>
@@ -1269,6 +1270,7 @@
 <translation id="8152370627892825"><ph name="DESCRIPTION" />, <ph name="ACCELERATOR_INFO" />.</translation>
 <translation id="8156233298086717232">magjik</translation>
 <translation id="8162776280680283326">dhelpra</translation>
+<translation id="8167413449582155132">Sfondi i mundësuar nga IA-ja e Google</translation>
 <translation id="8179976553408161302">Enter</translation>
 <translation id="8183975772394450380">plazh</translation>
 <translation id="8206859287963243715">Rrjeti celular</translation>

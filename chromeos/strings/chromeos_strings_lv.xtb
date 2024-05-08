@@ -11,6 +11,7 @@
 <translation id="1047458377670401304"><ph name="CPU_NAME" /> (pavedienu skaits: <ph name="THREAD_COUNT" />; <ph name="CPU_MAX_CLOCK_SPEED" /> GHz)</translation>
 <translation id="1047773237499189053">Pieejama jauna funkcija. Lai uzzinātu vairāk, nospiediet augšupvērsto bultiņu.</translation>
 <translation id="1049663189809099096">pasteļdzeltenā</translation>
+<translation id="1056898198331236512">Brīdinājums</translation>
 <translation id="1059913517121127803">Nevarēja sākt skenēšanu.</translation>
 <translation id="1062823486781306604"><ph name="NAME" />: <ph name="INDEX" />. no <ph name="COUNT" />.</translation>
 <translation id="1070066693520972135">WEP</translation>
@@ -95,7 +96,6 @@
 <translation id="1478594628797167447">Skeneris</translation>
 <translation id="1483493594462132177">Sūtīt</translation>
 <translation id="1488850966314959671">Nevienu iespējotu pielāgoto APN nevar izmantot, lai izveidotu savienojumu ar šo tīklu. Lai iegūtu plašāku informāciju, sazinieties ar savu mobilo sakaru operatoru.</translation>
-<translation id="1491076385728777984">Notiek ierīces “<ph name="DEVICE_NAME" />” aparātprogrammatūras atjaunināšana</translation>
 <translation id="1499041187027566160">palielināt skaļumu</translation>
 <translation id="1499900233129743732"><ph name="MANAGER" /> pārvalda šo lietotāju un, iespējams, var attālināti pārvaldīt iestatījumus un pārraudzīt lietotāja darbības.</translation>
 <translation id="150962533380566081">PUK nav derīgs.</translation>
@@ -291,7 +291,6 @@
 <translation id="2505327257735685095">Atsvaidzināt pašreizējo fona tapetes attēlu</translation>
 <translation id="2512979179176933762">rādīt logus</translation>
 <translation id="2513396635448525189">Pieteikšanās attēls</translation>
-<translation id="2517472476991765520">Meklēt</translation>
 <translation id="2521835766824839541">iepriekšējais ieraksts</translation>
 <translation id="2526590354069164005">Darbvirsma</translation>
 <translation id="2529641961800709867">Pogas iespējas</translation>
@@ -330,6 +329,7 @@
 <translation id="2744221223678373668">Koplietojamie</translation>
 <translation id="2751739896257479635">EAP 2. fāzes autentificēšana</translation>
 <translation id="2754757901767760034">lampa</translation>
+<translation id="2780756493585863768">Jaunākie foni, ko nodrošina Google MI</translation>
 <translation id="2783010256799387990">NOKĀRTOTS</translation>
 <translation id="2786429550992142861">linaudums</translation>
 <translation id="2787435249130282949">gaišāka tastatūra</translation>
@@ -426,6 +426,7 @@
 <translation id="3456078764689556234">Izdrukāto lapu skaits: <ph name="PRINTED_PAGES" /> no<ph name="TOTAL_PAGES" />.</translation>
 <translation id="345898999683440380">Notiek <ph name="PAGE_NUM" />. lapas skenēšana. Pabeigti: <ph name="PERCENTAGE_VALUE" />%.</translation>
 <translation id="3459509316159669723">Drukāšana</translation>
+<translation id="3462187165860821523">Notiek ierīces <ph name="DEVICE_NAME" /> atjaunināšana</translation>
 <translation id="346423161771747987">Strāvas patēriņš</translation>
 <translation id="346539236881580388">Uzņemt vēlreiz</translation>
 <translation id="3484914941826596830">Kamēr notiek aparātprogrammatūras atjaunināšana, neatvienojiet šo ārējo ierīci un neizslēdziet datoru. Varat minimizēt šo logu. Atjaunināšana var ilgt dažas minūtes, un jūsu ārējā ierīce šajā laikā var nedarboties.</translation>
@@ -790,6 +791,7 @@
 <translation id="5559898619118303662">Saulrietā automātiski pāriet uz tumšo motīvu</translation>
 <translation id="556042886152191864">Poga</translation>
 <translation id="5562551811867441927"><ph name="TERRAIN_FEATURE" /> šādā nokrāsā: <ph name="TERRAIN_COLOR" /></translation>
+<translation id="5572169899491758844">Skenēšana</translation>
 <translation id="5578477003638479617">UMTS</translation>
 <translation id="5578519639599103840">Atkārtoti skenēt</translation>
 <translation id="5583640892426849032">Atkāpšanās taustiņš</translation>
@@ -879,7 +881,6 @@
 <translation id="6075872808778243331">(Android) HTTP latentums</translation>
 <translation id="6078323886959318429">Pievienot saīsni</translation>
 <translation id="6091080061796993741">dzeltena</translation>
-<translation id="610371409726072606">Kameras fonu nodrošina Google MI</translation>
 <translation id="6104112872696127344">Skenēšana ir atcelta</translation>
 <translation id="6106186594183574873">Lai pabeigtu, ievadiet savu iepriekšējo paroli</translation>
 <translation id="6108689792487843350">Vārteja nav sasniedzama</translation>
@@ -1011,7 +1012,6 @@
 <translation id="672609503628871915">Uzzināt jaunumus</translation>
 <translation id="6740695858234317715">krēmkrāsa un oranža</translation>
 <translation id="6741823073189174383">laiva</translation>
-<translation id="674276385369049081">Jaunākie kameras foni, ko nodrošina Google MI</translation>
 <translation id="6744441848304920043">džungļi</translation>
 <translation id="6747035363363040417">neitrāls</translation>
 <translation id="6747215703636344499">Apturēts — izvades paliktnis ir pilns</translation>
@@ -1032,6 +1032,7 @@
 <translation id="6871256179359663621">gaiši violetā</translation>
 <translation id="6889786074662672253">Kamēr notiek restartēšana, neatvienojiet šo ārējo ierīci un neizslēdziet datoru. Varat minimizēt šo logu. Restartēšana var ilgt dažas minūtes, un jūsu ārējā ierīce šajā laikā var nedarboties.</translation>
 <translation id="6900701049656042631">Šajā albumā nav fotoattēlu. Lai pievienotu fotoattēlus, pārejiet uz vietni <ph name="LINK" />.</translation>
+<translation id="6902359863093437070">Izveidot fonu, izmantojot MI</translation>
 <translation id="6905163627763043954">Izmēģināt</translation>
 <translation id="6905724422583748843">Atpakaļ uz lapu <ph name="PAGE_NAME" /></translation>
 <translation id="6910312834584889076">Skenera vāks ir atvērts. Aizveriet vāku un mēģiniet vēlreiz.</translation>
@@ -1265,6 +1266,7 @@
 <translation id="8152370627892825"><ph name="DESCRIPTION" />, <ph name="ACCELERATOR_INFO" />.</translation>
 <translation id="8156233298086717232">maģisks</translation>
 <translation id="8162776280680283326">lapsas</translation>
+<translation id="8167413449582155132">Fonu nodrošina Google MI</translation>
 <translation id="8179976553408161302">Ievadīt</translation>
 <translation id="8183975772394450380">pludmale</translation>
 <translation id="8206859287963243715">Mobilais tālrunis</translation>

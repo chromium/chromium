@@ -12,6 +12,7 @@
 <translation id="1588438908519853928">सामान्य</translation>
 <translation id="1591562245178063882">यो महिना</translation>
 <translation id="1637811476055996098">फाइलहरू छान्नुहोस्</translation>
+<translation id="1680090928918677457">क्यामेरा प्रयोग गर्नुहोस्</translation>
 <translation id="1681022320378710418">हालको समय</translation>
 <translation id="1727839386348365796">आइड्रपर</translation>
 <translation id="1729654308190250600">कृपया एउटा खाली नभएको इमेल ठेगाना प्रविष्टि गर्नुहोस्।</translation>
@@ -60,6 +61,7 @@
 <translation id="3822383571486410024">कृपया यो पाठलाई <ph name="MIN_CHARACTERS" /> अक्षर वा थप (तपाईं हालमा प्रयोग गरिरहेको <ph name="CURRENT_LENGTH" /> अक्षर) सम्म लम्ब्याउनुहोस्।</translation>
 <translation id="383465348367842624">त्यसको पछाडि '<ph name="ATSIGN" />' आउने भागमा '<ph name="INVALIDCHARACTER" />' सङ्केत हुनुहुँदैन।</translation>
 <translation id="3846214748874656680">पूर्ण स्क्रिनबाट निस्कनुहोस्</translation>
+<translation id="3914173277599553213">आवश्यक</translation>
 <translation id="4031179711345676612">माइक्रोफोन प्रयोग गर्ने अनुमति छ</translation>
 <translation id="4103419683916926126">मिलिसेकेन्ड</translation>
 <translation id="4201051445878709314">अघिल्लो महिना देखाउनुहोस्</translation>
@@ -75,6 +77,7 @@
 <translation id="4912200001568447310">हालको वस्तु</translation>
 <translation id="4915360478455618802">समय चयनकर्ता देखाउनुहोस्</translation>
 <translation id="4924138096460353083">अनिश्चित</translation>
+<translation id="49269513399674318">माइक्रोफोन प्रयोग गर्नुहोस्</translation>
 <translation id="4950364064308314478">स्थानीय मिति र समय चयनकर्ता देखाउनुहोस्</translation>
 <translation id="4971739861736909480"><ph name="ACCNAME" /> चयन गरियो</translation>
 <translation id="4975562563186953947"><ph name="SELECTED_COUNT" /> चयन गरिएको</translation>
@@ -142,6 +145,7 @@
 <translation id="7080893216867146095">लोकेसन सेयर गर्ने अनुमति दिइएको छैन</translation>
 <translation id="709897737746224366">कृपया अनुरोध गरिएको ढाँचासँग मिलाउनुहोस्।</translation>
 <translation id="7102274145889307184">हालको स्थान</translation>
+<translation id="7134810312945846184">माइक्रोफोन र क्यामेरा प्रयोग गर्नुहोस्</translation>
 <translation id="7263440858009898357">कृपया सूचीमा एक वस्तु चयन गर्नुहोस्।</translation>
 <translation id="7320576522385648310">बफर गर्दै</translation>
 <translation id="7341556277900466204">कलर वेल</translation>

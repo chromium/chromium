@@ -12,6 +12,7 @@
 <translation id="1588438908519853928">Parasts</translation>
 <translation id="1591562245178063882">Šis mēnesis</translation>
 <translation id="1637811476055996098">Izvēlēties failus</translation>
+<translation id="1680090928918677457">Izmantot kameru</translation>
 <translation id="1681022320378710418">pašreizējais laiks</translation>
 <translation id="1727839386348365796">Pipete</translation>
 <translation id="1729654308190250600">Lūdzu, ievadiet e-pasta adresi.</translation>
@@ -60,6 +61,7 @@
 <translation id="3822383571486410024">Lūdzu, papildiniet šo tekstu līdz vismaz <ph name="MIN_CHARACTERS" /> rakstzīmēm (pašlaik tas ietver <ph name="CURRENT_LENGTH" /> rakstzīmes).</translation>
 <translation id="383465348367842624">Daļā, kas atrodas pirms zīmes <ph name="ATSIGN" />, nedrīkst būt ietverts simbols <ph name="INVALIDCHARACTER" />.</translation>
 <translation id="3846214748874656680">Aizvērt pilnekrāna režīmu</translation>
+<translation id="3914173277599553213">Obligātas</translation>
 <translation id="4031179711345676612">Mikrofona lietošana ir atļauta</translation>
 <translation id="4103419683916926126">Milisekundes</translation>
 <translation id="4201051445878709314">Rādīt iepriekšējo mēnesi</translation>
@@ -75,6 +77,7 @@
 <translation id="4912200001568447310">pašreizējais vienums</translation>
 <translation id="4915360478455618802">Rādīt laika atlasītāju</translation>
 <translation id="4924138096460353083">nenoteikta</translation>
+<translation id="49269513399674318">Izmantot mikrofonu</translation>
 <translation id="4950364064308314478">Rādīt vietējo datuma un laika atlasītāju</translation>
 <translation id="4971739861736909480">Atlasīts: <ph name="ACCNAME" /></translation>
 <translation id="4975562563186953947">Atlasīti <ph name="SELECTED_COUNT" /></translation>
@@ -142,6 +145,7 @@
 <translation id="7080893216867146095">Atrašanās vietas kopīgošana ir atļauta</translation>
 <translation id="709897737746224366">Pieskaņojiet vērtību prasītajam formātam.</translation>
 <translation id="7102274145889307184">pašreizējā atrašanās vieta</translation>
+<translation id="7134810312945846184">Izmantot mikrofonu un kameru</translation>
 <translation id="7263440858009898357">Atlasiet vienumu sarakstā.</translation>
 <translation id="7320576522385648310">notiek ievietošana buferī</translation>
 <translation id="7341556277900466204">Krāsu palete</translation>

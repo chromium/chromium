@@ -116,10 +116,12 @@ Megjegyzések:
 <translation id="417201473131094001">A Chrome Canary nem támogatja</translation>
 <translation id="424864128008805179">Kijelentkezés a Chrome-ból</translation>
 <translation id="4251174643044751591">Megnyitja a Fizetési módok beállítási oldalát a Chrome-ban.</translation>
+<translation id="4286914711740227883">A Chrome-ban tárolt böngészési adatok törlése</translation>
 <translation id="4453284704333523777">A Chrome beállításainak kezelése</translation>
 <translation id="4523886039239821078">Bizonyos bővítmények a Chrome összeomlását eredményezik. Távolítsa el a következő(ke)t:</translation>
 <translation id="4633328489441962921">A Chrome nem tud frissítéseket keresni</translation>
 <translation id="4636900170638246267">Jelentkezzen be erre a webhelyre és a Chrome-ba.</translation>
+<translation id="4742795653798179840">Törölt Chrome-adatok</translation>
 <translation id="4761869838909035636">A Chrome biztonsági ellenőrzésének futtatása</translation>
 <translation id="4798859546468762093">A személyre szabás és az egyéb funkciók használatához vegye fel a Chrome-ot a következők közé: <ph name="FEATURE_NAME_1" /> és <ph name="FEATURE_NAME_2" />.</translation>
 <translation id="4819268619367838612">Az alkalmazás továbbfejlesztése érdekében a Chrome elküldi a használati és az összeomlási adatokat a Google-nak. <ph name="BEGIN_LINK" />Kezelés<ph name="END_LINK" />.</translation>
@@ -130,6 +132,7 @@ Megjegyzések:
 <translation id="4840404732697892756">A Google Jelszókezelő ellenőrizni tudja a mentett jelszavakat, ha Ön bejelentkezik Google-fiókjával.</translation>
 <translation id="4860330141789125848">{COUNT,plural, =1{A Chrome segíthet a csomag nyomon követésében az Új lap oldalon.}other{A Chrome segíthet a csomagok nyomon követésében az Új lap oldalon.}}</translation>
 <translation id="4903674399067644695">Ez a kártya javaslatokat ad arra, hogy miként hozhatja ki a legtöbbet a Chrome-ból.</translation>
+<translation id="4919069428879420545">A Chrome-ban tárolt böngészési adatok törlése.</translation>
 <translation id="49200511069271369">Szervezete (<ph name="DOMAIN" />) kezeli azt a fiókot, amelybe bejelentkezik, valamint azt is, hogy miként használhatja a Chrome-ot. A rendszergazda beállíthat, illetve korlátozhat bizonyos funkciókat.</translation>
 <translation id="498985224078955265">A lap másik eszközre való elküldéséhez jelentkezzen be a Chrome-ba mindkét eszközön.</translation>
 <translation id="5030102366287574140">A Chrome segíthet az adatvédelmi incidensek, a nem biztonságos webhelyek és egyebek elleni védekezésben.</translation>

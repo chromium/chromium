@@ -7,10 +7,11 @@
 <translation id="1018656279737460067">Abgebrochen</translation>
 <translation id="1020274983236703756">Exklusive <ph name="PRODUCT_NAME" />-Assets jetzt verfügbar</translation>
 <translation id="1022628058306505708">Earth Flow</translation>
-<translation id="1026212596705997935">Tastenkombination wird bereits für „<ph name="CONFLICT_ACCEL_NAME" />“ verwendet. Drücke eine andere Kombination. Wenn du den vorhandenen Befehl ersetzen möchtest, drücke diese Tastenkombination noch einmal.</translation>
+<translation id="1026212596705997935">Tastenkombination wird bereits für „<ph name="CONFLICT_ACCEL_NAME" />“ verwendet. Soll diese nicht ersetzt werden, drücke eine andere Kombination. Wenn du die ursprüngliche Tastenkombination ersetzen möchtest, drücke diese Tastenkombination noch einmal.</translation>
 <translation id="1047458377670401304"><ph name="CPU_NAME" /> (<ph name="THREAD_COUNT" /> Threads, <ph name="CPU_MAX_CLOCK_SPEED" /> GHz)</translation>
 <translation id="1047773237499189053">Neue Funktion verfügbar. Verwende den Aufwärtspfeil, um mehr zu erfahren.</translation>
 <translation id="1049663189809099096">pastellgelb</translation>
+<translation id="1056898198331236512">Warnung</translation>
 <translation id="1059913517121127803">Scan konnte nicht gestartet werden</translation>
 <translation id="1062823486781306604"><ph name="INDEX" /> von <ph name="COUNT" />, <ph name="NAME" />.</translation>
 <translation id="1070066693520972135">WEP</translation>
@@ -28,6 +29,7 @@
 <translation id="1145018782460575098">Das Fenster für Firmwareupdates für externe Geräte ist geöffnet. Es sind <ph name="NUM_UPDATES" /> Updates verfügbar.</translation>
 <translation id="1145516343487477149">Hier findest du Hilfeartikel und Antworten auf häufig gestellte Fragen zu Chromebooks</translation>
 <translation id="1154390310959620237">Du kannst maximal fünf Tastenkombinationen anpassen. Wenn du eine neue Tastenkombination hinzufügen möchtest, musst du vorher eine bestehende löschen.</translation>
+<translation id="1155154308031262006">Prompt eingeben</translation>
 <translation id="115705039208660697">Ananas</translation>
 <translation id="1164939766849482256">Bildschirmschoner – Sonnenauf- bis -untergang</translation>
 <translation id="1167755866710282443">Öffne das Menü, um die Schlüssel anzupassen. Ziehe das Menü zum Verschieben.</translation>
@@ -95,7 +97,6 @@
 <translation id="1478594628797167447">Scanner</translation>
 <translation id="1483493594462132177">Senden</translation>
 <translation id="1488850966314959671">Mit den aktivierten benutzerdefinierten APNs kann keine Verbindung zu diesem Netzwerk hergestellt werden. Wende dich für weitere Informationen an deinen Mobilfunkanbieter.</translation>
-<translation id="1491076385728777984">Die Firmware auf „<ph name="DEVICE_NAME" />“ wird aktualisiert</translation>
 <translation id="1499041187027566160">Lautstärke erhöhen</translation>
 <translation id="1499900233129743732"><ph name="MANAGER" /> verwaltet diesen Nutzer und kann per Remotezugriff Einstellungen ändern und die Nutzeraktivität überwachen.</translation>
 <translation id="150962533380566081">Ungültiger PUK.</translation>
@@ -291,7 +292,6 @@
 <translation id="2505327257735685095">Aktuelles Hintergrundbild aktualisieren</translation>
 <translation id="2512979179176933762">Fenster anzeigen</translation>
 <translation id="2513396635448525189">Anmeldebild</translation>
-<translation id="2517472476991765520">Scannen</translation>
 <translation id="2521835766824839541">Vorheriger Titel</translation>
 <translation id="2526590354069164005">Desktop</translation>
 <translation id="2529641961800709867">Schaltflächenoptionen</translation>
@@ -330,6 +330,7 @@
 <translation id="2744221223678373668">Freigegeben</translation>
 <translation id="2751739896257479635">EAP-Phase 2-Authentifizierung</translation>
 <translation id="2754757901767760034">Lampe</translation>
+<translation id="2780756493585863768">Zuletzt verwendete Hintergründe powered by Google AI</translation>
 <translation id="2783010256799387990">BESTANDEN</translation>
 <translation id="2786429550992142861">Leinen</translation>
 <translation id="2787435249130282949">Tastatur heller</translation>
@@ -426,6 +427,7 @@
 <translation id="3456078764689556234">Seite <ph name="PRINTED_PAGES" /> von <ph name="TOTAL_PAGES" /> wird gedruckt.</translation>
 <translation id="345898999683440380">Seite <ph name="PAGE_NUM" /> wird gescannt. <ph name="PERCENTAGE_VALUE" /> % sind abgeschlossen.</translation>
 <translation id="3459509316159669723">Drucken</translation>
+<translation id="3462187165860821523">Das Gerät „<ph name="DEVICE_NAME" />“ wird aktualisiert</translation>
 <translation id="346423161771747987">Strom</translation>
 <translation id="346539236881580388">Neu aufnehmen</translation>
 <translation id="3484914941826596830">Während die Firmware aktualisiert wird, darf dieses externe Gerät nicht getrennt oder der Computer heruntergefahren werden. Du kannst dieses Fenster minimieren. Die Aktualisierung dauert einige Minuten und dein externes Gerät funktioniert während dieser Zeit eventuell nicht.</translation>
@@ -790,6 +792,7 @@
 <translation id="5559898619118303662">Dunkles Design bei Sonnenuntergang automatisch aktivieren</translation>
 <translation id="556042886152191864">Schaltfläche</translation>
 <translation id="5562551811867441927"><ph name="TERRAIN_FEATURE" /> in den Farbtönen <ph name="TERRAIN_COLOR" /></translation>
+<translation id="5572169899491758844">Scannen</translation>
 <translation id="5578477003638479617">UMTS</translation>
 <translation id="5578519639599103840">Neu scannen</translation>
 <translation id="5583640892426849032">Rücktaste</translation>
@@ -879,7 +882,6 @@
 <translation id="6075872808778243331">(Android) HTTP-Latenz</translation>
 <translation id="6078323886959318429">Verknüpfung</translation>
 <translation id="6091080061796993741">gelben</translation>
-<translation id="610371409726072606">Kamerahintergrund, der auf Google AI basiert</translation>
 <translation id="6104112872696127344">Scannen wurde abgebrochen</translation>
 <translation id="6106186594183574873">Gib zum Schluss dein altes Passwort ein</translation>
 <translation id="6108689792487843350">Gateway nicht erreichbar</translation>
@@ -906,6 +908,7 @@
 <translation id="6205145102504628069">Cloud Flow</translation>
 <translation id="6213737986933151570">CDMA1XRTT</translation>
 <translation id="6223752125779001553">Keine Scanner verfügbar</translation>
+<translation id="6231648282154119906">Verdächtige Dateien werden im Rahmen des von dir ausgewählten erweiterten Schutzes automatisch von Google Safe Browsing gescannt</translation>
 <translation id="6232017090690406397">Akku</translation>
 <translation id="6234024205316847054">Umrisse anzeigen</translation>
 <translation id="6235460611964961764">Datennutzung manuell zurücksetzen</translation>
@@ -1011,7 +1014,6 @@
 <translation id="672609503628871915">Neuigkeiten</translation>
 <translation id="6740695858234317715">creme- und orangefarben</translation>
 <translation id="6741823073189174383">Boot</translation>
-<translation id="674276385369049081">Aktuelle Kamerahintergründe, die auf Google AI basieren</translation>
 <translation id="6744441848304920043">Dschungel</translation>
 <translation id="6747035363363040417">neutral</translation>
 <translation id="6747215703636344499">Angehalten – Ausgabefach ist voll</translation>
@@ -1032,6 +1034,7 @@
 <translation id="6871256179359663621">hellviolett</translation>
 <translation id="6889786074662672253">Während des Neustarts darf dieses externe Gerät nicht getrennt oder der Computer heruntergefahren werden. Du kannst das Fenster aber minimieren. Der Vorgang kann einige Minuten dauern. Unter Umständen funktioniert dein externes Gerät während dieser Zeit nicht.</translation>
 <translation id="6900701049656042631">Dieses Album enthält keine Fotos. Du kannst Fotos unter <ph name="LINK" /> hinzufügen.</translation>
+<translation id="6902359863093437070">Hintergrund mit KI erstellen</translation>
 <translation id="6905163627763043954">Jetzt ausprobieren</translation>
 <translation id="6905724422583748843">Zurück zu <ph name="PAGE_NAME" /></translation>
 <translation id="6910312834584889076">Die Abdeckung des Scanners ist offen. Schließe sie und versuche es noch einmal.</translation>
@@ -1269,6 +1272,7 @@
 <translation id="8152370627892825"><ph name="DESCRIPTION" />, <ph name="ACCELERATOR_INFO" />.</translation>
 <translation id="8156233298086717232">magisch</translation>
 <translation id="8162776280680283326">Füchse</translation>
+<translation id="8167413449582155132">Hintergrund powered by Google AI</translation>
 <translation id="8179976553408161302">Eingabetaste</translation>
 <translation id="8183975772394450380">Strand</translation>
 <translation id="8206859287963243715">Mobil</translation>

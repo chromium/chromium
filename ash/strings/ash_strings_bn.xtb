@@ -166,6 +166,7 @@
 <translation id="1586324912145647027">১ থেকে ৮ নম্বর ডেস্কে যান</translation>
 <translation id="158838227375272121">Google Classroom ওয়েবসাইট</translation>
 <translation id="1589090746204042747">এই সেশনে আপনার সব অ্যাক্টিভিটি অ্যাক্সেস করুন</translation>
+<translation id="1597880963776148053"><ph name="TOTAL_STEPS" />টি ধাপের মধ্যে <ph name="STEP" /> নম্বর ধাপ। আপনার পিন করা ও খোলা অ্যাপ আপনার স্ক্রিনের নিচে থাকা শেল্ফে আছে। শেল্ফ আইটেমে ফোকাস করতে Alt + Shift + L কী-তে তারপর ট্যাবে প্রেস করুন।</translation>
 <translation id="1602874809115667351"><ph name="LAUNCHER_KEY_NAME" /> + নিম্নমুখী তীরচিহ্ন</translation>
 <translation id="1604857178818051494">মিডিয়া পজ করুন</translation>
 <translation id="1607312127821884567">আপনার ফোনের অ্যাপ দেখা সংক্রান্ত সেট-আপের পদ্ধতি বাতিল করুন</translation>
@@ -303,6 +304,7 @@
 <translation id="2257486738914982088"><ph name="FILENAME" /> ডাউনলোড করার সময় কিছু সমস্যা হয়েছে</translation>
 <translation id="2258734398699965611">সাজেস্ট করা ফাইল</translation>
 <translation id="2268130516524549846">ব্লুটুথ অক্ষমিত</translation>
+<translation id="2268731132310444948"><ph name="TOTAL_STEPS" />টি ধাপের মধ্যে <ph name="STEP" /> নম্বর ধাপ। একবার লঞ্চার চালু করা হলে, আপনি একটি উন্নত সার্চবার পাবেন। আপনার ফাইল, অ্যাপ ও আরও অনেক কিছুর জন্য সার্চ করতে টাইপ করা শুরু করে দেখতে পারেন। এছাড়াও আপনার <ph name="PRODUCT_NAME" /> সম্পর্কে প্রশ্নের উত্তর পেতে পারবেন।</translation>
 <translation id="2268813581635650749">সবগুলি থেকে সাইন-আউট</translation>
 <translation id="2276987123919776440">১৫মিনিট</translation>
 <translation id="2277103315734023688">এগিয়ে যান</translation>
@@ -397,6 +399,7 @@
 <translation id="2607678425161541573">অনলাইন সাইন-ইন প্রয়োজন</translation>
 <translation id="2612072250312279703">অ্যাক্টিভিটি মনিটর</translation>
 <translation id="2612614436418177118">অ্যাপ গ্রিডে একটি অ্যাপ আইকন সরান</translation>
+<translation id="2619326010008283367"><ph name="TOTAL_STEPS" />টি ধাপের মধ্যে <ph name="STEP" /> নম্বর ধাপ। আপনি লঞ্চারে নিজের ডিভাইস সেটিংস খুঁজে পাবেন। সেটিংস থেকে আপনার <ph name="PRODUCT_NAME" /> কাস্টমাইজ করার চেষ্টা করুন, যেমন ওয়ালপেপার পরিবর্তন করা বা স্ক্রিন সেভার সেট করা।</translation>
 <translation id="2620016719323068571">আপনার <ph name="CATEGORY" />, ফাইল, অ্যাপ এবং আরও অনেক কিছু সার্চ করুন...</translation>
 <translation id="2620436844016719705">সিস্টেম</translation>
 <translation id="2620900772667816510">ব্লুটুথ সুপার রেজোলিউশন</translation>
@@ -819,7 +822,6 @@
 <translation id="4209973997261364186">ওয়াই-ফাই চালু করা আছে</translation>
 <translation id="4212472694152630271">যাচাইকরণের জন্য পিন ব্যবহার করুন</translation>
 <translation id="4215497585250573029">ভিপিএন সেটিংস</translation>
-<translation id="4215548513524864822">ওভারভিউয়ের ৫টি ধাপের মধ্যে ৫ নম্বর ধাপ। আপনি 'লঞ্চার'-এ নিজের ডিভাইস সেটিংস খুঁজতে পারবেন। 'সেটিংস' থেকে আপনার <ph name="PRODUCT_NAME" /> কাস্টমাইজ করার চেষ্টা করুন বা যেমন নিজের ওয়ালপেপার পরিবর্তন বা স্ক্রিন সেভার সেট করা।</translation>
 <translation id="4217571870635786043">ডিক্টেশন</translation>
 <translation id="4221957499226645091"><ph name="APP_NAME" />, ইনস্টল করা অ্যাপ, পজ করা হয়েছে</translation>
 <translation id="4228078597006700451">কন্ট্রোল সেট-আপ করা নেই</translation>
@@ -946,12 +948,12 @@
 <translation id="468293128311738995">আপনার ফোন থেকে অ্যাপ</translation>
 <translation id="4690510401873698237">শেল্ফ নিচে দেখানো হচ্ছে</translation>
 <translation id="4696813013609194136">অভিভাবকীয় কোড দিয়ে ডিভাইস আনলক করুন</translation>
-<translation id="469693290987463983">ওভারভিউয়ের ৫টি ধাপের মধ্যে ১ নম্বর ধাপ। আপনার পিন করা ও খোলা অ্যাপ আপনার স্ক্রিনের নিচে থাকা শেল্ফে আছে। শেল্ফ আইটেমে ফোকাস করতে Alt + Shift + L 'কী'-তে তারপর ট্যাবে প্রেস করুন।</translation>
 <translation id="4702647871202761252">গোপনীয়তা স্ক্রিন বন্ধ করা আছে</translation>
 <translation id="4706121060329443414">পরে ডাউনলোডের চেষ্টা করা হবে। এখন প্রসেস করার জন্য Google-এর কাছে স্পিচ পাঠানো হবে।</translation>
 <translation id="470644585772471629">কালার ইনভার্সন</translation>
 <translation id="4708065238214351979">কীবোর্ড আরও উজ্জ্বল করুন</translation>
 <translation id="4717575069099566988">আপনার USB-C কেবল USB4-এ কাজ করে না। ডিভাইসের পারফর্ম্যান্স সীমিত হতে পারে।</translation>
+<translation id="4724328513667182700"><ph name="PRODUCT_NAME" />-এর ব্যবহার শুরু করতে ৬টি পরামর্শ</translation>
 <translation id="4730374152663651037">ঘন ঘন ব্যবহার করা হয়</translation>
 <translation id="4731797938093519117">অভিভাবকীয় অ্যাক্সেস</translation>
 <translation id="4733161265940833579"><ph name="BATTERY_PERCENTAGE" />% (বাঁদিক)</translation>
@@ -1027,6 +1029,7 @@
 <translation id="4964188651935955085">আপনি ব্লুটুথ বন্ধ করলে, আপনার <ph name="DEVICE_TYPE" /> থেকে এই এক্সটার্নাল ডিভাইস ডিসকানেক্ট হয়ে যাবে:</translation>
 <translation id="4966431234408005599">ভলিউম বাড়ান</translation>
 <translation id="4969092041573468113"><ph name="HOURS" />ঘঃ <ph name="MINUTES" />মিঃ <ph name="SECONDS" />সেঃ</translation>
+<translation id="496999337731226334"><ph name="TOTAL_STEPS" />টি ধাপের মধ্যে <ph name="STEP" /> নম্বর ধাপ। ওয়াই-ফাই, ব্লুটুথ এবং ভলিউমের মতো প্রায়শই ব্যবহার করা হয় এমন কন্ট্রোল দ্রুত সেটিংসে আছে। এছাড়াও স্ক্রিনশট নিতে এখানে যেতে পারবেন। দ্রুত সেটিংস খুলতে Alt + Shift + S কী প্রেস করুন।</translation>
 <translation id="4975771730019223894">অ্যাপ ব্যাজিং</translation>
 <translation id="4977493774330778463"><ph name="NUM_IMPORTANT_NOTIFICATION" />:
         <ph name="NOTIFICATION_1" />,
@@ -1144,6 +1147,7 @@
 <translation id="540713187982329711">হটস্পট টগল করুন। হটস্পট চালু আছে, কোনও ডিভাইস কানেক্ট করা নেই।</translation>
 <translation id="5413656666631274079">সেটিংস পৃষ্ঠা</translation>
 <translation id="5414198321558177633">প্রোফাইলের তালিকা রিফ্রেশ করা হচ্ছে। এর জন্য কয়েক মিনিট সময় লাগতে পারে।</translation>
+<translation id="5417965108047245734">আপনার <ph name="PRODUCT_NAME" /> ব্যবহার করার পদ্ধতি দ্রুত দেখে নিন</translation>
 <translation id="5426063383988017631">'সেটিংস' মেনু বন্ধ করা হয়েছে</translation>
 <translation id="5428899915242071344">বেছে নেওয়া শুরু করুন</translation>
 <translation id="5429993543155113935">বর্তমানে ছদ্মবেশী উইন্ডো ব্যবহারের সুবিধা নেই</translation>
@@ -1524,7 +1528,6 @@
 <translation id="6874854809828346832">হটস্পটের বিবরণ দেখুন। হটস্পট চালু আছে।</translation>
 <translation id="6878400149835617132">শর্টকাট বন্ধ করা আছে</translation>
 <translation id="6878701771800702153">{NUM_APPS,plural, =1{১টি অ্যাপ}one{#টি অ্যাপ}other{#টি অ্যাপ}}</translation>
-<translation id="6878787305374738418">ওভারভিউয়ের ৫টি ধাপের মধ্যে ৪ নম্বর ধাপ। একবার 'লঞ্চার' চালু করা হলে, আপনি একটি উন্নত সার্চবার পাবেন। আপনার ফাইল, অ্যাপ ও আরও অনেক কিছুর জন্য সার্চ করতে টাইপ করা শুরু করে দেখতে পারেন। এছাড়াও আপনার <ph name="PRODUCT_NAME" /> সম্পর্কে প্রশ্নের উত্তর পেতে পারবেন।</translation>
 <translation id="6883768636838842873">ডিভাইস ব্যবহার ও আরও অনেক কিছু করার জন্য কীবোর্ড শর্টকাট, পরামর্শ</translation>
 <translation id="6884665277231944629">আজকের তারিখ বেছে নিন</translation>
 <translation id="6886172995547742638">আপনার <ph name="DEVICE_TYPE" />-এর পারফর্ম্যান্স আশানুরূপ নাও হতে পারে। একটি <ph name="PREFERRED_MINIMUM_POWER" />W অথবা আরও ভাল USB-C পাওয়ার অ্যাডাপ্টার ব্যবহার করুন।</translation>
@@ -1593,6 +1596,7 @@
 <translation id="7143207342074048698">সংযুক্ত হচ্ছে</translation>
 <translation id="7144942256906679589">ব্যাটারির স্ট্যাটাস</translation>
 <translation id="7145639536026937076">ব্যাটারি <ph name="PERCENTAGE" />% চার্জ করা হয়েছে এবং চার্জ হচ্ছে। 'ব্যাটারি সেভার' ফিচার চালু আছে।</translation>
+<translation id="7149149900052329230">আপনার লোকাল ফাইল ও Google Drive-এর ফাইল সবকিছু Files অ্যাপ থেকে ম্যানেজ করুন।</translation>
 <translation id="7165278925115064263">Alt+Shift+K</translation>
 <translation id="7167913274352523149"><ph name="HOTSPOT" />,
         <ph name="NETWORK" /></translation>
@@ -1614,7 +1618,6 @@
 <translation id="726276584504105859">বিভক্ত স্ক্রিন ব্যবহার করতে এখানে টেনে আনুন</translation>
 <translation id="7262906531272962081">রিমাইন্ডার তৈরি করুন</translation>
 <translation id="7278787617901301220"><ph name="LAUNCHER_KEY_NAME" /> + backspace</translation>
-<translation id="7282547098317872382">ওভারভিউয়ের ৫টি ধাপের মধ্যে ৩ নম্বর ধাপ। আপনার <ph name="PRODUCT_NAME" />-এ প্রয়োজনীয় সবকিছু করতে অ্যাপ ব্যবহার করুন। আপনি 'লঞ্চার'-এ নিজের অ্যাপ খুঁজে পেতে পারবেন। 'লঞ্চার' বোতামে ফোকাস করতে Alt + Shift + L 'কী' প্রেস করুন।</translation>
 <translation id="7285232777292757180">স্ক্রিনশট নিতে, 'দ্রুত সেটিংস' ফিচারের মধ্যে 'স্ক্রিন ক্যাপচার' বিকল্প ব্যবহার করুন</translation>
 <translation id="7301826272005790482">উইন্ডো সম্পর্কিত সাজেশন বাতিল করুন</translation>
 <translation id="7302889331339392448">লাইভ ক্যাপশন বন্ধ আছে।</translation>
@@ -1796,10 +1799,12 @@
 <translation id="7933084174919150729">Google অ্যাসিস্ট্যান্ট শুধুমাত্র প্রাথমিক প্রোফাইলেই ব্যবহার করা যায়।</translation>
 <translation id="79341161159229895">অ্যাকাউন্টটি <ph name="FIRST_PARENT_EMAIL" /> এবং <ph name="SECOND_PARENT_EMAIL" /> ম্যানেজ করছেন</translation>
 <translation id="793716872548410480">আপনার ক্লিপবোর্ড দেখতে <ph name="SHORTCUT_KEY_NAME" /> + V প্রেস করুন। আপনার কপি করা শেষ ৫টি আইটেম ক্লিপবোর্ডে সেভ করা হয়েছে।</translation>
+<translation id="7942330802915522974"><ph name="TOTAL_STEPS" />টি ধাপের মধ্যে <ph name="STEP" /> নম্বর ধাপ। আপনি লঞ্চার থেকে Files অ্যাপ খুঁজে পাবেন। আপনার লোকাল ফাইল ও Google Drive-এর ফাইল সবকিছু Files অ্যাপ থেকে ম্যানেজ করুন।</translation>
 <translation id="7942349550061667556">লাল</translation>
 <translation id="7943516765291457328">আশেপাশের হটস্পটের জন্য স্ক্যান করতে ব্লুটুথ চালু করুন</translation>
 <translation id="7944023924886109030">আজকের সব ইভেন্ট দেখুন</translation>
 <translation id="7945357288295809525">অ্যাক্সেসিবিলিটি সেটিংস দেখুন, "<ph name="ENABLED_FEATURES" />" চালু করা আছে।</translation>
+<translation id="7946681191253332687">এক্সটেন্ডেড নিরাপত্তা আপডেট উপলভ্য</translation>
 <translation id="7947798320695032612"><ph name="APP_NAME" /> আপনার <ph name="DEVICE_NAME" /> ব্যবহার করতে চায়</translation>
 <translation id="7951630946012935453">ডিম কীবোর্ড</translation>
 <translation id="7953994493035617347">নতুন রেজোলিউশন কনফার্ম করবেন?</translation>
@@ -1911,7 +1916,6 @@
 <translation id="8412677897383510995">ডিসপ্লে সেটিংস দেখুন</translation>
 <translation id="8413272770729657668">রেকর্ডিং শুরু করা হচ্ছে ৩, ২, ১</translation>
 <translation id="8416730306157376817"><ph name="BATTERY_PERCENTAGE" />% (কেস)</translation>
-<translation id="8417951779969083400">ওভারভিউয়ের ৫টি ধাপের মধ্যে ২ নম্বর ধাপ। ওয়াই-ফাই, ব্লুটুথ এবং ভলিউমের মতো প্রায়শই ব্যবহার করা কন্ট্রোল 'দ্রুত সেটিংস'-এ আছে। এছাড়াও স্ক্রিনশট নিতে এখানে যেতে পারবেন। 'দ্রুত সেটিংস' খুলতে Alt + Shift + S 'কী' প্রেস করুন।</translation>
 <translation id="8420205633584771378">সাজেশনটি সরাতে চান?</translation>
 <translation id="8421270167862077762">এই ডিভাইসে <ph name="UNAVAILABLE_APPS" /> উপলভ্য নেই।</translation>
 <translation id="8426708595819210923">শুভ সন্ধ্যা <ph name="GIVEN_NAME" />,</translation>
@@ -2125,12 +2129,14 @@
 <translation id="954052413789300507"><ph name="FILENAME" />-এর জন্য পর্যাপ্ত স্টোরেজ নেই। স্টোরেজ খালি করুন।</translation>
 <translation id="954520015070501466">৩০মিনিট</translation>
 <translation id="956452277966142925">গেম ড্যাশবোর্ডের সেটিংস</translation>
+<translation id="961856697154696964">ব্রাউজ করা ডেটা মুছে দিন</translation>
 <translation id="974545358917229949"><ph name="QUERY" />-এর জন্য <ph name="RESULT_COUNT" />টি ফলাফল দেখানো হচ্ছে</translation>
 <translation id="981011780479609956">শেষ করার কোনও তারিখ নেই</translation>
 <translation id="98120814841227350">ডকুমেন্টের শেষে যান</translation>
 <translation id="987589956647469042">মোবাইল ডেটা চালু রয়েছে</translation>
 <translation id="989374776391122812">ক্যামেরা এবং অডিও নিয়ন্ত্রণ</translation>
 <translation id="990277280839877440">উইন্ডো <ph name="WINDOW_TITILE" /> বন্ধ করা আছে।</translation>
+<translation id="993398562350683614"><ph name="TOTAL_STEPS" />টি ধাপের মধ্যে <ph name="STEP" /> নম্বর ধাপ। আপনার <ph name="PRODUCT_NAME" />-এ প্রয়োজনীয় সবকিছু করতে অ্যাপ ব্যবহার করুন। আপনি লঞ্চারে নিজের অ্যাপ খুঁজে পাবেন। লঞ্চার বোতামে ফোকাস করতে Alt + Shift + L কী প্রেস করুন।</translation>
 <translation id="994354411665877646"><ph name="NETWORK_NAME" />, <ph name="SUBTEXT" /></translation>
 <translation id="996204416024568215">লেটেস্ট ফিচার এবং নিরাপত্তা সংক্রান্ত উন্নতি পান। ব্যাকগ্রাউন্ডে আপডেট চলতে থাকবে।</translation>
 </translationbundle>

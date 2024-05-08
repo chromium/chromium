@@ -11,6 +11,7 @@
 <translation id="1047458377670401304"><ph name="CPU_NAME" /> (<ph name="THREAD_COUNT" /> தொடரிழைகள், <ph name="CPU_MAX_CLOCK_SPEED" />GHz)</translation>
 <translation id="1047773237499189053">புதிய அம்சம் உள்ளது. மேலும் அறிய, மேல்நோக்கிய அம்புக்குறி விசையைப் பயன்படுத்துங்கள்.</translation>
 <translation id="1049663189809099096">பேஸ்ட்டல் மஞ்சள்</translation>
+<translation id="1056898198331236512">எச்சரிக்கை</translation>
 <translation id="1059913517121127803">ஸ்கேன் செய்ய முடியவில்லை</translation>
 <translation id="1062823486781306604"><ph name="COUNT" />ல் <ph name="INDEX" />வது, <ph name="NAME" />.</translation>
 <translation id="1070066693520972135">WEP</translation>
@@ -95,7 +96,6 @@
 <translation id="1478594628797167447">ஸ்கேனர்</translation>
 <translation id="1483493594462132177">அனுப்பு</translation>
 <translation id="1488850966314959671">இயக்கப்பட்ட பிரத்தியேக APNகளைப் பயன்படுத்தி இந்த நெட்வொர்க் உடன் இணைக்க முடியவில்லை. கூடுதல் தகவலுக்கு உங்கள் மொபைல் நிறுவனத்தைத் தொடர்புகொள்ளவும்.</translation>
-<translation id="1491076385728777984"><ph name="DEVICE_NAME" /> இல் நிலைபொருளைப் புதுப்பிக்கிறது</translation>
 <translation id="1499041187027566160">ஒலியளவை அதிகரிக்கும்</translation>
 <translation id="1499900233129743732">இந்தப் பயனரை <ph name="MANAGER" /> நிர்வகிக்கிறது. இது தொலைநிலையிலிருந்து அமைப்புகளை நிர்வகிக்கலாம், அத்துடன் பயனர் செயல்பாட்டையும் கண்காணிக்கலாம்.</translation>
 <translation id="150962533380566081">தவறான PUK.</translation>
@@ -291,7 +291,6 @@
 <translation id="2505327257735685095">தற்போதைய வால்பேப்பர் படத்தை ரெஃப்ரெஷ் செய்யும்</translation>
 <translation id="2512979179176933762">சாளரங்களைக் காட்டுவதற்கான ஐகான்</translation>
 <translation id="2513396635448525189">உள்நுழைவுப் படம்</translation>
-<translation id="2517472476991765520">ஸ்கேன்</translation>
 <translation id="2521835766824839541">முந்தைய டிராக் ஐகான்</translation>
 <translation id="2526590354069164005">டெஸ்க்டாப்</translation>
 <translation id="2529641961800709867">பட்டன் விருப்பங்கள்</translation>
@@ -330,6 +329,7 @@
 <translation id="2744221223678373668">பகிர்ந்தது</translation>
 <translation id="2751739896257479635">EAP 2ஆம் கட்ட அங்கீகரிப்பு</translation>
 <translation id="2754757901767760034">விளக்கு</translation>
+<translation id="2780756493585863768">சமீபத்தில் AI உருவாக்கிய பின்புலங்கள்</translation>
 <translation id="2783010256799387990">சரிபார்க்கப்பட்டது</translation>
 <translation id="2786429550992142861">லினென்</translation>
 <translation id="2787435249130282949">கீபோர்டு ஒளிர்வை அதிகரித்தல்</translation>
@@ -426,6 +426,7 @@
 <translation id="3456078764689556234">அச்சிடப்பட்ட பக்கங்கள்: <ph name="PRINTED_PAGES" />/<ph name="TOTAL_PAGES" />.</translation>
 <translation id="345898999683440380">ஸ்கேன் செய்யப்படும் பக்கம்: <ph name="PAGE_NUM" />. <ph name="PERCENTAGE_VALUE" />% முடிந்தது.</translation>
 <translation id="3459509316159669723">அச்சிடல்</translation>
+<translation id="3462187165860821523"><ph name="DEVICE_NAME" /> ஐப் புதுப்பிக்கிறது</translation>
 <translation id="346423161771747987">மின்னோட்டம்</translation>
 <translation id="346539236881580388">மீண்டும் எடு</translation>
 <translation id="3484914941826596830">நிலைபொருளைப் புதுப்பிக்கும்போது இந்த வெளிப்புறச் சாதனத்தின் இணைப்பைத் துண்டிக்கவோ உங்கள் கம்ப்யூட்டரை ஷட் டவுன் செய்யவோ கூடாது. இந்தச் சாளரத்தைச் சிறிதாக்கிக்கொள்ளலாம். இந்தப் புதுப்பிப்பு நிறைவடைய சில நிமிடங்கள் ஆகலாம். அதுவரை உங்கள் வெளிப்புறச் சாதனத்தில் வேறு எதுவும் செய்ய முடியாமல் போகலாம்.</translation>
@@ -790,6 +791,7 @@
 <translation id="5559898619118303662">சூரிய அஸ்தமனத்தின்போது தானாகவே டார்க் தீமிற்கு மாறும்</translation>
 <translation id="556042886152191864">பட்டன்</translation>
 <translation id="5562551811867441927"><ph name="TERRAIN_COLOR" /> ஷேட்களில் <ph name="TERRAIN_FEATURE" /></translation>
+<translation id="5572169899491758844">ஸ்கேன் செய்தல்</translation>
 <translation id="5578477003638479617">UMTS</translation>
 <translation id="5578519639599103840">மீண்டும் ஸ்கேன் செய்</translation>
 <translation id="5583640892426849032">Backspace</translation>
@@ -879,7 +881,6 @@
 <translation id="6075872808778243331">(Android) HTTP தாமதம்</translation>
 <translation id="6078323886959318429">ஷார்ட்கட்டைச் சேர்</translation>
 <translation id="6091080061796993741">மஞ்சள்</translation>
-<translation id="610371409726072606">Google AI உருவாக்கிய கேமரா பின்புலம்</translation>
 <translation id="6104112872696127344">ஸ்கேன் செய்வது ரத்துசெய்யப்பட்டது</translation>
 <translation id="6106186594183574873">நிறைவுசெய்ய தற்போதைய கடவுச்சொல்லை உள்ளிடவும்</translation>
 <translation id="6108689792487843350">கேட்வேயை அணுக முடியவில்லை</translation>
@@ -1011,7 +1012,6 @@
 <translation id="672609503628871915">புதியதைப் பார்க்கவும்</translation>
 <translation id="6740695858234317715">கிரீம் மற்றும் ஆரஞ்சு</translation>
 <translation id="6741823073189174383">படகு</translation>
-<translation id="674276385369049081">சமீபத்தில் Google AI உருவாக்கிய கேமரா பின்புலங்கள்</translation>
 <translation id="6744441848304920043">அடர் வனம்</translation>
 <translation id="6747035363363040417">மிதமான</translation>
 <translation id="6747215703636344499">பிரிண்ட் வெளியே வரும் டிரே நிரம்பிவிட்டதால் அச்சிட முடியவில்லை</translation>
@@ -1032,6 +1032,7 @@
 <translation id="6871256179359663621">வெளிர் ஊதா</translation>
 <translation id="6889786074662672253">மீண்டும் தொடங்கும்போது இந்த வெளிப்புறச் சாதனத்தின் இணைப்பைத் துண்டிக்கவோ உங்கள் கம்ப்யூட்டரை ஷட் டவுன் செய்யவோ கூடாது. இந்தச் சாளரத்தைச் சிறிதாக்கிக்கொள்ளலாம். இந்தச் செயல்பாடு நிறைவடைய சில நிமிடங்கள் ஆகலாம். அதுவரை உங்கள் வெளிப்புறச் சாதனத்தில் வேறு எதுவும் செய்ய முடியாமல் போகலாம்.</translation>
 <translation id="6900701049656042631">இந்த ஆல்பத்தில் எந்தப் படமும் இல்லை. படங்களைச் சேர்க்க, <ph name="LINK" /> தளத்திற்குச் செல்லவும்</translation>
+<translation id="6902359863093437070">AI மூலம் பின்புலத்தை உருவாக்குங்கள்</translation>
 <translation id="6905163627763043954">பயன்படுத்திப் பாருங்கள்</translation>
 <translation id="6905724422583748843"><ph name="PAGE_NAME" /> பக்கத்திற்குச் செல்லும்</translation>
 <translation id="6910312834584889076">ஸ்கேனரின் கவர் திறந்துள்ளது. கவரை மூடிவிட்டு மீண்டும் முயலவும்.</translation>
@@ -1269,6 +1270,7 @@
 <translation id="8152370627892825"><ph name="DESCRIPTION" />, <ph name="ACCELERATOR_INFO" />.</translation>
 <translation id="8156233298086717232">மேஜிக்கல்</translation>
 <translation id="8162776280680283326">நரிகள்</translation>
+<translation id="8167413449582155132">Google AI உருவாக்கிய பின்புலம்</translation>
 <translation id="8179976553408161302">Enter</translation>
 <translation id="8183975772394450380">கடற்கரை</translation>
 <translation id="8206859287963243715">செல்லுலர்</translation>
@@ -1361,7 +1363,7 @@
 <translation id="8747900814994928677">மாற்றத்தை உறுதிப்படுத்துங்கள்</translation>
 <translation id="8749478549112817787">கேமராவின் பின்புலம்</translation>
 <translation id="8755946156089753497">கோபுரம்</translation>
-<translation id="8756235582947991808">AI மூலம் உருவாக்கும் முறையும் நினைவில் கொள்ள வேண்டிய சில விஷயங்களும்</translation>
+<translation id="8756235582947991808">AI மூலம் உருவாக்குதலும் நினைவில் கொள்ள வேண்டிய சில விஷயங்களும்</translation>
 <translation id="8764414543112028321">WireGuard</translation>
 <translation id="87646919272181953">Google Photos ஆல்பம்</translation>
 <translation id="8775713578693478175">மோடம் APN</translation>

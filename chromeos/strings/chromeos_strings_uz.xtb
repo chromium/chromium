@@ -11,6 +11,7 @@
 <translation id="1047458377670401304"><ph name="CPU_NAME" /> (<ph name="THREAD_COUNT" /> ta oqim, <ph name="CPU_MAX_CLOCK_SPEED" /> GGs)</translation>
 <translation id="1047773237499189053">Yangi funksiya chiqdi, batafsil axborot uchun tepaga strelkani bosing</translation>
 <translation id="1049663189809099096">pastel sariq</translation>
+<translation id="1056898198331236512">Ogohlantirish</translation>
 <translation id="1059913517121127803">Skanerlash ishga tushmadi</translation>
 <translation id="1062823486781306604"><ph name="INDEX" />/<ph name="COUNT" />, <ph name="NAME" />.</translation>
 <translation id="1070066693520972135">WEP</translation>
@@ -28,6 +29,7 @@
 <translation id="1145018782460575098">Tashqi qurilmalar uchun mikrodasturni yangilash oynasi ochiq. <ph name="NUM_UPDATES" /> ta yangilanish chiqdi.</translation>
 <translation id="1145516343487477149">Yordam maqolalari va umumiy Chromebook savollariga javoblar toping</translation>
 <translation id="1154390310959620237">5 tagacha tezkor tugmani moslash mumkin. Yangi tezkor tugma kiritish uchun boshqa birini oʻchiring.</translation>
+<translation id="1155154308031262006">Soʻrov kiriting</translation>
 <translation id="115705039208660697">ananas</translation>
 <translation id="1164939766849482256">Shom manzaralari ekran lavhasi</translation>
 <translation id="1167755866710282443">Tugmalarni moslash uchun menyuni oching. Menyuni surish uchun torting.</translation>
@@ -95,7 +97,6 @@
 <translation id="1478594628797167447">Skaner</translation>
 <translation id="1483493594462132177">Yuborish</translation>
 <translation id="1488850966314959671">Yoqilgan shaxsiy APNlar orqali bu tarmoqqa ulanmadi. Batafsil axborot olish uchun mobil aloqa operatoriga bogʻlaning.</translation>
-<translation id="1491076385728777984"><ph name="DEVICE_NAME" /> mikrodasturi yangilanmoqda</translation>
 <translation id="1499041187027566160">ovozni ko‘tarish</translation>
 <translation id="1499900233129743732"><ph name="MANAGER" /> bu foydalanuvchi faoliyatini masofadan kuzatishi va boshqarishi mumkin.</translation>
 <translation id="150962533380566081">PUK kod xato.</translation>
@@ -291,7 +292,6 @@
 <translation id="2505327257735685095">Joriy fon rasmini yangilash</translation>
 <translation id="2512979179176933762">oynalarni koʻrsatish</translation>
 <translation id="2513396635448525189">Kirish ekranidagi rasm</translation>
-<translation id="2517472476991765520">Qidiruv</translation>
 <translation id="2521835766824839541">avvalgi trek</translation>
 <translation id="2526590354069164005">Ish soli</translation>
 <translation id="2529641961800709867">Tugma parametrlari</translation>
@@ -330,6 +330,7 @@
 <translation id="2744221223678373668">Ulashilgan</translation>
 <translation id="2751739896257479635">EAP autentifikatsiya 2-bosqichi</translation>
 <translation id="2754757901767760034">shamchiroq</translation>
+<translation id="2780756493585863768">Google AI yaratgan oxirgin fon rasmlari</translation>
 <translation id="2783010256799387990">TUGADI</translation>
 <translation id="2786429550992142861">zigʻir</translation>
 <translation id="2787435249130282949">yorqinroq klaviatura</translation>
@@ -426,6 +427,7 @@
 <translation id="3456078764689556234">Sahifa chop etildi: <ph name="PRINTED_PAGES" /> / <ph name="TOTAL_PAGES" />.</translation>
 <translation id="345898999683440380"><ph name="PAGE_NUM" /> ta sahifa skanerlandi. <ph name="PERCENTAGE_VALUE" />% tugallandi.</translation>
 <translation id="3459509316159669723">Chop etish</translation>
+<translation id="3462187165860821523"><ph name="DEVICE_NAME" /> yangilanmoqda</translation>
 <translation id="346423161771747987">Ayni vaqtda</translation>
 <translation id="346539236881580388">Qaytadan</translation>
 <translation id="3484914941826596830">Mikrodastur yangilanayotganda tashqi qurilmani uzmay va kompyuterni oʻchirmay turing. Bu oynani yigʻish mumkin. Bu yangilanish bir necha daqiqa vaqt oladi va bu vaqtda tashqi qurilma ishlamay turishi mumkin.</translation>
@@ -790,6 +792,7 @@
 <translation id="5559898619118303662">Quyosh botganida tungi mavzuga avtomatik almashish</translation>
 <translation id="556042886152191864">Tugma</translation>
 <translation id="5562551811867441927"><ph name="TERRAIN_COLOR" /> soyadagi <ph name="TERRAIN_FEATURE" /></translation>
+<translation id="5572169899491758844">Skanerlash</translation>
 <translation id="5578477003638479617">UMTS</translation>
 <translation id="5578519639599103840">Qayta skanerlash</translation>
 <translation id="5583640892426849032">Backspace</translation>
@@ -879,7 +882,6 @@
 <translation id="6075872808778243331">(Android) HTTP kechikichi</translation>
 <translation id="6078323886959318429">Yorliq bilan nomlash</translation>
 <translation id="6091080061796993741">sariq</translation>
-<translation id="610371409726072606">Kamera orqali Googel AI yaratgan fon</translation>
 <translation id="6104112872696127344">Skanlash amali bekor qilindi</translation>
 <translation id="6106186594183574873">Yakunlash uchun eski parolni kiriting</translation>
 <translation id="6108689792487843350">Shlyuz bilan aloqa yoʻq</translation>
@@ -906,6 +908,7 @@
 <translation id="6205145102504628069">Bulutlar</translation>
 <translation id="6213737986933151570">CDMA1XRTT</translation>
 <translation id="6223752125779001553">Hech qanday skaner mavjud emas</translation>
+<translation id="6231648282154119906">Kuchaytirilgan himoya tanlangani sababli Google Saytlarni xavfsiz kezish tizimi shubhali fayllarni avtomatik tekshiradi</translation>
 <translation id="6232017090690406397">Batareya</translation>
 <translation id="6234024205316847054">Konturlarni chiqarish</translation>
 <translation id="6235460611964961764">Trafik sarfini oddiy usulda asliga qaytarish</translation>
@@ -1011,7 +1014,6 @@
 <translation id="672609503628871915">Nimalar yangiligini ko‘ring</translation>
 <translation id="6740695858234317715">krem va apelsin</translation>
 <translation id="6741823073189174383">qayiq</translation>
-<translation id="674276385369049081">Google AI kamera orqali yaratgan oxirgi fon rasmlari</translation>
 <translation id="6744441848304920043">changalzor</translation>
 <translation id="6747035363363040417">neytral</translation>
 <translation id="6747215703636344499">Toʻxtatildi – Boʻsh joy qolmadi</translation>
@@ -1032,6 +1034,7 @@
 <translation id="6871256179359663621">och siyohrang</translation>
 <translation id="6889786074662672253">Oʻchib yonayotganda tashqi qurilmani uzmay va kompyuterni oʻchirmay turing. Bu oynani yigʻish mumkin. Bu bir necha daqiqa vaqt oladi va bu vaqtda tashqi qurilma ishlamay turishi mumkin.</translation>
 <translation id="6900701049656042631">Bu albomda hech qanday rasm mavjud emas. Suratlar kiritish uchun <ph name="LINK" /> sahifasini oching.</translation>
+<translation id="6902359863093437070">AI yordamida fon rasmi yaratish</translation>
 <translation id="6905163627763043954">Sinab ko‘rish</translation>
 <translation id="6905724422583748843"><ph name="PAGE_NAME" /> sahifasiga qaytish</translation>
 <translation id="6910312834584889076">Skaner qopqogʻi yopilmagan. Qopqogʻini toping va qaytadan urining.</translation>
@@ -1269,6 +1272,7 @@
 <translation id="8152370627892825"><ph name="DESCRIPTION" />, <ph name="ACCELERATOR_INFO" />.</translation>
 <translation id="8156233298086717232">sehrli</translation>
 <translation id="8162776280680283326">tulkilar</translation>
+<translation id="8167413449582155132">Google AI yaratgan fon rasmi</translation>
 <translation id="8179976553408161302">Enter</translation>
 <translation id="8183975772394450380">sohil</translation>
 <translation id="8206859287963243715">Uyali</translation>

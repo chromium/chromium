@@ -11,6 +11,7 @@
 <translation id="1047458377670401304"><ph name="CPU_NAME" /> (<ph name="THREAD_COUNT" /> hari, <ph name="CPU_MAX_CLOCK_SPEED" /> GHz)</translation>
 <translation id="1047773237499189053">Eginbide berri bat eskuragarri dago. Erabili gora egiteko gezi-tekla informazio gehiago lortzeko.</translation>
 <translation id="1049663189809099096">hori argi</translation>
+<translation id="1056898198331236512">Abisua</translation>
 <translation id="1059913517121127803">Ezin izan da hasi eskaneatzen</translation>
 <translation id="1062823486781306604"><ph name="COUNT" /> elementutatik <ph name="INDEX" />garrena, <ph name="NAME" />.</translation>
 <translation id="1070066693520972135">WEP</translation>
@@ -95,7 +96,6 @@
 <translation id="1478594628797167447">Eskanerra</translation>
 <translation id="1483493594462132177">Bidali</translation>
 <translation id="1488850966314959671">Ezin da konektatu sare horretara gaitutako APN pertsonalizatuen bidez. Informazio gehiago lortzeko, jarri telefonia mugikorreko operadorearekin harremanetan.</translation>
-<translation id="1491076385728777984"><ph name="DEVICE_NAME" /> gailuaren firmwarea eguneratzen</translation>
 <translation id="1499041187027566160">igo bolumena</translation>
 <translation id="1499900233129743732"><ph name="MANAGER" /> domeinuak kudeatzen du erabiltzaile hau, eta baliteke urrunetik haren ezarpenak kudeatzea eta jarduerak gainbegiratzea.</translation>
 <translation id="150962533380566081">PUK kodeak ez du balio.</translation>
@@ -291,7 +291,6 @@
 <translation id="2505327257735685095">Freskatu oraingo horma-paperaren irudia</translation>
 <translation id="2512979179176933762">erakutsi leihoak</translation>
 <translation id="2513396635448525189">Saio-hasierako irudia</translation>
-<translation id="2517472476991765520">Bilatu</translation>
 <translation id="2521835766824839541">aurreko pista</translation>
 <translation id="2526590354069164005">Ordenagailua</translation>
 <translation id="2529641961800709867">Botoiaren aukerak</translation>
@@ -330,6 +329,7 @@
 <translation id="2744221223678373668">Partekatutakoak</translation>
 <translation id="2751739896257479635">EAP 2. fasearen autentifikazioa</translation>
 <translation id="2754757901767760034">Lanpara</translation>
+<translation id="2780756493585863768">Google-ren AA bidez azkenaldian sortutako atzeko planoak</translation>
 <translation id="2783010256799387990">GAINDITUTA</translation>
 <translation id="2786429550992142861">lihoa</translation>
 <translation id="2787435249130282949">teklatu argiagoa</translation>
@@ -426,6 +426,7 @@
 <translation id="3456078764689556234"><ph name="PRINTED_PAGES" />/<ph name="TOTAL_PAGES" /> orria inprimatu da.</translation>
 <translation id="345898999683440380"><ph name="PAGE_NUM" />garren orria eskaneatzen. % <ph name="PERCENTAGE_VALUE" /> osatuta.</translation>
 <translation id="3459509316159669723">Inprimaketa</translation>
+<translation id="3462187165860821523"><ph name="DEVICE_NAME" /> gailua eguneratzen</translation>
 <translation id="346423161771747987">Oraingoa</translation>
 <translation id="346539236881580388">Atera berriro</translation>
 <translation id="3484914941826596830">Firmwarea eguneratu bitartean, ez deskonektatu kanpoko gailua edo ez itzali ordenagailua. Leihoa minimiza dezakezu. Agian minutu batzuk beharko dira eguneratzea instalatzeko, eta baliteke kanpoko gailuak denbora tarte horretan ez funtzionatzea.</translation>
@@ -573,7 +574,7 @@
 <translation id="4297501883039923494">Geldituta: errore ezezaguna</translation>
 <translation id="4300073214558989"><ph name="IMAGE_COUNT" /> irudi</translation>
 <translation id="430786093962686457">gaza</translation>
-<translation id="4310735698903592804">Google-ren AAk sortutako azken horma-paperak</translation>
+<translation id="4310735698903592804">Google-ren AAk sortutako azkenaldiko horma-paperak</translation>
 <translation id="4320904097188876154">neon-arrosa koloreko</translation>
 <translation id="4333390807948134856"><ph name="KEY_NAME" /> sakatuta dago</translation>
 <translation id="4354430579665871434">tekla</translation>
@@ -790,6 +791,7 @@
 <translation id="5559898619118303662">Aldatu automatikoki gai ilunera ilunabarrean</translation>
 <translation id="556042886152191864">Botoia</translation>
 <translation id="5562551811867441927"><ph name="TERRAIN_COLOR" /> koloreko <ph name="TERRAIN_FEATURE" /></translation>
+<translation id="5572169899491758844">Eskaneatu</translation>
 <translation id="5578477003638479617">UMTS</translation>
 <translation id="5578519639599103840">Eskaneatu berriro</translation>
 <translation id="5583640892426849032">Atzera tekla</translation>
@@ -879,7 +881,6 @@
 <translation id="6075872808778243331">HTTP eskaeren latentzia (Android)</translation>
 <translation id="6078323886959318429">Gehitu lasterbidea</translation>
 <translation id="6091080061796993741">kolore horiko</translation>
-<translation id="610371409726072606">Kameraren atzeko planoa, Google-ren AA bidezkoa</translation>
 <translation id="6104112872696127344">Bertan behera utzi da eskaneatzeko prozesua</translation>
 <translation id="6106186594183574873">Amaitzeko, idatzi pasahitz zaharra</translation>
 <translation id="6108689792487843350">Ezin da konektatu atebidera</translation>
@@ -1011,7 +1012,6 @@
 <translation id="672609503628871915">Ikusi azken berrikuntzak</translation>
 <translation id="6740695858234317715">krema eta laranja</translation>
 <translation id="6741823073189174383">Txalupa</translation>
-<translation id="674276385369049081">Kameraren azkenaldiko atzeko planoak, Google-ren AA bidezkoak</translation>
 <translation id="6744441848304920043">Oihan</translation>
 <translation id="6747035363363040417">neutro</translation>
 <translation id="6747215703636344499">Geldituta: irteera-erretilua beteta dago</translation>
@@ -1032,6 +1032,7 @@
 <translation id="6871256179359663621">more argi</translation>
 <translation id="6889786074662672253">Gailua eguneratu bitartean, ez deskonektatu kanpoko gailua edo ez itzali ordenagailua. Leihoa minimiza dezakezu. Agian minutu batzuk beharko dira eguneratzea instalatzeko, eta baliteke kanpoko gailuak denbora tarte horretan ez funtzionatzea.</translation>
 <translation id="6900701049656042631">Ez dago argazkirik albumean. Argazkiak gehitzeko, joan <ph name="LINK" /> helbidera.</translation>
+<translation id="6902359863093437070">Sortu atzeko planoa AA bidez</translation>
 <translation id="6905163627763043954">Probatu</translation>
 <translation id="6905724422583748843">Itzuli <ph name="PAGE_NAME" /> orrira</translation>
 <translation id="6910312834584889076">Eskanerraren estalkia irekita dago. Itxi ezazu eta saiatu berriro.</translation>
@@ -1269,6 +1270,7 @@
 <translation id="8152370627892825"><ph name="DESCRIPTION" />, <ph name="ACCELERATOR_INFO" />.</translation>
 <translation id="8156233298086717232">magiko</translation>
 <translation id="8162776280680283326">azeriak</translation>
+<translation id="8167413449582155132">Google-ren AA bidezko atzeko planoa</translation>
 <translation id="8179976553408161302">Sartu</translation>
 <translation id="8183975772394450380">Hondartza</translation>
 <translation id="8206859287963243715">Konexio mugikorra</translation>

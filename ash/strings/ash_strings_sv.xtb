@@ -166,6 +166,7 @@ Det här är några saker du kan testa för att komma igång.</translation>
 <translation id="1586324912145647027">Öppna skrivbord 1 till 8</translation>
 <translation id="158838227375272121">Webbplats för Google Classroom</translation>
 <translation id="1589090746204042747">Få tillgång till all aktivitet i sessionen</translation>
+<translation id="1597880963776148053">Rundtur, steg <ph name="STEP" /> av <ph name="TOTAL_STEPS" />. Dina fästa och öppna appar finns på hyllan längst ned på skärmen. Tryck på Alt + Skift + L och sedan på Tabb för att fokusera på objekt på hyllan.</translation>
 <translation id="1602874809115667351"><ph name="LAUNCHER_KEY_NAME" />+ nedåtpil</translation>
 <translation id="1604857178818051494">Pausa media</translation>
 <translation id="1607312127821884567">Ignorera att ställa in visning av appar på telefonen</translation>
@@ -303,6 +304,7 @@ Det här är några saker du kan testa för att komma igång.</translation>
 <translation id="2257486738914982088">Det gick inte att ladda ned <ph name="FILENAME" /></translation>
 <translation id="2258734398699965611">Föreslagna filer</translation>
 <translation id="2268130516524549846">Bluetooth inaktiverat</translation>
+<translation id="2268731132310444948">Rundtur, steg <ph name="STEP" /> av <ph name="TOTAL_STEPS" />. När Appstartaren har aktiverats visas ett utökat sökfält. Du kan börja skriva för att söka efter dina filer, appar med mera. Du kan även få svar på frågor om din <ph name="PRODUCT_NAME" />.</translation>
 <translation id="2268813581635650749">Logga ut alla</translation>
 <translation id="2276987123919776440">15 min</translation>
 <translation id="2277103315734023688">Sök framåt</translation>
@@ -397,6 +399,7 @@ Det här är några saker du kan testa för att komma igång.</translation>
 <translation id="2607678425161541573">Onlineinloggning krävs</translation>
 <translation id="2612072250312279703">aktivitetskontroll</translation>
 <translation id="2612614436418177118">Flytta en appikon i rutnätet för appar</translation>
+<translation id="2619326010008283367">Rundtur, steg <ph name="STEP" /> av <ph name="TOTAL_STEPS" />. Du hittar enhetsinställningarna i Appstartaren. Testa att anpassa <ph name="PRODUCT_NAME" /> i inställningarna som att ändra bakgrund eller ställa in en skärmsläckare.</translation>
 <translation id="2620016719323068571">Sök efter <ph name="CATEGORY" />, filer, appar med mera …</translation>
 <translation id="2620436844016719705">System</translation>
 <translation id="2620900772667816510">Bluetooth Super Resolution</translation>
@@ -819,7 +822,6 @@ Vissa funktioner är begränsade för att förlänga batteritiden.</translation>
 <translation id="4209973997261364186">wifi är aktiverat</translation>
 <translation id="4212472694152630271">Byt till pinkod</translation>
 <translation id="4215497585250573029">VPN-inställningar</translation>
-<translation id="4215548513524864822">Rundtur, steg 5 av 5. Du hittar enhetsinställningarna i Appstartaren. Testa att anpassa <ph name="PRODUCT_NAME" /> i inställningarna som att ändra bakgrund eller ställa in en skärmsläckare.</translation>
 <translation id="4217571870635786043">Diktering</translation>
 <translation id="4221957499226645091"><ph name="APP_NAME" />, installerad app, pausad</translation>
 <translation id="4228078597006700451">Kontrollerna har inte ställts in</translation>
@@ -946,12 +948,12 @@ Vissa funktioner är begränsade för att förlänga batteritiden.</translation>
 <translation id="468293128311738995">Appar från telefonen</translation>
 <translation id="4690510401873698237">Hyllan längst ned</translation>
 <translation id="4696813013609194136">Lås upp enheten med föräldrakod</translation>
-<translation id="469693290987463983">Rundtur, steg 1 av 5. Dina fästa och öppna appar finns på hyllan längst ned på skärmen. Tryck på Alt + Skift + L och sedan på Tabb för att fokusera på objekt på hyllan.</translation>
 <translation id="4702647871202761252">Integritetsskärmen är inaktiverad</translation>
 <translation id="4706121060329443414">Ett nytt nedladdningsförsök görs senare. Tills vidare skickas tal till Google för bearbetning.</translation>
 <translation id="470644585772471629">Inverterade färger</translation>
 <translation id="4708065238214351979">Gör tangentbordets belysning starkare</translation>
 <translation id="4717575069099566988">USB-C-kabeln du använder har inte stöd för USB4. Enhetens prestanda kan försämras.</translation>
+<translation id="4724328513667182700">Sex tips för att komma igång med <ph name="PRODUCT_NAME" /></translation>
 <translation id="4730374152663651037">OFTA ANVÄNDA</translation>
 <translation id="4731797938093519117">Föräldraåtkomst</translation>
 <translation id="4733161265940833579"><ph name="BATTERY_PERCENTAGE" /> % (vänster)</translation>
@@ -1027,6 +1029,7 @@ Vissa funktioner är begränsade för att förlänga batteritiden.</translation>
 <translation id="4964188651935955085">När du inaktiverar Bluetooth kopplas den här externa enheten från din <ph name="DEVICE_TYPE" />:</translation>
 <translation id="4966431234408005599">Höj volymen</translation>
 <translation id="4969092041573468113"><ph name="HOURS" /> tim. <ph name="MINUTES" /> min. <ph name="SECONDS" /> sek.</translation>
+<translation id="496999337731226334">Rundtur, steg <ph name="STEP" /> av <ph name="TOTAL_STEPS" />. I Snabbinställningar hittar ofta använda inställningar som wifi, Bluetooth och volym. Här kan du även ta en skärmbild. Tryck på Alt + Skift + S för att öppna Snabbinställningar.</translation>
 <translation id="4975771730019223894">Appmärkning</translation>
 <translation id="4977493774330778463"><ph name="NUM_IMPORTANT_NOTIFICATION" />:
         <ph name="NOTIFICATION_1" />,
@@ -1144,6 +1147,7 @@ Inga enheter är anslutna.</translation>
 <translation id="540713187982329711">Aktivera eller inaktivera surfzon. Surfzonen är aktiverad. Ingen enhet är ansluten.</translation>
 <translation id="5413656666631274079">Inställningssida</translation>
 <translation id="5414198321558177633">Uppdaterar listan över profiler. Det kan ta några minuter.</translation>
+<translation id="5417965108047245734">Ta en snabbtitt på hur du navigerar på <ph name="PRODUCT_NAME" /></translation>
 <translation id="5426063383988017631">Inställningsmenyn har stängts</translation>
 <translation id="5428899915242071344">Börja markera</translation>
 <translation id="5429993543155113935">Inkognitofönster stöds inte för närvarande</translation>
@@ -1440,6 +1444,7 @@ Inga enheter är anslutna.</translation>
 <translation id="6555373427270923730">Ange en webbadress i adressfältet och tryck sedan på <ph name="MODIFIER" /><ph name="KEY" /></translation>
 <translation id="655633303491376835"><ph name="APP_NAME" />
 Nyligen installerad</translation>
+<translation id="6559158502366839560">Utforska fler appar och spel</translation>
 <translation id="6559976592393364813">Fråga administratören</translation>
 <translation id="6565007273808762236">eSIM-anslutning tillgänglig</translation>
 <translation id="6570831796530454248">{0,plural, =1{Uppdatera enheten inom en timme}other{Uppdatera enheten inom # timmar}}</translation>
@@ -1524,7 +1529,6 @@ Nyligen installerad</translation>
 <translation id="6874854809828346832">Visa information om surfzon. Surfzonen är aktiverad.</translation>
 <translation id="6878400149835617132">Kortkommandot har inaktiverats.</translation>
 <translation id="6878701771800702153">{NUM_APPS,plural, =1{1 app}other{# appar}}</translation>
-<translation id="6878787305374738418">Rundtur, steg 4 av 5. När Appstartaren har aktiverats visas ett utökat sökfält. Du kan börja skriva för att söka efter dina filer, appar med mera. Du kan även få svar på frågor om din <ph name="PRODUCT_NAME" />.</translation>
 <translation id="6883768636838842873">Kortkommandon, tips om hur du använder enheten med mera</translation>
 <translation id="6884665277231944629">Återgå till i dag</translation>
 <translation id="6886172995547742638">Prestandan på <ph name="DEVICE_TYPE" /> kan försämras. Använd en certifierad USB-C-nätadapter för <ph name="PREFERRED_MINIMUM_POWER" /> W eller mer.</translation>
@@ -1593,6 +1597,7 @@ Nyligen installerad</translation>
 <translation id="7143207342074048698">Ansluter</translation>
 <translation id="7144942256906679589">Batteristatus</translation>
 <translation id="7145639536026937076">Batterinivån är på <ph name="PERCENTAGE" /> % och batteriet laddas. Batterisparläget är aktiverat.</translation>
+<translation id="7149149900052329230">Hantera dina lokala filer och Google Drive-filer i appen Filer.</translation>
 <translation id="7165278925115064263">Alt + Skift + K</translation>
 <translation id="7167913274352523149"><ph name="HOTSPOT" />,
         <ph name="NETWORK" /></translation>
@@ -1613,7 +1618,6 @@ Nyligen installerad</translation>
 <translation id="726276584504105859">Dra hit för att dela upp skärmen</translation>
 <translation id="7262906531272962081">Skapa påminnelse</translation>
 <translation id="7278787617901301220"><ph name="LAUNCHER_KEY_NAME" />+ backsteg</translation>
-<translation id="7282547098317872382">Rundtur, steg 3 av 5. Använd appar för att göra allt du behöver på din <ph name="PRODUCT_NAME" />. Du hittar dina appar i Appstartaren. Tryck på Alt + Skift + L för att fokusera på knappen för Appstartaren.</translation>
 <translation id="7285232777292757180">Ta skärmbilder med skärmbildsverktyget i snabbinställningarna</translation>
 <translation id="7301826272005790482">Stäng fönsterförslag</translation>
 <translation id="7302889331339392448">Live Caption är inaktiverat.</translation>
@@ -1795,10 +1799,12 @@ Stäng av enheten genom att hålla av/på-knappen nedtryckt igen.</translation>
 <translation id="7933084174919150729">Endast den primära profilen har tillgång till Google Assistent.</translation>
 <translation id="79341161159229895">Kontot hanteras av <ph name="FIRST_PARENT_EMAIL" /> och <ph name="SECOND_PARENT_EMAIL" /></translation>
 <translation id="793716872548410480">Tryck på <ph name="SHORTCUT_KEY_NAME" /> + V för att visa urklipp De senaste fem objekten du har kopierat sparas i urklipp.</translation>
+<translation id="7942330802915522974">Rundtur, steg <ph name="STEP" /> av <ph name="TOTAL_STEPS" />. Du hittar appen Filer i Appstartaren. Hantera dina lokala filer och Google Drive-filer i appen Filer.</translation>
 <translation id="7942349550061667556">Röd</translation>
 <translation id="7943516765291457328">Aktivera Bluetooth om du vill söka efter surfzoner i närheten</translation>
 <translation id="7944023924886109030">Visa alla dagens händelser</translation>
 <translation id="7945357288295809525">Visa tillgänglighetsinställningar. <ph name="ENABLED_FEATURES" /> har aktiverats.</translation>
+<translation id="7946681191253332687">Utökade säkerhetsuppdateringar är tillgängliga</translation>
 <translation id="7947798320695032612"><ph name="APP_NAME" /> vill använda din <ph name="DEVICE_NAME" /></translation>
 <translation id="7951630946012935453">Gör tangentbordets belysning svagare</translation>
 <translation id="7953994493035617347">Vill du bekräfta den nya upplösningen?</translation>
@@ -1910,7 +1916,6 @@ Stäng av enheten genom att hålla av/på-knappen nedtryckt igen.</translation>
 <translation id="8412677897383510995">Visa skärminställningar</translation>
 <translation id="8413272770729657668">Inspelningen startar om 3, 2, 1</translation>
 <translation id="8416730306157376817"><ph name="BATTERY_PERCENTAGE" /> % (fodral)</translation>
-<translation id="8417951779969083400">Rundtur, steg 2 av 5. I Snabbinställningar hittar ofta använda inställningar som wifi, Bluetooth och volym. Här kan du även ta en skärmbild. Tryck på Alt + Skift + S för att öppna Snabbinställningar.</translation>
 <translation id="8420205633584771378">Ska förslaget tas bort?</translation>
 <translation id="8421270167862077762"><ph name="UNAVAILABLE_APPS" /> finns inte på enheten.</translation>
 <translation id="8426708595819210923">Hej <ph name="GIVEN_NAME" />!</translation>
@@ -2124,12 +2129,14 @@ Stäng av enheten genom att hålla av/på-knappen nedtryckt igen.</translation>
 <translation id="954052413789300507">Det finns inte tillräckligt med utrymme för <ph name="FILENAME" />. Frigör utrymme.</translation>
 <translation id="954520015070501466">30 min</translation>
 <translation id="956452277966142925">Inställningar för Spelöversikt</translation>
+<translation id="961856697154696964">Radera webbinformation</translation>
 <translation id="974545358917229949"><ph name="RESULT_COUNT" /> resultat visas för <ph name="QUERY" /></translation>
 <translation id="981011780479609956">Inget inlämningsdatum</translation>
 <translation id="98120814841227350">Gå till slutet av dokumentet</translation>
 <translation id="987589956647469042">Mobildata har aktiverats</translation>
 <translation id="989374776391122812">Kamera- och ljudkontroller</translation>
 <translation id="990277280839877440">Fönstret <ph name="WINDOW_TITILE" /> har stängts.</translation>
+<translation id="993398562350683614">Rundtur, steg <ph name="STEP" /> av <ph name="TOTAL_STEPS" />. Använd appar för att göra allt du behöver på din <ph name="PRODUCT_NAME" />. Du hittar dina appar i Appstartaren. Tryck på Alt + Skift + L för att fokusera på knappen för Appstartaren.</translation>
 <translation id="994354411665877646"><ph name="NETWORK_NAME" />, <ph name="SUBTEXT" /></translation>
 <translation id="996204416024568215">Få de senaste funktionerna och säkerhetsförbättringarna. Uppdateringar görs i bakgrunden.</translation>
 </translationbundle>

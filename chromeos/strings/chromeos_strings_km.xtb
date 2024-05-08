@@ -11,6 +11,7 @@
 <translation id="1047458377670401304"><ph name="CPU_NAME" /> (កម្រងសារ <ph name="THREAD_COUNT" />, <ph name="CPU_MAX_CLOCK_SPEED" />GHz)</translation>
 <translation id="1047773237499189053">មានមុខងារថ្មី សូមប្រើគ្រាប់ចុចព្រួញឡើងលើ ដើម្បីស្វែងយល់បន្ថែម។</translation>
 <translation id="1049663189809099096">លឿង​ប្រឿងៗ</translation>
+<translation id="1056898198331236512">ការព្រមាន</translation>
 <translation id="1059913517121127803">មិនអាច​ចាប់ផ្ដើម​ស្កេនបានទេ</translation>
 <translation id="1062823486781306604"><ph name="INDEX" /> នៃ <ph name="COUNT" />, <ph name="NAME" />។</translation>
 <translation id="1070066693520972135">WEP</translation>
@@ -28,6 +29,7 @@
 <translation id="1145018782460575098">វិនដូដំឡើងកំណែកម្មវិធីបង្កប់សម្រាប់ឧបករណ៍ខាងក្រៅត្រូវបានបើក។ មានកំណែថ្មី <ph name="NUM_UPDATES" />។</translation>
 <translation id="1145516343487477149">រក​អត្ថបទ​ជំនួយ និង​ចម្លើយ​ចំពោះ​សំណួរ Chromebook ទូទៅ</translation>
 <translation id="1154390310959620237">អ្នកអាច​ប្ដូរផ្លូវកាត់​បានតែ 5 ប៉ុណ្ណោះតាមបំណង។ លុបផ្លូវកាត់​ណាមួយ ដើម្បីបញ្ចូល​ផ្លូវកាត់ថ្មី។</translation>
+<translation id="1155154308031262006">បញ្ចូល​សារតម្រុយ</translation>
 <translation id="115705039208660697">ម្នាស់</translation>
 <translation id="1164939766849482256">ធាតុរក្សាអេក្រង់ដែលបង្ហាញពេលព្រលឹម​ដល់​ព្រលប់</translation>
 <translation id="1167755866710282443">បើក​ម៉ឺនុយ​ ដើម្បី​ប្ដូរ​គ្រាប់ចុច​តាមបំណង។ អូស​ម៉ឺនុយ ដើម្បី​ផ្លាស់ទី។</translation>
@@ -95,7 +97,6 @@
 <translation id="1478594628797167447">ម៉ាស៊ីនស្កេន</translation>
 <translation id="1483493594462132177">ផ្ញើ</translation>
 <translation id="1488850966314959671">មិនអាច​ភ្ជាប់ទៅ​បណ្ដាញនេះ ដោយប្រើ APN ផ្ទាល់ខ្លួន​ដែលបានបើកទេ។ សូម​ទាក់ទង​ទៅក្រុមហ៊ុន​សេវាទូរសព្ទចល័ត​របស់​អ្នក ដើម្បីទទួល​បាន​ព័ត៌មាន​បន្ថែម។</translation>
-<translation id="1491076385728777984">កំពុងដំឡើងកំណែកម្មវិធី​បង្កប់នៅលើ <ph name="DEVICE_NAME" /></translation>
 <translation id="1499041187027566160">បង្កើនសម្លេង</translation>
 <translation id="1499900233129743732"><ph name="MANAGER" /> គ្រប់គ្រង​អ្នកប្រើប្រាស់នេះ និង​អាចតាមដាន​សកម្មភាពអ្នកប្រើប្រាស់ និង​គ្រប់គ្រង​ការកំណត់ពីចម្ងាយបាន។</translation>
 <translation id="150962533380566081">PUK មិនត្រឹមត្រូវ។</translation>
@@ -291,7 +292,6 @@
 <translation id="2505327257735685095">ផ្ទុក​ផ្ទាំងរូបភាព​បច្ចុប្បន្ន​ឡើងវិញ</translation>
 <translation id="2512979179176933762">បង្ហាញ​វិនដូ</translation>
 <translation id="2513396635448525189">រូបភាពចូលគណនី</translation>
-<translation id="2517472476991765520">ស្កេន</translation>
 <translation id="2521835766824839541">ចម្រៀង​មុន</translation>
 <translation id="2526590354069164005">ដេស៍ថប</translation>
 <translation id="2529641961800709867">ជម្រើសប៊ូតុង</translation>
@@ -330,6 +330,7 @@
 <translation id="2744221223678373668">បានចែករំលែក</translation>
 <translation id="2751739896257479635">ការផ្ទៀងផ្ទាត់ EAP ដំណាក់កាលទី 2</translation>
 <translation id="2754757901767760034">អំពូល​ភ្លើង</translation>
+<translation id="2780756493585863768">ផ្ទៃខាងក្រោយ​ថ្មីៗ​ដែល​ដំណើរការដោយ Google AI</translation>
 <translation id="2783010256799387990">ជាប់</translation>
 <translation id="2786429550992142861">លីនីន</translation>
 <translation id="2787435249130282949">ក្ដារចុចកាន់តែភ្លឺ</translation>
@@ -426,6 +427,7 @@
 <translation id="3456078764689556234">បានបោះពុម្ព​ទំព័រទី <ph name="PRINTED_PAGES" /> ក្នុងចំណោម <ph name="TOTAL_PAGES" />។</translation>
 <translation id="345898999683440380">កំពុង​ស្កេនទំព័រទី <ph name="PAGE_NUM" />។ បានបញ្ចប់ <ph name="PERCENTAGE_VALUE" />%។</translation>
 <translation id="3459509316159669723">កំពុងបោះពុម្ព</translation>
+<translation id="3462187165860821523">កំពុង​ដំឡើងកំណែ <ph name="DEVICE_NAME" /></translation>
 <translation id="346423161771747987">បច្ចុប្បន្ន</translation>
 <translation id="346539236881580388">ថតឡើងវិញ</translation>
 <translation id="3484914941826596830">សូមកុំដកឧបករណ៍ខាងក្រៅនេះ ឬបិទកុំព្យូទ័ររបស់អ្នក ពេលកំពុងដំឡើងកំណែកម្មវិធី​បង្កប់។ អ្នកអាចបង្រួមវិនដូនេះបាន។ ការដំឡើងកំណែនេះអាចចំណាយពេលពីរបីនាទី ហើយឧបករណ៍ខាងក្រៅរបស់អ្នកអាចមិនដំណើរការនៅអំឡុងពេលនេះទេ។</translation>
@@ -790,6 +792,7 @@
 <translation id="5559898619118303662">ប្ដូរទៅ​ជាទម្រង់រចនាងងឹត​នៅពេល​ថ្ងៃលិច​ដោយស្វ័យប្រវត្តិ</translation>
 <translation id="556042886152191864">ប៊ូតុង</translation>
 <translation id="5562551811867441927"><ph name="TERRAIN_FEATURE" />ពណ៌<ph name="TERRAIN_COLOR" /></translation>
+<translation id="5572169899491758844">ស្កេន</translation>
 <translation id="5578477003638479617">UMTS</translation>
 <translation id="5578519639599103840">ស្កេន​ឡើងវិញ</translation>
 <translation id="5583640892426849032">Backspace</translation>
@@ -879,7 +882,6 @@
 <translation id="6075872808778243331">(Android) ការពន្យារ HTTP</translation>
 <translation id="6078323886959318429">បន្ថែម​ផ្លូវកាត់</translation>
 <translation id="6091080061796993741">លឿង</translation>
-<translation id="610371409726072606">ផ្ទៃខាងក្រោយ​កាមេរ៉ា​ដែលដំណើរការដោយ Google AI</translation>
 <translation id="6104112872696127344">បានបោះបង់ការស្កេនហើយ</translation>
 <translation id="6106186594183574873">ដើម្បី​បញ្ចប់ សូម​បញ្ចូល​ពាក្យសម្ងាត់​ចាស់​របស់អ្នក</translation>
 <translation id="6108689792487843350">មិនអាចភ្ជាប់ជាមួយច្រកបានទេ</translation>
@@ -906,6 +908,7 @@
 <translation id="6205145102504628069">លំហូរ​ពពក</translation>
 <translation id="6213737986933151570">CDMA1XRTT</translation>
 <translation id="6223752125779001553">មិនមាន​ម៉ាស៊ីនស្កេន​ទេ</translation>
+<translation id="6231648282154119906">ការរុករកដោយសុវត្ថិភាព​នៅលើ Google នឹងស្កេនឯកសារគួរឱ្យសង្ស័យដោយស្វ័យប្រវត្តិ ដែលជាផ្នែកមួយនៃការការពារ​កម្រិត​ខ្ពស់ដែលអ្នកបានជ្រើសរើស</translation>
 <translation id="6232017090690406397">ថ្ម</translation>
 <translation id="6234024205316847054">បង្ហាញគ្រោង</translation>
 <translation id="6235460611964961764">កំណត់ការប្រើទិន្នន័យដោយផ្ទាល់ដៃ</translation>
@@ -1011,7 +1014,6 @@
 <translation id="672609503628871915">មើលអ្វីដែលថ្មី</translation>
 <translation id="6740695858234317715">លឿងស្លេក និង​ទឹកក្រូច</translation>
 <translation id="6741823073189174383">ទូក</translation>
-<translation id="674276385369049081">ផ្ទៃខាងក្រោយ​កាមេរ៉ាថ្មីៗ​ដែលដំណើរការដោយ Google AI</translation>
 <translation id="6744441848304920043">ព្រៃស្បាត</translation>
 <translation id="6747035363363040417">ធម្មតា</translation>
 <translation id="6747215703636344499">បានឈប់ - ថាសដាក់​ក្រដាស​បោះពុម្ព​ពេញហើយ</translation>
@@ -1032,6 +1034,7 @@
 <translation id="6871256179359663621">ស្វាយ​ខ្ចី</translation>
 <translation id="6889786074662672253">ខណៈពេលកំពុងចាប់ផ្ដើមឡើងវិញ សូមកុំដកឧបករណ៍ខាងក្រៅនេះ ឬបិទកុំព្យូទ័ររបស់អ្នក។ អ្នកអាចបង្រួមវិនដូនេះបាន។ ការចាប់ផ្ដើមឡើងវិញនេះអាចចំណាយពេលពីរបីនាទី ហើយឧបករណ៍ខាងក្រៅរបស់អ្នកអាចមិនដំណើរការនៅអំឡុងពេលនេះទេ។</translation>
 <translation id="6900701049656042631">អាល់ប៊ុមនេះ​មិនមាន​រូបថត​ទេ។ ដើម្បី​បញ្ចូលរូបថត សូមចូល​ទៅកាន់ <ph name="LINK" /></translation>
+<translation id="6902359863093437070">បង្កើត​ផ្ទៃខាងក្រោយ​ដោយប្រើ AI</translation>
 <translation id="6905163627763043954">សាកល្បងវា</translation>
 <translation id="6905724422583748843">ត្រឡប់​ទៅ <ph name="PAGE_NAME" /></translation>
 <translation id="6910312834584889076">គម្រប​របស់ម៉ាស៊ីនស្កេន​គឺបើក។ សូមបិទ​គម្របនោះ រួចព្យាយាម​ម្ដងទៀត។</translation>
@@ -1269,6 +1272,7 @@
 <translation id="8152370627892825"><ph name="DESCRIPTION" />, <ph name="ACCELERATOR_INFO" />។</translation>
 <translation id="8156233298086717232">អស្ចារ្យ</translation>
 <translation id="8162776280680283326">កញ្ជ្រោង</translation>
+<translation id="8167413449582155132">ផ្ទៃខាងក្រោយ​ដែល​ដំណើរការដោយ Google AI</translation>
 <translation id="8179976553408161302">បញ្ចូល</translation>
 <translation id="8183975772394450380">ឆ្នេរ</translation>
 <translation id="8206859287963243715">ប្រព័ន្ធទូរស័ព្ទ</translation>

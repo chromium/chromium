@@ -74,6 +74,7 @@
 <translation id="2918709798697875261">Вашата организација бара да останете одјавени од Chromium.</translation>
 <translation id="2942241131342758843">Користете го Chromium како стандарден прелистувач за отворање линкови, пребарување од виџети и автоматско пополнување лозинки во другите апликации</translation>
 <translation id="2977470724722393594">Chromium е ажуриран</translation>
+<translation id="3044857325852340337">Податоците од Chromium се избришани</translation>
 <translation id="3078941082359356771">{COUNT,plural, =1{Chromium може да ви помогне да го следите пакетов на страницата во нова картичка.}one{Chromium може да ви помогне да ги следите пакетиве на страницата во нова картичка.}other{Chromium може да ви помогне да ги следите пакетиве на страницата во нова картичка.}}</translation>
 <translation id="3102849287235003384">За да се одјавите од вашата сметка на Google на сите веб-сајтови, <ph name="BEGIN_LINK" />одјавете се од Chromium<ph name="END_LINK" />.</translation>
 <translation id="3219277919172823720">Пребарување со глас во Chromium</translation>
@@ -124,6 +125,7 @@
 <translation id="4633738821577273991">Добијте „Подобрено безбедно прелистување“ и за овој профил на Chromium</translation>
 <translation id="4638625642619341392">Преземете Chromium тука.</translation>
 <translation id="4654936625574199632">За да се подобри апликацијата, Chromium испраќа податоци за користењето и падовите во Google. <ph name="BEGIN_LINK" />Управувајте<ph name="END_LINK" /></translation>
+<translation id="4675485352217495362">Избришете ги податоците од прелистување во Chromium</translation>
 <translation id="4681781466797808448">Вклучете го скенерот на Chromium</translation>
 <translation id="4736424910885271643"><ph name="HOSTED_DOMAIN" /> управува со вашата сметка, па податоците од Chromium ќе се избришат од уредов</translation>
 <translation id="4773487571745795781">Го исклучивте најавувањето на Chromium.</translation>
@@ -191,6 +193,7 @@
 <translation id="6324041800010509197">Отворање на мрежата со картички во Chromium</translation>
 <translation id="6325378625795868881">Користете го Chromium секогаш кога ќе допрете линкови во пораки и други апликации.</translation>
 <translation id="632825460376924298">Дозволете најавување на Chromium</translation>
+<translation id="6332129548244419716">Избришете ги податоците од прелистување во Chromium.</translation>
 <translation id="6337530241089703714">Дали сакате да ги избришете податоците од Chromium од уредов или да ги задржите?</translation>
 <translation id="6348483005826990855">3. Изберете Chromium</translation>
 <translation id="6383607155624074112">Пристапувајте до Chromium побрзо од докот на почетниот екран</translation>

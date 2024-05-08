@@ -59,6 +59,7 @@
 <translation id="2574528844022712255">Sien Chromium-boekmerke</translation>
 <translation id="2590893390871230428">Sinkroniseer jou Chromium-data</translation>
 <translation id="2592940277904433508">Hou aan om Chromium te gebruik</translation>
+<translation id="2607609479243848905"><ph name="BEGIN_LINK" />Vee die Chromium-data in jou rekening uit<ph name="END_LINK" /> indien jy jou wagfrase vergeet het of hierdie instelling wil verander.</translation>
 <translation id="2618596336309823556">Maak “<ph name="TEXT_OF_THE_SETTINGS_MENU_ITEM" />" in jou toestel se Instellings oop en kies “Chromium”</translation>
 <translation id="2618757400690011108">{COUNT,plural, =1{Chromium sal help om hierdie pakkie op die Nuwe oortjie-bladsy na te spoor.}other{Chromium sal help om hierdie pakkies op die Nuwe oortjie-bladsy na te spoor.}}</translation>
 <translation id="2650312721222849884">Skakel sinkronisering aan om jou oortjies te sien van waar ook al jy Chromium gebruik</translation>
@@ -116,6 +117,9 @@ Jou data is met jou wagfrase geënkripteer. Voer dit in om Chromium-data in jou 
 <translation id="4498832288620833153">Voeg die ingevoerde URL’s by jou leeslys in Chromium.</translation>
 <translation id="452436063477828504">Maak seker dat jy altyd die Chromium-data in jou Google-rekening kan gebruik</translation>
 <translation id="4555020257205549924">Wanneer hierdie kenmerk aangeskakel is, sal Chromium aanbied om bladsye wat in ander tale geskryf is, te vertaal deur Google Vertaal te gebruik. <ph name="BEGIN_LINK" />Kom meer te wete<ph name="END_LINK" /></translation>
+<translation id="4572441104543926904">Wagfrase-enkripsie sluit nie betaalmetodes en adresse in nie.
+
+<ph name="BEGIN_LINK" />Vee die Chrome-data in jou rekening uit<ph name="END_LINK" /> om hierdie instelling te verander.</translation>
 <translation id="4576283463017113841">Maak die betaalmetode-instellingbladsy in Chromium oop.</translation>
 <translation id="459080529287102949">Soek visuele elemente in Chromium</translation>
 <translation id="4633738821577273991">Kry Verbeterde Veiligblaai ook vir hierdie Chromium-profiel</translation>
@@ -214,6 +218,9 @@ Dinge om in ag te neem:
 <translation id="7163483974919055112">Soek visuele elemente in Chromium.</translation>
 <translation id="7165402419892018581">Kies Chromium vir Outovul</translation>
 <translation id="7175400662502680481">Jou wagwoord is in 'n dataskending blootgestel. Wagwoordbestuurder beveel aan dat jy dit nou verander.</translation>
+<translation id="7185731475720473450">Betaalmetodes en adresse sal nie geënkripteer word nie. Blaaigeskiedenis van Chromium af sal nie sinkroniseer nie.
+
+Net iemand met jou wagfrase kan jou geënkripteerde data lees. Die wagfrase word nie na Google toe gestuur of deur Google geberg nie. <ph name="BEGIN_LINK" />Vee die Chromium-data in jou rekening uit<ph name="END_LINK" /> indien jy jou wagfrase vergeet of hierdie instelling wil verander.</translation>
 <translation id="7192111075364461693">Chromium-kennisgewings is tans in jou toestelinstellings afgeskakel.</translation>
 <translation id="7222001353246886083">Soek ${searchPhrase} in Chromium</translation>
 <translation id="725427773388857052">Chromium kan help om jou teen dataskendings, onveilige webwerwe en meer te beskerm.</translation>

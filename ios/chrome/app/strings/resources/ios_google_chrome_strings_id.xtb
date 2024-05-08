@@ -116,10 +116,12 @@ Hal-hal yang perlu dipertimbangkan:
 <translation id="417201473131094001">Tidak didukung di Chrome Canary</translation>
 <translation id="424864128008805179">Logout dari Chrome?</translation>
 <translation id="4251174643044751591">Membuka Halaman Setelan Metode Pembayaran di Chrome.</translation>
+<translation id="4286914711740227883">Hapus Data Penjelajahan di Chrome</translation>
 <translation id="4453284704333523777">Kelola Setelan Chrome</translation>
 <translation id="4523886039239821078">Beberapa add-on (add-on) menyebabkan Chrome mogok. Uninstal:</translation>
 <translation id="4633328489441962921">Chrome tidak dapat memeriksa update</translation>
 <translation id="4636900170638246267">Login ke situs ini dan Chrome.</translation>
+<translation id="4742795653798179840">Data Chrome berhasil dihapus</translation>
 <translation id="4761869838909035636">Jalankan Pemeriksaan Keamanan Chrome</translation>
 <translation id="4798859546468762093">Untuk mendapatkan personalisasi dan fitur lainnya, sertakan Chrome di <ph name="FEATURE_NAME_1" /> dan <ph name="FEATURE_NAME_2" /></translation>
 <translation id="4819268619367838612">Untuk membantu meningkatkan kualitas aplikasi, Chrome akan mengirimkan data penggunaan dan error ke Google. <ph name="BEGIN_LINK" />Kelola<ph name="END_LINK" /></translation>
@@ -130,6 +132,7 @@ Hal-hal yang perlu dipertimbangkan:
 <translation id="4840404732697892756">Pengelola Sandi Google dapat memeriksa sandi jika Anda login dengan Akun Google Anda.</translation>
 <translation id="4860330141789125848">{COUNT,plural, =1{Chrome dapat membantu Anda melacak paket ini di Halaman Tab Baru.}other{Chrome dapat membantu Anda melacak paket tersebut di Halaman Tab Baru.}}</translation>
 <translation id="4903674399067644695">Kartu ini menampilkan saran tentang cara memaksimalkan penggunaan Chrome.</translation>
+<translation id="4919069428879420545">Hapus Data Penjelajahan di Chrome.</translation>
 <translation id="49200511069271369">Organisasi Anda, <ph name="DOMAIN" />, mengelola akun yang Anda gunakan untuk login dan cara Chrome dapat digunakan. Administrator Anda dapat menyiapkan atau membatasi fitur tertentu.</translation>
 <translation id="498985224078955265">Untuk mengirim tab ini ke perangkat lain, login ke Chrome di kedua perangkat.</translation>
 <translation id="5030102366287574140">Chrome dapat membantu Anda agar tetap aman dari pelanggaran data, situs yang tidak aman, dan lainnya.</translation>
@@ -189,6 +192,9 @@ Data Anda dienkripsi dengan frasa sandi. Masukkan frasa sandi untuk menggunakan 
 <translation id="6648150602980899529">Anda login dengan akun terkelola oleh <ph name="DOMAIN" /> dan memberikan kontrol kepada administratornya atas data Chrome Anda. Data Anda akan terikat dengan akun ini secara permanen. Dengan logout dari Chrome, Anda akan menghapus data dari perangkat ini, tetapi data akan tetap tersimpan di Akun Google.</translation>
 <translation id="6683891932310469419">Membuka Halaman Histori Chrome Anda.</translation>
 <translation id="6709398533399187136">Sandi Anda terekspos dalam pelanggaran data. Pengelola Sandi Google merekomendasikan untuk mengubahnya sekarang.</translation>
+<translation id="6820553595690137150">Enkripsi frasa sandi tidak mencakup alamat dan metode pembayaran.
+
+Untuk mengubah setelan ini, <ph name="BEGIN_LINK" />hapus data Chrome di akun Anda<ph name="END_LINK" />.</translation>
 <translation id="6851982868877411675">Buka Setelan Chrome di iOS, lalu ketuk "Aplikasi Browser Default" dan pilih Chrome.</translation>
 <translation id="686691656039982452">Anda dapat <ph name="BEGIN_LINK" />mengelola data Chrome yang disimpan<ph name="END_LINK" /> di Akun Google Anda.
 
@@ -212,6 +218,7 @@ Untuk setelan lainnya yang menggunakan data guna meningkatkan pengalaman Chrome 
 <translation id="7261678641327190792">Chrome tidak dapat memeriksa sandi Anda</translation>
 <translation id="7272930098487145294">Untuk menyimpan gambar, ketuk Setelan untuk mengizinkan Chrome menambahkannya ke galeri foto Anda</translation>
 <translation id="7275945473750112644">Akun Anda dikelola oleh <ph name="HOSTED_DOMAIN" />, sehingga data Chrome Anda akan dihapus dari perangkat ini</translation>
+<translation id="7284245284340063465">Jika lupa frasa sandi atau ingin mengubah setelan ini, <ph name="BEGIN_LINK" />hapus data Chrome di akun Anda<ph name="END_LINK" />.</translation>
 <translation id="7304491752269485262">Tampilan Isi Otomatis Chrome Diperluas</translation>
 <translation id="7344094882820374540">Dapatkan perlindungan terkuat Chrome dari situs berbahaya</translation>
 <translation id="7349129508108954623">Izinkan Chrome menggunakan Google Maps untuk memberikan rute dan info lokal kepada Anda di alamat yang terdeteksi.</translation>
@@ -243,6 +250,9 @@ Untuk setelan lainnya yang menggunakan data guna meningkatkan pengalaman Chrome 
 <translation id="8160472928944011082">Chrome tidak dapat diupdate</translation>
 <translation id="8174679664544842874">Membuka Tab Baru di Chrome.</translation>
 <translation id="8213758103105806860">Lihat Bookmark Chrome</translation>
+<translation id="8317674518145175158">Metode pembayaran dan alamat tidak akan dienkripsi. Histori penjelajahan dari Chrome tidak akan disinkronkan.
+
+Hanya orang yang memiliki frasa sandi Anda yang dapat membaca data terenkripsi Anda. Frasa sandi tidak dikirim ke atau disimpan oleh Google. Jika lupa frasa sandi atau ingin mengubah setelan ini, <ph name="BEGIN_LINK" />hapus data Chrome di akun Anda<ph name="END_LINK" />.</translation>
 <translation id="8328903609881776074">Membuka Tab Samaran Chrome Baru.</translation>
 <translation id="8357607116237445042">Pilih apakah akan menghapus data Chrome dari perangkat ini atau menyimpannya</translation>
 <translation id="8370517070665726704">Hak cipta <ph name="YEAR" /> Google LLC. Semua hak dilindungi undang-undang.</translation>

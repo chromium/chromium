@@ -15,12 +15,6 @@
 <translation id="102916930470544692">Passkey</translation>
 <translation id="1030706264415084469"><ph name="URL" /> wants to permanently store large data on your device</translation>
 <translation id="1030949145805074938">{COUNT,plural, =0{None}=1{From 1 site. Signs you out of most sites. }other{From # sites. Signs you out of most sites. }}</translation>
-<translation id="1033329911862281889">Incognito does not make you invisible online:
-        <ph name="BEGIN_LIST" />
-          <ph name="LIST_ITEM" />Sites and the services that they use can see visits<ph name="END_LIST_ITEM" />
-          <ph name="LIST_ITEM" />Employers or schools can track browsing activity<ph name="END_LIST_ITEM" />
-          <ph name="LIST_ITEM" />Internet service providers can monitor web traffic<ph name="END_LIST_ITEM" />
-        <ph name="END_LIST" /></translation>
 <translation id="1035709686865413354">Water Filters and Purifiers</translation>
 <translation id="1036348656032585052">Turn off</translation>
 <translation id="1036881361735705143">Envelope C4</translation>
@@ -64,6 +58,7 @@
 <translation id="1104860668737945357">Manage passwords button, activate to view and manage your passwords in Chrome settings</translation>
 <translation id="1108464073729874771">A3 x 4</translation>
 <translation id="1110994991967754504">Select permission for <ph name="PERMISSION_NAME" /></translation>
+<translation id="1112238992895762847">Price range for all options</translation>
 <translation id="1113869188872983271">&amp;Undo reorder</translation>
 <translation id="1118429183611783760">Vacuums and Floor Care</translation>
 <translation id="1122714970786750095">Electronics and Electrical</translation>
@@ -73,7 +68,6 @@
 <translation id="1131264053432022307">Image that you copied</translation>
 <translation id="1138458427267715730">Get alerts when the price drops on any site across the web</translation>
 <translation id="1142713751288681188">Paper type</translation>
-<translation id="1142846828089312304">Block third-party cookies in Incognito</translation>
 <translation id="1144136880160289237">You don't have any active topics yet</translation>
 <translation id="1149617035358809955">verify it's you so it can fill in your payment info</translation>
 <translation id="1150565364351027703">Sunglasses</translation>
@@ -81,6 +75,7 @@
 <translation id="1151972924205500581">Password required</translation>
 <translation id="1156303062776767266">You're viewing a local or shared file</translation>
 <translation id="1158211211994409885"><ph name="HOST_NAME" /> unexpectedly closed the connection.</translation>
+<translation id="1160009341934077418">Price history across the web</translation>
 <translation id="1161325031994447685">Reconnecting to Wi-Fi</translation>
 <translation id="1163507966173624031">Folk and traditional music</translation>
 <translation id="11635448457105324">Manage addresses button, activate to add and manage addresses in Chrome settings</translation>
@@ -210,6 +205,7 @@ This will otherwise be blocked by your privacy settings. This will allow the con
 <translation id="1358223345833465883">Your search engine in Chromium</translation>
 <translation id="1359836962251219822">Kitchen and Dining</translation>
 <translation id="1360955481084547712">Open a new incognito window to browse privately</translation>
+<translation id="1363028406613469049">Track</translation>
 <translation id="1363819917331173092">Don‘t offer to translate pages in <ph name="SOURCE_LANGUAGE" /></translation>
 <translation id="1364822246244961190">This policy is blocked; its value will be ignored.</translation>
 <translation id="1368318639262510626">Dino game. A pixelated dinosaur dodges cacti and pterodactyls as it runs across a desolate landscape. When you hear an audio cue, press space to jump over obstacles.</translation>
@@ -223,6 +219,7 @@ This will otherwise be blocked by your privacy settings. This will allow the con
 <translation id="1382378825779654399">You’ll get email alerts if the price drops on any site. This page will be saved to <ph name="LAST_BOOKMARKS_FOLDER" />.</translation>
 <translation id="1384725838384960382">Secure payment credential authentication sheet</translation>
 <translation id="1386623374109090026">Annotations</translation>
+<translation id="138810468159004008">Allow while visiting the site</translation>
 <translation id="1391625539203220400">Save IBAN to this device?</translation>
 <translation id="139305205187523129"><ph name="HOST_NAME" /> didn’t send any data.</translation>
 <translation id="1405567553485452995">Light green</translation>
@@ -437,7 +434,7 @@ This will otherwise be blocked by your privacy settings. This will allow the con
 <translation id="1762779605905950734">Street name</translation>
 <translation id="1763864636252898013">This server could not prove that it is <ph name="DOMAIN" />; its security certificate is not trusted by your device's operating system. This may be caused by a misconfiguration or an attacker intercepting your connection.</translation>
 <translation id="1768211456781949159"><ph name="BEGIN_LINK" />Try running Windows Network Diagnostics<ph name="END_LINK" />.</translation>
-<translation id="1774592222195216949"><ph name="BEGIN_LINK" />Learn more about Incognito in Chromium<ph name="END_LINK" /></translation>
+<translation id="1771254328977666895">See price history</translation>
 <translation id="1777422078676229054">Photo (archival)</translation>
 <translation id="1778646502362731194">JIS B0</translation>
 <translation id="1791429645902722292">Google Smart Lock</translation>
@@ -477,7 +474,6 @@ This will otherwise be blocked by your privacy settings. This will allow the con
 <translation id="1853392626017747777">Virtual card enrollment closed</translation>
 <translation id="1854180393107901205">Stop casting</translation>
 <translation id="1855370856221982654">Boxing</translation>
-<translation id="1856713167556118146">What Incognito doesn’t do</translation>
 <translation id="1862788842908766795">Executive and Management Jobs</translation>
 <translation id="1863047423483329595">Tracking Protection is temporarily unavailable. While Chrome is updating this feature, sites can temporarily use third-party cookies unless you block them. <ph name="BEGIN_LINK" />Learn more<ph name="END_LINK" /></translation>
 <translation id="1863257867908022953">Tray 12</translation>
@@ -577,6 +573,7 @@ This will otherwise be blocked by your privacy settings. This will allow the con
 <translation id="2056658168519009885">Sites can ask Chrome for information to help personalise the ads that you see.</translation>
 <translation id="2059166748188874810">Municipality</translation>
 <translation id="2059202684901022309">22 in x 34 in</translation>
+<translation id="206275378685759380">Wait to buy</translation>
 <translation id="2064568741209980952">Credit and Lending</translation>
 <translation id="2064691555167957331">{COUNT,plural, =1{1 suggestion}other{# suggestions}}</translation>
 <translation id="2066915425250589881">request to be deleted</translation>
@@ -728,6 +725,7 @@ This will otherwise be blocked by your privacy settings. This will allow the con
 <translation id="2328955282645810595">Construction and Power Tools</translation>
 <translation id="2330137317877982892"><ph name="CREDIT_CARD" />, expires on <ph name="EXPIRATION_DATE_ABBR" /></translation>
 <translation id="2337044517221264923">CV writing</translation>
+<translation id="2337776048981813397">Price range for all options</translation>
 <translation id="2337852623177822836">Setting controlled by your administrator</translation>
 <translation id="2340263603246777781"><ph name="ORIGIN" /> wants to pair</translation>
 <translation id="2346319942568447007">Image that you copied</translation>
@@ -785,6 +783,7 @@ This will otherwise be blocked by your privacy settings. This will allow the con
             <ph name="LIST_ITEM" />Information entered in forms
           <ph name="END_LIST" /></translation>
 <translation id="2448295565072560657">Peripherals attached to this device while you are logged in</translation>
+<translation id="2451607499823206582">Tracking</translation>
 <translation id="2452098632681057184">Ecology and environment</translation>
 <translation id="2452837234288608067">Couldn't help with that. Try again.</translation>
 <translation id="2456755709261364512">Your battery must be charged above <ph name="REQUIRED_BATTERY_PRECENT" />%</translation>
@@ -1081,12 +1080,6 @@ This will otherwise be blocked by your privacy settings. This will allow the con
 <translation id="3090667236485488075">Glass</translation>
 <translation id="3095940652251934233">Statement</translation>
 <translation id="3098513225387949945">Ignored because the disable list contains a pattern equal to '*', which is equivalent to disabling the policy.</translation>
-<translation id="3100422601354996774">When you close all Chrome Incognito tabs, your activity in those tabs is removed from this device:
-          <ph name="BEGIN_LIST" />
-            <ph name="LIST_ITEM" />Browsing activity<ph name="END_LIST_ITEM" />
-            <ph name="LIST_ITEM" />Search history<ph name="END_LIST_ITEM" />
-            <ph name="LIST_ITEM" />Information entered in forms<ph name="END_LIST_ITEM" />
-          <ph name="END_LIST" /></translation>
 <translation id="3102312643185441063">Savings</translation>
 <translation id="3103188521861412364">Stocks and bonds</translation>
 <translation id="3105172416063519923">Asset ID:</translation>
@@ -1284,6 +1277,7 @@ This will otherwise be blocked by your privacy settings. This will allow the con
 <translation id="3447661539832366887">The owner of this device turned off the dinosaur game.</translation>
 <translation id="3447884698081792621">Show certificate (issued by <ph name="ISSUER" />)</translation>
 <translation id="3450323514459570273">Can ask to control and reprogram your MIDI devices</translation>
+<translation id="3451429106322189478"><ph name="PERMISSION" /> allowed</translation>
 <translation id="3452404311384756672">Fetch interval:</translation>
 <translation id="3453962258458347894">Number of retries</translation>
 <translation id="3457781733462096492">Rap and hip-hop</translation>
@@ -1826,7 +1820,6 @@ This will otherwise be blocked by your privacy settings. This will allow the con
 <translation id="447665707681730621"><ph name="BUBBLE_MESSAGE" />. <ph name="LEARN_MORE_TEXT" /></translation>
 <translation id="4476953670630786061">This form is not secure. Auto-fill has been turned off.</translation>
 <translation id="4477350412780666475">Next track</translation>
-<translation id="4481251927743463293">What Incognito does</translation>
 <translation id="4482953324121162758">This site will not be translated.</translation>
 <translation id="448363931695049633">Pizzerias</translation>
 <translation id="4489023393592172404">Envelope Kaku 4</translation>
@@ -1894,7 +1887,6 @@ This will otherwise be blocked by your privacy settings. This will allow the con
 <translation id="4631881646528206880">Virtual card enrollment</translation>
 <translation id="4635278307999235413">Sending data to Admin console</translation>
 <translation id="4636930964841734540">Info</translation>
-<translation id="4638670630777875591">Incognito in Chromium</translation>
 <translation id="464342062220857295">Search features</translation>
 <translation id="4644670975240021822">Reverse order face down</translation>
 <translation id="4646534391647090355">Take me there now</translation>
@@ -2054,10 +2046,10 @@ This will otherwise be blocked by your privacy settings. This will allow the con
 <translation id="4930153903256238152">Large capacity</translation>
 <translation id="4930714375720679147">Turn On</translation>
 <translation id="4932035752129140860">Text you paste or attach is sent to Google Cloud or third parties for analysis. For example, it might be scanned for sensitive data and might be stored based on company policies and visible to your administrator.</translation>
+<translation id="4933468175699107356">Right-click to autofill saved info, such as your name or address, on any form</translation>
 <translation id="4934780484581617878">Window management</translation>
 <translation id="4936134414789135531">The inserted <ph name="VALUE_NAME" /> couldn't be found.</translation>
 <translation id="4936675324097895694">Finance</translation>
-<translation id="4940163644868678279">Incognito in Chrome</translation>
 <translation id="4943620199112228840">Use your microphones</translation>
 <translation id="4943872375798546930">No results</translation>
 <translation id="4950898438188848926">Tab switch button, press Enter to switch to the open tab, <ph name="TAB_SWITCH_FOCUSED_FRIENDLY_MATCH_TEXT" /></translation>
@@ -2135,6 +2127,7 @@ This will otherwise be blocked by your privacy settings. This will allow the con
 <translation id="5097099694988056070">Device statistics such as CPU/RAM usage</translation>
 <translation id="5097468150760963273">27 in x 39 in</translation>
 <translation id="5097501891273180634">A2</translation>
+<translation id="5106405387002409393">Chrome needs access to your device's <ph name="PERMISSION" /></translation>
 <translation id="510644072453496781">Cardboard (end)</translation>
 <translation id="5108881358339761672">Site is not secure</translation>
 <translation id="5109892411553231226">Manage Payment Methods</translation>
@@ -2352,6 +2345,7 @@ This will otherwise be blocked by your privacy settings. This will allow the con
 <translation id="5526617258931667850"><ph name="MANAGE_CHROMEOS_ACCESSIBILITY_FOCUSED_FRIENDLY_MATCH_TEXT" />; press tab and then Enter to personalise your accessibility tools in Chrome OS settings</translation>
 <translation id="55293785478302737">Edge stitch</translation>
 <translation id="553377674408670169">Education Jobs</translation>
+<translation id="5534785731327961487">Good deal now</translation>
 <translation id="5536214594743852365">Show the '<ph name="SECTION" />' section</translation>
 <translation id="553782666181800029">Envelope Chou 2</translation>
 <translation id="5538270463355278784">automatic full screen</translation>
@@ -2465,7 +2459,6 @@ This will otherwise be blocked by your privacy settings. This will allow the con
 <translation id="5742806904559466333">Bars, Clubs and Nightlife</translation>
 <translation id="5743684619253032786">Nail care products</translation>
 <translation id="5745733273847572235">Can ask for your location</translation>
-<translation id="5745980000221562234">{NUM_CARDS,plural, =1{Use a virtual number for this card}other{Select a card}}</translation>
 <translation id="5759751709240058861">Use and move your camera</translation>
 <translation id="5763042198335101085">Enter a valid email address</translation>
 <translation id="5764725887548570807">Invalid origin format.</translation>
@@ -2495,7 +2488,6 @@ This will otherwise be blocked by your privacy settings. This will allow the con
 <translation id="5813119285467412249">&amp;Redo Add</translation>
 <translation id="5813753398265398978">Physics</translation>
 <translation id="5817918615728894473">Pair</translation>
-<translation id="5824687817967109979">{NUM_CARDS,plural, =1{This card will be charged when you pay, but its real number won't be shared with this site. For extra security, a temporary CVC will be generated.}other{The card that you select will be charged when you pay, but its real number won't be shared with this site. For extra security, a temporary CVC will be generated.}}</translation>
 <translation id="5826507051599432481">Common Name (CN)</translation>
 <translation id="5829215001860862731">Save in Account</translation>
 <translation id="5830698870816298009">camera use and movement</translation>
@@ -2509,6 +2501,7 @@ This will otherwise be blocked by your privacy settings. This will allow the con
 <translation id="5847181246682413476">Power Supplies</translation>
 <translation id="584902713199270089">Dating and personals</translation>
 <translation id="5851548754964597211">Tab list</translation>
+<translation id="5851868085455377790">Issuer</translation>
 <translation id="5852909432155870672">RA4</translation>
 <translation id="5860491529813859533">Turn on</translation>
 <translation id="5862579898803147654">Stacker 8</translation>
@@ -2658,7 +2651,6 @@ This will otherwise be blocked by your privacy settings. This will allow the con
 <translation id="6126565365696310362">Envelope Chinese no.2</translation>
 <translation id="6127379762771434464">Item removed</translation>
 <translation id="6131824478727057281">location</translation>
-<translation id="6132161237766805930"><ph name="BEGIN_LINK" />Learn more about Incognito in Chrome<ph name="END_LINK" /></translation>
 <translation id="6133320744616005677">Continue allowing</translation>
 <translation id="6133984428121856852">File extension is empty or malformed.</translation>
 <translation id="6139975341602920272">17 in x 22 in</translation>
@@ -2794,7 +2786,7 @@ This will otherwise be blocked by your privacy settings. This will allow the con
 <translation id="6386565501269869892">Envelope You 4</translation>
 <translation id="6387645831795005740">Attackers sometimes mimic sites by making small, hard-to-see changes to the URL.</translation>
 <translation id="6388060462449937608">Fitness Equipment and Accessories</translation>
-<translation id="6389470377220713856">Name on Card</translation>
+<translation id="6389470377220713856">Name on card</translation>
 <translation id="6390200185239044127">Z-fold half</translation>
 <translation id="639068771471208680">Multi-part form</translation>
 <translation id="6391700400718590966">Secure payment credential no matching credential sheet is closed</translation>
@@ -3052,12 +3044,6 @@ This will otherwise be blocked by your privacy settings. This will allow the con
 <translation id="6897140037006041989">User agent</translation>
 <translation id="6898699227549475383">Organisation (O)</translation>
 <translation id="6907458757809079309">Fitness</translation>
-<translation id="6908168784986658395">When you close all Chromium Incognito tabs, your activity in those tabs is removed from this device:
-          <ph name="BEGIN_LIST" />
-            <ph name="LIST_ITEM" />Browsing activity<ph name="END_LIST_ITEM" />
-            <ph name="LIST_ITEM" />Search history<ph name="END_LIST_ITEM" />
-            <ph name="LIST_ITEM" />Information entered in forms<ph name="END_LIST_ITEM" />
-          <ph name="END_LIST" /></translation>
 <translation id="691024665142758461">Download multiple files</translation>
 <translation id="6915804003454593391">User:</translation>
 <translation id="6916193791494646625">Provide reason for downloading (required)</translation>
@@ -3198,6 +3184,8 @@ This will otherwise be blocked by your privacy settings. This will allow the con
 <translation id="7163295244162773898">{0,plural, =1{Copy confidential file?}other{Copy confidential files?}}</translation>
 <translation id="7168625890036931112">'<ph name="DATA_CONTROLS_RESTRICTION" />' is not a supported restriction on this platform</translation>
 <translation id="717330890047184534">Gaia ID:</translation>
+<translation id="7173338713290252554">Price history across the web</translation>
+<translation id="7173478186876671324">Your administrator blocked your <ph name="PERMISSION" /> for this site</translation>
 <translation id="7174545416324379297">Merged</translation>
 <translation id="7175097078723125014">The edit address option was selected</translation>
 <translation id="7175401108899573750">{SHIPPING_OPTIONS,plural, =0{<ph name="SHIPPING_OPTION_PREVIEW" />}=1{<ph name="SHIPPING_OPTION_PREVIEW" /> and <ph name="NUMBER_OF_ADDITIONAL_SHIPPING_OPTIONS" /> more}other{<ph name="SHIPPING_OPTION_PREVIEW" /> and <ph name="NUMBER_OF_ADDITIONAL_SHIPPING_OPTIONS" /> more}}</translation>
@@ -3552,6 +3540,7 @@ Additional details:
 <translation id="7773005668374414287">Same order face up</translation>
 <translation id="7779418012194492374">Revoke access for <ph name="DEVICE_NAME" /></translation>
 <translation id="7781829728241885113">Yesterday</translation>
+<translation id="7782465647372057580">Account info is encrypted and kept private</translation>
 <translation id="7785790577395078482">this tablet</translation>
 <translation id="7786368602962652765">A required field is empty. Fill it before saving.</translation>
 <translation id="7791011319128895129">Unreleased</translation>
@@ -3643,6 +3632,7 @@ Additional details:
 <translation id="7977538094055660992">Output device</translation>
 <translation id="7979595116210197019">Food Service</translation>
 <translation id="798134797138789862">Can ask to use virtual reality devices and data</translation>
+<translation id="7982789257301363584">Network</translation>
 <translation id="7983008347525536475">SUVs</translation>
 <translation id="7984945080620862648">You cannot visit <ph name="SITE" /> at the moment because the website sent scrambled credentials that Chrome cannot process. Network errors and attacks are usually temporary, so this page will probably work later.</translation>
 <translation id="7986319120639858961"><ph name="CARD_TITLE" /> <ph name="TIME" /> <ph name="BOOKMARKED" /> <ph name="TITLE" /> <ph name="DOMAIN" /></translation>
@@ -3652,6 +3642,7 @@ Additional details:
 <translation id="800218591365569300">Try closing other tabs or programmes to free up memory.</translation>
 <translation id="8002230960325005199">See related sites in a new tab</translation>
 <translation id="8003046808285812021">'<ph name="SEARCH_TERMS" />'</translation>
+<translation id="8003697335101170520">Pay with Pix without copy and paste</translation>
 <translation id="8004582292198964060">Browser</translation>
 <translation id="8009058079740742415">Home safety and security</translation>
 <translation id="8009225694047762179">Manage passwords</translation>
@@ -3717,17 +3708,18 @@ Additional details:
 <translation id="8103161714697287722">Payment Method</translation>
 <translation id="8103643211515685474">Print anyway</translation>
 <translation id="8105368624971345109">Turn Off</translation>
-<translation id="8107664017913103177">Card benefits available</translation>
 <translation id="810875025413331850">No nearby devices found.</translation>
 <translation id="8116925261070264013">Muted</translation>
 <translation id="8118489163946903409">Payment method</translation>
 <translation id="8118506371121007279">Give feedback</translation>
+<translation id="8124085000247609808">Chat with <ph name="KEYWORD_SHORT_NAME" /></translation>
 <translation id="8127301229239896662">'<ph name="SOFTWARE_NAME" />' wasn’t installed properly on your computer or network. Ask your IT administrator to resolve this issue.</translation>
 <translation id="8131740175452115882">Confirm</translation>
 <translation id="8133495915926741232">Choose which broad categories of topics can be used to help personalise ads. Turning off a broader category will also block its related topics. <ph name="BEGIN_LINK" />Learn more<ph name="END_LINK" /></translation>
 <translation id="8134058435519644366">Recruitment and Staffing</translation>
 <translation id="8135546115396015134">left key</translation>
 <translation id="8137456439814903304">Energy and utilities</translation>
+<translation id="81474145143203755">To use your <ph name="PERMISSION" /> on this site, give Chrome access</translation>
 <translation id="8148608574971654810">PDF version:</translation>
 <translation id="8149426793427495338">Your computer went to sleep.</translation>
 <translation id="8150722005171944719">The file at <ph name="URL" /> is not readable.  It may have been removed, moved or file permissions may be preventing access.</translation>
@@ -3762,7 +3754,6 @@ Additional details:
 <translation id="8211406090763984747">Connection is secure</translation>
 <translation id="8213853114485953510">JIS Exec</translation>
 <translation id="8216640997712497593">14 in x 18 in</translation>
-<translation id="8217240300496046857">Sites can't use cookies that track you across the web. Features on some sites may break.</translation>
 <translation id="8218327578424803826">Assigned Location:</translation>
 <translation id="8220602974062798186">Block <ph name="TOPIC" /> and any related topics?</translation>
 <translation id="8220833680085771143">Tracking Protection is temporarily unavailable</translation>
@@ -4178,7 +4169,6 @@ Additional details:
 <translation id="9036306139374661733">Allow microphone?</translation>
 <translation id="9038649477754266430">Use a prediction service to load pages more quickly</translation>
 <translation id="9039213469156557790">Furthermore, this page includes other resources which are not secure. These resources can be viewed by others while in transit, and can be modified by an attacker to change the behaviour of the page.</translation>
-<translation id="9040341831873780534">See terms here</translation>
 <translation id="9042617223719777575">Large capacity</translation>
 <translation id="9042827002460091668">Please check your Internet connection and try again</translation>
 <translation id="9044359186343685026">Use Touch ID</translation>
@@ -4224,6 +4214,7 @@ Additional details:
 <translation id="9118692854637641831"><ph name="HISTORY_CLUSTERS_SEARCH_FOCUSED_FRIENDLY_MATCH_TEXT" />, press tab, then enter to resume your journey and see relevant activity in your Chrome history</translation>
 <translation id="9119042192571987207">Uploaded</translation>
 <translation id="912327514020027767">Skirts</translation>
+<translation id="912414390325846156">You previously chose 'Don't allow' for this site</translation>
 <translation id="9128870381267983090">Connect to network</translation>
 <translation id="9131119348384879525">Capture confidential content?</translation>
 <translation id="9133861214150761123">Accounting and auditing</translation>

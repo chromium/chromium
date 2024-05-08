@@ -11,6 +11,7 @@
 <translation id="1047458377670401304"><ph name="CPU_NAME" /> (<ph name="THREAD_COUNT" /> 個執行緒；<ph name="CPU_MAX_CLOCK_SPEED" /> GHz)</translation>
 <translation id="1047773237499189053">已推出新功能，請使用向上鍵瞭解詳情。</translation>
 <translation id="1049663189809099096">淡彩黃</translation>
+<translation id="1056898198331236512">警告</translation>
 <translation id="1059913517121127803">無法開始掃描</translation>
 <translation id="1062823486781306604">名稱：<ph name="NAME" /> (第 <ph name="INDEX" /> 項，共 <ph name="COUNT" /> 項)。</translation>
 <translation id="1070066693520972135">WEP</translation>
@@ -28,6 +29,7 @@
 <translation id="1145018782460575098">更新外部裝置韌體的視窗已開啟。<ph name="NUM_UPDATES" /> 項可用的更新。</translation>
 <translation id="1145516343487477149">尋找說明文章，並回答 Chromebook 常見問題</translation>
 <translation id="1154390310959620237">你只能自訂 5 個快速鍵。如要新增快速鍵，請刪除現有快速鍵。</translation>
+<translation id="1155154308031262006">輸入提示</translation>
 <translation id="115705039208660697">鳳梨</translation>
 <translation id="1164939766849482256">黎明到黑夜螢幕保護程式</translation>
 <translation id="1167755866710282443">開啟選單自訂按鍵，拖曳選單即可移動。</translation>
@@ -95,7 +97,6 @@
 <translation id="1478594628797167447">掃描器</translation>
 <translation id="1483493594462132177">傳送</translation>
 <translation id="1488850966314959671">無法透過任何已啟用的自訂 APN 連上這個網路，詳情請洽詢你的行動電信業者。</translation>
-<translation id="1491076385728777984">正在更新「<ph name="DEVICE_NAME" />」的韌體</translation>
 <translation id="1499041187027566160">調高音量</translation>
 <translation id="1499900233129743732"><ph name="MANAGER" /> 管理這位使用者，且可從遠端管理設定及監控使用者活動。</translation>
 <translation id="150962533380566081">PUK 無效。</translation>
@@ -291,7 +292,6 @@
 <translation id="2505327257735685095">重新整理目前的桌布圖片</translation>
 <translation id="2512979179176933762">顯示視窗</translation>
 <translation id="2513396635448525189">登入圖片</translation>
-<translation id="2517472476991765520">掃描</translation>
 <translation id="2521835766824839541">播放上一首曲目</translation>
 <translation id="2526590354069164005">桌面</translation>
 <translation id="2529641961800709867">按鈕選項</translation>
@@ -330,6 +330,7 @@
 <translation id="2744221223678373668">共用</translation>
 <translation id="2751739896257479635">EAP 第 2 階段驗證</translation>
 <translation id="2754757901767760034">燈具</translation>
+<translation id="2780756493585863768">最近使用 Google AI 技術製作的背景</translation>
 <translation id="2783010256799387990">已通過</translation>
 <translation id="2786429550992142861">亞麻紗</translation>
 <translation id="2787435249130282949">調亮鍵盤</translation>
@@ -426,6 +427,7 @@
 <translation id="3456078764689556234">已列印 <ph name="PRINTED_PAGES" /> 頁 (共 <ph name="TOTAL_PAGES" /> 頁)。</translation>
 <translation id="345898999683440380">正在掃描第 <ph name="PAGE_NUM" /> 頁，目前已完成 <ph name="PERCENTAGE_VALUE" />%。</translation>
 <translation id="3459509316159669723">列印</translation>
+<translation id="3462187165860821523">正在更新「<ph name="DEVICE_NAME" />」</translation>
 <translation id="346423161771747987">電流</translation>
 <translation id="346539236881580388">重拍</translation>
 <translation id="3484914941826596830">在韌體更新期間，請勿拔除這台外部裝置的插頭或關閉電腦。你可以將這個視窗縮到最小。更新作業可能需要幾分鐘才會完成，這段期間外部裝置可能無法正常運作。</translation>
@@ -790,6 +792,7 @@
 <translation id="5559898619118303662">日落後自動切換到深色主題</translation>
 <translation id="556042886152191864">按鈕</translation>
 <translation id="5562551811867441927">呈現多層次<ph name="TERRAIN_COLOR" />的<ph name="TERRAIN_FEATURE" /></translation>
+<translation id="5572169899491758844">掃描</translation>
 <translation id="5578477003638479617">UMTS</translation>
 <translation id="5578519639599103840">重新掃描</translation>
 <translation id="5583640892426849032">Backspace</translation>
@@ -879,7 +882,6 @@
 <translation id="6075872808778243331">(Android) HTTP 延遲時間</translation>
 <translation id="6078323886959318429">新增捷徑</translation>
 <translation id="6091080061796993741">黃色</translation>
-<translation id="610371409726072606">採用 Google AI 技術的相機背景</translation>
 <translation id="6104112872696127344">已取消掃描作業</translation>
 <translation id="6106186594183574873">如要完成變更，請輸入你的舊密碼</translation>
 <translation id="6108689792487843350">無法連上閘道</translation>
@@ -906,6 +908,7 @@
 <translation id="6205145102504628069">雲朵動態</translation>
 <translation id="6213737986933151570">CDMA1XRTT</translation>
 <translation id="6223752125779001553">沒有可用的掃描器</translation>
+<translation id="6231648282154119906">由於你選擇強化防護，因此 Google 安全瀏覽會自動掃描可疑檔案。</translation>
 <translation id="6232017090690406397">電池</translation>
 <translation id="6234024205316847054">顯示大綱</translation>
 <translation id="6235460611964961764">手動重設數據用量</translation>
@@ -1011,7 +1014,6 @@
 <translation id="672609503628871915">查看新功能</translation>
 <translation id="6740695858234317715">奶油色和橘色</translation>
 <translation id="6741823073189174383">船</translation>
-<translation id="674276385369049081">採用 Google AI 技術的近期相機背景</translation>
 <translation id="6744441848304920043">叢林</translation>
 <translation id="6747035363363040417">中性</translation>
 <translation id="6747215703636344499">已停止 - 輸出紙匣已滿</translation>
@@ -1032,6 +1034,7 @@
 <translation id="6871256179359663621">淺紫</translation>
 <translation id="6889786074662672253">在重新啟動新期間，請勿拔除這台外部裝置的插頭或關閉電腦。你可以將這個視窗縮到最小。這項作業可能需要幾分鐘才會完成，這段期間外部裝置可能無法正常運作。</translation>
 <translation id="6900701049656042631">這本相簿中沒有任何相片。如要新增，請前往 <ph name="LINK" /></translation>
+<translation id="6902359863093437070">使用 AI 製作背景</translation>
 <translation id="6905163627763043954">試用</translation>
 <translation id="6905724422583748843">返回「<ph name="PAGE_NAME" />」頁面</translation>
 <translation id="6910312834584889076">掃描器的蓋子已打開。請蓋上蓋子，然後再試一次。</translation>
@@ -1269,6 +1272,7 @@
 <translation id="8152370627892825"><ph name="DESCRIPTION" />，<ph name="ACCELERATOR_INFO" />。</translation>
 <translation id="8156233298086717232">神奇</translation>
 <translation id="8162776280680283326">狐狸</translation>
+<translation id="8167413449582155132">使用 Google AI 技術製作的背景</translation>
 <translation id="8179976553408161302">Enter</translation>
 <translation id="8183975772394450380">海灘</translation>
 <translation id="8206859287963243715">手機</translation>

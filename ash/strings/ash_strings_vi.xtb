@@ -166,6 +166,7 @@ Dưới đây là một số việc bạn có thể thử để bắt đầu.</t
 <translation id="1586324912145647027">Chuyển đến không gian làm việc từ 1 đến 8</translation>
 <translation id="158838227375272121">Trang web Google Lớp học</translation>
 <translation id="1589090746204042747">Truy cập vào tất cả hoạt động của bạn trong phiên này</translation>
+<translation id="1597880963776148053">Bước <ph name="STEP" />/<ph name="TOTAL_STEPS" /> của hướng dẫn. Các ứng dụng bạn đang mở và đã ghim sẽ nằm trên thanh ứng dụng ở cuối màn hình. Nhấn tổ hợp phím Alt + Shift + L, rồi nhấn phím Tab để lấy tiêu điểm vào các mục trên thanh ứng dụng.</translation>
 <translation id="1602874809115667351"><ph name="LAUNCHER_KEY_NAME" /> + mũi tên xuống</translation>
 <translation id="1604857178818051494">Tạm dừng nội dung nghe nhìn</translation>
 <translation id="1607312127821884567">Loại bỏ việc thiết lập tính năng xem ứng dụng có trên điện thoại</translation>
@@ -303,6 +304,7 @@ Dưới đây là một số việc bạn có thể thử để bắt đầu.</t
 <translation id="2257486738914982088">Đã xảy ra lỗi trong khi tải <ph name="FILENAME" /> xuống</translation>
 <translation id="2258734398699965611">Các tệp được đề xuất</translation>
 <translation id="2268130516524549846">Đã tắt bluetooth</translation>
+<translation id="2268731132310444948">Bước <ph name="STEP" />/<ph name="TOTAL_STEPS" /> của hướng dẫn. Sau khi kích hoạt Trình chạy, bạn sẽ thấy thanh tìm kiếm nâng cao. Bạn có thể nhập thông tin vào đó để tìm tệp, ứng dụng, v.v. Bạn cũng có thể tìm được câu trả lời cho các câu hỏi về <ph name="PRODUCT_NAME" />.</translation>
 <translation id="2268813581635650749">Đăng xuất tất cả</translation>
 <translation id="2276987123919776440">15 phút</translation>
 <translation id="2277103315734023688">Tua tiến</translation>
@@ -397,6 +399,7 @@ Dưới đây là một số việc bạn có thể thử để bắt đầu.</t
 <translation id="2607678425161541573">Yêu cầu đăng nhập trực tuyến</translation>
 <translation id="2612072250312279703">giám sát hoạt động</translation>
 <translation id="2612614436418177118">Di chuyển một biểu tượng ứng dụng trong lưới ứng dụng</translation>
+<translation id="2619326010008283367">Bước <ph name="STEP" />/<ph name="TOTAL_STEPS" /> của hướng dẫn. Bạn có thể tìm phần Cài đặt thiết bị trong Trình chạy. Hãy thử tuỳ chỉnh <ph name="PRODUCT_NAME" /> trong phần Cài đặt, chẳng hạn như thay đổi hình nền hoặc thiết lập trình bảo vệ màn hình.</translation>
 <translation id="2620016719323068571">Tìm kiếm <ph name="CATEGORY" />, tệp, ứng dụng, v.v...</translation>
 <translation id="2620436844016719705">Hệ thống</translation>
 <translation id="2620900772667816510">Bluetooth có độ phân giải siêu cao</translation>
@@ -819,7 +822,6 @@ Một số tính năng bị hạn chế nhằm tăng thời lượng pin.</trans
 <translation id="4209973997261364186">Wi-Fi đang bật</translation>
 <translation id="4212472694152630271">Chuyển sang mã PIN</translation>
 <translation id="4215497585250573029">Cài đặt mạng riêng ảo (VPN)</translation>
-<translation id="4215548513524864822">Bước 5/5 của hướng dẫn. Bạn có thể xem phần Cài đặt của thiết bị trong Trình chạy. Hãy thử tuỳ chỉnh <ph name="PRODUCT_NAME" /> trong phần Cài đặt, chẳng hạn như thay đổi hình nền hoặc thiết lập trình bảo vệ màn hình.</translation>
 <translation id="4217571870635786043">Nhập bằng giọng nói</translation>
 <translation id="4221957499226645091"><ph name="APP_NAME" />, ứng dụng đã được cài đặt nhưng đã tạm dừng</translation>
 <translation id="4228078597006700451">Chưa thiết lập các nút điều khiển</translation>
@@ -946,12 +948,12 @@ Một số tính năng bị hạn chế nhằm tăng thời lượng pin.</trans
 <translation id="468293128311738995">Ứng dụng từ điện thoại của bạn</translation>
 <translation id="4690510401873698237">Giá ở dưới cùng</translation>
 <translation id="4696813013609194136">Mở khóa thiết bị bằng mã dành cho cha mẹ</translation>
-<translation id="469693290987463983">Bước 1/5 của hướng dẫn. Các ứng dụng bạn đang mở và đã ghim sẽ nằm trên kệ ở cuối màn hình. Nhấn tổ hợp phím Alt + Shift + L, rồi nhấn phím Tab để lấy tiêu điểm vào các mục trên kệ.</translation>
 <translation id="4702647871202761252">Màn hình bảo vệ quyền riêng tư đang tắt</translation>
 <translation id="4706121060329443414">Thử tải xuống sau. Dữ liệu giọng nói sẽ được gửi tới Google để xử lý ngay bây giờ.</translation>
 <translation id="470644585772471629">Đảo màu</translation>
 <translation id="4708065238214351979">Tăng độ sáng của bàn phím</translation>
 <translation id="4717575069099566988">Cáp USB-C của bạn không hỗ trợ USB4. Hiệu suất của thiết bị có thể bị hạn chế.</translation>
+<translation id="4724328513667182700">6 mẹo giúp bạn làm quen với <ph name="PRODUCT_NAME" /></translation>
 <translation id="4730374152663651037">SỬ DỤNG THƯỜNG XUYÊN</translation>
 <translation id="4731797938093519117">Quyền truy cập của cha mẹ</translation>
 <translation id="4733161265940833579"><ph name="BATTERY_PERCENTAGE" />% (Trái)</translation>
@@ -1027,6 +1029,7 @@ Một số tính năng bị hạn chế nhằm tăng thời lượng pin.</trans
 <translation id="4964188651935955085">Khi bạn tắt Bluetooth, thiết bị bên ngoài sau đây sẽ ngắt kết nối khỏi <ph name="DEVICE_TYPE" />:</translation>
 <translation id="4966431234408005599">Tăng âm lượng</translation>
 <translation id="4969092041573468113"><ph name="HOURS" /> giờ <ph name="MINUTES" /> phút <ph name="SECONDS" /> giây</translation>
+<translation id="496999337731226334">Bước <ph name="STEP" />/<ph name="TOTAL_STEPS" /> của hướng dẫn. Các chế độ cài đặt thường dùng như Wi-Fi, Bluetooth và âm lượng sẽ nằm trong phần Cài đặt nhanh. Bạn cũng có thể vào phần này để chụp ảnh màn hình. Nhấn tổ hợp phím Alt + Shift + S để mở phần Cài đặt nhanh.</translation>
 <translation id="4975771730019223894">Huy hiệu ứng dụng</translation>
 <translation id="4977493774330778463"><ph name="NUM_IMPORTANT_NOTIFICATION" />:
         <ph name="NOTIFICATION_1" />,
@@ -1144,6 +1147,7 @@ Chưa kết nối thiết bị nào.</translation>
 <translation id="540713187982329711">Bật/tắt điểm phát sóng. Điểm phát sóng đang bật, chưa có thiết bị nào kết nối.</translation>
 <translation id="5413656666631274079">Trang cài đặt</translation>
 <translation id="5414198321558177633">Đang làm mới danh sách hồ sơ. Quá trình này có thể mất vài phút.</translation>
+<translation id="5417965108047245734">Xem hướng dẫn nhanh để biết cách sử dụng <ph name="PRODUCT_NAME" /></translation>
 <translation id="5426063383988017631">Đã đóng trình đơn Cài đặt</translation>
 <translation id="5428899915242071344">Bắt đầu chọn</translation>
 <translation id="5429993543155113935">Hiện không hỗ trợ cửa sổ ẩn danh</translation>
@@ -1440,6 +1444,7 @@ Chưa kết nối thiết bị nào.</translation>
 <translation id="6555373427270923730">Nhập địa chỉ web vào thanh địa chỉ, sau đó nhấn phím <ph name="MODIFIER" /><ph name="KEY" /></translation>
 <translation id="655633303491376835"><ph name="APP_NAME" />
 Mới cài đặt</translation>
+<translation id="6559158502366839560">Khám phá các ứng dụng và trò chơi khác</translation>
 <translation id="6559976592393364813">Hỏi quản trị viên</translation>
 <translation id="6565007273808762236">Kết nối eSIM không có sẵn</translation>
 <translation id="6570831796530454248">{0,plural, =1{Cập nhật thiết bị trong vòng 1 giờ}other{Cập nhật thiết bị trong vòng # giờ}}</translation>
@@ -1524,7 +1529,6 @@ Mới cài đặt</translation>
 <translation id="6874854809828346832">Hiển thị thông tin chi tiết về điểm phát sóng. Điểm phát sóng đang bật.</translation>
 <translation id="6878400149835617132">Đã tắt phím tắt</translation>
 <translation id="6878701771800702153">{NUM_APPS,plural, =1{1 ứng dụng}other{# ứng dụng}}</translation>
-<translation id="6878787305374738418">Bước 4/5 của hướng dẫn. Sau khi kích hoạt Trình chạy, bạn sẽ thấy thanh tìm kiếm nâng cao. Bạn có thể bắt đầu nhập để tìm kiếm tệp, ứng dụng, v.v. Bạn cũng có thể tìm được câu trả lời cho các câu hỏi về <ph name="PRODUCT_NAME" />.</translation>
 <translation id="6883768636838842873">Phím tắt, mẹo sử dụng thiết bị, v.v.</translation>
 <translation id="6884665277231944629">Quay lại hôm nay</translation>
 <translation id="6886172995547742638">Hiệu suất của <ph name="DEVICE_TYPE" /> của bạn có thể bị giảm. Hãy dùng bộ sạc USB-C được chứng nhận có công suất <ph name="PREFERRED_MINIMUM_POWER" />W trở lên.</translation>
@@ -1593,6 +1597,7 @@ Mới cài đặt</translation>
 <translation id="7143207342074048698">Đang kết nối</translation>
 <translation id="7144942256906679589">Trạng thái pin</translation>
 <translation id="7145639536026937076">Pin ở mức <ph name="PERCENTAGE" />% và đang sạc. Trình tiết kiệm pin đang bật.</translation>
+<translation id="7149149900052329230">Quản lý tệp trên thiết bị và tệp trên Google Drive, tất cả đều có trong ứng dụng Files.</translation>
 <translation id="7165278925115064263">Alt+Shift+K</translation>
 <translation id="7167913274352523149"><ph name="HOTSPOT" />,
         <ph name="NETWORK" /></translation>
@@ -1613,7 +1618,6 @@ Mới cài đặt</translation>
 <translation id="726276584504105859">Kéo vào đây để sử dụng chế độ chia đôi màn hình</translation>
 <translation id="7262906531272962081">Tạo lời nhắc</translation>
 <translation id="7278787617901301220"><ph name="LAUNCHER_KEY_NAME" /> + backspace</translation>
-<translation id="7282547098317872382">Bước 3/5 của hướng dẫn. Dùng các ứng dụng để làm mọi việc bạn cần trên <ph name="PRODUCT_NAME" />. Bạn có thể tìm ứng dụng của mình trong Trình chạy. Nhấn tổ hợp phím Alt + Shift + L để lấy tiêu điểm vào nút Trình chạy.</translation>
 <translation id="7285232777292757180">Sử dụng công cụ chụp ảnh màn hình trong trình đơn cài đặt nhanh để chụp ảnh màn hình</translation>
 <translation id="7301826272005790482">Đóng đề xuất về cửa sổ</translation>
 <translation id="7302889331339392448">Tính năng Phụ đề trực tiếp đang tắt.</translation>
@@ -1795,10 +1799,12 @@ Mới cài đặt</translation>
 <translation id="7933084174919150729">Bạn chỉ có thể sử dụng Trợ lý Google cho hồ sơ chính.</translation>
 <translation id="79341161159229895">Tài khoản được quản lý bởi <ph name="FIRST_PARENT_EMAIL" /> và <ph name="SECOND_PARENT_EMAIL" /></translation>
 <translation id="793716872548410480">Nhấn tổ hợp phím <ph name="SHORTCUT_KEY_NAME" /> + V để xem bảng nhớ tạm. 5 mục gần đây nhất mà bạn đã sao chép sẽ được lưu vào bảng nhớ tạm.</translation>
+<translation id="7942330802915522974">Bước <ph name="STEP" />/<ph name="TOTAL_STEPS" /> của hướng dẫn. Bạn có thể tìm ứng dụng Files trong Trình chạy. Quản lý tệp trên thiết bị và tệp trên Google Drive, tất cả đều có trong ứng dụng Files.</translation>
 <translation id="7942349550061667556">Đỏ</translation>
 <translation id="7943516765291457328">Bật Bluetooth để quét tìm các điểm phát sóng lân cận</translation>
 <translation id="7944023924886109030">Xem tất cả sự kiện cho hôm nay</translation>
 <translation id="7945357288295809525">Hiển thị chế độ cài đặt hỗ trợ tiếp cận, "<ph name="ENABLED_FEATURES" />" đã bật.</translation>
+<translation id="7946681191253332687">Hiện đã có bản cập nhật bảo mật mở rộng</translation>
 <translation id="7947798320695032612"><ph name="APP_NAME" /> muốn sử dụng <ph name="DEVICE_NAME" /> của bạn</translation>
 <translation id="7951630946012935453">Giảm độ sáng bàn phím</translation>
 <translation id="7953994493035617347">Bạn có muốn xác nhận độ phân giải mới không?</translation>
@@ -1910,7 +1916,6 @@ Mới cài đặt</translation>
 <translation id="8412677897383510995">Hiển thị các tùy chọn cài đặt màn hình</translation>
 <translation id="8413272770729657668">Bắt đầu ghi sau 3, 2, 1</translation>
 <translation id="8416730306157376817"><ph name="BATTERY_PERCENTAGE" />% (Hộp đựng)</translation>
-<translation id="8417951779969083400">Bước 2/5 của hướng dẫn. Các tuỳ chọn kiểm soát thường dùng như Wi-Fi, Bluetooth và âm lượng sẽ nằm trong phần Cài đặt nhanh. Bạn cũng có thể vào phần này để chụp ảnh màn hình. Nhấn tổ hợp phím Alt + Shift + S để mở trình đơn Cài đặt nhanh.</translation>
 <translation id="8420205633584771378">Xóa đề xuất này?</translation>
 <translation id="8421270167862077762"><ph name="UNAVAILABLE_APPS" /> không có trên thiết bị này.</translation>
 <translation id="8426708595819210923">Xin chào <ph name="GIVEN_NAME" />!</translation>
@@ -2131,6 +2136,7 @@ Mới cài đặt</translation>
 <translation id="987589956647469042">Dữ liệu di động đang bật</translation>
 <translation id="989374776391122812">Các tuỳ chọn điều khiển máy ảnh và âm thanh</translation>
 <translation id="990277280839877440">Đã đóng cửa sổ <ph name="WINDOW_TITILE" />.</translation>
+<translation id="993398562350683614">Bước <ph name="STEP" />/<ph name="TOTAL_STEPS" /> của hướng dẫn. Dùng các ứng dụng để làm mọi việc bạn cần trên <ph name="PRODUCT_NAME" />. Bạn có thể tìm ứng dụng của mình trong Trình chạy. Nhấn tổ hợp phím Alt + Shift + L để lấy tiêu điểm vào nút Trình chạy.</translation>
 <translation id="994354411665877646"><ph name="NETWORK_NAME" />, <ph name="SUBTEXT" /></translation>
 <translation id="996204416024568215">Nhận các tính năng mới nhất và mức độ bảo mật cao hơn. Quá trình cập nhật diễn ra trong nền.</translation>
 </translationbundle>

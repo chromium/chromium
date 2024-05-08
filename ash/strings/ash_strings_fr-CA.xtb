@@ -166,6 +166,7 @@ Voici quelques exemples de choses que vous pouvez essayer pour commencer.</trans
 <translation id="1586324912145647027">Accédez aux bureaux 1 à 8</translation>
 <translation id="158838227375272121">Site Web de Google Classroom</translation>
 <translation id="1589090746204042747">Accédez à toute l'activité de votre session</translation>
+<translation id="1597880963776148053">Visite guidée : étape <ph name="STEP" /> de <ph name="TOTAL_STEPS" />. Vos applications épinglées et ouvertes sont sur l'étagère située dans la partie inférieure de l'écran. Appuyez sur Alt+Maj+L, puis sur l'onglet pour mettre en évidence les éléments de l'étagère.</translation>
 <translation id="1602874809115667351"><ph name="LAUNCHER_KEY_NAME" />+flèche vers le bas</translation>
 <translation id="1604857178818051494">Mettre le contenu multimédia en pause</translation>
 <translation id="1607312127821884567">Ignorer la configuration de l'affichage des applications de votre téléphone</translation>
@@ -303,6 +304,7 @@ Voici quelques exemples de choses que vous pouvez essayer pour commencer.</trans
 <translation id="2257486738914982088">Un problème est survenu lors du téléchargement de <ph name="FILENAME" /></translation>
 <translation id="2258734398699965611">Fichiers suggérés</translation>
 <translation id="2268130516524549846">La connectivité Bluetooth est désactivée</translation>
+<translation id="2268731132310444948">Visite guidée : étape <ph name="STEP" /> de <ph name="TOTAL_STEPS" />. Une fois le lanceur activé, vous obtiendrez une barre de recherche améliorée. Vous pouvez commencer à taper pour rechercher vos fichiers, vos applications et bien plus encore. Vous pouvez également obtenir des réponses aux questions concernant votre <ph name="PRODUCT_NAME" />.</translation>
 <translation id="2268813581635650749">Tous déconnecter</translation>
 <translation id="2276987123919776440">15 min</translation>
 <translation id="2277103315734023688">Rechercher vers l'avant</translation>
@@ -397,6 +399,7 @@ Voici quelques exemples de choses que vous pouvez essayer pour commencer.</trans
 <translation id="2607678425161541573">Connexion en ligne requise</translation>
 <translation id="2612072250312279703">moniteur d'activité</translation>
 <translation id="2612614436418177118">Déplacer une icône d'application dans la grille d'applications</translation>
+<translation id="2619326010008283367">Visite guidée : étape <ph name="STEP" /> de <ph name="TOTAL_STEPS" />. Vous pouvez trouver les paramètres de votre appareil dans le lanceur. Essayez de personnaliser votre <ph name="PRODUCT_NAME" /> dans les paramètres, par exemple en modifiant votre fond d'écran ou en définissant un écran de veille.</translation>
 <translation id="2620016719323068571">Recherchez vos <ph name="CATEGORY" />, vos fichiers, vos applications et plus.</translation>
 <translation id="2620436844016719705">Système</translation>
 <translation id="2620900772667816510">Super résolution Bluetooth</translation>
@@ -818,7 +821,6 @@ Branchez votre appareil sur une source d'alimentation.</translation>
 <translation id="4209973997261364186">Le Wi-Fi est activé</translation>
 <translation id="4212472694152630271">Passer au NIP</translation>
 <translation id="4215497585250573029">Paramètres de RPV</translation>
-<translation id="4215548513524864822">Visite guidée : étape 5 sur 5. Vous pouvez trouver les paramètres de votre appareil dans le lanceur. Essayez de personnaliser votre <ph name="PRODUCT_NAME" /> dans les paramètres, par exemple en modifiant votre fond d'écran ou en définissant un écran de veille.</translation>
 <translation id="4217571870635786043">Dictée</translation>
 <translation id="4221957499226645091"><ph name="APP_NAME" />, application installée, en pause</translation>
 <translation id="4228078597006700451">Commandes non configurées</translation>
@@ -945,12 +947,12 @@ Un appareil connecté.</translation>
 <translation id="468293128311738995">Applications de votre téléphone</translation>
 <translation id="4690510401873698237">Étagère dans le bas</translation>
 <translation id="4696813013609194136">Déverrouiller l'appareil avec le code parental</translation>
-<translation id="469693290987463983">Visite guidée : étape 1 sur 5. Vos applications épinglées et ouvertes sont sur l'étagère située dans la partie inférieure de l'écran. Appuyez sur Alt+Maj+L, puis sur l'onglet pour mettre en évidence les éléments de l'étagère.</translation>
 <translation id="4702647871202761252">L'écran de confidentialité est désactivé</translation>
 <translation id="4706121060329443414">Une tentative de téléchargement aura lieu ultérieurement. Le fichier vocal sera maintenant envoyé à Google aux fin de traitement.</translation>
 <translation id="470644585772471629">Inversion des couleurs</translation>
 <translation id="4708065238214351979">Augmenter la luminosité du clavier</translation>
 <translation id="4717575069099566988">Votre câble USB-C ne prend pas en charge la norme USB4. La performance de l'appareil peut être limitée.</translation>
+<translation id="4724328513667182700">Six conseils pour bien démarrer sur <ph name="PRODUCT_NAME" /></translation>
 <translation id="4730374152663651037">FRÉQUEMMENT UTILISÉES</translation>
 <translation id="4731797938093519117">Accès parental</translation>
 <translation id="4733161265940833579"><ph name="BATTERY_PERCENTAGE" /> % (gauche)</translation>
@@ -1026,6 +1028,7 @@ Un appareil connecté.</translation>
 <translation id="4964188651935955085">Lorsque vous désactivez le Bluetooth, l'appareil externe suivant se déconnectera de votre <ph name="DEVICE_TYPE" /> :</translation>
 <translation id="4966431234408005599">Augmenter le volume</translation>
 <translation id="4969092041573468113"><ph name="HOURS" /> h <ph name="MINUTES" /> min <ph name="SECONDS" /> s</translation>
+<translation id="496999337731226334">Visite guidée : étape <ph name="STEP" /> de <ph name="TOTAL_STEPS" />. Les commandes fréquemment utilisées comme le Wi-Fi, le Bluetooth et le volume se trouvent dans les Paramètres rapides. Vous pouvez également y accéder pour prendre des captures d'écran. Appuyez sur Alt+Maj+S pour ouvrir les Paramètres rapides.</translation>
 <translation id="4975771730019223894">Badges d'applications</translation>
 <translation id="4977493774330778463"><ph name="NUM_IMPORTANT_NOTIFICATION" />:
         <ph name="NOTIFICATION_1" />,
@@ -1143,6 +1146,7 @@ Aucun appareil n'est connecté.</translation>
 <translation id="540713187982329711">Basculez le point d'accès sans fil. Le point d'accès sans fil est activé, aucun appareil connecté.</translation>
 <translation id="5413656666631274079">Page des paramètres</translation>
 <translation id="5414198321558177633">Actualisation de la liste de profils en cours… Cette opération peut prendre quelques minutes.</translation>
+<translation id="5417965108047245734">Regardez une présentation rapide pour vous familiariser avec votre <ph name="PRODUCT_NAME" /></translation>
 <translation id="5426063383988017631">Menu Paramètres fermé</translation>
 <translation id="5428899915242071344">Commencer la sélection</translation>
 <translation id="5429993543155113935">Les fenêtres de navigation privée ne sont pas prises en charge actuellement</translation>
@@ -1523,7 +1527,6 @@ Nouvelle installation</translation>
 <translation id="6874854809828346832">Afficher les détails du point d'accès sans fil. Le point d'accès sans fil est activé</translation>
 <translation id="6878400149835617132">Raccourci désactivé</translation>
 <translation id="6878701771800702153">{NUM_APPS,plural, =1{une application}one{# application}other{# applications}}</translation>
-<translation id="6878787305374738418">Visite guidée : étape 4 sur 5. Une fois le lanceur activé, vous obtiendrez une barre de recherche améliorée. Vous pouvez commencer à taper pour rechercher vos fichiers, vos applications et bien plus encore. Vous pouvez également obtenir des réponses aux questions concernant votre <ph name="PRODUCT_NAME" />.</translation>
 <translation id="6883768636838842873">Raccourcis clavier, conseils d'utilisation de l'appareil et plus</translation>
 <translation id="6884665277231944629">Revenir à aujourd'hui</translation>
 <translation id="6886172995547742638">Cela peut nuire aux performances de votre <ph name="DEVICE_TYPE" />. Utilisez un adaptateur d'alimentation USB-C de<ph name="PREFERRED_MINIMUM_POWER" /> W ou plus.</translation>
@@ -1592,6 +1595,7 @@ Nouvelle installation</translation>
 <translation id="7143207342074048698">Connexion…</translation>
 <translation id="7144942256906679589">État de la pile</translation>
 <translation id="7145639536026937076">Pile chargée à <ph name="PERCENTAGE" /> % et en cours de recharge. L'Économiseur de pile est activé.</translation>
+<translation id="7149149900052329230">Gérez vos fichiers locaux et vos fichiers Google Disque dans l'application Fichiers.</translation>
 <translation id="7165278925115064263">Alt+Maj+K</translation>
 <translation id="7167913274352523149"><ph name="HOTSPOT" />,
         <ph name="NETWORK" /></translation>
@@ -1612,7 +1616,6 @@ Nouvelle installation</translation>
 <translation id="726276584504105859">Glissez l'élément ici pour utiliser l'écran partagé</translation>
 <translation id="7262906531272962081">Créer un rappel</translation>
 <translation id="7278787617901301220"><ph name="LAUNCHER_KEY_NAME" />+retour arrière</translation>
-<translation id="7282547098317872382">Visite guidée : étape 3 sur 5. Utilisez des applications pour faire tout ce dont vous avez besoin sur votre <ph name="PRODUCT_NAME" />. Vous trouverez vos applications dans le lanceur. Appuyez sur Alt+Maj+L pour mettre en évidence le bouton du lanceur.</translation>
 <translation id="7285232777292757180">Utilisez l'outil de capture d'écran dans les Paramètres rapides pour prendre des captures d'écran</translation>
 <translation id="7301826272005790482">Fermer les suggestions de fenêtres</translation>
 <translation id="7302889331339392448">Les sous-titres instantanés sont désactivés.</translation>
@@ -1794,10 +1797,12 @@ Pour éteindre l'appareil, appuyez à nouveau sur le bouton d'alimentation de l'
 <translation id="7933084174919150729">L'Assistant Google n'est offert que pour le profil principal.</translation>
 <translation id="79341161159229895">Compte géré par <ph name="FIRST_PARENT_EMAIL" /> et <ph name="SECOND_PARENT_EMAIL" /></translation>
 <translation id="793716872548410480">Appuyez sur <ph name="SHORTCUT_KEY_NAME" />+V pour afficher le contenu du presse-papiers. Les cinq derniers éléments que vous avez copiés sont enregistrés dans le presse-papiers.</translation>
+<translation id="7942330802915522974">Visite guidée : étape <ph name="STEP" /> de <ph name="TOTAL_STEPS" />. Vous trouverez l'application Fichiers dans le lanceur. Gérez vos fichiers locaux et vos fichiers Google Disque dans l'application Fichiers.</translation>
 <translation id="7942349550061667556">Rouge</translation>
 <translation id="7943516765291457328">Activez le Bluetooth pour rechercher les points d'accès sans fil à proximité</translation>
 <translation id="7944023924886109030">Voir tous les événements d'aujourd'hui</translation>
 <translation id="7945357288295809525">Afficher les paramètres d'accessibilité, « <ph name="ENABLED_FEATURES" /> » activé.</translation>
+<translation id="7946681191253332687">Mises à jour de sécurité étendues accessibles</translation>
 <translation id="7947798320695032612"><ph name="APP_NAME" /> souhaite utiliser votre <ph name="DEVICE_NAME" /></translation>
 <translation id="7951630946012935453">Assombrir le clavier</translation>
 <translation id="7953994493035617347">Confirmer la nouvelle résolution?</translation>
@@ -1909,7 +1914,6 @@ Pour éteindre l'appareil, appuyez à nouveau sur le bouton d'alimentation de l'
 <translation id="8412677897383510995">Afficher les paramètres d'affichage</translation>
 <translation id="8413272770729657668">L'enregistrement va commencer dans 3 secondes, 2 secondes, 1 seconde</translation>
 <translation id="8416730306157376817"><ph name="BATTERY_PERCENTAGE" /> % (étui)</translation>
-<translation id="8417951779969083400">Visite guidée : étape 2 sur 5. Les commandes fréquemment utilisées comme le Wi-Fi, le Bluetooth et le volume se trouvent dans les Paramètres rapides. Vous pouvez également y accéder pour prendre des captures d'écran. Appuyez sur Alt+Maj+S pour ouvrir les Paramètres rapides.</translation>
 <translation id="8420205633584771378">Supprimer cette suggestion?</translation>
 <translation id="8421270167862077762"><ph name="UNAVAILABLE_APPS" /> n'est pas sur cet appareil.</translation>
 <translation id="8426708595819210923">Bonsoir <ph name="GIVEN_NAME" />,</translation>
@@ -2122,12 +2126,14 @@ Pour éteindre l'appareil, appuyez à nouveau sur le bouton d'alimentation de l'
 <translation id="954052413789300507">Espace de stockage insuffisant pour <ph name="FILENAME" />. Libérez de l'espace de stockage.</translation>
 <translation id="954520015070501466">30 min</translation>
 <translation id="956452277966142925">Paramètres du Tableau de bord de jeu</translation>
+<translation id="961856697154696964">Supp. données de navigation</translation>
 <translation id="974545358917229949">Affichage de <ph name="RESULT_COUNT" /> résultats pour <ph name="QUERY" /></translation>
 <translation id="981011780479609956">Aucune échéance</translation>
 <translation id="98120814841227350">Aller à la fin du document</translation>
 <translation id="987589956647469042">Les données cellulaires sont activées</translation>
 <translation id="989374776391122812">Commandes de l'appareil photo et du son</translation>
 <translation id="990277280839877440">La fenêtre <ph name="WINDOW_TITILE" /> a été fermée.</translation>
+<translation id="993398562350683614">Visite guidée : étape <ph name="STEP" /> de <ph name="TOTAL_STEPS" />. Utilisez des applications pour faire tout ce dont vous avez besoin sur votre <ph name="PRODUCT_NAME" />. Vous trouverez vos applications dans le lanceur. Appuyez sur Alt+Maj+L pour mettre en évidence le bouton du lanceur.</translation>
 <translation id="994354411665877646"><ph name="NETWORK_NAME" />, <ph name="SUBTEXT" /></translation>
 <translation id="996204416024568215">Bénéficiez des dernières fonctionnalités et améliorations de la sécurité. Les mises à jour s'effectuent en arrière-plan.</translation>
 </translationbundle>

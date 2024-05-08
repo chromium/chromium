@@ -73,6 +73,7 @@
 <translation id="2918709798697875261">የእርስዎ ድርጅት ከChromium ዘግተው እንደወጡ እንዲቆዩ ይፈልጋል።</translation>
 <translation id="2942241131342758843">አገናኞችን ለመክፈት፣ ከመግብሮች ለመፈለግ እና የይለፍ ቃሎችን በራስ-ለመሙላት በሌሎች መተግበሪያዎች ውስጥ በነባሪነት Chromium ይጠቀሙ</translation>
 <translation id="2977470724722393594">Chromium የተዘመነ ነው</translation>
+<translation id="3044857325852340337">የተሰረዘ Chromium ውሂብ</translation>
 <translation id="3078941082359356771">{COUNT,plural, =1{Chromium ይህን ጥቅል በአዲስ ትር ገፅ ላይ እንዲከታተሉ ሊያግዝዎት ይችላል።}one{Chromium ይህን ጥቅል በአዲስ ትር ገፅ ላይ እንዲከታተሉ ሊያግዝዎት ይችላል።}other{Chromium እነዚህን ጥቅሎች በአዲስ ትር ገፅ ላይ እንዲከታተሉ ሊያግዝዎት ይችላል።}}</translation>
 <translation id="3102849287235003384">በሁሉም ድር ጣቢያዎች ላይ የእርስዎን የGoogle መለያ ዘግተው ለመውጣት <ph name="BEGIN_LINK" />ከChromium ዘግተው ይውጡ<ph name="END_LINK" />።</translation>
 <translation id="3219277919172823720">በChromium ውስጥ በጽምፅ ይፈልጉ</translation>
@@ -123,6 +124,7 @@
 <translation id="4633738821577273991">ለዚህ የChromium መገለጫ የተሻሻለ የደህንነት አሰሳንም ያግኙ</translation>
 <translation id="4638625642619341392">Chromiumን እዚህ አውርዱ።</translation>
 <translation id="4654936625574199632">መተግበሪያውን ለማሻሻል ለማገዝ Chromium የአጠቃቀም እና የስንክል ውሂብን ወደ Google ይልካል። <ph name="BEGIN_LINK" />አቀናብር<ph name="END_LINK" /></translation>
+<translation id="4675485352217495362">በChromium ውስጥ የአሰሳ ውሂብን ሰርዝ</translation>
 <translation id="4681781466797808448">የChromium ቃኚን ያብሩ</translation>
 <translation id="4736424910885271643">የእርስዎ መለያ በ<ph name="HOSTED_DOMAIN" /> የሚተዳደር ነው፣ ስለሆነም የእርስዎ የChromium ውሂብ ከዚህ መሣሪያ ይጸዳል</translation>
 <translation id="4773487571745795781">በChromium መግባትን አጥፍተዋል።</translation>
@@ -190,6 +192,7 @@
 <translation id="6324041800010509197">በChromium ውስጥ የትር ፍርግርን ይጎብኙ</translation>
 <translation id="6325378625795868881">በመልዕክቶች እና ሌሎች መተግበሪያዎች ውስጥ ያሉ አገናኞች ላይ መታ በሚያደርጉበት ማንኛውም ጊዜ Chromiumን ይጠቀሙ።</translation>
 <translation id="632825460376924298">የChromium በመለያ መግባትን ይፍቀዱ</translation>
+<translation id="6332129548244419716">በChromium ውስጥ የአሰሳ ውሂብን ሰርዝ።</translation>
 <translation id="6337530241089703714">የChromium ውሂብዎን ከዚህ መሣሪያ ይጸዳ ወይም ይቆይ እንደሆነ ይምረጡ</translation>
 <translation id="6348483005826990855">3. Chromiumን ይምረጡ</translation>
 <translation id="6383607155624074112">Chromiumን ከመነሻ ማያ ገጽዎ መትከያ በፍጥነት ይድረሱበት</translation>

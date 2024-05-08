@@ -32,6 +32,7 @@
 <translation id="2175927920773552910">Código QR</translation>
 <translation id="2244252133441425811">Habilitar selector de FPS de vídeo</translation>
 <translation id="2271433936731426666">Habilitar captura de vídeo de tamaño completo</translation>
+<translation id="2281736597583450397">Capta detalles más nítidos con el zoom mejorado</translation>
 <translation id="2320741269052147773">Mover a la izquierda</translation>
 <translation id="2360840973209616515">Tu administrador gestiona la aplicación de la cámara.
         Para obtener más información, ponte en contacto con esa persona.</translation>
@@ -118,6 +119,7 @@
 Si tu comentario está relacionado con la calidad de imagen o de vídeo, adjunta una foto o un vídeo de muestra y describe el problema. Por ejemplo, indica si la foto está demasiado oscura o el sujeto no está enfocado.</translation>
 <translation id="6519884562954018934">Unirse a <ph name="WIFINAME" /></translation>
 <translation id="6527303717912515753">Compartir</translation>
+<translation id="6586509689874700895">Primero, pulsa <ph name="BUTTON_NAME" /> para ampliar. Después, cuando hayas hecho una foto, verás detalles mejorados.</translation>
 <translation id="6617916774429601017">Mostrar todas las resoluciones</translation>
 <translation id="6631515515009660915">Efecto espejo desactivado</translation>
 <translation id="6652737148136672975">Mover la posición de la esquina con las teclas de flecha</translation>

@@ -12,6 +12,7 @@
 <translation id="1588438908519853928">Normal</translation>
 <translation id="1591562245178063882">Denne måneden</translation>
 <translation id="1637811476055996098">Velg filer</translation>
+<translation id="1680090928918677457">Bruk kameraet</translation>
 <translation id="1681022320378710418">klokkeslettet nå</translation>
 <translation id="1727839386348365796">Pipette</translation>
 <translation id="1729654308190250600">Skriv inn en ikke-tom e-postadresse.</translation>
@@ -60,6 +61,7 @@
 <translation id="3822383571486410024">Du må forlenge denne teksten til <ph name="MIN_CHARACTERS" /> tegn eller mer (for øyeblikket bruker du <ph name="CURRENT_LENGTH" /> tegn).</translation>
 <translation id="383465348367842624">En del etterfulgt av «<ph name="ATSIGN" />» kan ikke inneholde symbolet «<ph name="INVALIDCHARACTER" />».</translation>
 <translation id="3846214748874656680">Avslutt fullskjermmodus</translation>
+<translation id="3914173277599553213">Påkrevd</translation>
 <translation id="4031179711345676612">Mikrofonen er tillatt</translation>
 <translation id="4103419683916926126">Millisekunder</translation>
 <translation id="4201051445878709314">Se forrige måned</translation>
@@ -75,6 +77,7 @@
 <translation id="4912200001568447310">gjeldende element</translation>
 <translation id="4915360478455618802">Vis klokkeslettvelger</translation>
 <translation id="4924138096460353083">ukjent</translation>
+<translation id="49269513399674318">Bruk mikrofonen</translation>
 <translation id="4950364064308314478">Vis lokal dato- og klokkeslettvelger</translation>
 <translation id="4971739861736909480"><ph name="ACCNAME" /> er valgt</translation>
 <translation id="4975562563186953947"><ph name="SELECTED_COUNT" /> er valgt</translation>
@@ -142,6 +145,7 @@
 <translation id="7080893216867146095">Deling av posisjon er tillatt</translation>
 <translation id="709897737746224366">Sørg for samsvar med det forespurte formatet.</translation>
 <translation id="7102274145889307184">nåværende posisjon</translation>
+<translation id="7134810312945846184">Bruk mikrofonen og kameraet</translation>
 <translation id="7263440858009898357">Velg en artikkel i listen.</translation>
 <translation id="7320576522385648310">bufring</translation>
 <translation id="7341556277900466204">Fargebrønn</translation>

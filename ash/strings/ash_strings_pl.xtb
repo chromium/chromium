@@ -166,6 +166,7 @@ Oto kilka rzeczy, które możesz wypróbować na początek.</translation>
 <translation id="1586324912145647027">Przejdź do biurka z zakresu od 1 do 8</translation>
 <translation id="158838227375272121">Witryna Google Classroom</translation>
 <translation id="1589090746204042747">uzyskiwać dostęp do całej Twojej aktywności w tej sesji;</translation>
+<translation id="1597880963776148053">Prezentacja – krok <ph name="STEP" /> z <ph name="TOTAL_STEPS" />. Przypięte i otwarte aplikacje znajdują się na półce u dołu ekranu. Aby przenieść zaznaczenie na elementy półki, naciśnij Alt + Shift + L, a potem Tab.</translation>
 <translation id="1602874809115667351"><ph name="LAUNCHER_KEY_NAME" /> + strzałka w dół</translation>
 <translation id="1604857178818051494">Wstrzymaj multimedia</translation>
 <translation id="1607312127821884567">Zamknij konfigurację wyświetlania aplikacji z telefonu</translation>
@@ -303,6 +304,7 @@ Oto kilka rzeczy, które możesz wypróbować na początek.</translation>
 <translation id="2257486738914982088">Podczas pobierania pliku <ph name="FILENAME" /> coś poszło nie tak</translation>
 <translation id="2258734398699965611">Sugerowane pliki</translation>
 <translation id="2268130516524549846">Bluetooth wyłączony</translation>
+<translation id="2268731132310444948">Prezentacja – krok <ph name="STEP" /> z <ph name="TOTAL_STEPS" />. Gdy Menu z aplikacjami zostanie aktywowane, zobaczysz ulepszony pasek wyszukiwania. Możesz zacząć pisać, aby wyszukać pliki, aplikacje i inne elementy lub dane. Możesz też zadawać pytania na temat urządzenia <ph name="PRODUCT_NAME" />.</translation>
 <translation id="2268813581635650749">Wyloguj wszystkich</translation>
 <translation id="2276987123919776440">15 min</translation>
 <translation id="2277103315734023688">Przewiń do przodu</translation>
@@ -397,6 +399,7 @@ Podłączone urządzenia: <ph name="DEVICECOUNT" />.</translation>
 <translation id="2607678425161541573">Wymagane jest zalogowanie w trybie online</translation>
 <translation id="2612072250312279703">monitor aktywności</translation>
 <translation id="2612614436418177118">Przenieś ikonę aplikacji w siatce aplikacji</translation>
+<translation id="2619326010008283367">Prezentacja – krok <ph name="STEP" /> z <ph name="TOTAL_STEPS" />. Ustawienia urządzenia znajdziesz w Menu z aplikacjami. W Ustawieniach możesz dostosować urządzenie <ph name="PRODUCT_NAME" />. Spróbuj np. zmienić tapetę lub ustawić wygaszacz ekranu.</translation>
 <translation id="2620016719323068571">Szukaj elementów takich jak np. <ph name="CATEGORY" />, pliki lub aplikacje…</translation>
 <translation id="2620436844016719705">System</translation>
 <translation id="2620900772667816510">Superrozdzielczość Bluetooth</translation>
@@ -819,7 +822,6 @@ W celu wydłużenia czasu pracy na baterii niektóre funkcje zostały ograniczo
 <translation id="4209973997261364186">Wi-Fi jest włączone</translation>
 <translation id="4212472694152630271">Zmień na PIN</translation>
 <translation id="4215497585250573029">Ustawienia sieci VPN</translation>
-<translation id="4215548513524864822">Prezentacja – krok 5 z 5. Ustawienia urządzenia znajdziesz w Menu z aplikacjami. W Ustawieniach możesz dostosować urządzenie <ph name="PRODUCT_NAME" />. Spróbuj np. zmienić tapetę lub ustawić wygaszacz ekranu.</translation>
 <translation id="4217571870635786043">Dyktowanie</translation>
 <translation id="4221957499226645091"><ph name="APP_NAME" />, zainstalowana aplikacja, wstrzymana</translation>
 <translation id="4228078597006700451">Elementy sterujące nie są skonfigurowane</translation>
@@ -946,12 +948,12 @@ Połączono 1 urządzenie.</translation>
 <translation id="468293128311738995">Aplikacje z telefonu</translation>
 <translation id="4690510401873698237">Półka na dole</translation>
 <translation id="4696813013609194136">Odblokuj urządzenie kodem rodzica</translation>
-<translation id="469693290987463983">Prezentacja – krok 1 z 5. Przypięte i otwarte aplikacje znajdują się na półce u dołu ekranu. Aby przenieść zaznaczenie na elementy półki, naciśnij Alt + Shift + L, a potem Tab.</translation>
 <translation id="4702647871202761252">Ekran chroniący prywatność jest wyłączony</translation>
 <translation id="4706121060329443414">Spróbuję je pobrać później. Na razie mowa będzie wysyłana do Google i tam będzie przetwarzana.</translation>
 <translation id="470644585772471629">Odwrócenie kolorów</translation>
 <translation id="4708065238214351979">Rozjaśnij klawiaturę</translation>
 <translation id="4717575069099566988">Twój kabel USB-C nie obsługuje standardu USB4. Wydajność urządzenia może być ograniczona.</translation>
+<translation id="4724328513667182700">6 wskazówek, jak zacząć korzystać z urządzenia <ph name="PRODUCT_NAME" /></translation>
 <translation id="4730374152663651037">CZĘSTO UŻYWANE</translation>
 <translation id="4731797938093519117">Dostęp rodzica</translation>
 <translation id="4733161265940833579"><ph name="BATTERY_PERCENTAGE" />% (lewa)</translation>
@@ -1027,6 +1029,7 @@ Połączono 1 urządzenie.</translation>
 <translation id="4964188651935955085">Gdy wyłączysz Bluetooth, to urządzenie zewnętrzne rozłączy się z urządzeniem <ph name="DEVICE_TYPE" />:</translation>
 <translation id="4966431234408005599">Zwiększ głośność</translation>
 <translation id="4969092041573468113"><ph name="HOURS" /> godz. <ph name="MINUTES" /> min <ph name="SECONDS" /> s</translation>
+<translation id="496999337731226334">Prezentacja – krok <ph name="STEP" /> z <ph name="TOTAL_STEPS" />. Często używane elementy sterujące dotyczące np. Wi-Fi, Bluetootha czy głośności znajdziesz w Szybkich ustawieniach. Możesz tam też robić zrzuty ekranu. Naciśnij Alt + Shift + S, aby otworzyć Szybkie ustawienia.</translation>
 <translation id="4975771730019223894">Plakietki aplikacji</translation>
 <translation id="4977493774330778463"><ph name="NUM_IMPORTANT_NOTIFICATION" />:
         <ph name="NOTIFICATION_1" />,
@@ -1144,6 +1147,7 @@ Brak połączonych urządzeń.</translation>
 <translation id="540713187982329711">Przełącz hotspota. Hotspot jest włączony. Żadne urządzenie nie jest połączone.</translation>
 <translation id="5413656666631274079">Strona ustawień</translation>
 <translation id="5414198321558177633">Odświeżam listę profili. Może to potrwać kilka minut.</translation>
+<translation id="5417965108047245734">Obejrzyj krótką prezentację, aby dowiedzieć się, jak korzystać z urządzenia <ph name="PRODUCT_NAME" />.</translation>
 <translation id="5426063383988017631">Zamknięto menu ustawień</translation>
 <translation id="5428899915242071344">Rozpocznij zaznaczanie</translation>
 <translation id="5429993543155113935">Okna incognito nie są obecnie obsługiwane</translation>
@@ -1439,6 +1443,7 @@ Brak połączonych urządzeń.</translation>
 <translation id="6542521951477560771">Przesyłam do: <ph name="RECEIVER_NAME" /></translation>
 <translation id="6555373427270923730">Wpisz adres internetowy w pasku adresu i naciśnij <ph name="MODIFIER" /> + <ph name="KEY" /></translation>
 <translation id="655633303491376835"><ph name="APP_NAME" /> – nowa instalacja</translation>
+<translation id="6559158502366839560">Zobacz więcej aplikacji i gier</translation>
 <translation id="6559976592393364813">Poproś administratora</translation>
 <translation id="6565007273808762236">Połączenie eSIM jest niedostępne</translation>
 <translation id="6570831796530454248">{0,plural, =1{Aktualizacja urządzenia nastąpi w ciągu godziny}few{Aktualizacja urządzenia nastąpi w ciągu # godzin}many{Aktualizacja urządzenia nastąpi w ciągu # godzin}other{Aktualizacja urządzenia nastąpi w ciągu # godziny}}</translation>
@@ -1523,7 +1528,6 @@ Brak połączonych urządzeń.</translation>
 <translation id="6874854809828346832">Pokaż szczegóły hotspota. Hotspot jest włączony.</translation>
 <translation id="6878400149835617132">Skrót wyłączony</translation>
 <translation id="6878701771800702153">{NUM_APPS,plural, =1{1 aplikacja}few{# aplikacje}many{# aplikacji}other{# aplikacji}}</translation>
-<translation id="6878787305374738418">Prezentacja – krok 4 z 5. Gdy Menu z aplikacjami zostanie aktywowane, zobaczysz ulepszony pasek wyszukiwania. Możesz zacząć pisać, aby wyszukać pliki, aplikacje i inne elementy lub dane. Możesz też zadawać pytania na temat urządzenia <ph name="PRODUCT_NAME" />.</translation>
 <translation id="6883768636838842873">Skróty klawiszowe, wskazówki dotyczące korzystania z urządzenia i inne</translation>
 <translation id="6884665277231944629">Wróć do dzisiaj</translation>
 <translation id="6886172995547742638">Twoje urządzenie <ph name="DEVICE_TYPE" /> może mieć gorszą wydajność. Używaj certyfikowanego zasilacza USB-C o mocy co najmniej <ph name="PREFERRED_MINIMUM_POWER" /> W.</translation>
@@ -1592,6 +1596,7 @@ Brak połączonych urządzeń.</translation>
 <translation id="7143207342074048698">Łączenie</translation>
 <translation id="7144942256906679589">Stan baterii</translation>
 <translation id="7145639536026937076">Naładowanie baterii: <ph name="PERCENTAGE" />%. Trwa ładowanie. Włączone jest Oszczędzanie baterii.</translation>
+<translation id="7149149900052329230">W aplikacji Pliki możesz zarządzać plikami lokalnymi i tymi z Dysku Google.</translation>
 <translation id="7165278925115064263">Alt + Shift + K</translation>
 <translation id="7167913274352523149"><ph name="HOTSPOT" />,
         <ph name="NETWORK" /></translation>
@@ -1612,7 +1617,6 @@ Brak połączonych urządzeń.</translation>
 <translation id="726276584504105859">Przeciągnij tutaj, by podzielić ekran</translation>
 <translation id="7262906531272962081">Utwórz przypomnienie</translation>
 <translation id="7278787617901301220"><ph name="LAUNCHER_KEY_NAME" /> + Backspace</translation>
-<translation id="7282547098317872382">Prezentacja – krok 3 z 5. Dzięki aplikacjom możesz robić na urządzeniu <ph name="PRODUCT_NAME" /> wszystko, co chcesz. Aplikacje znajdziesz w Menu z aplikacjami. Aby przenieść na nie zaznaczenie, naciśnij Alt + Shift + L.</translation>
 <translation id="7285232777292757180">Aby zrobić zrzut ekranu, użyj narzędzia zrzutu ekranu w Szybkich ustawieniach</translation>
 <translation id="7301826272005790482">Zamknij sugestie dotyczące okien</translation>
 <translation id="7302889331339392448">Napisy na żywo są wyłączone.</translation>
@@ -1794,10 +1798,12 @@ Aby wyłączyć urządzenie, ponownie naciśnij i przytrzymaj na nim przycisk z
 <translation id="7933084174919150729">Asystent Google jest dostępny tylko na profilu głównym.</translation>
 <translation id="79341161159229895">Kontem zarządzają <ph name="FIRST_PARENT_EMAIL" /> i <ph name="SECOND_PARENT_EMAIL" /></translation>
 <translation id="793716872548410480">Naciśnij <ph name="SHORTCUT_KEY_NAME" /> + V, by przejrzeć zawartość schowka. Znajdziesz tam ostatnie 5 skopiowanych elementów.</translation>
+<translation id="7942330802915522974">Prezentacja – krok <ph name="STEP" /> z <ph name="TOTAL_STEPS" />. Aplikację Pliki znajdziesz w Menu z aplikacjami. Możesz w niej zarządzać plikami lokalnymi i tymi z Dysku Google.</translation>
 <translation id="7942349550061667556">Czerwony</translation>
 <translation id="7943516765291457328">Włącz Bluetooth, aby skanować w poszukiwaniu hotspotów w pobliżu</translation>
 <translation id="7944023924886109030">Zobacz wszystkie dzisiejsze wydarzenia</translation>
 <translation id="7945357288295809525">Pokaż ustawienia ułatwień dostępu, włączono „<ph name="ENABLED_FEATURES" />”.</translation>
+<translation id="7946681191253332687">Dostępne są rozszerzone aktualizacje zabezpieczeń</translation>
 <translation id="7947798320695032612"><ph name="APP_NAME" /> chce użyć urządzenia <ph name="DEVICE_NAME" /></translation>
 <translation id="7951630946012935453">Przyciemnij klawiaturę</translation>
 <translation id="7953994493035617347">Potwierdzić nową rozdzielczość?</translation>
@@ -1909,7 +1915,6 @@ Aby wyłączyć urządzenie, ponownie naciśnij i przytrzymaj na nim przycisk z
 <translation id="8412677897383510995">Pokaż ustawienia wyświetlania</translation>
 <translation id="8413272770729657668">Nagrywanie rozpocznie się za 3, 2, 1</translation>
 <translation id="8416730306157376817"><ph name="BATTERY_PERCENTAGE" />% (obudowa)</translation>
-<translation id="8417951779969083400">Prezentacja – krok 2 z 5. Często używane elementy sterujące dotyczące np. Wi-Fi, Bluetootha czy głośności znajdziesz w Szybkich ustawieniach. Możesz tam też robić zrzuty ekranu. Naciśnij Alt + Shift + S, aby otworzyć Szybkie ustawienia.</translation>
 <translation id="8420205633584771378">Usunąć tę sugestię?</translation>
 <translation id="8421270167862077762">Aplikacji <ph name="UNAVAILABLE_APPS" /> nie ma na tym urządzeniu.</translation>
 <translation id="8426708595819210923">Dobry wieczór <ph name="GIVEN_NAME" />,</translation>
@@ -2130,6 +2135,7 @@ Aby wyłączyć urządzenie, ponownie naciśnij i przytrzymaj na nim przycisk z
 <translation id="987589956647469042">Mobilna transmisja danych jest włączona</translation>
 <translation id="989374776391122812">Sterowanie kamerą i dźwiękiem</translation>
 <translation id="990277280839877440">Okno <ph name="WINDOW_TITILE" /> zostało zamknięte.</translation>
+<translation id="993398562350683614">Prezentacja – krok <ph name="STEP" /> z <ph name="TOTAL_STEPS" />. Dzięki aplikacjom możesz robić na urządzeniu <ph name="PRODUCT_NAME" /> wszystko, co chcesz. Aplikacje znajdziesz w Menu z aplikacjami. Aby przenieść na nie zaznaczenie, naciśnij Alt + Shift + L.</translation>
 <translation id="994354411665877646"><ph name="NETWORK_NAME" />, <ph name="SUBTEXT" /></translation>
 <translation id="996204416024568215">Zainstaluj najnowsze funkcje i poprawki zabezpieczeń. Aktualizacje są przeprowadzane w tle.</translation>
 </translationbundle>

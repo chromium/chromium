@@ -11,6 +11,7 @@
 <translation id="1047458377670401304"><ph name="CPU_NAME" /> (<ph name="THREAD_COUNT" /> hilos, <ph name="CPU_MAX_CLOCK_SPEED" /> GHz)</translation>
 <translation id="1047773237499189053">Hay una nueva función disponible. Utiliza la flecha hacia arriba para obtener más información.</translation>
 <translation id="1049663189809099096">amarillo pastel</translation>
+<translation id="1056898198331236512">Advertencia</translation>
 <translation id="1059913517121127803">No se ha podido empezar a escanear</translation>
 <translation id="1062823486781306604"><ph name="INDEX" /> de <ph name="COUNT" />, <ph name="NAME" />.</translation>
 <translation id="1070066693520972135">WEP</translation>
@@ -28,6 +29,7 @@
 <translation id="1145018782460575098">La ventana de actualización de firmware de dispositivos externos está abierta. Actualizaciones disponibles: <ph name="NUM_UPDATES" />.</translation>
 <translation id="1145516343487477149">Encuentra artículos de ayuda y respuestas a preguntas frecuentes sobre Chromebook</translation>
 <translation id="1154390310959620237">Solo puedes personalizar 5 combinaciones de teclas. Elimina una combinación para añadir otra.</translation>
+<translation id="1155154308031262006">Introduce una petición</translation>
 <translation id="115705039208660697">piñas</translation>
 <translation id="1164939766849482256">Salvapantallas Del amanecer al anochecer</translation>
 <translation id="1167755866710282443">Abre el menú para personalizar las claves. Arrastra el menú para moverlo.</translation>
@@ -95,7 +97,6 @@
 <translation id="1478594628797167447">Escáner</translation>
 <translation id="1483493594462132177">Enviar</translation>
 <translation id="1488850966314959671">No se puede conectar a esta red con ningún APN personalizado habilitado. Ponte en contacto con tu operador móvil para obtener más información.</translation>
-<translation id="1491076385728777984">Actualizando firmware de <ph name="DEVICE_NAME" /></translation>
 <translation id="1499041187027566160">subir el volumen</translation>
 <translation id="1499900233129743732"><ph name="MANAGER" /> gestiona a este usuario y es posible que gestione sus ajustes y supervise su actividad de forma remota.</translation>
 <translation id="150962533380566081">El PUK no es válido.</translation>
@@ -291,7 +292,6 @@
 <translation id="2505327257735685095">Actualizar la imagen de fondo de pantalla actual</translation>
 <translation id="2512979179176933762">mostrar ventanas</translation>
 <translation id="2513396635448525189">Imagen de inicio de sesión</translation>
-<translation id="2517472476991765520">Escanear</translation>
 <translation id="2521835766824839541">pista anterior</translation>
 <translation id="2526590354069164005">Escritorio</translation>
 <translation id="2529641961800709867">Opciones de los botones</translation>
@@ -330,6 +330,7 @@
 <translation id="2744221223678373668">Compartidas</translation>
 <translation id="2751739896257479635">Autenticación de fase 2 EAP</translation>
 <translation id="2754757901767760034">lámpara</translation>
+<translation id="2780756493585863768">Fondos recientes creados con la tecnología de la IA de Google</translation>
 <translation id="2783010256799387990">SUPERADA</translation>
 <translation id="2786429550992142861">lino</translation>
 <translation id="2787435249130282949">teclado con más brillo</translation>
@@ -426,6 +427,7 @@
 <translation id="3456078764689556234">Se ha impreso la página <ph name="PRINTED_PAGES" /> de <ph name="TOTAL_PAGES" />.</translation>
 <translation id="345898999683440380">Escaneando página <ph name="PAGE_NUM" />. <ph name="PERCENTAGE_VALUE" /> % completado.</translation>
 <translation id="3459509316159669723">Imprimir</translation>
+<translation id="3462187165860821523">Actualizando <ph name="DEVICE_NAME" /></translation>
 <translation id="346423161771747987">Corriente</translation>
 <translation id="346539236881580388">Repetir foto</translation>
 <translation id="3484914941826596830">Mientras se actualiza el firmware, no desconectes este dispositivo externo ni apagues el ordenador. Puedes minimizar esta ventana. Es posible que esta actualización tarde unos minutos en instalarse y que tu dispositivo externo no funcione durante ese tiempo.</translation>
@@ -790,6 +792,7 @@
 <translation id="5559898619118303662">Cambiar automáticamente al tema oscuro al anochecer</translation>
 <translation id="556042886152191864">Botón</translation>
 <translation id="5562551811867441927"><ph name="TERRAIN_FEATURE" /> en tonos de color <ph name="TERRAIN_COLOR" /></translation>
+<translation id="5572169899491758844">Escanear</translation>
 <translation id="5578477003638479617">UMTS</translation>
 <translation id="5578519639599103840">Escanear de nuevo</translation>
 <translation id="5583640892426849032">Tecla de retroceso</translation>
@@ -879,7 +882,6 @@
 <translation id="6075872808778243331">(Android) Latencia de HTTP</translation>
 <translation id="6078323886959318429">Acceso directo</translation>
 <translation id="6091080061796993741">amarillo</translation>
-<translation id="610371409726072606">Fondo de cámara con la tecnología de la IA de Google</translation>
 <translation id="6104112872696127344">Se ha cancelado el análisis</translation>
 <translation id="6106186594183574873">Para finalizar, introduce tu contraseña anterior</translation>
 <translation id="6108689792487843350">No se puede acceder a la puerta de enlace</translation>
@@ -906,6 +908,7 @@
 <translation id="6205145102504628069">Movimiento de las nubes</translation>
 <translation id="6213737986933151570">CDMA1XRTT</translation>
 <translation id="6223752125779001553">No hay escáneres disponibles</translation>
+<translation id="6231648282154119906">Navegación segura de Google analizará automáticamente los archivos sospechosos como parte de la protección mejorada que has elegido</translation>
 <translation id="6232017090690406397">Batería</translation>
 <translation id="6234024205316847054">Mostrar detalles</translation>
 <translation id="6235460611964961764">Reiniciar uso de datos manualmente</translation>
@@ -1011,7 +1014,6 @@
 <translation id="672609503628871915">Consultar las novedades</translation>
 <translation id="6740695858234317715">crema y naranja</translation>
 <translation id="6741823073189174383">barca</translation>
-<translation id="674276385369049081">Fondos de cámara recientes con la tecnología de la IA de Google</translation>
 <translation id="6744441848304920043">jungla</translation>
 <translation id="6747035363363040417">de estilo neutro</translation>
 <translation id="6747215703636344499">Detenido: bandeja de salida llena</translation>
@@ -1032,6 +1034,7 @@
 <translation id="6871256179359663621">morado claro</translation>
 <translation id="6889786074662672253">Mientras se reinicia, no desconectes este dispositivo externo ni apagues el ordenador. Puedes minimizar esta ventana. Este proceso puede tardar unos minutos y es posible que tu dispositivo externo no funcione durante ese tiempo.</translation>
 <translation id="6900701049656042631">Este álbum no tiene ninguna foto. Para añadir fotos, visita <ph name="LINK" /></translation>
+<translation id="6902359863093437070">Crear fondo con IA</translation>
 <translation id="6905163627763043954">Probar</translation>
 <translation id="6905724422583748843">Volver a <ph name="PAGE_NAME" /></translation>
 <translation id="6910312834584889076">La cubierta del escáner está abierta. Ciérrala y vuelve a intentarlo.</translation>
@@ -1269,6 +1272,7 @@
 <translation id="8152370627892825"><ph name="DESCRIPTION" />, <ph name="ACCELERATOR_INFO" />.</translation>
 <translation id="8156233298086717232">mágica</translation>
 <translation id="8162776280680283326">zorros</translation>
+<translation id="8167413449582155132">Fondo creado con la tecnología de la IA de Google</translation>
 <translation id="8179976553408161302">Intro</translation>
 <translation id="8183975772394450380">playa</translation>
 <translation id="8206859287963243715">Móvil</translation>

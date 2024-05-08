@@ -116,10 +116,12 @@
 <translation id="417201473131094001">Application non prise en charge par Chrome Canary</translation>
 <translation id="424864128008805179">Se déconnecter de Chrome?</translation>
 <translation id="4251174643044751591">Ouvre la page de configuration de modes de paiement dans Chrome.</translation>
+<translation id="4286914711740227883">Supprimer les données de navigation dans Chrome</translation>
 <translation id="4453284704333523777">Gérer les paramètres de Chrome</translation>
 <translation id="4523886039239821078">Certains modules complémentaires provoquent le plantage de Chrome. Veuillez désinstaller :</translation>
 <translation id="4633328489441962921">Chrome ne peut pas vérifier s'il y a des mises à jour</translation>
 <translation id="4636900170638246267">Connectez-vous à ce site et à Chrome.</translation>
+<translation id="4742795653798179840">Données Chrome supprimées</translation>
 <translation id="4761869838909035636">Effectuer une vérification de sécurité de Chrome</translation>
 <translation id="4798859546468762093">Pour bénéficier de la personnalisation et d'autres fonctionnalités, incluez Chrome dans <ph name="FEATURE_NAME_1" /> et <ph name="FEATURE_NAME_2" /></translation>
 <translation id="4819268619367838612">Aux fins d'amélioration de l'application, Chrome envoie des données relatives à l'utilisation et au plantage à Google. <ph name="BEGIN_LINK" />Gérer<ph name="END_LINK" /></translation>
@@ -130,6 +132,7 @@
 <translation id="4840404732697892756">Le gestionnaire de mots de passe de Google peut vérifier vos mots de passe lorsque vous vous connectez avec votre compte Google.</translation>
 <translation id="4860330141789125848">{COUNT,plural, =1{Chrome peut vous aider à suivre ce colis sur la page Nouvel onglet.}one{Chrome peut vous aider à suivre ce colis sur la page Nouvel onglet.}other{Chrome peut vous aider à suivre ces colis sur la page Nouvel onglet.}}</translation>
 <translation id="4903674399067644695">Cette carte vous montre des suggestions sur la façon de tirer le meilleur parti de Chrome.</translation>
+<translation id="4919069428879420545">Supprimez les données de navigation dans Chrome.</translation>
 <translation id="49200511069271369">Votre organisation, <ph name="DOMAIN" />, gère le compte auquel vous êtes connecté et la façon dont Chrome peut être utilisé. Votre administrateur peut configurer ou restreindre certaines fonctionnalités.</translation>
 <translation id="498985224078955265">Pour envoyer cet onglet vers un autre appareil, connectez-vous à Chrome sur les deux appareils.</translation>
 <translation id="5030102366287574140">Chrome peut vous aider à vous protéger, entre autres, contre les violations de données et les sites Web non sécuritaires.</translation>

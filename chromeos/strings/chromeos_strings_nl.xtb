@@ -11,6 +11,7 @@
 <translation id="1047458377670401304"><ph name="CPU_NAME" /> (<ph name="THREAD_COUNT" /> threads, <ph name="CPU_MAX_CLOCK_SPEED" /> GHz)</translation>
 <translation id="1047773237499189053">Nieuwe functie beschikbaar, gebruik de pijl-omhoog voor meer informatie.</translation>
 <translation id="1049663189809099096">pastelgeel</translation>
+<translation id="1056898198331236512">Waarschuwing</translation>
 <translation id="1059913517121127803">Kan scannen niet starten</translation>
 <translation id="1062823486781306604"><ph name="INDEX" /> van <ph name="COUNT" />, <ph name="NAME" />.</translation>
 <translation id="1070066693520972135">WEP</translation>
@@ -28,6 +29,7 @@
 <translation id="1145018782460575098">Het venster voor het updaten van firmware voor externe apparaten is geopend. <ph name="NUM_UPDATES" /> updates beschikbaar.</translation>
 <translation id="1145516343487477149">Help-artikelen en antwoorden op veelgestelde vragen over Chromebooks bekijken</translation>
 <translation id="1154390310959620237">Je kunt maximaal 5 sneltoetsen aanpassen. Verwijder een sneltoets om een nieuwe te kunnen toevoegen.</translation>
+<translation id="1155154308031262006">Voer een prompt in</translation>
 <translation id="115705039208660697">ananassen</translation>
 <translation id="1164939766849482256">Screensaver Van dageraad tot donker</translation>
 <translation id="1167755866710282443">Open het menu om sleutels aan te passen. Sleep het menu om te verplaatsen.</translation>
@@ -95,7 +97,6 @@
 <translation id="1478594628797167447">Scanner</translation>
 <translation id="1483493594462132177">Verzenden</translation>
 <translation id="1488850966314959671">Kan geen verbinding maken met dit netwerk via aangezette aangepaste APN's. Neem contact op met je mobiele provider voor meer informatie.</translation>
-<translation id="1491076385728777984">Firmware op <ph name="DEVICE_NAME" /> updaten</translation>
 <translation id="1499041187027566160">volume omhoog</translation>
 <translation id="1499900233129743732"><ph name="MANAGER" /> beheert deze gebruiker en kan op afstand instellingen beheren en gebruikersactiviteit in de gaten houden.</translation>
 <translation id="150962533380566081">Ongeldige pukcode.</translation>
@@ -291,7 +292,6 @@
 <translation id="2505327257735685095">De huidige achtergrondafbeelding vernieuwen</translation>
 <translation id="2512979179176933762">vensters tonen</translation>
 <translation id="2513396635448525189">Inlogafbeelding</translation>
-<translation id="2517472476991765520">Scannen</translation>
 <translation id="2521835766824839541">vorig nummer</translation>
 <translation id="2526590354069164005">Bureaublad</translation>
 <translation id="2529641961800709867">Knopopties</translation>
@@ -330,6 +330,7 @@
 <translation id="2744221223678373668">Gedeeld</translation>
 <translation id="2751739896257479635">EAP Phase 2-verificatie</translation>
 <translation id="2754757901767760034">lamp</translation>
+<translation id="2780756493585863768">Recente achtergronden mogelijk gemaakt door AI van Google</translation>
 <translation id="2783010256799387990">GESLAAGD</translation>
 <translation id="2786429550992142861">linnen</translation>
 <translation id="2787435249130282949">toetsenbord helderder</translation>
@@ -426,6 +427,7 @@
 <translation id="3456078764689556234">Pagina <ph name="PRINTED_PAGES" /> van <ph name="TOTAL_PAGES" /> afgedrukt.</translation>
 <translation id="345898999683440380">Pagina <ph name="PAGE_NUM" /> scannen. <ph name="PERCENTAGE_VALUE" />% voltooid.</translation>
 <translation id="3459509316159669723">Afdrukken</translation>
+<translation id="3462187165860821523"><ph name="DEVICE_NAME" /> updaten</translation>
 <translation id="346423161771747987">Stroomsterkte</translation>
 <translation id="346539236881580388">Opnieuw maken</translation>
 <translation id="3484914941826596830">Koppel dit externe apparaat niet los en zet je computer niet uit terwijl de firmware wordt geüpdatet. Je kunt dit venster minimaliseren. Deze update kan een paar minuten duren en je externe apparaat werkt misschien niet tijdens het updaten.</translation>
@@ -541,7 +543,7 @@
 <translation id="4130035430755296270">Plaats de cursor voor meer lay-outopties.</translation>
 <translation id="4130750466177569591">Ik ga akkoord</translation>
 <translation id="4131410914670010031">Zwart/wit</translation>
-<translation id="4143226836069425823">Tik op een andere toetsenbordtoets om te vervangen</translation>
+<translation id="4143226836069425823">Tik op een andere toetsenbordtoets om de toets te vervangen</translation>
 <translation id="4145784616224233563">HTTP-firewall</translation>
 <translation id="4147897805161313378">Google Foto's</translation>
 <translation id="4150201353443180367">Weergave</translation>
@@ -790,6 +792,7 @@
 <translation id="5559898619118303662">Automatisch overschakelen naar donker thema bij zonsondergang</translation>
 <translation id="556042886152191864">Knop</translation>
 <translation id="5562551811867441927"><ph name="TERRAIN_FEATURE" /> in de tinten <ph name="TERRAIN_COLOR" /></translation>
+<translation id="5572169899491758844">Scannen</translation>
 <translation id="5578477003638479617">UMTS</translation>
 <translation id="5578519639599103840">Opnieuw scannen</translation>
 <translation id="5583640892426849032">Backspace</translation>
@@ -839,7 +842,7 @@
 <translation id="5860491529813859533">Aanzetten</translation>
 <translation id="5876385649737594562">Aanzetten om opties te selecteren</translation>
 <translation id="588258955323874662">Volledig scherm</translation>
-<translation id="5893975327266416093">Tik op een toets op het toetsenbord om toe te wijzen</translation>
+<translation id="5893975327266416093">Tik op een toets op het toetsenbord om de toets toe te wijzen</translation>
 <translation id="5895138241574237353">Opnieuw starten</translation>
 <translation id="5901630391730855834">Geel</translation>
 <translation id="5903200662178656908">Apparaat is een combinatie van toetsenbord en muis.</translation>
@@ -879,7 +882,6 @@
 <translation id="6075872808778243331">(Android) HTTP-vertraging</translation>
 <translation id="6078323886959318429">Snelle link toevoegen</translation>
 <translation id="6091080061796993741">geel</translation>
-<translation id="610371409726072606">Camera-achtergrond, mogelijk gemaakt door AI van Google</translation>
 <translation id="6104112872696127344">Scannen is geannuleerd</translation>
 <translation id="6106186594183574873">Geef je oude wachtwoord op om te voltooien</translation>
 <translation id="6108689792487843350">Gateway is onbereikbaar</translation>
@@ -906,6 +908,7 @@
 <translation id="6205145102504628069">Wolkenstroom</translation>
 <translation id="6213737986933151570">CDMA1XRTT</translation>
 <translation id="6223752125779001553">Geen scanners beschikbaar</translation>
+<translation id="6231648282154119906">Verdachte bestanden worden automatisch gescand door Google Safe Browsing als onderdeel van de geoptimaliseerde beveiliging die je hebt gekozen</translation>
 <translation id="6232017090690406397">Batterij</translation>
 <translation id="6234024205316847054">Contouren weergeven</translation>
 <translation id="6235460611964961764">Datagebruik handmatig resetten</translation>
@@ -1011,7 +1014,6 @@
 <translation id="672609503628871915">Wat is er nieuw?</translation>
 <translation id="6740695858234317715">crème en oranje</translation>
 <translation id="6741823073189174383">boot</translation>
-<translation id="674276385369049081">Recente camera-achtergronden, mogelijk gemaakt door AI van Google</translation>
 <translation id="6744441848304920043">jungle</translation>
 <translation id="6747035363363040417">neutraal</translation>
 <translation id="6747215703636344499">Gestopt: uitvoer is vol</translation>
@@ -1032,6 +1034,7 @@
 <translation id="6871256179359663621">lichtpaars</translation>
 <translation id="6889786074662672253">Koppel dit externe apparaat niet los en zet je computer niet uit tijdens het opnieuw opstarten. Je kunt dit venster minimaliseren. Dit kan een paar minuten duren en je externe apparaat werkt misschien niet tijdens dit proces.</translation>
 <translation id="6900701049656042631">Dit album bevat geen foto's. Ga naar <ph name="LINK" /> als je foto's wilt toevoegen.</translation>
+<translation id="6902359863093437070">Achtergrond maken met AI</translation>
 <translation id="6905163627763043954">Uitproberen</translation>
 <translation id="6905724422583748843">Terug naar <ph name="PAGE_NAME" /></translation>
 <translation id="6910312834584889076">De klep van de scanner staat open. Sluit de klep en probeer het opnieuw.</translation>
@@ -1269,6 +1272,7 @@ Je kunt alleen achtergronden met AI maken voor persoonlijk, niet-commercieel geb
 <translation id="8152370627892825"><ph name="DESCRIPTION" />, <ph name="ACCELERATOR_INFO" />.</translation>
 <translation id="8156233298086717232">magisch</translation>
 <translation id="8162776280680283326">vossen</translation>
+<translation id="8167413449582155132">Achtergrond mogelijk gemaakt door AI van Google</translation>
 <translation id="8179976553408161302">Enter</translation>
 <translation id="8183975772394450380">strand</translation>
 <translation id="8206859287963243715">Mobiel</translation>

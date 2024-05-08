@@ -12,6 +12,7 @@
 <translation id="1588438908519853928">সাধারণ</translation>
 <translation id="1591562245178063882">এই মাস</translation>
 <translation id="1637811476055996098">ফাইল বেছে নিন</translation>
+<translation id="1680090928918677457">ক্যামেরা ব্যবহার করুন</translation>
 <translation id="1681022320378710418">বর্তমান সময়</translation>
 <translation id="1727839386348365796">আইড্রপার</translation>
 <translation id="1729654308190250600">অনুগ্রহ করে একটি খালি না থাকা ইমেল আইডি লিখুন৷</translation>
@@ -60,6 +61,7 @@
 <translation id="3822383571486410024">দয়া করে এই পাঠ্যকে ন্যূনতম <ph name="MIN_CHARACTERS" /> অক্ষরের বা তার বেশি (আপনি বর্তমানে <ph name="CURRENT_LENGTH" />টি অক্ষর ব্যবহার করেছেন) দৈর্ঘের করুন।</translation>
 <translation id="383465348367842624">'<ph name="ATSIGN" />' অনুসরণ করে এমন একটি অংশে '<ph name="INVALIDCHARACTER" />' চিহ্ন থাকা উচিত নয়৷</translation>
 <translation id="3846214748874656680">পূর্ণস্ক্রীন থেকে প্রস্থান করুন</translation>
+<translation id="3914173277599553213">প্রয়োজন</translation>
 <translation id="4031179711345676612">মাইক্রোফোন ব্যবহারের অনুমতি দেওয়া হয়েছে</translation>
 <translation id="4103419683916926126">মিলিসেকেন্ড</translation>
 <translation id="4201051445878709314">পূর্ববর্তী মাস দেখান</translation>
@@ -75,6 +77,7 @@
 <translation id="4912200001568447310">বর্তমান আইটেম</translation>
 <translation id="4915360478455618802">সময় বাছাইকারী দেখুন</translation>
 <translation id="4924138096460353083">অনির্দিষ্ট</translation>
+<translation id="49269513399674318">মাইক্রোফোন ব্যবহার করুন</translation>
 <translation id="4950364064308314478">স্থানীয় তারিখ ও সময় বাছাইকারী দেখুন</translation>
 <translation id="4971739861736909480"><ph name="ACCNAME" />টি বেছে নেওয়া হয়েছে</translation>
 <translation id="4975562563186953947"><ph name="SELECTED_COUNT" />টি নির্বাচিত</translation>
@@ -142,6 +145,7 @@
 <translation id="7080893216867146095">লোকেশন শেয়ার করা অনুমোদিত</translation>
 <translation id="709897737746224366">দয়া করে অনুরোধ হওয়া বিন্যাসটি মেলান৷</translation>
 <translation id="7102274145889307184">বর্তমান লোকেশন</translation>
+<translation id="7134810312945846184">মাইক্রোফোন ও ক্যামেরা ব্যবহার করুন</translation>
 <translation id="7263440858009898357">তালিকা থেকে একটি আইটেম নির্বাচন করুন৷ </translation>
 <translation id="7320576522385648310">বাফার হচ্ছে</translation>
 <translation id="7341556277900466204">কালার ওয়েল</translation>

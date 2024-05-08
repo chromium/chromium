@@ -12,6 +12,7 @@
 <translation id="1588438908519853928">ਸਧਾਰਨ</translation>
 <translation id="1591562245178063882">ਇਸ ਮਹੀਨੇ</translation>
 <translation id="1637811476055996098">ਫਾਈਲਾਂ ਚੁਣੋ</translation>
+<translation id="1680090928918677457">ਕੈਮਰਾ ਵਰਤੋ</translation>
 <translation id="1681022320378710418">ਮੌਜੂਦਾ ਸਮਾਂ</translation>
 <translation id="1727839386348365796">ਰੰਗ ਚੋਣਕਾਰ</translation>
 <translation id="1729654308190250600">ਕਿਰਪਾ ਕਰਰਕੇ ਇੱਕ ਗ਼ੈਰ-ਖਾਲੀ ਈਮੇਲ ਪਤਾ ਦਰਜ ਕਰੋ।</translation>
@@ -60,6 +61,7 @@
 <translation id="3822383571486410024">ਕਿਰਪਾ ਕਰਕੇ ਇਸ ਲਿਖਤ ਨੂੰ <ph name="MIN_CHARACTERS" /> ਅੱਖਰਾਂ ਤੱਕ ਜਾਂ ਇਸ ਤੋਂ ਵੱਧ ਵਿੱਚ ਵਧਾਓ (ਇਸ ਵੇਲੇ ਤੁਸੀਂ <ph name="CURRENT_LENGTH" /> ਅੱਖਰ ਵਰਤ ਰਹੇ ਹੋ)।</translation>
 <translation id="383465348367842624">'<ph name="ATSIGN" />' ਤੋਂ ਬਾਅਦ ਦੇ ਭਾਗ ਵਿੱਚ ਚਿੰਨ੍ਹ '<ph name="INVALIDCHARACTER" />' ਨਹੀਂ ਹੋਣਾ ਚਾਹੀਦਾ।</translation>
 <translation id="3846214748874656680">ਫੁਲਸਕ੍ਰੀਨ ਤੋਂ ਬਾਹਰ ਜਾਓ</translation>
+<translation id="3914173277599553213">ਲੁੜੀਂਦਾ</translation>
 <translation id="4031179711345676612">ਮਾਈਕ੍ਰੋਫ਼ੋਨ ਦੀ ਇਜਾਜ਼ਤ ਦਿੱਤੀ ਗਈ</translation>
 <translation id="4103419683916926126">ਮਿਲੀਸਕਿੰਟ</translation>
 <translation id="4201051445878709314">ਪਿਛਲਾ ਮਹੀਨਾ ਦਿਖਾਓ</translation>
@@ -75,6 +77,7 @@
 <translation id="4912200001568447310">ਮੌਜੂਦਾ ਆਈਟਮ</translation>
 <translation id="4915360478455618802">ਸਮਾਂ ਚੋਣਕਾਰ ਦਿਖਾਓ</translation>
 <translation id="4924138096460353083">ਅਨਿਰਧਾਰਿਤ</translation>
+<translation id="49269513399674318">ਮਾਈਕ੍ਰੋਫ਼ੋਨ ਵਰਤੋ</translation>
 <translation id="4950364064308314478">ਸਥਾਨਕ ਤਾਰੀਖ ਅਤੇ ਸਮਾਂ ਚੋਣਕਾਰ ਦਿਖਾਓ</translation>
 <translation id="4971739861736909480"><ph name="ACCNAME" /> ਨੂੰ ਚੁਣਿਆ ਗਿਆ</translation>
 <translation id="4975562563186953947"><ph name="SELECTED_COUNT" /> ਚੁਣਿਆ ਗਿਆ</translation>
@@ -142,6 +145,7 @@
 <translation id="7080893216867146095">ਟਿਕਾਣੇ ਨੂੰ ਸਾਂਝਾ ਕਰਨ ਦੀ ਆਗਿਆ ਹੈ</translation>
 <translation id="709897737746224366">ਕਿਰਪਾ ਕਰਕੇ ਬੇਨਤੀ ਕੀਤਾ ਫੌਰਮੈਟ ਮੈਚ ਕਰੋ।</translation>
 <translation id="7102274145889307184">ਮੌਜੂਦਾ ਟਿਕਾਣਾ</translation>
+<translation id="7134810312945846184">ਮਾਈਕ੍ਰੋਫ਼ੋਨ ਅਤੇ ਕੈਮਰਾ ਵਰਤੋ</translation>
 <translation id="7263440858009898357">ਕਿਰਪਾ ਕਰਕੇ ਸੂਚੀ ਵਿੱਚ ਇੱਕ ਆਈਟਮ ਚੁਣੋ।</translation>
 <translation id="7320576522385648310">ਬਫ਼ਰ ਕੀਤਾ ਜਾ ਰਿਹਾ ਹੈ</translation>
 <translation id="7341556277900466204">ਰੰਗ ਭੰਡਾਰ</translation>

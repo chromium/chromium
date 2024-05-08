@@ -11,6 +11,7 @@
 <translation id="1047458377670401304"><ph name="CPU_NAME" /> (<ph name="THREAD_COUNT" /> luồng, <ph name="CPU_MAX_CLOCK_SPEED" /> GHz)</translation>
 <translation id="1047773237499189053">Đã có tính năng mới, hãy sử dụng phím Mũi tên lên để tìm hiểu thêm.</translation>
 <translation id="1049663189809099096">vàng nhạt</translation>
+<translation id="1056898198331236512">Cảnh báo</translation>
 <translation id="1059913517121127803">Không thể bắt đầu quét</translation>
 <translation id="1062823486781306604"><ph name="INDEX" />/<ph name="COUNT" />, <ph name="NAME" />.</translation>
 <translation id="1070066693520972135">WEP</translation>
@@ -28,6 +29,7 @@
 <translation id="1145018782460575098">Đang mở cửa sổ cập nhật chương trình cơ sở cho các thiết bị bên ngoài. Có <ph name="NUM_UPDATES" /> bản cập nhật</translation>
 <translation id="1145516343487477149">Tìm bài viết trợ giúp và câu trả lời cho các câu hỏi phổ biến về Chromebook</translation>
 <translation id="1154390310959620237">Bạn chỉ được tuỳ chỉnh 5 phím tắt. Xoá một phím tắt để thêm phím tắt mới.</translation>
+<translation id="1155154308031262006">Nhập câu lệnh</translation>
 <translation id="115705039208660697">quả dứa</translation>
 <translation id="1164939766849482256">Trình bảo vệ màn hình Sáng đến tối</translation>
 <translation id="1167755866710282443">Mở trình đơn để tuỳ chỉnh các phím. Kéo trình đơn để di chuyển.</translation>
@@ -95,7 +97,6 @@
 <translation id="1478594628797167447">Máy quét</translation>
 <translation id="1483493594462132177">Gửi</translation>
 <translation id="1488850966314959671">Không thể kết nối với mạng này bằng bất cứ APN tuỳ chỉnh đã bật nào. Hãy liên hệ với nhà mạng di động để biết thêm thông tin.</translation>
-<translation id="1491076385728777984">Cập nhật chương trình cơ sở trên <ph name="DEVICE_NAME" /></translation>
 <translation id="1499041187027566160">tăng âm lượng</translation>
 <translation id="1499900233129743732"><ph name="MANAGER" /> quản lý người dùng này và có thể quản lý từ xa các tùy chọn cài đặt cũng như giám sát hoạt động của người dùng.</translation>
 <translation id="150962533380566081">PUK không hợp lệ.</translation>
@@ -291,7 +292,6 @@
 <translation id="2505327257735685095">Làm mới hình nền hiện tại</translation>
 <translation id="2512979179176933762">hiện cửa sổ</translation>
 <translation id="2513396635448525189">Hình ảnh đăng nhập</translation>
-<translation id="2517472476991765520">Quét</translation>
 <translation id="2521835766824839541">bản nhạc trước</translation>
 <translation id="2526590354069164005">Màn hình nền</translation>
 <translation id="2529641961800709867">Lựa chọn về nút</translation>
@@ -330,6 +330,7 @@
 <translation id="2744221223678373668">Được chia sẻ</translation>
 <translation id="2751739896257479635">Xác thực EAP giai đoạn 2</translation>
 <translation id="2754757901767760034">cây đèn</translation>
+<translation id="2780756493585863768">Nền gần đây được tạo dựa trên công nghệ AI của Google</translation>
 <translation id="2783010256799387990">ĐÃ ĐẠT</translation>
 <translation id="2786429550992142861">vải lanh</translation>
 <translation id="2787435249130282949">bàn phím sáng hơn</translation>
@@ -426,6 +427,7 @@
 <translation id="3456078764689556234">Đã in trang <ph name="PRINTED_PAGES" />/<ph name="TOTAL_PAGES" />.</translation>
 <translation id="345898999683440380">Đang quét trang <ph name="PAGE_NUM" />. Ðã quét được <ph name="PERCENTAGE_VALUE" />%.</translation>
 <translation id="3459509316159669723">In</translation>
+<translation id="3462187165860821523">Đang cập nhật <ph name="DEVICE_NAME" /></translation>
 <translation id="346423161771747987">Cường độ dòng điện</translation>
 <translation id="346539236881580388">Chụp lại</translation>
 <translation id="3484914941826596830">Khi chương trình cơ sở đang cập nhật, đừng rút thiết bị bên ngoài này ra hay tắt máy tính. Bạn có thể thu nhỏ cửa sổ này. Quá trình cập nhật có thể mất vài phút và thiết bị bên ngoài của bạn có thể không hoạt động được trong thời gian này.</translation>
@@ -790,6 +792,7 @@
 <translation id="5559898619118303662">Tự động chuyển sang giao diện tối lúc hoàng hôn</translation>
 <translation id="556042886152191864">Nút</translation>
 <translation id="5562551811867441927"><ph name="TERRAIN_FEATURE" /> có màu <ph name="TERRAIN_COLOR" /></translation>
+<translation id="5572169899491758844">Quét</translation>
 <translation id="5578477003638479617">UMTS</translation>
 <translation id="5578519639599103840">Quét lại</translation>
 <translation id="5583640892426849032">Backspace</translation>
@@ -879,7 +882,6 @@
 <translation id="6075872808778243331">(Android) Độ trễ của yêu cầu HTTP</translation>
 <translation id="6078323886959318429">Thêm lối tắt</translation>
 <translation id="6091080061796993741">vàng</translation>
-<translation id="610371409726072606">Nền camera dựa trên công nghệ AI của Google</translation>
 <translation id="6104112872696127344">Đã hủy quá trình quét</translation>
 <translation id="6106186594183574873">Để hoàn tất, hãy nhập mật khẩu cũ của bạn</translation>
 <translation id="6108689792487843350">Không thể kết nối với cổng</translation>
@@ -906,6 +908,7 @@
 <translation id="6205145102504628069">Luồng đám mây</translation>
 <translation id="6213737986933151570">CDMA1XRTT</translation>
 <translation id="6223752125779001553">Không có máy quét nào</translation>
+<translation id="6231648282154119906">Vì bạn đã chọn cấp độ bảo vệ nâng cao nên tính năng Duyệt web An toàn của Google sẽ tự động quét các tệp đáng ngờ</translation>
 <translation id="6232017090690406397">Pin</translation>
 <translation id="6234024205316847054">Hiển thị các điểm chính</translation>
 <translation id="6235460611964961764">Đặt lại mức sử dụng dữ liệu theo cách thủ công</translation>
@@ -1011,7 +1014,6 @@
 <translation id="672609503628871915">Xem tính năng mới</translation>
 <translation id="6740695858234317715">kem và cam</translation>
 <translation id="6741823073189174383">chiếc thuyền</translation>
-<translation id="674276385369049081">Nền camera mới nhất dựa trên công nghệ AI của Google</translation>
 <translation id="6744441848304920043">rừng nhiệt đới</translation>
 <translation id="6747035363363040417">trung tính</translation>
 <translation id="6747215703636344499">Đã dừng – Khay giấy ra đã đầy</translation>
@@ -1032,6 +1034,7 @@
 <translation id="6871256179359663621">tím nhạt</translation>
 <translation id="6889786074662672253">Khi đang khởi động lại, đừng rút thiết bị bên ngoài này ra hay tắt máy tính. Bạn có thể thu nhỏ cửa sổ này. Quá trình này có thể mất vài phút và thiết bị bên ngoài của bạn có thể không hoạt động được trong thời gian này.</translation>
 <translation id="6900701049656042631">Album này không có ảnh nào. Để thêm ảnh, hãy truy cập <ph name="LINK" /></translation>
+<translation id="6902359863093437070">Tạo nền bằng AI</translation>
 <translation id="6905163627763043954">Dùng thử</translation>
 <translation id="6905724422583748843">Quay lại <ph name="PAGE_NAME" /></translation>
 <translation id="6910312834584889076">Nắp của máy quét đang mở. Hãy đóng nắp máy quét rồi thử lại.</translation>
@@ -1269,6 +1272,7 @@
 <translation id="8152370627892825"><ph name="DESCRIPTION" />, <ph name="ACCELERATOR_INFO" />.</translation>
 <translation id="8156233298086717232">kỳ diệu</translation>
 <translation id="8162776280680283326">con cáo</translation>
+<translation id="8167413449582155132">Nền được tạo dựa trên công nghệ AI của Google</translation>
 <translation id="8179976553408161302">Enter</translation>
 <translation id="8183975772394450380">bãi biển</translation>
 <translation id="8206859287963243715">Di động</translation>

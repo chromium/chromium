@@ -43,7 +43,7 @@
 <translation id="134645005685694099">您设备的存储空间不足，无法继续进行文件同步。新文件将不再自动同步。</translation>
 <translation id="1353686479385938207"><ph name="PROVIDER_NAME" />：<ph name="NETWORK_NAME" /></translation>
 <translation id="1358735829858566124">该文件或目录无法使用。</translation>
-<translation id="1363028406613469049">曲目</translation>
+<translation id="1363028406613469049">跟踪</translation>
 <translation id="1378727793141957596">欢迎使用 Google 云端硬盘！</translation>
 <translation id="1379911846207762492">您可将文件设为“可离线使用”，以便在未联网的情况下访问。</translation>
 <translation id="1383876407941801731">搜索</translation>
@@ -486,7 +486,7 @@
 <translation id="4826849268470072925">泰米尔语 ITRANS</translation>
 <translation id="482932175346970750">在浏览器中输入 <ph name="BEGIN_BOLD" />chrome://extensions<ph name="END_BOLD" /></translation>
 <translation id="4843566743023903107">Chromebase</translation>
-<translation id="4850886885716139402">视图</translation>
+<translation id="4850886885716139402">查看</translation>
 <translation id="485316830061041779">德语</translation>
 <translation id="4862885579661885411">“文件”相关设置</translation>
 <translation id="4867079195717347957">点击即可按降序对此列排序。</translation>

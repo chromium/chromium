@@ -166,6 +166,7 @@ Pour commencer, voici des exemples de ce que vous pouvez me demander.</translati
 <translation id="1586324912145647027">Accéder aux bureaux 1 à 8</translation>
 <translation id="158838227375272121">Site Web Google Classroom</translation>
 <translation id="1589090746204042747">Accéder à toutes vos activités dans cette session</translation>
+<translation id="1597880963776148053">Étape <ph name="STEP" /> sur <ph name="TOTAL_STEPS" /> de la visite. Vos applis épinglées et ouvertes se trouvent sur l'étagère, en bas de l'écran. Appuyez sur Alt+Maj+L, puis sur Tabulation pour sélectionner des éléments de l'étagère.</translation>
 <translation id="1602874809115667351"><ph name="LAUNCHER_KEY_NAME" />+Flèche vers le bas</translation>
 <translation id="1604857178818051494">Mettre en pause le contenu multimédia</translation>
 <translation id="1607312127821884567">Ignorer la configuration concernant l'affichage des applis de votre téléphone</translation>
@@ -303,6 +304,7 @@ Pour commencer, voici des exemples de ce que vous pouvez me demander.</translati
 <translation id="2257486738914982088">Une erreur s'est produite lors du téléchargement de <ph name="FILENAME" /></translation>
 <translation id="2258734398699965611">Fichiers suggérés</translation>
 <translation id="2268130516524549846">Bluetooth désactivé</translation>
+<translation id="2268731132310444948">Étape <ph name="STEP" /> sur <ph name="TOTAL_STEPS" /> de la visite. Une fois le Lanceur d'applications activé, une barre de recherche améliorée s'affiche. Commencez à taper du texte pour rechercher vos fichiers, vos applis, etc. Vous pouvez aussi obtenir des réponses aux questions concernant votre <ph name="PRODUCT_NAME" />.</translation>
 <translation id="2268813581635650749">Déconnecter les util.</translation>
 <translation id="2276987123919776440">15 min</translation>
 <translation id="2277103315734023688">Avance rapide</translation>
@@ -397,6 +399,7 @@ Pour commencer, voici des exemples de ce que vous pouvez me demander.</translati
 <translation id="2607678425161541573">Connexion en ligne requise</translation>
 <translation id="2612072250312279703">moniteur d'activité</translation>
 <translation id="2612614436418177118">Déplacer une icône d'application dans la grille d'applications</translation>
+<translation id="2619326010008283367">Étape <ph name="STEP" /> sur <ph name="TOTAL_STEPS" /> de la visite. Vous trouverez les paramètres de votre appareil dans le Lanceur d'applications. Personnalisez votre <ph name="PRODUCT_NAME" /> dans les paramètres. Modifiez par exemple votre fond d'écran ou configurez un économiseur d'écran.</translation>
 <translation id="2620016719323068571">Rechercher dans vos <ph name="CATEGORY" />, fichiers, applis, etc.…</translation>
 <translation id="2620436844016719705">Système</translation>
 <translation id="2620900772667816510">Bluetooth Super Résolution</translation>
@@ -819,7 +822,6 @@ Certaines fonctionnalités sont limitées afin d'augmenter l'autonomie de la bat
 <translation id="4209973997261364186">Le Wi-Fi est activé</translation>
 <translation id="4212472694152630271">Authentification par code</translation>
 <translation id="4215497585250573029">Paramètres de VPN</translation>
-<translation id="4215548513524864822">Étape 5 sur 5. Vous trouverez les paramètres de votre appareil dans le Lanceur d'applications. Personnalisez votre <ph name="PRODUCT_NAME" /> dans les paramètres. Modifiez par exemple votre fond d'écran ou configurez un économiseur d'écran.</translation>
 <translation id="4217571870635786043">Dictée</translation>
 <translation id="4221957499226645091"><ph name="APP_NAME" />, appli installée, en pause</translation>
 <translation id="4228078597006700451">Commandes non configurées</translation>
@@ -946,12 +948,12 @@ Certaines fonctionnalités sont limitées afin d'augmenter l'autonomie de la bat
 <translation id="468293128311738995">Applis de votre téléphone</translation>
 <translation id="4690510401873698237">Étagère en bas</translation>
 <translation id="4696813013609194136">Déverrouiller l'appareil avec le code parental</translation>
-<translation id="469693290987463983">Étape 1 sur 5. Vos applis épinglées et ouvertes se trouvent sur l'étagère, en bas de l'écran. Appuyez sur Alt+Maj+L, puis sur Tabulation pour sélectionner des éléments de l'étagère.</translation>
 <translation id="4702647871202761252">L'écran de confidentialité est désactivé</translation>
 <translation id="4706121060329443414">Le téléchargement sera relancé ultérieurement. Entre temps, les paroles seront envoyées à Google pour traitement.</translation>
 <translation id="470644585772471629">Inversion des couleurs</translation>
 <translation id="4708065238214351979">Augmenter la luminosité du clavier</translation>
 <translation id="4717575069099566988">Votre câble USB-C n'est pas compatible USB4. Cela peut limiter les performances de l'appareil.</translation>
+<translation id="4724328513667182700">6 conseils pour démarrer sur votre <ph name="PRODUCT_NAME" /></translation>
 <translation id="4730374152663651037">SOUVENT UTILISÉES</translation>
 <translation id="4731797938093519117">Accès parental</translation>
 <translation id="4733161265940833579"><ph name="BATTERY_PERCENTAGE" /> % (gauche)</translation>
@@ -1027,6 +1029,7 @@ Certaines fonctionnalités sont limitées afin d'augmenter l'autonomie de la bat
 <translation id="4964188651935955085">L'appareil externe suivant sera alors déconnecté de votre <ph name="DEVICE_TYPE" /> :</translation>
 <translation id="4966431234408005599">Augmenter le volume</translation>
 <translation id="4969092041573468113"><ph name="HOURS" /> h <ph name="MINUTES" /> min <ph name="SECONDS" /> s</translation>
+<translation id="496999337731226334">Étape <ph name="STEP" /> sur <ph name="TOTAL_STEPS" /> de la visite. Les commandes fréquemment utilisées, comme le Wi-Fi, le Bluetooth et le volume, se trouvent dans les Réglages rapides. Vous pouvez aussi y accéder pour prendre des captures d'écran. Appuyez sur Alt+Maj+S pour ouvrir les Réglages rapides.</translation>
 <translation id="4975771730019223894">Afficher un badge sur l'application</translation>
 <translation id="4977493774330778463"><ph name="NUM_IMPORTANT_NOTIFICATION" /> :
         <ph name="NOTIFICATION_1" />,
@@ -1144,6 +1147,7 @@ Aucun appareil connecté.</translation>
 <translation id="540713187982329711">Activer/Désactiver le point d'accès. Le point d'accès est activé, aucun appareil n'est connecté.</translation>
 <translation id="5413656666631274079">Page de paramètres</translation>
 <translation id="5414198321558177633">Actualisation de la liste de profils… Cela peut prendre quelques minutes.</translation>
+<translation id="5417965108047245734">Découvrez rapidement comment utiliser votre <ph name="PRODUCT_NAME" /></translation>
 <translation id="5426063383988017631">Menu "Paramètres" fermé</translation>
 <translation id="5428899915242071344">Commencer la sélection</translation>
 <translation id="5429993543155113935">Les fenêtres de navigation privée ne sont pas prises en charge actuellement</translation>
@@ -1524,7 +1528,6 @@ Nouvelle installation</translation>
 <translation id="6874854809828346832">Voir les détails du point d'accès. Celui-ci est activé.</translation>
 <translation id="6878400149835617132">Raccourci désactivé</translation>
 <translation id="6878701771800702153">{NUM_APPS,plural, =1{1 appli}one{# appli}other{# applis}}</translation>
-<translation id="6878787305374738418">Étape 4 sur 5. Une fois le Lanceur d'applications activé, une barre de recherche améliorée s'affiche. Commencez à saisir du texte pour rechercher vos fichiers, vos applis, etc. Vous pouvez également obtenir des réponses aux questions concernant votre <ph name="PRODUCT_NAME" />.</translation>
 <translation id="6883768636838842873">Raccourcis clavier, conseils d'utilisation de l'appareil, etc.</translation>
 <translation id="6884665277231944629">Revenir à aujourd'hui</translation>
 <translation id="6886172995547742638">Cela peut nuire aux performances de votre <ph name="DEVICE_TYPE" />. Utilisez un adaptateur secteur USB-C de <ph name="PREFERRED_MINIMUM_POWER" /> W ou plus.</translation>
@@ -1593,6 +1596,7 @@ Nouvelle installation</translation>
 <translation id="7143207342074048698">Connexion</translation>
 <translation id="7144942256906679589">État de la batterie</translation>
 <translation id="7145639536026937076">La batterie est en charge, avec un niveau de <ph name="PERCENTAGE" /> % pour l'instant. Économiseur de batterie activé.</translation>
+<translation id="7149149900052329230">Gérez vos fichiers locaux et vos fichiers Google Drive dans l'appli Fichiers.</translation>
 <translation id="7165278925115064263">Alt+Maj+K</translation>
 <translation id="7167913274352523149"><ph name="HOTSPOT" />,
         <ph name="NETWORK" /></translation>
@@ -1614,7 +1618,6 @@ Branchez votre appareil sur une source d'alimentation.</translation>
 <translation id="726276584504105859">Faire glisser ici pour utiliser l'écran partagé</translation>
 <translation id="7262906531272962081">Créer un rappel</translation>
 <translation id="7278787617901301220"><ph name="LAUNCHER_KEY_NAME" />+Retour arrière</translation>
-<translation id="7282547098317872382">Étape 3 sur 5. Utilisez des applis pour tout ce dont vous avez besoin sur votre <ph name="PRODUCT_NAME" />. Vous trouverez vos applis dans le Lanceur d'applications. Appuyez sur Alt+Maj+L pour sélectionner le bouton du Lanceur d'applications.</translation>
 <translation id="7285232777292757180">Utilisez l'outil de capture d'écran dans les Réglages rapides pour prendre des captures d'écran</translation>
 <translation id="7301826272005790482">Fermer les suggestions de fenêtres</translation>
 <translation id="7302889331339392448">Sous-titres instantanés désactivés.</translation>
@@ -1796,10 +1799,12 @@ Pour éteindre l'appareil, appuyez à nouveau de manière prolongée sur le bout
 <translation id="7933084174919150729">L'Assistant Google n'est disponible que pour le profil principal.</translation>
 <translation id="79341161159229895">Compte géré par <ph name="FIRST_PARENT_EMAIL" /> et <ph name="SECOND_PARENT_EMAIL" /></translation>
 <translation id="793716872548410480">Appuyez sur <ph name="SHORTCUT_KEY_NAME" />+V pour afficher le presse-papiers. Les cinq derniers éléments que vous avez copiés y sont enregistrés.</translation>
+<translation id="7942330802915522974">Étape <ph name="STEP" /> sur <ph name="TOTAL_STEPS" /> de la visite. L'appli Fichiers se trouve dans le Lanceur d'applications. Elle permet de gérer vos fichiers locaux et vos fichiers Google Drive.</translation>
 <translation id="7942349550061667556">Rouge</translation>
 <translation id="7943516765291457328">Activez le Bluetooth pour rechercher les points d'accès à proximité</translation>
 <translation id="7944023924886109030">Afficher tous les événements d'aujourd'hui</translation>
 <translation id="7945357288295809525">Afficher les paramètres d'accessibilité, "<ph name="ENABLED_FEATURES" />" activé(e).</translation>
+<translation id="7946681191253332687">Mises à jour de sécurité étendues disponibles</translation>
 <translation id="7947798320695032612"><ph name="APP_NAME" /> souhaite utiliser votre <ph name="DEVICE_NAME" /></translation>
 <translation id="7951630946012935453">Réduire la luminosité du clavier</translation>
 <translation id="7953994493035617347">Confirmer la nouvelle résolution ?</translation>
@@ -1911,7 +1916,6 @@ Pour éteindre l'appareil, appuyez à nouveau de manière prolongée sur le bout
 <translation id="8412677897383510995">Paramètres d'affichage</translation>
 <translation id="8413272770729657668">L'enregistrement commence dans 3 2, 1</translation>
 <translation id="8416730306157376817"><ph name="BATTERY_PERCENTAGE" /> % (étui)</translation>
-<translation id="8417951779969083400">Étape 2 sur 5. Les commandes fréquemment utilisées, comme le Wi-Fi, le Bluetooth et le volume, se trouvent dans les Réglages rapides. Vous pouvez également y accéder pour prendre des captures d'écran. Appuyez sur Alt+Maj+S pour ouvrir les Réglages rapides.</translation>
 <translation id="8420205633584771378">Supprimer cette suggestion ?</translation>
 <translation id="8421270167862077762"><ph name="UNAVAILABLE_APPS" /> n'est pas sur cet appareil.</translation>
 <translation id="8426708595819210923">Bonsoir <ph name="GIVEN_NAME" />,</translation>
@@ -2124,12 +2128,14 @@ Pour éteindre l'appareil, appuyez à nouveau de manière prolongée sur le bout
 <translation id="954052413789300507">Espace insuffisant pour <ph name="FILENAME" />. Libérez de l'espace.</translation>
 <translation id="954520015070501466">30 min</translation>
 <translation id="956452277966142925">Paramètres du tableau de bord Jeux</translation>
+<translation id="961856697154696964">Supprimer données navigation</translation>
 <translation id="974545358917229949">Affichage de <ph name="RESULT_COUNT" /> résultats pour <ph name="QUERY" /></translation>
 <translation id="981011780479609956">Aucune date limite</translation>
 <translation id="98120814841227350">Accéder à la fin du document</translation>
 <translation id="987589956647469042">Les données mobiles sont activées</translation>
 <translation id="989374776391122812">Commandes audio et de la caméra</translation>
 <translation id="990277280839877440">Fenêtre <ph name="WINDOW_TITILE" /> fermée.</translation>
+<translation id="993398562350683614">Étape <ph name="STEP" /> sur <ph name="TOTAL_STEPS" /> de la visite. Utilisez des applis pour tout ce dont vous avez besoin sur votre <ph name="PRODUCT_NAME" />. Vous trouverez vos applis dans le Lanceur d'applications. Appuyez sur Alt+Maj+L pour sélectionner le bouton du Lanceur d'applications.</translation>
 <translation id="994354411665877646"><ph name="NETWORK_NAME" />, <ph name="SUBTEXT" /></translation>
 <translation id="996204416024568215">Bénéficiez des dernières fonctionnalités et améliorations de sécurité. Les mises à jour s'effectuent en arrière-plan.</translation>
 </translationbundle>

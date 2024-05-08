@@ -74,6 +74,7 @@ Afin d'accéder à plus de paramètres utilisant des données pour améliorer vo
 <translation id="2918709798697875261">Votre organisation vous demande de rester déconnecté de Chromium.</translation>
 <translation id="2942241131342758843">Utilisez Chromium par défaut pour ouvrir des liens, faire des recherches dans des widgets et entrer automatiquement des mots de passe dans d'autres applications</translation>
 <translation id="2977470724722393594">Chromium est à jour</translation>
+<translation id="3044857325852340337">Données Chromium supprimées</translation>
 <translation id="3078941082359356771">{COUNT,plural, =1{Chromium peut vous aider à suivre ce colis sur la page Nouvel onglet.}one{Chromium peut vous aider à suivre ce colis sur la page Nouvel onglet.}other{Chromium peut vous aider à suivre ces colis sur la page Nouvel onglet.}}</translation>
 <translation id="3102849287235003384">Pour vous déconnecter de votre compte Google sur tous les sites Web, <ph name="BEGIN_LINK" />déconnectez-vous de Chrome<ph name="END_LINK" />.</translation>
 <translation id="3219277919172823720">Effectuer une recherche vocale dans Chromium</translation>
@@ -124,6 +125,7 @@ Pour modifier ce paramètre, <ph name="BEGIN_LINK" />supprimez les données Chro
 <translation id="4633738821577273991">Bénéficiez également de la navigation sécurisée améliorée pour ce profil Chromium</translation>
 <translation id="4638625642619341392">Téléchargez Chromium ici.</translation>
 <translation id="4654936625574199632">Aux fins d'amélioration de l'application, Chromium envoie des données relatives à l'utilisation et au plantage à Google. <ph name="BEGIN_LINK" />Gérer<ph name="END_LINK" /></translation>
+<translation id="4675485352217495362">Supprimer les données de navigation dans Chromium</translation>
 <translation id="4681781466797808448">Activer le lecteur de Chromium</translation>
 <translation id="4736424910885271643">Votre compte est géré par <ph name="HOSTED_DOMAIN" />, donc vos données Chromium seront effacées de cet appareil</translation>
 <translation id="4773487571745795781">Vous avez désactivé la connexion à Chromium.</translation>
@@ -191,6 +193,7 @@ Pour modifier ce paramètre, <ph name="BEGIN_LINK" />supprimez les données Chro
 <translation id="6324041800010509197">Consulter la grille d'onglets dans Chromium</translation>
 <translation id="6325378625795868881">Utilisez Chromium chaque fois que vous touchez des liens dans les messages et dans d'autres applications.</translation>
 <translation id="632825460376924298">Autoriser la connexion dans Chromium</translation>
+<translation id="6332129548244419716">Supprimez les données de navigation dans Chromium.</translation>
 <translation id="6337530241089703714">Voulez-vous effacer vos données Chrome de cet appareil ou les conserver?</translation>
 <translation id="6348483005826990855">3. Sélectionner Chromium</translation>
 <translation id="6383607155624074112">Accéder plus rapidement à Chromium à partir du Dock de l'écran d'accueil</translation>

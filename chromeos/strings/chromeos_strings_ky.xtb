@@ -11,6 +11,7 @@
 <translation id="1047458377670401304"><ph name="CPU_NAME" /> (<ph name="THREAD_COUNT" /> топтом, <ph name="CPU_MAX_CLOCK_SPEED" />ГГц)</translation>
 <translation id="1047773237499189053">Жаңы функциялар бар. Кеңири маалымат алуу үчүн Өйдө жебе баскычын басыңыз.</translation>
 <translation id="1049663189809099096">пастель сары</translation>
+<translation id="1056898198331236512">Эскертүү</translation>
 <translation id="1059913517121127803">Скандалып башталган жок</translation>
 <translation id="1062823486781306604"><ph name="COUNT" /> ичинен <ph name="INDEX" />, <ph name="NAME" />.</translation>
 <translation id="1070066693520972135">WEP</translation>
@@ -95,7 +96,6 @@
 <translation id="1478594628797167447">Сканер</translation>
 <translation id="1483493594462132177">Жөнтүү</translation>
 <translation id="1488850966314959671">Бул тармакка иштетилген жеке APN'дер менен туташуу мүмкүн эмес. Толук маалымат алуу үчүн мобилдик байланыш операторуна кайрылыңыз.</translation>
-<translation id="1491076385728777984"><ph name="DEVICE_NAME" /> түзмөгүндө орнотулган программа жаңыртылууда</translation>
 <translation id="1499041187027566160">катуулатуу</translation>
 <translation id="1499900233129743732"><ph name="MANAGER" /> алыстан параметрлерди башкарып, колдонуучунун аракеттерин көзөмөлдөй алат.</translation>
 <translation id="150962533380566081">Жараксыз PUK.</translation>
@@ -291,7 +291,6 @@
 <translation id="2505327257735685095">Тушкагаздын учурдагы сүрөтүн жаңыртуу</translation>
 <translation id="2512979179176933762">терезелерди көрсөтүү</translation>
 <translation id="2513396635448525189">Аккаунтка кирүү сүрөтү</translation>
-<translation id="2517472476991765520">Скандоо</translation>
 <translation id="2521835766824839541">мурунку трек</translation>
 <translation id="2526590354069164005">Иштакта</translation>
 <translation id="2529641961800709867">Баскыч параметрлери</translation>
@@ -330,6 +329,7 @@
 <translation id="2744221223678373668">Бөлүшүлгөн</translation>
 <translation id="2751739896257479635">EAP 2-фазадагы аныктыгын текшерүү</translation>
 <translation id="2754757901767760034">чырак</translation>
+<translation id="2780756493585863768">Google сунуштаган ЖИ технологиялары менен түзүлгөн соңку фондор</translation>
 <translation id="2783010256799387990">ТЕКШЕРҮҮДӨН ӨТТҮ</translation>
 <translation id="2786429550992142861">болотнай</translation>
 <translation id="2787435249130282949">баскычтоптун жарыктыгын көбөйтүү</translation>
@@ -426,6 +426,7 @@
 <translation id="3456078764689556234"><ph name="TOTAL_PAGES" /> ичинен <ph name="PRINTED_PAGES" /> барак басылып чыгарылды.</translation>
 <translation id="345898999683440380"><ph name="PAGE_NUM" />-бет скандалууда. <ph name="PERCENTAGE_VALUE" />% бүттү.</translation>
 <translation id="3459509316159669723">Басып чыгаруу</translation>
+<translation id="3462187165860821523"><ph name="DEVICE_NAME" /> жаңыртылууда</translation>
 <translation id="346423161771747987">Электр кубатын керектөө</translation>
 <translation id="346539236881580388">Кайра тартуу</translation>
 <translation id="3484914941826596830">Орнотулган программа жаңыртылып жатканда, тышкы түзмөктү ажыратпаңыз же компьютерди өчүрбөңүз. Бул терезени кичирейтип койсоңуз болот. Жаңыртуу бир нече мүнөткө созулуп, ал эми тышкы түзмөгүңүз бул убакытта иштебеши мүмкүн.</translation>
@@ -790,6 +791,7 @@
 <translation id="5559898619118303662">Күн батканда автоматтык түрдө караңгы темага которулуу</translation>
 <translation id="556042886152191864">Баскыч</translation>
 <translation id="5562551811867441927"><ph name="TERRAIN_FEATURE" /> <ph name="TERRAIN_COLOR" /> түсүндө</translation>
+<translation id="5572169899491758844">Скандоо</translation>
 <translation id="5578477003638479617">UMTS</translation>
 <translation id="5578519639599103840">Кайра скандоо</translation>
 <translation id="5583640892426849032">Backspace</translation>
@@ -879,7 +881,6 @@
 <translation id="6075872808778243331">(Android) HTTP күтүү убакыты</translation>
 <translation id="6078323886959318429">Кыска жол кошуу</translation>
 <translation id="6091080061796993741">сары</translation>
-<translation id="610371409726072606">Google сунуштаган ЖИ технологиялары менен түзүлгөн камера тушкагазы</translation>
 <translation id="6104112872696127344">Скандоо токтотулду</translation>
 <translation id="6106186594183574873">Бүтүрүү үчүн эски сырсөзүңүздү киргизиңиз</translation>
 <translation id="6108689792487843350">Шлюз жеткиликсиз</translation>
@@ -1011,7 +1012,6 @@
 <translation id="672609503628871915">Эмне жаңылык бар</translation>
 <translation id="6740695858234317715">крем жана кызгылт сары</translation>
 <translation id="6741823073189174383">кайык</translation>
-<translation id="674276385369049081">Google сунуштаган ЖИ технологиялары менен түзүлгөн камеранын жаңы тушкагаздары</translation>
 <translation id="6744441848304920043">жунгли</translation>
 <translation id="6747035363363040417">нейтралдуу</translation>
 <translation id="6747215703636344499">Токтоду – Түпкүч толуп калды</translation>
@@ -1032,6 +1032,7 @@
 <translation id="6871256179359663621">ачык кызгылт көгүш</translation>
 <translation id="6889786074662672253">Өчүрүп күйгүзүп жатканда тышкы түзмөктү ажыратпаңыз же компьютерди өчүрбөңүз. Бул терезени кичирейтип койсоңуз болот. Бул бир нече мүнөткө созулуп, ал эми тышкы түзмөгүңүз бул убакытта иштебеши мүмкүн.</translation>
 <translation id="6900701049656042631">Бул альбомдо сүрөттөр жок. Сүрөттөрдү кошуу үчүн төмөнкү жерге өтүңүз: <ph name="LINK" /></translation>
+<translation id="6902359863093437070">Фонду ЖИ менен түзүү</translation>
 <translation id="6905163627763043954">Сынап көрүү</translation>
 <translation id="6905724422583748843">Төмөнкүгө кайтуу: <ph name="PAGE_NAME" /></translation>
 <translation id="6910312834584889076">Сканердин капкагы ачык. Капкагын жаап, кайра аракет кылыңыз.</translation>
@@ -1269,6 +1270,7 @@
 <translation id="8152370627892825"><ph name="DESCRIPTION" />, <ph name="ACCELERATOR_INFO" />.</translation>
 <translation id="8156233298086717232">сыйкырдуу</translation>
 <translation id="8162776280680283326">түлкүлөр</translation>
+<translation id="8167413449582155132">Фон Google сунуштаган ЖИ технологиялары менен түзүлгөн</translation>
 <translation id="8179976553408161302">Enter</translation>
 <translation id="8183975772394450380">жээк</translation>
 <translation id="8206859287963243715">Уюктук</translation>

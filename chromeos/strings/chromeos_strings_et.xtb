@@ -11,6 +11,7 @@
 <translation id="1047458377670401304"><ph name="CPU_NAME" /> (<ph name="THREAD_COUNT" /> haru, <ph name="CPU_MAX_CLOCK_SPEED" /> GHz)</translation>
 <translation id="1047773237499189053">Uued funktsioonid on saadaval. Lisateabe saamiseks kasutage ülesnoolt.</translation>
 <translation id="1049663189809099096">pastellkollane</translation>
+<translation id="1056898198331236512">Hoiatus</translation>
 <translation id="1059913517121127803">Skannimist ei saanud alustada</translation>
 <translation id="1062823486781306604"><ph name="INDEX" /> / <ph name="COUNT" />, <ph name="NAME" />.</translation>
 <translation id="1070066693520972135">WEP</translation>
@@ -95,7 +96,6 @@
 <translation id="1478594628797167447">Skanner</translation>
 <translation id="1483493594462132177">Saada</translation>
 <translation id="1488850966314959671">Selle võrguga ei saa ühendust luua ühegi lubatud kohandatud APN-i abil. Pöörduge lisateabe saamiseks oma mobiilioperaatori poole.</translation>
-<translation id="1491076385728777984">Seadmes <ph name="DEVICE_NAME" /> värskendatakse püsivara</translation>
 <translation id="1499041187027566160">suurendab helitugevust</translation>
 <translation id="1499900233129743732">Seda kasutajat haldab domeen <ph name="MANAGER" />, mis võib eemalt hallata seadeid ja jälgida kasutaja tegevusi.</translation>
 <translation id="150962533380566081">Vale PUK-kood.</translation>
@@ -291,7 +291,6 @@
 <translation id="2505327257735685095">Praeguse taustapildi värskendamine</translation>
 <translation id="2512979179176933762">kuvab aknad</translation>
 <translation id="2513396635448525189">Profiilipilt</translation>
-<translation id="2517472476991765520">Kontrolli</translation>
 <translation id="2521835766824839541">eelmine lugu</translation>
 <translation id="2526590354069164005">Töölaud</translation>
 <translation id="2529641961800709867">Nupu valikud</translation>
@@ -330,6 +329,7 @@
 <translation id="2744221223678373668">Jagatud</translation>
 <translation id="2751739896257479635">EAP 2. etapi autentimine</translation>
 <translation id="2754757901767760034">lamp</translation>
+<translation id="2780756493585863768">Hiljutised taustad, mis toimivad Google’i AI platvormil</translation>
 <translation id="2783010256799387990">LÄBITUD</translation>
 <translation id="2786429550992142861">linariidest</translation>
 <translation id="2787435249130282949">heledam klaviatuur</translation>
@@ -426,6 +426,7 @@
 <translation id="3456078764689556234">Prinditi <ph name="PRINTED_PAGES" />. leht <ph name="TOTAL_PAGES" />-st.</translation>
 <translation id="345898999683440380">Lehe <ph name="PAGE_NUM" /> skannimine. <ph name="PERCENTAGE_VALUE" />% on lõpetatud.</translation>
 <translation id="3459509316159669723">Printimine</translation>
+<translation id="3462187165860821523">Seadme <ph name="DEVICE_NAME" /> värskendamine</translation>
 <translation id="346423161771747987">Praegune</translation>
 <translation id="346539236881580388">Tee uuesti</translation>
 <translation id="3484914941826596830">Püsivara värskendamise ajal ärge seda välist seadet eemaldage ega arvutit välja lülitage. Võite selle akna minimeerida. Selle värskenduse lõpuleviimiseks võib kuluda mõni minut ja teie väline seade ei pruugi sel ajal töötada.</translation>
@@ -790,6 +791,7 @@
 <translation id="5559898619118303662">Päikeseloojangul automaatselt tumedale teemale lülitumine</translation>
 <translation id="556042886152191864">Nupp</translation>
 <translation id="5562551811867441927"><ph name="TERRAIN_COLOR" /> toonides <ph name="TERRAIN_FEATURE" /></translation>
+<translation id="5572169899491758844">Skannimine</translation>
 <translation id="5578477003638479617">UMTS</translation>
 <translation id="5578519639599103840">Skanni uuesti</translation>
 <translation id="5583640892426849032">Tagasilükkeklahv</translation>
@@ -879,7 +881,6 @@
 <translation id="6075872808778243331">(Android) HTTP latentsusaeg</translation>
 <translation id="6078323886959318429">Otsetee lisamine</translation>
 <translation id="6091080061796993741">kollastes toonides</translation>
-<translation id="610371409726072606">Google'i AI platvormil toimiv kaamerataust</translation>
 <translation id="6104112872696127344">Skannimine tühistati</translation>
 <translation id="6106186594183574873">Toimingu lõpuleviimiseks sisestage oma vana parool</translation>
 <translation id="6108689792487843350">Lüüs on kättesaamatu</translation>
@@ -1011,7 +1012,6 @@
 <translation id="672609503628871915">Vaadake, mis on uut</translation>
 <translation id="6740695858234317715">kreemikas ja oranž</translation>
 <translation id="6741823073189174383">paat</translation>
-<translation id="674276385369049081">Google'i AI platvormil toimivad hiljutised kaamerataustad</translation>
 <translation id="6744441848304920043">džungel</translation>
 <translation id="6747035363363040417">neutraalne</translation>
 <translation id="6747215703636344499">Peatatud – väljastussalv on täis</translation>
@@ -1032,6 +1032,7 @@
 <translation id="6871256179359663621">helelilla</translation>
 <translation id="6889786074662672253">Kui toimub taaskäivitamine, ärge eemaldage seda välist seadet ega lülitage arvutit välja. Võite selle akna minimeerida. Toimingule võib kuluda mõni minut ja teie välisseade ei pruugi sel ajal töötada.</translation>
 <translation id="6900701049656042631">Selles albumis ei ole fotosid. Fotode lisamiseks minge saidile <ph name="LINK" /></translation>
+<translation id="6902359863093437070">AI abil tausta loomine</translation>
 <translation id="6905163627763043954">Proovige järele</translation>
 <translation id="6905724422583748843">Tagasi lehele <ph name="PAGE_NAME" /></translation>
 <translation id="6910312834584889076">Skanneri kaas on avatud. Sulgege kaas ja proovige uuesti.</translation>
@@ -1269,6 +1270,7 @@
 <translation id="8152370627892825"><ph name="DESCRIPTION" />, <ph name="ACCELERATOR_INFO" />.</translation>
 <translation id="8156233298086717232">maagiline</translation>
 <translation id="8162776280680283326">rebased</translation>
+<translation id="8167413449582155132">Taust toimib Google’i AI platvormil</translation>
 <translation id="8179976553408161302">Sisestusklahv</translation>
 <translation id="8183975772394450380">rand</translation>
 <translation id="8206859287963243715">Mobiil</translation>

@@ -192,6 +192,9 @@
 <translation id="6648150602980899529">您即將登入由 <ph name="DOMAIN" /> 管理的帳戶，並讓帳戶管理員控制您的 Chrome 資料。您的資料將與這個帳戶建立永久連結。如果您登出 Chrome，系統將刪除此裝置上的資料，但這些資料仍會儲存在您的 Google 帳戶中。</translation>
 <translation id="6683891932310469419">開啟 Chrome 記錄頁面。</translation>
 <translation id="6709398533399187136">您的密碼因資料外洩而被洩露。Google 密碼管理工具建議您立即變更密碼。</translation>
+<translation id="6820553595690137150">密碼短語加密的資料不包括付款方法和地址。
+
+如要變更此設定，請<ph name="BEGIN_LINK" />刪除帳戶中的 Chrome 資料<ph name="END_LINK" />。</translation>
 <translation id="6851982868877411675">在 iOS 中開啟 Chromium 設定，輕按 [預設瀏覽器應用程式]，然後選取 [Chrome]。</translation>
 <translation id="686691656039982452">你可前往 Google 帳戶<ph name="BEGIN_LINK" />管理要儲存哪些 Chrome 資料<ph name="END_LINK" />。
 
@@ -215,6 +218,7 @@
 <translation id="7261678641327190792">Chrome 無法檢查密碼</translation>
 <translation id="7272930098487145294">如要儲存圖片，請輕按 [設定] 並允許 Chrome 新增您的相片</translation>
 <translation id="7275945473750112644">由於您的帳戶由 <ph name="HOSTED_DOMAIN" /> 管理，因此您的 Chrome 資料將會從此裝置上清除</translation>
+<translation id="7284245284340063465">如果忘記密碼短語或想變更此設定，請<ph name="BEGIN_LINK" />刪除帳戶中的 Chrome 資料<ph name="END_LINK" />。</translation>
 <translation id="7304491752269485262">打開咗 Chrome 自動填入檢視畫面</translation>
 <translation id="7344094882820374540">取得 Chrome 最強大的安全防護功能，防範危險網站</translation>
 <translation id="7349129508108954623">允許 Chrome 使用「Google 地圖」，為偵測到的地址提供路線和本地資訊。</translation>
@@ -246,6 +250,9 @@
 <translation id="8160472928944011082">Chrome 無法更新</translation>
 <translation id="8174679664544842874">在 Chrome 中開啟新分頁。</translation>
 <translation id="8213758103105806860">開啟 Chrome 書籤</translation>
+<translation id="8317674518145175158">系統將不會加密你的付款方法和地址，Chrome 上的瀏覽記錄將不會同步。
+
+只有知道密碼短語的使用者，才能讀取已加密的資料。系統不會將密碼短語傳送給 Google，Google 亦不會儲存密碼短語。如果忘記密碼短語或想變更此設定，請<ph name="BEGIN_LINK" />刪除帳戶中的 Chrome 資料<ph name="END_LINK" />。</translation>
 <translation id="8328903609881776074">開啟新的 Chrome 無痕式分頁。</translation>
 <translation id="8357607116237445042">選擇要從此裝置上清除 Chrome 資料，還是要保留資料</translation>
 <translation id="8370517070665726704">版權所有 <ph name="YEAR" /> Google LLC。保留所有權利。</translation>

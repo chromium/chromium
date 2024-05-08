@@ -12,6 +12,7 @@
 <translation id="1588438908519853928">ปกติ</translation>
 <translation id="1591562245178063882">เดือนนี้</translation>
 <translation id="1637811476055996098">เลือกไฟล์</translation>
+<translation id="1680090928918677457">ใช้กล้อง</translation>
 <translation id="1681022320378710418">เวลาปัจจุบัน</translation>
 <translation id="1727839386348365796">หลอดดูดสี</translation>
 <translation id="1729654308190250600">โปรดป้อนที่อยู่อีเมลที่ไม่ว่างเปล่า</translation>
@@ -60,6 +61,7 @@
 <translation id="3822383571486410024">โปรดกรอกข้อความนี้ให้มีอักขระอย่างน้อย <ph name="MIN_CHARACTERS" /> ตัว (ตอนนี้คุณมี <ph name="CURRENT_LENGTH" /> ตัว)</translation>
 <translation id="383465348367842624">ส่วนที่ตามด้วย "<ph name="ATSIGN" />" ต้องไม่มีสัญลักษณ์ "<ph name="INVALIDCHARACTER" />"</translation>
 <translation id="3846214748874656680">ออกจากการแสดงเต็มหน้าจอ</translation>
+<translation id="3914173277599553213">จำเป็น</translation>
 <translation id="4031179711345676612">อนุญาตให้ใช้ไมโครโฟน</translation>
 <translation id="4103419683916926126">มิลลิวินาที</translation>
 <translation id="4201051445878709314">แสดงเดือนที่ผ่านมา</translation>
@@ -75,6 +77,7 @@
 <translation id="4912200001568447310">รายการปัจจุบัน</translation>
 <translation id="4915360478455618802">แสดงเครื่องมือเลือกเวลา</translation>
 <translation id="4924138096460353083">ไม่ชัดเจน</translation>
+<translation id="49269513399674318">ใช้ไมโครโฟน</translation>
 <translation id="4950364064308314478">แสดงเครื่องมือเลือกวันที่และเวลาท้องถิ่น</translation>
 <translation id="4971739861736909480">เลือก <ph name="ACCNAME" /> ไว้</translation>
 <translation id="4975562563186953947">เลือกไว้ <ph name="SELECTED_COUNT" /> รายการ</translation>
@@ -142,6 +145,7 @@
 <translation id="7080893216867146095">อนุญาตให้แชร์ตำแหน่ง</translation>
 <translation id="709897737746224366">โปรดจับคู่รูปแบบที่ร้องขอ</translation>
 <translation id="7102274145889307184">ตำแหน่งปัจจุบัน</translation>
+<translation id="7134810312945846184">ใช้ไมโครโฟนและกล้อง</translation>
 <translation id="7263440858009898357">โปรดเลือกรายการจากหน้ารายการ</translation>
 <translation id="7320576522385648310">กำลังบัฟเฟอร์</translation>
 <translation id="7341556277900466204">จานสี</translation>

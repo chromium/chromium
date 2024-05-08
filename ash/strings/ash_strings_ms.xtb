@@ -166,6 +166,7 @@ Berikut ialah beberapa perkara yang boleh anda cuba untuk bermula.</translation>
 <translation id="1586324912145647027">Pergi ke meja 1 hingga 8</translation>
 <translation id="158838227375272121">Laman web Google Classroom</translation>
 <translation id="1589090746204042747">Akses semua aktiviti anda dalam sesi ini</translation>
+<translation id="1597880963776148053">Langkah jelajah <ph name="STEP" /> daripada <ph name="TOTAL_STEPS" />. Apl anda yang disematkan dan dibuka berada pada rak yang terletak pada bahagian bawah skrin anda. Tekan Alt + Shift + L kemudian tab untuk memfokus pada item rak.</translation>
 <translation id="1602874809115667351"><ph name="LAUNCHER_KEY_NAME" /> + anak panah ke bawah</translation>
 <translation id="1604857178818051494">Jeda media</translation>
 <translation id="1607312127821884567">Menolak penyediaan pemaparan apl telefon anda</translation>
@@ -303,6 +304,7 @@ Berikut ialah beberapa perkara yang boleh anda cuba untuk bermula.</translation>
 <translation id="2257486738914982088">Kesilapan telah berlaku semasa memuat turun <ph name="FILENAME" /></translation>
 <translation id="2258734398699965611">Fail dicadangkan</translation>
 <translation id="2268130516524549846">Bluetooth dilumpuhkan</translation>
+<translation id="2268731132310444948">Langkah jelajah <ph name="STEP" /> daripada <ph name="TOTAL_STEPS" />. Setelah Pelancar diaktifkan, anda akan menemukan bar carian yang dipertingkatkan. Anda boleh mula menaip untuk mencari fail anda, apl dan pelbagai lagi. Anda juga boleh mendapatkan jawapan kepada pertanyaan tentang <ph name="PRODUCT_NAME" /> anda.</translation>
 <translation id="2268813581635650749">Log keluar semua</translation>
 <translation id="2276987123919776440">15 min</translation>
 <translation id="2277103315734023688">Cari Ke Hadapan</translation>
@@ -397,6 +399,7 @@ Berikut ialah beberapa perkara yang boleh anda cuba untuk bermula.</translation>
 <translation id="2607678425161541573">Log masuk dalam talian diperlukan</translation>
 <translation id="2612072250312279703">pemantau aktiviti</translation>
 <translation id="2612614436418177118">Alihkan apl ikon dalam grid apl</translation>
+<translation id="2619326010008283367">Langkah jelajah <ph name="STEP" /> daripada <ph name="TOTAL_STEPS" />. Anda boleh menemukan Tetapan peranti anda dalam Pelancar. Cuba sesuaikan <ph name="PRODUCT_NAME" /> anda dalam Tetapan seperti mengubah hiasan latar anda atau menetapkan penyelamat skrin.</translation>
 <translation id="2620016719323068571">Cari <ph name="CATEGORY" />, fail, apl anda dan pelbagai lagi...</translation>
 <translation id="2620436844016719705">Sistem</translation>
 <translation id="2620900772667816510">Peleraian Super Bluetooth</translation>
@@ -819,7 +822,6 @@ Semua pengguna mesti log keluar untuk meneruskan.</translation>
 <translation id="4209973997261364186">Wi-Fi dihidupkan</translation>
 <translation id="4212472694152630271">Tukar kepada PIN</translation>
 <translation id="4215497585250573029">Tetapan VPN</translation>
-<translation id="4215548513524864822">Langkah jelajah 5 daripada 5. Anda boleh menemukan Tetapan peranti anda dalam Pelancar. Cuba sesuaikan <ph name="PRODUCT_NAME" /> anda dalam Tetapan seperti mengubah hiasan latar anda atau menyediakan penyelamat skrin.</translation>
 <translation id="4217571870635786043">Pengimlakan</translation>
 <translation id="4221957499226645091"><ph name="APP_NAME" />, Apl yang Dipasang, Dijeda</translation>
 <translation id="4228078597006700451">Kawalan tidak disediakan</translation>
@@ -946,12 +948,12 @@ Semua pengguna mesti log keluar untuk meneruskan.</translation>
 <translation id="468293128311738995">Apl daripada telefon anda</translation>
 <translation id="4690510401873698237">Rak di bahagian bawah</translation>
 <translation id="4696813013609194136">Buka kunci peranti menggunakan kod ibu bapa</translation>
-<translation id="469693290987463983">Langkah jelajah 1 daripada 5. Apl anda yang disematkan dan dibuka berada pada rak yang terletak pada bahagian bawah skrin anda. Tekan Alt + Shift + L kemudian tab untuk memfokus pada item rak.</translation>
 <translation id="4702647871202761252">Skrin privasi dimatikan</translation>
 <translation id="4706121060329443414">Muat turun akan cuba dilakukan kemudian. Buat masa sekarang, pertuturan akan dihantar kepada Google untuk diproses.</translation>
 <translation id="470644585772471629">Penyongsangan warna</translation>
 <translation id="4708065238214351979">Jadikan papan kekunci lebih terang</translation>
 <translation id="4717575069099566988">Kabel USB-C anda tidak menyokong USB4. Prestasi peranti mungkin terhad.</translation>
+<translation id="4724328513667182700">6 petua untuk bermula bagi <ph name="PRODUCT_NAME" /></translation>
 <translation id="4730374152663651037">KERAP DIGUNAKAN</translation>
 <translation id="4731797938093519117">Akses ibu bapa</translation>
 <translation id="4733161265940833579"><ph name="BATTERY_PERCENTAGE" />% (Kiri)</translation>
@@ -1027,6 +1029,7 @@ Semua pengguna mesti log keluar untuk meneruskan.</translation>
 <translation id="4964188651935955085">Apabila anda mematikan Bluetooth, peranti luaran ini akan diputuskan sambungan daripada <ph name="DEVICE_TYPE" /> anda:</translation>
 <translation id="4966431234408005599">Tinggikan kelantangan</translation>
 <translation id="4969092041573468113"><ph name="HOURS" />j <ph name="MINUTES" />m <ph name="SECONDS" />s</translation>
+<translation id="496999337731226334">Langkah jelajah <ph name="STEP" /> daripada <ph name="TOTAL_STEPS" />. Kawalan yang kerap digunakan seperti Wi-Fi, Bluetooth dan kelantangan terdapat dalam Tetapan Pantas. Anda juga boleh mengakses di sini untuk mengambil tangkapan skrin. Tekan Alt + Shift + S untuk membuka Tetapan Pantas.</translation>
 <translation id="4975771730019223894">Pelencanaan apl</translation>
 <translation id="4977493774330778463"><ph name="NUM_IMPORTANT_NOTIFICATION" />:
         <ph name="NOTIFICATION_1" />,
@@ -1144,6 +1147,7 @@ Tiada peranti disambungkan.</translation>
 <translation id="540713187982329711">Togol tempat liputan. Tempat liputan dihidupkan, tiada peranti disambungkan.</translation>
 <translation id="5413656666631274079">Halaman tetapan</translation>
 <translation id="5414198321558177633">Memuat semula senarai profil. Proses ini mungkin mengambil masa beberapa minit.</translation>
+<translation id="5417965108047245734">Buat jelajah pantas untuk mengetahui cara menavigasi <ph name="PRODUCT_NAME" /> anda</translation>
 <translation id="5426063383988017631">Menu tetapan ditutup</translation>
 <translation id="5428899915242071344">Mula memilih</translation>
 <translation id="5429993543155113935">Tetingkap inkognito tidak disokong pada masa ini</translation>
@@ -1440,6 +1444,7 @@ Tiada peranti disambungkan.</translation>
 <translation id="6555373427270923730">Taipkan alamat web dalam bar alamat, kemudian tekan <ph name="MODIFIER" /><ph name="KEY" /></translation>
 <translation id="655633303491376835"><ph name="APP_NAME" />
 Pemasangan baharu</translation>
+<translation id="6559158502366839560">Teroka apl dan permainan lagi</translation>
 <translation id="6559976592393364813">Tanya Pentadbir</translation>
 <translation id="6565007273808762236">Sambungan eSIM tidak tersedia</translation>
 <translation id="6570831796530454248">{0,plural, =1{Kemas kini peranti dalam masa sejam}other{Kemas kini peranti dalam masa # jam}}</translation>
@@ -1524,7 +1529,6 @@ Pemasangan baharu</translation>
 <translation id="6874854809828346832">Tunjukkan butiran tempat liputan. Tempat liputan dihidupkan.</translation>
 <translation id="6878400149835617132">Pintasan dimatikan</translation>
 <translation id="6878701771800702153">{NUM_APPS,plural, =1{1 apl}other{# apl}}</translation>
-<translation id="6878787305374738418">Langkah jelajah 4 daripada 5. Setelah Pelancar diaktifkan, anda akan menerima bar carian yang dipertingkatkan. Anda boleh mula menaip untuk mencari fail anda, apl dan pelbagai lagi. Anda juga boleh mendapatkan jawapan kepada pertanyaan tentang <ph name="PRODUCT_NAME" /> anda.</translation>
 <translation id="6883768636838842873">Pintasan kekunci, petua untuk penggunaan peranti dan pelbagai lagi</translation>
 <translation id="6884665277231944629">Kembali ke hari ini</translation>
 <translation id="6886172995547742638"><ph name="DEVICE_TYPE" /> anda mungkin menunjukkan prestasi yang lebih rendah. Gunakan penyesuai kuasa USB-C <ph name="PREFERRED_MINIMUM_POWER" />W ke atas yang diperakui.</translation>
@@ -1593,6 +1597,7 @@ Pemasangan baharu</translation>
 <translation id="7143207342074048698">Menyambung</translation>
 <translation id="7144942256906679589">Status bateri</translation>
 <translation id="7145639536026937076">Kuasa bateri pada tahap <ph name="PERCENTAGE" />% dan sedang dicas. Penjimat Bateri dihidupkan.</translation>
+<translation id="7149149900052329230">Urus fail setempat anda dan fail Google Drive anda, semua dalam apl Fail.</translation>
 <translation id="7165278925115064263">Alt+Shift+K</translation>
 <translation id="7167913274352523149"><ph name="HOTSPOT" />,
         <ph name="NETWORK" /></translation>
@@ -1613,7 +1618,6 @@ Pemasangan baharu</translation>
 <translation id="726276584504105859">Seret ke sini untuk menggunakan skrin pisah</translation>
 <translation id="7262906531272962081">Buat peringatan</translation>
 <translation id="7278787617901301220"><ph name="LAUNCHER_KEY_NAME" /> + undur ruang</translation>
-<translation id="7282547098317872382">Langkah jelajah 3 daripada 5. Gunakan apl untuk melakukan semua yang diperlukan pada <ph name="PRODUCT_NAME" /> anda. Anda boleh menemukan apl anda dalam Pelancar. Tekan Alt + Shift + L untuk fokus pada butang Pelancar.</translation>
 <translation id="7285232777292757180">Gunakan alat tangkapan skrin dalam tetapan pantas untuk mengambil tangkapan skrin</translation>
 <translation id="7301826272005790482">Ketepikan cadangan tetingkap</translation>
 <translation id="7302889331339392448">Sari Kata Langsung dimatikan.</translation>
@@ -1795,10 +1799,12 @@ Untuk mematikan peranti, tekan dan tahan butang kuasa pada peranti sekali lagi.<
 <translation id="7933084174919150729">Google Assistant hanya tersedia untuk profil utama.</translation>
 <translation id="79341161159229895">Akaun diurus oleh <ph name="FIRST_PARENT_EMAIL" /> dan <ph name="SECOND_PARENT_EMAIL" /></translation>
 <translation id="793716872548410480">Tekan <ph name="SHORTCUT_KEY_NAME" /> + V untuk melihat papan keratan anda. 5 item terakhir yang telah anda salin disimpan pada papan keratan anda.</translation>
+<translation id="7942330802915522974">Langkah jelajah <ph name="STEP" /> daripada <ph name="TOTAL_STEPS" />. Anda boleh menemukan apl Fail dalam Pelancar. Urus fail setempat anda dan fail Google Drive anda, semua dalam apl Fail.</translation>
 <translation id="7942349550061667556">Merah</translation>
 <translation id="7943516765291457328">Hidupkan Bluetooth untuk mengimbas tempat liputan berdekatan</translation>
 <translation id="7944023924886109030">Lihat semua peristiwa hari ini</translation>
 <translation id="7945357288295809525">Memaparkan tetapan kebolehaksesan, "<ph name="ENABLED_FEATURES" />" didayakan.</translation>
+<translation id="7946681191253332687">Kemaskinian keselamatan lanjutan tersedia</translation>
 <translation id="7947798320695032612"><ph name="APP_NAME" /> mahu menggunakan <ph name="DEVICE_NAME" /> anda</translation>
 <translation id="7951630946012935453">Malapkan papan kekunci</translation>
 <translation id="7953994493035617347">Sahkan peleraian baharu?</translation>
@@ -1910,7 +1916,6 @@ Untuk mematikan peranti, tekan dan tahan butang kuasa pada peranti sekali lagi.<
 <translation id="8412677897383510995">Tunjukkan tetapan paparan</translation>
 <translation id="8413272770729657668">Rakaman akan bermula dalam masa 3, 2, 1</translation>
 <translation id="8416730306157376817"><ph name="BATTERY_PERCENTAGE" />% (Bekas)</translation>
-<translation id="8417951779969083400">Langkah jelajah 2 daripada 5. Kawalan yang kerap digunakan seperti Wi-Fi, Bluetooth dan kelantangan berada dalam Tetapan Pantas. Anda juga boleh mengakses di sini untuk mengambil tangkapan skrin. Tekan Alt + Shift + S untuk membuka Tetapan Pantas.</translation>
 <translation id="8420205633584771378">Alih keluar cadangan ini?</translation>
 <translation id="8421270167862077762"><ph name="UNAVAILABLE_APPS" /> tidak tersedia pada peranti ini.</translation>
 <translation id="8426708595819210923">Selamat petang <ph name="GIVEN_NAME" />,</translation>
@@ -2131,6 +2136,7 @@ Untuk mematikan peranti, tekan dan tahan butang kuasa pada peranti sekali lagi.<
 <translation id="987589956647469042">Data mudah alih dihidupkan</translation>
 <translation id="989374776391122812">Kawalan kamera dan audio</translation>
 <translation id="990277280839877440">Tetingkap <ph name="WINDOW_TITILE" /> ditutup.</translation>
+<translation id="993398562350683614">Langkah jelajah <ph name="STEP" /> daripada <ph name="TOTAL_STEPS" />. Gunakan apl untuk melakukan semua perkara yang diperlukan pada <ph name="PRODUCT_NAME" /> anda. Anda boleh menemukan apl anda dalam Pelancar. Tekan Alt + Shift + L untuk fokus pada butang Pelancar.</translation>
 <translation id="994354411665877646"><ph name="NETWORK_NAME" />, <ph name="SUBTEXT" /></translation>
 <translation id="996204416024568215">Dapatkan ciri terkini dan peningkatan keselamatan. Kemaskinian berlaku di latar belakang.</translation>
 </translationbundle>

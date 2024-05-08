@@ -133,6 +133,7 @@
 <translation id="3198916472715691905"><ph name="STORAGE_AMOUNT" /> შენახული მონაცემები</translation>
 <translation id="321187648315454507"><ph name="APP_NAME" />-მა შეტყობინებები რომ გამოგიგზავნოთ, გაააქტიურეთ შეტყობინებებზე წვდომის ნებართვაც <ph name="BEGIN_LINK" />Android-ის პარამეტრებიდან<ph name="END_LINK" />.</translation>
 <translation id="3227137524299004712">მიკროფონი</translation>
+<translation id="3232293466644486101">დათვალიერების მონაცემების წაშლა…</translation>
 <translation id="3242646949159196181">ჩართვის შემთხვევაში საიტებს შეეძლება ხმის დაკვრა. გამორთვის შემთხვევაში საიტებს არ შეეძლება ხმის დაკვრა.</translation>
 <translation id="3277252321222022663">საიტებისთვის სენსორებზე წვდომის დაშვება (რეკომენდებული)</translation>
 <translation id="3285500645985761267">საიტებისთვის ჯგუფში თქვენი აქტივობის ნახვის დაშვება</translation>
@@ -341,6 +342,7 @@
 <translation id="6545864417968258051">Bluetooth სკანირება</translation>
 <translation id="6552800053856095716">{PERMISSIONS_SUMMARY_BLOCKED,plural, =1{<ph name="PERMISSION_1" />, <ph name="PERMISSION_2" /> და <ph name="NUM_MORE" /> სხვა დაბლოკილია}other{<ph name="PERMISSION_1" />, <ph name="PERMISSION_2" /> და <ph name="NUM_MORE" /> სხვა დაბლოკილია}}</translation>
 <translation id="6554732001434021288">ბოლო ვიზიტი იყო <ph name="NUM_DAYS" /> დღის წინ</translation>
+<translation id="656065428026159829">მეტის ნახვა</translation>
 <translation id="6561560012278703671">ჩუმი შეტყობინების გამოყენება (დაბლოკავს შეტყობინებებთან დაკავშირებულ ხელისშემშლელ მოთხოვნებს)</translation>
 <translation id="6593061639179217415">დესკტოპის საიტი</translation>
 <translation id="6608650720463149374"><ph name="GIGABYTES" /> გბაიტი</translation>

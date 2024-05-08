@@ -11,6 +11,7 @@
 <translation id="1047458377670401304"><ph name="CPU_NAME" /> (патокаў: <ph name="THREAD_COUNT" />, <ph name="CPU_MAX_CLOCK_SPEED" /> ГГц)</translation>
 <translation id="1047773237499189053">З'явілася новая функцыя, націсніце стрэлку ўверх, каб даведацца больш.</translation>
 <translation id="1049663189809099096">пастэльна-жоўты</translation>
+<translation id="1056898198331236512">Папярэджанне</translation>
 <translation id="1059913517121127803">Не ўдалося запусціць сканіраванне</translation>
 <translation id="1062823486781306604"><ph name="INDEX" /> з <ph name="COUNT" />, <ph name="NAME" />.</translation>
 <translation id="1070066693520972135">WEP</translation>
@@ -95,7 +96,6 @@
 <translation id="1478594628797167447">Сканер</translation>
 <translation id="1483493594462132177">Адправіць</translation>
 <translation id="1488850966314959671">Не ўдалося падключыцца да гэтай сеткі ні з адным з уключаных уласных ідэнтыфікатараў APN. Па дадатковую інфармацыю звяртайцеся да аператара мабільнай сувязі.</translation>
-<translation id="1491076385728777984">Ідзе абнаўленне ўбудаванага праграмнага забеспячэння прылады "<ph name="DEVICE_NAME" />"</translation>
 <translation id="1499041187027566160">павялічыць гучнасць</translation>
 <translation id="1499900233129743732"><ph name="MANAGER" /> можа кіраваць наладамі гэтага карыстальніка і адсочваць яго дзеянні.</translation>
 <translation id="150962533380566081">Няправільны PUK-код.</translation>
@@ -291,7 +291,6 @@
 <translation id="2505327257735685095">Абнавіць відарыс, які выкарыстоўваецца як шпалеры</translation>
 <translation id="2512979179176933762">паказаць вокны</translation>
 <translation id="2513396635448525189">Відарыс уліковага запісу</translation>
-<translation id="2517472476991765520">Пошук</translation>
 <translation id="2521835766824839541">папярэдні трэк</translation>
 <translation id="2526590354069164005">Працоўны стол</translation>
 <translation id="2529641961800709867">Параметры кнопкі</translation>
@@ -426,6 +425,7 @@
 <translation id="3456078764689556234">Надрукавана старонка <ph name="PRINTED_PAGES" /> з <ph name="TOTAL_PAGES" />.</translation>
 <translation id="345898999683440380">Сканіруецца старонка <ph name="PAGE_NUM" />. Выканана <ph name="PERCENTAGE_VALUE" /> %.</translation>
 <translation id="3459509316159669723">Друк</translation>
+<translation id="3462187165860821523">Ідзе абнаўленне прылады "<ph name="DEVICE_NAME" />"</translation>
 <translation id="346423161771747987">Ток</translation>
 <translation id="346539236881580388">Перазняць</translation>
 <translation id="3484914941826596830">Падчас абнаўлення ўбудаванага ПЗ не адключайце знешнюю прыладу і не выключайце камп'ютар. Гэта акно можна згарнуць. Абнаўленне зойме некалькі хвілін, і падчас яго знешняя прылада можа не працаваць.</translation>
@@ -790,6 +790,7 @@
 <translation id="5559898619118303662">Аўтаматычна пераключацца на цёмную тэму на захадзе сонца</translation>
 <translation id="556042886152191864">Кнопка</translation>
 <translation id="5562551811867441927"><ph name="TERRAIN_FEATURE" />, колеры: <ph name="TERRAIN_COLOR" /></translation>
+<translation id="5572169899491758844">Сканіраванне</translation>
 <translation id="5578477003638479617">UMTS</translation>
 <translation id="5578519639599103840">Сканіраваць паўторна</translation>
 <translation id="5583640892426849032">Backspace</translation>
@@ -879,7 +880,6 @@
 <translation id="6075872808778243331">(Android) Затрымка HTTP-запытаў</translation>
 <translation id="6078323886959318429">Дадаць ярлык</translation>
 <translation id="6091080061796993741">жоўты</translation>
-<translation id="610371409726072606">Фон для камеры на аснове AI ад Google</translation>
 <translation id="6104112872696127344">Сканіраванне скасавана</translation>
 <translation id="6106186594183574873">Каб закончыць, увядзіце стары пароль</translation>
 <translation id="6108689792487843350">Шлюз недаступны</translation>
@@ -1011,7 +1011,6 @@
 <translation id="672609503628871915">Пазнаёмцеся з навінкамі</translation>
 <translation id="6740695858234317715">крэмавы і аранжавы</translation>
 <translation id="6741823073189174383">лодка</translation>
-<translation id="674276385369049081">Нядаўнія фонавыя відарысы для камеры на аснове AI ад Google</translation>
 <translation id="6744441848304920043">джунглі</translation>
 <translation id="6747035363363040417">нейтральны</translation>
 <translation id="6747215703636344499">Спынена: выхадны латок запоўнены</translation>

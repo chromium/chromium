@@ -12,6 +12,7 @@
 <translation id="1588438908519853928">Arrunta</translation>
 <translation id="1591562245178063882">Oraingo hilabetea</translation>
 <translation id="1637811476055996098">Aukeratu fitxategiak</translation>
+<translation id="1680090928918677457">Erabili kamera</translation>
 <translation id="1681022320378710418">une honetako ordua</translation>
 <translation id="1727839386348365796">Kolore-hautatzailea</translation>
 <translation id="1729654308190250600">Idatzi helbide elektronikoa.</translation>
@@ -60,6 +61,7 @@
 <translation id="3822383571486410024">Luzatu testua <ph name="MIN_CHARACTERS" /> karaktere izan ditzan gutxienez (<ph name="CURRENT_LENGTH" /> karaktere erabiltzen ari zara).</translation>
 <translation id="383465348367842624">"<ph name="ATSIGN" />" ikurraren ondoren ezin da "<ph name="INVALIDCHARACTER" />" idatzi.</translation>
 <translation id="3846214748874656680">Irten pantaila osotik</translation>
+<translation id="3914173277599553213">Nahitaezkoa</translation>
 <translation id="4031179711345676612">Mikrofonoa erabil daiteke</translation>
 <translation id="4103419683916926126">Milisegundo</translation>
 <translation id="4201051445878709314">Erakutsi aurreko hilabetea</translation>
@@ -75,6 +77,7 @@
 <translation id="4912200001568447310">une honetako elementua</translation>
 <translation id="4915360478455618802">Erakutsi ordu-hautatzailea</translation>
 <translation id="4924138096460353083">zehaztugabea</translation>
+<translation id="49269513399674318">Erabili mikrofonoa</translation>
 <translation id="4950364064308314478">Erakutsi tokiko data- eta ordu-hautatzailea</translation>
 <translation id="4971739861736909480"><ph name="ACCNAME" /> hautatuta</translation>
 <translation id="4975562563186953947"><ph name="SELECTED_COUNT" /> hautatuta</translation>
@@ -142,6 +145,7 @@
 <translation id="7080893216867146095">Kokapena partekatzeko baimena eman da</translation>
 <translation id="709897737746224366">Erabili eskatutako formatua.</translation>
 <translation id="7102274145889307184">oraingo kokapena</translation>
+<translation id="7134810312945846184">Erabili mikrofonoa eta kamera</translation>
 <translation id="7263440858009898357">Hautatu zerrendako elementu bat.</translation>
 <translation id="7320576522385648310">bufferrean gordetzen</translation>
 <translation id="7341556277900466204">Zirkulu kromatikoa</translation>

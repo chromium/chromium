@@ -12,6 +12,7 @@
 <translation id="1588438908519853928">ಸಾಮಾನ್ಯ</translation>
 <translation id="1591562245178063882">ಈ ತಿಂಗಳು</translation>
 <translation id="1637811476055996098">ಫೈಲ್‌ಗಳನ್ನು ಆರಿಸಿ</translation>
+<translation id="1680090928918677457">ಕ್ಯಾಮರಾವನ್ನು ಬಳಸಿ</translation>
 <translation id="1681022320378710418">ಪ್ರಸ್ತುತ ಸಮಯ</translation>
 <translation id="1727839386348365796">ಐ-ಡ್ರಾಪರ್</translation>
 <translation id="1729654308190250600">ಖಾಲಿ-ಅಲ್ಲದ ಇಮೇಲ್ ವಿಳಾಸವನ್ನು ನಮೂದಿಸಿ.</translation>
@@ -60,6 +61,7 @@
 <translation id="3822383571486410024">ಈ ಪಠ್ಯವನ್ನು <ph name="MIN_CHARACTERS" /> ಅಕ್ಷರಗಳಿಗೆ ಅಥವಾ ಅದಕ್ಕಿಂತಲೂ ಹೆಚ್ಚಿಗೆ ಸೀಮಿತಗೊಳಿಸಿ (ನೀವು ಪ್ರಸ್ತುತವಾಗಿ <ph name="CURRENT_LENGTH" /> ಅಕ್ಷರಗಳನ್ನು ಬಳಸುತ್ತಿರುವಿರಿ).</translation>
 <translation id="383465348367842624">'<ph name="ATSIGN" />' ನಂತರದ ಭಾಗವು '<ph name="INVALIDCHARACTER" />' ಚಿಹ್ನೆಯನ್ನು ಒಳಗೊಂಡಿರಬಾರದು.</translation>
 <translation id="3846214748874656680">ಪೂರ್ಣಪರದೆಯಿಂದ ನಿರ್ಗಮಿಸಿ</translation>
+<translation id="3914173277599553213">ಅಗತ್ಯವಿರುವುದು</translation>
 <translation id="4031179711345676612">ಮೈಕ್ರೊಫೋನ್ ಅನುಮತಿಸಲಾಗಿದೆ</translation>
 <translation id="4103419683916926126">ಮಿಲಿಸೆಕೆಂಡುಗಳು</translation>
 <translation id="4201051445878709314">ಹಿಂದಿನ ತಿಂಗಳು ತೋರಿಸು</translation>
@@ -75,6 +77,7 @@
 <translation id="4912200001568447310">ಪ್ರಸ್ತುತ ಐಟಂ</translation>
 <translation id="4915360478455618802">ಸಮಯದ ಪಿಕರ್ ಅನ್ನು ತೋರಿಸಿ</translation>
 <translation id="4924138096460353083">ಅನಿರ್ದಿಷ್ಟ</translation>
+<translation id="49269513399674318">ಮೈಕ್ರೋಫೋನ್ ಅನ್ನು ಬಳಸಿ</translation>
 <translation id="4950364064308314478">ಸ್ಥಳೀಯ ದಿನಾಂಕ ಮತ್ತು ಸಮಯದ ಪಿಕರ್ ಅನ್ನು ತೋರಿಸಿ</translation>
 <translation id="4971739861736909480"><ph name="ACCNAME" /> ಅನ್ನು ಆಯ್ಕೆಮಾಡಲಾಗಿದೆ</translation>
 <translation id="4975562563186953947"><ph name="SELECTED_COUNT" /> ಆಯ್ಕೆ ಮಾಡಲಾಗಿದೆ</translation>
@@ -142,6 +145,7 @@
 <translation id="7080893216867146095">ಸ್ಥಳ ಹಂಚಿಕೊಳ್ಳುವಿಕೆಯನ್ನು ಅನುಮತಿಸಲಾಗಿದೆ</translation>
 <translation id="709897737746224366">ದಯವಿಟ್ಟು ವಿನಂತಿಸಿದ ಸ್ವರೂಪವನ್ನು ಹೊಂದಿಸಿ.</translation>
 <translation id="7102274145889307184">ಪ್ರಸ್ತುತ ಸ್ಥಳ</translation>
+<translation id="7134810312945846184">ಮೈಕ್ರೊಫೋನ್ ಮತ್ತು ಕ್ಯಾಮರಾವನ್ನು ಬಳಸಿ</translation>
 <translation id="7263440858009898357">ಪಟ್ಟಿಯಲ್ಲಿನ ಐಟಂ ಅನ್ನು ದಯವಿಟ್ಟು ಆಯ್ಕೆ ಮಾಡಿ.</translation>
 <translation id="7320576522385648310">ಬಫರ್ ಆಗುತ್ತಿದೆ</translation>
 <translation id="7341556277900466204">ಕಲರ್ ವೆಲ್</translation>

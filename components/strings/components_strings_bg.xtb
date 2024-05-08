@@ -15,12 +15,6 @@
 <translation id="102916930470544692">Ключ за достъп</translation>
 <translation id="1030706264415084469"><ph name="URL" /> иска да съхранява за постоянно голямо количество данни на устройството ви</translation>
 <translation id="1030949145805074938">{COUNT,plural, =0{Няма}=1{От 1 сайт. Ще излезете от повечето сайтове. }other{От # сайта. Ще излезете от повечето сайтове. }}</translation>
-<translation id="1033329911862281889">Режимът „инкогнито“ не ви прави невидими онлайн:
-<ph name="BEGIN_LIST" />
-<ph name="LIST_ITEM" />Сайтовете и използваните от тях услуги могат да виждат посещенията.<ph name="END_LIST_ITEM" />
-<ph name="LIST_ITEM" />Работодателите или учебните заведения имат възможност да проследяват активността при сърфиране.<ph name="END_LIST_ITEM" />
-<ph name="LIST_ITEM" />Доставчиците на интернет услуги могат да следят уеб трафика.<ph name="END_LIST_ITEM" />
-<ph name="END_LIST" /></translation>
 <translation id="1035709686865413354">Водни филтри и пречистватели</translation>
 <translation id="1036348656032585052">Изключване</translation>
 <translation id="1036881361735705143">Плик C4</translation>
@@ -64,6 +58,7 @@
 <translation id="1104860668737945357">Бутон „Управление на паролите“. Активирайте, за да прегледате и управлявате паролите в настройките на Chrome</translation>
 <translation id="1108464073729874771">A3 x 4</translation>
 <translation id="1110994991967754504">Избиране на разрешението за <ph name="PERMISSION_NAME" /></translation>
+<translation id="1112238992895762847">Ценови диапазон за всички опции</translation>
 <translation id="1113869188872983271">&amp;Отмяна на пренареждането</translation>
 <translation id="1118429183611783760">Прахосмукачки и поддържане на подове</translation>
 <translation id="1122714970786750095">Електроника и електрически уреди</translation>
@@ -73,7 +68,6 @@
 <translation id="1131264053432022307">Копирано от вас изображение</translation>
 <translation id="1138458427267715730">Получавайте сигнали при понижение на цената в който и да е сайт в мрежата</translation>
 <translation id="1142713751288681188">Тип хартия</translation>
-<translation id="1142846828089312304">Блокиране на „бисквитките“ на трети страни в режим „инкогнито“</translation>
 <translation id="1144136880160289237">Все още нямате активни теми</translation>
 <translation id="1149617035358809955">потвърди, че това сте вие, за да може да попълни данните ви за плащане</translation>
 <translation id="1150565364351027703">Слънчеви очила</translation>
@@ -81,6 +75,7 @@
 <translation id="1151972924205500581">Изисква се парола</translation>
 <translation id="1156303062776767266">Преглеждате локален или споделен файл</translation>
 <translation id="1158211211994409885"><ph name="HOST_NAME" /> неочаквано прекрати връзката.</translation>
+<translation id="1160009341934077418">История на цените в мрежата</translation>
 <translation id="1161325031994447685">Свържете се отново с Wi-Fi.</translation>
 <translation id="1163507966173624031">Фолклорна и традиционна музика</translation>
 <translation id="11635448457105324">Бутон „Управление на адресите“. Активирайте, за да добавяте адреси и да ги управлявате от настройките на Chrome</translation>
@@ -210,6 +205,7 @@
 <translation id="1358223345833465883">Вашата търсеща машина в Chromium</translation>
 <translation id="1359836962251219822">Кухня и трапезария</translation>
 <translation id="1360955481084547712">Отворете нов прозорец в режим „инкогнито“, за да сърфирате частно</translation>
+<translation id="1363028406613469049">Запис</translation>
 <translation id="1363819917331173092">Да не се предлага превод на страниците от <ph name="SOURCE_LANGUAGE" /></translation>
 <translation id="1364822246244961190">Това правило е блокирано, стойността му ще бъде пренебрегната.</translation>
 <translation id="1368318639262510626">Играта с динозавъра. Пикселизиран динозавър избягва кактуси и птеродактили, докато тича през пустошта. Когато чуете аудиосигнал, натиснете интервал, за да прескачате препятствията.</translation>
@@ -223,6 +219,7 @@
 <translation id="1382378825779654399">Ще получавате сигнали по имейл, когато има понижение на цената в който и да е сайт. Тази страница ще бъде запазена в папката „<ph name="LAST_BOOKMARKS_FOLDER" />“.</translation>
 <translation id="1384725838384960382">Лист за удостоверяване на идентификационни данни за сигурни плащания</translation>
 <translation id="1386623374109090026">Пояснения</translation>
+<translation id="138810468159004008">Разрешаване при посещение на сайта</translation>
 <translation id="1391625539203220400">Да се запази ли IBAN номерът на това устройство?</translation>
 <translation id="139305205187523129"><ph name="HOST_NAME" /> не изпрати данни.</translation>
 <translation id="1405567553485452995">светлозелено</translation>
@@ -437,7 +434,7 @@
 <translation id="1762779605905950734">Улица</translation>
 <translation id="1763864636252898013">Сървърът не можа да докаже, че е <ph name="DOMAIN" />; операционната система на устройството ви няма доверие на сертификата му за сигурност. Това може да се дължи на неправилно конфигуриране или на прихващане на връзката ви от атакуващ.</translation>
 <translation id="1768211456781949159"><ph name="BEGIN_LINK" />Опитайте да стартирате мрежова диагностика в Windows<ph name="END_LINK" />.</translation>
-<translation id="1774592222195216949"><ph name="BEGIN_LINK" />Научете повече за режима „инкогнито“ в Chromium<ph name="END_LINK" /></translation>
+<translation id="1771254328977666895">Вижте историята на цените</translation>
 <translation id="1777422078676229054">Снимка (архивна)</translation>
 <translation id="1778646502362731194">JIS B0</translation>
 <translation id="1791429645902722292">Google Smart Lock</translation>
@@ -477,7 +474,6 @@
 <translation id="1853392626017747777">Диалоговият прозорец за регистриране на виртуална карта е затворен</translation>
 <translation id="1854180393107901205">Спиране на предаването</translation>
 <translation id="1855370856221982654">Бокс</translation>
-<translation id="1856713167556118146">За какво не служи режимът „инкогнито“</translation>
 <translation id="1862788842908766795">Управленски и ръководни длъжности</translation>
 <translation id="1863047423483329595">Функцията за защита от проследяване временно не е налице. Докато Chrome я актуализира, сайтовете могат временно да използват „бисквитки“ на трети страни, освен ако не ги блокирате. <ph name="BEGIN_LINK" />Научете повече<ph name="END_LINK" /></translation>
 <translation id="1863257867908022953">Тава 12</translation>
@@ -577,6 +573,7 @@
 <translation id="2056658168519009885">Сайтовете могат да поискат от Chrome информация, с чиято помощ да персонализират показваните ви реклами.</translation>
 <translation id="2059166748188874810">Община</translation>
 <translation id="2059202684901022309">22 x 34 инча</translation>
+<translation id="206275378685759380">Изчакайте, преди да купите</translation>
 <translation id="2064568741209980952">Кредити и заеми</translation>
 <translation id="2064691555167957331">{COUNT,plural, =1{1 предложение}other{# предложения}}</translation>
 <translation id="2066915425250589881">заявите изтриването ѝ</translation>
@@ -728,6 +725,7 @@
 <translation id="2328955282645810595">Ръчни и електрически строителни инструменти</translation>
 <translation id="2330137317877982892"><ph name="CREDIT_CARD" />, изтича на <ph name="EXPIRATION_DATE_ABBR" /></translation>
 <translation id="2337044517221264923">Възобновяване на писането</translation>
+<translation id="2337776048981813397">Ценови диапазон за всички опции</translation>
 <translation id="2337852623177822836">Настройката се контролира от администратора ви</translation>
 <translation id="2340263603246777781"><ph name="ORIGIN" /> иска да се сдвои</translation>
 <translation id="2346319942568447007">Копирано от вас изображение</translation>
@@ -785,6 +783,7 @@
 <ph name="LIST_ITEM" />информацията, въведена във формуляри.
 <ph name="END_LIST" /></translation>
 <translation id="2448295565072560657">Периферните устройства, свързани с това устройство, докато сте в профила си</translation>
+<translation id="2451607499823206582">Проследяване</translation>
 <translation id="2452098632681057184">Екология и околна среда</translation>
 <translation id="2452837234288608067">Не успях да помогна с това. Опитайте отново.</translation>
 <translation id="2456755709261364512">Батерията ви трябва да бъде заредена над <ph name="REQUIRED_BATTERY_PRECENT" />%</translation>
@@ -1081,12 +1080,6 @@
 <translation id="3090667236485488075">Стъкло</translation>
 <translation id="3095940652251934233">Statement</translation>
 <translation id="3098513225387949945">Правилото бе пренебрегнато, защото списъкът за деактивиране съдържа образец, еквивалентен на „*“, което е равносилно на деактивиране на правилото.</translation>
-<translation id="3100422601354996774">Когато затворите всички раздели в режим „инкогнито“ на Chrome, активността ви в тях се премахва от устройството. Това включва:
-<ph name="BEGIN_LIST" />
-<ph name="LIST_ITEM" />активността при сърфиране;<ph name="END_LIST_ITEM" />
-<ph name="LIST_ITEM" />историята на търсенията;<ph name="END_LIST_ITEM" />
-<ph name="LIST_ITEM" />информацията, въведена във формуляри.<ph name="END_LIST_ITEM" />
-<ph name="END_LIST" /></translation>
 <translation id="3102312643185441063">Депозит</translation>
 <translation id="3103188521861412364">Акции и облигации</translation>
 <translation id="3105172416063519923">ID на актива:</translation>
@@ -1284,6 +1277,7 @@
 <translation id="3447661539832366887">Собственикът на това устройство е изключил играта с динозавъра.</translation>
 <translation id="3447884698081792621">Показване на сертификата (издаден от <ph name="ISSUER" />)</translation>
 <translation id="3450323514459570273">Може да поиска разрешение да управлява и препрограмира MIDI устройствата ви</translation>
+<translation id="3451429106322189478">Използването на <ph name="PERMISSION" /> е разрешено</translation>
 <translation id="3452404311384756672">Интервал на извличане:</translation>
 <translation id="3453962258458347894">Брой повторни опити</translation>
 <translation id="3457781733462096492">Рап и хип-хоп</translation>
@@ -1826,7 +1820,6 @@
 <translation id="447665707681730621"><ph name="BUBBLE_MESSAGE" />. <ph name="LEARN_MORE_TEXT" /></translation>
 <translation id="4476953670630786061">Този формуляр не е защитен. Автоматичното попълване е изключено.</translation>
 <translation id="4477350412780666475">Следващ запис</translation>
-<translation id="4481251927743463293">За какво служи режимът „инкогнито“</translation>
 <translation id="4482953324121162758">Този сайт няма да се превежда.</translation>
 <translation id="448363931695049633">Пицарии</translation>
 <translation id="4489023393592172404">Плик Kaku 4</translation>
@@ -1894,7 +1887,6 @@
 <translation id="4631881646528206880">Регистриране на виртуална карта</translation>
 <translation id="4635278307999235413">Данните се изпращат до конзолата за администратори</translation>
 <translation id="4636930964841734540">Информация</translation>
-<translation id="4638670630777875591">Режим инкогнито в Chromium</translation>
 <translation id="464342062220857295">Функции за търсене</translation>
 <translation id="4644670975240021822">В обратен ред с отпечатаната страна надолу</translation>
 <translation id="4646534391647090355">Към изтеглянията</translation>
@@ -2054,10 +2046,10 @@
 <translation id="4930153903256238152">Голяма вместимост</translation>
 <translation id="4930714375720679147">Включване</translation>
 <translation id="4932035752129140860">Поставеният или прикаченият от вас текст се изпраща до Google Cloud или до трети страни за анализ. Възможно е например текстът да бъде сканиран за чувствителни данни, да се съхранява въз основа на правилата на компанията и да бъде видим за администратора ви.</translation>
+<translation id="4933468175699107356">Кликнете с десния бутон на мишката за автоматично попълване на запазената информация, като например името или адреса ви, в който и да е формуляр</translation>
 <translation id="4934780484581617878">Управление на прозорците</translation>
 <translation id="4936134414789135531">Вмъкнатият елемент <ph name="VALUE_NAME" /> не бе намерен.</translation>
 <translation id="4936675324097895694">Финанси</translation>
-<translation id="4940163644868678279">Режим „инкогнито“ в Chrome</translation>
 <translation id="4943620199112228840">Използване на микрофоните ви</translation>
 <translation id="4943872375798546930">Няма резултати</translation>
 <translation id="4950898438188848926">Бутон за превключване между раздели. Натиснете Enter, за да преминете към отворения раздел – <ph name="TAB_SWITCH_FOCUSED_FRIENDLY_MATCH_TEXT" /></translation>
@@ -2135,6 +2127,7 @@
 <translation id="5097099694988056070">Статистически данни за устройството, например за използването на процесора/RAM паметта</translation>
 <translation id="5097468150760963273">27 x 39 инча</translation>
 <translation id="5097501891273180634">A2</translation>
+<translation id="5106405387002409393">Chrome се нуждае от достъп до <ph name="PERMISSION" /> на устройството ви</translation>
 <translation id="510644072453496781">Картон (окрайчен)</translation>
 <translation id="5108881358339761672">Сайтът не е защитен</translation>
 <translation id="5109892411553231226">Управление на начините на плащане</translation>
@@ -2352,6 +2345,7 @@
 <translation id="5526617258931667850"><ph name="MANAGE_CHROMEOS_ACCESSIBILITY_FOCUSED_FRIENDLY_MATCH_TEXT" />. Натиснете Tab и след това Enter, за да персонализирате инструментите за достъпност в настройките на Chrome OS</translation>
 <translation id="55293785478302737">Зашиване на ръба</translation>
 <translation id="553377674408670169">Работни места в сферата на образованието</translation>
+<translation id="5534785731327961487">Текущата оферта е добра</translation>
 <translation id="5536214594743852365">Показване на секцията „<ph name="SECTION" />“</translation>
 <translation id="553782666181800029">Плик Chou 2</translation>
 <translation id="5538270463355278784">автоматичен цял екран</translation>
@@ -2465,7 +2459,6 @@
 <translation id="5742806904559466333">Барове, клубове и нощен живот</translation>
 <translation id="5743684619253032786">Продукти за грижа за ноктите</translation>
 <translation id="5745733273847572235">Може да поиска достъп до местоположението ви</translation>
-<translation id="5745980000221562234">{NUM_CARDS,plural, =1{Използвайте виртуален номер за тази карта}other{Изберете карта}}</translation>
 <translation id="5759751709240058861">Използване и местене на камерата ви</translation>
 <translation id="5763042198335101085">Въведете валиден имейл адрес</translation>
 <translation id="5764725887548570807">Форматът на източника е невалиден.</translation>
@@ -2495,7 +2488,6 @@
 <translation id="5813119285467412249">&amp;Възстановяване на добавянето</translation>
 <translation id="5813753398265398978">Физика</translation>
 <translation id="5817918615728894473">Сдвояване</translation>
-<translation id="5824687817967109979">{NUM_CARDS,plural, =1{Тази карта ще бъде таксувана, когато плащате, но реалният ѝ номер няма да бъде споделен с този сайт. За допълнителна сигурност ще бъде генериран временен код за проверка.}other{Избраната от вас карта ще бъде таксувана, когато плащате, но реалният ѝ номер няма да бъде споделен с този сайт. За допълнителна сигурност ще бъде генериран временен код за проверка.}}</translation>
 <translation id="5826507051599432481">Общо име (CN)</translation>
 <translation id="5829215001860862731">Запазване в профила</translation>
 <translation id="5830698870816298009">Използване и местене на камерата</translation>
@@ -2509,6 +2501,7 @@
 <translation id="5847181246682413476">Захранвания</translation>
 <translation id="584902713199270089">Запознанства и лични обяви</translation>
 <translation id="5851548754964597211">Списък с раздели</translation>
+<translation id="5851868085455377790">Издател</translation>
 <translation id="5852909432155870672">RA4</translation>
 <translation id="5860491529813859533">Включване</translation>
 <translation id="5862579898803147654">Стакер 8</translation>
@@ -2658,7 +2651,6 @@
 <translation id="6126565365696310362">Плик, китайски №2</translation>
 <translation id="6127379762771434464">Елементът бе премахнат</translation>
 <translation id="6131824478727057281">местоположение</translation>
-<translation id="6132161237766805930"><ph name="BEGIN_LINK" />Научете повече за режима „инкогнито“ в Chrome<ph name="END_LINK" /></translation>
 <translation id="6133320744616005677">Продължаване на достъпа</translation>
 <translation id="6133984428121856852">Файловото разширение е празно или невалидно.</translation>
 <translation id="6139975341602920272">17 x 22 инча</translation>
@@ -3052,12 +3044,6 @@
 <translation id="6897140037006041989">Потребителски агент</translation>
 <translation id="6898699227549475383">Организация (О)</translation>
 <translation id="6907458757809079309">Фитнес</translation>
-<translation id="6908168784986658395">Когато затворите всички раздели в режим „инкогнито“ на Chromium, активността ви в тях се премахва от устройството. Това включва:
-<ph name="BEGIN_LIST" />
-<ph name="LIST_ITEM" />активността при сърфиране;<ph name="END_LIST_ITEM" />
-<ph name="LIST_ITEM" />историята на търсенията;<ph name="END_LIST_ITEM" />
-<ph name="LIST_ITEM" />информацията, въведена във формуляри.<ph name="END_LIST_ITEM" />
-<ph name="END_LIST" /></translation>
 <translation id="691024665142758461">Изтегляне на няколко файла</translation>
 <translation id="6915804003454593391">Потребител:</translation>
 <translation id="6916193791494646625">Посочете причина за изтеглянето (задължително)</translation>
@@ -3198,6 +3184,8 @@
 <translation id="7163295244162773898">{0,plural, =1{Да се копира ли поверителният файл?}other{Да се копират ли поверителните файлове?}}</translation>
 <translation id="7168625890036931112"><ph name="DATA_CONTROLS_RESTRICTION" /> не е поддържано ограничение в тази платформа</translation>
 <translation id="717330890047184534">Идентификатор в GAIA:</translation>
+<translation id="7173338713290252554">История на цените в мрежата</translation>
+<translation id="7173478186876671324">Администраторът ви е блокирал използването на <ph name="PERMISSION" /> за този сайт</translation>
 <translation id="7174545416324379297">Обединени стойности</translation>
 <translation id="7175097078723125014">Избрана бе опцията за редактиране на адреса</translation>
 <translation id="7175401108899573750">{SHIPPING_OPTIONS,plural, =0{<ph name="SHIPPING_OPTION_PREVIEW" />}=1{<ph name="SHIPPING_OPTION_PREVIEW" /> и още <ph name="NUMBER_OF_ADDITIONAL_SHIPPING_OPTIONS" />}other{<ph name="SHIPPING_OPTION_PREVIEW" /> и още <ph name="NUMBER_OF_ADDITIONAL_SHIPPING_OPTIONS" />}}</translation>
@@ -3552,6 +3540,7 @@
 <translation id="7773005668374414287">В същия ред с отпечатаната страна нагоре</translation>
 <translation id="7779418012194492374">Отмяна на достъпа за <ph name="DEVICE_NAME" /></translation>
 <translation id="7781829728241885113">Вчера</translation>
+<translation id="7782465647372057580">Информацията за профила е шифрована и се пази частна</translation>
 <translation id="7785790577395078482">този таблет</translation>
 <translation id="7786368602962652765">Едно от задължителните полета е празно. Попълнете го, преди да запазите.</translation>
 <translation id="7791011319128895129">Непубликувано</translation>
@@ -3643,6 +3632,7 @@
 <translation id="7977538094055660992">Изходно устройство</translation>
 <translation id="7979595116210197019">Обществено хранене</translation>
 <translation id="798134797138789862">Може да поиска разрешение да използва устройства и данни за виртуална реалност</translation>
+<translation id="7982789257301363584">Мрежа</translation>
 <translation id="7983008347525536475">Автомобили с висока проходимост</translation>
 <translation id="7984945080620862648">В момента не можете да посетите <ph name="SITE" />, защото уебсайтът изпрати кодирани идентификационни данни, които Chrome не може да обработи. Обикновено грешките в мрежата и атаките срещу нея са временни, така че тази страница вероятно ще работи по-късно.</translation>
 <translation id="7986319120639858961"><ph name="CARD_TITLE" /> <ph name="TIME" /> <ph name="BOOKMARKED" /> <ph name="TITLE" /> <ph name="DOMAIN" /></translation>
@@ -3652,6 +3642,7 @@
 <translation id="800218591365569300">Затворете другите раздели или програми, за да освободите памет.</translation>
 <translation id="8002230960325005199">Преглед на сродните сайтове в нов раздел</translation>
 <translation id="8003046808285812021">„<ph name="SEARCH_TERMS" />“</translation>
+<translation id="8003697335101170520">Плащане с Pix без копиране и поставяне</translation>
 <translation id="8004582292198964060">Браузър</translation>
 <translation id="8009058079740742415">Сигурност и охрана на дома</translation>
 <translation id="8009225694047762179">Управление на паролите</translation>
@@ -3717,17 +3708,18 @@
 <translation id="8103161714697287722">Начин на плащане</translation>
 <translation id="8103643211515685474">Отпечатване въпреки това</translation>
 <translation id="8105368624971345109">Изключване</translation>
-<translation id="8107664017913103177">Налице са предимства на картата</translation>
 <translation id="810875025413331850">Няма намерени устройства в близост.</translation>
 <translation id="8116925261070264013">Заглушени</translation>
 <translation id="8118489163946903409">Начин на плащане</translation>
 <translation id="8118506371121007279">Изпращане на отзиви</translation>
+<translation id="8124085000247609808">Разговор с(ъс) <ph name="KEYWORD_SHORT_NAME" /></translation>
 <translation id="8127301229239896662"><ph name="SOFTWARE_NAME" /> не се инсталира правилно на компютъра ви или в мрежата. Помолете системния си администратор да реши този проблем.</translation>
 <translation id="8131740175452115882">Потвърждаване</translation>
 <translation id="8133495915926741232">Изберете кои широки категории теми могат да се използват за персонализиране на рекламите. Изключването на по-широка категория ще блокира и сродните ѝ теми. <ph name="BEGIN_LINK" />Научете повече<ph name="END_LINK" /></translation>
 <translation id="8134058435519644366">Подбор на персонал и кадрово обезпечение</translation>
 <translation id="8135546115396015134">клавиш със стрелка за наляво</translation>
 <translation id="8137456439814903304">Електроенергия и комунални услуги</translation>
+<translation id="81474145143203755">За да използвате <ph name="PERMISSION" /> на този сайт, дайте достъп на Chrome</translation>
 <translation id="8148608574971654810">PDF версия:</translation>
 <translation id="8149426793427495338">Компютърът ви премина в спящ режим.</translation>
 <translation id="8150722005171944719">Файлът на адрес <ph name="URL" /> не може да бъде прочетен.  Възможно е да е премахнат, преместен или разрешенията му да предотвратяват достъпа.</translation>
@@ -3762,7 +3754,6 @@
 <translation id="8211406090763984747">Връзката е защитена</translation>
 <translation id="8213853114485953510">JIS Exec</translation>
 <translation id="8216640997712497593">14 x 18 инча</translation>
-<translation id="8217240300496046857">Сайтовете не могат да използват „бисквитки“, които ви следят в мрежата. Функциите в някои от тях може да не работят правилно.</translation>
 <translation id="8218327578424803826">Зададено местоположение:</translation>
 <translation id="8220602974062798186">Искате ли да блокирате „<ph name="TOPIC" />“ и сродните теми?</translation>
 <translation id="8220833680085771143">Функцията за защита от проследяване временно не е налице</translation>
@@ -4178,7 +4169,6 @@
 <translation id="9036306139374661733">Да се разреши ли достъпът до микрофона?</translation>
 <translation id="9038649477754266430">Използване на услуга за предвиждане с цел по-бързо зареждане на страниците</translation>
 <translation id="9039213469156557790">Освен това тази страница включва други ресурси, които не са защитени. Докато се предават, те могат да бъдат видени от други хора и да бъдат модифицирани от извършител на атака, така че да се промени поведението на страницата.</translation>
-<translation id="9040341831873780534">Прегледайте условията тук</translation>
 <translation id="9042617223719777575">Тава с голяма вместимост</translation>
 <translation id="9042827002460091668">Проверете връзката си с интернет и опитайте отново</translation>
 <translation id="9044359186343685026">Използване на Touch ID</translation>
@@ -4224,6 +4214,7 @@
 <translation id="9118692854637641831"><ph name="HISTORY_CLUSTERS_SEARCH_FOCUSED_FRIENDLY_MATCH_TEXT" />, натиснете Tab и след това Enter, за да продължите пътешествието си и да прегледате съответната активност в историята си в Chrome</translation>
 <translation id="9119042192571987207">Качено</translation>
 <translation id="912327514020027767">Поли</translation>
+<translation id="912414390325846156">По-рано избрахте да не се разрешава за този сайт</translation>
 <translation id="9128870381267983090">Свързване към мрежа</translation>
 <translation id="9131119348384879525">Да се заснеме ли поверително съдържание?</translation>
 <translation id="9133861214150761123">Счетоводство и одит</translation>

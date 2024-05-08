@@ -166,6 +166,7 @@ Tu je nekaj stvari, ki jih lahko poskusite za začetek.</translation>
 <translation id="1586324912145647027">Odpiranje namizja od 1 do 8</translation>
 <translation id="158838227375272121">Spletno mesto Učilnice Google</translation>
 <translation id="1589090746204042747">dostop do vse dejavnosti v seji;</translation>
+<translation id="1597880963776148053"><ph name="STEP" />. korak predstavitve od <ph name="TOTAL_STEPS" />. Pripete in odprte aplikacije so na polici na dnu zaslona. Pritisnite Alt + Shift + L in nato tabulatorko, če želite izbrati elemente na polici.</translation>
 <translation id="1602874809115667351"><ph name="LAUNCHER_KEY_NAME" /> + puščica dol</translation>
 <translation id="1604857178818051494">Začasna zaustavitev predstavnosti</translation>
 <translation id="1607312127821884567">Opustitev nastavitve ogleda aplikacij telefona</translation>
@@ -303,6 +304,7 @@ Tu je nekaj stvari, ki jih lahko poskusite za začetek.</translation>
 <translation id="2257486738914982088">Pri prenosu datoteke <ph name="FILENAME" /> je prišlo do napake.</translation>
 <translation id="2258734398699965611">Predlagane datoteke</translation>
 <translation id="2268130516524549846">Bluetooth onemogočen</translation>
+<translation id="2268731132310444948"><ph name="STEP" />. korak predstavitve od <ph name="TOTAL_STEPS" />. Ko je zaganjalnik aktiviran, se prikaže izboljšana vrstica za iskanje. Začnete lahko vnašati, če želite iskati datoteke, aplikacije in drugo. Prejmete lahko tudi odgovore na vprašanja glede naprave <ph name="PRODUCT_NAME" />.</translation>
 <translation id="2268813581635650749">Odjava vseh</translation>
 <translation id="2276987123919776440">15 min</translation>
 <translation id="2277103315734023688">Išči naprej</translation>
@@ -397,6 +399,7 @@ Povezanih je toliko naprav: <ph name="DEVICECOUNT" />.</translation>
 <translation id="2607678425161541573">Obvezna je spletna prijava</translation>
 <translation id="2612072250312279703">nadzornik dejavnosti</translation>
 <translation id="2612614436418177118">Premikanje ikone aplikacije znotraj mreže aplikacij</translation>
+<translation id="2619326010008283367"><ph name="STEP" />. korak predstavitve od <ph name="TOTAL_STEPS" />. Nastavitve naprave so na voljo v zaganjalniku. Poskusite prilagoditi napravo <ph name="PRODUCT_NAME" /> v nastavitvah – denimo spremeniti zaslonsko ozadje ali nastaviti ohranjevalnik zaslona.</translation>
 <translation id="2620016719323068571">Iščite po <ph name="CATEGORY" />, datotekah, aplikacijah in drugem …</translation>
 <translation id="2620436844016719705">Sistem</translation>
 <translation id="2620900772667816510">Super ločljivost Bluetooth</translation>
@@ -819,7 +822,6 @@ Nekatere funkcije so omejene za podaljšanje časa delovanja baterije.</translat
 <translation id="4209973997261364186">Povezava Wi-Fi je vklopljena.</translation>
 <translation id="4212472694152630271">Preklopi na kodo PIN</translation>
 <translation id="4215497585250573029">Nastavitve VPN-ja</translation>
-<translation id="4215548513524864822">5. korak predstavitve od 5. Nastavitve naprave so na voljo v zaganjalniku. Poskusite prilagoditi napravo <ph name="PRODUCT_NAME" /> v nastavitvah, kot je spreminjanje zaslonskega ozadja ali nastavitev ohranjevalnika zaslona.</translation>
 <translation id="4217571870635786043">Narek</translation>
 <translation id="4221957499226645091"><ph name="APP_NAME" />, nameščena aplikacija, začasno zaustavljena</translation>
 <translation id="4228078597006700451">Kontrolniki niso nastavljeni</translation>
@@ -946,12 +948,12 @@ Nekatere funkcije so omejene za podaljšanje časa delovanja baterije.</translat
 <translation id="468293128311738995">Aplikacije iz telefona</translation>
 <translation id="4690510401873698237">Polica na dnu</translation>
 <translation id="4696813013609194136">Odklepanje naprave s kodo starša</translation>
-<translation id="469693290987463983">1. korak predstavitve od 5. Pripete in odprte aplikacije so na polici na dnu zaslona. Pritisnite Alt + Shift + L in nato tabulatorko, če želite izbrati elemente na polici.</translation>
 <translation id="4702647871202761252">Zaslon za zasebnost je izklopljen</translation>
 <translation id="4706121060329443414">Poskus prenosa bo izveden pozneje. Za zdaj bo govor poslan Googlu v obdelavo.</translation>
 <translation id="470644585772471629">Inverzija barv</translation>
 <translation id="4708065238214351979">Povečanje osvetlitve tipkovnice</translation>
 <translation id="4717575069099566988">Kabel USB-C ne podpira protokola USB4. Delovanje naprave bo morda omejeno.</translation>
+<translation id="4724328513667182700">6 nasvetov za začetek uporabe naprave <ph name="PRODUCT_NAME" /></translation>
 <translation id="4730374152663651037">POGOSTO UPORABLJENE</translation>
 <translation id="4731797938093519117">Starševski dostop</translation>
 <translation id="4733161265940833579"><ph name="BATTERY_PERCENTAGE" /> % (leva)</translation>
@@ -1027,6 +1029,7 @@ Nekatere funkcije so omejene za podaljšanje časa delovanja baterije.</translat
 <translation id="4964188651935955085">Ko izklopite Bluetooth, bo povezava te zunanje naprave z napravo <ph name="DEVICE_TYPE" /> prekinjena:</translation>
 <translation id="4966431234408005599">Povečanje glasnosti</translation>
 <translation id="4969092041573468113"><ph name="HOURS" /> h <ph name="MINUTES" /> min <ph name="SECONDS" /> s</translation>
+<translation id="496999337731226334"><ph name="STEP" />. korak predstavitve od <ph name="TOTAL_STEPS" />. Pogosto uporabljeni kontrolniki, kot so Wi-Fi, Bluetooth in glasnost, so v hitrih nastavitvah. Tukaj lahko ustvarite tudi posnetke zaslona. Pritisnite Alt + Shift + S, če želite odpreti hitre nastavitve.</translation>
 <translation id="4975771730019223894">Označevanje aplikacij z značko</translation>
 <translation id="4977493774330778463"><ph name="NUM_IMPORTANT_NOTIFICATION" />:
         <ph name="NOTIFICATION_1" />,
@@ -1144,6 +1147,7 @@ Nobena naprava ni povezana.</translation>
 <translation id="540713187982329711">Preklop dostopne točke. Dostopna točka je vklopljena, nobena naprava ni povezana.</translation>
 <translation id="5413656666631274079">stran z nastavitvami</translation>
 <translation id="5414198321558177633">Osveževanje seznama profilov. To lahko traja nekaj minut.</translation>
+<translation id="5417965108047245734">V kratki predstavitvi si oglejte, kako uporabljati napravo <ph name="PRODUCT_NAME" />.</translation>
 <translation id="5426063383988017631">Meni z nastavitvami je zaprt</translation>
 <translation id="5428899915242071344">Začni izbiranje</translation>
 <translation id="5429993543155113935">Anonimna okna trenutno niso podprta.</translation>
@@ -1524,7 +1528,6 @@ Nova namestitev</translation>
 <translation id="6874854809828346832">Prikaz podrobnosti dostopne točke. Dostopna točka je vklopljena.</translation>
 <translation id="6878400149835617132">Bližnjica je izklopljena</translation>
 <translation id="6878701771800702153">{NUM_APPS,plural, =1{1 aplikacija}one{# aplikacija}two{# aplikaciji}few{# aplikacije}other{# aplikacij}}</translation>
-<translation id="6878787305374738418">4. korak predstavitve od 5. Ko je zaganjalnik aktiviran, se prikaže izboljšana vrstica za iskanje. Začnete lahko vnašati, če želite iskati datoteke, aplikacije in drugo. Prejmete lahko tudi odgovore na vprašanja glede naprave <ph name="PRODUCT_NAME" />.</translation>
 <translation id="6883768636838842873">Bližnjične tipke, nasveti za uporabo naprave in drugo</translation>
 <translation id="6884665277231944629">Nazaj na današnji dan</translation>
 <translation id="6886172995547742638">Naprava <ph name="DEVICE_TYPE" /> morda deluje slabše. Uporabite potrjen napajalnik USB-C z močjo <ph name="PREFERRED_MINIMUM_POWER" /> W ali več.</translation>
@@ -1593,6 +1596,7 @@ Nova namestitev</translation>
 <translation id="7143207342074048698">Povezovanje</translation>
 <translation id="7144942256906679589">Stanje baterije</translation>
 <translation id="7145639536026937076">Baterija je <ph name="PERCENTAGE" />-% napolnjena in se polni. Varčevanje z energijo baterije je vklopljeno.</translation>
+<translation id="7149149900052329230">Upravljajte lokalne datoteke in datoteke v Googlu Drive v aplikaciji Datoteke.</translation>
 <translation id="7165278925115064263">Alt + Shift + K</translation>
 <translation id="7167913274352523149"><ph name="HOTSPOT" />,
         <ph name="NETWORK" /></translation>
@@ -1613,7 +1617,6 @@ Nova namestitev</translation>
 <translation id="726276584504105859">Povlecite sem za razdeljeni zaslon</translation>
 <translation id="7262906531272962081">Ustvarjanje opomnika</translation>
 <translation id="7278787617901301220"><ph name="LAUNCHER_KEY_NAME" /> + vračalka</translation>
-<translation id="7282547098317872382">3. korak predstavitve od 5. Za vse, kar morate opraviti v napravi <ph name="PRODUCT_NAME" />, lahko uporabite aplikacije. Aplikacije so na voljo v zaganjalniku. Pritisnite Alt + Shift + L, če želite preklopiti na gumb za zaganjalnik.</translation>
 <translation id="7285232777292757180">Za ustvarjanje posnetkov zaslona v hitrih nastavitvah uporabite orodje za zajem zaslonske slike</translation>
 <translation id="7301826272005790482">Opustitev predlogov za okna</translation>
 <translation id="7302889331339392448">Samodejni podnapisi so izklopljeni.</translation>
@@ -1795,10 +1798,12 @@ Nova namestitev</translation>
 <translation id="7933084174919150729">Pomočnik Google je na voljo samo za primarni profil.</translation>
 <translation id="79341161159229895">Račun upravljata <ph name="FIRST_PARENT_EMAIL" /> in <ph name="SECOND_PARENT_EMAIL" /></translation>
 <translation id="793716872548410480">Pritisnite <ph name="SHORTCUT_KEY_NAME" /> + V, če si želite ogledati odložišče. Zadnjih pet kopiranih elementov je shranjenih v odložišču.</translation>
+<translation id="7942330802915522974"><ph name="STEP" />. korak predstavitve od <ph name="TOTAL_STEPS" />. Aplikacija Datoteke je na voljo v zaganjalniku. Upravljajte lokalne datoteke in datoteke v Googlu Drive v aplikaciji Datoteke.</translation>
 <translation id="7942349550061667556">Rdeča</translation>
 <translation id="7943516765291457328">Vklopite Bluetooth, če želite iskati dostopne točke v bližini</translation>
 <translation id="7944023924886109030">Ogled vseh dogodkov za danes</translation>
 <translation id="7945357288295809525">Prikaz nastavitev dostopnosti, funkcija »<ph name="ENABLED_FEATURES" />« je omogočena.</translation>
+<translation id="7946681191253332687">Na voljo so razširjene varnostne posodobitve</translation>
 <translation id="7947798320695032612"><ph name="APP_NAME" /> želi uporabljati napravo <ph name="DEVICE_NAME" />.</translation>
 <translation id="7951630946012935453">Zatemnitev tipkovnice</translation>
 <translation id="7953994493035617347">Želite potrditi novo ločljivost?</translation>
@@ -1910,7 +1915,6 @@ Nova namestitev</translation>
 <translation id="8412677897383510995">Prikaz nastavitev zaslona</translation>
 <translation id="8413272770729657668">Snemanje se začne čez 3, 2, 1</translation>
 <translation id="8416730306157376817"><ph name="BATTERY_PERCENTAGE" /> % (škatlica)</translation>
-<translation id="8417951779969083400">2. korak predstavitve od 5. Pogosto uporabljeni kontrolniki, kot so Wi-Fi, Bluetooth in glasnost, so v hitrih nastavitvah. Tukaj lahko ustvarite tudi posnetke zaslona. Pritisnite Alt + Shift + S, če želite odpreti hitre nastavitve.</translation>
 <translation id="8420205633584771378">Želite odstraniti ta predlog?</translation>
 <translation id="8421270167862077762">Aplikacije <ph name="UNAVAILABLE_APPS" /> ni v tej napravi.</translation>
 <translation id="8426708595819210923">Dober večer, <ph name="GIVEN_NAME" />,</translation>
@@ -2124,12 +2128,14 @@ Nova namestitev</translation>
 <translation id="954052413789300507">Ni dovolj prostora za datoteko <ph name="FILENAME" />. Sprostite prostor.</translation>
 <translation id="954520015070501466">30 min</translation>
 <translation id="956452277966142925">Nastavitve nadzorne plošče igre</translation>
+<translation id="961856697154696964">Brisanje podatkov brskanja</translation>
 <translation id="974545358917229949">Prikaz <ph name="RESULT_COUNT" /> rezultatov za poizvedbo <ph name="QUERY" /></translation>
 <translation id="981011780479609956">Brez roka</translation>
 <translation id="98120814841227350">Premik na konec dokumenta</translation>
 <translation id="987589956647469042">Prenos podatkov v mobilnem omrežju je vklopljen</translation>
 <translation id="989374776391122812">Kontrolniki za kamero in zvok</translation>
 <translation id="990277280839877440">Okno <ph name="WINDOW_TITILE" /> je zaprto.</translation>
+<translation id="993398562350683614"><ph name="STEP" />. korak predstavitve od <ph name="TOTAL_STEPS" />. Za vse, kar morate opraviti v napravi <ph name="PRODUCT_NAME" />, lahko uporabite aplikacije. Aplikacije so na voljo v zaganjalniku. Pritisnite Alt + Shift + L, če želite preklopiti na gumb za zaganjalnik.</translation>
 <translation id="994354411665877646"><ph name="NETWORK_NAME" />, <ph name="SUBTEXT" /></translation>
 <translation id="996204416024568215">Zagotovite si najnovejše funkcije in varnostne izboljšave. Posodobitve se izvajajo v ozadju.</translation>
 </translationbundle>

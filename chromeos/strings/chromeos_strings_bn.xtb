@@ -11,6 +11,7 @@
 <translation id="1047458377670401304"><ph name="CPU_NAME" /> (<ph name="THREAD_COUNT" />টি থ্রেড, <ph name="CPU_MAX_CLOCK_SPEED" />GHz)</translation>
 <translation id="1047773237499189053">নতুন ফিচার উপলভ্য আছে, আরও জানতে, 'উর্ধমুখী তীরচিহ্ন' বোতাম ব্যবহার করুন।</translation>
 <translation id="1049663189809099096">হাল্কা হলুদ</translation>
+<translation id="1056898198331236512">সতর্কতা</translation>
 <translation id="1059913517121127803">স্ক্যান শুরু করা যায়নি</translation>
 <translation id="1062823486781306604"><ph name="COUNT" />টির মধ্যে <ph name="INDEX" />টি, <ph name="NAME" />।</translation>
 <translation id="1070066693520972135">WEP</translation>
@@ -95,7 +96,6 @@
 <translation id="1478594628797167447">স্ক্যানার</translation>
 <translation id="1483493594462132177">পাঠান</translation>
 <translation id="1488850966314959671">চালু করা কাস্টম APN ব্যবহার করে এই নেটওয়ার্কের সাথে কানেক্ট করা যাচ্ছে না। আরও তথ্যের জন্য আপনার মোবাইল পরিষেবা প্রদানকারীর সাথে যোগাযোগ করুন।</translation>
-<translation id="1491076385728777984"><ph name="DEVICE_NAME" /> ডিভাইসে ফার্মওয়্যার আপডেট করা হচ্ছে</translation>
 <translation id="1499041187027566160">ভলিউম বাড়ান</translation>
 <translation id="1499900233129743732"><ph name="MANAGER" /> এই ব্যবহারকারীকে ম্যানেজ করে এবং তার ফলে এটি হয়ত অন্য জায়গা থেকে সেটিংস ম্যানেজ করতে এবং ব্যবহারকারীর অ্যাক্টিভিটির উপর নজর রাখতে পারে।</translation>
 <translation id="150962533380566081">ভুল PUK।</translation>
@@ -291,7 +291,6 @@
 <translation id="2505327257735685095">বর্তমান ওয়ালপেপারের ছবি রিফ্রেশ করুন</translation>
 <translation id="2512979179176933762">উইন্ডো দেখুন</translation>
 <translation id="2513396635448525189">'লগ-ইন'-এর ছবি</translation>
-<translation id="2517472476991765520">স্ক্যান করুন</translation>
 <translation id="2521835766824839541">আগের ট্র্যাক</translation>
 <translation id="2526590354069164005">ডেস্কটপ</translation>
 <translation id="2529641961800709867">বোতামের বিকল্প</translation>
@@ -330,6 +329,7 @@
 <translation id="2744221223678373668">শেয়ার করে নেওয়া</translation>
 <translation id="2751739896257479635">EAP ফেজ ২ যাচাইকরণ</translation>
 <translation id="2754757901767760034">ল্যাম্প</translation>
+<translation id="2780756493585863768">Google AI দ্বারা পরিচালিত সাম্প্রতিক সময়ের ব্যাকগ্রাউন্ড</translation>
 <translation id="2783010256799387990">পাস করেছে</translation>
 <translation id="2786429550992142861">লিনেন</translation>
 <translation id="2787435249130282949">কীবোর্ড আরও বেশি উজ্জ্বল</translation>
@@ -426,6 +426,7 @@
 <translation id="3456078764689556234"><ph name="TOTAL_PAGES" />টি পৃষ্ঠার মধ্যে <ph name="PRINTED_PAGES" /> নম্বর পৃষ্ঠা প্রিন্ট করা হয়েছে।</translation>
 <translation id="345898999683440380">স্ক্যান করা পৃষ্ঠা <ph name="PAGE_NUM" />। <ph name="PERCENTAGE_VALUE" />% হয়ে গেছে।</translation>
 <translation id="3459509316159669723">প্রিন্ট হচ্ছে</translation>
+<translation id="3462187165860821523"><ph name="DEVICE_NAME" /> আপডেট করা হচ্ছে</translation>
 <translation id="346423161771747987">বর্তমান</translation>
 <translation id="346539236881580388">আবার তুলুন</translation>
 <translation id="3484914941826596830">ফার্মওয়্যার আপডেট করার সময়, এই এক্সটার্নাল ডিভাইসটি আনপ্লাগ করবেন না বা আপনার কম্পিউটার বন্ধ করবেন না। আপনি এই উইন্ডোটি মিনিমাইজ করতে পারবেন। এই আপডেটে কয়েক মিনিট সময় লাগতে পারে এবং এই সময়ে আপনার এক্সটার্নাল ডিভাইস কাজ নাও করতে পারে।</translation>
@@ -790,6 +791,7 @@
 <translation id="5559898619118303662">সূর্যাস্তের সময় অটোমেটিক ডার্ক থিমে পাল্টান</translation>
 <translation id="556042886152191864">বোতাম</translation>
 <translation id="5562551811867441927"><ph name="TERRAIN_COLOR" />-এর রঙে <ph name="TERRAIN_FEATURE" /></translation>
+<translation id="5572169899491758844">স্ক্যান করুন</translation>
 <translation id="5578477003638479617">UMTS</translation>
 <translation id="5578519639599103840">আবার স্ক্যান করুন</translation>
 <translation id="5583640892426849032">Backspace</translation>
@@ -879,7 +881,6 @@
 <translation id="6075872808778243331">(Android) HTTP লেটেন্সি</translation>
 <translation id="6078323886959318429">শর্টকাট যোগ করুন</translation>
 <translation id="6091080061796993741">হলুদ</translation>
-<translation id="610371409726072606">ক্যামেরা ব্যাকগ্রাউন্ড Google AI দ্বারা পরিচালিত</translation>
 <translation id="6104112872696127344">স্ক্যানিং বাতিল করা হয়েছে</translation>
 <translation id="6106186594183574873">সম্পূর্ণ করতে, আপনার পুরনো পাসওয়ার্ড লিখুন</translation>
 <translation id="6108689792487843350">নেটওয়ার্ক গেটওয়ে অ্যাক্সেস করা যাচ্ছে না</translation>
@@ -1011,7 +1012,6 @@
 <translation id="672609503628871915">নতুন কী আছে দেখুন</translation>
 <translation id="6740695858234317715">ক্রিম ও কমলা</translation>
 <translation id="6741823073189174383">নৌকা</translation>
-<translation id="674276385369049081">Google AI দ্বারা পরিচালিত সাম্প্রতিক সময়ের ক্যামেরা ব্যাকগ্রাউন্ড</translation>
 <translation id="6744441848304920043">জঙ্গল</translation>
 <translation id="6747035363363040417">নিউট্রাল</translation>
 <translation id="6747215703636344499">বন্ধ হয়ে গেছে - আউটপুট ট্রে ভর্তি হয়ে গেছে</translation>
@@ -1032,6 +1032,7 @@
 <translation id="6871256179359663621">হালকা বেগুনি</translation>
 <translation id="6889786074662672253">রিস্টার্ট হলে, এই এক্সটার্নাল ডিভাইস আনপ্লাগ করবে না বা আপনার কম্পিউটার বন্ধ করবেন না। আপনি এই উইন্ডোটি মিনিমাইজ করতে পারবেন। রিস্টার্ট হতে কয়েক মিনিট সময় লাগতে পারে এবং এই সময়ে আপনার এক্সটার্নাল ডিভাইস কাজ নাও করতে পারে।</translation>
 <translation id="6900701049656042631">এই অ্যালবামে কোনও ফটো নেই। ছবি যোগ করতে, <ph name="LINK" />-এ যান</translation>
+<translation id="6902359863093437070">AI-এর সাহায্যে ব্যাকগ্রাউন্ড তৈরি করুন</translation>
 <translation id="6905163627763043954">ব্যবহার করে দেখুন</translation>
 <translation id="6905724422583748843"><ph name="PAGE_NAME" /> এ ফিরুন</translation>
 <translation id="6910312834584889076">স্ক্যানারের কভার খোলা আছে। কভার বন্ধ করে আবার চেষ্টা করুন।</translation>
@@ -1269,6 +1270,7 @@
 <translation id="8152370627892825"><ph name="DESCRIPTION" />, <ph name="ACCELERATOR_INFO" />।</translation>
 <translation id="8156233298086717232">ম্যাজিক্যাল</translation>
 <translation id="8162776280680283326">শেয়াল</translation>
+<translation id="8167413449582155132">Google AI দ্বারা পরিচালিত ব্যাকগ্রাউন্ড</translation>
 <translation id="8179976553408161302">Enter</translation>
 <translation id="8183975772394450380">বিচ</translation>
 <translation id="8206859287963243715">সেলুলার</translation>

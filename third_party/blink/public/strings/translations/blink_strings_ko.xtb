@@ -12,6 +12,7 @@
 <translation id="1588438908519853928">일반</translation>
 <translation id="1591562245178063882">이번 달</translation>
 <translation id="1637811476055996098">파일 선택</translation>
+<translation id="1680090928918677457">카메라 사용</translation>
 <translation id="1681022320378710418">현재 시간</translation>
 <translation id="1727839386348365796">스포이트</translation>
 <translation id="1729654308190250600">비어 있지 않은 이메일 주소를 입력해 주세요.</translation>
@@ -60,6 +61,7 @@
 <translation id="3822383571486410024">이 텍스트를 <ph name="MIN_CHARACTERS" />자 이상으로 늘리세요(현재 <ph name="CURRENT_LENGTH" />자 사용 중).</translation>
 <translation id="383465348367842624">'<ph name="ATSIGN" />' 앞 부분에 '<ph name="INVALIDCHARACTER" />' 기호가 포함되면 안됩니다.</translation>
 <translation id="3846214748874656680">전체화면 종료</translation>
+<translation id="3914173277599553213">필수</translation>
 <translation id="4031179711345676612">마이크 허용됨</translation>
 <translation id="4103419683916926126">밀리초</translation>
 <translation id="4201051445878709314">이전 달 표시</translation>
@@ -75,6 +77,7 @@
 <translation id="4912200001568447310">현재 항목</translation>
 <translation id="4915360478455618802">시간 선택도구 표시</translation>
 <translation id="4924138096460353083">알 수 없음</translation>
+<translation id="49269513399674318">마이크 사용</translation>
 <translation id="4950364064308314478">현지 날짜 및 시간 선택도구 표시</translation>
 <translation id="4971739861736909480"><ph name="ACCNAME" /> 선택됨</translation>
 <translation id="4975562563186953947"><ph name="SELECTED_COUNT" />개 선택됨</translation>
@@ -142,6 +145,7 @@
 <translation id="7080893216867146095">위치 공유 허용됨</translation>
 <translation id="709897737746224366">요청한 형식과 일치시키세요.</translation>
 <translation id="7102274145889307184">현재 위치</translation>
+<translation id="7134810312945846184">마이크 및 카메라 사용</translation>
 <translation id="7263440858009898357">목록에서 항목을 선택하세요.</translation>
 <translation id="7320576522385648310">버퍼링</translation>
 <translation id="7341556277900466204">색상환</translation>

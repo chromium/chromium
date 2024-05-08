@@ -65,7 +65,6 @@
 <translation id="2653844658857826081">NOVÉ</translation>
 <translation id="2666092431469916601">Nahoru</translation>
 <translation id="2701330563083355633">Sdíleno ze zařízení <ph name="DEVICE_NAME" /></translation>
-<translation id="271033894570825754">Nové</translation>
 <translation id="2824719307700604149">{YEARS,plural, =1{před 1 rokem}few{před # lety}many{před # roku}other{před # lety}}</translation>
 <translation id="2878511608894704031">Smazat vše</translation>
 <translation id="2907671656515444832">{DAYS,plural, =1{za 1 d}few{za # d}many{za # d}other{za # d}}</translation>

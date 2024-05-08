@@ -166,6 +166,7 @@ Pääset alkuun esimerkiksi näillä tavoilla.</translation>
 <translation id="1586324912145647027">Avaa jokin työpöydistä 1–8</translation>
 <translation id="158838227375272121">Google Classroom ‑verkkosivusto</translation>
 <translation id="1589090746204042747">nähdä kaikki tämän käyttökerran toimintosi</translation>
+<translation id="1597880963776148053">Esittelyn vaihe <ph name="STEP" />/<ph name="TOTAL_STEPS" />. Kiinnitetyt ja avoimet sovellukset näkyvät näytön alareunassa olevassa hyllyssä. Tarkenna hyllyn kohteisiin painamalla Alt + vaihto + L ja sitten sarkain.</translation>
 <translation id="1602874809115667351"><ph name="LAUNCHER_KEY_NAME" /> + alanuoli</translation>
 <translation id="1604857178818051494">Keskeytä media</translation>
 <translation id="1607312127821884567">Hylkää puhelimen sovellusten katselun käyttöönotto</translation>
@@ -303,6 +304,7 @@ Pääset alkuun esimerkiksi näillä tavoilla.</translation>
 <translation id="2257486738914982088">Jotain meni pieleen, eikä <ph name="FILENAME" /> latautunut</translation>
 <translation id="2258734398699965611">Ehdotetut tiedostot</translation>
 <translation id="2268130516524549846">Bluetooth pois käytöstä</translation>
+<translation id="2268731132310444948">Esittelyn vaihe <ph name="STEP" />/<ph name="TOTAL_STEPS" />. Kun käynnistysohjelma on aktivoitu, näet parannetun hakukentän. Voit hakea esimerkiksi tiedostoja ja sovelluksia kirjoittamalla. Voit myös saada vastauksia kysymyksiin aiheesta <ph name="PRODUCT_NAME" />.</translation>
 <translation id="2268813581635650749">Kirjaa kaikki ulos</translation>
 <translation id="2276987123919776440">15 min</translation>
 <translation id="2277103315734023688">Kelaa eteenpäin</translation>
@@ -397,6 +399,7 @@ Pääset alkuun esimerkiksi näillä tavoilla.</translation>
 <translation id="2607678425161541573">Edellyttää kirjautumista verkossa</translation>
 <translation id="2612072250312279703">toimintojen seuranta</translation>
 <translation id="2612614436418177118">Siirrä sovelluksen kuvaketta sovellusruudukossa</translation>
+<translation id="2619326010008283367">Esittelyn vaihe <ph name="STEP" />/<ph name="TOTAL_STEPS" />. Löydät laitteen asetukset käynnistysohjelmasta. Kokeile muokata tuotteen (<ph name="PRODUCT_NAME" />) käyttökokemusta asetuksista. Voit esimerkiksi vaihtaa taustakuvan tai lisätä näytönsäästäjän.</translation>
 <translation id="2620016719323068571">Hae <ph name="CATEGORY" />, tiedostoista, sovelluksista ja muista.</translation>
 <translation id="2620436844016719705">Järjestelmä</translation>
 <translation id="2620900772667816510">Bluetooth Super Resolution</translation>
@@ -819,7 +822,6 @@ Joitakin ominaisuuksia on rajoitettu akunkeston parantamiseksi.</translation>
 <translation id="4209973997261364186">Wi-Fi on päällä</translation>
 <translation id="4212472694152630271">Vaihda PIN-koodiin</translation>
 <translation id="4215497585250573029">VPN-asetukset</translation>
-<translation id="4215548513524864822">Esittelyn vaihe 5/5. Löydät laitteen asetukset käynnistysohjelmasta. Kokeile muokata tuotteen (<ph name="PRODUCT_NAME" />) käyttökokemusta asetuksista. Voit esimerkiksi vaihtaa taustakuvan tai lisätä näytönsäästäjän.</translation>
 <translation id="4217571870635786043">Sanelu</translation>
 <translation id="4221957499226645091"><ph name="APP_NAME" />, asennettu sovellus, keskeytetty</translation>
 <translation id="4228078597006700451">Säätimiä ei ole otettu käyttöön</translation>
@@ -946,12 +948,12 @@ Yksi laite yhdistetty.</translation>
 <translation id="468293128311738995">Puhelimesi sovellukset</translation>
 <translation id="4690510401873698237">Hylly alareunassa</translation>
 <translation id="4696813013609194136">Avaa lukitus vanhemman koodilla</translation>
-<translation id="469693290987463983">Esittelyn vaihe 1/5. Kiinnitetyt ja avoimet sovellukset näkyvät näytön alareunassa olevassa hyllyssä. Tarkenna hyllyn kohteisiin painamalla Alt + vaihto + L ja sitten sarkain.</translation>
 <translation id="4702647871202761252">Yksityinen näkyvyys on pois päältä</translation>
 <translation id="4706121060329443414">Lataamista yritetään myöhemmin. Puhe lähetetään toistaiseksi Googlelle käsittelyyn.</translation>
 <translation id="470644585772471629">Käänteiset värit</translation>
 <translation id="4708065238214351979">Tee näppäimistöstä kirkkaampi</translation>
 <translation id="4717575069099566988">USB-C-johto ei tue USB4:ää. Laitteen toiminta voi olla rajoitettua.</translation>
+<translation id="4724328513667182700">Kuusi vinkkiä, joilla pääset alkuun laitteen (<ph name="PRODUCT_NAME" />) käytössä</translation>
 <translation id="4730374152663651037">USEIN KÄYTETYT</translation>
 <translation id="4731797938093519117">Avaus vanhemmille</translation>
 <translation id="4733161265940833579"><ph name="BATTERY_PERCENTAGE" /> % (vasen)</translation>
@@ -1027,6 +1029,7 @@ Yksi laite yhdistetty.</translation>
 <translation id="4964188651935955085">Kun laitat Bluetoothin pois päältä, tämä ulkoinen laite katkaisee yhteyden (<ph name="DEVICE_TYPE" />):</translation>
 <translation id="4966431234408005599">Lisää äänenvoimakkuutta</translation>
 <translation id="4969092041573468113"><ph name="HOURS" /> t <ph name="MINUTES" /> min <ph name="SECONDS" /> s</translation>
+<translation id="496999337731226334">Esittelyn vaihe <ph name="STEP" />/<ph name="TOTAL_STEPS" />. Pika-asetuksista löydät usein käytetyt valinnat, esimerkiksi Wi-Fin, Bluetoothin ja äänenvoimakkuuden. Voit myös ottaa kuvakaappauksia. Avaa pika-asetukset painamalla Alt + vaihto + S.</translation>
 <translation id="4975771730019223894">Sovellusten merkitseminen</translation>
 <translation id="4977493774330778463"><ph name="NUM_IMPORTANT_NOTIFICATION" />:
         <ph name="NOTIFICATION_1" />,
@@ -1144,6 +1147,7 @@ Ei liitettyjä laitteita.</translation>
 <translation id="540713187982329711">Laita hotspot päälle tai pois päältä. Hotspot on päällä, ei yhdistettyjä laitteita.</translation>
 <translation id="5413656666631274079">Asetukset-sivu</translation>
 <translation id="5414198321558177633">Päivitetään profiililistaa. Tämä voi kestää muutaman minuutin.</translation>
+<translation id="5417965108047245734">Katso lyhyt esittely siitä, miten <ph name="PRODUCT_NAME" /> toimii</translation>
 <translation id="5426063383988017631">Asetusvalikko suljettu</translation>
 <translation id="5428899915242071344">Aloita valitseminen</translation>
 <translation id="5429993543155113935">Incognito-ikkunoita ei tällä hetkellä tueta</translation>
@@ -1524,7 +1528,6 @@ Uusi asennus</translation>
 <translation id="6874854809828346832">Näytä hotspotin tiedot. Hotspot on päällä.</translation>
 <translation id="6878400149835617132">Pikanäppäin poistettu käytöstä</translation>
 <translation id="6878701771800702153">{NUM_APPS,plural, =1{1 sovellus}other{# sovellusta}}</translation>
-<translation id="6878787305374738418">Esittelyn vaihe 4/5. Kun käynnistysohjelma on aktivoitu, näet parannetun hakukentän. Voit hakea esimerkiksi tiedostoja ja sovelluksia kirjoittamalla. Voit myös saada vastauksia kysymyksiin aiheesta <ph name="PRODUCT_NAME" />.</translation>
 <translation id="6883768636838842873">Pikanäppäimet, vinkkejä laitteen käyttöön ja muuta</translation>
 <translation id="6884665277231944629">Palaa tähän päivään</translation>
 <translation id="6886172995547742638"><ph name="DEVICE_TYPE" /> voi toimia huonommin. Käytä sertifioitua USB-C-virtalähdettä, jonka teho on vähintään <ph name="PREFERRED_MINIMUM_POWER" /> W.</translation>
@@ -1593,6 +1596,7 @@ Uusi asennus</translation>
 <translation id="7143207342074048698">Yhdistetään</translation>
 <translation id="7144942256906679589">Akun tila</translation>
 <translation id="7145639536026937076">Akkua ladataan, varaus nyt <ph name="PERCENTAGE" /> %. Virransäästö on päällä.</translation>
+<translation id="7149149900052329230">Hallinnoi paikallisia tiedostoja ja Google Drive ‐tiedostoja Tiedostot-sovelluksessa.</translation>
 <translation id="7165278925115064263">Alt+Vaihto+K</translation>
 <translation id="7167913274352523149"><ph name="HOTSPOT" />,
         <ph name="NETWORK" /></translation>
@@ -1613,7 +1617,6 @@ Uusi asennus</translation>
 <translation id="726276584504105859">Jaa näyttö vetämällä tähän.</translation>
 <translation id="7262906531272962081">Luo muistutus</translation>
 <translation id="7278787617901301220"><ph name="LAUNCHER_KEY_NAME" /> + askelpalautin</translation>
-<translation id="7282547098317872382">Esittelyn vaihe 3/5. Sovellusten avulla <ph name="PRODUCT_NAME" /> voi tehdä kaiken tarvittavan. Löydät sovellukset käynnistysohjelmasta. Tarkenna käynnistysohjelmapainikkeeseen painamalla Alt + vaihto + L.</translation>
 <translation id="7285232777292757180">Ota kuvakaappauksia pika-asetusten kuvakaappaustyökalulla</translation>
 <translation id="7301826272005790482">Hylkää ikkunaehdotukset</translation>
 <translation id="7302889331339392448">Livetekstitys on poissa päältä.</translation>
@@ -1795,10 +1798,12 @@ Sammuta laite painamalla sen virtapainiketta pitkään uudelleen.</translation>
 <translation id="7933084174919150729">Google Assistant on käytettävissä vain ensisijaisella profiililla.</translation>
 <translation id="79341161159229895"><ph name="FIRST_PARENT_EMAIL" /> ja <ph name="SECOND_PARENT_EMAIL" /> hallinnoivat tiliä</translation>
 <translation id="793716872548410480">Katso leikepöytä painamalla <ph name="SHORTCUT_KEY_NAME" /> + V. Viisi viimeksi kopioimaasi kohdetta tallennetaan leikepöydälle.</translation>
+<translation id="7942330802915522974">Esittelyn vaihe <ph name="STEP" />/<ph name="TOTAL_STEPS" />. Löydät Tiedostot-sovelluksen Käynnistysohjelmasta. Hallinnoi paikallisia tiedostoja ja Google Drive ‐tiedostoja Tiedostot-sovelluksessa.</translation>
 <translation id="7942349550061667556">Punainen</translation>
 <translation id="7943516765291457328">Laita Bluetooth päälle, niin voit etsiä lähellä olevia hotspoteja</translation>
 <translation id="7944023924886109030">Katso kaikki tämän päivän tapahtumat</translation>
 <translation id="7945357288295809525">Näytä saavutettavuusasetukset, <ph name="ENABLED_FEATURES" /> käytössä.</translation>
+<translation id="7946681191253332687">Laajempia tietoturvapäivityksiä saatavilla</translation>
 <translation id="7947798320695032612"><ph name="APP_NAME" /> haluaa käyttää tätä: <ph name="DEVICE_NAME" /></translation>
 <translation id="7951630946012935453">Himmennä näppäimistö</translation>
 <translation id="7953994493035617347">Vahvistetaanko uusi resoluutio?</translation>
@@ -1910,7 +1915,6 @@ Sammuta laite painamalla sen virtapainiketta pitkään uudelleen.</translation>
 <translation id="8412677897383510995">Näytä näyttöasetukset</translation>
 <translation id="8413272770729657668">Tallennus alkaa: 3, 2, 1</translation>
 <translation id="8416730306157376817"><ph name="BATTERY_PERCENTAGE" /> % (kotelo)</translation>
-<translation id="8417951779969083400">Esittelyn vaihe 2/5. Pika-asetuksista löydät usein käytetyt valinnat, esimerkiksi Wi-Fin, Bluetoothin ja äänenvoimakkuuden. Voit myös ottaa kuvakaappauksia. Avaa pika-asetukset painamalla Alt + vaihto + S.</translation>
 <translation id="8420205633584771378">Poistetaanko tämä ehdotus?</translation>
 <translation id="8421270167862077762"><ph name="UNAVAILABLE_APPS" /> puuttuu laitteelta.</translation>
 <translation id="8426708595819210923">Hyvää iltaa <ph name="GIVEN_NAME" /></translation>
@@ -2130,6 +2134,7 @@ Sammuta laite painamalla sen virtapainiketta pitkään uudelleen.</translation>
 <translation id="987589956647469042">Mobiilidata on päällä</translation>
 <translation id="989374776391122812">Kamera- ja audiosäätimet</translation>
 <translation id="990277280839877440">Ikkuna <ph name="WINDOW_TITILE" /> suljettu.</translation>
+<translation id="993398562350683614">Esittelyn vaihe <ph name="STEP" />/<ph name="TOTAL_STEPS" />. Sovellusten avulla <ph name="PRODUCT_NAME" /> voi tehdä kaiken tarvittavan. Löydät sovellukset käynnistysohjelmasta. Tarkenna käynnistysohjelmapainikkeeseen painamalla Alt + vaihto + L.</translation>
 <translation id="994354411665877646"><ph name="NETWORK_NAME" />, <ph name="SUBTEXT" /></translation>
 <translation id="996204416024568215">Lataa uusimmat ominaisuudet ja tietoturvaparannukset. Päivitykset tapahtuvat taustalla.</translation>
 </translationbundle>

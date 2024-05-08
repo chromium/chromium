@@ -11,6 +11,7 @@
 <translation id="1047458377670401304"><ph name="CPU_NAME" /> (<ph name="THREAD_COUNT" /> szál, <ph name="CPU_MAX_CLOCK_SPEED" /> GHz)</translation>
 <translation id="1047773237499189053">Új funkciók állnak rendelkezésre. További információért használja a felfelé mutató nyilat.</translation>
 <translation id="1049663189809099096">pasztellsárga</translation>
+<translation id="1056898198331236512">Figyelmeztetés</translation>
 <translation id="1059913517121127803">Nem sikerült elindítani a szkennelést</translation>
 <translation id="1062823486781306604"><ph name="COUNT" />/<ph name="INDEX" />. APN, APN neve: <ph name="NAME" />.</translation>
 <translation id="1070066693520972135">WEP</translation>
@@ -95,7 +96,6 @@
 <translation id="1478594628797167447">Szkenner</translation>
 <translation id="1483493594462132177">Küldés</translation>
 <translation id="1488850966314959671">Nem lehet csatlakozni ehhez a hálózathoz az engedélyezett egyéni APN-ek használatával. A szolgáltatótól kérhet további információt.</translation>
-<translation id="1491076385728777984">Firmware frissítése a következő eszközön: <ph name="DEVICE_NAME" /></translation>
 <translation id="1499041187027566160">hangerő növelése</translation>
 <translation id="1499900233129743732">A(z) <ph name="MANAGER" /> kezeli ezt a felhasználót, és távolról kezelheti a beállításokat, illetve figyelheti a felhasználói tevékenységeket.</translation>
 <translation id="150962533380566081">Érvénytelen PUK-kód.</translation>
@@ -291,7 +291,6 @@
 <translation id="2505327257735685095">A jelenlegi háttérkép frissítése</translation>
 <translation id="2512979179176933762">ablakok megjelenítése</translation>
 <translation id="2513396635448525189">Bejelentkezési kép</translation>
-<translation id="2517472476991765520">Szkennelés</translation>
 <translation id="2521835766824839541">előző szám</translation>
 <translation id="2526590354069164005">Asztal</translation>
 <translation id="2529641961800709867">Gombopciók</translation>
@@ -330,6 +329,7 @@
 <translation id="2744221223678373668">Megosztott</translation>
 <translation id="2751739896257479635">EAP hitelesítés 2. fázisa</translation>
 <translation id="2754757901767760034">lámpa</translation>
+<translation id="2780756493585863768">A Google AI által biztosított legutóbbi hátterek</translation>
 <translation id="2783010256799387990">SIKERES ELLENŐRZÉS</translation>
 <translation id="2786429550992142861">lenvászon</translation>
 <translation id="2787435249130282949">billentyűzet világosabb</translation>
@@ -426,6 +426,7 @@
 <translation id="3456078764689556234"><ph name="PRINTED_PAGES" /> oldal kinyomtatva (összesen ennyiből: <ph name="TOTAL_PAGES" />).</translation>
 <translation id="345898999683440380"><ph name="PAGE_NUM" />. oldal beolvasása… <ph name="PERCENTAGE_VALUE" />% kész.</translation>
 <translation id="3459509316159669723">Nyomtatás</translation>
+<translation id="3462187165860821523"><ph name="DEVICE_NAME" /> frissítése…</translation>
 <translation id="346423161771747987">Áram</translation>
 <translation id="346539236881580388">Új kép készítése</translation>
 <translation id="3484914941826596830">A firmware frissítése közben ne húzza ki a külső eszközt, és ne kapcsolja ki számítógépét. Ezt az ablakot kis méretre állíthatja. A frissítés eltarthat néhány percig, és előfordulhat, hogy közben nem működik a külső eszköz.</translation>
@@ -790,6 +791,7 @@
 <translation id="5559898619118303662">Automatikus váltás sötét témára napnyugtakor</translation>
 <translation id="556042886152191864">Gomb</translation>
 <translation id="5562551811867441927"><ph name="TERRAIN_FEATURE" /> <ph name="TERRAIN_COLOR" /> színű árnyalatokban</translation>
+<translation id="5572169899491758844">Szkennelés</translation>
 <translation id="5578477003638479617">UMTS</translation>
 <translation id="5578519639599103840">Újbóli beolvasás</translation>
 <translation id="5583640892426849032">Backspace</translation>
@@ -879,7 +881,6 @@
 <translation id="6075872808778243331">(Android) HTTP várakozási idő</translation>
 <translation id="6078323886959318429">Parancsikon hozzáadása</translation>
 <translation id="6091080061796993741">sárga</translation>
-<translation id="610371409726072606">A kamerahátteret a Google AI működteti</translation>
 <translation id="6104112872696127344">Beolvasás megszakítva</translation>
 <translation id="6106186594183574873">A befejezéshez adja meg régi jelszavát</translation>
 <translation id="6108689792487843350">Az átjáró nem érhető el</translation>
@@ -1011,7 +1012,6 @@
 <translation id="672609503628871915">Újdonságok</translation>
 <translation id="6740695858234317715">krém és narancs</translation>
 <translation id="6741823073189174383">csónak</translation>
-<translation id="674276385369049081">A legutóbbi kameraháttereket a Google AI működteti</translation>
 <translation id="6744441848304920043">dzsungel</translation>
 <translation id="6747035363363040417">semleges</translation>
 <translation id="6747215703636344499">Leállt – Megtelt a kimenet</translation>
@@ -1032,6 +1032,7 @@
 <translation id="6871256179359663621">világoslila</translation>
 <translation id="6889786074662672253">Az újraindítás közben ne húzza ki a külső eszközt, és ne kapcsolja ki számítógépét. Ezt az ablakot kis méretre állíthatja. A folyamat eltarthat néhány percig, és előfordulhat, hogy közben nem működik a külső eszköz.</translation>
 <translation id="6900701049656042631">Ebben az albumban nincsenek fotók. Fotók hozzáadásához lépjen ide: <ph name="LINK" />.</translation>
+<translation id="6902359863093437070">Háttér létrehozása AI segítségével</translation>
 <translation id="6905163627763043954">Kipróbálás</translation>
 <translation id="6905724422583748843">Vissza ide: <ph name="PAGE_NAME" /></translation>
 <translation id="6910312834584889076">A szkenner fedele nyitva van. Zárja le, és próbálja újra.</translation>
@@ -1269,6 +1270,7 @@
 <translation id="8152370627892825"><ph name="DESCRIPTION" />, <ph name="ACCELERATOR_INFO" />.</translation>
 <translation id="8156233298086717232">varázslatos</translation>
 <translation id="8162776280680283326">rókák</translation>
+<translation id="8167413449582155132">A hátteret a Google AI biztosítja</translation>
 <translation id="8179976553408161302">Enter</translation>
 <translation id="8183975772394450380">tengerpart</translation>
 <translation id="8206859287963243715">Mobil</translation>

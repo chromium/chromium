@@ -166,6 +166,7 @@ Berikut ini beberapa hal yang dapat Anda coba untuk memulai.</translation>
 <translation id="1586324912145647027">Membuka desktop 1 sampai 8</translation>
 <translation id="158838227375272121">Situs Google Classroom</translation>
 <translation id="1589090746204042747">Akses semua aktivitas Anda di sesi ini</translation>
+<translation id="1597880963776148053">Langkah tur <ph name="STEP" /> dari <ph name="TOTAL_STEPS" />. Aplikasi yang disematkan dan terbuka berada di rak yang terletak di bagian bawah layar. Tekan Alt + Shift + L lalu tab untuk memfokuskan item rak.</translation>
 <translation id="1602874809115667351"><ph name="LAUNCHER_KEY_NAME" /> + panah bawah</translation>
 <translation id="1604857178818051494">Jeda media</translation>
 <translation id="1607312127821884567">Tutup penyiapan untuk melihat aplikasi ponsel Anda</translation>
@@ -303,6 +304,7 @@ Berikut ini beberapa hal yang dapat Anda coba untuk memulai.</translation>
 <translation id="2257486738914982088">Terjadi error saat mendownload <ph name="FILENAME" /></translation>
 <translation id="2258734398699965611">File yang disarankan</translation>
 <translation id="2268130516524549846">Bluetooth dinonaktifkan</translation>
+<translation id="2268731132310444948">Langkah tur <ph name="STEP" /> dari <ph name="TOTAL_STEPS" />. Setelah Peluncur diaktifkan, Anda akan mendapatkan kotak penelusuran yang ditingkatkan. Anda dapat mulai mengetik untuk menelusuri file, aplikasi, dan lainnya. Anda juga bisa mendapatkan jawaban atas pertanyaan seputar <ph name="PRODUCT_NAME" /> Anda.</translation>
 <translation id="2268813581635650749">Keluarkan semua</translation>
 <translation id="2276987123919776440">15 mnt</translation>
 <translation id="2277103315734023688">Cari Maju</translation>
@@ -397,6 +399,7 @@ Berikut ini beberapa hal yang dapat Anda coba untuk memulai.</translation>
 <translation id="2607678425161541573">Perlu login online</translation>
 <translation id="2612072250312279703">pemantauan aktivitas</translation>
 <translation id="2612614436418177118">Pindahkan ikon aplikasi dalam petak aplikasi</translation>
+<translation id="2619326010008283367">Langkah tur <ph name="STEP" /> dari <ph name="TOTAL_STEPS" />. Anda dapat menemukan Setelan perangkat di Peluncur. Coba sesuaikan <ph name="PRODUCT_NAME" /> Anda di Setelan seperti mengubah wallpaper atau menyetel screensaver.</translation>
 <translation id="2620016719323068571">Telusuri <ph name="CATEGORY" />, file, aplikasi, dan lainnya ...</translation>
 <translation id="2620436844016719705">Sistem</translation>
 <translation id="2620900772667816510">Resolusi Super Bluetooth</translation>
@@ -819,7 +822,6 @@ Beberapa fitur dibatasi untuk meningkatkan daya tahan baterai.</translation>
 <translation id="4209973997261364186">Wi-Fi diaktifkan</translation>
 <translation id="4212472694152630271">Ganti ke PIN</translation>
 <translation id="4215497585250573029">Setelan VPN</translation>
-<translation id="4215548513524864822">Langkah tur 5 dari 5. Anda dapat menemukan Setelan perangkat di Peluncur. Coba sesuaikan <ph name="PRODUCT_NAME" /> Anda di Setelan seperti mengubah wallpaper atau menyetel screensaver.</translation>
 <translation id="4217571870635786043">Dikte</translation>
 <translation id="4221957499226645091"><ph name="APP_NAME" />, Aplikasi Terinstal, Dijeda</translation>
 <translation id="4228078597006700451">Kontrol belum disiapkan</translation>
@@ -946,12 +948,12 @@ Beberapa fitur dibatasi untuk meningkatkan daya tahan baterai.</translation>
 <translation id="468293128311738995">Aplikasi dari ponsel Anda</translation>
 <translation id="4690510401873698237">Rak di bagian bawah</translation>
 <translation id="4696813013609194136">Buka kunci perangkat dengan kode orang tua</translation>
-<translation id="469693290987463983">Langkah tur 1 dari 5. Aplikasi yang disematkan dan terbuka berada di rak yang terletak di bagian bawah layar. Tekan Alt + Shift + L lalu tab untuk memfokuskan item rak.</translation>
 <translation id="4702647871202761252">Layar privasi nonaktif</translation>
 <translation id="4706121060329443414">Download akan dicoba nanti. Untuk saat ini, ucapan akan dikirim ke Google untuk diproses.</translation>
 <translation id="470644585772471629">Inversi warna</translation>
 <translation id="4708065238214351979">Cerahkan lampu latar keyboard</translation>
 <translation id="4717575069099566988">Kabel USB-C Anda tidak mendukung USB4. Performa perangkat mungkin dibatasi.</translation>
+<translation id="4724328513667182700">6 tips untuk mulai menggunakan <ph name="PRODUCT_NAME" /></translation>
 <translation id="4730374152663651037">SERING DIGUNAKAN</translation>
 <translation id="4731797938093519117">Akses orang tua</translation>
 <translation id="4733161265940833579"><ph name="BATTERY_PERCENTAGE" />% (Kiri)</translation>
@@ -1027,6 +1029,7 @@ Beberapa fitur dibatasi untuk meningkatkan daya tahan baterai.</translation>
 <translation id="4964188651935955085">Jika Anda menonaktifkan Bluetooth, koneksi perangkat eksternal ini akan diputuskan dari <ph name="DEVICE_TYPE" /> Anda:</translation>
 <translation id="4966431234408005599">Naikkan volume</translation>
 <translation id="4969092041573468113"><ph name="HOURS" />j <ph name="MINUTES" />m <ph name="SECONDS" />d</translation>
+<translation id="496999337731226334">Langkah tur <ph name="STEP" /> dari <ph name="TOTAL_STEPS" />. Kontrol yang sering digunakan seperti Wi-Fi, Bluetooth, dan volume ada di Setelan Cepat. Anda juga dapat membuka Setelan Cepat untuk mengambil screenshot. Tekan Alt + Shift + S untuk membuka Setelan Cepat.</translation>
 <translation id="4975771730019223894">Tampilkan badge aplikasi</translation>
 <translation id="4977493774330778463"><ph name="NUM_IMPORTANT_NOTIFICATION" />:
         <ph name="NOTIFICATION_1" />,
@@ -1144,6 +1147,7 @@ Tidak ada perangkat yang terhubung.</translation>
 <translation id="540713187982329711">Tombol hotspot. Hotspot aktif, tidak ada perangkat yang terhubung.</translation>
 <translation id="5413656666631274079">Halaman setelan</translation>
 <translation id="5414198321558177633">Memperbarui daftar profil. Proses ini mungkin perlu waktu beberapa menit.</translation>
+<translation id="5417965108047245734">Ikuti tur singkat untuk mempelajari cara mengoperasikan <ph name="PRODUCT_NAME" /> Anda</translation>
 <translation id="5426063383988017631">Menu setelan ditutup</translation>
 <translation id="5428899915242071344">Mulai memilih</translation>
 <translation id="5429993543155113935">Jendela Samaran saat ini tidak didukung</translation>
@@ -1524,7 +1528,6 @@ Baru diinstal</translation>
 <translation id="6874854809828346832">Tampilkan detail hotspot. Hotspot diaktifkan.</translation>
 <translation id="6878400149835617132">Pintasan dinonaktifkan</translation>
 <translation id="6878701771800702153">{NUM_APPS,plural, =1{1 aplikasi}other{# aplikasi}}</translation>
-<translation id="6878787305374738418">Langkah tur 4 dari 5. Setelah Peluncur diaktifkan, Anda akan mendapatkan kotak penelusuran yang ditingkatkan. Anda dapat mulai mengetik untuk menelusuri file, aplikasi, dan lainnya. Anda juga bisa mendapatkan jawaban atas pertanyaan seputar <ph name="PRODUCT_NAME" /> Anda.</translation>
 <translation id="6883768636838842873">Pintasan keyboard, tips menggunakan perangkat, dan lainnya</translation>
 <translation id="6884665277231944629">Kembali ke hari ini</translation>
 <translation id="6886172995547742638"><ph name="DEVICE_TYPE" /> Anda mungkin mengalami penurunan performa. Gunakan adaptor daya USB-C <ph name="PREFERRED_MINIMUM_POWER" /> W atau lebih tinggi yang tersertifikasi.</translation>
@@ -1593,6 +1596,7 @@ Baru diinstal</translation>
 <translation id="7143207342074048698">Menghubungkan</translation>
 <translation id="7144942256906679589">Status baterai</translation>
 <translation id="7145639536026937076">Daya baterai <ph name="PERCENTAGE" />% dan masih mengisi daya. Penghemat Baterai aktif.</translation>
+<translation id="7149149900052329230">Kelola file lokal dan file Google Drive Anda, semuanya di aplikasi File.</translation>
 <translation id="7165278925115064263">Alt+Shift+K</translation>
 <translation id="7167913274352523149"><ph name="HOTSPOT" />,
         <ph name="NETWORK" /></translation>
@@ -1613,7 +1617,6 @@ Baru diinstal</translation>
 <translation id="726276584504105859">Tarik ke sini untuk menggunakan layar terpisah</translation>
 <translation id="7262906531272962081">Buat pengingat</translation>
 <translation id="7278787617901301220"><ph name="LAUNCHER_KEY_NAME" /> + backspace</translation>
-<translation id="7282547098317872382">Langkah tur 3 dari 5. Gunakan aplikasi untuk melakukan semua hal yang Anda perlukan di <ph name="PRODUCT_NAME" />. Anda dapat menemukan aplikasi di Peluncur. Tekan Alt + Shift + L untuk memfokuskan tombol Peluncur.</translation>
 <translation id="7285232777292757180">Gunakan alat screenshot di setelan cepat untuk mengambil screenshot</translation>
 <translation id="7301826272005790482">Tutup saran jendela</translation>
 <translation id="7302889331339392448">Teks Otomatis nonaktif.</translation>
@@ -1795,10 +1798,12 @@ Untuk mematikan perangkat, tekan dan tahan tombol daya di perangkat lagi.</trans
 <translation id="7933084174919150729">Asisten Google hanya tersedia untuk profil utama.</translation>
 <translation id="79341161159229895">Akun dikelola oleh <ph name="FIRST_PARENT_EMAIL" /> dan <ph name="SECOND_PARENT_EMAIL" /></translation>
 <translation id="793716872548410480">Tekan <ph name="SHORTCUT_KEY_NAME" /> + V untuk menampilkan papan klip. Lima item terakhir yang disalin akan disimpan ke papan klip.</translation>
+<translation id="7942330802915522974">Langkah tur <ph name="STEP" /> dari <ph name="TOTAL_STEPS" />. Anda dapat menemukan aplikasi File di Peluncur. Kelola file lokal dan file Google Drive Anda, semuanya di aplikasi File.</translation>
 <translation id="7942349550061667556">Merah</translation>
 <translation id="7943516765291457328">Aktifkan Bluetooth untuk memindai hotspot di sekitar</translation>
 <translation id="7944023924886109030">Lihat semua acara hari ini</translation>
 <translation id="7945357288295809525">Tampilkan setelan aksesibilitas, "<ph name="ENABLED_FEATURES" />" diaktifkan.</translation>
+<translation id="7946681191253332687">Update keamanan yang diperpanjang tersedia</translation>
 <translation id="7947798320695032612"><ph name="APP_NAME" /> ingin menggunakan <ph name="DEVICE_NAME" /></translation>
 <translation id="7951630946012935453">Redupkan keyboard</translation>
 <translation id="7953994493035617347">Konfirmasi resolusi baru?</translation>
@@ -1910,7 +1915,6 @@ Untuk mematikan perangkat, tekan dan tahan tombol daya di perangkat lagi.</trans
 <translation id="8412677897383510995">Tampilkan setelan layar</translation>
 <translation id="8413272770729657668">Perekaman dimulai dalam 3, 2, 1</translation>
 <translation id="8416730306157376817"><ph name="BATTERY_PERCENTAGE" />% (Casing)</translation>
-<translation id="8417951779969083400">Langkah tur 2 dari 5. Kontrol yang sering digunakan seperti Wi-Fi, Bluetooth, dan volume ada di Setelan Cepat. Anda juga dapat membuka Setelan Cepat untuk mengambil screenshot. Tekan Alt + Shift + S untuk membuka Setelan Cepat.</translation>
 <translation id="8420205633584771378">Hapus saran ini?</translation>
 <translation id="8421270167862077762"><ph name="UNAVAILABLE_APPS" /> tidak ada di perangkat ini.</translation>
 <translation id="8426708595819210923">Selamat sore <ph name="GIVEN_NAME" />,</translation>
@@ -2124,12 +2128,14 @@ Untuk mematikan perangkat, tekan dan tahan tombol daya di perangkat lagi.</trans
 <translation id="954052413789300507">Ruang penyimpanan tidak cukup untuk <ph name="FILENAME" />. Kosongkan ruang penyimpanan.</translation>
 <translation id="954520015070501466">30 mnt</translation>
 <translation id="956452277966142925">Setelan dasbor game</translation>
+<translation id="961856697154696964">Hapus data penjelajahan</translation>
 <translation id="974545358917229949">Menampilkan <ph name="RESULT_COUNT" /> hasil untuk <ph name="QUERY" /></translation>
 <translation id="981011780479609956">Tidak ada tenggat</translation>
 <translation id="98120814841227350">Membuka akhir dokumen</translation>
 <translation id="987589956647469042">Data seluler diaktifkan</translation>
 <translation id="989374776391122812">Kontrol kamera dan audio</translation>
 <translation id="990277280839877440">Jendela <ph name="WINDOW_TITILE" /> menutup.</translation>
+<translation id="993398562350683614">Langkah tur <ph name="STEP" /> dari <ph name="TOTAL_STEPS" />. Gunakan aplikasi untuk melakukan semua hal yang Anda perlukan di <ph name="PRODUCT_NAME" />. Anda dapat menemukan aplikasi di Peluncur. Tekan Alt + Shift + L untuk memfokuskan tombol Peluncur.</translation>
 <translation id="994354411665877646"><ph name="NETWORK_NAME" />, <ph name="SUBTEXT" /></translation>
 <translation id="996204416024568215">Dapatkan fitur dan peningkatan keamanan terbaru. Update berlangsung di latar belakang.</translation>
 </translationbundle>

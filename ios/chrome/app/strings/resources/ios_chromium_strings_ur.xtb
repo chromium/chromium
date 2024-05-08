@@ -74,6 +74,7 @@
 <translation id="2918709798697875261">‏آپ کی تنظیم کا تقاضہ ہے کہ آپ Chromium سے سائن آؤٹ رہیں۔</translation>
 <translation id="2942241131342758843">‏لنکس کھولنے، ویجیٹس سے تلاش کرنے اور دیگر ایپس میں پاس ورڈز کو آٹو فل کرنے کیلئے، Chromium کا بطور ڈیفالٹ استعمال کریں</translation>
 <translation id="2977470724722393594">‏Chromium اپ ٹو ڈیٹ ہے</translation>
+<translation id="3044857325852340337">‏Chromium کے ڈیٹا کو حذف کر دیا گیا ہے</translation>
 <translation id="3078941082359356771">{COUNT,plural, =1{‏Chromium نئے ٹیب صفحہ پر اس پیکیج کو ٹریک کرنے میں آپ کی مدد کر سکتا ہے۔}other{‏Chromium نئے ٹیب صفحہ پر ان پیکیجز کو ٹریک کرنے میں آپ کی مدد کر سکتا ہے۔}}</translation>
 <translation id="3102849287235003384">‏سبھی ویب سائٹس پر اپنے Google اکاؤنٹ سے سائن آؤٹ کرنے کے لیے <ph name="BEGIN_LINK" />Chromium سے سائن آؤٹ کریں<ph name="END_LINK" />۔</translation>
 <translation id="3219277919172823720">‏Chromium میں آواز سے تلاش کریں</translation>
@@ -124,6 +125,7 @@
 <translation id="4633738821577273991">‏اس Chromium پروفائل کے لیے بھی بہتر کردہ محفوظ براؤزنگ حاصل کریں</translation>
 <translation id="4638625642619341392">‏Chromium یہاں ڈاؤن لوڈ کریں۔</translation>
 <translation id="4654936625574199632">‏ایپ کو بہتر بنانے میں مدد کے لیے، Chromium استعمال اور کریش کا ڈیٹا Google کو بھیجتا ہے۔ <ph name="BEGIN_LINK" />نظم کریں<ph name="END_LINK" /></translation>
+<translation id="4675485352217495362">‏Chromium میں براؤزنگ ڈیٹا حذف کریں</translation>
 <translation id="4681781466797808448">‏Chromium اسکینر آن کریں</translation>
 <translation id="4736424910885271643">‏آپ کا اکاؤنٹ <ph name="HOSTED_DOMAIN" /> کے زیر انتظام ہے، اسلئے آپ کا Chromium ڈیٹا اس آلے سے صاف کر دیا جائے گا</translation>
 <translation id="4773487571745795781">‏آپ نے Chromium سائن ان آف کر دیا۔</translation>
@@ -191,6 +193,7 @@
 <translation id="6324041800010509197">‏Chromium میں ٹیب گرِڈ ملاحظہ کریں</translation>
 <translation id="6325378625795868881">‏جب بھی آپ پیغامات اور دیگر ایپس میں لنکس پر تھپتھپائیں تو Chromium استعمال کریں۔</translation>
 <translation id="632825460376924298">‏Chromium میں سائن ان کرنے کی اجازت دیں</translation>
+<translation id="6332129548244419716">‏Chromium میں براؤزنگ ڈیٹا حذف کریں۔</translation>
 <translation id="6337530241089703714">‏منتخب کریں کہ آیا اپنے Chromium ڈیٹا کو اس آلے سے صاف کرنا ہے یا اسے رکھنا ہے</translation>
 <translation id="6348483005826990855">‏3۔ Chromium منتخب کریں</translation>
 <translation id="6383607155624074112">‏اپنے ہوم اسکرین ڈاک سے Chromium تک تیزی سے رسائی حاصل کریں</translation>

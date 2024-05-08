@@ -11,6 +11,7 @@
 <translation id="1047458377670401304"><ph name="CPU_NAME" /> (<ph name="THREAD_COUNT" /> वटा थ्रेड, <ph name="CPU_MAX_CLOCK_SPEED" />GHz)</translation>
 <translation id="1047773237499189053">नयाँ सुविधा उपलब्ध छ, थप जान्न अप एरो की प्रयोग गर्नुहोस्।</translation>
 <translation id="1049663189809099096">प्यास्टेल पहेँलो</translation>
+<translation id="1056898198331236512">चेतावनी</translation>
 <translation id="1059913517121127803">स्क्यान गर्ने प्रक्रिया सुरु गर्न सकिएन</translation>
 <translation id="1062823486781306604"><ph name="COUNT" /> मध्ये <ph name="INDEX" />, <ph name="NAME" />।</translation>
 <translation id="1070066693520972135">WEP</translation>
@@ -95,7 +96,6 @@
 <translation id="1478594628797167447">स्क्यानर</translation>
 <translation id="1483493594462132177">पठाउनुहोस्</translation>
 <translation id="1488850966314959671">अन गरिएका कस्टम APN हरू प्रयोग गरी यो नेटवर्कमा कनेक्ट गर्न सकिएन। यस सम्बन्धमा थप जानकारी प्राप्त गर्न आफ्नो मोबाइलको सेवा प्रदायकलाई सम्पर्क गर्नुहोस्।</translation>
-<translation id="1491076385728777984"><ph name="DEVICE_NAME" /> को फर्मवेयर अपडेट गरिँदै छ</translation>
 <translation id="1499041187027566160">आवाज ठुलो</translation>
 <translation id="1499900233129743732"><ph name="MANAGER" /> ले यो डिभाइस व्यवस्थापन गर्छ र यसले टाढैबाट सेटिङ व्यवस्थापन गर्न र प्रयोगकर्ताले गर्ने क्रियाकलाप निगरानी गर्न सक्छ।</translation>
 <translation id="150962533380566081">अमान्य PUK।</translation>
@@ -291,7 +291,6 @@
 <translation id="2505327257735685095">हालको वालपेपर रिफ्रेस गर्नुहोस्</translation>
 <translation id="2512979179176933762">"विन्डोहरू देखाउनुहोस्" जनाउने आइकन</translation>
 <translation id="2513396635448525189">प्रोफाइल फोटो</translation>
-<translation id="2517472476991765520">स्क्यान गर्नुहोस्</translation>
 <translation id="2521835766824839541">"अघिल्लो ट्रयाक" जनाउने आइकन</translation>
 <translation id="2526590354069164005">डेस्कटप</translation>
 <translation id="2529641961800709867">बटनसम्बन्धी विकल्पहरू</translation>
@@ -330,6 +329,7 @@
 <translation id="2744221223678373668">साझा गरिएको</translation>
 <translation id="2751739896257479635">EAP दोस्रो चरणको प्रमाणीकरण</translation>
 <translation id="2754757901767760034">बत्ती</translation>
+<translation id="2780756493585863768">Google को AI प्रविधियुक्त हालसालैका ब्याकग्राउन्डहरू</translation>
 <translation id="2783010256799387990">पास भयो</translation>
 <translation id="2786429550992142861">लिनेन</translation>
 <translation id="2787435249130282949">किबोर्डको ब्याकलाइट अझ चम्किलो बनाउनुहोस्</translation>
@@ -426,6 +426,7 @@
 <translation id="3456078764689556234"><ph name="TOTAL_PAGES" /> मध्ये <ph name="PRINTED_PAGES" /> पृष्ठहरू प्रिन्ट गरिए</translation>
 <translation id="345898999683440380">पेज <ph name="PAGE_NUM" /> स्क्यान गरिँदै छ। <ph name="PERCENTAGE_VALUE" />% पूरा भयो।</translation>
 <translation id="3459509316159669723">प्रिन्टिङ</translation>
+<translation id="3462187165860821523"><ph name="DEVICE_NAME" /> अपडेट गरिँदै छ</translation>
 <translation id="346423161771747987">करेन्ट</translation>
 <translation id="346539236881580388">पुनः खिच्नुहोस्</translation>
 <translation id="3484914941826596830">फर्मवेयर अपडेट भइरहेका बेला यो बाह्य डिभाइस अनप्लग गर्ने वा कम्प्युटर सट डाउन गर्ने काम नगर्नुहोस्। तपाईं यो विन्डो मिनिमाइज गर्न सक्नुहुन्छ। फर्मवेयर अपडेट गर्न केही मिनेट लाग्न सक्छ र अपडेट भइरहेका बेला तपाईंको बाह्य डिभाइसले काम नगर्न सक्छ।</translation>
@@ -790,6 +791,7 @@
 <translation id="5559898619118303662">सूर्यास्तपछि स्वतः अँध्यारो थिम लागू गर्नुहोस्</translation>
 <translation id="556042886152191864">बटन</translation>
 <translation id="5562551811867441927"><ph name="TERRAIN_COLOR" /> को सेड भएको <ph name="TERRAIN_FEATURE" /></translation>
+<translation id="5572169899491758844">स्क्यान गर्नुहोस्</translation>
 <translation id="5578477003638479617">UMTS</translation>
 <translation id="5578519639599103840">पुनः स्क्यान गर्नुहोस्</translation>
 <translation id="5583640892426849032">ब्याकस्पेस</translation>
@@ -879,7 +881,6 @@
 <translation id="6075872808778243331">(Android) HTTP को विलम्बता</translation>
 <translation id="6078323886959318429">सर्टकट हाल्नुहोस्</translation>
 <translation id="6091080061796993741">पहेँलो</translation>
-<translation id="610371409726072606">Google को AI प्रविधियुक्त क्यामेराको ब्याकग्राउन्ड</translation>
 <translation id="6104112872696127344">स्क्यान गर्ने कार्य रद्द गरिएको छ</translation>
 <translation id="6106186594183574873">यो कार्य पूरा गर्न आफ्नो पुरानो पासवर्ड प्रविष्टि गर्नुहोस्</translation>
 <translation id="6108689792487843350">गेटवेमा कनेक्ट गर्न सकिएन</translation>
@@ -1011,7 +1012,6 @@
 <translation id="672609503628871915">नयाँ के छ हेर्नुहोस्</translation>
 <translation id="6740695858234317715">क्रिम र सुन्तले रङ</translation>
 <translation id="6741823073189174383">डुङ्गा</translation>
-<translation id="674276385369049081">Google को AI प्रविधियुक्त क्यामेराका हालसालैका ब्याकग्राउन्डहरू</translation>
 <translation id="6744441848304920043">जङ्गल</translation>
 <translation id="6747035363363040417">तटस्थ</translation>
 <translation id="6747215703636344499">रोकियो - प्रिन्टरको आउटपुट ट्रे भरिएको छ</translation>
@@ -1032,6 +1032,7 @@
 <translation id="6871256179359663621">हल्का बैजनी</translation>
 <translation id="6889786074662672253">रिस्टार्ट भइरहेका बेला यो बाह्य डिभाइस अनप्लग गर्ने वा कम्प्युटर सट डाउन गर्ने काम नगर्नुहोस्। तपाईं यो विन्डो मिनिमाइज गर्न सक्नुहुन्छ। यो कार्य पूरा हुन केही मिनेट लाग्न सक्छ र यस समयमा तपाईंको बाह्य डिभाइसले काम नगर्न सक्छ।</translation>
 <translation id="6900701049656042631">यो एल्बममा कुनै पनि फोटो समावेश गरिएको छैन। तपाईं फोटो हाल्न चाहनुहुन्छ भने <ph name="LINK" /> मा जानुहोस्</translation>
+<translation id="6902359863093437070">AI प्रयोग गरी ब्याकग्राउन्ड बनाउनुहोस्</translation>
 <translation id="6905163627763043954">यसलाई चलाएर हेर्नुहोस्</translation>
 <translation id="6905724422583748843"><ph name="PAGE_NAME" /> मा फर्कनुहोस्</translation>
 <translation id="6910312834584889076">स्क्यानरको कभर खुला छ। कभर लगाउनुहोस् र फेरि प्रयास गर्नुहोस्।</translation>
@@ -1269,6 +1270,7 @@
 <translation id="8152370627892825"><ph name="DESCRIPTION" />, <ph name="ACCELERATOR_INFO" />।</translation>
 <translation id="8156233298086717232">जादुमयी</translation>
 <translation id="8162776280680283326">फ्याउरोहरू</translation>
+<translation id="8167413449582155132">Google को AI प्रविधियुक्त ब्याकग्राउन्ड</translation>
 <translation id="8179976553408161302">प्रविष्टि गर्नुहोस्</translation>
 <translation id="8183975772394450380">समुद्र किनारा</translation>
 <translation id="8206859287963243715">सेल्युलर</translation>

@@ -166,6 +166,7 @@ Aquí tienes algunas cosas que puedes probar para empezar.</translation>
 <translation id="1586324912145647027">Ir a un escritorio del 1 al 8</translation>
 <translation id="158838227375272121">Sitio web de Google Classroom</translation>
 <translation id="1589090746204042747">Acceder a toda tu actividad de esta sesión</translation>
+<translation id="1597880963776148053">Sigue el paso <ph name="STEP" /> de <ph name="TOTAL_STEPS" />. Las aplicaciones fijadas y abiertas están en la estantería situada en la parte inferior de la pantalla. Pulsa Alt + Mayús + L y luego Tabulador para enfocar los elementos de la estantería.</translation>
 <translation id="1602874809115667351"><ph name="LAUNCHER_KEY_NAME" /> + flecha hacia abajo</translation>
 <translation id="1604857178818051494">Pausar el contenido multimedia</translation>
 <translation id="1607312127821884567">Cerrar la configuración de la visualización de las aplicaciones de tu teléfono</translation>
@@ -303,6 +304,7 @@ Aquí tienes algunas cosas que puedes probar para empezar.</translation>
 <translation id="2257486738914982088">No se ha podido descargar <ph name="FILENAME" /></translation>
 <translation id="2258734398699965611">Archivos sugeridos</translation>
 <translation id="2268130516524549846">Bluetooth inhabilitado</translation>
+<translation id="2268731132310444948">Sigue el paso <ph name="STEP" /> de <ph name="TOTAL_STEPS" />. Una vez que el menú de aplicaciones esté activado, dispondrás de una barra de búsqueda mejorada. Puedes empezar a escribir para buscar tus archivos, aplicaciones y más. También puedes encontrar respuestas a preguntas sobre tu <ph name="PRODUCT_NAME" />.</translation>
 <translation id="2268813581635650749">Cerrar sesiones</translation>
 <translation id="2276987123919776440">15 min</translation>
 <translation id="2277103315734023688">Ir hacia delante</translation>
@@ -397,6 +399,7 @@ Aquí tienes algunas cosas que puedes probar para empezar.</translation>
 <translation id="2607678425161541573">Se requiere inicio de sesión online</translation>
 <translation id="2612072250312279703">monitor de actividad</translation>
 <translation id="2612614436418177118">Mueve el icono de una aplicación en la cuadrícula de aplicaciones</translation>
+<translation id="2619326010008283367">Sigue el paso <ph name="STEP" /> de <ph name="TOTAL_STEPS" />. Puedes encontrar los ajustes de tu dispositivo en el menú de aplicaciones. Prueba a personalizar tu <ph name="PRODUCT_NAME" /> en Configuración. Por ejemplo, cambia el fondo de pantalla o configura un salvapantallas.</translation>
 <translation id="2620016719323068571">Busca tus <ph name="CATEGORY" />, archivos, aplicaciones y más...</translation>
 <translation id="2620436844016719705">Sistema</translation>
 <translation id="2620900772667816510">Bluetooth de alta resolución</translation>
@@ -820,7 +823,6 @@ Algunas funciones están limitadas para aumentar la duración de la batería.</t
 <translation id="4209973997261364186">La conexión Wi-Fi está activada</translation>
 <translation id="4212472694152630271">Cambiar a PIN</translation>
 <translation id="4215497585250573029">Ajustes de VPN</translation>
-<translation id="4215548513524864822">Sigue el paso 5 de 5. Puedes encontrar los ajustes de tu dispositivo en el menú de aplicaciones. Prueba a personalizar tu <ph name="PRODUCT_NAME" /> en Configuración. Por ejemplo, cambia el fondo de pantalla o configura un salvapantallas.</translation>
 <translation id="4217571870635786043">Dictado</translation>
 <translation id="4221957499226645091"><ph name="APP_NAME" />, aplicación instalada, pausada</translation>
 <translation id="4228078597006700451">Controles no configurados</translation>
@@ -947,12 +949,12 @@ Algunas funciones están limitadas para aumentar la duración de la batería.</t
 <translation id="468293128311738995">Aplicaciones de tu teléfono</translation>
 <translation id="4690510401873698237">La estantería está en la parte inferior</translation>
 <translation id="4696813013609194136">Desbloquear con código parental</translation>
-<translation id="469693290987463983">Sigue el paso 1 de 5. Las aplicaciones fijadas y abiertas están en la estantería situada en la parte inferior de la pantalla. Pulsa Alt + Mayús + L y luego Tabulador para enfocar los elementos de la estantería.</translation>
 <translation id="4702647871202761252">La pantalla de privacidad está desactivada</translation>
 <translation id="4706121060329443414">Se intentarán descargar más tarde. De momento, se enviará la voz a Google para procesarse.</translation>
 <translation id="470644585772471629">Invertir colores</translation>
 <translation id="4708065238214351979">Aumentar el brillo del teclado</translation>
 <translation id="4717575069099566988">Tu cable USB‑C no es compatible con USB4. El rendimiento del dispositivo puede verse limitado.</translation>
+<translation id="4724328513667182700">6 consejos para empezar a usar <ph name="PRODUCT_NAME" /></translation>
 <translation id="4730374152663651037">UTILIZADAS CON FRECUENCIA</translation>
 <translation id="4731797938093519117">Acceso parental</translation>
 <translation id="4733161265940833579"><ph name="BATTERY_PERCENTAGE" /> % (izquierdo)</translation>
@@ -1028,6 +1030,7 @@ Algunas funciones están limitadas para aumentar la duración de la batería.</t
 <translation id="4964188651935955085">Cuando desactives el Bluetooth, este dispositivo externo se desconectará de tu <ph name="DEVICE_TYPE" />:</translation>
 <translation id="4966431234408005599">Subir el volumen</translation>
 <translation id="4969092041573468113"><ph name="HOURS" /> h <ph name="MINUTES" /> min <ph name="SECONDS" /> s</translation>
+<translation id="496999337731226334">Sigue el paso <ph name="STEP" /> de <ph name="TOTAL_STEPS" />. Los controles usados con frecuencia, como la conexión Wi-Fi, el Bluetooth y el volumen, están en los ajustes rápidos. También puedes hacer capturas de pantalla desde aquí. Pulsa Alt + Mayús + S para abrir los ajustes rápidos.</translation>
 <translation id="4975771730019223894">Insignias de aplicaciones</translation>
 <translation id="4977493774330778463"><ph name="NUM_IMPORTANT_NOTIFICATION" />:
         <ph name="NOTIFICATION_1" />,
@@ -1145,6 +1148,7 @@ No hay dispositivos conectados.</translation>
 <translation id="540713187982329711">Activar o desactivar punto de acceso. Punto de acceso activado. No hay dispositivos conectados.</translation>
 <translation id="5413656666631274079">Página de Configuración</translation>
 <translation id="5414198321558177633">Actualizando la ficha del perfil. Este proceso puede durar unos minutos.</translation>
+<translation id="5417965108047245734">Con una visita rápida puedes aprender cómo funciona tu <ph name="PRODUCT_NAME" /></translation>
 <translation id="5426063383988017631">Menú Ajustes cerrado</translation>
 <translation id="5428899915242071344">Empezar a seleccionar</translation>
 <translation id="5429993543155113935">Las ventanas de Incógnito no se admiten actualmente</translation>
@@ -1443,7 +1447,7 @@ No hay dispositivos conectados.</translation>
 Nueva instalación</translation>
 <translation id="6559976592393364813">Pregunta al administrador</translation>
 <translation id="6565007273808762236">Conexión eSIM no disponible</translation>
-<translation id="6570831796530454248">{0,plural, =1{Actualiza el dispositivo en un plazo de 1 hora}other{Actualiza el dispositivo en un plazo de # horas}}</translation>
+<translation id="6570831796530454248">{0,plural, =1{Actualiza tu dispositivo en un plazo de 1 hora}other{Actualiza tu dispositivo en un plazo de # horas}}</translation>
 <translation id="6570902864550063460">Cargando mediante USB</translation>
 <translation id="6574587113394758819">Se ha ocultado una notificación de <ph name="APP_TITLE" /> porque la protección contra fisgones está activada</translation>
 <translation id="6574622320167699133">Desbloqueado con tu teléfono. Toca o haz clic para acceder.</translation>
@@ -1525,7 +1529,6 @@ Nueva instalación</translation>
 <translation id="6874854809828346832">Mostrar detalles del punto de acceso. Punto de acceso activado.</translation>
 <translation id="6878400149835617132">Combinación de teclas desactivada</translation>
 <translation id="6878701771800702153">{NUM_APPS,plural, =1{1 aplicación}other{# aplicaciones}}</translation>
-<translation id="6878787305374738418">Sigue el paso 4 de 5. Una vez que el menú de aplicaciones esté activado, dispondrás de una barra de búsqueda mejorada. Puedes empezar a escribir para buscar tus archivos, aplicaciones y más. También puedes encontrar respuestas a preguntas sobre tu <ph name="PRODUCT_NAME" />.</translation>
 <translation id="6883768636838842873">Combinaciones de teclas, consejos para usar el dispositivo y más</translation>
 <translation id="6884665277231944629">Volver a hoy</translation>
 <translation id="6886172995547742638">Es posible que se reduzca el rendimiento de tu <ph name="DEVICE_TYPE" />. Usa un adaptador de corriente USB‑C certificado de <ph name="PREFERRED_MINIMUM_POWER" /> W o más.</translation>
@@ -1594,6 +1597,7 @@ Nueva instalación</translation>
 <translation id="7143207342074048698">Conectando</translation>
 <translation id="7144942256906679589">Estado de la batería</translation>
 <translation id="7145639536026937076">La batería está al <ph name="PERCENTAGE" /> % y se está cargando. Ahorro de batería está activado.</translation>
+<translation id="7149149900052329230">Puedes gestionar tus archivos locales y de Google Drive desde la aplicación Archivos.</translation>
 <translation id="7165278925115064263">Alt + Mayús + K</translation>
 <translation id="7167913274352523149"><ph name="HOTSPOT" />,
         <ph name="NETWORK" /></translation>
@@ -1614,7 +1618,6 @@ Nueva instalación</translation>
 <translation id="726276584504105859">Arrastra hasta aquí para utilizar la pantalla dividida</translation>
 <translation id="7262906531272962081">Crear recordatorio</translation>
 <translation id="7278787617901301220"><ph name="LAUNCHER_KEY_NAME" /> + Retroceso</translation>
-<translation id="7282547098317872382">Sigue el paso 3 de 5. Usa aplicaciones para hacer todo lo que quieras en tu <ph name="PRODUCT_NAME" />. Puedes encontrar tus aplicaciones en el menú de aplicaciones. Pulsa Alt + Mayús + L para enfocar el botón del menú de aplicaciones.</translation>
 <translation id="7285232777292757180">Usa la herramienta de captura de pantalla en los ajustes rápidos para hacer capturas de pantalla</translation>
 <translation id="7301826272005790482">Cerrar sugerencias de ventanas</translation>
 <translation id="7302889331339392448">Subtítulos automáticos desactivados.</translation>
@@ -1796,10 +1799,12 @@ Para apagarlo, mantén pulsado de nuevo el botón de encendido del dispositivo.<
 <translation id="7933084174919150729">El Asistente de Google solo está disponible en el perfil principal.</translation>
 <translation id="79341161159229895">Cuenta gestionada por <ph name="FIRST_PARENT_EMAIL" /> y <ph name="SECOND_PARENT_EMAIL" /></translation>
 <translation id="793716872548410480">Pulsa <ph name="SHORTCUT_KEY_NAME" /> + V para ver el portapapeles, que guarda los 5 últimos elementos que hayas copiado.</translation>
+<translation id="7942330802915522974">Sigue el paso <ph name="STEP" /> de <ph name="TOTAL_STEPS" />. Puedes encontrar la aplicación Archivos en el menú de aplicaciones. Puedes gestionar tus archivos locales y de Google Drive desde la aplicación Archivos.</translation>
 <translation id="7942349550061667556">Rojo</translation>
 <translation id="7943516765291457328">Activa el Bluetooth para buscar puntos de acceso cercanos</translation>
 <translation id="7944023924886109030">Ver todos los eventos de hoy</translation>
 <translation id="7945357288295809525">Mostrar configuración de accesibilidad, "<ph name="ENABLED_FEATURES" />" habilitado.</translation>
+<translation id="7946681191253332687">Actualizaciones de seguridad ampliadas disponibles</translation>
 <translation id="7947798320695032612"><ph name="APP_NAME" /> quiere usar tu <ph name="DEVICE_NAME" /></translation>
 <translation id="7951630946012935453">Atenuar la luz del teclado</translation>
 <translation id="7953994493035617347">¿Confirmar la nueva resolución?</translation>
@@ -1911,7 +1916,6 @@ Para apagarlo, mantén pulsado de nuevo el botón de encendido del dispositivo.<
 <translation id="8412677897383510995">Mostrar ajustes de pantalla</translation>
 <translation id="8413272770729657668">La grabación empezará en 3, 2. 1…</translation>
 <translation id="8416730306157376817"><ph name="BATTERY_PERCENTAGE" /> % (funda)</translation>
-<translation id="8417951779969083400">Sigue el paso 2 de 5. Los controles utilizados con frecuencia, como la conexión Wi-Fi, el Bluetooth y el volumen, están en los ajustes rápidos. También puedes hacer capturas de pantalla desde aquí. Pulsa Alt + Mayús + S para abrir los ajustes rápidos.</translation>
 <translation id="8420205633584771378">¿Eliminar esta sugerencia?</translation>
 <translation id="8421270167862077762"><ph name="UNAVAILABLE_APPS" /> no está en este dispositivo.</translation>
 <translation id="8426708595819210923">Buenas noches, <ph name="GIVEN_NAME" /></translation>
@@ -2132,6 +2136,7 @@ Para apagarlo, mantén pulsado de nuevo el botón de encendido del dispositivo.<
 <translation id="987589956647469042">Datos móviles activados</translation>
 <translation id="989374776391122812">Controles de cámara y audio</translation>
 <translation id="990277280839877440">La ventana <ph name="WINDOW_TITILE" /> se ha cerrado.</translation>
+<translation id="993398562350683614">Sigue el paso <ph name="STEP" /> de <ph name="TOTAL_STEPS" />. Usa aplicaciones para hacer todo lo que quieras en tu <ph name="PRODUCT_NAME" />. Puedes encontrar tus aplicaciones en el menú de aplicaciones. Pulsa Alt + Mayús + L para enfocar el botón del menú de aplicaciones.</translation>
 <translation id="994354411665877646"><ph name="NETWORK_NAME" />, <ph name="SUBTEXT" /></translation>
 <translation id="996204416024568215">Recibe las últimas funciones y mejoras de seguridad. Las actualizaciones se descargan e instalan en segundo plano.</translation>
 </translationbundle>

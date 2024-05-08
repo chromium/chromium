@@ -59,6 +59,7 @@
 <translation id="2574528844022712255">Դիտել Chromium-ի էջանիշները</translation>
 <translation id="2590893390871230428">Համաժամացնել Chromium-ի տվյալները</translation>
 <translation id="2592940277904433508">Շարունակել Chromium-ի օգտագործումը</translation>
+<translation id="2607609479243848905">Եթե մոռացել եք ձեր անցաբառը կամ ուզում եք փոխել այս կարգավորումը, <ph name="BEGIN_LINK" />ջնջեք Chromium-ի տվյալները ձեր հաշվում<ph name="END_LINK" />։</translation>
 <translation id="2618596336309823556">Ձեր սարքի կարգավորումներում բացեք «<ph name="TEXT_OF_THE_SETTINGS_MENU_ITEM" />» պարամետրը և ընտրեք «Chromium»</translation>
 <translation id="2618757400690011108">{COUNT,plural, =1{Chromium-ը կօգնի հետագծել այս փաթեթը նոր ներդիրի էջում։}one{Chromium-ը կօգնի հետագծել այս փաթեթը նոր ներդիրի էջում։}other{Chromium-ը կօգնի հետագծել այս փաթեթները նոր ներդիրի էջում։}}</translation>
 <translation id="2650312721222849884">Chromium-ն օգտագործելիս ձեր բոլոր ներդիրները տեսնելու համար միացրեք համաժամացումը։</translation>
@@ -73,6 +74,7 @@
 <translation id="2918709798697875261">Ձեր կազմակերպության կանոնների համաձայն՝ մուտքը Chromium արգելվում է։</translation>
 <translation id="2942241131342758843">Դարձրեք Chromium-ը ձեր կանխադրված դիտարկիչը՝ հղումներ բացելու, վիջեթներից որոնելու և այլ հավելվածներում գաղտնաբառերի ինքնալրացման համար</translation>
 <translation id="2977470724722393594">Chromium-ը թարմացված է</translation>
+<translation id="3044857325852340337">Տվյալները ջնջվել են Chromium-ից</translation>
 <translation id="3078941082359356771">{COUNT,plural, =1{Chromium-ը կարող է օգնել ձեզ հետագծել այս փաթեթը նոր ներդիրի էջում։}one{Chromium-ը կարող է օգնել ձեզ հետագծել այս փաթեթը նոր ներդիրի էջում։}other{Chromium-ը կարող է օգնել ձեզ հետագծել այս փաթեթները նոր ներդիրի էջում։}}</translation>
 <translation id="3102849287235003384">Բոլոր կայքերում ձեր Google հաշվից դուրս գալու համար <ph name="BEGIN_LINK" />դուրս եկեք Chromium-ից<ph name="END_LINK" />։</translation>
 <translation id="3219277919172823720">Որոնել ձայնի միջոցով Chromium-ում</translation>
@@ -115,11 +117,15 @@
 <translation id="4498832288620833153">Ավելացնում է մուտքագրված URL-ը ձեր ընթերցանության ցանկին Chromium-ում։</translation>
 <translation id="452436063477828504">Համոզվեք, որ միշտ կարող եք օգտվել Chromium-ի տվյալներից ձեր Google հաշվում</translation>
 <translation id="4555020257205549924">Եթե միացնեք այս գործառույթը, Chromium-ը կառաջարկի թարգմանել այլ լեզուներով ներկայացված էջերը Google Translate-ի միջոցով: <ph name="BEGIN_LINK" />Իմանալ ավելին<ph name="END_LINK" /></translation>
+<translation id="4572441104543926904">Անցաբառով գաղտնագրումը չի կիրառվում վճարման եղանակների և հասցեների համար։
+
+Այս կարգավորումը փոխելու համար <ph name="BEGIN_LINK" />ջնջեք Chromium-ի տվյալները ձեր հաշվում<ph name="END_LINK" />։</translation>
 <translation id="4576283463017113841">Բացում է վճարման եղանակների կարգավորման էջը Chromium-ում։</translation>
 <translation id="459080529287102949">Տեսողական որոնում Chromium-ում</translation>
 <translation id="4633738821577273991">Կիրառեք նաև բարելավված Ապահով դիտարկումն այս Chromium պրոֆիլի համար</translation>
 <translation id="4638625642619341392">Ներբեռնեք Chromium-ն այստեղ։</translation>
 <translation id="4654936625574199632">Հավելվածը բարելավելու նպատակով Chromium-ը ուղարկում է օգտագործման և խափանումների մասին տվյալները Google-ին։ <ph name="BEGIN_LINK" />Կառավարել<ph name="END_LINK" /></translation>
+<translation id="4675485352217495362">Ջնջել այցելությունների պատմությունը Chromium-ում</translation>
 <translation id="4681781466797808448">Միացրեք Chromium-ի սկաները</translation>
 <translation id="4736424910885271643">Chromium-ում պահվող ձեր բոլոր տվյալները կջնջվեն այս սարքից, քանի որ ձեր հաշիվը կառավարվում է <ph name="HOSTED_DOMAIN" /> տիրույթի կողմից</translation>
 <translation id="4773487571745795781">Դուք անջատել եք մուտքը Chromium։</translation>
@@ -187,6 +193,7 @@
 <translation id="6324041800010509197">Այցելել ներդիրների ցանց Chromium-ում</translation>
 <translation id="6325378625795868881">Օգտագործեք Chromium-ը ցանկացած ժամանակ, երբ հղումների եք հպում հաղորդագրություններում և այլ հավելվածներում։</translation>
 <translation id="632825460376924298">Թույլատրել մուտքը Chromium-ում</translation>
+<translation id="6332129548244419716">Ջնջել այցելությունների պատմությունը Chromium-ում։</translation>
 <translation id="6337530241089703714">Հեռացնե՞լ Chromium-ի տվյալներն այս սարքից</translation>
 <translation id="6348483005826990855">3. Ընտրեք Chromium-ը</translation>
 <translation id="6383607155624074112">Ավելի արագ բացեք Chromium-ը հիմնական էկրանի Dock վահանակից</translation>
@@ -211,6 +218,9 @@
 <translation id="7163483974919055112">Տեսողական որոնում Chromium-ում։</translation>
 <translation id="7165402419892018581">«Ինքնալրացում» պարամետրի համար ընտրեք Chromium-ը</translation>
 <translation id="7175400662502680481">Տվյալների արտահոսքի արդյունքում ձեր գաղտնաբառը հայտնի է դարձել կողմնակի անձանց։ Գաղտնաբառերի կառավարիչը խորհուրդ է տալիս անհապաղ փոխել այն։</translation>
+<translation id="7185731475720473450">Վճարման եղանակները և հասցեները չեն գաղտնագրվի։ Chromium-ի այցելությունների պատմությունը չի համաժամացվի։
+
+Միայն ձեր անցաբառն ունեցող մարդիկ կարող են կարդալ ձեր գաղտնագրված տվյալները։ Անցաբառը չի ուղարկվում Google-ին կամ պահվում նրա կողմից։ Եթե մոռացել եք ձեր անցաբառը կամ ուզում եք փոխել այս կարգավորումը, <ph name="BEGIN_LINK" />ջնջեք Chromium-ի տվյալները ձեր հաշվում<ph name="END_LINK" />։</translation>
 <translation id="7192111075364461693">Chromium-ի ծանուցումներն այս պահին անջատված են սարքի կարգավորումներում։</translation>
 <translation id="7222001353246886083">Որոնեք ${searchPhrase} Chromium-ում</translation>
 <translation id="725427773388857052">Chromium-ը կարող է պաշտպանել տվյալների արտահոսքից, վտանգավոր կայքերից և այլ խնդիրներից</translation>

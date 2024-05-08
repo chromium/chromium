@@ -166,6 +166,7 @@
 <translation id="1586324912145647027">Одете на работната површина 1 до 8</translation>
 <translation id="158838227375272121">Веб-сајт на Google Classroom</translation>
 <translation id="1589090746204042747">Пристапете до целата ваша активност во сесијава</translation>
+<translation id="1597880963776148053">Чекор <ph name="STEP" /> од <ph name="TOTAL_STEPS" />. Вашите закачени и отворени апликации се на „Полицата“ најдолу на екранот. Притиснете Alt + Shift + L, а потоа Tab за да се фокусирате на ставките на „Полицата“.</translation>
 <translation id="1602874809115667351"><ph name="LAUNCHER_KEY_NAME" /> + стрелка надолу</translation>
 <translation id="1604857178818051494">Паузирање аудиовизуелни содржини</translation>
 <translation id="1607312127821884567">Отфрлете го поставувањето прегледување на апликациите на телефонот</translation>
@@ -303,6 +304,7 @@
 <translation id="2257486738914982088">Нешто тргна наопаку при преземањето на <ph name="FILENAME" /></translation>
 <translation id="2258734398699965611">Предложени датотеки</translation>
 <translation id="2268130516524549846">Bluetooth е оневозможен</translation>
+<translation id="2268731132310444948">Чекор <ph name="STEP" /> од <ph name="TOTAL_STEPS" />. Штом ќе се активира „Стартерот“, ќе добиете подобрено поле за пребарување. Може да започнете со пишување за да ги пребарате вашите датотеки, апликации и друго. Може и да добиете одговори на прашањата за вашиот уред <ph name="PRODUCT_NAME" />.</translation>
 <translation id="2268813581635650749">Одјави се од сите</translation>
 <translation id="2276987123919776440">15 мин.</translation>
 <translation id="2277103315734023688">Премотај нанапред</translation>
@@ -397,6 +399,7 @@
 <translation id="2607678425161541573">Задолжително е најавување онлајн</translation>
 <translation id="2612072250312279703">следач на активност</translation>
 <translation id="2612614436418177118">Преместувајте икона за апликација во мрежа со апликации</translation>
+<translation id="2619326010008283367">Чекор <ph name="STEP" /> од <ph name="TOTAL_STEPS" />. „Поставките“ за вашиот уред може да ги најдете во „Стартер“. Обидете се да го приспособите вашиот уред <ph name="PRODUCT_NAME" /> во „Поставки“, на пр., да го промените тапетот или да поставите штедач на екран.</translation>
 <translation id="2620016719323068571">Пребарувајте ги вашите <ph name="CATEGORY" />, датотеки, апликации и слично…</translation>
 <translation id="2620436844016719705">Систем</translation>
 <translation id="2620900772667816510">Bluetooth Super Resolution</translation>
@@ -820,7 +823,6 @@
 <translation id="4209973997261364186">Wi-Fi мрежата е вклучена</translation>
 <translation id="4212472694152630271">Префрли на PIN</translation>
 <translation id="4215497585250573029">Поставки за VPN</translation>
-<translation id="4215548513524864822">Прегледајте го чекор 5 од 5. „Поставките“ за вашиот уред може да ги најдете во „Стартер“. Обидете се да го приспособите вашиот уред <ph name="PRODUCT_NAME" /> во „Поставки“, на пр., да го промените тапетот или да поставите штедач на екран.</translation>
 <translation id="4217571870635786043">Диктат</translation>
 <translation id="4221957499226645091"><ph name="APP_NAME" />, инсталирана апликација, паузирана</translation>
 <translation id="4228078597006700451">Контролите не се поставени</translation>
@@ -947,12 +949,12 @@
 <translation id="468293128311738995">Апликации од телефонот</translation>
 <translation id="4690510401873698237">Полицата е најдолу</translation>
 <translation id="4696813013609194136">Отклучете го уредот со код на родител</translation>
-<translation id="469693290987463983">Прегледајте го чекор 1 од 5. Вашите закачени и отворени апликации се на „Полицата“ најдолу на екранот. Притиснете Alt + Shift + L, а потоа Tab за да се фокусирате на ставките на „Полицата“.</translation>
 <translation id="4702647871202761252">Исклучен е екранот за приватност</translation>
 <translation id="4706121060329443414">Подоцна ќе се изврши обид за преземање. Говорот ќе биде испратен до Google за обработка засега.</translation>
 <translation id="470644585772471629">Инверзија на боите</translation>
 <translation id="4708065238214351979">Зголемување на осветленоста на тастатурата</translation>
 <translation id="4717575069099566988">Вашиот кабел USB-C не поддржува USB4. Изведбата на уредот може да биде ограничена.</translation>
+<translation id="4724328513667182700">6 чекори за да започнете на <ph name="PRODUCT_NAME" /></translation>
 <translation id="4730374152663651037">ЧЕСТО КОРИСТЕНИ</translation>
 <translation id="4731797938093519117">Пристап за родители</translation>
 <translation id="4733161265940833579"><ph name="BATTERY_PERCENTAGE" /> % (лева)</translation>
@@ -1028,6 +1030,7 @@
 <translation id="4964188651935955085">Кога ќе го исклучите Bluetooth, ќе се прекине врската меѓу овој надворешен уред и вашиот <ph name="DEVICE_TYPE" />:</translation>
 <translation id="4966431234408005599">Зголемување на јачината на звукот</translation>
 <translation id="4969092041573468113"><ph name="HOURS" /> ч. <ph name="MINUTES" /> м. <ph name="SECONDS" /> с.</translation>
+<translation id="496999337731226334">Чекор <ph name="STEP" /> од <ph name="TOTAL_STEPS" />. Често користените контроли како Wi-Fi, Bluetooth и јачина на звук се во „Брзи поставки“. Тука може да дојдете и за да снимите слики од екранот. Притиснете Alt + Shift + S за да отворите „Брзи поставки“.</translation>
 <translation id="4975771730019223894">Значки за апликации</translation>
 <translation id="4977493774330778463"><ph name="NUM_IMPORTANT_NOTIFICATION" />:
         <ph name="NOTIFICATION_1" />,
@@ -1145,6 +1148,7 @@
 <translation id="540713187982329711">Вклучување/Исклучување на точката на пристап. Точката на пристап е вклучена, нема поврзани уреди.</translation>
 <translation id="5413656666631274079">страницата со поставки</translation>
 <translation id="5414198321558177633">Се освежува списокот со профили. Може да потрае неколку минути.</translation>
+<translation id="5417965108047245734">Разгледајте накратко за да дознаете повеќе како се користи вашиот уред <ph name="PRODUCT_NAME" /></translation>
 <translation id="5426063383988017631">Менито со поставки е затворено</translation>
 <translation id="5428899915242071344">Започнете со избирање</translation>
 <translation id="5429993543155113935">Прозорците „Инкогнито“ не се поддржани во моментов</translation>
@@ -1525,7 +1529,6 @@
 <translation id="6874854809828346832">Прикажи детали за точката на пристап. Точката на пристап е вклучена.</translation>
 <translation id="6878400149835617132">Кратенката е исклучена</translation>
 <translation id="6878701771800702153">{NUM_APPS,plural, =1{1 апликација}one{# апликација}other{# апликации}}</translation>
-<translation id="6878787305374738418">Прегледајте го чекор 4 од 5. Штом ќе се активира „Стартерот“, ќе добиете подобрено поле за пребарување. Може да започнете со пишување за да ги пребарате вашите датотеки, апликации и друго. Може и да добиете одговори на прашањата за вашиот уред <ph name="PRODUCT_NAME" />.</translation>
 <translation id="6883768636838842873">Кратенки на тастатура, совети за користење на уредот и друго</translation>
 <translation id="6884665277231944629">Вратете се на денешниот датум</translation>
 <translation id="6886172995547742638">Перформансите на вашиот <ph name="DEVICE_TYPE" /> може да бидат послаби. Користете сертифициран адаптер за напојување USB-C од <ph name="PREFERRED_MINIMUM_POWER" /> W или повеќе.</translation>
@@ -1594,6 +1597,7 @@
 <translation id="7143207342074048698">Се поврзува</translation>
 <translation id="7144942256906679589">Статус на батеријата</translation>
 <translation id="7145639536026937076">Батеријата е на <ph name="PERCENTAGE" /> % и се полни. „Штедачот на батерија“ е вклучен.</translation>
+<translation id="7149149900052329230">Управувајте со локалните датотеки и датотеките во Google Drive, сѐ во апликацијата „Датотеки“.</translation>
 <translation id="7165278925115064263">Alt+Shift+K</translation>
 <translation id="7167913274352523149"><ph name="HOTSPOT" />,
         <ph name="NETWORK" /></translation>
@@ -1614,7 +1618,6 @@
 <translation id="726276584504105859">Повлечете тука за да користите поделен екран</translation>
 <translation id="7262906531272962081">Создајте потсетник</translation>
 <translation id="7278787617901301220"><ph name="LAUNCHER_KEY_NAME" /> + backspace</translation>
-<translation id="7282547098317872382">Прегледајте го чекор 3 од 5. Користете апликации за да правите сѐ што е потребно на вашиот уред <ph name="PRODUCT_NAME" />. Вашите апликации може да ги најдете во „Стартерот“. Притиснете Alt + Shift + L за да се фокусирате на копчето за „Стартер“.</translation>
 <translation id="7285232777292757180">За снимање слики од екранот, користете ја алатката „Снимање на екранот“ во „Брзи поставки“</translation>
 <translation id="7301826272005790482">Отфрли ги предлозите за прозорци</translation>
 <translation id="7302889331339392448">„Автоматските титлови“ се исклучени.</translation>
@@ -1796,10 +1799,12 @@
 <translation id="7933084174919150729">„Помошникот на Google“ е достапен само за примарниот профил.</translation>
 <translation id="79341161159229895"><ph name="FIRST_PARENT_EMAIL" /> и <ph name="SECOND_PARENT_EMAIL" /> управуваат со сметката</translation>
 <translation id="793716872548410480">Притиснете <ph name="SHORTCUT_KEY_NAME" /> + V за да ја видите привремената меморија. Последните 5 ставки што сте ги копирале се зачувани во привремената меморија.</translation>
+<translation id="7942330802915522974">Чекор <ph name="STEP" /> од <ph name="TOTAL_STEPS" />. Апликацијата „Датотеки“ може да ја најдете во „Стартер“. Управувајте со локалните датотеки и датотеките во Google Drive, сѐ во апликацијата „Датотеки“.</translation>
 <translation id="7942349550061667556">Црвена</translation>
 <translation id="7943516765291457328">Вклучете Bluetooth за да скенирате за точки на пристап во близина</translation>
 <translation id="7944023924886109030">Видете ги сите денешни настани</translation>
 <translation id="7945357288295809525">Прикажи ги поставките за пристапност, овозможено: „<ph name="ENABLED_FEATURES" />“.</translation>
+<translation id="7946681191253332687">Достапни се проширени безбедносни ажурирања</translation>
 <translation id="7947798320695032612"><ph name="APP_NAME" /> сака да користи <ph name="DEVICE_NAME" /></translation>
 <translation id="7951630946012935453">Затемнување тастатура</translation>
 <translation id="7953994493035617347">Да се потврди новата резолуција?</translation>
@@ -1911,7 +1916,6 @@
 <translation id="8412677897383510995">Прикажи ги поставките за екранот</translation>
 <translation id="8413272770729657668">Снимањето започнува за 3, 2, 1</translation>
 <translation id="8416730306157376817"><ph name="BATTERY_PERCENTAGE" /> % (футрола за полнење)</translation>
-<translation id="8417951779969083400">Прегледајте го чекор 2 од 5. Често користените контроли како Wi-Fi, Bluetooth и јачина на звук се во „Брзи поставки“. Тука може да дојдете и за да снимите слики од екранот. Притиснете Alt + Shift + S за да отворите „Брзи поставки“.</translation>
 <translation id="8420205633584771378">Да се отстрани предлогов?</translation>
 <translation id="8421270167862077762"><ph name="UNAVAILABLE_APPS" /> не е на уредов.</translation>
 <translation id="8426708595819210923">Добровечер <ph name="GIVEN_NAME" />,</translation>
@@ -2125,12 +2129,14 @@
 <translation id="954052413789300507">Нема доволно простор за <ph name="FILENAME" />. Ослободете простор.</translation>
 <translation id="954520015070501466">30 мин.</translation>
 <translation id="956452277966142925">Поставки за „Контролна табла за игри“</translation>
+<translation id="961856697154696964">Избришете го прелистувањето</translation>
 <translation id="974545358917229949">Се прикажуваат <ph name="RESULT_COUNT" /> резултати за <ph name="QUERY" /></translation>
 <translation id="981011780479609956">Без рок</translation>
 <translation id="98120814841227350">Одете на крајот од документот</translation>
 <translation id="987589956647469042">Мобилниот интернет е вклучен</translation>
 <translation id="989374776391122812">Контроли за камера и звук</translation>
 <translation id="990277280839877440">Прозорецот <ph name="WINDOW_TITILE" /> е затворен.</translation>
+<translation id="993398562350683614">Чекор <ph name="STEP" /> од <ph name="TOTAL_STEPS" />. Користете апликации за да правите сѐ што е потребно на вашиот уред <ph name="PRODUCT_NAME" />. Вашите апликации може да ги најдете во „Стартер“. Притиснете Alt + Shift + L за да се фокусирате на копчето за „Стартер“.</translation>
 <translation id="994354411665877646"><ph name="NETWORK_NAME" />, <ph name="SUBTEXT" /></translation>
 <translation id="996204416024568215">Преземете ги најновите функции и подобрувања на безбедноста. Ажурирањата се извршуваат во заднина.</translation>
 </translationbundle>

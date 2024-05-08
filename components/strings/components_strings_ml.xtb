@@ -15,12 +15,6 @@
 <translation id="102916930470544692">പാസ്‌കീ</translation>
 <translation id="1030706264415084469">നിങ്ങളുടെ ഉപകരണത്തിൽ ശാശ്വതമായി വലിയ അളവിൽ ഡാറ്റ സംഭരിക്കാന്‍ <ph name="URL" />ആഗ്രഹിക്കുന്നു</translation>
 <translation id="1030949145805074938">{COUNT,plural, =0{ഒന്നുമില്ല}=1{ഒരു സൈറ്റിൽ നിന്ന്. നിങ്ങൾ മിക്ക സൈറ്റുകളിൽ നിന്നും സൈൻ ഔട്ടാകും. }other{# സൈറ്റുകളിൽ നിന്ന്. നിങ്ങൾ മിക്ക സൈറ്റുകളിൽ നിന്നും സൈൻ ഔട്ടാകും. }}</translation>
-<translation id="1033329911862281889">അദൃശ്യ മോഡ് നിങ്ങളെ ഓൺലൈനിൽ അദൃശ്യമാക്കുന്നില്ല:
-        <ph name="BEGIN_LIST" />
-          <ph name="LIST_ITEM" />അവ ഉപയോഗിക്കുന്ന സൈറ്റുകൾക്കും സേവനങ്ങൾക്കും സന്ദർശനങ്ങൾ കാണാനാകും<ph name="END_LIST_ITEM" />
-          <ph name="LIST_ITEM" />തൊഴിലുടമകൾക്കോ സ്കൂളുകൾക്കോ ബ്രൗസിംഗ് ആക്റ്റിവിറ്റി ട്രാക്ക് ചെയ്യാനാകും<ph name="END_LIST_ITEM" />
-          <ph name="LIST_ITEM" />ഇന്റർനെറ്റ് സേവന ദാതാക്കൾക്ക് വെബ് ട്രാഫിക് നിരീക്ഷിക്കാനാകും<ph name="END_LIST_ITEM" />
-        <ph name="END_LIST" /></translation>
 <translation id="1035709686865413354">വാട്ടർ ഫിൽട്ടറുകളും പ്യൂരിഫയറുകളും</translation>
 <translation id="1036348656032585052">ഓഫാക്കുക</translation>
 <translation id="1036881361735705143">Envelope C4</translation>
@@ -64,6 +58,7 @@
 <translation id="1104860668737945357">'പാസ്‌വേഡുകൾ മാനേജ് ചെയ്യുക' ബട്ടൺ, Chrome ക്രമീകരണത്തിൽ നിങ്ങളുടെ പാസ്‌വേഡുകൾ കാണാനും മാനേജ് ചെയ്യാനും സജീവമാക്കുക</translation>
 <translation id="1108464073729874771">A3x4</translation>
 <translation id="1110994991967754504"><ph name="PERMISSION_NAME" /> എന്നതിന്‍റെ അനുമതി തിരഞ്ഞെടുക്കുക</translation>
+<translation id="1112238992895762847">എല്ലാ ഓപ്ഷനുകൾക്കുമുള്ള നിരക്ക് പരിധി</translation>
 <translation id="1113869188872983271">&amp;പുനഃക്രമീകരിക്കുന്നത് പഴയപടിയാക്കുക</translation>
 <translation id="1118429183611783760">വാക്വം ക്ലീനറുകളും നിലത്തിന്റെ പരിചരണവും</translation>
 <translation id="1122714970786750095">ഇലക്‌ട്രോണിക്‌സും ഇലക്‌ട്രിക്കലും</translation>
@@ -73,7 +68,6 @@
 <translation id="1131264053432022307">നിങ്ങൾ പകർത്തിയ ചിത്രം</translation>
 <translation id="1138458427267715730">വെബിലുടനീളമുള്ള ഏതെങ്കിലും സൈറ്റിൽ നിരക്ക് കുറയുമ്പോൾ അലേർട്ടുകൾ നേടുക</translation>
 <translation id="1142713751288681188">പേപ്പർ തരം</translation>
-<translation id="1142846828089312304">അദൃശ്യ മോഡിൽ മൂന്നാം കക്ഷി കുക്കികൾ ബ്ലോക്ക് ചെയ്യുക</translation>
 <translation id="1144136880160289237">നിങ്ങൾക്ക് ഇതുവരെ സജീവമായ വിഷയങ്ങളൊന്നുമില്ല</translation>
 <translation id="1149617035358809955">ഇത് നിങ്ങളാണെന്ന് പരിശോധിച്ചുറപ്പിക്കുക, അതുവഴി ഇതിന് നിങ്ങളുടെ പേയ്‌മെന്റ് വിവരങ്ങൾ പൂരിപ്പിക്കാനാകും</translation>
 <translation id="1150565364351027703">സൺഗ്ലാസുകൾ</translation>
@@ -81,6 +75,7 @@
 <translation id="1151972924205500581">പാസ്‍വേഡ് ആവശ്യമാണ്</translation>
 <translation id="1156303062776767266">ലോക്കൽ അല്ലെങ്കിൽ പങ്കിട്ട ഫയൽ ആണ് നിങ്ങൾ കാണുന്നത്</translation>
 <translation id="1158211211994409885"><ph name="HOST_NAME" /> അപ്രതീക്ഷിതമായി കണക്ഷൻ അടച്ചു.</translation>
+<translation id="1160009341934077418">വെബിലുടനീളമുള്ള നിരക്ക് ചരിത്രം</translation>
 <translation id="1161325031994447685">Wi-Fi-ലേക്ക് വീണ്ടും കണക്റ്റുചെയ്യുന്നു</translation>
 <translation id="1163507966173624031">നാടൻ, പരമ്പരാഗത സംഗീതം</translation>
 <translation id="11635448457105324">'വിലാസങ്ങൾ മാനേജ് ചെയ്യുക' ബട്ടൺ, Chrome ക്രമീകരണത്തിൽ വിലാസങ്ങൾ ചേർക്കാനും മാനേജ് ചെയ്യാനും സജീവമാക്കുക</translation>
@@ -210,6 +205,7 @@
 <translation id="1358223345833465883">Chromium-ലെ, നിങ്ങളുടെ തിരയൽ എഞ്ചിൻ</translation>
 <translation id="1359836962251219822">അടുക്കളയും ഡൈനിംഗും</translation>
 <translation id="1360955481084547712">സ്വകാര്യമായി ബ്രൗസ് ചെയ്യാൻ, ഒരു പുതിയ അദൃശ്യ വിൻഡോ തുറക്കുക</translation>
+<translation id="1363028406613469049">ട്രാക്കുചെയ്യുക</translation>
 <translation id="1363819917331173092"><ph name="SOURCE_LANGUAGE" /> എന്ന ഭാഷയിലെ പേജുകൾ വിവർത്തനം ചെയ്യേണ്ട</translation>
 <translation id="1364822246244961190">ഈ നയം ബ്ലോക്ക് ചെയ്‌തിരിക്കുന്നു, ഇതിൻ്റെ മൂല്യം അവഗണിക്കപ്പെടും.</translation>
 <translation id="1368318639262510626">ദിനോസർ ഗെയിം. കള്ളിമുൾച്ചെടികളിൽ നിന്നും വംശനാശം സംഭവിച്ച പറക്കുന്ന ഉരഗത്തിൽ നിന്നും ഒഴിഞ്ഞുമാറി, വിജനമായ ഭൂപ്രദേശത്തിലൂടെ ഓടുന്ന പിക്‌സലേറ്റ് ചെയ്‌ത ദിനോസർ. ഓഡിയോ ക്യൂ കേൾക്കുമ്പോൾ തടസങ്ങൾ മറികടന്ന് ചാടാൻ Space അമർത്തുക.</translation>
@@ -223,6 +219,7 @@
 <translation id="1382378825779654399">ഏതെങ്കിലും സൈറ്റിൽ വിലക്കുറവ് ഉണ്ടെങ്കിൽ നിങ്ങൾക്ക് ഇമെയിൽ അറിയിപ്പുകൾ ലഭിക്കും. ഈ പേജ് <ph name="LAST_BOOKMARKS_FOLDER" /> എന്നതിൽ സംരക്ഷിക്കും.</translation>
 <translation id="1384725838384960382">സുരക്ഷിതമായ പേയ്‌മെന്റ് ക്രെഡൻഷ്യൽ പരിശോധിച്ചുറപ്പിക്കൽ ഷീറ്റ്</translation>
 <translation id="1386623374109090026">കുറിപ്പുകൾ</translation>
+<translation id="138810468159004008">സൈറ്റ് സന്ദർശിക്കുമ്പോൾ അനുവദിക്കുക</translation>
 <translation id="1391625539203220400">ഈ ഉപകരണത്തിലേക്ക് IBAN സംരക്ഷിക്കണോ?</translation>
 <translation id="139305205187523129"><ph name="HOST_NAME" /> ഡാറ്റയൊന്നും അയച്ചിട്ടില്ല.</translation>
 <translation id="1405567553485452995">ഇളം പച്ച</translation>
@@ -437,7 +434,7 @@
 <translation id="1762779605905950734">തെരുവിന്റെ പേര്</translation>
 <translation id="1763864636252898013">ഈ സെർവറിന് അത് <ph name="DOMAIN" /> ആണെന്ന് തെളിയിക്കാനായില്ല; അതിന്റെ സുരക്ഷ സർട്ടിഫിക്കറ്റിനെ നിങ്ങളുടെ ഉപകരണത്തിന്റെ ഓപ്പറേറ്റിംഗ് സിസ്‌റ്റത്തിന് പരിചയമില്ല. തെറ്റായ കോൺഫിഗറേഷൻ കാരണമോ ഒരു അക്രമണകാരി നിങ്ങളുടെ കണക്ഷനെ തടസ്സപ്പെടുത്തുന്നത് കൊണ്ടോ ആയിരിക്കാം ഇത് സംഭവിച്ചത്.</translation>
 <translation id="1768211456781949159"><ph name="BEGIN_LINK" />Windows നെറ്റ്‌വർക്ക് ഡയഗണോസ്‌റ്റിക്‌സ് റൺ ചെയ്‌തുനോക്കൂ<ph name="END_LINK" />.</translation>
-<translation id="1774592222195216949"><ph name="BEGIN_LINK" />Chromium-ലെ അദൃശ്യ മോഡിനെ കുറിച്ച് കൂടുതലറിയുക<ph name="END_LINK" /></translation>
+<translation id="1771254328977666895">നിരക്ക് ചരിത്രം കാണുക</translation>
 <translation id="1777422078676229054">ഫോട്ടോ (ആർക്കൈവൽ)</translation>
 <translation id="1778646502362731194">JIS B0</translation>
 <translation id="1791429645902722292">Google Smart Lock</translation>
@@ -477,7 +474,6 @@
 <translation id="1853392626017747777">വെർച്വൽ കാർഡ് എൻറോൾമെന്റ് അടച്ചു</translation>
 <translation id="1854180393107901205">കാസ്റ്റ് ചെയ്യുന്നത് നിർത്തുക</translation>
 <translation id="1855370856221982654">ബോക്സിംഗ്</translation>
-<translation id="1856713167556118146">അദൃശ്യ മോഡ് ചെയ്യാത്ത കാര്യങ്ങൾ</translation>
 <translation id="1862788842908766795">എക്‌സിക്യൂട്ടിവ്, മാനേജ്‌മെ‌ന്റ് ജോലികൾ</translation>
 <translation id="1863047423483329595">ട്രാക്ക് ചെയ്യൽ പരിരക്ഷ താൽക്കാലികമായി ലഭ്യമല്ല. Chrome ഈ ഫീച്ചർ അപ്‌ഡേറ്റ് ചെയ്യുമ്പോൾ, മൂന്നാം-കക്ഷി കുക്കികൾ നിങ്ങൾ ബ്ലോക്ക് ചെയ്യുന്നില്ലെങ്കിൽ, സൈറ്റുകൾക്ക് അവ താൽക്കാലികമായി ഉപയോഗിക്കാനാകും. <ph name="BEGIN_LINK" />കൂടുതലറിയുക<ph name="END_LINK" /></translation>
 <translation id="1863257867908022953">ട്രേ 12</translation>
@@ -577,6 +573,7 @@
 <translation id="2056658168519009885">നിങ്ങൾ കാണുന്ന പരസ്യങ്ങൾ വ്യക്തിപരമാക്കാൻ സഹായിക്കുന്നതിന്, സൈറ്റുകൾക്ക് Chrome-നോട് വിവരങ്ങൾ ആവശ്യപ്പെടാം.</translation>
 <translation id="2059166748188874810">മുൻസിപ്പാലിറ്റി</translation>
 <translation id="2059202684901022309">22 x 34 ഇഞ്ച്</translation>
+<translation id="206275378685759380">വാങ്ങാൻ കാത്തിരിക്കുക</translation>
 <translation id="2064568741209980952">വായ്‌പയും കടം നൽകലും</translation>
 <translation id="2064691555167957331">{COUNT,plural, =1{ഒരു നിർദ്ദേശം}other{# നിർദ്ദേശങ്ങൾ}}</translation>
 <translation id="2066915425250589881">ഇല്ലാതാക്കാൻ അഭ്യർത്ഥിക്കാവുന്നതാണ്</translation>
@@ -728,6 +725,7 @@
 <translation id="2328955282645810595">നിർമ്മാണവും പവർ ടൂളുകളും</translation>
 <translation id="2330137317877982892"><ph name="CREDIT_CARD" />, <ph name="EXPIRATION_DATE_ABBR" />-ന് കാലഹരണപ്പെടുന്നു</translation>
 <translation id="2337044517221264923">എഴുതൽ പുനരാരംഭിച്ചു</translation>
+<translation id="2337776048981813397">എല്ലാ ഓപ്ഷനുകൾക്കുമുള്ള നിരക്ക് പരിധി</translation>
 <translation id="2337852623177822836">ക്രമീകരണം നിയന്ത്രിക്കുന്നത് നിങ്ങളുടെ അഡ്‌മിനിസ്‌ട്രേറ്ററാണ്</translation>
 <translation id="2340263603246777781"><ph name="ORIGIN" /> ജോടിയാക്കാൻ താൽപ്പര്യപ്പെടുന്നു</translation>
 <translation id="2346319942568447007">നിങ്ങൾ പകർത്തിയ ചിത്രം</translation>
@@ -785,6 +783,7 @@
             <ph name="LIST_ITEM" />ഫോമുകളിൽ നൽകിയ വിവരങ്ങൾ
           <ph name="END_LIST" /></translation>
 <translation id="2448295565072560657">നിങ്ങൾ ലോഗിൻ ചെയ്‌തിരിക്കുമ്പോൾ ഈ ഉപകരണത്തിൽ അറ്റാച്ച് ചെയ്തിരിക്കുന്ന പെരിഫറലുകൾ</translation>
+<translation id="2451607499823206582">ട്രാക്ക് ചെയ്യൽ</translation>
 <translation id="2452098632681057184">പരിസ്ഥിതി ശാസ്ത്രവും പരിസ്ഥിതിയും</translation>
 <translation id="2452837234288608067">അതുമായി ബന്ധപ്പെട്ട് സഹായിക്കാനായില്ല. വീണ്ടും ശ്രമിക്കൂ.</translation>
 <translation id="2456755709261364512">നിങ്ങളുടെ ബാറ്ററിക്ക് <ph name="REQUIRED_BATTERY_PRECENT" />%-ന് മുകളിൽ ചാർജ് ഉണ്ടായിരിക്കണം</translation>
@@ -1081,12 +1080,6 @@
 <translation id="3090667236485488075">ഗ്ലാസ്</translation>
 <translation id="3095940652251934233">പ്രസ്‌താവന</translation>
 <translation id="3098513225387949945">പ്രവർത്തനരഹിതമാക്കൽ ലിസ്റ്റിൽ '*' എന്നതിന് സമമായ ഒരു പാറ്റേൺ ഉള്ളതിനാൽ അവഗണിച്ചു, ഇത് നയം പ്രവർത്തനരഹിതമാക്കുന്നതിന് തുല്യമാണ്.</translation>
-<translation id="3100422601354996774">നിങ്ങൾ Chrome-ലെ എല്ലാ അദൃശ്യ ടാബുകളും അടയ്‌ക്കുമ്പോൾ, ആ ടാബുകളിലെ നിങ്ങളുടെ ആക്റ്റിവിറ്റി ഈ ഉപകരണത്തിൽ നിന്ന് നീക്കം ചെയ്യുന്നു:
-          <ph name="BEGIN_LIST" />
-            <ph name="LIST_ITEM" />ബ്രൗസിംഗ് ആക്റ്റിവിറ്റി<ph name="END_LIST_ITEM" />
-            <ph name="LIST_ITEM" />തിരയൽ ചരിത്രം<ph name="END_LIST_ITEM" />
-            <ph name="LIST_ITEM" />ഫോമുകളിൽ നൽകിയ വിവരങ്ങൾ<ph name="END_LIST_ITEM" />
-          <ph name="END_LIST" /></translation>
 <translation id="3102312643185441063">സേവിംഗ്‌സ് അക്കൗണ്ട്</translation>
 <translation id="3103188521861412364">സ്റ്റോക്കുകളും ബോണ്ടുകളും</translation>
 <translation id="3105172416063519923">അസറ്റ് ഐഡി:</translation>
@@ -1283,6 +1276,7 @@
 <translation id="3447661539832366887">ഈ ഉപകരണത്തിന്റെ ഉടമ ദിനോസർ ഗെയിം ഓഫാക്കി.</translation>
 <translation id="3447884698081792621">സർട്ടിഫിക്കറ്റ് (<ph name="ISSUER" /> ഇഷ്യൂ ചെയ്‌തത്) കാണിക്കുക</translation>
 <translation id="3450323514459570273">നിങ്ങളുടെ MIDI ഉപകരണങ്ങൾ നിയന്ത്രിക്കാനും റീപ്രോഗ്രാം ചെയ്യാനും ആവശ്യപ്പെടാം</translation>
+<translation id="3451429106322189478"><ph name="PERMISSION" /> അനുവദിച്ചു</translation>
 <translation id="3452404311384756672">ഇടവേള ലഭ്യമാക്കുക:</translation>
 <translation id="3453962258458347894">ശ്രമങ്ങളുടെ എണ്ണം</translation>
 <translation id="3457781733462096492">റാപ്പ്, ഹിപ്-ഹോപ്</translation>
@@ -1825,7 +1819,6 @@
 <translation id="447665707681730621"><ph name="BUBBLE_MESSAGE" />. <ph name="LEARN_MORE_TEXT" /></translation>
 <translation id="4476953670630786061">ഈ ഫോം സുരക്ഷിതമല്ല. സ്വയമേവ പൂരിപ്പിക്കൽ ഓഫാക്കിയിരിക്കുന്നു.</translation>
 <translation id="4477350412780666475">അടുത്ത ട്രാക്ക്</translation>
-<translation id="4481251927743463293">അദൃശ്യ മോഡ് ചെയ്യുന്ന കാര്യങ്ങൾ</translation>
 <translation id="4482953324121162758">ഈ സൈറ്റ് വിവർത്തനം ചെയ്യപ്പെടില്ല.</translation>
 <translation id="448363931695049633">പിസേറിയകൾ</translation>
 <translation id="4489023393592172404">Envelope Kaku 4</translation>
@@ -1893,7 +1886,6 @@
 <translation id="4631881646528206880">വെർച്വൽ കാർഡ് എൻറോൾമെന്റ്</translation>
 <translation id="4635278307999235413">അഡ്‌മിൻ കൺസോളിലേക്ക് ഡാറ്റ അയയ്ക്കുന്നു</translation>
 <translation id="4636930964841734540">വിവരം</translation>
-<translation id="4638670630777875591">Chromium-ലെ അദൃശ്യ മോഡ്</translation>
 <translation id="464342062220857295">തിരയൽ ഫീച്ചറുകൾ</translation>
 <translation id="4644670975240021822">വിപരീത ക്രമത്തിൽ ഫേസ് ഡൗൺ</translation>
 <translation id="4646534391647090355">എന്നെ ഇപ്പോൾ അവിടെയെത്തിക്കൂ</translation>
@@ -2053,10 +2045,10 @@
 <translation id="4930153903256238152">ഉയർന്ന ശേഷി</translation>
 <translation id="4930714375720679147">ഓണാക്കുക</translation>
 <translation id="4932035752129140860">നിങ്ങൾ ഒട്ടിക്കുന്നതോ അറ്റാച്ച് ചെയ്യുന്നതോ ആയ ടെക്‌സ്‌റ്റ് വിശകലനം ചെയ്യുന്നതിന്, Google Cloud-ലേക്കോ മൂന്നാം കക്ഷികൾക്കോ അയയ്ക്കുന്നു. ഉദാഹരണത്തിന്, സെൻസിറ്റീവായിട്ടുള്ള വ്യക്തിപരമായ ഡാറ്റയോ മാൽവെയറോ ഉണ്ടോയെന്നറിയാൻ ഇത് സ്‌കാൻ ചെയ്‌തേക്കാം, കമ്പനിയുടെ നയങ്ങൾ അടിസ്ഥാനമാക്കി ഇത് സംഭരിച്ചേക്കാം, അവ നിങ്ങളുടെ അഡ്‌മിന് ദൃശ്യമാകുകയും ചെയ്തേക്കാം.</translation>
+<translation id="4933468175699107356">നിങ്ങളുടെ പേരോ വിലാസമോ പോലുള്ള സംരക്ഷിച്ച വിവരങ്ങൾ ഏത് ഫോമിലും സ്വയമേവ പൂരിപ്പിക്കാൻ വലത്-ക്ലിക്ക് ചെയ്യുക</translation>
 <translation id="4934780484581617878">വിൻഡോ മാനേജ് ചെയ്യൽ</translation>
 <translation id="4936134414789135531">ചേർത്ത <ph name="VALUE_NAME" /> കണ്ടെത്താനായില്ല.</translation>
 <translation id="4936675324097895694">ധനകാര്യം</translation>
-<translation id="4940163644868678279">Chrome-ലെ അദൃശ്യ മോഡ്</translation>
 <translation id="4943620199112228840">നിങ്ങളുടെ മൈക്രോഫോണുകൾ ഉപയോഗിക്കുക</translation>
 <translation id="4943872375798546930">ഫലങ്ങളൊന്നുമില്ല</translation>
 <translation id="4950898438188848926">ടാബ് മാറാനുള്ള ബട്ടൺ, തുറന്നിരിക്കുന്ന ടാബായ <ph name="TAB_SWITCH_FOCUSED_FRIENDLY_MATCH_TEXT" /> എന്നതിലേക്ക് മാറാൻ എൻ്റർ അമർത്തുക</translation>
@@ -2134,6 +2126,7 @@
 <translation id="5097099694988056070">CPU/RAM ഉപയോഗം പോലുള്ള ഉപകരണ സ്ഥിതിവിവരക്കണക്കുകൾ</translation>
 <translation id="5097468150760963273">27 x 39 ഇഞ്ച്</translation>
 <translation id="5097501891273180634">A2</translation>
+<translation id="5106405387002409393">Chrome-ന് നിങ്ങളുടെ ഉപകരണത്തിന്റെ <ph name="PERMISSION" /> എന്നതിലേക്ക് ആക്സസ് ആവശ്യമാണ്</translation>
 <translation id="510644072453496781">കാർഡ്ബോർഡ് (എൻഡ്)</translation>
 <translation id="5108881358339761672">സൈറ്റ് സുരക്ഷിതമല്ല</translation>
 <translation id="5109892411553231226">പേയ്മെന്റ് രീതികൾ മാനേജ് ചെയ്യുക</translation>
@@ -2351,6 +2344,7 @@
 <translation id="5526617258931667850"><ph name="MANAGE_CHROMEOS_ACCESSIBILITY_FOCUSED_FRIENDLY_MATCH_TEXT" />, ChromeOS ക്രമീകരണത്തിൽ നിങ്ങളുടെ ഉപയോഗസഹായി ടൂളുകൾ വ്യക്തിപരമാക്കാൻ Tab അമർത്തുക, തുടർന്ന് Enter അമർത്തുക</translation>
 <translation id="55293785478302737">അരിക് കൂട്ടിച്ചേർക്കൽ</translation>
 <translation id="553377674408670169">വിദ്യാഭ്യാസ സംബന്ധമായ ജോലികൾ</translation>
+<translation id="5534785731327961487">ഇപ്പോൾ നല്ല ഡീൽ</translation>
 <translation id="5536214594743852365">"<ph name="SECTION" />" വിഭാഗം കാണിക്കുക</translation>
 <translation id="553782666181800029">Envelope Chou 2</translation>
 <translation id="5538270463355278784">സ്വയമേവയുള്ള പൂർണ്ണസ്ക്രീൻ</translation>
@@ -2464,7 +2458,6 @@
 <translation id="5742806904559466333">ബാറുകൾ, ക്ലബ്ബുകൾ, നൈറ്റ് ലൈഫ്</translation>
 <translation id="5743684619253032786">നഖ സംരക്ഷണ ഉൽപ്പന്നങ്ങൾ</translation>
 <translation id="5745733273847572235">നിങ്ങളുടെ ലൊക്കേഷൻ ആവശ്യപ്പെടാം</translation>
-<translation id="5745980000221562234">{NUM_CARDS,plural, =1{ഈ കാർഡിന് വെർച്വൽ നമ്പർ ഉപയോഗിക്കുക}other{ഒരു കാർഡ് തിരഞ്ഞെടുക്കുക}}</translation>
 <translation id="5759751709240058861">ക്യാമറ ഉപയോഗിക്കുകയും ചലിപ്പിക്കുകയും ചെയ്യുക</translation>
 <translation id="5763042198335101085">ശരിയായ ഇമെയിൽ വിലാസം നൽകുക</translation>
 <translation id="5764725887548570807">ഒറിജിൻ ഫോർമാറ്റ് അസാധുവാണ്.</translation>
@@ -2494,7 +2487,6 @@
 <translation id="5813119285467412249">&amp;ചേർത്തത് വീണ്ടും ചെയ്യുക</translation>
 <translation id="5813753398265398978">ഭൗതികശാസ്‌ത്രം</translation>
 <translation id="5817918615728894473">ജോടിയാക്കുക</translation>
-<translation id="5824687817967109979">{NUM_CARDS,plural, =1{നിങ്ങൾ പണമടയ്ക്കുമ്പോൾ ഈ കാർഡിൽ നിന്ന് നിരക്ക് ഈടാക്കും, എന്നാൽ ഈ സൈറ്റുമായി അതിന്റെ യഥാർത്ഥ നമ്പർ പങ്കിടില്ല. അധിക സുരക്ഷയ്ക്ക് താൽക്കാലികമായ ഒരു CVC സൃഷ്ടിക്കും.}other{നിങ്ങൾ പണമടയ്ക്കുമ്പോൾ, നിങ്ങൾ തിരഞ്ഞെടുത്ത കാർഡിൽ നിന്ന് നിരക്ക് ഈടാക്കും, എന്നാൽ ഈ സൈറ്റുമായി അതിന്റെ യഥാർത്ഥ നമ്പർ പങ്കിടില്ല. അധിക സുരക്ഷയ്ക്ക് താൽക്കാലികമായ ഒരു CVC സൃഷ്ടിക്കും.}}</translation>
 <translation id="5826507051599432481">പൊതുവായ പേര് (CN)</translation>
 <translation id="5829215001860862731">അക്കൗണ്ടിൽ സംരക്ഷിക്കുക</translation>
 <translation id="5830698870816298009">ക്യാമറയുടെ ഉപയോഗവും ചലനവും</translation>
@@ -2508,6 +2500,7 @@
 <translation id="5847181246682413476">വൈദ്യുതി വിതരണ ഉപകരണങ്ങൾ</translation>
 <translation id="584902713199270089">ഡേറ്റിംഗും വ്യക്തിപരമായ കാര്യങ്ങളും</translation>
 <translation id="5851548754964597211">ടാബ് ലിസ്റ്റ്</translation>
+<translation id="5851868085455377790">നല്‍‌കിയ ആള്‍‌</translation>
 <translation id="5852909432155870672">RA4</translation>
 <translation id="5860491529813859533">ഓൺ ചെയ്യുക</translation>
 <translation id="5862579898803147654">സ്റ്റാക്കർ 8</translation>
@@ -2657,7 +2650,6 @@
 <translation id="6126565365696310362">Envelope Chinese #2</translation>
 <translation id="6127379762771434464">ഇനം നീക്കംചെയ്‌തു</translation>
 <translation id="6131824478727057281">ലൊക്കേഷന്‍</translation>
-<translation id="6132161237766805930"><ph name="BEGIN_LINK" />Chrome-ലെ അദൃശ്യ മോഡിനെ കുറിച്ച് കൂടുതലറിയുക<ph name="END_LINK" /></translation>
 <translation id="6133320744616005677">അനുവദിക്കുന്നത് തുടരുക</translation>
 <translation id="6133984428121856852">ഫയൽ എക്സ്റ്റൻഷൻ ശൂന്യമോ കേടായതോ ആണ്.</translation>
 <translation id="6139975341602920272">17 x 22 ഇഞ്ച്</translation>
@@ -3051,12 +3043,6 @@
 <translation id="6897140037006041989">ഉപയോക്തൃ ഏജന്‍റ്</translation>
 <translation id="6898699227549475383">ഓര്‍‌ഗനൈസേഷന്‍‌ (O)</translation>
 <translation id="6907458757809079309">ശാരീരികക്ഷമത</translation>
-<translation id="6908168784986658395">നിങ്ങൾ Chromium-ലെ എല്ലാ അദൃശ്യ ടാബുകളും അടയ്‌ക്കുമ്പോൾ, ആ ടാബുകളിലെ നിങ്ങളുടെ ആക്റ്റിവിറ്റി ഈ ഉപകരണത്തിൽ നിന്ന് നീക്കം ചെയ്യുന്നു:
-          <ph name="BEGIN_LIST" />
-            <ph name="LIST_ITEM" />ബ്രൗസിംഗ് ആക്റ്റിവിറ്റി<ph name="END_LIST_ITEM" />
-            <ph name="LIST_ITEM" />തിരയൽ ചരിത്രം<ph name="END_LIST_ITEM" />
-            <ph name="LIST_ITEM" />ഫോമുകളിൽ നൽകിയ വിവരങ്ങൾ<ph name="END_LIST_ITEM" />
-          <ph name="END_LIST" /></translation>
 <translation id="691024665142758461">ഒന്നിലധികം ഫയലുകൾ ഡൗൺലോഡ് ചെയ്യുക</translation>
 <translation id="6915804003454593391">ഉപയോക്താവ്:</translation>
 <translation id="6916193791494646625">ഡൗൺലോഡ് ചെയ്യുന്നതിനുള്ള കാരണം നൽകുക (ആവശ്യമാണ്)</translation>
@@ -3197,6 +3183,8 @@
 <translation id="7163295244162773898">{0,plural, =1{രഹസ്യാത്മക ഫയൽ പകർത്തണോ?}other{രഹസ്യാത്മക ഫയലുകൾ പകർത്തണോ?}}</translation>
 <translation id="7168625890036931112">"<ph name="DATA_CONTROLS_RESTRICTION" />" എന്നത് ഈ പ്ലാറ്റ്‌ഫോമിലെ പിന്തുണയുള്ള നിയന്ത്രണമല്ല</translation>
 <translation id="717330890047184534">Gaia ഐഡി:</translation>
+<translation id="7173338713290252554">വെബിലുടനീളമുള്ള നിരക്ക് ചരിത്രം</translation>
+<translation id="7173478186876671324">ഈ സൈറ്റിനായി നിങ്ങളുടെ <ph name="PERMISSION" /> അഡ്മിൻ ബ്ലോക്ക് ചെയ്തു</translation>
 <translation id="7174545416324379297">ലയിപ്പിച്ചു</translation>
 <translation id="7175097078723125014">വിലാസം എഡിറ്റ് ചെയ്യുക ഓപ്‌ഷൻ തിരഞ്ഞെടുത്തു</translation>
 <translation id="7175401108899573750">{SHIPPING_OPTIONS,plural, =0{<ph name="SHIPPING_OPTION_PREVIEW" />}=1{<ph name="SHIPPING_OPTION_PREVIEW" /> എന്നതും മറ്റ് <ph name="NUMBER_OF_ADDITIONAL_SHIPPING_OPTIONS" /> എണ്ണവും}other{<ph name="SHIPPING_OPTION_PREVIEW" /> എന്നതും മറ്റ് <ph name="NUMBER_OF_ADDITIONAL_SHIPPING_OPTIONS" /> എണ്ണവും}}</translation>
@@ -3549,6 +3537,7 @@
 <translation id="7773005668374414287">അതേ ക്രമത്തിൽ ഫേസ് അപ്പ്</translation>
 <translation id="7779418012194492374"><ph name="DEVICE_NAME" /> എന്നതിനുള്ള ആക്‌സസ് റദ്ദാക്കുക</translation>
 <translation id="7781829728241885113">ഇന്നലെ</translation>
+<translation id="7782465647372057580">അക്കൗണ്ട് വിവരങ്ങൾ എൻക്രിപ്റ്റ് ചെയ്ത് സ്വകാര്യമാക്കി നിലനിർത്തും</translation>
 <translation id="7785790577395078482">ഈ ടാബ്‌ലെറ്റ്</translation>
 <translation id="7786368602962652765">പൂരിപ്പിക്കേണ്ട ഭാഗത്തിൽ ഒന്നുമില്ല. സംരക്ഷിക്കുന്നതിന് മുമ്പ് അത് പൂരിപ്പിക്കുക.</translation>
 <translation id="7791011319128895129">റിലീസ് ചെയ്യാത്തത്</translation>
@@ -3640,6 +3629,7 @@
 <translation id="7977538094055660992">ഔട്ട്പുട്ട് ഉപകരണം</translation>
 <translation id="7979595116210197019">ഭക്ഷണ സേവനം</translation>
 <translation id="798134797138789862">വെർച്വൽ റിയാലിറ്റി ഉപകരണങ്ങളും ഡാറ്റയും ഉപയോഗിക്കാൻ ആവശ്യപ്പെടാം</translation>
+<translation id="7982789257301363584">നെറ്റ്‌വർക്ക്</translation>
 <translation id="7983008347525536475">എസ്‌യുവികൾ</translation>
 <translation id="7984945080620862648">Chrome-ന് പ്രോസസ്സുചെയ്യാനാകാത്ത രൂപമാറ്റം വരുത്തിയ ക്രെഡൻഷ്യലുകൾ വെബ്സൈറ്റ് അയയ്ക്കുന്നതിനാൽ നിങ്ങൾക്കിപ്പോൾ <ph name="SITE" /> സന്ദർശിക്കാനാകില്ല.നെറ്റ്‌വർക്ക് പിശകുകളും ആക്രമണങ്ങളും സാധാരണയായി താൽക്കാലികമായതിനാൽ ഈ പേജ് മിക്കവാറും പിന്നീട് പ്രവർത്തിക്കും.</translation>
 <translation id="7986319120639858961"><ph name="CARD_TITLE" /> <ph name="TIME" /> <ph name="BOOKMARKED" /> <ph name="TITLE" /> <ph name="DOMAIN" /></translation>
@@ -3649,6 +3639,7 @@
 <translation id="800218591365569300">ഇടം സൃഷ്‌ടിക്കാൻ മറ്റ് ടാബുകളോ പ്രോഗ്രാമുകളോ അടയ്‌ക്കുന്നത് പരീക്ഷിക്കൂ.</translation>
 <translation id="8002230960325005199">അനുബന്ധ സൈറ്റുകൾ പുതിയൊരു ടാബിൽ കാണുക</translation>
 <translation id="8003046808285812021">“<ph name="SEARCH_TERMS" />”</translation>
+<translation id="8003697335101170520">പകർത്തി ഒട്ടിക്കാതെ Pix ഉപയോഗിച്ച് പണമടയ്ക്കൂ</translation>
 <translation id="8004582292198964060">ബ്രൗസര്‍</translation>
 <translation id="8009058079740742415">വീടിന്റെ സുരക്ഷയും ഭദ്രതയും</translation>
 <translation id="8009225694047762179">പാസ്‌വേഡുകൾ മാനേജ് ചെയ്യുക</translation>
@@ -3714,17 +3705,18 @@
 <translation id="8103161714697287722">പേയ്‌മെന്റ് രീതി</translation>
 <translation id="8103643211515685474">എന്തായാലും പ്രിന്റ് ചെയ്യുക</translation>
 <translation id="8105368624971345109">ഓഫാക്കുക</translation>
-<translation id="8107664017913103177">കാർഡ് ആനുകൂല്യങ്ങൾ ലഭ്യമാണ്</translation>
 <translation id="810875025413331850">സമീപത്ത് ഉപകരണങ്ങളൊന്നും കണ്ടെത്തിയില്ല.</translation>
 <translation id="8116925261070264013">മ്യൂട്ടുചെയ്‌തു</translation>
 <translation id="8118489163946903409">പേയ്‌മെന്റ് രീതി</translation>
 <translation id="8118506371121007279">ഫീഡ്ബാക്ക് നൽകുക</translation>
+<translation id="8124085000247609808"><ph name="KEYWORD_SHORT_NAME" /> എന്നയാളുമായി ചാറ്റ് ചെയ്യുക</translation>
 <translation id="8127301229239896662">നിങ്ങളുടെ കമ്പ്യൂട്ടറിൽ അല്ലെങ്കിൽ നെറ്റ്‍വര്‍ക്കിൽ "<ph name="SOFTWARE_NAME" />" ശരിയായി ഇൻസ്‌റ്റാൾ ചെയ്‌തിട്ടില്ല. ഈ പ്രശ്‌നം പരിഹരിക്കാൻ നിങ്ങളുടെ ഐടി അഡ്‌മിനോട് ആവശ്യപ്പെടുക.</translation>
 <translation id="8131740175452115882">സ്ഥിരീകരിക്കുക</translation>
 <translation id="8133495915926741232">പരസ്യങ്ങൾ വ്യക്തിപരമാക്കാൻ സഹായിക്കുന്നതിന്, ഏതൊക്കെ വിശാലമായ വിഷയ വിഭാഗങ്ങളാണ് ഉപയോഗിക്കേണ്ടതെന്ന് തിരഞ്ഞെടുക്കുക. വിപുലമായ വിഭാഗങ്ങൾ ഓഫാക്കുന്നത്, അവയുടെ അനുബന്ധ വിഷയങ്ങളെയും ബ്ലോക്ക് ചെയ്യും. <ph name="BEGIN_LINK" />കൂടുതലറിയുക<ph name="END_LINK" /></translation>
 <translation id="8134058435519644366">റിക്രൂട്ട് ചെയ്യലും ജീവനക്കാരെ നിയമിക്കലും</translation>
 <translation id="8135546115396015134">'Left' കീ</translation>
 <translation id="8137456439814903304">ഊർജ്ജവും യൂട്ടിലിറ്റികളും</translation>
+<translation id="81474145143203755">നിങ്ങളുടെ <ph name="PERMISSION" /> ഈ സൈറ്റിൽ ഉപയോഗിക്കാൻ Chrome-ന് ആക്സസ് നൽകുക</translation>
 <translation id="8148608574971654810">PDF പതിപ്പ്:</translation>
 <translation id="8149426793427495338">നിങ്ങളുടെ കമ്പ്യൂട്ടർ സ്ലീപ് മോഡിലാണ്.</translation>
 <translation id="8150722005171944719"><ph name="URL" /> എന്നതിലെ ഫയൽ റീഡ് ചെയ്യാനാവുന്നില്ല.  അത് നീക്കംചെയ്‌തിരിക്കുകയോ, നീക്കിയിരിക്കുകയോ ഫയൽ അനുമതികൾ ആക്‌സസ് തടയുകയോ ചെയ്യുന്നുണ്ടാകാം.</translation>
@@ -3759,7 +3751,6 @@
 <translation id="8211406090763984747">കണക്ഷൻ സുരക്ഷിതമാണ്</translation>
 <translation id="8213853114485953510">JIS Exec</translation>
 <translation id="8216640997712497593">14 x 18 ഇഞ്ച്</translation>
-<translation id="8217240300496046857">വെബിലുടനീളം നിങ്ങളെ ട്രാക്ക് ചെയ്യുന്ന കുക്കികൾ ഉപയോഗിക്കാൻ സെെറ്റുകൾക്കാകില്ല. ചില സൈറ്റുകളിലെ ഫീച്ചറുകളുടെ പ്രവർത്തനം തടസ്സപ്പെട്ടേക്കാം.</translation>
 <translation id="8218327578424803826">നൽകിയിരിക്കുന്ന ലൊക്കേഷൻ:</translation>
 <translation id="8220602974062798186"><ph name="TOPIC" /> എന്നതും അതിന്റെ അനുബന്ധ വിഷയങ്ങളും ബ്ലോക്ക് ചെയ്യണോ?</translation>
 <translation id="8220833680085771143">ട്രാക്ക് ചെയ്യൽ പരിരക്ഷ താൽക്കാലികമായി ലഭ്യമല്ല</translation>
@@ -4175,7 +4166,6 @@
 <translation id="9036306139374661733">മൈക്രോഫോൺ അനുമതി നൽകണോ?</translation>
 <translation id="9038649477754266430">പേജുകൾ കൂടുതൽ വേഗത്തിൽ ലോഡ് ചെയ്യാൻ ഒരു പ്രവചന സേവനം ഉപയോഗിക്കുക</translation>
 <translation id="9039213469156557790">ഈ പേജിൽ സുരക്ഷിതമല്ലാത്ത മറ്റ് ഉറവിടങ്ങൾ ഉൾപ്പെടുന്നു. ഈ ഉറവിടങ്ങൾ കൈമാറുന്നതിനിടെ മറ്റുള്ളവർക്ക് കാണാനും പേജിന്റെ പ്രവർത്തനരീതി മാറ്റുന്ന തരത്തിൽ ഒരു ആക്രമണകാരിയ്‌ക്ക് പരിഷ്‌ക്കരിക്കാനുമായേക്കും.</translation>
-<translation id="9040341831873780534">ഇവിടെ നിബന്ധനകൾ കാണുക</translation>
 <translation id="9042617223719777575">ഉയർന്ന ശേഷി</translation>
 <translation id="9042827002460091668">നിങ്ങളുടെ ഇന്റർനെറ്റ് കണക്ഷൻ പരിശോധിച്ച് വീണ്ടും ശ്രമിക്കുക</translation>
 <translation id="9044359186343685026">ടച്ച് ഐഡി ഉപയോഗിക്കുക</translation>
@@ -4221,6 +4211,7 @@
 <translation id="9118692854637641831"><ph name="HISTORY_CLUSTERS_SEARCH_FOCUSED_FRIENDLY_MATCH_TEXT" />, ടാബ് അമർത്തുക, തുടർന്ന് നിങ്ങളുടെ Chrome ചരിത്രത്തിൽ പ്രസക്തമായ ആക്റ്റിവിറ്റി കാണാനും തിരയൽ പുനരാരംഭിക്കാനും Enter അമർത്തുക</translation>
 <translation id="9119042192571987207">അപ്‌ലോഡ് ചെയ്തു</translation>
 <translation id="912327514020027767">പാവാടകൾ</translation>
+<translation id="912414390325846156">ഈ സൈറ്റിനായി അനുവദിക്കേണ്ടെന്ന് നിങ്ങൾ മുമ്പ് തിരഞ്ഞെടുത്തിട്ടുണ്ട്</translation>
 <translation id="9128870381267983090">നെറ്റ്‌വർക്കിലേക്ക് കണക്റ്റ് ചെയ്യുക</translation>
 <translation id="9131119348384879525">രഹസ്യാത്മക ഉള്ളടക്കം ക്യാപ്‌ചർ ചെയ്യണോ?</translation>
 <translation id="9133861214150761123">അക്കൗണ്ടിംഗും ഓഡിറ്റിംഗും</translation>

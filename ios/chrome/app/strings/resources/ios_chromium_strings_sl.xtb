@@ -74,6 +74,7 @@
 <translation id="2918709798697875261">Vaša organizacija zahteva, da niste prijavljeni v Chromium.</translation>
 <translation id="2942241131342758843">Uporabljajte Chromium kot privzeto možnost odpiranja povezav, iskanja v pripomočkih in samodejnega izpolnjevanja gesel v drugih aplikacijah.</translation>
 <translation id="2977470724722393594">Chromium je posodobljen</translation>
+<translation id="3044857325852340337">Izbrisani podatki v Chromiumu</translation>
 <translation id="3078941082359356771">{COUNT,plural, =1{Chromium vam lahko pomaga slediti temu paketu na novem zavihku s povezavami.}one{Chromium vam lahko pomaga slediti tem paketom na novem zavihku s povezavami.}two{Chromium vam lahko pomaga slediti tem paketom na novem zavihku s povezavami.}few{Chromium vam lahko pomaga slediti tem paketom na novem zavihku s povezavami.}other{Chromium vam lahko pomaga slediti tem paketom na novem zavihku s povezavami.}}</translation>
 <translation id="3102849287235003384">Če se želite odjaviti iz računa Google na vseh spletnih mestih, <ph name="BEGIN_LINK" />se odjavite iz Chromiuma<ph name="END_LINK" />.</translation>
 <translation id="3219277919172823720">Iskanje z govorom v Chromiumu</translation>
@@ -124,6 +125,7 @@ Podatki so šifrirani z vašim geslom. Vnesite ga, če želite podatke iz Chromi
 <translation id="4633738821577273991">Zagotovite si izboljšano varno brskanje tudi za ta profil v Chromiumu.</translation>
 <translation id="4638625642619341392">Tukaj prenesite Chromium.</translation>
 <translation id="4654936625574199632">Zaradi izboljšanja aplikacije Chromium Googlu pošlje poročila o uporabi in zrušitvah. <ph name="BEGIN_LINK" />Upravljanje<ph name="END_LINK" /></translation>
+<translation id="4675485352217495362">Brisanje podatkov brskanja v Chromiumu</translation>
 <translation id="4681781466797808448">Vklopite optični bralnik Chromium</translation>
 <translation id="4736424910885271643">Vaš račun upravlja domena <ph name="HOSTED_DOMAIN" />, zato bodo podatki v Chromiumu izbrisani iz te naprave.</translation>
 <translation id="4773487571745795781">Izklopili ste prijavo v Chromium.</translation>
@@ -191,6 +193,7 @@ Kaj je treba upoštevati:
 <translation id="6324041800010509197">Odpiranje mreže zavihkov v Chromiumu</translation>
 <translation id="6325378625795868881">Chromium lahko uporabljate, kadar koli se dotaknete povezav v sporočilih in drugih aplikacijah.</translation>
 <translation id="632825460376924298">Omogočanje prijave v Chromium</translation>
+<translation id="6332129548244419716">Brisanje podatkov brskanja v Chromiumu.</translation>
 <translation id="6337530241089703714">Izberite, ali želite izbrisati podatke v Chromiumu iz te naprave ali jih obdržati.</translation>
 <translation id="6348483005826990855">3. Izberite Chromium</translation>
 <translation id="6383607155624074112">Hitrejši dostop do Chromiuma iz vrstice Dock na začetnem zaslonu</translation>

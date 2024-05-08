@@ -247,7 +247,7 @@
 <translation id="2675533876313964202">シャルトリューズ</translation>
 <translation id="2684412629217766642">ChromeVox のチュートリアルを閉じる</translation>
 <translation id="2692503699962701720">要素タイプと書式付きテキストを読み上げるときにピッチを変更する</translation>
-<translation id="2697408785920771974">インライン オートコンプリート</translation>
+<translation id="2697408785920771974">インライン予測入力</translation>
 <translation id="2697786971245905543">テキスト変換候補</translation>
 <translation id="2704429362613743330">{COUNT,plural, =1{左丸かっこ}other{# 個の左丸かっこ}}</translation>
 <translation id="270523456882008230">ヒント: 現在のアイテムを有効にするには、1 本の指でダブルタップします。</translation>
@@ -427,7 +427,7 @@
 <translation id="3777742246909257041">スノー</translation>
 <translation id="3781428340399460090">ホットピンク</translation>
 <translation id="3783725005098956899">ログを表示</translation>
-<translation id="3801735343383419236">オートコンプリートはリスト形式</translation>
+<translation id="3801735343383419236">予測入力はリスト形式</translation>
 <translation id="3806327402890551732">次または前のアイテムに移動する</translation>
 <translation id="3810838688059735925">動画</translation>
 <translation id="3813387282697781382">ライトコーラル</translation>
@@ -643,7 +643,7 @@
     <ph name="UNDERLINE_STRING" />
     <ph name="LINE_THROUGH_STRING" />
     <ph name="FONT_FAMILY_STRING" /></translation>
-<translation id="5336381510091010269">リストのインライン オートコンプリート</translation>
+<translation id="5336381510091010269">リストのインライン予測入力</translation>
 <translation id="5349770431644471053">言及リンク</translation>
 <translation id="5355014376930441909">次のセクションはありません</translation>
 <translation id="5368000168321181111">イアコン オフ</translation>
@@ -681,7 +681,7 @@
 <translation id="5598905979683743333"><ph name="NAME" />、選択されていないラジオボタン</translation>
 <translation id="5601172225407283979">デフォルトの操作を実行します</translation>
 <translation id="5604302400025591178">{COUNT,plural, =1{四角形の箇条書き記号}other{# 個の四角形の箇条書き記号}}</translation>
-<translation id="5608798115546226984">オートコンプリートはインライン表示</translation>
+<translation id="5608798115546226984">予測入力はインライン表示</translation>
 <translation id="5616029807486814372">次のレッスン</translation>
 <translation id="561939826962581046">日時</translation>
 <translation id="5623778242535476823">ラジオボタン</translation>
@@ -700,7 +700,7 @@
 <translation id="5683155931978483559">前のチェックボックス</translation>
 <translation id="5684277895745049190">リスト</translation>
 <translation id="5703716265115423771">音量を下げる</translation>
-<translation id="5704453877234251104">上または下矢印キーでオート コンプリートの候補を表示します</translation>
+<translation id="5704453877234251104">上または下矢印キーで予測入力の候補を表示します</translation>
 <translation id="5712244464475377681">ポップアップ ボタン</translation>
 <translation id="5712889723513495267">次または前のセクションに移動する</translation>
 <translation id="5725079927589231571">ライト スチールブルー</translation>
@@ -966,7 +966,7 @@
 <translation id="7693840228159394336">前のラジオボタン</translation>
 <translation id="7696631298608145306">次の単語に移動</translation>
 <translation id="7701040980221191251">なし</translation>
-<translation id="7701196182766842984">リストのオートコンプリート</translation>
+<translation id="7701196182766842984">リストの予測入力</translation>
 <translation id="7714340021005120797">次のコンボボックスはありません</translation>
 <translation id="7724603315864178912">切り取り</translation>
 <translation id="7731785449856576010">次のメディア ウィジェットはありません</translation>
@@ -1057,7 +1057,7 @@
 <translation id="8326783648485765113">ローングリーン</translation>
 <translation id="8345569862449483843">{COUNT,plural, =1{ポンド}other{# 個のポンド記号}}</translation>
 <translation id="8378855320830505539">地域</translation>
-<translation id="8382679411218029383">オートコンプリートはインライン表示とリスト形式の両方</translation>
+<translation id="8382679411218029383">予測入力はインライン表示とリスト形式の両方</translation>
 <translation id="8394908167088220973">メディアの再生/一時停止</translation>
 <translation id="8428213095426709021">設定</translation>
 <translation id="8428603554127842284"><ph name="DEPTH" /> 階層</translation>
@@ -1161,7 +1161,7 @@
 <translation id="9173115498289768110">音量 <ph name="PERCENT" /> パーセント</translation>
 <translation id="9185200690645120087">ChromeVox タッチ操作チュートリアル</translation>
 <translation id="9192904702577636854">マーキー</translation>
-<translation id="9205282956404529648">文字を入力すると、オート コンプリートの候補が表示されます</translation>
+<translation id="9205282956404529648">文字を入力すると、予測入力の候補が表示されます</translation>
 <translation id="9208241857935108694">アンティーク ホワイト</translation>
 <translation id="9220679313820249046">オレンジレッド</translation>
 <translation id="9223032053830369045">ダークレッド</translation>

@@ -12,6 +12,7 @@
 <translation id="1588438908519853928">Звычайны</translation>
 <translation id="1591562245178063882">Гэты месяц</translation>
 <translation id="1637811476055996098">Выбраць файлы</translation>
+<translation id="1680090928918677457">Выкарыстоўваць камеру</translation>
 <translation id="1681022320378710418">бягучы час</translation>
 <translation id="1727839386348365796">Піпетка</translation>
 <translation id="1729654308190250600">Увядзіце адрас электроннай пошты.</translation>
@@ -60,6 +61,7 @@
 <translation id="3822383571486410024">Павялічце колькасць сімвалаў у гэтым тэксце як мінімум да <ph name="MIN_CHARACTERS" /> (зараз у вас – <ph name="CURRENT_LENGTH" />).</translation>
 <translation id="383465348367842624">У частцы перад "<ph name="ATSIGN" />" не павінна быць сімвала "<ph name="INVALIDCHARACTER" />".</translation>
 <translation id="3846214748874656680">Выключыць поўнаэкранны рэжым</translation>
+<translation id="3914173277599553213">Абавязковае поле</translation>
 <translation id="4031179711345676612">Выкарыстанне мікрафона дазволена</translation>
 <translation id="4103419683916926126">Мілісекунды</translation>
 <translation id="4201051445878709314">Паказаць папярэдні месяц</translation>
@@ -75,6 +77,7 @@
 <translation id="4912200001568447310">бягучы элемент</translation>
 <translation id="4915360478455618802">Паказаць сродак выбару часу</translation>
 <translation id="4924138096460353083">не вызначана</translation>
+<translation id="49269513399674318">Выкарыстоўваць мікрафон</translation>
 <translation id="4950364064308314478">Паказваць сродак выбару мясцовых даты і часу</translation>
 <translation id="4971739861736909480">Выбрана: <ph name="ACCNAME" /></translation>
 <translation id="4975562563186953947">Выбрана: <ph name="SELECTED_COUNT" /></translation>
@@ -142,6 +145,7 @@
 <translation id="7080893216867146095">Абагульванне геаданых дазволена</translation>
 <translation id="709897737746224366">Прытрымлівайцеся ўказанага фармату.</translation>
 <translation id="7102274145889307184">бягучае месцазнаходжанне</translation>
+<translation id="7134810312945846184">Выкарыстоўваць мікрафон і камеру</translation>
 <translation id="7263440858009898357">Выберыце пункт са спіса</translation>
 <translation id="7320576522385648310">буферызацыя</translation>
 <translation id="7341556277900466204">Палітра выбару колераў</translation>

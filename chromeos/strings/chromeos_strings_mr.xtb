@@ -11,6 +11,7 @@
 <translation id="1047458377670401304"><ph name="CPU_NAME" /> (<ph name="THREAD_COUNT" /> थ्रेड, <ph name="CPU_MAX_CLOCK_SPEED" />GHz)</translation>
 <translation id="1047773237499189053">नवीन वैशिष्ट्य उपलब्ध आहे, अधिक जाणून घेण्यासाठी अप अ‍ॅरो की वापरा.</translation>
 <translation id="1049663189809099096">पेस्टल पिवळे</translation>
+<translation id="1056898198331236512">चेतावणी</translation>
 <translation id="1059913517121127803">स्कॅनिंग सुरू करता आले नाही</translation>
 <translation id="1062823486781306604"><ph name="COUNT" /> पैकी <ph name="INDEX" />, <ph name="NAME" />.</translation>
 <translation id="1070066693520972135">WEP</translation>
@@ -95,7 +96,6 @@
 <translation id="1478594628797167447">स्कॅनर</translation>
 <translation id="1483493594462132177">पाठवा</translation>
 <translation id="1488850966314959671">कोणतीही सुरू असलेली कस्टम APNs वापरून या नेटवर्कशी कनेक्ट करू शकत नाही. अधिक माहितीसाठी तुमच्या मोबाइल वाहकाशी संपर्क साधा.</translation>
-<translation id="1491076385728777984"><ph name="DEVICE_NAME" /> वर फर्मवेअर अपडेट करत आहे</translation>
 <translation id="1499041187027566160">आवाज वाढवा</translation>
 <translation id="1499900233129743732"><ph name="MANAGER" /> या वापरकर्त्याला व्यवस्थापित करतो आणि तो रिमोट पद्धतीने सेटिंग्ज व्यवस्थापित करू शकतो तसेच वापरकर्ता अ‍ॅक्टिव्हिटीचे निरीक्षण करू शकतो.</translation>
 <translation id="150962533380566081">चुकीची PUK.</translation>
@@ -291,7 +291,6 @@
 <translation id="2505327257735685095">सध्याची वॉलपेपर इमेज रिफ्रेश करा</translation>
 <translation id="2512979179176933762">विंडो दाखवा</translation>
 <translation id="2513396635448525189">लॉगिन इमेज</translation>
-<translation id="2517472476991765520">स्कॅन करा</translation>
 <translation id="2521835766824839541">मागील ट्रॅक</translation>
 <translation id="2526590354069164005">डेस्कटॉप</translation>
 <translation id="2529641961800709867">बटणाचे पर्याय</translation>
@@ -330,6 +329,7 @@
 <translation id="2744221223678373668">शेअर</translation>
 <translation id="2751739896257479635">EAP टप्पा 2 ऑथेंटिकेशन</translation>
 <translation id="2754757901767760034">दिवा</translation>
+<translation id="2780756493585863768">Google AI द्वारे सक्षम केलेल्या अलीकडील बॅकग्राउंड</translation>
 <translation id="2783010256799387990">पास झाले</translation>
 <translation id="2786429550992142861">लिनन</translation>
 <translation id="2787435249130282949">कीबोर्ड उजळ</translation>
@@ -426,6 +426,7 @@
 <translation id="3456078764689556234"><ph name="TOTAL_PAGES" /> पैकी <ph name="PRINTED_PAGES" /> पेज प्रिंट केली.</translation>
 <translation id="345898999683440380"><ph name="PAGE_NUM" /> पेज स्कॅन करत आहे. <ph name="PERCENTAGE_VALUE" />% पूर्ण झाले.</translation>
 <translation id="3459509316159669723">प्रिंट</translation>
+<translation id="3462187165860821523"><ph name="DEVICE_NAME" /> अपडेट होत आहे</translation>
 <translation id="346423161771747987">करंट</translation>
 <translation id="346539236881580388">पुन्हा काढा</translation>
 <translation id="3484914941826596830">फर्मवेअर अपडेट होत असताना, हे बाह्य डिव्हाइस अनप्लग करू नका किंवा तुमचा कॉंप्युटर बंद करू नका. तुम्ही ही विंडो लहान करू शकता. या अपडेटला काही मिनिटे लागू शकतात आणि या कालावधीदरम्यान तुमचे बाह्य डिव्हाइस कदाचित काम करणार नाही.</translation>
@@ -790,6 +791,7 @@
 <translation id="5559898619118303662">सूर्यास्ताच्या वेळी आपोआप गडद थीमवर स्विच करा</translation>
 <translation id="556042886152191864">बटण</translation>
 <translation id="5562551811867441927"><ph name="TERRAIN_COLOR" /> च्या रंगछटांमध्ये <ph name="TERRAIN_FEATURE" /></translation>
+<translation id="5572169899491758844">स्कॅन करा</translation>
 <translation id="5578477003638479617">UMTS</translation>
 <translation id="5578519639599103840">पुन्हा स्कॅन करा</translation>
 <translation id="5583640892426849032">Backspace</translation>
@@ -879,7 +881,6 @@
 <translation id="6075872808778243331">(Android) HTTP लेटन्सी</translation>
 <translation id="6078323886959318429">शॉर्टकट जोडा</translation>
 <translation id="6091080061796993741">पिवळा</translation>
-<translation id="610371409726072606">Google AI द्वारे सक्षम केलेली कॅमेरा बॅकग्राउंड</translation>
 <translation id="6104112872696127344">स्कॅनिंग रद्द केले गेले</translation>
 <translation id="6106186594183574873">पूर्ण करण्यासाठी, तुमचा जुना पासवर्ड एंटर करा</translation>
 <translation id="6108689792487843350">गेटवेशी कनेक्ट करू शकत नाही</translation>
@@ -1011,7 +1012,6 @@
 <translation id="672609503628871915">नवीन काय ते पहा</translation>
 <translation id="6740695858234317715">क्रीम आणि नारिंगी</translation>
 <translation id="6741823073189174383">बोट</translation>
-<translation id="674276385369049081">Google AI द्वारे सक्षम केलेल्या अलीकडील कॅमेरा बॅकग्राउंड</translation>
 <translation id="6744441848304920043">जंगल</translation>
 <translation id="6747035363363040417">न्यूट्रल</translation>
 <translation id="6747215703636344499">थांबले - आउटपुट भरले आहे</translation>
@@ -1032,6 +1032,7 @@
 <translation id="6871256179359663621">फिकट जांभळे</translation>
 <translation id="6889786074662672253">रीस्टार्ट करत असताना, हे बाह्य डिव्हाइस अनप्लग किंवा तुमचा कॉंप्युटर बंद करू नका. तुम्ही ही विंडो लहान करू शकता. याला काही मिनिटे लागू शकतात आणि यादरम्यान तुमचे बाह्य डिव्हाइस कदाचित काम करणार नाही.</translation>
 <translation id="6900701049656042631">या अल्बममध्ये कोणतेही फोटो नाहीत. फोटो जोडण्यासाठी, <ph name="LINK" /> वर जा</translation>
+<translation id="6902359863093437070">AI वापरून बॅकग्राउंड तयार केली</translation>
 <translation id="6905163627763043954">हे वापरून पहा</translation>
 <translation id="6905724422583748843"><ph name="PAGE_NAME" /> वर परत या</translation>
 <translation id="6910312834584889076">स्कॅनरचे कव्हर उघडे आहे. कव्हर बंद करा आणि पुन्हा प्रयत्न करा.</translation>
@@ -1269,6 +1270,7 @@
 <translation id="8152370627892825"><ph name="DESCRIPTION" />, <ph name="ACCELERATOR_INFO" />.</translation>
 <translation id="8156233298086717232">जादुई</translation>
 <translation id="8162776280680283326">कोल्हे</translation>
+<translation id="8167413449582155132">Google AI द्वारे सक्षम केलेली बॅकग्राउंड</translation>
 <translation id="8179976553408161302">Enter</translation>
 <translation id="8183975772394450380">समुद्रकिनारा</translation>
 <translation id="8206859287963243715">सेल्यूलर</translation>

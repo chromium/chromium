@@ -59,6 +59,7 @@
 <translation id="2574528844022712255">‏הצגת הסימניות ב-Chromium</translation>
 <translation id="2590893390871230428">‏סנכרון נתוני Chromium שלך</translation>
 <translation id="2592940277904433508">‏המשך השימוש ב-Chromium</translation>
+<translation id="2607609479243848905">‏אם שכחת את ביטוי הסיסמה או שברצונך לשנות את ההגדרה הזו, <ph name="BEGIN_LINK" />עליך למחוק את נתוני Chromium בחשבון<ph name="END_LINK" />.</translation>
 <translation id="2618596336309823556">‏בהגדרות המכשיר, פותחים את '<ph name="TEXT_OF_THE_SETTINGS_MENU_ITEM" />' ובוחרים ב-Chromium</translation>
 <translation id="2618757400690011108">{COUNT,plural, =1{‏Chromium יעזור לעקוב אחרי החבילה הזו בדף 'כרטיסייה חדשה'.}one{‏Chromium יעזור לעקוב אחרי החבילות האלה בדף 'כרטיסייה חדשה'.}two{‏Chromium יעזור לעקוב אחרי החבילות האלה בדף 'כרטיסייה חדשה'.}other{‏Chromium יעזור לעקוב אחרי החבילות האלה בדף 'כרטיסייה חדשה'.}}</translation>
 <translation id="2650312721222849884">‏כדי לראות את הכרטיסיות שלך מכל מקום שבו פתחת את Chromium יש להפעיל את הסנכרון</translation>
@@ -116,6 +117,9 @@
 <translation id="4498832288620833153">‏הוספה של כתובות ה-URL שהוזנו לרשימת הקריאה ב-Chromium.</translation>
 <translation id="452436063477828504">‏כדאי לוודא שתמיד תהיה לך אפשרות להשתמש בנתוני Chromium בחשבון Google שלך</translation>
 <translation id="4555020257205549924">‏כשהתכונה הזו פועלת, Chromium יציע לתרגם באמצעות Google Translate דפים שנכתבו בשפות אחרות‏. <ph name="BEGIN_LINK" />למידע נוסף<ph name="END_LINK" /></translation>
+<translation id="4572441104543926904">‏הצפנה בעזרת ביטוי סיסמה לא כוללת אמצעי תשלום וכתובות.
+
+כדי לשנות את ההגדרה הזו, עליך <ph name="BEGIN_LINK" />למחוק את נתוני Chromium בחשבון<ph name="END_LINK" />.</translation>
 <translation id="4576283463017113841">‏פתיחת דף ההגדרות של אמצעי תשלום ב-Chromium.</translation>
 <translation id="459080529287102949">‏חיפוש רכיבים חזותיים ב-Chromium</translation>
 <translation id="4633738821577273991">‏אפשר לקבל את הגרסה המשופרת של הגלישה הבטוחה גם לפרופיל Chromium הזה</translation>
@@ -214,6 +218,9 @@
 <translation id="7163483974919055112">‏חיפוש רכיבים חזותיים ב-Chromium.</translation>
 <translation id="7165402419892018581">‏בחירת Chromium למילוי אוטומטי</translation>
 <translation id="7175400662502680481">הסיסמה שלך נחשפה בעקבות פרצה באבטחת מידע. לפי מנהל הסיסמאות, מומלץ לשנות אותה עכשיו.</translation>
+<translation id="7185731475720473450">‏אמצעי תשלום וכתובות לא יוצפנו. היסטוריית הגלישה ב-Chromium לא תסונכרן.
+
+רק מי שיודע את ביטוי הסיסמה יכול לקרוא את הנתונים המוצפנים. ביטוי הסיסמה לא נשלח אל Google ולא מאוחסן ב-Google. אם שכחת את ביטוי הסיסמה או שברצונך לשנות את ההגדרה הזו, <ph name="BEGIN_LINK" />עליך למחוק את נתוני Chromium בחשבון<ph name="END_LINK" />.</translation>
 <translation id="7192111075364461693">‏ההתראות מ-Chromium מושבתות עכשיו בהגדרות המכשיר.</translation>
 <translation id="7222001353246886083">‏חיפוש ${searchPhrase} ב-Chromium</translation>
 <translation id="725427773388857052">‏Chromium יכול להגן עליך מפני פרצות באבטחת מידע, אתרים לא בטוחים וסכנות נוספות</translation>

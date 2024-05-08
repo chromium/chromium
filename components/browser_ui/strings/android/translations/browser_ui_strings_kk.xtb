@@ -133,6 +133,7 @@
 <translation id="3198916472715691905"><ph name="STORAGE_AMOUNT" /> сақталған деректері</translation>
 <translation id="321187648315454507"><ph name="APP_NAME" /> браузерінен хабарландырулар алу үшін <ph name="BEGIN_LINK" />Android параметрлерінде<ph name="END_LINK" /> оларды да қосыңыз.</translation>
 <translation id="3227137524299004712">Микрофон</translation>
+<translation id="3232293466644486101">Браузерді пайдалану деректерін жою…</translation>
 <translation id="3242646949159196181">Қосылса, сайттар дыбыс ойната алады. Өшірілсе, ойната алмайды.</translation>
 <translation id="3277252321222022663">Сайттардың датчиктерді пайдалануына рұқсат ету (ұсынылады)</translation>
 <translation id="3285500645985761267">Қатысты сайттарға топта жасайтын әрекетіңізді көруге рұқсат ету</translation>
@@ -307,6 +308,7 @@
 <translation id="6064125863973209585">Жүктеп алынғандар</translation>
 <translation id="6071501408666570960">Сіз бұл сайтта аккаунттан шығарылуыңыз мүмкін.</translation>
 <translation id="6120483543004435978">Қосылса, сайттар құрылғыны белсенді пайдаланатын уақытыңызды білуге рұқсат сұрай алады. Өшірілсе, біле алмайды.</translation>
+<translation id="6140839633433422817">Рұқсаттарды бастапқы күйге қайтарып, cookie файлдары мен сайт деректерін жою қажет пе?</translation>
 <translation id="6165508094623778733">Толығырақ</translation>
 <translation id="6171020522141473435">Қосылса, сайттар Bluetooth құрылғыларын пайдалануға рұқсат сұрай алады. Өшірілсе, пайдалана алмайды.</translation>
 <translation id="6177111841848151710">Ағымдағы іздеу жүйесі үшін тыйым салынды</translation>
@@ -340,6 +342,7 @@
 <translation id="6545864417968258051">Bluetooth құрылғыларын іздеу</translation>
 <translation id="6552800053856095716">{PERMISSIONS_SUMMARY_BLOCKED,plural, =1{<ph name="PERMISSION_1" />, <ph name="PERMISSION_2" /> және тағы <ph name="NUM_MORE" /> қызметті пайдалануға тыйым салынған.}other{<ph name="PERMISSION_1" />, <ph name="PERMISSION_2" /> және тағы <ph name="NUM_MORE" /> қызметті пайдалануға тыйым салынған.}}</translation>
 <translation id="6554732001434021288">Соңғы кіру: <ph name="NUM_DAYS" /> күн бұрын</translation>
+<translation id="656065428026159829">Басқаларын көру</translation>
 <translation id="6561560012278703671">Дыбыссыз хабарландыру функциясын пайдалану (хабарландырулар кедергі келтірмейді)</translation>
 <translation id="6593061639179217415">Компьютерге арналған сайт</translation>
 <translation id="6608650720463149374"><ph name="GIGABYTES" /> ГБ</translation>

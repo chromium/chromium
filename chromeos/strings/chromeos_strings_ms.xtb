@@ -11,6 +11,7 @@
 <translation id="1047458377670401304"><ph name="CPU_NAME" /> (<ph name="THREAD_COUNT" /> urutan, <ph name="CPU_MAX_CLOCK_SPEED" />GHz)</translation>
 <translation id="1047773237499189053">Ciri baharu tersedia, gunakan kekunci Anak panah ke atas untuk mengetahui lebih lanjut.</translation>
 <translation id="1049663189809099096">kuning pastel</translation>
+<translation id="1056898198331236512">Amaran</translation>
 <translation id="1059913517121127803">Tidak dapat memulakan pengimbasan</translation>
 <translation id="1062823486781306604"><ph name="INDEX" /> daripada <ph name="COUNT" />, <ph name="NAME" />.</translation>
 <translation id="1070066693520972135">WEP</translation>
@@ -28,6 +29,7 @@
 <translation id="1145018782460575098">Kemaskinian perisian tegar untuk tetingkap peranti luaran dibuka. <ph name="NUM_UPDATES" /> kemaskinian tersedia.</translation>
 <translation id="1145516343487477149">Cari artikel bantuan dan jawapan kepada soalan lazim Chromebook</translation>
 <translation id="1154390310959620237">Anda hanya boleh menyesuaikan 5 pintasan. Padam satu pintasan untuk menambahkan pintasan baharu.</translation>
+<translation id="1155154308031262006">Masukkan gesaan</translation>
 <translation id="115705039208660697">nanas</translation>
 <translation id="1164939766849482256">Penyelamat skrin subuh sehingga gelap</translation>
 <translation id="1167755866710282443">Buka menu untuk menyesuaikan kunci. Seret menu untuk bergerak.</translation>
@@ -95,7 +97,6 @@
 <translation id="1478594628797167447">Pengimbas</translation>
 <translation id="1483493594462132177">Hantar</translation>
 <translation id="1488850966314959671">Tidak dapat menyambung kepada rangkaian ini menggunakan mana-mana APN tersuai yang didayakan. Hubungi pembawa mudah alih anda untuk mendapatkan maklumat lanjut.</translation>
-<translation id="1491076385728777984">Mengemas kini perisian tegar pada <ph name="DEVICE_NAME" /></translation>
 <translation id="1499041187027566160">tambahkan kelantangan</translation>
 <translation id="1499900233129743732"><ph name="MANAGER" /> mengurus pengguna ini dan mungkin mengurus tetapan dan memantau aktiviti pengguna dari jauh.</translation>
 <translation id="150962533380566081">PUK tidak sah.</translation>
@@ -291,7 +292,6 @@
 <translation id="2505327257735685095">Muatkan semula imej kertas dinding semasa</translation>
 <translation id="2512979179176933762">tunjukkan tetingkap</translation>
 <translation id="2513396635448525189">Imej log masuk</translation>
-<translation id="2517472476991765520">Imbas</translation>
 <translation id="2521835766824839541">lagu sebelumnya</translation>
 <translation id="2526590354069164005">Desktop</translation>
 <translation id="2529641961800709867">Pilihan butang</translation>
@@ -330,6 +330,7 @@
 <translation id="2744221223678373668">Dikongsi</translation>
 <translation id="2751739896257479635">Pengesahan Fasa 2 EAP</translation>
 <translation id="2754757901767760034">lampu</translation>
+<translation id="2780756493585863768">Latar terbaharu dikuasakan oleh Google AI</translation>
 <translation id="2783010256799387990">LULUS</translation>
 <translation id="2786429550992142861">linen</translation>
 <translation id="2787435249130282949">semakin cerah papan kekunci</translation>
@@ -426,6 +427,7 @@
 <translation id="3456078764689556234">Mencetak halaman <ph name="PRINTED_PAGES" /> daripada <ph name="TOTAL_PAGES" />.</translation>
 <translation id="345898999683440380">Mengimbas halaman <ph name="PAGE_NUM" />. <ph name="PERCENTAGE_VALUE" />% selesai.</translation>
 <translation id="3459509316159669723">Mencetak</translation>
+<translation id="3462187165860821523">Mengemas kini <ph name="DEVICE_NAME" /></translation>
 <translation id="346423161771747987">Arus</translation>
 <translation id="346539236881580388">Ambil semula</translation>
 <translation id="3484914941826596830">Semasa perisian tegar sedang dikemas kini, jangan cabut palam peranti luaran ini atau matikan komputer anda. Anda boleh meminimumkan tetingkap ini. Kemaskinian ini mungkin mengambil masa beberapa minit dan peranti luaran anda mungkin tidak berfungsi pada masa ini.</translation>
@@ -790,6 +792,7 @@
 <translation id="5559898619118303662">Tukar kepada tema gelap pada waktu matahari terbenam secara automatik</translation>
 <translation id="556042886152191864">Butang</translation>
 <translation id="5562551811867441927"><ph name="TERRAIN_FEATURE" /> dalam rona warna <ph name="TERRAIN_COLOR" /></translation>
+<translation id="5572169899491758844">Imbas</translation>
 <translation id="5578477003638479617">UMTS</translation>
 <translation id="5578519639599103840">Imbas semula</translation>
 <translation id="5583640892426849032">Undur ruang</translation>
@@ -879,7 +882,6 @@
 <translation id="6075872808778243331">Kependaman HTTP (Android)</translation>
 <translation id="6078323886959318429">Tambahkan pintasan</translation>
 <translation id="6091080061796993741">kuning</translation>
-<translation id="610371409726072606">Latar kamera dikuasakan oleh Google AI</translation>
 <translation id="6104112872696127344">Pengimbasan telah dibatalkan</translation>
 <translation id="6106186594183574873">Untuk menyelesaikan proses ini, masukkan kata laluan lama anda</translation>
 <translation id="6108689792487843350">Get Laluan tidak boleh dicapai</translation>
@@ -906,6 +908,7 @@
 <translation id="6205145102504628069">Aliran Awan</translation>
 <translation id="6213737986933151570">CDMA1XRTT</translation>
 <translation id="6223752125779001553">Tiada pengimbas tersedia</translation>
+<translation id="6231648282154119906">Fail yang mencurigakan akan diimbas secara automatik oleh Penyemakan Imbas Selamat Google sebagai sebahagian daripada perlindungan dipertingkat yang anda pilih</translation>
 <translation id="6232017090690406397">Bateri</translation>
 <translation id="6234024205316847054">Tunjukkan rangka</translation>
 <translation id="6235460611964961764">Tetapkan semula penggunaan data secara manual</translation>
@@ -1011,7 +1014,6 @@
 <translation id="672609503628871915">Lihat apa yang baharu</translation>
 <translation id="6740695858234317715">krim dan jingga</translation>
 <translation id="6741823073189174383">bot</translation>
-<translation id="674276385369049081">Latar kamera terbaharu yang dikuasakan oleh Google AI</translation>
 <translation id="6744441848304920043">rimba</translation>
 <translation id="6747035363363040417">neutral</translation>
 <translation id="6747215703636344499">Dihentikan - Output penuh</translation>
@@ -1032,6 +1034,7 @@
 <translation id="6871256179359663621">ungu muda</translation>
 <translation id="6889786074662672253">Semasa memulakan semula, jangan cabut palam peranti luaran ini atau matikan komputer anda. Anda boleh meminimumkan tetingkap ini. Proses ini mungkin mengambil masa beberapa minit dan peranti luaran anda mungkin tidak berfungsi pada masa ini.</translation>
 <translation id="6900701049656042631">Album ini tidak mengandungi sebarang foto. Untuk menambahkan foto, akses <ph name="LINK" /></translation>
+<translation id="6902359863093437070">Buat latar dengan AI</translation>
 <translation id="6905163627763043954">Cubalah</translation>
 <translation id="6905724422583748843">Kembali ke <ph name="PAGE_NAME" /></translation>
 <translation id="6910312834584889076">Penutup pengimbas terbuka. Tutup penutup dan cuba lagi.</translation>
@@ -1269,6 +1272,7 @@
 <translation id="8152370627892825"><ph name="DESCRIPTION" />, <ph name="ACCELERATOR_INFO" />.</translation>
 <translation id="8156233298086717232">ajaib</translation>
 <translation id="8162776280680283326">rubah</translation>
+<translation id="8167413449582155132">Latar dikuasakan oleh Google AI</translation>
 <translation id="8179976553408161302">Enter</translation>
 <translation id="8183975772394450380">pantai</translation>
 <translation id="8206859287963243715">Selular</translation>

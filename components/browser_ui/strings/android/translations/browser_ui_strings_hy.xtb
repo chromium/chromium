@@ -133,6 +133,7 @@
 <translation id="3198916472715691905"><ph name="STORAGE_AMOUNT" /> պահված տվյալներ</translation>
 <translation id="321187648315454507">Որպեսզի <ph name="APP_NAME" />-ին թույլատրեք ձեզ ծանուցումներ ուղարկել, միացրեք նաև ծանուցումները <ph name="BEGIN_LINK" />Android-ի կարգավորումներում<ph name="END_LINK" />։</translation>
 <translation id="3227137524299004712">Խոսափող</translation>
+<translation id="3232293466644486101">Ջնջել այցելությունների պատմությունը…</translation>
 <translation id="3242646949159196181">Երբ այս պարամետրը միացված է, կայքերը կարող են ձայն նվագարկել։ Երբ այն անջատված է, կայքերը չեն կարող ձայն նվագարկել։</translation>
 <translation id="3277252321222022663">Թույլ տալ կայքերին օգտագործել տվիչները (խորհուրդ է տրվում)</translation>
 <translation id="3285500645985761267">Թույլատրել առնչվող կայքերին տեսնել ձեր գործողությունները խմբում</translation>
@@ -307,6 +308,7 @@
 <translation id="6064125863973209585">Կատարված ներբեռնումներ</translation>
 <translation id="6071501408666570960">Հնարավոր է, որ այս կայքում դուրս գաք ձեր հաշվից</translation>
 <translation id="6120483543004435978">Երբ այս պարամետրը միացված է, կայքերը կարող են թույլտվություն խնդրել՝ տեղեկանալու, երբ դուք ակտիվորեն օգտագործում եք ձեր սարքը։ Երբ այն անջատված է, կայքերը չեն կարող տեղեկանալ, երբ դուք ակտիվորեն օգտագործում եք ձեր սարքը։</translation>
+<translation id="6140839633433422817">Իսկապե՞ս ուզում եք զրոյացնել թույլտվությունները և ջնջել քուքիներն ու կայքերի տվյալները։</translation>
 <translation id="6165508094623778733">Իմանալ ավելին</translation>
 <translation id="6171020522141473435">Երբ այս պարամետրը միացված է, կայքերը կարող են Bluetooth սարքերն օգտագործելու թույլտվություն խնդրել։ Երբ այն անջատված է, կայքերը չեն կարող օգտագործել Bluetooth սարքերը։</translation>
 <translation id="6177111841848151710">Արգելված է ընթացիկ որոնիչին</translation>
@@ -340,6 +342,7 @@
 <translation id="6545864417968258051">Bluetooth սարքերի որոնում</translation>
 <translation id="6552800053856095716">{PERMISSIONS_SUMMARY_BLOCKED,plural, =1{Արգելափակված են՝ «<ph name="PERMISSION_1" />», «<ph name="PERMISSION_2" />» ու ևս <ph name="NUM_MORE" /> թույլտվություն}one{Արգելափակված են՝ «<ph name="PERMISSION_1" />», «<ph name="PERMISSION_2" />» ու ևս <ph name="NUM_MORE" /> թույլտվություն}other{Արգելափակված են՝ «<ph name="PERMISSION_1" />», «<ph name="PERMISSION_2" />» ու ևս <ph name="NUM_MORE" /> թույլտվություն}}</translation>
 <translation id="6554732001434021288">Վերջին այցելությունը՝ <ph name="NUM_DAYS" /> օր առաջ</translation>
+<translation id="656065428026159829">Տեսնել ավելին</translation>
 <translation id="6561560012278703671">Օգտագործել ավելի հանգիստ հաղորդագրություններ (արգելափակում է շեղող ծանուցումները)</translation>
 <translation id="6593061639179217415">Համակարգչային տարբերակ</translation>
 <translation id="6608650720463149374"><ph name="GIGABYTES" /> ԳԲ</translation>

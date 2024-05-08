@@ -166,6 +166,7 @@ Dyma rai pethau y gallwch eu gwneud i roi cychwyn arni.</translation>
 <translation id="1586324912145647027">Ewch i ddesg 1 i 8</translation>
 <translation id="158838227375272121">Gwefan Google Classroom</translation>
 <translation id="1589090746204042747">Gael mynediad at eich holl weithgarwch yn y sesiwn hon</translation>
+<translation id="1597880963776148053">Cam <ph name="STEP" /> o <ph name="TOTAL_STEPS" /> y daith. Mae eich apiau sydd wedi'u pinio ac agored ar y silff sydd ar waelod eich sgrîn. Pwyswch Alt + Shift + L yna Tab i ffocysu ar eitemau silff.</translation>
 <translation id="1602874809115667351"><ph name="LAUNCHER_KEY_NAME" /> + saeth i lawr</translation>
 <translation id="1604857178818051494">Seibio'r cyfryngau</translation>
 <translation id="1607312127821884567">Diystyru gosod gweld apiau eich ffôn</translation>
@@ -303,6 +304,7 @@ Dyma rai pethau y gallwch eu gwneud i roi cychwyn arni.</translation>
 <translation id="2257486738914982088">Aeth rhywbeth o'i le wrth lawrlwytho <ph name="FILENAME" /></translation>
 <translation id="2258734398699965611">Ffeiliau a awgrymir</translation>
 <translation id="2268130516524549846">Mae Bluetooth wedi'i analluogi</translation>
+<translation id="2268731132310444948">Cam <ph name="STEP" /> o <ph name="TOTAL_STEPS" /> y daith. Unwaith y bydd Lansiwr wedi'i weithredu, byddwch yn cael bar chwilio uwch. Gallwch ddechrau teipio i chwilio am eich ffeiliau, apiau a rhagor. Gallwch hefyd gael atebion i gwestiynau am eich <ph name="PRODUCT_NAME" />.</translation>
 <translation id="2268813581635650749">Allgofnodi o bob un</translation>
 <translation id="2276987123919776440">15mun</translation>
 <translation id="2277103315734023688">Mynd ymlaen</translation>
@@ -397,6 +399,7 @@ Mae <ph name="DEVICECOUNT" /> o ddyfeisiau yn gysylltiedig.</translation>
 <translation id="2607678425161541573">Mae angen fewngofnodi ar-lein</translation>
 <translation id="2612072250312279703">monitor gweithgarwch</translation>
 <translation id="2612614436418177118">Symud eicon ap o fewn y grid apiau</translation>
+<translation id="2619326010008283367">Cam <ph name="STEP" /> o <ph name="TOTAL_STEPS" /> y daith. Gallwch ddod o hyd i Osodiadau eich dyfais yn Lansiwr. Rhowch gynnig ar addasu eich <ph name="PRODUCT_NAME" /> yn y Gosodiadau, megis newid eich papur wal neu osod arbedwr sgrîn.</translation>
 <translation id="2620016719323068571">Chwilio eich <ph name="CATEGORY" />, eich ffeiliau, eich apiau a rhagor...</translation>
 <translation id="2620436844016719705">System</translation>
 <translation id="2620900772667816510">Cydraniad Swper Bluetooth</translation>
@@ -819,7 +822,6 @@ Mae rhai nodweddion wedi'u cyfyngu i gynyddu oes y batri.</translation>
 <translation id="4209973997261364186">Mae Wi-Fi wedi'i droi ymlaen</translation>
 <translation id="4212472694152630271">Newid i PIN</translation>
 <translation id="4215497585250573029">Gosodiadau VPN</translation>
-<translation id="4215548513524864822">Cam 5 o 5 y daith. Gallwch ddod o hyd i Osodiadau eich dyfais yn Lansiwr. Rhowch gynnig ar addasu eich <ph name="PRODUCT_NAME" /> yn y Gosodiadau, megis newid eich papur wal neu osod arbedwr sgrîn.</translation>
 <translation id="4217571870635786043">Arddweud</translation>
 <translation id="4221957499226645091"><ph name="APP_NAME" />, Gosodwyd Ap, Seibiwyd</translation>
 <translation id="4228078597006700451">Rheolyddion heb eu gosod</translation>
@@ -946,12 +948,12 @@ Mae 1 ddyfais yn gysylltiedig.</translation>
 <translation id="468293128311738995">Apiau o'ch ffôn</translation>
 <translation id="4690510401873698237">Silff ar y gwaelod</translation>
 <translation id="4696813013609194136">Datgloi'r ddyfais gyda chod rhiant</translation>
-<translation id="469693290987463983">Cam 1 o 5 y daith. Mae eich apiau sydd wedi'u pinio ac agored ar y silff sydd ar waelod eich sgrîn. Pwyswch Alt + Shift + L yna Tab i ffocysu ar eitemau silff.</translation>
 <translation id="4702647871202761252">Mae'r Sgrîn Breifatrwydd wedi'i diffodd</translation>
 <translation id="4706121060329443414">Ceisir lawrlwytho yn nes ymlaen. Anfonir lleferydd at Google i'w brosesu am y tro.</translation>
 <translation id="470644585772471629">Gwrthdroad lliw</translation>
 <translation id="4708065238214351979">Gwneud y bysellfwrdd yn ddisgleiriach</translation>
 <translation id="4717575069099566988">Nid yw eich cebl USB-C yn cefnogi USB4. Mae'n bosib y bydd perfformiad y ddyfais yn gyfyngedig.</translation>
+<translation id="4724328513667182700">6 awgrym i ddechrau ar <ph name="PRODUCT_NAME" /></translation>
 <translation id="4730374152663651037">DEFNYDDIR YN AML</translation>
 <translation id="4731797938093519117">Mynediad rhieni</translation>
 <translation id="4733161265940833579"><ph name="BATTERY_PERCENTAGE" />% (Chwith)</translation>
@@ -1027,6 +1029,7 @@ Mae 1 ddyfais yn gysylltiedig.</translation>
 <translation id="4964188651935955085">Pan fyddwch yn diffodd Bluetooth, bydd y ddyfais allanol hon yn datgysylltu o'ch <ph name="DEVICE_TYPE" />:</translation>
 <translation id="4966431234408005599">Troi'r sain i fyny</translation>
 <translation id="4969092041573468113"><ph name="HOURS" />a <ph name="MINUTES" />m <ph name="SECONDS" />e</translation>
+<translation id="496999337731226334">Cam <ph name="STEP" /> o <ph name="TOTAL_STEPS" /> y daith. Mae rheolyddion a ddefnyddir yn aml megis Wi-Fi, Bluetooth a lefel sain yn ymddangos yn y Gosodiadau Cyflym. Gallwch hefyd fynd yma i gymryd sgrinluniau. Pwyswch Alt + Shift + S i agor Gosodiadau Cyflym.</translation>
 <translation id="4975771730019223894">Rhoi bathodynnau i apiau</translation>
 <translation id="4977493774330778463"><ph name="NUM_IMPORTANT_NOTIFICATION" />:
         <ph name="NOTIFICATION_1" />,
@@ -1144,6 +1147,7 @@ Dim dyfeisiau yn gysylltiedig.</translation>
 <translation id="540713187982329711">Toglo'r boethfan. Mae'r boethfan ymlaen, dim dyfais wedi'i chysylltu.</translation>
 <translation id="5413656666631274079">Tudalen gosodiadau</translation>
 <translation id="5414198321558177633">Wrthi'n ail-lwytho'r rhestr proffiliau. Gallai hyn gymryd ychydig funudau.</translation>
+<translation id="5417965108047245734">Ewch ar daith gyflym i ddysgu sut i lywio'ch <ph name="PRODUCT_NAME" /></translation>
 <translation id="5426063383988017631">Cafodd y ddewislen gosodiadau ei chau</translation>
 <translation id="5428899915242071344">Dechrau dewis</translation>
 <translation id="5429993543155113935">Ni chefnogir ffenestri anhysbys ar hyn o bryd</translation>
@@ -1524,7 +1528,6 @@ Gosodiad newydd</translation>
 <translation id="6874854809828346832">Dangos manylion y boethfan. Mae'r boethfan wedi'i throi ymlaen</translation>
 <translation id="6878400149835617132">Mae'r llwybr byr wedi'i ddiffodd</translation>
 <translation id="6878701771800702153">{NUM_APPS,plural, =1{1 ap}zero{# ap}two{# ap}few{# ap}many{# ap}other{# ap}}</translation>
-<translation id="6878787305374738418">Cam 4 o 5 y daith. Unwaith y bydd Lansiwr wedi'i weithredu, byddwch yn cael bar chwilio uwch. Gallwch ddechrau teipio i chwilio am eich ffeiliau, apiau a rhagor. Gallwch hefyd gael atebion i gwestiynau am eich <ph name="PRODUCT_NAME" />.</translation>
 <translation id="6883768636838842873">Llwybrau byr allweddol, awgrymiadau ar gyfer defnyddio'r ddyfais, a mwy</translation>
 <translation id="6884665277231944629">Mynd yn ôl i heddiw</translation>
 <translation id="6886172995547742638">Mae'n bosib y bydd eich <ph name="DEVICE_TYPE" /> yn profi perfformiad is. Defnyddiwch addasydd pŵer USB-C ardystiedig <ph name="PREFERRED_MINIMUM_POWER" />W neu uwch.</translation>
@@ -1593,6 +1596,7 @@ Gosodiad newydd</translation>
 <translation id="7143207342074048698">Wrthi'n cysylltu</translation>
 <translation id="7144942256906679589">Statws y batri</translation>
 <translation id="7145639536026937076">Mae'r batri ar <ph name="PERCENTAGE" />% ac yn gwefru. Mae'r modd Arbed Batri wedi'i droi ymlaen.</translation>
+<translation id="7149149900052329230">Rheoli'ch ffeiliau lleol a'ch ffeiliau Google Drive, i gyd yn yr ap Files.</translation>
 <translation id="7165278925115064263">Alt+Shift+K</translation>
 <translation id="7167913274352523149"><ph name="HOTSPOT" />,
         <ph name="NETWORK" /></translation>
@@ -1613,7 +1617,6 @@ Gosodiad newydd</translation>
 <translation id="726276584504105859">Llusgwch yma i ddefnyddio sgrîn hollt</translation>
 <translation id="7262906531272962081">Creu nodyn atgoffa</translation>
 <translation id="7278787617901301220"><ph name="LAUNCHER_KEY_NAME" /> + ôl-nod</translation>
-<translation id="7282547098317872382">Cam 3 o 5 y daith. Defnyddiwch apiau i wneud popeth sydd ei angen arnoch ar eich <ph name="PRODUCT_NAME" />. Gallwch ddod o hyd i'ch apiau yn y Lansiwr. Pwyswch Alt + Shift + L i ffocysu ar y botwm Lansiwr.</translation>
 <translation id="7285232777292757180">Defnyddiwch yr offeryn dal sgrîn yn y gosodiadau cyflym i dynnu sgrinluniau</translation>
 <translation id="7301826272005790482">Diystyru awgrymiadau ffenestr</translation>
 <translation id="7302889331339392448">Mae Capsiynau Byw wedi'u diffodd.</translation>
@@ -1795,10 +1798,12 @@ I ddiffodd y ddyfais, pwyswch a daliwch y botwm pŵer ar y ddyfais eto.</transla
 <translation id="7933084174919150729">Dim ond ar gyfer y prif broffil y mae Google Assistant ar gael.</translation>
 <translation id="79341161159229895">Rheolir y cyfrif gan <ph name="FIRST_PARENT_EMAIL" /> a <ph name="SECOND_PARENT_EMAIL" /></translation>
 <translation id="793716872548410480">Pwyswch <ph name="SHORTCUT_KEY_NAME" /> a V i weld eich clipfwrdd. Mae'r 5 eitem ddiwethaf a gopïoch wedi'u cadw i'ch clipfwrdd.</translation>
+<translation id="7942330802915522974">Cam <ph name="STEP" /> o <ph name="TOTAL_STEPS" /> y daith. Gallwch ddod o hyd i'r ap Files yn Lansiwr. Rheoli'ch ffeiliau lleol a'ch ffeiliau Google Drive, i gyd yn yr ap Files.</translation>
 <translation id="7942349550061667556">Coch</translation>
 <translation id="7943516765291457328">Trowch Bluetooth ymlaen i sganio am fannau problemus cyfagos</translation>
 <translation id="7944023924886109030">Gweld yr holl ddigwyddiadau ar gyfer heddiw</translation>
 <translation id="7945357288295809525">Dangos gosodiadau hygyrchedd, '<ph name="ENABLED_FEATURES" />' wedi'i alluogi.</translation>
+<translation id="7946681191253332687">Mae diweddariadau diogelwch estynedig ar gael</translation>
 <translation id="7947798320695032612">Mae <ph name="APP_NAME" /> am ddefnyddio eich <ph name="DEVICE_NAME" /></translation>
 <translation id="7951630946012935453">Bysellfwrdd pylu</translation>
 <translation id="7953994493035617347">Cadarnhau'r eglurdeb newydd?</translation>
@@ -1910,7 +1915,6 @@ I ddiffodd y ddyfais, pwyswch a daliwch y botwm pŵer ar y ddyfais eto.</transla
 <translation id="8412677897383510995">Dangos gosodiadau arddangos</translation>
 <translation id="8413272770729657668">Bydd recordio'n dechrau mewn 3, 2, 1</translation>
 <translation id="8416730306157376817"><ph name="BATTERY_PERCENTAGE" />% (Cas)</translation>
-<translation id="8417951779969083400">Cam 2 o 5 y daith. Mae rheolyddion a ddefnyddir yn aml megis Wi-Fi, Bluetooth a lefel sain yn ymddangos yn y Gosodiadau Cyflym. Gallwch hefyd fynd yma i gymryd sgrinluniau. Pwyswch Alt + Shift + S i agor Gosodiadau Cyflym.</translation>
 <translation id="8420205633584771378">Tynnu'r awgrym hwn?</translation>
 <translation id="8421270167862077762">Nid yw <ph name="UNAVAILABLE_APPS" /> ar y ddyfais hon.</translation>
 <translation id="8426708595819210923">Noswaith dda <ph name="GIVEN_NAME" />,</translation>
@@ -2124,12 +2128,14 @@ I ddiffodd y ddyfais, pwyswch a daliwch y botwm pŵer ar y ddyfais eto.</transla
 <translation id="954052413789300507">Nid oes digon o le storio ar gyfer <ph name="FILENAME" />. Rhyddhau lle storio.</translation>
 <translation id="954520015070501466">30mun</translation>
 <translation id="956452277966142925">Gosodiadau dangosfwrdd gêm</translation>
+<translation id="961856697154696964">Dileu data pori</translation>
 <translation id="974545358917229949">Wrthi'n dangos <ph name="RESULT_COUNT" /> o ganlyniadau ar gyfer <ph name="QUERY" /></translation>
 <translation id="981011780479609956">Dim dyddiad cwblhau</translation>
 <translation id="98120814841227350">Mynd i ddiwedd y ddogfen</translation>
 <translation id="987589956647469042">Mae data symudol wedi'u troi ymlaen</translation>
 <translation id="989374776391122812">Rheolyddion camera a sain</translation>
 <translation id="990277280839877440">Caewyd y ffenestr <ph name="WINDOW_TITILE" />.</translation>
+<translation id="993398562350683614">Cam <ph name="STEP" /> o <ph name="TOTAL_STEPS" /> y daith. Defnyddiwch apiau i wneud popeth sydd ei angen arnoch ar eich <ph name="PRODUCT_NAME" />. Gallwch ddod o hyd i'ch apiau yn y Lansiwr. Pwyswch Alt + Shift + L i ffocysu ar y botwm Lansiwr.</translation>
 <translation id="994354411665877646"><ph name="NETWORK_NAME" />, <ph name="SUBTEXT" /></translation>
 <translation id="996204416024568215">Cewch y nodweddion a'r gwelliannau diogelwch diweddaraf. Mae diweddariadau yn digwydd yn y cefndir.</translation>
 </translationbundle>

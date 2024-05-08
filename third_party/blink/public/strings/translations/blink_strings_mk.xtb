@@ -12,6 +12,7 @@
 <translation id="1588438908519853928">Нормален</translation>
 <translation id="1591562245178063882">Овој месец</translation>
 <translation id="1637811476055996098">Избери датотеки</translation>
+<translation id="1680090928918677457">Користи камера</translation>
 <translation id="1681022320378710418">тековно време</translation>
 <translation id="1727839386348365796">Пипета</translation>
 <translation id="1729654308190250600">Внесете адреса на е-пошта што не е празна.</translation>
@@ -60,6 +61,7 @@
 <translation id="3822383571486410024">Продолжете го текстот на <ph name="MIN_CHARACTERS" /> знаци или повеќе (во моментов користите <ph name="CURRENT_LENGTH" /> знаци).</translation>
 <translation id="383465348367842624">Дел по кој следува „<ph name="ATSIGN" />“ не треба да го содржи симболот „<ph name="INVALIDCHARACTER" />“.</translation>
 <translation id="3846214748874656680">Излези од цел екран</translation>
+<translation id="3914173277599553213">Потребно</translation>
 <translation id="4031179711345676612">Микрофон е дозволен</translation>
 <translation id="4103419683916926126">Милисекунди</translation>
 <translation id="4201051445878709314">Прикажи го претходниот месец</translation>
@@ -75,6 +77,7 @@
 <translation id="4912200001568447310">тековна ставка</translation>
 <translation id="4915360478455618802">Прикажи го избирачот за време</translation>
 <translation id="4924138096460353083">Неодредено</translation>
+<translation id="49269513399674318">Користи микрофон</translation>
 <translation id="4950364064308314478">Прикажи го избирачот за локален датум и време</translation>
 <translation id="4971739861736909480"><ph name="ACCNAME" />, избрано</translation>
 <translation id="4975562563186953947">Избрани: <ph name="SELECTED_COUNT" /></translation>
@@ -142,6 +145,7 @@
 <translation id="7080893216867146095">Споделувањето локација е дозволено</translation>
 <translation id="709897737746224366">Усогласете го бараниот формат.</translation>
 <translation id="7102274145889307184">тековна локација</translation>
+<translation id="7134810312945846184">Користи микрофон и камера</translation>
 <translation id="7263440858009898357">Изберете ставка од листата.</translation>
 <translation id="7320576522385648310">се презема</translation>
 <translation id="7341556277900466204">Спектар на бои</translation>

@@ -308,6 +308,7 @@
 <translation id="6064125863973209585">Завершені завантаження</translation>
 <translation id="6071501408666570960">Ви вийдете з облікового запису на цьому сайті</translation>
 <translation id="6120483543004435978">Якщо цей параметр увімкнено, сайти можуть запитувати, коли ви активно використовуєте пристрій. Якщо його вимкнено, сайти не можуть дізнаватися, коли ви активно використовуєте пристрій.</translation>
+<translation id="6140839633433422817">Скинути дозволи й видалити файли cookie та дані сайту?</translation>
 <translation id="6165508094623778733">Докладніше</translation>
 <translation id="6171020522141473435">Якщо цей параметр увімкнено, сайти можуть просити дозвіл використовувати пристрої з Bluetooth. Якщо його вимкнено, сайти не можуть використовувати пристрої з Bluetooth.</translation>
 <translation id="6177111841848151710">Заблоковано для поточної пошукової системи</translation>
@@ -341,6 +342,7 @@
 <translation id="6545864417968258051">Пошук пристроїв Bluetooth</translation>
 <translation id="6552800053856095716">{PERMISSIONS_SUMMARY_BLOCKED,plural, =1{Заблоковано: "<ph name="PERMISSION_1" />", "<ph name="PERMISSION_2" />" і ще <ph name="NUM_MORE" />}one{Заблоковано: "<ph name="PERMISSION_1" />", "<ph name="PERMISSION_2" />" і ще <ph name="NUM_MORE" />}few{Заблоковано: "<ph name="PERMISSION_1" />", "<ph name="PERMISSION_2" />" і ще <ph name="NUM_MORE" />}many{Заблоковано: "<ph name="PERMISSION_1" />", "<ph name="PERMISSION_2" />" і ще <ph name="NUM_MORE" />}other{Заблоковано: "<ph name="PERMISSION_1" />", "<ph name="PERMISSION_2" />" і ще <ph name="NUM_MORE" />}}</translation>
 <translation id="6554732001434021288">Останнє відвідування: <ph name="NUM_DAYS" /> дн. тому</translation>
+<translation id="656065428026159829">Показати більше</translation>
 <translation id="6561560012278703671">Показувати лише значок повідомлення (блокувати сповіщення)</translation>
 <translation id="6593061639179217415">Версія для комп’ютера</translation>
 <translation id="6608650720463149374"><ph name="GIGABYTES" /> ГБ</translation>

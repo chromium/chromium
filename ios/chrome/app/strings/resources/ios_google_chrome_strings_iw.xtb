@@ -192,6 +192,9 @@
 <translation id="6648150602980899529">‏נכנסת עם חשבון המנוהל על-ידי <ph name="DOMAIN" /> שמעניק למנהל שלו שליטה על הנתונים שלך ב-Chrome. הנתונים שלך ישויכו לצמיתות אל החשבון הזה. יציאה מ-Chrome תמחק את הנתונים שלך מהמכשיר הזה, אבל הם יישארו בחשבון Google שלך.</translation>
 <translation id="6683891932310469419">‏פתיחת דף ההיסטוריה ב-Chrome.</translation>
 <translation id="6709398533399187136">‏הסיסמה שלך נחשפה בעקבות פרצה באבטחת מידע. לפי מנהל הסיסמאות של Google, מומלץ לשנות אותה עכשיו.</translation>
+<translation id="6820553595690137150">‏הצפנה בעזרת ביטוי סיסמה לא כוללת אמצעי תשלום וכתובות.
+
+כדי לשנות את ההגדרה הזו, עליך <ph name="BEGIN_LINK" />למחוק את נתוני Chrome בחשבון<ph name="END_LINK" />.</translation>
 <translation id="6851982868877411675">‏פותחים את הגדרות Chrome ב-iOS, מקישים על 'אפליקציית ברירת המחדל לדפדפן' ובוחרים ב-Chrome.</translation>
 <translation id="686691656039982452">‏אפשר <ph name="BEGIN_LINK" />לקבוע אילו נתונים מ-Chrome יישמרו<ph name="END_LINK" /> בחשבון Google.
 
@@ -215,6 +218,7 @@
 <translation id="7261678641327190792">‏Chrome לא יכול לבדוק את הסיסמאות שלך</translation>
 <translation id="7272930098487145294">‏כדי לשמור תמונות צריך להקיש על 'הגדרות' על מנת לאפשר ל-Chrome להוסיף תמונות לגלריה שלך</translation>
 <translation id="7275945473750112644">‏החשבון שלך מנוהל על ידי <ph name="HOSTED_DOMAIN" />, ולכן הנתונים שלך מ-Chrome יימחקו מהמכשיר הזה</translation>
+<translation id="7284245284340063465">‏אם שכחת את ביטוי הסיסמה או שברצונך לשנות את ההגדרה הזו, <ph name="BEGIN_LINK" />עליך למחוק את נתוני Chrome בחשבון<ph name="END_LINK" />.</translation>
 <translation id="7304491752269485262">‏תצוגה מורחבת של המילוי האוטומטי ב-Chrome</translation>
 <translation id="7344094882820374540">‏נהנים מרמת האבטחה הכי יעילה של Chrome מפני אתרים מסוכנים</translation>
 <translation id="7349129508108954623">‏מתן הרשאה ל-Chrome להשתמש במפות Google כדי לספק מסלולים ומידע מקומי על כתובות שזוהו.</translation>
@@ -246,6 +250,9 @@
 <translation id="8160472928944011082">‏אי אפשר לעדכן את Chrome</translation>
 <translation id="8174679664544842874">‏תיפתח כרטיסייה חדשה ב-Chrome.</translation>
 <translation id="8213758103105806860">‏הצגת הסימניות ב-Chrome</translation>
+<translation id="8317674518145175158">‏אמצעי תשלום וכתובות לא יוצפנו. היסטוריית הגלישה ב-Chrome לא תסונכרן.
+
+רק מי שיודע את ביטוי הסיסמה יכול לקרוא את הנתונים המוצפנים. ביטוי הסיסמה לא נשלח אל Google ולא מאוחסן ב-Google. אם שכחת את ביטוי הסיסמה או שברצונך לשנות את ההגדרה הזו, <ph name="BEGIN_LINK" />עליך למחוק את נתוני Chrome בחשבון<ph name="END_LINK" />.</translation>
 <translation id="8328903609881776074">‏פתיחת כרטיסייה פרטית חדשה ב-Chrome.</translation>
 <translation id="8357607116237445042">‏האם למחוק את נתוני Chrome מהמכשיר הזה או לשמור אותם?</translation>
 <translation id="8370517070665726704">‏Copyright <ph name="YEAR" /> Google LLC.‎ כל הזכויות שמורות.</translation>

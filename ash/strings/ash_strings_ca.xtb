@@ -166,6 +166,7 @@ A continuació t'indico algunes coses que pots provar per començar.</translatio
 <translation id="1586324912145647027">Ves a l'escriptori de l'1 al 8</translation>
 <translation id="158838227375272121">Lloc web de Google Classroom</translation>
 <translation id="1589090746204042747">Accedir a tota la teva activitat d'aquesta sessió.</translation>
+<translation id="1597880963776148053">Pas <ph name="STEP" /> de <ph name="TOTAL_STEPS" /> de la visita. Les aplicacions fixades i les obertes són al prestatge situat a la part inferior de la pantalla. Prem Alt+Maj+L i, a continuació, el tabulador per posar el focus en elements del prestatge.</translation>
 <translation id="1602874809115667351"><ph name="LAUNCHER_KEY_NAME" />+fletxa avall</translation>
 <translation id="1604857178818051494">Posa en pausa el contingut multimèdia</translation>
 <translation id="1607312127821884567">Ignora la configuració de visualització de les aplicacions del telèfon</translation>
@@ -303,6 +304,7 @@ A continuació t'indico algunes coses que pots provar per començar.</translatio
 <translation id="2257486738914982088">S'ha produït un error en baixar <ph name="FILENAME" /></translation>
 <translation id="2258734398699965611">Fitxers suggerits</translation>
 <translation id="2268130516524549846">S'ha desactivat el Bluetooth</translation>
+<translation id="2268731132310444948">Pas <ph name="STEP" /> de <ph name="TOTAL_STEPS" /> de la visita. Un cop s'hagi activat el menú d'aplicacions, tindràs una barra de cerca millorada. Podràs començar a escriure-hi per cercar fitxers, aplicacions i més. També hi podràs obtenir respostes a preguntes sobre el teu <ph name="PRODUCT_NAME" />.</translation>
 <translation id="2268813581635650749">Tanca les sessions</translation>
 <translation id="2276987123919776440">15 min</translation>
 <translation id="2277103315734023688">Avança</translation>
@@ -397,6 +399,7 @@ Hi ha <ph name="DEVICECOUNT" /> dispositius connectats.</translation>
 <translation id="2607678425161541573">Cal iniciar la sessió en línia</translation>
 <translation id="2612072250312279703">monitor d'activitat</translation>
 <translation id="2612614436418177118">Mou la icona d'una aplicació a la quadrícula d'aplicacions</translation>
+<translation id="2619326010008283367">Pas <ph name="STEP" /> de <ph name="TOTAL_STEPS" /> de la visita. Trobaràs la configuració del dispositiu al menú d'aplicacions. Prova de personalitzar el teu <ph name="PRODUCT_NAME" /> a Configuració, per exemple, canvia el fons de pantalla o estableix un estalvi de pantalla.</translation>
 <translation id="2620016719323068571">Cerca <ph name="CATEGORY" />, fitxers, aplicacions i més...</translation>
 <translation id="2620436844016719705">Sistema</translation>
 <translation id="2620900772667816510">Superresolució Bluetooth</translation>
@@ -819,7 +822,6 @@ Algunes funcions estan limitades per allargar la durada de la bateria.</translat
 <translation id="4209973997261364186">La Wi‑Fi està activada</translation>
 <translation id="4212472694152630271">Canvia a PIN</translation>
 <translation id="4215497585250573029">Configuració de VPN</translation>
-<translation id="4215548513524864822">Pas 5 de 5 de la visita. Trobaràs la configuració del dispositiu al menú d'aplicacions. Prova de personalitzar el teu <ph name="PRODUCT_NAME" /> a Configuració, com ara canviar el fons de pantalla o establir un estalvi de pantalla.</translation>
 <translation id="4217571870635786043">Dictat</translation>
 <translation id="4221957499226645091"><ph name="APP_NAME" />, aplicació instal·lada, en pausa</translation>
 <translation id="4228078597006700451">Els controls no s'han configurat</translation>
@@ -946,12 +948,12 @@ Hi ha 1 dispositiu connectat.</translation>
 <translation id="468293128311738995">Aplicacions del telèfon</translation>
 <translation id="4690510401873698237">El prestatge és a la part inferior</translation>
 <translation id="4696813013609194136">Desbloqueja el dispositiu amb el codi parental</translation>
-<translation id="469693290987463983">Pas 1 de 5 de la visita. Les aplicacions fixades i les obertes són al prestatge situat a la part inferior de la pantalla. Prem Alt+Maj+L i, a continuació, el tabulador per posar el focus en elements del prestatge.</translation>
 <translation id="4702647871202761252">La pantalla de privadesa està desactivada</translation>
 <translation id="4706121060329443414">La baixada s'intentarà més tard. Per ara, la parla s'enviarà a Google perquè la processi.</translation>
 <translation id="470644585772471629">Inversió de colors</translation>
 <translation id="4708065238214351979">Augmenta la il·luminació del teclat</translation>
 <translation id="4717575069099566988">El teu cable USB-C no admet USB4. És possible que el rendiment del dispositiu es vegi limitat.</translation>
+<translation id="4724328513667182700">6 consells per començar a utilitzar <ph name="PRODUCT_NAME" /></translation>
 <translation id="4730374152663651037">UTILITZADES FREQÜENTMENT</translation>
 <translation id="4731797938093519117">Accés parental</translation>
 <translation id="4733161265940833579"><ph name="BATTERY_PERCENTAGE" />% (auricular esquerre)</translation>
@@ -1027,6 +1029,7 @@ Hi ha 1 dispositiu connectat.</translation>
 <translation id="4964188651935955085">Quan desactivis el Bluetooth, aquest dispositiu extern es desconnectarà del teu dispositiu <ph name="DEVICE_TYPE" />:</translation>
 <translation id="4966431234408005599">Apuja el volum</translation>
 <translation id="4969092041573468113"><ph name="HOURS" /> h <ph name="MINUTES" /> min <ph name="SECONDS" /> s</translation>
+<translation id="496999337731226334">Pas <ph name="STEP" /> de <ph name="TOTAL_STEPS" /> de la visita. Trobaràs els controls utilitzats amb més freqüència, com ara la Wi‐Fi, el Bluetooth i el volum, a la configuració ràpida. Des d'aquí també podràs fer captures de pantalla. Prem Alt+Maj+S per obrir la configuració ràpida.</translation>
 <translation id="4975771730019223894">Cercles a les aplicacions</translation>
 <translation id="4977493774330778463"><ph name="NUM_IMPORTANT_NOTIFICATION" />:
         <ph name="NOTIFICATION_1" />,
@@ -1144,6 +1147,7 @@ No hi ha cap dispositiu connectat.</translation>
 <translation id="540713187982329711">Commuta el punt d'accés Wi‐Fi. Està activat i no hi ha cap dispositiu connectat.</translation>
 <translation id="5413656666631274079">Pàgina de configuració</translation>
 <translation id="5414198321558177633">S'està actualitzant la llista de perfils. Aquest procés pot tardar uns minuts.</translation>
+<translation id="5417965108047245734">Aprèn a navegar pel teu <ph name="PRODUCT_NAME" /> amb una visita ràpida</translation>
 <translation id="5426063383988017631">El menú de configuració s'ha tancat</translation>
 <translation id="5428899915242071344">Comença a seleccionar</translation>
 <translation id="5429993543155113935">Les finestres d'incògnit no s'admeten actualment</translation>
@@ -1524,7 +1528,6 @@ Instal·lació nova</translation>
 <translation id="6874854809828346832">Mostra els detalls del punt d'accés Wi‐Fi. Està activat</translation>
 <translation id="6878400149835617132">S'ha desactivat la drecera</translation>
 <translation id="6878701771800702153">{NUM_APPS,plural, =1{1 aplicació}other{# aplicacions}}</translation>
-<translation id="6878787305374738418">Pas 4 de 5 de la visita. Un cop s'hagi activat el menú d'aplicacions, tindràs una barra de cerca millorada. Podràs començar a escriure-hi per cercar fitxers, aplicacions i més. També hi podràs obtenir respostes a preguntes sobre el teu <ph name="PRODUCT_NAME" />.</translation>
 <translation id="6883768636838842873">Tecles de drecera, consells per utilitzar el dispositiu i més</translation>
 <translation id="6884665277231944629">Torna a avui</translation>
 <translation id="6886172995547742638">És possible que el rendiment del teu dispositiu <ph name="DEVICE_TYPE" /> es vegi disminuït. Utilitza un adaptador de corrent USB-C certificat de <ph name="PREFERRED_MINIMUM_POWER" /> W o superior.</translation>
@@ -1593,6 +1596,7 @@ Instal·lació nova</translation>
 <translation id="7143207342074048698">Connectant</translation>
 <translation id="7144942256906679589">Estat de la bateria</translation>
 <translation id="7145639536026937076">La bateria s'està carregant i està a un <ph name="PERCENTAGE" /> %. L'estalvi de bateria està activat.</translation>
+<translation id="7149149900052329230">Gestiona els fitxers locals i els de Google Drive des de l'aplicació Fitxers.</translation>
 <translation id="7165278925115064263">Alt+Maj+K</translation>
 <translation id="7167913274352523149"><ph name="HOTSPOT" />,
         <ph name="NETWORK" /></translation>
@@ -1613,7 +1617,6 @@ Instal·lació nova</translation>
 <translation id="726276584504105859">Arrossega-la aquí per utilitzar la pantalla dividida</translation>
 <translation id="7262906531272962081">Crea un recordatori</translation>
 <translation id="7278787617901301220"><ph name="LAUNCHER_KEY_NAME" />+retrocés</translation>
-<translation id="7282547098317872382">Pas 3 de 5 de la visita. Utilitza les aplicacions per fer tot el que necessitis al teu <ph name="PRODUCT_NAME" />. Pots accedir a les teves aplicacions des del menú d'aplicacions. Prem Alt+Maj+L per posar el focus al botó del menú d'aplicacions.</translation>
 <translation id="7285232777292757180">Utilitza l'eina de captura de pantalla a la configuració ràpida per fer captures de pantalla</translation>
 <translation id="7301826272005790482">Ignora els suggeriments de finestres</translation>
 <translation id="7302889331339392448">La funció Subtítols instantanis està desactivada.</translation>
@@ -1795,10 +1798,12 @@ Per apagar el dispositiu, torna a mantenir premut el botó d'engegada.</translat
 <translation id="7933084174919150729">L'Assistent de Google només està disponible per al perfil principal.</translation>
 <translation id="79341161159229895">Compte gestionat per <ph name="FIRST_PARENT_EMAIL" /> i <ph name="SECOND_PARENT_EMAIL" /></translation>
 <translation id="793716872548410480">Prem <ph name="SHORTCUT_KEY_NAME" />+V per veure el porta-retalls. Els 5 darrers elements que has copiat estan desats al porta-retalls.</translation>
+<translation id="7942330802915522974">Pas <ph name="STEP" /> de <ph name="TOTAL_STEPS" /> de la visita. Trobaràs l'aplicació Fitxers al menú d'aplicacions. Gestiona els fitxers locals i els de Google Drive des de l'aplicació Fitxers.</translation>
 <translation id="7942349550061667556">Vermell</translation>
 <translation id="7943516765291457328">Activa el Bluetooth per cercar punts d'accés Wi‐Fi propers</translation>
 <translation id="7944023924886109030">Mostra tots els esdeveniments per a avui</translation>
 <translation id="7945357288295809525">Mostra la configuració d'accessibilitat, "<ph name="ENABLED_FEATURES" />" activada.</translation>
+<translation id="7946681191253332687">Actualitzacions de seguretat ampliades disponibles</translation>
 <translation id="7947798320695032612"><ph name="APP_NAME" /> vol utilitzar <ph name="DEVICE_NAME" /></translation>
 <translation id="7951630946012935453">Atenua el teclat</translation>
 <translation id="7953994493035617347">Vols confirmar la nova resolució?</translation>
@@ -1910,7 +1915,6 @@ Per apagar el dispositiu, torna a mantenir premut el botó d'engegada.</translat
 <translation id="8412677897383510995">Mostra la configuració de la pantalla</translation>
 <translation id="8413272770729657668">La gravació començarà d'aquí a 3, 2, 1</translation>
 <translation id="8416730306157376817"><ph name="BATTERY_PERCENTAGE" />% (estoig)</translation>
-<translation id="8417951779969083400">Pas 2 de 5 de la visita. Trobaràs els controls utilitzats amb més freqüència, com ara la Wi‐Fi, el Bluetooth i el volum, a la configuració ràpida. Des d'aquí també podràs fer captures de pantalla. Prem Alt+Maj+S per obrir la configuració ràpida.</translation>
 <translation id="8420205633584771378">Vols suprimir aquest suggeriment?</translation>
 <translation id="8421270167862077762"><ph name="UNAVAILABLE_APPS" /> no està disponible en aquest dispositiu.</translation>
 <translation id="8426708595819210923">Bon vespre, <ph name="GIVEN_NAME" />,</translation>
@@ -2131,6 +2135,7 @@ Per apagar el dispositiu, torna a mantenir premut el botó d'engegada.</translat
 <translation id="987589956647469042">Les dades mòbils estan activades</translation>
 <translation id="989374776391122812">Controls de càmera i d'àudio</translation>
 <translation id="990277280839877440">La finestra <ph name="WINDOW_TITILE" /> s'ha tancat.</translation>
+<translation id="993398562350683614">Pas <ph name="STEP" /> de <ph name="TOTAL_STEPS" /> de la visita. Utilitza les aplicacions per fer tot el que necessitis al teu <ph name="PRODUCT_NAME" />. Pots accedir a les teves aplicacions des del menú d'aplicacions. Prem Alt+Maj+L per posar el focus al botó del menú d'aplicacions.</translation>
 <translation id="994354411665877646"><ph name="NETWORK_NAME" />, <ph name="SUBTEXT" /></translation>
 <translation id="996204416024568215">Obtén les funcions i les millores de seguretat més recents. Les actualitzacions es duen a terme en segon pla.</translation>
 </translationbundle>

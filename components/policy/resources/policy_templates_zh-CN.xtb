@@ -14,6 +14,13 @@
 <translation id="1002829167638728809">允许报告网域可靠性相关数据</translation>
 <translation id="1004590217607585595">Web 应用管理设置</translation>
 <translation id="1006218396155867129">禁止远程访问用户将文件传输到远程主机或从远程主机传输文件</translation>
+<translation id="1007043180702842391">控制 <ph name="PRODUCT_NAME" /> 中的 PDF 查看器是否会使用进程外 iframe (OOPIF)。这将成为未来的新 PDF 查看器架构，因为它更加简单，并且更易于添加新功能。现有的 GuestView PDF 查看器是一种过时的复杂架构，即将被弃用。
+
+如果此政策已启用或未设置，<ph name="PRODUCT_NAME" /> 便能使用 OOPIF PDF 查看器架构。如果此政策已启用或未设置，默认行为将由 <ph name="PRODUCT_NAME" /> 决定。
+
+如果此政策已停用，<ph name="PRODUCT_NAME" /> 将严格使用现有的 GuestView PDF 查看器。它会将具有单独框架树的网页嵌入到另一个网页中。
+
+日后，待 OOPIF PDF 查看器功能全面推出后，此政策将被移除。</translation>
 <translation id="1007149936182752368">禁止修改书签</translation>
 <translation id="1009336698423963085">允许在这些网站上自动全屏显示</translation>
 <translation id="1010151305531217567">将鼠标主键切换成右键</translation>
@@ -516,6 +523,13 @@ First-Party Set 中的所有网站都必须是采用 HTTPS 协议的可注册网
       <ph name="BATTERY_SAVER_MODE_ENABLED_ON_BATTERY" /> (2)：自 M121 起，此值已被弃用。从 M121 开始，相关值将被视为 EnabledBelowThreshold。
       </translation>
 <translation id="1434300053894025056">停用拼写检查</translation>
+<translation id="1435031247649241006">在锁定的屏幕上，用户可以选择打开在线重新身份验证窗口，并使用该窗口完成身份验证流程，以便重新进入他们的会话。此政策可用于在需要进行在线重新身份验证时自动打开该窗口。
+
+如果已启用此政策，并且需要进行在线重新身份验证，系统会自动打开在线重新身份验证窗口。
+
+如果已停用或未设置此政策，则必须手动打开在线重新身份验证窗口。
+
+需要进行在线重新身份验证可能出于多种原因（例如密码更改），但也可能是某些政策（例如 <ph name="GAIA_LOCK_SCREEN_OFFLINE_SIGNIN_TIME_LIMIT_DAYS_POLICY_NAME" /> 或 <ph name="SAML_LOCK_SCREEN_OFFLINE_SIGNIN_TIME_LIMIT_DAYS_POLICY_NAME" />）的强制要求。</translation>
 <translation id="1435493974546396517">控制 <ph name="PRODUCT_NAME" /> 如何在 <ph name="MS_WIN_NAME" /> 和 <ph name="MAC_OS_NAME" /> 上提供“以图片形式打印”选项来打印 PDF。
 
 如果在 <ph name="MS_WIN_NAME" /> 或 <ph name="MAC_OS_NAME" /> 上打印 PDF，某些打印机有时需要将打印任务光栅化为图片，才能输出正确的结果。
@@ -3312,6 +3326,7 @@ IPv4 地址的前缀为 0010；IPv6 地址的前缀为 0020。对于双栈网络
 <translation id="3606571057705314194">在浏览器启动时停用个人资料选择器</translation>
 <translation id="3608206578291537084">启用加密报告管道</translation>
 <translation id="3608281460204780443">在 <ph name="PRODUCT_OS_NAME" /> 启动器和新标签页中显示 Chrome 应用商店的图标</translation>
+<translation id="3612482251405108708">在锁屏上自动启动在线重新身份验证</translation>
 <translation id="3616490235694929053">此政策用于控制是否让系统在用户首次登录期间向其显示“显示大小”设置界面。
       如果此政策设为 false，系统将不会显示“显示大小”设置界面。
       如果此政策设为 true，系统将会显示“显示大小”设置界面。</translation>
@@ -3574,6 +3589,7 @@ IPv4 地址的前缀为 0010；IPv6 地址的前缀为 0020。对于双栈网络
 <translation id="3863409707075047163">启用最低 SSL 版本</translation>
 <translation id="3864129983143201415">配置可在用户会话中使用的语言</translation>
 <translation id="3866249974567520381">说明</translation>
+<translation id="3866481716008450417">不允许自动启动在线重新身份验证。</translation>
 <translation id="386723261607812952">设置登录屏幕上启用的放大镜类型</translation>
 <translation id="3868347814555911633">此策略仅在零售模式下有效。
 
@@ -3745,6 +3761,19 @@ IPv4 地址的前缀为 0010；IPv6 地址的前缀为 0020。对于双栈网络
 <translation id="3989829840000169163">屏蔽浏览器旧版扩展点</translation>
 <translation id="3990391739475801018">系统将停用省电模式。</translation>
 <translation id="3990834929384096140">不强制启用系统音频回声消除功能</translation>
+<translation id="3992185577030665825"><ph name="PRODUCT_NAME" /> 开发者工具中的这些功能采用生成式 AI 模型来提供额外的调试信息。如需使用这些功能，<ph name="PRODUCT_NAME" /> 必须收集错误消息、堆栈轨迹、代码段和网络请求等数据，并将这些数据发送到归 Google 所有的服务器，该服务器会运行生成式 AI 模型。网络请求中的响应正文或身份验证信息和 Cookie 标头不会包含在发送至服务器的数据中。
+
+0 表示为用户启用此功能，并向 Google 发送相关数据来帮助训练或改进 AI 模型。
+
+除非下文另有说明，否则默认值是 0。
+
+1 表示为用户启用此功能，但不向 Google 发送数据来训练或改进 AI 模型。对于由 <ph name="GOOGLE_ADMIN_CONSOLE_PRODUCT_NAME" /> 管理的企业用户，1 是默认值。
+
+2 表示停用此功能。对于由 <ph name="GOOGLE_WORKSPACE_PRODUCT_NAME" /> 管理的教育版账号，2 是默认值。
+
+开发者工具的生成式 AI 功能包括：
+
+- 控制台数据分析：解释控制台消息，并建议如何修复控制台错误。</translation>
 <translation id="3994043824457743421">在“新标签页”页面上显示中间槽通知</translation>
 <translation id="399433537808390819">不为用户提供统一桌面模式选项</translation>
 <translation id="3995880046827722248">停用 Manifest V2</translation>
@@ -4823,6 +4852,7 @@ IPv4 地址的前缀为 0010；IPv6 地址的前缀为 0020。对于双栈网络
       在 M76 或更早版本中，不设置此政策意味着 <ph name="PRODUCT_NAME" /> 默认无法收集和上传这些日志。从 M77 开始，<ph name="PRODUCT_NAME" /> 默认能够从受基于云的用户级企业政策影响的大多数个人资料中收集并上传这些日志。从 M77 到 M80（含），<ph name="PRODUCT_NAME" /> 还默认能从受 <ph name="PRODUCT_NAME" /> 本地管理功能影响的个人资料中收集并上传这些日志。</translation>
 <translation id="4911334289324462969">端口 989（可在 2022 年 2 月 1 日之前解禁）</translation>
 <translation id="4917385247580444890">强</translation>
+<translation id="4918150584200819898">允许自动启动在线重新身份验证。</translation>
 <translation id="4918261735182294270">允许用户选择是否启用 <ph name="CHROME_SYNC_NAME" /></translation>
 <translation id="491889618361437456">启用 <ph name="GOOGLE_CALENDAR_NAME" />集成</translation>
 <translation id="4919122295221518724">为混合内容启用更严格的处理方式</translation>
@@ -7228,6 +7258,7 @@ Origin-Agent-Cluster HTTP 标头可控制是将某个文档隔离在以源为键
 <translation id="6795485990775913659">仅允许在没有 PIN 码的情况下打印</translation>
 <translation id="6796215185873669533">将 User-Agent 字符串版本默认设为浏览器设置。</translation>
 <translation id="6800181452282128474">不向 Quirks Server 发送查询</translation>
+<translation id="6802412020718145539">PDF 查看器使用 OOPIF 架构。</translation>
 <translation id="68031099365512050">报告音频状态</translation>
 <translation id="680356860463873420">不允许用户使用 PluginVm</translation>
 <translation id="6807947647944603395">为 TLS 停用 Kyber 后量子密钥协议</translation>
@@ -7242,11 +7273,6 @@ Origin-Agent-Cluster HTTP 标头可控制是将某个文档隔离在以源为键
 如果此政策已启用或未设置，用户将可以通过上下文菜单将图片保存到 <ph name="GOOGLE_PHOTOS_PRODUCT_NAME" />。如果此政策已停用，用户将无法在上下文菜单中看到此选项。
 此政策不会阻止用户使用上下文菜单之外的其他方式将图片保存到 <ph name="GOOGLE_PHOTOS_PRODUCT_NAME" />。</translation>
 <translation id="6823711520976094072">如果此政策设为小于 1 MB 或未设置，<ph name="PRODUCT_OS_NAME" />会使用默认大小 (256 MiB) 缓存应用和扩展程序，以供同一部设备上的多位用户安装，从而避免重新为每位用户下载。</translation>
-<translation id="6827666400941600157">此政策设定了一系列每周间隔时间来安排自动暂停时间表。当间隔时间开始时，<ph name="PRODUCT_OS_NAME" /> 设备会进入暂停模式，并在间隔时间结束时唤醒。
-
-不支持间隔时间重叠的时间表。如果此政策包含任何两个重叠的间隔时间，则不会产生任何影响。
-
-<ph name="PRODUCT_OS_NAME" /> 设备将使用系统时区来应用这些间隔时间。</translation>
 <translation id="6828729771894228555">让您能够设置一个网址格式列表，以指定要禁止哪些顶级（标签页地址栏中的网址）源使用第三方存储分区（跨源 iframe 存储分区）。
           如果此政策未设置或顶级源不匹配，系统将会使用 <ph name="DEFAULT_THIRD_PARTY_STORAGE_PARTITIONING_SETTING_POLICY_NAME" /> 的值。
           如需详细了解有效的格式，请访问 https://cloud.google.com/docs/chrome-enterprise/policies/url-patterns。
@@ -7375,6 +7401,7 @@ Origin-Agent-Cluster HTTP 标头可控制是将某个文档隔离在以源为键
 <translation id="6903818804346914108">启用设备风扇信息报告功能</translation>
 <translation id="690734633209203892">控制何时以何种方式应用 <ph name="PRODUCT_OS_NAME" /> 更新。</translation>
 <translation id="6907778402784621686">禁止在这些网站上显示不安全内容</translation>
+<translation id="6908335885425855120">使用进程外 iframe PDF 查看器</translation>
 <translation id="6908640907898649429">配置默认搜索服务提供商。您可以指定用户会使用的默认搜索服务提供商，或选择停用默认搜索。</translation>
 <translation id="6913068954484253496">允许 <ph name="PRODUCT_NAME" /> 连接到位于所有 IP 地址的 Cast 设备。</translation>
 <translation id="6915493311660114995">如果此政策已启用，<ph name="PRODUCT_NAME" /> 将允许在 TLS 证书含有错误的网站（即，那些被视为不安全的网站）上发出网络身份验证请求。
@@ -7972,18 +7999,10 @@ Origin-Agent-Cluster HTTP 标头可控制是将某个文档隔离在以源为键
 
       如果您没有为某个网站设置此政策，系统便会将 <ph name="DEFAULT_WINDOW_PLACEMENT_SETTING_POLICY_NAME" /> 中的政策（若已设置）应用于该网站，或者让该网站遵循浏览器的默认权限设置并允许用户按网站选择这项权限。</translation>
 <translation id="7358359585412734876">启用 <ph name="LACROS_NAME" /></translation>
+<translation id="7362566456990049303">仅限用户</translation>
 <translation id="736486789939370545">允许安装外部扩展程序</translation>
 <translation id="7366948865469126526">停用快速解答单位换算功能</translation>
 <translation id="7367734504783638685">第三方 SSO 提供商和 Chrome 设备之间的密码同步</translation>
-<translation id="7372169427762612484">如果已启用此政策，“安全浏览”功能将会信任您指定的网域。此功能将不会检查这类网域是否含有危险资源（例如钓鱼式攻击、恶意软件或垃圾软件）。“安全浏览”功能的下载保护服务将不会检查托管在这类网域上的下载内容。此功能的密码保护服务将不会检查密码重用情况。
-
-如果未设置此政策，系统便会将默认开启的“安全浏览”保护功能应用于所有资源。
-
-此政策必须设为一个由完全限定域名组成的列表。它不支持正则表达式，也不会将政策中所列域名的子域名添加到许可名单中。
-
-在 <ph name="MS_WIN_NAME" /> 上，此政策仅适用于已加入 <ph name="MS_AD_NAME" /> 网域的实例、已加入 <ph name="MS_AAD_NAME" /> 的实例，或已注册 <ph name="CHROME_BROWSER_CLOUD_MANAGEMENT_NAME" />的实例。
-
-在 <ph name="MAC_OS_NAME" /> 上，此政策仅适用于通过 MDM 进行管理的实例、已通过 MCX 加入网域的实例，或已注册 <ph name="CHROME_BROWSER_CLOUD_MANAGEMENT_NAME" />的实例。</translation>
 <translation id="7372831798009983116">启用“自动点击”无障碍功能</translation>
 <translation id="7373200034079131670">在用户退出后重新启动（如果 Android 或虚拟机已启动）。</translation>
 <translation id="7374784840090523241">默认在其他存储区（例如 <ph name="PRODUCT_NAME" /> 个人资料）中创建通行密钥。</translation>
@@ -10048,6 +10067,7 @@ Origin-Agent-Cluster HTTP 标头可控制是将某个文档隔离在以源为键
       如果此政策未设置，系统将不会为任何网站自动选择证书。
 
       如需详细了解有效网址格式，请访问 https://cloud.google.com/docs/chrome-enterprise/policies/url-patterns。</translation>
+<translation id="9063485115966829754">PDF 查看器使用 GuestView 架构。</translation>
 <translation id="9066311316566875681">所需 DNS-over-HTTPS 解析器的 URI 模板。若要指定多个 DNS-over-HTTPS 解析器，请使用空格分隔相应的 URI 模板。
 
       如果 DnsOverHttpsMode 设为 <ph name="SECURE_DNS_MODE_SECURE" />，则必须设置此政策，不得将它留空。（仅限 <ph name="PRODUCT_OS_NAME" />）必须设置此政策或 <ph name="DOH_TEMPLATES_WITH_IDENTIFIERS_POLICY_NAME" />，否则 DNS 解析将会失败。

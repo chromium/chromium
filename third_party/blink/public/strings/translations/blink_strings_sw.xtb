@@ -12,6 +12,7 @@
 <translation id="1588438908519853928">Ya kawaida</translation>
 <translation id="1591562245178063882">Mwezi huu</translation>
 <translation id="1637811476055996098">Chagua Faili</translation>
+<translation id="1680090928918677457">Tumia kamera</translation>
 <translation id="1681022320378710418">saa za sasa</translation>
 <translation id="1727839386348365796">Kichagua rangi</translation>
 <translation id="1729654308190250600">Tafadhali jaza sehemu ya anwani ya barua pepe.</translation>
@@ -60,6 +61,7 @@
 <translation id="3822383571486410024">Tafadhali refusha maandishi haya hadi herufi <ph name="MIN_CHARACTERS" /> au zaidi (kwa sasa unatumia herufi <ph name="CURRENT_LENGTH" />).</translation>
 <translation id="383465348367842624">Sehemu inayofuatwa na '<ph name="ATSIGN" />' haipaswi kuwa na alama ya '<ph name="INVALIDCHARACTER" />'.</translation>
 <translation id="3846214748874656680">Ondoka kwenye skrini nzima</translation>
+<translation id="3914173277599553213">Inahitajika</translation>
 <translation id="4031179711345676612">Maikrofoni imeruhusiwa</translation>
 <translation id="4103419683916926126">nukta</translation>
 <translation id="4201051445878709314">Onyesha mwezi uliotangulia</translation>
@@ -75,6 +77,7 @@
 <translation id="4912200001568447310">kipengee cha sasa</translation>
 <translation id="4915360478455618802">Onyesha kiteua saa</translation>
 <translation id="4924138096460353083">haijabainishwa</translation>
+<translation id="49269513399674318">Tumia maikrofoni</translation>
 <translation id="4950364064308314478">Onyesha kiteua tarehe na saa za mahali uliko</translation>
 <translation id="4971739861736909480">Umechagua <ph name="ACCNAME" /></translation>
 <translation id="4975562563186953947">Vipengee <ph name="SELECTED_COUNT" /> vimechaguliwa</translation>
@@ -142,6 +145,7 @@
 <translation id="7080893216867146095">Umeruhusu kushiriki maelezo ya mahali ulipo</translation>
 <translation id="709897737746224366">Tafadhali linganisha umbizo lililoombwa.</translation>
 <translation id="7102274145889307184">mahali ulipo sasa</translation>
+<translation id="7134810312945846184">Tumia maikrofoni na kamera</translation>
 <translation id="7263440858009898357">Tafadhali chagua kipengee katika orodha.</translation>
 <translation id="7320576522385648310">inaakibisha</translation>
 <translation id="7341556277900466204">Paka rangi vizuri</translation>

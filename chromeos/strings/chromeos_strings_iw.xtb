@@ -11,6 +11,7 @@
 <translation id="1047458377670401304">‏<ph name="CPU_NAME" /> (<ph name="THREAD_COUNT" /> שרשורים, GHz‏ <ph name="CPU_MAX_CLOCK_SPEED" />)</translation>
 <translation id="1047773237499189053">יש תכונה חדשה. למידע נוסף יש להקיש על מקש החץ למעלה.</translation>
 <translation id="1049663189809099096">בצבע צהוב פסטל</translation>
+<translation id="1056898198331236512">אזהרה</translation>
 <translation id="1059913517121127803">לא ניתן היה להתחיל את הסריקה</translation>
 <translation id="1062823486781306604"><ph name="INDEX" /> מתוך <ph name="COUNT" />, <ph name="NAME" />.</translation>
 <translation id="1070066693520972135">WEP</translation>
@@ -28,6 +29,7 @@
 <translation id="1145018782460575098">החלון של עדכון הקושחה למכשירים חיצוניים פתוח. יש <ph name="NUM_UPDATES" /> עדכונים זמינים.</translation>
 <translation id="1145516343487477149">‏חיפוש של מאמרי עזרה ותשובות לשאלות נפוצות בנושא Chromebook</translation>
 <translation id="1154390310959620237">אפשר להתאים אישית רק 5 קיצורי דרך. עליך למחוק קיצור דרך כדי להוסיף קיצור דרך חדש.</translation>
+<translation id="1155154308031262006">כאן מקלידים הנחיה</translation>
 <translation id="115705039208660697">אננסים</translation>
 <translation id="1164939766849482256">שומר המסך: מעלות השחר עד לרדת החושך</translation>
 <translation id="1167755866710282443">פתיחת התפריט להתאמה אישית של המפתחות. יש לגרור את התפריט כדי להזיז אותו.</translation>
@@ -95,7 +97,6 @@
 <translation id="1478594628797167447">סורק</translation>
 <translation id="1483493594462132177">שליחה</translation>
 <translation id="1488850966314959671">‏לא ניתן להתחבר לרשת הזו באמצעות פריטי APN בהתאמה אישית שהופעלו. למידע נוסף, צריך ליצור קשר עם ספק הסלולר.</translation>
-<translation id="1491076385728777984">מתבצע עדכון קושחה ב-<ph name="DEVICE_NAME" /></translation>
 <translation id="1499041187027566160">הגברת עוצמת הקול</translation>
 <translation id="1499900233129743732">המשתמש הזה מנוהל על ידי <ph name="MANAGER" />. הדומיין הזה עשוי לנהל מרחוק את ההגדרות ולעקוב אחר פעילות המשתמש.</translation>
 <translation id="150962533380566081">‏PUK לא חוקי.</translation>
@@ -291,7 +292,6 @@
 <translation id="2505327257735685095">רענון של תמונת הטפט</translation>
 <translation id="2512979179176933762">הצגת החלונות</translation>
 <translation id="2513396635448525189">תמונת המשתמש המחובר</translation>
-<translation id="2517472476991765520">סריקה</translation>
 <translation id="2521835766824839541">הטראק הקודם</translation>
 <translation id="2526590354069164005">שולחן עבודה</translation>
 <translation id="2529641961800709867">אפשרויות הלחצן</translation>
@@ -330,6 +330,7 @@
 <translation id="2744221223678373668">משותף</translation>
 <translation id="2751739896257479635">‏אימות שלב 2 של EAP</translation>
 <translation id="2754757901767760034">מנורה</translation>
+<translation id="2780756493585863768">‏הרקעים האחרונים שמבוססים על AI מבית Google</translation>
 <translation id="2783010256799387990">ציון 'עובר'</translation>
 <translation id="2786429550992142861">פשתן</translation>
 <translation id="2787435249130282949">איך להגביר את בהירות המקלדת</translation>
@@ -426,6 +427,7 @@
 <translation id="3456078764689556234">הודפס עמוד <ph name="PRINTED_PAGES" /> מתוך <ph name="TOTAL_PAGES" />.</translation>
 <translation id="345898999683440380">מתבצעת סריקה של עמוד <ph name="PAGE_NUM" />. החלק שהושלם: <ph name="PERCENTAGE_VALUE" />%.</translation>
 <translation id="3459509316159669723">הדפסה</translation>
+<translation id="3462187165860821523"><ph name="DEVICE_NAME" /> בתהליך עדכון</translation>
 <translation id="346423161771747987">זרם</translation>
 <translation id="346539236881580388">צילום חוזר</translation>
 <translation id="3484914941826596830">במהלך עדכון הקושחה אין לנתק את המכשיר החיצוני הזה או לכבות את המחשב. אפשר למזער את החלון הזה. העדכון הזה עשוי לקחת כמה דקות ויכול להיות שהמכשיר החיצוני לא יפעל במהלכו.</translation>
@@ -790,6 +792,7 @@
 <translation id="5559898619118303662">מעבר אוטומטי לעיצוב כהה בשקיעה</translation>
 <translation id="556042886152191864">לחצן</translation>
 <translation id="5562551811867441927"><ph name="TERRAIN_FEATURE" /> בגווני <ph name="TERRAIN_COLOR" /></translation>
+<translation id="5572169899491758844">סריקה</translation>
 <translation id="5578477003638479617">UMTS</translation>
 <translation id="5578519639599103840">סריקה מחדש</translation>
 <translation id="5583640892426849032">Backspace</translation>
@@ -879,7 +882,6 @@
 <translation id="6075872808778243331">‏זמן אחזור של HTTP ‏(Android)</translation>
 <translation id="6078323886959318429">הוספת קיצור דרך</translation>
 <translation id="6091080061796993741">צהוב</translation>
-<translation id="610371409726072606">‏רקע למצלמה שמבוסס על AI מבית Google</translation>
 <translation id="6104112872696127344">הסריקה בוטלה</translation>
 <translation id="6106186594183574873">כדי לסיים יש להזין את הסיסמה הישנה</translation>
 <translation id="6108689792487843350">לא ניתן להגיע אל השער</translation>
@@ -906,6 +908,7 @@
 <translation id="6205145102504628069">זרימה בענן</translation>
 <translation id="6213737986933151570">CDMA1XRTT</translation>
 <translation id="6223752125779001553">אין סורקים זמינים</translation>
+<translation id="6231648282154119906">‏קבצים חשודים ייסרקו באופן אוטומטי במסגרת הגלישה הבטוחה של Google, כחלק מההגנה המשופרת שבחרת</translation>
 <translation id="6232017090690406397">סוללה</translation>
 <translation id="6234024205316847054">הצגה בקווים כלליים</translation>
 <translation id="6235460611964961764">איפוס ידני של השימוש בחבילת הגלישה</translation>
@@ -1011,7 +1014,6 @@
 <translation id="672609503628871915">מה חדש</translation>
 <translation id="6740695858234317715">קרם וכתום</translation>
 <translation id="6741823073189174383">סירה</translation>
-<translation id="674276385369049081">‏הרקעים האחרונים למצלמה שמבוססים על AI מבית Google</translation>
 <translation id="6744441848304920043">ג'ונגל</translation>
 <translation id="6747035363363040417">נייטרלי</translation>
 <translation id="6747215703636344499">הפסיקה – מגש הפלט מלא</translation>
@@ -1032,6 +1034,7 @@
 <translation id="6871256179359663621">בצבע סגול בהיר</translation>
 <translation id="6889786074662672253">במהלך ההפעלה מחדש אין לנתק את המכשיר החיצוני הזה או לכבות את המחשב. אפשר למזער את החלון הזה. הפעולה עשויה להימשך כמה דקות ויכול להיות שהמכשיר החיצוני לא יפעל בזמן הזה.</translation>
 <translation id="6900701049656042631">אין תמונות באלבום הזה. כדי להוסיף תמונה, צריך לעבור אל <ph name="LINK" /></translation>
+<translation id="6902359863093437070">‏יצירת רקע באמצעות AI</translation>
 <translation id="6905163627763043954">נסה זאת</translation>
 <translation id="6905724422583748843">חזרה אל <ph name="PAGE_NAME" /></translation>
 <translation id="6910312834584889076">המכסה של הסורק פתוח. יש לסגור אותו ולנסות שוב.</translation>
@@ -1082,7 +1085,7 @@
 <translation id="7108668606237948702">הזנת מפתח</translation>
 <translation id="7118522231018231199">‏חשוב לבחור נקודות APN שסופקו על ידי ספק הסלולר או האדמין. בחירת ה-APN תשבית את כל נקודות ה-APN בהתאמה אישית. נקודות APN לא תקינות עלולות לשבש את החיבור לרשת הסלולרית.</translation>
 <translation id="7119389851461848805">הפעלה</translation>
-<translation id="7129287270910503851">נתוני השימוש בחבילת הגלישה יאופס מדי חודש ביום הזה</translation>
+<translation id="7129287270910503851">נתוני השימוש בחבילת הגלישה יאופסו מדי חודש ביום הזה</translation>
 <translation id="7130438335435247835">‏שם נקודת גישה (APN)</translation>
 <translation id="7134436342991564651">{0,plural, =1{שרת שמות}one{שרתי שמות}two{שרתי שמות}other{שרתי שמות}}</translation>
 <translation id="7135814714616751706">חיפוש מקשי קיצור</translation>
@@ -1269,6 +1272,7 @@
 <translation id="8152370627892825"><ph name="DESCRIPTION" />,‏ <ph name="ACCELERATOR_INFO" />.</translation>
 <translation id="8156233298086717232">קסום</translation>
 <translation id="8162776280680283326">שועלים</translation>
+<translation id="8167413449582155132">‏הרקע מבוסס על AI מבית Google</translation>
 <translation id="8179976553408161302">Enter</translation>
 <translation id="8183975772394450380">חוף</translation>
 <translation id="8206859287963243715">סלולארי</translation>

@@ -2,7 +2,7 @@
 <!DOCTYPE translationbundle>
 <translationbundle lang="en-GB">
 <translation id="1021782183249308751">Press and hold the Chrome icon and click 'Edit Home screen'</translation>
-<translation id="1066101356081285416">Chrome will detect tracking numbers on sites that you visit and show you package updates on the New tab page. The package tracking number and website name will be sent to Google to provide this feature and to improve Google Shopping features for everyone. You can update this at any time in <ph name="BEGIN_LINK" />package tracking settings<ph name="END_LINK" />.</translation>
+<translation id="1066101356081285416">Chrome will detect tracking numbers on sites that you visit and show you package updates on the New tab page. The package tracking number and website name will be sent to Google to provide this feature and to improve Google Shopping features for everyone. You can update this at any time in <ph name="BEGIN_LINK" />Package tracking settings<ph name="END_LINK" />.</translation>
 <translation id="1085696779717592361">Use Chrome by default</translation>
 <translation id="1143896152279775643">Your password will be saved to Google Password Manager for <ph name="EMAIL" />.</translation>
 <translation id="1177414119866731261">Open the Chrome menu</translation>
@@ -130,7 +130,7 @@ Things to consider:
         Try waiting a few minutes before signing out. If you sign out now, this data will be deleted.</translation>
 <translation id="484033449593719797">Not supported on Chrome beta</translation>
 <translation id="4840404732697892756">Google Password Manager can check your passwords when you sign in with your Google Account.</translation>
-<translation id="4860330141789125848">{COUNT,plural, =1{Chrome can help you track this parcel on the New tab page.}other{Chrome can help you track these parcels on the New tab page.}}</translation>
+<translation id="4860330141789125848">{COUNT,plural, =1{Chrome can help you track this package on the New tab page.}other{Chrome can help you track these packages on the New tab page.}}</translation>
 <translation id="4903674399067644695">This card shows you suggestions on how to get the most out of Chrome.</translation>
 <translation id="4919069428879420545">Delete browsing data in Chrome.</translation>
 <translation id="49200511069271369">Your organisation, <ph name="DOMAIN" />, manages the account you're signing in to and how Chrome can be used. Your administrator can set up or restrict certain features.</translation>
@@ -150,7 +150,7 @@ Things to consider:
 <translation id="5439191312780166229">Warns you about dangerous sites, even ones that Google didn't know about before, by analysing more data from sites than standard protection. You can choose to skip Chrome warnings.</translation>
 <translation id="5442013002200339429">If you hide '<ph name="MODULE_NAME" />, Chrome will no longer auto-track your future packages and will delete all your past package tracking data.</translation>
 <translation id="5460571915754665838">4. Select Chrome</translation>
-<translation id="546541279759910616">{COUNT,plural, =1{Chrome will help track this parcel on the New tab page.}other{Chrome will help track these parcels on the New tab page.}}</translation>
+<translation id="546541279759910616">{COUNT,plural, =1{Chrome will help track this package on the New tab page.}other{Chrome will help track these parcels on the New tab page.}}</translation>
 <translation id="5492504007368565877">Google Password Manager can’t check your passwords.</translation>
 <translation id="5525095647255982834">To send this tab to another device, sign in to Chrome there.</translation>
 <translation id="5527026824954593399">Tap 'View with Google Maps on Chrome'</translation>
@@ -169,7 +169,7 @@ Things to consider:
 <translation id="589695154992054845">Opens The Password Manager in Chrome.</translation>
 <translation id="5998675059699164418">Your organisation requires you to sign in to use Chrome.</translation>
 <translation id="6054613632208573261">Use Chrome by default</translation>
-<translation id="6063091872902370735">Allow Chrome Sign-in</translation>
+<translation id="6063091872902370735">Allow Chrome sign-in</translation>
 <translation id="6110625574506755980">Some Chrome features won’t be available anymore.</translation>
 <translation id="6132149203299792222">Sign in with your Google Account to sync your passwords, bookmarks and more.</translation>
 <translation id="6177442314419606057">Search in Chrome</translation>

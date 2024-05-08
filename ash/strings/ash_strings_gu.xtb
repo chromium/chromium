@@ -166,6 +166,7 @@
 <translation id="1586324912145647027">ડેસ્ક 1 થી 8 પર જાઓ</translation>
 <translation id="158838227375272121">Google Classroomની વેબસાઇટ</translation>
 <translation id="1589090746204042747">આ સત્રમાં તમારી બધી પ્રવૃત્તિને ઍક્સેસ કરો</translation>
+<translation id="1597880963776148053">ટૂરના <ph name="TOTAL_STEPS" />માંથી પગલું <ph name="STEP" />. તમારી પિન કરેલી અને ખુલ્લી ઍપ તમારી સ્ક્રીનની સૌથી નીચેની તરફ આવેલી શેલ્ફ પર છે. Alt + Shift + L દબાવો પછી શેલ્ફ આઇટમ પર ફૉકસ કરવા માટે ટૅપ કરો.</translation>
 <translation id="1602874809115667351"><ph name="LAUNCHER_KEY_NAME" /> + નીચેની ઍરો કી</translation>
 <translation id="1604857178818051494">મીડિયા થોભાવો</translation>
 <translation id="1607312127821884567">તમારા ફોનની ઍપ જોવાની સુવિધા સેટઅપ કરવાની પ્રક્રિયા છોડી દો</translation>
@@ -303,6 +304,7 @@
 <translation id="2257486738914982088"><ph name="FILENAME" /> ડાઉનલોડ કરતી વખતે કંઈક ખોટું થયું</translation>
 <translation id="2258734398699965611">સૂચવેલી ફાઇલો</translation>
 <translation id="2268130516524549846">Bluetooth અક્ષમ છે</translation>
+<translation id="2268731132310444948">ટૂરના <ph name="TOTAL_STEPS" />માંથી પગલું <ph name="STEP" />. એકવાર લૉન્ચર સક્રિય કરવામાં આવે, તમે એક વધારેલો શોધ બાર મેળવશો. તમે તમારી ફાઇલો, ઍપ અને બીજું ઘણું શોધવા માટે ટાઇપ કરવાનું શરૂ કરી શકો છો. તમે તમારી <ph name="PRODUCT_NAME" /> વિશેના પ્રશ્નોના જવાબ પણ મેળવી શકો છો.</translation>
 <translation id="2268813581635650749">બધાને સાઇન આઉટ કરો</translation>
 <translation id="2276987123919776440">15 મિનિટ</translation>
 <translation id="2277103315734023688">આગળ લઈ જાઓ</translation>
@@ -397,6 +399,7 @@
 <translation id="2607678425161541573">ઑનલાઇન સાઇન-ઇન કરવું આવશ્યક છે</translation>
 <translation id="2612072250312279703">ઍક્ટિવિટી મૉનિટર</translation>
 <translation id="2612614436418177118">ઍપ ગ્રિડની અંદર ઍપનું આઇકન ખસેડો</translation>
+<translation id="2619326010008283367">ટૂરના <ph name="TOTAL_STEPS" />માંથી પગલું <ph name="STEP" />. તમે લૉન્ચરમાં તમારા ડિવાઇસના સેટિંગ જોઈ શકો છો. સેટિંગમાં તમારી <ph name="PRODUCT_NAME" /> કસ્ટમાઇઝ કરવાનો પ્રયાસ કરો, જેમ કે તમારું વૉલપેપર બદલવું અથવા સ્ક્રીન સેવર સેટ કરવું.</translation>
 <translation id="2620016719323068571">તમારી <ph name="CATEGORY" />, ફાઇલો, ઍપ અને બીજું ઘણું શોધો…</translation>
 <translation id="2620436844016719705">સિસ્ટમ</translation>
 <translation id="2620900772667816510">બ્લૂટૂથ સુપર રિઝોલ્યુશન</translation>
@@ -819,7 +822,6 @@
 <translation id="4209973997261364186">વાઇ-ફાઇ ચાલુ છે</translation>
 <translation id="4212472694152630271">પિન પર સ્વિચ કરો</translation>
 <translation id="4215497585250573029">VPN સેટિંગ</translation>
-<translation id="4215548513524864822">પગલું 5માંથી 5 વિશે જાણો. તમે લૉન્ચરમાં તમારા ડિવાઇસના સેટિંગ જોઈ શકો છો. સેટિંગમાં તમારી <ph name="PRODUCT_NAME" /> કસ્ટમાઇઝ કરવાનો પ્રયાસ કરો, જેમ કે તમારું વૉલપેપર બદલવું અથવા સ્ક્રીન સેવર સેટ કરવું.</translation>
 <translation id="4217571870635786043">ડિક્ટેશન</translation>
 <translation id="4221957499226645091"><ph name="APP_NAME" />, ઇન્સ્ટૉલ કરેલી ઍપ, થોભાવી</translation>
 <translation id="4228078597006700451">નિયંત્રણોનું સેટઅપ કરેલું નથી</translation>
@@ -946,12 +948,12 @@
 <translation id="468293128311738995">તમારા ફોન પરની ઍપ</translation>
 <translation id="4690510401873698237">શેલ્ફ સૌથી નીચે છે</translation>
 <translation id="4696813013609194136">માતાપિતાના કોડ વડે ડિવાઇસને અનલૉક કરો</translation>
-<translation id="469693290987463983">પગલું 5માંથી 1 વિશે જાણો. તમારી પિન કરેલી અને ખુલ્લી ઍપ તમારી સ્ક્રીનની સૌથી નીચેની તરફ આવેલી શેલ્ફ પર છે. Alt + Shift + L દબાવો પછી શેલ્ફ આઇટમ પર ફૉકસ કરવા માટે ટૅપ કરો.</translation>
 <translation id="4702647871202761252">પ્રાઇવસી સ્ક્રીન બંધ છે</translation>
 <translation id="4706121060329443414">થોડા સમય પછી ડાઉનલોડ કરવાનો પ્રયાસ કરવામાં આવશે. હાલ પૂરતું સ્પીચ પ્રક્રિયા કરવા માટે Googleને મોકલવામાં આવશે.</translation>
 <translation id="470644585772471629">વિપરીત રંગમાં બદલવું</translation>
 <translation id="4708065238214351979">કીબોર્ડને વધુ બ્રાઇટ બનાવો</translation>
 <translation id="4717575069099566988">તમારો USB-C કેબલ USB4ને સપોર્ટ આપતો નથી. ડિવાઇસનું કાર્યપ્રદર્શન મર્યાદિત હોઈ શકે છે.</translation>
+<translation id="4724328513667182700"><ph name="PRODUCT_NAME" /> પર શરૂઆત કરવા માટે 6 ટિપ</translation>
 <translation id="4730374152663651037">વારંવાર વપરાયેલ</translation>
 <translation id="4731797938093519117">માતાપિતા માટે ઍક્સેસ</translation>
 <translation id="4733161265940833579"><ph name="BATTERY_PERCENTAGE" />% (ડાબે)</translation>
@@ -1027,6 +1029,7 @@
 <translation id="4964188651935955085">જ્યારે તમે બ્લૂટૂથ બંધ કરો, ત્યારે આ બાહ્ય ડિવાઇસ તમારા <ph name="DEVICE_TYPE" />થી ડિસ્કનેક્ટ થઈ જશે:</translation>
 <translation id="4966431234408005599">વૉલ્યૂમ વધારો</translation>
 <translation id="4969092041573468113"><ph name="HOURS" /> કલાક <ph name="MINUTES" /> મિનિટ <ph name="SECONDS" /> સેકન્ડ</translation>
+<translation id="496999337731226334">ટૂરના <ph name="TOTAL_STEPS" />માંથી પગલું <ph name="STEP" />. વાઇ-ફાઇ, બ્લૂટૂથ અને વૉલ્યૂમ જેવા વારંવાર વપરાતા નિયંત્રણો ઝડપી સેટિંગમાં છે. તમે સ્ક્રીનશૉટ લેવા માટે અહીં પણ જઈ શકો છો. ઝડપી સેટિંગ ખોલવા માટે Alt + Shift + S દબાવો.</translation>
 <translation id="4975771730019223894">ઍપ બૅજિંગ</translation>
 <translation id="4977493774330778463"><ph name="NUM_IMPORTANT_NOTIFICATION" />:
         <ph name="NOTIFICATION_1" />,
@@ -1144,6 +1147,7 @@
 <translation id="540713187982329711">હૉટસ્પૉટ ટૉગલ કરો. હૉટસ્પૉટ ચાલુ છે, કોઈ ડિવાઇસ કનેક્ટેડ નથી.</translation>
 <translation id="5413656666631274079">સેટિંગ પેજ</translation>
 <translation id="5414198321558177633">પ્રોફાઇલની સૂચિ રિફ્રેશ કરી રહ્યાં છીએ. આમાં થોડો સમય લાગી શકે છે.</translation>
+<translation id="5417965108047245734">તમારી <ph name="PRODUCT_NAME" />ને જાણવા એક ઝટપટ ટૂર કરો</translation>
 <translation id="5426063383988017631">સેટિંગ મેનૂ બંધ કર્યું</translation>
 <translation id="5428899915242071344">પસંદ કરવાનું શરૂ કરો</translation>
 <translation id="5429993543155113935">છૂપી વિન્ડોને હાલમાં સપોર્ટ કરવામાં આવતો નથી</translation>
@@ -1524,7 +1528,6 @@
 <translation id="6874854809828346832">હૉટસ્પૉટની વિગતો બતાવો. હૉટસ્પૉટ ચાલુ છે.</translation>
 <translation id="6878400149835617132">શૉર્ટકટ બંધ કર્યો</translation>
 <translation id="6878701771800702153">{NUM_APPS,plural, =1{1 ઍપ}one{# ઍપ}other{# ઍપ}}</translation>
-<translation id="6878787305374738418">પગલું 5માંથી 4 વિશે જાણો. એકવાર લૉન્ચર સક્રિય કરવામાં આવે, તમે એક વધારેલો શોધ બાર મેળવશો. તમે તમારી ફાઇલો, ઍપ અને બીજું ઘણું શોધવા માટે ટાઇપ કરવાનું શરૂ કરી શકો છો. તમે તમારી <ph name="PRODUCT_NAME" /> વિશેના પ્રશ્નોનો જવાબ પણ મેળવી શકો છો.</translation>
 <translation id="6883768636838842873">કી શૉર્ટકટ, ડિવાઇસના ઉપયોગ સંબંધિત ટિપ અને બીજું ઘણું</translation>
 <translation id="6884665277231944629">આજની તારીખ પર પાછા જાઓ</translation>
 <translation id="6886172995547742638">તમારા <ph name="DEVICE_TYPE" />માં નબળું કાર્યપ્રદર્શન થઈ શકે છે. પ્રમાણિત <ph name="PREFERRED_MINIMUM_POWER" />W અથવા તેથી વધુના USB-C પાવર અડૅપ્ટરનો ઉપયોગ કરો.</translation>
@@ -1593,6 +1596,7 @@
 <translation id="7143207342074048698">કનેક્ટિંગ</translation>
 <translation id="7144942256906679589">બૅટરીનું સ્ટેટસ</translation>
 <translation id="7145639536026937076">બૅટરી <ph name="PERCENTAGE" />% પર છે અને ચાર્જ થઈ રહી છે. બૅટરી સેવર ચાલુ છે.</translation>
+<translation id="7149149900052329230">તમારી સ્થાનિક ફાઇલો અને તમારી Google Driveની ફાઇલો, એ બધું Files ઍપમાં મેનેજ કરો.</translation>
 <translation id="7165278925115064263">Alt+Shift+K</translation>
 <translation id="7167913274352523149"><ph name="HOTSPOT" />,
         <ph name="NETWORK" /></translation>
@@ -1613,7 +1617,6 @@
 <translation id="726276584504105859">વિભાજિત સ્ક્રીનનો ઉપયોગ કરવા માટે અહીં ખેંચો</translation>
 <translation id="7262906531272962081">રિમાઇન્ડર બનાવો</translation>
 <translation id="7278787617901301220"><ph name="LAUNCHER_KEY_NAME" /> + backspace</translation>
-<translation id="7282547098317872382">પગલું 5માંથી 3 વિશે જાણો. તમારી <ph name="PRODUCT_NAME" /> પર તમને જે પણ કરવાની જરૂર હોય તે દરેક વસ્તુ કરવા માટે ઍપનો ઉપયોગ કરો. તમે લૉન્ચરમાં તમારી ઍપ જોઈ શકો છો. લૉન્ચર બટન પર ફોકસ કરવા માટે Alt + Shift + L દબાવો.</translation>
 <translation id="7285232777292757180">સ્ક્રીનશૉટ લેવા માટે, ઝડપી સેટિંગમાં જઈને સ્ક્રીન કૅપ્ચરનો ઉપયોગ કરો</translation>
 <translation id="7301826272005790482">વિન્ડોના સૂચનો છોડી દો</translation>
 <translation id="7302889331339392448">લાઇવ કૅપ્શનની સુવિધા બંધ છે.</translation>
@@ -1795,10 +1798,12 @@
 <translation id="7933084174919150729">Google Assistant માત્ર પ્રાથમિક પ્રોફાઇલ માટે જ ઉપલબ્ધ છે.</translation>
 <translation id="79341161159229895"><ph name="FIRST_PARENT_EMAIL" /> અને <ph name="SECOND_PARENT_EMAIL" /> દ્વારા મેનેજ કરાતું એકાઉન્ટ</translation>
 <translation id="793716872548410480">તમારું ક્લિપબોર્ડ જોવા માટે <ph name="SHORTCUT_KEY_NAME" /> + V દબાવો. તમે કૉપિ કરેલી છેલ્લી 5 આઇટમ તમારા ક્લિપબોર્ડ પર સાચવવામાં આવી છે.</translation>
+<translation id="7942330802915522974">ટૂરના <ph name="TOTAL_STEPS" />માંથી પગલું <ph name="STEP" />. તમે લૉન્ચરમાં Files ઍપ જોઈ શકો છો. તમારી સ્થાનિક ફાઇલો અને તમારી Google Driveની ફાઇલો, એ બધું Files ઍપમાં મેનેજ કરો.</translation>
 <translation id="7942349550061667556">લાલ</translation>
 <translation id="7943516765291457328">નજીકના હૉટસ્પૉટ સ્કૅન કરવા માટે બ્લૂટૂથ ચાલુ કરો</translation>
 <translation id="7944023924886109030">આજની તમામ ઇવેન્ટ જુઓ</translation>
 <translation id="7945357288295809525">ઍક્સેસિબિલિટી સેટિંગ બતાવો, "<ph name="ENABLED_FEATURES" />" ચાલુ કર્યું.</translation>
+<translation id="7946681191253332687">વધારેલી સુરક્ષા અપડેટ ઉપલબ્ધ છે</translation>
 <translation id="7947798320695032612"><ph name="APP_NAME" /> તમારા <ph name="DEVICE_NAME" />નો ઉપયોગ કરવા માગે છે</translation>
 <translation id="7951630946012935453">ડિમ કીબોર્ડ</translation>
 <translation id="7953994493035617347">નવું રિઝોલ્યુશન કન્ફર્મ કરીએ?</translation>
@@ -1910,7 +1915,6 @@
 <translation id="8412677897383510995">ડિસ્પ્લે સેટિંગ બતાવો</translation>
 <translation id="8413272770729657668">રેકોર્ડિંગ શરૂ થવાનું છે 3, 2, 1</translation>
 <translation id="8416730306157376817"><ph name="BATTERY_PERCENTAGE" />% (કેસ)</translation>
-<translation id="8417951779969083400">પગલું 5માંથી 2 વિશે જાણો. વાઇ-ફાઇ, બ્લૂટૂથ અમે વૉલ્યૂમ જેવા વારંવાર વપરાતા નિયંત્રણો ઝડપી સેટિંગમાં છે. તમે સ્ક્રીનશૉટ લેવા માટે અહીં પણ જઈ શકો છો. ઝડપી સેટિંગ ખોલવા માટે Alt + Shift + S દબાવો.</translation>
 <translation id="8420205633584771378">આ સૂચન કાઢી નાખીએ?</translation>
 <translation id="8421270167862077762">આ ડિવાઇસ પર <ph name="UNAVAILABLE_APPS" /> ઉપલબ્ધ નથી.</translation>
 <translation id="8426708595819210923">ગુડ ઇવનિંગ <ph name="GIVEN_NAME" />,</translation>
@@ -2131,6 +2135,7 @@
 <translation id="987589956647469042">મોબાઇલ ડેટા ચાલુ કરેલો છે</translation>
 <translation id="989374776391122812">કૅમેરા અને ઑડિયો નિયંત્રણો</translation>
 <translation id="990277280839877440">વિંડો <ph name="WINDOW_TITILE" /> બંધ કરેલી છે.</translation>
+<translation id="993398562350683614">ટૂરના <ph name="TOTAL_STEPS" />માંથી પગલું <ph name="STEP" />. તમારી <ph name="PRODUCT_NAME" /> પર તમને જે પણ કરવાની જરૂર હોય તે દરેક વસ્તુ કરવા માટે ઍપનો ઉપયોગ કરો. તમે લૉન્ચરમાં તમારી ઍપ જોઈ શકો છો. લૉન્ચર બટન પર ફોકસ કરવા માટે Alt + Shift + L દબાવો.</translation>
 <translation id="994354411665877646"><ph name="NETWORK_NAME" />, <ph name="SUBTEXT" /></translation>
 <translation id="996204416024568215">નવીનતમ સુવિધાઓ અને સુરક્ષા સંબંધિત સુધારણાઓ મેળવો. અપડેટ બૅકગ્રાઉન્ડમાં મેળવવામાં આવે છે.</translation>
 </translationbundle>

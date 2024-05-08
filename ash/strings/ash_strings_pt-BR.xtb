@@ -166,6 +166,7 @@ Veja o que você pode fazer para começar.</translation>
 <translation id="1586324912145647027">Ir para o espaço de trabalho 1 a 8</translation>
 <translation id="158838227375272121">Site do Google Sala de Aula</translation>
 <translation id="1589090746204042747">acessar todas as suas atividades nesta sessão;</translation>
+<translation id="1597880963776148053">Etapa <ph name="STEP" /> de <ph name="TOTAL_STEPS" /> do tour. Os apps fixados e abertos aparecem na estante, na parte de baixo da tela. Pressione Alt + Shift + L e pressione Tab para focar nos itens da estante.</translation>
 <translation id="1602874809115667351"><ph name="LAUNCHER_KEY_NAME" /> + seta para baixo</translation>
 <translation id="1604857178818051494">Pausar mídia</translation>
 <translation id="1607312127821884567">Dispensar configuração de visualização de apps do smartphone</translation>
@@ -303,6 +304,7 @@ Veja o que você pode fazer para começar.</translation>
 <translation id="2257486738914982088">Algo deu errado no download do arquivo <ph name="FILENAME" /></translation>
 <translation id="2258734398699965611">Arquivos sugeridos</translation>
 <translation id="2268130516524549846">Bluetooth desativado</translation>
+<translation id="2268731132310444948">Etapa <ph name="STEP" /> de <ph name="TOTAL_STEPS" /> do tour. Depois que o acesso rápido for ativado, uma barra de pesquisa aprimorada vai aparecer. Comece a digitar para pesquisar arquivos, apps e muito mais. Você também pode receber respostas para perguntas sobre o <ph name="PRODUCT_NAME" />.</translation>
 <translation id="2268813581635650749">Desconectar todos</translation>
 <translation id="2276987123919776440">15min</translation>
 <translation id="2277103315734023688">Avançar</translation>
@@ -397,6 +399,7 @@ Veja o que você pode fazer para começar.</translation>
 <translation id="2607678425161541573">É necessário fazer login on-line</translation>
 <translation id="2612072250312279703">monitor de atividade</translation>
 <translation id="2612614436418177118">Mover um ícone de app na grade de apps</translation>
+<translation id="2619326010008283367">Etapa <ph name="STEP" /> de <ph name="TOTAL_STEPS" /> do tour. As configurações do dispositivo estão disponíveis no acesso rápido. Personalize o <ph name="PRODUCT_NAME" /> nas Configurações, por exemplo, mudando o plano de fundo ou definindo um protetor de tela.</translation>
 <translation id="2620016719323068571">Pesquise <ph name="CATEGORY" />, arquivos, apps e muito mais…</translation>
 <translation id="2620436844016719705">Sistema</translation>
 <translation id="2620900772667816510">Super resolução do Bluetooth</translation>
@@ -819,7 +822,6 @@ Alguns recursos estão limitados para aumentar a duração da bateria.</translat
 <translation id="4209973997261364186">O Wi-Fi está ativado</translation>
 <translation id="4212472694152630271">Usar PIN</translation>
 <translation id="4215497585250573029">Configurações de VPN</translation>
-<translation id="4215548513524864822">Etapa 5 de 5 do tour. Encontre as configurações do dispositivo no acesso rápido. Personalize o <ph name="PRODUCT_NAME" /> nas Configurações, mudando o plano de fundo ou definindo um protetor de tela.</translation>
 <translation id="4217571870635786043">Ditado</translation>
 <translation id="4221957499226645091"><ph name="APP_NAME" />, app instalado, pausado</translation>
 <translation id="4228078597006700451">Controles não configurados</translation>
@@ -946,12 +948,12 @@ Alguns recursos estão limitados para aumentar a duração da bateria.</translat
 <translation id="468293128311738995">Apps do smartphone</translation>
 <translation id="4690510401873698237">Estante na parte inferior</translation>
 <translation id="4696813013609194136">Desbloquear dispositivo usando o código de familiar responsável</translation>
-<translation id="469693290987463983">Etapa 1 de 5 do tour. Os apps fixados e abertos aparecem na estante, na parte de baixo da tela. Pressione Alt + Shift + L e pressione Tab para focar nos itens da estante.</translation>
 <translation id="4702647871202761252">A tela de privacidade está desativada</translation>
 <translation id="4706121060329443414">O download será feito mais tarde. Por enquanto, a fala será enviada ao Google para processamento.</translation>
 <translation id="470644585772471629">Inversão de cores</translation>
 <translation id="4708065238214351979">Aumentar o brilho do teclado</translation>
 <translation id="4717575069099566988">O cabo USB-C não oferece suporte a USB4. O desempenho do dispositivo pode ser limitado.</translation>
+<translation id="4724328513667182700">Seis dicas para começar a usar o <ph name="PRODUCT_NAME" /></translation>
 <translation id="4730374152663651037">USADOS FREQUENTEMENTE</translation>
 <translation id="4731797938093519117">Acesso do familiar responsável</translation>
 <translation id="4733161265940833579"><ph name="BATTERY_PERCENTAGE" />% (esquerdo)</translation>
@@ -1027,6 +1029,7 @@ Alguns recursos estão limitados para aumentar a duração da bateria.</translat
 <translation id="4964188651935955085">Quando você desativar o Bluetooth, este dispositivo externo será desconectado do <ph name="DEVICE_TYPE" />:</translation>
 <translation id="4966431234408005599">Aumentar o volume</translation>
 <translation id="4969092041573468113"><ph name="HOURS" />h<ph name="MINUTES" />min<ph name="SECONDS" />s</translation>
+<translation id="496999337731226334">Etapa <ph name="STEP" /> de <ph name="TOTAL_STEPS" /> do tour. Os controles usados com frequência, como Wi-Fi, Bluetooth e volume, estão nas Configurações rápidas. Elas também permitem fazer capturas de tela. Pressione Alt + Shift + S para abrir as Configurações rápidas.</translation>
 <translation id="4975771730019223894">Notificações de apps</translation>
 <translation id="4977493774330778463"><ph name="NUM_IMPORTANT_NOTIFICATION" />:
         <ph name="NOTIFICATION_1" />,
@@ -1144,6 +1147,7 @@ Nenhum dispositivo conectado.</translation>
 <translation id="540713187982329711">Ative ou desative o ponto de acesso. O ponto de acesso está ativado e nenhum dispositivo está conectado.</translation>
 <translation id="5413656666631274079">Página "Configurações"</translation>
 <translation id="5414198321558177633">Atualizando a lista de perfis. Pode levar alguns minutos..</translation>
+<translation id="5417965108047245734">Faça um tour rápido para aprender a usar o <ph name="PRODUCT_NAME" /></translation>
 <translation id="5426063383988017631">Menu de configurações fechado</translation>
 <translation id="5428899915242071344">Iniciar seleção</translation>
 <translation id="5429993543155113935">No momento, não há suporte para janelas anônimas</translation>
@@ -1524,7 +1528,6 @@ Nova instalação</translation>
 <translation id="6874854809828346832">Consulte detalhes do ponto de acesso. O ponto de acesso está ativado.</translation>
 <translation id="6878400149835617132">Atalho desativado</translation>
 <translation id="6878701771800702153">{NUM_APPS,plural, =1{1 app}one{# app}other{# apps}}</translation>
-<translation id="6878787305374738418">Etapa 4 de 5 do tour. Depois que o acesso rápido for ativado, vai aparecer uma barra de pesquisa aprimorada. Comece a digitar para pesquisar arquivos, apps e muito mais. Você também pode receber respostas para perguntas sobre o <ph name="PRODUCT_NAME" />.</translation>
 <translation id="6883768636838842873">Atalhos de teclas, dicas para usar o dispositivo e muito mais</translation>
 <translation id="6884665277231944629">Voltar para hoje</translation>
 <translation id="6886172995547742638">Seu <ph name="DEVICE_TYPE" /> pode ter baixo desempenho. Use um adaptador de energia USB-C certificado de <ph name="PREFERRED_MINIMUM_POWER" /> W ou mais.</translation>
@@ -1593,6 +1596,7 @@ Nova instalação</translation>
 <translation id="7143207342074048698">Conectando</translation>
 <translation id="7144942256906679589">Status da bateria</translation>
 <translation id="7145639536026937076">Bateria em <ph name="PERCENTAGE" />% e carregando. A Economia de bateria está ativada.</translation>
+<translation id="7149149900052329230">Gerencie seus arquivos locais e do Google Drive no app Arquivos.</translation>
 <translation id="7165278925115064263">Alt+Shift+K</translation>
 <translation id="7167913274352523149"><ph name="HOTSPOT" />,
         <ph name="NETWORK" /></translation>
@@ -1613,7 +1617,6 @@ Nova instalação</translation>
 <translation id="726276584504105859">Arraste aqui para usar a tela dividida</translation>
 <translation id="7262906531272962081">Criar lembrete</translation>
 <translation id="7278787617901301220"><ph name="LAUNCHER_KEY_NAME" /> + backspace</translation>
-<translation id="7282547098317872382">Etapa 3 de 5 do tour. Use apps para fazer tudo o que você precisa no <ph name="PRODUCT_NAME" />. Seus apps estão disponíveis no acesso rápido. Pressione Alt + Shift + L para focar o botão de acesso rápido.</translation>
 <translation id="7285232777292757180">Use a ferramenta de captura de tela nas Configurações rápidas para fazer capturas de tela</translation>
 <translation id="7301826272005790482">Dispensar sugestões de janela</translation>
 <translation id="7302889331339392448">O recurso Legenda instantânea está desativado.</translation>
@@ -1795,10 +1798,12 @@ Para desligar o dispositivo, toque no botão liga/desliga novamente e pressione.
 <translation id="7933084174919150729">O Google Assistente só está disponível para o perfil principal.</translation>
 <translation id="79341161159229895">Conta gerenciada por <ph name="FIRST_PARENT_EMAIL" /> e <ph name="SECOND_PARENT_EMAIL" /></translation>
 <translation id="793716872548410480">Pressione <ph name="SHORTCUT_KEY_NAME" /> + V para ver a área de transferência. Os últimos cinco itens que você copiou ficam salvos nela.</translation>
+<translation id="7942330802915522974">Etapa <ph name="STEP" /> de <ph name="TOTAL_STEPS" /> do tour. O app Arquivos está disponível no acesso rápido. Gerencie seus arquivos locais e do Google Drive no app Arquivos.</translation>
 <translation id="7942349550061667556">Vermelho</translation>
 <translation id="7943516765291457328">Ative o Bluetooth para procurar pontos de acesso por perto</translation>
 <translation id="7944023924886109030">Confira todos os eventos de hoje</translation>
 <translation id="7945357288295809525">Mostrar configurações de acessibilidade: recurso "<ph name="ENABLED_FEATURES" />" ativado.</translation>
+<translation id="7946681191253332687">Atualizações de segurança estendidas disponíveis</translation>
 <translation id="7947798320695032612">O app <ph name="APP_NAME" /> quer usar seu dispositivo <ph name="DEVICE_NAME" /></translation>
 <translation id="7951630946012935453">Escurecer o teclado</translation>
 <translation id="7953994493035617347">Confirmar nova resolução?</translation>
@@ -1910,7 +1915,6 @@ Para desligar o dispositivo, toque no botão liga/desliga novamente e pressione.
 <translation id="8412677897383510995">Mostrar configurações de tela</translation>
 <translation id="8413272770729657668">A gravação começa em 3, 2, 1</translation>
 <translation id="8416730306157376817"><ph name="BATTERY_PERCENTAGE" />% (estojo)</translation>
-<translation id="8417951779969083400">Etapa 2 de 5 do tour. Os controles usados com frequência, como Wi-Fi, Bluetooth e volume, estão nas Configurações rápidas. Elas também permitem fazer capturas de tela. Pressione Alt + Shift + S para abrir as Configurações rápidas.</translation>
 <translation id="8420205633584771378">Remover esta sugestão?</translation>
 <translation id="8421270167862077762">O app <ph name="UNAVAILABLE_APPS" /> não está no dispositivo.</translation>
 <translation id="8426708595819210923">Boa noite, <ph name="GIVEN_NAME" />,</translation>
@@ -2131,6 +2135,7 @@ Para desligar o dispositivo, toque no botão liga/desliga novamente e pressione.
 <translation id="987589956647469042">Os dados móveis estão ativados</translation>
 <translation id="989374776391122812">Controles de câmera e áudio</translation>
 <translation id="990277280839877440">Janela <ph name="WINDOW_TITILE" /> fechada.</translation>
+<translation id="993398562350683614">Etapa <ph name="STEP" /> de <ph name="TOTAL_STEPS" /> do tour. Use apps para fazer tudo o que você precisa no <ph name="PRODUCT_NAME" />. Seus apps estão disponíveis no acesso rápido. Pressione Alt + Shift + L para focar o botão de acesso rápido.</translation>
 <translation id="994354411665877646"><ph name="NETWORK_NAME" />, <ph name="SUBTEXT" /></translation>
 <translation id="996204416024568215">Instale os recursos e melhorias de segurança mais recentes. As atualizações ocorrem em segundo plano.</translation>
 </translationbundle>

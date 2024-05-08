@@ -65,7 +65,6 @@
 <translation id="2653844658857826081">NOVO</translation>
 <translation id="2666092431469916601">Gornji</translation>
 <translation id="2701330563083355633">Dijeljeno s uređaja: <ph name="DEVICE_NAME" /></translation>
-<translation id="271033894570825754">Novo</translation>
 <translation id="2824719307700604149">{YEARS,plural, =1{Prije godinu dana}one{Prije # godinu}few{Prije # godine}other{Prije # godina}}</translation>
 <translation id="2878511608894704031">Izbriši sve</translation>
 <translation id="2907671656515444832">{DAYS,plural, =1{Za 1 d}one{Za # d}few{Za # d}other{Za # d}}</translation>

@@ -166,6 +166,7 @@ Pro začátek můžete vyzkoušet třeba tohle.</translation>
 <translation id="1586324912145647027">Přejděte na plochu 1 až 8</translation>
 <translation id="158838227375272121">Web Učebny Google</translation>
 <translation id="1589090746204042747">Získat přístup k veškeré vaší aktivitě v této relaci</translation>
+<translation id="1597880963776148053">Krok <ph name="STEP" /> z <ph name="TOTAL_STEPS" /> v prohlídce. Vaše připnuté a otevřené aplikace jsou na poličce ve spodní části obrazovky. Položky na poličce můžete vybrat tak, že stisknete kombinaci kláves Alt + Shift + L a poté tabulátor.</translation>
 <translation id="1602874809115667351"><ph name="LAUNCHER_KEY_NAME" /> + šipka dolů</translation>
 <translation id="1604857178818051494">Pozastavit médium</translation>
 <translation id="1607312127821884567">Zavřít nastavení zobrazování aplikací z telefonu</translation>
@@ -303,6 +304,7 @@ Pro začátek můžete vyzkoušet třeba tohle.</translation>
 <translation id="2257486738914982088">Při stahování souboru <ph name="FILENAME" /> se něco pokazilo</translation>
 <translation id="2258734398699965611">Navrhované soubory</translation>
 <translation id="2268130516524549846">Rozhraní Bluetooth deaktivováno</translation>
+<translation id="2268731132310444948">Krok <ph name="STEP" /> z <ph name="TOTAL_STEPS" /> v prohlídce. Po aktivaci Spouštěče získáte vylepšený vyhledávací panel. Můžete začít psát a hledat své soubory, aplikace a podobně. Můžete také získat odpovědi na otázky týkající se zařízení <ph name="PRODUCT_NAME" />.</translation>
 <translation id="2268813581635650749">Odhlásit vše</translation>
 <translation id="2276987123919776440">15 min</translation>
 <translation id="2277103315734023688">Přetočit dopředu</translation>
@@ -397,6 +399,7 @@ Je připojen tento počet zařízení: <ph name="DEVICECOUNT" />.</translation>
 <translation id="2607678425161541573">Je vyžadováno online přihlášení</translation>
 <translation id="2612072250312279703">sledování aktivity</translation>
 <translation id="2612614436418177118">Přesunout ikonu aplikace v mřížce aplikace</translation>
+<translation id="2619326010008283367">Krok <ph name="STEP" /> z <ph name="TOTAL_STEPS" /> v prohlídce. Ve Spouštěči najdete nastavení zařízení. Zkuste si zařízení <ph name="PRODUCT_NAME" /> v Nastavení přizpůsobit, například změnit tapetu nebo nastavit spořič obrazovky.</translation>
 <translation id="2620016719323068571">Prohledat soubory, aplikace a další obsah z kategorie <ph name="CATEGORY" />…</translation>
 <translation id="2620436844016719705">Systém</translation>
 <translation id="2620900772667816510">Bluetooth se super rozlišením</translation>
@@ -819,7 +822,6 @@ Některé funkce jsou za účelem prodloužení výdrže baterie omezeny.</trans
 <translation id="4209973997261364186">Wi-Fi je zapnuta</translation>
 <translation id="4212472694152630271">Přepnout na PIN</translation>
 <translation id="4215497585250573029">Nastavení sítě VPN</translation>
-<translation id="4215548513524864822">Krok 5 z 5 v prohlídce. Ve Spouštěči najdete nastavení zařízení. Zkuste si zařízení <ph name="PRODUCT_NAME" /> v Nastavení přizpůsobit, například změnit tapetu nebo nastavit spořič obrazovky.</translation>
 <translation id="4217571870635786043">Diktování</translation>
 <translation id="4221957499226645091"><ph name="APP_NAME" />, instalovaná aplikace, pozastaveno</translation>
 <translation id="4228078597006700451">Ovládací prvky nejsou nastaveny</translation>
@@ -946,12 +948,12 @@ Je připojeno 1 zařízení.</translation>
 <translation id="468293128311738995">Aplikace z telefonu</translation>
 <translation id="4690510401873698237">Polička dole</translation>
 <translation id="4696813013609194136">Odemkněte zařízení rodičovským kódem</translation>
-<translation id="469693290987463983">Krok 1 z 5 v prohlídce. Vaše připnuté a otevřené aplikace jsou na poličce ve spodní části obrazovky. Položky na poličce můžete vybrat tak, že stisknete kombinaci kláves Alt + Shift + L a poté tabulátor.</translation>
 <translation id="4702647871202761252">Obrazovka ochrany soukromí je vypnutá</translation>
 <translation id="4706121060329443414">Soubory zkusíme stáhnout později. Prozatím se řeč bude ke zpracování odesílat do Googlu.</translation>
 <translation id="470644585772471629">Převrácení barev</translation>
 <translation id="4708065238214351979">Zjasnit klávesnici</translation>
 <translation id="4717575069099566988">Váš kabel USB-C nepodporuje rozhraní USB4. Výkon zařízení může být omezen.</translation>
+<translation id="4724328513667182700">Šest tipů, jak začít se službou <ph name="PRODUCT_NAME" /></translation>
 <translation id="4730374152663651037">ČASTO POUŽÍVANÉ</translation>
 <translation id="4731797938093519117">Rodičovský přístup</translation>
 <translation id="4733161265940833579"><ph name="BATTERY_PERCENTAGE" /> % (vlevo)</translation>
@@ -1027,6 +1029,7 @@ Je připojeno 1 zařízení.</translation>
 <translation id="4964188651935955085">Když vypnete Bluetooth, od zařízení <ph name="DEVICE_TYPE" /> se odpojí toto externí zařízení:</translation>
 <translation id="4966431234408005599">Zvýšit hlasitost</translation>
 <translation id="4969092041573468113"><ph name="HOURS" /> h <ph name="MINUTES" /> min <ph name="SECONDS" /> s</translation>
+<translation id="496999337731226334">Krok <ph name="STEP" /> z <ph name="TOTAL_STEPS" /> v prohlídce. Často používané ovládací prvky, jako jsou Wi-Fi, Bluetooth a hlasitost, jsou v Rychlém nastavení. Můžete pomocí něj také pořídit snímky obrazovky. Stisknutím kombinace kláves Alt + Shift + S otevřete Rychlé nastavení.</translation>
 <translation id="4975771730019223894">Označování aplikací odznakem</translation>
 <translation id="4977493774330778463"><ph name="NUM_IMPORTANT_NOTIFICATION" />:
         <ph name="NOTIFICATION_1" />,
@@ -1144,6 +1147,7 @@ Nejsou připojena žádná zařízení.</translation>
 <translation id="540713187982329711">Přepnout hotspot. Hotspot je zapnutý, není připojeno žádné zařízení.</translation>
 <translation id="5413656666631274079">Stránka nastavení</translation>
 <translation id="5414198321558177633">Obnovování seznamu profilů. Může to trvat několik minut.</translation>
+<translation id="5417965108047245734">Projděte si rychlou prohlídku a naučte se v zařízení <ph name="PRODUCT_NAME" /> orientovat</translation>
 <translation id="5426063383988017631">Nabídka nastavení byla zavřena</translation>
 <translation id="5428899915242071344">Zahájit výběr</translation>
 <translation id="5429993543155113935">Anonymní okna v současné době nejsou podporována</translation>
@@ -1524,7 +1528,6 @@ Nová instalace</translation>
 <translation id="6874854809828346832">Zobrazit podrobnosti o hotspotu. Hotspot je zapnutý.</translation>
 <translation id="6878400149835617132">Zkratka je vypnutá</translation>
 <translation id="6878701771800702153">{NUM_APPS,plural, =1{1 aplikace}few{# aplikace}many{# aplikace}other{# aplikací}}</translation>
-<translation id="6878787305374738418">Krok 4 z 5 v prohlídce. Po aktivaci Spouštěče získáte vylepšený vyhledávací panel. Můžete začít psát a hledat své soubory, aplikace a podobně. Můžete také získat odpovědi na otázky týkající se zařízení <ph name="PRODUCT_NAME" />.</translation>
 <translation id="6883768636838842873">Klávesové zkratky, tipy k používání zařízení a další</translation>
 <translation id="6884665277231944629">Zpět na dnešek</translation>
 <translation id="6886172995547742638">Výkon zařízení <ph name="DEVICE_TYPE" /> se může snížit. Použijte certifikovaný napájecí adaptér s výkonem <ph name="PREFERRED_MINIMUM_POWER" /> W nebo vyšším.</translation>
@@ -1593,6 +1596,7 @@ Nová instalace</translation>
 <translation id="7143207342074048698">Připojování</translation>
 <translation id="7144942256906679589">Stav baterie</translation>
 <translation id="7145639536026937076">Baterie je nabitá na <ph name="PERCENTAGE" /> % a nabíjí se. Spořič baterie je zapnutý.</translation>
+<translation id="7149149900052329230">Spravujte své místní soubory a soubory na Disku Google, to vše v aplikaci Soubory.</translation>
 <translation id="7165278925115064263">Alt + Shift + K</translation>
 <translation id="7167913274352523149"><ph name="HOTSPOT" />, <ph name="NETWORK" /></translation>
 <translation id="7168224885072002358">Původní rozlišení bude obnoveno za <ph name="TIMEOUT_SECONDS" /></translation>
@@ -1612,7 +1616,6 @@ Nová instalace</translation>
 <translation id="726276584504105859">Chcete-li použít rozdělenou obrazovku, přetáhněte okno sem</translation>
 <translation id="7262906531272962081">Vytvořit připomenutí</translation>
 <translation id="7278787617901301220"><ph name="LAUNCHER_KEY_NAME" /> + backspace</translation>
-<translation id="7282547098317872382">Krok 3 z 5 v prohlídce. Pomocí aplikací můžete na zařízení <ph name="PRODUCT_NAME" /> dělat vše, co potřebujete. Své aplikace najdete ve Spouštěči. Stisknutím kombinace kláves Alt + Shift + L vyberete tlačítko Spouštěče.</translation>
 <translation id="7285232777292757180">K pořízení snímků obrazovky můžete použít nástroj pro záznam obrazovky v rychlém nastavení</translation>
 <translation id="7301826272005790482">Zavřít návrhy oken</translation>
 <translation id="7302889331339392448">Živý přepis je vypnutý.</translation>
@@ -1794,10 +1797,12 @@ Pokud zařízení chcete vypnout, znovu podržte tlačítko napájení na zaří
 <translation id="7933084174919150729">Asistent Google je k dispozici pouze pro primární profil.</translation>
 <translation id="79341161159229895">Správci účtu: <ph name="FIRST_PARENT_EMAIL" /> a <ph name="SECOND_PARENT_EMAIL" /></translation>
 <translation id="793716872548410480">Stisknutím kláves <ph name="SHORTCUT_KEY_NAME" /> + V zobrazíte schránku. Ve schránce je uloženo posledních pět zkopírovaných položek.</translation>
+<translation id="7942330802915522974">Krok <ph name="STEP" /> z <ph name="TOTAL_STEPS" /> v prohlídce. Aplikaci Soubory najdete ve Spouštěči. Spravujte své místní soubory a soubory na Disku Google, to vše v aplikaci Soubory.</translation>
 <translation id="7942349550061667556">Červená</translation>
 <translation id="7943516765291457328">Pokud chcete vyhledat hotspoty v okolí, zapněte Bluetooth</translation>
 <translation id="7944023924886109030">Zobrazit všechny události pro dnešek</translation>
 <translation id="7945357288295809525">Zobrazit nastavení přístupnosti. Zapnuté funkce: <ph name="ENABLED_FEATURES" />.</translation>
+<translation id="7946681191253332687">K dispozici jsou rozšířené aktualizace zabezpečení</translation>
 <translation id="7947798320695032612">Aplikace <ph name="APP_NAME" /> chce použít tuto hardwarovou komponentu: <ph name="DEVICE_NAME" /></translation>
 <translation id="7951630946012935453">Ztlumit klávesnici</translation>
 <translation id="7953994493035617347">Potvrdit nové rozlišení?</translation>
@@ -1909,7 +1914,6 @@ Pokud zařízení chcete vypnout, znovu podržte tlačítko napájení na zaří
 <translation id="8412677897383510995">Zobrazit nastavení displeje</translation>
 <translation id="8413272770729657668">Nahrávání začne za 3, 2, 1</translation>
 <translation id="8416730306157376817"><ph name="BATTERY_PERCENTAGE" /> % (pouzdro)</translation>
-<translation id="8417951779969083400">Krok 2 z 5 v prohlídce. Často používané ovládací prvky, jako jsou Wi-Fi, Bluetooth a hlasitost, jsou v Rychlém nastavení. Můžete pomocí něj také pořídit snímky obrazovky. Stisknutím kombinace kláves Alt + Shift + S otevřete Rychlé nastavení.</translation>
 <translation id="8420205633584771378">Odstranit tento návrh?</translation>
 <translation id="8421270167862077762">Aplikace <ph name="UNAVAILABLE_APPS" /> na tomto zařízení není.</translation>
 <translation id="8426708595819210923">Dobrý večer, <ph name="GIVEN_NAME" />,</translation>
@@ -2122,12 +2126,14 @@ Pokud zařízení chcete vypnout, znovu podržte tlačítko napájení na zaří
 <translation id="954052413789300507">Pro soubor <ph name="FILENAME" /> není k dispozici dostatek volného místa. Uvolněte místo.</translation>
 <translation id="954520015070501466">30 min</translation>
 <translation id="956452277966142925">Nastavení herního panelu</translation>
+<translation id="961856697154696964">Vymazat údaje o prohlížení</translation>
 <translation id="974545358917229949">Zobrazuje se tento počet výsledků pro dotaz <ph name="QUERY" />: <ph name="RESULT_COUNT" /></translation>
 <translation id="981011780479609956">Bez termínu</translation>
 <translation id="98120814841227350">Přejít na konec dokumentu</translation>
 <translation id="987589956647469042">Mobilní data jsou zapnutá</translation>
 <translation id="989374776391122812">Ovládání kamery a zvuku</translation>
 <translation id="990277280839877440">Okno <ph name="WINDOW_TITILE" /> bylo zavřeno.</translation>
+<translation id="993398562350683614">Krok <ph name="STEP" /> z <ph name="TOTAL_STEPS" /> v prohlídce. Pomocí aplikací můžete na zařízení <ph name="PRODUCT_NAME" /> dělat vše, co potřebujete. Své aplikace najdete ve Spouštěči. Stisknutím kombinace kláves Alt + Shift + L vyberete tlačítko Spouštěče.</translation>
 <translation id="994354411665877646"><ph name="NETWORK_NAME" />, <ph name="SUBTEXT" /></translation>
 <translation id="996204416024568215">Získejte nejnovější funkce a vylepšení zabezpečení. Aktualizace probíhají na pozadí.</translation>
 </translationbundle>

@@ -11,6 +11,7 @@
 <translation id="1047458377670401304"><ph name="CPU_NAME" /> (počet vlákien: <ph name="THREAD_COUNT" />, <ph name="CPU_MAX_CLOCK_SPEED" /> GHz)</translation>
 <translation id="1047773237499189053">K dispozícii je nová funkcia. Viac sa dozviete pomocou šípky nahor.</translation>
 <translation id="1049663189809099096">pastelovožltý/-á</translation>
+<translation id="1056898198331236512">Upozornenie</translation>
 <translation id="1059913517121127803">Skenovanie sa nepodarilo spustiť</translation>
 <translation id="1062823486781306604"><ph name="INDEX" /> z <ph name="COUNT" />, <ph name="NAME" />.</translation>
 <translation id="1070066693520972135">WEP</translation>
@@ -95,7 +96,6 @@
 <translation id="1478594628797167447">Skener</translation>
 <translation id="1483493594462132177">Odoslať</translation>
 <translation id="1488850966314959671">K tejto sieti sa nedá pripojiť pomocou žiadnych aktivovaných vlastných názvov prístupového bodu (APN). Viac sa dozviete od svojho operátora.</translation>
-<translation id="1491076385728777984">Aktualizuje sa firmvér zariadenia <ph name="DEVICE_NAME" /></translation>
 <translation id="1499041187027566160">zvýšenie hlasitosti</translation>
 <translation id="1499900233129743732"><ph name="MANAGER" /> spravuje tohto používateľa a môže vzdialene spravovať nastavenia a sledovať aktivitu používateľa.</translation>
 <translation id="150962533380566081">Neplatný kód PUK.</translation>
@@ -291,7 +291,6 @@
 <translation id="2505327257735685095">Obnoviť aktuálny obrázok tapety</translation>
 <translation id="2512979179176933762">zobrazenie okien</translation>
 <translation id="2513396635448525189">Obrázok na prihlasovacej obrazovke</translation>
-<translation id="2517472476991765520">Skenovať</translation>
 <translation id="2521835766824839541">predchádzajúca stopa</translation>
 <translation id="2526590354069164005">Pracovná plocha</translation>
 <translation id="2529641961800709867">Možnosti tlačidla</translation>
@@ -330,6 +329,7 @@
 <translation id="2744221223678373668">Zdieľané</translation>
 <translation id="2751739896257479635">Overenie totožnosti EAP – 2. fáza:</translation>
 <translation id="2754757901767760034">lampa</translation>
+<translation id="2780756493585863768">Nedávne pozadia používajúce umelú inteligenciu od Googlu</translation>
 <translation id="2783010256799387990">ÚSPEŠNÉ</translation>
 <translation id="2786429550992142861">ľan</translation>
 <translation id="2787435249130282949">jasnejšia klávesnica</translation>
@@ -426,6 +426,7 @@
 <translation id="3456078764689556234">Bola vytlačená <ph name="PRINTED_PAGES" />. strana z <ph name="TOTAL_PAGES" />.</translation>
 <translation id="345898999683440380">Skenuje sa <ph name="PAGE_NUM" />. strana. Dokončené: <ph name="PERCENTAGE_VALUE" /> %.</translation>
 <translation id="3459509316159669723">Tlač</translation>
+<translation id="3462187165860821523">Aktualizuje sa zariadenie <ph name="DEVICE_NAME" /></translation>
 <translation id="346423161771747987">Prúd</translation>
 <translation id="346539236881580388">Odfotiť znova</translation>
 <translation id="3484914941826596830">Počas aktualizovania firmvéru neodpájajte toto zariadenie ani nevypínajte počítač. Toto okno môžete minimalizovať. Táto aktualizácia môže trvať niekoľko minút a vaše externé zariadenie nemusí počas nej fungovať.</translation>
@@ -790,6 +791,7 @@
 <translation id="5559898619118303662">Automaticky prepínať na tmavý motív pri západe slnka</translation>
 <translation id="556042886152191864">Tlačidlo</translation>
 <translation id="5562551811867441927"><ph name="TERRAIN_FEATURE" /> v odtieňoch farby <ph name="TERRAIN_COLOR" /></translation>
+<translation id="5572169899491758844">Skenovanie</translation>
 <translation id="5578477003638479617">UMTS</translation>
 <translation id="5578519639599103840">Skenovať znova</translation>
 <translation id="5583640892426849032">Backspace</translation>
@@ -879,7 +881,6 @@
 <translation id="6075872808778243331">(Android) Latencia protokolu HTTP</translation>
 <translation id="6078323886959318429">Pridať odkaz</translation>
 <translation id="6091080061796993741">žlté</translation>
-<translation id="610371409726072606">Pozadie kamery používajúce umelú inteligenciu od Googlu</translation>
 <translation id="6104112872696127344">Skenovanie bolo zrušené</translation>
 <translation id="6106186594183574873">Ak chcete zmenu dokončiť, zadajte staré heslo</translation>
 <translation id="6108689792487843350">Brána je nedostupná</translation>
@@ -1011,7 +1012,6 @@
 <translation id="672609503628871915">Zobraziť novinky</translation>
 <translation id="6740695858234317715">krémová a oranžová</translation>
 <translation id="6741823073189174383">čln</translation>
-<translation id="674276385369049081">Nedávne pozadia kamery používajúce umelú inteligenciu od Googlu</translation>
 <translation id="6744441848304920043">džungle</translation>
 <translation id="6747035363363040417">neutrálna</translation>
 <translation id="6747215703636344499">Zastavené – výstup je plný</translation>
@@ -1032,6 +1032,7 @@
 <translation id="6871256179359663621">svetlofialový/-á</translation>
 <translation id="6889786074662672253">Počas reštartu neodpájajte toto externé zariadenie ani nevypínajte počítač. Toto okno môžete minimalizovať. Reštart môže trvať niekoľko minút a vaše externé zariadenie nemusí počas neho fungovať.</translation>
 <translation id="6900701049656042631">V tomto albume nie sú žiadne fotky. Ak doň chcete nejaké pridať, prejdite na <ph name="LINK" />.</translation>
+<translation id="6902359863093437070">Vytvorte pozadie pomocou umelej inteligencie</translation>
 <translation id="6905163627763043954">Vyskúšať</translation>
 <translation id="6905724422583748843">Späť na <ph name="PAGE_NAME" /></translation>
 <translation id="6910312834584889076">Je otvorený kryt skenera. Zavrite ho a skúste to znova.</translation>
@@ -1269,6 +1270,7 @@
 <translation id="8152370627892825"><ph name="DESCRIPTION" />, <ph name="ACCELERATOR_INFO" />.</translation>
 <translation id="8156233298086717232">Magická</translation>
 <translation id="8162776280680283326">líšky</translation>
+<translation id="8167413449582155132">Pozadie používa umelú inteligenciu od Googlu</translation>
 <translation id="8179976553408161302">Enter</translation>
 <translation id="8183975772394450380">pláže</translation>
 <translation id="8206859287963243715">Mobilné</translation>

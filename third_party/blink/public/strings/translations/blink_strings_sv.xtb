@@ -12,6 +12,7 @@
 <translation id="1588438908519853928">Normal</translation>
 <translation id="1591562245178063882">Den här månaden</translation>
 <translation id="1637811476055996098">Välj filer</translation>
+<translation id="1680090928918677457">Använd kameran</translation>
 <translation id="1681022320378710418">aktuell tid</translation>
 <translation id="1727839386348365796">Pipett</translation>
 <translation id="1729654308190250600">Ange en e-postadress som inte är tom.</translation>
@@ -60,6 +61,7 @@
 <translation id="3822383571486410024">Lägg till minst <ph name="MIN_CHARACTERS" /> tecken (för närvarande har du angett <ph name="CURRENT_LENGTH" /> tecken).</translation>
 <translation id="383465348367842624">En del följt av <ph name="ATSIGN" /> får inte innehålla symbolen <ph name="INVALIDCHARACTER" />.</translation>
 <translation id="3846214748874656680">Avsluta helskärmsläge</translation>
+<translation id="3914173277599553213">Obligatoriskt</translation>
 <translation id="4031179711345676612">Mikrofon är tillåten</translation>
 <translation id="4103419683916926126">Millisekunder</translation>
 <translation id="4201051445878709314">Visa föregående månad</translation>
@@ -75,6 +77,7 @@
 <translation id="4912200001568447310">aktuellt objekt</translation>
 <translation id="4915360478455618802">Visa tidsväljare</translation>
 <translation id="4924138096460353083">obestämt</translation>
+<translation id="49269513399674318">Använd mikrofonen</translation>
 <translation id="4950364064308314478">Visa datum- och tidsväljare för lokal tid</translation>
 <translation id="4971739861736909480"><ph name="ACCNAME" /> har valts</translation>
 <translation id="4975562563186953947"><ph name="SELECTED_COUNT" /> valda</translation>
@@ -142,6 +145,7 @@
 <translation id="7080893216867146095">Platsdelning tillåts</translation>
 <translation id="709897737746224366">Matcha det format som anges.</translation>
 <translation id="7102274145889307184">aktuell plats</translation>
+<translation id="7134810312945846184">Använd mikrofonen och kameran</translation>
 <translation id="7263440858009898357">Välj ett alternativ i listan.</translation>
 <translation id="7320576522385648310">buffrar</translation>
 <translation id="7341556277900466204">Färgkälla</translation>

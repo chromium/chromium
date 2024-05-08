@@ -32,6 +32,7 @@
 <translation id="2175927920773552910">QR-kod</translation>
 <translation id="2244252133441425811">Aktivera FPS-väljare för video</translation>
 <translation id="2271433936731426666">Aktivera ögonblicksvideo i full storlek</translation>
+<translation id="2281736597583450397">Få skarpare detaljer med förbättrad zoom</translation>
 <translation id="2320741269052147773">Panorera åt vänster</translation>
 <translation id="2360840973209616515">Kameraappen hanteras av administratören.
         Kontakta administratören för mer information.</translation>
@@ -118,6 +119,7 @@
 Om din feedback handlar om bild- eller videokvalitet bifogar du en exempelbild eller exempelvideo och beskriver problemet. (Till exempel: fotot är för mörkt eller motivet är inte i fokus.)</translation>
 <translation id="6519884562954018934">Gå med i <ph name="WIFINAME" /></translation>
 <translation id="6527303717912515753">Dela</translation>
+<translation id="6586509689874700895">Tryck först på <ph name="BUTTON_NAME" /> för att zooma in. När du har tagit ett foto ser du förbättrade detaljer.</translation>
 <translation id="6617916774429601017">Visa alla upplösningar</translation>
 <translation id="6631515515009660915">Spegling av</translation>
 <translation id="6652737148136672975">Flytta hörnet med hjälp av pilknapparna</translation>

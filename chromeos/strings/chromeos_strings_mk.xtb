@@ -11,6 +11,7 @@
 <translation id="1047458377670401304"><ph name="CPU_NAME" /> (<ph name="THREAD_COUNT" /> низи, <ph name="CPU_MAX_CLOCK_SPEED" /> GHz)</translation>
 <translation id="1047773237499189053">Достапна е нова функција. Користете го копчето со стрелка нагоре за да дознаете повеќе.</translation>
 <translation id="1049663189809099096">пастелножолта</translation>
+<translation id="1056898198331236512">Предупредување</translation>
 <translation id="1059913517121127803">Не можеше да се започне со скенирање</translation>
 <translation id="1062823486781306604"><ph name="INDEX" /> од <ph name="COUNT" />, <ph name="NAME" />.</translation>
 <translation id="1070066693520972135">WEP</translation>
@@ -95,7 +96,6 @@
 <translation id="1478594628797167447">Скенер</translation>
 <translation id="1483493594462132177">Испрати</translation>
 <translation id="1488850966314959671">Не може да се поврзе на мрежава со овозможени приспособени APN. Контактирајте со вашиот мобилен оператор за повеќе информации.</translation>
-<translation id="1491076385728777984">Се ажурира фирмверот на <ph name="DEVICE_NAME" /></translation>
 <translation id="1499041187027566160">засили звук</translation>
 <translation id="1499900233129743732"><ph name="MANAGER" /> управува со корисников и може оддалеку да управува со поставките и да ја набљудува неговата активност.</translation>
 <translation id="150962533380566081">Погрешен PUK.</translation>
@@ -291,7 +291,6 @@
 <translation id="2505327257735685095">Освежете ја тековната слика за тапет</translation>
 <translation id="2512979179176933762">прикажување прозорци</translation>
 <translation id="2513396635448525189">Слика при најавување</translation>
-<translation id="2517472476991765520">Скенирај</translation>
 <translation id="2521835766824839541">претходна песна</translation>
 <translation id="2526590354069164005">Десктоп</translation>
 <translation id="2529641961800709867">Опции за копче</translation>
@@ -330,6 +329,7 @@
 <translation id="2744221223678373668">Споделени</translation>
 <translation id="2751739896257479635">Автентикација со EAP во фаза 2</translation>
 <translation id="2754757901767760034">ламба</translation>
+<translation id="2780756493585863768">Неодамнешни заднини овозможени од Google AI</translation>
 <translation id="2783010256799387990">УСПЕШЕН</translation>
 <translation id="2786429550992142861">ленено платно</translation>
 <translation id="2787435249130282949">посветла тастатура</translation>
@@ -426,6 +426,7 @@
 <translation id="3456078764689556234">Отпечатена страница <ph name="PRINTED_PAGES" /> од <ph name="TOTAL_PAGES" />.</translation>
 <translation id="345898999683440380">Се скенира страницата <ph name="PAGE_NUM" />. <ph name="PERCENTAGE_VALUE" /> % завршено.</translation>
 <translation id="3459509316159669723">Се печати</translation>
+<translation id="3462187165860821523">Се ажурира <ph name="DEVICE_NAME" /></translation>
 <translation id="346423161771747987">Струја</translation>
 <translation id="346539236881580388">Фотографирај пак</translation>
 <translation id="3484914941826596830">Додека фирмверот се ажурира, не исклучувајте го надворешниов уред од струја или не исклучувајте го компјутерот. Може да го минимизирате прозорецов. Ажурирањево може да потрае неколку минути и надворешниот уред можеби нема да работи во ова време.</translation>
@@ -790,6 +791,7 @@
 <translation id="5559898619118303662">Автоматски префрлете се на темна тема на зајдисонце</translation>
 <translation id="556042886152191864">Копче</translation>
 <translation id="5562551811867441927"><ph name="TERRAIN_FEATURE" /> во нијанси на <ph name="TERRAIN_COLOR" /></translation>
+<translation id="5572169899491758844">Скенирање</translation>
 <translation id="5578477003638479617">UMTS</translation>
 <translation id="5578519639599103840">Скенирај пак</translation>
 <translation id="5583640892426849032">Backspace-копче</translation>
@@ -879,7 +881,6 @@
 <translation id="6075872808778243331">(Android) Латенција на HTTP</translation>
 <translation id="6078323886959318429">Додајте кратенка</translation>
 <translation id="6091080061796993741">жолта</translation>
-<translation id="610371409726072606">Заднина за камера овозможена од Google AI</translation>
 <translation id="6104112872696127344">Скенирањето е откажано</translation>
 <translation id="6106186594183574873">За да завршите, внесете ја старата лозинка</translation>
 <translation id="6108689792487843350">Порталот е недостапен</translation>
@@ -1011,7 +1012,6 @@
 <translation id="672609503628871915">Погледнете што има ново</translation>
 <translation id="6740695858234317715">светлокафеава и портокалова</translation>
 <translation id="6741823073189174383">брод</translation>
-<translation id="674276385369049081">Неодамнешни заднини за камера овозможени од Google AI</translation>
 <translation id="6744441848304920043">џунгла</translation>
 <translation id="6747035363363040417">неутрални</translation>
 <translation id="6747215703636344499">Запрено - излезната фиока е полна</translation>
@@ -1032,6 +1032,7 @@
 <translation id="6871256179359663621">светловиолетова</translation>
 <translation id="6889786074662672253">Додека се рестартира, не исклучувајте го надворешниов уред од струја или не исклучувајте го компјутерот. Може да го минимизирате прозорецов. Ова може да потрае неколку минути и надворешниот уред можеби нема да работи во ова време.</translation>
 <translation id="6900701049656042631">Нема фотографии во албумов. За да додадете фотографии, одете на <ph name="LINK" /></translation>
+<translation id="6902359863093437070">Создајте заднина со AI</translation>
 <translation id="6905163627763043954">Испробајте</translation>
 <translation id="6905724422583748843">Назад на <ph name="PAGE_NAME" /></translation>
 <translation id="6910312834584889076">Капакот на скенерот е отворен. Затворете го и обидете се повторно.</translation>
@@ -1269,6 +1270,7 @@
 <translation id="8152370627892825"><ph name="DESCRIPTION" />, <ph name="ACCELERATOR_INFO" />.</translation>
 <translation id="8156233298086717232">волшебна</translation>
 <translation id="8162776280680283326">лисици</translation>
+<translation id="8167413449582155132">Заднината е овозможена од Google AI</translation>
 <translation id="8179976553408161302">Enter</translation>
 <translation id="8183975772394450380">плажа</translation>
 <translation id="8206859287963243715">Мобилен</translation>

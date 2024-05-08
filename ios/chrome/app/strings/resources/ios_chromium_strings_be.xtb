@@ -59,6 +59,7 @@
 <translation id="2574528844022712255">Прагляд закладак Chromium</translation>
 <translation id="2590893390871230428">Сінхранізацыя даных Chromium</translation>
 <translation id="2592940277904433508">Працягнуць работу ў Chromium</translation>
+<translation id="2607609479243848905">Калі вы забылі фразу-пароль або хочаце змяніць гэту наладу, <ph name="BEGIN_LINK" />выдаліце даныя Chromium з уліковага запісу<ph name="END_LINK" />.</translation>
 <translation id="2618596336309823556">У наладах прылады адкрыйце пункт меню "<ph name="TEXT_OF_THE_SETTINGS_MENU_ITEM" />" і выберыце "Chromium"</translation>
 <translation id="2618757400690011108">{COUNT,plural, =1{Гэта пасылка будзе адсочвацца на старонцы новай укладкі ў Chromium.}one{Гэтыя пасылкі будуць адсочвацца на старонцы новай укладкі ў Chromium.}few{Гэтыя пасылкі будуць адсочвацца на старонцы новай укладкі ў Chromium.}many{Гэтыя пасылкі будуць адсочвацца на старонцы новай укладкі ў Chromium.}other{Гэтыя пасылкі будуць адсочвацца на старонцы новай укладкі ў Chromium.}}</translation>
 <translation id="2650312721222849884">Каб мець доступ да сваіх укладак з усіх прылад, на якіх вы выкарыстоўваеце Chromium, уключыце сінхранізацыю</translation>
@@ -73,6 +74,7 @@
 <translation id="2918709798697875261">Палітыка вашай арганізацыі забараняе вам уваходзіць у Chromium.</translation>
 <translation id="2942241131342758843">Зрабіце Chromium стандартным браўзерам, каб адкрываць спасылкі, шукаць інфармацыю праз віджэты і аўтаматычна запаўняць паролі ў іншых праграмах</translation>
 <translation id="2977470724722393594">Chromium абноўлены</translation>
+<translation id="3044857325852340337">Даныя пра работу ў Chromium выдалены</translation>
 <translation id="3078941082359356771">{COUNT,plural, =1{Вы можаце сачыць за гэтай пасылкай на старонцы новай укладкі ў Chromium.}one{Вы можаце сачыць за гэтымі пасылкамі на старонцы новай укладкі ў Chromium.}few{Вы можаце сачыць за гэтымі пасылкамі на старонцы новай укладкі ў Chromium.}many{Вы можаце сачыць за гэтымі пасылкамі на старонцы новай укладкі ў Chromium.}other{Вы можаце сачыць за гэтымі пасылкамі на старонцы новай укладкі ў Chromium.}}</translation>
 <translation id="3102849287235003384">Каб выйсці з Уліковага запісу Google на ўсіх вэб-сайтах, <ph name="BEGIN_LINK" />выйдзіце з Chromium<ph name="END_LINK" />.</translation>
 <translation id="3219277919172823720">Выканаць галасавы пошук у Chromium</translation>
@@ -115,11 +117,15 @@
 <translation id="4498832288620833153">Дадае ўведзеныя URL-адрасы ў Спіс на прагляд у Chromium.</translation>
 <translation id="452436063477828504">Падбайце аб тым, каб заўсёды мець доступ да даных Chromium ва Уліковым запісе Google</translation>
 <translation id="4555020257205549924">Калі гэта функцыя ўключана, Chromium будзе прапаноўваць перакласці старонкі на іншых мовах з дапамогай Перакладчыка Google. <ph name="BEGIN_LINK" />Даведацца больш<ph name="END_LINK" /></translation>
+<translation id="4572441104543926904">Шыфраванне фразай-паролем не прымяняецца да спосабаў аплаты і адрасоў.
+
+Каб змяніць гэту наладу, <ph name="BEGIN_LINK" />выдаліце даныя Chromium з уліковага запісу<ph name="END_LINK" />.</translation>
 <translation id="4576283463017113841">Адкрывае старонку для наладжвання спосабаў аплаты ў Chromium.</translation>
 <translation id="459080529287102949">Выканай візуальны пошук у Chromium</translation>
 <translation id="4633738821577273991">Для гэтага профілю Chromium даступны таксама Палепшаны Бяспечны прагляд</translation>
 <translation id="4638625642619341392">Спампуйце Chromium тут.</translation>
 <translation id="4654936625574199632">Chromium адпраўляе ў Google даныя пра збоі і выкарыстанне, якія дапамогуць палепшыць праграму. <ph name="BEGIN_LINK" />Кіраваць<ph name="END_LINK" /></translation>
+<translation id="4675485352217495362">Выдаліць даныя пра работу ў браўзеры Chromium</translation>
 <translation id="4681781466797808448">Уключыце сканер Chromium</translation>
 <translation id="4736424910885271643">Вашым уліковым запісам кіруе дамен <ph name="HOSTED_DOMAIN" />, таму даныя Chromium будуць выдалены з гэтай прылады</translation>
 <translation id="4773487571745795781">Вы адключылі ўваход у Chromium.</translation>
@@ -187,6 +193,7 @@
 <translation id="6324041800010509197">Перайсці да сеткі ўкладак у Chromium</translation>
 <translation id="6325378625795868881">Вы можаце заўсёды выкарыстоўваць Chromium для адкрыцця спасылак, на якія вы націскаеце ў паведамленнях або іншых праграмах.</translation>
 <translation id="632825460376924298">Дазволіць уваход у Chromium</translation>
+<translation id="6332129548244419716">Выдаліць даныя пра работу ў браўзеры Chromium.</translation>
 <translation id="6337530241089703714">Выберыце, выдаліць даныя Chromium з гэтай прылады ці захаваць іх</translation>
 <translation id="6348483005826990855">3. Выберыце Chromium.</translation>
 <translation id="6383607155624074112">Адкрывайце Chromium хутчэй, выкарыстоўваючы панэль Dock галоўнага экрана</translation>
@@ -211,6 +218,9 @@
 <translation id="7163483974919055112">Дазваляе выканаць візуальны пошук у Chromium.</translation>
 <translation id="7165402419892018581">Для параметра AutoFill ("Аўтазапаўненне") выберыце Chromium</translation>
 <translation id="7175400662502680481">Пры ўцечцы даных быў раскрыты ваш пароль. Рэкамендуем змяніць яго зараз жа ў Менеджары пароляў.</translation>
+<translation id="7185731475720473450">Спосабы аплаты і адрасы не будуць шыфравацца. Гісторыя прагляду сайтаў у Chromium не будзе сінхранізавацца.
+
+Прачытаць вашы зашыфраваныя даныя змогуць толькі карыстальнікі, якія ведаюць фразу-пароль. Google не атрымлівае і не захоўвае яе. Калі вы забудзеце фразу-пароль або захочаце змяніць гэту наладу, <ph name="BEGIN_LINK" />выдаліце даныя Chromium з уліковага запісу<ph name="END_LINK" />.</translation>
 <translation id="7192111075364461693">Апавяшчэнні Chromium адключаны ў наладах прылады.</translation>
 <translation id="7222001353246886083">${searchPhrase}: шукаць у Chromium</translation>
 <translation id="725427773388857052">Chromium дапамагае прадухіляць праблемы, звязаныя з уцечкай даных, наведваннем небяспечных вэб-сайтаў і г. д.</translation>

@@ -11,6 +11,7 @@
 <translation id="1047458377670401304"><ph name="CPU_NAME" /> (<ph name="THREAD_COUNT" /> threads, <ph name="CPU_MAX_CLOCK_SPEED" /> GHz)</translation>
 <translation id="1047773237499189053">Nouvelle fonctionnalité disponible. Cliquez sur la flèche vers le haut pour en savoir plus.</translation>
 <translation id="1049663189809099096">jaune pastel</translation>
+<translation id="1056898198331236512">Avertissement</translation>
 <translation id="1059913517121127803">Impossible de lancer la numérisation</translation>
 <translation id="1062823486781306604"><ph name="INDEX" /> sur <ph name="COUNT" />, <ph name="NAME" />.</translation>
 <translation id="1070066693520972135">WEP</translation>
@@ -95,7 +96,6 @@
 <translation id="1478594628797167447">Scanner</translation>
 <translation id="1483493594462132177">Envoyer</translation>
 <translation id="1488850966314959671">Impossible de se connecter à ce réseau avec les APN personnalisés activés. Pour en savoir plus, contactez votre opérateur mobile.</translation>
-<translation id="1491076385728777984">Mise à jour du micrologiciel sur <ph name="DEVICE_NAME" /></translation>
 <translation id="1499041187027566160">augmenter le volume</translation>
 <translation id="1499900233129743732"><ph name="MANAGER" /> gère cet utilisateur dont il peut modifier les paramètres et surveiller l'activité à distance.</translation>
 <translation id="150962533380566081">Clé PUK incorrecte.</translation>
@@ -291,7 +291,6 @@
 <translation id="2505327257735685095">Actualiser le fond d'écran actuel</translation>
 <translation id="2512979179176933762">afficher les fenêtres</translation>
 <translation id="2513396635448525189">Image de connexion</translation>
-<translation id="2517472476991765520">Scanner</translation>
 <translation id="2521835766824839541">piste précédente</translation>
 <translation id="2526590354069164005">Bureau</translation>
 <translation id="2529641961800709867">Options du bouton</translation>
@@ -330,6 +329,7 @@
 <translation id="2744221223678373668">Partagés</translation>
 <translation id="2751739896257479635">Authentification EAP phase 2</translation>
 <translation id="2754757901767760034">lampe</translation>
+<translation id="2780756493585863768">Arrière-plans récents optimisés par l'IA de Google</translation>
 <translation id="2783010256799387990">RÉUSSI</translation>
 <translation id="2786429550992142861">lin</translation>
 <translation id="2787435249130282949">clavier plus lumineux</translation>
@@ -426,6 +426,7 @@
 <translation id="3456078764689556234">Page imprimée : <ph name="PRINTED_PAGES" /> sur <ph name="TOTAL_PAGES" />.</translation>
 <translation id="345898999683440380">Numérisation de la page <ph name="PAGE_NUM" />… Numérisation terminée à <ph name="PERCENTAGE_VALUE" /> %.</translation>
 <translation id="3459509316159669723">Impression</translation>
+<translation id="3462187165860821523">Mise à jour de <ph name="DEVICE_NAME" />…</translation>
 <translation id="346423161771747987">Consommation</translation>
 <translation id="346539236881580388">Reprendre</translation>
 <translation id="3484914941826596830">Vous ne devez pas débrancher cet appareil externe ni éteindre votre ordinateur pendant la mise à jour du micrologiciel. Vous pouvez réduire cette fenêtre. Cette mise à jour peut prendre quelques minutes, durant lesquelles le fonctionnement de l'appareil externe est compromis.</translation>
@@ -790,6 +791,7 @@
 <translation id="5559898619118303662">Basculer automatiquement sur le thème sombre au coucher du soleil</translation>
 <translation id="556042886152191864">Bouton</translation>
 <translation id="5562551811867441927"><ph name="TERRAIN_FEATURE" /> dans des teintes de <ph name="TERRAIN_COLOR" /></translation>
+<translation id="5572169899491758844">Scanner</translation>
 <translation id="5578477003638479617">UMTS</translation>
 <translation id="5578519639599103840">Rescanner</translation>
 <translation id="5583640892426849032">Retour</translation>
@@ -879,7 +881,6 @@
 <translation id="6075872808778243331">(Android) Latence HTTP</translation>
 <translation id="6078323886959318429">Ajouter un raccourci</translation>
 <translation id="6091080061796993741">jaune</translation>
-<translation id="610371409726072606">Arrière-plan de caméra optimisé par l'IA de Google</translation>
 <translation id="6104112872696127344">Numérisation annulée</translation>
 <translation id="6106186594183574873">Pour terminer, saisissez votre ancien mot de passe</translation>
 <translation id="6108689792487843350">Passerelle injoignable</translation>
@@ -1011,7 +1012,6 @@
 <translation id="672609503628871915">Voir les nouveautés</translation>
 <translation id="6740695858234317715">crème et orange</translation>
 <translation id="6741823073189174383">bateau</translation>
-<translation id="674276385369049081">Arrière-plans pour caméra récents optimisés par l'IA de Google</translation>
 <translation id="6744441848304920043">jungle</translation>
 <translation id="6747035363363040417">neutre</translation>
 <translation id="6747215703636344499">Tâche suspendue - Bac de sortie plein</translation>
@@ -1032,6 +1032,7 @@
 <translation id="6871256179359663621">violet clair</translation>
 <translation id="6889786074662672253">Vous ne devez pas débrancher cet appareil externe ni éteindre votre ordinateur pendant le redémarrage. Vous pouvez réduire cette fenêtre. Le redémarrage peut prendre quelques minutes, durant lesquelles le fonctionnement de l'appareil externe est compromis.</translation>
 <translation id="6900701049656042631">Cet album ne contient aucune photo. Pour en ajouter, accédez à <ph name="LINK" />.</translation>
+<translation id="6902359863093437070">Créer un arrière-plan avec l'IA</translation>
 <translation id="6905163627763043954">Essayer</translation>
 <translation id="6905724422583748843">Revenir à <ph name="PAGE_NAME" /></translation>
 <translation id="6910312834584889076">Le capot du scanner est ouvert. Refermez-le, puis réessayez.</translation>
@@ -1269,6 +1270,7 @@
 <translation id="8152370627892825"><ph name="DESCRIPTION" />, <ph name="ACCELERATOR_INFO" />.</translation>
 <translation id="8156233298086717232">magique</translation>
 <translation id="8162776280680283326">renards</translation>
+<translation id="8167413449582155132">Arrière-plan optimisé par l'IA de Google</translation>
 <translation id="8179976553408161302">Entrée</translation>
 <translation id="8183975772394450380">plage</translation>
 <translation id="8206859287963243715">Mobile</translation>

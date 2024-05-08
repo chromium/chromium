@@ -12,6 +12,7 @@
 <translation id="1588438908519853928">Normální</translation>
 <translation id="1591562245178063882">Tento měsíc</translation>
 <translation id="1637811476055996098">Zvolit soubory</translation>
+<translation id="1680090928918677457">Použít kameru</translation>
 <translation id="1681022320378710418">aktuální čas</translation>
 <translation id="1727839386348365796">Kapátko</translation>
 <translation id="1729654308190250600">Vyplňte e-mailovou adresu.</translation>
@@ -60,6 +61,7 @@
 <translation id="3822383571486410024">Prodlužte prosím tento text na <ph name="MIN_CHARACTERS" /> či více znaků. (Aktuálně má <ph name="CURRENT_LENGTH" /> znaků.)</translation>
 <translation id="383465348367842624">Část před znakem <ph name="ATSIGN" /> nesmí obsahovat znak <ph name="INVALIDCHARACTER" />.</translation>
 <translation id="3846214748874656680">Ukončit režim na celou obrazovku</translation>
+<translation id="3914173277599553213">Vyžadováno</translation>
 <translation id="4031179711345676612">Mikrofon je povolen</translation>
 <translation id="4103419683916926126">Milisekundy</translation>
 <translation id="4201051445878709314">Zobrazit předchozí měsíc</translation>
@@ -75,6 +77,7 @@
 <translation id="4912200001568447310">aktuální položka</translation>
 <translation id="4915360478455618802">Zobrazit výběr času</translation>
 <translation id="4924138096460353083">neurčité</translation>
+<translation id="49269513399674318">Použít mikrofon</translation>
 <translation id="4950364064308314478">Zobrazit výběr místního data a času</translation>
 <translation id="4971739861736909480">Vybráno: <ph name="ACCNAME" /></translation>
 <translation id="4975562563186953947">Vybráno: <ph name="SELECTED_COUNT" /></translation>
@@ -142,6 +145,7 @@
 <translation id="7080893216867146095">Sdílení polohy povoleno</translation>
 <translation id="709897737746224366">Zadejte hodnotu, která odpovídá požadovanému formátu.</translation>
 <translation id="7102274145889307184">aktuální poloha</translation>
+<translation id="7134810312945846184">Použít mikrofon a kameru</translation>
 <translation id="7263440858009898357">Vyberte prosím v seznamu některou položku.</translation>
 <translation id="7320576522385648310">načítání do vyrovnávací paměti</translation>
 <translation id="7341556277900466204">Zásobník barev</translation>

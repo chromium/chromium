@@ -166,6 +166,7 @@ Ecco alcune cose che puoi provare per iniziare.</translation>
 <translation id="1586324912145647027">Vai alla scrivania 1 di 8</translation>
 <translation id="158838227375272121">Sito web Google Classroom</translation>
 <translation id="1589090746204042747">Accedere a tutte le tue attività in questa sessione.</translation>
+<translation id="1597880963776148053">Passaggio <ph name="STEP" /> di <ph name="TOTAL_STEPS" /> del tour. Le app bloccate e aperte si trovano nella barra delle app nella parte inferiore dello schermo. Premi Alt + Maiusc + L, quindi premi Tab per impostare lo stato attivo sugli elementi della barra.</translation>
 <translation id="1602874809115667351"><ph name="LAUNCHER_KEY_NAME" /> + Freccia giù</translation>
 <translation id="1604857178818051494">Metti in pausa i contenuti multimediali</translation>
 <translation id="1607312127821884567">Chiudi la configurazione della visualizzazione di app dello smartphone</translation>
@@ -303,6 +304,7 @@ Ecco alcune cose che puoi provare per iniziare.</translation>
 <translation id="2257486738914982088">Si è verificato un errore durante il download del file <ph name="FILENAME" /></translation>
 <translation id="2258734398699965611">File suggeriti</translation>
 <translation id="2268130516524549846">Bluetooth disattivato</translation>
+<translation id="2268731132310444948">Passaggio <ph name="STEP" /> di <ph name="TOTAL_STEPS" /> del tour. Una volta attivato Avvio app, vedrai una barra di ricerca avanzata. Puoi iniziare a digitare per cercare file, app e altro ancora. Inoltre puoi ricevere risposte a domande relative al tuo <ph name="PRODUCT_NAME" />.</translation>
 <translation id="2268813581635650749">Disconnetti tutti</translation>
 <translation id="2276987123919776440">15 min</translation>
 <translation id="2277103315734023688">Vai avanti</translation>
@@ -397,6 +399,7 @@ Ecco alcune cose che puoi provare per iniziare.</translation>
 <translation id="2607678425161541573">Accesso online richiesto</translation>
 <translation id="2612072250312279703">monitoraggio dell'attività</translation>
 <translation id="2612614436418177118">Sposta l'icona di un'app all'interno della griglia delle app</translation>
+<translation id="2619326010008283367">Passaggio <ph name="STEP" /> di <ph name="TOTAL_STEPS" /> del tour. Puoi trovare le impostazioni del tuo dispositivo in Avvio app. Prova a personalizzare il tuo <ph name="PRODUCT_NAME" /> nelle Impostazioni, ad esempio cambiando lo sfondo o impostando un salvaschermo.</translation>
 <translation id="2620016719323068571">Cerca <ph name="CATEGORY" />, file, app e altro ancora…</translation>
 <translation id="2620436844016719705">Sistema</translation>
 <translation id="2620900772667816510">Super risoluzione Bluetooth</translation>
@@ -816,7 +819,6 @@ Alcune funzionalità sono limitate per aumentare la durata della batteria.</tran
 <translation id="4209973997261364186">Il Wi-Fi è attivo</translation>
 <translation id="4212472694152630271">Passa al PIN</translation>
 <translation id="4215497585250573029">Impostazioni VPN</translation>
-<translation id="4215548513524864822">Passaggio 5 di 5 del tour. Puoi trovare le impostazioni del tuo dispositivo in Avvio app. Prova a personalizzare il tuo <ph name="PRODUCT_NAME" /> nelle Impostazioni, ad esempio cambiando lo sfondo o impostando un salvaschermo.</translation>
 <translation id="4217571870635786043">Dettatura</translation>
 <translation id="4221957499226645091"><ph name="APP_NAME" />, app installata, messa in pausa</translation>
 <translation id="4228078597006700451">Controlli non configurati</translation>
@@ -943,12 +945,12 @@ Alcune funzionalità sono limitate per aumentare la durata della batteria.</tran
 <translation id="468293128311738995">App dal telefono</translation>
 <translation id="4690510401873698237">Barra delle app in basso</translation>
 <translation id="4696813013609194136">Sblocca con codice genitore</translation>
-<translation id="469693290987463983">Passaggio 1 di 5 del tour. Le app bloccate e aperte si trovano nella barra delle app nella parte inferiore dello schermo. Premi Alt + Maiusc + L, quindi premi Tab per impostare lo stato attivo sugli elementi della barra.</translation>
 <translation id="4702647871202761252">Schermata sulla privacy non attiva</translation>
 <translation id="4706121060329443414">Verrà effettuato un tentativo di download in un secondo tempo. Per ora ciò che dici viene inviato a Google per l'elaborazione.</translation>
 <translation id="470644585772471629">Inversione dei colori</translation>
 <translation id="4708065238214351979">Aumenta la luminosità della tastiera</translation>
 <translation id="4717575069099566988">Il cavo USB-C non supporta USB4. Le prestazioni del dispositivo potrebbero essere limitate.</translation>
+<translation id="4724328513667182700">6 consigli per iniziare a usare il tuo <ph name="PRODUCT_NAME" /></translation>
 <translation id="4730374152663651037">USATE SPESSO</translation>
 <translation id="4731797938093519117">Accesso genitore</translation>
 <translation id="4733161265940833579"><ph name="BATTERY_PERCENTAGE" />% (sinistro)</translation>
@@ -1024,6 +1026,7 @@ Alcune funzionalità sono limitate per aumentare la durata della batteria.</tran
 <translation id="4964188651935955085">Se disattivi il Bluetooth, questo dispositivo esterno verrà scollegato da <ph name="DEVICE_TYPE" />:</translation>
 <translation id="4966431234408005599">Alza il volume</translation>
 <translation id="4969092041573468113"><ph name="HOURS" /> h <ph name="MINUTES" /> m <ph name="SECONDS" /> s</translation>
+<translation id="496999337731226334">Passaggio <ph name="STEP" /> di <ph name="TOTAL_STEPS" /> del tour. I controlli usati di frequente, come Wi-Fi, Bluetooth e volume, sono disponibili nelle Impostazioni rapide. Qui puoi anche acquisire screenshot. Premi Alt + Maiusc + S per aprire le Impostazioni rapide.</translation>
 <translation id="4975771730019223894">Badge dell'app</translation>
 <translation id="4977493774330778463"><ph name="NUM_IMPORTANT_NOTIFICATION" />:
         <ph name="NOTIFICATION_1" />,
@@ -1141,6 +1144,7 @@ Nessun dispositivo connesso.</translation>
 <translation id="540713187982329711">Attiva/disattiva l'hotspot. L'hotspot è attivo, nessun dispositivo connesso.</translation>
 <translation id="5413656666631274079">Pagina Impostazioni</translation>
 <translation id="5414198321558177633">Aggiornamento dell'elenco di profili in corso. Questa operazione può richiedere alcuni minuti.</translation>
+<translation id="5417965108047245734">Fai un rapido tour per scoprire come usare il tuo <ph name="PRODUCT_NAME" /></translation>
 <translation id="5426063383988017631">Menu Impostazioni chiuso</translation>
 <translation id="5428899915242071344">Inizia la selezione</translation>
 <translation id="5429993543155113935">Al momento le finestre di navigazione in incognito non sono supportate</translation>
@@ -1327,7 +1331,7 @@ Nessun dispositivo connesso.</translation>
 <translation id="6095425951508823973">Aggiungi una connessione con <ph name="PROVIDER" /></translation>
 <translation id="6099678161144790572">Modificato il mese scorso</translation>
 <translation id="6103838137565245112">sistema</translation>
-<translation id="6108952804512516814">Crea con l'IA</translation>
+<translation id="6108952804512516814">Crea con l'AI</translation>
 <translation id="6114505516289286752">File di contenuti vocali scaricati per questa la lingua: <ph name="LANGUAGE" /></translation>
 <translation id="6119360623251949462"><ph name="CHARGING_STATE" />. <ph name="BATTERY_SAVER_STATE" /></translation>
 <translation id="6119972796024789243">Correzione del colore</translation>
@@ -1521,7 +1525,6 @@ Nuova installazione</translation>
 <translation id="6874854809828346832">Mostra i dettagli relativi all'hotspot. L'hotspot è attivo.</translation>
 <translation id="6878400149835617132">Scorciatoia disattivata</translation>
 <translation id="6878701771800702153">{NUM_APPS,plural, =1{1 app}other{# app}}</translation>
-<translation id="6878787305374738418">Passaggio 4 di 5 del tour. Una volta attivato Avvio app, vedrai una barra di ricerca avanzata. Puoi iniziare a digitare per cercare file, app e altro ancora. Inoltre puoi ricevere risposte a domande relative al tuo <ph name="PRODUCT_NAME" />.</translation>
 <translation id="6883768636838842873">Scorciatoie da tastiera, suggerimenti per l'utilizzo del dispositivo e altro ancora</translation>
 <translation id="6884665277231944629">Torna a oggi</translation>
 <translation id="6886172995547742638">Il tuo <ph name="DEVICE_TYPE" /> potrebbe offrire prestazioni inferiori. Usa un alimentatore USB-C certificato da almeno <ph name="PREFERRED_MINIMUM_POWER" /> W.</translation>
@@ -1590,6 +1593,7 @@ Nuova installazione</translation>
 <translation id="7143207342074048698">Connessione</translation>
 <translation id="7144942256906679589">Stato della batteria</translation>
 <translation id="7145639536026937076">Batteria a <ph name="PERCENTAGE" />% e in carica. Risparmio energetico attivo.</translation>
+<translation id="7149149900052329230">Gestisci i tuoi file locali e i tuoi file di Google Drive, tutto nell'app File.</translation>
 <translation id="7165278925115064263">ALT + MAIUSC + K</translation>
 <translation id="7167913274352523149"><ph name="HOTSPOT" />,
         <ph name="NETWORK" /></translation>
@@ -1610,7 +1614,6 @@ Nuova installazione</translation>
 <translation id="726276584504105859">Trascina qui per utilizzare la modalità Schermo diviso</translation>
 <translation id="7262906531272962081">Crea promemoria</translation>
 <translation id="7278787617901301220"><ph name="LAUNCHER_KEY_NAME" /> + backspace</translation>
-<translation id="7282547098317872382">Passaggio 3 di 5 del tour. Usa le app per fare tutto ciò che ti serve sul tuo <ph name="PRODUCT_NAME" />. Puoi trovare le tue app in Avvio app. Premi Alt + Maiusc + L per impostare lo stato attivo sul pulsante Avvio app.</translation>
 <translation id="7285232777292757180">Usa lo strumento di acquisizione schermo nelle Impostazioni rapide per acquisire screenshot</translation>
 <translation id="7301826272005790482">Chiudi suggerimenti finestre</translation>
 <translation id="7302889331339392448">La funzionalità Sottotitoli in tempo reale è disattivata.</translation>
@@ -1792,10 +1795,12 @@ Per arrestare il dispositivo, tieni di nuovo premuto il relativo tasto di accens
 <translation id="7933084174919150729">L'Assistente Google è disponibile solo per il profilo principale.</translation>
 <translation id="79341161159229895">Account gestito da <ph name="FIRST_PARENT_EMAIL" /> e <ph name="SECOND_PARENT_EMAIL" /></translation>
 <translation id="793716872548410480">Premi <ph name="SHORTCUT_KEY_NAME" /> + V per visualizzare gli appunti. Gli ultimi 5 elementi copiati sono stati salvati negli appunti.</translation>
+<translation id="7942330802915522974">Passaggio <ph name="STEP" /> di <ph name="TOTAL_STEPS" /> del tour. Puoi trovare l'app File in Avvio app. Gestisci i tuoi file locali e i tuoi file di Google Drive, tutto nell'app File.</translation>
 <translation id="7942349550061667556">Rosso</translation>
 <translation id="7943516765291457328">Attiva il Bluetooth per cercare hotspot nelle vicinanze</translation>
 <translation id="7944023924886109030">Visualizza tutti gli eventi di oggi</translation>
 <translation id="7945357288295809525">Mostra impostazioni di accessibilità, funzionalità "<ph name="ENABLED_FEATURES" />" attivata.</translation>
+<translation id="7946681191253332687">Aggiornamenti della sicurezza estesi disponibili</translation>
 <translation id="7947798320695032612"><ph name="APP_NAME" /> vuole usare <ph name="DEVICE_NAME" /></translation>
 <translation id="7951630946012935453">Attenua la luminosità della tastiera</translation>
 <translation id="7953994493035617347">Confermare la nuova risoluzione?</translation>
@@ -1907,7 +1912,6 @@ Per arrestare il dispositivo, tieni di nuovo premuto il relativo tasto di accens
 <translation id="8412677897383510995">Mostra impostazioni di visualizzazione</translation>
 <translation id="8413272770729657668">Avvio registrazione tra 3, 2, 1</translation>
 <translation id="8416730306157376817"><ph name="BATTERY_PERCENTAGE" />% (custodia)</translation>
-<translation id="8417951779969083400">Passaggio 2 di 5 del tour. I controlli usati di frequente, come Wi-Fi, Bluetooth e volume, sono disponibili nelle Impostazioni rapide. Qui puoi anche acquisire screenshot. Premi Alt + Maiusc + S per aprire le Impostazioni rapide.</translation>
 <translation id="8420205633584771378">Rimuovere questo suggerimento?</translation>
 <translation id="8421270167862077762"><ph name="UNAVAILABLE_APPS" /> non è disponibile su questo dispositivo.</translation>
 <translation id="8426708595819210923">Buonasera <ph name="GIVEN_NAME" />,</translation>
@@ -2120,12 +2124,14 @@ Per arrestare il dispositivo, tieni di nuovo premuto il relativo tasto di accens
 <translation id="954052413789300507">Spazio disponibile insufficiente per il file <ph name="FILENAME" />. Libera spazio.</translation>
 <translation id="954520015070501466">30 min</translation>
 <translation id="956452277966142925">Impostazioni del Pannello di gioco</translation>
+<translation id="961856697154696964">Elimina dati di navigazione</translation>
 <translation id="974545358917229949">Visualizzazione di <ph name="RESULT_COUNT" /> risultati per <ph name="QUERY" /></translation>
 <translation id="981011780479609956">Nessuna data di scadenza</translation>
 <translation id="98120814841227350">Passa alla fine del documento</translation>
 <translation id="987589956647469042">I dati mobili sono attivi</translation>
 <translation id="989374776391122812">Controlli audio e fotocamera</translation>
 <translation id="990277280839877440">Finestra <ph name="WINDOW_TITILE" /> chiusa.</translation>
+<translation id="993398562350683614">Passaggio <ph name="STEP" /> di <ph name="TOTAL_STEPS" /> del tour. Usa le app per fare tutto ciò che ti serve sul tuo <ph name="PRODUCT_NAME" />. Puoi trovare le tue app in Avvio app. Premi Alt + Maiusc + L per impostare lo stato attivo sul pulsante Avvio app.</translation>
 <translation id="994354411665877646"><ph name="NETWORK_NAME" />, <ph name="SUBTEXT" /></translation>
 <translation id="996204416024568215">Ottieni le funzionalità e i miglioramenti della sicurezza più recenti. Gli aggiornamenti vengono eseguiti in background.</translation>
 </translationbundle>

@@ -11,6 +11,7 @@
 <translation id="1047458377670401304"><ph name="CPU_NAME" /> (потоків: <ph name="THREAD_COUNT" />, <ph name="CPU_MAX_CLOCK_SPEED" /> ГГц)</translation>
 <translation id="1047773237499189053">Доступна нова функція. Щоб дізнатися більше, натисніть клавішу зі стрілкою вгору.</translation>
 <translation id="1049663189809099096">пастельно-жовтий</translation>
+<translation id="1056898198331236512">Застереження</translation>
 <translation id="1059913517121127803">Не вдається почати сканування</translation>
 <translation id="1062823486781306604"><ph name="NAME" /> (<ph name="INDEX" /> з <ph name="COUNT" />).</translation>
 <translation id="1070066693520972135">WEP</translation>
@@ -28,6 +29,7 @@
 <translation id="1145018782460575098">Вікно "Оновіть мікропрограму для зовнішніх пристроїв" відкрито. Доступно оновлень: <ph name="NUM_UPDATES" />.</translation>
 <translation id="1145516343487477149">Шукайте довідкові статті та відповіді на поширені запитання про Chromebook</translation>
 <translation id="1154390310959620237">Можна налаштувати лише 5 комбінацій клавіш. Щоб додати нову комбінацію, видаліть одну з наявних.</translation>
+<translation id="1155154308031262006">Введіть запит</translation>
 <translation id="115705039208660697">ананаси</translation>
 <translation id="1164939766849482256">Заставка "Від світанку до заходу сонця"</translation>
 <translation id="1167755866710282443">Відкрийте меню, щоб налаштувати клавіші. Щоб перемістити меню, перетягніть його.</translation>
@@ -95,7 +97,6 @@
 <translation id="1478594628797167447">Сканери</translation>
 <translation id="1483493594462132177">Надіслати</translation>
 <translation id="1488850966314959671">Не вдалося підключитися до цієї мережі через увімкнені спеціальні точки доступу. Щоб отримати додаткову інформацію, зверніться до свого оператора мобільного зв’язку.</translation>
-<translation id="1491076385728777984"><ph name="DEVICE_NAME" />: оновлення мікропрограми на пристрої</translation>
 <translation id="1499041187027566160">збільшити гучність</translation>
 <translation id="1499900233129743732"><ph name="MANAGER" /> керує цим користувачем і може віддалено змінювати налаштування та відстежувати його дії.</translation>
 <translation id="150962533380566081">Недійсний PUK-код.</translation>
@@ -291,7 +292,6 @@
 <translation id="2505327257735685095">Оновити поточний фоновий малюнок</translation>
 <translation id="2512979179176933762">показати вікна</translation>
 <translation id="2513396635448525189">Зображення облікового запису</translation>
-<translation id="2517472476991765520">Сканувати</translation>
 <translation id="2521835766824839541">попередня композиція</translation>
 <translation id="2526590354069164005">Google Desktop</translation>
 <translation id="2529641961800709867">Параметри кнопки</translation>
@@ -330,6 +330,7 @@
 <translation id="2744221223678373668">Спільні</translation>
 <translation id="2751739896257479635">2-га фаза автентифікації EAP</translation>
 <translation id="2754757901767760034">Лампа</translation>
+<translation id="2780756493585863768">Фонові зображення, нещодавно створені за допомогою ШІ від Google</translation>
 <translation id="2783010256799387990">ПРОЙДЕНО</translation>
 <translation id="2786429550992142861">льону</translation>
 <translation id="2787435249130282949">світліша клавіатура</translation>
@@ -426,6 +427,7 @@
 <translation id="3456078764689556234">Надруковано сторінку <ph name="PRINTED_PAGES" /> з <ph name="TOTAL_PAGES" />.</translation>
 <translation id="345898999683440380">Сканування сторінки <ph name="PAGE_NUM" />. Виконано <ph name="PERCENTAGE_VALUE" />%.</translation>
 <translation id="3459509316159669723">Друк</translation>
+<translation id="3462187165860821523">Пристрій <ph name="DEVICE_NAME" /> оновлюється</translation>
 <translation id="346423161771747987">Енергоспоживання</translation>
 <translation id="346539236881580388">Зробити інше фото</translation>
 <translation id="3484914941826596830">Поки мікропрограма оновлюється, не відключайте цей зовнішній пристрій і не завершуйте роботу комп’ютера. Можете згорнути це вікно. Оновлення може зайняти кілька хвилин, і впродовж цього часу зовнішній пристрій, імовірно, не працюватиме.</translation>
@@ -790,6 +792,7 @@
 <translation id="5559898619118303662">Автоматично вмикати темну тему після заходу сонця</translation>
 <translation id="556042886152191864">Кнопка</translation>
 <translation id="5562551811867441927"><ph name="TERRAIN_FEATURE" /> у відтінках <ph name="TERRAIN_COLOR" /></translation>
+<translation id="5572169899491758844">Сканування</translation>
 <translation id="5578477003638479617">Технологія UMTS</translation>
 <translation id="5578519639599103840">Сканувати ще раз</translation>
 <translation id="5583640892426849032">Backspace</translation>
@@ -879,7 +882,6 @@
 <translation id="6075872808778243331">Затримка HTTP (Android)</translation>
 <translation id="6078323886959318429">Додати ярлик</translation>
 <translation id="6091080061796993741">жовтого</translation>
-<translation id="610371409726072606">Фон, створений за допомогою ШІ від Google</translation>
 <translation id="6104112872696127344">Сканування скасовано</translation>
 <translation id="6106186594183574873">Щоб завершити, введіть старий пароль</translation>
 <translation id="6108689792487843350">шлюз недоступний</translation>
@@ -906,6 +908,7 @@
 <translation id="6205145102504628069">Плин хмар</translation>
 <translation id="6213737986933151570">CDMA1XRTT</translation>
 <translation id="6223752125779001553">Немає доступних сканерів</translation>
+<translation id="6231648282154119906">Безпечний перегляд Google автоматично скануватиме підозрілі файли в обраному режимі покращеного захисту</translation>
 <translation id="6232017090690406397">Акумулятор</translation>
 <translation id="6234024205316847054">Показувати межі</translation>
 <translation id="6235460611964961764">Вручну скидати дані про використання трафіку</translation>
@@ -1011,7 +1014,6 @@
 <translation id="672609503628871915">Докладніше про нові функції</translation>
 <translation id="6740695858234317715">кремового й помаранчевого</translation>
 <translation id="6741823073189174383">Човен</translation>
-<translation id="674276385369049081">Фони, нещодавно створені за допомогою ШІ від Google</translation>
 <translation id="6744441848304920043">хащі</translation>
 <translation id="6747035363363040417">Нейтральне</translation>
 <translation id="6747215703636344499">Зупинено – вихідний лоток заповнений</translation>
@@ -1032,6 +1034,7 @@
 <translation id="6871256179359663621">світло-фіолетовий</translation>
 <translation id="6889786074662672253">Поки відбувається перезапуск, не відключайте цей зовнішній пристрій і не завершуйте роботу комп’ютера. Можете згорнути це вікно. Перезапуск може зайняти кілька хвилин, і впродовж цього часу зовнішній пристрій, імовірно, не працюватиме.</translation>
 <translation id="6900701049656042631">У цьому альбомі немає фотографій. Щоб додати фото, перейдіть на сторінку <ph name="LINK" />.</translation>
+<translation id="6902359863093437070">Створити фонове зображення за допомогою ШІ</translation>
 <translation id="6905163627763043954">Спробувати</translation>
 <translation id="6905724422583748843">Повернутися на сторінку <ph name="PAGE_NAME" /></translation>
 <translation id="6910312834584889076">Кришка сканера відкрита. Закрийте її та повторіть спробу.</translation>
@@ -1269,6 +1272,7 @@
 <translation id="8152370627892825"><ph name="DESCRIPTION" />, <ph name="ACCELERATOR_INFO" />.</translation>
 <translation id="8156233298086717232">Магічна</translation>
 <translation id="8162776280680283326">лисиці</translation>
+<translation id="8167413449582155132">Фонове зображення, створене за допомогою ШІ від Google</translation>
 <translation id="8179976553408161302">Enter</translation>
 <translation id="8183975772394450380">пляж</translation>
 <translation id="8206859287963243715">Мобільний</translation>

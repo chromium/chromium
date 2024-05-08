@@ -12,6 +12,7 @@
 <translation id="1588438908519853928">ସାଧାରଣ</translation>
 <translation id="1591562245178063882">ଏହି ମାସ</translation>
 <translation id="1637811476055996098">ଫାଇଲ୍‌ଗୁଡ଼ିକ ବାଛନ୍ତୁ</translation>
+<translation id="1680090928918677457">କେମେରା ବ୍ୟବହାର କରନ୍ତୁ</translation>
 <translation id="1681022320378710418">ବର୍ତ୍ତମାନର ସମୟ</translation>
 <translation id="1727839386348365796">ଆଇଡ୍ରପର୍</translation>
 <translation id="1729654308190250600">ଦୟାକରି ଏକ ଖାଲି ନଥିବା ଇମେଲ୍ ଠିକଣା ଲେଖନ୍ତୁ।</translation>
@@ -60,6 +61,7 @@
 <translation id="3822383571486410024">ଦୟାକରି ଏହି ଟେକ୍ସଟ୍‍କୁ <ph name="MIN_CHARACTERS" />ଟି କିମ୍ବା ଅଧିକ ଅକ୍ଷର ପର୍ଯ୍ୟନ୍ତ ଲମ୍ବା କରନ୍ତୁ (ବର୍ତ୍ତମାନ ଆପଣ <ph name="CURRENT_LENGTH" />ଟି ଅକ୍ଷର ବ୍ୟବହାର କରୁଛନ୍ତି)।</translation>
 <translation id="383465348367842624">'<ph name="ATSIGN" />' ପରେ ଆସୁଥିବା ଅଂଶରେ '<ph name="INVALIDCHARACTER" />' ଚିହ୍ନ ରହିବା ଉଚିତ ନୁହେଁ।</translation>
 <translation id="3846214748874656680">ପୂର୍ଣ୍ଣ ସ୍କ୍ରିନ୍‌ରୁ ପ୍ରସ୍ଥାନ କରନ୍ତୁ</translation>
+<translation id="3914173277599553213">ଆବଶ୍ୟକ</translation>
 <translation id="4031179711345676612">ମାଇକ୍ରୋଫୋନ୍‌କୁ ଅନୁମତି ଦିଆଯାଇଛି</translation>
 <translation id="4103419683916926126">ମିଲିସେକେଣ୍ଡ</translation>
 <translation id="4201051445878709314">ପୂର୍ବ ମାସ ଦେଖାନ୍ତୁ</translation>
@@ -75,6 +77,7 @@
 <translation id="4912200001568447310">ବର୍ତ୍ତମାନର ଆଇଟମ୍</translation>
 <translation id="4915360478455618802">ସମୟ ପିକର୍ ଦେଖାନ୍ତୁ</translation>
 <translation id="4924138096460353083">ଅନିର୍ଦ୍ଧାରିତ</translation>
+<translation id="49269513399674318">ମାଇକ୍ରୋଫୋନ ବ୍ୟବହାର କରନ୍ତୁ</translation>
 <translation id="4950364064308314478">ସ୍ଥାନୀୟ ତାରିଖ ଏବଂ ସମୟ ପିକର୍ ଦେଖାନ୍ତୁ</translation>
 <translation id="4971739861736909480"><ph name="ACCNAME" /> ଚୟନ କରାଯାଇଛି</translation>
 <translation id="4975562563186953947"><ph name="SELECTED_COUNT" />ଟି ଚୟନ କରାଯାଇଛି</translation>
@@ -142,6 +145,7 @@
 <translation id="7080893216867146095">ଲୋକେସନ ସେୟାର କରିବାକୁ ଅନୁମତି ଦିଆଯାଇଛି</translation>
 <translation id="709897737746224366">ଦୟାକରି ଅନୁରୋଧ କରାଯାଇଥିବା ଫର୍ମାଟ୍ ମେଳ କରନ୍ତୁ।</translation>
 <translation id="7102274145889307184">ବର୍ତ୍ତମାନର ଲୋକେସନ୍</translation>
+<translation id="7134810312945846184">ମାଇକ୍ରୋଫୋନ ଏବଂ କେମେରା ବ୍ୟବହାର କରନ୍ତୁ</translation>
 <translation id="7263440858009898357">ଦୟାକରି ତାଲିକାରେ ଏକ ଆଇଟମ୍ ଚୟନ କରନ୍ତୁ।</translation>
 <translation id="7320576522385648310">ବଫ୍‌ରିଂ ହେଉଛି</translation>
 <translation id="7341556277900466204">କଲର୍ ୱେଲ୍</translation>

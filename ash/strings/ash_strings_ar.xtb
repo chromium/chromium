@@ -167,6 +167,7 @@
 <translation id="1586324912145647027">الانتقال إلى سطح المكتب من 1 إلى 8</translation>
 <translation id="158838227375272121">‏موقع Google Classroom الإلكتروني</translation>
 <translation id="1589090746204042747">الوصول إلى جميع أنشطتك في جلسة واحدة</translation>
+<translation id="1597880963776148053">‏الخطوة <ph name="STEP" /> من إجمالي <ph name="TOTAL_STEPS" />: يمكنك العثور على تطبيقاتك المثبَّتة والمفتوحة على الرف أسفل الشاشة. اضغط على Alt + Shift + L ثم مفتاح التبويب (Tab) للتركيز على عناصر الرف.</translation>
 <translation id="1602874809115667351">‫<ph name="LAUNCHER_KEY_NAME" /> + السهم المتّجه للأسفل</translation>
 <translation id="1604857178818051494">الإيقاف المؤقت للوسائط</translation>
 <translation id="1607312127821884567">عدم إعداد ميزة عرض التطبيقات في هاتفك</translation>
@@ -304,6 +305,7 @@
 <translation id="2257486738914982088">حدث خطأ أثناء تنزيل الملف <ph name="FILENAME" />.</translation>
 <translation id="2258734398699965611">الملفات المقترَحة</translation>
 <translation id="2268130516524549846">تم إيقاف البلوتوث</translation>
+<translation id="2268731132310444948">الخطوة <ph name="STEP" /> من إجمالي <ph name="TOTAL_STEPS" />: بعد تفعيل "مشغِّل التطبيقات"، سيظهر لك شريط بحث محسَّن. يمكنك بدء الكتابة للبحث عن ملفاتك وتطبيقاتك وغير ذلك. بإمكانك أيضًا الحصول على إجابات عن الأسئلة حول <ph name="PRODUCT_NAME" />.</translation>
 <translation id="2268813581635650749">خروج من كل الحسابات</translation>
 <translation id="2276987123919776440">15 دقيقة</translation>
 <translation id="2277103315734023688">الانتقال إلى الأمام</translation>
@@ -398,6 +400,7 @@
 <translation id="2607678425161541573">يجب تسجيل الدخول على الإنترنت</translation>
 <translation id="2612072250312279703">أداة رصد النشاط</translation>
 <translation id="2612614436418177118">نقل رمز تطبيق داخل شبكة التطبيقات</translation>
+<translation id="2619326010008283367">الخطوة <ph name="STEP" /> من إجمالي <ph name="TOTAL_STEPS" />: يمكنك العثور على إعدادات جهازك من خلال "مشغِّل التطبيقات". جرِّب تخصيص <ph name="PRODUCT_NAME" /> من خلال "الإعدادات"، مثل تغيير الخلفية أو ضبط شاشة استراحة.</translation>
 <translation id="2620016719323068571">البحث في <ph name="CATEGORY" /> والملفات والتطبيقات وغير ذلك...</translation>
 <translation id="2620436844016719705">النظام</translation>
 <translation id="2620900772667816510">Bluetooth Super Resolution</translation>
@@ -821,7 +824,6 @@
 <translation id="4209973997261364186">‏تم تفعيل شبكة Wi-Fi.</translation>
 <translation id="4212472694152630271">التبديل إلى رقم التعريف الشخصي</translation>
 <translation id="4215497585250573029">‏إعدادات الشبكة الافتراضية الخاصة (VPN)</translation>
-<translation id="4215548513524864822">الخطوة 5 من 5 في الجولة: يمكنك العثور على إعدادات جهازك من خلال "مشغّل التطبيقات". جرِّب تخصيص جهاز <ph name="PRODUCT_NAME" /> من خلال "الإعدادات"، مثل تغيير الخلفية أو ضبط شاشة استراحة.</translation>
 <translation id="4217571870635786043">إملاء</translation>
 <translation id="4221957499226645091"><ph name="APP_NAME" />، تطبيق مثبّت ومتوقف مؤقتًا</translation>
 <translation id="4228078597006700451">لم يتم إعداد عناصر التحكّم.</translation>
@@ -948,12 +950,12 @@
 <translation id="468293128311738995">تطبيقات من هاتفك</translation>
 <translation id="4690510401873698237">الرف في الجزء السفلي</translation>
 <translation id="4696813013609194136">فتح قفل الجهاز باستخدام رمز الوالدين</translation>
-<translation id="469693290987463983">‏الخطوة 1 من 5 في الجولة: يمكنك العثور على تطبيقاتك المثبَّتة والمفتوحة على الرف أسفل الشاشة. اضغط على Alt + Shift + L ثم على مفتاح Tab للتركيز على عناصر الرف.</translation>
 <translation id="4702647871202761252">تم إيقاف شاشة الخصوصية.</translation>
 <translation id="4706121060329443414">‏ستتم إعادة محاولة التنزيل لاحقًا. سيتم إرسال ملفات الكلام إلى Google لمعالجتها الآن.</translation>
 <translation id="470644585772471629">قلب الألوان</translation>
 <translation id="4708065238214351979">زيادة سطوع لوحة المفاتيح</translation>
 <translation id="4717575069099566988">‏لا يتوافق الكابل المزوّد بمنفذ USB-C مع جهاز USB4. وقد يصبح أداء الجهاز محدودًا.</translation>
+<translation id="4724328513667182700">‫6 نصائح لبدء استخدام <ph name="PRODUCT_NAME" /></translation>
 <translation id="4730374152663651037">التطبيقات المستخدمة بشكل متكرر</translation>
 <translation id="4731797938093519117">وصول أحد الوالدين</translation>
 <translation id="4733161265940833579">%<ph name="BATTERY_PERCENTAGE" /> (السماعة اليسرى)</translation>
@@ -1029,6 +1031,7 @@
 <translation id="4964188651935955085">بعد إيقاف البلوتوث، سيتم إلغاء ربط هذا الجهاز الخارجي بجهاز <ph name="DEVICE_TYPE" />:</translation>
 <translation id="4966431234408005599">رفع مستوى الصوت</translation>
 <translation id="4969092041573468113"><ph name="HOURS" /> س <ph name="MINUTES" /> د <ph name="SECONDS" /> ث</translation>
+<translation id="496999337731226334">‏الخطوة <ph name="STEP" /> من إجمالي <ph name="TOTAL_STEPS" />: في قائمة "الإعدادات السريعة"، ستظهر لك عناصر التحكّم الشائعة الاستخدام على جهازك، مثل Wi-Fi والبلوتوث ومستوى الصوت. يمكنك من خلال القائمة أيضًا أخذ لقطات شاشة. اضغط على Alt + Shift + S لفتح "الإعدادات السريعة".</translation>
 <translation id="4975771730019223894">وضع شارات على رمز التطبيق</translation>
 <translation id="4977493774330778463"><ph name="NUM_IMPORTANT_NOTIFICATION" />:
         <ph name="NOTIFICATION_1" />،
@@ -1146,6 +1149,7 @@
 <translation id="540713187982329711">نقطة الاتصال مفعَّلة، وما مِن أجهزة متصلة بها. يمكنك إيقافها.</translation>
 <translation id="5413656666631274079">صفحة الإعدادات</translation>
 <translation id="5414198321558177633">جارٍ إعادة تحميل قائمة الملفات الشخصية. قد تستغرق هذه العملية بضع دقائق.</translation>
+<translation id="5417965108047245734">يمكنك التعرّف سريعًا على طريقة استخدام جهاز <ph name="PRODUCT_NAME" /></translation>
 <translation id="5426063383988017631">تم إغلاق قائمة الإعدادات.</translation>
 <translation id="5428899915242071344">بدء التحديد</translation>
 <translation id="5429993543155113935">هذا الخيار غير متوفّر حاليًا لنوافذ التصفّح المتخفي.</translation>
@@ -1442,6 +1446,7 @@
 <translation id="6555373427270923730">‏اكتب عنوان الويب في شريط العناوين، ثم اضغط على ‎<ph name="MODIFIER" /><ph name="KEY" />.</translation>
 <translation id="655633303491376835"><ph name="APP_NAME" />
 مثبَّت حديثًا</translation>
+<translation id="6559158502366839560">المزيد من التطبيقات والألعاب</translation>
 <translation id="6559976592393364813">الطلب من المشرف</translation>
 <translation id="6565007273808762236">‏تعذُّر الاتصال من خلال شريحة eSIM</translation>
 <translation id="6570831796530454248">{0,plural, =1{تحديث الجهاز خلال ساعة واحدة}zero{تحديث الجهاز خلال # ساعة}two{تحديث الجهاز خلال ساعتين}few{تحديث الجهاز خلال # ساعات}many{تحديث الجهاز خلال # ساعة}other{تحديث الجهاز خلال # ساعة}}</translation>
@@ -1526,7 +1531,6 @@
 <translation id="6874854809828346832">يمكنك عرض تفاصيل نقطة الاتصال. نقطة الاتصال مفعَّلة.</translation>
 <translation id="6878400149835617132">تم إيقاف الاختصار</translation>
 <translation id="6878701771800702153">{NUM_APPS,plural, =1{تطبيق واحد}zero{‫# تطبيق}two{تطبيقان}few{‫# تطبيقات}many{‫# تطبيقًا}other{‫# تطبيق}}</translation>
-<translation id="6878787305374738418">الخطوة 4 من 5 في الجولة: بعد تفعيل "مشغّل التطبيقات"، سيظهر لك شريط بحث محسَّن. يمكنك بدء الكتابة للبحث عن ملفاتك وتطبيقاتك وغير ذلك. بإمكانك أيضًا الحصول على إجابات عن الأسئلة حول <ph name="PRODUCT_NAME" />.</translation>
 <translation id="6883768636838842873">اختصارات لوحة المفاتيح ونصائح حول استخدام الجهاز والمزيد</translation>
 <translation id="6884665277231944629">العودة إلى تاريخ اليوم</translation>
 <translation id="6886172995547742638">‏قد يواجه جهاز <ph name="DEVICE_TYPE" /> انخفاضًا في الأداء. يمكنك استخدام محوِّل طاقة متوافق بقدرة <ph name="PREFERRED_MINIMUM_POWER" /> واط أو محوِّل طاقة USB-C بقدرة أعلى.</translation>
@@ -1595,6 +1599,7 @@
 <translation id="7143207342074048698">اتصال</translation>
 <translation id="7144942256906679589">حالة البطارية</translation>
 <translation id="7145639536026937076">‏مستوى البطارية عند ‎<ph name="PERCENTAGE" />% ويجري شحنها. وضع "توفير شحن البطارية" مفعّل.</translation>
+<translation id="7149149900052329230">‏يمكنك إدارة ملفاتك المحلية وملفاتك على Google Drive في تطبيق "الملفات".</translation>
 <translation id="7165278925115064263">Alt+Shift+K</translation>
 <translation id="7167913274352523149">‫<ph name="HOTSPOT" />،
         <ph name="NETWORK" /></translation>
@@ -1616,7 +1621,6 @@
 <translation id="726276584504105859">السحب هنا لاستخدام وضع تقسيم الشاشة</translation>
 <translation id="7262906531272962081">إنشاء تذكير</translation>
 <translation id="7278787617901301220">‏‫<ph name="LAUNCHER_KEY_NAME" /> + مفتاح backspace</translation>
-<translation id="7282547098317872382">‏الخطوة 3 من 5 في الجولة: استخدِم التطبيقات لتنفيذ كل مهامك المطلوبة على <ph name="PRODUCT_NAME" />. وانتقِل إلى "مشغِّل التطبيقات" للعثور على كل تطبيقاتك. اضغط على Alt + Shift + L للتركيز على زر "مشغّل التطبيقات".</translation>
 <translation id="7285232777292757180">استخدِم أداة تصوير الشاشة في الإعدادات السريعة لأخذ لقطات شاشة.</translation>
 <translation id="7301826272005790482">إغلاق اقتراحات النوافذ</translation>
 <translation id="7302889331339392448">ميزة "النسخ النصي التلقائي" غير مفعَّلة.</translation>
@@ -1798,10 +1802,12 @@
 <translation id="7933084174919150729">‏لا يتوفر مساعد Google إلا للملف الشخصي الأساسي.</translation>
 <translation id="79341161159229895">يُدير <ph name="FIRST_PARENT_EMAIL" /> و<ph name="SECOND_PARENT_EMAIL" /> الحساب.</translation>
 <translation id="793716872548410480">‏يُرجى الضغط على <ph name="SHORTCUT_KEY_NAME" /> + V للاطّلاع على الحافظة. تم حفظ آخر 5 عناصر نسختها إلى الحافظة.</translation>
+<translation id="7942330802915522974">‏الخطوة <ph name="STEP" /> من إجمالي <ph name="TOTAL_STEPS" />: يمكنك العثور على تطبيق "الملفات" في "مشغِّل التطبيقات". يمكنك إدارة ملفاتك المحلية وملفاتك على Google Drive في تطبيق "الملفات".</translation>
 <translation id="7942349550061667556">أحمر</translation>
 <translation id="7943516765291457328">يجب تفعيل البلوتوث للبحث عن نقاط الاتصال القريبة</translation>
 <translation id="7944023924886109030">عرض جميع الأحداث لهذا اليوم</translation>
 <translation id="7945357288295809525">عرض إعدادات تسهيل الاستخدام، الميزة المفعَّلة حاليًا: <ph name="ENABLED_FEATURES" /></translation>
+<translation id="7946681191253332687">تتوفّر تحديثات أمان ممتدة</translation>
 <translation id="7947798320695032612">‫"<ph name="APP_NAME" />" بحاجة إلى استخدام <ph name="DEVICE_NAME" />.</translation>
 <translation id="7951630946012935453">تعتيم لوحة المفاتيح</translation>
 <translation id="7953994493035617347">هل تريد تأكيد درجة الدقة الجديدة؟</translation>
@@ -1848,7 +1854,7 @@
 <translation id="8127095419621171197">فتح تطبيق "الآلة الحاسبة"</translation>
 <translation id="8129620843620772246"><ph name="TEMPERATURE_C" />° مئوية</translation>
 <translation id="8130528849632411619">الانتقال إلى بداية المستند</translation>
-<translation id="8131740175452115882">التأكيد</translation>
+<translation id="8131740175452115882">تأكيد</translation>
 <translation id="8131994907636310308">إغلاق الإشعار المنبثق لترتيب التطبيقات</translation>
 <translation id="8132793192354020517">تم الاتصال بالموقع <ph name="NAME" /></translation>
 <translation id="8138705869659070104">يمكنك التفعيل بعد إعداد جهازك</translation>
@@ -1913,7 +1919,6 @@
 <translation id="8412677897383510995">إظهار إعدادات شاشة العرض</translation>
 <translation id="8413272770729657668">يبدأ التسجيل بعد 3، 2، 1.</translation>
 <translation id="8416730306157376817">%<ph name="BATTERY_PERCENTAGE" /> (الحافظة)</translation>
-<translation id="8417951779969083400">‏الخطوة 2 من 5 في الجولة: في قائمة "الإعدادات السريعة"، ستظهر لك عناصر التحكّم الشائعة على جهازك، مثل Wi-Fi والبلوتوث ومستوى الصوت. يمكنك من خلال القائمة أيضًا أخذ لقطات شاشة. اضغط على Alt + Shift + S لفتح "الإعدادات السريعة".</translation>
 <translation id="8420205633584771378">هل تريد إزالة هذا الاقتراح؟</translation>
 <translation id="8421270167862077762"><ph name="UNAVAILABLE_APPS" /> غير مثبَّت على هذا الجهاز.</translation>
 <translation id="8426708595819210923">مساء الخير <ph name="GIVEN_NAME" />،</translation>
@@ -2134,6 +2139,7 @@
 <translation id="987589956647469042">بيانات الجوّال مفعَّلة.</translation>
 <translation id="989374776391122812">عناصر التحكّم في الكاميرا والصوت</translation>
 <translation id="990277280839877440">تم إغلاق النافذة <ph name="WINDOW_TITILE" />.</translation>
+<translation id="993398562350683614">‏الخطوة <ph name="STEP" /> من إجمالي <ph name="TOTAL_STEPS" />: استخدِم التطبيقات لتنفيذ كل مهامك المطلوبة على <ph name="PRODUCT_NAME" />. وانتقِل إلى "مشغِّل التطبيقات" للعثور على كل تطبيقاتك. اضغط على Alt + Shift + L للتركيز على زر "مشغِّل التطبيقات".</translation>
 <translation id="994354411665877646"><ph name="NETWORK_NAME" />، <ph name="SUBTEXT" /></translation>
 <translation id="996204416024568215">يُرجى الحصول على أحدث الميزات وتحسينات الأمان. يتم تنزيل التحديثات في الخلفية.</translation>
 </translationbundle>

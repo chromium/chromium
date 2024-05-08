@@ -11,6 +11,7 @@
 <translation id="1047458377670401304"><ph name="CPU_NAME" />（<ph name="THREAD_COUNT" /> 个线程，<ph name="CPU_MAX_CLOCK_SPEED" />GHz）</translation>
 <translation id="1047773237499189053">有可用的新功能，使用向上键即可了解详情。</translation>
 <translation id="1049663189809099096">粉黄色</translation>
+<translation id="1056898198331236512">警告</translation>
 <translation id="1059913517121127803">无法启动扫描</translation>
 <translation id="1062823486781306604">第 <ph name="INDEX" /> 个，共 <ph name="COUNT" /> 个，<ph name="NAME" />。</translation>
 <translation id="1070066693520972135">WEP</translation>
@@ -28,6 +29,7 @@
 <translation id="1145018782460575098">“更新外部设备的固件”窗口已打开。有 <ph name="NUM_UPDATES" /> 项可用的更新。</translation>
 <translation id="1145516343487477149">查找帮助文章和常见 Chromebook 问题解答</translation>
 <translation id="1154390310959620237">您只能自定义 5 个快捷键。如要添加一个新的快捷键，请先删除一个现有快捷键。</translation>
+<translation id="1155154308031262006">输入提示</translation>
 <translation id="115705039208660697">菠萝</translation>
 <translation id="1164939766849482256">“黎明到黄昏”屏保</translation>
 <translation id="1167755866710282443">打开菜单即可自定义键。拖动菜单即可移动它。</translation>
@@ -95,7 +97,6 @@
 <translation id="1478594628797167447">扫描器</translation>
 <translation id="1483493594462132177">发送</translation>
 <translation id="1488850966314959671">无法使用任何已启用的自定义 APN 连接到此网络。如需了解详情，请与您的移动运营商联系。</translation>
-<translation id="1491076385728777984">正在更新“<ph name="DEVICE_NAME" />”上的固件</translation>
 <translation id="1499041187027566160">调高音量</translation>
 <translation id="1499900233129743732"><ph name="MANAGER" /> 负责管理此用户，而且可能会远程管理设置并监控用户活动。</translation>
 <translation id="150962533380566081">PUK 无效。</translation>
@@ -291,7 +292,6 @@
 <translation id="2505327257735685095">刷新当前壁纸图片</translation>
 <translation id="2512979179176933762">显示窗口</translation>
 <translation id="2513396635448525189">登录图片</translation>
-<translation id="2517472476991765520">扫描</translation>
 <translation id="2521835766824839541">上一首</translation>
 <translation id="2526590354069164005">桌面</translation>
 <translation id="2529641961800709867">按钮选项</translation>
@@ -330,6 +330,7 @@
 <translation id="2744221223678373668">已共享</translation>
 <translation id="2751739896257479635">EAP 阶段 2 身份验证</translation>
 <translation id="2754757901767760034">灯</translation>
+<translation id="2780756493585863768">由 Google AI 赋能的近期背景</translation>
 <translation id="2783010256799387990">通过</translation>
 <translation id="2786429550992142861">亚麻</translation>
 <translation id="2787435249130282949">调亮键盘</translation>
@@ -426,6 +427,7 @@
 <translation id="3456078764689556234">已打印 <ph name="PRINTED_PAGES" /> 页（共 <ph name="TOTAL_PAGES" /> 页）。</translation>
 <translation id="345898999683440380">正在扫描第 <ph name="PAGE_NUM" /> 页。已完成 <ph name="PERCENTAGE_VALUE" />%。</translation>
 <translation id="3459509316159669723">打印</translation>
+<translation id="3462187165860821523">正在更新“<ph name="DEVICE_NAME" />”</translation>
 <translation id="346423161771747987">电流</translation>
 <translation id="346539236881580388">重拍</translation>
 <translation id="3484914941826596830">固件更新期间，请不要拔掉此外部设备的电源插头或关闭您的计算机。您可以最小化此窗口。此更新可能需要几分钟时间，在此期间，您的外部设备可能无法正常使用。</translation>
@@ -790,6 +792,7 @@
 <translation id="5559898619118303662">日落时自动切换到深色主题</translation>
 <translation id="556042886152191864">按钮</translation>
 <translation id="5562551811867441927"><ph name="TERRAIN_COLOR" />色调的<ph name="TERRAIN_FEATURE" /></translation>
+<translation id="5572169899491758844">扫描</translation>
 <translation id="5578477003638479617">UMTS</translation>
 <translation id="5578519639599103840">重新扫描</translation>
 <translation id="5583640892426849032">退格</translation>
@@ -879,7 +882,6 @@
 <translation id="6075872808778243331">(Android) HTTP 延迟时间</translation>
 <translation id="6078323886959318429">添加快捷方式</translation>
 <translation id="6091080061796993741">黄色</translation>
-<translation id="610371409726072606">由 Google AI 赋能的相机背景</translation>
 <translation id="6104112872696127344">已取消扫描</translation>
 <translation id="6106186594183574873">要完成更改，请输入您的旧密码</translation>
 <translation id="6108689792487843350">无法连接至网关</translation>
@@ -906,6 +908,7 @@
 <translation id="6205145102504628069">云朵的动态变化</translation>
 <translation id="6213737986933151570">CDMA1XRTT</translation>
 <translation id="6223752125779001553">没有可用的扫描仪</translation>
+<translation id="6231648282154119906">在您选择了增强型保护功能后，Google 安全浏览功能会自动扫描可疑文件</translation>
 <translation id="6232017090690406397">电池</translation>
 <translation id="6234024205316847054">显示概要</translation>
 <translation id="6235460611964961764">手动重置流量使用情况</translation>
@@ -1011,7 +1014,6 @@
 <translation id="672609503628871915">了解一下新变化</translation>
 <translation id="6740695858234317715">奶油色和橙色</translation>
 <translation id="6741823073189174383">小船</translation>
-<translation id="674276385369049081">由 Google AI 赋能的近期相机背景</translation>
 <translation id="6744441848304920043">丛林</translation>
 <translation id="6747035363363040417">中性色</translation>
 <translation id="6747215703636344499">已停止 - 出纸盘已满</translation>
@@ -1032,6 +1034,7 @@
 <translation id="6871256179359663621">浅紫色</translation>
 <translation id="6889786074662672253">重启期间，请不要拔掉此外部设备的电源插头或关闭您的计算机。您可以最小化此窗口。这可能需要几分钟时间，在此期间，您的外部设备可能无法正常使用。</translation>
 <translation id="6900701049656042631">此影集内尚无任何照片。若要添加照片，请前往 <ph name="LINK" /></translation>
+<translation id="6902359863093437070">利用 AI 创建背景</translation>
 <translation id="6905163627763043954">试用一下</translation>
 <translation id="6905724422583748843">返回“<ph name="PAGE_NAME" />”</translation>
 <translation id="6910312834584889076">扫描仪的盖子没合上。请合上盖子，然后重试。</translation>
@@ -1269,6 +1272,7 @@
 <translation id="8152370627892825"><ph name="DESCRIPTION" />，<ph name="ACCELERATOR_INFO" />。</translation>
 <translation id="8156233298086717232">神奇</translation>
 <translation id="8162776280680283326">狐狸</translation>
+<translation id="8167413449582155132">由 Google AI 赋能的背景</translation>
 <translation id="8179976553408161302">Enter</translation>
 <translation id="8183975772394450380">海滩</translation>
 <translation id="8206859287963243715">蜂窝网络设备</translation>
@@ -1429,7 +1433,7 @@
 <translation id="9049868303458988905">APN“保存”按钮现已启用</translation>
 <translation id="9058932992221914855">IPv6</translation>
 <translation id="9062831201344759865">DNS 解析延迟时间较长</translation>
-<translation id="9065203028668620118">编辑</translation>
+<translation id="9065203028668620118">修改</translation>
 <translation id="9068296451330120661">水彩画</translation>
 <translation id="9073281213608662541">PAP</translation>
 <translation id="9074739597929991885">蓝牙</translation>

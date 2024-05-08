@@ -166,6 +166,7 @@
 <translation id="1586324912145647027">Перейти к рабочим столам (от 1 до 8)</translation>
 <translation id="158838227375272121">Сайт "Google Класс"</translation>
 <translation id="1589090746204042747">Получать доступ к данным о ваших действиях во время этого сеанса.</translation>
+<translation id="1597880963776148053">Шаг <ph name="STEP" /> из <ph name="TOTAL_STEPS" />. На панели запуска в нижней части экрана находятся закрепленные и открытые приложения. Чтобы перейти к ним, нажмите Alt + Shift + L, а затем Tab.</translation>
 <translation id="1602874809115667351"><ph name="LAUNCHER_KEY_NAME" /> + Стрелка вниз</translation>
 <translation id="1604857178818051494">Приостановить воспроизведение</translation>
 <translation id="1607312127821884567">Не настраивать просмотр приложений с телефона</translation>
@@ -303,6 +304,7 @@
 <translation id="2257486738914982088">При скачивании файла <ph name="FILENAME" /> произошла ошибка.</translation>
 <translation id="2258734398699965611">Рекомендуемые файлы</translation>
 <translation id="2268130516524549846">Bluetooth отключен</translation>
+<translation id="2268731132310444948">Шаг <ph name="STEP" /> из <ph name="TOTAL_STEPS" />. На открытой панели запуска вы найдете улучшенную строку поиска. Используйте ее, чтобы находить файлы, приложения и все остальное, а также задавать вопросы о своем компьютере (<ph name="PRODUCT_NAME" />).</translation>
 <translation id="2268813581635650749">Выйти для всех</translation>
 <translation id="2276987123919776440">15 минут</translation>
 <translation id="2277103315734023688">Перемотать вперед</translation>
@@ -397,6 +399,7 @@
 <translation id="2607678425161541573">Войдите в аккаунт в режиме онлайн</translation>
 <translation id="2612072250312279703">мониторинг системы</translation>
 <translation id="2612614436418177118">Переместить значок приложения в сетке</translation>
+<translation id="2619326010008283367">Шаг <ph name="STEP" /> из <ph name="TOTAL_STEPS" />. Вы можете персонализировать <ph name="PRODUCT_NAME" />, например изменить обои или установить заставку. Для этого откройте настройки на панели запуска.</translation>
 <translation id="2620016719323068571">Ищите <ph name="CATEGORY" />, файлы, приложения и не только…</translation>
 <translation id="2620436844016719705">Система</translation>
 <translation id="2620900772667816510">Bluetooth Super Resolution</translation>
@@ -819,7 +822,6 @@
 <translation id="4209973997261364186">Wi-Fi включен</translation>
 <translation id="4212472694152630271">Войти с помощью PIN-кода</translation>
 <translation id="4215497585250573029">Настройки VPN</translation>
-<translation id="4215548513524864822">Шаг 5 из 5. Персонализируйте свое устройство (<ph name="PRODUCT_NAME" />) в приложении "Настройки" на панели запуска. Например, измените обои или установите заставку.</translation>
 <translation id="4217571870635786043">Голосовой ввод</translation>
 <translation id="4221957499226645091"><ph name="APP_NAME" />, установленное приложение, приостановлено</translation>
 <translation id="4228078597006700451">Элементы управления не настроены</translation>
@@ -946,12 +948,12 @@
 <translation id="468293128311738995">Приложения на вашем телефоне</translation>
 <translation id="4690510401873698237">Временное хранилище размещено в нижней части экрана</translation>
 <translation id="4696813013609194136">Требуется родительский код доступа</translation>
-<translation id="469693290987463983">Шаг 1 из 5. На панели запуска в нижней части экрана находятся закрепленные и открытые приложения. Чтобы перейти к ним, нажмите Alt + Shift + L.</translation>
 <translation id="4702647871202761252">Экран конфиденциальности отключен</translation>
 <translation id="4706121060329443414">Повторное скачивание запустится позже. Сейчас запись речи будет передана для обработки в Google.</translation>
 <translation id="470644585772471629">Инверсия цветов</translation>
 <translation id="4708065238214351979">Увеличить яркость подсветки клавиатуры</translation>
 <translation id="4717575069099566988">Кабель USB-C не поддерживает интерфейс USB4. Производительность устройства может быть ограничена.</translation>
+<translation id="4724328513667182700">6 советов для начинающих пользователей (<ph name="PRODUCT_NAME" />)</translation>
 <translation id="4730374152663651037">ЧАСТО ИСПОЛЬЗУЕМЫЕ</translation>
 <translation id="4731797938093519117">Родительский доступ</translation>
 <translation id="4733161265940833579"><ph name="BATTERY_PERCENTAGE" /> % (левый)</translation>
@@ -1027,6 +1029,7 @@
 <translation id="4964188651935955085">После этого от вашего устройства (<ph name="DEVICE_TYPE" />) будет отключено следующее внешнее устройство:</translation>
 <translation id="4966431234408005599">Увеличить громкость</translation>
 <translation id="4969092041573468113"><ph name="HOURS" /> ч. <ph name="MINUTES" /> мин. <ph name="SECONDS" /> сек.</translation>
+<translation id="496999337731226334">Шаг <ph name="STEP" /> из <ph name="TOTAL_STEPS" />. Часто используемые параметры, например для управления Wi-Fi, Bluetooth и громкостью, находятся в меню быстрых настроек. Там же есть кнопка для создания скриншотов. Чтобы открыть быстрые настройки, нажмите Alt + Shift + S.</translation>
 <translation id="4975771730019223894">Число уведомлений на значке приложения</translation>
 <translation id="4977493774330778463"><ph name="NUM_IMPORTANT_NOTIFICATION" />:
         <ph name="NOTIFICATION_1" />,
@@ -1144,6 +1147,7 @@
 <translation id="540713187982329711">Включить или отключить точку доступа. Сейчас она работает. К ней не подключено ни одно устройство.</translation>
 <translation id="5413656666631274079">Страница настроек</translation>
 <translation id="5414198321558177633">Список профилей обновляется. Это может занять несколько минут.</translation>
+<translation id="5417965108047245734">Наш краткий обзор поможет вам освоить <ph name="PRODUCT_NAME" />.</translation>
 <translation id="5426063383988017631">Меню настроек закрыто</translation>
 <translation id="5428899915242071344">Начать выбор текста</translation>
 <translation id="5429993543155113935">Окна в режиме инкогнито пока не поддерживаются</translation>
@@ -1524,7 +1528,6 @@
 <translation id="6874854809828346832">Показать сведения о точке доступа. Точка доступа включена.</translation>
 <translation id="6878400149835617132">Быстрые клавиши отключены</translation>
 <translation id="6878701771800702153">{NUM_APPS,plural, =1{1 приложение}one{# приложение}few{# приложения}many{# приложений}other{# приложения}}</translation>
-<translation id="6878787305374738418">Шаг 4 из 5. На открытой панели запуска доступна строка улучшенного поиска. Чтобы найти нужный файл, приложение или другой контент, начните вводить его название. Там же можно задать вопрос о своем устройстве (<ph name="PRODUCT_NAME" />).</translation>
 <translation id="6883768636838842873">Сочетания клавиш, советы по использованию устройства и не только</translation>
 <translation id="6884665277231944629">Вернуться к сегодняшней дате</translation>
 <translation id="6886172995547742638"><ph name="DEVICE_TYPE" /> может работать неэффективно. Используйте сертифицированный адаптер питания USB-C на <ph name="PREFERRED_MINIMUM_POWER" /> Вт или выше.</translation>
@@ -1593,6 +1596,7 @@
 <translation id="7143207342074048698">Подключение</translation>
 <translation id="7144942256906679589">Состояние батареи</translation>
 <translation id="7145639536026937076">Батарея заряжена на <ph name="PERCENTAGE" /> % и подключена к источнику питания. Режим энергосбережения включен.</translation>
+<translation id="7149149900052329230">Управляйте файлами на устройстве и Google Диске через приложение "Файлы".</translation>
 <translation id="7165278925115064263">Alt + Shift + K</translation>
 <translation id="7167913274352523149"><ph name="HOTSPOT" />,
         <ph name="NETWORK" /></translation>
@@ -1613,7 +1617,6 @@
 <translation id="726276584504105859">Перетащите сюда, чтобы разделить экран</translation>
 <translation id="7262906531272962081">Создать напоминание</translation>
 <translation id="7278787617901301220"><ph name="LAUNCHER_KEY_NAME" /> + Backspace</translation>
-<translation id="7282547098317872382">Шаг 3 из 5. Выполняйте разные задачи на устройстве (<ph name="PRODUCT_NAME" />) с помощью приложений. Чтобы их найти, откройте панель запуска. Вы можете перейти к ней, нажав Alt + Shift + L.</translation>
 <translation id="7285232777292757180">Чтобы сделать скриншот, воспользуйтесь инструментом записи экрана в быстрых настройках.</translation>
 <translation id="7301826272005790482">Закрыть рекомендации окон</translation>
 <translation id="7302889331339392448">Автоматические субтитры отключены</translation>
@@ -1795,10 +1798,12 @@
 <translation id="7933084174919150729">Google Ассистент доступен только в основном профиле</translation>
 <translation id="79341161159229895">Администраторы аккаунта: <ph name="FIRST_PARENT_EMAIL" /> и <ph name="SECOND_PARENT_EMAIL" /></translation>
 <translation id="793716872548410480">Чтобы посмотреть содержимое буфера обмена, нажмите клавиши <ph name="SHORTCUT_KEY_NAME" /> + V. В буфере сохраняются пять последних скопированных объектов.</translation>
+<translation id="7942330802915522974">Шаг <ph name="STEP" /> из <ph name="TOTAL_STEPS" />. На панели запуска вы можете найти приложение "Файлы". Используйте его, чтобы управлять файлами на устройстве и Google Диске.</translation>
 <translation id="7942349550061667556">Красный</translation>
 <translation id="7943516765291457328">Включите Bluetooth, чтобы начать поиск точек доступа поблизости.</translation>
 <translation id="7944023924886109030">Посмотреть все мероприятия на сегодня</translation>
 <translation id="7945357288295809525">Открыть настройки специальных возможностей. Включенные функции: <ph name="ENABLED_FEATURES" />.</translation>
+<translation id="7946681191253332687">Доступна расширенная поддержка обновлений системы безопасности</translation>
 <translation id="7947798320695032612">Приложению "<ph name="APP_NAME" />" требуется разрешение (<ph name="DEVICE_NAME" />)</translation>
 <translation id="7951630946012935453">Уменьшить яркость подсветки клавиатуры</translation>
 <translation id="7953994493035617347">Подтвердите изменение</translation>
@@ -1910,7 +1915,6 @@
 <translation id="8412677897383510995">Показать настройки экрана</translation>
 <translation id="8413272770729657668">До начала записи: 3, 2, 1</translation>
 <translation id="8416730306157376817"><ph name="BATTERY_PERCENTAGE" /> % (чехол)</translation>
-<translation id="8417951779969083400">Шаг 2 из 5. Часто используемые параметры, такие как Wi-Fi, Bluetooth и громкость, находятся в меню быстрых настроек. Там также есть функция для создания скриншотов. Чтобы открыть быстрые настройки, нажмите Alt + Shift + S.</translation>
 <translation id="8420205633584771378">Удалить эту подсказку?</translation>
 <translation id="8421270167862077762">Приложение "<ph name="UNAVAILABLE_APPS" />" не установлено на этом устройстве.</translation>
 <translation id="8426708595819210923">Добрый вечер, <ph name="GIVEN_NAME" />!</translation>
@@ -2131,6 +2135,7 @@
 <translation id="987589956647469042">Мобильный интернет включен.</translation>
 <translation id="989374776391122812">Настройки камеры и аудио</translation>
 <translation id="990277280839877440">Окно "<ph name="WINDOW_TITILE" />" закрыто.</translation>
+<translation id="993398562350683614">Шаг <ph name="STEP" /> из <ph name="TOTAL_STEPS" />. Для чего бы вы ни использовали <ph name="PRODUCT_NAME" />, выполнять все задачи вам помогут приложения. Вы найдете их на панели запуска. Чтобы перейти к ее кнопке, нажмите Alt + Shift + L.</translation>
 <translation id="994354411665877646"><ph name="NETWORK_NAME" />, <ph name="SUBTEXT" /></translation>
 <translation id="996204416024568215">Получите доступ к новым функциям и улучшениям безопасности. Обновление выполняется в фоновом режиме.</translation>
 </translationbundle>

@@ -12,6 +12,7 @@
 <translation id="1588438908519853928">Jwayelekile</translation>
 <translation id="1591562245178063882">Le nyanga</translation>
 <translation id="1637811476055996098">Khetha amafayela</translation>
+<translation id="1680090928918677457">Sebenzisa ikhamera</translation>
 <translation id="1681022320378710418">isikhathi samanje</translation>
 <translation id="1727839386348365796">I-Eyedropper</translation>
 <translation id="1729654308190250600">Sicela ufake ikheli le imeyili elinokuthile.</translation>
@@ -60,6 +61,7 @@
 <translation id="3822383571486410024">Sicela welule lo mbhalo kuya kuzinhlamvu ezingu-<ph name="MIN_CHARACTERS" /> noma ngaphezulu (okwamanje usebenzisa izinhlamvu ezingu-<ph name="CURRENT_LENGTH" />).</translation>
 <translation id="383465348367842624">Ingxenye elandelwa yi-'<ph name="ATSIGN" />' akumele iqukathe isimbuli engu-'<ph name="INVALIDCHARACTER" />'.</translation>
 <translation id="3846214748874656680">Phuma kusikrini esigcwele</translation>
+<translation id="3914173277599553213">Kuyadingeka</translation>
 <translation id="4031179711345676612">Imakrofoni ivunyelwe</translation>
 <translation id="4103419683916926126">Ama-millisecond</translation>
 <translation id="4201051445878709314">bonisa inyanga yangaphambilini</translation>
@@ -75,6 +77,7 @@
 <translation id="4912200001568447310">into yamanje</translation>
 <translation id="4915360478455618802">Bonisa isikhi sesikhathi</translation>
 <translation id="4924138096460353083">okunganqunyelwe</translation>
+<translation id="49269513399674318">Sebenzisa imakrofoni</translation>
 <translation id="4950364064308314478">Bonisa idatha yasendaweni nesikhi sesikhathi</translation>
 <translation id="4971739861736909480"><ph name="ACCNAME" />okukhethiwe</translation>
 <translation id="4975562563186953947"><ph name="SELECTED_COUNT" /> okukhethiwe</translation>
@@ -142,6 +145,7 @@
 <translation id="7080893216867146095">Ukwabelana ngendawo kuvunyelwe</translation>
 <translation id="709897737746224366">Sicela ufanise ifomethi eceliwe.</translation>
 <translation id="7102274145889307184">indawo yamanje</translation>
+<translation id="7134810312945846184">Sebenzisa imakrofoni nekhamera</translation>
 <translation id="7263440858009898357">Sicela ukhethe into kuhlu.</translation>
 <translation id="7320576522385648310">ukugcina umthamo</translation>
 <translation id="7341556277900466204">Faka umbala kahle</translation>

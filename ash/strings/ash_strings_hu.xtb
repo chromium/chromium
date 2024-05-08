@@ -166,6 +166,7 @@
 <translation id="1586324912145647027">Lépjen az 1–8. asztal valamelyikéhez.</translation>
 <translation id="158838227375272121">A Google Tanterem webhelye</translation>
 <translation id="1589090746204042747">Hozzáférés az Ön jelen munkamenetben végzett összes tevékenységéhez</translation>
+<translation id="1597880963776148053">A bemutató <ph name="STEP" />. lépése az összesen <ph name="TOTAL_STEPS" /> lépésből. A kitűzött és a megnyitott alkalmazások a képernyő alján lévő polcon találhatók. Nyomja meg az Alt + Shift + L billentyűkombinációt, majd a Tab billentyűt, ha a polcon lévő elemekre szeretné helyezni a fókuszt.</translation>
 <translation id="1602874809115667351"><ph name="LAUNCHER_KEY_NAME" /> + lefelé nyíl</translation>
 <translation id="1604857178818051494">Médiatartalom szüneteltetése</translation>
 <translation id="1607312127821884567">A telefon alkalmazásainak megtekintésére vonatkozó beállítás elvetése</translation>
@@ -303,6 +304,7 @@
 <translation id="2257486738914982088">Hiba történt a következő fájl letöltésekor: <ph name="FILENAME" /></translation>
 <translation id="2258734398699965611">Javasolt fájlok</translation>
 <translation id="2268130516524549846">Bluetooth letiltva</translation>
+<translation id="2268731132310444948">A bemutató <ph name="STEP" />. lépése az összesen <ph name="TOTAL_STEPS" /> lépésből. Az Indító aktiválása után bővített keresősáv jelenik meg. Fájlok, alkalmazások és egyebek kereséséhez elkezdhet gépelni. Ugyanitt <ph name="PRODUCT_NAME" /> eszközével kapcsolatos kérdéseire is választ kaphat.</translation>
 <translation id="2268813581635650749">Összes kiléptetése</translation>
 <translation id="2276987123919776440">15 perc</translation>
 <translation id="2277103315734023688">Ugrás előre</translation>
@@ -397,6 +399,7 @@
 <translation id="2607678425161541573">Online bejelentkezés szükséges</translation>
 <translation id="2612072250312279703">tevékenységfigyelő</translation>
 <translation id="2612614436418177118">Egy alkalmazásikon áthelyezése az alkalmazásrácson belül</translation>
+<translation id="2619326010008283367">A bemutató <ph name="STEP" />. lépése az összesen <ph name="TOTAL_STEPS" /> lépésből. Az eszköz beállításait az Indítóban találja. Próbálja meg személyre szabni <ph name="PRODUCT_NAME" /> eszközét a Beállításokban: például módosítsa a háttérképet, vagy állítson be képernyőkímélőt.</translation>
 <translation id="2620016719323068571">Keresés a következők között: <ph name="CATEGORY" />, fájlok, alkalmazások és egyebek…</translation>
 <translation id="2620436844016719705">Rendszer</translation>
 <translation id="2620900772667816510">Szuperfelbontású Bluetooth</translation>
@@ -820,7 +823,6 @@ Az akkumulátor-élettartam növelése érdekében egyes funkciók korlátozotta
 <translation id="4209973997261364186">Wi-Fi bekapcsolva</translation>
 <translation id="4212472694152630271">Váltás PIN-kódra</translation>
 <translation id="4215497585250573029">VPN-beállítások</translation>
-<translation id="4215548513524864822">Bemutató – 5/5. lépés. Az eszköz beállításait az Indítóban találja. Próbálja meg személyre szabni <ph name="PRODUCT_NAME" /> eszközét a Beállításokban: például módosítsa a háttérképet, vagy állítson be képernyőkímélőt.</translation>
 <translation id="4217571870635786043">Diktálás</translation>
 <translation id="4221957499226645091"><ph name="APP_NAME" />, telepített alkalmazás, szüneteltetve</translation>
 <translation id="4228078597006700451">A vezérlők nincsenek beállítva</translation>
@@ -947,12 +949,12 @@ Az akkumulátor-élettartam növelése érdekében egyes funkciók korlátozotta
 <translation id="468293128311738995">Alkalmazások a telefonjáról</translation>
 <translation id="4690510401873698237">A polc alul található</translation>
 <translation id="4696813013609194136">Zárolás feloldása szülői kóddal</translation>
-<translation id="469693290987463983">Bemutató – 5/1. lépés. A kitűzött és a megnyitott alkalmazások a képernyő alján lévő polcon találhatók. Nyomja meg az Alt + Shift + L billentyűkombinációt, majd a Tab billentyűt, ha a polcon lévő elemekre szeretné helyezni a fókuszt.</translation>
 <translation id="4702647871202761252">Az adatvédelmi képernyő ki van kapcsolva</translation>
 <translation id="4706121060329443414">A letöltést később kísérli meg a rendszer. A beszédet a rendszer egyelőre elküldi a Google-nak feldolgozásra.</translation>
 <translation id="470644585772471629">Színek invertálása</translation>
 <translation id="4708065238214351979">A billentyűzet fényerejének növelése</translation>
 <translation id="4717575069099566988">Az USB-C kábel nem támogatja az USB4 szabványt. Ez korlátozhatja az eszköz teljesítményét.</translation>
+<translation id="4724328513667182700">Hat tipp a(z) <ph name="PRODUCT_NAME" /> használatának megkezdéséhez</translation>
 <translation id="4730374152663651037">GYAKRAN HASZNÁLT</translation>
 <translation id="4731797938093519117">Szülői hozzáférés</translation>
 <translation id="4733161265940833579"><ph name="BATTERY_PERCENTAGE" />% (bal)</translation>
@@ -1028,6 +1030,7 @@ Az akkumulátor-élettartam növelése érdekében egyes funkciók korlátozotta
 <translation id="4964188651935955085">A Bluetooth kikapcsolásakor megszakad a(z) Ön <ph name="DEVICE_TYPE" /> eszköze és a következő külső eszköz közötti kapcsolat:</translation>
 <translation id="4966431234408005599">Hangerő növelése</translation>
 <translation id="4969092041573468113"><ph name="HOURS" /> ó <ph name="MINUTES" /> p <ph name="SECONDS" /> mp</translation>
+<translation id="496999337731226334">A bemutató <ph name="STEP" />. lépése az összesen <ph name="TOTAL_STEPS" /> lépésből. A gyakran használt vezérlők (például a Wi-Fi, a Bluetooth és a hangerő) a Gyorsbeállításokban találhatók. Itt képernyőképeket is készíthet. Ha szeretné megnyitni a Gyorsbeállításokat, nyomja meg az Alt + Shift + S billentyűkombinációt.</translation>
 <translation id="4975771730019223894">Alkalmazásjelvények</translation>
 <translation id="4977493774330778463"><ph name="NUM_IMPORTANT_NOTIFICATION" />:
         <ph name="NOTIFICATION_1" />,
@@ -1145,6 +1148,7 @@ Nincsenek csatlakoztatott eszközök.</translation>
 <translation id="540713187982329711">Hotspot be- vagy kikapcsolása. A hotspot be van kapcsolva; nincs csatlakoztatott eszköz.</translation>
 <translation id="5413656666631274079">Beállítások oldal</translation>
 <translation id="5414198321558177633">Profillista frissítése. Ez eltarthat néhány percig.</translation>
+<translation id="5417965108047245734">Tekintse át gyorsan, hogy hogyan navigálhat <ph name="PRODUCT_NAME" /> eszközén.</translation>
 <translation id="5426063383988017631">Beállítások menü bezárva</translation>
 <translation id="5428899915242071344">Kijelölés indítása</translation>
 <translation id="5429993543155113935">Az inkognitó ablakok jelenleg nem támogatottak.</translation>
@@ -1525,7 +1529,6 @@ Frissen telepítve</translation>
 <translation id="6874854809828346832">Hotspotadatok megjelenítése. A hotspot be van kapcsolva.</translation>
 <translation id="6878400149835617132">A billentyűparancs ki van kapcsolva</translation>
 <translation id="6878701771800702153">{NUM_APPS,plural, =1{1 alkalmazás}other{# alkalmazás}}</translation>
-<translation id="6878787305374738418">Bemutató – 5/4. lépés. Az Indító aktiválása után bővített keresősáv jelenik meg. Fájlok, alkalmazások és egyebek kereséséhez elkezdhet gépelni. Ugyanitt <ph name="PRODUCT_NAME" /> eszközével kapcsolatos kérdéseire is választ kaphat.</translation>
 <translation id="6883768636838842873">Billentyűparancsok, eszközhasználati tippek és egyebek</translation>
 <translation id="6884665277231944629">Vissza a mai napra</translation>
 <translation id="6886172995547742638">A(z) <ph name="DEVICE_TYPE" /> eszközön a teljesítmény csökkenése észlelhető. Használjon tanúsítvánnyal rendelkező, <ph name="PREFERRED_MINIMUM_POWER" /> W-os vagy nagyobb teljesítményű USB-C tápcsatlakozót.</translation>
@@ -1594,6 +1597,7 @@ Frissen telepítve</translation>
 <translation id="7143207342074048698">Csatlakozás</translation>
 <translation id="7144942256906679589">Akkumulátorállapot</translation>
 <translation id="7145639536026937076">Az akkumulátor töltöttsége <ph name="PERCENTAGE" />%, és a töltés jelenleg is folyamatban van. Az Akkumulátorkímélő mód be van kapcsolva.</translation>
+<translation id="7149149900052329230">Helyi és Google Drive-fájljait is kezelheti a Fájlok alkalmazásban.</translation>
 <translation id="7165278925115064263">Alt+Shift+K</translation>
 <translation id="7167913274352523149"><ph name="HOTSPOT" />,
         <ph name="NETWORK" /></translation>
@@ -1614,7 +1618,6 @@ Frissen telepítve</translation>
 <translation id="726276584504105859">Húzza ide az osztott képernyő használatához</translation>
 <translation id="7262906531272962081">Emlékeztető létrehozása</translation>
 <translation id="7278787617901301220"><ph name="LAUNCHER_KEY_NAME" /> + backspace</translation>
-<translation id="7282547098317872382">Bemutató – 5/3. lépés. Alkalmazások használatával bármit elvégezhet <ph name="PRODUCT_NAME" /> eszközén. Alkalmazásait az Indítóban találja. Ha az Indító gombra szeretné helyezni a fókuszt, nyomja le az Alt + Shift + L billentyűkombinációt.</translation>
 <translation id="7285232777292757180">Képernyőképek készítéséhez használja a gyorsbeállításokban található Képernyőfelvétel eszközt</translation>
 <translation id="7301826272005790482">Ablakjavaslatok elvetése</translation>
 <translation id="7302889331339392448">Az Élő feliratozás ki van kapcsolva.</translation>
@@ -1796,10 +1799,12 @@ Az eszköz leállításához tartsa ismét nyomva az eszköz bekapcsológombját
 <translation id="7933084174919150729">A Google Segéd csak az elsődleges profilhoz áll rendelkezésre.</translation>
 <translation id="79341161159229895">A fiókot a(z) <ph name="FIRST_PARENT_EMAIL" /> és a(z) <ph name="SECOND_PARENT_EMAIL" /> kezeli</translation>
 <translation id="793716872548410480">Nyomja le a(z) <ph name="SHORTCUT_KEY_NAME" /> + V billentyűkombinációt a vágólap megtekintéséhez. A rendszer az utoljára másolt öt elemet menti a vágólapra.</translation>
+<translation id="7942330802915522974">A bemutató <ph name="STEP" />. lépése az összesen <ph name="TOTAL_STEPS" /> lépésből. A Fájlok alkalmazást az Indítóban találja. Helyi és Google Drive-fájljait is kezelheti a Fájlok alkalmazásban.</translation>
 <translation id="7942349550061667556">Piros</translation>
 <translation id="7943516765291457328">Kapcsolja be a Bluetootht a közeli hotspotok kereséséhez</translation>
 <translation id="7944023924886109030">A mai nap összes eseményének megtekintése</translation>
 <translation id="7945357288295809525">Kisegítő beállítások megjelenítése, „<ph name="ENABLED_FEATURES" />” engedélyezve.</translation>
+<translation id="7946681191253332687">Kiterjesztett biztonsági frissítések állnak rendelkezésre</translation>
 <translation id="7947798320695032612">A(z) <ph name="APP_NAME" /> használni szeretné a következőt: <ph name="DEVICE_NAME" /></translation>
 <translation id="7951630946012935453">A billentyűzet fényerejének csökkentése</translation>
 <translation id="7953994493035617347">Megerősíti az új felbontást?</translation>
@@ -1911,7 +1916,6 @@ Az eszköz leállításához tartsa ismét nyomva az eszköz bekapcsológombját
 <translation id="8412677897383510995">Kijelzőbeállítások megjelenítése</translation>
 <translation id="8413272770729657668">Felvételkészítés indul, 3, 2, 1</translation>
 <translation id="8416730306157376817"><ph name="BATTERY_PERCENTAGE" />% (tok)</translation>
-<translation id="8417951779969083400">Bemutató – 5/2. lépés. A gyakran használt vezérlők (például a Wi-Fi, a Bluetooth és a hangerő) a Gyorsbeállításokban találhatók. Itt képernyőképeket is készíthet. Ha szeretné megnyitni a Gyorsbeállításokat, nyomja meg az Alt + Shift + S billentyűkombinációt.</translation>
 <translation id="8420205633584771378">Eltávolítja ezt a javaslatot?</translation>
 <translation id="8421270167862077762">A(z) <ph name="UNAVAILABLE_APPS" /> alkalmazás nincs telepítve erre az eszközre.</translation>
 <translation id="8426708595819210923">Jó estét, <ph name="GIVEN_NAME" />!</translation>
@@ -2125,12 +2129,14 @@ Az eszköz leállításához tartsa ismét nyomva az eszköz bekapcsológombját
 <translation id="954052413789300507">Nincs elég tárhely a következő fájl számára: <ph name="FILENAME" />. Szabadítson fel tárhelyet.</translation>
 <translation id="954520015070501466">30 perc</translation>
 <translation id="956452277966142925">Játékok irányítópultjának beállításai</translation>
+<translation id="961856697154696964">Böngészési adatok törlése</translation>
 <translation id="974545358917229949"><ph name="RESULT_COUNT" /> találat megjelenítése a következő lekérdezésre: <ph name="QUERY" /></translation>
 <translation id="981011780479609956">Nincs határidő</translation>
 <translation id="98120814841227350">Ugrás a dokumentum végére</translation>
 <translation id="987589956647469042">A mobiladat-kapcsolat be van kapcsolva</translation>
 <translation id="989374776391122812">Kamera- és hangvezérlők</translation>
 <translation id="990277280839877440">Bezárta a következő ablakot: <ph name="WINDOW_TITILE" />.</translation>
+<translation id="993398562350683614">A bemutató <ph name="STEP" />. lépése az összesen <ph name="TOTAL_STEPS" /> lépésből. Alkalmazások használatával bármit elvégezhet <ph name="PRODUCT_NAME" /> eszközén. Alkalmazásait az Indítóban találja. Ha az Indító gombra szeretné helyezni a fókuszt, nyomja le az Alt + Shift + L billentyűkombinációt.</translation>
 <translation id="994354411665877646"><ph name="NETWORK_NAME" />, <ph name="SUBTEXT" /></translation>
 <translation id="996204416024568215">Szeretném megkapni a legújabb funkciókat és biztonsági fejlesztéseket. A frissítés a háttérben történik.</translation>
 </translationbundle>

@@ -11,6 +11,7 @@
 <translation id="1047458377670401304"><ph name="CPU_NAME" />(스레드 <ph name="THREAD_COUNT" />개, <ph name="CPU_MAX_CLOCK_SPEED" />GHz)</translation>
 <translation id="1047773237499189053">새 기능을 이용할 수 있습니다. 자세히 알아보려면 위쪽 화살표 키를 사용하세요.</translation>
 <translation id="1049663189809099096">밝은 노란색</translation>
+<translation id="1056898198331236512">경고</translation>
 <translation id="1059913517121127803">스캔을 시작할 수 없음</translation>
 <translation id="1062823486781306604"><ph name="COUNT" />개 중 <ph name="INDEX" />번째인 <ph name="NAME" />입니다.</translation>
 <translation id="1070066693520972135">WEP</translation>
@@ -28,12 +29,13 @@
 <translation id="1145018782460575098">외부 기기용 펌웨어 업데이트 창이 열려 있습니다. 업데이트가 <ph name="NUM_UPDATES" />개 있습니다.</translation>
 <translation id="1145516343487477149">Chromebook과 관련된 일반적인 질문에 관한 도움말 및 답변 찾기</translation>
 <translation id="1154390310959620237">단축키는 5개까지만 맞춤설정할 수 있습니다. 새로운 단축키를 추가하려면 기존 단축키를 삭제하세요.</translation>
+<translation id="1155154308031262006">프롬프트 입력</translation>
 <translation id="115705039208660697">파인애플</translation>
 <translation id="1164939766849482256">새벽부터 밤까지 화면 보호기</translation>
 <translation id="1167755866710282443">메뉴를 열어 키를 맞춤설정하세요. 이동하려면 메뉴를 드래그하세요.</translation>
 <translation id="1171349345463658120">모래 석호</translation>
 <translation id="1174073918202301297">바로가기 추가됨</translation>
-<translation id="11743817593307477">화살표 키를 사용하여 이 컨트롤을 원하는 게임 작업으로 이동합니다. Enter 키를 사용하여 컨트롤을 배치합니다. 취소하려면 Esc 키를 누르세요.</translation>
+<translation id="11743817593307477">화살표 키를 사용하여 이 컨트롤을 원하는 게임 액션으로 이동합니다. Enter 키를 사용하여 컨트롤을 배치합니다. 취소하려면 Esc 키를 누르세요.</translation>
 <translation id="1175697296044146566">이 <ph name="DEVICE_TYPE" /> 기기는 <ph name="MANAGER" />에서 관리합니다.</translation>
 <translation id="1175951029573070619">평균(<ph name="SIGNAL_STRENGTH" />)</translation>
 <translation id="1180621378971766337">아늑한</translation>
@@ -95,7 +97,6 @@
 <translation id="1478594628797167447">스캐너</translation>
 <translation id="1483493594462132177">보내기</translation>
 <translation id="1488850966314959671">사용 설정된 맞춤 APN을 사용하여 이 네트워크에 연결할 수 없습니다. 자세한 내용은 이동통신사에 문의하세요.</translation>
-<translation id="1491076385728777984"><ph name="DEVICE_NAME" /> 펌웨어 업데이트 중</translation>
 <translation id="1499041187027566160">볼륨 크게</translation>
 <translation id="1499900233129743732"><ph name="MANAGER" />에서 이 사용자를 관리하며, 원격으로 설정을 관리하고 사용자 활동을 모니터링할 수 있습니다.</translation>
 <translation id="150962533380566081">잘못된 PUK입니다.</translation>
@@ -291,7 +292,6 @@
 <translation id="2505327257735685095">현재 배경화면 이미지 새로고침</translation>
 <translation id="2512979179176933762">창을 표시합니다</translation>
 <translation id="2513396635448525189">로그인 이미지</translation>
-<translation id="2517472476991765520">스캔</translation>
 <translation id="2521835766824839541">이전 트랙입니다</translation>
 <translation id="2526590354069164005">데스크톱</translation>
 <translation id="2529641961800709867">버튼 옵션</translation>
@@ -330,6 +330,7 @@
 <translation id="2744221223678373668">공유</translation>
 <translation id="2751739896257479635">EAP 2단계 인증</translation>
 <translation id="2754757901767760034">전등</translation>
+<translation id="2780756493585863768">Google AI 기반 최근 배경</translation>
 <translation id="2783010256799387990">통과</translation>
 <translation id="2786429550992142861">리넨</translation>
 <translation id="2787435249130282949">키보드 더 밝게</translation>
@@ -426,6 +427,7 @@
 <translation id="3456078764689556234">인쇄된 페이지 <ph name="PRINTED_PAGES" />/<ph name="TOTAL_PAGES" /></translation>
 <translation id="345898999683440380"><ph name="PAGE_NUM" />페이지를 스캔 중입니다. <ph name="PERCENTAGE_VALUE" />% 완료되었습니다.</translation>
 <translation id="3459509316159669723">인쇄</translation>
+<translation id="3462187165860821523"><ph name="DEVICE_NAME" /> 업데이트 중</translation>
 <translation id="346423161771747987">현재</translation>
 <translation id="346539236881580388">다시 촬영</translation>
 <translation id="3484914941826596830">펌웨어 업데이트 도중에 외부 기기를 분리하거나 컴퓨터를 종료하지 마세요. 이 창을 최소화할 수 있습니다. 업데이트되는 데 몇 분 정도 걸릴 수 있으며 이 시간 동안 외부 기기가 작동하지 않을 수도 있습니다.</translation>
@@ -790,6 +792,7 @@
 <translation id="5559898619118303662">일몰 시 어두운 테마로 자동 전환</translation>
 <translation id="556042886152191864">버튼</translation>
 <translation id="5562551811867441927"><ph name="TERRAIN_COLOR" />의 <ph name="TERRAIN_FEATURE" /></translation>
+<translation id="5572169899491758844">검색</translation>
 <translation id="5578477003638479617">UMTS</translation>
 <translation id="5578519639599103840">다시 스캔</translation>
 <translation id="5583640892426849032">Backspace</translation>
@@ -879,7 +882,6 @@
 <translation id="6075872808778243331">(Android) HTTP 지연 시간</translation>
 <translation id="6078323886959318429">바로가기 추가</translation>
 <translation id="6091080061796993741">노란색</translation>
-<translation id="610371409726072606">Google AI 기반 카메라 배경</translation>
 <translation id="6104112872696127344">스캔이 취소되었습니다.</translation>
 <translation id="6106186594183574873">완료하려면 이전 비밀번호를 입력하세요.</translation>
 <translation id="6108689792487843350">게이트웨이에 연결할 수 없습니다.</translation>
@@ -906,6 +908,7 @@
 <translation id="6205145102504628069">구름의 흐름</translation>
 <translation id="6213737986933151570">CDMA1XRTT</translation>
 <translation id="6223752125779001553">사용 가능한 스캐너 없음</translation>
+<translation id="6231648282154119906">선택한 향상된 보호 모드에 따라 Google 세이프 브라우징에서 의심스러운 파일을 자동으로 검사합니다.</translation>
 <translation id="6232017090690406397">배터리</translation>
 <translation id="6234024205316847054">개요 표시</translation>
 <translation id="6235460611964961764">데이터 사용량 수동 재설정</translation>
@@ -1011,7 +1014,6 @@
 <translation id="672609503628871915">새로운 기능 알아보기</translation>
 <translation id="6740695858234317715">크림색 및 주황색</translation>
 <translation id="6741823073189174383">보트</translation>
-<translation id="674276385369049081">Google AI 기반 최근 카메라 배경</translation>
 <translation id="6744441848304920043">밀림</translation>
 <translation id="6747035363363040417">무채색</translation>
 <translation id="6747215703636344499">중지됨 - 배지대 가득 참</translation>
@@ -1032,6 +1034,7 @@
 <translation id="6871256179359663621">연한 보라색</translation>
 <translation id="6889786074662672253">다시 시작하는 동안 외부 기기를 분리하거나 컴퓨터를 종료하지 마세요. 이 창을 최소화할 수 있습니다. 다시 시작하는 데 몇 분 정도 걸릴 수 있으며 이 시간 동안 외부 기기가 작동하지 않을 수도 있습니다.</translation>
 <translation id="6900701049656042631">앨범에 사진이 없습니다. 사진을 추가하려면 <ph name="LINK" />(으)로 이동하세요.</translation>
+<translation id="6902359863093437070">AI로 배경 만들기</translation>
 <translation id="6905163627763043954">사용해 보기</translation>
 <translation id="6905724422583748843"><ph name="PAGE_NAME" /> 페이지로 돌아가기</translation>
 <translation id="6910312834584889076">스캐너의 덮개가 열려 있습니다. 덮개를 닫은 후 다시 시도해 보세요.</translation>
@@ -1059,7 +1062,7 @@
           AI로 만들면 <ph name="BEGIN_LINK_GOOGLE_PRIVACY_POLICY" />Google 개인정보처리방침<ph name="END_LINK_GOOGLE_PRIVACY_POLICY" />에 따라 이미지를 생성하고 제품을 개선하기 위해 프롬프트가 Google AI 서버로 전송됩니다.
           <ph name="LINE_BREAK" />
           <ph name="LINE_BREAK" />
-          생성형 AI는 실험 단계의 기술로 초기 개발 단계에 있으며 현재 제한적으로만 이용할 수 있습니다.</translation>
+          생성형 AI는 실험 단계의 기술로, 초기 개발 단계에 있으며 현재 제한적으로만 이용할 수 있습니다.</translation>
 <translation id="6982462588253070448">모래 언덕</translation>
 <translation id="7005833343836210400">기기가 오프라인 상태입니다.</translation>
 <translation id="7028979494427204405"><ph name="MANAGER" />에서 이 기기를 관리하고 방문한 웹페이지, 비밀번호, 이메일을 비롯한 모든 사용자 활동에 액세스합니다.</translation>
@@ -1269,6 +1272,7 @@
 <translation id="8152370627892825"><ph name="DESCRIPTION" />, <ph name="ACCELERATOR_INFO" />.</translation>
 <translation id="8156233298086717232">마법 같은</translation>
 <translation id="8162776280680283326">여우</translation>
+<translation id="8167413449582155132">Google AI 기반 배경</translation>
 <translation id="8179976553408161302">Enter</translation>
 <translation id="8183975772394450380">해변</translation>
 <translation id="8206859287963243715">휴대전화</translation>
@@ -1450,7 +1454,7 @@
 <translation id="9149391708638971077">메모리 테스트 실행</translation>
 <translation id="9159524746324788320">햄버거</translation>
 <translation id="9161276708550942948">스페이스</translation>
-<translation id="9169345239923038539">아직 연결되지 않았습니다. 이동통신사에서 맞춤 APN을 추천하는 경우 <ph name="BEGIN_LINK" />APN 정보를 입력<ph name="END_LINK" />합니다.</translation>
+<translation id="9169345239923038539">아직 연결되지 않았습니다. 이동통신사에서 맞춤 APN을 추천하는 경우 <ph name="BEGIN_LINK" />APN 정보를 입력<ph name="END_LINK" />하세요.</translation>
 <translation id="9173638680043580060">1분 미만 남음</translation>
 <translation id="9174334653006917325">UI 색상</translation>
 <translation id="917720651393141712">테스트</translation>

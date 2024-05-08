@@ -11,6 +11,7 @@
 <translation id="1047458377670401304"><ph name="CPU_NAME" /> (<ph name="THREAD_COUNT" /> mövzu, <ph name="CPU_MAX_CLOCK_SPEED" /> GHs)</translation>
 <translation id="1047773237499189053">Yeni funksiya əlçatandır, ətraflı məlumat üçün Yuxarı ox düyməsini istifadə edin.</translation>
 <translation id="1049663189809099096">pastel sarı</translation>
+<translation id="1056898198331236512">Xəbərdarlıq</translation>
 <translation id="1059913517121127803">Skanlamanı başlatmaq mümkün olmadı</translation>
 <translation id="1062823486781306604"><ph name="INDEX" />/<ph name="COUNT" />, <ph name="NAME" />.</translation>
 <translation id="1070066693520972135">WEP</translation>
@@ -95,7 +96,6 @@
 <translation id="1478594628797167447">Skaner</translation>
 <translation id="1483493594462132177">Göndərin</translation>
 <translation id="1488850966314959671">Aktivləşdirilmiş fərdi APN ilə bu şəbəkəyə qoşulmaq olmur. Ətraflı məlumat üçün mobil operator ilə əlaqə saxlayın.</translation>
-<translation id="1491076385728777984"><ph name="DEVICE_NAME" /> cihazında proqram güncəllənir</translation>
 <translation id="1499041187027566160">həcmi artırın</translation>
 <translation id="1499900233129743732"><ph name="MANAGER" /> bu istifadəçini idarə edir və ayarları məsafədən idarə edə və istifadəçinin fəaliyyətini izləyə bilər.</translation>
 <translation id="150962533380566081">Yanlış PUK.</translation>
@@ -291,7 +291,6 @@
 <translation id="2505327257735685095">Cari divar kağızı şəklini yeniləyin</translation>
 <translation id="2512979179176933762">pəncərələri göstərin</translation>
 <translation id="2513396635448525189">Giriş şəkli</translation>
-<translation id="2517472476991765520">Skan edin</translation>
 <translation id="2521835766824839541">əvvəlki trek</translation>
 <translation id="2526590354069164005">Masaüstü</translation>
 <translation id="2529641961800709867">Düymə seçimləri</translation>
@@ -330,6 +329,7 @@
 <translation id="2744221223678373668">Paylaşılan</translation>
 <translation id="2751739896257479635">EAP Faza 2 doğrulaması</translation>
 <translation id="2754757901767760034">lampa</translation>
+<translation id="2780756493585863768">Google AI tərəfindən dəstəklənən son arxa fonlar</translation>
 <translation id="2783010256799387990">KEÇDİ</translation>
 <translation id="2786429550992142861">kətan</translation>
 <translation id="2787435249130282949">daha parlaq klaviatura</translation>
@@ -426,6 +426,7 @@
 <translation id="3456078764689556234"><ph name="PRINTED_PAGES" />/<ph name="TOTAL_PAGES" /> səhifə çap edilib.</translation>
 <translation id="345898999683440380">Səhifə <ph name="PAGE_NUM" /> skanlanır. <ph name="PERCENTAGE_VALUE" />% tamamlanıb.</translation>
 <translation id="3459509316159669723">Çap edilir</translation>
+<translation id="3462187165860821523"><ph name="DEVICE_NAME" /> güncəllənir</translation>
 <translation id="346423161771747987">Cərəyan</translation>
 <translation id="346539236881580388">Yenidən çəkin</translation>
 <translation id="3484914941826596830">Proqram güncəllənərkən bu xarici cihazı ayırmayın və ya kompüterinizi söndürməyin. Bu pəncərəni kiçildə bilərsiniz. Bu güncəlləmə bir neçə dəqiqə çəkə bilər və xarici cihazınız bu müddət ərzində işləməyə bilər.</translation>
@@ -790,6 +791,7 @@
 <translation id="5559898619118303662">Gün batımında avtomatik olaraq tünd temaya keçin</translation>
 <translation id="556042886152191864">Düymə</translation>
 <translation id="5562551811867441927"><ph name="TERRAIN_COLOR" /> çalarlarda <ph name="TERRAIN_FEATURE" /></translation>
+<translation id="5572169899491758844">Skan</translation>
 <translation id="5578477003638479617">UMTS</translation>
 <translation id="5578519639599103840">Yenidən skan edin</translation>
 <translation id="5583640892426849032">Geri silmə</translation>
@@ -879,7 +881,6 @@
 <translation id="6075872808778243331">(Android) HTTP Gecikməsi</translation>
 <translation id="6078323886959318429">Qısayol əlavə edin</translation>
 <translation id="6091080061796993741">sarı</translation>
-<translation id="610371409726072606">Google AI tərəfindən dəstəklənən kamera arxa fonu</translation>
 <translation id="6104112872696127344">Skanlama ləğv edilib</translation>
 <translation id="6106186594183574873">Tamamlamaq üçün köhnə parolu yazın</translation>
 <translation id="6108689792487843350">Giriş ilə əlaqə saxlamaq olmur</translation>
@@ -1011,7 +1012,6 @@
 <translation id="672609503628871915">Yeniliklərə baxın</translation>
 <translation id="6740695858234317715">krem rəngi və narıncı</translation>
 <translation id="6741823073189174383">qayıq</translation>
-<translation id="674276385369049081">Google AI tərəfindən dəstəklənən son kamera arxa fonları</translation>
 <translation id="6744441848304920043">cəngəllik</translation>
 <translation id="6747035363363040417">neytral</translation>
 <translation id="6747215703636344499">Dayanıb - Çıxış doludur</translation>
@@ -1032,6 +1032,7 @@
 <translation id="6871256179359663621">açıq-bənövşəyi</translation>
 <translation id="6889786074662672253">Yenidən başlatma zamanı bu xarici cihazı ayırmayın və ya kompüterinizi söndürməyin. Bu pəncərəni kiçildə bilərsiniz. Bu, bir neçə dəqiqə çəkə bilər və xarici cihazınız bu müddət ərzində işləməyə bilər.</translation>
 <translation id="6900701049656042631">Albomda foto yoxdur. Foto əlavə etmək üçün <ph name="LINK" /> ünvanına keçin</translation>
+<translation id="6902359863093437070">Sİ ilə arxa fon yaradın</translation>
 <translation id="6905163627763043954">Sınayın</translation>
 <translation id="6905724422583748843"><ph name="PAGE_NAME" /> səhifəsinə qayıdın</translation>
 <translation id="6910312834584889076">Skanerin qapağı açıqdır. Qapağı bağlayıb yenidən sınayın.</translation>
@@ -1269,6 +1270,7 @@
 <translation id="8152370627892825"><ph name="DESCRIPTION" />, <ph name="ACCELERATOR_INFO" />.</translation>
 <translation id="8156233298086717232">sehrli</translation>
 <translation id="8162776280680283326">tülkülər</translation>
+<translation id="8167413449582155132">Google Sİ tərəfindən dəstəklənən arxa fon</translation>
 <translation id="8179976553408161302">Enter</translation>
 <translation id="8183975772394450380">çimərlik</translation>
 <translation id="8206859287963243715">Mobil</translation>

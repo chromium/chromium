@@ -116,10 +116,12 @@
 <translation id="417201473131094001">Не е поддржана на Chrome Canary</translation>
 <translation id="424864128008805179">Ќе се одјавите од Chrome?</translation>
 <translation id="4251174643044751591">Ја отвора страницата со поставки за начините на плаќање во Chrome.</translation>
+<translation id="4286914711740227883">Избришете ги податоците од прелистување во Chrome.</translation>
 <translation id="4453284704333523777">Управувајте со поставките за Chrome</translation>
 <translation id="4523886039239821078">Некои додатоци предизвикуваат пад на Chrome. Деинсталирајте:</translation>
 <translation id="4633328489441962921">Chrome не може да провери дали има ажурирања</translation>
 <translation id="4636900170638246267">Најавете се на сајтов и на Chrome.</translation>
+<translation id="4742795653798179840">Избришани податоци на Chrome</translation>
 <translation id="4761869838909035636">Изврши безбедносна проверка во Chrome</translation>
 <translation id="4798859546468762093">За да добиете персонализација и други функции, опфатете го Chrome во <ph name="FEATURE_NAME_1" /> и <ph name="FEATURE_NAME_2" /></translation>
 <translation id="4819268619367838612">За да се подобри апликацијата, Chrome испраќа податоци за користењето и падовите во Google. <ph name="BEGIN_LINK" />Управувајте<ph name="END_LINK" /></translation>
@@ -130,6 +132,7 @@
 <translation id="4840404732697892756">Google Password Manager може да ги проверува вашите лозинки кога ќе се најавите со вашата сметка на Google.</translation>
 <translation id="4860330141789125848">{COUNT,plural, =1{Chrome може да ви помогне да го следите пакетов на страницата во нова картичка.}one{Chrome може да ви помогне да ги следите пакетиве на страницата во нова картичка.}other{Chrome може да ви помогне да ги следите пакетиве на страницата во нова картичка.}}</translation>
 <translation id="4903674399067644695">Картичкава ви прикажува предлози за тоа како да го извлечете максимумот од Chrome.</translation>
+<translation id="4919069428879420545">Избришете ги податоците од прелистување во Chrome.</translation>
 <translation id="49200511069271369">Вашата организација, <ph name="DOMAIN" />, управува со сметката на којашто се најавувате, а и со тоа како може да се користи Chrome. Вашиот администратор може да постави или да ограничи конкретни функции.</translation>
 <translation id="498985224078955265">За да ја испратите картичкава на друг уред, најавете се на Chrome на двата уреда.</translation>
 <translation id="5030102366287574140">Chrome може да ве штити од упад во податоците, небезбедни веб-сајтови и друго.</translation>

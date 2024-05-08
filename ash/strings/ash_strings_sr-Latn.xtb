@@ -166,6 +166,7 @@ Evo nekoliko stvari koje možete da probate za početak.</translation>
 <translation id="1586324912145647027">Idite na radne površine od 1 do 8</translation>
 <translation id="158838227375272121">Veb-sajt Google učionice</translation>
 <translation id="1589090746204042747">Pristupite svim aktivnostima u ovoj sesiji</translation>
+<translation id="1597880963776148053"><ph name="STEP" />. korak obilaska od <ph name="TOTAL_STEPS" />. Zakačene i otvorene aplikacije nalaze se na polici u dnu ekrana. Pritisnite Alt + Shift + L, pa Tab da biste fokusirali stavke na polici.</translation>
 <translation id="1602874809115667351"><ph name="LAUNCHER_KEY_NAME" /> + strelica nadole</translation>
 <translation id="1604857178818051494">Pauziraj medije</translation>
 <translation id="1607312127821884567">Odbacite podešavanje pregleda aplikacija na telefonu</translation>
@@ -303,6 +304,7 @@ Evo nekoliko stvari koje možete da probate za početak.</translation>
 <translation id="2257486738914982088">Došlo je do problema pri preuzimanju fajla <ph name="FILENAME" /></translation>
 <translation id="2258734398699965611">Predloženi fajlovi</translation>
 <translation id="2268130516524549846">Bluetooth je onemogućen</translation>
+<translation id="2268731132310444948"><ph name="STEP" />. korak obilaska od <ph name="TOTAL_STEPS" />. Kada se Pokretač aktivira, dobićete traku za poboljšanu pretragu. Možete da počnete da unosite tekst da biste potražili fajlove, aplikacije i drugo. Možete i da dobijete odgovore na pitanja o <ph name="PRODUCT_NAME" />-u.</translation>
 <translation id="2268813581635650749">Odjavi sve</translation>
 <translation id="2276987123919776440">15 min</translation>
 <translation id="2277103315734023688">Premotaj unapred</translation>
@@ -397,6 +399,7 @@ Broj povezanih uređaja je <ph name="DEVICECOUNT" />.</translation>
 <translation id="2607678425161541573">Onlajn prijavljivanje je obavezno</translation>
 <translation id="2612072250312279703">nadgledanje aktivnosti</translation>
 <translation id="2612614436418177118">Premestite ikonu aplikacije unutar mreže aplikacije</translation>
+<translation id="2619326010008283367"><ph name="STEP" />. korak obilaska od <ph name="TOTAL_STEPS" />. Podešavanja uređaja možete da pronađete u Pokretaču. Probajte da prilagodite <ph name="PRODUCT_NAME" /> u Podešavanjima, na primer, da promenite pozadinu ili podesite čuvar ekrana.</translation>
 <translation id="2620016719323068571">Pretražujte kategoriju <ph name="CATEGORY" />, fajlove, aplikacije i drugo…</translation>
 <translation id="2620436844016719705">Sistem</translation>
 <translation id="2620900772667816510">Bluetooth super rezolucija</translation>
@@ -820,7 +823,6 @@ Neke funkcije su ograničene da bi se produžilo trajanje baterije.</translation
 <translation id="4209973997261364186">WiFi je uključen</translation>
 <translation id="4212472694152630271">Pređi na PIN</translation>
 <translation id="4215497585250573029">Podešavanja VPN-a</translation>
-<translation id="4215548513524864822">5. od 5 koraka obilaska. Podešavanja uređaja možete da pronađete u Pokretaču. Probajte da prilagodite <ph name="PRODUCT_NAME" /> u Podešavanjima, na primer, da promenite pozadinu ili podesite čuvar ekrana.</translation>
 <translation id="4217571870635786043">Diktiranje</translation>
 <translation id="4221957499226645091"><ph name="APP_NAME" />, instalirana aplikacija, pauzirana</translation>
 <translation id="4228078597006700451">Kontrole nisu podešene</translation>
@@ -947,12 +949,12 @@ Neke funkcije su ograničene da bi se produžilo trajanje baterije.</translation
 <translation id="468293128311738995">Aplikacije sa telefona</translation>
 <translation id="4690510401873698237">Polica u dnu</translation>
 <translation id="4696813013609194136">Otključajte uređaj pomoću koda roditelja</translation>
-<translation id="469693290987463983">1. od 5 koraka obilaska. Zakačene i otvorene aplikacije nalaze se na polici u dnu ekrana. Pritisnite Alt + Shift + L, pa Tab da biste fokusirali stavke na polici.</translation>
 <translation id="4702647871202761252">Ekran za privatnost je isključen</translation>
 <translation id="4706121060329443414">Probaćemo preuzimanje kasnije. Govor će za sada biti poslat Google-u radi obrade.</translation>
 <translation id="470644585772471629">Inverzija boja</translation>
 <translation id="4708065238214351979">Posvetli tastaturu</translation>
 <translation id="4717575069099566988">USB-C kabl ne podržava USB4. Učinak uređaja će možda biti ograničen.</translation>
+<translation id="4724328513667182700">6 saveta da biste počeli da koristite <ph name="PRODUCT_NAME" /></translation>
 <translation id="4730374152663651037">ČESTO KORIŠĆENE</translation>
 <translation id="4731797938093519117">Roditeljski pristup</translation>
 <translation id="4733161265940833579"><ph name="BATTERY_PERCENTAGE" />% (leva)</translation>
@@ -1028,6 +1030,7 @@ Neke funkcije su ograničene da bi se produžilo trajanje baterije.</translation
 <translation id="4964188651935955085">Kada isključite Bluetooth, ovaj spoljni uređaj će prekinuti vezu sa uređajem <ph name="DEVICE_TYPE" />:</translation>
 <translation id="4966431234408005599">Povećaj jačinu zvuka</translation>
 <translation id="4969092041573468113"><ph name="HOURS" /> s <ph name="MINUTES" /> min <ph name="SECONDS" /> sek</translation>
+<translation id="496999337731226334"><ph name="STEP" />. korak obilaska od <ph name="TOTAL_STEPS" />. U Brzim podešavanjima su često korišćene kontrole poput WiFi-ja, Bluetooth-a i jačine zvuka. Ovde možete da pravite i snimke ekrana. Pritisnite Alt + Shift + S da biste otvorili Brza podešavanja.</translation>
 <translation id="4975771730019223894">Dodavanje znački na aplikacije</translation>
 <translation id="4977493774330778463"><ph name="NUM_IMPORTANT_NOTIFICATION" />:
         <ph name="NOTIFICATION_1" />,
@@ -1145,6 +1148,7 @@ Nijedan uređaj nije povezan.</translation>
 <translation id="540713187982329711">Uključite/isključite hotspot. Hotspot je uključen, ali nijedan uređaj nije povezan.</translation>
 <translation id="5413656666631274079">Stranica podešavanja</translation>
 <translation id="5414198321558177633">Lista profila se osvežava. To može da potraje nekoliko minuta.</translation>
+<translation id="5417965108047245734">Krenite u kratak obilazak da biste saznali kako da se krećete po <ph name="PRODUCT_NAME" />-u</translation>
 <translation id="5426063383988017631">Meni Podešavanja je zatvoren</translation>
 <translation id="5428899915242071344">Pokreni biranje</translation>
 <translation id="5429993543155113935">Prozori bez arhiviranja trenutno nisu podržani</translation>
@@ -1525,7 +1529,6 @@ Novo instaliranje</translation>
 <translation id="6874854809828346832">Pregledajte detalje hotspota. Hotspot je uključen.</translation>
 <translation id="6878400149835617132">Prečica je isključena</translation>
 <translation id="6878701771800702153">{NUM_APPS,plural, =1{1 aplikacija}one{# aplikacija}few{# aplikacije}other{# aplikacija}}</translation>
-<translation id="6878787305374738418">4. od 5 koraka obilaska. Kada se Pokretač aktivira, dobićete traku za poboljšanu pretragu. Možete da počnete da unosite tekst da biste potražili fajlove, aplikacije i drugo. Možete i da dobijete odgovore na pitanja o <ph name="PRODUCT_NAME" />-u.</translation>
 <translation id="6883768636838842873">Tasterske prečice, saveti za korišćenje uređaja i drugo</translation>
 <translation id="6884665277231944629">Vratite se na danas</translation>
 <translation id="6886172995547742638">To može negativno da utiče na rad uređaja <ph name="DEVICE_TYPE" />. Koristite sertifikovani USB-C adapter od <ph name="PREFERRED_MINIMUM_POWER" /> W ili jači.</translation>
@@ -1594,6 +1597,7 @@ Novo instaliranje</translation>
 <translation id="7143207342074048698">Povezivanje</translation>
 <translation id="7144942256906679589">Status baterije</translation>
 <translation id="7145639536026937076">Baterija je na <ph name="PERCENTAGE" />% i puni se. Ušteda baterije je uključena.</translation>
+<translation id="7149149900052329230">Upravljajte lokalnim fajlovima i fajlovima sa Google diska, sve u aplikaciji Fajlovi.</translation>
 <translation id="7165278925115064263">Alt+Shift+K</translation>
 <translation id="7167913274352523149"><ph name="HOTSPOT" />,
         <ph name="NETWORK" /></translation>
@@ -1615,7 +1619,6 @@ Priključite uređaj na napajanje.</translation>
 <translation id="726276584504105859">Prevucite ovde da biste koristili podeljeni ekran</translation>
 <translation id="7262906531272962081">Napravi podsetnik</translation>
 <translation id="7278787617901301220"><ph name="LAUNCHER_KEY_NAME" /> + backspace</translation>
-<translation id="7282547098317872382">3. od 5 koraka obilaska. Koristite aplikacije da biste obavljali sve potrebne radnje na <ph name="PRODUCT_NAME" />-u. Aplikacije možete da pronađete u Pokretaču. Pritisnite Alt + Shift + L da biste fokusirali dugme Pokretača.</translation>
 <translation id="7285232777292757180">Koristite alatku za snimanje ekrana u brzim podešavanjima da biste pravili snimke ekrana</translation>
 <translation id="7301826272005790482">Odbacite predloge prozora</translation>
 <translation id="7302889331339392448">Titl uživo je isključen.</translation>
@@ -1797,10 +1800,12 @@ Da biste isključili uređaj, ponovo pritisnite i zadržite dugme za uključivan
 <translation id="7933084174919150729">Google pomoćnik je dostupan samo za primarni profil.</translation>
 <translation id="79341161159229895">Nalogom upravljaju <ph name="FIRST_PARENT_EMAIL" /> i <ph name="SECOND_PARENT_EMAIL" /></translation>
 <translation id="793716872548410480">Pritisnite <ph name="SHORTCUT_KEY_NAME" /> + V da biste videli privremenu memoriju. Poslednjih 5 stavki koje ste kopirali se čuvaju u privremenoj memoriji.</translation>
+<translation id="7942330802915522974"><ph name="STEP" />. korak obilaska od <ph name="TOTAL_STEPS" />. Aplikaciju Fajlovi možete da pronađete u Pokretaču. Upravljajte lokalnim fajlovima i fajlovima sa Google diska, sve u aplikaciji Fajlovi.</translation>
 <translation id="7942349550061667556">Crvena</translation>
 <translation id="7943516765291457328">Uključite Bluetooth da biste tražili hotspotove u blizini</translation>
 <translation id="7944023924886109030">Pregledajte sve događaje za danas</translation>
 <translation id="7945357288295809525">Prikažite podešavanja pristupačnosti, „<ph name="ENABLED_FEATURES" />“ je omogućeno.</translation>
+<translation id="7946681191253332687">Dostupna su proširena bezbednosna ažuriranja</translation>
 <translation id="7947798320695032612"><ph name="APP_NAME" /> želi da koristi uređaj <ph name="DEVICE_NAME" /></translation>
 <translation id="7951630946012935453">Zatamni tastaturu</translation>
 <translation id="7953994493035617347">Želite da potvrdite novu rezoluciju?</translation>
@@ -1912,7 +1917,6 @@ Da biste isključili uređaj, ponovo pritisnite i zadržite dugme za uključivan
 <translation id="8412677897383510995">Prikažite podešavanja ekrana</translation>
 <translation id="8413272770729657668">Snimanje počinje za 3, 2, 1</translation>
 <translation id="8416730306157376817"><ph name="BATTERY_PERCENTAGE" />% (futrola)</translation>
-<translation id="8417951779969083400">2. od 5 koraka obilaska. U Brzim podešavanjima su često korišćene kontrole poput WiFi-ja, Bluetooth-a i jačine zvuka. Ovde možete da pravite i snimke ekrana. Pritisnite Alt + Shift + S da biste otvorili Brza podešavanja.</translation>
 <translation id="8420205633584771378">Želite li da uklonite ovaj predlog?</translation>
 <translation id="8421270167862077762">Aplikacija <ph name="UNAVAILABLE_APPS" />nije na ovom uređaju.</translation>
 <translation id="8426708595819210923">Dobro veče, <ph name="GIVEN_NAME" />,</translation>
@@ -2133,6 +2137,7 @@ Da biste isključili uređaj, ponovo pritisnite i zadržite dugme za uključivan
 <translation id="987589956647469042">Mobilni podaci su uključeni</translation>
 <translation id="989374776391122812">Kontrole kamere i zvuka</translation>
 <translation id="990277280839877440">Prozor <ph name="WINDOW_TITILE" /> je zatvoren.</translation>
+<translation id="993398562350683614"><ph name="STEP" />. korak obilaska od <ph name="TOTAL_STEPS" />. Koristite aplikacije da biste obavljali sve potrebne radnje na <ph name="PRODUCT_NAME" />-u. Aplikacije možete da pronađete u Pokretaču. Pritisnite Alt + Shift + L da biste fokusirali dugme Pokretača.</translation>
 <translation id="994354411665877646"><ph name="NETWORK_NAME" />, <ph name="SUBTEXT" /></translation>
 <translation id="996204416024568215">Dobijajte najnovije funkcije i bezbednosna poboljšanja. Ažuriranja se vrše u pozadini.</translation>
 </translationbundle>

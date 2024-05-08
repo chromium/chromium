@@ -116,10 +116,12 @@ Kaj je treba upoštevati:
 <translation id="417201473131094001">Ni podprto v Chromu Canary</translation>
 <translation id="424864128008805179">Se želite odjaviti iz Chroma?</translation>
 <translation id="4251174643044751591">V Chromu odpre stran z nastavitvijo plačilnih sredstev.</translation>
+<translation id="4286914711740227883">Brisanje podatkov brskanja v Chromu</translation>
 <translation id="4453284704333523777">Upravljanje Chromovih nastavitev</translation>
 <translation id="4523886039239821078">Nekateri dodatki povzročajo zrušitve Chroma. Odstranite jih:</translation>
 <translation id="4633328489441962921">Chrome ne more preveriti, ali so na voljo posodobitve</translation>
 <translation id="4636900170638246267">Prijavite se na tem spletnem mestu in v Chrome.</translation>
+<translation id="4742795653798179840">Izbrisani podatki v Chromu</translation>
 <translation id="4761869838909035636">Zaženi varnostno opravljanje v Chromu</translation>
 <translation id="4798859546468762093">Če želite uporabljati osebno prilagajanje in druge funkcije, vključite Chrome v <ph name="FEATURE_NAME_1" /> in <ph name="FEATURE_NAME_2" /></translation>
 <translation id="4819268619367838612">Zaradi izboljšanja aplikacije Chrome Googlu pošlje podatke o uporabi in zrušitvah. <ph name="BEGIN_LINK" />Upravljanje<ph name="END_LINK" /></translation>
@@ -130,6 +132,7 @@ Kaj je treba upoštevati:
 <translation id="4840404732697892756">Googlov upravitelj gesel lahko preveri vaša gesla, ko se prijavite z računom Google.</translation>
 <translation id="4860330141789125848">{COUNT,plural, =1{Chrome vam lahko pomaga slediti temu paketu na novem zavihku s povezavami.}one{Chrome vam lahko pomaga slediti tem paketom na novem zavihku s povezavami.}two{Chrome vam lahko pomaga slediti tem paketom na novem zavihku s povezavami.}few{Chrome vam lahko pomaga slediti tem paketom na novem zavihku s povezavami.}other{Chrome vam lahko pomaga slediti tem paketom na novem zavihku s povezavami.}}</translation>
 <translation id="4903674399067644695">Na tej kartici so prikazani predlogi, kako izkoristiti Chrome na najboljši način.</translation>
+<translation id="4919069428879420545">Brisanje podatkov brskanja v Chromu.</translation>
 <translation id="49200511069271369">Vaša organizacija <ph name="DOMAIN" /> upravlja račun, v katerega se prijavljate, in način uporabe Chroma. Nekatere funkcije lahko nastavi ali omeji skrbnik.</translation>
 <translation id="498985224078955265">Če želite ta zavihek poslati v drugo napravo, se v obeh napravah prijavite v Chrome.</translation>
 <translation id="5030102366287574140">Chrome vas lahko varuje pred podatkovnimi kršitvami, spletnimi mesti, ki niso varna, in drugim.</translation>

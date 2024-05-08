@@ -12,6 +12,7 @@
 <translation id="1588438908519853928">Звичайний</translation>
 <translation id="1591562245178063882">Цей місяць</translation>
 <translation id="1637811476055996098">Вибрати файли</translation>
+<translation id="1680090928918677457">Використовувати камеру</translation>
 <translation id="1681022320378710418">поточний час</translation>
 <translation id="1727839386348365796">Піпетка</translation>
 <translation id="1729654308190250600">Введіть електронну адресу.</translation>
@@ -60,6 +61,7 @@
 <translation id="3822383571486410024">У тексті має бути на менше <ph name="MIN_CHARACTERS" /> символів (ви ввели <ph name="CURRENT_LENGTH" /> символів).</translation>
 <translation id="383465348367842624">Частина перед знаком "<ph name="ATSIGN" />" не може містити символ "<ph name="INVALIDCHARACTER" />".</translation>
 <translation id="3846214748874656680">Вийти з повноекранного режиму</translation>
+<translation id="3914173277599553213">Обов’язково</translation>
 <translation id="4031179711345676612">Дозволено використовувати мікрофон</translation>
 <translation id="4103419683916926126">Мілісекунди</translation>
 <translation id="4201051445878709314">Показати попередній місяць</translation>
@@ -75,6 +77,7 @@
 <translation id="4912200001568447310">поточний елемент</translation>
 <translation id="4915360478455618802">Засіб вибору часу</translation>
 <translation id="4924138096460353083">невизначене значення</translation>
+<translation id="49269513399674318">Використовувати мікрофон</translation>
 <translation id="4950364064308314478">Показувати засіб вибору місцевих дати й часу</translation>
 <translation id="4971739861736909480">Вибрано <ph name="ACCNAME" /></translation>
 <translation id="4975562563186953947">Вибрано <ph name="SELECTED_COUNT" /></translation>
@@ -142,6 +145,7 @@
 <translation id="7080893216867146095">Дозволено ділитися місцезнаходженням</translation>
 <translation id="709897737746224366">Виберіть потрібний формат.</translation>
 <translation id="7102274145889307184">поточне місцезнаходження</translation>
+<translation id="7134810312945846184">Використовувати мікрофон і камеру</translation>
 <translation id="7263440858009898357">Виберіть елемент зі списку.</translation>
 <translation id="7320576522385648310">буферизація</translation>
 <translation id="7341556277900466204">Палітра вибору кольору</translation>

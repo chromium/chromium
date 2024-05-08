@@ -11,6 +11,7 @@
 <translation id="1047458377670401304"><ph name="CPU_NAME" /> (<ph name="THREAD_COUNT" /> нишки, <ph name="CPU_MAX_CLOCK_SPEED" /> ГХц)</translation>
 <translation id="1047773237499189053">Налице е нова функция. Използвайте стрелката нагоре, за да научите повече.</translation>
 <translation id="1049663189809099096">пастелножълто</translation>
+<translation id="1056898198331236512">Предупреждение</translation>
 <translation id="1059913517121127803">Сканирането не бе стартирано</translation>
 <translation id="1062823486781306604"><ph name="INDEX" /> от <ph name="COUNT" />, <ph name="NAME" />.</translation>
 <translation id="1070066693520972135">WEP</translation>
@@ -28,6 +29,7 @@
 <translation id="1145018782460575098">Отворен е прозорецът за актуализиране на фърмуера на външни устройства. Налице са <ph name="NUM_UPDATES" /> актуализации.</translation>
 <translation id="1145516343487477149">Намерете помощни статии и отговори на често задавани въпроси за Chromebook</translation>
 <translation id="1154390310959620237">Можете да персонализирате само 5 клавишни комбинации. Изтрийте някоя, за да добавите нова.</translation>
+<translation id="1155154308031262006">Въведете подкана</translation>
 <translation id="115705039208660697">ананаси</translation>
 <translation id="1164939766849482256">Скрийнсейвър „От зазоряване до здрачаване“</translation>
 <translation id="1167755866710282443">Отворете менюто, за да персонализирате клавишите. Плъзнете менюто за преместване.</translation>
@@ -95,7 +97,6 @@
 <translation id="1478594628797167447">Скенер</translation>
 <translation id="1483493594462132177">Изпращане</translation>
 <translation id="1488850966314959671">Не може да се установи връзка с тази мрежа посредством активираните персонализирани имена на точките за достъп (APN). Обърнете се към мобилния си оператор за още информация.</translation>
-<translation id="1491076385728777984">Фърмуерът на <ph name="DEVICE_NAME" /> се актуализира</translation>
 <translation id="1499041187027566160">увеличаване на силата на звука</translation>
 <translation id="1499900233129743732"><ph name="MANAGER" /> управлява този потребител и може отдалечено да контролира настройките и да наблюдава потребителската активност.</translation>
 <translation id="150962533380566081">Невалиден PUK код.</translation>
@@ -291,7 +292,6 @@
 <translation id="2505327257735685095">Опресняване на текущото изображение на тапета</translation>
 <translation id="2512979179176933762">показване на прозорците</translation>
 <translation id="2513396635448525189">Изображение при влизане в профила</translation>
-<translation id="2517472476991765520">Сканиране</translation>
 <translation id="2521835766824839541">предишен запис</translation>
 <translation id="2526590354069164005">Работен плот</translation>
 <translation id="2529641961800709867">Опции за бутон</translation>
@@ -330,6 +330,7 @@
 <translation id="2744221223678373668">Споделени</translation>
 <translation id="2751739896257479635">Удостоверяване във фаза 2 през EAP</translation>
 <translation id="2754757901767760034">лампа</translation>
+<translation id="2780756493585863768">Скорошни фонове, базирани на AI на Google</translation>
 <translation id="2783010256799387990">УСПЕШНО</translation>
 <translation id="2786429550992142861">лен</translation>
 <translation id="2787435249130282949">по-ярка клавиатура</translation>
@@ -426,6 +427,7 @@
 <translation id="3456078764689556234">Отпечатана е страница <ph name="PRINTED_PAGES" /> от <ph name="TOTAL_PAGES" />.</translation>
 <translation id="345898999683440380">Сканира се страница <ph name="PAGE_NUM" />. Завършена: <ph name="PERCENTAGE_VALUE" />%.</translation>
 <translation id="3459509316159669723">Отпечатване</translation>
+<translation id="3462187165860821523"><ph name="DEVICE_NAME" /> се актуализира</translation>
 <translation id="346423161771747987">Ток</translation>
 <translation id="346539236881580388">Повторно заснемане</translation>
 <translation id="3484914941826596830">Докато фърмуерът се актуализира, не изключвайте това външно устройство, нито компютъра си. Можете да намалите прозореца. Възможно е актуализацията да отнеме няколко минути и през това време външното ви устройство може да не работи.</translation>
@@ -790,6 +792,7 @@
 <translation id="5559898619118303662">Автоматично превключване към тъмната тема при залез</translation>
 <translation id="556042886152191864">Бутон</translation>
 <translation id="5562551811867441927"><ph name="TERRAIN_FEATURE" /> в нюанси на <ph name="TERRAIN_COLOR" /></translation>
+<translation id="5572169899491758844">Сканиране</translation>
 <translation id="5578477003638479617">UMTS</translation>
 <translation id="5578519639599103840">Повторно сканиране</translation>
 <translation id="5583640892426849032">Backspace</translation>
@@ -879,7 +882,6 @@
 <translation id="6075872808778243331">(Android) Забавяне на HTTP</translation>
 <translation id="6078323886959318429">Добавяне на пряк път</translation>
 <translation id="6091080061796993741">жълт</translation>
-<translation id="610371409726072606">Фон за камерата, базиран на AI на Google</translation>
 <translation id="6104112872696127344">Сканирането бе отменено</translation>
 <translation id="6106186594183574873">За да завършите процеса, въведете старата си парола</translation>
 <translation id="6108689792487843350">Шлюзът е недостъпен</translation>
@@ -906,6 +908,7 @@
 <translation id="6205145102504628069">Облаци</translation>
 <translation id="6213737986933151570">CDMA1XRTT</translation>
 <translation id="6223752125779001553">Няма налични скенери</translation>
+<translation id="6231648282154119906">Подозрителните файлове ще бъдат сканирани автоматично от Google Безопасно сърфиране като част от избраната от вас подобрена защита</translation>
 <translation id="6232017090690406397">Батерия</translation>
 <translation id="6234024205316847054">Показване на опорните точки</translation>
 <translation id="6235460611964961764">Ръчно нулиране на преноса на данни</translation>
@@ -1011,7 +1014,6 @@
 <translation id="672609503628871915">Вижте новите неща</translation>
 <translation id="6740695858234317715">кремаво и оранжево</translation>
 <translation id="6741823073189174383">лодка</translation>
-<translation id="674276385369049081">Скорошни фонове за камерата, базирани на AI на Google</translation>
 <translation id="6744441848304920043">джунгла</translation>
 <translation id="6747035363363040417">неутрални/неутрално</translation>
 <translation id="6747215703636344499">Спряло – изходният контейнер е пълен</translation>
@@ -1032,6 +1034,7 @@
 <translation id="6871256179359663621">светлолилаво</translation>
 <translation id="6889786074662672253">По време на рестартирането не изключвайте това външно устройство, нито компютъра си. Можете да намалите прозореца. Възможно е процесът да отнеме няколко минути и през това време външното ви устройство може да не работи.</translation>
 <translation id="6900701049656042631">В този албум няма снимки. За да добавите, отворете <ph name="LINK" /></translation>
+<translation id="6902359863093437070">Създаване на фон с AI</translation>
 <translation id="6905163627763043954">Изпробвайте</translation>
 <translation id="6905724422583748843">Назад към <ph name="PAGE_NAME" /></translation>
 <translation id="6910312834584889076">Капакът на скенера е отворен. Затворете го и опитайте отново.</translation>
@@ -1269,6 +1272,7 @@
 <translation id="8152370627892825"><ph name="DESCRIPTION" />, <ph name="ACCELERATOR_INFO" />.</translation>
 <translation id="8156233298086717232">магически</translation>
 <translation id="8162776280680283326">лисици</translation>
+<translation id="8167413449582155132">Фон, базиран на AI на Google</translation>
 <translation id="8179976553408161302">Enter</translation>
 <translation id="8183975772394450380">плаж</translation>
 <translation id="8206859287963243715">Клетъчно</translation>

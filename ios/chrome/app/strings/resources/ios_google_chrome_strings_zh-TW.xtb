@@ -2,7 +2,7 @@
 <!DOCTYPE translationbundle>
 <translationbundle lang="zh-TW">
 <translation id="1021782183249308751">按住 Chrome 圖示，然後點選「編輯主畫面」</translation>
-<translation id="1066101356081285416">造訪網站時，Chrome 會在網站上偵測是否有追蹤號碼，並在新分頁顯示包裹配送動態。為提供這項功能，系統會將包裹追蹤號碼和網站名稱傳送給 Google。這些資料也會用於改善 Google 購物功能，造福所有使用者。你隨時可以前往<ph name="BEGIN_LINK" />包裹追蹤設定<ph name="END_LINK" />進行更新。</translation>
+<translation id="1066101356081285416">造訪網站時，Chrome 會偵測網站上的追蹤號碼，並在新分頁顯示包裹配送動態。為提供這項功能，系統會將包裹追蹤號碼和網站名稱傳送給 Google。這些資料也會用於改善 Google 購物功能，造福所有使用者。你隨時可以前往<ph name="BEGIN_LINK" />包裹追蹤設定<ph name="END_LINK" />更新這項設定。</translation>
 <translation id="1085696779717592361">使用 Chrome 做為預設瀏覽器</translation>
 <translation id="1143896152279775643">系統會將你的密碼儲存至 <ph name="EMAIL" /> 的 Google 密碼管理員中。</translation>
 <translation id="1177414119866731261">開啟 Chrome 選單</translation>
@@ -66,7 +66,7 @@
 <translation id="2574249610672786438">在你所有的裝置上登入帳戶後，不論從何處使用 Chrome 都能查看你的分頁</translation>
 <translation id="2576431527583832481">Chrome 現在變得更進步了！歡迎你升級使用新版本。</translation>
 <translation id="257708665678654955">下次造訪這個網站時，需要 Google Chrome 為您翻譯其中的<ph name="LANGUAGE_NAME" />網頁嗎？</translation>
-<translation id="2650286135394207535">讓 Chrome 協助你追蹤包裹</translation>
+<translation id="2650286135394207535">Chrome 可協助追蹤包裹</translation>
 <translation id="2671426118752779020">你可以在 iPhone 上的其他應用程式中，使用 Google 密碼管理員所儲存的密碼。</translation>
 <translation id="2689064829982324496">如要從所有網站中登出 Google 帳戶，請<ph name="BEGIN_LINK" />登出 Chrome<ph name="END_LINK" />。</translation>
 <translation id="2695886661449553974">Chrome 無法檢查更新，請稍後再試。</translation>
@@ -116,10 +116,12 @@
 <translation id="417201473131094001">Chrome Canary 不支援這項功能</translation>
 <translation id="424864128008805179">要登出 Chrome 嗎？</translation>
 <translation id="4251174643044751591">使用 Chrome 開啟「付款方式設定」頁面。</translation>
+<translation id="4286914711740227883">刪除 Chrome 中的瀏覽資料</translation>
 <translation id="4453284704333523777">管理 Chrome 設定</translation>
 <translation id="4523886039239821078">部分外掛程式造成 Chrome 當機，請解除安裝這些外掛程式：</translation>
 <translation id="4633328489441962921">Chrome 無法檢查更新</translation>
 <translation id="4636900170638246267">登入這個網站和 Chrome。</translation>
+<translation id="4742795653798179840">已刪除 Chrome 資料</translation>
 <translation id="4761869838909035636">執行 Chrome 安全檢查</translation>
 <translation id="4798859546468762093">如要享有個人化服務和其他功能，請在「<ph name="FEATURE_NAME_1" />」和「<ph name="FEATURE_NAME_2" />」中納入 Chrome</translation>
 <translation id="4819268619367838612">為協助改善應用程式，Chrome 會將使用情形和當機資料傳送給 Google。<ph name="BEGIN_LINK" />管理設定<ph name="END_LINK" /></translation>
@@ -130,6 +132,7 @@
 <translation id="4840404732697892756">當你登入 Google 帳戶後，Google 密碼管理工具可以檢查你的密碼。</translation>
 <translation id="4860330141789125848">{COUNT,plural, =1{Chrome 可以在新分頁上追蹤這個包裹。}other{Chrome 可以在新分頁上追蹤這些包裹。}}</translation>
 <translation id="4903674399067644695">這張資訊卡會建議你如何充分運用 Chrome 的各項功能。</translation>
+<translation id="4919069428879420545">刪除 Chrome 中的瀏覽資料。</translation>
 <translation id="49200511069271369">貴機構 (<ph name="DOMAIN" />) 會管理你登入的帳戶和 Chrome 的使用方式。系統管理員可以設定或限制特定功能。</translation>
 <translation id="498985224078955265">如要將這個分頁傳送到另一部裝置，請在這兩部裝置上登入 Chrome。</translation>
 <translation id="5030102366287574140">Chrome 可防範資料侵害事件、封鎖不安全的網站或採取其他措施，協助提升網路安全。</translation>
@@ -189,6 +192,9 @@
 <translation id="6648150602980899529">您即將使用由 <ph name="DOMAIN" /> 所管理的帳戶登入，並授權該網域的管理員控管您的 Chrome 資料。您的資料會與這個帳戶建立永久連結。登出 Chrome 後，系統會將您的資料從這個裝置上刪除，但繼續保留在您的 Google 帳戶中。</translation>
 <translation id="6683891932310469419">開啟 Chrome 歷史記錄頁面。</translation>
 <translation id="6709398533399187136">你的密碼因為資料侵害事件遭到外洩，Google 密碼管理工具建議你立即變更這組密碼。</translation>
+<translation id="6820553595690137150">通關密語加密資料不包括付款方式和地址。
+
+如要變更這項設定，請<ph name="BEGIN_LINK" />刪除帳戶中的 Chrome 資料<ph name="END_LINK" />。</translation>
 <translation id="6851982868877411675">在 iOS 設定中開啟 Chrome，然後依序輕觸「預設瀏覽器 App」和「Chrome」。</translation>
 <translation id="686691656039982452">你可以前往 Google 帳戶<ph name="BEGIN_LINK" />管理要儲存哪些 Chrome 資料<ph name="END_LINK" />。
 
@@ -212,6 +218,7 @@
 <translation id="7261678641327190792">Chrome 無法檢查你的密碼</translation>
 <translation id="7272930098487145294">如要儲存圖片，請輕觸 [設定] 並允許 Chrome 新增相片</translation>
 <translation id="7275945473750112644">由於你的帳戶受到 <ph name="HOSTED_DOMAIN" /> 管理，因此系統會在你登出後，清除你在這部裝置上的 Chrome 資料</translation>
+<translation id="7284245284340063465">如果忘記通關密語或想變更這項設定，請<ph name="BEGIN_LINK" />刪除帳戶中的 Chrome 資料<ph name="END_LINK" />。</translation>
 <translation id="7304491752269485262">Chrome 的自動填入檢視畫面已展開</translation>
 <translation id="7344094882820374540">取得 Chrome 最強大的安全防護機制，防範危險網站</translation>
 <translation id="7349129508108954623">允許 Chrome 使用 Google 地圖，為偵測到的地址提供路線和當地資訊。</translation>
@@ -243,6 +250,9 @@
 <translation id="8160472928944011082">Chrome 無法更新</translation>
 <translation id="8174679664544842874">使用 Chrome 開啟新分頁。</translation>
 <translation id="8213758103105806860">查看 Chrome 書籤</translation>
+<translation id="8317674518145175158">系統不會加密保護付款方式和地址，也不會同步處理 Chrome 中的瀏覽記錄。
+
+只有知道通關密語的人才能讀取你的加密資料。系統不會將通關密語傳送給 Google，Google 也不會儲存通關密語。如果忘記通關密語或想變更這項設定，請<ph name="BEGIN_LINK" />刪除帳戶中的 Chrome 資料<ph name="END_LINK" />。</translation>
 <translation id="8328903609881776074">開啟新的 Chrome 無痕分頁。</translation>
 <translation id="8357607116237445042">選擇是否要清除你在這部裝置上的 Chrome 資料</translation>
 <translation id="8370517070665726704">Copyright <ph name="YEAR" /> Google LLC. 保留所有權利。</translation>

@@ -12,6 +12,7 @@
 <translation id="1588438908519853928">Սովորական</translation>
 <translation id="1591562245178063882">Այս ամիս</translation>
 <translation id="1637811476055996098">Ընտրել ֆայլեր</translation>
+<translation id="1680090928918677457">Օգտագործել տեսախցիկը</translation>
 <translation id="1681022320378710418">ընթացիկ ժամը</translation>
 <translation id="1727839386348365796">Պիպետ</translation>
 <translation id="1729654308190250600">Էլփոստի հասցեի տողը չպետք է դատարկ լինի:</translation>
@@ -60,6 +61,7 @@
 <translation id="3822383571486410024">Ընդլայնեք այս տեքստը մինչև <ph name="MIN_CHARACTERS" /> կամ ավելի գրանշան (ներկայումս <ph name="CURRENT_LENGTH" /> գրանշան է):</translation>
 <translation id="383465348367842624">«<ph name="ATSIGN" />»-ին հետևող մասը չպետք է պարունակի «<ph name="INVALIDCHARACTER" />» նշանը:</translation>
 <translation id="3846214748874656680">Դուք գալ լիաէկրան ռեժիմից</translation>
+<translation id="3914173277599553213">Պարտադիր է</translation>
 <translation id="4031179711345676612">Խոսափողի օգտագործումը թույլատրված է</translation>
 <translation id="4103419683916926126">Միլիվայրկյաններ</translation>
 <translation id="4201051445878709314">Ցուցադրել նախորդ ամիսը</translation>
@@ -75,6 +77,7 @@
 <translation id="4912200001568447310">ընթացիկ տարրը</translation>
 <translation id="4915360478455618802">Ցուցադրել ժամի ընտրիչը</translation>
 <translation id="4924138096460353083">անորոշ</translation>
+<translation id="49269513399674318">Օգտագործել խոսափողը</translation>
 <translation id="4950364064308314478">Ցուցադրել տեղական ամսաթվի և ժամի ընտրիչը</translation>
 <translation id="4971739861736909480">«<ph name="ACCNAME" />» օբյեկտն ընտրված է</translation>
 <translation id="4975562563186953947">Ընտրված է՝ <ph name="SELECTED_COUNT" /></translation>
@@ -142,6 +145,7 @@
 <translation id="7080893216867146095">Տեղադրության մասին տվյալների փոխանցումը թույլատրված է</translation>
 <translation id="709897737746224366">Հետևեք պահանջված ձևաչափին:</translation>
 <translation id="7102274145889307184">ընթացիկ տեղադրությունը</translation>
+<translation id="7134810312945846184">Օգտագործել խոսափողը և տեսախցիկը</translation>
 <translation id="7263440858009898357">Ցանկից որևէ միավոր ընտրեք:</translation>
 <translation id="7320576522385648310">բուֆերացում</translation>
 <translation id="7341556277900466204">Գունապնակ</translation>

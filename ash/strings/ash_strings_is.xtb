@@ -166,6 +166,7 @@ Hér eru nokkrir hlutir sem þú getur prófað til að byrja með.</translation
 <translation id="1586324912145647027">Opna skrifborð 1 til 8</translation>
 <translation id="158838227375272121">Vefsvæði Google Classroom</translation>
 <translation id="1589090746204042747">Fengið aðgang að öllum aðgerðum þínum í þessari lotu</translation>
+<translation id="1597880963776148053">Skref <ph name="STEP" /> af <ph name="TOTAL_STEPS" /> í kynningu. Festu og opnu forritin þín eru í hillunni neðst á skjánum. Ýttu á „Alt + Shift + L“ og síðan á dálkalykilinn til að fókusa á atriði í hillunni.</translation>
 <translation id="1602874809115667351"><ph name="LAUNCHER_KEY_NAME" /> + ör niður</translation>
 <translation id="1604857178818051494">Gera hlé á efni</translation>
 <translation id="1607312127821884567">Hafna að setja upp skoðun forrita símans</translation>
@@ -303,6 +304,7 @@ Hér eru nokkrir hlutir sem þú getur prófað til að byrja með.</translation
 <translation id="2257486738914982088">Eitthvað fór úrskeiðis við að sækja <ph name="FILENAME" /></translation>
 <translation id="2258734398699965611">Skráatillögur</translation>
 <translation id="2268130516524549846">Slökkt á Bluetooth</translation>
+<translation id="2268731132310444948">Skref <ph name="STEP" /> af <ph name="TOTAL_STEPS" /> í kynningu. Þegar ræsiforritið hefur verið virkjað birtist ítarleg leitarstika. Þá geturðu hafist handa við að leita að skrám, forritum og fleiru. Þú getur einnig fengið svör við spurningum um <ph name="PRODUCT_NAME" />.</translation>
 <translation id="2268813581635650749">Skrá alla út</translation>
 <translation id="2276987123919776440">15 mín.</translation>
 <translation id="2277103315734023688">Spóla áfram</translation>
@@ -397,6 +399,7 @@ Hér eru nokkrir hlutir sem þú getur prófað til að byrja með.</translation
 <translation id="2607678425161541573">Innskráningar á netinu er krafist</translation>
 <translation id="2612072250312279703">virknieftirlit</translation>
 <translation id="2612614436418177118">Færa forritatákn innan forritatöflu</translation>
+<translation id="2619326010008283367">Skref <ph name="STEP" /> af <ph name="TOTAL_STEPS" /> í kynningu. Þú finnur stillingar tækisins í ræsiforritinu. Prófaðu að sérsníða <ph name="PRODUCT_NAME" />-tækið þitt í stillingunum, t.d. að skipta um veggfóður eða stilla skjávara.</translation>
 <translation id="2620016719323068571">Leitaðu að <ph name="CATEGORY" />, skrám, forritum og fleira...</translation>
 <translation id="2620436844016719705">Kerfi</translation>
 <translation id="2620900772667816510">Bluetooth-ofurupplausn</translation>
@@ -819,7 +822,6 @@ Tilteknir eiginleikar verða takmarkaðir til að lengja rafhlöðuendingu.</tra
 <translation id="4209973997261364186">Kveikt er á Wi-Fi</translation>
 <translation id="4212472694152630271">Skipta yfir í PIN-númer</translation>
 <translation id="4215497585250573029">VPN-stillingar</translation>
-<translation id="4215548513524864822">Skref fimm af fimm í kynningu. Þú finnur stillingar tækisins í ræsiforritinu. Prófaðu að sérsníða <ph name="PRODUCT_NAME" />-tækið þitt í stillingunum, t.d. að skipta um veggfóður eða stilla skjávara.</translation>
 <translation id="4217571870635786043">Upplestur</translation>
 <translation id="4221957499226645091"><ph name="APP_NAME" />, uppsett forrit, í bið</translation>
 <translation id="4228078597006700451">Stýringar ekki uppsettar</translation>
@@ -946,12 +948,12 @@ Eitt tæki er tengt.</translation>
 <translation id="468293128311738995">Forrit úr símanum</translation>
 <translation id="4690510401873698237">Hilla neðst</translation>
 <translation id="4696813013609194136">Opna tæki með kóða foreldris</translation>
-<translation id="469693290987463983">Skref eitt af fimm í kynningu. Festu og opnu forritin þín eru í hillunni neðst á skjánum. Ýttu á „Alt + Shift + L“ og síðan á dálkalykilinn til að fókusa á atriði í hillunni.</translation>
 <translation id="4702647871202761252">Slökkt er á persónuverndarskjá</translation>
 <translation id="4706121060329443414">Reynt verður að hlaða niður síðar. Tal verður sent til Google til úrvinnslu í millitíðinni.</translation>
 <translation id="470644585772471629">Umsnúningur lita</translation>
 <translation id="4708065238214351979">Gera lyklaborðið bjartara</translation>
 <translation id="4717575069099566988">USB-C-snúran styður ekki USB4. Afköst tækisins kunna að vera takmörkuð.</translation>
+<translation id="4724328513667182700">6 ráð til að hefjast handa með <ph name="PRODUCT_NAME" /></translation>
 <translation id="4730374152663651037">OFT NOTUÐ</translation>
 <translation id="4731797938093519117">Foreldraaðgangur</translation>
 <translation id="4733161265940833579"><ph name="BATTERY_PERCENTAGE" />% (vinstri)</translation>
@@ -1027,6 +1029,7 @@ Eitt tæki er tengt.</translation>
 <translation id="4964188651935955085">Þegar þú slekkur á Bluetooth aftengist þetta ytra tæki frá <ph name="DEVICE_TYPE" />:</translation>
 <translation id="4966431234408005599">Hækka hljóðstyrk</translation>
 <translation id="4969092041573468113"><ph name="HOURS" /> k., <ph name="MINUTES" /> m. og <ph name="SECONDS" /> s.</translation>
+<translation id="496999337731226334">Skref <ph name="STEP" /> af <ph name="TOTAL_STEPS" /> í kynningu. Þú finnur algengar stýringar á borð við Wi-Fi, Bluetooth og hljóðstyrk í flýtistillingunum. Hér geturðu einnig tekið skjámyndir. Ýttu á „Alt + Shift + S“ til að opna flýtistillingar.</translation>
 <translation id="4975771730019223894">Merking forrita</translation>
 <translation id="4977493774330778463"><ph name="NUM_IMPORTANT_NOTIFICATION" />:
         <ph name="NOTIFICATION_1" />,
@@ -1144,6 +1147,7 @@ Engin tæki eru tengd.</translation>
 <translation id="540713187982329711">Kveikja/slökkva á heitum reit. Kveikt er á heitum reit, engin tæki eru tengd.</translation>
 <translation id="5413656666631274079">Stillingasíða</translation>
 <translation id="5414198321558177633">Endurnýjar prófílalista. Þetta gæti tekið nokkrar mínútur.</translation>
+<translation id="5417965108047245734">Horfðu á stutta kynningu til að læra á grunnatriði <ph name="PRODUCT_NAME" /></translation>
 <translation id="5426063383988017631">Stillingavalmynd lokað</translation>
 <translation id="5428899915242071344">Byrja að velja</translation>
 <translation id="5429993543155113935">Huliðsgluggar eru ekki studdir eins og er</translation>
@@ -1440,6 +1444,7 @@ Engin tæki eru tengd.</translation>
 <translation id="6555373427270923730">Sláðu veffang inn á veffangastikunni og ýttu svo á <ph name="MODIFIER" /><ph name="KEY" /></translation>
 <translation id="655633303491376835"><ph name="APP_NAME" />
 Ný uppsetning</translation>
+<translation id="6559158502366839560">Skoða fleiri forrit og leiki</translation>
 <translation id="6559976592393364813">Spyrja kerfisstjóra</translation>
 <translation id="6565007273808762236">eSIM-tenging er ekki tiltæk</translation>
 <translation id="6570831796530454248">{0,plural, =1{Uppfærðu tækið innan klukkustundar}one{Uppfærðu tækið innan # klukkustundar}other{Uppfærðu tækið innan # klukkustunda}}</translation>
@@ -1524,7 +1529,6 @@ Ný uppsetning</translation>
 <translation id="6874854809828346832">Sýna upplýsingar um heitan reit. Kveikt er á heitum reit.</translation>
 <translation id="6878400149835617132">Slökkt á flýtileið</translation>
 <translation id="6878701771800702153">{NUM_APPS,plural, =1{1 forrit}one{# forrit}other{# forrit}}</translation>
-<translation id="6878787305374738418">Skref fjögur af fimm í kynningu. Þegar ræsiforritið hefur verið virkjað birtist ítarleg leitarstika. Þá geturðu hafist handa við að leita að skrám, forritum og fleiru. Þú getur einnig fengið svör við spurningum um <ph name="PRODUCT_NAME" />.</translation>
 <translation id="6883768636838842873">Flýtilyklar, ábendingar um notkun á tækjum og fleira</translation>
 <translation id="6884665277231944629">Fara til baka til dagsins í dag</translation>
 <translation id="6886172995547742638">Afköst <ph name="DEVICE_TYPE" /> gætu minnkað. Notaðu vottaðan USB-C straumbreyti með <ph name="PREFERRED_MINIMUM_POWER" /> W eða meira.</translation>
@@ -1593,6 +1597,7 @@ Ný uppsetning</translation>
 <translation id="7143207342074048698">Tengist</translation>
 <translation id="7144942256906679589">Staða rafhlöðu</translation>
 <translation id="7145639536026937076">Rafhlaða í <ph name="PERCENTAGE" />% og í hleðslu. Kveikt er á rafhlöðusparnaði.</translation>
+<translation id="7149149900052329230">Hafðu umsjón með staðbundnum skrám og Google Drive-skránum þínum í forritinu Skrár.</translation>
 <translation id="7165278925115064263">Alt+shift+K</translation>
 <translation id="7167913274352523149"><ph name="HOTSPOT" />,
         <ph name="NETWORK" /></translation>
@@ -1613,7 +1618,6 @@ Ný uppsetning</translation>
 <translation id="726276584504105859">Dragðu hingað til að skipta skjánum</translation>
 <translation id="7262906531272962081">Búa til áminningu</translation>
 <translation id="7278787617901301220"><ph name="LAUNCHER_KEY_NAME" /> + bakklykill</translation>
-<translation id="7282547098317872382">Skref þrjú af fimm í kynningu. Notaðu forrit til að gera allt sem þú þarft í <ph name="PRODUCT_NAME" />-tækinu þínu. Þú finnur forritin þín í ræsiforritinu. Ýttu á „Alt + Shift + L“ til að fókusa á hnapp ræsiforritsins.</translation>
 <translation id="7285232777292757180">Notaðu skjáskotsverkfærið í flýtistillingum til að taka skjáskot</translation>
 <translation id="7301826272005790482">Hunsa tillöguglugga</translation>
 <translation id="7302889331339392448">Slökkt er á skjátextum í rauntíma.</translation>
@@ -1795,10 +1799,12 @@ Til að slökkva á tækinu skaltu halda aflrofa tækisins inni aftur.</translat
 <translation id="7933084174919150729">Google hjálparinn er aðeins í boði fyrir aðalprófíl.</translation>
 <translation id="79341161159229895"><ph name="FIRST_PARENT_EMAIL" /> og <ph name="SECOND_PARENT_EMAIL" /> stjórna þessum reikningi</translation>
 <translation id="793716872548410480">Ýttu á <ph name="SHORTCUT_KEY_NAME" /> + V til að skoða klippiborðið. Síðustu 5 atriðin sem þú afritaðir eru vistuð á klippiborðinu.</translation>
+<translation id="7942330802915522974">Skref <ph name="STEP" /> af <ph name="TOTAL_STEPS" /> í kynningu. Þú finnur forritið Skrár í ræsiforritinu. Hafðu umsjón með staðbundnum skrám og Google Drive-skránum þínum í forritinu Skrár.</translation>
 <translation id="7942349550061667556">Rauður</translation>
 <translation id="7943516765291457328">Kveiktu á Bluetooth til að skanna eftir nálægum heitum reitum</translation>
 <translation id="7944023924886109030">Sjá alla viðburði dagsins</translation>
 <translation id="7945357288295809525">Sýna aðgengisstillingar, kveikt er á „<ph name="ENABLED_FEATURES" />“.</translation>
+<translation id="7946681191253332687">Framlengdar öryggisuppfærslur í boði</translation>
 <translation id="7947798320695032612"><ph name="APP_NAME" /> vill nota <ph name="DEVICE_NAME" /></translation>
 <translation id="7951630946012935453">Myrkva lyklaborð</translation>
 <translation id="7953994493035617347">Staðfesta nýja upplausn?</translation>
@@ -1910,7 +1916,6 @@ Til að slökkva á tækinu skaltu halda aflrofa tækisins inni aftur.</translat
 <translation id="8412677897383510995">Sýna skjástillingar</translation>
 <translation id="8413272770729657668">Upptaka hefst eftir 3, 2, 1</translation>
 <translation id="8416730306157376817"><ph name="BATTERY_PERCENTAGE" />% (hulstur)</translation>
-<translation id="8417951779969083400">Skref tvö af fimm í kynningu. Þú finnur algengar stýringar á borð við Wi-Fi, Bluetooth og hljóðstyrk í flýtistillingunum. Hér geturðu einnig tekið skjámyndir. Ýttu á „Alt + Shift + S“ til að opna flýtistillingar.</translation>
 <translation id="8420205633584771378">Fjarlægja þessa tillögu?</translation>
 <translation id="8421270167862077762"><ph name="UNAVAILABLE_APPS" /> er ekki í þessu tæki.</translation>
 <translation id="8426708595819210923">Gott kvöld <ph name="GIVEN_NAME" />,</translation>
@@ -2131,6 +2136,7 @@ Til að slökkva á tækinu skaltu halda aflrofa tækisins inni aftur.</translat
 <translation id="987589956647469042">Kveikt er á farsímagögnum</translation>
 <translation id="989374776391122812">Myndavélar- og hljóðstýringar</translation>
 <translation id="990277280839877440">Glugganum „<ph name="WINDOW_TITILE" />“ lokað.</translation>
+<translation id="993398562350683614">Skref <ph name="STEP" /> af <ph name="TOTAL_STEPS" /> í kynningu. Notaðu forrit til að gera allt sem þú þarft í <ph name="PRODUCT_NAME" />-tækinu þínu. Þú finnur forritin þín í ræsiforritinu. Ýttu á „Alt + Shift + L“ til að fókusa á hnapp ræsiforritsins.</translation>
 <translation id="994354411665877646"><ph name="NETWORK_NAME" />, <ph name="SUBTEXT" /></translation>
 <translation id="996204416024568215">Fáðu nýjustu eiginleikana og öryggisúrbætur. Uppfærslur fara fram í bakgrunninum.</translation>
 </translationbundle>

@@ -166,6 +166,7 @@
 <translation id="1586324912145647027">Перайсці да аднаго з працоўных сталоў (1-8)</translation>
 <translation id="158838227375272121">Вэб-сайт Google Класа</translation>
 <translation id="1589090746204042747">Атрымліваць доступ да ўсіх вашых дзеянняў у гэтым сеансе</translation>
+<translation id="1597880963776148053">Крок <ph name="STEP" /> з <ph name="TOTAL_STEPS" />. Замацаваныя і адкрытыя праграмы знаходзяцца на панэлі доступу ўнізе экрана. Каб перайсці да элементаў на панэлі, націсніце Alt + Shift + L, а потым Tab.</translation>
 <translation id="1602874809115667351"><ph name="LAUNCHER_KEY_NAME" /> + стрэлка ўніз</translation>
 <translation id="1604857178818051494">Прыпыніць медыязмесціва</translation>
 <translation id="1607312127821884567">Не наладжваць прагляд праграм з тэлефона</translation>
@@ -303,6 +304,7 @@
 <translation id="2257486738914982088">Не ўдалося спампаваць файл "<ph name="FILENAME" />"</translation>
 <translation id="2258734398699965611">Прапанаваныя файлы</translation>
 <translation id="2268130516524549846">Bluetooth выключаны</translation>
+<translation id="2268731132310444948">Крок <ph name="STEP" /> з <ph name="TOTAL_STEPS" />. Пасля актывацыі Панэлі запуску вам будзе даступны радок пашыранага пошуку. Пачніце ўводзіць запыт, каб знайсці патрэбны файл, праграму ці іншае змесціва або атрымаць адказ на пытанне аб сваёй прыладзе (<ph name="PRODUCT_NAME" />).</translation>
 <translation id="2268813581635650749">Выйсці адусюль</translation>
 <translation id="2276987123919776440">15 хв</translation>
 <translation id="2277103315734023688">Перайсці ўперад</translation>
@@ -397,6 +399,7 @@
 <translation id="2607678425161541573">Неабходна выканаць уваход праз інтэрнэт</translation>
 <translation id="2612072250312279703">маніторынг дзеянняў</translation>
 <translation id="2612614436418177118">Перамясціць значок праграмы ў сетцы праграм</translation>
+<translation id="2619326010008283367">Крок <ph name="STEP" /> з <ph name="TOTAL_STEPS" />. З Панэлі запуску можна атрымаць доступ да налад прылады (<ph name="PRODUCT_NAME" />). Паспрабуйце выкарыстаць іх, калі хочаце персаналізаваць прыладу, напрыклад змяніць шпалеры або ўстанавіць застаўку.</translation>
 <translation id="2620016719323068571">Пошук: <ph name="CATEGORY" />, файлы, праграмы і не толькі...</translation>
 <translation id="2620436844016719705">Сістэма</translation>
 <translation id="2620900772667816510">Bluetooth Super Resolution</translation>
@@ -819,7 +822,6 @@
 <translation id="4209973997261364186">Wi-Fi уключаны</translation>
 <translation id="4212472694152630271">Пераключыцца на PIN-код</translation>
 <translation id="4215497585250573029">Налады VPN</translation>
-<translation id="4215548513524864822">Крок 5 з 5. На Панэлі запуску вы можаце знайсці налады, каб персаналізаваць сваю прыладу (<ph name="PRODUCT_NAME" />), напрыклад змяніць шпалеры або ўстанавіць застаўку.</translation>
 <translation id="4217571870635786043">Галасавы ўвод</translation>
 <translation id="4221957499226645091"><ph name="APP_NAME" />, усталяваная праграма, прыпынена</translation>
 <translation id="4228078597006700451">Налады не зададзены</translation>
@@ -946,12 +948,12 @@
 <translation id="468293128311738995">Праграмы з вашага тэлефона</translation>
 <translation id="4690510401873698237">Паліца ўнізе</translation>
 <translation id="4696813013609194136">Разблакіруйце прыладу бацькоўскім кодам</translation>
-<translation id="469693290987463983">Крок 1 з 5. Замацаваныя і адкрытыя праграмы знаходзяцца на панэлі доступу ўнізе экрана. Каб перайсці да элементаў на панэлі, націсніце Alt + Shift + L, а потым Tab.</translation>
 <translation id="4702647871202761252">Экран прыватнасці выключаны</translation>
 <translation id="4706121060329443414">Спроба спампоўвання будзе зроблена пазней. Пакуль што аўдыяматэрыял будзе адпраўлены для апрацоўкі ў Google.</translation>
 <translation id="470644585772471629">Інверсія колераў</translation>
 <translation id="4708065238214351979">Павялічыць яркасць клавіятуры</translation>
 <translation id="4717575069099566988">Ваш кабель USB-C не падыходзіць для выкарыстання з USB4. Прадукцыйнасць прылады можа быць абмежавана.</translation>
+<translation id="4724328513667182700">6 парад для новых карыстальнікаў прылады "<ph name="PRODUCT_NAME" />"</translation>
 <translation id="4730374152663651037">ЧАСТА ВЫКАРЫСТОЎВАЮЦЦА</translation>
 <translation id="4731797938093519117">Бацькоўскі доступ</translation>
 <translation id="4733161265940833579"><ph name="BATTERY_PERCENTAGE" />% (левы)</translation>
@@ -1027,6 +1029,7 @@
 <translation id="4964188651935955085">Пасля гэтага ад вашай прылады <ph name="DEVICE_TYPE" /> будзе адключана наступная знешняя прылада:</translation>
 <translation id="4966431234408005599">Павялічыць гучнасць</translation>
 <translation id="4969092041573468113"><ph name="HOURS" /> гадз <ph name="MINUTES" /> хв <ph name="SECONDS" /> с</translation>
+<translation id="496999337731226334">Крок <ph name="STEP" /> з <ph name="TOTAL_STEPS" />. Параметры, якія часта выкарыстоўваюцца (напрыклад, для кіравання Wi-Fi, Bluetooth і гучнасцю), даступныя ў хуткіх наладах. Там жа можна рабіць здымкі экрана. Каб адкрыць хуткія налады, націсніце Alt + Shift + S.</translation>
 <translation id="4975771730019223894">Значкі колькасці апавяшчэнняў у праграмах</translation>
 <translation id="4977493774330778463"><ph name="NUM_IMPORTANT_NOTIFICATION" />:
         <ph name="NOTIFICATION_1" />,
@@ -1144,6 +1147,7 @@
 <translation id="540713187982329711">Уключыць/выключыць хот-спот. Хот-спот уключаны, падключаных прылад няма.</translation>
 <translation id="5413656666631274079">старонку налад</translation>
 <translation id="5414198321558177633">Ідзе абнаўленне спіса профіляў. Гэта можа заняць некалькі хвілін.</translation>
+<translation id="5417965108047245734"><ph name="PRODUCT_NAME" />: удзяліце час на кароткі агляд прылады і даведайцеся, як з ёй працаваць</translation>
 <translation id="5426063383988017631">Меню налад закрыта</translation>
 <translation id="5428899915242071344">Пачаць выбар</translation>
 <translation id="5429993543155113935">Вокны ў рэжыме інкогніта зараз не падтрымліваюцца</translation>
@@ -1524,7 +1528,6 @@
 <translation id="6874854809828346832">Паказаць падрабязныя звесткі пра хот-спот. Хот-спот уключаны.</translation>
 <translation id="6878400149835617132">Спалучэнне клавіш выключана</translation>
 <translation id="6878701771800702153">{NUM_APPS,plural, =1{1 праграма}one{# праграма}few{# праграмы}many{# праграм}other{# праграмы}}</translation>
-<translation id="6878787305374738418">Крок 4 з 5. Пасля актывацыі Панэлі запуску вам будзе даступны радок пашыранага пошуку. Пачніце ўводзіць запыт, каб знайсці патрэбны файл, праграму ці іншае змесціва або атрымаць адказ на пытанне аб сваёй прыладзе (<ph name="PRODUCT_NAME" />).</translation>
 <translation id="6883768636838842873">Спалучэнні клавіш, парады па выкарыстанні прылады і іншае</translation>
 <translation id="6884665277231944629">Вярнуцца да сённяшняй даты</translation>
 <translation id="6886172995547742638">Прадукцыйнасць прылады <ph name="DEVICE_TYPE" /> можа знізіцца. Выкарыстоўвайце адаптар сілкавання USB-C з магутнасцю, не меншай за <ph name="PREFERRED_MINIMUM_POWER" /> Вт</translation>
@@ -1593,6 +1596,7 @@
 <translation id="7143207342074048698">Падключэнне</translation>
 <translation id="7144942256906679589">Стан акумулятара</translation>
 <translation id="7145639536026937076">Акумулятар зараджаецца, узровень зараду: <ph name="PERCENTAGE" />%. Уключаны рэжым энергазберажэння.</translation>
+<translation id="7149149900052329230">Кіраваць лакальнымі файламі і файламі на Google Дыску можна праз праграму "Файлы".</translation>
 <translation id="7165278925115064263">Alt + Shift + K</translation>
 <translation id="7167913274352523149"><ph name="HOTSPOT" />,
         <ph name="NETWORK" /></translation>
@@ -1613,7 +1617,6 @@
 <translation id="726276584504105859">Каб перайсці ў рэжым падзеленага экрана, перацягніце акно сюды</translation>
 <translation id="7262906531272962081">Стварыць напамін</translation>
 <translation id="7278787617901301220"><ph name="LAUNCHER_KEY_NAME" /> + Backspace</translation>
-<translation id="7282547098317872382">Крок 3 з 5. З дапамогай праграм вы можаце выконваць на сваёй прыладзе (<ph name="PRODUCT_NAME" />) самыя розныя задачы. Знайсці праграмы можна на Панэлі запуску. Каб перайсці да кнопкі Панэлі запуску, націсніце Alt + Shift + L.</translation>
 <translation id="7285232777292757180">Каб зрабіць здымак экрана, выкарыстайце інструмент здымання экрана ў хуткіх наладах</translation>
 <translation id="7301826272005790482">Закрыць прапановы акон</translation>
 <translation id="7302889331339392448">Імгненныя субцітры выключаны.</translation>
@@ -1795,10 +1798,12 @@
 <translation id="7933084174919150729">Памочнік Google даступны толькі ў асноўным профілі.</translation>
 <translation id="79341161159229895">Уліковым запісам кіруюць <ph name="FIRST_PARENT_EMAIL" /> і <ph name="SECOND_PARENT_EMAIL" /></translation>
 <translation id="793716872548410480">Каб прагледзець буфер абмену, націсніце <ph name="SHORTCUT_KEY_NAME" /> + V. Апошнія 5 скапіраваных вамі элементаў захоўваюцца ў буферы абмену.</translation>
+<translation id="7942330802915522974">Крок <ph name="STEP" /> з <ph name="TOTAL_STEPS" />. На Панэлі запуску можна знайсці праграму "Файлы". Праз яе вы можаце кіраваць лакальнымі файламі і файламі на Google Дыску.</translation>
 <translation id="7942349550061667556">Чырвоны</translation>
 <translation id="7943516765291457328">Каб знайсці хот-споты паблізу, уключыце Bluetooth</translation>
 <translation id="7944023924886109030">Паглядзець усе падзеі на сёння</translation>
 <translation id="7945357288295809525">Паказаць налады спецыяльных магчымасцей, уключана: "<ph name="ENABLED_FEATURES" />".</translation>
+<translation id="7946681191253332687">Даступныя пашыраныя абнаўленні сістэмы бяспекі</translation>
 <translation id="7947798320695032612">Праграма "<ph name="APP_NAME" />" спрабуе выкарыстаць наступную прыладу: <ph name="DEVICE_NAME" /></translation>
 <translation id="7951630946012935453">Паменшыць яркасць клавіятуры</translation>
 <translation id="7953994493035617347">Пацвердзіць новую раздзяляльнасць?</translation>
@@ -1910,7 +1915,6 @@
 <translation id="8412677897383510995">Паказаць налады дысплэя</translation>
 <translation id="8413272770729657668">Запіс пачнецца праз 3, 2, 1</translation>
 <translation id="8416730306157376817"><ph name="BATTERY_PERCENTAGE" />% (чахол)</translation>
-<translation id="8417951779969083400">Крок 2 з 5. Параметры, якія часта выкарыстоўваюцца (напрыклад, для кіравання Wi-Fi, Bluetooth і гучнасцю), даступныя ў хуткіх наладах. Там жа можна рабіць здымкі экрана. Каб адкрыць хуткія налады, націсніце Alt + Shift + S.</translation>
 <translation id="8420205633584771378">Выдаліць гэту прапанову?</translation>
 <translation id="8421270167862077762">На гэтай прыладзе няма праграмы "<ph name="UNAVAILABLE_APPS" />".</translation>
 <translation id="8426708595819210923">Добры вечар, <ph name="GIVEN_NAME" />!</translation>
@@ -2124,12 +2128,14 @@
 <translation id="954052413789300507">Файл "<ph name="FILENAME" />" не змяшчаецца ў сховішчы. Вызваліце месца.</translation>
 <translation id="954520015070501466">30 хв</translation>
 <translation id="956452277966142925">Налады гульнявой панэлі</translation>
+<translation id="961856697154696964">Выдаліць даныя пра работу ў браўзеры</translation>
 <translation id="974545358917229949">Паказваюцца вынікі (<ph name="RESULT_COUNT" />) па запыце "<ph name="QUERY" />"</translation>
 <translation id="981011780479609956">Тэрмін выканання адсутнічае</translation>
 <translation id="98120814841227350">Перайсці ў канец дакумента</translation>
 <translation id="987589956647469042">Мабільны інтэрнэт уключаны</translation>
 <translation id="989374776391122812">Элементы кіравання камерай і аўдыя</translation>
 <translation id="990277280839877440">Акно <ph name="WINDOW_TITILE" /> закрыта.</translation>
+<translation id="993398562350683614">Крок <ph name="STEP" /> з <ph name="TOTAL_STEPS" />. З дапамогай праграм вы можаце выконваць на сваёй прыладзе (<ph name="PRODUCT_NAME" />) самыя розныя задачы. Знайсці праграмы можна на Панэлі запуску. Каб перайсці да кнопкі Панэлі запуску, націсніце Alt + Shift + L.</translation>
 <translation id="994354411665877646"><ph name="NETWORK_NAME" />, <ph name="SUBTEXT" /></translation>
 <translation id="996204416024568215">Усталюйце апошнія функцыі і паляпшэнні сістэмы бяспекі. Абнаўленні ўсталёўваюцца ў фонавым рэжыме.</translation>
 </translationbundle>

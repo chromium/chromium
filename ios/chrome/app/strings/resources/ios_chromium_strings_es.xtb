@@ -21,7 +21,7 @@
 <translation id="1561849081734670621">Para inhabilitar el modo Bloqueo de seguridad en Chromium, desactívalo en tu iPhone.</translation>
 <translation id="159029779861043703">Chromium protege tus datos sensibles con Face ID.</translation>
 <translation id="1591119736686995611">Abre la cuadrícula de pestañas de Chromium.</translation>
-<translation id="1611584326765829247">Permitir que Chromium te ayude a monitorizar tus paquetes</translation>
+<translation id="1611584326765829247">Permitir que Chromium te ayude a seguir tus paquetes</translation>
 <translation id="1617663976202781617">Datos de la sincronización de Chromium</translation>
 <translation id="1647558790457890304">Configuración de Chromium</translation>
 <translation id="164952285225495380">Ya se está haciendo un seguimiento de este paquete en Chromium.</translation>
@@ -59,6 +59,7 @@
 <translation id="2574528844022712255">Ver marcadores de Chromium</translation>
 <translation id="2590893390871230428">Sincronizar tus datos de Chromium</translation>
 <translation id="2592940277904433508">Seguir usando Chromium</translation>
+<translation id="2607609479243848905">Si has olvidado tu frase de contraseña o quieres cambiar este ajuste, <ph name="BEGIN_LINK" />elimina los datos de Chromium de tu cuenta<ph name="END_LINK" />.</translation>
 <translation id="2618596336309823556">En los ajustes de tu dispositivo, abre <ph name="TEXT_OF_THE_SETTINGS_MENU_ITEM" /> y selecciona Chromium</translation>
 <translation id="2618757400690011108">{COUNT,plural, =1{Chromium te ayudará a hacer un seguimiento de este paquete en la página Nueva pestaña.}other{Chromium te ayudará a hacer un seguimiento de estos paquetes en la página Nueva pestaña.}}</translation>
 <translation id="2650312721222849884">Activa la sincronización para ver tus pestañas dondequiera que uses Chromium</translation>
@@ -74,7 +75,7 @@ Si quieres ver más ajustes que usan datos para mejorar tu experiencia con Chrom
 <translation id="2942241131342758843">Usa Chromium de forma predeterminada para abrir enlaces, hacer búsquedas desde widgets y autocompletar contraseñas en otras aplicaciones</translation>
 <translation id="2977470724722393594">Chromium está actualizado</translation>
 <translation id="3044857325852340337">Datos de Chromium eliminados</translation>
-<translation id="3078941082359356771">{COUNT,plural, =1{Chromium puede ayudarte a hacer un seguimiento de este paquete en la página Nueva pestaña.}other{Chromium puede ayudarte a hacer un seguimiento de estos paquetes en la página Nueva pestaña.}}</translation>
+<translation id="3078941082359356771">{COUNT,plural, =1{Chromium puede ayudarte a seguir este paquete en la página Nueva pestaña.}other{Chromium puede ayudarte a seguir estos paquetes en la página Nueva pestaña.}}</translation>
 <translation id="3102849287235003384">Para cerrar sesión con tu cuenta de Google en todos los sitios web, <ph name="BEGIN_LINK" />cierra sesión en Chromium<ph name="END_LINK" />.</translation>
 <translation id="3219277919172823720">Buscar por voz en Chromium</translation>
 <translation id="3228349498066165585">Algunos de tus datos de Chromium aún no se han guardado en tu cuenta de Google.
@@ -116,6 +117,9 @@ Tus datos se han cifrado con tu frase de contraseña. Introdúcela para usar y g
 <translation id="4498832288620833153">Añade las URLs introducidas a tu lista de lectura de Chromium.</translation>
 <translation id="452436063477828504">Asegúrate de que siempre puedas usar los datos de Chromium en tu cuenta de Google</translation>
 <translation id="4555020257205549924">Si esta función está activada, Chromium ofrecerá la posibilidad de traducir páginas escritas en otros idiomas con el Traductor de Google. <ph name="BEGIN_LINK" />Más información<ph name="END_LINK" /></translation>
+<translation id="4572441104543926904">El cifrado con frase de contraseña no incluye los métodos de pago ni las direcciones.
+
+Para cambiar este ajuste, <ph name="BEGIN_LINK" />elimina los datos de Chromium de tu cuenta<ph name="END_LINK" />.</translation>
 <translation id="4576283463017113841">Abre la página de configuración de métodos de pago en Chromium.</translation>
 <translation id="459080529287102949">Buscar elementos visuales en Chromium</translation>
 <translation id="4633738821577273991">Usa Navegación segura mejorada en este perfil de Chromium también</translation>
@@ -214,6 +218,9 @@ Notas importantes:
 <translation id="7163483974919055112">Busca elementos visuales en Chromium.</translation>
 <translation id="7165402419892018581">Elige Chromium para la función Autocompletar</translation>
 <translation id="7175400662502680481">Tu contraseña se ha visto expuesta en una brecha de seguridad de datos. El gestor de contraseñas te recomienda que cambies esa contraseña ahora.</translation>
+<translation id="7185731475720473450">Los métodos de pago y las direcciones no se cifrarán. El historial de navegación de Chromium no se sincronizará.
+
+Solo las personas que tengan tu frase de contraseña podrán leer tus datos cifrados. La frase de contraseña no se enviará a Google, que tampoco la almacenará. Si olvidas tu frase de contraseña o quieres cambiar este ajuste, <ph name="BEGIN_LINK" />elimina los datos de Chromium de tu cuenta<ph name="END_LINK" />.</translation>
 <translation id="7192111075364461693">Las notificaciones de Chromium están desactivadas actualmente en los ajustes del dispositivo.</translation>
 <translation id="7222001353246886083">Buscar ${searchFrase} en Chromium</translation>
 <translation id="725427773388857052">Chromium puede ayudarte a protegerte frente a quiebras de seguridad de datos, sitios web no seguros y mucho más.</translation>

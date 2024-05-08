@@ -166,6 +166,7 @@
 <translation id="1586324912145647027">ចូល​ទៅកាន់​តុទី 1 នៃ 8</translation>
 <translation id="158838227375272121">គេហទំព័រ Google ថ្នាក់រៀន</translation>
 <translation id="1589090746204042747">ចូលប្រើសកម្មភាព​ទាំងអស់របស់អ្នកនៅក្នុង​រយៈពេលចូលប្រើនេះ</translation>
+<translation id="1597880963776148053">ការណែនាំនៅជំហានទី <ph name="STEP" /> នៃ <ph name="TOTAL_STEPS" />។ កម្មវិធី​ដែលបើក និង​បានខ្ទាស់​របស់អ្នក​នៅលើធ្នើរដែលស្ថិតផ្នែកនៅខាងក្រោមនៃអេក្រង់របស់អ្នក។ ចុច Alt + Shift + L រួចចុច tab ដើម្បីផ្ដោតលើធាតុលើធ្នើរ។</translation>
 <translation id="1602874809115667351"><ph name="LAUNCHER_KEY_NAME" /> + ព្រួញចុះក្រោម</translation>
 <translation id="1604857178818051494">ផ្អាក​មេឌៀ</translation>
 <translation id="1607312127821884567">ច្រានចោល​ការរៀបចំ​ការមើល​កម្មវិធី​លើ​ទូរសព្ទ​របស់​អ្នក</translation>
@@ -303,6 +304,7 @@
 <translation id="2257486738914982088">មានអ្វីមួយខុសប្រក្រតី ពេលកំពុងទាញយក <ph name="FILENAME" /></translation>
 <translation id="2258734398699965611">ឯកសារ​ដែល​បាន​ណែនាំ</translation>
 <translation id="2268130516524549846">ប៊្លូធូសត្រូវបានបិទ</translation>
+<translation id="2268731132310444948">ការណែនាំនៅជំហានទី <ph name="STEP" /> នៃ <ph name="TOTAL_STEPS" />។ នៅពេលបើកដំណើរការកម្មវិធី​ចាប់ផ្ដើមរួច អ្នកនឹងទទួលបានរបារស្វែងរកដែលប្រសើរជាងមុន។ អ្នកអាចចាប់ផ្ដើមវាយបញ្ចូល ដើម្បីស្វែងរកឯកសារ កម្មវិធីរបស់អ្នក និងអ្វីៗជាច្រើនទៀត។ អ្នកក៏អាច​ទទួលបាន​ចម្លើយ​ចំពោះសំណួរ​ដែលទាក់ទងនឹង <ph name="PRODUCT_NAME" /> របស់អ្នក​ផងដែរ។</translation>
 <translation id="2268813581635650749">ចាកចេញទាំងអស់</translation>
 <translation id="2276987123919776440">15 ន</translation>
 <translation id="2277103315734023688">សា​ទៅមុខ</translation>
@@ -397,6 +399,7 @@
 <translation id="2607678425161541573">តម្រូវឱ្យ​ចូលគណនី​លើអ៊ីនធឺណិត</translation>
 <translation id="2612072250312279703">កម្មវិធីតាមដានសកម្មភាព</translation>
 <translation id="2612614436418177118">ផ្លាស់ទី​រូបកម្មវិធី​នៅក្នុង​ក្រឡាកម្មវិធី</translation>
+<translation id="2619326010008283367">ការណែនាំនៅជំហានទី <ph name="STEP" /> នៃ <ph name="TOTAL_STEPS" />។ អ្នកអាចរកឃើញ "ការកំណត់" ឧបករណ៍របស់អ្នកក្នុងកម្មវិធី​ចាប់ផ្ដើម។ សាកល្បងប្ដូរ <ph name="PRODUCT_NAME" /> របស់អ្នក​តាមបំណងនៅក្នុង "ការកំណត់" ដូចជា​ប្ដូរផ្ទាំង​រូបភាព​របស់អ្នក ឬ​កំណត់ធាតុរក្សាអេក្រង់។</translation>
 <translation id="2620016719323068571">ស្វែងរក <ph name="CATEGORY" /> ឯកសារ កម្មវិធី និងអ្វីៗជាច្រើនទៀត...</translation>
 <translation id="2620436844016719705">ប្រព័ន្ធ</translation>
 <translation id="2620900772667816510">កម្រិតគុណភាពកំពូលរបស់ប៊្លូធូស</translation>
@@ -819,7 +822,6 @@
 <translation id="4209973997261364186">Wi-Fi ត្រូវបានបើក</translation>
 <translation id="4212472694152630271">ប្ដូរទៅកូដ PIN</translation>
 <translation id="4215497585250573029">ការ​កំណត់ VPN</translation>
-<translation id="4215548513524864822">ជំហានទី 5 នៃ 5 ក្នុងការណែនាំ។ អ្នកអាចស្វែងរកការ​កំណត់ឧបករណ៍របស់អ្នកក្នុងកម្មវិធី​ចាប់ផ្ដើម។ សាកល្បងប្ដូរ <ph name="PRODUCT_NAME" /> របស់អ្នកតាមបំណងក្នុង "ការកំណត់" ដូចជាការផ្លាស់ប្ដូរផ្ទាំង​រូបភាពរបស់អ្នក ឬកំណត់ធាតុរក្សាអេក្រង់។</translation>
 <translation id="4217571870635786043">ការសរសេរ​តាមអាន​</translation>
 <translation id="4221957499226645091"><ph name="APP_NAME" />, កម្មវិធី​ដែលបាន​ដំឡើង ហើយ​បានផ្អាក</translation>
 <translation id="4228078597006700451">មិនបានរៀបចំការគ្រប់គ្រងទេ</translation>
@@ -946,12 +948,12 @@
 <translation id="468293128311738995">កម្មវិធីពីទូរសព្ទរបស់​អ្នក</translation>
 <translation id="4690510401873698237">ធ្នើនៅ​ខាងក្រោម</translation>
 <translation id="4696813013609194136">ដោះ​សោ​ឧបករណ៍​ដោយ​ប្រើ​កូដ​សម្រាប់​មាតា​បិតា</translation>
-<translation id="469693290987463983">ជំហានទី 1 នៃ 5 ក្នុងការណែនាំ។ កម្មវិធី​ដែលបើក និង​បានខ្ទាស់​របស់អ្នក​នៅលើធ្នើរដែលស្ថិតផ្នែកនៅខាងក្រោមនៃអេក្រង់របស់អ្នក។ ចុច Alt + Shift + L រួចចុច tab ដើម្បីផ្ដោតលើធាតុលើធ្នើរ។</translation>
 <translation id="4702647871202761252">អេក្រង់​ឯកជនភាព​ត្រូវបានបិទ</translation>
 <translation id="4706121060329443414">នឹងព្យាយាម​ទាញយក​នៅពេលក្រោយ។ ការនិយាយ​នឹងត្រូវបានផ្ញើទៅ Google ដើម្បីដំណើរការ​សម្រាប់ពេលនេះ។</translation>
 <translation id="470644585772471629">ការបញ្ច្រាស​ពណ៌</translation>
 <translation id="4708065238214351979">បង្កើនពន្លឺក្ដារចុច</translation>
 <translation id="4717575069099566988">ខ្សែ USB-C របស់អ្នកមិនអាចប្រើ USB4 បានទេ។ ប្រតិបត្តិការឧបករណ៍អាចត្រូវ​បានដាក់កំហិត។</translation>
+<translation id="4724328513667182700">គន្លឹះ 6 ក្នុងការចាប់ផ្ដើម​នៅលើ <ph name="PRODUCT_NAME" /></translation>
 <translation id="4730374152663651037">ដែល​ប្រើ​ញឹកញាប់</translation>
 <translation id="4731797938093519117">សិទ្ធិចូលប្រើប្រាស់​សម្រាប់មាតាបិតា</translation>
 <translation id="4733161265940833579"><ph name="BATTERY_PERCENTAGE" />% (ឆ្វេង)</translation>
@@ -1027,6 +1029,7 @@
 <translation id="4964188651935955085">នៅពេលអ្នក​បិទប៊្លូធូស ឧបករណ៍​ខាងក្រៅនេះ​នឹងផ្ដាច់ពី <ph name="DEVICE_TYPE" /> របស់អ្នក៖</translation>
 <translation id="4966431234408005599">បង្កើន​កម្រិត​សំឡេង</translation>
 <translation id="4969092041573468113"><ph name="HOURS" />ម៉ <ph name="MINUTES" />ន <ph name="SECONDS" />វិ</translation>
+<translation id="496999337731226334">ការណែនាំនៅជំហានទី <ph name="STEP" /> នៃ <ph name="TOTAL_STEPS" />។ ការគ្រប់គ្រង​ដែលប្រើ​ញឹកញាប់​ដូចជា Wi-Fi, ប៊្លូធូស និង​កម្រិតសំឡេង​គឺនៅក្នុង "ការកំណត់រហ័ស"។ អ្នកក៏អាច​ចូលទីនេះ ដើម្បីថតរូប​អេក្រង់​បានផងដែរ។ ចុច Alt + Shift + S ដើម្បីបើក "ការកំណត់រហ័ស"។</translation>
 <translation id="4975771730019223894">ការដាក់គ្រឿង​សម្គាល់កម្មវិធី</translation>
 <translation id="4977493774330778463"><ph name="NUM_IMPORTANT_NOTIFICATION" />៖
         <ph name="NOTIFICATION_1" />,
@@ -1144,6 +1147,7 @@
 <translation id="540713187982329711">បិទ/បើក​ហតស្ប៉ត។ ហតស្ប៉ត​ត្រូវបានបើក មិនបានភ្ជាប់​ឧបករណ៍ទេ។</translation>
 <translation id="5413656666631274079">ទំព័រ​ការកំណត់</translation>
 <translation id="5414198321558177633">កំពុងផ្ទុក​បញ្ជីកម្រងព័ត៌មានឡើងវិញ។ ដំណើរការនេះ​អាចចំណាយ​ពេលពីរបីនាទី។</translation>
+<translation id="5417965108047245734">មើល​ការណែនាំ​ត្រួសៗ ដើម្បី​ស្វែងយល់​អំពី​របៀប​ប្រើប្រាស់ <ph name="PRODUCT_NAME" /> របស់អ្នក</translation>
 <translation id="5426063383988017631">បានបិទម៉ឺនុយការ​កំណត់</translation>
 <translation id="5428899915242071344">ចាប់ផ្ដើមជ្រើសរើស</translation>
 <translation id="5429993543155113935">បច្ចុប្បន្ន មិនអាចប្រើ​ផ្ទាំងឯកជន​បានទេ</translation>
@@ -1440,6 +1444,7 @@
 <translation id="6555373427270923730">វាយ​បញ្ចូល​អាសយដ្ឋាន​ទំព័រ​ក្នុង​របារ​អាសយដ្ឋាន រួច​ចុច <ph name="MODIFIER" /><ph name="KEY" /></translation>
 <translation id="655633303491376835"><ph name="APP_NAME" />
 ការដំឡើងថ្មី</translation>
+<translation id="6559158502366839560">រុករក​កម្មវិធី និង​ហ្គេម​ច្រើនទៀត</translation>
 <translation id="6559976592393364813">ស្នើសុំ​អ្នកគ្រប់គ្រង</translation>
 <translation id="6565007273808762236">មិនអាចភ្ជាប់ eSIM បានទេ</translation>
 <translation id="6570831796530454248">{0,plural, =1{ដំឡើងកំណែ​ឧបករណ៍​ក្នុងរយៈពេល​មួយ​ម៉ោង​}other{ដំឡើងកំណែ​ឧបករណ៍​ក្នុងរយៈពេល # ម៉ោង​}}</translation>
@@ -1524,7 +1529,6 @@
 <translation id="6874854809828346832">បង្ហាញ​ព័ត៌មាន​លម្អិតអំពី​ហតស្ប៉ត។ ហតស្ប៉ត​ត្រូវបានបើក។</translation>
 <translation id="6878400149835617132">បានបិទ​ផ្លូវកាត់</translation>
 <translation id="6878701771800702153">{NUM_APPS,plural, =1{កម្មវិធី 1}other{កម្មវិធី #}}</translation>
-<translation id="6878787305374738418">ជំហានទី 4 នៃ 5 ក្នុងការណែនាំ។ នៅពេលបើកដំណើរការកម្មវិធី​ចាប់ផ្ដើមរួច អ្នកនឹងទទួលបានរបារស្វែងរកដែលប្រសើរជាងមុន។ អ្នកអាចចាប់ផ្ដើមវាយបញ្ចូល ដើម្បីស្វែងរកឯកសារ កម្មវិធីរបស់អ្នក និងអ្វីៗជាច្រើនទៀត។ អ្នកក៏អាច​ទទួលបាន​ចម្លើយ​ចំពោះសំណួរ​ដែលទាក់ទងនឹង <ph name="PRODUCT_NAME" /> របស់អ្នក​ផងដែរ។</translation>
 <translation id="6883768636838842873">ផ្លូវ​កាត់គ្រាប់ចុច គន្លឹះក្នុងការប្រើប្រាស់ឧបករណ៍ និងអ្វីៗជាច្រើនទៀត</translation>
 <translation id="6884665277231944629">ត្រឡប់ទៅថ្ងៃនេះវិញ</translation>
 <translation id="6886172995547742638"><ph name="DEVICE_TYPE" /> របស់អ្នកអាចដំណើរការយឺតជាងមុន។ សូមប្រើឆ្នាំងសាក USB-C កម្រិត <ph name="PREFERRED_MINIMUM_POWER" />W ឬខ្ពស់ជាងនេះដែលមានការទទួលស្គាល់។</translation>
@@ -1593,6 +1597,7 @@
 <translation id="7143207342074048698">កំពុងភ្ជាប់...</translation>
 <translation id="7144942256906679589">ស្ថានភាពថ្ម</translation>
 <translation id="7145639536026937076">ថ្ម​មានកម្រិត <ph name="PERCENTAGE" />% និងកំពុងសាក។ មុខងារសន្សំថ្ម​ត្រូវបានបើក។</translation>
+<translation id="7149149900052329230">គ្រប់គ្រង​ឯកសារ​ក្នុងឧបករណ៍​របស់អ្នក និង​ឯកសារ Google ថាស​របស់អ្នក ដែល​ទាំងអស់​នៅក្នុង​កម្មវិធី Files។</translation>
 <translation id="7165278925115064263">Alt+ប្ដូរ (Shift)+K</translation>
 <translation id="7167913274352523149"><ph name="HOTSPOT" />, <ph name="NETWORK" /></translation>
 <translation id="7168224885072002358">កំពុងត្រលប់ទៅកម្រិតច្បាស់ចាស់នៅក្នុង <ph name="TIMEOUT_SECONDS" /></translation>
@@ -1612,7 +1617,6 @@
 <translation id="726276584504105859">អូសនៅទីនេះដើម្បីប្រើអេក្រង់បំបែក</translation>
 <translation id="7262906531272962081">បង្កើត​ការ​រំលឹក</translation>
 <translation id="7278787617901301220"><ph name="LAUNCHER_KEY_NAME" /> + backspace</translation>
-<translation id="7282547098317872382">ជំហានទី 3 នៃ 5 ក្នុងការស្វែងយល់។ ប្រើកម្មវិធី ដើម្បី​ធ្វើអ្វីៗគ្រប់យ៉ាង​ដែលអ្នកត្រូវការ​នៅលើ <ph name="PRODUCT_NAME" /> របស់អ្នក។ អ្នកអាច​ស្វែងរក​កម្មវិធី​របស់អ្នក​នៅក្នុង​កម្មវិធី​ចាប់ផ្ដើម។ ចុច Alt + Shift + L ដើម្បីផ្ដោតលើប៊ូតុង "កម្មវិធី​ចាប់ផ្ដើម"។</translation>
 <translation id="7285232777292757180">ប្រើ​ឧបករណ៍​ថត​អេក្រង់​នៅក្នុង​ការកំណត់​រហ័ស ដើម្បីថត​រូបអេក្រង់</translation>
 <translation id="7301826272005790482">ច្រានចោល​ការណែនាំ​វិនដូ</translation>
 <translation id="7302889331339392448">មុខងារអក្សររត់ក្នុងពេលជាក់ស្ដែង​ត្រូវបានបិទ។</translation>
@@ -1794,10 +1798,12 @@
 <translation id="7933084174919150729">Google ជំនួយ​ការ​អាច​ប្រើបាន​តែជាមួយកម្រង​ព័ត៌មាន​ចម្បង​ប៉ុណ្ណោះ។</translation>
 <translation id="79341161159229895">គណនី​ស្ថិត​ក្រោមការគ្រប់គ្រង​របស់ <ph name="FIRST_PARENT_EMAIL" /> និង <ph name="SECOND_PARENT_EMAIL" /></translation>
 <translation id="793716872548410480">ចុច <ph name="SHORTCUT_KEY_NAME" /> + V ដើម្បីមើល​ឃ្លីបបតរបស់អ្នក។ ធាតុ 5 ចុងក្រោយ​ដែលអ្នកបានចម្លង​ត្រូវបានរក្សាទុក​ទៅក្នុងឃ្លីបបតរបស់អ្នក។</translation>
+<translation id="7942330802915522974">ការណែនាំនៅជំហានទី <ph name="STEP" /> នៃ <ph name="TOTAL_STEPS" />។ អ្នកអាច​រកឃើញ​កម្មវិធី Files នៅក្នុង​កម្មវិធី​ចាប់ផ្ដើម។ គ្រប់គ្រង​ឯកសារ​ក្នុងឧបករណ៍​របស់អ្នក និង​ឯកសារ Google ថាស​របស់អ្នក ដែល​ទាំងអស់​នៅក្នុង​កម្មវិធី Files។</translation>
 <translation id="7942349550061667556">ក្រហម</translation>
 <translation id="7943516765291457328">បើកប៊្លូធូស ដើម្បីស្កេនរកហតស្ប៉តដែលនៅជិត</translation>
 <translation id="7944023924886109030">មើល​ព្រឹត្តិការណ៍​ទាំងអស់​សម្រាប់​ថ្ងៃ​នេះ</translation>
 <translation id="7945357288295809525">បង្ហាញ​ការកំណត់​ភាពងាយស្រួល, បាន​បើក "<ph name="ENABLED_FEATURES" />"។</translation>
+<translation id="7946681191253332687">មានការធ្វើ​បច្ចុប្បន្នភាព​ផ្នែក​សុវត្ថិភាពបន្ថែម</translation>
 <translation id="7947798320695032612"><ph name="APP_NAME" /> ចង់​ប្រើ<ph name="DEVICE_NAME" />របស់​អ្នក</translation>
 <translation id="7951630946012935453">បន្ថយ​ពន្លឺ​ក្ដារចុច</translation>
 <translation id="7953994493035617347">បញ្ជាក់​កម្រិតគុណភាព​ថ្មីឬ?</translation>
@@ -1909,7 +1915,6 @@
 <translation id="8412677897383510995">បង្ហាញ​ការកំណត់​ផ្ទាំងអេក្រង់</translation>
 <translation id="8413272770729657668">ការថតចាប់ផ្ដើមក្នុងរយៈពេល 3, 2, 1</translation>
 <translation id="8416730306157376817"><ph name="BATTERY_PERCENTAGE" />% (ប្រអប់កាស)</translation>
-<translation id="8417951779969083400">ជំហានទី 2 នៃ 5 ក្នុងការណែនាំ។ ការគ្រប់គ្រង​ដែលប្រើ​ញឹកញាប់​ដូចជា Wi-Fi, ប៊្លូធូស និង​កម្រិតសំឡេង​គឺនៅក្នុង​ការកំណត់រហ័ស។ អ្នកក៏អាច​ចូលទីនេះ ដើម្បីថតរូប​អេក្រង់​បានផងដែរ។ ចុច Alt + Shift + S ដើម្បីបើកការកំណត់រហ័ស។</translation>
 <translation id="8420205633584771378">លុបការ​ណែនាំ​នេះ?</translation>
 <translation id="8421270167862077762"><ph name="UNAVAILABLE_APPS" /> មិនមាននៅលើឧបករណ៍នេះទេ។</translation>
 <translation id="8426708595819210923">សាយណ្ហ​សួស្ដី <ph name="GIVEN_NAME" /></translation>
@@ -2123,12 +2128,14 @@
 <translation id="954052413789300507">មិនមានទំហំផ្ទុកគ្រប់គ្រាន់សម្រាប់ <ph name="FILENAME" /> ទេ។ សូមបង្កើនទំហំផ្ទុក។</translation>
 <translation id="954520015070501466">30 ន</translation>
 <translation id="956452277966142925">ការកំណត់​ផ្ទាំងគ្រប់គ្រង​ហ្គេម</translation>
+<translation id="961856697154696964">លុប​ទិន្នន័យរុករក</translation>
 <translation id="974545358917229949">កំពុង​បង្ហាញ​លទ្ធផល <ph name="RESULT_COUNT" /> សម្រាប់ <ph name="QUERY" /></translation>
 <translation id="981011780479609956">គ្មាន​ថ្ងៃ​ផុត​កំណត់ទេ</translation>
 <translation id="98120814841227350">ទៅកាន់​ផ្នែក​បញ្ចប់​នៃ​ឯកសារ</translation>
 <translation id="987589956647469042">ទិន្នន័យ​ទូរសព្ទចល័ត​ត្រូវបានបើក</translation>
 <translation id="989374776391122812">ការគ្រប់គ្រង​កាមេរ៉ា និង​សំឡេង</translation>
 <translation id="990277280839877440">បានបិទវិនដូ <ph name="WINDOW_TITILE" /> ។</translation>
+<translation id="993398562350683614">ការណែនាំនៅជំហានទី <ph name="STEP" /> នៃ <ph name="TOTAL_STEPS" />។ ប្រើកម្មវិធី ដើម្បី​ធ្វើអ្វីៗគ្រប់យ៉ាង​ដែលអ្នក​ត្រូវការ​នៅលើ <ph name="PRODUCT_NAME" /> របស់អ្នក។ អ្នកអាច​រកឃើញ​កម្មវិធី​របស់អ្នក​នៅក្នុង​កម្មវិធី​ចាប់ផ្ដើម។ ចុច Alt + Shift + L ដើម្បីផ្ដោតលើប៊ូតុង "កម្មវិធី​ចាប់ផ្ដើម"។</translation>
 <translation id="994354411665877646"><ph name="NETWORK_NAME" />, <ph name="SUBTEXT" /></translation>
 <translation id="996204416024568215">ទទួលបាន​មុខងារ និងការកែលម្អផ្នែកសុវត្ថិភាពចុងក្រោយបំផុត។ ការដំឡើងកំណែ​កើតឡើងនៅ​ផ្ទៃខាងក្រោយ។</translation>
 </translationbundle>

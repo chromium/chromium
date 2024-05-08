@@ -166,6 +166,7 @@ Iată câteva lucruri pe care le poți încerca pentru început.</translation>
 <translation id="1586324912145647027">Accesează un desktop de la 1 la 8</translation>
 <translation id="158838227375272121">Site-ul Google Classroom</translation>
 <translation id="1589090746204042747">să acceseze toată activitatea din această sesiune;</translation>
+<translation id="1597880963776148053">Pasul <ph name="STEP" /> din <ph name="TOTAL_STEPS" /> al turului. Aplicațiile fixate și deschise se află pe raftul din partea de jos a ecranului. Apasă pe Alt + Shift + L, apoi pe Tab pentru a focaliza pe elementele din raft.</translation>
 <translation id="1602874809115667351"><ph name="LAUNCHER_KEY_NAME" /> + săgeată în jos</translation>
 <translation id="1604857178818051494">Întrerupe fișierul media</translation>
 <translation id="1607312127821884567">Renunță la configurarea afișării aplicațiilor telefonului</translation>
@@ -303,6 +304,7 @@ Iată câteva lucruri pe care le poți încerca pentru început.</translation>
 <translation id="2257486738914982088">A apărut o eroare în timpul descărcării <ph name="FILENAME" /></translation>
 <translation id="2258734398699965611">Fișiere sugerate</translation>
 <translation id="2268130516524549846">Bluetooth dezactivat</translation>
+<translation id="2268731132310444948">Pasul <ph name="STEP" /> din <ph name="TOTAL_STEPS" /> al turului. După ce ai activat Lansatorul, vei vedea o bară de căutare îmbunătățită. Poți începe să introduci text pentru a căuta fișiere, aplicații și altele. Poți și să primești răspunsuri la întrebările despre <ph name="PRODUCT_NAME" />.</translation>
 <translation id="2268813581635650749">Deconectează tot</translation>
 <translation id="2276987123919776440">15 min.</translation>
 <translation id="2277103315734023688">Derulează înainte</translation>
@@ -397,6 +399,7 @@ Iată câteva lucruri pe care le poți încerca pentru început.</translation>
 <translation id="2607678425161541573">Este necesară conectarea online</translation>
 <translation id="2612072250312279703">instrument de monitorizare a activităților</translation>
 <translation id="2612614436418177118">Mută o pictogramă de aplicație în grila de aplicații</translation>
+<translation id="2619326010008283367">Pasul <ph name="STEP" /> din <ph name="TOTAL_STEPS" /> al turului. Setările dispozitivului se găsesc în Lansator. Încearcă să personalizezi dispozitivul <ph name="PRODUCT_NAME" /> în Setări, de exemplu, să schimbi imaginea de fundal sau să setezi un screensaver.</translation>
 <translation id="2620016719323068571">Caută în <ph name="CATEGORY" />, fișiere, aplicații și altele…</translation>
 <translation id="2620436844016719705">Sistem</translation>
 <translation id="2620900772667816510">Super-rezoluție Bluetooth</translation>
@@ -819,7 +822,6 @@ Unele funcții sunt limitate pentru a crește autonomia.</translation>
 <translation id="4209973997261364186">Conexiunea Wi-Fi este activată</translation>
 <translation id="4212472694152630271">Comută la PIN</translation>
 <translation id="4215497585250573029">Setări VPN</translation>
-<translation id="4215548513524864822">Pasul 5 din 5 al turului. Poți găsi Setările dispozitivului în Lansator. Încearcă să personalizezi dispozitivul <ph name="PRODUCT_NAME" /> în Setări, cum ar fi să schimbi imaginea de fundal sau să setezi un screensaver.</translation>
 <translation id="4217571870635786043">Dictare</translation>
 <translation id="4221957499226645091"><ph name="APP_NAME" />, aplicație instalată, în pauză</translation>
 <translation id="4228078597006700451">Comenzile nu sunt configurate</translation>
@@ -946,12 +948,12 @@ Un dispozitiv conectat.</translation>
 <translation id="468293128311738995">Aplicații de pe telefon</translation>
 <translation id="4690510401873698237">Raft în partea de jos</translation>
 <translation id="4696813013609194136">Deblochează dispozitivul cu codul părintelui</translation>
-<translation id="469693290987463983">Pasul 1 din 5 al turului. Aplicațiile fixate și deschise se află pe raftul din partea de jos a ecranului. Apasă pe Alt + Shift + L, apoi pe Tab pentru a focaliza pe elementele din raft.</translation>
 <translation id="4702647871202761252">Ecranul de confidențialitate este dezactivat</translation>
 <translation id="4706121060329443414">Se va încerca descărcarea mai târziu. Momentan, fișierele de redare în scris a vorbirii vor fi trimise la Google pentru procesare.</translation>
 <translation id="470644585772471629">Inversarea culorilor</translation>
 <translation id="4708065238214351979">Mărește luminozitatea tastaturii</translation>
 <translation id="4717575069099566988">Cablul USB-C nu acceptă USB4. Este posibil ca performanța dispozitivului să fie limitată.</translation>
+<translation id="4724328513667182700">6 sfaturi pentru a începe să folosești dispozitivul <ph name="PRODUCT_NAME" /></translation>
 <translation id="4730374152663651037">FOLOSITE FRECVENT</translation>
 <translation id="4731797938093519117">Acces pentru părinți</translation>
 <translation id="4733161265940833579"><ph name="BATTERY_PERCENTAGE" /> % (stânga)</translation>
@@ -1027,6 +1029,7 @@ Un dispozitiv conectat.</translation>
 <translation id="4964188651935955085">Când dezactivezi Bluetooth, acest dispozitiv extern se va deconecta de la <ph name="DEVICE_TYPE" />:</translation>
 <translation id="4966431234408005599">Crește volumul</translation>
 <translation id="4969092041573468113"><ph name="HOURS" /> h <ph name="MINUTES" /> min. <ph name="SECONDS" /> sec.</translation>
+<translation id="496999337731226334">Pasul <ph name="STEP" /> din <ph name="TOTAL_STEPS" /> al turului. Comenzile folosite frecvent, cum ar fi Wi-Fi, Bluetooth și volumul, se găsesc în Setările rapide. Aici poți și să faci capturi de ecran. Apasă pe Alt + Shift + S pentru a deschide Setările rapide.</translation>
 <translation id="4975771730019223894">Marcarea cu insignă a aplicațiilor</translation>
 <translation id="4977493774330778463"><ph name="NUM_IMPORTANT_NOTIFICATION" />:
         <ph name="NOTIFICATION_1" />,
@@ -1144,6 +1147,7 @@ Niciun dispozitiv conectat.</translation>
 <translation id="540713187982329711">Dezactivează hotspotul. Hotspotul este activat. Niciun dispozitiv conectat.</translation>
 <translation id="5413656666631274079">Pagina Setări</translation>
 <translation id="5414198321558177633">Se actualizează lista de profiluri. Poate dura câteva minute.</translation>
+<translation id="5417965108047245734">Fă un tur rapid pentru a afla cum să navighezi pe <ph name="PRODUCT_NAME" /></translation>
 <translation id="5426063383988017631">Meniul Setări închis</translation>
 <translation id="5428899915242071344">Începe selectarea</translation>
 <translation id="5429993543155113935">Ferestrele incognito nu sunt acceptate</translation>
@@ -1524,7 +1528,6 @@ Instalare nouă</translation>
 <translation id="6874854809828346832">Afișează detaliile despre hotspot. Hotspotul este activat.</translation>
 <translation id="6878400149835617132">Comanda rapidă a fost dezactivată</translation>
 <translation id="6878701771800702153">{NUM_APPS,plural, =1{O aplicație}few{# aplicații}other{# de aplicații}}</translation>
-<translation id="6878787305374738418">Pasul 4 din 5 al turului. După ce ai activat Lansatorul, vei vedea o bară de căutare îmbunătățită. Poți începe să introduci text pentru a căuta fișiere, aplicații și altele. Poți și să primești răspunsuri la întrebările despre <ph name="PRODUCT_NAME" />.</translation>
 <translation id="6883768636838842873">Comenzi rapide de la tastatură, sfaturi pentru folosirea dispozitivului și multe altele</translation>
 <translation id="6884665277231944629">Revino la ziua de azi</translation>
 <translation id="6886172995547742638">Dispozitivul <ph name="DEVICE_TYPE" /> poate avea o performanță mai slabă. Folosește un adaptor de curent USB-C certificat de minimum <ph name="PREFERRED_MINIMUM_POWER" /> W.</translation>
@@ -1593,6 +1596,7 @@ Instalare nouă</translation>
 <translation id="7143207342074048698">Se conectează</translation>
 <translation id="7144942256906679589">Starea bateriei</translation>
 <translation id="7145639536026937076">Nivelul bateriei este <ph name="PERCENTAGE" /> % și se încarcă. Economisirea bateriei este activată.</translation>
+<translation id="7149149900052329230">Gestionează fișierele locale și fișierele din Google Drive din aplicația Fișiere.</translation>
 <translation id="7165278925115064263">Alt + Shift + K</translation>
 <translation id="7167913274352523149"><ph name="HOTSPOT" />,
         <ph name="NETWORK" /></translation>
@@ -1613,7 +1617,6 @@ Instalare nouă</translation>
 <translation id="726276584504105859">Trage aici pentru a folosi ecranul împărțit</translation>
 <translation id="7262906531272962081">Creează un memento</translation>
 <translation id="7278787617901301220"><ph name="LAUNCHER_KEY_NAME" /> + backspace</translation>
-<translation id="7282547098317872382">Pasul 3 din 5 al turului. Folosește aplicațiile pentru a face toate activitățile necesare pe <ph name="PRODUCT_NAME" />. Aplicațiile se găsesc în Lansator. Apasă pe Alt + Shift + L pentru a focaliza pe butonul Lansator.</translation>
 <translation id="7285232777292757180">Folosește instrumentul Captură de ecran din setările rapide pentru a face capturi de ecran</translation>
 <translation id="7301826272005790482">Închide sugestiile de ferestre</translation>
 <translation id="7302889331339392448">Funcția Subtitrări live este dezactivată.</translation>
@@ -1795,10 +1798,12 @@ Pentru a închide dispozitivul, apasă lung pe butonul de pornire al dispozitivu
 <translation id="7933084174919150729">Asistentul Google este disponibil numai pentru profilul principal.</translation>
 <translation id="79341161159229895">Cont gestionat de <ph name="FIRST_PARENT_EMAIL" /> și de <ph name="SECOND_PARENT_EMAIL" /></translation>
 <translation id="793716872548410480">Apasă <ph name="SHORTCUT_KEY_NAME" /> + V pentru a vedea clipboardul. Ultimele cinci elemente pe care le-ai copiat sunt salvate în clipboard.</translation>
+<translation id="7942330802915522974">Pasul <ph name="STEP" /> din <ph name="TOTAL_STEPS" /> al turului. Aplicația Fișiere se găsește în Lansator. Gestionează fișierele locale și fișierele din Google Drive din aplicația Fișiere.</translation>
 <translation id="7942349550061667556">Roșu</translation>
 <translation id="7943516765291457328">Activează Bluetooth pentru a căuta hotspoturi din apropiere</translation>
 <translation id="7944023924886109030">Vezi toate evenimentele pentru astăzi</translation>
 <translation id="7945357288295809525">Afișează setările de accesibilitate, <ph name="ENABLED_FEATURES" /> este activată.</translation>
+<translation id="7946681191253332687">Sunt disponibile actualizări de securitate extinse</translation>
 <translation id="7947798320695032612"><ph name="APP_NAME" /> vrea să folosească <ph name="DEVICE_NAME" /></translation>
 <translation id="7951630946012935453">Redu luminozitatea tastaturii</translation>
 <translation id="7953994493035617347">Confirmi noua rezoluție?</translation>
@@ -1910,7 +1915,6 @@ Pentru a închide dispozitivul, apasă lung pe butonul de pornire al dispozitivu
 <translation id="8412677897383510995">Afișează setările de afișare</translation>
 <translation id="8413272770729657668">Înregistrarea începe în 3, 2, 1</translation>
 <translation id="8416730306157376817"><ph name="BATTERY_PERCENTAGE" /> % (carcasă)</translation>
-<translation id="8417951779969083400">Pasul 2 din 5 al turului. Comenzile folosite frecvent, cum ar fi Wi-Fi, Bluetooth și volumul, se găsesc în Setări rapide. Aici poți și să faci capturi de ecran. Apasă pe Alt + Shift + S pentru a deschide Setările rapide.</translation>
 <translation id="8420205633584771378">Eliminați această sugestie?</translation>
 <translation id="8421270167862077762"><ph name="UNAVAILABLE_APPS" /> nu este disponibilă pe acest dispozitiv.</translation>
 <translation id="8426708595819210923">Bună seara, <ph name="GIVEN_NAME" />!</translation>
@@ -2131,6 +2135,7 @@ Pentru a închide dispozitivul, apasă lung pe butonul de pornire al dispozitivu
 <translation id="987589956647469042">Datele mobile sunt activate</translation>
 <translation id="989374776391122812">Comenzi pentru camera foto și audio</translation>
 <translation id="990277280839877440">Fereastra <ph name="WINDOW_TITILE" /> s-a închis.</translation>
+<translation id="993398562350683614">Pasul <ph name="STEP" /> din <ph name="TOTAL_STEPS" /> al turului. Folosește aplicațiile pentru a face toate activitățile necesare pe <ph name="PRODUCT_NAME" />. Aplicațiile se găsesc în Lansator. Apasă pe Alt + Shift + L pentru a focaliza pe butonul Lansator.</translation>
 <translation id="994354411665877646"><ph name="NETWORK_NAME" /> <ph name="SUBTEXT" /></translation>
 <translation id="996204416024568215">Obține cele mai noi funcții și îmbunătățiri ale securității. Actualizările au loc în fundal.</translation>
 </translationbundle>

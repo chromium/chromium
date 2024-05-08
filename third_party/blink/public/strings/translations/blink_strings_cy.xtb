@@ -12,6 +12,7 @@
 <translation id="1588438908519853928">Normal</translation>
 <translation id="1591562245178063882">Y mis hwn</translation>
 <translation id="1637811476055996098">Dewis Ffeiliau</translation>
+<translation id="1680090928918677457">Defnyddio'ch camera</translation>
 <translation id="1681022320378710418">yr amser ar hyn o bryd</translation>
 <translation id="1727839386348365796">Diferydd lliw</translation>
 <translation id="1729654308190250600">Rhowch gyfeiriad e-bost nad yw'n wag.</translation>
@@ -60,6 +61,7 @@
 <translation id="3822383571486410024">Estynnwch y testun hwn i <ph name="MIN_CHARACTERS" /> nod neu fwy (rydych yn defnyddio <ph name="CURRENT_LENGTH" /> nod ar hyn o bryd).</translation>
 <translation id="383465348367842624">Ni ddylai rhan sy'n dilyn '<ph name="ATSIGN" />' gynnwys y symbol '<ph name="INVALIDCHARACTER" />'.</translation>
 <translation id="3846214748874656680">Gadael y sgrîn lawn</translation>
+<translation id="3914173277599553213">Gofynnol</translation>
 <translation id="4031179711345676612">Caniateir meicroffon</translation>
 <translation id="4103419683916926126">Milieiliadau</translation>
 <translation id="4201051445878709314">Dangos y mis blaenorol</translation>
@@ -75,6 +77,7 @@
 <translation id="4912200001568447310">eitem bresennol</translation>
 <translation id="4915360478455618802">Dangos y dewisydd amser</translation>
 <translation id="4924138096460353083">amhenodol</translation>
+<translation id="49269513399674318">Defnyddio'r meicroffon</translation>
 <translation id="4950364064308314478">Dangos y dewisydd dyddiad ac amser lleol</translation>
 <translation id="4971739861736909480">Dewiswyd <ph name="ACCNAME" /></translation>
 <translation id="4975562563186953947"><ph name="SELECTED_COUNT" /> wedi'i ddewis</translation>
@@ -142,6 +145,7 @@
 <translation id="7080893216867146095">Caniateir rhannu lleoliad</translation>
 <translation id="709897737746224366">Defnyddiwch y fformat y gofynnwyd amdano.</translation>
 <translation id="7102274145889307184">lleoliad presennol</translation>
+<translation id="7134810312945846184">Defnyddio'r meicroffon a'r camera</translation>
 <translation id="7263440858009898357">Dewiswch eitem yn y rhestr.</translation>
 <translation id="7320576522385648310">wrthi'n llwytho</translation>
 <translation id="7341556277900466204">Lliw gwell</translation>

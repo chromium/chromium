@@ -11,6 +11,7 @@
 <translation id="1047458377670401304"><ph name="CPU_NAME" /> (<ph name="THREAD_COUNT" /> (na) thread, <ph name="CPU_MAX_CLOCK_SPEED" />GHz)</translation>
 <translation id="1047773237499189053">May available na bagong feature, gamitin ang Pataas na arrow key para matuto pa.</translation>
 <translation id="1049663189809099096">pastel yellow</translation>
+<translation id="1056898198331236512">Babala</translation>
 <translation id="1059913517121127803">Hindi masimulan ang pag-scan</translation>
 <translation id="1062823486781306604"><ph name="INDEX" /> sa <ph name="COUNT" />, <ph name="NAME" />.</translation>
 <translation id="1070066693520972135">WEP</translation>
@@ -28,6 +29,7 @@
 <translation id="1145018782460575098">Nakabukas ang window para i-update ang firmware para sa mga external device. <ph name="NUM_UPDATES" /> (na) update ang available.</translation>
 <translation id="1145516343487477149">Maghanap ng mga artikulo ng tulong at sagot sa mga karaniwang tanong sa Chromebook</translation>
 <translation id="1154390310959620237">5 shortcut lang ang puwede mong i-customize. Mag-delete ng shortcut para makapagdagdag ng bago.</translation>
+<translation id="1155154308031262006">Maglagay ng prompt</translation>
 <translation id="115705039208660697">mga pinya</translation>
 <translation id="1164939766849482256">Screen saver na pagtakipsilim</translation>
 <translation id="1167755866710282443">Buksan ang menu para mag-customize ng mga key. I-drag ang menu para maglipat.</translation>
@@ -95,7 +97,6 @@
 <translation id="1478594628797167447">Scanner</translation>
 <translation id="1483493594462132177">Ipadala</translation>
 <translation id="1488850966314959671">Hindi makakonekta sa network na ito gamit ang anumang naka-enable na custom na APN. Makipag-ugnayan sa iyong mobile carrier para sa higit pang impormasyon.</translation>
-<translation id="1491076385728777984">Nag-a-update ng firmware sa <ph name="DEVICE_NAME" /></translation>
 <translation id="1499041187027566160">lakasan ang volume</translation>
 <translation id="1499900233129743732">Pinapamahalaan ng <ph name="MANAGER" /> ang user na ito at puwede nitong pamahalaan ang mga setting at subaybayan ang aktibidad ng user sa remote na paraan.</translation>
 <translation id="150962533380566081">Di-wasto ang PUK.</translation>
@@ -291,7 +292,6 @@
 <translation id="2505327257735685095">I-refresh ang kasalukuyang larawan sa wallpaper</translation>
 <translation id="2512979179176933762">ipakita ang mga window</translation>
 <translation id="2513396635448525189">Larawan sa pag-log in</translation>
-<translation id="2517472476991765520">I-scan</translation>
 <translation id="2521835766824839541">nakaraang track</translation>
 <translation id="2526590354069164005">Desktop</translation>
 <translation id="2529641961800709867">Mga opsyon sa button</translation>
@@ -330,6 +330,7 @@
 <translation id="2744221223678373668">Nakabahagi</translation>
 <translation id="2751739896257479635">EAP Phase 2 na pag-authenticate</translation>
 <translation id="2754757901767760034">lampara</translation>
+<translation id="2780756493585863768">Mga kamakailang background na pinapagana ng Google AI</translation>
 <translation id="2783010256799387990">NAKAPASA</translation>
 <translation id="2786429550992142861">linen</translation>
 <translation id="2787435249130282949">mas maliwanag na keyboard</translation>
@@ -426,6 +427,7 @@
 <translation id="3456078764689556234">Na-print ang page <ph name="PRINTED_PAGES" /> sa <ph name="TOTAL_PAGES" />.</translation>
 <translation id="345898999683440380">Sina-scan ang pahina <ph name="PAGE_NUM" />. <ph name="PERCENTAGE_VALUE" />% na ang natapos.</translation>
 <translation id="3459509316159669723">Pagpi-print</translation>
+<translation id="3462187165860821523">Ina-update ang <ph name="DEVICE_NAME" /></translation>
 <translation id="346423161771747987">Current</translation>
 <translation id="346539236881580388">Kunan ulit</translation>
 <translation id="3484914941826596830">Habang nag-a-update ang firmware, huwag alisin sa pagkakasaksak ang external device na ito o i-shut down ang iyong computer. Puwede mong i-minimize ang window na ito. Posibleng tumagal nang ilang minuto ang update na ito at posibleng hindi gumana ang iyong external device sa panahong ito.</translation>
@@ -790,6 +792,7 @@
 <translation id="5559898619118303662">Awtomatikong lumipat sa madilim na tema sa paglubog ng araw</translation>
 <translation id="556042886152191864">Pindutan</translation>
 <translation id="5562551811867441927"><ph name="TERRAIN_FEATURE" /> na nasa shade ng <ph name="TERRAIN_COLOR" /></translation>
+<translation id="5572169899491758844">I-scan</translation>
 <translation id="5578477003638479617">UMTS</translation>
 <translation id="5578519639599103840">Mag-scan ulit</translation>
 <translation id="5583640892426849032">Backspace</translation>
@@ -879,7 +882,6 @@
 <translation id="6075872808778243331">(Android) Latency ng HTTP</translation>
 <translation id="6078323886959318429">Magdagdag ng shortcut</translation>
 <translation id="6091080061796993741">dilaw</translation>
-<translation id="610371409726072606">Background sa camera na pinapagana ng Google AI</translation>
 <translation id="6104112872696127344">Nakansela ang pag-scan</translation>
 <translation id="6106186594183574873">Para tapusin, ilagay ang iyong lumang password</translation>
 <translation id="6108689792487843350">Hindi makakonekta sa gateway</translation>
@@ -906,6 +908,7 @@
 <translation id="6205145102504628069">Cloud Flow</translation>
 <translation id="6213737986933151570">CDMA1XRTT</translation>
 <translation id="6223752125779001553">Walang available na scanner</translation>
+<translation id="6231648282154119906">Ang mga kahina-hinalang file ay awtomatikong isa-scan ng Ligtas na Pag-browse sa Google bilang bahagi ng pinaigting na proteksyong pinili mo</translation>
 <translation id="6232017090690406397">Baterya</translation>
 <translation id="6234024205316847054">Ipakita ang mga outline</translation>
 <translation id="6235460611964961764">Manual na i-reset ang paggamit ng data</translation>
@@ -1011,7 +1014,6 @@
 <translation id="672609503628871915">Tingnan kung ano'ng bago</translation>
 <translation id="6740695858234317715">cream at orange</translation>
 <translation id="6741823073189174383">bangka</translation>
-<translation id="674276385369049081">Mga kamakailang background sa camera na pinapagana ng Google AI</translation>
 <translation id="6744441848304920043">kagubatan</translation>
 <translation id="6747035363363040417">neutral</translation>
 <translation id="6747215703636344499">Huminto - Puno na ang output</translation>
@@ -1032,6 +1034,7 @@
 <translation id="6871256179359663621">light purple</translation>
 <translation id="6889786074662672253">Habang nagre-restart, huwag alisin sa pagkakasaksak ang external device na ito o i-shut down ang iyong computer. Puwede mong i-minimize ang window na ito. Posible itong abutin nang ilang minuto at posibleng hindi gumana ang iyong external device sa panahong ito.</translation>
 <translation id="6900701049656042631">Walang anumang larawan ang album na ito. Para magdagdag ng mga larawan, pumunta sa <ph name="LINK" /></translation>
+<translation id="6902359863093437070">Gumawa ng background gamit ang AI</translation>
 <translation id="6905163627763043954">Subukan ito</translation>
 <translation id="6905724422583748843">Bumalik sa <ph name="PAGE_NAME" /></translation>
 <translation id="6910312834584889076">Nakabukas ang takip ng scanner. Isara ang takip at subukan ulit.</translation>
@@ -1269,6 +1272,7 @@
 <translation id="8152370627892825"><ph name="DESCRIPTION" />, <ph name="ACCELERATOR_INFO" />.</translation>
 <translation id="8156233298086717232">magical</translation>
 <translation id="8162776280680283326">mga fox</translation>
+<translation id="8167413449582155132">Background na pinapagana ng Google AI</translation>
 <translation id="8179976553408161302">Enter</translation>
 <translation id="8183975772394450380">beach</translation>
 <translation id="8206859287963243715">Cellular</translation>

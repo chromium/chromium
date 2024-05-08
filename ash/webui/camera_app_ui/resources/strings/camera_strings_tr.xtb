@@ -32,6 +32,7 @@
 <translation id="2175927920773552910">QR Kodu</translation>
 <translation id="2244252133441425811">Video FPS seçiciyi etkinleştirin</translation>
 <translation id="2271433936731426666">Videonun tam boyutlu anlık görüntüsünü etkinleştir</translation>
+<translation id="2281736597583450397">İyileştirilmiş yakınlaştırma ile ayrıntıların keskinliğini artırın</translation>
 <translation id="2320741269052147773">Sola kaydır</translation>
 <translation id="2360840973209616515">Kamera uygulaması, yöneticiniz tarafından yönetiliyor.
         Ayrıntılar için yöneticiyle iletişime geçin.</translation>
@@ -118,6 +119,7 @@
 Geri bildiriminiz resim ya da video kalitesi ile ilgiliyse lütfen örnek bir fotoğraf veya video ekleyip sorunun ne olduğunu açıklayın. (Örneğin, fotoğraf çok karanlık veya özne net değil.)</translation>
 <translation id="6519884562954018934"><ph name="WIFINAME" /> ağına katılın</translation>
 <translation id="6527303717912515753">Paylaş</translation>
+<translation id="6586509689874700895">Öncelikle, yakınlaştırmak için <ph name="BUTTON_NAME" /> tuşuna basın. Fotoğraf çektikten sonra, iyileştirilmiş ayrıntıları görürsünüz.</translation>
 <translation id="6617916774429601017">Tüm çözünürlükleri göster</translation>
 <translation id="6631515515009660915">Yansıtma kapalı</translation>
 <translation id="6652737148136672975">Köşe konumunu ok tuşlarıyla taşıyın</translation>

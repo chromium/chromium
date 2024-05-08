@@ -192,6 +192,9 @@ Les teves dades s'encripten amb la teva frase de contrasenya. Per utilitzar i de
 <translation id="6648150602980899529">Esteu iniciant la sessió amb un compte gestionat per <ph name="DOMAIN" /> i esteu proporcionant a l'administrador el control de les vostres dades de Chrome. Les dades estaran permanentment lligades a aquest compte. Si tanqueu la sessió de Chrome, se suprimiran les vostres dades d'aquest dispositiu, però continuaran emmagatzemades al compte de Google.</translation>
 <translation id="6683891932310469419">Obre la pàgina de l'historial de Chrome.</translation>
 <translation id="6709398533399187136">La teva contrasenya ha quedat exposada en una violació de les dades. El gestor de contrasenyes de Google recomana que la canviïs ara.</translation>
+<translation id="6820553595690137150">L'encriptació de frases de contrasenya no inclou les formes de pagament ni les adreces.
+
+Per canviar aquesta opció de configuració, <ph name="BEGIN_LINK" />suprimeix les dades de Chrome del compte<ph name="END_LINK" />.</translation>
 <translation id="6851982868877411675">Obre la configuració de Chrome a iOS, toca Aplicació de navegació predeterminada i selecciona Chrome.</translation>
 <translation id="686691656039982452">Pots <ph name="BEGIN_LINK" />gestionar quines dades de Chrome es desen<ph name="END_LINK" /> al teu Compte de Google.
 
@@ -215,6 +218,7 @@ Per veure més opcions de configuració que utilitzin dades per millorar la teva
 <translation id="7261678641327190792">Chrome no pot comprovar les teves contrasenyes</translation>
 <translation id="7272930098487145294">Si vols desar imatges, toca Configuració per permetre que Chrome les afegeixi a les teves fotos</translation>
 <translation id="7275945473750112644">Com que <ph name="HOSTED_DOMAIN" /> gestiona el teu compte, les dades de Chrome s'esborraran d'aquest dispositiu</translation>
+<translation id="7284245284340063465">Si has oblidat la frase de contrasenya o vols canviar aquesta opció de configuració, <ph name="BEGIN_LINK" />suprimeix les dades de Chrome del compte<ph name="END_LINK" />.</translation>
 <translation id="7304491752269485262">Visualització ampliada de la funció Emplenament automàtic de Chrome</translation>
 <translation id="7344094882820374540">Obtén la seguretat més efectiva de Chrome contra llocs web perillosos</translation>
 <translation id="7349129508108954623">Permet que Chrome utilitzi Google Maps per oferir-te indicacions i informació local sobre les adreces detectades.</translation>
@@ -246,6 +250,9 @@ Per veure més opcions de configuració que utilitzin dades per millorar la teva
 <translation id="8160472928944011082">Chrome no es pot actualitzar</translation>
 <translation id="8174679664544842874">Obre una pestanya nova a Chrome.</translation>
 <translation id="8213758103105806860">Mostra les adreces d'interès de Chrome</translation>
+<translation id="8317674518145175158">Les formes de pagament i les adreces no s'encriptaran. L'historial de navegació de Chrome no se sincronitzarà.
+
+Només les persones que sàpiguen la teva frase de contrasenya podran llegir les dades encriptades. La frase de contrasenya no s'envia a Google, i Google tampoc no l'emmagatzema. Si oblides la frase de contrasenya o vols canviar aquesta opció de configuració, <ph name="BEGIN_LINK" />suprimeix les dades de Chrome del compte<ph name="END_LINK" />.</translation>
 <translation id="8328903609881776074">Obre una pestanya d'incògnit nova a Chrome.</translation>
 <translation id="8357607116237445042">Tria si vols esborrar les dades de Chrome d'aquest dispositiu o si vols conservar-les</translation>
 <translation id="8370517070665726704">Copyright <ph name="YEAR" /> Google LLC. Tots els drets reservats.</translation>

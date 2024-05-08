@@ -11,6 +11,7 @@
 <translation id="1047458377670401304"><ph name="CPU_NAME" /> (<ph name="THREAD_COUNT" /> viestiketju, <ph name="CPU_MAX_CLOCK_SPEED" /> GHz)</translation>
 <translation id="1047773237499189053">Uusi ominaisuus saatavilla, tutki sitä painamalla ylänuolta.</translation>
 <translation id="1049663189809099096">pastellinkeltainen</translation>
+<translation id="1056898198331236512">Varoitus</translation>
 <translation id="1059913517121127803">Skannauksen aloittaminen ei onnistunut</translation>
 <translation id="1062823486781306604"><ph name="INDEX" />/<ph name="COUNT" />, <ph name="NAME" />.</translation>
 <translation id="1070066693520972135">WEP</translation>
@@ -28,6 +29,7 @@
 <translation id="1145018782460575098">Ulkoisten laitteiden laiteohjelmistojen päivityksiä koskeva ikkuna on auki. <ph name="NUM_UPDATES" /> päivitystä saatavilla.</translation>
 <translation id="1145516343487477149">Etsi ohjeartikkeleita ja vastauksia yleisiin Chromebook-kysymyksiin</translation>
 <translation id="1154390310959620237">Voit valita vain viisi pikanäppäintä. Poista pikanäppäin, jotta voit lisätä uuden.</translation>
+<translation id="1155154308031262006">Lisää kehote</translation>
 <translation id="115705039208660697">ananakset</translation>
 <translation id="1164939766849482256">Aamusta iltaan ‑näytönsäästäjä</translation>
 <translation id="1167755866710282443">Avaa valikko muokataksesi avaimia. Siirrä vetämällä valikkoa.</translation>
@@ -95,7 +97,6 @@
 <translation id="1478594628797167447">Skanneri</translation>
 <translation id="1483493594462132177">Lähetä</translation>
 <translation id="1488850966314959671">Tähän verkkoon ei saada yhteyttä millään käytössä olevalla muokatulla APN:llä. Pyydä lisätietoa mobiilioperaattorilta.</translation>
-<translation id="1491076385728777984">Päivitetään laiteohjelmistoa: <ph name="DEVICE_NAME" /></translation>
 <translation id="1499041187027566160">Lisää äänenvoimakkuutta.</translation>
 <translation id="1499900233129743732"><ph name="MANAGER" /> ylläpitää tätä käyttäjää ja voi muuttaa asetuksia ja seurata käyttäjän toimia etänä.</translation>
 <translation id="150962533380566081">Virheellinen PUK-koodi</translation>
@@ -291,7 +292,6 @@
 <translation id="2505327257735685095">Päivitä taustakuva</translation>
 <translation id="2512979179176933762">näytä ikkunat</translation>
 <translation id="2513396635448525189">Kirjautumiskuva</translation>
-<translation id="2517472476991765520">Etsi</translation>
 <translation id="2521835766824839541">edellinen kappale</translation>
 <translation id="2526590354069164005">Työpöytä</translation>
 <translation id="2529641961800709867">Painikkeiden asetukset</translation>
@@ -330,6 +330,7 @@
 <translation id="2744221223678373668">Jaettu</translation>
 <translation id="2751739896257479635">EAPin 2. vaiheen todennus</translation>
 <translation id="2754757901767760034">lamppu</translation>
+<translation id="2780756493585863768">Viimeaikaisia Googlen tekoälyn luomia taustoja</translation>
 <translation id="2783010256799387990">ONNISTUI</translation>
 <translation id="2786429550992142861">pellava</translation>
 <translation id="2787435249130282949">kirkkaampi näppäimistö</translation>
@@ -426,6 +427,7 @@
 <translation id="3456078764689556234">Tulostettu <ph name="PRINTED_PAGES" />/<ph name="TOTAL_PAGES" /> sivua.</translation>
 <translation id="345898999683440380">Skannataan sivu <ph name="PAGE_NUM" />. <ph name="PERCENTAGE_VALUE" /> % valmis.</translation>
 <translation id="3459509316159669723">Tulostaminen</translation>
+<translation id="3462187165860821523">Päivitetään: <ph name="DEVICE_NAME" /></translation>
 <translation id="346423161771747987">Nykyinen</translation>
 <translation id="346539236881580388">Uusi otos</translation>
 <translation id="3484914941826596830">Älä irrota ulkoista laitetta äläkä sammuta tietokonetta sillä aikaa kun laiteohjelmisto päivittyy. Voit pienentää ikkunan. Päivityksessä voi mennä muutama minuutti, eikä ulkoinen laite välttämättä toimi sen aikana.</translation>
@@ -790,6 +792,7 @@
 <translation id="5559898619118303662">Vaihda tummaan teemaan automaattisesti, kun aurinko laskee</translation>
 <translation id="556042886152191864">Painike</translation>
 <translation id="5562551811867441927"><ph name="TERRAIN_FEATURE" />: <ph name="TERRAIN_COLOR" /> eri sävyissä</translation>
+<translation id="5572169899491758844">Aloita haku</translation>
 <translation id="5578477003638479617">UMTS</translation>
 <translation id="5578519639599103840">Skannaa uudelleen</translation>
 <translation id="5583640892426849032">Askelpalautin</translation>
@@ -879,7 +882,6 @@
 <translation id="6075872808778243331">(Android) HTTP-viive</translation>
 <translation id="6078323886959318429">Lisää pikakuvake</translation>
 <translation id="6091080061796993741">keltainen</translation>
-<translation id="610371409726072606">Googlen tekoälyn avulla luotu kameran tausta</translation>
 <translation id="6104112872696127344">Skannaus on peruttu</translation>
 <translation id="6106186594183574873">Lisää lopuksi vanha salasana</translation>
 <translation id="6108689792487843350">Yhdyskäytävään ei saa yhteyttä</translation>
@@ -906,6 +908,7 @@
 <translation id="6205145102504628069">Pilvityönkulku</translation>
 <translation id="6213737986933151570">CDMA1XRTT</translation>
 <translation id="6223752125779001553">Skannereita ei saatavilla</translation>
+<translation id="6231648282154119906">Googlen selaussuoja tarkistaa epäilyttävät tiedostot automaattisesti osana valitsemaasi parannettua suojausta</translation>
 <translation id="6232017090690406397">Akku</translation>
 <translation id="6234024205316847054">Näytä osioiden yhteenvedot</translation>
 <translation id="6235460611964961764">Nollaa datan käyttö manuaalisesti</translation>
@@ -1011,7 +1014,6 @@
 <translation id="672609503628871915">Uudet ominaisuudet</translation>
 <translation id="6740695858234317715">kerma ja oranssi</translation>
 <translation id="6741823073189174383">vene</translation>
-<translation id="674276385369049081">Viimeaikaiset Googlen tekoälyn avulla luodut kameran taustat</translation>
 <translation id="6744441848304920043">viidakko</translation>
 <translation id="6747035363363040417">neutraali</translation>
 <translation id="6747215703636344499">Pysähtynyt – Syöte täynnä</translation>
@@ -1032,6 +1034,7 @@
 <translation id="6871256179359663621">vaaleanvioletti</translation>
 <translation id="6889786074662672253">Älä irrota ulkoista laitetta äläkä sammuta tietokonetta sillä aikaa kun laite käynnistyy uudelleen. Voit pienentää ikkunan. Uudelleenkäynnistyksessä voi mennä muutama minuutti, eikä ulkoinen laite välttämättä toimi sen aikana.</translation>
 <translation id="6900701049656042631">Tässä albumissa ei ole kuvia. Jos haluat lisätä kuvia, avaa <ph name="LINK" /></translation>
+<translation id="6902359863093437070">Luo tausta tekoälyn avulla</translation>
 <translation id="6905163627763043954">Kokeile</translation>
 <translation id="6905724422583748843">Palaa: <ph name="PAGE_NAME" /></translation>
 <translation id="6910312834584889076">Skannerin kansi on auki. Sulje kansi ja yritä uudelleen.</translation>
@@ -1269,6 +1272,7 @@
 <translation id="8152370627892825"><ph name="DESCRIPTION" />, <ph name="ACCELERATOR_INFO" />.</translation>
 <translation id="8156233298086717232">maaginen</translation>
 <translation id="8162776280680283326">ketut</translation>
+<translation id="8167413449582155132">Googlen tekoälyä hyödyntävä tausta</translation>
 <translation id="8179976553408161302">Enter</translation>
 <translation id="8183975772394450380">ranta</translation>
 <translation id="8206859287963243715">Matkapuhelin</translation>

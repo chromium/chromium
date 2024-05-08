@@ -11,6 +11,7 @@
 <translation id="1047458377670401304"><ph name="CPU_NAME" /> (<ph name="THREAD_COUNT" /> টা থ্ৰেড, <ph name="CPU_MAX_CLOCK_SPEED" /> গিগাহাৰ্টজ)</translation>
 <translation id="1047773237499189053">নতুন সুবিধা উপলব্ধ, অধিক জানিবলৈ উপৰমুৱা কাঁড়চিহ্নৰ কী ব্যৱহাৰ কৰক।</translation>
 <translation id="1049663189809099096">পেষ্টেল হালধীয়া</translation>
+<translation id="1056898198331236512">সতর্কবার্তা</translation>
 <translation id="1059913517121127803">স্কেনিং আৰম্ভ কৰিব পৰা নগ’ল</translation>
 <translation id="1062823486781306604"><ph name="COUNT" />ৰ <ph name="INDEX" />, <ph name="NAME" />।</translation>
 <translation id="1070066693520972135">ডব্লিউইপি</translation>
@@ -95,7 +96,6 @@
 <translation id="1478594628797167447">স্কেনাৰ</translation>
 <translation id="1483493594462132177">পঠিয়াওক</translation>
 <translation id="1488850966314959671">কোনো সক্ষম কৰা কাষ্টম এপিএন ব্যৱহাৰ কৰি এই নেটৱৰ্কৰ সৈতে সংযোগ কৰিব নোৱাৰি। অধিক তথ্যৰ বাবে আপোনাৰ ম’বাইলৰ বাহকৰ সৈতে যোগাযোগ কৰক।</translation>
-<translation id="1491076385728777984"><ph name="DEVICE_NAME" />ত ফাৰ্মৱেৰ আপডে’ট কৰি থকা হৈছে</translation>
 <translation id="1499041187027566160">ভলিউম বঢ়াওক</translation>
 <translation id="1499900233129743732"><ph name="MANAGER" />এ এই ব্যৱহাৰকাৰীগৰাকীক পৰিচালনা কৰে আৰু হয়তো দূৰৰ পৰা ছেটিং পৰিচালনা কৰে আৰু ব্যৱহাৰকাৰীৰ কাৰ্যকলাপ নিৰীক্ষণ কৰে।</translation>
 <translation id="150962533380566081">অমান্য PUK।</translation>
@@ -291,7 +291,6 @@
 <translation id="2505327257735685095">বর্তমানৰ ৱালপেপাৰৰ প্ৰতিচ্ছবিখন ৰিফ্ৰেশ্ব কৰক</translation>
 <translation id="2512979179176933762">ৱিণ্ড’ দেখুৱাওক</translation>
 <translation id="2513396635448525189">লগইনৰ প্ৰতিচ্ছবি</translation>
-<translation id="2517472476991765520">স্কেন কৰক</translation>
 <translation id="2521835766824839541">পূৰ্বৱৰ্তী ট্ৰেক</translation>
 <translation id="2526590354069164005">ডেস্কটপ</translation>
 <translation id="2529641961800709867">বুটামৰ বিকল্প</translation>
@@ -330,6 +329,7 @@
 <translation id="2744221223678373668">শ্বেয়াৰ কৰা</translation>
 <translation id="2751739896257479635">EAPৰ ২য় স্তৰৰ বিশ্বাসযোগ্যতাৰ প্ৰমাণীকৰণ</translation>
 <translation id="2754757901767760034">লেম্প</translation>
+<translation id="2780756493585863768">Google AIএ সঞ্চালন কৰা শেহতীয়া পৃষ্ঠভূমি</translation>
 <translation id="2783010256799387990">পাছ কৰিছে</translation>
 <translation id="2786429550992142861">লিনেন</translation>
 <translation id="2787435249130282949">কীব’ৰ্ড অধিক উজ্জ্বল কৰি তোলা</translation>
@@ -426,6 +426,7 @@
 <translation id="3456078764689556234"><ph name="TOTAL_PAGES" /> খনৰ ভিতৰত <ph name="PRINTED_PAGES" /> নম্বৰৰ পৃষ্ঠাখন প্ৰিণ্ট কৰা হৈছে।</translation>
 <translation id="345898999683440380"><ph name="PAGE_NUM" /> নম্বৰ পৃষ্ঠাখন স্কেন কৰি থকা হৈছে। <ph name="PERCENTAGE_VALUE" />% সম্পূৰ্ণ হ’ল।</translation>
 <translation id="3459509316159669723">প্ৰিণ্টিং</translation>
+<translation id="3462187165860821523"><ph name="DEVICE_NAME" /> আপডে’ট কৰি থকা হৈছে</translation>
 <translation id="346423161771747987">বৈদ্যুতিক প্ৰবাহ</translation>
 <translation id="346539236881580388">অন্য এখন ফট' লওক</translation>
 <translation id="3484914941826596830">ফাৰ্মৱেৰটো আপডে’ট হৈ থকাৰ সময়ত, এই বাহ্যিক ডিভাইচটো আনপ্লাগ অথবা আপোনাৰ কম্পিউটাৰটো শ্বাট ডাউন নকৰিব। আপুনি এই ৱিণ্ড’খন মিনিমাইজ কৰিব পাৰে। এই আপডে’টটোৰ বাবে কেইমিনিটমান সময় লাগিব পাৰে আৰু এই সময়খিনিত আপোনাৰ বাহ্যিক ডিভাইচটোৱে কাম নকৰিব পাৰে।</translation>
@@ -790,6 +791,7 @@
 <translation id="5559898619118303662">সূৰ্যাস্তৰ সময়ত স্বয়ংক্ৰিয়ভাৱে গাঢ় ৰঙৰ থীমলৈ সলনি কৰক</translation>
 <translation id="556042886152191864">বুটাম</translation>
 <translation id="5562551811867441927"><ph name="TERRAIN_COLOR" />ৰ শ্বেডত <ph name="TERRAIN_FEATURE" /></translation>
+<translation id="5572169899491758844">স্কেন কৰক</translation>
 <translation id="5578477003638479617">UMTS</translation>
 <translation id="5578519639599103840">পুনৰ স্কেন কৰক</translation>
 <translation id="5583640892426849032">বেকস্পেচ</translation>
@@ -879,7 +881,6 @@
 <translation id="6075872808778243331">(Android) HTTP বিলম্বতা</translation>
 <translation id="6078323886959318429">শ্বর্টকাট যোগ কৰক</translation>
 <translation id="6091080061796993741">হালধীয়া</translation>
-<translation id="610371409726072606">Google AIএ সঞ্চালন কৰা কেমেৰাৰ পটভূমি</translation>
 <translation id="6104112872696127344">স্কেনিং বাতিল কৰা হৈছে</translation>
 <translation id="6106186594183574873">সম্পূর্ণ কৰিবলৈ আপোনাৰ পুৰণি পাছৱর্ড দিয়ক</translation>
 <translation id="6108689792487843350">গেইটৱে'টো পাব পৰা অৱস্থাত নাই</translation>
@@ -1011,7 +1012,6 @@
 <translation id="672609503628871915">নতুন কি আছে চাওক</translation>
 <translation id="6740695858234317715">ক্ৰীম আৰু কমলাৰঙী</translation>
 <translation id="6741823073189174383">নাও</translation>
-<translation id="674276385369049081">Google AIএ সঞ্চালন কৰা শেহতীয়া কেমেৰাৰ পটভূমি</translation>
 <translation id="6744441848304920043">জংঘল</translation>
 <translation id="6747035363363040417">নিৰপেক্ষ</translation>
 <translation id="6747215703636344499">বন্ধ হৈছে - আউটপুট ভৰ্তি হৈ গৈছে</translation>
@@ -1032,6 +1032,7 @@
 <translation id="6871256179359663621">পাতল বেঙুনীয়া</translation>
 <translation id="6889786074662672253">ৰিষ্টাৰ্ট কৰি থকাৰ সময়ত, এই বাহ্যিক ডিভাইচটো আনপ্লাগ অথবা আপোনাৰ কম্পিউটাৰটো শ্বাট ডাউন নকৰিব। আপুনি এই ৱিণ্ড’খন মিনিমাইজ কৰিব পাৰে। এইটোৰ বাবে কেইমিনিটমান সময় লাগিব পাৰে আৰু এই সময়খিনিত আপোনাৰ বাহ্যিক ডিভাইচটোৱে কাম নকৰিব পাৰে।</translation>
 <translation id="6900701049656042631">এই এলবামটোত কোনো ফট’ নাই। ফট’ যোগ দিবলৈ, <ph name="LINK" />লৈ যাওক</translation>
+<translation id="6902359863093437070">AIৰ জৰিয়তে পৃষ্ঠভূমি সৃষ্টি কৰক</translation>
 <translation id="6905163627763043954">ব্যৱহাৰ কৰি চাওক</translation>
 <translation id="6905724422583748843"><ph name="PAGE_NAME" />লৈ উভতি যাওক</translation>
 <translation id="6910312834584889076">স্কেনাৰৰ ঢাকনীখন খোলা আছে। ঢাকনীখন বন্ধ কৰি পুনৰ চেষ্টা কৰি চাওক।</translation>
@@ -1269,6 +1270,7 @@
 <translation id="8152370627892825"><ph name="DESCRIPTION" />, <ph name="ACCELERATOR_INFO" />।</translation>
 <translation id="8156233298086717232">যাদুকৰী</translation>
 <translation id="8162776280680283326">শিয়াল</translation>
+<translation id="8167413449582155132">Google AIৰ দ্বাৰা সঞ্চালিত পৃষ্ঠভূমি</translation>
 <translation id="8179976553408161302">Enter</translation>
 <translation id="8183975772394450380">সমুদ্ৰতীৰ</translation>
 <translation id="8206859287963243715">চেলুলাৰ</translation>

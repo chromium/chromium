@@ -12,6 +12,7 @@
 <translation id="1588438908519853928">सामान्य</translation>
 <translation id="1591562245178063882">या महिन्यात</translation>
 <translation id="1637811476055996098">फाइल निवडा</translation>
+<translation id="1680090928918677457">कॅमेरा वापरा</translation>
 <translation id="1681022320378710418">सध्याची वेळ</translation>
 <translation id="1727839386348365796">आयड्रॉपर</translation>
 <translation id="1729654308190250600">कृपया एक रिक्त नसलेला ईमेल ॲड्रेस एंटर करा.</translation>
@@ -60,6 +61,7 @@
 <translation id="3822383571486410024">कृपया हा मजकूर <ph name="MIN_CHARACTERS" /> वर्ण किंवा त्यापेक्षा अधिक मोठा करा (तुम्ही सध्‍या <ph name="CURRENT_LENGTH" /> वर्ण वापरत आहात).</translation>
 <translation id="383465348367842624">'<ph name="ATSIGN" />' मागुन येणार्‍या भागामध्ये '<ph name="INVALIDCHARACTER" />' चिन्ह नसावे.</translation>
 <translation id="3846214748874656680">क्षेत्रेमधून बाहेर पडा</translation>
+<translation id="3914173277599553213">आवश्यक</translation>
 <translation id="4031179711345676612">मायक्रोफोनला अनुमती आहे</translation>
 <translation id="4103419683916926126">मिलिसेकंद</translation>
 <translation id="4201051445878709314">मागील महिना दर्शवा</translation>
@@ -75,6 +77,7 @@
 <translation id="4912200001568447310">सध्याचा आयटम</translation>
 <translation id="4915360478455618802">वेळ पिकर दाखवा</translation>
 <translation id="4924138096460353083">अनिश्चित</translation>
+<translation id="49269513399674318">मायक्रोफोन वापरा</translation>
 <translation id="4950364064308314478">स्थानिक तारीख आणि वेळ पिकर दाखवा</translation>
 <translation id="4971739861736909480"><ph name="ACCNAME" /> निवडले आहे</translation>
 <translation id="4975562563186953947"><ph name="SELECTED_COUNT" /> निवडले</translation>
@@ -142,6 +145,7 @@
 <translation id="7080893216867146095">स्थान शेअर करण्याची अनुमती आहे</translation>
 <translation id="709897737746224366">कृपया विनंती केलेले स्वरूपन जुळवा.</translation>
 <translation id="7102274145889307184">सध्याचे स्थान</translation>
+<translation id="7134810312945846184">मायक्रोफोन आणि कॅमेरा वापरा</translation>
 <translation id="7263440858009898357">कृपया सूचीमधील आयटम निवडा.</translation>
 <translation id="7320576522385648310">बफर होत आहे</translation>
 <translation id="7341556277900466204">कलर वेल</translation>

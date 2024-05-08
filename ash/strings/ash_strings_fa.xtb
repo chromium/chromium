@@ -119,7 +119,7 @@
 <translation id="1383876407941801731">جستجو</translation>
 <translation id="1391102559483454063">روشن</translation>
 <translation id="1394698770495054737">محو کردن کامل</translation>
-<translation id="1407069428457324124">زمینه تیره</translation>
+<translation id="1407069428457324124">زمینه تاریک</translation>
 <translation id="1410568680128842168"><ph name="DATE_CELL_TOOL_TIP" />. برای پیمایش بین تاریخ‌ها، از کلیدهای جهت‌نما استفاده کنید.</translation>
 <translation id="141170878022560212">دکمه میانی</translation>
 <translation id="1414271762428216854"><ph name="APP_NAME" />، برنامه نصب‌شده</translation>
@@ -166,6 +166,7 @@
 <translation id="1586324912145647027">رفتن به میزکار ۱ تا ۸</translation>
 <translation id="158838227375272121">‏وب‌سایت Google Classroom</translation>
 <translation id="1589090746204042747">به همه فعالیت‌هایتان در این جلسه دسترسی پیدا کنید</translation>
+<translation id="1597880963776148053">‏مرحله <ph name="STEP" /> از <ph name="TOTAL_STEPS" /> در مراحل گشت. برنامه‌های سنجاق‌شده و باز در قفسه پایین صفحه قرار دارند. برای تمرکز کردن روی موارد موجود در قفسه، کلیدهای «دگرساز + تبدیل + L» و سپس کلید «جهش» را فشار دهید.</translation>
 <translation id="1602874809115667351"><ph name="LAUNCHER_KEY_NAME" /> + پایین‌بر</translation>
 <translation id="1604857178818051494">مکث رسانه</translation>
 <translation id="1607312127821884567">بستن راه‌اندازی مشاهده برنامه‌های تلفن</translation>
@@ -194,7 +195,7 @@
 <translation id="1720011244392820496">‏روشن کردن «همگام‌سازی Wi-Fi»</translation>
 <translation id="1720230731642245863">«نقطه اتصال» خاموش است</translation>
 <translation id="1731815243805539470">جابه‌جایی به کاربر قبلی</translation>
-<translation id="1733996486177697563">بین زمینه تیره و روشن جابه‌جا شوید. میز کار را لمس کنید و نگه دارید، سپس «کاغذدیواری و سبک» را انتخاب کنید.</translation>
+<translation id="1733996486177697563">بین زمینه تاریک و روشن جابه‌جا شوید. میز کار را لمس کنید و نگه دارید، سپس «کاغذدیواری و سبک» را انتخاب کنید.</translation>
 <translation id="1736898441010944794">«<ph name="NAME" />» برای دستگاه‌های بلوتوث قابل‌مشاهده است.</translation>
 <translation id="1737078180382804488">بستن راه‌اندازی مشاهده اعلان‌های تلفن</translation>
 <translation id="174102739345480129">نشانگر خاموش است.</translation>
@@ -303,6 +304,7 @@
 <translation id="2257486738914982088">هنگام بارگیری <ph name="FILENAME" /> مشکلی پیش آمد</translation>
 <translation id="2258734398699965611">فایل‌های پیشنهادی</translation>
 <translation id="2268130516524549846">بلوتوث غیرفعال است</translation>
+<translation id="2268731132310444948">مرحله <ph name="STEP" /> از <ph name="TOTAL_STEPS" /> در مراحل گشت. پس‌از فعال شدن «راه‌انداز»، نوار جستجوی پیشرفته‌ای خواهید داشت. می‌توانید شروع به تایپ کنید و فایل‌ها، برنامه‌ها، و موارد دیگر را جستجو کنید. همچنین می‌توانید پاسخ سؤالات مربوط به <ph name="PRODUCT_NAME" /> را دریافت کنید.</translation>
 <translation id="2268813581635650749">خروج همه از سیستم</translation>
 <translation id="2276987123919776440">‫۱۵ دقیقه</translation>
 <translation id="2277103315734023688">رفتن به جلو</translation>
@@ -397,6 +399,7 @@
 <translation id="2607678425161541573">ورود به سیستم آنلاین لازم است</translation>
 <translation id="2612072250312279703">پایشگر فعالیت</translation>
 <translation id="2612614436418177118">جابه‌جایی نماد برنامه در جدول برنامه</translation>
+<translation id="2619326010008283367">مرحله <ph name="STEP" /> از <ph name="TOTAL_STEPS" /> در مراحل گشت. می‌توانید «تنظیمات» دستگاهتان را در «راه‌انداز» پیدا کنید. می‌توانید <ph name="PRODUCT_NAME" /> را در «تنظیمات» سفارشی‌سازی کنید و کارهایی مثل تغییر کاغذدیواری و تنظیم محافظ صفحه را انجام دهید.</translation>
 <translation id="2620016719323068571">جستجوی <ph name="CATEGORY" />، فایل‌ها، برنامه‌ها، و موارد بیشتر…</translation>
 <translation id="2620436844016719705">سیستم</translation>
 <translation id="2620900772667816510">وضوح فوق‌العاده با بلوتوث</translation>
@@ -593,7 +596,7 @@
 <translation id="3405101454990027959">روشن کردن دسترسی به میکروفون</translation>
 <translation id="3408735331120433841">اکنون درحال پخش محتوای صفحه‌نمایش خود هستید.</translation>
 <translation id="3409584356742878290">نشان دادن یا پنهان کردن نظارتگر «ابزار توسعه‌دهندگان»</translation>
-<translation id="3410336247007142655">نمایش تنظیمات زمینه تیره</translation>
+<translation id="3410336247007142655">نمایش تنظیمات زمینه تاریک</translation>
 <translation id="3413817803639110246">هنوز چیزی برای دیدن وجود ندارد</translation>
 <translation id="3417835166382867856">برگه‌های جستجو</translation>
 <translation id="3426253816581969877"><ph name="MODIFIER_1" /><ph name="MODIFIER_2" /> را فشار دهید و نگه دارید، چندبار روی <ph name="KEY" /> ضربه بزنید تا به پنجره‌ای که می‌خواهید باز شود برسید، سپس کلید را رها کنید</translation>
@@ -819,7 +822,6 @@
 <translation id="4209973997261364186">‏Wi-Fi روشن است</translation>
 <translation id="4212472694152630271">رفتن به پین</translation>
 <translation id="4215497585250573029">‏تنظیمات VPN</translation>
-<translation id="4215548513524864822">مرحله ۵ از ۵ در مراحل گشت. می‌توانید «تنظیمات» دستگاهتان را در «راه‌انداز» پیدا کنید. می‌توانید <ph name="PRODUCT_NAME" /> را در «تنظیمات» سفارشی‌سازی کنید و کارهایی مثل تغییر کاغذدیواری و تنظیم محافظ صفحه را انجام دهید.</translation>
 <translation id="4217571870635786043">املا</translation>
 <translation id="4221957499226645091"><ph name="APP_NAME" />، برنامه نصب‌شده، موقتاً متوقف‌شده</translation>
 <translation id="4228078597006700451">کنترل‌ها راه‌اندازی نشده است</translation>
@@ -921,7 +923,7 @@
 <translation id="458210817642223147">‏ضبط GIF</translation>
 <translation id="4582666543382004902">‏نقطه اتصال برای استفاده از Wi-Fi خاموش شده است. برای استفاده از نقطه اتصال، Wi-Fi را خاموش کنید.</translation>
 <translation id="4585337515783392668">توقف پخش محتوا به گیرنده ناشناس</translation>
-<translation id="4596144739579517758">زمینه تیره خاموش است</translation>
+<translation id="4596144739579517758">زمینه تاریک خاموش است</translation>
 <translation id="4596442969149038771"><ph name="USER" /> هم‌رسانی کرد</translation>
 <translation id="4611292653554630842">ورود به سیستم</translation>
 <translation id="462160925400706389"><ph name="NAME" /> متصل شد</translation>
@@ -946,12 +948,12 @@
 <translation id="468293128311738995">برنامه‌های تلفن شما</translation>
 <translation id="4690510401873698237">قفسه در پایین است</translation>
 <translation id="4696813013609194136">باز کردن قفل دستگاه با کد والدین</translation>
-<translation id="469693290987463983">‏مرحله ۱ از ۵ در مراحل گشت. برنامه‌های سنجاق‌شده و باز در قفسه پایین صفحه قرار دارند. برای تمرکز کردن روی موارد موجود در قفسه، کلیدهای «دگرساز + تبدیل + L» و سپس کلید «جهش» را فشار دهید.</translation>
 <translation id="4702647871202761252">صفحه حریم خصوصی خاموش است</translation>
 <translation id="4706121060329443414">‏بارگیری بعداً انجام خواهد شد. اکنون گفتار برای پردازش به Google ارسال خواهد شد.</translation>
 <translation id="470644585772471629">وارونگی رنگ</translation>
 <translation id="4708065238214351979">افزایش نور صفحه‌کلید</translation>
 <translation id="4717575069099566988">‏کابل USB-C شما از USB4 پشتیبانی نمی‌کند. ممکن است عملکرد دستگاه محدود شود.</translation>
+<translation id="4724328513667182700">‫۶ نکته برای شروع کار در <ph name="PRODUCT_NAME" /></translation>
 <translation id="4730374152663651037">مکرراً استفاده‌شده</translation>
 <translation id="4731797938093519117">دسترسی ولی</translation>
 <translation id="4733161265940833579"><ph name="BATTERY_PERCENTAGE" />% (چپ)</translation>
@@ -1027,6 +1029,7 @@
 <translation id="4964188651935955085">هرگاه بلوتوث را خاموش کنید، اتصال این دستگاه خارجی به <ph name="DEVICE_TYPE" /> قطع خواهد شد:</translation>
 <translation id="4966431234408005599">افزایش صدا</translation>
 <translation id="4969092041573468113"><ph name="HOURS" /> س <ph name="MINUTES" /> د <ph name="SECONDS" /> ث</translation>
+<translation id="496999337731226334">‏مرحله <ph name="STEP" /> از <ph name="TOTAL_STEPS" /> در مراحل گشت. کنترل‌های پرکاربرد مثل Wi-Fi، بلوتوث، و میزان صدا در «تنظیمات فوری» قرار دارند. همچنین برای ثبت نماگرفت می‌توانید به اینجا بروید. برای باز کردن «تنظیمات فوری»، کلیدهای «دگرساز + تبدیل + S» را فشار دهید.</translation>
 <translation id="4975771730019223894">نشان‌گذاری برنامه</translation>
 <translation id="4977493774330778463"><ph name="NUM_IMPORTANT_NOTIFICATION" />:
         <ph name="NOTIFICATION_1" />،
@@ -1126,10 +1129,10 @@
 <translation id="5331975486040154427">‏دستگاه USB-C (درگاه عقب سمت چپ)</translation>
 <translation id="533282197239610265">نمایش دستگاه‌های پخش محتوا</translation>
 <translation id="5344128444027639014"><ph name="BATTERY_PERCENTAGE" />% (راست)</translation>
-<translation id="5352250171825660495">زمینه تیره روشن است</translation>
+<translation id="5352250171825660495">زمینه تاریک روشن است</translation>
 <translation id="5354804064646502504">ممکن است هزینه داده دربر داشته باشد.
 هیچ دستگاهی متصل نیست.</translation>
-<translation id="5356963482258194581">بین زمینه تیره و روشن جابه‌جا شوید. روی میز کار کلیک راست کنید و «کاغذدیواری و سبک» را انتخاب کنید.</translation>
+<translation id="5356963482258194581">بین زمینه تاریک و روشن جابه‌جا شوید. روی میز کار کلیک راست کنید و «کاغذدیواری و سبک» را انتخاب کنید.</translation>
 <translation id="536019650977002321">سرپرستتان ضبط صدا را غیرمجاز کرده است. برای اطلاعات بیشتر، با سرپرست تماس بگیرید.</translation>
 <translation id="5361524080961918551">فایل‌های گفتار <ph name="LANGUAGE" /> کامل بارگیری نشده‌اند</translation>
 <translation id="5363163447017455357"><ph name="DELIMITER" /> رفتن به این برگه</translation>
@@ -1144,6 +1147,7 @@
 <translation id="540713187982329711">روشن/ خاموش کردن نقطه اتصال. نقطه اتصال روشن است، هیچ دستگاهی متصل نیست.</translation>
 <translation id="5413656666631274079">صفحه تنظیمات</translation>
 <translation id="5414198321558177633">درحال بازآوری فهرست نمایه. ممکن است چند دقیقه طول بکشد.</translation>
+<translation id="5417965108047245734">برای آشنایی با نحوه کار کردن با <ph name="PRODUCT_NAME" />، گشتی سریع بزنید</translation>
 <translation id="5426063383988017631">منوی تنظیمات بسته شد</translation>
 <translation id="5428899915242071344">شروع کردن انتخاب</translation>
 <translation id="5429993543155113935">درحال‌حاضر از پنجره‌های «ناشناس» پشتیبانی نمی‌شود</translation>
@@ -1287,7 +1291,7 @@
 <translation id="5955304353782037793">app</translation>
 <translation id="5958529069007801266">کاربر نظارت‌شده</translation>
 <translation id="5960410286721553511">مشاهده رسانه و عکس‌های جدید تلفن</translation>
-<translation id="5965524703725988602">روشن/خاموش کردن «زمینه تیره». <ph name="STATE_TEXT" />.</translation>
+<translation id="5965524703725988602">روشن/خاموش کردن «زمینه تاریک». <ph name="STATE_TEXT" />.</translation>
 <translation id="5975235751479998104">چرخش روبه جلو میان پنجره‌ها</translation>
 <translation id="5978382165065462689">هم‌رسانی کنترل صفحه‌تان از طریق راهنمایی ازراه‌دور.</translation>
 <translation id="5980301590375426705">خروج از مهمان</translation>
@@ -1524,7 +1528,6 @@
 <translation id="6874854809828346832">نمایش جزئیات نقطه اتصال. نقطه اتصال روشن است.</translation>
 <translation id="6878400149835617132">میان‌بر خاموش شد</translation>
 <translation id="6878701771800702153">{NUM_APPS,plural, =1{یک برنامه}one{# برنامه}other{# برنامه}}</translation>
-<translation id="6878787305374738418">مرحله ۴ از ۵ در مراحل گشت. پس‌از فعال شدن «راه‌انداز»، نوار جستجوی پیشرفته‌ای خواهید داشت. می‌توانید شروع به تایپ کنید و فایل‌ها، برنامه‌ها، و موارد دیگر را جستجو کنید. همچنین می‌توانید پاسخ سؤالات مربوط به <ph name="PRODUCT_NAME" /> را دریافت کنید.</translation>
 <translation id="6883768636838842873">میان‌برهای مهم، نکته‌های مربوط به استفاده از دستگاه، و موارد دیگر</translation>
 <translation id="6884665277231944629">برگشتن به امروز</translation>
 <translation id="6886172995547742638">‏ممکن است <ph name="DEVICE_TYPE" /> شما عملکرد ضعیف‌تری را تجربه کند. از آداپتور برق USB-C بالاتر یا <ph name="PREFERRED_MINIMUM_POWER" /> وات تأییدشده‌ای استفاده کنید.</translation>
@@ -1593,6 +1596,7 @@
 <translation id="7143207342074048698">در حال اتصال</translation>
 <translation id="7144942256906679589">وضعیت باتری</translation>
 <translation id="7145639536026937076">شارژ باتری <ph name="PERCENTAGE" />٪ است و باتری درحال شارژ است. «بهینه‌سازی باتری» روشن است.</translation>
+<translation id="7149149900052329230">‏فایل‌های محلی و فایل‌های Google Drive را در برنامه Files مدیریت کنید.</translation>
 <translation id="7165278925115064263">Alt+Shift+K</translation>
 <translation id="7167913274352523149"><ph name="HOTSPOT" />،
         <ph name="NETWORK" /></translation>
@@ -1613,7 +1617,6 @@
 <translation id="726276584504105859">برای استفاده از تقسیم صفحه، به اینجا بکشید</translation>
 <translation id="7262906531272962081">ایجاد یادآوری</translation>
 <translation id="7278787617901301220"><ph name="LAUNCHER_KEY_NAME" /> + پس‌بر</translation>
-<translation id="7282547098317872382">‏مرحله ۳ از ۵ در مراحل گشت. بااستفاده از برنامه‌ها، کارهای موردنیازتان را در <ph name="PRODUCT_NAME" /> انجام دهید. می‌توانید برنامه‌ها را در «راه‌انداز» پیدا کنید. برای تمرکز کردن روی «راه‌انداز»، کلیدهای «دگرساز + تبدیل + L» را فشار دهید.</translation>
 <translation id="7285232777292757180">برای ثبت نماگرفت، از ابزار ضبط صفحه‌نمایش در تنظیمات فوری استفاده کنید</translation>
 <translation id="7301826272005790482">بستن پیشنهادهای پنجره</translation>
 <translation id="7302889331339392448">«زیرنویس ناشنوایان زنده» خاموش است.</translation>
@@ -1795,10 +1798,12 @@
 <translation id="7933084174919150729">‏«دستیار Google» فقط برای نمایه اصلی دردسترس است.</translation>
 <translation id="79341161159229895">حساب تحت مدیریت <ph name="FIRST_PARENT_EMAIL" /> و <ph name="SECOND_PARENT_EMAIL" /> است</translation>
 <translation id="793716872548410480">‏برای مشاهده بریده‌دان، کلیدهای <ph name="SHORTCUT_KEY_NAME" /> + V را فشار دهید. ۵ مورد آخری که کپی کرده‌اید در بریده‌دان ذخیره می‌شود.</translation>
+<translation id="7942330802915522974">‏مرحله <ph name="STEP" /> از <ph name="TOTAL_STEPS" /> در مراحل گشت. می‌توانید برنامه Files را در «راه‌انداز» پیدا کنید. فایل‌های محلی و فایل‌های Google Drive را در برنامه Files مدیریت کنید.</translation>
 <translation id="7942349550061667556">قرمز</translation>
 <translation id="7943516765291457328">برای اسکن کردن نقطه‌های اتصال اطراف، بلوتوث را روشن کنید</translation>
 <translation id="7944023924886109030">دیدن همه رویدادهای امروز</translation>
 <translation id="7945357288295809525">نمایش تنظیمات دسترس‌پذیری، «<ph name="ENABLED_FEATURES" />» فعال است.</translation>
+<translation id="7946681191253332687">به‌روزرسانی امنیتی تمدیدشده دردسترس است</translation>
 <translation id="7947798320695032612"><ph name="APP_NAME" /> می‌خواهد از <ph name="DEVICE_NAME" /> شما استفاده کند</translation>
 <translation id="7951630946012935453">کم کردن نور صفحه‌کلید</translation>
 <translation id="7953994493035617347">وضوح جدید را تأیید می‌کنید؟</translation>
@@ -1910,7 +1915,6 @@
 <translation id="8412677897383510995">نمایش تنظیمات نمایشگر</translation>
 <translation id="8413272770729657668">شروع ضبط با شمارش ۳، ۲، ۱</translation>
 <translation id="8416730306157376817"><ph name="BATTERY_PERCENTAGE" />٪ (قاب)</translation>
-<translation id="8417951779969083400">‏مرحله ۲ از ۵ در مراحل گشت. کنترل‌های پرکاربرد مثل Wi-Fi، بلوتوث، ومیزان صدا در «تنظیمات فوری» قرار دارند. همچنین برای ثبت نماگرفت می‌توانید به اینجا بروید. برای باز کردن «تنظیمات فوری»، کلیدهای «دگرساز + تبدیل + S» را فشار دهید.</translation>
 <translation id="8420205633584771378">این پیشنهاد حذف شود؟</translation>
 <translation id="8421270167862077762"><ph name="UNAVAILABLE_APPS" /> در این دستگاه وجود ندارد.</translation>
 <translation id="8426708595819210923">عصر به‌خیر <ph name="GIVEN_NAME" />،</translation>
@@ -2130,6 +2134,7 @@
 <translation id="987589956647469042">داده تلفن همراه روشن است</translation>
 <translation id="989374776391122812">کنترل‌های دوربین و صدا</translation>
 <translation id="990277280839877440">پنجره <ph name="WINDOW_TITILE" /> بسته شد.</translation>
+<translation id="993398562350683614">‏مرحله <ph name="STEP" /> از <ph name="TOTAL_STEPS" /> در مراحل گشت. بااستفاده از برنامه‌ها، کارهای موردنیازتان را در <ph name="PRODUCT_NAME" /> انجام دهید. می‌توانید برنامه‌ها را در «راه‌انداز» پیدا کنید. برای تمرکز کردن روی «راه‌انداز»، کلیدهای «دگرساز + تبدیل + L» را فشار دهید.</translation>
 <translation id="994354411665877646"><ph name="NETWORK_NAME" />، <ph name="SUBTEXT" /></translation>
 <translation id="996204416024568215">جدیدترین ویژگی‌ها و قابلیت‌های امنیتی بهبودیافته را دریافت می‌کنید. به‌روزرسانی در پس‌زمینه انجام می‌شود.</translation>
 </translationbundle>

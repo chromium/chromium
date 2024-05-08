@@ -11,6 +11,7 @@
 <translation id="1047458377670401304"><ph name="CPU_NAME" /> (အတွဲ <ph name="THREAD_COUNT" /> ခု၊ <ph name="CPU_MAX_CLOCK_SPEED" />GHz)</translation>
 <translation id="1047773237499189053">ဝန်ဆောင်မှုအသစ် ရနိုင်သည်၊ ပိုမိုလေ့လာရန် အပေါ်ညွှန်မြားကို အသုံးပြုပါ။</translation>
 <translation id="1049663189809099096">အဝါဖျော့</translation>
+<translation id="1056898198331236512">သတိပေးချက်</translation>
 <translation id="1059913517121127803">စကင်ဖတ်ရန် စတင်၍မရပါ</translation>
 <translation id="1062823486781306604"><ph name="COUNT" /> အနက် <ph name="INDEX" />၊ <ph name="NAME" />။</translation>
 <translation id="1070066693520972135">WEP</translation>
@@ -95,7 +96,6 @@
 <translation id="1478594628797167447">စကင်ဖတ်စနစ်</translation>
 <translation id="1483493594462132177">ပို့ရန်</translation>
 <translation id="1488850966314959671">ဖွင့်ထားသော စိတ်ကြိုက် APN များ သုံးပြီး ဤကွန်ရက်သို့ ချိတ်ဆက်၍မရပါ။ နောက်ထပ်အချက်အလက်အတွက် သင့်မိုဘိုင်းဖုန်းကုမ္ပဏီကို ဆက်သွယ်ပါ။</translation>
-<translation id="1491076385728777984"><ph name="DEVICE_NAME" /> တွင် ဖာမ်းဝဲအပ်ဒိတ်လုပ်နေသည်</translation>
 <translation id="1499041187027566160">အသံ တိုးပါ</translation>
 <translation id="1499900233129743732">ဤအသုံးပြုသူကို <ph name="MANAGER" /> က စီမံခန့်ခွဲသည့်အတွက် ဆက်တင်များကို အဝေးထိန်းစီမံပြီး အသုံးပြုသူ၏လုပ်ဆောင်ချက်ကို စောင့်ကြည့်နိုင်သည်။</translation>
 <translation id="150962533380566081">PUK မမှန်ကန်ပါ။</translation>
@@ -291,7 +291,6 @@
 <translation id="2505327257735685095">လက်ရှိနောက်ခံပုံကို ပြန်လည်စတင်ရန်</translation>
 <translation id="2512979179176933762">ဝင်းဒိုးများ ပြပါ</translation>
 <translation id="2513396635448525189">အကောင့်ဝင်ရန်ပုံ</translation>
-<translation id="2517472476991765520">ရှာဖွေရန်</translation>
 <translation id="2521835766824839541">ယခင်တစ်ပုဒ်သို့ သွားရန်</translation>
 <translation id="2526590354069164005">ဒက်စက်တော့</translation>
 <translation id="2529641961800709867">ခလုတ်ရွေးစရာများ</translation>
@@ -330,6 +329,7 @@
 <translation id="2744221223678373668">မျှဝေထား</translation>
 <translation id="2751739896257479635">EAP အဆင့် ၂ အထောက်အထားစိစစ်ခြင်း</translation>
 <translation id="2754757901767760034">မီးအိမ်</translation>
+<translation id="2780756493585863768">Google AI က ပံ့ပိုးထားသည့် လတ်တလော နောက်ခံများ</translation>
 <translation id="2783010256799387990">အောင်မြင်သည်</translation>
 <translation id="2786429550992142861">ပိတ်ချောထည်</translation>
 <translation id="2787435249130282949">ကီးဘုတ် ပိုလင်း</translation>
@@ -426,6 +426,7 @@
 <translation id="3456078764689556234">စာမျက်နှာ <ph name="TOTAL_PAGES" /> မျက်နှာအနက် <ph name="PRINTED_PAGES" /> မျက်နှာကို ပုံနှိပ်ထုတ်ထားသည်။</translation>
 <translation id="345898999683440380">စာမျက်နှာ <ph name="PAGE_NUM" /> ကို စကင်ဖတ်နေသည်။ <ph name="PERCENTAGE_VALUE" />% ပြီးသွားပါပြီ။</translation>
 <translation id="3459509316159669723">ပုံနှိပ်နေသည်</translation>
+<translation id="3462187165860821523"><ph name="DEVICE_NAME" /> ကိုအပ်ဒိတ်လုပ်နေသည်</translation>
 <translation id="346423161771747987">လက်ရှိ</translation>
 <translation id="346539236881580388">ပြန်ရိုက်ရန်</translation>
 <translation id="3484914941826596830">ဖားမ်ဝဲအပ်ဒိတ်လုပ်နေစဉ် ဤပြင်ပကိရိယာကို ပလတ်မဖြုတ်ပါနှင့် (သို့) သင်၏ကွန်ပျူတာကို အပြီးမပိတ်ပါနှင့်။ ဤဝင်းဒိုးကို ချုံ့နိုင်သည်။ ယခုအပ်ဒိတ်သည် မိနစ်အနည်းငယ်ကြာနိုင်ပြီး ဤအချိန်အတွင်း သင်၏ပြင်ပကိရိယာ အလုပ်လုပ်နိုင်မည်မဟုတ်ပါ။</translation>
@@ -790,6 +791,7 @@
 <translation id="5559898619118303662">နေဝင်ချိန်တွင် အမှောင်နောက်ခံသို့ အလိုအလျောက်ပြောင်းရန်</translation>
 <translation id="556042886152191864">ခလုတ်</translation>
 <translation id="5562551811867441927"><ph name="TERRAIN_COLOR" /> အရောင်များဖြင့် <ph name="TERRAIN_FEATURE" /></translation>
+<translation id="5572169899491758844">စကင်ဖတ်ခြင်း</translation>
 <translation id="5578477003638479617">UMTS</translation>
 <translation id="5578519639599103840">စကင်ပြန်ဖတ်ရန်</translation>
 <translation id="5583640892426849032">နောက်ပြန်</translation>
@@ -879,7 +881,6 @@
 <translation id="6075872808778243331">(Android) HTTP တုံ့ပြန်ချိန်</translation>
 <translation id="6078323886959318429">ဖြတ်လမ်းလင့်ခ် ထည့်ပါ</translation>
 <translation id="6091080061796993741">အဝါရောင်</translation>
-<translation id="610371409726072606">Google AI က ပံ့ပိုးထားသည့် ကင်မရာနောက်ခံ</translation>
 <translation id="6104112872696127344">စကင်ဖတ်ခြင်းကို ပယ်ဖျက်လိုက်သည်</translation>
 <translation id="6106186594183574873">အပြီးသတ်ရန်အတွက် သင့်စကားဝှက်ဟောင်းကို ထည့်ပါ</translation>
 <translation id="6108689792487843350">ဂိတ်ဝကို မချိတ်ဆက်နိုင်ပါ</translation>
@@ -1011,7 +1012,6 @@
 <translation id="672609503628871915">အသစ် ဘာတွေလဲ ကြည့်ရအောင်</translation>
 <translation id="6740695858234317715">ခရင်မ်အရောင်နှင့် လိမ္မော်ရောင်</translation>
 <translation id="6741823073189174383">လှေ</translation>
-<translation id="674276385369049081">Google AI က ပံ့ပိုးထားသည့် လတ်တလော ကင်မရာနောက်ခံ</translation>
 <translation id="6744441848304920043">တော</translation>
 <translation id="6747035363363040417">ပုံမှန်</translation>
 <translation id="6747215703636344499">ရပ်ထားသည် - အထွက်ပြည့်နေသည်</translation>
@@ -1032,6 +1032,7 @@
 <translation id="6871256179359663621">ခရမ်းဖျော့</translation>
 <translation id="6889786074662672253">ပြန်စနေစဉ် ဤပြင်ပစက်ပစ္စည်းကို ပလတ်မဖြုတ်ပါနှင့် (သို့) သင့်ကွန်ပျူတာကို အပြီးမပိတ်ပါနှင့်။ ဤဝင်းဒိုးကို ချုံ့နိုင်သည်။ မိနစ်အနည်းငယ်ကြာနိုင်ပြီး ဤအချိန်အတွင်း သင်၏ပြင်ပစက်ပစ္စည်း အလုပ်လုပ်နိုင်မည်မဟုတ်ပါ။</translation>
 <translation id="6900701049656042631">ဤအယ်လ်ဘမ်တွင် ဓာတ်ပုံများမရှိပါ။ ဓာတ်ပုံများ ထည့်ရန် <ph name="LINK" /> သို့သွားပါ</translation>
+<translation id="6902359863093437070">နောက်ခံကို AI ဖြင့် ပြုလုပ်ရန်</translation>
 <translation id="6905163627763043954">စမ်းကြည့်ရန်</translation>
 <translation id="6905724422583748843"><ph name="PAGE_NAME" /> သို့ ပြန်သွားရန်</translation>
 <translation id="6910312834584889076">စကင်ဖတ်စက်၏ အဖုံး ပွင့်နေသည်။ အဖုံးကိုပိတ်ပြီး ထပ်စမ်းကြည့်ပါ။</translation>
@@ -1269,6 +1270,7 @@
 <translation id="8152370627892825"><ph name="DESCRIPTION" />၊ <ph name="ACCELERATOR_INFO" />။</translation>
 <translation id="8156233298086717232">ဆန်းကြယ်</translation>
 <translation id="8162776280680283326">မြေခွေး</translation>
+<translation id="8167413449582155132">Google AI က ပံ့ပိုးထားသော နောက်ခံ</translation>
 <translation id="8179976553408161302">အင်တာ</translation>
 <translation id="8183975772394450380">ကမ်းခြေ</translation>
 <translation id="8206859287963243715">ဆဲလ်လူလာ</translation>

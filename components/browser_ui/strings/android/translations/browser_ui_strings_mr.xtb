@@ -133,6 +133,7 @@
 <translation id="3198916472715691905"><ph name="STORAGE_AMOUNT" /> संचयित केलेला डेटा</translation>
 <translation id="321187648315454507"><ph name="APP_NAME" /> ने तुम्हाला सूचना पाठवण्यासाठी, <ph name="BEGIN_LINK" />Android सेटिंग्ज<ph name="END_LINK" /> मध्येदेखील सूचना सुरू करा.</translation>
 <translation id="3227137524299004712">मायक्रोफोन</translation>
+<translation id="3232293466644486101">ब्राउझिंग डेटा हटवा…</translation>
 <translation id="3242646949159196181">सुरू असताना, साइट आवाज प्ले करू शकतात. बंद असताना, साइट आवाज प्ले करू शकत नाहीत.</translation>
 <translation id="3277252321222022663">साइटना सेन्सर ॲक्सेस करण्याची अनुमती द्या (शिफारस केलेले)</translation>
 <translation id="3285500645985761267">संबंधित साइटना गटामधील तुमच्या अ‍ॅक्टिव्हिटी पाहण्याची अनुमती द्या</translation>
@@ -307,6 +308,7 @@
 <translation id="6064125863973209585">डाउनलोड पूर्ण झाले</translation>
 <translation id="6071501408666570960">तुम्हाला या साइटमधून साइन आउट केले जाऊ शकते</translation>
 <translation id="6120483543004435978">सुरू असताना, साइट तुम्ही तुमचे डिव्हाइस सक्रियपणे कधी वापरत आहात हे जाणून घेण्याची विनंती करू शकतात. बंद असताना, साइट तुम्ही तुमचे डिव्हाइस सक्रियपणे कधी वापरत आहात हे जाणून घेऊ शकत नाहीत.</translation>
+<translation id="6140839633433422817">तुम्हाला नक्की परवानग्या रीसेट करणे आणि कुकी व साइट डेटा हटवणे हे करायचे आहे का?</translation>
 <translation id="6165508094623778733">अधिक जाणून घ्या</translation>
 <translation id="6171020522141473435">सुरू असताना, साइट ब्लूटूथ डिव्हाइस वापरण्याची विनंती करू शकतात. बंद असताना, साइट ब्लूटूथ डिव्हाइस वापरू शकत नाहीत.</translation>
 <translation id="6177111841848151710">सध्याच्या शोध इंजीनसाठी ब्लॉक केले</translation>
@@ -340,6 +342,7 @@
 <translation id="6545864417968258051">ब्लूटूथ स्कॅन करत आहे</translation>
 <translation id="6552800053856095716">{PERMISSIONS_SUMMARY_BLOCKED,plural, =1{<ph name="PERMISSION_1" />, <ph name="PERMISSION_2" /> आणि आणखी <ph name="NUM_MORE" /> ब्लॉक केली}other{<ph name="PERMISSION_1" />, <ph name="PERMISSION_2" /> आणि आणखी <ph name="NUM_MORE" /> ब्लॉक केल्या}}</translation>
 <translation id="6554732001434021288"><ph name="NUM_DAYS" /> दिवसांपूर्वी शेवटची भेट दिली</translation>
+<translation id="656065428026159829">आणखी पहा</translation>
 <translation id="6561560012278703671">कमी आवाजाचा मेसेज वापरा (तुम्हाला व्यत्यय आणणे थांबवण्यासाठी सूचना ब्लॉक करा)</translation>
 <translation id="6593061639179217415">डेस्कटॉप साइट</translation>
 <translation id="6608650720463149374"><ph name="GIGABYTES" /> GB</translation>

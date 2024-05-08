@@ -12,6 +12,7 @@
 <translation id="1588438908519853928">Tavaline</translation>
 <translation id="1591562245178063882">See kuu</translation>
 <translation id="1637811476055996098">Vali failid</translation>
+<translation id="1680090928918677457">Kasuta kaamerat</translation>
 <translation id="1681022320378710418">praegune kellaaeg</translation>
 <translation id="1727839386348365796">Värvipipett</translation>
 <translation id="1729654308190250600">Sisestage mittetühi e-posti aadress.</translation>
@@ -60,6 +61,7 @@
 <translation id="3822383571486410024">Pikendage teksti vähemalt <ph name="MIN_CHARACTERS" /> tähemärgini (kasutate praegu <ph name="CURRENT_LENGTH" /> tähemärki).</translation>
 <translation id="383465348367842624">Märgile „<ph name="ATSIGN" />” eelnev osa ei tohi sisaldada sümbolit „<ph name="INVALIDCHARACTER" />”.</translation>
 <translation id="3846214748874656680">Täisekraanilt väljumine</translation>
+<translation id="3914173277599553213">Kohustuslik</translation>
 <translation id="4031179711345676612">Mikrofon on lubatud</translation>
 <translation id="4103419683916926126">Millisekundid</translation>
 <translation id="4201051445878709314">Eelmise kuu kuvamine</translation>
@@ -75,6 +77,7 @@
 <translation id="4912200001568447310">praegune üksus</translation>
 <translation id="4915360478455618802">Kuva kellaaja valija</translation>
 <translation id="4924138096460353083">määramatu</translation>
+<translation id="49269513399674318">Kasuta mikrofoni</translation>
 <translation id="4950364064308314478">Kuva kohaliku kuupäeva ja kellaaja valija</translation>
 <translation id="4971739861736909480">Valitud on <ph name="ACCNAME" /></translation>
 <translation id="4975562563186953947">Valitud on <ph name="SELECTED_COUNT" /> üksust</translation>
@@ -142,6 +145,7 @@
 <translation id="7080893216867146095">Asukoha jagamine on lubatud</translation>
 <translation id="709897737746224366">Vastendage nõutav vorming.</translation>
 <translation id="7102274145889307184">praegune asukoht</translation>
+<translation id="7134810312945846184">Kasuta mikrofoni ja kaamerat</translation>
 <translation id="7263440858009898357">Valige loendist element.</translation>
 <translation id="7320576522385648310">puhverdamine</translation>
 <translation id="7341556277900466204">Värviratas</translation>

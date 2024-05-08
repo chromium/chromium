@@ -11,6 +11,7 @@
 <translation id="1047458377670401304"><ph name="CPU_NAME" /> (<ph name="THREAD_COUNT" /> థ్రెడ్‌లు, <ph name="CPU_MAX_CLOCK_SPEED" />GHz)</translation>
 <translation id="1047773237499189053">కొత్త ఫీచర్ అందుబాటులో ఉంది, మరింత తెలుసుకోవడానికి పై వైపు బాణం కీని ఉపయోగించండి.</translation>
 <translation id="1049663189809099096">పాస్టెల్ పసుపు రంగు</translation>
+<translation id="1056898198331236512">హెచ్చరిక</translation>
 <translation id="1059913517121127803">స్కానింగ్ ప్రారంభించడం సాధ్యపడలేదు</translation>
 <translation id="1062823486781306604"><ph name="COUNT" />లో <ph name="INDEX" />, <ph name="NAME" />.</translation>
 <translation id="1070066693520972135">WEP</translation>
@@ -95,7 +96,6 @@
 <translation id="1478594628797167447">స్కానర్</translation>
 <translation id="1483493594462132177">పంపు</translation>
 <translation id="1488850966314959671">ఎనేబుల్ చేసిన అనుకూల APNలు వేటినీ ఉపయోగించి ఈ నెట్‌వర్క్‌కు కనెక్ట్ చేయడం సాధ్యపడదు. మరింత సమాచారం కోసం మీ మొబైల్ క్యారియర్‌ను సంప్రదించండి.</translation>
-<translation id="1491076385728777984"><ph name="DEVICE_NAME" />‌లో ఫర్మ్‌వేర్ అప్‌డేట్ చేయబడుతోంది</translation>
 <translation id="1499041187027566160">వాల్యూమ్ పెంచుతుంది</translation>
 <translation id="1499900233129743732"><ph name="MANAGER" />, ఈ యూజర్‌ను మేనేజ్ చేస్తుంది, ఇంకా అది సెట్టింగ్‌లను రిమోట్‌గా మేనేజ్ చేయవచ్చు, యూజర్ యాక్టివిటీని మానిటర్ చేయవచ్చు.</translation>
 <translation id="150962533380566081">PUK చెల్లదు.</translation>
@@ -291,7 +291,6 @@
 <translation id="2505327257735685095">ప్రస్తుత వాల్‌పేపర్ ఇమేజ్‌ను రిఫ్రెష్ చేయండి</translation>
 <translation id="2512979179176933762">విండోలను చూపుతుంది</translation>
 <translation id="2513396635448525189">లాగిన్ ఇమేజ్</translation>
-<translation id="2517472476991765520">స్కాన్ చేయండి</translation>
 <translation id="2521835766824839541">మునుపటి ట్రాక్</translation>
 <translation id="2526590354069164005">డెస్క్‌టాప్</translation>
 <translation id="2529641961800709867">బటన్ ఆప్షన్‌లు</translation>
@@ -330,6 +329,7 @@
 <translation id="2744221223678373668">భాగస్వామ్యం చేయబడింది</translation>
 <translation id="2751739896257479635">EAP 2వ దశ ప్రమాణీకరణ</translation>
 <translation id="2754757901767760034">దీపం</translation>
+<translation id="2780756493585863768">Googleకు చెందిన AI టెక్నాలజీలు ఇటీవల క్రియేట్ చేసిన బ్యాక్‌గ్రౌండ్‌లు</translation>
 <translation id="2783010256799387990">ఉత్తీర్ణత సాధించాయి</translation>
 <translation id="2786429550992142861">లినెన్</translation>
 <translation id="2787435249130282949">కీబోర్డ్ బ్రైట్‌నెస్ మెరుగ్గా ఉంది</translation>
@@ -426,6 +426,7 @@
 <translation id="3456078764689556234"><ph name="TOTAL_PAGES" /> పేజీలలో <ph name="PRINTED_PAGES" />వ పేజీ ప్రింట్ చేయబడింది.</translation>
 <translation id="345898999683440380"><ph name="PAGE_NUM" />వ పేజీని స్కాన్ చేస్తోంది. <ph name="PERCENTAGE_VALUE" />% పూర్తయింది.</translation>
 <translation id="3459509316159669723">ప్రింటింగ్</translation>
+<translation id="3462187165860821523"><ph name="DEVICE_NAME" /> అప్‌డేట్ అవుతోంది</translation>
 <translation id="346423161771747987">విద్యుత్తు</translation>
 <translation id="346539236881580388">మళ్లీ తీయండి</translation>
 <translation id="3484914941826596830">ఫర్మ్‌వేర్ అప్‌డేట్ అవుతున్నప్పుడు, ఈ బాహ్య పరికరాన్ని అన్‌ప్లగ్ చేయవద్దు లేదా మీ కంప్యూటర్‌ను షట్ డౌన్ చేయవద్దు. మీరు ఈ విండోను చిన్నదిగా చేయవచ్చు. ఈ అప్‌డేట్‌కు కొన్ని నిమిషాల సమయం పట్టవచ్చు, ఇంకా ఈ సమయంలో మీ బాహ్య పరికరం పని చేయకపోవచ్చు.</translation>
@@ -790,6 +791,7 @@
 <translation id="5559898619118303662">సూర్యాస్తమయానికి ఆటోమేటిక్‌గా ముదురు రంగు రూపానికి మారండి</translation>
 <translation id="556042886152191864">బటన్</translation>
 <translation id="5562551811867441927"><ph name="TERRAIN_COLOR" /> రంగుల్లో <ph name="TERRAIN_FEATURE" /></translation>
+<translation id="5572169899491758844">స్కాన్ చేయండి</translation>
 <translation id="5578477003638479617">UMTS</translation>
 <translation id="5578519639599103840">మళ్లీ స్కాన్ చేయండి</translation>
 <translation id="5583640892426849032">Backspace</translation>
@@ -879,7 +881,6 @@
 <translation id="6075872808778243331">(Android) HTTP ప్రతిస్పందన సమయం</translation>
 <translation id="6078323886959318429">షార్ట్‌కట్‌ను జోడించండి</translation>
 <translation id="6091080061796993741">పసుపు రంగు</translation>
-<translation id="610371409726072606">Googleకు చెందిన AI టెక్నాలజీల ద్వారా క్రియేట్ అయిన కెమెరా బ్యాక్‌గ్రౌండ్</translation>
 <translation id="6104112872696127344">స్కానింగ్ రద్దు చేయబడింది</translation>
 <translation id="6106186594183574873">దీనిని ముగించడానికి, మీ పాత పాస్‌వర్డ్‌ను నమోదు చేయండి</translation>
 <translation id="6108689792487843350">గేట్‌వే అందుబాటులో లేదు</translation>
@@ -1011,7 +1012,6 @@
 <translation id="672609503628871915">కొత్తగా ఏమి ఉన్నాయో చూడండి</translation>
 <translation id="6740695858234317715">క్రీమ్, నారింజ రంగు</translation>
 <translation id="6741823073189174383">బోట్</translation>
-<translation id="674276385369049081">Googleకు చెందిన AI టెక్నాలజీల ద్వారా ఇటీవల క్రియేట్ అయిన కెమెరా బ్యాక్‌గ్రౌండ్‌లు</translation>
 <translation id="6744441848304920043">అడవి</translation>
 <translation id="6747035363363040417">తటస్థంగా ఉంది</translation>
 <translation id="6747215703636344499">ఆగిపోయింది - అవుట్‌పుట్ నిండిపోయింది</translation>
@@ -1032,6 +1032,7 @@
 <translation id="6871256179359663621">లేత ఊదా రంగు</translation>
 <translation id="6889786074662672253">రీస్టార్ట్ అవుతున్నప్పుడు, ఈ బాహ్య పరికరాన్ని అన్‌ప్లగ్ చేయవద్దు లేదా మీ కంప్యూటర్‌ను షట్ డౌన్ చేయవద్దు. మీరు ఈ విండోను చిన్నదిగా చేయవచ్చు. ఇందుకు కొన్ని నిమిషాల సమయం పట్టవచ్చు, ఇంకా ఈ సమయంలో మీ బాహ్య పరికరం పని చేయకపోవచ్చు.</translation>
 <translation id="6900701049656042631">ఈ ఆల్బమ్‌లో ఫోటోలు ఏవీ లేవు. ఫోటోలను జోడించడానికి, <ph name="LINK" /> లింక్‌కు వెళ్లండి</translation>
+<translation id="6902359863093437070">AIతో బ్యాక్‌గ్రౌండ్‌ను క్రియేట్ చేయండి</translation>
 <translation id="6905163627763043954">దీన్ని ప్రయత్నించు</translation>
 <translation id="6905724422583748843">తిరిగి <ph name="PAGE_NAME" />‌కు</translation>
 <translation id="6910312834584889076">స్కానర్ కవర్ తెరిచి ఉంది. కవర్‌ను మూసివేసి, మళ్లీ ట్రై చేయండి.</translation>
@@ -1269,6 +1270,7 @@
 <translation id="8152370627892825"><ph name="DESCRIPTION" />, <ph name="ACCELERATOR_INFO" />.</translation>
 <translation id="8156233298086717232">అద్భుతంగా ఉంది</translation>
 <translation id="8162776280680283326">నక్కలు</translation>
+<translation id="8167413449582155132">Googleకు చెందిన AI టెక్నాలజీలు అందించిన బ్యాక్‌గ్రౌండ్</translation>
 <translation id="8179976553408161302">Enter</translation>
 <translation id="8183975772394450380">బీచ్</translation>
 <translation id="8206859287963243715">సెల్యులార్</translation>

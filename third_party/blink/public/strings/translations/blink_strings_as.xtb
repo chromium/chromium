@@ -12,6 +12,7 @@
 <translation id="1588438908519853928">সাধাৰণ</translation>
 <translation id="1591562245178063882">এইটো মাহ</translation>
 <translation id="1637811476055996098">ফাইল বাছনি কৰক</translation>
+<translation id="1680090928918677457">কেমেৰা ব্যৱহাৰ কৰক</translation>
 <translation id="1681022320378710418">বৰ্তমানৰ সময়</translation>
 <translation id="1727839386348365796">আইড্ৰ’পাৰ</translation>
 <translation id="1729654308190250600">অনুগ্ৰহ কৰি খালী নোহোৱা ইমেইল ঠিকনা দিয়ক৷</translation>
@@ -60,6 +61,7 @@
 <translation id="3822383571486410024">অনুগ্ৰহ কৰি এই পাঠটো <ph name="MIN_CHARACTERS" />টা বা তাতকৈ অধিক বর্ণ ব্যৱহাৰ কৰি লিখক (বর্তমান আপুনি <ph name="CURRENT_LENGTH" />টা বর্ণ ব্যৱহাৰ কৰি আছে)।</translation>
 <translation id="383465348367842624">’<ph name="ATSIGN" />’ৰ পাছত আহিব লগা অংশ ’<ph name="INVALIDCHARACTER" />’ চিহ্নত অন্তর্ভুক্ত হ’ব নালাগে।</translation>
 <translation id="3846214748874656680">পূৰ্ণষ্ক্রীণৰ পৰা বাহিৰ হওক</translation>
+<translation id="3914173277599553213">বাধ্যতামূলক</translation>
 <translation id="4031179711345676612">মাইক্ৰ’ফ’নৰ অনুমতি আছে</translation>
 <translation id="4103419683916926126">মিলিছেকেণ্ড</translation>
 <translation id="4201051445878709314">পূৰ্বৱৰ্তী মাহটো দেখুৱাওক</translation>
@@ -75,6 +77,7 @@
 <translation id="4912200001568447310">বৰ্তমানৰ বস্তু</translation>
 <translation id="4915360478455618802">সময় বাছনিকৰ্তাক দেখুৱাওক</translation>
 <translation id="4924138096460353083">অনিৰ্ধাৰিত</translation>
+<translation id="49269513399674318">মাইক্ৰ’ফ’ন ব্যৱহাৰ কৰক</translation>
 <translation id="4950364064308314478">স্থানীয় তাৰিখ আৰু সময় বাছনিকৰ্তা দেখুৱাওক</translation>
 <translation id="4971739861736909480"><ph name="ACCNAME" /> বাছনি কৰা হৈছে</translation>
 <translation id="4975562563186953947"><ph name="SELECTED_COUNT" />টা বাছনি কৰা হৈছে</translation>
@@ -142,6 +145,7 @@
 <translation id="7080893216867146095">অৱস্থান শ্বেয়াৰ কৰাৰ অনুমতি আছে</translation>
 <translation id="709897737746224366">অনুগ্ৰহ কৰি অনুৰোধ কৰা ফর্মেটটো মিলাওক।</translation>
 <translation id="7102274145889307184">বৰ্তমানৰ অৱস্থান</translation>
+<translation id="7134810312945846184">মাইক্ৰ’ফ’ন আৰু কেমেৰা ব্যৱহাৰ কৰক</translation>
 <translation id="7263440858009898357">অনুগ্ৰহ কৰি সূচীৰ কোনো বস্তু বাছনি কৰক।</translation>
 <translation id="7320576522385648310">বাফাৰ হৈ আছে</translation>
 <translation id="7341556277900466204">ৰঙৰ বাকচ</translation>

@@ -133,6 +133,7 @@
 <translation id="3198916472715691905"><ph name="STORAGE_AMOUNT" /> সংরক্ষিত ডেটা</translation>
 <translation id="321187648315454507">তাছাড়া, যাতে <ph name="APP_NAME" /> আপনাকে বিজ্ঞপ্তি পাঠাতে পারে, তার জন্য <ph name="BEGIN_LINK" />Android সেটিংসে<ph name="END_LINK" /> গিয়েও বিজ্ঞপ্তি চালু করে দিন।</translation>
 <translation id="3227137524299004712">মাইক্রোফোন</translation>
+<translation id="3232293466644486101">ব্রাউজ করা ডেটা মুছে দিন…</translation>
 <translation id="3242646949159196181">চালু থাকলে, সাইট সাউন্ড প্লে করতে পারে। বন্ধ থাকলে, সাইট সাউন্ড প্লে করতে পারে না।</translation>
 <translation id="3277252321222022663">সাইটকে সেন্সর অ্যাক্সেস করার অনুমতি দিন (সাজেস্ট করা হয়)</translation>
 <translation id="3285500645985761267">গ্রুপে আপনার অ্যাক্টিভিটি দেখতে সম্পর্কিত সাইটগুলিকে অনুমতি দিন</translation>
@@ -307,6 +308,7 @@
 <translation id="6064125863973209585">সম্পূর্ণ হয়ে যাওয়া ডাউনলোড</translation>
 <translation id="6071501408666570960">আপনি হয়ত এই সাইট থেকে সাইন-আউট হয়ে যাবেন</translation>
 <translation id="6120483543004435978">চালু থাকলে, সাইট আপনি সক্রিয়ভাবে নিজের ডিভাইস কখন ব্যবহার করেন তা জানতে চাইতে পারে। চালু থাকলে, সাইট আপনি সক্রিয়ভাবে নিজের ডিভাইস কখন ব্যবহার করেন তা জানতে পারে না।</translation>
+<translation id="6140839633433422817">আপনি কি সত্যিই অনুমতি রিসেট করতে এবং কুকি ও সাইট ডেটা মুছে দিতে চান?</translation>
 <translation id="6165508094623778733">আরও জানুন</translation>
 <translation id="6171020522141473435">চালু থাকলে, সাইট আপনার ব্লুটুথ ডিভাইস ব্যবহার করার জন্য অনুমতি চাইতে পারে। বন্ধ থাকলে, সাইট আপনার ব্লুটুথ ডিভাইস ব্যবহার করতে পারে না।</translation>
 <translation id="6177111841848151710">বর্তমান সার্চ ইঞ্জিনের জন্য অবরুদ্ধ করা হয়েছে</translation>
@@ -340,6 +342,7 @@
 <translation id="6545864417968258051">ব্লুটুথ স্ক্যানিং</translation>
 <translation id="6552800053856095716">{PERMISSIONS_SUMMARY_BLOCKED,plural, =1{<ph name="PERMISSION_1" />, <ph name="PERMISSION_2" /> আরও <ph name="NUM_MORE" />টি সুবিধা ব্লক করা হয়েছে}one{<ph name="PERMISSION_1" />, <ph name="PERMISSION_2" /> আরও <ph name="NUM_MORE" />টি সুবিধা ব্লক করা হয়েছে}other{<ph name="PERMISSION_1" />, <ph name="PERMISSION_2" /> আরও <ph name="NUM_MORE" />টি সুবিধা ব্লক করা হয়েছে}}</translation>
 <translation id="6554732001434021288"><ph name="NUM_DAYS" /> দিন আগে শেষবার দেখেছেন</translation>
+<translation id="656065428026159829">আরও দেখুন</translation>
 <translation id="6561560012278703671">আওয়াজ ছাড়া বিজ্ঞপ্তি (বিজ্ঞপ্তির ক্ষেত্রে আওয়াজ সহ প্রম্পট ব্লক করা হয়, যাতে কাজের সময় ব্যাঘাত না ঘটে)</translation>
 <translation id="6593061639179217415">ডেস্কটপ সাইট</translation>
 <translation id="6608650720463149374"><ph name="GIGABYTES" /> জিবি</translation>

@@ -116,10 +116,12 @@
 <translation id="417201473131094001">在 Chrome Canary 版中不受支持</translation>
 <translation id="424864128008805179">退出 Chrome？</translation>
 <translation id="4251174643044751591">在 Chrome 中打开“付款方式设置”页面。</translation>
+<translation id="4286914711740227883">删除 Chrome 中的浏览数据</translation>
 <translation id="4453284704333523777">管理 Chrome 设置</translation>
 <translation id="4523886039239821078">部分插件导致 Chrome 崩溃，请卸载这些插件：</translation>
 <translation id="4633328489441962921">Chrome 无法检查是否有更新</translation>
 <translation id="4636900170638246267">登录此网站和 Chrome。</translation>
+<translation id="4742795653798179840">已删除 Chrome 数据</translation>
 <translation id="4761869838909035636">运行 Chrome 安全检查</translation>
 <translation id="4798859546468762093">若要获得个性化体验和其他功能，请在 <ph name="FEATURE_NAME_1" /> 和 <ph name="FEATURE_NAME_2" /> 中包含 Chrome</translation>
 <translation id="4819268619367838612">为帮助改进该应用，Chrome 会向 Google 发送使用情况统计信息和崩溃数据。<ph name="BEGIN_LINK" />管理<ph name="END_LINK" /></translation>
@@ -130,6 +132,7 @@
 <translation id="4840404732697892756">您需要先登录 Google 账号，然后才能使用 Google 密码管理工具的密码检查功能。</translation>
 <translation id="4860330141789125848">{COUNT,plural, =1{Chrome 可以帮助您在“新标签页”页面中跟踪此包裹。}other{Chrome 可以帮助您在“新标签页”页面中跟踪这些包裹。}}</translation>
 <translation id="4903674399067644695">此卡片会为您提供一些建议，帮助您充分利用 Chrome。</translation>
+<translation id="4919069428879420545">删除 Chrome 中的浏览数据。</translation>
 <translation id="49200511069271369">贵组织 (<ph name="DOMAIN" />) 负责管理您登录的账号和 Chrome 的使用方式。您的管理员可以设置或限制某些功能。</translation>
 <translation id="498985224078955265">若要将此标签页发送到另一设备，请在这两部设备上都登录 Chrome。</translation>
 <translation id="5030102366287574140">Chrome 可为您提供保护，帮助您免受数据泄露、不安全网站等问题的影响。</translation>
@@ -187,6 +190,9 @@
 <translation id="6648150602980899529">您正要登录由 <ph name="DOMAIN" /> 管理的账号，并要授权其管理员控制您的 Chrome 数据。您的数据将与此账号永久关联。退出 Chrome 后，您的数据将从这台设备上删除，但仍会保留在您的 Google 账号中。</translation>
 <translation id="6683891932310469419">打开 Chrome 历史记录页面。</translation>
 <translation id="6709398533399187136">您的密码在数据泄露事件中外泄。Google 密码管理器建议您立即更改此密码。</translation>
+<translation id="6820553595690137150">口令加密不涵盖付款方式和地址。
+
+如要更改此设置，请<ph name="BEGIN_LINK" />删除您账号中的 Chrome 数据<ph name="END_LINK" />。</translation>
 <translation id="6851982868877411675">在 iOS 中打开 Chrome 设置，然后点按“默认浏览器应用”并选择“Chrome”。</translation>
 <translation id="686691656039982452">您可以<ph name="BEGIN_LINK" />管理要将哪些 Chrome 数据保存<ph name="END_LINK" />到您的 Google 账号。
 
@@ -210,6 +216,7 @@
 <translation id="7261678641327190792">Chrome 无法检查您的密码</translation>
 <translation id="7272930098487145294">若要保存图片，请点按“设置”并允许 Chrome 添加照片</translation>
 <translation id="7275945473750112644">您的账号是由 <ph name="HOSTED_DOMAIN" /> 管理，所以您在此设备上存储的 Chrome 数据将会被清除</translation>
+<translation id="7284245284340063465">如果您忘记了口令或想更改此设置，请<ph name="BEGIN_LINK" />删除您账号中的 Chrome 数据<ph name="END_LINK" />。</translation>
 <translation id="7304491752269485262">Chrome 自动填充展开视图</translation>
 <translation id="7344094882820374540">利用 Chrome 的超强安全防护来保护自己免受危险网站的侵害</translation>
 <translation id="7349129508108954623">允许 Chrome 使用 Google 地图针对检测到的地址为您提供路线和当地信息。</translation>
@@ -241,6 +248,9 @@
 <translation id="8160472928944011082">Chrome 无法更新</translation>
 <translation id="8174679664544842874">在 Chrome 中打开新标签页。</translation>
 <translation id="8213758103105806860">查看 Chrome 书签</translation>
+<translation id="8317674518145175158">付款方式和地址不会加密。Chrome 中的浏览记录不会同步。
+
+只有知道您口令的人能读取您的加密数据。该口令不会发送给 Google，也不会被 Google 存储。如果您忘记了该口令或想更改此设置，请<ph name="BEGIN_LINK" />删除您账号中的 Chrome 数据<ph name="END_LINK" />。</translation>
 <translation id="8328903609881776074">打开新的 Chrome 无痕式标签页。</translation>
 <translation id="8357607116237445042">请选择是要清除还是要保留您在此设备上存储的 Chrome 数据</translation>
 <translation id="8370517070665726704">版权所有 <ph name="YEAR" /> Google LLC. 保留所有权利。</translation>

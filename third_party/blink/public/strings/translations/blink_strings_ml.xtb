@@ -12,6 +12,7 @@
 <translation id="1588438908519853928">സാധാരണം</translation>
 <translation id="1591562245178063882">ഈ മാസം</translation>
 <translation id="1637811476055996098">ഫയലുകൾ തിരഞ്ഞെടുക്കുക</translation>
+<translation id="1680090928918677457">ക്യാമറ ഉപയോഗിക്കുക</translation>
 <translation id="1681022320378710418">നിലവിലെ സമയം</translation>
 <translation id="1727839386348365796">Eyedropper</translation>
 <translation id="1729654308190250600">ശൂന്യമായിടാതെ, ഇമെയിൽ വിലാസം നൽകുക.</translation>
@@ -60,6 +61,7 @@
 <translation id="3822383571486410024">ഈ ടെക്‌സ്റ്റിന്‍റെ ദൈർഘ്യം <ph name="MIN_CHARACTERS" /> അല്ലെങ്കിൽ അതിൽക്കൂടുതൽ പ്രതീകങ്ങൾ നൽകി കൂട്ടുക. (നിങ്ങൾ നിലവിൽ <ph name="CURRENT_LENGTH" /> പ്രതീകങ്ങളാണ് ഉപയോഗിക്കുന്നത്).</translation>
 <translation id="383465348367842624">'<ph name="ATSIGN" />' എന്നതിനുശേഷം വരുന്ന ഒരു ഭാഗത്തിൽ '<ph name="INVALIDCHARACTER" />' ചിഹ്നം ഉണ്ടാകരുത്.</translation>
 <translation id="3846214748874656680">പൂർണ്ണ സ്‌ക്രീനിൽ നിന്ന് പുറത്തുകടക്കുക</translation>
+<translation id="3914173277599553213">ആവശ്യമായത്</translation>
 <translation id="4031179711345676612">മൈക്രോഫോൺ അനുവദനീയം</translation>
 <translation id="4103419683916926126">മില്ലിസെക്കൻഡ്</translation>
 <translation id="4201051445878709314">മുമ്പത്തെ മാസം കാണിക്കുക</translation>
@@ -75,6 +77,7 @@
 <translation id="4912200001568447310">നിലവിലെ ഇനം</translation>
 <translation id="4915360478455618802">സമയ പിക്കർ കാണിക്കുക</translation>
 <translation id="4924138096460353083">അനിശ്ചിതമായത്</translation>
+<translation id="49269513399674318">മൈക്രോഫോൺ ഉപയോഗിക്കുക</translation>
 <translation id="4950364064308314478">പ്രാദേശിക തീയതിയും സമയ പിക്കറും കാണിക്കുക</translation>
 <translation id="4971739861736909480"><ph name="ACCNAME" /> തിരഞ്ഞെടുത്തു</translation>
 <translation id="4975562563186953947"><ph name="SELECTED_COUNT" /> തിരഞ്ഞെടുത്തു</translation>
@@ -142,6 +145,7 @@
 <translation id="7080893216867146095">ലൊക്കേഷൻ പങ്കിടൽ അനുവദനീയമാണ്</translation>
 <translation id="709897737746224366">അഭ്യര്‍ത്ഥി ച്ചഫോര്‍മാറ്റ് ദയവായി പൊരുത്തപ്പെടുത്തുക.</translation>
 <translation id="7102274145889307184">നിലവിലെ ലൊക്കേഷൻ</translation>
+<translation id="7134810312945846184">മൈക്രോഫോണും ക്യാമറയും ഉപയോഗിക്കുക</translation>
 <translation id="7263440858009898357">പട്ടികയിലെ ഒരു ഇനം ദയവായി തിരഞ്ഞെടുക്കുക</translation>
 <translation id="7320576522385648310">ബഫർ ചെയ്യൽ</translation>
 <translation id="7341556277900466204">ലഭ്യമായ വർണ്ണ ഓപ്‌ഷനുകളുടെ സെറ്റ്</translation>

@@ -59,6 +59,7 @@
 <translation id="2574528844022712255">Chromium Yer İşaretlerini Göster</translation>
 <translation id="2590893390871230428">Chromium Verilerimi Senkronize Et</translation>
 <translation id="2592940277904433508">Chromium'u kullanmaya devam et</translation>
+<translation id="2607609479243848905">Parolanızı unuttuysanız veya bu ayarı değiştirmek istiyorsanız <ph name="BEGIN_LINK" />hesabınızdaki Chromium verilerini silin<ph name="END_LINK" />.</translation>
 <translation id="2618596336309823556">Cihazınızın Ayarlar bölümünden "<ph name="TEXT_OF_THE_SETTINGS_MENU_ITEM" />" bölümünü açıp "Chromium"u seçin</translation>
 <translation id="2618757400690011108">{COUNT,plural, =1{Chromium, Yeni Sekme sayfasında bu kargoyu takip etmenize yardımcı olacak.}other{Chromium, Yeni Sekme sayfasında bu kargoları takip etmenize yardımcı olacak.}}</translation>
 <translation id="2650312721222849884">Chromium kullandığınız her yerde sekmelerinizi görmek için senkronizasyonu açın.</translation>
@@ -73,6 +74,7 @@ Veri kullanarak Chromium deneyiminizi iyileştiren daha fazla ayar görmek için
 <translation id="2918709798697875261">Kuruluşunuz, Chromium'da oturum kapatmış olarak kalmanızı zorunlu tutuyor.</translation>
 <translation id="2942241131342758843">Bağlantıları açmak, widget'lardan arama yapmak ve diğer uygulamalarda şifreleri otomatik doldurmak için varsayılan olarak Chromium'u kullanın</translation>
 <translation id="2977470724722393594">Chromium güncel durumda</translation>
+<translation id="3044857325852340337">Chromium verileri silindi</translation>
 <translation id="3078941082359356771">{COUNT,plural, =1{Chromium, Yeni Sekme sayfasında bu kargoyu takip etmenize yardımcı olabilir.}other{Chromium, Yeni Sekme sayfasında bu kargoları takip etmenize yardımcı olabilir.}}</translation>
 <translation id="3102849287235003384">Tüm web sitelerinde Google Hesabınızın oturumunu kapatmak için <ph name="BEGIN_LINK" />Chromium oturumunu kapatın<ph name="END_LINK" />.</translation>
 <translation id="3219277919172823720">Chromium'da Sesle Arama Yap</translation>
@@ -115,11 +117,15 @@ Verileriniz parolanızla şifrelenir. Chromium verilerini kullanmak ve Google He
 <translation id="4498832288620833153">Girilen URL'leri Chromium'daki okuma listenize ekler.</translation>
 <translation id="452436063477828504">Google Hesabınızdaki Chromium verilerini her zaman kullanabildiğinizden emin olun</translation>
 <translation id="4555020257205549924">Bu özellik açık durumdayken Chromium, diğer dillerde yazılmış sayfaları Google Çeviri'yi kullanarak çevirmeyi teklif eder. <ph name="BEGIN_LINK" />Daha fazla bilgi<ph name="END_LINK" /></translation>
+<translation id="4572441104543926904">Parolayla şifreleme, ödeme yöntemlerini ve adresleri kapsamaz.
+
+Bu ayarı değiştirmek için <ph name="BEGIN_LINK" />hesabınızdaki Chromium verilerini silin<ph name="END_LINK" />.</translation>
 <translation id="4576283463017113841">Chromium'daki ödeme yöntemi ayarları sayfasını açar.</translation>
 <translation id="459080529287102949">Görselleri Chromium'da Ara</translation>
 <translation id="4633738821577273991">Bu Chromium profilinde Gelişmiş Güvenli Tarama'yı da edinin</translation>
 <translation id="4638625642619341392">Chromium'u buradan indirin.</translation>
 <translation id="4654936625574199632">Chromium, uygulamanın iyileştirilmesine yardımcı olmak için kullanım ve kilitlenme verilerini Google'a gönderir. <ph name="BEGIN_LINK" />Yönetin<ph name="END_LINK" /></translation>
+<translation id="4675485352217495362">Chromium'daki Tarama Verilerini Silin</translation>
 <translation id="4681781466797808448">Chromium tarayıcıyı açın</translation>
 <translation id="4736424910885271643">Hesabınız, <ph name="HOSTED_DOMAIN" /> tarafından yönetildiği için Chromium verileri bu cihazdan silinecek</translation>
 <translation id="4773487571745795781">Chromium oturum açma ayarını kapattınız.</translation>
@@ -187,6 +193,7 @@ Dikkate alınması gereken noktalar:
 <translation id="6324041800010509197">Chromium'daki Sekme Izgarasına Git</translation>
 <translation id="6325378625795868881">Mesajlardaki ve diğer uygulamalardaki bağlantılara her dokunduğunuzda Chromium'u kullanın.</translation>
 <translation id="632825460376924298">Chromium'da Oturum Açmaya İzin Ver</translation>
+<translation id="6332129548244419716">Chromium'daki Tarama Verilerini Silin.</translation>
 <translation id="6337530241089703714">Chromium verilerinizi bu cihazdan temizlemeyi veya saklamayı seçin</translation>
 <translation id="6348483005826990855">3. Chromium'u seçin</translation>
 <translation id="6383607155624074112">Ana ekran yuvanızdan Chromium'a daha hızlı erişin</translation>
@@ -211,6 +218,9 @@ Dikkate alınması gereken noktalar:
 <translation id="7163483974919055112">Görselleri Chromium'da arayın.</translation>
 <translation id="7165402419892018581">Otomatik doldurma için Chromium'u seçin</translation>
 <translation id="7175400662502680481">Şifreniz bir veri ihlali nedeniyle açığa çıktı. Şifre Yöneticisi bu şifreyi hemen değiştirmenizi öneriyor.</translation>
+<translation id="7185731475720473450">Ödeme yöntemleri ve adresler şifrelenmez. Chromium'daki tarama geçmişi senkronize edilmez.
+
+Sadece parolanıza sahip olan kişiler şifrelenmiş verilerinizi okuyabilir. Parola Google'a gönderilmez veya Google tarafından saklanmaz. Parolanızı unutursanız veya bu ayarı değiştirmek isterseniz <ph name="BEGIN_LINK" />hesabınızdaki Chromium verilerini silin<ph name="END_LINK" />.</translation>
 <translation id="7192111075364461693">Chromium bildirimleri cihaz ayarlarınızda devre dışı bırakılmış.</translation>
 <translation id="7222001353246886083">Chromium'da ${searchphrase} ifadesini ara</translation>
 <translation id="725427773388857052">Chromium; veri ihlallerine, güvenli olmayan web sitelerine ve diğer tehditlere karşı güvende kalmanıza yardımcı olabilir.</translation>

@@ -11,6 +11,7 @@
 <translation id="1047458377670401304"><ph name="CPU_NAME" /> (<ph name="THREAD_COUNT" /> հոսք, <ph name="CPU_MAX_CLOCK_SPEED" /> ԳՀց)</translation>
 <translation id="1047773237499189053">Հասանելի է նոր գործառույթ։ Ավելին իմանալու համար օգտագործեք վեր սլաքը։</translation>
 <translation id="1049663189809099096">պաստելային դեղին</translation>
+<translation id="1056898198331236512">Զգուշացում</translation>
 <translation id="1059913517121127803">Չհաջողվեց սկսել սկանավորումը</translation>
 <translation id="1062823486781306604"><ph name="INDEX" />/<ph name="COUNT" />, <ph name="NAME" />։</translation>
 <translation id="1070066693520972135">WEP</translation>
@@ -95,7 +96,6 @@
 <translation id="1478594628797167447">Սկաներ</translation>
 <translation id="1483493594462132177">Ուղարկել</translation>
 <translation id="1488850966314959671">Միացված հատուկ APN-ներից ոչ մեկի միջոցով չհաջողվեց միանալ այս ցանցին։ Լրացուցիչ տեղեկությունների համար կապվեք ձեր բջջային օպերատորի հետ։</translation>
-<translation id="1491076385728777984"><ph name="DEVICE_NAME" /> սարքի ներկառուցված ծրագրաշարը թարմացվում է</translation>
 <translation id="1499041187027566160">բարձրացնել ձայնը</translation>
 <translation id="1499900233129743732">Այս օգտատերը կառավարվում է <ph name="MANAGER" />-ի կողմից, և վերջինս նաև կարող է հեռակա կառավարել կարգավորումներն ու վերահսկել օգտատիրոջ գործողությունները։</translation>
 <translation id="150962533380566081">Անվավեր PUK:</translation>
@@ -291,7 +291,6 @@
 <translation id="2505327257735685095">Թարմացնել ընթացիկ պաստառը</translation>
 <translation id="2512979179176933762">ցուցադրել պատուհանները</translation>
 <translation id="2513396635448525189">Մուտքի պատկեր</translation>
-<translation id="2517472476991765520">Որոնել</translation>
 <translation id="2521835766824839541">նախորդ կատարումը</translation>
 <translation id="2526590354069164005">Աշխատասեղան</translation>
 <translation id="2529641961800709867">Կոճակների ընտրանքներ</translation>
@@ -330,6 +329,7 @@
 <translation id="2744221223678373668">Համօգտագործված</translation>
 <translation id="2751739896257479635">EAP նույնականացման փուլ 2</translation>
 <translation id="2754757901767760034">լամպ</translation>
+<translation id="2780756493585863768">Google AI տեխնոլոգիաներով ստեղծված վերջին ֆոները</translation>
 <translation id="2783010256799387990">ԱՆՑԱԾ Է</translation>
 <translation id="2786429550992142861">քաթան</translation>
 <translation id="2787435249130282949">ստեղնաշարի լուսավորության ավելացում</translation>
@@ -426,6 +426,7 @@
 <translation id="3456078764689556234">Տպված էջ՝ <ph name="PRINTED_PAGES" />/<ph name="TOTAL_PAGES" />։</translation>
 <translation id="345898999683440380">Սկանավորվում է էջ <ph name="PAGE_NUM" />-ը։ Կատարված է <ph name="PERCENTAGE_VALUE" />%-ը։</translation>
 <translation id="3459509316159669723">Տպում</translation>
+<translation id="3462187165860821523"><ph name="DEVICE_NAME" /> սարքը թարմացվում է</translation>
 <translation id="346423161771747987">Ընթացիկ</translation>
 <translation id="346539236881580388">Նորից լուսանկարել</translation>
 <translation id="3484914941826596830">Քանի դեռ ներկառուցված ծրագիրը թարմացվում է, մի՛ անջատեք ձեր համակարգիչը կամ այս արտաքին սարքը համակարգչից։ Դուք կարող եք փոքրացնել այս պատուհանը։ Այս թարմացումը կարող է մի քանի րոպե տևել, և այդ ընթացքում արտաքին սարքը հնարավոր է, որ չաշխատի։</translation>
@@ -790,6 +791,7 @@
 <translation id="5559898619118303662">Մայրամուտին ավտոմատ միացնել մուգ թեման</translation>
 <translation id="556042886152191864">Կոճակ</translation>
 <translation id="5562551811867441927"><ph name="TERRAIN_FEATURE" /> <ph name="TERRAIN_COLOR" /> երանգներով</translation>
+<translation id="5572169899491758844">Սկանավորել</translation>
 <translation id="5578477003638479617">UMTS</translation>
 <translation id="5578519639599103840">Նորից սկանավորել</translation>
 <translation id="5583640892426849032">Backspace</translation>
@@ -879,7 +881,6 @@
 <translation id="6075872808778243331">HTTP-ի հապաղում (Android)</translation>
 <translation id="6078323886959318429">Ավելացնել դյուրանցում</translation>
 <translation id="6091080061796993741">դեղին</translation>
-<translation id="610371409726072606">Տեսախցիկի ֆոնը ստեղծվել է Google AI տեխնոլոգիաներով</translation>
 <translation id="6104112872696127344">Սկանավորումը չեղարկվել է</translation>
 <translation id="6106186594183574873">Ավարտելու համար մուտքագրեք ձեր հին գաղտնաբառը</translation>
 <translation id="6108689792487843350">Անցախուցն անհասանելի է</translation>
@@ -1011,7 +1012,6 @@
 <translation id="672609503628871915">Իմանալ՝ ինչ նոր բան կա</translation>
 <translation id="6740695858234317715">սերուցքագույն և նարնջագույն</translation>
 <translation id="6741823073189174383">նավակ</translation>
-<translation id="674276385369049081">Տեսախցիկի՝ Google AI տեխնոլոգիաներով ստեղծված վերջին ֆոները</translation>
 <translation id="6744441848304920043">ջունգլի</translation>
 <translation id="6747035363363040417">չեզոք</translation>
 <translation id="6747215703636344499">Դադարեցվել է – Ելքային դարակը լցված է</translation>
@@ -1032,6 +1032,7 @@
 <translation id="6871256179359663621">բաց մանուշակագույն</translation>
 <translation id="6889786074662672253">Վերագործարկման ժամանակ մի՛ անջատեք ձեր համակարգիչը կամ այս արտաքին սարքը համակարգչից։ Դուք կարող եք փոքրացնել այս պատուհանը։ Վերագործարկումը կարող է մի քանի րոպե տևել, և այդ ընթացքում արտաքին սարքը հնարավոր է, որ չաշխատի։</translation>
 <translation id="6900701049656042631">Այս ալբոմում չկան լուսանկարներ։ Լուսանկարներ ավելացնելու համար անցեք <ph name="LINK" />։</translation>
+<translation id="6902359863093437070">Ստեղծեք ֆոն արհեստական բանականության օգնությամբ</translation>
 <translation id="6905163627763043954">Փորձել</translation>
 <translation id="6905724422583748843">Վերադառնալ <ph name="PAGE_NAME" /></translation>
 <translation id="6910312834584889076">Սկաների կափարիչը բաց է։ Փակեք այն և նորից փորձեք։</translation>
@@ -1269,6 +1270,7 @@
 <translation id="8152370627892825"><ph name="DESCRIPTION" />, <ph name="ACCELERATOR_INFO" />։</translation>
 <translation id="8156233298086717232">կախարդական</translation>
 <translation id="8162776280680283326">աղվեսներ</translation>
+<translation id="8167413449582155132">Ֆոն՝ ստեղծված Google AI տեխնոլոգիաների հիման վրա</translation>
 <translation id="8179976553408161302">Enter</translation>
 <translation id="8183975772394450380">լողափ</translation>
 <translation id="8206859287963243715">Բջջային</translation>

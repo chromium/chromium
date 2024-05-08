@@ -59,6 +59,7 @@
 <translation id="2574528844022712255">Просмотр закладок Chromium</translation>
 <translation id="2590893390871230428">Синхронизировать данные Chromium</translation>
 <translation id="2592940277904433508">Продолжить работу в Chromium</translation>
+<translation id="2607609479243848905">Если вы забыли кодовую фразу или хотите ее изменить, <ph name="BEGIN_LINK" />удалите данные Chromium из аккаунта<ph name="END_LINK" />.</translation>
 <translation id="2618596336309823556">В настройках устройства откройте раздел "<ph name="TEXT_OF_THE_SETTINGS_MENU_ITEM" />" и выберите Chromium</translation>
 <translation id="2618757400690011108">{COUNT,plural, =1{Эта посылка будет отслеживаться на странице быстрого доступа в Chromium.}one{Эти посылки будут отслеживаться на странице быстрого доступа в Chromium.}few{Эти посылки будут отслеживаться на странице быстрого доступа в Chromium.}many{Эти посылки будут отслеживаться на странице быстрого доступа в Chromium.}other{Эти посылки будут отслеживаться на странице быстрого доступа в Chromium.}}</translation>
 <translation id="2650312721222849884">Чтобы ваши вкладки всегда были доступны вам при работе с Chromium, включите синхронизацию.</translation>
@@ -116,6 +117,9 @@
 <translation id="4498832288620833153">Указанные URL будут добавлены в список для чтения в Chromium.</translation>
 <translation id="452436063477828504">Обеспечьте доступ к данным Chromium в аккаунте Google.</translation>
 <translation id="4555020257205549924">Когда эта функция включена, Chrome предлагает перевести страницы с помощью Google Переводчика. <ph name="BEGIN_LINK" />Подробнее…<ph name="END_LINK" /></translation>
+<translation id="4572441104543926904">Способы оплаты и адреса не шифруются кодовой фразой.
+
+Чтобы это изменить, <ph name="BEGIN_LINK" />удалите данные Chromium из аккаунта<ph name="END_LINK" />.</translation>
 <translation id="4576283463017113841">Откроется страница настройки способов оплаты в Chromium.</translation>
 <translation id="459080529287102949">Искать изображения в Chromium</translation>
 <translation id="4633738821577273991">Для этого профиля Chromium также доступен улучшенный Безопасный просмотр.</translation>
@@ -214,6 +218,9 @@
 <translation id="7163483974919055112">Искать изображения в Chromium.</translation>
 <translation id="7165402419892018581">Укажите значение Chromium для параметра "Автозаполнение"</translation>
 <translation id="7175400662502680481">Ваш пароль раскрыт из-за утечки данных. Измените его прямо сейчас в Менеджере паролей.</translation>
+<translation id="7185731475720473450">Способы оплаты и адреса не будут шифроваться, а история браузера Chromium – синхронизироваться.
+
+Прочесть ваши зашифрованные данные сможет только тот, кто знает кодовую фразу. Она не отправляется компании Google и не хранится на ее серверах. Если вы забыли кодовую фразу или хотите ее изменить, <ph name="BEGIN_LINK" />удалите данные Chromium из аккаунта<ph name="END_LINK" />.</translation>
 <translation id="7192111075364461693">Включите уведомления Chromium на своем устройстве.</translation>
 <translation id="7222001353246886083">Искать "${searchPhrase}" в Chromium</translation>
 <translation id="725427773388857052">Chromium поможет обеспечить защиту от утечки данных, подозрительных сайтов и других проблем с безопасностью.</translation>

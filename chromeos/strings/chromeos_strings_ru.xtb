@@ -11,6 +11,7 @@
 <translation id="1047458377670401304"><ph name="CPU_NAME" /> (потоки: <ph name="THREAD_COUNT" />, <ph name="CPU_MAX_CLOCK_SPEED" /> ГГц)</translation>
 <translation id="1047773237499189053">Доступна новая функция. Чтобы получить подробную информацию, нажмите на стрелку вверх.</translation>
 <translation id="1049663189809099096">пастельно-желтый</translation>
+<translation id="1056898198331236512">Внимание</translation>
 <translation id="1059913517121127803">Не удалось начать сканирование.</translation>
 <translation id="1062823486781306604"><ph name="NAME" /> (<ph name="INDEX" /> из <ph name="COUNT" />).</translation>
 <translation id="1070066693520972135">WEP</translation>
@@ -95,7 +96,6 @@
 <translation id="1478594628797167447">Сканер</translation>
 <translation id="1483493594462132177">Отправить</translation>
 <translation id="1488850966314959671">Не удается подключиться к этой сети через включенные персональные точки доступа. За подробной информацией обратитесь к оператору мобильной связи.</translation>
-<translation id="1491076385728777984"><ph name="DEVICE_NAME" />: обновление встроенного ПО…</translation>
 <translation id="1499041187027566160">увеличить громкость</translation>
 <translation id="1499900233129743732">Этим аккаунтом управляет <ph name="MANAGER" />. Администратор может отслеживать действия пользователя, а также удаленно изменять настройки.</translation>
 <translation id="150962533380566081">Неверный PUK-код.</translation>
@@ -291,7 +291,6 @@
 <translation id="2505327257735685095">Обновить обои</translation>
 <translation id="2512979179176933762">показать окна</translation>
 <translation id="2513396635448525189">Изображение на экране входа</translation>
-<translation id="2517472476991765520">Сканировать</translation>
 <translation id="2521835766824839541">предыдущий трек</translation>
 <translation id="2526590354069164005">Рабочий стол</translation>
 <translation id="2529641961800709867">Настройки кнопок</translation>
@@ -330,6 +329,7 @@
 <translation id="2744221223678373668">Общедоступные</translation>
 <translation id="2751739896257479635">2-й этап аутентификации EAP</translation>
 <translation id="2754757901767760034">светильник</translation>
+<translation id="2780756493585863768">Новые фоны, созданные с помощью ИИ от Google</translation>
 <translation id="2783010256799387990">ПРОЙДЕНО</translation>
 <translation id="2786429550992142861">лен</translation>
 <translation id="2787435249130282949">увеличить яркость клавиатуры</translation>
@@ -426,6 +426,7 @@
 <translation id="3456078764689556234">Напечатано страниц: <ph name="PRINTED_PAGES" /> из <ph name="TOTAL_PAGES" />.</translation>
 <translation id="345898999683440380">Сканирование страницы <ph name="PAGE_NUM" />. Выполнено <ph name="PERCENTAGE_VALUE" /> %.</translation>
 <translation id="3459509316159669723">Печать</translation>
+<translation id="3462187165860821523">Обновление встроенного ПО для устройства "<ph name="DEVICE_NAME" />"</translation>
 <translation id="346423161771747987">Потребление электроэнергии</translation>
 <translation id="346539236881580388">Переснять</translation>
 <translation id="3484914941826596830">Пока выполняется обновление встроенного ПО, не отключайте внешнее устройство и не выключайте компьютер. Это окно можно свернуть. Обновление займет несколько минут, в течение которых внешнее устройство может не работать.</translation>
@@ -790,6 +791,7 @@
 <translation id="5559898619118303662">Автоматически включать тёмную тему на закате</translation>
 <translation id="556042886152191864">Кнопка</translation>
 <translation id="5562551811867441927"><ph name="TERRAIN_FEATURE" /> в <ph name="TERRAIN_COLOR" /> оттенках</translation>
+<translation id="5572169899491758844">Сканирование</translation>
 <translation id="5578477003638479617">UMTS</translation>
 <translation id="5578519639599103840">Сканировать повторно</translation>
 <translation id="5583640892426849032">Клавиша возврата (Backspace)</translation>
@@ -879,7 +881,6 @@
 <translation id="6075872808778243331">Время ожидания HTTP (Android)</translation>
 <translation id="6078323886959318429">Добавить ярлык</translation>
 <translation id="6091080061796993741">желтый</translation>
-<translation id="610371409726072606">Фоновое изображение для камеры, сгенерированное с помощью ИИ от Google</translation>
 <translation id="6104112872696127344">Сканирование отменено.</translation>
 <translation id="6106186594183574873">Для завершения введите старый пароль.</translation>
 <translation id="6108689792487843350">Шлюз недоступен.</translation>
@@ -1011,7 +1012,6 @@
 <translation id="672609503628871915">Узнать, что нового</translation>
 <translation id="6740695858234317715">кремовый и оранжевый</translation>
 <translation id="6741823073189174383">лодка</translation>
-<translation id="674276385369049081">Новые фоновые изображения для камеры, сгенерированные с помощью ИИ от Google</translation>
 <translation id="6744441848304920043">джунгли</translation>
 <translation id="6747035363363040417">нейтральный</translation>
 <translation id="6747215703636344499">Печать прервана: выходной лоток заполнен</translation>
@@ -1032,6 +1032,7 @@
 <translation id="6871256179359663621">светло-фиолетовый</translation>
 <translation id="6889786074662672253">Во время перезапуска не отключайте внешнее устройство и не завершайте работу компьютера. Это окно можно свернуть. Перезапуск займет несколько минут, в течение которых внешнее устройство может не работать.</translation>
 <translation id="6900701049656042631">Этот альбом пустой. Добавить фотографии можно на сайте <ph name="LINK" />.</translation>
+<translation id="6902359863093437070">Создание фона с помощью ИИ</translation>
 <translation id="6905163627763043954">Применить пароль</translation>
 <translation id="6905724422583748843">Вернуться на страницу "<ph name="PAGE_NAME" />"</translation>
 <translation id="6910312834584889076">Открыта крышка сканера. Закройте крышку и повторите попытку.</translation>
@@ -1269,6 +1270,7 @@
 <translation id="8152370627892825"><ph name="DESCRIPTION" />, <ph name="ACCELERATOR_INFO" />.</translation>
 <translation id="8156233298086717232">магия</translation>
 <translation id="8162776280680283326">лисы</translation>
+<translation id="8167413449582155132">Фон, созданный с помощью ИИ от Google</translation>
 <translation id="8179976553408161302">ВВОД</translation>
 <translation id="8183975772394450380">пляж</translation>
 <translation id="8206859287963243715">Сотовый</translation>

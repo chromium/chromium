@@ -11,6 +11,7 @@
 <translation id="1047458377670401304"><ph name="CPU_NAME" /> (<ph name="THREAD_COUNT" /> tråde, <ph name="CPU_MAX_CLOCK_SPEED" /> GHz)</translation>
 <translation id="1047773237499189053">Nye funktioner er tilgængelige. Tryk på pil op for at få flere oplysninger.</translation>
 <translation id="1049663189809099096">pastelgul</translation>
+<translation id="1056898198331236512">Advarsel</translation>
 <translation id="1059913517121127803">Kunne ikke begynde at scanne</translation>
 <translation id="1062823486781306604"><ph name="INDEX" /> af <ph name="COUNT" />, <ph name="NAME" />.</translation>
 <translation id="1070066693520972135">WEP</translation>
@@ -95,7 +96,6 @@
 <translation id="1478594628797167447">Scanner</translation>
 <translation id="1483493594462132177">Send</translation>
 <translation id="1488850966314959671">Der kan ikke oprettes forbindelse til dette netværk via aktiverede tilpassede APN'er. Kontakt dit mobilselskab for at få flere oplysninger.</translation>
-<translation id="1491076385728777984">Opdaterer firmware på <ph name="DEVICE_NAME" /></translation>
 <translation id="1499041187027566160">lydstyrke op</translation>
 <translation id="1499900233129743732"><ph name="MANAGER" /> administrerer denne bruger, og vedkommende kan administrere indstillinger og overvåge brugeraktivitet via fjernadgang.</translation>
 <translation id="150962533380566081">Ugyldig PUK-kode.</translation>
@@ -291,7 +291,6 @@
 <translation id="2505327257735685095">Opdater det aktuelle baggrundsbillede</translation>
 <translation id="2512979179176933762">se vinduer</translation>
 <translation id="2513396635448525189">Loginbillede</translation>
-<translation id="2517472476991765520">Scan</translation>
 <translation id="2521835766824839541">forrige nummer</translation>
 <translation id="2526590354069164005">Skrivebord</translation>
 <translation id="2529641961800709867">Knapindstillinger</translation>
@@ -330,6 +329,7 @@
 <translation id="2744221223678373668">Delte</translation>
 <translation id="2751739896257479635">EAP fase 2-godkendelse</translation>
 <translation id="2754757901767760034">en lampe</translation>
+<translation id="2780756493585863768">Seneste baggrunde baseret på Googles AI</translation>
 <translation id="2783010256799387990">GENNEMFØRT</translation>
 <translation id="2786429550992142861">linned</translation>
 <translation id="2787435249130282949">lysere tastatur</translation>
@@ -426,6 +426,7 @@
 <translation id="3456078764689556234"><ph name="PRINTED_PAGES" /> ud af <ph name="TOTAL_PAGES" /> er blevet udskrevet.</translation>
 <translation id="345898999683440380">Scanner side <ph name="PAGE_NUM" />. <ph name="PERCENTAGE_VALUE" /> % er blevet scannet.</translation>
 <translation id="3459509316159669723">Udskrivning</translation>
+<translation id="3462187165860821523">Opdaterer <ph name="DEVICE_NAME" /></translation>
 <translation id="346423161771747987">Strøm</translation>
 <translation id="346539236881580388">Tag igen</translation>
 <translation id="3484914941826596830">Du må ikke frakoble den eksterne enhed eller slukke din computer, mens firmwaren opdaterer. Du kan minimere dette vindue. Denne opdatering kan tage et par minutter, og din eksterne enhed fungerer muligvis ikke under opdateringen.</translation>
@@ -790,6 +791,7 @@
 <translation id="5559898619118303662">Skift automatisk til Mørkt tema ved solnedgang</translation>
 <translation id="556042886152191864">Knap</translation>
 <translation id="5562551811867441927"><ph name="TERRAIN_FEATURE" /> i nuancen <ph name="TERRAIN_COLOR" /></translation>
+<translation id="5572169899491758844">Scan</translation>
 <translation id="5578477003638479617">UMTS</translation>
 <translation id="5578519639599103840">Scan igen</translation>
 <translation id="5583640892426849032">Backspace</translation>
@@ -879,7 +881,6 @@
 <translation id="6075872808778243331">(Android) HTTP-forsinkelse</translation>
 <translation id="6078323886959318429">Tilføj genvej</translation>
 <translation id="6091080061796993741">gul</translation>
-<translation id="610371409726072606">Kamerabaggrund baseret på Googles AI</translation>
 <translation id="6104112872696127344">Scanningen blev annulleret</translation>
 <translation id="6106186594183574873">Angiv din gamle adgangskode for at afslutte</translation>
 <translation id="6108689792487843350">Denne gateway kan ikke nås</translation>
@@ -1011,7 +1012,6 @@
 <translation id="672609503628871915">Se de nye funktioner</translation>
 <translation id="6740695858234317715">cremefarvet og orange</translation>
 <translation id="6741823073189174383">en båd</translation>
-<translation id="674276385369049081">Seneste kamerabaggrunde baseret på Googles AI</translation>
 <translation id="6744441848304920043">en jungle</translation>
 <translation id="6747035363363040417">neutralt</translation>
 <translation id="6747215703636344499">Stoppet – Fuld udskriftsbakke</translation>
@@ -1032,6 +1032,7 @@
 <translation id="6871256179359663621">lyselilla</translation>
 <translation id="6889786074662672253">Når du genstarter, må du ikke frakoble denne eksterne enhed eller slukke din computer. Du kan minimere dette vindue. Genstarten kan tage et par minutter, og din eksterne enhed fungerer muligvis ikke under opdateringen.</translation>
 <translation id="6900701049656042631">Dette album indeholder ingen billeder. Du kan tilføje billeder ved at gå til <ph name="LINK" /></translation>
+<translation id="6902359863093437070">Opret baggrund med AI</translation>
 <translation id="6905163627763043954">Prøv det</translation>
 <translation id="6905724422583748843">Tilbage til <ph name="PAGE_NAME" /></translation>
 <translation id="6910312834584889076">Scannerens er åben. Luk den, og prøv igen.</translation>
@@ -1269,6 +1270,7 @@
 <translation id="8152370627892825"><ph name="DESCRIPTION" />, <ph name="ACCELERATOR_INFO" />.</translation>
 <translation id="8156233298086717232">magisk</translation>
 <translation id="8162776280680283326">ræve</translation>
+<translation id="8167413449582155132">Baggrund baseret på Googles AI</translation>
 <translation id="8179976553408161302">Enter</translation>
 <translation id="8183975772394450380">en strand</translation>
 <translation id="8206859287963243715">Mobil</translation>

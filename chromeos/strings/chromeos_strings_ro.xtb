@@ -11,6 +11,7 @@
 <translation id="1047458377670401304"><ph name="CPU_NAME" /> (<ph name="THREAD_COUNT" /> fire, <ph name="CPU_MAX_CLOCK_SPEED" /> GHz)</translation>
 <translation id="1047773237499189053">Funcție nouă disponibilă; folosește tasta săgeată în sus ca să afli mai multe.</translation>
 <translation id="1049663189809099096">galben pastelat</translation>
+<translation id="1056898198331236512">Avertisment</translation>
 <translation id="1059913517121127803">Nu s-a putut începe scanarea</translation>
 <translation id="1062823486781306604"><ph name="INDEX" /> din <ph name="COUNT" />, <ph name="NAME" />.</translation>
 <translation id="1070066693520972135">WEP</translation>
@@ -28,6 +29,7 @@
 <translation id="1145018782460575098">Fereastra de actualizare a firmware-ului pentru dispozitivele externe este deschisă. <ph name="NUM_UPDATES" /> actualizări disponibile.</translation>
 <translation id="1145516343487477149">Găsește articole de ajutor și răspunsuri la întrebările frecvente despre Chromebookuri</translation>
 <translation id="1154390310959620237">Poți personaliza doar cinci comenzi rapide. Șterge o comandă rapidă ca să adaugi alta.</translation>
+<translation id="1155154308031262006">Introdu o solicitare</translation>
 <translation id="115705039208660697">ananași</translation>
 <translation id="1164939766849482256">Screensaver din zori până seara</translation>
 <translation id="1167755866710282443">Deschide meniul pentru a personaliza tastele. Trage meniul pentru a muta.</translation>
@@ -95,7 +97,6 @@
 <translation id="1478594628797167447">Scaner</translation>
 <translation id="1483493594462132177">Trimite</translation>
 <translation id="1488850966314959671">Nu se poate conecta la această rețea utilizând niciun APN personalizat activat. Contactează operatorul de telefonie mobilă pentru informații suplimentare.</translation>
-<translation id="1491076385728777984">Se actualizează firmware-ul pe <ph name="DEVICE_NAME" /></translation>
 <translation id="1499041187027566160">mărește volumul</translation>
 <translation id="1499900233129743732"><ph name="MANAGER" /> gestionează acest utilizator și poate să gestioneze de la distanță setările și să monitorizeze activitatea utilizatorului.</translation>
 <translation id="150962533380566081">PUK nevalid.</translation>
@@ -291,7 +292,6 @@
 <translation id="2505327257735685095">Actualizează imaginea de fundal actuală</translation>
 <translation id="2512979179176933762">afișează ferestrele</translation>
 <translation id="2513396635448525189">Imagine de conectare</translation>
-<translation id="2517472476991765520">Scanează</translation>
 <translation id="2521835766824839541">melodia anterioară</translation>
 <translation id="2526590354069164005">Desktop</translation>
 <translation id="2529641961800709867">Opțiuni buton</translation>
@@ -330,6 +330,7 @@
 <translation id="2744221223678373668">Comune</translation>
 <translation id="2751739896257479635">Autentificare EAP din a doua fază</translation>
 <translation id="2754757901767760034">lampă</translation>
+<translation id="2780756493585863768">Fundaluri recente dezvoltate de Google AI</translation>
 <translation id="2783010256799387990">REUȘIT</translation>
 <translation id="2786429550992142861">pânză de in</translation>
 <translation id="2787435249130282949">tastatură mai luminoasă</translation>
@@ -426,6 +427,7 @@
 <translation id="3456078764689556234">S-a printat pagina <ph name="PRINTED_PAGES" /> din <ph name="TOTAL_PAGES" />.</translation>
 <translation id="345898999683440380">Se scanează pagina <ph name="PAGE_NUM" />. Progres: <ph name="PERCENTAGE_VALUE" /> %.</translation>
 <translation id="3459509316159669723">Printare</translation>
+<translation id="3462187165860821523">Se actualizează dispozitivul <ph name="DEVICE_NAME" /></translation>
 <translation id="346423161771747987">Actual</translation>
 <translation id="346539236881580388">Refă</translation>
 <translation id="3484914941826596830">Nu deconecta dispozitivul extern și nu închide computerul în timpul actualizării firmware-ului. Poți să minimizezi fereastra. Actualizarea poate să dureze câteva minute și este posibil ca dispozitivul extern să nu funcționeze în această perioadă.</translation>
@@ -790,6 +792,7 @@
 <translation id="5559898619118303662">Comută automat la tema întunecată la apus</translation>
 <translation id="556042886152191864">Buton</translation>
 <translation id="5562551811867441927"><ph name="TERRAIN_FEATURE" /> în nuanțe de <ph name="TERRAIN_COLOR" /></translation>
+<translation id="5572169899491758844">Scanează</translation>
 <translation id="5578477003638479617">UMTS</translation>
 <translation id="5578519639599103840">Scanează din nou</translation>
 <translation id="5583640892426849032">Backspace</translation>
@@ -879,7 +882,6 @@
 <translation id="6075872808778243331">(Android) Latența solicitărilor HTTP</translation>
 <translation id="6078323886959318429">Adaugă o comandă rapidă</translation>
 <translation id="6091080061796993741">galben</translation>
-<translation id="610371409726072606">Fundal pentru camera foto dezvoltat de Google AI</translation>
 <translation id="6104112872696127344">Scanarea a fost anulată</translation>
 <translation id="6106186594183574873">Pentru a finaliza, introdu vechea parolă</translation>
 <translation id="6108689792487843350">Gateway-ul nu poate fi accesat</translation>
@@ -906,6 +908,7 @@
 <translation id="6205145102504628069">Cloud Flow</translation>
 <translation id="6213737986933151570">CDMA1XRTT</translation>
 <translation id="6223752125779001553">Niciun scaner disponibil</translation>
+<translation id="6231648282154119906">Fișierele suspecte vor fi scanate automat de Navigarea sigură Google în cadrul protecției îmbunătățite pe care ai ales-o</translation>
 <translation id="6232017090690406397">Baterie</translation>
 <translation id="6234024205316847054">Afișează contururile</translation>
 <translation id="6235460611964961764">Resetează manual utilizarea datelor</translation>
@@ -1011,7 +1014,6 @@
 <translation id="672609503628871915">Vedeți noutățile</translation>
 <translation id="6740695858234317715">crem și portocaliu</translation>
 <translation id="6741823073189174383">ambarcațiune</translation>
-<translation id="674276385369049081">Fundaluri recente dezvoltate de Google AI pentru camere foto</translation>
 <translation id="6744441848304920043">junglă</translation>
 <translation id="6747035363363040417">neutră</translation>
 <translation id="6747215703636344499">Oprită – Tavă de ieșire plină</translation>
@@ -1032,6 +1034,7 @@
 <translation id="6871256179359663621">mov deschis</translation>
 <translation id="6889786074662672253">Nu deconecta dispozitivul extern și nu închide computerul în timpul repornirii. Poți să minimizezi fereastra. Actualizarea poate să dureze câteva minute și este posibil ca dispozitivul extern să nu funcționeze în această perioadă.</translation>
 <translation id="6900701049656042631">Acest album nu conține nicio fotografie. Pentru a adăuga fotografii, accesează <ph name="LINK" /></translation>
+<translation id="6902359863093437070">Creează un fundal cu AI</translation>
 <translation id="6905163627763043954">Încearcă-l</translation>
 <translation id="6905724422583748843">Înapoi la <ph name="PAGE_NAME" /></translation>
 <translation id="6910312834584889076">Capacul scanerului este deschis. Închide capacul și încearcă din nou.</translation>
@@ -1269,6 +1272,7 @@
 <translation id="8152370627892825"><ph name="DESCRIPTION" />, <ph name="ACCELERATOR_INFO" />.</translation>
 <translation id="8156233298086717232">magic</translation>
 <translation id="8162776280680283326">vulpi</translation>
+<translation id="8167413449582155132">Fundal dezvoltat de Google AI</translation>
 <translation id="8179976553408161302">Enter</translation>
 <translation id="8183975772394450380">plajă</translation>
 <translation id="8206859287963243715">Celular</translation>

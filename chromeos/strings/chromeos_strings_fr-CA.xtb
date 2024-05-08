@@ -11,6 +11,7 @@
 <translation id="1047458377670401304"><ph name="CPU_NAME" /> (<ph name="THREAD_COUNT" /> fils d'exécution, <ph name="CPU_MAX_CLOCK_SPEED" /> GHz)</translation>
 <translation id="1047773237499189053">Une nouvelle fonctionnalité est proposée, servez-vous de la touche de flèche vers le haut pour en savoir plus.</translation>
 <translation id="1049663189809099096">jaune pastel</translation>
+<translation id="1056898198331236512">Avertissement</translation>
 <translation id="1059913517121127803">Impossible de démarrer la numérisation</translation>
 <translation id="1062823486781306604"><ph name="INDEX" /> sur <ph name="COUNT" />, <ph name="NAME" />.</translation>
 <translation id="1070066693520972135">WEP</translation>
@@ -28,6 +29,7 @@
 <translation id="1145018782460575098">La fenêtre de mise à jour du micrologiciel pour les appareils externes est ouverte. <ph name="NUM_UPDATES" /> mises à jour disponibles.</translation>
 <translation id="1145516343487477149">Trouvez des articles d'aide et des réponses aux questions courantes relatives au Chromebook</translation>
 <translation id="1154390310959620237">Vous ne pouvez personnaliser que cinq raccourcis. Supprimez un raccourci pour en ajouter un nouveau.</translation>
+<translation id="1155154308031262006">Saisissez une requête</translation>
 <translation id="115705039208660697">ananas</translation>
 <translation id="1164939766849482256">Écran de veille de l'aube à l'obscurité</translation>
 <translation id="1167755866710282443">Ouvrez le menu pour personnaliser les clés. Faites glisser le menu pour le déplacer.</translation>
@@ -95,7 +97,6 @@
 <translation id="1478594628797167447">Numériseur</translation>
 <translation id="1483493594462132177">Envoi</translation>
 <translation id="1488850966314959671">Impossible de se connecter à ce réseau à l'aide de nom de points d'accès (APN) personnalisés activés. Contactez votre fournisseur de services cellulaires pour plus d'informations.</translation>
-<translation id="1491076385728777984">Mise à jour du micrologiciel de <ph name="DEVICE_NAME" /> en cours…</translation>
 <translation id="1499041187027566160">augmenter le volume</translation>
 <translation id="1499900233129743732"><ph name="MANAGER" /> gère cet utilisateur et peut gérer ses paramètres et faire le suivi de son activité à distance.</translation>
 <translation id="150962533380566081">Clé PUK non valide.</translation>
@@ -291,7 +292,6 @@
 <translation id="2505327257735685095">Actualiser le fond d'écran actuel</translation>
 <translation id="2512979179176933762">afficher les fenêtres</translation>
 <translation id="2513396635448525189">Image de connexion</translation>
-<translation id="2517472476991765520">Rechercher</translation>
 <translation id="2521835766824839541">chanson précédente</translation>
 <translation id="2526590354069164005">Ordinateur de bureau</translation>
 <translation id="2529641961800709867">Options des boutons</translation>
@@ -330,6 +330,7 @@
 <translation id="2744221223678373668">Partagé</translation>
 <translation id="2751739896257479635">Authentification EAP phase 2</translation>
 <translation id="2754757901767760034">lampe</translation>
+<translation id="2780756493585863768">Arrière-plans récents propulsés par l'IA de Google</translation>
 <translation id="2783010256799387990">TEST RÉUSSI</translation>
 <translation id="2786429550992142861">lin</translation>
 <translation id="2787435249130282949">clavier plus lumineux</translation>
@@ -426,6 +427,7 @@
 <translation id="3456078764689556234">Page imprimée <ph name="PRINTED_PAGES" /> sur <ph name="TOTAL_PAGES" />.</translation>
 <translation id="345898999683440380">Numérisation de la page <ph name="PAGE_NUM" /> en cours… Progression : <ph name="PERCENTAGE_VALUE" /> %.</translation>
 <translation id="3459509316159669723">Impression</translation>
+<translation id="3462187165860821523">Mise à jour de <ph name="DEVICE_NAME" /> en cours…</translation>
 <translation id="346423161771747987">Courant</translation>
 <translation id="346539236881580388">Recommencer</translation>
 <translation id="3484914941826596830">Pendant la mise à jour du micrologiciel, ne débranchez pas cet appareil externe et n'éteignez pas votre ordinateur. Vous pouvez réduire cette fenêtre. Cette mise à jour peut prendre quelques minutes, et votre appareil externe peut ne pas fonctionner pendant ce temps.</translation>
@@ -790,6 +792,7 @@
 <translation id="5559898619118303662">Basculer automatiquement au thème sombre au coucher du soleil</translation>
 <translation id="556042886152191864">Bouton</translation>
 <translation id="5562551811867441927"><ph name="TERRAIN_FEATURE" /> dans les tons de <ph name="TERRAIN_COLOR" /></translation>
+<translation id="5572169899491758844">Analyser</translation>
 <translation id="5578477003638479617">UMTS</translation>
 <translation id="5578519639599103840">Numériser de nouveau</translation>
 <translation id="5583640892426849032">Effacement arrière</translation>
@@ -879,7 +882,6 @@
 <translation id="6075872808778243331">Latence HTTP (Android)</translation>
 <translation id="6078323886959318429">Ajouter un raccourci</translation>
 <translation id="6091080061796993741">jaune</translation>
-<translation id="610371409726072606">Arrière-plan de caméra propulsé par l'IA de Google</translation>
 <translation id="6104112872696127344">La numérisation a été annulée</translation>
 <translation id="6106186594183574873">Pour terminer cette opération, entrez votre ancien mot de passe</translation>
 <translation id="6108689792487843350">Impossible d'atteindre la passerelle</translation>
@@ -906,6 +908,7 @@
 <translation id="6205145102504628069">Cloud Flow</translation>
 <translation id="6213737986933151570">CDMA1XRTT</translation>
 <translation id="6223752125779001553">Aucun numériseur n'a été trouvé</translation>
+<translation id="6231648282154119906">Les fichiers suspects seront analysés automatiquement par la Navigation sécurisée Google dans le cadre de la protection renforcée que vous avez choisie</translation>
 <translation id="6232017090690406397">Pile</translation>
 <translation id="6234024205316847054">Afficher la structure</translation>
 <translation id="6235460611964961764">Réinitialiser manuellement l'utilisation de données</translation>
@@ -1011,7 +1014,6 @@
 <translation id="672609503628871915">Découvrir les nouveautés</translation>
 <translation id="6740695858234317715">crème et orange</translation>
 <translation id="6741823073189174383">bateau</translation>
-<translation id="674276385369049081">Arrière-plans de caméra récents propulsés par l'IA de Google</translation>
 <translation id="6744441848304920043">jungle</translation>
 <translation id="6747035363363040417">neutre</translation>
 <translation id="6747215703636344499">Tâche arrêtée : le plateau de sortie est plein</translation>
@@ -1032,6 +1034,7 @@
 <translation id="6871256179359663621">violet pâle</translation>
 <translation id="6889786074662672253">Pendant le redémarrage, ne débranchez pas cet appareil externe et n'éteignez pas votre ordinateur. Vous pouvez réduire cette fenêtre. Cela peut prendre quelques minutes, et votre appareil externe peut ne pas fonctionner pendant ce temps.</translation>
 <translation id="6900701049656042631">Cet album ne contient aucune photo. Pour ajouter des photos, accédez au site <ph name="LINK" /></translation>
+<translation id="6902359863093437070">Créer un arrière-plan avec l'IA</translation>
 <translation id="6905163627763043954">Essayer</translation>
 <translation id="6905724422583748843">Retourner à <ph name="PAGE_NAME" /></translation>
 <translation id="6910312834584889076">Le couvercle du numériseur est ouvert. Fermez le couvercle, puis réessayez.</translation>
@@ -1269,6 +1272,7 @@ L'IA générative est expérimentale, en début de développement et sa disponib
 <translation id="8152370627892825"><ph name="DESCRIPTION" />, <ph name="ACCELERATOR_INFO" />.</translation>
 <translation id="8156233298086717232">magique</translation>
 <translation id="8162776280680283326">renards</translation>
+<translation id="8167413449582155132">Arrière-plan propulsé par l'IA de Google</translation>
 <translation id="8179976553408161302">Entrée</translation>
 <translation id="8183975772394450380">plage</translation>
 <translation id="8206859287963243715">Cellulaire</translation>

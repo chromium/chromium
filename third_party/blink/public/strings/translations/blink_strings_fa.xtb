@@ -12,6 +12,7 @@
 <translation id="1588438908519853928">معمولی</translation>
 <translation id="1591562245178063882">این ماه</translation>
 <translation id="1637811476055996098">انتخاب فایل‌ها</translation>
+<translation id="1680090928918677457">استفاده از دوربین</translation>
 <translation id="1681022320378710418">زمان کنونی</translation>
 <translation id="1727839386348365796">قطره‌چکان</translation>
 <translation id="1729654308190250600">لطفاً یک نشانی ایمیل غیرخالی وارد کنید.</translation>
@@ -60,6 +61,7 @@
 <translation id="3822383571486410024">لطفاً این نوشتار را به <ph name="MIN_CHARACTERS" /> نویسه یا بیشتر افزایش دهید (درحال حاضر از <ph name="CURRENT_LENGTH" /> نویسه استفاده می‌کنید).</translation>
 <translation id="383465348367842624">قسمت قبل از «<ph name="ATSIGN" />» نباید حاوی نماد «<ph name="INVALIDCHARACTER" />» باشد.</translation>
 <translation id="3846214748874656680">خروج از حالت تمام صفحه</translation>
+<translation id="3914173277599553213">ضروری</translation>
 <translation id="4031179711345676612">میکروفون مجاز است</translation>
 <translation id="4103419683916926126">میلی‌ ثانیه</translation>
 <translation id="4201051445878709314">نمایش ماه قبلی</translation>
@@ -75,6 +77,7 @@
 <translation id="4912200001568447310">مورد کنونی</translation>
 <translation id="4915360478455618802">نمایش انتخابگر زمان</translation>
 <translation id="4924138096460353083">نامعین</translation>
+<translation id="49269513399674318">استفاده از میکروفون</translation>
 <translation id="4950364064308314478">نمایش انتخابگر تاریخ و زمان محلی</translation>
 <translation id="4971739861736909480"><ph name="ACCNAME" /> انتخاب شد</translation>
 <translation id="4975562563186953947"><ph name="SELECTED_COUNT" /> انتخاب شد</translation>
@@ -142,6 +145,7 @@
 <translation id="7080893216867146095">هم‌رسانی مکان مجاز است</translation>
 <translation id="709897737746224366">لطفاً با قالب درخواستی مطابقت دهید.</translation>
 <translation id="7102274145889307184">مکان کنونی</translation>
+<translation id="7134810312945846184">استفاده از میکروفون و دوربین</translation>
 <translation id="7263440858009898357">لطفاً یک مورد را در فهرست انتخاب کنید.</translation>
 <translation id="7320576522385648310">درحال بافر کردن</translation>
 <translation id="7341556277900466204">مخزن رنگ</translation>

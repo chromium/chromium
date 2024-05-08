@@ -32,6 +32,7 @@
 <translation id="2175927920773552910">QR kód</translation>
 <translation id="2244252133441425811">Povolit výběr snímkové frekvence videa</translation>
 <translation id="2271433936731426666">Aktivovat snímek videa na celou obrazovku</translation>
+<translation id="2281736597583450397">Získejte ostřejší detaily s vylepšeným zoomem</translation>
 <translation id="2320741269052147773">Posunout doleva</translation>
 <translation id="2360840973209616515">Aplikaci k focení a natáčení spravuje váš administrátor.
         Pokud se chcete dozvědět podrobnosti, kontaktujte administrátora.</translation>
@@ -118,6 +119,7 @@
 Pokud se zpětná vazba týká kvality fotek nebo videí, připojte ukázkovou fotku nebo video a popište, kde je problém. (Například fotka je příliš tmavá nebo objekt není zaostřen.)</translation>
 <translation id="6519884562954018934">Připojit se k síti <ph name="WIFINAME" /></translation>
 <translation id="6527303717912515753">Sdílet</translation>
+<translation id="6586509689874700895">Nejdříve zobrazení přibližte stisknutím tlačítka <ph name="BUTTON_NAME" />. Po pořízení fotky pak lépe uvidíte detaily.</translation>
 <translation id="6617916774429601017">Zobrazit všechna rozlišení</translation>
 <translation id="6631515515009660915">Vypnout zrcadlení</translation>
 <translation id="6652737148136672975">Roh můžete posouvat pomocí kláves se šipkami</translation>

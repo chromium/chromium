@@ -74,6 +74,7 @@ Kwa mipangilio zaidi inayotumia data kuboresha hali yako ya utumiaji wa Chromium
 <translation id="2918709798697875261">Shirika lako linahitaji usiingie katika akaunti kwenye Chromium.</translation>
 <translation id="2942241131342758843">Tumia Chromium kwa chaguomsingi kufungua viungo, kutafuta kwenye wijeti na kujaza manenosiri kiotomatiki katika programu zingine</translation>
 <translation id="2977470724722393594">Chromium imesasishwa</translation>
+<translation id="3044857325852340337">Umefuta data kwenye Chromium</translation>
 <translation id="3078941082359356771">{COUNT,plural, =1{Chromium inaweza kukusaidia kufuatilia kifurushi hiki kwenye Ukurasa Mpya wa Kichupo.}other{Chromium inaweza kukusaidia kufuatilia vifurushi hivi kwenye Ukurasa Mpya wa Kichupo.}}</translation>
 <translation id="3102849287235003384">Ili uondoke kwenye akaunti yako ya Google katika tovuti zote, <ph name="BEGIN_LINK" />ondoka kwenye akaunti yako katika kivinjari cha Chromium<ph name="END_LINK" />.</translation>
 <translation id="3219277919172823720">Tafuta Ukitumia Sauti kwenye Chromium</translation>
@@ -124,6 +125,7 @@ Ili ubadilishe mipangilio hii, <ph name="BEGIN_LINK" />futa data ya Chromium kwe
 <translation id="4633738821577273991">Pia, pata Kipengele cha Kuvinjari Salama Kilichoboreshwa kwenye wasifu huu wa Chromium</translation>
 <translation id="4638625642619341392">Pakua Chromium hapa.</translation>
 <translation id="4654936625574199632">Ili kusaidia kuboresha programu hii, Chromium hutuma takwimu ya matumizi na ripoti ya kuacha kufanya kazi kwenda Google. <ph name="BEGIN_LINK" />Dhibiti<ph name="END_LINK" /></translation>
+<translation id="4675485352217495362">Futa Data ya Kuvinjari kwenye Chromium</translation>
 <translation id="4681781466797808448">Washa kichanganuzi cha Chromium</translation>
 <translation id="4736424910885271643">Akaunti yako inadhibitiwa na <ph name="HOSTED_DOMAIN" />, kwa hivyo data yako ya Chromium itafutwa kwenye kifaa hiki</translation>
 <translation id="4773487571745795781">Umezima mipangilio ya kuingia katika Chromium.</translation>
@@ -191,6 +193,7 @@ Mambo ya kuzingatia:
 <translation id="6324041800010509197">Tembelea Gridi ya Kichupo kwenye Chromium</translation>
 <translation id="6325378625795868881">Tumia Chromium wakati wowote unapogusa viungo kwenye ujumbe na programu nyingine.</translation>
 <translation id="632825460376924298">Ruhusu vidokezo vya kuingia katika akaunti kwenye Chromium</translation>
+<translation id="6332129548244419716">Futa Data ya Kuvinjari kwenye Chromium.</translation>
 <translation id="6337530241089703714">Chagua iwapo ungependa kufuta data yako ya Chromium kwenye kifaa hiki au kuihifadhi</translation>
 <translation id="6348483005826990855">3. Chagua Chromium</translation>
 <translation id="6383607155624074112">Fikia Chromium kwa haraka katika Sehemu Iliyopachikwa kwenye Skrini ya Kwanza</translation>

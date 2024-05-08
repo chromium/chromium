@@ -166,6 +166,7 @@
 <translation id="1586324912145647027">Преминаване към работен кът от 1 до 8</translation>
 <translation id="158838227375272121">Уебсайтът на Google Classroom</translation>
 <translation id="1589090746204042747">да осъществява достъп до цялата ви активност в тази сесия;</translation>
+<translation id="1597880963776148053">Стъпка <ph name="STEP" /> от <ph name="TOTAL_STEPS" />. Фиксираните и отворените от вас приложения са в лентата, която се намира в долната част на екрана. Натиснете Alt + Shift + L и след това Tab, за да поставите фокуса върху елементите в лентата.</translation>
 <translation id="1602874809115667351">Клавишът „<ph name="LAUNCHER_KEY_NAME" />“ + стрелката за надолу</translation>
 <translation id="1604857178818051494">Поставяне на пауза на мултимедията</translation>
 <translation id="1607312127821884567">Отхвърляне на настройването на прегледа на приложенията на телефона ви</translation>
@@ -303,6 +304,7 @@
 <translation id="2257486738914982088">Нещо се обърка при изтеглянето на <ph name="FILENAME" /></translation>
 <translation id="2258734398699965611">Предложени файлове</translation>
 <translation id="2268130516524549846">Bluetooth е деактивиран</translation>
+<translation id="2268731132310444948">Стъпка <ph name="STEP" /> от <ph name="TOTAL_STEPS" />. След като стартовият панел бъде активиран, ще видите подобрена лента за търсене. Започнете да въвеждате, за да търсите файлове, приложения и др. Можете също да получавате отговори на въпроси относно <ph name="PRODUCT_NAME" />.</translation>
 <translation id="2268813581635650749">Изход за всички</translation>
 <translation id="2276987123919776440">15 мин</translation>
 <translation id="2277103315734023688">Придвижване напред</translation>
@@ -397,6 +399,7 @@
 <translation id="2607678425161541573">Изисква се онлайн вход</translation>
 <translation id="2612072250312279703">наблюдение на активността</translation>
 <translation id="2612614436418177118">Преместване на икона на приложение в решетката с приложения</translation>
+<translation id="2619326010008283367">Стъпка <ph name="STEP" /> от <ph name="TOTAL_STEPS" />. Можете да намерите настройките на устройството си в стартовия панел. Можете да персонализирате своя <ph name="PRODUCT_NAME" /> от настройките, като например да промените тапета или да зададете скрийнсейвър.</translation>
 <translation id="2620016719323068571">Търсете в своите <ph name="CATEGORY" />, файлове, приложения и други…</translation>
 <translation id="2620436844016719705">Система</translation>
 <translation id="2620900772667816510">Bluetooth Super Resolution</translation>
@@ -819,7 +822,6 @@
 <translation id="4209973997261364186">Функцията за Wi-Fi е включена</translation>
 <translation id="4212472694152630271">Превключване към ПИН</translation>
 <translation id="4215497585250573029">Настройки за VPN</translation>
-<translation id="4215548513524864822">Стъпка 5 от 5. Можете да намерите настройките на устройството си в стартовия панел. Можете да персонализирайте своя <ph name="PRODUCT_NAME" /> от настройките, като например да промените тапета или да зададете скрийнсейвър.</translation>
 <translation id="4217571870635786043">Диктуване</translation>
 <translation id="4221957499226645091"><ph name="APP_NAME" />, инсталирано приложение, поставено на пауза</translation>
 <translation id="4228078597006700451">Контролите не са настроени</translation>
@@ -946,12 +948,12 @@
 <translation id="468293128311738995">Приложения от телефона ви</translation>
 <translation id="4690510401873698237">Лавицата е най-долу</translation>
 <translation id="4696813013609194136">Отключване на устройството с код на родител</translation>
-<translation id="469693290987463983">Стъпка 1 от 5. Фиксираните и отворените от вас приложения са в лентата, която се намира в долната част на екрана. Натиснете Alt + Shift + L и след това Tab, за да поставите фокуса върху елементите в лентата.</translation>
 <translation id="4702647871202761252">Екранът за поверителност е изключен</translation>
 <translation id="4706121060329443414">По-късно ще се направи опит за изтегляне. Засега говорът ще бъде изпратен до Google за обработка.</translation>
 <translation id="470644585772471629">Инвертиране на цветовете</translation>
 <translation id="4708065238214351979">Увеличаване на яркостта на клавиатурата</translation>
 <translation id="4717575069099566988">USB-C кабелът ви не поддържа USB4. Ефективността на устройството може да е ограничена.</translation>
+<translation id="4724328513667182700">6 съвета как да започнете да използвате <ph name="PRODUCT_NAME" /></translation>
 <translation id="4730374152663651037">ЧЕСТО ИЗПОЛЗВАНИ</translation>
 <translation id="4731797938093519117">Достъп на родител</translation>
 <translation id="4733161265940833579"><ph name="BATTERY_PERCENTAGE" />% (лява)</translation>
@@ -1027,6 +1029,7 @@
 <translation id="4964188651935955085">Когато изключите Bluetooth, ще прекратите връзката между своя <ph name="DEVICE_TYPE" /> и следното външно устройство:</translation>
 <translation id="4966431234408005599">Увеличаване на силата на звука</translation>
 <translation id="4969092041573468113"><ph name="HOURS" /> ч, <ph name="MINUTES" /> мин и <ph name="SECONDS" /> сек</translation>
+<translation id="496999337731226334">Стъпка <ph name="STEP" /> от <ph name="TOTAL_STEPS" />. Често използваните контроли, като например тези за Wi-Fi, Bluetooth и силата на звука, се намират в бързите настройки. Оттам можете да правите и екранни снимки. Натиснете Alt + Shift + S, за да отворите бързите настройки.</translation>
 <translation id="4975771730019223894">Значки за приложенията</translation>
 <translation id="4977493774330778463"><ph name="NUM_IMPORTANT_NOTIFICATION" />:
 <ph name="NOTIFICATION_1" />,
@@ -1144,6 +1147,7 @@
 <translation id="540713187982329711">Превключване на точката за достъп. Тя е включена, няма свързани устройства.</translation>
 <translation id="5413656666631274079">Страница за настройки</translation>
 <translation id="5414198321558177633">Списъкът с профили за мобилни мрежи се опреснява. Това може да отнеме няколко минути.</translation>
+<translation id="5417965108047245734">Направете бърза обиколка, за да научите как да се придвижвате в своя <ph name="PRODUCT_NAME" /></translation>
 <translation id="5426063383988017631">Менюто за настройки е затворено</translation>
 <translation id="5428899915242071344">Стартиране на избирането</translation>
 <translation id="5429993543155113935">Понастоящем не се поддържат прозорци в режим „инкогнито“</translation>
@@ -1524,7 +1528,6 @@
 <translation id="6874854809828346832">Показване на подробностите за точката за достъп. Тя е включена.</translation>
 <translation id="6878400149835617132">Прекият път е изключен</translation>
 <translation id="6878701771800702153">{NUM_APPS,plural, =1{1 приложение}other{# приложения}}</translation>
-<translation id="6878787305374738418">Стъпка 4 от 5. След като стартовият панел бъде активиран, ще видите подобрена лента за търсене. Започнете да въвеждате, за да търсите файлове, приложения и др. Можете също да получавате отговори на въпроси относно <ph name="PRODUCT_NAME" />.</translation>
 <translation id="6883768636838842873">Клавишни комбинации, съвети за използване на устройството и др.</translation>
 <translation id="6884665277231944629">Към днешната дата</translation>
 <translation id="6886172995547742638">Възможно е вашият <ph name="DEVICE_TYPE" /> да работи с намалена производителност. Използвайте сертифициран захранващ адаптер с USB-C и мощност от <ph name="PREFERRED_MINIMUM_POWER" /> W или повече.</translation>
@@ -1593,6 +1596,7 @@
 <translation id="7143207342074048698">Свързва се</translation>
 <translation id="7144942256906679589">Състояние на батерията</translation>
 <translation id="7145639536026937076">Батерията е на <ph name="PERCENTAGE" />% и се зарежда. Режимът за запазването ѝ е включен.</translation>
+<translation id="7149149900052329230">Управлявайте локалните си файлове и тези в Google Диск от приложението „Файлове“.</translation>
 <translation id="7165278925115064263">Alt + Shift + K</translation>
 <translation id="7167913274352523149"><ph name="HOTSPOT" />,
         <ph name="NETWORK" /></translation>
@@ -1613,7 +1617,6 @@
 <translation id="726276584504105859">Преместете тук с плъзгане, за да използвате режим за разделен екран</translation>
 <translation id="7262906531272962081">Създаване на напомняне</translation>
 <translation id="7278787617901301220">Клавишът „<ph name="LAUNCHER_KEY_NAME" />“ + Backspace</translation>
-<translation id="7282547098317872382">Стъпка 3 от 5. Използвайте приложения, за да правите всичко необходимо на своя <ph name="PRODUCT_NAME" />. Можете да намерите приложенията си в стартовия панел. Натиснете Alt + Shift + L, за да поставите фокуса върху бутона за стартовия панел.</translation>
 <translation id="7285232777292757180">Използвайте инструмента за заснемане на екрана в бързите настройки, за да правите екранни снимки</translation>
 <translation id="7301826272005790482">Отхвърляне на предложенията за прозорци</translation>
 <translation id="7302889331339392448">Функцията „Надписи на живо“ е изключена.</translation>
@@ -1795,10 +1798,12 @@
 <translation id="7933084174919150729">Google Асистент е налице само за основния потребителски профил.</translation>
 <translation id="79341161159229895">Профилът се управлява от <ph name="FIRST_PARENT_EMAIL" /> и <ph name="SECOND_PARENT_EMAIL" /></translation>
 <translation id="793716872548410480">Натиснете <ph name="SHORTCUT_KEY_NAME" /> + V, за да видите буферната памет. В нея се запазват последните 5 неща, които сте копирали.</translation>
+<translation id="7942330802915522974">Стъпка <ph name="STEP" /> от <ph name="TOTAL_STEPS" />. Можете да намерите приложението „Файлове“ в стартовия панел. Управлявайте локалните си файлове и тези в Google Диск от приложението „Файлове“.</translation>
 <translation id="7942349550061667556">червено</translation>
 <translation id="7943516765291457328">Включете Bluetooth, за да сканирате за точки за достъп в близост</translation>
 <translation id="7944023924886109030">Преглед на всички събития за днес</translation>
 <translation id="7945357288295809525">Показване на настройките за достъпност: функцията „<ph name="ENABLED_FEATURES" />“ е активирана.</translation>
+<translation id="7946681191253332687">Налице са удължени актуализации за сигурност</translation>
 <translation id="7947798320695032612"><ph name="APP_NAME" /> иска да използва <ph name="DEVICE_NAME" /></translation>
 <translation id="7951630946012935453">Затъмняване на клавиатурата</translation>
 <translation id="7953994493035617347">Искате ли да потвърдите новата разделителна способност?</translation>
@@ -1910,7 +1915,6 @@
 <translation id="8412677897383510995">Показване на настройките за екрана</translation>
 <translation id="8413272770729657668">Записването започва след 3, 2, 1</translation>
 <translation id="8416730306157376817"><ph name="BATTERY_PERCENTAGE" />% (калъф)</translation>
-<translation id="8417951779969083400">Стъпка 2 от 5. Често използваните контроли, като например тези за Wi-Fi, Bluetooth и силата на звука, се намират в бързите настройки. Оттам можете да правите и екранни снимки. Натиснете Alt + Shift + S, за да отворите бързите настройки.</translation>
 <translation id="8420205633584771378">Да се премахне ли това предложение?</translation>
 <translation id="8421270167862077762">Приложението <ph name="UNAVAILABLE_APPS" /> не е инсталирано на това устройство.</translation>
 <translation id="8426708595819210923">Добър вечер, <ph name="GIVEN_NAME" />,</translation>
@@ -2131,6 +2135,7 @@
 <translation id="987589956647469042">Мобилните данни са включени</translation>
 <translation id="989374776391122812">Контроли за камерата и аудиото</translation>
 <translation id="990277280839877440">Прозорецът <ph name="WINDOW_TITILE" /> бе затворен.</translation>
+<translation id="993398562350683614">Стъпка <ph name="STEP" /> от <ph name="TOTAL_STEPS" />. Използвайте приложения, за да правите всичко необходимо на своя <ph name="PRODUCT_NAME" />. Можете да намерите приложенията си в стартовия панел. Натиснете Alt + Shift + L, за да поставите фокуса върху бутона за стартовия панел.</translation>
 <translation id="994354411665877646"><ph name="NETWORK_NAME" />, <ph name="SUBTEXT" /></translation>
 <translation id="996204416024568215">Получавайте най-новите функции и подобрения в сигурността. Актуализациите се извършват на заден план.</translation>
 </translationbundle>
