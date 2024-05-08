@@ -637,4 +637,14 @@ export class CCATest {
     const helper = await untrustedScripts.getGaHelper();
     return helper.setGa4Enabled(true);
   }
+
+  /**
+   * Gets vid:pid of current active USB camera device in the format of a 8
+   * digits hex string, such as abcd:1234, or return '' for MIPI.
+   */
+  static async getVidPid(): Promise<string> {
+    const deviceOperator = assertExists(
+        DeviceOperator.getInstance(), 'Failed to get deviceOperator instance.');
+    return (await deviceOperator.getVidPid(CCATest.getDeviceId())) ?? '';
+  }
 }
