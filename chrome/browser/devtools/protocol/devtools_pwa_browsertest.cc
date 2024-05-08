@@ -627,30 +627,36 @@ IN_PROC_BROWSER_TEST_F(PWAProtocolTest, Launch_ReturnsAttachableTargetId) {
       base::Value::Dict{}.Set("targetId", *result->FindString("targetId"))));
 }
 
-// TODO(crbug.com/331214986): May want a test to auto-attach to the web_contents
-// (tab) target rather than page target.
 IN_PROC_BROWSER_TEST_F(PWAProtocolTest, Launch_AutoAttach) {
   InstallFromUrl();
-  ASSERT_TRUE(SendCommandSync("Target.setAutoAttach",
-                              base::Value::Dict{}
-                                  .Set("autoAttach", true)
-                                  .Set("waitForDebuggerOnStart", true)
-                                  .Set("flatten", true)));
+  ASSERT_TRUE(
+      SendCommandSync("Target.setAutoAttach",
+                      base::Value::Dict{}
+                          .Set("autoAttach", true)
+                          .Set("waitForDebuggerOnStart", true)
+                          .Set("filter", base::Value::List{}
+                                             .Append(base::Value::Dict{}
+                                                         .Set("type", "tab")
+                                                         .Set("exclude", false))
+                                             .Append(base::Value::Dict{}
+                                                         .Set("type", "page")
+                                                         .Set("exclude", true)))
+                          .Set("flatten", true)));
   ASSERT_TRUE(SendCommandSync(
       "PWA.launch", base::Value::Dict{}.Set(
                         "manifestId", InstallableWebAppManifestId().spec())));
   ASSERT_TRUE(HasExistingNotificationMatching(
-      [exp_url = InstallableWebAppManifestId().spec()](
+      [expected_target_id = *result()->FindString("targetId")](
           const base::Value::Dict& notification) {
         if (*notification.FindString("method") != "Target.attachedToTarget") {
           return false;
         }
-        const std::string* url =
-            notification.FindStringByDottedPath("params.targetInfo.url");
+        const std::string* target_id =
+            notification.FindStringByDottedPath("params.targetInfo.targetId");
         const std::string* type =
             notification.FindStringByDottedPath("params.targetInfo.type");
-        return url && *url == exp_url && type &&
-               *type == content::DevToolsAgentHost::kTypePage;
+        return target_id && *target_id == expected_target_id && type &&
+               *type == content::DevToolsAgentHost::kTypeTab;
       }));
 }
 

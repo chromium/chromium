@@ -12381,4 +12381,5 @@ experimental domain PWA
       string manifestId
       optional string url
     returns
+      # ID of the tab target created as a result.
       Target.TargetID targetId
