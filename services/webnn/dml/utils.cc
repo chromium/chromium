@@ -175,7 +175,10 @@ DML_FEATURE_LEVEL GetMaxSupportedDMLFeatureLevel(IDMLDevice* dml_device) {
   // level.
   DML_FEATURE_LEVEL feature_levels_requested[] = {
       DML_FEATURE_LEVEL_1_0, DML_FEATURE_LEVEL_2_0, DML_FEATURE_LEVEL_2_1,
-      DML_FEATURE_LEVEL_3_0, DML_FEATURE_LEVEL_3_1, DML_FEATURE_LEVEL_4_0};
+      DML_FEATURE_LEVEL_3_0, DML_FEATURE_LEVEL_3_1, DML_FEATURE_LEVEL_4_0,
+      DML_FEATURE_LEVEL_4_1, DML_FEATURE_LEVEL_5_0, DML_FEATURE_LEVEL_5_1,
+      DML_FEATURE_LEVEL_5_2, DML_FEATURE_LEVEL_6_0, DML_FEATURE_LEVEL_6_1,
+      DML_FEATURE_LEVEL_6_2};
 
   DML_FEATURE_QUERY_FEATURE_LEVELS feature_levels_query = {
       std::size(feature_levels_requested), feature_levels_requested};

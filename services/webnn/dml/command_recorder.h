@@ -5,15 +5,16 @@
 #ifndef SERVICES_WEBNN_DML_COMMAND_RECORDER_H_
 #define SERVICES_WEBNN_DML_COMMAND_RECORDER_H_
 
-#include <DirectML.h>
-#include <wrl.h>
-
 #include <optional>
 #include <vector>
 
 #include "base/component_export.h"
 #include "base/containers/span.h"
 #include "base/memory/scoped_refptr.h"
+#include "third_party/microsoft_dxheaders/include/directml.h"
+
+// Windows SDK headers should be included after DirectX headers.
+#include <wrl.h>
 
 namespace webnn::dml {
 

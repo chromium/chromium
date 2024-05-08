@@ -2,12 +2,13 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#include <DirectML.h>
+#include "services/webnn/dml/tensor_desc.h"
+
 #include <vector>
 
 #include "base/numerics/safe_conversions.h"
-#include "services/webnn/dml/tensor_desc.h"
 #include "testing/gtest/include/gtest/gtest.h"
+#include "third_party/microsoft_dxheaders/include/directml.h"
 
 namespace webnn::dml {
 

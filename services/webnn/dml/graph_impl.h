@@ -5,9 +5,6 @@
 #ifndef SERVICES_WEBNN_DML_GRAPH_IMPL_H_
 #define SERVICES_WEBNN_DML_GRAPH_IMPL_H_
 
-#include <DirectML.h>
-#include <wrl.h>
-
 #include <map>
 #include <memory>
 #include <string>
@@ -21,6 +18,10 @@
 #include "services/webnn/public/mojom/webnn_context_provider.mojom.h"
 #include "services/webnn/public/mojom/webnn_graph.mojom.h"
 #include "services/webnn/webnn_graph_impl.h"
+#include "third_party/microsoft_dxheaders/include/directml.h"
+
+// Windows SDK headers should be included after DirectX headers.
+#include <wrl.h>
 
 namespace webnn::dml {
 

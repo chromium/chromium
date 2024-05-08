@@ -5,9 +5,6 @@
 #ifndef SERVICES_WEBNN_DML_UTILS_H_
 #define SERVICES_WEBNN_DML_UTILS_H_
 
-#include <DirectML.h>
-#include <d3d12.h>
-#include <wrl.h>
 #include <string>
 #include <vector>
 
@@ -16,6 +13,11 @@
 #include "services/webnn/dml/command_recorder.h"
 #include "services/webnn/public/mojom/webnn_context_provider.mojom.h"
 #include "services/webnn/public/mojom/webnn_error.mojom.h"
+#include "third_party/microsoft_dxheaders/include/directml.h"
+#include "third_party/microsoft_dxheaders/src/include/directx/d3d12.h"
+
+// Windows SDK headers should be included after DirectX headers.
+#include <wrl.h>
 
 namespace webnn::dml {
 

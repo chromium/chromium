@@ -5,13 +5,15 @@
 #ifndef SERVICES_WEBNN_DML_TENSOR_DESC_H_
 #define SERVICES_WEBNN_DML_TENSOR_DESC_H_
 
-#include <DirectML.h>
-#include <wrl.h>
 #include <vector>
 
 #include "base/component_export.h"
 #include "base/containers/span.h"
 #include "base/gtest_prod_util.h"
+#include "third_party/microsoft_dxheaders/include/directml.h"
+
+// Windows SDK headers should be included after DirectX headers.
+#include <wrl.h>
 
 namespace webnn::dml {
 

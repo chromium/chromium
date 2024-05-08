@@ -7,13 +7,14 @@
 
 #include <windows.h>
 
-#include <DirectML.h>
-#include <d3d12.h>
-#include <dxcore.h>
-
 #include "base/component_export.h"
 #include "base/no_destructor.h"
 #include "base/scoped_native_library.h"
+#include "third_party/microsoft_dxheaders/include/directml.h"
+#include "third_party/microsoft_dxheaders/src/include/directx/d3d12.h"
+
+// Windows SDK headers should be included after DirectX headers.
+#include <dxcore.h>
 
 namespace webnn::dml {
 

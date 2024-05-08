@@ -2,17 +2,18 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#include <DirectML.h>
-#include <d3d11.h>
-#include <wrl.h>
+#include "services/webnn/dml/graph_builder.h"
 
 #include "base/logging.h"
 #include "services/webnn/dml/adapter.h"
-#include "services/webnn/dml/graph_builder.h"
 #include "services/webnn/dml/tensor_desc.h"
 #include "services/webnn/dml/test_base.h"
 #include "services/webnn/dml/utils.h"
 #include "testing/gtest/include/gtest/gtest.h"
+#include "third_party/microsoft_dxheaders/include/directml.h"
+
+// Windows SDK headers should be included after DirectX headers.
+#include <wrl.h>
 
 namespace webnn::dml {
 

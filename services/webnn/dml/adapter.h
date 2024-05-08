@@ -5,17 +5,18 @@
 #ifndef SERVICES_WEBNN_DML_ADAPTER_H_
 #define SERVICES_WEBNN_DML_ADAPTER_H_
 
-#include <DirectML.h>
-#include <d3d12.h>
-#include <dxgi.h>
-#include <wrl.h>
-
 #include "base/component_export.h"
 #include "base/gtest_prod_util.h"
 #include "base/memory/ref_counted.h"
 #include "base/types/expected.h"
 #include "services/webnn/dml/error.h"
 #include "services/webnn/public/mojom/webnn_context_provider.mojom.h"
+#include "third_party/microsoft_dxheaders/include/directml.h"
+#include "third_party/microsoft_dxheaders/src/include/directx/d3d12.h"
+
+// Windows SDK headers should be included after DirectX headers.
+#include <dxgi.h>
+#include <wrl.h>
 
 namespace webnn::dml {
 
