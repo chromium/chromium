@@ -25,6 +25,7 @@ import {PolymerElement} from 'chrome://resources/polymer/v3_0/polymer/polymer_bu
 import {getTemplate} from './app.html.js';
 import type {AppearanceElement} from './appearance.js';
 import type {CategoriesElement} from './categories.js';
+import {CustomizeChromeImpression, recordCustomizeChromeImpression} from './common.js';
 import type {BackgroundCollection, CustomizeChromePageHandlerInterface} from './customize_chrome.mojom-webui.js';
 import {ChromeWebStoreCategory, ChromeWebStoreCollection, CustomizeChromeSection} from './customize_chrome.mojom-webui.js';
 import {CustomizeChromeApiProxy} from './customize_chrome_api_proxy.js';
@@ -137,6 +138,24 @@ export class AppElement extends AppElementBase {
     // laid out.
     window.addEventListener('load', () => {
       CustomizeChromeApiProxy.getInstance().handler.updateScrollToSection();
+      // Install observer to log extension cards impression.
+      const extensionsCardSectionObserver =
+          new IntersectionObserver(([{intersectionRatio}]) => {
+            if (intersectionRatio >= 0.8) {
+              extensionsCardSectionObserver.disconnect();
+              this.dispatchEvent(
+                  new Event('detect-extensions-card-section-impression'));
+              recordCustomizeChromeImpression(
+                  CustomizeChromeImpression.EXTENSIONS_CARD_SECTION_DISPLAYED);
+            }
+          }, {
+            threshold: 1.0,
+          });
+      // Start observing if extension cards are scroll into view.
+      if (this.shadowRoot && this.shadowRoot.querySelector('#extensions')) {
+        extensionsCardSectionObserver.observe(
+            this.shadowRoot!.querySelector('#extensions')!);
+      }
     }, {once: true});
   }
 
