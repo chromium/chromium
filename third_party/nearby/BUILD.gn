@@ -617,6 +617,7 @@ source_set("platform_api_types") {
     "//crypto:crypto",
     "//third_party/abseil-cpp:absl",
   ]
+  deps = [ ":platform_impl_crypto" ]
   configs -= [ "//build/config/compiler:chromium_code" ]
   configs += [ "//build/config/compiler:no_chromium_code" ]
 }
@@ -1303,4 +1304,12 @@ if (is_chromeos_device) {
   tast_test("nearby_share_tast_tests") {
     tast_attr_expr = "\"group:nearby-share-remote\""
   }
+}
+
+###############################################################################
+# Chromium platform implementations. These are not third-party code.
+###############################################################################
+source_set("platform_impl_crypto") {
+  sources = [ "platform_impl/crypto.cc" ]
+  deps = [ "//base" ]
 }
