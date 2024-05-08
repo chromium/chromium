@@ -52,9 +52,6 @@ PickerLacrosOmniboxSearchProvider::CreateControllerCallback(bool bookmarks,
           ->search_controller_factory_ash();
   auto provider = std::make_unique<PickerLacrosOmniboxSearchProvider>(
       factory, bookmarks, history, open_tabs);
-  return base::BindRepeating(
-      [](const std::unique_ptr<PickerLacrosOmniboxSearchProvider>& provider) {
-        return provider->GetController();
-      },
-      std::move(provider));
+  return base::BindRepeating(&PickerLacrosOmniboxSearchProvider::GetController,
+                             std::move(provider));
 }
