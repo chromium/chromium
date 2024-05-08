@@ -196,6 +196,14 @@ bool PopupViewViews::Show(
 
   has_keyboard_focus_ = !parent_;
 
+  if (search_bar_) {
+    // Make sure the search bar is focused before possible first suggestion
+    // selection, because `SetSelectedCell()` eventually leads to calling
+    // `SetPopupFocusOverride()` and focusing the input while having a view
+    // overriding focus makes `ViewAXPlatformNodeDelegate` unhappy.
+    search_bar_->Focus();
+  }
+
   if (autoselect_first_suggestion) {
     SetSelectedCell(CellIndex{0u, PopupRowView::CellType::kContent},
                     PopupCellSelectionSource::kNonUserInput);
@@ -214,10 +222,6 @@ bool PopupViewViews::Show(
   if (controller_->GetMainFillingProduct() == FillingProduct::kCompose) {
     AxAnnounce(
         l10n_util::GetStringUTF16(IDS_COMPOSE_SUGGESTION_AX_MESSAGE_ON_SHOW));
-  }
-
-  if (search_bar_) {
-    search_bar_->Focus();
   }
 
   return !CanActivate() || (GetWidget() && GetWidget()->IsActive());
