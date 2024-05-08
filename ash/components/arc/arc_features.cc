@@ -19,6 +19,15 @@ BASE_FEATURE(kArcVmGki,
              "ArcVmGki",
              base::FEATURE_DISABLED_BY_DEFAULT);
 
+// Controls block IO schedulers in ARCVM.
+BASE_FEATURE(kBlockIoScheduler,
+             "ArcBlockIoScheduler",
+             base::FEATURE_DISABLED_BY_DEFAULT);
+
+// Controls whether to enable block IO scheduler for virtio-blk /data.
+const base::FeatureParam<bool> kEnableDataBlockIoScheduler{
+    &kBlockIoScheduler, "data_block_io_scheduler", true};
+
 // Controls ACTION_BOOT_COMPLETED broadcast for third party applications on ARC.
 // When disabled, third party apps will not receive this broadcast.
 BASE_FEATURE(kBootCompletedBroadcastFeature,

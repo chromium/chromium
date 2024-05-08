@@ -450,7 +450,12 @@ vm_tools::concierge::StartArcVmRequest CreateStartArcVmRequest(
 
   request.set_enable_broadcast_anr_prenotify(
       base::FeatureList::IsEnabled(arc::kVmBroadcastPreNotifyANR));
+
   request.set_enable_virtio_blk_data(start_params.use_virtio_blk_data);
+  request.set_enable_data_block_io_scheduler(
+      start_params.use_virtio_blk_data &&
+      base::FeatureList::IsEnabled(kBlockIoScheduler) &&
+      kEnableDataBlockIoScheduler.Get());
 
   if (base::FeatureList::IsEnabled(kGuestZram)) {
     request.set_guest_swappiness(kGuestZramSwappiness.Get());

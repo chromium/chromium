@@ -1715,6 +1715,56 @@ TEST_F(ArcVmClientAdapterTest, VirtioBlkForData_NoLvmForEphemeralCryptohome) {
   EXPECT_TRUE(req.enable_virtio_blk_data());
 }
 
+TEST_F(ArcVmClientAdapterTest, DataBlockIoScheduler_Enabled) {
+  base::test::ScopedFeatureList feature_list;
+  feature_list.InitWithFeaturesAndParameters(
+      {{arc::kLvmApplicationContainers, {}},
+       {arc::kBlockIoScheduler, {{"data_block_io_scheduler", "true"}}}},
+      {});
+
+  StartParams start_params(GetPopulatedStartParams());
+  start_params.use_virtio_blk_data = true;
+
+  StartMiniArcWithParams(true, std::move(start_params));
+
+  const auto& req = GetTestConciergeClient()->start_arc_vm_request();
+  EXPECT_TRUE(req.enable_data_block_io_scheduler());
+}
+
+TEST_F(ArcVmClientAdapterTest, DataBlockIoScheduler_Disabled) {
+  base::test::ScopedFeatureList feature_list;
+  feature_list.InitWithFeaturesAndParameters(
+      {{arc::kLvmApplicationContainers, {}},
+       // Disabled.
+       {arc::kBlockIoScheduler, {{"data_block_io_scheduler", "false"}}}},
+      {});
+
+  StartParams start_params(GetPopulatedStartParams());
+  start_params.use_virtio_blk_data = true;
+
+  StartMiniArcWithParams(true, std::move(start_params));
+
+  const auto& req = GetTestConciergeClient()->start_arc_vm_request();
+  EXPECT_FALSE(req.enable_data_block_io_scheduler());
+}
+
+TEST_F(ArcVmClientAdapterTest, DataBlockIoScheduler_VirtioBlkDataIsDisabled) {
+  base::test::ScopedFeatureList feature_list;
+  feature_list.InitWithFeaturesAndParameters(
+      {{arc::kLvmApplicationContainers, {}},
+       {arc::kBlockIoScheduler, {{"data_block_io_scheduler", "true"}}}},
+      {});
+
+  StartParams start_params(GetPopulatedStartParams());
+  // virtio-blk /data is disabled.
+  start_params.use_virtio_blk_data = false;
+
+  StartMiniArcWithParams(true, std::move(start_params));
+
+  const auto& req = GetTestConciergeClient()->start_arc_vm_request();
+  EXPECT_FALSE(req.enable_data_block_io_scheduler());
+}
+
 TEST_F(ArcVmClientAdapterTest, MetadataDisk_DisabledForArcT) {
   // Metadata disk should not be requested for ARC T.
   base::test::ScopedChromeOSVersionInfo version(
