@@ -390,8 +390,8 @@ void WelcomeScreen::ShowImpl() {
   WizardController::default_controller()
       ->quick_start_controller()
       ->DetermineEntryPointVisibility(
-          base::BindOnce(&WelcomeScreen::SetQuickStartButtonVisibility,
-                         weak_ptr_factory_.GetWeakPtr()));
+          base::BindRepeating(&WelcomeScreen::SetQuickStartButtonVisibility,
+                              weak_ptr_factory_.GetWeakPtr()));
 
   if (LoginScreenClientImpl::HasInstance()) {
     LoginScreenClientImpl::Get()->AddSystemTrayObserver(this);
@@ -558,8 +558,8 @@ bool WelcomeScreen::HandleAccelerator(LoginAcceleratorAction action) {
     WizardController::default_controller()
         ->quick_start_controller()
         ->DetermineEntryPointVisibility(
-            base::BindOnce(&WelcomeScreen::SetQuickStartButtonVisibility,
-                           weak_ptr_factory_.GetWeakPtr()));
+            base::BindRepeating(&WelcomeScreen::SetQuickStartButtonVisibility,
+                                weak_ptr_factory_.GetWeakPtr()));
     return true;
   }
 
@@ -586,9 +586,9 @@ void WelcomeScreen::SetQuickStartButtonVisibility(bool visible) {
 
   if (visible) {
     view_->SetQuickStartEnabled();
+    base::UmaHistogramBoolean(
+        "QuickStart.WelcomeScreen.QuickStartButtonVisible", visible);
   }
-  base::UmaHistogramBoolean("QuickStart.WelcomeScreen.QuickStartButtonVisible",
-                            visible);
 }
 
 ////////////////////////////////////////////////////////////////////////////////

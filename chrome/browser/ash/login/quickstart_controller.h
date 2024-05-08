@@ -90,7 +90,12 @@ class QuickStartController
     std::string avatar_url = "";
   };
 
-  using EntryPointButtonVisibilityCallback = base::OnceCallback<void(bool)>;
+  // EntryPointButtonVisibilityCallback is a RepeatingCallback since the
+  // bluetooth adapter may not be present and powered the first time it's
+  // invoked. The bluetooth adapter asynchronously affects the feature support
+  // status and thus the entry point visibility.
+  using EntryPointButtonVisibilityCallback =
+      base::RepeatingCallback<void(bool)>;
   using UiState = UiDelegate::UiState;
 
   QuickStartController();

@@ -574,16 +574,30 @@ void TargetDeviceConnectionBrokerImpl::
 void TargetDeviceConnectionBrokerImpl::AdapterPresentChanged(
     device::BluetoothAdapter* adapter,
     bool present) {
-  if (present && deferred_start_advertising_callback_) {
-    std::move(deferred_start_advertising_callback_).Run();
+  if (!present) {
+    return;
   }
+
+  if (deferred_start_advertising_callback_) {
+    std::move(deferred_start_advertising_callback_).Run();
+    return;
+  }
+
+  MaybeNotifyFeatureStatus();
 }
 
 void TargetDeviceConnectionBrokerImpl::AdapterPoweredChanged(
     device::BluetoothAdapter* adapter,
     bool powered) {
-  if (powered && deferred_start_advertising_callback_) {
-    std::move(deferred_start_advertising_callback_).Run();
+  if (!powered) {
+    return;
   }
+
+  if (deferred_start_advertising_callback_) {
+    std::move(deferred_start_advertising_callback_).Run();
+    return;
+  }
+
+  MaybeNotifyFeatureStatus();
 }
 }  // namespace ash::quick_start

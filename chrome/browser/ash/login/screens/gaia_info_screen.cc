@@ -69,8 +69,8 @@ void GaiaInfoScreen::ShowImpl() {
   WizardController::default_controller()
       ->quick_start_controller()
       ->DetermineEntryPointVisibility(
-          base::BindOnce(&GaiaInfoScreen::SetQuickStartButtonVisibility,
-                         weak_ptr_factory_.GetWeakPtr()));
+          base::BindRepeating(&GaiaInfoScreen::SetQuickStartButtonVisibility,
+                              weak_ptr_factory_.GetWeakPtr()));
 
   view_->Show();
 }

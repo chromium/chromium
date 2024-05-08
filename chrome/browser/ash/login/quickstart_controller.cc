@@ -306,9 +306,9 @@ void QuickStartController::DetermineEntryPointVisibility(
     return;
   }
 
-  bootstrap_controller_->GetFeatureSupportStatusAsync(
-      base::BindOnce(&QuickStartController::OnGetQuickStartFeatureSupportStatus,
-                     weak_ptr_factory_.GetWeakPtr(), std::move(callback)));
+  bootstrap_controller_->GetFeatureSupportStatusAsync(base::BindRepeating(
+      &QuickStartController::OnGetQuickStartFeatureSupportStatus,
+      weak_ptr_factory_.GetWeakPtr(), std::move(callback)));
 }
 
 void QuickStartController::AbortFlow(AbortFlowReason reason) {

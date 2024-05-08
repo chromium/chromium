@@ -169,7 +169,7 @@ class TargetDeviceConnectionBroker {
   virtual FeatureSupportStatus GetFeatureSupportStatus() const = 0;
 
   using FeatureSupportStatusCallback =
-      base::OnceCallback<void(FeatureSupportStatus status)>;
+      base::RepeatingCallback<void(FeatureSupportStatus status)>;
   void GetFeatureSupportStatusAsync(FeatureSupportStatusCallback callback);
 
   // Will kick off Fast Pair and Nearby Connections advertising.

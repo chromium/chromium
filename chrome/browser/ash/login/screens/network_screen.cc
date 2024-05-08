@@ -137,8 +137,8 @@ void NetworkScreen::ShowImpl() {
   WizardController::default_controller()
       ->quick_start_controller()
       ->DetermineEntryPointVisibility(
-          base::BindOnce(&NetworkScreen::SetQuickStartButtonVisibility,
-                         weak_ptr_factory_.GetWeakPtr()));
+          base::BindRepeating(&NetworkScreen::SetQuickStartButtonVisibility,
+                              weak_ptr_factory_.GetWeakPtr()));
 
   // The network screen is reused during QuickStart. Here we determine which
   // strings are shown on the screen accordingly.

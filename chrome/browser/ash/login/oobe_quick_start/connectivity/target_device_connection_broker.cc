@@ -31,10 +31,8 @@ void TargetDeviceConnectionBroker::MaybeNotifyFeatureStatus() {
     return;
   }
 
-  auto callbacks = std::exchange(feature_status_callbacks_, {});
-
-  for (auto& callback : callbacks) {
-    std::move(callback).Run(status);
+  for (auto& callback : feature_status_callbacks_) {
+    callback.Run(status);
   }
 }
 
