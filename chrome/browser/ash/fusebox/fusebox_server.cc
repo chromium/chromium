@@ -38,6 +38,7 @@
 #include "storage/browser/file_system/file_system_url.h"
 #include "storage/common/file_system/file_system_util.h"
 #include "third_party/cros_system_api/dbus/fusebox/dbus-constants.h"
+#include "url/url_util.h"
 
 // This file provides the "business logic" half of the FuseBox server, coupled
 // with the "D-Bus protocol logic" half in fusebox_service_provider.cc.
@@ -170,13 +171,31 @@ base::expected<Parsed, ParseError> ParseFileSystemURL(
     return base::unexpected(ParseError(EFAULT));
   }
 
+  // encoded is fs_url_as_string transformed such that "fsp.hash/x/y#z.txt"
+  // becomes "fsp.hash/x%2Fy%23z.txt". The "#" in particular would otherwise be
+  // problematic, since the conversion from string to GURL does not consider
+  // the "#y.txt" part of the URL path, even though "#" is a valid character
+  // for ChromeOS (Linux) file names.
+  //
+  // The initial "/" stays a slash, not a "%2F", since that is what
+  // ResolvePrefixMap and MonikerMap::ExtractToken expects to find.
+  std::string encoded;
+  size_t slash = fs_url_as_string.find('/');
+  if (slash == std::string::npos) {
+    encoded = fs_url_as_string;
+  } else {
+    url::RawCanonOutputT<char> canon_output;
+    url::EncodeURIComponent(fs_url_as_string.substr(slash + 1), &canon_output);
+    encoded = base::StrCat(
+        {fs_url_as_string.substr(0, slash + 1), canon_output.view()});
+  }
+
   storage::FileSystemURL fs_url;
   bool read_only = false;
 
   // Intercept any moniker names and replace them by their linked target.
   using ResultType = fusebox::MonikerMap::ExtractTokenResult::ResultType;
-  auto extract_token_result =
-      fusebox::MonikerMap::ExtractToken(fs_url_as_string);
+  auto extract_token_result = fusebox::MonikerMap::ExtractToken(encoded);
   switch (extract_token_result.result_type) {
     case ResultType::OK: {
       auto resolved = moniker_map.Resolve(extract_token_result.token);
@@ -189,7 +208,7 @@ base::expected<Parsed, ParseError> ParseFileSystemURL(
       break;
     }
     case ResultType::NOT_A_MONIKER_FS_URL: {
-      auto resolved = ResolvePrefixMap(prefix_map, fs_url_as_string);
+      auto resolved = ResolvePrefixMap(prefix_map, encoded);
       if (resolved.first.empty()) {
         LOG(ERROR) << "Unresolvable Prefix";
         return base::unexpected(ParseError(ENOENT));
