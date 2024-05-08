@@ -105,7 +105,7 @@ namespace bluetooth {
     // Type of filter to apply to the device list. Default is all.
     FilterType? filterType;
 
-    // Maximum number of bluetoth devices to return. Default is 0 (no limit)
+    // Maximum number of bluetooth devices to return. Default is 0 (no limit)
     // if unspecified.
     long? limit;
   };
