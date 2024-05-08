@@ -5,7 +5,6 @@
 package org.chromium.testing;
 
 import android.os.Bundle;
-import android.text.TextUtils;
 
 import androidx.test.internal.runner.listener.InstrumentationRunListener;
 
@@ -15,14 +14,17 @@ import org.json.JSONObject;
 import org.junit.runner.Description;
 import org.junit.runner.Result;
 import org.junit.runner.notification.Failure;
+import org.junit.runners.model.InitializationError;
 
 import java.io.PrintStream;
 import java.lang.annotation.Annotation;
 import java.lang.reflect.Array;
 import java.lang.reflect.InvocationTargetException;
 import java.lang.reflect.Method;
+import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.Collection;
+import java.util.List;
 import java.util.Set;
 import java.util.TreeSet;
 
@@ -37,7 +39,7 @@ public class TestListInstrumentationRunListener extends InstrumentationRunListen
             Set.of("toString", "hashCode", "annotationType", "equals");
 
     private final boolean mRequireBaseRunner;
-    private Failure mFirstFailure;
+    private final List<Failure> mFailures = new ArrayList<>();
     private Class<?> mActiveTestClass;
     private final Set<String> mClassesWithWrongRunner = new TreeSet<>();
 
@@ -51,8 +53,10 @@ public class TestListInstrumentationRunListener extends InstrumentationRunListen
 
     @Override
     public void testFailure(Failure failure) {
-        if (mFirstFailure == null) {
-            mFirstFailure = failure;
+        mFailures.add(failure);
+        // JUnit's ErrorReportingRunner calls testStart() in the case of InitializationError.
+        if (failure.getException() instanceof InitializationError) {
+            mClassesWithWrongRunner.remove(failure.getDescription().getClassName());
         }
     }
 
@@ -88,15 +92,27 @@ public class TestListInstrumentationRunListener extends InstrumentationRunListen
     @Override
     public void instrumentationRunFinished(
             PrintStream streamResult, Bundle resultBundle, Result junitResults) {
-        if (!mClassesWithWrongRunner.isEmpty()) {
-            throw new RuntimeException(
-                    "All tests must use @RunWith(BaseJUnit4ClassRunner.class) or a subclass"
-                            + " thereof. These tests did not:\n  * "
-                            + TextUtils.join("\n  * ", mClassesWithWrongRunner));
+        StringBuilder sb = new StringBuilder();
+        if (!mFailures.isEmpty()) {
+            sb.append("Failure during test listing:\n");
+            for (Failure f : mFailures) {
+                sb.append(f).append("\n");
+            }
         }
-        if (mFirstFailure != null) {
-            throw new RuntimeException(
-                    "Failed on " + mFirstFailure.getDescription(), mFirstFailure.getException());
+        if (!mClassesWithWrongRunner.isEmpty()) {
+            if (sb.length() > 0) {
+                sb.append("\n");
+            }
+            sb.append(
+                    "Found one or more tests that were not using "
+                            + "@RunWith(BaseJUnit4ClassRunner.class) or a subclass thereof:\n");
+            for (String name : mClassesWithWrongRunner) {
+                sb.append("* ").append(name).append("\n");
+            }
+        }
+        String errorMsg = sb.toString();
+        if (!errorMsg.isEmpty()) {
+            throw new RuntimeException(errorMsg);
         }
     }
 
