@@ -39,9 +39,15 @@ class FileIndexImpl : public FileIndex {
   OpResults AugmentFile(const std::vector<Term>& terms,
                         const FileInfo& info) override;
 
-  // Overrides base implementation to purge in-memory maps of information
-  // associated with the file with the given `url`.
+  // Overrides base implementation to remove information associated with the
+  // file with the given `url`. This means removing association between URL ID
+  // and all terms known for the file, as well as the URL ID itself.
   OpResults RemoveFile(const GURL& url) override;
+
+  // Overrides base implementation to remove association between the file with
+  // the given `url` and the specified terms.
+  OpResults RemoveTerms(const std::vector<Term>& terms,
+                        const GURL& url) override;
 
   // Overrides base implementation to search in-memory maps for files that match
   // the specified query.

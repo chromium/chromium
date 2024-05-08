@@ -287,5 +287,34 @@ TEST_F(FileIndexServiceTest, RemoveFile) {
               ContainsFiles(FileInfoList{}));
 }
 
+TEST_F(FileIndexServiceTest, RemoveTerms) {
+  GURL foo_url = MakeLocalURL("foo.txt");
+  FileInfo foo_info(foo_url, 1024, base::Time());
+
+  EXPECT_EQ(index_service_->RemoveTerms({}, foo_url), OpResults::kSuccess);
+
+  // Add terms for foo_info.
+  EXPECT_EQ(index_service_->UpdateFile({starred_, downloaded_}, foo_info),
+            OpResults::kSuccess);
+  EXPECT_THAT(index_service_->Search(Query({starred_})),
+              ContainsFiles(FileInfoList{foo_info}));
+  EXPECT_THAT(index_service_->Search(Query({downloaded_})),
+              ContainsFiles(FileInfoList{foo_info}));
+
+  EXPECT_EQ(index_service_->RemoveTerms({starred_}, foo_url),
+            OpResults::kSuccess);
+
+  EXPECT_TRUE(index_service_->Search(Query({starred_})).matches.empty());
+  EXPECT_THAT(index_service_->Search(Query({downloaded_})),
+              ContainsFiles(FileInfoList{foo_info}));
+
+  // Remove more terms, including one that is no longer there.
+  EXPECT_EQ(index_service_->RemoveTerms({starred_, downloaded_}, foo_url),
+            OpResults::kSuccess);
+
+  EXPECT_TRUE(index_service_->Search(Query({starred_})).matches.empty());
+  EXPECT_TRUE(index_service_->Search(Query({downloaded_})).matches.empty());
+}
+
 }  // namespace
 }  // namespace file_manager

@@ -86,6 +86,14 @@ OpResults FileIndexService::RemoveFile(const GURL& url) {
   return file_index_impl_->RemoveFile(url);
 }
 
+OpResults FileIndexService::RemoveTerms(const std::vector<Term>& terms,
+                                        const GURL& url) {
+  if (!inited_) {
+    return kUninitialized;
+  }
+  return file_index_impl_->RemoveTerms(terms, url);
+}
+
 // Searches the index for file info matching the specified query.
 SearchResults FileIndexService::Search(const Query& query) {
   if (!inited_) {

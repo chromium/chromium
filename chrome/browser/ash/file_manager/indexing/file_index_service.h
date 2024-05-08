@@ -75,6 +75,11 @@ class FileIndexService : public KeyedService, FileIndex {
   // empty terms vector. Returns true if the file was found and removed.
   OpResults RemoveFile(const GURL& url) override;
 
+  // Removes the specified terms from list of terms associated with the given
+  // `url`.
+  OpResults RemoveTerms(const std::vector<Term>& terms,
+                        const GURL& url) override;
+
   // Adds specified terms to terms associated with the file. The file must
   // already exist for this operation to succeed.
   // TODO(b:327535200): Implement and add tests.

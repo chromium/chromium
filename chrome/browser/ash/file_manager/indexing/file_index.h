@@ -68,6 +68,11 @@ class FileIndex {
   // empty terms vector. Returns true if the file was found and removed.
   virtual OpResults RemoveFile(const GURL& url) = 0;
 
+  // Removes the specified term from terms associated with the file with the
+  // given URL.
+  virtual OpResults RemoveTerms(const std::vector<Term>& terms,
+                                const GURL& url) = 0;
+
   // Searches the index for file info matching the specified query.
   virtual SearchResults Search(const Query& query) = 0;
 };

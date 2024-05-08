@@ -39,6 +39,29 @@ OpResults FileIndexImpl::RemoveFile(const GURL& url) {
   return OpResults::kSuccess;
 }
 
+OpResults FileIndexImpl::RemoveTerms(const std::vector<Term>& terms,
+                                     const GURL& url) {
+  int64_t url_id = storage_->GetUrlId(url);
+  if (url_id < 0) {
+    return OpResults::kSuccess;
+  }
+  std::set<int64_t> augmented_term_ids;
+  for (const Term& t : terms) {
+    int64_t id_with_field = storage_->GetAugmentedTermId(t);
+    if (id_with_field != -1) {
+      augmented_term_ids.emplace(id_with_field);
+    }
+    int64_t global_id = storage_->GetAugmentedTermId(Term("", t.text()));
+    if (global_id != -1) {
+      augmented_term_ids.emplace(global_id);
+    }
+  }
+  for (int64_t augmented_term_id : augmented_term_ids) {
+    storage_->DeleteFromPostingList(augmented_term_id, url_id);
+  }
+  return OpResults::kSuccess;
+}
+
 OpResults FileIndexImpl::AugmentFile(const std::vector<Term>& terms,
                                      const FileInfo& info) {
   if (terms.empty()) {
