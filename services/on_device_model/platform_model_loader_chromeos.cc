@@ -5,6 +5,7 @@
 #include "services/on_device_model/platform_model_loader_chromeos.h"
 
 #include <cstdint>
+#include <optional>
 #include <string>
 #include <utility>
 #include <vector>
@@ -262,7 +263,7 @@ void ChromeosPlatformModelLoader::OnInstallDlcComplete(
   const std::string* weight_path = model_dict->FindString(kWeightPathKey);
   const std::string* version = model_dict->FindString(kVersionKey);
 
-  if (!model_path || !weight_path || !version) {
+  if (!weight_path || !version) {
     LOG(ERROR) << "Failed to read model data from model descriptor file";
     base::UmaHistogramEnumeration(kLoadStatusHistogramName,
                                   LoadStatus::kInvalidModelDescriptor);
@@ -293,21 +294,13 @@ void ChromeosPlatformModelLoader::OnInstallDlcComplete(
         base::BindOnce(
             &ChromeosPlatformModelLoader::LoadAdaptationPlatformModel,
             weak_ptr_factory_.GetWeakPtr(), base_model_uuid, *base_version,
-            uuid, dlc_root, *version, *model_path, *weight_path,
-            std::move(platform_model)));
+            uuid, dlc_root, *version, model_path ? *model_path : "",
+            *weight_path, std::move(platform_model)));
 
     return;
   }
 
   const std::string* sp_model = model_dict->FindString(kSpModelPathKey);
-
-  if (!sp_model) {
-    LOG(ERROR) << "Failed to read sp model path from model descriptor file";
-    base::UmaHistogramEnumeration(kLoadStatusHistogramName,
-                                  LoadStatus::kInvalidModelDescriptor);
-    ReplyError(uuid, mojom::LoadModelResult::kFailedToLoadLibrary);
-    return;
-  }
 
   std::optional<int> max_tokens = model_dict->FindInt(kMaxTokensKey);
 
@@ -327,8 +320,12 @@ void ChromeosPlatformModelLoader::OnInstallDlcComplete(
   std::optional<int> ts_dimension = model_dict->FindInt(kTsDimensionKey);
 
   on_device_model::ModelAssetPaths model_paths;
-  model_paths.sp_model = dlc_root.Append(*sp_model);
-  model_paths.model = dlc_root.Append(*model_path);
+  if (sp_model) {
+    model_paths.sp_model = dlc_root.Append(*sp_model);
+  }
+  if (model_path) {
+    model_paths.model = dlc_root.Append(*model_path);
+  }
   model_paths.weights = dlc_root.Append(*weight_path);
   if (ts_data) {
     model_paths.ts_data = dlc_root.Append(*ts_data);
@@ -407,7 +404,9 @@ void ChromeosPlatformModelLoader::LoadAdaptationPlatformModel(
 
   on_device_model::AdaptationAssetPaths adaptation_paths;
 
-  adaptation_paths.model = dlc_root.Append(model_path);
+  if (!model_path.empty()) {
+    adaptation_paths.model = dlc_root.Append(model_path);
+  }
   adaptation_paths.weights = dlc_root.Append(weight_path);
 
   auto params = on_device_model::mojom::LoadAdaptationParams::New();

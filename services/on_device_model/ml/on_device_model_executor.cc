@@ -475,19 +475,24 @@ base::expected<uint32_t, LoadModelResult> OnDeviceModelExecutor::LoadAdaptation(
   }
 
   on_device_model::AdaptationAssets assets = std::move(params->assets);
-  auto model_proto = std::make_unique<base::MemoryMappedFile>();
-  if (!assets.model.IsValid() ||
-      !model_proto->Initialize(std::move(assets.model))) {
+  std::unique_ptr<base::MemoryMappedFile> model_proto;
+  if (assets.model.IsValid()) {
+    model_proto = std::make_unique<base::MemoryMappedFile>();
+  }
+
+  if (model_proto && !model_proto->Initialize(std::move(assets.model))) {
     LOG(ERROR) << "Unable to load model";
     return base::unexpected(LoadModelResult::kFailedToLoadLibrary);
   }
 
   uint32_t id;
-  const ChromeMLModelData data = {
-      .model_proto_data = model_proto->data(),
-      .model_proto_size = model_proto->length(),
+  ChromeMLModelData data = {
       .weights_file = assets.weights.TakePlatformFile(),
   };
+  if (model_proto) {
+    data.model_proto_data = model_proto->data();
+    data.model_proto_size = model_proto->length();
+  }
   ChromeMLAdaptationDescriptor descriptor = {
       .model_data = &data,
   };
