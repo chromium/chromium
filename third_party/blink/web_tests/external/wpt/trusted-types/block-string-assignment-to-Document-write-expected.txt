@@ -1,0 +1,7 @@
+This is a testharness.js-based test.
+[FAIL] document.write with multiple trusted arguments.
+  Failed to execute 'write' on 'Document': This document requires 'TrustedHTML' assignment.
+[FAIL] document.writeln with multiple trusted arguments.
+  Failed to execute 'writeln' on 'Document': This document requires 'TrustedHTML' assignment.
+Harness: the test ran to completion.
+

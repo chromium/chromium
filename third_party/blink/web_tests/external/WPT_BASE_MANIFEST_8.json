@@ -145625,7 +145625,7 @@
       ]
      ],
      "counter-set-001.html": [
-      "4e28367798ae65095b21094d2d5da777b57f4294",
+      "6ec53e3bfa12306db12ecdded3f6727053222094",
       [
        null,
        [
@@ -145722,6 +145722,19 @@
        [
         [
          "/css/css-lists/counters-004-ref.html",
+         "=="
+        ]
+       ],
+       {}
+      ]
+     ],
+     "counters-005.html": [
+      "12908e64720863293bb71dd0867524921bf34273",
+      [
+       null,
+       [
+        [
+         "/css/css-lists/counters-005-ref.html",
          "=="
         ]
        ],
@@ -197143,6 +197156,23 @@
          [
           "/css/css-text/white-space/reference/text-wrap-balance-text-indent-001-ref.html",
           "=="
+         ]
+        ],
+        {}
+       ]
+      ],
+      "text-wrap-nowrap-001.html": [
+       "94437df6deeb3ddcf73d7732c046901cb4b3842d",
+       [
+        null,
+        [
+         [
+          "/css/css-text/white-space/reference/text-wrap-nowrap-001-ref.html",
+          "=="
+         ],
+         [
+          "/css/css-text/white-space/reference/text-wrap-nowrap-001-mis-ref.html",
+          "!="
          ]
         ],
         {}
@@ -264025,6 +264055,19 @@
           }
          ]
         ],
+        "svg-filter-lh-rlh.html": [
+         "b61193fb9fdd107319d98ee8429970221dbfd549",
+         [
+          null,
+          [
+           [
+            "/html/canvas/element/manual/filters/svg-filter-lh-rlh-expected.html",
+            "=="
+           ]
+          ],
+          {}
+         ]
+        ],
         "tentative": {
          "canvas-filter-object-blur.html": [
           "9fe7ef120c5cc73f3f3bfd1278d9d7dc025f402f",
@@ -272549,6 +272592,19 @@
         [
          [
           "/html/rendering/widgets/input-date-content-size-ref.html",
+          "=="
+         ]
+        ],
+        {}
+       ]
+      ],
+      "input-password-background-suppresses-appearance.html": [
+       "3c85b100a1dc74e94d0a7f7e187da951d7476209",
+       [
+        null,
+        [
+         [
+          "/html/rendering/widgets/input-password-background-suppresses-appearance-ref.html",
           "=="
          ]
         ],
@@ -308253,10 +308309,6 @@
       "feef9209f5c19f51233a2025108b66c63b58f34c",
       []
      ],
-     "contain-style-dynamic-001-expected.txt": [
-      "dd5fb66706b01010354a3d27b73e966c7eb81a00",
-      []
-     ],
      "container-queries": {
       "DIR_METADATA": [
        "b7dc9730f956fd4eda032aeeef33e920110545ee",
@@ -308544,10 +308596,6 @@
       ],
       "content-visibility-size-containment-001-expected.txt": [
        "c4a2f2085ce4648d848d4ddeeba51f88a8f190c9",
-       []
-      ],
-      "content-visibility-style-containment-001-expected.txt": [
-       "b4fd02ab0bf1df5d621f9f72b9f75dd2efe1ba45",
        []
       ],
       "content-visibility-svg-path-expected.txt": [
@@ -324028,7 +324076,7 @@
       []
      ],
      "counter-set-001-ref.html": [
-      "301197904a5af79eb5024bb7d97ac161e5ada3ad",
+      "2b5eb90ccfc61af30e95e539a34f85ac8a8b58cd",
       []
      ],
      "counter-set-002-ref.html": [
@@ -324057,6 +324105,10 @@
      ],
      "counters-004-ref.html": [
       "070c7047386818eb8b6d8b08faac8516b6e70018",
+      []
+     ],
+     "counters-005-ref.html": [
+      "232bab76a106674358e024f9e0bb97993aac476a",
       []
      ],
      "counters-scope-001-ref.html": [
@@ -335675,6 +335727,14 @@
        ],
        "text-wrap-balance-text-indent-001-ref.html": [
         "401e35e2f1f8c534487782df003078b1a53b6e36",
+        []
+       ],
+       "text-wrap-nowrap-001-mis-ref.html": [
+        "ca73318ecf3bae78643e5a754da54e8c8dc313d2",
+        []
+       ],
+       "text-wrap-nowrap-001-ref.html": [
+        "bd5b231d83126b01720fd5d2d3c57f8d920acdf5",
         []
        ],
        "textarea-pre-wrap-001-ref.html": [
@@ -351525,7 +351585,7 @@
      []
     ],
     "textdecoder-copy.any-expected.txt": [
-     "3722df9d3d4fa865299e64742c403263c130c8f2",
+     "b70509bd5ef5b895780dd7154bec80656519642a",
      []
     ],
     "textdecoder-copy.any.js.headers": [
@@ -351533,15 +351593,15 @@
      []
     ],
     "textdecoder-copy.any.serviceworker-expected.txt": [
-     "3722df9d3d4fa865299e64742c403263c130c8f2",
+     "b70509bd5ef5b895780dd7154bec80656519642a",
      []
     ],
     "textdecoder-copy.any.sharedworker-expected.txt": [
-     "3722df9d3d4fa865299e64742c403263c130c8f2",
+     "b70509bd5ef5b895780dd7154bec80656519642a",
      []
     ],
     "textdecoder-copy.any.worker-expected.txt": [
-     "3722df9d3d4fa865299e64742c403263c130c8f2",
+     "b70509bd5ef5b895780dd7154bec80656519642a",
      []
     ],
     "textdecoder-fatal-streaming.any.shadowrealm-expected.txt": [
@@ -361414,6 +361474,14 @@
          "caf6b53ce39f2fa61c43b35f6c91c6954e7350d6",
          []
         ],
+        "svg-filter-lh-rlh-expected.html": [
+         "d183f6940deb4399186770a4e97bb136e05f5f61",
+         []
+        ],
+        "svg-filter.svg": [
+         "a783a3eb15dbbab1395539e1d6597551c0bd62da",
+         []
+        ],
         "tentative": {
          "canvas-filter-object-blur-expected.html": [
           "ae8911b2de39e593c2ef262ed9cd5eaa70b5bf0c",
@@ -369230,6 +369298,10 @@
       ],
       "input-no-centering-ref.html": [
        "5b2ea91fe5fa635c221adc8801605f3b14fb66c7",
+       []
+      ],
+      "input-password-background-suppresses-appearance-ref.html": [
+       "33e0e6ac161007679a51f435951f579ab5dfaf09",
        []
       ],
       "input-radio-disabled-checked-notref.html": [
@@ -393800,6 +393872,10 @@
     ],
     "WEB_FEATURES.yml": [
      "6ea31f1ef8d3838b3b9d84f6dac839b22083ee20",
+     []
+    ],
+    "block-string-assignment-to-Document-write-expected.txt": [
+     "6ce2110d82390fcf559e572c70e83a74a90b0555",
      []
     ],
     "default-policy-callback-arguments-expected.txt": [
@@ -652698,6 +652774,13 @@
         {}
        ]
       ],
+      "SVGLength-rlh.html": [
+       "411013b65b5b1601d221dba99ee84efa9e990bbf",
+       [
+        null,
+        {}
+       ]
+      ],
       "SVGLength-viewport.html": [
        "2a29c0ba54978fa732b60460689e34d08db93448",
        [
@@ -653059,7 +653142,7 @@
      ]
     ],
     "Document-write.html": [
-     "87e9e724699efc3f0edde3afade4cf53ec2c9c3e",
+     "7902733f67c23bad9529505565308a6e5a8db887",
      [
       null,
       {}
@@ -653348,7 +653431,7 @@
      ]
     ],
     "block-string-assignment-to-Document-write.html": [
-     "974203c1133a43afd87069b41b29ab1e5460a36d",
+     "d22be1118ce2b0bcc49c502f5bbaa6283d4c6552",
      [
       null,
       {}
