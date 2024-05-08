@@ -2,14 +2,14 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#include "chrome/browser/ui/startup/default_browser_prompt.h"
+#include "chrome/browser/ui/startup/default_browser_prompt/default_browser_prompt.h"
 
 #include "base/metrics/field_trial.h"
 #include "base/strings/strcat.h"
 #include "base/test/scoped_feature_list.h"
 #include "chrome/browser/browser_process.h"
 #include "chrome/browser/ui/browser.h"
-#include "chrome/browser/ui/startup/default_browser_prompt_trial.h"
+#include "chrome/browser/ui/startup/default_browser_prompt/default_browser_prompt_trial.h"
 #include "chrome/browser/ui/ui_features.h"
 #include "chrome/common/pref_names.h"
 #include "chrome/test/base/in_process_browser_test.h"
@@ -19,7 +19,7 @@
 #include "testing/gtest/include/gtest/gtest.h"
 
 class DefaultBrowserPromptBrowserTest : public InProcessBrowserTest {
- public:
+public:
   static constexpr char kStudyTestGroupName[] = "test_group_1";
 
   void SetUp() override {
@@ -35,9 +35,9 @@ class DefaultBrowserPromptBrowserTest : public InProcessBrowserTest {
         {{}});
   }
 
-  PrefService* local_state() { return g_browser_process->local_state(); }
+  PrefService *local_state() { return g_browser_process->local_state(); }
 
- private:
+private:
   base::test::ScopedFeatureList scoped_feature_list;
 };
 

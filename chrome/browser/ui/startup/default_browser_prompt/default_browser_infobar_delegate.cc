@@ -2,7 +2,7 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#include "chrome/browser/ui/startup/default_browser_infobar_delegate.h"
+#include "chrome/browser/ui/startup/default_browser_prompt/default_browser_infobar_delegate.h"
 
 #include <memory>
 
@@ -17,9 +17,9 @@
 #include "chrome/browser/infobars/confirm_infobar_creator.h"
 #include "chrome/browser/profiles/profile.h"
 #include "chrome/browser/shell_integration.h"
-#include "chrome/browser/ui/startup/default_browser_prompt.h"
-#include "chrome/browser/ui/startup/default_browser_prompt_manager.h"
-#include "chrome/browser/ui/startup/default_browser_prompt_prefs.h"
+#include "chrome/browser/ui/startup/default_browser_prompt/default_browser_prompt.h"
+#include "chrome/browser/ui/startup/default_browser_prompt/default_browser_prompt_manager.h"
+#include "chrome/browser/ui/startup/default_browser_prompt/default_browser_prompt_prefs.h"
 #include "chrome/browser/ui/ui_features.h"
 #include "chrome/common/pref_names.h"
 #include "chrome/grit/branded_strings.h"

@@ -2,7 +2,7 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#include "chrome/browser/ui/startup/default_browser_prompt.h"
+#include "chrome/browser/ui/startup/default_browser_prompt/default_browser_prompt.h"
 
 #include <limits>
 #include <string>
@@ -22,10 +22,10 @@
 #include "chrome/browser/ui/browser.h"
 #include "chrome/browser/ui/browser_finder.h"
 #include "chrome/browser/ui/browser_list.h"
-#include "chrome/browser/ui/startup/default_browser_infobar_delegate.h"
-#include "chrome/browser/ui/startup/default_browser_prompt_manager.h"
-#include "chrome/browser/ui/startup/default_browser_prompt_prefs.h"
-#include "chrome/browser/ui/startup/default_browser_prompt_trial.h"
+#include "chrome/browser/ui/startup/default_browser_prompt/default_browser_infobar_delegate.h"
+#include "chrome/browser/ui/startup/default_browser_prompt/default_browser_prompt_manager.h"
+#include "chrome/browser/ui/startup/default_browser_prompt/default_browser_prompt_prefs.h"
+#include "chrome/browser/ui/startup/default_browser_prompt/default_browser_prompt_trial.h"
 #include "chrome/browser/ui/tabs/tab_strip_model.h"
 #include "chrome/browser/ui/ui_features.h"
 #include "chrome/common/pref_names.h"
@@ -45,8 +45,9 @@ void ShowPrompt() {
     // |browser| may be null in UI tests. Also, don't show the prompt in an app
     // window, which is not meant to be treated as a Chrome window. Only show in
     // a normal, tabbed browser.
-    if (browser && !browser->is_type_normal())
+    if (browser && !browser->is_type_normal()) {
       continue;
+    }
 
     // In ChromeBot tests, there might be a race. This line appears to get
     // called during shutdown and the active web contents can be nullptr.
@@ -115,8 +116,8 @@ void OnCheckIsDefaultBrowserFinished(
 }  // namespace
 
 void RegisterDefaultBrowserPromptPrefs(PrefRegistrySimple* registry) {
-  registry->RegisterStringPref(
-      prefs::kBrowserSuppressDefaultBrowserPrompt, std::string());
+  registry->RegisterStringPref(prefs::kBrowserSuppressDefaultBrowserPrompt,
+                               std::string());
   registry->RegisterStringPref(prefs::kDefaultBrowserPromptRefreshStudyGroup,
                                std::string());
 }
@@ -166,7 +167,7 @@ void ShowDefaultBrowserPrompt(Profile* profile) {
   // Do not check if Chrome is the default browser if there is a policy in
   // control of this setting.
   if (g_browser_process->local_state()->IsManagedPreference(
-      prefs::kDefaultBrowserSettingEnabled)) {
+          prefs::kDefaultBrowserSettingEnabled)) {
     // Handling of the browser.default_browser_setting_enabled policy setting is
     // taken care of in BrowserProcessImpl.
     return;

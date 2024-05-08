@@ -30,7 +30,7 @@
 #include "services/network/public/cpp/network_switches.h"
 
 #if !BUILDFLAG(IS_CHROMEOS) && !BUILDFLAG(IS_ANDROID)
-#include "chrome/browser/ui/startup/default_browser_prompt.h"
+#include "chrome/browser/ui/startup/default_browser_prompt/default_browser_prompt.h"
 #endif
 
 #if BUILDFLAG(CHROME_FOR_TESTING)

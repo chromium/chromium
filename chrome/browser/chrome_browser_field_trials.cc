@@ -45,7 +45,7 @@
 #endif
 
 #if !BUILDFLAG(IS_ANDROID) && !BUILDFLAG(IS_CHROMEOS)
-#include "chrome/browser/ui/startup/default_browser_prompt_trial.h"
+#include "chrome/browser/ui/startup/default_browser_prompt/default_browser_prompt_trial.h"
 #endif
 
 ChromeBrowserFieldTrials::ChromeBrowserFieldTrials(PrefService* local_state)
