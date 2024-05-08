@@ -429,13 +429,7 @@ void SharedWorkerServiceImpl::StartWorker(
     const blink::MessagePortChannel& message_port,
     blink::mojom::FetchClientSettingsObjectPtr
         outside_fetch_client_settings_object,
-    std::unique_ptr<blink::PendingURLLoaderFactoryBundle>
-        subresource_loader_factories,
-    blink::mojom::WorkerMainScriptLoadParamsPtr main_script_load_params,
-    blink::mojom::ControllerServiceWorkerInfoPtr controller,
-    base::WeakPtr<ServiceWorkerObjectHost>
-        controller_service_worker_object_host,
-    const GURL& final_response_url) {
+    std::optional<WorkerScriptFetcherResult> result) {
   DCHECK_CURRENTLY_ON(BrowserThread::UI);
 
   // The host may already be gone if something forcibly terminated the worker
@@ -446,7 +440,7 @@ void SharedWorkerServiceImpl::StartWorker(
 
   // If the script fetcher failed to load the shared worker's main script,
   // terminate the worker.
-  if (!main_script_load_params) {
+  if (!result) {
     DestroyHost(host.get());
     return;
   }
@@ -471,11 +465,10 @@ void SharedWorkerServiceImpl::StartWorker(
   host->GetProcessHost()->BindReceiver(
       factory.InitWithNewPipeAndPassReceiver());
 
-  host->Start(std::move(factory), std::move(main_script_load_params),
-              std::move(subresource_loader_factories), std::move(controller),
-              std::move(controller_service_worker_object_host),
+  const GURL final_response_url = result->final_response_url;
+  host->Start(std::move(factory),
               std::move(outside_fetch_client_settings_object),
-              final_response_url, GetContentClient()->browser());
+              GetContentClient()->browser(), std::move(*result));
   for (Observer& observer : observers_) {
     observer.OnFinalResponseURLDetermined(host->token(), final_response_url);
   }

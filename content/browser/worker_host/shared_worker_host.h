@@ -56,7 +56,6 @@ class GURL;
 
 namespace blink {
 class MessagePortChannel;
-class PendingURLLoaderFactoryBundle;
 class StorageKey;
 }  // namespace blink
 
@@ -65,10 +64,10 @@ namespace content {
 class ContentBrowserClient;
 class CrossOriginEmbedderPolicyReporter;
 class ServiceWorkerMainResourceHandle;
-class ServiceWorkerObjectHost;
 class SharedWorkerContentSettingsProxyImpl;
 class SharedWorkerServiceImpl;
 class SiteInstanceImpl;
+struct WorkerScriptFetcherResult;
 
 // SharedWorkerHost is the browser-side host of a single shared worker running
 // in the renderer. This class is owned by the SharedWorkerServiceImpl of the
@@ -96,18 +95,6 @@ class CONTENT_EXPORT SharedWorkerHost : public blink::mojom::SharedWorkerHost,
 
   // Starts the SharedWorker in the renderer process.
   //
-  // |main_script_load_params| is sent to the renderer process and to be used to
-  // load the shared worker main script pre-requested by the browser process.
-  //
-  // |subresource_loader_factories| is sent to the renderer process and is to be
-  // used to request subresources where applicable. For example, this allows the
-  // shared worker to load chrome-extension:// URLs which the renderer's default
-  // loader factory can't load.
-  //
-  // |controller| contains information about the service worker controller. Once
-  // a ServiceWorker object about the controller is prepared, it is registered
-  // to |controller_service_worker_object_host|.
-  //
   // |outside_fetch_client_settings_object| is used for loading the shared
   // worker main script by the browser process, sent to the renderer process,
   // and then used to load the script.
@@ -115,18 +102,13 @@ class CONTENT_EXPORT SharedWorkerHost : public blink::mojom::SharedWorkerHost,
   // |client| is used to determine the IP address space of the worker if the
   // script is fetched from a URL with a special scheme known only to the
   // embedder.
-  void Start(
-      mojo::PendingRemote<blink::mojom::SharedWorkerFactory> factory,
-      blink::mojom::WorkerMainScriptLoadParamsPtr main_script_load_params,
-      std::unique_ptr<blink::PendingURLLoaderFactoryBundle>
-          subresource_loader_factories,
-      blink::mojom::ControllerServiceWorkerInfoPtr controller,
-      base::WeakPtr<ServiceWorkerObjectHost>
-          controller_service_worker_object_host,
-      blink::mojom::FetchClientSettingsObjectPtr
-          outside_fetch_client_settings_object,
-      const GURL& final_response_url,
-      ContentBrowserClient* client);
+  //
+  // `result` contains the worker main script fetch result.
+  void Start(mojo::PendingRemote<blink::mojom::SharedWorkerFactory> factory,
+             blink::mojom::FetchClientSettingsObjectPtr
+                 outside_fetch_client_settings_object,
+             ContentBrowserClient* client,
+             WorkerScriptFetcherResult result);
 
   void AllowFileSystem(const GURL& url,
                        base::OnceCallback<void(bool)> callback);

@@ -52,6 +52,49 @@ class WorkerScriptLoaderFactory;
 
 struct SubresourceLoaderParams;
 
+// Contains the result of successful worker script fetch. On fetch failure,
+// `std::nullopt` is used instead.
+struct CONTENT_EXPORT WorkerScriptFetcherResult final {
+  WorkerScriptFetcherResult(
+      std::unique_ptr<blink::PendingURLLoaderFactoryBundle>
+          subresource_loader_factories,
+      blink::mojom::WorkerMainScriptLoadParamsPtr main_script_load_params,
+      blink::mojom::ControllerServiceWorkerInfoPtr controller,
+      base::WeakPtr<ServiceWorkerObjectHost>
+          controller_service_worker_object_host,
+      const GURL& final_response_url);
+  ~WorkerScriptFetcherResult();
+
+  WorkerScriptFetcherResult(WorkerScriptFetcherResult&& other);
+  WorkerScriptFetcherResult& operator=(WorkerScriptFetcherResult&& other);
+
+  // Sent to the renderer process and is to be used to request subresources
+  // where applicable. For example, this allows the dedicated worker to load
+  // chrome-extension:// URLs which the renderer's default loader factory can't
+  // load.
+  std::unique_ptr<blink::PendingURLLoaderFactoryBundle>
+      subresource_loader_factories;
+
+  // Sent to the renderer process and to be used to load the worker main script
+  // pre-requested by the browser process.
+  // Always non-null and contains `response_head` and
+  // `response_head->parsed_headers`.
+  blink::mojom::WorkerMainScriptLoadParamsPtr main_script_load_params;
+
+  // May be nullptr.
+  // Contains information about the service worker controller (if any). Once
+  // a ServiceWorker object about the controller is prepared, it is registered
+  // to `controller_service_worker_object_host`.
+  blink::mojom::ControllerServiceWorkerInfoPtr controller;
+
+  // May be nullptr.
+  base::WeakPtr<ServiceWorkerObjectHost> controller_service_worker_object_host;
+
+  // The script response URL.
+  // https://fetch.spec.whatwg.org/#concept-response-url
+  GURL final_response_url;
+};
+
 // NetworkService (PlzWorker):
 // This is an implementation of the URLLoaderClient for web worker's main script
 // fetch. The loader and client bounded with this class are to be unbound and
@@ -65,21 +108,9 @@ struct SubresourceLoaderParams;
 // use `unique_ptr` to create WorkerScriptFetcher in a caller side.
 class WorkerScriptFetcher : public network::mojom::URLLoaderClient {
  public:
-  // Called with the result of fetching a script upon completion.
-  //
-  // - `subresource_loader_factories` is never nullptr.
-  // - `main_script_load_params` is nullptr iff the fetch failed. Otherwise, it
-  //    always contains `response_head` and `response_head->parsed_headers`.
-  // - `controller` and `controller_service_worker_object_host` may be nullptr.
-  // - `final_response_url` specifies the script response URL.
-  using CompletionCallback = base::OnceCallback<void(
-      std::unique_ptr<blink::PendingURLLoaderFactoryBundle>
-          subresource_loader_factories,
-      blink::mojom::WorkerMainScriptLoadParamsPtr main_script_load_params,
-      blink::mojom::ControllerServiceWorkerInfoPtr controller,
-      base::WeakPtr<ServiceWorkerObjectHost>
-          controller_service_worker_object_host,
-      const GURL& final_response_url)>;
+  // Called with the result of fetching a script upon response received.
+  using CompletionCallback =
+      base::OnceCallback<void(std::optional<WorkerScriptFetcherResult>)>;
 
   // Used for specifying how URLLoaderFactoryBundle is used.
   enum class LoaderType { kMainResource, kSubResource };

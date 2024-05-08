@@ -176,10 +176,15 @@ void DidCreateScriptLoader(
     }
   }
 
-  std::move(callback).Run(
-      std::move(subresource_loader_factories),
-      std::move(main_script_load_params), std::move(controller),
-      std::move(controller_service_worker_object_host), final_response_url);
+  // The load succeeded iff `main_script_load_params` is not nullptr.
+  if (main_script_load_params) {
+    std::move(callback).Run(std::make_optional<WorkerScriptFetcherResult>(
+        std::move(subresource_loader_factories),
+        std::move(main_script_load_params), std::move(controller),
+        std::move(controller_service_worker_object_host), final_response_url));
+  } else {
+    std::move(callback).Run(std::nullopt);
+  }
 }
 
 bool ShouldCreateWebUILoader(RenderFrameHostImpl* creator_render_frame_host) {
@@ -201,6 +206,31 @@ bool ShouldCreateWebUILoader(RenderFrameHostImpl* creator_render_frame_host) {
 }
 
 }  // namespace
+
+WorkerScriptFetcherResult::WorkerScriptFetcherResult(
+    std::unique_ptr<blink::PendingURLLoaderFactoryBundle>
+        subresource_loader_factories,
+    blink::mojom::WorkerMainScriptLoadParamsPtr main_script_load_params,
+    blink::mojom::ControllerServiceWorkerInfoPtr controller,
+    base::WeakPtr<ServiceWorkerObjectHost>
+        controller_service_worker_object_host,
+    const GURL& final_response_url)
+    : subresource_loader_factories(std::move(subresource_loader_factories)),
+      main_script_load_params(std::move(main_script_load_params)),
+      controller(std::move(controller)),
+      controller_service_worker_object_host(
+          std::move(controller_service_worker_object_host)),
+      final_response_url(final_response_url) {
+  CHECK(this->main_script_load_params);
+  CHECK(this->main_script_load_params->response_head);
+  CHECK(this->main_script_load_params->response_head->parsed_headers);
+}
+
+WorkerScriptFetcherResult::WorkerScriptFetcherResult(
+    WorkerScriptFetcherResult&& other) = default;
+WorkerScriptFetcherResult& WorkerScriptFetcherResult::operator=(
+    WorkerScriptFetcherResult&& other) = default;
+WorkerScriptFetcherResult::~WorkerScriptFetcherResult() = default;
 
 void WorkerScriptFetcher::CreateAndStart(
     int worker_process_id,

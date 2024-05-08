@@ -61,13 +61,13 @@ struct CrossOriginEmbedderPolicy;
 
 namespace content {
 
-class ServiceWorkerClient;
-class ServiceWorkerRegistration;
-class DedicatedWorkerServiceImpl;
-class ServiceWorkerMainResourceHandle;
-class ServiceWorkerObjectHost;
-class StoragePartitionImpl;
 class CrossOriginEmbedderPolicyReporter;
+class DedicatedWorkerServiceImpl;
+class ServiceWorkerClient;
+class ServiceWorkerMainResourceHandle;
+class ServiceWorkerRegistration;
+class StoragePartitionImpl;
+struct WorkerScriptFetcherResult;
 
 // A host for a single dedicated worker. It deletes itself upon Mojo
 // disconnection from the worker in the renderer or when the RenderProcessHost
@@ -274,37 +274,9 @@ class CONTENT_EXPORT DedicatedWorkerHost final
 
   // Called from `WorkerScriptFetcher`. Continues starting the dedicated worker
   // in the renderer process.
-  //
-  // `main_script_load_params` is not nullptr iff the fetch succeeded. This is
-  // sent to the renderer process and to be used to load the dedicated worker
-  // main script pre-requested by the browser process.
-  //
-  // The following parameters are valid iff `main_script_load_params` is not
-  // nullptr, i.e. iff the fetch succeeded.
-  //
-  // `subresource_loader_factories` is sent to the renderer process and is to be
-  // used to request subresources where applicable. For example, this allows the
-  // dedicated worker to load chrome-extension:// URLs which the renderer's
-  // default loader factory can't load.
-  //
-  // `controller` contains information about the service worker controller. Once
-  // a ServiceWorker object about the controller is prepared, it is registered
-  // to `controller_service_worker_object_host`.
-  //
-  // `final_response_url` is the URL calculated from the initial request URL,
-  // redirect chain, and URLs fetched via service worker.
-  // https://fetch.spec.whatwg.org/#concept-response-url
-  void DidStartScriptLoad(
-      std::unique_ptr<blink::PendingURLLoaderFactoryBundle>
-          subresource_loader_factories,
-      blink::mojom::WorkerMainScriptLoadParamsPtr main_script_load_params,
-      blink::mojom::ControllerServiceWorkerInfoPtr controller,
-      base::WeakPtr<ServiceWorkerObjectHost>
-          controller_service_worker_object_host,
-      const GURL& final_response_url);
+  void DidStartScriptLoad(std::optional<WorkerScriptFetcherResult> result);
 
-  void ScriptLoadStartFailed(const GURL& url,
-                             const network::URLLoaderCompletionStatus& status);
+  void ScriptLoadStartFailed(const network::URLLoaderCompletionStatus& status);
 
   // Sets up the observer of network service crash.
   void ObserveNetworkServiceCrash(StoragePartitionImpl* storage_partition_impl);
@@ -396,6 +368,10 @@ class CONTENT_EXPORT DedicatedWorkerHost final
 
   std::unique_ptr<PressureServiceForWorker<DedicatedWorkerHost>>
       pressure_service_;
+
+  // Script request URL used, only for DevTools and tracing. Only set after
+  // `StartScriptLoad()`. Only set and used if PlzDedicatedWorker is enabled.
+  GURL script_request_url_;
 
   // BrowserInterfaceBroker implementation through which this
   // DedicatedWorkerHost exposes worker-scoped Mojo services to the
