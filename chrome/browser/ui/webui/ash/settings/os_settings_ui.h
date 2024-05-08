@@ -34,6 +34,7 @@
 #include "chromeos/ash/services/cellular_setup/public/mojom/esim_manager.mojom-forward.h"
 #include "chromeos/ash/services/connectivity/public/mojom/passpoint.mojom-forward.h"
 #include "chromeos/ash/services/hotspot_config/public/mojom/cros_hotspot_config.mojom-forward.h"
+#include "chromeos/ash/services/ime/public/mojom/input_method_user_data.mojom.h"
 #include "chromeos/ash/services/nearby/public/mojom/nearby_share_settings.mojom.h"
 #include "chromeos/components/in_session_auth/mojom/in_session_auth.mojom.h"
 #include "chromeos/services/network_config/public/mojom/cros_network_config.mojom-forward.h"
@@ -226,6 +227,11 @@ class OSSettingsUI : public ui::MojoWebUIController {
   // Binds HidPreservingBluetoothStateController service.
   void BindInterface(
       mojo::PendingReceiver<ash::mojom::HidPreservingBluetoothStateController>
+          receiver);
+
+  // Binds InputMethodUserDataService service.
+  void BindInterface(
+      mojo::PendingReceiver<ash::ime::mojom::InputMethodUserDataService>
           receiver);
 
  private:

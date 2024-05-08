@@ -20,6 +20,11 @@ mojom("mojom") {
     "user_data_japanese_legacy_config.mojom",
   ]
 
+  webui_module_path = "/"
+
+  # Also used by targets that rely on legacy JavaScript bindings
+  generate_legacy_js_bindings = true
+
   public_deps = [
     "//mojo/public/mojom/base",
     "//sandbox/policy/mojom",

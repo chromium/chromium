@@ -5474,6 +5474,7 @@ static_library("browser") {
       "//chromeos/ash/services/device_sync/public/mojom",
       "//chromeos/ash/services/hotspot_config",
       "//chromeos/ash/services/hotspot_config/public/mojom",
+      "//chromeos/ash/services/ime/public/mojom",
       "//chromeos/ash/services/multidevice_setup",
       "//chromeos/ash/services/multidevice_setup/public/cpp",
       "//chromeos/ash/services/multidevice_setup/public/cpp:first_run_field_trial",
