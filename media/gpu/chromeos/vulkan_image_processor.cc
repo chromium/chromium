@@ -854,6 +854,8 @@ VulkanImageProcessor::~VulkanImageProcessor() {
   vulkan_device_queue_->GetVulkanDeviceQueue()
       ->GetFenceHelper()
       ->PerformImmediateCleanup();
+
+  pivot_image_->Destroy();
 }
 
 std::unique_ptr<VulkanImageProcessor> VulkanImageProcessor::Create(
