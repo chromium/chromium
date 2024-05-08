@@ -9,6 +9,7 @@
 import concurrent.futures
 import json
 import os
+import subprocess
 import sys
 import textwrap
 
@@ -57,19 +58,27 @@ def main():
         updates[key] = globals["deps"][key]
         if success:
             result = " ".join(result.splitlines()[1:])
-            updates[key]["objects"] = json.loads(result)["<path>"]["objects"]
+            updates[key]["objects"] = json.loads(result)["path"]["objects"]
 
-    print("Update DEPS with the following entries:")
-    entries = json.dumps(
-        updates,
-        sort_keys=True,
-        indent=2,
-        separators=(",", ": "),
-    )
-    # Format with single quotes and trailing commas.
-    print("\n".join(line if any(line.endswith(c)
-                                for c in "[{,") else line + ","
-                    for line in entries.replace('"', "'").splitlines())[:-1])
+    print("Updating DEPS files")
+    for key, objects in updates.items():
+        obj = objects[0]
+        object_info = ','.join([
+            obj['object_name'],
+            obj['sha256sum'],
+            str(obj['size_bytes']),
+            str(obj['generation']),
+        ])
+
+        print(f"Updating {key} in src/DEPS")
+        subprocess.call(["gclient", "setdep", "-r", f"{key}@{object_info}"])
+        prefix = 'src/build/'
+        substr_key = key[len(prefix):]
+        print(f"Updating {substr_key} in src/build/DEPS")
+        subprocess.call([
+            "gclient", "setdep", "-r", f"{substr_key}@{object_info}",
+            "--deps-file", "build/DEPS"
+        ])
 
     if not failures:
         key = (sysroot_creator.ARCHIVE_TIMESTAMP + "-" +
