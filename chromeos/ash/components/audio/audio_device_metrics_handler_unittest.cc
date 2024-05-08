@@ -480,4 +480,161 @@ TEST_F(AudioDeviceMetricsHandlerTest, NotificationEvents) {
   }
 }
 
+// Tests that no audio selection metrics are fired when there is only one device
+// currently connected.
+TEST_F(AudioDeviceMetricsHandlerTest,
+       NoAudioSelectionMetricsRecordedWhenOnlyOneAudioDeviceConnected) {
+  AudioDevice input_USB = AudioDevice(NewInputNode("USB"));
+  AudioDevice input_BLUETOOTH = AudioDevice(NewInputNode("BLUETOOTH"));
+  AudioDeviceMap previous_devices_map;
+  previous_devices_map[input_USB.id] = input_USB;
+  previous_devices_map[input_BLUETOOTH.id] = input_BLUETOOTH;
+  AudioDeviceMap current_devices_map;
+  current_devices_map[input_USB.id] = input_USB;
+  AudioDeviceList previous_devices = {input_USB, input_BLUETOOTH};
+  AudioDeviceList current_devices = {input_USB};
+
+  for (const bool is_input : {true, false}) {
+    for (const bool is_switched : {true, false}) {
+      audio_device_metrics_handler().MaybeRecordSystemSwitchDecisionAndContext(
+          is_input, /*has_alternative_device=*/true, is_switched,
+          current_devices_map, previous_devices_map);
+
+      std::string system_switch_histogram_name =
+          is_input ? AudioDeviceMetricsHandler::kSystemSwitchInputAudio
+                   : AudioDeviceMetricsHandler::kSystemSwitchOutputAudio;
+      histogram_tester().ExpectTotalCount(system_switch_histogram_name, 0);
+
+      std::string device_count_histogram_name;
+      if (is_switched) {
+        device_count_histogram_name =
+            is_input
+                ? AudioDeviceMetricsHandler::kSystemSwitchInputAudioDeviceCount
+                : AudioDeviceMetricsHandler::
+                      kSystemSwitchOutputAudioDeviceCount;
+      } else {
+        device_count_histogram_name =
+            is_input ? AudioDeviceMetricsHandler::
+                           kSystemNotSwitchInputAudioDeviceCount
+                     : AudioDeviceMetricsHandler::
+                           kSystemNotSwitchOutputAudioDeviceCount;
+      }
+      histogram_tester().ExpectTotalCount(device_count_histogram_name,
+                                          /*expected_count=*/0);
+
+      std::string device_set_histogram_name;
+      if (is_switched) {
+        device_set_histogram_name =
+            is_input
+                ? AudioDeviceMetricsHandler::kSystemSwitchInputAudioDeviceSet
+                : AudioDeviceMetricsHandler::kSystemSwitchOutputAudioDeviceSet;
+      } else {
+        device_set_histogram_name =
+            is_input
+                ? AudioDeviceMetricsHandler::kSystemNotSwitchInputAudioDeviceSet
+                : AudioDeviceMetricsHandler::
+                      kSystemNotSwitchOutputAudioDeviceSet;
+      }
+
+      histogram_tester().ExpectTotalCount(device_set_histogram_name,
+                                          /*expected_count=*/0);
+
+      std::string before_and_after_device_set_histogram_name;
+      if (is_switched) {
+        before_and_after_device_set_histogram_name =
+            is_input ? AudioDeviceMetricsHandler::
+                           kSystemSwitchInputBeforeAndAfterAudioDeviceSet
+                     : AudioDeviceMetricsHandler::
+                           kSystemSwitchOutputBeforeAndAfterAudioDeviceSet;
+      } else {
+        before_and_after_device_set_histogram_name =
+            is_input ? AudioDeviceMetricsHandler::
+                           kSystemNotSwitchInputBeforeAndAfterAudioDeviceSet
+                     : AudioDeviceMetricsHandler::
+                           kSystemNotSwitchOutputBeforeAndAfterAudioDeviceSet;
+      }
+      histogram_tester().ExpectTotalCount(
+          before_and_after_device_set_histogram_name,
+          /*expected_count=*/0);
+    }
+  }
+}
+
+// Tests that no audio selection metrics are fired when there is no device
+// currently connected.
+TEST_F(AudioDeviceMetricsHandlerTest,
+       NoAudioSelectionMetricsRecordedWhenNoAudioDeviceConnected) {
+  AudioDevice input_USB = AudioDevice(NewInputNode("USB"));
+  AudioDeviceMap previous_devices_map;
+  previous_devices_map[input_USB.id] = input_USB;
+  AudioDeviceMap current_devices_map;
+  AudioDeviceList previous_devices = {input_USB};
+  AudioDeviceList current_devices = {};
+
+  for (const bool is_input : {true, false}) {
+    for (const bool is_switched : {true, false}) {
+      audio_device_metrics_handler().MaybeRecordSystemSwitchDecisionAndContext(
+          is_input, /*has_alternative_device=*/true, is_switched,
+          current_devices_map, previous_devices_map);
+
+      std::string system_switch_histogram_name =
+          is_input ? AudioDeviceMetricsHandler::kSystemSwitchInputAudio
+                   : AudioDeviceMetricsHandler::kSystemSwitchOutputAudio;
+      histogram_tester().ExpectTotalCount(system_switch_histogram_name, 0);
+
+      std::string device_count_histogram_name;
+      if (is_switched) {
+        device_count_histogram_name =
+            is_input
+                ? AudioDeviceMetricsHandler::kSystemSwitchInputAudioDeviceCount
+                : AudioDeviceMetricsHandler::
+                      kSystemSwitchOutputAudioDeviceCount;
+      } else {
+        device_count_histogram_name =
+            is_input ? AudioDeviceMetricsHandler::
+                           kSystemNotSwitchInputAudioDeviceCount
+                     : AudioDeviceMetricsHandler::
+                           kSystemNotSwitchOutputAudioDeviceCount;
+      }
+      histogram_tester().ExpectTotalCount(device_count_histogram_name,
+                                          /*expected_count=*/0);
+
+      std::string device_set_histogram_name;
+      if (is_switched) {
+        device_set_histogram_name =
+            is_input
+                ? AudioDeviceMetricsHandler::kSystemSwitchInputAudioDeviceSet
+                : AudioDeviceMetricsHandler::kSystemSwitchOutputAudioDeviceSet;
+      } else {
+        device_set_histogram_name =
+            is_input
+                ? AudioDeviceMetricsHandler::kSystemNotSwitchInputAudioDeviceSet
+                : AudioDeviceMetricsHandler::
+                      kSystemNotSwitchOutputAudioDeviceSet;
+      }
+
+      histogram_tester().ExpectTotalCount(device_set_histogram_name,
+                                          /*expected_count=*/0);
+
+      std::string before_and_after_device_set_histogram_name;
+      if (is_switched) {
+        before_and_after_device_set_histogram_name =
+            is_input ? AudioDeviceMetricsHandler::
+                           kSystemSwitchInputBeforeAndAfterAudioDeviceSet
+                     : AudioDeviceMetricsHandler::
+                           kSystemSwitchOutputBeforeAndAfterAudioDeviceSet;
+      } else {
+        before_and_after_device_set_histogram_name =
+            is_input ? AudioDeviceMetricsHandler::
+                           kSystemNotSwitchInputBeforeAndAfterAudioDeviceSet
+                     : AudioDeviceMetricsHandler::
+                           kSystemNotSwitchOutputBeforeAndAfterAudioDeviceSet;
+      }
+      histogram_tester().ExpectTotalCount(
+          before_and_after_device_set_histogram_name,
+          /*expected_count=*/0);
+    }
+  }
+}
+
 }  // namespace ash

@@ -28,10 +28,14 @@ void AudioDeviceMetricsHandler::MaybeRecordSystemSwitchDecisionAndContext(
     const AudioDeviceMap& audio_devices_,
     const AudioDeviceMap& previous_audio_devices_) {
   if (is_input) {
+    AudioDeviceList input_devices =
+        CrasAudioHandler::GetSimpleUsageAudioDevices(audio_devices_,
+                                                     /*is_input=*/true);
+
     // Do not record if there is only one audio device since it will definitely
     // be activated. The metric aims to measure how well the system selection
     // works when there are more than one available devices.
-    if (!has_alternative_device) {
+    if (!has_alternative_device || input_devices.size() <= 1) {
       // Reset timestamp since no interested system selection decision is made
       // and to prevent previous system decision from being used to record the
       // user override.
@@ -39,9 +43,6 @@ void AudioDeviceMetricsHandler::MaybeRecordSystemSwitchDecisionAndContext(
       return;
     }
 
-    AudioDeviceList input_devices =
-        CrasAudioHandler::GetSimpleUsageAudioDevices(audio_devices_,
-                                                     /*is_input=*/true);
     uint32_t input_devices_bits = EncodeAudioDeviceSet(input_devices);
     AudioDeviceList previous_input_devices =
         CrasAudioHandler::GetSimpleUsageAudioDevices(previous_audio_devices_,
@@ -103,16 +104,17 @@ void AudioDeviceMetricsHandler::MaybeRecordSystemSwitchDecisionAndContext(
     before_and_after_input_device_set_bits_ =
         before_and_after_input_device_set_bits;
   } else {
+    AudioDeviceList output_devices =
+        CrasAudioHandler::GetSimpleUsageAudioDevices(audio_devices_,
+                                                     /*is_input=*/false);
+
     // Do not record if there is only one audio device. Same as above.
-    if (!has_alternative_device) {
+    if (!has_alternative_device || output_devices.size() <= 1) {
       // Reset timestamp. Same as above.
       ResetSystemSwitchTimestamp(is_input);
       return;
     }
 
-    AudioDeviceList output_devices =
-        CrasAudioHandler::GetSimpleUsageAudioDevices(audio_devices_,
-                                                     /*is_input=*/false);
     uint32_t output_devices_bits = EncodeAudioDeviceSet(output_devices);
     AudioDeviceList previous_output_devices =
         CrasAudioHandler::GetSimpleUsageAudioDevices(previous_audio_devices_,
