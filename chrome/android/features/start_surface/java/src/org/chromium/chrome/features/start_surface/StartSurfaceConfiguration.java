@@ -141,14 +141,12 @@ public class StartSurfaceConfiguration {
 
     /** Returns whether a magic stack is enabled on Start surface. */
     public static boolean useMagicStack() {
-        return ChromeFeatureList.sSurfacePolish.isEnabled()
-                && ChromeFeatureList.sMagicStackAndroid.isEnabled();
+        return ChromeFeatureList.sMagicStackAndroid.isEnabled();
     }
 
     /** Returns whether logo polish flag is enabled in the given context. */
     public static boolean isLogoPolishEnabled() {
-        return ChromeFeatureList.sSurfacePolish.isEnabled()
-                && ChromeFeatureList.sLogoPolish.isEnabled();
+        return ChromeFeatureList.sLogoPolish.isEnabled();
     }
 
     /**
