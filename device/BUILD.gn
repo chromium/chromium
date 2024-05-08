@@ -151,10 +151,6 @@ test("device_unittests") {
     "//ui/resources:ui_test_pak_data",
   ]
 
-  if (is_android && enable_chrome_android_internal) {
-    data_deps += [ "//clank/build/bot/filters:device_unittests_filters" ]
-  }
-
   if (!is_ios) {
     deps += [
       "//device/fido",
