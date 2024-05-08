@@ -110,7 +110,7 @@ public class CommerceSubscriptionsServiceUnitTest {
         ProfileManager.setLastUsedProfileForTesting(mProfile);
         when(mUserPrefsJni.get(mProfile)).thenReturn(mPrefService);
 
-        mPriceDropNotificationManager = PriceDropNotificationManagerFactory.create();
+        mPriceDropNotificationManager = PriceDropNotificationManagerFactory.create(mProfile);
         mService =
                 new CommerceSubscriptionsService(mShoppingService, mPriceDropNotificationManager);
         mService.setImplicitSubscriptionsManagerForTesting(mImplicitSubscriptionsManager);

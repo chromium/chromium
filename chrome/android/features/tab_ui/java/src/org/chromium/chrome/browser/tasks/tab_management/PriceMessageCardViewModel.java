@@ -13,7 +13,7 @@ import android.graphics.drawable.Drawable;
 
 import androidx.appcompat.content.res.AppCompatResources;
 
-import org.chromium.chrome.browser.price_tracking.PriceDropNotificationManagerFactory;
+import org.chromium.chrome.browser.price_tracking.PriceDropNotificationManager;
 import org.chromium.chrome.browser.tasks.tab_management.PriceMessageService.PriceMessageType;
 import org.chromium.chrome.tab_ui.R;
 import org.chromium.ui.modelutil.PropertyModel;
@@ -22,19 +22,22 @@ import org.chromium.ui.modelutil.PropertyModel;
 public class PriceMessageCardViewModel {
     /**
      * Create a {@link PropertyModel} for PriceMessageCardView.
+     *
      * @param context The {@link Context} to use.
      * @param uiDismissActionProvider The {@link MessageCardView.DismissActionProvider} to set.
      * @param data The {@link PriceMessageService.PriceMessageData} to use.
+     * @param notificationManager The {@link PriceDropNotificationManager} handling notifications.
      * @return A {@link PropertyModel} for the given {@code data}.
      */
     public static PropertyModel create(
             Context context,
             MessageCardView.DismissActionProvider uiDismissActionProvider,
-            PriceMessageService.PriceMessageData data) {
+            PriceMessageService.PriceMessageData data,
+            PriceDropNotificationManager notificationManager) {
         boolean isIconVisible = data.getType() != PriceMessageType.PRICE_WELCOME;
         String titleText = getTitle(context, data.getType());
-        String descriptionText = getDescription(context, data.getType());
-        String actionText = getActionText(context, data.getType());
+        String descriptionText = getDescription(context, data.getType(), notificationManager);
+        String actionText = getActionText(context, data.getType(), notificationManager);
         String dismissButtonContextDescription =
                 context.getString(R.string.accessibility_tab_suggestion_dismiss_button);
 
@@ -84,11 +87,14 @@ public class PriceMessageCardViewModel {
         return null;
     }
 
-    private static String getDescription(Context context, @PriceMessageType int type) {
+    private static String getDescription(
+            Context context,
+            @PriceMessageType int type,
+            PriceDropNotificationManager notificationManager) {
         if (type == PriceMessageType.PRICE_WELCOME) {
             return context.getString(R.string.price_drop_spotted_content);
         } else if (type == PriceMessageType.PRICE_ALERTS) {
-            if ((PriceDropNotificationManagerFactory.create()).areAppNotificationsEnabled()) {
+            if (notificationManager.areAppNotificationsEnabled()) {
                 return context.getString(R.string.price_drop_alerts_card_get_notified_content);
             } else {
                 return context.getString(R.string.price_drop_alerts_card_go_to_settings_content);
@@ -97,11 +103,14 @@ public class PriceMessageCardViewModel {
         return null;
     }
 
-    private static String getActionText(Context context, @PriceMessageType int type) {
+    private static String getActionText(
+            Context context,
+            @PriceMessageType int type,
+            PriceDropNotificationManager notificationManager) {
         if (type == PriceMessageType.PRICE_WELCOME) {
             return context.getString(R.string.price_drop_spotted_show_me);
         } else if (type == PriceMessageType.PRICE_ALERTS) {
-            if ((PriceDropNotificationManagerFactory.create()).areAppNotificationsEnabled()) {
+            if (notificationManager.areAppNotificationsEnabled()) {
                 return context.getString(R.string.price_drop_alerts_card_get_notified);
             } else {
                 return context.getString(R.string.go_to_os_settings);

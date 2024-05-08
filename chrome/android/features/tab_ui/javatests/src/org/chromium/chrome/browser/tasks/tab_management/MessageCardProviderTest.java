@@ -32,6 +32,7 @@ import org.chromium.base.test.util.CriteriaHelper;
 import org.chromium.base.test.util.Features;
 import org.chromium.base.test.util.Features.DisableFeatures;
 import org.chromium.chrome.browser.flags.ChromeFeatureList;
+import org.chromium.chrome.browser.profiles.Profile;
 import org.chromium.chrome.browser.tasks.tab_management.suggestions.TabSuggestion;
 import org.chromium.chrome.tab_ui.R;
 import org.chromium.chrome.test.ChromeJUnit4ClassRunner;
@@ -104,6 +105,8 @@ public class MessageCardProviderTest extends BlankUiTestActivityTestCase {
 
     @Mock private PriceMessageService.PriceMessageData mPriceMessageData;
 
+    @Mock private Profile mProfile;
+
     @Override
     public void setUpTest() throws Exception {
         super.setUpTest();
@@ -166,7 +169,7 @@ public class MessageCardProviderTest extends BlankUiTestActivityTestCase {
 
                     mCoordinator =
                             new MessageCardProviderCoordinator(
-                                    getActivity(), () -> false, mUiDismissActionProvider);
+                                    getActivity(), () -> mProfile, mUiDismissActionProvider);
                     mCoordinator.subscribeMessageService(mTestingService);
                     mCoordinator.subscribeMessageService(mSuggestionService);
                     mCoordinator.subscribeMessageService(mPriceService);

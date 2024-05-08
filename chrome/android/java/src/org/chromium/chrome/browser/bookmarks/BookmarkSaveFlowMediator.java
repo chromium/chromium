@@ -333,7 +333,7 @@ public class BookmarkSaveFlowMediator extends BookmarkModelObserver
         // TODO(crbug.com/40245507): Add a SubscriptionsObserver in the PriceDropNotificationManager
         // and initialize the channel there.
         if (toggled && Build.VERSION.SDK_INT >= Build.VERSION_CODES.O) {
-            PriceDropNotificationManagerFactory.create().createNotificationChannel();
+            PriceDropNotificationManagerFactory.create(mProfile).createNotificationChannel();
         }
         setPriceTrackingIconForEnabledState(toggled);
         PriceTrackingUtils.setPriceTrackingStateForBookmark(

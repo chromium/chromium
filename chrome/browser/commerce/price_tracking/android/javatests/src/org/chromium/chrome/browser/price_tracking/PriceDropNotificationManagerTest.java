@@ -106,9 +106,9 @@ public class PriceDropNotificationManagerTest {
     public void setUp() {
         mMockNotificationManager = new MockNotificationManagerProxy();
         PriceDropNotificationManagerImpl.setNotificationManagerForTesting(mMockNotificationManager);
-        mPriceDropNotificationManager = PriceDropNotificationManagerFactory.create();
+        mPriceDropNotificationManager = PriceDropNotificationManagerFactory.create(mMockProfile);
         when(mMockBookmarkModel.isBookmarkModelLoaded()).thenReturn(true);
-        PriceDropNotificationManagerImpl.setBookmarkModelForTesting(mMockBookmarkModel);
+        BookmarkModel.setInstanceForTesting(mMockBookmarkModel);
         ShoppingServiceFactory.setShoppingServiceForTesting(mMockShoppingService);
         ProfileManager.setLastUsedProfileForTesting(mMockProfile);
         ShoppingFeatures.setShoppingListEligibleForTesting(true);

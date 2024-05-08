@@ -118,11 +118,13 @@ public class PriceDropNotifier {
         mProfile = profile;
         mNotificationManagerProxy = notificationManager;
         mPriceDropNotificationManager =
-                PriceDropNotificationManagerFactory.create(mContext, mNotificationManagerProxy);
+                PriceDropNotificationManagerFactory.create(
+                        mContext, mProfile, mNotificationManagerProxy);
     }
 
     /**
      * Shows a price drop notification.
+     *
      * @param notificationData Information about the notification contents.
      */
     public void showNotification(final NotificationData notificationData) {

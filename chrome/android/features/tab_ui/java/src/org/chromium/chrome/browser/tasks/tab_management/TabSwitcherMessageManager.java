@@ -178,7 +178,7 @@ public class TabSwitcherMessageManager implements PriceWelcomeMessageController 
         mMessageCardProviderCoordinator =
                 new MessageCardProviderCoordinator(
                         context,
-                        () -> currentTabModelFilterSupplier.get().isIncognito(),
+                        () -> currentTabModelFilterSupplier.get().getTabModel().getProfile(),
                         this::dismissHandler);
 
         registerMessages(tabListCoordinator, mode);
@@ -478,7 +478,7 @@ public class TabSwitcherMessageManager implements PriceWelcomeMessageController 
         assert mProfile != null;
         if (PriceTrackingFeatures.isPriceTrackingEnabled(mProfile)) {
             PriceDropNotificationManager notificationManager =
-                    PriceDropNotificationManagerFactory.create();
+                    PriceDropNotificationManagerFactory.create(mProfile);
             if (mPriceMessageService == null) {
                 mPriceMessageService =
                         new PriceMessageService(

@@ -179,7 +179,7 @@ public class PowerBookmarkUtils {
         // TODO(crbug.com/40245507): Add a SubscriptionsObserver in the PriceDropNotificationManager
         // and initialize the channel there.
         if (enabled && Build.VERSION.SDK_INT >= Build.VERSION_CODES.O) {
-            PriceDropNotificationManagerFactory.create().createNotificationChannel();
+            PriceDropNotificationManagerFactory.create(profile).createNotificationChannel();
         }
         PriceTrackingUtils.setPriceTrackingStateForBookmark(
                 profile, bookmarkId.getId(), enabled, wrapperCallback);

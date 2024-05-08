@@ -23,6 +23,7 @@ import org.mockito.MockitoAnnotations;
 
 import org.chromium.base.supplier.Supplier;
 import org.chromium.base.test.BaseRobolectricTestRunner;
+import org.chromium.chrome.browser.profiles.Profile;
 import org.chromium.chrome.browser.tasks.tab_management.PriceMessageService.PriceMessageType;
 import org.chromium.chrome.browser.tasks.tab_management.suggestions.TabSuggestion;
 import org.chromium.chrome.tab_ui.R;
@@ -44,11 +45,14 @@ public class MessageCardProviderMediatorUnitTest {
 
     @Mock private Resources mResourcesMock;
 
+    @Mock private Profile mProfileMock;
+    @Mock private Profile mIncognitoProfileMock;
+
     @Mock private TabSuggestionMessageService.TabSuggestionMessageData mTabSuggestionMessageData;
 
     @Mock private PriceMessageService.PriceMessageData mPriceMessageData;
 
-    @Mock private Supplier<Boolean> mIsIncognitoSupplier;
+    @Mock private Supplier<Profile> mProfileSupplier;
 
     @Mock private IphMessageService.IphMessageData mIphMessageData;
 
@@ -60,11 +64,12 @@ public class MessageCardProviderMediatorUnitTest {
     public void setUp() {
         MockitoAnnotations.initMocks(this);
 
-        doReturn(false).when(mIsIncognitoSupplier).get();
+        doReturn(true).when(mIncognitoProfileMock).isOffTheRecord();
+        doReturn(mProfileMock).when(mProfileSupplier).get();
         doNothing().when(mUiDismissActionProvider).dismiss(anyInt());
         mMediator =
                 new MessageCardProviderMediator(
-                        mContext, mIsIncognitoSupplier, mUiDismissActionProvider);
+                        mContext, mProfileSupplier, mUiDismissActionProvider);
     }
 
     private void enqueueMessageItem(@MessageService.MessageType int type, int tabSuggestionAction) {
@@ -417,7 +422,7 @@ public class MessageCardProviderMediatorUnitTest {
         PropertyModel messageModel = mMediator.getMessageItems().get(0).model;
         Assert.assertFalse(messageModel.get(MessageCardViewProperties.IS_INCOGNITO));
 
-        doReturn(true).when(mIsIncognitoSupplier).get();
+        doReturn(mIncognitoProfileMock).when(mProfileSupplier).get();
         messageModel = mMediator.getMessageItems().get(0).model;
         Assert.assertTrue(messageModel.get(MessageCardViewProperties.IS_INCOGNITO));
     }
@@ -432,7 +437,7 @@ public class MessageCardProviderMediatorUnitTest {
                         .model;
         Assert.assertFalse(messageModel.get(MessageCardViewProperties.IS_INCOGNITO));
 
-        doReturn(true).when(mIsIncognitoSupplier).get();
+        doReturn(mIncognitoProfileMock).when(mProfileSupplier).get();
         messageModel =
                 mMediator.getNextMessageItemForType(MessageService.MessageType.TAB_SUGGESTION)
                         .model;

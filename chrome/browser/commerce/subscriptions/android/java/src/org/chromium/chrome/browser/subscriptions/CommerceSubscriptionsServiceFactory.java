@@ -47,7 +47,7 @@ public class CommerceSubscriptionsServiceFactory {
 
     private static CommerceSubscriptionsService buildForProfile(Profile profile) {
         PriceDropNotificationManager priceDropNotificationManager =
-                PriceDropNotificationManagerFactory.create();
+                PriceDropNotificationManagerFactory.create(profile);
         return new CommerceSubscriptionsService(
                 ShoppingServiceFactory.getForProfile(profile), priceDropNotificationManager);
     }

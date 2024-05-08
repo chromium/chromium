@@ -115,12 +115,14 @@ public class PriceAlertsMessageCardTest {
         PriceTrackingFeatures.setIsSignedInAndSyncEnabledForTesting(true);
         mMockNotificationManager = new MockNotificationManagerProxy();
         PriceDropNotificationManagerImpl.setNotificationManagerForTesting(mMockNotificationManager);
-        mPriceDropNotificationManager = PriceDropNotificationManagerFactory.create();
         ShoppingFeatures.setShoppingListEligibleForTesting(true);
 
         mActivityTestRule.startMainActivityOnBlankPage();
         CriteriaHelper.pollUiThread(
                 mActivityTestRule.getActivity().getTabModelSelector()::isTabStateInitialized);
+
+        mPriceDropNotificationManager =
+                PriceDropNotificationManagerFactory.create(mActivityTestRule.getProfile(false));
     }
 
     @After

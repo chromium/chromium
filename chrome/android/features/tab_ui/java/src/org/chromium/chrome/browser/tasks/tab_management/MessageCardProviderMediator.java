@@ -14,6 +14,8 @@ import android.content.Context;
 import androidx.annotation.VisibleForTesting;
 
 import org.chromium.base.supplier.Supplier;
+import org.chromium.chrome.browser.price_tracking.PriceDropNotificationManagerFactory;
+import org.chromium.chrome.browser.profiles.Profile;
 import org.chromium.ui.modelutil.PropertyModel;
 
 import java.util.ArrayList;
@@ -40,17 +42,17 @@ public class MessageCardProviderMediator implements MessageService.MessageObserv
     }
 
     private final Context mContext;
-    private final Supplier<Boolean> mIsIncognitoSupplier;
+    private final Supplier<Profile> mProfileSupplier;
     private Map<Integer, List<Message>> mMessageItems = new LinkedHashMap<>();
     private Map<Integer, Message> mShownMessageItems = new LinkedHashMap<>();
     private MessageCardView.DismissActionProvider mUiDismissActionProvider;
 
     public MessageCardProviderMediator(
             Context context,
-            Supplier<Boolean> isIncognitoSupplier,
+            Supplier<Profile> profileSupplier,
             MessageCardView.DismissActionProvider uiDismissActionProvider) {
         mContext = context;
-        mIsIncognitoSupplier = isIncognitoSupplier;
+        mProfileSupplier = profileSupplier;
         mUiDismissActionProvider = uiDismissActionProvider;
     }
 
@@ -71,7 +73,9 @@ public class MessageCardProviderMediator implements MessageService.MessageObserv
         }
 
         for (Message message : mShownMessageItems.values()) {
-            message.model.set(MessageCardViewProperties.IS_INCOGNITO, mIsIncognitoSupplier.get());
+            message.model.set(
+                    MessageCardViewProperties.IS_INCOGNITO,
+                    mProfileSupplier.get().isOffTheRecord());
             message.model.set(TabListModel.CardProperties.CARD_ALPHA, 1F);
         }
 
@@ -91,7 +95,8 @@ public class MessageCardProviderMediator implements MessageService.MessageObserv
         }
 
         Message message = mShownMessageItems.get(messageType);
-        message.model.set(MessageCardViewProperties.IS_INCOGNITO, mIsIncognitoSupplier.get());
+        message.model.set(
+                MessageCardViewProperties.IS_INCOGNITO, mProfileSupplier.get().isOffTheRecord());
         return message;
     }
 
@@ -123,7 +128,8 @@ public class MessageCardProviderMediator implements MessageService.MessageObserv
                 return PriceMessageCardViewModel.create(
                         mContext,
                         this::invalidateShownMessage,
-                        (PriceMessageService.PriceMessageData) data);
+                        (PriceMessageService.PriceMessageData) data,
+                        PriceDropNotificationManagerFactory.create(mProfileSupplier.get()));
             case INCOGNITO_REAUTH_PROMO_MESSAGE:
                 assert data
                         instanceof IncognitoReauthPromoMessageService.IncognitoReauthMessageData;
