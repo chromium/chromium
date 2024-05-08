@@ -622,13 +622,6 @@ void PhysicsModel::AdvanceToNextAnimationDriver(
       break;
     }
     case Driver::kSpringCancel: {
-      // The commit-pending or invoke spring must have the opposite velocity
-      // from the cancel spring.
-      float next_spring_initial_vel = -1.f * spring_cancel_->ComputeVelocity();
-      // Make sure the next spring's initial velocity is at least 1, towards the
-      // right edge (e.g., -1.5, -2.0 etc).
-      next_spring_initial_vel = std::min(next_spring_initial_vel, -1.f);
-
       if (navigation_state_ == NavigationState::kBeforeUnloadAckedProceed) {
         // We only switch away from `kSpringCancel` when the renderer has acked
         // the BeforeUnload message and navigation should proceed. When the
@@ -643,7 +636,11 @@ void PhysicsModel::AdvanceToNextAnimationDriver(
         // the first frame as if it has been 10 seconds since the last frame.
         StartAnimating(request_animation_frame);
         animation_driver_ = Driver::kSpringCommitPending;
-        spring_commit_pending_->set_initial_velocity(next_spring_initial_vel);
+        // Set the initial velocity to zero because the commit-pending (or
+        // invoke) spring will move the active page across the entire viewport.
+        // A high velocity would make the animation look like it's skipping
+        // frames.
+        spring_commit_pending_->set_initial_velocity(0.f);
       } else if (UNLIKELY(navigation_state_ == NavigationState::kCommitted)) {
         // Also rare but possible (e.g., in tests) for the navigation to commit
         // so fast that the commit-pending spring hasn't played a single frame,
@@ -651,7 +648,7 @@ void PhysicsModel::AdvanceToNextAnimationDriver(
         // invoke spring in this case.
         StartAnimating(request_animation_frame);
         animation_driver_ = Driver::kSpringInvoke;
-        spring_invoke_->set_initial_velocity(next_spring_initial_vel);
+        spring_invoke_->set_initial_velocity(0.f);
       }
       break;
     }
