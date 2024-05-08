@@ -118,6 +118,10 @@
 #include "url/gurl.h"
 #include "v8/include/v8.h"
 
+#if BUILDFLAG(ENABLE_PDF_INK2)
+#include "pdf/ink_module.h"
+#endif
+
 namespace chrome_pdf {
 
 namespace {
@@ -263,6 +267,15 @@ bool IsSaveDataSizeValid(size_t size) {
   return size > 0 && size <= PdfViewWebPlugin::kMaximumSavedFileSize;
 }
 
+#if BUILDFLAG(ENABLE_PDF_INK2)
+std::unique_ptr<InkModule> MaybeCreateInkModule() {
+  if (!base::FeatureList::IsEnabled(features::kPdfInk2)) {
+    return nullptr;
+  }
+  return std::make_unique<InkModule>();
+}
+#endif
+
 }  // namespace
 
 std::unique_ptr<PDFiumEngine> PdfViewWebPlugin::Client::CreateEngine(
@@ -285,6 +298,9 @@ PdfViewWebPlugin::PdfViewWebPlugin(
     const blink::WebPluginParams& params)
     : client_(std::move(client)),
       pdf_host_(std::move(pdf_host)),
+#if BUILDFLAG(ENABLE_PDF_INK2)
+      ink_module_(MaybeCreateInkModule()),
+#endif
       initial_params_(params) {
   DCHECK(pdf_host_);
   pdf_host_->SetListener(listener_receiver_.BindNewPipeAndPassRemote());
@@ -1298,6 +1314,12 @@ PdfViewWebPlugin::CreateAssociatedURLLoader(
 }
 
 void PdfViewWebPlugin::OnMessage(const base::Value::Dict& message) {
+#if BUILDFLAG(ENABLE_PDF_INK2)
+  if (ink_module_ && ink_module_->OnMessage(message)) {
+    return;
+  }
+#endif
+
   using MessageHandler = void (PdfViewWebPlugin::*)(const base::Value::Dict&);
 
   static constexpr auto kMessageHandlers =
@@ -1322,10 +1344,6 @@ void PdfViewWebPlugin::OnMessage(const base::Value::Dict& message) {
           {"save", &PdfViewWebPlugin::HandleSaveMessage},
           {"saveAttachment", &PdfViewWebPlugin::HandleSaveAttachmentMessage},
           {"selectAll", &PdfViewWebPlugin::HandleSelectAllMessage},
-#if BUILDFLAG(ENABLE_PDF_INK2)
-          {"setAnnotationMode",
-           &PdfViewWebPlugin::HandleSetAnnotationModeMessage},
-#endif  // BUILDFLAG(ENABLE_PDF_INK2)
           {"setBackgroundColor",
            &PdfViewWebPlugin::HandleSetBackgroundColorMessage},
           {"setPresentationMode",
@@ -1489,13 +1507,6 @@ void PdfViewWebPlugin::HandleSelectAllMessage(
     const base::Value::Dict& /*message*/) {
   engine_->SelectAll();
 }
-
-#if BUILDFLAG(ENABLE_PDF_INK2)
-void PdfViewWebPlugin::HandleSetAnnotationModeMessage(
-    const base::Value::Dict& message) {
-  // TODO(crbug.com/335521184): Implement the backend for Ink2.
-}
-#endif  // BUILDFLAG(ENABLE_PDF_INK2)
 
 void PdfViewWebPlugin::HandleSetBackgroundColorMessage(
     const base::Value::Dict& message) {

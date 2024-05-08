@@ -77,6 +77,10 @@ class PDFiumEngine;
 class PdfAccessibilityDataHandler;
 class Thumbnail;
 
+#if BUILDFLAG(ENABLE_PDF_INK2)
+class InkModule;
+#endif
+
 class PdfViewWebPlugin final : public PDFEngine::Client,
                                public blink::WebPlugin,
                                public pdf::mojom::PdfListener,
@@ -493,9 +497,6 @@ class PdfViewWebPlugin final : public PDFEngine::Client,
   void HandleSaveAttachmentMessage(const base::Value::Dict& message);
   void HandleSaveMessage(const base::Value::Dict& message);
   void HandleSelectAllMessage(const base::Value::Dict& /*message*/);
-#if BUILDFLAG(ENABLE_PDF_INK2)
-  void HandleSetAnnotationModeMessage(const base::Value::Dict& message);
-#endif  // BUILDFLAG(ENABLE_PDF_INK2)
   void HandleSetBackgroundColorMessage(const base::Value::Dict& message);
   void HandleSetPresentationModeMessage(const base::Value::Dict& message);
   void HandleSetTwoUpViewMessage(const base::Value::Dict& message);
@@ -637,6 +638,11 @@ class PdfViewWebPlugin final : public PDFEngine::Client,
   mojo::AssociatedRemote<pdf::mojom::PdfHost> const pdf_host_;
 
   mojo::Receiver<pdf::mojom::PdfListener> listener_receiver_{this};
+
+#if BUILDFLAG(ENABLE_PDF_INK2)
+  // Null if `features::kPdfInk2` is not enabled.
+  std::unique_ptr<InkModule> const ink_module_;
+#endif
 
   std::unique_ptr<PDFiumEngine> engine_;
 

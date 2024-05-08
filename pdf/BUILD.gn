@@ -190,6 +190,13 @@ if (enable_pdf) {
       ]
     }
 
+    if (enable_pdf_ink2) {
+      sources += [
+        "ink_module.cc",
+        "ink_module.h",
+      ]
+    }
+
     if (enable_screen_ai_service) {
       sources += [
         "pdfium/pdfium_searchify.cc",
@@ -403,14 +410,6 @@ if (enable_pdf) {
       "//v8",
     ]
 
-    if (v8_use_external_startup_data) {
-      deps += [
-        "//tools/v8_context_snapshot",
-        "//tools/v8_context_snapshot:buildflags",
-      ]
-      configs += [ "//v8:external_startup_data" ]
-    }
-
     data_deps = [
       ":pdf_unittests_pak",
       "//ui/resources:ui_test_pak_data",
@@ -420,6 +419,18 @@ if (enable_pdf) {
       "//ppapi/c/*",
       "//ppapi/cpp/*",
     ]
+
+    if (enable_pdf_ink2) {
+      sources += [ "ink_module_unittest.cc" ]
+    }
+
+    if (v8_use_external_startup_data) {
+      deps += [
+        "//tools/v8_context_snapshot",
+        "//tools/v8_context_snapshot:buildflags",
+      ]
+      configs += [ "//v8:external_startup_data" ]
+    }
   }
 
   repack("pdf_unittests_pak") {
