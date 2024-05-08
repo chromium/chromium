@@ -33,6 +33,7 @@ _DISABLED_ALWAYS = [
     "MissingApplicationIcon",  # False positive for non-production targets.
     "NetworkSecurityConfig",  # Breaks on library certificates b/269783280.
     "ObsoleteLintCustomCheck",  # We have no control over custom lint checks.
+    "OldTargetApi",  # We sometimes need targetSdkVersion to not be latest.
     "StringFormatCount",  # Has false-positives.
     "SwitchIntDef",  # Many C++ enums are not used at all in java.
     "Typos",  # Strings are committed in English first and later translated.
