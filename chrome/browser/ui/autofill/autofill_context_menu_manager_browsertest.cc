@@ -1139,11 +1139,11 @@ IN_PROC_BROWSER_TEST_F(PlusAddressContextMenuManagerTest,
 // has a Plus Address for the domain.
 IN_PROC_BROWSER_TEST_F(PlusAddressContextMenuManagerTest,
                        IncognitoModeWithPlusAddress) {
-  const auto kUrl = GURL("https://foo.bar");
+  const auto kUrl = GURL("https://foo.com");
   autofill_client()->set_is_off_the_record(true);
   autofill_client()->set_last_committed_primary_main_frame_url(kUrl);
   plus_address_service()->SavePlusProfile(
-      url::Origin::Create(kUrl), plus_addresses::test::CreatePlusProfile());
+      plus_addresses::test::CreatePlusProfile());
 
   FormData form = CreateAndAttachClassifiedForm();
   autofill_context_menu_manager()->set_params_for_testing(

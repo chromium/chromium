@@ -116,10 +116,8 @@ class PlusAddressService : public KeyedService,
   // triggered by this method, only the cached responses are returned.
   std::vector<PlusProfile> GetPlusProfiles() const;
 
-  // Saves a plus profile for the given origin, which is converted to its eTLD+1
-  // form prior to persistence.
-  // TODO(b/322147254): Remove `origin` parameter when sync support is launched.
-  void SavePlusProfile(url::Origin origin, const PlusProfile& profile);
+  // Saves a confirmed plus profile for its facet.
+  void SavePlusProfile(const PlusProfile& profile);
 
   // Asks the PlusAddressHttpClient to reserve a plus address for use on
   // `origin` and returns the plus address via `on_completed`.

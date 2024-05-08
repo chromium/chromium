@@ -165,31 +165,23 @@ std::optional<PlusProfile> PlusAddressService::GetPlusProfile(
   return *it;
 }
 
-void PlusAddressService::SavePlusProfile(url::Origin origin,
-                                         const PlusProfile& profile) {
+void PlusAddressService::SavePlusProfile(const PlusProfile& profile) {
   DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
   CHECK(profile.is_confirmed);
-  // TODO(b/322147254): Once sync support is launched, and the client has thus
-  // migrated from eTLD+1 to origin, remove `profile_to_save` and simply store
-  // `profile`.
-  PlusProfile profile_to_save = profile;
-  if (absl::holds_alternative<std::string>(profile.facet)) {
-    profile_to_save.facet = GetEtldPlusOne(origin);
-  }
   // New plus addresses are requested directly from the PlusAddress backend. If
   // `IsSyncingPlusAddresses()`, these addresses become later available through
   // sync. Until the address shows up in sync, it should still be available
   // through `PlusAddressService`, even after reloading the data. This requires
   // adding the address to the database.
   if (webdata_service_ && IsSyncingPlusAddresses()) {
-    webdata_service_->AddOrUpdatePlusProfile(profile_to_save);
+    webdata_service_->AddOrUpdatePlusProfile(profile);
   }
   // Update the in-memory `plus_profiles_` cache.
-  plus_profiles_.insert(profile_to_save);
-  plus_addresses_.insert(profile_to_save.plus_address);
+  plus_profiles_.insert(profile);
+  plus_addresses_.insert(profile.plus_address);
   for (Observer& o : observers_) {
-    o.OnPlusAddressesChanged({PlusAddressDataChange(
-        PlusAddressDataChange::Type::kAdd, profile_to_save)});
+    o.OnPlusAddressesChanged(
+        {PlusAddressDataChange(PlusAddressDataChange::Type::kAdd, profile)});
   }
 }
 
@@ -297,7 +289,13 @@ void PlusAddressService::HandleCreateOrConfirmResponse(
   if (maybe_profile.has_value()) {
     account_is_forbidden_ = false;
     if (maybe_profile->is_confirmed) {
-      SavePlusProfile(origin, *maybe_profile);
+      if (IsSyncingPlusAddresses()) {
+        SavePlusProfile(*maybe_profile);
+      } else {
+        PlusProfile profile_to_save = *maybe_profile;
+        profile_to_save.facet = GetEtldPlusOne(origin);
+        SavePlusProfile(profile_to_save);
+      }
     }
   } else {
     HandlePlusAddressRequestError(maybe_profile.error());

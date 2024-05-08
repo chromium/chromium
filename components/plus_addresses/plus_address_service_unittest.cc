@@ -142,7 +142,7 @@ class PlusAddressServiceTest : public ::testing::Test {
 TEST_F(PlusAddressServiceTest, BasicTest) {
   const PlusProfile profile = test::CreatePlusProfile();
   EXPECT_FALSE(service().IsPlusAddress(profile.plus_address));
-  service().SavePlusProfile(OriginFromFacet(profile.facet), profile);
+  service().SavePlusProfile(profile);
   EXPECT_TRUE(service().IsPlusAddress(profile.plus_address));
   EXPECT_EQ(service().GetPlusAddress(profile.facet), profile.plus_address);
   EXPECT_EQ(service().GetPlusAddress(affiliations::FacetURI()), std::nullopt);
@@ -153,8 +153,7 @@ TEST_F(PlusAddressServiceTest, BasicTest) {
 TEST_F(PlusAddressServiceTest, GetPlusProfileByFacet) {
   const PlusProfile profile = test::CreatePlusProfile(/*use_full_domain=*/true);
   EXPECT_FALSE(service().IsPlusAddress(profile.plus_address));
-  // The origin param is unused when using FacetURI(s).
-  service().SavePlusProfile(/*origin=*/url::Origin(), profile);
+  service().SavePlusProfile(profile);
   EXPECT_TRUE(service().IsPlusAddress(profile.plus_address));
   EXPECT_EQ(
       service().GetPlusProfile(
@@ -213,12 +212,8 @@ TEST_F(PlusAddressServiceTest, AbortPlusAddressCreation) {
 TEST_F(PlusAddressServiceTest, GetPlusProfiles) {
   PlusProfile profile1 = test::CreatePlusProfile();
   PlusProfile profile2 = test::CreatePlusProfile2();
-  profile1.facet = "foo.com";
-  profile2.facet = "bar.com";
-  service().SavePlusProfile(url::Origin::Create(GURL("https://foo.com")),
-                            profile1);
-  service().SavePlusProfile(url::Origin::Create(GURL("https://bar.com")),
-                            profile2);
+  service().SavePlusProfile(profile1);
+  service().SavePlusProfile(profile2);
 
   EXPECT_THAT(service().GetPlusProfiles(),
               testing::UnorderedElementsAre(profile1, profile2));
@@ -778,8 +773,7 @@ TEST_F(PlusAddressServiceWebDataTest, OnWebDataChangedBySync) {
   table().AddOrUpdatePlusProfile(profile1);
   table().AddOrUpdatePlusProfile(profile2);
 
-  service().SavePlusProfile(url::Origin::Create(GURL("https://foo.com")),
-                            profile1);
+  service().SavePlusProfile(profile1);
   EXPECT_THAT(service().GetPlusProfiles(), testing::ElementsAre(profile1));
 
   MockPlusAddressServiceObserver observer;
@@ -928,8 +922,9 @@ TEST_F(PlusAddressServiceEnabledTest, OTRWithExistingAddress) {
                                       {signin::ConsentLevel::kSignin});
   InitService();
 
-  service().SavePlusProfile(kNoSubdomainOrigin, test::CreatePlusProfile());
-  EXPECT_TRUE(service().SupportsPlusAddresses(kNoSubdomainOrigin,
+  const PlusProfile profile = test::CreatePlusProfile();
+  service().SavePlusProfile(profile);
+  EXPECT_TRUE(service().SupportsPlusAddresses(OriginFromFacet(profile.facet),
                                               /*is_off_the_record=*/true));
 }
 
@@ -983,7 +978,7 @@ TEST_F(PlusAddressServiceSignoutTest, PrimaryAccountCleared_TogglesIsEnabled) {
   // Verify behaviors expected when service is enabled.
   const PlusProfile profile = test::CreatePlusProfile();
   const url::Origin origin = OriginFromFacet(profile.facet);
-  service().SavePlusProfile(origin, profile);
+  service().SavePlusProfile(profile);
   EXPECT_TRUE(
       service().SupportsPlusAddresses(origin, /*is_off_the_record=*/false));
   EXPECT_TRUE(service().GetPlusAddress(profile.facet));
@@ -1007,8 +1002,8 @@ TEST_F(PlusAddressServiceSignoutTest,
 
   // Verify behaviors expected when service is enabled.
   const PlusProfile profile = test::CreatePlusProfile();
-  url::Origin origin = OriginFromFacet(profile.facet);
-  service().SavePlusProfile(origin, profile);
+  const url::Origin origin = OriginFromFacet(profile.facet);
+  service().SavePlusProfile(profile);
   EXPECT_TRUE(
       service().SupportsPlusAddresses(origin, /*is_off_the_record=*/false));
   EXPECT_TRUE(service().GetPlusAddress(profile.facet));
@@ -1067,9 +1062,9 @@ class PlusAddressSuggestionsTest : public PlusAddressServiceTest {
 // focused field matches the prefix of an existing plus address.
 TEST_F(PlusAddressSuggestionsTest, SuggestionsForExistingPlusAddress) {
   base::HistogramTester histogram_tester;
-  const auto origin = url::Origin::Create(GURL("https://foo.com"));
   const PlusProfile profile = test::CreatePlusProfile();
-  service().SavePlusProfile(origin, profile);
+  const url::Origin origin = OriginFromFacet(profile.facet);
+  service().SavePlusProfile(profile);
 
   // We offer filling if the field is empty.
   EXPECT_THAT(service().GetSuggestions(
@@ -1109,7 +1104,7 @@ TEST_F(PlusAddressSuggestionsTest, SuggestionsForETLD) {
   const PlusProfile profile(/*profile_id=*/"123", "foo.com",
                             "plus+foo@plus.plus",
                             /*is_confirmed=*/true);
-  service().SavePlusProfile(OriginFromFacet(profile.facet), profile);
+  service().SavePlusProfile(profile);
   ASSERT_THAT(service().GetSuggestions(
                   OriginFromFacet(profile.facet), /*is_off_the_record=*/false,
                   /*focused_field_value=*/u"",
@@ -1127,9 +1122,9 @@ TEST_F(PlusAddressSuggestionsTest, SuggestionsForETLD) {
 TEST_F(PlusAddressSuggestionsTest,
        SuggestionsForExistingPlusAddressWithManualFallback) {
   base::HistogramTester histogram_tester;
-  const auto origin = url::Origin::Create(GURL("https://foo.coom"));
   const PlusProfile profile = test::CreatePlusProfile();
-  service().SavePlusProfile(origin, profile);
+  const url::Origin origin = OriginFromFacet(profile.facet);
+  service().SavePlusProfile(profile);
 
   // We offer filling if the field is empty.
   EXPECT_THAT(
