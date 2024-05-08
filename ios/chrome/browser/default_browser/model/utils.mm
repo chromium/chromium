@@ -46,10 +46,6 @@ NSString* const kLastSignificantUserEventMadeForIOS =
 NSString* const kLastSignificantUserEventAllTabs =
     @"lastSignificantUserEventAllTabs";
 
-// Key in storage containing an array of dates. Each date correspond to
-// a video event of interest for Default Browser Promo modals.
-NSString* const kLastSignificantUserEventVideo =
-    @"lastSignificantUserEventVideo";
 
 // Key in storage containing an int indicating the number of times the
 // user has interacted with a non-modal promo.
@@ -184,8 +180,6 @@ NSString* StorageKeyForDefaultPromoType(DefaultPromoType type) {
       return kLastSignificantUserEventAllTabs;
     case DefaultPromoTypeStaySafe:
       return kLastSignificantUserEventStaySafe;
-    case DefaultPromoTypeVideo:
-      return kLastSignificantUserEventVideo;
   }
   NOTREACHED();
   return nil;
@@ -520,7 +514,6 @@ DefaultPromoType ForceDefaultPromoType() {
       case DefaultPromoTypeStaySafe:
       case DefaultPromoTypeMadeForIOS:
       case DefaultPromoTypeAllTabs:
-      case DefaultPromoTypeVideo:
         return static_cast<DefaultPromoType>(default_promo_type);
     }
   }

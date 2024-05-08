@@ -27,7 +27,6 @@ typedef NS_ENUM(NSUInteger, DefaultPromoType) {
   DefaultPromoTypeStaySafe = 1,
   DefaultPromoTypeMadeForIOS = 2,
   DefaultPromoTypeAllTabs = 3,
-  DefaultPromoTypeVideo = 4,
 };
 
 // Enum actions for default browser promo UMA metrics. Entries should not be

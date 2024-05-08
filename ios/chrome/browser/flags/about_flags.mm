@@ -139,7 +139,6 @@ const FeatureEntry::Choice kDefaultBrowserPromoForceShowPromoChoices[] = {
      "default-browser-promo-force-show-promo", "2"},
     {"Show tailored all tabs promo", "default-browser-promo-force-show-promo",
      "3"},
-    {"Show video promo", "default-browser-promo-force-show-promo", "4"},
 };
 
 const FeatureEntry::FeatureParam kOmniboxUIMaxAutocompleteMatches3[] = {

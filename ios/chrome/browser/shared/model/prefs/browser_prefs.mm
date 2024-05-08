@@ -1023,4 +1023,7 @@ void MigrateObsoleteUserDefault() {
 
   // TODO(b/322004644): Remove in M124+. Added 02/2024.
   [defaults removeObjectForKey:@"TimestampAppLaunchedOnColdStart"];
+
+  // Added 05/2024.
+  [defaults removeObjectForKey:@"lastSignificantUserEventVideo"];
 }
