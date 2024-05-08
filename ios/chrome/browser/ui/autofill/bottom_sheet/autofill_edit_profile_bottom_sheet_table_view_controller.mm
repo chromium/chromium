@@ -5,9 +5,11 @@
 #import "ios/chrome/browser/ui/autofill/bottom_sheet/autofill_edit_profile_bottom_sheet_table_view_controller.h"
 
 #import "base/apple/foundation_util.h"
+#import "base/notreached.h"
 #import "components/strings/grit/components_strings.h"
 #import "ios/chrome/browser/shared/ui/table_view/legacy_chrome_table_view_styler.h"
 #import "ios/chrome/browser/shared/ui/table_view/table_view_utils.h"
+#import "ios/chrome/browser/ui/autofill/autofill_profile_edit_table_view_constants.h"
 #import "ios/chrome/browser/ui/autofill/bottom_sheet/bottom_sheet_constants.h"
 #import "ios/chrome/common/ui/colors/semantic_color_names.h"
 #import "ios/chrome/common/ui/table_view/table_view_cells_constants.h"
@@ -25,8 +27,8 @@ NSString* const kCustomMinimizedDetentIdentifier = @"customMinimizedDetent";
 // Custom detent identifier for when the bottom sheet is expanded.
 NSString* const kCustomExpandedDetentIdentifier = @"customExpandedDetent";
 
-// Deafult height of the footer, used to speed the constraints.
-const CGFloat kDefaultFooterHeight = 20;
+// Deafult height of the header/footer, used to speed the constraints.
+const CGFloat kDefaultHeaderFooterHeight = 10;
 }  // namespace
 
 @interface AutofillEditProfileBottomSheetTableViewController () <
@@ -153,6 +155,22 @@ const CGFloat kDefaultFooterHeight = 20;
   [self.handler didSelectRowAtIndexPath:indexPath];
 }
 
+- (UIView*)tableView:(UITableView*)tableView
+    viewForFooterInSection:(NSInteger)section {
+  UIView* view = [super tableView:tableView viewForFooterInSection:section];
+  [self.handler configureView:view forFooterInSection:section];
+  return view;
+}
+
+- (CGFloat)tableView:(UITableView*)tableView
+    heightForHeaderInSection:(NSInteger)section {
+  if ([self.tableViewModel headerForSectionIndex:section]) {
+    return UITableViewAutomaticDimension;
+  }
+
+  return kDefaultHeaderFooterHeight;
+}
+
 - (CGFloat)tableView:(UITableView*)tableView
     heightForFooterInSection:(NSInteger)section {
   if ([self.handler heightForFooterShouldBeZeroInSection:section]) {
@@ -163,7 +181,7 @@ const CGFloat kDefaultFooterHeight = 20;
     return UITableViewAutomaticDimension;
   }
 
-  return kDefaultFooterHeight;
+  return kDefaultHeaderFooterHeight;
 }
 
 #pragma mark - Actions

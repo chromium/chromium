@@ -6,6 +6,8 @@ source_set("cells") {
   sources = [
     "autofill_credit_card_edit_item.h",
     "autofill_credit_card_edit_item.mm",
+    "autofill_edit_profile_button_footer_item.h",
+    "autofill_edit_profile_button_footer_item.mm",
     "autofill_profile_edit_item.h",
     "autofill_profile_edit_item.mm",
     "card_unmask_header_item.h",
@@ -33,6 +35,7 @@ source_set("cells") {
     "//ios/chrome/browser/ui/autofill:autofill_ui_type",
     "//ios/chrome/common/ui/colors",
     "//ios/chrome/common/ui/table_view:cells_constants",
+    "//ios/chrome/common/ui/util",
     "//ui/base",
   ]
 }

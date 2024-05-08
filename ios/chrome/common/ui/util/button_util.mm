@@ -71,3 +71,21 @@ void SetConfigurationFont(UIButton* button, UIFont* font) {
     }
   }
 }
+
+void UpdateButtonColorOnEnableDisable(UIButton* button) {
+  if (@available(iOS 15.0, *)) {
+    UIButtonConfiguration* buttonConfiguration = button.configuration;
+    if (button.enabled) {
+      buttonConfiguration.background.backgroundColor =
+          [UIColor colorNamed:kBlueColor];
+      buttonConfiguration.baseForegroundColor =
+          [UIColor colorNamed:kSolidButtonTextColor];
+    } else {
+      buttonConfiguration.background.backgroundColor =
+          [UIColor colorNamed:kUpdatedTertiaryBackgroundColor];
+      buttonConfiguration.baseForegroundColor =
+          [UIColor colorNamed:kDisabledTintColor];
+    }
+    button.configuration = buttonConfiguration;
+  }
+}

@@ -484,7 +484,7 @@ TEST_P(AutofillProfileEditTableViewControllerTestWithDynamicFieldsEnabled,
     CheckSectionFooter(expected_footer_text, 3);
 
     if (!test_case.is_settings) {
-      EXPECT_EQ(NumberOfItemsInSection(4), 1);
+      EXPECT_EQ(NumberOfItemsInSection(4), 0);
     }
   }
 

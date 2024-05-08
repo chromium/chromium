@@ -27,6 +27,9 @@
        forRowAtIndexPath:(NSIndexPath*)indexPath
         withTextDelegate:(id<UITextFieldDelegate>)delegate;
 
+// Called for setting footer properties in `section`.
+- (void)configureView:(UIView*)view forFooterInSection:(NSInteger)section;
+
 // Returns header sections view controller  whose height should be 0.
 - (BOOL)heightForHeaderShouldBeZeroInSection:(NSInteger)section;
 

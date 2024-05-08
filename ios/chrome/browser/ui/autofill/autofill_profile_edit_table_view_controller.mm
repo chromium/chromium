@@ -22,6 +22,7 @@
 #import "ios/chrome/browser/ui/autofill/autofill_profile_edit_table_view_constants.h"
 #import "ios/chrome/browser/ui/autofill/autofill_profile_edit_table_view_controller_delegate.h"
 #import "ios/chrome/browser/ui/autofill/autofill_ui_type_util.h"
+#import "ios/chrome/browser/ui/autofill/cells/autofill_edit_profile_button_footer_item.h"
 #import "ios/chrome/browser/ui/autofill/cells/autofill_profile_edit_item.h"
 #import "ios/chrome/browser/ui/autofill/cells/country_item.h"
 #import "ios/chrome/common/ui/colors/semantic_color_names.h"
@@ -34,7 +35,8 @@ const CGFloat kLineSpacingBetweenErrorAndFooter = 12.0f;
 
 }  // namespace
 
-@interface AutofillProfileEditTableViewController ()
+@interface AutofillProfileEditTableViewController () <
+    AutofillEditProfileButtonFooterDelegate>
 
 // Stores the value displayed in the fields.
 @property(nonatomic, strong)
@@ -280,6 +282,17 @@ const CGFloat kLineSpacingBetweenErrorAndFooter = 12.0f;
   }
 }
 
+- (void)configureView:(UIView*)view forFooterInSection:(NSInteger)section {
+  NSInteger sectionIdentifier =
+      [_controller.tableViewModel sectionIdentifierForSectionIndex:section];
+
+  if (sectionIdentifier == AutofillProfileDetailsSectionIdentifierButton) {
+    AutofillEditProfileButtonFooterCell* buttonView =
+        base::apple::ObjCCast<AutofillEditProfileButtonFooterCell>(view);
+    buttonView.delegate = self;
+  }
+}
+
 - (BOOL)heightForHeaderShouldBeZeroInSection:(NSInteger)section {
   NSInteger sectionIdentifier =
       [_controller.tableViewModel sectionIdentifierForSectionIndex:section];
@@ -334,15 +347,16 @@ const CGFloat kLineSpacingBetweenErrorAndFooter = 12.0f;
     }
   }
 
-  AutofillProfileDetailsSectionIdentifier sectionIdentifier =
-      AutofillProfileDetailsSectionIdentifierFields;
   if (_dynamicallyLoadInputFieldsEnabled) {
-    sectionIdentifier = AutofillProfileDetailsSectionIdentifierButton;
-    [model addSectionWithIdentifier:sectionIdentifier];
+    [model
+        addSectionWithIdentifier:AutofillProfileDetailsSectionIdentifierButton];
+    [model setFooter:[self saveUpdateButtonAsFooter:update]
+        forSectionWithIdentifier:AutofillProfileDetailsSectionIdentifierButton];
+  } else {
+    [model addItem:[self saveButtonIfSaveOrUpdate:update]
+        toSectionWithIdentifier:AutofillProfileDetailsSectionIdentifierFields];
   }
 
-  [model addItem:[self saveButtonIfSaveOrUpdate:update]
-      toSectionWithIdentifier:sectionIdentifier];
   _hasSaveButton = !update;
   _hasUpdateButton = update;
 }
@@ -419,6 +433,15 @@ const CGFloat kLineSpacingBetweenErrorAndFooter = 12.0f;
 
   self.fieldValuesMap[[self countryFieldKeyValue]] = country;
   [self findRequiredFieldsWithEmptyValues];
+}
+
+#pragma mark - AutofillEditProfileButtonFooterDelegate
+
+- (void)didTapButton {
+  CHECK(!_settingsView);
+  if (!_errorSectionPresented) {
+    [self didTapSaveButton];
+  }
 }
 
 #pragma mark - Actions
@@ -588,6 +611,22 @@ const CGFloat kLineSpacingBetweenErrorAndFooter = 12.0f;
   return _modalSaveUpdateButton;
 }
 
+- (AutofillEditProfileButtonFooterItem*)saveUpdateButtonAsFooter:(BOOL)update {
+  CHECK(!_settingsView);
+  AutofillEditProfileButtonFooterItem* buttonFooter =
+      [[AutofillEditProfileButtonFooterItem alloc]
+          initWithType:AutofillProfileDetailsItemTypeSaveButton];
+  if (self.migrationPrompt) {
+    buttonFooter.buttonText = l10n_util::GetNSString(
+        IDS_AUTOFILL_ADDRESS_MIGRATION_TO_ACCOUNT_PROMPT_OK_BUTTON_LABEL);
+  } else {
+    buttonFooter.buttonText = l10n_util::GetNSString(
+        update ? IDS_AUTOFILL_UPDATE_ADDRESS_PROMPT_OK_BUTTON_LABEL
+               : IDS_AUTOFILL_SAVE_ADDRESS_PROMPT_OK_BUTTON_LABEL);
+  }
+  return buttonFooter;
+}
+
 #pragma mark - Private
 
 // Removes the given section if it exists.
@@ -676,8 +715,24 @@ const CGFloat kLineSpacingBetweenErrorAndFooter = 12.0f;
   if (_settingsView) {
     _controller.navigationItem.rightBarButtonItem.enabled = !shouldShowError;
   } else {
-    _modalSaveUpdateButton.enabled = !shouldShowError;
-    [_controller reconfigureCellsForItems:@[ _modalSaveUpdateButton ]];
+    if (_dynamicallyLoadInputFieldsEnabled) {
+      [_controller.tableView beginUpdates];
+
+      NSInteger section = [[_controller tableViewModel]
+          sectionForSectionIdentifier:
+              AutofillProfileDetailsSectionIdentifierButton];
+      UITableViewHeaderFooterView* footer =
+          [_controller.tableView footerViewForSection:section];
+      AutofillEditProfileButtonFooterCell* buttonFooter =
+          base::apple::ObjCCastStrict<AutofillEditProfileButtonFooterCell>(
+              footer);
+      buttonFooter.button.enabled = !shouldShowError;
+
+      [_controller.tableView endUpdates];
+    } else {
+      _modalSaveUpdateButton.enabled = !shouldShowError;
+      [_controller reconfigureCellsForItems:@[ _modalSaveUpdateButton ]];
+    }
   }
 }
 
