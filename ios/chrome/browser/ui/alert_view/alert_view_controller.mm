@@ -43,6 +43,9 @@ constexpr CGFloat kTitleInsetLeading = 20;
 constexpr CGFloat kTitleInsetBottom = 9;
 constexpr CGFloat kTitleInsetTrailing = 20;
 
+constexpr CGFloat kSpinnerInsetTop = 12;
+constexpr CGFloat kSpinnerInsetBottom = 14;
+
 constexpr CGFloat kMessageInsetLeading = 20;
 constexpr CGFloat kMessageInsetBottom = 6;
 constexpr CGFloat kMessageInsetTrailing = 20;
@@ -57,8 +60,6 @@ constexpr CGFloat kTextfieldStackInsetLeading = 12;
 constexpr CGFloat kTextfieldStackInsetTrailing = 12;
 
 constexpr CGFloat kTextfieldInset = 8;
-
-constexpr CGFloat kSpinnerInsetBottom = 6;
 
 // This is how many bits UIViewAnimationCurve needs to be shifted to be in
 // UIViewAnimationOptions format. Must match the one in UIView.h.
@@ -314,7 +315,10 @@ GrayHighlightButton* GetButtonForAction(AlertAction* action) {
     titleLabel.text = self.title;
     titleLabel.translatesAutoresizingMaskIntoConstraints = NO;
     [stackView addArrangedSubview:titleLabel];
-    [stackView setCustomSpacing:kTitleInsetBottom afterView:titleLabel];
+    [stackView setCustomSpacing:self.shouldShowActivityIndicator
+                                    ? kTitleInsetBottom + kSpinnerInsetTop
+                                    : kTitleInsetBottom
+                      afterView:titleLabel];
 
     NSDirectionalEdgeInsets titleInsets = NSDirectionalEdgeInsetsMake(
         0, kTitleInsetLeading, 0, kTitleInsetTrailing);
@@ -324,7 +328,7 @@ GrayHighlightButton* GetButtonForAction(AlertAction* action) {
   }
 
   if (self.shouldShowActivityIndicator) {
-    UIActivityIndicatorView* spinner = GetMediumUIActivityIndicatorView();
+    UIActivityIndicatorView* spinner = GetLargeUIActivityIndicatorView();
     [spinner startAnimating];
     [stackView addArrangedSubview:spinner];
     [stackView setCustomSpacing:kSpinnerInsetBottom afterView:spinner];
