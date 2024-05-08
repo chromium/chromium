@@ -59,6 +59,7 @@
 #include "third_party/blink/renderer/core/frame/web_feature.h"
 #include "third_party/blink/renderer/core/html/forms/html_field_set_element.h"
 #include "third_party/blink/renderer/core/html/forms/html_form_element.h"
+#include "third_party/blink/renderer/core/html/forms/html_input_element.h"
 #include "third_party/blink/renderer/core/html/forms/radio_node_list.h"
 #include "third_party/blink/renderer/core/html/html_collection.h"
 #include "third_party/blink/renderer/core/html/html_dialog_element.h"
@@ -1587,14 +1588,27 @@ String ContainerNode::FindTextInElementWith(
     const AtomicString& substring,
     base::FunctionRef<bool(const String&)> validity_checker) const {
   for (Element& element : ElementTraversal::DescendantsOf(*this)) {
-    if (element.HasOnlyText()) {
-      const String& text = element.TextFromChildren();
-      if (text.FindIgnoringASCIICase(substring) != WTF::kNotFound &&
-          validity_checker(text)) {
-        return text;
-      }
+    String text;
+    if (element.HasTagName(html_names::kInputTag) &&
+        element.FastHasAttribute(html_names::kReadonlyAttr) &&
+        element.FastGetAttribute(html_names::kTypeAttr).LowerASCII() ==
+            "text" &&
+        RuntimeEnabledFeatures::FindTextInReadonlyTextInputEnabled()) {
+      text = To<HTMLInputElement>(element).Value();
+    } else if (element.HasOnlyText()) {
+      text = element.TextFromChildren();
+    }
+
+    if (text.empty()) {
+      continue;
+    }
+
+    if (text.FindIgnoringASCIICase(substring) != WTF::kNotFound &&
+        validity_checker(text)) {
+      return text;
     }
   }
+
   return String();
 }
 

@@ -1716,6 +1716,10 @@
       status: "experimental",
     },
     {
+      name: "FindTextInReadonlyTextInput",
+      status: "experimental",
+    },
+    {
       name: "Fledge",
       base_feature: "none",
       origin_trial_feature_name: "PrivacySandboxAdsAPIs",

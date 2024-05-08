@@ -137,4 +137,48 @@ TEST_F(WebNodeTest, CannotFindTextInElementIfValidatorRejectsIt) {
                   .IsEmpty());
 }
 
+TEST_F(WebNodeTest, CanFindTextInReadonlyTextInputElement) {
+  SetInnerHTML(R"HTML(
+    <body class="container">
+      <input type="text" readonly="" value=" HeLLo WoRLd! ">
+    </body>
+  )HTML");
+  WebElement element = Root().QuerySelector(AtomicString(".container"));
+
+  EXPECT_FALSE(element.IsNull());
+  EXPECT_EQ(WebString(" HeLLo WoRLd! "),
+            element.FindTextInElementWith(
+                "hello world", [](const WebString&) { return true; }));
+}
+
+TEST_F(WebNodeTest, CannotFindTextInNonTextInputElement) {
+  SetInnerHTML(R"HTML(
+    <body class="container">
+      <input type="url" readonly="" value=" HeLLo WoRLd! ">
+    </body>
+  )HTML");
+  WebElement element = Root().QuerySelector(AtomicString(".container"));
+
+  EXPECT_FALSE(element.IsNull());
+  EXPECT_TRUE(element
+                  .FindTextInElementWith("hello world",
+                                         [](const WebString&) { return true; })
+                  .IsEmpty());
+}
+
+TEST_F(WebNodeTest, CannotFindTextInNonReadonlyTextInputElement) {
+  SetInnerHTML(R"HTML(
+    <body class="container">
+      <input type="text" value=" HeLLo WoRLd! ">
+    </body>
+  )HTML");
+  WebElement element = Root().QuerySelector(AtomicString(".container"));
+
+  EXPECT_FALSE(element.IsNull());
+  EXPECT_TRUE(element
+                  .FindTextInElementWith("hello world",
+                                         [](const WebString&) { return true; })
+                  .IsEmpty());
+}
+
 }  // namespace blink

@@ -153,9 +153,10 @@ class CORE_EXPORT ContainerNode : public Node {
   RadioNodeList* GetRadioNodeList(const AtomicString&,
                                   bool only_match_img_elements = false);
 
-  // Returns the contents of the first descendant element, if any, that contains
-  // only text, a part of which is the given substring, if the given validity
-  // checker returns true for it. Ignores ASCII case in the substring search.
+  // Returns the contents of the first descendant that is either (1) an element
+  // containing only text or (2) a readonly text input, whose text contains the
+  // given substring, if the validity checker returns true for it. Ignores ASCII
+  // case in the substring search.
   String FindTextInElementWith(
       const AtomicString& substring,
       base::FunctionRef<bool(const String&)> validity_checker) const;

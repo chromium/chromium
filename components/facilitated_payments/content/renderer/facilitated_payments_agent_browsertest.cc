@@ -55,7 +55,7 @@ TEST_F(FacilitatedPaymentsAgentTest, TriggerPixCodeDetection_NotFound) {
     <div>
       Hello world!
     </div>
-  </form>
+  </body>
   )").get());
 }
 
@@ -67,7 +67,41 @@ TEST_F(FacilitatedPaymentsAgentTest, TriggerPixCodeDetection_FoundValid) {
     <div>
       00020126370014br.gov.bcb.pix2515www.example.com6304EA3F
     </div>
-  </form>
+  </body>
+  )").get());
+}
+
+TEST_F(FacilitatedPaymentsAgentTest,
+       TriggerPixCodeDetection_FoundValidInInputElement) {
+  Expect(mojom::PixCodeDetectionResult::kValidPixCodeFound,
+         "00020126370014br.gov.bcb.pix2515www.example.com6304EA3F",
+         CreateAgentFor(R"(
+   <body>
+    <input type="text" readonly=""
+      value="00020126370014br.gov.bcb.pix2515www.example.com6304EA3F">
+  </body>
+  )").get());
+}
+
+TEST_F(FacilitatedPaymentsAgentTest,
+       TriggerPixCodeDetection_NotFoundInEditableInput) {
+  Expect(mojom::PixCodeDetectionResult::kPixCodeNotFound, std::string(),
+         CreateAgentFor(R"(
+   <body>
+    <input type="text"
+      value="00020126370014br.gov.bcb.pix2515www.example.com6304EA3F">
+  </body>
+  )").get());
+}
+
+TEST_F(FacilitatedPaymentsAgentTest,
+       TriggerPixCodeDetection_NotFoundInNonTextInput) {
+  Expect(mojom::PixCodeDetectionResult::kPixCodeNotFound, std::string(),
+         CreateAgentFor(R"(
+   <body>
+    <input type="url" readonly=""
+      value="00020126370014br.gov.bcb.pix2515www.example.com6304EA3F">
+  </body>
   )").get());
 }
 
@@ -80,7 +114,7 @@ TEST_F(FacilitatedPaymentsAgentTest,
     <div>
       00020126370014BR.gov.bcb.PIX2515www.example.com6304EA3F
     </div>
-  </form>
+  </body>
   )").get());
 }
 
@@ -91,7 +125,7 @@ TEST_F(FacilitatedPaymentsAgentTest, TriggerPixCodeDetection_FoundInvalid) {
     <div>
       0014br.gov.bcb.pix
     </div>
-  </form>
+  </body>
   )").get());
 }
 
@@ -105,7 +139,7 @@ TEST_F(FacilitatedPaymentsAgentTest, TriggerPixCodeDetection_FoundTwoInvalid) {
     <div>
       0014br.gov.bcb.pix
     </div>
-  </form>
+  </body>
   )").get());
 }
 
@@ -121,7 +155,7 @@ TEST_F(FacilitatedPaymentsAgentTest,
     <div>
       00020126370014br.gov.bcb.pix2515www.example.com6304EA3F
     </div>
-  </form>
+  </body>
   )").get());
 }
 
@@ -137,7 +171,7 @@ TEST_F(FacilitatedPaymentsAgentTest,
     <div>
       0014br.gov.bcb.pix
     </div>
-  </form>
+  </body>
   )").get());
 }
 
@@ -148,7 +182,7 @@ TEST_F(FacilitatedPaymentsAgentTest,
     <div>
       00020126370014br.gov.bcb.pix2515www.example.com6304EA3F
     </div>
-  </form>
+  </body>
   )");
   // Relesase the pointer because OnDestruct() calls DeleteSoon() on the PIX
   // agent.
