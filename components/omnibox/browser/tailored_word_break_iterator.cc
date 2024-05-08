@@ -33,7 +33,7 @@ bool TailoredWordBreakIterator::Advance() {
   special_word_ = std::u16string_view();
   if (!IsWord())
     return true;
-  std::u16string_view word = BreakIterator::GetStringPiece();
+  std::u16string_view word = BreakIterator::GetStringView();
   if (word.find_first_of(all_breaks_) != std::u16string_view::npos) {
     special_word_ = word;
     AdvanceInSpecialWord();
@@ -43,21 +43,21 @@ bool TailoredWordBreakIterator::Advance() {
 
 bool TailoredWordBreakIterator::IsWord() const {
   if (HasSpecialWord()) {
-    std::u16string_view word = GetStringPiece();
+    std::u16string_view word = GetStringView();
     if (!word.empty())
       return non_word_breaks_.find(word[0]) == std::u16string::npos;
   }
   return BreakIterator::IsWord();
 }
 
-std::u16string_view TailoredWordBreakIterator::GetStringPiece() const {
+std::u16string_view TailoredWordBreakIterator::GetStringView() const {
   if (!special_word_.empty())
     return special_word_.substr(prev_, pos_ - prev_);
-  return BreakIterator::GetStringPiece();
+  return BreakIterator::GetStringView();
 }
 
 std::u16string TailoredWordBreakIterator::GetString() const {
-  return std::u16string(GetStringPiece());
+  return std::u16string(GetStringView());
 }
 
 size_t TailoredWordBreakIterator::prev() const {

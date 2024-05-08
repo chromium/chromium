@@ -265,10 +265,10 @@ bool BreakIterator::IsGraphemeBoundary(size_t position) const {
 }
 
 std::u16string BreakIterator::GetString() const {
-  return std::u16string(GetStringPiece());
+  return std::u16string(GetStringView());
 }
 
-std::u16string_view BreakIterator::GetStringPiece() const {
+std::u16string_view BreakIterator::GetStringView() const {
   DCHECK(prev_ != npos && pos_ != npos);
   return string_.substr(prev_, pos_ - prev_);
 }

@@ -176,7 +176,7 @@ class BASE_I18N_EXPORT BreakIterator {
   // have advanced to somewhere useful.
   std::u16string GetString() const;
 
-  std::u16string_view GetStringPiece() const;
+  std::u16string_view GetStringView() const;
 
   // Returns the value of pos() returned before Advance() was last called.
   size_t prev() const { return prev_; }
