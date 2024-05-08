@@ -239,16 +239,8 @@ async function tabIndexFocus(
     if (dialogParams.type === 'saveFile') {
       await remoteCall.waitForElement(
           appId, ['#filename-input-textbox:focus-within']);
-    } else if (directoryTree.isNewTree) {
-      await directoryTree.waitForFocusedItemByType(volumeType);
     } else {
-      // The  remoteCall.openAndWaitForClosingDialog() below will select the
-      // tree item with the corresponding `volumeType` by fake mouse click, for
-      // new tree it will focus the tree item we do that programmatically, but
-      // for the old tree it won't focus the tree because it rely on
-      // "tabindex=0" on the <tree> element to focus which only works with
-      // physical mouse/touch, hence the checking of "file-list:focus" below.
-      await remoteCall.waitForElement(appId, ['#file-list:focus']);
+      await directoryTree.waitForFocusedItemByType(volumeType);
     }
 
     // Wait for Files app to finish loading.

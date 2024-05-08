@@ -103,11 +103,6 @@ TestCase& TestCase::EnableSinglePartitionFormat() {
   return *this;
 }
 
-TestCase& TestCase::NewDirectoryTree() {
-  options.enable_new_directory_tree = true;
-  return *this;
-}
-
 TestCase& TestCase::EnableMaterializedViews() {
   options.enable_materialized_views = true;
   return *this;
@@ -324,10 +319,6 @@ std::string TestCase::GetFullName() const {
 
   if (options.enable_materialized_views) {
     full_name += "_MaterializedViews";
-  }
-
-  if (options.enable_new_directory_tree) {
-    full_name += "_NewDirectoryTree";
   }
 
   switch (options.device_mode) {

@@ -1225,16 +1225,14 @@ export async function unselectCurrentDirectoryInTreeOnSearchInDownloads() {
   // Expect the Downloads folder to be selected again.
   await directoryTree.waitForSelectedItemByLabel('Downloads');
 
-  if (directoryTree.isNewTree) {
-    // Change location to "My files" and click the Downloads.
-    chrome.test.assertTrue(
-        !!await remoteCall.selectSearchOption(appId, 'location', 2),
-        'Failed to click "My files" location selector');
-    await directoryTree.waitForSelectedItemLostByLabel('Downloads');
-    await directoryTree.selectItemByLabel('Downloads');
-    // Expect the search will be cleared.
-    await remoteCall.waitForElement(appId, '#search-wrapper[collapsed]');
-  }
+  // Change location to "My files" and click the Downloads.
+  chrome.test.assertTrue(
+      !!await remoteCall.selectSearchOption(appId, 'location', 2),
+      'Failed to click "My files" location selector');
+  await directoryTree.waitForSelectedItemLostByLabel('Downloads');
+  await directoryTree.selectItemByLabel('Downloads');
+  // Expect the search will be cleared.
+  await remoteCall.waitForElement(appId, '#search-wrapper[collapsed]');
 }
 
 /**
@@ -1256,10 +1254,8 @@ export async function unselectCurrentDirectoryInTreeOnSearchInDrive() {
   ]));
   chrome.test.assertEq(
       'Google Drive', await getSelectedOptionText(appId, 'location'));
-  if (directoryTree.isNewTree) {
-    // Expect the My Drive folder is still selected.
-    await directoryTree.waitForSelectedItemByLabel('My Drive');
-  }
+  // Expect the My Drive folder is still selected.
+  await directoryTree.waitForSelectedItemByLabel('My Drive');
 
   // Change location to "Everywhere".
   chrome.test.assertTrue(
@@ -1272,20 +1268,16 @@ export async function unselectCurrentDirectoryInTreeOnSearchInDrive() {
   chrome.test.assertTrue(
       !!await remoteCall.selectSearchOption(appId, 'location', 2),
       'Failed to click "Google Drive" location selector');
-  if (directoryTree.isNewTree) {
-    // Expect the My Drive folder to be selected again.
-    await directoryTree.waitForSelectedItemByLabel('My Drive');
-  }
+  // Expect the My Drive folder to be selected again.
+  await directoryTree.waitForSelectedItemByLabel('My Drive');
 
-  if (directoryTree.isNewTree) {
-    // Change location to "Everywhere" and click the My Drive.
-    chrome.test.assertTrue(
-        !!await remoteCall.selectSearchOption(appId, 'location', 1),
-        'Failed to click "Everywhere" location selector');
-    await directoryTree.waitForSelectedItemLostByLabel('My Drive');
-    await directoryTree.selectItemByLabel('My Drive');
+  // Change location to "Everywhere" and click the My Drive.
+  chrome.test.assertTrue(
+      !!await remoteCall.selectSearchOption(appId, 'location', 1),
+      'Failed to click "Everywhere" location selector');
+  await directoryTree.waitForSelectedItemLostByLabel('My Drive');
+  await directoryTree.selectItemByLabel('My Drive');
 
-    // Expect the search will be cleared.
-    await remoteCall.waitForElement(appId, '#search-wrapper[collapsed]');
-  }
+  // Expect the search will be cleared.
+  await remoteCall.waitForElement(appId, '#search-wrapper[collapsed]');
 }

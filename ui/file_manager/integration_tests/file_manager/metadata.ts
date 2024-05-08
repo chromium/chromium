@@ -300,16 +300,9 @@ export async function metadataTeamDrives() {
   // = 152
   chrome.test.assertEq(152, metadataStats.fullFetch);
 
-  if (directoryTree.isNewTree) {
-    // No cache read for the new tree implementation, because metadata is
-    // retrieved from the store instead of the metadata model when expanding
-    // directory tree.
-    chrome.test.assertEq(0, metadataStats.fromCache);
-  } else {
-    // 50 team drives cached, reading from file list when navigating to
-    // /team_drives, then read cached when expanding directory tree.
-    chrome.test.assertEq(50, metadataStats.fromCache);
-  }
+  // No cache read here because metadata is retrieved from the store instead of
+  // the metadata model when expanding directory tree.
+  chrome.test.assertEq(0, metadataStats.fromCache);
 
   // Cleared 50 folders + 50 files when navigated out of My Drive and
   // clearing file list.
