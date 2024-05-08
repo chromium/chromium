@@ -12,6 +12,7 @@
 #include "ash/root_window_controller.h"
 #include "ash/screen_util.h"
 #include "ash/shell.h"
+#include "ash/wm/pip/pip_controller.h"
 #include "ash/wm/system_modal_container_layout_manager.h"
 #include "ash/wm/window_properties.h"
 #include "ash/wm/window_restore/window_restore_controller.h"
@@ -78,6 +79,12 @@ void AdjustBoundsSmallerThan(const gfx::Size& max_size, gfx::Rect* bounds) {
 void AdjustBoundsToEnsureMinimumWindowVisibility(const gfx::Rect& visible_area,
                                                  bool client_controlled,
                                                  gfx::Rect* bounds) {
+  if (Shell::Get()->pip_controller()->is_tucked()) {
+    // PiP is allowed to be positioned beyond the threshold while it's tucked.
+    // TODO(http://b/337113950): Check if this is also needed for float windows.
+    return;
+  }
+
   int min_width =
       std::max(kMinimumOnScreenArea,
                static_cast<int>(bounds->width() * kMinimumPercentOnScreenArea));
