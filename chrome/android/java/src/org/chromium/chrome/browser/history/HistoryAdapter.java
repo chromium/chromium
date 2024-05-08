@@ -192,6 +192,9 @@ public class HistoryAdapter extends DateDividedAdapter implements BrowsingHistor
     /** Removes all items that have been marked for removal through #markItemForRemoval(). */
     public void removeItems() {
         mHistoryProvider.removeItems();
+
+        // Removing app-specific entries could require refreshing the apps list.
+        mManager.maybeQueryApps();
     }
 
     /** Should be called when the user's sign in state changes. */
@@ -213,6 +216,9 @@ public class HistoryAdapter extends DateDividedAdapter implements BrowsingHistor
         if (mClearBrowsingDataButton != null) {
             mClearBrowsingDataButton.setEnabled(!active);
         }
+
+        // While the selection is active, we temporarily disable the app filter button.
+        if (mShowAppFilter) mAppFilterChip.setEnabled(!active);
 
         int visibility = mManager.getRemoveItemButtonVisibility();
         if (active) {
@@ -299,8 +305,12 @@ public class HistoryAdapter extends DateDividedAdapter implements BrowsingHistor
     public void onQueryAppsComplete(List<String> items) {
         boolean hasAppToShow = mManager.onQueryAppsComplete(items);
 
-        // Querying apps was completed after the search mode is entered. Enable the filter button.
-        if (hasAppToShow && mIsSearching) mAppFilterChip.setEnabled(true);
+        // Querying apps was completed after the search mode is entered (or within search mode).
+        // Enable/disable the filter header/button accordingly.
+        if (mIsSearching) {
+            mAppFilterHeaderItem.getView().setVisibility(hasAppToShow ? View.VISIBLE : View.GONE);
+            mAppFilterChip.setEnabled(hasAppToShow);
+        }
     }
 
     @Override
@@ -487,9 +497,13 @@ public class HistoryAdapter extends DateDividedAdapter implements BrowsingHistor
         if (mIsSearching) {
             if (mShowAppFilter) {
                 args.add(mAppFilterHeaderItem);
-                // Query for apps list could be still pending. Keep the button disabled until
-                // the result is ready.
-                mAppFilterChip.setEnabled(mManager.hasFilterList());
+                // Query for apps list could be still pending. Keep the header hidden and the button
+                // disabled until the result is ready.
+                // TODO(b/339497723): Prefer not adding the header to making it hidden as it could
+                //     cause an issue regarding a11y.
+                boolean visible = mManager.hasFilterList();
+                mAppFilterHeaderItem.getView().setVisibility(visible ? View.VISIBLE : View.GONE);
+                mAppFilterChip.setEnabled(visible);
             }
         } else {
             if (mPrivacyDisclaimersVisible) {
@@ -577,10 +591,14 @@ public class HistoryAdapter extends DateDividedAdapter implements BrowsingHistor
     }
 
     void generateHeaderItemsForTest() {
+        generateHeaderItemsForTest(null);
+    }
+
+    void generateHeaderItemsForTest(View appFilterContainer) {
         mPrivacyDisclaimerHeaderItem = new HeaderItem(0, null);
         mClearBrowsingDataButtonHeaderItem = new HeaderItem(1, null);
         mClearBrowsingDataButtonVisible = true;
-        mAppFilterHeaderItem = new HeaderItem(0, null);
+        mAppFilterHeaderItem = new HeaderItem(0, appFilterContainer);
     }
 
     void generateFooterItemsForTest(MoreProgressButton mockButton) {
@@ -612,6 +630,10 @@ public class HistoryAdapter extends DateDividedAdapter implements BrowsingHistor
 
     void setAppFilterButtonForTest(ChipView appFilterChip) {
         mAppFilterChip = appFilterChip;
+    }
+
+    boolean isAppFilterHeaderItemVisible() {
+        return mAppFilterHeaderItem.getView().getVisibility() == View.VISIBLE;
     }
 
     boolean showSourceAppForTest() {

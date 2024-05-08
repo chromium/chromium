@@ -8,6 +8,7 @@ import static org.mockito.Mockito.doReturn;
 
 import static org.chromium.chrome.browser.history.HistoryTestUtils.checkAdapterContents;
 
+import android.view.View;
 import android.widget.TextView;
 
 import org.junit.Assert;
@@ -39,6 +40,7 @@ public class HistoryAdapterTest {
     @Mock private HistoryContentManager mContentManager;
     @Mock private ChipView mAppFilterChip;
     @Mock private TextView mTextView;
+    @Mock private View mAppFilterContainer;
 
     @Before
     public void setUp() {
@@ -104,7 +106,7 @@ public class HistoryAdapterTest {
         doReturn(true).when(mContentManager).showAppFilter();
         mAdapter = new HistoryAdapter(mContentManager, mHistoryProvider);
 
-        mAdapter.generateHeaderItemsForTest();
+        mAdapter.generateHeaderItemsForTest(mAppFilterContainer);
         mAdapter.generateFooterItemsForTest(mMockButton);
         mAdapter.setAppFilterButtonForTest(mAppFilterChip);
         Assert.assertTrue("Source app should be on", showSourceApp());
