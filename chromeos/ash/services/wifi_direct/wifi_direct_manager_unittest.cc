@@ -27,6 +27,7 @@ using mojom::WifiP2PCapabilitiesPtr;
 namespace {
 
 constexpr char kIpv4Address[] = "100.0.0.1";
+const int testShillId = 0;
 
 }  // namespace
 
@@ -148,6 +149,9 @@ TEST_F(WifiDirectManagerTest, CreateWifiDirectGroupSuccess) {
   // Request disconnection from client side.
   wifi_direct_connection.reset();
   ExpectConnectionsCount(0);
+  EXPECT_EQ(testShillId, ShillManagerClient::Get()
+                             ->GetTestInterface()
+                             ->GetRecentlyDestroyedP2PGroupId());
 }
 
 TEST_F(WifiDirectManagerTest, CreateWifiDirectGroupFailure_InvalidArguments) {
@@ -188,6 +192,9 @@ TEST_F(WifiDirectManagerTest, ConnectToWifiDirectGroupSuccess) {
   // Request disconnection from client side.
   wifi_direct_connection.reset();
   ExpectConnectionsCount(0);
+  EXPECT_EQ(testShillId, ShillManagerClient::Get()
+                             ->GetTestInterface()
+                             ->GetRecentlyDisconnectedP2PGroupId());
 }
 
 TEST_F(WifiDirectManagerTest, ConnectToWifiDirectGroupFailure_InvalidResult) {

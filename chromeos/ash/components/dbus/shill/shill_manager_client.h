@@ -256,6 +256,12 @@ class COMPONENT_EXPORT(SHILL_CLIENT) ShillManagerClient {
     virtual void SetWifiServicesVisibleByDefault(
         bool wifi_services_visible_by_default) = 0;
 
+    // Returns the shill id of the recently destroyed P2P group.
+    virtual int GetRecentlyDestroyedP2PGroupId() = 0;
+
+    // Returns the shill id of the recently disconnected P2P group.
+    virtual int GetRecentlyDisconnectedP2PGroupId() = 0;
+
    protected:
     virtual ~TestInterface() = default;
   };

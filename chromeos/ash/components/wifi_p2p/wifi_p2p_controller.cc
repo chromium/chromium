@@ -302,7 +302,8 @@ void WifiP2PController::GetP2PGroupMetadata(
         WifiDirectConnectionMetadata{
             shill_id, static_cast<uint32_t>(*entry_frequency),
             *entry_network_id,
-            entry_ipv4_address ? *entry_ipv4_address : std::string()});
+            entry_ipv4_address ? *entry_ipv4_address : std::string(),
+            is_owner});
     return;
   }
 

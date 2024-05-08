@@ -62,6 +62,10 @@ WifiDirectConnection::CreateRemote(base::OnceClosure disconnect_handler) {
   return pending_remote;
 }
 
+bool WifiDirectConnection::IsOwner() const {
+  return metadata_.is_owner;
+}
+
 void WifiDirectConnection::FlushForTesting() {
   receiver_.FlushForTesting();  // IN-TEST
 }

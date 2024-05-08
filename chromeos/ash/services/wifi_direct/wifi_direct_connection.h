@@ -30,6 +30,9 @@ class WifiDirectConnection : public mojom::WifiDirectConnection {
   WifiDirectConnection& operator=(const WifiDirectConnection&) = delete;
   ~WifiDirectConnection() override;
 
+  // Returns a boolean indicating if the current device is the owner or not.
+  bool IsOwner() const;
+
   // mojom::WifiDirectConnection
   void GetProperties(GetPropertiesCallback callback) override;
   void AssociateSocket(mojo::PlatformHandle socket,

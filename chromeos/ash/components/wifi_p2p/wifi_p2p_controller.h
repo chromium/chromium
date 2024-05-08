@@ -49,6 +49,8 @@ class COMPONENT_EXPORT(CHROMEOS_ASH_COMPONENTS_WIFI_P2P) WifiP2PController
     int network_id;
     // Ipv4 address for the Wifi direct network.
     std::string ipv4_address;
+    // Boolean indicating if the device is group owner or client.
+    bool is_owner;
   };
 
   struct WifiP2PCapabilities {

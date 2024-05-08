@@ -58,6 +58,8 @@ class WifiDirectManager : public mojom::WifiDirectManager {
       CreateWifiDirectGroupCallback callback,
       WifiP2PController::OperationResult result,
       std::optional<WifiP2PController::WifiDirectConnectionMetadata> metadata);
+  void OnDestroyOrDisconnectWifiDirectGroup(
+      WifiP2PController::OperationResult result);
   void OnClientRequestedDisconnection(int shill_id);
 
   mojo::ReceiverSet<mojom::WifiDirectManager> receivers_;

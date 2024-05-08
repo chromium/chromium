@@ -165,6 +165,8 @@ class COMPONENT_EXPORT(SHILL_CLIENT) FakeShillManagerClient
   void SetShouldReturnNullProperties(bool value) override;
   void SetWifiServicesVisibleByDefault(
       bool wifi_services_visible_by_default) override;
+  int GetRecentlyDestroyedP2PGroupId() override;
+  int GetRecentlyDisconnectedP2PGroupId() override;
 
   // Constants used for testing.
   static const char kFakeEthernetNetworkGuid[];
@@ -249,9 +251,11 @@ class COMPONENT_EXPORT(SHILL_CLIENT) FakeShillManagerClient
   FakeShillSimulatedResult simulate_destroy_p2p_group_result_ =
       FakeShillSimulatedResult::kSuccess;
   std::string simulate_destroy_p2p_group_result_code_;
+  int recent_destroyed_group_id = -1;
   FakeShillSimulatedResult simulate_connect_p2p_group_result_ =
       FakeShillSimulatedResult::kSuccess;
   std::string simulate_connect_p2p_group_result_code_;
+  int recent_disconnected_group_id = -1;
   FakeShillSimulatedResult simulate_disconnect_p2p_group_result_ =
       FakeShillSimulatedResult::kSuccess;
   std::string simulate_disconnect_p2p_group_result_code_;
