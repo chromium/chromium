@@ -142,6 +142,9 @@ void PassageEmbedder::GenerateEmbeddings(
       std::move(callback).Run({});
       return;
     }
+    if (tokenized.size() < kEmbeddingsInputWindowSize) {
+      tokenized.push_back(sp_processor_->eos_id());
+    }
     tokenized.resize(kEmbeddingsInputWindowSize);
     base::UmaHistogramMediumTimes(
         "History.Embeddings.Embedder.TokenizationDuration",
