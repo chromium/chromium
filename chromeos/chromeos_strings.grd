@@ -5570,9 +5570,8 @@
         <message name="IDS_FIRMWARE_CONFIRMATION_DISCLAIMER_ICON_ARIA_LABEL" desc="The alt-text read by the screen reader when the warning disclaimer is selected.">
           Warning
         </message>
-        <!-- TODO(cambickel): Make these strings translatable. -->
         <message name="IDS_FIRMWARE_REQUEST_ID_REMOVE_REPLUG" desc="Request shown to the user during an update, requesting that the device USB cable be unplugged and reinserted.">
-          Unplug the <ph name="DEVICE_NAME">$1<ex>Logitech keyboard</ex></ph> power cable and then reinsert it to continue the update process
+          Unplug the <ph name="DEVICE_NAME">$1<ex>Logitech keyboard</ex></ph> USB cable and then reinsert it to continue the update process
         </message>
         <message name="IDS_FIRMWARE_REQUEST_ID_REMOVE_USB_CABLE" desc="Request shown to the user during an update, requesting that the device USB cable be unplugged.">
           Unplug the <ph name="DEVICE_NAME">$1<ex>Logitech keyboard</ex></ph> USB cable to continue the update process
