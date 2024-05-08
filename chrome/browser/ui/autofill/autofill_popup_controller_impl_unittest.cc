@@ -299,7 +299,7 @@ TEST_F(AutofillPopupControllerImplTest, SuggestionFiltration_MatchingMainText) {
   EXPECT_EQ(controller.GetSuggestions().size(), 3u);
   EXPECT_EQ(controller.GetSuggestionFilterMatches().size(), 0u);
 
-  controller.SetFilter(AutofillPopupController::SuggestionFilter(u"ab"));
+  controller.SetFilter(AutofillPopupController::SuggestionFilter(u"Ab"));
   EXPECT_EQ(controller.GetSuggestions().size(), 2u);
   EXPECT_EQ(controller.GetSuggestionFilterMatches().size(), 2u);
   EXPECT_THAT(controller.GetSuggestionFilterMatches(),

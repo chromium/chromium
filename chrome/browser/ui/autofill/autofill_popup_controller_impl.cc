@@ -14,6 +14,7 @@
 #include "base/check_op.h"
 #include "base/command_line.h"
 #include "base/functional/bind.h"
+#include "base/i18n/case_conversion.h"
 #include "base/i18n/rtl.h"
 #include "base/memory/weak_ptr.h"
 #include "base/metrics/histogram_functions.h"
@@ -65,13 +66,15 @@ SuggestionFiltrationResult FilterSuggestions(
     const AutofillPopupController::SuggestionFilter& filter) {
   SuggestionFiltrationResult result;
 
+  std::u16string filter_lowercased = base::i18n::ToLower(*filter);
   for (size_t i = 0; i < suggestions.size(); ++i) {
     const Suggestion& suggestion = suggestions[i];
     // Footer suggestions cannot be filtered out.
     if (IsFooterItem(suggestions, i)) {
       result.first.push_back(suggestion);
       result.second.emplace_back();
-    } else if (size_t pos = suggestion.main_text.value.find(*filter);
+    } else if (size_t pos = base::i18n::ToLower(suggestion.main_text.value)
+                                .find(filter_lowercased);
                pos != std::u16string::npos) {
       result.first.push_back(suggestion);
       result.second.push_back(AutofillPopupController::SuggestionFilterMatch{
