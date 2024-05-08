@@ -10,6 +10,7 @@
 #import "base/strings/sys_string_conversions.h"
 #import "components/autofill/ios/browser/autofill_java_script_feature.h"
 #import "components/autofill/ios/browser/autofill_util.h"
+#import "components/autofill/ios/browser/form_suggestion.h"
 #import "components/autofill/ios/form_util/form_activity_observer_bridge.h"
 #import "components/autofill/ios/form_util/form_activity_params.h"
 #import "components/password_manager/core/browser/password_manager_client.h"
@@ -478,6 +479,11 @@ BOOL AreCredentialsAtIndicesConnected(
   [self.contentInjector userDidPickContent:content
                              passwordField:passwordField
                              requiresHTTPS:requiresHTTPS];
+}
+
+- (void)autofillFormWithSuggestion:(FormSuggestion*)formSuggestion {
+  [self.delegate manualFillPasswordMediatorWillInjectContent:self];
+  [self.contentInjector autofillFormWithSuggestion:formSuggestion];
 }
 
 #pragma mark - TableViewFaviconDataSource

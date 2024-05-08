@@ -7,6 +7,8 @@
 
 #import <Foundation/Foundation.h>
 
+@class FormSuggestion;
+
 // Protocol to send Manual Fill user selections to be filled in the active web
 // state.
 @protocol ManualFillContentInjector <NSObject>
@@ -32,6 +34,12 @@
 - (void)userDidPickContent:(NSString*)content
              passwordField:(BOOL)passwordField
              requiresHTTPS:(BOOL)requiresHTTPS;
+
+// Called when the user wants to entirely fill the current form with an
+// autofill suggestion.
+//
+// @param formSuggestion The suggestion to fill out the form with.
+- (void)autofillFormWithSuggestion:(FormSuggestion*)formSuggestion;
 
 @end
 

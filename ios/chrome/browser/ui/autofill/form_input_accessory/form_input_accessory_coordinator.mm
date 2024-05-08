@@ -145,16 +145,11 @@ const CGFloat kIPHVerticalOffset = -5;
     CommandDispatcher* dispatcher = browser->GetCommandDispatcher();
     [dispatcher startDispatchingToTarget:self
                              forProtocol:@protocol(SecurityAlertCommands)];
-    __weak id<SecurityAlertCommands> securityAlertHandler =
-        HandlerForProtocol(dispatcher, SecurityAlertCommands);
+
     _brandingCoordinator =
         [[BrandingCoordinator alloc] initWithBaseViewController:viewController
                                                         browser:browser];
     _reauthenticationModule = [[ReauthenticationModule alloc] init];
-    _injectionHandler = [[ManualFillInjectionHandler alloc]
-          initWithWebStateList:browser->GetWebStateList()
-          securityAlertHandler:securityAlertHandler
-        reauthenticationModule:_reauthenticationModule];
     if (!base::FeatureList::IsEnabled(kEnableStartupImprovements)) {
       _formInputAccessoryTapRecognizer = [[UITapGestureRecognizer alloc]
           initWithTarget:self
@@ -220,6 +215,12 @@ const CGFloat kIPHVerticalOffset = -5;
       self.browser->GetBrowserState()
           ->GetOriginalChromeBrowserState()
           ->GetPrefs();
+
+  _injectionHandler = [[ManualFillInjectionHandler alloc]
+        initWithWebStateList:self.browser->GetWebStateList()
+        securityAlertHandler:securityAlertHandler
+      reauthenticationModule:_reauthenticationModule
+        formSuggestionClient:self.formInputAccessoryMediator];
 }
 
 - (void)stop {

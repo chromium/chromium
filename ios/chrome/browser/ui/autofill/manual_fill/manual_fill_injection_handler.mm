@@ -19,6 +19,7 @@
 #import "components/autofill/ios/form_util/form_activity_observer_bridge.h"
 #import "components/autofill/ios/form_util/form_activity_params.h"
 #import "ios/chrome/browser/autofill/model/form_input_accessory_view_handler.h"
+#import "ios/chrome/browser/autofill/model/form_suggestion_client.h"
 #import "ios/chrome/browser/passwords/model/password_tab_helper.h"
 #import "ios/chrome/browser/shared/model/web_state_list/web_state_list.h"
 #import "ios/chrome/browser/shared/public/commands/security_alert_commands.h"
@@ -66,6 +67,9 @@ using base::UmaHistogramEnumeration;
 // Used to present alerts.
 @property(nonatomic, weak) id<SecurityAlertCommands> securityAlertHandler;
 
+// Used to entirely fill the current form with a suggestion.
+@property(nonatomic, weak) id<FormSuggestionClient> formSuggestionClient;
+
 @end
 
 @implementation ManualFillInjectionHandler
@@ -73,7 +77,8 @@ using base::UmaHistogramEnumeration;
 - (instancetype)
       initWithWebStateList:(WebStateList*)webStateList
       securityAlertHandler:(id<SecurityAlertCommands>)securityAlertHandler
-    reauthenticationModule:(ReauthenticationModule*)reauthenticationModule {
+    reauthenticationModule:(ReauthenticationModule*)reauthenticationModule
+      formSuggestionClient:(id<FormSuggestionClient>)formSuggestionClient {
   self = [super init];
   if (self) {
     _webStateList = webStateList;
@@ -82,6 +87,7 @@ using base::UmaHistogramEnumeration;
         [[FormObserverHelper alloc] initWithWebStateList:webStateList];
     _formHelper.delegate = self;
     _reauthenticationModule = reauthenticationModule;
+    _formSuggestionClient = formSuggestionClient;
   }
   return self;
 }
@@ -144,6 +150,10 @@ using base::UmaHistogramEnumeration;
       [self fillLastSelectedFieldWithString:content];
     }
   }
+}
+
+- (void)autofillFormWithSuggestion:(FormSuggestion*)formSuggestion {
+  [self.formSuggestionClient didSelectSuggestion:formSuggestion];
 }
 
 #pragma mark - FormActivityObserver

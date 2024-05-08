@@ -43,6 +43,8 @@ namespace {
 
 const char kFormElementName[] = "CCName";
 const char kFormElementCardNumber[] = "CCNo";
+const char kFormElementCardExpirationMonth[] = "CCExpiresMonth";
+const char kFormElementCardExpirationYear[] = "CCExpiresYear";
 
 NSString* kLocalCardNumber = @"4111111111111111";
 NSString* kLocalCardHolder = @"Test User";
@@ -907,6 +909,11 @@ void OpenPaymentMethodManualFillViewWithNoSavedPaymentMethods() {
                             @"Accessory Upgrade feature is disabled.")
   }
 
+  [AutofillAppInterface setUpMockReauthenticationModule];
+  [AutofillAppInterface mockReauthenticationModuleCanAttempt:YES];
+  [AutofillAppInterface mockReauthenticationModuleExpectedResult:
+                            ReauthenticationResult::kSuccess];
+
   // Save a card.
   [AutofillAppInterface saveLocalCreditCard];
 
@@ -919,11 +926,12 @@ void OpenPaymentMethodManualFillViewWithNoSavedPaymentMethods() {
   // Open the payment method manual fill view.
   OpenPaymentMethodManualFillView();
 
+  // Tap the "Autofill Form" button.
   [[EarlGrey selectElementWithMatcher:AutofillFormButton()]
-      assertWithMatcher:grey_sufficientlyVisible()];
+      performAction:grey_tap()];
 
-  // TODO(crbug.com/326413323): Perform tap on the button and assert that the
-  // form was filled.
+  // Verify that the page is filled properly.
+  [self verifyCreditCardInfosHaveBeenFilled:autofill::test::GetCreditCard()];
 }
 
 #pragma mark - Private
@@ -951,6 +959,43 @@ void OpenPaymentMethodManualFillViewWithNoSavedPaymentMethods() {
       stringWithFormat:@"window.document.getElementById('%s').value === '%@'",
                        kFormElementName, result];
   [ChromeEarlGrey waitForJavaScriptCondition:javaScriptCondition];
+}
+
+// Verify credit card infos are filled.
+- (void)verifyCreditCardInfosHaveBeenFilled:(autofill::CreditCard)card {
+  std::string locale = l10n_util::GetLocaleOverride();
+
+  // Credit card name.
+  NSString* name = base::SysUTF16ToNSString(
+      card.GetInfo(autofill::CREDIT_CARD_NAME_FULL, locale));
+  NSString* condition = [NSString
+      stringWithFormat:@"window.document.getElementById('%s').value === '%@'",
+                       kFormElementName, name];
+  [ChromeEarlGrey waitForJavaScriptCondition:condition];
+
+  // Credit card number.
+  NSString* number = base::SysUTF16ToNSString(
+      card.GetInfo(autofill::CREDIT_CARD_NUMBER, locale));
+  condition = [NSString
+      stringWithFormat:@"window.document.getElementById('%s').value === '%@'",
+                       kFormElementCardNumber, number];
+  [ChromeEarlGrey waitForJavaScriptCondition:condition];
+
+  // Credit card expiration month.
+  NSString* expMonth = base::SysUTF16ToNSString(
+      card.GetInfo(autofill::CREDIT_CARD_EXP_MONTH, locale));
+  condition = [NSString
+      stringWithFormat:@"window.document.getElementById('%s').value === '%@'",
+                       kFormElementCardExpirationMonth, expMonth];
+  [ChromeEarlGrey waitForJavaScriptCondition:condition];
+
+  // Credit card expiration year.
+  NSString* expYear = base::SysUTF16ToNSString(
+      card.GetInfo(autofill::CREDIT_CARD_EXP_4_DIGIT_YEAR, locale));
+  condition = [NSString
+      stringWithFormat:@"window.document.getElementById('%s').value === '%@'",
+                       kFormElementCardExpirationYear, expYear];
+  [ChromeEarlGrey waitForJavaScriptCondition:condition];
 }
 
 @end

@@ -10,6 +10,7 @@
 #import "ios/chrome/browser/ui/autofill/manual_fill/manual_fill_content_injector.h"
 
 @class ReauthenticationModule;
+@protocol FormSuggestionClient;
 @protocol SecurityAlertCommands;
 class WebStateList;
 
@@ -23,7 +24,8 @@ class WebStateList;
 - (instancetype)
       initWithWebStateList:(WebStateList*)webStateList
       securityAlertHandler:(id<SecurityAlertCommands>)securityAlertHandler
-    reauthenticationModule:(ReauthenticationModule*)reauthenticationModule;
+    reauthenticationModule:(ReauthenticationModule*)reauthenticationModule
+      formSuggestionClient:(id<FormSuggestionClient>)formSuggestionClient;
 
 @end
 
