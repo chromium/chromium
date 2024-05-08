@@ -42,6 +42,9 @@ class ArcIdleManagerTest : public testing::Test {
   ~ArcIdleManagerTest() override = default;
 
   void SetUp() override {
+    scoped_feature_list_.InitAndEnableFeatureWithParameters(
+        kEnableArcIdleManager,
+        {{kEnableArcIdleManagerIgnoreBatteryForPLT.name, "false"}});
     chromeos::PowerManagerClient::InitializeFake();
 
     // This is needed for setting up ArcPowerBridge.
@@ -63,7 +66,9 @@ class ArcIdleManagerTest : public testing::Test {
 
     on_battery_observer_ =
         arc_idle_manager_->GetObserverByName(kArcOnBatteryObserverName);
-    DCHECK(on_battery_observer_);
+    // Observer exist when ignore battery is disabled.
+    DCHECK(kEnableArcIdleManagerIgnoreBatteryForPLT.Get() ==
+           !on_battery_observer_);
 
     display_power_observer_ =
         arc_idle_manager_->GetObserverByName(kArcDisplayPowerObserverName);
@@ -169,6 +174,7 @@ class ArcIdleManagerTest : public testing::Test {
 
   content::BrowserTaskEnvironment task_environment_{
       base::test::TaskEnvironment::TimeSource::MOCK_TIME};
+  base::test::ScopedFeatureList scoped_feature_list_;
   std::unique_ptr<ArcServiceManager> arc_service_manager_;
   std::unique_ptr<TestingProfile> testing_profile_;
 

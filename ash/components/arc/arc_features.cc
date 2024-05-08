@@ -82,12 +82,12 @@ BASE_FEATURE(kDocumentsProviderUnknownSizeFeature,
 // when it is mostly idle - even if Chrome is still active.
 BASE_FEATURE(kEnableArcIdleManager,
              "ArcIdleManager",
-             base::FEATURE_DISABLED_BY_DEFAULT);
+             base::FEATURE_ENABLED_BY_DEFAULT);
 
 // For test purposes, ignore battery status changes, allowing Doze mode to
 // kick in even if we do not receive powerd changes related to battery.
 const base::FeatureParam<bool> kEnableArcIdleManagerIgnoreBatteryForPLT{
-    &kEnableArcIdleManager, "ignore_battery_for_test", false};
+    &kEnableArcIdleManager, "ignore_battery_for_test", true};
 
 const base::FeatureParam<int> kEnableArcIdleManagerDelayMs{
     &kEnableArcIdleManager, "delay_ms", 60 * 1000};
