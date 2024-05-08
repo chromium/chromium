@@ -105,8 +105,6 @@ class PlusAddressServiceTest : public ::testing::Test {
   // Constants that cannot be created at compile time:
   const url::Origin kNoSubdomainOrigin =
       url::Origin::Create(GURL("https://test.example"));
-  const url::Origin kSubdomainOrigin =
-      url::Origin::Create(GURL("https://asd.test.example"));
 
   signin::IdentityTestEnvironment& identity_env() { return identity_test_env_; }
   signin::IdentityManager* identity_manager() {
@@ -144,11 +142,11 @@ class PlusAddressServiceTest : public ::testing::Test {
 TEST_F(PlusAddressServiceTest, BasicTest) {
   const PlusProfile profile = test::CreatePlusProfile();
   EXPECT_FALSE(service().IsPlusAddress(profile.plus_address));
-  service().SavePlusProfile(kSubdomainOrigin, profile);
+  service().SavePlusProfile(OriginFromFacet(profile.facet), profile);
   EXPECT_TRUE(service().IsPlusAddress(profile.plus_address));
-  EXPECT_EQ(service().GetPlusAddress(kSubdomainOrigin), profile.plus_address);
-  EXPECT_EQ(service().GetPlusAddress(url::Origin()), std::nullopt);
-  EXPECT_EQ(service().GetPlusProfile(kSubdomainOrigin)->plus_address,
+  EXPECT_EQ(service().GetPlusAddress(profile.facet), profile.plus_address);
+  EXPECT_EQ(service().GetPlusAddress(affiliations::FacetURI()), std::nullopt);
+  EXPECT_EQ(service().GetPlusProfile(profile.facet)->plus_address,
             profile.plus_address);
 }
 
@@ -165,27 +163,6 @@ TEST_F(PlusAddressServiceTest, GetPlusProfileByFacet) {
   EXPECT_EQ(service().GetPlusProfile(
                 absl::get<affiliations::FacetURI>(profile.facet)),
             profile);
-}
-
-TEST_F(PlusAddressServiceTest, EnsureEtldPlusOneScope) {
-  const PlusProfile profile = test::CreatePlusProfile();
-  service().SavePlusProfile(kNoSubdomainOrigin, profile);
-  EXPECT_EQ(service().GetPlusAddress(kNoSubdomainOrigin), profile.plus_address);
-  EXPECT_EQ(service().GetPlusAddress(kSubdomainOrigin), profile.plus_address);
-  EXPECT_EQ(service().GetPlusProfile(kNoSubdomainOrigin)->plus_address,
-            profile.plus_address);
-  EXPECT_EQ(service().GetPlusProfile(kSubdomainOrigin)->plus_address,
-            profile.plus_address);
-}
-
-TEST_F(PlusAddressServiceTest, EnsureEtldPlusOneScopeSubdomainAddedFirst) {
-  const PlusProfile profile = test::CreatePlusProfile();
-  service().SavePlusProfile(kSubdomainOrigin, profile);
-  EXPECT_EQ(service().GetPlusAddress(kNoSubdomainOrigin), profile.plus_address);
-  EXPECT_EQ(service().GetPlusProfile(kNoSubdomainOrigin)->plus_address,
-            profile.plus_address);
-  EXPECT_EQ(service().GetPlusProfile(kSubdomainOrigin)->plus_address,
-            profile.plus_address);
 }
 
 TEST_F(PlusAddressServiceTest, DefaultSupportsPlusAddressesState) {
@@ -273,9 +250,6 @@ class PlusAddressServiceRequestsTest : public PlusAddressServiceTest {
   const std::string kPlusProfilesEndpoint;
   const std::string kReservePlusAddressEndpoint;
   const std::string kCreatePlusAddressEndpoint;
-
-  // The eTLD+1 of `kNoSubdomainOrigin`.
-  static constexpr char kSite[] = "test.example";
 
   base::FieldTrialParams GetFieldTrialParams() const {
     return {{"server-url", kServerUrl.spec()},
@@ -638,8 +612,7 @@ TEST_F(PlusAddressServicePolling, CallsGetAllPlusAddresses) {
   // The service's mapping should be updated now.
   for (const PlusProfile& profile : {profile1, profile2}) {
     SCOPED_TRACE(testing::Message() << profile.plus_address);
-    url::Origin origin = OriginFromFacet(profile.facet);
-    EXPECT_EQ(service().GetPlusAddress(origin), profile.plus_address);
+    EXPECT_EQ(service().GetPlusAddress(profile.facet), profile.plus_address);
     EXPECT_TRUE(service().IsPlusAddress(profile.plus_address));
   }
 }
@@ -718,8 +691,7 @@ TEST_F(PlusAddressServicePolling, PrimaryAccountCleared_TogglesPollingOff) {
   const PlusProfile profile = test::CreatePlusProfile();
   url_loader_factory().SimulateResponseForPendingRequest(
       kPlusProfilesEndpoint, test::MakeListResponse({profile}));
-  url::Origin origin = OriginFromFacet(profile.facet);
-  EXPECT_EQ(service().GetPlusAddress(origin), profile.plus_address);
+  EXPECT_EQ(service().GetPlusAddress(profile.facet), profile.plus_address);
   EXPECT_TRUE(service().IsPlusAddress(profile.plus_address));
 }
 #endif  // !BUILDFLAG(IS_CHROMEOS_ASH)
@@ -749,8 +721,7 @@ TEST_F(PlusAddressServicePolling, PrimaryRefreshTokenError_TogglesPollingOff) {
   const PlusProfile profile = test::CreatePlusProfile();
   url_loader_factory().SimulateResponseForPendingRequest(
       kPlusProfilesEndpoint, test::MakeListResponse({profile}));
-  url::Origin origin = OriginFromFacet(profile.facet);
-  EXPECT_EQ(service().GetPlusAddress(origin), profile.plus_address);
+  EXPECT_EQ(service().GetPlusAddress(profile.facet), profile.plus_address);
   EXPECT_TRUE(service().IsPlusAddress("plus+foo@plus.plus"));
 }
 
@@ -1010,21 +981,22 @@ TEST_F(PlusAddressServiceSignoutTest, PrimaryAccountCleared_TogglesIsEnabled) {
   ASSERT_TRUE(service().is_enabled());
 
   // Verify behaviors expected when service is enabled.
-  url::Origin site = url::Origin::Create(GURL("https://foo.com"));
   const PlusProfile profile = test::CreatePlusProfile();
-  service().SavePlusProfile(site, profile);
+  const url::Origin origin = OriginFromFacet(profile.facet);
+  service().SavePlusProfile(origin, profile);
   EXPECT_TRUE(
-      service().SupportsPlusAddresses(site, /*is_off_the_record=*/false));
-  EXPECT_TRUE(service().GetPlusAddress(site));
-  EXPECT_EQ(service().GetPlusAddress(site).value(), profile.plus_address);
+      service().SupportsPlusAddresses(origin, /*is_off_the_record=*/false));
+  EXPECT_TRUE(service().GetPlusAddress(profile.facet));
+  EXPECT_EQ(service().GetPlusAddress(profile.facet).value(),
+            profile.plus_address);
   EXPECT_TRUE(service().IsPlusAddress(profile.plus_address));
 
   identity_env().ClearPrimaryAccount();
   EXPECT_FALSE(service().is_enabled());
 
   // Ensure that the local data is cleared on disabling.
-  EXPECT_FALSE(
-      service().SupportsPlusAddresses(site, /*is_off_the_record=*/false));
+  EXPECT_FALSE(service().SupportsPlusAddresses(origin,
+                                               /*is_off_the_record=*/false));
   EXPECT_FALSE(service().IsPlusAddress(profile.plus_address));
 }
 #endif  // !BUILDFLAG(IS_CHROMEOS_ASH)
@@ -1034,13 +1006,14 @@ TEST_F(PlusAddressServiceSignoutTest,
   ASSERT_TRUE(service().is_enabled());
 
   // Verify behaviors expected when service is enabled.
-  url::Origin site = url::Origin::Create(GURL("https://foo.com"));
   const PlusProfile profile = test::CreatePlusProfile();
-  service().SavePlusProfile(site, profile);
+  url::Origin origin = OriginFromFacet(profile.facet);
+  service().SavePlusProfile(origin, profile);
   EXPECT_TRUE(
-      service().SupportsPlusAddresses(site, /*is_off_the_record=*/false));
-  EXPECT_TRUE(service().GetPlusAddress(site));
-  EXPECT_EQ(service().GetPlusAddress(site).value(), profile.plus_address);
+      service().SupportsPlusAddresses(origin, /*is_off_the_record=*/false));
+  EXPECT_TRUE(service().GetPlusAddress(profile.facet));
+  EXPECT_EQ(service().GetPlusAddress(profile.facet).value(),
+            profile.plus_address);
   EXPECT_TRUE(service().IsPlusAddress(profile.plus_address));
 
   // Setting to NONE doesn't disable the service.
@@ -1063,7 +1036,7 @@ TEST_F(PlusAddressServiceSignoutTest,
 
   // Ensure that the local data is cleared on disabling.
   EXPECT_FALSE(
-      service().SupportsPlusAddresses(site, /*is_off_the_record=*/false));
+      service().SupportsPlusAddresses(origin, /*is_off_the_record=*/false));
   EXPECT_FALSE(service().IsPlusAddress(profile.plus_address));
 }
 
@@ -1094,7 +1067,7 @@ class PlusAddressSuggestionsTest : public PlusAddressServiceTest {
 // focused field matches the prefix of an existing plus address.
 TEST_F(PlusAddressSuggestionsTest, SuggestionsForExistingPlusAddress) {
   base::HistogramTester histogram_tester;
-  const auto origin = url::Origin::Create(GURL("https://foo.coom"));
+  const auto origin = url::Origin::Create(GURL("https://foo.com"));
   const PlusProfile profile = test::CreatePlusProfile();
   service().SavePlusProfile(origin, profile);
 
@@ -1129,6 +1102,24 @@ TEST_F(PlusAddressSuggestionsTest, SuggestionsForExistingPlusAddress) {
   histogram_tester.ExpectUniqueSample(
       kPlusAddressSuggestionMetric,
       SuggestionEvent::kExistingPlusAddressSuggested, 2);
+}
+
+// Tests that `GetSuggestions()` suggests plus profiles across eTLD+1s.
+TEST_F(PlusAddressSuggestionsTest, SuggestionsForETLD) {
+  const PlusProfile profile(/*profile_id=*/"123", "foo.com",
+                            "plus+foo@plus.plus",
+                            /*is_confirmed=*/true);
+  service().SavePlusProfile(OriginFromFacet(profile.facet), profile);
+  ASSERT_THAT(service().GetSuggestions(
+                  OriginFromFacet(profile.facet), /*is_off_the_record=*/false,
+                  /*focused_field_value=*/u"",
+                  AutofillSuggestionTriggerSource::kFormControlElementClicked),
+              IsSingleFillPlusAddressSuggestion(profile.plus_address));
+  EXPECT_THAT(service().GetSuggestions(
+                  OriginFromFacet("asd.foo.com"), /*is_off_the_record=*/false,
+                  /*focused_field_value=*/u"",
+                  AutofillSuggestionTriggerSource::kFormControlElementClicked),
+              IsSingleFillPlusAddressSuggestion(profile.plus_address));
 }
 
 // Tests that fill plus address suggestions regardless of whether there is

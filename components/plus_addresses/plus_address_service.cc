@@ -60,6 +60,23 @@ base::flat_set<std::string> GetAndParseExcludedSites() {
                         base::TRIM_WHITESPACE, base::SPLIT_WANT_NONEMPTY));
 }
 
+PlusProfile::facet_t OriginToFacet(const url::Origin& origin) {
+  PlusProfile::facet_t facet;
+  if (IsSyncingPlusAddresses()) {
+    // For a valid `origin`, `origin.GetURL().spec()` is always a valid spec.
+    // However, using `FacetURI::FromCanonicalSpec(spec)` can lead to mismatches
+    // in the underlying representation, since it uses the spec verbatim. E.g.,
+    // a trailing "/" is removed by `FacetURI::FromPotentiallyInvalidSpec()`,
+    // but kept by `FacetURI::FromCanonicalSpec(spec)`.
+    // TODO(b/338342346): Revise `FacetURI::FromCanonicalSpec()`.
+    facet = affiliations::FacetURI::FromPotentiallyInvalidSpec(
+        origin.GetURL().spec());
+  } else {
+    facet = GetEtldPlusOne(origin);
+  }
+  return facet;
+}
+
 }  // namespace
 
 PlusAddressService::PlusAddressService(
@@ -117,13 +134,13 @@ bool PlusAddressService::SupportsPlusAddresses(const url::Origin& origin,
   }
   // Prerequisites are met, but it's an off-the-record session. If there's an
   // existing plus_address, it's supported, otherwise it is not.
-  return GetPlusProfile(origin).has_value();
+  return GetPlusProfile(OriginToFacet(origin)).has_value();
 }
 
 std::optional<std::string> PlusAddressService::GetPlusAddress(
-    const url::Origin& origin) const {
+    const PlusProfile::facet_t& facet) const {
   DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
-  std::optional<PlusProfile> profile = GetPlusProfile(origin);
+  std::optional<PlusProfile> profile = GetPlusProfile(facet);
   return profile ? std::make_optional(profile->plus_address) : std::nullopt;
 }
 
@@ -133,35 +150,12 @@ std::vector<PlusProfile> PlusAddressService::GetPlusProfiles() const {
 }
 
 std::optional<PlusProfile> PlusAddressService::GetPlusProfile(
-    const url::Origin& origin) const {
+    const PlusProfile::facet_t& facet) const {
   DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
-  PlusProfile::facet_t facet;
-  if (IsSyncingPlusAddresses()) {
-    // Even though `origin.GetURL().spec()` is always a valid spec, using
-    // `FacetURI::FromCanonicalSpec(spec)` can lead to mismatches in the
-    // underlying representation, since it uses the spec verbatim. E.g., a
-    // trailing "/" is removed by `FacetURI::FromPotentiallyInvalidSpec()`, but
-    // kept by `FacetURI::FromCanonicalSpec(spec)`.
-    // TODO(b/338342346): Revise `FacetURI::FromCanonicalSpec()`.
-    facet = affiliations::FacetURI::FromPotentiallyInvalidSpec(
-        origin.GetURL().spec());
-    CHECK(absl::get<affiliations::FacetURI>(facet).is_valid());
-  } else {
-    facet = GetEtldPlusOne(origin);
-  }
-  // `facet` is used as the comparator, so the other fields don't matter.
-  auto it = plus_profiles_.find(PlusProfile("", facet, "", false));
-  if (it == plus_profiles_.end()) {
-    return std::nullopt;
-  }
-  return *it;
-}
-
-std::optional<PlusProfile> PlusAddressService::GetPlusProfile(
-    const affiliations::FacetURI& facet) const {
-  DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
-  if (!facet.is_valid()) {
-    return std::nullopt;
+  if (auto* facet_uri = absl::get_if<affiliations::FacetURI>(&facet)) {
+    if (!facet_uri->is_valid()) {
+      return std::nullopt;
+    }
   }
   // `facet` is used as the comparator, so the other fields don't matter.
   auto it = plus_profiles_.find(PlusProfile("", facet, "", false));
@@ -219,7 +213,7 @@ std::vector<Suggestion> PlusAddressService::GetSuggestions(
   const std::u16string normalized_field_value =
       autofill::RemoveDiacriticsAndConvertToLowerCase(focused_field_value);
   std::optional<std::string> maybe_address =
-      GetPlusAddress(last_committed_primary_main_frame_origin);
+      GetPlusAddress(OriginToFacet(last_committed_primary_main_frame_origin));
   if (maybe_address == std::nullopt) {
     if (trigger_source != kManualFallbackPlusAddresses &&
         !normalized_field_value.empty()) {
@@ -284,7 +278,8 @@ void PlusAddressService::ConfirmPlusAddress(
     return;
   }
   // Check the local mapping before attempting to confirm plus_address.
-  if (std::optional<PlusProfile> stored_plus_profile = GetPlusProfile(origin);
+  if (std::optional<PlusProfile> stored_plus_profile =
+          GetPlusProfile(OriginToFacet(origin));
       stored_plus_profile) {
     std::move(on_completed).Run(stored_plus_profile.value());
     return;
