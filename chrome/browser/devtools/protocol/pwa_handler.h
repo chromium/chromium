@@ -44,6 +44,10 @@ class PWAHandler final : public protocol::PWA::Backend {
   void Uninstall(const std::string& in_manifest_id,
                  std::unique_ptr<UninstallCallback> callback) override;
 
+  void Launch(const std::string& in_manifest_id,
+              protocol::Maybe<std::string> in_url,
+              std::unique_ptr<LaunchCallback> callback) override;
+
   /// Implementation details ///
 
   // Installs from only the manifest id; requires a WebContents.

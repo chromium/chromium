@@ -137,6 +137,7 @@ static_library("devtools") {
       "//chrome:strings",
       "//chrome/app/theme:theme_resources",
       "//chrome/browser:browser_process",
+      "//chrome/browser/apps/app_service:constants",
       "//chrome/browser/media/router:media_router_feature",
       "//chrome/browser/profiles:profile",
       "//chrome/browser/web_applications",
@@ -274,6 +275,7 @@ static_library("devtools") {
       "//components/security_state/content",
       "//components/subresource_filter/content/browser:browser",
       "//components/webapps/browser",
+      "//third_party/blink/public/common:headers",
       "//third_party/inspector_protocol:crdtp",
     ]
     sources += [

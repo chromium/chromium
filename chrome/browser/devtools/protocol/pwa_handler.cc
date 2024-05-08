@@ -8,6 +8,7 @@
 #include <sstream>
 
 #include "base/check.h"
+#include "base/feature_list.h"
 #include "base/functional/bind.h"
 #include "base/numerics/clamped_math.h"
 #include "base/strings/to_string.h"
@@ -16,6 +17,7 @@
 #include "chrome/browser/badging/badge_manager_factory.h"
 #include "chrome/browser/profiles/profile.h"
 #include "chrome/browser/profiles/profile_manager.h"
+#include "chrome/browser/ui/browser.h"
 #include "chrome/browser/web_applications/locks/app_lock.h"
 #include "chrome/browser/web_applications/proto/web_app_os_integration_state.pb.h"
 #include "chrome/browser/web_applications/web_app.h"
@@ -30,6 +32,7 @@
 #include "components/webapps/common/web_app_id.h"
 #include "content/public/browser/devtools_agent_host.h"
 #include "content/public/browser/web_contents.h"
+#include "third_party/blink/public/common/features.h"
 #include "url/gurl.h"
 
 namespace {
@@ -135,8 +138,6 @@ content::WebContents* PWAHandler::GetWebContents() const {
 void PWAHandler::GetOsAppState(
     const std::string& in_manifest_id,
     std::unique_ptr<GetOsAppStateCallback> callback) {
-  // TODO(b/331214986): Consider if the API should allow setting a browser
-  // context id as the profile id to override the default behavior.
   Profile* profile = GetProfile();
   const webapps::AppId app_id =
       web_app::GenerateAppIdFromManifestId(GURL{in_manifest_id});
@@ -161,7 +162,7 @@ void PWAHandler::GetOsAppState(
       "PWAHandler::GetOsAppState", web_app::AppLockDescription(app_id),
       base::BindOnce(&GetFileHandlersFromApp, app_id, in_manifest_id),
       base::BindOnce(
-          [](std::unique_ptr<GetOsAppStateCallback> callback, int badge_count,
+          [](int badge_count, std::unique_ptr<GetOsAppStateCallback> callback,
              GetFileHandlersFromAppReturnType&& file_handlers) {
             if (file_handlers.has_value()) {
               std::move(callback)->sendSuccess(
@@ -170,7 +171,7 @@ void PWAHandler::GetOsAppState(
               std::move(callback)->sendFailure(file_handlers.error());
             }
           },
-          std::move(callback), badge_count),
+          badge_count, std::move(callback)),
       GetFileHandlersFromAppReturnType(
           base::unexpected(protocol::Response::ServerError(
               std::string("web-app is shutting down when querying manifest ") +
@@ -197,7 +198,7 @@ void PWAHandler::InstallFromManifestId(
   scheduler->FetchManifestAndInstall(
       webapps::WebappInstallSource::DEVTOOLS, contents->GetWeakPtr(),
       base::BindOnce(
-          [](std::string in_manifest_id,
+          [](const std::string& in_manifest_id,
              content::WebContents* initiator_web_contents,
              std::unique_ptr<web_app::WebAppInstallInfo> web_app_info,
              web_app::WebAppInstallationAcceptanceCallback
@@ -215,7 +216,7 @@ void PWAHandler::InstallFromManifestId(
           },
           in_manifest_id),
       base::BindOnce(
-          [](std::string in_manifest_id,
+          [](const std::string& in_manifest_id,
              std::unique_ptr<InstallCallback> callback,
              const webapps::AppId& app_id, webapps::InstallResultCode code) {
             if (webapps::IsSuccess(code)) {
@@ -233,7 +234,7 @@ void PWAHandler::InstallFromManifestId(
             }
           },
           in_manifest_id, std::move(callback)),
-      web_app::FallbackBehavior::kCraftedManifestOnly, FROM_HERE);
+      web_app::FallbackBehavior::kCraftedManifestOnly);
 }
 
 void PWAHandler::InstallFromUrl(const std::string& in_manifest_id,
@@ -292,8 +293,8 @@ void PWAHandler::InstallFromInstallInfo(
   scheduler->InstallFromInfoWithParams(
       std::move(web_app_info), false, webapps::WebappInstallSource::DEVTOOLS,
       base::BindOnce(
-          [](std::string in_manifest_id,
-             std::string in_install_url_or_bundle_url,
+          [](const std::string& in_manifest_id,
+             const std::string& in_install_url_or_bundle_url,
              std::unique_ptr<InstallCallback> callback,
              const webapps::AppId& app_id, webapps::InstallResultCode code) {
             if (webapps::IsSuccess(code)) {
@@ -309,7 +310,7 @@ void PWAHandler::InstallFromInstallInfo(
           in_manifest_id, in_install_url_or_bundle_url, std::move(callback)),
       // TODO(crbug.com/331214986): Create command-line flag to fake all os
       // integration for Chrome.
-      web_app::WebAppInstallParams{}, FROM_HERE);
+      web_app::WebAppInstallParams{});
 }
 
 void PWAHandler::Install(
@@ -337,8 +338,9 @@ void PWAHandler::Uninstall(const std::string& in_manifest_id,
   scheduler->RemoveUserUninstallableManagements(
       app_id, webapps::WebappUninstallSource::kDevtools,
       base::BindOnce(
-          [](std::unique_ptr<UninstallCallback> callback,
-             std::string in_manifest_id, webapps::UninstallResultCode result) {
+          [](const std::string& in_manifest_id,
+             std::unique_ptr<UninstallCallback> callback,
+             webapps::UninstallResultCode result) {
             if (webapps::UninstallSucceeded(result)) {
               std::move(callback)->sendSuccess();
             } else {
@@ -348,6 +350,73 @@ void PWAHandler::Uninstall(const std::string& in_manifest_id,
                       ": " + base::ToString(result)));
             }
           },
-          std::move(callback), in_manifest_id),
-      FROM_HERE);
+          in_manifest_id, std::move(callback)));
+}
+
+void PWAHandler::Launch(const std::string& in_manifest_id,
+                        protocol::Maybe<std::string> in_url,
+                        std::unique_ptr<LaunchCallback> callback) {
+  const webapps::AppId app_id =
+      web_app::GenerateAppIdFromManifestId(GURL{in_manifest_id});
+  const auto url =
+      (in_url ? std::optional<GURL>{in_url.value()} : std::nullopt);
+  web_app::WebAppProvider* provider =
+      web_app::WebAppProvider::GetForWebApps(GetProfile());
+  if (!provider) {
+    std::move(callback)->sendFailure(errors::WebAppUnavailable());
+    return;
+  }
+  if (url) {
+    if (!url->is_valid()) {
+      std::move(callback)->sendFailure(protocol::Response::InvalidParams(
+          std::string("Invalid input url " + in_url.value())));
+      return;
+    }
+
+    // TODO(crbug.com/338406726): Remove after launches correctly fail when url
+    // is out of scope.
+    bool is_in_scope;
+    if (base::FeatureList::IsEnabled(
+            blink::features::kWebAppEnableScopeExtensions)) {
+      is_in_scope =
+          provider->registrar_unsafe().IsUrlInAppExtendedScope(*url, app_id);
+    } else {
+      is_in_scope = provider->registrar_unsafe().IsUrlInAppScope(*url, app_id);
+    }
+    if (!is_in_scope) {
+      std::move(callback)->sendFailure(protocol::Response::InvalidParams(
+          std::string("Requested url ") + url->spec() +
+          " is not in the scope of the web app " + in_manifest_id));
+      return;
+    }
+  }
+  provider->scheduler().LaunchApp(
+      app_id, url,
+      base::BindOnce(
+          [](const std::string& in_manifest_id, const std::optional<GURL>& url,
+             std::unique_ptr<LaunchCallback> callback,
+             base::WeakPtr<Browser> browser,
+             base::WeakPtr<content::WebContents> web_contents,
+             apps::LaunchContainer container) {
+            // The callback will always be provided with a valid Browser
+            // instance, but the web_contents is associated with the newly
+            // opened web app, and it can be used to indicate the success of the
+            // launch operation.
+            // See web_app::WebAppLaunchUtils::LaunchWebApp() for more
+            // information.
+            if (web_contents) {
+              std::move(callback)->sendSuccess(
+                  content::DevToolsAgentHost::GetOrCreateForTab(
+                      web_contents.get())
+                      ->GetId());
+              return;
+            }
+            std::string msg = "Failed to launch " + in_manifest_id;
+            if (url) {
+              msg += " from url " + url->spec();
+            }
+            std::move(callback)->sendFailure(
+                protocol::Response::InvalidRequest(msg));
+          },
+          in_manifest_id, url, std::move(callback)));
 }

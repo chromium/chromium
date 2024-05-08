@@ -12371,3 +12371,14 @@ experimental domain PWA
   command uninstall
     parameters
       string manifestId
+
+  # Launches the installed web app, or an url in the same web app instead of the
+  # default start url if it is provided. Returns a tab / web contents based
+  # Target.TargetID which can be used to attach to via Target.attachToTarget or
+  # similar APIs.
+  command launch
+    parameters
+      string manifestId
+      optional string url
+    returns
+      Target.TargetID targetId
