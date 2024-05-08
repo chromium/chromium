@@ -6,7 +6,6 @@ package org.chromium.chrome.browser.history;
 
 import android.content.Context;
 import android.graphics.drawable.Drawable;
-import android.text.TextUtils;
 import android.util.AttributeSet;
 import android.view.View;
 import android.widget.ImageButton;
@@ -25,7 +24,6 @@ import org.chromium.chrome.browser.ui.favicon.FaviconHelper.DefaultFaviconHelper
 import org.chromium.chrome.browser.ui.favicon.FaviconUtils;
 import org.chromium.components.browser_ui.util.TraceEventVectorDrawableCompat;
 import org.chromium.components.browser_ui.widget.RoundedIconGenerator;
-import org.chromium.components.browser_ui.widget.chips.ChipView;
 import org.chromium.components.browser_ui.widget.selectable_list.SelectableItemView;
 import org.chromium.components.browser_ui.widget.selectable_list.SelectableListUtils;
 
@@ -46,7 +44,6 @@ public class HistoryItemView extends SelectableItemView<HistoryItem> {
 
     private boolean mIsItemRemoved;
     private BooleanSupplier mShowSourceApp;
-    private ChipView mChipView;
 
     public HistoryItemView(Context context, AttributeSet attrs) {
         super(context, attrs);
@@ -79,10 +76,6 @@ public class HistoryItemView extends SelectableItemView<HistoryItem> {
                 getResources()
                         .getDimensionPixelSize(R.dimen.history_item_remove_button_lateral_padding),
                 getPaddingBottom());
-
-        findViewById(R.id.chip_description).setVisibility(View.VISIBLE);
-        mChipView = findViewById(R.id.chip);
-        mChipView.getPrimaryTextView().setEllipsize(TextUtils.TruncateAt.END);
     }
 
     @Override
@@ -92,8 +85,7 @@ public class HistoryItemView extends SelectableItemView<HistoryItem> {
         super.setItem(item);
 
         mTitleView.setText(item.getTitle());
-        mDescriptionView.setText(item.getDomain());
-        updateChipView(item);
+        mDescriptionView.setText(getDescription(item));
         SelectableListUtils.setContentDescriptionContext(
                 getContext(),
                 mRemoveButton,
@@ -129,23 +121,22 @@ public class HistoryItemView extends SelectableItemView<HistoryItem> {
         mShowSourceApp = showSourceApp;
     }
 
-    private void updateChipView(HistoryItem item) {
-        boolean showChipView = false;
-        if (mShowSourceApp.getAsBoolean()) {
-            String appId = item.getAppId();
-            if (appId != null) {
-                AppInfo appInfo = mAppInfoCache.get(appId);
-                if (appInfo.isValid()) {
-                    var sourceApp =
-                            getResources()
-                                    .getString(R.string.history_app_attribution, appInfo.label);
-                    mChipView.getPrimaryTextView().setText(sourceApp);
-                    mChipView.setIcon(appInfo.icon, false);
-                    showChipView = true;
-                }
-            }
-        }
-        mChipView.setVisibility(showChipView ? View.VISIBLE : View.GONE);
+    protected String getDescription(HistoryItem item) {
+        String domain = item.getDomain();
+        if (!mShowSourceApp.getAsBoolean()) return domain;
+
+        String appId = item.getAppId();
+        if (appId == null) return domain;
+
+        AppInfo appInfo = mAppInfoCache.get(appId);
+        if (!appInfo.isValid()) return domain;
+        CharSequence label = appInfo.label;
+
+        StringBuilder sb = new StringBuilder();
+        sb.append(domain);
+        sb.append(" - ");
+        sb.append(getContext().getResources().getString(R.string.history_app_attribution, label));
+        return sb.toString();
     }
 
     /**

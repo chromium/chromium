@@ -36,7 +36,6 @@ found in the LICENSE file.
     <macro name="chip_outline_focused_color">?attr/colorOnSurface</macro>
     <macro name="chip_state_layer_color">?attr/colorOnSurfaceVariant</macro>
     <macro name="chip_state_layer_selected_color">?attr/colorOnSecondaryContainer</macro>
-    <macro name="history_chip_bg_color">?attr/colorSurfaceContainer</macro>
 
     <macro name="toolbar_background_primary" tools:ignore="UnusedResources">@macro/default_bg_color</macro>
 
