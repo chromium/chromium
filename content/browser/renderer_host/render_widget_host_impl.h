@@ -29,6 +29,7 @@
 #include "base/scoped_observation_traits.h"
 #include "base/time/time.h"
 #include "base/timer/timer.h"
+#include "base/types/pass_key.h"
 #include "build/build_config.h"
 #include "cc/mojom/render_frame_metadata.mojom.h"
 #include "components/viz/common/surfaces/frame_sink_id.h"
@@ -107,6 +108,7 @@ class MockRenderWidgetHost;
 class MockRenderWidgetHostImpl;
 class PeakGpuMemoryTracker;
 class RenderWidgetHostOwnerDelegate;
+class RenderWidgetHostFactory;
 class SiteInstanceGroup;
 class SyntheticGestureController;
 class TimeoutMonitor;
@@ -156,8 +158,12 @@ class CONTENT_EXPORT RenderWidgetHostImpl
       public blink::mojom::PointerLockContext,
       public RenderInputRouterDelegate {
  public:
-  // See the constructor for documentations.
+  // See the constructor for documentation.
+  //
+  // This static factory method is restricted to being called from the factory,
+  // to ensure all RenderWidgetHostImpl creation can be hooked for tests.
   static std::unique_ptr<RenderWidgetHostImpl> Create(
+      base::PassKey<RenderWidgetHostFactory>,
       FrameTree* frame_tree,
       RenderWidgetHostDelegate* delegate,
       viz::FrameSinkId frame_sink_id,
@@ -167,14 +173,12 @@ class CONTENT_EXPORT RenderWidgetHostImpl
       bool renderer_initiated_creation,
       std::unique_ptr<FrameTokenMessageQueue> frame_token_message_queue);
 
-  // See the constructor for documentations.
-  //
-  // Contrary to Create(), this function doesn't give ownership of the
-  // RenderWidgetHost. Instead, this instance is self-owned. It deletes itself
-  // when:
+  // Similar to `Create()`, but creates a self-owned `RenderWidgetHostImpl`. The
+  // returned widget deletes itself when either:
   // - ShutdownAndDestroyWidget(also_delete = true) is called.
-  // - its RenderProcess exit.
+  // - its RenderProcess exits.
   static RenderWidgetHostImpl* CreateSelfOwned(
+      base::PassKey<RenderWidgetHostFactory>,
       FrameTree* frame_tree,
       RenderWidgetHostDelegate* delegate,
       base::SafeRef<SiteInstanceGroup> site_instance_group,

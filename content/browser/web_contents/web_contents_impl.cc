@@ -100,6 +100,7 @@
 #include "content/browser/renderer_host/render_process_host_impl.h"
 #include "content/browser/renderer_host/render_view_host_delegate_view.h"
 #include "content/browser/renderer_host/render_view_host_impl.h"
+#include "content/browser/renderer_host/render_widget_host_factory.h"
 #include "content/browser/renderer_host/render_widget_host_impl.h"
 #include "content/browser/renderer_host/render_widget_host_input_event_router.h"
 #include "content/browser/renderer_host/render_widget_host_view_base.h"
@@ -4795,9 +4796,8 @@ RenderWidgetHostImpl* WebContentsImpl::CreateNewPopupWidget(
     return nullptr;
   }
 
-  RenderWidgetHostImpl* widget_host = RenderWidgetHostImpl::CreateSelfOwned(
-      &primary_frame_tree_, this, site_instance_group, route_id, IsHidden(),
-      std::make_unique<FrameTokenMessageQueue>());
+  RenderWidgetHostImpl* widget_host = RenderWidgetHostFactory::CreateSelfOwned(
+      &primary_frame_tree_, this, site_instance_group, route_id, IsHidden());
 
   widget_host->BindWidgetInterfaces(std::move(blink_widget_host),
                                     std::move(blink_widget));

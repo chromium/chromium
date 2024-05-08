@@ -18,6 +18,7 @@
 #include "content/browser/renderer_host/agent_scheduling_group_host.h"
 #include "content/browser/renderer_host/cross_process_frame_connector.h"
 #include "content/browser/renderer_host/frame_token_message_queue.h"
+#include "content/browser/renderer_host/render_widget_host_factory.h"
 #include "content/browser/renderer_host/render_widget_host_impl.h"
 #include "content/browser/renderer_host/render_widget_host_view_child_frame.h"
 #include "content/browser/renderer_host/render_widget_targeter.h"
@@ -219,13 +220,12 @@ class RenderWidgetHostInputEventRouterTest : public testing::Test {
         base::WrapRefCounted(SiteInstanceGroup::CreateForTesting(
             browser_context_.get(), process_host_root_.get()));
     auto routing_id = process_host_root_->GetNextRoutingID();
-    widget_host_root_ = RenderWidgetHostImpl::Create(
+    widget_host_root_ = RenderWidgetHostFactory::Create(
         /*frame_tree=*/nullptr, delegate_.get(),
         RenderWidgetHostImpl::DefaultFrameSinkId(*site_instance_group_root_,
                                                  routing_id),
         site_instance_group_root_->GetSafeRef(), routing_id,
-        /*hidden=*/false, /*renderer_initiated_creation=*/false,
-        std::make_unique<FrameTokenMessageQueue>());
+        /*hidden=*/false, /*renderer_initiated_creation=*/false);
     widget_host_root_->SetViewIsFrameSinkIdOwner(true);
 
     mojo::AssociatedRemote<blink::mojom::WidgetHost> blink_widget_host;
@@ -282,13 +282,12 @@ class RenderWidgetHostInputEventRouterTest : public testing::Test {
         base::WrapRefCounted(SiteInstanceGroup::CreateForTesting(
             site_instance_group_root_.get(), child.process_host.get()));
     auto routing_id = child.process_host->GetNextRoutingID();
-    child.widget_host = RenderWidgetHostImpl::Create(
+    child.widget_host = RenderWidgetHostFactory::Create(
         /*frame_tree=*/nullptr, delegate_.get(),
         RenderWidgetHostImpl::DefaultFrameSinkId(*child.site_instance_group,
                                                  routing_id),
         child.site_instance_group->GetSafeRef(), routing_id,
-        /*hidden=*/false, /*renderer_initiated_creation=*/false,
-        std::make_unique<FrameTokenMessageQueue>());
+        /*hidden=*/false, /*renderer_initiated_creation=*/false);
     child.widget_host->SetViewIsFrameSinkIdOwner(true);
     child.view = std::make_unique<TestRenderWidgetHostViewChildFrame>(
         child.widget_host.get());

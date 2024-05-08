@@ -351,6 +351,7 @@ std::unique_ptr<RenderWidgetHostIteratorImpl> GetEmbeddedRenderWidgetHosts(
 
 // static
 std::unique_ptr<RenderWidgetHostImpl> RenderWidgetHostImpl::Create(
+    base::PassKey<RenderWidgetHostFactory>,
     FrameTree* frame_tree,
     RenderWidgetHostDelegate* delegate,
     viz::FrameSinkId frame_sink_id,
@@ -360,28 +361,27 @@ std::unique_ptr<RenderWidgetHostImpl> RenderWidgetHostImpl::Create(
     bool renderer_initiated_creation,
     std::unique_ptr<FrameTokenMessageQueue> frame_token_message_queue) {
   return base::WrapUnique(new RenderWidgetHostImpl(
-      frame_tree,
-      /*self_owned=*/false, frame_sink_id, delegate,
+      frame_tree, /*self_owned=*/false, frame_sink_id, delegate,
       std::move(site_instance_group), routing_id, hidden,
       renderer_initiated_creation, std::move(frame_token_message_queue)));
 }
 
 // static
 RenderWidgetHostImpl* RenderWidgetHostImpl::CreateSelfOwned(
+    base::PassKey<RenderWidgetHostFactory>,
     FrameTree* frame_tree,
     RenderWidgetHostDelegate* delegate,
     base::SafeRef<SiteInstanceGroup> site_instance_group,
     int32_t routing_id,
     bool hidden,
     std::unique_ptr<FrameTokenMessageQueue> frame_token_message_queue) {
-  auto* host = new RenderWidgetHostImpl(
-      frame_tree, /*self_owned=*/true,
-      DefaultFrameSinkId(*site_instance_group, routing_id), delegate,
-      site_instance_group, routing_id, hidden,
-      /*renderer_initiated_creation=*/true,
-      std::move(frame_token_message_queue));
-  host->SetViewIsFrameSinkIdOwner(true);
-  return host;
+  viz::FrameSinkId frame_sink_id =
+      DefaultFrameSinkId(*site_instance_group, routing_id);
+  return new RenderWidgetHostImpl(frame_tree, /*self_owned=*/true,
+                                  frame_sink_id, delegate,
+                                  std::move(site_instance_group), routing_id,
+                                  hidden, /*renderer_initiated_creation=*/true,
+                                  std::move(frame_token_message_queue));
 }
 
 RenderWidgetHostImpl::RenderWidgetHostImpl(
@@ -442,6 +442,7 @@ RenderWidgetHostImpl::RenderWidgetHostImpl(
   // is gone.
   if (self_owned_) {
     agent_scheduling_group_->GetProcess()->AddObserver(this);
+    SetViewIsFrameSinkIdOwner(true);
   }
 
   render_process_blocked_state_changed_subscription_ =

@@ -83,7 +83,8 @@ class TracingRenderWidgetHost : public RenderWidgetHostImpl {
                           viz::FrameSinkId frame_sink_id,
                           base::SafeRef<SiteInstanceGroup> site_instance_group,
                           int32_t routing_id,
-                          bool hidden)
+                          bool hidden,
+                          bool renderer_initiated_creation)
       : RenderWidgetHostImpl(frame_tree,
                              /*self_owned=*/false,
                              frame_sink_id,
@@ -91,7 +92,7 @@ class TracingRenderWidgetHost : public RenderWidgetHostImpl {
                              std::move(site_instance_group),
                              routing_id,
                              hidden,
-                             /*renderer_initiated_creation=*/false,
+                             renderer_initiated_creation,
                              std::make_unique<FrameTokenMessageQueue>()) {}
 
   void OnMouseEventAck(
@@ -123,10 +124,11 @@ class TracingRenderWidgetHostFactory : public RenderWidgetHostFactory {
       viz::FrameSinkId frame_sink_id,
       base::SafeRef<SiteInstanceGroup> site_instance_group,
       int32_t routing_id,
-      bool hidden) override {
+      bool hidden,
+      bool renderer_initiated_creation) override {
     return std::make_unique<TracingRenderWidgetHost>(
         frame_tree, delegate, frame_sink_id, std::move(site_instance_group),
-        routing_id, hidden);
+        routing_id, hidden, renderer_initiated_creation);
   }
 };
 

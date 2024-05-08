@@ -16,6 +16,7 @@
 #include "content/browser/gpu/compositor_util.h"
 #include "content/browser/renderer_host/frame_token_message_queue.h"
 #include "content/browser/renderer_host/render_widget_host_delegate.h"
+#include "content/browser/renderer_host/render_widget_host_factory.h"
 #include "content/browser/renderer_host/render_widget_host_impl.h"
 #include "content/browser/renderer_host/visible_time_request_trigger.h"
 #include "content/browser/site_instance_group.h"
@@ -154,13 +155,12 @@ TEST_F(RenderWidgetHostViewMacEditCommandHelperWithTaskEnvTest,
   @autoreleasepool {
     int32_t routing_id = process_host->GetNextRoutingID();
     std::unique_ptr<RenderWidgetHostImpl> render_widget =
-        RenderWidgetHostImpl::Create(
+        RenderWidgetHostFactory::Create(
             /*frame_tree=*/nullptr, &delegate,
             RenderWidgetHostImpl::DefaultFrameSinkId(*site_instance_group,
                                                      routing_id),
             site_instance_group->GetSafeRef(), routing_id,
-            /*hidden=*/false, /*renderer_initiated_creation=*/false,
-            std::make_unique<FrameTokenMessageQueue>());
+            /*hidden=*/false, /*renderer_initiated_creation=*/false);
 
     ui::WindowResizeHelperMac::Get()->Init(
         base::SingleThreadTaskRunner::GetCurrentDefault());

@@ -23,10 +23,11 @@ TestRenderWidgetHostFactory::CreateRenderWidgetHost(
     viz::FrameSinkId frame_sink_id,
     base::SafeRef<SiteInstanceGroup> site_instance_group,
     int32_t routing_id,
-    bool hidden) {
-  return TestRenderWidgetHost::Create(frame_tree, delegate, frame_sink_id,
-                                      std::move(site_instance_group),
-                                      routing_id, hidden);
+    bool hidden,
+    bool renderer_initiated_creation) {
+  return TestRenderWidgetHost::Create(
+      frame_tree, delegate, frame_sink_id, std::move(site_instance_group),
+      routing_id, hidden, renderer_initiated_creation);
 }
 
 }  // namespace content

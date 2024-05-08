@@ -18,10 +18,11 @@ std::unique_ptr<RenderWidgetHostImpl> TestRenderWidgetHost::Create(
     viz::FrameSinkId frame_sink_id,
     base::SafeRef<SiteInstanceGroup> site_instance_group,
     int32_t routing_id,
-    bool hidden) {
+    bool hidden,
+    bool renderer_initiated_creation) {
   return base::WrapUnique(new TestRenderWidgetHost(
       frame_tree, delegate, frame_sink_id, std::move(site_instance_group),
-      routing_id, hidden));
+      routing_id, hidden, renderer_initiated_creation));
 }
 
 TestRenderWidgetHost::TestRenderWidgetHost(
@@ -30,7 +31,8 @@ TestRenderWidgetHost::TestRenderWidgetHost(
     viz::FrameSinkId frame_sink_id,
     base::SafeRef<SiteInstanceGroup> site_instance_group,
     int32_t routing_id,
-    bool hidden)
+    bool hidden,
+    bool renderer_initiated_creation)
     : RenderWidgetHostImpl(frame_tree,
                            /*self_owned=*/false,
                            frame_sink_id,
@@ -38,7 +40,7 @@ TestRenderWidgetHost::TestRenderWidgetHost(
                            std::move(site_instance_group),
                            routing_id,
                            hidden,
-                           /*renderer_initiated_creation=*/false,
+                           renderer_initiated_creation,
                            std::make_unique<FrameTokenMessageQueue>()) {
   mojo::AssociatedRemote<blink::mojom::WidgetHost> blink_widget_host;
   mojo::AssociatedRemote<blink::mojom::Widget> blink_widget;
