@@ -142,6 +142,12 @@
             RunningSafetyCheckState::kDefault) {
       [self.consumer showSafetyCheck:_safetyCheckMediator.safetyCheckState];
     }
+    if (IsIOSParcelTrackingEnabled() &&
+        !IsParcelTrackingDisabled(GetApplicationContext()->GetLocalState()) &&
+        _parcelTrackingMediator.parcelTrackingItemToShow) {
+      [self.consumer showParcelTrackingItem:_parcelTrackingMediator
+                                                .parcelTrackingItemToShow];
+    }
     [self.consumer setShortcutTilesConfig:_shortcutsMediator.shortcutsConfig];
   }
 }

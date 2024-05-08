@@ -390,6 +390,7 @@ TEST_F(MagicStackRankingModelTest, TestSetUpListConsumerCall) {
   OCMExpect([consumer_ showSetUpListModuleWithConfigs:[OCMArg any]]);
   OCMExpect([consumer_ setShortcutTilesConfig:[OCMArg any]]);
   OCMExpect([consumer_ showTabResumptionWithItem:[OCMArg any]]);
+  OCMExpect([consumer_ showParcelTrackingItem:[OCMArg any]]);
 
   [_magicStackRankingModel fetchLatestMagicStackRanking];
 
