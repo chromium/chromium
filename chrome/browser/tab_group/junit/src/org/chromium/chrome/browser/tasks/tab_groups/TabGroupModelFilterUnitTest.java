@@ -2141,6 +2141,13 @@ public class TabGroupModelFilterUnitTest {
     }
 
     @Test
+    public void testDeleteTabGroupTitle() {
+        mTabGroupModelFilter.deleteTabGroupTitle(TAB2_ROOT_ID);
+        verify(mTabGroupModelFilterObserver)
+                .didChangeTabGroupTitle(TAB2_ROOT_ID, /* newTitle= */ null);
+    }
+
+    @Test
     public void testSetTabGroupColor() {
         mTabGroupModelFilter.setTabGroupColor(TAB2_ROOT_ID, TabGroupColorId.GREY);
         verify(mTabGroupModelFilterObserver)

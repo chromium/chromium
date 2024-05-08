@@ -261,11 +261,13 @@ public class StripLayoutHelper implements StripLayoutTabDelegate, StripLayoutGro
                     updateGroupTitle(groupTitle, newTitle, widthPx);
                     updateGroupAccessibilityDescription(groupTitle);
 
-                    if (groupTitle.isVisible()) {
+                    if (TextUtils.isEmpty(newTitle)) {
+                        mLayerTitleCache.removeGroupTitle(rootId);
+                    } else if (groupTitle.isVisible()) {
                         mLayerTitleCache.getUpdatedGroupTitle(
                                 rootId, groupTitle.getTitle(), mIncognito);
-                        mRenderHost.requestRender();
                     }
+                    mRenderHost.requestRender();
                 }
 
                 @Override

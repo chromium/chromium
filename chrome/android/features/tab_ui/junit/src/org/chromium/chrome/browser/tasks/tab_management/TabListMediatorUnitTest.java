@@ -2258,20 +2258,8 @@ public class TabListMediatorUnitTest {
     @Test
     public void tabGroupTitleEditor_deleteTitle() {
         TabGroupTitleEditor tabGroupTitleEditor = mMediator.getTabGroupTitleEditor();
-
-        getGroupTitleSharedPreferences()
-                .edit()
-                .putString(String.valueOf(mTab1.getRootId()), CUSTOMIZED_DIALOG_TITLE1)
-                .apply();
-        assertEquals(
-                CUSTOMIZED_DIALOG_TITLE1,
-                getGroupTitleSharedPreferences()
-                        .getString(String.valueOf(mTab1.getRootId()), null));
-
         tabGroupTitleEditor.deleteTabGroupTitle(mTab1.getRootId());
-        assertNull(
-                getGroupTitleSharedPreferences()
-                        .getString(String.valueOf(mTab1.getRootId()), null));
+        verify(mTabGroupModelFilter).deleteTabGroupTitle(mTab1.getRootId());
     }
 
     @Test

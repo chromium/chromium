@@ -1441,6 +1441,14 @@ public class TabGroupModelFilter extends TabModelFilter {
         }
     }
 
+    /** Deletes the stored title for the tab group, defaulting it back to "N tabs." */
+    public void deleteTabGroupTitle(int rootId) {
+        TabGroupTitleUtils.deleteTabGroupTitle(rootId);
+        for (TabGroupModelFilterObserver observer : mGroupFilterObserver) {
+            observer.didChangeTabGroupTitle(rootId, null);
+        }
+    }
+
     /** Returns the current color of the tab group. */
     public @TabGroupColorId int getTabGroupColor(int rootId) {
         // TODO(crbug.com/329127327): Refactor and emit an event when this changes the color.

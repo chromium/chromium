@@ -81,7 +81,6 @@ import org.chromium.chrome.browser.tasks.pseudotab.PseudoTab;
 import org.chromium.chrome.browser.tasks.tab_groups.TabGroupColorUtils;
 import org.chromium.chrome.browser.tasks.tab_groups.TabGroupModelFilter;
 import org.chromium.chrome.browser.tasks.tab_groups.TabGroupModelFilterObserver;
-import org.chromium.chrome.browser.tasks.tab_groups.TabGroupTitleUtils;
 import org.chromium.chrome.browser.tasks.tab_groups.TabGroupUtils;
 import org.chromium.chrome.browser.tasks.tab_management.ActionConfirmationManager.ConfirmationResult;
 import org.chromium.chrome.browser.tasks.tab_management.PriceMessageService.PriceTabData;
@@ -1284,7 +1283,9 @@ class TabListMediator {
 
                     @Override
                     protected void deleteTabGroupTitle(int tabRootId) {
-                        TabGroupTitleUtils.deleteTabGroupTitle(tabRootId);
+                        TabGroupModelFilter filter =
+                                (TabGroupModelFilter) mCurrentTabModelFilterSupplier.get();
+                        filter.deleteTabGroupTitle(tabRootId);
                     }
 
                     @Override
