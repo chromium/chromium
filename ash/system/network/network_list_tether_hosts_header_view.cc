@@ -23,7 +23,7 @@ namespace ash {
 
 NetworkListTetherHostsHeaderView::NetworkListTetherHostsHeaderView(
     OnExpandedStateToggle callback)
-    : RoundedContainer(RoundedContainer::Behavior::kAllRounded),
+    : RoundedContainer(RoundedContainer::Behavior::kTopRounded),
       callback_(std::move(callback)) {
   DCHECK(base::FeatureList::IsEnabled(features::kInstantHotspotRebrand));
   auto* entry_row = AddChildView(std::make_unique<HoverHighlightView>(this));
