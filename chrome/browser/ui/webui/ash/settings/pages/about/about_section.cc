@@ -49,7 +49,6 @@ namespace ash::settings {
 namespace mojom {
 using ::chromeos::settings::mojom::kAboutChromeOsSectionPath;
 using ::chromeos::settings::mojom::kDetailedBuildInfoSubpagePath;
-using ::chromeos::settings::mojom::kInternalStorybookSubpagePath;
 using ::chromeos::settings::mojom::Section;
 using ::chromeos::settings::mojom::Setting;
 using ::chromeos::settings::mojom::Subpage;
@@ -591,13 +590,6 @@ void AboutSection::RegisterHierarchy(HierarchyGenerator* generator) const {
       mojom::Setting::kCopyDetailedBuildInfo};
   RegisterNestedSettingBulk(mojom::Subpage::kDetailedBuildInfo,
                             kDetailedBuildInfoSettings, generator);
-
-  // Internal Storybook subpage.
-  generator->RegisterTopLevelSubpage(IDS_OS_SETTINGS_INTERNAL_STORYBOOK_TITLE,
-                                     mojom::Subpage::kInternalStorybook,
-                                     mojom::SearchResultIcon::kChrome,
-                                     mojom::SearchResultDefaultRank::kLow,
-                                     mojom::kInternalStorybookSubpagePath);
 
   if (crostini_subsection_) {
     crostini_subsection_->RegisterHierarchy(generator);

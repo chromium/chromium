@@ -75,8 +75,11 @@ const std::vector<mojom::Section>& AllSections() {
 }
 
 const std::vector<mojom::Subpage>& AllSubpages() {
-  static const base::NoDestructor<std::vector<mojom::Subpage>> all_subpages(
-      All<mojom::Subpage>());
+  static const base::NoDestructor<std::vector<mojom::Subpage>> all_subpages([] {
+    std::vector<mojom::Subpage> subpages = All<mojom::Subpage>();
+    std::erase(subpages, mojom::Subpage::kInternalStorybook);
+    return subpages;
+  }());
   return *all_subpages;
 }
 
