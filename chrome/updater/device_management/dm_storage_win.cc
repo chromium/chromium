@@ -27,12 +27,65 @@ constexpr wchar_t kRegKeyCryptographyKey[] =
     L"SOFTWARE\\Microsoft\\Cryptography\\";
 constexpr wchar_t kRegValueMachineGuid[] = L"MachineGuid";
 
-bool ReadTokenBinary(const base::win::RegKey& key,
-                     const wchar_t* name,
+bool ReadRegistryString(const std::wstring& key_path,
+                        const std::wstring& name,
+                        REGSAM reg_view,
+                        std::string& value) {
+  std::wstring data;
+  const LONG result = base::win::RegKey(HKEY_LOCAL_MACHINE, key_path.c_str(),
+                                        reg_view | KEY_READ)
+                          .ReadValue(name.c_str(), &data);
+  if (result != ERROR_SUCCESS) {
+    VLOG(1) << __func__ << ": failed to read registry: " << key_path << "@"
+            << name;
+    return false;
+  }
+  value = base::SysWideToUTF8(data);
+  return true;
+}
+
+bool DeleteRegistryValue(const std::wstring& key_path,
+                         const std::wstring& name,
+                         REGSAM reg_view) {
+  const LONG result = base::win::RegKey(HKEY_LOCAL_MACHINE, key_path.c_str(),
+                                        reg_view | KEY_READ | KEY_WRITE)
+                          .DeleteValue(name.c_str());
+  if (result != ERROR_SUCCESS && result != ERROR_FILE_NOT_FOUND) {
+    VLOG(1) << "Failed to delete registry: " << key_path << "@" << name;
+    return false;
+  }
+  return true;
+}
+
+// Reads a token from the registry value of string type .
+bool ReadTokenString(const std::wstring& key_path,
+                     const std::wstring& name,
+                     REGSAM reg_view,
                      std::string& token) {
+  if (!ReadRegistryString(key_path, name, reg_view, token)) {
+    return false;
+  }
+  if (token.size() > DMStorage::kMaxDmTokenLength) {
+    token.clear();
+    VLOG(1) << __func__ << ": token [" << token << "] is too long.";
+    return false;
+  }
+  return true;
+}
+
+// Reads a token from the registry value of type REG_BINARY.
+bool ReadTokenBinary(const std::wstring& key_path,
+                     const std::wstring& name,
+                     REGSAM reg_view,
+                     std::string& token) {
+  base::win::RegKey key;
+  if (key.Open(HKEY_LOCAL_MACHINE, key_path.c_str(), reg_view | KEY_READ) !=
+      ERROR_SUCCESS) {
+    return false;
+  }
   DWORD size = 0;
   DWORD type = 0;
-  LONG error = key.ReadValue(name, nullptr, &size, &type);
+  LONG error = key.ReadValue(name.c_str(), nullptr, &size, &type);
   if (error != ERROR_SUCCESS) {
     VLOG(2) << "ReadValue failed: " << error;
     return false;
@@ -46,11 +99,11 @@ bool ReadTokenBinary(const base::win::RegKey& key,
     return false;
   }
   if (type != REG_BINARY) {
-    VLOG(2) << "Ignored DM token value with incompatible type.";
+    VLOG(2) << "Ignored token value with incompatible type.";
     return false;
   }
   std::vector<char> value(size);
-  error = key.ReadValue(name, &value.front(), &size, &type);
+  error = key.ReadValue(name.c_str(), &value.front(), &size, &type);
   if (error != ERROR_SUCCESS) {
     VLOG(2) << "ReadValue failed: " << error;
     return false;
@@ -59,38 +112,28 @@ bool ReadTokenBinary(const base::win::RegKey& key,
   return true;
 }
 
-bool WriteTokenBinary(base::win::RegKey& key,
-                      const wchar_t* name,
+// Writes a token as a binary value to the registry.
+bool WriteTokenBinary(const std::wstring& key_path,
+                      const std::wstring& name,
+                      REGSAM reg_view,
                       const std::string& token) {
   if (token.size() > DMStorage::kMaxDmTokenLength) {
     VLOG(2) << "Value is too large: " << token.size();
     return false;
   }
-  const LONG error =
-      key.WriteValue(name, token.data(), token.size(), REG_BINARY);
-  if (error != ERROR_SUCCESS) {
-    VLOG(2) << "WriteValue failed: " << error;
-    return false;
-  }
-  return true;
-}
 
-// Set `name` in `root`\`key` as a binary `value`.
-bool SetRegistryKeyBinary(HKEY root,
-                          const std::wstring& key,
-                          const std::wstring& name,
-                          const std::string& value) {
-  base::win::RegKey rkey;
-  LONG error = rkey.Create(root, key.c_str(), Wow6432(KEY_WRITE));
+  base::win::RegKey key;
+  LONG error =
+      key.Create(HKEY_LOCAL_MACHINE, key_path.c_str(), reg_view | KEY_WRITE);
   if (error != ERROR_SUCCESS) {
-    VLOG(1) << "Failed to open (" << root << ") " << key << ": " << error;
+    VLOG(1) << "Failed to open " << key_path << ": " << error;
     return false;
   }
-  error = rkey.WriteValue(name.c_str(), value.data(), value.size(), REG_BINARY);
+
+  error = key.WriteValue(name.c_str(), token.data(), token.size(), REG_BINARY);
   if (error != ERROR_SUCCESS) {
-    VLOG(1) << "Failed to write (" << root << ") " << key << " @ " << name
+    VLOG(1) << "Failed to write " << key_path << " @ " << name
             << " (binary): " << error;
-    return false;
   }
   return error == ERROR_SUCCESS;
 }
@@ -112,15 +155,12 @@ class TokenService : public TokenServiceInterface {
 };
 
 std::string TokenService::GetDeviceID() const {
-  std::wstring device_id;
-  base::win::RegKey key;
-  if (key.Open(HKEY_LOCAL_MACHINE, kRegKeyCryptographyKey,
-               KEY_READ | KEY_WOW64_64KEY) != ERROR_SUCCESS ||
-      key.ReadValue(kRegValueMachineGuid, &device_id) != ERROR_SUCCESS) {
-    return std::string();
+  std::string device_id;
+  if (!ReadRegistryString(kRegKeyCryptographyKey, kRegValueMachineGuid,
+                          KEY_READ | KEY_WOW64_64KEY, device_id)) {
+    return {};
   }
-
-  return base::SysWideToUTF8(device_id);
+  return device_id;
 }
 
 bool TokenService::IsEnrollmentMandatory() const {
@@ -145,86 +185,53 @@ bool TokenService::StoreEnrollmentToken(const std::string& token) {
 
 bool TokenService::DeleteEnrollmentToken() {
   VLOG(1) << __func__;
-  return DeleteRegValue(HKEY_LOCAL_MACHINE, kRegKeyCompanyCloudManagement,
-                        kRegValueEnrollmentToken) &&
-         DeleteRegValue(HKEY_LOCAL_MACHINE, kRegKeyCompanyLegacyCloudManagement,
-                        kRegValueCloudManagementEnrollmentToken);
+  return DeleteRegistryValue(kRegKeyCompanyCloudManagement,
+                             kRegValueEnrollmentToken, KEY_WOW64_32KEY) &&
+         DeleteRegistryValue(kRegKeyCompanyLegacyCloudManagement,
+                             kRegValueCloudManagementEnrollmentToken,
+                             KEY_WOW64_32KEY);
 }
 
 std::string TokenService::GetEnrollmentToken() const {
-  std::wstring token;
-  if (base::win::RegKey(HKEY_LOCAL_MACHINE, kRegKeyCompanyCloudManagement,
-                        Wow6432(KEY_READ))
-          .ReadValue(kRegValueEnrollmentToken, &token) == ERROR_SUCCESS) {
-    return base::SysWideToUTF8(token);
+  std::string token;
+  if (ReadTokenString(kRegKeyCompanyCloudManagement, kRegValueEnrollmentToken,
+                      KEY_WOW64_32KEY, token)) {
+    return token;
   }
   for (const std::wstring& key_path :
        {std::wstring(kRegKeyCompanyLegacyCloudManagement),
         GetAppClientsKey(UPDATER_APPID),
         GetAppClientsKey(kLegacyGoogleUpdateAppID)}) {
-    if (base::win::RegKey(HKEY_LOCAL_MACHINE, key_path.c_str(),
-                          Wow6432(KEY_READ))
-            .ReadValue(kRegValueCloudManagementEnrollmentToken, &token) ==
-        ERROR_SUCCESS) {
-      return base::SysWideToUTF8(token);
+    if (ReadTokenString(key_path, kRegValueCloudManagementEnrollmentToken,
+                        KEY_WOW64_32KEY, token)) {
+      return token;
     }
   }
   return {};
 }
 
 bool TokenService::StoreDmToken(const std::string& token) {
-  VLOG(1) << __func__;
-  if (!SetRegistryKeyBinary(HKEY_LOCAL_MACHINE, kRegKeyCompanyEnrollment,
-                            kRegValueDmToken, token)) {
-    VLOG(1) << "Failed to write DM token.";
-    return false;
-  }
-  base::win::RegKey legacy_key;
-  if (legacy_key.Create(HKEY_LOCAL_MACHINE, kRegKeyCompanyLegacyEnrollment,
-                        KEY_WOW64_64KEY | KEY_WRITE) != ERROR_SUCCESS ||
-      !WriteTokenBinary(legacy_key, kRegValueDmToken, token)) {
-    VLOG(1) << "Failed to write DM token at the legacy place.";
-    return false;
-  }
-  VLOG(1) << "Updated DM token to: [" << token << "]";
-  return true;
+  VLOG(1) << __func__ << ": [" << token << "]";
+  return WriteTokenBinary(kRegKeyCompanyEnrollment, kRegValueDmToken,
+                          KEY_WOW64_32KEY, token) &&
+         WriteTokenBinary(kRegKeyCompanyLegacyEnrollment, kRegValueDmToken,
+                          KEY_WOW64_64KEY, token);
 }
 
 bool TokenService::DeleteDmToken() {
   VLOG(1) << __func__;
-  if (!DeleteRegValue(HKEY_LOCAL_MACHINE, kRegKeyCompanyEnrollment,
-                      kRegValueDmToken)) {
-    VLOG(1) << "Failed to delete DM token.";
-    return false;
-  }
-
-  base::win::RegKey legacy_dm_key(HKEY_LOCAL_MACHINE,
-                                  kRegKeyCompanyLegacyEnrollment,
-                                  KEY_WOW64_64KEY | KEY_READ | KEY_WRITE);
-  if (legacy_dm_key.Valid()) {
-    LONG result = legacy_dm_key.DeleteValue(kRegValueDmToken);
-    if (result != ERROR_SUCCESS && result != ERROR_FILE_NOT_FOUND) {
-      VLOG(1) << "Failed to delete DM token from the legacy place.";
-      return false;
-    }
-  }
-
-  VLOG(1) << __func__ << ": success.";
-  return true;
+  return DeleteRegistryValue(kRegKeyCompanyEnrollment, kRegValueDmToken,
+                             KEY_WOW64_32KEY) &&
+         DeleteRegistryValue(kRegKeyCompanyLegacyEnrollment, kRegValueDmToken,
+                             KEY_WOW64_64KEY);
 }
 
 std::string TokenService::GetDmToken() const {
   std::string token;
-  if (base::win::RegKey key;
-      key.Open(HKEY_LOCAL_MACHINE, kRegKeyCompanyEnrollment,
-               Wow6432(KEY_READ)) == ERROR_SUCCESS &&
-      ReadTokenBinary(key, kRegValueDmToken, token)) {
-    return token;
-  }
-  if (base::win::RegKey key;
-      key.Open(HKEY_LOCAL_MACHINE, kRegKeyCompanyLegacyEnrollment,
-               KEY_WOW64_64KEY | KEY_READ) == ERROR_SUCCESS &&
-      ReadTokenBinary(key, kRegValueDmToken, token)) {
+  if (ReadTokenBinary(kRegKeyCompanyEnrollment, kRegValueDmToken,
+                      KEY_WOW64_32KEY, token) ||
+      ReadTokenBinary(kRegKeyCompanyLegacyEnrollment, kRegValueDmToken,
+                      KEY_WOW64_64KEY, token)) {
     return token;
   }
   VLOG(1) << __func__ << ": token not found.";
