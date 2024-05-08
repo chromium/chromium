@@ -259,6 +259,16 @@ TEST(CredentialUIEntryTest, TestGetAffiliatedDuplicatesWithDifferentUrls) {
                                    ExpectDomain("g.com", form2.url)));
 }
 
+TEST(CredentialUIEntryTest, TestGetInvalidAffiliatedDomains) {
+  PasswordForm form;
+  form.signon_realm = "htt://g.com/";
+  form.url = GURL("htt://g.com/login/");
+
+  CredentialUIEntry entry = CredentialUIEntry({form});
+  EXPECT_THAT(entry.GetAffiliatedDomains(),
+              ElementsAre(ExpectDomain("htt://g.com/login/", form.url)));
+}
+
 TEST(CredentialUIEntryTest, TestGetChangeURLAndroid) {
   PasswordForm android_form;
   android_form.signon_realm = kAndroidSignonRealm;

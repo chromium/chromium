@@ -255,10 +255,12 @@ CredentialUIEntry::GetAffiliatedDomains() const {
               ? GURL(kPlayStoreAppPrefix + facet_uri.android_package_name())
               : GURL(facet.affiliated_web_realm);
     } else {
-      domain.name = GetOrigin(url::Origin::Create(facet.url));
       domain.url = facet.url;
+      std::string origin = GetOrigin(url::Origin::Create(facet.url));
+      domain.name =
+          origin.empty() ? domain.url.possibly_invalid_spec() : origin;
     }
-    if (unique_urls.insert(domain.url.spec()).second) {
+    if (unique_urls.insert(domain.url.possibly_invalid_spec()).second) {
       domains.push_back(std::move(domain));
     }
   }
