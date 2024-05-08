@@ -5,6 +5,7 @@
 #ifndef CHROME_BROWSER_ASH_SPARKY_SPARKY_MANAGER_IMPL_H_
 #define CHROME_BROWSER_ASH_SPARKY_SPARKY_MANAGER_IMPL_H_
 
+#include "ash/system/mahi/mahi_ui_controller.h"
 #include "base/memory/raw_ptr.h"
 #include "chrome/browser/profiles/profile.h"
 #include "chromeos/components/mahi/public/cpp/mahi_manager.h"
@@ -12,7 +13,7 @@
 #include "components/manta/manta_service.h"
 #include "components/manta/sparky/sparky_provider.h"
 #include "ui/gfx/image/image_skia.h"
-#include "ui/views/widget/unique_widget_ptr.h"
+
 namespace ash {
 
 // The Mahi UI will be temporarily re-used for this feature which is an
@@ -28,7 +29,6 @@ class SparkyManagerImpl : public chromeos::MahiManager, public KeyedService {
   ~SparkyManagerImpl() override;
 
   // chromeos::MahiManager:
-  void OpenMahiPanel(int64_t display_id) override;
   std::u16string GetContentTitle() override;
   gfx::ImageSkia GetContentIcon() override;
   GURL GetContentUrl() override;
@@ -88,8 +88,7 @@ class SparkyManagerImpl : public chromeos::MahiManager, public KeyedService {
   std::u16string latest_summary_;
   chromeos::MahiResponseStatus latest_response_status_;
 
-  // The widget contains the Mahi main panel.
-  views::UniqueWidgetPtr mahi_panel_widget_;
+  MahiUiController ui_controller_;
 
   base::WeakPtrFactory<SparkyManagerImpl> weak_ptr_factory_{this};
 };

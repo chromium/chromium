@@ -12,7 +12,7 @@
 
 #include "ash/constants/ash_pref_names.h"
 #include "ash/shell.h"
-#include "ash/system/mahi/mahi_panel_widget.h"
+#include "ash/system/mahi/mahi_ui_controller.h"
 #include "ash/webui/settings/public/constants/routes.mojom.h"
 #include "ash/webui/settings/public/constants/setting.mojom.h"
 #include "base/functional/callback.h"
@@ -105,17 +105,7 @@ MahiManagerImpl::MahiManagerImpl() {
 }
 
 MahiManagerImpl::~MahiManagerImpl() {
-  mahi_panel_widget_.reset();
   mahi_provider_.reset();
-}
-
-void MahiManagerImpl::OpenMahiPanel(int64_t display_id) {
-  if (!IsEnabled()) {
-    return;
-  }
-
-  mahi_panel_widget_ = MahiPanelWidget::CreatePanelWidget(display_id);
-  mahi_panel_widget_->Show();
 }
 
 std::u16string MahiManagerImpl::GetContentTitle() {
@@ -198,10 +188,10 @@ void MahiManagerImpl::OnContextMenuClicked(
     case MahiContextMenuActionType::kSummary:
     case MahiContextMenuActionType::kOutline:
       // TODO(b/318565610): Update the behaviour of kOutline.
-      OpenMahiPanel(context_menu_request->display_id);
+      ui_controller_.OpenMahiPanel(context_menu_request->display_id);
       return;
     case MahiContextMenuActionType::kQA:
-      OpenMahiPanel(context_menu_request->display_id);
+      ui_controller_.OpenMahiPanel(context_menu_request->display_id);
 
       // Ask question.
       // TODO(b/331837721): `MahiManagerImpl` should own an instance of
@@ -212,15 +202,16 @@ void MahiManagerImpl::OnContextMenuClicked(
         return;
       }
 
-      if (!mahi_panel_widget_) {
+      if (!ui_controller_.IsMahiPanelOpen()) {
         return;
       }
 
       // When the user sends a question from the context menu, we treat it as
       // the start of a new journey, so we set `current_panel_content` false.
-      static_cast<MahiPanelWidget*>(mahi_panel_widget_.get())
-          ->SendQuestion(context_menu_request->question.value(),
-                         /*current_panel_content=*/false);
+      ui_controller_.SendQuestion(context_menu_request->question.value(),
+                                  /*current_panel_content=*/false,
+                                  MahiUiController::QuestionSource::kMenuView);
+
       return;
     case MahiContextMenuActionType::kSettings:
       chrome::SettingsWindowManager::GetInstance()->ShowOSSettings(
@@ -270,9 +261,8 @@ bool MahiManagerImpl::IsEnabled() {
 }
 
 void MahiManagerImpl::NotifyRefreshAvailability(bool available) {
-  auto* mahi_widget = static_cast<MahiPanelWidget*>(mahi_panel_widget_.get());
-  if (mahi_widget) {
-    mahi_widget->NotifyRefreshAvailabilityChanged(available);
+  if (ui_controller_.IsMahiPanelOpen()) {
+    ui_controller_.NotifyRefreshAvailabilityChanged(available);
   }
 }
 
@@ -294,7 +284,7 @@ void MahiManagerImpl::OnMahiPrefChanged() {
   CHECK(pref_change_registrar_);
   CHECK(pref_change_registrar_->prefs());
   if (!pref_change_registrar_->prefs()->GetBoolean(ash::prefs::kMahiEnabled)) {
-    mahi_panel_widget_.reset();
+    ui_controller_.CloseMahiPanel();
   }
 }
 

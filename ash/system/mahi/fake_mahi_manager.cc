@@ -10,6 +10,7 @@
 #include "ash/public/cpp/new_window_delegate.h"
 #include "ash/system/mahi/mahi_constants.h"
 #include "ash/system/mahi/mahi_panel_widget.h"
+#include "ash/system/mahi/mahi_ui_controller.h"
 #include "base/functional/bind.h"
 #include "base/task/single_thread_task_runner.h"
 #include "base/time/time.h"
@@ -47,11 +48,6 @@ using crosapi::mojom::MahiContextMenuActionType;
 FakeMahiManager::FakeMahiManager() = default;
 
 FakeMahiManager::~FakeMahiManager() = default;
-
-void FakeMahiManager::OpenMahiPanel(int64_t display_id) {
-  mahi_panel_widget_ = MahiPanelWidget::CreatePanelWidget(display_id);
-  mahi_panel_widget_->Show();
-}
 
 std::u16string FakeMahiManager::GetContentTitle() {
   return content_title_.value_or(kDefaultContentTitle);
@@ -99,22 +95,20 @@ void FakeMahiManager::OnContextMenuClicked(
     case MahiContextMenuActionType::kSummary:
     case MahiContextMenuActionType::kOutline:
       // TODO(b/318565610): Update the behaviour of kOutline.
-      OpenMahiPanel(context_menu_request->display_id);
+      ui_controller_.OpenMahiPanel(context_menu_request->display_id);
+
       return;
     case MahiContextMenuActionType::kQA:
-      OpenMahiPanel(context_menu_request->display_id);
+      ui_controller_.OpenMahiPanel(context_menu_request->display_id);
 
       // Ask question.
-      // TODO(b/331837721): `FakeMahiManager` should own an instance of
-      // `MahiUiController` and use it to answer question here. This
-      // functionality shouldn't need to be routed through the widget.
-      if (context_menu_request->question) {
+      if (!context_menu_request->question) {
         return;
       }
 
-      static_cast<MahiPanelWidget*>(mahi_panel_widget_.get())
-          ->SendQuestion(context_menu_request->question.value(),
-                         /*current_panel_content=*/true);
+      ui_controller_.SendQuestion(context_menu_request->question.value(),
+                                  /*current_panel_content=*/true,
+                                  MahiUiController::QuestionSource::kMenuView);
       return;
     case MahiContextMenuActionType::kSettings:
       NewWindowDelegate::GetInstance()->OpenUrl(

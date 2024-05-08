@@ -5,6 +5,7 @@
 #include "ash/system/mahi/mahi_ui_controller.h"
 
 #include "ash/system/mahi/mahi_constants.h"
+#include "ash/system/mahi/mahi_panel_widget.h"
 #include "ash/system/mahi/mahi_ui_update.h"
 #include "base/logging.h"
 #include "base/metrics/histogram_functions.h"
@@ -48,7 +49,13 @@ MahiUiController::Delegate::~Delegate() = default;
 
 MahiUiController::MahiUiController() = default;
 
-MahiUiController::~MahiUiController() = default;
+MahiUiController::~MahiUiController() {
+  if (mahi_panel_widget_) {
+    // Immediately close the widget to avoid dangling pointers in tests.
+    mahi_panel_widget_->CloseNow();
+    mahi_panel_widget_.reset();
+  }
+}
 
 void MahiUiController::AddDelegate(Delegate* delegate) {
   delegates_.AddObserver(delegate);
@@ -56,6 +63,26 @@ void MahiUiController::AddDelegate(Delegate* delegate) {
 
 void MahiUiController::RemoveDelegate(Delegate* delegate) {
   delegates_.RemoveObserver(delegate);
+}
+
+void MahiUiController::OpenMahiPanel(int64_t display_id) {
+  // TODO(http://b/339250208): Use DCHECK instead of return early when
+  // `IsEnabled()` is false.
+  if (!chromeos::MahiManager::Get()->IsEnabled()) {
+    return;
+  }
+
+  mahi_panel_widget_ =
+      MahiPanelWidget::CreatePanelWidget(display_id, /*ui_controller=*/this);
+  mahi_panel_widget_->Show();
+}
+
+void MahiUiController::CloseMahiPanel() {
+  mahi_panel_widget_.reset();
+}
+
+bool MahiUiController::IsMahiPanelOpen() {
+  return !!mahi_panel_widget_;
 }
 
 void MahiUiController::NavigateToQuestionAnswerView() {

@@ -7,6 +7,7 @@
 #include "ash/public/cpp/shelf_config.h"
 #include "ash/system/mahi/fake_mahi_manager.h"
 #include "ash/system/mahi/mahi_constants.h"
+#include "ash/system/mahi/mahi_ui_controller.h"
 #include "ash/test/ash_test_base.h"
 #include "base/test/scoped_feature_list.h"
 #include "chromeos/components/mahi/public/cpp/mahi_manager.h"
@@ -46,6 +47,9 @@ class MahiPanelWidgetTest : public AshTestBase {
     AshTestBase::TearDown();
   }
 
+ protected:
+  MahiUiController ui_controller_;
+
  private:
   base::test::ScopedFeatureList scoped_feature_list_;
   std::unique_ptr<FakeMahiManager> fake_mahi_manager_;
@@ -54,7 +58,8 @@ class MahiPanelWidgetTest : public AshTestBase {
 
 TEST_F(MahiPanelWidgetTest, WidgetBounds) {
   auto* root_window = GetContext();
-  auto widget = MahiPanelWidget::CreatePanelWidget(GetPrimaryDisplay().id());
+  auto widget = MahiPanelWidget::CreatePanelWidget(GetPrimaryDisplay().id(),
+                                                   &ui_controller_);
 
   auto bottom_right = root_window->bounds().bottom_right();
   EXPECT_EQ(
@@ -67,7 +72,8 @@ TEST_F(MahiPanelWidgetTest, WidgetBounds) {
 }
 
 TEST_F(MahiPanelWidgetTest, WidgetBoundsWithRefreshBanner) {
-  auto widget = MahiPanelWidget::CreatePanelWidget(GetPrimaryDisplay().id());
+  auto widget = MahiPanelWidget::CreatePanelWidget(GetPrimaryDisplay().id(),
+                                                   &ui_controller_);
 
   auto* panel_view = widget->GetContentsView()->GetViewByID(
       mahi_constants::ViewId::kMahiPanelView);

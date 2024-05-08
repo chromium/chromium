@@ -50,9 +50,6 @@ class COMPONENT_EXPORT(MAHI_PUBLIC_CPP) MahiManager {
 
   static bool IsSupportedWithCorrectFeatureKey();
 
-  // Opens the Mahi Panel in the display with `display_id`.
-  virtual void OpenMahiPanel(int64_t display_id) = 0;
-
   // Gets information about the content on the corresponding surface.
   virtual std::u16string GetContentTitle() = 0;
   virtual gfx::ImageSkia GetContentIcon() = 0;

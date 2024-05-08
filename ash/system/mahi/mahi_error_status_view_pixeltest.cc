@@ -7,6 +7,7 @@
 
 #include "ash/system/mahi/mahi_constants.h"
 #include "ash/system/mahi/mahi_panel_widget.h"
+#include "ash/system/mahi/mahi_ui_controller.h"
 #include "ash/system/mahi/test/mock_mahi_manager.h"
 #include "ash/test/ash_test_base.h"
 #include "ash/test/pixel/ash_pixel_differ.h"
@@ -31,6 +32,7 @@ using ::testing::Return;
 class MahiErrorStatusViewPixelTest : public AshTestBase {
  protected:
   MockMahiManager& mock_mahi_manager() { return mock_mahi_manager_; }
+  MahiUiController* ui_controller() { return &ui_controller_; }
 
  private:
   // AshTestBase:
@@ -48,6 +50,7 @@ class MahiErrorStatusViewPixelTest : public AshTestBase {
 
   base::test::ScopedFeatureList scoped_feature_list_;
   NiceMock<MockMahiManager> mock_mahi_manager_;
+  MahiUiController ui_controller_;
   chromeos::ScopedMahiManagerSetter scoped_setter_{&mock_mahi_manager_};
 };
 
@@ -61,8 +64,8 @@ TEST_F(MahiErrorStatusViewPixelTest, Basics) {
                                 MahiResponseStatus::kUnknownError);
       });
 
-  views::UniqueWidgetPtr mahi_panel_widget =
-      MahiPanelWidget::CreatePanelWidget(GetPrimaryDisplay().id());
+  views::UniqueWidgetPtr mahi_panel_widget = MahiPanelWidget::CreatePanelWidget(
+      GetPrimaryDisplay().id(), ui_controller());
   mahi_panel_widget->Show();
 
   views::View* const error_status_view =

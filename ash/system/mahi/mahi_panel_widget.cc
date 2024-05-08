@@ -11,6 +11,7 @@
 #include "ash/shell.h"
 #include "ash/system/mahi/mahi_constants.h"
 #include "ash/system/mahi/mahi_panel_view.h"
+#include "ash/system/mahi/mahi_ui_controller.h"
 #include "ash/system/mahi/refresh_banner_view.h"
 #include "ui/aura/window.h"
 #include "ui/compositor/layer_type.h"
@@ -52,7 +53,8 @@ gfx::Rect CalculateWidgetBounds(aura::Window* root_window,
 
 }  // namespace
 
-MahiPanelWidget::MahiPanelWidget(InitParams params)
+MahiPanelWidget::MahiPanelWidget(InitParams params,
+                                 MahiUiController* ui_controller)
     : views::Widget(std::move(params)) {
   auto* contents_view = SetContentsView(
       views::Builder<views::BoxLayoutView>()
@@ -64,11 +66,11 @@ MahiPanelWidget::MahiPanelWidget(InitParams params)
           .Build());
 
   refresh_view_ = contents_view->AddChildView(
-      std::make_unique<RefreshBannerView>(&ui_controller_));
+      std::make_unique<RefreshBannerView>(ui_controller));
   refresh_view_observation_.Observe(refresh_view_);
 
   auto* panel_view = contents_view->AddChildView(
-      std::make_unique<MahiPanelView>(&ui_controller_));
+      std::make_unique<MahiPanelView>(ui_controller));
 
   // Make sure the `MahiPanelView` is sized to fill up the available space.
   contents_view->SetFlexForView(panel_view, 1.0);
@@ -77,7 +79,9 @@ MahiPanelWidget::MahiPanelWidget(InitParams params)
 MahiPanelWidget::~MahiPanelWidget() = default;
 
 // static
-views::UniqueWidgetPtr MahiPanelWidget::CreatePanelWidget(int64_t display_id) {
+views::UniqueWidgetPtr MahiPanelWidget::CreatePanelWidget(
+    int64_t display_id,
+    MahiUiController* ui_controller) {
   auto* root_window = Shell::GetRootWindowForDisplayId(display_id);
 
   views::Widget::InitParams params(
@@ -91,7 +95,7 @@ views::UniqueWidgetPtr MahiPanelWidget::CreatePanelWidget(int64_t display_id) {
   params.layer_type = ui::LAYER_NOT_DRAWN;
 
   views::UniqueWidgetPtr widget =
-      std::make_unique<MahiPanelWidget>(std::move(params));
+      std::make_unique<MahiPanelWidget>(std::move(params), ui_controller);
 
   widget->SetBounds(CalculateWidgetBounds(root_window));
   return widget;
@@ -100,16 +104,6 @@ views::UniqueWidgetPtr MahiPanelWidget::CreatePanelWidget(int64_t display_id) {
 // static
 const char* MahiPanelWidget::GetName() {
   return kWidgetName;
-}
-
-void MahiPanelWidget::NotifyRefreshAvailabilityChanged(bool available) {
-  ui_controller_.NotifyRefreshAvailabilityChanged(available);
-}
-
-void MahiPanelWidget::SendQuestion(const std::u16string& question,
-                                   bool current_panel_content) {
-  ui_controller_.SendQuestion(question, current_panel_content,
-                              MahiUiController::QuestionSource::kMenuView);
 }
 
 void MahiPanelWidget::OnViewVisibilityChanged(views::View* observed_view,

@@ -14,6 +14,7 @@
 #include "ash/constants/ash_pref_names.h"
 #include "ash/shell.h"
 #include "ash/system/mahi/mahi_panel_widget.h"
+#include "ash/system/mahi/mahi_ui_controller.h"
 #include "base/functional/callback.h"
 #include "base/strings/string_number_conversions.h"
 #include "base/strings/stringprintf.h"
@@ -58,15 +59,6 @@ SparkyManagerImpl::SparkyManagerImpl(Profile* profile,
 }
 
 SparkyManagerImpl::~SparkyManagerImpl() = default;
-
-void SparkyManagerImpl::OpenMahiPanel(int64_t display_id) {
-  if (!IsEnabled()) {
-    return;
-  }
-
-  mahi_panel_widget_ = MahiPanelWidget::CreatePanelWidget(display_id);
-  mahi_panel_widget_->Show();
-}
 
 std::u16string SparkyManagerImpl::GetContentTitle() {
   return u"";
@@ -136,25 +128,21 @@ void SparkyManagerImpl::OnContextMenuClicked(
     case MahiContextMenuActionType::kSummary:
     case MahiContextMenuActionType::kOutline:
       // TODO(b/318565610): Update the behaviour of kOutline.
-      OpenMahiPanel(context_menu_request->display_id);
+      ui_controller_.OpenMahiPanel(context_menu_request->display_id);
       return;
     case MahiContextMenuActionType::kQA:
-      OpenMahiPanel(context_menu_request->display_id);
+      ui_controller_.OpenMahiPanel(context_menu_request->display_id);
 
       // Ask question.
-      // TODO(b/331837721): `SparkyManagerImpl` should own an instance of
-      // `MahiUiController` and use it to answer question here. This
-      // functionality shouldn't need to be routed through the widget. We also
-      // need to add unit test logic for this after the refactor.
       if (!context_menu_request->question) {
         return;
       }
 
       // When the user sends a question from the context menu, we treat it as
       // the start of a new journey, so we set `current_panel_content` false.
-      static_cast<MahiPanelWidget*>(mahi_panel_widget_.get())
-          ->SendQuestion(context_menu_request->question.value(),
-                         /*current_panel_content=*/false);
+      ui_controller_.SendQuestion(context_menu_request->question.value(),
+                                  /*current_panel_content=*/false,
+                                  MahiUiController::QuestionSource::kMenuView);
       return;
     case MahiContextMenuActionType::kSettings:
       // TODO(b/318565610): Update the behaviour of kSettings
@@ -172,9 +160,8 @@ bool SparkyManagerImpl::IsEnabled() {
 }
 
 void SparkyManagerImpl::NotifyRefreshAvailability(bool available) {
-  auto* mahi_widget = static_cast<MahiPanelWidget*>(mahi_panel_widget_.get());
-  if (mahi_widget) {
-    mahi_widget->NotifyRefreshAvailabilityChanged(available);
+  if (ui_controller_.IsMahiPanelOpen()) {
+    ui_controller_.NotifyRefreshAvailabilityChanged(available);
   }
 }
 

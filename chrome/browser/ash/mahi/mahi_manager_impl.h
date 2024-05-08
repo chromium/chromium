@@ -10,13 +10,13 @@
 
 #include "ash/public/cpp/session/session_observer.h"
 #include "ash/session/session_controller_impl.h"
+#include "ash/system/mahi/mahi_ui_controller.h"
 #include "base/memory/raw_ptr.h"
 #include "chromeos/components/mahi/public/cpp/mahi_manager.h"
 #include "components/manta/mahi_provider.h"
 #include "components/prefs/pref_change_registrar.h"
 #include "components/prefs/pref_service.h"
 #include "ui/gfx/image/image_skia.h"
-#include "ui/views/widget/unique_widget_ptr.h"
 
 namespace ash {
 
@@ -31,7 +31,6 @@ class MahiManagerImpl : public chromeos::MahiManager, public SessionObserver {
   ~MahiManagerImpl() override;
 
   // chromeos::MahiManager:
-  void OpenMahiPanel(int64_t display_id) override;
   std::u16string GetContentTitle() override;
   gfx::ImageSkia GetContentIcon() override;
   GURL GetContentUrl() override;
@@ -104,8 +103,7 @@ class MahiManagerImpl : public chromeos::MahiManager, public SessionObserver {
   std::u16string latest_summary_;
   chromeos::MahiResponseStatus latest_response_status_;
 
-  // The widget contains the Mahi main panel.
-  views::UniqueWidgetPtr mahi_panel_widget_;
+  MahiUiController ui_controller_;
 
   base::WeakPtrFactory<MahiManagerImpl> weak_ptr_factory_{this};
 };

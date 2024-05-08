@@ -46,13 +46,6 @@ class MahiManagerImplTest : public NoSessionAshTestBase {
     NoSessionAshTestBase::TearDown();
   }
 
-  views::Widget* GetMahiPanelWidget() {
-    if (!mahi_manager_impl_->mahi_panel_widget_) {
-      return nullptr;
-    }
-    return mahi_manager_impl_->mahi_panel_widget_->AsWidget();
-  }
-
   void SetUserPref(bool enabled) {
     Shell::Get()->session_controller()->GetActivePrefService()->SetBoolean(
         ash::prefs::kMahiEnabled, enabled);
@@ -121,19 +114,14 @@ class MahiManagerImplFeatureKeyTest : public NoSessionAshTestBase {
   }
 
  protected:
-  views::Widget* GetMahiPanelWidget() {
-    return mahi_manager_impl_->mahi_panel_widget_.get();
-  }
   std::unique_ptr<MahiManagerImpl> mahi_manager_impl_;
 
  private:
   base::test::ScopedFeatureList feature_list_{chromeos::features::kMahi};
 };
 
-TEST_F(MahiManagerImplFeatureKeyTest, DoesNotShowWidgetIfFeatureKeyIsWrong) {
-  mahi_manager_impl_->OpenMahiPanel(/*display_id=*/0);
-
-  EXPECT_THAT(GetMahiPanelWidget(), IsNull());
+TEST_F(MahiManagerImplFeatureKeyTest, IsNotEnabledIfFeatureKeyIsWrong) {
+  EXPECT_FALSE(mahi_manager_impl_->IsEnabled());
 }
 
 }  // namespace ash
