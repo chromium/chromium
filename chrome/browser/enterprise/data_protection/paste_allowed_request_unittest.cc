@@ -340,9 +340,111 @@ TEST_F(PasteAllowedRequestTest, EmptyData) {
   ASSERT_TRUE(future.Get());
   ASSERT_TRUE(future.Get()->empty());
 
-  // When data is empty, the callback is invoked right away without having a
-  // request cached.
+  // When data is empty, a request is still made in case the data needs to be
+  // replaced later.
+  EXPECT_EQ(1u, PasteAllowedRequest::requests_count_for_testing());
+}
+
+TEST_F(PasteAllowedRequestTest, EmptyData_SameSourceReplaced) {
+  data_controls::SetDataControls(profile_->GetPrefs(), {
+                                                           R"({
+                    "destinations": {
+                      "os_clipboard": true
+                    },
+                    "restrictions": [
+                      {"class": "CLIPBOARD", "level": "BLOCK"}
+                    ]
+                  })"});
+
+  const std::u16string kText = u"text";
+  content::ClipboardPasteData copied_data;
+  copied_data.text = kText;
+  base::test::TestFuture<const ui::ClipboardFormatType&,
+                         const content::ClipboardPasteData&,
+                         std::optional<std::u16string>>
+      copy_future;
+
+  IsClipboardCopyAllowedByPolicy(main_endpoint(), {}, copied_data,
+                                 copy_future.GetCallback());
+  auto replacement = copy_future.Get<std::optional<std::u16string>>();
+  EXPECT_TRUE(replacement);
+  EXPECT_EQ(*replacement,
+            u"Pasting this content here is blocked by your administrator.");
+
+  // This triggers the clipboard observer started by the
+  // `IsClipboardCopyAllowedByPolicy` calls so that they're aware of the new
+  // seqno.
+  ui::ClipboardMonitor::GetInstance()->NotifyClipboardDataChanged();
+
+  auto seqno = ui::Clipboard::GetForCurrentThread()->GetSequenceNumber(
+      ui::ClipboardBuffer::kCopyPaste);
+  main_rfh().MarkClipboardOwner(seqno);
+  base::test::TestFuture<std::optional<content::ClipboardPasteData>> future;
+  PasteAllowedRequest::StartPasteAllowedRequest(
+      /*source*/ secondary_endpoint(),
+      /*destination*/ main_endpoint(),
+      {
+          .seqno = ui::Clipboard::GetForCurrentThread()->GetSequenceNumber(
+              ui::ClipboardBuffer::kCopyPaste),
+      },
+      content::ClipboardPasteData(), future.GetCallback());
+
+  ASSERT_TRUE(future.Get());
+  ASSERT_EQ(future.Get()->text, kText);
+
+  // When the same document writes and then reads from the clipboard, content
+  // checks should be skipped.
   EXPECT_EQ(0u, PasteAllowedRequest::requests_count_for_testing());
+}
+
+TEST_F(PasteAllowedRequestTest, EmptyData_DifferentSourceReplaced) {
+  data_controls::SetDataControls(profile_->GetPrefs(), {
+                                                           R"({
+                    "destinations": {
+                      "os_clipboard": true
+                    },
+                    "restrictions": [
+                      {"class": "CLIPBOARD", "level": "BLOCK"}
+                    ]
+                  })"});
+
+  const std::u16string kText = u"text";
+  content::ClipboardPasteData copied_data;
+  copied_data.text = kText;
+  base::test::TestFuture<const ui::ClipboardFormatType&,
+                         const content::ClipboardPasteData&,
+                         std::optional<std::u16string>>
+      copy_future;
+
+  IsClipboardCopyAllowedByPolicy(main_endpoint(), {}, copied_data,
+                                 copy_future.GetCallback());
+  auto replacement = copy_future.Get<std::optional<std::u16string>>();
+  EXPECT_TRUE(replacement);
+  EXPECT_EQ(*replacement,
+            u"Pasting this content here is blocked by your administrator.");
+
+  // This triggers the clipboard observer started by the
+  // `IsClipboardCopyAllowedByPolicy` calls so that they're aware of the new
+  // seqno.
+  ui::ClipboardMonitor::GetInstance()->NotifyClipboardDataChanged();
+
+  auto seqno = ui::Clipboard::GetForCurrentThread()->GetSequenceNumber(
+      ui::ClipboardBuffer::kCopyPaste);
+  main_rfh().MarkClipboardOwner(seqno);
+  base::test::TestFuture<std::optional<content::ClipboardPasteData>> future;
+  PasteAllowedRequest::StartPasteAllowedRequest(
+      /*source*/ main_endpoint(),
+      /*destination*/ secondary_endpoint(),
+      {
+          .seqno = ui::Clipboard::GetForCurrentThread()->GetSequenceNumber(
+              ui::ClipboardBuffer::kCopyPaste),
+      },
+      content::ClipboardPasteData(), future.GetCallback());
+
+  ASSERT_TRUE(future.Get());
+  ASSERT_EQ(future.Get()->text, kText);
+
+  EXPECT_EQ(1u, PasteAllowedRequest::requests_count_for_testing());
 }
 
 TEST_F(PasteAllowedRequestTest, CleanupObsoleteScanRequests) {

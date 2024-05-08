@@ -51,11 +51,6 @@ void PasteAllowedRequest::StartPasteAllowedRequest(
   DCHECK(destination.web_contents());
   DCHECK(destination.web_contents()->GetPrimaryMainFrame());
 
-  if (clipboard_paste_data.empty()) {
-    std::move(callback).Run(std::move(clipboard_paste_data));
-    return;
-  }
-
   CleanupObsoleteRequests();
 
   ui::ClipboardSequenceNumberToken seqno = metadata.seqno;
