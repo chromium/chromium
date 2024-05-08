@@ -1186,29 +1186,6 @@ chromium-metrics-reviews@google.com.
   </token>
 </histogram>
 
-<histogram name="Power.ExternalBrightnessRequestResult"
-    enum="ExternalDisplaySendResult" expires_after="M100">
-  <owner>puthik@chromium.org</owner>
-  <owner>chromeos-platform-power@google.com</owner>
-  <summary>
-    The result of requesting an external display's brightness on Chrome OS. A
-    request is sent when the user presses a brightness key and the current
-    brightness is not already cached. A successful request is followed shortly
-    thereafter by a read attempt.
-  </summary>
-</histogram>
-
-<histogram name="Power.ExternalBrightnessWriteResult"
-    enum="ExternalDisplaySendResult" expires_after="M100">
-  <owner>puthik@chromium.org</owner>
-  <owner>chromeos-platform-power@google.com</owner>
-  <summary>
-    The result of attempting to change an external display's brightness on
-    Chrome OS. A request is sent when the user presses a brightness key and the
-    current brightness is either already cached or successfully loaded.
-  </summary>
-</histogram>
-
 <histogram name="Power.FirmwareResumeTimeOnAC" units="ms"
     expires_after="2022-03-31">
   <owner>puthik@chromium.org</owner>

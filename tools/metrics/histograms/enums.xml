@@ -6196,11 +6196,6 @@ Called by update_document_policy_enum.py.-->
   <int value="28" label="REPLACED_BY_SYSTEM_APP"/>
 </enum>
 
-<enum name="ExternalDisplaySendResult">
-  <int value="0" label="Success"/>
-  <int value="1" label="ioctl() to I2C device failed"/>
-</enum>
-
 <enum name="FactoryPingEmbargoEndDateValidity">
   <summary>
     Defines the validity of the factory ping embargo end date in RW_VPD.
