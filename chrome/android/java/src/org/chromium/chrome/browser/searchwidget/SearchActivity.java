@@ -493,20 +493,6 @@ public class SearchActivity extends AsyncInitializationActivity
     }
 
     @Override
-    public void onPause() {
-        super.onPause();
-        // Make sure that re-entering the SearchActivity from different widgets shows appropriate
-        // suggestion types.
-        mLocationBarCoordinator.clearOmniboxFocus();
-    }
-
-    @Override
-    public void onResume() {
-        super.onResume();
-        mSearchBox.focusTextBox();
-    }
-
-    @Override
     public void onPauseWithNative() {
         umaSessionEnd();
         RevenueStats.setCustomTabSearchClient(null);
