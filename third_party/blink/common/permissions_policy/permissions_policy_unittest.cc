@@ -2992,7 +2992,7 @@ TEST_F(PermissionsPolicyTest, OverwriteHeaderPolicyForClientHints) {
          /*matches_all_origins=*/false,
          /*matches_opaque_src=*/false}}},
       origin_a_);
-  policy1->OverwriteHeaderPolicyForClientHints(
+  policy1 = policy1->WithClientHints(
       {{{mojom::PermissionsPolicyFeature::kClientHintDPR,
          /*allowed_origins=*/
          {*blink::OriginWithPossibleWildcards::FromOriginAndWildcardsForTest(
@@ -3016,7 +3016,7 @@ TEST_F(PermissionsPolicyTest, OverwriteHeaderPolicyForClientHints) {
          /*matches_all_origins=*/false,
          /*matches_opaque_src=*/false}}},
       origin_a_);
-  policy2->OverwriteHeaderPolicyForClientHints(
+  policy2 = policy2->WithClientHints(
       {{{mojom::PermissionsPolicyFeature::kClientHintDPR,
          /*allowed_origins=*/
          {*blink::OriginWithPossibleWildcards::FromOriginAndWildcardsForTest(
@@ -3039,7 +3039,7 @@ TEST_F(PermissionsPolicyTest, OverwriteHeaderPolicyForClientHints) {
          /*matches_all_origins=*/false,
          /*matches_opaque_src=*/false}}},
       origin_a_);
-  policy3->OverwriteHeaderPolicyForClientHints(
+  policy3 = policy3->WithClientHints(
       {{{mojom::PermissionsPolicyFeature::kClientHintDPR,
          /*allowed_origins=*/
          {*blink::OriginWithPossibleWildcards::FromOriginAndWildcardsForTest(
@@ -3052,34 +3052,9 @@ TEST_F(PermissionsPolicyTest, OverwriteHeaderPolicyForClientHints) {
       mojom::PermissionsPolicyFeature::kClientHintDPR));
 
   // We can't overwrite a non-client-hint header.
-  auto policy4 =
-      CreateFromParentPolicy(nullptr, /*header_policy=*/{}, origin_a_);
-  EXPECT_DCHECK_DEATH(policy4->OverwriteHeaderPolicyForClientHints(
+  auto policy4 = CreateFromParentPolicy(nullptr, {}, origin_a_);
+  EXPECT_DCHECK_DEATH(policy4->WithClientHints(
       {{{kDefaultSelfFeature, /*allowed_origins=*/
-         {*blink::OriginWithPossibleWildcards::FromOriginAndWildcardsForTest(
-             origin_a_,
-             /*has_subdomain_wildcard=*/false)},
-         /*self_if_matches=*/std::nullopt,
-         /*matches_all_origins=*/false,
-         /*matches_opaque_src=*/false}}}));
-
-  // We can't construct a policy, set headers, check, then overwrite the header.
-  auto policy5 = CreateFromParentPolicy(
-      nullptr,
-      {{{mojom::PermissionsPolicyFeature::kClientHintDPR,
-         /*allowed_origins=*/
-         {*blink::OriginWithPossibleWildcards::FromOriginAndWildcardsForTest(
-             origin_a_,
-             /*has_subdomain_wildcard=*/false)},
-         /*self_if_matches=*/std::nullopt,
-         /*matches_all_origins=*/false,
-         /*matches_opaque_src=*/false}}},
-      origin_a_);
-  EXPECT_TRUE(policy5->IsFeatureEnabled(
-      mojom::PermissionsPolicyFeature::kClientHintDPR));
-  EXPECT_DCHECK_DEATH(policy5->OverwriteHeaderPolicyForClientHints(
-      {{{mojom::PermissionsPolicyFeature::kClientHintDPR,
-         /*allowed_origins=*/
          {*blink::OriginWithPossibleWildcards::FromOriginAndWildcardsForTest(
              origin_a_,
              /*has_subdomain_wildcard=*/false)},
@@ -3129,12 +3104,12 @@ TEST_F(PermissionsPolicyTest, GetAllowlistForFeatureIfExists) {
                                 /*matches_all_origins=*/false,
                                 /*matches_opaque_src=*/false}}},
                              origin_a_);
-  policy3->OverwriteHeaderPolicyForClientHints(
+  auto new_policy3 = policy3->WithClientHints(
       {{{mojom::PermissionsPolicyFeature::kClientHintDPR, origins3,
          /*self_if_matches=*/std::nullopt,
          /*matches_all_origins=*/false,
          /*matches_opaque_src=*/false}}});
-  const auto& maybe_allow_list3 = policy3->GetAllowlistForFeatureIfExists(
+  const auto& maybe_allow_list3 = new_policy3->GetAllowlistForFeatureIfExists(
       mojom::PermissionsPolicyFeature::kClientHintDPR);
   EXPECT_TRUE(maybe_allow_list3.has_value());
   EXPECT_FALSE(maybe_allow_list3.value().MatchesAll());
@@ -3152,7 +3127,7 @@ TEST_F(PermissionsPolicyTest, GetAllowlistForFeatureIfExists) {
        *blink::OriginWithPossibleWildcards::FromOriginAndWildcardsForTest(
            origin_b_,
            /*has_subdomain_wildcard=*/false)});
-  policy4->OverwriteHeaderPolicyForClientHints(
+  policy4 = policy4->WithClientHints(
       {{{mojom::PermissionsPolicyFeature::kClientHintDPR, origins4,
          /*self_if_matches=*/std::nullopt,
          /*matches_all_origins=*/false,

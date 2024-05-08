@@ -240,12 +240,13 @@ class BLINK_COMMON_EXPORT PermissionsPolicy {
   void SetHeaderPolicyForIsolatedApp(
       const ParsedPermissionsPolicy& parsed_header);
 
-  // Used to update a client hint header policy set via the accept-ch meta tag.
-  // It will fail if header policies not for client hints are included in
-  // `parsed_header` or if allowlists_ has already been used for a check.
-  // TODO(crbug.com/1278127): Replace w/ generic HTML policy modification.
-  void OverwriteHeaderPolicyForClientHints(
-      const ParsedPermissionsPolicy& parsed_header);
+  // Returns a new permissions policy, based on this policy and a client hint
+  // header policy set via the accept-ch meta tag. It will fail if header
+  // policies not for client hints are included in `parsed_header`.
+  // TODO(https://crbug.com/40208054): Replace w/ generic HTML policy
+  // modification.
+  std::unique_ptr<PermissionsPolicy> WithClientHints(
+      const ParsedPermissionsPolicy& parsed_header) const;
 
   const url::Origin& GetOriginForTest() const { return origin_; }
   const std::map<mojom::PermissionsPolicyFeature, Allowlist>& allowlists()

@@ -675,8 +675,8 @@ void UpdateIFramePermissionsPolicyWithDelegationSupportForClientHints(
       }
     }
   }
-  data.permissions_policy->OverwriteHeaderPolicyForClientHints(
-      client_hints_container_policy);
+  data.permissions_policy =
+      data.permissions_policy->WithClientHints(client_hints_container_policy);
 }
 
 // Captures when UpdateNavigationRequestClientUaHeadersImpl() is being called.

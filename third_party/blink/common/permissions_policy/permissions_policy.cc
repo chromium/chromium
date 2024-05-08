@@ -362,15 +362,19 @@ void PermissionsPolicy::SetHeaderPolicyForIsolatedApp(
   }
 }
 
-void PermissionsPolicy::OverwriteHeaderPolicyForClientHints(
-    const ParsedPermissionsPolicy& parsed_header) {
-  DCHECK(!disallow_updates_);
+std::unique_ptr<PermissionsPolicy> PermissionsPolicy::WithClientHints(
+    const ParsedPermissionsPolicy& parsed_header) const {
+  std::map<mojom::PermissionsPolicyFeature, Allowlist> allowlists = allowlists_;
   for (const ParsedPermissionsPolicyDeclaration& parsed_declaration :
        parsed_header) {
     mojom::PermissionsPolicyFeature feature = parsed_declaration.feature;
     DCHECK(GetPolicyFeatureToClientHintMap().contains(feature));
-    allowlists_[feature] = Allowlist::FromDeclaration(parsed_declaration);
+    allowlists[feature] = Allowlist::FromDeclaration(parsed_declaration);
   }
+
+  return base::WrapUnique(new PermissionsPolicy(
+      origin_, {allowlists, reporting_endpoints_}, inherited_policies_,
+      GetPermissionsPolicyFeatureList(origin_)));
 }
 
 const mojom::PermissionsPolicyFeature
