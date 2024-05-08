@@ -2246,7 +2246,7 @@ TEST_P(PasswordFormManagerTest, Update) {
   EXPECT_CALL(client_, UpdateFormManagers());
 
   const base::Time kNow = base::Time::Now();
-  form_manager_->Update(saved_match_);
+  form_manager_->Save();
 
   EXPECT_TRUE(ArePasswordFormUniqueKeysEqual(saved_match_, updated_form));
   EXPECT_EQ(new_password, updated_form.password_value);
@@ -2888,10 +2888,7 @@ TEST_P(PasswordFormManagerTest, UsernameFirstFlow) {
 
     base::HistogramTester histogram_tester;
 
-    if (!is_password_update)
-      form_manager_->Save();
-    else
-      form_manager_->Update(saved_match_);
+    form_manager_->Save();
 
 #if !BUILDFLAG(IS_ANDROID)
     histogram_tester.ExpectUniqueSample(

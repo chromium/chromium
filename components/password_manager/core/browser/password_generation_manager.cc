@@ -64,7 +64,6 @@ class PasswordDataForUI : public PasswordFormManagerForUI {
   bool IsBlocklisted() const override;
   bool IsMovableToAccountStore() const override;
   void Save() override;
-  void Update(const PasswordForm& credentials_to_update) override;
   bool IsUpdateAffectingPasswordsStoredInTheGoogleAccount() const override;
   void OnUpdateUsernameFromPrompt(const std::u16string& new_username) override;
   void OnUpdatePasswordFromPrompt(const std::u16string& new_password) override;
@@ -160,11 +159,6 @@ bool PasswordDataForUI::IsMovableToAccountStore() const {
 
 void PasswordDataForUI::Save() {
   bubble_interaction_cb_.Run(true, pending_form_);
-}
-
-void PasswordDataForUI::Update(const PasswordForm&) {
-  // The method is obsolete.
-  NOTREACHED();
 }
 
 bool PasswordDataForUI::IsUpdateAffectingPasswordsStoredInTheGoogleAccount()

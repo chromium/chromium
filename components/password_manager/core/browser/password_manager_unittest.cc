@@ -2779,7 +2779,7 @@ TEST_P(PasswordManagerTest, PasswordGenerationPresavePasswordAndLogin) {
     if (found_matched_logins_in_store) {
       // Credentials should be updated only when the user explicitly chooses.
       ASSERT_TRUE(form_manager);
-      form_manager->Update(form_manager->GetPendingCredentials());
+      form_manager->Save();
     }
     task_environment_.RunUntilIdle();
     form.password_element =

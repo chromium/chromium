@@ -649,7 +649,7 @@ using UserDecision = autofill::AutofillClient::AddressPromptUserDecision;
                           << "A password update can only be accepted or "
                              "ignored.";
                       if (decision == CWVPasswordUserDecisionYes) {
-                        formPtr->Update(credentials);
+                        formPtr->Save();
                       }
                     }];
 }

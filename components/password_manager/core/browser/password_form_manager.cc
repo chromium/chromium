@@ -439,12 +439,6 @@ void PasswordFormManager::Save() {
   client_->UpdateFormManagers();
 }
 
-void PasswordFormManager::Update(const PasswordForm& credentials_to_update) {
-  password_save_manager_->Update(credentials_to_update, observed_form(),
-                                 *parsed_submitted_form_);
-  client_->UpdateFormManagers();
-}
-
 bool PasswordFormManager::IsUpdateAffectingPasswordsStoredInTheGoogleAccount()
     const {
   signin::IdentityManager* identity_manager = client_->GetIdentityManager();

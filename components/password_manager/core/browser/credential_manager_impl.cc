@@ -246,7 +246,7 @@ void CredentialManagerImpl::OnProvisionalSaveComplete() {
          form_manager_->GetFormFetcher()->GetFederatedMatches()) {
       if (match->username_value == form.username_value &&
           match->federation_origin.IsSameOriginWith(form.federation_origin)) {
-        form_manager_->Update(*match);
+        form_manager_->Save();
         return;
       }
     }
@@ -257,7 +257,7 @@ void CredentialManagerImpl::OnProvisionalSaveComplete() {
     // signal that the page understands the credential management API and so can
     // be trusted to notify us when they sign the user out.
     bool is_update_confirmation = form_manager_->IsPasswordUpdate();
-    form_manager_->Update(form_manager_->GetPendingCredentials());
+    form_manager_->Save();
     if (is_update_confirmation) {
       client_->AutomaticPasswordSave(std::move(form_manager_),
                                      /*is_update_confirmation=*/true);
