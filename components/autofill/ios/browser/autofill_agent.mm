@@ -21,7 +21,7 @@
 #import "base/memory/raw_ptr.h"
 #import "base/memory/weak_ptr.h"
 #import "base/metrics/field_trial.h"
-#import "base/metrics/histogram_macros.h"
+#import "base/metrics/histogram_functions.h"
 #import "base/strings/string_number_conversions.h"
 #import "base/strings/sys_string_conversions.h"
 #import "base/strings/utf_string_conversions.h"
@@ -952,13 +952,14 @@ constexpr CGFloat kSuggestionIconWidth = 32;
                      inFrame:(web::WebFrame*)frame
         fieldToFormLookupMap:(const FieldToFormLookupMap&)fieldToFormLookupMap {
   std::map<uint32_t, std::u16string> fillingResults;
-  if (!autofill::ExtractFillingResults(resultsAsJsonStr, &fillingResults)) {
-    return;
+  if (autofill::ExtractFillingResults(resultsAsJsonStr, &fillingResults)) {
+    [self updateFieldManagerWithFillingResults:fillingResults inFrame:frame];
+    [self notifyAboutFormFillingResults:fillingResults
+                                inFrame:frame
+                   fieldToFormLookupMap:fieldToFormLookupMap];
   }
-  [self updateFieldManagerWithFillingResults:fillingResults inFrame:frame];
-  [self notifyAboutFormFillingResults:fillingResults
-                              inFrame:frame
-                 fieldToFormLookupMap:fieldToFormLookupMap];
+
+  [self recordFormFillingSuccessMetrics:!fillingResults.empty()];
 }
 
 // Called when did clear fields.
@@ -984,14 +985,6 @@ constexpr CGFloat kSuggestionIconWidth = 32;
                                      inFrame:frame
                                    withValue:fillData.second];
   }
-
-  // TODO(crbug.com/40150011): Remove once the experiment is over.
-  UMA_HISTOGRAM_BOOLEAN("Autofill.FormFillSuccessIOS", !fillingResults.empty());
-
-  ukm::SourceId source_id = ukm::GetSourceIdForWebStateDocument(_webState);
-  ukm::builders::Autofill_FormFillSuccessIOS(source_id)
-      .SetFormFillSuccess(!fillingResults.empty())
-      .Record(ukm::UkmRecorder::Get());
 }
 
 - (void)updateFieldManagerForSpecificField:(FieldRendererId)fieldRendererID
@@ -1337,6 +1330,18 @@ constexpr CGFloat kSuggestionIconWidth = 32;
       /*track_user_edited_fields=*/true);
 
   [self scanFormsInWebState:webState inFrame:frame];
+}
+
+// Records if the renderer was able to fill the Autofill-provided values in a
+// form or formless fields.
+- (void)recordFormFillingSuccessMetrics:(BOOL)success {
+  base::UmaHistogramBoolean(/*name=*/"Autofill.FormFillSuccessIOS",
+                            /*sample=*/success);
+
+  ukm::SourceId source_id = ukm::GetSourceIdForWebStateDocument(_webState);
+  ukm::builders::Autofill_FormFillSuccessIOS(source_id)
+      .SetFormFillSuccess(success)
+      .Record(ukm::UkmRecorder::Get());
 }
 
 @end
