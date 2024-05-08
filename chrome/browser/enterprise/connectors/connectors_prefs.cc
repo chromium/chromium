@@ -2,14 +2,15 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
+#include "chrome/browser/enterprise/connectors/connectors_prefs.h"
+
 #include <algorithm>
 #include <string>
 #include <vector>
 
-#include "chrome/browser/enterprise/connectors/connectors_prefs.h"
 #include "chrome/browser/enterprise/connectors/connectors_service.h"
 #include "chrome/browser/enterprise/connectors/device_trust/prefs.h"
-#include "chrome/browser/enterprise/connectors/service_provider_config.h"
+#include "components/enterprise/connectors/service_provider_config.h"
 #include "components/prefs/pref_registry_simple.h"
 
 #if BUILDFLAG(IS_WIN) || BUILDFLAG(IS_MAC)

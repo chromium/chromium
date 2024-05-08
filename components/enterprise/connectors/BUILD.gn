@@ -1,0 +1,30 @@
+# Copyright 2024 The Chromium Authors
+# Use of this source code is governed by a BSD-style license that can be
+# found in the LICENSE file.
+
+import("//components/enterprise/buildflags/buildflags.gni")
+
+assert(enterprise_content_analysis)
+
+source_set("connectors") {
+  sources = [
+    "service_provider_config.cc",
+    "service_provider_config.h",
+  ]
+
+  deps = [ "//base" ]
+}
+
+source_set("unit_tests") {
+  testonly = true
+
+  sources = [ "service_provider_config_unittest.cc" ]
+
+  public_deps = [ ":connectors" ]
+
+  deps = [
+    "//base",
+    "//testing/gtest",
+    "//url:url",
+  ]
+}

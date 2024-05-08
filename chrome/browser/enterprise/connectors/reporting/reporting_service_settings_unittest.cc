@@ -9,8 +9,8 @@
 #include "base/no_destructor.h"
 #include "build/chromeos_buildflags.h"
 #include "chrome/browser/enterprise/connectors/connectors_service.h"
-#include "chrome/browser/enterprise/connectors/service_provider_config.h"
 #include "chrome/browser/policy/chrome_browser_policy_connector.h"
+#include "components/enterprise/connectors/service_provider_config.h"
 #include "content/public/test/browser_task_environment.h"
 #include "testing/gtest/include/gtest/gtest.h"
 

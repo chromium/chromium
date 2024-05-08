@@ -6,8 +6,8 @@
 
 #include "base/command_line.h"
 #include "chrome/browser/browser_process.h"
-#include "chrome/browser/enterprise/connectors/service_provider_config.h"
 #include "chrome/browser/policy/chrome_browser_policy_connector.h"
+#include "components/enterprise/connectors/service_provider_config.h"
 
 namespace enterprise_connectors {
 namespace {
